@@ -1,32 +1,45 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 
+#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/bookmarks/recently_used_folders_combo_model.h"
-#include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/commerce/price_tracking/shopping_list_ui_tab_helper.h"
 #include "chrome/browser/ui/sync/sync_promo_ui.h"
+#include "chrome/browser/ui/views/commerce/price_tracking_view.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/common/bookmark_metrics.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/shopping_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/views/sync/dice_bubble_sync_promo_view.h"
+#include "chrome/browser/ui/views/sync/bubble_sync_promo_view.h"
 #endif
 
 using base::UserMetricsAction;
@@ -38,8 +51,8 @@ using bookmarks::BookmarkNode;
 views::BubbleDialogDelegate* BookmarkBubbleView::bookmark_bubble_ = nullptr;
 
 namespace {
-constexpr int kBookmarkName = 1;
-constexpr int kBookmarkFolder = 2;
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarkName);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBookmarkFolder);
 }
 
 class BookmarkBubbleView::BookmarkBubbleDelegate
@@ -101,10 +114,9 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
   }
 
   void OnComboboxAction() {
-    if (dialog_model()
-                ->GetComboboxByUniqueId(kBookmarkFolder)
-                ->selected_index() +
-            1 ==
+    const auto* combobox =
+        dialog_model()->GetComboboxByUniqueId(kBookmarkFolder);
+    if (static_cast<size_t>(combobox->selected_index()) + 1 ==
         GetFolderModel()->GetItemCount()) {
       base::RecordAction(UserMetricsAction("BookmarkBubble_EditFromCombobox"));
       ShowEditor();
@@ -125,7 +137,8 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
     const std::u16string new_title =
         dialog_model()->GetTextfieldByUniqueId(kBookmarkName)->text();
     if (new_title != node->GetTitle()) {
-      model->SetTitle(node, new_title);
+      model->SetTitle(node, new_title,
+                      bookmarks::metrics::BookmarkEditSource::kUser);
       base::RecordAction(
           UserMetricsAction("BookmarkBubble_ChangeTitleInBubble"));
     }
@@ -147,9 +160,9 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
   BubbleSyncPromoDelegate* delegate() { return delegate_.get(); }
 
  private:
-  bookmarks::BookmarkBubbleObserver* const observer_;
+  const raw_ptr<bookmarks::BookmarkBubbleObserver> observer_;
   std::unique_ptr<BubbleSyncPromoDelegate> delegate_;
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   const GURL url_;
 
   bool should_apply_edits_ = true;
@@ -158,6 +171,7 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
 // static
 void BookmarkBubbleView::ShowBubble(
     views::View* anchor_view,
+    content::WebContents* web_contents,
     views::Button* highlighted_button,
     bookmarks::BookmarkBubbleObserver* observer,
     std::unique_ptr<BubbleSyncPromoDelegate> delegate,
@@ -178,53 +192,73 @@ void BookmarkBubbleView::ShowBubble(
       observer, std::move(delegate), profile, url);
   BookmarkBubbleDelegate* bubble_delegate = bubble_delegate_unique.get();
 
-  auto dialog_model =
-      ui::DialogModel::Builder(std::move(bubble_delegate_unique))
-          .SetTitle(l10n_util::GetStringUTF16(
-              already_bookmarked ? IDS_BOOKMARK_BUBBLE_PAGE_BOOKMARK
-                                 : IDS_BOOKMARK_BUBBLE_PAGE_BOOKMARKED))
-          .SetWindowClosingCallback(
-              base::BindOnce(&BookmarkBubbleDelegate::OnWindowClosing,
-                             base::Unretained(bubble_delegate)))
-          .AddOkButton(base::BindOnce(&BookmarkBubbleDelegate::ApplyEdits,
-                                      base::Unretained(bubble_delegate)),
-                       l10n_util::GetStringUTF16(IDS_DONE))
-          .AddCancelButton(
-              base::BindOnce(&BookmarkBubbleDelegate::RemoveBookmark,
-                             base::Unretained(bubble_delegate)),
-              l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_REMOVE_BOOKMARK),
-              ui::DialogModelButton::Params().AddAccelerator(
-                  ui::Accelerator(ui::VKEY_R, ui::EF_ALT_DOWN)))
-          .AddDialogExtraButton(
-              base::BindRepeating(&BookmarkBubbleDelegate::OnEditButton,
+  auto dialog_model_builder =
+      ui::DialogModel::Builder(std::move(bubble_delegate_unique));
+  dialog_model_builder
+      .SetTitle(l10n_util::GetStringUTF16(
+          already_bookmarked ? IDS_BOOKMARK_BUBBLE_PAGE_BOOKMARK
+                             : IDS_BOOKMARK_BUBBLE_PAGE_BOOKMARKED))
+      .SetDialogDestroyingCallback(
+          base::BindOnce(&BookmarkBubbleDelegate::OnWindowClosing,
+                         base::Unretained(bubble_delegate)))
+      .AddOkButton(base::BindOnce(&BookmarkBubbleDelegate::ApplyEdits,
                                   base::Unretained(bubble_delegate)),
-              l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_OPTIONS),
-              ui::DialogModelButton::Params().AddAccelerator(
-                  ui::Accelerator(ui::VKEY_E, ui::EF_ALT_DOWN)))
-          .AddTextfield(
-              l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_NAME_LABEL),
-              bookmark_node->GetTitle(),
-              ui::DialogModelTextfield::Params()
-                  .SetUniqueId(kBookmarkName)
-                  .SetAccessibleName(l10n_util::GetStringUTF16(
-                      IDS_BOOKMARK_AX_BUBBLE_NAME_LABEL)))
-          .AddCombobox(
-              l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_FOLDER_LABEL),
-              std::make_unique<RecentlyUsedFoldersComboModel>(
-                  bookmark_model,
-                  bookmark_model->GetMostRecentlyAddedUserNodeForURL(url)),
-              ui::DialogModelCombobox::Params()
-                  .SetUniqueId(kBookmarkFolder)
-                  .SetCallback(base::BindRepeating(
-                      &BookmarkBubbleDelegate::OnComboboxAction,
-                      base::Unretained(bubble_delegate))))
-          .SetInitiallyFocusedField(kBookmarkName)
-          .Build();
+                   l10n_util::GetStringUTF16(IDS_DONE))
+      .AddCancelButton(
+          base::BindOnce(&BookmarkBubbleDelegate::RemoveBookmark,
+                         base::Unretained(bubble_delegate)),
+          l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_REMOVE_BOOKMARK),
+          ui::DialogModelButton::Params().AddAccelerator(
+              ui::Accelerator(ui::VKEY_R, ui::EF_ALT_DOWN)))
+      .AddExtraButton(base::BindRepeating(&BookmarkBubbleDelegate::OnEditButton,
+                                          base::Unretained(bubble_delegate)),
+                      l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_OPTIONS),
+                      ui::DialogModelButton::Params().AddAccelerator(
+                          ui::Accelerator(ui::VKEY_E, ui::EF_ALT_DOWN)))
+      .AddTextfield(
+          kBookmarkName,
+          l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_NAME_LABEL),
+          bookmark_node->GetTitle(),
+          ui::DialogModelTextfield::Params().SetAccessibleName(
+              l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_BUBBLE_NAME_LABEL)))
+      .AddCombobox(
+          kBookmarkFolder,
+          l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_FOLDER_LABEL),
+          std::make_unique<RecentlyUsedFoldersComboModel>(
+              bookmark_model,
+              bookmark_model->GetMostRecentlyAddedUserNodeForURL(url)),
+          ui::DialogModelCombobox::Params().SetCallback(
+              base::BindRepeating(&BookmarkBubbleDelegate::OnComboboxAction,
+                                  base::Unretained(bubble_delegate))))
+      .SetInitiallyFocusedField(kBookmarkName);
+
+  if (commerce::IsShoppingListEnabled(profile->GetPrefs())) {
+    absl::optional<commerce::ProductInfo> product_info =
+        commerce::ShoppingServiceFactory::GetForBrowserContext(profile)
+            ->GetAvailableProductInfoForUrl(url);
+    auto* tab_helper =
+        commerce::ShoppingListUiTabHelper::FromWebContents(web_contents);
+    CHECK(tab_helper);
+
+    const gfx::Image& product_image = tab_helper->GetProductImage();
+    if (product_info.has_value() && !product_image.IsEmpty()) {
+      bool is_price_tracked =
+          commerce::IsBookmarkPriceTracked(bookmark_model, bookmark_node);
+      dialog_model_builder.AddSeparator().AddCustomField(
+          std::make_unique<views::BubbleDialogModelHost::CustomView>(
+              std::make_unique<PriceTrackingView>(
+                  profile, url, ui::ImageModel::FromImage(product_image),
+                  is_price_tracked),
+              views::BubbleDialogModelHost::FieldType::kControl),
+          kPriceTrackingBookmarkViewElementId);
+    }
+  }
 
   // views:: land below, there's no agnostic reference to arrow / anchors /
   // bubbles.
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-      std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
+      dialog_model_builder.Build(), anchor_view,
+      views::BubbleBorder::TOP_RIGHT);
   bookmark_bubble_ = bubble.get();
   if (highlighted_button)
     bubble->SetHighlightedButton(highlighted_button);
@@ -235,7 +269,7 @@ void BookmarkBubbleView::ShowBubble(
     // not need to be tied to views.
     // TODO(pbos): Consider updating ::SetFootnoteView so that it can resize the
     // widget to account for it.
-    bubble->SetFootnoteView(std::make_unique<DiceBubbleSyncPromoView>(
+    bubble->SetFootnoteView(std::make_unique<BubbleSyncPromoView>(
         profile, delegate_ptr,
         signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE,
         IDS_BOOKMARK_DICE_PROMO_SYNC_MESSAGE,
@@ -244,10 +278,8 @@ void BookmarkBubbleView::ShowBubble(
 #endif
 
   views::Widget* const widget =
-      views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
   widget->Show();
-
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::BOOKMARK);
 
   if (observer) {
     observer->OnBookmarkBubbleShown(

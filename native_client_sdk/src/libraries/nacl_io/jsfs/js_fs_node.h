@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,9 @@ namespace nacl_io {
 class JsFsNode : public Node {
  public:
   typedef JsFs::RequestId RequestId;
+
+  JsFsNode(const JsFsNode&) = delete;
+  JsFsNode& operator=(const JsFsNode&) = delete;
 
  protected:
   JsFsNode(Filesystem* filesystem, int32_t fd);
@@ -60,9 +63,8 @@ class JsFsNode : public Node {
   int32_t fd_;
 
   friend class JsFs;
-  DISALLOW_COPY_AND_ASSIGN(JsFsNode);
 };
 
 }  // namespace nacl_io
 
-#endif  // LIBRARIES_NACL_IO_JSFS_JS_FS_H_
+#endif  // LIBRARIES_NACL_IO_JSFS_JS_FS_NODE_H_

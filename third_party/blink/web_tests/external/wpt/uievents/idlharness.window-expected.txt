@@ -1,0 +1,255 @@
+This is a testharness.js-based test.
+Found 251 tests; 250 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface UIEvent: original interface defined
+PASS Partial interface UIEvent: member names are unique
+PASS Partial interface MouseEvent: original interface defined
+PASS Partial interface MouseEvent: member names are unique
+PASS Partial interface KeyboardEvent: original interface defined
+PASS Partial interface KeyboardEvent: member names are unique
+PASS Partial interface CompositionEvent: original interface defined
+PASS Partial interface CompositionEvent: member names are unique
+PASS Partial interface UIEvent[2]: original interface defined
+PASS Partial interface UIEvent[2]: member names are unique
+PASS Partial dictionary UIEventInit: original dictionary defined
+PASS Partial dictionary UIEventInit: member names are unique
+PASS Partial interface KeyboardEvent[2]: original interface defined
+PASS Partial interface KeyboardEvent[2]: member names are unique
+PASS Partial dictionary KeyboardEventInit: original dictionary defined
+PASS Partial dictionary KeyboardEventInit: member names are unique
+PASS Partial interface Window: member names are unique
+PASS Window includes GlobalEventHandlers: member names are unique
+PASS Window includes WindowEventHandlers: member names are unique
+PASS Window includes WindowOrWorkerGlobalScope: member names are unique
+PASS Window includes AnimationFrameProvider: member names are unique
+PASS Window includes WindowSessionStorage: member names are unique
+PASS Window includes WindowLocalStorage: member names are unique
+PASS UIEvent interface: existence and properties of interface object
+PASS UIEvent interface object length
+PASS UIEvent interface object name
+PASS UIEvent interface: existence and properties of interface prototype object
+PASS UIEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS UIEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS UIEvent interface: attribute view
+PASS UIEvent interface: attribute detail
+PASS UIEvent interface: operation initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long)
+PASS UIEvent interface: attribute which
+PASS UIEvent must be primary interface of new UIEvent("event")
+PASS Stringification of new UIEvent("event")
+PASS UIEvent interface: new UIEvent("event") must inherit property "view" with the proper type
+PASS UIEvent interface: new UIEvent("event") must inherit property "detail" with the proper type
+PASS UIEvent interface: new UIEvent("event") must inherit property "initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long)" with the proper type
+PASS UIEvent interface: calling initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long) on new UIEvent("event") with too few arguments must throw TypeError
+PASS UIEvent interface: new UIEvent("event") must inherit property "which" with the proper type
+PASS FocusEvent interface: existence and properties of interface object
+PASS FocusEvent interface object length
+PASS FocusEvent interface object name
+PASS FocusEvent interface: existence and properties of interface prototype object
+PASS FocusEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS FocusEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS FocusEvent interface: attribute relatedTarget
+PASS FocusEvent must be primary interface of new FocusEvent("event")
+PASS Stringification of new FocusEvent("event")
+PASS FocusEvent interface: new FocusEvent("event") must inherit property "relatedTarget" with the proper type
+PASS UIEvent interface: new FocusEvent("event") must inherit property "view" with the proper type
+PASS UIEvent interface: new FocusEvent("event") must inherit property "detail" with the proper type
+PASS UIEvent interface: new FocusEvent("event") must inherit property "initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long)" with the proper type
+PASS UIEvent interface: calling initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long) on new FocusEvent("event") with too few arguments must throw TypeError
+PASS UIEvent interface: new FocusEvent("event") must inherit property "which" with the proper type
+PASS MouseEvent interface: existence and properties of interface object
+PASS MouseEvent interface object length
+PASS MouseEvent interface object name
+PASS MouseEvent interface: existence and properties of interface prototype object
+PASS MouseEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS MouseEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS MouseEvent interface: attribute screenX
+PASS MouseEvent interface: attribute screenY
+PASS MouseEvent interface: attribute clientX
+PASS MouseEvent interface: attribute clientY
+PASS MouseEvent interface: attribute ctrlKey
+PASS MouseEvent interface: attribute shiftKey
+PASS MouseEvent interface: attribute altKey
+PASS MouseEvent interface: attribute metaKey
+PASS MouseEvent interface: attribute button
+PASS MouseEvent interface: attribute buttons
+PASS MouseEvent interface: attribute relatedTarget
+PASS MouseEvent interface: operation getModifierState(DOMString)
+PASS MouseEvent interface: operation initMouseEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long, optional long, optional long, optional long, optional long, optional boolean, optional boolean, optional boolean, optional boolean, optional short, optional EventTarget?)
+PASS MouseEvent must be primary interface of new MouseEvent("event")
+PASS Stringification of new MouseEvent("event")
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "screenX" with the proper type
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "screenY" with the proper type
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "clientX" with the proper type
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "clientY" with the proper type
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "ctrlKey" with the proper type
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "shiftKey" with the proper type
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "altKey" with the proper type
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "metaKey" with the proper type
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "button" with the proper type
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "buttons" with the proper type
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "relatedTarget" with the proper type
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "getModifierState(DOMString)" with the proper type
+PASS MouseEvent interface: calling getModifierState(DOMString) on new MouseEvent("event") with too few arguments must throw TypeError
+PASS MouseEvent interface: new MouseEvent("event") must inherit property "initMouseEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long, optional long, optional long, optional long, optional long, optional boolean, optional boolean, optional boolean, optional boolean, optional short, optional EventTarget?)" with the proper type
+PASS MouseEvent interface: calling initMouseEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long, optional long, optional long, optional long, optional long, optional boolean, optional boolean, optional boolean, optional boolean, optional short, optional EventTarget?) on new MouseEvent("event") with too few arguments must throw TypeError
+PASS UIEvent interface: new MouseEvent("event") must inherit property "view" with the proper type
+PASS UIEvent interface: new MouseEvent("event") must inherit property "detail" with the proper type
+PASS UIEvent interface: new MouseEvent("event") must inherit property "initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long)" with the proper type
+PASS UIEvent interface: calling initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long) on new MouseEvent("event") with too few arguments must throw TypeError
+PASS UIEvent interface: new MouseEvent("event") must inherit property "which" with the proper type
+PASS WheelEvent interface: existence and properties of interface object
+PASS WheelEvent interface object length
+PASS WheelEvent interface object name
+PASS WheelEvent interface: existence and properties of interface prototype object
+PASS WheelEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS WheelEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS WheelEvent interface: constant DOM_DELTA_PIXEL on interface object
+PASS WheelEvent interface: constant DOM_DELTA_PIXEL on interface prototype object
+PASS WheelEvent interface: constant DOM_DELTA_LINE on interface object
+PASS WheelEvent interface: constant DOM_DELTA_LINE on interface prototype object
+PASS WheelEvent interface: constant DOM_DELTA_PAGE on interface object
+PASS WheelEvent interface: constant DOM_DELTA_PAGE on interface prototype object
+PASS WheelEvent interface: attribute deltaX
+PASS WheelEvent interface: attribute deltaY
+PASS WheelEvent interface: attribute deltaZ
+PASS WheelEvent interface: attribute deltaMode
+PASS WheelEvent must be primary interface of new WheelEvent("event")
+PASS Stringification of new WheelEvent("event")
+PASS WheelEvent interface: new WheelEvent("event") must inherit property "DOM_DELTA_PIXEL" with the proper type
+PASS WheelEvent interface: new WheelEvent("event") must inherit property "DOM_DELTA_LINE" with the proper type
+PASS WheelEvent interface: new WheelEvent("event") must inherit property "DOM_DELTA_PAGE" with the proper type
+PASS WheelEvent interface: new WheelEvent("event") must inherit property "deltaX" with the proper type
+PASS WheelEvent interface: new WheelEvent("event") must inherit property "deltaY" with the proper type
+PASS WheelEvent interface: new WheelEvent("event") must inherit property "deltaZ" with the proper type
+PASS WheelEvent interface: new WheelEvent("event") must inherit property "deltaMode" with the proper type
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "screenX" with the proper type
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "screenY" with the proper type
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "clientX" with the proper type
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "clientY" with the proper type
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "ctrlKey" with the proper type
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "shiftKey" with the proper type
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "altKey" with the proper type
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "metaKey" with the proper type
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "button" with the proper type
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "buttons" with the proper type
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "relatedTarget" with the proper type
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "getModifierState(DOMString)" with the proper type
+PASS MouseEvent interface: calling getModifierState(DOMString) on new WheelEvent("event") with too few arguments must throw TypeError
+PASS MouseEvent interface: new WheelEvent("event") must inherit property "initMouseEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long, optional long, optional long, optional long, optional long, optional boolean, optional boolean, optional boolean, optional boolean, optional short, optional EventTarget?)" with the proper type
+PASS MouseEvent interface: calling initMouseEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long, optional long, optional long, optional long, optional long, optional boolean, optional boolean, optional boolean, optional boolean, optional short, optional EventTarget?) on new WheelEvent("event") with too few arguments must throw TypeError
+PASS UIEvent interface: new WheelEvent("event") must inherit property "view" with the proper type
+PASS UIEvent interface: new WheelEvent("event") must inherit property "detail" with the proper type
+PASS UIEvent interface: new WheelEvent("event") must inherit property "initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long)" with the proper type
+PASS UIEvent interface: calling initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long) on new WheelEvent("event") with too few arguments must throw TypeError
+PASS UIEvent interface: new WheelEvent("event") must inherit property "which" with the proper type
+PASS InputEvent interface: existence and properties of interface object
+PASS InputEvent interface object length
+PASS InputEvent interface object name
+PASS InputEvent interface: existence and properties of interface prototype object
+PASS InputEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS InputEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS InputEvent interface: attribute data
+PASS InputEvent interface: attribute isComposing
+PASS InputEvent interface: attribute inputType
+PASS InputEvent must be primary interface of new InputEvent("event")
+PASS Stringification of new InputEvent("event")
+PASS InputEvent interface: new InputEvent("event") must inherit property "data" with the proper type
+PASS InputEvent interface: new InputEvent("event") must inherit property "isComposing" with the proper type
+PASS InputEvent interface: new InputEvent("event") must inherit property "inputType" with the proper type
+PASS UIEvent interface: new InputEvent("event") must inherit property "view" with the proper type
+PASS UIEvent interface: new InputEvent("event") must inherit property "detail" with the proper type
+PASS UIEvent interface: new InputEvent("event") must inherit property "initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long)" with the proper type
+PASS UIEvent interface: calling initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long) on new InputEvent("event") with too few arguments must throw TypeError
+PASS UIEvent interface: new InputEvent("event") must inherit property "which" with the proper type
+PASS KeyboardEvent interface: existence and properties of interface object
+PASS KeyboardEvent interface object length
+PASS KeyboardEvent interface object name
+PASS KeyboardEvent interface: existence and properties of interface prototype object
+PASS KeyboardEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS KeyboardEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS KeyboardEvent interface: constant DOM_KEY_LOCATION_STANDARD on interface object
+PASS KeyboardEvent interface: constant DOM_KEY_LOCATION_STANDARD on interface prototype object
+PASS KeyboardEvent interface: constant DOM_KEY_LOCATION_LEFT on interface object
+PASS KeyboardEvent interface: constant DOM_KEY_LOCATION_LEFT on interface prototype object
+PASS KeyboardEvent interface: constant DOM_KEY_LOCATION_RIGHT on interface object
+PASS KeyboardEvent interface: constant DOM_KEY_LOCATION_RIGHT on interface prototype object
+PASS KeyboardEvent interface: constant DOM_KEY_LOCATION_NUMPAD on interface object
+PASS KeyboardEvent interface: constant DOM_KEY_LOCATION_NUMPAD on interface prototype object
+PASS KeyboardEvent interface: attribute key
+PASS KeyboardEvent interface: attribute code
+PASS KeyboardEvent interface: attribute location
+PASS KeyboardEvent interface: attribute ctrlKey
+PASS KeyboardEvent interface: attribute shiftKey
+PASS KeyboardEvent interface: attribute altKey
+PASS KeyboardEvent interface: attribute metaKey
+PASS KeyboardEvent interface: attribute repeat
+PASS KeyboardEvent interface: attribute isComposing
+PASS KeyboardEvent interface: operation getModifierState(DOMString)
+PASS KeyboardEvent interface: operation initKeyboardEvent(DOMString, optional boolean, optional boolean, optional Window?, optional DOMString, optional unsigned long, optional boolean, optional boolean, optional boolean, optional boolean)
+PASS KeyboardEvent interface: attribute charCode
+PASS KeyboardEvent interface: attribute keyCode
+PASS KeyboardEvent must be primary interface of new KeyboardEvent("event")
+PASS Stringification of new KeyboardEvent("event")
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "DOM_KEY_LOCATION_STANDARD" with the proper type
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "DOM_KEY_LOCATION_LEFT" with the proper type
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "DOM_KEY_LOCATION_RIGHT" with the proper type
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "DOM_KEY_LOCATION_NUMPAD" with the proper type
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "key" with the proper type
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "code" with the proper type
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "location" with the proper type
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "ctrlKey" with the proper type
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "shiftKey" with the proper type
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "altKey" with the proper type
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "metaKey" with the proper type
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "repeat" with the proper type
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "isComposing" with the proper type
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "getModifierState(DOMString)" with the proper type
+PASS KeyboardEvent interface: calling getModifierState(DOMString) on new KeyboardEvent("event") with too few arguments must throw TypeError
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "initKeyboardEvent(DOMString, optional boolean, optional boolean, optional Window?, optional DOMString, optional unsigned long, optional boolean, optional boolean, optional boolean, optional boolean)" with the proper type
+PASS KeyboardEvent interface: calling initKeyboardEvent(DOMString, optional boolean, optional boolean, optional Window?, optional DOMString, optional unsigned long, optional boolean, optional boolean, optional boolean, optional boolean) on new KeyboardEvent("event") with too few arguments must throw TypeError
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "charCode" with the proper type
+PASS KeyboardEvent interface: new KeyboardEvent("event") must inherit property "keyCode" with the proper type
+PASS UIEvent interface: new KeyboardEvent("event") must inherit property "view" with the proper type
+PASS UIEvent interface: new KeyboardEvent("event") must inherit property "detail" with the proper type
+PASS UIEvent interface: new KeyboardEvent("event") must inherit property "initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long)" with the proper type
+PASS UIEvent interface: calling initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long) on new KeyboardEvent("event") with too few arguments must throw TypeError
+PASS UIEvent interface: new KeyboardEvent("event") must inherit property "which" with the proper type
+PASS CompositionEvent interface: existence and properties of interface object
+PASS CompositionEvent interface object length
+PASS CompositionEvent interface object name
+PASS CompositionEvent interface: existence and properties of interface prototype object
+PASS CompositionEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS CompositionEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS CompositionEvent interface: attribute data
+PASS CompositionEvent interface: operation initCompositionEvent(DOMString, optional boolean, optional boolean, optional WindowProxy?, optional DOMString)
+PASS CompositionEvent must be primary interface of new CompositionEvent("event")
+PASS Stringification of new CompositionEvent("event")
+PASS CompositionEvent interface: new CompositionEvent("event") must inherit property "data" with the proper type
+PASS CompositionEvent interface: new CompositionEvent("event") must inherit property "initCompositionEvent(DOMString, optional boolean, optional boolean, optional WindowProxy?, optional DOMString)" with the proper type
+PASS CompositionEvent interface: calling initCompositionEvent(DOMString, optional boolean, optional boolean, optional WindowProxy?, optional DOMString) on new CompositionEvent("event") with too few arguments must throw TypeError
+PASS UIEvent interface: new CompositionEvent("event") must inherit property "view" with the proper type
+PASS UIEvent interface: new CompositionEvent("event") must inherit property "detail" with the proper type
+PASS UIEvent interface: new CompositionEvent("event") must inherit property "initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long)" with the proper type
+PASS UIEvent interface: calling initUIEvent(DOMString, optional boolean, optional boolean, optional Window?, optional long) on new CompositionEvent("event") with too few arguments must throw TypeError
+PASS UIEvent interface: new CompositionEvent("event") must inherit property "which" with the proper type
+PASS MutationEvent interface: existence and properties of interface object
+PASS MutationEvent interface object length
+PASS MutationEvent interface object name
+PASS MutationEvent interface: existence and properties of interface prototype object
+PASS MutationEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS MutationEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS MutationEvent interface: constant MODIFICATION on interface object
+PASS MutationEvent interface: constant MODIFICATION on interface prototype object
+PASS MutationEvent interface: constant ADDITION on interface object
+PASS MutationEvent interface: constant ADDITION on interface prototype object
+PASS MutationEvent interface: constant REMOVAL on interface object
+PASS MutationEvent interface: constant REMOVAL on interface prototype object
+PASS MutationEvent interface: attribute relatedNode
+PASS MutationEvent interface: attribute prevValue
+PASS MutationEvent interface: attribute newValue
+PASS MutationEvent interface: attribute attrName
+PASS MutationEvent interface: attribute attrChange
+FAIL MutationEvent interface: operation initMutationEvent(DOMString, optional boolean, optional boolean, optional Node?, optional DOMString, optional DOMString, optional DOMString, optional unsigned short) assert_equals: property has wrong .length expected 1 but got 0
+Harness: the test ran to completion.
+

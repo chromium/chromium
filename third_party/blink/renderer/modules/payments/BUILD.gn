@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,8 +12,6 @@ blink_modules_sources("payments") {
     "abort_payment_respond_with_observer.h",
     "address_init_type_converter.cc",
     "address_init_type_converter.h",
-    "basic_card_helper.cc",
-    "basic_card_helper.h",
     "can_make_payment_event.cc",
     "can_make_payment_event.h",
     "can_make_payment_respond_with_observer.cc",
@@ -59,16 +57,9 @@ blink_modules_sources("payments") {
     "update_payment_details_function.h",
   ]
 
-  if (is_android) {
-    sources += [
-      "skip_to_gpay_utils.cc",
-      "skip_to_gpay_utils.h",
-    ]
-  }
-
   deps = [
     "//components/payments/mojom:mojom_blink",
-    "//third_party/blink/renderer/modules/credentialmanager",
+    "//third_party/blink/renderer/modules/credentialmanagement",
     "//third_party/blink/renderer/modules/permissions",
   ]
 }

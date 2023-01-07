@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -358,4 +358,37 @@ TEST(ContentSettingsPatternParserTest, SerializePatterns) {
   parts.host = "peoadpeiejnhkmpaakpnompolbglelel";
   EXPECT_EQ("chrome-extension://peoadpeiejnhkmpaakpnompolbglelel/",
             content_settings::PatternParser::ToString(parts));
+}
+
+TEST(ContentSettingsPatternParserTest, IdempotencyOfCanonicalization) {
+  const std::string pattern_specs[] = {
+      "abc",
+      "https://chromium.org",
+      "file:///foo/",
+      "file:///foo/:/bar/:/baz",
+      "https://foo/:/bar/:/baz",
+      "file://:/path",
+      "file://:/:",  // crbug.com/1196591
+      "file:///C:/Users/a.txt",
+      "filE:///foo/",  // crbug.com/1323130
+  };
+
+  for (const std::string& spec : pattern_specs) {
+    SCOPED_TRACE("spec: " + spec);
+    auto builder = ContentSettingsPattern::CreateBuilder();
+    content_settings::PatternParser::Parse(spec, builder.get());
+    ContentSettingsPattern pattern = builder->Build();
+    EXPECT_TRUE(pattern.IsValid());
+    std::string canonical = pattern.ToString();
+
+    auto builder2 = ContentSettingsPattern::CreateBuilder();
+    content_settings::PatternParser::Parse(canonical, builder2.get());
+    ContentSettingsPattern pattern2 = builder2->Build();
+    EXPECT_TRUE(pattern2.IsValid());
+    std::string canonical2 = pattern2.ToString();
+
+    EXPECT_EQ(canonical, canonical2);
+    EXPECT_EQ(pattern.Compare(pattern2),
+              ContentSettingsPattern::Relation::IDENTITY);
+  }
 }

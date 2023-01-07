@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
  * in the tutorial.
  */
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/shared_style_css.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

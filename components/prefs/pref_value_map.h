@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,33 +6,32 @@
 #define COMPONENTS_PREFS_PREF_VALUE_MAP_H_
 
 #include <map>
-#include <memory>
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/strings/string_piece.h"
+#include "base/values.h"
 #include "components/prefs/prefs_export.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}
 
 // A generic string to value map used by the PrefStore implementations.
 class COMPONENTS_PREFS_EXPORT PrefValueMap {
  public:
-  using Map = std::map<std::string, base::Value>;
+  using Map = std::map<std::string, base::Value, std::less<void>>;
   using iterator = Map::iterator;
   using const_iterator = Map::const_iterator;
 
   PrefValueMap();
+
+  PrefValueMap(const PrefValueMap&) = delete;
+  PrefValueMap& operator=(const PrefValueMap&) = delete;
+
   virtual ~PrefValueMap();
 
   // Gets the value for |key| and stores it in |value|. Ownership remains with
   // the map. Returns true if a value is present. If not, |value| is not
   // touched.
-  bool GetValue(const std::string& key, const base::Value** value) const;
-  bool GetValue(const std::string& key, base::Value** value);
+  bool GetValue(base::StringPiece key, const base::Value** value) const;
+  bool GetValue(base::StringPiece key, base::Value** value);
 
   // Sets a new |value| for |key|. Returns true if the value changed.
   bool SetValue(const std::string& key, base::Value value);
@@ -86,13 +85,11 @@ class COMPONENTS_PREFS_EXPORT PrefValueMap {
   void GetDifferingKeys(const PrefValueMap* other,
                         std::vector<std::string>* differing_keys) const;
 
-  // Copies the map into a dictionary value.
-  std::unique_ptr<base::DictionaryValue> AsDictionaryValue() const;
+  // Copies the map into a Value::Dict.
+  base::Value::Dict AsDict() const;
 
  private:
   Map prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefValueMap);
 };
 
 #endif  // COMPONENTS_PREFS_PREF_VALUE_MAP_H_

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Test media.load() before appending data will trigger MediaSource detaching from a media element.
-FAIL Test media.load() after appending data will trigger MediaSource detaching from a media element. assert_greater_than: media readyState is greater than "HAVE_NOTHING" expected a number greater than 0 but got 0
-Harness: the test ran to completion.
-

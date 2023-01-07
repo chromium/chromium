@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ public interface ManagedBottomSheetController
     void setBrowserControlsHiddenRatio(float ratio);
 
     /** @param accessibilityUtil A mechanism for testing whether accessibility is enabled. */
-    void setAccssibilityUtil(AccessibilityUtil accessibilityUtil);
+    void setAccessibilityUtil(AccessibilityUtil accessibilityUtil);
 
     /** Clean up any state maintained by the controller. */
     void destroy();

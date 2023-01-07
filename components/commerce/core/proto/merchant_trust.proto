@@ -1,0 +1,34 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package commerce;
+
+option java_package = "org.chromium.components.commerce";
+
+option optimize_for = LITE_RUNTIME;
+
+message MerchantTrustSignalsV2 {
+  // Overall rating out of 5.
+  optional float merchant_star_rating = 1;
+
+  // Total number of reviews.
+  optional int32 merchant_count_rating = 2;
+
+  // Link to the merchant details page.
+  optional string merchant_details_page_url = 3;
+
+  // Whether we have return policy for the merchant.
+  optional bool has_return_policy = 4;
+
+  // Non-personalized familiarity score of the merchant, ranged from 0 to 1.
+  optional float non_personalized_familiarity_score = 5;
+
+  // Whether the merchant contains sensitive content.
+  optional bool contains_sensitive_content = 6;
+
+  // Whether proactively showing message is disabled for the merchant.
+  optional bool proactive_message_disabled = 7;
+}

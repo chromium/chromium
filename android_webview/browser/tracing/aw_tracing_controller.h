@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ANDROID_WEBVIEW_BROWSER_TRACING_AW_TRACING_CONTROLLER_H_
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace android_webview {
@@ -14,6 +13,9 @@ namespace android_webview {
 class AwTracingController {
  public:
   AwTracingController(JNIEnv* env, jobject obj);
+
+  AwTracingController(const AwTracingController&) = delete;
+  AwTracingController& operator=(const AwTracingController&) = delete;
 
   bool Start(JNIEnv* env,
              const base::android::JavaParamRef<jobject>& obj,
@@ -31,8 +33,6 @@ class AwTracingController {
 
   JavaObjectWeakGlobalRef weak_java_object_;
   base::WeakPtrFactory<AwTracingController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AwTracingController);
 };
 
 }  // namespace android_webview

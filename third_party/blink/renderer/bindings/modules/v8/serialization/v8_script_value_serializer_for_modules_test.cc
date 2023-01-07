@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,28 +11,57 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
+#include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_read_only.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/serialization/v8_script_value_deserializer_for_modules.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_frame.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data_copy_to_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_browser_capture_media_stream_track.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dom_file_system.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_focusable_media_stream_track.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/modules/crypto/crypto_key.h"
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 #include "third_party/blink/renderer/modules/filesystem/dom_file_system.h"
+#include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/crop_target.h"
+#include "third_party/blink/renderer/modules/mediastream/focusable_media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_source.h"
+#include "third_party/blink/renderer/modules/mediastream/mock_video_capturer_source.h"
+#include "third_party/blink/renderer/modules/mediastream/test/transfer_test_utils.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
-#include "third_party/blink/renderer/modules/webcodecs/audio_frame_serialization_data.h"
+#include "third_party/blink/renderer/modules/webcodecs/allow_shared_buffer_source_util.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
+#include "third_party/blink/renderer/modules/webcodecs/audio_data_transfer_list.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using testing::ElementsAre;
@@ -42,13 +71,17 @@ using testing::UnorderedElementsAre;
 namespace blink {
 namespace {
 
-v8::Local<v8::Value> RoundTripForModules(v8::Local<v8::Value> value,
-                                         V8TestingScope& scope) {
+v8::Local<v8::Value> RoundTripForModules(
+    v8::Local<v8::Value> value,
+    V8TestingScope& scope,
+    Transferables* transferables = nullptr) {
   ScriptState* script_state = scope.GetScriptState();
   ExceptionState& exception_state = scope.GetExceptionState();
+  V8ScriptValueSerializer::Options serialize_options;
+  DCHECK(!transferables || transferables->message_ports.empty());
+  serialize_options.transferables = transferables;
   scoped_refptr<SerializedScriptValue> serialized_script_value =
-      V8ScriptValueSerializerForModules(
-          script_state, V8ScriptValueSerializerForModules::Options())
+      V8ScriptValueSerializerForModules(script_state, serialize_options)
           .Serialize(value, exception_state);
   DCHECK_EQ(!serialized_script_value, exception_state.HadException());
   EXPECT_TRUE(serialized_script_value);
@@ -174,7 +207,8 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripRTCCertificate) {
 
   // Round trip test.
   v8::Local<v8::Value> wrapper =
-      ToV8(certificate, scope.GetContext()->Global(), scope.GetIsolate());
+      ToV8Traits<RTCCertificate>::ToV8(scope.GetScriptState(), certificate)
+          .ToLocalChecked();
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
   ASSERT_TRUE(V8RTCCertificate::HasInstance(result, scope.GetIsolate()));
   RTCCertificate* new_certificate =
@@ -261,8 +295,9 @@ WebVector<unsigned char> ConvertCryptoResult<WebVector<unsigned char>>(
     v8::Isolate* isolate,
     const ScriptValue& value) {
   WebVector<unsigned char> vector;
-  if (DOMArrayBuffer* buffer =
-          V8ArrayBuffer::ToImplWithTypeCheck(isolate, value.V8Value())) {
+  DummyExceptionStateForTesting exception_state;
+  if (DOMArrayBuffer* buffer = NativeValueTraits<DOMArrayBuffer>::NativeValue(
+          isolate, value.V8Value(), exception_state)) {
     vector.Assign(reinterpret_cast<const unsigned char*>(buffer->Data()),
                   buffer->ByteLength());
   }
@@ -274,19 +309,17 @@ bool ConvertCryptoResult<bool>(v8::Isolate*, const ScriptValue& value) {
 }
 
 template <typename T>
-class WebCryptoResultAdapter : public ScriptFunction {
+class WebCryptoResultAdapter : public ScriptFunction::Callable {
  public:
-  WebCryptoResultAdapter(ScriptState* script_state,
-                         base::RepeatingCallback<void(T)> function)
-      : ScriptFunction(script_state), function_(std::move(function)) {}
+  explicit WebCryptoResultAdapter(base::RepeatingCallback<void(T)> function)
+      : function_(std::move(function)) {}
 
- private:
-  ScriptValue Call(ScriptValue value) final {
-    function_.Run(
-        ConvertCryptoResult<T>(GetScriptState()->GetIsolate(), value));
-    return ScriptValue::From(GetScriptState(), ToV8UndefinedGenerator());
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
+    function_.Run(ConvertCryptoResult<T>(script_state->GetIsolate(), value));
+    return ScriptValue::From(script_state, ToV8UndefinedGenerator());
   }
 
+ private:
   base::RepeatingCallback<void(T)> function_;
   template <typename U>
   friend WebCryptoResult ToWebCryptoResult(ScriptState*,
@@ -298,14 +331,17 @@ WebCryptoResult ToWebCryptoResult(ScriptState* script_state,
                                   base::RepeatingCallback<void(T)> function) {
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state);
   result->Promise().Then(
-      (MakeGarbageCollected<WebCryptoResultAdapter<T>>(script_state,
-                                                       std::move(function)))
-          ->BindToV8Function(),
-      (MakeGarbageCollected<WebCryptoResultAdapter<DOMException*>>(
-           script_state, WTF::BindRepeating([](DOMException* exception) {
-             CHECK(false) << "crypto operation failed";
-           })))
-          ->BindToV8Function());
+      (MakeGarbageCollected<ScriptFunction>(
+           script_state, MakeGarbageCollected<WebCryptoResultAdapter<T>>(
+                             std::move(function))))
+          ->V8Function(),
+      (MakeGarbageCollected<ScriptFunction>(
+           script_state,
+           MakeGarbageCollected<WebCryptoResultAdapter<DOMException*>>(
+               WTF::BindRepeating([](DOMException* exception) {
+                 CHECK(false) << "crypto operation failed";
+               }))))
+          ->V8Function());
   return result->Result();
 }
 
@@ -1015,6 +1051,40 @@ TEST(V8ScriptValueSerializerForModulesTest, RoundTripVideoFrame) {
   EXPECT_TRUE(media_frame->HasOneRef());
 }
 
+TEST(V8ScriptValueSerializerForModulesTest, TransferVideoFrame) {
+  V8TestingScope scope;
+
+  const gfx::Size kFrameSize(600, 480);
+  scoped_refptr<media::VideoFrame> media_frame =
+      media::VideoFrame::CreateBlackFrame(kFrameSize);
+
+  auto* blink_frame = MakeGarbageCollected<VideoFrame>(
+      media_frame, scope.GetExecutionContext());
+
+  // Transfer the frame and make sure the size is the same.
+  Transferables transferables;
+  VideoFrameTransferList* transfer_list =
+      transferables.GetOrCreateTransferList<VideoFrameTransferList>();
+  transfer_list->video_frames.push_back(blink_frame);
+  v8::Local<v8::Value> wrapper = ToV8(blink_frame, scope.GetScriptState());
+  v8::Local<v8::Value> result =
+      RoundTripForModules(wrapper, scope, &transferables);
+
+  ASSERT_TRUE(V8VideoFrame::HasInstance(result, scope.GetIsolate()));
+
+  VideoFrame* new_frame = V8VideoFrame::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ(new_frame->frame()->natural_size(), kFrameSize);
+
+  EXPECT_FALSE(media_frame->HasOneRef());
+
+  // The transfer should have closed the source frame.
+  EXPECT_EQ(blink_frame->frame(), nullptr);
+
+  // Closing |new_frame| should remove all references to |media_frame|.
+  new_frame->close();
+  EXPECT_TRUE(media_frame->HasOneRef());
+}
+
 TEST(V8ScriptValueSerializerForModulesTest, ClosedVideoFrameThrows) {
   V8TestingScope scope;
   ExceptionState exception_state(scope.GetIsolate(),
@@ -1038,84 +1108,581 @@ TEST(V8ScriptValueSerializerForModulesTest, ClosedVideoFrameThrows) {
       "DataCloneError", scope.GetScriptState(), exception_state));
 }
 
-TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioFrame) {
+TEST(V8ScriptValueSerializerForModulesTest, RoundTripAudioData) {
   V8TestingScope scope;
 
   const unsigned kChannels = 2;
   const unsigned kSampleRate = 8000;
   const unsigned kFrames = 500;
-  constexpr base::TimeDelta kTimestamp = base::TimeDelta::FromMilliseconds(314);
+  constexpr base::TimeDelta kTimestamp = base::Milliseconds(314);
 
   auto audio_bus = media::AudioBus::Create(kChannels, kFrames);
 
-  // Populate each frame with a unique value.
-  const unsigned kTotalFrames = (kFrames * kChannels);
-  const float kFramesMultiplier = 1.0 / kTotalFrames;
+  // Populate each sample with a unique value.
+  const unsigned kTotalSamples = (kFrames * kChannels);
+  const float kSampleMultiplier = 1.0 / kTotalSamples;
   for (unsigned ch = 0; ch < kChannels; ++ch) {
     float* data = audio_bus->channel(ch);
     for (unsigned i = 0; i < kFrames; ++i)
-      data[i] = (i + ch * kFrames) * kFramesMultiplier;
+      data[i] = (i + ch * kFrames) * kSampleMultiplier;
   }
 
-  auto audio_serialization_data = AudioFrameSerializationData::Wrap(
-      std::move(audio_bus), kSampleRate, kTimestamp);
+  // Copying the data from an AudioBus instead of creating a media::AudioBuffer
+  // directly is acceptable/desirable here, as it's a path often exercised when
+  // receiving microphone/WebCam data.
+  auto audio_buffer =
+      media::AudioBuffer::CopyFrom(kSampleRate, kTimestamp, audio_bus.get());
 
-  auto* audio_frame =
-      MakeGarbageCollected<AudioFrame>(std::move(audio_serialization_data));
+  auto* audio_data = MakeGarbageCollected<AudioData>(std::move(audio_buffer));
 
   // Round trip the frame and make sure the size is the same.
-  v8::Local<v8::Value> wrapper = ToV8(audio_frame, scope.GetScriptState());
+  v8::Local<v8::Value> wrapper = ToV8(audio_data, scope.GetScriptState());
   v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
 
   // The data should have been copied, not transferred.
-  EXPECT_TRUE(audio_frame->buffer());
+  EXPECT_TRUE(audio_data->data());
 
-  ASSERT_TRUE(V8AudioFrame::HasInstance(result, scope.GetIsolate()));
+  ASSERT_TRUE(V8AudioData::HasInstance(result, scope.GetIsolate()));
 
-  AudioFrame* new_frame = V8AudioFrame::ToImpl(result.As<v8::Object>());
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(new_frame->timestamp()),
-            kTimestamp);
-  EXPECT_EQ(new_frame->buffer()->numberOfChannels(), kChannels);
-  EXPECT_EQ(new_frame->buffer()->sampleRate(), kSampleRate);
-  EXPECT_EQ(new_frame->buffer()->length(), kFrames);
+  AudioData* new_data = V8AudioData::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ(base::Microseconds(new_data->timestamp()), kTimestamp);
+  EXPECT_EQ(new_data->numberOfChannels(), kChannels);
+  EXPECT_EQ(new_data->numberOfFrames(), kFrames);
+  EXPECT_EQ(new_data->sampleRate(), kSampleRate);
 
-  // Make sure the data wasn't changed during the transfer.
-  for (unsigned ch = 0; ch < kChannels; ++ch) {
-    float* src_data = audio_frame->buffer()->getChannelData(ch)->Data();
-    float* dst_data = new_frame->buffer()->getChannelData(ch)->Data();
-    for (unsigned i = 0; i < kFrames; ++i) {
-      EXPECT_EQ(src_data[i], dst_data[i]);
-    }
+  // Copy out the frames to make sure they haven't been changed during the
+  // transfer.
+  DOMArrayBuffer* copy_dest = DOMArrayBuffer::Create(kFrames, sizeof(float));
+  AllowSharedBufferSource* dest =
+      MakeGarbageCollected<AllowSharedBufferSource>(copy_dest);
+  AudioDataCopyToOptions* options =
+      MakeGarbageCollected<AudioDataCopyToOptions>();
+
+  for (unsigned int ch = 0; ch < kChannels; ++ch) {
+    options->setPlaneIndex(ch);
+    new_data->copyTo(dest, options, scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetExceptionState().HadException());
+
+    float* new_samples = static_cast<float*>(copy_dest->Data());
+
+    for (unsigned int i = 0; i < kFrames; ++i)
+      ASSERT_EQ(new_samples[i], (i + ch * kFrames) * kSampleMultiplier);
   }
 
-  // Closing the original |audio_frame| should not affect |new_frame|.
-  audio_frame->close();
-  EXPECT_TRUE(new_frame->buffer());
+  // Closing the original |audio_data| should not affect |new_data|.
+  audio_data->close();
+  EXPECT_TRUE(new_data->data());
 }
 
-TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioFrameThrows) {
+TEST(V8ScriptValueSerializerForModulesTest, TransferAudioData) {
+  V8TestingScope scope;
+
+  const unsigned kFrames = 500;
+  auto audio_buffer = media::AudioBuffer::CreateEmptyBuffer(
+      media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
+      /*channel_count=*/2,
+      /*sample_rate=*/8000, kFrames, base::Milliseconds(314));
+
+  auto* audio_data = MakeGarbageCollected<AudioData>(audio_buffer);
+
+  // Transfer the frame and make sure the size is the same.
+  Transferables transferables;
+  AudioDataTransferList* transfer_list =
+      transferables.GetOrCreateTransferList<AudioDataTransferList>();
+  transfer_list->audio_data_collection.push_back(audio_data);
+  v8::Local<v8::Value> wrapper = ToV8(audio_data, scope.GetScriptState());
+  v8::Local<v8::Value> result =
+      RoundTripForModules(wrapper, scope, &transferables);
+
+  ASSERT_TRUE(V8AudioData::HasInstance(result, scope.GetIsolate()));
+
+  AudioData* new_data = V8AudioData::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ(new_data->numberOfFrames(), kFrames);
+
+  EXPECT_FALSE(audio_buffer->HasOneRef());
+
+  // The transfer should have closed the source data.
+  EXPECT_EQ(audio_data->format(), absl::nullopt);
+
+  // Closing |new_data| should remove all references to |audio_buffer|.
+  new_data->close();
+  EXPECT_TRUE(audio_buffer->HasOneRef());
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, ClosedAudioDataThrows) {
   V8TestingScope scope;
   ExceptionState exception_state(scope.GetIsolate(),
                                  ExceptionState::kExecutionContext, "Window",
                                  "postMessage");
 
-  auto audio_bus = media::AudioBus::Create(/*channels=*/2, /*frames=*/500);
-  auto audio_serialization_data = AudioFrameSerializationData::Wrap(
-      std::move(audio_bus), /*sample_rate=*/8000,
-      base::TimeDelta::FromMilliseconds(314));
+  auto audio_buffer = media::AudioBuffer::CreateEmptyBuffer(
+      media::ChannelLayout::CHANNEL_LAYOUT_STEREO,
+      /*channel_count=*/2,
+      /*sample_rate=*/8000,
+      /*frame_count=*/500, base::Milliseconds(314));
 
   // Create and close the frame.
-  auto* audio_frame =
-      MakeGarbageCollected<AudioFrame>(std::move(audio_serialization_data));
-  audio_frame->close();
+  auto* audio_data = MakeGarbageCollected<AudioData>(std::move(audio_buffer));
+  audio_data->close();
 
   // Serializing the closed frame should throw an error.
-  v8::Local<v8::Value> wrapper = ToV8(audio_frame, scope.GetScriptState());
+  v8::Local<v8::Value> wrapper = ToV8(audio_data, scope.GetScriptState());
   EXPECT_FALSE(V8ScriptValueSerializer(scope.GetScriptState())
                    .Serialize(wrapper, exception_state));
   EXPECT_TRUE(HadDOMExceptionInModulesTest(
       "DataCloneError", scope.GetScriptState(), exception_state));
 }
+
+TEST(V8ScriptValueSerializerForModulesTest, TransferMediaStreamTrack) {
+  // This flag is default-off for Android, so we force it on to test this
+  // functionality.
+  ScopedRegionCaptureForTest region_capture(true);
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+
+  const auto session_id = base::UnguessableToken::Create();
+  MediaStreamComponent* component =
+      MakeTabCaptureVideoComponentForTest(&scope.GetFrame(), session_id);
+  MediaStreamTrack* blink_track =
+      MakeGarbageCollected<BrowserCaptureMediaStreamTrack>(
+          scope.GetExecutionContext(), component,
+          MediaStreamSource::ReadyState::kReadyStateMuted,
+          /*callback=*/base::DoNothing(), "descriptor");
+  blink_track->setEnabled(false);
+
+  ScopedMockMediaStreamTrackFromTransferredState mock_impl;
+
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
+  v8::Local<v8::Value> result =
+      RoundTripForModules(wrapper, scope, &transferables);
+
+  // Transferring should have ended the original track.
+  EXPECT_TRUE(blink_track->Ended());
+
+  ASSERT_TRUE(V8MediaStreamTrack::HasInstance(result, scope.GetIsolate()));
+  EXPECT_EQ(V8MediaStreamTrack::ToImpl(result.As<v8::Object>()),
+            mock_impl.return_value.Get());
+
+  const auto& data = mock_impl.last_argument;
+  // The assertions here match the TransferredValues in
+  // MediaStreamTrackTransferTest.TabCaptureVideoFromTransferredState. If you
+  // change this test, please augment MediaStreamTrackTransferTest to test the
+  // new scenario.
+  EXPECT_EQ(data.track_impl_subtype,
+            BrowserCaptureMediaStreamTrack::GetStaticWrapperTypeInfo());
+  EXPECT_EQ(data.session_id, session_id);
+  // TODO(crbug.com/1352414): assert correct data.transfer_id
+  EXPECT_EQ(data.kind, "video");
+  EXPECT_EQ(data.id, "component_id");
+  EXPECT_EQ(data.label, "test_name");
+  EXPECT_EQ(data.enabled, false);
+  EXPECT_EQ(data.muted, true);
+  EXPECT_EQ(data.content_hint,
+            WebMediaStreamTrack::ContentHintType::kVideoMotion);
+  EXPECT_EQ(data.ready_state, MediaStreamSource::ReadyState::kReadyStateLive);
+  EXPECT_EQ(data.crop_version, absl::optional<uint32_t>(0));
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
+     TransferMediaStreamTrackRegionCaptureDisabled) {
+  // Test with region capture disabled, since this is the default for Android.
+  ScopedRegionCaptureForTest region_capture(false);
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+
+  const auto session_id = base::UnguessableToken::Create();
+  MediaStreamComponent* component =
+      MakeTabCaptureVideoComponentForTest(&scope.GetFrame(), session_id);
+  MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      scope.GetExecutionContext(), component,
+      MediaStreamSource::ReadyState::kReadyStateLive,
+      /*callback=*/base::DoNothing());
+
+  ScopedMockMediaStreamTrackFromTransferredState mock_impl;
+
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
+  v8::Local<v8::Value> result =
+      RoundTripForModules(wrapper, scope, &transferables);
+
+  ASSERT_TRUE(V8MediaStreamTrack::HasInstance(result, scope.GetIsolate()));
+  EXPECT_EQ(V8MediaStreamTrack::ToImpl(result.As<v8::Object>()),
+            mock_impl.return_value.Get());
+
+  const auto& data = mock_impl.last_argument;
+  EXPECT_EQ(data.track_impl_subtype,
+            MediaStreamTrack::GetStaticWrapperTypeInfo());
+  EXPECT_FALSE(data.crop_version.has_value());
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, TransferFocusableMediaStreamTrack) {
+  ScopedConditionalFocusForTest conditional_focus(true);
+  // RegionCapture overrides ConditionalFocus, so we turn it off here to test
+  // FocusableMediaStreamTrack.
+  ScopedRegionCaptureForTest region_capture(false);
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+
+  const auto session_id = base::UnguessableToken::Create();
+  MediaStreamComponent* component =
+      MakeTabCaptureVideoComponentForTest(&scope.GetFrame(), session_id);
+  MediaStreamTrack* blink_track =
+      MakeGarbageCollected<FocusableMediaStreamTrack>(
+          scope.GetExecutionContext(), component,
+          MediaStreamSource::ReadyState::kReadyStateLive,
+          /*callback=*/base::DoNothing(), "descriptor");
+
+  ScopedMockMediaStreamTrackFromTransferredState mock_impl;
+
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
+  v8::Local<v8::Value> result =
+      RoundTripForModules(wrapper, scope, &transferables);
+
+  ASSERT_TRUE(V8MediaStreamTrack::HasInstance(result, scope.GetIsolate()));
+  EXPECT_EQ(V8MediaStreamTrack::ToImpl(result.As<v8::Object>()),
+            mock_impl.return_value.Get());
+
+  const auto& data = mock_impl.last_argument;
+  EXPECT_EQ(data.track_impl_subtype,
+            FocusableMediaStreamTrack::GetStaticWrapperTypeInfo());
+  EXPECT_FALSE(data.crop_version.has_value());
+}
+
+TEST(V8ScriptValueSerializerForModulesTest, TransferAudioMediaStreamTrack) {
+  V8TestingScope scope;
+
+  const auto session_id = base::UnguessableToken::Create();
+  MediaStreamComponent* component =
+      MakeTabCaptureAudioComponentForTest(session_id);
+  MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      scope.GetExecutionContext(), component,
+      MediaStreamSource::ReadyState::kReadyStateMuted,
+      /*callback=*/base::DoNothing());
+
+  ScopedMockMediaStreamTrackFromTransferredState mock_impl;
+
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
+  v8::Local<v8::Value> result =
+      RoundTripForModules(wrapper, scope, &transferables);
+
+  // Transferring should have ended the original track.
+  EXPECT_TRUE(blink_track->Ended());
+
+  ASSERT_TRUE(V8MediaStreamTrack::HasInstance(result, scope.GetIsolate()));
+  EXPECT_EQ(V8MediaStreamTrack::ToImpl(result.As<v8::Object>()),
+            mock_impl.return_value.Get());
+
+  const auto& data = mock_impl.last_argument;
+  // The assertions here match the TransferredValues in
+  // MediaStreamTrackTransferTest.TabCaptureAudioFromTransferredState. If you
+  // change this test, please augment MediaStreamTrackTransferTest to test the
+  // new scenario.
+  EXPECT_EQ(data.track_impl_subtype,
+            MediaStreamTrack::GetStaticWrapperTypeInfo());
+  EXPECT_EQ(data.session_id, session_id);
+  // TODO(crbug.com/1352414): assert correct data.transfer_id
+  EXPECT_EQ(data.kind, "audio");
+  EXPECT_EQ(data.id, "component_id");
+  EXPECT_EQ(data.label, "test_name");
+  EXPECT_EQ(data.enabled, true);
+  EXPECT_EQ(data.muted, true);
+  EXPECT_EQ(data.content_hint,
+            WebMediaStreamTrack::ContentHintType::kAudioSpeech);
+  EXPECT_EQ(data.ready_state, MediaStreamSource::ReadyState::kReadyStateLive);
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
+     TransferDeviceCaptureMediaStreamTrackFails) {
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+
+  auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
+      scope.GetFrame().GetTaskRunner(TaskType::kInternalMediaRealTime),
+      &scope.GetFrame(),
+      MediaStreamVideoCapturerSource::SourceStoppedCallback(),
+      std::make_unique<MockVideoCapturerSource>());
+  auto platform_track = std::make_unique<MediaStreamVideoTrack>(
+      mock_source.get(),
+      WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+      /*enabled=*/true);
+
+  MediaStreamDevice device(mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+                           "device_id", "device_name");
+  device.set_session_id(base::UnguessableToken::Create());
+  mock_source->SetDevice(device);
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
+      /*remote=*/false, std::move(mock_source));
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source,
+                                                     std::move(platform_track));
+  component->SetContentHint(WebMediaStreamTrack::ContentHintType::kVideoMotion);
+  MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      scope.GetExecutionContext(), component,
+      MediaStreamSource::ReadyState::kReadyStateMuted,
+      /*callback=*/base::DoNothing());
+
+  // Transferring MediaStreamTrack should fail for Device Capture type device.
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
+  V8ScriptValueSerializer::Options serialize_options;
+  serialize_options.transferables = &transferables;
+  ScriptState* script_state = scope.GetScriptState();
+  ExceptionState exception_state(scope.GetIsolate(),
+                                 ExceptionState::kExecutionContext, "Window",
+                                 "postMessage");
+  EXPECT_FALSE(
+      V8ScriptValueSerializerForModules(script_state, serialize_options)
+          .Serialize(wrapper, exception_state));
+  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
+                                           exception_state));
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
+     TransferScreenCaptureMediaStreamTrackFails) {
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+
+  auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
+      scope.GetFrame().GetTaskRunner(TaskType::kInternalMediaRealTime),
+      &scope.GetFrame(),
+      MediaStreamVideoCapturerSource::SourceStoppedCallback(),
+      std::make_unique<MockVideoCapturerSource>());
+  auto platform_track = std::make_unique<MediaStreamVideoTrack>(
+      mock_source.get(),
+      WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+      /*enabled=*/true);
+
+  MediaStreamDevice device(mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                           "device_id", "device_name");
+  device.set_session_id(base::UnguessableToken::Create());
+  device.display_media_info = media::mojom::DisplayMediaInformation::New(
+      media::mojom::DisplayCaptureSurfaceType::MONITOR,
+      /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+      /*capture_handle=*/nullptr);
+  mock_source->SetDevice(device);
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
+      /*remote=*/false, std::move(mock_source));
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source,
+                                                     std::move(platform_track));
+  component->SetContentHint(WebMediaStreamTrack::ContentHintType::kVideoMotion);
+  MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      scope.GetExecutionContext(), component,
+      MediaStreamSource::ReadyState::kReadyStateMuted,
+      /*callback=*/base::DoNothing());
+
+  // Transferring MediaStreamTrack should fail for screen captures.
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
+  V8ScriptValueSerializer::Options serialize_options;
+  serialize_options.transferables = &transferables;
+  ScriptState* script_state = scope.GetScriptState();
+  ExceptionState exception_state(scope.GetIsolate(),
+                                 ExceptionState::kExecutionContext, "Window",
+                                 "postMessage");
+  EXPECT_FALSE(
+      V8ScriptValueSerializerForModules(script_state, serialize_options)
+          .Serialize(wrapper, exception_state));
+  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
+                                           exception_state));
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
+     TransferWindowCaptureMediaStreamTrackFails) {
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+
+  auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
+      scope.GetFrame().GetTaskRunner(TaskType::kInternalMediaRealTime),
+      &scope.GetFrame(),
+      MediaStreamVideoCapturerSource::SourceStoppedCallback(),
+      std::make_unique<MockVideoCapturerSource>());
+  auto platform_track = std::make_unique<MediaStreamVideoTrack>(
+      mock_source.get(),
+      WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+      /*enabled=*/true);
+
+  MediaStreamDevice device(mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                           "device_id", "device_name");
+  device.set_session_id(base::UnguessableToken::Create());
+  device.display_media_info = media::mojom::DisplayMediaInformation::New(
+      media::mojom::DisplayCaptureSurfaceType::WINDOW,
+      /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+      /*capture_handle=*/nullptr);
+  mock_source->SetDevice(device);
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
+      /*remote=*/false, std::move(mock_source));
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source,
+                                                     std::move(platform_track));
+  component->SetContentHint(WebMediaStreamTrack::ContentHintType::kVideoMotion);
+  MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      scope.GetExecutionContext(), component,
+      MediaStreamSource::ReadyState::kReadyStateMuted,
+      /*callback=*/base::DoNothing());
+
+  // Transferring MediaStreamTrack should fail for window captures.
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
+  V8ScriptValueSerializer::Options serialize_options;
+  serialize_options.transferables = &transferables;
+  ScriptState* script_state = scope.GetScriptState();
+  ExceptionState exception_state(scope.GetIsolate(),
+                                 ExceptionState::kExecutionContext, "Window",
+                                 "postMessage");
+  EXPECT_FALSE(
+      V8ScriptValueSerializerForModules(script_state, serialize_options)
+          .Serialize(wrapper, exception_state));
+  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
+                                           exception_state));
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
+     TransferClosedMediaStreamTrackFails) {
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+  ScriptState* script_state = scope.GetScriptState();
+  ExceptionState exception_state(scope.GetIsolate(),
+                                 ExceptionState::kExecutionContext, "Window",
+                                 "postMessage");
+
+  MediaStreamComponent* component = MakeTabCaptureVideoComponentForTest(
+      &scope.GetFrame(), base::UnguessableToken::Create());
+  MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      scope.GetExecutionContext(), component,
+      MediaStreamSource::ReadyState::kReadyStateMuted,
+      /*callback=*/base::DoNothing());
+  blink_track->stopTrack(scope.GetExecutionContext());
+  ASSERT_TRUE(blink_track->Ended());
+
+  // Transferring a closed MediaStreamTrack should throw an error.
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, scope.GetScriptState());
+  V8ScriptValueSerializer::Options serialize_options;
+  serialize_options.transferables = &transferables;
+  EXPECT_FALSE(
+      V8ScriptValueSerializerForModules(script_state, serialize_options)
+          .Serialize(wrapper, exception_state));
+  EXPECT_TRUE(HadDOMExceptionInModulesTest("InvalidStateError", script_state,
+                                           exception_state));
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
+     TransferMediaStreamTrackInvalidContentHintFails) {
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+  ScriptState* script_state = scope.GetScriptState();
+  ExceptionState exception_state(scope.GetIsolate(),
+                                 ExceptionState::kExecutionContext, "Window",
+                                 "postMessage");
+
+  MediaStreamComponent* component = MakeTabCaptureVideoComponentForTest(
+      &scope.GetFrame(), base::UnguessableToken::Create());
+  component->SetContentHint(
+      static_cast<WebMediaStreamTrack::ContentHintType>(666));
+  MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      scope.GetExecutionContext(), component,
+      MediaStreamSource::ReadyState::kReadyStateMuted,
+      /*callback=*/base::DoNothing());
+
+  // Transfer a MediaStreamTrack with an invalid contentHint which should throw
+  // an error.
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, script_state);
+  V8ScriptValueSerializer::Options serialize_options;
+  serialize_options.transferables = &transferables;
+  EXPECT_FALSE(V8ScriptValueSerializer(script_state, serialize_options)
+                   .Serialize(wrapper, exception_state));
+  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
+                                           exception_state));
+  EXPECT_FALSE(blink_track->Ended());
+}
+
+TEST(V8ScriptValueSerializerForModulesTest,
+     TransferMediaStreamTrackNoSessionIdThrows) {
+  V8TestingScope scope;
+  ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform;
+  ScriptState* script_state = scope.GetScriptState();
+  ExceptionState exception_state(scope.GetIsolate(),
+                                 ExceptionState::kExecutionContext, "Window",
+                                 "postMessage");
+
+  auto mock_source = std::make_unique<MediaStreamVideoCapturerSource>(
+      scope.GetFrame().GetTaskRunner(TaskType::kInternalMediaRealTime),
+      &scope.GetFrame(),
+      MediaStreamVideoCapturerSource::SourceStoppedCallback(),
+      std::make_unique<MockVideoCapturerSource>());
+  auto platform_track = std::make_unique<MediaStreamVideoTrack>(
+      mock_source.get(),
+      WebPlatformMediaStreamSource::ConstraintsOnceCallback(),
+      /*enabled=*/true);
+
+  MediaStreamDevice device(mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                           "device_id", "device_name");
+  device.display_media_info = media::mojom::DisplayMediaInformation::New(
+      media::mojom::DisplayCaptureSurfaceType::BROWSER,
+      /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+      /*capture_handle=*/nullptr);
+  mock_source->SetDevice(device);
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "test_id", MediaStreamSource::StreamType::kTypeVideo, "test_name",
+      /*remote=*/false, std::move(mock_source));
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponentImpl>("component_id", source,
+                                                     std::move(platform_track));
+  component->SetContentHint(WebMediaStreamTrack::ContentHintType::kVideoMotion);
+  MediaStreamTrack* blink_track = MakeGarbageCollected<MediaStreamTrackImpl>(
+      scope.GetExecutionContext(), component,
+      MediaStreamSource::ReadyState::kReadyStateMuted,
+      /*callback=*/base::DoNothing());
+
+  // Transfer a MediaStreamTrack with no session id should throw an error.
+  Transferables transferables;
+  transferables.media_stream_tracks.push_back(blink_track);
+  v8::Local<v8::Value> wrapper = ToV8(blink_track, script_state);
+  V8ScriptValueSerializer::Options serialize_options;
+  serialize_options.transferables = &transferables;
+  EXPECT_FALSE(
+      V8ScriptValueSerializerForModules(script_state, serialize_options)
+          .Serialize(wrapper, exception_state));
+  EXPECT_TRUE(HadDOMExceptionInModulesTest("DataCloneError", script_state,
+                                           exception_state));
+  EXPECT_FALSE(blink_track->Ended());
+}
+
+#if !BUILDFLAG(IS_ANDROID)  // CropTarget is not exposed on Android.
+TEST(V8ScriptValueSerializerForModulesTest, RoundTripCropTarget) {
+  V8TestingScope scope;
+
+  const String crop_id("8e7e0c22-67a0-4c39-b4dc-a20433262f8e");
+
+  CropTarget* const crop_target = MakeGarbageCollected<CropTarget>(crop_id);
+
+  v8::Local<v8::Value> wrapper = ToV8(crop_target, scope.GetScriptState());
+  v8::Local<v8::Value> result = RoundTripForModules(wrapper, scope);
+
+  ASSERT_TRUE(V8CropTarget::HasInstance(result, scope.GetIsolate()));
+
+  CropTarget* const new_crop_target =
+      V8CropTarget::ToImpl(result.As<v8::Object>());
+  EXPECT_EQ(new_crop_target->GetCropId(), crop_id);
+}
+#endif
 
 }  // namespace
 }  // namespace blink

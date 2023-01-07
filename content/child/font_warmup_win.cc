@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -29,9 +29,9 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/ports/SkTypeface_win.h"
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 #include "ppapi/shared_impl/proxy_lock.h"
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+#endif  // BUILDFLAG(ENABLE_PPAPI)
 
 namespace content {
 
@@ -102,6 +102,9 @@ class FakeGdiObject : public base::RefCountedThreadSafe<FakeGdiObject> {
   FakeGdiObject(uint32_t magic, void* handle)
       : handle_(handle), magic_(magic) {}
 
+  FakeGdiObject(const FakeGdiObject&) = delete;
+  FakeGdiObject& operator=(const FakeGdiObject&) = delete;
+
   void set_typeface(sk_sp<SkTypeface> typeface) {
     typeface_ = std::move(typeface);
   }
@@ -114,11 +117,9 @@ class FakeGdiObject : public base::RefCountedThreadSafe<FakeGdiObject> {
   friend class base::RefCountedThreadSafe<FakeGdiObject>;
   ~FakeGdiObject() {}
 
-  void* handle_;
+  raw_ptr<void> handle_;
   uint32_t magic_;
   sk_sp<SkTypeface> typeface_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGdiObject);
 };
 
 // This class acts as a factory for creating new fake GDI objects. It also maps
@@ -130,6 +131,9 @@ class FakeGdiObject : public base::RefCountedThreadSafe<FakeGdiObject> {
 class FakeGdiObjectFactory {
  public:
   FakeGdiObjectFactory() : curr_handle_(0) {}
+
+  FakeGdiObjectFactory(const FakeGdiObjectFactory&) = delete;
+  FakeGdiObjectFactory& operator=(const FakeGdiObjectFactory&) = delete;
 
   // Find a corresponding fake GDI object and verify its magic value.
   // The returned value is either nullptr or the validated object.
@@ -182,8 +186,6 @@ class FakeGdiObjectFactory {
   base::CheckedNumeric<uintptr_t> curr_handle_;
   std::map<void*, scoped_refptr<FakeGdiObject>> objects_;
   base::Lock objects_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGdiObjectFactory);
 };
 
 base::LazyInstance<FakeGdiObjectFactory>::Leaky g_fake_gdi_object_factory =
@@ -204,9 +206,9 @@ sk_sp<SkTypeface> GetTypefaceFromLOGFONT(const LOGFONTW* log_font) {
                                        : SkFontStyle::kUpright_Slant);
 
   std::string family_name = base::WideToUTF8(log_font->lfFaceName);
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   ppapi::ProxyAutoLock lock;  // Needed for DirectWrite font proxy.
-#endif                        // BUILDFLAG(ENABLE_PLUGINS)
+#endif                        // BUILDFLAG(ENABLE_PPAPI)
   return sk_sp<SkTypeface>(
       g_warmup_fontmgr->matchFamilyStyle(family_name.c_str(), style));
 }

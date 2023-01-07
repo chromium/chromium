@@ -1,12 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
-#define IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
+#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_PRESENTER_H_
+#define IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_PRESENTER_H_
 
 #import <UIKit/UIKit.h>
 
+@protocol ContentProviding;
 @class OmniboxPopupPresenter;
 
 @protocol OmniboxPopupPresenterDelegate
@@ -40,9 +41,11 @@
 
 - (instancetype)initWithPopupPresenterDelegate:
                     (id<OmniboxPopupPresenterDelegate>)presenterDelegate
-                           popupViewController:(UIViewController*)viewController
+                           popupViewController:
+                               (UIViewController<ContentProviding>*)
+                                   viewController
                                      incognito:(BOOL)incognito;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_
+#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_OMNIBOX_POPUP_PRESENTER_H_

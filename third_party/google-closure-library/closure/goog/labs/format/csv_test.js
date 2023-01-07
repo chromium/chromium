@@ -1,16 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.labs.format.csvTest');
 goog.setTestOnly();
@@ -54,7 +46,7 @@ testSuite({
       csv.parse('a,b,c\r\nd,e,f\r\ng,h,i\r\n', undefined, '\n');
     });
     assertEquals(
-        'Assertion failed: Cannot use newline or carriage return has delimiter.',
+        'Assertion failed: Cannot use newline or carriage return as delimiter.',
         e.message);
   },
 
@@ -63,7 +55,7 @@ testSuite({
       csv.parse('a,b,c\r\nd,e,f\r\ng,h,i\r\n', undefined, '\r');
     });
     assertEquals(
-        'Assertion failed: Cannot use newline or carriage return has delimiter.',
+        'Assertion failed: Cannot use newline or carriage return as delimiter.',
         e.message);
   },
 
@@ -106,6 +98,10 @@ testSuite({
         csv.parse('a,"""b""","Jonathan ""Smokey"" Feinberg"\nd,e,f\r\n'));
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testUnclosedQuote() {
     const e = assertThrows(() => {
       csv.parse('a,"b,c\nd,e,f');
@@ -121,6 +117,10 @@ testSuite({
         e.message);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testQuotesInUnquotedField() {
     const e = assertThrows(() => {
       csv.parse('a,b "and" b,c\nd,e,f');
@@ -138,6 +138,10 @@ testSuite({
         e.message);
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testGarbageOutsideQuotes() {
     const e = assertThrows(() => {
       csv.parse('a,"b",c\nd,"e"oops,f');
@@ -194,6 +198,7 @@ testSuite({
 
   testFindLineInfo() {
     const testString = 'abc\ndef\rghi';
+    /** @suppress {visibility} suppression added to enable type checking */
     const info = ParseError.findLineInfo_(testString, 4);
 
     assertEquals(4, info.line.startLineIndex);
@@ -203,6 +208,7 @@ testSuite({
     assertEquals(1, info.lineIndex);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testGetLineDebugString() {
     const str = 'abcdefghijklmnop';
     const index = str.indexOf('j');
@@ -213,6 +219,10 @@ testSuite({
             '         ^');
   },
 
+  /**
+     @suppress {visibility,checkTypes} suppression added to enable type
+     checking
+   */
   testIsCharacterString() {
     assertTrue(csv.isCharacterString_('a'));
     assertTrue(csv.isCharacterString_('\n'));
@@ -224,23 +234,44 @@ testSuite({
     assertFalse(csv.isCharacterString_('aa'));
   },
 
+  /**
+     @suppress {visibility,missingProperties} suppression added to enable type
+     checking
+   */
   testAssertToken() {
     csv.assertToken_('a');
 
-    googObject.forEach(csv.SENTINELS_, (value) => {
-      csv.assertToken_(value);
-    });
+    googObject.forEach(
+        csv.SENTINELS_, /**
+                           @suppress {visibility} suppression added to enable
+                           type checking
+                         */
+        (value) => {
+          csv.assertToken_(value);
+        });
 
-    assertThrows(() => {
-      csv.assertToken_('aa');
-    });
+    assertThrows(/**
+                    @suppress {visibility} suppression added to enable type
+                    checking
+                  */
+                 () => {
+                   csv.assertToken_('aa');
+                 });
 
-    assertThrows(() => {
-      csv.assertToken_('');
-    });
+    assertThrows(/**
+                    @suppress {visibility} suppression added to enable type
+                    checking
+                  */
+                 () => {
+                   csv.assertToken_('');
+                 });
 
-    assertThrows(() => {
-      csv.assertToken_({});
-    });
+    assertThrows(/**
+                    @suppress {visibility} suppression added to enable type
+                    checking
+                  */
+                 () => {
+                   csv.assertToken_({});
+                 });
   },
 });

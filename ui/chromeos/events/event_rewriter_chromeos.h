@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,17 +13,16 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 
-namespace chromeos {
+namespace ash {
 namespace input_method {
 class ImeKeyboard;
-}  // namespace input_method
-}  // namespace chromeos
+}
+}  // namespace ash
 
 namespace ui {
 
@@ -81,6 +80,17 @@ class EventRewriterChromeOS : public EventRewriter {
                     DomKey::Base input_key,
                     KeyboardCode input_key_code);
 
+    friend bool operator==(const MutableKeyState& lhs,
+                           const MutableKeyState& rhs) {
+      return lhs.flags == rhs.flags && lhs.code == rhs.code &&
+             lhs.key == rhs.key && lhs.key_code == rhs.key_code;
+    }
+
+    friend bool operator!=(const MutableKeyState& lhs,
+                           const MutableKeyState& rhs) {
+      return !(lhs == rhs);
+    }
+
     int flags;
     DomCode code;
     DomKey::Base key;
@@ -90,9 +100,15 @@ class EventRewriterChromeOS : public EventRewriter {
   class Delegate {
    public:
     Delegate() {}
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate() {}
 
-    // Returns true if we want to rewrite modifier keys.
+    // Returns true only if the the key event was rewritten to ALTGR. For most
+    // cases, it is expected that this function returns false as most key events
+    // do not involve ALTGR.
     virtual bool RewriteModifierKeys() = 0;
 
     // Returns true if get keyboard remapped preference value successfully and
@@ -120,18 +136,11 @@ class EventRewriterChromeOS : public EventRewriter {
     // returns true if the notification was shown.
     virtual bool NotifyDeprecatedRightClickRewrite() = 0;
 
-    // Used to send a notification about Search+Digit Fkey rewrites being
-    // deprecated. The notification is only sent once per user session,
-    // and this function returns true if the notification was shown.
-    virtual bool NotifyDeprecatedFKeyRewrite() = 0;
-
-    // Used to send a notification about Alt based key rewrite being deprecated.
-    // The notification is only sent once per user session, and this function
-    // returns true if the notification was shown.
-    virtual bool NotifyDeprecatedAltBasedKeyRewrite(KeyboardCode key_code) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
+    // Used to send a notification about a Six Pack (PageUp, PageDown, Home,
+    // End, Insert, Delete) key rewrite being deprecated. The notification
+    // is only sent once per user session, and this function returns true if
+    // the notification was shown.
+    virtual bool NotifyDeprecatedSixPackKeyRewrite(KeyboardCode key_code) = 0;
   };
 
   // Does not take ownership of the |sticky_keys_controller|, which may also be
@@ -140,6 +149,15 @@ class EventRewriterChromeOS : public EventRewriter {
   EventRewriterChromeOS(Delegate* delegate,
                         EventRewriter* sticky_keys_controller,
                         bool privacy_screen_supported);
+
+  // Only explicitly use this constructor for tests. Does not take ownership of
+  // |ime_keyboard|.
+  EventRewriterChromeOS(Delegate* delegate,
+                        EventRewriter* sticky_keys_controller,
+                        bool privacy_screen_supported,
+                        ash::input_method::ImeKeyboard* ime_keyboard);
+  EventRewriterChromeOS(const EventRewriterChromeOS&) = delete;
+  EventRewriterChromeOS& operator=(const EventRewriterChromeOS&) = delete;
   ~EventRewriterChromeOS() override;
 
   // Calls KeyboardDeviceAdded.
@@ -155,10 +173,6 @@ class EventRewriterChromeOS : public EventRewriter {
 
   void set_last_keyboard_device_id_for_testing(int device_id) {
     last_keyboard_device_id_ = device_id;
-  }
-  void set_ime_keyboard_for_testing(
-      ::chromeos::input_method::ImeKeyboard* ime_keyboard) {
-    ime_keyboard_for_testing_ = ime_keyboard;
   }
 
   void set_privacy_screen_for_testing(bool supported) {
@@ -190,6 +204,20 @@ class EventRewriterChromeOS : public EventRewriter {
   // layout, or when failing to retrieve device layout from udev.
   static KeyboardTopRowLayout GetKeyboardTopRowLayout(
       const InputDevice& keyboard_device);
+
+  // Given a keyboard device, identify the type of keyboard, and the top row
+  // layout, if applicable. |out_type| and |out_layout| are always updated. If
+  // |out_scan_code_map| is non-null, and the top row layout is of type
+  // kKbdTopRowLayoutCustom, then the custom layout information will be parsed
+  // and written to the supplied map. Returns false on some errors of
+  // identifying the keyboard, however out_type and out_layout will always be
+  // updated.
+  static bool IdentifyKeyboard(
+      const InputDevice& keyboard_device,
+      EventRewriterChromeOS::DeviceType* out_type,
+      EventRewriterChromeOS::KeyboardTopRowLayout* out_layout,
+      base::flat_map<uint32_t, EventRewriterChromeOS::MutableKeyState>*
+          out_scan_code_map);
 
   // Given a keyboard device, returns true if we get back the Assistant key
   // property without getting an error. Property value is stored in
@@ -270,10 +298,13 @@ class EventRewriterChromeOS : public EventRewriter {
   int RewriteLocatedEvent(const Event& event);
   int RewriteModifierClick(const MouseEvent& event, int* flags);
 
-  // Reads the keyboard mapping for new CrOS keyboards that support
-  // supplying a custom layout via sysfs and stores it mapped to
+  // For new CrOS keyboards that support supplying a custom layout via sysfs,
+  // takes a mapping read by IdentifyKeyboard, and stores it mapped to
   // |keyboard_device| in |top_row_scan_code_map_|.
-  bool StoreCustomTopRowMapping(const ui::InputDevice& keyboard_device);
+  bool StoreCustomTopRowMapping(
+      const ui::InputDevice& keyboard_device,
+      base::flat_map<uint32_t, EventRewriterChromeOS::MutableKeyState>
+          top_row_map);
 
   // Handle Function <-> Action key remapping for new CrOS keyboards that
   // support supplying a custom layout via sysfs.
@@ -318,8 +349,6 @@ class EventRewriterChromeOS : public EventRewriter {
   // used to interpret modifiers on pointer events.
   int last_keyboard_device_id_;
 
-  ::chromeos::input_method::ImeKeyboard* ime_keyboard_for_testing_;
-
   Delegate* const delegate_;
 
   // For each pair, the first element is the rewritten key state and the second
@@ -355,14 +384,22 @@ class EventRewriterChromeOS : public EventRewriter {
   int latched_modifier_latches_;
   int used_modifier_latches_;
 
+  // If a non-modifier key has been remapped to a modifier key,
+  // e.g. ESCAPE -> ALT, this stores the DomCode on the KeyPress event
+  // along with its associated previous modifier remap.
+  // Handles the case in which the original key's remap is no longer mapped to a
+  // modifier but there needs to be a way to reset the stickied modifier
+  // latches. See b/216049965 for more details.
+  base::flat_map<DomCode, ui::EventFlags> previous_non_modifier_latches_;
+
+  ash::input_method::ImeKeyboard* const ime_keyboard_;
+
   // True if alt + key and mouse event remapping is allowed. In some scenario,
   // such as clicking a button in the Alt-Tab UI, this remapping undesirably
   // prevents button clicking when alt + left turns into right click. Also,
   // user needs to be able to use an up arrow key to navigate and focus
   // different component, but remapping can turn alt + up arrow into PageUp.
   bool is_alt_down_remapping_enabled_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(EventRewriterChromeOS);
 };
 
 }  // namespace ui

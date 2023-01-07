@@ -1,24 +1,27 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ProgressCenter} from '../../externs/background/progress_center.m.js';
-// #import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.m.js';
-// #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
-// #import {str, strf} from '../../common/js/util.m.js';
-// #import {fileOperationUtil} from './file_operation_util.m.js';
-// #import {AsyncUtil} from '../../common/js/async_util.m.js';
-// #import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {launcher, LaunchType} from './launcher.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+
+import {AsyncUtil} from '../../common/js/async_util.js';
+import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.js';
+import {getFilesAppIconURL, toFilesAppURL} from '../../common/js/url_constants.js';
+import {str, strf, util} from '../../common/js/util.js';
+import {xfm} from '../../common/js/xfm.js';
+import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
+import {ProgressCenter} from '../../externs/background/progress_center.js';
+import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.js';
+import {MetadataModel} from '../../foreground/js/metadata/metadata_model.js';
+
+import {fileOperationUtil} from './file_operation_util.js';
 
 /**
  * Handler of the background page for the Drive sync events.
  * @implements {DriveSyncHandler}
  */
-/* #export */ class DriveSyncHandlerImpl extends cr.EventTarget {
+export class DriveSyncHandlerImpl extends EventTarget {
   /** @param {ProgressCenter} progressCenter */
   constructor(progressCenter) {
     super();
@@ -30,6 +33,13 @@
      * @private
      */
     this.progressCenter_ = progressCenter;
+
+    /**
+     * The metadata model to notify entries have changed.
+     * @type {?MetadataModel}
+     * @private
+     */
+    this.metadataModel_ = null;
 
     /**
      * Predefined error ID for out of quota messages.
@@ -127,7 +137,7 @@
           {single: 'SYNC_FILE_NAME', plural: 'SYNC_FILE_NUMBER'},
       [this.pinItem_.id]: {
         single: 'OFFLINE_PROGRESS_MESSAGE',
-        plural: 'OFFLINE_PROGRESS_MESSAGE_PLURAL'
+        plural: 'OFFLINE_PROGRESS_MESSAGE_PLURAL',
       },
     };
     Object.freeze(this.statusMessages_);
@@ -161,11 +171,9 @@
         this.onFileTransfersStatusReceived_.bind(this, this.pinItem_));
     chrome.fileManagerPrivate.onDriveSyncError.addListener(
         this.onDriveSyncError_.bind(this));
-    chrome.fileManagerPrivate.onDriveConfirmDialog.addListener(
-        this.onDriveConfirmDialog_.bind(this));
-    chrome.notifications.onButtonClicked.addListener(
+    xfm.notifications.onButtonClicked.addListener(
         this.onNotificationButtonClicked_.bind(this));
-    chrome.notifications.onClosed.addListener(
+    xfm.notifications.onClosed.addListener(
         this.onNotificationClosed_.bind(this));
     chrome.fileManagerPrivate.onPreferencesChanged.addListener(
         this.onPreferencesChanged_.bind(this));
@@ -183,6 +191,13 @@
    */
   get syncing() {
     return this.syncing_;
+  }
+
+  /**
+   * @param {!MetadataModel} model
+   */
+  set metadataModel(model) {
+    this.metadataModel_ = model;
   }
 
   /**
@@ -205,14 +220,14 @@
    * Shows a notification that Drive sync is disabled on cellular networks.
    */
   showDisabledMobileSyncNotification() {
-    chrome.notifications.create(
+    xfm.notifications.create(
         DriveSyncHandlerImpl.DISABLED_MOBILE_SYNC_NOTIFICATION_ID_, {
           type: 'basic',
-          title: chrome.runtime.getManifest().name,
+          title: str('FILEMANAGER_APP_NAME'),
           message: str('DISABLED_MOBILE_SYNC_NOTIFICATION_MESSAGE'),
-          iconUrl: chrome.runtime.getURL('/common/images/icon96.png'),
+          iconUrl: getFilesAppIconURL().toString(),
           buttons:
-              [{title: str('DISABLED_MOBILE_SYNC_NOTIFICATION_ENABLE_BUTTON')}]
+              [{title: str('DISABLED_MOBILE_SYNC_NOTIFICATION_ENABLE_BUTTON')}],
         },
         () => {});
   }
@@ -226,9 +241,39 @@
    * @private
    */
   async onFileTransfersStatusReceived_(item, status) {
+    if (!this.isProcessableEvent(status)) {
+      return;
+    }
+    if (!status.showNotification) {
+      // Hide the notification by settings its state to Canceled.
+      item.state = ProgressItemState.CANCELED;
+      this.progressCenter_.updateItem(item);
+      return;
+    }
+
+    /** @type {?Entry}  */
+    let entry;
+    if (status.fileUrl) {
+      try {
+        entry = await util.urlToEntry(status.fileUrl);
+      } catch (error) {
+        console.warn('Resolving URL ' + status.fileUrl + ' is failed: ', error);
+      }
+    }
+
+    if (util.isInlineSyncStatusEnabled()) {
+      if (entry) {
+        this.metadataModel_.notifyEntriesChanged([entry]);
+        this.metadataModel_.get([entry], ['syncStatus']);
+      }
+
+      // If inline sync status is enabled, don't display visual signal for
+      // Drive syncing.
+      return;
+    }
     switch (status.transferState) {
       case 'in_progress':
-        await this.updateItem_(item, status);
+        await this.updateItem_(item, status, entry);
         break;
       case 'completed':
       case 'failed':
@@ -248,15 +293,17 @@
    * @param {ProgressCenterItem} item Item to update.
    * @param {chrome.fileManagerPrivate.FileTransferStatus} status Transfer
    *     status.
+   * @param {?Entry} entry Transfer status' corresponding entry.
    * @private
    */
-  async updateItem_(item, status) {
+  async updateItem_(item, status, entry) {
+    if (!entry) {
+      console.warn('No corresponding entry for progress update event.');
+      return;
+    }
+
     const unlock = await this.queue_.lock();
     try {
-      const entry = await new Promise((resolve, reject) => {
-        window.webkitResolveLocalFileSystemURL(status.fileUrl, resolve, reject);
-      });
-
       item.state = ProgressItemState.PROGRESSING;
       item.type = ProgressItemType.SYNC;
       item.quiet = true;
@@ -273,13 +320,9 @@
       const speedometer = this.speedometers_[item.id];
       speedometer.setTotalBytes(item.progressMax);
       speedometer.update(item.progressValue);
-      item.currentSpeed = speedometer.getCurrentSpeed();
-      item.averageSpeed = speedometer.getAverageSpeed();
       item.remainingTime = speedometer.getRemainingTime();
 
       this.progressRateLimiter_.run();
-    } catch (error) {
-      console.warn('Resolving URL ' + status.fileUrl + ' is failed: ', error);
     } finally {
       unlock();
     }
@@ -307,12 +350,30 @@
   }
 
   /**
+   * Attempts to infer of the given event is processable by the drive sync
+   * handler. It uses fileUrl to make a decision. It
+   * errs on the side of 'yes', when passing the judgement.
+   * @param {!Object} event
+   * @return {boolean} Whether or not the event should be processed.
+   */
+  isProcessableEvent(event) {
+    const fileUrl = event.fileUrl;
+    if (fileUrl) {
+      return fileUrl.startsWith(`filesystem:${toFilesAppURL()}`);
+    }
+    return true;
+  }
+
+  /**
    * Handles drive's sync errors.
    * @param {chrome.fileManagerPrivate.DriveSyncErrorEvent} event Drive sync
    * error event.
    * @private
    */
   onDriveSyncError_(event) {
+    if (!this.isProcessableEvent(event)) {
+      return;
+    }
     const postError = name => {
       const item = new ProgressCenterItem();
       item.type = ProgressItemType.SYNC;
@@ -326,10 +387,25 @@
           item.message = str('SYNC_SERVICE_UNAVAILABLE_ERROR');
           break;
         case 'no_server_space':
-          item.message = strf('SYNC_NO_SERVER_SPACE', name);
+          item.message = strf('SYNC_NO_SERVER_SPACE');
+          item.setExtraButton(
+              ProgressItemState.ERROR, str('LEARN_MORE_LABEL'),
+              () => util.visitURL(str('GOOGLE_DRIVE_MANAGE_STORAGE_URL')));
+
           // This error will reappear every time sync is retried, so we use
           // a fixed ID to avoid spamming the user.
           item.id = DriveSyncHandlerImpl.DRIVE_SYNC_ERROR_PREFIX +
+              this.driveErrorIdOutOfQuota_;
+          break;
+        case 'no_server_space_organization':
+          item.message = strf('SYNC_NO_SERVER_SPACE_ORGANIZATION');
+          item.setExtraButton(
+              ProgressItemState.ERROR, str('LEARN_MORE_LABEL'),
+              () => util.visitURL(str('GOOGLE_DRIVE_MANAGE_STORAGE_URL')));
+
+          // This error will reappear every time sync is retried, so we use
+          // a fixed ID to avoid spamming the user.
+          item.id = DriveSyncHandlerImpl.DRIVE_SYNC_ERROR_ORGANIZATION_PREFIX +
               this.driveErrorIdOutOfQuota_;
           break;
         case 'no_local_space':
@@ -364,7 +440,7 @@
   addDialog(appId, dialog) {
     this.dialogs_.set(appId, dialog);
     if (this.savedDialogEvent_) {
-      chrome.notifications.clear(
+      xfm.notifications.clear(
           DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_, () => {});
       dialog.showDialog(this.savedDialogEvent_);
       this.savedDialogEvent_ = null;
@@ -384,50 +460,6 @@
   }
 
   /**
-   * Handles showing dialogs from Drive.
-   * @param {chrome.fileManagerPrivate.DriveConfirmDialogEvent} event
-   * @private
-   */
-  async onDriveConfirmDialog_(event) {
-    let appId = null;
-    // When a file manager is launched, its dialog will be added to dialogs_, so
-    // check it to see if there is already a window open.
-    if (this.dialogs_.size > 0) {
-      // launchFileManager() should always return a string, but this is not
-      // shown in the closure type.
-      // TODO(austinct): Change launchFileManager() to have return type
-      // Promise<?string>.
-      appId = /** @type {?string} */ (await launcher.launchFileManager(
-          /* opt_appState */ {}, /* opt_id */ undefined,
-          LaunchType.FOCUS_ANY_OR_CREATE));
-    }
-    if (!appId) {
-      chrome.notifications.create(
-          DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_, {
-            type: 'basic',
-            title: chrome.runtime.getManifest().name,
-            message: str('OFFLINE_ENABLE_MESSAGE'),
-            iconUrl: chrome.runtime.getURL('/common/images/icon96.png'),
-            buttons: [
-              {title: str('OFFLINE_ENABLE_REJECT')},
-              {title: str('OFFLINE_ENABLE_ACCEPT')},
-            ]
-          },
-          () => {});
-      this.savedDialogEvent_ = event;
-      return;
-    }
-
-    if (this.dialogs_.has(appId)) {
-      this.dialogs_.get(appId).showDialog(event);
-    } else {
-      // File manager is still being launched, so save the event for later when
-      // it has fully initialized.
-      this.savedDialogEvent_ = event;
-    }
-  }
-
-  /**
    * Handles notification's button click.
    * @param {string} notificationId Notification ID.
    * @param {number} buttonIndex Index of the button.
@@ -436,11 +468,11 @@
   onNotificationButtonClicked_(notificationId, buttonIndex) {
     switch (notificationId) {
       case DriveSyncHandlerImpl.DISABLED_MOBILE_SYNC_NOTIFICATION_ID_:
-        chrome.notifications.clear(notificationId, () => {});
+        xfm.notifications.clear(notificationId, () => {});
         chrome.fileManagerPrivate.setPreferences({cellularDisabled: false});
         break;
       case DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_:
-        chrome.notifications.clear(notificationId, () => {});
+        xfm.notifications.clear(notificationId, () => {});
         this.savedDialogEvent_ = null;
         chrome.fileManagerPrivate.notifyDriveDialogResult(
             buttonIndex == 1 ?
@@ -509,7 +541,7 @@
             chrome.fileManagerPrivate.MountCompletedEventType.UNMOUNT &&
         event.volumeMetadata.volumeType ===
             chrome.fileManagerPrivate.VolumeType.DRIVE) {
-      chrome.notifications.clear(
+      xfm.notifications.clear(
           DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_, () => {});
     }
   }
@@ -543,9 +575,18 @@ DriveSyncHandlerImpl.ENABLE_DOCS_OFFLINE_NOTIFICATION_ID_ =
 
 
 /**
- * Drive sync error prefix.
+ * Drive sync error prefix for expired individual quotas.
  * @type {string}
  * @private
  * @const
  */
 DriveSyncHandlerImpl.DRIVE_SYNC_ERROR_PREFIX = 'drive-sync-error-';
+
+/**
+ * Drive sync error prefix for expired organization quotas.
+ * @type {string}
+ * @private
+ * @const
+ */
+DriveSyncHandlerImpl.DRIVE_SYNC_ERROR_ORGANIZATION_PREFIX =
+    'drive-sync-error-organization';

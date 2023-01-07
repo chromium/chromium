@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -80,21 +80,23 @@ bool FakePtraceConnection::ReadFileContents(const base::FilePath& path,
   return LoggingReadEntireFile(path, contents);
 }
 
-ProcessMemory* FakePtraceConnection::Memory() {
+ProcessMemoryLinux* FakePtraceConnection::Memory() {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   if (!memory_) {
-    auto mem = std::make_unique<ProcessMemoryLinux>();
-    if (mem->Initialize(pid_)) {
-      memory_ = std::move(mem);
-    } else {
-      ADD_FAILURE();
-    }
+    memory_ = std::make_unique<ProcessMemoryLinux>(this);
   }
   return memory_.get();
 }
 
 bool FakePtraceConnection::Threads(std::vector<pid_t>* threads) {
   // TODO(jperaza): Implement this if/when it's needed.
+  NOTREACHED();
+  return false;
+}
+
+ssize_t FakePtraceConnection::ReadUpTo(VMAddress address,
+                                       size_t size,
+                                       void* buffer) {
   NOTREACHED();
   return false;
 }

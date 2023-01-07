@@ -1,8 +1,7 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "remoting/host/client_session_details.h"
@@ -25,6 +24,12 @@ class HostExtensionSessionManagerTest : public testing::Test {
     extensions_.push_back(&extension2_);
     extensions_.push_back(&extension3_);
   }
+
+  HostExtensionSessionManagerTest(const HostExtensionSessionManagerTest&) =
+      delete;
+  HostExtensionSessionManagerTest& operator=(
+      const HostExtensionSessionManagerTest&) = delete;
+
   ~HostExtensionSessionManagerTest() override = default;
 
  protected:
@@ -37,8 +42,6 @@ class HostExtensionSessionManagerTest : public testing::Test {
   // Mocks of interfaces provided by ClientSession.
   MockClientSessionDetails client_session_details_;
   protocol::MockClientStub client_stub_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostExtensionSessionManagerTest);
 };
 
 // Verifies that messages are handled by the correct extension.

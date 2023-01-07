@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_API_MEDIA_PERCEPTION_PRIVATE_CONVERSION_UTILS_H_
 #define EXTENSIONS_BROWSER_API_MEDIA_PERCEPTION_PRIVATE_CONVERSION_UTILS_H_
 
-#include "chromeos/dbus/media_perception/media_perception.pb.h"
+#include "chromeos/ash/components/dbus/media_perception/media_perception.pb.h"
 #include "extensions/common/api/media_perception_private.h"
 
 namespace extensions {

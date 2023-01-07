@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/timer/timer.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -58,6 +59,9 @@ class ResultLayer : public ui::Layer, public ui::LayerDelegate {
  public:
   ResultLayer(const gfx::Rect& bounds);
 
+  ResultLayer(const ResultLayer&) = delete;
+  ResultLayer& operator=(const ResultLayer&) = delete;
+
  private:
   // ui::LayerDelegate:
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -74,14 +78,12 @@ class ResultLayer : public ui::Layer, public ui::LayerDelegate {
                          float y,
                          float width,
                          cc::PaintFlags& flags);
-
-  DISALLOW_COPY_AND_ASSIGN(ResultLayer);
 };
 
 ResultLayer::ResultLayer(const gfx::Rect& box) {
   SetName("HighlighterResultView:ResultLayer");
   gfx::Rect bounds = box;
-  bounds.Inset(-kResultLayerMargin, -kResultLayerMargin);
+  bounds.Inset(-kResultLayerMargin);
   SetBounds(bounds);
   SetFillsBoundsOpaquely(false);
   SetMasksToBounds(false);
@@ -176,7 +178,7 @@ views::UniqueWidgetPtr HighlighterResultView::Create(
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.name = "HighlighterResult";
   params.accept_events = false;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.activatable = views::Widget::InitParams::Activatable::kNo;
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.parent =
       Shell::GetContainer(root_window, kShellWindowId_OverlayContainer);
@@ -206,13 +208,12 @@ void HighlighterResultView::Animate(const gfx::RectF& bounds,
     result_layer_->SetBounds(gfx::ToEnclosingRect(bounds));
     result_layer_->SetFillsBoundsOpaquely(false);
     result_layer_->SetMasksToBounds(false);
-    result_layer_->SetColor(HighlighterView::kPenColor);
+    result_layer_->SetColor(fast_ink::FastInkPoints::kDefaultColor);
 
     layer->Add(result_layer_.get());
 
-    delay = base::TimeDelta::FromMilliseconds(kResultInPlaceFadeinDelayMs);
-    duration =
-        base::TimeDelta::FromMilliseconds(kResultInPlaceFadeinDurationMs);
+    delay = base::Milliseconds(kResultInPlaceFadeinDelayMs);
+    duration = base::Milliseconds(kResultInPlaceFadeinDurationMs);
   } else {
     DCHECK(gesture_type == HighlighterGestureType::kClosedShape);
     // The original stroke is fading out and inflating.
@@ -227,8 +228,8 @@ void HighlighterResultView::Animate(const gfx::RectF& bounds,
     transform.Scale(kInitialScale, kInitialScale);
     layer->SetTransform(transform);
 
-    delay = base::TimeDelta::FromMilliseconds(kResultFadeinDelayMs);
-    duration = base::TimeDelta::FromMilliseconds(kResultFadeinDurationMs);
+    delay = base::Milliseconds(kResultFadeinDelayMs);
+    duration = base::Milliseconds(kResultFadeinDurationMs);
   }
 
   layer->SetOpacity(0);
@@ -258,8 +259,7 @@ void HighlighterResultView::FadeIn(const base::TimeDelta& duration,
 
   animation_timer_ = std::make_unique<base::OneShotTimer>();
   animation_timer_->Start(
-      FROM_HERE,
-      duration + base::TimeDelta::FromMilliseconds(kResultFadeoutDelayMs),
+      FROM_HERE, duration + base::Milliseconds(kResultFadeoutDelayMs),
       base::BindOnce(&HighlighterResultView::FadeOut, base::Unretained(this),
                      std::move(done)));
 }
@@ -267,8 +267,7 @@ void HighlighterResultView::FadeIn(const base::TimeDelta& duration,
 void HighlighterResultView::FadeOut(base::OnceClosure done) {
   ui::Layer* layer = GetWidget()->GetLayer();
 
-  base::TimeDelta duration =
-      base::TimeDelta::FromMilliseconds(kResultFadeoutDurationMs);
+  base::TimeDelta duration = base::Milliseconds(kResultFadeoutDurationMs);
 
   ui::ScopedLayerAnimationSettings settings(layer->GetAnimator());
   settings.SetTransitionDuration(duration);

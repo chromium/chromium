@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,14 +51,13 @@ int BookmarksMessageHandler::GetIncognitoAvailability() {
 }
 
 void BookmarksMessageHandler::HandleGetIncognitoAvailability(
-    const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
 
   AllowJavascript();
 
-  ResolveJavascriptCallback(*callback_id,
+  ResolveJavascriptCallback(callback_id,
                             base::Value(GetIncognitoAvailability()));
 }
 
@@ -73,14 +72,13 @@ bool BookmarksMessageHandler::CanEditBookmarks() {
 }
 
 void BookmarksMessageHandler::HandleGetCanEditBookmarks(
-    const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
 
   AllowJavascript();
 
-  ResolveJavascriptCallback(*callback_id, base::Value(CanEditBookmarks()));
+  ResolveJavascriptCallback(callback_id, base::Value(CanEditBookmarks()));
 }
 
 void BookmarksMessageHandler::UpdateCanEditBookmarks() {

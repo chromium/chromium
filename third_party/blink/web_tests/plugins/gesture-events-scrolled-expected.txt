@@ -1,14 +1,7 @@
-Plugin received event: GestureTapDown
-Plugin received event: GestureShowPress
-Plugin received event: GestureTap
 Plugin received event: MouseEnter
 Plugin received event: MouseMove
 Plugin received event: MouseDown
 Plugin received event: MouseUp
-Plugin received event: GestureTapDown
-Plugin received event: GestureScrollBegin
-Plugin received event: GestureScrollUpdate
-Plugin received event: GestureScrollEnd
 PASS successfullyParsed is true
 
 TEST COMPLETE

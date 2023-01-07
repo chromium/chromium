@@ -1,0 +1,53 @@
+[{
+  "id" : 1,
+  "priority": 1,
+  "action": { "type" : "block" },
+  "condition" : { "urlFilter" : "blocked", "resourceTypes" : [ "sub_frame" ] }
+},
+{
+  "_comment": [
+    "Add a rule to block any *main* frames with 'allowed'. Since the only",
+    "frame matching 'allowed' is a fenced frame, it shouldn't match this",
+    "rule."
+  ],
+  "id" : 2,
+  "priority": 1,
+  "action": { "type" : "block" },
+  "condition" : { "urlFilter" : "allowed", "resourceTypes" : [ "main_frame" ] }
+},
+{
+  "_comment": [
+    "Add a rule to block any thirdParty frames with 'allowed'. Since the only",
+    "frame matching 'allowed' is a fenced frame and is considered thirdParty",
+    "it shouldn't match this rule."
+  ],
+  "id" : 3,
+  "priority": 2,
+  "action": { "type" : "block" },
+  "condition" : { "domainType": "firstParty", "urlFilter" : "allowed", "resourceTypes" : [ "sub_frame" ] }
+},
+{
+  "id" : 4,
+  "priority": 1,
+  "action": { "type" : "allow" },
+  "condition" : { "urlFilter" : "allowed", "resourceTypes" : [ "sub_frame" ] }
+},
+{
+  "_comment": [
+    "Allow a subresource inside the fenced frame."
+  ],
+  "id": 5,
+  "priority": 1,
+  "action": { "type": "allow" },
+  "condition": { "urlFilter": "icon1", "resourceTypes": [ "image" ] }
+},
+{
+  "_comment": [
+    "Block a subresource inside the fenced frame."
+  ],
+  "id": 6,
+  "priority": 1,
+  "action": { "type": "block" },
+  "condition": { "urlFilter": "icon2", "resourceTypes": [ "image" ] }
+}
+]

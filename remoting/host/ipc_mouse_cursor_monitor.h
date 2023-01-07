@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -23,6 +23,10 @@ class IpcMouseCursorMonitor : public webrtc::MouseCursorMonitor {
  public:
   explicit IpcMouseCursorMonitor(
       scoped_refptr<DesktopSessionProxy> desktop_session_proxy);
+
+  IpcMouseCursorMonitor(const IpcMouseCursorMonitor&) = delete;
+  IpcMouseCursorMonitor& operator=(const IpcMouseCursorMonitor&) = delete;
+
   ~IpcMouseCursorMonitor() override;
 
   // webrtc::MouseCursorMonitor interface.
@@ -34,15 +38,13 @@ class IpcMouseCursorMonitor : public webrtc::MouseCursorMonitor {
 
  private:
   // The callback passed to |webrtc::MouseCursorMonitor::Init()|.
-  webrtc::MouseCursorMonitor::Callback* callback_;
+  raw_ptr<webrtc::MouseCursorMonitor::Callback> callback_;
 
   // Wraps the IPC channel to the desktop session agent.
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;
 
   // Used to cancel tasks pending on the capturer when it is stopped.
   base::WeakPtrFactory<IpcMouseCursorMonitor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IpcMouseCursorMonitor);
 };
 
 }  // namespace remoting

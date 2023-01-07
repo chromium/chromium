@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -34,8 +34,6 @@ source_set("generator") {
 
   if (is_android) {
     sources += [
-      "android/local_media_data_source_factory.cc",
-      "android/local_media_data_source_factory.h",
       "android/stats.cc",
       "android/stats.h",
       "android/thumbnail_generator.cc",
@@ -72,13 +70,15 @@ if (is_android) {
       ":jni_headers",
       ":proto_java",
       "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
       "//chrome/browser/util:java",
       "//components/browser_ui/util/android:java",
       "//content/public/android:content_java",
-      "//third_party/android_deps:android_support_v4_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_collection_collection_java",
+      "//third_party/androidx:androidx_core_core_java",
     ]
 
     sources = [
@@ -105,6 +105,26 @@ if (is_android) {
     sources = [ "$proto_path/thumbnail_cache_entry.proto" ]
   }
 
+  android_library("unit_device_javatests") {
+    testonly = true
+
+    sources = [ "android/java/src/org/chromium/chrome/browser/thumbnail/generator/ThumbnailDiskStorageTest.java" ]
+
+    deps = [
+      ":java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//chrome/test/android:chrome_java_unit_test_support",
+      "//components/browser_ui/util/android:java",
+      "//content/public/test/android:content_java_test_support",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/junit:junit",
+      "//third_party/mockito:mockito_java",
+    ]
+  }
+
   android_library("javatests") {
     testonly = true
 
@@ -115,13 +135,13 @@ if (is_android) {
       "//base:base_java_test_support",
       "//chrome/browser/flags:java",
       "//chrome/browser/util:java",
-      "//chrome/test/android:chrome_java_test_support",
+      "//chrome/test/android:chrome_java_integration_test_support",
       "//components/browser_ui/util/android:java",
       "//content/public/android:content_java",
       "//content/public/test/android:content_java_test_support",
-      "//third_party/android_deps:android_support_v4_java",
       "//third_party/android_support_test_runner:runner_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/junit",
@@ -131,7 +151,6 @@ if (is_android) {
     data = [ "//chrome/browser/thumbnail/generator/test/data/android/" ]
 
     sources = [
-      "android/java/src/org/chromium/chrome/browser/thumbnail/generator/ThumbnailDiskStorageTest.java",
       "android/java/src/org/chromium/chrome/browser/thumbnail/generator/ThumbnailMediaParserTest.java",
       "android/java/src/org/chromium/chrome/browser/thumbnail/generator/ThumbnailProviderImplTest.java",
     ]
@@ -159,6 +178,8 @@ if (is_android) {
     deps = [
       ":test_support_jni_headers",
       "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
     ]
 
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -175,9 +196,6 @@ if (is_android) {
       "//ui/gfx",
     ]
 
-    sources = [
-      "android/thumbnail_media_parser_bridge.cc",
-      "android/thumbnail_media_parser_bridge.h",
-    ]
+    sources = [ "android/thumbnail_media_parser_bridge.cc" ]
   }
 }

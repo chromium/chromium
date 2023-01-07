@@ -1,21 +1,21 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/components/webui/sync_internals/sync_internals_ui.h"
+#import "ios/components/webui/sync_internals/sync_internals_ui.h"
 
-#include <memory>
+#import <memory>
 
-#include "components/grit/sync_driver_sync_internals_resources.h"
-#include "components/grit/sync_driver_sync_internals_resources_map.h"
-#include "components/sync/driver/sync_internals_util.h"
-#include "ios/components/webui/sync_internals/sync_internals_message_handler.h"
-#include "ios/components/webui/web_ui_url_constants.h"
-#include "ios/web/public/browser_state.h"
-#include "ios/web/public/web_state.h"
-#include "ios/web/public/webui/web_ui_ios.h"
-#include "ios/web/public/webui/web_ui_ios_data_source.h"
-#include "ui/base/webui/resource_path.h"
+#import "components/grit/sync_driver_sync_internals_resources.h"
+#import "components/grit/sync_driver_sync_internals_resources_map.h"
+#import "components/sync/driver/sync_internals_util.h"
+#import "ios/components/webui/sync_internals/sync_internals_message_handler.h"
+#import "ios/components/webui/web_ui_url_constants.h"
+#import "ios/web/public/browser_state.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web/public/webui/web_ui_ios_data_source.h"
+#import "ui/base/webui/resource_path.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

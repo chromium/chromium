@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,9 +25,6 @@ namespace {
 // Speed up the initial component checking.
 const char kSwitchFastUpdate[] = "fast-update";
 
-// Add "testrequest=1" attribute to the update check request.
-const char kSwitchTestRequestParam[] = "test-request";
-
 // Disables pings. Pings are the requests sent to the update server that report
 // the success or the failure of component install or update attempts.
 const char kSwitchDisablePings[] = "disable-pings";
@@ -42,10 +39,10 @@ const char kSwitchDisableDeltaUpdates[] = "disable-delta-updates";
 // value is in seconds.
 const char kInitialDelay[] = "initial-delay";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Disables background downloads.
 const char kSwitchDisableBackgroundDownloads[] = "disable-background-downloads";
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // If there is an element of |vec| of the form |test|=.*, returns the right-
 // hand side of that assignment. Otherwise, returns an empty string.
@@ -68,6 +65,9 @@ std::string GetSwitchArgument(const std::vector<std::string>& vec,
 
 }  // namespace
 
+// Add "testrequest=1" attribute to the update check request.
+const char kSwitchTestRequestParam[] = "test-request";
+
 ComponentUpdaterCommandLineConfigPolicy::
     ComponentUpdaterCommandLineConfigPolicy(const base::CommandLine* cmdline) {
   DCHECK(cmdline);
@@ -76,7 +76,7 @@ ComponentUpdaterCommandLineConfigPolicy::
       cmdline->GetSwitchValueASCII(switches::kComponentUpdater), ",",
       base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   background_downloads_enabled_ =
       !base::Contains(switch_values, kSwitchDisableBackgroundDownloads);
 #else

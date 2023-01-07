@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,10 @@ namespace blink {
 
 // Just a helper used for Delimiter tokens.
 CSSParserToken::CSSParserToken(CSSParserTokenType type, UChar c)
-    : type_(type), block_type_(kNotBlock), delimiter_(c) {
+    : type_(type),
+      block_type_(kNotBlock),
+      value_is_inline_(false),
+      delimiter_(c) {
   DCHECK_EQ(type_, static_cast<unsigned>(kDelimiterToken));
 }
 
@@ -28,24 +31,30 @@ CSSParserToken::CSSParserToken(CSSParserTokenType type,
       block_type_(kNotBlock),
       numeric_value_type_(numeric_value_type),
       numeric_sign_(sign),
-      unit_(static_cast<unsigned>(CSSPrimitiveValue::UnitType::kNumber)) {
+      unit_(static_cast<unsigned>(CSSPrimitiveValue::UnitType::kNumber)),
+      value_is_inline_(false) {
   DCHECK_EQ(type, kNumberToken);
   numeric_value_ =
-      clampTo<double>(numeric_value, -std::numeric_limits<float>::max(),
+      ClampTo<double>(numeric_value, -std::numeric_limits<float>::max(),
                       std::numeric_limits<float>::max());
 }
 
 CSSParserToken::CSSParserToken(CSSParserTokenType type,
                                UChar32 start,
                                UChar32 end)
-    : type_(kUnicodeRangeToken), block_type_(kNotBlock) {
+    : type_(kUnicodeRangeToken),
+      block_type_(kNotBlock),
+      value_is_inline_(false) {
   DCHECK_EQ(type, kUnicodeRangeToken);
   unicode_range_.start = start;
   unicode_range_.end = end;
 }
 
 CSSParserToken::CSSParserToken(HashTokenType type, StringView value)
-    : type_(kHashToken), block_type_(kNotBlock), hash_token_type_(type) {
+    : type_(kHashToken),
+      block_type_(kNotBlock),
+      value_is_inline_(false),
+      hash_token_type_(type) {
   InitValueFromStringView(value);
 }
 
@@ -116,6 +125,9 @@ CSSValueID CSSParserToken::FunctionId() const {
 
 bool CSSParserToken::HasStringBacking() const {
   CSSParserTokenType token_type = GetType();
+  if (value_is_inline_) {
+    return false;
+  }
   return token_type == kIdentToken || token_type == kFunctionToken ||
          token_type == kAtKeywordToken || token_type == kHashToken ||
          token_type == kUrlToken || token_type == kDimensionToken ||
@@ -133,25 +145,25 @@ bool CSSParserToken::ValueDataCharRawEqual(const CSSParserToken& other) const {
   if (value_length_ != other.value_length_)
     return false;
 
-  if (value_data_char_raw_ == other.value_data_char_raw_ &&
+  if (ValueDataCharRaw() == other.ValueDataCharRaw() &&
       value_is_8bit_ == other.value_is_8bit_)
     return true;
 
   if (value_is_8bit_) {
     return other.value_is_8bit_
-               ? Equal(static_cast<const LChar*>(value_data_char_raw_),
-                       static_cast<const LChar*>(other.value_data_char_raw_),
+               ? Equal(static_cast<const LChar*>(ValueDataCharRaw()),
+                       static_cast<const LChar*>(other.ValueDataCharRaw()),
                        value_length_)
-               : Equal(static_cast<const LChar*>(value_data_char_raw_),
-                       static_cast<const UChar*>(other.value_data_char_raw_),
+               : Equal(static_cast<const LChar*>(ValueDataCharRaw()),
+                       static_cast<const UChar*>(other.ValueDataCharRaw()),
                        value_length_);
   } else {
     return other.value_is_8bit_
-               ? Equal(static_cast<const UChar*>(value_data_char_raw_),
-                       static_cast<const LChar*>(other.value_data_char_raw_),
+               ? Equal(static_cast<const UChar*>(ValueDataCharRaw()),
+                       static_cast<const LChar*>(other.ValueDataCharRaw()),
                        value_length_)
-               : Equal(static_cast<const UChar*>(value_data_char_raw_),
-                       static_cast<const UChar*>(other.value_data_char_raw_),
+               : Equal(static_cast<const UChar*>(ValueDataCharRaw()),
+                       static_cast<const UChar*>(other.ValueDataCharRaw()),
                        value_length_);
   }
 }
@@ -165,7 +177,7 @@ bool CSSParserToken::operator==(const CSSParserToken& other) const {
     case kHashToken:
       if (hash_token_type_ != other.hash_token_type_)
         return false;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kIdentToken:
     case kFunctionToken:
     case kStringToken:
@@ -174,7 +186,7 @@ bool CSSParserToken::operator==(const CSSParserToken& other) const {
     case kDimensionToken:
       if (!ValueDataCharRawEqual(other))
         return false;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kNumberToken:
     case kPercentageToken:
       return numeric_sign_ == other.numeric_sign_ &&

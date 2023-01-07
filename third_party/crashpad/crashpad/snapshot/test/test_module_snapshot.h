@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/module_snapshot.h"
 
 namespace crashpad {
@@ -33,6 +32,10 @@ namespace test {
 class TestModuleSnapshot final : public ModuleSnapshot {
  public:
   TestModuleSnapshot();
+
+  TestModuleSnapshot(const TestModuleSnapshot&) = delete;
+  TestModuleSnapshot& operator=(const TestModuleSnapshot&) = delete;
+
   ~TestModuleSnapshot() override;
 
   void SetName(const std::string& name) { name_ = name; }
@@ -127,8 +130,6 @@ class TestModuleSnapshot final : public ModuleSnapshot {
   std::map<std::string, std::string> annotations_simple_map_;
   std::vector<AnnotationSnapshot> annotation_objects_;
   std::set<CheckedRange<uint64_t>> extra_memory_ranges_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestModuleSnapshot);
 };
 
 }  // namespace test

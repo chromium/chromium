@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -115,4 +115,16 @@ TEST_F(FeedbackCommonTest, TestAllCrashIdsRetention) {
   feedback_->PrepareReport(&report_);
 
   EXPECT_EQ(1, report_.web_data().product_specific_data_size());
+}
+
+TEST_F(FeedbackCommonTest, IncludeInSystemLogs) {
+  bool google_email = true;
+  EXPECT_TRUE(FeedbackCommon::IncludeInSystemLogs(kOne, google_email));
+  EXPECT_TRUE(FeedbackCommon::IncludeInSystemLogs(
+      feedback::FeedbackReport::kAllCrashReportIdsKey, google_email));
+
+  google_email = false;
+  EXPECT_TRUE(FeedbackCommon::IncludeInSystemLogs(kOne, google_email));
+  EXPECT_FALSE(FeedbackCommon::IncludeInSystemLogs(
+      feedback::FeedbackReport::kAllCrashReportIdsKey, google_email));
 }

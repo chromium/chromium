@@ -1,0 +1,40 @@
+<html>
+  <style>
+    body {
+      background: lightgrey;
+    }
+
+    .container {
+      position: fixed;
+      top: 100px;
+      left: 100px;
+      width: 100px;
+      height: 100px;
+      isolation: isolate;
+    }
+
+    .content {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 100%;
+    }
+
+    .new {
+      background-color: red;
+    }
+
+    .old {
+      background-color: blue;
+      mix-blend-mode: multiply;
+    }
+
+  </style>
+<body>
+  <div class="container">
+    <div class="content new"></div>
+    <div class="content old"></div>
+  </div>
+</body>
+</html>

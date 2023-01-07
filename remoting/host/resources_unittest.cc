@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ TEST_F(ResourcesTest, DISABLED_ProductName) {
 #endif  // BUILDFLAGdefined(GOOGLE_CRANDING)
 
   // Chrome-style i18n is not used on Windows or Android.
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(resources_available_);
 #else
   EXPECT_TRUE(resources_available_);

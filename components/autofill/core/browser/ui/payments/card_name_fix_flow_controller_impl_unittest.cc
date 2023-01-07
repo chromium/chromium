@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,6 +27,11 @@ class CardNameFixFlowControllerImplGenericTest {
  public:
   CardNameFixFlowControllerImplGenericTest() {}
 
+  CardNameFixFlowControllerImplGenericTest(
+      const CardNameFixFlowControllerImplGenericTest&) = delete;
+  CardNameFixFlowControllerImplGenericTest& operator=(
+      const CardNameFixFlowControllerImplGenericTest&) = delete;
+
   void ShowPromptWithInferredName() {
     inferred_name_ = u"John Doe";
     ShowPrompt();
@@ -41,6 +45,8 @@ class CardNameFixFlowControllerImplGenericTest {
   void AcceptWithInferredName() { controller_->OnNameAccepted(inferred_name_); }
 
   void AcceptWithEditedName() { controller_->OnNameAccepted(u"Edited Name"); }
+
+  void OnDialogClosed() { controller_->OnConfirmNameDialogClosed(); }
 
  protected:
   std::unique_ptr<TestCardNameFixFlowView> test_card_name_fix_flow_view_;
@@ -60,8 +66,6 @@ class CardNameFixFlowControllerImplGenericTest {
             &CardNameFixFlowControllerImplGenericTest::OnNameAccepted,
             weak_ptr_factory_.GetWeakPtr()));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CardNameFixFlowControllerImplGenericTest);
 };
 
 class CardNameFixFlowControllerImplTest
@@ -69,15 +73,18 @@ class CardNameFixFlowControllerImplTest
       public testing::Test {
  public:
   CardNameFixFlowControllerImplTest() {}
+
+  CardNameFixFlowControllerImplTest(const CardNameFixFlowControllerImplTest&) =
+      delete;
+  CardNameFixFlowControllerImplTest& operator=(
+      const CardNameFixFlowControllerImplTest&) = delete;
+
   ~CardNameFixFlowControllerImplTest() override {}
 
   void SetUp() override {
-    test_card_name_fix_flow_view_.reset(new TestCardNameFixFlowView());
-    controller_.reset(new CardNameFixFlowControllerImpl());
+    test_card_name_fix_flow_view_ = std::make_unique<TestCardNameFixFlowView>();
+    controller_ = std::make_unique<CardNameFixFlowControllerImpl>();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CardNameFixFlowControllerImplTest);
 };
 
 TEST_F(CardNameFixFlowControllerImplTest, LogShown) {
@@ -131,6 +138,26 @@ TEST_F(CardNameFixFlowControllerImplTest, LogUserAcceptedEditedName) {
 
   histogram_tester.ExpectBucketCount("Autofill.SaveCardCardholderNameWasEdited",
                                      true, 1);
+}
+
+TEST_F(CardNameFixFlowControllerImplTest, LogIgnored) {
+  base::HistogramTester histogram_tester;
+  ShowPromptWithInferredName();
+  ShowPromptWithInferredName();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.CardholderNameFixFlowPrompt.Events",
+      AutofillMetrics::
+          CARDHOLDER_NAME_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION,
+      1);
+
+  OnDialogClosed();
+
+  histogram_tester.ExpectBucketCount(
+      "Autofill.CardholderNameFixFlowPrompt.Events",
+      AutofillMetrics::
+          CARDHOLDER_NAME_FIX_FLOW_PROMPT_CLOSED_WITHOUT_INTERACTION,
+      2);
 }
 
 TEST_F(CardNameFixFlowControllerImplTest, LogDismissed) {

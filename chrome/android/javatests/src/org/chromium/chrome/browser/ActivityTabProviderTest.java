@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotEquals;
 
 import android.support.test.InstrumentationRegistry;
 
-import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -22,9 +21,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -45,22 +45,37 @@ import java.util.concurrent.TimeoutException;
 public class ActivityTabProviderTest {
     /** A test observer that provides access to the tab being observed. */
     private static class TestActivityTabTabObserver extends ActivityTabTabObserver {
-        /** Callback helper for notification that the observer is watching a different tab. */
-        private CallbackHelper mObserverMoveHelper;
-
         /** The tab currently being observed. */
         private Tab mObservedTab;
 
         public TestActivityTabTabObserver(ActivityTabProvider provider) {
             super(provider);
-            mObserverMoveHelper = new CallbackHelper();
-            mObservedTab = provider.get();
+            TestThreadUtils.runOnUiThreadBlockingNoException(() -> mObservedTab = provider.get());
         }
 
         @Override
         public void onObservingDifferentTab(Tab tab, boolean hint) {
             mObservedTab = tab;
-            mObserverMoveHelper.notifyCalled();
+        }
+
+        @Override
+        protected void updateObservedTabToCurrent() {
+            TestThreadUtils.runOnUiThreadBlocking(super::updateObservedTabToCurrent);
+        }
+
+        @Override
+        protected void addObserverToTabProvider() {
+            TestThreadUtils.runOnUiThreadBlocking(super::addObserverToTabProvider);
+        }
+
+        @Override
+        protected void removeObserverFromTabProvider() {
+            TestThreadUtils.runOnUiThreadBlocking(super::removeObserverFromTabProvider);
+        }
+
+        @Override
+        public void destroy() {
+            TestThreadUtils.runOnUiThreadBlocking(super::destroy);
         }
     }
 
@@ -71,23 +86,21 @@ public class ActivityTabProviderTest {
     private ActivityTabProvider mProvider;
     private Tab mActivityTab;
     private CallbackHelper mActivityTabChangedHelper = new CallbackHelper();
-    private CallbackHelper mActivityTabChangedHintHelper = new CallbackHelper();
 
     @Before
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mActivity = mActivityTestRule.getActivity();
-        mProvider = mActivity.getActivityTabProvider();
-        mProvider.addObserverAndTrigger((tab, hint) -> {
-            if (hint) {
-                mActivityTabChangedHintHelper.notifyCalled();
-            } else {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mActivity = mActivityTestRule.getActivity();
+            mProvider = mActivity.getActivityTabProvider();
+            mProvider.addObserver(tab -> {
                 mActivityTab = tab;
                 mActivityTabChangedHelper.notifyCalled();
-            }
+            });
         });
-        assertEquals("Setup should have only triggered the event once.",
-                mActivityTabChangedHelper.getCallCount(), 1);
+        mActivityTabChangedHelper.waitForCallback(0);
+        assertEquals("Setup should have only triggered the event once.", 1,
+                mActivityTabChangedHelper.getCallCount());
     }
 
     /**
@@ -106,7 +119,8 @@ public class ActivityTabProviderTest {
     @Feature({"ActivityTabObserver"})
     public void testTriggerOnAddObserver() throws TimeoutException {
         CallbackHelper helper = new CallbackHelper();
-        mProvider.addObserverAndTrigger((tab, hint) -> helper.notifyCalled());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mProvider.addObserver(tab -> helper.notifyCalled()); });
         helper.waitForCallback(0);
 
         assertEquals("Only the added observer should have been triggered.",
@@ -125,40 +139,19 @@ public class ActivityTabProviderTest {
                 mActivityTab);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.getLayoutManager().showOverview(false));
+                () -> mActivity.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false));
         mActivityTabChangedHelper.waitForCallback(1);
         assertEquals("Entering the tab switcher should have triggered the event once.", 2,
                 mActivityTabChangedHelper.getCallCount());
         assertEquals("The activity tab should be null.", null, mActivityTab);
 
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.getLayoutManager().hideOverview(false));
+                () -> mActivity.getLayoutManager().showLayout(LayoutType.BROWSING, false));
         mActivityTabChangedHelper.waitForCallback(2);
         assertEquals("Exiting the tab switcher should have triggered the event once.", 3,
                 mActivityTabChangedHelper.getCallCount());
         assertEquals("The activity tab should be the model's selected tab.", getModelSelectedTab(),
                 mActivityTab);
-    }
-
-    /** Test that the hint event triggers when exiting the tab switcher. */
-    @Test
-    @LargeTest
-    @Feature({"ActivityTabObserver"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void testTriggerHintWithTabSwitcher() throws TimeoutException {
-        assertEquals("The hint should not yet have triggered.", 0,
-                mActivityTabChangedHintHelper.getCallCount());
-
-        setTabSwitcherModeAndWait(true);
-
-        assertEquals("The hint should not yet have triggered.", 0,
-                mActivityTabChangedHintHelper.getCallCount());
-
-        setTabSwitcherModeAndWait(false);
-        mActivityTabChangedHintHelper.waitForCallback(0);
-
-        assertEquals("The hint should have triggerd once.", 1,
-                mActivityTabChangedHintHelper.getCallCount());
     }
 
     /**
@@ -183,7 +176,7 @@ public class ActivityTabProviderTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Select the original tab without switching layouts.
             mActivity.getTabModelSelector().getCurrentModel().setIndex(
-                    0, TabSelectionType.FROM_USER);
+                    0, TabSelectionType.FROM_USER, false);
         });
         mActivityTabChangedHelper.waitForCallback(callCount);
 
@@ -243,7 +236,7 @@ public class ActivityTabProviderTest {
     @Test
     @SmallTest
     @Feature({"ActivityTabObserver"})
-    public void testActivityTabTabObserver() {
+    public void testActivityTabTabObserver() throws TimeoutException {
         Tab startingTab = getModelSelectedTab();
 
         TestActivityTabTabObserver tabObserver = new TestActivityTabTabObserver(mProvider);
@@ -265,29 +258,10 @@ public class ActivityTabProviderTest {
      * Enter or exit the tab switcher with animations and wait for the scene to change.
      * @param inSwitcher Whether to enter or exit the tab switcher.
      */
-    private void setTabSwitcherModeAndWait(boolean inSwitcher) throws TimeoutException {
-        final CallbackHelper sceneChangeHelper = new CallbackHelper();
-        SceneChangeObserver observer = new SceneChangeObserver() {
-            @Override
-            public void onTabSelectionHinted(int tabId) {}
-
-            @Override
-            public void onSceneChange(Layout layout) {
-                sceneChangeHelper.notifyCalled();
-            }
-        };
-        mActivity.getCompositorViewHolder().getLayoutManager().addSceneChangeObserver(observer);
-
-        int sceneChangeCount = sceneChangeHelper.getCallCount();
-        if (inSwitcher) {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> mActivity.getLayoutManager().showOverview(true));
-        } else {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> mActivity.getLayoutManager().hideOverview(true));
-        }
-        sceneChangeHelper.waitForCallback(sceneChangeCount);
-
-        mActivity.getCompositorViewHolder().getLayoutManager().removeSceneChangeObserver(observer);
+    private void setTabSwitcherModeAndWait(boolean inSwitcher) {
+        LayoutManager layoutManager = mActivityTestRule.getActivity().getLayoutManager();
+        @LayoutType
+        int layout = inSwitcher ? LayoutType.TAB_SWITCHER : LayoutType.BROWSING;
+        LayoutTestUtils.startShowingAndWaitForLayout(layoutManager, layout, true);
     }
 }

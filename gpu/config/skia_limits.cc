@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ void DetermineGrCacheLimitsFromAvailableMemory(
   *max_glyph_cache_texture_bytes = kMaxDefaultGlyphCacheTextureBytes;
 
 // We can't call AmountOfPhysicalMemory under NACL, so leave the default.
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // The limit of the bytes allocated toward GPU resources in the GrContext's
   // GPU cache.
   constexpr size_t kMaxLowEndGaneshResourceCacheBytes = 48 * 1024 * 1024;
@@ -30,7 +30,7 @@ void DetermineGrCacheLimitsFromAvailableMemory(
   // Limits for glyph cache textures.
   constexpr size_t kMaxLowEndGlyphCacheTextureBytes = 1024 * 512 * 4;
   // High-end / low-end memory cutoffs.
-  constexpr int64_t kHighEndMemoryThreshold = 4096LL * 1024 * 1024;
+  constexpr uint64_t kHighEndMemoryThreshold = 4096ULL * 1024 * 1024;
 
   if (base::SysInfo::IsLowEndDevice()) {
     *max_resource_cache_bytes = kMaxLowEndGaneshResourceCacheBytes;

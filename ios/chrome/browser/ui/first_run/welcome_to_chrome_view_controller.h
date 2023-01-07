@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ class Browser;
 // Chrome Terms of Service before proceeding to use Chrome.
 //
 // Note: On iPhone, this controller supports portrait orientation only. It
-// should always be presented in an |OrientationLimitingNavigationController|.
+// should always be presented in an `OrientationLimitingNavigationController`.
 @interface WelcomeToChromeViewController : UIViewController
 
 // True when the stats checkbox should be checked by default.
@@ -25,6 +25,7 @@ class Browser;
 // Initializes with the given browser state object and tab model, neither of
 // which can be nil.
 - (instancetype)initWithBrowser:(Browser*)browser
+                    mainBrowser:(Browser*)mainBrowser
                       presenter:(id<SyncPresenter>)presenter
                      dispatcher:(id<ApplicationCommands, BrowsingDataCommands>)
                                     dispatcher NS_DESIGNATED_INITIALIZER;

@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -84,7 +84,7 @@ WRITE_SPECIAL = set([
 ])
 
 FILE_HEADER = \
-'''// Copyright 2021 The Chromium Authors. All rights reserved.
+'''// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -262,10 +262,22 @@ class GenXproto(FileWriter):
         # Enums that represent bit masks.
         self.bitenums = []
 
-    # Geenerate an ID suitable for use in temporary variable names.
+    # Generate an ID suitable for use in temporary variable names.
     def new_uid(self, ):
         self.prev_id += 1
         return self.prev_id
+
+    def is_eq_comparable(self, type):
+        if type.is_list:
+            return self.is_eq_comparable(type.member)
+        if type.is_simple or type.is_pad:
+            return True
+        if (type.is_switch or type.is_union
+                or isinstance(type, self.xcbgen.xtypes.Request)
+                or isinstance(type, self.xcbgen.xtypes.Reply)):
+            return False
+        assert type.is_container
+        return all(self.is_eq_comparable(field.type) for field in type.fields)
 
     def type_suffix(self, t):
         if isinstance(t, self.xcbgen.xtypes.Error):
@@ -538,7 +550,7 @@ class GenXproto(FileWriter):
                     self.copy_field(case_field)
 
     def declare_switch(self, field):
-        return [('base::Optional<%s>' % field_type, field_name)
+        return [('absl::optional<%s>' % field_type, field_name)
                 for case in field.type.bitcases
                 for field_type, field_name in self.declare_case(case)]
 
@@ -761,7 +773,6 @@ class GenXproto(FileWriter):
                              for (y, x) in event.enum_opcodes.items()]
                     for opcode, opname in sorted(items):
                         self.write('%s = %s,' % (opname, opcode))
-            self.write('bool send_event{};')
             self.declare_fields(event.fields)
             self.write()
             window_field = self.get_window_field(event)
@@ -779,8 +790,19 @@ class GenXproto(FileWriter):
         self.write()
 
     def declare_container(self, struct, struct_name):
-        name = struct_name[-1] + self.type_suffix(struct)
-        with Indent(self, 'struct %s {' % adjust_type_name(name), '};'):
+        name = adjust_type_name(struct_name[-1] + self.type_suffix(struct))
+        with Indent(self, 'struct %s {' % name, '};'):
+            if self.is_eq_comparable(struct):
+                sig = 'bool operator==(const %s& other) const {' % name
+                with Indent(self, sig, '}'):
+                    terms = [
+                        '%s == other.%s' % (field_name, field_name)
+                        for field in struct.fields
+                        for _, field_name in self.declare_field(field)
+                    ]
+                    expr = ' && '.join(terms) if terms else 'true'
+                    self.write('return %s;' % expr)
+                self.write()
             self.declare_fields(struct.fields)
         self.write()
 
@@ -843,7 +865,7 @@ class GenXproto(FileWriter):
             return []
 
         if field.type.is_switch:
-            return ['base::nullopt'] * len(self.declare_switch(field))
+            return ['absl::nullopt'] * len(self.declare_switch(field))
         if field.type.is_list or not field.type.is_container:
             return ['{}']
 
@@ -1222,7 +1244,7 @@ class GenXproto(FileWriter):
         self.write('#include "base/component_export.h"')
         self.write('#include "base/memory/ref_counted_memory.h"')
         self.write('#include "base/memory/scoped_refptr.h"')
-        self.write('#include "base/optional.h"')
+        self.write('#include "third_party/abseil-cpp/absl/types/optional.h"')
         self.write('#include "base/files/scoped_file.h"')
         self.write('#include "ui/gfx/x/ref_counted_fd.h"')
         self.write('#include "ui/gfx/x/error.h"')
@@ -1311,6 +1333,7 @@ class GenXproto(FileWriter):
         self.write_header()
         self.write('#include "%s.h"' % self.module.namespace.header)
         self.write()
+        self.write('#include <unistd.h>')
         self.write('#include <xcb/xcb.h>')
         self.write('#include <xcb/xcbext.h>')
         self.write()
@@ -1483,15 +1506,15 @@ class GenReadEvent(FileWriter):
         cond, opcode = self.event_condition(event, typename, proto)
         with Indent(self, 'if (%s) {' % cond, '}'):
             self.write('event->type_id_ = %d;' % event.type_id)
-            with Indent(self, 'event->deleter_ = [](void* event) {', '};'):
-                self.write('delete reinterpret_cast<%s*>(event);' % typename)
+            with Indent(self, 'auto deleter_ = [](void* e) {', '};'):
+                self.write('if(e){delete reinterpret_cast<%s*>(e);}' %
+                           typename)
             self.write('auto* event_ = new %s;' % typename)
             self.write('ReadEvent(event_, buffer);')
             if len(event.opcodes) > 1:
                 self.write('{0} = static_cast<decltype({0})>({1});'.format(
                     'event_->opcode', opcode))
-            self.write('event_->send_event = send_event;')
-            self.write('event->event_ = event_;')
+            self.write('event->event_ = {event_, deleter_};')
             self.write('event->window_ = event_->GetWindow();')
             self.write('return;')
         self.write()
@@ -1518,7 +1541,6 @@ class GenReadEvent(FileWriter):
             self.write(cast % ('ev', 'xcb_generic_event_t'))
             self.write(cast % ('ge', 'xcb_ge_generic_event_t'))
             self.write('auto evtype = ev->response_type & ~kSendEventMask;')
-            self.write('bool send_event = ev->response_type & kSendEventMask;')
             self.write()
             for name, event, proto in self.events:
                 self.gen_event(name, event, proto)

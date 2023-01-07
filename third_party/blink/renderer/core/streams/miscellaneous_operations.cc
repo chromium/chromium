@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 
 #include <math.h>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -19,7 +20,6 @@
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -34,7 +34,11 @@ v8::Local<v8::Promise> PromiseRejectInternal(ScriptState* script_state,
                                              v8::Local<v8::Value> value,
                                              int recursion_depth) {
   auto context = script_state->GetContext();
-  v8::TryCatch trycatch(script_state->GetIsolate());
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::MicrotasksScope microtasks_scope(
+      isolate, ToMicrotaskQueue(script_state),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  v8::TryCatch trycatch(isolate);
   // TODO(ricea): Can this fail for reasons other than memory exhaustion? Can we
   // recover if it does?
   auto resolver = v8::Promise::Resolver::New(context).ToLocalChecked();
@@ -52,7 +56,7 @@ v8::Local<v8::Promise> PromiseRejectInternal(ScriptState* script_state,
 
 class DefaultSizeAlgorithm final : public StrategySizeAlgorithm {
  public:
-  base::Optional<double> Run(ScriptState*,
+  absl::optional<double> Run(ScriptState*,
                              v8::Local<v8::Value>,
                              ExceptionState&) override {
     return 1;
@@ -64,7 +68,7 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
   JavaScriptSizeAlgorithm(v8::Isolate* isolate, v8::Local<v8::Function> size)
       : function_(isolate, size) {}
 
-  base::Optional<double> Run(ScriptState* script_state,
+  absl::optional<double> Run(ScriptState* script_state,
                              v8::Local<v8::Value> chunk,
                              ExceptionState& exception_state) override {
     auto* isolate = script_state->GetIsolate();
@@ -74,12 +78,12 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
 
     // https://streams.spec.whatwg.org/#make-size-algorithm-from-size-function
     // 3.a. Return ? Call(size, undefined, « chunk »).
-    v8::MaybeLocal<v8::Value> result_maybe = function_.NewLocal(isolate)->Call(
-        context, v8::Undefined(isolate), 1, argv);
+    v8::MaybeLocal<v8::Value> result_maybe =
+        function_.Get(isolate)->Call(context, v8::Undefined(isolate), 1, argv);
     v8::Local<v8::Value> result;
     if (!result_maybe.ToLocal(&result)) {
       exception_state.RethrowV8Exception(trycatch.Exception());
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     // This conversion to double comes from the EnqueueValueWithSize
@@ -89,7 +93,7 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
     v8::Local<v8::Number> number;
     if (!number_maybe.ToLocal(&number)) {
       exception_state.RethrowV8Exception(trycatch.Exception());
-      return base::nullopt;
+      return absl::nullopt;
     }
     return number->Value();
   }
@@ -134,8 +138,8 @@ class JavaScriptStreamAlgorithmWithoutExtraArg final : public StreamAlgorithm {
     // 6.b.i. Return ! PromiseCall(method, underlyingObject, extraArgs).
     // In this class extraArgs is always empty, but there may be other arguments
     // supplied to the method.
-    return PromiseCall(script_state, method_.NewLocal(isolate),
-                       recv_.NewLocal(isolate), argc, argv);
+    return PromiseCall(script_state, method_.Get(isolate), recv_.Get(isolate),
+                       argc, argv);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -175,12 +179,12 @@ class JavaScriptStreamAlgorithmWithExtraArg final : public StreamAlgorithm {
     if (argc != 0) {
       full_argv[0] = argv[0];
     }
-    full_argv[argc] = extra_arg_.NewLocal(isolate);
+    full_argv[argc] = extra_arg_.Get(isolate);
     int full_argc = argc + 1;
 
     //     ii. Return ! PromiseCall(method, underlyingObject, fullArgs).
-    return PromiseCall(script_state, method_.NewLocal(isolate),
-                       recv_.NewLocal(isolate), full_argc, full_argv);
+    return PromiseCall(script_state, method_.Get(isolate), recv_.Get(isolate),
+                       full_argc, full_argv);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -211,8 +215,8 @@ class JavaScriptByteStreamStartAlgorithm : public StreamStartAlgorithm {
     auto* isolate = script_state->GetIsolate();
 
     auto value_maybe =
-        Call1(script_state, method_.NewLocal(isolate), recv_.NewLocal(isolate),
-              controller_.NewLocal(isolate), exception_state);
+        Call1(script_state, method_.Get(isolate), recv_.Get(isolate),
+              controller_.Get(isolate), exception_state);
     if (exception_state.HadException()) {
       return v8::MaybeLocal<v8::Promise>();
     }
@@ -254,9 +258,9 @@ class JavaScriptStreamStartAlgorithm : public StreamStartAlgorithm {
     // https://streams.spec.whatwg.org/#set-up-writable-stream-default-controller-from-underlying-sink
     // 3. Let startAlgorithm be the following steps:
     //    a. Return ? InvokeOrNoop(underlyingSink, "start", « controller »).
-    auto value_maybe = CallOrNoop1(
-        script_state, recv_.NewLocal(isolate), "start", method_name_for_error_,
-        controller_.NewLocal(isolate), exception_state);
+    auto value_maybe = CallOrNoop1(script_state, recv_.Get(isolate), "start",
+                                   method_name_for_error_,
+                                   controller_.Get(isolate), exception_state);
     if (exception_state.HadException()) {
       return v8::MaybeLocal<v8::Promise>();
     }
@@ -403,6 +407,20 @@ CORE_EXPORT StreamAlgorithm* CreateTrivialStreamAlgorithm() {
   return MakeGarbageCollected<TrivialStreamAlgorithm>();
 }
 
+CORE_EXPORT ScriptValue CreateTrivialQueuingStrategy(v8::Isolate* isolate,
+                                                     size_t high_water_mark) {
+  v8::Local<v8::Name> high_water_mark_string =
+      V8AtomicString(isolate, "highWaterMark");
+  v8::Local<v8::Value> high_water_mark_value =
+      v8::Number::New(isolate, high_water_mark);
+
+  auto strategy =
+      v8::Object::New(isolate, v8::Null(isolate), &high_water_mark_string,
+                      &high_water_mark_value, 1);
+
+  return ScriptValue(isolate, strategy);
+}
+
 CORE_EXPORT v8::MaybeLocal<v8::Value> CallOrNoop1(
     ScriptState* script_state,
     v8::Local<v8::Object> object,
@@ -458,7 +476,11 @@ CORE_EXPORT v8::Local<v8::Promise> PromiseCall(ScriptState* script_state,
                                                int argc,
                                                v8::Local<v8::Value> argv[]) {
   DCHECK_GE(argc, 0);
-  v8::TryCatch trycatch(script_state->GetIsolate());
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::TryCatch trycatch(isolate);
+  v8::MicrotasksScope microtasks_scope(
+      isolate, ToMicrotaskQueue(script_state),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
 
   // https://streams.spec.whatwg.org/#promise-call
   // 4. Let returnValue be Call(F, V, args).
@@ -529,7 +551,11 @@ CORE_EXPORT v8::Local<v8::Promise> PromiseResolve(ScriptState* script_state,
     return value.As<v8::Promise>();
   }
   auto context = script_state->GetContext();
-  v8::TryCatch trycatch(script_state->GetIsolate());
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::MicrotasksScope microtasks_scope(
+      isolate, ToMicrotaskQueue(script_state),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  v8::TryCatch trycatch(isolate);
   // TODO(ricea): Can this fail for reasons other than memory exhaustion? Can we
   // recover if it does?
   auto resolver = v8::Promise::Resolver::New(context).ToLocalChecked();

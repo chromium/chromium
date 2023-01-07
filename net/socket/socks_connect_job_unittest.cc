@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/socket/socks_connect_job.h"
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -16,7 +17,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
-#include "net/dns/public/secure_dns_mode.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
@@ -38,7 +39,7 @@ namespace {
 const char kProxyHostName[] = "proxy.test";
 const int kProxyPort = 4321;
 
-constexpr base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
+constexpr base::TimeDelta kTinyTime = base::Microseconds(1);
 
 class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
  public:
@@ -65,24 +66,26 @@ class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
             NetLog::Get(),
             nullptr /* websocket_endpoint_lock_manager */) {}
 
-  ~SOCKSConnectJobTest() override {}
+  ~SOCKSConnectJobTest() override = default;
 
   static scoped_refptr<SOCKSSocketParams> CreateSOCKSParams(
       SOCKSVersion socks_version,
-      bool disable_secure_dns = false) {
+      SecureDnsPolicy secure_dns_policy = SecureDnsPolicy::kAllow) {
     return base::MakeRefCounted<SOCKSSocketParams>(
         base::MakeRefCounted<TransportSocketParams>(
-            HostPortPair(kProxyHostName, kProxyPort), NetworkIsolationKey(),
-            disable_secure_dns, OnHostResolutionCallback()),
+            HostPortPair(kProxyHostName, kProxyPort), NetworkAnonymizationKey(),
+            secure_dns_policy, OnHostResolutionCallback(),
+            /*supported_alpns=*/base::flat_set<std::string>()),
         socks_version == SOCKSVersion::V5,
         socks_version == SOCKSVersion::V4
             ? HostPortPair(kSOCKS4TestHost, kSOCKS4TestPort)
             : HostPortPair(kSOCKS5TestHost, kSOCKS5TestPort),
-        NetworkIsolationKey(), TRAFFIC_ANNOTATION_FOR_TESTS);
+        NetworkAnonymizationKey(), TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
  protected:
-  MockHostResolver host_resolver_;
+  MockHostResolver host_resolver_{/*default_result=*/MockHostResolverBase::
+                                      RuleResolver::GetLocalhostResult()};
   MockTaggingClientSocketFactory client_socket_factory_;
   const CommonConnectJobParams common_connect_job_params_;
 };
@@ -119,10 +122,12 @@ TEST_F(SOCKSConnectJobTest, HostResolutionFailureSOCKS4Endpoint) {
     scoped_refptr<SOCKSSocketParams> socket_params =
         base::MakeRefCounted<SOCKSSocketParams>(
             base::MakeRefCounted<TransportSocketParams>(
-                HostPortPair(kProxyHostName, kProxyPort), NetworkIsolationKey(),
-                false /* disable_secure_dns */, OnHostResolutionCallback()),
+                HostPortPair(kProxyHostName, kProxyPort),
+                NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+                OnHostResolutionCallback(),
+                /*supported_alpns=*/base::flat_set<std::string>()),
             false /* socks_v5 */, HostPortPair(hostname, kSOCKS4TestPort),
-            NetworkIsolationKey(), TRAFFIC_ANNOTATION_FOR_TESTS);
+            NetworkAnonymizationKey(), TRAFFIC_ANNOTATION_FOR_TESTS);
 
     TestConnectJobDelegate test_delegate;
     SOCKSConnectJob socks_connect_job(
@@ -388,20 +393,16 @@ TEST_F(SOCKSConnectJobTest, Priority) {
   }
 }
 
-TEST_F(SOCKSConnectJobTest, DisableSecureDns) {
-  for (bool disable_secure_dns : {false, true}) {
+TEST_F(SOCKSConnectJobTest, SecureDnsPolicy) {
+  for (auto secure_dns_policy :
+       {SecureDnsPolicy::kAllow, SecureDnsPolicy::kDisable}) {
     TestConnectJobDelegate test_delegate;
     SOCKSConnectJob socks_connect_job(
         DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
-        CreateSOCKSParams(SOCKSVersion::V4, disable_secure_dns), &test_delegate,
+        CreateSOCKSParams(SOCKSVersion::V4, secure_dns_policy), &test_delegate,
         nullptr /* net_log */);
     ASSERT_THAT(socks_connect_job.Connect(), test::IsError(ERR_IO_PENDING));
-    EXPECT_EQ(disable_secure_dns,
-              host_resolver_.last_secure_dns_mode_override().has_value());
-    if (disable_secure_dns) {
-      EXPECT_EQ(net::SecureDnsMode::kOff,
-                host_resolver_.last_secure_dns_mode_override().value());
-    }
+    EXPECT_EQ(secure_dns_policy, host_resolver_.last_secure_dns_policy());
   }
 }
 
@@ -450,8 +451,10 @@ TEST_F(SOCKSConnectJobTest, ConnectTiming) {
   // Proxy name resolution is not considered resolving the host name for
   // ConnectionInfo. For SOCKS4, where the host name is also looked up via DNS,
   // the resolution time is not currently reported.
-  EXPECT_EQ(base::TimeTicks(), socks_connect_job.connect_timing().dns_start);
-  EXPECT_EQ(base::TimeTicks(), socks_connect_job.connect_timing().dns_end);
+  EXPECT_EQ(base::TimeTicks(),
+            socks_connect_job.connect_timing().domain_lookup_start);
+  EXPECT_EQ(base::TimeTicks(),
+            socks_connect_job.connect_timing().domain_lookup_end);
 
   // The "connect" time for socks proxies includes DNS resolution time.
   EXPECT_EQ(start, socks_connect_job.connect_timing().connect_start);

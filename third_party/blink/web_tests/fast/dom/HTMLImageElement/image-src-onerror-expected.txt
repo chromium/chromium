@@ -1,2 +1,2 @@
-CONSOLE MESSAGE: line 14: Error triggerred
+CONSOLE MESSAGE: Error triggerred
 

@@ -1,17 +1,21 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_INFOBAR_DELEGATE_ANDROID_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_INFOBAR_DELEGATE_ANDROID_H_
 
-#include "base/macros.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 // Base class for some of the password manager infobar delegates, e.g.
 // SavePasswordInfoBarDelegate.
 class PasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
+  PasswordManagerInfoBarDelegate(const PasswordManagerInfoBarDelegate&) =
+      delete;
+  PasswordManagerInfoBarDelegate& operator=(
+      const PasswordManagerInfoBarDelegate&) = delete;
+
   ~PasswordManagerInfoBarDelegate() override;
 
   // Getter for the message displayed in adition to the title. If no message
@@ -39,8 +43,6 @@ class PasswordManagerInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Used to display aditional information about where the passwords were saved.
   std::u16string details_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordManagerInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_MANAGER_INFOBAR_DELEGATE_ANDROID_H_

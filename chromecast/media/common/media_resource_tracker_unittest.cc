@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,10 @@ namespace media {
 class MediaResourceTrackerTest : public ::testing::Test {
  public:
   MediaResourceTrackerTest() {}
+
+  MediaResourceTrackerTest(const MediaResourceTrackerTest&) = delete;
+  MediaResourceTrackerTest& operator=(const MediaResourceTrackerTest&) = delete;
+
   ~MediaResourceTrackerTest() override {}
 
  protected:
@@ -39,8 +43,6 @@ class MediaResourceTrackerTest : public ::testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   TestMediaResourceTracker* resource_tracker_;
   std::unique_ptr<MediaResourceTrackerTestMocks> test_mocks_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaResourceTrackerTest);
 };
 
 TEST_F(MediaResourceTrackerTest, BasicLifecycle) {

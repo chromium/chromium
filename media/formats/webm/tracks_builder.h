@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace media {
 
 class TracksBuilder {
@@ -22,6 +20,10 @@ class TracksBuilder {
   // |name|, |language| and any device-specific constraints are not checked.
   explicit TracksBuilder(bool allow_invalid_values);
   TracksBuilder();  // Sets |allow_invalid_values| to false.
+
+  TracksBuilder(const TracksBuilder&) = delete;
+  TracksBuilder& operator=(const TracksBuilder&) = delete;
+
   ~TracksBuilder();
 
   // Only a non-negative |default_duration| will result in a serialized
@@ -109,8 +111,6 @@ class TracksBuilder {
   typedef std::list<Track> TrackList;
   TrackList tracks_;
   bool allow_invalid_values_;
-
-  DISALLOW_COPY_AND_ASSIGN(TracksBuilder);
 };
 
 }  // namespace media

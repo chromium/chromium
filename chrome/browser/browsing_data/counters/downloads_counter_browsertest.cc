@@ -1,16 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/browsing_data/counters/downloads_counter.h"
 
+#include <memory>
 #include <set>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -23,6 +26,7 @@
 #include "components/history/core/browser/download_row.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/origin.h"
@@ -39,15 +43,16 @@ class DownloadsCounterTest : public InProcessBrowserTest,
   void SetUpOnMainThread() override {
     time_ = base::Time::Now();
     items_count_ = 0;
-    manager_ =
-        content::BrowserContext::GetDownloadManager(browser()->profile());
+    manager_ = browser()->profile()->GetDownloadManager();
     history_ =
         DownloadCoreServiceFactory::GetForBrowserContext(browser()->profile())
             ->GetDownloadHistory();
     history_->AddObserver(this);
 
-    otr_manager_ = content::BrowserContext::GetDownloadManager(
-        browser()->profile()->GetPrimaryOTRProfile());
+    otr_manager_ = browser()
+                       ->profile()
+                       ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+                       ->GetDownloadManager();
     SetDownloadsDeletionPref(true);
     SetDeletionPeriodPref(browsing_data::TimePeriod::ALL_TIME);
   }
@@ -118,15 +123,19 @@ class DownloadsCounterTest : public InProcessBrowserTest,
     std::vector<GURL> url_chain;
     url_chain.push_back(url);
 
-    content::DownloadManager* manager = incognito ? otr_manager_ : manager_;
+    content::DownloadManager* manager =
+        incognito ? otr_manager_.get() : manager_.get();
     manager->CreateDownloadItem(
         guid, download::DownloadItem::kInvalidId + (++items_count_),
         base::FilePath(FILE_PATH_LITERAL("current/path")),
         base::FilePath(FILE_PATH_LITERAL("target/path")), url_chain, GURL(),
-        GURL(), GURL(), GURL(), url::Origin(), mime_type, std::string(), time_,
-        time_, std::string(), std::string(), 1, 1, std::string(), state, danger,
+        content::StoragePartitionConfig::CreateDefault(
+            manager->GetBrowserContext()),
+        GURL(), GURL(), url::Origin(), mime_type, std::string(), time_, time_,
+        std::string(), std::string(), 1, 1, std::string(), state, danger,
         reason, false, time_, false,
-        std::vector<download::DownloadItem::ReceivedSlice>());
+        std::vector<download::DownloadItem::ReceivedSlice>(),
+        download::DownloadItemRerouteInfo());
 
     return guid;
   }
@@ -149,9 +158,7 @@ class DownloadsCounterTest : public InProcessBrowserTest,
         browsing_data::prefs::kDeleteTimePeriod, static_cast<int>(period));
   }
 
-  void RevertTimeInHours(int days) {
-    time_ -= base::TimeDelta::FromHours(days);
-  }
+  void RevertTimeInHours(int days) { time_ -= base::Hours(days); }
 
   // Waiting for downloads to be stored. ---------------------------------------
 
@@ -186,7 +193,7 @@ class DownloadsCounterTest : public InProcessBrowserTest,
       return;
 
     DCHECK(!run_loop_ || !run_loop_->running());
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -222,9 +229,9 @@ class DownloadsCounterTest : public InProcessBrowserTest,
   // a set of IDs.
   std::set<uint32_t> ids_to_remove_;
 
-  content::DownloadManager* manager_;
-  content::DownloadManager* otr_manager_;
-  DownloadHistory* history_;
+  raw_ptr<content::DownloadManager> manager_;
+  raw_ptr<content::DownloadManager> otr_manager_;
+  raw_ptr<DownloadHistory> history_;
   base::Time time_;
 
   int items_count_;
@@ -324,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, NotPersisted) {
 
 // Tests that the counter takes time ranges into account.
 // Flaky on Mac (crbug.com/736820)
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TimeRanges DISABLED_TimeRanges
 #else
 #define MAYBE_TimeRanges TimeRanges

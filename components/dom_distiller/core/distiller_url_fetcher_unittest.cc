@@ -1,14 +1,17 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/dom_distiller/core/distiller_url_fetcher.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,8 +34,8 @@ class DistillerURLFetcherTest : public testing::Test {
  protected:
   // testing::Test implementation:
   void SetUp() override {
-    url_fetcher_.reset(new dom_distiller::DistillerURLFetcher(
-        test_shared_url_loader_factory_));
+    url_fetcher_ = std::make_unique<dom_distiller::DistillerURLFetcher>(
+        test_shared_url_loader_factory_);
     test_url_loader_factory_.AddResponse(
         kTestPageA,
         std::string(kTestPageAResponse, sizeof(kTestPageAResponse)));

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ void ExtensionMigrator::StartLoading() {
     entry->SetKey(ExternalProviderImpl::kExternalUpdateUrl,
                   base::Value(extension_urls::GetWebstoreUpdateUrl().spec()));
 
-    prefs->SetWithoutPathExpansion(new_id_, std::move(entry));
+    prefs->SetKey(new_id_, base::Value::FromUniquePtrValue(std::move(entry)));
   }
 
   LoadFinished(std::move(prefs));

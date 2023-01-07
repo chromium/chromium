@@ -1,0 +1,18 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module drivefs.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+
+// This file tracks apps/drive/fs/chromeos/mojom/fake_drivefs_launcher.mojom.
+// Changes should be made there first and then replicated here.
+
+interface FakeDriveFsLauncher {
+  // Launch a DriveFS, using |datadir_path| for its data, mounting at
+  // |mount_path|, using |mojo_socket_handle| to communicate with chrome.
+  LaunchDriveFs(mojo_base.mojom.FilePath datadir_path,
+                mojo_base.mojom.FilePath mount_path,
+                handle mojo_socket_handle);
+};

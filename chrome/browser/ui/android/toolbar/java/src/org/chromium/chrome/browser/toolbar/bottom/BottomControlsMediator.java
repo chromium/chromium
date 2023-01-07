@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -23,7 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 class BottomControlsMediator implements BrowserControlsStateProvider.Observer,
                                         KeyboardVisibilityDelegate.KeyboardVisibilityListener,
-                                        LayoutStateObserver {
+                                        LayoutStateObserver, TabObscuringHandler.Observer {
     /** The model for the bottom controls component that holds all of its view state. */
     private final PropertyModel mModel;
 
@@ -32,6 +33,7 @@ class BottomControlsMediator implements BrowserControlsStateProvider.Observer,
 
     /** The browser controls sizer/manager to observe browser controls events. */
     private final BrowserControlsSizer mBrowserControlsSizer;
+    private final TabObscuringHandler mTabObscuringHandler;
 
     private final CallbackController mCallbackController;
 
@@ -65,17 +67,21 @@ class BottomControlsMediator implements BrowserControlsStateProvider.Observer,
      * @param controlsSizer The {@link BrowserControlsSizer} to manipulate browser controls.
      * @param fullscreenManager A {@link FullscreenManager} for events related to the browser
      *                          controls.
+     * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param bottomControlsHeight The height of the bottom bar in pixels.
      * @param overlayPanelVisibilitySupplier Notifies overlay panel visibility event.
      */
     BottomControlsMediator(WindowAndroid windowAndroid, PropertyModel model,
             BrowserControlsSizer controlsSizer, FullscreenManager fullscreenManager,
-            int bottomControlsHeight, ObservableSupplier<Boolean> overlayPanelVisibilitySupplier) {
+            TabObscuringHandler tabObscuringHandler, int bottomControlsHeight,
+            ObservableSupplier<Boolean> overlayPanelVisibilitySupplier) {
         mModel = model;
 
         mFullscreenManager = fullscreenManager;
         mBrowserControlsSizer = controlsSizer;
         mBrowserControlsSizer.addObserver(this);
+        mTabObscuringHandler = tabObscuringHandler;
+        tabObscuringHandler.addObserver(this);
 
         mBottomControlsHeight = bottomControlsHeight;
         mCallbackController = new CallbackController();
@@ -111,6 +117,7 @@ class BottomControlsMediator implements BrowserControlsStateProvider.Observer,
             mLayoutStateProvider.removeObserver(this);
             mLayoutStateProvider = null;
         }
+        mTabObscuringHandler.removeObserver(this);
     }
 
     @Override
@@ -172,5 +179,10 @@ class BottomControlsMediator implements BrowserControlsStateProvider.Observer,
         mModel.set(BottomControlsProperties.ANDROID_VIEW_VISIBLE,
                 isCompositedViewVisible() && !mIsOverlayPanelShowing && !mIsInSwipeLayout
                         && mBrowserControlsSizer.getBottomControlOffset() == 0);
+    }
+
+    @Override
+    public void updateObscured(boolean obscureTabContent, boolean obscureToolbar) {
+        mModel.set(BottomControlsProperties.IS_OBSCURED, obscureToolbar);
     }
 }

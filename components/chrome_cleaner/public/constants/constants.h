@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,9 +68,6 @@ extern const char kResetShortcutsSwitch[];
 // software reporter (which may include multiple invocations of the reporter
 /// binary, each generating a report). An ASCII, base-64 encoded random string.
 extern const char kSessionIdSwitch[];
-
-// Indicates the group name for the SRTPrompt field trial.
-extern const char kSRTPromptFieldTrialGroupNameSwitch[];
 
 // Indicates that metrics reporting is enabled for the current user.
 extern const char kUmaUserSwitch[];

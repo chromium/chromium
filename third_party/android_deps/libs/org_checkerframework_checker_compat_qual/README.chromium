@@ -4,6 +4,7 @@ URL: https://checkerframework.org
 Version: 2.5.5
 License: GPL v2 with the classpath exception
 License File: LICENSE
+CPEPrefix: unknown
 Security Critical: yes
 
 Description:

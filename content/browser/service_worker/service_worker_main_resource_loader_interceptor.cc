@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
+#include "base/memory/ptr_util.h"
+#include "base/types/optional_util.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
@@ -18,11 +18,23 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
+#include "content/browser/worker_host/dedicated_worker_host.h"
+#include "content/browser/worker_host/dedicated_worker_service_impl.h"
+#include "content/browser/worker_host/shared_worker_host.h"
+#include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "net/base/isolation_info.h"
+#include "net/cookies/site_for_cookies.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/loader/resource_type_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/storage_key/ancestor_chain_bit.mojom.h"
+#include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace content {
 
@@ -69,23 +81,24 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForNavigation(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!ShouldCreateForNavigation(
-          url, request_info.begin_params->request_destination,
+          url, request_info.common_params->request_destination,
           navigation_handle->context_wrapper()->browser_context())) {
     return nullptr;
   }
 
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
       std::move(navigation_handle),
-      request_info.is_main_frame ? network::mojom::RequestDestination::kDocument
-                                 : network::mojom::RequestDestination::kIframe,
+      request_info.common_params->request_destination,
       request_info.begin_params->skip_service_worker,
       request_info.are_ancestors_secure, request_info.frame_tree_node_id,
-      ChildProcessHost::kInvalidUniqueID, /* worker_token = */ nullptr));
+      ChildProcessHost::kInvalidUniqueID, /* worker_token = */ nullptr,
+      request_info.isolation_info));
 }
 
 std::unique_ptr<NavigationLoaderInterceptor>
 ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
     const network::ResourceRequest& resource_request,
+    const net::IsolationInfo& isolation_info,
     int process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
     base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle) {
@@ -104,7 +117,8 @@ ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
   return base::WrapUnique(new ServiceWorkerMainResourceLoaderInterceptor(
       std::move(navigation_handle), resource_request.destination,
       resource_request.skip_service_worker, /*are_ancestors_secure=*/false,
-      FrameTreeNode::kFrameTreeNodeInvalidId, process_id, &worker_token));
+      FrameTreeNode::kFrameTreeNodeInvalidId, process_id, &worker_token,
+      isolation_info));
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::
@@ -149,8 +163,7 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     base::WeakPtr<ServiceWorkerContainerHost> container_host;
     bool inherit_controller_only = false;
 
-    if (request_destination_ == network::mojom::RequestDestination::kDocument ||
-        request_destination_ == network::mojom::RequestDestination::kIframe) {
+    if (blink::IsRequestDestinationFrame(request_destination_)) {
       container_host = context_core->CreateContainerHostForWindow(
           std::move(host_receiver), are_ancestors_secure_,
           std::move(client_remote), frame_tree_node_id_);
@@ -192,29 +205,60 @@ void ServiceWorkerMainResourceLoaderInterceptor::MaybeCreateLoader(
     }
   }
 
-  // If we know there's no service worker for the origin, let's skip asking
+  // Update `isolation_info_`  to equal the net::IsolationInfo needed for any
+  // service worker intercepting this request. Here, `isolation_info_` directly
+  // corresponds to the StorageKey used to look up the service worker's
+  // registration. That StorageKey will then be used later to recreate this
+  // net::IsolationInfo for use by the ServiceWorker itself.
+  url::Origin new_origin = url::Origin::Create(tentative_resource_request.url);
+  net::SiteForCookies new_site_for_cookies = isolation_info_.site_for_cookies();
+  new_site_for_cookies.CompareWithFrameTreeOriginAndRevise(new_origin);
+  isolation_info_ = net::IsolationInfo::Create(
+      isolation_info_.request_type(),
+      isolation_info_.top_frame_origin().value(), new_origin,
+      new_site_for_cookies, absl::nullopt,
+      isolation_info_.nonce().has_value() ? &(isolation_info_.nonce().value())
+                                          : nullptr);
+
+  // Attempt to get the storage key from |RenderFrameHostImpl|. This correctly
+  // accounts for extension URLs. The absence of this logic was a potential
+  // cause for https://crbug.com/1346450.
+  absl::optional<blink::StorageKey> storage_key =
+      GetStorageKeyFromRenderFrameHost(
+          new_origin, base::OptionalToPtr(isolation_info_.nonce()));
+  if (!storage_key.has_value()) {
+    storage_key = GetStorageKeyFromWorkerHost(new_origin);
+  }
+  if (!storage_key.has_value()) {
+    storage_key = blink::StorageKey::CreateFromOriginAndIsolationInfo(
+        new_origin, isolation_info_);
+  }
+
+  // If we know there's no service worker for the storage key, let's skip asking
   // the storage to check the existence.
   bool skip_service_worker =
       skip_service_worker_ ||
-      !handle_->context_wrapper()->MaybeHasRegistrationForOrigin(
-          url::Origin::Create(tentative_resource_request.url));
+      !OriginCanAccessServiceWorkers(tentative_resource_request.url) ||
+      !handle_->context_wrapper()->MaybeHasRegistrationForStorageKey(
+          *storage_key);
 
   // Create and start the handler for this request. It will invoke the loader
   // callback or fallback callback.
   request_handler_ = std::make_unique<ServiceWorkerControlleeRequestHandler>(
       context_core->AsWeakPtr(), handle_->container_host(),
-      request_destination_, skip_service_worker,
+      request_destination_, skip_service_worker, frame_tree_node_id_,
       handle_->service_worker_accessed_callback());
+
   request_handler_->MaybeCreateLoader(
-      tentative_resource_request, browser_context, std::move(loader_callback),
-      std::move(fallback_callback));
+      tentative_resource_request, *storage_key, browser_context,
+      std::move(loader_callback), std::move(fallback_callback));
 }
 
-base::Optional<SubresourceLoaderParams>
+absl::optional<SubresourceLoaderParams>
 ServiceWorkerMainResourceLoaderInterceptor::
     MaybeCreateSubresourceLoaderParams() {
   if (!handle_) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
       handle_->container_host();
@@ -222,7 +266,7 @@ ServiceWorkerMainResourceLoaderInterceptor::
   // We didn't find a matching service worker for this request, and
   // ServiceWorkerContainerHost::SetControllerRegistration() was not called.
   if (!container_host || !container_host->controller()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Otherwise let's send the controller service worker information along
@@ -230,6 +274,10 @@ ServiceWorkerMainResourceLoaderInterceptor::
   SubresourceLoaderParams params;
   auto controller_info = blink::mojom::ControllerServiceWorkerInfo::New();
   controller_info->mode = container_host->GetControllerMode();
+  controller_info->fetch_handler_type =
+      container_host->controller()->fetch_handler_type();
+  controller_info->effective_fetch_handler_type =
+      container_host->controller()->EffectiveFetchHandlerType();
   // Note that |controller_info->remote_controller| is null if the controller
   // has no fetch event handler. In that case the renderer frame won't get the
   // controller pointer upon the navigation commit, and subresource loading will
@@ -244,7 +292,7 @@ ServiceWorkerMainResourceLoaderInterceptor::
   controller_info->client_id = container_host->client_uuid();
   if (container_host->fetch_request_window_id()) {
     controller_info->fetch_request_window_id =
-        base::make_optional(container_host->fetch_request_window_id());
+        absl::make_optional(container_host->fetch_request_window_id());
   }
   base::WeakPtr<ServiceWorkerObjectHost> object_host =
       container_host->GetOrCreateServiceWorkerObjectHost(
@@ -257,7 +305,7 @@ ServiceWorkerMainResourceLoaderInterceptor::
     controller_info->used_features.push_back(feature);
   }
   params.controller_service_worker_info = std::move(controller_info);
-  return base::Optional<SubresourceLoaderParams>(std::move(params));
+  return absl::optional<SubresourceLoaderParams>(std::move(params));
 }
 
 ServiceWorkerMainResourceLoaderInterceptor::
@@ -268,10 +316,12 @@ ServiceWorkerMainResourceLoaderInterceptor::
         bool are_ancestors_secure,
         int frame_tree_node_id,
         int process_id,
-        const DedicatedOrSharedWorkerToken* worker_token)
+        const DedicatedOrSharedWorkerToken* worker_token,
+        const net::IsolationInfo& isolation_info)
     : handle_(std::move(handle)),
       request_destination_(request_destination),
       skip_service_worker_(skip_service_worker),
+      isolation_info_(isolation_info),
       are_ancestors_secure_(are_ancestors_secure),
       frame_tree_node_id_(frame_tree_node_id),
       process_id_(process_id),
@@ -296,6 +346,53 @@ bool ServiceWorkerMainResourceLoaderInterceptor::ShouldCreateForNavigation(
   // case of redirect to HTTPS.
   return url.SchemeIsHTTPOrHTTPS() || OriginCanAccessServiceWorkers(url) ||
          SchemeMaySupportRedirectingToHTTPS(browser_context, url);
+}
+
+absl::optional<blink::StorageKey>
+ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromRenderFrameHost(
+    const url::Origin& origin,
+    const base::UnguessableToken* nonce) {
+  // In this case |frame_tree_node_id_| is invalid.
+  if (!blink::IsRequestDestinationFrame(request_destination_))
+    return absl::nullopt;
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  if (!frame_tree_node)
+    return absl::nullopt;
+  RenderFrameHostImpl* frame_host = frame_tree_node->current_frame_host();
+  if (!frame_host)
+    return absl::nullopt;
+  return frame_host->CalculateStorageKey(origin, nonce);
+}
+
+absl::optional<blink::StorageKey>
+ServiceWorkerMainResourceLoaderInterceptor::GetStorageKeyFromWorkerHost(
+    const url::Origin& origin) {
+  if (!worker_token_.has_value())
+    return absl::nullopt;
+  auto* process = RenderProcessHost::FromID(process_id_);
+  if (!process)
+    return absl::nullopt;
+  auto* storage_partition = process->GetStoragePartition();
+
+  if (worker_token_->Is<blink::DedicatedWorkerToken>()) {
+    auto* worker_service = static_cast<DedicatedWorkerServiceImpl*>(
+        storage_partition->GetDedicatedWorkerService());
+    auto* worker_host = worker_service->GetDedicatedWorkerHostFromToken(
+        worker_token_->GetAs<blink::DedicatedWorkerToken>());
+    if (worker_host)
+      return worker_host->GetStorageKey().WithOrigin(origin);
+  } else if (worker_token_->Is<blink::SharedWorkerToken>()) {
+    auto* worker_service = static_cast<SharedWorkerServiceImpl*>(
+        storage_partition->GetSharedWorkerService());
+    auto* worker_host = worker_service->GetSharedWorkerHostFromToken(
+        worker_token_->GetAs<blink::SharedWorkerToken>());
+    if (worker_host)
+      return worker_host->GetStorageKey().WithOrigin(origin);
+  } else {
+    NOTREACHED();
+  }
+  return absl::nullopt;
 }
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/chromeos/ui/kiosk_external_update_notification.h"
+#include "chrome/browser/ash/notifications/kiosk_external_update_notification.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
@@ -26,10 +26,6 @@
 namespace ash {
 
 namespace {
-
-namespace disks = ::chromeos::disks;
-using ::chromeos::MountError;
-using ::chromeos::MountType;
 
 constexpr base::FilePath::CharType kExternalUpdateManifest[] =
     "external_update.json";
@@ -112,11 +108,11 @@ KioskExternalUpdater::~KioskExternalUpdater() {
 void KioskExternalUpdater::OnMountEvent(
     disks::DiskMountManager::MountEvent event,
     MountError error_code,
-    const disks::DiskMountManager::MountPointInfo& mount_info) {
+    const disks::DiskMountManager::MountPoint& mount_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (mount_info.mount_type != MountType::MOUNT_TYPE_DEVICE ||
-      error_code != MountError::MOUNT_ERROR_NONE) {
+  if (mount_info.mount_type != MountType::kDevice ||
+      error_code != MountError::kNone) {
     return;
   }
 
@@ -225,9 +221,8 @@ void KioskExternalUpdater::ProcessParsedManifest(
           IDS_KIOSK_EXTERNAL_UPDATE_IN_PROGRESS));
 
   external_update_path_ = external_update_dir;
-  for (base::DictionaryValue::Iterator it(*parsed_manifest); !it.IsAtEnd();
-       it.Advance()) {
-    std::string app_id = it.key();
+  for (auto manifest : parsed_manifest->DictItems()) {
+    std::string app_id = manifest.first;
     std::string cached_version_str;
     base::FilePath cached_crx;
     if (!KioskAppManager::Get()->GetCachedCrx(
@@ -236,22 +231,24 @@ void KioskExternalUpdater::ProcessParsedManifest(
       continue;
     }
 
-    const base::DictionaryValue* extension = nullptr;
-    if (!it.value().GetAsDictionary(&extension)) {
-      LOG(ERROR) << "Found bad entry in manifest type " << it.value().type();
+    if (!manifest.second.is_dict()) {
+      LOG(ERROR) << "Found bad entry in manifest type "
+                 << manifest.second.type();
       continue;
     }
+    const base::Value::Dict& extension = manifest.second.GetDict();
 
-    std::string external_crx_str;
-    if (!extension->GetString(kExternalCrx, &external_crx_str)) {
+    const std::string* external_crx_str = extension.FindString(kExternalCrx);
+    if (!external_crx_str) {
       LOG(ERROR) << "Can't find external crx in manifest " << app_id;
       continue;
     }
 
-    std::string external_version_str;
-    if (extension->GetString(kExternalVersion, &external_version_str)) {
-      if (!ShouldUpdateForHigherVersion(
-              cached_version_str, external_version_str, false)) {
+    const std::string* external_version_str =
+        extension.FindString(kExternalVersion);
+    if (external_version_str) {
+      if (!ShouldUpdateForHigherVersion(cached_version_str,
+                                        *external_version_str, false)) {
         LOG(WARNING) << "External app " << app_id
                      << " is at the same or lower version comparing to "
                      << " the existing one.";
@@ -267,7 +264,7 @@ void KioskExternalUpdater::ProcessParsedManifest(
       NOTREACHED();
     }
     update.external_crx = extensions::CRXFileInfo(
-        external_update_path_.AppendASCII(external_crx_str),
+        external_update_path_.AppendASCII(*external_crx_str),
         extensions::GetExternalVerifierFormat());
     update.external_crx.extension_id = app_id;
     update.update_status = UpdateStatus::kPending;

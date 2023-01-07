@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.incognito;
 
 import static org.junit.Assert.assertEquals;
 
-import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createMinimalCustomTabIntent;
-import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createMinimalIncognitoCustomTabIntent;
+import static org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.createMinimalCustomTabIntent;
+import static org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent;
 
 import android.app.Activity;
 import android.content.Context;

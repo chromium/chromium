@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
@@ -31,7 +32,7 @@ static NGConstraintSpace ConstructConstraintSpace(
                                    /* is_new_fc */ false);
   builder.SetAvailableSize(size);
   builder.SetPercentageResolutionSize(size);
-  builder.SetStretchInlineSizeIfAuto(true);
+  builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
   builder.SetIsFixedInlineSize(fixed_inline);
   builder.SetIsFixedBlockSize(fixed_block);
   return builder.ToConstraintSpace();
@@ -45,35 +46,47 @@ class NGLengthUtilsTest : public testing::Test {
 
   LayoutUnit ResolveMainInlineLength(
       const Length& length,
-      const base::Optional<MinMaxSizes>& sizes = base::nullopt,
+      const absl::optional<MinMaxSizes>& sizes = absl::nullopt,
       NGConstraintSpace constraint_space = ConstructConstraintSpace(200, 300)) {
     NGBoxStrut border_padding = ComputeBordersForTest(*style_) +
                                 ComputePadding(constraint_space, *style_);
 
-    return ::blink::ResolveMainInlineLength(constraint_space, *style_,
-                                            border_padding, sizes, length);
+    return ::blink::ResolveMainInlineLength(
+        constraint_space, *style_, border_padding,
+        [&](MinMaxSizesType) -> MinMaxSizesResult {
+          return {*sizes, /* depends_on_block_constraints */ false};
+        },
+        length);
   }
 
   LayoutUnit ResolveMinInlineLength(
       const Length& length,
-      const base::Optional<MinMaxSizes>& sizes = base::nullopt,
+      const absl::optional<MinMaxSizes>& sizes = absl::nullopt,
       NGConstraintSpace constraint_space = ConstructConstraintSpace(200, 300)) {
     NGBoxStrut border_padding = ComputeBordersForTest(*style_) +
                                 ComputePadding(constraint_space, *style_);
 
-    return ::blink::ResolveMinInlineLength(constraint_space, *style_,
-                                           border_padding, sizes, length);
+    return ::blink::ResolveMinInlineLength(
+        constraint_space, *style_, border_padding,
+        [&](MinMaxSizesType) -> MinMaxSizesResult {
+          return {*sizes, /* depends_on_block_constraints */ false};
+        },
+        length);
   }
 
   LayoutUnit ResolveMaxInlineLength(
       const Length& length,
-      const base::Optional<MinMaxSizes>& sizes = base::nullopt,
+      const absl::optional<MinMaxSizes>& sizes = absl::nullopt,
       NGConstraintSpace constraint_space = ConstructConstraintSpace(200, 300)) {
     NGBoxStrut border_padding = ComputeBordersForTest(*style_) +
                                 ComputePadding(constraint_space, *style_);
 
-    return ::blink::ResolveMaxInlineLength(constraint_space, *style_,
-                                           border_padding, sizes, length);
+    return ::blink::ResolveMaxInlineLength(
+        constraint_space, *style_, border_padding,
+        [&](MinMaxSizesType) -> MinMaxSizesResult {
+          return {*sizes, /* depends_on_block_constraints */ false};
+        },
+        length);
   }
 
   LayoutUnit ResolveMainBlockLength(const Length& length,
@@ -113,7 +126,7 @@ class NGLengthUtilsTestWithNode : public NGLayoutTest {
   LayoutUnit ComputeBlockSizeForFragment(
       NGConstraintSpace constraint_space = ConstructConstraintSpace(200, 300),
       LayoutUnit content_size = LayoutUnit(),
-      base::Optional<LayoutUnit> inline_size = base::nullopt) {
+      absl::optional<LayoutUnit> inline_size = absl::nullopt) {
     LayoutBox* body = GetDocument().body()->GetLayoutBox();
     body->SetStyle(style_);
     body->SetIntrinsicLogicalWidthsDirty();
@@ -155,11 +168,11 @@ TEST_F(NGLengthUtilsTest, TestIndefiniteResolveInlineLength) {
   const NGConstraintSpace space = ConstructConstraintSpace(-1, -1);
 
   EXPECT_EQ(LayoutUnit(0),
-            ResolveMinInlineLength(Length::Auto(), base::nullopt, space));
+            ResolveMinInlineLength(Length::Auto(), absl::nullopt, space));
   EXPECT_EQ(LayoutUnit::Max(),
-            ResolveMaxInlineLength(Length::Percent(30), base::nullopt, space));
+            ResolveMaxInlineLength(Length::Percent(30), absl::nullopt, space));
   EXPECT_EQ(LayoutUnit::Max(), ResolveMaxInlineLength(Length::FillAvailable(),
-                                                      base::nullopt, space));
+                                                      absl::nullopt, space));
 }
 
 TEST_F(NGLengthUtilsTest, TestResolveBlockLength) {
@@ -212,7 +225,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeContentContribution) {
   expected = MinMaxSizes{LayoutUnit(30), LayoutUnit(40)};
   style_->SetPaddingLeft(Length::Fixed(0));
   style_->SetLogicalWidth(Length(CalculationValue::Create(
-      PixelsAndPercent(100, -10), kValueRangeNonNegative)));
+      PixelsAndPercent(100, -10), Length::ValueRange::kNonNegative)));
   EXPECT_EQ(expected, ComputeMinAndMaxContentContributionForTest(
                           style_->GetWritingMode(), node, space, sizes));
 
@@ -290,7 +303,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeInlineSizeForFragment) {
   EXPECT_EQ(LayoutUnit(200), ComputeInlineSizeForFragment());
 
   style_->SetLogicalWidth(Length(CalculationValue::Create(
-      PixelsAndPercent(100, -10), kValueRangeNonNegative)));
+      PixelsAndPercent(100, -10), Length::ValueRange::kNonNegative)));
   EXPECT_EQ(LayoutUnit(80), ComputeInlineSizeForFragment());
 
   NGConstraintSpace constraint_space =
@@ -362,7 +375,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeBlockSizeForFragment) {
   EXPECT_EQ(LayoutUnit(300), ComputeBlockSizeForFragment());
 
   style_->SetLogicalHeight(Length(CalculationValue::Create(
-      PixelsAndPercent(100, -10), kValueRangeNonNegative)));
+      PixelsAndPercent(100, -10), Length::ValueRange::kNonNegative)));
   EXPECT_EQ(LayoutUnit(70), ComputeBlockSizeForFragment());
 
   constraint_space = ConstructConstraintSpace(200, 200, true, true);
@@ -402,7 +415,7 @@ TEST_F(NGLengthUtilsTestWithNode, TestComputeBlockSizeForFragment) {
   style_ = GetDocument().GetStyleResolver().CreateComputedStyle();
   style_->SetLogicalWidth(Length::Fixed(100));
   style_->SetAspectRatio(
-      StyleAspectRatio(EAspectRatioType::kRatio, FloatSize(2, 1)));
+      StyleAspectRatio(EAspectRatioType::kRatio, gfx::SizeF(2, 1)));
   EXPECT_EQ(LayoutUnit(50),
             ComputeBlockSizeForFragment(ConstructConstraintSpace(200, 300),
                                         LayoutUnit(), LayoutUnit(100)));

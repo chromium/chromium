@@ -1,0 +1,74 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// A module for a prototype of the Read Anything feature.
+module read_anything.mojom;
+
+import "skia/public/mojom/skcolor.mojom";
+import "ui/accessibility/mojom/ax_tree_update.mojom";
+
+// Used to represent the current user choices for the Read Anything visual
+// presentation/theme. This includes font name, size, spacing, and colors.
+struct ReadAnythingTheme {
+  // The name of the user's font choice.
+  string font_name;
+
+  // The px value of the user's font size.
+  float font_size;
+
+  // The various colors of the user's chosen theme.
+  skia.mojom.SkColor foreground_color;
+  skia.mojom.SkColor background_color;
+
+  // The enum value of the user's line spacing choice
+  read_anything.mojom.Spacing line_spacing;
+
+  // The enum value of the user's letter spacing choice.
+  read_anything.mojom.Spacing letter_spacing;
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Used as identifiers for the Read Anything theme options.
+// Next value: 4
+[Extensible, Stable, Uuid="03f38cfc-a34f-460a-a0a7-faf711f11a64"]
+enum Colors {
+  [Default]kDefault = 0,
+  kLight = 1,
+  kDark = 2,
+  kYellow = 3,
+};
+
+[Extensible, Stable, Uuid="2B5C793A-D81E-4C76-8CDF-695C7E0A30E2",
+ RenamedFrom="read_anything.mojom.LetterSpacing"]
+enum Spacing {
+  kTight = 0,
+  [Default]kDefault = 1,
+  kLoose = 2,
+  kVeryLoose = 3,
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // TODO(crbug.com/1266555): Fill in with messages once Select to Read Anything
+  // is implemented.
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {
+  // Trigger the frontend to update the current read anything display. Snapshot
+  // is an accessibility tree snapshot of a web page. Content node ids are node
+  // ids from that ax tree update, where each node is part of the main article
+  // for that web page.
+  OnAXTreeDistilled(ax.mojom.AXTreeUpdate snapshot,
+                    array<int32> content_node_ids);
+
+  // Send an updated theme to front end.
+  OnThemeChanged(ReadAnythingTheme new_theme);
+};

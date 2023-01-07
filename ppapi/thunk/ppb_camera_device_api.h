@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define PPAPI_THUNK_PPB_CAMERA_DEVICE_API_H_
 
 #include <stdint.h>
-
-#include <string>
 
 #include "ppapi/c/private/ppb_camera_device_private.h"
 #include "ppapi/thunk/ppapi_thunk_export.h"

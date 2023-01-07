@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -42,7 +40,8 @@ WebDataRequest::WebDataRequest(WebDataRequestManager* manager,
                        ? base::SequencedTaskRunnerHandle::Get()
                        : nullptr),
       atomic_manager_(reinterpret_cast<base::subtle::AtomicWord>(manager)),
-      consumer_(consumer),
+      consumer_(consumer ? consumer->GetWebDataServiceConsumerWeakPtr()
+                         : nullptr),
       handle_(handle) {
   DCHECK(IsActive());
   static_assert(sizeof(atomic_manager_) == sizeof(manager), "size mismatch");
@@ -54,7 +53,7 @@ WebDataRequestManager* WebDataRequest::GetManager() {
 }
 
 WebDataServiceConsumer* WebDataRequest::GetConsumer() {
-  return consumer_;
+  return consumer_.get();
 }
 
 scoped_refptr<base::SequencedTaskRunner> WebDataRequest::GetTaskRunner() {

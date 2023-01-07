@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -25,6 +25,8 @@ android_library("settings_java") {
   deps = [
     ":location_java",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
   sources =
@@ -54,11 +56,12 @@ source_set("settings") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "location_settings_dialog_context.h",
+    "location_settings_dialog_outcome.h",
     "mock_location_settings.cc",
     "mock_location_settings.h",
   ]
   deps = [
-    ":location_settings_dialog_enums_java",
     ":settings",
     "//base",
   ]

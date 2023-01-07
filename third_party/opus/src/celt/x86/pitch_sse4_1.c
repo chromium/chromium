@@ -117,6 +117,14 @@ void xcorr_kernel_sse4_1(const opus_val16 * x, const opus_val16 * y, opus_val32 
     __m128i sum0, sum1, sum2, sum3, vecSum;
     __m128i initSum;
 
+#ifdef OPUS_CHECK_ASM
+    opus_val32 sum_c[4];
+    for (j=0;j<4;j++) {
+      sum_c[j] = sum[j];
+    }
+    xcorr_kernel_c(x, y, sum_c, len);
+#endif
+
     celt_assert(len >= 3);
 
     sum0 = _mm_setzero_si128();
@@ -177,19 +185,56 @@ void xcorr_kernel_sse4_1(const opus_val16 * x, const opus_val16 * y, opus_val32 
         vecSum = _mm_add_epi32(vecSum, sum2);
     }
 
-    for (;j<len;j++)
+    vecX = OP_CVTEPI16_EPI32_M64(&x[len - 4]);
+    if (len - j == 3)
     {
-        vecX = OP_CVTEPI16_EPI32_M64(&x[j + 0]);
-        vecX0 = _mm_shuffle_epi32(vecX, 0x00);
+        vecX0 = _mm_shuffle_epi32(vecX, 0x55);
+        vecX1 = _mm_shuffle_epi32(vecX, 0xaa);
+        vecX2 = _mm_shuffle_epi32(vecX, 0xff);
+
+        vecY0 = OP_CVTEPI16_EPI32_M64(&y[j + 0]);
+        vecY1 = OP_CVTEPI16_EPI32_M64(&y[j + 1]);
+        vecY2 = OP_CVTEPI16_EPI32_M64(&y[j + 2]);
+
+        sum0 = _mm_mullo_epi32(vecX0, vecY0);
+        sum1 = _mm_mullo_epi32(vecX1, vecY1);
+        sum2 = _mm_mullo_epi32(vecX2, vecY2);
+
+        vecSum = _mm_add_epi32(vecSum, sum0);
+        vecSum = _mm_add_epi32(vecSum, sum1);
+        vecSum = _mm_add_epi32(vecSum, sum2);
+    }
+    else if (len - j == 2)
+    {
+        vecX0 = _mm_shuffle_epi32(vecX, 0xaa);
+        vecX1 = _mm_shuffle_epi32(vecX, 0xff);
+
+        vecY0 = OP_CVTEPI16_EPI32_M64(&y[j + 0]);
+        vecY1 = OP_CVTEPI16_EPI32_M64(&y[j + 1]);
+
+        sum0 = _mm_mullo_epi32(vecX0, vecY0);
+        sum1 = _mm_mullo_epi32(vecX1, vecY1);
+
+        vecSum = _mm_add_epi32(vecSum, sum0);
+        vecSum = _mm_add_epi32(vecSum, sum1);
+    }
+    else if (len - j == 1)
+    {
+        vecX0 = _mm_shuffle_epi32(vecX, 0xff);
 
         vecY0 = OP_CVTEPI16_EPI32_M64(&y[j + 0]);
 
         sum0 = _mm_mullo_epi32(vecX0, vecY0);
+
         vecSum = _mm_add_epi32(vecSum, sum0);
     }
 
     initSum = _mm_loadu_si128((__m128i *)(&sum[0]));
     initSum = _mm_add_epi32(initSum, vecSum);
     _mm_storeu_si128((__m128i *)sum, initSum);
+
+#ifdef OPUS_CHECK_ASM
+    celt_assert(!memcmp(sum_c, sum, sizeof(sum_c)));
+#endif
 }
 #endif

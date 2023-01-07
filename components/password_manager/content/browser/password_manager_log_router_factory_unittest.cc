@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ const char kTestText[] = "abcd1234";
 
 class MockLogReceiver : public autofill::LogReceiver {
  public:
-  MOCK_METHOD1(LogEntry, void(const base::Value&));
+  MOCK_METHOD1(LogEntry, void(const base::Value::Dict&));
 };
 
 }  // namespace
@@ -51,10 +51,10 @@ TEST_F(PasswordManagerLogRouterFactoryTest, ServiceActiveNonIncognito) {
   testing::StrictMock<MockLogReceiver> receiver;
 
   ASSERT_TRUE(log_router);
-  EXPECT_EQ(std::vector<base::Value>(),
-            log_router->RegisterReceiver(&receiver));
+  log_router->RegisterReceiver(&receiver);
 
-  base::Value log_entry = autofill::LogRouter::CreateEntryForText(kTestText);
+  base::Value::Dict log_entry =
+      autofill::LogRouter::CreateEntryForText(kTestText);
   EXPECT_CALL(receiver, LogEntry(testing::Eq(testing::ByRef(log_entry))))
       .Times(1);
   log_router->ProcessLog(kTestText);

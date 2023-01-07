@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,15 +15,26 @@ INCLUDE_RE = re.compile(r"^\s*include\s+([^#\s]+)")
 
 # Exclude these files from table validation.
 IGNORE_TABLES = set()
-IGNORE_TABLES.add('boxes.ctb')
-IGNORE_TABLES.add('unicode-braille.utb')
 IGNORE_TABLES.add('IPA.utb')
-IGNORE_TABLES.add('spaces.ctb')
+IGNORE_TABLES.add('bh.ctb')
+IGNORE_TABLES.add('bo.ctb')
+IGNORE_TABLES.add('boxes.ctb')
+IGNORE_TABLES.add('de-chess.ctb')
+IGNORE_TABLES.add('dra.ctb')
+IGNORE_TABLES.add('en-chess.ctb')
 IGNORE_TABLES.add('ethio-g1.ctb')
+IGNORE_TABLES.add('gon.ctb')
+IGNORE_TABLES.add('kok.ctb')
+IGNORE_TABLES.add('kru.ctb')
+IGNORE_TABLES.add('mun.ctb')
+IGNORE_TABLES.add('mwr.ctb')
 IGNORE_TABLES.add('or-in-g1.utb')
+IGNORE_TABLES.add('pi.ctb')
+IGNORE_TABLES.add('spaces.ctb')
+IGNORE_TABLES.add('unicode-braille.utb')
 
 def Error(msg):
-  print >> sys.stderr, 'liblouis_list_tables: %s' % msg
+  sys.stderr.write('liblouis_list_tables: %s' % msg)
   sys.exit(1)
 
 
@@ -35,7 +46,7 @@ def LoadTablesFile(filename):
   with open(ToNativePath(filename), 'r') as fh:
     try:
       return json.load(fh)
-    except ValueError, e:
+    except ValueError as e:
       raise ValueError('Error parsing braille table file %s: %s' %
                        (filename, e.message))
 
@@ -59,10 +70,21 @@ def FindAllTableFiles(directory):
 def GetIncludeFiles(filename):
   result = []
   with open(ToNativePath(filename), 'r') as fh:
-    for line in fh.xreadlines():
+    for line in fh.readlines():
       match = INCLUDE_RE.match(line)
       if match:
         result.append(match.group(1))
+  return result
+
+
+def GetAdditionalFileTableData(filename):
+  result = {}
+  INCLUDE_RE = re.compile(r"^#[\+-](\S+):\s*(.+)")
+  with open(ToNativePath(filename), 'r') as fh:
+    for line in fh.readlines():
+      match = INCLUDE_RE.match(line)
+      if match:
+        result[match.groups(1)[0]] = match.groups(1)[1]
   return result
 
 
@@ -88,22 +110,21 @@ def GetTableFiles(tables_file, directories, extra_files):
 
 def CheckTables(tables_file):
   tables = LoadTablesFile(tables_file)
-  actual_set = set();
+  actual_set = set()
   for table in tables:
     for name in table['fileNames'].split(','):
       actual_set.add(name)
   expected_set = FindAllTableFiles("src/tables")
-  output = []
+  errors = []
   for table in actual_set:
     if table not in expected_set and table not in IGNORE_TABLES:
-      output.append("Error: obsolete table not in liblouis " + table)
+      errors.append("Error: obsolete table not in liblouis " + table)
 
   new_tables = []
   for table in expected_set:
     if table not in actual_set and table not in IGNORE_TABLES:
-      output.append("Error: table not found in tables file " + table)
       new_tables.append(table)
-  return (output, new_tables)
+  return (errors, new_tables)
 
 def DoMain(argv):
   "Entry point for gyp's pymod_do_main command."
@@ -126,7 +147,7 @@ def DoMain(argv):
 
 
 def main(argv):
-  print DoMain(argv[1:])
+  print(DoMain(argv[1:]))
 
 
 if __name__ == '__main__':

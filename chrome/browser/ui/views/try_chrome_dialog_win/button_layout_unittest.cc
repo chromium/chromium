@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -16,39 +16,39 @@
 class ButtonLayoutTest
     : public ::testing::TestWithParam<::testing::tuple<int, int>> {
  private:
-  enum {
-    // The width of an imaginary host view in the test.
-    kFixedHostWidth = 100,
-  };
+  // The width of an imaginary host view in the test.
+  static constexpr int kFixedHostWidth = 100;
 
  public:
   // Various button widths to be tested.
-  enum {
-    // Magic width meaning no button at all.
-    kNoButton = 0,
+  // Magic width meaning no button at all.
+  static constexpr int kNoButton = 0;
 
-    // Some small "narrow" button that fits within half of the test's host.
-    kNarrowButtonMin = 8,
+  // Some small "narrow" button that fits within half of the test's host.
+  static constexpr int kNarrowButtonMin = 8;
 
-    // The largest "narrow" button that could fit within the test's host.
-    kNarrowButtonMax =
-        (kFixedHostWidth - ButtonLayout::kPaddingBetweenButtons) / 2,
+  // The largest "narrow" button that could fit within the test's host.
+  static constexpr int kNarrowButtonMax =
+      (kFixedHostWidth - ButtonLayout::kPaddingBetweenButtons) / 2;
 
-    // Some mid-sized "narrow" button that could fit within the test's host.
-    kNarrowButtonMid = (kNarrowButtonMin + kNarrowButtonMax) / 2,
+  // Some mid-sized "narrow" button that could fit within the test's host.
+  static constexpr int kNarrowButtonMid =
+      (kNarrowButtonMin + kNarrowButtonMax) / 2;
 
-    // The least wide "wide" button that could fit within the test's host.
-    kWideButtonMin = kNarrowButtonMax + 1,
+  // The least wide "wide" button that could fit within the test's host.
+  static constexpr int kWideButtonMin = kNarrowButtonMax + 1;
 
-    // The largest "wide" button that could fit within the test's host.
-    kWideButtonMax = kFixedHostWidth,
+  // The largest "wide" button that could fit within the test's host.
+  static constexpr int kWideButtonMax = kFixedHostWidth;
 
-    // Some mid-sized "wide" button that could fit within the test's host.
-    kWideButtonMid = (kWideButtonMin + kWideButtonMax) / 2,
+  // Some mid-sized "wide" button that could fit within the test's host.
+  static constexpr int kWideButtonMid = (kWideButtonMin + kWideButtonMax) / 2;
 
-    // A button that is too big to fit within the host.
-    kSuperSizedButton = kWideButtonMax + 1,
-  };
+  // A button that is too big to fit within the host.
+  static constexpr int kSuperSizedButton = kWideButtonMax + 1;
+
+  ButtonLayoutTest(const ButtonLayoutTest&) = delete;
+  ButtonLayoutTest& operator=(const ButtonLayoutTest&) = delete;
 
  protected:
   ButtonLayoutTest()
@@ -68,12 +68,12 @@ class ButtonLayoutTest
   // Adds one or two child views of widths specified by the test parameters.
   void AddChildViews() {
     auto view = std::make_unique<views::View>();
-    view->SetPreferredSize({button_1_width_, kButtonHeight});
+    view->SetPreferredSize(gfx::Size(button_1_width_, kButtonHeight));
     host()->AddChildView(view.release());
 
     if (has_two_buttons()) {
       view = std::make_unique<views::View>();
-      view->SetPreferredSize({button_2_width_, kButtonHeight});
+      view->SetPreferredSize(gfx::Size(button_2_width_, kButtonHeight));
       host()->AddChildView(view.release());
     }
   }
@@ -154,11 +154,9 @@ class ButtonLayoutTest
   };
 
   views::View host_;
-  ButtonLayout* const layout_;  // Owned by |host_|.
+  const raw_ptr<ButtonLayout> layout_;  // Owned by |host_|.
   const int button_1_width_;
   const int button_2_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(ButtonLayoutTest);
 };
 
 TEST_P(ButtonLayoutTest, GetPreferredSize) {
@@ -170,8 +168,8 @@ TEST_P(ButtonLayoutTest, GetPreferredSize) {
 
 TEST_P(ButtonLayoutTest, Layout) {
   AddChildViews();
+  // Layout will be done through SetBounds.
   host()->SetBounds(0, 0, GetExpectedWidth(), GetExpectedHeight());
-  layout()->Layout(host());
 
   ExpectViewBoundsEquals(host()->children()[0], GetExpectedButtonBounds(1));
   if (has_two_buttons())

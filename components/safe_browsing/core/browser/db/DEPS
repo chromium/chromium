@@ -1,0 +1,11 @@
+include_rules = [
+  "+components/version_info",
+  "+crypto",
+  "+google_apis/google_api_keys.h",
+  "+net",
+  "+services/network/public",
+  "+services/network/test",
+  "+testing/gtest",
+  "+third_party/protobuf/src/google",
+  "+url",
+]

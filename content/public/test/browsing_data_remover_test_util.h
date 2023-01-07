@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 namespace content {
@@ -21,6 +21,12 @@ class BrowsingDataRemoverCompletionObserver
     : public BrowsingDataRemover::Observer {
  public:
   explicit BrowsingDataRemoverCompletionObserver(BrowsingDataRemover* remover);
+
+  BrowsingDataRemoverCompletionObserver(
+      const BrowsingDataRemoverCompletionObserver&) = delete;
+  BrowsingDataRemoverCompletionObserver& operator=(
+      const BrowsingDataRemoverCompletionObserver&) = delete;
+
   ~BrowsingDataRemoverCompletionObserver() override;
 
   void BlockUntilCompletion();
@@ -50,8 +56,6 @@ class BrowsingDataRemoverCompletionObserver
   base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemover::Observer>
       observation_{this};
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverCompletionObserver);
 };
 
 // The completion inhibitor can artificially delay completion of the browsing
@@ -64,6 +68,12 @@ class BrowsingDataRemoverCompletionObserver
 class BrowsingDataRemoverCompletionInhibitor {
  public:
   explicit BrowsingDataRemoverCompletionInhibitor(BrowsingDataRemover* remover);
+
+  BrowsingDataRemoverCompletionInhibitor(
+      const BrowsingDataRemoverCompletionInhibitor&) = delete;
+  BrowsingDataRemoverCompletionInhibitor& operator=(
+      const BrowsingDataRemoverCompletionInhibitor&) = delete;
+
   virtual ~BrowsingDataRemoverCompletionInhibitor();
 
   void Reset();
@@ -87,13 +97,11 @@ class BrowsingDataRemoverCompletionInhibitor {
 
   // Not owned by this class. If the pointer becomes invalid, the owner of
   // this class is responsible for calling Reset().
-  BrowsingDataRemover* remover_;
+  raw_ptr<BrowsingDataRemover> remover_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure continue_to_completion_callback_;
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverCompletionInhibitor);
 };
 
 }  // namespace content

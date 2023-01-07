@@ -1,13 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_ANIMATION_INK_DROP_RIPPLE_OBSERVER_H_
 #define UI_VIEWS_ANIMATION_INK_DROP_RIPPLE_OBSERVER_H_
 
-#include <string>
-
-#include "base/macros.h"
 #include "ui/views/animation/ink_drop_animation_ended_reason.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/views_export.h"
@@ -17,6 +14,9 @@ namespace views {
 // Observer to attach to an InkDropRipple.
 class VIEWS_EXPORT InkDropRippleObserver {
  public:
+  InkDropRippleObserver(const InkDropRippleObserver&) = delete;
+  InkDropRippleObserver& operator=(const InkDropRippleObserver&) = delete;
+
   // An animation for the given |ink_drop_state| has started.
   virtual void AnimationStarted(InkDropState ink_drop_state) = 0;
 
@@ -31,9 +31,6 @@ class VIEWS_EXPORT InkDropRippleObserver {
  protected:
   InkDropRippleObserver() = default;
   virtual ~InkDropRippleObserver() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InkDropRippleObserver);
 };
 
 }  // namespace views

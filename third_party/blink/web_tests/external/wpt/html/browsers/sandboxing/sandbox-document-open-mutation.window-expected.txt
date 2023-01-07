@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Using document.open() against a document from a different window must not mutate the other window's sandbox flags assert_equals: expected "not sandboxed" but got "sandboxed"
+Harness: the test ran to completion.
+

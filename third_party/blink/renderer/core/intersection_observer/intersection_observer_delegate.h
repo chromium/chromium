@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -19,7 +20,7 @@ class IntersectionObserverDelegate
     : public GarbageCollected<IntersectionObserverDelegate>,
       public NameClient {
  public:
-  virtual ~IntersectionObserverDelegate() = default;
+  ~IntersectionObserverDelegate() override = default;
 
   virtual LocalFrameUkmAggregator::MetricId GetUkmMetricId() const = 0;
   virtual IntersectionObserver::DeliveryBehavior GetDeliveryBehavior()

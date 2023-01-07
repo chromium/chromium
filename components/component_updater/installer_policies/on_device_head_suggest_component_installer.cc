@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
@@ -67,9 +68,9 @@ OnDeviceHeadSuggestInstallerPolicy::~OnDeviceHeadSuggestInstallerPolicy() =
     default;
 
 bool OnDeviceHeadSuggestInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
-  const std::string* name = manifest.FindStringPath("name");
+  const std::string* name = manifest.FindStringKey("name");
 
   if (!name || *name != ("OnDeviceHeadSuggest" + accept_locale_))
     return false;
@@ -84,7 +85,7 @@ bool OnDeviceHeadSuggestInstallerPolicy::VerifyInstallation(
 
 bool OnDeviceHeadSuggestInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool OnDeviceHeadSuggestInstallerPolicy::RequiresNetworkEncryption() const {
@@ -93,7 +94,7 @@ bool OnDeviceHeadSuggestInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 OnDeviceHeadSuggestInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -103,7 +104,7 @@ void OnDeviceHeadSuggestInstallerPolicy::OnCustomUninstall() {}
 void OnDeviceHeadSuggestInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   auto* listener = OnDeviceModelUpdateListener::GetInstance();
   if (listener)
     listener->OnModelUpdate(install_dir);

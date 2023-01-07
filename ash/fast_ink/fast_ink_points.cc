@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,21 @@
 
 #include "base/containers/adapters.h"
 #include "base/containers/circular_deque.h"
+#include "base/ranges/algorithm.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
+namespace {
+
+constexpr SkColor kDefaultPointColor = SkColorSetRGB(0x42, 0x85, 0xF4);
+constexpr int kDefaultOpacity = 0xCC;
+
+}  // namespace
+
 namespace fast_ink {
+
+const SkColor FastInkPoints::kDefaultColor =
+    SkColorSetA(kDefaultPointColor, kDefaultOpacity);
 
 FastInkPoints::FastInkPoints(base::TimeDelta life_duration)
     : life_duration_(life_duration) {}
@@ -25,6 +36,16 @@ void FastInkPoints::AddPoint(const gfx::PointF& point,
   FastInkPoint new_point;
   new_point.location = point;
   new_point.time = time;
+  points_.push_back(new_point);
+}
+
+void FastInkPoints::AddPoint(const gfx::PointF& point,
+                             const base::TimeTicks& time,
+                             SkColor color) {
+  FastInkPoint new_point;
+  new_point.location = point;
+  new_point.time = time;
+  new_point.color = color;
   points_.push_back(new_point);
 }
 
@@ -42,11 +63,30 @@ void FastInkPoints::MoveForwardToTime(const base::TimeTicks& latest_time) {
   if (!points_.empty() && !life_duration_.is_zero()) {
     // Remove obsolete points.
     const base::TimeTicks expiration = latest_time - life_duration_;
-    auto first_alive_point = std::find_if(
-        points_.begin(), points_.end(),
-        [expiration](const FastInkPoint& p) { return p.time > expiration; });
+    auto first_alive_point = base::ranges::lower_bound(
+        points_, expiration, base::ranges::less_equal(), &FastInkPoint::time);
     points_.erase(points_.begin(), first_alive_point);
   }
+}
+
+gfx::Rect FastInkPoints::UndoLastStroke() {
+  if (points_.empty())
+    return gfx::Rect();
+
+  gfx::PointF min_point = GetNewest().location;
+  gfx::PointF max_point = min_point;
+  // Skip the last gap to delete until the penultimate gap.
+  if (points_.back().gap_after)
+    points_.pop_back();
+
+  while (!points_.empty() && !points_.back().gap_after) {
+    const gfx::PointF& location = points_.back().location;
+    min_point.SetToMin(location);
+    max_point.SetToMax(location);
+    points_.pop_back();
+  }
+
+  return gfx::ToEnclosingRect(gfx::BoundingRect(min_point, max_point));
 }
 
 void FastInkPoints::Clear() {
@@ -62,7 +102,7 @@ gfx::RectF FastInkPoints::GetBoundingBoxF() const {
     return gfx::RectF();
 
   gfx::PointF min_point = GetOldest().location;
-  gfx::PointF max_point = GetOldest().location;
+  gfx::PointF max_point = min_point;
   for (const FastInkPoint& point : points_) {
     min_point.SetToMin(point.location);
     max_point.SetToMax(point.location);
@@ -123,9 +163,8 @@ void FastInkPoints::Predict(const FastInkPoints& real_points,
   const float kPredictionIntervalMs = 5.0f;
   const float kMaxPointIntervalMs = 10.0f;
   base::TimeDelta prediction_interval =
-      base::TimeDelta::FromMilliseconds(kPredictionIntervalMs);
-  base::TimeDelta max_point_interval =
-      base::TimeDelta::FromMilliseconds(kMaxPointIntervalMs);
+      base::Milliseconds(kPredictionIntervalMs);
+  base::TimeDelta max_point_interval = base::Milliseconds(kMaxPointIntervalMs);
   const FastInkPoint newest_real_point = real_points.GetNewest();
   base::TimeTicks last_point_time = newest_real_point.time;
   gfx::PointF last_point_location =
@@ -192,7 +231,8 @@ void FastInkPoints::Predict(const FastInkPoints& real_points,
     acceleration[0] += jerk;
     location += velocity[0];
 
-    AddPoint(gfx::ScalePoint(location, 1 / scale.x(), 1 / scale.y()), time);
+    AddPoint(gfx::ScalePoint(location, 1 / scale.x(), 1 / scale.y()), time,
+             newest_real_point.color);
 
     // Always stop at three predicted points as a four point history doesn't
     // provide accurate prediction of more points.

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include "ash/login/ui/pin_request_widget.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -70,7 +70,7 @@ class ASH_EXPORT ParentAccessControllerImpl : public ParentAccessController,
   // validation result for a given |action|. If no |action| specified, returns
   // the name of the aggregated histogram.
   static std::string GetUMAParentCodeValidationResultHistorgam(
-      base::Optional<SupervisedAction> action);
+      absl::optional<SupervisedAction> action);
 
   ParentAccessControllerImpl();
   ParentAccessControllerImpl(const ParentAccessControllerImpl&) = delete;
@@ -82,7 +82,7 @@ class ASH_EXPORT ParentAccessControllerImpl : public ParentAccessController,
   PinRequestView::SubmissionResult OnPinSubmitted(
       const std::string& pin) override;
   void OnBack() override;
-  void OnHelp(gfx::NativeWindow parent_window) override;
+  void OnHelp() override;
 
   // ParentAccessController:
   bool ShowWidget(const AccountId& child_account_id,

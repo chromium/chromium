@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_FEEDBACK_CONTENT_FEEDBACK_UPLOADER_FACTORY_H_
 #define COMPONENTS_FEEDBACK_CONTENT_FEEDBACK_UPLOADER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -32,6 +31,9 @@ class FeedbackUploaderFactory : public BrowserContextKeyedServiceFactory {
   static FeedbackUploader* GetForBrowserContext(
       content::BrowserContext* context);
 
+  FeedbackUploaderFactory(const FeedbackUploaderFactory&) = delete;
+  FeedbackUploaderFactory& operator=(const FeedbackUploaderFactory&) = delete;
+
  protected:
   FeedbackUploaderFactory(const char* service_name);
   ~FeedbackUploaderFactory() override;
@@ -46,8 +48,6 @@ class FeedbackUploaderFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackUploaderFactory);
 };
 
 }  // namespace feedback

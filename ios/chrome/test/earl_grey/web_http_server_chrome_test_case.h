@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 // Base class for Chrome Earl Grey tests which need a web::test::HttpServer.
 // NOTE: This class exists for compatibility with old test classes only.
 //       New tests should not use this class, but instead inherit from
-//       ChromeTestCase and use |self.testServer| directly.
+//       ChromeTestCase and use `self.testServer` directly.
 @interface WebHttpServerChromeTestCase : ChromeTestCase
 @end
 

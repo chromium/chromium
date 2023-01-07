@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,9 @@ class UdpEventEmitter : public StreamEventEmitter {
  public:
   UdpEventEmitter(size_t rsize, size_t wsize);
 
+  UdpEventEmitter(const UdpEventEmitter&) = delete;
+  UdpEventEmitter& operator=(const UdpEventEmitter&) = delete;
+
   // Takes or gives away ownership of the packet.
   Packet* ReadRXPacket_Locked();
   void WriteRXPacket_Locked(Packet* packet);
@@ -34,7 +37,6 @@ class UdpEventEmitter : public StreamEventEmitter {
  private:
   FIFOPacket in_fifo_;
   FIFOPacket out_fifo_;
-  DISALLOW_COPY_AND_ASSIGN(UdpEventEmitter);
 };
 
 }  // namespace nacl_io

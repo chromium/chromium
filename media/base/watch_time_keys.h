@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_BASE_WATCH_TIME_KEYS_H_
 #define MEDIA_BASE_WATCH_TIME_KEYS_H_
 
-#include "base/containers/flat_set.h"
 #include "base/strings/string_piece.h"
 #include "media/base/media_export.h"
 

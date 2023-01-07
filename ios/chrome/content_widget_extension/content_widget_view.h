@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 // content widget view.
 @protocol ContentWidgetViewDelegate
 
-// Called when tapping a tile to open |URL|.
+// Called when tapping a tile to open `URL`.
 - (void)openURL:(NSURL*)URL;
 
 @end
@@ -28,9 +28,9 @@
 // The height of the widget in expanded mode.
 @property(nonatomic, readonly) CGFloat widgetExpandedHeight;
 
-// Designated initializer, creates the widget view with a |delegate| for user
-// actions. |compactHeight| indicates the size to use in compact display.
-// |width| is the width of the widget.
+// Designated initializer, creates the widget view with a `delegate` for user
+// actions. `compactHeight` indicates the size to use in compact display.
+// `width` is the width of the widget.
 - (instancetype)initWithDelegate:(id<ContentWidgetViewDelegate>)delegate
                    compactHeight:(CGFloat)compactHeight
                            width:(CGFloat)width NS_DESIGNATED_INITIALIZER;
@@ -39,12 +39,12 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 // Updates the view to display a compact or expanded view, depending on
-// |compact|. If |compact| is false, the view shows a maximum of 8 tiles. If
-// |compact| is true, the view is set to show a single row of 4 tiles at most
-// within the |compactHeight| passed in the constructor.
+// `compact`. If `compact` is false, the view shows a maximum of 8 tiles. If
+// `compact` is true, the view is set to show a single row of 4 tiles at most
+// within the `compactHeight` passed in the constructor.
 - (void)showMode:(BOOL)compact;
 
-// Updates the displayed sites. |sites| should contain NTPTiles with continuous
+// Updates the displayed sites. `sites` should contain NTPTiles with continuous
 // positions starting at 0.
 - (void)updateSites:(NSDictionary<NSURL*, NTPTile*>*)sites;
 

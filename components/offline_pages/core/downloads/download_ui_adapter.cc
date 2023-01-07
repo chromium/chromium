@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -121,7 +121,7 @@ void DownloadUIAdapter::OfflinePageAdded(OfflinePageModel* model,
   // since they're added to Offline Page database directly, so OnItemsAdded is
   // used.
   if (!is_suggested)
-    NotifyItemUpdated(offline_item, base::nullopt);
+    NotifyItemUpdated(offline_item, absl::nullopt);
   else
     NotifyItemsAdded({offline_item});
 }
@@ -161,11 +161,6 @@ void DownloadUIAdapter::OnCompleted(
   if (!delegate_->IsVisibleInUI(request.client_id()))
     return;
 
-  if (delegate_->MaybeSuppressNotification(request.request_origin(),
-                                           request.client_id())) {
-    return;
-  }
-
   OfflineItem item = OfflineItemConversions::CreateOfflineItem(request);
   if (status == RequestNotifier::BackgroundSavePageResult::SUCCESS) {
     // If the request is completed successfully, it means there should already
@@ -180,7 +175,7 @@ void DownloadUIAdapter::OnCompleted(
     // Actual cause could be server or network related, but we need to pick
     // a fail_state.
     item.fail_state = offline_items_collection::FailState::SERVER_FAILED;
-    NotifyItemUpdated(item, base::nullopt);
+    NotifyItemUpdated(item, absl::nullopt);
   }
 }
 
@@ -190,7 +185,7 @@ void DownloadUIAdapter::OnChanged(const SavePageRequest& request) {
     return;
 
   OfflineItem offline_item(OfflineItemConversions::CreateOfflineItem(request));
-  NotifyItemUpdated(offline_item, base::nullopt);
+  NotifyItemUpdated(offline_item, absl::nullopt);
 }
 
 // RequestCoordinator::Observer
@@ -201,7 +196,7 @@ void DownloadUIAdapter::OnNetworkProgress(const SavePageRequest& request,
 
   OfflineItem offline_item(OfflineItemConversions::CreateOfflineItem(request));
   offline_item.received_bytes = received_bytes;
-  NotifyItemUpdated(offline_item, base::nullopt);
+  NotifyItemUpdated(offline_item, absl::nullopt);
 }
 
 void DownloadUIAdapter::GetAllItems(
@@ -233,12 +228,6 @@ void DownloadUIAdapter::GetShareInfoForItem(const ContentId& id,
 void DownloadUIAdapter::RenameItem(const ContentId& id,
                                    const std::string& name,
                                    RenameCallback callback) {
-  NOTREACHED();
-}
-
-void DownloadUIAdapter::ChangeSchedule(
-    const ContentId& id,
-    base::Optional<OfflineItemSchedule> schedule) {
   NOTREACHED();
 }
 
@@ -382,7 +371,7 @@ void DownloadUIAdapter::OnAllRequestsGetForGetItem(
     const ContentId& id,
     OfflineContentProvider::SingleItemCallback callback,
     std::vector<std::unique_ptr<SavePageRequest>> requests) {
-  base::Optional<OfflineItem> offline_item;
+  absl::optional<OfflineItem> offline_item;
   for (const auto& request : requests) {
     if (request->client_id().id == id.id)
       offline_item = OfflineItemConversions::CreateOfflineItem(*request);

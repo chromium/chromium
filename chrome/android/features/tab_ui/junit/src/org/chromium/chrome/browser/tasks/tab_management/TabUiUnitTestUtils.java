@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ import org.chromium.url.GURL;
  * This is a util class for TabUi unit tests.
  */
 // TODO(crbug.com/1023701): Generalize all prepareTab method from tab_ui/junit directory.
-@SuppressWarnings("ResultOfMethodCallIgnored")
+@SuppressWarnings({"DoNotMock", "ResultOfMethodCallIgnored"}) // Mocks GURL
 public class TabUiUnitTestUtils {
     public static TabImpl prepareTab() {
         TabImpl tab = mock(TabImpl.class);
@@ -53,16 +53,13 @@ public class TabUiUnitTestUtils {
         doReturn(userDataHost).when(tab).getUserDataHost();
     }
 
-    public static TabImpl prepareTab(int id, String title, String urlString) {
+    public static TabImpl prepareTab(int id, String title, GURL url) {
         CriticalPersistedTabData criticalPersistedTabData = mock(CriticalPersistedTabData.class);
         TabImpl tab = prepareTab(id, criticalPersistedTabData);
         doReturn(id).when(criticalPersistedTabData).getRootId();
-        doReturn(urlString).when(tab).getUrlString();
         doReturn(title).when(tab).getTitle();
-
-        GURL gurl = mock(GURL.class);
-        doReturn(urlString).when(gurl).getSpec();
-        doReturn(gurl).when(tab).getOriginalUrl();
+        doReturn(url).when(tab).getOriginalUrl();
+        doReturn(url).when(tab).getUrl();
         return tab;
     }
 
@@ -87,7 +84,7 @@ public class TabUiUnitTestUtils {
         userDataHost.setUserData(CriticalPersistedTabData.class, criticalPersistedTabData);
         doReturn(userDataHost).when(tab).getUserDataHost();
         doReturn(rootId).when(criticalPersistedTabData).getRootId();
-        doReturn("").when(tab).getUrlString();
+        doReturn(GURL.emptyGURL()).when(tab).getUrl();
         return tab;
     }
 

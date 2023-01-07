@@ -1,3 +1,8 @@
+include_rules = [
+"+components/signin/internal/identity_manager/account_capabilities_constants.h",
+"+ios/chrome/browser/ui",
+]
+
 specific_include_rules = {
   # web::HttpServer is deprecated in favor of net::EmbeddedTestServer.
   # TODO:(crbug.com/891834) Remove this exception.

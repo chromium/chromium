@@ -26,7 +26,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_REGISTERED_EVENT_LISTENER_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -44,6 +45,7 @@ class RegisteredEventListener final {
   RegisteredEventListener();
   RegisteredEventListener(EventListener* listener,
                           const AddEventListenerOptionsResolved* options);
+  RegisteredEventListener(const RegisteredEventListener& that);
   RegisteredEventListener& operator=(const RegisteredEventListener& that);
 
   void Trace(Visitor* visitor) const;

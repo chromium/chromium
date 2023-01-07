@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,16 +16,18 @@
         Security.SecurityModel.Events.VisibleSecurityStateChanged,
         pageVisibleSecurityState);
 
-  var passive = new SDK.NetworkRequest(0, 'http://foo.test', 'https://foo.test', 0, 0, null);
+  var passive = SDK.NetworkRequest.create(
+      0, 'http://foo.test', 'https://foo.test', 0, 0, null);
   passive.mixedContentType = 'optionally-blockable';
   SecurityTestRunner.dispatchRequestFinished(passive);
 
-  var active = new SDK.NetworkRequest(0, 'http://bar.test', 'https://bar.test', 0, 0, null);
+  var active = SDK.NetworkRequest.create(
+      0, 'http://bar.test', 'https://bar.test', 0, 0, null);
   active.mixedContentType = 'blockable';
   SecurityTestRunner.dispatchRequestFinished(active);
 
   TestRunner.addResult('Origin sidebar:');
-  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel._instance()._sidebarTree.element);
+  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance().sidebarTree.element);
 
   TestRunner.completeTest();
 })();

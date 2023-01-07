@@ -1,0 +1,40 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/ash/components/hibernate/buildflags.gni")
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+
+component("hibernate_manager") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_LOGIN_HIBERNATE_IMPL" ]
+  public_deps = [ "//chromeos/ash/components/login/auth/public:authpublic" ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/hibernate:buildflags",
+  ]
+  sources = [
+    "hibernate_manager.cc",
+    "hibernate_manager.h",
+  ]
+
+  if (enable_hibernate) {
+    deps += [ "//chromeos/ash/components/dbus/hiberman" ]
+  }
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/linux/dbus" ]
+  testonly = true
+  deps = [
+    ":hibernate_manager",
+    "//base",
+    "//chromeos/ash/components/dbus/hiberman",
+    "//testing/gtest",
+  ]
+  sources = [ "hibernate_manager_unittest.cc" ]
+}

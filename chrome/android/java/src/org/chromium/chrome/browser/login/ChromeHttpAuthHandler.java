@@ -1,10 +1,11 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.login;
 
 import android.app.Activity;
+import android.view.WindowManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -93,6 +94,10 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
             cancel();
             return;
         }
+        if (activity.isFinishing() || activity.isDestroyed()) {
+            cancel();
+            return;
+        }
         mTab = tab;
         mTab.addObserver(this);
         String messageBody = ChromeHttpAuthHandlerJni.get().getMessageBody(
@@ -102,7 +107,12 @@ public class ChromeHttpAuthHandler extends EmptyTabObserver implements LoginProm
         if (mAutofillUsername != null && mAutofillPassword != null) {
             mLoginPrompt.onAutofillDataAvailable(mAutofillUsername, mAutofillPassword);
         }
-        mLoginPrompt.show();
+        try {
+            mLoginPrompt.show();
+        } catch (WindowManager.BadTokenException ex) {
+            cancel();
+            return;
+        }
     }
 
     @CalledByNative

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/public/browser/payment_app_provider_util.h"
 
-#include "content/common/service_worker/service_worker_utils.h"
+#include "content/browser/service_worker/service_worker_loader_helpers.h"
+#include "content/browser/service_worker/service_worker_security_utils.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
@@ -13,7 +14,8 @@ namespace content {
 ukm::SourceId PaymentAppProviderUtil::GetSourceIdForPaymentAppFromScope(
     const GURL& sw_scope) {
   return ukm::UkmRecorder::GetSourceIdForPaymentAppFromScope(
-      sw_scope.GetOrigin());
+      base::PassKey<PaymentAppProviderUtil>(),
+      sw_scope.DeprecatedGetOriginAsURL());
 }
 
 // static
@@ -27,7 +29,7 @@ bool PaymentAppProviderUtil::IsValidInstallablePaymentApp(
 
   // Scope will be checked against service worker js url when registering, but
   // we check it here earlier to avoid presenting unusable payment handlers.
-  if (!ServiceWorkerUtils::IsPathRestrictionSatisfiedWithoutHeader(
+  if (!service_worker_loader_helpers::IsPathRestrictionSatisfiedWithoutHeader(
           sw_scope, sw_js_url, error_message)) {
     return false;
   }
@@ -35,7 +37,8 @@ bool PaymentAppProviderUtil::IsValidInstallablePaymentApp(
   // TODO(crbug.com/855312): Unify duplicated code between here and
   // ServiceWorkerProviderHost::IsValidRegisterMessage.
   std::vector<GURL> urls = {manifest_url, sw_js_url, sw_scope};
-  if (!ServiceWorkerUtils::AllOriginsMatchAndCanAccessServiceWorkers(urls)) {
+  if (!service_worker_security_utils::AllOriginsMatchAndCanAccessServiceWorkers(
+          urls)) {
     *error_message =
         "Origins are not matching, or some origins cannot access service "
         "worker (manifest:" +
@@ -52,9 +55,7 @@ payments::mojom::CanMakePaymentResponsePtr
 PaymentAppProviderUtil::CreateBlankCanMakePaymentResponse(
     payments::mojom::CanMakePaymentEventResponseType response_type) {
   return payments::mojom::CanMakePaymentResponse::New(
-      response_type, /*can_make_payment=*/false,
-      /*ready_for_minimal_ui=*/false,
-      /*account_balance=*/base::nullopt);
+      response_type, /*can_make_payment=*/false);
 }
 
 // static
@@ -63,9 +64,9 @@ PaymentAppProviderUtil::CreateBlankPaymentHandlerResponse(
     payments::mojom::PaymentEventResponseType response_type) {
   return payments::mojom::PaymentHandlerResponse::New(
       /*method_name=*/"", /*stringified_details=*/"", response_type,
-      /*payer_name=*/base::nullopt, /*payer_email=*/base::nullopt,
-      /*payer_phone=*/base::nullopt, /*shipping_address=*/nullptr,
-      /*shipping_option=*/base::nullopt);
+      /*payer_name=*/absl::nullopt, /*payer_email=*/absl::nullopt,
+      /*payer_phone=*/absl::nullopt, /*shipping_address=*/nullptr,
+      /*shipping_option=*/absl::nullopt);
 }
 
 }  // namespace content

@@ -1,9 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_TOUCH_SELECTION_SELECTION_EVENT_TYPE_
-#define UI_TOUCH_SELECTION_SELECTION_EVENT_TYPE_
+#ifndef UI_TOUCH_SELECTION_SELECTION_EVENT_TYPE_H_
+#define UI_TOUCH_SELECTION_SELECTION_EVENT_TYPE_H_
 
 namespace ui {
 
@@ -28,4 +28,4 @@ enum SelectionEventType {
 
 }  // namespace ui
 
-#endif  // UI_TOUCH_SELECTION_SELECTION_EVENT_TYPE_
+#endif  // UI_TOUCH_SELECTION_SELECTION_EVENT_TYPE_H_

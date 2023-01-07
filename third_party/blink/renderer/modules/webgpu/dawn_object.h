@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,10 @@
 #include <dawn/webgpu.h>
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -23,7 +25,7 @@
   X(ComputePassEncoder, computePassEncoder)   \
   X(ComputePipeline, computePipeline)         \
   X(Device, device)                           \
-  X(Fence, fence)                             \
+  X(ExternalTexture, externalTexture)         \
   X(Instance, instance)                       \
   X(PipelineLayout, pipelineLayout)           \
   X(QuerySet, querySet)                       \
@@ -35,7 +37,6 @@
   X(Sampler, sampler)                         \
   X(ShaderModule, shaderModule)               \
   X(Surface, surface)                         \
-  X(SwapChain, swapChain)                     \
   X(Texture, texture)                         \
   X(TextureView, textureView)
 
@@ -48,6 +49,10 @@ class WebGPUInterface;
 }  // namespace gpu
 
 namespace blink {
+
+namespace scheduler {
+class EventLoop;
+}  // namespace scheduler
 
 template <typename T>
 struct WGPUReleaseFn;
@@ -73,12 +78,17 @@ class DawnObjectBase {
       scoped_refptr<DawnControlClientHolder> dawn_control_client);
 
   const scoped_refptr<DawnControlClientHolder>& GetDawnControlClient() const;
-  gpu::webgpu::WebGPUInterface* GetInterface() const;
-  const DawnProcTable& GetProcs() const;
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
+      const {
+    return dawn_control_client_->GetContextProviderWeakPtr();
+  }
+  const DawnProcTable& GetProcs() const {
+    return dawn_control_client_->GetProcs();
+  }
 
   // Ensure commands up until now on this object's parent device are flushed by
   // the end of the task.
-  void EnsureFlush();
+  void EnsureFlush(scheduler::EventLoop& event_loop);
 
   // Flush commands up until now on this object's parent device immediately.
   void FlushNow();
@@ -86,6 +96,8 @@ class DawnObjectBase {
   // GPUObjectBase mixin implementation
   const String& label() const { return label_; }
   void setLabel(const String& value);
+
+  virtual void setLabelImpl(const String& value) {}
 
  private:
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
@@ -98,6 +110,7 @@ class DawnObjectImpl : public ScriptWrappable, public DawnObjectBase {
   ~DawnObjectImpl() override;
 
   WGPUDevice GetDeviceHandle();
+  GPUDevice* device() { return device_.Get(); }
 
   void Trace(Visitor* visitor) const override;
 
@@ -122,6 +135,8 @@ class DawnObject : public DawnObjectImpl {
   }
 
   ~DawnObject() override {
+    DCHECK(handle_);
+
     // Note: The device is released last because all child objects must be
     // destroyed first.
     (GetProcs().*WGPUReleaseFn<Handle>::fn)(handle_);

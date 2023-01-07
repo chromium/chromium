@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_NOTIFICATIONS_NOTIFICATION_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_NOTIFICATIONS_NOTIFICATION_MANAGER_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
@@ -34,6 +33,10 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
   static NotificationManager* From(ExecutionContext* context);
 
   explicit NotificationManager(ExecutionContext& context);
+
+  NotificationManager(const NotificationManager&) = delete;
+  NotificationManager& operator=(const NotificationManager&) = delete;
+
   ~NotificationManager();
 
   // Returns the notification permission status of the current origin. This
@@ -104,8 +107,6 @@ class NotificationManager final : public GarbageCollected<NotificationManager>,
 
   HeapMojoRemote<mojom::blink::NotificationService> notification_service_;
   HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationManager);
 };
 
 }  // namespace blink

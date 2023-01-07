@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_INSTALLEDAPP_INSTALLED_APP_PROVIDER_IMPL_WIN_H_
 #define CONTENT_BROWSER_INSTALLEDAPP_INSTALLED_APP_PROVIDER_IMPL_WIN_H_
 
-#include <string>
 #include <vector>
 
 #include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"

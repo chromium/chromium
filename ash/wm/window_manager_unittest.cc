@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,9 @@ class CustomEventHandler : public ui::test::TestEventHandler {
   CustomEventHandler()
       : key_result_(ui::ER_UNHANDLED), mouse_result_(ui::ER_UNHANDLED) {}
 
+  CustomEventHandler(const CustomEventHandler&) = delete;
+  CustomEventHandler& operator=(const CustomEventHandler&) = delete;
+
   ~CustomEventHandler() override = default;
 
   void set_key_event_handling_result(ui::EventResult result) {
@@ -73,8 +76,6 @@ class CustomEventHandler : public ui::test::TestEventHandler {
  private:
   ui::EventResult key_result_;
   ui::EventResult mouse_result_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomEventHandler);
 };
 
 }  // namespace
@@ -84,6 +85,10 @@ namespace ash {
 class WindowManagerTest : public AshTestBase {
  public:
   WindowManagerTest() = default;
+
+  WindowManagerTest(const WindowManagerTest&) = delete;
+  WindowManagerTest& operator=(const WindowManagerTest&) = delete;
+
   ~WindowManagerTest() override = default;
 
   void SetUp() override {
@@ -92,23 +97,26 @@ class WindowManagerTest : public AshTestBase {
     // Shell hides the cursor by default; show it for these tests.
     Shell::Get()->cursor_manager()->ShowCursor();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(WindowManagerTest);
 };
 
 class NonFocusableDelegate : public aura::test::TestWindowDelegate {
  public:
   NonFocusableDelegate() = default;
 
+  NonFocusableDelegate(const NonFocusableDelegate&) = delete;
+  NonFocusableDelegate& operator=(const NonFocusableDelegate&) = delete;
+
  private:
   bool CanFocus() override { return false; }
-
-  DISALLOW_COPY_AND_ASSIGN(NonFocusableDelegate);
 };
 
 class HitTestWindowDelegate : public aura::test::TestWindowDelegate {
  public:
   HitTestWindowDelegate() : hittest_code_(HTNOWHERE) {}
+
+  HitTestWindowDelegate(const HitTestWindowDelegate&) = delete;
+  HitTestWindowDelegate& operator=(const HitTestWindowDelegate&) = delete;
+
   ~HitTestWindowDelegate() override = default;
   void set_hittest_code(int hittest_code) { hittest_code_ = hittest_code; }
 
@@ -119,8 +127,6 @@ class HitTestWindowDelegate : public aura::test::TestWindowDelegate {
   }
 
   int hittest_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(HitTestWindowDelegate);
 };
 
 TEST_F(WindowManagerTest, Focus) {
@@ -352,8 +358,8 @@ TEST_F(WindowManagerTest, ActivateOnMouse) {
     std::unique_ptr<aura::Window> w11(CreateTestWindowWithDelegate(
         &nfd, -1, gfx::Rect(10, 10, 10, 10), w1.get()));
     // Move focus to |w2| first.
-    std::unique_ptr<aura::Window> w2(CreateTestWindowInShellWithDelegate(
-        &wd, -1, gfx::Rect(70, 70, 50, 50)));
+    w2.reset(CreateTestWindowInShellWithDelegate(&wd, -1,
+                                                 gfx::Rect(70, 70, 50, 50)));
     ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(), w2.get());
     generator.ClickLeftButton();
     EXPECT_EQ(w2.get(), focus_client->GetFocusedWindow());
@@ -617,7 +623,7 @@ TEST_F(WindowManagerTest, TransformActivate) {
   w1->Show();
 
   gfx::Point miss_point(5, 5);
-  transform.TransformPoint(&miss_point);
+  miss_point = transform.MapPoint(miss_point);
   ui::MouseEvent mouseev1(ui::ET_MOUSE_PRESSED, miss_point, miss_point,
                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                           ui::EF_LEFT_MOUSE_BUTTON);
@@ -632,7 +638,7 @@ TEST_F(WindowManagerTest, TransformActivate) {
   ASSERT_FALSE(details.dispatcher_destroyed);
 
   gfx::Point hit_point(5, 15);
-  transform.TransformPoint(&hit_point);
+  hit_point = transform.MapPoint(hit_point);
   ui::MouseEvent mouseev2(ui::ET_MOUSE_PRESSED, hit_point, hit_point,
                           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                           ui::EF_LEFT_MOUSE_BUTTON);

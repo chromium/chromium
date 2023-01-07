@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,13 @@ namespace ui {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(WmDragHandler*, kWmDragHandlerKey, nullptr)
 
-WmDragHandler::Delegate::~Delegate() = default;
+WmDragHandler::LocationDelegate::~LocationDelegate() = default;
+
+bool WmDragHandler::ShouldReleaseCaptureForDrag(
+    ui::OSExchangeData* data) const {
+  // Chrome normally expects starting drag and drop to release capture.
+  return true;
+}
 
 void SetWmDragHandler(PlatformWindow* platform_window,
                       WmDragHandler* drag_handler) {

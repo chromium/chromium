@@ -1,13 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/accessibility/auto_complete_handler.h"
 
+#include "ash/components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
-#include "components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -54,7 +54,7 @@ AutoCompleteHandler::AutoCompleteHandler(const int32_t editable_node_id)
 AutoCompleteHandler::~AutoCompleteHandler() = default;
 
 // static
-std::vector<std::pair<int32_t, std::unique_ptr<AutoCompleteHandler>>>
+std::vector<AutoCompleteHandler::IdAndHandler>
 AutoCompleteHandler::CreateIfNecessary(
     AXTreeSourceArc* tree_source,
     const mojom::AccessibilityEventData& event_data) {
@@ -63,7 +63,7 @@ AutoCompleteHandler::CreateIfNecessary(
     return {};
   }
 
-  std::vector<std::pair<int32_t, std::unique_ptr<AutoCompleteHandler>>> results;
+  std::vector<IdAndHandler> results;
 
   // Check all updated nodes under the event source.
   std::vector<AccessibilityInfoDataWrapper*> to_visit;

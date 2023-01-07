@@ -1,61 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Theme shared between Chrome and embedders. -->
-    <style name="Theme.BrowserUI" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <!-- Text colors -->
-        <item name="android:textColorLink">@color/default_text_color_link</item>
-        <item name="android:textColorHighlight">@color/text_highlight_color</item>
-        <item name="android:textColorHint">@color/default_text_color_hint_list</item>
-
-        <!-- Color of checkboxes, switches, buttons, etc. -->
-        <item name="colorAccent">@color/default_control_color_active</item>
-        <item name="colorControlNormal">@color/control_normal_color</item>
-        <item name="colorControlActivated">@color/default_control_color_active</item>
-        <item name="colorControlHighlight">@color/control_highlight_color</item>
-
-        <!-- Window Properties -->
-        <item name="android:windowBackground">@color/default_bg_color</item>
-
-        <!-- Action bar color -->
-        <item name="colorPrimary">@color/default_bg_color</item>
-
-        <!-- Status bar color -->
-        <item name="android:statusBarColor" tools:targetApi="21">@android:color/black</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
-        <item name="colorPrimaryDark">@android:color/black</item>
-
-        <!-- Spinner styles -->
-        <item name="spinnerStyle">@style/SpinnerStyle</item>
-
-        <!-- Popup styles -->
-        <!-- Set android popup menu attributes for context menu styles because the context menus are
-             OS-dependent. -->
-        <item name="android:popupMenuStyle">@style/PopupMenuStyle</item>
-        <item name="android:textAppearanceLargePopupMenu">
-            @style/TextAppearance.TextLarge.Primary
-        </item>
-        <item name="android:textAppearanceSmallPopupMenu">
-            @style/TextAppearance.TextLarge.Primary
-        </item>
-        <item name="android:contextPopupMenuStyle" tools:targetApi="24">@style/PopupMenuStyle</item>
-
-        <!-- Shape -->
-        <item name="menuCornerSize">@dimen/popup_bg_corner_radius</item>
+    <!-- Control styles -->
+    <style name="Widget.BrowserUI.CheckBox" parent="Widget.Material3.CompoundButton.CheckBox">
+        <item name="buttonTint">@color/selection_control_button_tint_list</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
     </style>
+    <style name="Widget.BrowserUI.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
+        <item name="buttonTint">@color/selection_control_button_tint_list</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
+    </style>
+    <style name="Widget.BrowserUI.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="thumbTint">@color/switch_thumb_tint_list</item>
+        <item name="trackTint">@color/switch_track_tint</item>
+        <item name="trackTintMode">src_in</item>
+    </style>
+    <style name="Widget.BrowserUI.Switch.Incognito" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="thumbTint">@color/switch_thumb_tint_incognito_baseline_list</item>
+        <item name="trackTint">@color/switch_track_tint_incognito_baseline_list</item>
 
-    <!-- Popup and long-press context popup menu style -->
-    <style name="PopupMenuStyle" parent="Widget.AppCompat.Light.PopupMenu">
-        <item name="android:popupBackground">@drawable/popup_bg_tinted</item>
-        <item name="android:overlapAnchor" tools:targetApi="21">true</item>
-        <item name="android:popupElevation" tools:targetApi="21">0dp</item>
+    </style>
+    <!-- TextInputLayout style -->
+    <style name="Widget.BrowserUI.TextInputLayout" parent="Widget.Design.TextInputLayout">
+        <item name="errorTextAppearance">@style/TextAppearance.ErrorCaption</item>
     </style>
 
     <!-- Basic theme for an overflow menu displayed in Chrome. -->
-    <style name="Base.OverflowMenuThemeOverlay" parent="Theme.AppCompat.DayNight">
+    <style name="Base.OverflowMenuThemeOverlay" parent="">
+        <item name="android:popupMenuStyle">@android:style/Widget.Material.PopupMenu</item>
         <item name="android:popupBackground">@null</item>
         <item name="android:listDivider">@null</item>
         <item name="android:listPreferredItemHeightSmall">48dp</item>
@@ -64,31 +45,7 @@
     </style>
     <style name="OverflowMenuThemeOverlay" parent="Base.OverflowMenuThemeOverlay" />
 
-    <!-- AlertDialog styles -->
-    <style name="Base.Theme.Chromium.AlertDialog" parent="Theme.AppCompat.DayNight.Dialog.Alert">
-        <item name="android:textColorPrimary">@color/default_text_color</item>
-        <item name="android:windowBackground">@drawable/popup_bg_tinted</item>
-        <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>
-        <item name="android:textColorHighlight">@color/text_highlight_color</item>
-
-        <!--  Overriding AppCompat values -->
-        <item name="colorAccent">@color/default_control_color_active</item>
-        <item name="colorControlActivated">@color/default_control_color_active</item>
-        <item name="colorControlNormal">@color/control_normal_color</item>
-        <item name="colorControlHighlight">@color/control_highlight_color</item>
-        <item name="colorPrimary">@color/default_control_color_active</item>
-        <item name="buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
-        <item name="spinnerStyle">@style/SpinnerStyle</item>
-    </style>
-
-    <style name="Theme.Chromium.AlertDialog" parent="Base.Theme.Chromium.AlertDialog" />
-
-    <style name="Theme.Chromium.AlertDialog.NoActionBar">
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-    </style>
-
-    <style name="AlertDialogButtonStyle" parent="Widget.AppCompat.Button.ButtonBar.AlertDialog">
+    <style name="AlertDialogButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textAppearance">@style/TextAppearance.Button.Text.Blue</item>
     </style>
 
@@ -118,19 +75,20 @@
         <item name="android:paddingTop">10dp</item>
     </style>
 
-    <!-- Spinner styles -->
-    <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner">
-        <item name="android:popupBackground">@drawable/popup_bg_tinted</item>
-        <item name="android:popupElevation" tools:targetApi="21">0dp</item>
+    <style name="ProgressBarStyle" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">@macro/default_icon_color_accent1</item>
     </style>
 
     <!-- Switch styling for dark theme -->
-    <style name="SwitchCompatDark" >
-        <item name="colorAccent">@color/default_control_color_active_dark</item>
-        <item name="colorControlNormal">@color/default_control_color_normal_dark</item>
+    <!-- TODO(sinansahin): See if we can pass the baseline dark theme to the incognito NTP instead.
+         -->
+    <style name="SwitchMaterialDark">
+        <!-- TODO(sinansahin): When we migrate the switch style to Material3, we should override
+             colorOnSurface and colorPrimary instead of these attributes because they are what
+             m3_selection_control_ripple_color_selector uses. -->
         <item name="colorControlActivated">@color/default_control_color_active_dark</item>
         <item name="colorControlHighlight">@color/default_control_color_highlight_dark</item>
-        <item name="android:colorForeground">@color/modern_grey_100</item>
+        <item name="switchStyle">@style/Widget.BrowserUI.Switch.Incognito</item>
     </style>
 
     <!-- Styling for an app menu item row. -->
@@ -146,18 +104,136 @@
         <item name="android:paddingStart">16dp</item>
     </style>
 
-    <!-- Fullscreen -->
-    <style name="Base.Theme.Chromium.Fullscreen" parent="Theme.BrowserUI">
-        <!-- With ActionBar but not window title -->
-        <!-- TODO(huayinz): Check if windowActionBar is actually needed. -->
-        <item name="windowActionBar">true</item>
-        <item name="colorPrimary">@color/default_control_color_active</item>
-        <item name="colorAccent">@color/default_control_color_active</item>
+    <style name="ModernToolbar" parent="Widget.MaterialComponents.Toolbar">
+        <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
+        <item name="titleTextColor">@macro/default_text_color</item>
+        <item name="windowActionBarOverlay">true</item>
+        <item name="android:background">@macro/default_bg_color</item>
     </style>
-    <style name="Theme.Chromium.Fullscreen" parent="Base.Theme.Chromium.Fullscreen" />
 
-    <!-- Refactored styles -->
-    <style name="ThemeRefactorAppThemeOverlay">
-        <item name="menuCornerSize">@dimen/refactor_menu_rounded_corner_radius</item>
+    <style name="TextButton.OnAccent1" tools:ignore="UnusedResources">
+        <item name="android:textAppearance">@style/TextAppearance.Button.OnAccent1</item>
+        <item name="buttonTextColor">@color/default_text_color_on_accent1_list</item>
+        <item name="rippleColor">@color/filled_button_ripple_color</item>
     </style>
+
+    <!-- Text styles -->
+    <!-- Primary text styles -->
+    <style name="TextAppearance.Headline.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
+    <style name="TextAppearance.TextLarge.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
+    <style name="TextAppearance.TextMediumThick.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
+    <style name="TextAppearance.TextMedium.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
+    <style name="TextAppearance.TextSmall.Primary">
+        <item name="android:textColor">@color/default_text_color_list</item>
+    </style>
+
+    <!-- Secondary text styles -->
+    <style name="TextAppearance.TextLarge.Secondary">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+    </style>
+
+    <style name="TextAppearance.TextMediumThick.Secondary">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+    </style>
+
+    <style name="TextAppearance.TextAccentMediumThick.Secondary">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+    </style>
+
+    <style name="TextAppearance.TextMedium.Secondary">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+    </style>
+
+    <style name="TextAppearance.TextSmall.Secondary">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+    </style>
+
+    <!-- Accent1 text styles -->
+    <style name="TextAppearance.TextLarge.Accent1">
+        <item name="android:textColor">@color/default_text_color_accent1_tint_list</item>
+    </style>
+    <style name="TextAppearance.TextMedium.Accent1">
+        <item name="android:textColor">@color/default_text_color_accent1_tint_list</item>
+    </style>
+    <style name="TextAppearance.TextMediumThick.Accent1">
+        <item name="android:textColor">@color/default_text_color_accent1_tint_list</item>
+    </style>
+    <style name="TextAppearance.TextSmall.Accent1">
+        <item name="android:textColor">@color/default_text_color_accent1_tint_list</item>
+    </style>
+    <style name="TextAppearance.TextLarge.Link" parent="TextAppearance.TextLarge">
+        <item name="android:textColor">@color/default_text_color_link_tint_list</item>
+    </style>
+    <style name="TextAppearance.TextMedium.Link" parent="TextAppearance.TextMedium">
+        <item name="android:textColor">@color/default_text_color_link_tint_list</item>
+    </style>
+    <style name="TextAppearance.TextSmall.Link" parent="TextAppearance.TextSmall">
+        <item name="android:textColor">@color/default_text_color_link_tint_list</item>
+    </style>
+
+    <!-- Formerly inverse text styles -->
+    <!-- Text styles used on dark background on light theme, and light background on dark theme. -->
+    <style name="TextAppearance.Headline.Primary.OnAccent1" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
+    </style>
+    <style name="TextAppearance.TextMediumThick.Primary.OnAccent1" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
+    </style>
+    <style name="TextAppearance.TextMedium.Primary.OnAccent1" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
+    </style>
+    <style name="TextAppearance.TextSmall.Primary.OnAccent1" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
+    </style>
+    <style name="TextAppearance.Button.OnAccent1" parent="TextAppearance.TextMediumThick.Primary.OnAccent1"/>
+
+    <!-- Chip Text Styles -->
+    <style name="TextAppearance.ChipText" parent="TextAppearance.TextAccentMediumThick">
+        <item name="android:textColor">@color/chip_text_color_secondary_list</item>
+    </style>
+    <style name="TextAppearance.ChipHint" parent="TextAppearance.TextAccentMediumThick">
+        <item name="android:textColor">@color/chip_text_color_secondary_list</item>
+    </style>
+
+    <!-- Other text styles -->
+    <style name="TextAppearance.BlackLink" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+        <item name="android:textSize">@dimen/text_size_medium</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextAppearance.BlackToolbarTitle" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+        <item name="android:textSize">@dimen/text_size_large</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextAppearance.EditorDialogSectionAddButton"
+        parent="TextAppearance.TextMedium.Link">
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <!-- Disabled text styles -->
+    <style name="TextAppearance.TextLarge.Disabled" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_list</item>
+    </style>
+
+    <style name="TextAppearance.TextMedium.Disabled">
+        <item name="android:textColor">@color/default_text_color_disabled_list</item>
+    </style>
+
+    <style name="TextAppearance.TextSmall.Disabled" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_list</item>
+    </style>
+
 </resources>

@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,6 +10,7 @@ static_library("common") {
     "content_settings.cc",
     "content_settings.h",
     "content_settings_constraints.h",
+    "content_settings_metadata.h",
     "content_settings_param_traits.cc",
     "content_settings_param_traits.h",
     "content_settings_pattern.cc",
@@ -54,6 +55,7 @@ source_set("unit_tests") {
   deps = [
     ":common",
     "//base",
+    "//base/test:test_support",
     "//net",
     "//testing/gmock",
     "//testing/gtest",

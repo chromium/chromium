@@ -1,9 +1,9 @@
-CONSOLE WARNING: line 24: The specified value "foo" cannot be parsed, or is out of range.
-CONSOLE WARNING: line 24: The specified value "foo" cannot be parsed, or is out of range.
-CONSOLE WARNING: line 24: The specified value "foo" cannot be parsed, or is out of range.
-CONSOLE WARNING: line 24: The specified value "foo" cannot be parsed, or is out of range.
-CONSOLE WARNING: line 24: The specified value "foo" cannot be parsed, or is out of range.
-CONSOLE WARNING: line 24: The specified value "foo" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "foo" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "foo" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "foo" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "foo" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "foo" cannot be parsed, or is out of range.
+CONSOLE WARNING: The specified value "foo" cannot be parsed, or is out of range.
 Check stepping-up and -down for number input from renderer.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

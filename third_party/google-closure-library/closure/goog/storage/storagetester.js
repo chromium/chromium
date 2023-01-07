@@ -1,16 +1,8 @@
-// Copyright 2017 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Helper for various storage tests.
@@ -27,6 +19,7 @@ goog.require('goog.testing.asserts');
  * @param {!goog.storage.Storage} storage
  */
 goog.storage.storageTester.runBasicTests = function(storage) {
+  'use strict';
   // Simple Objects.
   storage.set('first', 'Hello world!');
   storage.set('second', ['one', 'two', 'three']);
@@ -36,7 +29,7 @@ goog.storage.storageTester.runBasicTests = function(storage) {
   assertObjectEquals({'a': 97, 'b': 98}, storage.get('third'));
 
   // Some more complex fun with a Map.
-  var map = new goog.structs.Map();
+  const map = new goog.structs.Map();
   map.set('Alice', 'Hello world!');
   map.set('Bob', ['one', 'two', 'three']);
   map.set('Cecile', {'a': 97, 'b': 98});

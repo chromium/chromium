@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,9 +44,12 @@ export const SAConstants = {
   ActionResponse: {
     NO_ACTION_TAKEN: -1,
     REMAIN_OPEN: 0,
+    // Closes the menu entirely.
     CLOSE_MENU: 1,
-    RELOAD_MENU: 2,
-    OPEN_TEXT_NAVIGATION_MENU: 3,
+    // Exits the current submenu.
+    EXIT_SUBMENU: 2,
+    RELOAD_MENU: 3,
+    OPEN_TEXT_NAVIGATION_MENU: 4,
   },
 
   /**
@@ -142,7 +145,7 @@ export const SAConstants = {
       PRIMARY: 'primary',
       // The ID for the ring showing a preview of the next focus, if the user
       // selects the current element.
-      PREVIEW: 'preview'
+      PREVIEW: 'preview',
     },
 
     /**

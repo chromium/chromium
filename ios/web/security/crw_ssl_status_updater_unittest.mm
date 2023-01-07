@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,20 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/mac/bridging.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/public/navigation/navigation_item.h"
-#include "ios/web/public/security/ssl_status.h"
-#include "ios/web/public/test/web_test.h"
+#import "ios/web/public/security/ssl_status.h"
+#import "ios/web/public/test/web_test.h"
 #import "ios/web/security/wk_web_view_security_util.h"
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
 #import "ios/web/test/fakes/fake_navigation_manager_delegate.h"
-#include "net/cert/x509_util_ios_and_mac.h"
-#include "net/test/cert_test_util.h"
-#include "net/test/test_data_directory.h"
-#include "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "net/cert/x509_util_apple.h"
+#import "net/test/cert_test_util.h"
+#import "net/test/test_data_directory.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -31,12 +31,12 @@
   StatusQueryHandler _verificationCompletionHandler;
 }
 
-// Yes if |SSLStatusUpdater:querySSLStatusForTrust:host:completionHandler| was
+// Yes if `SSLStatusUpdater:querySSLStatusForTrust:host:completionHandler` was
 // called.
 @property(nonatomic, readonly) BOOL certVerificationRequested;
 
 // Calls completion handler passed in
-// |SSLStatusUpdater:querySSLStatusForTrust:host:completionHandler|.
+// `SSLStatusUpdater:querySSLStatusForTrust:host:completionHandler`.
 - (void)finishVerificationWithCertStatus:(net::CertStatus)certStatus
                            securityStyle:(web::SecurityStyle)securityStyle;
 
@@ -108,7 +108,7 @@ class CRWSSLStatusUpdaterTest : public web::WebTest {
         net::x509_util::CreateSecCertificateArrayForX509Certificate(
             cert.get()));
     ASSERT_TRUE(chain);
-    trust_ = CreateServerTrustFromChain(base::mac::CFToNSCast(chain.get()),
+    trust_ = CreateServerTrustFromChain(base::mac::CFToNSPtrCast(chain.get()),
                                         kHostName);
   }
 
@@ -117,12 +117,13 @@ class CRWSSLStatusUpdaterTest : public web::WebTest {
     web::WebTest::TearDown();
   }
 
-  // Adds a single committed entry to |nav_manager_|.
+  // Adds a single committed entry to `nav_manager_`.
   void AddNavigationItem(std::string item_url_spec) {
     [fake_wk_list_ setCurrentURL:base::SysUTF8ToNSString(item_url_spec)];
     nav_manager_.AddPendingItem(
         GURL(item_url_spec), Referrer(), ui::PAGE_TRANSITION_LINK,
-        web::NavigationInitiationType::BROWSER_INITIATED);
+        web::NavigationInitiationType::BROWSER_INITIATED,
+        /*is_post_navigation=*/false, web::HttpsUpgradeType::kNone);
     nav_manager_.CommitPendingItem();
   }
 
@@ -185,7 +186,7 @@ TEST_F(CRWSSLStatusUpdaterTest, NoChangesToHttpItem) {
 TEST_F(CRWSSLStatusUpdaterTest, HttpsItemNoCert) {
   AddNavigationItem(kHttpsUrl);
   web::NavigationItem* item = nav_manager_.GetLastCommittedItem();
-  // Change default value to test that |item| is actually changed.
+  // Change default value to test that `item` is actually changed.
   item->GetSSL().security_style = SECURITY_STYLE_UNAUTHENTICATED;
 
   // Make sure that item change callback was called.

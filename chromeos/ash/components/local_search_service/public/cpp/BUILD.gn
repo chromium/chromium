@@ -1,0 +1,37 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("local_search_service_provider") {
+  sources = [
+    "local_search_service_provider.cc",
+    "local_search_service_provider.h",
+  ]
+
+  deps = [
+    "//chromeos/ash/components/local_search_service",
+    "//chromeos/ash/components/local_search_service/public/mojom",
+  ]
+}
+
+source_set("cpp") {
+  sources = [
+    "local_search_service_proxy.cc",
+    "local_search_service_proxy.h",
+    "local_search_service_proxy_factory.cc",
+    "local_search_service_proxy_factory.h",
+  ]
+
+  deps = [
+    ":local_search_service_provider",
+    "//chromeos/ash/components/local_search_service",
+    "//chromeos/ash/components/local_search_service:local_search_service_provider",
+    "//chromeos/ash/components/local_search_service/public/mojom",
+    "//components/keyed_service/content:content",
+    "//components/prefs:prefs",
+  ]
+}

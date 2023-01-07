@@ -1,0 +1,56 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+source_set("proxy") {
+  # Due to circular dependency, others should depend on via
+  # chromeos/ash/components/network.
+  visibility = [ "//chromeos/ash/components/network" ]
+
+  configs += [ "//chromeos/ash/components/network:network_config" ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network/onc",
+    "//components/onc",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/proxy_config",
+    "//components/user_manager",
+    "//dbus",
+    "//net",
+  ]
+  sources = [
+    "proxy_config_handler.cc",
+    "proxy_config_handler.h",
+    "proxy_config_service_impl.cc",
+    "proxy_config_service_impl.h",
+    "ui_proxy_config_service.cc",
+    "ui_proxy_config_service.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    "//base",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network:test_support",
+    "//components/onc",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/proxy_config",
+    "//components/sync_preferences:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+  sources = [
+    "proxy_config_service_impl_unittest.cc",
+    "ui_proxy_config_service_unittest.cc",
+  ]
+}

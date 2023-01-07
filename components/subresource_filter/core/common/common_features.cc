@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,6 @@
 
 namespace subresource_filter {
 
-const base::Feature kAdTagging{"AdTagging", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAdTagging, "AdTagging", base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace subresource_filter

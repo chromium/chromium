@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,32 +7,31 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
-#include "base/test/scoped_feature_list.h"
 #include "net/http/http_response_headers.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
 namespace {
 
 constexpr auto kNone = mojom::CrossOriginEmbedderPolicyValue::kNone;
-constexpr auto kCorsOrCredentialless =
-    mojom::CrossOriginEmbedderPolicyValue::kCorsOrCredentialless;
+constexpr auto kCredentialless =
+    mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
 constexpr auto kRequireCorp =
     mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
-const auto kNoHeader = base::Optional<std::string>();
-const auto kNoEndpoint = base::Optional<std::string>();
+const auto kNoHeader = absl::optional<std::string>();
+const auto kNoEndpoint = absl::optional<std::string>();
 
 struct TestCase {
-  base::Optional<std::string> coep_header;
-  base::Optional<std::string> coep_report_only_header;
+  absl::optional<std::string> coep_header;
+  absl::optional<std::string> coep_report_only_header;
 
   mojom::CrossOriginEmbedderPolicyValue value;
-  base::Optional<std::string> reporting_endpoint;
+  absl::optional<std::string> reporting_endpoint;
   mojom::CrossOriginEmbedderPolicyValue report_only_value;
-  base::Optional<std::string> report_only_reporting_endpoint;
+  absl::optional<std::string> report_only_reporting_endpoint;
 };
 
 void CheckTestCase(const TestCase& test_case) {
@@ -80,20 +79,44 @@ TEST(CrossOriginEmbedderPolicyTest, Parse) {
       // COEP: require-corp
       {"require-corp", kNoHeader, kRequireCorp, kNoEndpoint, kNone,
        kNoEndpoint},
+
+      // COEP: credentialless
+      {"credentialless", kNoHeader, kCredentialless, kNoEndpoint, kNone,
+       kNoEndpoint},
+
       // COEP-RO: require-corp
       {kNoHeader, "require-corp", kNone, kNoEndpoint, kRequireCorp,
        kNoEndpoint},
+
+      // COEP-RO: credentialless
+      {kNoHeader, "credentialless", kNone, kNoEndpoint, kCredentialless,
+       kNoEndpoint},
+
       // COEP: require-corp with reporting-endpoint
       {"require-corp; report-to=\"endpoint\"", kNoHeader, kRequireCorp,
        "endpoint", kNone, kNoEndpoint},
+
+      // COEP: credentialless with reporting endpoint
+      {"credentialless; report-to=\"endpoint\"", kNoHeader, kCredentialless,
+       "endpoint", kNone, kNoEndpoint},
+
       // COEP-RO: require-corp with reporting-endpoint
       {kNoHeader, "require-corp; report-to=\"endpoint\"", kNone, kNoEndpoint,
        kRequireCorp, "endpoint"},
 
-      // With both headers
+      // COEP-RO: credentialless with reporting endpoint
+      {kNoHeader, "credentialless; report-to=\"endpoint\"", kNone, kNoEndpoint,
+       kCredentialless, "endpoint"},
+
+      // COEP:require-corp, with both headers
       {"require-corp; report-to=\"endpoint1\"",
        "require-corp; report-to=\"endpoint2\"", kRequireCorp, "endpoint1",
        kRequireCorp, "endpoint2"},
+
+      // COEP:credentialless, with both headers
+      {"credentialless; report-to=\"endpoint1\"",
+       "credentialless; report-to=\"endpoint2\"", kCredentialless, "endpoint1",
+       kCredentialless, "endpoint2"},
 
       // With random spaces
       {"  require-corp; report-to=\"endpoint1\"  ",
@@ -110,9 +133,7 @@ TEST(CrossOriginEmbedderPolicyTest, Parse) {
 
       // Errors
       {"REQUIRE-CORP", kNoHeader, kNone, kNoEndpoint, kNone, kNoEndpoint},
-      {"CORS-OR-CREDENTIALLESS", kNoHeader, kNone, kNoEndpoint, kNone,
-       kNoEndpoint},
-      {"credentialless", kNoHeader, kNone, kNoEndpoint, kNone, kNoEndpoint},
+      {"CREDENTIALLESS", kNoHeader, kNone, kNoEndpoint, kNone, kNoEndpoint},
       {" require-corp; REPORT-TO=\"endpoint\"", kNoHeader, kNone, kNoEndpoint,
        kNone, kNoEndpoint},
       {"foobar; report-to=\"endpoint\"", kNoHeader, kNone, kNoEndpoint, kNone,
@@ -128,59 +149,6 @@ TEST(CrossOriginEmbedderPolicyTest, Parse) {
        kNone, kNoEndpoint},
       {"TOTALLY BLOKEN", "require-corp; report-to=\"x\"", kNone, kNoEndpoint,
        kRequireCorp, "x"},
-  };
-
-  for (const TestCase& test_case : test_cases)
-    CheckTestCase(test_case);
-}
-
-TEST(CrossOriginEmbedderPolicyTest, ParseCredentiallessDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {}, {features::kCrossOriginEmbedderPolicyCredentialless});
-  TestCase test_cases[] = {
-      // COEP: cors-or-credentialless
-      {"cors-or-credentialless", kNoHeader, kNone, kNoEndpoint, kNone,
-       kNoEndpoint},
-      // COEP-RO: cors-or-credentialless
-      {kNoHeader, "cors-or-credentialless", kNone, kNoEndpoint, kNone,
-       kNoEndpoint},
-      // COEP: cors-or-credentialless with reporting endpoint
-      {"cors-or-credentialless; report-to=\"endpoint\"", kNoHeader, kNone,
-       kNoEndpoint, kNone, kNoEndpoint},
-      // COEP-RO: cors-or-credentialless with reporting endpoint
-      {kNoHeader, "cors-or-credentialless; report-to=\"endpoint\"", kNone,
-       kNoEndpoint, kNone, kNoEndpoint},
-      // With both headers
-      {"cors-or-credentialless; report-to=\"endpoint1\"",
-       "cors-or-credentialless; report-to=\"endpoint2\"", kNone, kNoEndpoint,
-       kNone, kNoEndpoint},
-  };
-  for (const TestCase& test_case : test_cases)
-    CheckTestCase(test_case);
-}
-
-TEST(CrossOriginEmbedderPolicyTest, ParseCredentiallessEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {features::kCrossOriginEmbedderPolicyCredentialless}, {});
-  TestCase test_cases[] = {
-      // COEP: cors-or-credentialless
-      {"cors-or-credentialless", kNoHeader, kCorsOrCredentialless, kNoEndpoint,
-       kNone, kNoEndpoint},
-      // COEP-RO: cors-or-credentialless
-      {kNoHeader, "cors-or-credentialless", kNone, kNoEndpoint,
-       kCorsOrCredentialless, kNoEndpoint},
-      // COEP: cors-or-credentialless with reporting endpoint
-      {"cors-or-credentialless; report-to=\"endpoint\"", kNoHeader,
-       kCorsOrCredentialless, "endpoint", kNone, kNoEndpoint},
-      // COEP-RO: cors-or-credentialless with reporting endpoint
-      {kNoHeader, "cors-or-credentialless; report-to=\"endpoint\"", kNone,
-       kNoEndpoint, kCorsOrCredentialless, "endpoint"},
-      // With both headers
-      {"cors-or-credentialless; report-to=\"endpoint1\"",
-       "cors-or-credentialless; report-to=\"endpoint2\"", kCorsOrCredentialless,
-       "endpoint1", kCorsOrCredentialless, "endpoint2"},
   };
 
   for (const TestCase& test_case : test_cases)

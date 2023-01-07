@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,18 @@
 
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/public/common/content_switches.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/quota/quota_manager_host.mojom.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -61,20 +61,20 @@ class QuotaChangeDispatcherTest : public testing::Test {
         task_environment_.GetMainThreadTaskRunner());
   }
 
-  std::map<url::Origin, QuotaChangeDispatcher::DelayedOriginListener>*
-  listeners_by_origin() {
-    return &(quota_change_dispatcher_->listeners_by_origin_);
+  std::map<blink::StorageKey, QuotaChangeDispatcher::DelayedStorageKeyListener>*
+  listeners_by_storage_key() {
+    return &(quota_change_dispatcher_->listeners_by_storage_key_);
   }
 
   mojo::RemoteSet<blink::mojom::QuotaChangeListener>* GetListeners(
-      const url::Origin& origin) {
-    DCHECK_GT(listeners_by_origin()->count(origin), 0U);
-    return &(listeners_by_origin()->find(origin)->second.listeners);
+      const blink::StorageKey& storage_key) {
+    DCHECK_GT(listeners_by_storage_key()->count(storage_key), 0U);
+    return &(listeners_by_storage_key()->find(storage_key)->second.listeners);
   }
 
-  base::TimeDelta GetDelay(const url::Origin& origin) {
-    DCHECK_GT(listeners_by_origin()->count(origin), 0U);
-    return listeners_by_origin()->find(origin)->second.delay;
+  base::TimeDelta GetDelay(const blink::StorageKey& storage_key) {
+    DCHECK_GT(listeners_by_storage_key()->count(storage_key), 0U);
+    return listeners_by_storage_key()->find(storage_key)->second.delay;
   }
 
   void DispatchCompleted() {
@@ -95,27 +95,29 @@ class QuotaChangeDispatcherTest : public testing::Test {
 
  private:
   // If not null, will be stopped when a quota change notification is received.
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 };
 
 TEST_F(QuotaChangeDispatcherTest, AddChangeListener) {
-  const url::Origin& url_foo_ = url::Origin::Create(GURL("http://foo.com/"));
+  const blink::StorageKey& storage_key_foo_ =
+      blink::StorageKey::CreateFromStringForTesting("http://foo.com/");
   mojo::PendingRemote<blink::mojom::QuotaChangeListener> mojo_listener;
   mojo::PendingReceiver<blink::mojom::QuotaChangeListener> receiver =
       mojo_listener.InitWithNewPipeAndPassReceiver();
   MockQuotaChangeListener listener(std::move(receiver));
 
-  EXPECT_EQ(0U, listeners_by_origin()->size());
+  EXPECT_EQ(0U, listeners_by_storage_key()->size());
 
-  quota_change_dispatcher_->AddChangeListener(url_foo_,
+  quota_change_dispatcher_->AddChangeListener(storage_key_foo_,
                                               std::move(mojo_listener));
 
-  EXPECT_EQ(1U, listeners_by_origin()->size());
-  EXPECT_TRUE(base::Contains(*(listeners_by_origin()), url_foo_));
+  EXPECT_EQ(1U, listeners_by_storage_key()->size());
+  EXPECT_TRUE(base::Contains(*(listeners_by_storage_key()), storage_key_foo_));
 }
 
-TEST_F(QuotaChangeDispatcherTest, AddChangeListener_DuplicateOrigins) {
-  const url::Origin& url_foo_ = url::Origin::Create(GURL("http://foo.com/"));
+TEST_F(QuotaChangeDispatcherTest, AddChangeListener_DuplicateStorageKeys) {
+  const blink::StorageKey& storage_key_foo_ =
+      blink::StorageKey::CreateFromStringForTesting("http://foo.com/");
   constexpr double kMinDelay = 0;
   constexpr double kMaxDelay = 2;
   mojo::PendingRemote<blink::mojom::QuotaChangeListener> mojo_listener_1;
@@ -128,28 +130,29 @@ TEST_F(QuotaChangeDispatcherTest, AddChangeListener_DuplicateOrigins) {
       mojo_listener_2.InitWithNewPipeAndPassReceiver();
   MockQuotaChangeListener listener_2(std::move(receiver_2));
 
-  EXPECT_EQ(0U, listeners_by_origin()->size());
+  EXPECT_EQ(0U, listeners_by_storage_key()->size());
 
-  quota_change_dispatcher_->AddChangeListener(url_foo_,
+  quota_change_dispatcher_->AddChangeListener(storage_key_foo_,
                                               std::move(mojo_listener_1));
-  quota_change_dispatcher_->AddChangeListener(url_foo_,
+  quota_change_dispatcher_->AddChangeListener(storage_key_foo_,
                                               std::move(mojo_listener_2));
 
-  EXPECT_EQ(1U, listeners_by_origin()->size());
+  EXPECT_EQ(1U, listeners_by_storage_key()->size());
 
-  EXPECT_EQ(2U, GetListeners(url_foo_)->size());
-  EXPECT_LE(kMinDelay, GetDelay(url_foo_).InSecondsF());
-  EXPECT_GE(kMaxDelay, GetDelay(url_foo_).InSecondsF());
+  EXPECT_EQ(2U, GetListeners(storage_key_foo_)->size());
+  EXPECT_LE(kMinDelay, GetDelay(storage_key_foo_).InSecondsF());
+  EXPECT_GE(kMaxDelay, GetDelay(storage_key_foo_).InSecondsF());
 }
 
 TEST_F(QuotaChangeDispatcherTest, DispatchEvents) {
-  const url::Origin& url_foo_ = url::Origin::Create(GURL("http://foo.com/"));
+  const blink::StorageKey& storage_key_foo_ =
+      blink::StorageKey::CreateFromStringForTesting("http://foo.com/");
 
   mojo::PendingRemote<blink::mojom::QuotaChangeListener> mojo_listener;
   mojo::PendingReceiver<blink::mojom::QuotaChangeListener> receiver =
       mojo_listener.InitWithNewPipeAndPassReceiver();
 
-  quota_change_dispatcher_->AddChangeListener(url_foo_,
+  quota_change_dispatcher_->AddChangeListener(storage_key_foo_,
                                               std::move(mojo_listener));
   MockQuotaChangeListener listener(std::move(receiver));
 
@@ -170,7 +173,8 @@ TEST_F(QuotaChangeDispatcherTest, DispatchEvents_Multiple) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitchASCII(switches::kQuotaChangeEventInterval, "0");
 
-  const url::Origin& url_foo_ = url::Origin::Create(GURL("http://foo.com/"));
+  const blink::StorageKey& storage_key_foo_ =
+      blink::StorageKey::CreateFromStringForTesting("http://foo.com/");
 
   mojo::PendingRemote<blink::mojom::QuotaChangeListener> mojo_listener_1;
   mojo::PendingReceiver<blink::mojom::QuotaChangeListener> receiver_1 =
@@ -182,9 +186,9 @@ TEST_F(QuotaChangeDispatcherTest, DispatchEvents_Multiple) {
       mojo_listener_2.InitWithNewPipeAndPassReceiver();
   MockQuotaChangeListener listener_2(std::move(receiver_2));
 
-  quota_change_dispatcher_->AddChangeListener(url_foo_,
+  quota_change_dispatcher_->AddChangeListener(storage_key_foo_,
                                               std::move(mojo_listener_1));
-  quota_change_dispatcher_->AddChangeListener(url_foo_,
+  quota_change_dispatcher_->AddChangeListener(storage_key_foo_,
                                               std::move(mojo_listener_2));
 
   EXPECT_EQ(0, listener_1.quota_change_call_count());
@@ -219,8 +223,10 @@ TEST_F(QuotaChangeDispatcherTest, RemoveThenDispatch) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitchASCII(switches::kQuotaChangeEventInterval, "0");
 
-  const url::Origin& url_foo_ = url::Origin::Create(GURL("http://foo.com/"));
-  const url::Origin& url_bar_ = url::Origin::Create(GURL("http://bar.com/"));
+  const blink::StorageKey& storage_key_foo_ =
+      blink::StorageKey::CreateFromStringForTesting("http://foo.com/");
+  const blink::StorageKey& storage_key_bar_ =
+      blink::StorageKey::CreateFromStringForTesting("http://bar.com/");
   mojo::PendingRemote<blink::mojom::QuotaChangeListener> mojo_listener_1;
   mojo::PendingReceiver<blink::mojom::QuotaChangeListener> receiver_1 =
       mojo_listener_1.InitWithNewPipeAndPassReceiver();
@@ -231,9 +237,9 @@ TEST_F(QuotaChangeDispatcherTest, RemoveThenDispatch) {
       mojo_listener_2.InitWithNewPipeAndPassReceiver();
   MockQuotaChangeListener listener_2(std::move(receiver_2));
 
-  quota_change_dispatcher_->AddChangeListener(url_foo_,
+  quota_change_dispatcher_->AddChangeListener(storage_key_foo_,
                                               std::move(mojo_listener_1));
-  quota_change_dispatcher_->AddChangeListener(url_bar_,
+  quota_change_dispatcher_->AddChangeListener(storage_key_bar_,
                                               std::move(mojo_listener_2));
 
   EXPECT_EQ(0, listener_1.quota_change_call_count());

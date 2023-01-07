@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,23 +21,16 @@ class WebGPUInterfaceStub : public WebGPUInterface {
   void GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) override;
   void VerifySyncTokensCHROMIUM(GLbyte** sync_tokens, GLsizei count) override;
   void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) override;
+  void ShallowFlushCHROMIUM() override;
 
   // WebGPUInterface implementation
-  const DawnProcTable& GetProcs() const override;
+  scoped_refptr<APIChannel> GetAPIChannel() const override;
   void FlushCommands() override;
-  void EnsureAwaitingFlush(bool* needs_flush) override;
+  bool EnsureAwaitingFlush() override;
   void FlushAwaitingCommands() override;
-  void DisconnectContextAndDestroyServer() override;
-  ReservedTexture ReserveTexture(WGPUDevice device) override;
-  void RequestAdapterAsync(
-      PowerPreference power_preference,
-      base::OnceCallback<void(int32_t,
-                              const WGPUDeviceProperties&,
-                              const char*)> request_adapter_callback) override;
-  void RequestDeviceAsync(
-      uint32_t adapter_service_id,
-      const WGPUDeviceProperties& requested_device_properties,
-      base::OnceCallback<void(WGPUDevice)> request_device_callback) override;
+  ReservedTexture ReserveTexture(
+      WGPUDevice device,
+      const WGPUTextureDescriptor* optionalDesc) override;
 
   WGPUDevice DeprecatedEnsureDefaultDeviceSync() override;
 
@@ -46,8 +39,11 @@ class WebGPUInterfaceStub : public WebGPUInterface {
 // this file instead of having to edit some template or the code generator.
 #include "gpu/command_buffer/client/webgpu_interface_stub_autogen.h"
 
+ protected:
+  DawnProcTable* procs();
+
  private:
-  DawnProcTable null_procs_;
+  scoped_refptr<APIChannel> api_channel_;
 };
 
 }  // namespace webgpu

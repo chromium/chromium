@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ namespace headless {
 namespace {
 
 template <class T>
-const T& ReturnOverriddenValue(const base::Optional<T>& value,
+const T& ReturnOverriddenValue(const absl::optional<T>& value,
                                const T& default_value) {
   return value ? *value : default_value;
 }

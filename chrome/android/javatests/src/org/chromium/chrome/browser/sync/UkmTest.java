@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,7 +98,7 @@ public class UkmTest {
     public void singleSyncSignoutCheck() throws Exception {
         // Keep in sync with UkmBrowserTest.SingleSyncSignoutCheck in
         // chrome/browser/metrics/ukm_browsertest.cc.
-        // Make sure that UKM is disabled when an secondary passphrase is set.
+        // Make sure that UKM is disabled when an explicit passphrase is set.
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> UmaSessionStats.updateMetricsAndCrashReportingForTesting(true));

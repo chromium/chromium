@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -15,6 +14,10 @@ namespace {
 class TestPermission {
  public:
   TestPermission(int id) : id_(id) {}
+
+  TestPermission(const TestPermission&) = delete;
+  TestPermission& operator=(const TestPermission&) = delete;
+
   ~TestPermission() = default;
 
   // Methods required by BaseSetOperators operations.
@@ -30,8 +33,6 @@ class TestPermission {
 
  private:
   int id_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPermission);
 };
 
 }  // namespace

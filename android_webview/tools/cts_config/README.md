@@ -24,9 +24,40 @@ Android release basis by editing
       "test_runs": [
         {
           "apk": "location of the test apk in the cts zip file",
+          "additional_apks": [
+            // optional list of additional apks that need to be installed
+            // for the test to run
+            {
+              "apk": "location of the additional apk in the cts zip file",
+            },
+            {
+              "apk": "location of the additional apk in the cts zip file",
+              // An optional boolean flag to indicate if the APK should
+              // be queryable by other APKs
+              // Only usable from Android 11+
+              "forced_queryable": true
+            },
+            {
+              "apk": "location of the additional apk in the cts zip file",
+              // An optional boolean flag to indicate an additional APK should always
+              // be installed in full mode, even when the tests are being run in
+              // instant mode
+              // This flag is only available for additional APKs
+              "force_full_mode": true
+            }
+          ]
+        },
+        {
+          "apk": "location of the test apk in the cts zip file",
+          "voice_service": "<An optional override to use a custom voice service, eg: android.assist.service/.MainInteractionService - used by CTS assistant tests>"
+        },
+        {
+          "apk": "location of the test apk in the cts zip file",
           "excludes": [
             {
               "match": "<class#testcase (wildcard supported) expression of test to skip>",
+              "arch": "<the architecture to skip for, optional, eg: x86 - if not provided, will match all architectures>",
+              "mode": "<the app mode to skip for, optional - either 'instant' or 'full' - if not provided, will run in all modes>",
               "_bug_id": "<bug reference comment, optional>"
             }
           ]
@@ -35,7 +66,9 @@ Android release basis by editing
           "apk": "location of the test apk in the cts zip file",
           "includes": [
             {
-              "match": "<class#testcase (wildcard supported) expression of test to run>"
+              "match": "<class#testcase (wildcard supported) expression of test to run>",
+              "arch": "<the architecture to include for, optional, eg: arm64 - if not provided, will match all architectures>",
+              "mode": "<the app mode to include for, optional - either 'instant' or 'full' - if not provided, will run in all modes>"
             }
           ]
         }
@@ -53,6 +86,17 @@ please adjust them accordingly.
 
 *** note
 **Note:** If includes nor excludes are specified, all tests in the apk will run.
+***
+
+*** note
+**Note:** The supported architectures for filtering are arm64 and x86
+***
+
+*** note
+**Note:** The `mode` is the type of test execution environment a test will be
+included or excluded in. Instant apps run in a more restrictive environment
+while full apps run in the default execution environment.
+The `--test-apk-as-instant` flag will make tests run in instant app mode.
 ***
 
 ## Disabling/Skipping tests

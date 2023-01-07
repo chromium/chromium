@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -33,6 +32,10 @@ namespace {
 class PassThroughDataPipeGetter : public mojom::DataPipeGetter {
  public:
   explicit PassThroughDataPipeGetter() = default;
+
+  PassThroughDataPipeGetter(const PassThroughDataPipeGetter&) = delete;
+  PassThroughDataPipeGetter& operator=(const PassThroughDataPipeGetter&) =
+      delete;
 
   mojo::PendingRemote<network::mojom::DataPipeGetter>
   GetDataPipeGetterRemote() {
@@ -81,8 +84,6 @@ class PassThroughDataPipeGetter : public mojom::DataPipeGetter {
   mojo::Receiver<network::mojom::DataPipeGetter> receiver_{this};
   mojo::ScopedDataPipeProducerHandle write_pipe_;
   ReadCallback read_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(PassThroughDataPipeGetter);
 };
 
 class DataPipeElementReaderTest : public testing::Test {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 #include "base/types/strong_alias.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
@@ -23,7 +22,6 @@ class ResourceError;
 class ResourceRequest;
 class ResourceResponse;
 enum class ResourceType : uint8_t;
-struct FetchInitiatorInfo;
 
 // ResourceLoadObserver is a collection of functions which meet following
 // conditions.
@@ -51,8 +49,9 @@ class PLATFORM_EXPORT ResourceLoadObserver
   virtual void WillSendRequest(const ResourceRequest&,
                                const ResourceResponse& redirect_response,
                                ResourceType,
-                               const FetchInitiatorInfo&,
-                               RenderBlockingBehavior) = 0;
+                               const ResourceLoaderOptions&,
+                               RenderBlockingBehavior,
+                               const Resource*) = 0;
 
   // Called when the priority of the request changes.
   virtual void DidChangePriority(uint64_t identifier,
@@ -96,6 +95,11 @@ class PLATFORM_EXPORT ResourceLoadObserver
                               const ResourceError&,
                               int64_t encoded_data_length,
                               IsInternalRequest) = 0;
+
+  // Called when the RenderBlockingBehavior given to WillSendRequest changes.
+  virtual void DidChangeRenderBlockingBehavior(
+      Resource* resource,
+      const FetchParameters& params) = 0;
 
   virtual void Trace(Visitor*) const {}
 };

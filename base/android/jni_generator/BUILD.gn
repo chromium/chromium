@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,14 +20,22 @@ android_library("jni_sample_java") {
     "java/src/org/chromium/example/jni_generator/SampleForTests.java",
   ]
 
-  deps = [ "//base:base_java" ]
+  deps = [
+    "//base:jni_java",
+    "//build/android:build_java",
+  ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_library("jni_annotation_sample_java") {
   sources = [ "java/src/org/chromium/example/jni_generator/SampleForAnnotationProcessor.java" ]
-  deps = [ "//base:base_java" ]
+
+  deps = [
+    "//base:jni_java",
+    "//build/android:build_java",
+  ]
+
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
@@ -58,10 +66,7 @@ shared_library("jni_sample_lib") {
 android_apk("sample_jni_apk") {
   apk_name = "SampleJni"
   android_manifest = "AndroidManifest.xml"
-  deps = [
-    ":jni_sample_java",
-    "//base:base_java",
-  ]
+  deps = [ ":jni_sample_java" ]
   shared_libraries = [ ":jni_sample_lib" ]
   jni_registration_header = _registration_header
 }
@@ -80,8 +85,8 @@ java_annotation_processor("jni_processor") {
 
     # Avoids a circular dependency with base:base_java. This is okay because
     # no target should ever expect to package an annotation processor.
-    "//base/android/java/src/org/chromium/base/annotations/CheckDiscard.java",
-    "//base/android/java/src/org/chromium/base/annotations/MainDex.java",
+    "//build/android/java/src/org/chromium/build/annotations/CheckDiscard.java",
+    "//build/android/java/src/org/chromium/build/annotations/MainDex.java",
   ]
 
   main_class = "org.chromium.jni_generator.JniProcessor"
@@ -94,6 +99,5 @@ java_annotation_processor("jni_processor") {
     "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
     "//third_party/android_deps:com_google_guava_guava_java",
     "//third_party/android_deps:com_squareup_javapoet_java",
-    "//third_party/android_deps:javax_annotation_jsr250_api_java",
   ]
 }

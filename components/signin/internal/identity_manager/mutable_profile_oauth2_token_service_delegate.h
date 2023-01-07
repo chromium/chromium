@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
@@ -23,7 +23,6 @@
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
-class PrefRegistrySimple;
 class SigninClient;
 class TokenWebData;
 
@@ -42,9 +41,13 @@ class MutableProfileOAuth2TokenServiceDelegate
       signin::AccountConsistencyMethod account_consistency,
       bool revoke_all_tokens_on_load,
       FixRequestErrorCallback fix_request_error_callback);
-  ~MutableProfileOAuth2TokenServiceDelegate() override;
 
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+  MutableProfileOAuth2TokenServiceDelegate(
+      const MutableProfileOAuth2TokenServiceDelegate&) = delete;
+  MutableProfileOAuth2TokenServiceDelegate& operator=(
+      const MutableProfileOAuth2TokenServiceDelegate&) = delete;
+
+  ~MutableProfileOAuth2TokenServiceDelegate() override;
 
   // Overridden from ProfileOAuth2TokenServiceDelegate.
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
@@ -52,20 +55,14 @@ class MutableProfileOAuth2TokenServiceDelegate
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       OAuth2AccessTokenConsumer* consumer) override;
 
-  // Updates the internal cache of the result from the most-recently-completed
-  // auth request (used for reporting errors to the user).
-  void UpdateAuthError(const CoreAccountId& account_id,
-                       const GoogleServiceAuthError& error) override;
-
   std::string GetTokenForMultilogin(
       const CoreAccountId& account_id) const override;
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
-  GoogleServiceAuthError GetAuthError(
-      const CoreAccountId& account_id) const override;
   std::vector<CoreAccountId> GetAccounts() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
-  void LoadCredentials(const CoreAccountId& primary_account_id) override;
+  void LoadCredentials(const CoreAccountId& primary_account_id,
+                       bool is_syncing) override;
   void UpdateCredentials(const CoreAccountId& account_id,
                          const std::string& refresh_token) override;
   void RevokeAllCredentials() override;
@@ -77,9 +74,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Overridden from NetworkConnectionTracker::NetworkConnectionObserver.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 
-  // Overridden from ProfileOAuth2TokenServiceDelegate.
-  const net::BackoffEntry* BackoffEntry() const override;
-
   bool FixRequestErrorIfPossible() override;
 
   // Returns the account's refresh token used for testing purposes.
@@ -89,11 +83,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   friend class MutableProfileOAuth2TokenServiceDelegateTest;
 
   class RevokeServerRefreshToken;
-
-  struct AccountStatus {
-    std::string refresh_token;
-    GoogleServiceAuthError last_auth_error;
-  };
 
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            PersistenceDBUpgrade);
@@ -127,8 +116,6 @@ class MutableProfileOAuth2TokenServiceDelegate
                            LoadInvalidToken);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            GetAccounts);
-  FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
-                           RetryBackoff);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
                            CanonicalizeAccountId);
   FRIEND_TEST_ALL_PREFIXES(MutableProfileOAuth2TokenServiceDelegateTest,
@@ -192,16 +179,8 @@ class MutableProfileOAuth2TokenServiceDelegate
   void RevokeCredentialsImpl(const CoreAccountId& account_id,
                              bool revoke_on_server);
 
-  // If the Dice migration happened before the tokens could be migrated, delete
-  // all the tokens. This is only called if the tokens could not be loaded
-  // successfully.
-  void MaybeDeletePreDiceTokens();
-
-  // Maps the |account_id| of accounts known to ProfileOAuth2TokenService
-  // to information about the account.
-  typedef std::map<CoreAccountId, AccountStatus> AccountStatusMap;
   // In memory refresh token store mapping account_id to refresh_token.
-  AccountStatusMap refresh_tokens_;
+  std::map<CoreAccountId, std::string> refresh_tokens_;
 
   // Handle to the request reading tokens from database.
   WebDataServiceBase::Handle web_data_service_request_;
@@ -216,14 +195,9 @@ class MutableProfileOAuth2TokenServiceDelegate
   // this instance was created.
   THREAD_CHECKER(thread_checker_);
 
-  // Used to rate-limit network token requests so as to not overload the server.
-  net::BackoffEntry::Policy backoff_policy_;
-  net::BackoffEntry backoff_entry_;
-  GoogleServiceAuthError backoff_error_;
-
-  SigninClient* client_;
-  AccountTrackerService* account_tracker_service_;
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<SigninClient> client_;
+  raw_ptr<AccountTrackerService> account_tracker_service_;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
   scoped_refptr<TokenWebData> token_web_data_;
   signin::AccountConsistencyMethod account_consistency_;
 
@@ -235,8 +209,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   // Callback function that attempts to correct request errors.  Best effort
   // only.  Returns true if the error was fixed and retry should be reattempted.
   FixRequestErrorCallback fix_request_error_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MutableProfileOAuth2TokenServiceDelegate);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_MUTABLE_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_H_

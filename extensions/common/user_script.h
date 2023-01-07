@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
+#include "extensions/common/mojom/execution_world.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/script_constants.h"
@@ -32,6 +33,10 @@ class UserScript {
   // The file extension for standalone user scripts.
   static const char kFileExtension[];
 
+  // The prefix for all generated user script IDs (i.e. the ID is not provided
+  // by the extension).
+  static const char kGeneratedIDPrefix;
+
   static std::string GenerateUserScriptID();
 
   // Check if a URL should be treated as a user script and converted to an
@@ -39,8 +44,11 @@ class UserScript {
   static bool IsURLUserScript(const GURL& url, const std::string& mime_type);
 
   // Get the valid user script schemes for the current process. If
-  // canExecuteScriptEverywhere is true, this will return ALL_SCHEMES.
-  static int ValidUserScriptSchemes(bool canExecuteScriptEverywhere = false);
+  // `can_execute_script_everywhere` is true, this will return ALL_SCHEMES.
+  static int ValidUserScriptSchemes(bool can_execute_script_everywhere = false);
+
+  // Returns if a user script's ID is generated.
+  static bool IsIDGenerated(const std::string& id);
 
   // Holds script file info.
   class File {
@@ -103,6 +111,10 @@ class UserScript {
   // Constructor. Default the run location to document end, which is like
   // Greasemonkey and probably more useful for typical scripts.
   UserScript();
+
+  UserScript(const UserScript&) = delete;
+  UserScript& operator=(const UserScript&) = delete;
+
   ~UserScript();
 
   // Performs a copy of all fields except file contents.
@@ -201,6 +213,11 @@ class UserScript {
   bool is_incognito_enabled() const { return incognito_enabled_; }
   void set_incognito_enabled(bool enabled) { incognito_enabled_ = enabled; }
 
+  mojom::ExecutionWorld execution_world() const { return execution_world_; }
+  void set_execution_world(mojom::ExecutionWorld world) {
+    execution_world_ = world;
+  }
+
   // Returns true if the script should be applied to the specified URL, false
   // otherwise.
   bool MatchesURL(const GURL& url) const;
@@ -219,6 +236,9 @@ class UserScript {
   // because presumably we were the one that pickled it, and we did it
   // correctly.
   void Unpickle(const base::Pickle& pickle, base::PickleIterator* iter);
+
+  // Returns if this script's ID is generated.
+  bool IsIDGenerated() const;
 
  private:
   // base::Pickle helper functions used to pickle the individual types of
@@ -305,19 +325,8 @@ class UserScript {
   // True if the script should be injected into an incognito tab.
   bool incognito_enabled_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(UserScript);
+  mojom::ExecutionWorld execution_world_ = mojom::ExecutionWorld::kIsolated;
 };
-
-// Information we need while removing scripts from a UserScriptLoader.
-struct UserScriptIDPair {
-  UserScriptIDPair(std::string id, const mojom::HostID& host_id);
-  explicit UserScriptIDPair(std::string id);
-
-  std::string id;
-  mojom::HostID host_id;
-};
-
-bool operator<(const UserScriptIDPair& a, const UserScriptIDPair& b);
 
 using UserScriptList = std::vector<std::unique_ptr<UserScript>>;
 

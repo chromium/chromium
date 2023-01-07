@@ -1,0 +1,20 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_absl_cleanup") {
+  packages = [ "absl_cleanup" ]
+}
+
+shim_headers("cleanup_shim") {
+  root_path = "."
+  prefix = "absl/cleanup/"
+  headers = [ "cleanup.h" ]
+}
+
+source_set("cleanup") {
+  deps = [ ":cleanup_shim" ]
+  public_configs = [ ":system_absl_cleanup" ]
+}
+
+source_set("cleanup_test") {
+}

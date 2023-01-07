@@ -1,15 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_SAFETY_TIP_PAGE_INFO_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_SAFETY_TIP_PAGE_INFO_BUBBLE_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/reputation/safety_tip_ui.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/visibility.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/styled_label.h"
 
 namespace content {
@@ -21,7 +22,7 @@ class Rect;
 }  // namespace gfx
 
 namespace views {
-class GridLayout;
+class Link;
 class View;
 class Widget;
 }  // namespace views
@@ -44,6 +45,11 @@ class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase {
       security_state::SafetyTipStatus safety_tip_status,
       const GURL& suggested_url,
       base::OnceCallback<void(SafetyTipInteraction)> close_callback);
+
+  SafetyTipPageInfoBubbleView(const SafetyTipPageInfoBubbleView&) = delete;
+  SafetyTipPageInfoBubbleView& operator=(const SafetyTipPageInfoBubbleView&) =
+      delete;
+
   ~SafetyTipPageInfoBubbleView() override;
 
   // views::WidgetObserver:
@@ -60,14 +66,8 @@ class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase {
   // WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
-  void DidStartNavigation(content::NavigationHandle* handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void DidChangeVisibleSecurityState() override;
-
-  void MaybeAddButtons(security_state::SafetyTipStatus safety_tip_status,
-                       views::GridLayout* bottom_layout,
-                       int spacing,
-                       int column_id,
-                       const gfx::Insets& insets);
 
   const security_state::SafetyTipStatus safety_tip_status_;
 
@@ -75,13 +75,10 @@ class SafetyTipPageInfoBubbleView : public PageInfoBubbleViewBase {
   // applicable (for SafetyTipStatus::kLookalike).
   const GURL suggested_url_;
 
-  views::StyledLabel* info_button_ = nullptr;
-  views::Button* ignore_button_ = nullptr;
-  views::Button* leave_button_ = nullptr;
+  raw_ptr<views::Link> info_link_ = nullptr;
+  raw_ptr<views::MdTextButton> leave_button_ = nullptr;
   base::OnceCallback<void(SafetyTipInteraction)> close_callback_;
   SafetyTipInteraction action_taken_ = SafetyTipInteraction::kNoAction;
-
-  DISALLOW_COPY_AND_ASSIGN(SafetyTipPageInfoBubbleView);
 };
 
 // Creates and returns a safety tip bubble. Used in unit tests.

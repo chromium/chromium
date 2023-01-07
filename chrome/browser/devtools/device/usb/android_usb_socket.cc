@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -224,11 +224,6 @@ net::NextProto AndroidUsbSocket::GetNegotiatedProtocol() const {
 
 bool AndroidUsbSocket::GetSSLInfo(net::SSLInfo* ssl_info) {
   return false;
-}
-
-void AndroidUsbSocket::GetConnectionAttempts(
-    net::ConnectionAttempts* out) const {
-  out->clear();
 }
 
 int64_t AndroidUsbSocket::GetTotalReceivedBytes() const {

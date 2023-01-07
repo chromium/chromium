@@ -9,7 +9,7 @@ Tests exception message from eval on nested worker context in console contains s
                 foo();
             }
             boo();
-VM:3 Uncaught {a: 239}a: 239__proto__: Object
+VM:3 Uncaught {a: 239}a: 239[[Prototype]]: Object
 foo @ VM:3
 boo @ VM:7
 (anonymous) @ VM:9

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,14 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/reporting/reporting_cache.h"
 #include "net/reporting/reporting_header_parser.h"
 #include "net/reporting/reporting_policy.pb.h"
 #include "net/reporting/reporting_test_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "third_party/libprotobuf-mutator/src/src/libfuzzer/libfuzzer_macro.h"
@@ -32,16 +34,16 @@ void FuzzReportingHeaderParser(const std::string& data_json,
                                     policy);
   // Emulate what ReportingService::OnHeader does before calling
   // ReportingHeaderParser::ParseHeader.
-  std::unique_ptr<base::Value> data_value =
-      base::JSONReader::ReadDeprecated("[" + data_json + "]");
+  absl::optional<base::Value> data_value =
+      base::JSONReader::Read("[" + data_json + "]");
   if (!data_value)
     return;
 
   // TODO: consider including proto definition for URL after moving that to
   // testing/libfuzzer/proto and creating a separate converter.
   net::ReportingHeaderParser::ParseReportToHeader(
-      &context, net::NetworkIsolationKey(), GURL("https://origin/path"),
-      std::move(data_value));
+      &context, net::NetworkAnonymizationKey(),
+      url::Origin::Create(GURL("https://origin/")), data_value->GetList());
   if (context.cache()->GetEndpointCount() == 0) {
     return;
   }
@@ -53,17 +55,16 @@ void InitializeReportingPolicy(
   policy.max_report_count = policy_data.max_report_count();
   policy.max_endpoint_count = policy_data.max_endpoint_count();
   policy.delivery_interval =
-      base::TimeDelta::FromMicroseconds(policy_data.delivery_interval_us());
+      base::Microseconds(policy_data.delivery_interval_us());
   policy.persistence_interval =
-      base::TimeDelta::FromMicroseconds(policy_data.persistence_interval_us());
+      base::Microseconds(policy_data.persistence_interval_us());
   policy.persist_reports_across_restarts =
       policy_data.persist_reports_across_restarts();
   policy.persist_clients_across_restarts =
       policy_data.persist_clients_across_restarts();
-  policy.garbage_collection_interval = base::TimeDelta::FromMicroseconds(
-      policy_data.garbage_collection_interval_us());
-  policy.max_report_age =
-      base::TimeDelta::FromMicroseconds(policy_data.max_report_age_us());
+  policy.garbage_collection_interval =
+      base::Microseconds(policy_data.garbage_collection_interval_us());
+  policy.max_report_age = base::Microseconds(policy_data.max_report_age_us());
   policy.max_report_attempts = policy_data.max_report_attempts();
   policy.persist_reports_across_network_changes =
       policy_data.persist_reports_across_network_changes();
@@ -73,7 +74,7 @@ void InitializeReportingPolicy(
     policy.max_endpoints_per_origin = policy_data.max_endpoints_per_origin();
   if (policy_data.has_max_group_staleness_us()) {
     policy.max_group_staleness =
-        base::TimeDelta::FromMicroseconds(policy_data.max_report_age_us());
+        base::Microseconds(policy_data.max_report_age_us());
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "ui/gfx/image/image_unittest_util.h"
 #include "weblayer/browser/browser_list.h"
 #include "weblayer/browser/browser_list_observer.h"
-#include "weblayer/browser/default_search_engine.h"
 #include "weblayer/browser/favicon/favicon_fetcher_impl.h"
 #include "weblayer/browser/favicon/test_favicon_fetcher_delegate.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
@@ -24,7 +23,7 @@ namespace weblayer {
 using ProfileBrowserTest = WebLayerBrowserTest;
 
 // TODO(crbug.com/654704): Android does not support PRE_ tests.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // UKM enabling via Profile persists across restarts.
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, PRE_PersistUKM) {
@@ -46,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, PersistNetworkPrediction) {
       GetProfile()->GetBooleanSetting(SettingType::NETWORK_PREDICTION_ENABLED));
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, GetCachedFaviconForPageUrl) {
   // Navigation to a page with a favicon.
@@ -93,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearBrowsingDataDeletesFavicons) {
   base::Time now = base::Time::Now();
   ProfileImpl* profile = static_cast<TabImpl*>(shell()->tab())->profile();
   profile->ClearBrowsingData({BrowsingDataType::COOKIES_AND_SITE_DATA},
-                             now - base::TimeDelta::FromMinutes(5), now,
+                             now - base::Minutes(5), now,
                              run_loop.QuitClosure());
   run_loop.Run();
 
@@ -137,16 +136,12 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, DefaultNetworkPredictionState) {
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearSiteSettings) {
-  auto dse_origin = GetDseOrigin().GetURL();
   auto foo_origin = GURL("http://www.foo.com");
 
   auto* settings_map = HostContentSettingsMapFactory::GetForBrowserContext(
       static_cast<TabImpl*>(shell()->tab())
           ->web_contents()
           ->GetBrowserContext());
-  EXPECT_EQ(settings_map->GetContentSetting(dse_origin, dse_origin,
-                                            ContentSettingsType::GEOLOCATION),
-            CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings_map->GetContentSetting(foo_origin, foo_origin,
                                             ContentSettingsType::GEOLOCATION),
             CONTENT_SETTING_ASK);
@@ -164,10 +159,6 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearSiteSettings) {
       base::Time(), now, run_loop.QuitClosure());
   run_loop.Run();
 
-  EXPECT_EQ(settings_map->GetContentSetting(dse_origin, dse_origin,
-                                            ContentSettingsType::GEOLOCATION),
-            CONTENT_SETTING_ALLOW);
-
   EXPECT_EQ(settings_map->GetContentSetting(foo_origin, foo_origin,
                                             ContentSettingsType::GEOLOCATION),
             CONTENT_SETTING_ALLOW);
@@ -178,9 +169,6 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearSiteSettings) {
                              now, run_loop2.QuitClosure());
   run_loop2.Run();
 
-  EXPECT_EQ(settings_map->GetContentSetting(dse_origin, dse_origin,
-                                            ContentSettingsType::GEOLOCATION),
-            CONTENT_SETTING_ALLOW);
   EXPECT_EQ(settings_map->GetContentSetting(foo_origin, foo_origin,
                                             ContentSettingsType::GEOLOCATION),
             CONTENT_SETTING_ASK);
@@ -188,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest, ClearSiteSettings) {
 
 // This test creates a Browser and Tab, which doesn't work well with Java when
 // driven from native code.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 class BrowserListObserverImpl : public BrowserListObserver {
  public:

@@ -1,0 +1,49 @@
+Tests CSS.setScopeText method.
+==== Initial style sheet text ====
+@scope (.dark-theme) to (.light-theme) {
+  p {
+    color: red;
+  }
+}
+
+
+Running test: testSimpleEdit
+==== Style sheet text ====
+@scope (body) {
+  p {
+    color: red;
+  }
+}
+
+
+Running test: testInvalidParameters
+Expected protocol error: Invalid parameters (Failed to deserialize params.range.startLine - BINDINGS: int32 value expected <somewhere>)
+
+Running test: testInvalidText
+Expected protocol error: SyntaxError Selector or scope rule text is not valid.
+
+Running test: testEditSequentially
+==== Style sheet text ====
+@scope (body) {
+  p {
+    color: red;
+  }
+}
+
+==== Style sheet text ====
+@scope (.dark-theme) {
+  p {
+    color: red;
+  }
+}
+
+
+Running test: testAfterSequentially
+==== Style sheet text ====
+@scope (.light-theme) to (.dark-theme) {
+  p {
+    color: red;
+  }
+}
+
+

@@ -1,0 +1,9 @@
+focusable.AXInvalid='false'
+focusable_invalid.AXInvalid='false'
+focusable_invalid_true.AXInvalid='true'
+focusable_invalid_false.AXInvalid='false'
+focusable_invalid_false.accessibilityAttributeValue(AXInvalid)='false'
+div_invalid_true.AXInvalid=n/a
+div_invalid_true.accessibilityAttributeValue(AXInvalid)='true'
+not_applicable.AXInvalid=n/a
+not_applicable.accessibilityAttributeValue(AXInvalid)='false'

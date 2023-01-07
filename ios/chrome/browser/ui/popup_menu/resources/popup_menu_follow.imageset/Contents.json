@@ -1,0 +1,23 @@
+{
+    "images": [
+        {
+            "idiom": "universal",
+            "scale": "1x",
+            "filename": "popup_menu_follow.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "2x",
+            "filename": "popup_menu_follow@2x.png"
+        },
+        {
+            "idiom": "universal",
+            "scale": "3x",
+            "filename": "popup_menu_follow@3x.png"
+        }
+    ],
+    "info": {
+        "version": 1,
+        "author": "xcode"
+    }
+}

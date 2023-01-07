@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Test trace-specific implementation of timeline model\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';
@@ -194,7 +194,7 @@
     }
   ];
 
-  var tracingTimelineModel = PerformanceTestRunner.createPerformanceModelWithEvents(commonMetadata.concat(traceEvents));
+  await PerformanceTestRunner.createPerformanceModelWithEvents(commonMetadata.concat(traceEvents));
   await PerformanceTestRunner.forAllEvents(PerformanceTestRunner.mainTrackEvents(), async (event, stack) => {
     const prefix = Array(stack.length + 1).join('----') + (stack.length ? '> ' : '');
     const details = await Timeline.TimelineUIUtils.buildDetailsTextForTraceEvent(event, null) || '';

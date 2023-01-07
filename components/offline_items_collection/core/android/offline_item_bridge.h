@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/update_delta.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace offline_items_collection {
 namespace android {
@@ -32,12 +33,7 @@ class OfflineItemBridge {
   // Creates a Java UpdateDelta from |update_delta|.
   static base::android::ScopedJavaLocalRef<jobject> CreateUpdateDelta(
       JNIEnv* env,
-      const base::Optional<UpdateDelta>& update_delta);
-
-  // Creates a Java OfflineItemSchedule.
-  static base::android::ScopedJavaLocalRef<jobject> CreateOfflineItemSchedule(
-      JNIEnv* env,
-      const base::Optional<OfflineItemSchedule>& schedule);
+      const absl::optional<UpdateDelta>& update_delta);
 
  private:
   OfflineItemBridge();

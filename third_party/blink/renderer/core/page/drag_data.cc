@@ -39,8 +39,8 @@
 namespace blink {
 
 DragData::DragData(DataObject* data,
-                   const FloatPoint& client_position,
-                   const FloatPoint& global_position,
+                   const gfx::PointF& client_position,
+                   const gfx::PointF& global_position,
                    DragOperationsMask source_operation_mask)
     : client_position_(client_position),
       global_position_(global_position),
@@ -78,7 +78,7 @@ int DragData::GetModifiers() const {
 void DragData::AsFilePaths(Vector<String>& result) const {
   const Vector<String>& filenames = platform_drag_data_->Filenames();
   for (wtf_size_t i = 0; i < filenames.size(); ++i) {
-    if (!filenames[i].IsEmpty())
+    if (!filenames[i].empty())
       result.push_back(filenames[i]);
   }
 }
@@ -131,8 +131,8 @@ DocumentFragment* DragData::AsFragment(LocalFrame* frame) const {
     platform_drag_data_->HtmlAndBaseURL(html, base_url);
     DCHECK(frame->GetDocument());
     if (DocumentFragment* fragment =
-            CreateFragmentFromMarkup(*frame->GetDocument(), html, base_url,
-                                     kDisallowScriptingAndPluginContent))
+            CreateSanitizedFragmentFromMarkupWithContext(
+                *frame->GetDocument(), html, 0, html.length(), base_url))
       return fragment;
   }
 

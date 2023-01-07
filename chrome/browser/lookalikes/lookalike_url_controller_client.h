@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "url/gurl.h"
 
@@ -27,6 +26,10 @@ class LookalikeUrlControllerClient
       const GURL& request_url,
       const GURL& safe_url);
 
+  LookalikeUrlControllerClient(const LookalikeUrlControllerClient&) = delete;
+  LookalikeUrlControllerClient& operator=(const LookalikeUrlControllerClient&) =
+      delete;
+
   ~LookalikeUrlControllerClient() override;
 
   // security_interstitials::ControllerClient overrides.
@@ -36,8 +39,6 @@ class LookalikeUrlControllerClient
  private:
   const GURL request_url_;
   const GURL safe_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(LookalikeUrlControllerClient);
 };
 
 #endif  // CHROME_BROWSER_LOOKALIKES_LOOKALIKE_URL_CONTROLLER_CLIENT_H_

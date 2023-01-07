@@ -1,0 +1,30 @@
+digraph graphname {
+    graph [fontname = "helvetica", fontsize=11, compound=true];
+    node [shape="box", fontname = "helvetica", fontsize=11];
+    edge [fontname = "helvetica", fontsize=11];
+    rankdir="LR";
+
+    subgraph cluster_browser {
+        label = "Browser Process";
+
+	window [label="Browser Window"];
+    }
+
+    subgraph cluster_tab1 {
+        label = "Tab Process 1";
+	tab1 [label="Tab 1"];
+    }
+
+    subgraph cluster_tab2 {
+        label = "Tab Process 2";
+	tab2 [label="Tab 2"];
+    }
+
+    window -> tab1 [dir=both];
+    window -> tab2 [dir=both];
+
+    os [label="Operating System"];
+    os -> window [lhead=cluster_browser, dir=both];
+    os -> tab1 [dir=both];
+    os -> tab2 [dir=both];
+}

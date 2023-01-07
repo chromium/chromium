@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/payments/content/android/jni_headers/JourneyLogger_jni.h"
-#include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/web_contents.h"
 
 namespace payments {
@@ -157,29 +156,12 @@ void JourneyLoggerAndroid::SetNotShown(
       static_cast<JourneyLogger::NotShownReason>(jreason));
 }
 
-void JourneyLoggerAndroid::RecordTransactionAmount(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jstring>& jcurrency,
-    const base::android::JavaParamRef<jstring>& jvalue,
-    jboolean jcompleted) {
-  journey_logger_.RecordTransactionAmount(
-      ConvertJavaStringToUTF8(env, jcurrency),
-      ConvertJavaStringToUTF8(env, jvalue), jcompleted);
-}
-
 void JourneyLoggerAndroid::RecordCheckoutStep(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     jint jstep) {
   journey_logger_.RecordCheckoutStep(
       static_cast<JourneyLogger::CheckoutFunnelStep>(jstep));
-}
-
-void JourneyLoggerAndroid::SetTriggerTime(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
-  journey_logger_.SetTriggerTime();
 }
 
 void JourneyLoggerAndroid::SetPaymentAppUkmSourceId(
@@ -198,7 +180,8 @@ static jlong JNI_JourneyLogger_InitJourneyLoggerAndroid(
       content::WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);  // Verified in Java before invoking this function.
   return reinterpret_cast<jlong>(new JourneyLoggerAndroid(
-      jis_incognito, ukm::GetSourceIdForWebContentsDocument(web_contents)));
+      jis_incognito,
+      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 }
 
 }  // namespace payments

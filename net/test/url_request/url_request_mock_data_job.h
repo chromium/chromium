@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "net/url_request/url_request_job.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -66,9 +66,9 @@ class URLRequestMockDataJob : public URLRequestJob {
 
   void StartAsync();
 
-  base::Optional<std::string> headers_;
+  absl::optional<std::string> headers_;
   std::string data_;
-  size_t data_offset_;
+  size_t data_offset_ = 0;
   bool request_client_certificate_;
   base::WeakPtrFactory<URLRequestMockDataJob> weak_factory_{this};
 };

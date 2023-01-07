@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,8 @@ namespace {
 void SplitStringHelper(const String& str, HashSet<String>& set) {
   Vector<String> substrings;
   str.Split(' ', substrings);
-  for (size_t i = 0; i < substrings.size(); ++i)
-    set.insert(substrings[i]);
+  for (const auto& substring : substrings)
+    set.insert(substring);
 }
 
 }  // anonymous namespace

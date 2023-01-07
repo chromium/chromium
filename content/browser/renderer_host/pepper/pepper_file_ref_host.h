@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_ppapi_host.h"
 #include "ppapi/c/pp_file_info.h"
@@ -53,9 +53,8 @@ class PepperFileRefBackend {
   virtual int32_t CanReadWrite() const = 0;
 };
 
-class CONTENT_EXPORT PepperFileRefHost
-    : public ppapi::host::ResourceHost,
-      public base::SupportsWeakPtr<PepperFileRefHost> {
+class PepperFileRefHost : public ppapi::host::ResourceHost,
+                          public base::SupportsWeakPtr<PepperFileRefHost> {
  public:
   PepperFileRefHost(BrowserPpapiHost* host,
                     PP_Instance instance,
@@ -67,6 +66,9 @@ class CONTENT_EXPORT PepperFileRefHost
                     PP_Instance instance,
                     PP_Resource resource,
                     const base::FilePath& external_path);
+
+  PepperFileRefHost(const PepperFileRefHost&) = delete;
+  PepperFileRefHost& operator=(const PepperFileRefHost&) = delete;
 
   ~PepperFileRefHost() override;
 
@@ -102,12 +104,10 @@ class CONTENT_EXPORT PepperFileRefHost
   int32_t OnReadDirectoryEntries(ppapi::host::HostMessageContext* context);
   int32_t OnGetAbsolutePath(ppapi::host::HostMessageContext* context);
 
-  BrowserPpapiHost* host_;
+  raw_ptr<BrowserPpapiHost> host_;
   std::unique_ptr<PepperFileRefBackend> backend_;
   base::WeakPtr<PepperFileSystemBrowserHost> file_system_host_;
   PP_FileSystemType fs_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperFileRefHost);
 };
 
 }  // namespace content

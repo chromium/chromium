@@ -1,0 +1,24 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Text indent 50px'
+++++++++++UNKNOWN label='Text indent 50px'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Text indent -50px'
+++++++++++UNKNOWN label='Text indent -50px'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Text indent 0px'
+++++++++++UNKNOWN label='Text indent 0px'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Text indent initial'
+++++++++++UNKNOWN label='Text indent initial'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Text indent inherit'
+++++++++++UNKNOWN label='Text indent inherit'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='No text indent specified'
+++++++++++UNKNOWN label='No text indent specified'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Invalid text indent'
+++++++++++UNKNOWN label='Invalid text indent'

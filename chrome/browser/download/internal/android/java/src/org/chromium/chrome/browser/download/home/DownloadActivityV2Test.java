@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.download.home;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.Espresso.pressBack;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
@@ -21,15 +20,15 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.os.Build.VERSION_CODES;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Pair;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
@@ -40,6 +39,7 @@ import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -48,20 +48,22 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
 import org.chromium.base.DiscardableReferencePool;
+import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.download.DownloadLaterPromptStatus;
+import org.chromium.chrome.browser.download.home.list.ListUtils;
 import org.chromium.chrome.browser.download.home.list.holder.ListItemViewHolder;
 import org.chromium.chrome.browser.download.home.rename.RenameUtils;
 import org.chromium.chrome.browser.download.home.toolbar.DownloadHomeToolbar;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.util.date.StringUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -69,24 +71,28 @@ import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.RenameResult;
-import org.chromium.components.prefs.PrefService;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-/** Tests the DownloadActivity home V2. */
+/** Tests the download home V2. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-public class DownloadActivityV2Test extends DummyUiActivityTestCase {
+public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Mock
     private Tracker mTracker;
     @Mock
@@ -95,9 +101,6 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
     public JniMocker mJniMocker = new JniMocker();
     @Mock
     private UrlFormatter.Natives mUrlFormatterJniMock;
-
-    @Mock
-    PrefService mPrefService;
 
     private ModalDialogManager.Presenter mAppModalPresenter;
 
@@ -138,15 +141,11 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
         when(mUrlFormatterJniMock.formatStringUrlForSecurityDisplay(
                      anyString(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
                 .then(inv -> inv.getArgument(0));
-        when(mPrefService.getInteger(eq(Pref.DOWNLOAD_LATER_PROMPT_STATUS)))
-                .thenReturn(DownloadLaterPromptStatus.SHOW_INITIAL);
-        doNothing().when(mPrefService).setInteger(anyString(), anyInt());
 
         Map<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.DOWNLOADS_LOCATION_CHANGE, true);
         features.put(ChromeFeatureList.OFFLINE_PAGES_PREFETCHING, true);
         features.put(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER, false);
-        ChromeFeatureList.setTestFeatures(features);
+        FeatureList.setTestFeatures(features);
 
         mStubbedOfflineContentProvider = new StubbedOfflineContentProvider() {
             @Override
@@ -175,10 +174,8 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
 
     private void setUpUi() {
         DownloadManagerUiConfig config = DownloadManagerUiConfigHelper.fromFlags()
-                                                 .setIsOffTheRecord(false)
+                                                 .setOTRProfileID(null)
                                                  .setIsSeparateActivity(true)
-                                                 .setUseNewDownloadPath(true)
-                                                 .setUseNewDownloadPathThumbnails(true)
                                                  .build();
 
         mAppModalPresenter = new AppModalPresenter(getActivity());
@@ -191,10 +188,10 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
         ObservableSupplierImpl<Boolean> isPrefetchEnabledSupplier = new ObservableSupplierImpl<>();
         isPrefetchEnabledSupplier.set(true);
 
-        mDownloadCoordinator = new DownloadManagerCoordinatorImpl(getActivity(), config,
-                isPrefetchEnabledSupplier, settingsLauncher, mSnackbarManager, mModalDialogManager,
-                mPrefService, mTracker, faviconProvider, mStubbedOfflineContentProvider,
-                /* LegacyDownloadProvider */ null, mDiscardableReferencePool);
+        mDownloadCoordinator =
+                new DownloadManagerCoordinatorImpl(getActivity(), config, isPrefetchEnabledSupplier,
+                        settingsLauncher, mSnackbarManager, mModalDialogManager, mTracker,
+                        faviconProvider, mStubbedOfflineContentProvider, mDiscardableReferencePool);
         getActivity().setContentView(mDownloadCoordinator.getView());
 
         mDownloadCoordinator.updateForUrl(UrlConstants.DOWNLOADS_URL);
@@ -303,8 +300,8 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
 
         // Add an item. The new item should be visible and the storage text should be updated.
         OfflineItem item5 = StubbedProvider.createOfflineItem("offline_guid_5",
-                "http://stuff_and_things.com", OfflineItemState.COMPLETE, 1024, "page 5",
-                "/data/fake_path/Downloads/file_5", System.currentTimeMillis(), 100000,
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2), OfflineItemState.COMPLETE, 1024,
+                "page 5", "/data/fake_path/Downloads/file_5", System.currentTimeMillis(), 100000,
                 OfflineItemFilter.OTHER);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mStubbedOfflineContentProvider.addItem(item5));
@@ -320,7 +317,7 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
 
     @Test
     @MediumTest
-    public void testShowListItemMenu() throws Exception {
+    public void testShowListItemMenuWithRename() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
         onView(withText("page 3")).check(matches(isDisplayed()));
 
@@ -332,9 +329,17 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
         onView(withText("Rename")).check(matches(isDisplayed()));
         onView(withText("Delete")).check(matches(isDisplayed()));
         onView(withText("Share")).check(matches(isDisplayed()));
+    }
 
-        // Dismiss the menu by pressing back button.
-        pressBack();
+    @Test
+    @MediumTest
+    public void testShowListItemMenuWithoutRename() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
+
+        // The last item may be outside the view port, that recycler view won't create the view
+        // holder, so scroll to that view holder first.
+        onView(withId(R.id.download_home_recycler_view))
+                .perform(RecyclerViewActions.scrollToHolder(hasTextInViewHolder("page 1")));
 
         // Open menu for a page download, it should have share, delete, but no rename option.
         onView(allOf(withId(R.id.more), hasSibling(withText("page 1"))))
@@ -360,6 +365,11 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
         onView(withId(R.id.selection_mode_share_menu_id)).check(doesNotExist());
         onView(withId(R.id.selection_mode_delete_menu_id)).check(doesNotExist());
 
+        // The last item may be outside the view port, that recycler view won't create the view
+        // holder, so scroll to that view holder first.
+        onView(withId(R.id.download_home_recycler_view))
+                .perform(RecyclerViewActions.scrollToHolder(hasTextInViewHolder("page 1")));
+
         // Select an item.
         onView(withText("page 1")).perform(ViewActions.longClick());
 
@@ -370,6 +380,11 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
         onView(withId(R.id.selection_mode_number)).check(matches(isDisplayed()));
         onView(withId(R.id.selection_mode_share_menu_id)).check(matches(isDisplayed()));
         onView(withId(R.id.selection_mode_delete_menu_id)).check(matches(isDisplayed()));
+
+        // The last item may be outside the view port, that recycler view won't create the view
+        // holder, so scroll to that view holder first.
+        onView(withId(R.id.download_home_recycler_view))
+                .perform(RecyclerViewActions.scrollToHolder(hasTextInViewHolder("page 1")));
 
         // Deselect the same item.
         onView(withText("page 1")).perform(ViewActions.longClick());
@@ -388,6 +403,11 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
     public void testDeleteItem() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
         SnackbarManager.setDurationForTesting(1);
+
+        // The last item may be outside the view port, that recycler view won't create the view
+        // holder, so scroll to that view holder first.
+        onView(withId(R.id.download_home_recycler_view))
+                .perform(RecyclerViewActions.scrollToHolder(hasTextInViewHolder("page 1")));
 
         onView(withText("page 1")).check(matches(isDisplayed()));
 
@@ -413,6 +433,7 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R, message = "https://crbug.com/1338140")
     public void testRenameItem() throws Exception {
         TestThreadUtils.runOnUiThreadBlocking(() -> { setUpUi(); });
 
@@ -451,9 +472,9 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
                 .perform(ViewActions.click());
 
         // Share an item. The share via android dialog should popup.
-        onView(withText("Share")).check(matches(isDisplayed())).perform(ViewActions.click());
+        onView(withText("Share")).check(matches(isDisplayed()));
 
-        // TODO(shaktisahu): Test content of the intent.
+        // TODO(shaktisahu): Perform a click, capture the Intent and check its contents.
     }
 
     @Test
@@ -483,15 +504,70 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
         onView(withId(R.id.search_text)).check(matches(not(isDisplayed())));
     }
 
+    /**
+     * @param items        The list (unsorted) of OfflineItems that could be displayed.
+     * @param expectations Whether or not each item (1:1 with {@code items}) is visible.
+     */
+    private void checkItemsDisplayed(ArrayList<OfflineItem> items, List<Boolean> expectations) {
+        int currentIndex = 2; // (1) Storage, (2) Filters
+
+        Assert.assertEquals(items.size(), expectations.size());
+
+        // Create a sortable pair of the OfflineItem and the visibility expectation.
+        ArrayList<Pair<OfflineItem, Boolean>> sorted = new ArrayList<>();
+        for (int i = 0; i < items.size(); i++) {
+            sorted.add(Pair.create(items.get(i), expectations.get(i)));
+        }
+
+        // Sort by date, which is how the items will show up in the UI.
+        Collections.sort(sorted, this::compareOfflineItems);
+
+        for (int i = 0; i < sorted.size(); i++) {
+            boolean visible = sorted.get(i).second;
+            OfflineItem item = sorted.get(i).first;
+
+            if (visible) {
+                OfflineItem previous = findPreviousVisible(sorted, i);
+                // If we have a day change, validate the header and move forward one item before
+                // comparing.
+                if (previous == null || ListUtils.compareItemByDate(previous, item) != 0) {
+                    onView(withId(R.id.download_home_recycler_view))
+                            .perform(RecyclerViewActions.scrollToPosition(currentIndex++));
+                    onView(withText(StringUtils
+                                            .dateToHeaderString(
+                                                    new Date(sorted.get(i).first.creationTimeMs))
+                                            .toString()))
+                            .check(matches(isDisplayed()));
+                }
+
+                onView(withId(R.id.download_home_recycler_view))
+                        .perform(RecyclerViewActions.scrollToPosition(currentIndex++));
+                onView(withText(item.title)).check(matches(isDisplayed()));
+            } else {
+                onView(withText(item.title)).check(doesNotExist());
+            }
+        }
+
+        // Reset the scroll position to the beginning to set proper expectations for the broader
+        // test.
+        onView(withId(R.id.download_home_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(0));
+    }
+
+    private OfflineItem findPreviousVisible(ArrayList<Pair<OfflineItem, Boolean>> list, int i) {
+        for (int j = i - 1; j >= 0; j--) {
+            if (list.get(j).second) return list.get(j).first;
+        }
+        return null;
+    }
+
+    private int compareOfflineItems(Pair<OfflineItem, Boolean> a, Pair<OfflineItem, Boolean> b) {
+        return (int) (b.first.creationTimeMs - a.first.creationTimeMs);
+    }
+
     private void checkItemsDisplayed(boolean item0, boolean item1, boolean item2, boolean item3) {
-        // TODO(xingliu): Fix this properly. Some items may be outside the view port, that the
-        // recycler view won't create the view holder, and isDisplayed() will not check those items
-        // as well.
-        // See https://crbug.com/1039491.
-        onView(withText("page 1")).check(item0 ? matches(isDisplayed()) : doesNotExist());
-        onView(withText("page 2")).check(item1 ? matches(isDisplayed()) : doesNotExist());
-        onView(withText("page 3")).check(item2 ? matches(isDisplayed()) : doesNotExist());
-        onView(withText("page 4")).check(item3 ? matches(isDisplayed()) : doesNotExist());
+        checkItemsDisplayed(mStubbedOfflineContentProvider.getItemsSynchronously(),
+                Arrays.asList(item0, item1, item2, item3));
     }
 
     private void renameFileAndVerifyErrorMessage(String name, int expectErrorMsgId) {

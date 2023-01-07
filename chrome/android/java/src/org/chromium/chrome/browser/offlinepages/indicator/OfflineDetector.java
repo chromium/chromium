@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.offlinepages.indicator;
 
 import android.os.Handler;
 import android.os.SystemClock;
-import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -15,11 +14,9 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector;
 import org.chromium.chrome.browser.net.connectivitydetector.ConnectivityDetector.ConnectionState;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
-import org.chromium.components.variations.VariationsAssociatedData;
+import org.chromium.components.version_info.VersionInfo;
 
 /**
  * Class that detects if the network is offline. Waits for the network to stablize before notifying
@@ -100,8 +97,8 @@ class OfflineDetector
     private long mTimeWhenLastOnline;
 
     // Set to true if adb console logging should be enabled.
-    private static final boolean sLoggingEnabled = ChromeVersionInfo.isCanaryBuild()
-            || ChromeVersionInfo.isDevBuild() || ChromeVersionInfo.isLocalBuild();
+    private static final boolean sLoggingEnabled =
+            VersionInfo.isCanaryBuild() || VersionInfo.isDevBuild() || VersionInfo.isLocalBuild();
 
     private static final String TAG = "OfflineDetector";
 
@@ -114,9 +111,8 @@ class OfflineDetector
         mIsOfflineCallback = isOfflineCallback;
         mIsForegroundCallback = isForegroundCallback;
         mHandler = new Handler();
-        mStatusIndicatorWaitOnSwitchOnlineToOfflineDurationMs = getIntParamValueOrDefault(
-                "STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS",
-                STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS);
+        mStatusIndicatorWaitOnSwitchOnlineToOfflineDurationMs =
+                STATUS_INDICATOR_WAIT_ON_SWITCH_ONLINE_TO_OFFLINE_DEFAULT_DURATION_MS;
 
         mUpdateOfflineStatusIndicatorDelayedRunnable = () -> {
             if (sLoggingEnabled) {
@@ -315,35 +311,5 @@ class OfflineDetector
         mHandler.postDelayed(mUpdateOfflineStatusIndicatorDelayedRunnable,
                 Math.max(Math.max(timeNeededForForeground, timeNeededForOffline),
                         timeNeededAfterConnectionChangeFromOnlineToOffline));
-    }
-
-    /**
-     * Returns the value for a Finch parameter, or the default value if no parameter
-     * exists in the current configuration.
-     * @param paramName The name of the Finch parameter (or command-line switch) to get a value
-     *                  for.
-     * @param defaultValue The default value to return when there's no param or switch.
-     * @return The value -- either the param or the default.
-     */
-    private static long getIntParamValueOrDefault(String paramName, long defaultValue) {
-        String value;
-
-        // May throw exception in tests.
-        try {
-            value = VariationsAssociatedData.getVariationParamValue(
-                    ChromeFeatureList.OFFLINE_INDICATOR_V2, paramName);
-        } catch (java.lang.UnsupportedOperationException e) {
-            return defaultValue;
-        }
-
-        if (!TextUtils.isEmpty(value)) {
-            try {
-                return Integer.parseInt(value);
-            } catch (NumberFormatException e) {
-                return defaultValue;
-            }
-        }
-
-        return defaultValue;
     }
 }

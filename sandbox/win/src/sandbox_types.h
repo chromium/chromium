@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SANDBOX_WIN_SRC_SANDBOX_TYPES_H_
 #define SANDBOX_WIN_SRC_SANDBOX_TYPES_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 
@@ -14,7 +15,7 @@ namespace sandbox {
 //
 // Note: These codes are listed in a histogram and any new codes should be added
 // at the end. If the underlying type is changed then the forward declaration in
-// sandbox_init.h must be updated.
+// sandbox_init_win.h must be updated.
 //
 enum ResultCode : int {
   SBOX_ALL_OK = 0,
@@ -108,11 +109,11 @@ enum ResultCode : int {
   // Cannot find the base address of the new process.
   SBOX_ERROR_CANNOT_FIND_BASE_ADDRESS = 43,
   // Cannot create the AppContainer profile.
-  SBOX_ERROR_CREATE_APPCONTAINER_PROFILE = 44,
+  SBOX_ERROR_CREATE_APPCONTAINER = 44,
   // Cannot create the AppContainer as the main executable can't be accessed.
-  SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_ACCESS_CHECK = 45,
+  SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK = 45,
   // Cannot create the AppContainer as adding a capability failed.
-  SBOX_ERROR_CREATE_APPCONTAINER_PROFILE_CAPABILITY = 46,
+  SBOX_ERROR_CREATE_APPCONTAINER_CAPABILITY = 46,
   // Cannot initialize a job object.
   SBOX_ERROR_CANNOT_INIT_JOB = 47,
   // Invalid LowBox SID string.
@@ -141,6 +142,28 @@ enum ResultCode : int {
   SBOX_ERROR_CANNOT_INIT_BROKERSERVICES = 59,
   // Cannot update job active process limit.
   SBOX_ERROR_CANNOT_UPDATE_JOB_PROCESS_LIMIT = 60,
+  // Cannot create an impersonation lowbox token
+  SBOX_ERROR_CANNOT_CREATE_LOWBOX_IMPERSONATION_TOKEN = 61,
+  // Cannot create a sandbox policy for an unsandboxed process.
+  SBOX_ERROR_UNSANDBOXED_PROCESS = 62,
+  // Could not create the unsandboxed process. Extended error from
+  // base::LaunchProcess will be in GetLastError().
+  SBOX_ERROR_CANNOT_LAUNCH_UNSANDBOXED_PROCESS = 63,
+  // Attempt to start a sandboxed process from sandbox code hosted not within
+  // the main EXE. This is an unsupported operation by the sandbox.
+  SBOX_ERROR_INVALID_LINK_STATE = 64,
+  // The target process main EXE had a different base address to the broker.
+  // This should be impossible but might happen if there is a mismatch in the
+  // running executable image files vs the one disk.
+  SBOX_ERROR_INVALID_TARGET_BASE_ADDRESS = 65,
+  // The target process sentinel value cannot be read.
+  SBOX_ERROR_CANNOT_READ_SENTINEL_VALUE = 66,
+  // Short read of the target process sentinel value.
+  SBOX_ERROR_INVALID_READ_SENTINEL_SIZE = 67,
+  // The target process sentinel value did not match the sentinel in the broker.
+  SBOX_ERROR_MISMATCH_SENTINEL_VALUE = 68,
+  // The process of consolidating the ConfigBase for a policy failed.
+  SBOX_ERROR_FAILED_TO_FREEZE_CONFIG = 69,
   // Placeholder for last item of the enum.
   SBOX_ERROR_LAST
 };
@@ -170,8 +193,10 @@ class TargetServices;
 
 // Contains the pointer to a target or broker service.
 struct SandboxInterfaceInfo {
-  BrokerServices* broker_services;
-  TargetServices* target_services;
+  // TODO(crbug.com/1298696): Chrome crashes with MTECheckedPtr
+  // enabled. Triage.
+  raw_ptr<BrokerServices, DegradeToNoOpWhenMTE> broker_services;
+  raw_ptr<TargetServices> target_services;
 };
 
 #define SANDBOX_INTERCEPT extern "C"
@@ -180,10 +205,8 @@ enum InterceptionType {
   INTERCEPTION_INVALID = 0,
   INTERCEPTION_SERVICE_CALL,  // Trampoline of an NT native call
   INTERCEPTION_EAT,
-  INTERCEPTION_SIDESTEP,        // Preamble patch
-  INTERCEPTION_SMART_SIDESTEP,  // Preamble patch but bypass internal calls
-  INTERCEPTION_UNLOAD_MODULE,   // Unload the module (don't patch)
-  INTERCEPTION_LAST             // Placeholder for last item in the enumeration
+  INTERCEPTION_UNLOAD_MODULE,  // Unload the module (don't patch)
+  INTERCEPTION_LAST            // Placeholder for last item in the enumeration
 };
 
 }  // namespace sandbox

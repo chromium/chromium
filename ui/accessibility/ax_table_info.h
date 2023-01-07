@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 #include <set>
 #include <vector>
 
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
 
@@ -17,6 +18,10 @@ namespace ui {
 
 class AXTree;
 class AXNode;
+
+#if BUILDFLAG(IS_MAC)
+#define AX_EXTRA_MAC_NODES 1
+#endif
 
 // This helper class computes info about tables and grids in AXTrees.
 class AX_EXPORT AXTableInfo {
@@ -114,8 +119,8 @@ class AX_EXPORT AXTableInfo {
   AXNode* CreateExtraMacTableHeaderNode();
   void UpdateExtraMacColumnNodeAttributes(size_t col_index);
 
-  AXTree* tree_ = nullptr;
-  AXNode* table_node_ = nullptr;
+  raw_ptr<AXTree> tree_ = nullptr;
+  raw_ptr<AXNode> table_node_ = nullptr;
   bool valid_ = false;
   std::map<int, std::map<int, CellData>> incremental_row_col_map_;
 };

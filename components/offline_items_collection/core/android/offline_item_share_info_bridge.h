@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_ANDROID_OFFLINE_ITEM_SHARE_INFO_BRIDGE_H_
 #define COMPONENTS_OFFLINE_ITEMS_COLLECTION_CORE_ANDROID_OFFLINE_ITEM_SHARE_INFO_BRIDGE_H_
 
-#include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"

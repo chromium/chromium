@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
+#include "base/test/allow_check_is_test_to_be_called.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_switches.h"
 
@@ -31,6 +32,8 @@ int LaunchUnitTests(int argc,
                     char** argv,
                     RunTestSuiteCallback run_test_suite,
                     size_t retry_limit) {
+  base::test::AllowCheckIsTestToBeCalled();
+
   return LaunchUnitTestsSerially(argc, argv, std::move(run_test_suite));
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/paint_preview/browser/file_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/ax_tree_update.h"
 
 namespace paint_preview {
@@ -57,7 +58,7 @@ class PaintPreviewFileMixin {
   // will return the kExpired status.
   virtual void GetCapturedPaintPreviewProto(
       const DirectoryKey& key,
-      base::Optional<base::TimeDelta> expiry_horizon,
+      absl::optional<base::TimeDelta> expiry_horizon,
       OnReadProtoCallback on_read_proto_callback);
 
   // Writes an Accessibility Tree snapshot to the directory listed in key.
@@ -76,4 +77,4 @@ class PaintPreviewFileMixin {
 
 }  // namespace paint_preview
 
-#endif  // COMPONENTS_PAINT_PREVIEW_BROWSER_PAINT_PREVIEW_FILE_HELPER_H_
+#endif  // COMPONENTS_PAINT_PREVIEW_BROWSER_PAINT_PREVIEW_FILE_MIXIN_H_

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,18 +30,6 @@ void GetChromeBundlePath(base::FilePath* chrome_bundle) {
 }
 
 }  // namespace
-
-TEST(ChromeLocatorTest, FindBundle) {
-  base::FilePath finder_bundle_path;
-  EXPECT_TRUE(
-      app_mode::FindBundleById(@"com.apple.finder", &finder_bundle_path));
-  EXPECT_TRUE(base::DirectoryExists(finder_bundle_path));
-}
-
-TEST(ChromeLocatorTest, FindNonExistentBundle) {
-  base::FilePath dummy;
-  EXPECT_FALSE(app_mode::FindBundleById(@"this.doesnt.exist", &dummy));
-}
 
 TEST(ChromeLocatorTest, GetNonExistentBundleInfo) {
   base::ScopedTempDir temp_dir;

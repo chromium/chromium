@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,4 +11,4 @@
     : BrowsingDataCounterWrapperProducer
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_BROWSING_DATA_COUNTER_WRAPPER_PRODUCER_H_
+#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_FAKE_BROWSING_DATA_COUNTER_WRAPPER_PRODUCER_H_

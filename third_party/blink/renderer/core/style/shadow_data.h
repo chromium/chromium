@@ -28,8 +28,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect_outsets.h"
+#include "ui/gfx/geometry/outsets_f.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -41,7 +41,7 @@ class CORE_EXPORT ShadowData {
   USING_FAST_MALLOC(ShadowData);
 
  public:
-  ShadowData(const FloatPoint& location,
+  ShadowData(const gfx::PointF& location,
              float blur,
              float spread,
              ShadowStyle style,
@@ -57,9 +57,9 @@ class CORE_EXPORT ShadowData {
 
   static ShadowData NeutralValue();
 
-  float X() const { return location_.X(); }
-  float Y() const { return location_.Y(); }
-  FloatPoint Location() const { return location_; }
+  float X() const { return location_.x(); }
+  float Y() const { return location_.y(); }
+  gfx::PointF Location() const { return location_; }
   float Blur() const { return blur_; }
   float Spread() const { return spread_; }
   ShadowStyle Style() const { return style_; }
@@ -69,10 +69,10 @@ class CORE_EXPORT ShadowData {
 
   // Outsets needed to adjust a source rectangle to the one cast by this
   // shadow.
-  FloatRectOutsets RectOutsets() const;
+  gfx::OutsetsF RectOutsets() const;
 
  private:
-  FloatPoint location_;
+  gfx::PointF location_;
   float blur_;
   float spread_;
   StyleColor color_;

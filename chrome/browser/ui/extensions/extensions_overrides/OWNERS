@@ -1,0 +1,5 @@
+# Similar to extension APIs, changes to this file are sensitive. Ensure an API
+# owner reviews them.
+set noparent
+
+file://extensions/common/api/API_OWNERS

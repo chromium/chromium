@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <stdint.h>
 
 #include "base/check.h"
-#include "base/stl_util.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/url_database.h"
 #include "components/history/core/browser/visit_database.h"
 
@@ -25,14 +25,14 @@ const HistoryAndBookmarkRow::ColumnID kInterestingColumns[] = {
 } // namespace
 
 VisitSQLHandler::VisitSQLHandler(URLDatabase* url_db, VisitDatabase* visit_db)
-    : SQLHandler(kInterestingColumns, base::size(kInterestingColumns)),
+    : SQLHandler(kInterestingColumns, std::size(kInterestingColumns)),
       url_db_(url_db),
       visit_db_(visit_db) {}
 
 VisitSQLHandler::~VisitSQLHandler() {
 }
 
-// The created time is updated according the given |row|.
+// The created time is updated according the given `row`.
 // We simulate updating created time by
 // a. Remove all visits.
 // b. Insert a new visit which has visit time same as created time.
@@ -123,7 +123,7 @@ bool VisitSQLHandler::AddVisit(URLID url_id, const Time& visit_time) {
                      ui::PAGE_TRANSITION_AUTO_BOOKMARK,
                      /*segment_id=*/0,
                      /*incremented_omnibox_typed_score=*/false,
-                     /*floc_allowed=*/false);
+                     /*opening_visit=*/0);
   return visit_db_->AddVisit(&visit_row, SOURCE_BROWSED);
 }
 

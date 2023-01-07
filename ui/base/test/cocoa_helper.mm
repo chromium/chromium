@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,6 @@ void NOINLINE ForceSystemLeaks() {
 @implementation CocoaTestHelperWindow
 
 @synthesize pretendIsKeyWindow = _pretendIsKeyWindow;
-@synthesize pretendIsOccluded = _pretendIsOccluded;
 @synthesize pretendIsOnActiveSpace = _pretendIsOnActiveSpace;
 @synthesize pretendFullKeyboardAccessIsEnabled =
     _pretendFullKeyboardAccessIsEnabled;
@@ -40,7 +39,7 @@ void NOINLINE ForceSystemLeaks() {
 
 - (instancetype)initWithContentRect:(NSRect)contentRect {
   self = [super initWithContentRect:contentRect
-                          styleMask:NSBorderlessWindowMask
+                          styleMask:NSWindowStyleMaskBorderless
                             backing:NSBackingStoreBuffered
                               defer:NO];
   if (self) {
@@ -78,13 +77,6 @@ void NOINLINE ForceSystemLeaks() {
   EXPECT_TRUE([self makeFirstResponder:NSApp]);
 }
 
-- (void)setPretendIsOccluded:(BOOL)flag {
-  _pretendIsOccluded = flag;
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSWindowDidChangeOcclusionStateNotification
-                    object:self];
-}
-
 - (void)setPretendIsOnActiveSpace:(BOOL)pretendIsOnActiveSpace {
   _pretendIsOnActiveSpace = pretendIsOnActiveSpace;
   [[NSWorkspace sharedWorkspace].notificationCenter
@@ -104,10 +96,6 @@ void NOINLINE ForceSystemLeaks() {
 // -setPretendFullKeyboardAccessIsEnabled:.
 - (BOOL)_allowsAnyValidResponder {
   return _pretendFullKeyboardAccessIsEnabled;
-}
-
-- (NSWindowOcclusionState)occlusionState {
-  return _pretendIsOccluded ? 0 : NSWindowOcclusionStateVisible;
 }
 
 - (NSArray<NSView*>*)validKeyViews {
@@ -201,7 +189,7 @@ CocoaTestHelper::~CocoaTestHelper() {
       // Autorelease anything thrown up by the event loop.
       @autoreleasepool {
         ++spins;
-        NSEvent* next_event = [NSApp nextEventMatchingMask:NSAnyEventMask
+        NSEvent* next_event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                                  untilDate:nil
                                                     inMode:NSDefaultRunLoopMode
                                                    dequeue:YES];

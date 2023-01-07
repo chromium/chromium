@@ -1,15 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_SMS_SMS_PROVIDER_GMS_H_
 #define CONTENT_BROWSER_SMS_SMS_PROVIDER_GMS_H_
 
-#include <utility>
-
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "content/browser/sms/sms_provider.h"
 #include "content/common/content_export.h"
 
@@ -27,6 +24,10 @@ class RenderFrameHost;
 class CONTENT_EXPORT SmsProviderGms : public SmsProvider {
  public:
   SmsProviderGms();
+
+  SmsProviderGms(const SmsProviderGms&) = delete;
+  SmsProviderGms& operator=(const SmsProviderGms&) = delete;
+
   ~SmsProviderGms() override;
 
   void Retrieve(RenderFrameHost* rfh, SmsFetchType fetch_type) override;
@@ -44,8 +45,6 @@ class CONTENT_EXPORT SmsProviderGms : public SmsProvider {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> j_sms_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmsProviderGms);
 };
 
 }  // namespace content

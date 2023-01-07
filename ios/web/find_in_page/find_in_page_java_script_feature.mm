@@ -1,26 +1,27 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 
+#import "base/no_destructor.h"
 #import "ios/web/find_in_page/find_in_page_constants.h"
-#include "ios/web/public/js_messaging/java_script_feature_util.h"
-#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-const char kScriptName[] = "find_in_page_js";
-const char kEventListenersScriptName[] = "find_in_page_event_listeners_js";
+const char kScriptName[] = "find_in_page_native_api";
+const char kEventListenersScriptName[] = "find_in_page_event_listeners";
 
 // Timeout for the find within JavaScript in milliseconds.
 const double kFindInPageFindTimeout = 100.0;
 
 // The timeout for JavaScript function calls in milliseconds. Important that
-// this is longer than |kFindInPageFindTimeout| to allow for incomplete find to
+// this is longer than `kFindInPageFindTimeout` to allow for incomplete find to
 // restart again. If this timeout hits, then something went wrong with the find
 // and find in page should not continue.
 const double kJavaScriptFunctionCallTimeout = 200.0;
@@ -61,7 +62,7 @@ FindInPageJavaScriptFeature::~FindInPageJavaScriptFeature() = default;
 bool FindInPageJavaScriptFeature::Search(
     WebFrame* frame,
     const std::string& query,
-    base::OnceCallback<void(base::Optional<int>)> callback) {
+    base::OnceCallback<void(absl::optional<int>)> callback) {
   std::vector<base::Value> params;
   params.push_back(base::Value(query));
   params.push_back(base::Value(kFindInPageFindTimeout));
@@ -69,19 +70,19 @@ bool FindInPageJavaScriptFeature::Search(
       frame, kFindInPageSearch, params,
       base::BindOnce(&FindInPageJavaScriptFeature::ProcessSearchResult,
                      base::Unretained(GetInstance()), std::move(callback)),
-      base::TimeDelta::FromMilliseconds(kJavaScriptFunctionCallTimeout));
+      base::Milliseconds(kJavaScriptFunctionCallTimeout));
 }
 
 void FindInPageJavaScriptFeature::Pump(
     WebFrame* frame,
-    base::OnceCallback<void(base::Optional<int>)> callback) {
+    base::OnceCallback<void(absl::optional<int>)> callback) {
   std::vector<base::Value> params;
   params.push_back(base::Value(kFindInPageFindTimeout));
   CallJavaScriptFunction(
       frame, kFindInPagePump, params,
       base::BindOnce(&FindInPageJavaScriptFeature::ProcessSearchResult,
                      base::Unretained(GetInstance()), std::move(callback)),
-      base::TimeDelta::FromMilliseconds(kJavaScriptFunctionCallTimeout));
+      base::Milliseconds(kJavaScriptFunctionCallTimeout));
 }
 
 void FindInPageJavaScriptFeature::SelectMatch(
@@ -90,9 +91,9 @@ void FindInPageJavaScriptFeature::SelectMatch(
     base::OnceCallback<void(const base::Value*)> callback) {
   std::vector<base::Value> params;
   params.push_back(base::Value(index));
-  CallJavaScriptFunction(
-      frame, kFindInPageSelectAndScrollToMatch, params, std::move(callback),
-      base::TimeDelta::FromMilliseconds(kJavaScriptFunctionCallTimeout));
+  CallJavaScriptFunction(frame, kFindInPageSelectAndScrollToMatch, params,
+                         std::move(callback),
+                         base::Milliseconds(kJavaScriptFunctionCallTimeout));
 }
 
 void FindInPageJavaScriptFeature::Stop(WebFrame* frame) {
@@ -101,9 +102,9 @@ void FindInPageJavaScriptFeature::Stop(WebFrame* frame) {
 }
 
 void FindInPageJavaScriptFeature::ProcessSearchResult(
-    base::OnceCallback<void(const base::Optional<int>)> callback,
+    base::OnceCallback<void(const absl::optional<int>)> callback,
     const base::Value* result) {
-  base::Optional<int> match_count;
+  absl::optional<int> match_count;
   if (result && result->is_double()) {
     // Valid match number returned. If not, match count will be 0 in order to
     // zero-out count from previous find.

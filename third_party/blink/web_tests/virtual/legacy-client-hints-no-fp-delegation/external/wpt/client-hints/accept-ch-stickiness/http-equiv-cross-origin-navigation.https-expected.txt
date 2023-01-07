@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS http-equiv cross origin navigation precondition: Test that the browser does not have client hints preferences cached
-PASS http-equiv cross origin navigation set Accept-CH
-PASS http-equiv cross origin navigation got client hints according to expectations.
-Harness: the test ran to completion.
-

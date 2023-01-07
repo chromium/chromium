@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,8 @@
 #include <cmath>
 #include <vector>
 
+#include "ash/ash_export.h"
 #include "ash/login/ui/animation_frame.h"
-#include "base/macros.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -19,7 +18,7 @@
 namespace ash {
 
 // A custom image view with rounded edges.
-class AnimatedRoundedImageView : public views::View {
+class ASH_EXPORT AnimatedRoundedImageView : public views::View {
  public:
   enum class Playback {
     kFirstFrameOnly,  // Only the first frame in the animation will be shown.
@@ -37,6 +36,10 @@ class AnimatedRoundedImageView : public views::View {
   // Constructs a new rounded image view with rounded corners of radius
   // |corner_radius|.
   AnimatedRoundedImageView(const gfx::Size& size, int corner_radius);
+
+  AnimatedRoundedImageView(const AnimatedRoundedImageView&) = delete;
+  AnimatedRoundedImageView& operator=(const AnimatedRoundedImageView&) = delete;
+
   ~AnimatedRoundedImageView() override;
 
   // Show an animation with specified playback mode.
@@ -74,8 +77,6 @@ class AnimatedRoundedImageView : public views::View {
   const int corner_radius_;
 
   base::OneShotTimer update_frame_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimatedRoundedImageView);
 };
 
 }  // namespace ash

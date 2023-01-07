@@ -1,28 +1,39 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_AUDIO_UNIFIED_VOLUME_SLIDER_CONTROLLER_H_
 #define ASH_SYSTEM_AUDIO_UNIFIED_VOLUME_SLIDER_CONTROLLER_H_
 
+#include "ash/ash_export.h"
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/system/unified/unified_slider_view.h"
 
 namespace ash {
 
 // Controller of a slider that can change audio volume.
-class UnifiedVolumeSliderController : public UnifiedSliderListener {
+class ASH_EXPORT UnifiedVolumeSliderController : public UnifiedSliderListener {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() = default;
+    Delegate();
+    virtual ~Delegate();
     virtual void OnAudioSettingsButtonClicked() = 0;
+
+    base::WeakPtrFactory<Delegate> weak_ptr_factory_{this};
   };
 
-  UnifiedVolumeSliderController(Delegate* delegate, bool in_bubble);
+  explicit UnifiedVolumeSliderController(Delegate* delegate);
+
+  UnifiedVolumeSliderController(const UnifiedVolumeSliderController&) = delete;
+  UnifiedVolumeSliderController& operator=(
+      const UnifiedVolumeSliderController&) = delete;
+
   ~UnifiedVolumeSliderController() override;
 
   // UnifiedSliderListener:
   views::View* CreateView() override;
+  QsSliderCatalogName GetCatalogName() override;
   void SliderValueChanged(views::Slider* sender,
                           float value,
                           float old_value,
@@ -32,11 +43,6 @@ class UnifiedVolumeSliderController : public UnifiedSliderListener {
 
  private:
   Delegate* const delegate_;
-
-  // Whether the volume slider is in the bubble, as opposed to the system tray.
-  const bool in_bubble_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedVolumeSliderController);
 };
 
 }  // namespace ash

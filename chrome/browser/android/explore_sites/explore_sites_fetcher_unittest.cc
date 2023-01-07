@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/android/explore_sites/catalog.pb.h"
 #include "chrome/browser/android/explore_sites/explore_sites_feature.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
@@ -20,6 +21,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,7 +34,6 @@ using testing::SaveArg;
 
 namespace {
 const char kAcceptLanguages[] = "en-US,en;q=0.5";
-const char kExperimentData[] = "FooBar";
 const char kTestData[] = "Any data.";
 }  // namespace
 
@@ -355,28 +356,12 @@ TEST_F(ExploreSitesFetcherTest, TestHeaders) {
   EXPECT_FALSE(success);
 }
 
-TEST_F(ExploreSitesFetcherTest, TestFinchHeader) {
-  // Set up the Finch experiment.
-  SetUpExperimentOption("exp", kExperimentData);
-
-  std::string data;
-  EXPECT_EQ(ExploreSitesRequestStatus::kSuccess,
-            RunFetcherWithData(kTestData, &data));
-
-  net::HttpRequestHeaders headers = last_resource_request.headers;
-  std::string header_text;
-  bool success;
-
-  success = headers.GetHeader("X-Goog-Chrome-Experiment-Tag", &header_text);
-  EXPECT_EQ(std::string(kExperimentData), header_text);
-}
-
 TEST_F(ExploreSitesFetcherTest, OneBackoffForImmediateFetch) {
   std::string data;
   int initial_delay_ms =
       ExploreSitesFetcher::kImmediateFetchBackoffPolicy.initial_delay_ms;
   std::vector<base::TimeDelta> backoff_delays = {
-      base::TimeDelta::FromMilliseconds(initial_delay_ms)};
+      base::Milliseconds(initial_delay_ms)};
   std::vector<base::OnceCallback<void(void)>> respond_callbacks;
   respond_callbacks.push_back(
       base::BindOnce(&ExploreSitesFetcherTest::RespondWithNetError,
@@ -396,7 +381,7 @@ TEST_F(ExploreSitesFetcherTest, OneBackoffForBackgroundFetch) {
   int initial_delay_ms =
       ExploreSitesFetcher::kBackgroundFetchBackoffPolicy.initial_delay_ms;
   std::vector<base::TimeDelta> backoff_delays = {
-      base::TimeDelta::FromMilliseconds(initial_delay_ms)};
+      base::Milliseconds(initial_delay_ms)};
   std::vector<base::OnceCallback<void(void)>> respond_callbacks;
   respond_callbacks.push_back(
       base::BindOnce(&ExploreSitesFetcherTest::RespondWithNetError,
@@ -416,8 +401,8 @@ TEST_F(ExploreSitesFetcherTest, TwoBackoffsForImmediateFetch) {
   int initial_delay_ms =
       ExploreSitesFetcher::kImmediateFetchBackoffPolicy.initial_delay_ms;
   std::vector<base::TimeDelta> backoff_delays = {
-      base::TimeDelta::FromMilliseconds(initial_delay_ms),
-      base::TimeDelta::FromMilliseconds(initial_delay_ms * 2)};
+      base::Milliseconds(initial_delay_ms),
+      base::Milliseconds(initial_delay_ms * 2)};
   std::vector<base::OnceCallback<void(void)>> respond_callbacks;
   respond_callbacks.push_back(
       base::BindOnce(&ExploreSitesFetcherTest::RespondWithNetError,
@@ -443,7 +428,7 @@ TEST_F(ExploreSitesFetcherTest, ExceedMaxBackoffsForImmediateFetch) {
   std::vector<base::OnceCallback<void(void)>> respond_callbacks;
   for (int i = 0; i < ExploreSitesFetcher::kMaxFailureCountForImmediateFetch;
        ++i) {
-    backoff_delays.push_back(base::TimeDelta::FromMilliseconds(delay_ms));
+    backoff_delays.push_back(base::Milliseconds(delay_ms));
     delay_ms *= 2;
     respond_callbacks.push_back(
         base::BindOnce(&ExploreSitesFetcherTest::RespondWithNetError,
@@ -465,7 +450,7 @@ TEST_F(ExploreSitesFetcherTest, ExceedMaxBackoffsForBackgroundFetch) {
   std::vector<base::OnceCallback<void(void)>> respond_callbacks;
   for (int i = 0; i < ExploreSitesFetcher::kMaxFailureCountForBackgroundFetch;
        ++i) {
-    backoff_delays.push_back(base::TimeDelta::FromMilliseconds(delay_ms));
+    backoff_delays.push_back(base::Milliseconds(delay_ms));
     delay_ms *= 2;
     respond_callbacks.push_back(
         base::BindOnce(&ExploreSitesFetcherTest::RespondWithNetError,
@@ -496,7 +481,7 @@ TEST_F(ExploreSitesFetcherTest, RestartAsImmediateFetchIfNotYet) {
 
   // Fast forward by the initial delay of the immediate fetch. The retry should
   // be triggered.
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(
+  task_environment()->FastForwardBy(base::Milliseconds(
       ExploreSitesFetcher::kImmediateFetchBackoffPolicy.initial_delay_ms));
 
   // Make the request succeeded.

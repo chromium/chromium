@@ -21,7 +21,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_UTF16_TEXT_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_UTF16_TEXT_ITERATOR_H_
 
-#include "base/macros.h"
+#include <unicode/utf16.h>
+
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -38,6 +39,8 @@ class PLATFORM_EXPORT UTF16TextIterator {
   // 'length' denotes the maximum length of the UChar array, which might exceed
   // 'endOffset'.
   UTF16TextIterator(const UChar*, int length);
+  UTF16TextIterator(const UTF16TextIterator&) = delete;
+  UTF16TextIterator& operator=(const UTF16TextIterator&) = delete;
 
   inline bool Consume(UChar32& character) {
     if (offset_ >= length_)
@@ -70,10 +73,8 @@ class PLATFORM_EXPORT UTF16TextIterator {
   int offset_;
   int length_;
   unsigned current_glyph_length_;
-
-  DISALLOW_COPY_AND_ASSIGN(UTF16TextIterator);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_UTF16_TEXT_ITERATOR_H_

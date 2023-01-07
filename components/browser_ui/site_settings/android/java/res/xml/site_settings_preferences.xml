@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2015 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <!-- The order of the following items is from: http://crbug.com/610358. -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
@@ -12,7 +14,7 @@
         android:key="all_sites"
         android:title="@string/all_sites"
         android:icon="@drawable/settings_all_sites"
-        app:iconTint="@color/default_icon_color" />
+        app:iconTint="@macro/default_icon_color" />
     <!-- Cookies -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="cookies"
@@ -71,8 +73,8 @@
         android:fragment="org.chromium.components.browser_ui.site_settings.AllSiteSettings"
         android:key="use_storage"
         android:title="@string/website_settings_storage"
-        android:icon="@drawable/settings_storage"
-        app:iconTint="@color/default_icon_color" />
+        android:icon="@drawable/ic_storage"
+        app:iconTint="@macro/default_icon_color" />
     <!-- NFC -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
@@ -105,4 +107,17 @@
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="idle_detection" />
+    <!-- Federated Identity API -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="federated_identity_api" />
+    <!-- Auto-dark Web Content -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="auto_dark_web_content" />
+    <!-- Request Desktop Site -->
+    <!-- TODO(crbug.com/1243758): Update the location of this setting once approved. -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="request_desktop_site" />
 </PreferenceScreen>

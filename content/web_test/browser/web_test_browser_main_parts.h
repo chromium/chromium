@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/shell/browser/shell_browser_main_parts.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -18,7 +17,11 @@ class ShellPluginServiceFilter;
 
 class WebTestBrowserMainParts : public ShellBrowserMainParts {
  public:
-  explicit WebTestBrowserMainParts(const MainFunctionParams& parameters);
+  explicit WebTestBrowserMainParts();
+
+  WebTestBrowserMainParts(const WebTestBrowserMainParts&) = delete;
+  WebTestBrowserMainParts& operator=(const WebTestBrowserMainParts&) = delete;
+
   ~WebTestBrowserMainParts() override;
 
  private:
@@ -30,8 +33,6 @@ class WebTestBrowserMainParts : public ShellBrowserMainParts {
 #if BUILDFLAG(ENABLE_PLUGINS)
   std::unique_ptr<ShellPluginServiceFilter> plugin_service_filter_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestBrowserMainParts);
 };
 
 }  // namespace content

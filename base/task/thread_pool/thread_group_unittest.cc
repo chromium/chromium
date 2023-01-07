@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/can_run_policy_test.h"
 #include "base/task/thread_pool/delayed_task_manager.h"
@@ -21,7 +22,6 @@
 #include "base/task/thread_pool/test_task_factory.h"
 #include "base/task/thread_pool/test_utils.h"
 #include "base/task/thread_pool/thread_group_impl.h"
-#include "base/task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/test/test_waitable_event.h"
@@ -34,11 +34,11 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/task/thread_pool/thread_group_native_win.h"
 #include "base/win/com_init_check_hook.h"
 #include "base/win/com_init_util.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include "base/task/thread_pool/thread_group_native_mac.h"
 #endif
 
@@ -49,9 +49,9 @@ namespace {
 
 #if HAS_NATIVE_THREAD_POOL()
 using ThreadGroupNativeType =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ThreadGroupNativeWin;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
     ThreadGroupNativeMac;
 #endif
 #endif
@@ -124,15 +124,15 @@ class ThreadGroupTestBase : public testing::Test, public ThreadGroup::Delegate {
     switch (GetGroupType()) {
       case test::GroupType::GENERIC:
         thread_group_ = std::make_unique<ThreadGroupImpl>(
-            "TestThreadGroup", "A", ThreadPriority::NORMAL,
+            "TestThreadGroup", "A", ThreadType::kDefault,
             task_tracker_.GetTrackedRef(),
             tracked_ref_factory_.GetTrackedRef());
         break;
 #if HAS_NATIVE_THREAD_POOL()
       case test::GroupType::NATIVE:
         thread_group_ = std::make_unique<ThreadGroupNativeType>(
-#if defined(OS_APPLE)
-            ThreadPriority::NORMAL,
+#if BUILDFLAG(IS_APPLE)
+            ThreadType::kDefault, service_thread_.task_runner(),
 #endif
             task_tracker_.GetTrackedRef(),
             tracked_ref_factory_.GetTrackedRef());
@@ -514,7 +514,7 @@ TEST_P(ThreadGroupTestAllExecutionModes, ScopedBlockingCallTwice) {
   task_ran.Wait();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_P(ThreadGroupTestAllExecutionModes, COMMTAWorkerEnvironment) {
   StartThreadGroup(ThreadGroup::WorkerEnvironment::COM_MTA);
   auto task_runner = test::CreatePooledTaskRunnerWithExecutionMode(
@@ -525,28 +525,6 @@ TEST_P(ThreadGroupTestAllExecutionModes, COMMTAWorkerEnvironment) {
       FROM_HERE, BindOnce(
                      [](TestWaitableEvent* task_ran) {
                        win::AssertComApartmentType(win::ComApartmentType::MTA);
-                       task_ran->Signal();
-                     },
-                     Unretained(&task_ran)));
-  task_ran.Wait();
-}
-
-TEST_P(ThreadGroupTestAllExecutionModes, COMSTAWorkerEnvironment) {
-  StartThreadGroup(ThreadGroup::WorkerEnvironment::COM_STA);
-  auto task_runner = test::CreatePooledTaskRunnerWithExecutionMode(
-      execution_mode(), &mock_pooled_task_runner_delegate_);
-
-  TestWaitableEvent task_ran;
-  task_runner->PostTask(
-      FROM_HERE, BindOnce(
-                     [](TestWaitableEvent* task_ran) {
-  // COM STA is ignored when defined(COM_INIT_CHECK_HOOK_ENABLED). See comment
-  // in ThreadGroup::GetScopedWindowsThreadEnvironment().
-#if defined(COM_INIT_CHECK_HOOK_ENABLED)
-                       win::AssertComApartmentType(win::ComApartmentType::NONE);
-#else
-                       win::AssertComApartmentType(win::ComApartmentType::STA);
-#endif
                        task_ran->Signal();
                      },
                      Unretained(&task_ran)));

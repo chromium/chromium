@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@ bool IsSizeValid(const gfx::Size& size) {
   bytes *= size.height();
   return bytes.IsValid();
 }
+
 }  // namespace
 
 GpuClient::GpuClient(std::unique_ptr<GpuClientDelegate> delegate,
@@ -65,14 +66,51 @@ void GpuClient::OnError(ErrorReason reason) {
 }
 
 void GpuClient::PreEstablishGpuChannel() {
-  if (task_runner_->RunsTasksInCurrentSequence()) {
-    EstablishGpuChannel(EstablishGpuChannelCallback());
-  } else {
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&GpuClient::EstablishGpuChannel, base::Unretained(this),
-                       EstablishGpuChannelCallback()));
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&GpuClient::EstablishGpuChannel,
+                                          weak_factory_.GetWeakPtr(),
+                                          EstablishGpuChannelCallback()));
+    return;
   }
+
+  EstablishGpuChannel(EstablishGpuChannelCallback());
+}
+
+void GpuClient::SetClientPid(base::ProcessId client_pid) {
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&GpuClient::SetClientPid,
+                                  weak_factory_.GetWeakPtr(), client_pid));
+    return;
+  }
+
+  if (GpuHostImpl* gpu_host = delegate_->EnsureGpuHost())
+    gpu_host->SetChannelClientPid(client_id_, client_pid);
+}
+
+void GpuClient::SetDiskCacheHandle(const gpu::GpuDiskCacheHandle& handle) {
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&GpuClient::SetDiskCacheHandle,
+                                          weak_factory_.GetWeakPtr(), handle));
+    return;
+  }
+
+  if (GpuHostImpl* gpu_host = delegate_->EnsureGpuHost())
+    gpu_host->SetChannelDiskCacheHandle(client_id_, handle);
+}
+
+void GpuClient::RemoveDiskCacheHandles() {
+  if (!task_runner_->RunsTasksInCurrentSequence()) {
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(&GpuClient::RemoveDiskCacheHandles,
+                                          weak_factory_.GetWeakPtr()));
+    return;
+  }
+
+  if (GpuHostImpl* gpu_host = delegate_->EnsureGpuHost())
+    gpu_host->RemoveChannelDiskCacheHandles(client_id_);
 }
 
 void GpuClient::SetConnectionErrorHandler(
@@ -93,7 +131,6 @@ void GpuClient::OnEstablishGpuChannel(
             status == GpuHostImpl::EstablishChannelStatus::kSuccess);
   gpu_channel_requested_ = false;
   EstablishGpuChannelCallback callback = std::move(callback_);
-  DCHECK(!callback_);
 
   if (status == GpuHostImpl::EstablishChannelStatus::kGpuHostInvalid) {
     // GPU process may have crashed or been killed. Try again.
@@ -115,8 +152,12 @@ void GpuClient::OnEstablishGpuChannel(
   }
 }
 
-void GpuClient::OnCreateGpuMemoryBuffer(CreateGpuMemoryBufferCallback callback,
+void GpuClient::OnCreateGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
                                         gfx::GpuMemoryBufferHandle handle) {
+  auto it = pending_create_callbacks_.find(id);
+  DCHECK(it != pending_create_callbacks_.end());
+  CreateGpuMemoryBufferCallback callback = std::move(it->second);
+  pending_create_callbacks_.erase(it);
   std::move(callback).Run(std::move(handle));
 }
 
@@ -126,7 +167,6 @@ void GpuClient::ClearCallback() {
   EstablishGpuChannelCallback callback = std::move(callback_);
   std::move(callback).Run(client_id_, mojo::ScopedMessagePipeHandle(),
                           gpu::GPUInfo(), gpu::GpuFeatureInfo());
-  DCHECK(!callback_);
 }
 
 void GpuClient::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
@@ -162,7 +202,7 @@ void GpuClient::EstablishGpuChannel(EstablishGpuChannelCallback callback) {
   gpu_channel_requested_ = true;
   const bool is_gpu_host = false;
   gpu_host->EstablishGpuChannel(
-      client_id_, client_tracing_id_, is_gpu_host,
+      client_id_, client_tracing_id_, is_gpu_host, false,
       base::BindOnce(&GpuClient::OnEstablishGpuChannel,
                      weak_factory_.GetWeakPtr()));
 }
@@ -195,15 +235,27 @@ void GpuClient::CreateGpuMemoryBuffer(
     mojom::GpuMemoryBufferFactory::CreateGpuMemoryBufferCallback callback) {
   auto* gpu_memory_buffer_manager = delegate_->GetGpuMemoryBufferManager();
 
-  if (!gpu_memory_buffer_manager || !IsSizeValid(size)) {
-    OnCreateGpuMemoryBuffer(std::move(callback), gfx::GpuMemoryBufferHandle());
+  if (pending_create_callbacks_.find(id) != pending_create_callbacks_.end()) {
+    gpu_memory_buffer_factory_receivers_.ReportBadMessage(
+        "GpuMemoryBufferId already in use");
     return;
   }
 
+  if (!IsSizeValid(size)) {
+    gpu_memory_buffer_factory_receivers_.ReportBadMessage("Invalid GMB size");
+    return;
+  }
+
+  if (!gpu_memory_buffer_manager) {
+    std::move(callback).Run(gfx::GpuMemoryBufferHandle());
+    return;
+  }
+
+  pending_create_callbacks_[id] = std::move(callback);
   gpu_memory_buffer_manager->AllocateGpuMemoryBuffer(
       id, client_id_, size, format, usage, gpu::kNullSurfaceHandle,
       base::BindOnce(&GpuClient::OnCreateGpuMemoryBuffer,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), id));
 }
 
 void GpuClient::DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,

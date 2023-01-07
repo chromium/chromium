@@ -25,6 +25,8 @@
 
 namespace blink {
 
+class NGInlineCursor;
+
 class LayoutSVGInline : public LayoutInline {
  public:
   explicit LayoutSVGInline(Element*);
@@ -45,17 +47,21 @@ class LayoutSVGInline : public LayoutInline {
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
-  FloatRect ObjectBoundingBox() const final;
-  FloatRect StrokeBoundingBox() const final;
-  FloatRect VisualRectInLocalSVGCoordinates() const final;
+  gfx::RectF ObjectBoundingBox() const final;
+  gfx::RectF StrokeBoundingBox() const final;
+  gfx::RectF VisualRectInLocalSVGCoordinates() const final;
 
   PhysicalRect VisualRectInDocument(
       VisualRectFlags = kDefaultVisualRectFlags) const final;
   void MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                           TransformState&,
                           MapCoordinatesFlags) const final;
-  void AbsoluteQuads(Vector<FloatQuad>&,
+  void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const final;
+  void AddOutlineRects(Vector<PhysicalRect>&,
+                       OutlineInfo*,
+                       const PhysicalOffset& additional_offset,
+                       NGOutlineType) const final;
 
  private:
   InlineFlowBox* CreateInlineFlowBox() final;
@@ -69,6 +75,11 @@ class LayoutSVGInline : public LayoutInline {
 
   void InsertedIntoTree() override;
   void WillBeRemovedFromTree() override;
+
+  bool IsObjectBoundingBoxValid() const;
+
+  static void ObjectBoundingBoxForCursor(NGInlineCursor& cursor,
+                                         gfx::RectF& bounds);
 };
 
 template <>
@@ -80,4 +91,4 @@ struct DowncastTraits<LayoutSVGInline> {
 
 }  // namespace blink
 
-#endif  // LayoutSVGInline_H
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_INLINE_H_

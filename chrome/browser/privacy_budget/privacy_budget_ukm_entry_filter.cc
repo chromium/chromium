@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/privacy_budget/encountered_surface_tracker.h"
 #include "chrome/browser/privacy_budget/identifiability_study_state.h"
@@ -17,6 +17,7 @@
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 
 PrivacyBudgetUkmEntryFilter::PrivacyBudgetUkmEntryFilter(
     IdentifiabilityStudyState* state)
@@ -43,7 +44,14 @@ bool PrivacyBudgetUkmEntryFilter::FilterEntry(
   base::EraseIf(entry->metrics, [&](auto metric) {
     const auto surface =
         blink::IdentifiableSurface::FromMetricHash(metric.first);
-    if (!blink::IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(surface))
+    const blink::IdentifiableToken token = metric.second;
+
+    // Update the Reid surface storage map.
+    identifiability_study_state_->MaybeStoreValueForComputingReidScore(surface,
+                                                                       token);
+
+    if (!blink::IdentifiabilityStudySettings::Get()->ShouldSampleSurface(
+            surface))
       return true;
 
     if (identifiability_study_state_->ShouldReportEncounteredSurface(

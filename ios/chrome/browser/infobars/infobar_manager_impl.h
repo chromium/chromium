@@ -1,20 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_INFOBARS_INFOBAR_MANAGER_IMPL_H_
 #define IOS_CHROME_BROWSER_INFOBARS_INFOBAR_MANAGER_IMPL_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
-
-namespace infobars {
-class InfoBar;
-}
 
 namespace web {
 class WebState;
@@ -26,9 +19,12 @@ class InfoBarManagerImpl : public infobars::InfoBarManager,
                            public web::WebStateObserver,
                            public web::WebStateUserData<InfoBarManagerImpl> {
  public:
+  InfoBarManagerImpl(const InfoBarManagerImpl&) = delete;
+  InfoBarManagerImpl& operator=(const InfoBarManagerImpl&) = delete;
+
   ~InfoBarManagerImpl() override;
 
-  // Returns the |web_state_| tied to this InfobarManager.
+  // Returns the `web_state_` tied to this InfobarManager.
   web::WebState* web_state() const { return web_state_; }
 
  private:
@@ -38,15 +34,13 @@ class InfoBarManagerImpl : public infobars::InfoBarManager,
 
   // InfoBarManager implementation.
   int GetActiveEntryID() override;
-  std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate> delegate) override;
 
   // web::WebStateObserver implementation.
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // Opens a URL according to the specified |disposition|.
+  // Opens a URL according to the specified `disposition`.
   void OpenURL(const GURL& url, WindowOpenDisposition disposition) override;
 
   // The WebState this instance is observing. Will be null after
@@ -54,8 +48,6 @@ class InfoBarManagerImpl : public infobars::InfoBarManager,
   web::WebState* web_state_ = nullptr;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBarManagerImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_INFOBAR_MANAGER_IMPL_H_

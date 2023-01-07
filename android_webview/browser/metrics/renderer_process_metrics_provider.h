@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,4 +30,4 @@ class RendererProcessMetricsProvider : public metrics::MetricsProvider {
 
 }  // namespace android_webview
 
-#endif  // ANDROID_WEBVIEW_BROWSER_METRICS_RENDERER_PROCESS_PROVIDER_H_
+#endif  // ANDROID_WEBVIEW_BROWSER_METRICS_RENDERER_PROCESS_METRICS_PROVIDER_H_

@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Performance: original interface defined
+PASS Partial interface Performance: valid exposure set
+PASS Partial interface Performance: member names are unique
+PASS Partial dictionary PerformanceObserverInit: original dictionary defined
+PASS Partial dictionary PerformanceObserverInit: member names are unique
+PASS Partial interface Performance[2]: member names are unique
+PASS PerformanceEventTiming interface: existence and properties of interface object
+PASS EventCounts interface: existence and properties of interface object
+FAIL EventCounts must be primary interface of performance.eventCounts assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL Stringification of performance.eventCounts assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL EventCounts interface: performance.eventCounts must not have property "undefined" Cannot use 'in' operator to search for 'undefined' in undefined
+PASS InteractionCounts interface: existence and properties of interface object
+FAIL InteractionCounts must be primary interface of performance.interactionCounts assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL Stringification of performance.interactionCounts assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL InteractionCounts interface: performance.interactionCounts must not have property "undefined" Cannot use 'in' operator to search for 'undefined' in undefined
+PASS Performance interface: member eventCounts
+PASS Performance interface: member interactionCounts
+PASS Performance interface: performance must not have property "eventCounts"
+PASS Performance interface: performance must not have property "interactionCounts"
+Harness: the test ran to completion.
+

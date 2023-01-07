@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
 #include "components/page_load_metrics/renderer/page_resource_data_use.h"
@@ -16,8 +15,9 @@
 #include "components/subresource_filter/content/renderer/ad_resource_tracker.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
+#include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
-#include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/public/web/web_local_frame_observer.h"
 
 class GURL;
 
@@ -37,33 +37,38 @@ class PageTimingSender;
 // updates for main frames, but only metadata updates for child frames.
 class MetricsRenderFrameObserver
     : public content::RenderFrameObserver,
+      public blink::WebLocalFrameObserver,
       public subresource_filter::AdResourceTracker::Observer {
  public:
   explicit MetricsRenderFrameObserver(content::RenderFrame* render_frame);
+
+  MetricsRenderFrameObserver(const MetricsRenderFrameObserver&) = delete;
+  MetricsRenderFrameObserver& operator=(const MetricsRenderFrameObserver&) =
+      delete;
+
   ~MetricsRenderFrameObserver() override;
 
   // RenderFrameObserver implementation
   void DidChangePerformanceTiming() override;
   void DidObserveInputDelay(base::TimeDelta input_delay) override;
+  void DidObserveUserInteraction(
+      base::TimeDelta max_event_duration,
+      blink::UserInteractionType interaction_type) override;
   void DidChangeCpuTiming(base::TimeDelta time) override;
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
-  void DidObserveNewFeatureUsage(blink::mojom::WebFeature feature) override;
-  void DidObserveNewCssPropertyUsage(blink::mojom::CSSSampleId css_property,
-                                     bool is_animated) override;
+  void DidObserveNewFeatureUsage(
+      const blink::UseCounterFeature& feature) override;
+  void DidObserveSoftNavigation(uint32_t count) override;
   void DidObserveLayoutShift(double score, bool after_input_or_scroll) override;
-  void DidObserveInputForLayoutShiftTracking(
-      base::TimeTicks timestamp) override;
   void DidObserveLayoutNg(uint32_t all_block_count,
                           uint32_t ng_block_count,
                           uint32_t all_call_count,
                           uint32_t ng_call_count) override;
-  void DidObserveLazyLoadBehavior(
-      blink::WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) override;
-  void DidStartResponse(const GURL& response_url,
-                        int request_id,
-                        const network::mojom::URLResponseHead& response_head,
-                        network::mojom::RequestDestination request_destination,
-                        blink::PreviewsState previews_state) override;
+  void DidStartResponse(
+      const url::SchemeHostPort& final_response_url,
+      int request_id,
+      const network::mojom::URLResponseHead& response_head,
+      network::mojom::RequestDestination request_destination) override;
   void DidReceiveTransferSizeUpdate(int request_id,
                                     int received_data_length) override;
   void DidCompleteResponse(
@@ -77,7 +82,7 @@ class MetricsRenderFrameObserver
                                       bool from_archive) override;
   void DidStartNavigation(
       const GURL& url,
-      base::Optional<blink::WebNavigationType> navigation_type) override;
+      absl::optional<blink::WebNavigationType> navigation_type) override;
   void DidSetPageLifecycleState() override;
 
   void ReadyToCommitNavigation(
@@ -100,8 +105,13 @@ class MetricsRenderFrameObserver
   void OnAdResourceObserved(int request_id) override;
 
   void OnMainFrameIntersectionChanged(
-      const gfx::Rect& main_frame_intersection) override;
-  void OnMobileFriendlinessChanged(const blink::MobileFriendliness&) override;
+      const gfx::Rect& main_frame_intersection_rect) override;
+  void OnMainFrameViewportRectangleChanged(
+      const gfx::Rect& main_frame_viewport_rect) override;
+
+  // blink::WebLocalFrameObserver implementation
+  void OnFrameDetached() override;
+  void DidChangeMobileFriendliness(const blink::MobileFriendliness&) override;
 
   bool SetUpSmoothnessReporting(
       base::ReadOnlySharedMemoryRegion& shared_memory) override;
@@ -133,6 +143,7 @@ class MetricsRenderFrameObserver
   void MaybeSetCompletedBeforeFCP(int request_id);
 
   void SendMetrics();
+  void OnMetricsSenderCreated();
   virtual Timing GetTiming() const;
   virtual std::unique_ptr<base::OneShotTimer> CreateTimer();
   virtual std::unique_ptr<PageTimingSender> CreatePageTimingSender(
@@ -161,10 +172,14 @@ class MetricsRenderFrameObserver
   // Handle to the shared memory for transporting smoothness related ukm data.
   base::ReadOnlySharedMemoryRegion ukm_smoothness_data_;
 
+  // The main frame intersection rectangle signal received before
+  // `page_timing_metrics_sender_` is created. The signal will be send out right
+  // after `page_timing_metrics_sender_` is created.
+  absl::optional<gfx::Rect>
+      main_frame_intersection_rect_before_metrics_sender_created_;
+
   // Will be null when we're not actively sending metrics.
   std::unique_ptr<PageTimingMetricsSender> page_timing_metrics_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsRenderFrameObserver);
 };
 
 }  // namespace page_load_metrics

@@ -1,0 +1,581 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/clang/clang.gni")
+import("//build/config/compiler/compiler.gni")
+import("//build/config/rust.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//build/config/win/visual_studio_version.gni")
+import("//build/toolchain/cc_wrapper.gni")
+import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
+import("//build/toolchain/toolchain.gni")
+
+assert(is_win, "Should only be running on Windows")
+
+# This tool will is used as a wrapper for various commands below.
+_tool_wrapper_path =
+    rebase_path("//build/toolchain/win/tool_wrapper.py", root_build_dir)
+
+if (host_os == "win") {
+  _exe = ".exe"
+} else {
+  _exe = ""
+}
+
+_clang_bin_path = rebase_path("$clang_base_path/bin", root_build_dir)
+
+# Parameters:
+#   environment: File name of environment file.
+#
+# You would also define a toolchain_args variable with at least these set:
+#   current_cpu: current_cpu to pass as a build arg
+#   current_os: current_os to pass as a build arg
+template("msvc_toolchain") {
+  toolchain(target_name) {
+    # When invoking this toolchain not as the default one, these args will be
+    # passed to the build. They are ignored when this is the default toolchain.
+    assert(defined(invoker.toolchain_args))
+    toolchain_args = {
+      forward_variables_from(invoker.toolchain_args, "*")
+
+      # This value needs to be passed through unchanged.
+      host_toolchain = host_toolchain
+
+      # Respect the global setting for whether rustc can make binaries.
+      rustc_can_link = rustc_can_link
+    }
+
+    if (defined(toolchain_args.is_clang)) {
+      toolchain_is_clang = toolchain_args.is_clang
+    } else {
+      toolchain_is_clang = is_clang
+    }
+
+    # When the invoker has explicitly overridden use_goma or cc_wrapper in the
+    # toolchain args, use those values, otherwise default to the global one.
+    # This works because the only reasonable override that toolchains might
+    # supply for these values are to force-disable them.
+    if (defined(toolchain_args.use_remoteexec)) {
+      toolchain_uses_remoteexec = toolchain_args.use_remoteexec
+    } else {
+      toolchain_uses_remoteexec = use_remoteexec
+    }
+    if (defined(toolchain_args.use_goma)) {
+      toolchain_uses_goma = toolchain_args.use_goma
+    } else {
+      toolchain_uses_goma = use_goma
+    }
+    if (defined(toolchain_args.cc_wrapper)) {
+      toolchain_cc_wrapper = toolchain_args.cc_wrapper
+    } else {
+      toolchain_cc_wrapper = cc_wrapper
+    }
+    assert(!(toolchain_uses_remoteexec && toolchain_uses_goma),
+           "Goma and re-client can't be used together.")
+    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_remoteexec),
+           "re-client and cc_wrapper can't be used together.")
+    assert(!(toolchain_cc_wrapper != "" && toolchain_uses_goma),
+           "Goma and cc_wrapper can't be used together.")
+
+    if (toolchain_uses_remoteexec) {
+      if (toolchain_is_clang) {
+        cl_prefix = "${rbe_bin_dir}/rewrapper -cfg=${rbe_cc_cfg_file} -exec_root=${rbe_exec_root} "
+      } else {
+        cl_prefix = ""
+      }
+    } else if (toolchain_uses_goma) {
+      cl_prefix = "${goma_dir}/gomacc${_exe} "
+    } else if (toolchain_cc_wrapper != "" && toolchain_is_clang) {
+      cl_prefix = toolchain_cc_wrapper + " "
+    } else {
+      cl_prefix = ""
+    }
+
+    cl = "${cl_prefix}${invoker.cl}"
+    if (host_os == "win") {
+      # Flip the slashes so that copy/paste of the command works.
+      cl = string_replace(cl, "/", "\\")
+    }
+
+    # Make these apply to all tools below.
+    lib_switch = ""
+    lib_dir_switch = "/LIBPATH:"
+
+    # Object files go in this directory.
+    object_subdir = "{{target_out_dir}}/{{label_name}}"
+
+    env = invoker.environment
+
+    if (use_lld) {
+      # lld-link includes a replacement for lib.exe that can produce thin
+      # archives and understands bitcode (for lto builds).
+      link = "${_clang_bin_path}/lld-link${_exe}"
+      if (host_os == "win") {
+        # Flip the slashes so that copy/paste of the commands works.
+        link = string_replace(link, "/", "\\")
+      }
+      lib = "$link /lib"
+      if (host_os != "win") {
+        # See comment adding --rsp-quoting to $cl above for more information.
+        link = "$link --rsp-quoting=posix"
+      }
+    } else {
+      lib = "lib.exe"
+      link = "link.exe"
+    }
+
+    # If possible, pass system includes as flags to the compiler.  When that's
+    # not possible, load a full environment file (containing %INCLUDE% and
+    # %PATH%) -- e.g. 32-bit MSVS builds require %PATH% to be set and just
+    # passing in a list of include directories isn't enough.
+    if (defined(invoker.sys_include_flags)) {
+      env_wrapper = ""
+      sys_include_flags =
+          "${invoker.sys_include_flags} "  # Note trailing space.
+    } else {
+      # clang-cl doesn't need this env hoop, so omit it there.
+      assert(!toolchain_is_clang)
+      env_wrapper = "ninja -t msvc -e $env -- "  # Note trailing space.
+      sys_include_flags = ""
+    }
+
+    if (host_os != "win" || (use_lld && defined(invoker.sys_lib_flags))) {
+      linker_wrapper = ""
+      sys_lib_flags = "${invoker.sys_lib_flags} "  # Note trailing space.
+    } else {
+      # link.exe must be run under a wrapper to set up the environment
+      # (it needs %LIB% set to find libraries), and to work around its bugs.
+      # Note trailing space:
+      linker_wrapper =
+          "$python_path $_tool_wrapper_path link-wrapper $env False "
+      sys_lib_flags = ""
+    }
+
+    if (defined(toolchain_args.use_clang_coverage)) {
+      toolchain_use_clang_coverage = toolchain_args.use_clang_coverage
+    } else {
+      toolchain_use_clang_coverage = use_clang_coverage
+    }
+
+    if (toolchain_use_clang_coverage) {
+      assert(toolchain_is_clang,
+             "use_clang_coverage should only be used with Clang")
+      if (defined(toolchain_args.coverage_instrumentation_input_file)) {
+        toolchain_coverage_instrumentation_input_file =
+            toolchain_args.coverage_instrumentation_input_file
+      } else {
+        toolchain_coverage_instrumentation_input_file =
+            coverage_instrumentation_input_file
+      }
+
+      coverage_wrapper =
+          rebase_path("//build/toolchain/clang_code_coverage_wrapper.py",
+                      root_build_dir)
+      coverage_wrapper = coverage_wrapper + " --target-os=" + target_os
+      if (toolchain_coverage_instrumentation_input_file != "") {
+        coverage_wrapper =
+            coverage_wrapper + " --files-to-instrument=" +
+            rebase_path(toolchain_coverage_instrumentation_input_file,
+                        root_build_dir)
+      }
+      coverage_wrapper = "$python_path " + coverage_wrapper + " "
+    } else {
+      coverage_wrapper = ""
+    }
+
+    # Disabled with cc_wrapper because of
+    # https://github.com/mozilla/sccache/issues/1013
+    if (toolchain_is_clang && toolchain_cc_wrapper == "") {
+      # This flag omits system includes from /showIncludes output, to reduce
+      # the amount of data to parse and store in .ninja_deps. We do this on
+      # non-Windows too, and already make sure rebuilds after winsdk/libc++/
+      # clang header updates happen via changing command line flags.
+      show_includes = "/showIncludes:user"
+    } else {
+      show_includes = "/showIncludes"
+    }
+
+    tool("cc") {
+      precompiled_header_type = "msvc"
+      pdbname = "{{target_out_dir}}/{{label_name}}_c.pdb"
+
+      # Label names may have spaces in them so the pdbname must be quoted. The
+      # source and output don't need to be quoted because GN knows they're a
+      # full file name and will quote automatically when necessary.
+      depsformat = "msvc"
+      description = "CC {{output}}"
+      outputs = [ "$object_subdir/{{source_name_part}}.obj" ]
+
+      # Note that the code coverage wrapper scripts assumes that {{source}}
+      # comes immediately after /c.
+      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} /Fo{{output}} /Fd\"$pdbname\""
+    }
+
+    tool("cxx") {
+      precompiled_header_type = "msvc"
+
+      # The PDB name needs to be different between C and C++ compiled files.
+      pdbname = "{{target_out_dir}}/{{label_name}}_cc.pdb"
+
+      # See comment in CC tool about quoting.
+      depsformat = "msvc"
+      description = "CXX {{output}}"
+      outputs = [ "$object_subdir/{{source_name_part}}.obj" ]
+
+      # Note that the code coverage wrapper scripts assumes that {{source}}
+      # comes immediately after /c.
+      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /Fo{{output}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} /Fd\"$pdbname\""
+    }
+
+    tool("rc") {
+      command = "$python_path $_tool_wrapper_path rc-wrapper $env rc.exe /nologo $sys_include_flags{{defines}} {{include_dirs}} /fo{{output}} {{source}}"
+      depsformat = "msvc"
+      outputs = [ "$object_subdir/{{source_name_part}}.res" ]
+      description = "RC {{output}}"
+    }
+
+    tool("asm") {
+      is_msvc_assembler = true
+
+      if (toolchain_args.current_cpu == "arm64") {
+        if (toolchain_is_clang) {
+          ml = "${cl_prefix}${_clang_bin_path}/clang-cl${_exe} --target=arm64-windows"
+          if (host_os == "win") {
+            # Flip the slashes so that copy/paste of the command works.
+            ml = string_replace(ml, "/", "\\")
+          }
+          ml += " -c -o{{output}}"
+          is_msvc_assembler = false
+        } else {
+          # Only affects Arm builds with is_clang = false, implemented for
+          # building V8 for Windows on Arm systems with the MSVC toolchain.
+          ml = "armasm64.exe"
+        }
+      } else {
+        if (toolchain_is_clang) {
+          prefix = rebase_path("$clang_base_path/bin", root_build_dir)
+          ml = "$prefix/llvm-ml${_exe}"
+          if (toolchain_args.current_cpu == "x64") {
+            ml += " -m64"
+          } else {
+            ml += " -m32"
+          }
+        } else {
+          if (toolchain_args.current_cpu == "x64") {
+            ml = "ml64.exe"
+          } else {
+            ml = "ml.exe"
+          }
+        }
+      }
+
+      if (is_msvc_assembler) {
+        ml += " /nologo /Fo{{output}}"
+
+        # Suppress final-stage linking on x64/x86 builds. (Armasm64 does not
+        # require /c because it doesn't support linking.)
+        if (toolchain_args.current_cpu != "arm64") {
+          ml += " /c"
+        }
+        if (use_lld && !toolchain_is_clang) {
+          # Wrap ml(64).exe with a script that makes its output deterministic.
+          # It's lld only because the script zaps obj Timestamp which
+          # link.exe /incremental looks at.
+          ml_py = rebase_path("//build/toolchain/win/ml.py", root_build_dir)
+          ml = "$python_path $ml_py $ml"
+        }
+      }
+      if (toolchain_args.current_cpu != "arm64" || toolchain_is_clang) {
+        # TODO(thakis): Stop using asm-wrapper when using clang.
+        command = "$python_path $_tool_wrapper_path asm-wrapper $env $ml {{defines}} {{include_dirs}} {{asmflags}} {{source}}"
+      } else {
+        # armasm64.exe does not support definitions passed via the command
+        # line. (Fortunately, they're not needed for compiling the V8
+        # snapshot, which is the only time this assembler is required.)
+        command = "$python_path $_tool_wrapper_path asm-wrapper $env $ml {{include_dirs}} {{asmflags}} {{source}}"
+      }
+
+      description = "ASM {{output}}"
+      outputs = [ "$object_subdir/{{source_name_part}}.obj" ]
+    }
+
+    if (toolchain_has_rust) {
+      rustc_wrapper = rebase_path("//build/rust/rustc_wrapper.py")
+
+      # TODO(https://crbug.com/1271215)
+      # Other toolchains (Linux, Mac) pass {{ldflags}} to rustc.
+      # This is necessary for some types of build such as
+      # LTO and sanitizers. However, such ldflags are not yet fully
+      # compatible with the arguments passed from rustc to the linker,
+      # so we'll do this at a later stage.
+      rustc = rebase_path("${rust_sysroot}/bin/rustc", root_build_dir)
+      rust_sysroot_relative_to_out = rebase_path(rust_sysroot, root_out_dir)
+      tool("rust_staticlib") {
+        rust_outfile = "{{output_dir}}/{{target_output_name}}.lib"
+        depfile = "{{output}}.d"
+        rspfile = "$rust_outfile.rsp"
+        rspfile_content = "{{rustdeps}} {{externs}}"
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
+        description = "RUST $rust_outfile"
+        rust_sysroot = rust_sysroot_relative_to_out
+        outputs = [ rust_outfile ]
+      }
+
+      tool("rust_rlib") {
+        rust_outfile = "{{output_dir}}/lib{{target_output_name}}.rlib"
+        depfile = "{{output}}.d"
+
+        # Do not use rsp files in this (common) case because they occupy the
+        # ninja main thread, and {{rlibs}} have shorter command lines than
+        # fully linked targets.
+        command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile {{rustdeps}} {{externs}} LDFLAGS RUSTENV {{rustenv}}"
+        description = "RUST $rust_outfile"
+        rust_sysroot = rust_sysroot_relative_to_out
+        outputs = [ rust_outfile ]
+      }
+
+      if (toolchain_args.rustc_can_link) {
+        tool("rust_bin") {
+          rust_outfile = "{{root_out_dir}}/{{target_output_name}}.exe"
+          depfile = "{{output}}.d"
+          rspfile = "$rust_outfile.rsp"
+          rspfile_content = "{{rustdeps}} {{externs}}"
+          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
+          description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
+          outputs = [ rust_outfile ]
+        }
+
+        tool("rust_cdylib") {
+          rust_outfile = "{{output_dir}}/lib{{target_output_name}}.dll"
+          depfile = "{{output}}.d"
+          rspfile = "$rust_outfile.rsp"
+          rspfile_content = "{{rustdeps}} {{externs}}"
+          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
+          description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
+          outputs = [ rust_outfile ]
+        }
+
+        tool("rust_macro") {
+          rust_outfile = "{{output_dir}}/{{target_output_name}}.dll"
+          depfile = "{{output}}.d"
+          rspfile = "$rust_outfile.rsp"
+          rspfile_content = "{{rustdeps}} {{externs}}"
+          command = "$python_path \"$rustc_wrapper\" --rustc=$rustc --depfile=$depfile --rsp=$rspfile -- $rustc_common_args --emit=dep-info=$depfile,link -o $rust_outfile LDFLAGS RUSTENV {{rustenv}}"
+          description = "RUST $rust_outfile"
+          rust_sysroot = rust_sysroot_relative_to_out
+          outputs = [ rust_outfile ]
+        }
+      }
+    }
+
+    tool("alink") {
+      rspfile = "{{output}}.rsp"
+      command =
+          "$linker_wrapper$lib /OUT:{{output}} /nologo {{arflags}} @$rspfile"
+      description = "LIB {{output}}"
+      outputs = [
+        # Ignore {{output_extension}} and always use .lib, there's no reason to
+        # allow targets to override this extension on Windows.
+        "{{output_dir}}/{{target_output_name}}.lib",
+      ]
+      default_output_extension = ".lib"
+      default_output_dir = "{{target_out_dir}}"
+
+      # The use of inputs_newline is to work around a fixed per-line buffer
+      # size in the linker.
+      rspfile_content = "{{inputs_newline}}"
+    }
+
+    tool("solink") {
+      # E.g. "foo.dll":
+      dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
+      libname = "${dllname}.lib"  # e.g. foo.dll.lib
+      pdbname = "${dllname}.pdb"
+      rspfile = "${dllname}.rsp"
+      pool = "//build/toolchain:link_pool($default_toolchain)"
+
+      command = "$linker_wrapper$link /OUT:$dllname /nologo ${sys_lib_flags}/IMPLIB:$libname /DLL /PDB:$pdbname @$rspfile"
+
+      default_output_extension = ".dll"
+      default_output_dir = "{{root_out_dir}}"
+      description = "LINK(DLL) {{output}}"
+      outputs = [
+        dllname,
+        libname,
+        pdbname,
+      ]
+      link_output = libname
+      depend_output = libname
+      runtime_outputs = [
+        dllname,
+        pdbname,
+      ]
+
+      # Since the above commands only updates the .lib file when it changes,
+      # ask Ninja to check if the timestamp actually changed to know if
+      # downstream dependencies should be recompiled.
+      restat = true
+
+      # The use of inputs_newline is to work around a fixed per-line buffer
+      # size in the linker.
+      rspfile_content =
+          "{{libs}} {{solibs}} {{inputs_newline}} {{ldflags}} {{rlibs}}"
+    }
+
+    tool("solink_module") {
+      # E.g. "foo.dll":
+      dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
+      pdbname = "${dllname}.pdb"
+      rspfile = "${dllname}.rsp"
+      pool = "//build/toolchain:link_pool($default_toolchain)"
+
+      command = "$linker_wrapper$link /OUT:$dllname /nologo ${sys_lib_flags}/DLL /PDB:$pdbname @$rspfile"
+
+      default_output_extension = ".dll"
+      default_output_dir = "{{root_out_dir}}"
+      description = "LINK_MODULE(DLL) {{output}}"
+      outputs = [
+        dllname,
+        pdbname,
+      ]
+      runtime_outputs = outputs
+
+      # The use of inputs_newline is to work around a fixed per-line buffer
+      # size in the linker.
+      rspfile_content =
+          "{{libs}} {{solibs}} {{inputs_newline}} {{ldflags}} {{rlibs}}"
+    }
+
+    tool("link") {
+      exename = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
+      pdbname = "$exename.pdb"
+      rspfile = "$exename.rsp"
+      pool = "//build/toolchain:link_pool($default_toolchain)"
+
+      command = "$linker_wrapper$link /OUT:$exename /nologo ${sys_lib_flags} /PDB:$pdbname @$rspfile"
+
+      default_output_extension = ".exe"
+      default_output_dir = "{{root_out_dir}}"
+      description = "LINK {{output}}"
+      outputs = [
+        exename,
+        pdbname,
+      ]
+      runtime_outputs = outputs
+
+      # The use of inputs_newline is to work around a fixed per-line buffer
+      # size in the linker.
+      rspfile_content =
+          "{{inputs_newline}} {{libs}} {{solibs}} {{ldflags}} {{rlibs}}"
+    }
+
+    # These two are really entirely generic, but have to be repeated in
+    # each toolchain because GN doesn't allow a template to be used here.
+    # See //build/toolchain/toolchain.gni for details.
+    tool("stamp") {
+      command = stamp_command
+      description = stamp_description
+      pool = "//build/toolchain:action_pool($default_toolchain)"
+    }
+    tool("copy") {
+      command = copy_command
+      description = copy_description
+      pool = "//build/toolchain:action_pool($default_toolchain)"
+    }
+
+    tool("action") {
+      pool = "//build/toolchain:action_pool($default_toolchain)"
+    }
+  }
+}
+
+template("win_toolchains") {
+  assert(defined(invoker.toolchain_arch))
+  toolchain_arch = invoker.toolchain_arch
+
+  win_toolchain_data = exec_script("//build/toolchain/win/setup_toolchain.py",
+                                   [
+                                     visual_studio_path,
+                                     windows_sdk_path,
+                                     visual_studio_runtime_dirs,
+                                     "win",
+                                     toolchain_arch,
+                                     "environment." + toolchain_arch,
+                                   ],
+                                   "scope")
+
+  # The toolchain using MSVC only makes sense when not doing cross builds.
+  # Chromium exclusively uses the win_clang_ toolchain below, but V8 and
+  # WebRTC still use this MSVC toolchain in some cases.
+  if (host_os == "win") {
+    if (defined(invoker.cl_toolchain_prefix)) {
+      cl_toolchain_prefix = invoker.cl_toolchain_prefix
+    } else {
+      cl_toolchain_prefix = ""
+    }
+    msvc_toolchain(cl_toolchain_prefix + target_name) {
+      environment = "environment." + toolchain_arch
+      cl = "\"${win_toolchain_data.vc_bin_dir}/cl.exe\""
+
+      toolchain_args = {
+        if (defined(invoker.toolchain_args)) {
+          forward_variables_from(invoker.toolchain_args, "*")
+        }
+        is_clang = false
+        use_clang_coverage = false
+        current_os = "win"
+        current_cpu = toolchain_arch
+      }
+    }
+  }
+
+  if (defined(invoker.clang_toolchain_prefix)) {
+    clang_toolchain_prefix = invoker.clang_toolchain_prefix
+  } else {
+    clang_toolchain_prefix = "win_clang_"
+  }
+  msvc_toolchain(clang_toolchain_prefix + target_name) {
+    environment = "environment." + toolchain_arch
+    cl = "${_clang_bin_path}/clang-cl${_exe}"
+    _clang_lib_dir =
+        rebase_path("$clang_base_path/lib/clang/$clang_version/lib/windows",
+                    root_build_dir)
+    if (host_os == "win") {
+      # And to match the other -libpath flags.
+      _clang_lib_dir = string_replace(_clang_lib_dir, "/", "\\")
+    }
+
+    sys_include_flags = "${win_toolchain_data.include_flags_imsvc}"
+    if (use_lld) {
+      sys_lib_flags =
+          "-libpath:$_clang_lib_dir ${win_toolchain_data.libpath_lldlink_flags}"
+
+      # TODO(thakis): Remove once crbug.com/1300005 is fixed
+      assert(toolchain_arch == "x64" || toolchain_arch == "x86" ||
+                 toolchain_arch == "arm" || toolchain_arch == "arm64",
+             "Only supports x64, x86, arm and arm64 CPUs")
+      if (toolchain_arch == "x64") {
+        sys_lib_flags += " /MACHINE:X64"
+      } else if (toolchain_arch == "x86") {
+        sys_lib_flags += " /MACHINE:X86"
+      } else if (toolchain_arch == "arm") {
+        sys_lib_flags += " /MACHINE:ARM"
+      } else if (toolchain_arch == "arm64") {
+        sys_lib_flags += " /MACHINE:ARM64"
+      }
+    }
+
+    toolchain_args = {
+      if (defined(invoker.toolchain_args)) {
+        forward_variables_from(invoker.toolchain_args, "*")
+      }
+      is_clang = true
+      current_os = "win"
+      current_cpu = toolchain_arch
+    }
+  }
+}

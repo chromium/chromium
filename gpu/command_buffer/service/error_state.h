@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
@@ -66,6 +65,9 @@ class GPU_GLES2_EXPORT ErrorStateClient {
 
 class GPU_GLES2_EXPORT ErrorState {
  public:
+  ErrorState(const ErrorState&) = delete;
+  ErrorState& operator=(const ErrorState&) = delete;
+
   virtual ~ErrorState();
 
   static ErrorState* Create(ErrorStateClient* client, Logger* logger);
@@ -118,12 +120,9 @@ class GPU_GLES2_EXPORT ErrorState {
 
  protected:
   ErrorState();
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorState);
 };
 
 }  // namespace gles2
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_ERROR_STATE_H_
-

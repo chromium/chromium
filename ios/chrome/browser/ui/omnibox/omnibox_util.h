@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,13 @@
 
 #pragma mark - Suggestion icons.
 
-// Converts |type| to the appropriate icon type for this match type to show in
+// Converts `type` to the appropriate icon type for this match type to show in
 // the omnibox.
 OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     AutocompleteMatchType::Type type,
     bool is_starred);
 
-// Converts |type| to the appropriate icon for this type to show in the omnibox.
+// Converts `type` to the appropriate icon for this type to show in the omnibox.
 // Returns UI Refresh icons.
 UIImage* GetOmniboxSuggestionIconForAutocompleteMatchType(
     AutocompleteMatchType::Type type,
@@ -31,11 +31,11 @@ UIImage* GetOmniboxSuggestionIconForAutocompleteMatchType(
 // Returns the asset with "always template" rendering mode.
 UIImage* GetLocationBarSecurityIcon(LocationBarSecurityIconType icon);
 
-// Converts the |security_level| to an appropriate security icon type.
+// Converts the `security_level` to an appropriate security icon type.
 LocationBarSecurityIconType GetLocationBarSecurityIconTypeForSecurityState(
     security_state::SecurityLevel security_level);
 
-// Converts the |security_level| to an appropriate icon in "always template"
+// Converts the `security_level` to an appropriate icon in "always template"
 // rendering mode.
 UIImage* GetLocationBarSecurityIconForSecurityState(
     security_state::SecurityLevel security_level);

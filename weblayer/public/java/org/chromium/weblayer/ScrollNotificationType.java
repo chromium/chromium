@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 @IntDef({ScrollNotificationType.DIRECTION_CHANGED_UP,
         ScrollNotificationType.DIRECTION_CHANGED_DOWN})
 @Retention(RetentionPolicy.SOURCE)
-public @interface ScrollNotificationType {
+@interface ScrollNotificationType {
     /**
      * This is the direction toward vertical scroll offset 0. Note direction change notification
      * is sent on direction change. If there are two consecutive scrolls in the same direction,

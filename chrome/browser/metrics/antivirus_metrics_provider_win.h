@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,23 +11,25 @@
 
 #include "base/callback_forward.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
+BASE_DECLARE_FEATURE(kReportFullAVProductDetails);
+
 // AntiVirusMetricsProvider is responsible for adding antivirus information to
 // the UMA system profile proto.
 class AntiVirusMetricsProvider : public metrics::MetricsProvider {
  public:
-  static constexpr base::Feature kReportNamesFeature = {
-      "ReportFullAVProductDetails", base::FEATURE_DISABLED_BY_DEFAULT};
-
   AntiVirusMetricsProvider();
+
+  AntiVirusMetricsProvider(const AntiVirusMetricsProvider&) = delete;
+  AntiVirusMetricsProvider& operator=(const AntiVirusMetricsProvider&) = delete;
+
   ~AntiVirusMetricsProvider() override;
 
-  // metrics::MetricsDataProvider:
+  // metrics::MetricsProvider:
   void AsyncInit(base::OnceClosure done_callback) override;
   void ProvideSystemProfileMetrics(
       metrics::SystemProfileProto* system_profile_proto) override;
@@ -51,8 +53,6 @@ class AntiVirusMetricsProvider : public metrics::MetricsProvider {
   std::vector<metrics::SystemProfileProto::AntiVirusProduct> av_products_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AntiVirusMetricsProvider);
 };
 
 #endif  // CHROME_BROWSER_METRICS_ANTIVIRUS_METRICS_PROVIDER_WIN_H_

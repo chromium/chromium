@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,27 +12,31 @@ assert(enable_extensions,
 
 source_set("api") {
   sources = [
-    "api_resource.cc",
-    "api_resource.h",
-    "api_resource_manager.h",
     "async_api_function.cc",
     "async_api_function.h",
-    "device_permissions_manager.cc",
-    "device_permissions_manager.h",
-    "device_permissions_prompt.cc",
-    "device_permissions_prompt.h",
-    "execute_code_function.cc",
-    "execute_code_function.h",
-    "extensions_api_client.cc",
-    "extensions_api_client.h",
-    "guest_view/app_view/app_view_guest_internal_api.cc",
-    "guest_view/app_view/app_view_guest_internal_api.h",
-    "guest_view/guest_view_internal_api.cc",
-    "guest_view/guest_view_internal_api.h",
-    "guest_view/web_view/web_view_internal_api.cc",
-    "guest_view/web_view/web_view_internal_api.h",
-    "web_contents_capture_client.cc",
-    "web_contents_capture_client.h",
+
+    # TODO(crbug.com/1206265): anything under storage/ should be moved out of
+    # this target.
+    "storage/backend_task_runner.cc",
+    "storage/backend_task_runner.h",
+    "storage/local_value_store_cache.cc",
+    "storage/local_value_store_cache.h",
+    "storage/session_storage_manager.cc",
+    "storage/session_storage_manager.h",
+    "storage/settings_storage_quota_enforcer.cc",
+    "storage/settings_storage_quota_enforcer.h",
+    "storage/storage_api.cc",
+    "storage/storage_api.h",
+    "storage/storage_area_namespace.cc",
+    "storage/storage_area_namespace.h",
+    "storage/storage_frontend.cc",
+    "storage/storage_frontend.h",
+    "storage/value_store_cache.cc",
+    "storage/value_store_cache.h",
+    "storage/value_store_util.cc",
+    "storage/value_store_util.h",
+    "storage/weak_unlimited_settings_storage.cc",
+    "storage/weak_unlimited_settings_storage.h",
   ]
 
   public_deps = [
@@ -40,6 +44,7 @@ source_set("api") {
     "//content/public/browser",
     "//content/public/common",
     "//extensions/common",
+    "//extensions/common/api",
     "//ipc",
   ]
 
@@ -61,6 +66,14 @@ source_set("api") {
     "//components/storage_monitor",
     "//device/bluetooth",
   ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chromeos/dbus/permission_broker",
+      "//components/prefs:prefs",
+      "//ui/base/clipboard",
+    ]
+  }
 
   if (is_chromeos_ash) {
     sources += [
@@ -85,11 +98,10 @@ source_set("api") {
 
     deps += [
       "//chromeos",
-      "//chromeos/dbus",
-      "//chromeos/dbus/media_analytics",
-      "//chromeos/dbus/media_analytics:media_perception_proto",
-      "//chromeos/dbus/permission_broker",
-      "//chromeos/dbus/upstart",
+      "//chromeos/ash/components/dbus",
+      "//chromeos/ash/components/dbus/media_analytics",
+      "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
+      "//chromeos/ash/components/dbus/upstart",
       "//chromeos/login/login_state",
       "//chromeos/services/media_perception/public/mojom",
       "//chromeos/services/media_perception/public/mojom:mojom_js_data_deps",
@@ -99,7 +111,8 @@ source_set("api") {
 
 group("api_implementations") {
   public_deps = [
-    "//extensions/browser/api/activity_log",
+    "//extensions/browser:browser_sources",
+    "//extensions/browser/api",
     "//extensions/browser/api/alarms",
     "//extensions/browser/api/app_current_window_internal",
     "//extensions/browser/api/app_runtime",
@@ -109,13 +122,11 @@ group("api_implementations") {
     "//extensions/browser/api/bluetooth",
     "//extensions/browser/api/bluetooth_low_energy",
     "//extensions/browser/api/bluetooth_socket",
-    "//extensions/browser/api/cast_channel",
-    "//extensions/browser/api/declarative_net_request",
     "//extensions/browser/api/dns",
     "//extensions/browser/api/feedback_private",
     "//extensions/browser/api/file_handlers",
     "//extensions/browser/api/file_system",
-    "//extensions/browser/api/hid",
+    "//extensions/browser/api/i18n",
     "//extensions/browser/api/idle",
     "//extensions/browser/api/management",
     "//extensions/browser/api/messaging",
@@ -123,6 +134,7 @@ group("api_implementations") {
     "//extensions/browser/api/metrics_private",
     "//extensions/browser/api/mime_handler_private",
     "//extensions/browser/api/networking_private",
+    "//extensions/browser/api/offscreen",
     "//extensions/browser/api/power",
     "//extensions/browser/api/printer_provider",
     "//extensions/browser/api/runtime",
@@ -131,26 +143,23 @@ group("api_implementations") {
     "//extensions/browser/api/sockets_tcp",
     "//extensions/browser/api/sockets_tcp_server",
     "//extensions/browser/api/sockets_udp",
-    "//extensions/browser/api/storage",
     "//extensions/browser/api/system_cpu",
-    "//extensions/browser/api/system_display",
     "//extensions/browser/api/system_info",
     "//extensions/browser/api/system_memory",
     "//extensions/browser/api/system_network",
     "//extensions/browser/api/system_storage",
     "//extensions/browser/api/test",
-    "//extensions/browser/api/usb",
     "//extensions/browser/api/virtual_keyboard_private",
-    "//extensions/browser/api/web_request",
   ]
+
+  if (is_chromeos) {
+    public_deps += [ "//extensions/browser/api/virtual_keyboard" ]
+  }
 
   if (is_chromeos_ash) {
     public_deps += [
       "//extensions/browser/api/cec_private",
-      "//extensions/browser/api/clipboard",
       "//extensions/browser/api/diagnostics",
-      "//extensions/browser/api/virtual_keyboard",
-      "//extensions/browser/api/vpn_provider",
       "//extensions/browser/api/webcam_private",
     ]
   }

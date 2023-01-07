@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,19 +17,23 @@
 
 #include <algorithm>
 #include <atomic>
+#include <ostream>
 
 #include <stdint.h>
 #include <string.h>
 #include <sys/types.h>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
 namespace crashpad {
-
+#if BUILDFLAG(IS_IOS)
+namespace internal {
+class InProcessIntermediateDumpHandler;
+}  // namespace internal
+#endif
 class AnnotationList;
 
 //! \brief Base class for an annotation, which records a name-value pair of
@@ -69,7 +73,8 @@ class AnnotationList;
 class Annotation {
  public:
   //! \brief The maximum length of an annotation’s name, in bytes.
-  static constexpr size_t kNameMaxLength = 64;
+  //!    Matches the behavior of Breakpad's SimpleStringDictionary.
+  static constexpr size_t kNameMaxLength = 256;
 
   //! \brief The maximum size of an annotation’s value, in bytes.
   static constexpr size_t kValueMaxSize = 5 * 4096;
@@ -103,7 +108,7 @@ class Annotation {
     // variables defined in a constexpr function, which is valid. Avoid them
     // and the also-problematic DCHECK until all the infrastructure is updated:
     // https://crbug.com/crashpad/201.
-#if !defined(OS_WIN) || (defined(_MSC_VER) && _MSC_VER >= 1910)
+#if !BUILDFLAG(IS_WIN) || (defined(_MSC_VER) && _MSC_VER >= 1910)
     const UnderlyingType start =
         static_cast<UnderlyingType>(Type::kUserDefinedStart);
     const UnderlyingType user_type = start + value;
@@ -134,6 +139,9 @@ class Annotation {
         value_ptr_(value_ptr),
         size_(0),
         type_(type) {}
+
+  Annotation(const Annotation&) = delete;
+  Annotation& operator=(const Annotation&) = delete;
 
   //! \brief Specifies the number of bytes in \a value_ptr_ to include when
   //!     generating a crash report.
@@ -167,6 +175,9 @@ class Annotation {
 
  protected:
   friend class AnnotationList;
+#if BUILDFLAG(IS_IOS)
+  friend class internal::InProcessIntermediateDumpHandler;
+#endif
 
   std::atomic<Annotation*>& link_node() { return link_node_; }
 
@@ -182,8 +193,6 @@ class Annotation {
   void* const value_ptr_;
   ValueSizeType size_;
   const Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(Annotation);
 };
 
 //! \brief An \sa Annotation that stores a `NUL`-terminated C-string value.
@@ -206,6 +215,9 @@ class StringAnnotation : public Annotation {
   //! \param[in] name The Annotation name.
   constexpr explicit StringAnnotation(const char name[])
       : Annotation(Type::kString, name, value_), value_() {}
+
+  StringAnnotation(const StringAnnotation&) = delete;
+  StringAnnotation& operator=(const StringAnnotation&) = delete;
 
   //! \brief Constructs a new StringAnnotation with the given \a name.
   //!
@@ -255,8 +267,6 @@ class StringAnnotation : public Annotation {
   // This value is not `NUL`-terminated, since the size is stored by the base
   // annotation.
   char value_[MaxSize];
-
-  DISALLOW_COPY_AND_ASSIGN(StringAnnotation);
 };
 
 }  // namespace crashpad

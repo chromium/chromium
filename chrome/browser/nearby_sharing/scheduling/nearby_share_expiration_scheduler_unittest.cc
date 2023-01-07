@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -15,14 +14,14 @@
 #include "components/prefs/testing_pref_service.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
 const char kTestPrefName[] = "test_pref_name";
 
-constexpr base::TimeDelta kTestInitialNow = base::TimeDelta::FromDays(100);
-constexpr base::TimeDelta kTestExpirationTimeFromInitalNow =
-    base::TimeDelta::FromMinutes(123);
+constexpr base::TimeDelta kTestInitialNow = base::Days(100);
+constexpr base::TimeDelta kTestExpirationTimeFromInitalNow = base::Minutes(123);
 
 }  // namespace
 
@@ -47,7 +46,7 @@ class NearbyShareExpirationSchedulerTest : public ::testing::Test {
         &pref_service_, base::DoNothing(), task_environment_.GetMockClock());
   }
 
-  base::Optional<base::Time> TestExpirationTimeFunctor() {
+  absl::optional<base::Time> TestExpirationTimeFunctor() {
     return expiration_time_;
   }
 
@@ -58,7 +57,7 @@ class NearbyShareExpirationSchedulerTest : public ::testing::Test {
     task_environment_.FastForwardBy(delta);
   }
 
-  base::Optional<base::Time> expiration_time_;
+  absl::optional<base::Time> expiration_time_;
   NearbyShareScheduler* scheduler() { return scheduler_.get(); }
 
  private:
@@ -73,14 +72,14 @@ TEST_F(NearbyShareExpirationSchedulerTest, ExpirationRequest) {
 
   // Let 5 minutes elapse since the start time just to make sure the time to the
   // next request only depends on the expiration time and the current time.
-  FastForward(base::TimeDelta::FromMinutes(5));
+  FastForward(base::Minutes(5));
 
   EXPECT_EQ(*expiration_time_ - Now(), scheduler()->GetTimeUntilNextRequest());
 }
 
 TEST_F(NearbyShareExpirationSchedulerTest, Reschedule) {
   scheduler()->Start();
-  FastForward(base::TimeDelta::FromMinutes(5));
+  FastForward(base::Minutes(5));
 
   base::TimeDelta initial_expected_time_until_next_request =
       *expiration_time_ - Now();
@@ -88,15 +87,14 @@ TEST_F(NearbyShareExpirationSchedulerTest, Reschedule) {
             scheduler()->GetTimeUntilNextRequest());
 
   // The expiration time suddenly changes.
-  expiration_time_ = *expiration_time_ + base::TimeDelta::FromDays(2);
+  expiration_time_ = *expiration_time_ + base::Days(2);
   scheduler()->Reschedule();
-  EXPECT_EQ(
-      initial_expected_time_until_next_request + base::TimeDelta::FromDays(2),
-      scheduler()->GetTimeUntilNextRequest());
+  EXPECT_EQ(initial_expected_time_until_next_request + base::Days(2),
+            scheduler()->GetTimeUntilNextRequest());
 }
 
 TEST_F(NearbyShareExpirationSchedulerTest, NullExpirationTime) {
   expiration_time_.reset();
   scheduler()->Start();
-  EXPECT_EQ(base::nullopt, scheduler()->GetTimeUntilNextRequest());
+  EXPECT_EQ(absl::nullopt, scheduler()->GetTimeUntilNextRequest());
 }

@@ -1,0 +1,39 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/style_variable_generator/style_variable_generator.gni")
+
+style_variable_generator("cros_styles") {
+  # If you change the sources, also change the paths in presubmit_support.py
+  sources = [
+    "cros_colors.json5",
+    "cros_palette.json5",
+    "cros_shadows.json5",
+    "cros_typography.json5",
+  ]
+
+  cpp_namespace = "cros_styles"
+}
+
+style_variable_generator("cros_tokens") {
+  # If you change the sources, also change the paths in presubmit_support.py
+  sources = [
+    "cros_colors.json5",
+    "cros_palette.json5",
+    "cros_ref_colors.json5",
+    "cros_sys_colors.json5",
+  ]
+
+  cpp_namespace = "cros_tokens"
+  color_id_start_value = "0x4000"
+}
+
+style_variable_generator("color_internals_tokens") {
+  # If you change the sources, also change the paths in presubmit_support.py
+  sources = [
+    "cros_ref_colors.json5",
+    "cros_sys_colors.json5",
+  ]
+  cpp_namespace = "color_internals_tokens"
+}

@@ -15,7 +15,7 @@
           return lineNumberDiff || a.params.issue.details.contentSecurityPolicyIssueDetails.sourceCodeLocation.columnNumber - b.params.issue.details.contentSecurityPolicyIssueDetails.sourceCodeLocation.columnNumber;
         });
         for (const issue of issues) {
-          testRunner.log(issue.params, "Inspector issue: ", ["violatingNodeId"]);
+          testRunner.log(issue.params, "Inspector issue: ", ["violatingNodeId", "scriptId"]);
         }
         testRunner.completeTest();
       }

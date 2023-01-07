@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,11 +31,12 @@ PasswordBubbleControllerBase::~PasswordBubbleControllerBase() {
 }
 
 void PasswordBubbleControllerBase::OnBubbleClosing() {
-  ReportInteractions();
+  // This method can be reentered from OnBubbleHidden() below. Reset the things
+  // before calling it.
+  if (!std::exchange(interaction_reported_, true))
+    ReportInteractions();
   if (delegate_)
-    delegate_->OnBubbleHidden();
-  delegate_.reset();
-  interaction_reported_ = true;
+    std::exchange(delegate_, nullptr)->OnBubbleHidden();
 }
 
 Profile* PasswordBubbleControllerBase::GetProfile() const {

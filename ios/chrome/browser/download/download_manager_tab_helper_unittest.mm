@@ -1,17 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/download/download_manager_tab_helper.h"
 
-#include <memory>
+#import <memory>
 
 #import "ios/chrome/test/fakes/fake_download_manager_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "net/url_request/url_fetcher_response_writer.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,7 +27,9 @@ class DownloadManagerTabHelperTest : public PlatformTest {
   DownloadManagerTabHelperTest()
       : web_state_(std::make_unique<web::FakeWebState>()),
         delegate_([[FakeDownloadManagerTabHelperDelegate alloc] init]) {
-    DownloadManagerTabHelper::CreateForWebState(web_state_.get(), delegate_);
+    DownloadManagerTabHelper::CreateForWebState(web_state_.get());
+    DownloadManagerTabHelper::FromWebState(web_state_.get())
+        ->SetDelegate(delegate_);
   }
 
   DownloadManagerTabHelper* tab_helper() {
@@ -147,7 +148,7 @@ TEST_F(DownloadManagerTabHelperTest, HasDownloadTask) {
   web::FakeDownloadTask* task_ptr = task.get();
   ASSERT_FALSE(tab_helper()->has_download_task());
   tab_helper()->Download(std::move(task));
-  task_ptr->Start(std::make_unique<net::URLFetcherStringWriter>());
+  task_ptr->Start(base::FilePath());
   ASSERT_TRUE(tab_helper()->has_download_task());
 
   task_ptr->Cancel();

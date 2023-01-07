@@ -1,7 +1,10 @@
 include_rules = [
+  "+components/browsing_topics/common",
   # components/download are needed for providing the download feature.
   # TODO(qinmin): move it to services/download when download becomes a service.
   "+components/download/public/common",
+  "+components/file_access",
+  "+components/services/storage/privileged",
   "+components/services/storage/public",
   "+components/viz/common",
   "+components/viz/host",
@@ -35,6 +38,17 @@ specific_include_rules = {
     # desktop_capture.h creates a DesktopCaptureOptions to share between
     # content/browser and chrome/browser.
     "+third_party/webrtc/modules/desktop_capture/desktop_capture_options.h",
+  ],
+
+  "gpu_utils\.cc": [
+    # For using switch::kPlatformDisallowsChromeOSDirectVideoDecoder.
+    # TODO(b/192563524): remove it when the legacy video decoder is replaced for
+    # all devices.
+    "+ui/ozone/public/ozone_switches.h",
+
+    # For using chromeos::BrowserParamsProxy which is needed on LaCrOS to decide
+    # if the GPU process sandbox needs to be started early.
+    "+chromeos/startup/browser_params_proxy.h",
   ],
 
   ".*unittest\.cc": [

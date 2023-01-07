@@ -1,26 +1,37 @@
 Tests accessibility values of display locked nodes
 
-WebArea
+RootWebArea
   generic
-    text "spacer"
+    StaticText "spacer"
       InlineTextBox
   generic
-    text "locked"
+    StaticText "
+      locked
+      "
     generic
-      text "child"
+      StaticText "
+        child
+        "
       generic
-        text "grandChild"
+        StaticText "grandChild"
+      StaticText "
+      "
+    StaticText "
+      "
+    generic
+      StaticText "invisible"
+    StaticText "
+      "
+    generic
+      StaticText "nested"
+    StaticText "
       text
-    text
-    generic
-      text "invisible"
-    text
-    generic
-      text "nested"
-    text "text"
+    "
   generic
+
   generic
+
   generic
-    text "normal text"
+    StaticText "normal text"
       InlineTextBox
 

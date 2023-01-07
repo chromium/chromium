@@ -1,15 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 
 #include "base/base64url.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/util/values/values_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/ui/hats/hats_service.h"
@@ -29,14 +30,14 @@
 #include "content/public/browser/render_frame_host.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
 constexpr gfx::Size HatsNextWebDialog::kMinSize;
@@ -60,7 +61,7 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
   }
 
   // content::WebContentsDelegate:
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) override {
     // Ignores context menu.
     return true;
@@ -80,7 +81,7 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace) override {
     // The HaTS Next WebDialog runs with a non-primary OTR profile. This profile
     // cannot open new browser windows, so they are instead opened in the
@@ -113,8 +114,8 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
   }
 
  private:
-  HatsNextWebDialog* dialog_;
-  Browser* browser_;
+  raw_ptr<HatsNextWebDialog> dialog_;
+  raw_ptr<Browser> browser_;
 };
 
 BEGIN_METADATA(HatsNextWebDialog, HatsWebView, views::WebView)
@@ -125,15 +126,17 @@ HatsNextWebDialog::HatsNextWebDialog(
     const std::string& trigger_id,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const std::map<std::string, bool>& product_specific_data)
+    const SurveyBitsData& product_specific_bits_data,
+    const SurveyStringData& product_specific_string_data)
     : HatsNextWebDialog(
           browser,
           trigger_id,
           GURL("https://storage.googleapis.com/chrome_hats_staging/index.html"),
-          base::TimeDelta::FromSeconds(10),
+          base::Seconds(10),
           std::move(success_callback),
           std::move(failure_callback),
-          product_specific_data) {}
+          product_specific_bits_data,
+          product_specific_string_data) {}
 
 gfx::Size HatsNextWebDialog::CalculatePreferredSize() const {
   gfx::Size preferred_size = views::View::CalculatePreferredSize();
@@ -154,7 +157,8 @@ HatsNextWebDialog::HatsNextWebDialog(
     const base::TimeDelta& timeout,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const std::map<std::string, bool>& product_specific_data)
+    const SurveyBitsData& product_specific_bits_data,
+    const SurveyStringData& product_specific_string_data)
     : BubbleDialogDelegateView(
           browser->is_type_devtools()
               ? static_cast<views::View*>(
@@ -165,14 +169,16 @@ HatsNextWebDialog::HatsNextWebDialog(
                     ->GetAppMenuButton(),
           views::BubbleBorder::TOP_RIGHT),
       otr_profile_(browser->profile()->GetOffTheRecordProfile(
-          Profile::OTRProfileID::CreateUnique("HaTSNext:WebDialog"))),
+          Profile::OTRProfileID::CreateUnique("HaTSNext:WebDialog"),
+          /*create_if_needed=*/true)),
       browser_(browser),
       trigger_id_(trigger_id),
       hats_survey_url_(hats_survey_url),
       timeout_(timeout),
       success_callback_(std::move(success_callback)),
       failure_callback_(std::move(failure_callback)),
-      product_specific_data_(product_specific_data) {
+      product_specific_bits_data_(product_specific_bits_data),
+      product_specific_string_data_(product_specific_string_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   otr_profile_->AddObserver(this);
   set_close_on_deactivate(false);
@@ -221,8 +227,10 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   // Append any Product Specific Data to the query. This will be interpreted
   // by the wrapper website and provided to the HaTS backend service.
   base::DictionaryValue dict;
-  for (const auto& field_value : product_specific_data_)
+  for (const auto& field_value : product_specific_bits_data_)
     dict.SetStringKey(field_value.first, field_value.second ? "true" : "false");
+  for (const auto& field_value : product_specific_string_data_)
+    dict.SetStringKey(field_value.first, field_value.second);
 
   std::string product_specific_data_json;
   base::JSONWriter::Write(dict, &product_specific_data_json);
@@ -230,10 +238,22 @@ GURL HatsNextWebDialog::GetParameterizedHatsURL() const {
   param_url = net::AppendQueryParameter(param_url, "product_specific_data",
                                         product_specific_data_json);
 
+  // The HaTS backend service accepts a list of preferred languages, although
+  // only the application locale is provided here to ensure that the survey
+  // matches the native UI language.
+  base::ListValue language_list;
+  language_list.Append(g_browser_process->GetApplicationLocale());
+
+  std::string language_list_json;
+  base::JSONWriter::Write(language_list, &language_list_json);
+  param_url =
+      net::AppendQueryParameter(param_url, "languages", language_list_json);
+
   if (base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopDemo)) {
     param_url = net::AppendQueryParameter(param_url, "enable_testing", "true");
   }
+
   return param_url;
 }
 

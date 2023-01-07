@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,21 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
-
-class GURL;
-
-namespace blink {
-struct NotificationResources;
-}  // namespace blink
+#include "third_party/blink/public/common/notifications/notification_resources.h"
+#include "url/gurl.h"
 
 namespace content {
 
 // Contains the |resources| for a notification with |notification_id| and
 // |origin|. Used to pass multiple resources to the PlatformNotificationContext.
 struct CONTENT_EXPORT NotificationResourceData {
-  NotificationResourceData(NotificationResourceData&& data) = default;
-
+  NotificationResourceData(std::string notification_id,
+                           GURL origin,
+                           blink::NotificationResources resources)
+      : notification_id(std::move(notification_id)),
+        origin(std::move(origin)),
+        resources(std::move(resources)) {}
   // Id of the notification.
   std::string notification_id;
 
@@ -31,9 +30,6 @@ struct CONTENT_EXPORT NotificationResourceData {
 
   // Notification resources containing all image data.
   blink::NotificationResources resources;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationResourceData);
 };
 
 }  // namespace content

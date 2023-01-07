@@ -1,0 +1,20 @@
+noparent = True
+
+include_rules = [
+  "+base",
+  "+chromeos/ash/components/network",
+  "+google_apis",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+third_party/cros_system_api",
+  "+net",
+  "+url",
+]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+chromeos/ash/components/dbus",
+    "+services/network/test",
+    "+testing/gtest",
+  ],
+}

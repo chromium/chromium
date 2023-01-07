@@ -1,0 +1,132 @@
+<style>
+  .help-content-label {
+    color: var(--cros-text-color-secondary);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 22px;
+    margin: 0;
+  }
+
+  .help-item {
+    display: flex;
+    margin:  12px 0 0;
+    padding: 0 4px 0 4px;
+  }
+
+  .help-item a {
+    align-items: center;
+    color: var(--cros-text-color-primary);
+    display: flex;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    overflow: hidden;
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .help-item a:focus {
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
+
+  .help-item-icon {
+    padding-inline-end: 12px;
+  }
+
+  .help-content-offline-details {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 16px;
+  }
+
+  .help-content-offline-text {
+    color: var(--cros-text-color-secondary);
+    line-height: 18px;
+    max-width: 200px;
+    text-align: center;
+  }
+
+  #helpContentLabelContainer {
+    align-items: center;
+    display: inline-flex;
+  }
+
+  #helpContentIcon {
+    --cr-tooltip-icon-fill-color: var(--cros-icon-color-secondary);
+    margin-inline-start: 6px;
+  }
+
+  #helpContentIcon:focus {
+    border-radius: 4px;
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
+
+  #helpContentContainer {
+    overflow: visible;
+    padding-top: 32px;
+  }
+
+  iron-icon {
+    --iron-icon-fill-color: var(--cros-text-color-secondary);
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+  }
+
+  paper-tooltip::part(tooltip) {
+    border-radius: 2px;
+    font-family: Roboto, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 18px;
+    padding: 3px 8px;
+  }
+
+  paper-tooltip {
+    --paper-tooltip-background: var(--cros-tooltip-background-color);
+    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+  }
+</style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+  query-matches="{{isDarkModeEnabled_}}">
+</iron-media-query>
+<div id="helpContentContainer">
+  <div id="helpContentLabelContainer">
+    <h2 class="help-content-label">[[getLabel_(searchResult, isOnline_)]]</h2>
+    <iron-icon icon="os-feedback:info" id="helpContentIcon" tabindex="0"
+        hidden$="[[!hasSuggestedHelpContent_(searchResult, isOnline_)]]"
+        aria-labelledby="helpContentLabelTooltip">
+    </iron-icon>
+    <paper-tooltip for="helpContentIcon" position="top" offset="5">
+      <div id="helpContentLabelTooltip">
+        [[i18n('helpContentLabelTooltip')]]
+      </div>
+    </paper-tooltip>
+  </div>
+  <template is="dom-if" if="[[!isOnline_]]">
+    <div class="help-content-offline-details">
+      <img src="[[getOfflineIllustrationSrc_(isDarkModeEnabled_)]]"
+           alt="[[i18n('helpContentOfflineAltText')]]">
+      <div class="help-content-offline-text">
+        [[i18n('helpContentOfflineMessage')]]
+      </div>
+    </div>
+  </template>
+  <template is="dom-if" if="[[isOnline_]]">
+    <dom-repeat items="[[searchResult.contentList]]">
+      <template>
+        <div class="help-item">
+          <a href="[[getUrl_(item)]]" target="_blank"
+              on-click="handleHelpContentClicked_">
+            <iron-icon icon="[[getIcon_(item.contentType)]]"
+                class="help-item-icon">
+            </iron-icon>
+            [[getTitle_(item)]]
+          </a>
+        </div>
+      </template>
+    </dom-repeat>
+  </template>
+</div>

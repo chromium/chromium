@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,10 +18,15 @@ source_set("session") {
     "//base",
     "//ios/third_party/material_components_ios",
     "//remoting/client",
+    "//remoting/client/audio",
     "//remoting/client/display",
+    "//remoting/client/input",
     "//remoting/client/ui",
+    "//remoting/ios/audio",
     "//remoting/ios/display",
     "//remoting/ios/domain",
+    "//remoting/ios/facade",
+    "//remoting/ios/persistence",
     "//remoting/protocol",
   ]
 

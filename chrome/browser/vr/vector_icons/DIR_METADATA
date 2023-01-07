@@ -1,4 +1,1 @@
-monorail: {
-  component: "UI>Browser>VR"
-}
-team_email: "xr-dev@chromium.org"
+mixins: "//components/vector_icons/COMMON_METADATA"

@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,9 +7,15 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//media/cdm/library_cdm/cdm_paths.gni")
+import("//build/toolchain/toolchain.gni")
 import("//media/media_options.gni")
 import("//third_party/widevine/cdm/widevine.gni")
+
+if (bundle_widevine_cdm) {
+  import("//media/cdm/library_cdm/cdm_paths.gni")
+}
+
+assert(!bundle_widevine_cdm || (enable_widevine && enable_library_cdms))
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
@@ -18,60 +24,33 @@ buildflag_header("buildflags") {
     "ENABLE_WIDEVINE=$enable_widevine",
     "BUNDLE_WIDEVINE_CDM=$bundle_widevine_cdm",
     "ENABLE_WIDEVINE_CDM_COMPONENT=$enable_widevine_cdm_component",
+    "ENABLE_MEDIA_FOUNDATION_WIDEVINE_CDM=$enable_media_foundation_widevine_cdm",
   ]
 }
 
-widevine_arch = current_cpu
-if (widevine_arch == "x86") {
-  widevine_arch = "ia32"
-}
-
-widevine_cdm_binary_files = []
-widevine_cdm_manifest_and_license_files = []
-
 # TODO(xhwang): widevine_cdm_version.h is only used in few places. Clean this up
 # so we don't need to copy it in most cases.
+# Also, merge the bundle_widevine_cdm blocks as much as possible.
 if (bundle_widevine_cdm) {
-  if (is_chromeos_ash) {
-    widevine_cdm_version_h_file =
-        "chromeos/$widevine_arch/widevine_cdm_version.h"
-    widevine_cdm_binary_files = [ "chromeos/$widevine_arch/libwidevinecdm.so" ]
-  } else if (is_linux || is_chromeos_lacros) {
-    widevine_cdm_version_h_file = "linux/$widevine_arch/widevine_cdm_version.h"
-    widevine_cdm_binary_files = [ "linux/$widevine_arch/libwidevinecdm.so" ]
-    widevine_cdm_manifest_and_license_files = [
-      "linux/$widevine_arch/manifest.json",
-      "../LICENSE",
-    ]
-  } else if (is_win) {
-    widevine_cdm_version_h_file = "win/$widevine_arch/widevine_cdm_version.h"
-    widevine_cdm_binary_files = [ "win/$widevine_arch/widevinecdm.dll" ]
-    widevine_cdm_manifest_and_license_files = [
-      "win/$widevine_arch/manifest.json",
-      "../LICENSE",
-    ]
-  } else if (is_mac) {
-    widevine_cdm_version_h_file = "mac/$widevine_arch/widevine_cdm_version.h"
-    widevine_cdm_binary_files = [ "mac/$widevine_arch/libwidevinecdm.dylib" ]
-    widevine_cdm_manifest_and_license_files = [
-      "mac/$widevine_arch/manifest.json",
-      "../LICENSE",
-    ]
-  } else {
-    assert(false, "Platform not supported to bundle Widevine CDM.")
+  widevine_arch = target_cpu
+
+  widevine_cdm_root = "${widevine_root}/${target_os}/${widevine_arch}"
+  cdm_file_name = "${shlib_prefix}widevinecdm${shlib_extension}"
+
+  widevine_cdm_version_h_file = "${widevine_cdm_root}/widevine_cdm_version.h"
+  widevine_cdm_binary_files = [ "${widevine_cdm_root}/${cdm_file_name}" ]
+  widevine_cdm_manifest_and_license_files = [
+    "${widevine_cdm_root}/manifest.json",
+    "../LICENSE",
+  ]
+
+  if (enable_widevine_cdm_host_verification) {
+    assert(is_win || is_mac)
+    widevine_cdm_binary_files += [ "${widevine_cdm_root}/${cdm_file_name}.sig" ]
   }
 } else {
-  # No branding, use the default one.
+  # The CDM is not bundled. Use the default file.
   widevine_cdm_version_h_file = "widevine_cdm_version.h"
-}
-
-if (bundle_widevine_cdm && enable_widevine_cdm_host_verification) {
-  if (is_win) {
-    widevine_cdm_binary_files += [ "win/$widevine_arch/widevinecdm.dll.sig" ]
-  } else if (is_mac) {
-    widevine_cdm_binary_files +=
-        [ "mac/$widevine_arch/libwidevinecdm.dylib.sig" ]
-  }
 }
 
 copy("version_h") {
@@ -81,57 +60,51 @@ copy("version_h") {
   # TODO(brettw) this should go into target_out_dir and callers should include
   # it from there. This requires, however, renaming the default
   # widevine_cdm_version.h in this directory to avoid conflicts.
-  outputs = [ "$root_gen_dir/widevine_cdm_version.h" ]
+  outputs = [ "${root_gen_dir}/widevine_cdm_version.h" ]
 }
 
 source_set("headers") {
   public = [ "widevine_cdm_common.h" ]
 
   public_deps = [
+    ":buildflags",
     ":version_h",  # Forward permission to use version header.
     "//base",
-    "//media:media_buildflags",
   ]
 }
 
-if (widevine_cdm_manifest_and_license_files != []) {
+if (bundle_widevine_cdm) {
   copy("widevine_cdm_manifest_and_license") {
     sources = widevine_cdm_manifest_and_license_files
-    outputs = [ "$root_out_dir/WidevineCdm/{{source_file_part}}" ]
+    outputs = [ "${root_out_dir}/WidevineCdm/{{source_file_part}}" ]
   }
-} else {
-  group("widevine_cdm_manifest_and_license") {
-    # NOP
-  }
-}
 
-if (widevine_cdm_binary_files != []) {
   copy("widevine_cdm_binary") {
     sources = widevine_cdm_binary_files
-    outputs = [ "$root_out_dir/$widevine_cdm_path/{{source_file_part}}" ]
+    outputs = [ "${root_out_dir}/${widevine_cdm_path}/{{source_file_part}}" ]
 
     # TODO(jrummell)
     # 'COPY_PHASE_STRIP': 'NO',
   }
+
+  group("cdm") {
+    # Needed at run time by tests, e.g. swarming tests to generate isolate.
+    # See https://crbug.com/824493 for context.
+    data_deps = [
+      ":widevine_cdm_binary",
+      ":widevine_cdm_manifest_and_license",
+    ]
+
+    # Needed at build time e.g. for mac bundle (//chrome:chrome_framework).
+    public_deps = [
+      ":widevine_cdm_binary",
+      ":widevine_cdm_manifest_and_license",
+    ]
+  }
 } else {
-  group("widevine_cdm_binary") {
+  group("cdm") {
     # NOP
   }
-}
-
-group("cdm") {
-  # Needed at run time by tests, e.g. swarming tests to generate isolate.
-  # See https://crbug.com/824493 for context.
-  data_deps = [
-    ":widevine_cdm_binary",
-    ":widevine_cdm_manifest_and_license",
-  ]
-
-  # Needed at build time e.g. for mac bundle (//chrome:chrome_framework).
-  public_deps = [
-    ":widevine_cdm_binary",
-    ":widevine_cdm_manifest_and_license",
-  ]
 }
 
 # This target exists for tests to depend on that pulls in a runtime dependency

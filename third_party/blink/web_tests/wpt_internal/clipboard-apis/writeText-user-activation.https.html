@@ -1,0 +1,30 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>navigator.clipboard.writeText() fails when read permission is denied and no user gesture is registered</title>
+<link rel="help" href="https://w3c.github.io/clipboard-apis/#async-clipboard-api">
+<body>Body needed for test_driver.click()</body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/user-activation.js"></script>
+<script>
+'use strict';
+
+promise_test(async t => {
+  // Without a user gesture, clipboard-read is the permission that's used.
+  await test_driver.set_permission({name: 'clipboard-read'}, 'denied');
+  await test_driver.set_permission({name: 'clipboard-write'}, 'granted');
+  await promise_rejects_dom(t, 'NotAllowedError',
+      navigator.clipboard.writeText('xyz'));
+
+  // With a user gesture, clipboard-write is the permission that's used.
+  // With Chromium, this permission is auto-granted.
+  await waitForUserActivation();
+  await navigator.clipboard.writeText('xyz');
+
+  await test_driver.set_permission({name: 'clipboard-read'}, 'granted');
+  const result = await navigator.clipboard.readText();
+  assert_equals(result, 'xyz');
+}, 'navigator.clipboard.writeText() fails when permission denied');
+</script>

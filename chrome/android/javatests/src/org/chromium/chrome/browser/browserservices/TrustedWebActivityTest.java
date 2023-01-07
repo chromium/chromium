@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -206,7 +206,7 @@ public class TrustedWebActivityTest {
     @Feature({"StatusBar"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    @DisabledTest(message = "https://crbug.com/1111997")
+    @DisabledTest(message = "https://crbug.com/1112720")
     public void testStatusBarColorCertificateError() throws ExecutionException, TimeoutException {
         final String pageWithThemeColor = mEmbeddedTestServerRule.getServer().getURL(
                 "/chrome/test/data/android/theme_color_test.html");
@@ -248,7 +248,7 @@ public class TrustedWebActivityTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1111997")
+    @DisabledTest(message = "https://crbug.com/1112720")
     public void testToolbarVisibleCertificateError() throws ExecutionException, TimeoutException {
         final String pageWithoutCertError =
                 mEmbeddedTestServerRule.getServer().getURL("/chrome/test/data/android/about.html");

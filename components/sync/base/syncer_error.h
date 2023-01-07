@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,8 @@ class SyncerError {
   // values are persisted to logs. Entries should not be renumbered and numeric
   // values should never be reused.
   enum Value {
-    UNSET = 0,           // Default value.
-    CANNOT_DO_WORK = 1,  // A model worker could not process a work item.
+    UNSET = 0,  // Default value.
+    // Deprecated: CANNOT_DO_WORK = 1,
 
     NETWORK_CONNECTION_UNAVAILABLE = 2,  // Connectivity failure.
     NETWORK_IO_ERROR = 3,                // Response buffer read error.
@@ -37,12 +37,11 @@ class SyncerError {
     SERVER_RESPONSE_VALIDATION_FAILED = 14,
     SERVER_RETURN_DISABLED_BY_ADMIN = 15,
     // Deprecated: SERVER_RETURN_USER_ROLLBACK = 16,
-    SERVER_RETURN_PARTIAL_FAILURE = 17,
+    // Deprecated: SERVER_RETURN_PARTIAL_FAILURE = 17,
     SERVER_RETURN_CLIENT_DATA_OBSOLETE = 18,
     SERVER_RETURN_ENCRYPTION_OBSOLETE = 19,
 
-    // A datatype decided the sync cycle needed to be performed again.
-    DATATYPE_TRIGGERED_RETRY = 20,
+    // Deprecated: DATATYPE_TRIGGERED_RETRY = 20,
 
     SERVER_MORE_TO_DOWNLOAD = 21,
 

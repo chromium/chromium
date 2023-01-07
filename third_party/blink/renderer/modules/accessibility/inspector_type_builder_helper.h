@@ -1,11 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_INSPECTOR_TYPE_BUILDER_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_INSPECTOR_TYPE_BUILDER_HELPER_H_
 
-#include "third_party/blink/renderer/core/inspector/protocol/Accessibility.h"
+#include "third_party/blink/renderer/core/inspector/protocol/accessibility.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -47,4 +47,4 @@ std::unique_ptr<AXValueSource> CreateValueSource(NameSource&);
 
 }  // namespace blink
 
-#endif  // InspectorAccessibilityAgent_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_INSPECTOR_TYPE_BUILDER_HELPER_H_

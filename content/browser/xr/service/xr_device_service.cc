@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 #include "base/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "content/browser/service_sandbox_type.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/gpu_client.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -33,8 +31,7 @@ class XRDeviceServiceHostImpl : public device::mojom::XRDeviceServiceHost {
   // process.
   void BindGpu(::mojo::PendingReceiver<::viz::mojom::Gpu> receiver) override {
     gpu_client_ =
-        content::CreateGpuClient(std::move(receiver), base::DoNothing(),
-                                 content::GetIOThreadTaskRunner({}));
+        content::CreateGpuClient(std::move(receiver), base::DoNothing());
   }
 
  private:
@@ -42,12 +39,6 @@ class XRDeviceServiceHostImpl : public device::mojom::XRDeviceServiceHost {
   // any.
   std::unique_ptr<viz::GpuClient, base::OnTaskRunnerDeleter> gpu_client_;
 };
-
-void BindHost(
-    mojo::PendingReceiver<device::mojom::XRDeviceServiceHost> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<XRDeviceServiceHostImpl>(),
-                              std::move(receiver));
-}
 
 }  // namespace
 
@@ -67,7 +58,7 @@ const mojo::Remote<device::mojom::XRDeviceService>& GetXRDeviceService() {
     // one -- then we will reset |remote|, causing the service process to be
     // terminated if it isn't already.
     remote->reset_on_disconnect();
-    remote->reset_on_idle_timeout(base::TimeDelta::FromSeconds(5));
+    remote->reset_on_idle_timeout(base::Seconds(5));
 
     auto& startup_callback = GetStartupCallback();
     if (startup_callback)
@@ -79,14 +70,10 @@ const mojo::Remote<device::mojom::XRDeviceService>& GetXRDeviceService() {
 
 mojo::PendingRemote<device::mojom::XRDeviceServiceHost>
 CreateXRDeviceServiceHost() {
-  // XRDeviceServiceHostImpl doesn't need to live on the IO thread but GpuClient
-  // does and it will own GpuClient. Might as well have them both live on the IO
-  // thread.
   mojo::PendingRemote<device::mojom::XRDeviceServiceHost> device_service_host;
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BindHost,
-                     device_service_host.InitWithNewPipeAndPassReceiver()));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<XRDeviceServiceHostImpl>(),
+      device_service_host.InitWithNewPipeAndPassReceiver());
 
   return device_service_host;
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ void FrameRateEstimator::AddSample(base::TimeDelta frame_duration) {
   most_recent_bucket_ = bucketed_fps_min;
 }
 
-base::Optional<int> FrameRateEstimator::ComputeFPS() {
+absl::optional<int> FrameRateEstimator::ComputeFPS() {
   return most_recent_bucket_;
 }
 

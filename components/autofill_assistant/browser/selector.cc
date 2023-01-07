@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
+#include "components/autofill_assistant/browser/field_formatter.h"
 
 namespace autofill_assistant {
 
@@ -18,6 +20,47 @@ namespace autofill_assistant {
 bool operator<(const TextFilter& a, const TextFilter& b) {
   return std::make_tuple(a.re2(), a.case_sensitive()) <
          std::make_tuple(b.re2(), b.case_sensitive());
+}
+
+bool operator<(const AutofillValueRegexp& a, const AutofillValueRegexp& b) {
+  return std::make_tuple(a.profile().identifier(),
+                         field_formatter::GetHumanReadableValueExpression(
+                             a.value_expression_re2().value_expression()),
+                         a.value_expression_re2().case_sensitive()) <
+         std::make_tuple(b.profile().identifier(),
+                         field_formatter::GetHumanReadableValueExpression(
+                             b.value_expression_re2().value_expression()),
+                         b.value_expression_re2().case_sensitive());
+}
+
+bool operator<(const SelectorProto::PropertyFilter& a,
+               const SelectorProto::PropertyFilter& b) {
+  if (a.property() < b.property()) {
+    return true;
+  }
+  if (a.property() != b.property()) {
+    return false;
+  }
+  if (a.value_case() < b.value_case()) {
+    return true;
+  }
+  if (a.value_case() != b.value_case()) {
+    return false;
+  }
+  switch (a.value_case()) {
+    case SelectorProto::PropertyFilter::kTextFilter:
+      return a.text_filter() < b.text_filter();
+    case SelectorProto::PropertyFilter::kAutofillValueRegexp:
+      return a.autofill_value_regexp() < b.autofill_value_regexp();
+    case SelectorProto::PropertyFilter::VALUE_NOT_SET:
+      return false;
+  }
+}
+
+bool operator<(const SelectorProto::SemanticFilter& a,
+               const SelectorProto::SemanticFilter& b) {
+  return std::make_tuple(a.objective(), a.role(), a.ignore_objective()) <
+         std::make_tuple(b.objective(), b.role(), b.ignore_objective());
 }
 
 // Used by operator<(RepeatedPtrField<Filter>, RepeatedPtrField<Filter>)
@@ -75,6 +118,7 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
 
     case SelectorProto::Filter::kEnterFrame:
     case SelectorProto::Filter::kLabelled:
+    case SelectorProto::Filter::kParent:
       return false;
 
     case SelectorProto::Filter::kMatchCssSelector:
@@ -83,10 +127,15 @@ bool operator<(const SelectorProto::Filter& a, const SelectorProto::Filter& b) {
     case SelectorProto::Filter::kNthMatch:
       return a.nth_match().index() < b.nth_match().index();
 
+    case SelectorProto::Filter::kProperty:
+      return a.property() < b.property();
+
+    case SelectorProto::Filter::kSemantic:
+      return a.semantic() < b.semantic();
+
     case SelectorProto::Filter::FILTER_NOT_SET:
       return false;
   }
-  return false;
 }
 
 SelectorProto ToSelectorProto(const std::string& s) {
@@ -154,10 +203,10 @@ Selector::Selector(const SelectorProto& selector_proto)
 
 Selector::~Selector() = default;
 
-Selector::Selector(Selector&& other) = default;
+Selector::Selector(Selector&& other) noexcept = default;
 Selector::Selector(const Selector& other) = default;
 Selector& Selector::operator=(const Selector& other) = default;
-Selector& Selector::operator=(Selector&& other) = default;
+Selector& Selector::operator=(Selector&& other) noexcept = default;
 
 bool Selector::operator<(const Selector& other) const {
   return proto.filters() < other.proto.filters();
@@ -178,87 +227,27 @@ Selector& Selector::MustBeVisible() {
 }
 
 bool Selector::empty() const {
-  bool has_css_selector = false;
-  for (const SelectorProto::Filter& filter : proto.filters()) {
-    switch (filter.filter_case()) {
-      case SelectorProto::Filter::FILTER_NOT_SET:
-        // There must not be any unknown or invalid filters.
-        return true;
-
-      case SelectorProto::Filter::kCssSelector:
-        // There must be at least one CSS selector, since it's the only
-        // way we have of expanding the set of matches.
-        has_css_selector = true;
-        break;
-
-      default:
-        break;
-    }
+  if (base::ranges::any_of(proto.filters(),
+                           [](const SelectorProto::Filter& filter) {
+                             return filter.filter_case() ==
+                                    SelectorProto::Filter::FILTER_NOT_SET;
+                           })) {
+    return true;
   }
-  return !has_css_selector;
-}
 
-base::Optional<std::string> Selector::ExtractSingleCssSelectorForAutofill()
-    const {
-  int last_enter_frame_index = -1;
-  for (int i = proto.filters().size() - 1; i >= 0; i--) {
-    if (proto.filters(i).filter_case() == SelectorProto::Filter::kEnterFrame) {
-      last_enter_frame_index = i;
-      break;
-    }
+  int semantic_selector_count = base::ranges::count_if(
+      proto.filters(), [](const SelectorProto::Filter& filter) {
+        return filter.filter_case() == SelectorProto::Filter::kSemantic;
+      });
+  if (semantic_selector_count > 0) {
+    return semantic_selector_count > 1 ||
+           proto.filters(0).filter_case() != SelectorProto::Filter::kSemantic;
   }
-  std::string css_selector;
-  for (int i = last_enter_frame_index + 1; i < proto.filters().size(); i++) {
-    const SelectorProto::Filter& filter = proto.filters(i);
-    switch (filter.filter_case()) {
-      case SelectorProto::Filter::kCssSelector:
-        if (css_selector.empty()) {
-          css_selector = filter.css_selector();
-        } else {
-          VLOG(1) << __func__
-                  << " Selector with multiple CSS selectors not supported for "
-                     "autofill: "
-                  << *this;
-          return base::nullopt;
-        }
-        break;
 
-      case SelectorProto::Filter::kBoundingBox:
-      case SelectorProto::Filter::kNthMatch:
-        if (filter.nth_match().index() == 0)
-          break;
-
-        FALLTHROUGH;
-      case SelectorProto::Filter::kInnerText:
-      case SelectorProto::Filter::kValue:
-      case SelectorProto::Filter::kPseudoType:
-      case SelectorProto::Filter::kPseudoElementContent:
-      case SelectorProto::Filter::kCssStyle:
-      case SelectorProto::Filter::kLabelled:
-      case SelectorProto::Filter::kMatchCssSelector:
-      case SelectorProto::Filter::kOnTop:
-        VLOG(1) << __func__
-                << " Selector feature not supported by autofill: " << *this;
-        return base::nullopt;
-
-      case SelectorProto::Filter::FILTER_NOT_SET:
-        VLOG(1) << __func__ << " Unknown filter type in: " << *this;
-        return base::nullopt;
-
-      case SelectorProto::Filter::kEnterFrame:
-        // This cannot possibly happen, since the iteration started after the
-        // last enter_frame.
-        NOTREACHED();
-        break;
-    }
-  }
-  if (css_selector.empty()) {
-    VLOG(1) << __func__
-            << " Selector without CSS selector not supported by autofill: "
-            << *this;
-    return base::nullopt;
-  }
-  return css_selector;
+  return !base::ranges::any_of(
+      proto.filters(), [](const SelectorProto::Filter& filter) {
+        return filter.filter_case() == SelectorProto::Filter::kCssSelector;
+      });
 }
 
 std::ostream& operator<<(std::ostream& out, const Selector& selector) {
@@ -278,6 +267,46 @@ std::ostream& operator<<(std::ostream& out, const TextFilter& c) {
   if (c.case_sensitive()) {
     out << "i";
   }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const AutofillValueRegexp& c) {
+  out << "/"
+      << field_formatter::GetHumanReadableValueExpression(
+             c.value_expression_re2().value_expression())
+      << "/";
+  if (c.value_expression_re2().case_sensitive()) {
+    out << "i";
+  }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const SelectorProto::PropertyFilter& c) {
+  out << c.property() << " ~= ";
+  switch (c.value_case()) {
+    case SelectorProto::PropertyFilter::kTextFilter:
+      out << c.text_filter();
+      break;
+    case SelectorProto::PropertyFilter::kAutofillValueRegexp:
+      out << c.autofill_value_regexp();
+      break;
+    case SelectorProto::PropertyFilter::VALUE_NOT_SET:
+      out << "/<unknown>/";
+      break;
+  }
+  return out;
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const SelectorProto::SemanticFilter& c) {
+  out << "Semantic { role: " << c.role() << ", objective: ";
+  if (c.ignore_objective()) {
+    out << "ignored";
+  } else {
+    out << c.objective();
+  }
+  out << " }";
   return out;
 }
 
@@ -372,6 +401,18 @@ std::ostream& operator<<(std::ostream& out, const SelectorProto::Filter& f) {
       if (f.on_top().accept_element_if_not_in_view()) {
         out << "(accept not in view)";
       }
+      return out;
+
+    case SelectorProto::Filter::kProperty:
+      out << f.property();
+      return out;
+
+    case SelectorProto::Filter::kParent:
+      out << "parent";
+      return out;
+
+    case SelectorProto::Filter::kSemantic:
+      out << f.semantic();
       return out;
 
     case SelectorProto::Filter::FILTER_NOT_SET:

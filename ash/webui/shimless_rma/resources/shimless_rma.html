@@ -1,0 +1,248 @@
+<style include="cr-shared-style shimless-rma-shared">
+  #shimlessRMAContainer {
+    align-items: stretch;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-bottom: var(--container-vertical-padding);
+    padding-inline: var(--container-horizontal-padding);
+    padding-top: var(--container-vertical-padding);
+    width: 100%;
+  }
+
+  #header,
+  #contentContainer,
+  #footer {
+    padding-inline: var(--content-container-padding);
+  }
+
+  #contentContainer {
+    min-height: var(--content-container-height);
+  }
+
+  .shimless-content {
+    height: 100%;
+    width: 100%;
+  }
+
+  #footer {
+    min-height: var(--header-footer-height);
+    text-align: end;
+  }
+
+  #header {
+    min-height: var(--header-footer-height);
+  }
+
+  #back {
+    border: 0;
+    border-radius: 16px;
+    height: 32px;
+    padding-inline-start: 16px;
+  }
+
+  #next {
+    margin-inline-end: -13px;
+    top: 24px;
+  }
+
+  #exit {
+    margin-inline-end: 8px;
+    top: 24px;
+  }
+
+  .busy-icon {
+    height: 20px;
+    width: 20px;
+  }
+
+  .button-icon {
+    height: var(--cr-icon-size);
+    width: var(--cr-icon-size);
+  }
+
+  #exitButtonSpinner,
+  #nextButtonCaret,
+  #nextButtonSpinner {
+    margin-inline-start: 8px;
+  }
+
+  #backButtonCaret,
+  #backButtonSpinner {
+    margin-inline-end: 8px;
+  }
+
+  #busyStateOverlay {
+    background-color: white;
+    display: none;
+    height: 100vh;
+    opacity: .4;
+    position: fixed;
+    width: 100%;
+    z-index: 1;
+  }
+
+  :host([show-busy-state-overlay_]) #busyStateOverlay {
+    display: block;
+  }
+
+  #logsDialog::part(dialog) {
+    width: 512px;
+  }
+
+  #logsDialog::part(wrapper) {
+    height: 480px;
+  }
+
+  #logsDialog [slot=button-container] {
+    padding-bottom: 24px;
+    padding-top: 24px;
+  }
+
+  #logsDialog [slot=title] {
+    align-items: center;
+    display: flex;
+    font-size: 15px;
+    height: 32px;
+    justify-content: center;
+    padding: 0 24px 0 24px;
+  }
+
+  #logText {
+    white-space: pre-line;
+  }
+
+  #logSaveAttemptButtonContainer {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #logSavedIconText {
+    align-items: center;
+    display: flex;
+  }
+
+  #connectUsbIcon {
+    color: var(--cros-icon-color-secondary);
+  }
+
+  #connectUsbInstructions {
+    color: var(--cros-text-color-primary);
+  }
+</style>
+
+<div id="shimlessRMAContainer">
+  <div id="busyStateOverlay"></div>
+  <div id="header">
+    <cr-button
+      id="back" on-click="onBackButtonClicked_"
+      disabled="[[isButtonDisabled_(currentPage_.buttonBack, allButtonsDisabled_)]]"
+      hidden$="[[isButtonHidden_(currentPage_.buttonBack)]]">
+      <paper-spinner-lite id="backButtonSpinner" class="busy-icon"
+          hidden$="[[!backButtonClicked_]]" active>
+      </paper-spinner-lite>
+      <iron-icon id="backButtonCaret" icon="cr:chevron-left"
+          class="button-icon" hidden$="[[backButtonClicked_]]">
+      </iron-icon>
+      <span id="backButtonLabel">
+        [[i18n('backButtonLabel')]]
+      </span>
+    </cr-button>
+  </div>
+  <div id="contentContainer"></div>
+  <div id="footer">
+    <cr-button
+      id="exit" class="pill" on-click="onExitButtonClicked_"
+      disabled="[[isButtonDisabled_(currentPage_.buttonExit, allButtonsDisabled_)]]"
+      hidden$="[[isButtonHidden_(currentPage_.buttonExit)]]">
+      <span id="exitButtonLabel">
+        [[getExitButtonLabel_(currentPage_.buttonExitLabelKey)]]
+      </span>
+      <paper-spinner-lite id="exitButtonSpinner" class="busy-icon"
+          hidden$="[[!confirmExitButtonClicked_]]" active>
+      </paper-spinner-lite>
+    </cr-button>
+    <cr-button
+      id="next" class="action-button" on-click="onNextButtonClicked_"
+      disabled="[[isButtonDisabled_(currentPage_.buttonNext, allButtonsDisabled_)]]"
+      hidden$="[[isButtonHidden_(currentPage_.buttonNext)]]">
+      <span id="nextButtonLabel">
+        [[getNextButtonLabel_(currentPage_.buttonNextLabelKey)]]
+      </span>
+      <paper-spinner-lite id="nextButtonSpinner" class="busy-icon"
+          hidden$="[[!nextButtonClicked_]]" active>
+      </paper-spinner-lite>
+      <iron-icon id="nextButtonCaret" icon="cr:chevron-right"
+          class="button-icon" hidden$="[[nextButtonClicked_]]">
+      </iron-icon>
+    </cr-button>
+  </div>
+</div>
+<cr-dialog id="exitDialog">
+  <div slot="title">
+    [[i18n('exitDialogTitleText')]]
+  </div>
+  <div slot="body">
+    [[i18n('exitDialogDescriptionText')]]
+  </div>
+  <div class="dialog-footer" slot="button-container">
+    <cr-button id="cancelExitDialogButton" class="pill"
+        on-click="closeDialog_">
+      [[i18n('exitDialogCancelButtonLabel')]]
+    </cr-button>
+    <cr-button id="confirmExitDialogButton" class="action-button"
+        on-click="onConfirmExitButtonClicked_">
+      [[i18n('exitButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>
+<cr-dialog id="logsDialog" close-text="close" on-cancel="closeLogsDialog_">
+  <div slot="title">
+    [[i18n('rmaLogsTitleText')]]
+  </div>
+  <div slot="body">
+    <div id="logText">[[log_]]</div>
+  </div>
+  <div id="saveLogButtonContainer" class="dialog-footer" slot="button-container"
+      hidden="[[!shouldShowSaveToUsbButton_(usbLogState_)]]">
+    <cr-button id="closeLogDialogButton" on-click="closeLogsDialog_">
+      [[i18n('rmaLogsCancelButtonText')]]
+    </cr-button>
+    <cr-button id="saveLogDialogButton" class="text-button action-button"
+        on-click="onSaveLogClick_">
+      [[i18n('rmaLogsSaveToUsbButtonText')]]
+    </cr-button>
+  </div>
+  <div id="logSaveAttemptButtonContainer" class="dialog-footer"
+        slot="button-container"
+        hidden="[[!shouldShowLogSaveAttemptContainer_(usbLogState_)]]">
+    <div id="logSavedIconText">
+      <iron-icon id="verificationIcon" class="small-icon"
+          icon="[[getSaveLogResultIcon_(usbLogState_)]]">
+      </iron-icon>
+      <span id="logSavedStatusText">[[logSavedStatusText_]]</span>
+    </div>
+    <cr-button id="logRetryDialogButton" class="text-button action-button"
+        on-click="retrySaveLogs_"
+        hidden="[[!shouldShowRetryButton_(usbLogState_)]]">
+        [[i18n('retryButtonLabel')]]
+    </cr-button>
+    <cr-button id="logSaveDoneDialogButton" class="text-button action-button"
+        on-click="closeLogsDialog_">
+      [[i18n('doneButtonLabel')]]
+    </cr-button>
+  </div>
+  <div id="logConnectUsbMessageContainer" class="dialog-footer"
+        slot="button-container"
+        hidden="[[!shouldShowLogUsbMessageContainer_(usbLogState_)]]">
+    <div id="logSavedIconText">
+      <iron-icon id="connectUsbIcon" class="small-icon"
+          icon="shimless-icon:warning"></iron-icon>
+      <span id="connectUsbInstructions" class="instructions">
+        [[i18n('rmaLogsMissingUsbMessageText')]]
+      </span>
+    </div>
+  </div>
+</cr-dialog>

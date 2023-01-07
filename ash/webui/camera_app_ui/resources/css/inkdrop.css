@@ -1,0 +1,35 @@
+/* Copyright 2021 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.inkdrop {
+  overflow: hidden;
+}
+
+.inkdrop .inkdrop-ripple {
+  background: white;
+  border-radius: 50%;
+  height: 0;
+  left: var(--drop-x);
+  position: absolute;
+  top: var(--drop-y);
+  transform: translate(-50%, -50%);
+  width: 0;
+}
+
+.inkdrop.animate .inkdrop-ripple {
+  animation: inkdrop var(--moderate1-duration) ease-out;
+}
+
+@keyframes inkdrop {
+  0% {
+    height: 0;
+    opacity: 0.6;
+    width: 0;
+  }
+  100% {
+    height: calc(var(--drop-radius) * 2);
+    opacity: 0;
+    width: calc(var(--drop-radius) * 2);
+  }
+}

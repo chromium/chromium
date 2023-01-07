@@ -1,13 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
 
-#include "base/callback_helpers.h"
+#import "base/callback_helpers.h"
 #import "ios/web/public/test/fakes/crw_fake_web_state_policy_decider.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,20 +28,21 @@ class WebStatePolicyDeciderBridgeTest : public PlatformTest {
   WebStatePolicyDeciderBridge decider_bridge_;
 };
 
-// Tests |shouldAllowRequest:requestInfo:| forwarding.
+// Tests `shouldAllowRequest:requestInfo:` forwarding.
 TEST_F(WebStatePolicyDeciderBridgeTest, ShouldAllowRequest) {
   ASSERT_FALSE([decider_ shouldAllowRequestInfo]);
   NSURL* url = [NSURL URLWithString:@"http://test.url"];
   NSURLRequest* request = [NSURLRequest requestWithURL:url];
-  ui::PageTransition transition_type = ui::PageTransition::PAGE_TRANSITION_LINK;
-  bool target_frame_is_main = true;
-  bool target_frame_is_cross_origin = false;
-  bool has_user_gesture = false;
-  WebStatePolicyDecider::RequestInfo request_info(
+  const ui::PageTransition transition_type =
+      ui::PageTransition::PAGE_TRANSITION_LINK;
+  const bool target_frame_is_main = true;
+  const bool target_frame_is_cross_origin = false;
+  const bool has_user_gesture = false;
+  const WebStatePolicyDecider::RequestInfo request_info(
       transition_type, target_frame_is_main, target_frame_is_cross_origin,
       has_user_gesture);
-  decider_bridge_.ShouldAllowRequest(request, request_info);
-  FakeShouldAllowRequestInfo* should_allow_request_info =
+  decider_bridge_.ShouldAllowRequest(request, request_info, base::DoNothing());
+  const FakeShouldAllowRequestInfo* should_allow_request_info =
       [decider_ shouldAllowRequestInfo];
   ASSERT_TRUE(should_allow_request_info);
   EXPECT_EQ(request, should_allow_request_info->request);
@@ -54,7 +55,7 @@ TEST_F(WebStatePolicyDeciderBridgeTest, ShouldAllowRequest) {
       should_allow_request_info->request_info.transition_type));
 }
 
-// Tests |decidePolicyForNavigationResponse:forMainFrame:completionHandler:|
+// Tests `decidePolicyForNavigationResponse:responseInfo:completionHandler:`
 // forwarding.
 TEST_F(WebStatePolicyDeciderBridgeTest, DecidePolicyForNavigationResponse) {
   ASSERT_FALSE([decider_ decidePolicyForNavigationResponseInfo]);
@@ -63,16 +64,18 @@ TEST_F(WebStatePolicyDeciderBridgeTest, DecidePolicyForNavigationResponse) {
                                                       MIMEType:@"text/html"
                                          expectedContentLength:0
                                               textEncodingName:nil];
-  bool for_main_frame = true;
-  decider_bridge_.ShouldAllowResponse(response, for_main_frame,
+  const bool for_main_frame = true;
+  const WebStatePolicyDecider::ResponseInfo response_info(for_main_frame);
+  decider_bridge_.ShouldAllowResponse(response, response_info,
                                       base::DoNothing());
-  FakeDecidePolicyForNavigationResponseInfo*
+  const FakeDecidePolicyForNavigationResponseInfo*
       decide_policy_for_navigation_response_info =
           [decider_ decidePolicyForNavigationResponseInfo];
   ASSERT_TRUE(decide_policy_for_navigation_response_info);
   EXPECT_EQ(response, decide_policy_for_navigation_response_info->response);
-  EXPECT_EQ(for_main_frame,
-            decide_policy_for_navigation_response_info->for_main_frame);
+  EXPECT_EQ(
+      for_main_frame,
+      decide_policy_for_navigation_response_info->response_info.for_main_frame);
 }
 
 }  // namespace web

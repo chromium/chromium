@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiable_sample.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-forward.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
 
 namespace blink {
 
@@ -82,7 +82,7 @@ namespace blink {
 //
 // 1. A simple web exposed API that's represented using a |WebFeature|
 //    constant. Values are defined in
-//    blink/public/mojom/web_feature/web_feature.mojom.
+//    blink/public/mojom/use_counter/metrics/web_feature.mojom.
 //
 //        identifiable_surface = IdentifiableSurface::FromTypeAndToken(
 //            IdentifiableSurface::Type::kWebFeature,
@@ -112,14 +112,14 @@ class BLINK_COMMON_EXPORT IdentifiabilityMetricBuilder {
   ~IdentifiabilityMetricBuilder();
 
   // Set the metric using a previously constructed |IdentifiableSurface|.
-  IdentifiabilityMetricBuilder& Set(IdentifiableSurface surface,
+  IdentifiabilityMetricBuilder& Add(IdentifiableSurface surface,
                                     IdentifiableToken sample);
 
   // Convenience method for recording the result of invoking a simple API
   // surface with a |UseCounter|.
-  IdentifiabilityMetricBuilder& SetWebfeature(mojom::WebFeature feature,
+  IdentifiabilityMetricBuilder& AddWebFeature(mojom::WebFeature feature,
                                               IdentifiableToken sample) {
-    return Set(IdentifiableSurface::FromTypeAndToken(
+    return Add(IdentifiableSurface::FromTypeAndToken(
                    IdentifiableSurface::Type::kWebFeature, feature),
                sample);
   }

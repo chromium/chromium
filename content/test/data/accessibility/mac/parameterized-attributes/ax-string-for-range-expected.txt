@@ -1,0 +1,2 @@
+input.accessibilityParameterizedAttributeNames.has(AXStringForRange)='yes'
+input.accessibilityAttributeValue(AXStringForRange, {loc: 1, len: 2})='al'

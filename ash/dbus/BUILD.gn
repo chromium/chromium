@@ -1,0 +1,17 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(b/203137959): Move dbus build relations from ash/BUILD.gn file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+proto_library("privacy_screen_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/privacy_screen/privacy_screen.proto",
+  ]
+
+  proto_out_dir = "ash/dbus/privacy_screen"
+}

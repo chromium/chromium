@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -409,11 +409,10 @@ TEST_P(VaapiJpegDecoderTest, DecodeSucceeds) {
 // state is retained.
 TEST_F(VaapiJpegDecoderTest, DecodeSucceedsForSupportedSizes) {
   gfx::Size min_supported_size;
-  ASSERT_TRUE(VaapiWrapper::GetDecodeMinResolution(VAProfileJPEGBaseline,
-                                                   &min_supported_size));
   gfx::Size max_supported_size;
-  ASSERT_TRUE(VaapiWrapper::GetDecodeMaxResolution(VAProfileJPEGBaseline,
-                                                   &max_supported_size));
+  ASSERT_TRUE(VaapiWrapper::GetSupportedResolutions(
+      VAProfileJPEGBaseline, VaapiWrapper::CodecMode::kDecode,
+      min_supported_size, max_supported_size));
 
   // Ensure the maximum supported size is reasonable.
   ASSERT_GE(max_supported_size.width(), min_supported_size.width());
@@ -597,11 +596,10 @@ TEST_P(VaapiJpegDecoderWithDmaBufsTest, DecodeSucceeds) {
 // TODO(andrescj): for now, this assumes 4:2:0. Handle other formats.
 TEST_F(VaapiJpegDecoderTest, DecodeFailsForBelowMinSize) {
   gfx::Size min_supported_size;
-  ASSERT_TRUE(VaapiWrapper::GetDecodeMinResolution(VAProfileJPEGBaseline,
-                                                   &min_supported_size));
   gfx::Size max_supported_size;
-  ASSERT_TRUE(VaapiWrapper::GetDecodeMaxResolution(VAProfileJPEGBaseline,
-                                                   &max_supported_size));
+  ASSERT_TRUE(VaapiWrapper::GetSupportedResolutions(
+      VAProfileJPEGBaseline, VaapiWrapper::CodecMode::kDecode,
+      min_supported_size, max_supported_size));
 
   // Ensure the maximum supported size is reasonable.
   ASSERT_GE(max_supported_size.width(), min_supported_size.width());
@@ -648,11 +646,10 @@ TEST_F(VaapiJpegDecoderTest, DecodeFailsForBelowMinSize) {
 // TODO(andrescj): for now, this assumes 4:2:0. Handle other formats.
 TEST_F(VaapiJpegDecoderTest, DecodeFailsForAboveMaxSize) {
   gfx::Size min_supported_size;
-  ASSERT_TRUE(VaapiWrapper::GetDecodeMinResolution(VAProfileJPEGBaseline,
-                                                   &min_supported_size));
   gfx::Size max_supported_size;
-  ASSERT_TRUE(VaapiWrapper::GetDecodeMaxResolution(VAProfileJPEGBaseline,
-                                                   &max_supported_size));
+  ASSERT_TRUE(VaapiWrapper::GetSupportedResolutions(
+      VAProfileJPEGBaseline, VaapiWrapper::CodecMode::kDecode,
+      min_supported_size, max_supported_size));
 
   // Ensure the maximum supported size is reasonable.
   ASSERT_GE(max_supported_size.width(), min_supported_size.width());

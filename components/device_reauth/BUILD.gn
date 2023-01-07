@@ -1,0 +1,43 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
+
+static_library("device_reauth") {
+  sources = [
+    "biometric_authenticator.cc",
+    "biometric_authenticator.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mock_biometric_authenticator.cc",
+    "mock_biometric_authenticator.h",
+  ]
+
+  deps = [
+    ":device_reauth",
+    "//base",
+    "//testing/gmock",
+  ]
+}
+
+if (is_android) {
+  android_library("device_reauth_java_enums") {
+    srcjar_deps = [ ":device_reauth_java_enums_srcjar" ]
+
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+
+  java_cpp_enum("device_reauth_java_enums_srcjar") {
+    sources = [ "biometric_authenticator.h" ]
+  }
+}

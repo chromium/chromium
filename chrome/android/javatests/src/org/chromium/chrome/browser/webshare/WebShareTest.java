@@ -1,38 +1,36 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.webshare;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.support.test.InstrumentationRegistry;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -41,10 +39,16 @@ import java.util.ArrayList;
 
 /** Test suite for Web Share (navigator.share) functionality. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebShareTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private static final String TEST_FILE = "/content/test/data/android/webshare.html";
     private static final String TEST_FILE_APK = "/content/test/data/android/webshare-apk.html";
@@ -54,6 +58,8 @@ public class WebShareTest {
     private static final String TEST_FILE_OGG = "/content/test/data/android/webshare-ogg.html";
     private static final String TEST_FILE_MANY = "/content/test/data/android/webshare-many.html";
     private static final String TEST_FILE_LARGE = "/content/test/data/android/webshare-large.html";
+    private static final String TEST_FILE_SEPARATOR =
+            "/content/test/data/android/webshare-separator.html";
     private static final String TEST_LONG_TEXT = "/content/test/data/android/webshare-long.html";
 
     private EmbeddedTestServer mTestServer;
@@ -74,7 +80,7 @@ public class WebShareTest {
 
         @Override
         public void onTitleUpdated(Tab tab) {
-            String title = mActivityTestRule.getActivity().getActivityTab().getTitle();
+            String title = sActivityTestRule.getActivity().getActivityTab().getTitle();
             // Wait until the title indicates either success or failure.
             if (!title.equals("Success") && !title.startsWith("Fail:")) return;
             mStatus = title;
@@ -89,21 +95,22 @@ public class WebShareTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
 
-        mTab = mActivityTestRule.getActivity().getActivityTab();
+        mTab = sActivityTestRule.getActivity().getActivityTab();
         mUpdateWaiter = new WebShareUpdateWaiter();
-        mTab.addObserver(mUpdateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mUpdateWaiter));
 
         mReceivedIntent = null;
     }
 
     @After
     public void tearDown() {
-        if (mTab != null) mTab.removeObserver(mUpdateWaiter);
+        if (mTab != null) {
+            TestThreadUtils.runOnUiThreadBlocking(() -> mTab.removeObserver(mUpdateWaiter));
+        }
         if (mTestServer != null) mTestServer.stopAndDestroyServer();
 
         // Clean up some state that might have been changed by tests.
@@ -119,112 +126,11 @@ public class WebShareTest {
     @MediumTest
     @Feature({"WebShare"})
     public void testWebShareNoUserGesture() throws Exception {
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE));
-        mActivityTestRule.runJavaScriptCodeInCurrentTab("initiate_share()");
+        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE));
+        sActivityTestRule.runJavaScriptCodeInCurrentTab("initiate_share()");
         Assert.assertEquals("Fail: NotAllowedError: Failed to execute 'share' on 'Navigator': "
                         + "Must be handling a user gesture to perform a share request.",
                 mUpdateWaiter.waitForUpdate());
-    }
-
-    /**
-     * Verify WebShare fails if share is called from a user gesture, and canceled.
-     * This test tests functionality that is only available post Lollipop MR1.
-     * @throws Exception
-     */
-    @Test
-    @MediumTest
-    @Feature({"WebShare"})
-    @Features.DisableFeatures(ChromeFeatureList.CHROME_SHARING_HUB)
-    @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
-    public void testWebShareDoubleRequest() throws Exception {
-        // Set up ShareHelper to ignore the intent (without showing a picker),
-        // and request another share.
-        ShareHelper.setFakeIntentReceiverForTesting(new FakeIntentReceiverPostLMR1(false));
-
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE));
-        // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
-        TouchCommon.singleClickView(mTab.getView());
-        Assert.assertEquals("Fail: InvalidStateError: Failed to execute 'share' on 'Navigator': "
-                        + "A earlier share had not yet completed.",
-                mUpdateWaiter.waitForUpdate());
-    }
-
-    /**
-     * Verify WebShare succeeds if share is called from a user gesture, and app chosen.
-     * This test tests functionality that is only available post Lollipop MR1.
-     * @throws Exception
-     */
-    @Test
-    @MediumTest
-    @Feature({"WebShare"})
-    @Features.DisableFeatures(ChromeFeatureList.CHROME_SHARING_HUB)
-    @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
-    public void testWebShareSuccess() throws Exception {
-        // Set up ShareHelper to immediately succeed (without showing a picker).
-        ShareHelper.setFakeIntentReceiverForTesting(new FakeIntentReceiverPostLMR1(true));
-
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE));
-        // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
-        TouchCommon.singleClickView(mTab.getView());
-        Assert.assertEquals("Success", mUpdateWaiter.waitForUpdate());
-
-        // The actual intent to be delivered to the target is in the EXTRA_INTENT of the chooser
-        // intent.
-        Assert.assertNotNull(mReceivedIntent);
-        Assert.assertTrue(mReceivedIntent.hasExtra(Intent.EXTRA_INTENT));
-        verifyDeliveredIntent(mReceivedIntent.getParcelableExtra(Intent.EXTRA_INTENT));
-    }
-
-    /**
-     * Verify WebShare of .ogg file succeeds if share is called from a user gesture, and app chosen.
-     * This test tests functionality that is only available post Lollipop MR1.
-     * @throws Exception
-     */
-    @Test
-    @MediumTest
-    @Feature({"WebShare"})
-    @Features.DisableFeatures(ChromeFeatureList.CHROME_SHARING_HUB)
-    @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
-    public void testWebShareOgg() throws Exception {
-        // Set up ShareHelper to immediately succeed (without showing a picker).
-        ShareHelper.setFakeIntentReceiverForTesting(new FakeIntentReceiverPostLMR1(true));
-
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_OGG));
-        // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
-        TouchCommon.singleClickView(mTab.getView());
-        Assert.assertEquals("Success", mUpdateWaiter.waitForUpdate());
-
-        // The actual intent to be delivered to the target is in the EXTRA_INTENT of the chooser
-        // intent.
-        Assert.assertNotNull(mReceivedIntent);
-        Assert.assertTrue(mReceivedIntent.hasExtra(Intent.EXTRA_INTENT));
-        verifyDeliveredOggIntent(mReceivedIntent.getParcelableExtra(Intent.EXTRA_INTENT));
-    }
-
-    /**
-     * Verify WebShare of .bmp files succeeds if share is called from a user gesture, and app
-     * chosen. This test tests functionality that is only available post Lollipop MR1.
-     * @throws Exception
-     */
-    @Test
-    @MediumTest
-    @Feature({"WebShare"})
-    @Features.DisableFeatures(ChromeFeatureList.CHROME_SHARING_HUB)
-    @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP_MR1)
-    public void testWebShareBmp() throws Exception {
-        // Set up ShareHelper to immediately succeed (without showing a picker).
-        ShareHelper.setFakeIntentReceiverForTesting(new FakeIntentReceiverPostLMR1(true));
-
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_BMP));
-        // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
-        TouchCommon.singleClickView(mTab.getView());
-        Assert.assertEquals("Success", mUpdateWaiter.waitForUpdate());
-
-        // The actual intent to be delivered to the target is in the EXTRA_INTENT of the chooser
-        // intent.
-        Assert.assertNotNull(mReceivedIntent);
-        Assert.assertTrue(mReceivedIntent.hasExtra(Intent.EXTRA_INTENT));
-        verifyDeliveredBmpIntent(mReceivedIntent.getParcelableExtra(Intent.EXTRA_INTENT));
     }
 
     /**
@@ -235,7 +141,7 @@ public class WebShareTest {
     @MediumTest
     @Feature({"WebShare"})
     public void testWebShareApk() throws Exception {
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_APK));
+        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_APK));
         // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
         TouchCommon.singleClickView(mTab.getView());
         Assert.assertEquals(
@@ -250,7 +156,7 @@ public class WebShareTest {
     @MediumTest
     @Feature({"WebShare"})
     public void testWebShareDex() throws Exception {
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_DEX));
+        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_DEX));
         // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
         TouchCommon.singleClickView(mTab.getView());
         Assert.assertEquals(
@@ -265,7 +171,7 @@ public class WebShareTest {
     @MediumTest
     @Feature({"WebShare"})
     public void testWebShareMany() throws Exception {
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_MANY));
+        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_MANY));
         // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
         TouchCommon.singleClickView(mTab.getView());
         Assert.assertEquals("Fail: NotAllowedError: "
@@ -281,7 +187,7 @@ public class WebShareTest {
     @MediumTest
     @Feature({"WebShare"})
     public void testWebShareLarge() throws Exception {
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_LARGE));
+        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_LARGE));
         // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
         TouchCommon.singleClickView(mTab.getView());
         Assert.assertEquals("Fail: NotAllowedError: "
@@ -297,7 +203,7 @@ public class WebShareTest {
     @MediumTest
     @Feature({"WebShare"})
     public void testWebShareLongText() throws Exception {
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_LONG_TEXT));
+        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_LONG_TEXT));
         // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
         TouchCommon.singleClickView(mTab.getView());
         Assert.assertEquals("Fail: NotAllowedError: "
@@ -306,92 +212,19 @@ public class WebShareTest {
     }
 
     /**
-     * Verify WebShare fails if share is called from a user gesture, and canceled.
-     *
-     * Simulates pre-Lollipop-LMR1 system (different intent picker).
-     *
+     * Verify WebShare fails if share of file name '/' is called from a user gesture.
      * @throws Exception
      */
     @Test
     @MediumTest
     @Feature({"WebShare"})
-    @Features.DisableFeatures(ChromeFeatureList.CHROME_SHARING_HUB)
-    public void testWebShareCancelPreLMR1() throws Exception {
-        ShareHelper.setFakeIntentReceiverForTesting(new FakeIntentReceiverPreLMR1(false));
-
-        ShareHelper.setForceCustomChooserForTesting(true);
-
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE));
+    public void testWebShareSeparator() throws Exception {
+        sActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_SEPARATOR));
         // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
         TouchCommon.singleClickView(mTab.getView());
-        Assert.assertEquals("Fail: AbortError: Share canceled", mUpdateWaiter.waitForUpdate());
-    }
-
-    /**
-     * Verify WebShare succeeds if share is called from a user gesture, and app chosen.
-     *
-     * Simulates pre-Lollipop-LMR1 system (different intent picker).
-     *
-     * @throws Exception
-     */
-    @Test
-    @MediumTest
-    @Feature({"WebShare"})
-    @Features.DisableFeatures(ChromeFeatureList.CHROME_SHARING_HUB)
-    public void testWebShareSuccessPreLMR1() throws Exception {
-        ShareHelper.setFakeIntentReceiverForTesting(new FakeIntentReceiverPreLMR1(true));
-
-        ShareHelper.setForceCustomChooserForTesting(true);
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE));
-        // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
-        TouchCommon.singleClickView(mTab.getView());
-        Assert.assertEquals("Success", mUpdateWaiter.waitForUpdate());
-        verifyDeliveredIntent(mReceivedIntent);
-    }
-
-    /**
-     * Verify WebShare of .ogg succeeds if share is called from a user gesture, and app chosen.
-     *
-     * Simulates pre-Lollipop-LMR1 system (different intent picker).
-     *
-     * @throws Exception
-     */
-    @Test
-    @MediumTest
-    @Feature({"WebShare"})
-    @Features.DisableFeatures(ChromeFeatureList.CHROME_SHARING_HUB)
-    public void testWebShareOggPreLMR1() throws Exception {
-        ShareHelper.setFakeIntentReceiverForTesting(new FakeIntentReceiverPreLMR1(true));
-
-        ShareHelper.setForceCustomChooserForTesting(true);
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_OGG));
-        // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
-        TouchCommon.singleClickView(mTab.getView());
-        Assert.assertEquals("Success", mUpdateWaiter.waitForUpdate());
-        verifyDeliveredOggIntent(mReceivedIntent);
-    }
-
-    /**
-     * Verify WebShare of .csv files succeeds if share is called from a user gesture, and app
-     * chosen.
-     *
-     * Simulates pre-Lollipop-LMR1 system (different intent picker).
-     *
-     * @throws Exception
-     */
-    @Test
-    @MediumTest
-    @Feature({"WebShare"})
-    @Features.DisableFeatures(ChromeFeatureList.CHROME_SHARING_HUB)
-    public void testWebShareCsvPreLMR1() throws Exception {
-        ShareHelper.setFakeIntentReceiverForTesting(new FakeIntentReceiverPreLMR1(true));
-
-        ShareHelper.setForceCustomChooserForTesting(true);
-        mActivityTestRule.loadUrl(mTestServer.getURL(TEST_FILE_CSV));
-        // Click (instead of directly calling the JavaScript function) to simulate a user gesture.
-        TouchCommon.singleClickView(mTab.getView());
-        Assert.assertEquals("Success", mUpdateWaiter.waitForUpdate());
-        verifyDeliveredCsvIntent(mReceivedIntent);
+        Assert.assertEquals("Fail: NotAllowedError: "
+                        + "Failed to execute 'share' on 'Navigator': Permission denied",
+                mUpdateWaiter.waitForUpdate());
     }
 
     private static void verifyDeliveredIntent(Intent intent) {
@@ -450,74 +283,5 @@ public class WebShareTest {
                 intent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION);
         Uri fileUri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
         Assert.assertEquals("contents", getFileContents(fileUri));
-    }
-
-    // Uses intent picker functionality that is only available since Lollipop MR1.
-    private class FakeIntentReceiverPostLMR1 implements ShareHelper.FakeIntentReceiver {
-        private final boolean mProceed;
-        private Intent mIntentToSendBack;
-
-        FakeIntentReceiverPostLMR1(boolean proceed) {
-            Assert.assertTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1);
-            mProceed = proceed;
-        }
-
-        @Override
-        public void setIntentToSendBack(Intent intent) {
-            mIntentToSendBack = intent;
-        }
-
-        @Override
-        public void onCustomChooserShown(AlertDialog dialog) {}
-
-        @Override
-        public void fireIntent(Context context, Intent intent) {
-            mReceivedIntent = intent;
-
-            if (!mProceed) {
-                // Click again to start another share, which fails as a share is already in
-                // progress.
-                TouchCommon.singleClickView(mTab.getView());
-                return;
-            }
-
-            if (context == null) return;
-
-            // Send the intent back, which indicates that the user made a choice. (Normally,
-            // this would have EXTRA_CHOSEN_COMPONENT set, but for the test, we do not set any
-            // chosen target app.)
-            context.sendBroadcast(mIntentToSendBack);
-        }
-    }
-
-    // Uses intent picker functionality that is available before Lollipop MR1.
-    private class FakeIntentReceiverPreLMR1 implements ShareHelper.FakeIntentReceiver {
-        private final boolean mProceed;
-
-        FakeIntentReceiverPreLMR1(boolean proceed) {
-            mProceed = proceed;
-        }
-
-        @Override
-        public void setIntentToSendBack(Intent intent) {}
-
-        @Override
-        public void onCustomChooserShown(AlertDialog dialog) {
-            if (!mProceed) {
-                // Cancel the chooser dialog.
-                dialog.dismiss();
-                return;
-            }
-
-            // Click on an app (it doesn't matter which, because we will hook the intent).
-            Assert.assertTrue(dialog.getListView().getCount() > 0);
-            dialog.getListView().performItemClick(
-                    null, 0, dialog.getListView().getItemIdAtPosition(0));
-        }
-
-        @Override
-        public void fireIntent(Context context, Intent intent) {
-            mReceivedIntent = intent;
-        }
     }
 }

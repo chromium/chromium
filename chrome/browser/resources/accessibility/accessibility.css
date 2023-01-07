@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 The Chromium Authors. All rights reserved.
+ * Copyright 2013 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -7,8 +7,7 @@
 body {
   font-family: Arial, sans-serif;
   font-size: 12px;
-  margin: 10px 20px;
-  min-width: 47em;
+  margin: 10px 0 10px 20px;
   padding-block-end: 65px;
 }
 
@@ -20,16 +19,17 @@ img {
 }
 
 .row {
-  border-bottom: 1px solid #A0A0A0;
+  border-bottom: 1px solid rgb(128, 134, 139);
   padding: 5px;
 }
 
 .url {
-  color: #696969;
+  color: rgb(128, 134, 139);
 }
 
 p {
-  line-height: 1.2em;
+  line-height: 1.5em;
+  margin-inline-end: 20px;
 }
 
 .columns {
@@ -53,8 +53,8 @@ p {
 }
 
 .secondary {
-  color: #696969;
-  margin: 0 0 12px 32px;
+  color: rgb(60, 64, 67);
+  margin: 0 20px 12px 32px;
 }
 
 .hidden {
@@ -74,9 +74,34 @@ label {
 }
 
 label.disabled {
-  color: #696969;
+  color: rgb(128, 134, 139);
 }
 
-label input[type='checkbox'] {
+input[type='checkbox'] {
   margin-inline-end: 6px;
+}
+
+/* For mobile phones we want to use a one column layout */
+@media only screen and (max-width: 768px) {
+  .column {
+    flex-basis: 100%;
+  }
+
+  .columns {
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+
+  body {
+    font-size: 15px;
+  }
+
+  pre div {
+    margin-bottom: .5em;
+  }
+
+  input[type='checkbox'] {
+    height: 16px;
+    width: 16px;
+  }
 }

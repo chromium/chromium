@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/extensions/media_player_api.h"
+
+#include <memory>
 
 #include "base/lazy_instance.h"
 #include "base/values.h"
@@ -23,8 +25,8 @@ MediaPlayerAPI* MediaPlayerAPI::Get(content::BrowserContext* context) {
 
 MediaPlayerEventRouter* MediaPlayerAPI::media_player_event_router() {
   if (!media_player_event_router_)
-    media_player_event_router_.reset(
-        new MediaPlayerEventRouter(browser_context_));
+    media_player_event_router_ =
+        std::make_unique<MediaPlayerEventRouter>(browser_context_);
   return media_player_event_router_.get();
 }
 

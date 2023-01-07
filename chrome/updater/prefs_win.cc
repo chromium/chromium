@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/updater/updater_scope.h"
-#include "chrome/updater/win/constants.h"
-#include "chrome/updater/win/util.h"
+#include "chrome/updater/win/win_constants.h"
+#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 
@@ -36,23 +36,22 @@ ScopedPrefsLock::ScopedPrefsLock(std::unique_ptr<ScopedPrefsLockImpl> impl)
 ScopedPrefsLock::~ScopedPrefsLock() = default;
 
 std::unique_ptr<ScopedPrefsLock> AcquireGlobalPrefsLock(
+    UpdaterScope scope,
     base::TimeDelta timeout) {
   auto lock = std::make_unique<ScopedPrefsLockImpl>();
 
-  // TODO(crbug.com/1096654): need to pass 'scope' instead of
-  // 'UpdaterScope::kUser' here.
-  DVLOG(2) << "Trying to acquire the lock.";
-  if (!lock->Initialize(UpdaterScope::kUser, timeout))
+  VLOG(2) << "Trying to acquire the lock.";
+  if (!lock->Initialize(scope, timeout))
     return nullptr;
-  DVLOG(2) << "Lock acquired.";
+  VLOG(2) << "Lock acquired.";
 
   return std::make_unique<ScopedPrefsLock>(std::move(lock));
 }
 
 bool ScopedPrefsLockImpl::Initialize(UpdaterScope scope,
                                      base::TimeDelta timeout) {
-  NamedObjectAttributes lock_attr;
-  GetNamedObjectAttributes(kPrefsAccessMutex, scope, &lock_attr);
+  NamedObjectAttributes lock_attr =
+      GetNamedObjectAttributes(kPrefsAccessMutex, scope);
   mutex_.Set(::CreateMutex(&lock_attr.sa, false, lock_attr.name.c_str()));
   if (!mutex_.IsValid())
     return false;
@@ -64,7 +63,7 @@ bool ScopedPrefsLockImpl::Initialize(UpdaterScope scope,
 ScopedPrefsLockImpl::~ScopedPrefsLockImpl() {
   if (mutex_.IsValid()) {
     ::ReleaseMutex(mutex_.Get());
-    DVLOG(2) << "Lock released.";
+    VLOG(2) << "Lock released.";
   }
 }
 

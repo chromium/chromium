@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/actions/presave_generated_password_action.h"
 
 #include <utility>
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -36,10 +36,10 @@ void PresaveGeneratedPasswordAction::InternalProcessAction(
     return;
   }
 
-  if (!delegate_->GetUserData()->has_additional_value(
+  if (!delegate_->GetUserData()->HasAdditionalValue(
           presave_password.memory_key()) ||
       delegate_->GetUserData()
-              ->additional_value(presave_password.memory_key())
+              ->GetAdditionalValue(presave_password.memory_key())
               ->strings()
               .values()
               .size() != 1) {
@@ -65,7 +65,7 @@ void PresaveGeneratedPasswordAction::InternalProcessAction(
   }
 
   std::string password = delegate_->GetUserData()
-                             ->additional_value(presave_password.memory_key())
+                             ->GetAdditionalValue(presave_password.memory_key())
                              ->strings()
                              .values(0);
 

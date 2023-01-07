@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PAYMENTS_CONTENT_CAN_MAKE_PAYMENT_QUERY_FACTORY_H_
 #define COMPONENTS_PAYMENTS_CONTENT_CAN_MAKE_PAYMENT_QUERY_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -28,6 +27,10 @@ class CanMakePaymentQueryFactory : public BrowserContextKeyedServiceFactory {
   static CanMakePaymentQueryFactory* GetInstance();
   CanMakePaymentQuery* GetForContext(content::BrowserContext* context);
 
+  CanMakePaymentQueryFactory(const CanMakePaymentQueryFactory&) = delete;
+  CanMakePaymentQueryFactory& operator=(const CanMakePaymentQueryFactory&) =
+      delete;
+
  private:
   friend struct base::DefaultSingletonTraits<CanMakePaymentQueryFactory>;
 
@@ -39,8 +42,6 @@ class CanMakePaymentQueryFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(CanMakePaymentQueryFactory);
 };
 
 }  // namespace payments

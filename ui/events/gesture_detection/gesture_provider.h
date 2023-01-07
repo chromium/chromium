@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -95,6 +95,9 @@ class GESTURE_DETECTION_EXPORT GestureProvider {
   // Whether a double-tap gesture is in-progress (either double-tap or
   // double-tap drag zoom).
   bool IsDoubleTapInProgress() const;
+
+  // Synthesizes and propagates gesture end events.
+  void SendSynthesizedEndEvents();
 
   // May be NULL if there is no currently active touch sequence.
   const ui::MotionEvent* current_down_event() const {

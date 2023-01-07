@@ -1,14 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/data_transfer/data_transfer.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "url/mojom/url.mojom";
 
 enum ClipboardFormat {
@@ -23,7 +24,7 @@ enum ClipboardBuffer {
   // Used on platforms like the X Window System that treat selection
   // as a type of clipboard.
   // TODO(crbug.com/676224): When preprocessing of mojom is available only
-  // define this value for USE_X11.
+  // define this value for USE_OZONE.
   kSelection,
 };
 
@@ -34,13 +35,49 @@ struct ClipboardFiles {
   string? file_system_id;
 };
 
-// Allows communication with the system clipboard.
+// Implemented by the browser to allow the renderer to use the system clipboard.
 // Individual operations are atomic, but successive operations are not.
 // Therefore, it's possible that one may see text available from
 // ReadAvailableTypes(), but that a subsequent ReadText() may then fail.
+//
+// Security and Privacy Model:
+// Native: Operating systems (OS's) generally provide clipboard access as-is to
+// native applications (including Chrome), trusting that users who install these
+// applications trust the apps' clipboard use to be safe. This means both
+// formats and payloads read/written by native applications are used by OS's
+// as-is. Native applications also often trust other native applications
+// in this manner, and may have existing vulnerabilities that untrusted content
+// (ex. from the web) could potentially exploit.
+//
+// Web: As browsers and users view web content as untrusted by default, the
+// browser must limit and secure web content from interaction with the OS, that
+// has a more trusted security model, and vice versa.
+//
+// Security: Content written to the clipboard should generally be sanitized
+// to protect insecure / out-of-date decoders in native applications from
+// malicious, untrusted, web-originated content. For example, PNG images should
+// be sanitized due to PNG vulnerabilities that may exist in native decoders.
+// Native applications tend to not be sandboxed, have lower update rates, and
+// have higher levels of system permissions than web applications, so failure
+// to properly sanitize may lead to sandbox escapes and remote code execution.
+//
+// Privacy: Content read from the clipboard should generally sanitize any
+// content that users may not reasonably expect to be on their clipboard.
+// Failure to do so may lead to users leaking sensitive information,
+// that may for example be held in metadata.
 interface ClipboardHost {
+  // Conservative limits to maximum format name and data sizes, to avoid
+  // potential attacks with long strings. These limits are only applied to
+  // unsanitized custom formats. The size limit includes the null terminator.
+  const uint32 kMaxFormatSize = 1024;
+  const uint32 kMaxDataSize = 1073741824; // 1 GB, or 1 << 30
+
+  // Returns a token which uniquely identifies clipboard state.
+  // This can be used to version the data on the clipboard and determine
+  // whether it has changed.
   [Sync]
-  GetSequenceNumber(ClipboardBuffer buffer) => (uint64 result);
+  GetSequenceNumber(ClipboardBuffer buffer) =>
+      (blink.mojom.ClipboardSequenceNumberToken result);
 
   [Sync]
   IsFormatAvailable(ClipboardFormat format,
@@ -66,8 +103,10 @@ interface ClipboardHost {
   [Sync]
   ReadRtf(ClipboardBuffer buffer) => (mojo_base.mojom.BigString result);
 
+  // Read an image from the OS clipboard, returning the PNG-encoded bytes if
+  // there is an image, or an empty buffer otherwise.
   [Sync]
-  ReadImage(ClipboardBuffer buffer) => (skia.mojom.BitmapN32? image);
+  ReadPng(ClipboardBuffer buffer) => (mojo_base.mojom.BigBuffer png);
 
   // Read Files from clipboard. Called on paste event to provide
   // clipboardData.files.
@@ -83,6 +122,22 @@ interface ClipboardHost {
   [Sync]
   ReadCustomData(ClipboardBuffer buffer, mojo_base.mojom.String16 type) =>
       (mojo_base.mojom.BigString16 result);
+
+  // Reads both unsanitized custom formats & standard
+  // formats(such as text/html).
+  // `format_types` contains the list of all available custom & standard
+  // formats.
+  [Sync]
+  ReadAvailableCustomAndStandardFormats() =>
+      (array<mojo_base.mojom.String16> format_types);
+
+  // Reads an unsanitized custom format from the clipboard. This is currently
+  // only used in async clipboard API.
+  // `format` contains the custom format name.
+  // Returns the data from the clipboard corresponding to the `format`.
+  // Returns empty `data` if the `format` is not available in the clipboard.
+  ReadUnsanitizedCustomFormat(mojo_base.mojom.String16 format) =>
+      (mojo_base.mojom.BigBuffer data);
 
   // Writing to the clipboard via mojo is a two-phase operation. First, the
   // sender sends the different types of data it'd like to write to the
@@ -109,6 +164,14 @@ interface ClipboardHost {
                 mojo_base.mojom.String16 title);
 
   WriteImage(skia.mojom.BitmapN32 image);
+
+  // Writes an unsanitized custom format to the clipboard.
+  // `format` contains the name of the custom format and `data` contains the
+  // unsanitized payload provided by the web authors.
+  // There can only be 100 custom formats per write operation and it will be
+  // registered when the web authors request for a custom format.
+  WriteUnsanitizedCustomFormat(mojo_base.mojom.String16 format,
+                               mojo_base.mojom.BigBuffer data);
 
   CommitWrite();
 

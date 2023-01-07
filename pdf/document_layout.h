@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,12 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/i18n/rtl.h"
+#include "base/values.h"
 #include "pdf/draw_utils/coordinates.h"
 #include "pdf/page_orientation.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-
-namespace base {
-class Value;
-}
 
 namespace chrome_pdf {
 
@@ -25,10 +23,16 @@ namespace chrome_pdf {
 //
 // All layout units are pixels.
 //
-// The |Options| class controls the behavior of the layout, such as the default
+// The `Options` class controls the behavior of the layout, such as the default
 // orientation of pages.
 class DocumentLayout final {
  public:
+  // TODO(crbug.com/1144505): Add `kTwoUpEven` page spread support.
+  enum class PageSpread {
+    kOneUp = 0,     // One page per spread.
+    kTwoUpOdd = 1,  // Two pages per spread, with odd pages first.
+  };
+
   // Options controlling layout behavior.
   class Options final {
    public:
@@ -40,19 +44,28 @@ class DocumentLayout final {
     ~Options();
 
     friend bool operator==(const Options& lhs, const Options& rhs) {
-      return lhs.two_up_view_enabled() == rhs.two_up_view_enabled() &&
-             lhs.default_page_orientation() == rhs.default_page_orientation();
+      return lhs.direction() == rhs.direction() &&
+             lhs.default_page_orientation() == rhs.default_page_orientation() &&
+             lhs.page_spread() == rhs.page_spread();
     }
 
     friend bool operator!=(const Options& lhs, const Options& rhs) {
       return !(lhs == rhs);
     }
 
-    // Serializes layout options to a base::Value.
-    base::Value ToValue() const;
+    // Serializes layout options to a base::Value::Dict.
+    base::Value::Dict ToValue() const;
 
-    // Deserializes layout options from a base::Value.
-    void FromValue(const base::Value& value);
+    // Deserializes layout options from a base::Value::Dict.
+    void FromValue(const base::Value::Dict& value);
+
+    // Page layout direction. This is tied to the direction of the user's UI,
+    // rather than the direction of individual pages.
+    base::i18n::TextDirection direction() const { return direction_; }
+
+    void set_direction(base::i18n::TextDirection direction) {
+      direction_ = direction;
+    }
 
     PageOrientation default_page_orientation() const {
       return default_page_orientation_;
@@ -64,14 +77,15 @@ class DocumentLayout final {
     // Rotates default page orientation 90 degrees counterclockwise.
     void RotatePagesCounterclockwise();
 
-    bool two_up_view_enabled() const { return two_up_view_enabled_; }
+    PageSpread page_spread() const { return page_spread_; }
 
     // Changes two-up view status.
-    void set_two_up_view_enabled(bool enable) { two_up_view_enabled_ = enable; }
+    void set_page_spread(PageSpread spread) { page_spread_ = spread; }
 
    private:
+    base::i18n::TextDirection direction_ = base::i18n::UNKNOWN_DIRECTION;
     PageOrientation default_page_orientation_ = PageOrientation::kOriginal;
-    bool two_up_view_enabled_ = false;
+    PageSpread page_spread_ = PageSpread::kOneUp;
   };
 
   static const draw_utils::PageInsetSizes kSingleViewInsets;
@@ -121,15 +135,8 @@ class DocumentLayout final {
     return page_layouts_[page_index].inner_rect;
   }
 
-  // Computes layout that represent |page_sizes| formatted for single view.
-  //
-  // TODO(kmoon): Control layout type using an option.
-  void ComputeSingleViewLayout(const std::vector<gfx::Size>& page_sizes);
-
-  // Computes layout that represent |page_sizes| formatted for two-up view.
-  //
-  // TODO(kmoon): Control layout type using an option.
-  void ComputeTwoUpViewLayout(const std::vector<gfx::Size>& page_sizes);
+  // Computes the layout for a given list of `page_sizes` based on `options_`.
+  void ComputeLayout(const std::vector<gfx::Size>& page_sizes);
 
  private:
   // Layout of a single page.
@@ -141,15 +148,19 @@ class DocumentLayout final {
     gfx::Rect inner_rect;
   };
 
-  // Copies |source_rect| to |destination_rect|, setting |dirty_| to true if
-  // |destination_rect| is modified as a result.
+  // Helpers for ComputeLayout() handling different page spreads.
+  void ComputeOneUpLayout(const std::vector<gfx::Size>& page_sizes);
+  void ComputeTwoUpOddLayout(const std::vector<gfx::Size>& page_sizes);
+
+  // Copies `source_rect` to `destination_rect`, setting `dirty_` to true if
+  // `destination_rect` is modified as a result.
   void CopyRectIfModified(const gfx::Rect& source_rect,
                           gfx::Rect& destination_rect);
 
   Options options_;
 
   // Indicates if the layout has changed in an externally-observable way,
-  // usually as a result of calling |ComputeLayout()| with different inputs.
+  // usually as a result of calling `ComputeLayout()` with different inputs.
   //
   // Some operations that may trigger layout changes:
   // * Changing page sizes

@@ -1,0 +1,5 @@
+# If we interpret the spec literally the expectation should be "baz", but that
+# does not match what Chrome and Firefox do and it is under discussion. See:
+# https://github.com/w3c/accname/issues/57
+# TODO: set correct expectation after the issue is closed.
+textField name='foobarbaz' nameFrom=relatedElement

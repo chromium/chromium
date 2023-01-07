@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/gfx/animation/tween.h"
@@ -36,6 +35,10 @@ class ASH_EXPORT UserSwitchFlipAnimation : public ui::LayerAnimationElement {
                           base::TimeDelta duration,
                           gfx::Tween::Type tween_type,
                           base::OnceClosure on_midpoint);
+
+  UserSwitchFlipAnimation(const UserSwitchFlipAnimation&) = delete;
+  UserSwitchFlipAnimation& operator=(const UserSwitchFlipAnimation&) = delete;
+
   ~UserSwitchFlipAnimation() override;
 
   // ui::LayerAnimationElement:
@@ -55,8 +58,6 @@ class ASH_EXPORT UserSwitchFlipAnimation : public ui::LayerAnimationElement {
 
   // Called when the animation is 50% complete.
   base::OnceClosure on_midpoint_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserSwitchFlipAnimation);
 };
 
 }  // namespace ash

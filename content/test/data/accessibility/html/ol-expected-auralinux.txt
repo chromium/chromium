@@ -1,27 +1,21 @@
 [document web]
 ++[list]
 ++++[list item]
-++++++[panel]
-++++++++[static] name='1. '
+++++++[static] name='1. '
 ++++++[static] name='Chrome'
 ++++[list item]
-++++++[panel]
-++++++++[static] name='2. '
+++++++[static] name='2. '
 ++++++[static] name='Safari'
 ++++[list item]
-++++++[panel]
-++++++++[static] name='3. '
+++++++[static] name='3. '
 ++++++[static] name='IE'
 ++[list]
 ++++[list item]
-++++++[panel]
-++++++++[static] name='10. '
+++++++[static] name='10. '
 ++++++[static] name='Android'
 ++++[list item]
-++++++[panel]
-++++++++[static] name='11. '
+++++++[static] name='11. '
 ++++++[static] name='Mac'
 ++++[list item]
-++++++[panel]
-++++++++[static] name='12. '
+++++++[static] name='12. '
 ++++++[static] name='Windows'

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,7 @@
 #include "net/der/parse_values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace der {
-namespace test {
+namespace net::der::test {
 
 namespace {
 
@@ -24,8 +22,7 @@ base::StringPiece ToStringPiece(const uint8_t (&data)[N]) {
 
 TEST(EncodeValuesTest, EncodeTimeAsGeneralizedTime) {
   // Fri, 24 Jun 2016 17:04:54 GMT
-  base::Time time =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1466787894);
+  base::Time time = base::Time::UnixEpoch() + base::Seconds(1466787894);
   GeneralizedTime generalized_time;
   ASSERT_TRUE(EncodeTimeAsGeneralizedTime(time, &generalized_time));
   EXPECT_EQ(2016, generalized_time.year);
@@ -48,14 +45,9 @@ TEST(EncodeValuesTest, EncodeTimeAsGeneralizedTime) {
 // on platforms where it returns true. As of this writing, it will return false
 // on Windows.
 TEST(EncodeValuesTest, EncodeTimeFromBeforeWindowsEpoch) {
-  constexpr int kYearsBeforeWindowsEpoch = 1601 - 1570;
-  constexpr int kDaysPerYear = 365;
-  constexpr int kExtraLeapDaysOverThoseYears = 8;
+  // Thu, 01 Jan 1570 00:00:00 GMT
   constexpr base::Time kStartOfYear1570 =
-      base::Time() -
-      base::TimeDelta::FromDays(kYearsBeforeWindowsEpoch * kDaysPerYear +
-                                kExtraLeapDaysOverThoseYears);
-
+      base::Time::UnixEpoch() - base::Seconds(12622780800);
   GeneralizedTime generalized_time;
   if (!EncodeTimeAsGeneralizedTime(kStartOfYear1570, &generalized_time))
     return;
@@ -105,8 +97,7 @@ TEST(EncodeValuesTest, GeneralizedTimeToTime) {
   generalized_time.seconds = 54;
   base::Time time;
   ASSERT_TRUE(GeneralizedTimeToTime(generalized_time, &time));
-  EXPECT_EQ(base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1466787894),
-            time);
+  EXPECT_EQ(base::Time::UnixEpoch() + base::Seconds(1466787894), time);
 }
 
 TEST(EncodeValuesTest, GeneralizedTimeToTimeBeforeWindowsEpoch) {
@@ -280,8 +271,4 @@ TEST(EncodeValuesTest, EncodeUTCTime) {
   EXPECT_FALSE(EncodeUTCTime(time, out));
 }
 
-}  // namespace test
-
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der::test

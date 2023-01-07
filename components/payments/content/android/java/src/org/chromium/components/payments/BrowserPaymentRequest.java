@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,14 +68,6 @@ public interface BrowserPaymentRequest {
     default void modifyMethodDataIfNeeded(@Nullable Map<String, PaymentMethodData> methodData) {}
 
     /**
-     * Modifies queryForQuota if needed, called when queryForQuota is created.
-     * @param queryForQuota The created queryForQuota, which could be modified in place.
-     * @param paymentOptions The payment options specified by the merchant.
-     */
-    default void modifyQueryForQuotaCreatedIfNeeded(
-            Map<String, PaymentMethodData> queryForQuota, PaymentOptions paymentOptions) {}
-
-    /**
      * Performs extra validation for the given input and disconnects the mojo pipe if failed.
      * @param webContents The WebContents that represents the merchant page.
      * @param methodData A map of the method data specified for the request.
@@ -94,16 +86,6 @@ public interface BrowserPaymentRequest {
      * @param spec The validated PaymentRequestSpec.
      */
     void onSpecValidated(PaymentRequestSpec spec);
-
-    /**
-     * Adds the PaymentAppFactory(s) specified by the implementers to the given PaymentAppService.
-     * @param service The PaymentAppService to be added with the factories.
-     * @param delegate The delegate of payment app factory.
-     */
-    void addPaymentAppFactories(PaymentAppService service, PaymentAppFactoryDelegate delegate);
-
-    default void onWhetherGooglePayBridgeEligible(boolean googlePayBridgeEligible,
-            WebContents webContents, PaymentMethodData[] rawMethodData) {}
 
     /**
      * @return Whether at least one payment app (including basic-card payment app) is available
@@ -134,18 +116,18 @@ public interface BrowserPaymentRequest {
      * Called when these conditions are satisfied: (1) show() has been called, (2) payment apps
      * are all queried, and (3) PaymentDetails is finalized.
      * @return The error if it fails; null otherwise.
-     * @param isUserGestureShow Whether PaymentRequest.show() was invoked with a user gesture.
      */
     @Nullable
-    default String onShowCalledAndAppsQueriedAndDetailsFinalized(boolean isUserGestureShow) {
+    default String onShowCalledAndAppsQueriedAndDetailsFinalized() {
         return null;
     }
 
     /**
      * Called when a new payment app is created.
      * @param paymentApp The new payment app.
+     * @return True if the payment app should be used; false if it should be ignored.
      */
-    default void onPaymentAppCreated(PaymentApp paymentApp) {}
+    boolean onPaymentAppCreated(PaymentApp paymentApp);
 
     /**
      * @return Whether payment sheet based payment app is supported, e.g., user entering credit
@@ -177,11 +159,18 @@ public interface BrowserPaymentRequest {
     default void onInstrumentDetailsReady() {}
 
     /**
-     * Called if unable to retrieve payment details.
-     * @param errorMessage Developer-facing error message to be used when rejecting the promise
-     *                     returned from PaymentRequest.show().
+     * @return True if the app selector UI has been skipped. This method should not modify internal
+     *         states.
      */
-    void onInstrumentDetailsError(String errorMessage);
+    default boolean hasSkippedAppSelector() {
+        return true;
+    }
+
+    /**
+     * Shows the app selector UI after the payment app invocation fails. This should be called
+     * when the payment invocation fails and if the app selector was not skipped.
+     */
+    default void showAppSelectorAfterPaymentAppInvokeFailed() {}
 
     /**
      * Opens a payment handler window and creates a WebContents with the given url to display in it.

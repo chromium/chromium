@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,12 +62,12 @@ void KioskExternalUpdateValidator::OnUnpackSuccess(
   DCHECK(crx_file_.extension_id == extension->id());
 
   std::string minimum_browser_version;
-  if (!extension->manifest()->GetString(
-          extensions::manifest_keys::kMinimumChromeVersion,
-          &minimum_browser_version)) {
+  if (const std::string* temp = extension->manifest()->FindStringPath(
+          extensions::manifest_keys::kMinimumChromeVersion)) {
+    minimum_browser_version = *temp;
+  } else {
     LOG(ERROR) << "Can't find minimum browser version for app "
                << crx_file_.extension_id;
-    minimum_browser_version.clear();
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(

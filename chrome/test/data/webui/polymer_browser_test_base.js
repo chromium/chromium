@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,33 +29,6 @@ PolymerTest.prototype = {
    * @final
    */
   isAsync: true,
-};
-
-/**
- * Test fixture for Polymer2 elements testing (deprecated).
- * TODO(crbug.com/965770): Delete once all remaining Polymer2 UIs have been
- * migrated.
- * @constructor
- * @extends PolymerTest
- */
-function Polymer2DeprecatedTest() {}
-
-Polymer2DeprecatedTest.prototype = {
-  __proto__: PolymerTest.prototype,
-
-  /**
-   * Files that need not be compiled.
-   * @override
-   */
-  extraLibraries: [
-    '//ui/webui/resources/js/cr.js',
-    '//ui/webui/resources/js/assert.js',
-    '//ui/webui/resources/js/promise_resolver.js',
-    '//third_party/mocha/mocha.js',
-    '//chrome/test/data/webui/mocha_adapter.js',
-    '//third_party/polymer/v1_0/components-chromium/iron-test-helpers/' +
-        'mock-interactions.js',
-  ],
 };
 
 /**

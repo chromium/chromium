@@ -1,8 +1,9 @@
 include_rules = [
+  "+components/autofill_assistant/core/public/autofill_assistant_intent.h",
   "+components/autofill/android/jni_headers",
   "+components/prefs",
   "+components/strings/grit/components_strings.h",
-  "+google_apis/gaia/gaia_urls.h",
+  "+google_apis/gaia",
   "+net",
   "+mojo/public",
   "+third_party/protobuf",
@@ -13,6 +14,7 @@ include_rules = [
   # Autofill is a layered component; subdirectories must explicitly introduce
   # the ability to use the content layer as appropriate.
   "-components/autofill/content",
+  "-components/android_autofill",
 
   # This directory contains build flags and does not pull all of PPAPI in.
   "+ppapi/buildflags",

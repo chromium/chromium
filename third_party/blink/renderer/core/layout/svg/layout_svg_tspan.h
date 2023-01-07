@@ -29,6 +29,7 @@ class LayoutSVGTSpan final : public LayoutSVGInline {
  public:
   explicit LayoutSVGTSpan(Element*);
 
+  bool IsOfType(LayoutObjectType type) const override;
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
   const char* GetName() const override {

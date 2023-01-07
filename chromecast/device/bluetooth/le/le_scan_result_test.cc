@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ TEST(LeScanResultTest, Name) {
       std::vector<uint8_t>(
           reinterpret_cast<const uint8_t*>(kName1),
           reinterpret_cast<const uint8_t*>(kName1) + strlen(kName1)));
-  base::Optional<std::string> name = scan_result.Name();
+  absl::optional<std::string> name = scan_result.Name();
   ASSERT_TRUE(name);
   EXPECT_EQ(kName1, *name);
 

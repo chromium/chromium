@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/gl/gl_surface_egl_x11.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/base/x/x11_xrandr_interval_only_vsync_provider.h"
 #include "ui/gfx/x/xproto.h"
@@ -13,17 +13,15 @@
 
 namespace gl {
 
-NativeViewGLSurfaceEGLX11::NativeViewGLSurfaceEGLX11(x11::Window window)
-    : NativeViewGLSurfaceEGL(static_cast<uint32_t>(window), nullptr) {}
+NativeViewGLSurfaceEGLX11::NativeViewGLSurfaceEGLX11(GLDisplayEGL* display,
+                                                     x11::Window window)
+    : NativeViewGLSurfaceEGL(display, static_cast<uint32_t>(window), nullptr) {}
 
 bool NativeViewGLSurfaceEGLX11::Initialize(GLSurfaceFormat format) {
   if (!NativeViewGLSurfaceEGL::Initialize(format))
     return false;
 
   auto* connection = x11::Connection::Get();
-  // Synchronize the Xlib display to ensure ANGLE's CreateWindow request
-  // completes before we make our QueryTree request below.
-  connection->GetXlibDisplay(x11::XlibDisplayType::kSyncing);
   // Query all child windows and store them. ANGLE creates a child window when
   // eglCreateWindowSurface is called on X11 and expose events from this window
   // need to be received by this class.  Since ANGLE is using a separate
@@ -49,8 +47,10 @@ void NativeViewGLSurfaceEGLX11::Destroy() {
 }
 
 gfx::SwapResult NativeViewGLSurfaceEGLX11::SwapBuffers(
-    PresentationCallback callback) {
-  auto result = NativeViewGLSurfaceEGL::SwapBuffers(std::move(callback));
+    PresentationCallback callback,
+    FrameData data) {
+  auto result =
+      NativeViewGLSurfaceEGL::SwapBuffers(std::move(callback), std::move(data));
   if (result == gfx::SwapResult::SWAP_FAILED)
     return result;
 
@@ -67,6 +67,13 @@ gfx::SwapResult NativeViewGLSurfaceEGLX11::SwapBuffers(
     has_swapped_buffers_ = true;
   }
   return result;
+}
+
+EGLint NativeViewGLSurfaceEGLX11::GetNativeVisualID() const {
+  x11::VisualId visual_id;
+  ui::XVisualManager::GetInstance()->ChooseVisualForWindow(
+      true, &visual_id, nullptr, nullptr, nullptr);
+  return static_cast<EGLint>(visual_id);
 }
 
 NativeViewGLSurfaceEGLX11::~NativeViewGLSurfaceEGLX11() {

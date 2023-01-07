@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_BLOB_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_BLOB_H_
 
+#include "third_party/blink/public/mojom/blob/serialized_blob.mojom-forward.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -38,7 +39,6 @@
 
 namespace v8 {
 class Isolate;
-class Object;
 class Value;
 template <class T>
 class Local;
@@ -48,7 +48,7 @@ namespace blink {
 
 class Blob;
 
-class WebBlob {
+class BLINK_EXPORT WebBlob {
  public:
   ~WebBlob() { Reset(); }
 
@@ -59,22 +59,17 @@ class WebBlob {
     return *this;
   }
 
-  BLINK_EXPORT static WebBlob CreateFromUUID(const WebString& uuid,
-                                             const WebString& type,
-                                             uint64_t size);
-  BLINK_EXPORT static WebBlob CreateFromFile(const WebString& path,
-                                             uint64_t size);
-  BLINK_EXPORT static WebBlob FromV8Value(v8::Local<v8::Value>);
+  static WebBlob CreateFromSerializedBlob(mojom::SerializedBlobPtr blob);
+  static WebBlob CreateFromFile(const WebString& path, uint64_t size);
+  static WebBlob FromV8Value(v8::Local<v8::Value>);
 
-  BLINK_EXPORT void Reset();
-  BLINK_EXPORT void Assign(const WebBlob&);
-  BLINK_EXPORT WebString Uuid();
+  void Reset();
+  void Assign(const WebBlob&);
+  WebString Uuid();
 
   bool IsNull() const { return private_.IsNull(); }
 
-  BLINK_EXPORT v8::Local<v8::Value> ToV8Value(
-      v8::Local<v8::Object> creation_context,
-      v8::Isolate*);
+  v8::Local<v8::Value> ToV8Value(v8::Isolate*);
 
 #if INSIDE_BLINK
   WebBlob(Blob*);

@@ -1,17 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
 
-#include "base/i18n/rtl.h"
-#include "base/mac/foundation_util.h"
+#import "base/i18n/rtl.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_edit_delegate.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,7 +19,7 @@
 
 namespace {
 // Width by which to indent folder cell's content. This is multiplied by the
-// |indentationLevel| of the cell.
+// `indentationLevel` of the cell.
 const CGFloat kFolderCellIndentationWidth = 32.0;
 // The amount in points by which to inset horizontally the cell contents.
 const CGFloat kFolderCellHorizonalInset = 17.0;

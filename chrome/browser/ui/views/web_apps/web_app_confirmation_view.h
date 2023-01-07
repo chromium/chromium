@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -26,7 +26,7 @@ class WebAppConfirmationView : public views::DialogDelegateView,
                                public views::TextfieldController {
  public:
   METADATA_HEADER(WebAppConfirmationView);
-  WebAppConfirmationView(std::unique_ptr<WebApplicationInfo> web_app_info,
+  WebAppConfirmationView(std::unique_ptr<WebAppInstallInfo> web_app_info,
                          chrome::AppInstallationAcceptanceCallback callback);
   WebAppConfirmationView(const WebAppConfirmationView&) = delete;
   WebAppConfirmationView& operator=(const WebAppConfirmationView&) = delete;
@@ -49,9 +49,9 @@ class WebAppConfirmationView : public views::DialogDelegateView,
   // Get the trimmed contents of the title text field.
   std::u16string GetTrimmedTitle() const;
 
-  // The WebApplicationInfo that the user is editing.
+  // The WebAppInstallInfo that the user is editing.
   // Cleared when the dialog completes (Accept/WindowClosing).
-  std::unique_ptr<WebApplicationInfo> web_app_info_;
+  std::unique_ptr<WebAppInstallInfo> web_app_info_;
 
   // The callback to be invoked when the dialog is completed.
   chrome::AppInstallationAcceptanceCallback callback_;
@@ -67,5 +67,10 @@ class WebAppConfirmationView : public views::DialogDelegateView,
   // Textfield showing the title of the app.
   views::Textfield* title_tf_ = nullptr;
 };
+
+BEGIN_VIEW_BUILDER(, WebAppConfirmationView, views::DialogDelegateView)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, WebAppConfirmationView)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_CONFIRMATION_VIEW_H_

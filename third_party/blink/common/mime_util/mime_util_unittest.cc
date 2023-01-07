@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include "media/media_buildflags.h"
 #include "net/base/mime_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace blink {
 
@@ -17,6 +19,12 @@ TEST(MimeUtilTest, LookupTypes) {
 
   EXPECT_TRUE(IsSupportedImageMimeType("image/jpeg"));
   EXPECT_TRUE(IsSupportedImageMimeType("Image/JPEG"));
+#if BUILDFLAG(ENABLE_JXL_DECODER)
+  EXPECT_EQ(IsSupportedImageMimeType("image/jxl"),
+            base::FeatureList::IsEnabled(features::kJXL));
+#else
+  EXPECT_FALSE(IsSupportedImageMimeType("image/jxl"));
+#endif
   EXPECT_EQ(IsSupportedImageMimeType("image/avif"),
             BUILDFLAG(ENABLE_AV1_DECODER));
   EXPECT_FALSE(IsSupportedImageMimeType("image/lolcat"));
@@ -33,7 +41,7 @@ TEST(MimeUtilTest, LookupTypes) {
   EXPECT_TRUE(IsSupportedNonImageMimeType("application/+json"));
   EXPECT_TRUE(IsSupportedNonImageMimeType("application/x-suggestions+json"));
   EXPECT_TRUE(IsSupportedNonImageMimeType("application/x-s+json;x=2"));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #if 0  // Disabled until http://crbug.com/318217 is resolved.
   EXPECT_TRUE(IsSupportedMediaMimeType("application/vnd.apple.mpegurl"));
   EXPECT_TRUE(IsSupportedMediaMimeType("application/x-mpegurl"));

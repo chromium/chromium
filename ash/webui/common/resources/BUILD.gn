@@ -1,0 +1,534 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/css_to_wrapper.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_definitions.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash)
+
+preprocessed_dir = "preprocessed"
+preprocessed_manifest = "preprocessed_manifest.json"
+
+web_component_files = [
+  "keyboard_diagram.js",
+  "keyboard_key.js",
+  "navigation_selector.js",
+  "navigation_view_panel.js",
+  "page_toolbar.js",
+
+  "bluetooth/bluetooth_icon.js",
+  "bluetooth/bluetooth_pairing_confirm_code_page.js",
+  "bluetooth/bluetooth_pairing_enter_code_page.js",
+  "bluetooth/bluetooth_pairing_device_selection_page.js",
+  "bluetooth/bluetooth_pairing_request_code_page.js",
+  "bluetooth/bluetooth_pairing_device_item.js",
+  "bluetooth/bluetooth_pairing_ui.js",
+  "bluetooth/bluetooth_base_page.js",
+  "bluetooth/bluetooth_battery_icon_percentage.js",
+  "bluetooth/bluetooth_device_battery_info.js",
+  "bluetooth/bluetooth_spinner_page.js",
+
+  "cellular_setup/activation_code_page.js",
+  "cellular_setup/activation_verification_page.js",
+  "cellular_setup/base_page.js",
+  "cellular_setup/button_bar.js",
+  "cellular_setup/cellular_setup.js",
+  "cellular_setup/confirmation_code_page.js",
+  "cellular_setup/esim_flow_ui.js",
+  "cellular_setup/final_page.js",
+  "cellular_setup/profile_discovery_list_item.js",
+  "cellular_setup/profile_discovery_list_page.js",
+  "cellular_setup/provisioning_page.js",
+  "cellular_setup/psim_flow_ui.js",
+  "cellular_setup/cellular_eid_dialog.js",
+  "cellular_setup/setup_loading_page.js",
+  "cr_picture/cr_camera.js",
+  "cr_picture/cr_picture_list.js",
+  "cr_picture/cr_picture_pane.js",
+  "multidevice_setup/button_bar.js",
+  "multidevice_setup/multidevice_setup.js",
+  "multidevice_setup/password_page.js",
+  "multidevice_setup/setup_succeeded_page.js",
+  "multidevice_setup/start_setup_page.js",
+  "multidevice_setup/ui_page.js",
+  "network_health/network_diagnostics.js",
+  "network_health/network_health_container.js",
+  "network_health/network_health_summary.js",
+  "network_health/routine_group.js",
+  "network/cr_policy_network_indicator_mojo.js",
+  "network/network_apnlist.js",
+  "network/network_choose_mobile.js",
+  "network/network_config_input.js",
+  "network/network_config.js",
+  "network/network_config_select.js",
+  "network/network_config_toggle.js",
+  "network/network_icon.js",
+  "network/network_ip_config.js",
+  "network/network_list_item.js",
+  "network/network_list.js",
+  "network/network_nameservers.js",
+  "network/network_password_input.js",
+  "network/network_property_list_mojo.js",
+  "network/network_proxy_exclusions.js",
+  "network/network_proxy_input.js",
+  "network/network_proxy.js",
+  "network/network_select.js",
+  "network/network_siminfo.js",
+  "network/sim_lock_dialogs.js",
+  "quick_unlock/pin_keyboard.js",
+  "quick_unlock/setup_pin_keyboard.js",
+  "smb_shares/add_smb_share_dialog.js",
+  "traffic_counters/traffic_counters.js",
+]
+
+non_web_component_files = [
+  "cr.js",
+  "bluetooth/bluetooth_metrics_utils.js",
+  "bluetooth/bluetooth_types.js",
+  "bluetooth/bluetooth_utils.js",
+  "bluetooth/cros_bluetooth_config.js",
+  "cellular_setup/cellular_types.js",
+  "cellular_setup/cellular_setup_delegate.js",
+  "cellular_setup/esim_manager_listener_behavior.js",
+  "cellular_setup/esim_manager_utils.js",
+  "cellular_setup/mojo_interface_provider.js",
+  "cellular_setup/subflow_behavior.js",
+  "cellular_setup/webview_post_util.js",
+  "cr_container_shadow_behavior.js",
+  "cr_picture/cr_picture_types.js",
+  "cr_picture/png.js",
+  "cr_picture/webcam_utils.js",
+  "cr_policy_indicator_behavior.js",
+  "cr_scrollable_behavior.js",
+  "event_tracker.js",
+  "focus_row_js.js",
+  "focus_row_behavior.js",
+  "focus_without_ink_js.js",
+  "i18n_behavior.js",
+  "keyboard_shortcut_list_js.js",
+  "list_property_update_behavior.js",
+  "multidevice_setup/fake_mojo_service.js",
+  "multidevice_setup/mojo_api.js",
+  "multidevice_setup/multidevice_setup_browser_proxy.js",
+  "multidevice_setup/multidevice_setup_delegate.js",
+  "multidevice_setup/ui_page_container_behavior.js",
+  "network/cellular_utils.js",
+  "network/cr_policy_network_behavior_mojo.js",
+  "network/mojo_interface_provider.js",
+  "network/network_config_element_behavior.js",
+  "network/network_listener_behavior.js",
+  "network/network_list_types.js",
+  "network/onc_mojo.js",
+  "network_health/mojo_interface_provider.js",
+  "network_health/network_diagnostics_types.js",
+  "post_message_api/post_message_api_client.js",
+  "post_message_api/post_message_api_request_handler.js",
+  "post_message_api/post_message_api_server.js",
+  "smb_shares/smb_browser_proxy.js",
+  "store/store.js",
+  "store/store_client.js",
+  "traffic_counters/traffic_counters_adapter.js",
+  "quick_unlock/lock_screen_constants.js",
+  "web_ui_listener_behavior.js",
+]
+
+icons_html_files = [
+  "keyboard_icons.html",
+  "multidevice_setup/icons.html",
+  "navigation_icons.html",
+
+  "bluetooth/bluetooth_icons.html",
+  "cellular_setup/cellular_setup_icons.html",
+  "cr_picture/icons.html",
+  "network/network_icons.html",
+  "quick_unlock/pin_keyboard_icons.html",
+]
+
+# Files that are passed as input to html_to_wrapper().
+html_files = []
+foreach(f, web_component_files) {
+  html_files += [ string_replace(f, ".js", ".html") ]
+}
+
+# Files that are generated by html_to_wrapper().
+html_wrapper_files = []
+foreach(f, html_files + icons_html_files) {
+  html_wrapper_files += [ f + ".js" ]
+}
+
+css_files = [
+  "multidevice_setup/multidevice_setup_shared.css",
+  "navigation_shared_vars.css",
+  "network/network_shared.css",
+]
+
+# Files that are generated by css_to_wrapper().
+css_wrapper_files = []
+foreach(f, css_files) {
+  css_wrapper_files += [ f + ".js" ]
+}
+
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  out_manifest = "$target_gen_dir/$preprocessed_manifest"
+  in_files = non_web_component_files + web_component_files + icons_html_files +
+             html_files + css_files
+}
+
+html_to_wrapper("html_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = "$target_gen_dir/$preprocessed_dir"
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  in_files = html_files + icons_html_files
+  use_js = true
+}
+
+css_to_wrapper("css_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = "$target_gen_dir/$preprocessed_dir"
+  out_folder = "$target_gen_dir/$preprocessed_dir"
+  in_files = css_files
+  use_js = true
+}
+
+generate_grd("build_html_css_wrapper_files_grdp") {
+  input_files = html_wrapper_files + css_wrapper_files
+  input_files_base_dir =
+      rebase_path("$target_gen_dir/$preprocessed_dir", root_build_dir)
+  public_deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+  ]
+  grd_prefix = "ash_common"
+  out_grd = "$target_gen_dir/html_css_wrapper_files_resources.grdp"
+  resource_path_prefix = "ash/common"
+}
+
+generate_grd("build_grdp") {
+  input_files = [
+    "fake_method_resolver.js",
+    "fake_observables.js",
+    "keyboard_layouts.js",
+    "mojo_utils.js",
+
+    "cellular_setup/sim_detect_error.svg",
+    "cellular_setup/sim_detect_error_dark.svg",
+    "cellular_setup/error.svg",
+    "cellular_setup/error_dark.svg",
+    "cellular_setup/final_page_success.svg",
+    "cellular_setup/final_page_success_dark.svg",
+    "cellular_setup/default_esim_profile.svg",
+    "cellular_setup/default_esim_profile_dark.svg",
+    "multidevice_setup/all_set_1x_dark.svg",
+    "multidevice_setup/all_set_1x_light.svg",
+    "multidevice_setup/all_set_2x_dark.svg",
+    "multidevice_setup/all_set_2x_light.svg",
+    "network/cellular_0.svg",
+    "network/cellular_0_with_x.svg",
+    "network/cellular_1.svg",
+    "network/cellular_2.svg",
+    "network/cellular_3.svg",
+    "network/cellular_4.svg",
+    "network/cellular_locked.svg",
+    "network/cellular_off.svg",
+    "network/ethernet.svg",
+    "network/roaming_badge.svg",
+    "network/vpn.svg",
+    "network/wifi_0.svg",
+    "network/wifi_0_with_x.svg",
+    "network/wifi_1.svg",
+    "network/wifi_2.svg",
+    "network/wifi_3.svg",
+    "network/wifi_4.svg",
+    "network/wifi_off.svg",
+    "network_health/test_canceled.png",
+    "network_health/test_failed.png",
+    "network_health/test_not_run.png",
+    "network_health/test_passed.png",
+    "network_health/test_warning.png",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  public_deps = [ ":preprocess" ]
+  manifest_files = [ "$target_gen_dir/$preprocessed_manifest" ]
+  grd_prefix = "ash_common"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
+  resource_path_prefix = "ash/common"
+}
+
+generate_definitions_js_files = [
+  "bluetooth/bluetooth_metrics_utils.js",
+  "bluetooth/bluetooth_types.js",
+  "bluetooth/bluetooth_utils.js",
+  "bluetooth/cros_bluetooth_config.js",
+  "cellular_setup/cellular_setup_icons.html.js",
+  "cellular_setup/esim_manager_utils.js",
+  "cellular_setup/mojo_interface_provider.js",
+  "cr_picture/cr_camera.html.js",
+  "cr_picture/cr_picture_list.html.js",
+  "cr_picture/cr_picture_list.js",
+  "cr_picture/cr_picture_pane.html.js",
+  "cr_picture/cr_picture_types.js",
+  "cr_picture/icons.html.js",
+  "cr_picture/png.js",
+  "cr_picture/webcam_utils.js",
+  "event_tracker.js",
+  "focus_row_js.js",
+  "focus_without_ink_js.js",
+  "keyboard_shortcut_list_js.js",
+  "navigation_shared_vars.css.js",
+  "network/network_shared.css.js",
+  "network/onc_mojo.js",
+  "quick_unlock/lock_screen_constants.js",
+  "quick_unlock/pin_keyboard_icons.html.js",
+  "store/store.js",
+  "store/store_client.js",
+]
+
+ts_definitions("generate_definitions") {
+  root_dir = "$target_gen_dir/$preprocessed_dir"
+  out_dir = "$target_gen_dir/$preprocessed_dir"
+  js_files = generate_definitions_js_files
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [
+    ":copy_checked_in_dts_files",
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+    ":preprocess",
+  ]
+}
+
+checked_in_dts_files = [
+  "cr_container_shadow_behavior.d.ts",
+  "cr_scrollable_behavior.d.ts",
+  "cr_policy_indicator_behavior.d.ts",
+  "fake_method_resolver.d.ts",
+  "fake_observables.d.ts",
+  "focus_row_behavior.d.ts",
+  "i18n_behavior.d.ts",
+  "keyboard_diagram.d.ts",
+  "keyboard_key.d.ts",
+  "list_property_update_behavior.d.ts",
+
+  "page_toolbar.d.ts",
+  "navigation_view_panel.d.ts",
+  "navigation_selector.d.ts",
+  "web_ui_listener_behavior.d.ts",
+
+  "bluetooth/bluetooth_base_page.d.ts",
+  "bluetooth/bluetooth_battery_icon_percentage.d.ts",
+  "bluetooth/bluetooth_device_battery_info.d.ts",
+  "bluetooth/bluetooth_icon.d.ts",
+  "bluetooth/bluetooth_pairing_confirm_code_page.d.ts",
+  "bluetooth/bluetooth_pairing_device_item.d.ts",
+  "bluetooth/bluetooth_pairing_device_selection_page.d.ts",
+  "bluetooth/bluetooth_pairing_enter_code_page.d.ts",
+  "bluetooth/bluetooth_pairing_request_code_page.d.ts",
+  "bluetooth/bluetooth_pairing_ui.d.ts",
+  "bluetooth/bluetooth_spinner_page.d.ts",
+
+  "cellular_setup/base_page.d.ts",
+  "cellular_setup/button_bar.d.ts",
+  "cellular_setup/cellular_eid_dialog.d.ts",
+  "cellular_setup/cellular_setup.d.ts",
+  "cellular_setup/cellular_setup_delegate.d.ts",
+  "cellular_setup/cellular_types.d.ts",
+  "cellular_setup/esim_flow_ui.d.ts",
+  "cellular_setup/esim_manager_listener_behavior.d.ts",
+  "cellular_setup/profile_discovery_list_page.d.ts",
+  "cellular_setup/provisioning_page.d.ts",
+  "cellular_setup/psim_flow_ui.d.ts",
+  "cellular_setup/setup_loading_page.d.ts",
+  "cr_picture/cr_camera.d.ts",
+  "cr_picture/cr_picture_pane.d.ts",
+  "smb_shares/add_smb_share_dialog.d.ts",
+  "smb_shares/smb_browser_proxy.d.ts",
+  "traffic_counters/traffic_counters_adapter.d.ts",
+  "traffic_counters/traffic_counters.d.ts",
+  "quick_unlock/pin_keyboard.d.ts",
+  "quick_unlock/setup_pin_keyboard.d.ts",
+
+  "network/cellular_utils.d.ts",
+  "network/cr_policy_network_behavior_mojo.d.ts",
+  "network/cr_policy_network_indicator_mojo.d.ts",
+  "network/mojo_interface_provider.d.ts",
+  "network/network_apnlist.d.ts",
+  "network/network_choose_mobile.d.ts",
+  "network/network_config.d.ts",
+  "network/network_config_input.d.ts",
+  "network/network_config_toggle.d.ts",
+  "network/network_icon.d.ts",
+  "network/network_ip_config.d.ts",
+  "network/network_list.d.ts",
+  "network/network_list_item.d.ts",
+  "network/network_list_types.d.ts",
+  "network/network_listener_behavior.d.ts",
+  "network/network_nameservers.d.ts",
+  "network/network_property_list_mojo.d.ts",
+  "network/network_proxy.d.ts",
+  "network/network_siminfo.d.ts",
+  "network/sim_lock_dialogs.d.ts",
+]
+
+copy("copy_checked_in_dts_files") {
+  sources = checked_in_dts_files
+  outputs = [ "$target_gen_dir/$preprocessed_dir/{{source_target_relative}}" ]
+}
+
+group("closure_compile") {
+  deps = [
+    ":closure_compile_local",
+    "bluetooth:closure_compile_module",
+    "cellular_setup:closure_compile_module",
+    "cr_picture:closure_compile_module",
+    "multidevice_setup:closure_compile_module",
+    "network:closure_compile_module",
+    "network_health:closure_compile_module",
+    "post_message_api:closure_compile",
+    "quick_unlock:closure_compile_module",
+    "smb_shares:closure_compile_module",
+    "store:closure_compile_module",
+    "traffic_counters:closure_compile_module",
+  ]
+}
+
+js_type_check("closure_compile_local") {
+  is_polymer3 = true
+  deps = [
+    ":event_tracker",
+    ":fake_method_resolver",
+    ":fake_observables",
+    ":focus_row_behavior",
+    ":focus_row_js",
+    ":focus_without_ink_js",
+    ":keyboard_diagram",
+    ":keyboard_key",
+    ":keyboard_layouts",
+    ":keyboard_shortcut_list_js",
+    ":list_property_update_behavior",
+    ":mojo_utils",
+    ":navigation_selector",
+    ":navigation_view_panel",
+    ":page_toolbar",
+  ]
+}
+
+js_library("cr_container_shadow_behavior") {
+  deps = [ "//ui/webui/resources/js:assert" ]
+}
+
+js_library("cr_policy_indicator_behavior") {
+  deps = [ "//ui/webui/resources/js:assert" ]
+}
+
+js_library("cr_scrollable_behavior") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("event_tracker") {
+}
+
+js_library("fake_observables") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
+js_library("fake_method_resolver") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
+js_library("focus_row_js") {
+  deps = [
+    ":event_tracker",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:util",
+  ]
+}
+
+js_library("focus_row_behavior") {
+  deps = [
+    ":focus_row_js",
+    ":focus_without_ink_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert",
+  ]
+}
+
+js_library("focus_without_ink_js") {
+  deps = [
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("i18n_behavior") {
+  deps = [
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:parse_html_subset",
+  ]
+}
+
+js_library("keyboard_diagram") {
+  deps = [
+    ":keyboard_key",
+    ":keyboard_layouts",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("keyboard_key") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("keyboard_layouts") {
+  sources = [ "keyboard_layouts.js" ]
+}
+
+js_library("keyboard_shortcut_list_js") {
+}
+
+js_library("list_property_update_behavior") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("mojo_utils") {
+  deps = [ "//ash/webui/common/mojom:mojom_js_library_for_compile" ]
+}
+
+js_library("navigation_selector") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("navigation_view_panel") {
+  deps = [
+    ":navigation_selector",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("page_toolbar") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("web_ui_listener_behavior") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}

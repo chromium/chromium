@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -17,6 +15,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/service_factory_unittest.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace test {
@@ -26,10 +25,11 @@ class ServiceFactoryTest : public testing::Test {
  public:
   ServiceFactoryTest() = default;
 
+  ServiceFactoryTest(const ServiceFactoryTest&) = delete;
+  ServiceFactoryTest& operator=(const ServiceFactoryTest&) = delete;
+
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceFactoryTest);
 };
 
 class TestService1Impl : public mojom::TestService1 {
@@ -38,6 +38,9 @@ class TestService1Impl : public mojom::TestService1 {
       : receiver_(this, std::move(receiver)) {
     ++num_instances_;
   }
+
+  TestService1Impl(const TestService1Impl&) = delete;
+  TestService1Impl& operator=(const TestService1Impl&) = delete;
 
   ~TestService1Impl() override {
     --num_instances_;
@@ -55,14 +58,15 @@ class TestService1Impl : public mojom::TestService1 {
 
   Receiver<mojom::TestService1> receiver_;
   static int num_instances_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestService1Impl);
 };
 
 class TestService2Impl : public mojom::TestService2 {
  public:
   explicit TestService2Impl(PendingReceiver<mojom::TestService2> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TestService2Impl(const TestService2Impl&) = delete;
+  TestService2Impl& operator=(const TestService2Impl&) = delete;
 
   ~TestService2Impl() override = default;
 
@@ -73,8 +77,6 @@ class TestService2Impl : public mojom::TestService2 {
   }
 
   Receiver<mojom::TestService2> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestService2Impl);
 };
 
 int TestService1Impl::num_instances_ = 0;
@@ -168,7 +170,7 @@ TEST_F(ServiceFactoryTest, DestroyInstanceOnServiceDisconnect) {
 }
 
 TEST_F(ServiceFactoryTest, DestroyInstancesOnFactoryDestruction) {
-  base::Optional<ServiceFactory> factory{base::in_place};
+  absl::optional<ServiceFactory> factory{absl::in_place};
   factory->Add(RunTestService1);
 
   Remote<mojom::TestService1> remote1;

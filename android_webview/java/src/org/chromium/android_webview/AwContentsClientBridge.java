@@ -1,17 +1,23 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.android_webview;
 
+import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.net.http.SslCertificate;
 import android.net.http.SslError;
-import android.util.Log;
 
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConversionHelper;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingResponse;
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.CalledByNativeUnchecked;
 import org.chromium.base.annotations.JNINamespace;
@@ -27,6 +33,7 @@ import java.security.PrivateKey;
 import java.security.cert.CertificateEncodingException;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.security.auth.x500.X500Principal;
@@ -40,7 +47,7 @@ import javax.security.auth.x500.X500Principal;
  */
 @JNINamespace("android_webview")
 public class AwContentsClientBridge {
-    private static final String TAG = "AwContentsClientBridge";
+    private static final String TAG = "AwContentsCB";
 
     private AwContentsClient mClient;
     private Context mContext;
@@ -297,13 +304,15 @@ public class AwContentsClientBridge {
     @CalledByNative
     private void onReceivedError(
             // WebResourceRequest
-            String url, boolean isMainFrame, boolean hasUserGesture, boolean isRendererInitiated,
-            String method, String[] requestHeaderNames, String[] requestHeaderValues,
+            String url, boolean isOutermostMainFrame, boolean hasUserGesture,
+            boolean isRendererInitiated, String method, String[] requestHeaderNames,
+            String[] requestHeaderValues,
             // WebResourceError
             @NetError int errorCode, String description, boolean safebrowsingHit,
             boolean shouldOmitNotificationsForSafeBrowsingHit) {
-        AwContentsClient.AwWebResourceRequest request = new AwContentsClient.AwWebResourceRequest(
-                url, isMainFrame, hasUserGesture, method, requestHeaderNames, requestHeaderValues);
+        AwContentsClient.AwWebResourceRequest request =
+                new AwContentsClient.AwWebResourceRequest(url, isOutermostMainFrame, hasUserGesture,
+                        method, requestHeaderNames, requestHeaderValues);
         AwContentsClient.AwWebResourceError error = new AwContentsClient.AwWebResourceError();
         error.errorCode = ErrorCodeConversionHelper.convertErrorCode(errorCode);
         error.description = description;
@@ -330,12 +339,12 @@ public class AwContentsClientBridge {
                     error.errorCode = WebviewErrorCode.ERROR_UNSAFE_RESOURCE;
                 }
             }
-            if (request.isMainFrame
+            if (request.isOutermostMainFrame
                     && AwFeatureList.pageStartedOnCommitEnabled(isRendererInitiated)) {
                 mClient.getCallbackHelper().postOnPageStarted(request.url);
             }
             mClient.getCallbackHelper().postOnReceivedError(request, error);
-            if (request.isMainFrame) {
+            if (request.isOutermostMainFrame) {
                 // Need to call onPageFinished after onReceivedError for backwards compatibility
                 // with the classic webview. See also AwWebContentsObserver.didFailLoad which is
                 // used when we want to send onPageFinished alone.
@@ -347,11 +356,12 @@ public class AwContentsClientBridge {
     @CalledByNative
     public void onSafeBrowsingHit(
             // WebResourceRequest
-            String url, boolean isMainFrame, boolean hasUserGesture, String method,
+            String url, boolean isOutermostMainFrame, boolean hasUserGesture, String method,
             String[] requestHeaderNames, String[] requestHeaderValues, int threatType,
             final int requestId) {
-        AwContentsClient.AwWebResourceRequest request = new AwContentsClient.AwWebResourceRequest(
-                url, isMainFrame, hasUserGesture, method, requestHeaderNames, requestHeaderValues);
+        AwContentsClient.AwWebResourceRequest request =
+                new AwContentsClient.AwWebResourceRequest(url, isOutermostMainFrame, hasUserGesture,
+                        method, requestHeaderNames, requestHeaderValues);
 
         // TODO(ntfschr): remove clang-format directives once crbug/764582 is resolved
         // clang-format off
@@ -369,13 +379,14 @@ public class AwContentsClientBridge {
     @CalledByNative
     private void onReceivedHttpError(
             // WebResourceRequest
-            String url, boolean isMainFrame, boolean hasUserGesture, String method,
+            String url, boolean isOutermostMainFrame, boolean hasUserGesture, String method,
             String[] requestHeaderNames, String[] requestHeaderValues,
             // WebResourceResponse
             String mimeType, String encoding, int statusCode, String reasonPhrase,
             String[] responseHeaderNames, String[] responseHeaderValues) {
-        AwContentsClient.AwWebResourceRequest request = new AwContentsClient.AwWebResourceRequest(
-                url, isMainFrame, hasUserGesture, method, requestHeaderNames, requestHeaderValues);
+        AwContentsClient.AwWebResourceRequest request =
+                new AwContentsClient.AwWebResourceRequest(url, isOutermostMainFrame, hasUserGesture,
+                        method, requestHeaderNames, requestHeaderValues);
         Map<String, String> responseHeaders =
                 new HashMap<String, String>(responseHeaderNames.length);
         // Note that we receive un-coalesced response header lines, thus we need to combine
@@ -402,9 +413,76 @@ public class AwContentsClientBridge {
 
     @CalledByNativeUnchecked
     private boolean shouldOverrideUrlLoading(
-            String url, boolean hasUserGesture, boolean isRedirect, boolean isMainFrame) {
+            String url, boolean hasUserGesture, boolean isRedirect, boolean isOutermostMainFrame) {
         return mClient.shouldIgnoreNavigation(
-                mContext, url, isMainFrame, hasUserGesture, isRedirect);
+                mContext, url, isOutermostMainFrame, hasUserGesture, isRedirect);
+    }
+
+    @CalledByNative
+    private boolean sendBrowseIntent(String url) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            intent.addCategory(Intent.CATEGORY_BROWSABLE);
+            intent.addCategory(Intent.CATEGORY_DEFAULT);
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                intent.setFlags(Intent.FLAG_ACTIVITY_REQUIRE_NON_BROWSER
+                        | Intent.FLAG_ACTIVITY_REQUIRE_DEFAULT);
+            } else {
+                ResolveInfo bestActivity = getBestActivityForIntent(intent);
+                if (bestActivity == null) {
+                    return false;
+                }
+                intent.setComponent(new ComponentName(
+                        bestActivity.activityInfo.packageName, bestActivity.activityInfo.name));
+            }
+            mContext.startActivity(intent);
+            return true;
+        } catch (ActivityNotFoundException e) {
+            Log.w(TAG, "Could not find an application to handle : %s", url);
+        } catch (Exception e) {
+            Log.e(TAG, "Exception while sending browse Intent.", e);
+        }
+        return false;
+    }
+
+    private ResolveInfo getBestActivityForIntent(Intent intent) {
+        List<ResolveInfo> resolveInfos = mContext.getPackageManager().queryIntentActivities(
+                intent, PackageManager.GET_RESOLVED_FILTER);
+
+        ResolveInfo bestActivity = null;
+        final int n = resolveInfos.size();
+
+        if (n == 1) {
+            bestActivity = resolveInfos.get(0);
+        } else if (n > 1) {
+            ResolveInfo r0 = resolveInfos.get(0);
+            ResolveInfo r1 = resolveInfos.get(1);
+
+            // If the first activity has a higher priority, or a different
+            // default, then it is always desirable to pick it, else there is a tie
+            // between the first and second activity and we cant choose one(best one).
+            if (r0.priority > r1.priority || r0.preferredOrder > r1.preferredOrder
+                    || r0.isDefault != r1.isDefault) {
+                bestActivity = resolveInfos.get(0);
+            }
+        }
+        // Different cases due to which we return null from here
+        // 1. There is no activity to handle this intent
+        // 2. We can't come down to a single higher priority activity
+        // 3. Best activity to handle is actually a browser.
+        if (bestActivity == null || isBrowserApp(bestActivity)) {
+            return null;
+        }
+        return bestActivity;
+    }
+
+    private boolean isBrowserApp(ResolveInfo ri) {
+        if (ri.filter.hasCategory(Intent.CATEGORY_APP_BROWSER)
+                || (ri.filter.hasDataScheme("http") && ri.filter.hasDataScheme("https")
+                        && ri.filter.countDataAuthorities() == 0)) {
+            return true;
+        }
+        return false;
     }
 
     void confirmJsResult(int id, String prompt) {

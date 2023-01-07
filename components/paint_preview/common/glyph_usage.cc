@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ GlyphUsage::GlyphUsage(uint16_t first, uint16_t last)
 }
 GlyphUsage::~GlyphUsage() = default;
 
-DenseGlyphUsage::DenseGlyphUsage() : GlyphUsage(), bitset_(0, 0) {}
+DenseGlyphUsage::DenseGlyphUsage() : GlyphUsage(), bitset_(0, false) {}
 DenseGlyphUsage::DenseGlyphUsage(uint16_t num_glyphs)
     : GlyphUsage(1, num_glyphs), bitset_(num_glyphs + 1, false) {}
 DenseGlyphUsage::~DenseGlyphUsage() = default;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ bool DocumentNameCollection::ElementMatches(const HTMLElement& element) const {
   if (IsA<HTMLImageElement>(element)) {
     const AtomicString& name_value = element.GetNameAttribute();
     return name_value == name_ ||
-           (element.GetIdAttribute() == name_ && !name_value.IsEmpty());
+           (element.GetIdAttribute() == name_ && !name_value.empty());
   }
   return false;
 }

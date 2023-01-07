@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,8 +40,7 @@ bool TrackedAtomicPreference::EnforceAndReport(
     base::DictionaryValue* pref_store_contents,
     PrefHashStoreTransaction* transaction,
     PrefHashStoreTransaction* external_validation_transaction) const {
-  const base::Value* value = NULL;
-  pref_store_contents->Get(pref_path_, &value);
+  const base::Value* value = pref_store_contents->FindPath(pref_path_);
   ValueState value_state = transaction->CheckValue(pref_path_, value);
   helper_.ReportValidationResult(value_state, transaction->GetStoreUMASuffix());
 
@@ -56,7 +55,7 @@ bool TrackedAtomicPreference::EnforceAndReport(
 
   if (delegate_) {
     delegate_->OnAtomicPreferenceValidation(
-        pref_path_, value ? base::make_optional(value->Clone()) : base::nullopt,
+        pref_path_, value ? absl::make_optional(value->Clone()) : absl::nullopt,
         value_state, external_validation_value_state, helper_.IsPersonal());
   }
   TrackedPreferenceHelper::ResetAction reset_action =
@@ -65,14 +64,13 @@ bool TrackedAtomicPreference::EnforceAndReport(
 
   bool was_reset = false;
   if (reset_action == TrackedPreferenceHelper::DO_RESET) {
-    pref_store_contents->RemovePath(pref_path_, NULL);
+    pref_store_contents->RemovePath(pref_path_);
     was_reset = true;
   }
 
   if (value_state != ValueState::UNCHANGED) {
     // Store the hash for the new value (whether it was reset or not).
-    const base::Value* new_value = NULL;
-    pref_store_contents->Get(pref_path_, &new_value);
+    const base::Value* new_value = pref_store_contents->FindPath(pref_path_);
     transaction->StoreHash(pref_path_, new_value);
   }
 
@@ -80,8 +78,7 @@ bool TrackedAtomicPreference::EnforceAndReport(
   // reset or external validation failed.
   if (external_validation_transaction &&
       (was_reset || external_validation_value_state != ValueState::UNCHANGED)) {
-    const base::Value* new_value = nullptr;
-    pref_store_contents->Get(pref_path_, &new_value);
+    const base::Value* new_value = pref_store_contents->FindPath(pref_path_);
     external_validation_transaction->StoreHash(pref_path_, new_value);
   }
 

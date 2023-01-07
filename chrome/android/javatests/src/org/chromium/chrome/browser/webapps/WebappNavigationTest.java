@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -39,20 +40,28 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.browserservices.intents.WebDisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.customtabs.CustomTabNightModeStateController;
+import org.chromium.chrome.browser.customtabs.DefaultBrowserProviderImpl;
+import org.chromium.chrome.browser.customtabs.FakeDefaultBrowserProviderImpl;
+import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
+import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
+import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.test.MockCertVerifierRuleAndroid;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.browser.contextmenu.RevampedContextMenuUtils;
+import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -76,9 +85,22 @@ public class WebappNavigationTest {
     public MockCertVerifierRuleAndroid mCertVerifierRule =
             new MockCertVerifierRuleAndroid(0 /* net::OK */);
 
+    private final TestRule mModuleOverridesRule =
+            new ModuleOverridesRule().setOverride(BaseCustomTabActivityModule.Factory.class,
+                    (BrowserServicesIntentDataProvider intentDataProvider,
+                            CustomTabNightModeStateController nightModeController,
+                            CustomTabIntentHandler.IntentIgnoringCriterion intentIgnoringCriterion,
+                            TopUiThemeColorProvider topUiThemeColorProvider,
+                            DefaultBrowserProviderImpl customTabDefaultBrowserProvider)
+                            -> new BaseCustomTabActivityModule(intentDataProvider,
+                                    nightModeController, intentIgnoringCriterion,
+                                    topUiThemeColorProvider, new FakeDefaultBrowserProviderImpl()));
+
     @Rule
-    public RuleChain mRuleChain =
-            RuleChain.emptyRuleChain().around(mActivityTestRule).around(mCertVerifierRule);
+    public RuleChain mRuleChain = RuleChain.emptyRuleChain()
+                                          .around(mActivityTestRule)
+                                          .around(mCertVerifierRule)
+                                          .around(mModuleOverridesRule);
 
     @Before
     public void setUp() {
@@ -126,7 +148,7 @@ public class WebappNavigationTest {
     public void testRegularLinkOffOriginThemeColor() throws Exception {
         WebappActivity activity =
                 runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent().putExtra(
-                        ShortcutHelper.EXTRA_THEME_COLOR, (long) Color.CYAN));
+                        WebappConstants.EXTRA_THEME_COLOR, (long) Color.CYAN));
         assertEquals(
                 BrowserControlsState.HIDDEN, WebappActivityTestRule.getToolbarShowState(activity));
 
@@ -148,12 +170,13 @@ public class WebappNavigationTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testRegularLinkOffOriginTwa() throws Exception {
         Intent launchIntent = mActivityTestRule.createIntent().putExtra(
-                ShortcutHelper.EXTRA_THEME_COLOR, (long) Color.CYAN);
+                WebappConstants.EXTRA_THEME_COLOR, (long) Color.CYAN);
         mActivityTestRule.addTwaExtrasToIntent(launchIntent);
         String url = WebappTestPage.getServiceWorkerUrl(mActivityTestRule.getTestServer());
         CommandLine.getInstance().appendSwitchWithValue(
                 ChromeSwitches.DISABLE_DIGITAL_ASSET_LINK_VERIFICATION, url);
-        mActivityTestRule.startWebappActivity(launchIntent.putExtra(ShortcutHelper.EXTRA_URL, url));
+        mActivityTestRule.startWebappActivity(
+                launchIntent.putExtra(WebappConstants.EXTRA_URL, url));
         WebappActivity activity = mActivityTestRule.getActivity();
         assertEquals(
                 BrowserControlsState.HIDDEN, WebappActivityTestRule.getToolbarShowState(activity));
@@ -175,7 +198,7 @@ public class WebappNavigationTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testFormSubmitOffOrigin() throws Exception {
         Intent launchIntent = mActivityTestRule.createIntent().putExtra(
-                ShortcutHelper.EXTRA_THEME_COLOR, (long) Color.CYAN);
+                WebappConstants.EXTRA_THEME_COLOR, (long) Color.CYAN);
         mActivityTestRule.addTwaExtrasToIntent(launchIntent);
         WebappActivity activity = runWebappActivityAndWaitForIdleWithUrl(launchIntent,
                 mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/form.html"));
@@ -266,7 +289,7 @@ public class WebappNavigationTest {
         final ActivityMonitor monitor =
                 InstrumentationRegistry.getInstrumentation().addMonitor(filter, null, true);
 
-        RevampedContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
+        ContextMenuUtils.selectContextMenuItem(InstrumentationRegistry.getInstrumentation(),
                 null /* activity to check for focus after click */,
                 mActivityTestRule.getActivity().getActivityTab(), "myTestAnchorId",
                 R.id.contextmenu_open_in_chrome);
@@ -282,7 +305,7 @@ public class WebappNavigationTest {
     public void testOpenInChromeFromCustomMenuTabbedChrome() {
         WebappActivity activity =
                 runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent().putExtra(
-                        ShortcutHelper.EXTRA_DISPLAY_MODE, WebDisplayMode.MINIMAL_UI));
+                        WebappConstants.EXTRA_DISPLAY_MODE, DisplayMode.MINIMAL_UI));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             activity.getComponent().resolveNavigationController().openCurrentUrlInBrowser(true);
@@ -303,8 +326,8 @@ public class WebappNavigationTest {
     public void testCanNavigateAfterReparentingToTabbedChrome() throws Exception {
         runWebappActivityAndWaitForIdle(
                 mActivityTestRule.createIntent()
-                        .putExtra(ShortcutHelper.EXTRA_DISPLAY_MODE, WebDisplayMode.MINIMAL_UI)
-                        .putExtra(ShortcutHelper.EXTRA_THEME_COLOR, (long) Color.CYAN));
+                        .putExtra(WebappConstants.EXTRA_DISPLAY_MODE, DisplayMode.MINIMAL_UI)
+                        .putExtra(WebappConstants.EXTRA_THEME_COLOR, (long) Color.CYAN));
 
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> {
             mActivityTestRule.getActivity()
@@ -400,13 +423,12 @@ public class WebappNavigationTest {
     }
 
     private WebappActivity runWebappActivityAndWaitForIdleWithUrl(Intent intent, String url) {
-        mActivityTestRule.startWebappActivity(intent.putExtra(ShortcutHelper.EXTRA_URL, url));
+        mActivityTestRule.startWebappActivity(intent.putExtra(WebappConstants.EXTRA_URL, url));
         return mActivityTestRule.getActivity();
     }
 
     private long getDefaultPrimaryColor() {
-        return ChromeColors.getDefaultThemeColor(
-                mActivityTestRule.getActivity().getResources(), false);
+        return ChromeColors.getDefaultThemeColor(mActivityTestRule.getActivity(), false);
     }
 
     private String offOriginUrl() {

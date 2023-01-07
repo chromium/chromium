@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -107,7 +108,7 @@ class ReadingListNotificationServiceTest : public testing::Test {
   base::SimpleTestClock clock_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ReadingListModelImpl> reading_list_model_;
-  MockDelegate* delegate_;
+  raw_ptr<MockDelegate> delegate_;
   MockNotificationScheduleService mock_schedule_service_;
   std::unique_ptr<ReadingListNotificationServiceImpl> service_;
 };

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,13 +42,6 @@ class GL_EXPORT GLImageDXGI : public GLImage {
                     uint64_t process_tracing_id,
                     const std::string& dump_name) override;
   void ReleaseTexImage(unsigned target) override;
-  bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int z_order,
-                            gfx::OverlayTransform transform,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
 
   const gfx::ColorSpace& color_space() const { return color_space_; }
   Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex() { return keyed_mutex_; }

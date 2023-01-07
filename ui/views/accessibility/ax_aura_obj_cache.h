@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/focus_change_observer.h"
@@ -21,13 +23,9 @@ namespace aura {
 class Window;
 }  // namespace aura
 
-namespace base {
-template <typename T>
-class NoDestructor;
-}  // namespace base
-
 namespace views {
 class AXAuraObjWrapper;
+class AXVirtualView;
 class View;
 class Widget;
 
@@ -51,6 +49,7 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   // Get or create an entry in the cache. May return null if the View is not
   // associated with a Widget.
   AXAuraObjWrapper* GetOrCreate(View* view);
+  AXAuraObjWrapper* GetOrCreate(AXVirtualView* virtual_view);
 
   // Get or create an entry in the cache.
   AXAuraObjWrapper* GetOrCreate(Widget* widget);
@@ -63,11 +62,13 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
 
   // Gets an id given an Aura view.
   ui::AXNodeID GetID(View* view) const;
+  ui::AXNodeID GetID(AXVirtualView* view) const;
   ui::AXNodeID GetID(Widget* widget) const;
   ui::AXNodeID GetID(aura::Window* window) const;
 
   // Removes an entry from this cache based on an Aura view.
   void Remove(View* view);
+  void Remove(AXVirtualView* view);
   void Remove(Widget* widget);
 
   // Removes |window| and optionally notifies delegate by sending an event on
@@ -86,9 +87,6 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
 
   // Get the object that has focus.
   AXAuraObjWrapper* GetFocus();
-
-  // Send a notification that the focused view may have changed.
-  void OnFocusedViewChanged();
 
   // Tell our delegate to fire an event on a given object.
   void FireEvent(AXAuraObjWrapper* aura_obj, ax::mojom::Event event_type);
@@ -121,6 +119,9 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
 
   View* GetFocusedView();
 
+  // Send a notification that the focused view may have changed.
+  void OnFocusedViewChanged();
+
   // aura::client::FocusChangeObserver override.
   void OnWindowFocused(aura::Window* gained_focus,
                        aura::Window* lost_focus) override;
@@ -142,23 +143,26 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
   // The window that should take a11y focus. This is for a window that needs to
   // work with accessiblity features, but cannot take real focus. Gets set to
   // null if the window is destroyed.
-  aura::Window* a11y_override_window_ = nullptr;
+  raw_ptr<aura::Window> a11y_override_window_ = nullptr;
 
   // Observes |a11y_override_window_| for destruction and sets it to null in
   // that case.
   std::unique_ptr<A11yOverrideWindowObserver> a11y_override_window_observer_;
 
   std::map<views::View*, ui::AXNodeID> view_to_id_map_;
+  std::map<views::AXVirtualView*, ui::AXNodeID> virtual_view_to_id_map_;
   std::map<views::Widget*, ui::AXNodeID> widget_to_id_map_;
   std::map<aura::Window*, ui::AXNodeID> window_to_id_map_;
 
   std::map<ui::AXNodeID, std::unique_ptr<AXAuraObjWrapper>> cache_;
 
-  Delegate* delegate_ = nullptr;
+  raw_ptr<Delegate> delegate_ = nullptr;
 
-  std::set<aura::Window*> root_windows_;
+  std::vector<aura::Window*> root_windows_;
 
-  views::Widget* focused_widget_for_testing_ = nullptr;
+  raw_ptr<aura::Window> focused_window_ = nullptr;
+
+  raw_ptr<views::Widget> focused_widget_for_testing_ = nullptr;
 };
 
 }  // namespace views

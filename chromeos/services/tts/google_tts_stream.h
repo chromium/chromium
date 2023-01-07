@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CHROMEOS_SERVICES_TTS_GOOGLE_TTS_STREAM_H_
 
 #include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
+#include "chromeos/services/tts/tts_player.h"
 #include "library_loaders/libchrometts.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -17,11 +18,17 @@ class TtsService;
 
 class GoogleTtsStream : public mojom::GoogleTtsStream {
  public:
-  GoogleTtsStream(TtsService* owner,
-                  mojo::PendingReceiver<mojom::GoogleTtsStream> receiver);
+  GoogleTtsStream(
+      TtsService* owner,
+      mojo::PendingReceiver<mojom::GoogleTtsStream> receiver,
+      mojo::PendingRemote<media::mojom::AudioStreamFactory> factory);
   ~GoogleTtsStream() override;
 
   bool IsBound() const;
+
+  void set_is_in_process_teardown(bool value) {
+    is_in_process_teardown_ = value;
+  }
 
  private:
   // mojom::GoogleTtsStream:
@@ -51,6 +58,12 @@ class GoogleTtsStream : public mojom::GoogleTtsStream {
 
   // Whether buffering is in progress.
   bool is_buffering_ = false;
+
+  // Plays raw tts audio samples.
+  TtsPlayer tts_player_;
+
+  // Whether the tts service process is tearing down.
+  bool is_in_process_teardown_ = false;
 
   base::WeakPtrFactory<GoogleTtsStream> weak_factory_{this};
 };

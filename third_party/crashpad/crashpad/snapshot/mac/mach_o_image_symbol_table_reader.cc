@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,6 +52,11 @@ class MachOImageSymbolTableReaderInitializer {
                              linkedit_segment->Size());
     DCHECK(linkedit_range_.IsValid());
   }
+
+  MachOImageSymbolTableReaderInitializer(
+      const MachOImageSymbolTableReaderInitializer&) = delete;
+  MachOImageSymbolTableReaderInitializer& operator=(
+      const MachOImageSymbolTableReaderInitializer&) = delete;
 
   ~MachOImageSymbolTableReaderInitializer() {}
 
@@ -246,8 +251,6 @@ class MachOImageSymbolTableReaderInitializer {
   CheckedMachAddressRange linkedit_range_;
   ProcessReaderMac* process_reader_;  // weak
   const MachOImageSegmentReader* linkedit_segment_;  // weak
-
-  DISALLOW_COPY_AND_ASSIGN(MachOImageSymbolTableReaderInitializer);
 };
 
 }  // namespace internal

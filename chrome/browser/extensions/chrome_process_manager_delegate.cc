@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,9 +74,8 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* profile = Profile::FromBrowserContext(context);
 
-  const bool is_signin_profile =
-      chromeos::ProfileHelper::IsSigninProfile(profile) &&
-      !profile->IsOffTheRecord();
+  const bool is_signin_profile = ash::ProfileHelper::IsSigninProfile(profile) &&
+                                 !profile->IsOffTheRecord();
 
   if (is_signin_profile) {
     // Check for flag.
@@ -92,14 +91,14 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
 
     // For the ChromeOS login profile, only allow apps installed by device
     // policy or that are explicitly allowlisted.
-    return login_screen_apps_list->HasKey(extension.id()) ||
+    return login_screen_apps_list->FindKey(extension.id()) ||
            IsComponentExtensionAllowlistedForSignInProfile(extension.id());
   }
 
-  if (chromeos::ProfileHelper::IsLockScreenAppProfile(profile) &&
+  if (ash::ProfileHelper::IsLockScreenAppProfile(profile) &&
       !profile->IsOffTheRecord()) {
     return extension.permissions_data()->HasAPIPermission(
-        APIPermission::kLockScreen);
+        mojom::APIPermissionID::kLockScreen);
   }
 #endif
 
@@ -172,7 +171,7 @@ void ChromeProcessManagerDelegate::OnProfileWillBeDestroyed(Profile* profile) {
   // incognito profile is destroyed, then close the incognito background hosts
   // as well. This happens in a few tests. http://crbug.com/138843
   if (!profile->IsOffTheRecord() && profile->HasPrimaryOTRProfile()) {
-    Profile* otr = profile->GetPrimaryOTRProfile();
+    Profile* otr = profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     close_background_hosts(otr);
     if (observed_profiles_.IsObservingSource(otr))
       observed_profiles_.RemoveObservation(otr);

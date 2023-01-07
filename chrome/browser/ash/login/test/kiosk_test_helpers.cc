@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 KioskSessionInitializedWaiter::KioskSessionInitializedWaiter() {
-  scoped_observer_.Add(KioskAppManager::Get());
-  scoped_observer_.Add(WebKioskAppManager::Get());
+  scoped_observations_.AddObservation(KioskAppManager::Get());
+  scoped_observations_.AddObservation(WebKioskAppManager::Get());
 }
 
 KioskSessionInitializedWaiter::~KioskSessionInitializedWaiter() = default;
@@ -60,4 +60,4 @@ ScopedCanConfigureNetwork::~ScopedCanConfigureNetwork() {
       nullptr);
 }
 
-}  // namespace chromeos
+}  // namespace ash

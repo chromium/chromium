@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,9 @@
 #define COMPONENTS_EXO_XDG_SHELL_SURFACE_H_
 
 #include <cstdint>
-#include <memory>
-#include <string>
 
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/wm/window_state_observer.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
@@ -45,29 +41,20 @@ class XdgShellSurface : public ShellSurface {
                   const gfx::Point& origin,
                   bool can_minimize,
                   int container);
+
+  XdgShellSurface(const XdgShellSurface&) = delete;
+  XdgShellSurface& operator=(const XdgShellSurface&) = delete;
+
   ~XdgShellSurface() override;
 
   // ShellSurfaceBase::
   void OverrideInitParams(views::Widget::InitParams* params) override;
 
-  bool x_flipped() const { return x_flipped_; }
-  void set_x_flipped(bool flipped) { x_flipped_ = flipped; }
-
-  bool y_flipped() const { return y_flipped_; }
-  void set_y_flipped(bool flipped) { y_flipped_ = flipped; }
-
  private:
-  // Used by positioner to layout cascading menus in opposite
-  // direction when the layout does not fit to the work area.
-  bool y_flipped_ = false;
-  bool x_flipped_ = false;
-
   // Xdg surfaces have the behaviour that they should maximize themselves if
   // their bounds are larger or equal to the display area. This behaviour is
   // implemented in linux display managers (e.g. Muffin/Cinnamon).
   bool ShouldAutoMaximize();
-
-  DISALLOW_COPY_AND_ASSIGN(XdgShellSurface);
 };
 
 }  // namespace exo

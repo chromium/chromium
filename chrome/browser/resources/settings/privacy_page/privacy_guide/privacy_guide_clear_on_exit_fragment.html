@@ -1,0 +1,55 @@
+<style include="privacy-guide-fragment-shared"></style>
+<template is="dom-if" if="[[enablePrivacyGuide2_]]">
+  <div class="header-phase2" focus-element tabindex="-1">
+    <picture>
+      <source
+          srcset="./images/privacy_guide/clear_on_exit_graphic_dark_v2.svg"
+          media="(prefers-color-scheme: dark)">
+      <img alt="" src="./images/privacy_guide/clear_on_exit_graphic_v2.svg">
+    </picture>
+    <h2 class="header-label-phase2">
+      $i18n{privacyGuideClearOnExitCardHeader}
+    </h2>
+  </div>
+</template>
+<template is="dom-if" if="[[!enablePrivacyGuide2_]]">
+  <div class="header" focus-element tabindex="-1">
+    <picture>
+      <source
+          srcset="./images/privacy_guide/clear_on_exit_graphic_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img alt="" src="./images/privacy_guide/clear_on_exit_graphic.svg">
+    </picture>
+    <h2 class="header-label">$i18n{privacyGuideClearOnExitCardHeader}</h2>
+  </div>
+</template>
+<div class="fragment-content">
+  <div class="embedded-setting-wrapper">
+    <settings-toggle-button id="clearOnExit"
+        pref="{{prefs.generated.cookie_session_only}}"
+        label="$i18n{cookiePageClearOnExit}">
+    </settings-toggle-button>
+  </div>
+  <div class="description-wrapper">
+    <div class=description-header>
+      $i18n{privacyGuideFeatureDescriptionHeader}
+    </div>
+    <div role="list">
+      <privacy-guide-description-item
+          role="listitem"
+          icon="settings20:delete-forever"
+          label="$i18n{privacyGuideClearOnExitFeatureDescription1}">
+      </privacy-guide-description-item>
+      <privacy-guide-description-item
+          role="listitem"
+          icon="settings20:logout"
+          label-html="$i18nRaw{privacyGuideClearOnExitFeatureDescription2}">
+      </privacy-guide-description-item>
+      <privacy-guide-description-item
+          role="listitem"
+          icon="settings20:check-circle-outline"
+          label="$i18n{privacyGuideClearOnExitFeatureDescription3}">
+      </privacy-guide-description-item>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,11 +66,11 @@ bool SslValidityChecker::IsValidPageInPaymentHandlerWindow(
   if (!web_contents)
     return false;
 
-  GURL url = web_contents->GetLastCommittedURL();
-  if (!UrlUtil::IsValidUrlInPaymentHandlerWindow(url))
+  GURL main_frame_url = web_contents->GetVisibleURL();
+  if (!UrlUtil::IsValidUrlInPaymentHandlerWindow(main_frame_url))
     return false;
 
-  if (url.SchemeIsCryptographic()) {
+  if (main_frame_url.SchemeIsCryptographic()) {
     security_state::SecurityLevel security_level =
         GetSecurityLevel(web_contents);
     return security_level == security_state::SECURE ||

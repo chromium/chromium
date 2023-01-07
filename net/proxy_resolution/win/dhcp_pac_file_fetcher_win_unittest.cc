@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/proxy_resolution/win/dhcp_pac_file_fetcher_win.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -13,11 +14,14 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
 #include "net/proxy_resolution/win/dhcp_pac_file_adapter_fetcher_win.h"
 #include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,13 +52,11 @@ TEST(DhcpPacFileFetcherWin, AdapterNamesAndPacURLFromDhcp) {
 class RealFetchTester {
  public:
   RealFetchTester()
-      : context_(new TestURLRequestContext),
-        fetcher_(new DhcpPacFileFetcherWin(context_.get())),
-        finished_(false),
-        on_completion_is_error_(false) {
+      : context_(CreateTestURLRequestContextBuilder()->Build()),
+        fetcher_(std::make_unique<DhcpPacFileFetcherWin>(context_.get())) {
     // Make sure the test ends.
-    timeout_.Start(FROM_HERE,
-        base::TimeDelta::FromSeconds(5), this, &RealFetchTester::OnTimeout);
+    timeout_.Start(FROM_HERE, base::Seconds(5), this,
+                   &RealFetchTester::OnTimeout);
   }
 
   void RunTest() {
@@ -75,8 +77,8 @@ class RealFetchTester {
     // Put the cancellation into the queue before even running the
     // test to avoid the chance of one of the adapter fetcher worker
     // threads completing before cancellation.  See http://crbug.com/86756.
-    cancel_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(0),
-                        this, &RealFetchTester::OnCancelTimer);
+    cancel_timer_.Start(FROM_HERE, base::Milliseconds(0), this,
+                        &RealFetchTester::OnCancelTimer);
     RunTest();
   }
 
@@ -110,16 +112,16 @@ class RealFetchTester {
   // do something a bit more clever to track worker threads even when the
   // DhcpPacFileFetcherWin state machine has finished.
   void FinishTestAllowCleanup() {
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(30));
+    base::PlatformThread::Sleep(base::Milliseconds(30));
   }
 
   std::unique_ptr<URLRequestContext> context_;
   std::unique_ptr<DhcpPacFileFetcherWin> fetcher_;
-  bool finished_;
+  bool finished_ = false;
   std::u16string pac_text_;
   base::OneShotTimer timeout_;
   base::OneShotTimer cancel_timer_;
-  bool on_completion_is_error_;
+  bool on_completion_is_error_ = false;
 };
 
 TEST(DhcpPacFileFetcherWin, RealFetch) {
@@ -167,7 +169,7 @@ class DelayingDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
 
     std::string ImplGetPacURLFromDhcp(
         const std::string& adapter_name) override {
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(20));
+      base::PlatformThread::Sleep(base::Milliseconds(20));
       return DhcpQuery::ImplGetPacURLFromDhcp(adapter_name);
     }
 
@@ -175,8 +177,8 @@ class DelayingDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
     ~DelayingDhcpQuery() override {}
   };
 
-  DhcpQuery* ImplCreateDhcpQuery() override {
-    return new DelayingDhcpQuery();
+  scoped_refptr<DhcpQuery> ImplCreateDhcpQuery() override {
+    return base::MakeRefCounted<DelayingDhcpQuery>();
   }
 };
 
@@ -186,9 +188,10 @@ class DelayingDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
   explicit DelayingDhcpPacFileFetcherWin(URLRequestContext* context)
       : DhcpPacFileFetcherWin(context) {}
 
-  DhcpPacFileAdapterFetcher* ImplCreateAdapterFetcher() override {
-    return new DelayingDhcpPacFileAdapterFetcher(url_request_context(),
-                                                 GetTaskRunner());
+  std::unique_ptr<DhcpPacFileAdapterFetcher> ImplCreateAdapterFetcher()
+      override {
+    return std::make_unique<DelayingDhcpPacFileAdapterFetcher>(
+        url_request_context(), GetTaskRunner());
   }
 };
 
@@ -200,8 +203,8 @@ TEST(DhcpPacFileFetcherWin, RealFetchWithDeferredCancel) {
   // introduces a guaranteed 20 ms delay on the worker threads so that
   // the cancel is called before they complete.
   RealFetchTester fetcher;
-  fetcher.fetcher_.reset(
-      new DelayingDhcpPacFileFetcherWin(fetcher.context_.get()));
+  fetcher.fetcher_ =
+      std::make_unique<DelayingDhcpPacFileFetcherWin>(fetcher.context_.get());
   fetcher.on_completion_is_error_ = true;
   fetcher.RunTestWithDeferredCancel();
   fetcher.WaitUntilDone();
@@ -214,18 +217,14 @@ class DummyDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
  public:
   DummyDhcpPacFileAdapterFetcher(URLRequestContext* context,
                                  scoped_refptr<base::TaskRunner> runner)
-      : DhcpPacFileAdapterFetcher(context, runner),
-        did_finish_(false),
-        result_(OK),
-        pac_script_(u"bingo"),
-        fetch_delay_ms_(1) {}
+      : DhcpPacFileAdapterFetcher(context, runner), pac_script_(u"bingo") {}
 
   void Fetch(const std::string& adapter_name,
              CompletionOnceCallback callback,
              const NetworkTrafficAnnotationTag traffic_annotation) override {
     callback_ = std::move(callback);
-    timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(fetch_delay_ms_),
-                 this, &DummyDhcpPacFileAdapterFetcher::OnTimer);
+    timer_.Start(FROM_HERE, base::Milliseconds(fetch_delay_ms_), this,
+                 &DummyDhcpPacFileAdapterFetcher::OnTimer);
   }
 
   void Cancel() override {
@@ -255,10 +254,10 @@ class DummyDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
   }
 
  private:
-  bool did_finish_;
-  int result_;
+  bool did_finish_ = false;
+  int result_ = OK;
   std::u16string pac_script_;
-  int fetch_delay_ms_;
+  int fetch_delay_ms_ = 1;
   CompletionOnceCallback callback_;
   base::OneShotTimer timer_;
 };
@@ -286,7 +285,6 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
 
   MockDhcpPacFileFetcherWin(URLRequestContext* context)
       : DhcpPacFileFetcherWin(context),
-        num_fetchers_created_(0),
         worker_finished_event_(
             base::WaitableEvent::ResetPolicy::MANUAL,
             base::WaitableEvent::InitialState::NOT_SIGNALED) {
@@ -301,9 +299,9 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
   // |ImplCreateAdapterFetcher()|, and its name to the list of adapters
   // returned by ImplGetCandidateAdapterNames.
   void PushBackAdapter(const std::string& adapter_name,
-                       DhcpPacFileAdapterFetcher* fetcher) {
+                       std::unique_ptr<DhcpPacFileAdapterFetcher> fetcher) {
     adapter_query_->mock_adapter_names_.push_back(adapter_name);
-    adapter_fetchers_.push_back(fetcher);
+    adapter_fetchers_.push_back(std::move(fetcher));
   }
 
   void ConfigureAndPushBackAdapter(const std::string& adapter_name,
@@ -311,22 +309,22 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
                                    int result,
                                    std::u16string pac_script,
                                    base::TimeDelta fetch_delay) {
-    std::unique_ptr<DummyDhcpPacFileAdapterFetcher> adapter_fetcher(
-        new DummyDhcpPacFileAdapterFetcher(url_request_context(),
-                                           GetTaskRunner()));
+    auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
+        url_request_context(), GetTaskRunner());
     adapter_fetcher->Configure(
         did_finish, result, pac_script, fetch_delay.InMilliseconds());
-    PushBackAdapter(adapter_name, adapter_fetcher.release());
+    PushBackAdapter(adapter_name, std::move(adapter_fetcher));
   }
 
-  DhcpPacFileAdapterFetcher* ImplCreateAdapterFetcher() override {
+  std::unique_ptr<DhcpPacFileAdapterFetcher> ImplCreateAdapterFetcher()
+      override {
     ++num_fetchers_created_;
-    return adapter_fetchers_[next_adapter_fetcher_index_++];
+    return std::move(adapter_fetchers_[next_adapter_fetcher_index_++]);
   }
 
-  AdapterQuery* ImplCreateAdapterQuery() override {
+  scoped_refptr<AdapterQuery> ImplCreateAdapterQuery() override {
     DCHECK(adapter_query_.get());
-    return adapter_query_.get();
+    return adapter_query_;
   }
 
   base::TimeDelta ImplGetMaxWait() override {
@@ -338,19 +336,10 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
   }
 
   void ResetTestState() {
-    // Delete any adapter fetcher objects we didn't hand out.
-    std::vector<DhcpPacFileAdapterFetcher*>::const_iterator it =
-        adapter_fetchers_.begin();
-    for (; it != adapter_fetchers_.end(); ++it) {
-      if (num_fetchers_created_-- <= 0) {
-        delete (*it);
-      }
-    }
-
     next_adapter_fetcher_index_ = 0;
     num_fetchers_created_ = 0;
     adapter_fetchers_.clear();
-    adapter_query_ = new MockAdapterQuery();
+    adapter_query_ = base::MakeRefCounted<MockAdapterQuery>();
     max_wait_ = TestTimeouts::tiny_timeout();
   }
 
@@ -363,23 +352,20 @@ class MockDhcpPacFileFetcherWin : public DhcpPacFileFetcherWin {
   // Ownership gets transferred to the implementation class via
   // ImplCreateAdapterFetcher, but any objects not handed out are
   // deleted on destruction.
-  std::vector<DhcpPacFileAdapterFetcher*> adapter_fetchers_;
+  std::vector<std::unique_ptr<DhcpPacFileAdapterFetcher>> adapter_fetchers_;
 
   scoped_refptr<MockAdapterQuery> adapter_query_;
 
   base::TimeDelta max_wait_;
-  int num_fetchers_created_;
+  int num_fetchers_created_ = 0;
   base::WaitableEvent worker_finished_event_;
 };
 
 class FetcherClient {
  public:
   FetcherClient()
-      : context_(new TestURLRequestContext),
-        fetcher_(context_.get()),
-        finished_(false),
-        result_(ERR_UNEXPECTED) {
-  }
+      : context_(CreateTestURLRequestContextBuilder()->Build()),
+        fetcher_(context_.get()) {}
 
   void RunTest() {
     int result = fetcher_.Fetch(
@@ -408,8 +394,7 @@ class FetcherClient {
 
   void RunMessageLoopUntilWorkerDone() {
     DCHECK(fetcher_.adapter_query_.get());
-    while (!fetcher_.worker_finished_event_.TimedWait(
-        base::TimeDelta::FromMilliseconds(10))) {
+    while (!fetcher_.worker_finished_event_.TimedWait(base::Milliseconds(10))) {
       base::RunLoop().RunUntilIdle();
     }
   }
@@ -432,19 +417,19 @@ class FetcherClient {
 
   std::unique_ptr<URLRequestContext> context_;
   MockDhcpPacFileFetcherWin fetcher_;
-  bool finished_;
-  int result_;
+  bool finished_ = false;
+  int result_ = ERR_UNEXPECTED;
   std::u16string pac_text_;
 };
 
 // We separate out each test's logic so that we can easily implement
 // the ReuseFetcher test at the bottom.
 void TestNormalCaseURLConfiguredOneAdapter(FetcherClient* client) {
-  TestURLRequestContext context;
-  std::unique_ptr<DummyDhcpPacFileAdapterFetcher> adapter_fetcher(
-      new DummyDhcpPacFileAdapterFetcher(&context, client->GetTaskRunner()));
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
+      context.get(), client->GetTaskRunner());
   adapter_fetcher->Configure(true, OK, u"bingo", 1);
-  client->fetcher_.PushBackAdapter("a", adapter_fetcher.release());
+  client->fetcher_.PushBackAdapter("a", std::move(adapter_fetcher));
   client->RunTest();
   client->RunMessageLoopUntilComplete();
   ASSERT_THAT(client->result_, IsOk());
@@ -461,11 +446,11 @@ TEST(DhcpPacFileFetcherWin, NormalCaseURLConfiguredOneAdapter) {
 void TestNormalCaseURLConfiguredMultipleAdapters(FetcherClient* client) {
   client->fetcher_.ConfigureAndPushBackAdapter(
       "most_preferred", true, ERR_PAC_NOT_IN_DHCP, std::u16string(),
-      base::TimeDelta::FromMilliseconds(1));
-  client->fetcher_.ConfigureAndPushBackAdapter(
-      "second", true, OK, u"bingo", base::TimeDelta::FromMilliseconds(50));
-  client->fetcher_.ConfigureAndPushBackAdapter(
-      "third", true, OK, u"rocko", base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
+  client->fetcher_.ConfigureAndPushBackAdapter("second", true, OK, u"bingo",
+                                               base::Milliseconds(50));
+  client->fetcher_.ConfigureAndPushBackAdapter("third", true, OK, u"rocko",
+                                               base::Milliseconds(1));
   client->RunTest();
   client->RunMessageLoopUntilComplete();
   ASSERT_THAT(client->result_, IsOk());
@@ -483,13 +468,13 @@ void TestNormalCaseURLConfiguredMultipleAdaptersWithTimeout(
     FetcherClient* client) {
   client->fetcher_.ConfigureAndPushBackAdapter(
       "most_preferred", true, ERR_PAC_NOT_IN_DHCP, std::u16string(),
-      base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
   // This will time out.
   client->fetcher_.ConfigureAndPushBackAdapter("second", false, ERR_IO_PENDING,
                                                u"bingo",
                                                TestTimeouts::action_timeout());
-  client->fetcher_.ConfigureAndPushBackAdapter(
-      "third", true, OK, u"rocko", base::TimeDelta::FromMilliseconds(1));
+  client->fetcher_.ConfigureAndPushBackAdapter("third", true, OK, u"rocko",
+                                               base::Milliseconds(1));
   client->RunTest();
   client->RunMessageLoopUntilComplete();
   ASSERT_THAT(client->result_, IsOk());
@@ -508,7 +493,7 @@ void TestFailureCaseURLConfiguredMultipleAdaptersWithTimeout(
     FetcherClient* client) {
   client->fetcher_.ConfigureAndPushBackAdapter(
       "most_preferred", true, ERR_PAC_NOT_IN_DHCP, std::u16string(),
-      base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
   // This will time out.
   client->fetcher_.ConfigureAndPushBackAdapter("second", false, ERR_IO_PENDING,
                                                u"bingo",
@@ -517,10 +502,10 @@ void TestFailureCaseURLConfiguredMultipleAdaptersWithTimeout(
   // should be chosen.
   client->fetcher_.ConfigureAndPushBackAdapter(
       "third", true, ERR_HTTP_RESPONSE_CODE_FAILURE, std::u16string(),
-      base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
   client->fetcher_.ConfigureAndPushBackAdapter(
       "fourth", true, ERR_NOT_IMPLEMENTED, std::u16string(),
-      base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
   client->RunTest();
   client->RunMessageLoopUntilComplete();
   ASSERT_THAT(client->result_, IsError(ERR_HTTP_RESPONSE_CODE_FAILURE));
@@ -538,7 +523,7 @@ TEST(DhcpPacFileFetcherWin,
 void TestFailureCaseNoURLConfigured(FetcherClient* client) {
   client->fetcher_.ConfigureAndPushBackAdapter(
       "most_preferred", true, ERR_PAC_NOT_IN_DHCP, std::u16string(),
-      base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
   // This will time out.
   client->fetcher_.ConfigureAndPushBackAdapter("second", false, ERR_IO_PENDING,
                                                u"bingo",
@@ -547,7 +532,7 @@ void TestFailureCaseNoURLConfigured(FetcherClient* client) {
   // should be chosen.
   client->fetcher_.ConfigureAndPushBackAdapter(
       "third", true, ERR_PAC_NOT_IN_DHCP, std::u16string(),
-      base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
   client->RunTest();
   client->RunMessageLoopUntilComplete();
   ASSERT_THAT(client->result_, IsError(ERR_PAC_NOT_IN_DHCP));
@@ -582,10 +567,9 @@ void TestShortCircuitLessPreferredAdapters(FetcherClient* client) {
   // time.  Verify that we complete quickly and do not wait for the slow
   // adapters, i.e. we finish before timeout.
   client->fetcher_.ConfigureAndPushBackAdapter(
-      "1", true, ERR_PAC_NOT_IN_DHCP, std::u16string(),
-      base::TimeDelta::FromMilliseconds(1));
-  client->fetcher_.ConfigureAndPushBackAdapter(
-      "2", true, OK, u"bingo", base::TimeDelta::FromMilliseconds(1));
+      "1", true, ERR_PAC_NOT_IN_DHCP, std::u16string(), base::Milliseconds(1));
+  client->fetcher_.ConfigureAndPushBackAdapter("2", true, OK, u"bingo",
+                                               base::Milliseconds(1));
   client->fetcher_.ConfigureAndPushBackAdapter(
       "3", true, OK, u"wrongo", TestTimeouts::action_max_timeout());
 
@@ -613,11 +597,11 @@ TEST(DhcpPacFileFetcherWin, ShortCircuitLessPreferredAdapters) {
 }
 
 void TestImmediateCancel(FetcherClient* client) {
-  TestURLRequestContext context;
-  std::unique_ptr<DummyDhcpPacFileAdapterFetcher> adapter_fetcher(
-      new DummyDhcpPacFileAdapterFetcher(&context, client->GetTaskRunner()));
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
+      context.get(), client->GetTaskRunner());
   adapter_fetcher->Configure(true, OK, u"bingo", 1);
-  client->fetcher_.PushBackAdapter("a", adapter_fetcher.release());
+  client->fetcher_.PushBackAdapter("a", std::move(adapter_fetcher));
   client->RunTest();
   client->fetcher_.Cancel();
   client->RunMessageLoopUntilWorkerDone();
@@ -674,11 +658,11 @@ TEST(DhcpPacFileFetcherWin, OnShutdown) {
   base::test::TaskEnvironment task_environment;
 
   FetcherClient client;
-  TestURLRequestContext context;
-  std::unique_ptr<DummyDhcpPacFileAdapterFetcher> adapter_fetcher(
-      new DummyDhcpPacFileAdapterFetcher(&context, client.GetTaskRunner()));
+  auto context = CreateTestURLRequestContextBuilder()->Build();
+  auto adapter_fetcher = std::make_unique<DummyDhcpPacFileAdapterFetcher>(
+      context.get(), client.GetTaskRunner());
   adapter_fetcher->Configure(true, OK, u"bingo", 1);
-  client.fetcher_.PushBackAdapter("a", adapter_fetcher.release());
+  client.fetcher_.PushBackAdapter("a", std::move(adapter_fetcher));
   client.RunTest();
 
   client.fetcher_.OnShutdown();
@@ -687,7 +671,7 @@ TEST(DhcpPacFileFetcherWin, OnShutdown) {
 
   client.ResetTestState();
   EXPECT_THAT(client.RunTestThatMayFailSync(), IsError(ERR_CONTEXT_SHUT_DOWN));
-  EXPECT_EQ(0u, context.url_requests()->size());
+  EXPECT_EQ(0u, context->url_requests()->size());
 }
 
 }  // namespace

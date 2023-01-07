@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -38,6 +37,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkQualityEstimatorManager
       public net::RTTAndThroughputEstimatesObserver {
  public:
   explicit NetworkQualityEstimatorManager(net::NetLog* net_log);
+
+  NetworkQualityEstimatorManager(const NetworkQualityEstimatorManager&) =
+      delete;
+  NetworkQualityEstimatorManager& operator=(
+      const NetworkQualityEstimatorManager&) = delete;
 
   ~NetworkQualityEstimatorManager() override;
 
@@ -72,8 +76,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkQualityEstimatorManager
   int32_t downstream_throughput_kbps_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityEstimatorManager);
 };
 
 }  // namespace network

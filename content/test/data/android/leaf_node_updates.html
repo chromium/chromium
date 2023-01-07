@@ -1,0 +1,21 @@
+<!-- Simple file to update text data programmatically -->
+<html>
+  <head>
+    <script>
+      const textNode = document.createTextNode("");
+
+      function createText() {
+        const div = document.querySelector("div");
+        textNode.data = "Example text 1";
+        div.appendChild(textNode);
+      }
+
+      function updateText() {
+        textNode.data = "Example text 2";
+      }
+    </script>
+  </head>
+  <body onload="createText()">
+    <div id="test"></div>
+  </body>
+</html>

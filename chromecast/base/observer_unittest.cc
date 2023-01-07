@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
@@ -35,6 +34,9 @@ class ThreadedObservable {
     thread_.Start();
   }
 
+  ThreadedObservable(const ThreadedObservable&) = delete;
+  ThreadedObservable& operator=(const ThreadedObservable&) = delete;
+
   Observer<int> Observe() { return value_.Observe(); }
 
   void SetValue(int value) {
@@ -51,8 +53,6 @@ class ThreadedObservable {
 
   base::Thread thread_;
   Observable<int> value_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedObservable);
 };
 
 class ThreadedObserver {
@@ -63,6 +63,9 @@ class ThreadedObserver {
                    base::WaitableEvent::InitialState::NOT_SIGNALED) {
     thread_.Start();
   }
+
+  ThreadedObserver(const ThreadedObserver&) = delete;
+  ThreadedObserver& operator=(const ThreadedObserver&) = delete;
 
   ~ThreadedObserver() {
     thread_.task_runner()->PostTask(
@@ -104,8 +107,6 @@ class ThreadedObserver {
   base::Thread thread_;
   std::unique_ptr<Observer<int>> observer_;
   base::WaitableEvent observing_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadedObserver);
 };
 
 void RunCallback(std::function<void()> callback) {

@@ -1,7 +1,7 @@
 <!--
- * Copyright 2014 The Chromium Authors. All rights reserved.  Use of this
- * source code is governed by a BSD-style license that can be found in the
- * LICENSE file.
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 <html>
 <head>
@@ -52,7 +52,7 @@
        aria-valuemax="1.0" aria-orientation="vertical" aria-controls="main"
        id="scrollbar-role"></div>
 
-  <div id="main" aria-label="main">Content for scrollbar to control</div>
+  <div id="main" role="group" aria-label="main">Content for scrollbar to control</div>
 
   <!-- table and cell attributes -->
   <!-- The first 100 rows and the first 50 columns are missing. -->
@@ -77,12 +77,15 @@
   <div id="check-test-1" aria-label="check-test-1" role="checkbox" aria-checked="true">Checked</div>
   <div id="check-test-2" aria-label="check-test-2" role="checkbox" aria-checked="false">Unchecked</div>
   <div id="check-test-3" aria-label="check-test-3" role="checkbox" aria-checked="mixed">Mixed</div>
-  <div id="check-test-4" aria-label="check-test-4" aria-checked="true">Not a checkbox</div>
+  <div id="check-test-4" aria-label="check-test-4" role="group" aria-checked="true">Not a checkbox</div>
   <div id="check-test-5" aria-label="check-test-5" role="treeitem" aria-checked="true">Checked treeitem</div>
   <div id="check-test-6" aria-label="check-test-6" role="button" aria-pressed="true">Pressed button</div>
 
   <!-- htmlTag attribute -->
   <figure>Go figure!</figure>
+
+  <!-- isImage attribute -->
+  <img src="data:image/gif;base64,R0lGODlhyAAiALMDfD0QAADs=" /></img>
 
 </body>
 </html>

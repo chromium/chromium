@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/omnibox/omnibox_suggestion_icon_util.h"
 
-#include "base/notreached.h"
+#import "base/notreached.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -13,35 +13,35 @@
 NSString* GetOmniboxSuggestionIconTypeAssetName(
     OmniboxSuggestionIconType iconType) {
   switch (iconType) {
-    case BOOKMARK:
+    case OmniboxSuggestionIconType::kBookmark:
       return @"omnibox_completion_bookmark";
-    case CALCULATOR:
+    case OmniboxSuggestionIconType::kCalculator:
       return @"answer_calculator";
-    case DEFAULT_FAVICON:
+    case OmniboxSuggestionIconType::kDefaultFavicon:
       return @"favicon_fallback";
-    case HISTORY:
+    case OmniboxSuggestionIconType::kHistory:
       return @"omnibox_completion_history";
-    case SEARCH:
+    case OmniboxSuggestionIconType::kSearch:
       return @"search";
-    case CONVERSION:
-      return @"answer_conversion";
-    case DICTIONARY:
-      return @"answer_dictionary";
-    case STOCK:
-      return @"answer_stock";
-    case SUNRISE:
-      return @"answer_sunrise";
-    case LOCAL_TIME:
-      return @"answer_local_time";
-    case WHEN_IS:
-      return @"answer_when_is";
-    case TRANSLATION:
-      return @"answer_translation";
-    case FALLBACK_ANSWER:
-      return @"search";
-    case SEARCH_HISTORY:
+    case OmniboxSuggestionIconType::kSearchHistory:
       return @"omnibox_popup_recent_query";
-    case OMNIBOX_SUGGESTION_ICON_TYPE_COUNT:
+    case OmniboxSuggestionIconType::kConversation:
+      return @"answer_conversion";
+    case OmniboxSuggestionIconType::kDictionary:
+      return @"answer_dictionary";
+    case OmniboxSuggestionIconType::kStock:
+      return @"answer_stock";
+    case OmniboxSuggestionIconType::kSunrise:
+      return @"answer_sunrise";
+    case OmniboxSuggestionIconType::kLocalTime:
+      return @"answer_local_time";
+    case OmniboxSuggestionIconType::kWhenIs:
+      return @"answer_when_is";
+    case OmniboxSuggestionIconType::kTranslation:
+      return @"answer_translation";
+    case OmniboxSuggestionIconType::kFallbackAnswer:
+      return @"search";
+    case OmniboxSuggestionIconType::kCount:
       NOTREACHED();
       return @"favicon_fallback";
   }

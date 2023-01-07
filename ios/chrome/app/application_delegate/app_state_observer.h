@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef IOS_CHROME_APP_APPLICATION_DELEGATE_APP_STATE_OBSERVER_H_
@@ -16,8 +16,44 @@ typedef NS_ENUM(NSUInteger, InitStage) {
   // The first stage when starting the initialization. The label and value of
   // this enum item should not change.
   InitStageStart = 0,
-  // The app is in safe mode.
+  // The app is starting the minimal basic browser services to support safe
+  // mode.
+  InitStageBrowserBasic,
+  // The app is considering whether safe mode should be used. The app will stay
+  // at the InitStageSafeMode stage if safe mode is needed, or will move to the
+  // next stage otherwise.
   InitStageSafeMode,
+  // The app is waiting for the Finch seed to be fetched on first run. The app
+  // will stay at the InitStageVariationsSeed if it is the first launch after
+  // installation, and the seed has not been fetched; it moves to the next stage
+  // otherwise.
+  InitStageVariationsSeed,
+  // The app is initializing the browser objects for the background handlers.
+  // In particular this creates ChromeMain instances which initialises many
+  // low-level objects (such as PostTask, ChromeBrowserStateManager, named
+  // threads, ApplicationContext, ...). Using the corresponding features when
+  // the InitStage is below this stage is unsupported. Most likely, you want
+  // all new stages to be >= InitStageBrowserObjectsForBackgroundHandlers.
+  InitStageBrowserObjectsForBackgroundHandlers,
+  // The app is fetching any enterprise policies. The initialization is blocked
+  // on this because the policies might have an effect on later init stages.
+  InitStageEnterprise,
+  // The app is initializing the browser objects for the browser UI (e.g., the
+  // browser state).
+  InitStageBrowserObjectsForUI,
+  // If there are connected scenes, the app is creating browsers and starting
+  // the root coordinators. The BVCs and Tab switchers are created here. This
+  // is what is considered the normal UI.
+  //
+  // The stage is no-op for regular startups (no FRE, no Safe Mode) in which
+  // case the app will continue its transition to InitStageFinal and the UI is
+  // initialized when the scene transitions to the foreground.
+  InitStageNormalUI,
+  // TODO(crbug.com/1198246): Decouple FRE from Browser views to be able to go
+  // through this stage before InitStageNormalUI.
+  // The app is considering presenting the FRE UI. Will remain in that state
+  // when presenting the FRE.
+  InitStageFirstRun,
   // The final stage before being done with initialization. The label and
   // relative position (always last) of this enum item should not change.
   // The value may change when inserting enum items between Start and Final.
@@ -29,27 +65,25 @@ typedef NS_ENUM(NSUInteger, InitStage) {
 @optional
 
 // Called when a scene is connected.
-// On iOS 12, called when the mainSceneState is set.
 - (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState;
 
 // Called when the first scene initializes its UI.
 - (void)appState:(AppState*)appState
     firstSceneHasInitializedUI:(SceneState*)sceneState;
 
-// Called after the app exits safe mode.
-- (void)appStateDidExitSafeMode:(AppState*)appState;
-
-// Called when |AppState.lastTappedWindow| changes.
+// Called when `AppState.lastTappedWindow` changes.
 - (void)appState:(AppState*)appState lastTappedWindowChanged:(UIWindow*)window;
 
-// Called when the app is about to transition to |initStage|. The init stage of
-// the app at that moment is still |initStage| - 1.
+// Called when the app is about to transition to `nextInitStage`. The init stage
+// of the app at that moment is still `nextInitStage` - 1.
 - (void)appState:(AppState*)appState
-    willTransitionToInitStage:(InitStage)initStage;
+    willTransitionToInitStage:(InitStage)nextInitStage;
 
-// Called right after the app is transitioned to the |initStage|.
+// Called right after the app is transitioned out of to the
+// `previousInitStage`. he init stage of the app at that
+// moment is `previousInitStage` + 1.
 - (void)appState:(AppState*)appState
-    didTransitionToInitStage:(InitStage)initStage;
+    didTransitionFromInitStage:(InitStage)previousInitStage;
 
 @end
 

@@ -1,11 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/feedback/redaction_tool.h"
 
-#include <memory>
+#include <set>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
@@ -14,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/chromeos_buildflags.h"
+#include "components/feedback/pii_types.h"
 #include "net/base/ip_address.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -36,7 +38,7 @@ namespace {
 // Every matched identifier (in the context of the whole pattern) is redacted
 // by replacing it with an incremental instance identifier. Every different
 // pattern defines a separate instance identifier space. See the unit test for
-// RedactionTool::RedactCustomPatterns for pattern redaction examples.
+// RedactionToolTest::RedactCustomPatterns for pattern redaction examples.
 //
 // Useful regular expression syntax:
 //
@@ -47,15 +49,22 @@ namespace {
 // (?:regex) denotes non-capturing parentheses group.
 CustomPatternWithAlias kCustomPatternsWithContext[] = {
     // ModemManager
-    {"CellID", "(\\bCell ID: ')([0-9a-fA-F]+)(')"},
-    {"LocAC", "(\\bLocation area code: ')([0-9a-fA-F]+)(')"},
+    {"CellID", "(\\bCell ID: ')([0-9a-fA-F]+)(')", PIIType::kLocationInfo},
+    {"LocAC", "(\\bLocation area code: ')([0-9a-fA-F]+)(')",
+     PIIType::kLocationInfo},
+
+    // Android. Must run first since this expression matches the replacement.
+    {"SSID", "(?i-s)(\\SSID: ['\"]??)(.+)(['\"]??)", PIIType::kSSID},
 
     // wpa_supplicant
-    {"SSID", "(?i-s)(\\bssid[= ]')(.+)(')"},
-    {"SSIDHex", "(?-s)(\\bSSID - hexdump\\(len=[0-9]+\\): )(.+)()"},
+    {"SSID", "(?i-s)(\\bssid[= ]')(.+)(')", PIIType::kSSID},
+    {"SSID", "(?i-s)(\\bssid[= ]\")(.+)(\")", PIIType::kSSID},
+    {"SSID", "(\\* SSID=)(.+)($)", PIIType::kSSID},
+    {"SSIDHex", "(?-s)(\\bSSID - hexdump\\(len=[0-9]+\\): )(.+)()",
+     PIIType::kSSID},
 
     // shill
-    {"SSID", "(?-s)(\\[SSID=)(.+?)(\\])"},
+    {"SSID", "(?-s)(\\[SSID=)(.+?)(\\])", PIIType::kSSID},
 
     // Serial numbers. The actual serial number itself can include any alphanum
     // char as well as dashes, periods, colons, slashes and unprintable ASCII
@@ -63,29 +72,45 @@ CustomPatternWithAlias kCustomPatternsWithContext[] = {
     // edid-decode, where if we genericized it further then we would catch too
     // many other cases that we don't want to redact.
     {"Serial",
-     "(?i-s)(\\bserial\\s*_?(?:number)?['\"]?\\s*[:=]\\s*['\"]?)"
-     "([0-9a-zA-Z\\-.:\\/\\\\\\x00-\\x09\\x0B-\\x1F]+)(\\b)"},
-    {"Serial", "( Serial Number )(\\d+)(\\b)"},
+     "(?i-s)(\\bserial\\s*_?(?:number)?['\"]?\\s*[:=|]\\s*['\"]?)"
+     "([0-9a-zA-Z\\-.:\\/\\\\\\x00-\\x09\\x0B-\\x1F]+)(\\b)",
+     PIIType::kSerial},
+    {"Serial", "( Serial Number )(\\d+)(\\b)", PIIType::kSerial},
+    // The attested device id, a serial number, that comes from vpd_2.0.txt.
+    // The pattern was recently clarified as being a case insensitive string of
+    // ASCII letters and digits, plus the dash/hyphen character. The dash cannot
+    // appear first or last
+    {"Serial", "(\"attested_device_id\"=\")([^-][0-9a-zA-Z-]+[^-])(\")",
+     PIIType::kSerial},
 
     // GAIA IDs
-    {"GAIA", R"xxx((\"?\bgaia_id\"?[=:]['\"])(\d+)(\b['\"]))xxx"},
-    {"GAIA", R"xxx((\{id: )(\d+)(, email:))xxx"},
+    {"GAIA", R"xxx((\"?\bgaia_id\"?[=:]['\"])(\d+)(\b['\"]))xxx",
+     PIIType::kGaiaID},
+    {"GAIA", R"xxx((\{id: )(\d+)(, email:))xxx", PIIType::kGaiaID},
 
     // UUIDs given by the 'blkid' tool. These don't necessarily look like
     // standard UUIDs, so treat them specially.
-    {"UUID", R"xxx((UUID=")([0-9a-zA-Z-]+)("))xxx"},
+    {"UUID", R"xxx((UUID=")([0-9a-zA-Z-]+)("))xxx", PIIType::kStableIdentifier},
+    // Also cover UUIDs given by the 'lvs' and 'pvs' tools, which similarly
+    // don't necessarily look like standard UUIDs.
+    {"UUID", R"xxx(("[lp]v_uuid":")([0-9a-zA-Z-]+)("))xxx",
+     PIIType::kStableIdentifier},
 
     // Volume labels presented in the 'blkid' tool, and as part of removable
     // media paths shown in various logs such as cros-disks (in syslog).
     // There isn't a well-defined format for these. For labels in blkid,
     // capture everything between the open and closing quote.
-    {"Volume Label", R"xxx((LABEL=")([^"]+)("))xxx"},
+    {"Volume Label", R"xxx((LABEL=")([^"]+)("))xxx", PIIType::kVolumeLabel},
     // For paths, this is harder. The only restricted characters are '/' and
     // NUL, so use a simple heuristic. cros-disks generally quotes paths using
     // single-quotes, so capture everything until a quote character. For lsblk,
     // capture everything until the end of the line, since the mount path is the
     // last field.
-    {"Volume Label", R"xxx((/media/removable/)(.+?)(['"/\n]|$))xxx"},
+    {"Volume Label", R"xxx((/media/removable/)(.+?)(['"/\n]|$))xxx",
+     PIIType::kVolumeLabel},
+
+    // IPP (Internet Printing Protocol) Addresses
+    {"IPP Address", R"xxx((ipp:\/\/)(.+?)(\/ipp))xxx", PIIType::kIPPAddress},
 };
 
 bool MaybeUnmapAddress(net::IPAddress* addr) {
@@ -201,6 +226,31 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
   return "";
 }
 
+// Some strings can contain pieces that match like IPv4 addresses but aren't.
+// This function can be used to determine if this was the case by evaluating
+// the skipped piece. It returns true, if the matched address was erroneous
+// and should be skipped instead.
+bool ShouldSkipIPAddress(const re2::StringPiece& skipped) {
+  // MomdemManager can dump out firmware revision fields that can also
+  // confuse the IPv4 matcher e.g. "Revision: 81600.0000.00.29.19.16_DO"
+  // so ignore the replacement if the skipped piece looks like
+  // "Revision: .*<ipv4>". Note however that if this field contains
+  // values delimited by multiple spaces, any matches after the first
+  // will lose the context and be redacted.
+  static const re2::StringPiece rev("Revision: ");
+  static const re2::StringPiece space(" ");
+  const auto pos = skipped.rfind(rev);
+  if (pos != re2::StringPiece::npos &&
+      skipped.find(space, pos + rev.length()) == re2::StringPiece::npos) {
+    return true;
+  }
+
+  // USB paths can be confused with IPv4 Addresses because they can look
+  // similar: n-n.n.n.n . Ignore replacement if previous char is `-`
+  static const re2::StringPiece dash("-");
+  return skipped.ends_with(dash);
+}
+
 // Helper macro: Non capturing group
 #define NCG(x) "(?:" x ")"
 // Helper macro: Optional non capturing group
@@ -229,6 +279,7 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
 #define LS32 NCG(H16 ":" H16 "|" IPV4ADDRESS)
 #define WB "\\b"
 
+// clang-format off
 #define IPV6ADDRESS NCG( \
                                           WB NCG(H16 ":") "{6}" LS32 WB "|" \
                                         "::" NCG(H16 ":") "{5}" LS32 WB "|" \
@@ -239,6 +290,7 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
   OPT_NCG( WB NCG(H16 ":") "{0,4}" H16) "::"                    LS32 WB "|" \
   OPT_NCG( WB NCG(H16 ":") "{0,5}" H16) "::"                    H16  WB "|" \
   OPT_NCG( WB NCG(H16 ":") "{0,6}" H16) "::")
+// clang-format on
 
 #define IPVFUTURE                     \
   "v" HEXDIG                          \
@@ -252,7 +304,8 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
 #define PORT DIGIT "*"
 
 // This is a diversion of RFC 3987
-#define SCHEME NCG("http|https|ftp|chrome|chrome-extension|android|rtsp|file")
+#define SCHEME \
+  NCG("http|https|ftp|chrome|chrome-extension|android|rtsp|file|isolated-app")
 
 #define IPRIVATE            \
   "["                       \
@@ -352,18 +405,23 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
 // The |kCustomPatternWithoutContext| array defines further patterns to match
 // and redact. Each pattern consists of a single capturing group.
 CustomPatternWithAlias kCustomPatternsWithoutContext[] = {
-    {"URL", "(?i)(" IRI ")"},
+    {"URL", "(?i)(" IRI ")", PIIType::kURL},
     // Email Addresses need to come after URLs because they can be part
     // of a query parameter.
-    {"email", "(?i)([0-9a-z._%+-]+@[a-z0-9.-]+\\.[a-z]{2,6})"},
+    {"email", "(?i)([0-9a-z._%+-]+@[a-z0-9.-]+\\.[a-z]{2,6})", PIIType::kEmail},
     // IP filter rules need to come after URLs so that they don't disturb the
     // URL pattern in case the IP address is part of a URL.
-    {"IPv4", "(?i)(" IPV4ADDRESS ")"},
-    {"IPv6", "(?i)(" IPV6ADDRESS ")"},
+    {"IPv4", "(?i)(" IPV4ADDRESS ")", PIIType::kIPAddress},
+    {"IPv6", "(?i)(" IPV6ADDRESS ")", PIIType::kIPAddress},
     // Universal Unique Identifiers (UUIDs).
     {"UUID",
      "(?i)([0-9a-zA-Z]{8}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-[0-9a-zA-Z]{4}-"
-     "[0-9a-zA-Z]{12})"},
+     "[0-9a-zA-Z]{12})",
+     PIIType::kStableIdentifier},
+    // Eche UID which is a base64 conversion of a 32 bytes public key.
+    {"UID",
+     "((?:[A-Za-z0-9+/]{4}){10}(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=))",
+     PIIType::kStableIdentifier},
 };
 
 // Like RE2's FindAndConsume, searches for the first occurrence of |pattern| in
@@ -388,8 +446,9 @@ bool FindAndConsumeAndGetSkippedN(re2::StringPiece* input,
   re2::RE2::Arg a0(argc > 0 ? args[0] : nullptr);
   re2::RE2::Arg a1(argc > 1 ? args[1] : nullptr);
   re2::RE2::Arg a2(argc > 2 ? args[2] : nullptr);
-  const re2::RE2::Arg* const wrapped_args[] = {&a0, &a1, &a2};
-  CHECK_LE(argc, 3);
+  re2::RE2::Arg a3(argc > 3 ? args[3] : nullptr);
+  const re2::RE2::Arg* const wrapped_args[] = {&a0, &a1, &a2, &a3};
+  CHECK_LE(argc, 4);
 
   bool result = re2::RE2::FindAndConsumeN(input, pattern, wrapped_args, argc);
 
@@ -408,7 +467,7 @@ bool FindAndConsumeAndGetSkipped(re2::StringPiece* input,
                                  Arg*... match_groups) {
   re2::StringPiece* args[] = {match_groups...};
   return FindAndConsumeAndGetSkippedN(input, pattern, skipped_input, args,
-                                      base::size(args));
+                                      std::size(args));
 }
 
 // The following MAC addresses will not be redacted as they are not specific
@@ -417,7 +476,7 @@ const char* const kUnredactedMacAddresses[] = {
     "00:00:00:00:00:00",  // ARP failure result MAC.
     "ff:ff:ff:ff:ff:ff",  // Broadcast MAC.
 };
-constexpr size_t kNumUnredactedMacs = base::size(kUnredactedMacAddresses);
+constexpr size_t kNumUnredactedMacs = std::size(kUnredactedMacAddresses);
 
 }  // namespace
 
@@ -433,16 +492,58 @@ RedactionTool::~RedactionTool() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-std::string RedactionTool::Redact(const std::string& input) {
+std::map<PIIType, std::set<std::string>> RedactionTool::Detect(
+    const std::string& input) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::AssertLongCPUWorkAllowed();
 
-  std::string redacted = RedactMACAddresses(input);
-  redacted = RedactAndroidAppStoragePaths(std::move(redacted));
-  redacted = RedactCustomPatterns(std::move(redacted));
+  std::map<PIIType, std::set<std::string>> detected;
+
+  RedactMACAddresses(input, &detected);
+  // This function will add to |detected| only on Chrome OS as Android app
+  // storage paths are only detected for Chrome OS.
+  RedactAndroidAppStoragePaths(input, &detected);
+  DetectWithCustomPatterns(input, &detected);
   // Do hashes last since they may appear in URLs and they also prevent us from
   // properly recognizing the Android storage paths.
-  redacted = RedactHashes(std::move(redacted));
+  RedactHashes(input, &detected);
+  return detected;
+}
+
+std::string RedactionTool::Redact(const std::string& input) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return RedactAndKeepSelected(input, /*pii_types_to_keep=*/{});
+}
+
+std::string RedactionTool::RedactAndKeepSelected(
+    const std::string& input,
+    const std::set<PIIType>& pii_types_to_keep) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::AssertLongCPUWorkAllowed();
+
+  // Copy |input| so we can modify it.
+  std::string redacted = input;
+
+  if (pii_types_to_keep.find(PIIType::kMACAddress) == pii_types_to_keep.end()) {
+    redacted = RedactMACAddresses(std::move(redacted), nullptr);
+  }
+  if (pii_types_to_keep.find(PIIType::kAndroidAppStoragePath) ==
+      pii_types_to_keep.end()) {
+    redacted = RedactAndroidAppStoragePaths(std::move(redacted), nullptr);
+  }
+
+  redacted = RedactAndKeepSelectedCustomPatterns(std::move(redacted),
+                                                 pii_types_to_keep);
+
+  // Do hashes last since they may appear in URLs and they also prevent us
+  // from properly recognizing the Android storage paths.
+  if (pii_types_to_keep.find(PIIType::kStableIdentifier) ==
+      pii_types_to_keep.end()) {
+    // URLs and Android storage paths will be partially redacted (only hashes)
+    // if |pii_types_to_keep| contains PIIType::kURL or
+    // PIIType::kAndroidAppStoragePath and not PIIType::kStableIdentifier.
+    redacted = RedactHashes(std::move(redacted), nullptr);
+  }
   return redacted;
 }
 
@@ -460,7 +561,9 @@ RE2* RedactionTool::GetRegExp(const std::string& pattern) {
   return regexp_cache_[pattern].get();
 }
 
-std::string RedactionTool::RedactMACAddresses(const std::string& input) {
+std::string RedactionTool::RedactMACAddresses(
+    const std::string& input,
+    std::map<PIIType, std::set<std::string>>* detected) {
   // This regular expression finds the next MAC address. It splits the data into
   // an OUI (Organizationally Unique Identifier) part and a NIC (Network
   // Interface Controller) specific part. We also match on dash and underscore
@@ -484,9 +587,9 @@ std::string RedactionTool::RedactMACAddresses(const std::string& input) {
   while (FindAndConsumeAndGetSkipped(&text, *mac_re, &skipped, &oui, &nic)) {
     // Look up the MAC address in the hash. Force the separator to be a colon
     // so that the same MAC with a different format will match in all cases.
-    std::string oui_string = base::ToLowerASCII(oui.as_string());
+    std::string oui_string = base::ToLowerASCII(std::string(oui));
     base::ReplaceChars(oui_string, kMacSeparatorChars, ":", &oui_string);
-    std::string nic_string = base::ToLowerASCII(nic.as_string());
+    std::string nic_string = base::ToLowerASCII(std::string(nic));
     base::ReplaceChars(nic_string, kMacSeparatorChars, ":", &nic_string);
     std::string mac = oui_string + ":" + nic_string;
     std::string replacement_mac = mac_addresses_[mac];
@@ -498,7 +601,9 @@ std::string RedactionTool::RedactMACAddresses(const std::string& input) {
                                            oui_string.c_str(), mac_id);
       mac_addresses_[mac] = replacement_mac;
     }
-
+    if (detected != nullptr) {
+      (*detected)[PIIType::kMACAddress].insert(mac);
+    }
     skipped.AppendToString(&result);
     result += replacement_mac;
   }
@@ -507,7 +612,9 @@ std::string RedactionTool::RedactMACAddresses(const std::string& input) {
   return result;
 }
 
-std::string RedactionTool::RedactHashes(const std::string& input) {
+std::string RedactionTool::RedactHashes(
+    const std::string& input,
+    std::map<PIIType, std::set<std::string>>* detected) {
   // This will match hexadecimal strings from length 32 to 64 that have a word
   // boundary at each end. We then check to make sure they are one of our valid
   // hash lengths before replacing.
@@ -541,15 +648,18 @@ std::string RedactionTool::RedactHashes(const std::string& input) {
 
     // Look up the hash value address in the map of replacements.
     std::string hash_prefix_string =
-        base::ToLowerASCII(hash_prefix.as_string());
+        base::ToLowerASCII(std::string(hash_prefix));
     std::string hash =
-        hash_prefix_string + base::ToLowerASCII(hash_suffix.as_string());
+        hash_prefix_string + base::ToLowerASCII(std::string(hash_suffix));
     std::string replacement_hash = hashes_[hash];
     if (replacement_hash.empty()) {
       // If not found, build up a replacement value.
       replacement_hash = base::StringPrintf(
           "<HASH:%s %zd>", hash_prefix_string.c_str(), hashes_.size());
       hashes_[hash] = replacement_hash;
+    }
+    if (detected != nullptr) {
+      (*detected)[PIIType::kStableIdentifier].insert(hash);
     }
 
     result += replacement_hash;
@@ -560,7 +670,8 @@ std::string RedactionTool::RedactHashes(const std::string& input) {
 }
 
 std::string RedactionTool::RedactAndroidAppStoragePaths(
-    const std::string& input) {
+    const std::string& input,
+    std::map<PIIType, std::set<std::string>>* detected) {
   // We only use this on Chrome OS and there's differences in the API for
   // FilePath on Windows which prevents this from compiling, so only enable this
   // code for Chrome OS.
@@ -568,20 +679,28 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
   std::string result;
   result.reserve(input.size());
 
-  // This is for redacting 'android_app_storage' output. When the path starts
-  // either /home/root/<hash>/data/data/<package_name>/ or
-  // /home/root/<hash>/data/user_de/<number>/<package_name>/, this function will
-  // redact path components following <package_name>/.
+  // This is for redacting Android data paths included in 'android_app_storage'
+  // and 'audit_log' output. <app_specific_path> in the following data paths
+  // will be redacted.
+  // - /data/data/<package_name>/<app_specific_path>
+  // - /data/app/<package_name>/<app_specific_path>
+  // - /data/user_de/<number>/<package_name>/<app_specific_path>
+  // These data paths are preceded by "/home/root/<user_hash>/android-data" in
+  // 'android_app_storage' output, and preceded by "path=" or "exe=" in
+  // 'audit_log' output.
   RE2* path_re = GetRegExp(
-      "(?m)(\\t/home/root/[\\da-f]+/android-data/data/"
-      "(data|user_de/\\d+)/[^/\\n]+)("
-      "/[^\\n]+)");
+      R"((?m)((path=|exe=|/home/root/[\da-f]+/android-data))"
+      R"(/data/(data|app|user_de/\d+)/[^/\n]+)(/[^\n\s]+))");
 
   // Keep consuming, building up a result string as we go.
   re2::StringPiece text(input);
-  re2::StringPiece skipped, path_prefix, ignored, app_specific;
+  re2::StringPiece skipped;
+  re2::StringPiece path_prefix;  // path before app_specific;
+  re2::StringPiece pre_data;  // (path=|exe=|/home/root/<hash>/android-data)
+  re2::StringPiece post_data;  // (data|app|user_de/\d+)
+  re2::StringPiece app_specific;  // (/[^\n\s]+)
   while (FindAndConsumeAndGetSkipped(&text, *path_re, &skipped, &path_prefix,
-                                     &ignored, &app_specific)) {
+                                     &pre_data, &post_data, &app_specific)) {
     // We can record these parts as-is.
     skipped.AppendToString(&result);
     path_prefix.AppendToString(&result);
@@ -593,8 +712,7 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
     //   one.
     // - If the original component has 2 or more bytes, add '_'.
     const base::FilePath path(app_specific.as_string());
-    std::vector<std::string> components;
-    path.GetComponents(&components);
+    std::vector<std::string> components = path.GetComponents();
     DCHECK(!components.empty());
 
     auto it = components.begin() + 1;  // ignore the leading slash
@@ -606,6 +724,10 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
       if (component.length() > 1)
         result += '_';
     }
+    if (detected != nullptr) {
+      (*detected)[PIIType::kAndroidAppStoragePath].insert(
+          app_specific.as_string());
+    }
   }
 
   text.AppendToString(&result);
@@ -615,21 +737,37 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-std::string RedactionTool::RedactCustomPatterns(std::string input) {
-  for (size_t i = 0; i < base::size(kCustomPatternsWithContext); i++) {
-    input =
-        RedactCustomPatternWithContext(input, kCustomPatternsWithContext[i]);
+std::string RedactionTool::RedactAndKeepSelectedCustomPatterns(
+    std::string input,
+    const std::set<PIIType>& pii_types_to_keep) {
+  for (const auto& pattern : kCustomPatternsWithContext) {
+    if (pii_types_to_keep.find(pattern.pii_type) == pii_types_to_keep.end()) {
+      input = RedactCustomPatternWithContext(input, pattern, nullptr);
+    }
   }
-  for (size_t i = 0; i < base::size(kCustomPatternsWithoutContext); i++) {
-    input = RedactCustomPatternWithoutContext(input,
-                                              kCustomPatternsWithoutContext[i]);
+  for (const auto& pattern : kCustomPatternsWithoutContext) {
+    if (pii_types_to_keep.find(pattern.pii_type) == pii_types_to_keep.end()) {
+      input = RedactCustomPatternWithoutContext(input, pattern, nullptr);
+    }
   }
   return input;
 }
 
+void RedactionTool::DetectWithCustomPatterns(
+    std::string input,
+    std::map<PIIType, std::set<std::string>>* detected) {
+  for (const auto& pattern : kCustomPatternsWithContext) {
+    RedactCustomPatternWithContext(input, pattern, detected);
+  }
+  for (const auto& pattern : kCustomPatternsWithoutContext) {
+    RedactCustomPatternWithoutContext(input, pattern, detected);
+  }
+}
+
 std::string RedactionTool::RedactCustomPatternWithContext(
     const std::string& input,
-    const CustomPatternWithAlias& pattern) {
+    const CustomPatternWithAlias& pattern,
+    std::map<PIIType, std::set<std::string>>* detected) {
   RE2* re = GetRegExp(pattern.pattern);
   DCHECK_EQ(3, re->NumberOfCapturingGroups());
   std::map<std::string, std::string>* identifier_space =
@@ -644,7 +782,7 @@ std::string RedactionTool::RedactCustomPatternWithContext(
   re2::StringPiece pre_match, pre_matched_id, matched_id, post_matched_id;
   while (FindAndConsumeAndGetSkipped(&text, *re, &skipped, &pre_matched_id,
                                      &matched_id, &post_matched_id)) {
-    std::string matched_id_as_string = matched_id.as_string();
+    std::string matched_id_as_string(matched_id);
     std::string replacement_id;
     if (identifier_space->count(matched_id_as_string) == 0) {
       // The weird NumberToString trick is because Windows does not like
@@ -656,7 +794,9 @@ std::string RedactionTool::RedactCustomPatternWithContext(
     } else {
       replacement_id = (*identifier_space)[matched_id_as_string];
     }
-
+    if (detected != nullptr) {
+      (*detected)[pattern.pii_type].insert(matched_id_as_string);
+    }
     skipped.AppendToString(&result);
     pre_matched_id.AppendToString(&result);
     result += replacement_id;
@@ -673,6 +813,11 @@ bool IsUrlExempt(re2::StringPiece url,
   // We do not exempt anything with a query parameter.
   if (url.contains("?"))
     return false;
+
+  // Last part of an SELinux context is misdetected as a URL.
+  // e.g. "u:object_r:system_data_file:s0:c512,c768"
+  if (url.starts_with("file:s0"))
+    return true;
 
   // Check for chrome:// URLs that are exempt.
   if (url.starts_with("chrome://")) {
@@ -712,7 +857,8 @@ bool IsUrlExempt(re2::StringPiece url,
 
 std::string RedactionTool::RedactCustomPatternWithoutContext(
     const std::string& input,
-    const CustomPatternWithAlias& pattern) {
+    const CustomPatternWithAlias& pattern,
+    std::map<PIIType, std::set<std::string>>* detected) {
   RE2* re = GetRegExp(pattern.pattern);
   DCHECK_EQ(1, re->NumberOfCapturingGroups());
 
@@ -732,11 +878,19 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
       matched_id.AppendToString(&result);
       continue;
     }
-    std::string matched_id_as_string = matched_id.as_string();
+    std::string matched_id_as_string(matched_id);
     std::string replacement_id;
     if (identifier_space->count(matched_id_as_string) == 0) {
       replacement_id = MaybeScrubIPAddress(matched_id_as_string);
       if (replacement_id != matched_id_as_string) {
+        // Double-check overly opportunistic IPv4 address matching.
+        if ((strcmp("IPv4", pattern.alias) == 0) &&
+            ShouldSkipIPAddress(skipped)) {
+          skipped.AppendToString(&result);
+          matched_id.AppendToString(&result);
+          continue;
+        }
+
         // The weird NumberToString trick is because Windows does not like
         // to deal with %zu and a size_t in printf, nor does it support %llu.
         replacement_id = base::StringPrintf(
@@ -744,9 +898,15 @@ std::string RedactionTool::RedactCustomPatternWithoutContext(
             replacement_id.empty() ? pattern.alias : replacement_id.c_str(),
             base::NumberToString(identifier_space->size() + 1).c_str());
         (*identifier_space)[matched_id_as_string] = replacement_id;
+        if (detected != nullptr) {
+          (*detected)[pattern.pii_type].insert(matched_id_as_string);
+        }
       }
     } else {
       replacement_id = (*identifier_space)[matched_id_as_string];
+      if (detected != nullptr) {
+        (*detected)[pattern.pii_type].insert(matched_id_as_string);
+      }
     }
 
     skipped.AppendToString(&result);

@@ -1,0 +1,76 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Private API exposed by Language Packs.
+// It allows clients to check, request and observe the files managed by
+// Language Packs.
+
+module ash.language.mojom;
+
+// ID of the Feature using LanguagePacks.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. When adding new enumerations to this
+// enum, you must add those to the LanguagePackMojoFeatureId definition in
+// tools/metrics/histograms/enums.xml to keep them in sync.
+[Extensible]
+enum FeatureId {
+  // Unknown feature, not supported.
+  UNSUPPORTED_UNKNOWN = 0,
+  // Handwriting Recognition used by the Virtual Keyboard.
+  HANDWRITING_RECOGNITION = 1,
+  // Text-To-Speech feature.
+  [MinVersion=1] TTS = 2,
+};
+
+// Current state of Pack on disk.
+// INSTALLED means that it's mounted and can be used.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.  When adding new enumerations to this
+// enum, you must add those to the LanguagePackMojoPackState definition in
+// tools/metrics/histograms/enums.xml to keep them in sync.
+enum PackState {
+  ERROR = 0,
+  NOT_INSTALLED = 1,
+  INSTALLING = 2,
+  INSTALLED = 3
+};
+
+// This struct holds information that allows clients to use a Language Pack.
+struct LanguagePackInfo {
+  PackState pack_state;
+  string path;
+};
+
+// This struct holds information that allows clients to use a Base Pack.
+struct BasePackInfo {
+  PackState pack_state;
+  string path;
+};
+
+// Interface for managing Language Packs.
+// Lives in the browser process and it allows clients to get information
+// about a Language Pack or to install one.
+// Language Packs are mounted to the user partition once they are installed and
+// this interface allows to get the path to the files.
+// Next ordinal: 3
+interface LanguagePacks {
+  // Gets information about the current state of a Language Pack.
+  // Takes the id of the feature (for example handwriting) and the language.
+  GetPackInfo@0(FeatureId feature_id, string language) =>
+      (LanguagePackInfo info);
+
+  // Requests to install a Language Pack.
+  // Takes the id of the feature (for example handwriting) and the language.
+  InstallPack@1(FeatureId feature_id, string language) =>
+      (LanguagePackInfo info);
+
+  // Requests to install the Base Pack for a `feature_id`.
+  // The Base Pack contains the dependencies needed for a Language Pack to
+  // function correctly.
+  // Takes the id of the feature (for example handwriting).
+  // If there's no Base Pack for the specified feature, then `info` will have an
+  // ERROR PackState.
+  InstallBasePack@2(FeatureId feature_id) =>
+      (BasePackInfo info);
+};

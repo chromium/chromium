@@ -1,103 +1,116 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
-#include "chrome/browser/web_applications/components/app_registry_controller.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_app_provider_base.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
+#include "chrome/browser/web_applications/manifest_update_task.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
+using content::RenderFrameHost;
+using content::WebContents;
+using content::test::PrerenderHostObserver;
+using content::test::PrerenderHostRegistryObserver;
+using content::test::PrerenderTestHelper;
 using ui_test_utils::BrowserChangeObserver;
 
 namespace web_app {
 
+using ClientMode = LaunchHandler::ClientMode;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Tests that links are captured correctly into an installed WebApp using the
+// 'tabbed' display mode, which allows the webapp window to have multiple tabs.
 class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
  public:
   WebAppLinkCapturingBrowserTest() {
-    os_hooks_supress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
+    feature_list_.InitAndEnableFeature(
+        blink::features::kWebAppEnableLaunchHandler);
   }
-
   ~WebAppLinkCapturingBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     WebAppNavigationBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(https_server().Start());
     ASSERT_TRUE(embedded_test_server()->Start());
+    out_of_scope_ = https_server().GetURL("/");
   }
 
-  void InstallTestApp(const char* path, bool await_metric) {
+  void InstallTestApp(const char* path) {
     start_url_ = embedded_test_server()->GetURL(path);
     in_scope_1_ = start_url_.Resolve("page1.html");
     in_scope_2_ = start_url_.Resolve("page2.html");
     scope_ = start_url_.GetWithoutFilename();
 
-    // Create new tab to navigate, install, automatically pop out and then
-    // close. This sequence avoids altering the browser window state we started
-    // with.
-    AddTab(browser(), about_blank_);
-
-    page_load_metrics::PageLoadMetricsTestWaiter metrics_waiter(
-        browser()->tab_strip_model()->GetActiveWebContents());
-    if (await_metric) {
-      metrics_waiter.AddWebFeatureExpectation(
-          blink::mojom::WebFeature::kWebAppManifestCaptureLinks);
-    }
-    BrowserChangeObserver observer(browser(),
-                                   BrowserChangeObserver::ChangeType::kAdded);
-    app_id_ = web_app::InstallWebAppFromPage(browser(), start_url_);
-    if (await_metric)
-      metrics_waiter.Wait();
-
-    Browser* app_browser = observer.Wait();
-    EXPECT_NE(app_browser, browser());
-    EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
-    chrome::CloseWindow(app_browser);
+    app_id_ = InstallWebAppFromPageAndCloseAppBrowser(browser(), start_url_);
   }
 
-  WebAppProviderBase& provider() {
-    auto* provider = WebAppProviderBase::GetProviderBase(profile());
+  WebAppProvider& provider() {
+    auto* provider = WebAppProvider::GetForTest(profile());
     DCHECK(provider);
     return *provider;
   }
 
-  void AddTab(Browser* browser, GURL url) {
+  void AddTab(Browser* browser, const GURL& url) {
     content::TestNavigationObserver observer(url);
     observer.StartWatchingNewWebContents();
     chrome::AddTabAt(browser, url, /*index=*/-1, /*foreground=*/true);
     observer.Wait();
   }
 
-  void Navigate(Browser* browser, const GURL& url) {
+  void Navigate(Browser* browser,
+                const GURL& url,
+                LinkTarget link_target = LinkTarget::SELF) {
     ClickLinkAndWait(browser->tab_strip_model()->GetActiveWebContents(), url,
-                     LinkTarget::SELF, "");
+                     link_target, "");
   }
 
-  Browser* GetNewBrowserFromNavigation(Browser* browser, const GURL& url) {
-    BrowserChangeObserver observer(browser,
+  Browser* GetNewBrowserFromNavigation(Browser* browser,
+                                       const GURL& url,
+                                       bool preserve_about_blank = true) {
+    if (preserve_about_blank && browser->tab_strip_model()
+                                    ->GetActiveWebContents()
+                                    ->GetVisibleURL()
+                                    .IsAboutBlank()) {
+      // Create a new tab to link capture in because about:blank tabs are
+      // destroyed after link capturing, see:
+      // CommonAppsNavigationThrottle::ShouldCancelNavigation()
+      AddTab(browser, about_blank_);
+    }
+
+    BrowserChangeObserver observer(nullptr,
                                    BrowserChangeObserver::ChangeType::kAdded);
     Navigate(browser, url);
     return observer.Wait();
@@ -135,7 +148,14 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
     }
   }
 
-  GURL NtpUrl() { return ntp_test_utils::GetFinalNtpUrl(browser()->profile()); }
+  void TurnOnLinkCapturing() {
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+    proxy->SetSupportedLinksPreference(app_id_);
+  }
+
+  absl::optional<LaunchHandler> GetLaunchHandler(const AppId& app_id) {
+    return provider().registrar().GetAppById(app_id)->launch_handler();
+  }
 
  protected:
   AppId app_id_;
@@ -143,36 +163,117 @@ class WebAppLinkCapturingBrowserTest : public WebAppNavigationBrowserTest {
   GURL in_scope_1_;
   GURL in_scope_2_;
   GURL scope_;
+  GURL out_of_scope_;
 
   const GURL about_blank_{"about:blank"};
-  const GURL out_of_scope_{"https://other-domain.org/"};
 
-  ScopedOsHooksSuppress os_hooks_supress_;
+  base::test::ScopedFeatureList feature_list_;
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
 };
 
+// Link capturing with navigate_existing_client: always should navigate existing
+// app windows.
+IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
+                       NavigateExistingClientFromBrowser) {
+  InstallTestApp(
+      "/web_apps/get_manifest.html?"
+      "launch_handler_client_mode_navigate_existing.json");
+  EXPECT_EQ(GetLaunchHandler(app_id_),
+            (LaunchHandler{ClientMode::kNavigateExisting}));
+
+  TurnOnLinkCapturing();
+
+  // Start browser at an out of scope page.
+  Navigate(browser(), out_of_scope_);
+
+  // In scope navigation should open app window.
+  Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1_);
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
+  ExpectTabs(browser(), {out_of_scope_});
+  ExpectTabs(app_browser, {in_scope_1_});
+
+  // Navigate the app window out of scope to ensure the captured link triggers a
+  // navigation.
+  Navigate(app_browser, out_of_scope_);
+  ExpectTabs(app_browser, {out_of_scope_});
+
+  // Click a link in the browser in to scope. Ensure that no additional tabs get
+  // opened in the browser.
+  Navigate(browser(), in_scope_1_);
+  ExpectTabs(browser(), {out_of_scope_});
+  ExpectTabs(app_browser, {in_scope_1_});
+}
+
+// Link captures from about:blank cleans up the about:blank page.
+IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
+                       AboutBlankNavigationCleanUp) {
+  InstallTestApp("/web_apps/basic.html");
+  TurnOnLinkCapturing();
+
+  ExpectTabs(browser(), {about_blank_});
+  BrowserChangeObserver removed_observer(
+      browser(), BrowserChangeObserver::ChangeType::kRemoved);
+
+  // Navigate an about:blank page.
+  Browser* app_browser = GetNewBrowserFromNavigation(
+      browser(), in_scope_1_, /*preserve_about_blank=*/false);
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
+  ExpectTabs(app_browser, {in_scope_1_});
+
+  // Old about:blank page cleaned up.
+  removed_observer.Wait();
+}
+
+// JavaScript initiated link captures from about:blank cleans up the about:blank
+// page.
+IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingBrowserTest,
+                       JavascriptAboutBlankNavigationCleanUp) {
+  InstallTestApp("/web_apps/basic.html");
+  TurnOnLinkCapturing();
+
+  ExpectTabs(browser(), {about_blank_});
+  BrowserChangeObserver removed_observer(
+      browser(), BrowserChangeObserver::ChangeType::kRemoved);
+
+  // Navigate an about:blank page using JavaScript.
+  BrowserChangeObserver added_observer(
+      nullptr, BrowserChangeObserver::ChangeType::kAdded);
+  ASSERT_TRUE(content::ExecuteScript(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      base::StringPrintf("location = '%s';", in_scope_1_.spec().c_str())));
+  Browser* app_browser = added_observer.Wait();
+  ExpectTabs(app_browser, {in_scope_1_});
+
+  // Old about:blank page cleaned up.
+  removed_observer.Wait();
+}
+
+// TODO: Run these tests on Chrome OS with both Ash and Lacros processes active.
 class WebAppTabStripLinkCapturingBrowserTest
     : public WebAppLinkCapturingBrowserTest {
  public:
   WebAppTabStripLinkCapturingBrowserTest() {
     features_.InitWithFeatures({features::kDesktopPWAsTabStrip,
-                                features::kDesktopPWAsTabStripLinkCapturing},
+                                features::kDesktopPWAsTabStripSettings},
                                {});
   }
 
-  void InstallTestApp() {
-    WebAppLinkCapturingBrowserTest::InstallTestApp("/web_apps/basic.html",
-                                                   /*await_metric=*/false);
-    provider().registry_controller().SetExperimentalTabbedWindowMode(
-        app_id_, true, /*is_user_action=*/false);
+  void InstallTestTabbedApp() {
+    WebAppLinkCapturingBrowserTest::InstallTestApp("/web_apps/basic.html");
+    provider().sync_bridge().SetAppUserDisplayMode(
+        app_id_, UserDisplayMode::kTabbed, /*is_user_action=*/false);
   }
 
  private:
   base::test::ScopedFeatureList features_;
 };
 
+// First in scope navigation from out of scope gets captured and reparented into
+// the app window.
 IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
                        InScopeNavigationsCaptured) {
-  InstallTestApp();
+  InstallTestTabbedApp();
+  TurnOnLinkCapturing();
 
   // Start browser at an out of scope page.
   Navigate(browser(), out_of_scope_);
@@ -207,380 +308,6 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
   ExpectTabs(app_browser, {in_scope_1_, in_scope_2_, scope_});
 }
 
-// First about:blank captures in scope navigations.
-IN_PROC_BROWSER_TEST_F(WebAppTabStripLinkCapturingBrowserTest,
-                       AboutBlankNavigationReparented) {
-  InstallTestApp();
-
-  ExpectTabs(browser(), {about_blank_});
-  content::WebContents* reparent_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Navigations from a fresh about:blank page should reparent.
-  // When no app window is open one should be created.
-  Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1_);
-  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
-  ExpectTabs(browser(), {NtpUrl()});
-  ExpectTabs(app_browser, {in_scope_1_});
-  EXPECT_EQ(reparent_web_contents,
-            app_browser->tab_strip_model()->GetActiveWebContents());
-
-  // Navigations from a fresh about:blank page via JavaScript should also
-  // reparent. When there is already an app window open we should reparent into
-  // it.
-  AddTab(browser(), about_blank_);
-  ExpectTabs(browser(), {NtpUrl(), about_blank_});
-  reparent_web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  {
-    content::TestNavigationObserver observer(in_scope_2_);
-    observer.WatchExistingWebContents();
-    ASSERT_TRUE(content::ExecuteScript(
-        reparent_web_contents,
-        base::StringPrintf("location = '%s';", in_scope_2_.spec().c_str())));
-    observer.Wait();
-  }
-  ExpectTabs(browser(), {NtpUrl()});
-  ExpectTabs(app_browser, {in_scope_1_, in_scope_2_});
-  EXPECT_EQ(reparent_web_contents,
-            app_browser->tab_strip_model()->GetActiveWebContents());
-}
-
-class WebAppDeclarativeLinkCapturingBrowserTest
-    : public WebAppLinkCapturingBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  static std::string ParamToString(
-      const ::testing::TestParamInfo<bool> param_info) {
-    return param_info.param ? "PersistenceOn" : "PersistenceOff";
-  }
-
-  WebAppDeclarativeLinkCapturingBrowserTest() {
-    if (GetParam()) {
-      features_.InitWithFeatures({blink::features::kWebAppEnableLinkCapturing,
-                                  features::kIntentPickerPWAPersistence},
-                                 {});
-    } else {
-      features_.InitWithFeatures({blink::features::kWebAppEnableLinkCapturing},
-                                 {features::kIntentPickerPWAPersistence});
-    }
-  }
-
-  bool IsIntentPickerPersistenceEnabled() {
-    return base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence);
-  }
-
-  void TurnOnLinkCapturing() {
-    apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile());
-    proxy->AddPreferredApp(app_id_, start_url_);
-    proxy->FlushMojoCallsForTesting();
-  }
-
- protected:
-  base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
-                       CaptureLinksUnset) {
-  InstallTestApp("/web_apps/basic.html", /*await_metric=*/false);
-
-  histogram_tester_.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kWebAppManifestCaptureLinks, 0);
-
-  // No link capturing should happen.
-  Navigate(browser(), start_url_);
-  EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
-  ExpectTabs(browser(), {start_url_});
-
-  if (IsIntentPickerPersistenceEnabled()) {
-    TurnOnLinkCapturing();
-
-    // Users can enable link capturing regardless of declarative link capturing.
-    Navigate(browser(), out_of_scope_);
-    Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1_);
-    EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
-    ExpectTabs(browser(), {out_of_scope_});
-    ExpectTabs(app_browser, {in_scope_1_});
-  }
-}
-
-IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
-                       CaptureLinksNone) {
-  InstallTestApp("/web_apps/capture_links_none.html", /*await_metric=*/true);
-
-  histogram_tester_.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kWebAppManifestCaptureLinks, 1);
-
-  // No link capturing should happen.
-  Navigate(browser(), start_url_);
-  EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
-  ExpectTabs(browser(), {start_url_});
-
-  if (IsIntentPickerPersistenceEnabled()) {
-    TurnOnLinkCapturing();
-
-    // Users can enable link capturing regardless of declarative link capturing.
-    Navigate(browser(), out_of_scope_);
-    Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1_);
-    EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
-    ExpectTabs(browser(), {out_of_scope_});
-    ExpectTabs(app_browser, {in_scope_1_});
-  }
-}
-
-// Flaky on Linux, crbug.com/1185680
-#if defined(OS_LINUX)
-#define MAYBE_CaptureLinksNewClient DISABLED_CaptureLinksNewClient
-#else
-#define MAYBE_CaptureLinksNewClient CaptureLinksNewClient
-#endif
-IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
-                       MAYBE_CaptureLinksNewClient) {
-  InstallTestApp("/web_apps/capture_links_new_client.html",
-                 /*await_metric=*/true);
-
-  histogram_tester_.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kWebAppManifestCaptureLinks, 1);
-
-  if (IsIntentPickerPersistenceEnabled()) {
-    // No link capturing should happen until the user turns it on.
-    Navigate(browser(), start_url_);
-    EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
-    ExpectTabs(browser(), {start_url_});
-
-    TurnOnLinkCapturing();
-  }
-
-  // In scope navigation should open an app window.
-  Navigate(browser(), out_of_scope_);
-  Browser* app_browser_1 = GetNewBrowserFromNavigation(browser(), in_scope_1_);
-  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser_1, app_id_));
-  ExpectTabs(browser(), {out_of_scope_});
-  ExpectTabs(app_browser_1, {in_scope_1_});
-
-  // In scope navigation should open a new app window.
-  Browser* app_browser_2 = GetNewBrowserFromNavigation(browser(), in_scope_2_);
-  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser_2, app_id_));
-  EXPECT_NE(app_browser_1, app_browser_2);
-  ExpectTabs(browser(), {out_of_scope_});
-  ExpectTabs(app_browser_1, {in_scope_1_});
-  ExpectTabs(app_browser_2, {in_scope_2_});
-
-  // In scope navigation from app window should not capture.
-  Navigate(app_browser_1, in_scope_2_);
-  EXPECT_EQ(app_browser_2, BrowserList::GetInstance()->GetLastActive());
-  ExpectTabs(browser(), {out_of_scope_});
-  ExpectTabs(app_browser_1, {in_scope_2_});
-  ExpectTabs(app_browser_2, {in_scope_2_});
-}
-
-IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
-                       InAppScopeNavigationIgnored) {
-  InstallTestApp("/web_apps/capture_links_new_client.html",
-                 /*await_metric=*/true);
-
-  histogram_tester_.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kWebAppManifestCaptureLinks, 1);
-
-  if (IsIntentPickerPersistenceEnabled())
-    TurnOnLinkCapturing();
-
-  // Put the browser in the app scope.
-  AddTab(browser(), start_url_);
-
-  // Navigations that happen inside the app scope should not capture even if
-  // done outside of an app window.
-  Navigate(browser(), in_scope_1_);
-  EXPECT_EQ(browser(), BrowserList::GetInstance()->GetLastActive());
-  ExpectTabs(browser(), {about_blank_, in_scope_1_});
-}
-
-IN_PROC_BROWSER_TEST_P(WebAppDeclarativeLinkCapturingBrowserTest,
-                       CaptureLinksExistingClientNavigate) {
-  InstallTestApp("/web_apps/capture_links_existing_client_navigate.html",
-                 /*await_metric=*/true);
-
-  histogram_tester_.ExpectBucketCount(
-      "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kWebAppManifestCaptureLinks, 1);
-
-  if (IsIntentPickerPersistenceEnabled())
-    TurnOnLinkCapturing();
-
-  Navigate(browser(), out_of_scope_);
-
-  // In scope navigation should open an app window (because there are none
-  // already open).
-  Browser* app_browser = GetNewBrowserFromNavigation(browser(), in_scope_1_);
-  EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser, app_id_));
-  ExpectTabs(browser(), {out_of_scope_});
-  ExpectTabs(app_browser, {in_scope_1_});
-
-  // In scope navigation should navigate the existing app window.
-  Navigate(browser(), in_scope_2_);
-  EXPECT_EQ(app_browser, BrowserList::GetInstance()->GetLastActive());
-  ExpectTabs(browser(), {out_of_scope_});
-  ExpectTabs(app_browser, {in_scope_2_});
-
-  // In scope navigation should navigate the existing app window.
-  Navigate(browser(), in_scope_1_);
-  EXPECT_EQ(app_browser, BrowserList::GetInstance()->GetLastActive());
-  ExpectTabs(browser(), {out_of_scope_});
-  ExpectTabs(app_browser, {in_scope_1_});
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebAppDeclarativeLinkCapturingBrowserTest,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    /*persistence=*/testing::Values(true, false),
-#else
-    // App service intent handling is not yet available outside of Chrome OS.
-    /*persistence=*/testing::Values(false),
-#endif
-    &WebAppDeclarativeLinkCapturingBrowserTest::ParamToString);
-
-class WebAppDeclarativeLinkCapturingOriginTrialBrowserTest
-    : public InProcessBrowserTest {
- public:
-  WebAppDeclarativeLinkCapturingOriginTrialBrowserTest() {
-    features_.InitAndDisableFeature(
-        blink::features::kWebAppEnableLinkCapturing);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Using the test public key from docs/origin_trials_integration.md#Testing.
-    command_line->AppendSwitchASCII(
-        embedder_support::kOriginTrialPublicKey,
-        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=");
-  }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-namespace {
-
-// Using localhost to avoid the HTTPS requirement for InstallableManager to even
-// load the manifest.
-constexpr char kTestWebAppUrl[] = "http://127.0.0.1:8000/";
-constexpr char kTestWebAppHeaders[] =
-    "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
-constexpr char kTestWebAppBody[] = R"(
-  <!DOCTYPE html>
-  <head>
-    <link rel="manifest" href="manifest.webmanifest">
-    <meta http-equiv="origin-trial" content="$1">
-  </head>
-)";
-
-constexpr char kTestIconUrl[] = "http://127.0.0.1:8000/icon.png";
-constexpr char kTestManifestUrl[] =
-    "http://127.0.0.1:8000/manifest.webmanifest";
-constexpr char kTestManifestHeaders[] =
-    "HTTP/1.1 200 OK\nContent-Type: application/json; charset=utf-8\n";
-constexpr char kTestManifestBody[] = R"({
-  "name": "Test app",
-  "display": "standalone",
-  "start_url": "/",
-  "scope": "/",
-  "icons": [{
-    "src": "icon.png",
-    "sizes": "192x192",
-    "type": "image/png"
-  }],
-  "capture_links": "new-client"
-})";
-
-// Generated from script:
-// $ tools/origin_trials/generate_token.py http://127.0.0.1:8000 \
-// WebAppLinkCapturing --expire-timestamp=2000000000
-constexpr char kOriginTrialToken[] =
-    "A9FvND2pz57gueYZNHgjh4f5vPfcFyck04vOsOOO+OMqj2naHRG9RwO92Vv1C/"
-    "X32R39B+"
-    "EaMCn7r3imGvWVvAsAAABbeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgIm"
-    "ZlYXR1cmUiOiAiV2ViQXBwTGlua0NhcHR1cmluZyIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ"
-    "==";
-
-}  // namespace
-
-IN_PROC_BROWSER_TEST_F(WebAppDeclarativeLinkCapturingOriginTrialBrowserTest,
-                       OriginTrial) {
-  bool serve_token = true;
-  content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
-      [&serve_token](
-          content::URLLoaderInterceptor::RequestParams* params) -> bool {
-        if (params->url_request.url.spec() == kTestWebAppUrl) {
-          content::URLLoaderInterceptor::WriteResponse(
-              kTestWebAppHeaders,
-              base::ReplaceStringPlaceholders(
-                  kTestWebAppBody, {serve_token ? kOriginTrialToken : ""},
-                  nullptr),
-              params->client.get());
-          return true;
-        }
-        if (params->url_request.url.spec() == kTestManifestUrl) {
-          content::URLLoaderInterceptor::WriteResponse(
-              kTestManifestHeaders, kTestManifestBody, params->client.get());
-          return true;
-        }
-        if (params->url_request.url.spec() == kTestIconUrl) {
-          content::URLLoaderInterceptor::WriteResponse(
-              "chrome/test/data/web_apps/basic-192.png", params->client.get());
-          return true;
-        }
-        return false;
-      }));
-
-  // Install web app with origin trial token.
-  content::WebContents* app_web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  AppId app_id =
-      web_app::InstallWebAppFromPage(browser(), GURL(kTestWebAppUrl));
-
-  // Origin trial should grant the app access.
-  WebAppProvider& provider = *WebAppProvider::Get(browser()->profile());
-  EXPECT_EQ(provider.registrar().GetAppCaptureLinks(app_id),
-            blink::mojom::CaptureLinks::kNewClient);
-
-  // Open the page again with the token missing.
-  {
-    class UpdateAwaiter : public AppRegistrarObserver {
-     public:
-      UpdateAwaiter() = default;
-      void AwaitUpdate() { run_loop_.Run(); }
-      void OnWebAppManifestUpdated(const AppId& app_id,
-                                   base::StringPiece old_name) override {
-        run_loop_.Quit();
-      }
-
-     private:
-      base::RunLoop run_loop_;
-    } update_awaiter;
-    base::ScopedObservation<AppRegistrar, AppRegistrarObserver> observer_scope(
-        &update_awaiter);
-    observer_scope.Observe(&provider.registrar());
-
-    serve_token = false;
-    NavigateToURLAndWait(browser(), GURL(kTestWebAppUrl));
-
-    // Close the app window to unblock updating.
-    app_web_contents->Close();
-
-    update_awaiter.AwaitUpdate();
-  }
-
-  // The app should update to no longer have capture_links defined without the
-  // origin trial.
-  EXPECT_EQ(provider.registrar().GetAppCaptureLinks(app_id),
-            blink::mojom::CaptureLinks::kUndefined);
-}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace web_app

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <set>
 
 #include "base/memory/weak_ptr.h"
-#include "components/safe_browsing/core/db/test_database_manager.h"
-#include "components/safe_browsing/core/db/util.h"
+#include "components/safe_browsing/core/browser/db/test_database_manager.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -19,6 +19,11 @@ class CrowdDenyFakeSafeBrowsingDatabaseManager
     : public safe_browsing::TestSafeBrowsingDatabaseManager {
  public:
   CrowdDenyFakeSafeBrowsingDatabaseManager();
+
+  CrowdDenyFakeSafeBrowsingDatabaseManager(
+      const CrowdDenyFakeSafeBrowsingDatabaseManager&) = delete;
+  CrowdDenyFakeSafeBrowsingDatabaseManager& operator=(
+      const CrowdDenyFakeSafeBrowsingDatabaseManager&) = delete;
 
   void SetSimulatedMetadataForUrl(
       const GURL& url,
@@ -40,7 +45,6 @@ class CrowdDenyFakeSafeBrowsingDatabaseManager
   // safe_browsing::TestSafeBrowsingDatabaseManager:
   bool CheckApiBlocklistUrl(const GURL& url, Client* client) override;
   bool CancelApiCheck(Client* client) override;
-  bool IsSupported() const override;
   bool ChecksAreAlwaysAsync() const override;
 
  private:
@@ -54,8 +58,6 @@ class CrowdDenyFakeSafeBrowsingDatabaseManager
 
   base::WeakPtrFactory<CrowdDenyFakeSafeBrowsingDatabaseManager> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrowdDenyFakeSafeBrowsingDatabaseManager);
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_CROWD_DENY_FAKE_SAFE_BROWSING_DATABASE_MANAGER_H_

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,12 @@ ScopedInstallDetails::ScopedInstallDetails(bool system_level,
   details->set_mode(mode);
   details->set_channel(mode->default_channel_name);
   details->set_system_level(system_level);
+  these_details_ = details.get();
+  previous_details_ = InstallDetails::Swap(std::move(details));
+}
+
+ScopedInstallDetails::ScopedInstallDetails(
+    std::unique_ptr<InstallDetails> details) {
   these_details_ = details.get();
   previous_details_ = InstallDetails::Swap(std::move(details));
 }

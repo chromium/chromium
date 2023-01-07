@@ -1,0 +1,51 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+source_set("services") {
+  output_name = "ash_dbus_services"
+
+  deps = [
+    "//base",
+    "//dbus",
+    "//net",
+    "//url",
+  ]
+
+  sources = [
+    "cros_dbus_service.cc",
+    "cros_dbus_service.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  deps = [
+    ":services",
+    "//base",
+    "//dbus:test_support",
+    "//net:test_support",
+  ]
+  sources = [
+    "service_provider_test_helper.cc",
+    "service_provider_test_helper.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":services",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [ "cros_dbus_service_unittest.cc" ]
+}

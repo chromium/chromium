@@ -1,0 +1,4 @@
+monorail {
+  component: "Internals>PerformanceManager"
+}
+team_email: "catan-team@chromium.org"

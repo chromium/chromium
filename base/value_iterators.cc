@@ -1,8 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/value_iterators.h"
+
+#include "base/values.h"
 
 namespace base {
 
@@ -127,6 +129,10 @@ bool operator!=(const const_dict_iterator& lhs,
 dict_iterator_proxy::dict_iterator_proxy(DictStorage* storage)
     : storage_(storage) {}
 
+dict_iterator_proxy::size_type dict_iterator_proxy::size() const {
+  return storage_->size();
+}
+
 dict_iterator_proxy::iterator dict_iterator_proxy::begin() {
   return iterator(storage_->begin());
 }
@@ -186,6 +192,10 @@ const_dict_iterator_proxy::const_dict_iterator_proxy(const DictStorage* storage)
 const_dict_iterator_proxy::const_iterator const_dict_iterator_proxy::begin()
     const {
   return const_iterator(storage_->begin());
+}
+
+const_dict_iterator_proxy::size_type const_dict_iterator_proxy::size() const {
+  return storage_->size();
 }
 
 const_dict_iterator_proxy::const_iterator const_dict_iterator_proxy::end()

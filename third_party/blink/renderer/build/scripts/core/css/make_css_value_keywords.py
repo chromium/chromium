@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import subprocess
 from name_utilities import enum_key_for_css_keyword
 import json5_generator
 

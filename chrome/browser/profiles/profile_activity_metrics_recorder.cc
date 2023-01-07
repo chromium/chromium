@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,11 +27,10 @@ ProfileActivityMetricsRecorder* g_profile_activity_metrics_recorder = nullptr;
 constexpr int kMaxProfileBucket = 100;
 
 // Long time of inactivity that is treated as if user starts the browser anew.
-constexpr base::TimeDelta kLongTimeOfInactivity =
-    base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kLongTimeOfInactivity = base::Minutes(30);
 
 int GetMetricsBucketIndex(const Profile* profile) {
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
+  if (profile->IsGuestSession())
     return 0;
 
   if (!g_browser_process->profile_manager()) {
@@ -105,8 +104,6 @@ void RecordProfilesState() {
 
 void RecordAccountMetrics(const Profile* profile) {
   DCHECK(profile);
-  if (profile->IsEphemeralGuestProfile())
-    return;
 
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -149,8 +146,8 @@ void ProfileActivityMetricsRecorder::OnBrowserSetLastActive(Browser* browser) {
 
     running_session_profile_ = active_profile;
     running_session_start_ = base::TimeTicks::Now();
-    profile_observer_.RemoveAll();
-    profile_observer_.Add(running_session_profile_);
+    profile_observation_.Reset();
+    profile_observation_.Observe(running_session_profile_.get());
 
     // Record state at startup (when |last_session_end_| is 0) and whenever the
     // user starts browsing after a longer time of inactivity. Do it
@@ -186,7 +183,9 @@ void ProfileActivityMetricsRecorder::OnSessionEnded(
   // profiles.
   RecordProfileSessionDuration(running_session_profile_,
                                session_end - running_session_start_);
-  profile_observer_.Remove(running_session_profile_);
+  DCHECK(
+      profile_observation_.IsObservingSource(running_session_profile_.get()));
+  profile_observation_.Reset();
   running_session_profile_ = nullptr;
   last_session_end_ = base::TimeTicks::Now();
 }
@@ -201,7 +200,9 @@ void ProfileActivityMetricsRecorder::OnProfileWillBeDestroyed(
   // TODO(crbug.com/1096145): explore having
   // DesktopSessionDurationTracker call OnSessionEnded() when the
   // profile is destroyed. Remove this workaround if this is done.
-  profile_observer_.Remove(running_session_profile_);
+  DCHECK(
+      profile_observation_.IsObservingSource(running_session_profile_.get()));
+  profile_observation_.Reset();
   running_session_profile_ = nullptr;
   last_active_profile_ = nullptr;
   last_session_end_ = base::TimeTicks::Now();

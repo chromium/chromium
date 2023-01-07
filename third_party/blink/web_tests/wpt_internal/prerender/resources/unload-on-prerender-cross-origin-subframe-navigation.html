@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="unload-utils.js"></script>
+<script src="utils.js"></script>
+<body>
+<script type="module">
+const params = new URLSearchParams(location.search);
+const state = params.get('state') || 'start';
+
+const bc = openChannel();
+
+// Test steps:
+//   1. `start` page starts prerendering `prerendering` page.
+//   2. `prerendering` page adds `same-origin-frame`.
+//   3. `same-origin-frame' navigates to `cross-origin-frame`.
+//   4. `same-origin-frame` asks `start` page to activate `prerendering`.
+//   5. `visibilitychange` event is handled in `same-origin-frame` due to the
+//       activation.
+//   6. `pagehide`, `visibilitychange`, and `unload` events are handled in
+//      `same-origin-frame` for the resumed navigation.
+//   7. `cross-origin-frame` is loaded, then `prerendering` quits the test.
+bc.postMessage('load ' + state);
+if (state === 'start') {
+  const url = createTestUrl('prerendering');
+  startPrerendering(url);
+
+  // Wait for a message from 'same-origin-frame' that is sent after triggering
+  // cross-origin navigation.
+  await waitChannelMessage('request activation');
+
+  // Activate the 'prerendering' page.
+  document.location = url;
+} else if (state === 'prerendering') {
+  const frame = addFrame(createTestUrl('same-origin-frame'));
+
+  // Complete the test when the `cross-origin-frame` is loaded.
+  const message = await waitWindowMessage();
+  bc.postMessage(message);
+  bc.postMessage('Done');
+} else if (state === 'same-origin-frame') {
+  addEventListeners('same-origin-frame');
+
+  // Run a cross-origin navigation.
+  document.location = createCrossOriginTestUrl('cross-origin-frame');
+
+  // Ask the 'start' page to activate the prerendering page.
+  bc.postMessage('request activation');
+} else if (state === 'cross-origin-frame') {
+  // Let the 'prerendering' page know this frame is loaded.
+  window.parent.postMessage('load ' + state, '*');
+}
+
+bc.close();
+</script>
+</body>

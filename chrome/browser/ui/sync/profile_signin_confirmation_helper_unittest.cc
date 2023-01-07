@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -84,21 +84,19 @@ class TestingPrefStoreWithCustomReadError : public TestingPrefStore {
   }
   PrefReadError GetReadError() const override { return read_error_; }
   bool IsInitializationComplete() const override { return true; }
-  void set_read_error(PrefReadError read_error) {
-    read_error_ = read_error;
-  }
+  void set_read_error(PrefReadError read_error) { read_error_ = read_error; }
+
  private:
   ~TestingPrefStoreWithCustomReadError() override {}
   PrefReadError read_error_;
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kExtensionFilePath[] =
     FILE_PATH_LITERAL("c:\\foo");
-#elif defined(OS_POSIX)
-const base::FilePath::CharType kExtensionFilePath[] =
-    FILE_PATH_LITERAL("/oo");
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+const base::FilePath::CharType kExtensionFilePath[] = FILE_PATH_LITERAL("/oo");
 #endif
 
 static scoped_refptr<extensions::Extension> CreateExtension(
@@ -106,18 +104,14 @@ static scoped_refptr<extensions::Extension> CreateExtension(
     const std::string& id,
     extensions::mojom::ManifestLocation location) {
   base::DictionaryValue manifest;
-  manifest.SetString(extensions::manifest_keys::kVersion, "1.0.0.0");
-  manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
-  manifest.SetString(extensions::manifest_keys::kName, name);
+  manifest.SetStringPath(extensions::manifest_keys::kVersion, "1.0.0.0");
+  manifest.SetIntPath(extensions::manifest_keys::kManifestVersion, 2);
+  manifest.SetStringPath(extensions::manifest_keys::kName, name);
   std::string error;
   scoped_refptr<extensions::Extension> extension =
-    extensions::Extension::Create(
-        base::FilePath(kExtensionFilePath).AppendASCII(name),
-        location,
-        manifest,
-        extensions::Extension::NO_FLAGS,
-        id,
-        &error);
+      extensions::Extension::Create(
+          base::FilePath(kExtensionFilePath).AppendASCII(name), location,
+          manifest, extensions::Extension::NO_FLAGS, id, &error);
   return extension;
 }
 #endif
@@ -140,7 +134,8 @@ class ProfileSigninConfirmationHelperTest : public testing::Test {
         new sync_preferences::TestingPrefServiceSyncable(
             /*managed_prefs=*/new TestingPrefStore(),
             /*supervised_user_prefs=*/new TestingPrefStore(),
-            /*extension_prefs=*/new TestingPrefStore(), user_prefs_,
+            /*extension_prefs=*/new TestingPrefStore(),
+            /*standalone_browser_prefs=*/new TestingPrefStore(), user_prefs_,
             /*recommended_prefs=*/new TestingPrefStore(),
             new user_prefs::PrefRegistrySyncable(), new PrefNotifierImpl());
     RegisterUserProfilePrefs(pref_service->registry());
@@ -148,20 +143,20 @@ class ProfileSigninConfirmationHelperTest : public testing::Test {
         base::WrapUnique<sync_preferences::PrefServiceSyncable>(pref_service));
     builder.AddTestingFactory(BookmarkModelFactory::GetInstance(),
                               BookmarkModelFactory::GetDefaultFactory());
+    builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                              HistoryServiceFactory::GetDefaultFactory());
     profile_ = builder.Build();
 
     // Initialize the services we check.
     model_ = BookmarkModelFactory::GetForBrowserContext(profile_.get());
     bookmarks::test::WaitForBookmarkModelToLoad(model_);
-    ASSERT_TRUE(profile_->CreateHistoryService());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     extensions::TestExtensionSystem* system =
         static_cast<extensions::TestExtensionSystem*>(
             extensions::ExtensionSystem::Get(profile_.get()));
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     system->CreateExtensionService(&command_line,
-                                   base::FilePath(kExtensionFilePath),
-                                   false);
+                                   base::FilePath(kExtensionFilePath), false);
 #endif
   }
 
@@ -176,8 +171,8 @@ class ProfileSigninConfirmationHelperTest : public testing::Test {
   base::ScopedTempDir profile_dir_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  TestingPrefStoreWithCustomReadError* user_prefs_;
-  BookmarkModel* model_;
+  raw_ptr<TestingPrefStoreWithCustomReadError> user_prefs_;
+  raw_ptr<BookmarkModel> model_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
@@ -243,7 +238,7 @@ TEST_F(ProfileSigninConfirmationHelperTest,
   profile_->SetIsNewProfile(true);
   char buf[18];
   for (int i = 0; i < 10; i++) {
-    base::snprintf(buf, base::size(buf), "http://foo.com/%d", i);
+    base::snprintf(buf, std::size(buf), "http://foo.com/%d", i);
     history->AddPage(GURL(std::string(buf)), base::Time::Now(), nullptr, 1,
                      GURL(), history::RedirectList(), ui::PAGE_TRANSITION_LINK,
                      history::SOURCE_BROWSED, false, false);

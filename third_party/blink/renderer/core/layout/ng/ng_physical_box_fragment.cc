@@ -1,31 +1,49 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
+#include "build/chromeos_buildflags.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_physical_line_box_fragment.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_disable_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_outline_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
+#include "third_party/blink/renderer/core/paint/ng/ng_inline_paint_context.h"
+#include "third_party/blink/renderer/core/paint/outline_painter.h"
+#include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
 
+#if DCHECK_IS_ON()
+unsigned NGPhysicalBoxFragment::AllowPostLayoutScope::allow_count_ = 0;
+#endif
+
 namespace {
 
-struct SameSizeAsNGPhysicalBoxFragment : NGPhysicalContainerFragment {
+struct SameSizeAsNGPhysicalBoxFragment : NGPhysicalFragment {
+  unsigned flags;
+  wtf_size_t const_num_children;
   LayoutUnit baseline;
   LayoutUnit last_baseline;
   NGInkOverflow ink_overflow;
@@ -41,24 +59,16 @@ bool HasControlClip(const NGPhysicalBoxFragment& self) {
 
 bool ShouldUsePositionForPointInBlockFlowDirection(
     const LayoutObject& layout_object) {
-  const LayoutBlock* const layout_block = DynamicTo<LayoutBlock>(layout_object);
-  if (!layout_block)
-    return false;
-  if (layout_block->IsTableRow()) {
-    // See editing/selection/click-before-and-after-table.html
+  const LayoutBlockFlow* const layout_block_flow =
+      DynamicTo<LayoutBlockFlow>(layout_object);
+  if (!layout_block_flow) {
+    // For <tr>, see editing/selection/click-before-and-after-table.html
     return false;
   }
-  if (layout_block->StyleRef().SpecifiesColumns()) {
+  if (layout_block_flow->StyleRef().SpecifiesColumns()) {
     // Columns are laid out in inline direction.
     return false;
   }
-  if (layout_block->IsTable())
-    return false;
-  // Note: For legacy layout compatibility, we find child by using
-  // |PositionForPointInBlockFlowDirection()| for flex and grid.
-  // TODO(yosin): We should have specific functions for flex and grid instead
-  // of using |PositionForPointInBlockFlowDirection()|,
-  // e.g. "flex-direction:row" layouts children horizontally.
   return true;
 }
 
@@ -68,10 +78,50 @@ inline bool IsHitTestCandidate(const NGPhysicalBoxFragment& fragment) {
          !fragment.IsFloatingOrOutOfFlowPositioned();
 }
 
+// Applies the overflow clip to |result|. For any axis that is clipped, |result|
+// is reset to |no_overflow_rect|. If neither axis is clipped, nothing is
+// changed.
+void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
+                       const PhysicalRect& no_overflow_rect,
+                       PhysicalRect* result) {
+  if (overflow_clip_axes & kOverflowClipX) {
+    result->SetX(no_overflow_rect.X());
+    result->SetWidth(no_overflow_rect.Width());
+  }
+  if (overflow_clip_axes & kOverflowClipY) {
+    result->SetY(no_overflow_rect.Y());
+    result->SetHeight(no_overflow_rect.Height());
+  }
+}
+
+NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
+    NGContainerFragmentBuilder* builder,
+    PhysicalSize outer_size,
+    PhysicalSize inner_size,
+    const NGContainingBlock<LogicalOffset>& containing_block) {
+  return NGContainingBlock<PhysicalOffset>(
+      containing_block.Offset().ConvertToPhysical(
+          builder->Style().GetWritingDirection(), outer_size, inner_size),
+      containing_block.RelativeOffset().ConvertToPhysical(
+          builder->Style().GetWritingDirection(), outer_size, inner_size),
+      containing_block.Fragment(), containing_block.IsInsideColumnSpanner(),
+      containing_block.RequiresContentBeforeBreaking());
+}
+
+NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
+    NGContainerFragmentBuilder* builder,
+    PhysicalSize size,
+    const NGContainingBlock<LogicalOffset>& containing_block) {
+  PhysicalSize containing_block_size =
+      containing_block.Fragment() ? containing_block.Fragment()->Size() : size;
+  return PhysicalContainingBlock(builder, size, containing_block_size,
+                                 containing_block);
+}
+
 }  // namespace
 
 // static
-scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
+const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Create(
     NGBoxFragmentBuilder* builder,
     WritingMode block_or_line_writing_mode) {
   const auto writing_direction = builder->GetWritingDirection();
@@ -88,14 +138,13 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
       ToPhysicalSize(builder->Size(), builder->GetWritingMode());
   WritingModeConverter converter(writing_direction, physical_size);
 
-  base::Optional<PhysicalRect> inflow_bounds;
+  absl::optional<PhysicalRect> inflow_bounds;
   if (builder->inflow_bounds_)
     inflow_bounds = converter.ToPhysical(*builder->inflow_bounds_);
 
 #if DCHECK_IS_ON()
   if (builder->needs_inflow_bounds_explicitly_set_ && builder->node_ &&
-      builder->node_.IsScrollContainer() &&
-      builder->box_type_ != NGBoxType::kColumnBox)
+      builder->node_.IsScrollContainer() && !builder->IsFragmentainerBoxType())
     DCHECK(builder->is_inflow_bounds_explicitly_set_);
   if (builder->needs_may_have_descendant_above_block_start_explicitly_set_)
     DCHECK(builder->is_may_have_descendant_above_block_start_explicitly_set_);
@@ -108,11 +157,13 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
             writing_direction);
     NGLayoutOverflowCalculator calculator(
         To<NGBlockNode>(builder->node_),
-        /* is_css_box */ builder->box_type_ != NGBoxType::kColumnBox, borders,
-        scrollbar, padding, physical_size, writing_direction);
+        /* is_css_box */ !builder->IsFragmentainerBoxType(), borders, scrollbar,
+        padding, physical_size, writing_direction);
 
-    if (NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder())
-      calculator.AddItems(items_builder->Items(physical_size));
+    if (NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder()) {
+      calculator.AddItems(builder->GetLayoutObject(),
+                          items_builder->Items(physical_size));
+    }
 
     for (auto& child : builder->children_) {
       const auto* box_fragment =
@@ -125,6 +176,9 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
                                              box_fragment->Size()));
     }
 
+    if (builder->table_collapsed_borders_)
+      calculator.AddTableSelfRect();
+
     layout_overflow = calculator.Result(inflow_bounds);
   }
 
@@ -132,42 +186,61 @@ scoped_refptr<const NGPhysicalBoxFragment> NGPhysicalBoxFragment::Create(
   // differs from the fragment size.
   bool has_layout_overflow = layout_overflow != PhysicalRect({}, physical_size);
 
+  // Omit |NGFragmentItems| if there were no items; e.g., display-lock.
+  bool has_fragment_items = false;
+  if (NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder()) {
+    if (items_builder->Size())
+      has_fragment_items = true;
+  }
+
   bool has_rare_data =
-      builder->mathml_paint_info_ ||
-      !builder->oof_positioned_fragmentainer_descendants_.IsEmpty() ||
-      !builder->multicols_with_pending_oofs_.IsEmpty() ||
-      builder->table_grid_rect_ || builder->table_column_geometries_ ||
+      builder->frame_set_layout_data_ || builder->mathml_paint_info_ ||
+      builder->table_grid_rect_ || !builder->table_column_geometries_.empty() ||
       builder->table_collapsed_borders_ ||
       builder->table_collapsed_borders_geometry_ ||
-      builder->table_cell_column_index_;
+      builder->table_cell_column_index_ ||
+      !builder->table_section_row_offsets_.empty() || builder->page_name_;
 
   wtf_size_t num_fragment_items =
       builder->ItemsBuilder() ? builder->ItemsBuilder()->Size() : 0;
-  size_t byte_size = ByteSize(num_fragment_items, builder->children_.size(),
-                              has_layout_overflow, has_borders, has_padding,
-                              inflow_bounds.has_value(), has_rare_data);
+  size_t byte_size = AdditionalByteSize(
+      num_fragment_items, builder->children_.size(), has_layout_overflow,
+      has_borders, has_padding, inflow_bounds.has_value(), has_rare_data);
 
   // We store the children list inline in the fragment as a flexible
   // array. Therefore, we need to make sure to allocate enough space for
   // that array here, which requires a manual allocation + placement new.
-  // The initialization of the array is done by NGPhysicalContainerFragment;
+  // The initialization of the array is done by NGPhysicalFragment;
   // we pass the buffer as a constructor argument.
-  void* data = ::WTF::Partitions::FastMalloc(
-      byte_size, ::WTF::GetStringWithTypeName<NGPhysicalBoxFragment>());
-  new (data) NGPhysicalBoxFragment(PassKey(), builder, has_layout_overflow,
-                                   layout_overflow, has_borders, borders,
-                                   has_padding, padding, inflow_bounds,
-                                   has_rare_data, block_or_line_writing_mode);
-  return base::AdoptRef(static_cast<NGPhysicalBoxFragment*>(data));
+  return MakeGarbageCollected<NGPhysicalBoxFragment>(
+      AdditionalBytes(byte_size), PassKey(), builder, has_layout_overflow,
+      layout_overflow, has_borders, borders, has_padding, padding,
+      inflow_bounds, has_fragment_items, has_rare_data,
+      block_or_line_writing_mode);
 }
 
 // static
-scoped_refptr<const NGPhysicalBoxFragment>
+const NGPhysicalBoxFragment* NGPhysicalBoxFragment::Clone(
+    const NGPhysicalBoxFragment& other) {
+  // The size of the new fragment shouldn't differ from the old one.
+  wtf_size_t num_fragment_items = other.Items() ? other.Items()->Size() : 0;
+  size_t byte_size = AdditionalByteSize(
+      num_fragment_items, other.const_num_children_, other.HasLayoutOverflow(),
+      other.HasBorders(), other.HasPadding(), other.HasInflowBounds(),
+      other.ConstHasRareData());
+
+  return MakeGarbageCollected<NGPhysicalBoxFragment>(
+      AdditionalBytes(byte_size), PassKey(), other, other.HasLayoutOverflow(),
+      other.LayoutOverflow());
+}
+
+// static
+const NGPhysicalBoxFragment*
 NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
     const NGPhysicalBoxFragment& other,
-    const base::Optional<PhysicalRect> updated_layout_overflow) {
+    const absl::optional<PhysicalRect> updated_layout_overflow) {
   PhysicalRect layout_overflow = other.LayoutOverflow();
-  bool has_layout_overflow = other.has_layout_overflow_;
+  bool has_layout_overflow = other.HasLayoutOverflow();
 
   if (updated_layout_overflow) {
     layout_overflow = *updated_layout_overflow;
@@ -176,35 +249,92 @@ NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
 
   // The size of the new fragment shouldn't differ from the old one.
   wtf_size_t num_fragment_items = other.Items() ? other.Items()->Size() : 0;
-  size_t byte_size =
-      ByteSize(num_fragment_items, other.num_children_, has_layout_overflow,
-               other.has_borders_, other.has_padding_, other.has_inflow_bounds_,
-               other.has_rare_data_);
+  size_t byte_size = AdditionalByteSize(
+      num_fragment_items, other.const_num_children_, has_layout_overflow,
+      other.HasBorders(), other.HasPadding(), other.HasInflowBounds(),
+      other.ConstHasRareData());
 
-  void* data = ::WTF::Partitions::FastMalloc(
-      byte_size, ::WTF::GetStringWithTypeName<NGPhysicalBoxFragment>());
-  new (data) NGPhysicalBoxFragment(
-      PassKey(), other, has_layout_overflow, layout_overflow,
-      /* recalculate_layout_overflow */ updated_layout_overflow.has_value());
-  return base::AdoptRef(static_cast<NGPhysicalBoxFragment*>(data));
+  const auto* cloned_fragment = MakeGarbageCollected<NGPhysicalBoxFragment>(
+      AdditionalBytes(byte_size), PassKey(), other, has_layout_overflow,
+      layout_overflow);
+
+  // To ensure the fragment tree is consistent, use the post-layout fragment.
+#if DCHECK_IS_ON()
+  AllowPostLayoutScope allow_post_layout_scope;
+#endif
+
+  for (NGLink& child : cloned_fragment->GetMutableForCloning().Children()) {
+    child.fragment = child->PostLayout();
+    DCHECK(child.fragment);
+
+    if (!child->IsFragmentainerBox())
+      continue;
+
+    // Fragmentainers don't have the concept of post-layout fragments, so if
+    // this is a fragmentation context root (such as a multicol container), we
+    // need to not only update its children, but also the children of the
+    // children that are fragmentainers.
+    auto& fragmentainer = *To<NGPhysicalBoxFragment>(child.fragment.Get());
+    for (NGLink& fragmentainer_child :
+         fragmentainer.GetMutableForCloning().Children()) {
+      auto& old_child =
+          *To<NGPhysicalBoxFragment>(fragmentainer_child.fragment.Get());
+      fragmentainer_child.fragment = old_child.PostLayout();
+    }
+  }
+
+  if (cloned_fragment->HasItems()) {
+    // Replace box fragment items with post layout fragments.
+    for (const auto& cloned_item : cloned_fragment->Items()->Items()) {
+      const NGPhysicalBoxFragment* box = cloned_item.BoxFragment();
+      if (!box)
+        continue;
+      box = box->PostLayout();
+      DCHECK(box);
+      cloned_item.GetMutableForCloning().ReplaceBoxFragment(*box);
+    }
+  }
+
+  return cloned_fragment;
 }
 
+namespace {
+template <typename T>
+constexpr void AccountSizeAndPadding(size_t& current_size) {
+  const size_t current_size_with_padding =
+      base::bits::AlignUp(current_size, alignof(T));
+  current_size = current_size_with_padding + sizeof(T);
+}
+}  // namespace
+
 // static
-size_t NGPhysicalBoxFragment::ByteSize(wtf_size_t num_fragment_items,
-                                       wtf_size_t num_children,
-                                       bool has_layout_overflow,
-                                       bool has_borders,
-                                       bool has_padding,
-                                       bool has_inflow_bounds,
-                                       bool has_rare_data) {
-  return sizeof(NGPhysicalBoxFragment) +
-         NGFragmentItems::ByteSizeFor(num_fragment_items) +
-         sizeof(NGLink) * num_children +
-         (has_layout_overflow ? sizeof(PhysicalRect) : 0) +
-         (has_borders ? sizeof(NGPhysicalBoxStrut) : 0) +
-         (has_padding ? sizeof(NGPhysicalBoxStrut) : 0) +
-         (has_inflow_bounds ? sizeof(PhysicalRect) : 0) +
-         (has_rare_data ? sizeof(NGPhysicalBoxFragment::RareData) : 0);
+size_t NGPhysicalBoxFragment::AdditionalByteSize(wtf_size_t num_fragment_items,
+                                                 wtf_size_t num_children,
+                                                 bool has_layout_overflow,
+                                                 bool has_borders,
+                                                 bool has_padding,
+                                                 bool has_inflow_bounds,
+                                                 bool has_rare_data) {
+  // Padding must be 0 for flexible array members.
+  static_assert(0 == (sizeof(NGPhysicalBoxFragment) % alignof(NGLink)));
+
+  size_t additional_size = sizeof(NGLink) * num_children;
+  additional_size =
+      base::bits::AlignUp(additional_size, alignof(NGFragmentItems)) +
+      NGFragmentItems::ByteSizeFor(num_fragment_items);
+
+  if (has_layout_overflow)
+    AccountSizeAndPadding<PhysicalRect>(additional_size);
+  if (has_borders)
+    AccountSizeAndPadding<NGPhysicalBoxStrut>(additional_size);
+  if (has_padding)
+    AccountSizeAndPadding<NGPhysicalBoxStrut>(additional_size);
+  if (has_inflow_bounds)
+    AccountSizeAndPadding<PhysicalRect>(additional_size);
+  if (has_rare_data)
+    AccountSizeAndPadding<NGPhysicalBoxFragment::RareData>(additional_size);
+
+  return additional_size;
 }
 
 NGPhysicalBoxFragment::NGPhysicalBoxFragment(
@@ -216,86 +346,105 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     const NGPhysicalBoxStrut& borders,
     bool has_padding,
     const NGPhysicalBoxStrut& padding,
-    const base::Optional<PhysicalRect>& inflow_bounds,
+    const absl::optional<PhysicalRect>& inflow_bounds,
+    bool has_fragment_items,
     bool has_rare_data,
     WritingMode block_or_line_writing_mode)
-    : NGPhysicalContainerFragment(builder,
-                                  block_or_line_writing_mode,
-                                  children_,
-                                  kFragmentBox,
-                                  builder->BoxType()) {
+    : NGPhysicalFragment(builder,
+                         block_or_line_writing_mode,
+                         kFragmentBox,
+                         builder->BoxType()),
+      bit_field_(ConstHasFragmentItemsFlag::encode(has_fragment_items) |
+                 ConstHasRareDataFlag::encode(has_rare_data) |
+                 HasDescendantsForTablePartFlag::encode(false) |
+                 IsFragmentationContextRootFlag::encode(
+                     builder->is_fragmentation_context_root_) |
+                 IsMonolithicFlag::encode(builder->is_monolithic_)),
+      const_num_children_(builder->children_.size()) {
   DCHECK(layout_object_);
   DCHECK(layout_object_->IsBoxModelObject());
+  DCHECK(!builder->break_token_ || builder->break_token_->IsBlockType());
 
-  has_fragment_items_ = false;
-  if (NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder()) {
-    // Omit |NGFragmentItems| if there were no items; e.g., display-lock.
-    if (items_builder->Size()) {
-      has_fragment_items_ = true;
-      NGFragmentItems* items =
-          const_cast<NGFragmentItems*>(ComputeItemsAddress());
-      DCHECK_EQ(items_builder->GetWritingMode(), block_or_line_writing_mode);
-      DCHECK_EQ(items_builder->Direction(), builder->Direction());
-      items_builder->ToFragmentItems(Size(), items);
-    }
+  PhysicalSize size = Size();
+  const WritingModeConverter converter(
+      {block_or_line_writing_mode, builder->Direction()}, size);
+  wtf_size_t i = 0;
+  for (auto& child : builder->children_) {
+    children_[i].offset =
+        converter.ToPhysical(child.offset, child.fragment->Size());
+    // Fragments in |builder| are not used after |this| was constructed.
+    children_[i].fragment = child.fragment.Release();
+    ++i;
   }
 
-  has_layout_overflow_ = has_layout_overflow;
-  if (has_layout_overflow_) {
+  if (HasItems()) {
+    NGFragmentItemsBuilder* items_builder = builder->ItemsBuilder();
+    NGFragmentItems* items =
+        const_cast<NGFragmentItems*>(ComputeItemsAddress());
+    DCHECK_EQ(items_builder->GetWritingMode(), block_or_line_writing_mode);
+    DCHECK_EQ(items_builder->Direction(), builder->Direction());
+    absl::optional<PhysicalSize> new_size =
+        items_builder->ToFragmentItems(Size(), items);
+    if (new_size)
+      size_ = *new_size;
+  }
+
+  bit_field_.set<HasLayoutOverflowFlag>(has_layout_overflow);
+  if (has_layout_overflow) {
     *const_cast<PhysicalRect*>(ComputeLayoutOverflowAddress()) =
         layout_overflow;
   }
-  ink_overflow_type_ = NGInkOverflow::kNotSet;
-  has_borders_ = has_borders;
-  if (has_borders_)
+  SetInkOverflowType(NGInkOverflow::Type::kNotSet);
+  bit_field_.set<HasBordersFlag>(has_borders);
+  if (has_borders)
     *const_cast<NGPhysicalBoxStrut*>(ComputeBordersAddress()) = borders;
-  has_padding_ = has_padding;
-  if (has_padding_)
+  bit_field_.set<HasPaddingFlag>(has_padding);
+  if (has_padding)
     *const_cast<NGPhysicalBoxStrut*>(ComputePaddingAddress()) = padding;
-  has_inflow_bounds_ = inflow_bounds.has_value();
-  if (has_inflow_bounds_)
+  bit_field_.set<HasInflowBoundsFlag>(inflow_bounds.has_value());
+  if (HasInflowBounds())
     *const_cast<PhysicalRect*>(ComputeInflowBoundsAddress()) = *inflow_bounds;
-  has_rare_data_ = has_rare_data;
-  if (has_rare_data_) {
-    new (const_cast<RareData*>(ComputeRareDataAddress()))
-        RareData(builder, Size());
+  if (ConstHasRareData()) {
+    new (const_cast<RareData*>(ComputeRareDataAddress())) RareData(builder);
   }
 
-  is_first_for_node_ = builder->is_first_for_node_;
-  may_have_descendant_above_block_start_ =
-      builder->may_have_descendant_above_block_start_;
+  bit_field_.set<IsFirstForNodeFlag>(builder->is_first_for_node_);
   is_fieldset_container_ = builder->is_fieldset_container_;
   is_table_ng_part_ = builder->is_table_ng_part_;
   is_legacy_layout_root_ = builder->is_legacy_layout_root_;
-  is_painted_atomically_ =
-      builder->space_ && builder->space_->IsPaintedAtomically();
+  is_painted_atomically_ = builder->space_.IsPaintedAtomically();
   PhysicalBoxSides sides_to_include(builder->sides_to_include_,
                                     builder->GetWritingMode());
-  include_border_top_ = sides_to_include.top;
-  include_border_right_ = sides_to_include.right;
-  include_border_bottom_ = sides_to_include.bottom;
-  include_border_left_ = sides_to_include.left;
-  is_inline_formatting_context_ = builder->is_inline_formatting_context_;
+  bit_field_.set<IncludeBorderTopFlag>(sides_to_include.top);
+  bit_field_.set<IncludeBorderRightFlag>(sides_to_include.right);
+  bit_field_.set<IncludeBorderBottomFlag>(sides_to_include.bottom);
+  bit_field_.set<IncludeBorderLeftFlag>(sides_to_include.left);
+  bit_field_.set<IsInlineFormattingContextFlag>(
+      builder->is_inline_formatting_context_);
   is_math_fraction_ = builder->is_math_fraction_;
   is_math_operator_ = builder->is_math_operator_;
 
-  // TODO(ikilpatrick): Investigate if new table-cells should always produce a
-  // baseline.
-  bool has_layout_containment = layout_object_->ShouldApplyLayoutContainment();
-  if (builder->baseline_.has_value() && !has_layout_containment) {
-    has_baseline_ = true;
-    baseline_ = *builder->baseline_;
+  const bool allow_baseline = !layout_object_->ShouldApplyLayoutContainment() ||
+                              layout_object_->IsTableCell();
+  if (allow_baseline && builder->first_baseline_.has_value()) {
+    has_first_baseline_ = true;
+    first_baseline_ = *builder->first_baseline_;
   } else {
-    has_baseline_ = false;
-    baseline_ = LayoutUnit::Min();
+    has_first_baseline_ = false;
+    first_baseline_ = LayoutUnit::Min();
   }
-  if (builder->last_baseline_.has_value() && !has_layout_containment) {
+  if (allow_baseline && builder->last_baseline_.has_value()) {
     has_last_baseline_ = true;
     last_baseline_ = *builder->last_baseline_;
   } else {
     has_last_baseline_ = false;
     last_baseline_ = LayoutUnit::Min();
   }
+  use_last_baseline_for_inline_baseline_ =
+      builder->use_last_baseline_for_inline_baseline_;
+
+  bit_field_.set<HasDescendantsForTablePartFlag>(
+      const_num_children_ || NeedsOOFPositionedInfoPropagation());
 
 #if DCHECK_IS_ON()
   CheckIntegrity();
@@ -306,71 +455,132 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     PassKey key,
     const NGPhysicalBoxFragment& other,
     bool has_layout_overflow,
-    const PhysicalRect& layout_overflow,
-    bool recalculate_layout_overflow)
-    : NGPhysicalContainerFragment(other,
-                                  recalculate_layout_overflow,
-                                  children_),
-      baseline_(other.baseline_),
+    const PhysicalRect& layout_overflow)
+    : NGPhysicalFragment(other),
+      bit_field_(other.bit_field_),
+      const_num_children_(other.const_num_children_),
+      first_baseline_(other.first_baseline_),
       last_baseline_(other.last_baseline_),
       ink_overflow_(other.InkOverflowType(), other.ink_overflow_) {
-  ink_overflow_type_ = other.ink_overflow_type_;
-  if (has_fragment_items_) {
+  // Shallow-clone the children.
+  for (wtf_size_t i = 0; i < const_num_children_; ++i)
+    children_[i] = other.children_[i];
+
+  SetInkOverflowType(other.InkOverflowType());
+  if (HasItems()) {
     NGFragmentItems* items =
         const_cast<NGFragmentItems*>(ComputeItemsAddress());
     new (items) NGFragmentItems(*other.ComputeItemsAddress());
   }
-  has_layout_overflow_ = has_layout_overflow;
-  if (has_layout_overflow_) {
+  bit_field_.set<HasLayoutOverflowFlag>(has_layout_overflow);
+  if (has_layout_overflow) {
     *const_cast<PhysicalRect*>(ComputeLayoutOverflowAddress()) =
         layout_overflow;
   }
-  if (has_borders_) {
+  if (HasBorders()) {
     *const_cast<NGPhysicalBoxStrut*>(ComputeBordersAddress()) =
         *other.ComputeBordersAddress();
   }
-  if (has_padding_) {
+  if (HasPadding()) {
     *const_cast<NGPhysicalBoxStrut*>(ComputePaddingAddress()) =
         *other.ComputePaddingAddress();
   }
-  if (has_inflow_bounds_) {
+  if (HasInflowBounds()) {
     *const_cast<PhysicalRect*>(ComputeInflowBoundsAddress()) =
         *other.ComputeInflowBoundsAddress();
   }
-  if (has_rare_data_) {
+  if (ConstHasRareData()) {
     new (const_cast<RareData*>(ComputeRareDataAddress()))
         RareData(*other.ComputeRareDataAddress());
   }
 }
 
-NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
-                                          PhysicalSize size)
-    : mathml_paint_info(std::move(builder->mathml_paint_info_)) {
-  oof_positioned_fragmentainer_descendants.ReserveCapacity(
+NGPhysicalBoxFragment::~NGPhysicalBoxFragment() {
+  // Note: This function may not always be called because the dtor of
+  // NGPhysicalFragment is made non-virtual for memory efficiency.
+  SetInkOverflowType(ink_overflow_.Reset(InkOverflowType()));
+}
+
+void NGPhysicalBoxFragment::Dispose() {
+  if (HasInkOverflow())
+    SetInkOverflowType(ink_overflow_.Reset(InkOverflowType()));
+  if (HasItems())
+    ComputeItemsAddress()->~NGFragmentItems();
+  if (ConstHasRareData())
+    ComputeRareDataAddress()->~RareData();
+}
+
+// TODO(kojii): Move to ng_physical_fragment.cc
+NGPhysicalFragment::OutOfFlowData*
+NGPhysicalFragment::FragmentedOutOfFlowDataFromBuilder(
+    NGContainerFragmentBuilder* builder) {
+  DCHECK(has_fragmented_out_of_flow_data_);
+  DCHECK_EQ(has_fragmented_out_of_flow_data_,
+            !builder->oof_positioned_fragmentainer_descendants_.empty() ||
+                !builder->multicols_with_pending_oofs_.empty());
+  NGFragmentedOutOfFlowData* fragmented_data =
+      MakeGarbageCollected<NGFragmentedOutOfFlowData>();
+  fragmented_data->oof_positioned_fragmentainer_descendants.reserve(
       builder->oof_positioned_fragmentainer_descendants_.size());
-  const WritingModeConverter converter(
-      {builder->Style().GetWritingMode(), builder->Direction()}, size);
+  const PhysicalSize& size = Size();
+  WritingDirectionMode writing_direction = builder->GetWritingDirection();
+  const WritingModeConverter converter(writing_direction, size);
   for (const auto& descendant :
        builder->oof_positioned_fragmentainer_descendants_) {
-    oof_positioned_fragmentainer_descendants.emplace_back(
-        descendant.node,
-        descendant.static_position.ConvertToPhysical(converter),
-        descendant.inline_container,
-        descendant.containing_block_offset.ConvertToPhysical(
-            builder->Style().GetWritingDirection(), size,
-            descendant.containing_block_fragment
-                ? descendant.containing_block_fragment->Size()
-                : PhysicalSize()),
-        descendant.containing_block_fragment);
+    NGInlineContainer<PhysicalOffset> inline_container(
+        descendant.inline_container.container,
+        converter.ToPhysical(descendant.inline_container.relative_offset,
+                             PhysicalSize()));
+    NGInlineContainer<PhysicalOffset> fixedpos_inline_container(
+        descendant.fixedpos_inline_container.container,
+        converter.ToPhysical(
+            descendant.fixedpos_inline_container.relative_offset,
+            PhysicalSize()));
+
+    // The static position should remain relative to the containing block.
+    PhysicalSize containing_block_size =
+        descendant.containing_block.Fragment()
+            ? descendant.containing_block.Fragment()->Size()
+            : size;
+    const WritingModeConverter containing_block_converter(
+        writing_direction, containing_block_size);
+
+    fragmented_data->oof_positioned_fragmentainer_descendants.emplace_back(
+        descendant.Node(),
+        descendant.static_position.ConvertToPhysical(
+            containing_block_converter),
+        inline_container,
+        PhysicalContainingBlock(builder, size, containing_block_size,
+                                descendant.containing_block),
+        PhysicalContainingBlock(builder, size,
+                                descendant.fixedpos_containing_block),
+        fixedpos_inline_container);
   }
-  if (builder->HasMulticolsWithPendingOOFs()) {
-    multicols_with_pending_oofs =
-        std::move(builder->multicols_with_pending_oofs_);
+  for (const auto& multicol : builder->multicols_with_pending_oofs_) {
+    auto& value = multicol.value;
+    NGInlineContainer<PhysicalOffset> fixedpos_inline_container(
+        value->fixedpos_inline_container.container,
+        converter.ToPhysical(value->fixedpos_inline_container.relative_offset,
+                             PhysicalSize()));
+    fragmented_data->multicols_with_pending_oofs.insert(
+        multicol.key,
+        MakeGarbageCollected<NGMulticolWithPendingOOFs<PhysicalOffset>>(
+            value->multicol_offset.ConvertToPhysical(
+                builder->Style().GetWritingDirection(), size, PhysicalSize()),
+            PhysicalContainingBlock(builder, size,
+                                    value->fixedpos_containing_block),
+            fixedpos_inline_container));
   }
+  return fragmented_data;
+}
+
+NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder)
+    : frame_set_layout_data(std::move(builder->frame_set_layout_data_)),
+      mathml_paint_info(std::move(builder->mathml_paint_info_)) {
   if (builder->table_grid_rect_)
     table_grid_rect = *builder->table_grid_rect_;
-  if (builder->table_column_geometries_)
-    table_column_geometries = *builder->table_column_geometries_;
+  if (!builder->table_column_geometries_.empty())
+    table_column_geometries = builder->table_column_geometries_;
   if (builder->table_collapsed_borders_)
     table_collapsed_borders = std::move(builder->table_collapsed_borders_);
   if (builder->table_collapsed_borders_geometry_) {
@@ -379,12 +589,18 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
   }
   if (builder->table_cell_column_index_)
     table_cell_column_index = *builder->table_cell_column_index_;
+  if (!builder->table_section_row_offsets_.empty()) {
+    table_section_start_row_index = builder->table_section_start_row_index_;
+    table_section_row_offsets = std::move(builder->table_section_row_offsets_);
+  }
+  page_name = builder->page_name_;
 }
 
 NGPhysicalBoxFragment::RareData::RareData(const RareData& other)
-    : oof_positioned_fragmentainer_descendants(
-          other.oof_positioned_fragmentainer_descendants),
-      multicols_with_pending_oofs(other.multicols_with_pending_oofs),
+    : frame_set_layout_data(
+          other.frame_set_layout_data
+              ? new FrameSetLayoutData(*other.frame_set_layout_data)
+              : nullptr),
       mathml_paint_info(other.mathml_paint_info
                             ? new NGMathMLPaintInfo(*other.mathml_paint_info)
                             : nullptr),
@@ -396,32 +612,34 @@ NGPhysicalBoxFragment::RareData::RareData(const RareData& other)
               ? new NGTableFragmentData::CollapsedBordersGeometry(
                     *other.table_collapsed_borders_geometry)
               : nullptr),
-      table_cell_column_index(other.table_cell_column_index) {}
-
-scoped_refptr<const NGLayoutResult>
-NGPhysicalBoxFragment::CloneAsHiddenForPaint() const {
-  const ComputedStyle& style = Style();
-  NGBoxFragmentBuilder builder(GetMutableLayoutObject(), &style,
-                               style.GetWritingDirection());
-  builder.SetBoxType(BoxType());
-  NGFragmentGeometry initial_fragment_geometry{
-      Size().ConvertToLogical(style.GetWritingMode())};
-  builder.SetInitialFragmentGeometry(initial_fragment_geometry);
-  builder.SetIsHiddenForPaint(true);
-  return builder.ToBoxFragment();
-}
+      table_cell_column_index(other.table_cell_column_index),
+      table_section_start_row_index(other.table_section_start_row_index),
+      table_section_row_offsets(other.table_section_row_offsets),
+      page_name(other.page_name) {}
 
 const LayoutBox* NGPhysicalBoxFragment::OwnerLayoutBox() const {
+  // TODO(layout-dev): We should probably get rid of this method, now that it
+  // does nothing, apart from some checking. The checks are useful, but could be
+  // moved elsewhere.
   const LayoutBox* owner_box =
       DynamicTo<LayoutBox>(GetSelfOrContainerLayoutObject());
+
+#if DCHECK_IS_ON()
   DCHECK(owner_box);
-  if (UNLIKELY(IsColumnBox())) {
-    owner_box = To<LayoutBox>(owner_box->SlowFirstChild());
-    DCHECK(owner_box && owner_box->IsLayoutFlowThread());
+  if (UNLIKELY(IsFragmentainerBox())) {
+    if (owner_box->IsLayoutView()) {
+      DCHECK(IsPageBox());
+      DCHECK(To<LayoutView>(owner_box)->ShouldUsePrintingLayout());
+    } else {
+      DCHECK(IsColumnBox());
+    }
+  } else {
+    // Check |this| and the |LayoutBox| that produced it are in sync.
+    DCHECK(owner_box->PhysicalFragments().Contains(*this));
+    DCHECK_EQ(IsFirstForNode(), this == owner_box->GetPhysicalFragment(0));
   }
-  // Check |this| and the |LayoutBox| that produced it are in sync.
-  DCHECK(owner_box->PhysicalFragments().Contains(*this));
-  DCHECK_EQ(IsFirstForNode(), this == owner_box->GetPhysicalFragment(0));
+#endif
+
   return owner_box;
 }
 
@@ -430,6 +648,8 @@ LayoutBox* NGPhysicalBoxFragment::MutableOwnerLayoutBox() const {
 }
 
 PhysicalOffset NGPhysicalBoxFragment::OffsetFromOwnerLayoutBox() const {
+  DCHECK(IsCSSBox());
+
   // This function uses |FragmentData|, so must be |kPrePaintClean|.
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
@@ -468,6 +688,11 @@ PhysicalOffset NGPhysicalBoxFragment::OffsetFromOwnerLayoutBox() const {
 }
 
 const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
+  // While side effects are disabled, new fragments are not copied to
+  // |LayoutBox|. Just return the given fragment.
+  if (NGDisableSideEffectsScope::IsDisabled())
+    return this;
+
   const auto* layout_object = GetSelfOrContainerLayoutObject();
   if (UNLIKELY(!layout_object)) {
     NOTREACHED();
@@ -478,51 +703,112 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
     DCHECK(IsInlineBox());
     return this;
   }
-  if (UNLIKELY(IsColumnBox())) {
-    // Column boxes should not be a relayout boundary.
+  if (UNLIKELY(!IsCSSBox())) {
+    // We don't need to do anything special for fragments that don't correspond
+    // to entries in the CSS box tree (such as fragmentainers). Any post-layout
+    // fragmentainers should be found as children of the post-layout fragments
+    // of the containing block.
+    //
+    // TODO(mstensho): Clean up this method. Rather than calling
+    // GetSelfOrContainerLayoutObject() above, we first bail on !IsCSSBox(), and
+    // then simply use GetLayoutObject().
     return this;
   }
 
   const wtf_size_t fragment_count = box->PhysicalFragmentCount();
   if (UNLIKELY(fragment_count == 0)) {
-    // This should not happen, but DCHECK hits. crbug.com/1107204
+#if DCHECK_IS_ON()
+    DCHECK(AllowPostLayoutScope::IsAllowed());
+#endif
     return nullptr;
   }
-  if (fragment_count == 1) {
-    const NGPhysicalBoxFragment* post_layout = box->GetPhysicalFragment(0);
-    DCHECK(post_layout);
-    if (UNLIKELY(post_layout != this)) {
-      // This can happen at the relayout boundary crbug.com/829028
-      // but DCHECKing |IsRelayoutBoundary()| hits. crbug.com/1107204
-      return post_layout;
-    }
-  }
-  // TODO(crbug.com/829028): Block fragmentation not supported yet.
 
-  DCHECK(std::any_of(box->PhysicalFragments().begin(),
-                     box->PhysicalFragments().end(),
-                     [this](const NGPhysicalFragment& fragment) {
-                       return this == &fragment;
-                     }));
-  return this;
+  const NGPhysicalBoxFragment* post_layout = nullptr;
+  if (fragment_count == 1) {
+    post_layout = box->GetPhysicalFragment(0);
+    DCHECK(post_layout);
+  } else if (const auto* break_token = BreakToken()) {
+    const unsigned index = break_token->SequenceNumber();
+    if (index < fragment_count) {
+      post_layout = box->GetPhysicalFragment(index);
+      DCHECK(post_layout);
+      DCHECK(!post_layout->BreakToken() ||
+             post_layout->BreakToken()->SequenceNumber() == index);
+    }
+  } else {
+    post_layout = &box->PhysicalFragments().back();
+  }
+
+  if (post_layout == this)
+    return this;
+
+// TODO(crbug.com/1241721): Revert https://crrev.com/c/3108806 to re-enable this
+// DCHECK on CrOS.
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS_ASH)
+  DCHECK(AllowPostLayoutScope::IsAllowed());
+#endif
+  return post_layout;
 }
 
-PhysicalRect NGPhysicalBoxFragment::InkOverflow() const {
-  if (const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject()))
-    return owner_box->PhysicalVisualOverflowRect();
-  // TODO(kojii): (!IsCSSBox() || IsInlineBox()) is not supported yet. Implement
-  // if needed.
-  NOTREACHED();
-  return LocalRect();
+PhysicalRect NGPhysicalBoxFragment::SelfInkOverflow() const {
+  if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
+    const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
+    return owner_box->PhysicalSelfVisualOverflowRect();
+  }
+  if (!HasInkOverflow())
+    return LocalRect();
+  return ink_overflow_.Self(InkOverflowType(), Size());
 }
 
 PhysicalRect NGPhysicalBoxFragment::ContentsInkOverflow() const {
-  if (const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject()))
+  if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
+    const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
     return owner_box->PhysicalContentsVisualOverflowRect();
-  // TODO(kojii): (!IsCSSBox() || IsInlineBox()) is not supported yet. Implement
-  // if needed.
-  NOTREACHED();
-  return LocalRect();
+  }
+  if (!HasInkOverflow())
+    return LocalRect();
+  return ink_overflow_.Contents(InkOverflowType(), Size());
+}
+
+PhysicalRect NGPhysicalBoxFragment::InkOverflow() const {
+  if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
+    const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
+    return owner_box->PhysicalVisualOverflowRect();
+  }
+
+  if (!HasInkOverflow())
+    return LocalRect();
+
+  const PhysicalRect self_rect = ink_overflow_.Self(InkOverflowType(), Size());
+  const ComputedStyle& style = Style();
+  if (style.HasMask())
+    return self_rect;
+
+  const OverflowClipAxes overflow_clip_axes = GetOverflowClipAxes();
+  if (overflow_clip_axes == kNoOverflowClip) {
+    return UnionRect(self_rect,
+                     ink_overflow_.Contents(InkOverflowType(), Size()));
+  }
+
+  if (overflow_clip_axes == kOverflowClipBothAxis) {
+    if (ShouldApplyOverflowClipMargin()) {
+      const PhysicalRect& contents_rect =
+          ink_overflow_.Contents(InkOverflowType(), Size());
+      if (!contents_rect.IsEmpty()) {
+        PhysicalRect result = LocalRect();
+        result.Expand(OverflowClipMarginOutsets());
+        result.Intersect(contents_rect);
+        result.Unite(self_rect);
+        return result;
+      }
+    }
+    return self_rect;
+  }
+
+  PhysicalRect result = ink_overflow_.Contents(InkOverflowType(), Size());
+  result.Unite(self_rect);
+  ApplyOverflowClip(overflow_clip_axes, self_rect, &result);
+  return result;
 }
 
 PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
@@ -531,6 +817,52 @@ PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
   DCHECK(GetLayoutObject() && GetLayoutObject()->IsBox());
   const LayoutBox* box = To<LayoutBox>(GetLayoutObject());
   return box->OverflowClipRect(location, overlay_scrollbar_clip_behavior);
+}
+
+PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
+    const PhysicalOffset& location,
+    const NGBlockBreakToken* incoming_break_token,
+    OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
+  PhysicalRect clip_rect =
+      OverflowClipRect(location, overlay_scrollbar_clip_behavior);
+  if (!incoming_break_token && !BreakToken())
+    return clip_rect;
+
+  // Clip the stitched box clip rectangle against the bounds of the fragment.
+  //
+  // TODO(layout-dev): It's most likely better to actually store the clip
+  // rectangle in each fragment, rather than post-processing the stitched clip
+  // rectangle like this.
+  auto writing_direction = Style().GetWritingDirection();
+  const LayoutBox* box = To<LayoutBox>(GetLayoutObject());
+  WritingModeConverter converter(writing_direction, PhysicalSize(box->Size()));
+  // Make the clip rectangle relative to the layout box.
+  clip_rect.offset -= location;
+  LogicalOffset stitched_offset;
+  if (incoming_break_token)
+    stitched_offset.block_offset = incoming_break_token->ConsumedBlockSize();
+  LogicalRect logical_fragment_rect(
+      stitched_offset,
+      Size().ConvertToLogical(writing_direction.GetWritingMode()));
+  PhysicalRect physical_fragment_rect =
+      converter.ToPhysical(logical_fragment_rect);
+
+  const auto overflow_clip = box->GetOverflowClipAxes();
+  PhysicalRect overflow_physical_fragment_rect = physical_fragment_rect;
+  if (overflow_clip != kOverflowClipBothAxis) {
+    ApplyVisibleOverflowToClipRect(overflow_clip,
+                                   overflow_physical_fragment_rect);
+  } else if (box->ShouldApplyOverflowClipMargin()) {
+    overflow_physical_fragment_rect.Expand(OverflowClipMarginOutsets());
+  }
+
+  // Clip against the fragment's bounds.
+  clip_rect.Intersect(overflow_physical_fragment_rect);
+  // Make the clip rectangle relative to the fragment.
+  clip_rect.offset -= physical_fragment_rect.offset;
+  // Make the clip rectangle relative to whatever the caller wants.
+  clip_rect.offset += location;
+  return clip_rect;
 }
 
 bool NGPhysicalBoxFragment::MayIntersect(
@@ -547,7 +879,11 @@ bool NGPhysicalBoxFragment::MayIntersect(
 PhysicalRect NGPhysicalBoxFragment::ScrollableOverflow(
     TextHeightType height_type) const {
   DCHECK(GetLayoutObject());
-  DCHECK_EQ(PostLayout(), this);
+  // TODO(kojii): Scrollable overflow is computed after layout, and that the
+  // tree needs to be consistent, except for Ruby where it is computed during
+  // layout. It might be that |ComputeAnnotationOverflow| should move to layout
+  // overflow recalc, but it is to be thought out.
+  DCHECK(height_type == TextHeightType::kEmHeight || PostLayout() == this);
   if (UNLIKELY(IsLayoutObjectDestroyedOrMoved())) {
     NOTREACHED();
     return PhysicalRect();
@@ -581,7 +917,8 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflow(
 
 PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
     TextHeightType height_type) const {
-  DCHECK_EQ(PostLayout(), this);
+  // TODO(kojii): See |ScrollableOverflow|.
+  DCHECK(height_type == TextHeightType::kEmHeight || PostLayout() == this);
   const NGFragmentItems* items = Items();
   if (Children().empty() && !items)
     return PhysicalRect();
@@ -591,6 +928,9 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
   // - Float / OOF overflow is added as is.
   // - Children not reachable by scroll overflow do not contribute to it.
   struct ComputeOverflowContext {
+    STACK_ALLOCATED();
+
+   public:
     ComputeOverflowContext(const NGPhysicalBoxFragment& container,
                            TextHeightType height_type)
         : container(container),
@@ -686,8 +1026,8 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
     const WritingDirectionMode writing_direction;
     const LayoutUnit border_inline_start;
     const LayoutUnit border_block_start;
-    base::Optional<NGPhysicalBoxStrut> padding_strut;
-    base::Optional<PhysicalRect> lineboxes_enclosing_rect;
+    absl::optional<NGPhysicalBoxStrut> padding_strut;
+    absl::optional<PhysicalRect> lineboxes_enclosing_rect;
     PhysicalRect children_overflow;
     TextHeightType height_type;
   } context(*this, height_type);
@@ -738,10 +1078,9 @@ PhysicalRect NGPhysicalBoxFragment::ScrollableOverflowFromChildren(
   return context.children_overflow;
 }
 
-LayoutSize NGPhysicalBoxFragment::PixelSnappedScrolledContentOffset() const {
+gfx::Vector2d NGPhysicalBoxFragment::PixelSnappedScrolledContentOffset() const {
   DCHECK(GetLayoutObject());
-  const LayoutBox* box = To<LayoutBox>(GetLayoutObject());
-  return box->PixelSnappedScrolledContentOffset();
+  return To<LayoutBox>(*GetLayoutObject()).PixelSnappedScrolledContentOffset();
 }
 
 PhysicalSize NGPhysicalBoxFragment::ScrollSize() const {
@@ -783,33 +1122,177 @@ NGPhysicalBoxFragment::InlineContainerFragmentIfOutlineOwner() const {
   }
 }
 
+void NGPhysicalBoxFragment::SetInkOverflow(const PhysicalRect& self,
+                                           const PhysicalRect& contents) {
+  SetInkOverflowType(
+      ink_overflow_.Set(InkOverflowType(), self, contents, Size()));
+}
+
+void NGPhysicalBoxFragment::RecalcInkOverflow(const PhysicalRect& contents) {
+  const PhysicalRect self_rect = ComputeSelfInkOverflow();
+  SetInkOverflow(self_rect, contents);
+}
+
+void NGPhysicalBoxFragment::RecalcInkOverflow() {
+  DCHECK(CanUseFragmentsForInkOverflow());
+  const LayoutObject* layout_object = GetSelfOrContainerLayoutObject();
+  DCHECK(layout_object);
+  DCHECK(
+      !DisplayLockUtilities::LockedAncestorPreventingPrePaint(*layout_object));
+
+  PhysicalRect contents_rect;
+  if (!layout_object->ChildPrePaintBlockedByDisplayLock())
+    contents_rect = RecalcContentsInkOverflow();
+  RecalcInkOverflow(contents_rect);
+
+  // Copy the computed values to the |OwnerBox| if |this| is the last fragment.
+
+  // Fragmentainers may or may not have |BreakToken|s, and that
+  // |CopyVisualOverflowFromFragments| cannot compute stitched coordinate for
+  // them. See crbug.com/1197561.
+  if (UNLIKELY(IsFragmentainerBox()))
+    return;
+
+  if (BreakToken()) {
+    DCHECK_NE(this, &OwnerLayoutBox()->PhysicalFragments().back());
+    return;
+  }
+  DCHECK_EQ(this, &OwnerLayoutBox()->PhysicalFragments().back());
+
+  // We need to copy to the owner box, but |OwnerLayoutBox| should be equal to
+  // |GetLayoutObject| except for column boxes, and since we early-return for
+  // column boxes, |GetMutableLayoutObject| should do the work.
+  DCHECK_EQ(MutableOwnerLayoutBox(), GetMutableLayoutObject());
+  LayoutBox* owner_box = To<LayoutBox>(GetMutableLayoutObject());
+  DCHECK(owner_box);
+  DCHECK(owner_box->PhysicalFragments().Contains(*this));
+  owner_box->CopyVisualOverflowFromFragments();
+}
+
+// Recalculate ink overflow of children. Returns the contents ink overflow
+// for |this|.
+PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
+  DCHECK(GetSelfOrContainerLayoutObject());
+  DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(
+      *GetSelfOrContainerLayoutObject()));
+  DCHECK(
+      !GetSelfOrContainerLayoutObject()->ChildPrePaintBlockedByDisplayLock());
+
+  PhysicalRect contents_rect;
+  if (const NGFragmentItems* items = Items()) {
+    NGInlineCursor cursor(*this, *items);
+    NGInlinePaintContext child_inline_context;
+    contents_rect = NGFragmentItem::RecalcInkOverflowForCursor(
+        &cursor, &child_inline_context);
+
+    // Add text decorations and emphasis mark ink over flow for combined
+    // text.
+    const auto* const text_combine =
+        DynamicTo<LayoutNGTextCombine>(GetLayoutObject());
+    if (UNLIKELY(text_combine))
+      contents_rect.Unite(text_combine->RecalcContentsInkOverflow());
+
+    // Even if this turned out to be an inline formatting context with
+    // fragment items (handled above), we need to handle floating descendants.
+    // If a float is block-fragmented, it is resumed as a regular box fragment
+    // child, rather than becoming a fragment item.
+    if (!HasFloatingDescendantsForPaint())
+      return contents_rect;
+  }
+
+  for (const NGLink& child : PostLayoutChildren()) {
+    const auto* child_fragment = DynamicTo<NGPhysicalBoxFragment>(child.get());
+    if (!child_fragment || child_fragment->HasSelfPaintingLayer())
+      continue;
+    DCHECK(!child_fragment->IsOutOfFlowPositioned());
+
+    PhysicalRect child_rect;
+    if (child_fragment->CanUseFragmentsForInkOverflow()) {
+      child_fragment->GetMutableForPainting().RecalcInkOverflow();
+      child_rect = child_fragment->InkOverflow();
+    } else {
+      LayoutBox* child_layout_object = child_fragment->MutableOwnerLayoutBox();
+      DCHECK(child_layout_object);
+      DCHECK(!child_layout_object->CanUseFragmentsForVisualOverflow());
+      child_layout_object->RecalcVisualOverflow();
+      // TODO(crbug.com/1144203): Reconsider this when fragment-based ink
+      // overflow supports block fragmentation. Never allow flow threads to
+      // propagate overflow up to a parent.
+      DCHECK_EQ(child_fragment->IsColumnBox(),
+                child_layout_object->IsLayoutFlowThread());
+      if (child_fragment->IsColumnBox())
+        continue;
+      child_rect = child_layout_object->PhysicalVisualOverflowRect();
+    }
+    child_rect.offset += child.offset;
+    contents_rect.Unite(child_rect);
+  }
+  return contents_rect;
+}
+
 PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
   DCHECK_EQ(PostLayout(), this);
-  CheckCanUpdateInkOverflow();
   const ComputedStyle& style = Style();
-  if (!style.HasVisualOverflowingEffect())
-    return LocalRect();
 
-  DCHECK(GetLayoutObject());
   PhysicalRect ink_overflow(LocalRect());
+  if (UNLIKELY(IsTableNGRow())) {
+    // This is necessary because table-rows paints beyond border box if it
+    // contains rowspanned cells.
+    for (const NGLink& child : PostLayoutChildren()) {
+      const auto& child_fragment = To<NGPhysicalBoxFragment>(*child);
+      if (!child_fragment.IsTableNGCell())
+        continue;
+      const auto* child_layout_object =
+          To<LayoutNGTableCell>(child_fragment.GetLayoutObject());
+      if (child_layout_object->ComputedRowSpan() == 1)
+        continue;
+      PhysicalRect child_rect;
+      if (child_fragment.CanUseFragmentsForInkOverflow())
+        child_rect = child_fragment.InkOverflow();
+      else
+        child_rect = child_layout_object->PhysicalVisualOverflowRect();
+      child_rect.offset += child.offset;
+      ink_overflow.Unite(child_rect);
+    }
+  }
+
+  if (!style.HasVisualOverflowingEffect())
+    return ink_overflow;
+
   ink_overflow.Expand(style.BoxDecorationOutsets());
+
   if (style.HasOutline() && IsOutlineOwner()) {
     Vector<PhysicalRect> outline_rects;
+    LayoutObject::OutlineInfo info;
     // The result rects are in coordinates of this object's border box.
     AddSelfOutlineRects(PhysicalOffset(),
                         style.OutlineRectsShouldIncludeBlockVisualOverflow(),
-                        &outline_rects);
+                        &outline_rects, &info);
     PhysicalRect rect = UnionRect(outline_rects);
-    rect.Inflate(LayoutUnit(style.OutlineOutsetExtent()));
+    rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
     ink_overflow.Unite(rect);
   }
   return ink_overflow;
 }
 
+#if DCHECK_IS_ON()
+void NGPhysicalBoxFragment::InvalidateInkOverflow() {
+  SetInkOverflowType(ink_overflow_.Invalidate(InkOverflowType()));
+}
+#endif
+
 void NGPhysicalBoxFragment::AddSelfOutlineRects(
     const PhysicalOffset& additional_offset,
     NGOutlineType outline_type,
-    Vector<PhysicalRect>* outline_rects) const {
+    Vector<PhysicalRect>* outline_rects,
+    LayoutObject::OutlineInfo* info) const {
+  if (info) {
+    if (IsSvgText())
+      *info = LayoutObject::OutlineInfo::GetUnzoomedFromStyle(Style());
+    else
+      *info = LayoutObject::OutlineInfo::GetFromStyle(Style());
+  }
+
   AddOutlineRects(additional_offset, outline_type,
                   /* container_relative */ false, outline_rects);
 }
@@ -837,8 +1320,16 @@ void NGPhysicalBoxFragment::AddOutlineRects(
   DCHECK(IsOutlineOwner());
 
   // For anonymous blocks, the children add outline rects.
-  if (!IsAnonymousBlock())
-    outline_rects->emplace_back(additional_offset, Size().ToLayoutSize());
+  if (!IsAnonymousBlock()) {
+    if (IsSvgText()) {
+      if (const NGFragmentItems* items = Items()) {
+        outline_rects->emplace_back(PhysicalRect::EnclosingRect(
+            GetLayoutObject()->ObjectBoundingBox()));
+      }
+    } else {
+      outline_rects->emplace_back(additional_offset, Size().ToLayoutSize());
+    }
+  }
 
   if (outline_type == NGOutlineType::kIncludeBlockVisualOverflow &&
       !HasNonVisibleOverflow() && !HasControlClip(*this)) {
@@ -848,17 +1339,22 @@ void NGPhysicalBoxFragment::AddOutlineRects(
     // additional_offset to be an offset from containing_block.
     // Since containing_block is our layout object, offset must be 0,0.
     // https://crbug.com/968019
-    Vector<PhysicalRect> children_rects;
+    const wtf_size_t size_before = outline_rects->size();
     AddOutlineRectsForNormalChildren(
-        &children_rects, PhysicalOffset(), outline_type,
+        outline_rects, PhysicalOffset(), outline_type,
         To<LayoutBoxModelObject>(GetLayoutObject()));
     if (!additional_offset.IsZero()) {
-      for (auto& rect : children_rects)
+      for (PhysicalRect& rect :
+           base::make_span(*outline_rects).subspan(size_before))
         rect.offset += additional_offset;
     }
-    outline_rects->AppendVector(children_rects);
-    // LayoutBlock::AddOutlineRects also adds out of flow objects here.
-    // In LayoutNG out of flow objects are not part of the outline.
+    for (const auto& child : PostLayoutChildren()) {
+      if (child->IsOutOfFlowPositioned()) {
+        AddOutlineRectsForDescendant(
+            child, outline_rects, additional_offset, outline_type,
+            To<LayoutBoxModelObject>(GetLayoutObject()));
+      }
+    }
   }
   // TODO(kojii): Needs inline_element_continuation logic from
   // LayoutBlockFlow::AddOutlineRects?
@@ -890,6 +1386,8 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
   NGInlineCursor cursor(*container);
   cursor.MoveTo(*layout_object);
   DCHECK(cursor);
+  const PhysicalOffset this_offset_in_container =
+      cursor.Current()->OffsetInContainerFragment();
 #if DCHECK_IS_ON()
   bool has_this_fragment = false;
 #endif
@@ -898,8 +1396,12 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
 #if DCHECK_IS_ON()
     has_this_fragment = has_this_fragment || current.BoxFragment() == this;
 #endif
-    if (!current.Size().IsZero())
-      rects->push_back(current.RectInContainerFragment());
+    if (!current.Size().IsZero()) {
+      const NGPhysicalBoxFragment* fragment = current.BoxFragment();
+      DCHECK(fragment);
+      if (!fragment->IsOpaque() && !fragment->IsSvg())
+        rects->push_back(current.RectInContainerFragment());
+    }
 
     // Add descendants if any, in the container-relative coordinate.
     if (!current.HasChildren())
@@ -915,9 +1417,10 @@ void NGPhysicalBoxFragment::AddOutlineRectsForInlineBox(
   if (rects->size() <= initial_rects_size)
     return;
 
+  // At this point, |rects| are in the container coordinate space.
   // Adjust the rectangles using |additional_offset| and |container_relative|.
   if (!container_relative)
-    additional_offset -= (*rects)[initial_rects_size].offset;
+    additional_offset -= this_offset_in_container;
   if (additional_offset.IsZero())
     return;
   for (PhysicalRect& rect :
@@ -937,16 +1440,18 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
           ? point + PhysicalOffset(PixelSnappedScrolledContentOffset())
           : point;
 
-  if (const NGFragmentItems* items = Items()) {
-    NGInlineCursor cursor(*this, *items);
-    if (const PositionWithAffinity position =
-            cursor.PositionForPointInInlineFormattingContext(point_in_contents,
-                                                             *this))
-      return AdjustForEditingBoundary(position);
-    return layout_object_->CreatePositionWithAffinity(0);
+  if (!layout_object_->ChildPaintBlockedByDisplayLock()) {
+    if (const NGFragmentItems* items = Items()) {
+      NGInlineCursor cursor(*this, *items);
+      if (const PositionWithAffinity position =
+              cursor.PositionForPointInInlineFormattingContext(
+                  point_in_contents, *this))
+        return AdjustForEditingBoundary(position);
+      return layout_object_->CreatePositionWithAffinity(0);
+    }
   }
 
-  if (IsA<LayoutBlockFlow>(layout_object_) &&
+  if (IsA<LayoutBlockFlow>(*layout_object_) &&
       layout_object_->ChildrenInline()) {
     // Here |this| may have out-of-flow children without inline children, we
     // don't find closest child of |point| for out-of-flow children.
@@ -965,6 +1470,13 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
 
 PositionWithAffinity NGPhysicalBoxFragment::PositionForPointByClosestChild(
     PhysicalOffset point_in_contents) const {
+  if (layout_object_->ChildPaintBlockedByDisplayLock()) {
+    // If this node is DisplayLocked, then Children() will have invalid layout
+    // information.
+    return AdjustForEditingBoundary(
+        FirstPositionInOrBeforeNode(*layout_object_->GetNode()));
+  }
+
   NGLink closest_child = {nullptr};
   LayoutUnit shortest_distance = LayoutUnit::Max();
   bool found_hit_test_candidate = false;
@@ -1040,6 +1552,14 @@ NGPhysicalBoxFragment::PositionForPointInBlockFlowDirection(
   DCHECK(!layout_object_->IsTable()) << this;
   DCHECK(ShouldUsePositionForPointInBlockFlowDirection(*layout_object_))
       << this;
+
+  if (layout_object_->ChildPaintBlockedByDisplayLock()) {
+    // If this node is DisplayLocked, then Children() will have invalid layout
+    // information.
+    return AdjustForEditingBoundary(
+        FirstPositionInOrBeforeNode(*layout_object_->GetNode()));
+  }
+
   const bool blocks_are_flipped = Style().IsFlippedBlocksWritingMode();
   WritingModeConverter converter(Style().GetWritingDirection(), Size());
   const LogicalOffset logical_point_in_contents =
@@ -1120,9 +1640,9 @@ NGPhysicalBoxFragment::PositionForPointRespectingEditingBoundaries(
     ancestor = ancestor->Parent();
   if (!ancestor || !ancestor->Parent() ||
       (ancestor->HasLayer() && ancestor->Parent()->IsLayoutView()) ||
-      HasEditableStyle(*ancestor->NonPseudoNode()) ==
-          HasEditableStyle(*child_node))
+      IsEditable(*ancestor->NonPseudoNode()) == IsEditable(*child_node)) {
     return child.PositionForPoint(point_in_child);
+  }
 
   // If editiability isn't the same in the ancestor and the child, then we
   // return a visible position just before or after the child, whichever side is
@@ -1138,36 +1658,47 @@ NGPhysicalBoxFragment::PositionForPointRespectingEditingBoundaries(
   return child.GetLayoutObject()->PositionAfterThis();
 }
 
-UBiDiLevel NGPhysicalBoxFragment::BidiLevel() const {
-  // TODO(xiaochengh): Make the implementation more efficient.
-  DCHECK(IsInline());
-  DCHECK(IsAtomicInline());
-  const auto& inline_items = InlineItemsOfContainingBlock();
-  const NGInlineItem* self_item =
-      std::find_if(inline_items.begin(), inline_items.end(),
-                   [this](const NGInlineItem& item) {
-                     return GetLayoutObject() == item.GetLayoutObject();
-                   });
-  DCHECK(self_item);
-  DCHECK_NE(self_item, inline_items.end());
-  return self_item->BidiLevel();
-}
+NGPhysicalBoxStrut NGPhysicalBoxFragment::OverflowClipMarginOutsets() const {
+  DCHECK(Style().OverflowClipMargin());
+  DCHECK(ShouldApplyOverflowClipMargin());
+  DCHECK(!IsScrollContainer());
 
-NGPixelSnappedPhysicalBoxStrut NGPhysicalBoxFragment::BorderWidths() const {
-  PhysicalBoxSides sides = SidesToInclude();
-  NGPhysicalBoxStrut borders = Borders();
-  if (!sides.top)
-    borders.top = LayoutUnit();
-  if (!sides.right)
-    borders.right = LayoutUnit();
-  if (!sides.bottom)
-    borders.bottom = LayoutUnit();
-  if (!sides.left)
-    borders.left = LayoutUnit();
-  return borders.SnapToDevicePixels();
+  const auto& overflow_clip_margin = Style().OverflowClipMargin();
+  NGPhysicalBoxStrut outsets;
+
+  // First inset the overflow rect based on the reference box. The
+  // |child_overflow_rect| initialized above assumes clipping to
+  // border-box.
+  switch (overflow_clip_margin->GetReferenceBox()) {
+    case StyleOverflowClipMargin::ReferenceBox::kBorderBox:
+      break;
+    case StyleOverflowClipMargin::ReferenceBox::kPaddingBox:
+      outsets -= Borders();
+      break;
+    case StyleOverflowClipMargin::ReferenceBox::kContentBox:
+      outsets -= Borders();
+      outsets -= Padding();
+      break;
+  }
+
+  // Now expand the rect based on the given margin. The margin only
+  // applies if the side is a painted with this child fragment.
+  outsets += NGPhysicalBoxStrut(overflow_clip_margin->GetMargin());
+  outsets.TruncateSides(SidesToInclude());
+
+  return outsets;
 }
 
 #if DCHECK_IS_ON()
+NGPhysicalBoxFragment::AllowPostLayoutScope::AllowPostLayoutScope() {
+  ++allow_count_;
+}
+
+NGPhysicalBoxFragment::AllowPostLayoutScope::~AllowPostLayoutScope() {
+  DCHECK(allow_count_);
+  --allow_count_;
+}
+
 void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
     const NGPhysicalBoxFragment& other,
     bool check_same_block_size) const {
@@ -1187,6 +1718,8 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
   DCHECK_EQ(sub_type_, other.sub_type_);
   DCHECK_EQ(style_variant_, other.style_variant_);
   DCHECK_EQ(is_hidden_for_paint_, other.is_hidden_for_paint_);
+  DCHECK_EQ(is_opaque_, other.is_opaque_);
+  DCHECK_EQ(is_block_in_inline_, other.is_block_in_inline_);
   DCHECK_EQ(is_math_fraction_, other.is_math_fraction_);
   DCHECK_EQ(is_math_operator_, other.is_math_operator_);
 
@@ -1195,6 +1728,9 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
             other.may_have_descendant_above_block_start_);
   DCHECK_EQ(depends_on_percentage_block_size_,
             other.depends_on_percentage_block_size_);
+  DCHECK_EQ(bit_field_.get<HasDescendantsForTablePartFlag>(),
+            other.bit_field_.get<HasDescendantsForTablePartFlag>());
+  DCHECK_EQ(IsFragmentationContextRoot(), other.IsFragmentationContextRoot());
 
   DCHECK_EQ(is_fieldset_container_, other.is_fieldset_container_);
   DCHECK_EQ(is_table_ng_part_, other.is_table_ng_part_);
@@ -1202,12 +1738,12 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
   DCHECK_EQ(is_painted_atomically_, other.is_painted_atomically_);
   DCHECK_EQ(has_collapsed_borders_, other.has_collapsed_borders_);
 
-  DCHECK_EQ(is_inline_formatting_context_, other.is_inline_formatting_context_);
-  DCHECK_EQ(has_fragment_items_, other.has_fragment_items_);
-  DCHECK_EQ(include_border_top_, other.include_border_top_);
-  DCHECK_EQ(include_border_right_, other.include_border_right_);
-  DCHECK_EQ(include_border_bottom_, other.include_border_bottom_);
-  DCHECK_EQ(include_border_left_, other.include_border_left_);
+  DCHECK_EQ(HasItems(), other.HasItems());
+  DCHECK_EQ(IsInlineFormattingContext(), other.IsInlineFormattingContext());
+  DCHECK_EQ(IncludeBorderTop(), other.IncludeBorderTop());
+  DCHECK_EQ(IncludeBorderRight(), other.IncludeBorderRight());
+  DCHECK_EQ(IncludeBorderBottom(), other.IncludeBorderBottom());
+  DCHECK_EQ(IncludeBorderLeft(), other.IncludeBorderLeft());
 
   // The oof_positioned_descendants_ vector can change during "simplified"
   // layout. This occurs when an OOF-descendant changes from "fixed" to
@@ -1215,14 +1751,8 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
 
   // Legacy layout can (incorrectly) shift baseline position(s) during
   // "simplified" layout.
-  DCHECK(IsLegacyLayoutRoot() || Baseline() == other.Baseline());
-  if (check_same_block_size) {
-    DCHECK(IsLegacyLayoutRoot() || LastBaseline() == other.LastBaseline());
-  } else {
-    DCHECK(IsLegacyLayoutRoot() || LastBaseline() == other.LastBaseline() ||
-           NGBlockNode(To<LayoutBox>(GetMutableLayoutObject()))
-               .UseBlockEndMarginEdgeForInlineBlockBaseline());
-  }
+  DCHECK(IsLegacyLayoutRoot() || FirstBaseline() == other.FirstBaseline());
+  DCHECK(IsLegacyLayoutRoot() || LastBaseline() == other.LastBaseline());
 
   if (IsTableNG()) {
     DCHECK_EQ(TableGridRect(), other.TableGridRect());
@@ -1303,6 +1833,59 @@ void NGPhysicalBoxFragment::CheckIntegrity() const {
     DCHECK(!has_list_markers);
   }
 }
+
+void NGPhysicalBoxFragment::AssertFragmentTreeSelf() const {
+  DCHECK(!IsInlineBox());
+  DCHECK(OwnerLayoutBox());
+  DCHECK_EQ(this, PostLayout());
+}
+
+void NGPhysicalBoxFragment::AssertFragmentTreeChildren(
+    bool allow_destroyed_or_moved) const {
+  if (const NGFragmentItems* items = Items()) {
+    for (NGInlineCursor cursor(*this, *items); cursor; cursor.MoveToNext()) {
+      const NGFragmentItem& item = *cursor.Current();
+      if (item.IsLayoutObjectDestroyedOrMoved()) {
+        DCHECK(allow_destroyed_or_moved);
+        continue;
+      }
+      if (const auto* box = item.BoxFragment()) {
+        DCHECK(!box->IsLayoutObjectDestroyedOrMoved());
+        if (!box->IsInlineBox())
+          box->AssertFragmentTreeSelf();
+      }
+    }
+  }
+
+  for (const NGLink& child : Children()) {
+    if (child->IsLayoutObjectDestroyedOrMoved()) {
+      DCHECK(allow_destroyed_or_moved);
+      continue;
+    }
+    if (const auto* box =
+            DynamicTo<NGPhysicalBoxFragment>(child.fragment.Get()))
+      box->AssertFragmentTreeSelf();
+  }
+}
 #endif
+
+void NGPhysicalBoxFragment::TraceAfterDispatch(Visitor* visitor) const {
+  // Accessing |const_num_children_| inside Trace() here is safe since it is
+  // const. Note we don't check children_valid_ since that is not threadsafe.
+  // Tracing the child links themselves is safe from a background thread.
+  for (const auto& child : base::make_span(children_, const_num_children_))
+    visitor->Trace(child);
+  // |HasItems()| and |ConstHasRareData()| are const and set
+  // in ctor so they do not cause TOCTOU.
+  if (HasItems())
+    visitor->Trace(*ComputeItemsAddress());
+  if (ConstHasRareData())
+    visitor->Trace(*ComputeRareDataAddress());
+  NGPhysicalFragment::TraceAfterDispatch(visitor);
+}
+
+void NGPhysicalBoxFragment::RareData::Trace(Visitor* visitor) const {
+  visitor->Trace(table_column_geometries);
+}
 
 }  // namespace blink

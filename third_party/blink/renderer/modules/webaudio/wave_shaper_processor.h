@@ -65,7 +65,7 @@ class WaveShaperProcessor final : public AudioDSPKernelProcessor {
   // m_curve represents the non-linear shaping curve.
   std::unique_ptr<Vector<float>> curve_;
 
-  OverSampleType oversample_;
+  OverSampleType oversample_ = kOverSampleNone;
 };
 
 }  // namespace blink

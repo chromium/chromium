@@ -1,0 +1,46 @@
+<!-- Copyright 2019 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<!DOCTYPE html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <meta charset="utf-8">
+  <title>$i18n{appTitle}</title>
+  <style>
+    body {
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    /*
+     * Any changes to this file except for these media queries should also be
+     * copied to index.html.
+     */
+    @media (prefers-color-scheme: dark) {
+      body { background-color: #202124 }
+    }
+
+    @media (prefers-color-scheme: light) {
+      body { background-color: white }
+    }
+
+    /*
+    * This is the <iframe> style set for sandboxed guests that use
+    * guest_view_iframe_container.js.
+    */
+    iframe {
+      border: 0;
+      display: block;
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js"></script>
+  <script src="chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js"></script>
+  <script src="chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js"></script>
+  <script src="/browser_proxy.js" type="module"></script>
+</body>
+</html>

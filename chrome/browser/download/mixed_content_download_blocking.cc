@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,6 +21,7 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -49,11 +50,11 @@ namespace {
 const base::FeatureParam<bool> kTreatSilentBlockListAsAllowlist(
     &features::kTreatUnsafeDownloadsAsActive,
     "TreatSilentBlockListAsAllowlist",
-    false);
+    true);
 const base::FeatureParam<std::string> kSilentBlockExtensionList(
     &features::kTreatUnsafeDownloadsAsActive,
     "SilentBlockExtensionList",
-    "silently_blocked_for_testing");
+    "silently_unblocked_for_testing");
 
 const base::FeatureParam<bool> kTreatBlockListAsAllowlist(
     &features::kTreatUnsafeDownloadsAsActive,
@@ -62,17 +63,17 @@ const base::FeatureParam<bool> kTreatBlockListAsAllowlist(
 const base::FeatureParam<std::string> kBlockExtensionList(
     &features::kTreatUnsafeDownloadsAsActive,
     "BlockExtensionList",
-    "exe,scr,msi,vb,dmg,pkg,crx,gz,gzip,zip,bz2,rar,7z,tar");
+    "");
 
 // Note: this is an allowlist, so acts as a catch-all.
 const base::FeatureParam<bool> kTreatWarnListAsAllowlist(
     &features::kTreatUnsafeDownloadsAsActive,
     "TreatWarnListAsAllowlist",
-    true);
+    false);
 const base::FeatureParam<std::string> kWarnExtensionList(
     &features::kTreatUnsafeDownloadsAsActive,
     "WarnExtensionList",
-    "dont_warn_for_testing");
+    "");
 
 // Map the string file extension to the corresponding histogram enum.
 InsecureDownloadExtensions GetExtensionEnumFromString(
@@ -144,7 +145,7 @@ std::string GetDownloadBlockingExtensionMetricName(
 // for histogram reporting. |dl_secure| signifies whether the download was
 // a secure source. |inferred| is whether the initiator value is our best guess.
 InsecureDownloadSecurityStatus GetDownloadBlockingEnum(
-    base::Optional<url::Origin> initiator,
+    absl::optional<url::Origin> initiator,
     bool dl_secure,
     bool inferred) {
   if (inferred) {
@@ -195,7 +196,7 @@ struct MixedContentDownloadData {
     }
 
     // Extract extension.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     extension_ = base::WideToUTF8(path.FinalExtension());
 #else
     extension_ = path.FinalExtension();
@@ -207,10 +208,17 @@ struct MixedContentDownloadData {
 
     // Evaluate download security.
     is_redirect_chain_secure_ = true;
-    for (const auto& url : item->GetUrlChain()) {
-      if (!network::IsUrlPotentiallyTrustworthy(url)) {
-        is_redirect_chain_secure_ = false;
-        break;
+    // Skip over the final URL so that we can investigate it separately below.
+    // The redirect chain always contains the final URL, so this is always safe
+    // in Chrome, but some tests don't plan for it, so we check here.
+    const auto& chain = item->GetUrlChain();
+    if (chain.size() > 1) {
+      for (unsigned i = 0; i < chain.size() - 1; ++i) {
+        const GURL& url = chain[i];
+        if (!network::IsUrlPotentiallyTrustworthy(url)) {
+          is_redirect_chain_secure_ = false;
+          break;
+        }
       }
     }
     const GURL& dl_url = item->GetURL();
@@ -271,31 +279,25 @@ struct MixedContentDownloadData {
     }
   }
 
-  base::Optional<url::Origin> initiator_;
+  absl::optional<url::Origin> initiator_;
   std::string extension_;
-  const download::DownloadItem* item_;
+  raw_ptr<const download::DownloadItem> item_;
   bool is_redirect_chain_secure_;
   bool is_mixed_content_;
 };
 
-// Whether or not |extension| is contained in the comma-separated list in a
-// feature param specified by |override_param_name|. If |override_param_name| is
-// not set, defaults to |default_extensions|.
-bool ContainsExtension(const base::FeatureParam<std::string>& extensions,
-                       const base::FeatureParam<bool>& is_allowlist,
-                       const std::string& download_extension) {
-  auto extensions_str = extensions.Get();
-  std::vector<base::StringPiece> listed_extensions = base::SplitStringPiece(
-      extensions_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  for (const auto& unsafe_extension : listed_extensions) {
-    DCHECK_EQ(base::ToLowerASCII(unsafe_extension), unsafe_extension);
-    if (base::LowerCaseEqualsASCII(download_extension, unsafe_extension)) {
-      return !is_allowlist.Get();  // aka true when it's a blocklist.
-    }
+// Check if |extension| is contained in the comma separated |extension_list|.
+bool ContainsExtension(const std::string& extension_list,
+                       const std::string& extension) {
+  for (const auto& item :
+       base::SplitStringPiece(extension_list, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    DCHECK_EQ(base::ToLowerASCII(item), item);
+    if (base::EqualsCaseInsensitiveASCII(extension, item))
+      return true;
   }
 
-  return is_allowlist.Get();  // aka false when it's a blocklist.
+  return false;
 }
 
 // Just print a descriptive message to the console about the blocked download.
@@ -308,7 +310,7 @@ void PrintConsoleMessage(const MixedContentDownloadData& data,
     return;
   }
 
-  web_contents->GetMainFrame()->AddMessageToConsole(
+  web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kError,
       base::StringPrintf(
           "Mixed Content: The site at '%s' was loaded over a secure "
@@ -328,10 +330,10 @@ void PrintConsoleMessage(const MixedContentDownloadData& data,
 
 bool IsDownloadPermittedByContentSettings(
     Profile* profile,
-    const base::Optional<url::Origin>& initiator) {
+    const absl::optional<url::Origin>& initiator) {
   // TODO(crbug.com/1048957): Checking content settings crashes unit tests on
   // Android. It shouldn't.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ContentSettingsForOneType settings;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
@@ -379,8 +381,8 @@ MixedContentStatus GetMixedContentStatusForDownload(
     return MixedContentStatus::SAFE;
   }
 
-  if (ContainsExtension(kSilentBlockExtensionList,
-                        kTreatSilentBlockListAsAllowlist, data.extension_)) {
+  if (ContainsExtension(kSilentBlockExtensionList.Get(), data.extension_) !=
+      kTreatSilentBlockListAsAllowlist.Get()) {
     PrintConsoleMessage(data, true);
 
     // Only permit silent blocking when not initiated by an explicit user
@@ -394,14 +396,14 @@ MixedContentStatus GetMixedContentStatusForDownload(
     return MixedContentStatus::SILENT_BLOCK;
   }
 
-  if (ContainsExtension(kBlockExtensionList, kTreatBlockListAsAllowlist,
-                        data.extension_)) {
+  if (ContainsExtension(kBlockExtensionList.Get(), data.extension_) !=
+      kTreatBlockListAsAllowlist.Get()) {
     PrintConsoleMessage(data, true);
     return MixedContentStatus::BLOCK;
   }
 
-  if (ContainsExtension(kWarnExtensionList, kTreatWarnListAsAllowlist,
-                        data.extension_)) {
+  if (ContainsExtension(kWarnExtensionList.Get(), data.extension_) !=
+      kTreatWarnListAsAllowlist.Get()) {
     PrintConsoleMessage(data, true);
     return MixedContentStatus::WARN;
   }

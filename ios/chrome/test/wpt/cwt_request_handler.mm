@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,19 +6,19 @@
 
 #import <XCTest/XCTest.h>
 
-#include "base/debug/stack_trace.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/guid.h"
-#include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/ios/wait_util.h"
-#include "components/version_info/version_info.h"
+#import "base/debug/stack_trace.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/guid.h"
+#import "base/json/json_reader.h"
+#import "base/json/json_writer.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
+#import "components/version_info/version_info.h"
 #import "ios/chrome/test/wpt/cwt_constants.h"
 #import "ios/chrome/test/wpt/cwt_webdriver_app_interface.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOClientService.h"
-#include "net/http/http_status_code.h"
+#import "net/http/http_status_code.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,6 +44,7 @@ const char kWebDriverSyncScriptCommand[] = "sync";
 const char kWebDriverAsyncScriptCommand[] = "async";
 const char kWebDriverScreenshotCommand[] = "screenshot";
 const char kWebDriverWindowRectCommand[] = "rect";
+const char kWebDriverActionsCommand[] = "actions";
 
 // Non-standard commands used only for testing Chrome.
 // This command is similar to the standard "url" command. It loads the URL
@@ -55,6 +56,10 @@ const char kWebDriverWindowRectCommand[] = "rect";
 // the kChromeStderrValueField response field. If the given URL is a file URL,
 // the given file is copied and served from a local EmbeddedTestServer.
 const char kChromeCrashTestCommand[] = "chrome_crashtest";
+
+// This returns the Chrome version (e.g., "92.0.4483.0") along with the
+// revision number (e.g, "872495") used for the current build.
+const char kChromeVersionInfoCommand[] = "chrome_versionInfo";
 
 // WebDriver error codes.
 const char kWebDriverInvalidArgumentError[] = "invalid argument";
@@ -118,6 +123,8 @@ const char kWebDriverStackTraceValueField[] = "stacktrace";
 // Non-standard value field names, used only when testing Chrome.
 // Stderr output from the app.
 const char kChromeStderrValueField[] = "chrome_stderr";
+// The revision number used for the current build.
+const char kChromeRevisionNumberField[] = "chrome_revisionNumber";
 
 // Field names for the "capabilities" struct that's included in the response
 // when creating a session.
@@ -157,6 +164,8 @@ CWTRequestHandler::CWTRequestHandler(ProceduralBlock session_completion_handler)
     : session_completion_handler_(session_completion_handler),
       script_timeout_(kDefaultScriptTimeout),
       page_load_timeout_(kDefaultPageLoadTimeout) {
+  application_ = [[XCUIApplication alloc] init];
+  [application_ launch];
   base::CreateNewTempDirectory(base::FilePath::StringType(),
                                &test_case_directory_);
   test_case_server_.ServeFilesFromDirectory(test_case_directory_);
@@ -167,7 +176,7 @@ CWTRequestHandler::CWTRequestHandler(ProceduralBlock session_completion_handler)
 
 CWTRequestHandler::~CWTRequestHandler() = default;
 
-base::Optional<base::Value> CWTRequestHandler::ProcessCommand(
+absl::optional<base::Value> CWTRequestHandler::ProcessCommand(
     const std::string& command,
     net::test_server::HttpMethod http_method,
     const std::string& request_content) {
@@ -186,11 +195,14 @@ base::Optional<base::Value> CWTRequestHandler::ProcessCommand(
     if (command == kWebDriverScreenshotCommand)
       return GetSnapshot();
 
-    return base::nullopt;
+    if (command == kChromeVersionInfoCommand)
+      return GetVersionInfo();
+
+    return absl::nullopt;
   }
 
   if (http_method == net::test_server::METHOD_POST) {
-    base::Optional<base::Value> content =
+    absl::optional<base::Value> content =
         base::JSONReader::Read(request_content);
     if (!content || !content->is_dict()) {
       return CreateErrorValue(kWebDriverInvalidArgumentError,
@@ -232,7 +244,7 @@ base::Optional<base::Value> CWTRequestHandler::ProcessCommand(
     if (command == kWebDriverWindowRectCommand)
       return SetWindowRect(*content);
 
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (http_method == net::test_server::METHOD_DELETE) {
@@ -247,16 +259,19 @@ base::Optional<base::Value> CWTRequestHandler::ProcessCommand(
     if (command == kWebDriverWindowCommand)
       return CloseTargetTab();
 
-    return base::nullopt;
+    if (command == kWebDriverActionsCommand)
+      return ReleaseActions();
+
+    return absl::nullopt;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::unique_ptr<net::test_server::HttpResponse>
 CWTRequestHandler::HandleRequest(const net::test_server::HttpRequest& request) {
   std::string command = request.GetURL().ExtractFileName();
-  base::Optional<base::Value> result =
+  absl::optional<base::Value> result =
       ProcessCommand(command, request.method, request.content);
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
@@ -323,6 +338,10 @@ base::Value CWTRequestHandler::CloseSession() {
   return base::Value(base::Value::Type::NONE);
 }
 
+base::Value CWTRequestHandler::ReleaseActions() {
+  return base::Value(base::Value::Type::NONE);
+}
+
 base::Value CWTRequestHandler::NavigateToUrl(const base::Value* url) {
   if (!url || !url->is_string()) {
     return CreateErrorValue(kWebDriverInvalidArgumentError,
@@ -371,6 +390,7 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
   base::CreateTemporaryFile(&log_file);
   [CWTWebDriverAppInterface
       logStderrToFilePath:base::SysUTF8ToNSString(log_file.value())];
+  [CWTWebDriverAppInterface installCleanExitHandlerForAbortSignal];
 
   // Once the test page is loaded, the app might crash at any time until the
   // tab is closed. Re-launch the app if it crashes.
@@ -388,7 +408,7 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
                                   kChromeInvalidExtraWaitMessage);
         }
         base::test::ios::SpinRunLoopWithMinDelay(
-            base::TimeDelta::FromSeconds(extra_wait->GetInt()));
+            base::Seconds(extra_wait->GetInt()));
       }
     }
 
@@ -401,7 +421,7 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
     [CWTWebDriverAppInterface stopLoggingStderr];
   } @catch (NSException* exception) {
     dispatch_sync(dispatch_get_main_queue(), ^{
-      [[[XCUIApplication alloc] init] launch];
+      [application_ launch];
     });
     target_tab_id_ =
         base::SysNSStringToUTF8([CWTWebDriverAppInterface currentTabID]);
@@ -416,7 +436,7 @@ base::Value CWTRequestHandler::NavigateToUrlForCrashTest(
 }
 
 base::Value CWTRequestHandler::SetTimeouts(const base::Value& timeouts) {
-  for (const auto& timeout : timeouts.DictItems()) {
+  for (const auto timeout : timeouts.DictItems()) {
     if (!timeout.second.is_int() || timeout.second.GetInt() < 0) {
       return CreateErrorValue(kWebDriverInvalidArgumentError,
                               kWebDriverInvalidTimeoutMessage);
@@ -496,13 +516,13 @@ base::Value CWTRequestHandler::ExecuteScript(const base::Value* script,
 
   NSString* function_to_execute;
   if (is_async_function) {
-    // The provided |script| is a function body that already calls its last
+    // The provided `script` is a function body that already calls its last
     // argument with the result of its computation.
     function_to_execute =
         [NSString stringWithFormat:@"function f(completionHandler) { %s }",
                                    script->GetString().c_str()];
   } else {
-    // The provided |script| directly computes a result. Convert to a function
+    // The provided `script` directly computes a result. Convert to a function
     // that calls a completion handler with the result of its computation.
     NSString* input_function = [NSString
         stringWithFormat:@"() => { %s }", script->GetString().c_str()];
@@ -523,7 +543,7 @@ base::Value CWTRequestHandler::ExecuteScript(const base::Value* script,
                             kWebDriverScriptTimeoutMessage);
   }
 
-  base::Optional<base::Value> result =
+  absl::optional<base::Value> result =
       base::JSONReader::Read(base::SysNSStringToUTF8(result_as_json));
   DCHECK(result);
   return std::move(*result);
@@ -542,4 +562,24 @@ base::Value CWTRequestHandler::GetSnapshot() {
 
 base::Value CWTRequestHandler::SetWindowRect(const base::Value& rect) {
   return base::Value();
+}
+
+base::Value CWTRequestHandler::GetVersionInfo() {
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetStringKey(kCapabilitiesBrowserVersionField,
+                      version_info::GetVersionNumber());
+
+  // The full revision starts with a git hash and ends with the revision
+  // number in the following format: @{#123456}
+  std::string full_revision = version_info::GetLastChange();
+  size_t start_position = full_revision.rfind("#") + 1;
+
+  if (start_position == std::string::npos) {
+    result.SetStringKey(kChromeRevisionNumberField, "0");
+  } else {
+    size_t length = full_revision.size() - start_position - 1;
+    result.SetStringKey(kChromeRevisionNumberField,
+                        full_revision.substr(start_position, length));
+  }
+  return result;
 }

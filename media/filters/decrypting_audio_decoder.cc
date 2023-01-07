@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,14 @@
 #include <stdint.h>
 
 #include <cstdlib>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -60,12 +61,12 @@ void DecryptingAudioDecoder::Initialize(const AudioDecoderConfig& config,
   if (!cdm_context) {
     // Once we have a CDM context, one should always be present.
     DCHECK(!support_clear_content_);
-    std::move(init_cb_).Run(StatusCode::kDecoderMissingCdmForEncryptedContent);
+    std::move(init_cb_).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
   if (!config.is_encrypted() && !support_clear_content_) {
-    std::move(init_cb_).Run(StatusCode::kClearContentUnsupported);
+    std::move(init_cb_).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
@@ -81,7 +82,7 @@ void DecryptingAudioDecoder::Initialize(const AudioDecoderConfig& config,
   // TODO(xhwang): We should be able to DCHECK config.IsValidConfig().
   if (!config.IsValidConfig()) {
     DLOG(ERROR) << "Invalid audio stream config.";
-    std::move(init_cb_).Run(StatusCode::kDecoderUnsupportedCodec);
+    std::move(init_cb_).Run(DecoderStatus::Codes::kUnsupportedCodec);
     return;
   }
 
@@ -90,7 +91,7 @@ void DecryptingAudioDecoder::Initialize(const AudioDecoderConfig& config,
   if (state_ == kUninitialized) {
     if (!cdm_context->GetDecryptor()) {
       DVLOG(1) << __func__ << ": no decryptor";
-      std::move(init_cb_).Run(StatusCode::kDecoderFailedInitialization);
+      std::move(init_cb_).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
       return;
     }
 
@@ -120,7 +121,7 @@ void DecryptingAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   // Return empty (end-of-stream) frames if decoding has finished.
   if (state_ == kDecodeFinished) {
     output_cb_.Run(AudioBuffer::CreateEOSBuffer());
-    std::move(decode_cb_).Run(DecodeStatus::OK);
+    std::move(decode_cb_).Run(DecoderStatus::Codes::kOk);
     return;
   }
 
@@ -161,7 +162,7 @@ void DecryptingAudioDecoder::Reset(base::OnceClosure closure) {
   if (state_ == kWaitingForKey) {
     DCHECK(decode_cb_);
     pending_buffer_to_decode_.reset();
-    std::move(decode_cb_).Run(DecodeStatus::ABORTED);
+    std::move(decode_cb_).Run(DecoderStatus::Codes::kAborted);
   }
 
   DCHECK(!decode_cb_);
@@ -181,9 +182,9 @@ DecryptingAudioDecoder::~DecryptingAudioDecoder() {
   }
   pending_buffer_to_decode_.reset();
   if (init_cb_)
-    std::move(init_cb_).Run(StatusCode::kDecoderInitializeNeverCompleted);
+    std::move(init_cb_).Run(DecoderStatus::Codes::kInterrupted);
   if (decode_cb_)
-    std::move(decode_cb_).Run(DecodeStatus::ABORTED);
+    std::move(decode_cb_).Run(DecoderStatus::Codes::kAborted);
   if (reset_cb_)
     std::move(reset_cb_).Run();
 }
@@ -206,7 +207,7 @@ void DecryptingAudioDecoder::FinishInitialization(bool success) {
 
   if (!success) {
     DVLOG(1) << __func__ << ": failed to init audio decoder on decryptor";
-    std::move(init_cb_).Run(StatusCode::kDecoderInitializeNeverCompleted);
+    std::move(init_cb_).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
     decryptor_ = nullptr;
     event_cb_registration_.reset();
     state_ = kError;
@@ -214,11 +215,11 @@ void DecryptingAudioDecoder::FinishInitialization(bool success) {
   }
 
   // Success!
-  timestamp_helper_.reset(
-      new AudioTimestampHelper(config_.samples_per_second()));
+  timestamp_helper_ =
+      std::make_unique<AudioTimestampHelper>(config_.samples_per_second());
 
   state_ = kIdle;
-  std::move(init_cb_).Run(OkStatus());
+  std::move(init_cb_).Run(DecoderStatus::Codes::kOk);
 }
 
 void DecryptingAudioDecoder::DecodePendingBuffer() {
@@ -253,7 +254,7 @@ void DecryptingAudioDecoder::DeliverFrame(
       std::move(pending_buffer_to_decode_);
 
   if (reset_cb_) {
-    std::move(decode_cb_).Run(DecodeStatus::ABORTED);
+    std::move(decode_cb_).Run(DecoderStatus::Codes::kAborted);
     DoReset();
     return;
   }
@@ -264,7 +265,7 @@ void DecryptingAudioDecoder::DeliverFrame(
     DVLOG(2) << "DeliverFrame() - kError";
     MEDIA_LOG(ERROR, media_log_) << GetDecoderType() << ": decode error";
     state_ = kDecodeFinished;  // TODO add kError state
-    std::move(decode_cb_).Run(DecodeStatus::DECODE_ERROR);
+    std::move(decode_cb_).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
@@ -298,7 +299,7 @@ void DecryptingAudioDecoder::DeliverFrame(
     DVLOG(2) << "DeliverFrame() - kNeedMoreData";
     state_ = scoped_pending_buffer_to_decode->end_of_stream() ? kDecodeFinished
                                                               : kIdle;
-    std::move(decode_cb_).Run(DecodeStatus::OK);
+    std::move(decode_cb_).Run(DecoderStatus::Codes::kOk);
     return;
   }
 
@@ -315,7 +316,7 @@ void DecryptingAudioDecoder::DeliverFrame(
   }
 
   state_ = kIdle;
-  std::move(decode_cb_).Run(DecodeStatus::OK);
+  std::move(decode_cb_).Run(DecoderStatus::Codes::kOk);
 }
 
 void DecryptingAudioDecoder::OnCdmContextEvent(CdmContext::Event event) {

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,16 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/bluetooth/bluetooth_type_converters.h"
+#include "ash/components/arc/mojom/bluetooth.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_bluetooth_instance.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/task_environment.h"
-#include "components/arc/bluetooth/bluetooth_type_converters.h"
-#include "components/arc/mojom/bluetooth.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_bluetooth_instance.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_device_client.h"
@@ -120,7 +119,7 @@ class ArcBluetoothBridgeTest : public testing::Test {
         nullptr, arc_bridge_service_.get());
     fake_bluetooth_instance_ = std::make_unique<FakeBluetoothInstance>();
     arc_bridge_service_->bluetooth()->SetInstance(
-        fake_bluetooth_instance_.get(), 17);
+        fake_bluetooth_instance_.get(), 20);
     WaitForInstanceReady(arc_bridge_service_->bluetooth());
 
     device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
@@ -293,41 +292,6 @@ TEST_F(ArcBluetoothBridgeTest, LEDeviceFound) {
   EXPECT_EQ(std::string(bluez::FakeBluetoothDeviceClient::kLowEnergyAddress),
             addr->To<std::string>());
   EXPECT_EQ(kEIR, eir);
-  EXPECT_EQ(kTestRssi, le_device_found_data->rssi());
-
-  ChangeTestDeviceRssi(kTestRssi2);
-  EXPECT_EQ(4u, fake_bluetooth_instance_->le_device_found_data().size());
-  EXPECT_EQ(kTestRssi2,
-            fake_bluetooth_instance_->le_device_found_data().back()->rssi());
-}
-
-TEST_F(ArcBluetoothBridgeTest, LEDeviceFoundForN) {
-  base::test::ScopedChromeOSVersionInfo version(
-      "CHROMEOS_ARC_ANDROID_SDK_VERSION=27", base::Time::Now());
-
-  EXPECT_EQ(0u, fake_bluetooth_instance_->le_device_found_data().size());
-  AddTestDevice();
-  EXPECT_EQ(3u, fake_bluetooth_instance_->le_device_found_data().size());
-
-  const auto& le_device_found_data =
-      fake_bluetooth_instance_->le_device_found_data().back();
-  const mojom::BluetoothAddressPtr& addr = le_device_found_data->addr();
-  const std::vector<mojom::BluetoothAdvertisingDataPtr>& adv_data =
-      le_device_found_data->adv_data();
-
-  EXPECT_EQ(std::string(bluez::FakeBluetoothDeviceClient::kLowEnergyAddress),
-            addr->To<std::string>());
-  EXPECT_EQ(2u, adv_data.size());
-
-  EXPECT_TRUE(adv_data[0]->is_local_name());
-  EXPECT_EQ(std::string(bluez::FakeBluetoothDeviceClient::kLowEnergyName),
-            adv_data[0]->get_local_name());
-
-  EXPECT_TRUE(adv_data[1]->is_service_uuids());
-  EXPECT_EQ(1u, adv_data[1]->get_service_uuids().size());
-  EXPECT_EQ(kTestServiceUUID,
-            adv_data[1]->get_service_uuids()[0].canonical_value());
-
   EXPECT_EQ(kTestRssi, le_device_found_data->rssi());
 
   ChangeTestDeviceRssi(kTestRssi2);
@@ -512,4 +476,36 @@ TEST_F(ArcBluetoothBridgeTest, SingleAdvertisement) {
   EXPECT_EQ(0, NumActiveAdvertisements());
 }
 
+TEST_F(ArcBluetoothBridgeTest, ServiceChanged) {
+  // Set up device and service
+  AddTestDevice();
+
+  bluez::BluezDBusManager* dbus_manager = bluez::BluezDBusManager::Get();
+  auto* fake_bluetooth_gatt_service_client =
+      static_cast<bluez::FakeBluetoothGattServiceClient*>(
+      dbus_manager->GetBluetoothGattServiceClient());
+
+  device::BluetoothDevice* device = adapter_->GetDevices()[0];
+  device::BluetoothRemoteGattService* service =
+      device->GetGattService(fake_bluetooth_gatt_service_client->GetHeartRateServicePath().value());
+
+  // When OnServiceChanged is called, service changed flag will be set
+  // true, while reset_service_changed_flag will set this flag to false.
+  // Here is to test whether OnServiceChanged is called after GattServiceAdded
+  // and GattServiceRemoved is called.
+  fake_bluetooth_instance_->reset_service_changed_flag();
+  EXPECT_FALSE(fake_bluetooth_instance_->get_service_changed_flag());
+  arc_bluetooth_bridge_->GattServiceAdded(adapter_.get(), device, service);
+  EXPECT_TRUE(fake_bluetooth_instance_->get_service_changed_flag());
+
+  fake_bluetooth_instance_->reset_service_changed_flag();
+  EXPECT_FALSE(fake_bluetooth_instance_->get_service_changed_flag());
+  arc_bluetooth_bridge_->GattServiceRemoved(adapter_.get(), device, service);
+  EXPECT_TRUE(fake_bluetooth_instance_->get_service_changed_flag());
+
+  fake_bluetooth_instance_->reset_service_changed_flag();
+  EXPECT_FALSE(fake_bluetooth_instance_->get_service_changed_flag());
+  arc_bluetooth_bridge_->GattServiceChanged(adapter_.get(), service);
+  EXPECT_TRUE(fake_bluetooth_instance_->get_service_changed_flag());
+}
 }  // namespace arc

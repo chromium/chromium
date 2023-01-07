@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ enum AllowlistState {
   ALLOWLIST_ALLOWLISTED = 1,
   // The extension is not included in the Safe Browsing extension allowlist.
   ALLOWLIST_NOT_ALLOWLISTED = 2,
-  ALLOWLIST_LAST = 3
+  ALLOWLIST_LAST = 2
 };
 
 // The acknowledge states for the Safe Browsing CRX allowlist enforcements.
@@ -33,7 +33,7 @@ enum AllowlistAcknowledgeState {
   // extension after it was disabled. The extension should not be disabled again
   // from the allowlist enforcement.
   ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER = 3,
-  ALLOWLIST_ACKNOWLEDGE_LAST = 4
+  ALLOWLIST_ACKNOWLEDGE_LAST = 3
 };
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ constexpr FrameSinkId kChildFrameSinkId(4, 4);
 class DisplayDamageTrackerTest : public testing::Test {
  public:
   DisplayDamageTrackerTest()
-      : manager_(&shared_bitmap_manager_),
+      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
         resource_provider_(&shared_bitmap_manager_),
         aggregator_(manager_.surface_manager(),
                     &resource_provider_,

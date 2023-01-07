@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PAYMENTS_CONTENT_PAYMENT_HANDLER_NAVIGATION_THROTTLE_H_
 #define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_HANDLER_NAVIGATION_THROTTLE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
 

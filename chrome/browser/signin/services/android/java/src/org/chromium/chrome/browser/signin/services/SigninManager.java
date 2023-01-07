@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -33,22 +33,20 @@ public interface SigninManager {
         /**
          * Invoked when the user has signed in to Chrome.
          */
-        void onSignedIn();
+        default void onSignedIn() {}
 
         /**
          * Invoked when the user has signed out of Chrome.
          */
-        void onSignedOut();
-    }
+        default void onSignedOut() {}
 
-    /**
-     * SignInAllowedObservers will be notified once signing-in becomes allowed or disallowed.
-     */
-    interface SignInAllowedObserver {
         /**
          * Invoked once all startup checks are done and signing-in becomes allowed, or disallowed.
          */
-        void onSignInAllowedChanged();
+        default void onSignInAllowedChanged() {}
+
+        /** Notifies observers when {@link #isSignOutAllowed()} value changes. */
+        default void onSignOutAllowedChanged() {}
     }
 
     /**
@@ -92,16 +90,14 @@ public interface SigninManager {
     IdentityManager getIdentityManager();
 
     /**
-     * Notifies the SigninManager that the First Run check has completed.
-     *
-     * The user will be allowed to sign-in once this is signaled.
+     * Returns true if sign in can be started now.
      */
-    void onFirstRunCheckDone();
+    boolean isSigninAllowed();
 
     /**
-     * Returns true if signin can be started now.
+     * Returns true if sync opt in can be started now.
      */
-    boolean isSignInAllowed();
+    boolean isSyncOptInAllowed();
 
     /**
      * Returns true if signin is disabled by policy.
@@ -130,16 +126,6 @@ public interface SigninManager {
     void removeSignInStateObserver(SignInStateObserver observer);
 
     /**
-     * Adds a {@link SignInAllowedObserver}.
-     */
-    void addSignInAllowedObserver(SignInAllowedObserver observer);
-
-    /**
-     * Removes a {@link SignInAllowedObserver}.
-     */
-    void removeSignInAllowedObserver(SignInAllowedObserver observer);
-
-    /**
      * Starts the sign-in flow, and executes the callback when finished.
      *
      * The sign-in flow goes through the following steps:
@@ -148,34 +134,12 @@ public interface SigninManager {
      *   - Complete sign-in with the native IdentityManager.
      *   - Call the callback if provided.
      *
-     * @param accountInfo The account to sign in to.
+     * @param account The account to sign in to.
      * @param callback Optional callback for when the sign-in process is finished.
      */
-    void signin(CoreAccountInfo accountInfo, @Nullable SignInCallback callback);
+    void signin(Account account, @Nullable SignInCallback callback);
 
     /**
-     * Starts the sign-in flow, enables sync and executes the callback when finished.
-     *
-     * The sign-in flow goes through the following steps:
-     *
-     *   - Wait for AccountTrackerService to be seeded.
-     *   - Wait for policy to be checked for the account.
-     *   - If managed, wait for the policy to be fetched.
-     *   - Complete sign-in with the native IdentityManager.
-     *   - Enable sync.
-     *   - Call the callback if provided.
-     *
-     * @param accessPoint {@link SigninAccessPoint} that initiated the sign-in flow.
-     * @param accountInfo The account to sign in to.
-     * @param callback Optional callback for when the sign-in process is finished.
-     */
-    void signinAndEnableSync(@SigninAccessPoint int accessPoint, CoreAccountInfo accountInfo,
-            @Nullable SignInCallback callback);
-
-    /**
-     * @deprecated use {@link #signinAndEnableSync(int, CoreAccountInfo, SignInCallback)} instead.
-     * TODO(crbug.com/1002056): Remove this version after migrating all callers to CoreAccountInfo.
-     *
      * Starts the sign-in flow, and executes the callback when finished.
      *
      * The sign-in flow goes through the following steps:
@@ -190,24 +154,33 @@ public interface SigninManager {
      * @param account The account to sign in to.
      * @param callback Optional callback for when the sign-in process is finished.
      */
-    @Deprecated
     void signinAndEnableSync(
             @SigninAccessPoint int accessPoint, Account account, @Nullable SignInCallback callback);
 
     /**
-     * Returns true if a sign-in or sign-out operation is in progress. See also
-     * {@link SigninManager#runAfterOperationInProgress}.
-     */
-    @MainThread
-    boolean isOperationInProgress();
-
-    /**
-     * Schedules the runnable to be invoked after currently ongoing a sign-in or sign-out operation
+     * Schedules the runnable to be invoked after all sign-in, sign-out, or sync data wipe operation
      * is finished. If there's no operation is progress, posts the callback to the UI thread right
-     * away. See also {@link SigninManager#isOperationInProgress}.
+     * away.
      */
     @MainThread
     void runAfterOperationInProgress(Runnable runnable);
+
+    /**
+     * Revokes sync consent (which disables the sync feature). This method should only be called
+     * for child accounts.
+     *
+     * @param signoutSource describes the event driving disabling sync (e.g.
+     *         {@link SignoutReason.USER_CLICKED_TURN_OFF_SYNC_SETTINGS}).
+     * @param signOutCallback Callback to notify about progress.
+     * @param forceWipeUserData Whether user selected to wipe all device data.
+     */
+    void revokeSyncConsent(@SignoutReason int signoutSource, SignOutCallback signOutCallback,
+            boolean forceWipeUserData);
+
+    /**
+     * Returns true if sign out can be started now.
+     */
+    boolean isSignOutAllowed();
 
     /**
      * Invokes signOut with no callback.
@@ -244,4 +217,20 @@ public interface SigninManager {
      *                 otherwise.
      */
     void isAccountManaged(String email, Callback<Boolean> callback);
+
+    /**
+     * Reloads all the accounts from the system within the {@link IdentityManager}.
+     * @param primaryAccountId {@link CoreAccountId} of the primary account.
+     */
+    void reloadAllAccountsFromSystem(CoreAccountId primaryAccountId);
+
+    /**
+     * Wipes the user's bookmarks and sync data.
+     *
+     * Callers should make this call within a runAfterOperationInProgress() call in order to ensure
+     * serialization of wipe operations.
+     *
+     * @param wipeDataCallback A callback which will be called once the data is wiped.
+     */
+    void wipeSyncUserData(Runnable wipeDataCallback);
 }

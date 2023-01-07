@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_MERCHANT_VALIDATION_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PAYMENTS_MERCHANT_VALIDATION_EVENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_merchant_validation_event_init.h"
@@ -35,6 +34,10 @@ class MODULES_EXPORT MerchantValidationEvent final : public Event {
                           const AtomicString& type,
                           const MerchantValidationEventInit*,
                           ExceptionState&);
+
+  MerchantValidationEvent(const MerchantValidationEvent&) = delete;
+  MerchantValidationEvent& operator=(const MerchantValidationEvent&) = delete;
+
   ~MerchantValidationEvent() override;
 
   const AtomicString& InterfaceName() const override;
@@ -49,8 +52,6 @@ class MODULES_EXPORT MerchantValidationEvent final : public Event {
 
   // Set to true after .complete() is called.
   bool wait_for_update_;
-
-  DISALLOW_COPY_AND_ASSIGN(MerchantValidationEvent);
 };
 
 }  // namespace blink

@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.widget;
 
+import android.app.Activity;
 import android.view.MotionEvent;
 import android.view.TouchDelegate;
 import android.view.View;
@@ -15,6 +16,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -28,9 +30,6 @@ public final class CompositeTouchDelegateUnitTest {
     CompositeTouchDelegate mCompositeTouchDelegate;
 
     @Mock
-    View mMockAncestorView;
-
-    @Mock
     TouchDelegate mMockTouchDelegate;
 
     @Mock
@@ -42,7 +41,8 @@ public final class CompositeTouchDelegateUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mCompositeTouchDelegate = new CompositeTouchDelegate(mMockAncestorView);
+        View view = new View(Robolectric.setupActivity(Activity.class));
+        mCompositeTouchDelegate = new CompositeTouchDelegate(view);
         mCompositeTouchDelegate.addDelegateForDescendantView(mMockTouchDelegate);
         mCompositeTouchDelegate.addDelegateForDescendantView(mMockOtherTouchDelegate);
     }

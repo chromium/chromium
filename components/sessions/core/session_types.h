@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,14 @@
 #define COMPONENTS_SESSIONS_CORE_SESSION_TYPES_H_
 
 #include <algorithm>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/token.h"
+#include "build/chromeos_buildflags.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_user_agent_override.h"
 #include "components/sessions/core/session_id.h"
@@ -21,6 +21,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/variations/variations_associated_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_palette.h"
@@ -34,6 +35,10 @@ namespace sessions {
 // SessionTab corresponds to a NavigationController.
 struct SESSIONS_EXPORT SessionTab {
   SessionTab();
+
+  SessionTab(const SessionTab&) = delete;
+  SessionTab& operator=(const SessionTab&) = delete;
+
   ~SessionTab();
 
   // Since the current_navigation_index can be larger than the index for number
@@ -72,7 +77,7 @@ struct SESSIONS_EXPORT SessionTab {
   int current_navigation_index;
 
   // The tab's group ID, if any.
-  base::Optional<tab_groups::TabGroupId> group;
+  absl::optional<tab_groups::TabGroupId> group;
 
   // True if the tab is pinned.
   bool pinned;
@@ -103,8 +108,8 @@ struct SESSIONS_EXPORT SessionTab {
   // Data associated with the tab by the embedder.
   std::map<std::string, std::string> data;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionTab);
+  // Extra data associated with the tab.
+  std::map<std::string, std::string> extra_data;
 };
 
 // SessionTabGroup -----------------------------------------------------------
@@ -114,6 +119,10 @@ struct SESSIONS_EXPORT SessionTab {
 // visually obvious.
 struct SESSIONS_EXPORT SessionTabGroup {
   explicit SessionTabGroup(const tab_groups::TabGroupId& id);
+
+  SessionTabGroup(const SessionTabGroup&) = delete;
+  SessionTabGroup& operator=(const SessionTabGroup&) = delete;
+
   ~SessionTabGroup();
 
   // Uniquely identifies this group. Initialized to zero and must be set be
@@ -122,9 +131,6 @@ struct SESSIONS_EXPORT SessionTabGroup {
   tab_groups::TabGroupId id;
 
   tab_groups::TabGroupVisualData visual_data;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionTabGroup);
 };
 
 // SessionWindow -------------------------------------------------------------
@@ -132,6 +138,10 @@ struct SESSIONS_EXPORT SessionTabGroup {
 // Describes a saved window.
 struct SESSIONS_EXPORT SessionWindow {
   SessionWindow();
+
+  SessionWindow(const SessionWindow&) = delete;
+  SessionWindow& operator=(const SessionWindow&) = delete;
+
   ~SessionWindow();
 
   // Possible window types which can be stored here. Note that these values will
@@ -142,6 +152,9 @@ struct SESSIONS_EXPORT SessionWindow {
     TYPE_APP = 2,
     TYPE_DEVTOOLS = 3,
     TYPE_APP_POPUP = 4,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    TYPE_CUSTOM_TAB = 5,
+#endif
   };
 
   // Identifier of the window.
@@ -193,8 +206,8 @@ struct SESSIONS_EXPORT SessionWindow {
   // The user-configured title for this window, may be empty.
   std::string user_title;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionWindow);
+  // Extra data associated with the window.
+  std::map<std::string, std::string> extra_data;
 };
 
 }  // namespace sessions

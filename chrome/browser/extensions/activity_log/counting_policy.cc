@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,10 +43,9 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
 #include "chrome/common/chrome_constants.h"
 #include "sql/statement.h"
@@ -58,7 +57,7 @@ using extensions::Action;
 
 // Delay between cleaning passes (to delete old action records) through the
 // database.
-constexpr base::TimeDelta kCleaningDelay = base::TimeDelta::FromHours(12);
+constexpr base::TimeDelta kCleaningDelay = base::Hours(12);
 
 // We should log the arguments to these API calls.  Be careful when
 // constructing this allowlist to not keep arguments that might compromise
@@ -171,8 +170,8 @@ CountingPolicy::CountingPolicy(Profile* profile)
           base::FilePath(chrome::kExtensionActivityLogFilename)),
       string_table_("string_ids"),
       url_table_("url_ids"),
-      retention_time_(base::TimeDelta::FromHours(60)) {
-  for (size_t i = 0; i < base::size(kAlwaysLog); i++) {
+      retention_time_(base::Hours(60)) {
+  for (size_t i = 0; i < std::size(kAlwaysLog); i++) {
     api_arg_allowlist_.insert(
         std::make_pair(kAlwaysLog[i].type, kAlwaysLog[i].name));
   }
@@ -189,7 +188,7 @@ bool CountingPolicy::InitDatabase(sql::Database* db) {
   // Create the unified activity log entry table.
   if (!ActivityDatabase::InitializeTable(db, kTableName, kTableContentFields,
                                          kTableFieldTypes,
-                                         base::size(kTableContentFields)))
+                                         std::size(kTableContentFields)))
     return false;
 
   // Create a view for easily accessing the uncompressed form of the data, and
@@ -271,14 +270,14 @@ bool CountingPolicy::FlushDatabase(sql::Database* db) {
       " SET count = count + ?, time = max(?, time)"
       " WHERE rowid = ?";
 
-  for (size_t i = 0; i < base::size(matched_columns); i++) {
+  for (size_t i = 0; i < std::size(matched_columns); i++) {
     locate_str = base::StringPrintf(
         "%s AND %s IS ?", locate_str.c_str(), matched_columns[i]);
     insert_str =
         base::StringPrintf("%s, %s", insert_str.c_str(), matched_columns[i]);
   }
   insert_str += ") VALUES (?, ?";
-  for (size_t i = 0; i < base::size(matched_columns); i++) {
+  for (size_t i = 0; i < std::size(matched_columns); i++) {
     insert_str += ", ?";
   }
   locate_str += " ORDER BY time DESC LIMIT 1";
@@ -497,11 +496,10 @@ std::unique_ptr<Action::ActionVector> CountingPolicy::DoReadFilteredData(
         query.ColumnString(3), query.ColumnInt64(10));
 
     if (query.GetColumnType(4) != sql::ColumnType::kNull) {
-      std::unique_ptr<base::Value> parsed_value =
-          base::JSONReader::ReadDeprecated(query.ColumnString(4));
+      absl::optional<base::Value> parsed_value =
+          base::JSONReader::Read(query.ColumnString(4));
       if (parsed_value && parsed_value->is_list()) {
-        action->set_args(base::WrapUnique(
-            static_cast<base::ListValue*>(parsed_value.release())));
+        action->set_args(std::move(*parsed_value).TakeList());
       }
     }
 
@@ -510,11 +508,10 @@ std::unique_ptr<Action::ActionVector> CountingPolicy::DoReadFilteredData(
     action->ParseArgUrl(query.ColumnString(7));
 
     if (query.GetColumnType(8) != sql::ColumnType::kNull) {
-      std::unique_ptr<base::Value> parsed_value =
-          base::JSONReader::ReadDeprecated(query.ColumnString(8));
+      absl::optional<base::Value> parsed_value =
+          base::JSONReader::Read(query.ColumnString(8));
       if (parsed_value && parsed_value->is_dict()) {
-        action->set_other(base::WrapUnique(
-            static_cast<base::DictionaryValue*>(parsed_value.release())));
+        action->set_other(std::move(*parsed_value).TakeDict());
       }
     }
     action->set_count(query.ColumnInt(9));

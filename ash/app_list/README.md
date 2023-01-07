@@ -38,9 +38,6 @@ non-Chrome OS platforms.
 dependencies. This includes sync support and communication with the App Service
 (which provides the list of installed apps).
 
-Watch out for `//chrome/browser/ui/ash/launcher`. It contains shelf code, not
-app list. The shelf was originally called the launcher (circa 2012).
-
 ## Data model
 
 ### Apps
@@ -191,10 +188,8 @@ Ctrl-Alt-Shift-V to see the full view hierarchy.
 
 ## Testing
 
-App list tests live in both app_list_unittests and ash_unittests. Run the unit
-tests with:
+App list tests live in ash_unittests. Run the unit tests with:
 
-    testing/xvfb.py out/Default/app_list_unittests
     testing/xvfb.py out/Default/ash_unittests
 
 Tests for high level user actions (reordering icons, creating folders, etc.) are
@@ -207,3 +202,5 @@ generally part of [apps_grid_view_unittest.cc][1] or
 ## Historical notes
 
 The old demo binary in //ash/app_list/demo was removed in 2021.
+
+The shelf was originally called the launcher (circa 2012).

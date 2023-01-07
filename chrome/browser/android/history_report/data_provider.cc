@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 #include <stddef.h>
 
 #include <map>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/browser/android/history_report/delta_file_commons.h"
 #include "chrome/browser/android/history_report/delta_file_service.h"
@@ -36,8 +38,8 @@ static bool g_is_debug = false;
 using BookmarkMap = std::map<std::string, UrlAndTitle*>;
 
 struct Context {
-  history::HistoryService* history_service;
-  base::CancelableTaskTracker* history_task_tracker;
+  raw_ptr<history::HistoryService> history_service;
+  raw_ptr<base::CancelableTaskTracker> history_task_tracker;
   base::WaitableEvent finished;
 
   Context(history::HistoryService* hservice,
@@ -144,7 +146,7 @@ std::unique_ptr<std::vector<DeltaFileEntryWithData>> DataProvider::Query(
       }
     }
 
-    valid_entries.reset(new std::vector<DeltaFileEntryWithData>());
+    valid_entries = std::make_unique<std::vector<DeltaFileEntryWithData>>();
     valid_entries->reserve(entries->size());
     for (size_t i = 0; i < entries->size(); ++i) {
       const DeltaFileEntryWithData& entry = (*entries)[i];

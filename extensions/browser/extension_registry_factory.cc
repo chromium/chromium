@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,8 @@ BrowserContext* ExtensionRegistryFactory::GetBrowserContextToUse(
   // Redirected in incognito.
   auto* extension_browser_client = ExtensionsBrowserClient::Get();
   DCHECK(extension_browser_client);
-  return extension_browser_client->GetOriginalContext(context);
+  return extension_browser_client->GetRedirectedContextInIncognito(
+      context, /*force_guest_profile=*/true, /*force_system_profile=*/false);
 }
 
 }  // namespace extensions

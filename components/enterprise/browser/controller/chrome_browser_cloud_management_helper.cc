@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,8 @@ void ChromeBrowserCloudManagementRegistrar::
     RegisterForCloudManagementWithEnrollmentToken(
         const std::string& enrollment_token,
         const std::string& client_id,
-        const CloudManagementRegistrationCallback& callback) {
+        const ClientDataDelegate& client_data_delegate,
+        CloudManagementRegistrationCallback callback) {
   DCHECK(!enrollment_token.empty());
   DCHECK(!client_id.empty());
 
@@ -69,12 +70,18 @@ void ChromeBrowserCloudManagementRegistrar::
   registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
       policy_client.get(),
       enterprise_management::DeviceRegisterRequest::BROWSER);
+
+  // Check if token enrollment is mandatory
+  bool is_enrollment_mandatory =
+      BrowserDMTokenStorage::Get()->ShouldDisplayErrorMessageOnFailure();
+
   registration_helper_->StartRegistrationWithEnrollmentToken(
-      enrollment_token, client_id,
+      enrollment_token, client_id, client_data_delegate,
+      is_enrollment_mandatory,
       base::BindOnce(&ChromeBrowserCloudManagementRegistrar::
                          CallCloudManagementRegistrationCallback,
                      base::Unretained(this), std::move(policy_client),
-                     callback));
+                     std::move(callback)));
 }
 
 void ChromeBrowserCloudManagementRegistrar::
@@ -83,7 +90,7 @@ void ChromeBrowserCloudManagementRegistrar::
         CloudManagementRegistrationCallback callback) {
   registration_helper_.reset();
   if (callback)
-    callback.Run(client->dm_token(), client->client_id());
+    std::move(callback).Run(client->dm_token(), client->client_id());
 }
 
 /* MachineLevelUserCloudPolicyFetcher */

@@ -1,17 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/offline_pages/offliner_user_data.h"
 
+#include <memory>
+
 namespace offline_pages {
 
-void OfflinerUserData::AddToWebContents(content::WebContents* webcontents,
-                                        BackgroundLoaderOffliner* offliner) {
-  DCHECK(offliner);
-  webcontents->SetUserData(UserDataKey(), std::unique_ptr<OfflinerUserData>(
-                                              new OfflinerUserData(offliner)));
-}
+OfflinerUserData::OfflinerUserData(content::WebContents* web_contents,
+                                   BackgroundLoaderOffliner* offliner)
+    : content::WebContentsUserData<OfflinerUserData>(*web_contents),
+      offliner_(offliner) {}
 
 // static - gets the data pointer as a BackgroundLoaderOffliner
 BackgroundLoaderOffliner* OfflinerUserData::OfflinerFromWebContents(
@@ -34,6 +34,6 @@ OfflinerUserData::ResourceLoadingObserverFromWebContents(
   return nullptr;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(OfflinerUserData)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(OfflinerUserData);
 
 }  // namespace offline_pages

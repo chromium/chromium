@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<head>
+  <meta charset="utf-8">
+  <title>Super Size Tiger View</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#4285f4">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans:400,500|Roboto:400,500" rel="stylesheet">
+  <style>
+body {
+  display: grid;
+  grid-template-rows: 64px 1fr;
+  grid-template-areas: "appbar" "select";
+  color: #3c4043;
+  font-family: "Roboto", sans-serif;
+}
+form {
+  grid-area: 'select';
+  margin: auto;
+}
+.appbar {
+  grid-area: appbar;
+  padding: 0 66px 0 48px;
+}
+.appbar-inner {
+  height: 100%;
+  padding: 0 66px 0 48px;
+  display: flex;
+  align-items: center;
+}
+.headline {
+  margin: 0;
+  font-family: "Google Sans", Arial, sans-serif;
+  color: #202124;
+  font-size: 22px;
+  flex: 1;
+}
+.select-wrapper {
+  position: relative;
+}
+.sel-big {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  font: inherit;
+  background: transparent;
+  border: 0;
+  padding: 20px 12px 13px;
+  width: 100%;
+  caret-color: #1a73e8;
+}
+.select-label {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 52px;
+  line-height: 20px;
+  padding: 0 12px;
+  font-size: 12px;
+  color: #5f6368;
+  border-bottom: 1px solid currentColor;
+  background: rgba(0, 0, 0, 0.04);
+}
+.select-label::after {
+  content: '';
+  position: absolute;
+  top: calc(50% - 5px);
+  right: 4px;
+  margin: 5px 7px 5px 8px;
+  border-style: solid;
+  border-width: 5px 5px 0 5px;
+  border-color: currentColor transparent transparent transparent;
+  transition: transform 0.2s ease-out;
+}
+.sel-big:focus + .select-label {
+  color: #1a73e8;
+  bottom: -2px;
+  border-width: 2px;
+}
+.text-button {
+  padding: 0 8px;
+  height: 36px;
+  border-radius: 4px;
+  font-family: 'Google Sans', Arial, sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  background: #1a73e8;
+  color: white;
+}
+.text-button:hover {
+  background: #287ae6;
+  box-shadow: 0 1px 2px #3c40434d, 0 1px 3px 1px #3c404326;
+}
+.text-button:hover:focus {
+  background: #d2e3fc;
+}
+.text-button:focus,
+.text-button:active {
+  background: #d2e3fce6;
+}
+  </style>
+  <link rel="icon" href="favicon.ico" sizes="16x16 32x32 256x256" type="image/x-icon">
+  <script src="index.js"></script>
+</head>
+
+<body>
+  <header class="appbar">
+    <div class="appbar-inner">
+      <h1 class="headline">Super Size Tiger View</h1>
+    </div>
+  </header>
+  <table style="margin:auto; text-align: center">
+    <tr>
+      <td style="width: 40%">
+        <form id="select-form">
+          <p class="select-wrapper">
+            <select id="apk" class="sel-big" name="apk"></select>
+            <label class="select-label" for="apk">APK</label>
+          </p>
+          <p class="select-wrapper">
+            <select id="version1" class="sel-big" name="version1"></select>
+            <label class="select-label" for="version1">Version</label>
+          </p>
+          <p class="select-wrapper">
+            <select id="version2" class="sel-big" name="version2"></select>
+            <label class="select-label" for="version2">
+              Diff Against
+            </label>
+          </p>
+          <p class="select-wrapper" style="font-size: 16px">
+            <label><input type="checkbox" name="showall"> Show all Canary versions</label>
+          </p>
+
+          <p class="select-wrapper">
+            <button type="submit" class="text-button" id="submit-button">
+              Open Size Report
+            </button> <i>(Googlers only)</i>
+          </p>
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: center" colspan=3>
+        <p>To upload your own .size file, use the upload button within <a href="viewer.html">the viewer</a>.</p>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/passwords/password_infobar_modal_overlay_coordinator.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_password_table_view_controller.h"
 #import "ios/chrome/browser/ui/overlays/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
@@ -18,7 +18,7 @@ using password_modal::PasswordAction;
 
 namespace {
 // Returns the InfobarType that should be used to construct the
-// InfobarPasswordTableViewController for |action|.
+// InfobarPasswordTableViewController for `action`.
 InfobarType GetTableViewInfobarType(PasswordAction action) {
   switch (action) {
     case PasswordAction::kSave:

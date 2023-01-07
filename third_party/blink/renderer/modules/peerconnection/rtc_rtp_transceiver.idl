@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ interface RTCRtpTransceiver {
     [Measure] readonly attribute boolean stopped;
     [Measure, RaisesException=Setter] attribute RTCRtpTransceiverDirection direction;
     readonly attribute RTCRtpTransceiverDirection? currentDirection;
-    [Measure, RuntimeEnabled=RTCRtpTransceiverStop, RaisesException] void stop();
+    [Measure, RaisesException] void stop();
     [RaisesException] void setCodecPreferences(sequence<RTCRtpCodecCapability> codecs);
     [RaisesException, RuntimeEnabled=RTCRtpHeaderExtensionControl] void setOfferedRtpHeaderExtensions(
             sequence<RTCRtpHeaderExtensionCapability>

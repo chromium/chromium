@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,27 +9,26 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/web/common/uikit_ui_util.h"
 
 // UI Util containing functions that require UIKit.
 
-// Utility function to set the |element|'s accessibility label to the localized
-// message corresponding to |idsAccessibilityLabel| and its accessibility
-// identifier to |englishUiAutomationName|.
-// Call SetA11yLabelAndUiAutomationName() if |element| is accessible and its
+// Utility function to set the `element`'s accessibility label to the localized
+// message corresponding to `idsAccessibilityLabel` and its accessibility
+// identifier to `englishUiAutomationName`.
+// Call SetA11yLabelAndUiAutomationName() if `element` is accessible and its
 // a11y label should be localized.
-// By convention |englishUiAutomationName| must be equal to the English
-// localized string corresponding to |idsAccessibilityLabel|.
-// |englishUiAutomationName| is the name used in JavaScript UI Automation test
-// scripts to identify the |element|.
+// By convention `englishUiAutomationName` must be equal to the English
+// localized string corresponding to `idsAccessibilityLabel`.
+// `englishUiAutomationName` is the name used in JavaScript UI Automation test
+// scripts to identify the `element`.
 void SetA11yLabelAndUiAutomationName(
     NSObject<UIAccessibilityIdentification>* element,
     int idsAccessibilityLabel,
     NSString* englishUiAutomationName);
 
-// Sets dynamic font for the given |font| on iOS 11+ on the givel |label| or
-// |textField|. Use |maybe| versions to keep code short when dynamic types are
+// Sets dynamic font for the given `font` on iOS 11+ on the givel `label` or
+// `textField`. Use `maybe` versions to keep code short when dynamic types are
 // not in use yet.
 void SetUILabelScaledFont(UILabel* label, UIFont* font);
 void MaybeSetUILabelScaledFont(BOOL maybe, UILabel* label, UIFont* font);
@@ -38,19 +37,19 @@ void MaybeSetUITextFieldScaledFont(BOOL maybe,
                                    UITextField* textField,
                                    UIFont* font);
 
-enum CaptureViewOption {
+typedef enum CaptureViewOption {
   kNoCaptureOption,      // Equivalent to calling CaptureView without options.
   kAfterScreenUpdate,    // Require a synchronization with CA process which can
                          // have side effects.
   kClientSideRendering,  // Triggers a client side compositing, very slow.
-};
+} CaptureViewOption;
 
-// Captures and returns an autoreleased rendering of the |view|.
-// The |view| is assumed to be opaque and the returned image does
+// Captures and returns an autoreleased rendering of the `view`.
+// The `view` is assumed to be opaque and the returned image does
 // not have an alpha channel. The scale parameter is used as a scale factor
 // for the rendering context. Using 0.0 as scale will result in the device's
 // main screen scale to be used.
-// The CaptureViewWithOption function can be used with the |option|
+// The CaptureViewWithOption function can be used with the `option`
 // parameter set to kAfterScreenUpdate if some changes performed in the view
 // and/or it's subtree that have not yet been part of a committed implicit
 // transaction must be reflected in the snapshot.
@@ -73,9 +72,11 @@ UIImage* CaptureView(UIView* view, CGFloat scale);
 // Converts input image and returns a grey scaled version.
 UIImage* GreyImage(UIImage* image);
 
-// Returns an UIColor with |rgb| and |alpha|. The caller should pass the RGB
+// C does not support default arguments.
+#ifdef __cplusplus
+// Returns an UIColor with `rgb` and `alpha`. The caller should pass the RGB
 // value in hexadecimal as this is the typical way they are provided by UX.
-// For example a call to |UIColorFromRGB(0xFF7D40, 1.0)| returns an orange
+// For example a call to `UIColorFromRGB(0xFF7D40, 1.0)` returns an orange
 // UIColor object.
 inline UIColor* UIColorFromRGB(int rgb, CGFloat alpha = 1.0) {
   return [UIColor colorWithRed:((CGFloat)((rgb & 0xFF0000) >> 16)) / 255.0
@@ -83,41 +84,22 @@ inline UIColor* UIColorFromRGB(int rgb, CGFloat alpha = 1.0) {
                           blue:((CGFloat)(rgb & 0x0000FF)) / 255.0
                          alpha:alpha];
 }
+#endif  // __cplusplus
 
+#ifdef __cplusplus
+extern "C" {
+#endif  // __cplusplus
 // Returns the image from the shared resource bundle with the image id
-// |imageID|. If |reversable| is YES and RTL layout is in use, the image
+// `imageID`. If `reversable` is YES and RTL layout is in use, the image
 // will be flipped for RTL.
 UIImage* NativeReversableImage(int imageID, BOOL reversable);
 
 // Convenience version of NativeReversableImage for images that are never
 // reversable; equivalent to NativeReversableImage(imageID, NO).
 UIImage* NativeImage(int imageID);
-
-// Returns an image resized to |targetSize|. It first calculate the projection
-// by calling CalculateProjection() and then create a new image of the desired
-// size and project the correct subset of the original image onto it.
-// The resulting image will have an alpha channel.
-//
-// Image interpolation level for resizing is set to kCGInterpolationDefault.
-//
-// The resize always preserves the scale of the original image.
-UIImage* ResizeImage(UIImage* image,
-                     CGSize targetSize,
-                     ProjectionMode projectionMode);
-
-// Returns an image resized to |targetSize|. It first calculate the projection
-// by calling CalculateProjection() and then create a new image of the desired
-// size and project the correct subset of the original image onto it.
-// |opaque| determine whether resulting image should have an alpha channel.
-// Prefer setting |opaque| to YES for better performances.
-//
-// Image interpolation level for resizing is set to kCGInterpolationDefault.
-//
-// The resize always preserves the scale of the original image.
-UIImage* ResizeImage(UIImage* image,
-                     CGSize targetSize,
-                     ProjectionMode projectionMode,
-                     BOOL opaque);
+#ifdef __cplusplus
+}
+#endif  // __cplusplus
 
 // Returns an output image where each pixel has RGB values equal to a color and
 // the alpha value sampled from the given image. The RGB values of the image are
@@ -125,7 +107,7 @@ UIImage* ResizeImage(UIImage* image,
 // output image's alpha is scaled by the color's alpha value.
 UIImage* TintImage(UIImage* image, UIColor* color);
 
-// Returns the first responder in the subviews of |view|, or nil if no view in
+// Returns the first responder in the subviews of `view`, or nil if no view in
 // the subtree is the first responder.
 UIView* GetFirstResponderSubview(UIView* view);
 
@@ -135,10 +117,10 @@ UIInterfaceOrientation GetInterfaceOrientation(UIWindow* window);
 // Returns the height of the keyboard in the current orientation.
 CGFloat CurrentKeyboardHeight(NSValue* keyboardFrameValue);
 
-// Create 1x1px image from |color|.
+// Create 1x1px image from `color`.
 UIImage* ImageWithColor(UIColor* color);
 
-// Returns a circular image of width |width| based on |image| scaled up or
+// Returns a circular image of width `width` based on `image` scaled up or
 // down. If the source image is not square, the image is first cropped.
 UIImage* CircularImageFromImage(UIImage* image, CGFloat width);
 
@@ -149,38 +131,41 @@ bool IsPortrait(UIWindow* window);
 // Returns true if the window is in landscape orientation.
 bool IsLandscape(UIWindow* window);
 
-// Whether the |environment| has a compact horizontal size class.
+// C does not support function overloading.
+#ifdef __cplusplus
+// Whether the `environment` has a compact horizontal size class.
 bool IsCompactWidth(id<UITraitEnvironment> environment);
 
-// Whether the |traitCollection| has a compact horizontal size class.
+// Whether the `traitCollection` has a compact horizontal size class.
 bool IsCompactWidth(UITraitCollection* traitCollection);
 
-// Whether the |environment| has a compact vertical size class.
+// Whether the `environment` has a compact vertical size class.
 bool IsCompactHeight(id<UITraitEnvironment> environment);
 
-// Whether the |traitCollection| has a compact vertical size class.
+// Whether the `traitCollection` has a compact vertical size class.
 bool IsCompactHeight(UITraitCollection* traitCollection);
 
-// Whether toolbar should be shown in compact mode in |environment|.
+// Whether toolbar should be shown in compact mode in `environment`.
 bool ShouldShowCompactToolbar(id<UITraitEnvironment> environment);
 
-// Whether toolbar should be shown in compact mode in |traitCollection|.
+// Whether toolbar should be shown in compact mode in `traitCollection`.
 bool ShouldShowCompactToolbar(UITraitCollection* traitCollection);
 
-// Whether the |environment| has a regular vertical and regular horizontal
+// Whether the `environment` has a regular vertical and regular horizontal
 // size class.
 bool IsRegularXRegularSizeClass(id<UITraitEnvironment> environment);
-// Whether the |traitCollection| has a regular vertical and regular horizontal
+// Whether the `traitCollection` has a regular vertical and regular horizontal
 // size class.
 bool IsRegularXRegularSizeClass(UITraitCollection* traitCollection);
 
-// Returns whether the |environment|'s toolbar is split between top and bottom
+// Returns whether the `environment`'s toolbar is split between top and bottom
 // toolbar or if it is displayed as only one toolbar.
 bool IsSplitToolbarMode(id<UITraitEnvironment> environment);
 
-// Returns whether the |traitCollection|'s toolbar is split between top and
+// Returns whether the `traitCollection`'s toolbar is split between top and
 // bottom toolbar or if it is displayed as only one toolbar.
 bool IsSplitToolbarMode(UITraitCollection* traitCollection);
+#endif  // __cplusplus
 
 // Returns the current first responder for keyWindow.
 UIResponder* GetFirstResponder();
@@ -188,10 +173,10 @@ UIResponder* GetFirstResponder();
 // Trigger a haptic vibration for various types of actions. This is a no-op for
 // devices that do not support haptic feedback.
 void TriggerHapticFeedbackForSelectionChange();
-// |impactStyle| should represent the mass of the object in the collision
+// `impactStyle` should represent the mass of the object in the collision
 // simulated by this feedback.
 void TriggerHapticFeedbackForImpact(UIImpactFeedbackStyle impactStyle);
-// |type| represent the type of notification associated with this feedback.
+// `type` represent the type of notification associated with this feedback.
 void TriggerHapticFeedbackForNotification(UINotificationFeedbackType type);
 
 // Returns the text for tabs count to be displayed in toolbar and tab_grid.
@@ -199,11 +184,11 @@ void TriggerHapticFeedbackForNotification(UINotificationFeedbackType type);
 // more than 99 tabs open.
 NSString* TextForTabCount(long count);
 
-// Adds |item| to the global Edit Menu configuration (UIMenuController). No-op
-// if a UIMenuItem with the same selector as |item| has already been registered.
+// Adds `item` to the global Edit Menu configuration (UIMenuController). No-op
+// if a UIMenuItem with the same selector as `item` has already been registered.
 void RegisterEditMenuItem(UIMenuItem* item);
 
-// Finds the root of |view|'s view hierarchy -- its window if it has one, or
+// Finds the root of `view`'s view hierarchy -- its window if it has one, or
 // the first (recursive) superview with no superview.
 UIView* ViewHierarchyRootForView(UIView* view);
 

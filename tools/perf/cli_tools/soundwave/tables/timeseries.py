@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -84,7 +84,7 @@ def _ParseIntValue(value, on_error=-1):
   # Try to parse as int and, in case of error, return a pre-defined value.
   try:
     return int(value)
-  except StandardError:
+  except Exception:
     return on_error
 
 
@@ -105,9 +105,8 @@ def _ParseConfigFromTestPath(test_path):
 def DataFrameFromJson(test_path, data):
   if isinstance(test_path, Key):
     return _DataFrameFromJsonV2(test_path, data)
-  else:
-    # TODO(crbug.com/907121): Remove when we can switch entirely to v2.
-    return _DataFrameFromJsonV1(test_path, data)
+  # TODO(crbug.com/907121): Remove when we can switch entirely to v2.
+  return _DataFrameFromJsonV1(test_path, data)
 
 
 def _DataFrameFromJsonV2(ts_key, data):

@@ -34,6 +34,7 @@
 #include <algorithm>
 #include <limits>
 
+#include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
@@ -56,7 +57,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
@@ -74,7 +75,7 @@ static Decimal EnsureMaximum(const Decimal& proposed_value,
 }
 
 RangeInputType::RangeInputType(HTMLInputElement& element)
-    : InputType(element),
+    : InputType(Type::kRange, element),
       InputTypeView(element),
       tick_mark_values_dirty_(true) {}
 
@@ -106,7 +107,7 @@ const AtomicString& RangeInputType::FormControlType() const {
 }
 
 double RangeInputType::ValueAsDouble() const {
-  return ParseToDoubleForNumberType(GetElement().value());
+  return ParseToDoubleForNumberType(GetElement().Value());
 }
 
 void RangeInputType::SetValueAsDouble(double new_value,
@@ -117,7 +118,7 @@ void RangeInputType::SetValueAsDouble(double new_value,
 }
 
 bool RangeInputType::TypeMismatchFor(const String& value) const {
-  return !value.IsEmpty() && !std::isfinite(ParseToDoubleForNumberType(value));
+  return !value.empty() && !std::isfinite(ParseToDoubleForNumberType(value));
 }
 
 bool RangeInputType::SupportsRequired() const {
@@ -150,10 +151,6 @@ StepRange RangeInputType::CreateStepRange(
                    /*has_reversed_range=*/false, step, step_description);
 }
 
-bool RangeInputType::IsSteppable() const {
-  return true;
-}
-
 void RangeInputType::HandleMouseDownEvent(MouseEvent& event) {
   if (GetElement().IsDisabledFormControl())
     return;
@@ -179,7 +176,7 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
 
   const String& key = event.key();
 
-  const Decimal current = ParseToNumberOrNaN(GetElement().value());
+  const Decimal current = ParseToNumberOrNaN(GetElement().Value());
   DCHECK(current.IsFinite());
 
   StepRange step_range(CreateStepRange(kRejectAny));
@@ -278,23 +275,27 @@ void RangeInputType::AccessKeyAction(
 
 void RangeInputType::SanitizeValueInResponseToMinOrMaxAttributeChange() {
   if (GetElement().HasDirtyValue())
-    GetElement().setValue(GetElement().value());
+    GetElement().SetValue(GetElement().Value());
   else
-    GetElement().SetNonDirtyValue(GetElement().value());
+    GetElement().SetNonDirtyValue(GetElement().Value());
   GetElement().UpdateView();
 }
 
 void RangeInputType::StepAttributeChanged() {
   if (GetElement().HasDirtyValue())
-    GetElement().setValue(GetElement().value());
+    GetElement().SetValue(GetElement().Value());
   else
-    GetElement().SetNonDirtyValue(GetElement().value());
+    GetElement().SetNonDirtyValue(GetElement().Value());
   GetElement().UpdateView();
 }
 
 void RangeInputType::DidSetValue(const String&, bool value_changed) {
   if (value_changed)
     GetElement().UpdateView();
+}
+
+ControlPart RangeInputType::AutoAppearance() const {
+  return kSliderHorizontalPart;
 }
 
 void RangeInputType::UpdateView() {
@@ -309,7 +310,7 @@ String RangeInputType::SanitizeValue(const String& proposed_value) const {
 }
 
 void RangeInputType::WarnIfValueIsInvalid(const String& value) const {
-  if (value.IsEmpty() || !GetElement().SanitizeValue(value).IsEmpty())
+  if (value.empty() || !GetElement().SanitizeValue(value).empty())
     return;
   AddWarningToConsole(
       "The specified value %s cannot be parsed, or is out of range.", value);
@@ -359,17 +360,17 @@ void RangeInputType::UpdateTickMarkValues() {
   if (!data_list)
     return;
   HTMLDataListOptionsCollection* options = data_list->options();
-  tick_mark_values_.ReserveCapacity(options->length());
+  tick_mark_values_.reserve(options->length());
   for (unsigned i = 0; i < options->length(); ++i) {
     HTMLOptionElement* option_element = options->Item(i);
     String option_value = option_element->value();
-    if (option_element->IsDisabledFormControl() || option_value.IsEmpty())
+    if (option_element->IsDisabledFormControl() || option_value.empty())
       continue;
     if (!GetElement().IsValidValue(option_value))
       continue;
     tick_mark_values_.push_back(ParseToNumber(option_value, Decimal::Nan()));
   }
-  tick_mark_values_.ShrinkToFit();
+  tick_mark_values_.shrink_to_fit();
   std::sort(tick_mark_values_.begin(), tick_mark_values_.end(), DecimalCompare);
 }
 

@@ -50,8 +50,8 @@
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -134,7 +134,7 @@ class FrameSerializerTest : public testing::Test,
                                         const char* mime_type) {
     String mime(mime_type);
     for (const SerializedResource& resource : resources_) {
-      if (resource.url == url && !resource.data->IsEmpty() &&
+      if (resource.url == url && !resource.data->empty() &&
           (mime.IsNull() || EqualIgnoringASCIICase(resource.mime_type, mime)))
         return &resource;
     }

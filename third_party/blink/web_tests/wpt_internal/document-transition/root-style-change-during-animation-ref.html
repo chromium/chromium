@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<title>Shared transitions: root element style changes during transition</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:vmpstr@chromium.org">
+<link rel="match" href="root-style-change-during-animation-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<style>
+#target {
+  width: 100px;
+  height: 100px;
+  contain: paint;
+  background: green;
+}
+
+body {
+  background: grey;
+}
+</style>
+
+<div id=target></div>
+

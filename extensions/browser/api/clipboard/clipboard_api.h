@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/api/clipboard.h"
@@ -34,7 +35,7 @@ class ClipboardAPI : public BrowserContextKeyedAPI,
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() { return "ClipboardAPI"; }
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 };
 
 class ClipboardSetImageDataFunction : public ExtensionFunction {

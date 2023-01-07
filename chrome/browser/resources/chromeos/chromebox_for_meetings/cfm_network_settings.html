@@ -1,0 +1,38 @@
+<style>
+  body,
+  html {
+    overflow: scroll;
+  }
+
+  #content {
+    margin: 0 16px;
+  }
+
+  #network-select,
+  #custom-items {
+    flex: 1;
+    height: 100%;
+    width: 100%;
+  }
+</style>
+
+<iron-iconset-svg name="cfm-custom" size="24">
+  <svg>
+    <defs>
+      <g id="manage-certs">
+        <path d="M0 0h24v24H0z" fill="none">
+        <path d="M2 2v20h20V2H2zm18 18H4V4h2v7l2.5-1.5L11 11V4h9v16z">
+      </g>
+    </defs>
+  </svg>
+</iron-iconset-svg>
+<div id="content">
+  <network-list id="custom-items"
+      custom-items="[[customItems_]]"
+      on-custom-item-selected="onCustomItemSelected_">
+  </network-list>
+  <h2>$i18n{availableNetworks}</h2>
+  <network-select id="network-select"
+      on-network-item-selected="onNetworkItemSelected_">
+  </network-select>
+</div>

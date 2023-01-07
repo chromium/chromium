@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "device/vr/vr_device_base.h"
 #include "device/vr/vr_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -24,6 +23,10 @@ class DEVICE_VR_EXPORT GvrDevice : public VRDeviceBase,
                                    public mojom::XRSessionController {
  public:
   GvrDevice();
+
+  GvrDevice(const GvrDevice&) = delete;
+  GvrDevice& operator=(const GvrDevice&) = delete;
+
   ~GvrDevice() override;
 
   // VRDeviceBase
@@ -33,10 +36,6 @@ class DEVICE_VR_EXPORT GvrDevice : public VRDeviceBase,
   void PauseTracking() override;
   void ResumeTracking() override;
   void ShutdownSession(mojom::XRRuntime::ShutdownSessionCallback) override;
-
-  void OnDisplayConfigurationChanged(
-      JNIEnv* env,
-      const base::android::JavaRef<jobject>& obj);
 
  private:
   void OnStartPresentResult(mojom::XRSessionPtr session);
@@ -65,8 +64,6 @@ class DEVICE_VR_EXPORT GvrDevice : public VRDeviceBase,
   mojom::XRRuntime::RequestSessionCallback pending_request_session_callback_;
 
   base::WeakPtrFactory<GvrDevice> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GvrDevice);
 };
 
 }  // namespace device

@@ -1,7 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {EventGenerator} from '../../common/event_generator.js';
+import {EventHandler} from '../../common/event_handler.js';
+import {RectUtil} from '../../common/rect_util.js';
 import {AutoScanManager} from '../auto_scan_manager.js';
 import {Navigator} from '../navigator.js';
 import {SwitchAccess} from '../switch_access.js';
@@ -19,7 +22,7 @@ const AutomationNode = chrome.automation.AutomationNode;
  * This class handles the behavior of keyboard nodes directly associated with a
  * single AutomationNode.
  */
-class KeyboardNode extends BasicNode {
+export class KeyboardNode extends BasicNode {
   /**
    * @param {!AutomationNode} node
    * @param {!SARootNode} parent
@@ -165,9 +168,12 @@ export class KeyboardRootNode extends BasicRootNode {
       return;
     }
 
-    KeyboardRootNode.isVisible_ =
-        SwitchAccessPredicate.isVisible(keyboardObject);
+    KeyboardRootNode.isVisible_ = KeyboardRootNode.isKeyboardVisible_();
 
+    new EventHandler(
+        keyboardObject, chrome.automation.EventType.LOAD_COMPLETE,
+        KeyboardRootNode.checkVisibilityChanged_)
+        .start();
     new EventHandler(
         keyboardObject, chrome.automation.EventType.STATE_CHANGED,
         KeyboardRootNode.checkVisibilityChanged_, {exactMatch: true})
@@ -177,12 +183,23 @@ export class KeyboardRootNode extends BasicRootNode {
   // ================= Private static methods =================
 
   /**
+   * @return {boolean}
+   * @private
+   */
+  static isKeyboardVisible_() {
+    const keyboardObject = KeyboardRootNode.getKeyboardObject();
+    return Boolean(
+        keyboardObject && SwitchAccessPredicate.isVisible(keyboardObject) &&
+        keyboardObject.find({role: chrome.automation.RoleType.ROOT_WEB_AREA}));
+  }
+
+  /**
    * @param {chrome.automation.AutomationEvent} event
    * @private
    */
   static checkVisibilityChanged_(event) {
-    const currentlyVisible =
-        SwitchAccessPredicate.isVisible(KeyboardRootNode.getKeyboardObject());
+    const keyboardObject = KeyboardRootNode.getKeyboardObject();
+    const currentlyVisible = KeyboardRootNode.isKeyboardVisible_();
     if (currentlyVisible === KeyboardRootNode.isVisible_) {
       return;
     }
@@ -209,7 +226,7 @@ export class KeyboardRootNode extends BasicRootNode {
    * @private
    */
   static findAndSetChildren_(root) {
-    const childConstructor = (node) => new KeyboardNode(node, root);
+    const childConstructor = node => new KeyboardNode(node, root);
     const interestingChildren =
         root.automationNode.findAll({role: chrome.automation.RoleType.BUTTON});
     /** @type {!Array<!SAChildNode>} */
@@ -241,12 +258,11 @@ export class KeyboardRootNode extends BasicRootNode {
       return;
     }
 
-    KeyboardRootNode.explicitStateChange_ = true;
     chrome.accessibilityPrivate.setVirtualKeyboardVisible(true);
   }
 }
 
 BasicRootNode.builders.push({
   predicate: rootNode => rootNode.role === chrome.automation.RoleType.KEYBOARD,
-  builder: KeyboardRootNode.buildTree
+  builder: KeyboardRootNode.buildTree,
 });

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,10 +56,6 @@ views::View* ShelfTestApi::GetHomeButton() {
   return GetShelfWidget()->navigation_widget()->GetHomeButton();
 }
 
-bool ShelfTestApi::HasLoginShelfGestureHandler() const {
-  return GetShelfWidget()->login_shelf_gesture_controller_for_testing();
-}
-
 ScrollableShelfInfo ShelfTestApi::GetScrollableShelfInfoForState(
     const ShelfState& state) {
   const auto* scrollable_shelf_view = GetScrollableShelfView();
@@ -84,6 +80,8 @@ ScrollableShelfInfo ShelfTestApi::GetScrollableShelfInfoForState(
     info.icons_bounds_in_screen.push_back(
         shelf_view->view_model()->view_at(i)->GetBoundsInScreen());
   }
+
+  info.icons_under_animation = shelf_view->IsAnimating();
 
   // Calculates the target offset only when |scroll_distance| is specified.
   if (state.scroll_distance != 0.f) {
@@ -116,6 +114,8 @@ HotseatInfo ShelfTestApi::GetHotseatInfo() {
   gfx::Point swipe_end_location = info.swipe_up.swipe_start_location;
   swipe_end_location.set_y(swipe_end_location.y() - swipe_distance);
   info.swipe_up.swipe_end_location = swipe_end_location;
+  info.is_auto_hidden =
+      GetShelf()->shelf_layout_manager()->is_shelf_auto_hidden();
 
   return info;
 }

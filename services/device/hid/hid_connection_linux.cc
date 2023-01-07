@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -45,6 +44,9 @@ class HidConnectionLinux::BlockingTaskRunnerHelper {
     report_buffer_size_ = device_info->max_input_report_size() + 1;
     has_report_id_ = device_info->has_report_id();
   }
+
+  BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
+  BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
 
   ~BlockingTaskRunnerHelper() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -177,16 +179,15 @@ class HidConnectionLinux::BlockingTaskRunnerHelper {
   base::WeakPtr<HidConnectionLinux> connection_;
   const scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> file_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingTaskRunnerHelper);
 };
 
 HidConnectionLinux::HidConnectionLinux(
     scoped_refptr<HidDeviceInfo> device_info,
     base::ScopedFD fd,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
-    bool allow_protected_reports)
-    : HidConnection(device_info, allow_protected_reports),
+    bool allow_protected_reports,
+    bool allow_fido_reports)
+    : HidConnection(device_info, allow_protected_reports, allow_fido_reports),
       helper_(nullptr, base::OnTaskRunnerDeleter(blocking_task_runner)),
       blocking_task_runner_(std::move(blocking_task_runner)) {
   helper_.reset(new BlockingTaskRunnerHelper(std::move(fd), device_info,

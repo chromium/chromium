@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,9 @@
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/hash/hash.h"
-#include "base/optional.h"
-#include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/frecency_store.pb.h"
@@ -26,13 +24,12 @@
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.pb.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker_config.pb.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 namespace {
 
-using base::Optional;
 using base::Time;
-using base::TimeDelta;
 
 // A predictor may return scores for target IDs that have been deleted. If less
 // than this proportion of IDs are valid, the ranker triggers a cleanup of the
@@ -42,6 +39,12 @@ constexpr float kMinValidTargetProportionBeforeCleanup = 0.5f;
 void SaveProtoToDisk(const base::FilePath& filepath,
                      const std::string& model_identifier,
                      const RecurrenceRankerProto& proto) {
+  // CreateDirectory returns true if the directory was created successfully, or
+  // the path is already a directory.
+  if (!base::CreateDirectory(filepath.DirName())) {
+    return;
+  }
+
   std::string proto_str;
   if (!proto.SerializeToString(&proto_str)) {
     return;
@@ -79,8 +82,7 @@ std::unique_ptr<RecurrenceRankerProto> LoadProtoFromDisk(
   return proto;
 }
 
-std::vector<std::pair<std::string, float>> SortAndTruncateRanks(
-    int n,
+std::vector<std::pair<std::string, float>> SortRanks(
     const std::map<std::string, float>& ranks) {
   std::vector<std::pair<std::string, float>> sorted_ranks(ranks.begin(),
                                                           ranks.end());
@@ -89,12 +91,13 @@ std::vector<std::pair<std::string, float>> SortAndTruncateRanks(
                const std::pair<std::string, float>& b) {
               return a.second > b.second;
             });
-
-  // vector::resize simply truncates the array if there are more than n
-  // elements. Note this is still O(N).
-  if (sorted_ranks.size() > static_cast<size_t>(n))
-    sorted_ranks.resize(n);
   return sorted_ranks;
+}
+
+void TruncateRanks(std::vector<std::pair<std::string, float>>& ranks,
+                   const int n) {
+  if (ranks.size() > static_cast<size_t>(n))
+    ranks.resize(n);
 }
 
 // Given a FrecencyStore's map from target names to IDs, and a
@@ -152,7 +155,7 @@ RecurrenceRanker::RecurrenceRanker(const std::string& model_identifier,
       config_hash_(base::PersistentHash(config.SerializeAsString())),
       is_ephemeral_user_(is_ephemeral_user),
       min_seconds_between_saves_(
-          TimeDelta::FromSeconds(config.min_seconds_between_saves())),
+          base::Seconds(config.min_seconds_between_saves())),
       time_of_last_save_(Time::Now()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
@@ -280,8 +283,8 @@ std::map<std::string, float> RecurrenceRanker::Rank(
   if (predictor_->GetPredictorName() == DefaultPredictor::kPredictorName)
     return GetScoresFromFrecencyStore(targets_->GetAll());
 
-  base::Optional<unsigned int> condition_id = conditions_->GetId(condition);
-  if (condition_id == base::nullopt)
+  absl::optional<unsigned int> condition_id = conditions_->GetId(condition);
+  if (condition_id == absl::nullopt)
     return {};
 
   const auto& targets = targets_->GetAll();
@@ -304,13 +307,24 @@ void RecurrenceRanker::MaybeCleanup(float proportion_valid,
 }
 
 std::vector<std::pair<std::string, float>> RecurrenceRanker::RankTopN(
-    int n,
+    const int n,
     const std::string& condition) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!load_from_disk_completed_)
     return {};
 
-  return SortAndTruncateRanks(n, Rank(condition));
+  auto ranks = SortRanks(Rank(condition));
+  TruncateRanks(ranks, n);
+  return ranks;
+}
+
+std::vector<std::pair<std::string, float>> RecurrenceRanker::RankSorted(
+    const std::string& condition) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!load_from_disk_completed_)
+    return {};
+
+  return SortRanks(Rank(condition));
 }
 
 std::map<std::string, FrecencyStore::ValueData>*

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,21 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/menu_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-
-namespace gfx {
-class ImageSkia;
-}  // namespace gfx
+#include "ui/views/metadata/view_factory.h"
 
 namespace media_router {
 FORWARD_DECLARE_TEST(CastDialogSinkButtonTest, SetTitleLabel);
 FORWARD_DECLARE_TEST(CastDialogSinkButtonTest, SetStatusLabel);
 }  // namespace media_router
+
+namespace ui {
+class ImageModel;
+}
 
 namespace views {
 class Label;
@@ -44,7 +45,7 @@ class HoverButton : public views::LabelButton {
 
   // Creates a single line hover button with an icon.
   HoverButton(PressedCallback callback,
-              const gfx::ImageSkia& icon,
+              const ui::ImageModel& icon,
               const std::u16string& text);
 
   // Creates a HoverButton with custom subviews. |icon_view| replaces the
@@ -54,6 +55,8 @@ class HoverButton : public views::LabelButton {
   // When |resize_row_for_secondary_icon| is false, the button tries to
   // accommodate the view's preferred size by reducing the top and bottom
   // insets appropriately up to a value of 0.
+  // Warning: |icon_view| must have a fixed size and be correctly set during its
+  // constructor for the HoverButton to layout correctly.
   HoverButton(PressedCallback callback,
               std::unique_ptr<views::View> icon_view,
               const std::u16string& title,
@@ -71,6 +74,7 @@ class HoverButton : public views::LabelButton {
   // views::LabelButton:
   void SetBorder(std::unique_ptr<views::Border> b) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void PreferredSizeChanged() override;
   void OnViewBoundsChanged(View* observed_view) override;
 
   // Sets the text style of the title considering the color of the background.
@@ -78,6 +82,10 @@ class HoverButton : public views::LabelButton {
   // changed to a color that is not readable on the specified background.
   void SetTitleTextStyle(views::style::TextStyle text_style,
                          SkColor background_color);
+
+  // Set the text context and style of the subtitle.
+  void SetSubtitleTextStyle(int text_context,
+                            views::style::TextStyle text_style);
 
   // Updates the accessible name and tooltip of the button if necessary based on
   // |title_| and |subtitle_| labels.
@@ -87,8 +95,6 @@ class HoverButton : public views::LabelButton {
   // views::MenuButton:
   KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override;
   void StateChanged(ButtonState old_state) override;
-  SkColor GetInkDropBaseColor() const override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
 
   views::StyledLabel* title() const { return title_; }
@@ -105,16 +111,23 @@ class HoverButton : public views::LabelButton {
                            NotifyClickExecutesAction);
   FRIEND_TEST_ALL_PREFIXES(ExtensionsMenuItemViewTest,
                            UpdatesToDisplayCorrectActionTitle);
+  friend class AccountSelectionBubbleViewTest;
   friend class PageInfoBubbleViewBrowserTest;
 
-  views::StyledLabel* title_ = nullptr;
-  views::View* label_wrapper_ = nullptr;
-  views::Label* subtitle_ = nullptr;
-  views::View* icon_view_ = nullptr;
-  views::View* secondary_view_ = nullptr;
+  raw_ptr<views::StyledLabel> title_ = nullptr;
+  raw_ptr<views::View> label_wrapper_ = nullptr;
+  raw_ptr<views::Label> subtitle_ = nullptr;
+  raw_ptr<views::View> icon_view_ = nullptr;
+  raw_ptr<views::View> secondary_view_ = nullptr;
 
   base::ScopedObservation<views::View, views::ViewObserver> label_observation_{
       this};
 };
+
+BEGIN_VIEW_BUILDER(, HoverButton, views::LabelButton)
+VIEW_BUILDER_METHOD(SetTitleTextStyle, views::style::TextStyle, SkColor)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, HoverButton)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_HOVER_BUTTON_H_

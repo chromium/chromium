@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,46 +7,42 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/values.h"
 #include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
-#include "ios/web/public/security/web_interstitial_delegate.h"
 #include "url/gurl.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace web {
 class WebFrame;
-class WebInterstitial;
 class WebState;
 }  // namespace web
 
 namespace security_interstitials {
 
-class IOSSecurityInterstitialPage : public web::WebInterstitialDelegate {
+class IOSSecurityInterstitialPage {
  public:
   IOSSecurityInterstitialPage(web::WebState* web_state,
                               const GURL& request_url,
                               IOSBlockingPageControllerClient* client);
-  ~IOSSecurityInterstitialPage() override;
 
-  // Creates an interstitial and shows it.
-  void Show();
+  IOSSecurityInterstitialPage(const IOSSecurityInterstitialPage&) = delete;
+  IOSSecurityInterstitialPage& operator=(const IOSSecurityInterstitialPage&) =
+      delete;
 
-  // web::WebInterstitialDelegate implementation.
-  std::string GetHtmlContents() const override;
+  virtual ~IOSSecurityInterstitialPage();
+
+  // Returns the HTML that should be displayed in the page
+  virtual std::string GetHtmlContents() const;
 
   // Whether a URL should be displayed on this interstitial page. This is
   // respected by committed interstitials only.
   virtual bool ShouldDisplayURL() const;
 
-  // Handles JS commands from the interstitial page. Overridden in subclasses
+  // Handles `command` from the interstitial page. Overridden in subclasses
   // to handle actions specific to the type of interstitial.
-  virtual void HandleScriptCommand(const base::DictionaryValue& message,
-                                   const GURL& origin_url,
-                                   bool user_is_interacting,
-                                   web::WebFrame* sender_frame) = 0;
+  virtual void HandleCommand(SecurityInterstitialCommand command,
+                             const GURL& origin_url,
+                             bool user_is_interacting,
+                             web::WebFrame* sender_frame) = 0;
 
  protected:
   // Returns true if the interstitial should create a new navigation item.
@@ -54,18 +50,13 @@ class IOSSecurityInterstitialPage : public web::WebInterstitialDelegate {
 
   // Populates the strings used to generate the HTML from the template.
   virtual void PopulateInterstitialStrings(
-      base::DictionaryValue* load_time_data) const = 0;
-
-  // Gives an opportunity for child classes to react to Show() having run. The
-  // |web_interstitial_| will now have a value.
-  virtual void AfterShow() = 0;
+      base::Value::Dict& load_time_data) const = 0;
 
   // Returns the formatted host name for the request url.
   std::u16string GetFormattedHostName() const;
 
   web::WebState* web_state() const { return web_state_; }
   const GURL& request_url() const { return request_url_; }
-  web::WebInterstitial* web_interstitial() const { return web_interstitial_; }
 
  private:
   // The WebState with which this interstitial page is associated. Not
@@ -74,15 +65,9 @@ class IOSSecurityInterstitialPage : public web::WebInterstitialDelegate {
   web::WebState* web_state_;
   const GURL request_url_;
 
-  // Once non-null, the |web_interstitial_| takes ownership of this
-  // IOSSecurityInterstitialPage instance.
-  web::WebInterstitial* web_interstitial_;
-
-  // Used to interact with the embedder. Unowned pointer; must outlive |this|
+  // Used to interact with the embedder. Unowned pointer; must outlive `this`
   // instance.
   IOSBlockingPageControllerClient* const client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSSecurityInterstitialPage);
 };
 
 }  // namespace security_interstitials

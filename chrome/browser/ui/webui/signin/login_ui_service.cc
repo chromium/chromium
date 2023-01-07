@@ -1,21 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 
+#include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/common/url_constants.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -58,41 +53,6 @@ void LoginUIService::SyncConfirmationUIClosed(
     observer.OnSyncConfirmationUIClosed(result);
 }
 
-void LoginUIService::ShowExtensionLoginPrompt(bool enable_sync,
-                                              const std::string& email_hint) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED();
-#else
-  // There is no sign-in flow for guest or system profile.
-  if (profile_->IsGuestSession() || profile_->IsSystemProfile())
-    return;
-  // Locked profile should be unlocked with UserManager only.
-  ProfileAttributesEntry* entry =
-      g_browser_process->profile_manager()
-          ->GetProfileAttributesStorage()
-          .GetProfileAttributesWithPath(profile_->GetPath());
-  if (entry && entry->IsSigninRequired()) {
-    return;
-  }
-
-  // This may be called in incognito. Redirect to the original profile.
-  chrome::ScopedTabbedBrowserDisplayer displayer(
-      profile_->GetOriginalProfile());
-  Browser* browser = displayer.browser();
-
-  if (enable_sync) {
-    // Set a primary account.
-    browser->signin_view_controller()->ShowDiceEnableSyncTab(
-        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS,
-        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO, email_hint);
-  } else {
-    // Add an account to the web without setting a primary account.
-    browser->signin_view_controller()->ShowDiceAddAccountTab(
-        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS, email_hint);
-  }
-#endif
-}
-
 void LoginUIService::DisplayLoginResult(Browser* browser,
                                         const SigninUIError& error) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -100,6 +60,7 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
   NOTREACHED();
 #else
   last_login_error_ = error;
+  // TODO(crbug.com/1326904): Check if the condition should be `!error.IsOk()`
   if (!error.message().empty()) {
     if (browser) {
       browser->signin_view_controller()->ShowModalSigninErrorDialog();
@@ -109,10 +70,6 @@ void LoginUIService::DisplayLoginResult(Browser* browser,
     } else {
       LOG(ERROR) << "Unable to show Login error message: " << error.message();
     }
-  } else if (browser) {
-    browser->window()->ShowAvatarBubbleFromAvatarButton(
-        BrowserWindow::AVATAR_BUBBLE_MODE_CONFIRM_SIGNIN,
-        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS, false);
   }
 #endif
 }

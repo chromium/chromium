@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "base/values.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_export.h"
 

@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_WIDTH_VARIANT_H_
 
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {

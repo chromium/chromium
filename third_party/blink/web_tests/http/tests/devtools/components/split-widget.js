@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@
     TestRunner.addResult(
         '    Sidebar size = ' + sidebarSize + ', showMode = ' + splitWidget.showMode() + ', ' + orientation);
     TestRunner.addResult(
-        '    Setting value: ' + JSON.stringify(Common.settings.settingForTest(splitWidget._setting._name).get()));
+        '    Setting value: ' + JSON.stringify(Common.settings.settingForTest(splitWidget.setting.name).get()));
   }
 
   function testSplitWidgetSizes(useFraction, shouldSaveShowMode) {

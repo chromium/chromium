@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,34 +12,34 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
+#include "components/services/storage/public/cpp/buckets/bucket_init_params.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/quota_client.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/quota/quota_callbacks.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_impl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace base {
-
 class SequencedTaskRunner;
-
 }  // namespace base
-
-namespace url {
-
-class Origin;
-
-}  // namespace url
 
 namespace storage {
 
-class QuotaClient;
+struct BucketLocator;
 class QuotaOverrideHandle;
 
 // Thread-safe proxy for QuotaManagerImpl.
@@ -59,57 +59,184 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   // `quota_manager_impl` isn't a base::WeakPtr<QuotaManagerImpl>.
   QuotaManagerProxy(
       QuotaManagerImpl* quota_manager_impl,
-      scoped_refptr<base::SequencedTaskRunner> quota_manager_impl_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> quota_manager_impl_task_runner,
+      const base::FilePath& profile_path);
 
   QuotaManagerProxy(const QuotaManagerProxy&) = delete;
   QuotaManagerProxy& operator=(const QuotaManagerProxy&) = delete;
-
-  // TODO(crbug.com/1163009): Remove this method after all QuotaClients have
-  //                          been mojofied.
-  virtual void RegisterLegacyClient(
-      scoped_refptr<QuotaClient> client,
-      QuotaClientType client_type,
-      const std::vector<blink::mojom::StorageType>& storage_types);
 
   virtual void RegisterClient(
       mojo::PendingRemote<mojom::QuotaClient> client,
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types);
-  virtual void NotifyStorageAccessed(const url::Origin& origin,
+
+  virtual void BindInternalsHandler(
+      mojo::PendingReceiver<mojom::QuotaInternalsHandler> receiver);
+
+  // Constructs path where `bucket` data is persisted to disk for partitioned
+  // storage.
+  base::FilePath GetBucketPath(const BucketLocator& bucket);
+
+  // Constructs path where `bucket` and `client_type` data is persisted to disk
+  // for partitioned storage.
+  base::FilePath GetClientBucketPath(const BucketLocator& bucket,
+                                     QuotaClientType client_type);
+
+  // Gets the bucket with the name, storage key, quota and expiration
+  // specified in `bucket_params` for StorageType kTemporary and returns a
+  // BucketInfo with all fields filled in. This will also update the bucket's
+  // policies to match `bucket_params` for those parameters which may be
+  // updated, but only if it's a user created bucket (not the default bucket).
+  // If one doesn't exist, it creates a new bucket with the specified policies.
+  // Returns a QuotaError if the operation has failed.
+  virtual void UpdateOrCreateBucket(
+      const BucketInitParams& bucket_params,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
+
+  // This function calls the asynchronous GetOrCreateBucket function but blocks
+  // until completion.
+  //
+  // NOTE: this function cannot be called from the
+  // quota_manager_impl_task_runner. Additionally, the asychonrous version of
+  // this method `GetOrCreateBucket` is preferred; only use this synchronous
+  // version where asynchronous bucket retrieval is not possible.
+  virtual QuotaErrorOr<BucketInfo> GetOrCreateBucketSync(
+      const BucketInitParams& params);
+
+  // Same as GetOrCreateBucket but takes in StorageType. This should only be
+  // used by FileSystem, and is expected to be removed when
+  // StorageType::kSyncable and StorageType::kPersistent are deprecated.
+  // (crbug.com/1233525, crbug.com/1286964).
+  virtual void GetOrCreateBucketDeprecated(
+      const BucketInitParams& params,
+      blink::mojom::StorageType storage_type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
+
+  // Creates a bucket for `origin` with `bucket_name` and returns the
+  // BucketInfo to the callback. Returns a QuotaError to the callback
+  // on operation failure.
+  //
+  // TODO(crbug.com/1208141): Remove `storage_type` when the only supported
+  // StorageType is kTemporary.
+  virtual void CreateBucketForTesting(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      blink::mojom::StorageType storage_type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
+
+  // Retrieves the BucketInfo of the bucket with `bucket_id` and returns it to
+  // the callback. Will return a QuotaError if a bucket does not exist or on
+  // operation failure.
+  virtual void GetBucketById(
+      const BucketId& bucket_id,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
+
+  // Retrieves the BucketInfo of the bucket with `bucket_name` for
+  // `storage_key` and returns it to the callback. Will return a QuotaError if a
+  // bucket does not exist or on operation failure.
+  virtual void GetBucket(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      blink::mojom::StorageType type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
+
+  // Retrieves all buckets for `storage_key` and `type` that are in the buckets
+  // table. If `delete_expired` is true, expired buckets will be filtered out of
+  // the reply and also deleted from disk.
+  virtual void GetBucketsForStorageKey(
+      const blink::StorageKey& storage_key,
+      blink::mojom::StorageType type,
+      bool delete_expired,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback);
+
+  // Deletes bucket with `bucket_name` for `storage_key` for
+  // StorageType::kTemporary for all registered QuotaClients if a bucket exists.
+  // Will return QuotaStatusCode to the callback. Called by Storage Buckets API
+  // for deleting buckets via StorageBucketManager.
+  virtual void DeleteBucket(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(blink::mojom::QuotaStatusCode)> callback);
+
+  // Updates the expiration for a bucket.
+  virtual void UpdateBucketExpiration(
+      BucketId bucket,
+      const base::Time& expiration,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
+
+  // Updates the persistence for a bucket.
+  virtual void UpdateBucketPersistence(
+      BucketId bucket,
+      bool persistent,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
+
+  virtual void NotifyStorageAccessed(const blink::StorageKey& storage_key,
                                      blink::mojom::StorageType type,
                                      base::Time access_time);
 
+  // Notifies the quota manager that a bucket has been accessed to maintain LRU
+  // ordering.
+  virtual void NotifyBucketAccessed(BucketId bucket_id, base::Time access_time);
+
   // Notify the quota manager that storage has been modified for the given
-  // client.  A |callback| may be optionally provided to be invoked on the
+  // client.  A `callback` may be optionally provided to be invoked on the
   // given task runner when the quota system's state in memory has been
-  // updated.  If a |callback| is provided then |callback_task_runner| must
-  // also be provided.  If the quota manager runs on |callback_task_runner|,
-  // then the |callback| may be invoked synchronously.
+  // updated.  If a `callback` is provided then `callback_task_runner` must
+  // also be provided.  If the quota manager runs on `callback_task_runner`,
+  // then the `callback` may be invoked synchronously.
+  // TODO(https://crbug.com/1202167): Remove when all usages have updated to use
+  // `NotifyBucketModified()`.
   virtual void NotifyStorageModified(
       QuotaClientType client_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
       int64_t delta,
       base::Time modification_time,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner = nullptr,
-      base::OnceClosure callback = base::OnceClosure());
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceClosure callback);
 
-  virtual void NotifyOriginInUse(const url::Origin& origin);
-  virtual void NotifyOriginNoLongerInUse(const url::Origin& origin);
-  virtual void NotifyWriteFailed(const url::Origin& origin);
+  // Notifies the quota manager that a bucket has been modified for the given
+  // client.  A `callback` may be optionally provided to be invoked on the
+  // given task runner when the quota system's state in memory has been
+  // updated.  If a `callback` is provided then `callback_task_runner` must
+  // also be provided.  If the quota manager runs on `callback_task_runner`,
+  // then the `callback` may be invoked synchronously.
+  virtual void NotifyBucketModified(
+      QuotaClientType client_id,
+      BucketId bucket_id,
+      int64_t delta,
+      base::Time modification_time,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      base::OnceClosure callback);
+
+  virtual void NotifyWriteFailed(const blink::StorageKey& storage_key);
 
   virtual void SetUsageCacheEnabled(QuotaClientType client_id,
-                                    const url::Origin& origin,
+                                    const blink::StorageKey& storage_key,
                                     blink::mojom::StorageType type,
                                     bool enabled);
   virtual void GetUsageAndQuota(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback);
 
+  void GetBucketUsageAndQuota(
+      const BucketInfo& bucket,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      UsageAndQuotaCallback callback);
+
   virtual void IsStorageUnlimited(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(bool)> callback);
@@ -121,10 +248,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   void GetOverrideHandleId(
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceCallback<void(int)> callback);
-  void OverrideQuotaForOrigin(
+  void OverrideQuotaForStorageKey(
       int handle_id,
-      url::Origin origin,
-      base::Optional<int64_t> quota_size,
+      const blink::StorageKey& storage_key,
+      absl::optional<int64_t> quota_size,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       base::OnceClosure callback);
   void WithdrawOverridesForHandle(int handle_id);
@@ -163,7 +290,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   //    constructed. This is because the easiest way to ensure that
   //    QuotaManagerImpl exposes its QuotaManagerProxy in a thread-safe manner
   //    is to have the QuotaManagerImpl's QuotaManagerProxy reference be const.
-  QuotaManagerImpl* quota_manager_impl_
+  raw_ptr<QuotaManagerImpl> quota_manager_impl_
       GUARDED_BY_CONTEXT(quota_manager_impl_sequence_checker_);
 
   // TaskRunner that accesses QuotaManagerImpl's sequence.
@@ -173,6 +300,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   // to the same object), and the object it points to is thread-safe.
   const scoped_refptr<base::SequencedTaskRunner>
       quota_manager_impl_task_runner_;
+
+  const base::FilePath profile_path_;
 };
 
 }  // namespace storage

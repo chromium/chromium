@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,27 @@
 #include <map>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/gfx/geometry/point.h"
 
+namespace base {
+
+class TimeTicks;
+
+}  // namespace base
+
+namespace ui {
+
+class AXPlatformTreeManager;
+
+}  // namespace ui
+
 namespace content {
 
-class BrowserAccessibility;
-class BrowserAccessibilityManager;
 class RenderFrameHostImpl;
 class SyntheticGestureController;
 class SyntheticGestureTarget;
@@ -48,10 +59,9 @@ class SyntheticTouchDriver;
 //
 // Implementation:
 //
-// Determining whether each event falls within a passthrough region or not
-// requires doing an asynchronous hit test. Because of this, a queue is
-// created of events in the order they were received, and then the events
-// are processed in order when ready.
+// When an onTouchStart is received, we must first do an async hit test to
+// determine if it's within a touch passthrough region. If it is, then all
+// touch events are passed through until onTouchEnd.
 class CONTENT_EXPORT TouchPassthroughManager {
  public:
   explicit TouchPassthroughManager(RenderFrameHostImpl* rfh);
@@ -72,72 +82,45 @@ class CONTENT_EXPORT TouchPassthroughManager {
   // These are virtual protected for unit-testing.
   virtual void SendHitTest(
       const gfx::Point& point_in_frame_pixels,
-      base::OnceCallback<void(BrowserAccessibilityManager* hit_manager,
-                              int hit_node_id)> callback);
+      base::OnceCallback<void(ui::AXPlatformTreeManager* hit_manager,
+                              ui::AXNodeID hit_node_id)> callback);
   virtual void CancelTouchesAndDestroyTouchDriver();
   virtual void SimulatePress(const gfx::Point& point,
                              const base::TimeTicks& time);
   virtual void SimulateMove(const gfx::Point& point,
                             const base::TimeTicks& time);
-  virtual void SimulateCancel(const base::TimeTicks& time);
   virtual void SimulateRelease(const base::TimeTicks& time);
 
  private:
-  enum EventType {
-    kPress,
-    kMove,
-    kRelease,
-  };
-
   // The main frame where touch events should be sent. Touch events
   // that target an iframe will be automatically forwarded.
-  RenderFrameHostImpl* rfh_;
+  raw_ptr<RenderFrameHostImpl> rfh_;
 
   // Classes needed to generate touch events.
   std::unique_ptr<SyntheticGestureController> gesture_controller_;
-  SyntheticGestureTarget* gesture_target_ = nullptr;
+  raw_ptr<SyntheticGestureTarget> gesture_target_ = nullptr;
   std::unique_ptr<SyntheticTouchDriver> touch_driver_;
 
-  // A struct containing the information about touch start, move, and end
-  // events, stored in a queue in the order they were received. The |pending|
-  // field is set to true for events that are waiting on the result of a
-  // hit test. The hit test populates |tree_id| and |node_id|.
-  struct TouchPassthroughEvent {
-    bool pending = false;
-    EventType type;
-    base::TimeTicks time;
-    gfx::Point location;
-    ui::AXTreeID tree_id;
-    ui::AXNodeID node_id = 0;
-  };
-
-  // The queue is implemented as a map from sequential IDs to an event
-  // struct.
-  int next_event_id_ = 0;
-  int current_event_id_ = 0;
-  std::map<int, std::unique_ptr<TouchPassthroughEvent>> id_to_event_;
-
-  // The current state of events being passed through, as the queue is
-  // being processed in order.
+  // Keeps track of whether or not touch is down, regardless of whether or
+  // not we're passing through.
   bool is_touch_down_ = false;
-  ui::AXTreeID current_tree_id_;
-  ui::AXNodeID current_node_id_;
 
-  // Returns the event ID.
-  int EnqueueEventOfType(EventType type,
-                         bool pending,
-                         const gfx::Point& point_in_frame_pixels);
+  // Whether or not we're passing through touch events until the next
+  // touch up.
+  bool is_passthrough_ = false;
+
+  // An incrementing ID so that hit test callbacks that arrive late can
+  // be ignored.
+  int hit_test_id_ = 0;
+
   void CreateTouchDriverIfNeeded();
-  void HitTestAndEnqueueEventOfType(EventType type,
-                                    const gfx::Point& point_in_frame_pixels);
   void OnHitTestResult(int event_id,
-                       BrowserAccessibilityManager* hit_manager,
-                       int hit_node_id);
-  BrowserAccessibility* GetTouchPassthroughNode(
-      BrowserAccessibilityManager* hit_manager,
-      int hit_node_id);
-  void ProcessPendingEvents();
-  void ProcessPendingEvent(std::unique_ptr<TouchPassthroughEvent> event);
+                       base::TimeTicks event_time,
+                       gfx::Point location,
+                       ui::AXPlatformTreeManager* hit_manager,
+                       ui::AXNodeID hit_node_id);
+  bool IsTouchPassthroughNode(ui::AXPlatformTreeManager* hit_manager,
+                              ui::AXNodeID hit_node_id);
   gfx::Point ToCSSPoint(gfx::Point point_in_frame_pixels);
 
   base::WeakPtrFactory<TouchPassthroughManager> weak_ptr_factory_{this};

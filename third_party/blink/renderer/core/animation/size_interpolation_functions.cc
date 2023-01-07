@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -183,7 +183,7 @@ static Length CreateLength(
     return Length::Auto();
   }
   return To<InterpolableLength>(interpolable_value)
-      .CreateLength(conversion_data, kValueRangeNonNegative);
+      .CreateLength(conversion_data, Length::ValueRange::kNonNegative);
 }
 
 FillSize SizeInterpolationFunctions::CreateFillSize(

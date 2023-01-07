@@ -1,9 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 
+#include "base/containers/adapters.h"
+#include "base/format_macros.h"
+#include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_observer.h"
 #include "components/breadcrumbs/core/crash_reporter_breadcrumb_constants.h"
@@ -21,93 +24,74 @@ namespace {
 constexpr unsigned long kMaxUsefulBreadcrumbEvents = kMaxDataLength / 10;
 
 // The minimum number of event buckets to keep, even if they are expired.
-const int kMinEventsBuckets = 2;
+const int kMinEventBuckets = 2;
 
-// Returns a Time used to bucket events for easier discarding of expired events.
-base::Time EventBucket(const base::Time& time) {
-  base::Time::Exploded exploded;
-  time.LocalExplode(&exploded);
-  exploded.millisecond = 0;
-  exploded.second = 0;
-
-  base::Time bucket_time;
-  bool converted = base::Time::FromLocalExploded(exploded, &bucket_time);
-  DCHECK(converted);
-  return bucket_time;
-}
+// The time, in minutes, after which events are removed (unless there are fewer
+// than |kMinEventBuckets| event buckets, in which case no time limit applies).
+const int kEventExpirationMinutes = 20;
 
 }  // namespace
 
-BreadcrumbManager::BreadcrumbManager() : start_time_(base::Time::Now()) {}
-
-BreadcrumbManager::~BreadcrumbManager() = default;
-
-size_t BreadcrumbManager::GetEventCount() {
-  DropOldEvents();
-
-  size_t count = 0;
-  for (auto it = event_buckets_.rbegin(); it != event_buckets_.rend(); ++it) {
-    std::list<std::string> bucket_events = it->second;
-    count += bucket_events.size();
-  }
-  return count;
+// static
+BreadcrumbManager& BreadcrumbManager::GetInstance() {
+  static base::NoDestructor<BreadcrumbManager> breadcrumb_manager;
+  return *breadcrumb_manager;
 }
 
-const std::list<std::string> BreadcrumbManager::GetEvents(
-    size_t event_count_limit) {
+const std::list<std::string> BreadcrumbManager::GetEvents() {
   DropOldEvents();
 
   std::list<std::string> events;
-  for (auto it = event_buckets_.rbegin(); it != event_buckets_.rend(); ++it) {
-    std::list<std::string> bucket_events = it->second;
-    for (auto event_it = bucket_events.rbegin();
-         event_it != bucket_events.rend(); ++event_it) {
-      std::string event = *event_it;
+  for (const EventBucket& event_bucket : base::Reversed(event_buckets_)) {
+    for (const std::string& event : base::Reversed(event_bucket.events)) {
       events.push_front(event);
-      if (event_count_limit > 0 && events.size() >= event_count_limit) {
-        return events;
-      }
     }
   }
   return events;
 }
 
 void BreadcrumbManager::AddEvent(const std::string& event) {
-  base::Time time = base::Time::Now();
-  base::Time bucket_time = EventBucket(time);
+  DCHECK_EQ(std::string::npos, event.find('\n'));
+  const base::TimeDelta elapsed_time = GetElapsedTime();
 
-  // If bucket exists, it will be at the end of the list.
-  if (event_buckets_.empty() || event_buckets_.back().first != bucket_time) {
-    std::pair<base::Time, std::list<std::string>> bucket(
-        bucket_time, std::list<std::string>());
-    event_buckets_.push_back(bucket);
+  // If a bucket exists, it will be at the end of the list.
+  const int minutes_elapsed = elapsed_time.InMinutes();
+  if (event_buckets_.empty() ||
+      event_buckets_.back().minutes_elapsed != minutes_elapsed) {
+    event_buckets_.emplace_back(minutes_elapsed);
   }
 
-  base::Time::Exploded exploded;
-  time.UTCExplode(&exploded);
-  std::string timestamp =
-      base::StringPrintf("%02d:%02d", exploded.minute, exploded.second);
-  std::string event_log =
-      base::StringPrintf("%s %s", timestamp.c_str(), event.c_str());
-  event_buckets_.back().second.push_back(event_log);
+  // Prepend a timestamp containing elapsed time in H:MM:SS format. This is
+  // preferred over base::TimeDurationWithSeconds() and wall-clock time to
+  // avoid revealing client language or time zone.
+  const int64_t total_seconds = elapsed_time.InSeconds();
+  const int64_t hours = total_seconds / base::Time::kSecondsPerHour;
+  const int64_t minutes = (total_seconds / base::Time::kSecondsPerMinute) %
+                          base::Time::kMinutesPerHour;
+  const int64_t seconds = total_seconds % base::Time::kSecondsPerMinute;
+  const std::string event_log =
+      base::StringPrintf("%" PRIu64 ":%02" PRIu64 ":%02" PRIu64 " %s", hours,
+                         minutes, seconds, event.c_str());
+
+  event_buckets_.back().events.push_back(event_log);
 
   for (auto& observer : observers_) {
-    observer.EventAdded(this, event_log);
+    observer.EventAdded(event_log);
   }
 
   DropOldEvents();
 }
 
-void BreadcrumbManager::DropOldEvents() {
-  static const base::TimeDelta kMessageExpirationTime =
-      base::TimeDelta::FromMinutes(20);
+BreadcrumbManager::BreadcrumbManager() = default;
+BreadcrumbManager::~BreadcrumbManager() = default;
 
+void BreadcrumbManager::DropOldEvents() {
   bool old_buckets_dropped = false;
-  base::Time now = base::Time::Now();
-  // Drop buckets which are more than kMessageExpirationTime old.
-  while (event_buckets_.size() > kMinEventsBuckets) {
-    base::Time oldest_bucket_time = event_buckets_.front().first;
-    if (now - oldest_bucket_time < kMessageExpirationTime) {
+  // Drop buckets that are more than kEventExpirationMinutes old.
+  while (event_buckets_.size() > kMinEventBuckets) {
+    const int oldest_bucket_minutes = event_buckets_.front().minutes_elapsed;
+    if (GetElapsedTime().InMinutes() - oldest_bucket_minutes <
+        kEventExpirationMinutes) {
       break;
     }
     event_buckets_.pop_front();
@@ -118,7 +102,7 @@ void BreadcrumbManager::DropOldEvents() {
   unsigned long newer_event_count = 0;
   auto event_bucket_it = event_buckets_.rbegin();
   while (event_bucket_it != event_buckets_.rend()) {
-    std::list<std::string> bucket_events = event_bucket_it->second;
+    const std::list<std::string>& bucket_events = event_bucket_it->events;
     if (newer_event_count > kMaxUsefulBreadcrumbEvents) {
       event_buckets_.erase(event_buckets_.begin(), event_bucket_it.base());
       old_buckets_dropped = true;
@@ -130,9 +114,13 @@ void BreadcrumbManager::DropOldEvents() {
 
   if (old_buckets_dropped) {
     for (auto& observer : observers_) {
-      observer.OldEventsRemoved(this);
+      observer.OldEventsRemoved();
     }
   }
+}
+
+base::TimeDelta BreadcrumbManager::GetElapsedTime() {
+  return base::TimeTicks::Now() - start_time_;
 }
 
 void BreadcrumbManager::AddObserver(BreadcrumbManagerObserver* observer) {
@@ -142,5 +130,15 @@ void BreadcrumbManager::AddObserver(BreadcrumbManagerObserver* observer) {
 void BreadcrumbManager::RemoveObserver(BreadcrumbManagerObserver* observer) {
   observers_.RemoveObserver(observer);
 }
+
+void BreadcrumbManager::ResetForTesting() {
+  start_time_ = base::TimeTicks::Now();
+  event_buckets_.clear();
+}
+
+BreadcrumbManager::EventBucket::EventBucket(int minutes_elapsed)
+    : minutes_elapsed(minutes_elapsed) {}
+BreadcrumbManager::EventBucket::EventBucket(const EventBucket&) = default;
+BreadcrumbManager::EventBucket::~EventBucket() = default;
 
 }  // namespace breadcrumbs

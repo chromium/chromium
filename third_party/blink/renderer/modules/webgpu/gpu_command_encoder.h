@@ -1,28 +1,26 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_COMMAND_ENCODER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGPU_GPU_COMMAND_ENCODER_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
 class ExceptionState;
-class GPUBuffer;
 class GPUImageCopyBuffer;
 class GPUCommandBuffer;
 class GPUCommandBufferDescriptor;
 class GPUCommandEncoderDescriptor;
 class GPUComputePassDescriptor;
 class GPUComputePassEncoder;
-class GPUQuerySet;
 class GPURenderPassDescriptor;
 class GPURenderPassEncoder;
 class GPUImageCopyTexture;
-class UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict;
 
 class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder> {
   DEFINE_WRAPPERTYPEINFO();
@@ -34,42 +32,72 @@ class GPUCommandEncoder : public DawnObject<WGPUCommandEncoder> {
   explicit GPUCommandEncoder(GPUDevice* device,
                              WGPUCommandEncoder command_encoder);
 
+  GPUCommandEncoder(const GPUCommandEncoder&) = delete;
+  GPUCommandEncoder& operator=(const GPUCommandEncoder&) = delete;
+
   // gpu_command_encoder.idl
   GPURenderPassEncoder* beginRenderPass(
       const GPURenderPassDescriptor* descriptor,
       ExceptionState& exception_state);
   GPUComputePassEncoder* beginComputePass(
       const GPUComputePassDescriptor* descriptor);
-  void copyBufferToBuffer(GPUBuffer* src,
+  void copyBufferToBuffer(DawnObject<WGPUBuffer>* src,
                           uint64_t src_offset,
-                          GPUBuffer* dst,
+                          DawnObject<WGPUBuffer>* dst,
                           uint64_t dst_offset,
-                          uint64_t size);
-  void copyBufferToTexture(
-      GPUImageCopyBuffer* source,
-      GPUImageCopyTexture* destination,
-      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size);
-  void copyTextureToBuffer(
-      GPUImageCopyTexture* source,
-      GPUImageCopyBuffer* destination,
-      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size);
-  void copyTextureToTexture(
-      GPUImageCopyTexture* source,
-      GPUImageCopyTexture* destination,
-      UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict& copy_size);
-  void pushDebugGroup(String groupLabel);
-  void popDebugGroup();
-  void insertDebugMarker(String markerLabel);
-  void resolveQuerySet(GPUQuerySet* querySet,
+                          uint64_t size) {
+    DCHECK(src);
+    DCHECK(dst);
+    GetProcs().commandEncoderCopyBufferToBuffer(GetHandle(), src->GetHandle(),
+                                                src_offset, dst->GetHandle(),
+                                                dst_offset, size);
+  }
+  void copyBufferToTexture(GPUImageCopyBuffer* source,
+                           GPUImageCopyTexture* destination,
+                           const V8GPUExtent3D* copy_size);
+  void copyTextureToBuffer(GPUImageCopyTexture* source,
+                           GPUImageCopyBuffer* destination,
+                           const V8GPUExtent3D* copy_size);
+  void copyTextureToTexture(GPUImageCopyTexture* source,
+                            GPUImageCopyTexture* destination,
+                            const V8GPUExtent3D* copy_size);
+  void pushDebugGroup(String groupLabel) {
+    std::string label = groupLabel.Utf8();
+    GetProcs().commandEncoderPushDebugGroup(GetHandle(), label.c_str());
+  }
+  void popDebugGroup() { GetProcs().commandEncoderPopDebugGroup(GetHandle()); }
+  void insertDebugMarker(String markerLabel) {
+    std::string label = markerLabel.Utf8();
+    GetProcs().commandEncoderInsertDebugMarker(GetHandle(), label.c_str());
+  }
+  void resolveQuerySet(DawnObject<WGPUQuerySet>* querySet,
                        uint32_t firstQuery,
                        uint32_t queryCount,
-                       GPUBuffer* destination,
-                       uint64_t destinationOffset);
-  void writeTimestamp(GPUQuerySet* querySet, uint32_t queryIndex);
+                       DawnObject<WGPUBuffer>* destination,
+                       uint64_t destinationOffset) {
+    GetProcs().commandEncoderResolveQuerySet(
+        GetHandle(), querySet->GetHandle(), firstQuery, queryCount,
+        destination->GetHandle(), destinationOffset);
+  }
+  void writeTimestamp(DawnObject<WGPUQuerySet>* querySet,
+                      uint32_t queryIndex,
+                      ExceptionState& exception_state);
+  void clearBuffer(DawnObject<WGPUBuffer>* buffer, uint64_t offset) {
+    GetProcs().commandEncoderClearBuffer(GetHandle(), buffer->GetHandle(),
+                                         offset, WGPU_WHOLE_SIZE);
+  }
+  void clearBuffer(DawnObject<WGPUBuffer>* buffer,
+                   uint64_t offset,
+                   uint64_t size) {
+    GetProcs().commandEncoderClearBuffer(GetHandle(), buffer->GetHandle(),
+                                         offset, size);
+  }
   GPUCommandBuffer* finish(const GPUCommandBufferDescriptor* descriptor);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUCommandEncoder);
+  void setLabelImpl(const String& value) override {
+    std::string utf8_label = value.Utf8();
+    GetProcs().commandEncoderSetLabel(GetHandle(), utf8_label.c_str());
+  }
 };
 
 }  // namespace blink

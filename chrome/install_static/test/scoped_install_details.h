@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CHROME_INSTALL_STATIC_TEST_SCOPED_INSTALL_DETAILS_H_
 
 #include <memory>
-
-#include "base/macros.h"
 
 namespace install_static {
 
@@ -23,6 +21,13 @@ class ScopedInstallDetails {
   // TODO(grt): replace bool and int with more obvious types (e.g., enum).
   explicit ScopedInstallDetails(bool system_level = false,
                                 int install_mode_index = 0);
+
+  // Installs `details` as the current instance.
+  explicit ScopedInstallDetails(std::unique_ptr<InstallDetails> details);
+
+  ScopedInstallDetails(const ScopedInstallDetails&) = delete;
+  ScopedInstallDetails& operator=(const ScopedInstallDetails&) = delete;
+
   ~ScopedInstallDetails();
 
  private:
@@ -35,8 +40,6 @@ class ScopedInstallDetails {
   // This instance will be swapped back into place when this object is
   // destroyed.
   std::unique_ptr<const InstallDetails> previous_details_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedInstallDetails);
 };
 
 }  // namespace install_static

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "gpu/config/gpu_info.h"  // nogncheck
 #include "gpu/config/vulkan_info.h"
 #include "gpu/vulkan/vulkan_command_pool.h"
@@ -18,13 +20,15 @@
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_util.h"
+#include "ui/gl/gl_angle_util_vulkan.h"
 
 namespace gpu {
 
-VulkanDeviceQueue::VulkanDeviceQueue(VkInstance vk_instance,
-                                     bool enforce_protected_memory)
-    : vk_instance_(vk_instance),
-      enforce_protected_memory_(enforce_protected_memory) {}
+VulkanDeviceQueue::VulkanDeviceQueue(VkInstance vk_instance)
+    : vk_instance_(vk_instance) {}
+
+VulkanDeviceQueue::VulkanDeviceQueue(VulkanInstance* instance)
+    : vk_instance_(instance->vk_instance()), instance_(instance) {}
 
 VulkanDeviceQueue::~VulkanDeviceQueue() {
   DCHECK_EQ(static_cast<VkPhysicalDevice>(VK_NULL_HANDLE), vk_physical_device_);
@@ -35,20 +39,23 @@ VulkanDeviceQueue::~VulkanDeviceQueue() {
 bool VulkanDeviceQueue::Initialize(
     uint32_t options,
     const GPUInfo* gpu_info,
-    const VulkanInfo& info,
     const std::vector<const char*>& required_extensions,
     const std::vector<const char*>& optional_extensions,
     bool allow_protected_memory,
     const GetPresentationSupportCallback& get_presentation_support,
-    uint32_t heap_memory_limit) {
+    uint32_t heap_memory_limit,
+    const bool is_thread_safe) {
   DCHECK_EQ(static_cast<VkPhysicalDevice>(VK_NULL_HANDLE), vk_physical_device_);
   DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), owned_vk_device_);
   DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), vk_device_);
   DCHECK_EQ(static_cast<VkQueue>(VK_NULL_HANDLE), vk_queue_);
-  DCHECK(!enforce_protected_memory_ || allow_protected_memory);
+  DCHECK_EQ(static_cast<VmaAllocator>(VK_NULL_HANDLE), owned_vma_allocator_);
+  DCHECK_EQ(static_cast<VmaAllocator>(VK_NULL_HANDLE), vma_allocator_);
 
   if (VK_NULL_HANDLE == vk_instance_)
     return false;
+
+  const VulkanInfo& info = instance_->vulkan_info();
 
   VkResult result = VK_SUCCESS;
 
@@ -80,11 +87,15 @@ bool VulkanDeviceQueue::Initialize(
     if (device_properties.apiVersion < info.used_api_version)
       continue;
 
+      // In dual-CPU cases, we cannot detect the active GPU correctly on Linux,
+      // so don't select GPU device based on the |gpu_info|.
+#if !BUILDFLAG(IS_LINUX)
     // If gpu_info is provided, the device should match it.
     if (gpu_info && (device_properties.vendorID != gpu_info->gpu.vendor_id ||
                      device_properties.deviceID != gpu_info->gpu.device_id)) {
       continue;
     }
+#endif
 
     if (device_properties.deviceType < 0 ||
         device_properties.deviceType > VK_PHYSICAL_DEVICE_TYPE_CPU) {
@@ -115,7 +126,7 @@ bool VulkanDeviceQueue::Initialize(
         break;
       }
     }
-    
+
     if (!found)
       continue;
 
@@ -152,17 +163,15 @@ bool VulkanDeviceQueue::Initialize(
 
   std::vector<const char*> enabled_extensions;
   for (const char* extension : required_extensions) {
-    const auto it =
-        std::find_if(physical_device_info.extensions.begin(),
-                     physical_device_info.extensions.end(),
-                     [extension](const VkExtensionProperties& p) {
-                       return std::strcmp(extension, p.extensionName) == 0;
-                     });
-    if (it == physical_device_info.extensions.end()) {
+    if (base::ranges::none_of(physical_device_info.extensions,
+                              [extension](const VkExtensionProperties& p) {
+                                return std::strcmp(extension,
+                                                   p.extensionName) == 0;
+                              })) {
       // On Fuchsia, some device extensions are provided by layers.
       // TODO(penghuang): checking extensions against layer device extensions
       // too.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
       DLOG(ERROR) << "Required Vulkan extension " << extension
                   << " is not supported.";
       return false;
@@ -172,13 +181,11 @@ bool VulkanDeviceQueue::Initialize(
   }
 
   for (const char* extension : optional_extensions) {
-    const auto it =
-        std::find_if(physical_device_info.extensions.begin(),
-                     physical_device_info.extensions.end(),
-                     [extension](const VkExtensionProperties& p) {
-                       return std::strcmp(extension, p.extensionName) == 0;
-                     });
-    if (it == physical_device_info.extensions.end()) {
+    if (base::ranges::none_of(physical_device_info.extensions,
+                              [extension](const VkExtensionProperties& p) {
+                                return std::strcmp(extension,
+                                                   p.extensionName) == 0;
+                              })) {
       DLOG(ERROR) << "Optional Vulkan extension " << extension
                   << " is not supported.";
     } else {
@@ -213,7 +220,7 @@ bool VulkanDeviceQueue::Initialize(
       "other", "integrated", "discrete", "virtual", "cpu",
   };
   uint32_t gpu_type = vk_physical_device_properties_.deviceType;
-  if (gpu_type >= base::size(kDeviceTypeNames))
+  if (gpu_type >= std::size(kDeviceTypeNames))
     gpu_type = 0;
   crash_keys::vulkan_device_type.Set(kDeviceTypeNames[gpu_type]);
   crash_keys::vulkan_device_name.Set(vk_physical_device_properties_.deviceName);
@@ -221,8 +228,8 @@ bool VulkanDeviceQueue::Initialize(
   // Disable all physical device features by default.
   enabled_device_features_2_ = {VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2};
 
-  // Android and Fuchsia need YCbCr sampler support.
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+  // Android, Fuchsia, and Linux(VaapiVideoDecoder) need YCbCr sampler support.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
   if (!physical_device_info.feature_sampler_ycbcr_conversion) {
     LOG(ERROR) << "samplerYcbcrConversion is not supported.";
     return false;
@@ -235,7 +242,7 @@ bool VulkanDeviceQueue::Initialize(
   // of VkPhysicalDeviceFeatures2 to enable YCbCr sampler support.
   sampler_ycbcr_conversion_features_.pNext = enabled_device_features_2_.pNext;
   enabled_device_features_2_.pNext = &sampler_ycbcr_conversion_features_;
-#endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
 
   if (allow_protected_memory) {
     if (!physical_device_info.feature_protected_memory) {
@@ -295,11 +302,84 @@ bool VulkanDeviceQueue::Initialize(
       VK_MAX_MEMORY_HEAPS,
       heap_memory_limit ? heap_memory_limit : VK_WHOLE_SIZE);
   vma::CreateAllocator(vk_physical_device_, vk_device_, vk_instance_,
-                       heap_size_limit.data(), &vma_allocator_);
+                       heap_size_limit.data(), is_thread_safe,
+                       &owned_vma_allocator_);
+  vma_allocator_ = owned_vma_allocator_;
+
   cleanup_helper_ = std::make_unique<VulkanFenceHelper>(this);
 
   allow_protected_memory_ = allow_protected_memory;
   return true;
+}
+
+bool VulkanDeviceQueue::InitCommon(VkPhysicalDevice vk_physical_device,
+                                   VkDevice vk_device,
+                                   VkQueue vk_queue,
+                                   uint32_t vk_queue_index,
+                                   gfx::ExtensionSet enabled_extensions) {
+  DCHECK_EQ(static_cast<VkPhysicalDevice>(VK_NULL_HANDLE), vk_physical_device_);
+  DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), owned_vk_device_);
+  DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), vk_device_);
+  DCHECK_EQ(static_cast<VkQueue>(VK_NULL_HANDLE), vk_queue_);
+  DCHECK_EQ(static_cast<VmaAllocator>(VK_NULL_HANDLE), owned_vma_allocator_);
+
+  vk_physical_device_ = vk_physical_device;
+  vk_device_ = vk_device;
+  vk_queue_ = vk_queue;
+  vk_queue_index_ = vk_queue_index;
+  enabled_extensions_ = std::move(enabled_extensions);
+
+  if (vma_allocator_ == VK_NULL_HANDLE) {
+    vma::CreateAllocator(vk_physical_device_, vk_device_, vk_instance_, nullptr,
+                         /*is_thread_safe =*/false, &owned_vma_allocator_);
+    vma_allocator_ = owned_vma_allocator_;
+  }
+
+  cleanup_helper_ = std::make_unique<VulkanFenceHelper>(this);
+  return true;
+}
+
+bool VulkanDeviceQueue::InitializeFromANGLE() {
+  const VulkanInfo& info = instance_->vulkan_info();
+  VkPhysicalDevice vk_physical_device = gl::QueryVkPhysicalDeviceFromANGLE();
+  if (vk_physical_device == VK_NULL_HANDLE)
+    return false;
+
+  int device_index = -1;
+  for (size_t i = 0; i < info.physical_devices.size(); ++i) {
+    if (info.physical_devices[i].device == vk_physical_device) {
+      device_index = i;
+      break;
+    }
+  }
+
+  if (device_index == -1) {
+    DLOG(ERROR) << "Cannot find physical device match ANGLE.";
+    return false;
+  }
+
+  const auto& physical_device_info = info.physical_devices[device_index];
+  vk_physical_device_properties_ = physical_device_info.properties;
+  vk_physical_device_driver_properties_ =
+      physical_device_info.driver_properties;
+
+  VkDevice vk_device = gl::QueryVkDeviceFromANGLE();
+  VkQueue vk_queue = gl::QueryVkQueueFromANGLE();
+  uint32_t vk_queue_index = gl::QueryVkQueueFramiliyIndexFromANGLE();
+  auto enabled_extensions = gl::QueryVkDeviceExtensionsFromANGLE();
+
+  if (!gpu::GetVulkanFunctionPointers()->BindDeviceFunctionPointers(
+          vk_device, info.used_api_version, enabled_extensions)) {
+    return false;
+  }
+
+  enabled_device_features_2_from_angle_ =
+      gl::QueryVkEnabledDeviceFeaturesFromANGLE();
+  if (!enabled_device_features_2_from_angle_)
+    return false;
+
+  return InitCommon(vk_physical_device, vk_device, vk_queue, vk_queue_index,
+                    enabled_extensions);
 }
 
 bool VulkanDeviceQueue::InitializeForWebView(
@@ -308,22 +388,38 @@ bool VulkanDeviceQueue::InitializeForWebView(
     VkQueue vk_queue,
     uint32_t vk_queue_index,
     gfx::ExtensionSet enabled_extensions) {
-  DCHECK_EQ(static_cast<VkPhysicalDevice>(VK_NULL_HANDLE), vk_physical_device_);
-  DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), owned_vk_device_);
-  DCHECK_EQ(static_cast<VkDevice>(VK_NULL_HANDLE), vk_device_);
-  DCHECK_EQ(static_cast<VkQueue>(VK_NULL_HANDLE), vk_queue_);
+  return InitCommon(vk_physical_device, vk_device, vk_queue, vk_queue_index,
+                    enabled_extensions);
+}
 
-  vk_physical_device_ = vk_physical_device;
-  vk_device_ = vk_device;
-  vk_queue_ = vk_queue;
-  vk_queue_index_ = vk_queue_index;
-  enabled_extensions_ = std::move(enabled_extensions);
+bool VulkanDeviceQueue::InitializeForCompositorGpuThread(
+    VkPhysicalDevice vk_physical_device,
+    VkDevice vk_device,
+    VkQueue vk_queue,
+    uint32_t vk_queue_index,
+    gfx::ExtensionSet enabled_extensions,
+    const VkPhysicalDeviceFeatures2& vk_physical_device_features2,
+    VmaAllocator vma_allocator) {
+  // Currently VulkanDeviceQueue for drdc thread(aka CompositorGpuThread) uses
+  // the same vulkan queue as the gpu main thread. Now since both gpu main and
+  // drdc threads would be accessing/submitting work to the same queue, all the
+  // queue access should be made thread safe. This is done by using locks. This
+  // lock is per |vk_queue|. Note that we are intentionally overwriting a
+  // previous lock if any.
+  // Since the map itself would be accessed by multiple gpu threads, we need to
+  // ensure that the access are thread safe. Here the locks are created and
+  // written into the map only when drdc thread is initialized which happens
+  // during GpuServiceImpl init. At this point none of the gpu threads would be
+  // doing read access until GpuServiceImpl init completed. Hence its safe to
+  // access map here.
+  GetVulkanFunctionPointers()->per_queue_lock_map[vk_queue] =
+      std::make_unique<base::Lock>();
+  enabled_device_features_2_ = vk_physical_device_features2;
 
-  vma::CreateAllocator(vk_physical_device_, vk_device_, vk_instance_, nullptr,
-                       &vma_allocator_);
-
-  cleanup_helper_ = std::make_unique<VulkanFenceHelper>(this);
-  return true;
+  // Note that CompositorGpuThread uses same vma allocator as gpu main thread.
+  vma_allocator_ = vma_allocator;
+  return InitCommon(vk_physical_device, vk_device, vk_queue, vk_queue_index,
+                    enabled_extensions);
 }
 
 void VulkanDeviceQueue::Destroy() {
@@ -332,24 +428,34 @@ void VulkanDeviceQueue::Destroy() {
     cleanup_helper_.reset();
   }
 
-  if (vma_allocator_ != VK_NULL_HANDLE) {
-    vma::DestroyAllocator(vma_allocator_);
-    vma_allocator_ = VK_NULL_HANDLE;
+  if (owned_vma_allocator_ != VK_NULL_HANDLE) {
+    vma::DestroyAllocator(owned_vma_allocator_);
+    owned_vma_allocator_ = VK_NULL_HANDLE;
   }
 
-  if (VK_NULL_HANDLE != owned_vk_device_) {
+  if (owned_vk_device_ != VK_NULL_HANDLE) {
     vkDestroyDevice(owned_vk_device_, nullptr);
     owned_vk_device_ = VK_NULL_HANDLE;
+
+    // Clear all the entries from this map since the device and hence all the
+    // generated queue(and their corresponding lock) from this device is
+    // destroyed.
+    // This happens when VulkanDeviceQueue is destroyed on gpu main thread
+    // during GpuServiceImpl destruction which happens after CompositorGpuThread
+    // is destroyed. Hence CompositorGpuThread would not be accessing the map at
+    // this point and its thread safe to delete map entries here.
+    GetVulkanFunctionPointers()->per_queue_lock_map.clear();
   }
   vk_device_ = VK_NULL_HANDLE;
   vk_queue_ = VK_NULL_HANDLE;
   vk_queue_index_ = 0;
   vk_physical_device_ = VK_NULL_HANDLE;
+  vma_allocator_ = VK_NULL_HANDLE;
 }
 
 std::unique_ptr<VulkanCommandPool> VulkanDeviceQueue::CreateCommandPool() {
   std::unique_ptr<VulkanCommandPool> command_pool(new VulkanCommandPool(this));
-  if (!command_pool->Initialize(enforce_protected_memory_))
+  if (!command_pool->Initialize())
     return nullptr;
 
   return command_pool;

@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromecast/graphics/cast_window_manager_default.h"
 
 #include "base/memory/ptr_util.h"
-#include "chromecast/graphics/cast_touch_activity_observer.h"
 
 namespace chromecast {
 
@@ -42,8 +41,5 @@ void CastWindowManagerDefault::AddTouchActivityObserver(
     CastTouchActivityObserver* observer) {}
 void CastWindowManagerDefault::RemoveTouchActivityObserver(
     CastTouchActivityObserver* observer) {}
-
-void CastWindowManagerDefault::SetEnableRoundedCorners(bool enable) {}
-void CastWindowManagerDefault::NotifyColorInversionEnabled(bool enabled) {}
 
 }  // namespace chromecast

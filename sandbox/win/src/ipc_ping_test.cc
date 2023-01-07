@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,11 +48,14 @@ TEST(IPCTest, IPCPingTestSimple) {
 }
 
 TEST(IPCTest, IPCPingTestWithOutput) {
-  TestRunner runner;
-  runner.SetTimeout(2000);
-  runner.SetTestState(EVERY_STATE);
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"IPC_Ping 2"));
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"IPC_Ping 2"));
+  TestRunner runner1;
+  runner1.SetTimeout(2000);
+  runner1.SetTestState(EVERY_STATE);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner1.RunTest(L"IPC_Ping 2"));
+  TestRunner runner2;
+  runner2.SetTimeout(2000);
+  runner2.SetTestState(EVERY_STATE);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(L"IPC_Ping 2"));
 }
 
 }  // namespace sandbox

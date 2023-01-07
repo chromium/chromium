@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,10 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+
 #include <limits>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"
 #include "url/url_canon_internal.h"
 
 namespace url {
@@ -32,56 +31,6 @@ int BaseForType(SharedCharTypes type) {
   }
 }
 
-template<typename CHAR, typename UCHAR>
-bool DoFindIPv4Components(const CHAR* spec,
-                          const Component& host,
-                          Component components[4]) {
-  if (!host.is_nonempty())
-    return false;
-
-  int cur_component = 0;  // Index of the component we're working on.
-  int cur_component_begin = host.begin;  // Start of the current component.
-  int end = host.end();
-  for (int i = host.begin; /* nothing */; i++) {
-    if (i >= end || spec[i] == '.') {
-      // Found the end of the current component.
-      int component_len = i - cur_component_begin;
-      components[cur_component] = Component(cur_component_begin, component_len);
-
-      // The next component starts after the dot.
-      cur_component_begin = i + 1;
-      cur_component++;
-
-      // Don't allow empty components (two dots in a row), except we may
-      // allow an empty component at the end (this would indicate that the
-      // input ends in a dot). We also want to error if the component is
-      // empty and it's the only component (cur_component == 1).
-      if (component_len == 0 && (i < end || cur_component == 1))
-        return false;
-
-      if (i >= end)
-        break;  // End of the input.
-
-      if (cur_component == 4) {
-        // Anything else after the 4th component is an error unless it is a
-        // dot that would otherwise be treated as the end of input.
-        if (spec[i] == '.' && i + 1 == end)
-          break;
-        return false;
-      }
-    } else if (static_cast<UCHAR>(spec[i]) >= 0x80 ||
-               !IsIPv4Char(static_cast<unsigned char>(spec[i]))) {
-      // Invalid character for an IPv4 address.
-      return false;
-    }
-  }
-
-  // Fill in any unused components.
-  while (cur_component < 4)
-    components[cur_component++] = Component();
-  return true;
-}
-
 // Converts an IPv4 component to a 32-bit number, while checking for overflow.
 //
 // Possible return values:
@@ -89,13 +38,15 @@ bool DoFindIPv4Components(const CHAR* spec,
 // - BROKEN  - The input was numeric, but too large for a 32-bit field.
 // - NEUTRAL - Input was not numeric.
 //
-// The input is assumed to be ASCII. FindIPv4Components should have stripped
-// out any input that is greater than 7 bits. The components are assumed
-// to be non-empty.
+// The input is assumed to be ASCII. The components are assumed to be non-empty.
 template<typename CHAR>
 CanonHostInfo::Family IPv4ComponentToNumber(const CHAR* spec,
                                             const Component& component,
                                             uint32_t* number) {
+  // Empty components are considered non-numeric.
+  if (!component.is_nonempty())
+    return CanonHostInfo::NEUTRAL;
+
   // Figure out the base
   SharedCharTypes base;
   int base_prefix_len = 0;  // Size of the prefix for this base.
@@ -127,20 +78,34 @@ CanonHostInfo::Family IPv4ComponentToNumber(const CHAR* spec,
   const int kMaxComponentLen = 16;
   char buf[kMaxComponentLen + 1];  // digits + '\0'
   int dest_i = 0;
+  bool may_be_broken_octal = false;
   for (int i = component.begin + base_prefix_len; i < component.end(); i++) {
+    if (spec[i] >= 0x80)
+      return CanonHostInfo::NEUTRAL;
+
     // We know the input is 7-bit, so convert to narrow (if this is the wide
     // version of the template) by casting.
     char input = static_cast<char>(spec[i]);
 
     // Validate that this character is OK for the given base.
-    if (!IsCharOfType(input, base))
-      return CanonHostInfo::NEUTRAL;
+    if (!IsCharOfType(input, base)) {
+      if (IsCharOfType(input, CHAR_DEC)) {
+        // Entirely numeric components with leading 0s that aren't octal are
+        // considered broken.
+        may_be_broken_octal = true;
+      } else {
+        return CanonHostInfo::NEUTRAL;
+      }
+    }
 
     // Fill the buffer, if there's space remaining. This check allows us to
     // verify that all characters are numeric, even those that don't fit.
     if (dest_i < kMaxComponentLen)
       buf[dest_i++] = input;
   }
+
+  if (may_be_broken_octal)
+    return CanonHostInfo::BROKEN;
 
   buf[dest_i] = '\0';
 
@@ -158,64 +123,76 @@ CanonHostInfo::Family IPv4ComponentToNumber(const CHAR* spec,
 }
 
 // See declaration of IPv4AddressToNumber for documentation.
-template<typename CHAR>
+template <typename CHAR, typename UCHAR>
 CanonHostInfo::Family DoIPv4AddressToNumber(const CHAR* spec,
-                                            const Component& host,
+                                            Component host,
                                             unsigned char address[4],
                                             int* num_ipv4_components) {
-  // The identified components. Not all may exist.
-  Component components[4];
-  if (!FindIPv4Components(spec, host, components))
+  // Ignore terminal dot, if present.
+  if (host.is_nonempty() && spec[host.end() - 1] == '.')
+    --host.len;
+
+  // Do nothing if empty.
+  if (!host.is_nonempty())
     return CanonHostInfo::NEUTRAL;
 
-  // Convert existing components to digits. Values up to
-  // |existing_components| will be valid.
+  // Read component values.  The first `existing_components` of them are
+  // populated front to back, with the first one corresponding to the last
+  // component, which allows for early exit if the last component isn't a
+  // number.
   uint32_t component_values[4];
   int existing_components = 0;
 
-  // Set to true if one or more components are BROKEN. BROKEN is only
-  // returned if all components are IPV4 or BROKEN, so, for example,
-  // 12345678912345.de returns NEUTRAL rather than broken.
-  bool broken = false;
-  for (int i = 0; i < 4; i++) {
-    if (components[i].len <= 0)
+  int current_component_end = host.end();
+  int current_position = current_component_end;
+  while (true) {
+    // If this is not the first character of a component, go to the next
+    // component.
+    if (current_position != host.begin && spec[current_position - 1] != '.') {
+      --current_position;
       continue;
-    CanonHostInfo::Family family = IPv4ComponentToNumber(
-        spec, components[i], &component_values[existing_components]);
-
-    if (family == CanonHostInfo::BROKEN) {
-      broken = true;
-    } else if (family != CanonHostInfo::IPV4) {
-      // Stop if we hit a non-BROKEN invalid non-empty component.
-      return family;
     }
 
-    existing_components++;
+    CanonHostInfo::Family family = IPv4ComponentToNumber(
+        spec,
+        Component(current_position, current_component_end - current_position),
+        &component_values[existing_components]);
+
+    // If `family` is NEUTRAL and this is the last component, return NEUTRAL. If
+    // `family` is NEUTRAL but not the last component, this is considered a
+    // BROKEN IPv4 address, as opposed to a non-IPv4 hostname.
+    if (family == CanonHostInfo::NEUTRAL && existing_components == 0)
+      return CanonHostInfo::NEUTRAL;
+
+    if (family != CanonHostInfo::IPV4)
+      return CanonHostInfo::BROKEN;
+
+    ++existing_components;
+
+    // If this is the final component, nothing else to do.
+    if (current_position == host.begin)
+      break;
+
+    // If there are more than 4 components, fail.
+    if (existing_components == 4)
+      return CanonHostInfo::BROKEN;
+
+    current_component_end = current_position - 1;
+    --current_position;
   }
 
-  if (broken)
-    return CanonHostInfo::BROKEN;
-
-  // Use that sequence of numbers to fill out the 4-component IP address.
+  // Use `component_values` to fill out the 4-component IP address.
 
   // First, process all components but the last, while making sure each fits
   // within an 8-bit field.
-  for (int i = 0; i < existing_components - 1; i++) {
+  for (int i = existing_components - 1; i > 0; i--) {
     if (component_values[i] > std::numeric_limits<uint8_t>::max())
       return CanonHostInfo::BROKEN;
-    address[i] = static_cast<unsigned char>(component_values[i]);
+    address[existing_components - i - 1] =
+        static_cast<unsigned char>(component_values[i]);
   }
 
-  // Next, consume the last component to fill in the remaining bytes.
-  // Work around a gcc 4.9 bug. crbug.com/392872
-#if ((__GNUC__ == 4 && __GNUC_MINOR__ >= 9) || __GNUC__ > 4)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Warray-bounds"
-#endif
-  uint32_t last_value = component_values[existing_components - 1];
-#if ((__GNUC__ == 4 && __GNUC_MINOR__ >= 9) || __GNUC__ > 4)
-#pragma GCC diagnostic pop
-#endif
+  uint32_t last_value = component_values[0];
   for (int i = 3; i >= existing_components - 1; i--) {
     address[i] = static_cast<unsigned char>(last_value);
     last_value >>= 8;
@@ -595,105 +572,6 @@ bool DoCanonicalizeIPv6Address(const CHAR* spec,
   return true;
 }
 
-// Method to check if something looks like a number. Used instead of
-// IPv4ComponentToNumber() so that it counts things that look like bad base-8
-// (e.g. 09).
-//
-// TODO(https://crbug.com/1149194): Remove this once the bug is fixed.
-template <typename CHAR>
-bool LooksLikeANumber(const CHAR* spec, const Component& component) {
-  // Empty components don't look like numbers.
-  if (!component.is_nonempty())
-    return false;
-
-  SharedCharTypes base = CHAR_DEC;
-  size_t start = component.begin;
-  if (component.len >= 2 && spec[start] == '0' &&
-      (spec[start + 1] == 'x' || spec[start + 1] == 'X')) {
-    base = CHAR_HEX;
-    start += 2;
-  }
-  for (int i = start; i < component.end(); i++) {
-    if (!IsCharOfType(spec[i], base))
-      return false;
-  }
-  return true;
-}
-
-// Calculates the "HostSafetyStatus" of the provided hostname.
-//
-// TODO(https://crbug.com/1149194): Remove this once the bug is fixed.
-template <typename CHAR>
-HostSafetyStatus DoCheckHostnameSafety(const CHAR* spec,
-                                       const Component& host) {
-  if (!host.is_nonempty())
-    return HostSafetyStatus::kOk;
-
-  // Find the last two components.
-
-  // Number of identified components. Stops after second component. Does not
-  // include the empty terminal component, if the host ends with a dot.
-  int existing_components = 0;
-  // Parsed component values. Populated last component first.
-  Component components[2];
-
-  // Index of the character after the end of the current component.
-  int cur_component_end = host.end();
-
-  // Ignore terminal dot, if there is one.
-  if (spec[cur_component_end - 1] == '.') {
-    cur_component_end--;
-    // Nothing else to do if the host is just a dot.
-    if (host.begin == cur_component_end)
-      return HostSafetyStatus::kOk;
-  }
-
-  for (int i = cur_component_end; /* nothing */; i--) {
-    DCHECK_GE(i, host.begin);
-
-    // If `i` is not the first character of the component, continue.
-    if (i != host.begin && spec[i - 1] != '.')
-      continue;
-
-    // Otherwise, i is the index of the the start of a component.
-    components[existing_components] = Component(i, cur_component_end - i);
-    existing_components++;
-
-    // Finished parsing last component.
-    if (i == host.begin)
-      break;
-
-    // If there's anything left to parse after the 2th component, nothing more
-    // to do.
-    if (existing_components == 2)
-      break;
-
-    // The next component ends before the dot at spec[i]. `i` will be
-    // decremented when restarting the loop, so no need to modify it.
-    cur_component_end = i - 1;
-  }
-
-  // If the last value doesn't look like a number, no need to do more work, as
-  // IPv6 and hostnames with non-numeric final components are all considered OK.
-  if (!LooksLikeANumber(spec, components[0]))
-    return HostSafetyStatus::kOk;
-
-  url::RawCanonOutputT<char> ignored_output;
-  CanonHostInfo host_info;
-  CanonicalizeIPAddress(spec, host, &ignored_output, &host_info);
-  // Ignore valid IPv4 addresses, and hostnames considered invalid by the IPv4
-  // and IPv6 parsers. The IPv6 check doesn't provide a whole lot, but does mean
-  // things like "].6" will correctly be considered already invalid, so will
-  // return kOk.
-  if (host_info.family != CanonHostInfo::NEUTRAL)
-    return HostSafetyStatus::kOk;
-
-  if (LooksLikeANumber(spec, components[1]))
-    return HostSafetyStatus::kTwoHighestLevelDomainsAreNumeric;
-
-  return HostSafetyStatus::kTopLevelDomainIsNumeric;
-}
-
 }  // namespace
 
 void AppendIPv4Address(const unsigned char address[4], CanonOutput* output) {
@@ -745,18 +623,6 @@ void AppendIPv6Address(const unsigned char address[16], CanonOutput* output) {
   }
 }
 
-bool FindIPv4Components(const char* spec,
-                        const Component& host,
-                        Component components[4]) {
-  return DoFindIPv4Components<char, unsigned char>(spec, host, components);
-}
-
-bool FindIPv4Components(const char16_t* spec,
-                        const Component& host,
-                        Component components[4]) {
-  return DoFindIPv4Components<char16_t, char16_t>(spec, host, components);
-}
-
 void CanonicalizeIPAddress(const char* spec,
                            const Component& host,
                            CanonOutput* output,
@@ -785,15 +651,16 @@ CanonHostInfo::Family IPv4AddressToNumber(const char* spec,
                                           const Component& host,
                                           unsigned char address[4],
                                           int* num_ipv4_components) {
-  return DoIPv4AddressToNumber<char>(spec, host, address, num_ipv4_components);
+  return DoIPv4AddressToNumber<char, unsigned char>(spec, host, address,
+                                                    num_ipv4_components);
 }
 
 CanonHostInfo::Family IPv4AddressToNumber(const char16_t* spec,
                                           const Component& host,
                                           unsigned char address[4],
                                           int* num_ipv4_components) {
-  return DoIPv4AddressToNumber<char16_t>(spec, host, address,
-                                         num_ipv4_components);
+  return DoIPv4AddressToNumber<char16_t, char16_t>(spec, host, address,
+                                                   num_ipv4_components);
 }
 
 bool IPv6AddressToNumber(const char* spec,
@@ -806,15 +673,6 @@ bool IPv6AddressToNumber(const char16_t* spec,
                          const Component& host,
                          unsigned char address[16]) {
   return DoIPv6AddressToNumber<char16_t, char16_t>(spec, host, address);
-}
-
-HostSafetyStatus CheckHostnameSafety(const char* spec, const Component& host) {
-  return DoCheckHostnameSafety(spec, host);
-}
-
-HostSafetyStatus CheckHostnameSafety(const char16_t* spec,
-                                     const Component& host) {
-  return DoCheckHostnameSafety(spec, host);
 }
 
 }  // namespace url

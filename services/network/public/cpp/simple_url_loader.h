@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,9 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -45,6 +45,7 @@ class URLLoaderFactory;
 namespace network {
 
 class SimpleURLLoaderStreamConsumer;
+class SimpleURLLoaderThrottle;
 
 // Creates and wraps a URLLoader, and runs it to completion. It's recommended
 // that consumers use this class instead of URLLoader directly, due to the
@@ -144,13 +145,17 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // be reused.
   static std::unique_ptr<SimpleURLLoader> Create(
       std::unique_ptr<ResourceRequest> resource_request,
-      const net::NetworkTrafficAnnotationTag& annotation_tag);
+      const net::NetworkTrafficAnnotationTag& annotation_tag,
+      base::Location created_from = base::Location::Current());
 
   // The TickClock to use to configure a timer that tracks if |timeout_duration|
   // has been reached or not. This can be removed once https://crbug.com/905412
   // is completed. When null, the timer falls back to base::TimeTicks::Now().
   static void SetTimeoutTickClockForTest(
       const base::TickClock* timeout_tick_clock);
+
+  SimpleURLLoader(const SimpleURLLoader&) = delete;
+  SimpleURLLoader& operator=(const SimpleURLLoader&) = delete;
 
   virtual ~SimpleURLLoader();
 
@@ -291,6 +296,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   virtual void AttachStringForUpload(
       const std::string& upload_data,
       const std::string& upload_content_type) = 0;
+  virtual void AttachStringForUpload(const std::string& upload_data) = 0;
 
   // Helper method to attach a file for upload, so the consumer won't need to
   // open the file itself off-thread. May only be called once, and only if the
@@ -306,6 +312,13 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
       const std::string& upload_content_type,
       uint64_t offset = 0,
       uint64_t length = std::numeric_limits<uint64_t>::max()) = 0;
+  virtual void AttachFileForUpload(const base::FilePath& upload_file_path,
+                                   uint64_t offset,
+                                   uint64_t length) = 0;
+  void AttachFileForUpload(const base::FilePath& upload_file_path) {
+    AttachFileForUpload(upload_file_path, 0,
+                        std::numeric_limits<uint64_t>::max());
+  }
 
   // Sets the when to try and the max number of times to retry a request, if
   // any. |max_retries| is the number of times to retry the request, not
@@ -340,6 +353,13 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // as much time as it wants.
   virtual void SetTimeoutDuration(base::TimeDelta timeout_duration) = 0;
 
+  // Allows this SimpleURLLoader to be batched when sending a network request
+  // impacts on battery consumption. This should be called before the request
+  // is started.
+  // NOTE: This is for an experimental use. Please contact bashi@chromium.org
+  // before starting using this function.
+  virtual void SetAllowBatching() = 0;
+
   // Returns the net::Error representing the final status of the request. May
   // only be called once the loader has informed the caller of completion.
   virtual int NetError() const = 0;
@@ -352,7 +372,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // The URLLoaderCompletionStatus for the request. Will be nullopt if the
   // response never completed. May only be called once the loader has informed
   // the caller of completion.
-  virtual const base::Optional<URLLoaderCompletionStatus>& CompletionStatus()
+  virtual const absl::optional<URLLoaderCompletionStatus>& CompletionStatus()
       const = 0;
 
   // Returns the URL that this loader is processing. May only be called once the
@@ -379,11 +399,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // Returns the number of times retry has been attempted.
   virtual int GetNumRetries() const = 0;
 
+  virtual SimpleURLLoaderThrottle* GetThrottleForTesting() = 0;
+
  protected:
   SimpleURLLoader();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SimpleURLLoader);
 };
 
 }  // namespace network

@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_PROPERTY_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_PROMISE_PROPERTY_H_
 
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -43,6 +43,9 @@ class ScriptPromiseProperty final
   // property holder).
   ScriptPromiseProperty(ExecutionContext* execution_context)
       : ExecutionContextClient(execution_context) {}
+
+  ScriptPromiseProperty(const ScriptPromiseProperty&) = delete;
+  ScriptPromiseProperty& operator=(const ScriptPromiseProperty&) = delete;
 
   ScriptPromise Promise(DOMWrapperWorld& world) {
     if (!GetExecutionContext()) {
@@ -109,6 +112,7 @@ class ScriptPromiseProperty final
 
   void ResolveWithUndefined() {
     CHECK(!ScriptForbiddenScope::IsScriptForbidden());
+    DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
     DCHECK_EQ(GetState(), kPending);
     if (!GetExecutionContext()) {
       return;
@@ -125,6 +129,7 @@ class ScriptPromiseProperty final
   template <typename PassRejectedType>
   void Reject(PassRejectedType value) {
     CHECK(!ScriptForbiddenScope::IsScriptForbidden());
+    DCHECK(!ScriptForbiddenScope::WillBeScriptForbidden());
     DCHECK_EQ(GetState(), kPending);
     if (!GetExecutionContext()) {
       return;
@@ -176,8 +181,6 @@ class ScriptPromiseProperty final
   HeapVector<ScriptPromise> promises_;
   bool resolved_with_undefined_ = false;
   bool mark_as_handled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptPromiseProperty);
 };
 
 }  // namespace blink

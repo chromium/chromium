@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,12 @@
 #include <istream>
 #include <ostream>
 
-#include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.pb.h"
+#include "chromecast/media/cma/backend/proxy/audio_channel_push_buffer_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.pb.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
 
 namespace chromecast {
@@ -24,36 +26,28 @@ struct AudioConfig;
 // data, which are pushed together over gRPC using the PushData() API call.
 // Two sequences are expected to simultaneously access this object:
 // - A PRODUCER sequence, which will push new data in.
-// - A CONSUMER thread which will pull this data back out of the data structure.
+// - A CONSUMER sequence which will pull this data back out of the data
+//   structure.
 //
 // This is achieved through serializing this protobuf into bytes, then storing
 // these bytes in a lockless FIFO.
-class PushBufferQueue {
+class PushBufferQueue : public AudioChannelPushBufferHandler {
  public:
-  using PushBufferRequest = cast::media::PushBufferRequest;
-
   // The amount of space to allocate in the buffer.
   static constexpr size_t kBufferSizeBytes = 0x01 << 12;  // 4 kB.
 
   PushBufferQueue();
-  ~PushBufferQueue();
+  PushBufferQueue(const PushBufferQueue& other) = delete;
 
-  // Pushes the data stored in the associated type to the queue underlying this
-  // object. Returns true if the operation was successful, and false otherwise.
-  //
-  // May only be called by the PRODUCER.
-  bool PushBuffer(const PushBufferRequest& request);
+  ~PushBufferQueue() override;
 
-  // Returns true if there is data available for reading.
-  //
-  // May only be called by the CONSUMER.
-  bool HasBufferedData() const;
+  PushBufferQueue& operator=(const PushBufferQueue& other) = delete;
 
-  // Attempts to read the top PushBufferRequest on the queue, returning the
-  // instance on success and empty if not enough data is available yet.
-  //
-  // May only be called by the CONSUMER.
-  base::Optional<PushBufferRequest> GetBufferedData();
+  // AudioChannelPushBufferHandler overrides.
+  CmaBackend::BufferStatus PushBuffer(
+      const PushBufferRequest& request) override;
+  bool HasBufferedData() const override;
+  absl::optional<PushBufferRequest> GetBufferedData() override;
 
  private:
   // These classes exist for the following 2 reasons:
@@ -134,7 +128,7 @@ class PushBufferQueue {
 
   // Helper methods to be used for test hooks.
   bool PushBufferImpl(const PushBufferRequest& request);
-  base::Optional<PushBufferRequest> GetBufferedDataImpl();
+  absl::optional<PushBufferRequest> GetBufferedDataImpl();
 
   // Buffer where serialized PushBufferRequest data is stored.
   char buffer_[kBufferSizeBytes];
@@ -174,14 +168,14 @@ class PushBufferQueue {
   // Input streams backed by this instance. They must be optional so that they
   // can be re-created following a failed read. These should only be used by the
   // CONSUMER.
-  base::Optional<std::istream> consumer_stream_;
-  base::Optional<google::protobuf::io::IstreamInputStream>
+  absl::optional<std::istream> consumer_stream_;
+  absl::optional<google::protobuf::io::IstreamInputStream>
       protobuf_consumer_stream_;
 
   // Output stream backed by this instance. This must be optional so it can be
   // re-created following a failed write. It should only be used by the
   // PRODUCER.
-  base::Optional<std::ostream> producer_stream_;
+  absl::optional<std::ostream> producer_stream_;
 };
 
 }  // namespace media

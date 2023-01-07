@@ -26,12 +26,15 @@
 #include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "third_party/blink/public/common/scheme_registry.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -42,6 +45,31 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 
 namespace blink {
+namespace {
+mojom::blink::UseCounterFeatureType ToFeatureType(
+    UseCounterImpl::CSSPropertyType type) {
+  switch (type) {
+    case UseCounterImpl::CSSPropertyType::kDefault:
+      return mojom::blink::UseCounterFeatureType::kCssProperty;
+    case UseCounterImpl::CSSPropertyType::kAnimation:
+      return mojom::blink::UseCounterFeatureType::kAnimatedCssProperty;
+  }
+}
+
+mojom::blink::UseCounterFeatureType ToFeatureType(
+    UseCounterImpl::PermissionsPolicyUsageType type) {
+  switch (type) {
+    case UseCounterImpl::PermissionsPolicyUsageType::kViolation:
+      return mojom::blink::UseCounterFeatureType::
+          kPermissionsPolicyViolationEnforce;
+    case UseCounterImpl::PermissionsPolicyUsageType::kHeader:
+      return mojom::blink::UseCounterFeatureType::kPermissionsPolicyHeader;
+    case UseCounterImpl::PermissionsPolicyUsageType::kIframeAttribute:
+      return mojom::blink::UseCounterFeatureType::
+          kPermissionsPolicyIframeAttribute;
+  }
+}
+}  // namespace
 
 UseCounterMuteScope::UseCounterMuteScope(const Element& element)
     : loader_(element.GetDocument().Loader()) {
@@ -65,55 +93,24 @@ void UseCounterImpl::UnmuteForInspector() {
   mute_count_--;
 }
 
-void UseCounterImpl::RecordMeasurement(WebFeature feature,
-                                       const LocalFrame& source_frame) {
-  if (mute_count_)
-    return;
-
-  // PageDestruction is reserved as a scaling factor.
-  DCHECK_NE(WebFeature::kOBSOLETE_PageDestruction, feature);
-  DCHECK_NE(WebFeature::kPageVisits, feature);
-  DCHECK_GE(WebFeature::kNumberOfFeatures, feature);
-
-  int feature_id = static_cast<int>(feature);
-  if (features_recorded_[feature_id])
-    return;
-  if (commit_state_ >= kCommited)
-    ReportAndTraceMeasurementByFeatureId(feature, source_frame);
-
-  features_recorded_.set(feature_id);
-}
-
-void UseCounterImpl::ReportAndTraceMeasurementByFeatureId(
-    WebFeature feature,
-    const LocalFrame& source_frame) {
-  if (context_ != kDisabledContext) {
-    // Note that HTTPArchive tooling looks specifically for this event -
-    // see https://github.com/HTTPArchive/httparchive/issues/59
-    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("blink.feature_usage"),
-                 "FeatureFirstUsed", "feature", feature);
-    if (context_ != kDefaultContext)
-      CountFeature(feature);
-    if (LocalFrameClient* client = source_frame.Client())
-      client->DidObserveNewFeatureUsage(feature);
-    NotifyFeatureCounted(feature);
-  }
-}
-
-bool UseCounterImpl::HasRecordedMeasurement(WebFeature feature) const {
+bool UseCounterImpl::IsCounted(WebFeature web_feature) const {
   if (mute_count_)
     return false;
 
   // PageDestruction is reserved as a scaling factor.
-  DCHECK_NE(WebFeature::kOBSOLETE_PageDestruction, feature);
-  DCHECK_NE(WebFeature::kPageVisits, feature);
-  DCHECK_GE(WebFeature::kNumberOfFeatures, feature);
+  DCHECK_NE(WebFeature::kOBSOLETE_PageDestruction, web_feature);
+  DCHECK_NE(WebFeature::kPageVisits, web_feature);
+  DCHECK_GE(WebFeature::kNumberOfFeatures, web_feature);
 
-  return features_recorded_[static_cast<size_t>(feature)];
+  return feature_tracker_.Test(
+      {mojom::blink::UseCounterFeatureType::kWebFeature,
+       static_cast<uint32_t>(web_feature)});
 }
 
-void UseCounterImpl::ClearMeasurementForTesting(WebFeature feature) {
-  features_recorded_.reset(static_cast<size_t>(feature));
+void UseCounterImpl::ClearMeasurementForTesting(WebFeature web_feature) {
+  feature_tracker_.ResetForTesting(
+      {mojom::blink::UseCounterFeatureType::kWebFeature,
+       static_cast<uint32_t>(web_feature)});
 }
 
 void UseCounterImpl::Trace(Visitor* visitor) const {
@@ -122,35 +119,33 @@ void UseCounterImpl::Trace(Visitor* visitor) const {
 
 void UseCounterImpl::DidCommitLoad(const LocalFrame* frame) {
   const KURL url = frame->GetDocument()->Url();
-  if (url.ProtocolIs("chrome-extension"))
+  if (CommonSchemeRegistry::IsExtensionScheme(url.Protocol().Ascii())) {
     context_ = kExtensionContext;
-  if (url.ProtocolIs("file"))
+  } else if (url.ProtocolIs("file")) {
     context_ = kFileContext;
+  } else if (url.ProtocolIsInHTTPFamily()) {
+    context_ = kDefaultContext;
+  } else {
+    // UseCounter is disabled for all other URL schemes.
+    context_ = kDisabledContext;
+  }
 
   DCHECK_EQ(kPreCommit, commit_state_);
   commit_state_ = kCommited;
-  if (!mute_count_) {
-    // If any feature was recorded prior to navigation commits, flush to the
-    // browser side.
-    for (wtf_size_t feature_id = 0; feature_id < features_recorded_.size();
-         ++feature_id) {
-      if (features_recorded_[feature_id]) {
-        ReportAndTraceMeasurementByFeatureId(
-            static_cast<WebFeature>(feature_id), *frame);
-      }
-    }
-    for (wtf_size_t sample_id = 0; sample_id < css_recorded_.size();
-         ++sample_id) {
-      if (css_recorded_[sample_id])
-        ReportAndTraceMeasurementByCSSSampleId(sample_id, frame, false);
-      if (animated_css_recorded_[sample_id])
-        ReportAndTraceMeasurementByCSSSampleId(sample_id, frame, true);
-    }
 
-    // TODO(loonybear): move extension histogram to the browser side.
-    if (context_ == kExtensionContext || context_ == kFileContext) {
-      CountFeature(WebFeature::kPageVisits);
-    }
+  if (mute_count_)
+    return;
+
+  // If any feature was recorded prior to navigation commits, flush to the
+  // browser side.
+  for (const UseCounterFeature& feature :
+       feature_tracker_.GetRecordedFeatures()) {
+    if (ReportMeasurement(feature, frame))
+      TraceMeasurement(feature);
+  }
+
+  if (context_ == kExtensionContext || context_ == kFileContext) {
+    CountFeature(WebFeature::kPageVisits);
   }
 }
 
@@ -159,13 +154,17 @@ bool UseCounterImpl::IsCounted(CSSPropertyID unresolved_property,
   if (unresolved_property == CSSPropertyID::kInvalid) {
     return false;
   }
-  int sample_id = static_cast<int>(GetCSSSampleId(unresolved_property));
-  switch (type) {
-    case CSSPropertyType::kDefault:
-      return css_recorded_[sample_id];
-    case CSSPropertyType::kAnimation:
-      return animated_css_recorded_[sample_id];
-  }
+
+  return feature_tracker_.Test(
+      {ToFeatureType(type),
+       static_cast<uint32_t>(GetCSSSampleId(unresolved_property))});
+}
+
+bool UseCounterImpl::IsCounted(const UseCounterFeature& feature) const {
+  if (mute_count_)
+    return false;
+
+  return feature_tracker_.Test(feature);
 }
 
 void UseCounterImpl::AddObserver(Observer* observer) {
@@ -173,20 +172,26 @@ void UseCounterImpl::AddObserver(Observer* observer) {
   observers_.insert(observer);
 }
 
-void UseCounterImpl::ReportAndTraceMeasurementByCSSSampleId(
-    int sample_id,
-    const LocalFrame* frame,
-    bool is_animated) {
-  // Note that HTTPArchive tooling looks specifically for this event - see
-  // https://github.com/HTTPArchive/httparchive/issues/59
-  if (context_ != kDisabledContext && context_ != kExtensionContext) {
-    const char* name = is_animated ? "AnimatedCSSFirstUsed" : "CSSFirstUsed";
-    TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("blink.feature_usage"), name,
-                 "feature", sample_id);
-    if (frame && frame->Client()) {
-      frame->Client()->DidObserveNewCssPropertyUsage(
-          static_cast<mojom::blink::CSSSampleId>(sample_id), is_animated);
-    }
+void UseCounterImpl::Count(const UseCounterFeature& feature,
+                           const LocalFrame* source_frame) {
+  // Features can be accessed only while replaying, e.g. window.devicePixelRatio
+  // is accessed for reporting to the recorder.
+  if (recordreplay::AreEventsDisallowed())
+    return;
+
+  if (!source_frame)
+    return;
+
+  if (mute_count_)
+    return;
+
+  if (feature_tracker_.TestAndSet(feature)) {
+    return;
+  }
+
+  if (commit_state_ >= kCommited) {
+    if (ReportMeasurement(feature, source_frame))
+      TraceMeasurement(feature);
   }
 }
 
@@ -196,40 +201,30 @@ void UseCounterImpl::Count(CSSPropertyID property,
   DCHECK(IsCSSPropertyIDWithName(property) ||
          property == CSSPropertyID::kVariable);
 
-  if (mute_count_)
-    return;
-
-  int sample_id = static_cast<int>(GetCSSSampleId(property));
-
-  switch (type) {
-    case CSSPropertyType::kDefault:
-      if (css_recorded_[sample_id])
-        return;
-      if (commit_state_ >= kCommited)
-        ReportAndTraceMeasurementByCSSSampleId(sample_id, source_frame, false);
-
-      css_recorded_.set(sample_id);
-      break;
-    case CSSPropertyType::kAnimation:
-      if (animated_css_recorded_[sample_id])
-        return;
-      if (commit_state_ >= kCommited)
-        ReportAndTraceMeasurementByCSSSampleId(sample_id, source_frame, true);
-
-      animated_css_recorded_.set(sample_id);
-      break;
-  }
+  Count({ToFeatureType(type), static_cast<uint32_t>(GetCSSSampleId(property))},
+        source_frame);
 }
 
-void UseCounterImpl::Count(WebFeature feature, const LocalFrame* source_frame) {
-  // Features can be accessed only while replaying, e.g. window.devicePixelRatio
-  // is accessed for reporting to the recorder.
-  if (recordreplay::AreEventsDisallowed())
-    return;
+void UseCounterImpl::Count(WebFeature web_feature,
+                           const LocalFrame* source_frame) {
+  // PageDestruction is reserved as a scaling factor.
+  DCHECK_NE(WebFeature::kOBSOLETE_PageDestruction, web_feature);
+  DCHECK_NE(WebFeature::kPageVisits, web_feature);
+  DCHECK_GE(WebFeature::kNumberOfFeatures, web_feature);
 
-  if (!source_frame)
-    return;
-  RecordMeasurement(feature, *source_frame);
+  Count({mojom::blink::UseCounterFeatureType::kWebFeature,
+         static_cast<uint32_t>(web_feature)},
+        source_frame);
+}
+
+void UseCounterImpl::CountPermissionsPolicyUsage(
+    mojom::blink::PermissionsPolicyFeature feature,
+    PermissionsPolicyUsageType usage_type,
+    const LocalFrame& source_frame) {
+  DCHECK_NE(mojom::blink::PermissionsPolicyFeature::kNotFound, feature);
+
+  Count({ToFeatureType(usage_type), static_cast<uint32_t>(feature)},
+        &source_frame);
 }
 
 void UseCounterImpl::NotifyFeatureCounted(WebFeature feature) {
@@ -247,7 +242,7 @@ void UseCounterImpl::CountFeature(WebFeature feature) const {
   switch (context_) {
     case kDefaultContext:
       // Feature usage for the default context is recorded on the browser side.
-      // TODO(dcheng): Where?
+      // components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer
       NOTREACHED();
       return;
     case kExtensionContext:
@@ -263,6 +258,72 @@ void UseCounterImpl::CountFeature(WebFeature feature) const {
       return;
   }
   NOTREACHED();
+}
+
+bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,
+                                       const LocalFrame* frame) {
+  if (context_ == kDisabledContext)
+    return false;
+
+  if (!frame || !frame->Client())
+    return false;
+  auto* client = frame->Client();
+
+  if (feature.type() == mojom::blink::UseCounterFeatureType::kWebFeature)
+    NotifyFeatureCounted(static_cast<WebFeature>(feature.value()));
+
+  // Report to browser about observed event only when URL is HTTP/HTTPS,
+  // as other URL schemes are filtered out in
+  // |MetricsWebContentsObserver::DoesTimingUpdateHaveError| anyway.
+  if (context_ == kDefaultContext) {
+    client->DidObserveNewFeatureUsage(feature);
+    return true;
+  }
+
+  // WebFeatures in non-default contexts are counted on renderer side.
+  if (feature.type() == mojom::blink::UseCounterFeatureType::kWebFeature) {
+    CountFeature(static_cast<WebFeature>(feature.value()));
+    return true;
+  }
+
+  return false;
+}
+
+// Note that HTTPArchive tooling looks specifically for this event - see
+// https://github.com/HTTPArchive/httparchive/issues/59
+void UseCounterImpl::TraceMeasurement(const UseCounterFeature& feature) {
+  const char* trace_name = nullptr;
+  switch (feature.type()) {
+    case mojom::blink::UseCounterFeatureType::kWebFeature:
+      trace_name = "FeatureFirstUsed";
+      break;
+    case mojom::blink::UseCounterFeatureType::kAnimatedCssProperty:
+      trace_name = "AnimatedCSSFirstUsed";
+      break;
+    case mojom::blink::UseCounterFeatureType::kCssProperty:
+      trace_name = "CSSFirstUsed";
+      break;
+    case mojom::blink::UseCounterFeatureType::
+        kPermissionsPolicyViolationEnforce:
+    case mojom::blink::UseCounterFeatureType::kPermissionsPolicyHeader:
+    case mojom::blink::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
+      // TODO(crbug.com/1206004): Add trace event for permissions policy metrics
+      // gathering.
+      return;
+    case mojom::blink::UseCounterFeatureType::kUserAgentOverride:
+      return;
+  }
+  DCHECK(trace_name);
+  TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("blink.feature_usage"), trace_name,
+               "feature", feature.value());
+}
+
+void UseCounterImpl::CountUserAgentOverride(
+    blink::UserAgentOverride::UserAgentOverrideHistogram ua_override,
+    const LocalFrame* source_frame) {
+  Count({mojom::blink::UseCounterFeatureType::kUserAgentOverride,
+         static_cast<uint32_t>(ua_override)},
+        source_frame);
 }
 
 }  // namespace blink

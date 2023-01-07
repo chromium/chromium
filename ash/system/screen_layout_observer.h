@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "ui/display/manager/managed_display_info.h"
 
 namespace ash {
@@ -23,6 +23,10 @@ namespace ash {
 class ASH_EXPORT ScreenLayoutObserver : public WindowTreeHostManager::Observer {
  public:
   ScreenLayoutObserver();
+
+  ScreenLayoutObserver(const ScreenLayoutObserver&) = delete;
+  ScreenLayoutObserver& operator=(const ScreenLayoutObserver&) = delete;
+
   ~ScreenLayoutObserver() override;
 
   static const char kNotificationId[];
@@ -58,11 +62,9 @@ class ASH_EXPORT ScreenLayoutObserver : public WindowTreeHostManager::Observer {
   // |out_message| to empty, which means the notification should be removed. It
   // also sets |out_additional_message| which appears in the notification with
   // the |out_message|.
-  bool GetDisplayMessageForNotification(
-      const DisplayInfoMap& old_info,
-      bool should_notify_has_unassociated_display,
-      std::u16string* out_message,
-      std::u16string* out_additional_message);
+  bool GetUnassociatedDisplayMessage(const DisplayInfoMap& old_info,
+                                     std::u16string* out_message,
+                                     std::u16string* out_additional_message);
 
   // Creates or updates the display notification.
   void CreateOrUpdateNotification(const std::u16string& message,
@@ -94,8 +96,6 @@ class ASH_EXPORT ScreenLayoutObserver : public WindowTreeHostManager::Observer {
   std::set<int64_t> displays_changed_from_settings_ui_;
 
   bool show_notifications_for_testing_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenLayoutObserver);
 };
 
 }  // namespace ash

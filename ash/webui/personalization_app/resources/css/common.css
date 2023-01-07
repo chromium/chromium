@@ -1,0 +1,370 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+[hidden] {
+  /* The |hidden| attribute does not hide an element with an explicitly
+   * specified |display| property. Handle this by forcing display to |none|
+   * when the |hidden| attribute is present. */
+  display: none !important;
+}
+
+:host {
+  --personalization-app-grid-item-background-color: var(--google-grey-100);
+  --personalization-app-grid-item-border-radius: 12px;
+  --personalization-app-grid-item-height: 120px;
+  --personalization-app-grid-item-spacing: 16px;
+
+  --personalization-app-text-shadow-elevation-1: 0 1px 3px
+      rgba(0, 0, 0, 15%), 0 1px 2px rgba(0, 0, 0, 30%);
+
+  /* copied from |AshColorProvider| |kSecondToneOpacity| constant. */
+  --personalization-app-second-tone-opacity: 0.3;
+
+  --personalization-app-label-font: 500 13px/20px
+      var(--cros-font-family-google-sans);
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --personalization-app-grid-item-background-color:
+      rgba(var(--google-grey-700-rgb), 0.3);
+  }
+}
+
+iron-list {
+  height: 100%;
+}
+
+.photo-container {
+  box-sizing: border-box;
+  height: calc(
+    var(--personalization-app-grid-item-height) +
+    var(--personalization-app-grid-item-spacing));
+  overflow: hidden;
+  padding: calc(var(--personalization-app-grid-item-spacing) / 2);
+  /* Media queries in trusted and untrusted code will resize to 25% at
+   * correct widths.  Subtract 0.34px to fix subpixel rounding issues with
+   * iron-list. This makes sure all photo containers on a row add up to at
+   * least 1px smaller than the parent width.*/
+  width: calc(100% / 3 - 0.34px);
+}
+
+.photo-container:focus-visible {
+  outline: none;
+}
+
+/* This extra position: relative element corrects for absolutely positioned
+   elements ignoring parent interior padding. */
+.photo-inner-container {
+  align-items: center;
+  border-radius: var(--personalization-app-grid-item-border-radius);
+  cursor: pointer;
+  display: flex;
+  height: 100%;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+@keyframes ripple {
+  /* 0 ms */
+  from {
+    opacity: 1;
+  }
+  /* 200 ms */
+  9% {
+    opacity: 0.15;
+  }
+  /* 350 ms */
+  15.8% {
+    opacity: 0.15;
+  }
+  /* 550 ms, hold for 83ms * 20 and then restart */
+  24.9% {
+    opacity: 1;
+  }
+  /* 2210 ms */
+  to {
+    opacity: 1;
+  }
+}
+
+.placeholder {
+  animation: 2210ms linear var(--animation-delay, 1s) infinite ripple;
+}
+
+.photo-inner-container:focus-visible,
+.photo-loading-placeholder:focus-visible {
+  border: 2px solid var(--cros-focus-ring-color);
+  border-radius: 14px;
+  outline: none;
+}
+
+.photo-images-container {
+  background-color: var(--personalization-app-grid-item-background-color);
+  border-radius: 12px;
+  box-sizing: border-box;
+  display: flex;
+  flex-flow: row wrap;
+  height: 100%;
+  /* stop img and gradient-mask from ignoring above border-radius. */
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.photo-images-container img {
+  flex: 1 1 0;
+  height: 100%;
+  min-width: 50%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.photo-images-container img.left {
+  clip-path: inset(0 50% 0 0);
+  position: absolute;
+}
+
+.photo-images-container img.right {
+  clip-path: inset(0 0 0 50%);
+  position: absolute;
+}
+
+@keyframes scale-up {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.photo-container iron-icon[icon='personalization:checkmark'] {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  animation-duration: 200ms;
+  animation-name: scale-up;
+  animation-timing-function: cubic-bezier(0.40, 0.00, 0.20, 1.00);
+  left: 4px;
+  position: absolute;
+  top: 4px;
+}
+
+.photo-inner-container:not([aria-selected='true'])
+iron-icon[icon='personalization:checkmark'] {
+  display: none;
+}
+
+.photo-inner-container[aria-selected='true'] {
+  background-color: rgba(var(--cros-icon-color-prominent-rgb),
+      var(--personalization-app-second-tone-opacity));
+  border-radius: 16px;
+}
+
+@keyframes resize {
+  100% {
+    height: calc(100% - 8px);
+    width: calc(100% - 8px);
+  }
+}
+
+.photo-inner-container[aria-selected='true'] .photo-images-container {
+  animation-duration: 200ms;
+  animation-fill-mode: forwards;
+  animation-name: resize;
+  animation-timing-function: cubic-bezier(0.40, 0.00, 0.20, 1.00);
+}
+
+.photo-inner-container[aria-selected='true'] .photo-images-border {
+  border: 0;
+}
+
+.photo-inner-container:focus-visible:not([aria-selected='true'])
+.photo-images-container {
+  height: calc(100% - 4px);
+  width: calc(100% - 4px);
+}
+
+cr-button[aria-pressed=true],
+cr-button[aria-selected=true] {
+  background-color: var(--cros-highlight-color);
+  border: 0;
+}
+
+.preview-container {
+  border: 1px solid var(--cros-separator-color);
+  border-radius: 16px;
+}
+
+.preview-text-container,
+.preview-text-placeholder {
+  align-items: flex-start;
+  display: flex;
+  flex-flow: column nowrap;
+  margin: 0;
+}
+
+.preview-text-container {
+  justify-content: flex-end;
+}
+
+.preview-text-placeholder {
+  justify-content: center;
+}
+
+.placeholder {
+  background-color: var(--personalization-app-grid-item-background-color);
+  border-radius: 12px;
+}
+
+.preview-image-container {
+  border-radius: 12px;
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+/**
+ * Hover a border over the image container to avoid sub pixel rounding issues
+ * with chrome scaling images.
+ */
+.preview-image-border,
+.photo-images-border,
+.wallpaper-grid-item-border {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  bottom: 0;
+  box-sizing: border-box;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 2;
+}
+
+.preview-image {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.preview-text-container > *,
+.preview-text-placeholder > * {
+  margin: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-text-container > * + * {
+  margin-top: 4px;
+}
+
+.preview-text-placeholder > * + * {
+  margin-top: 8px;
+}
+
+.preview-text-container > span:first-child {
+  color: var(--cros-text-color-secondary);
+  font: var(--cros-body-2-font);
+}
+
+.preview-text-placeholder > .placeholder:first-child {
+  /* Each row is 83 ms after the prior element. */
+  --animation-delay: calc(1s + 83ms);
+  width: 20%;
+  height: 20px;
+}
+
+.preview-text-container > span:nth-child(2) {
+  color: var(--cros-text-color-primary);
+  font: var(--cros-display-6-font);
+}
+
+.preview-text-placeholder > .placeholder:nth-child(2) {
+  --animation-delay: calc(1s + 83ms * 2);
+  width: 75%;
+  height: 24px;
+}
+
+.preview-text-container > span:nth-child(n+3) {
+  color: var(--cros-text-color-secondary);
+  font: var(--cros-body-1-font);
+}
+
+.preview-text-placeholder > .placeholder:nth-child(n+3) {
+  --animation-delay: calc(1s + 83ms * 3);
+  width: 33%;
+  height: 20px;
+}
+
+.ambient-subpage-element-title {
+  color: var(--cros-text-color-primary);
+  font: var(--personalization-app-label-font);
+  margin: 34px 8px 16px 8px;
+}
+
+.ambient-toggle-row-container {
+  border: 1px solid var(--cros-separator-color);
+  border-radius: 8px;
+  display: flex;
+  flex-flow: column nowrap;
+  height: 48px;
+  width: 100%;
+}
+
+.ambient-toggle-row {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  margin: 0 20px;
+}
+
+.ambient-toggle-row + .ambient-toggle-row {
+  border-top: 1px solid var(--cros-separator-color);
+}
+
+.ambient-toggle-row > p {
+  font: var(--cros-body-1-font);
+  height: 20px;
+  margin: 0;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+paper-tooltip::part(tooltip) {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: row;
+  height: 18px;
+  padding: 3px 8px;
+}
+
+paper-tooltip {
+  --paper-tooltip-background: var(--cros-tooltip-background-color);
+  --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+}
+
+paper-tooltip span {
+  align-items: center;
+  display: flex;
+  font: var(--cros-body-2-font);
+}
+
+:host-context([dir=rtl]) iron-icon[icon='cr:chevron-right'] {
+  transform: scaleX(-1);
+}

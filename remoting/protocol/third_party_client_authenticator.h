@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,12 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/protocol/client_authentication_config.h"
 #include "remoting/protocol/third_party_authenticator_base.h"
+#include "remoting/protocol/token_validator.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Implements the client side of the third party authentication mechanism.
 // The client authenticator expects a |token_url| and |scope| in the first
@@ -33,6 +32,11 @@ class ThirdPartyClientAuthenticator : public ThirdPartyAuthenticatorBase {
   ThirdPartyClientAuthenticator(
       const CreateBaseAuthenticatorCallback& create_base_authenticator_callback,
       const FetchThirdPartyTokenCallback& fetch_token_callback);
+
+  ThirdPartyClientAuthenticator(const ThirdPartyClientAuthenticator&) = delete;
+  ThirdPartyClientAuthenticator& operator=(
+      const ThirdPartyClientAuthenticator&) = delete;
+
   ~ThirdPartyClientAuthenticator() override;
 
  protected:
@@ -42,21 +46,18 @@ class ThirdPartyClientAuthenticator : public ThirdPartyAuthenticatorBase {
   void AddTokenElements(jingle_xmpp::XmlElement* message) override;
 
  private:
-  void OnThirdPartyTokenFetched(base::OnceClosure resume_callback,
-                                const std::string& third_party_token,
-                                const std::string& shared_secret);
+  void OnThirdPartyTokenFetched(
+      base::OnceClosure resume_callback,
+      const std::string& third_party_token,
+      const TokenValidator::ValidationResult& validation_result);
 
   CreateBaseAuthenticatorCallback create_base_authenticator_callback_;
   FetchThirdPartyTokenCallback fetch_token_callback_;
   std::string token_;
 
   base::WeakPtrFactory<ThirdPartyClientAuthenticator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThirdPartyClientAuthenticator);
 };
 
-
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_THIRD_PARTY_CLIENT_AUTHENTICATOR_H_

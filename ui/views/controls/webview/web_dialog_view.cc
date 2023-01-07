@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,12 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
@@ -46,24 +47,12 @@ ObservableWebView::~ObservableWebView() = default;
 void ObservableWebView::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  // Only listen to the main frame.
-  if (render_frame_host->GetParent())
+  // Only listen to the primary main frame.
+  if (!render_frame_host->IsInPrimaryMainFrame())
     return;
 
   if (delegate_)
     delegate_->OnWebContentsFinishedLoad();
-}
-
-void ObservableWebView::ResourceLoadComplete(
-    content::RenderFrameHost* render_frame_host,
-    const content::GlobalRequestID& request_id,
-    const blink::mojom::ResourceLoadInfo& resource_load_info) {
-  // Only listen to the main frame.
-  if (render_frame_host->GetParent())
-    return;
-
-  if (delegate_)
-    delegate_->OnMainFrameResourceLoadComplete(resource_load_info);
 }
 
 void ObservableWebView::ResetDelegate() {
@@ -87,7 +76,7 @@ WebDialogView::WebDialogView(content::BrowserContext* context,
   SetCanResize(!delegate_ || delegate_->can_resize());
   SetModalType(GetDialogModalType());
   web_view_->set_allow_accelerators(true);
-  AddChildView(web_view_);
+  AddChildView(web_view_.get());
   set_contents_view(web_view_);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   // Pressing the Escape key will close the dialog.
@@ -109,6 +98,15 @@ content::WebContents* WebDialogView::web_contents() {
 
 ////////////////////////////////////////////////////////////////////////////////
 // WebDialogView, views::View implementation:
+
+void WebDialogView::AddedToWidget() {
+  gfx::RoundedCornersF corner_radii(
+      delegate_ && delegate_->GetWebDialogFrameKind() ==
+                       WebDialogDelegate::FrameKind::kDialog
+          ? GetCornerRadius()
+          : 0);
+  web_view_->holder()->SetCornerRadii(corner_radii);
+}
 
 gfx::Size WebDialogView::CalculatePreferredSize() const {
   gfx::Size out;
@@ -350,7 +348,7 @@ bool WebDialogView::ShouldShowCloseButton() const {
 }
 
 bool WebDialogView::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   if (delegate_)
     return delegate_->HandleContextMenu(render_frame_host, params);
@@ -404,16 +402,16 @@ void WebDialogView::AddNewContents(
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
     WindowOpenDisposition disposition,
-    const gfx::Rect& initial_rect,
+    const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
   WebDialogWebContentsDelegate::AddNewContents(
-      source, std::move(new_contents), target_url, disposition, initial_rect,
+      source, std::move(new_contents), target_url, disposition, window_features,
       user_gesture, was_blocked);
 }
 
 void WebDialogView::LoadingStateChanged(content::WebContents* source,
-                                        bool to_different_document) {
+                                        bool should_show_loading_ui) {
   if (delegate_)
     delegate_->OnLoadingStateChanged(source);
 }

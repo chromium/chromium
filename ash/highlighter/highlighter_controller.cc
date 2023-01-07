@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -128,7 +128,7 @@ void HighlighterController::UpdatePointerView(ui::TouchEvent* event) {
 
   gfx::Rect bounds =
       highlighter_view_widget_->GetNativeWindow()->GetRootWindow()->bounds();
-  bounds.Inset(kScreenEdgeMargin, kScreenEdgeMargin);
+  bounds.Inset(kScreenEdgeMargin);
 
   const gfx::PointF pos = GetHighlighterView()->points().GetNewest().location;
   if (bounds.Contains(
@@ -145,7 +145,7 @@ void HighlighterController::UpdatePointerView(ui::TouchEvent* event) {
 
   interrupted_stroke_timer_ = std::make_unique<base::OneShotTimer>();
   interrupted_stroke_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kInterruptedStrokeTimeoutMs),
+      FROM_HERE, base::Milliseconds(kInterruptedStrokeTimeoutMs),
       base::BindOnce(&HighlighterController::RecognizeGesture,
                      base::Unretained(this)));
 }
@@ -238,6 +238,16 @@ bool HighlighterController::CanStartNewGesture(ui::LocatedEvent* event) {
     return false;
   return !interrupted_stroke_timer_ &&
          FastInkPointerController::CanStartNewGesture(event);
+}
+
+bool HighlighterController::ShouldProcessEvent(ui::LocatedEvent* event) {
+  // Allow mouse clicking when Assistant tool is enabled.
+  if (event->type() == ui::ET_MOUSE_PRESSED ||
+      event->type() == ui::ET_MOUSE_RELEASED) {
+    return false;
+  }
+
+  return FastInkPointerController::ShouldProcessEvent(event);
 }
 
 void HighlighterController::DestroyHighlighterView() {

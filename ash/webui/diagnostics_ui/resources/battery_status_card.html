@@ -1,0 +1,50 @@
+<style include="diagnostics-shared">
+  .remove-stroke {
+    --iron-icon-stroke-color: none;
+  }
+</style>
+<diagnostics-card>
+  <div id="cardTitle" slot="title" aria-describedby="batteryStatusChipInfo">
+    [[i18n('batteryTitle')]]
+  </div>
+  <div id="batteryStatusChipInfo" slot="chip" class="diagnostics-chip"
+      aria-hidden="true">
+    [[getDesignedFullCharge_(batteryHealth_.chargeFullDesignMilliampHours)]]
+  </div>
+  <iron-icon slot="icon" icon="[[batteryIcon]]" class$="[[iconClass]]">
+  </iron-icon>
+  <percent-bar-chart slot="left-panel" header="[[powerTimeString_]]"
+      value="[[batteryChargeStatus_.chargeNowMilliampHours]]"
+      max="[[batteryHealth_.chargeFullNowMilliampHours]]">
+  </percent-bar-chart>
+  <data-point slot="body" id="batteryHealth"
+      header="[[i18n('batteryHealthLabel')]]"
+      value="[[getBatteryHealth_(batteryHealth_.batteryWearPercentage)]]"
+      tooltip-text="[[i18n('batteryHealthTooltipText')]]"
+      class="data-point-margin-start">
+  </data-point>
+  <div slot="body" class="divider"></div>
+  <data-point slot="body" id="cycleCount" header="[[i18n('cycleCount')]]"
+      value="[[batteryHealth_.cycleCount]]"
+      tooltip-text="[[i18n('cycleCountTooltipText')]]">
+  </data-point>
+  <div slot="body" class="divider"></div>
+  <data-point slot="body" id="currentNow" header="[[i18n('currentNowLabel')]]"
+      value="[[getCurrentNow_(batteryChargeStatus_.currentNowMilliamps)]]"
+      tooltip-text="[[i18n('currentNowTooltipText')]]"
+      class="data-point-margin-end">
+  </data-point>
+  <routine-section slot="routines" routines="[[routines_]]"
+      routine-runtime="{{getEstimateRuntimeInMinutes_(routines_)}}"
+      test-suite-status="{{testSuiteStatus}}"
+      is-power-routine
+      run-tests-button-text="[[getRunTestsButtonText_(
+        batteryChargeStatus_.powerAdapterStatus
+      )]]"
+      additional-message="[[getRunTestsAdditionalMessage(
+        batteryChargeStatus_.chargeNowMilliampHours,
+        batteryHealth_.chargeFullNowMilliampHours)]]"
+      learn-more-link-section="battery"
+      is-active="[[isActive]]">
+  </routine-section>
+</diagnostics-card>

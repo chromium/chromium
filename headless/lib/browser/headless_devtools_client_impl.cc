@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -40,7 +41,6 @@ HeadlessDevToolsClient::CreateWithExternalHost(ExternalHost* external_host) {
 HeadlessDevToolsClientImpl::HeadlessDevToolsClientImpl()
     : accessibility_domain_(this),
       animation_domain_(this),
-      application_cache_domain_(this),
       browser_domain_(this),
       cache_storage_domain_(this),
       console_domain_(this),
@@ -131,15 +131,13 @@ void HeadlessDevToolsClientImpl::SendRawDevToolsMessage(
     const std::string& json_message) {
   std::unique_ptr<base::Value> message =
       base::JSONReader::ReadDeprecated(json_message);
-  if (!message->is_dict()) {
+  if (!message || !message->is_dict()) {
     LOG(ERROR) << "Malformed raw message";
     return;
   }
-  std::unique_ptr<base::DictionaryValue> dict =
-      base::DictionaryValue::From(std::move(message));
   if (!session_id_.empty())
-    dict->SetString("sessionId", session_id_);
-  SendProtocolMessage(dict.get());
+    message->GetDict().Set("sessionId", session_id_);
+  SendProtocolMessage(message->GetDict());
 }
 
 void HeadlessDevToolsClientImpl::DispatchMessageFromExternalHost(
@@ -162,9 +160,9 @@ void HeadlessDevToolsClientImpl::ReceiveProtocolMessage(
   std::unique_ptr<base::DictionaryValue> message_dict =
       base::DictionaryValue::From(std::move(message));
 
-  std::string session_id;
-  if (message_dict->GetString("sessionId", &session_id)) {
-    auto it = sessions_.find(session_id);
+  const std::string* session_id = message_dict->FindStringKey("sessionId");
+  if (session_id) {
+    auto it = sessions_.find(*session_id);
     if (it != sessions_.end()) {
       it->second->ReceiveProtocolMessage(json_message, std::move(message_dict));
       return;
@@ -190,7 +188,7 @@ void HeadlessDevToolsClientImpl::ReceiveProtocolMessage(
   }
 
   bool success = false;
-  if (message_dict->HasKey("id"))
+  if (message_dict->FindKey("id"))
     success = DispatchMessageReply(std::move(message), *message_dict);
   else
     success = DispatchEvent(std::move(message), *message_dict);
@@ -320,10 +318,6 @@ animation::Domain* HeadlessDevToolsClientImpl::GetAnimation() {
   return &animation_domain_;
 }
 
-application_cache::Domain* HeadlessDevToolsClientImpl::GetApplicationCache() {
-  return &application_cache_domain_;
-}
-
 browser::Domain* HeadlessDevToolsClientImpl::GetBrowser() {
   return &browser_domain_;
 }
@@ -451,28 +445,28 @@ tracing::Domain* HeadlessDevToolsClientImpl::GetTracing() {
 
 template <typename CallbackType>
 void HeadlessDevToolsClientImpl::FinalizeAndSendMessage(
-    base::DictionaryValue* message,
+    base::Value::Dict message,
     CallbackType callback) {
   if (renderer_crashed_)
     return;
   int id = g_next_message_id;
   g_next_message_id += 2;  // We only send even numbered messages.
-  message->SetInteger("id", id);
+  message.Set("id", id);
   if (!session_id_.empty())
-    message->SetString("sessionId", session_id_);
+    message.Set("sessionId", session_id_);
   pending_messages_[id] = Callback(std::move(callback));
   SendProtocolMessage(message);
 }
 
 void HeadlessDevToolsClientImpl::SendProtocolMessage(
-    const base::DictionaryValue* message) {
+    const base::Value::Dict& message) {
   if (parent_client_) {
     parent_client_->SendProtocolMessage(message);
     return;
   }
 
   std::string json_message;
-  base::JSONWriter::Write(*message, &json_message);
+  base::JSONWriter::Write(message, &json_message);
   // LOG(ERROR) << "[SEND] " << json_message;
   auto bytes_message = base::as_bytes(base::make_span(json_message));
   if (channel_)
@@ -482,27 +476,25 @@ void HeadlessDevToolsClientImpl::SendProtocolMessage(
 }
 
 template <typename CallbackType>
-void HeadlessDevToolsClientImpl::SendMessageWithParams(
-    const char* method,
-    std::unique_ptr<base::Value> params,
-    CallbackType callback) {
-  base::DictionaryValue message;
-  message.SetString("method", method);
+void HeadlessDevToolsClientImpl::SendMessageWithParams(const char* method,
+                                                       base::Value params,
+                                                       CallbackType callback) {
+  base::Value::Dict message;
+  message.Set("method", method);
   message.Set("params", std::move(params));
-  FinalizeAndSendMessage(&message, std::move(callback));
+  FinalizeAndSendMessage(std::move(message), std::move(callback));
 }
 
 void HeadlessDevToolsClientImpl::SendMessage(
     const char* method,
-    std::unique_ptr<base::Value> params,
+    base::Value params,
     base::OnceCallback<void(const base::Value&)> callback) {
   SendMessageWithParams(method, std::move(params), std::move(callback));
 }
 
-void HeadlessDevToolsClientImpl::SendMessage(
-    const char* method,
-    std::unique_ptr<base::Value> params,
-    base::OnceClosure callback) {
+void HeadlessDevToolsClientImpl::SendMessage(const char* method,
+                                             base::Value params,
+                                             base::OnceClosure callback) {
   SendMessageWithParams(method, std::move(params), std::move(callback));
 }
 
@@ -526,7 +518,7 @@ HeadlessDevToolsClientImpl::Callback::Callback(
 
 HeadlessDevToolsClientImpl::Callback::~Callback() = default;
 
-HeadlessDevToolsClientImpl::Callback& HeadlessDevToolsClientImpl::Callback::
-operator=(Callback&& other) = default;
+HeadlessDevToolsClientImpl::Callback&
+HeadlessDevToolsClientImpl::Callback::operator=(Callback&& other) = default;
 
 }  // namespace headless

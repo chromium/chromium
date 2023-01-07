@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs.content;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -30,25 +31,30 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.password_manager.PasswordChangeSuccessTrackerBridge;
+import org.chromium.chrome.browser.password_manager.PasswordChangeSuccessTrackerBridgeJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * Integration tests involving several classes in Custom Tabs content layer, checking that urls are
  * properly loaded in Custom Tabs in different conditions.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@Features.DisableFeatures({ChromeFeatureList.CCT_EXTERNAL_LINK_HANDLING})
+@DisableFeatures({ChromeFeatureList.CCT_REAL_TIME_ENGAGEMENT_SIGNALS})
 public class CustomTabActivityUrlLoadingTest {
+    public static final String PASSWORD_CHANGE_USERNAME = "Peter";
+
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
@@ -68,11 +74,15 @@ public class CustomTabActivityUrlLoadingTest {
 
     @Mock
     UrlUtilities.Natives mUrlUtilitiesJniMock;
+    @Mock
+    PasswordChangeSuccessTrackerBridge.Natives mPasswordChangeSuccessTrackerBridge;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
+        mocker.mock(PasswordChangeSuccessTrackerBridgeJni.TEST_HOOKS,
+                mPasswordChangeSuccessTrackerBridge);
         Profile.setLastUsedProfileForTesting(mProfile);
         mTabController = env.createTabController();
         mNavigationController = env.createNavigationController(mTabController);
@@ -84,6 +94,24 @@ public class CustomTabActivityUrlLoadingTest {
         env.warmUp();
         mTabController.onPreInflationStartup();
         verify(env.tabFromFactory).loadUrl(argThat(params -> INITIAL_URL.equals(params.getUrl())));
+
+        // The PasswordChangeSuccessTracker is never called.
+        verify(mPasswordChangeSuccessTrackerBridge, never())
+                .onManualPasswordChangeStarted(any(), any());
+    }
+
+    @Test
+    public void startsLoadingPage_InEarlyCreatedTab_AndNotifiesTracker() {
+        env.warmUp();
+        mTabController.onPreInflationStartup();
+        verify(env.tabFromFactory).loadUrl(argThat(params -> INITIAL_URL.equals(params.getUrl())));
+
+        // Set the extra and create a new intent handler.
+        env.setPasswordChangeUsername(PASSWORD_CHANGE_USERNAME);
+        mIntentHandler = env.createIntentHandler(mNavigationController);
+        // This must trigger the PasswordChangeSuccessTracker.
+        verify(mPasswordChangeSuccessTrackerBridge, times(1))
+                .onManualPasswordChangeStarted(any(), eq(PASSWORD_CHANGE_USERNAME));
     }
 
     @Test

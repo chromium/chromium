@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,44 +9,42 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
-#include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
 
-void SyncData::ImmutableSyncEntityTraits::InitializeWrapper(Wrapper* wrapper) {
-  *wrapper = new sync_pb::SyncEntity();
-}
+// TODO(crbug.com/1152824): Avoid using thread-safe refcounting, since it's only
+// needed by a few (one?) browser test.
+struct SyncData::InternalData
+    : public base::RefCountedThreadSafe<InternalData> {
+  InternalData() = default;
 
-void SyncData::ImmutableSyncEntityTraits::DestroyWrapper(Wrapper* wrapper) {
-  delete *wrapper;
-}
+  ClientTagHash client_tag_hash;
+  std::string non_unique_name;
+  sync_pb::EntitySpecifics specifics;
 
-const sync_pb::SyncEntity& SyncData::ImmutableSyncEntityTraits::Unwrap(
-    const Wrapper& wrapper) {
-  return *wrapper;
-}
+ private:
+  friend class base::RefCountedThreadSafe<InternalData>;
+  ~InternalData() = default;
+};
 
-sync_pb::SyncEntity* SyncData::ImmutableSyncEntityTraits::UnwrapMutable(
-    Wrapper* wrapper) {
-  return *wrapper;
-}
+SyncData::SyncData() = default;
 
-void SyncData::ImmutableSyncEntityTraits::Swap(sync_pb::SyncEntity* t1,
-                                               sync_pb::SyncEntity* t2) {
-  t1->Swap(t2);
-}
-
-SyncData::SyncData() : is_local_(false), is_valid_(false) {}
-
-SyncData::SyncData(bool is_local, sync_pb::SyncEntity* entity)
-    : immutable_entity_(entity), is_local_(is_local), is_valid_(true) {}
+SyncData::SyncData(scoped_refptr<InternalData> ptr) : ptr_(std::move(ptr)) {}
 
 SyncData::SyncData(const SyncData& other) = default;
 
-SyncData::~SyncData() {}
+SyncData::SyncData(SyncData&& other) = default;
+
+SyncData& SyncData::operator=(const SyncData& other) = default;
+
+SyncData& SyncData::operator=(SyncData&& other) = default;
+
+SyncData::~SyncData() = default;
 
 // Static.
 SyncData SyncData::CreateLocalDelete(const std::string& client_tag_unhashed,
@@ -64,32 +62,31 @@ SyncData SyncData::CreateLocalData(const std::string& client_tag_unhashed,
   DCHECK(IsRealDataType(model_type));
 
   DCHECK(!client_tag_unhashed.empty());
-  const ClientTagHash client_tag_hash =
+
+  SyncData data(base::MakeRefCounted<InternalData>());
+  data.ptr_->client_tag_hash =
       ClientTagHash::FromUnhashed(model_type, client_tag_unhashed);
-
-  sync_pb::SyncEntity entity;
-  entity.set_client_defined_unique_tag(client_tag_hash.value());
-  entity.set_non_unique_name(non_unique_title);
-  entity.mutable_specifics()->CopyFrom(specifics);
-
-  return SyncData(/*is_local=*/true, &entity);
+  data.ptr_->non_unique_name = non_unique_title;
+  data.ptr_->specifics = specifics;
+  return data;
 }
 
 // Static.
 SyncData SyncData::CreateRemoteData(sync_pb::EntitySpecifics specifics,
                                     const ClientTagHash& client_tag_hash) {
-  sync_pb::SyncEntity entity;
-  *entity.mutable_specifics() = std::move(specifics);
-  entity.set_client_defined_unique_tag(client_tag_hash.value());
-  return SyncData(/*is_local=*/false, &entity);
+  SyncData data(base::MakeRefCounted<InternalData>());
+  data.ptr_->client_tag_hash = client_tag_hash;
+  data.ptr_->specifics = std::move(specifics);
+  DCHECK(IsRealDataType(data.GetDataType()));
+  return data;
 }
 
 bool SyncData::IsValid() const {
-  return is_valid_;
+  return ptr_ != nullptr;
 }
 
 const sync_pb::EntitySpecifics& SyncData::GetSpecifics() const {
-  return immutable_entity_.Get().specifics();
+  return ptr_->specifics;
 }
 
 ModelType SyncData::GetDataType() const {
@@ -97,32 +94,25 @@ ModelType SyncData::GetDataType() const {
 }
 
 ClientTagHash SyncData::GetClientTagHash() const {
-  return ClientTagHash::FromHashed(
-      immutable_entity_.Get().client_defined_unique_tag());
+  return ptr_->client_tag_hash;
 }
 
 const std::string& SyncData::GetTitle() const {
-  return immutable_entity_.Get().non_unique_name();
-}
-
-bool SyncData::IsLocal() const {
-  return is_local_;
+  return ptr_->non_unique_name;
 }
 
 std::string SyncData::ToString() const {
   if (!IsValid())
     return "<Invalid SyncData>";
 
-  std::string type = ModelTypeToString(GetDataType());
+  std::string type = ModelTypeToDebugString(GetDataType());
   std::string specifics;
   base::JSONWriter::WriteWithOptions(*EntitySpecificsToValue(GetSpecifics()),
                                      base::JSONWriter::OPTIONS_PRETTY_PRINT,
                                      &specifics);
-  std::string is_local_string = IsLocal() ? "true" : "false";
 
-  return "{ isLocal: " + is_local_string + ", type: " + type +
-         ", tagHash: " + GetClientTagHash().value() + ", title: " + GetTitle() +
-         ", specifics: " + specifics + "}";
+  return "{ type: " + type + ", tagHash: " + GetClientTagHash().value() +
+         ", title: " + GetTitle() + ", specifics: " + specifics + "}";
 }
 
 void PrintTo(const SyncData& sync_data, std::ostream* os) {

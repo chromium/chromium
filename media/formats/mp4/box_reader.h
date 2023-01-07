@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
@@ -61,25 +61,25 @@ class MEDIA_EXPORT BufferReader {
 
   // Read a value from the stream, performing endian correction, and advance the
   // stream pointer.
-  bool Read1(uint8_t* v) WARN_UNUSED_RESULT;
-  bool Read2(uint16_t* v) WARN_UNUSED_RESULT;
-  bool Read2s(int16_t* v) WARN_UNUSED_RESULT;
-  bool Read4(uint32_t* v) WARN_UNUSED_RESULT;
-  bool Read4s(int32_t* v) WARN_UNUSED_RESULT;
-  bool Read8(uint64_t* v) WARN_UNUSED_RESULT;
-  bool Read8s(int64_t* v) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Read1(uint8_t* v);
+  [[nodiscard]] bool Read2(uint16_t* v);
+  [[nodiscard]] bool Read2s(int16_t* v);
+  [[nodiscard]] bool Read4(uint32_t* v);
+  [[nodiscard]] bool Read4s(int32_t* v);
+  [[nodiscard]] bool Read8(uint64_t* v);
+  [[nodiscard]] bool Read8s(int64_t* v);
 
-  bool ReadFourCC(FourCC* v) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadFourCC(FourCC* v);
 
-  bool ReadVec(std::vector<uint8_t>* t, uint64_t count) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadVec(std::vector<uint8_t>* t, uint64_t count);
 
   // These variants read a 4-byte integer of the corresponding signedness and
   // store it in the 8-byte return type.
-  bool Read4Into8(uint64_t* v) WARN_UNUSED_RESULT;
-  bool Read4sInto8s(int64_t* v) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Read4Into8(uint64_t* v);
+  [[nodiscard]] bool Read4sInto8s(int64_t* v);
 
   // Advance the stream by this many bytes.
-  bool SkipBytes(uint64_t nbytes) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SkipBytes(uint64_t nbytes);
 
   const uint8_t* buffer() const { return buf_; }
 
@@ -95,7 +95,8 @@ class MEDIA_EXPORT BufferReader {
   size_t buf_size_;
   size_t pos_;
 
-  template<typename T> bool Read(T* t) WARN_UNUSED_RESULT;
+  template <typename T>
+  [[nodiscard]] bool Read(T* t);
 };
 
 class MEDIA_EXPORT BoxReader : public BufferReader {
@@ -107,22 +108,22 @@ class MEDIA_EXPORT BoxReader : public BufferReader {
   // will be set, otherwise |out_reader| will be unchanged.
   //
   // |buf| is retained but not owned, and must outlive the BoxReader instance.
-  static ParseResult ReadTopLevelBox(const uint8_t* buf,
-                                     const size_t buf_size,
-                                     MediaLog* media_log,
-                                     std::unique_ptr<BoxReader>* out_reader)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static ParseResult ReadTopLevelBox(
+      const uint8_t* buf,
+      const size_t buf_size,
+      MediaLog* media_log,
+      std::unique_ptr<BoxReader>* out_reader);
 
   // Read the box header from the current buffer, and return its type and size.
   // This function returns kNeedMoreData if the box is incomplete, even if the
   // box header is complete.
   //
   // |buf| is not retained.
-  static ParseResult StartTopLevelBox(const uint8_t* buf,
-                                      const size_t buf_size,
-                                      MediaLog* media_log,
-                                      FourCC* out_type,
-                                      size_t* out_box_size) WARN_UNUSED_RESULT;
+  [[nodiscard]] static ParseResult StartTopLevelBox(const uint8_t* buf,
+                                                    const size_t buf_size,
+                                                    MediaLog* media_log,
+                                                    FourCC* out_type,
+                                                    size_t* out_box_size);
 
   // Create a BoxReader from a buffer. |buf| must be the complete buffer, as
   // errors are returned when sufficient data is not available. |buf| can start
@@ -140,50 +141,49 @@ class MEDIA_EXPORT BoxReader : public BufferReader {
 
   // Scan through all boxes within the current box, starting at the current
   // buffer position. Must be called before any of the *Child functions work.
-  bool ScanChildren() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ScanChildren();
 
   // Return true if child with type |child.BoxType()| exists.
-  bool HasChild(Box* child) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool HasChild(Box* child);
 
   // Read exactly one child box from the set of children. The type of the child
   // will be determined by the BoxType() method of |child|.
-  bool ReadChild(Box* child) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadChild(Box* child);
 
   // Read one child if available. Returns false on error, true on successful
   // read or on child absent.
-  bool MaybeReadChild(Box* child) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool MaybeReadChild(Box* child);
 
   // ISO-BMFF streams files use a 3x3 matrix consisting of 6 16.16 fixed point
   // decimals and 3 2.30 fixed point decimals.
   bool ReadDisplayMatrix(DisplayMatrix matrix);
 
   // Read at least one child. False means error or no such child present.
-  template<typename T> bool ReadChildren(
-      std::vector<T>* children) WARN_UNUSED_RESULT;
+  template <typename T>
+  [[nodiscard]] bool ReadChildren(std::vector<T>* children);
 
   // Read any number of children. False means error.
-  template<typename T> bool MaybeReadChildren(
-      std::vector<T>* children) WARN_UNUSED_RESULT;
+  template <typename T>
+  [[nodiscard]] bool MaybeReadChildren(std::vector<T>* children);
 
   // Read all children, regardless of FourCC. This is used from exactly one box,
   // corresponding to a rather significant inconsistency in the BMFF spec.
   // Note that this method is mutually exclusive with ScanChildren() and
   // ReadAllChildrenAndCheckFourCC().
   template <typename T>
-  bool ReadAllChildren(std::vector<T>* children) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadAllChildren(std::vector<T>* children);
 
   // Read all children and verify that the FourCC matches what is expected.
   // Returns true if all children are successfully parsed and have the correct
   // box type for |T|. Note that this method is mutually exclusive with
   // ScanChildren() and ReadAllChildren().
   template <typename T>
-  bool ReadAllChildrenAndCheckFourCC(std::vector<T>* children)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadAllChildrenAndCheckFourCC(std::vector<T>* children);
 
   // Populate the values of 'version()' and 'flags()' from a full box header.
   // Many boxes, but not all, use these values. This call should happen after
   // the box has been initialized, and does not re-read the main box header.
-  bool ReadFullBoxHeader() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadFullBoxHeader();
 
   size_t box_size() const {
     DCHECK(box_size_known_);
@@ -205,7 +205,7 @@ class MEDIA_EXPORT BoxReader : public BufferReader {
             bool is_EOS);
 
   // Must be called immediately after init.
-  ParseResult ReadHeader() WARN_UNUSED_RESULT;
+  [[nodiscard]] ParseResult ReadHeader();
 
   // Read all children, optionally checking FourCC. Returns true if all
   // children are successfully parsed and, if |check_box_type|, have the
@@ -214,7 +214,7 @@ class MEDIA_EXPORT BoxReader : public BufferReader {
   template <typename T>
   bool ReadAllChildrenInternal(std::vector<T>* children, bool check_box_type);
 
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
   size_t box_size_;
   bool box_size_known_;
   FourCC type_;

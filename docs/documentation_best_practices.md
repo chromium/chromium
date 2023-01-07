@@ -93,7 +93,7 @@ to detailed prose:
     * Who maintains this directory and where I can learn more?
 
 4.  **Design docs, PRDs**: A good design doc or PRD discusses the proposed
-    implementation at length for the purpose of collecting feeback on that
+    implementation at length for the purpose of collecting feedback on that
     design. However, once the code is implemented, design docs should serve as
     archives of these decisions, not as half-correct docs (they are often
     misused). See

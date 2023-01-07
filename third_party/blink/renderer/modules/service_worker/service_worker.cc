@@ -62,7 +62,7 @@ void ServiceWorker::postMessage(ScriptState* script_state,
                                 HeapVector<ScriptValue>& transfer,
                                 ExceptionState& exception_state) {
   PostMessageOptions* options = PostMessageOptions::Create();
-  if (!transfer.IsEmpty())
+  if (!transfer.empty())
     options->setTransfer(transfer);
   postMessage(script_state, message, options, exception_state);
 }
@@ -98,27 +98,40 @@ void ServiceWorker::postMessage(ScriptState* script_state,
   if (exception_state.HadException())
     return;
 
-  if (msg.message->IsLockedToAgentCluster()) {
-    msg.locked_agent_cluster_id = GetExecutionContext()->GetAgentClusterID();
-  } else {
-    msg.locked_agent_cluster_id = base::nullopt;
+  msg.sender_agent_cluster_id = GetExecutionContext()->GetAgentClusterID();
+  msg.locked_to_sender_agent_cluster = msg.message->IsLockedToAgentCluster();
+
+  // Defer postMessage() from a prerendered page until page activation.
+  // https://wicg.github.io/nav-speculation/prerendering.html#patch-service-workers
+  if (GetExecutionContext()->IsWindow()) {
+    Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
+    if (document->IsPrerendering()) {
+      document->AddPostPrerenderingActivationStep(
+          WTF::BindOnce(&ServiceWorker::PostMessageInternal,
+                        WrapWeakPersistent(this), std::move(msg)));
+      return;
+    }
   }
 
-  host_->PostMessageToServiceWorker(std::move(msg));
+  PostMessageInternal(std::move(msg));
+}
+
+void ServiceWorker::PostMessageInternal(BlinkTransferableMessage message) {
+  host_->PostMessageToServiceWorker(std::move(message));
 }
 
 ScriptPromise ServiceWorker::InternalsTerminate(ScriptState* script_state) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  host_->TerminateForTesting(
-      WTF::Bind([](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
-                WrapPersistent(resolver)));
+  host_->TerminateForTesting(WTF::BindOnce(
+      [](ScriptPromiseResolver* resolver) { resolver->Resolve(); },
+      WrapPersistent(resolver)));
   return promise;
 }
 
 void ServiceWorker::StateChanged(mojom::blink::ServiceWorkerState new_state) {
   state_ = new_state;
-  this->DispatchEvent(*Event::Create(event_type_names::kStatechange), "ServiceWorker::StateChanged");
+  DispatchEvent(*Event::Create(event_type_names::kStatechange), "ServiceWorker::StateChanged");
 }
 
 String ServiceWorker::scriptURL() const {
@@ -186,7 +199,6 @@ void ServiceWorker::ContextDestroyed() {
 ServiceWorker::ServiceWorker(ExecutionContext* execution_context,
                              WebServiceWorkerObjectInfo info)
     : AbstractWorker(execution_context),
-      was_stopped_(false),
       url_(info.url),
       state_(info.state),
       host_(execution_context),

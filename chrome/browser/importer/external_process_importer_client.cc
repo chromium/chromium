@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include "build/build_config.h"
 #include "chrome/browser/importer/external_process_importer_host.h"
 #include "chrome/browser/importer/in_process_importer_bridge.h"
-#include "chrome/browser/service_sandbox_type.h"
 #include "chrome/common/importer/firefox_importer_utils.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
+#include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/service_process_host.h"
@@ -43,7 +43,7 @@ void ExternalProcessImporterClient::Start() {
       profile_import_.BindNewPipeAndPassReceiver(),
       content::ServiceProcessHost::Options()
           .WithDisplayName(IDS_UTILITY_PROCESS_PROFILE_IMPORTER_NAME)
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
           // Importing from Firefox involves loading a Firefox dylib into the
           // importer service process. Use the child process that doesn't
           // enforce library validation so that this will work.

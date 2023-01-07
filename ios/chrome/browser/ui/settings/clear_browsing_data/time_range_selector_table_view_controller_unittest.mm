@@ -1,20 +1,20 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/time_range_selector_table_view_controller.h"
 
-#include "base/files/file_path.h"
-#include "base/test/task_environment.h"
-#include "components/browsing_data/core/pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/pref_service.h"
-#include "components/sync_preferences/pref_service_mock_factory.h"
+#import "base/files/file_path.h"
+#import "base/test/task_environment.h"
+#import "components/browsing_data/core/pref_names.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/pref_service.h"
+#import "components/sync_preferences/pref_service_mock_factory.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/ocmock/OCMock/OCMock.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -56,7 +56,7 @@ class TimeRangeSelectorTableViewControllerTest
     return factory.Create(registry.get());
   }
 
-  // Verifies that the cell at |item| in |section| has the given |accessory|
+  // Verifies that the cell at `item` in `section` has the given `accessory`
   // type.
   void CheckTextItemAccessoryType(UITableViewCellAccessoryType accessory_type,
                                   int section,

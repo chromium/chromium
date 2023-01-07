@@ -1,22 +1,27 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_WEB_FEED_INDEX_H_
 #define COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_WEB_FEED_INDEX_H_
 
-#include "base/containers/flat_map.h"
+#include <iosfwd>
+
 #include "base/strings/string_piece_forward.h"
+#include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_store.h"
 #include "components/feed/core/v2/proto_util.h"
+#include "components/url_matcher/url_matcher.h"
 
-class GURL;
 namespace feedstore {
 class UriMatcher;
 }
 namespace feed {
+namespace web_feed_index_internal {
+class EntrySet;
+}  // namespace web_feed_index_internal
 
 // Tracks followed web feeds, and recommended web feeds.
 class WebFeedIndex {
@@ -41,37 +46,46 @@ class WebFeedIndex {
   // Populate the recommended feed index.
   void Populate(const feedstore::RecommendedWebFeedIndex& recommended_feeds);
 
-  // Returns the `Entry` for `url`. If more than one web feed matches,
-  // this returns only one. Subscribed feeds, and more specific URL matches are
-  // returned preferentially.
-  Entry FindWebFeedForUrl(const GURL& url);
+  void Clear();
 
-  Entry FindWebFeed(const std::string& id);
+  // Returns the Web Feed `Entry` which matches `page_info`. If there's more
+  // than one match, preferentially returns subscribed Web Feed entries.
+  Entry FindWebFeed(const WebFeedPageInformation& page_info);
+
+  Entry FindWebFeed(const std::string& id) const;
   bool IsRecommended(const std::string& web_feed_id) const;
 
+  base::Time GetRecommendedFeedsUpdateTime() const {
+    return recommended_feeds_update_time_;
+  }
+  base::Time GetSubscribedFeedsUpdateTime() const {
+    return subscribed_feeds_update_time_;
+  }
+  bool HasSubscriptions() const;
+  int SubscriptionCount() const;
+  int RecommendedWebFeedCount() const;
+  const std::vector<Entry>& GetSubscribedEntries() const;
+
+  std::vector<Entry> GetRecommendedEntriesForTesting() const;
+  std::vector<Entry> GetSubscribedEntriesForTesting() const;
+  void DumpStateForDebugging(std::ostream& os);
+
  private:
-  struct EntrySet {
-    EntrySet();
-    ~EntrySet();
-    EntrySet(const EntrySet&);
-    EntrySet& operator=(const EntrySet&);
-    // Maps from domain -> entries_ index.
-    base::flat_map<std::string, int> domains;
-    std::vector<Entry> entries;
-  };
+  using EntrySet = web_feed_index_internal::EntrySet;
+
   void AddMatcher(const std::string& web_feed_id,
                   const feedstore::UriMatcher& matcher);
-  const Entry& FindWebFeedForDomain(base::StringPiece domain);
-  const Entry& FindWebFeedForDomain(const EntrySet& entry_set,
-                                    base::StringPiece domain);
 
-  // TODO(crbug/1152592): This code is temporary, we will need to have
-  // additional matching criteria. Plan to use url_matcher.h instead.
-
-  EntrySet subscribed_;
-  EntrySet recommended_;
+  base::Time recommended_feeds_update_time_;
+  base::Time subscribed_feeds_update_time_;
   Entry empty_entry_;
+
+  std::unique_ptr<EntrySet> recommended_;
+  std::unique_ptr<EntrySet> subscribed_;
 };
+
+// For tests.
+std::ostream& operator<<(std::ostream& os, const WebFeedIndex::Entry& entry);
 
 }  // namespace feed
 

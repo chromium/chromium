@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 using content::WebContents;
 
 ExternalProtocolObserver::ExternalProtocolObserver(WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
-}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<ExternalProtocolObserver>(*web_contents) {}
 
 ExternalProtocolObserver::~ExternalProtocolObserver() {
 }
@@ -22,4 +22,4 @@ void ExternalProtocolObserver::DidGetUserInteraction(
     ExternalProtocolHandler::PermitLaunchUrl();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ExternalProtocolObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ExternalProtocolObserver);

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,10 @@
 #define EXTENSIONS_COMMON_FEATURES_FEATURE_FLAGS_H_
 
 #include <string>
-#include <vector>
 
 #include "base/auto_reset.h"
-
-namespace base {
-struct Feature;
-}  // namespace base
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 
 namespace extensions {
 
@@ -21,13 +18,14 @@ namespace extensions {
 // same name.
 bool IsFeatureFlagEnabled(const std::string& feature_flag);
 
-// Used to override the set of base::Feature flags while the returned value is
-// in scope. Clients must ensure that |features| remains alive (non-dangling)
-// while the returned value is in scope.
+// Used to override the set of base::Feature flags while the returned scoper is
+// alive. Clients must ensure that pointers in |features| remain valid
+// (non-dangling) while the returned scoper is alive (note that features are
+// generally global variables, so this should always be trivially true...).
 using ScopedFeatureFlagsOverride =
-    base::AutoReset<const std::vector<base::Feature>*>;
+    base::AutoReset<base::span<const base::Feature*>>;
 ScopedFeatureFlagsOverride CreateScopedFeatureFlagsOverrideForTesting(
-    const std::vector<base::Feature>* features);
+    base::span<const base::Feature*> features);
 
 }  // namespace extensions
 

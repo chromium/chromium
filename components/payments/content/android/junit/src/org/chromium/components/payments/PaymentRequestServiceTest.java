@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,13 +17,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
-import org.robolectric.annotation.Resetter;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.payments.test_support.PaymentRequestServiceBuilder;
+import org.chromium.components.payments.test_support.ShadowPaymentFeatureList;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.payments.mojom.PayerDetail;
@@ -34,6 +32,7 @@ import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequestClient;
 import org.chromium.payments.mojom.PaymentResponse;
+import org.chromium.url.mojom.Url;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -42,8 +41,7 @@ import java.util.Set;
 
 /** A test for PaymentRequestService. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE,
-        shadows = {PaymentRequestServiceTest.ShadowPaymentFeatureList.class})
+@Config(manifest = Config.NONE, shadows = {ShadowPaymentFeatureList.class})
 public class PaymentRequestServiceTest implements PaymentRequestClient {
     private static final int NO_PAYMENT_ERROR = PaymentErrorReason.MIN_VALUE;
     private final BrowserPaymentRequest mBrowserPaymentRequest;
@@ -68,31 +66,10 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private boolean mWarnNoFaviconCalled;
     private boolean mIsClientClosed;
     private MojoException mConnectionError;
-    private boolean mIsUserGestureDefaultValue = true;
     private boolean mWaitForUpdatedDetailsDefaultValue;
     private PaymentAppService mPaymentAppService;
     private PaymentAppFactoryDelegate mPaymentAppFactoryDelegate;
     private JourneyLogger mJourneyLogger;
-
-    /** The shadow of PaymentFeatureList. Not to use outside the test. */
-    @Implements(PaymentFeatureList.class)
-    /* package */ static class ShadowPaymentFeatureList {
-        private static Set<String> sEnabledFeatures = new HashSet<>();
-
-        @Resetter
-        public static void reset() {
-            sEnabledFeatures.clear();
-        }
-
-        @Implementation
-        public static boolean isEnabled(String featureName) {
-            return sEnabledFeatures.contains(featureName);
-        }
-
-        private static void setEnabledFeature(String featureName) {
-            sEnabledFeatures.add(featureName);
-        }
-    }
 
     public PaymentRequestServiceTest() {
         mPaymentAppService = Mockito.mock(PaymentAppService.class);
@@ -115,6 +92,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         Mockito.doReturn(null)
                 .when(mBrowserPaymentRequest)
                 .showOrSkipAppSelector(Mockito.anyBoolean(), Mockito.any(), Mockito.anyBoolean());
+        Mockito.doReturn(true).when(mBrowserPaymentRequest).onPaymentAppCreated(Mockito.any());
         Mockito.doReturn(true)
                 .when(mBrowserPaymentRequest)
                 .parseAndValidateDetailsFurtherIfNeeded(Mockito.any());
@@ -137,11 +115,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
                     @Override
                     public void dismissInstrument() {}
-
-                    @Override
-                    public boolean isUserGestureRequiredToSkipUi() {
-                        return false;
-                    }
                 };
         Mockito.doReturn(app).when(mBrowserPaymentRequest).getSelectedPaymentApp();
         List<PaymentApp> apps = new ArrayList();
@@ -154,13 +127,15 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Before
     public void setUp() {
         PaymentRequestService.resetShowingPaymentRequestForTest();
-        ShadowPaymentFeatureList.setEnabledFeature(
-                PaymentFeatureList.WEB_PAYMENTS_SINGLE_APP_UI_SKIP);
+        ShadowPaymentFeatureList.setDefaultStatuses();
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.WEB_PAYMENTS_EXPERIMENTAL_FEATURES, false);
     }
 
     @After
     public void tearDown() {
         PaymentRequestService.resetShowingPaymentRequestForTest();
+        ShadowPaymentFeatureList.reset();
     }
 
     @Override
@@ -221,6 +196,12 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     }
 
     @Override
+    public void allowConnectToSource(Url url, Url urlBeforeRedirects, boolean didFollowRedirect,
+            AllowConnectToSource_Response callback) {
+        callback.call(/*allow=*/true);
+    }
+
+    @Override
     public void close() {
         mIsClientClosed = true;
     }
@@ -245,7 +226,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     }
 
     private void show(PaymentRequestService service) {
-        service.show(mIsUserGestureDefaultValue, mWaitForUpdatedDetailsDefaultValue);
+        service.show(mWaitForUpdatedDetailsDefaultValue);
     }
 
     private void updateWith(PaymentRequestService service) {
@@ -261,7 +242,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     private PaymentApp createDefaultPaymentApp() {
         PaymentApp app = Mockito.mock(PaymentApp.class);
-        Mockito.doReturn(true).when(app).canMakePayment();
+        Mockito.doReturn(true).when(app).hasEnrolledInstrument();
         return app;
     }
 
@@ -278,11 +259,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     private void verifyShowAppSelector(int times) {
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(times))
                 .showOrSkipAppSelector(Mockito.anyBoolean(), Mockito.any(), Mockito.anyBoolean());
-    }
-
-    private void verifyJourneyLoggerRecordedTransactionAmount() {
-        Mockito.verify(mJourneyLogger, Mockito.times(1))
-                .recordTransactionAmount(Mockito.eq("CNY"), Mockito.eq("123"), Mockito.eq(false));
     }
 
     private void verifyContinuedShowWithUpdatedDetails(int times) {
@@ -371,7 +347,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testNullDetailsFailsUpdateWith() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, false);
+        service.show(false);
         assertNoError();
         service.updateWith(null);
         assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS,
@@ -384,7 +360,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testDetailsWithIdFailsUpdateWith() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, false);
+        service.show(false);
         PaymentDetails details = getDefaultPaymentDetailsUpdate();
         details.id = "testId";
         assertNoError();
@@ -399,7 +375,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testOnPaymentDetailsUpdatedIsInvoked() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, false);
+        service.show(false);
         updateWith(service);
         assertNoError();
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
@@ -410,7 +386,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testNullDetailsFailsContinueShow() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, true);
+        service.show(true);
         assertNoError();
         service.updateWith(null);
         assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_DETAILS, PaymentErrorReason.USER_CANCEL);
@@ -421,7 +397,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testDetailsWithIdFailsContinueShow() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, true);
+        service.show(true);
         assertNoError();
         PaymentDetails details = getDefaultPaymentDetailsUpdate();
         details.id = "testId";
@@ -434,7 +410,7 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
     @Feature({"Payments"})
     public void testContinueShowIsInvoked() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, true);
+        service.show(true);
         updateWith(service);
         assertNoError();
         verifyContinuedShowWithUpdatedDetails(1);
@@ -645,46 +621,40 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         PaymentRequestService service = defaultBuilder().build();
         show(service);
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
-
-        verifyJourneyLoggerRecordedTransactionAmount();
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
     }
 
     @Test
     @Feature({"Payments"})
     public void testWaitingForUpdatedDetailsDeterUiSkipMethod() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, true);
+        service.show(true);
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
         updateWith(service);
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
-
-        verifyJourneyLoggerRecordedTransactionAmount();
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
     }
 
     @Test
     @Feature({"Payments"})
     public void testQueryFinishCanTriggerUiSkipped() {
         PaymentRequestService service = defaultBuilder().build();
-        service.show(mIsUserGestureDefaultValue, true);
+        service.show(true);
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
         updateWith(service);
         Mockito.verify(mBrowserPaymentRequest, Mockito.never())
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
         queryPaymentApps();
         Mockito.verify(mBrowserPaymentRequest, Mockito.times(1))
-                .onShowCalledAndAppsQueriedAndDetailsFinalized(Mockito.anyBoolean());
-
-        verifyJourneyLoggerRecordedTransactionAmount();
+                .onShowCalledAndAppsQueriedAndDetailsFinalized();
     }
 
     @Test
@@ -707,5 +677,98 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
         PaymentRequestService service2 = defaultBuilder().build();
         show(service2);
         assertErrorAndReason(ErrorStrings.ANOTHER_UI_SHOWING, PaymentErrorReason.ALREADY_SHOWING);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testSpcCanOnlyBeRequestedAlone_success() {
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
+        Assert.assertNotNull(defaultBuilder().setOnlySpcMethodWithoutPaymentOptions().build());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testSpcCanOnlyBeRequestedAlone_failedForHavingOptions() {
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
+        PaymentOptions options = new PaymentOptions();
+        options.requestShipping = true;
+        Assert.assertNull(defaultBuilder()
+                                  .setOnlySpcMethodWithoutPaymentOptions()
+                                  .setOptions(options)
+                                  .build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testSpcCanOnlyBeRequestedAlone_failedForNullPayeeNameAndOrigin() {
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
+        Assert.assertNull(defaultBuilder()
+                                  .setPayeeName(null)
+                                  .setPayeeOrigin(null)
+                                  .setOnlySpcMethodWithoutPaymentOptions()
+                                  .build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testSpcCanOnlyBeRequestedAlone_allowsNullPayeeOrigin() {
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
+        // If a valid payeeName is passed, then payeeOrigin is not needed.
+        Assert.assertNotNull(defaultBuilder()
+                                     .setOnlySpcMethodWithoutPaymentOptions()
+                                     .setPayeeName("Merchant Shop")
+                                     .setPayeeOrigin(null)
+                                     .build());
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testSpcCanOnlyBeRequestedAlone_failedForEmptyPayeeName() {
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
+        Assert.assertNull(
+                defaultBuilder().setPayeeName("").setOnlySpcMethodWithoutPaymentOptions().build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    @Test
+    @Feature({"Payments"})
+    public void testSpcCanOnlyBeRequestedAlone_failedForHttpPayeeOrigin() {
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, true);
+        org.chromium.url.internal.mojom.Origin payeeOrigin =
+                new org.chromium.url.internal.mojom.Origin();
+        payeeOrigin.scheme = "http";
+        payeeOrigin.host = "www.example.com";
+        payeeOrigin.port = 443;
+        Assert.assertNull(defaultBuilder()
+                                  .setPayeeOrigin(payeeOrigin)
+                                  .setOnlySpcMethodWithoutPaymentOptions()
+                                  .build());
+        assertErrorAndReason(ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
+                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
+    }
+
+    // The restriction is imposed only when the SPC flag is enabled.
+    @Test
+    @Feature({"Payments"})
+    public void testSpcCanOnlyBeRequestedAlone_notApplicableWhenSpcDisabled() {
+        ShadowPaymentFeatureList.setFeatureEnabled(
+                PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION, false);
+        PaymentOptions options = new PaymentOptions();
+        options.requestShipping = true;
+        Assert.assertNotNull(defaultBuilder()
+                                     .setOnlySpcMethodWithoutPaymentOptions()
+                                     .setOptions(options)
+                                     .build());
     }
 }

@@ -1,21 +1,23 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {Menu} from 'chrome://resources/js/cr/ui/menu.m.js';
-// #import {ProvidersModel} from '../providers_model.m.js';
-// #import {util} from '../../../common/js/util.m.js';
-// #import {FilesMenuItem} from './files_menu.m.js';
-// #import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {decorate} from 'chrome://resources/js/cr/ui.js';
+import {Menu} from './menu.js';
+
+import {util} from '../../../common/js/util.js';
+import {ProvidersModel} from '../providers_model.js';
+
+import {FilesMenuItem} from './files_menu.js';
 
 /**
  * Fills out the menu for mounting or installing new providers.
  */
-/* #export */ class ProvidersMenu {
+export class ProvidersMenu {
   /**
    * @param {!ProvidersModel} model
-   * @param {!cr.ui.Menu} menu
+   * @param {!Menu} menu
    */
   constructor(model, menu) {
     /**
@@ -25,7 +27,7 @@
     this.model_ = model;
 
     /**
-     * @private {!cr.ui.Menu}
+     * @private {!Menu}
      * @const
      */
     this.menu_ = menu;
@@ -43,13 +45,13 @@
   }
 
   /**
-   * @return {!cr.ui.FilesMenuItem}
+   * @return {!FilesMenuItem}
    * @private
    */
   addMenuItem_() {
     const menuItem = this.menu_.addMenuItem({});
-    cr.ui.decorate(/** @type {!Element} */ (menuItem), cr.ui.FilesMenuItem);
-    return /** @type {!cr.ui.FilesMenuItem} */ (menuItem);
+    decorate(/** @type {!Element} */ (menuItem), FilesMenuItem);
+    return /** @type {!FilesMenuItem} */ (menuItem);
   }
 
   /**
@@ -64,7 +66,11 @@
     item.label = name;
 
     const iconImage = util.iconSetToCSSBackgroundImageValue(iconSet);
-    item.iconStartImage = iconImage;
+    if (iconImage === 'none' && providerId === '@smb') {
+      item.iconStartFileType = 'smb';
+    } else {
+      item.iconStartImage = iconImage;
+    }
 
     item.addEventListener(
         'activate', this.onItemActivate_.bind(this, providerId));

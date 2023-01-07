@@ -1,12 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_api.h"
 
-#include "chrome/browser/chromeos/extensions/printing_metrics/print_job_info_idl_conversions.h"
-#include "chrome/browser/chromeos/printing/history/print_job_history_service.h"
-#include "chrome/browser/chromeos/printing/history/print_job_history_service_factory.h"
+#include "chrome/browser/chromeos/extensions/printing_metrics/printing_metrics_service.h"
 #include "chrome/common/extensions/api/printing_metrics.h"
 #include "content/public/browser/browser_context.h"
 
@@ -16,24 +14,29 @@ PrintingMetricsGetPrintJobsFunction::~PrintingMetricsGetPrintJobsFunction() =
     default;
 
 ExtensionFunction::ResponseAction PrintingMetricsGetPrintJobsFunction::Run() {
-  chromeos::PrintJobHistoryService* print_job_history_service =
-      chromeos::PrintJobHistoryServiceFactory::GetForBrowserContext(
-          browser_context());
-  print_job_history_service->GetPrintJobs(base::BindOnce(
+  auto* service = PrintingMetricsService::Get(browser_context());
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!service) {
+    return RespondNow(Error("API is not accessible."));
+  }
+#else
+  DCHECK(service);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  service->GetPrintJobs(base::BindOnce(
       &PrintingMetricsGetPrintJobsFunction::OnPrintJobsRetrieved, this));
 
-  // GetPrintJobs might have already responded.
-  return did_respond() ? AlreadyResponded() : RespondLater();
+  return RespondLater();
 }
 
 void PrintingMetricsGetPrintJobsFunction::OnPrintJobsRetrieved(
-    bool success,
-    std::vector<chromeos::printing::proto::PrintJobInfo>
-        print_job_info_protos) {
+    std::vector<base::Value> print_jobs) {
   std::vector<api::printing_metrics::PrintJobInfo> print_job_infos;
-  if (success) {
-    for (const auto& print_job_info_proto : print_job_info_protos)
-      print_job_infos.push_back(PrintJobInfoProtoToIdl(print_job_info_proto));
+  for (const auto& print_job : print_jobs) {
+    std::unique_ptr<api::printing_metrics::PrintJobInfo> print_job_info =
+        api::printing_metrics::PrintJobInfo::FromValue(print_job);
+    DCHECK(print_job_info);
+    print_job_infos.emplace_back(std::move(*print_job_info));
   }
   Respond(ArgumentList(
       api::printing_metrics::GetPrintJobs::Results::Create(print_job_infos)));

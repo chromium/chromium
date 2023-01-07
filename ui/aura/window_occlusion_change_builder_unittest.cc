@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -19,6 +20,11 @@ namespace {
 class OcclusionTrackWindowDelegate : public test::TestWindowDelegate {
  public:
   OcclusionTrackWindowDelegate() = default;
+
+  OcclusionTrackWindowDelegate(const OcclusionTrackWindowDelegate&) = delete;
+  OcclusionTrackWindowDelegate& operator=(const OcclusionTrackWindowDelegate&) =
+      delete;
+
   ~OcclusionTrackWindowDelegate() override = default;
 
   void set_window(Window* window) { window_ = window; }
@@ -38,13 +44,11 @@ class OcclusionTrackWindowDelegate : public test::TestWindowDelegate {
     last_occluded_region_ = window_->occluded_region_in_root();
   }
 
-  Window* window_ = nullptr;
+  raw_ptr<Window> window_ = nullptr;
   int occlusion_change_count_ = 0;
   Window::OcclusionState last_occlusion_state_ =
       Window::OcclusionState::UNKNOWN;
   SkRegion last_occluded_region_;
-
-  DISALLOW_COPY_AND_ASSIGN(OcclusionTrackWindowDelegate);
 };
 
 }  // namespace
@@ -52,6 +56,12 @@ class OcclusionTrackWindowDelegate : public test::TestWindowDelegate {
 class WindowOcclusionChangeBuilderTest : public test::AuraTestBase {
  public:
   WindowOcclusionChangeBuilderTest() = default;
+
+  WindowOcclusionChangeBuilderTest(const WindowOcclusionChangeBuilderTest&) =
+      delete;
+  WindowOcclusionChangeBuilderTest& operator=(
+      const WindowOcclusionChangeBuilderTest&) = delete;
+
   ~WindowOcclusionChangeBuilderTest() override = default;
 
   std::unique_ptr<Window> CreateTestWindow(
@@ -66,9 +76,6 @@ class WindowOcclusionChangeBuilderTest : public test::AuraTestBase {
     root_window()->AddChild(window.get());
     return window;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WindowOcclusionChangeBuilderTest);
 };
 
 // Test that window occlusion info is updated after commit.

@@ -1,9 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
 #define IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
+
+// These defines are used to indicate support for a particular API. This can be
+// useful in cases where a client depends on more than one version of this
+// library, depending on the clients own configuration.
 
 // Supports -[CWVWebViewConfiguration nonPersistentConfiguration].
 #define IOS_WEB_VIEW_SUPPORTS_CWV_CONFIGURATION_NON_PERSISTENT_CONFIGURATION 1
@@ -26,5 +30,46 @@
 
 // Allows customization of CWVWebView's user agent string.
 #define IOS_WEB_VIEW_SUPPORTS_CWV_WEB_VIEW_CUSTOM_USER_AGENT 1
+
+// Allows handling of SSL errors with CWVSSLErrorHandler.
+#define IOS_WEB_VIEW_SUPPORTS_CWV_SSL_ERROR_HANDLER 1
+
+// Allows new save API for CWVCreditCardSaver and deletes the previous fixer
+// based flows.
+#define IOS_WEB_VIEW_SUPPORTS_NEW_CREDIT_CARD_SAVE_APIS 1
+
+// Supports APIs used to implement the iOS credential provider extension.
+#define IOS_WEB_VIEW_SUPPORTS_CREDENTIAL_EXTENSION_PROVIDER_APIS 1
+
+// Supports new APIs that simplifies how CWVSyncController is used.
+#define IOS_WEB_VIEW_SUPPORTS_NEW_CWV_SYNC_CONTROLLER_APIS 1
+
+// Supports APIs used to implement the trusted vault for chrome sync.
+#define IOS_WEB_VIEW_SUPPORTS_TRUSTED_VAULT_APIS 1
+
+// Supports -[CWVAutofillDataManager updatePassword:newUsername:newPassword:].
+#define IOS_WEB_VIEW_SUPPORTS_UPDATING_PASSWORDS 1
+
+// Supports -[CWVAutofillDataManager addPasswordWithUsername:password:site:].
+#define IOS_WEB_VIEW_SUPPORTS_ADDING_PASSWORDS 1
+
+// Supports -[CWVNavigationDelegate handleLookalikeURLWithHandler:].
+#define IOS_WEB_VIEW_SUPPORTS_CWV_LOOKALIKE_URL_HANDLER 1
+
+// Allows accessing SSL certificate details through the CWVWebView.
+#define IOS_WEB_VIEW_SUPPORTS_CWV_X509_CERTIFICATE 1
+
+// Supports -[CWVNavigationDelegate handleUnsafeURLWithHandler:].
+#define IOS_WEB_VIEW_SUPPORTS_CWV_UNSAFE_URL_HANDLER 1
+
+// Supports -[CWVWebView addMessageHandler:forCommand:] and
+// -[CWVWebView removeMessageHandlerForCommand] APIs.
+#define IOS_WEB_VIEW_SUPPORTS_MODERN_JS_MESSAGE_HANDLERS 1
+
+// Supports -[CWVWebView evaluateJavaScript:completion:].
+#define IOS_WEB_VIEW_SUPPORTS_MODERN_JS_EVALUATION 1
+
+// Supports -[CWVWebViewConfiguration leakCheckService].
+#define IOS_WEB_VIEW_SUPPORTS_LEAK_CHECK_SERVICE 1
 
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_

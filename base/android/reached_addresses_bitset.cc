@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/android/library_loader/anchor_functions.h"
 #include "base/android/library_loader/anchor_functions_buildflags.h"
 #include "base/check_op.h"
-#include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace base {
 namespace android {
@@ -15,19 +15,38 @@ namespace android {
 namespace {
 constexpr size_t kBitsPerElement = sizeof(uint32_t) * 8;
 
-#if BUILDFLAG(SUPPORTS_CODE_ORDERING)
+// Below an array of uint32_t in BSS is introduced and then casted to an array
+// of std::atomic<uint32_t>. In C++20 constructing an std::atomic is not
+// 'trivial'. See https://github.com/microsoft/STL/issues/661 for reasons of
+// this change in the standard.
+//
+// Assert that both types have the same size. The sizes do not have to match
+// according to a note in [atomics.types.generic] in C++17. With this assertion
+// in place it is unlikely that the constructor produces the value other than
+// (uint32_t)0.
+static_assert(sizeof(uint32_t) == sizeof(std::atomic<uint32_t>), "");
+
+// Keep the array in BSS only for non-official builds to avoid potential harm to
+// data locality and unspecified behavior from the reinterpret_cast below.
+// In order to start new experiments with base::Feature(ReachedCodeProfiler) on
+// Canary/Dev this array will need to be reintroduced to official builds. When
+// doing so, don't forget to update `kConfigurationSupported` in
+// `reached_code_profiler.cc`
+#if BUILDFLAG(SUPPORTS_CODE_ORDERING) && !defined(OFFICIAL_BUILD)
 // Enough for 1 << 29 bytes of code, 512MB.
 constexpr size_t kTextBitfieldSize = 1 << 20;
-std::atomic<uint32_t> g_text_bitfield[kTextBitfieldSize];
+uint32_t g_text_bitfield[kTextBitfieldSize];
 #endif
 }  // namespace
 
 // static
 ReachedAddressesBitset* ReachedAddressesBitset::GetTextBitset() {
-#if BUILDFLAG(SUPPORTS_CODE_ORDERING)
-  static base::NoDestructor<ReachedAddressesBitset> text_bitset(
-      kStartOfText, kEndOfText, g_text_bitfield, kTextBitfieldSize);
-  return text_bitset.get();
+#if BUILDFLAG(SUPPORTS_CODE_ORDERING) && !defined(OFFICIAL_BUILD)
+  static ReachedAddressesBitset text_bitset(
+      kStartOfText, kEndOfText,
+      reinterpret_cast<std::atomic<uint32_t>*>(g_text_bitfield),
+      kTextBitfieldSize);
+  return &text_bitset;
 #else
   return nullptr;
 #endif
@@ -38,8 +57,8 @@ void ReachedAddressesBitset::RecordAddress(uintptr_t address) {
   if (address < start_address_ || address >= end_address_)
     return;
 
-  uint32_t offset = address - start_address_;
-  uint32_t offset_index = offset / kBytesGranularity;
+  size_t offset = static_cast<size_t>(address - start_address_);
+  uint32_t offset_index = checked_cast<uint32_t>(offset / kBytesGranularity);
 
   // Atomically set the corresponding bit in the array.
   std::atomic<uint32_t>* element = reached_ + (offset_index / kBitsPerElement);
@@ -67,9 +86,9 @@ std::vector<uint32_t> ReachedAddressesBitset::GetReachedOffsets() const {
       if (!((element >> j) & 1))
         continue;
 
-      uint32_t offset_index = i * 32 + j;
-      uint32_t offset = offset_index * kBytesGranularity;
-      offsets.push_back(offset);
+      size_t offset_index = i * 32 + j;
+      size_t offset = offset_index * kBytesGranularity;
+      offsets.push_back(checked_cast<uint32_t>(offset));
     }
   }
 

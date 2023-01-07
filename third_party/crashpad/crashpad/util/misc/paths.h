@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,13 +16,16 @@
 #define CRASHPAD_UTIL_PATHS_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace crashpad {
 
 //! \brief Functions to obtain paths.
 class Paths {
  public:
+  Paths() = delete;
+  Paths(const Paths&) = delete;
+  Paths& operator=(const Paths&) = delete;
+
   //! \brief Obtains the pathname of the currently-running executable.
   //!
   //! \param[out] path The pathname of the currently-running executable.
@@ -31,8 +34,6 @@ class Paths {
   //!
   //! \note In test code, use test::TestPaths::Executable() instead.
   static bool Executable(base::FilePath* path);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Paths);
 };
 
 }  // namespace crashpad

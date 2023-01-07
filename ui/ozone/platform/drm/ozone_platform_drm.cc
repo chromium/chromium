@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
@@ -23,12 +22,12 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/cursor/cursor_factory.h"
-#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/events/ozone/device/device_manager.h"
 #include "ui/events/ozone/evdev/event_factory_evdev.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/gfx/linux/client_native_pixmap_dmabuf.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/common/bitmap_cursor_factory.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_manager.h"
@@ -45,8 +44,8 @@
 #include "ui/ozone/platform/drm/host/drm_window_host.h"
 #include "ui/ozone/platform/drm/host/drm_window_host_manager.h"
 #include "ui/ozone/platform/drm/host/host_drm_device.h"
+#include "ui/ozone/platform/drm/mojom/drm_device.mojom.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
-#include "ui/ozone/public/mojom/drm_device.mojom.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/ozone/public/platform_screen.h"
@@ -60,7 +59,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/base/ime/chromeos/input_method_chromeos.h"
+#include "ui/base/ime/ash/input_method_ash.h"
 #else
 #include "ui/base/ime/input_method_minimal.h"
 #endif
@@ -90,6 +89,7 @@ class OzonePlatformDrm : public OzonePlatform {
     NOTREACHED();
     return nullptr;
   }
+  void InitScreen(PlatformScreen* screen) override { NOTREACHED(); }
 
   GpuPlatformSupportHost* GetGpuPlatformSupportHost() override {
     return drm_device_connector_.get();
@@ -125,7 +125,7 @@ class OzonePlatformDrm : public OzonePlatform {
       binders->Add<ozone::mojom::DrmDevice>(
           base::BindRepeating(
               &OzonePlatformDrm::CreateDrmDeviceReceiverOnDrmThread,
-              weak_factory_.GetWeakPtr()),
+              base::Unretained(this)),
           drm_thread_proxy_->GetDrmThreadTaskRunner());
     }
   }
@@ -173,12 +173,12 @@ class OzonePlatformDrm : public OzonePlatform {
     return std::make_unique<DrmNativeDisplayDelegate>(display_manager_.get());
   }
   std::unique_ptr<InputMethod> CreateInputMethod(
-      internal::InputMethodDelegate* delegate,
+      ImeKeyEventDispatcher* ime_key_event_dispatcher,
       gfx::AcceleratedWidget) override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    return std::make_unique<InputMethodChromeOS>(delegate);
+    return std::make_unique<InputMethodAsh>(ime_key_event_dispatcher);
 #else
-    return std::make_unique<InputMethodMinimal>(delegate);
+    return std::make_unique<InputMethodMinimal>(ime_key_event_dispatcher);
 #endif
   }
 
@@ -188,7 +188,7 @@ class OzonePlatformDrm : public OzonePlatform {
                                                                    usage);
   }
 
-  void InitializeUI(const InitParams& args) override {
+  bool InitializeUI(const InitParams& args) override {
     // Ozone drm can operate in two modes configured at runtime.
     //   1. single-process mode where host and viz components
     //      communicate via in-process mojo. Single-process mode can be single
@@ -225,9 +225,11 @@ class OzonePlatformDrm : public OzonePlatform {
     display_manager_ = std::make_unique<DrmDisplayHostManager>(
         adapter, device_manager_.get(), &host_properties_,
         event_factory_ozone_->input_controller());
-    cursor_factory_ = std::make_unique<BitmapCursorFactoryOzone>();
+    cursor_factory_ = std::make_unique<BitmapCursorFactory>();
 
     host_drm_device_->SetDisplayManager(display_manager_.get());
+
+    return true;
   }
 
   void InitializeGPU(const InitParams& args) override {
@@ -245,6 +247,9 @@ class OzonePlatformDrm : public OzonePlatform {
 
     surface_factory_ =
         std::make_unique<GbmSurfaceFactory>(drm_thread_proxy_.get());
+
+    // Native pixmaps are always available on ozone/drm.
+    host_properties_.supports_native_pixmaps = true;
 
     overlay_manager_ = std::make_unique<DrmOverlayManagerGpu>(
         drm_thread_proxy_.get(),
@@ -274,8 +279,8 @@ class OzonePlatformDrm : public OzonePlatform {
     }
   }
 
-  const InitializedHostProperties& GetInitializedHostProperties() override {
-    DCHECK(has_initialized_ui());
+  const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
+    DCHECK(has_initialized_ui() || has_initialized_gpu());
     return host_properties_;
   }
 
@@ -302,9 +307,12 @@ class OzonePlatformDrm : public OzonePlatform {
       done_event.Wait();
       DrainReceiverRequests();
     } else {
+      // OzonePlatformDrm owns |drm_thread_proxy_| which owns the DRM thread
+      // this callback is invoked on, using base::Unretained pointer here is
+      // safe.
       auto safe_receiver_request_drainer = CreateSafeOnceCallback(
           base::BindOnce(&OzonePlatformDrm::DrainReceiverRequests,
-                         weak_factory_.GetWeakPtr()));
+                         base::Unretained(this)));
       drm_thread_proxy_->StartDrmThread(
           std::move(safe_receiver_request_drainer));
     }
@@ -342,7 +350,7 @@ class OzonePlatformDrm : public OzonePlatform {
   std::unique_ptr<DrmCursor> cursor_;
   std::unique_ptr<EventFactoryEvdev> event_factory_ozone_;
   std::unique_ptr<DrmDisplayHostManager> display_manager_;
-  InitializedHostProperties host_properties_;
+  PlatformRuntimeProperties host_properties_;
 
   base::WeakPtrFactory<OzonePlatformDrm> weak_factory_{this};
   OzonePlatformDrm(const OzonePlatformDrm&) = delete;

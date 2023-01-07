@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,13 @@ constexpr int kLaps = 5000;
 constexpr int kWarmupLaps = 5;
 constexpr char kMetricCallsPerSecondRunsPerS[] = "calls_per_second";
 
-class AXPositionPerfTest : public testing::Test, public TestAXTreeManager {
+class AXPositionPerfTest : public ::testing::Test, public TestAXTreeManager {
  public:
   AXPositionPerfTest() = default;
+
+  AXPositionPerfTest(const AXPositionPerfTest&) = delete;
+  AXPositionPerfTest& operator=(const AXPositionPerfTest&) = delete;
+
   ~AXPositionPerfTest() override = default;
 
  protected:
@@ -34,9 +38,6 @@ class AXPositionPerfTest : public testing::Test, public TestAXTreeManager {
     reporter.RegisterImportantMetric(kMetricCallsPerSecondRunsPerS, "runs/s");
     return reporter;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AXPositionPerfTest);
 };
 
 void AXPositionPerfTest::SetUp() {
@@ -142,7 +143,7 @@ TEST_F(AXPositionPerfTest, AsLeafTextPositionFromTextPosition) {
 
 TEST_F(AXPositionPerfTest, AsLeafTextPositionFromTreePosition) {
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      GetTreeID(), /*anchor_id=*/1, /*child_index=*/4);
+      *ax_tree(), *ax_tree()->root(), /*child_index=*/4);
 
   base::LapTimer timer(kWarmupLaps, base::TimeDelta(), kLaps);
   for (int i = 0; i < kLaps + kWarmupLaps; ++i) {

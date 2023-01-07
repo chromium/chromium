@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,8 @@
 bool ShowProcessSingletonDialog(const std::u16string& message,
                                 const std::u16string& relaunch_text) {
   bool result = chrome::ShowMessageBoxWithButtonText(
-                    NULL,
-                    l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
-                    message,
-                    relaunch_text,
+                    nullptr, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME),
+                    message, relaunch_text,
                     l10n_util::GetStringUTF16(IDS_PROFILE_IN_USE_LINUX_QUIT)) ==
                 chrome::MESSAGE_BOX_RESULT_YES;
 

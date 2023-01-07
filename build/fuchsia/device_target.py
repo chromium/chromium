@@ -1,25 +1,28 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """Implements commands for running and interacting with Fuchsia on devices."""
 
-from __future__ import print_function
-
-import amber_repo
-import boot_data
-import filecmp
+import itertools
 import logging
 import os
+import pkg_repo
 import re
 import subprocess
 import sys
 import target
-import tempfile
 import time
-import uuid
 
-from common import SDK_ROOT, EnsurePathExists, GetHostToolPathFromPlatform
+import ermine_ctl
+import ffx_session
+
+from common import ATTACH_RETRY_SECONDS, EnsurePathExists, \
+                   GetHostToolPathFromPlatform, RunGnSdkFunction
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                             'test')))
+from compatible_utils import get_sdk_hash, pave
 
 # The maximum times to attempt mDNS resolution when connecting to a freshly
 # booted Fuchsia instance before aborting.
@@ -28,20 +31,27 @@ BOOT_DISCOVERY_ATTEMPTS = 30
 # Number of failed connection attempts before redirecting system logs to stdout.
 CONNECT_RETRY_COUNT_BEFORE_LOGGING = 10
 
-# Number of seconds to wait for device discovery.
-BOOT_DISCOVERY_TIMEOUT_SECS = 2 * 60
-
-# The timeout limit for one call to the device-finder tool.
-_DEVICE_FINDER_TIMEOUT_LIMIT_SECS = \
-    BOOT_DISCOVERY_TIMEOUT_SECS / BOOT_DISCOVERY_ATTEMPTS
+# Number of seconds between each device discovery.
+BOOT_DISCOVERY_DELAY_SECS = 4
 
 # Time between a reboot command is issued and when connection attempts from the
 # host begin.
 _REBOOT_SLEEP_PERIOD = 20
 
+# File on device that indicates Fuchsia version.
+_ON_DEVICE_VERSION_FILE = '/config/build-info/version'
+
+# File on device that indicates Fuchsia product.
+_ON_DEVICE_PRODUCT_FILE = '/config/build-info/product'
+
 
 def GetTargetType():
   return DeviceTarget
+
+
+class ProvisionDeviceException(Exception):
+  def __init__(self, message: str):
+    super(ProvisionDeviceException, self).__init__(message)
 
 
 class DeviceTarget(target.Target):
@@ -62,16 +72,8 @@ class DeviceTarget(target.Target):
   If |_host| is set:
     Deploy to a device at the host IP address as-is."""
 
-  def __init__(self,
-               out_dir,
-               target_cpu,
-               host=None,
-               node_name=None,
-               port=None,
-               ssh_config=None,
-               fuchsia_out_dir=None,
-               os_check='update',
-               system_log_file=None):
+  def __init__(self, out_dir, target_cpu, host, node_name, port, ssh_config,
+               fuchsia_out_dir, os_check, logs_dir, system_image_dir):
     """out_dir: The directory which will contain the files that are
                    generated to support the deployment.
     target_cpu: The CPU architecture of the deployment target. Can be
@@ -85,17 +87,24 @@ class DeviceTarget(target.Target):
     os_check: If 'check', the target's SDK version must match.
               If 'update', the target will be repaved if the SDK versions
                   mismatch.
-              If 'ignore', the target's SDK version is ignored."""
+              If 'ignore', the target's SDK version is ignored.
+    system_image_dir: The directory which contains the files used to pave the
+                      device."""
 
-    super(DeviceTarget, self).__init__(out_dir, target_cpu)
+    super(DeviceTarget, self).__init__(out_dir, target_cpu, logs_dir)
 
-    self._system_log_file = system_log_file
     self._host = host
     self._port = port
     self._fuchsia_out_dir = None
-    self._node_name = node_name
+    self._node_name = node_name or os.environ.get('FUCHSIA_NODENAME')
+    self._system_image_dir = system_image_dir
     self._os_check = os_check
-    self._amber_repo = None
+    self._pkg_repo = None
+    self._target_context = None
+    self._ffx_target = None
+    self._ermine_ctl = ermine_ctl.ErmineCtl(self)
+    if not self._system_image_dir and self._os_check != 'ignore':
+      raise Exception("Image directory must be provided if a repave is needed.")
 
     if self._host and self._node_name:
       raise Exception('Only one of "--host" or "--name" can be specified.')
@@ -116,21 +125,23 @@ class DeviceTarget(target.Target):
       self._ssh_config_path = os.path.expanduser(ssh_config)
 
     else:
-      # Default to using an automatically generated SSH config and keys.
-      boot_data.ProvisionSSH(out_dir)
-      self._ssh_config_path = boot_data.GetSSHConfigPath(out_dir)
+      return_code, ssh_config_raw, _ = RunGnSdkFunction(
+          'fuchsia-common.sh', 'get-fuchsia-sshconfig-file')
+      if return_code != 0:
+        raise Exception('Could not get Fuchsia ssh config file.')
+      self._ssh_config_path = os.path.expanduser(ssh_config_raw.strip())
 
   @staticmethod
   def CreateFromArgs(args):
     return DeviceTarget(args.out_dir, args.target_cpu, args.host,
                         args.node_name, args.port, args.ssh_config,
-                        args.fuchsia_out_dir, args.os_check,
-                        args.system_log_file)
+                        args.fuchsia_out_dir, args.os_check, args.logs_dir,
+                        args.system_image_dir)
 
   @staticmethod
   def RegisterArgs(arg_parser):
-    target.Target.RegisterArgs(arg_parser)
-    device_args = arg_parser.add_argument_group('device', 'Device Arguments')
+    device_args = arg_parser.add_argument_group(
+        'device', 'External device deployment arguments')
     device_args.add_argument('--host',
                              help='The IP of the target device. Optional.')
     device_args.add_argument('--node-name',
@@ -150,99 +161,144 @@ class DeviceTarget(target.Target):
     device_args.add_argument(
         '--os-check',
         choices=['check', 'update', 'ignore'],
-        default='update',
+        default='ignore',
         help="Sets the OS version enforcement policy. If 'check', then the "
         "deployment process will halt if the target\'s version doesn\'t "
         "match. If 'update', then the target device will automatically "
         "be repaved. If 'ignore', then the OS version won\'t be checked.")
-
-  def _ProvisionDeviceIfNecessary(self):
-    if self._Discover():
-      self._WaitUntilReady()
-    else:
-      raise Exception('Could not find device. If the device is connected '
-                      'to the host remotely, make sure that --host flag is '
-                      'set and that remote serving is set up.')
+    device_args.add_argument('--system-image-dir',
+                             help="Specify the directory that contains the "
+                             "Fuchsia image used to pave the device. Only "
+                             "needs to be specified if 'os_check' is not "
+                             "'ignore'.")
 
   def _Discover(self):
     """Queries mDNS for the IP address of a booted Fuchsia instance whose name
-    matches |_node_name| on the local area network. If |_node_name| isn't
-    specified, and there is only one device on the network, then returns the
-    IP address of that advice.
+    matches |_node_name| on the local area network. If |_node_name| is not
+    specified and there is only one device on the network, |_node_name| is set
+    to that device's name.
 
-    Sets |_host_name| and returns True if the device was found,
-    or waits up to |timeout| seconds and returns False if the device couldn't
-    be found."""
+    Returns:
+      True if exactly one device is found, after setting |_host| and |_port| to
+      its SSH address. False if no devices are found.
 
-    dev_finder_path = GetHostToolPathFromPlatform('device-finder')
+    Raises:
+      Exception: If more than one device is found.
+    """
 
     if self._node_name:
-      command = [
-          dev_finder_path,
-          'resolve',
-          '-timeout',
-          "%ds" % _DEVICE_FINDER_TIMEOUT_LIMIT_SECS,
-          '-device-limit',
-          '1',  # Exit early as soon as a host is found.
-          self._node_name
-      ]
+      target = ffx_session.FfxTarget.from_node_name(self._ffx_runner,
+                                                    self._node_name)
     else:
-      command = [
-          dev_finder_path, 'list', '-full', '-timeout',
-          "%ds" % _DEVICE_FINDER_TIMEOUT_LIMIT_SECS
-      ]
+      # Get the node name of a single attached target.
+      try:
+        # Get at most the first 2 valid targets
+        targets = list(
+            itertools.islice(self._ffx_runner.list_active_targets(), 2))
+      except subprocess.CalledProcessError:
+        # A failure to list targets could mean that the device is in zedboot.
+        # Return false in this case so that Start() will attempt to provision.
+        return False
+      if not targets:
+        return False
 
-    proc = subprocess.Popen(command,
-                            stdout=subprocess.PIPE,
-                            stderr=open(os.devnull, 'w'))
+      if len(targets) > 1:
+        raise Exception('More than one device was discovered on the network. '
+                        'Use --node-name <name> to specify the device to use.'
+                        'List of devices: {}'.format(targets))
+      target = targets[0]
 
-    output = set(proc.communicate()[0].strip().split('\n'))
-    if proc.returncode != 0:
+    # Get the ssh address of the target.
+    ssh_address = target.get_ssh_address()
+    if ssh_address:
+      self._host, self._port = ssh_address
+    else:
       return False
 
-    if self._node_name:
-      # Handle the result of "device-finder resolve".
-      self._host = output.pop().strip()
+    logging.info('Found device "%s" at %s.' %
+                 (self._node_name if self._node_name else '<unknown>',
+                  ffx_session.format_host_port(self._host, self._port)))
 
-    else:
-      name_host_pairs = [x.strip().split(' ') for x in output]
-
-      # Handle the output of "device-finder list".
-      if len(name_host_pairs) > 1:
-        print('More than one device was discovered on the network.')
-        print('Use --node-name <name> to specify the device to use.')
-        print('\nList of devices:')
-        for pair in name_host_pairs:
-          print('  ' + pair[1])
-        print()
-        raise Exception('Ambiguous target device specification.')
-
-      assert len(name_host_pairs) == 1
-      self._host, self._node_name = name_host_pairs[0]
-
-    logging.info('Found device "%s" at address %s.' % (self._node_name,
-                                                       self._host))
+    # TODO(crbug.com/1307220): Remove this once the telemetry scripts can handle
+    # specifying the port for a device that is not listening on localhost.
+    if self._port == 22:
+      self._port = None
 
     return True
 
+  def _Login(self):
+    """Attempts to log into device, if possible.
+
+    This method should not be called from anything other than Start,
+    though calling it multiple times should have no adverse effect.
+    """
+    if self._ermine_ctl.exists:
+      self._ermine_ctl.TakeToShell()
+
   def Start(self):
     if self._host:
-      self._WaitUntilReady()
-    else:
-      self._ProvisionDeviceIfNecessary()
+      self._ConnectToTarget()
+      self._Login()
+    elif self._Discover():
+      self._ConnectToTarget()
+      if self._os_check == 'ignore':
+        self._Login()
+        return
 
-  def GetAmberRepo(self):
-    if not self._amber_repo:
+      # If accessible, check version.
+      new_version = get_sdk_hash(self._system_image_dir)
+      installed_version = self._GetInstalledSdkVersion()
+      if new_version == installed_version:
+        logging.info('Fuchsia version installed on device matches Chromium '
+                     'SDK version. Skipping pave.')
+      else:
+        if self._os_check == 'check':
+          raise Exception('Image and Fuchsia version installed on device '
+                          'does not match. Abort.')
+        logging.info('Putting device in recovery mode')
+        self.RunCommandPiped(['dm', 'reboot-recovery'],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
+        self._ProvisionDevice()
+      self._Login()
+    else:
+      if self._node_name:
+        logging.info('Could not detect device %s.' % self._node_name)
+        if self._os_check == 'update':
+          logging.info('Assuming it is in zedboot. Continuing with paving...')
+          self._ProvisionDevice()
+          self._Login()
+          return
+      raise Exception('Could not find device. If the device is connected '
+                      'to the host remotely, make sure that --host flag '
+                      'is set and that remote serving is set up.')
+
+  def GetFfxTarget(self):
+    assert self._ffx_target
+    return self._ffx_target
+
+  def _GetInstalledSdkVersion(self):
+    """Retrieves installed OS version from device.
+
+    Returns:
+      Tuple of strings, containing (product, version number)
+    """
+    return (self.GetFileAsString(_ON_DEVICE_PRODUCT_FILE).strip(),
+            self.GetFileAsString(_ON_DEVICE_VERSION_FILE).strip())
+
+  def GetPkgRepo(self):
+    if not self._pkg_repo:
       if self._fuchsia_out_dir:
         # Deploy to an already-booted device running a local Fuchsia build.
-        self._amber_repo = amber_repo.ExternalAmberRepo(
-            os.path.join(self._fuchsia_out_dir, 'amber-files'))
+        self._pkg_repo = pkg_repo.ExternalPkgRepo(
+            os.path.join(self._fuchsia_out_dir, 'amber-files'),
+            os.path.join(self._fuchsia_out_dir, '.build-id'))
       else:
-        # Create an ephemeral Amber repo, then start both "pm serve" as well as
-        # the bootserver.
-        self._amber_repo = amber_repo.ManagedAmberRepo(self)
+        # Create an ephemeral package repository, then start both "pm serve" as
+        # well as the bootserver.
+        self._pkg_repo = pkg_repo.ManagedPkgRepo(self)
 
-    return self._amber_repo
+    return self._pkg_repo
 
   def _ParseNodename(self, output):
     # Parse the nodename from bootserver stdout.
@@ -253,24 +309,64 @@ class DeviceTarget(target.Target):
     self._node_name = m.groupdict()['nodename']
     logging.info('Booted device "%s".' % self._node_name)
 
-    # Repeatdly query mDNS until we find the device, or we hit the timeout of
-    # DISCOVERY_TIMEOUT_SECS.
+    # Repeatedly search for a device for |BOOT_DISCOVERY_ATTEMPT|
+    # number of attempts. If a device isn't found, wait
+    # |BOOT_DISCOVERY_DELAY_SECS| before searching again.
     logging.info('Waiting for device to join network.')
-    for _ in xrange(BOOT_DISCOVERY_ATTEMPTS):
+    for _ in range(BOOT_DISCOVERY_ATTEMPTS):
       if self._Discover():
         break
+      time.sleep(BOOT_DISCOVERY_DELAY_SECS)
 
     if not self._host:
       raise Exception('Device %s couldn\'t be discovered via mDNS.' %
                       self._node_name)
 
-    self._WaitUntilReady();
+    self._ConnectToTarget()
 
   def _GetEndpoint(self):
     return (self._host, self._port)
 
+  def _ConnectToTarget(self):
+    logging.info('Connecting to Fuchsia using ffx.')
+    # Prefer connecting via node name over address:port.
+    if self._node_name:
+      # Assume that ffx already knows about the target, so there's no need to
+      # add/remove it.
+      self._ffx_target = ffx_session.FfxTarget.from_node_name(
+          self._ffx_runner, self._node_name)
+    else:
+      # The target may not be known by ffx. Probe to see if it has already been
+      # added.
+      ffx_target = ffx_session.FfxTarget.from_address(self._ffx_runner,
+                                                      self._host, self._port)
+      if ffx_target.get_ssh_address():
+        # If we could lookup the address, the target must be reachable. Do not
+        # open a new scoped_target_context, as that will `ffx target add` now
+        # and then `ffx target remove` later, which will break subsequent
+        # interactions with a persistent emulator.
+        self._ffx_target = ffx_target
+      else:
+        # The target is not known, so take on responsibility of adding and
+        # removing it.
+        self._target_context = self._ffx_runner.scoped_target_context(
+            self._host, self._port)
+        self._ffx_target = self._target_context.__enter__()
+        self._ffx_target.wait(ATTACH_RETRY_SECONDS)
+    return super(DeviceTarget, self)._ConnectToTarget()
+
+  def _DisconnectFromTarget(self):
+    self._ffx_target = None
+    if self._target_context:
+      self._target_context.__exit__(None, None, None)
+      self._target_context = None
+    super(DeviceTarget, self)._DisconnectFromTarget()
+
   def _GetSshConfigPath(self):
     return self._ssh_config_path
+
+  def _ProvisionDevice(self):
+    self._ParseNodename(pave(self._system_image_dir, self._node_name).stderr)
 
   def Restart(self):
     """Restart the device."""
@@ -278,3 +374,13 @@ class DeviceTarget(target.Target):
     self.RunCommandPiped('dm reboot')
     time.sleep(_REBOOT_SLEEP_PERIOD)
     self.Start()
+
+  def Stop(self):
+    try:
+      self._DisconnectFromTarget()
+      # End multiplexed ssh connection, ensure that ssh logging stops before
+      # tests/scripts return.
+      if self.IsStarted():
+        self.RunCommand(['-O', 'exit'])
+    finally:
+      super(DeviceTarget, self).Stop()

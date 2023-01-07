@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/socket/websocket_endpoint_lock_manager.h"
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "net/base/ip_address.h"
@@ -27,7 +26,7 @@ namespace {
 
 class FakeWaiter : public WebSocketEndpointLockManager::Waiter {
  public:
-  FakeWaiter() : called_(false) {}
+  FakeWaiter() = default;
 
   void GotEndpointLock() override {
     CHECK(!called_);
@@ -37,7 +36,7 @@ class FakeWaiter : public WebSocketEndpointLockManager::Waiter {
   bool called() const { return called_; }
 
  private:
-  bool called_;
+  bool called_ = false;
 };
 
 class BlockingWaiter : public FakeWaiter {
@@ -266,7 +265,7 @@ TEST_F(WebSocketEndpointLockManagerTest, UnlockEndpointIsDelayed) {
   // applied. Instead it just verifies that the whole thing took >=1ms. 1ms is
   // easily enough for normal compiles even on Android, so the fact that there
   // is a delay is still checked on every platform.
-  const base::TimeDelta unlock_delay = base::TimeDelta::FromMilliseconds(1);
+  const base::TimeDelta unlock_delay = base::Milliseconds(1);
   websocket_endpoint_lock_manager_.SetUnlockDelayForTesting(unlock_delay);
   FakeWaiter fake_waiter;
   BlockingWaiter blocking_waiter;

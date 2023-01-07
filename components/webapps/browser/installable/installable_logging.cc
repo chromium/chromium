@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,6 +71,10 @@ static const char kWarnNotOfflineCapable[] =
     "Page does not work offline. Starting in Chrome 93, the installability "
     "criteria is changing, and this site will not be installable. See "
     "https://goo.gle/improved-pwa-offline-detection for more information.";
+static const char kPipelineRestarted[] =
+    "Web app uninstalled so that it stops any running pipeline";
+static const char kManifestUrlSchemeNotSupportedForWebApkMessage[] =
+    "The Manifest URL scheme is not supported on Android.";
 
 static const char kNotFromSecureOriginId[] = "not-from-secure-origin";
 static const char kNoManifestId[] = "no-manifest";
@@ -105,6 +109,9 @@ static const char kManifestLocationChangedId[] = "manifest-location-changed";
 static const char kManifestDisplayOverrideNotSupportedId[] =
     "manifest-display-override-not-supported";
 static const char kWarnNotOfflineCapableId[] = "warn-not-offline-capable";
+static const char kPipelineRestartedId[] = "pipeline-restarted";
+static const char kManifestUrlSchemeNotSupportedForWebApkId[] =
+    "scheme-not-supported-for-webapk";
 
 const std::string& GetMessagePrefix() {
   static base::NoDestructor<std::string> message_prefix(
@@ -134,6 +141,9 @@ std::string GetErrorMessage(InstallableStatusCode code) {
     case NO_GESTURE:
     case WAITING_FOR_NATIVE_DATA:
     case SHOWING_APP_INSTALLATION_DIALOG:
+    case DATA_TIMED_OUT:
+    case WEBAPK_INSTALL_FAILED:
+    case SERVICE_WORKER_NOT_REQUIRED:
     case MAX_ERROR_CODE:
       break;
     case NOT_FROM_SECURE_ORIGIN:
@@ -212,6 +222,12 @@ std::string GetErrorMessage(InstallableStatusCode code) {
     case WARN_NOT_OFFLINE_CAPABLE:
       message = kWarnNotOfflineCapable;
       break;
+    case PIPELINE_RESTARTED:
+      message = kPipelineRestarted;
+      break;
+    case MANIFEST_URL_SCHEME_NOT_SUPPORTED_FOR_WEBAPK:
+      message = kManifestUrlSchemeNotSupportedForWebApkMessage;
+      break;
   }
 
   return message;
@@ -240,6 +256,9 @@ content::InstallabilityError GetInstallabilityError(
     case NO_GESTURE:
     case WAITING_FOR_NATIVE_DATA:
     case SHOWING_APP_INSTALLATION_DIALOG:
+    case DATA_TIMED_OUT:
+    case WEBAPK_INSTALL_FAILED:
+    case SERVICE_WORKER_NOT_REQUIRED:
     case MAX_ERROR_CODE:
       break;
     case NOT_FROM_SECURE_ORIGIN:
@@ -262,18 +281,18 @@ content::InstallabilityError GetInstallabilityError(
       break;
     case MANIFEST_MISSING_SUITABLE_ICON:
       error_id = kManifestMissingSuitableIconId;
-      error_arguments.push_back(content::InstallabilityErrorArgument(
+      error_arguments.emplace_back(
           kMinimumIconSizeInPixelsId,
-          base::NumberToString(InstallableManager::GetMinimumIconSizeInPx())));
+          base::NumberToString(InstallableManager::GetMinimumIconSizeInPx()));
       break;
     case NO_MATCHING_SERVICE_WORKER:
       error_id = kNoMatchingServiceWorkerId;
       break;
     case NO_ACCEPTABLE_ICON:
       error_id = kNoAcceptableIconId;
-      error_arguments.push_back(content::InstallabilityErrorArgument(
+      error_arguments.emplace_back(
           kMinimumIconSizeInPixelsId,
-          base::NumberToString(InstallableManager::GetMinimumIconSizeInPx())));
+          base::NumberToString(InstallableManager::GetMinimumIconSizeInPx()));
       break;
     case CANNOT_DOWNLOAD_ICON:
       error_id = kCannotDownloadIconId;
@@ -320,6 +339,12 @@ content::InstallabilityError GetInstallabilityError(
     case WARN_NOT_OFFLINE_CAPABLE:
       error_id = kWarnNotOfflineCapableId;
       break;
+    case PIPELINE_RESTARTED:
+      error_id = kPipelineRestartedId;
+      break;
+    case MANIFEST_URL_SCHEME_NOT_SUPPORTED_FOR_WEBAPK:
+      error_id = kManifestUrlSchemeNotSupportedForWebApkId;
+      break;
   }
   error.error_id = error_id;
   error.installability_error_arguments = error_arguments;
@@ -337,7 +362,7 @@ void LogToConsole(content::WebContents* web_contents,
   if (message.empty())
     return;
 
-  web_contents->GetMainFrame()->AddMessageToConsole(
+  web_contents->GetPrimaryMainFrame()->AddMessageToConsole(
       level, GetMessagePrefix() + message);
 }
 

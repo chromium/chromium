@@ -1,11 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_SOUND_CONTENT_SETTING_OBSERVER_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_SOUND_CONTENT_SETTING_OBSERVER_H_
 
-#include "base/scoped_observer.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -13,6 +14,10 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace content {
+class Page;
+}
 
 class SoundContentSettingObserver
     : public content::WebContentsObserver,
@@ -27,19 +32,25 @@ class SoundContentSettingObserver
                          // block.
   };
 
+  SoundContentSettingObserver(const SoundContentSettingObserver&) = delete;
+  SoundContentSettingObserver& operator=(const SoundContentSettingObserver&) =
+      delete;
+
   ~SoundContentSettingObserver() override;
 
   // content::WebContentsObserver implementation.
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void OnAudioStateChanged(bool audible) override;
 
   // content_settings::Observer implementation.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
+
+  bool HasLoggedSiteMutedUkmForTesting() { return logged_site_muted_ukm_; }
 
  private:
   explicit SoundContentSettingObserver(content::WebContents* web_contents);
@@ -57,7 +68,7 @@ class SoundContentSettingObserver
   // Determine the reason why audio was blocked on the page.
   MuteReason GetSiteMutedReason();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Update the autoplay policy on the attached |WebContents|.
   void UpdateAutoplayPolicy();
 
@@ -66,16 +77,14 @@ class SoundContentSettingObserver
 #endif
 
   // True if we have already logged a SiteMuted UKM event since last navigation.
-  bool logged_site_muted_ukm_;
+  bool logged_site_muted_ukm_ = false;
 
-  HostContentSettingsMap* host_content_settings_map_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
 
-  ScopedObserver<HostContentSettingsMap, content_settings::Observer> observer_{
-      this};
+  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
+      observation_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SoundContentSettingObserver);
 };
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_SOUND_CONTENT_SETTING_OBSERVER_H_

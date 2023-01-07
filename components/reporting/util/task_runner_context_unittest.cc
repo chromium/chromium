@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,15 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -111,7 +113,7 @@ TEST_F(TaskRunner, SeriesOfDelays) {
         : TaskRunnerContext<uint32_t>(std::move(callback),
                                       std::move(task_runner)),
           init_value_(init_value),
-          delay_(base::TimeDelta::FromSecondsD(0.1)) {}
+          delay_(base::Seconds(0.1)) {}
 
    private:
     void Halve(uint32_t value, uint32_t log) {
@@ -120,7 +122,7 @@ TEST_F(TaskRunner, SeriesOfDelays) {
         Response(log);
         return;
       }
-      delay_ += base::TimeDelta::FromSecondsD(0.1);
+      delay_ += base::Seconds(0.1);
       ScheduleAfter(delay_, &SeriesOfDelaysContext::Halve,
                     base::Unretained(this), value / 2, log + 1);
     }
@@ -159,7 +161,7 @@ TEST_F(TaskRunner, SeriesOfAsyncs) {
         : TaskRunnerContext<uint32_t>(std::move(callback),
                                       std::move(task_runner)),
           init_value_(init_value),
-          delay_(base::TimeDelta::FromSecondsD(0.1)) {}
+          delay_(base::Seconds(0.1)) {}
 
    private:
     void Halve(uint32_t value, uint32_t log) {
@@ -170,7 +172,7 @@ TEST_F(TaskRunner, SeriesOfAsyncs) {
       }
       // Perform a calculation on a generic thread pool with delay,
       // then get back to the sequence by calling Schedule from there.
-      delay_ += base::TimeDelta::FromSecondsD(0.1);
+      delay_ += base::Seconds(0.1);
       base::ThreadPool::PostDelayedTask(
           FROM_HERE,
           base::BindOnce(

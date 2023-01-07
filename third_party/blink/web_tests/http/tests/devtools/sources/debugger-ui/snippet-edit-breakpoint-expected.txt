@@ -1,8 +1,0 @@
-Tests that breakpoints can be edited in snippets before execution.
-
-Snippet content:
-var x = 0;
-
-breakpoint at 0
-breakpoint at 0 disabled
-

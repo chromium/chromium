@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/security.h"
 #include "content/public/browser/certificate_request_result_type.h"
@@ -28,6 +27,10 @@ class SecurityHandler : public DevToolsDomainHandler,
       base::OnceCallback<void(content::CertificateRequestResultType)>;
 
   SecurityHandler();
+
+  SecurityHandler(const SecurityHandler&) = delete;
+  SecurityHandler& operator=(const SecurityHandler&) = delete;
+
   ~SecurityHandler() override;
 
   static std::vector<SecurityHandler*> ForAgentHost(
@@ -57,9 +60,9 @@ class SecurityHandler : public DevToolsDomainHandler,
 
   void AttachToRenderFrameHost();
   void FlushPendingCertificateErrorNotifications();
+  Response AssureTopLevelActiveFrame();
 
   // WebContentsObserver overrides
-  void DidChangeVisibleSecurityState() override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
 
   std::unique_ptr<Security::Frontend> frontend_;
@@ -70,8 +73,6 @@ class SecurityHandler : public DevToolsDomainHandler,
   enum class CertErrorOverrideMode { kDisabled, kHandleEvents, kIgnoreAll };
   CertErrorOverrideMode cert_error_override_mode_ =
       CertErrorOverrideMode::kDisabled;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityHandler);
 };
 
 }  // namespace protocol

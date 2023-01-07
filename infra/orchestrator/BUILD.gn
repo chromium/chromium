@@ -1,0 +1,98 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/coverage/coverage.gni")
+import("//build/config/python.gni")
+
+group("orchestrator_all") {
+  data_deps = [
+    # blink merge scripts the Orchestrator needs to merge blink test results
+    ":blink_merge_web_test_results_py",
+    ":blinkpy_merge_results_py",
+
+    # merge scripts the Orchestrator needs to merge test results and coverage
+    # profile information
+    ":code_coverage_merge_results_py",
+    ":code_coverage_merge_steps_py",
+    ":process_perf_results_py",
+    ":standard_gtest_merge_py",
+    ":standard_isolated_script_merge_py",
+  ]
+
+  if (is_android) {
+    data_deps += [ "//build/android:test_result_presentations_py" ]
+  }
+
+  data = [
+    # Various merge/collect scripts will likely need a venv specified in
+    # the root vpython spec files.
+    "//.vpython3",
+
+    # Used if the orchestrator needs to run recipe_module.chromium.get_version()
+    # to get the Chrome milestone being tested.
+    "//chrome/VERSION",
+
+    # Test specs the Orchestrator needs to trigger swarming tests
+    "//testing/buildbot/*.json",
+  ]
+
+  # Orchestrator will run this script to curl for the coverage tool, which
+  # merges and outputs coverage data
+  if (use_clang_coverage) {
+    data += [ "//tools/clang/scripts/update.py" ]
+  }
+
+  if (use_jacoco_coverage) {
+    data += [ "//third_party/jacoco/lib/jacococli.jar" ]
+    data_deps += [ "//third_party/jdk:java_data" ]
+  }
+  write_runtime_deps = "$root_out_dir/orchestrator_all.runtime_deps"
+}
+
+# blink merge scripts pydeps files for the Orchestrator
+python_library("blink_merge_web_test_results_py") {
+  pydeps_file = "//third_party/blink/tools/merge_web_test_results.pydeps"
+}
+
+python_library("blinkpy_merge_results_py") {
+  pydeps_file =
+      "//third_party/blink/tools/blinkpy/web_tests/merge_results.pydeps"
+}
+
+# pydeps files for merge scripts needed by the Orchestrator
+python_library("standard_isolated_script_merge_py") {
+  pydeps_file = "//testing/merge_scripts/standard_isolated_script_merge.pydeps"
+}
+
+python_library("standard_gtest_merge_py") {
+  pydeps_file = "//testing/merge_scripts/standard_gtest_merge.pydeps"
+}
+
+python_library("code_coverage_merge_results_py") {
+  pydeps_file = "//testing/merge_scripts/code_coverage/merge_results.pydeps"
+}
+
+python_library("code_coverage_merge_steps_py") {
+  pydeps_file = "//testing/merge_scripts/code_coverage/merge_steps.pydeps"
+}
+
+python_library("process_perf_results_py") {
+  pydeps_file = "//tools/perf/process_perf_results.pydeps"
+
+  data = [
+    # Telemetry fails if catapult's vendored libs aren't present on the
+    # filesystem. But since process_perf_results.py doesn't ever import any of
+    # them, build/print_python_deps.py doesn't detect them. So to appease
+    # telemetry, just add the needed dirs directly.
+    "//third_party/catapult/telemetry/third_party/",
+    "//third_party/catapult/third_party/polymer/",
+    "//third_party/catapult/third_party/six/",
+    "//third_party/catapult/third_party/vinn/",
+    "//third_party/catapult/tracing/bin/add_reserved_diagnostics",
+    "//third_party/catapult/tracing/third_party/",
+    "//third_party/catapult/tracing/tracing/",
+
+    # This file is read at script run-time.
+    "//tools/perf/core/perf_dashboard_machine_group_mapping.json",
+  ]
+}

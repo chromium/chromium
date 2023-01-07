@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,7 +103,7 @@ void ImageFetcherImpl::OnImageURLFetched(const GURL& image_url,
   request->image_data = image_data;
   request->request_metadata = metadata;
   image_decoder_->DecodeImage(
-      image_data, params.frame_size(),
+      image_data, params.frame_size(), params.data_decoder(),
       base::BindOnce(&ImageFetcherImpl::OnImageDecoded,
                      weak_ptr_factory_.GetWeakPtr(), image_url, metadata));
 }

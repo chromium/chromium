@@ -1,11 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/header_util.h"
 
+#include <string>
+#include <vector>
+
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "net/base/features.h"
+#include "net/base/mime_sniffer.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_status_code.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "url/gurl.h"
 
 namespace network {
 
@@ -68,6 +78,12 @@ bool IsRequestHeaderSafe(const base::StringPiece& key,
       return false;
   }
 
+  // 'Set-Cookie' is semantically a response header, so not useuful on requests.
+  if (base::FeatureList::IsEnabled(net::features::kBlockSetCookieHeader) &&
+      base::EqualsCaseInsensitiveASCII("Set-Cookie", key)) {
+    return false;
+  }
+
   for (const auto& header : kUnsafeHeaderValues) {
     if (base::EqualsCaseInsensitiveASCII(header.name, key) &&
         base::EqualsCaseInsensitiveASCII(header.value, value)) {
@@ -91,6 +107,93 @@ bool AreRequestHeadersSafe(const net::HttpRequestHeaders& request_headers) {
   }
 
   return true;
+}
+
+// TODO(https://crbug.com/1302851): Consider merging this with
+// ProcessReferrerPolicyHeaderOnRedirect() in //net and/or
+// blink::SecurityPolicy::ReferrerPolicyFromString().
+mojom::ReferrerPolicy ParseReferrerPolicy(
+    const net::HttpResponseHeaders& response_headers) {
+  mojom::ReferrerPolicy policy = mojom::ReferrerPolicy::kDefault;
+
+  std::string referrer_policy_header;
+  if (!response_headers.GetNormalizedHeader("Referrer-Policy",
+                                            &referrer_policy_header)) {
+    return policy;
+  }
+
+  std::vector<base::StringPiece> policy_tokens =
+      base::SplitStringPiece(referrer_policy_header, ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+
+  // Per https://w3c.github.io/webappsec-referrer-policy/#unknown-policy-values,
+  // use the last recognized policy value, and ignore unknown policies.
+  for (const auto& token : policy_tokens) {
+    if (base::CompareCaseInsensitiveASCII(token, "no-referrer") == 0) {
+      policy = mojom::ReferrerPolicy::kNever;
+      continue;
+    }
+
+    if (base::CompareCaseInsensitiveASCII(token,
+                                          "no-referrer-when-downgrade") == 0) {
+      policy = mojom::ReferrerPolicy::kNoReferrerWhenDowngrade;
+      continue;
+    }
+
+    if (base::CompareCaseInsensitiveASCII(token, "origin") == 0) {
+      policy = mojom::ReferrerPolicy::kOrigin;
+      continue;
+    }
+
+    if (base::CompareCaseInsensitiveASCII(token, "origin-when-cross-origin") ==
+        0) {
+      policy = mojom::ReferrerPolicy::kOriginWhenCrossOrigin;
+      continue;
+    }
+
+    if (base::CompareCaseInsensitiveASCII(token, "unsafe-url") == 0) {
+      policy = mojom::ReferrerPolicy::kAlways;
+      continue;
+    }
+
+    if (base::CompareCaseInsensitiveASCII(token, "same-origin") == 0) {
+      policy = mojom::ReferrerPolicy::kSameOrigin;
+      continue;
+    }
+
+    if (base::CompareCaseInsensitiveASCII(token, "strict-origin") == 0) {
+      policy = mojom::ReferrerPolicy::kStrictOrigin;
+      continue;
+    }
+
+    if (base::CompareCaseInsensitiveASCII(
+            token, "strict-origin-when-cross-origin") == 0) {
+      policy = mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
+      continue;
+    }
+  }
+
+  return policy;
+}
+
+bool ShouldSniffContent(const GURL& url,
+                        const mojom::URLResponseHead& response) {
+  std::string content_type_options;
+  if (response.headers) {
+    response.headers->GetNormalizedHeader("x-content-type-options",
+                                          &content_type_options);
+  }
+  bool sniffing_blocked =
+      base::EqualsCaseInsensitiveASCII(content_type_options, "nosniff");
+  bool we_would_like_to_sniff =
+      net::ShouldSniffMimeType(url, response.mime_type);
+
+  return !sniffing_blocked && we_would_like_to_sniff;
+}
+
+bool IsSuccessfulStatus(int status) {
+  // This contains successful 2xx status code.
+  return status >= net::HTTP_OK && status < net::HTTP_MULTIPLE_CHOICES;
 }
 
 }  // namespace network

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/containers/flat_map.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_occlusion_tracker.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 
 namespace ash {
@@ -27,24 +27,21 @@ class ASH_EXPORT OcclusionTrackerPauser : public ui::CompositorObserver {
   ~OcclusionTrackerPauser() override;
 
   // Pause the occlusion tracker until all new animations added after this
-  // are finished. If non zero 'extra_pause_duration' is specified, it'll wait
-  // then unpause the tracker.
-  void PauseUntilAnimationsEnd(
-      const base::TimeDelta& extra_pause_duration = base::TimeDelta());
+  // are finished. If the timeout is elapsed before all new animations are
+  // finished, the pause will be unpaused.
+  void PauseUntilAnimationsEnd(base::TimeDelta timeout);
 
   // ui::CompositorObserver:
   void OnFirstAnimationStarted(ui::Compositor* compositor) override {}
-  void OnLastAnimationEnded(ui::Compositor* compositor) override;
+  void OnFirstNonAnimatedFrameStarted(ui::Compositor* compositor) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
 
  private:
-  void Pause(ui::Compositor* compositor,
-             const base::TimeDelta& extra_pause_duration);
+  void Pause(ui::Compositor* compositor);
   void OnFinish(ui::Compositor* compositor);
-  void Unpause();
+  void Timeout();
 
   base::OneShotTimer timer_;
-  base::TimeDelta extra_pause_duration_;
   base::ScopedMultiSourceObservation<ui::Compositor, ui::CompositorObserver>
       observations_{this};
 

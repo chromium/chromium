@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/base64url.h"
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_split.h"
@@ -71,7 +72,7 @@ bool GetServiceFlags(const std::string id_token,
     VLOG(1) << "Missing service flags in the id_token";
     return false;
   }
-  for (const auto& flag_value : service_flags_value_raw->GetList()) {
+  for (const auto& flag_value : service_flags_value_raw->GetListDeprecated()) {
     const std::string& flag = flag_value.GetString();
     if (flag.size())
       out_service_flags->push_back(flag);
@@ -95,11 +96,9 @@ TokenServiceFlags ParseServiceFlags(const std::string& id_token) {
   }
 
   token_service_flags.is_child_account =
-      std::find(service_flags.begin(), service_flags.end(),
-                kChildAccountServiceFlag) != service_flags.end();
+      base::Contains(service_flags, kChildAccountServiceFlag);
   token_service_flags.is_under_advanced_protection =
-      std::find(service_flags.begin(), service_flags.end(),
-                kAdvancedProtectionAccountServiceFlag) != service_flags.end();
+      base::Contains(service_flags, kAdvancedProtectionAccountServiceFlag);
   return token_service_flags;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
   );
 
   await TestRunner.loadTestModule('network_test_runner');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
 
   await TestRunner.evaluateInPagePromise(`
@@ -65,7 +65,7 @@
   }
 
   function step6() {
-    delete imageRequest._contentData;
+    delete imageRequest.contentData;
     imageRequest.requestContent().then(step7);
   }
 

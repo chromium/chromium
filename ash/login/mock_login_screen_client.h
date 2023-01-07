@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,10 @@ namespace ash {
 class MockLoginScreenClient : public LoginScreenClient {
  public:
   MockLoginScreenClient();
+
+  MockLoginScreenClient(const MockLoginScreenClient&) = delete;
+  MockLoginScreenClient& operator=(const MockLoginScreenClient&) = delete;
+
   ~MockLoginScreenClient() override;
 
   MOCK_METHOD(void,
@@ -78,6 +82,7 @@ class MockLoginScreenClient : public LoginScreenClient {
   MOCK_METHOD(void, SignOutUser, (), (override));
   MOCK_METHOD(void, CancelAddUser, (), (override));
   MOCK_METHOD(void, LoginAsGuest, (), (override));
+  MOCK_METHOD(void, ShowGuestTosScreen, (), (override));
   MOCK_METHOD(void,
               OnMaxIncorrectPasswordAttempted,
               (const AccountId& account_id),
@@ -87,6 +92,7 @@ class MockLoginScreenClient : public LoginScreenClient {
               ShowGaiaSignin,
               (const AccountId& prefilled_account),
               (override));
+  MOCK_METHOD(void, ShowOsInstallScreen, (), (override));
   MOCK_METHOD(void, OnRemoveUserWarningShown, (), (override));
   MOCK_METHOD(void, RemoveUser, (const AccountId& account_id), (override));
   MOCK_METHOD(void,
@@ -104,12 +110,14 @@ class MockLoginScreenClient : public LoginScreenClient {
               (ash::LoginAcceleratorAction action),
               (override));
   MOCK_METHOD(void, ShowAccountAccessHelpApp, (gfx::NativeWindow), (override));
-  MOCK_METHOD(void, ShowParentAccessHelpApp, (gfx::NativeWindow), (override));
+  MOCK_METHOD(void, ShowParentAccessHelpApp, (), (override));
   MOCK_METHOD(void, ShowLockScreenNotificationSettings, (), (override));
   MOCK_METHOD(void, FocusOobeDialog, (), (override));
   MOCK_METHOD(void, OnFocusLeavingSystemTray, (bool reverse), (override));
   MOCK_METHOD(void, OnUserActivity, (), (override));
   MOCK_METHOD(void, OnLoginScreenShown, (), (override));
+  MOCK_METHOD(void, OnSystemTrayBubbleShown, (), (override));
+  MOCK_METHOD(views::Widget*, GetLoginWindowWidget, (), (override));
 
  private:
   bool authenticate_user_callback_result_ = true;
@@ -117,8 +125,6 @@ class MockLoginScreenClient : public LoginScreenClient {
       ParentCodeValidationResult::kValid;
   base::OnceCallback<void(bool)>*
       authenticate_user_with_password_or_pin_callback_storage_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockLoginScreenClient);
 };
 
 }  // namespace ash

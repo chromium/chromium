@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/win/atl.h"
 #include "base/win/shlwapi.h"
@@ -20,7 +19,7 @@ std::ostream& operator<<(std::ostream& os, const LogHr& hr) {
   const DWORD kFlags =
       FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
   char error_text[4096] = {'\0'};
-  ::FormatMessageA(kFlags, 0, hr.hr_, 0, error_text, base::size(error_text),
+  ::FormatMessageA(kFlags, 0, hr.hr_, 0, error_text, std::size(error_text),
                    NULL);
   std::string error(error_text);
   base::TrimWhitespaceASCII(error, base::TRIM_ALL, &error);
@@ -35,7 +34,7 @@ std::ostream& operator<<(std::ostream& os, const LogWe& we) {
   const DWORD kFlags =
       FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
   char error_text[4096] = {'\0'};
-  ::FormatMessageA(kFlags, 0, we.we_, 0, error_text, base::size(error_text),
+  ::FormatMessageA(kFlags, 0, we.we_, 0, error_text, std::size(error_text),
                    NULL);
   std::string error(error_text);
   base::TrimWhitespaceASCII(error, base::TRIM_ALL, &error);

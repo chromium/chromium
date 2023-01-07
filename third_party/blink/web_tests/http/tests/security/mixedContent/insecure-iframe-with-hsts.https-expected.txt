@@ -1,11 +1,2 @@
-main frame - didFinishDocumentLoadForFrame
-main frame - didHandleOnloadEventsForFrame
-main frame - didFinishLoadForFrame
-frame "<!--framePath //<!--frame0-->-->" - BeginNavigation request to 'http://hsts-example.test:8443/security/resources/hsts.php', http method GET
-frame "<!--framePath //<!--frame0-->-->" - DidStartNavigation
-CONSOLE ERROR: line 18: Mixed Content: The page at 'https://127.0.0.1:8443/security/mixedContent/insecure-iframe-with-hsts.https.html' was loaded over HTTPS, but requested an insecure frame 'http://hsts-example.test:8443/security/resources/hsts.php'. This request has been blocked; the content must be served over HTTPS.
-frame "<!--framePath //<!--frame0-->-->" - didFailProvisionalLoadWithError
-This is a testharness.js-based test.
-PASS HSTS does not bypass MIX.
-Harness: the test ran to completion.
+CONSOLE ERROR: Mixed Content: The page at 'https://127.0.0.1:8443/security/mixedContent/insecure-iframe-with-hsts.https.html' was loaded over HTTPS, but requested an insecure frame 'http://hsts-example.test:8443/security/resources/hsts.php'. This request has been blocked; the content must be served over HTTPS.
 

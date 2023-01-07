@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/notifications/proto/icon.pb.h"
@@ -139,8 +140,8 @@ class IconStoreTest : public testing::Test {
   IconStore::IconTypeUuidMap icons_uuid_map_;
   std::unique_ptr<IconStore> store_;
   std::map<std::string, proto::Icon> db_entries_;
-  leveldb_proto::test::FakeDB<proto::Icon, IconEntry>* db_;
-  MockIconConverter* icon_converter_;
+  raw_ptr<leveldb_proto::test::FakeDB<proto::Icon, IconEntry>> db_;
+  raw_ptr<MockIconConverter> icon_converter_;
 };
 
 TEST_F(IconStoreTest, Init) {

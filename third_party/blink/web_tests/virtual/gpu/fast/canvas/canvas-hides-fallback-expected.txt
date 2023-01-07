@@ -1,3 +1,0 @@
-The DOM part of this test succeeded. The canvas element had at least one child, indicating that we are hiding text by not rendering it, but we are creating DOM elements as expected.
-
-There should be no text below this, because the text is inside a canvas element and JavaScript is enabled.

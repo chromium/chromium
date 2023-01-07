@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ enum class PresentAddPassesDialogResult {
 // Coordinates presentation of "Add pkpass UI" and "failed to add pkpass UI".
 @interface PassKitCoordinator : ChromeCoordinator<PassKitTabHelperDelegate>
 
-// Must be set before calling |start| method. Set to null when stop method is
+// Must be set before calling `start` method. Set to null when stop method is
 // called or web state is destroyed.
 @property(nonatomic) web::WebState* webState;
 

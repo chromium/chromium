@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/tray/tray_event_filter.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -13,7 +12,6 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -29,6 +27,10 @@ namespace {
 class TrayEventFilterTest : public AshTestBase {
  public:
   TrayEventFilterTest() = default;
+
+  TrayEventFilterTest(const TrayEventFilterTest&) = delete;
+  TrayEventFilterTest& operator=(const TrayEventFilterTest&) = delete;
+
   ~TrayEventFilterTest() override = default;
 
   // AshTestBase:
@@ -61,8 +63,8 @@ class TrayEventFilterTest : public AshTestBase {
   std::string AddNotification() {
     std::string notification_id = base::NumberToString(notification_id_++);
     MessageCenter::Get()->AddNotification(std::make_unique<Notification>(
-        message_center::NOTIFICATION_TYPE_BASE_FORMAT, notification_id,
-        u"test title", u"test message", gfx::Image(),
+        message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
+        u"test title", u"test message", ui::ImageModel(),
         std::u16string() /* display_source */, GURL(),
         message_center::NotifierId(), message_center::RichNotificationData(),
         new message_center::NotificationDelegate()));
@@ -100,7 +102,6 @@ class TrayEventFilterTest : public AshTestBase {
 
  private:
   int notification_id_ = 0;
-  DISALLOW_COPY_AND_ASSIGN(TrayEventFilterTest);
 };
 
 TEST_F(TrayEventFilterTest, ClickingOutsideCloseBubble) {
@@ -120,6 +121,26 @@ TEST_F(TrayEventFilterTest, ClickingInsideDoesNotCloseBubble) {
   // Clicking inside should not close the bubble
   ui::MouseEvent event = inside_event();
   GetTrayEventFilter()->OnMouseEvent(&event);
+  EXPECT_TRUE(IsBubbleShown());
+}
+
+TEST_F(TrayEventFilterTest, DraggingInsideDoesNotCloseBubble) {
+  ShowSystemTrayMainView();
+  EXPECT_TRUE(IsBubbleShown());
+
+  // Dragging within the bubble should not close the bubble.
+  const gfx::Rect tray_bounds = GetSystemTrayBoundsInScreen();
+  const gfx::Point start = tray_bounds.origin();
+  const gfx::Point end_inside = start + gfx::Vector2d(5, 5);
+  GetEventGenerator()->GestureScrollSequence(start, end_inside,
+                                             base::Milliseconds(100), 4);
+  EXPECT_TRUE(IsBubbleShown());
+
+  // Dragging from inside to outside of the bubble should not close the bubble.
+  const gfx::Point start_inside = end_inside;
+  const gfx::Point end_outside = start + gfx::Vector2d(-5, -5);
+  GetEventGenerator()->GestureScrollSequence(start_inside, end_outside,
+                                             base::Milliseconds(100), 4);
   EXPECT_TRUE(IsBubbleShown());
 }
 
@@ -187,6 +208,20 @@ TEST_F(TrayEventFilterTest, ClickingOnKeyboardContainerDoesNotCloseBubble) {
   ui::Event::DispatcherApi(&event).set_target(keyboard_window.get());
   GetTrayEventFilter()->OnMouseEvent(&event);
   EXPECT_TRUE(IsBubbleShown());
+}
+
+TEST_F(TrayEventFilterTest, DraggingOnTrayClosesBubble) {
+  ShowSystemTrayMainView();
+  EXPECT_TRUE(IsBubbleShown());
+
+  // Dragging on the tray background view should close the bubble.
+  const gfx::Rect tray_bounds =
+      GetPrimaryUnifiedSystemTray()->GetBoundsInScreen();
+  const gfx::Point start = tray_bounds.CenterPoint();
+  const gfx::Point end_inside = start + gfx::Vector2d(0, 10);
+  GetEventGenerator()->GestureScrollSequence(start, end_inside,
+                                             base::Milliseconds(100), 4);
+  EXPECT_FALSE(IsBubbleShown());
 }
 
 TEST_F(TrayEventFilterTest, MessageCenterAndSystemTrayStayOpenTogether) {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,7 +76,7 @@ class FileSystemAccessPermissionRequestManager
   // and then the bubble will proceed as desired as soon as it would have been
   // shown.
   void set_auto_response_for_test(
-      base::Optional<permissions::PermissionAction> response) {
+      absl::optional<permissions::PermissionAction> response) {
     auto_response_for_test_ = response;
   }
 
@@ -93,8 +93,7 @@ class FileSystemAccessPermissionRequestManager
   void DequeueAndShowRequest();
 
   // WebContentsObserver
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   void OnPermissionDialogResult(permissions::PermissionAction result);
 
@@ -104,10 +103,7 @@ class FileSystemAccessPermissionRequestManager
   // Queued up requests.
   base::circular_deque<std::unique_ptr<Request>> queued_requests_;
 
-  // We only show new prompts when this is true.
-  bool main_frame_has_fully_loaded_ = false;
-
-  base::Optional<permissions::PermissionAction> auto_response_for_test_;
+  absl::optional<permissions::PermissionAction> auto_response_for_test_;
 
   base::WeakPtrFactory<FileSystemAccessPermissionRequestManager> weak_factory_{
       this};

@@ -1,0 +1,1733 @@
+<?xml version="1.0" ?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.chromium.chrome.stable"
+    platformBuildVersionCode="33"
+    platformBuildVersionName="13"
+    android:isolatedSplits="true">
+  <permission android:name="$PACKAGE.TOS_ACKED" android:protectionLevel="signatureOrSystem"/>
+  <permission android:name="$PACKAGE.permission.C2D_MESSAGE" android:protectionLevel="signature"/>
+  <permission android:name="$PACKAGE.permission.CHILD_SERVICE" android:protectionLevel="signature"/>
+  <permission android:name="$PACKAGE.permission.DEBUG" android:label="Debug web pages" android:protectionLevel="signature"/>
+  <permission android:name="$PACKAGE.permission.READ_WRITE_BOOKMARK_FOLDERS" android:protectionLevel="signatureOrSystem"/>
+  <permission android:name="$PACKAGE.permission.TRANSLATE" android:protectionLevel="signature"/>
+  <queries>  # DIFF-ANCHOR: 9588fea7
+    <package android:name="com.google.ar.core"/>
+  </queries>  # DIFF-ANCHOR: 9588fea7
+  <uses-feature android:glEsVersion="0x00020000"/>
+  <uses-feature android:name="android.hardware.camera" android:required="false"/>
+  <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+  <uses-feature android:name="android.hardware.location.gps" android:required="false"/>
+  <uses-feature android:name="android.hardware.microphone" android:required="false"/>
+  <uses-feature android:name="android.hardware.screen.landscape" android:required="false"/>
+  <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false"/>
+  <uses-feature android:name="android.hardware.sensor.gyroscope" android:required="false"/>
+  <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
+  <uses-feature android:name="android.hardware.vr.headtracking" android:required="false" android:version="1"/>
+  <uses-feature android:name="android.hardware.vr.high_performance" android:required="false"/>
+  <uses-feature android:name="android.software.vr.mode" android:required="false"/>
+  <uses-permission android:name="$PACKAGE.TOS_ACKED"/>
+  <uses-permission android:name="$PACKAGE.permission.C2D_MESSAGE"/>
+  <uses-permission android:name="$PACKAGE.permission.READ_WRITE_BOOKMARK_FOLDERS"/>
+  <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
+  <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+  <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+  <uses-permission android:name="android.permission.INTERNET"/>
+  <uses-permission android:name="android.permission.MANAGE_ACCOUNTS"/>
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
+  <uses-permission android:name="android.permission.NFC"/>
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+  <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+  <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
+  <uses-permission android:name="android.permission.VIBRATE"/>
+  <uses-permission android:name="android.permission.WAKE_LOCK"/>
+  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+  <uses-permission android:name="com.chrome.permission.DEVICE_EXTRAS"/>
+  <uses-permission android:name="com.google.android.apps.now.CURRENT_ACCOUNT_ACCESS"/>
+  <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE"/>
+  <uses-permission-sdk-23 android:name="android.permission.ACCESS_WIFI_STATE"/>
+  <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH"/>
+  <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30"/>
+  <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_ADVERTISE"/>
+  <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_CONNECT"/>
+  <uses-permission-sdk-23 android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation"/>
+  <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS"/>
+  <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_AUDIO"/>
+  <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_IMAGES"/>
+  <uses-permission-sdk-23 android:name="android.permission.READ_MEDIA_VIDEO"/>
+  <uses-permission-sdk-23 android:name="android.permission.REORDER_TASKS"/>
+  <uses-permission-sdk-23 android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
+  <uses-permission-sdk-23 android:name="android.permission.USE_BIOMETRIC"/>
+  <uses-permission-sdk-23 android:name="android.permission.USE_FINGERPRINT"/>
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33"/>
+  <application
+      android:name="org.chromium.chrome.browser.base.SplitMonochromeApplication"
+      android:allowAudioPlaybackCapture="false"
+      android:allowBackup="false"
+      android:appComponentFactory="org.chromium.chrome.browser.base.SplitCompatAppComponentFactory"
+      android:enableOnBackInvokedCallback="true"
+      android:extractNativeLibs="false"
+      android:icon="@drawable/ic_launcher"
+      android:label="@string/app_name"
+      android:largeHeap="false"
+      android:manageSpaceActivity="@string/manage_space_activity"
+      android:multiArch="true"
+      android:networkSecurityConfig="@xml/network_security_config"
+      android:roundIcon="@drawable/ic_launcher_round"
+      android:supportsRtl="true"
+      android:use32bitAbi="true"
+      android:zygotePreloadName="org.chromium.content_public.app.ZygotePreload">
+    <activity  # DIFF-ANCHOR: ea1a94af
+        android:name="com.google.android.gms.common.api.GoogleApiActivity"
+        android:exported="false"
+        android:theme="@android:style/Theme.Translucent.NoTitleBar">
+    </activity>  # DIFF-ANCHOR: ea1a94af
+    <activity  # DIFF-ANCHOR: a2bae37c
+        android:name="com.google.android.play.core.common.PlayCoreDialogWrapperActivity"
+        android:enabled="false"
+        android:exported="false"
+        android:stateNotNeeded="true"
+        android:theme="@style/Theme.PlayCore.Transparent">
+    </activity>  # DIFF-ANCHOR: a2bae37c
+    <activity  # DIFF-ANCHOR: 53a4871f
+        android:name="com.google.android.play.core.missingsplits.PlayCoreMissingSplitsActivity"
+        android:enabled="false"
+        android:exported="false"
+        android:launchMode="singleInstance"
+        android:process=":playcore_missing_splits_activity"
+        android:stateNotNeeded="true">
+    </activity>  # DIFF-ANCHOR: 53a4871f
+    <activity  # DIFF-ANCHOR: 28dc9019
+        android:name="com.google.ar.core.InstallActivity"
+        android:configChanges="keyboardHidden|orientation|screenSize"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:launchMode="singleTop"
+        android:theme="@android:style/Theme.Material.Light.Dialog.Alert">
+    </activity>  # DIFF-ANCHOR: 28dc9019
+    <activity  # DIFF-ANCHOR: a4438884
+        android:name="org.chromium.android_webview.devui.MainActivity"
+        android:exported="true"
+        android:icon="@drawable/icon_webview"
+        android:label="WebView DevTools"
+        android:launchMode="singleTask"
+        android:process=":webview_apk"
+        android:taskAffinity="$PACKAGE.org.chromium.android_webview.devui"
+        android:theme="@style/Theme.DevUi.DayNight"
+        android:visibleToInstantApps="true"
+        android:windowSoftInputMode="adjustPan">
+      <intent-filter>  # DIFF-ANCHOR: a167e73d
+        <action android:name="com.android.webview.SHOW_DEV_UI"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: a167e73d
+    </activity>  # DIFF-ANCHOR: a4438884
+    <activity  # DIFF-ANCHOR: aeabab17
+        android:name="org.chromium.android_webview.nonembedded.LicenseActivity"
+        android:exported="true"
+        android:label="@string/license_activity_title"
+        android:process=":webview_apk">
+      <intent-filter>  # DIFF-ANCHOR: 23298d3b
+        <action android:name="android.settings.WEBVIEW_LICENSE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 23298d3b
+      <meta-data android:name="com.android.settings.PRIMARY_PROFILE_CONTROLLED" android:value="true"/>
+    </activity>  # DIFF-ANCHOR: aeabab17
+    <activity  # DIFF-ANCHOR: 93d41352
+        android:name="org.chromium.chrome.browser.BrowserRestartActivity"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:launchMode="singleInstance"
+        android:process=":browser_restart_process"
+        android:theme="@style/Theme.BrowserUI.Translucent.NoTitleBar">
+    </activity>  # DIFF-ANCHOR: 93d41352
+    <activity  # DIFF-ANCHOR: 61b2c776
+        android:name="org.chromium.chrome.browser.ChromeTabbedActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|navigation"
+        android:exported="true"
+        android:hardwareAccelerated="false"
+        android:launchMode="singleTask"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:theme="@style/Theme.Chromium.TabbedMode"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>  # DIFF-ANCHOR: dea53031
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>  # DIFF-ANCHOR: dea53031
+      <meta-data android:name="android.activity.launch_mode" android:value="singleInstancePerTask"/>
+    </activity>  # DIFF-ANCHOR: 61b2c776
+    <activity  # DIFF-ANCHOR: 610e8ccf
+        android:name="org.chromium.chrome.browser.ChromeTabbedActivity2"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|navigation"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:launchMode="singleTask"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:taskAffinity="$PACKAGE.ChromeTabbedActivity2"
+        android:theme="@style/Theme.Chromium.TabbedMode"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>  # DIFF-ANCHOR: dea53031
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>  # DIFF-ANCHOR: dea53031
+    </activity>  # DIFF-ANCHOR: 610e8ccf
+    <activity  # DIFF-ANCHOR: 76686af9
+        android:name="org.chromium.chrome.browser.LauncherShortcutActivity"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:taskAffinity=""
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+    </activity>  # DIFF-ANCHOR: 76686af9
+    <activity  # DIFF-ANCHOR: dc170161
+        android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+    </activity>  # DIFF-ANCHOR: dc170161
+    <activity  # DIFF-ANCHOR: d8508de6
+        android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkAddEditFolderActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:theme="@style/Theme.Chromium.DialogWhenLarge">
+    </activity>  # DIFF-ANCHOR: d8508de6
+    <activity  # DIFF-ANCHOR: 766e66bd
+        android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkEditActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:label="@string/edit_bookmark"
+        android:theme="@style/Theme.Chromium.DialogWhenLarge"
+        android:windowSoftInputMode="stateHidden">
+    </activity>  # DIFF-ANCHOR: 766e66bd
+    <activity  # DIFF-ANCHOR: 8f8d0c81
+        android:name="org.chromium.chrome.browser.app.bookmarks.BookmarkFolderSelectActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:label="@string/bookmark_choose_folder"
+        android:theme="@style/Theme.Chromium.DialogWhenLarge"
+        android:windowSoftInputMode="stateAlwaysHidden">
+    </activity>  # DIFF-ANCHOR: 8f8d0c81
+    <activity  # DIFF-ANCHOR: 9bfe10ab
+        android:name="org.chromium.chrome.browser.app.creator.CreatorActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+    </activity>  # DIFF-ANCHOR: 9bfe10ab
+    <activity  # DIFF-ANCHOR: 8f3f76d9
+        android:name="org.chromium.chrome.browser.app.download.home.DownloadActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+    </activity>  # DIFF-ANCHOR: 8f3f76d9
+    <activity  # DIFF-ANCHOR: 3d32d400
+        android:name="org.chromium.chrome.browser.app.feed.feedmanagement.FeedManagementActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:theme="@style/Theme.Chromium.Settings"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+    </activity>  # DIFF-ANCHOR: 3d32d400
+    <activity  # DIFF-ANCHOR: 98c8c9be
+        android:name="org.chromium.chrome.browser.app.feed.followmanagement.FollowManagementActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:theme="@style/Theme.Chromium.Settings"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+      <intent-filter>  # DIFF-ANCHOR: 0bc48fdf
+        <action android:name="org.chromium.chrome.browser.app.feed.followmanagement.FollowManagementActivity.ACTIVATE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 0bc48fdf
+    </activity>  # DIFF-ANCHOR: 98c8c9be
+    <activity  # DIFF-ANCHOR: 50c7105b
+        android:name="org.chromium.chrome.browser.app.reengagement.ReengagementActivity"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:taskAffinity=""
+        android:theme="@style/Theme.BrowserUI.Translucent">
+    </activity>  # DIFF-ANCHOR: 50c7105b
+    <activity  # DIFF-ANCHOR: aeab60ac
+        android:name="org.chromium.chrome.browser.app.video_tutorials.VideoPlayerActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:screenOrientation="portrait"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen">
+    </activity>  # DIFF-ANCHOR: aeab60ac
+    <activity  # DIFF-ANCHOR: 170e9f21
+        android:name="org.chromium.chrome.browser.app.video_tutorials.VideoTutorialListActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen">
+    </activity>  # DIFF-ANCHOR: 170e9f21
+    <activity  # DIFF-ANCHOR: be2dce69
+        android:name="org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProxy"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:noHistory="true"
+        android:taskAffinity=""
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+    </activity>  # DIFF-ANCHOR: be2dce69
+    <activity  # DIFF-ANCHOR: 209b5ded
+        android:name="org.chromium.chrome.browser.browserservices.ClearDataDialogActivity"
+        android:exported="false"
+        android:theme="@style/Theme.Chromium.ClearDataDialogActivity">
+    </activity>  # DIFF-ANCHOR: 209b5ded
+    <activity  # DIFF-ANCHOR: 2b0ee4cd
+        android:name="org.chromium.chrome.browser.browserservices.ManageTrustedWebActivityDataActivity"
+        android:exported="true"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen.Transparent">
+      <intent-filter>  # DIFF-ANCHOR: 38d9d906
+        <action android:name="android.support.customtabs.action.ACTION_MANAGE_TRUSTED_WEB_ACTIVITY_DATA"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:scheme="https"/>
+      </intent-filter>  # DIFF-ANCHOR: 38d9d906
+      <intent-filter>  # DIFF-ANCHOR: 38d9d906
+        <action android:name="android.support.customtabs.action.ACTION_MANAGE_TRUSTED_WEB_ACTIVITY_DATA"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 38d9d906
+    </activity>  # DIFF-ANCHOR: 2b0ee4cd
+    <activity  # DIFF-ANCHOR: 44266a6a
+        android:name="org.chromium.chrome.browser.customtabs.CustomTabActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|navigation"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:theme="@style/Theme.Chromium.Activity"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>  # DIFF-ANCHOR: dea53031
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>  # DIFF-ANCHOR: dea53031
+    </activity>  # DIFF-ANCHOR: 44266a6a
+    <activity  # DIFF-ANCHOR: 4d923622
+        android:name="org.chromium.chrome.browser.customtabs.TranslucentCustomTabActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|navigation"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:theme="@style/Theme.Chromium.Activity.FakeTranslucent"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>  # DIFF-ANCHOR: dea53031
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>  # DIFF-ANCHOR: dea53031
+    </activity>  # DIFF-ANCHOR: 4d923622
+    <activity  # DIFF-ANCHOR: 1acdfd19
+        android:name="org.chromium.chrome.browser.document.ChromeLauncherActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"
+        android:excludeFromRecents="true"
+        android:relinquishTaskIdentity="true"
+        android:taskAffinity=""
+        android:theme="@style/LauncherTheme">
+    </activity>  # DIFF-ANCHOR: 1acdfd19
+    <activity  # DIFF-ANCHOR: 2121eb0d
+        android:name="org.chromium.chrome.browser.firstrun.FirstRunActivity"
+        android:autoRemoveFromRecents="true"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:excludeFromRecents="true"
+        android:label="@string/fre_activity_label"
+        android:launchMode="singleTop"
+        android:theme="@style/Theme.Chromium.DialogWhenLarge"
+        android:windowSoftInputMode="stateHidden|adjustPan">
+    </activity>  # DIFF-ANCHOR: 2121eb0d
+    <activity  # DIFF-ANCHOR: 67932092
+        android:name="org.chromium.chrome.browser.firstrun.LightweightFirstRunActivity"
+        android:autoRemoveFromRecents="true"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:excludeFromRecents="true"
+        android:label="@string/fre_activity_label"
+        android:launchMode="singleInstance"
+        android:theme="@style/Theme.BrowserUI.AlertDialog.NoActionBar"
+        android:windowSoftInputMode="stateHidden|adjustPan">
+    </activity>  # DIFF-ANCHOR: 67932092
+    <activity  # DIFF-ANCHOR: bb612a34
+        android:name="org.chromium.chrome.browser.firstrun.TabbedModeFirstRunActivity"
+        android:autoRemoveFromRecents="true"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:excludeFromRecents="true"
+        android:label="@string/fre_activity_label"
+        android:launchMode="singleTop"
+        android:theme="@style/Theme.Chromium.TabbedMode"
+        android:windowSoftInputMode="stateHidden|adjustPan">
+    </activity>  # DIFF-ANCHOR: bb612a34
+    <activity  # DIFF-ANCHOR: 05911131
+        android:name="org.chromium.chrome.browser.history.HistoryActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+    </activity>  # DIFF-ANCHOR: 05911131
+    <activity  # DIFF-ANCHOR: b98302dc
+        android:name="org.chromium.chrome.browser.incognito.IncognitoTabLauncher"
+        android:enabled="false"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:taskAffinity=""
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+      <intent-filter>  # DIFF-ANCHOR: 8f811d02
+        <action android:name="org.chromium.chrome.browser.incognito.OPEN_PRIVATE_TAB"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 8f811d02
+    </activity>  # DIFF-ANCHOR: b98302dc
+    <activity  # DIFF-ANCHOR: 349d8ca5
+        android:name="org.chromium.chrome.browser.instantapps.AuthenticatedProxyActivity"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:noHistory="true"
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+    </activity>  # DIFF-ANCHOR: 349d8ca5
+    <activity  # DIFF-ANCHOR: ecd48344
+        android:name="org.chromium.chrome.browser.media.MediaLauncherActivity"
+        android:enabled="false"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="image/*"/>
+        <data android:mimeType="video/*"/>
+        <data android:scheme="content"/>
+        <data android:scheme="file"/>
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+    </activity>  # DIFF-ANCHOR: ecd48344
+    <activity  # DIFF-ANCHOR: d706d96e
+        android:name="org.chromium.chrome.browser.media.PictureInPictureActivity"
+        android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:noHistory="true"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:theme="@style/Theme.Chromium.Activity">
+    </activity>  # DIFF-ANCHOR: d706d96e
+    <activity  # DIFF-ANCHOR: 9023f153
+        android:name="org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|navigation"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:theme="@style/Theme.Chromium.TabbedMode"
+        android:windowSoftInputMode="adjustResize">
+    </activity>  # DIFF-ANCHOR: 9023f153
+    <activity  # DIFF-ANCHOR: e86e2b49
+        android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$TrampolineActivity"
+        android:autoRemoveFromRecents="true"
+        android:documentLaunchMode="always"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:noHistory="true"
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+    </activity>  # DIFF-ANCHOR: e86e2b49
+    <activity  # DIFF-ANCHOR: 7ff74272
+        android:name="org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl$DismissNotificationChromeActivity"
+        android:autoRemoveFromRecents="true"
+        android:documentLaunchMode="always"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:noHistory="true"
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+    </activity>  # DIFF-ANCHOR: 7ff74272
+    <activity  # DIFF-ANCHOR: 71702606
+        android:name="org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl$TrampolineActivity"
+        android:autoRemoveFromRecents="true"
+        android:documentLaunchMode="always"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:noHistory="true"
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+    </activity>  # DIFF-ANCHOR: 71702606
+    <activity  # DIFF-ANCHOR: 7468a722
+        android:name="org.chromium.chrome.browser.searchwidget.SearchActivity"
+        android:clearTaskOnLaunch="true"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:label="Search"
+        android:launchMode="singleTask"
+        android:taskAffinity=""
+        android:theme="@style/Theme.Chromium.SearchActivity"
+        android:windowSoftInputMode="adjustResize">
+    </activity>  # DIFF-ANCHOR: 7468a722
+    <activity  # DIFF-ANCHOR: d32b85df
+        android:name="org.chromium.chrome.browser.settings.SettingsActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:label="@string/settings"
+        android:theme="@style/Theme.Chromium.Settings">
+    </activity>  # DIFF-ANCHOR: d32b85df
+    <activity  # DIFF-ANCHOR: fbf1ba15
+        android:name="org.chromium.chrome.browser.signin.SyncConsentActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:theme="@style/Theme.Chromium.DialogWhenLarge">
+    </activity>  # DIFF-ANCHOR: fbf1ba15
+    <activity  # DIFF-ANCHOR: d2967c86
+        android:name="org.chromium.chrome.browser.site_settings.ManageSpaceActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:label="@string/storage_management_activity_label"
+        android:theme="@style/Theme.Chromium.Settings.ManageSpace">
+    </activity>  # DIFF-ANCHOR: d2967c86
+    <activity  # DIFF-ANCHOR: 8492e3fd
+        android:name="org.chromium.chrome.browser.sync.ui.PassphraseActivity"
+        android:autoRemoveFromRecents="true"
+        android:theme="@style/Theme.Chromium.Activity">
+    </activity>  # DIFF-ANCHOR: 8492e3fd
+    <activity  # DIFF-ANCHOR: 45a98fa4
+        android:name="org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:theme="@style/Theme.MaterialComponents">
+    </activity>  # DIFF-ANCHOR: 45a98fa4
+    <activity  # DIFF-ANCHOR: 43bfa5de
+        android:name="org.chromium.chrome.browser.test_dummy.TestDummyActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:noHistory="true"
+        android:theme="@style/Theme.MaterialComponents">
+    </activity>  # DIFF-ANCHOR: 43bfa5de
+    <activity  # DIFF-ANCHOR: b007dcaa
+        android:name="org.chromium.chrome.browser.vr.VrCancelAnimationActivity"
+        android:enableVrMode="@string/gvr_vr_mode_component"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:noHistory="true"
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+      <intent-filter>  # DIFF-ANCHOR: dea53031
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>  # DIFF-ANCHOR: dea53031
+    </activity>  # DIFF-ANCHOR: b007dcaa
+    <activity  # DIFF-ANCHOR: 5e628a6c
+        android:name="org.chromium.chrome.browser.vr.VrFirstRunActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode"
+        android:enableVrMode="@string/gvr_vr_mode_component"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:launchMode="singleInstance"
+        android:theme="@style/VrActivityTheme">
+      <intent-filter>  # DIFF-ANCHOR: dea53031
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>  # DIFF-ANCHOR: dea53031
+    </activity>  # DIFF-ANCHOR: 5e628a6c
+    <activity  # DIFF-ANCHOR: 9bb1f409
+        android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity"
+        android:exported="true"
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+      <intent-filter>  # DIFF-ANCHOR: 0d72b7f0
+        <action android:name="org.chromium.chrome.browser.webapps.ActivateWebApkActivity.ACTIVATE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 0d72b7f0
+    </activity>  # DIFF-ANCHOR: 9bb1f409
+    <activity  # DIFF-ANCHOR: f1dc024a
+        android:name="org.chromium.chrome.browser.webapps.SameTaskWebApkActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|navigation"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:label="@string/webapp_activity_title"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:theme="@style/Theme.Chromium.Webapp.Translucent"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>  # DIFF-ANCHOR: dea53031
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>  # DIFF-ANCHOR: dea53031
+    </activity>  # DIFF-ANCHOR: f1dc024a
+    <activity  # DIFF-ANCHOR: 5e467d8a
+        android:name="org.chromium.chrome.browser.webapps.WebappActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density|navigation"
+        android:documentLaunchMode="intoExisting"
+        android:exported="false"
+        android:hardwareAccelerated="false"
+        android:label="@string/webapp_activity_title"
+        android:launchMode="singleTop"
+        android:persistableMode="persistNever"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:theme="@style/Theme.Chromium.Webapp"
+        android:windowSoftInputMode="adjustResize">
+      <intent-filter>  # DIFF-ANCHOR: dea53031
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>  # DIFF-ANCHOR: dea53031
+    </activity>  # DIFF-ANCHOR: 5e467d8a
+    <activity  # DIFF-ANCHOR: aea75380
+        android:name="org.chromium.chrome.browser.webapps.WebappLauncherActivity"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:taskAffinity=""
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+      <intent-filter>  # DIFF-ANCHOR: faf519ad
+        <action android:name="com.google.android.apps.chrome.webapps.WebappManager.ACTION_START_WEBAPP"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: faf519ad
+      <intent-filter>  # DIFF-ANCHOR: 9c5197e9
+        <action android:name="org.webapk.ACTION_START_WEBAPK"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 9c5197e9
+    </activity>  # DIFF-ANCHOR: aea75380
+    <activity  # DIFF-ANCHOR: 66a0be05
+        android:name="org.chromium.chrome.browser.webapps.launchpad.LaunchpadActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+    </activity>  # DIFF-ANCHOR: 66a0be05
+    <activity  # DIFF-ANCHOR: a1fac31f
+        android:name="org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorActivity"
+        android:configChanges="density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:label="@string/cablev2_activity_title"
+        android:launchMode="singleTop"
+        android:permission="com.google.android.gms.auth.cryptauth.permission.CABLEV2_SERVER_LINK"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen">
+    </activity>  # DIFF-ANCHOR: a1fac31f
+    <activity  # DIFF-ANCHOR: b21cfcff
+        android:name="org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorUSBActivity"
+        android:configChanges="density|fontScale|keyboard|keyboardHidden|layoutDirection|locale|mcc|mnc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|touchscreen|uiMode"
+        android:excludeFromRecents="true"
+        android:exported="false"
+        android:label="@string/cablev2_activity_title"
+        android:launchMode="singleTop"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen">
+      <intent-filter>  # DIFF-ANCHOR: 5873407a
+        <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED"/>
+      </intent-filter>  # DIFF-ANCHOR: 5873407a
+      <meta-data android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" android:resource="@xml/phone_as_a_security_key_accessory_filter"/>
+    </activity>  # DIFF-ANCHOR: b21cfcff
+    <activity  # DIFF-ANCHOR: 1d9b4077
+        android:name="org.chromium.components.media_router.caf.remoting.CafExpandedControllerActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:excludeFromRecents="true"
+        android:hardwareAccelerated="true"
+        android:label="Chrome.CafExpandedControllerActivity"
+        android:launchMode="singleTask"
+        android:noHistory="true"
+        android:theme="@style/Theme.Chromium.Activity">
+    </activity>  # DIFF-ANCHOR: 1d9b4077
+    <activity-alias  # DIFF-ANCHOR: 9da0e5b6
+        android:name="com.google.android.apps.chrome.IntentDispatcher"
+        android:exported="true"
+        android:targetActivity="org.chromium.chrome.browser.document.ChromeLauncherActivity">
+      <intent-filter>  # DIFF-ANCHOR: a5330430
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.NOTIFICATION_PREFERENCES"/>
+      </intent-filter>  # DIFF-ANCHOR: a5330430
+      <intent-filter>  # DIFF-ANCHOR: 436dfef3
+        <action android:name="android.intent.action.MEDIA_SEARCH"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 436dfef3
+      <intent-filter>  # DIFF-ANCHOR: 8f70c92f
+        <action android:name="android.intent.action.SEARCH"/>
+      </intent-filter>  # DIFF-ANCHOR: 8f70c92f
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="application/xhtml+xml"/>
+        <data android:mimeType="text/html"/>
+        <data android:mimeType="text/plain"/>
+        <data android:scheme="about"/>
+        <data android:scheme="googlechrome"/>
+        <data android:scheme="http"/>
+        <data android:scheme="https"/>
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:host="*"/>
+        <data android:mimeType="*/*"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\.mht"/>
+        <data android:pathPattern="/.*\\.mhtml"/>
+        <data android:scheme="file"/>
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:host="*"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\..*\\.mht"/>
+        <data android:pathPattern="/.*\\..*\\.mhtml"/>
+        <data android:pathPattern="/.*\\.mht"/>
+        <data android:pathPattern="/.*\\.mhtml"/>
+        <data android:scheme="file"/>
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="multipart/related"/>
+        <data android:scheme="file"/>
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:scheme="about"/>
+        <data android:scheme="googlechrome"/>
+        <data android:scheme="http"/>
+        <data android:scheme="https"/>
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="application/xhtml+xml"/>
+        <data android:mimeType="text/html"/>
+        <data android:mimeType="text/plain"/>
+        <data android:scheme="content"/>
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="message/rfc822"/>
+        <data android:scheme="content"/>
+        <data android:scheme="file"/>
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="multipart/related"/>
+        <data android:scheme="content"/>
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+      <intent-filter>  # DIFF-ANCHOR: 7a3b3be8
+        <action android:name="android.nfc.action.NDEF_DISCOVERED"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:scheme="http"/>
+        <data android:scheme="https"/>
+      </intent-filter>  # DIFF-ANCHOR: 7a3b3be8
+      <intent-filter>  # DIFF-ANCHOR: 2a3a3c3d
+        <action android:name="android.speech.action.VOICE_SEARCH_RESULTS"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 2a3a3c3d
+      <intent-filter>  # DIFF-ANCHOR: 83919a44
+        <action android:name="com.sec.android.airview.HOVER"/>
+      </intent-filter>  # DIFF-ANCHOR: 83919a44
+      <meta-data android:name="android.app.searchable" android:resource="@xml/searchable"/>
+    </activity-alias>  # DIFF-ANCHOR: 9da0e5b6
+    <activity-alias  # DIFF-ANCHOR: 5042984f
+        android:name="com.google.android.apps.chrome.Main"
+        android:exported="true"
+        android:targetActivity="org.chromium.chrome.browser.ChromeTabbedActivity">
+      <intent-filter>  # DIFF-ANCHOR: a5330430
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.APP_BROWSER"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>  # DIFF-ANCHOR: a5330430
+      <intent-filter>  # DIFF-ANCHOR: dea53031
+        <action android:name="org.chromium.chrome.browser.dummy.action"/>
+        <category android:name="com.google.intent.category.CARDBOARD"/>
+        <category android:name="com.google.intent.category.DAYDREAM"/>
+      </intent-filter>  # DIFF-ANCHOR: dea53031
+      <meta-data android:name="android.app.shortcuts" android:resource="@xml/launchershortcuts"/>
+    </activity-alias>  # DIFF-ANCHOR: 5042984f
+    <activity-alias  # DIFF-ANCHOR: 03398466
+        android:name="com.google.android.apps.chrome.TranslateDispatcher"
+        android:exported="true"
+        android:permission="$PACKAGE.permission.TRANSLATE"
+        android:targetActivity="org.chromium.chrome.browser.document.ChromeLauncherActivity">
+      <intent-filter>  # DIFF-ANCHOR: 75e5f897
+        <action android:name="org.chromium.chrome.browser.translate.TRANSLATE_TAB"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 75e5f897
+    </activity-alias>  # DIFF-ANCHOR: 03398466
+    <activity-alias  # DIFF-ANCHOR: dcfe2999
+        android:name="com.google.android.apps.chrome.webapps.WebappActivity"
+        android:label="@string/webapp_activity_title"
+        android:resizeableActivity="true"
+        android:supportsPictureInPicture="true"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappActivity">
+    </activity-alias>  # DIFF-ANCHOR: dcfe2999
+    <activity-alias  # DIFF-ANCHOR: 8e23336d
+        android:name="com.google.android.apps.chrome.webapps.WebappManager"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappLauncherActivity">
+    </activity-alias>  # DIFF-ANCHOR: 8e23336d
+    <activity-alias  # DIFF-ANCHOR: da85c28e
+        android:name="org.chromium.android_webview.SafeModeState"
+        android:enabled="false"
+        android:process=":webview_apk"
+        android:targetActivity="org.chromium.android_webview.devui.MainActivity"
+        android:visibleToInstantApps="true">
+    </activity-alias>  # DIFF-ANCHOR: da85c28e
+    <activity-alias  # DIFF-ANCHOR: b7cc06e9
+        android:name="org.chromium.android_webview.devui.DeveloperModeState"
+        android:enabled="false"
+        android:process=":webview_apk"
+        android:targetActivity="org.chromium.android_webview.devui.MainActivity"
+        android:visibleToInstantApps="true">
+    </activity-alias>  # DIFF-ANCHOR: b7cc06e9
+    <activity-alias  # DIFF-ANCHOR: 32e34aba
+        android:name="org.chromium.android_webview.devui.MonochromeLauncherActivity"
+        android:enabled="false"
+        android:exported="true"
+        android:label="WebView DevTools"
+        android:targetActivity="org.chromium.android_webview.devui.MainActivity">
+      <intent-filter>  # DIFF-ANCHOR: a5330430
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>  # DIFF-ANCHOR: a5330430
+    </activity-alias>  # DIFF-ANCHOR: 32e34aba
+    <activity-alias  # DIFF-ANCHOR: 5c83a464
+        android:name="org.chromium.chrome.browser.download.DownloadActivity"
+        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"
+        android:exported="false"
+        android:targetActivity="org.chromium.chrome.browser.app.download.home.DownloadActivity"
+        android:theme="@style/Theme.Chromium.Activity.Fullscreen"
+        android:windowSoftInputMode="stateAlwaysHidden|adjustResize">
+    </activity-alias>  # DIFF-ANCHOR: 5c83a464
+    <activity-alias  # DIFF-ANCHOR: b4a6221b
+        android:name="org.chromium.chrome.browser.media.AudioLauncherActivity"
+        android:enabled="false"
+        android:excludeFromRecents="true"
+        android:exported="true"
+        android:targetActivity="org.chromium.chrome.browser.media.MediaLauncherActivity"
+        android:theme="@style/Theme.BrowserUI.NoDisplay">
+      <intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <data android:mimeType="audio/*"/>
+        <data android:scheme="content"/>
+        <data android:scheme="file"/>
+      </intent-filter>  # DIFF-ANCHOR: 13c9b0a8
+    </activity-alias>  # DIFF-ANCHOR: b4a6221b
+    <activity-alias  # DIFF-ANCHOR: 7c349c4f
+        android:name="org.chromium.chrome.browser.webapps.SecureWebAppLauncher"
+        android:exported="false"
+        android:targetActivity="org.chromium.chrome.browser.webapps.WebappLauncherActivity">
+      <intent-filter>  # DIFF-ANCHOR: 9fe4b527
+        <action android:name="org.chromium.chrome.browser.webapps.WebappManager.ACTION_START_SECURE_WEBAPP"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+      </intent-filter>  # DIFF-ANCHOR: 9fe4b527
+    </activity-alias>  # DIFF-ANCHOR: 7c349c4f
+    <meta-data android:name="android.allow_multiple_resumed_activities" android:value="true"/>
+    <meta-data android:name="android.content.APP_RESTRICTIONS" android:resource="@xml/app_restrictions"/>
+    <meta-data android:name="com.android.webview.WebViewLibrary" android:value="libmonochrome.so"/>
+    <meta-data android:name="com.google.android.gms.cast.framework.OPTIONS_PROVIDER_CLASS_NAME" android:value="org.chromium.components.media_router.caf.CastOptionsProvider"/>
+    <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version"/>
+    <meta-data android:name="com.google.ar.core" android:value="optional"/>
+    <meta-data android:name="com.google.ar.core.min_apk_version" android:value="221020000"/>
+    <meta-data android:name="com.samsung.android.sdk.multiwindow.enable" android:value="true"/>
+    <meta-data android:name="com.samsung.android.sdk.multiwindow.penwindow.enable" android:value="true"/>
+    <meta-data android:name="org.chromium.content.browser.NUM_PRIVILEGED_SERVICES" android:value="5"/>
+    <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES" android:value="40"/>
+    <meta-data android:name="org.chromium.content.browser.SMART_CLIP_PROVIDER" android:value="org.chromium.content_public.browser.SmartClipProvider"/>
+    <provider  # DIFF-ANCHOR: bc0a9a7a
+        android:name="com.google.firebase.provider.FirebaseInitProvider"
+        android:authorities="$PACKAGE.firebaseinitprovider"
+        android:directBootAware="true"
+        android:exported="false"
+        android:initOrder="100">
+    </provider>  # DIFF-ANCHOR: bc0a9a7a
+    <provider  # DIFF-ANCHOR: a5e78e63
+        android:name="org.chromium.android_webview.nonembedded.LicenseContentProvider"
+        android:authorities="$PACKAGE.LicenseContentProvider"
+        android:exported="true"
+        android:grantUriPermissions="true"
+        android:process=":webview_apk">
+    </provider>  # DIFF-ANCHOR: a5e78e63
+    <provider  # DIFF-ANCHOR: bfe37944
+        android:name="org.chromium.android_webview.services.DeveloperModeContentProvider"
+        android:authorities="$PACKAGE.DeveloperModeContentProvider"
+        android:exported="true"
+        android:process=":webview_service"
+        android:visibleToInstantApps="true">
+    </provider>  # DIFF-ANCHOR: bfe37944
+    <provider  # DIFF-ANCHOR: ecfff997
+        android:name="org.chromium.android_webview.services.SafeModeContentProvider"
+        android:authorities="$PACKAGE.SafeModeContentProvider"
+        android:exported="true"
+        android:process=":webview_service"
+        android:visibleToInstantApps="true">
+    </provider>  # DIFF-ANCHOR: ecfff997
+    <provider  # DIFF-ANCHOR: b73a881a
+        android:name="org.chromium.chrome.browser.download.DownloadFileProvider"
+        android:authorities="$PACKAGE.DownloadFileProvider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+      <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"/>
+    </provider>  # DIFF-ANCHOR: b73a881a
+    <provider  # DIFF-ANCHOR: f1c2d7e1
+        android:name="org.chromium.chrome.browser.provider.ChromeBrowserProvider"
+        android:authorities="$PACKAGE.ChromeBrowserProvider;$PACKAGE.browser;$PACKAGE"
+        android:exported="true">
+      <path-permission android:path="/bookmarks/search_suggest_query" android:readPermission="android.permission.GLOBAL_SEARCH"/>
+    </provider>  # DIFF-ANCHOR: f1c2d7e1
+    <provider  # DIFF-ANCHOR: 67014fab
+        android:name="org.chromium.chrome.browser.util.ChromeFileProvider"
+        android:authorities="$PACKAGE.FileProvider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+      <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths"/>
+    </provider>  # DIFF-ANCHOR: 67014fab
+    <provider  # DIFF-ANCHOR: cb51666f
+        android:name="org.chromium.ui.dragdrop.DropDataContentProvider"
+        android:authorities="$PACKAGE.DropDataProvider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+    </provider>  # DIFF-ANCHOR: cb51666f
+    <receiver  # DIFF-ANCHOR: 58d39a0f
+        android:name="com.google.android.apps.chrome.appwidget.bookmarks.BookmarkThumbnailWidgetProvider"
+        android:exported="true"
+        android:label="@string/bookmark_widget_title">
+      <intent-filter>  # DIFF-ANCHOR: 1ebe78e9
+        <action android:name=".BOOKMARK_APPWIDGET_UPDATE"/>
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+      </intent-filter>  # DIFF-ANCHOR: 1ebe78e9
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/bookmark_widget_info"/>
+    </receiver>  # DIFF-ANCHOR: 58d39a0f
+    <receiver  # DIFF-ANCHOR: 0a6f8fa5
+        android:name="com.google.android.gms.cast.framework.media.MediaIntentReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 0a6f8fa5
+    <receiver  # DIFF-ANCHOR: f1c9c29d
+        android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
+        android:exported="true"
+        android:permission="com.google.android.c2dm.permission.SEND">
+      <intent-filter>  # DIFF-ANCHOR: aae22013
+        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+      </intent-filter>  # DIFF-ANCHOR: aae22013
+    </receiver>  # DIFF-ANCHOR: f1c9c29d
+    <receiver  # DIFF-ANCHOR: 68e22783
+        android:name="org.chromium.chrome.browser.announcement.AnnouncementNotificationManager$Receiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 68e22783
+    <receiver  # DIFF-ANCHOR: f6d77f5a
+        android:name="org.chromium.chrome.browser.app.send_tab_to_self.SendTabToSelfNotificationReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: f6d77f5a
+    <receiver  # DIFF-ANCHOR: bb762b77
+        android:name="org.chromium.chrome.browser.browserservices.InstalledWebappBroadcastReceiver"
+        android:exported="true">
+      <intent-filter>  # DIFF-ANCHOR: e5bb6a36
+        <action android:name="android.intent.action.PACKAGE_DATA_CLEARED"/>
+        <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED"/>
+        <data android:scheme="package"/>
+      </intent-filter>  # DIFF-ANCHOR: e5bb6a36
+    </receiver>  # DIFF-ANCHOR: bb762b77
+    <receiver  # DIFF-ANCHOR: 2f4b69ac
+        android:name="org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.DisclosureAcceptanceBroadcastReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 2f4b69ac
+    <receiver  # DIFF-ANCHOR: fd245bee
+        android:name="org.chromium.chrome.browser.customtabs.CustomTabsShareBroadcastReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: fd245bee
+    <receiver  # DIFF-ANCHOR: 2b9c19aa
+        android:name="org.chromium.chrome.browser.notifications.NotificationIntentInterceptor$Receiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 2b9c19aa
+    <receiver  # DIFF-ANCHOR: d8a2af42
+        android:name="org.chromium.chrome.browser.notifications.NotificationService$Receiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: d8a2af42
+    <receiver  # DIFF-ANCHOR: df76237f
+        android:name="org.chromium.chrome.browser.notifications.NotificationServiceImpl$Receiver"
+        android:exported="false">
+      <intent-filter>  # DIFF-ANCHOR: 1c1c5ed8
+        <action android:name="org.chromium.chrome.browser.notifications.CLICK_NOTIFICATION"/>
+        <action android:name="org.chromium.chrome.browser.notifications.CLOSE_NOTIFICATION"/>
+      </intent-filter>  # DIFF-ANCHOR: 1c1c5ed8
+    </receiver>  # DIFF-ANCHOR: df76237f
+    <receiver  # DIFF-ANCHOR: a9b53579
+        android:name="org.chromium.chrome.browser.notifications.channels.LocaleChangedBroadcastReceiver"
+        android:exported="true">
+      <intent-filter>  # DIFF-ANCHOR: 5458f2a2
+        <action android:name="android.intent.action.LOCALE_CHANGED"/>
+      </intent-filter>  # DIFF-ANCHOR: 5458f2a2
+    </receiver>  # DIFF-ANCHOR: a9b53579
+    <receiver  # DIFF-ANCHOR: 64dc49ab
+        android:name="org.chromium.chrome.browser.notifications.permissions.NotificationPermissionChangeReceiver"
+        android:exported="false">
+      <intent-filter>  # DIFF-ANCHOR: 772631d2
+        <action android:name="android.app.action.APP_BLOCK_STATE_CHANGED"/>
+      </intent-filter>  # DIFF-ANCHOR: 772631d2
+    </receiver>  # DIFF-ANCHOR: 64dc49ab
+    <receiver  # DIFF-ANCHOR: 0cefd906
+        android:name="org.chromium.chrome.browser.notifications.scheduler.DisplayAgent$Receiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 0cefd906
+    <receiver  # DIFF-ANCHOR: 7d28c8e4
+        android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$CompleteNotificationReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 7d28c8e4
+    <receiver  # DIFF-ANCHOR: 05f19ac3
+        android:name="org.chromium.chrome.browser.offlinepages.AutoFetchNotifier$InProgressCancelReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 05f19ac3
+    <receiver  # DIFF-ANCHOR: a3a6e991
+        android:name="org.chromium.chrome.browser.omaha.UpdateNotificationController$UpdateNotificationReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: a3a6e991
+    <receiver  # DIFF-ANCHOR: 226134db
+        android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
+        android:exported="true"
+        android:label="@string/dino_widget_title">
+      <intent-filter>  # DIFF-ANCHOR: 4ed161a4
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+      </intent-filter>  # DIFF-ANCHOR: 4ed161a4
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/quick_action_search_widget_dino_info"/>
+    </receiver>  # DIFF-ANCHOR: 226134db
+    <receiver  # DIFF-ANCHOR: 5a0b9536
+        android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch"
+        android:exported="true"
+        android:label="@string/quick_action_search_widget_title">
+      <intent-filter>  # DIFF-ANCHOR: 4ed161a4
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+      </intent-filter>  # DIFF-ANCHOR: 4ed161a4
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/quick_action_search_widget_small_info"/>
+    </receiver>  # DIFF-ANCHOR: 5a0b9536
+    <receiver  # DIFF-ANCHOR: a0d83ae5
+        android:name="org.chromium.chrome.browser.searchwidget.SearchWidgetProvider"
+        android:exported="true"
+        android:label="@string/search_widget_title">
+      <intent-filter>  # DIFF-ANCHOR: 4ed161a4
+        <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+      </intent-filter>  # DIFF-ANCHOR: 4ed161a4
+      <meta-data android:name="android.appwidget.provider" android:resource="@xml/search_widget_info"/>
+    </receiver>  # DIFF-ANCHOR: a0d83ae5
+    <receiver  # DIFF-ANCHOR: 2f1fe689
+        android:name="org.chromium.chrome.browser.sharing.click_to_call.ClickToCallMessageHandler$PhoneUnlockedReceiver"
+        android:exported="true">
+      <intent-filter>  # DIFF-ANCHOR: 4b5ec7a9
+        <action android:name="android.intent.action.USER_PRESENT"/>
+      </intent-filter>  # DIFF-ANCHOR: 4b5ec7a9
+    </receiver>  # DIFF-ANCHOR: 2f1fe689
+    <receiver  # DIFF-ANCHOR: 124ac9a1
+        android:name="org.chromium.chrome.browser.sharing.click_to_call.ClickToCallMessageHandler$TapReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 124ac9a1
+    <receiver  # DIFF-ANCHOR: 84094425
+        android:name="org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardMessageHandler$TapReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 84094425
+    <receiver  # DIFF-ANCHOR: 352611a4
+        android:name="org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardMessageHandler$TryAgainReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 352611a4
+    <receiver  # DIFF-ANCHOR: 420d0678
+        android:name="org.chromium.chrome.browser.sharing.sms_fetcher.SmsFetcherMessageHandler$NotificationReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: 420d0678
+    <receiver  # DIFF-ANCHOR: 9015e3cf
+        android:name="org.chromium.chrome.browser.upgrade.PackageReplacedBroadcastReceiver"
+        android:exported="false">
+      <intent-filter>  # DIFF-ANCHOR: e8cce90c
+        <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+      </intent-filter>  # DIFF-ANCHOR: e8cce90c
+    </receiver>  # DIFF-ANCHOR: 9015e3cf
+    <receiver  # DIFF-ANCHOR: c787586e
+        android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskBroadcastReceiver"
+        android:exported="false">
+    </receiver>  # DIFF-ANCHOR: c787586e
+    <service android:name="androidx.browser.customtabs.PostMessageService"/>
+    <service  # DIFF-ANCHOR: 749391ed
+        android:name="com.google.android.gms.cast.framework.ReconnectionService"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: 749391ed
+    <service  # DIFF-ANCHOR: 48ce9d28
+        android:name="com.google.android.gms.cast.framework.media.MediaNotificationService"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: 48ce9d28
+    <service  # DIFF-ANCHOR: 7e26656b
+        android:name="com.google.firebase.components.ComponentDiscoveryService"
+        android:directBootAware="true"
+        android:exported="false">
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.dynamicloading.DynamicLoadingRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.iid.Registrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+    </service>  # DIFF-ANCHOR: 7e26656b
+    <service  # DIFF-ANCHOR: 2295960c
+        android:name="com.google.firebase.messaging.FirebaseMessagingService"
+        android:directBootAware="true"
+        android:exported="false">
+      <intent-filter android:priority="-500">  # DIFF-ANCHOR: 69e70070
+        <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+      </intent-filter>  # DIFF-ANCHOR: 69e70070
+    </service>  # DIFF-ANCHOR: 2295960c
+    <service  # DIFF-ANCHOR: 4c2196d9
+        android:name="com.google.ipc.invalidation.ticl.android2.channel.GcmRegistrationTaskService"
+        android:exported="true"
+        android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
+      <intent-filter>  # DIFF-ANCHOR: 99686c45
+        <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
+      </intent-filter>  # DIFF-ANCHOR: 99686c45
+    </service>  # DIFF-ANCHOR: 4c2196d9
+    <service  # DIFF-ANCHOR: 1d3bf514
+        android:name="org.chromium.android_webview.js_sandbox.service.JsSandboxService0"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:process=":js_sandboxed_process0"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 1d3bf514
+    <service  # DIFF-ANCHOR: b9ec52c4
+        android:name="org.chromium.android_webview.nonembedded.AwComponentUpdateService"
+        android:exported="false"
+        android:permission="android.permission.BIND_JOB_SERVICE"
+        android:process=":webview_apk">
+    </service>  # DIFF-ANCHOR: b9ec52c4
+    <service  # DIFF-ANCHOR: 3cd6d713
+        android:name="org.chromium.android_webview.services.AwMinidumpUploadJobService"
+        android:exported="true"
+        android:permission="android.permission.BIND_JOB_SERVICE"
+        android:process=":webview_service">
+    </service>  # DIFF-ANCHOR: 3cd6d713
+    <service  # DIFF-ANCHOR: 65cddb26
+        android:name="org.chromium.android_webview.services.AwVariationsSeedFetcher"
+        android:exported="false"
+        android:permission="android.permission.BIND_JOB_SERVICE"
+        android:process=":webview_service">
+    </service>  # DIFF-ANCHOR: 65cddb26
+    <service  # DIFF-ANCHOR: c756cf8d
+        android:name="org.chromium.android_webview.services.ComponentsProviderService"
+        android:exported="true"
+        android:process=":webview_service"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: c756cf8d
+    <service  # DIFF-ANCHOR: 5cda9608
+        android:name="org.chromium.android_webview.services.CrashReceiverService"
+        android:exported="true"
+        android:process=":webview_service">
+    </service>  # DIFF-ANCHOR: 5cda9608
+    <service  # DIFF-ANCHOR: adce9ea1
+        android:name="org.chromium.android_webview.services.DeveloperUiService"
+        android:exported="true"
+        android:process=":webview_service">
+    </service>  # DIFF-ANCHOR: adce9ea1
+    <service  # DIFF-ANCHOR: eecf2fee
+        android:name="org.chromium.android_webview.services.MetricsBridgeService"
+        android:exported="true"
+        android:process=":webview_service"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: eecf2fee
+    <service  # DIFF-ANCHOR: bda8b561
+        android:name="org.chromium.android_webview.services.MetricsUploadService"
+        android:exported="true"
+        android:process=":webview_service"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: bda8b561
+    <service  # DIFF-ANCHOR: 47046f1b
+        android:name="org.chromium.android_webview.services.SafeModeService"
+        android:exported="true"
+        android:process=":webview_service">
+    </service>  # DIFF-ANCHOR: 47046f1b
+    <service  # DIFF-ANCHOR: c52936d7
+        android:name="org.chromium.android_webview.services.StartupFeatureMetadataHolder"
+        android:enabled="false"
+        android:exported="true">
+      <meta-data android:name="SET_DATA_DIRECTORY_SUFFIX:DEV" android:value="true"/>
+    </service>  # DIFF-ANCHOR: c52936d7
+    <service  # DIFF-ANCHOR: dc926e35
+        android:name="org.chromium.android_webview.services.VariationsSeedServer"
+        android:exported="true"
+        android:process=":webview_service">
+    </service>  # DIFF-ANCHOR: dc926e35
+    <service  # DIFF-ANCHOR: c34d99ad
+        android:name="org.chromium.chrome.browser.ChromeBackgroundService"
+        android:exported="true"
+        android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
+      <intent-filter>  # DIFF-ANCHOR: 99686c45
+        <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
+      </intent-filter>  # DIFF-ANCHOR: 99686c45
+    </service>  # DIFF-ANCHOR: c34d99ad
+    <service  # DIFF-ANCHOR: b56e4a55
+        android:name="org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: b56e4a55
+    <service  # DIFF-ANCHOR: 2af739d5
+        android:name="org.chromium.chrome.browser.app.usb.UsbNotificationService"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: 2af739d5
+    <service  # DIFF-ANCHOR: ac44dbad
+        android:name="org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetService"
+        android:exported="false"
+        android:permission="android.permission.BIND_REMOTEVIEWS">
+    </service>  # DIFF-ANCHOR: ac44dbad
+    <service  # DIFF-ANCHOR: 90d2ec9b
+        android:name="org.chromium.chrome.browser.crash.ChromeMinidumpUploadJobService"
+        android:exported="false"
+        android:permission="android.permission.BIND_JOB_SERVICE">
+    </service>  # DIFF-ANCHOR: 90d2ec9b
+    <service  # DIFF-ANCHOR: f72bb7bc
+        android:name="org.chromium.chrome.browser.crash.MinidumpUploadService"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: f72bb7bc
+    <service  # DIFF-ANCHOR: ee1c39a8
+        android:name="org.chromium.chrome.browser.customtabs.CustomTabsConnectionService"
+        android:exported="true">
+      <intent-filter>  # DIFF-ANCHOR: d46bf795
+        <action android:name="android.support.customtabs.action.CustomTabsService"/>
+        <category android:name="androidx.browser.customtabs.category.ColorSchemeCustomization"/>
+        <category android:name="androidx.browser.customtabs.category.NavBarColorCustomization"/>
+        <category android:name="androidx.browser.trusted.category.ImmersiveMode"/>
+        <category android:name="androidx.browser.trusted.category.LaunchSiteSettings"/>
+        <category android:name="androidx.browser.trusted.category.LaunchWebApkSiteSettings"/>
+        <category android:name="androidx.browser.trusted.category.TrustedWebActivities"/>
+        <category android:name="androidx.browser.trusted.category.TrustedWebActivitySplashScreensV1"/>
+        <category android:name="androidx.browser.trusted.category.WebShareTargetV2"/>
+      </intent-filter>  # DIFF-ANCHOR: d46bf795
+    </service>  # DIFF-ANCHOR: ee1c39a8
+    <service  # DIFF-ANCHOR: 4b22c3f5
+        android:name="org.chromium.chrome.browser.download.DownloadBroadcastManager"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: 4b22c3f5
+    <service  # DIFF-ANCHOR: 413310e5
+        android:name="org.chromium.chrome.browser.download.DownloadForegroundService"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: 413310e5
+    <service  # DIFF-ANCHOR: 7e3ff13a
+        android:name="org.chromium.chrome.browser.incognito.IncognitoNotificationService"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: 7e3ff13a
+    <service  # DIFF-ANCHOR: ac8469ff
+        android:name="org.chromium.chrome.browser.media.MediaCaptureNotificationService"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: ac8469ff
+    <service  # DIFF-ANCHOR: 7ef9e4e5
+        android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$CastListenerService"
+        android:exported="false">
+      <intent-filter>  # DIFF-ANCHOR: f401157d
+        <action android:name="android.intent.action.MEDIA_BUTTON"/>
+      </intent-filter>  # DIFF-ANCHOR: f401157d
+    </service>  # DIFF-ANCHOR: 7ef9e4e5
+    <service  # DIFF-ANCHOR: 41fa6492
+        android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$PlaybackListenerService"
+        android:exported="false">
+      <intent-filter>  # DIFF-ANCHOR: f401157d
+        <action android:name="android.intent.action.MEDIA_BUTTON"/>
+      </intent-filter>  # DIFF-ANCHOR: f401157d
+    </service>  # DIFF-ANCHOR: 41fa6492
+    <service  # DIFF-ANCHOR: 1260bca4
+        android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$PresentationListenerService"
+        android:exported="false">
+      <intent-filter>  # DIFF-ANCHOR: f401157d
+        <action android:name="android.intent.action.MEDIA_BUTTON"/>
+      </intent-filter>  # DIFF-ANCHOR: f401157d
+    </service>  # DIFF-ANCHOR: 1260bca4
+    <service  # DIFF-ANCHOR: 4b2220c4
+        android:name="org.chromium.chrome.browser.notifications.NotificationJobService"
+        android:exported="false"
+        android:permission="android.permission.BIND_JOB_SERVICE">
+    </service>  # DIFF-ANCHOR: 4b2220c4
+    <service  # DIFF-ANCHOR: 7fb8c03f
+        android:name="org.chromium.chrome.browser.notifications.NotificationService"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: 7fb8c03f
+    <service android:name="org.chromium.chrome.browser.omaha.OmahaClient" android:exported="false"/>
+    <service  # DIFF-ANCHOR: 53256720
+        android:name="org.chromium.chrome.browser.photo_picker.DecoderService"
+        android:description="@string/decoder_description"
+        android:exported="false"
+        android:isolatedProcess="true"
+        android:process=":decoder_service">
+    </service>  # DIFF-ANCHOR: 53256720
+    <service  # DIFF-ANCHOR: 064aae37
+        android:name="org.chromium.chrome.browser.prerender.ChromePrerenderService"
+        android:exported="true">
+    </service>  # DIFF-ANCHOR: 064aae37
+    <service  # DIFF-ANCHOR: 6d9cb216
+        android:name="org.chromium.chrome.browser.services.gcm.ChromeGcmListenerService"
+        android:exported="false">
+      <intent-filter>  # DIFF-ANCHOR: 69e70070
+        <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+      </intent-filter>  # DIFF-ANCHOR: 69e70070
+    </service>  # DIFF-ANCHOR: 6d9cb216
+    <service  # DIFF-ANCHOR: 7b05db30
+        android:name="org.chromium.chrome.browser.services.gcm.GCMBackgroundService"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: 7b05db30
+    <service  # DIFF-ANCHOR: dcd6fa39
+        android:name="org.chromium.chrome.browser.services.gcm.InvalidationGcmUpstreamSender"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: dcd6fa39
+    <service  # DIFF-ANCHOR: c26364a8
+        android:name="org.chromium.chrome.browser.tracing.TracingNotificationService"
+        android:exported="false">
+    </service>  # DIFF-ANCHOR: c26364a8
+    <service  # DIFF-ANCHOR: 878b448b
+        android:name="org.chromium.chrome.browser.webapps.WebApkInstallCoordinatorService"
+        android:exported="true">
+      <intent-filter>  # DIFF-ANCHOR: 875093ee
+        <action android:name="org.chromium.intent.action.INSTALL_WEB_APK"/>
+      </intent-filter>  # DIFF-ANCHOR: 875093ee
+    </service>  # DIFF-ANCHOR: 878b448b
+    <service  # DIFF-ANCHOR: 8fc286d0
+        android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskGcmTaskService"
+        android:exported="true"
+        android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
+      <intent-filter>  # DIFF-ANCHOR: 99686c45
+        <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
+      </intent-filter>  # DIFF-ANCHOR: 99686c45
+    </service>  # DIFF-ANCHOR: 8fc286d0
+    <service  # DIFF-ANCHOR: a550decc
+        android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskJobService"
+        android:exported="false"
+        android:permission="android.permission.BIND_JOB_SERVICE">
+    </service>  # DIFF-ANCHOR: a550decc
+    <service  # DIFF-ANCHOR: 2a1cd701
+        android:name="org.chromium.components.payments.PaymentDetailsUpdateService"
+        android:exported="true">
+      <intent-filter>  # DIFF-ANCHOR: c68af934
+        <action android:name="org.chromium.intent.action.UPDATE_PAYMENT_DETAILS"/>
+      </intent-filter>  # DIFF-ANCHOR: c68af934
+    </service>  # DIFF-ANCHOR: 2a1cd701
+    <service  # DIFF-ANCHOR: 0c6c4fd9
+        android:name="org.chromium.content.app.PrivilegedProcessService0"
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":privileged_process0">
+    </service>  # DIFF-ANCHOR: 0c6c4fd9
+    <service  # DIFF-ANCHOR: 6f89af32
+        android:name="org.chromium.content.app.PrivilegedProcessService1"
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":privileged_process1">
+    </service>  # DIFF-ANCHOR: 6f89af32
+    <service  # DIFF-ANCHOR: 40e0d738
+        android:name="org.chromium.content.app.PrivilegedProcessService2"
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":privileged_process2">
+    </service>  # DIFF-ANCHOR: 40e0d738
+    <service  # DIFF-ANCHOR: b197517d
+        android:name="org.chromium.content.app.PrivilegedProcessService3"
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":privileged_process3">
+    </service>  # DIFF-ANCHOR: b197517d
+    <service  # DIFF-ANCHOR: 52303702
+        android:name="org.chromium.content.app.PrivilegedProcessService4"
+        android:exported="false"
+        android:isolatedProcess="false"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":privileged_process4">
+    </service>  # DIFF-ANCHOR: 52303702
+    <service  # DIFF-ANCHOR: b1e3e8bd
+        android:name="org.chromium.content.app.SandboxedProcessService0"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process0"
+        android:useAppZygote="true"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: b1e3e8bd
+    <service  # DIFF-ANCHOR: 76d1ccf8
+        android:name="org.chromium.content.app.SandboxedProcessService1"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process1"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 76d1ccf8
+    <service  # DIFF-ANCHOR: 38b95266
+        android:name="org.chromium.content.app.SandboxedProcessService10"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process10"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 38b95266
+    <service  # DIFF-ANCHOR: e4a2e4a2
+        android:name="org.chromium.content.app.SandboxedProcessService11"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process11"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: e4a2e4a2
+    <service  # DIFF-ANCHOR: d9b2ffba
+        android:name="org.chromium.content.app.SandboxedProcessService12"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process12"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: d9b2ffba
+    <service  # DIFF-ANCHOR: b41bb17d
+        android:name="org.chromium.content.app.SandboxedProcessService13"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process13"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: b41bb17d
+    <service  # DIFF-ANCHOR: aec0ea21
+        android:name="org.chromium.content.app.SandboxedProcessService14"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process14"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: aec0ea21
+    <service  # DIFF-ANCHOR: cf88a5e5
+        android:name="org.chromium.content.app.SandboxedProcessService15"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process15"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: cf88a5e5
+    <service  # DIFF-ANCHOR: 7d85889d
+        android:name="org.chromium.content.app.SandboxedProcessService16"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process16"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 7d85889d
+    <service  # DIFF-ANCHOR: dae26ed4
+        android:name="org.chromium.content.app.SandboxedProcessService17"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process17"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: dae26ed4
+    <service  # DIFF-ANCHOR: 2c6cf029
+        android:name="org.chromium.content.app.SandboxedProcessService18"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process18"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 2c6cf029
+    <service  # DIFF-ANCHOR: 1d2f0988
+        android:name="org.chromium.content.app.SandboxedProcessService19"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process19"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 1d2f0988
+    <service  # DIFF-ANCHOR: 4a39041b
+        android:name="org.chromium.content.app.SandboxedProcessService2"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process2"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 4a39041b
+    <service  # DIFF-ANCHOR: 073533bf
+        android:name="org.chromium.content.app.SandboxedProcessService20"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process20"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 073533bf
+    <service  # DIFF-ANCHOR: d24da41d
+        android:name="org.chromium.content.app.SandboxedProcessService21"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process21"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: d24da41d
+    <service  # DIFF-ANCHOR: 594d8b32
+        android:name="org.chromium.content.app.SandboxedProcessService22"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process22"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 594d8b32
+    <service  # DIFF-ANCHOR: 5528c0c3
+        android:name="org.chromium.content.app.SandboxedProcessService23"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process23"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 5528c0c3
+    <service  # DIFF-ANCHOR: b7ab2ba3
+        android:name="org.chromium.content.app.SandboxedProcessService24"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process24"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: b7ab2ba3
+    <service  # DIFF-ANCHOR: cec6cb64
+        android:name="org.chromium.content.app.SandboxedProcessService25"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process25"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: cec6cb64
+    <service  # DIFF-ANCHOR: 5b4a00fe
+        android:name="org.chromium.content.app.SandboxedProcessService26"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process26"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 5b4a00fe
+    <service  # DIFF-ANCHOR: ad49d203
+        android:name="org.chromium.content.app.SandboxedProcessService27"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process27"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: ad49d203
+    <service  # DIFF-ANCHOR: 573298e9
+        android:name="org.chromium.content.app.SandboxedProcessService28"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process28"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 573298e9
+    <service  # DIFF-ANCHOR: 79897b32
+        android:name="org.chromium.content.app.SandboxedProcessService29"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process29"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 79897b32
+    <service  # DIFF-ANCHOR: 84335864
+        android:name="org.chromium.content.app.SandboxedProcessService3"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process3"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 84335864
+    <service  # DIFF-ANCHOR: c4bd371e
+        android:name="org.chromium.content.app.SandboxedProcessService30"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process30"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: c4bd371e
+    <service  # DIFF-ANCHOR: 394a9fd0
+        android:name="org.chromium.content.app.SandboxedProcessService31"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process31"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 394a9fd0
+    <service  # DIFF-ANCHOR: b811afb8
+        android:name="org.chromium.content.app.SandboxedProcessService32"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process32"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: b811afb8
+    <service  # DIFF-ANCHOR: 2811ddd3
+        android:name="org.chromium.content.app.SandboxedProcessService33"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process33"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 2811ddd3
+    <service  # DIFF-ANCHOR: 73ae1688
+        android:name="org.chromium.content.app.SandboxedProcessService34"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process34"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 73ae1688
+    <service  # DIFF-ANCHOR: c476f324
+        android:name="org.chromium.content.app.SandboxedProcessService35"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process35"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: c476f324
+    <service  # DIFF-ANCHOR: 75d5304b
+        android:name="org.chromium.content.app.SandboxedProcessService36"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process36"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 75d5304b
+    <service  # DIFF-ANCHOR: dc6d0617
+        android:name="org.chromium.content.app.SandboxedProcessService37"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process37"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: dc6d0617
+    <service  # DIFF-ANCHOR: e31efe49
+        android:name="org.chromium.content.app.SandboxedProcessService38"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process38"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: e31efe49
+    <service  # DIFF-ANCHOR: 5736507e
+        android:name="org.chromium.content.app.SandboxedProcessService39"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process39"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 5736507e
+    <service  # DIFF-ANCHOR: a161be24
+        android:name="org.chromium.content.app.SandboxedProcessService4"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process4"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: a161be24
+    <service  # DIFF-ANCHOR: 8e591688
+        android:name="org.chromium.content.app.SandboxedProcessService5"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process5"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 8e591688
+    <service  # DIFF-ANCHOR: 705141d0
+        android:name="org.chromium.content.app.SandboxedProcessService6"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process6"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 705141d0
+    <service  # DIFF-ANCHOR: 38ed2189
+        android:name="org.chromium.content.app.SandboxedProcessService7"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process7"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: 38ed2189
+    <service  # DIFF-ANCHOR: aa417956
+        android:name="org.chromium.content.app.SandboxedProcessService8"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process8"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: aa417956
+    <service  # DIFF-ANCHOR: e2f3bbbd
+        android:name="org.chromium.content.app.SandboxedProcessService9"
+        android:exported="true"
+        android:externalService="true"
+        android:isolatedProcess="true"
+        android:permission="$PACKAGE.permission.CHILD_SERVICE"
+        android:process=":sandboxed_process9"
+        android:visibleToInstantApps="true">
+    </service>  # DIFF-ANCHOR: e2f3bbbd
+  </application>
+</manifest>

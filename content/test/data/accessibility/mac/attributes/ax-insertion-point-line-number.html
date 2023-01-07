@@ -1,0 +1,48 @@
+<!--
+@SCRIPT:
+  emptyLine.setAccessibilityFocused(TRUE)
+  wait for AXFocusedUIElementChanged on AXTextField
+  emptyLine.accessibilityAttributeNames.has(AXInsertionPointLineNumber)
+  emptyLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  singleLine.setAccessibilityFocused(TRUE)
+  wait for AXFocusedUIElementChanged on AXTextField
+  singleLine.accessibilityAttributeNames.has(AXInsertionPointLineNumber)
+  singleLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  press ArrowRight
+  singleLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  multiLine.setAccessibilityFocused(TRUE)
+  wait for AXFocusedUIElementChanged on AXTextField
+  multiLine.accessibilityAttributeNames.has(AXInsertionPointLineNumber)
+  multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  press ArrowRight
+  multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  press ArrowDown
+  multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  press ArrowLeft
+  multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  press ArrowDown
+  multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  press ArrowRight
+  multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  multiLine_emptyFirstLine.setAccessibilityFocused(TRUE)
+  wait for AXFocusedUIElementChanged on AXTextField
+  multiLine_emptyFirstLine.accessibilityAttributeNames.has(AXInsertionPointLineNumber)
+  multiLine_emptyFirstLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  press ArrowDown
+  multiLine_emptyFirstLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  press ArrowRight
+  multiLine_emptyFirstLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+-->
+<!DOCTYPE html>
+<input id="emptyLine">
+<input id="singleLine" value="single line">
+<textarea id="multiLine">
+    first line
+    second line
+    third line
+</textarea>
+<textarea id="multiLine_emptyFirstLine">
+
+    second line
+    third line
+</textarea>

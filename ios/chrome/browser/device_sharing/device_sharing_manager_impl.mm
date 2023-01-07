@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #import "components/handoff/handoff_manager.h"
 #import "components/handoff/pref_names_ios.h"
-#import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 
@@ -16,19 +15,19 @@
 
 DeviceSharingManagerImpl::DeviceSharingManagerImpl(
     ChromeBrowserState* browser_state)
-    : browser_state_(browser_state),
-      prefs_change_observer_(std::make_unique<PrefChangeRegistrar>()) {
+    : browser_state_(browser_state) {
   DCHECK(!browser_state || !browser_state->IsOffTheRecord());
-  prefs_change_observer_->Init(browser_state_->GetPrefs());
-  prefs_change_observer_->Add(
+  prefs_change_observer_.Init(browser_state_->GetPrefs());
+  prefs_change_observer_.Add(
       prefs::kIosHandoffToOtherDevices,
       base::BindRepeating(&DeviceSharingManagerImpl::UpdateHandoffManager,
                           base::Unretained(this)));
   UpdateHandoffManager();
   [handoff_manager_ updateActiveURL:GURL()];
+  [handoff_manager_ updateActiveTitle:std::u16string()];
 }
 
-DeviceSharingManagerImpl::~DeviceSharingManagerImpl() {}
+DeviceSharingManagerImpl::~DeviceSharingManagerImpl() = default;
 
 void DeviceSharingManagerImpl::SetActiveBrowser(Browser* browser) {
   active_browser_ = browser;
@@ -47,11 +46,20 @@ void DeviceSharingManagerImpl::UpdateActiveUrl(Browser* browser,
   [handoff_manager_ updateActiveURL:active_url];
 }
 
+void DeviceSharingManagerImpl::UpdateActiveTitle(Browser* browser,
+                                                 const std::u16string& title) {
+  if (browser != active_browser_)
+    return;
+
+  [handoff_manager_ updateActiveTitle:title];
+}
+
 void DeviceSharingManagerImpl::ClearActiveUrl(Browser* browser) {
   if (browser != active_browser_)
     return;
 
   [handoff_manager_ updateActiveURL:GURL()];
+  [handoff_manager_ updateActiveTitle:std::u16string()];
 }
 
 void DeviceSharingManagerImpl::UpdateHandoffManager() {

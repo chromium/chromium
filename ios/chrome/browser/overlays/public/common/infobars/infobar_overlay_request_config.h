@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,11 +21,11 @@ class InfobarOverlayRequestConfig
 
   // The infobar that triggered this OverlayRequest.
   InfoBarIOS* infobar() const { return infobar_.get(); }
-  // |infobar_|'s type.
+  // `infobar_`'s type.
   InfobarType infobar_type() const { return infobar_type_; }
-  // Whether |infobar_| has a badge.
+  // Whether `infobar_` has a badge.
   bool has_badge() const { return has_badge_; }
-  // Whether the |infobar_| banner should be presented for a longer time.
+  // Whether the `infobar_` banner should be presented for a longer time.
   bool is_high_priority() const { return is_high_priority_; }
   // The overlay type for this infobar OverlayRequest.
   InfobarOverlayType overlay_type() const { return overlay_type_; }

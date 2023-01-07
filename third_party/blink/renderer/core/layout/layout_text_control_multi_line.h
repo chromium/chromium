@@ -42,7 +42,7 @@ class LayoutTextControlMultiLine final : public LayoutTextControl {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 
   // We override the two baseline functions because we want our baseline to be
   // the bottom of our margin box.
@@ -62,4 +62,4 @@ class LayoutTextControlMultiLine final : public LayoutTextControl {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TEXT_CONTROL_MULTI_LINE_H_

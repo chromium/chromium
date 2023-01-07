@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,15 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
+#include "base/observer_list.h"
 #include "base/process/process_metrics.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resource_coordinator/intervention_policy_database.h"
@@ -31,9 +33,8 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/usb/usb_tab_helper.h"
-#include "chrome/browser/web_applications/components/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/permissions/permission_manager.h"
@@ -43,6 +44,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom.h"
 #include "url/gurl.h"
 
@@ -138,8 +140,9 @@ class TabLifecycleUnitExternalImpl : public TabLifecycleUnitExternal {
     tab_lifecycle_unit_->SetAutoDiscardable(auto_discardable);
   }
 
-  bool DiscardTab(LifecycleUnitDiscardReason reason) override {
-    return tab_lifecycle_unit_->Discard(reason);
+  bool DiscardTab(LifecycleUnitDiscardReason reason,
+                  uint64_t resident_set_size_estimate) override {
+    return tab_lifecycle_unit_->Discard(reason, resident_set_size_estimate);
   }
 
   bool IsDiscarded() const override {
@@ -151,7 +154,8 @@ class TabLifecycleUnitExternalImpl : public TabLifecycleUnitExternal {
   }
 
  private:
-  TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit_ = nullptr;
+  raw_ptr<TabLifecycleUnitSource::TabLifecycleUnit> tab_lifecycle_unit_ =
+      nullptr;
 };
 
 TabLifecycleUnitSource::TabLifecycleUnit::TabLifecycleUnit(
@@ -270,7 +274,7 @@ base::TimeTicks TabLifecycleUnitSource::TabLifecycleUnit::GetLastFocusedTime()
 
 base::ProcessHandle TabLifecycleUnitSource::TabLifecycleUnit::GetProcessHandle()
     const {
-  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+  content::RenderFrameHost* main_frame = web_contents()->GetPrimaryMainFrame();
   if (!main_frame)
     return base::ProcessHandle();
   content::RenderProcessHost* process = main_frame->GetProcess();
@@ -458,7 +462,8 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetAutoDiscardable(
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
-    LifecycleUnitDiscardReason discard_reason) {
+    LifecycleUnitDiscardReason discard_reason,
+    uint64_t tab_resident_set_size_estimate) {
   UMA_HISTOGRAM_BOOLEAN(
       "TabManager.Discarding.DiscardedTabHasBeforeUnloadHandler",
       web_contents()->NeedToFireBeforeUnloadOrUnloadEvents());
@@ -476,6 +481,10 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   std::unique_ptr<content::WebContents> null_contents =
       content::WebContents::Create(create_params);
   content::WebContents* raw_null_contents = null_contents.get();
+
+  performance_manager::user_tuning::UserPerformanceTuningManager::
+      PreDiscardResourceUsage::CreateForWebContents(
+          null_contents.get(), tab_resident_set_size_estimate);
 
   // Attach the ResourceCoordinatorTabHelper. In production code this has
   // already been attached by now due to AttachTabHelpers, but there's a long
@@ -497,10 +506,10 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   bool fast_shutdown_success =
       GetRenderProcessHost()->FastShutdownIfPossible(1u, false);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!fast_shutdown_success &&
       discard_reason == LifecycleUnitDiscardReason::URGENT) {
-    content::RenderFrameHost* main_frame = old_contents->GetMainFrame();
+    content::RenderFrameHost* main_frame = old_contents->GetPrimaryMainFrame();
     // We avoid fast shutdown on tabs with beforeunload handlers on the main
     // frame, as that is often an indication of unsaved user state.
     DCHECK(main_frame);
@@ -543,7 +552,8 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
 }
 
 bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
-    LifecycleUnitDiscardReason reason) {
+    LifecycleUnitDiscardReason reason,
+    uint64_t tab_resident_set_size_estimate) {
   // Can't discard a tab when it isn't in a tabstrip.
   if (!tab_strip_model_) {
     // Logs are used to diagnose user feedback reports.
@@ -563,7 +573,7 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
 
   discard_reason_ = reason;
 
-  FinishDiscard(reason);
+  FinishDiscard(reason, tab_resident_set_size_estimate);
 
   return true;
 }
@@ -608,7 +618,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::CheckMediaUsage(
 
 content::RenderProcessHost*
 TabLifecycleUnitSource::TabLifecycleUnit::GetRenderProcessHost() const {
-  return web_contents()->GetMainFrame()->GetProcess();
+  return web_contents()->GetPrimaryMainFrame()->GetProcess();
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::OnLifecycleUnitStateChanged(
@@ -646,11 +656,9 @@ void TabLifecycleUnitSource::TabLifecycleUnit::CheckDeviceUsage(
     DecisionDetails* decision_details) const {
   DCHECK(decision_details);
 
-  if (auto* usb_tab_helper = UsbTabHelper::FromWebContents(web_contents())) {
-    if (usb_tab_helper->IsDeviceConnected()) {
-      decision_details->AddReason(
-          DecisionFailureReason::LIVE_STATE_USING_WEB_USB);
-    }
+  if (web_contents()->IsConnectedToUsbDevice()) {
+    decision_details->AddReason(
+        DecisionFailureReason::LIVE_STATE_USING_WEB_USB);
   }
 
   if (web_contents()->IsConnectedToBluetoothDevice()) {

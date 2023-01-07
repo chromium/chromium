@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 
 #include "base/base64url.h"
 #include "base/bind.h"
+#include "base/json/values_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "base/util/values/values_util.h"
+#include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_certificate_storage_impl.h"
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
@@ -119,9 +120,8 @@ std::vector<NearbySharePrivateCertificate> CreatePrivateCertificates(
 }
 
 base::Time TimestampToTime(nearbyshare::proto::Timestamp timestamp) {
-  return base::Time::UnixEpoch() +
-         base::TimeDelta::FromSeconds(timestamp.seconds()) +
-         base::TimeDelta::FromNanoseconds(timestamp.nanos());
+  return base::Time::UnixEpoch() + base::Seconds(timestamp.seconds()) +
+         base::Nanoseconds(timestamp.nanos());
 }
 
 }  // namespace
@@ -178,7 +178,7 @@ class NearbyShareCertificateStorageImplTest : public ::testing::Test {
     for (auto& cert : pub_certs) {
       expiration_dict.SetKey(
           EncodeString(cert.secret_id()),
-          util::TimeToValue(TimestampToTime(cert.end_time())));
+          base::TimeToValue(TimestampToTime(cert.end_time())));
       db_entries_.emplace(cert.secret_id(), std::move(cert));
     }
     pref_service_->Set(
@@ -551,7 +551,7 @@ TEST_F(NearbyShareCertificateStorageImplTest,
   auto certs = CreatePrivateCertificates(
       3, nearby_share::mojom::Visibility::kAllContacts);
   cert_store_->ReplacePrivateCertificates(certs);
-  base::Optional<base::Time> next_expiration =
+  absl::optional<base::Time> next_expiration =
       cert_store_->NextPrivateCertificateExpirationTime();
 
   ASSERT_TRUE(next_expiration.has_value());
@@ -568,7 +568,7 @@ TEST_F(NearbyShareCertificateStorageImplTest,
        NextPublicCertificateExpirationTime) {
   db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
 
-  base::Optional<base::Time> next_expiration =
+  absl::optional<base::Time> next_expiration =
       cert_store_->NextPublicCertificateExpirationTime();
 
   ASSERT_TRUE(next_expiration.has_value());

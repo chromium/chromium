@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/core/xlink_names.h"
 #include "third_party/blink/renderer/core/xml_names.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/static_constructors.h"
@@ -66,8 +65,8 @@ struct QNameComponentsTranslator {
                         unsigned) {
     const QualifiedNameComponents& components = data.components_;
     auto name = QualifiedName::QualifiedNameImpl::Create(
-        AtomicString(components.prefix_), AtomicString(components.local_name_),
-        AtomicString(components.namespace_), data.is_static_);
+        components.prefix_, components.local_name_, components.namespace_,
+        data.is_static_);
     name->AddRef();
     location = name.get();
   }
@@ -77,7 +76,7 @@ QualifiedName::QualifiedName(const AtomicString& p,
                              const AtomicString& l,
                              const AtomicString& n) {
   QualifiedNameData data = {
-      {p.Impl(), l.Impl(), n.IsEmpty() ? g_null_atom.Impl() : n.Impl()}, false};
+      {p.Impl(), l.Impl(), n.empty() ? g_null_atom.Impl() : n.Impl()}, false};
   QualifiedNameCache::AddResult add_result =
       GetQualifiedNameCache().AddWithTranslator<QNameComponentsTranslator>(
           data);

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -123,7 +123,7 @@ const tests = {
   'LoginExitCurrentSession': () => {
     chrome.test.getConfig(config => {
       chrome.login.exitCurrentSession(config.customArg);
-      // No check for success as browser process exists.
+      // No check for success as browser process exits.
     });
   },
   'LoginFetchDataForNextLoginAttempt': () => {
@@ -143,10 +143,8 @@ const tests = {
   },
   'LoginUnlockManagedGuestSession': () => {
     chrome.test.getConfig(config => {
-      chrome.login.unlockManagedGuestSession(config.customArg, () => {
-        chrome.test.assertNoLastError();
-        chrome.test.succeed();
-      });
+      chrome.login.unlockManagedGuestSession(config.customArg);
+      // No check for success as browser process exits.
     });
   },
   'LoginUnlockManagedGuestSessionWrongPassword': () => {
@@ -174,6 +172,18 @@ const tests = {
       chrome.test.assertLastError(noPermissionToUnlockErrorMessage);
       chrome.test.succeed();
     });
+  },
+  'LoginRequestExternalLogout': () => {
+    chrome.login.requestExternalLogout();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+  'LoginOnExternalLogoutDone': () => {
+    chrome.login.onExternalLogoutDone.addListener(() => {
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
+    chrome.test.sendMessage('onExternalLogoutDoneLoginScreenMessage');
   },
   /* I18n *********************************************************************/
   'I18nGetMessage': () => {

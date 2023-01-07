@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,8 +30,11 @@ message TrustTokenToplevelConfig {
 // (issuer origin, top-level page origin) pairs.
 message TrustTokenIssuerToplevelPairConfig {
   // The time of the most recent redemption for this pair. Used for
-  // rate-limiting.
+  // rate-limiting and expiration.
   optional string last_redemption = 1;
   // The redemption record cached for this pair, if any.
   optional TrustTokenRedemptionRecord redemption_record = 2;
+  // The time of the redemption before last for this pair. Used for
+  // rate-limiting.
+  optional string penultimate_redemption = 3;
 }

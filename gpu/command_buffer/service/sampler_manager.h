@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
@@ -115,7 +115,7 @@ class GPU_GLES2_EXPORT Sampler : public base::RefCounted<Sampler> {
       const FeatureInfo* feature_info, GLenum pname, GLfloat param);
 
   // The manager that owns this Sampler.
-  SamplerManager* manager_;
+  raw_ptr<SamplerManager> manager_;
 
   GLuint client_id_;
   GLuint service_id_;
@@ -131,6 +131,10 @@ class GPU_GLES2_EXPORT Sampler : public base::RefCounted<Sampler> {
 class GPU_GLES2_EXPORT SamplerManager {
  public:
   SamplerManager(FeatureInfo* feature_info);
+
+  SamplerManager(const SamplerManager&) = delete;
+  SamplerManager& operator=(const SamplerManager&) = delete;
+
   ~SamplerManager();
 
   // Must call before destruction.
@@ -164,8 +168,6 @@ class GPU_GLES2_EXPORT SamplerManager {
   SamplerMap samplers_;
 
   bool have_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(SamplerManager);
 };
 
 }  // namespace gles2

@@ -1,0 +1,25 @@
+caption: Enable <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> proxy
+desc: |-
+  Setting the policy to Enabled or leaving it unset lets <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> act as a proxy between <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> and legacy printers connected to the machine. Using their Google Account, users may turn on the cloud print proxy by authentication.
+
+        Setting the policy to Disabled means users can't turn on the proxy, and the machine can't share its printers with <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Enable <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> proxy
+  value: true
+- caption: Disable <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> proxy
+  value: false
+owners:
+- file://printing/OWNERS
+- rbpotter@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:17-
+tags: []
+type: main

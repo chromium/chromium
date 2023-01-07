@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,12 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -38,13 +38,18 @@ class SharingDeviceRegistration {
       base::OnceCallback<void(SharingDeviceRegistrationResult)>;
   using TargetInfoCallback = base::OnceCallback<void(
       SharingDeviceRegistrationResult,
-      base::Optional<syncer::DeviceInfo::SharingTargetInfo>)>;
+      absl::optional<syncer::DeviceInfo::SharingTargetInfo>)>;
 
   SharingDeviceRegistration(PrefService* pref_service,
                             SharingSyncPreference* prefs,
                             VapidKeyManager* vapid_key_manager,
                             instance_id::InstanceIDDriver* instance_id_driver,
                             syncer::SyncService* sync_service);
+
+  SharingDeviceRegistration(const SharingDeviceRegistration&) = delete;
+  SharingDeviceRegistration& operator=(const SharingDeviceRegistration&) =
+      delete;
+
   virtual ~SharingDeviceRegistration();
 
   // Registers device with sharing sync preferences. Takes a |callback| function
@@ -65,6 +70,10 @@ class SharingDeviceRegistration {
 
   // Returns if device can handle receiving of remote copy contents.
   virtual bool IsRemoteCopySupported() const;
+
+  // Returns if device can handle receiving of optimization guide push
+  // notification.
+  virtual bool IsOptimizationGuidePushNotificationSupported() const;
 
   // For testing
   void SetEnabledFeaturesForTesting(
@@ -90,16 +99,16 @@ class SharingDeviceRegistration {
 
   void OnVapidTargetInfoRetrieved(
       RegistrationCallback callback,
-      base::Optional<std::string> authorized_entity,
+      absl::optional<std::string> authorized_entity,
       SharingDeviceRegistrationResult result,
-      base::Optional<syncer::DeviceInfo::SharingTargetInfo> vapid_target_info);
+      absl::optional<syncer::DeviceInfo::SharingTargetInfo> vapid_target_info);
 
   void OnSharingTargetInfoRetrieved(
       RegistrationCallback callback,
-      base::Optional<std::string> authorized_entity,
-      base::Optional<syncer::DeviceInfo::SharingTargetInfo> vapid_target_info,
+      absl::optional<std::string> authorized_entity,
+      absl::optional<syncer::DeviceInfo::SharingTargetInfo> vapid_target_info,
       SharingDeviceRegistrationResult result,
-      base::Optional<syncer::DeviceInfo::SharingTargetInfo>
+      absl::optional<syncer::DeviceInfo::SharingTargetInfo>
           sharing_target_info);
 
   void OnVapidFCMTokenDeleted(RegistrationCallback callback,
@@ -112,7 +121,7 @@ class SharingDeviceRegistration {
                          instance_id::InstanceID::Result result);
 
   // Returns the authorization entity for FCM registration.
-  base::Optional<std::string> GetAuthorizationEntity() const;
+  absl::optional<std::string> GetAuthorizationEntity() const;
 
   // Computes and returns a set of all enabled features on the device.
   // |supports_vapid|: If set to true, then enabled features with VAPID suffix
@@ -121,17 +130,15 @@ class SharingDeviceRegistration {
   std::set<sync_pb::SharingSpecificFields_EnabledFeatures> GetEnabledFeatures(
       bool supports_vapid) const;
 
-  PrefService* pref_service_;
-  SharingSyncPreference* sharing_sync_preference_;
-  VapidKeyManager* vapid_key_manager_;
-  instance_id::InstanceIDDriver* instance_id_driver_;
-  syncer::SyncService* sync_service_;
-  base::Optional<std::set<sync_pb::SharingSpecificFields_EnabledFeatures>>
+  raw_ptr<PrefService> pref_service_;
+  raw_ptr<SharingSyncPreference> sharing_sync_preference_;
+  raw_ptr<VapidKeyManager> vapid_key_manager_;
+  raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
+  raw_ptr<syncer::SyncService> sync_service_;
+  absl::optional<std::set<sync_pb::SharingSpecificFields_EnabledFeatures>>
       enabled_features_testing_value_;
 
   base::WeakPtrFactory<SharingDeviceRegistration> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SharingDeviceRegistration);
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_DEVICE_REGISTRATION_H_

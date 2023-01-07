@@ -1,0 +1,30 @@
+emptyLine.setAccessibilityFocused(TRUE)=NULL
+AXFocusedUIElementChanged on AXTextField
+emptyLine.accessibilityAttributeNames.has(AXInsertionPointLineNumber)='yes'
+emptyLine.accessibilityAttributeValue(AXInsertionPointLineNumber)=0
+singleLine.setAccessibilityFocused(TRUE)=NULL
+AXFocusedUIElementChanged on AXTextField AXValue='single line'
+singleLine.accessibilityAttributeNames.has(AXInsertionPointLineNumber)='yes'
+singleLine.accessibilityAttributeValue(AXInsertionPointLineNumber)=0
+press ArrowRight
+singleLine.accessibilityAttributeValue(AXInsertionPointLineNumber)=0
+multiLine.setAccessibilityFocused(TRUE)=NULL
+multiLine.accessibilityAttributeNames.has(AXInsertionPointLineNumber)='yes'
+multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)=0
+press ArrowRight
+multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)=0
+press ArrowDown
+multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)=1
+press ArrowLeft
+multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)=1
+press ArrowDown
+multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)=2
+press ArrowRight
+multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)=2
+multiLine_emptyFirstLine.setAccessibilityFocused(TRUE)=NULL
+multiLine_emptyFirstLine.accessibilityAttributeNames.has(AXInsertionPointLineNumber)='yes'
+multiLine_emptyFirstLine.accessibilityAttributeValue(AXInsertionPointLineNumber)=0
+press ArrowDown
+multiLine_emptyFirstLine.accessibilityAttributeValue(AXInsertionPointLineNumber)=1
+press ArrowRight
+multiLine_emptyFirstLine.accessibilityAttributeValue(AXInsertionPointLineNumber)=1

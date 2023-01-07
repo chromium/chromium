@@ -1,17 +1,20 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/policy/core/common/policy_proto_decoders.h"
 
+#include <cstring>
 #include <limits>
 #include <memory>
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
@@ -23,6 +26,10 @@ namespace policy {
 namespace em = enterprise_management;
 
 namespace {
+
+const char kValue[] = "Value";
+const char kLevel[] = "Level";
+const char kRecommended[] = "Recommended";
 
 // Returns true and sets |level| to a PolicyLevel if the policy has been set
 // at that level. Returns false if the policy is not set, or has been set at
@@ -87,22 +94,45 @@ base::Value DecodeStringListProto(const em::StringListPolicyProto& proto) {
 base::Value DecodeJsonProto(const em::StringPolicyProto& proto,
                             std::string* error) {
   const std::string& json = proto.value();
-  base::JSONReader::ValueWithError value_with_error =
-      base::JSONReader::ReadAndReturnValueWithError(
-          json, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
+      json, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 
-  if (!value_with_error.value) {
+  if (!value_with_error.has_value()) {
     // Can't parse as JSON so return it as a string, and leave it to the handler
     // to validate.
     LOG(WARNING) << "Invalid JSON: " << json;
-    *error = value_with_error.error_message;
+    *error = value_with_error.error().message;
     return base::Value(json);
   }
 
   // Accept any Value type that parsed as JSON, and leave it to the handler to
   // convert and check the concrete type.
   error->clear();
-  return std::move(value_with_error.value.value());
+  return std::move(*value_with_error);
+}
+
+bool PerProfileMatches(bool policy_per_profile,
+                       PolicyPerProfileFilter per_profile_enum) {
+  switch (per_profile_enum) {
+    case PolicyPerProfileFilter::kTrue:
+      return policy_per_profile;
+    case PolicyPerProfileFilter::kFalse:
+      return !policy_per_profile;
+    case PolicyPerProfileFilter::kAny:
+      return true;
+  }
+}
+
+bool UseExternalDataFetcher(const char* policy_name,
+                            StringPolicyType policy_type) {
+  if (policy_type == StringPolicyType::EXTERNAL)
+    return true;
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (strcmp(policy_name, key::kWebAppInstallForceList) == 0)
+    return true;
+#endif
+  return false;
 }
 
 }  // namespace
@@ -112,81 +142,126 @@ void DecodeProtoFields(
     base::WeakPtr<CloudExternalDataManager> external_data_manager,
     PolicySource source,
     PolicyScope scope,
-    PolicyMap* map) {
+    PolicyMap* map,
+    PolicyPerProfileFilter per_profile) {
   PolicyLevel level;
 
-  // Access arrays are terminated by a struct that contains only nullptrs.
-  for (const BooleanPolicyAccess* access = &kBooleanPolicyAccess[0];
-       access->policy_key; access++) {
-    if (!(policy.*access->has_proto)())
+  for (const BooleanPolicyAccess& access : kBooleanPolicyAccess) {
+    if (!PerProfileMatches(access.per_profile, per_profile) ||
+        !access.has_proto(policy))
       continue;
 
-    const em::BooleanPolicyProto& proto = (policy.*access->get_proto)();
+    const em::BooleanPolicyProto& proto = access.get_proto(policy);
     if (!GetPolicyLevel(proto, &level))
       continue;
 
-    map->Set(access->policy_key, level, scope, source,
-             DecodeBooleanProto(proto), nullptr);
+    map->Set(access.policy_key, level, scope, source, DecodeBooleanProto(proto),
+             nullptr);
   }
 
-  for (const IntegerPolicyAccess* access = &kIntegerPolicyAccess[0];
-       access->policy_key; access++) {
-    if (!(policy.*access->has_proto)())
+  for (const IntegerPolicyAccess& access : kIntegerPolicyAccess) {
+    if (!PerProfileMatches(access.per_profile, per_profile) ||
+        !access.has_proto(policy))
       continue;
 
-    const em::IntegerPolicyProto& proto = (policy.*access->get_proto)();
+    const em::IntegerPolicyProto& proto = access.get_proto(policy);
     if (!GetPolicyLevel(proto, &level))
       continue;
 
     std::string error;
-    map->Set(access->policy_key, level, scope, source,
+    map->Set(access.policy_key, level, scope, source,
              DecodeIntegerProto(proto, &error), nullptr);
     if (!error.empty())
-      map->AddMessage(access->policy_key, PolicyMap::MessageType::kError,
+      map->AddMessage(access.policy_key, PolicyMap::MessageType::kError,
                       IDS_POLICY_PROTO_PARSING_ERROR,
                       {base::UTF8ToUTF16(error)});
   }
 
-  for (const StringPolicyAccess* access = &kStringPolicyAccess[0];
-       access->policy_key; access++) {
-    if (!(policy.*access->has_proto)())
+  for (const StringPolicyAccess& access : kStringPolicyAccess) {
+    if (!PerProfileMatches(access.per_profile, per_profile) ||
+        !access.has_proto(policy))
       continue;
 
-    const em::StringPolicyProto& proto = (policy.*access->get_proto)();
+    const em::StringPolicyProto& proto = access.get_proto(policy);
     if (!GetPolicyLevel(proto, &level))
       continue;
 
     std::string error;
-    base::Value value = (access->type == StringPolicyType::STRING)
+    base::Value value = (access.type == StringPolicyType::STRING)
                             ? DecodeStringProto(proto)
                             : DecodeJsonProto(proto, &error);
 
+    // EXTERNAL policies represent a single piece of external data that is
+    // retrieved by an ExternalDataFetcher.
+    // kWebAppInstallForceList is currently the only policy that is a JSON
+    // policy (containing mostly non-external data) which can contain
+    // references to multiple pieces of external data as well. For that it
+    // needs an ExternalDataFetcher. If we ever create a second such policy,
+    // create a new type for it instead of special-casing the policies here.
     std::unique_ptr<ExternalDataFetcher> external_data_fetcher =
-        (access->type == StringPolicyType::EXTERNAL)
+        UseExternalDataFetcher(access.policy_key, access.type)
             ? std::make_unique<ExternalDataFetcher>(external_data_manager,
-                                                    access->policy_key)
+                                                    access.policy_key)
             : nullptr;
 
-    map->Set(access->policy_key, level, scope, source, std::move(value),
+    map->Set(access.policy_key, level, scope, source, std::move(value),
              std::move(external_data_fetcher));
     if (!error.empty())
-      map->AddMessage(access->policy_key, PolicyMap::MessageType::kError,
+      map->AddMessage(access.policy_key, PolicyMap::MessageType::kError,
                       IDS_POLICY_PROTO_PARSING_ERROR,
                       {base::UTF8ToUTF16(error)});
   }
 
-  for (const StringListPolicyAccess* access = &kStringListPolicyAccess[0];
-       access->policy_key; access++) {
-    if (!(policy.*access->has_proto)())
+  for (const StringListPolicyAccess& access : kStringListPolicyAccess) {
+    if (!PerProfileMatches(access.per_profile, per_profile) ||
+        !access.has_proto(policy))
       continue;
 
-    const em::StringListPolicyProto& proto = (policy.*access->get_proto)();
+    const em::StringListPolicyProto& proto = access.get_proto(policy);
     if (!GetPolicyLevel(proto, &level))
       continue;
 
-    map->Set(access->policy_key, level, scope, source,
+    map->Set(access.policy_key, level, scope, source,
              DecodeStringListProto(proto), nullptr);
   }
+}
+
+bool ParseComponentPolicy(base::Value json,
+                          PolicyScope scope,
+                          PolicySource source,
+                          PolicyMap* policy,
+                          std::string* error) {
+  // Each top-level key maps a policy name to its description.
+  //
+  // Each description is an object that contains the policy value under the
+  // "Value" key. The optional "Level" key is either "Mandatory" (default) or
+  // "Recommended".
+  for (auto it : json.DictItems()) {
+    const std::string& policy_name = it.first;
+    base::Value description = std::move(it.second);
+    if (!description.is_dict()) {
+      *error = "The JSON blob dictionary value is not a dictionary.";
+      return false;
+    }
+
+    absl::optional<base::Value> value = description.ExtractKey(kValue);
+    if (!value.has_value()) {
+      *error = base::StrCat(
+          {"The JSON blob dictionary value doesn't contain the required ",
+           kValue, " field."});
+      return false;
+    }
+
+    PolicyLevel level = POLICY_LEVEL_MANDATORY;
+    const std::string* level_string = description.FindStringKey(kLevel);
+    if (level_string && *level_string == kRecommended)
+      level = POLICY_LEVEL_RECOMMENDED;
+
+    policy->Set(policy_name, level, scope, source, std::move(value.value()),
+                nullptr);
+  }
+
+  return true;
 }
 
 }  // namespace policy

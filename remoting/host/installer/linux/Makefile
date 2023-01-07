@@ -1,4 +1,4 @@
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,7 +16,10 @@ SYSTEMD_UNIT_DIR = $(DESTDIR)/lib/systemd/system
 INSTALL_DIR = $(DESTDIR)/opt/google/chrome-remote-desktop
 CHROME_NATIVE_MESSAGING_DIR = $(DESTDIR)/etc/opt/chrome/native-messaging-hosts
 FIREFOX_NATIVE_MESSAGING_DIR = $(DESTDIR)/usr/lib/mozilla/native-messaging-hosts
+SYSTEM_WIDE_DESKTOP_ENTRIES_DIR = $(DESTDIR)/usr/share/applications
 
+CORE_LIBNAME = $(BUILD_DIR)/libremoting_core.so
+CORE_DEBUGFILE = $(CORE_LIBNAME).debug
 ME2ME_PROGNAME = $(BUILD_DIR)/remoting_me2me_host
 ME2ME_DEBUGFILE = $(ME2ME_PROGNAME).debug
 START_PROGNAME = $(BUILD_DIR)/remoting_start_host
@@ -27,9 +30,16 @@ ME2ME_NM_PROGNAME = $(BUILD_DIR)/remoting_native_messaging_host
 ME2ME_NM_DEBUGFILE = $(ME2ME_NM_PROGNAME).debug
 REMOTE_ASSISTANCE_PROGNAME = $(BUILD_DIR)/remote_assistance_host
 REMOTE_ASSISTANCE_DEBUGFILE = $(REMOTE_ASSISTANCE_PROGNAME).debug
+REMOTE_OPEN_URL_PROGNAME = $(BUILD_DIR)/remote_open_url
+REMOTE_OPEN_URL_DEBUGFILE = $(REMOTE_OPEN_URL_PROGNAME).debug
+REMOTE_WEBAUTHN_PROGNAME = $(BUILD_DIR)/remote_webauthn
+REMOTE_WEBAUTHN_DEBUGFILE = $(REMOTE_WEBAUTHN_PROGNAME).debug
 
 all:
 
+# Make sure you list files to be installed in |inputs| in BUILD.gn, so that you
+# don't accidentally miss a dependency, which may cause nondeterministic build
+# behavior.
 install:
 	install -d "$(CRON_DIR)"
 	install -d "$(DOC_DIR)"
@@ -38,6 +48,7 @@ install:
 	install -d "$(SYSTEMD_UNIT_DIR)"
 	install -d "$(CHROME_NATIVE_MESSAGING_DIR)"
 	install -d "$(FIREFOX_NATIVE_MESSAGING_DIR)"
+	install -d "$(SYSTEM_WIDE_DESKTOP_ENTRIES_DIR)"
 
 	install "$(SRC_DIR)/remoting/host/linux/linux_me2me_host.py" \
 	  "$(INSTALL_DIR)/chrome-remote-desktop"
@@ -45,6 +56,8 @@ install:
 	  "$(INSTALL_DIR)"
 	install "$(SRC_DIR)/remoting/host/installer/linux/Xsession" \
 	  "$(INSTALL_DIR)"
+	install "$(SRC_DIR)/remoting/host/linux/configure_url_forwarder.py" \
+	  "$(INSTALL_DIR)/configure-url-forwarder"
 
 	install -m 0644 \
 	  "$(BUILD_DIR)/remoting/com.google.chrome.remote_desktop.json" \
@@ -59,6 +72,12 @@ install:
 	install -m 0644 \
 	  "$(BUILD_DIR)/remoting/com.google.chrome.remote_assistance-firefox.json" \
 	  "$(FIREFOX_NATIVE_MESSAGING_DIR)/com.google.chrome.remote_assistance.json"
+	install -m 0644 \
+	  "$(BUILD_DIR)/remoting/com.google.chrome.remote_webauthn.json" \
+	  "$(CHROME_NATIVE_MESSAGING_DIR)/com.google.chrome.remote_webauthn.json"
+
+	install "$(CORE_LIBNAME)" "$(INSTALL_DIR)/libremoting_core.so"
+	eu-strip -f "$(CORE_DEBUGFILE)" "$(INSTALL_DIR)/libremoting_core.so"
 
 	install "$(ME2ME_PROGNAME)" \
 	  "$(INSTALL_DIR)/chrome-remote-desktop-host"
@@ -81,6 +100,18 @@ install:
 	eu-strip -f "$(REMOTE_ASSISTANCE_DEBUGFILE)" \
 	  "$(INSTALL_DIR)/remote-assistance-host"
 
+	install "$(REMOTE_OPEN_URL_PROGNAME)" \
+	  "$(INSTALL_DIR)/remote-open-url"
+	eu-strip -f "$(REMOTE_OPEN_URL_DEBUGFILE)" \
+	  "$(INSTALL_DIR)/remote-open-url"
+
+	install "$(REMOTE_WEBAUTHN_PROGNAME)" "$(INSTALL_DIR)/remote-webauthn"
+	eu-strip -f "$(REMOTE_WEBAUTHN_DEBUGFILE)" "$(INSTALL_DIR)/remote-webauthn"
+
+	install -m 0644 \
+	  "$(BUILD_DIR)/remoting/crd-url-forwarder.desktop" \
+	  "$(SYSTEM_WIDE_DESKTOP_ENTRIES_DIR)/crd-url-forwarder.desktop"
+
 	install -m 0644 \
 	  "$(BUILD_DIR)/icudtl.dat" "$(INSTALL_DIR)/icudtl.dat"
 
@@ -89,9 +120,16 @@ install:
 	    "$(INSTALL_DIR)/remoting_locales/$$locale"; \
 	done
 
+ifdef REMOTING_USE_WAYLAND
+	install -m 0644 \
+	  "$(SRC_DIR)/remoting/host/installer/linux/chrome-remote-desktop-wayland@.service" \
+	  "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop@.service"
+else
 	install -m 0644 \
 	  "$(SRC_DIR)/remoting/host/installer/linux/chrome-remote-desktop@.service" \
 	  "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop@.service"
+endif
+
 	# Mask the SysV-style init script under systemd so both don't end up enabled.
 	ln -s /dev/null "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop.service"
 

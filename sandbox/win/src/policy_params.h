@@ -1,9 +1,9 @@
-// Copyright (c) 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_POLICY_PARAMS_H__
-#define SANDBOX_SRC_POLICY_PARAMS_H__
+#ifndef SANDBOX_WIN_SRC_POLICY_PARAMS_H_
+#define SANDBOX_WIN_SRC_POLICY_PARAMS_H_
 
 #include "sandbox/win/src/policy_engine_params.h"
 
@@ -18,25 +18,12 @@ class ParameterSet;
 #define POLPARAMS_END(type) PolParamLast }; }; \
   typedef sandbox::ParameterSet type##Array [type::PolParamLast];
 
-// Policy parameters for file open / create.
+// Policy parameters for file access.
 POLPARAMS_BEGIN(OpenFile)
   POLPARAM(NAME)
-  POLPARAM(BROKER)  // true if called from the broker.
   POLPARAM(ACCESS)
-  POLPARAM(DISPOSITION)
-  POLPARAM(OPTIONS)
+  POLPARAM(OPENONLY)
 POLPARAMS_END(OpenFile)
-
-// Policy parameter for name-based policies.
-POLPARAMS_BEGIN(FileName)
-  POLPARAM(NAME)
-  POLPARAM(BROKER)  // true if called from the broker.
-POLPARAMS_END(FileName)
-
-static_assert(OpenFile::NAME == static_cast<int>(FileName::NAME),
-              "to simplify fs policies");
-static_assert(OpenFile::BROKER == static_cast<int>(FileName::BROKER),
-              "to simplify fs policies");
 
 // Policy parameter for name-based policies.
 POLPARAMS_BEGIN(NameBased)
@@ -63,4 +50,4 @@ POLPARAMS_END(HandleTarget)
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_POLICY_PARAMS_H__
+#endif  // SANDBOX_WIN_SRC_POLICY_PARAMS_H_

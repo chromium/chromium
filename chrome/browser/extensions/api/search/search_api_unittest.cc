@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,6 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension_builder.h"
-#include "ui/display/test/scoped_screen_override.h"
-#include "ui/display/test/test_screen.h"
 
 namespace extensions {
 
@@ -30,11 +28,9 @@ scoped_refptr<const Extension> CreateSearchExtension() {
 }
 
 scoped_refptr<SearchQueryFunction> CreateSearchFunction(
-    scoped_refptr<const Extension> extension,
-    Profile* profile) {
+    scoped_refptr<const Extension> extension) {
   auto function = base::MakeRefCounted<SearchQueryFunction>();
   function->set_extension(extension.get());
-  function->set_browser_context(profile);
   function->set_has_callback(true);
   return function;
 }
@@ -76,8 +72,6 @@ class SearchApiUnitTest : public ExtensionServiceTestBase {
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
 
-  display::test::TestScreen test_screen_;
-  std::unique_ptr<display::test::ScopedScreenOverride> scoped_screen_override_;
   scoped_refptr<extensions::SearchQueryFunction> function_;
 };
 
@@ -93,8 +87,6 @@ void SearchApiUnitTest::SetUp() {
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
   browser_ = std::unique_ptr<Browser>(Browser::Create(params));
-  scoped_screen_override_ =
-      std::make_unique<display::test::ScopedScreenOverride>(&test_screen_);
 
   // Mock TemplateURLService.
   auto* template_url_service = static_cast<TemplateURLService*>(
@@ -104,7 +96,7 @@ void SearchApiUnitTest::SetUp() {
   search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
 
   scoped_refptr<const Extension> extension = CreateSearchExtension();
-  function_ = CreateSearchFunction(extension, profile());
+  function_ = CreateSearchFunction(extension);
   CreateWebContents(browser());
 }
 

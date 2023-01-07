@@ -1,0 +1,43 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+CANVAS_DIMENSIONS, 24,
+MOVE_TO, 12, 6,
+R_CUBIC_TO, 1.65f, 0, 3, -1.35f, 3, -3,
+R_CUBIC_TO, 0, -1.65f, -1.35f, -3, -3, -3,
+R_CUBIC_TO, -1.65f, 0, -3, 1.35f, -3, 3,
+R_CUBIC_TO, 0, 1.65f, 1.35f, 3, 3, 3,
+CLOSE,
+R_MOVE_TO, 0, 3,
+R_CUBIC_TO, -1.65f, 0, -3, 1.35f, -3, 3,
+R_CUBIC_TO, 0, 1.65f, 1.35f, 3, 3, 3,
+R_CUBIC_TO, 1.65f, 0, 3, -1.35f, 3, -3,
+R_CUBIC_TO, 0, -1.65f, -1.35f, -3, -3, -3,
+CLOSE,
+R_MOVE_TO, 0, 9,
+R_CUBIC_TO, -1.65f, 0, -3, 1.35f, -3, 3,
+R_CUBIC_TO, 0, 1.65f, 1.35f, 3, 3, 3,
+R_CUBIC_TO, 1.65f, 0, 3, -1.35f, 3, -3,
+R_CUBIC_TO, 0, -1.65f, -1.35f, -3, -3, -3,
+CLOSE
+
+CANVAS_DIMENSIONS, 12,
+MOVE_TO, 6, 3,
+R_CUBIC_TO, 0.83f, 0, 1.5f, -0.67f, 1.5f, -1.5f,
+CUBIC_TO_SHORTHAND, 6.83f, 0, 6, 0,
+CUBIC_TO_SHORTHAND, 4.5f, 0.68f, 4.5f, 1.5f,
+CUBIC_TO_SHORTHAND, 5.18f, 3, 6, 3,
+CLOSE,
+R_MOVE_TO, 0, 1.5f,
+R_CUBIC_TO, -0.82f, 0, -1.5f, 0.68f, -1.5f, 1.5f,
+CUBIC_TO_SHORTHAND, 5.18f, 7.5f, 6, 7.5f,
+CUBIC_TO_SHORTHAND, 7.5f, 6.83f, 7.5f, 6,
+CUBIC_TO_SHORTHAND, 6.83f, 4.5f, 6, 4.5f,
+CLOSE,
+MOVE_TO, 6, 9,
+R_CUBIC_TO, -0.82f, 0, -1.5f, 0.68f, -1.5f, 1.5f,
+CUBIC_TO_SHORTHAND, 5.18f, 12, 6, 12,
+R_CUBIC_TO, 0.82f, 0, 1.5f, -0.67f, 1.5f, -1.5f,
+CUBIC_TO_SHORTHAND, 6.83f, 9, 6, 9,
+CLOSE

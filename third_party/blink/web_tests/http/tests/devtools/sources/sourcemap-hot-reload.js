@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
   for (var content of contents) {
     TestRunner.addResult('Evaluating script with new source map..');
     await TestRunner.evaluateInPageAnonymously(content);
-    await new Promise(resolve => TestRunner.addSniffer(Bindings.CompilerScriptMapping.prototype, "_sourceMapAttachedForTest", resolve));
+    await new Promise(resolve => TestRunner.addSniffer(Bindings.CompilerScriptMapping.prototype, "sourceMapAttachedForTest", resolve));
     var uiSourceCode = await TestRunner.waitForUISourceCode("eval-in");
     TestRunner.addResult((await uiSourceCode.requestContent()).content);
   }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ SessionSyncServiceImpl::SessionSyncServiceImpl(
           base::BindRepeating(&syncer::ReportUnrecoverableError, channel)));
 }
 
-SessionSyncServiceImpl::~SessionSyncServiceImpl() {}
+SessionSyncServiceImpl::~SessionSyncServiceImpl() = default;
 
 syncer::GlobalIdMapper* SessionSyncServiceImpl::GetGlobalIdMapper() const {
   return bridge_->GetGlobalIdMapper();

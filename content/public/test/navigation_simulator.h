@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@ class SSLInfo;
 
 namespace content {
 
+class NavigationController;
 class NavigationHandle;
 class RenderFrameHost;
 class WebContents;
@@ -119,10 +120,13 @@ class NavigationSimulator {
 
   // Creates a NavigationSimulator that will be used to simulate a history
   // navigation to one of the |web_contents|'s navigation controller |offset|.
-  // E.g. offset -1 for back navigations and 1 for forward navigations.
+  // E.g. offset -1 for back navigations and 1 for forward navigations. If
+  // |is_renderer_initiated| is true, the navigation will simulate a history
+  // navigation initiated via JS.
   static std::unique_ptr<NavigationSimulator> CreateHistoryNavigation(
       int offset,
-      WebContents* web_contents);
+      WebContents* web_contents,
+      bool is_renderer_initiated);
 
   // Creates a NavigationSimulator that will be used to simulate a
   // renderer-initiated navigation to |original_url| started by
@@ -135,9 +139,9 @@ class NavigationSimulator {
   // LoadURL / Reload / GoToOffset / history.GoBack() scripts, etc. Can be used
   // to drive the navigation to completion.
   static std::unique_ptr<NavigationSimulator> CreateFromPending(
-      WebContents* contents);
+      NavigationController& controller);
 
-  virtual ~NavigationSimulator() {}
+  virtual ~NavigationSimulator() = default;
 
   // --------------------------------------------------------------------------
 
@@ -228,6 +232,9 @@ class NavigationSimulator {
   // to complete.
   virtual bool IsDeferred() = 0;
 
+  // Returns true if a previous operation has caused the navigation to fail.
+  virtual bool HasFailed() = 0;
+
   // --------------------------------------------------------------------------
 
   // The following functions are used to specify the parameters of the
@@ -246,6 +253,8 @@ class NavigationSimulator {
   virtual void SetInitiatorFrame(RenderFrameHost* initiator_frame_host) = 0;
   virtual void SetTransition(ui::PageTransition transition) = 0;
   virtual void SetHasUserGesture(bool has_user_gesture) = 0;
+  virtual void SetNavigationInputStart(
+      base::TimeTicks navigation_input_start) = 0;
   // Note: ReloadType should only be specified for browser-initiated
   // navigations.
   virtual void SetReloadType(ReloadType reload_type) = 0;
@@ -281,12 +290,23 @@ class NavigationSimulator {
   // specified before calling |ReadyToCommit| or |Commit|.
   virtual void SetContentsMimeType(const std::string& contents_mime_type) = 0;
 
+  // Provides the response headers that should be received during the next
+  // |Redirect| call. These headers will only be applied to the next
+  // |Redirect| call, and will be reset afterwards.
+  virtual void SetRedirectHeaders(
+      scoped_refptr<net::HttpResponseHeaders> redirect_headers) = 0;
+
   // Provides the response headers received during |ReadyToCommit| specified
   // before calling |ReadyToCommit| or |Commit|.
   // Note that the mime type should be specified separately with
   // |SectContentsMimeType|.
   virtual void SetResponseHeaders(
       scoped_refptr<net::HttpResponseHeaders> response_headers) = 0;
+
+  // Provides the response body received during |ReadyToCommit|. Must be
+  // specified before calling |ReadyToCommit| or |Commit|.
+  virtual void SetResponseBody(
+      mojo::ScopedDataPipeConsumerHandle response_body) = 0;
 
   // Whether or not the NavigationSimulator automatically advances the
   // navigation past the stage requested (e.g. through asynchronous
@@ -310,6 +330,10 @@ class NavigationSimulator {
   // be preserved in reverse order, from canonical name (i.e. address record
   // name) through to query name. This method should be called before Commit().
   virtual void SetResponseDnsAliases(std::vector<std::string> aliases) = 0;
+
+  // Sets whether preload Link headers were received via Early Hints responses
+  // during the navigation.
+  virtual void SetEarlyHintsPreloadLinkHeaderReceived(bool received) = 0;
 
   // --------------------------------------------------------------------------
 

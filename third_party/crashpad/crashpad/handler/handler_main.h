@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ int HandlerMain(int argc,
                 char* argv[],
                 const UserStreamDataSources* user_stream_sources);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 //! \brief The `main()` entry point for Android libraries.
 //!
 //! This symbol is the entry point for crashpad when it is dynamically loaded

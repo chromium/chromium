@@ -1,0 +1,38 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+  /Dests <<
+    % A valid page object for page 1
+    /ValidPageObj [3 0 R /XYZ 100 200 1.2]
+    % An invalid page object which doesn't exist
+    /InvalidPageObj [8 0 R /XYZ 100 200 1]
+    % A valid page number for page 2
+    /ValidPageNumber [1]
+    % An out-of-range page number 3 which doesn't exist
+    /OutOfRangePageNumber [2]
+  >>
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /Count 2
+  /Kids [3 0 R 4 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /MediaBox [0 0 300 600]
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /MediaBox [0 0 300 600]
+>>
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

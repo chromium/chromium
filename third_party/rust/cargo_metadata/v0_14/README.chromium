@@ -1,0 +1,6 @@
+Name: cargo_metadata
+URL: https://crates.io/crates/cargo_metadata
+Description: structured access to the output of `cargo metadata`
+Version: 0.14.2
+Security Critical: no
+License: MIT

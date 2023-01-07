@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,6 +67,10 @@ class CastSysInfo {
   virtual std::string GetWifiInterface() = 0;
   // Returns the name of the software AP interface.
   virtual std::string GetApInterface() = 0;
+
+  // Returns the setup SSID suffix to use, if configured, an empty string
+  // otherwise.
+  virtual std::string GetProductSsidSuffix() = 0;
 };
 
 }  // namespace chromecast

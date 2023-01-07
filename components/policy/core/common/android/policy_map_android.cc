@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ jint PolicyMapAndroid::GetIntValue(
     const base::android::JavaRef<jstring>& policy) const {
   const base::Value* value = GetValue(env, policy);
   DCHECK(value && value->is_int())
-      << "The policy must be exist and stored as integer.";
+      << "The policy must exist and be stored as integer.";
   return value->GetInt();
 }
 
@@ -41,7 +41,7 @@ jboolean PolicyMapAndroid::GetBooleanValue(
     const base::android::JavaRef<jstring>& policy) const {
   const base::Value* value = GetValue(env, policy);
   DCHECK(value && value->is_bool())
-      << "The policy must be exist and stored as boolean.";
+      << "The policy must exist and be stored as boolean.";
   return value->GetBool();
 }
 
@@ -108,7 +108,8 @@ base::android::ScopedJavaLocalRef<jstring> PolicyMapAndroid::GetListOrDictValue(
 const base::Value* PolicyMapAndroid::GetValue(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& policy) const {
-  return policy_map_.GetValue(
+  // It is safe to use `GetValueUnsafe()` as multiple policy types are handled.
+  return policy_map_.GetValueUnsafe(
       base::android::ConvertJavaStringToUTF8(env, policy));
 }
 

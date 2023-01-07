@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <!--
-Copyright 2010 The Closure Library Authors. All Rights Reserved.
+Copyright The Closure Library Authors. All Rights Reserved.
 
 Use of this source code is governed by the Apache License, Version 2.0.
 See the COPYING file for details.
@@ -52,7 +52,6 @@ See the COPYING file for details.
     goog.require('goog.dom.classlist');
     goog.require('goog.userAgent');
     goog.require('goog.userAgent.adobeReader');
-    goog.require('goog.userAgent.flash');
     goog.require('goog.userAgent.iphoto');
     goog.require('goog.userAgent.jscript');
     goog.require('goog.userAgent.product');
@@ -106,12 +105,6 @@ See the COPYING file for details.
     'IPHONE',
     'OPERA',
     'SAFARI',
-    'VERSION'
-  ];
-
-  // Public members in goog.userAgent.flash
-  var flashFields = [
-    'HAS_FLASH',
     'VERSION'
   ];
 
@@ -174,7 +167,7 @@ See the COPYING file for details.
     var valueCell = goog.dom.createElement('td');
     goog.dom.appendChild(row, valueCell);
 
-    if (goog.isBoolean(value)) {
+    if (typeof value === 'boolean') {
       value = value ? 'yes' : 'no';
       goog.dom.setTextContent(valueCell, value);
       goog.dom.classlist.set(valueCell, value);
@@ -195,7 +188,6 @@ See the COPYING file for details.
   var features = goog.dom.getElement('featureFields');
   addSection(features, 'Adobe Reader Detection', goog.userAgent.adobeReader,
       adobeReaderFields);
-  addSection(features, 'Flash Plugin', goog.userAgent.flash, flashFields);
   addSection(features, 'iPhoto Detection', goog.userAgent.iphoto, iphotoFields);
   addSection(features, 'Microsoft JScript', goog.userAgent.jscript,
       jscriptFields);

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define ASH_SYSTEM_SYSTEM_NOTIFICATION_CONTROLLER_H_
 
 #include <memory>
-
-#include "base/macros.h"
 
 namespace ash {
 
@@ -17,8 +15,10 @@ class CapsLockNotificationController;
 class GestureEducationNotificationController;
 class CastNotificationController;
 class CellularSetupNotifier;
+class ManagedSimLockNotifier;
+class MicrophoneMuteNotificationController;
 class PowerNotificationController;
-class ScreenSecurityNotificationController;
+class ScreenSecurityController;
 class SessionLimitNotificationController;
 class TracingNotificationController;
 class UpdateNotificationController;
@@ -28,11 +28,17 @@ class WifiToggleNotificationController;
 class SystemNotificationController {
  public:
   SystemNotificationController();
+
+  SystemNotificationController(const SystemNotificationController&) = delete;
+  SystemNotificationController& operator=(const SystemNotificationController&) =
+      delete;
+
   ~SystemNotificationController();
 
  private:
   friend class AutoConnectNotifierTest;
   friend class CellularSetupNotifierTest;
+  friend class ManagedSimLockNotifier;
   friend class UpdateNotificationControllerTest;
   const std::unique_ptr<AutoConnectNotifier> auto_connect_;
   const std::unique_ptr<CapsLockNotificationController> caps_lock_;
@@ -40,14 +46,15 @@ class SystemNotificationController {
   const std::unique_ptr<CellularSetupNotifier> cellular_setup_notifier_;
   const std::unique_ptr<GestureEducationNotificationController>
       gesture_education_;
+  // TODO(b/228093904): Make |managed_sim_lock_notifier_| const during cleanup.
+  std::unique_ptr<ManagedSimLockNotifier> managed_sim_lock_notifier_;
+  std::unique_ptr<MicrophoneMuteNotificationController> microphone_mute_;
   const std::unique_ptr<PowerNotificationController> power_;
-  const std::unique_ptr<ScreenSecurityNotificationController> screen_security_;
+  const std::unique_ptr<ScreenSecurityController> screen_security_;
   const std::unique_ptr<SessionLimitNotificationController> session_limit_;
   const std::unique_ptr<TracingNotificationController> tracing_;
   const std::unique_ptr<UpdateNotificationController> update_;
   const std::unique_ptr<WifiToggleNotificationController> wifi_toggle_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemNotificationController);
 };
 
 }  // namespace ash

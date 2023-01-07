@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -83,7 +83,11 @@ message LoginOptionList {
   repeated LoginOptionProto values = 1;
 }
 
-// Next: 29
+// Can be used to indicate the presence of a field, without the ambiguity that
+// a boolean field would have.
+message Empty {}
+
+// Next Id: 45
 enum ProcessedActionStatusProto {
   UNKNOWN_ACTION_STATUS = 0;
 
@@ -210,7 +214,55 @@ enum ProcessedActionStatusProto {
   // password's origin.
   PASSWORD_ORIGIN_MISMATCH = 29;
 
-  reserved 15, 23, 25;
+  // Selecting an option failed because more than one option matched.
+  TOO_MANY_OPTION_VALUES_FOUND = 30;
+
+  // The action's target did not fit the action. E.g. a |SelectOption| being
+  // called on any element other than <select>.
+  INVALID_TARGET = 31;
+
+  // The element has no or only an empty box model. This can mean the element
+  // is not rendered (display: none) or simply empty.
+  ELEMENT_POSITION_NOT_FOUND = 33;
+
+  // The requested client memory key was not available.
+  CLIENT_MEMORY_KEY_NOT_AVAILABLE = 34;
+
+  // The requested value expression resulted in an empty string.
+  EMPTY_VALUE_EXPRESSION_RESULT = 35;
+
+  // The RenderFrameHost does not have a corresponding live RenderFrame, e.g.
+  // the renderer process may have crashed.
+  NO_RENDER_FRAME = 37;
+
+  // Requesting the user data from our data endpoint failed.
+  USER_DATA_REQUEST_FAILED = 38;
+
+  // The js flow action forced an additional roundtrip.
+  JS_FORCED_ROUNDTRIP = 39;
+
+  // The QR code scan returned without populating data in client memory.
+  // Possible causes:
+  // - The user did not give an image with a valid QR code.
+  QR_CODE_SCAN_FAILURE = 40;
+
+  // The QR code scan was cancelled by the user.
+  // Possible causes:
+  // - The user pressed back button or clicked on cancel icon.
+  QR_CODE_SCAN_CANCELLED = 41;
+
+  // The QR code scan failed because of some camera issues.
+  QR_CODE_SCAN_CAMERA_ERROR = 42;
+
+  // Parse XML action returned without successfully resolving the XML
+  // because of the input XML data not satisfying the XML config.
+  XML_PARSE_INCORRECT_DATA = 43;
+
+  // Parse XML action returned without successfully resolving the XML because
+  // of the input XML data being signed.
+  XML_PARSE_SIGNED_DATA = 44;
+
+  reserved 15, 23, 25, 32, 36;
 }
 
 // A message to describe a chip.
@@ -354,8 +406,13 @@ message DateTimeProto {
 }
 
 message AutofillCreditCardProto {
-  // The GUID of the card.
-  optional string guid = 1;
+  oneof identifier {
+    // The GUID of the card.
+    string guid = 1;
+    // The currently selected credit card. Only works if a card was selected in
+    // a previous |CollectUserData| action.
+    Empty selected_credit_card = 2;
+  }
 }
 
 message CreditCardResponseProto {
@@ -363,12 +420,30 @@ message CreditCardResponseProto {
 }
 
 message AutofillProfileProto {
-  // The GUID of the profile.
-  optional string guid = 1;
+  oneof identifier {
+    // The GUID of the profile.
+    string guid = 1;
+    // The selected profile for the given profile name. Only works if a profile
+    // was selected in a previous |CollectUserData| action.
+    string selected_profile_name = 2;
+    // This points to a backend phone number which is stored in an Autofill
+    // profile for convenience's sake. All non phone number fields will be
+    // empty.
+    int32 phone_number_index = 3;
+  }
 }
 
 message LoginOptionProto {
   optional string label = 1;
   optional string sublabel = 2;
-  optional bytes payload = 3;
+
+  oneof payload_or_tag {
+    // A payload to be echoed back to the caller when the option is selected.
+    //
+    // Prefer using tag.
+    bytes payload = 3;
+
+    // A tag to be echoed back to the caller when the option is selected.
+    string tag = 4;
+  }
 }

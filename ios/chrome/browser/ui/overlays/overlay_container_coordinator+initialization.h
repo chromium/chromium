@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@ class OverlayPresentationContextImpl;
 @interface OverlayContainerCoordinator (Initialization)
 
 // Initializer for a coordinator that manages the base UIViewController for
-// overlay UI implemented using child UIViewControllers for |context| at
-// |modality|.
+// overlay UI implemented using child UIViewControllers for `context` at
+// `modality`.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                        presentationContext:

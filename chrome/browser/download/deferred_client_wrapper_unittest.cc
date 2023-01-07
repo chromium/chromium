@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/background_service/test/mock_client.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace download {
@@ -35,7 +37,7 @@ class DeferredClientWrapperTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
   std::unique_ptr<DeferredClientWrapper> deferred_wrapper_;
-  test::MockClient* mock_client_;
+  raw_ptr<test::MockClient> mock_client_;
 };
 
 // Tests that DeferredClientWrapper is reentrant (doesn't crash if called into

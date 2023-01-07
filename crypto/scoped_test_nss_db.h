@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CRYPTO_SCOPED_TEST_NSS_DB_H_
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "crypto/crypto_export.h"
 #include "crypto/scoped_nss_types.h"
 
@@ -18,6 +17,10 @@ namespace crypto {
 class CRYPTO_EXPORT ScopedTestNSSDB {
  public:
   ScopedTestNSSDB();
+
+  ScopedTestNSSDB(const ScopedTestNSSDB&) = delete;
+  ScopedTestNSSDB& operator=(const ScopedTestNSSDB&) = delete;
+
   ~ScopedTestNSSDB();
 
   bool is_open() const { return !!slot_; }
@@ -29,8 +32,6 @@ class CRYPTO_EXPORT ScopedTestNSSDB {
 
   base::ScopedTempDir temp_dir_;
   ScopedPK11Slot slot_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestNSSDB);
 };
 
 }  // namespace crypto

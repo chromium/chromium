@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,6 +47,17 @@ namespace blink {
 namespace {
 constexpr double kScrollVelocityZeroingTimeout = 0.10f;
 constexpr double kRubberbandMinimumRequiredDeltaBeforeStretch = 10;
+
+#if BUILDFLAG(IS_ANDROID)
+// On android, overscroll should not occur if the scroller is not scrollable in
+// the overscrolled direction.
+constexpr bool kOverscrollNonScrollableDirection = false;
+#else   // BUILDFLAG(IS_ANDROID)
+// On other platforms, overscroll can occur even if the scroller is not
+// scrollable.
+constexpr bool kOverscrollNonScrollableDirection = true;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace
 
 ElasticOverscrollController::ElasticOverscrollController(
@@ -57,12 +68,13 @@ ElasticOverscrollController::ElasticOverscrollController(
 
 std::unique_ptr<ElasticOverscrollController>
 ElasticOverscrollController::Create(cc::ScrollElasticityHelper* helper) {
-#if defined(OS_WIN)
-  return base::FeatureList::IsEnabled(features::kElasticOverscrollWin)
+#if BUILDFLAG(IS_WIN)
+  return base::FeatureList::IsEnabled(features::kElasticOverscroll)
              ? std::make_unique<ElasticOverscrollControllerBezier>(helper)
              : nullptr;
-#endif
+#else
   return std::make_unique<ElasticOverscrollControllerExponential>(helper);
+#endif
 }
 
 void ElasticOverscrollController::ObserveRealScrollBegin(bool enter_momentum,
@@ -169,14 +181,20 @@ void ElasticOverscrollController::UpdateVelocity(
 
 void ElasticOverscrollController::Overscroll(
     const gfx::Vector2dF& overscroll_delta) {
-  // The effect can be dynamically disabled by setting disallowing user
+  gfx::Vector2dF adjusted_overscroll_delta = overscroll_delta;
+
+  // The effect can be dynamically disabled by setting styles to disallow user
   // scrolling. When disabled, disallow active or momentum overscrolling, but
   // allow any current overscroll to animate back.
-  if (!helper_->IsUserScrollable())
+  if (!helper_->IsUserScrollableHorizontal())
+    adjusted_overscroll_delta.set_x(0);
+  if (!helper_->IsUserScrollableVertical())
+    adjusted_overscroll_delta.set_y(0);
+
+  if (adjusted_overscroll_delta.IsZero())
     return;
 
-  gfx::Vector2dF adjusted_overscroll_delta =
-      pending_overscroll_delta_ + overscroll_delta;
+  adjusted_overscroll_delta += pending_overscroll_delta_;
   pending_overscroll_delta_ = gfx::Vector2dF();
 
   // TODO (arakeri): Make this prefer the writing mode direction instead.
@@ -186,6 +204,15 @@ void ElasticOverscrollController::Overscroll(
     adjusted_overscroll_delta.set_x(0);
   else
     adjusted_overscroll_delta.set_y(0);
+
+  if (!kOverscrollNonScrollableDirection) {
+    // Check whether each direction is scrollable and 0 out the overscroll if it
+    // is not.
+    if (!CanScrollHorizontally())
+      adjusted_overscroll_delta.set_x(0);
+    if (!CanScrollVertically())
+      adjusted_overscroll_delta.set_y(0);
+  }
 
   // Don't allow overscrolling in a direction where scrolling is possible.
   if (!PinnedHorizontally(adjusted_overscroll_delta.x()))
@@ -294,8 +321,8 @@ void ElasticOverscrollController::Animate(base::TimeTicks time) {
 }
 
 bool ElasticOverscrollController::PinnedHorizontally(float direction) const {
-  gfx::ScrollOffset scroll_offset = helper_->ScrollOffset();
-  gfx::ScrollOffset max_scroll_offset = helper_->MaxScrollOffset();
+  gfx::PointF scroll_offset = helper_->ScrollOffset();
+  gfx::PointF max_scroll_offset = helper_->MaxScrollOffset();
   if (direction < 0)
     return scroll_offset.x() <= 0;
   if (direction > 0)
@@ -304,8 +331,8 @@ bool ElasticOverscrollController::PinnedHorizontally(float direction) const {
 }
 
 bool ElasticOverscrollController::PinnedVertically(float direction) const {
-  gfx::ScrollOffset scroll_offset = helper_->ScrollOffset();
-  gfx::ScrollOffset max_scroll_offset = helper_->MaxScrollOffset();
+  gfx::PointF scroll_offset = helper_->ScrollOffset();
+  gfx::PointF max_scroll_offset = helper_->MaxScrollOffset();
   if (direction < 0)
     return scroll_offset.y() <= 0;
   if (direction > 0)
@@ -326,8 +353,8 @@ void ElasticOverscrollController::ReconcileStretchAndScroll() {
   if (stretch.IsZero())
     return;
 
-  gfx::ScrollOffset scroll_offset = helper_->ScrollOffset();
-  gfx::ScrollOffset max_scroll_offset = helper_->MaxScrollOffset();
+  gfx::PointF scroll_offset = helper_->ScrollOffset();
+  gfx::PointF max_scroll_offset = helper_->MaxScrollOffset();
 
   // Compute stretch_adjustment which will be added to |stretch| and subtracted
   // from the |scroll_offset|.

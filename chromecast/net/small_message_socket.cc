@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/net/io_buffer_pool.h"
 #include "net/base/io_buffer.h"
@@ -335,7 +335,7 @@ bool SmallMessageSocket::ReadSize(char* ptr,
   }
 
   uint16_t first_size;
-  base::ReadBigEndian(ptr, &first_size);
+  base::ReadBigEndian(reinterpret_cast<uint8_t*>(ptr), &first_size);
 
   if (first_size < kMax2ByteSize) {
     data_offset = sizeof(uint16_t);
@@ -345,7 +345,8 @@ bool SmallMessageSocket::ReadSize(char* ptr,
       return false;
     }
     uint32_t real_size;
-    base::ReadBigEndian(ptr + sizeof(uint16_t), &real_size);
+    base::ReadBigEndian(reinterpret_cast<uint8_t*>(ptr) + sizeof(uint16_t),
+                        &real_size);
     data_offset = sizeof(uint16_t) + sizeof(uint32_t);
     message_size = real_size;
   }

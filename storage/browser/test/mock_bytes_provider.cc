@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ MockBytesProvider::MockBytesProvider(
     size_t* reply_request_count,
     size_t* stream_request_count,
     size_t* file_request_count,
-    base::Optional<base::Time> file_modification_time)
+    absl::optional<base::Time> file_modification_time)
     : data_(std::move(data)),
       reply_request_count_(reply_request_count),
       stream_request_count_(stream_request_count),

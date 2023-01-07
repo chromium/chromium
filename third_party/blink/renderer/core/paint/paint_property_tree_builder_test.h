@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,6 +64,18 @@ class PaintPropertyTreeBuilderTest : public PaintControllerPaintTest {
  private:
   void SetUp() override;
 };
+
+// Used when LayoutClipRect and PaintClipRect are the same.
+// |expected_arg| can be gfx::RectF or FloatRoundedRect.
+#define EXPECT_CLIP_RECT(expected_arg, clip_node)                     \
+  do {                                                                \
+    FloatRoundedRect expected((expected_arg));                        \
+    ASSERT_TRUE(clip_node);                                           \
+    EXPECT_EQ(expected.Rect(), (clip_node)->LayoutClipRect().Rect()); \
+    EXPECT_EQ(expected.IsRounded(),                                   \
+              (clip_node)->LayoutClipRect().HasRadius());             \
+    EXPECT_EQ(expected, (clip_node)->PaintClipRect());                \
+  } while (false)
 
 }  // namespace blink
 

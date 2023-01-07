@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_TRACING_CROS_TRACING_AGENT_H_
 
 #include <memory>
-#include <string>
 
 #include "services/tracing/public/cpp/base_agent.h"
 
@@ -18,12 +17,13 @@ class CrOSTracingAgent : public tracing::BaseAgent {
  public:
   CrOSTracingAgent();
 
+  CrOSTracingAgent(const CrOSTracingAgent&) = delete;
+  CrOSTracingAgent& operator=(const CrOSTracingAgent&) = delete;
+
  private:
   friend std::default_delete<CrOSTracingAgent>;
 
   ~CrOSTracingAgent() override;
-
-  DISALLOW_COPY_AND_ASSIGN(CrOSTracingAgent);
 };
 
 }  // namespace content

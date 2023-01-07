@@ -1,9 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MEMORY_METRICS_REPORTER_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MEMORY_METRICS_REPORTER_H_
+
+#include <set>
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
@@ -22,6 +24,10 @@ namespace resource_coordinator {
 class TabMemoryMetricsReporter : public TabLoadTracker::Observer {
  public:
   TabMemoryMetricsReporter();
+
+  TabMemoryMetricsReporter(const TabMemoryMetricsReporter&) = delete;
+  TabMemoryMetricsReporter& operator=(const TabMemoryMetricsReporter&) = delete;
+
   ~TabMemoryMetricsReporter() override;
 
   void StartReporting(TabLoadTracker* tracker);
@@ -94,8 +100,6 @@ class TabMemoryMetricsReporter : public TabLoadTracker::Observer {
   // A list of web contents to be reported their memory usage, sorted by
   // next_emit_time.
   std::set<WebContentsData, WebContentsDataComparator> monitored_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabMemoryMetricsReporter);
 };
 
 }  // namespace resource_coordinator

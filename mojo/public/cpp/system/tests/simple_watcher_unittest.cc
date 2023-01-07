@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -37,12 +36,14 @@ SimpleWatcher::ReadyCallback NotReached() {
 class SimpleWatcherTest : public testing::Test {
  public:
   SimpleWatcherTest() {}
+
+  SimpleWatcherTest(const SimpleWatcherTest&) = delete;
+  SimpleWatcherTest& operator=(const SimpleWatcherTest&) = delete;
+
   ~SimpleWatcherTest() override {}
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleWatcherTest);
 };
 
 TEST_F(SimpleWatcherTest, WatchBasic) {

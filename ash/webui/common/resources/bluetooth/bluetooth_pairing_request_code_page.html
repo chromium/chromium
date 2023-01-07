@@ -1,0 +1,34 @@
+<style>
+  #pageBody {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #message {
+    margin-bottom: 56px;
+  }
+
+  #pin {
+    width: 336px;
+  }
+</style>
+<bluetooth-base-page
+    on-pair="onPairClicked_"
+    button-bar-state="[[buttonBarState_]]">
+  <div slot="page-body" id="pageBody">
+    <div id="message">
+      [[getMessage_(device.*)]]
+    </div>
+    <cr-input
+        id="pin"
+        minlength="1"
+        maxlength="[[getMaxlength_(authType)]]"
+        type="text"
+        aria-label="[[getMessage_(device.*)]]"
+        value="{{pinCode_}}"
+        auto-validate >
+    </cr-input>
+  </div>
+</bluetooth-base-page>

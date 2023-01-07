@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ namespace net {
 // Implements encryption and decryption for the persistent cookie store.
 class COMPONENT_EXPORT(NET_EXTRAS) CookieCryptoDelegate {
  public:
-  virtual ~CookieCryptoDelegate() {}
+  virtual ~CookieCryptoDelegate() = default;
 
   // Return if cookies should be encrypted on this platform.  Decryption of
   // previously encrypted cookies is always possible.

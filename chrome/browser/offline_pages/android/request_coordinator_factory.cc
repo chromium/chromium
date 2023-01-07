@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/offline_pages/android/background_scheduler_bridge.h"
@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/chrome_constants.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/offline_pages/core/background/offliner.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
@@ -58,13 +57,11 @@ class ActiveTabInfo : public RequestCoordinator::ActiveTabInfo {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 RequestCoordinatorFactory::RequestCoordinatorFactory()
-    : BrowserContextKeyedServiceFactory(
-          "OfflineRequestCoordinator",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("OfflineRequestCoordinator") {
   // Depends on OfflinePageModelFactory in SimpleDependencyManager.
 }
 
@@ -89,8 +86,8 @@ KeyedService* RequestCoordinatorFactory::BuildServiceInstanceFor(
 
   std::unique_ptr<LoadTerminationListenerImpl> load_termination_listener =
       std::make_unique<LoadTerminationListenerImpl>();
-  offliner.reset(new BackgroundLoaderOffliner(
-      context, policy.get(), model, std::move(load_termination_listener)));
+  offliner = std::make_unique<BackgroundLoaderOffliner>(
+      context, policy.get(), model, std::move(load_termination_listener));
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(

@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -124,7 +124,7 @@ FilterEffect* SVGFEDisplacementMapElement::Build(
       filter, x_channel_selector_->CurrentEnumValue(),
       y_channel_selector_->CurrentEnumValue(), scale_->CurrentValue()->Value());
   FilterEffectVector& input_effects = effect->InputEffects();
-  input_effects.ReserveCapacity(2);
+  input_effects.reserve(2);
   input_effects.push_back(input1);
   input_effects.push_back(input2);
   return effect;

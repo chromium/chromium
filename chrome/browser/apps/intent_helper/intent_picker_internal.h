@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,14 @@
 #include <vector>
 
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 
 namespace content {
 class NavigationHandle;
 class WebContents;
 }  // namespace content
+
+class GURL;
 
 namespace apps {
 
@@ -41,6 +44,8 @@ bool IsNavigateFromLink(content::NavigationHandle* navigation_handle);
 void CloseOrGoBack(content::WebContents* web_contents);
 
 bool IsGoogleRedirectorUrlForTesting(const GURL& url);
+
+PickerEntryType GetPickerEntryType(AppType app_type);
 
 }  // namespace apps
 

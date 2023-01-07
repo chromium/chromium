@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,7 +68,7 @@ public class ScreenCapture extends Fragment {
     }
 
     // Native callback context variable.
-    private final long mNativeScreenCaptureMachineAndroid;
+    private long mNativeScreenCaptureMachineAndroid;
 
     private final Object mCaptureStateLock = new Object();
     private @CaptureState int mCaptureState = CaptureState.STOPPED;
@@ -282,9 +282,17 @@ public class ScreenCapture extends Fragment {
         return true;
     }
 
+    @CalledByNative
+    private void onNativeDestroyed() {
+        // Native must have called stopCapture prior to it's destruction if it started capture.
+        assert (mCaptureState != CaptureState.STARTED);
+        mNativeScreenCaptureMachineAndroid = 0;
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode != REQUEST_MEDIA_PROJECTION) return;
+        if (mNativeScreenCaptureMachineAndroid == 0) return;
 
         if (resultCode == Activity.RESULT_OK) {
             mResultCode = resultCode;

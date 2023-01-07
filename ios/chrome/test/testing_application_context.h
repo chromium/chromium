@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
-#include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/application_context/application_context.h"
 
 namespace network {
 class TestNetworkConnectionTracker;
@@ -20,6 +19,11 @@ class TestURLLoaderFactory;
 class TestingApplicationContext : public ApplicationContext {
  public:
   TestingApplicationContext();
+
+  TestingApplicationContext(const TestingApplicationContext&) = delete;
+  TestingApplicationContext& operator=(const TestingApplicationContext&) =
+      delete;
+
   ~TestingApplicationContext() override;
 
   // Convenience method to get the current application context as a
@@ -62,15 +66,20 @@ class TestingApplicationContext : public ApplicationContext {
   SafeBrowsingService* GetSafeBrowsingService() override;
   network::NetworkConnectionTracker* GetNetworkConnectionTracker() override;
   BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
-  BreadcrumbPersistentStorageManager* GetBreadcrumbPersistentStorageManager()
-      override;
+  PromosManager* GetPromosManager() override;
+  breadcrumbs::BreadcrumbPersistentStorageManager*
+  GetBreadcrumbPersistentStorageManager() override;
+  id<SingleSignOnService> GetSSOService() override;
+  segmentation_platform::OTRWebStateObserver*
+  GetSegmentationOTRWebStateObserver() override;
+  PushNotificationService* GetPushNotificationService() override;
 
  private:
   base::ThreadChecker thread_checker_;
   std::string application_locale_;
   PrefService* local_state_;
 
-  // Must be destroyed after |local_state_|. BrowserStatePolicyConnector isn't a
+  // Must be destroyed after `local_state_`. BrowserStatePolicyConnector isn't a
   // keyed service because the pref service, which isn't a keyed service, has a
   // hard dependency on the policy infrastructure. In order to outlive the pref
   // service, the policy connector must live outside the keyed services.
@@ -83,7 +92,8 @@ class TestingApplicationContext : public ApplicationContext {
   scoped_refptr<SafeBrowsingService> fake_safe_browsing_service_;
   std::unique_ptr<network::TestNetworkConnectionTracker>
       test_network_connection_tracker_;
-  DISALLOW_COPY_AND_ASSIGN(TestingApplicationContext);
+  __strong id<SingleSignOnService> single_sign_on_service_ = nil;
+  std::unique_ptr<PushNotificationService> push_notification_service_;
 };
 
 #endif  // IOS_CHROME_TEST_TESTING_APPLICATION_CONTEXT_H_

@@ -1,0 +1,159 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/cr_elements/cr_shared_style.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=../../settings_shared.css.js
+ * #include=cr-shared-style settings-shared
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  flex: 1;
+  padding: 0 24px;
+}
+
+.headline-container {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.headline {
+  color: var(--google-grey-800);
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.description-column {
+  width: 50%;
+}
+
+.description-column-first {
+  padding-inline-end: 12px;
+}
+
+.description-header {
+  color: var(--google-blue-600);
+  font-weight: 400;
+}
+
+@media (prefers-color-scheme: dark) {
+  .description-header {
+    color: var(--google-blue-300);
+  }
+}
+
+.description-wrapper {
+  padding: 16px;
+}
+
+.description-wrapper-radio {
+  padding: 4px 0 16px 0;
+}
+
+settings-collapse-radio-button:not(:first-of-type) {
+  --settings-collapse-separator-line: var(--cr-separator-line);
+}
+
+.header {
+  align-items: center;
+  column-gap: 16px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  outline: none;
+  padding: 24px 0 16px 0;
+}
+
+.header-phase2 {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  padding: 24px 0 16px 0;
+}
+
+.header-label {
+  align-self: normal;
+  color: var(--cr-primary-text-color);
+  flex: 1;
+  font-size: 123%;  /* Should be 16px when 100% is 13px. */
+  font-weight: 400;
+  padding-bottom: 0;
+  padding-top: 0;
+}
+
+.header-label-phase2 {
+  align-self: center;
+  color: var(--cr-primary-text-color);
+  font-size: 138%;  /* Should be 18px when 100% is 13px. */
+  font-weight: 400;
+  justify-content: center;
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slide-in {
+  0% {
+    transform: translateX(calc(
+        var(--privacy-guide-v2-translate-multiplier) * 20px));
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+}
+
+:host-context([is-privacy-guide-v2]) .headline,
+:host-context([is-privacy-guide-v2]) .cr-secondary-text,
+:host-context([is-privacy-guide-v2]) .header-phase2 picture,
+:host-context([is-privacy-guide-v2]) .fragment-content {
+  animation: fade-in var(--privacy-guide-animation-duration),
+      slide-in 450ms;
+}
+
+:host-context([is-privacy-guide-v2]) .header-label-phase2 {
+  animation: fade-in var(--privacy-guide-animation-duration);
+}
+
+@media (prefers-color-scheme: dark) {
+  .headline {
+    color: var(--google-grey-200);
+  }
+}
+
+.embedded-setting-wrapper {
+  border: 1px solid var(--google-grey-300);
+  border-radius: 4px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .embedded-setting-wrapper {
+    border-color: var(--google-grey-700);
+  }
+}
+
+.two-column {
+  display: flex;
+}
+
+settings-toggle-button {
+  padding-bottom: 8px;
+  padding-top: 8px;
+}
+
+picture {
+  align-items: center;
+  display: flex;
+}

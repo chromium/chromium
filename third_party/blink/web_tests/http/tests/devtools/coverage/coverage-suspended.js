@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests the coverage list view after suspending the coverage model.\n`);
-  await TestRunner.loadModule('panels/coverage'); await TestRunner.loadTestModule('coverage_test_runner');
+  await TestRunner.loadLegacyModule('panels/coverage'); await TestRunner.loadTestModule('coverage_test_runner');
   await TestRunner.loadHTML(`
       <p class="class">
       </p>
@@ -31,7 +31,7 @@
   await CoverageTestRunner.resumeCoverageModel();
 
   var coverageView = Coverage.CoverageView.instance();
-  coverageView._clear();
+  coverageView.clear();
 
   await CoverageTestRunner.startCoverage(true);
   await TestRunner.evaluateInPagePromise('performActions()');

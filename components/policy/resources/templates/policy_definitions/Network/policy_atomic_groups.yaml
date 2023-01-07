@@ -1,0 +1,5 @@
+WiFi:
+  caption: WiFi
+  policies:
+  - DeviceWiFiFastTransitionEnabled
+  - DeviceWiFiAllowed

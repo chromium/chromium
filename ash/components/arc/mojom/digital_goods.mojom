@@ -1,0 +1,80 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 2
+
+module arc.mojom;
+
+import "components/digital_goods/mojom/digital_goods.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Deprecated, replaced with |payments.mojom.PurchaseReference|.
+// See https://wicg.github.io/digital-goods/#purchaseDetails-dictionary
+[Stable, RenamedFrom="payments.mojom.PurchaseDetails"]
+struct PurchaseDetails {
+  string item_id;
+  string purchase_token;
+  bool acknowledged;
+  PurchaseState purchase_state;
+  // Microseconds since the Unix epoch.
+  mojo_base.mojom.TimeDelta purchase_time;
+  bool will_auto_renew;
+};
+
+// Deprecated: only used by the (also) deprecated PurchaseDetails.
+[Extensible, Stable, RenamedFrom="payments.mojom.PurchaseState"]
+enum PurchaseState {
+  kUnknown,
+  kPurchased,
+  kPending,
+};
+
+// Allows the browser process to forward calls for the Digital Goods API to
+// ARC++
+// Next method ID: 6
+[Stable]
+interface DigitalGoodsInstance {
+  // Queries a specific package for SKU details by item IDs.
+  [MinVersion=0] GetDetails@0(string package_name,
+                              string scope,
+                              array<string> item_ids)
+    => (payments.mojom.BillingResponseCode code,
+        array<payments.mojom.ItemDetails> item_details_list);
+
+  // Informs a package that the purchase identified by |purchase_token| was
+  // successfully acknowledged. If |make_available_again| is true, indicates
+  // that the purchase is repeatable (e.g. a consumable item). If it is false,
+  // indicates that the purchase is one-off (e.g. a permanent upgrade).
+  [MinVersion=0] Acknowledge@1(string package_name,
+                               string scope,
+                               string purchase_token,
+                               bool make_available_again)
+    => (payments.mojom.BillingResponseCode code);
+
+  // Queries a package for information on all items that are currently owned by
+  // the user.
+  [MinVersion=0] DeprecatedListPurchases@2(string package_name,
+                                 string scope)
+    => (payments.mojom.BillingResponseCode code,
+        array<PurchaseDetails> purchase_details_list);
+
+  // Queries a package for information on all items that are currently owned by
+  // the user. May include unconfirmed purchases.
+  [MinVersion=1] ListPurchases@3(string package_name, string scope)
+    => (payments.mojom.BillingResponseCode code,
+        array<payments.mojom.PurchaseReference> purchase_reference_list);
+
+  // Queries a package for information on the latest purchase for each item type
+  // ever purchased by the user. May include expired or consumed purchases.
+  [MinVersion=1] ListPurchaseHistory@4(string package_name, string scope)
+    => (payments.mojom.BillingResponseCode code,
+        array<payments.mojom.PurchaseReference> purchase_reference_list);
+
+  // Informs a package that the purchase identified by |purchase_token| was used
+  // up.
+  [MinVersion=1] Consume@5(string package_name,
+                           string scope,
+                           string purchase_token)
+    => (payments.mojom.BillingResponseCode code);
+};

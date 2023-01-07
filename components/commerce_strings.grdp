@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Desktop only -->
+  <if expr="not is_android and not is_ios">
+    <!-- Discount consent strings -->
+    <!-- TODO(crbug.com/1368330): Delete the following strings. -->
+    <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_TITLE" desc="The title shown on the consent bubble for getting discount.">
+      Get discount on <ph name="MERCHANT_NAME">$1</ph> and more
+    </message>
+    <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_CONTENT" desc="Text shown on the consent bubble asking if users would like to give their consent to the feature.">
+      Let Google use your carts to find personalized discounts when available
+    </message>
+    <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_NO_THANKS" desc="Text shown on the reject button of the consent bubble. By clicking this button, users has chosen not to accept the consent.">
+      No thanks
+    </message>
+    <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_GET_DISCOUNTS" desc="Text shown on the accept button of the consent bubble. By clicking this button, users has chosen to accept the consent.">
+      Get discounts
+    </message>
+    <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_ACCEPTED_CONFIRMATION_TITLE" desc="The title shown on the consent confirmation bubble after the user has accepted the consent.">
+      Google will find discounts for you
+    </message>
+    <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_ACCEPTED_CONFIRMATION_CONTENT" desc="The text shown on the consent confirmation bubble telling user where to look for discounts.">
+      When Google finds available discounts, they will show during checkout
+    </message>
+    <message name="IDS_DISCOUNT_CONTEXTUAL_CONSENT_ACCEPTED_CONFIRMATION_DONE" desc="The text shown on the consent confirmation bubble bubble. User can click this button to close the bubble.">
+      Done
+    </message>
+    <!-- Discount consent strings -->
+    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_ACCEPT_BUTTON" desc="Text shown on the accept button of the consent dialog. By clicking this button, users has chosen to accept the consent to let Google find discounts for your carts.">
+      Yes, I'm in
+    </message>
+    <!-- This string can skip translation because the feature is targeted en-us locale. Only the
+         en-us user can access the feature UI. -->
+    <!-- TODO(crbug.com/1372493): Remove the special character and enable translation. -->
+    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_TITLE" translateable="false" desc="The title shown on the native consent dialog for getting discount.">
+      Let Google help you find&#13;discounts for your carts
+    </message>
+    
+    <message name="IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_BODY" desc="The actual consent descrition that shows in the native consent dialog.">
+      Let Google use your carts to search for personalized discounts. When available, discounts will automatically show up on your carts.
+    </message>
+    <message name="IDS_NTP_CART_DISCOUNT_STEP_ONE_CONTENT" desc="Text shown in the consent card within the cart module. This is the first step of the discount consent flow.">
+      Let Google help you find discounts for your carts
+    </message>
+
+    <!-- For Desktop Price Tracking -->
+    <message name="IDS_OMNIBOX_TRACK_PRICE" desc="Text shown for a button in the omnibox when the user is on a product page and the product's price is not currently being tracked. User can click this button to open a dialog and track this product from the dialog.">
+      Track price
+    </message>
+    <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_TITLE" desc="The title text for the dialog that is shown when a user tracks the product displayed on the current web page.">
+      Track price
+    </message>
+    <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_DESCRIPTION" desc="The description text for the dialog that is shown when a user tracks the product displayed on the current web page. It describes what will happen when price tracking is initiated.">
+      Get alerts if the price drops on any site
+    </message>
+    <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_EMAIL_DESCRIPTION" desc="The description text for the dialog that is shown when a user tracks the product displayed on the current web page. It describes what will happen when price tracking is initiated.">
+      Get alerts if the price drops on any site. Alerts will be sent to your email.
+    </message>
+    <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_ACTION_BUTTON" desc="The action button text for the dialog that is shown when a user tracks the product displayed on the current web page. User can click this button to track this product's price.">
+      Track price
+    </message>
+    <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_ERROR_DESCRIPTION" desc="The description text for the dialog that is shown when a user initiates price tracking for the product displayed on the current page from the dialog but the request fails. It tells user that the tracking request failed.">
+      Something went wrong. Try again.
+    </message>
+    <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_ERROR_BUTTON" desc="The action button text for the dialog that is shown when a user initiates price tracking for the product displayed on the current page from the dialog but the request fails. User can click this button to re-try tracking the product.">
+      Try again
+    </message>
+    <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_TITLE_FIRST_RUN" desc="The title text for the dialog that is shown at the first time a user tracks the product displayed on the current web page.">
+      Track prices with Chrome
+    </message>
+    <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_DESCRIPTION_FIRST_RUN" desc="The description text for the dialog that is shown at the first time a user tracks the product displayed on the current web page. It describes what will happen when price tracking is initiated, and tells users which bookmarks folder this page will be saved.">
+      You’ll get email alerts if the price drops on any site. This page will be saved to <ph name="LAST_BOOKMARKS_FOLDER">$1<ex>Other Bookmarks</ex></ph>.
+    </message>
+    <message name="IDS_OMNIBOX_TRACK_PRICE_DIALOG_CANCEL_BUTTON" desc="The button text for the dialog that is shown at the first time a user tracks the product displayed on the current web page. User can click this button to dismiss this dialog.">
+      Cancel
+    </message>
+
+    <message name="IDS_OMNIBOX_TRACKING_PRICE" desc="Text shown for a button in the omnibox when the user is on a product page and the product's price is currently being tracked. User can click this button to open a dialog and view the tracking details or untrack this product from the dialog.">
+      Tracking price
+    </message>
+    <message name="IDS_OMNIBOX_TRACKING_PRICE_DIALOG_TITLE" desc="The title text for the dialog that is shown when a user checks the tracking details of the product displayed on the current web page. This dialog is shown only when the product is currently being tracked.">
+      Tracking price
+    </message>
+    <message name="IDS_OMNIBOX_TRACKING_PRICE_DIALOG_DESCRIPTION" desc="The description text for the dialog that is shown when a user checks the tracking details of the product displayed on the current web page. It indicates this product is currently being tracked and which bookmarks folder it is saved.">
+      You’re tracking this product. This page is saved in <ph name="LAST_BOOKMARKS_FOLDER">$1<ex>Other Bookmarks</ex></ph>.
+    </message>
+    <message name="IDS_OMNIBOX_TRACKING_PRICE_DIALOG_ACTION_BUTTON" desc="The action button text for the dialog that is shown when a user checks the tracking details of the product displayed on the current web page. This dialog is shown only when the product is currently being tracked and the user can click this button to acknowledge this tracking.">
+      Done
+    </message>
+    <message name="IDS_OMNIBOX_TRACKING_PRICE_DIALOG_UNTRACK_BUTTON" desc="The button text for the dialog that is shown when a user checks the tracking details of the product displayed on the current web page. This dialog is shown only when the product is currently being tracked and the user can click this button to untrack this product.">
+      Untrack
+    </message>
+    <message name="IDS_OMNIBOX_PRICE_TRACKING_OFF_DIALOG_TITLE" desc="The title text for the dialog that is shown when a user untracks the product displayed on the current web page. It indicates this product is no longer being tracked.">
+      Price tracking off
+    </message>
+    <message name="IDS_OMNIBOX_PRICE_TRACKING_OFF_DIALOG_DESCRIPTION" desc="The description text for the dialog that is shown when a user untracks the product displayed on the current web page. It indicates this product is no longer being tracked.">
+      Alerts for this product have been turned off
+    </message>
+    <message name="IDS_OMNIBOX_PRICE_TRACKING_OFF_DIALOG_DESCRIPTION_BOOKMARK_REMOVED" desc="The description text for the dialog that is shown when a user untracks the product displayed on the current web page. It indicates this product is no longer being tracked and this page is removed from bookmarks.">
+      Alerts for this product have been turned off and the bookmark removed
+    </message>
+    <message name="IDS_OMNIBOX_PRICE_TRACKING_OFF_DIALOG_ACTION_BUTTON" desc="The action button text for the dialog that is shown when a user untracks the product displayed on the current web page.. User can click this button to acknowledge that this product is no longer being tracked.">
+      Done
+    </message>
+
+    <message name="IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION" desc="The description text for the dialog that is shown when a user clicks the bookmark star icon on a product web page. It describes what will happen when price tracking is initiated.">
+      Get email alerts if the price drops on any site
+    </message>
+    <message name="IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION_EMAIL_OFF" desc="The description text for the dialog that is shown when a user clicks the bookmark star icon on a product web page. We use this text only if the email notification is currently turned off by the user. It describes what will happen when price tracking is initiated.">
+      Track prices across multiple sites at the same time
+    </message>
+
+    <message name="IDS_BOOKMARKS_MENU_TRACK_PRICE" desc="Text shown as a menu item when the user is on a product page and the product's price is not currently being tracked. User can click this button to track this product.">
+      Track price
+    </message>
+    <message name="IDS_BOOKMARKS_MENU_UNTRACK_PRICE" desc="Text shown as a menu item when the user is on a product page and the product's price is currently being tracked. User can click this button to untrack this product.">
+      Untrack price
+    </message>
+
+    <message name="IDS_BOOKMARKS_MANAGER_TRACKED_PRODUCTS" desc="Text shown for a product-specific bookmarks folder in the bookmarks manager. User can click this item to view their tracked product.">
+      Tracked products
+    </message>
+    <message name="IDS_BOOKMARKS_MANAGER_UNTRACK_BUTTON" desc="Text shown when user right-clicks a tracked product from the bookmarks manager. User can click this button to untrack this product.">
+      Untrack
+    </message>
+
+    <message name="IDS_PRICE_TRACKING_SIDE_PANEL_IPH" desc="Text shown after user tracks a product for the first time. Text attached to the side panel indicating user can see their tracked products there.">
+      See all your tracked products here
+    </message>
+    <message name="IDS_SIDE_PANEL_TRACKED_PRODUCTS" desc="Text shown for a product-specific bookmark folder in the side panel. Users can click this item to view their tracked products.">
+      Tracked Products
+    </message>
+    <message name="IDS_SIDE_PANEL_UNTRACK_BUTTON" desc="Text shown when user right-clicks a tracked product from the side panel. User can click this button to untrack this product.">
+      Untrack price
+    </message>
+    <message name="IDS_SIDE_PANEL_TRACK_BUTTON" desc="Text shown when user right-clicks an untracked product from the side panel. User can click this button to track this product.">
+      Track price
+    </message>
+
+    <message name="IDS_PRICE_TRACKING_UNTRACK_PRODUCT_ACCESSIBILITY" desc="Accessibility string for the price tracking toggle button and bell icon when this product is currently being tracked. User can click this button or icon to untrack this product.">
+      Turn off alerts
+    </message>
+    <message name="IDS_PRICE_TRACKING_TRACK_PRODUCT_ACCESSIBILITY" desc="Accessibility string for the price tracking toggle button and bell icon when this product is not currently being tracked. User can click this button or icon to track this product.">
+      Turn on alerts
+    </message>
+
+    <message name="IDS_PRICE_TRACKING_SETTINGS_TITLE" desc="Text shown in chrome settings. User can turn on or off the toggle next to this setting item to manage whether they want to receive price drop notifications.">
+      Get price tracking notifications
+    </message>
+    <message name="IDS_PRICE_TRACKING_SETTINGS_EMAIL_DESCRIPTION" desc="Text shown in chrome settings indicating that the price drop notifications will be sent via email. User can turn on or off the toggle next to this setting item to manage whether they want to receive such notifications.">
+      Price drop alerts will be sent to <ph name="EMAIL_ADDRESS">$1<ex>example@google.com</ex></ph>
+    </message>
+    <message name="IDS_PRICE_TRACKING_SETTINGS_POPUP_DESCRIPTION" desc="Text shown in chrome settings indicating that the price drop notifications will be sent via chrome popups. User can turn on or off the toggle next to this setting item to manage whether they want to receive such notifications.">
+      Price drop alerts show up as popup notifications on your desktop
+    </message>
+  </if>
+
+  <!-- Android only -->
+  <if expr="is_android">
+    <!-- For Android Price Tracking -->
+    <message name="IDS_PRICE_ANNOTATIONS_SETTINGS_TITLE" desc="The title text for price annotations settings in Google services. User can turn on or off the toggle next to this item to manage whether they want to see price drops on their open tabs.">
+      Show price drops on tabs
+    </message>
+    <message name="IDS_PRICE_ANNOTATIONS_SETTINGS_DESCRIPTION" desc="The description text for price annotations settings in Google services. User can turn on or off the toggle next to this item to manage whether they want to see price drops on their open tabs.">
+      Price drop alerts will show up on your open tabs
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_TITLE" desc="The title text for price notifications settings in Google services. User can click into this item to view the detailed settings." formatter_data="android_java">
+      Get price tracking notifications
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_DESCRIPTION" desc="The description text for price notifications settings in Google services. User can click into this item to view the detailed settings." formatter_data="android_java">
+      Manage mobile and email notifications
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_DETAILED_PAGE_TITLE" desc="The title text for the detailed page settings of price notifications in Google services." formatter_data="android_java">
+      Price tracking notifications
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_DETAILED_PAGE_DESCRIPTION" desc="The description text for the detailed page settings of price notifications in Google services." formatter_data="android_java">
+      Manage how you receive price drop alerts for products you track
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_MOBILE_TITLE" desc="The title text for managing mobile price drop popup notifications shown on the detailed page settings in Google services." formatter_data="android_java">
+      Mobile
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_MOBILE_DESCRIPTION_ON" desc="The description text for managing mobile price drop popup notifications when the notification is currently enabled. Shown on the detailed page settings in Google services. It tells users that they can disable the popup notification in the Chrome notification settings." formatter_data="android_java">
+      Price drop alerts are on. You can change this in <ph name="BEGIN_LINK">&lt;link&gt;</ph><ph name="NOTIFICATION_SETTINGS">%1$s<ex>settings</ex></ph><ph name="END_LINK">&lt;/link&gt;</ph>.
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_MOBILE_DESCRIPTION_OFF" desc="The description text for managing mobile price drop popup notifications when the notification is currently disabled. Shown on the detailed page settings in Google services. It tells users that they can enable the popup notification in the Chrome notification settings." formatter_data="android_java">
+      Chrome notifications must be on. You can turn them on in <ph name="BEGIN_LINK">&lt;link&gt;</ph><ph name="NOTIFICATION_SETTINGS">%1$s<ex>settings</ex></ph><ph name="END_LINK">&lt;/link&gt;</ph>.
+    </message>
+    <message name="IDS_CHROME_NOTIFICATION_SETTINGS_FOR_PRICE_TRACKING" desc="The button text within the description for managing mobile price drop popup notifications. When user clicks this button, we send them to the Chrome notification settings." formatter_data="android_java">
+      settings
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_EMAIL_TITLE" desc="The title text for managing price drop email notifications shown on the detailed page settings in Google services. User can turn on or off the toggle next to this item to manage whether they want to receive price drop emails." formatter_data="android_java">
+      Email
+    </message>
+    <message name="IDS_PRICE_NOTIFICATIONS_SETTINGS_EMAIL_DESCRIPTION" desc="The description text for managing price drop email notifications shown on the detailed page settings in Google services. User can turn on or off the toggle next to this item to manage whether they want to receive price drop emails." formatter_data="android_java">
+      Send to <ph name="EMAIL_ADDRESS">%1$s<ex>example@google.com</ex></ph>
+    </message>
+  </if>
+
+  <!-- For Price Tracking on all platforms -->
+  <message name="IDS_PRICE_DROP_POPUP_CONTENT_TITLE" desc="Text shown on the price drop popup notification. It tells users how much price drop on the corresponding product.">
+    <ph name="PRICE_DROP">$1<ex>$100</ex></ph> price drop on <ph name="PRODUCT_NAME">$2<ex>Chromebook</ex></ph>
+  </message>
+  <message name="IDS_PRICE_DROP_POPUP_CONTENT_TEXT" desc="Text shown on the price drop popup notification below the content title. It tells users the current price of the product and the source website.">
+    Now <ph name="CURRENT_PRICE">$1<ex>$799</ex></ph> on <ph name="SOURCE_WEBSITE">$2<ex>amazon.com</ex></ph>
+  </message>
+  <message name="IDS_PRICE_DROP_POPUP_ACTION_BUTTON" desc="Text shown on the price drop popup notification below the content text. When users click this button, we send them to the source website.">
+    Visit site
+  </message>
+  <message name="IDS_PRICE_DROP_POPUP_UNTRACK_BUTTON" desc="Text shown on the price drop popup notification below the content text. When users click this button, we untrack this product and will no longer send its price drop to users.">
+    Untrack price
+  </message>
+</grit-part>

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,20 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/backoff_entry.h"
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/client_session.h"
-#include "remoting/host/desktop_environment_options.h"
 #include "remoting/host/host_extension.h"
 #include "remoting/host/host_status_monitor.h"
 #include "remoting/host/host_status_observer.h"
+#include "remoting/host/mojom/chromoting_host_services.mojom.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/pairing_registry.h"
@@ -38,6 +40,7 @@ class TransportContext;
 }  // namespace protocol
 
 class DesktopEnvironmentFactory;
+class IpcServer;
 
 // A class to implement the functionality of a host process.
 //
@@ -62,7 +65,8 @@ class DesktopEnvironmentFactory;
 //    all pending tasks to complete. After all of that has completed, we
 //    return to the idle state. We then go to step (2) to wait for a new
 //    incoming connection.
-class ChromotingHost : public ClientSession::EventHandler {
+class ChromotingHost : public ClientSession::EventHandler,
+                       public mojom::ChromotingHostServices {
  public:
   typedef std::vector<std::unique_ptr<ClientSession>> ClientSessions;
 
@@ -74,6 +78,10 @@ class ChromotingHost : public ClientSession::EventHandler {
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> video_encode_task_runner,
       const DesktopEnvironmentOptions& options);
+
+  ChromotingHost(const ChromotingHost&) = delete;
+  ChromotingHost& operator=(const ChromotingHost&) = delete;
+
   ~ChromotingHost() override;
 
   // Asynchronously starts the host.
@@ -82,6 +90,11 @@ class ChromotingHost : public ClientSession::EventHandler {
   //
   // This method can only be called once during the lifetime of this object.
   void Start(const std::string& host_owner);
+
+  // Starts running the ChromotingHostServices server and listening for incoming
+  // IPC binding requests.
+  // It must be started exactly once across all Chromoting processes.
+  void StartChromotingHostServices();
 
   scoped_refptr<HostStatusMonitor> status_monitor() { return status_monitor_; }
   const DesktopEnvironmentOptions& desktop_environment_options() const {
@@ -115,6 +128,11 @@ class ChromotingHost : public ClientSession::EventHandler {
                             const std::string& channel_name,
                             const protocol::TransportRoute& route) override;
 
+  // mojom::ChromotingHostServices implementation.
+  void BindSessionServices(
+      mojo::PendingReceiver<mojom::ChromotingSessionServices> receiver)
+      override;
+
   // Callback for SessionManager to accept incoming sessions.
   void OnIncomingSession(
       protocol::Session* session,
@@ -137,13 +155,16 @@ class ChromotingHost : public ClientSession::EventHandler {
   }
 
  private:
+  // Returns the currently connected client session, or nullptr if not found.
+  ClientSession* GetConnectedClientSession() const;
+
   friend class ChromotingHostTest;
 
   // Unless specified otherwise, all members of this class must be
   // used on the network thread only.
 
   // Parameters specified when the host was created.
-  DesktopEnvironmentFactory* desktop_environment_factory_;
+  raw_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
   std::unique_ptr<protocol::SessionManager> session_manager_;
   scoped_refptr<protocol::TransportContext> transport_context_;
   scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner_;
@@ -172,11 +193,13 @@ class ChromotingHost : public ClientSession::EventHandler {
   // List of host extensions.
   std::vector<std::unique_ptr<HostExtension>> extensions_;
 
+  // IPC server that runs the CRD host service API. Non-null if the server name
+  // is set and the host is started.
+  std::unique_ptr<IpcServer> ipc_server_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ChromotingHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromotingHost);
 };
 
 }  // namespace remoting

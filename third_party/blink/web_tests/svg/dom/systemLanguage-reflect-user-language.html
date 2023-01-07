@@ -8,9 +8,15 @@
 </switch>
 </svg>
 <script>
-test(() => {
-	internals.setUserPreferredLanguages(["es"]);
+async function languageChange() {
+	return new Promise(resolve => window.onlanguagechange = resolve);
+}
+
+promise_test(async () => {
+        internals.setUserPreferredLanguages(["es"]);
+	var languageChangePromise = languageChange();
 	testRunner.setAcceptLanguages("en-US,en");
+	await languageChangePromise;
 
 	var text1 = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 	text1.setAttribute('systemLanguage', 'es, de');
@@ -30,7 +36,9 @@ test(() => {
 	myswitch.removeChild(text1);
 	myswitch.removeChild(text2);
 
+	languageChangePromise = languageChange();
 	testRunner.setAcceptLanguages("it, en-AU");
+	await languageChangePromise;
 
 	myswitch.appendChild(text1);
 	myswitch.appendChild(text2);

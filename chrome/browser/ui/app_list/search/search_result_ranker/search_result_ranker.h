@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,14 +13,12 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/file_manager/file_tasks_notifier.h"
-#include "chrome/browser/chromeos/file_manager/file_tasks_observer.h"
+#include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
+#include "chrome/browser/ash/file_manager/file_tasks_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
+#include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_event_logger.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker_util.h"
 #include "components/history/core/browser/history_service.h"
@@ -44,7 +42,7 @@ class SearchResultRanker : file_manager::file_tasks::FileTasksObserver {
 
   // Performs all setup of rankers. This is separated from the constructor for
   // testing reasons.
-  void InitializeRankers(SearchController* search_controller);
+  void InitializeRankers();
 
   // Queries each model contained with the SearchResultRanker for its results,
   // and saves them for use on subsequent calls to Rank(). The given query may
@@ -61,7 +59,7 @@ class SearchResultRanker : file_manager::file_tasks::FileTasksObserver {
 
   // Forwards the given training signal to the relevant models contained within
   // the SearchResultRanker.
-  void Train(const AppLaunchData& app_launch_data);
+  void Train(const LaunchData& launch_data);
 
   // file_manager::file_tasks::FileTaskObserver:
   void OnFilesOpened(const std::vector<FileOpenEvent>& file_opens) override;

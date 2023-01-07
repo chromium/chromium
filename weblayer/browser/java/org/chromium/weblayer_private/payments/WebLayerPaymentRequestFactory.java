@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,18 @@ package org.chromium.weblayer_private.payments;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.payments.BrowserPaymentRequest;
 import org.chromium.components.payments.InvalidPaymentRequest;
 import org.chromium.components.payments.MojoPaymentRequestGateKeeper;
 import org.chromium.components.payments.OriginSecurityChecker;
+import org.chromium.components.payments.PaymentAppServiceBridge;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.components.payments.PaymentRequestServiceUtil;
 import org.chromium.components.payments.PrefsStrings;
 import org.chromium.components.payments.SslValidityChecker;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.PermissionsPolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
@@ -120,6 +121,7 @@ public class WebLayerPaymentRequestFactory implements InterfaceFactory<PaymentRe
         if (webContents == null || webContents.isDestroyed()) return new InvalidPaymentRequest();
         return new MojoPaymentRequestGateKeeper(
                 (client, onClosed)
-                        -> new PaymentRequestService(mRenderFrameHost, client, onClosed, delegate));
+                        -> new PaymentRequestService(mRenderFrameHost, client, onClosed, delegate,
+                                PaymentAppServiceBridge::new));
     }
 }

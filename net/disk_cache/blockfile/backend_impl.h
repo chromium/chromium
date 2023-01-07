@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <unordered_map>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/timer/timer.h"
 #include "net/base/net_export.h"
@@ -67,10 +67,14 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
               net::CacheType cache_type,
               net::NetLog* net_log);
 
+  BackendImpl(const BackendImpl&) = delete;
+  BackendImpl& operator=(const BackendImpl&) = delete;
+
   ~BackendImpl() override;
 
   // Performs general initialization for this current instance of the cache.
-  net::Error Init(CompletionOnceCallback callback);
+  // `callback` is always invoked asynchronously.
+  void Init(CompletionOnceCallback callback);
 
   // Performs the actual initialization and final cleanup on destruction.
   int SyncInit();
@@ -268,6 +272,9 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   // Ensures that the private cache thread completes work.
   static void FlushForTesting();
 
+  // Ensures that the private cache thread completes work.
+  static void FlushAsynchronouslyForTesting(base::OnceClosure callback);
+
   // Backend implementation.
   int32_t GetEntryCount() const override;
   EntryResult OpenOrCreateEntry(const std::string& key,
@@ -301,9 +308,6 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   std::unique_ptr<Iterator> CreateIterator() override;
   void GetStats(StatsItems* stats) override;
   void OnExternalCacheHit(const std::string& key) override;
-  size_t DumpMemoryStats(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const std::string& parent_absolute_name) const override;
 
  private:
   using EntriesMap = std::unordered_map<CacheAddr, EntryImpl*>;
@@ -371,8 +375,12 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   // Send UMA stats.
   void ReportStats();
 
-  // Upgrades the index file to version 2.1.
+  // Upgrades the index file to version 2.1 (from 2.0)
   void UpgradeTo2_1();
+
+  // Upgrades the index file to version 3.0
+  // (from 2.1/2.0 depending on eviction algorithm)
+  void UpgradeTo3_0();
 
   // Performs basic checks on the index file. Returns false on failure.
   bool CheckIndex();
@@ -392,7 +400,7 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   InFlightBackendIO background_queue_;  // The controller of pending operations.
   scoped_refptr<MappedFile> index_;  // The main cache index.
   base::FilePath path_;  // Path to the folder used as backing storage.
-  Index* data_;  // Pointer to the index data.
+  raw_ptr<Index> data_;  // Pointer to the index data.
   BlockFiles block_files_;  // Set of files used to store all data.
   Rankings rankings_;  // Rankings to be able to trim the cache.
   uint32_t mask_ = 0;  // Binary mask to map a hash to the hash table.
@@ -422,13 +430,11 @@ class NET_EXPORT_PRIVATE BackendImpl : public Backend {
   // True if we should consider doing eviction at end of current operation.
   bool consider_evicting_at_op_end_ = false;
 
-  net::NetLog* net_log_;
+  raw_ptr<net::NetLog> net_log_;
 
   Stats stats_;  // Usage statistics.
   std::unique_ptr<base::RepeatingTimer> timer_;  // Usage timer.
   base::WeakPtrFactory<BackendImpl> ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackendImpl);
 };
 
 }  // namespace disk_cache

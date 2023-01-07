@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/environment.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/nix/xdg_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -48,13 +47,13 @@ bool AudioManagerCras::HasAudioOutputDevices() {
 }
 
 bool AudioManagerCras::HasAudioInputDevices() {
-  return !CrasGetAudioDevices(DeviceType::kInput).empty();
+  return !cras_util_->CrasGetAudioDevices(DeviceType::kInput).empty();
 }
 
-AudioManagerCras::AudioManagerCras(
-    std::unique_ptr<AudioThread> audio_thread,
-    AudioLogFactory* audio_log_factory)
+AudioManagerCras::AudioManagerCras(std::unique_ptr<AudioThread> audio_thread,
+                                   AudioLogFactory* audio_log_factory)
     : AudioManagerCrasBase(std::move(audio_thread), audio_log_factory),
+      cras_util_(std::make_unique<CrasUtil>()),
       main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       weak_ptr_factory_(this) {
   weak_this_ = weak_ptr_factory_.GetWeakPtr();
@@ -64,18 +63,185 @@ AudioManagerCras::~AudioManagerCras() = default;
 
 void AudioManagerCras::GetAudioInputDeviceNames(
     AudioDeviceNames* device_names) {
-  device_names->push_back(AudioDeviceName::CreateDefault());
-  for (const auto& device : CrasGetAudioDevices(DeviceType::kInput)) {
+  for (const auto& device :
+       cras_util_->CrasGetAudioDevices(DeviceType::kInput)) {
     device_names->emplace_back(device.name, base::NumberToString(device.id));
   }
+  if (!device_names->empty())
+    device_names->push_front(AudioDeviceName::CreateDefault());
 }
 
 void AudioManagerCras::GetAudioOutputDeviceNames(
     AudioDeviceNames* device_names) {
-  device_names->push_back(AudioDeviceName::CreateDefault());
-  for (const auto& device : CrasGetAudioDevices(DeviceType::kOutput)) {
+  for (const auto& device :
+       cras_util_->CrasGetAudioDevices(DeviceType::kOutput)) {
     device_names->emplace_back(device.name, base::NumberToString(device.id));
   }
+  if (!device_names->empty())
+    device_names->push_front(AudioDeviceName::CreateDefault());
+}
+
+// Checks if a system AEC with a specific group ID is flagged to be deactivated
+// by the field trial.
+bool IsSystemAecDeactivated(int aec_group_id) {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kCrOSSystemAECDeactivatedGroups,
+      base::NumberToString(aec_group_id), false);
+}
+
+// Checks if the board with `aec_group_id` is flagged by the field trial to not
+// allow using DSP-based AEC effect.
+bool IsDspBasedAecDeactivated(int aec_group_id) {
+  return base::GetFieldTrialParamByFeatureAsBool(
+             features::kCrOSDspBasedAecDeactivatedGroups,
+             base::NumberToString(aec_group_id), false) ||
+         !base::FeatureList::IsEnabled(features::kCrOSDspBasedAecAllowed);
+}
+
+// Checks if the board with `aec_group_id` is flagged by the field trial to not
+// allow using DSP-based NS effect.
+bool IsDspBasedNsDeactivated(int aec_group_id) {
+  return base::GetFieldTrialParamByFeatureAsBool(
+             features::kCrOSDspBasedNsDeactivatedGroups,
+             base::NumberToString(aec_group_id), false) ||
+         !base::FeatureList::IsEnabled(features::kCrOSDspBasedNsAllowed);
+}
+
+// Checks if the board with `aec_group_id` is flagged by the field trial to not
+// allow using DSP-based AGC effect.
+bool IsDspBasedAgcDeactivated(int aec_group_id) {
+  return base::GetFieldTrialParamByFeatureAsBool(
+             features::kCrOSDspBasedAgcDeactivatedGroups,
+             base::NumberToString(aec_group_id), false) ||
+         !base::FeatureList::IsEnabled(features::kCrOSDspBasedAgcAllowed);
+}
+
+// Specifies which DSP-based effects are allowed based on media constraints and
+// any finch field trials.
+void SetAllowedDspBasedEffects(int aec_group_id, AudioParameters& params) {
+  int effects = params.effects();
+
+  // Allow AEC to be applied by CRAS on DSP if the AEC is active in CRAS and if
+  // using the AEC on DSP has not been deactivated by any field trials.
+  if ((effects & AudioParameters::ECHO_CANCELLER) &&
+      !IsDspBasedAecDeactivated(aec_group_id)) {
+    effects = effects | AudioParameters::ALLOW_DSP_ECHO_CANCELLER;
+  } else {
+    effects = effects & ~AudioParameters::ALLOW_DSP_ECHO_CANCELLER;
+  }
+
+  // Allow NS to be applied by CRAS on DSP if the NS is active in CRAS and if
+  // using the NS on DSP has not been deactivated by any field trials.
+  if ((effects & AudioParameters::NOISE_SUPPRESSION) &&
+      !IsDspBasedNsDeactivated(aec_group_id)) {
+    effects = effects | AudioParameters::ALLOW_DSP_NOISE_SUPPRESSION;
+  } else {
+    effects = effects & ~AudioParameters::ALLOW_DSP_NOISE_SUPPRESSION;
+  }
+
+  // Allow AGC to be applied by CRAS on DSP if the AGC is active in CRAS and if
+  // using the AGC on DSP has not been deactivated by any field trials.
+  if ((effects & AudioParameters::AUTOMATIC_GAIN_CONTROL) &&
+      !IsDspBasedAgcDeactivated(aec_group_id)) {
+    effects = effects | AudioParameters::ALLOW_DSP_AUTOMATIC_GAIN_CONTROL;
+  } else {
+    effects = effects & ~AudioParameters::ALLOW_DSP_AUTOMATIC_GAIN_CONTROL;
+  }
+
+  params.set_effects(effects);
+}
+
+
+// Collects flags values for whether, and in what way, the AEC, NS or AGC
+// effects should be enforced in spite of them not being flagged as supported by
+// the board.
+void RetrieveSystemEffectFeatures(bool& enforce_system_aec,
+                                  bool& enforce_system_ns,
+                                  bool& enforce_system_agc,
+                                  bool& tuned_system_aec_allowed) {
+  const bool enforce_system_aec_ns_agc_feature =
+      base::FeatureList::IsEnabled(features::kCrOSEnforceSystemAecNsAgc);
+  const bool enforce_system_aec_ns_feature =
+      base::FeatureList::IsEnabled(features::kCrOSEnforceSystemAecNs);
+  const bool enforce_system_aec_agc_feature =
+      base::FeatureList::IsEnabled(features::kCrOSEnforceSystemAecAgc);
+  const bool enforce_system_aec_feature =
+      base::FeatureList::IsEnabled(features::kCrOSEnforceSystemAec);
+
+  enforce_system_aec =
+      enforce_system_aec_feature || enforce_system_aec_ns_agc_feature ||
+      enforce_system_aec_ns_feature || enforce_system_aec_agc_feature;
+  enforce_system_ns =
+      enforce_system_aec_ns_agc_feature || enforce_system_aec_ns_feature;
+  enforce_system_agc =
+      enforce_system_aec_ns_agc_feature || enforce_system_aec_agc_feature;
+
+  tuned_system_aec_allowed =
+      base::FeatureList::IsEnabled(features::kCrOSSystemAEC);
+}
+
+AudioParameters AudioManagerCras::GetStreamParametersForSystem(
+    int user_buffer_size) {
+  AudioParameters params(
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, ChannelLayoutConfig::Stereo(),
+      kDefaultSampleRate, user_buffer_size,
+      AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
+                                            limits::kMaxAudioBufferSize));
+
+  bool enforce_system_aec;
+  bool enforce_system_ns;
+  bool enforce_system_agc;
+  bool tuned_system_aec_allowed;
+  RetrieveSystemEffectFeatures(enforce_system_aec, enforce_system_ns,
+                               enforce_system_agc, tuned_system_aec_allowed);
+
+  // Activation of the system AEC. Allow experimentation with system AEC with
+  // all devices, but enable it by default on devices that actually support it.
+  params.set_effects(params.effects() |
+                     AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
+
+  // Rephrase the field aec_supported to properly reflect its meaning in this
+  // context (since it currently signals whether an CrAS APM with tuned settings
+  // is available).
+  // TODO(crbug.com/1307680): add unit tests and caching cras_util_ results.
+  const bool tuned_system_apm_available = cras_util_->CrasGetAecSupported();
+
+  // Don't use the system AEC if it is deactivated for this group ID. Also never
+  // activate NS nor AGC for this board if the AEC is not activated, since this
+  // will cause issues for the Browser AEC.
+  bool use_system_aec =
+      (tuned_system_apm_available && tuned_system_aec_allowed) ||
+      enforce_system_aec;
+
+  // TODO(hychao): query from CRAS
+  bool system_ns_supported = true;
+  bool system_agc_supported = true;
+
+  int aec_group_id = cras_util_->CrasGetAecGroupId();
+  if (!use_system_aec || IsSystemAecDeactivated(aec_group_id)) {
+    SetAllowedDspBasedEffects(aec_group_id, params);
+    return params;
+  }
+
+  // Activation of the system AEC.
+  params.set_effects(params.effects() | AudioParameters::ECHO_CANCELLER);
+
+  // Don't use system NS or AGC if the AEC has board-specific tunings.
+  if (!tuned_system_apm_available) {
+    // Activation of the system NS.
+    if (system_ns_supported || enforce_system_ns) {
+      params.set_effects(params.effects() | AudioParameters::NOISE_SUPPRESSION);
+    }
+
+    // Activation of the system AGC.
+    if (system_agc_supported || enforce_system_agc) {
+      params.set_effects(params.effects() |
+                         AudioParameters::AUTOMATIC_GAIN_CONTROL);
+    }
+  }
+
+  SetAllowedDspBasedEffects(aec_group_id, params);
+  return params;
 }
 
 AudioParameters AudioManagerCras::GetInputStreamParameters(
@@ -83,40 +249,10 @@ AudioParameters AudioManagerCras::GetInputStreamParameters(
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
 
   int user_buffer_size = GetUserBufferSize();
-  int buffer_size =
+  user_buffer_size =
       user_buffer_size ? user_buffer_size : kDefaultInputBufferSize;
 
-  AudioParameters params(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, CHANNEL_LAYOUT_STEREO,
-      kDefaultSampleRate, buffer_size,
-      AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
-                                            limits::kMaxAudioBufferSize));
-
-  if (CrasHasKeyboardMic())
-    params.set_effects(AudioParameters::KEYBOARD_MIC);
-
-  // Allow experimentation with system echo cancellation with all devices,
-  // but enable it by default on devices that actually support it.
-  params.set_effects(params.effects() |
-                     AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
-  if (base::FeatureList::IsEnabled(features::kCrOSSystemAEC)) {
-    if (CrasGetAecSupported()) {
-      const int32_t aec_group_id = CrasGetAecGroupId();
-
-      // Check if the system AEC has a group ID which is flagged to be
-      // deactivated by the field trial.
-      const bool system_aec_deactivated =
-          base::GetFieldTrialParamByFeatureAsBool(
-              features::kCrOSSystemAECDeactivatedGroups,
-              base::NumberToString(aec_group_id), false);
-
-      if (!system_aec_deactivated) {
-        params.set_effects(params.effects() | AudioParameters::ECHO_CANCELLER);
-      }
-    }
-  }
-
-  return params;
+  return GetStreamParametersForSystem(user_buffer_size);
 }
 
 std::string AudioManagerCras::GetDefaultInputDeviceID() {
@@ -130,7 +266,8 @@ std::string AudioManagerCras::GetDefaultOutputDeviceID() {
 }
 
 std::string AudioManagerCras::GetGroupIDInput(const std::string& device_id) {
-  for (const auto& device : CrasGetAudioDevices(DeviceType::kInput)) {
+  for (const auto& device :
+       cras_util_->CrasGetAudioDevices(DeviceType::kInput)) {
     if (base::NumberToString(device.id) == device_id ||
         (AudioDeviceDescription::IsDefaultDevice(device_id) && device.active)) {
       return device.dev_name;
@@ -140,7 +277,8 @@ std::string AudioManagerCras::GetGroupIDInput(const std::string& device_id) {
 }
 
 std::string AudioManagerCras::GetGroupIDOutput(const std::string& device_id) {
-  for (const auto& device : CrasGetAudioDevices(DeviceType::kOutput)) {
+  for (const auto& device :
+       cras_util_->CrasGetAudioDevices(DeviceType::kOutput)) {
     if (base::NumberToString(device.id) == device_id ||
         (AudioDeviceDescription::IsDefaultDevice(device_id) && device.active)) {
       return device.dev_name;
@@ -163,7 +301,8 @@ std::string AudioManagerCras::GetAssociatedOutputDeviceID(
     return "";
 
   // Now search for an output device with the same device name.
-  for (const auto& device : CrasGetAudioDevices(DeviceType::kOutput)) {
+  for (const auto& device :
+       cras_util_->CrasGetAudioDevices(DeviceType::kOutput)) {
     if (device.dev_name == device_name)
       return base::NumberToString(device.id);
   }
@@ -174,34 +313,64 @@ AudioParameters AudioManagerCras::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const AudioParameters& input_params) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  ChannelLayout channel_layout = CHANNEL_LAYOUT_STEREO;
+  ChannelLayoutConfig channel_layout_config = ChannelLayoutConfig::Stereo();
   int sample_rate = kDefaultSampleRate;
   int buffer_size = GetUserBufferSize();
   if (input_params.IsValid()) {
-    channel_layout = input_params.channel_layout();
+    channel_layout_config = input_params.channel_layout_config();
     sample_rate = input_params.sample_rate();
     if (!buffer_size)  // Not user-provided.
       buffer_size =
           std::min(static_cast<int>(limits::kMaxAudioBufferSize),
                    std::max(static_cast<int>(limits::kMinAudioBufferSize),
                             input_params.frames_per_buffer()));
+    return AudioParameters(
+        AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
+        sample_rate, buffer_size,
+        AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
+                                              limits::kMaxAudioBufferSize));
+  }
+
+  // Get max supported channels from |output_device_id| or the primary active
+  // one if |output_device_id| is the default device.
+  uint64_t preferred_device_id;
+  if (AudioDeviceDescription::IsDefaultDevice(output_device_id)) {
+    preferred_device_id = GetPrimaryActiveOutputNode();
+  } else {
+    if (!base::StringToUint64(output_device_id, &preferred_device_id))
+      preferred_device_id = 0;  // 0 represents invalid |output_device_id|.
+  }
+
+  for (const auto& device :
+       cras_util_->CrasGetAudioDevices(DeviceType::kOutput)) {
+    if (device.id == preferred_device_id) {
+      channel_layout_config = ChannelLayoutConfig::Guess(
+          static_cast<int>(device.max_supported_channels));
+      // Fall-back to old fashion: always fixed to STEREO layout.
+      if (channel_layout_config.channel_layout() ==
+          CHANNEL_LAYOUT_UNSUPPORTED) {
+        channel_layout_config = ChannelLayoutConfig::Stereo();
+      }
+      break;
+    }
   }
 
   if (!buffer_size)  // Not user-provided.
-    buffer_size = CrasGetDefaultOutputBufferSize();
+    buffer_size = cras_util_->CrasGetDefaultOutputBufferSize();
 
   if (buffer_size <= 0)
     buffer_size = kDefaultOutputBufferSize;
 
   return AudioParameters(
-      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout, sample_rate,
-      buffer_size,
+      AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout_config,
+      sample_rate, buffer_size,
       AudioParameters::HardwareCapabilities(limits::kMinAudioBufferSize,
                                             limits::kMaxAudioBufferSize));
 }
 
 uint64_t AudioManagerCras::GetPrimaryActiveInputNode() {
-  for (const auto& device : CrasGetAudioDevices(DeviceType::kInput)) {
+  for (const auto& device :
+       cras_util_->CrasGetAudioDevices(DeviceType::kInput)) {
     if (device.active)
       return device.id;
   }
@@ -209,7 +378,8 @@ uint64_t AudioManagerCras::GetPrimaryActiveInputNode() {
 }
 
 uint64_t AudioManagerCras::GetPrimaryActiveOutputNode() {
-  for (const auto& device : CrasGetAudioDevices(DeviceType::kOutput)) {
+  for (const auto& device :
+       cras_util_->CrasGetAudioDevices(DeviceType::kOutput)) {
     if (device.active)
       return device.id;
   }

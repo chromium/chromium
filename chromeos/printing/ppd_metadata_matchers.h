@@ -1,9 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // This file contains matchers useful for testing with parsed PPD
 // metadata.
+
+#ifndef CHROMEOS_PRINTING_PPD_METADATA_MATCHERS_H_
+#define CHROMEOS_PRINTING_PPD_METADATA_MATCHERS_H_
 
 #include <string>
 
@@ -11,9 +14,6 @@
 #include "base/version.h"
 #include "chromeos/printing/ppd_metadata_parser.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
-
-#ifndef CHROMEOS_PRINTING_PPD_METADATA_MATCHERS_H_
-#define CHROMEOS_PRINTING_PPD_METADATA_MATCHERS_H_
 
 namespace chromeos {
 
@@ -27,20 +27,22 @@ MATCHER_P(RestrictionsWithMinMilestone,
           integral_min_milestone,
           "is a Restrictions with min_milestone ``" +
               base::NumberToString(integral_min_milestone) + "''") {
-  return ExplainMatchResult(Field(&Restrictions::min_milestone,
-                                  Optional(base::Version(base::NumberToString(
-                                      double{integral_min_milestone})))),
-                            arg, result_listener);
+  return ExplainMatchResult(
+      Field(&Restrictions::min_milestone,
+            Optional(base::Version(base::NumberToString(
+                static_cast<double>(integral_min_milestone))))),
+      arg, result_listener);
 }
 
 MATCHER_P(RestrictionsWithMaxMilestone,
           integral_max_milestone,
           "is a Restrictions with max_milestone ``" +
               base::NumberToString(integral_max_milestone) + "''") {
-  return ExplainMatchResult(Field(&Restrictions::max_milestone,
-                                  Optional(base::Version(base::NumberToString(
-                                      double{integral_max_milestone})))),
-                            arg, result_listener);
+  return ExplainMatchResult(
+      Field(&Restrictions::max_milestone,
+            Optional(base::Version(base::NumberToString(
+                static_cast<double>(integral_max_milestone))))),
+      arg, result_listener);
 }
 
 MATCHER_P2(RestrictionsWithMinAndMaxMilestones,
@@ -62,10 +64,10 @@ MATCHER_P2(RestrictionsWithMinAndMaxMilestones,
 MATCHER(UnboundedRestrictions,
         "is a Restrictions with neither min nor max milestones") {
   return ExplainMatchResult(
-             Field(&Restrictions::min_milestone, Eq(base::nullopt)), arg,
+             Field(&Restrictions::min_milestone, Eq(absl::nullopt)), arg,
              result_listener) &&
          ExplainMatchResult(
-             Field(&Restrictions::max_milestone, Eq(base::nullopt)), arg,
+             Field(&Restrictions::max_milestone, Eq(absl::nullopt)), arg,
              result_listener);
 }
 

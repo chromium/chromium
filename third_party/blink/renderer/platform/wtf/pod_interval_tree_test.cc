@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/pod_interval_tree.h"
 
+#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/pod_tree_test_helpers.h"

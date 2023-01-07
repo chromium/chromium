@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
@@ -20,6 +19,7 @@
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 
@@ -35,6 +35,10 @@ class AutocompleteSyncBridge
   AutocompleteSyncBridge(
       AutofillWebDataBackend* backend,
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor);
+
+  AutocompleteSyncBridge(const AutocompleteSyncBridge&) = delete;
+  AutocompleteSyncBridge& operator=(const AutocompleteSyncBridge&) = delete;
+
   ~AutocompleteSyncBridge() override;
 
   static void CreateForWebDataServiceAndBackend(
@@ -47,10 +51,10 @@ class AutocompleteSyncBridge
   // syncer::ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  base::Optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  base::Optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplySyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -77,13 +81,11 @@ class AutocompleteSyncBridge
 
   // AutocompleteSyncBridge is owned by |web_data_backend_| through
   // SupportsUserData, so it's guaranteed to outlive |this|.
-  AutofillWebDataBackend* const web_data_backend_;
+  const raw_ptr<AutofillWebDataBackend> web_data_backend_;
 
   base::ScopedObservation<AutofillWebDataBackend,
                           AutofillWebDataServiceObserverOnDBSequence>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteSyncBridge);
 };
 
 }  // namespace autofill

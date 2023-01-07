@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -123,7 +123,7 @@ public class ContactView extends SelectableItemView<ContactDetails> {
         mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                          .with(ModalDialogProperties.CONTROLLER, controller)
                          .with(ModalDialogProperties.TITLE, mContactDetails.getDisplayName())
-                         .with(ModalDialogProperties.MESSAGE,
+                         .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1,
                                  mContactDetails.getContactDetailsAsString(
                                          PickerAdapter.includesAddresses(),
                                          PickerAdapter.includesEmails(),

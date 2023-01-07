@@ -27,11 +27,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_SYNTHESIS_H_
 
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom-blink-forward.h"
+#include "third_party/blink/renderer/core/speech/speech_synthesis_base.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_utterance.h"
 #include "third_party/blink/renderer/modules/speech/speech_synthesis_voice.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -42,6 +45,7 @@ class LocalDOMWindow;
 
 class MODULES_EXPORT SpeechSynthesis final
     : public EventTargetWithInlineData,
+      public SpeechSynthesisBase,
       public Supplement<LocalDOMWindow>,
       public mojom::blink::SpeechSynthesisVoiceListObserver {
   DEFINE_WRAPPERTYPEINFO();
@@ -49,6 +53,7 @@ class MODULES_EXPORT SpeechSynthesis final
  public:
   static const char kSupplementName[];
 
+  static SpeechSynthesisBase* Create(LocalDOMWindow&);
   static SpeechSynthesis* speechSynthesis(LocalDOMWindow&);
   static void CreateForTesting(
       LocalDOMWindow&,
@@ -57,13 +62,20 @@ class MODULES_EXPORT SpeechSynthesis final
   explicit SpeechSynthesis(LocalDOMWindow&);
 
   bool pending() const;
-  bool speaking() const;
+  bool speaking() const { return Speaking(); }
   bool paused() const;
 
+  // SpeechSynthesisBase
+  void Speak(const String&, const String&) override;
+  void Cancel() override;
+  void Pause() override;
+  void Resume() override;
+  bool Speaking() const override;
+
   void speak(ScriptState*, SpeechSynthesisUtterance*);
-  void cancel();
-  void pause();
-  void resume();
+  void cancel() { Cancel(); }
+  void pause() { Pause(); }
+  void resume() { Resume(); }
 
   const HeapVector<Member<SpeechSynthesisVoice>>& getVoices();
 

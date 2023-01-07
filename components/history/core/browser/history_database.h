@@ -1,34 +1,29 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_DATABASE_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_DATABASE_H_
 
-#include <stddef.h>
-
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/download_database.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/sync/history_sync_metadata_database.h"
 #include "components/history/core/browser/sync/typed_url_sync_metadata_database.h"
 #include "components/history/core/browser/url_database.h"
+#include "components/history/core/browser/visit_annotations_database.h"
 #include "components/history/core/browser/visit_database.h"
 #include "components/history/core/browser/visitsegment_database.h"
-#include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/history/core/browser/android/android_cache_database.h"
 #include "components/history/core/browser/android/android_urls_database.h"
-#endif
-
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/history/core/browser/visit_annotations_database.h"
 #endif
 
 namespace base {
@@ -47,36 +42,23 @@ namespace history {
 // as the storage interface. Logic for manipulating this storage layer should
 // be in HistoryBackend.cc.
 class HistoryDatabase : public DownloadDatabase,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
                         public AndroidURLsDatabase,
                         public AndroidCacheDatabase,
 #endif
-                        public TypedURLSyncMetadataDatabase,
                         public URLDatabase,
                         public VisitDatabase,
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
                         public VisitAnnotationsDatabase,
-#endif
                         public VisitSegmentDatabase {
  public:
-  // A simple class for scoping a history database transaction. This does not
-  // support rollback since the history database doesn't, either.
-  class TransactionScoper {
-   public:
-    explicit TransactionScoper(HistoryDatabase* db) : db_(db) {
-      db_->BeginTransaction();
-    }
-    ~TransactionScoper() { db_->CommitTransaction(); }
-
-   private:
-    HistoryDatabase* db_;
-  };
-
   // Must call Init() to complete construction. Although it can be created on
   // any thread, it must be destructed on the history thread for proper
   // database cleanup.
   HistoryDatabase(DownloadInterruptReason download_interrupt_reason_none,
                   DownloadInterruptReason download_interrupt_reason_crash);
+
+  HistoryDatabase(const HistoryDatabase&) = delete;
+  HistoryDatabase& operator=(const HistoryDatabase&) = delete;
 
   ~HistoryDatabase() override;
 
@@ -85,6 +67,7 @@ class HistoryDatabase : public DownloadDatabase,
   void set_error_callback(const sql::Database::ErrorCallback& error_callback) {
     db_.set_error_callback(error_callback);
   }
+  void reset_error_callback() { db_.reset_error_callback(); }
 
   // Must call this function to complete initialization. Will return
   // sql::INIT_OK on success. Otherwise, no other function should be called. You
@@ -99,7 +82,7 @@ class HistoryDatabase : public DownloadDatabase,
   int CountUniqueHostsVisitedLastMonth();
 
   // Counts the number of unique domains (eLTD+1) visited within
-  // [|begin_time|, |end_time|).
+  // [`begin_time`, `end_time`).
   int CountUniqueDomainsVisited(base::Time begin_time, base::Time end_time);
 
   // Call to set the mode on the database to exclusive. The default locking mode
@@ -155,7 +138,11 @@ class HistoryDatabase : public DownloadDatabase,
   // Razes the database. Returns true if successful.
   bool Raze();
 
-  std::string GetDiagnosticInfo(int extended_error, sql::Statement* statement);
+  // A simple passthrough to `sql::Database::GetDiagnosticInfo()`.
+  std::string GetDiagnosticInfo(
+      int extended_error,
+      sql::Statement* statement,
+      sql::DatabaseDiagnostics* diagnostics = nullptr);
 
   // Visit table functions ----------------------------------------------------
 
@@ -166,42 +153,43 @@ class HistoryDatabase : public DownloadDatabase,
   // visit id wasn't found.
   SegmentID GetSegmentID(VisitID visit_id);
 
-  // TODO(https://crbug.com/1141501): this is for an experiment, and will be
-  // removed once data is collected from experiment.
-  bool GetVisitsForUrl2(URLID url_id, VisitVector* visits) override;
-
   // Retrieves/Updates early expiration threshold, which specifies the earliest
   // known point in history that may possibly to contain visits suitable for
   // early expiration (AUTO_SUBFRAMES).
   virtual base::Time GetEarlyExpirationThreshold();
   virtual void UpdateEarlyExpirationThreshold(base::Time threshold);
 
+  // Sync metadata storage ----------------------------------------------------
+
+  // Returns the sub-database used for storing Sync metadata for Typed URLs.
+  TypedURLSyncMetadataDatabase* GetTypedURLMetadataDB();
+
+  // Returns the sub-database used for storing Sync metadata for History.
+  HistorySyncMetadataDatabase* GetHistoryMetadataDB();
+
  private:
-#if defined(OS_ANDROID)
-  // AndroidProviderBackend uses the |db_|.
+#if BUILDFLAG(IS_ANDROID)
+  // AndroidProviderBackend uses the `db_`.
   friend class AndroidProviderBackend;
   FRIEND_TEST_ALL_PREFIXES(AndroidURLsMigrationTest, MigrateToVersion22);
 #endif
   friend class ::InMemoryURLIndexTest;
 
-  // Overridden from URLDatabase, DownloadDatabase, VisitDatabase,
-  // VisitSegmentDatabase and TypedURLSyncMetadataDatabase.
+  // Overridden from URLDatabase, DownloadDatabase, VisitDatabase, and
+  // VisitSegmentDatabase.
   sql::Database& GetDB() override;
-
-  // Overridden from TypedURLSyncMetadataDatabase.
-  sql::MetaTable& GetMetaTable() override;
 
   // Migration -----------------------------------------------------------------
 
   // Makes sure the version is up to date, updating if necessary. If the
   // database is too old to migrate, the user will be notified. Returns
-  // sql::INIT_OK iff  the DB is up to date and ready for use.
+  // sql::INIT_OK iff the DB is up to date and ready for use.
   //
   // This assumes it is called from the init function inside a transaction. It
   // may commit the transaction and start a new one if migration requires it.
   sql::InitStatus EnsureCurrentVersion();
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // Converts the time epoch in the database from being 1970-based to being
   // 1601-based which corresponds to the change in Time.internal_value_.
   void MigrateTimeEpoch();
@@ -212,9 +200,14 @@ class HistoryDatabase : public DownloadDatabase,
   sql::Database db_;
   sql::MetaTable meta_table_;
 
-  base::Time cached_early_expiration_threshold_;
+  // Most of the sub-DBs (URLDatabase etc.) are integrated into HistoryDatabase
+  // via inheritance. However, that can lead to "diamond inheritance" issues
+  // when multiple of these base classes define the same methods. Therefore the
+  // Sync metadata DBs are integrated via composition instead.
+  TypedURLSyncMetadataDatabase typed_url_metadata_db_;
+  HistorySyncMetadataDatabase history_metadata_db_;
 
-  DISALLOW_COPY_AND_ASSIGN(HistoryDatabase);
+  base::Time cached_early_expiration_threshold_;
 };
 
 }  // namespace history

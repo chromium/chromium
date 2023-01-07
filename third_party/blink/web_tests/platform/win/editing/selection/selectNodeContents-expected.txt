@@ -21,7 +21,7 @@ layer at (0,0) size 800x600
       LayoutNGBlockFlow {UL} at (0,132) size 784x20
         LayoutNGListItem {LI} at (40,0) size 744x20
           LayoutNGOutsideListMarker {::marker} at (-18,0) size 7x20
-            LayoutText (anonymous) at (0,0) size 7x19
+            LayoutTextFragment (anonymous) at (0,0) size 7x19
               text run at (0,0) width 7: "\x{2022} "
           LayoutText {#text} at (0,0) size 53x19
             text run at (0,0) width 53: "Success."

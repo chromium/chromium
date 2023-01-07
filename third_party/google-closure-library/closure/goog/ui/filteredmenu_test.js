@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.FilteredMenuTest');
 goog.setTestOnly();
@@ -29,6 +21,8 @@ const events = goog.require('goog.events');
 const style = goog.require('goog.style');
 const testSuite = goog.require('goog.testing.testSuite');
 const testingEvents = goog.require('goog.testing.events');
+const transform = goog.require('goog.style.transform');
+
 
 let sandbox;
 
@@ -100,6 +94,10 @@ testSuite({
     menu.dispose();
   },
 
+  /**
+     @suppress {strictMissingProperties} suppression added to enable type
+     checking
+   */
   testFilter() {
     let menu = new FilteredMenu();
     menu.addItem(new MenuItem('Family'));
@@ -286,6 +284,40 @@ testSuite({
     menu.dispose();
   },
 
+  testScrollIntoView_cssTransformApplied() {
+    // Applying a transform property on an element affects whether it is set
+    // as an offsetParent, which influences calculation of offsetTop and
+    // offsetLeft for child elements. This test is to help ensure that reliance
+    // on offsetParent is avoided when performing scroll-on-highlight as the
+    // behavior of offsetParent is not well-defined.
+    let menu = new FilteredMenu();
+    menu.addItem(new MenuItem('Family'));
+    menu.addItem(new MenuItem('Friends'));
+    menu.addItem(new MenuItem('Photos'));
+    menu.addItem(new MenuItem('Work'));
+    menu.render(sandbox);
+
+    transform.setTranslation(menu.getContentElement(), 0, 0);
+
+    menu.setHighlightedIndex(0);
+    assertTrue(
+        'Highlighted item should be visible', isHighlightedVisible(menu));
+    menu.setHighlightedIndex(1);
+    assertTrue(
+        'Highlighted item should be visible', isHighlightedVisible(menu));
+    menu.setHighlightedIndex(2);
+    assertTrue(
+        'Highlighted item should be visible', isHighlightedVisible(menu));
+    menu.setHighlightedIndex(3);
+    assertTrue(
+        'Highlighted item should be visible', isHighlightedVisible(menu));
+    menu.setHighlightedIndex(0);
+    assertTrue(
+        'Highlighted item should be visible', isHighlightedVisible(menu));
+
+    menu.dispose();
+  },
+
   testEscapeKeyHandling() {
     let menu = new FilteredMenu();
     menu.addItem(new MenuItem('Family'));
@@ -301,6 +333,7 @@ testSuite({
     assertFalse('ESC key should not propagate out to parent', gotKeyCode);
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testAriaRoles() {
     let menu = new FilteredMenu();
     menu.addItem(new MenuItem('Item 1'));
@@ -313,6 +346,7 @@ testSuite({
     assertEquals('true', aria.getState(input, State.EXPANDED));
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testInputActiveDescendant() {
     let menu = new FilteredMenu();
     const menuItem1 = new MenuItem('Item 1');

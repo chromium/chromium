@@ -1,36 +1,26 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/pdf/chrome_pdf_web_contents_helper_client.h"
 
 #include "chrome/browser/download/download_stats.h"
+#include "chrome/browser/pdf/pdf_frame_util.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/common/content_restriction.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
-#include "ppapi/c/private/ppb_pdf.h"
 
 namespace {
 
-// For the UpdateContentRestrictions() call below, ensure the enum values in
-// chrome/common/content_restriction.h and ppapi/c/private/ppb_pdf.h match.
-#define STATIC_ASSERT_ENUM(a, b)                            \
-  static_assert(static_cast<int>(a) == static_cast<int>(b), \
-                "mismatching enums: " #a)
-
-STATIC_ASSERT_ENUM(CONTENT_RESTRICTION_COPY, PP_CONTENT_RESTRICTION_COPY);
-STATIC_ASSERT_ENUM(CONTENT_RESTRICTION_CUT, PP_CONTENT_RESTRICTION_CUT);
-STATIC_ASSERT_ENUM(CONTENT_RESTRICTION_PASTE, PP_CONTENT_RESTRICTION_PASTE);
-STATIC_ASSERT_ENUM(CONTENT_RESTRICTION_PRINT, PP_CONTENT_RESTRICTION_PRINT);
-STATIC_ASSERT_ENUM(CONTENT_RESTRICTION_SAVE, PP_CONTENT_RESTRICTION_SAVE);
-
 content::WebContents* GetWebContentsToUse(
-    content::WebContents* web_contents) {
+    content::RenderFrameHost* render_frame_host) {
   // If we're viewing the PDF in a MimeHandlerViewGuest, use its embedder
   // WebContents.
   auto* guest_view =
-      extensions::MimeHandlerViewGuest::FromWebContents(web_contents);
-  return guest_view ? guest_view->embedder_web_contents() : web_contents;
+      extensions::MimeHandlerViewGuest::FromRenderFrameHost(render_frame_host);
+  return guest_view
+             ? guest_view->embedder_web_contents()
+             : content::WebContents::FromRenderFrameHost(render_frame_host);
 }
 
 }  // namespace
@@ -39,12 +29,21 @@ ChromePDFWebContentsHelperClient::ChromePDFWebContentsHelperClient() = default;
 
 ChromePDFWebContentsHelperClient::~ChromePDFWebContentsHelperClient() = default;
 
+content::RenderFrameHost* ChromePDFWebContentsHelperClient::FindPdfFrame(
+    content::WebContents* contents) {
+  content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* pdf_frame =
+      pdf_frame_util::FindPdfChildFrame(main_frame);
+  return pdf_frame ? pdf_frame : main_frame;
+}
+
 void ChromePDFWebContentsHelperClient::UpdateContentRestrictions(
-    content::WebContents* contents,
+    content::RenderFrameHost* render_frame_host,
     int content_restrictions) {
   // Speculative short-term-fix while we get at the root of
   // https://crbug.com/752822 .
-  content::WebContents* web_contents_to_use = GetWebContentsToUse(contents);
+  content::WebContents* web_contents_to_use =
+      GetWebContentsToUse(render_frame_host);
   if (!web_contents_to_use)
     return;
 
@@ -67,10 +66,10 @@ void ChromePDFWebContentsHelperClient::OnSaveURL(
 }
 
 void ChromePDFWebContentsHelperClient::SetPluginCanSave(
-    content::WebContents* contents,
+    content::RenderFrameHost* render_frame_host,
     bool can_save) {
   auto* guest_view =
-      extensions::MimeHandlerViewGuest::FromWebContents(contents);
+      extensions::MimeHandlerViewGuest::FromRenderFrameHost(render_frame_host);
   if (guest_view)
     guest_view->SetPluginCanSave(can_save);
 }

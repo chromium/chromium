@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 #define COMPONENTS_TRANSLATE_CORE_LANGUAGE_DETECTION_LANGUAGE_DETECTION_MODEL_H_
 
 #include <string>
-#include "base/files/memory_mapped_file.h"
+
+#include "base/files/file.h"
 
 namespace tflite {
 namespace task {
@@ -70,14 +71,13 @@ class LanguageDetectionModel {
   std::pair<std::string, float> DetectTopLanguage(
       const std::string& sampled_str) const;
 
-  // A memory-mapped file that contains the TFLite model used for
-  // determining the language of a page. This must be valid in order
-  // to evaluate the model owned by |this|.
-  base::MemoryMappedFile model_fb_;
-
   // The tflite classifier that can determine the language of text.
   std::unique_ptr<tflite::task::text::nlclassifier::NLClassifier>
       lang_detection_model_;
+
+  // The number of threads to use for model inference. -1 tells TFLite to use
+  // its internal default logic.
+  const int num_threads_ = -1;
 };
 
 }  // namespace translate

@@ -1,0 +1,79 @@
+This is a testharness.js-based test.
+Found 63 tests; 60 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS # AUDIT TASK RUNNER STARTED.
+PASS Executing "attack"
+PASS Executing "knee"
+PASS Executing "ratio"
+PASS Executing "release"
+PASS Executing "threshold"
+PASS Audit report
+PASS > [attack] Dynamics compressor attack
+PASS   attack: refNode = new DynamicsCompressorNode(context) did not throw an exception.
+PASS   attack: tstNode = new DynamicsCompressorNode(context, {"attack":0}) did not throw an exception.
+PASS   attack: refNode[attack].setValueAtTime(refNode[attack].minValue, 0) did not throw an exception.
+PASS   attack: refNode[attack].linearRampToValueAtTime(refNode[attack].minValue, 0.25) did not throw an exception.
+PASS   attack: mod = new ConstantSourceNode(context, {offset: 0}) did not throw an exception.
+PASS   attack: mod.offset.setValueAtTime(0, 0) did not throw an exception.
+PASS   attack: mod.offset.linearRampToValueAtTime(1, 0.25) did not throw an exception.
+PASS   attack: mod.connect(tstNode[attack]) did not throw an exception.
+PASS   k-rate attack AudioParam with input equals [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0...] with an element-wise tolerance of {"absoluteThreshold":0,"relativeThreshold":0}.
+PASS < [attack] All assertions passed. (total 9 assertions)
+PASS > [knee] Dynamics compressor knee
+PASS   knee: refNode = new DynamicsCompressorNode(context) did not throw an exception.
+PASS   knee: tstNode = new DynamicsCompressorNode(context, {"knee":0}) did not throw an exception.
+PASS   knee: refNode[knee].setValueAtTime(refNode[knee].minValue, 0) did not throw an exception.
+PASS   knee: refNode[knee].linearRampToValueAtTime(refNode[knee].minValue, 0.25) did not throw an exception.
+PASS   knee: mod = new ConstantSourceNode(context, {offset: 0}) did not throw an exception.
+PASS   knee: mod.offset.setValueAtTime(0, 0) did not throw an exception.
+PASS   knee: mod.offset.linearRampToValueAtTime(40, 0.25) did not throw an exception.
+PASS   knee: mod.connect(tstNode[knee]) did not throw an exception.
+PASS   k-rate knee AudioParam with input equals [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0...] with an element-wise tolerance of {"absoluteThreshold":0,"relativeThreshold":0}.
+PASS < [knee] All assertions passed. (total 9 assertions)
+PASS > [ratio] Dynamics compressor ratio
+PASS   ratio: refNode = new DynamicsCompressorNode(context) did not throw an exception.
+PASS   ratio: tstNode = new DynamicsCompressorNode(context, {"ratio":1}) did not throw an exception.
+PASS   ratio: refNode[ratio].setValueAtTime(refNode[ratio].minValue, 0) did not throw an exception.
+PASS   ratio: refNode[ratio].linearRampToValueAtTime(refNode[ratio].minValue, 0.25) did not throw an exception.
+PASS   ratio: mod = new ConstantSourceNode(context, {offset: 0}) did not throw an exception.
+PASS   ratio: mod.offset.setValueAtTime(0, 0) did not throw an exception.
+PASS   ratio: mod.offset.linearRampToValueAtTime(19, 0.25) did not throw an exception.
+PASS   ratio: mod.connect(tstNode[ratio]) did not throw an exception.
+PASS   k-rate ratio AudioParam with input equals [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0...] with an element-wise tolerance of {"absoluteThreshold":0,"relativeThreshold":0}.
+PASS < [ratio] All assertions passed. (total 9 assertions)
+PASS > [release] Dynamics compressor release
+PASS   release: refNode = new DynamicsCompressorNode(context) did not throw an exception.
+PASS   release: tstNode = new DynamicsCompressorNode(context, {"release":0}) did not throw an exception.
+PASS   release: refNode[release].setValueAtTime(refNode[release].minValue, 0) did not throw an exception.
+PASS   release: refNode[release].linearRampToValueAtTime(refNode[release].minValue, 0.25) did not throw an exception.
+PASS   release: mod = new ConstantSourceNode(context, {offset: 0}) did not throw an exception.
+PASS   release: mod.offset.setValueAtTime(0, 0) did not throw an exception.
+PASS   release: mod.offset.linearRampToValueAtTime(1, 0.25) did not throw an exception.
+PASS   release: mod.connect(tstNode[release]) did not throw an exception.
+PASS   k-rate release AudioParam with input equals [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0...] with an element-wise tolerance of {"absoluteThreshold":0,"relativeThreshold":0}.
+PASS < [release] All assertions passed. (total 9 assertions)
+PASS > [threshold] Dynamics compressor threshold
+PASS   threshold: refNode = new DynamicsCompressorNode(context) did not throw an exception.
+PASS   threshold: tstNode = new DynamicsCompressorNode(context, {"threshold":-100}) did not throw an exception.
+PASS   threshold: refNode[threshold].setValueAtTime(refNode[threshold].minValue, 0) did not throw an exception.
+PASS   threshold: refNode[threshold].linearRampToValueAtTime(refNode[threshold].minValue, 0.25) did not throw an exception.
+PASS   threshold: mod = new ConstantSourceNode(context, {offset: 0}) did not throw an exception.
+PASS   threshold: mod.offset.setValueAtTime(0, 0) did not throw an exception.
+PASS   threshold: mod.offset.linearRampToValueAtTime(100, 0.25) did not throw an exception.
+PASS   threshold: mod.connect(tstNode[threshold]) did not throw an exception.
+FAIL X k-rate threshold AudioParam with input does not equal [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0...] with an element-wise tolerance of {"absoluteThreshold":0,"relativeThreshold":0}.
+	Index	Actual			Expected		AbsError		RelError		Test threshold
+	[512]	4.0975883603096008e-3	4.0966668166220188e-3	9.2154368758201599e-7	2.2494963072000363e-4	0.0000000000000000e+0
+	[513]	4.9103251658380032e-3	4.9092206172645092e-3	1.1045485734939575e-6	2.2499469052369222e-4	0.0000000000000000e+0
+	[514]	5.8354442007839680e-3	5.8341315016150475e-3	1.3126991689205170e-6	2.2500335629341333e-4	0.0000000000000000e+0
+	[515]	6.1213369481265545e-3	6.1199599876999855e-3	1.3769604265689850e-6	2.2499500476088518e-4	0.0000000000000000e+0
+	[516]	7.3028206825256348e-3	7.3011782951653004e-3	1.6423873603343964e-6	2.2494826094329921e-4	0.0000000000000000e+0
+	...and 11483 more errors.
+	Max AbsError of 3.0715018510818481e-5 at index of 2523.
+	[2523]	3.1251750886440277e-2	3.1282465904951096e-2	3.0715018510818481e-5	9.8186052864704626e-4	0.0000000000000000e+0
+	Max RelError of 1.0166148481892119e-3 at index of 2450.
+	[2450]	-9.4820801168680191e-3	-9.4917295500636101e-3	9.6494331955909729e-6	1.0166148481892119e-3	0.0000000000000000e+0
+ assert_true: expected true got false
+FAIL < [threshold] 1 out of 9 assertions were failed. assert_true: expected true got false
+FAIL # AUDIT TASK RUNNER FINISHED: 1 out of 5 tasks were failed. assert_true: expected true got false
+Harness: the test ran to completion.
+

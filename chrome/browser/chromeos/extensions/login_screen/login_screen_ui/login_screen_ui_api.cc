@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ LoginScreenUiShowFunction::~LoginScreenUiShowFunction() = default;
 
 ExtensionFunction::ResponseAction LoginScreenUiShowFunction::Run() {
   std::unique_ptr<login_screen_ui::Show::Params> parameters =
-      login_screen_ui::Show::Params::Create(*args_);
+      login_screen_ui::Show::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
   const login_screen_ui::ShowOptions& options = parameters->options;
@@ -46,7 +46,7 @@ ExtensionFunction::ResponseAction LoginScreenUiCloseFunction::Run() {
 
 void LoginScreenUiCloseFunction::OnClosed(
     bool success,
-    const base::Optional<std::string>& error) {
+    const absl::optional<std::string>& error) {
   if (!success) {
     Respond(Error(error.value()));
     return;

@@ -1,8 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
+
+#include "third_party/webrtc/api/video_codecs/h264_profile_level_id.h"
+#include "third_party/webrtc/api/video_codecs/video_codec.h"
+#include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 
 namespace blink {
 
@@ -24,15 +28,67 @@ media::VideoRotation WebRtcToMediaVideoRotation(
 media::VideoCodec WebRtcToMediaVideoCodec(webrtc::VideoCodecType codec) {
   switch (codec) {
     case webrtc::kVideoCodecAV1:
-      return media::kCodecAV1;
+      return media::VideoCodec::kAV1;
     case webrtc::kVideoCodecVP8:
-      return media::kCodecVP8;
+      return media::VideoCodec::kVP8;
     case webrtc::kVideoCodecVP9:
-      return media::kCodecVP9;
+      return media::VideoCodec::kVP9;
     case webrtc::kVideoCodecH264:
-      return media::kCodecH264;
+      return media::VideoCodec::kH264;
     default:
-      return media::kUnknownVideoCodec;
+      return media::VideoCodec::kUnknown;
+  }
+}
+
+media::VideoCodecProfile WebRtcVideoFormatToMediaVideoCodecProfile(
+    const webrtc::SdpVideoFormat& format) {
+  const webrtc::VideoCodecType video_codec_type =
+      webrtc::PayloadStringToCodecType(format.name);
+  switch (video_codec_type) {
+    case webrtc::kVideoCodecAV1:
+      return media::AV1PROFILE_PROFILE_MAIN;
+    case webrtc::kVideoCodecVP8:
+      return media::VP8PROFILE_ANY;
+    case webrtc::kVideoCodecVP9: {
+      const absl::optional<webrtc::VP9Profile> vp9_profile =
+          webrtc::ParseSdpForVP9Profile(format.parameters);
+      // The return value is absl::nullopt if the profile-id is specified
+      // but its value is invalid.
+      if (!vp9_profile) {
+        return media::VIDEO_CODEC_PROFILE_UNKNOWN;
+      }
+      switch (*vp9_profile) {
+        case webrtc::VP9Profile::kProfile2:
+          return media::VP9PROFILE_PROFILE2;
+        case webrtc::VP9Profile::kProfile1:
+          return media::VP9PROFILE_PROFILE1;
+        case webrtc::VP9Profile::kProfile0:
+        default:
+          return media::VP9PROFILE_PROFILE0;
+      }
+    }
+    case webrtc::kVideoCodecH264: {
+      const absl::optional<webrtc::H264ProfileLevelId> h264_profile_level_id =
+          webrtc::ParseSdpForH264ProfileLevelId(format.parameters);
+      // The return value is absl::nullopt if the profile-level-id is specified
+      // but its value is invalid.
+      if (!h264_profile_level_id) {
+        return media::VIDEO_CODEC_PROFILE_UNKNOWN;
+      }
+      switch (h264_profile_level_id->profile) {
+        case webrtc::H264Profile::kProfileMain:
+          return media::H264PROFILE_MAIN;
+        case webrtc::H264Profile::kProfileConstrainedHigh:
+        case webrtc::H264Profile::kProfileHigh:
+          return media::H264PROFILE_HIGH;
+        case webrtc::H264Profile::kProfileConstrainedBaseline:
+        case webrtc::H264Profile::kProfileBaseline:
+        default:
+          return media::H264PROFILE_BASELINE;
+      }
+    }
+    default:
+      return media::VIDEO_CODEC_PROFILE_UNKNOWN;
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@ namespace security_interstitials {
 
 // Provides utilities for security interstitials on //content-based platforms.
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Launches date and time settings as appropriate based on the platform (not
 // supported on ChromeOS, where taking this action requires embedder-level
-// machinery, or Fuchsia, which simply doesn't require this functionality).
+// machinery.
 void LaunchDateAndTimeSettings();
 #endif
 

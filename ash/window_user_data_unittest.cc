@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "ash/public/cpp/autotest_private_api_utils.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/window_user_data.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer_type.h"
 
@@ -20,12 +19,14 @@ namespace {
 class Data {
  public:
   explicit Data(bool* delete_setter) : delete_setter_(delete_setter) {}
+
+  Data(const Data&) = delete;
+  Data& operator=(const Data&) = delete;
+
   ~Data() { *delete_setter_ = true; }
 
  private:
   bool* delete_setter_;
-
-  DISALLOW_COPY_AND_ASSIGN(Data);
 };
 
 }  // namespace

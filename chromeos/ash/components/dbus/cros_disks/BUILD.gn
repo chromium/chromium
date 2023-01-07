@@ -1,0 +1,35 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
+
+component("cros_disks") {
+  output_name = "ash_cros_disks"
+  defines = [ "IS_ASH_DBUS_CROS_DISKS_IMPL" ]
+  deps = [
+    "//base",
+    "//chromeos/dbus/common",
+    "//chromeos/dbus/constants",
+    "//dbus",
+    "//url",
+  ]
+  sources = [
+    "cros_disks_client.cc",
+    "cros_disks_client.h",
+    "fake_cros_disks_client.cc",
+    "fake_cros_disks_client.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":cros_disks",
+    "//dbus",
+    "//testing/gtest",
+  ]
+  sources = [ "cros_disks_client_unittest.cc" ]
+}

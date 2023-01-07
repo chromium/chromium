@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,6 @@
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
@@ -39,19 +38,19 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "third_party/breakpad/breakpad/src/client/linux/handler/exception_handler.h"  // nogncheck
 #include "third_party/breakpad/breakpad/src/client/linux/minidump_writer/linux_dumper.h"  // nogncheck
 #include "third_party/breakpad/breakpad/src/client/linux/minidump_writer/minidump_writer.h"  // nogncheck
-#endif  // ! defined(OS_ANDROID)
+#endif  // ! BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID) && !defined(__LP64__)
+#if BUILDFLAG(IS_ANDROID) && !defined(__LP64__)
 #include <sys/syscall.h>
 
 #define SYS_read __NR_read
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/crash/core/app/crashpad.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"  // nogncheck
 #include "third_party/crashpad/crashpad/util/posix/signals.h"      // nogncheck
@@ -59,7 +58,7 @@
 
 using content::BrowserThread;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 using google_breakpad::ExceptionHandler;
 
@@ -114,7 +113,7 @@ CrashHandlerHostLinux::CrashHandlerHostLinux(const std::string& process_type,
                                              bool upload)
     : process_type_(process_type),
       dumps_path_(dumps_path),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       upload_(upload),
 #endif
       fd_watch_controller_(FROM_HERE),
@@ -262,9 +261,9 @@ void CrashHandlerHostLinux::OnFileCanReadWithoutBlocking(int fd) {
           return;
         }
         DCHECK(!signal_fd.is_valid());
-        int fd = reinterpret_cast<int*>(CMSG_DATA(hdr))[0];
-        DCHECK_GE(fd, 0);  // The kernel should never send a negative fd.
-        signal_fd.reset(fd);
+        int kernel_fd = reinterpret_cast<int*>(CMSG_DATA(hdr))[0];
+        DCHECK_GE(kernel_fd, 0);  // The kernel should never send a negative fd.
+        signal_fd.reset(kernel_fd);
       } else if (hdr->cmsg_type == SCM_CREDENTIALS) {
         DCHECK_EQ(-1, crashing_pid);
         const struct ucred *cred =
@@ -350,7 +349,7 @@ void CrashHandlerHostLinux::FindCrashingThreadAndDump(
                        std::move(asan_report),
 #endif
                        uptime, oom_size, signal_fd, attempt),
-        base::TimeDelta::FromMilliseconds(kRetryIntervalTranslatingTidInMs));
+        base::Milliseconds(kRetryIntervalTranslatingTidInMs));
     return;
   }
 
@@ -391,7 +390,7 @@ void CrashHandlerHostLinux::FindCrashingThreadAndDump(
 
   info->process_start_time = uptime;
   info->oom_size = oom_size;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Nothing gets uploaded in android.
   info->upload = false;
 #else
@@ -502,7 +501,7 @@ bool CrashHandlerHostLinux::IsShuttingDown() const {
 
 }  // namespace breakpad
 
-#else  // !OS_ANDROID
+#else  // !BUILDFLAG(IS_ANDROID)
 
 namespace crashpad {
 
@@ -580,7 +579,7 @@ bool CrashHandlerHost::ReceiveClientMessage(int client_fd,
   msg.msg_name = nullptr;
   msg.msg_namelen = 0;
   msg.msg_iov = iov;
-  msg.msg_iovlen = base::size(iov);
+  msg.msg_iovlen = std::size(iov);
 
   char cmsg_buf[CMSG_SPACE(sizeof(int)) + CMSG_SPACE(sizeof(ucred))];
   msg.msg_control = cmsg_buf;
@@ -659,4 +658,4 @@ void CrashHandlerHost::WillDestroyCurrentMessageLoop() {
 
 }  // namespace crashpad
 
-#endif  // !OS_ANDROID
+#endif  // !BUILDFLAG(IS_ANDROID)

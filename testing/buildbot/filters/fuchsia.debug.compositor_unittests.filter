@@ -1,0 +1,9 @@
+# https://crbug.com/1241502
+-LayerWithRealCompositorTest.BackgroundBlur*
+-LayerWithRealCompositorTest.CompositorObservers
+-LayerWithRealCompositorTest.Delegate
+-LayerWithRealCompositorTest.Draw*
+-LayerWithRealCompositorTest.Hierarchy*
+-LayerWithRealCompositorTest.ModifyHierarchy
+-LayerWithRealCompositorTest.Opacity
+-LayerWithRealCompositorTest.SchedulePaintUpdatesMask

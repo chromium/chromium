@@ -1,4 +1,4 @@
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import '../shared_vars_chromeos_css.m.js';
 // </if>
 import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -6,7 +6,7 @@ import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 import {PaperRippleBehavior} from '//resources/polymer/v3_0/paper-behaviors/paper-ripple-behavior.js';
 import '../shared_vars_css.m.js';
 import './foo.m.js';
-// <if expr="chromeos">
+// <if expr="chromeos_ash">
 import './bar.m.js';
 // </if>
 

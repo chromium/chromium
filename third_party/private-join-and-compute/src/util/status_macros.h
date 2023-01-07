@@ -32,10 +32,10 @@
 // Internal helper.
 #define PRIVACY_BLINDERS_ASSIGN_OR_RETURN_IMPL_(statusor, lhs, rexpr) \
   auto statusor = (rexpr);                                            \
-  if (UNLIKELY(!statusor.ok())) {                           \
+  if (UNLIKELY(!statusor.ok())) {                                     \
     return std::move(statusor).status();                              \
   }                                                                   \
-  lhs = std::move(statusor).ValueOrDie()
+  lhs = std::move(statusor).value()
 
 // Internal helper for concatenating macro values.
 #define PRIVACY_BLINDERS_STATUS_MACROS_IMPL_CONCAT_INNER_(x, y) x##y

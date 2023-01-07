@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,19 +6,25 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
+#include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/ash_message_popup_collection.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/pip/pip_test_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/window.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/gfx/geometry/insets.h"
@@ -60,7 +66,7 @@ TEST_F(CollisionDetectionUtilsTest,
 }
 
 TEST_F(CollisionDetectionUtilsTest, AvoidObstaclesAvoidsUnifiedSystemTray) {
-  UpdateDisplay("1000x1000");
+  UpdateDisplay("1000x900");
   auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
   unified_system_tray->ShowBubble();
 
@@ -76,6 +82,49 @@ TEST_F(CollisionDetectionUtilsTest, AvoidObstaclesAvoidsUnifiedSystemTray) {
   // but also don't leave the PIP movement area.
   EXPECT_FALSE(moved_bounds.Intersects(bubble_bounds));
   EXPECT_TRUE(area.Contains(moved_bounds));
+}
+
+TEST_F(CollisionDetectionUtilsTest, AvoidObstaclesAvoidsPopupNotification) {
+  UpdateDisplay("1000x900");
+  auto* window = CreateTestWindowInShellWithId(kShellWindowId_ShelfContainer);
+  window->SetName(AshMessagePopupCollection::kMessagePopupWidgetName);
+  window->Show();
+
+  auto display = GetPrimaryDisplay();
+  gfx::Rect area = CollisionDetectionUtils::GetMovementArea(display);
+  gfx::Rect popup_bounds = window->GetBoundsInScreen();
+  gfx::Rect bounds = gfx::Rect(popup_bounds.x(), popup_bounds.y(), 100, 100);
+  gfx::Rect moved_bounds = CollisionDetectionUtils::GetRestingPosition(
+      display, bounds,
+      CollisionDetectionUtils::RelativePriority::kPictureInPicture);
+
+  // Expect that the returned bounds don't intersect the popup message window
+  // but also don't leave the PIP movement area.
+  EXPECT_FALSE(moved_bounds.Intersects(popup_bounds));
+  EXPECT_TRUE(area.Contains(moved_bounds));
+}
+
+TEST_F(CollisionDetectionUtilsTest, AvoidObstaclesAvoidsClamshellLauncher) {
+  base::test::ScopedFeatureList feature_list(features::kProductivityLauncher);
+
+  UpdateDisplay("1000x900");
+  AppListController* app_list_controller = AppListController::Get();
+  app_list_controller->ShowAppList();
+
+  display::Display display = GetPrimaryDisplay();
+  gfx::Rect movement_area = CollisionDetectionUtils::GetMovementArea(display);
+  gfx::Rect bubble_bounds =
+      app_list_controller->GetWindow()->GetBoundsInScreen();
+  // Start with bounds that overlap the bubble window.
+  gfx::Rect bounds = gfx::Rect(bubble_bounds.x(), bubble_bounds.y(), 100, 100);
+  gfx::Rect moved_bounds = CollisionDetectionUtils::GetRestingPosition(
+      display, bounds,
+      CollisionDetectionUtils::RelativePriority::kPictureInPicture);
+
+  // Expect that the returned bounds don't intersect the bubble window but also
+  // don't leave the PIP movement area.
+  EXPECT_FALSE(moved_bounds.Intersects(bubble_bounds));
+  EXPECT_TRUE(movement_area.Contains(moved_bounds));
 }
 
 class CollisionDetectionUtilsDisplayTest
@@ -108,6 +157,21 @@ class CollisionDetectionUtilsDisplayTest
  protected:
   display::Display GetDisplay() { return GetDisplayForWindow(root_window_); }
 
+  gfx::Rect GetKeyboardBounds(int keyboard_height) {
+    gfx::Rect keyboard_bounds(GetDisplay().bounds().size());
+    keyboard_bounds.set_y(keyboard_bounds.bottom() - keyboard_height);
+    keyboard_bounds.set_height(100);
+    return keyboard_bounds;
+  }
+
+  void TransposeIfPortrait(gfx::Rect* rect) {
+    bool landscape =
+        GetDisplay().bounds().width() > GetDisplay().bounds().height();
+    if (!landscape) {
+      rect->SetRect(rect->y(), rect->x(), rect->height(), rect->width());
+    }
+  }
+
   aura::Window* root_window() { return root_window_; }
 
   gfx::Rect ConvertToScreen(const gfx::Rect& bounds) {
@@ -124,8 +188,10 @@ class CollisionDetectionUtilsDisplayTest
 
   void UpdateWorkArea(const std::string& bounds) {
     UpdateDisplay(bounds);
-    for (aura::Window* root : Shell::GetAllRootWindows())
-      Shell::Get()->SetDisplayWorkAreaInsets(root, gfx::Insets());
+    for (aura::Window* root : Shell::GetAllRootWindows()) {
+      WorkAreaInsets::ForWindow(root)->UpdateWorkAreaInsetsForTest(
+          root, gfx::Rect(), gfx::Insets(), gfx::Insets());
+    }
   }
 
  private:
@@ -135,7 +201,9 @@ class CollisionDetectionUtilsDisplayTest
 
 TEST_P(CollisionDetectionUtilsDisplayTest, MovementAreaIsInset) {
   gfx::Rect area = CollisionDetectionUtils::GetMovementArea(GetDisplay());
-  EXPECT_EQ(ConvertToScreen(gfx::Rect(8, 8, 384, 384)), area);
+  gfx::Rect expected(8, 8, 484, 384);
+  TransposeIfPortrait(&expected);
+  EXPECT_EQ(ConvertToScreen(expected), area);
 }
 
 TEST_P(CollisionDetectionUtilsDisplayTest,
@@ -144,14 +212,23 @@ TEST_P(CollisionDetectionUtilsDisplayTest,
   keyboard_controller->ShowKeyboardInDisplay(GetDisplay());
   ASSERT_TRUE(keyboard::WaitUntilShown());
   aura::Window* keyboard_window = keyboard_controller->GetKeyboardWindow();
-  keyboard_window->SetBounds(gfx::Rect(0, 300, 400, 100));
+
+  constexpr int keyboard_height = 100;
+  gfx::Rect keyboard_bounds = GetKeyboardBounds(keyboard_height);
+  keyboard_window->SetBounds(keyboard_bounds);
+
+  gfx::Rect expected = gfx::Rect(GetDisplay().bounds().size());
+  expected.Inset(gfx::Insets::TLBR(0, 0, keyboard_height, 0));
+  expected.Inset(8);
 
   gfx::Rect area = CollisionDetectionUtils::GetMovementArea(GetDisplay());
-  EXPECT_EQ(ConvertToScreen(gfx::Rect(8, 8, 384, 284)), area);
+  EXPECT_EQ(ConvertToScreen(expected), area);
 }
 
 TEST_P(CollisionDetectionUtilsDisplayTest, RestingPositionSnapsToClosestEdge) {
   auto display = GetDisplay();
+  int right = display.bounds().width();
+  int bottom = display.bounds().height();
 
   // Snap near top edge to top.
   EXPECT_EQ(ConvertToScreen(gfx::Rect(100, 8, 100, 100)),
@@ -160,9 +237,9 @@ TEST_P(CollisionDetectionUtilsDisplayTest, RestingPositionSnapsToClosestEdge) {
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 
   // Snap near bottom edge to bottom.
-  EXPECT_EQ(ConvertToScreen(gfx::Rect(100, 292, 100, 100)),
+  EXPECT_EQ(ConvertToScreen(gfx::Rect(100, bottom - 108, 100, 100)),
             CollisionDetectionUtils::GetRestingPosition(
-                display, ConvertToScreen(gfx::Rect(100, 250, 100, 100)),
+                display, ConvertToScreen(gfx::Rect(100, bottom - 50, 100, 100)),
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 
   // Snap near left edge to left.
@@ -172,14 +249,16 @@ TEST_P(CollisionDetectionUtilsDisplayTest, RestingPositionSnapsToClosestEdge) {
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 
   // Snap near right edge to right.
-  EXPECT_EQ(ConvertToScreen(gfx::Rect(292, 100, 100, 100)),
+  EXPECT_EQ(ConvertToScreen(gfx::Rect(right - 108, 100, 100, 100)),
             CollisionDetectionUtils::GetRestingPosition(
-                display, ConvertToScreen(gfx::Rect(250, 100, 100, 100)),
+                display, ConvertToScreen(gfx::Rect(right - 50, 100, 100, 100)),
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 }
 
 TEST_P(CollisionDetectionUtilsDisplayTest, RestingPositionSnapsInsideDisplay) {
   auto display = GetDisplay();
+  int right = display.bounds().width();
+  int bottom = display.bounds().height();
 
   // Snap near top edge outside movement area to top.
   EXPECT_EQ(ConvertToScreen(gfx::Rect(100, 8, 100, 100)),
@@ -188,9 +267,9 @@ TEST_P(CollisionDetectionUtilsDisplayTest, RestingPositionSnapsInsideDisplay) {
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 
   // Snap near bottom edge outside movement area to bottom.
-  EXPECT_EQ(ConvertToScreen(gfx::Rect(100, 292, 100, 100)),
+  EXPECT_EQ(ConvertToScreen(gfx::Rect(100, bottom - 108, 100, 100)),
             CollisionDetectionUtils::GetRestingPosition(
-                display, ConvertToScreen(gfx::Rect(100, 450, 100, 100)),
+                display, ConvertToScreen(gfx::Rect(100, 1000, 100, 100)),
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 
   // Snap near left edge outside movement area to left.
@@ -200,9 +279,9 @@ TEST_P(CollisionDetectionUtilsDisplayTest, RestingPositionSnapsInsideDisplay) {
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 
   // Snap near right edge outside movement area to right.
-  EXPECT_EQ(ConvertToScreen(gfx::Rect(292, 100, 100, 100)),
+  EXPECT_EQ(ConvertToScreen(gfx::Rect(right - 108, 100, 100, 100)),
             CollisionDetectionUtils::GetRestingPosition(
-                display, ConvertToScreen(gfx::Rect(450, 100, 100, 100)),
+                display, ConvertToScreen(gfx::Rect(1000, 100, 100, 100)),
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 }
 
@@ -330,11 +409,16 @@ TEST_P(CollisionDetectionUtilsDisplayTest, GetRestingPositionAvoidsKeyboard) {
   keyboard_controller->ShowKeyboardInDisplay(display);
   ASSERT_TRUE(keyboard::WaitUntilShown());
   aura::Window* keyboard_window = keyboard_controller->GetKeyboardWindow();
-  keyboard_window->SetBounds(gfx::Rect(0, 300, 400, 100));
 
-  EXPECT_EQ(ConvertToScreen(gfx::Rect(8, 192, 100, 100)),
+  constexpr int keyboard_height = 100;
+  gfx::Rect keyboard_bounds = GetKeyboardBounds(keyboard_height);
+  keyboard_window->SetBounds(keyboard_bounds);
+
+  gfx::Rect expected =
+      gfx::Rect(8, display.bounds().height() - 100 - 108, 100, 100);
+  EXPECT_EQ(ConvertToScreen(expected),
             CollisionDetectionUtils::GetRestingPosition(
-                display, ConvertToScreen(gfx::Rect(8, 300, 100, 100)),
+                display, ConvertToScreen(gfx::Rect(8, 500, 100, 100)),
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 }
 
@@ -350,18 +434,44 @@ TEST_P(CollisionDetectionUtilsDisplayTest, AutoHideShownShelfAffectsWindow) {
   EXPECT_FALSE(shelf_bounds.Intersects(bounds));
 }
 
+TEST_P(CollisionDetectionUtilsDisplayTest,
+       AvoidObstaclesWorksWithHorizontalShelf) {
+  auto* shelf = Shelf::ForWindow(root_window());
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+
+  shelf->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_FALSE(shelf->IsHorizontalAlignment());
+  ShelfLayoutManager* manager = shelf->shelf_layout_manager();
+  manager->LayoutShelf();
+
+  auto shelf_bounds = shelf->GetWindow()->GetBoundsInScreen();
+  {
+    auto initial_bounds = gfx::Rect(shelf_bounds.right() - 10,
+                                    shelf_bounds.CenterPoint().y(), 1, 1);
+    auto bounds = CallAvoidObstacles(GetDisplay(), initial_bounds);
+    EXPECT_NE(initial_bounds, bounds);
+  }
+  {
+    auto initial_bounds = gfx::Rect(shelf_bounds.right() + 10,
+                                    shelf_bounds.CenterPoint().y(), 1, 1);
+    auto bounds = CallAvoidObstacles(GetDisplay(), initial_bounds);
+    EXPECT_EQ(initial_bounds, bounds);
+  }
+}
+
 // TODO: UpdateDisplay() doesn't support different layouts of multiple displays.
 // We should add some way to try multiple layouts.
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CollisionDetectionUtilsDisplayTest,
-    testing::Values(std::make_tuple("400x400", 0u),
-                    std::make_tuple("400x400/r", 0u),
-                    std::make_tuple("400x400/u", 0u),
-                    std::make_tuple("400x400/l", 0u),
-                    std::make_tuple("800x800*2", 0u),
-                    std::make_tuple("400x400,400x400", 0u),
-                    std::make_tuple("400x400,400x400", 1u)));
+    testing::Values(std::make_tuple("500x400", 0u),
+                    std::make_tuple("500x400/r", 0u),
+                    std::make_tuple("500x400/u", 0u),
+                    std::make_tuple("500x400/l", 0u),
+                    std::make_tuple("1000x800*2", 0u),
+                    std::make_tuple("500x400,500x400", 0u),
+                    std::make_tuple("500x400,500x400", 1u)));
 
 class CollisionDetectionUtilsLogicTest : public ::testing::Test {
  public:

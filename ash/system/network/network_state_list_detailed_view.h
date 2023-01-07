@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "ash/login_status.h"
 #include "ash/system/network/tray_network_state_observer.h"
 #include "ash/system/tray/tray_detailed_view.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
@@ -23,18 +22,22 @@ class Button;
 namespace ash {
 class TrayNetworkStateModel;
 
-namespace tray {
-
 bool CanNetworkConnect(
     chromeos::network_config::mojom::ConnectionStateType connection_state,
     chromeos::network_config::mojom::NetworkType type,
-    bool is_connectable);
+    chromeos::network_config::mojom::ActivationStateType activation_state,
+    bool is_connectable,
+    std::string sim_eid);
 
 // Exported for tests.
 class ASH_EXPORT NetworkStateListDetailedView
     : public TrayDetailedView,
       public TrayNetworkStateObserver {
  public:
+  NetworkStateListDetailedView(const NetworkStateListDetailedView&) = delete;
+  NetworkStateListDetailedView& operator=(const NetworkStateListDetailedView&) =
+      delete;
+
   ~NetworkStateListDetailedView() override;
 
   void Init();
@@ -120,11 +123,8 @@ class ASH_EXPORT NetworkStateListDetailedView
   base::RepeatingTimer network_scan_repeating_timer_;
 
   base::WeakPtrFactory<NetworkStateListDetailedView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkStateListDetailedView);
 };
 
-}  // namespace tray
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_NETWORK_NETWORK_STATE_LIST_DETAILED_VIEW_H_

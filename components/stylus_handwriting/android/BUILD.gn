@@ -1,0 +1,67 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_aidl("direct_writing_service_aidl") {
+  interface_file =
+      "java/src/android/widget/directwriting/directwriting_common.aidl"
+  sources = [
+    "java/src/android/widget/directwriting/IDirectWritingService.aidl",
+    "java/src/android/widget/directwriting/IDirectWritingServiceCallback.aidl",
+  ]
+}
+
+android_library("java") {
+  deps = [
+    "//base:base_java",
+    "//content/public/android:content_full_java",
+    "//mojo/public/mojom/base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/blink/public/mojom:mojom_platform_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//ui/gfx/geometry/mojom:mojom_java",
+  ]
+  srcjar_deps = [ ":direct_writing_service_aidl" ]
+  sources = [
+    "java/src/org/chromium/components/stylus_handwriting/AndroidStylusWritingHandler.java",
+    "java/src/org/chromium/components/stylus_handwriting/DirectWritingBundleUtil.java",
+    "java/src/org/chromium/components/stylus_handwriting/DirectWritingConstants.java",
+    "java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceBinder.java",
+    "java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallback.java",
+    "java/src/org/chromium/components/stylus_handwriting/DirectWritingServiceConfiguration.java",
+    "java/src/org/chromium/components/stylus_handwriting/DirectWritingSettingsHelper.java",
+    "java/src/org/chromium/components/stylus_handwriting/DirectWritingTrigger.java",
+    "java/src/org/chromium/components/stylus_handwriting/DisabledStylusWritingHandler.java",
+    "java/src/org/chromium/components/stylus_handwriting/StylusApiOption.java",
+    "java/src/org/chromium/components/stylus_handwriting/StylusWritingController.java",
+  ]
+}
+
+robolectric_library("junit_test_support") {
+  sources = [ "junit/src/org/chromium/components/stylus_handwriting/test_support/ShadowDirectWritingSettingsHelper.java" ]
+  deps = [ ":java" ]
+}
+
+robolectric_binary("components_stylus_handwriting_junit_tests") {
+  sources = [
+    "junit/src/org/chromium/components/stylus_handwriting/DirectWritingServiceCallbackTest.java",
+    "junit/src/org/chromium/components/stylus_handwriting/DirectWritingTriggerTest.java",
+  ]
+  deps = [
+    ":java",
+    ":junit_test_support",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//content/public/android:content_full_java",
+    "//mojo/public/mojom/base:base_java",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
+    "//third_party/blink/public:blink_headers_java",
+    "//third_party/blink/public/mojom:mojom_platform_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+    "//ui/gfx/geometry/mojom:mojom_java",
+  ]
+}

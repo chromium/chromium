@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,9 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "content/common/content_export.h"
 #include "content/renderer/pepper/video_encoder_shim.h"
 #include "gpu/command_buffer/client/gpu_control_client.h"
 #include "ppapi/c/pp_codecs.h"
@@ -37,15 +35,18 @@ namespace content {
 
 class RendererPpapiHost;
 
-class CONTENT_EXPORT PepperVideoEncoderHost
-    : public ppapi::host::ResourceHost,
-      public VideoEncoderShim::Client,
-      public ppapi::MediaStreamBufferManager::Delegate,
-      public gpu::GpuControlClient {
+class PepperVideoEncoderHost : public ppapi::host::ResourceHost,
+                               public VideoEncoderShim::Client,
+                               public ppapi::MediaStreamBufferManager::Delegate,
+                               public gpu::GpuControlClient {
  public:
   PepperVideoEncoderHost(RendererPpapiHost* host,
                          PP_Instance instance,
                          PP_Resource resource);
+
+  PepperVideoEncoderHost(const PepperVideoEncoderHost&) = delete;
+  PepperVideoEncoderHost& operator=(const PepperVideoEncoderHost&) = delete;
+
   ~PepperVideoEncoderHost() override;
 
  private:
@@ -84,10 +85,6 @@ class CONTENT_EXPORT PepperVideoEncoderHost
   void OnGpuControlLostContext() final;
   void OnGpuControlLostContextMaybeReentrant() final;
   void OnGpuControlErrorMessage(const char* msg, int id) final {}
-  void OnGpuControlSwapBuffersCompleted(
-      const gpu::SwapBuffersCompleteParams& params) final {}
-  void OnSwapBufferPresented(uint64_t swap_id,
-                             const gfx::PresentationFeedback& feedback) final {}
   void OnGpuControlReturnData(base::span<const uint8_t> data) final;
 
   int32_t OnHostMsgGetSupportedProfiles(
@@ -179,8 +176,6 @@ class CONTENT_EXPORT PepperVideoEncoderHost
 #endif
 
   base::WeakPtrFactory<PepperVideoEncoderHost> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperVideoEncoderHost);
 };
 
 }  // namespace content

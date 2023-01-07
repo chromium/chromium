@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,13 @@
 #include "base/check_op.h"
 #include "content/browser/notifications/devtools_event_logging.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "content/public/common/content_client.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -24,9 +25,8 @@ PlatformNotificationServiceProxy::PlatformNotificationServiceProxy(
     BrowserContext* browser_context)
     : service_worker_context_(service_worker_context),
       browser_context_(browser_context),
-      notification_service_(
-          GetContentClient()->browser()->GetPlatformNotificationService(
-              browser_context)) {}
+      notification_service_(browser_context->GetPlatformNotificationService()) {
+}
 
 PlatformNotificationServiceProxy::~PlatformNotificationServiceProxy() = default;
 
@@ -61,11 +61,11 @@ void PlatformNotificationServiceProxy::VerifyServiceWorkerScope(
     DisplayResultCallback callback,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::OnceClosure task;
 
   if (status == blink::ServiceWorkerStatusCode::kOk &&
-      registration->scope().GetOrigin() == data.origin) {
+      registration->key().origin().GetURL() == data.origin) {
     DoDisplayNotification(data, registration->scope(), std::move(callback));
   } else {
     std::move(callback).Run(/* success= */ false, /* notification_id= */ "");
@@ -84,27 +84,17 @@ void PlatformNotificationServiceProxy::DisplayNotification(
     return;
   }
 
-  scoped_refptr<base::SingleThreadTaskRunner> core_thread_task_runner;
-  constexpr BrowserTaskTraits traits = {base::TaskPriority::USER_VISIBLE};
-  switch (ServiceWorkerContext::GetCoreThreadId()) {
-    case BrowserThread::UI:
-      core_thread_task_runner = GetUIThreadTaskRunner(traits);
-      break;
-    case BrowserThread::IO:
-      core_thread_task_runner = GetIOThreadTaskRunner(traits);
-      break;
-    case BrowserThread::ID_COUNT:
-      NOTREACHED();
-  }
-  core_thread_task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &ServiceWorkerContextWrapper::FindReadyRegistrationForId,
-          service_worker_context_, data.service_worker_registration_id,
-          url::Origin::Create(data.origin),
+  GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE})
+      ->PostTask(
+          FROM_HERE,
           base::BindOnce(
-              &PlatformNotificationServiceProxy::VerifyServiceWorkerScope,
-              weak_ptr_factory_io_.GetWeakPtr(), data, std::move(callback))));
+              &ServiceWorkerContextWrapper::FindReadyRegistrationForId,
+              service_worker_context_, data.service_worker_registration_id,
+              blink::StorageKey(url::Origin::Create(data.origin)),
+              base::BindOnce(
+                  &PlatformNotificationServiceProxy::VerifyServiceWorkerScope,
+                  weak_ptr_factory_io_.GetWeakPtr(), data,
+                  std::move(callback))));
 }
 
 void PlatformNotificationServiceProxy::CloseNotifications(

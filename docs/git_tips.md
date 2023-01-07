@@ -60,7 +60,7 @@ an old version of a CL.
 ```bash
 #!/bin/bash
 # Commit all, amending if not initial commit.
-if git status | grep -q "# Your branch is ahead of 'master' by 1 commit."
+if git status | grep -q "Your branch is ahead of 'origin/main' by 1 commit."
 then
   git commit --all --amend
 else

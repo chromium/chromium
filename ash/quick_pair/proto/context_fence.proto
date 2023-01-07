@@ -1,0 +1,1800 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package personalization.context;
+
+// Represents the parameters for a time-based fence.
+message TimeFence {
+  enum TriggerType {
+    UNKNOWN_TIME_FENCE_TRIGGER_TYPE = 0;
+    ABSOLUTE_INTERVAL = 1;
+    DAILY_INTERVAL = 2;
+    WEEKEND_INTERVAL = 3;
+    WEEKDAY_INTERVAL = 4;
+    SUNDAY_INTERVAL = 5;
+    MONDAY_INTERVAL = 6;
+    TUESDAY_INTERVAL = 7;
+    WEDNESDAY_INTERVAL = 8;
+    THURSDAY_INTERVAL = 9;
+    FRIDAY_INTERVAL = 10;
+    SATURDAY_INTERVAL = 11;
+    // The enum type AFTER_LOCAL_TIME is not supported, and is here only for
+    // backwards compatibility
+    AFTER_LOCAL_TIME = 12;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  // Unused for ABSOLUTE_INTERVAL.  For all other types, this
+  // represents the time zone to determine when the beginning of
+  // day is.
+  // If the flag use_local_time_zone is set to True, this is not set.
+  optional string time_zone = 2;
+
+  // For ABSOLUTE_INTERVAL, this is the time in millis since epoch
+  // January 1, 1970.  For other intervals, this is the time in
+  // millis since the start of the day (where midnight is 0 and
+  // 24*60*60*1000 millis is the end of the day).
+  // This should not be set if triggerType is AFTER_LOCAL_TIME.
+  optional int64 start_time_millis = 3;
+
+  // For ABSOLUTE_INTERVAL, this is the time in millis since epoch
+  // January 1, 1970.  For other intervals, this is the time in
+  // millis since the start of the day (where midnight is 0 and
+  // 24*60*60*1000 millis is the end of the day).
+  // This should not be set if triggerType is AFTER_LOCAL_TIME.
+  optional int64 stop_time_millis = 4;
+
+  // Used for representing the 'AFTER_LOCAL_TIME' trigger.
+  // NOTE: DEPRECATED, AND UNSUPPORTED. DO NOT USE.
+  optional DateTime date = 5 [deprecated = true];
+
+  // Used to specify whether a local time zone at device location should
+  // be used for the time fence.
+  optional bool use_local_time_zone = 6;
+}
+
+// Represents the parameters for a location-based fence.
+message LocationFence {
+  // The type of trigger for this location fence.
+  enum TriggerType {
+    UNKNOWN_LOCATION_FENCE_TRIGGER_TYPE = 0;
+
+    // Represents a fence which is triggered when the user's location
+    // is within this location fence.
+    IN = 1;
+
+    // Represents a fence which is triggered when the user enters
+    // this location fence.
+    ENTERING = 2;
+
+    // Represents a fence which is triggered when the user exits
+    // this location fence.
+    EXITING = 3;
+  }
+
+  // The type indicating how this location fence's geometry is defined.
+  enum GeometryType {
+    UNKNOWN_LOCATION_FENCE_GEOMETRY_TYPE = 0;
+
+    // Represents a location fence's boundary as a center and radius.
+    CIRCLE = 1;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  optional GeometryType geometry_type = 2;
+
+  // Unused for trigger type IN.
+  // For trigger types ENTERING and EXITING, this is window of time
+  // in millis after detecting that the user has entered or exited the
+  // location fence, during which this fence is considered triggered.
+  // This parameter is needed to account for the async nature of context
+  // data collection.
+  optional int64 delta_time_millis = 3;
+
+  // For GeometryType CIRCLE, this represents the center latitude
+  // in E7 representation.
+  optional int32 center_latitude_e7 = 4;
+
+  // For GeometryType CIRCLE, this represents the center longitude
+  // in E7 representation.
+  optional int32 center_longitude_e7 = 5;
+
+  // For GeometryType CIRCLE, this represents the outer radius in meters of
+  // the circular region.  A user's location transitions from inside to
+  // outside only when the user's location is found to be farther than
+  // outer_radius_meters away from the center.
+  // Note that the outer_radius_meters must be greater than or equal to
+  // inner_radius_meters, and effectively, implements hysteresis to deal
+  // with noisy location data.
+  optional double outer_radius_meters = 6;
+
+  // For GeometryType CIRCLE, this represents the inner radius of the circular
+  // region.  A user's location transitions from outside to inside only when
+  // the user's location is found to be closer than inner_radius_meters away
+  // from the center.
+  // Note that the inner_radius_meters must be less than or equal to
+  // outer_radius_meters, and effectively, implement hysteresis to deal with
+  // noisy location data.
+  optional double inner_radius_meters = 7;
+
+  // Used for trigger type IN.
+  // For trigger type IN, it indicates the minimum dwell time at a location
+  // before triggering the location fence.
+  optional int64 dwell_time_millis = 8;
+}
+
+// Represents the parameters for a place-based fence.
+message PlaceFence {
+  // The type of trigger for this place fence.
+  enum TriggerType {
+    UNKNOWN_PLACE_FENCE_TRIGGER_TYPE = 0;
+
+    // Represents a fence which is triggered when the user's place
+    // is one of the specified places (either matches one of the
+    // place types or matches one of the place ids).
+    IN = 1;
+
+    // Represents a fence which is triggered when the user enters
+    // one of the specified places from some other place.
+    ENTERING = 2;
+
+    // Represents a fence which is triggered when the user is
+    // currently in one of the specified places and exits to some
+    // other place.
+    EXITING = 3;
+
+    // Represents a fence which is triggered when the place changes
+    // in successive screen on events.
+    SCREEN_ON_CHANGE = 4;
+
+    // Represents a fence which is triggered when CURRENT_PLACE context changes.
+    AT_A_PLACE_CHANGE = 5;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  // Unused for trigger type IN.
+  // For trigger types ENTERING and EXITING, this is window of time
+  // in millis after detecting that the user has entered or exited the
+  // place fence, during which this fence is considered triggered.
+  // This parameter is needed to account for the async nature of context
+  // data collection.
+  optional int64 delta_time_millis = 2;
+
+  // List of place types as provided by the PlacesApi. This field will not be
+  // filled in for
+  // the SCREEN_ON_CHANGE trigger type.  See
+  // https://cs.corp.google.com/piper///depot/google3/java/com/google/android/gmscore/dev/client/placefencing/src/com/google/android/gms/location/places/Place.java
+  // Only one place_type, or one place_id, or one place_alias, or one
+  // place_chain_name can be set.
+  repeated int32 place_type = 3;
+
+  // List of place ids.  This field will not be filled in for the
+  // SCREEN_ON_CHANGE trigger type.
+  // See Places.getId()
+  // https://cs.corp.google.com/piper///depot/google3/java/com/google/android/gmscore/dev/client/placefencing/src/com/google/android/gms/location/places/Place.java
+  // Only one place_type, or one place_id, or one place_alias, or one
+  // place_chain_name can be set.
+  repeated string place_id = 4;
+
+  // Used for trigger type IN.
+  // For trigger type IN, it indicates the minimum dwell time in a place
+  // before triggering the Place fence.
+  optional int64 dwell_time_millis = 5;
+
+  // List of place aliases.  This field will not be filled in for the
+  // SCREEN_ON_CHANGE trigger type.
+  // See PlaceAlias.getAlias()
+  // https://cs.corp.google.com/piper///depot/google3/java/com/google/android/gmscore/dev/client/places/src/com/google/android/gms/location/places/personalized/PlaceAlias.java
+  // Only one place_type, or one place_id, or one place_alias, or one
+  // place_chain_name can be set.
+  repeated string place_alias = 6;
+
+  // Name of the place chain like Walmart, AMC etc,.
+  // Only one place_type, or one place_id, or one place_alias, or one
+  // place_chain_name can be set.
+  optional string place_chain_name = 7;
+
+  // Optional field to set the timestamp for this fence.
+  // This is ignored by contextmanager, but can be used to force (AGSA) client
+  // into treating this fence as logically different, even if other fields are
+  // identical.
+  optional int64 creation_timestamp = 8;
+}
+
+// This message encapsulates the context specific data.
+message ContextExtension {
+  // Context specific data is attached as an extension.
+  extensions 1000 to max;
+}
+
+message DetectedActivity {
+  extend ContextExtension { optional DetectedActivity data = 77815057; }
+
+  message ActivityRecord {
+    // NextId: 22
+    // Note: This enum must be kept in sync (including tag numbers) with
+    // google3/java/com/google/geo/sidekick/proto/detected_activity.proto
+    // google3/location/unified/proto/location_descriptor.proto
+    enum Type {
+      // LINT.IfChange
+      IN_VEHICLE = 0;
+      ON_BICYCLE = 1;
+      ON_FOOT = 2;
+      STILL = 3;
+      UNKNOWN = 4;
+      TILTING = 5;
+      EXITING_VEHICLE = 6;
+      WALKING = 7;
+      RUNNING = 8;
+      OFF_BODY = 9;
+      TRUSTED_GAIT = 10;
+      FLOOR_CHANGE = 11;
+      ON_STAIRS = 12;
+      ON_ESCALATOR = 13;
+      IN_ELEVATOR = 14;
+      SLEEPING = 15;
+      IN_ROAD_VEHICLE = 16;
+      IN_RAIL_VEHICLE = 17;
+      IN_TWO_WHEELER_VEHICLE = 18;
+      IN_FOUR_WHEELER_VEHICLE = 19;
+      IN_CAR = 20;
+      IN_BUS = 21;
+
+      // This is to support EXPERIMENTAL_EXTRA_PERSONAL_VEHICLE until
+      // Activity Recognition team figures out their API.
+      EXPERIMENTAL_EXTRA_PERSONAL_VEHICLE = -1000;
+      // LINT.ThenChange(
+      //     //depot/google3/java/com/google/geo/sidekick/proto/detected_activity.proto,
+      //     //depot/google3/location/unified/proto/location_descriptor.proto
+      // )
+    }
+
+    // The type of activity.
+    optional Type type = 1;
+    // The confidence of the detection. Range is [0, 100].
+    optional int32 confidence = 2;
+  }
+  repeated ActivityRecord activity_record = 2;
+}
+
+// Represents the parameters for an activity-based fence.
+message ActivityFence {
+  enum TriggerType {
+    UKNOWN_ACTIVITY_FENCE_TRIGGER_TYPE = 0;
+
+    // Represents a fence which is triggered when the user's activity
+    // is one of the specified activity types.
+    DURING = 1;
+
+    // Represents a fence which is triggered when the user starts
+    // one of the specified activity types from some other activity type.
+    STARTING = 2;
+
+    // Represents a fence which is triggered when the user is
+    // currently in one of the specified activity types but transitions
+    // to some other activity type.
+    STOPPING = 3;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  // Unused for trigger type DURING.
+  // For trigger types STARTING and STOPPING, this is window of time
+  // in millis after detecting that the user has started or stopped the
+  // activity types, during which this fence is considered triggered.
+  // This parameter is needed to account for the async nature of context
+  // data collection.
+  optional int64 delta_time_millis = 2;
+
+  // List of activity types that are considered part of this fence.
+  repeated DetectedActivity.ActivityRecord.Type activity_type = 3;
+}
+
+// This represents the state of the device screen.
+message Screen {
+  extend ContextExtension { optional Screen data = 79284926; }
+
+  enum State {
+    // Unknown screen state.  All discrete states
+    // like this should have an UNKNOWN enum set to 0.
+    UNKNOWN = 0;
+
+    // Screen is off.
+    OFF = 1;
+
+    // Screen is on.
+    ON = 2;
+  }
+
+  // Screen state
+  optional State state = 1;
+}
+
+// Represents the parameters for a fence based on screen on/off state
+message ScreenFence {
+  enum TriggerType {
+    UNKNOWN_SCREEN_FENCE_TRIGGER_TYPE = 0;
+
+    // Represents a fence which is triggered when the screen is either
+    // on or off
+    DURING = 1;
+
+    // Represents a fence which is triggered when the screen is turning
+    // on.
+    TURNING_ON = 2;
+
+    // Represents a fence which is triggered when the screen it turning
+    // off.
+    TURNING_OFF = 3;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  // Unused for trigger type DURING.
+  // For trigger types TURNING_ON and TURNING_OFF, this is the window of
+  // time in millis after detecting that the device's screen has turned
+  // on or off.  This parameter is needed to account for the async nature
+  // of context data collection.
+  optional int64 delta_time_millis = 2;
+
+  // Used only for trigger type DURING.  This indicates whether the screen is
+  // on or off.
+  optional Screen.State screen_state = 3;
+}
+
+// This represents the state of the headphones.
+message AudioState {
+  extend ContextExtension { optional AudioState data = 91925232; }
+
+  enum HeadPhoneState {
+    UNKNOWN_HEADPHONE_STATE = 0;
+
+    // Headphone is plugged.
+    PLUGGED = 1;
+
+    // Headphone is unplugged.
+    UNPLUGGED = 2;
+  }
+
+  // Deprecated. Results may not be valid
+  enum BluetoothA2DPState {
+    UNKNOWN_BLUETOOTH_A2DP_STATE = 0;
+    // State when A2DP audio routing to the Bluetooth headset is
+    // on.
+    BLUETOOTH_A2DP_ON = 1;
+
+    // State when A2DP audio routing to the Bluetooth headset is
+    // off.
+    BLUETOOTH_A2DP_OFF = 2;
+  }
+
+  enum BluetoothSCOState {
+    UNKNOWN_BLUETOOTH_SCO_STATE = 0;
+    // State when SCO audio routing to the Bluetooth headset is
+    // on.
+    BLUETOOTH_SCO_ON = 1;
+
+    // State when SCO audio routing to the Bluetooth headset is
+    // off.
+    BLUETOOTH_SCO_OFF = 2;
+  }
+
+  enum MicrophoneState {
+    UNKNOWN_MICROPHONE_STATE = 0;
+    // State indicating if the microphone mute is on.
+    MICROPHONE_MUTE_ON = 1;
+
+    // State indicating if the microphone mute is off.
+    MICROPHONE_MUTE_OFF = 2;
+  }
+
+  enum MusicState {
+    UNKNOWN_MUSIC_STATE = 0;
+    // State indicating when some music is playing.
+    MUSIC_ACTIVE = 1;
+
+    // State indicating when music is not active.
+    MUSIC_INACTIVE = 2;
+  }
+
+  enum SpeakerPhoneState {
+    UNKNOWN_SPEAKERPHONE_STATE = 0;
+    // State indicating if the speakerphone is on.
+    SPEAKER_PHONE_ON = 1;
+
+    // State indicating if the speakerphone is off.
+    SPEAKER_PHONE_OFF = 2;
+  }
+
+  optional HeadPhoneState headphone_state = 1;
+  optional BluetoothA2DPState bluetooth_a2dp_state = 2 [deprecated = true];
+  optional BluetoothSCOState bluetooth_sco_state = 3 [deprecated = true];
+  optional MicrophoneState microphone_state = 4;
+  optional MusicState music_state = 5;
+  optional SpeakerPhoneState speakerphone_state = 6;
+}
+
+// Represents the parameters for a fence based on audio state.
+// This audio state is derived from Android's AudioManager
+// For More details about AudioManager API refer here -
+// http://developer.android.com/reference/android/media/AudioManager.html
+message AudioStateFence {
+  enum TriggerType {
+    UNKNOWN_AUDIO_STATE_FENCE_TRIGGER_TYPE = 0;
+    HEADPHONE_DURING = 1;
+    HEADPHONE_PLUGGING = 2;
+    HEADPHONE_UNPLUGGING = 3;
+
+    BLUETOOTH_A2DP_DURING = 4 [deprecated = true];
+    BLUETOOTH_A2DP_TURNING_ON = 5 [deprecated = true];
+    BLUETOOTH_A2DP_TURNING_OFF = 6 [deprecated = true];
+
+    BLUETOOTH_SCO_DURING = 7 [deprecated = true];
+    BLUETOOTH_SCO_TURNING_ON = 8 [deprecated = true];
+    BLUETOOTH_SCO_TURNING_OFF = 9 [deprecated = true];
+
+    MICROPHONE_DURING = 10;
+    MICROPHONE_MUTING = 11;
+    MICROPHONE_UNMUTING = 12;
+
+    MUSIC_DURING = 13;
+    MUSIC_ACTIVATING = 14;
+    MUSIC_DEACTIVATING = 15;
+
+    SPEAKER_PHONE_DURING = 16;
+    SPEAKER_PHONE_TURNING_ON = 17;
+    SPEAKER_PHONE_TURNING_OFF = 18;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  // Unused for trigger types *_DURING. Required for all others.
+  // This is the window of time in millis after detecting that the audio state
+  // has changed during which the context fence will still trigger. This
+  // parameter is needed to account for the async nature of context data
+  // collection. A non-zero value must be specified, otherwise the fence will
+  // never trigger.
+  optional int64 delta_time_millis = 2;
+
+  // Used only for trigger types during.
+  // Any give time at most one of these states will be set depending upon the
+  // During trigger type.
+  optional AudioState.HeadPhoneState headphone_state = 3;
+  optional AudioState.BluetoothA2DPState bluetooth_a2dp_state = 4
+      [deprecated = true];
+  optional AudioState.BluetoothSCOState bluetooth_sco_state = 5
+      [deprecated = true];
+  optional AudioState.MicrophoneState microphone_state = 6;
+  optional AudioState.MusicState music_state = 7;
+  optional AudioState.SpeakerPhoneState speakerphone_state = 8;
+}
+
+// This represents the state of the phone if it is locked or not.
+message PhoneLock {
+  extend ContextExtension { optional PhoneLock data = 91835270; }
+
+  enum State {
+    // Unknown state.  All discrete states
+    // like this should have an UNKNOWN enum set to 0.
+    UNKNOWN = 0;
+
+    // Phone is unlocked.
+    UNLOCKED = 1;
+
+    // Phone is locked.
+    LOCKED = 2;
+  }
+
+  optional State state = 1;
+}
+
+// Represents the parameters for a fence based on phone lock/unlock state
+message PhoneLockFence {
+  enum TriggerType {
+    UNKNOWN_PHONE_LOCK_FENCE_TRIGGER_TYPE = 0;
+
+    // Represents a fence which is triggered when the screen is either
+    // on or off
+    DURING = 1;
+
+    // Represents a fence which is triggered when the phone is unlocked.
+    UNLOCKING = 2;
+
+    // Represents a fence which is triggered when the phone is locked.
+    LOCKING = 3;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  // Unused for trigger type DURING. Required for UNLOCKING and LOCKING.
+  // This is the window of time in millis after detecting that the device has
+  // been locked or unlocked during which the context fence will still trigger.
+  // This parameter is needed to account for the async nature of context data
+  // collection. A non-zero value must be specified, otherwise the fence will
+  // never trigger.
+  optional int64 delta_time_millis = 2;
+
+  // Used only for trigger type DURING.  This indicates whether the phone is
+  // locked or unlocked.
+  optional PhoneLock.State phone_lock_state = 3;
+}
+
+// This represents whether the device is connected to power.
+message PowerConnection {
+  extend ContextExtension { optional PowerConnection data = 87654321; }
+
+  enum State {
+    // Unknown power connection state.  All discrete states
+    // like this should have an UNKNOWN enum set to 0.
+    UNKNOWN = 0;
+
+    // Device is not connected to a power source.
+    DISCONNECTED = 1;
+
+    // Device is connected to USB power.
+    CONNECTED_USB = 2;
+
+    // Device is connected to AC power.
+    CONNECTED_AC = 3;
+
+    // Device is connected to wireless power.
+    CONNECTED_WIRELESS = 4;
+  }
+
+  // Power connection state
+  optional State state = 1;
+  // The battery level of the device (0.0-1.0).
+  optional double battery_level = 2;
+}
+
+// Represents the parameters for a fence based on battery level or
+// plugged in state.
+message PowerConnectionFence {
+  enum TriggerType {
+    UNKNOWN_POWER_CONNECTION_FENCE_TRIGGER_TYPE = 0;
+
+    // Represents a fence for which the battery level is within an
+    // interval.  For example, battery level between 30% and 80% is
+    // represented by battery_level_lower_bound=.3 and
+    // battery_level_upper_bound=.8.  Because the battery level
+    // can only range from 0.0 to 1.0, you can represent battery level
+    // greater than a threshold, say 70%, by setting
+    // battery_level_lower_bound=.7 and
+    // battery_level_upper_bound=1.0.  To represent battery level less
+    // than a threshold, say 20%, you can set
+    // battery_level_lower_bound=0.0 and battery_level_upper_bound=0.2.
+    BATTERY_LEVEL_IN = 1;
+
+    // Represents a fence when the battery level enters the interval.
+    BATTERY_LEVEL_ENTERING = 2;
+
+    // Represents a fence when the battery level exits the interval.
+    BATTERY_LEVEL_EXITING = 3;
+
+    // Represents a fence when the plugged in state is one of the
+    // specified states.
+    PLUGGED_IN_STATE_DURING = 4;
+
+    // Represents a fence when the plugged in state transitions to one
+    // of the specified states.
+    PLUGGED_IN_STATE_STARTING = 5;
+
+    // Represents a fence when the plugged in state transitions out
+    // of one of the specified states.
+    PLUGGED_IN_STATE_STOPPING = 6;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  // Used for BATTERY_LEVEL_IN, BATTERY_LEVEL_ENTERING, and
+  // BATTERY_LEVEL_EXITING.  This is the lower bound of the
+  // battery level interval.  This ranges in value from 0.0 to 1.0.
+  optional double battery_level_lower_bound = 2;
+
+  // Used for BATTERY_LEVEL_IN, BATTERY_LEVEL_ENTERING, and
+  // BATTERY_LEVEL_EXITING.  This is the upper bound of the
+  // battery level interval.  This ranges in value from 0.0 to 1.0.
+  // This value must be greater than or equal to
+  // battery_level_lower_bound.
+  optional double battery_level_upper_bound = 3;
+
+  // Required for trigger types BATTERY_LEVEL_ENTERING, BATTERY_LEVEL_EXITING,
+  // PLUGGED_IN_STATE_STARTING, and PLUGGED_IN_STATE_STOPPING.
+  // This is the window of time in millis after detecting that the device's
+  // state has changed during which the context fence will still trigger. This
+  // parameter is needed to account for the async nature of context data
+  // collection. A non-zero value must be specified, otherwise the fence will
+  // never trigger.
+  optional int64 delta_time_millis = 4;
+
+  // Used for DURING_PLUGGED_IN_STATE, STARTING_PLUGGED_IN_STATE, and
+  // STOPPING_PLUGGED_IN_STATE.
+  repeated PowerConnection.State plugged_in_state = 5;
+}
+
+// Represents a fence that is triggered when detecting a beacon
+// that contains a beacon attachment of the given types.
+message BeaconFence {
+  enum TriggerType {
+    UNKNOWN_BEACON_FENCE_TRIGGER_TYPE = 0;
+
+    // Represents a fence that is triggered when a beacon is
+    // detected.  The fence is triggered every time a unique
+    // beacon is found that matches the set of beacon_type_filters.
+    // Uniqueness for a beacon means that the (namespace,type,content)
+    // triple is unique.
+    FOUND = 1;
+
+    // Represents a fence that is triggered when a beacon is
+    // no longer detectable.  The fence is triggered every time
+    // a unique beacon is lost that matches the set of
+    // beacon_type_filters.  Uniqueness for a beacon means that the
+    // (namespace,type,content) triple is unique.
+    LOST = 2;
+
+    // Represents a fence that is triggered when a beacon has been
+    // found and is not lost.
+    NEAR = 3;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  // Represents the set of beacon types (i.e., namespace/type pairs)
+  // that encompass this beacon fence.  If none is set, then this
+  // beacon fence will never trigger.
+  // DEPRECATED, fill in beacon_type_filter instead.
+  // repeated detected_beacon.DetectedBeacon.Type beacon_type = 2;
+  // NOTE: do not reuse field number 2
+
+  // Used for FOUND and LOST.  This is the window of time in millis
+  // after detecting that a beacon was either found or lost that
+  // the transition is considered true.  This is needed to account
+  // for the async nature of context data collection.
+  optional int64 delta_time_millis = 3;
+
+  message BeaconTypeFilter {
+    // REQUIRED
+    // Namespace of the beacon attachment to match against.
+    // e.g., "com.google.location.beaconservice"
+    optional string namespace = 1;
+
+    // REQUIRED
+    // Type of the beacon attachment to match against.
+    // e.g., "geo-message-dogfood"
+    optional string type = 2;
+
+    // OPTIONAL
+    // Indicates the content to match against in terms of
+    // a byte array equals.  Do not set this if you do not
+    // want to match against specific content.
+    optional bytes content = 3;
+  }
+
+  repeated BeaconTypeFilter beacon_type_filter = 4;
+
+  // Deprecated fields
+  reserved 2;
+}
+
+// This represents the state of the phone's network connection,
+// i.e. whether the phone is connected to a network and if connected,
+// whether it is on WiFi or Cellular.
+message NetworkState {
+  extend ContextExtension { optional NetworkState data = 95555291; }
+
+  enum ConnectionState {
+    // Unknown state.  All discrete states
+    // like this should have an UNKNOWN enum set to 0.
+    UNKNOWN_STATE = 0;
+
+    // Phone is not connected to network.
+    DISCONNECTED = 1;
+
+    // Phone is connected to network via WiFi
+    ON_WIFI = 2;
+
+    // Phone is connected to network via Cellular
+    ON_CELLULAR = 3;
+  }
+
+  // connection_state is a REQUIRED field
+  optional ConnectionState connection_state = 1;
+
+  enum MeterState {
+    // Unknown meter state
+    UNKNOWN_METER_TYPE = 0;
+
+    // Metered network connection
+    METERED = 1;
+
+    // Unmetered network connection
+    UNMETERED = 2;
+  }
+
+  // meter_state field is omitted when connection_state is UNKNOWN_STATE
+  // or DISCONNECTED; it is required when state is ON_CELLULAR or ON_WIFI
+  optional MeterState meter_state = 2;
+
+  message WifiInfo {
+    // bssid of the currently connected Wifi connection
+    optional string bssid = 1;
+
+    // ssid of the currently connected Wifi connection
+    optional string ssid = 2;
+  }
+
+  // connected_wifi_info is only populated when connection_state is connected
+  optional WifiInfo connected_wifi_info = 3;
+}
+
+// Represents the parameters for a fence pertaining to network state
+// (disconnected, connected to network via WiFi, or Cellular.
+message NetworkStateFence {
+  enum TriggerType {
+    UNKNOWN_NETWORK_STATE_FENCE_TRIGGER_TYPE = 0;
+
+    // Represents a fence which is triggered when the connection state of the
+    // device
+    // is one of the specified states in the connection_state field below.
+    CONNECTION_DURING = 1;
+
+    // Represents a fence which is triggered when the device gets into
+    // one of the specified connection states from some other connection state.
+    CONNECTION_STARTING = 2;
+
+    // Represents a fence which is triggered when the device is
+    // currently in one of the specified connection states but transitions
+    // to some other connection state.
+    CONNECTION_STOPPING = 3;
+
+    // Represents a fence which is triggered when the meter state of the device
+    // is one of the specified states in the connection_state field below.
+    METER_DURING = 4;
+
+    // Represents a fence which is triggered when the device gets into
+    // one of the specified meter states from some other meter state.
+    METER_STARTING = 5;
+
+    // Represents a fence which is triggered when the device is
+    // currently in one of the specified meter states but transitions
+    // to some other meter state.
+    METER_STOPPING = 6;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  // Unused for trigger types DURING. Required for STARTING and STOPPING.
+  // This is the window of time in millis after detecting that the network state
+  // has changed during which the context fence will still trigger. This
+  // parameter is needed to account for the async nature of context data
+  // collection. A non-zero value must be specified, otherwise the fence will
+  // never trigger.
+  optional int64 delta_time_millis = 2;
+
+  // A valid NetworkStateFence proto should have only one of the following two
+  // fields set. i.e. the fence can be over a subset of either connection
+  // states or meter states but not both.
+  // connection_state indicates the list of connection states that are
+  // considered part of this fence.
+  // connection_state is set in the proto only if the trigger_type is set to
+  // CONNECTION_DURING, CONNECTION_STARTING, or CONNECTION_STOPPING.
+  repeated NetworkState.ConnectionState connection_state = 3;
+
+  // meter_state indicates the list of meter states that are considered part of
+  // this fence.
+  // meter_state is set in the proto only if the trigger_type is set to
+  // METER_DURING, METER_STARTING, or METER_STOPPING.
+  repeated NetworkState.MeterState meter_state = 4;
+}
+
+// The fence defines a device to be 'IN wandering' state if it has moved more
+// than 'wander_distance_meters' in past interval 'wander_time_interval_hours'.
+message WanderStateFence {
+  enum TriggerType {
+    UNKNOWN_WANDER_STATE_FENCE_TRIGGER_TYPE = 0;
+
+    // Represents a fence which is triggered when the device is in a state
+    // where it is moving by at least 'wander_distance_meters' in a time
+    // interval of 'wander_time_millis'
+    IS_WANDERING = 1;
+
+    // Represents a fence which is triggered when the device is entering a
+    // wander state specified by the device moving by at least
+    // 'wander_distance_meters' in a time interval of 'wander_time_millis'
+    STARTING_WANDER = 2;
+
+    // Represents a fence which is triggered when the device is leaving a
+    // wander state specified by the device moving by at least
+    // 'wander_distance_meters' in a time interval of 'wander_time_millis'
+    STOPPING_WANDER = 3;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  // Unused for trigger type IS_WANDERING.
+  // For trigger types STARTING and STOPPING, this is window of time
+  // in millis after detecting that the wander state has changed,
+  // during which this fence is considered triggered.
+  // This parameter is needed to account for the async nature of context
+  // data collection.
+  optional int64 delta_time_millis = 2;
+
+  // the minimum distance that the phone needs to move for it to be evaluated
+  // to be in wander state for this fence
+  optional float wander_distance_meters = 3;
+
+  // the time interval in hours during which the device should have covered
+  // 'wander_distance_meters' for it to be evaluated to be in wander state
+  // for this fence. This must be an integer number of hours between 1 and 20.
+  // There is a 20 hour limit because the maximum period of location history
+  // available on the phone is only 20 hours.
+  optional int32 wander_time_interval_hours = 4;
+}
+
+// Represents the attributes of the day corresponding to the
+// current time and locale.
+// As examples, some attributes are: MORNING, AFTERNOON, EVENING,
+// WEEKDAY, WEEKEND, HOLIDAY.
+message DayAttributes {
+  extend ContextExtension { optional DayAttributes data = 121436786; }
+
+  enum DayAttributeType {
+    // Unknown attribute type.  All discrete types
+    // like this should have an UNKNOWN enum set to 0.
+    UNKNOWN = 0;
+
+    // Denotes a weekday for the device locale at the current time
+    WEEKDAY = 1;
+
+    // Denotes a weekend for the device locale at the current time
+    WEEKEND = 2;
+
+    // Denotes a government-sanctioned holiday for the device locale
+    // at the current time
+    HOLIDAY = 3;
+
+    // Denotes the period of a day that is classified as morning
+    MORNING = 4;
+
+    // Denotes the period of a day that is classified as afternoon
+    AFTERNOON = 5;
+
+    // Denotes the period of a day that is classified as evening
+    EVENING = 6;
+
+    // Denotes the period of a day that is classified as night
+    NIGHT = 7;
+  }
+
+  repeated DayAttributeType day_attribute_types = 1;
+}
+
+// Represents the parameters for a time-based fence.
+message TimeIntervalFence {
+  enum TriggerType {
+    UNKNOWN_TIME_INTERVAL_FENCE_TRIGGER_TYPE = 0;
+
+    // Represents a fence which is triggered when one of the attributes for
+    // the local time for the device is the attribute specified for the fence
+    // in 'day_attribute' parameter
+    IN = 1;
+
+    // Represents a fence which is triggered when one of the attributes for
+    // the local time for the device transitions into being equal to the
+    // attribute specified for the fence in 'day_attribute' parameter,
+    // and the previous attribute before the transition was not equal
+    // to the 'day_attribute' parameter
+    STARTING = 2;
+
+    // Represents a fence which is triggered when one of the attributes for
+    // the local time for the device transitions to being not equal to the
+    // attribute specified for the fence in 'day_attribute' parameter,
+    // and the previous attribute before the transition was equal
+    // to the 'day_attribute' parameter
+    STOPPING = 3;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  // Used to specify one of the DAY_ATTRIBUTE related triggers
+  optional DayAttributes.DayAttributeType time_interval_type = 2;
+}
+
+// Represents the installed apps fence
+message InstalledAppsFence {
+  enum TriggerType {
+    UNKNOWN_INSTALLED_APPS_TRIGGER_TYPE = 0;
+
+    // Used for the fence which is triggered when the app is installed.
+    INSTALLED = 1;
+
+    // Used for the fence which is triggered when the app is not installed.
+    NOT_INSTALLED = 2;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  // The package to check for the installed status
+  optional string package_name = 2;
+}
+
+// Represents the phone call fence
+message PhoneCallFence {
+  enum TriggerType {
+    UNKNOWN_PHONE_CALL_TRIGGER_TYPE = 0;
+
+    // Used for the fence which is triggered when the user is in a phone call.
+    IN_CALL = 1;
+
+    // Used for the fence which is triggered when the user is not in a phone
+    // call.
+    NOT_IN_CALL = 2;
+  }
+
+  optional TriggerType trigger_type = 1;
+}
+
+// Represents the proximity distance fence
+message ProximityDistanceFence {
+  enum TriggerType {
+    UNKNOWN_PROXIMITY_DISTANCE_TRIGGER_TYPE = 0;
+
+    // Used for the fence which is triggered when the proximity sensor is far
+    // from an object.
+    FAR_AWAY = 1;
+
+    // Used for the fence which is triggered when the proximity sensor is near
+    // to an object.
+    NEAR = 2;
+  }
+
+  optional TriggerType trigger_type = 1;
+}
+
+// Represents a time fence expressed in terms of moments of the day
+message SunStateFence {
+  enum TriggerType {
+    UNKNOWN_MOMENT_FENCE_TRIGGER_TYPE = 0;
+
+    // Time triggers specified based on sunrise times
+    AROUND_SUNRISE = 1;
+
+    // Time triggers specified based on sunset times
+    AROUND_SUNSET = 2;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  // Absolute value of begin_relative_to_sun_state_millis
+  // cannot exceed total millis in a day.
+  // begin_relative_to_sun_state_millis cannot be later than
+  // end_relative_to_sun_state_millis.
+  optional int64 begin_relative_to_sun_state_millis = 3;
+
+  // Absolute value of end_relative_to_sun_state_millis
+  // cannot exceed total millis in a day.
+  // end_relative_to_sun_state_millis cannot be earlier
+  // than begin_relative_to_sun_state_millis.
+  optional int64 end_relative_to_sun_state_millis = 4;
+}
+
+// Represents a weather fence that triggers when specified criteria
+// on weather connditions, temperatures or humidity is met
+message WeatherFence {
+  enum TriggerType {
+    UNKNOWN_WEATHER_FENCE_TRIGGER_TYPE = 0;
+
+    // Fence that triggers when the temperature in the device's location
+    // is in a specified range.
+    IN_TEMPERATURE_RANGE = 1;
+
+    // Fence that triggers when the feels-like temperature in the device's
+    // location is in a specified range.
+    IN_FEELS_LIKE_TEMPERATURE_RANGE = 2;
+
+    // Fence that triggers when the dew point in the device's location
+    // is in a specified range.
+    IN_DEW_POINT_RANGE = 3;
+
+    // Fence that triggers when the humidity in the device's location
+    // is in a specified range.
+    IN_HUMIDITY_RANGE = 4;
+
+    // Fence that triggers when the weather condition in the device's location
+    // is the specified condition
+    IN_CONDITION = 5;
+  }
+
+  optional TriggerType trigger_type = 1;
+
+  // Low value of the temperature range of the weather fence.
+  // Used only for trigger types IN_TEMPERATURE_RANGE,
+  // IN_FEELS_LIKE_TEMPERATURE_RANGE, IN_DEW_POINT_RANGE.
+  // Note: low_temp_f < high_temp_f for a valid fence.
+  optional float low_temp_f = 2;
+
+  // High value of the temperature range of the weather fence.
+  // Used only for trigger types IN_TEMPERATURE_RANGE,
+  // IN_FEELS_LIKE_TEMPERATURE_RANGE, IN_DEW_POINT_RANGE.
+  // Note: low_temp_f < high_temp_f for a valid fence.
+  optional float high_temp_f = 3;
+
+  // Low value of the humidity range of the weather fence.
+  // Used only for trigger type IN_HUMIDITY_RANGE.
+  // Note: low_humidity < high_temp_f for a valid fence.
+  optional int32 low_humidity = 4;
+
+  // High value of the temperature range of the weather fence.
+  // Used only for trigger type IN_HUMIDITY_RANGE.
+  // Note: low_humidity < high_humidity for a valid fence.
+  optional int32 high_humidity = 5;
+
+  // Desired type of weather condition for the fence.
+  // Used only for trigger types IN_CONDITION
+  // This should be set to one of the values in:
+  // Weather.WeatherCondition.Type or
+  // com.google.android.gms.awareness.state.Weather.WeatherCondition
+  optional int32 condition_type = 6;
+}
+
+// Represents the parameters for a shush state fence
+message ShushStateFence {}
+
+// Represents the parameters for a wifi state fence
+message WifiStateFence {
+  enum TriggerType {
+    UNKNOWN_WIFI_FENCE_TRIGGER_TYPE = 0;
+
+    // Fence triggers when a matching access point is connected
+    CONNECTED = 1;
+    // Fence triggers when a matching access point is detectable
+    FOUND = 2;
+  }
+  optional TriggerType trigger_type = 1;
+  // If provided, matches when an access point has given bssid
+  optional string bssid = 2;
+  // If provided, matches when an access point has given ssid
+  optional string ssid = 3;
+}
+
+// Names of the different contexts.  The enum here is meant to grow as more
+// contexts are defined. Names are loosely organized (and corresponding proto
+// tag numbers) by family. See ContextFamily for description of what families
+// entail.  It is understood that some context names may fall under multiple
+// families but should be tagged with whatever is deemed the more prominent
+// family grouping.
+//
+// The ContextName directly maps to a proto (if one exists) that is put in
+// the extension of a Context object.  These protos are stored
+// in subdirectories under //personalization/context/proto according to the
+// name.  (E.g., for SCREEN and POWER_CONNECTION, the corresponding protos
+// are stored in //personalization/context/proto/screen/screen.proto and
+// //personalization/context/proto/power_connection/power_connection.proto.
+//
+// A ContextName can also be mapped to a model that may be used to generate
+// a context for a particular type. Each model name should strictly be suffixed
+// with '_MODEL' to indicate that it is a Model. It is also fine if multiple
+// contexts share the same model.
+//
+// Namespaces of 1 - 10000 is reserved for Contexts.
+// For any clarification, always contact context-team@
+enum ContextName {
+  // The context name is unknown.
+  UNKNOWN_CONTEXT_NAME = 0;
+  // The user's current location.
+  USER_LOCATION = 1;
+  // How familiar the user is with their current location (tourist vs. local).
+  USER_LOCATION_FAMILIARITY = 2 [deprecated = true];
+  // Predicted future locations that the user will be at.
+  USER_LOCATION_FORECAST = 3 [deprecated = true];
+  // The Maps viewport that the user is currently looking at.
+  MAPS_VIEWPORT = 4;
+  // How familiar the user is with the Maps viewport they are currently looking
+  // at (tourist vs. local).
+  MAPS_VIEWPORT_FAMILIARITY = 5;
+  // Detected activity of the user.
+  DETECTED_ACTIVITY = 6;
+  // Device screen state: on/off
+  SCREEN = 7;
+  // Device power connection state: connected/disconnected
+  POWER_CONNECTION = 8;
+  // Signal related to current trust state of the device (ex. Connection state
+  // of devices, signals from facial recognition, user activity or location
+  // affinity.
+  TRUST_SIGNAL = 9;
+  // A decision evaluated by a decision engine about how much the device is
+  // currently secure.
+  TRUST_DECISION = 10;
+  // Use these context names if experimenting with the Context Manager for the
+  // first time.  In order to query for experimental context types, be sure
+  // to include keys in the Key field when inserting Context objects into
+  // Context Manager. For more information see go/experimental-context-name
+
+  // EXPERIMENTAL1_UPLOAD_RESTRICTED is an upload restricted context name,
+  // meaning it will not be uploaded to the backend context manager server.
+  // Use this for experimental contexts that are prohibited from syncing.
+  EXPERIMENTAL1_UPLOAD_RESTRICTED = 11;
+  // The 2 and 3 are not upload restricted. These will be synced to the
+  // backend.
+  EXPERIMENTAL2_UPLOAD_OK = 12;
+  EXPERIMENTAL3_UPLOAD_OK = 13;
+  // Snapped-to-road locations as provided by GMM in navigation mode.
+  SNAPPED_TO_ROAD_LOCATION = 14;
+  // High-level semantic time, location and activity state of the user.
+  SEMANTIC_STATE = 15;
+  // User's travel context, e.g., trips, locations, travel modes, etc.
+  TRAVEL = 16;
+  // User's device wifi scan results.
+  WIFI_SCAN = 17;
+  // Places context. See android places api.
+  PLACES = 18;
+  // Calendar events for the user.
+  CALENDAR_EVENT = 19;
+  // APPS that are running at a given time interval. This is obtained via the
+  // UsageStatsManager for Lollipop+ platform versions, and via ActivityManager
+  // for pre Lollipop.
+  // Deprecated. consider using UsageStatsManager API directly.
+  RUNNING_APPS = 20 [deprecated = true];
+  // The topics about which the user will be interested in consuming content.
+  CONTENT_INTERESTS = 21;
+  // Cast events.
+  CAST_EVENT = 22;
+  // Places that are of interest to the user.
+  PLACE_INTERESTS = 23 [deprecated = true];
+  // Audio state for the device provided by Android's audio manager.
+  AUDIO_STATE = 24;
+  // State of the User's phone, whether it is locked or unlocked.
+  PHONE_LOCK = 25;
+  // Detected beacon attachments from scanned BLE beacons.
+  DETECTED_BEACON = 26;
+  // State of the network connection, if connected whether it is on WiFi or
+  // Cellular
+  NETWORK_STATE = 27;
+  // Locations the user recently visited.
+  RECENT_VISITS = 28;
+  // Snapped place location  of the user. Obtained from Hulk STP backend
+  // based on user's lat/lng location, detected activity, nearby Wifi signals,
+  // BLE beacons, etc.
+  SNAPPED_PLACES = 29;
+  // Snapped city location of the user. Obtained by reverse geocoding
+  // the user's lat/lng location.
+  SNAPPED_CITY = 30 [deprecated = true];
+  // Context for the weather information.
+  WEATHER = 31;
+  // User's wandering state context, i.e. distance spanned by a device in
+  // a given time interval
+  WANDER_STATE = 32;
+  // User's affinities with service providers.
+  PROVIDER_AFFINITIES = 34;
+  // User's detected routines
+  ROUTINES = 35 [deprecated = true];
+  // Attributes of the day corresponding to the current time and locale
+  // As examples, some attributes are: MORNING, EVENING, WEEKDAY,
+  // WEEKEND, HOLIDAY.
+  DAY_ATTRIBUTES = 36;
+  // Phone call state
+  PHONE_CALL = 37 [deprecated = true];
+  // Proximity distance reported by the proximity sensor
+  PROXIMITY_DISTANCE = 38;
+  // Installed applications on the device
+  INSTALLED_APPS = 39;
+  // Shopping related contexts (e.g. Shopping product profiles from
+  // web and Chrome)
+  SHOPPING = 40;
+  // Users Personas. go/persona
+  PERSONAS = 41 [deprecated = true];
+  // Users language preferences. go/now-u-languages-design
+  LANGUAGES = 42;
+  // Sunrise and sunset times of the day at the device's location
+  SUN_STATE = 43;
+  // User demographics (e.g. age, gender, income bracket)
+  DEMOGRAPHICS = 44;
+  // Properties of time (such as time zone at device's locale). This is similar
+  // to LOCALE_BASED_TIME_MODEL but does not need a network call. The guiding
+  // principle has been to have flat organization for contexts despite possible
+  // overlap. The alternative of having the same context being produced from
+  // client or server introduces code complexity that gets unmaintainable.
+  // This context is part of the same SEMANTIC_TIME family.
+  TIME_PROPERTY = 45;
+  // Predicted future locations the user will go to.
+  // This context will eventually replace USER_LOCATION_FORECAST
+  DESTINATION_PREDICTION = 46;
+  // Where the user has a vehicle parked and related information such as how
+  // long they can park there, how to find the parking spot, etc.
+  PARKING_LOCATIONS = 47;
+  // User's current direction and speed
+  USER_VELOCITY = 48;
+  // Context from user's Gmail, e.g. movie tickets, flight information,
+  // restaurant reservation, etc.
+  PERSONAL_INTELLIGENCE = 49;
+  // The contextual pivot for a search query, e.g. a KG mid, a location, etc.
+  // This is provided as part of search requests to describe the thing that a
+  // query is pivoted around.
+  QUERY_PIVOT = 50;
+  // Intents predicted by the intent system (go/pips).
+  // Deprecated. This context is currently not supported. Please email to
+  // user-model-clients@google.com before use it.
+  PROACTIVE_INTENTS = 51 [deprecated = true];
+  // XGeo header
+  XGEO_HEADER = 52 [deprecated = true];
+  // User's location history and location habits. See go/distill
+  DISTILL_LOCATION_PROFILE = 53 [deprecated = true];
+  // Trained user embeddings.
+  USER_EMBEDDING = 54;
+  // Weather context for internal (first-party) clients
+  WEATHER_INTERNAL = 55;
+  // Trained entity embeddings for user interests.
+  INTEREST_ENTITY_EMBEDDINGS = 56;
+  // Prediction for whether the device is indoors or outdoors
+  // automatic read/write permissions
+  INDOOR_OUTDOOR = 57;
+  // User's inferred task and task related suggestions.
+  VASCO_TASK_SUGGESTIONS = 58;
+  // Probability of user in DND mode
+  DND_MODE = 59;
+  // Filtered CurrentPlaces context, based on filtered PlaceUpdates.
+  CURRENT_PLACES = 60;
+  // Aware profile (go/search-aware).
+  AWARE_PROFILE = 61;
+  // The language (ISO 639-1) and country (ISO 3166-1) codes, such as "en_US",
+  // of the device that made the request. It belongs to the DEVICE_STATE family.
+  DEVICE_LOCALE = 62;
+  // All activity in a timeline (go/unified-activity-overview).
+  ACTIVITY_TIMELINE = 63;
+
+  // Current Maps turn-by-turn navigation state.  See
+  // go/gmm-guided-navigation-state-export.
+  MAPS_NAVIGATION_STATE = 67;
+  // The user's device information as gathered in Search. Uses
+  // superroot/impls/web/proto/device.proto as representation.
+  SEARCH_DEVICE = 68;
+  // Scores related to sending geo notifications computed from internal ML
+  // models. (go/ml-for-ugc-notifications).
+  GEO_NOTIFICATION_SCORES = 70;
+  // Interest similarity. A list of related entity interests with support for
+  // different types and verticals.
+  INTEREST_ENTITY_SIMILARITY = 71;
+  // Entities consumed by a user and related metadata. (It covers use cases
+  // like metadata about watching a movie / tv show or buying a book etc).
+  CONTENT_CONSUMPTION = 73;
+  // User's semantic location state for at-home, at-work, and traveling.
+  SEMANTIC_LOCATION = 74 [deprecated = true];
+  // Set of locations (IP location, device location, historic location, etc)
+  LOCATION_CONTEXT = 75;
+  // The input method of the query, e.g. typed or voice.
+  SEARCH_INPUT_METHOD = 76;
+  // Knowledge-specific params.
+  KE_PARAMS = 77;
+  // State of the user w.r.t Product. This is intended to serve
+  // lightweight product specific information about a user e.g opt-in age,
+  // activity levels, etc.
+  PRODUCT_USER_STATE = 78;
+  // `ACTIVITY_TRANSPOSE` is deprecated.
+  ACTIVITY_TRANSPOSE = 79 [deprecated = true];
+  // Search ugc interests, contains entity-level and user-level aggregated
+  // signals about user's activities with Search UGC features.
+  SEARCH_UGC_INTERESTS = 80;
+  // Context indicating user is currently on commute.
+  ON_COMMUTE = 81;
+  // Relations (Caretaker, Owner, Employee) users have to places
+  // go/user-relation-to-place-anima.
+  USER_RELATION_TO_PLACES = 82;
+
+  // State capturing user interactions in Discover sliced by card category,
+  // content topic etc. which will be used by interest exploration efforts
+  // (go/exploration-state-design).
+  DISCOVER_ACTIONS_PROFILE = 84;
+
+  // Returns user's related activities given a set of input activities.
+  // (go/related-activity-api-proto-proposal).
+  RELATED_ACTIVITY = 85;
+
+  // Stateful Task APIs: go/stateful-task-apis
+  STATEFUL_ACTIVITY_RECOMMENDED = 86;
+  STATEFUL_ACTIVITY_RELATED = 87;
+  STATEFUL_ACTIVITY_RENDERABLE = 88;
+  STATEFUL_TASK_ACTIVE = 89;
+  STATEFUL_TASK_RELATED = 90;
+
+  // Stateful API v2 (go/stateful-api-v2)
+  STATEFUL_TASK = 128;
+  STATEFUL_TASK_ACTIVITY_CARD = 130;
+  STATEFUL_TASK_DISCOVER = 131;
+  STATEFUL_TASK_TASK_HUB = 137;
+  STATEFUL_TASK_NOTIFICATIONS = 142;
+
+  // State of the currently connected wifi connection
+  WIFI_CONNECTION_STATE = 91;
+
+  // User contribution data for geo UGC. go/ugc-motivation.
+  GEO_UGC_MOTIVATION = 92;
+
+  // User's search suggestion state, such as previous query and suggested
+  // queries from recent queries (go/suggest-context).
+  SEARCH_SUGGEST_STATE = 93;
+
+  // User's predicted Geo Merchant Identification state (go/mid-anima).
+  GEO_MERCHANT_IDENTIFICATION_STATE = 94;
+
+  // Affinity signals from Sherlock.
+  SHERLOCK_AFFINITY = 95;
+
+  // User Activity Counts (go/user-activity-counts).
+  USER_ACTIVITY_COUNTS = 96;
+
+  // Shopping preferences model
+  SHOPPING_PREFERENCE_PROFILE = 97;
+
+  // Users contribution data for Get-on-Google (go/gog). Includes stats about
+  // previous contributions, contribution views, topic interests, and topic
+  // tasks.
+  GOG_CONTRIBUTOR_PROFILE = 98;
+
+  // Crosspath representative items.
+  CROSSPATH_REPRESENTATIVE_ITEMS = 99;
+
+  // Entity History Model which holds entities the user might want to re-engage
+  // with in evergreen verticals like Books and Video Games. go/ehm
+  ENTITY_HISTORY = 100;
+
+  // Discover User Actions Profile which holds personalized aggregate counts of
+  // actions sliced by custom dimensions over longer term time windows.
+  // go/discover-uap-redesign
+  DISCOVER_USER_ACTIONS_PROFILE = 101;
+
+  // LOCAL_ADS_ENTITY_PREFERENCES represents the serving analog for the local
+  // ads entity preference model (go/anima-local-ads-entity-model). The model
+  // represents KG entities which the user has shown a preference for based on
+  // the Ads-approved activities across Google products.
+  LOCAL_ADS_ENTITY_PREFERENCES = 102;
+
+  // Aggregated clicks on merchant websites. See go/scaling-merchant-reviews.
+  MERCHANT_CLICK_COUNTS = 103;
+
+  // Model containing aggregated views of Get on Google Cameos across platforms
+  // (assistant, SRP, Discover, Topic Feed)
+  GOG_CAMEO_VIEWS = 104;
+
+  // Single-day aggregate counts of distinct Semantic User Needs (SUNs) in
+  // the user's activity timeline. (See: go/nash-pre-suns)
+  DAILY_SUN_COUNTS = 105;
+
+  // Representation Assistant Recipe Embeddings.
+  ASSISTANT_RECIPE_USER_EMBEDDINGS = 106;
+
+  // Representation of Assistant Recipe Embeddings inferred during request-time.
+  ASSISTANT_RECIPE_ONLINE_USER_EMBEDDINGS = 145;
+
+  // Representation of Core Interest Embeddings.
+  CORE_INTEREST_EMBEDDINGS = 107;
+
+  // Representation of Event User Embedding.
+  EVENT_USER_EMBEDDINGS = 108;
+
+  // Representation of Podcast User Embedding.
+  PODCAST_USER_EMBEDDINGS = 109;
+
+  // Representation of Long term interest embeddings.
+  LONG_TERM_INTEREST_EMBEDDINGS = 110;
+
+  // Representation of Horizontal User Embeddings.
+  HORIZONTAL_USER_EMBEDDINGS = 135;
+
+  // Monet online embeddings.
+  MONET_ONLINE_EMBEDDINGS = 138;
+
+  // Representation of Tvn Timeline Signals.
+  TVM_TIMELINE_SIGNALS_FEATURES = 111;
+
+  // Representation of qualia profile for Discover feed.
+  DISCOVER_QUALIA_PROFILE = 112;
+
+  // Representation of qualia profile for GNews.
+  NEWS_QUALIA_PROFILE = 127;
+
+  // Representation of monet embeddings model input features.
+  DISCOVER_MONET_EMBEDDINGS_FEATURES = 113;
+
+  // Representation of monet pilot embeddings model input features.
+  DISCOVER_MONET_PILOT_EMBEDDINGS_FEATURES = 144;
+
+  // Representation of monet holdback embeddings model input features.
+  DISCOVER_MONET_HOLDBACK_EMBEDDINGS_FEATURES = 148;
+
+  // TVM items click counts, within what-to-watch. Includes item clicks (W2W)
+  // and clicks on 'watch now' button (W2W and Amati).
+  W2W_CLICKS = 114;
+
+  // Aggregated TVM items clicks, impressions and other relevant signals in W2W,
+  // Amati and other surfaces. go/recomedia-freshness
+  W2W_STATEFULNESS = 132;
+
+  // Representation of user embeddings for recomedia TVM vertical.
+  RECOMEDIA_TVM_USER_EMBEDDINGS = 115;
+
+  // Representation of user embeddings for books vertical.
+  RECOMEDIA_BOOKS_USER_EMBEDDINGS = 136;
+
+  // User's implicit watch state across products, i.e. Search, Amati, and
+  // Primetime. go/ump-implicit-watch
+  UMP_IMPLICIT_WATCH = 116;
+
+  // Representation of Hobbes DeepTrends IDLE user embeddings.
+  HOBBES_DEEP_TRENDS_IDLE_USER_EMBEDDINGS = 117;
+
+  // Representation of Hobbes DeepTrends FaBLE user embeddings.
+  HOBBES_DEEP_TRENDS_FABLE_USER_EMBEDDINGS = 118;
+
+  // Representation of signals needed to determine churn probability of a user.
+  // go/aga-churn-notif-design
+  AGA_CHURN_PREVENTION_MODEL = 119;
+
+  // User Activity Store on Evergreen Content (a.k.a., RoutinesMemory Redesign).
+  // go/user-activity-store-on-evergreen-content
+  USER_ACTIVITY_STORE_ON_EVERGREEN_CONTENT = 120;
+
+  // Url view demotion PSM, containing counts of docids from Chrome, Search,
+  // and Discover per time ranges.
+  // go/psm-view-demotion-aggregates
+  VIEW_DEMOTION_AGGREGATES = 125;
+
+  // Representation of user embeddings model for Shopping Property user
+  // timeline.
+  SHOPPING_PROPERTY_USER_TIMELINE = 121;
+
+  // Representation of the signals needed to determine churn probability in
+  // opa for a user.
+  GROWTH_FACTORS_OPA_CHURN_MODEL = 122;
+
+  // LOCAL_ADS_CHAIN_ENTITY_PREFERENCES represents the serving analog for the
+  // local ads chain entity preference model. The model scores KG entities
+  // pertaining to business chains which the user has shown a preference for
+  // based on the Ads-approved activities across Google products.
+  LOCAL_ADS_CHAIN_ENTITY_PREFERENCES = 123;
+
+  // Representation of the user profile generated by Qualia model during serving
+  // time based on features extracted from both LTAT and STAT.
+  QUALIA_ONLINE_PROFILE = 126;
+
+  // Representation of Books Timeline Signals.
+  BOOKS_TIMELINE_SIGNALS_FEATURES = 129;
+
+  // Representation of Handbag Personalized entities.
+  HANDBAG_PERSONALIZED_ENTITIES = 133;
+
+  // Represents the backfill analog for the local
+  // ads entity preference model (go/anima-local-ads-entity-model). The model
+  // represents KG entities which the user has shown a preference for based on
+  // the Ads-approved activities across Google products.
+  LOCAL_ADS_HISTORICAL_ENTITY_PREFERENCES = 134;
+
+  // Representation of Deep Now `ContextFeatures` signals. Note that this is a
+  // temporary solution and should not be used for other external use cases.
+  // TODO(b/187311600): Clean up DEEP_NOW_CONTEXT_FEATURES
+  DEEP_NOW_CONTEXT_FEATURES = 139;
+
+  // Represents the Hobbes user embeddings model for Hotels Ranking.
+  HOTEL_HOBBES_USER_EMBEDDINGS = 140;
+
+  // Representation of the petacat profile generated by Petacat model during
+  // serving time.
+  PETACAT_ONLINE_PROFILE = 143;
+
+  // Represents user's recent actions on documents.
+  RECENT_URL_ACTIONS = 146;
+
+  // Represents user's recent activity signals that is local related.
+  LOCAL_RELATED_RECENT_ACTIVITY_SIGNALS = 147;
+
+  // Profile of documents by domain visited by the user across google e.g.
+  // Search and Chrome (go/wind-rose-data).
+  WIND_ROSE_PROFILE = 149;
+
+  // Represents the user's U-SERP profile, i.e. how much they like/dislike
+  // certain OneNamespace types (go/u-serp).
+  USERP = 150;
+
+  // Next Context Id: 151
+
+  //---------------------------------------------------------------------------
+  // Context Manager Internal Contexts. These are usually contexts such as
+  // models that are used by the first party apps for synchronization from
+  // cloud, or used by context manager for creating other higher level
+  // contexts.
+  // A range of [10000 - 19999] is reserved.
+  // Next Id: 10010
+  //---------------------------------------------------------------------------
+
+  // Model for the USER_LOCATION_FAMILIARITY context.
+  USER_LOCATION_FAMILIARITY_MODEL = 10000;
+
+  // Model that is trained for a user based upon the hotword detection.
+  // Hotword detection is also known as Keyword Spotting and is the task
+  // of detecting a pre-defined Hotword like “Ok Google” in a continuous
+  // audio stream.
+  // These already trained models can be pushed from cloud to device where
+  // they can be used as preconfigured for voice search on a new or resetted
+  // device.
+  HOTWORD_SPEAKER_MODEL = 10001;
+
+  // Model representing the UDC settings.
+  UDC_FOOTPRINTS_SETTINGS_MODEL = 10002;
+
+  // Model that is used for predicting safe locations for a user.
+  // These locations can be marked as trusted locations on the device,
+  // used for creating an overall trust/confidence score etc.
+  SAFE_LOCATION_MODEL = 10003;
+
+  // A set of places for which we have personal data for ELSA to use for place
+  // inference. This includes the user's home and work, and places for which
+  // they have interactions in the GeoJournalSummary. See
+  // http://go/elsa-geojournal.
+  PERSONALIZED_PLACES = 10004;
+
+  // A set of places which user has set aliases, such as HOME/WORK
+  ALIASED_PLACES = 10005;
+
+  // A special type of Context Manager's internal context that represents the
+  // encoded bytes of a differential context.
+  CONTEXT_DELTA = 10006;
+
+  // Model that represents information about time that is expressed
+  // semantically and dependent on locale. For example, notions of weekday,
+  // weekend, holiday refer to time but are dependent on country.
+  // In addition this includes personalized day parts such as start of day,
+  // morning, evening which is user dependent.
+  LOCALE_BASED_TIME_MODEL = 10007;
+
+  // Representation for the feedback to be collected about the fence states
+  FENCE_FEEDBACK = 10008;
+
+  // Information about the fence state. This includes the fence key, the event
+  // related to the fence and the condition of the fence
+  FENCE_STATE = 10009;
+
+  // Representation of domain interests
+  DOMAIN_INTERESTS = 10011;
+
+  reserved 33, 64, 65, 66, 69, 72, 83, 124, 141, 10010;
+
+  // Next Model Id: 10012
+
+  //---------------------------------------------------------------------------
+  // The following block is reserved by Context Manager for generic local
+  // contexts, that are produced by a local app or process.
+  // UNSPECIFIED_LOCAL_CONTEXTx tags are left in as placeholders so proto
+  // parsing does not eliminate them. Each tag should be renamed appropriately
+  // once claimed.
+  //---------------------------------------------------------------------------
+
+  // Marker for start of the block; default length is 100, expandable to 1000
+  LOCALLY_PRODUCED_BLOCK_START_MARKER = 10999;
+
+  // Next locally-produce Context Id: 11000 (claim the name below)
+  UNSPECIFIED_LOCAL_CONTEXT0 = 11000;
+  UNSPECIFIED_LOCAL_CONTEXT1 = 11001;
+  UNSPECIFIED_LOCAL_CONTEXT2 = 11002;
+  UNSPECIFIED_LOCAL_CONTEXT3 = 11003;
+  UNSPECIFIED_LOCAL_CONTEXT4 = 11004;
+  UNSPECIFIED_LOCAL_CONTEXT5 = 11005;
+  UNSPECIFIED_LOCAL_CONTEXT6 = 11006;
+  UNSPECIFIED_LOCAL_CONTEXT7 = 11007;
+  UNSPECIFIED_LOCAL_CONTEXT8 = 11008;
+  UNSPECIFIED_LOCAL_CONTEXT9 = 11009;
+
+  //---------------------------------------------------------------------------
+  // This block is reserved by Context Manager for generic remote
+  // contexts, that are produced on-demand via CMFE. The
+  // UNSPECIFIED_BACKEND_CONTEXTx tags are left in as placeholders so proto
+  // parsing does not eliminate them. Each tag should be renamed appropriately
+  // once claimed.
+  //---------------------------------------------------------------------------
+
+  // Marker for start of the block; default length is 100, expandable to 1000
+  BACKEND_PRODUCED_BLOCK_START_MARKER = 11999;
+
+  // Next Backend-produce Context Id: 12000 (claim the name below)
+  UNSPECIFIED_BACKEND_CONTEXT0 = 12000;
+  UNSPECIFIED_BACKEND_CONTEXT1 = 12001;
+  UNSPECIFIED_BACKEND_CONTEXT2 = 12002;
+  UNSPECIFIED_BACKEND_CONTEXT3 = 12003;
+  UNSPECIFIED_BACKEND_CONTEXT4 = 12004;
+  UNSPECIFIED_BACKEND_CONTEXT5 = 12005;
+  UNSPECIFIED_BACKEND_CONTEXT6 = 12006;
+  UNSPECIFIED_BACKEND_CONTEXT7 = 12007;
+  UNSPECIFIED_BACKEND_CONTEXT8 = 12008;
+  UNSPECIFIED_BACKEND_CONTEXT9 = 12009;
+
+  //---------------------------------------------------------------------------
+  // Context names > 100_000 are reserved for experimentation by various teams,
+  // These contexts will have automatic read/write permission for everyone, but
+  // should NOT be submitted!
+  // Next Id: 100001
+  //---------------------------------------------------------------------------
+
+  // Dummy context, used to mark beginning of range
+  DUMMY_EXPERIMENTAL_AUTO_RW_MARKER = 99999;
+
+  DUMMY_EXPERIMENTAL_AUTO_RW_1 = 100000;
+}
+
+// Represents a context fence, which can either be an AND,
+// OR, or NOT of other context fences.  Or, one of the fences for
+// a particular context name.
+message ContextFence {
+  // WARNING!  This protocol buffer has a unique equals() method in its nano
+  // implementation.  See cl/209825626 and b/112847166.  The default nano
+  // equals method somehow causes pathological performance in dex2oat in
+  // Lollipop devices, so bad that GMS Core can never start.  This is dependent
+  // also on which member messages are in different dex files dependent on
+  // which bytecode ProGuard generates.  Instead, the equals() method generated
+  // for this just delegates to MessageNano.messageNanoEquals which is slower.
+
+  enum Type {
+    UNKNOWN_CONTEXT_FENCE_TYPE = 0;
+    AND = 1;                        // AND expression
+    OR = 2;                         // OR expression
+    NOT = 3;                        // NOT expression
+    TIME_FENCE = 4;                 // Time-based fence
+    LOCATION_FENCE = 5;             // Location-based fence
+    PLACE_FENCE = 6;                // Place-based fence
+    ACTIVITY_FENCE = 7;             // Activity-based fence
+    SCREEN_FENCE = 8;               // Screen-based fence
+    POWER_CONNECTION_FENCE = 9;     // Power connection-based fence
+    PHONE_LOCK_FENCE = 10;          // Phone lock fence
+    AUDIO_STATE_FENCE = 11;         // Audio state fence
+    BEACON_FENCE = 12;              // Beacon fence
+    NETWORK_STATE_FENCE = 13;       // Network state fence
+    WANDER_STATE_FENCE = 14;        // Wander state fence
+    TIME_INTERVAL_FENCE = 15;       // Time fence specified using day attributes
+    INSTALLED_APPS_FENCE = 16;      // Installed apps fence
+    PHONE_CALL_FENCE = 17;          // Phone call based fence
+    PROXIMITY_DISTANCE_FENCE = 18;  // Proximity distance based fence
+    SUN_STATE_FENCE = 19;           // Sun-state based fence
+    LOCAL_TIME_FENCE = 20;          // Local-time-based fence
+    WEATHER_FENCE = 21;             // Weather-based fence
+    PREDICTIVE = 22;                // Predictive fence
+    SHUSH_STATE_FENCE = 23;         // Shush state fence
+    WIFI_STATE_FENCE = 24;          // Wifi state fence
+  }
+
+  optional Type type = 1;
+
+  // For AND and OR types, this is the list of ContextFence messages
+  // that should be ANDed or ORed together.  For NOT type, this
+  // should contain a single element.
+  repeated ContextFence fence_list = 2;
+
+  // Should be set only when type is TIME_FENCE.
+  optional TimeFence time_fence = 3;
+
+  // Should be set only when type is LOCATION_FENCE.
+  optional LocationFence location_fence = 4;
+
+  // Should be set only when type is PLACE_FENCE.
+  optional PlaceFence place_fence = 5;
+
+  // Should be set only when type is ACTIVITY_FENCE.
+  optional ActivityFence activity_fence = 6;
+
+  // Should be set only when type is SCREEN_FENCE.
+  optional ScreenFence screen_fence = 7;
+
+  // Should be set only when type is POWER_CONNECTION_FENCE.
+  optional PowerConnectionFence power_connection_fence = 8;
+
+  // Should be set only when the type is PHONE_LOCK_FENCE.
+  optional PhoneLockFence phone_lock_fence = 9;
+
+  // Should be set only when the type if AUDIO_STATE_FENCE.
+  optional AudioStateFence audio_state_fence = 10;
+
+  // Should be set only when the type is BEACON_FENCE.
+  optional BeaconFence beacon_fence = 11;
+
+  // Should be set only when the type is NETWORK_STATE_FENCE.
+  optional NetworkStateFence network_state_fence = 12;
+
+  // Encapsulates the source that evaluates this fence.
+  optional Source source = 13;
+
+  // Should be set only when the type is WANDER_STATE_FENCE.
+  optional WanderStateFence wander_state_fence = 14;
+
+  // Should be set only when the type is TIME_INTERVAL_FENCE.
+  optional TimeIntervalFence time_interval_fence = 15;
+
+  // Should be set only when the type is INSTALLED_APPS_FENCE.
+  optional InstalledAppsFence installed_apps_fence = 16;
+
+  // Should be set only when the type is PHONE_CALL_FENCE.
+  optional PhoneCallFence phone_call_fence = 17;
+
+  // Should be set only when the type is PROXIMITY_DISTANCE_FENCE.
+  optional ProximityDistanceFence proximity_distance_fence = 18;
+
+  // Should be set only when the type is SUN_STATE_FENCE.
+  optional SunStateFence sun_state_fence = 19;
+
+  // Should be set only when type is LOCAL_TIME_FENCE.
+  optional TimeFence local_time_fence = 20;
+
+  // Should be set only when type is WEATHER_FENCE.
+  optional WeatherFence weather_fence = 21;
+
+  // Contexts to be snapshot when fence triggers.
+  repeated ContextName requested_snapshot = 22;
+
+  // Contain parameters for predictive fences,
+  // null if the fence is not predictive
+  optional PredictiveParameters predictive_parameters = 23;
+
+  // Should be set only when type is SHUSH_STATE_FENCE.
+  optional ShushStateFence shush_state_fence = 24;
+
+  // Should be set only when type is WIFI_STATE_FENCE.
+  optional WifiStateFence wifi_state_fence = 25;
+  // Next Tag: 26
+}
+
+// Encapsulates the source metadata associated with a context fence.
+// This is useful for the distributed fences, when a particular context fence
+// can be remotely evaluated on a different device.
+message Source {
+  // TODO(b112847166): Re-migrate to lite after we understand how to avoid this
+  // from getting pulled into the main dex and causing catastrophic failures.
+
+  // [REQUIRED]
+  optional string account_name = 1;
+}
+
+// Represents an expression for representing the date time.
+message DateTime {
+  // TODO(b112847166): Re-migrate to lite after we understand how to avoid this
+  // from getting pulled into the main dex and causing catastrophic failures.
+
+  // Represents the year for the date time.
+  // For example: 2015
+  optional int32 year = 1;
+
+  // Represents the month for the date time with values ranging
+  // from 0 to 11. Example, January is represented as 0 and December
+  // as 11.
+  optional int32 month = 2;
+
+  // Represents the day of the month
+  // The first day of the month has a value of 1.
+  // Example January 1 will have day as 1, January 2 will
+  // have day as 2 respectively.
+  optional int32 day = 3;
+
+  // Represents the hour of the day as a 24 hour clock.
+  // Range of valid values is 0 - 23, example for 10:04:15 PM
+  // the HOUR_OF_DAY is 22
+  optional int32 hour = 4;
+
+  // Represents the minute with in the hour.
+  // Range of valid values is 0 - 59, example at 10:04:15 PM
+  // the MINUTE is 4
+  optional int32 minutes = 5;
+
+  // Represents the seconds with in the minute.
+  // Range of valid values is 0 - 59, example at 10:04:15 PM
+  // the SECOND is 15
+  optional int32 seconds = 6;
+}
+
+message PredictiveParameters {
+  // Minimum confidence level for a predictive fence to be triggered.
+  optional int32 prediction_confidence_level = 1;
+
+  // Time duration within which prediction will be considered.
+  optional int64 prediction_time_millis = 2;
+  // Next Tag: 25
+}

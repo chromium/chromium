@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_cache.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -29,23 +31,19 @@ class AppsIconCacheTest : public testing::Test {
     void SetReturnPlaceholderIcons(bool b) { return_placeholder_icons_ = b; }
 
    private:
-    apps::mojom::IconKeyPtr GetIconKey(const std::string& app_id) override {
-      return apps::mojom::IconKey::New(0, 0, 0);
-    }
-
     std::unique_ptr<Releaser> LoadIconFromIconKey(
-        apps::mojom::AppType app_type,
+        apps::AppType app_type,
         const std::string& app_id,
-        apps::mojom::IconKeyPtr icon_key,
-        apps::mojom::IconType icon_Type,
+        const apps::IconKey& icon_key,
+        apps::IconType icon_type,
         int32_t size_hint_in_dip,
         bool allow_placeholder_icon,
-        apps::mojom::Publisher::LoadIconCallback callback) override {
+        apps::LoadIconCallback callback) override {
       num_load_calls_++;
 
-      auto iv = apps::mojom::IconValue::New();
-      if (icon_Type == apps::mojom::IconType::kUncompressed) {
-        iv->icon_type = apps::mojom::IconType::kUncompressed;
+      auto iv = std::make_unique<apps::IconValue>();
+      if (icon_type == apps::IconType::kUncompressed) {
+        iv->icon_type = apps::IconType::kUncompressed;
         iv->uncompressed =
             gfx::ImageSkia(gfx::ImageSkiaRep(gfx::Size(1, 1), 1.0f));
         iv->is_placeholder_icon = return_placeholder_icons_;
@@ -64,15 +62,12 @@ class AppsIconCacheTest : public testing::Test {
                           const std::string& app_id,
                           HitOrMiss expect_hom,
                           bool allow_placeholder_icon = false) {
-    static constexpr auto app_type = apps::mojom::AppType::kWeb;
-    static constexpr auto icon_type = apps::mojom::IconType::kUncompressed;
-    static constexpr int32_t size_hint_in_dip = 1;
-
     int before = fake->NumLoadIconFromIconKeyCalls();
 
-    UniqueReleaser releaser =
-        loader->LoadIcon(app_type, app_id, icon_type, size_hint_in_dip,
-                         allow_placeholder_icon, base::DoNothing());
+    UniqueReleaser releaser;
+    releaser = loader->LoadIcon(
+        apps::AppType::kWeb, app_id, apps::IconType::kUncompressed,
+        /*size_hint_in_dip=*/1, allow_placeholder_icon, base::DoNothing());
 
     int after = fake->NumLoadIconFromIconKeyCalls();
     HitOrMiss actual_hom = (after == before) ? kHit : kMiss;
@@ -109,8 +104,8 @@ class AppsIconCacheTest : public testing::Test {
     HitOrMiss expect_hom = kHit;
     if (gc_policy == apps::IconCache::GarbageCollectionPolicy::kExplicit) {
       if (remove_icon) {
-        cache.RemoveIcon(apps::mojom::AppType::kWeb, "cherry");
-        cache.RemoveIcon(apps::mojom::AppType::kWeb, "apricot");
+        cache.RemoveIcon(apps::AppType::kWeb, "cherry");
+        cache.RemoveIcon(apps::AppType::kWeb, "apricot");
         expect_hom = kMiss;
       } else {
         cache.SweepReleasedIcons();
@@ -123,7 +118,7 @@ class AppsIconCacheTest : public testing::Test {
 
     if (gc_policy == apps::IconCache::GarbageCollectionPolicy::kExplicit) {
       if (remove_icon) {
-        cache.RemoveIcon(apps::mojom::AppType::kWeb, "cherry");
+        cache.RemoveIcon(apps::AppType::kWeb, "cherry");
       } else {
         cache.SweepReleasedIcons();
       }
@@ -199,7 +194,7 @@ class AppsIconCacheTest : public testing::Test {
 
     if (gc_policy == apps::IconCache::GarbageCollectionPolicy::kExplicit) {
       if (remove_icon) {
-        cache.RemoveIcon(apps::mojom::AppType::kWeb, "watermelon");
+        cache.RemoveIcon(apps::AppType::kWeb, "watermelon");
       } else {
         cache.SweepReleasedIcons();
       }

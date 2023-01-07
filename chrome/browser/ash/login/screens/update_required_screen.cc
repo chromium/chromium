@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,18 +18,23 @@
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/chromeos/devicetype_utils.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
+namespace ash {
 namespace {
+
 constexpr char kUserActionSelectNetworkButtonClicked[] = "select-network";
 constexpr char kUserActionUpdateButtonClicked[] = "update";
 constexpr char kUserActionAcceptUpdateOverCellular[] = "update-accept-cellular";
@@ -39,18 +44,17 @@ constexpr char kUserActionConfirmDeleteUsersData[] = "confirm-delete-users";
 // Delay before showing error message if captive portal is detected.
 // We wait for this delay to let captive portal to perform redirect and show
 // its login page before error message appears.
-constexpr const base::TimeDelta kDelayErrorMessage =
-    base::TimeDelta::FromSeconds(10);
+constexpr const base::TimeDelta kDelayErrorMessage = base::Seconds(10);
+
 }  // namespace
 
-namespace chromeos {
-
-UpdateRequiredScreen::UpdateRequiredScreen(UpdateRequiredView* view,
-                                           ErrorScreen* error_screen,
-                                           base::RepeatingClosure exit_callback)
+UpdateRequiredScreen::UpdateRequiredScreen(
+    base::WeakPtr<UpdateRequiredView> view,
+    ErrorScreen* error_screen,
+    base::RepeatingClosure exit_callback)
     : BaseScreen(UpdateRequiredView::kScreenId,
                  OobeScreenPriority::SCREEN_UPDATE_REQUIRED),
-      view_(view),
+      view_(std::move(view)),
       error_screen_(error_screen),
       exit_callback_(std::move(exit_callback)),
       histogram_helper_(
@@ -60,30 +64,23 @@ UpdateRequiredScreen::UpdateRequiredScreen(UpdateRequiredView* view,
   error_message_delay_ = kDelayErrorMessage;
 
   eol_message_subscription_ = CrosSettings::Get()->AddSettingsObserver(
-      chromeos::kDeviceMinimumVersionAueMessage,
+      kDeviceMinimumVersionAueMessage,
       base::BindRepeating(&UpdateRequiredScreen::OnEolMessageChanged,
                           weak_factory_.GetWeakPtr()));
-  if (view_)
-    view_->Bind(this);
 }
 
 UpdateRequiredScreen::~UpdateRequiredScreen() {
   StopObservingNetworkState();
-  if (view_)
-    view_->Unbind();
-}
-
-void UpdateRequiredScreen::OnViewDestroyed(UpdateRequiredView* view) {
-  if (view_ == view)
-    view_ = nullptr;
 }
 
 void UpdateRequiredScreen::ShowImpl() {
-  ash::LoginScreen::Get()->SetAllowLoginAsGuest(false);
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  view_->SetEnterpriseAndDeviceName(connector->GetEnterpriseDisplayDomain(),
-                                    ui::GetChromeOSDeviceName());
+  LoginScreen::Get()->SetAllowLoginAsGuest(false);
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  if (view_) {
+    view_->SetEnterpriseAndDeviceName(connector->GetEnterpriseDomainManager(),
+                                      ui::GetChromeOSDeviceName());
+  }
 
   is_shown_ = true;
 
@@ -104,10 +101,10 @@ void UpdateRequiredScreen::ShowImpl() {
 }
 
 void UpdateRequiredScreen::OnGetEolInfo(
-    const chromeos::UpdateEngineClient::EolInfo& info) {
+    const UpdateEngineClient::EolInfo& info) {
   //  TODO(crbug.com/1020616) : Handle if the device is left on this screen
   //  for long enough to reach Eol.
-  if (chromeos::switches::IsAueReachedForUpdateRequiredForTest() ||
+  if (switches::IsAueReachedForUpdateRequiredForTest() ||
       (!info.eol_date.is_null() && info.eol_date <= clock_->Now())) {
     EnsureScreenIsShown();
     if (view_) {
@@ -124,28 +121,27 @@ void UpdateRequiredScreen::OnGetEolInfo(
 }
 
 void UpdateRequiredScreen::OnEolMessageChanged() {
-  chromeos::CrosSettingsProvider::TrustedStatus status =
+  CrosSettingsProvider::TrustedStatus status =
       CrosSettings::Get()->PrepareTrustedValues(
           base::BindOnce(&UpdateRequiredScreen::OnEolMessageChanged,
                          weak_factory_.GetWeakPtr()));
-  if (status != chromeos::CrosSettingsProvider::TRUSTED)
+  if (status != CrosSettingsProvider::TRUSTED)
     return;
 
   std::string eol_message;
-  if (view_ && CrosSettings::Get()->GetString(
-                   chromeos::kDeviceMinimumVersionAueMessage, &eol_message)) {
+  if (view_ && CrosSettings::Get()->GetString(kDeviceMinimumVersionAueMessage,
+                                              &eol_message)) {
     view_->SetEolMessage(eol_message);
   }
 }
 
 void UpdateRequiredScreen::HideImpl() {
-  if (view_)
-    view_->Hide();
   is_shown_ = false;
   StopObservingNetworkState();
 }
 
-void UpdateRequiredScreen::OnUserAction(const std::string& action_id) {
+void UpdateRequiredScreen::OnUserAction(const base::Value::List& args) {
+  const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionSelectNetworkButtonClicked) {
     OnSelectNetworkButtonClicked();
   } else if (action_id == kUserActionUpdateButtonClicked) {
@@ -167,7 +163,7 @@ void UpdateRequiredScreen::OnUserAction(const std::string& action_id) {
   } else if (action_id == kUserActionConfirmDeleteUsersData) {
     DeleteUsersData();
   } else {
-    BaseScreen::OnUserAction(action_id);
+    BaseScreen::OnUserAction(args);
   }
 }
 
@@ -241,21 +237,20 @@ void UpdateRequiredScreen::RefreshView(
 void UpdateRequiredScreen::ObserveNetworkState() {
   if (!is_network_subscribed_) {
     is_network_subscribed_ = true;
-    NetworkHandler::Get()->network_state_handler()->AddObserver(this,
-                                                                FROM_HERE);
+    network_state_handler_observer_.Observe(
+        NetworkHandler::Get()->network_state_handler());
   }
 }
 
 void UpdateRequiredScreen::StopObservingNetworkState() {
   if (is_network_subscribed_) {
     is_network_subscribed_ = false;
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this,
-                                                                   FROM_HERE);
+    network_state_handler_observer_.Reset();
   }
 }
 
 void UpdateRequiredScreen::OnSelectNetworkButtonClicked() {
-  ash::SystemTray::Get()->ShowNetworkDetailedViewBubble();
+  SystemTray::Get()->ShowNetworkDetailedViewBubble();
 }
 
 void UpdateRequiredScreen::OnUpdateButtonClicked() {
@@ -306,11 +301,12 @@ void UpdateRequiredScreen::ShowErrorMessage() {
 }
 
 void UpdateRequiredScreen::UpdateErrorMessage(
-    const NetworkPortalDetector::CaptivePortalStatus status,
-    const NetworkError::ErrorState& error_state,
+    NetworkState::PortalState state,
+    NetworkError::ErrorState error_state,
     const std::string& network_name) {
   error_screen_->SetErrorState(error_state, network_name);
-  if (status == NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PORTAL) {
+  if (state == NetworkState::PortalState::kPortal ||
+      state == NetworkState::PortalState::kPortalSuspected) {
     if (is_first_portal_notification_) {
       is_first_portal_notification_ = false;
       error_screen_->FixCaptivePortal();
@@ -334,9 +330,11 @@ void UpdateRequiredScreen::UpdateInfoChanged(
     const VersionUpdater::UpdateInfo& update_info) {
   switch (update_info.status.current_operation()) {
     case update_engine::Operation::CHECKING_FOR_UPDATE:
+    case update_engine::Operation::CLEANUP_PREVIOUS_UPDATE:
     case update_engine::Operation::ATTEMPTING_ROLLBACK:
     case update_engine::Operation::DISABLED:
     case update_engine::Operation::IDLE:
+    case update_engine::Operation::UPDATED_BUT_DEFERRED:
       break;
     case update_engine::Operation::UPDATE_AVAILABLE:
     case update_engine::Operation::DOWNLOADING:
@@ -417,7 +415,7 @@ void UpdateRequiredScreen::OnConnectRequested() {
 }
 
 void UpdateRequiredScreen::OnErrorScreenHidden() {
-  error_screen_->SetParentScreen(OobeScreen::SCREEN_UNKNOWN);
+  error_screen_->SetParentScreen(ash::OOBE_SCREEN_UNKNOWN);
   // Return to the default state.
   error_screen_->SetIsPersistentError(false /* is_persistent */);
   Show(context());
@@ -429,7 +427,10 @@ void UpdateRequiredScreen::DeleteUsersData() {
   // change underneath.
   const user_manager::UserList user_list = user_manager->GetUsers();
   for (user_manager::User* user : user_list) {
-    user_manager->RemoveUser(user->GetAccountId(), this /* delegate */);
+    user_manager->RemoveUser(user->GetAccountId(),
+                             user_manager::UserRemovalReason::
+                                 LOCAL_USER_INITIATED_ON_REQUIRED_UPDATE,
+                             /*delegate=*/this);
   }
 }
 
@@ -441,4 +442,4 @@ void UpdateRequiredScreen::OnUserRemoved(const AccountId& account_id) {
 
 void UpdateRequiredScreen::OnBeforeUserRemoved(const AccountId& account_id) {}
 
-}  // namespace chromeos
+}  // namespace ash

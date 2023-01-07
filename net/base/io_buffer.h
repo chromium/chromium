@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/memory/free_deleter.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/pickle.h"
 #include "net/base/net_export.h"
@@ -93,7 +94,7 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
 
   virtual ~IOBuffer();
 
-  char* data_;
+  raw_ptr<char> data_;
 };
 
 // This version stores the size of the buffer so that the creator of the object
@@ -175,7 +176,7 @@ class NET_EXPORT DrainableIOBuffer : public IOBuffer {
 
   scoped_refptr<IOBuffer> base_;
   int size_;
-  int used_;
+  int used_ = 0;
 };
 
 // This version provides a resizable buffer and a changeable offset.
@@ -214,8 +215,8 @@ class NET_EXPORT GrowableIOBuffer : public IOBuffer {
   ~GrowableIOBuffer() override;
 
   std::unique_ptr<char, base::FreeDeleter> real_data_;
-  int capacity_;
-  int offset_;
+  int capacity_ = 0;
+  int offset_ = 0;
 };
 
 // This versions allows a pickle to be used as the storage for a write-style

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/values.h"
 
 namespace arc {
 
-// |ArcTracingEvent| is a wrapper over |base::DictionaryValue| that is used to
+// |ArcTracingEvent| is a wrapper over |base::Value::Dict| that is used to
 // represent trace event in Chrome. |ArcTracingEvent| is hierarchical and
 // can contain children. Setter methods are used to convert system trace events
 // that are not dictionary based to the common Chrome format.
@@ -29,7 +28,11 @@ class ArcTracingEvent {
     kOverlap,  // event overlaps with compared event.
   };
 
-  explicit ArcTracingEvent(base::Value dictionary);
+  explicit ArcTracingEvent(base::Value::Dict dictionary);
+
+  ArcTracingEvent(const ArcTracingEvent&) = delete;
+  ArcTracingEvent& operator=(const ArcTracingEvent&) = delete;
+
   ~ArcTracingEvent();
 
   ArcTracingEvent(ArcTracingEvent&&);
@@ -79,11 +82,11 @@ class ArcTracingEvent {
   // Gets timestamp of the end of the event.
   uint64_t GetEndTimestamp() const;
 
-  // Returns base representation of the event as a |base::DictionaryValue|.
-  const base::DictionaryValue* GetDictionary() const;
+  // Returns base representation of the event as a |base::Value::Dict|.
+  const base::Value::Dict* GetDictionary() const;
 
-  // Returns set of arguments as a |base::DictionaryValue|.
-  const base::DictionaryValue* GetArgs() const;
+  // Returns set of arguments as a |base::Value::Dict|.
+  const base::Value::Dict* GetArgs() const;
 
   // Gets argument as string. Return |default_value| if not found.
   std::string GetArgAsString(const std::string& name,
@@ -120,9 +123,7 @@ class ArcTracingEvent {
 
  private:
   std::vector<std::unique_ptr<ArcTracingEvent>> children_;
-  base::Value dictionary_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTracingEvent);
+  base::Value::Dict dictionary_;
 };
 
 }  // namespace arc

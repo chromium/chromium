@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,25 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/threading/thread.h"
+#include "components/viz/test/test_gpu_service_holder.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 
+namespace ash {
+
+// A significant number of ash_unittests are overriding the feature list after
+// the GPU thread is started so allowlist the whole test binary.
+// TODO(crbug.com/1241161): Fix racy tests and remove this.
+class AshScopedAllowRacyFeatureListOverrides {
+ private:
+  viz::TestGpuServiceHolder::ScopedAllowRacyFeatureListOverrides
+      gpu_thread_allow_racy_overrides_;
+};
+
+}  // namespace ash
+
 int main(int argc, char** argv) {
+  ash::AshScopedAllowRacyFeatureListOverrides gpu_thread_allow_racy_overrides;
   ash::AshTestSuite test_suite(argc, argv);
 
   mojo::core::Init();

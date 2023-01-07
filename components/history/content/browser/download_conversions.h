@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define COMPONENTS_HISTORY_CONTENT_BROWSER_DOWNLOAD_CONVERSIONS_H_
 
 #include <stdint.h>
-
-#include <string>
 
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"

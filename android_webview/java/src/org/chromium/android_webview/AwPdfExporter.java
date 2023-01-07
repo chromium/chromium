@@ -1,10 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.android_webview;
 
-import android.annotation.SuppressLint;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import android.print.PrintAttributes;
@@ -19,7 +18,6 @@ import org.chromium.base.annotations.NativeMethods;
  * Export the android webview as a PDF.
  * @TODO(sgurun) explain the ownership of this class and its native counterpart
  */
-@SuppressLint("NewApi")  // Printing requires API level 19.
 @JNINamespace("android_webview")
 public class AwPdfExporter {
 

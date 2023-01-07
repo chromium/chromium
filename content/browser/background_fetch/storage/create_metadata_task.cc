@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,10 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/background_fetch_data_manager_observer.h"
 #include "content/browser/background_fetch/storage/database_helpers.h"
@@ -23,6 +25,7 @@
 #include "content/common/fetch/fetch_api_request_proto.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
@@ -31,32 +34,35 @@ namespace background_fetch {
 namespace {
 
 // TODO(crbug.com/889401): Consider making this configurable by finch.
-constexpr size_t kRegistrationLimitPerOrigin = 5u;
+constexpr size_t kRegistrationLimitPerStorageKey = 5u;
 
-// Finds the number of active registrations associated with the provided origin,
-// and compares it with the limit to determine whether this registration can go
-// through.
+// Finds the number of active registrations associated with the provided storage
+// key, and compares it with the limit to determine whether this registration
+// can go through.
 class CanCreateRegistrationTask : public DatabaseTask {
  public:
   using CanCreateRegistrationCallback =
       base::OnceCallback<void(blink::mojom::BackgroundFetchError, bool)>;
 
   CanCreateRegistrationTask(DatabaseTaskHost* host,
-                            const url::Origin& origin,
+                            const blink::StorageKey& storage_key,
                             CanCreateRegistrationCallback callback)
-      : DatabaseTask(host), origin_(origin), callback_(std::move(callback)) {}
+      : DatabaseTask(host),
+        storage_key_(storage_key),
+        callback_(std::move(callback)) {}
 
   ~CanCreateRegistrationTask() override = default;
 
   void Start() override {
-    service_worker_context()->GetRegistrationsForOrigin(
-        origin_,
-        base::BindOnce(&CanCreateRegistrationTask::DidGetRegistrationsForOrigin,
-                       weak_factory_.GetWeakPtr()));
+    service_worker_context()->GetRegistrationsForStorageKey(
+        storage_key_,
+        base::BindOnce(
+            &CanCreateRegistrationTask::DidGetRegistrationsForStorageKey,
+            weak_factory_.GetWeakPtr()));
   }
 
  private:
-  void DidGetRegistrationsForOrigin(
+  void DidGetRegistrationsForStorageKey(
       blink::ServiceWorkerStatusCode status,
       const std::vector<scoped_refptr<ServiceWorkerRegistration>>&
           registrations) {
@@ -108,11 +114,11 @@ class CanCreateRegistrationTask : public DatabaseTask {
 
   void FinishWithError(blink::mojom::BackgroundFetchError error) override {
     std::move(callback_).Run(
-        error, num_active_registrations_ < kRegistrationLimitPerOrigin);
+        error, num_active_registrations_ < kRegistrationLimitPerStorageKey);
     Finished();  // Destroys |this|.
   }
 
-  url::Origin origin_;
+  blink::StorageKey storage_key_;
   CanCreateRegistrationCallback callback_;
 
   // The number of existing registrations found for |origin_|.
@@ -131,6 +137,7 @@ CreateMetadataTask::CreateMetadataTask(
     blink::mojom::BackgroundFetchOptionsPtr options,
     const SkBitmap& icon,
     bool start_paused,
+    const net::IsolationInfo& isolation_info,
     CreateMetadataCallback callback)
     : DatabaseTask(host),
       registration_id_(registration_id),
@@ -138,6 +145,7 @@ CreateMetadataTask::CreateMetadataTask(
       options_(std::move(options)),
       icon_(icon),
       start_paused_(start_paused),
+      isolation_info_(isolation_info),
       callback_(std::move(callback)) {}
 
 CreateMetadataTask::~CreateMetadataTask() = default;
@@ -145,7 +153,7 @@ CreateMetadataTask::~CreateMetadataTask() = default;
 void CreateMetadataTask::Start() {
   // Check if the registration can be created.
   AddSubTask(std::make_unique<CanCreateRegistrationTask>(
-      this, registration_id_.origin(),
+      this, registration_id_.storage_key(),
       base::BindOnce(&CreateMetadataTask::DidGetCanCreateRegistration,
                      weak_factory_.GetWeakPtr())));
 }
@@ -168,7 +176,7 @@ void CreateMetadataTask::DidGetCanCreateRegistration(
 
   // Check if there is enough quota to download the data first.
   if (options_->download_total > 0) {
-    IsQuotaAvailable(registration_id_.origin(), options_->download_total,
+    IsQuotaAvailable(registration_id_.storage_key(), options_->download_total,
                      base::BindOnce(&CreateMetadataTask::DidGetIsQuotaAvailable,
                                     weak_factory_.GetWeakPtr()));
   } else {
@@ -276,10 +284,15 @@ void CreateMetadataTask::InitializeMetadataProto() {
   }
 
   // Set other metadata fields.
-  metadata_proto_->set_origin(registration_id_.origin().Serialize());
+  //
+  // TODO(https://crbug.com/1199077): Store the full serialization of the
+  // storage key inside `metadata_proto_`.
+  metadata_proto_->set_origin(
+      registration_id_.storage_key().origin().Serialize());
   metadata_proto_->set_creation_microseconds_since_unix_epoch(
       (base::Time::Now() - base::Time::UnixEpoch()).InMicroseconds());
   metadata_proto_->set_num_fetches(requests_.size());
+  metadata_proto_->set_isolation_info(isolation_info_.Serialize());
 }
 
 void CreateMetadataTask::DidSerializeIcon(std::string serialized_icon) {
@@ -343,7 +356,7 @@ void CreateMetadataTask::StoreMetadata() {
 
   service_worker_context()->StoreRegistrationUserData(
       registration_id_.service_worker_registration_id(),
-      registration_id_.origin(), entries,
+      registration_id_.storage_key(), entries,
       base::BindOnce(&CreateMetadataTask::DidStoreMetadata,
                      weak_factory_.GetWeakPtr()));
 }
@@ -441,7 +454,7 @@ void CreateMetadataTask::FinishWithError(
     for (auto& observer : data_manager()->observers()) {
       observer.OnRegistrationCreated(registration_id_, *registration_data,
                                      options_.Clone(), icon_, requests_.size(),
-                                     start_paused_);
+                                     start_paused_, std::move(isolation_info_));
     }
   }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #endif
 
 namespace system_logs {
@@ -33,9 +33,13 @@ class StubUploadList : public UploadList {
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
+class TestDebugDaemonClient : public ash::FakeDebugDaemonClient {
  public:
   TestDebugDaemonClient() = default;
+
+  TestDebugDaemonClient(const TestDebugDaemonClient&) = delete;
+  TestDebugDaemonClient& operator=(const TestDebugDaemonClient&) = delete;
+
   ~TestDebugDaemonClient() override = default;
 
   void UploadCrashes(UploadCrashesCallback callback) override {
@@ -47,29 +51,24 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
 
  private:
   int upload_crashes_called_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDebugDaemonClient);
 };
-
-TestDebugDaemonClient* fake_debug_client() {
-  return static_cast<TestDebugDaemonClient*>(
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient());
-}
 
 TEST(CrashIdsSourceTest, CallsCrashSender) {
   content::BrowserTaskEnvironment task_environment;
 
-  auto setter = chromeos::DBusThreadManager::GetSetterForTesting();
-  setter->SetDebugDaemonClient(std::make_unique<TestDebugDaemonClient>());
+  TestDebugDaemonClient test_debug_client;
+  ash::DebugDaemonClient::SetInstanceForTest(&test_debug_client);
 
   CrashIdsSource source;
   source.SetUploadListForTesting(new StubUploadList());
 
-  EXPECT_EQ(0, fake_debug_client()->upload_crashes_called());
+  EXPECT_EQ(0, test_debug_client.upload_crashes_called());
 
   source.Fetch(base::BindOnce([](std::unique_ptr<SystemLogsResponse>) {}));
 
-  EXPECT_EQ(1, fake_debug_client()->upload_crashes_called());
+  EXPECT_EQ(1, test_debug_client.upload_crashes_called());
+
+  ash::DebugDaemonClient::SetInstanceForTest(nullptr);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

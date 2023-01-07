@@ -1,0 +1,119 @@
+caption: Override First-Party Sets.
+default: {}
+desc: |-
+  This policy provides a way to override the list of sets the browser uses for First-Party Sets features.
+
+        Each set in the browser's list of First-Party Sets must meet the requirements of a First-Party Set.
+        A First-Party Set must contain an owner site and one or more member sites.
+        A set can also contain a list of service sites that it owns, as well as a map from a site to all of its ccTLD variants.
+        See https: //github.com/WICG/first-party-sets for more information on First-Party Sets are used by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>.
+
+        All sites in a First-Party Set must be a registrable domain served over HTTPS. Each site in a First-Party Set must also be unique,
+        meaning a site cannot be listed more than once in a First-Party Set.
+
+        When this policy is given an empty dictionary, the browser uses the public list of First-Party Sets.
+
+        For all sites in a First-Party Set from the <ph name="REPLACEMENTS">replacements</ph> list, if a site is also present
+        on a First-Party Set in the browser's list, then that site will be removed from the browser's First-Party Set.
+        After this, the policy's First-Party Set will be added to the browser's list of First-Party Sets.
+
+        For all sites in a First-Party Set from the <ph name="ADDITIONS">additions</ph> list, if a site is also present
+        on a First-Party Set in the browser's list, then the browser's First-Party Set will be updated so that the
+        new First-Party Set can be added to the browser's list. After the browser's list has been updated,
+        the policy's First-Party Set will be added to the browser's list of First-Party Sets.
+
+        The browser's list of First-Party Sets requires that for all sites in its list, no site is in
+        more than one set. This is also required for both the <ph name="REPLACEMENTS">replacements</ph> list
+        and the <ph name="ADDITIONS">additions</ph> list. Similarly, a site cannot be in both the
+        <ph name="REPLACEMENTS">replacements</ph> list and the <ph name="ADDITIONS">additions</ph> list.
+
+        Wildcards (*) are not supported as a policy value, nor within any First-Party Set in these lists.
+
+        All sets provided by to policy must be valid First-Party Sets, if they aren't then an
+        appropriate error will be outputted.
+
+        This policy is available only on Windows instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain or Windows 10 Pro or Enterprise instances that are enrolled for device management, and macOS instances that are managed via MDM or joined to a domain via MCX.
+example_value:
+  additions:
+  - associatedSites:
+    - https://associate2.test
+    ccTLDs:
+      https://associate2.test:
+      - https://associate2.com
+    primary: https://primary2.test
+    serviceSites:
+    - https://associate2-content.test
+  replacements:
+  - associatedSites:
+    - https://associate1.test
+    ccTLDs:
+      https://associate1.test:
+      - https://associate1.co.uk
+    primary: https://primary1.test
+    serviceSites:
+    - https://associate1-content.test
+features:
+  dynamic_refresh: false
+  per_profile: true
+future_on:
+- chrome.*
+- chrome_os
+- android
+- webview_android
+- fuchsia
+owners:
+- kaklilu@chromium.com
+- chrome-first-party-sets@chromium.org
+schema:
+  properties:
+    additions:
+      items:
+        properties:
+          associatedSites:
+            items:
+              type: string
+            type: array
+          ccTLDs:
+            additionalProperties:
+              items:
+                type: string
+              type: array
+            type: object
+          primary:
+            type: string
+          serviceSites:
+            items:
+              type: string
+            type: array
+        required:
+        - primary
+        - associatedSites
+        type: object
+      type: array
+    replacements:
+      items:
+        properties:
+          associatedSites:
+            items:
+              type: string
+            type: array
+          ccTLDs:
+            additionalProperties:
+              items:
+                type: string
+              type: array
+            type: object
+          primary:
+            type: string
+          serviceSites:
+            items:
+              type: string
+            type: array
+        required:
+        - primary
+        - associatedSites
+        type: object
+      type: array
+  type: object
+tags: []
+type: dict

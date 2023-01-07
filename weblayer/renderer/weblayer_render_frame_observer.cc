@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,7 @@ static const char kTranslateCaptureText[] = "Translate.CaptureText";
 
 // For a page that auto-refreshes, we still show the bubble, if
 // the refresh delay is less than this value (in seconds).
-static constexpr base::TimeDelta kLocationChangeInterval =
-    base::TimeDelta::FromSeconds(10);
+static constexpr base::TimeDelta kLocationChangeInterval = base::Seconds(10);
 }  // namespace
 
 WebLayerRenderFrameObserver::WebLayerRenderFrameObserver(
@@ -51,8 +50,7 @@ WebLayerRenderFrameObserver::WebLayerRenderFrameObserver(
   // TODO(crbug.com/1073370): Handle case where subframe translation is enabled.
   DCHECK(!translate::IsSubFrameTranslationEnabled());
   translate_agent_ =
-      new translate::TranslateAgent(render_frame, ISOLATED_WORLD_ID_TRANSLATE,
-                                    /*extension_scheme=*/"");
+      new translate::TranslateAgent(render_frame, ISOLATED_WORLD_ID_TRANSLATE);
 }
 
 WebLayerRenderFrameObserver::~WebLayerRenderFrameObserver() = default;

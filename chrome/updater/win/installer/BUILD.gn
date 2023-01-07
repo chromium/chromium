@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,15 +20,17 @@ source_set("lib") {
     "installer_resource.h",
     "pe_resource.cc",
     "pe_resource.h",
-    "regkey.cc",
-    "regkey.h",
     "string.cc",
     "string.h",
   ]
 
   deps = [
     "//base",
-    "//chrome/installer/util:with_no_strings",
+    "//chrome/installer/util:constants",
+    "//chrome/installer/util:metainstaller_utils",
+    "//chrome/updater:base",
+    "//chrome/updater:branding_header",
+    "//chrome/updater:constants_prod",
     "//chrome/updater/win:tag_extractor",
   ]
 }
@@ -47,17 +49,22 @@ group("updater_runtime_deps") {
   data_deps = [ "//chrome/updater/win:updater" ]
 }
 
+updater_test_runtime_deps = "$target_gen_dir/updater_test.runtime_deps"
+group("updater_test_runtime_deps") {
+  write_runtime_deps = updater_test_runtime_deps
+  data_deps = [ "//chrome/updater/win:updater_test" ]
+}
+
 template("generate_installer") {
   output_dir = invoker.out_dir
   packed_files_rc_file = "$target_gen_dir/$target_name/packed_files.rc"
   archive_name = target_name + "_archive"
   staging_dir = "$target_gen_dir/$target_name"
 
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action(archive_name) {
+  action(archive_name) {
     script = "create_installer_archive.py"
 
-    release_file = "updater.release"
+    release_file = invoker.release_file
 
     inputs = [ release_file ]
 
@@ -78,7 +85,7 @@ template("generate_installer") {
       "--output_dir",
       rebase_path(output_dir, root_build_dir),
       "--setup_runtime_deps",
-      rebase_path(updater_runtime_deps, root_build_dir),
+      rebase_path(invoker.runtime_deps, root_build_dir),
       "--output_name=updater",
       "--timestamp",
       build_timestamp,
@@ -87,11 +94,7 @@ template("generate_installer") {
       #"--verbose",
     ]
 
-    deps = [
-      ":updater_runtime_deps",
-      "//chrome/updater/win:updater",
-      "//third_party/icu:icudata",
-    ]
+    deps = invoker.archive_deps
 
     if (is_component_build) {
       args += [ "--component_build=1" ]
@@ -106,7 +109,6 @@ template("generate_installer") {
       packed_files_rc_file,
     ]
 
-    configs -= [ "//build/config/compiler:cet_shadow_stack" ]
     configs += [ "//build/config/win:windowed" ]
 
     libs = [ "setupapi.lib" ]
@@ -116,7 +118,7 @@ template("generate_installer") {
       ":lib",
       ":version",
       "//build/win:default_exe_manifest",
-      "//chrome/installer/util:with_no_strings",
+      "//chrome/updater:base",
     ]
   }
 }
@@ -124,6 +126,23 @@ template("generate_installer") {
 generate_installer("installer") {
   out_dir = root_out_dir
   output_name = "UpdaterSetup"
+  archive_deps = [
+    ":updater_runtime_deps",
+    "//chrome/updater/win:updater",
+  ]
+  release_file = "updater.release"
+  runtime_deps = updater_runtime_deps
+}
+
+generate_installer("installer_test") {
+  out_dir = root_out_dir + "/update_test_contents"
+  output_name = "UpdaterSetup_test"
+  archive_deps = [
+    ":updater_test_runtime_deps",
+    "//chrome/updater/win:updater_test",
+  ]
+  release_file = "updater_test.release"
+  runtime_deps = updater_test_runtime_deps
 }
 
 test("installer_unittest") {
@@ -133,6 +152,7 @@ test("installer_unittest") {
 
   sources = [
     "configuration_unittest.cc",
+    "installer_unittest.cc",
     "run_all_unittests.cc",
     "string_unittest.cc",
   ]
@@ -141,7 +161,7 @@ test("installer_unittest") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//chrome/installer/util:with_no_strings",
+    "//chrome/updater:constants_header",
     "//testing/gtest",
   ]
 }

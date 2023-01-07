@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,7 +100,7 @@ void MediaSessionAndroid::MediaSessionInfoChanged(
 }
 
 void MediaSessionAndroid::MediaSessionMetadataChanged(
-    const base::Optional<media_session::MediaMetadata>& metadata) {
+    const absl::optional<media_session::MediaMetadata>& metadata) {
   ScopedJavaLocalRef<jobject> j_local_session = GetJavaObject();
   if (j_local_session.is_null())
     return;
@@ -157,7 +157,7 @@ void MediaSessionAndroid::MediaSessionImagesChanged(
 }
 
 void MediaSessionAndroid::MediaSessionPositionChanged(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   ScopedJavaLocalRef<jobject> j_local_session = GetJavaObject();
   if (j_local_session.is_null())
     return;
@@ -201,7 +201,7 @@ void MediaSessionAndroid::Seek(
   DCHECK(media_session_);
   DCHECK_NE(millis, 0)
       << "Attempted to seek by a missing number of milliseconds";
-  media_session_->Seek(base::TimeDelta::FromMilliseconds(millis));
+  media_session_->Seek(base::Milliseconds(millis));
 }
 
 void MediaSessionAndroid::SeekTo(
@@ -210,7 +210,7 @@ void MediaSessionAndroid::SeekTo(
     const jlong millis) {
   DCHECK(media_session_);
   DCHECK_GE(millis, 0) << "Attempted to seek to a negative position";
-  media_session_->SeekTo(base::TimeDelta::FromMilliseconds(millis));
+  media_session_->SeekTo(base::Milliseconds(millis));
 }
 
 void MediaSessionAndroid::DidReceiveAction(JNIEnv* env,

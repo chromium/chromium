@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,27 +8,51 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
-#include "base/sequence_checker.h"
+#include "base/process/process_metrics.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/child_process_launcher_helper.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_termination_info.h"
 #include "content/public/common/result_codes.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_types.h"
+#endif
+
+#if BUILDFLAG(IS_POSIX)
+#include "base/files/scoped_file.h"
 #endif
 
 namespace base {
 class CommandLine;
+#if BUILDFLAG(IS_ANDROID)
+namespace android {
+enum class ChildBindingState;
 }
+#endif
+}  // namespace base
+
+namespace perfetto {
+namespace protos {
+namespace pbzero {
+class ChildProcessLauncherPriority;
+}
+}  // namespace protos
+}  // namespace perfetto
 
 namespace content {
 
@@ -47,7 +71,7 @@ enum LaunchResultCode {
   LAUNCH_RESULT_CODE_LAST_CODE
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 static_assert(static_cast<int>(LAUNCH_RESULT_START) >
                   static_cast<int>(sandbox::SBOX_ERROR_LAST),
               "LaunchResultCode must not overlap with sandbox::ResultCode");
@@ -60,7 +84,7 @@ struct ChildProcessLauncherPriority {
                                unsigned int frame_depth,
                                bool intersects_viewport,
                                bool boost_for_pending_views
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
                                ,
                                ChildProcessImportance importance
 #endif
@@ -71,7 +95,7 @@ struct ChildProcessLauncherPriority {
         frame_depth(frame_depth),
         intersects_viewport(intersects_viewport),
         boost_for_pending_views(boost_for_pending_views)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
         ,
         importance(importance)
 #endif
@@ -85,6 +109,9 @@ struct ChildProcessLauncherPriority {
   bool operator!=(const ChildProcessLauncherPriority& other) const {
     return !(*this == other);
   }
+
+  using TraceProto = perfetto::protos::pbzero::ChildProcessLauncherPriority;
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const;
 
   // Prefer |is_background()| to inspecting these fields individually (to ensure
   // all logic uses the same notion of "backgrounded").
@@ -122,8 +149,31 @@ struct ChildProcessLauncherPriority {
   // during navigation).
   bool boost_for_pending_views;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance importance;
+#endif
+};
+
+// Data to pass as file descriptors.
+struct ChildProcessLauncherFileData {
+  ChildProcessLauncherFileData();
+  ChildProcessLauncherFileData(const ChildProcessLauncherFileData& others) =
+      delete;
+  ChildProcessLauncherFileData& operator=(const ChildProcessLauncherFileData&) =
+      delete;
+  ~ChildProcessLauncherFileData();
+
+#if BUILDFLAG(IS_POSIX)
+  // Files opened by the browser and passed as corresponding file descriptors
+  // in the child process.
+  // Currently only supported on Linux, ChromeOS and Android platforms.
+  std::map<std::string, base::FilePath> files_to_preload;
+
+  // Map of file descriptors to pass. This is used instead of
+  // `files_to_preload` when the data is already contained as a file
+  // descriptor.
+  // Currently only supported on POSIX platforms.
+  std::map<int, base::ScopedFD> additional_remapped_fds;
 #endif
 };
 
@@ -140,7 +190,7 @@ class CONTENT_EXPORT ChildProcessLauncher {
 
     virtual void OnProcessLaunchFailed(int error_code) {}
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Whether the process can use pre-warmed up connection.
     virtual bool CanUseWarmUpConnection();
 #endif
@@ -154,15 +204,19 @@ class CONTENT_EXPORT ChildProcessLauncher {
   // this object destructs, it will be terminated.
   // Takes ownership of cmd_line.
   //
-  // If |process_error_callback| is provided, it will be called if a Mojo error
+  // If `process_error_callback` is provided, it will be called if a Mojo error
   // is encountered when processing messages from the child process. This
   // callback must be safe to call from any thread.
   //
-  // |files_to_preload| is a map of key names to file paths. These files will be
+  // `file_data` consists of 2 members:
+  // files_to_preload: a map of key names to file paths. These files will be
   // opened by the browser process and corresponding file descriptors inherited
   // by the new child process, accessible using the corresponding key via some
   // platform-specific mechanism (such as base::FileDescriptorStore on POSIX).
-  // Currently only supported on POSIX platforms.
+  // Currently only supported on Linux, ChromeOS and Android platforms.
+  // additional_remapped_fds: is a map of file descriptors to pass. This is
+  // used instead of files_to_preload when the data is already contained as a
+  // file descriptor. Currently only supported on POSIX platforms.
   ChildProcessLauncher(
       std::unique_ptr<SandboxedProcessLauncherDelegate> delegate,
       std::unique_ptr<base::CommandLine> cmd_line,
@@ -170,8 +224,12 @@ class CONTENT_EXPORT ChildProcessLauncher {
       Client* client,
       mojo::OutgoingInvitation mojo_invitation,
       const mojo::ProcessErrorCallback& process_error_callback,
-      std::map<std::string, base::FilePath> files_to_preload,
+      std::unique_ptr<ChildProcessLauncherFileData> file_data,
       bool terminate_on_shutdown = true);
+
+  ChildProcessLauncher(const ChildProcessLauncher&) = delete;
+  ChildProcessLauncher& operator=(const ChildProcessLauncher&) = delete;
+
   ~ChildProcessLauncher();
 
   // True if the process is being launched and so the handle isn't available.
@@ -209,7 +267,10 @@ class CONTENT_EXPORT ChildProcessLauncher {
   // previous  client.
   Client* ReplaceClientForTest(Client* client);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  // Returns the highest binding state for the ChildProcessConnection.
+  base::android::ChildBindingState GetEffectiveChildBindingState();
+
   // Dumps the stack of the child process without crashing it.
   void DumpProcessStack();
 #endif
@@ -218,13 +279,17 @@ class CONTENT_EXPORT ChildProcessLauncher {
 
   // Notifies the client about the result of the operation.
   void Notify(internal::ChildProcessLauncherHelper::Process process,
+#if BUILDFLAG(IS_WIN)
+              DWORD last_error,
+#endif
               int error_code);
 
-  Client* client_;
+  raw_ptr<Client> client_;
 
   // The process associated with this ChildProcessLauncher. Set in Notify by
   // ChildProcessLauncherHelper once the process was started.
   internal::ChildProcessLauncherHelper::Process process_;
+  base::TimeTicks process_start_time_;
 
   ChildProcessTerminationInfo termination_info_;
   bool starting_;
@@ -233,13 +298,13 @@ class CONTENT_EXPORT ChildProcessLauncher {
   // shutdown. Default behavior is to terminate the child.
   const bool terminate_child_on_shutdown_;
 
+  // Indicates if the child process should be launched with elevated privileges.
+  // Can only be true on Windows.
+  bool should_launch_elevated_ = false;
+
   scoped_refptr<internal::ChildProcessLauncherHelper> helper_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
   base::WeakPtrFactory<ChildProcessLauncher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessLauncher);
 };
 
 }  // namespace content

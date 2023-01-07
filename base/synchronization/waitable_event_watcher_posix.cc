@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace base {
@@ -34,6 +35,9 @@ class Flag : public RefCountedThreadSafe<Flag> {
  public:
   Flag() { flag_ = false; }
 
+  Flag(const Flag&) = delete;
+  Flag& operator=(const Flag&) = delete;
+
   void Set() {
     AutoLock locked(lock_);
     flag_ = true;
@@ -50,8 +54,6 @@ class Flag : public RefCountedThreadSafe<Flag> {
 
   mutable Lock lock_;
   bool flag_;
-
-  DISALLOW_COPY_AND_ASSIGN(Flag);
 };
 
 // -----------------------------------------------------------------------------
@@ -107,7 +109,7 @@ void AsyncCallbackHelper(Flag* flag,
 }
 
 WaitableEventWatcher::WaitableEventWatcher() {
-  sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 WaitableEventWatcher::~WaitableEventWatcher() {
@@ -126,7 +128,7 @@ bool WaitableEventWatcher::StartWatching(
     WaitableEvent* event,
     EventCallback callback,
     scoped_refptr<SequencedTaskRunner> task_runner) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // A user may call StartWatching from within the callback function. In this
   // case, we won't know that we have finished watching, expect that the Flag
@@ -163,7 +165,7 @@ bool WaitableEventWatcher::StartWatching(
 }
 
 void WaitableEventWatcher::StopWatching() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!cancel_flag_.get())  // if not currently watching...
     return;
@@ -183,7 +185,7 @@ void WaitableEventWatcher::StopWatching() {
     // In this case, a task was enqueued on the MessageLoop and will run.
     // We set the flag in case the task hasn't yet run. The flag will stop the
     // delegate getting called. If the task has run then we have the last
-    // reference to the flag and it will be deleted immedately after.
+    // reference to the flag and it will be deleted immediately after.
     cancel_flag_->Set();
     cancel_flag_ = nullptr;
     return;

@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_BROWSER_PROCESS_TASK_PROVIDER_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_BROWSER_PROCESS_TASK_PROVIDER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/browser_process_task.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 
@@ -16,6 +15,9 @@ namespace task_manager {
 class BrowserProcessTaskProvider : public TaskProvider {
  public:
   BrowserProcessTaskProvider();
+  BrowserProcessTaskProvider(const BrowserProcessTaskProvider&) = delete;
+  BrowserProcessTaskProvider& operator=(const BrowserProcessTaskProvider&) =
+      delete;
   ~BrowserProcessTaskProvider() override;
 
   // task_manager::TaskProvider:
@@ -29,8 +31,6 @@ class BrowserProcessTaskProvider : public TaskProvider {
   // This is the task that represents the one and only main browser process. It
   // lives as long as the browser lives.
   BrowserProcessTask browser_process_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserProcessTaskProvider);
 };
 
 }  // namespace task_manager

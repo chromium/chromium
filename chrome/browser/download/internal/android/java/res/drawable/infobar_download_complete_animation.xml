@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    tools:targetApi="21"
+    android:drawable="@drawable/infobar_download_complete">
+
+    <target android:name="circle">
+        <aapt:attr name="android:animation">
+            <set android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="100"
+                    android:interpolator="@android:interpolator/linear"
+                    android:propertyName="fillAlpha"
+                    android:valueFrom="0"
+                    android:valueTo="1"/>
+                <objectAnimator
+                    android:duration="500"
+                    android:startOffset="300"
+                    android:interpolator="@android:interpolator/linear"
+                    android:propertyName="fillAlpha"
+                    android:valueFrom="1"
+                    android:valueTo="0"/>
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>

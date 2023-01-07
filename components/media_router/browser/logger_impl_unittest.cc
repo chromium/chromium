@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ class LoggerImplTest : public testing::Test {
 
 TEST_F(LoggerImplTest, RecordAndGetLogs) {
   const base::Time time1 = base::Time::Now();
-  const base::Time time2 = time1 + base::TimeDelta::FromSeconds(20);
+  const base::Time time2 = time1 + base::Seconds(20);
   const std::string expected_logs =
       R"([
     {

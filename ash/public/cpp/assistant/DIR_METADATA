@@ -1,3 +1,1 @@
-monorail {
-  component: "UI>Shell>Assistant"
-}
+mixins: "//chromeos/ash/components/assistant/COMMON_METADATA"

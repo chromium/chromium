@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2021 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+
+ <LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_components_list"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/components_summary_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textAppearance="?android:attr/textAppearanceLarge"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"/>
+
+    <Switch
+        android:id="@+id/on_demand_update"
+        android:text="On-Demand Update"
+        android:checked="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        tools:ignore="UseSwitchCompatOrMaterialXml,HardcodedText"/>
+
+    <!-- horizontal divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider"/>
+
+    <!-- child divider is transparent (hidden) -->
+    <ListView
+        android:id="@+id/components_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:childDivider="#00000000"/>
+
+ </LinearLayout>

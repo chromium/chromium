@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -23,22 +24,21 @@ MediaStreamDevicePolicy GetDevicePolicy(const Profile* profile,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // If the security origin policy matches a value in allowed urls list, allow
-  // it.  Otherwise, check the |policy_name| master switch for the default
-  // behavior.
+  // it.  Otherwise, check the |policy_name| switch for the default behavior.
 
   const PrefService* prefs = profile->GetPrefs();
 
-  const base::ListValue* list = prefs->GetList(allowed_urls_pref_name);
-  std::string value;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
-    if (list->GetString(i, &value)) {
+  const base::Value::List& list = prefs->GetList(allowed_urls_pref_name);
+  for (const base::Value& i : list) {
+    const std::string* value = i.GetIfString();
+    if (value) {
       ContentSettingsPattern pattern =
-          ContentSettingsPattern::FromString(value);
+          ContentSettingsPattern::FromString(*value);
       if (pattern == ContentSettingsPattern::Wildcard()) {
-        DLOG(WARNING) << "Ignoring wildcard URL pattern: " << value;
+        DLOG(WARNING) << "Ignoring wildcard URL pattern: " << *value;
         continue;
       }
-      DLOG_IF(ERROR, !pattern.IsValid()) << "Invalid URL pattern: " << value;
+      DLOG_IF(ERROR, !pattern.IsValid()) << "Invalid URL pattern: " << *value;
       if (pattern.IsValid() && pattern.Matches(security_origin))
         return ALWAYS_ALLOW;
     }

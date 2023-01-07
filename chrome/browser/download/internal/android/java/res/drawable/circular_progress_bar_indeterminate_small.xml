@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2018 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -14,13 +16,13 @@
             android:height="36dp"
             android:viewportWidth="36"
             android:viewportHeight="36"
-            android:tint="@color/circular_progress_outer_circle_progress_color_small">
+            android:tint="@macro/circular_progress_outer_circle_progress_color_small">
             <group android:name="container"
                 android:pivotX="18"
                 android:pivotY="18">
                 <path android:name="arc"
                     android:fillColor="@android:color/transparent"
-                    android:strokeColor="@color/circular_progress_outer_circle_progress_color_small"
+                    android:strokeColor="@macro/circular_progress_outer_circle_progress_color_small"
                     android:strokeLineCap="square"
                     android:strokeLineJoin="miter"
                     android:strokeWidth="2"

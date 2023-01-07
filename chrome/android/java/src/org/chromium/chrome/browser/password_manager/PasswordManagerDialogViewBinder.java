@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,9 +28,12 @@ class PasswordManagerDialogViewBinder {
         } else if (ILLUSTRATION_VISIBLE == propertyKey) {
             dialogView.updateIllustrationVisibility(model.get(ILLUSTRATION_VISIBLE));
             dialogView.updateHelpIcon(!model.get(ILLUSTRATION_VISIBLE));
-            // TODO(crbug.com/1092444): Depending on feature status, remove this or inline the
-            //  cropping into password_manager_dialog_with_help_button.xml.
-            dialogView.cropImageToText();
+            // TODO(crbug.com/1271552): Cropping was needed for previous image version.
+            // Depending on feature status, remove this or inline the cropping into
+            // password_manager_dialog_with_help_button.xml.
+            if (!PasswordManagerHelper.usesUnifiedPasswordManagerBranding()) {
+                dialogView.cropImageToText();
+            }
         } else if (TITLE == propertyKey) {
             dialogView.setTitle(model.get(TITLE));
         } else if (DETAILS == propertyKey) {

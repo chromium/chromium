@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,12 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
+import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.thatMatchesFirst;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,15 +37,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.device.DeviceConditions;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.prefs.PrefService;
@@ -54,14 +53,13 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  *  Unit tests for {@link ImageDescriptionsDialog}
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
+@RunWith(BaseJUnit4ClassRunner.class)
+public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 
@@ -95,9 +93,11 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
         Profile.setLastUsedProfileForTesting(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
 
-        mAppModalPresenter = new AppModalPresenter(getActivity());
-        mModalDialogManager =
-                new ModalDialogManager(mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mAppModalPresenter = new AppModalPresenter(getActivity());
+            mModalDialogManager = new ModalDialogManager(
+                    mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
+        });
 
         mManager = SharedPreferencesManager.getInstance();
         mController = ImageDescriptionsController.getInstance();
@@ -173,7 +173,8 @@ public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
     @SmallTest
     public void testHeaderAndButtonContent() {
         showDialog();
-        onView(thatMatchesFirst(withId(org.chromium.chrome.R.id.title)))
+        onView(allOf(isDescendantOfA(withId(org.chromium.chrome.R.id.title_container)),
+                       withId(org.chromium.chrome.R.id.title)))
                 .check(matches(withText("Get image descriptions?")));
         onView(withId(R.id.image_descriptions_dialog_content))
                 .check(matches(

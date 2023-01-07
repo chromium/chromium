@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_type_change_processor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -89,7 +89,7 @@ class ModelTypeSyncBridge {
   // storage writes, if not able to combine all change atomically, should save
   // the metadata after the data changes, so that this merge will be re-driven
   // by sync if is not completely saved during the current run.
-  virtual base::Optional<ModelError> MergeSyncData(
+  virtual absl::optional<ModelError> MergeSyncData(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_data) = 0;
 
@@ -98,7 +98,7 @@ class ModelTypeSyncBridge {
   // |metadata_change_list| in case when some of the data changes are filtered
   // out, or even be empty in case when a commit confirmation is processed and
   // only the metadata needs to persisted.
-  virtual base::Optional<ModelError> ApplySyncChanges(
+  virtual absl::optional<ModelError> ApplySyncChanges(
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_changes) = 0;
 
@@ -197,6 +197,17 @@ class ModelTypeSyncBridge {
   // a good idea to account for overhead that would also get accounted for the
   // SyncableService by other means.
   virtual size_t EstimateSyncOverheadMemoryUsage() const;
+
+  // Returns a copy of |entity_specifics| where fields that do not need to be
+  // preserved in EntityMetadata cache are cleared. This allows each data type
+  // to specify which fields are supported in the current version. This usually
+  // means all known proto fields (i.e. all except unknown proto fields synced
+  // from more recent versions of the browser) but not always, since there are
+  // cases where a proto field is defined, but its implementation is not
+  // complete yet or exists behind a feature flag.
+  // By default, empty EntitySpecifics is returned.
+  virtual sync_pb::EntitySpecifics TrimRemoteSpecificsForCaching(
+      const sync_pb::EntitySpecifics& entity_specifics) const;
 
   // Needs to be informed about any model change occurring via Delete() and
   // Put(). The changing metadata should be stored to persistent storage

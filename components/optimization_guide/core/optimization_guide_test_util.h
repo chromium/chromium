@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,30 @@
 
 #include <memory>
 
+#include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "url/gurl.h"
 
 namespace optimization_guide {
 
-// Returns a decision tree model with |threshold|, |weight|, and a single
-// uninitialized node.
-std::unique_ptr<proto::PredictionModel> GetMinimalDecisionTreePredictionModel(
-    double threshold,
-    double weight);
+enum class HintsFetcherRemoteResponseType {
+  kSuccessful = 0,
+  kUnsuccessful = 1,
+  kMalformed = 2,
+  kHung = 3,
+};
 
-// Returns a decision tree model with |threshold|, |weight|, and a single
-// leaf node with |leaf_value|.
-std::unique_ptr<proto::PredictionModel>
-GetSingleLeafDecisionTreePredictionModel(double threshold,
-                                         double weight,
-                                         double leaf_value);
+// File paths that can be used in testing, handling platform differences, namely
+// C:\ in Windows.
+extern const char kTestAbsoluteFilePath[];
+extern const char kTestRelativeFilePath[];
+
+// Creates the hints config with |optimization_type| to |hints_url| that returns
+// the |metadata|. This config string can be passed to the |kHintsProtoOverride|
+// commandline switch.
+std::string CreateHintsConfig(const GURL& hints_url,
+                              proto::OptimizationType optimization_type,
+                              proto::Any* metadata);
 
 }  // namespace optimization_guide
 

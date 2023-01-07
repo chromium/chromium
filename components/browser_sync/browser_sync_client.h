@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,10 @@
 #define COMPONENTS_BROWSER_SYNC_BROWSER_SYNC_CLIENT_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sync/driver/sync_client.h"
 #include "components/sync/model/model_type_controller_delegate.h"
-
-class BookmarkUndoService;
-
-namespace bookmarks {
-class BookmarkModel;
-}  // namespace bookmarks
 
 namespace favicon {
 class FaviconService;
@@ -52,6 +45,10 @@ namespace browser_sync {
 class BrowserSyncClient : public syncer::SyncClient {
  public:
   BrowserSyncClient() = default;
+
+  BrowserSyncClient(const BrowserSyncClient&) = delete;
+  BrowserSyncClient& operator=(const BrowserSyncClient&) = delete;
+
   ~BrowserSyncClient() override = default;
 
   virtual syncer::ModelTypeStoreService* GetModelTypeStoreService() = 0;
@@ -63,18 +60,12 @@ class BrowserSyncClient : public syncer::SyncClient {
 
   // DataType specific service getters.
   virtual syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() = 0;
-  virtual bookmarks::BookmarkModel* GetBookmarkModel() = 0;
   virtual favicon::FaviconService* GetFaviconService() = 0;
   virtual history::HistoryService* GetHistoryService() = 0;
   virtual sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() = 0;
   virtual sync_sessions::SessionSyncService* GetSessionSyncService() = 0;
   virtual send_tab_to_self::SendTabToSelfSyncService*
   GetSendTabToSelfSyncService() = 0;
-  virtual BookmarkUndoService* GetBookmarkUndoService() = 0;
-  virtual base::RepeatingClosure GetPasswordStateChangedCallback() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserSyncClient);
 };
 
 }  // namespace browser_sync

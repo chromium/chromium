@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 
 namespace base {
@@ -24,6 +23,11 @@ class MediaEngagementPreloadedList {
   static MediaEngagementPreloadedList* GetInstance();
 
   MediaEngagementPreloadedList();
+
+  MediaEngagementPreloadedList(const MediaEngagementPreloadedList&) = delete;
+  MediaEngagementPreloadedList& operator=(const MediaEngagementPreloadedList&) =
+      delete;
+
   ~MediaEngagementPreloadedList();
 
   // Load the contents from |path|.
@@ -119,8 +123,6 @@ class MediaEngagementPreloadedList {
   bool is_loaded_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementPreloadedList);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_PRELOADED_LIST_H_

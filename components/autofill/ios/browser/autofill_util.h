@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,19 @@
 
 #include <vector>
 
+#include "base/values.h"
+
 #import "ios/web/public/js_messaging/web_frame.h"
 
 class GURL;
 
-namespace base {
-class DictionaryValue;
-}
 namespace web {
 class WebState;
 }
 
 namespace autofill {
 
+class FieldRendererId;
 struct FormData;
 struct FormFieldData;
 
@@ -31,7 +31,7 @@ bool IsContextSecureForWebState(web::WebState* web_state);
 std::unique_ptr<base::Value> ParseJson(NSString* json_string);
 
 // Processes the JSON form data extracted from the page into the format expected
-// by AutofillManager and fills it in |forms_data|.
+// by BrowserAutofillManager and fills it in |forms_data|.
 // |forms_data| cannot be nil.
 // |filtered| and |form_name| limit the field that will be returned in
 // |forms_data|.
@@ -58,7 +58,7 @@ bool ExtractFormData(const base::Value& form,
 // Extracts a single form field from the JSON dictionary into a FormFieldData
 // object.
 // Returns false if the field could not be extracted.
-bool ExtractFormFieldData(const base::DictionaryValue& field,
+bool ExtractFormFieldData(const base::Value::Dict& field,
                           FormFieldData* field_data);
 
 typedef base::OnceCallback<void(const base::Value*)> JavaScriptResultCallback;
@@ -66,9 +66,12 @@ typedef base::OnceCallback<void(const base::Value*)> JavaScriptResultCallback;
 // Creates a callback for a string JS function return type.
 JavaScriptResultCallback CreateStringCallback(
     void (^completionHandler)(NSString*));
+JavaScriptResultCallback CreateStringCallback(
+    base::OnceCallback<void(NSString*)> callback);
 
 // Creates a callback for a bool JS function return type.
 JavaScriptResultCallback CreateBoolCallback(void (^completionHandler)(BOOL));
+JavaScriptResultCallback CreateBoolCallback(base::OnceCallback<void(BOOL)>);
 
 // Executes the JavaScript function with the given name and argument.
 // If |callback| is not null, it will be called when the result of the
@@ -79,7 +82,7 @@ void ExecuteJavaScriptFunction(const std::string& name,
                                JavaScriptResultCallback callback);
 
 // Extracts a vector of numeric renderer IDs from the JS returned json string.
-bool ExtractIDs(NSString* json_string, std::vector<uint32_t>* ids);
+bool ExtractIDs(NSString* json_string, std::vector<FieldRendererId>* ids);
 
 // Extracts a map of filled renderer IDs and values from the JS returned json
 // string.

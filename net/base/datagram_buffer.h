@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ class NET_EXPORT_PRIVATE DatagramBufferPool {
  public:
   // |max_buffer_size| must be >= largest |buf_len| provided to
   // ||New()|.
-  DatagramBufferPool(size_t max_buffer_size);
+  explicit DatagramBufferPool(size_t max_buffer_size);
   DatagramBufferPool(const DatagramBufferPool&) = delete;
   DatagramBufferPool& operator=(const DatagramBufferPool&) = delete;
   virtual ~DatagramBufferPool();
@@ -86,7 +86,7 @@ class NET_EXPORT_PRIVATE DatagramBuffer {
   size_t length() const;
 
  protected:
-  DatagramBuffer(size_t max_packet_size);
+  explicit DatagramBuffer(size_t max_packet_size);
 
  private:
   friend class DatagramBufferPool;
@@ -94,7 +94,7 @@ class NET_EXPORT_PRIVATE DatagramBuffer {
   void Set(const char* buffer, size_t buf_len);
 
   std::unique_ptr<char[]> data_;
-  size_t length_;
+  size_t length_ = 0;
 };
 
 }  // namespace net

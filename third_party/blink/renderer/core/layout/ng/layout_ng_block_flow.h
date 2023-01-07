@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,16 +11,24 @@
 
 namespace blink {
 
+extern template class CORE_EXTERN_TEMPLATE_EXPORT
+    LayoutNGBlockFlowMixin<LayoutBlockFlow>;
+extern template class CORE_EXTERN_TEMPLATE_EXPORT
+    LayoutNGMixin<LayoutBlockFlow>;
+
 // This overrides the default layout block algorithm to use Layout NG.
 class CORE_EXPORT LayoutNGBlockFlow
     : public LayoutNGBlockFlowMixin<LayoutBlockFlow> {
  public:
-  explicit LayoutNGBlockFlow(Element*);
+  explicit LayoutNGBlockFlow(ContainerNode*);
   ~LayoutNGBlockFlow() override;
 
   void UpdateBlockLayout(bool relayout_children) override;
 
-  const char* GetName() const override { return "LayoutNGBlockFlow"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGBlockFlow";
+  }
 
  protected:
   bool IsOfType(LayoutObjectType) const override;

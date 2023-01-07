@@ -1,23 +1,29 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {util} from '../../common/js/util.m.js';
-// #import {DisplayPanel} from './xf_display_panel.m.js';
-// #import './xf_button.m.js';
-// #import './xf_circular_progress.m.js';
+import './xf_button.js';
+import './xf_circular_progress.js';
+
+import {assert} from 'chrome://resources/js/assert.js';
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {str, util} from '../../common/js/util.js';
+
+import {DisplayPanel} from './xf_display_panel.js';
+
+/** @type {!HTMLTemplateElement} */
+const htmlTemplate = html`{__html_template__}`;
 
 /**
  * A panel to display the status or progress of a file operation.
  * @extends HTMLElement
  */
-/* #export */ class PanelItem extends HTMLElement {
+export class PanelItem extends HTMLElement {
   constructor() {
     super();
-    const host = document.createElement('template');
-    host.innerHTML = this.constructor.template_;
-    this.attachShadow({mode: 'open'}).appendChild(host.content.cloneNode(true));
+    const fragment = htmlTemplate.content.cloneNode(true);
+    this.attachShadow({mode: 'open'}).appendChild(fragment);
 
     /** @private {Element} */
     this.indicator_ = this.shadowRoot.querySelector('#indicator');
@@ -54,189 +60,9 @@
      * User specific data, used as a reference to persist any custom
      * data that the panel user may want to use in the signal callback.
      * e.g. holding the file name(s) used in a copy operation.
-     * @type {string|Object}
+     * @type {?Object}
      */
     this.userData = null;
-  }
-
-  /**
-   * Static getter for the custom element template.
-   * @private
-   * @return {string}
-   */
-  static get template_() {
-    return `<style>
-              .xf-panel-item {
-                  align-items: center;
-                  background-color: rgba(0,0,0,0);
-                  border-radius: 4px;
-                  display: flex;
-                  flex-direction: row;
-                  height: 68px;
-                  width: 400px;
-              }
-
-              .xf-button {
-                  height: 36px;
-                  width: 36px;
-              }
-
-              .xf-panel-text {
-                  flex: 1;
-                  font: 13px Roboto;
-                  line-height: 20px;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                  white-space: nowrap;
-              }
-
-              .xf-panel-label-text {
-                  outline: none;
-              }
-
-              :host([panel-type='3']) .xf-panel-label-text {
-                  display: -webkit-box;
-                  -webkit-line-clamp: 2;
-                  -webkit-box-orient: vertical;
-                  overflow: hidden;
-                  white-space: normal;
-              }
-
-              :host([panel-type='3']) .xf-linebreaker {
-                  display: none;
-              }
-
-              .xf-panel-label-text {
-                  color: var(--google-grey-900);
-                  text-overflow: ellipsis;
-                  overflow: hidden;
-                  white-space: nowrap;
-              }
-
-              .xf-panel-secondary-text {
-                  color: var(--google-grey-700);
-              }
-
-              :host(:not([detailed-panel])) .xf-padder-4 {
-                  width: 4px;
-              }
-
-              :host(:not([detailed-panel])) .xf-padder-16 {
-                  width: 16px;
-              }
-
-              :host(:not([detailed-panel])) .xf-grow-padder {
-                  width: 24px;
-              }
-
-              xf-circular-progress {
-                  padding: 16px;
-              }
-
-              :host(:not([detailed-summary])) iron-icon {
-                  height: 36px;
-                  padding: 16px;
-                  width: 36px;
-              }
-
-              // TODO(crbug.com/947388) Use '--goog' prefixed CSS varables.
-              .xf-success {
-                  color: rgb(52, 168, 83);
-              }
-
-              .xf-failure {
-                  color: rgb(234, 67, 53);
-              }
-
-              :host([panel-type='0']) .xf-panel-item {
-                  height: var(--progress-height);
-                  padding-top: var(--progress-padding-top);
-                  padding-bottom: var(--progress-padding-bottom);
-              }
-
-              :host([detailed-panel]:not([detailed-summary])) .xf-panel-text {
-                  margin-inline-end: 24px;
-                  margin-inline-start: 24px;
-              }
-
-              :host([detailed-panel][panel-type='2']) .xf-panel-secondary-text {
-                  color: var(--google-green-600);
-              }
-
-              :host([detailed-panel]:not([detailed-summary])) xf-button {
-                  margin-inline-end: 12px;
-              }
-
-              :host([detailed-panel]:not([detailed-summary])) #indicator {
-                  display: none;
-              }
-
-              :host([detailed-summary][data-category='collapsed'])
-              .xf-panel-item {
-                  width: 236px;
-              }
-
-              :host([detailed-summary]) .xf-panel-text {
-                  align-items: center;
-                  display: flex;
-                  height: 48px;
-                  max-width: unset;
-                  width: 100%;
-              }
-
-              :host([detailed-summary]) #indicator {
-                  margin-inline-start: 22px;
-                  padding: 0;
-              }
-
-              :host([detailed-summary][data-category='collapsed']) #indicator {
-                  margin-inline-end: 20px;
-                  min-width: 28px;
-              }
-
-              :host([detailed-summary][data-category='expanded']) #indicator {
-                  margin-inline-end: 18px;
-                  min-width: 32px;
-              }
-
-              :host([detailed-summary]) #primary-action {
-                  align-items: center;
-                  display: flex;
-                  height: 48px;
-                  justify-content: center;
-                  margin-inline-end: 10px;
-                  margin-inline-start: auto;
-                  width: 48px;
-              }
-
-              :host([detailed-panel]) .xf-padder-4 {
-                  display: none;
-              }
-
-              :host([detailed-panel]) .xf-padder-16 {
-                  display: none;
-              }
-
-              :host([detailed-panel]) .xf-grow-padder {
-                  display: none;
-              }
-            </style>
-            <div class='xf-panel-item'>
-                <xf-circular-progress id='indicator'>
-                </xf-circular-progress>
-                <div class='xf-panel-text' role='alert' tabindex='0'>
-                    <span class='xf-panel-label-text'>
-                    </span>
-                    <br class='xf-linebreaker'/>
-                </div>
-                <div class='xf-grow-padder'></div>
-                <xf-button id='secondary-action' tabindex='-1'>
-                </xf-button>
-                <div id='button-gap' class='xf-padder-4'></div>
-                <xf-button id='primary-action' tabindex='-1'>
-                </xf-button>
-                <div class='xf-padder-16'></div>
-            </div>`;
   }
 
   /**
@@ -285,6 +111,7 @@
     const textHost = assert(this.shadowRoot.querySelector('.xf-panel-text'));
     textHost.setAttribute('role', 'alert');
 
+    const hasExtraButton = !!this.dataset['extraButtonText'];
     // Setup the panel configuration for the panel type.
     // TOOD(crbug.com/947388) Simplify this switch breaking out common cases.
     /** @type {?Element} */
@@ -298,7 +125,7 @@
         secondaryButton.id = 'secondary-action';
         secondaryButton.onclick = assert(this.onclick);
         secondaryButton.dataset.category = 'cancel';
-        secondaryButton.setAttribute('aria-label', '$i18n{CANCEL_LABEL}');
+        secondaryButton.setAttribute('aria-label', str('CANCEL_LABEL'));
         buttonSpacer.insertAdjacentElement('afterend', secondaryButton);
         break;
       case this.panelTypeSummary:
@@ -306,8 +133,7 @@
         primaryButton = document.createElement('xf-button');
         primaryButton.id = 'primary-action';
         primaryButton.dataset.category = 'expand';
-        primaryButton.setAttribute(
-            'aria-label', '$i18n{FEEDBACK_EXPAND_LABEL}');
+        primaryButton.setAttribute('aria-label', str('FEEDBACK_EXPAND_LABEL'));
         // Remove the 'alert' role to stop screen readers repeatedly
         // reading each progress update.
         textHost.setAttribute('role', '');
@@ -316,22 +142,40 @@
       case this.panelTypeDone:
         this.setAttribute('indicator', 'status');
         this.setAttribute('status', 'success');
-        primaryButton = document.createElement('xf-button');
-        primaryButton.id = 'primary-action';
-        primaryButton.onclick = assert(this.onclick);
-        primaryButton.dataset.category = 'dismiss';
-        buttonSpacer.insertAdjacentElement('afterend', primaryButton);
+        secondaryButton = document.createElement('xf-button');
+        secondaryButton.id =
+            (hasExtraButton) ? 'secondary-action' : 'primary-action';
+        secondaryButton.onclick = assert(this.onclick);
+        secondaryButton.dataset.category = 'dismiss';
+        buttonSpacer.insertAdjacentElement('afterend', secondaryButton);
+        if (hasExtraButton) {
+          primaryButton = document.createElement('xf-button');
+          primaryButton.id = 'primary-action';
+          primaryButton.dataset['category'] = 'extra-button';
+          primaryButton.onclick = assert(this.onclick);
+          primaryButton.setExtraButtonText(this.dataset['extraButtonText']);
+          buttonSpacer.insertAdjacentElement('afterend', primaryButton);
+        }
         break;
       case this.panelTypeError:
         this.setAttribute('indicator', 'status');
         this.setAttribute('status', 'failure');
-        this.primaryText = '$i18n{FILE_ERROR_GENERIC}';
+        this.primaryText = str('FILE_ERROR_GENERIC');
         this.secondaryText = '';
         secondaryButton = document.createElement('xf-button');
-        secondaryButton.id = 'secondary-action';
+        secondaryButton.id =
+            (hasExtraButton) ? 'secondary-action' : 'primary-action';
         secondaryButton.onclick = assert(this.onclick);
         secondaryButton.dataset.category = 'dismiss';
         buttonSpacer.insertAdjacentElement('afterend', secondaryButton);
+        if (hasExtraButton) {
+          primaryButton = document.createElement('xf-button');
+          primaryButton.id = 'primary-action';
+          primaryButton.dataset.category = 'extra-button';
+          primaryButton.onclick = assert(this.onclick);
+          primaryButton.setExtraButtonText(this.dataset['extraButtonText']);
+          buttonSpacer.insertAdjacentElement('afterend', primaryButton);
+        }
         break;
       case this.panelTypeInfo:
         break;

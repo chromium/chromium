@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,19 @@
 
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/focus_cycler.h"
 #include "ash/login/security_token_request_controller.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_data_dispatcher.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen_client.h"
-#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/login_shelf_view.h"
+#include "ash/shelf/login_shelf_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -29,6 +31,7 @@
 #include "base/debug/alias.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/session_manager/session_manager_types.h"
 
@@ -66,11 +69,11 @@ void SetSystemTrayVisibility(SystemTrayVisibility visibility) {
 LoginScreenController::LoginScreenController(
     SystemTrayNotifier* system_tray_notifier)
     : system_tray_notifier_(system_tray_notifier) {
-  system_tray_notifier_->AddSystemTrayFocusObserver(this);
+  system_tray_notifier_->AddSystemTrayObserver(this);
 }
 
 LoginScreenController::~LoginScreenController() {
-  system_tray_notifier_->RemoveSystemTrayFocusObserver(this);
+  system_tray_notifier_->RemoveSystemTrayObserver(this);
 }
 
 // static
@@ -99,7 +102,7 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
       << static_cast<int>(authentication_stage_);
 
   if (!client_) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -114,16 +117,18 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
     case ForceFailAuth::kDelayed:
       // Set a dummy authentication stage so that |IsAuthenticating| returns
       // true.
+      LOG(WARNING) << "crbug.com/1339004 : Dummy auth state";
       authentication_stage_ = AuthenticationStage::kDoAuthenticate;
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&LoginScreenController::OnAuthenticateComplete,
                          weak_factory_.GetWeakPtr(), std::move(callback),
                          false),
-          base::TimeDelta::FromSeconds(1));
+          base::Seconds(1));
       return;
   }
 
+  LOG(WARNING) << "crbug.com/1339004 : started authentication";
   authentication_stage_ = AuthenticationStage::kDoAuthenticate;
 
   // Checking if the password is only formed of numbers with base::StringToInt
@@ -153,7 +158,7 @@ void LoginScreenController::AuthenticateUserWithChallengeResponse(
       << static_cast<int>(authentication_stage_);
 
   if (!client_) {
-    std::move(callback).Run(/*success=*/base::nullopt);
+    std::move(callback).Run(/*success=*/absl::nullopt);
     return;
   }
 
@@ -181,18 +186,21 @@ bool LoginScreenController::GetSecurityTokenPinRequestCanceled() const {
 }
 
 void LoginScreenController::HardlockPod(const AccountId& account_id) {
+  GetModel()->NotifyFocusPod(account_id);
   if (!client_)
     return;
   client_->HardlockPod(account_id);
 }
 
 void LoginScreenController::OnFocusPod(const AccountId& account_id) {
+  GetModel()->NotifyFocusPod(account_id);
   if (!client_)
     return;
   client_->OnFocusPod(account_id);
 }
 
 void LoginScreenController::OnNoPodFocused() {
+  GetModel()->NotifyFocusPod(EmptyAccountId());
   if (!client_)
     return;
   client_->OnNoPodFocused();
@@ -222,6 +230,12 @@ void LoginScreenController::LoginAsGuest() {
   client_->LoginAsGuest();
 }
 
+void LoginScreenController::ShowGuestTosScreen() {
+  if (!client_)
+    return;
+  client_->ShowGuestTosScreen();
+}
+
 void LoginScreenController::OnMaxIncorrectPasswordAttempted(
     const AccountId& account_id) {
   if (!client_)
@@ -239,6 +253,12 @@ void LoginScreenController::ShowGaiaSignin(const AccountId& prefilled_account) {
   if (!client_)
     return;
   client_->ShowGaiaSignin(prefilled_account);
+}
+
+void LoginScreenController::ShowOsInstallScreen() {
+  if (!client_)
+    return;
+  client_->ShowOsInstallScreen();
 }
 
 void LoginScreenController::OnRemoveUserWarningShown() {
@@ -279,10 +299,10 @@ LoginScreenModel* LoginScreenController::GetModel() {
 }
 
 void LoginScreenController::ShowKioskAppError(const std::string& message) {
-  ToastData toast_data(
-      "KioskAppError", base::UTF8ToUTF16(message), -1 /*duration_ms*/,
-      base::Optional<std::u16string>(std::u16string()) /*dismiss_text*/,
-      true /*visible_on_lock_screen*/);
+  ToastData toast_data("KioskAppError", ToastCatalogName::kKioskAppError,
+                       base::UTF8ToUTF16(message), ToastData::kInfiniteDuration,
+                       /*visible_on_lock_screen=*/true,
+                       /*has_dismiss_button=*/true);
   Shell::Get()->toast_manager()->Show(toast_data);
 }
 
@@ -291,7 +311,7 @@ void LoginScreenController::FocusLoginShelf(bool reverse) {
   // Tell the focus direction to the status area or the shelf so they can focus
   // the correct child view.
   if (Shell::GetPrimaryRootWindowController()->IsSystemTrayVisible() &&
-      (reverse || !shelf->shelf_widget()->login_shelf_view()->IsFocusable())) {
+      (reverse || !shelf->shelf_widget()->GetLoginShelfView()->IsFocusable())) {
     // Focus goes to system tray (status area) if one of the following is true:
     //  - system tray is visible and tab is in reverse order;
     //  - system tray is visible and there is no visible shelf buttons before.
@@ -299,10 +319,16 @@ void LoginScreenController::FocusLoginShelf(bool reverse) {
         ->status_area_widget_delegate()
         ->set_default_last_focusable_child(reverse);
     Shell::Get()->focus_cycler()->FocusWidget(shelf->GetStatusAreaWidget());
-  } else if (shelf->shelf_widget()->login_shelf_view()->IsFocusable()) {
-    // Otherwise focus goes to shelf buttons when there is any.
-    shelf->shelf_widget()->set_default_last_focusable_child(reverse);
-    Shell::Get()->focus_cycler()->FocusWidget(shelf->shelf_widget());
+  } else if (shelf->shelf_widget()->GetLoginShelfView()->IsFocusable()) {
+    // Otherwise focus goes to login shelf buttons when there is any.
+    if (features::IsUseLoginShelfWidgetEnabled()) {
+      LoginShelfWidget* login_shelf_widget = shelf->login_shelf_widget();
+      login_shelf_widget->SetDefaultLastFocusableChild(reverse);
+      Shell::Get()->focus_cycler()->FocusWidget(login_shelf_widget);
+    } else {
+      shelf->shelf_widget()->set_default_last_focusable_child(reverse);
+      Shell::Get()->focus_cycler()->FocusWidget(shelf->shelf_widget());
+    }
   } else {
     // No elements to focus on the shelf.
     NOTREACHED();
@@ -316,42 +342,42 @@ bool LoginScreenController::IsReadyForPassword() {
 void LoginScreenController::EnableAddUserButton(bool enable) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->SetAddUserButtonEnabled(enable);
 }
 
 void LoginScreenController::EnableShutdownButton(bool enable) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->SetShutdownButtonEnabled(enable);
 }
 
 void LoginScreenController::EnableShelfButtons(bool enable) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->SetButtonEnabled(enable);
 }
 
 void LoginScreenController::SetIsFirstSigninStep(bool is_first) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->SetIsFirstSigninStep(is_first);
 }
 
 void LoginScreenController::ShowParentAccessButton(bool show) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->ShowParentAccessButton(show);
 }
 
 void LoginScreenController::SetAllowLoginAsGuest(bool allow_guest) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->SetAllowLoginAsGuest(allow_guest);
 }
 
@@ -359,7 +385,7 @@ std::unique_ptr<ScopedGuestButtonBlocker>
 LoginScreenController::GetScopedGuestButtonBlocker() {
   return Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
+      ->GetLoginShelfView()
       ->GetScopedGuestButtonBlocker();
 }
 
@@ -371,20 +397,9 @@ void LoginScreenController::RequestSecurityTokenPin(
 void LoginScreenController::ClearSecurityTokenPinRequest() {
   security_token_request_controller_.ClosePinUi();
 }
-bool LoginScreenController::SetLoginShelfGestureHandler(
-    const std::u16string& nudge_text,
-    const base::RepeatingClosure& fling_callback,
-    base::OnceClosure exit_callback) {
-  return Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
-      ->shelf_widget()
-      ->SetLoginShelfSwipeHandler(nudge_text, fling_callback,
-                                  std::move(exit_callback));
-}
 
-void LoginScreenController::ClearLoginShelfGestureHandler() {
-  return Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
-      ->shelf_widget()
-      ->ClearLoginShelfSwipeHandler();
+views::Widget* LoginScreenController::GetLoginWindowWidget() {
+  return client_ ? client_->GetLoginWindowWidget() : nullptr;
 }
 
 void LoginScreenController::ShowLockScreen() {
@@ -409,13 +424,20 @@ void LoginScreenController::ShowLoginScreen() {
 }
 
 void LoginScreenController::SetKioskApps(
-    const std::vector<KioskAppMenuEntry>& kiosk_apps,
+    const std::vector<KioskAppMenuEntry>& kiosk_apps) {
+  Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
+      ->shelf_widget()
+      ->GetLoginShelfView()
+      ->SetKioskApps(kiosk_apps);
+}
+
+void LoginScreenController::ConfigureKioskCallbacks(
     const base::RepeatingCallback<void(const KioskAppMenuEntry&)>& launch_app,
     const base::RepeatingClosure& on_show_menu) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
-      ->login_shelf_view()
-      ->SetKioskApps(kiosk_apps, launch_app, on_show_menu);
+      ->GetLoginShelfView()
+      ->ConfigureKioskCallbacks(launch_app, on_show_menu);
 }
 
 void LoginScreenController::HandleAccelerator(
@@ -430,9 +452,8 @@ void LoginScreenController::ShowAccountAccessHelpApp(
   client_->ShowAccountAccessHelpApp(parent_window);
 }
 
-void LoginScreenController::ShowParentAccessHelpApp(
-    gfx::NativeWindow parent_window) {
-  client_->ShowParentAccessHelpApp(parent_window);
+void LoginScreenController::ShowParentAccessHelpApp() {
+  client_->ShowParentAccessHelpApp();
 }
 
 void LoginScreenController::ShowLockScreenNotificationSettings() {
@@ -454,8 +475,10 @@ void LoginScreenController::NotifyUserActivity() {
 void LoginScreenController::OnAuthenticateComplete(
     OnAuthenticateCallback callback,
     bool success) {
+  LOG(WARNING) << "crbug.com/1339004 : authentication complete";
   authentication_stage_ = AuthenticationStage::kUserCallback;
-  std::move(callback).Run(base::make_optional<bool>(success));
+  std::move(callback).Run(absl::make_optional<bool>(success));
+  LOG(WARNING) << "crbug.com/1339004 : triggered callback";
   authentication_stage_ = AuthenticationStage::kIdle;
 
   // During smart card login flow, multiple security token requests can be made.
@@ -481,11 +504,18 @@ void LoginScreenController::OnFocusLeavingSystemTray(bool reverse) {
   client_->OnFocusLeavingSystemTray(reverse);
 }
 
+void LoginScreenController::OnSystemTrayBubbleShown() {
+  if (!client_)
+    return;
+  client_->OnSystemTrayBubbleShown();
+}
+
 void LoginScreenController::OnLockScreenDestroyed() {
   DCHECK_EQ(authentication_stage_, AuthenticationStage::kIdle);
 
   // Still handle it to avoid crashes during Login/Lock/Unlock flows.
   authentication_stage_ = AuthenticationStage::kIdle;
+  SetSystemTrayVisibility(SystemTrayVisibility::kAll);
 }
 
 void LoginScreenController::NotifyLoginScreenShown() {

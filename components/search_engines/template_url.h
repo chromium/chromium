@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,14 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "components/search_engines/omnibox_focus_type.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_id.h"
+#include "third_party/metrics_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/metrics_proto/omnibox_focus_type.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -68,11 +69,12 @@ class TemplateURLRef {
   // the |post_data|. See http://tools.ietf.org/html/rfc2046 for the details.
   typedef std::pair<std::string, std::string> PostContent;
 
-  // Enumeration of the known search or suggest request sources.
+  // Enumeration of the known search or suggest request sources. These values
+  // are not persisted or used in histograms; thus can be freely changed.
   enum RequestSource {
     SEARCHBOX,          // Omnibox or the NTP realbox. The default.
     CROS_APP_LIST,      // Chrome OS app list search box.
-    NON_SEARCHBOX_NTP,  // Non-searchbox NTP surfaces.
+    NON_SEARCHBOX_NTP,  // Suggestions for the NTP surface.
   };
 
   // This struct encapsulates arguments passed to
@@ -190,15 +192,24 @@ class TemplateURLRef {
     metrics::OmniboxInputType input_type = metrics::OmniboxInputType::EMPTY;
 
     // Specifies how the user last interacted with the searchbox UI element.
-    OmniboxFocusType focus_type = OmniboxFocusType::DEFAULT;
+    metrics::OmniboxFocusType focus_type =
+        metrics::OmniboxFocusType::INTERACTION_DEFAULT;
 
     // The optional assisted query stats, aka AQS, used for logging purposes.
     // This string contains impressions of all autocomplete matches shown
     // at the query submission time.  For privacy reasons, we require the
     // search provider to support HTTPS protocol in order to receive the AQS
     // param.
-    // For more details, see http://goto.google.com/binary-clients-logging .
+    // For more details, see go/chrome-suggest-logging.
     std::string assisted_query_stats;
+
+    // The optional searchbox stats, reported as gs_lcrp for logging purposes.
+    // This proto message contains information such as impressions of all
+    // autocomplete matches shown at the query submission time.
+    // For privacy reasons, we require the search provider to support HTTPS
+    // protocol in order to receive the gs_lcrp param.
+    // For more details, see go/chrome-suggest-logging-improvement.
+    metrics::ChromeSearchboxStats searchbox_stats;
 
     // TODO: Remove along with "aq" CGI param.
     int accepted_suggestion = NO_SUGGESTIONS_AVAILABLE;
@@ -253,6 +264,14 @@ class TemplateURLRef {
     bool is_prefetch = false;
 
     ContextualSearchParams contextual_search_params;
+
+    // The cache duration to be sent as a query string parameter in the zero
+    // suggest requests, if non-zero.
+    uint32_t zero_suggest_cache_duration_sec = 0;
+
+    // Whether the request should bypass the HTTP cache, i.e., a "shift-reload".
+    // If true, the net::LOAD_BYPASS_CACHE load flag will be set on the request.
+    bool bypass_cache = false;
   };
 
   TemplateURLRef(const TemplateURL* owner, Type type);
@@ -380,18 +399,19 @@ class TemplateURLRef {
   enum ReplacementType {
     ENCODING,
     GOOGLE_ASSISTED_QUERY_STATS,
-    GOOGLE_BASE_URL,
     GOOGLE_BASE_SEARCH_BY_IMAGE_URL,
     GOOGLE_BASE_SUGGEST_URL,
-    GOOGLE_CONTEXTUAL_SEARCH_VERSION,
+    GOOGLE_BASE_URL,
+    GOOGLE_CLIENT_CACHE_TIME_TO_LIVE,
     GOOGLE_CONTEXTUAL_SEARCH_CONTEXT_DATA,
+    GOOGLE_CONTEXTUAL_SEARCH_VERSION,
     GOOGLE_CURRENT_PAGE_URL,
     GOOGLE_CURSOR_POSITION,
     GOOGLE_IMAGE_ORIGINAL_HEIGHT,
     GOOGLE_IMAGE_ORIGINAL_WIDTH,
     GOOGLE_IMAGE_SEARCH_SOURCE,
-    GOOGLE_IMAGE_THUMBNAIL,
     GOOGLE_IMAGE_THUMBNAIL_BASE64,
+    GOOGLE_IMAGE_THUMBNAIL,
     GOOGLE_IMAGE_URL,
     GOOGLE_INPUT_TYPE,
     GOOGLE_IOS_SEARCH_LANGUAGE,
@@ -405,6 +425,7 @@ class TemplateURLRef {
     GOOGLE_SEARCH_CLIENT,
     GOOGLE_SEARCH_FIELDTRIAL_GROUP,
     GOOGLE_SEARCH_VERSION,
+    GOOGLE_SEARCHBOX_STATS,
     GOOGLE_SESSION_TOKEN,
     GOOGLE_SUGGEST_CLIENT,
     GOOGLE_SUGGEST_REQUEST_ID,
@@ -518,7 +539,7 @@ class TemplateURLRef {
       PostContent* post_content) const;
 
   // The TemplateURL that contains us.  This should outlive us.
-  const TemplateURL* owner_;
+  raw_ptr<const TemplateURL> owner_;
 
   // What kind of URL we are.
   Type type_;
@@ -631,6 +652,9 @@ class TemplateURL {
               base::Time install_time,
               bool wants_to_be_default_engine);
 
+  TemplateURL(const TemplateURL&) = delete;
+  TemplateURL& operator=(const TemplateURL&) = delete;
+
   ~TemplateURL();
 
   // For two engines with the same keyword, |this| and |other|,
@@ -691,6 +715,17 @@ class TemplateURL {
   const std::string& image_url_post_params() const {
     return data_.image_url_post_params;
   }
+  const std::string& side_search_param() const {
+    return data_.side_search_param;
+  }
+  const std::string& side_image_search_param() const {
+    return data_.side_image_search_param;
+  }
+  const std::u16string& image_search_branding_label() const {
+    return !data_.image_search_branding_label.empty()
+               ? data_.image_search_branding_label
+               : short_name();
+  }
   const std::vector<std::string>& alternate_urls() const {
     return data_.alternate_urls;
   }
@@ -722,6 +757,10 @@ class TemplateURL {
   int prepopulate_id() const { return data_.prepopulate_id; }
 
   const std::string& sync_guid() const { return data_.sync_guid; }
+
+  TemplateURLData::ActiveStatus is_active() const { return data_.is_active; }
+
+  int starter_pack_id() const { return data_.starter_pack_id; }
 
   const std::vector<TemplateURLRef>& url_refs() const { return url_refs_; }
   const TemplateURLRef& url_ref() const {
@@ -772,6 +811,10 @@ class TemplateURL {
   SearchEngineType GetEngineType(
       const SearchTermsData& search_terms_data) const;
 
+  // Returns the type of this search engine, i.e. whether the engine is a
+  // prepopulated engine, starter pack engine, or not built-in.
+  BuiltinEngineType GetBuiltinEngineType() const;
+
   // Use the alternate URLs and the search URL to match the provided |url|
   // and extract |search_terms| from it. Returns false and an empty
   // |search_terms| if no search terms can be matched. The URLs are matched in
@@ -809,9 +852,39 @@ class TemplateURL {
       std::u16string* encoded_terms,
       std::u16string* encoded_original_query) const;
 
-  // Returns the search url for this template URL.
+  // Returns the search url for this template URL and the optional search terms.
+  // Uses something obscure as the default value for the search terms argument
+  // so that in the rare case the term replaces the URL it's unlikely another
+  // keyword would have the same url.
   // Returns an empty GURL if this template URL has no url().
-  GURL GenerateSearchURL(const SearchTermsData& search_terms_data) const;
+  GURL GenerateSearchURL(
+      const SearchTermsData& search_terms_data,
+      const std::u16string& search_terms = u"blah.blah.blah.blah.blah") const;
+
+  // Returns the suggest endpoint URL for this template URL.
+  // Returns an empty GURL if this template URL has no suggestions_url().
+  GURL GenerateSuggestionURL(const SearchTermsData& search_terms_data) const;
+
+  // Returns true if this search engine supports the side search feature.
+  bool IsSideSearchSupported() const;
+
+  // Returns true if this search engine supports the side image search feature.
+  bool IsSideImageSearchSupported() const;
+
+  // Takes a search URL belonging to this search engine and generates the URL
+  // appropriate for the side search side panel.
+  GURL GenerateSideSearchURL(const GURL& search_url,
+                             const std::string& version,
+                             const SearchTermsData& search_terms_data) const;
+
+  // Takes a search URL belonging to this image search engine and generates the
+  // URL appropriate for the image search in the side panel.
+  GURL GenerateSideImageSearchURL(const GURL& image_search_url,
+                                  const std::string& version) const;
+
+  // Takes a search URL that belongs to this image search in the side panel and
+  // removes the side image search param from the URL.
+  GURL RemoveSideImageSearchParamFromURL(const GURL& image_search_url) const;
 
   // TemplateURL internally caches values derived from a passed SearchTermsData
   // to make its functions quick. This method invalidates any cached values and
@@ -821,6 +894,12 @@ class TemplateURL {
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
+
+  // Returns whether |url| query contains a side search param.
+  bool ContainsSideSearchParam(const GURL& url) const;
+
+  // Returns whether |url| query contains a side image search param.
+  bool ContainsSideImageSearchParam(const GURL& url) const;
 
  private:
   friend class TemplateURLService;
@@ -875,8 +954,6 @@ class TemplateURL {
   mutable SearchEngineType engine_type_;
 
   // TODO(sky): Add date last parsed OSD file.
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURL);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_H_

@@ -1,0 +1,187 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//media/media_options.gni")
+
+# TODO(https://crbug.com/1198341): use blink_platform_sources once the code is
+# ported to Blink code conventions.
+component("media") {
+  visibility = [
+    # Note: this is here because web_media_player_impl_unittest.cc needs core
+    # and web, and platform should not depend on either.
+    "//third_party/blink/public/platform/media",
+    "//third_party/blink/renderer/core:unit_tests",
+    "//third_party/blink/renderer/platform/*",
+  ]
+  output_name = "blink_platform_media"
+  sources = [
+    "cache_util.cc",
+    "cache_util.h",
+    "cdm_result_promise.h",
+    "cdm_result_promise_helper.cc",
+    "cdm_result_promise_helper.h",
+    "cdm_session_adapter.cc",
+    "cdm_session_adapter.h",
+    "key_system_config_selector.cc",
+    "multi_buffer.cc",
+    "multi_buffer_reader.cc",
+    "multi_buffer_reader.h",
+    "new_session_cdm_result_promise.cc",
+    "new_session_cdm_result_promise.h",
+    "power_status_helper.cc",
+    "power_status_helper.h",
+    "remote_playback_client_wrapper_impl.cc",
+    "resource_multi_buffer_data_provider.cc",
+    "resource_multi_buffer_data_provider.h",
+    "text_track_impl.cc",
+    "text_track_impl.h",
+    "url_index.cc",
+    "video_decode_stats_reporter.cc",
+    "video_decode_stats_reporter.h",
+    "video_frame_compositor.cc",
+    "web_content_decryption_module_access_impl.cc",
+    "web_content_decryption_module_access_impl.h",
+    "web_content_decryption_module_impl.cc",
+    "web_content_decryption_module_impl.h",
+    "web_content_decryption_module_session_impl.cc",
+    "web_content_decryption_module_session_impl.h",
+    "web_encrypted_media_client_impl.cc",
+    "web_inband_text_track_impl.cc",
+    "web_inband_text_track_impl.h",
+    "web_media_player_builder.cc",
+    "web_media_source_impl.cc",
+    "web_media_source_impl.h",
+    "web_source_buffer_impl.cc",
+    "web_source_buffer_impl.h",
+  ]
+
+  configs +=
+      [ "//third_party/blink/renderer/platform:blink_platform_implementation" ]
+  public_deps = [
+    "//base",
+    "//media",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom:mojom_blink",
+    "//third_party/blink/public:blink",
+    "//third_party/blink/renderer/platform:platform_export",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+  deps = [
+    "//build:chromeos_buildflags",
+    "//components/viz/common",
+    "//media:media_buildflags",
+    "//media:shared_memory_support",
+    "//net",
+    "//services/network/public/cpp",
+    "//third_party/blink/public/common",
+    "//third_party/blink/public/mojom:mojom_platform",
+  ]
+
+  if (media_use_ffmpeg || !is_android) {
+    sources += [
+      "buffered_data_source_host_impl.cc",
+      "buffered_data_source_host_impl.h",
+      "learning_experiment_helper.cc",
+      "learning_experiment_helper.h",
+      "multi_buffer_data_source.cc",
+      "multi_buffer_data_source.h",
+      "smoothness_helper.cc",
+      "smoothness_helper.h",
+      "web_media_player_impl.cc",
+      "web_media_player_impl.h",
+    ]
+    public_deps += [
+      "//media/learning/common",
+      "//services/media_session/public/cpp:base_cpp",
+    ]
+    deps += [
+      "//cc",
+      "//media/learning/mojo/public/cpp",
+      "//media/remoting:remoting_constants",
+      "//third_party/blink/public/strings:strings_grit",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  visibility = [ "//third_party/blink/renderer/platform:*" ]
+  testonly = true
+
+  data = [ "//media/test/data/" ]
+
+  # TODO(https://crbug.com/1198341): enable this config once the code is ported
+  # to Blink code conventions.
+  #configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
+  sources = [
+    "cache_util_unittest.cc",
+    "interval_map_unittest.cc",
+    "key_system_config_selector_unittest.cc",
+    "multi_buffer_unittest.cc",
+    "power_status_helper_unittest.cc",
+    "resource_multi_buffer_data_provider_unittest.cc",
+    "url_index_unittest.cc",
+    "video_decode_stats_reporter_unittest.cc",
+    "video_frame_compositor_unittest.cc",
+    "watch_time_reporter_unittest.cc",
+  ]
+  deps = [
+    ":media",
+    "//base",
+    "//base/test:test_support",
+    "//components/viz/common",
+    "//media",
+    "//media:test_support",
+    "//media/mojo/mojom",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:blink",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/public/platform/media",
+    "//third_party/blink/renderer/platform:test_support",
+  ]
+
+  if (media_use_ffmpeg || !is_android) {
+    sources += [
+      "buffered_data_source_host_impl_unittest.cc",
+      "learning_experiment_helper_unittest.cc",
+      "multi_buffer_data_source_unittest.cc",
+      "smoothness_helper_unittest.cc",
+    ]
+    deps += [
+      "//media/learning/common",
+      "//services/network/public/mojom",
+    ]
+  }
+}
+
+source_set("test_support") {
+  visibility = [ "//third_party/blink/renderer/platform:test_support" ]
+  testonly = true
+  configs += [
+    "//third_party/blink/renderer:non_test_config",
+    # TODO(https://crbug.com/1198341): enable this config once the code is
+    # ported to Blink code conventions.
+    #"//third_party/blink/renderer/platform:blink_platform_config",
+  ]
+  sources = [
+    "testing/mock_resource_fetch_context.cc",
+    "testing/mock_resource_fetch_context.h",
+    "testing/mock_web_associated_url_loader.cc",
+    "testing/mock_web_associated_url_loader.h",
+    "testing/test_response_generator.cc",
+    "testing/test_response_generator.h",
+  ]
+  public_deps = [
+    "//base",
+    "//testing/gmock",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public/platform/media",
+    "//url",
+  ]
+  deps = [ "//net" ]
+}

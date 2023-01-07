@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/metrics/metrics_provider.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
@@ -30,14 +30,14 @@ class CrosHealthdMetricsProvider : public metrics::MetricsProvider {
  private:
   FRIEND_TEST_ALL_PREFIXES(CrosHealthdMetricsProviderTest, EndToEndTimeout);
 
-  chromeos::cros_healthd::mojom::CrosHealthdProbeService* GetService();
+  ash::cros_healthd::mojom::CrosHealthdProbeService* GetService();
   void OnDisconnect();
-  void OnProbeDone(chromeos::cros_healthd::mojom::TelemetryInfoPtr ptr);
+  void OnProbeDone(ash::cros_healthd::mojom::TelemetryInfoPtr ptr);
   void OnProbeTimeout();
 
   static base::TimeDelta GetTimeout();
 
-  mojo::Remote<chromeos::cros_healthd::mojom::CrosHealthdProbeService> service_;
+  mojo::Remote<ash::cros_healthd::mojom::CrosHealthdProbeService> service_;
   std::vector<metrics::SystemProfileProto::Hardware::InternalStorageDevice>
       devices_;
 

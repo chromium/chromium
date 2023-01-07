@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,17 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "components/safe_browsing/core/common/test_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
 
 class SafeBrowsingTokenFetchTrackerTest : public ::testing::Test {
  public:
-  SafeBrowsingTokenFetchTrackerTest()
-      : task_environment_(CreateTestTaskEnvironment(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
+  SafeBrowsingTokenFetchTrackerTest() {}
 
  protected:
-  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(SafeBrowsingTokenFetchTrackerTest, Success) {
@@ -126,8 +124,8 @@ TEST_F(SafeBrowsingTokenFetchTrackerTest, Timeout) {
                         int request_id) { *target_on_timeout_invoked = true; },
                      &on_timeout1_invoked));
 
-  task_environment_->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(delay_before_second_request_from_ms));
+  task_environment_.FastForwardBy(
+      base::Milliseconds(delay_before_second_request_from_ms));
   fetcher.StartTrackingTokenFetch(
       base::BindOnce([](std::string* target_token,
                         const std::string& token) { *target_token = token; },
@@ -141,17 +139,17 @@ TEST_F(SafeBrowsingTokenFetchTrackerTest, Timeout) {
   int time_to_trigger_first_timeout_from_ms =
       kTokenFetchTimeoutDelayFromMilliseconds -
       delay_before_second_request_from_ms;
-  task_environment_->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(time_to_trigger_first_timeout_from_ms));
+  task_environment_.FastForwardBy(
+      base::Milliseconds(time_to_trigger_first_timeout_from_ms));
   EXPECT_EQ(access_token1, "");
   EXPECT_TRUE(on_timeout1_invoked);
   EXPECT_EQ(access_token2, "dummy_value2");
   EXPECT_FALSE(on_timeout2_invoked);
 
   // Fast-forward to trigger the second request's timeout threshold.
-  task_environment_->FastForwardBy(base::TimeDelta::FromMilliseconds(
-      kTokenFetchTimeoutDelayFromMilliseconds -
-      time_to_trigger_first_timeout_from_ms));
+  task_environment_.FastForwardBy(
+      base::Milliseconds(kTokenFetchTimeoutDelayFromMilliseconds -
+                         time_to_trigger_first_timeout_from_ms));
   EXPECT_EQ(access_token2, "");
   EXPECT_TRUE(on_timeout2_invoked);
 }

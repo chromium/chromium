@@ -1,40 +1,27 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared"></style>
 
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="os_powerwash_dialog.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../i18n_setup.html">
-<link rel="import" href="../../router.html">
-
-<dom-module id="os-settings-reset-page">
-  <template>
-    <style include="settings-shared"></style>
-
-    <div route-path="default">
-      <div class="settings-box two-line first">
-        <div class="start" id="title" aria-hidden="true">
-          $i18n{powerwashTitle}
-          <div class="secondary" id="secondaryText" aria-hidden="true">
-            $i18n{powerwashDescription}
-          </div>
-        </div>
-        <div class="separator"></div>
-        <cr-button id="powerwash"
-            on-click="onShowPowerwashDialog_"
-            aria-labelledby="title"
-            aria-describedby="secondaryText"
-            aria-roledescription="$i18n{powerwashButtonRoleDescription}"
-            deep-link-focus-id$="[[Setting.kPowerwash]]">
-          $i18n{powerwashButton}
-        </cr-button>
+<div route-path="default">
+  <div class="settings-box two-line first">
+    <div class="start" id="title" aria-hidden="true">
+      $i18n{powerwashTitle}
+      <div class="secondary" id="secondaryText" aria-hidden="true">
+        $i18n{powerwashDescription}
       </div>
     </div>
-    <template is="dom-if" if="[[showPowerwashDialog_]]" restamp>
-      <os-settings-powerwash-dialog on-close="onPowerwashDialogClose_">
-      </os-settings-powerwash-dialog>
-    </template>
-  </template>
-  <script src="os_reset_page.js"></script>
-</dom-module>
+    <div class="separator"></div>
+    <cr-button id="powerwash"
+        on-click="onShowPowerwashDialog_"
+        aria-labelledby="title"
+        aria-describedby="secondaryText"
+        aria-roledescription="$i18n{powerwashButtonRoleDescription}"
+        deep-link-focus-id$="[[Setting.kPowerwash]]">
+      $i18n{powerwashButton}
+    </cr-button>
+  </div>
+</div>
+<template is="dom-if" if="[[showPowerwashDialog_]]" restamp>
+  <os-settings-powerwash-dialog
+      installed-e-sim-profiles="[[installedESimProfiles_]]"
+      on-close="onPowerwashDialogClose_">
+  </os-settings-powerwash-dialog>
+</template>

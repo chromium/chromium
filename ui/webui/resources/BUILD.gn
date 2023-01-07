@@ -1,31 +1,36 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//crypto/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_definitions.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-
-include_polymer = !is_android && !is_ios
+import("./cr_elements/cr_elements.gni")
 
 generate_grd("build_grd") {
   grd_prefix = "webui_generated"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
-  deps = [
+  public_deps = [
+    ":build_ts_grdp",
     "css:build_grdp",
     "html:build_grdp",
     "images:build_grdp",
     "js:build_grdp",
-    "js/cr/ui:build_grdp",
+    "js/metrics_reporter:build_grdp",
     "//third_party/jstemplate:build_grdp",
   ]
   grdp_files = [
     "$target_gen_dir/css/resources.grdp",
     "$target_gen_dir/html/resources.grdp",
     "$target_gen_dir/images/resources.grdp",
-    "$target_gen_dir/js/cr/ui/resources.grdp",
+    "$target_gen_dir/js/metrics_reporter/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
+    "$target_gen_dir/resources_ts.grdp",
     "$root_gen_dir/third_party/jstemplate/resources.grdp",
   ]
 
@@ -42,37 +47,87 @@ generate_grd("build_grd") {
   }
 
   if (include_polymer) {
-    deps += [
-      "cr_components:build_grdp",
-      "cr_elements:build_grdp",
-      "//third_party/polymer/v1_0:build_grdp",
+    public_deps += [
+      "cr_components/app_management:build_grdp",
+      "cr_components/customize_themes:build_grdp",
+      "cr_components/help_bubble:build_grdp",
+      "cr_components/most_visited:build_grdp",
+      "js/browser_command:build_grdp",
       "//third_party/polymer/v3_0:build_grdp",
     ]
     grdp_files += [
-      "$root_gen_dir/third_party/polymer/v1_0/polymer_1_0_resources.grdp",
       "$root_gen_dir/third_party/polymer/v3_0/polymer_3_0_resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/cr_components_resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_elements/cr_elements_resources.grdp",
+      "$target_gen_dir/cr_components/app_management/resources.grdp",
+      "$target_gen_dir/cr_components/customize_themes/resources.grdp",
+      "$target_gen_dir/cr_components/help_bubble/resources.grdp",
+      "$target_gen_dir/cr_components/most_visited/resources.grdp",
+      "$target_gen_dir/js/browser_command/resources.grdp",
     ]
+
+    if (use_nss_certs) {
+      public_deps += [ "cr_components/certificate_manager:build_grdp" ]
+      grdp_files +=
+          [ "$target_gen_dir/cr_components/certificate_manager/resources.grdp" ]
+    }
+
+    if (!is_android) {
+      public_deps += [ "cr_components/history_clusters:build_grdp" ]
+      grdp_files += [ "$root_gen_dir/ui/webui/resources/cr_components/history_clusters/resources.grdp" ]
+    }
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//third_party/web-animations-js:build_grdp" ]
-    grdp_files += [ "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp" ]
+    public_deps += [
+      ":build_cros_styles_grdp",
+      "//ash/webui/common/resources:build_grdp",
+      "//ash/webui/common/resources:build_html_css_wrapper_files_grdp",
+      "//chromeos/ash/components/cros_elements:build_grdp",
+      "//third_party/material_web_components:build_grdp",
+      "//third_party/web-animations-js:build_grdp",
+    ]
+    grdp_files += [
+      "$root_gen_dir/ash/webui/common/resources/ash_common_resources.grdp",
+      "$root_gen_dir/ash/webui/common/resources/html_css_wrapper_files_resources.grdp",
+      "$root_gen_dir/chromeos/ash/components/cros_elements/cros_elements_resources.grdp",
+      "$root_gen_dir/third_party/material_web_components/material_web_components_resources.grdp",
+      "$root_gen_dir/third_party/web-animations-js/web_animations_resources.grdp",
+      "$target_gen_dir/cros_styles_resources.grdp",
+    ]
   }
 
   if (!is_android && !is_ios) {
-    deps += [ "//third_party/lottie:build_grdp" ]
-    grdp_files += [ "$root_gen_dir/third_party/lottie/resources.grdp" ]
+    public_deps += [
+      "cr_components/color_change_listener:build_grdp",
+      "//third_party/lottie:build_grdp",
+    ]
+    grdp_files += [
+      "$root_gen_dir/third_party/lottie/resources.grdp",
+      "$root_gen_dir/ui/webui/resources/cr_components/color_change_listener/resources.grdp",
+    ]
+  }
+}
+
+if (is_chromeos_ash) {
+  generate_grd("build_cros_styles_grdp") {
+    grd_prefix = "webui"
+    out_grd = "$target_gen_dir/cros_styles_resources.grdp"
+    public_deps = [ "//ui/chromeos/styles:cros_styles_css" ]
+    input_files_base_dir = rebase_path("$root_gen_dir/", root_build_dir)
+    input_files = [ "ui/chromeos/styles/cros_styles.css" ]
+    resource_path_rewrites =
+        [ "ui/chromeos/styles/cros_styles.css|chromeos/colors/cros_styles.css" ]
   }
 }
 
 group("preprocess") {
-  deps = [
-    "cr_components:preprocess",
+  public_deps = [
     "cr_elements:preprocess",
     "js:preprocess",
   ]
+
+  if (include_polymer) {
+    public_deps += [ "cr_components:preprocess" ]
+  }
 }
 
 group("closure_compile") {
@@ -80,26 +135,123 @@ group("closure_compile") {
     "js:closure_compile",
     "js:closure_compile_modules",
   ]
-
-  if (!is_android) {
-    deps += [
-      "cr_components:closure_compile",
-      "cr_elements:closure_compile",
-    ]
-  }
 }
 
-group("modulize") {
-  public_deps = [
-    "js:modulize",
-    "js/cr:modulize",
-    "js/cr/ui:modulize",
-  ]
+# TypeScript targets
 
-  if (!is_android) {
-    public_deps += [
-      "cr_components:polymer3_elements",
-      "cr_elements:polymer3_elements",
+preprocessed_folder = "$target_gen_dir/preprocessed"
+
+checked_in_dts_files = [
+  "js/parse_html_subset.d.ts",
+  "js/promise_resolver.d.ts",
+]
+
+# Copies checked-in .d.ts files to the preprocess folder so that they are
+# discovered by TSC the same way generated .d.ts files are.
+copy("copy_checked_in_dts_files") {
+  sources = checked_in_dts_files
+  outputs = [ "$preprocessed_folder/{{source_target_relative}}" ]
+}
+
+# Files for which .d.ts files will be auto-generated with ts_definitions().
+generate_definitions_js_files = [
+  "js/assert.js",
+  "js/cr/event_target.js",
+  "js/cr.m.js",
+  "js/cr/ui.js",
+  "js/load_time_data.m.js",
+  "js/icon.js",
+  "js/util.js",
+]
+
+if (is_ios) {
+  generate_definitions_js_files += [ "js/ios/web_ui.js" ]
+}
+
+ts_library("library") {
+  root_dir = preprocessed_folder
+  out_dir = preprocessed_folder
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  extra_deps = []
+
+  in_files = cr_elements_files + [
+               "js/action_link.ts",
+               "js/assert_ts.ts",
+               "js/color_utils.ts",
+               "js/custom_element.ts",
+               "js/drag_wrapper.ts",
+               "js/event_tracker.ts",
+               "js/focus_grid.ts",
+               "js/focus_row.ts",
+               "js/focus_outline_manager.ts",
+               "js/keyboard_shortcut_list.ts",
+               "js/plural_string_proxy.ts",
+               "js/static_types.ts",
+               "js/store_ts.ts",
+               "js/test_loader.ts",
+               "js/test_loader_util.ts",
+             ]
+
+  if (include_polymer) {
+    in_files += [
+      "cr_components/localized_link/localized_link.html.ts",
+      "cr_components/localized_link/localized_link.ts",
+      "cr_components/managed_dialog/managed_dialog.html.ts",
+      "cr_components/managed_dialog/managed_dialog.ts",
+      "cr_components/managed_footnote/managed_footnote.html.ts",
+      "cr_components/managed_footnote/managed_footnote.ts",
+      "js/focus_row_mixin.ts",
+      "js/focus_without_ink.ts",
+      "js/search_highlight_utils.ts",
     ]
   }
+
+  if (is_chromeos) {
+    in_files += [ "js/os_about.ts" ]
+  }
+
+  definitions = [
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+  ]
+
+  # Checked-in .d.ts files.
+  foreach(_file, checked_in_dts_files) {
+    definitions += [ "$root_dir/$_file" ]
+  }
+
+  # Auto-generated .d.ts files.
+  foreach(_file, generate_definitions_js_files) {
+    definitions += [ "$root_dir/" + string_replace(_file, ".js", ".d.ts") ]
+  }
+
+  deps = [ "//third_party/polymer/v3_0:library" ]
+  extra_deps += [
+    ":copy_checked_in_dts_files",
+    ":generate_definitions",
+    ":preprocess",
+  ]
+}
+
+generate_grd("build_ts_grdp") {
+  grd_prefix = "webui"
+  out_grd = "$target_gen_dir/resources_ts.grdp"
+  public_deps = [ ":library" ]
+  manifest_files =
+      filter_include(get_target_outputs(":library"), [ "*.manifest" ])
+}
+
+ts_definitions("generate_definitions") {
+  root_dir = preprocessed_folder
+  out_dir = preprocessed_folder
+  js_files = generate_definitions_js_files
+  extra_deps = [
+    # Copy checked-in d.ts files first, so that |generate_definitions| leverages
+    # these files, instead of accidentally auto-generating them.
+    ":copy_checked_in_dts_files",
+    ":preprocess",
+    "mojo:library",
+  ]
 }

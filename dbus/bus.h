@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
@@ -37,7 +37,7 @@ class ObjectProxy;
 //
 // For asynchronous operations such as an asynchronous method call, the
 // bus object will use a task runner to monitor the underlying file
-// descriptor used for D-Bus communication. By default, the bus will usegi
+// descriptor used for D-Bus communication. By default, the bus will use
 // the current thread's task runner. If |dbus_task_runner| option is
 // specified, the bus will use that task runner instead.
 //
@@ -185,6 +185,8 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   struct CHROME_DBUS_EXPORT Options {
     Options();
     ~Options();
+    Options(Options&&);
+    Options& operator=(Options&&);
 
     BusType bus_type;  // SESSION by default.
     ConnectionType connection_type;  // PRIVATE by default.
@@ -219,6 +221,9 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   // Creates a Bus object. The actual connection will be established when
   // Connect() is called.
   explicit Bus(const Options& options);
+
+  Bus(const Bus&) = delete;
+  Bus& operator=(const Bus&) = delete;
 
   // Called when an ownership request is complete.
   // Parameters:
@@ -342,7 +347,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
                                           const ObjectPath& object_path);
 
   // Unregisters the object manager for the given remote object path
-  // |object_path| exported by the srevice |service_name|.
+  // |object_path| exported by the service |service_name|.
   //
   // Getting an object manager for the same remote object after this call
   // will return a new object, method calls on any remaining copies of the
@@ -598,7 +603,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
       const std::string& service_name,
       const ServiceOwnerChangeCallback& callback);
 
-  // Return the unique name of the bus connnection if it is connected to
+  // Return the unique name of the bus connection if it is connected to
   // D-BUS. Otherwise, return an empty string.
   std::string GetConnectionName();
 
@@ -724,7 +729,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   const ConnectionType connection_type_;
   scoped_refptr<base::SequencedTaskRunner> dbus_task_runner_;
   base::WaitableEvent on_shutdown_;
-  DBusConnection* connection_;
+  raw_ptr<DBusConnection, DanglingUntriaged> connection_;
 
   base::PlatformThreadId origin_thread_id_;
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
@@ -776,13 +781,11 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   bool shutdown_completed_;
 
   // Counters to make sure that OnAddWatch()/OnRemoveWatch() and
-  // OnAddTimeout()/OnRemoveTimeou() are balanced.
+  // OnAddTimeout()/OnRemoveTimeout() are balanced.
   int num_pending_watches_;
   int num_pending_timeouts_;
 
   std::string address_;
-
-  DISALLOW_COPY_AND_ASSIGN(Bus);
 };
 
 }  // namespace dbus

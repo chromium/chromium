@@ -1,9 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_INTERFACE_ENDPOINT_CONTROLLER_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_INTERFACE_ENDPOINT_CONTROLLER_H_
+
+#include <stdint.h>
 
 namespace mojo {
 
@@ -29,7 +31,17 @@ class InterfaceEndpointController {
   //   - return false otherwise, including
   //     MultiplexRouter::DetachEndpointClient() being called for the same
   //     interface endpoint.
-  virtual bool SyncWatch(const bool* should_stop) = 0;
+  virtual bool SyncWatch(const bool& should_stop) = 0;
+
+  // Watches the endpoint for a specific incoming sync reply. This method only
+  // returns true once the reply is received, or false if the endpoint is
+  // detached or destroyed beforehand.
+  virtual bool SyncWatchExclusive(uint64_t request_id) = 0;
+
+  // Notifies the controller that a specific in-flight sync message identified
+  // by `request_id` has an off-thread sync waiter, so its reply must be
+  // processed immediately once received.
+  virtual void RegisterExternalSyncWaiter(uint64_t request_id) = 0;
 };
 
 }  // namespace mojo

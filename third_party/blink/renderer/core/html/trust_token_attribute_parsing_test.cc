@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/trust_token_attribute_parsing.h"
 
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
-#include "services/network/trust_tokens/test/trust_token_test_util.h"
+#include "services/network/test/trust_token_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -88,7 +88,7 @@ TEST_P(TrustTokenAttributeParsingSuccess, Roundtrip) {
             expectation->include_timestamp_header);
 
   EXPECT_EQ(result->issuers.size(), expectation->issuers.size());
-  for (size_t i = 0; i < result->issuers.size(); ++i) {
+  for (wtf_size_t i = 0; i < result->issuers.size(); ++i) {
     EXPECT_EQ(!!result->issuers.at(i), !!expectation->issuers.at(i));
     if (result->issuers.at(i)) {
       EXPECT_EQ(result->issuers.at(i)->ToString(),

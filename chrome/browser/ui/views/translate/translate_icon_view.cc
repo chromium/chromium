@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,17 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/translate/translate_bubble_view_state_transition.h"
+#include "chrome/browser/ui/translate/translate_bubble_ui_action_logger.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 TranslateIconView::TranslateIconView(
     CommandUpdater* command_updater,
@@ -28,14 +29,45 @@ TranslateIconView::TranslateIconView(
     : PageActionIconView(command_updater,
                          IDC_TRANSLATE_PAGE,
                          icon_label_bubble_delegate,
-                         page_action_icon_delegate) {
+                         page_action_icon_delegate,
+                         "Translate") {
   SetID(VIEW_ID_TRANSLATE_BUTTON);
 }
 
-TranslateIconView::~TranslateIconView() {}
+TranslateIconView::~TranslateIconView() = default;
 
 views::BubbleDialogDelegate* TranslateIconView::GetBubble() const {
-  return TranslateBubbleView::GetCurrentBubble();
+  if (GetWebContents()) {
+    TranslateBubbleController* translate_bubble_controller =
+        TranslateBubbleController::FromWebContents(GetWebContents());
+
+    if (translate_bubble_controller)
+      return translate_bubble_controller->GetTranslateBubble();
+  }
+
+  return nullptr;
+}
+
+views::BubbleDialogDelegate* TranslateIconView::GetPartialTranslateBubble()
+    const {
+  if (GetWebContents()) {
+    TranslateBubbleController* translate_bubble_controller =
+        TranslateBubbleController::FromWebContents(GetWebContents());
+
+    if (translate_bubble_controller)
+      return translate_bubble_controller->GetPartialTranslateBubble();
+  }
+
+  return nullptr;
+}
+
+bool TranslateIconView::IsBubbleShowing() const {
+  // We override the PageActionIconView implementation because there are two
+  // different bubbles that may be shown with the Translate icon, and so this
+  // function should return true if either the Full Page Translate or Partial
+  // Translate bubble are showing. If a bubble is being destroyed, it's
+  // considered showing though it may be already invisible currently.
+  return (GetBubble() != nullptr) || (GetPartialTranslateBubble() != nullptr);
 }
 
 void TranslateIconView::UpdateImpl() {
@@ -55,18 +87,12 @@ void TranslateIconView::UpdateImpl() {
   // Enable Translate page command or disable icon.
   enabled &= SetCommandEnabled(enabled);
   SetVisible(enabled);
-  if (!enabled)
-    TranslateBubbleView::CloseCurrentBubble();
+  if (!enabled && TranslateBubbleController::FromWebContents(GetWebContents()))
+    TranslateBubbleController::FromWebContents(GetWebContents())->CloseBubble();
 }
 
 void TranslateIconView::OnExecuting(
     PageActionIconView::ExecuteSource execute_source) {}
-
-void TranslateIconView::OnPressed(bool activated) {
-  translate::ReportUiAction(activated
-                                 ? translate::PAGE_ACTION_ICON_ACTIVATED
-                                 : translate::PAGE_ACTION_ICON_DEACTIVATED);
-}
 
 const gfx::VectorIcon& TranslateIconView::GetVectorIcon() const {
   return kTranslateIcon;

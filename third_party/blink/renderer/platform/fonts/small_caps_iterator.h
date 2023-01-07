@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/utf16_text_iterator.h"
@@ -26,6 +25,8 @@ class PLATFORM_EXPORT SmallCapsIterator {
   };
 
   SmallCapsIterator(const UChar* buffer, unsigned buffer_size);
+  SmallCapsIterator(const SmallCapsIterator&) = delete;
+  SmallCapsIterator& operator=(const SmallCapsIterator&) = delete;
 
   bool Consume(unsigned* caps_limit, SmallCapsBehavior*);
 
@@ -37,10 +38,8 @@ class PLATFORM_EXPORT SmallCapsIterator {
 
   SmallCapsBehavior current_small_caps_behavior_;
   SmallCapsBehavior previous_small_caps_behavior_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmallCapsIterator);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SMALL_CAPS_ITERATOR_H_

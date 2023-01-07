@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/aura/window_observer.h"
 #include "ui/gfx/image/image_skia.h"
@@ -25,6 +25,11 @@ class TestAppWindowIconObserver
       public aura::WindowObserver {
  public:
   explicit TestAppWindowIconObserver(content::BrowserContext* context);
+
+  TestAppWindowIconObserver(const TestAppWindowIconObserver&) = delete;
+  TestAppWindowIconObserver& operator=(const TestAppWindowIconObserver&) =
+      delete;
+
   ~TestAppWindowIconObserver() override;
 
   // Waits for one icon update.
@@ -48,7 +53,7 @@ class TestAppWindowIconObserver
                                const void* key,
                                intptr_t old) override;
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext> context_;
   int icon_updates_ = 0;
   int expected_icon_updates_ = 0;
   std::vector<aura::Window*> windows_;
@@ -57,8 +62,6 @@ class TestAppWindowIconObserver
   gfx::ImageSkia last_app_icon_;
   gfx::ImageSkia expected_image_skia_;
   base::OnceClosure icon_image_updated_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAppWindowIconObserver);
 };
 
 #endif  // CHROME_BROWSER_UI_TEST_TEST_APP_WINDOW_ICON_OBSERVER_H_

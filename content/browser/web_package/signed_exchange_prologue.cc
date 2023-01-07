@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ constexpr size_t kMaximumCBORHeaderLength = 512 * 1024;
 
 namespace signed_exchange_prologue {
 
-constexpr size_t BeforeFallbackUrl::kEncodedSizeInBytes =
+const size_t BeforeFallbackUrl::kEncodedSizeInBytes =
     sizeof(kSignedExchangeMagic) + kFallbackUrlLengthFieldSizeInBytes;
 
 size_t Parse2BytesEncodedLength(base::span<const uint8_t> input) {

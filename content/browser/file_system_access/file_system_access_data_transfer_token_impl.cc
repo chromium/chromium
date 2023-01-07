@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,16 +39,19 @@ FileSystemAccessDataTransferTokenImpl::
 
 void FileSystemAccessDataTransferTokenImpl::GetInternalId(
     GetInternalIdCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(callback).Run(token_);
 }
 
 void FileSystemAccessDataTransferTokenImpl::Clone(
     mojo::PendingReceiver<blink::mojom::FileSystemAccessDataTransferToken>
         clone_receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   receivers_.Add(this, std::move(clone_receiver));
 }
 
 void FileSystemAccessDataTransferTokenImpl::OnMojoDisconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (receivers_.empty()) {
     manager_->RemoveDataTransferToken(token_);
   }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,13 +16,15 @@ namespace download {
 class BatteryStatusListenerAndroid : public BatteryStatusListenerImpl {
  public:
   BatteryStatusListenerAndroid(const base::TimeDelta& battery_query_interval);
+
+  BatteryStatusListenerAndroid(const BatteryStatusListenerAndroid&) = delete;
+  BatteryStatusListenerAndroid& operator=(const BatteryStatusListenerAndroid&) =
+      delete;
+
   ~BatteryStatusListenerAndroid() override;
 
   // BatteryStatusListener implementation.
   int GetBatteryPercentageInternal() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusListenerAndroid);
 };
 
 }  // namespace download

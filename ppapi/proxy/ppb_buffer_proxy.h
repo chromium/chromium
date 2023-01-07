@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "ppapi/c/pp_instance.h"
@@ -27,6 +26,10 @@ class Buffer : public thunk::PPB_Buffer_API, public Resource {
  public:
   Buffer(const HostResource& resource,
          base::UnsafeSharedMemoryRegion shm_handle);
+
+  Buffer(const Buffer&) = delete;
+  Buffer& operator=(const Buffer&) = delete;
+
   ~Buffer() override;
 
   // Resource overrides.
@@ -45,8 +48,6 @@ class Buffer : public thunk::PPB_Buffer_API, public Resource {
   base::UnsafeSharedMemoryRegion shm_;
   base::WritableSharedMemoryMapping mapping_;
   int map_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(Buffer);
 };
 
 class PPB_Buffer_Proxy : public InterfaceProxy {

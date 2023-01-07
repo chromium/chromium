@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,21 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/threading/hang_watcher.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_process_singleton.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/process_singleton.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/browser_main_parts.h"
-#include "content/public/common/main_function_params.h"
+#include "content/public/common/result_codes.h"
+
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+#include "chrome/browser/process_singleton.h"
+#endif
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
 #include "chrome/browser/downgrade/downgrade_manager.h"
@@ -34,6 +38,7 @@ class ShutdownWatcherHelper;
 class WebUsbDetector;
 
 namespace base {
+class CommandLine;
 class RunLoop;
 }
 
@@ -43,21 +48,33 @@ class TraceEventSystemStatsMonitor;
 
 class ChromeBrowserMainParts : public content::BrowserMainParts {
  public:
+  ChromeBrowserMainParts(const ChromeBrowserMainParts&) = delete;
+  ChromeBrowserMainParts& operator=(const ChromeBrowserMainParts&) = delete;
   ~ChromeBrowserMainParts() override;
 
   // Add additional ChromeBrowserMainExtraParts.
   void AddParts(std::unique_ptr<ChromeBrowserMainExtraParts> parts);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Returns the RunLoop that would be run by MainMessageLoopRun. This is used
   // by InProcessBrowserTests to allow them to run until the BrowserProcess is
   // ready for the browser to exit.
   static std::unique_ptr<base::RunLoop> TakeRunLoopForTest();
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
+  // Handles notifications from other processes. The function receives the
+  // command line and directory with which the other Chrome process was
+  // launched. Return true if the command line will be handled within the
+  // current browser instance or false if the remote process should handle it
+  // (i.e., because the current process is shutting down).
+  static bool ProcessSingletonNotificationCallback(
+      const base::CommandLine& command_line,
+      const base::FilePath& current_directory);
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
  protected:
-  ChromeBrowserMainParts(const content::MainFunctionParams& parameters,
-                         StartupData* startup_data);
+  ChromeBrowserMainParts(bool is_integration_test, StartupData* startup_data);
 
   // content::BrowserMainParts overrides.
   // These are called in-order by content::BrowserMainLoop.
@@ -66,39 +83,45 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   int PreEarlyInitialization() override;
   void PostEarlyInitialization() override;
   void ToolkitInitialized() override;
-  void PreMainMessageLoopStart() override;
-  void PostMainMessageLoopStart() override;
+  void PreCreateMainMessageLoop() override;
+  void PostCreateMainMessageLoop() override;
   int PreCreateThreads() override;
   void PostCreateThreads() override;
   int PreMainMessageLoopRun() override;
+#if !BUILDFLAG(IS_ANDROID)
+  bool ShouldInterceptMainMessageLoopRun() override;
+#endif
   void WillRunMainMessageLoop(
       std::unique_ptr<base::RunLoop>& run_loop) override;
+  void OnFirstIdle() override;
   void PostMainMessageLoopRun() override;
   void PostDestroyThreads() override;
 
   // Additional stages for ChromeBrowserMainExtraParts. These stages are called
   // in order from PreMainMessageLoopRun(). See implementation for details.
+  // TODO(crbug.com/1150326): Update the comment once the feature launches.
+  // `PostProfileInit()` might not be called in order, it is planned to be
+  // called for each new profile as part of that launch. See bug for context.
   virtual void PreProfileInit();
-  virtual void PostProfileInit();
+  virtual void PostProfileInit(Profile* profile, bool is_initial_profile);
   virtual void PreBrowserStart();
   virtual void PostBrowserStart();
 
   // Displays a warning message that we can't find any locale data files.
   virtual void ShowMissingLocaleMessageBox() = 0;
 
-  const content::MainFunctionParams& parameters() const {
-    return parameters_;
-  }
-  const base::CommandLine& parsed_command_line() const {
-    return parsed_command_line_;
-  }
   const base::FilePath& user_data_dir() const {
     return user_data_dir_;
   }
 
-  Profile* profile() { return profile_; }
+ protected:
+  // Returns whether ChromeContentBrowserClient::CreateBrowserMainParts was
+  // invoked as part of an integration (browser) test.
+  // Avoid writing test-only conditions in product code if at all possible.
+  bool is_integration_test() const { return is_integration_test_; }
 
  private:
+  class ProfileInitManager;
   friend class ChromeBrowserMainPartsTestApi;
 
   // Constructs the metrics service and initializes metrics recording.
@@ -132,22 +155,27 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   int PreCreateThreadsImpl();
   int PreMainMessageLoopRunImpl();
 
+  // Wrapper for `PostProfileInit()` that provides to it the right
+  // `is_initial_profile` value.
+  void CallPostProfileInit(Profile* profile);
+
   // Members initialized on construction ---------------------------------------
+  const bool is_integration_test_;
+  const raw_ptr<StartupData> startup_data_;
 
-  const content::MainFunctionParams parameters_;
-  // TODO(sky): remove this. This class (and related calls), may mutate the
-  // CommandLine, so it is misleading keeping a const ref here.
-  const base::CommandLine& parsed_command_line_;
-  int result_code_;
+  int result_code_ = content::RESULT_CODE_NORMAL_EXIT;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Create ShutdownWatcherHelper object for watching jank during shutdown.
   // Please keep |shutdown_watcher| as the first object constructed, and hence
   // it is destroyed last.
   std::unique_ptr<ShutdownWatcherHelper> shutdown_watcher_;
 
+  // HangWatcher based equivalent to |shutdown_watcher_|
+  absl::optional<base::WatchHangsInScope> watch_hangs_scope_;
+
   std::unique_ptr<WebUsbDetector> web_usb_detector_;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Vector of additional ChromeBrowserMainExtraParts.
   // Parts are deleted in the inverse order they are added.
@@ -158,48 +186,45 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<tracing::TraceEventSystemStatsMonitor>
       trace_event_system_stats_monitor_;
 
-  // Whether PerformPreMainMessageLoopStartup() is called on VariationsService.
-  // Initialized to true if |MainFunctionParams::ui_task| is null (meaning not
-  // running browser_tests), but may be forced to true for tests.
-  bool should_call_pre_main_loop_start_startup_on_variations_service_;
-
   // Members initialized after / released before main_message_loop_ ------------
 
   std::unique_ptr<BrowserProcessImpl> browser_process_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Browser creation happens on the Java side in Android.
   std::unique_ptr<StartupBrowserCreator> browser_creator_;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-  // Android doesn't support multiple browser processes, so it doesn't implement
-  // ProcessSingleton.
-  std::unique_ptr<ChromeProcessSingleton> process_singleton_;
-
+#if BUILDFLAG(ENABLE_PROCESS_SINGLETON)
   ProcessSingleton::NotifyResult notify_result_ =
       ProcessSingleton::PROCESS_NONE;
+#endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
+#if !BUILDFLAG(IS_ANDROID)
   // Members needed across shutdown methods.
   bool restart_last_session_ = false;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
   downgrade::DowngradeManager downgrade_manager_;
 #endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Android's first run is done in Java instead of native. Chrome OS does not
   // use master preferences.
   std::unique_ptr<first_run::MasterPrefs> master_prefs_;
 #endif
 
-  Profile* profile_;
-  bool run_message_loop_;
-
   base::FilePath user_data_dir_;
 
-  StartupData* startup_data_;
+  // Indicates that the initial profile has been created and we started
+  // executing `PostProfileInit()` for it.
+  bool initialized_initial_profile_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainParts);
+  // Observer that triggers `PostProfileInit()` when new user profiles are
+  // created.
+  // Must be deleted before `browser_process_`.
+  std::unique_ptr<ProfileInitManager> profile_init_manager_;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_H_

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_TEST_MEDIA_CLIENT_H_
 
 #include "ash/public/cpp/media_client.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -15,6 +14,10 @@ namespace ash {
 class TestMediaClient : public MediaClient {
  public:
   TestMediaClient();
+
+  TestMediaClient(const TestMediaClient&) = delete;
+  TestMediaClient& operator=(const TestMediaClient&) = delete;
+
   ~TestMediaClient() override;
 
   // MediaClient:
@@ -59,8 +62,6 @@ class TestMediaClient : public MediaClient {
   int handle_media_seek_backward_count_ = 0;
   int handle_media_seek_forward_count_ = 0;
   bool media_sessions_suspended_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMediaClient);
 };
 
 }  // namespace ash

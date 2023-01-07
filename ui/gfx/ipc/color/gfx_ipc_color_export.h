@@ -1,9 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GFX_IPC_COLOR_EXPORT_H_
-#define GFX_IPC_COLOR_EXPORT_H_
+#ifndef UI_GFX_IPC_COLOR_GFX_IPC_COLOR_EXPORT_H_
+#define UI_GFX_IPC_COLOR_GFX_IPC_COLOR_EXPORT_H_
 
 #if defined(COMPONENT_BUILD)
 #if defined(WIN32)
@@ -26,4 +26,4 @@
 #define GFX_IPC_COLOR_EXPORT
 #endif
 
-#endif  // GFX_IPC_COLOR_EXPORT_H_
+#endif  // UI_GFX_IPC_COLOR_GFX_IPC_COLOR_EXPORT_H_

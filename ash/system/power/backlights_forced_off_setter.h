@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 #include "ash/public/cpp/screen_backlight.h"
 #include "ash/public/cpp/screen_backlight_observer.h"
 #include "ash/public/cpp/screen_backlight_type.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -29,6 +28,11 @@ class ASH_EXPORT BacklightsForcedOffSetter
       public ScreenBacklight {
  public:
   BacklightsForcedOffSetter();
+
+  BacklightsForcedOffSetter(const BacklightsForcedOffSetter&) = delete;
+  BacklightsForcedOffSetter& operator=(const BacklightsForcedOffSetter&) =
+      delete;
+
   ~BacklightsForcedOffSetter() override;
 
   bool backlights_forced_off() const {
@@ -38,7 +42,7 @@ class ASH_EXPORT BacklightsForcedOffSetter
   // ScreenBacklight:
   void AddObserver(ScreenBacklightObserver* observer) override;
   void RemoveObserver(ScreenBacklightObserver* observer) override;
-  ScreenState GetScreenState() const override;
+  ScreenBacklightState GetScreenBacklightState() const override;
 
   // Forces the backlights off. The backlights will be kept in the forced-off
   // state until all requests have been destroyed.
@@ -63,7 +67,7 @@ class ASH_EXPORT BacklightsForcedOffSetter
   void GetInitialBacklightsForcedOff();
 
   // Callback for |GetInitialBacklightsForcedOff()|.
-  void OnGotInitialBacklightsForcedOff(base::Optional<bool> is_forced_off);
+  void OnGotInitialBacklightsForcedOff(absl::optional<bool> is_forced_off);
 
   // Removes a force backlights off request from the list of active ones, which
   // effectively cancels the request. This is passed to every
@@ -76,7 +80,7 @@ class ASH_EXPORT BacklightsForcedOffSetter
 
   // Enables or disables the touchscreen by updating the global touchscreen
   // enabled status. The touchscreen is disabled when backlights are forced off
-  // or |screen_state_| is OFF_AUTO.
+  // or |screen_backlight_state_| is OFF_AUTO.
   void UpdateTouchscreenStatus();
 
   // Controls whether the touchscreen is disabled when the screen is turned off
@@ -84,10 +88,10 @@ class ASH_EXPORT BacklightsForcedOffSetter
   bool disable_touchscreen_while_screen_off_ = true;
 
   // Current forced-off state of backlights.
-  base::Optional<bool> backlights_forced_off_;
+  absl::optional<bool> backlights_forced_off_;
 
   // Current screen state.
-  ScreenState screen_state_ = ScreenState::ON;
+  ScreenBacklightState screen_backlight_state_ = ScreenBacklightState::ON;
 
   // Number of active backlights forced off requests.
   int active_backlights_forced_off_count_ = 0;
@@ -99,8 +103,6 @@ class ASH_EXPORT BacklightsForcedOffSetter
       power_manager_observation_{this};
 
   base::WeakPtrFactory<BacklightsForcedOffSetter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BacklightsForcedOffSetter);
 };
 
 }  // namespace ash

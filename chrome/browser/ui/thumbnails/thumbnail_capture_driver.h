@@ -1,11 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_CAPTURE_DRIVER_H_
 #define CHROME_BROWSER_UI_THUMBNAILS_THUMBNAIL_CAPTURE_DRIVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_readiness_tracker.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_scheduler.h"
 
@@ -56,8 +58,7 @@ class ThumbnailCaptureDriver : public ThumbnailScheduler::TabCapturer {
 
   // Determines how long to wait for final capture, and how many times
   // to retry if one is not received. Exposed for testing.
-  static constexpr base::TimeDelta kCooldownDelay =
-      base::TimeDelta::FromMilliseconds(500);
+  static constexpr base::TimeDelta kCooldownDelay = base::Milliseconds(500);
   static constexpr size_t kMaxCooldownRetries = 3;
 
  private:
@@ -80,8 +81,8 @@ class ThumbnailCaptureDriver : public ThumbnailScheduler::TabCapturer {
   void StartCooldown();
   void OnCooldownEnded();
 
-  Client* const client_;
-  ThumbnailScheduler* const scheduler_;
+  const raw_ptr<Client> client_;
+  const raw_ptr<ThumbnailScheduler> scheduler_;
 
   PageReadiness page_readiness_ = PageReadiness::kNotReady;
   bool page_visible_ = false;

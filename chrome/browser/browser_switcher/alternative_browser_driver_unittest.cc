@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
@@ -29,18 +30,18 @@ class TestBrowserSwitcherPrefs : public BrowserSwitcherPrefs {
 };
 
 StringType UTF8ToNative(base::StringPiece src) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::UTF8ToWide(src);
-#elif defined(OS_POSIX)
-  return src.as_string();
+#elif BUILDFLAG(IS_POSIX)
+  return std::string(src);
 #else
 #error "Invalid platform for browser_switcher"
 #endif
 }
 
-base::ListValue UTF8VectorToListValue(
+base::Value::List UTF8VectorToValueList(
     const std::vector<base::StringPiece>& src) {
-  base::ListValue out;
+  base::Value::List out;
   for (base::StringPiece str : src)
     out.Append(str);
   return out;
@@ -58,13 +59,12 @@ class AlternativeBrowserDriverTest : public testing::Test {
 
   void SetBrowserPath(const std::string& path) {
     prefs_backend_.SetManagedPref(prefs::kAlternativeBrowserPath,
-                                  std::make_unique<base::Value>(path));
+                                  base::Value(path));
   }
 
-  void SetBrowserParameters(const base::ListValue* params) {
-    prefs_backend_.SetManagedPref(
-        prefs::kAlternativeBrowserParameters,
-        base::Value::ToUniquePtrValue(params->Clone()));
+  void SetBrowserParameters(const base::Value::List& params) {
+    prefs_backend_.SetManagedPref(prefs::kAlternativeBrowserParameters,
+                                  base::Value(params.Clone()));
   }
 
   AlternativeBrowserDriverImpl* driver() { return driver_.get(); }
@@ -77,8 +77,8 @@ class AlternativeBrowserDriverTest : public testing::Test {
 
 TEST_F(AlternativeBrowserDriverTest, CreateCommandLine) {
   SetBrowserPath("/usr/bin/true");
-  auto params = UTF8VectorToListValue({"a", "b", "c"});
-  SetBrowserParameters(&params);
+  auto params = UTF8VectorToValueList({"a", "b", "c"});
+  SetBrowserParameters(params);
   auto cmd_line = driver()->CreateCommandLine(GURL("http://example.com/"));
   const base::CommandLine::StringVector& argv = cmd_line.argv();
   EXPECT_EQ(5u, argv.size());
@@ -91,8 +91,8 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLine) {
 
 TEST_F(AlternativeBrowserDriverTest, CreateCommandLineExpandsUrl) {
   SetBrowserPath("/usr/bin/true");
-  auto params = UTF8VectorToListValue({"--flag=${url}#fragment"});
-  SetBrowserParameters(&params);
+  auto params = UTF8VectorToValueList({"--flag=${url}#fragment"});
+  SetBrowserParameters(params);
   auto cmd_line = driver()->CreateCommandLine(GURL("http://example.com/"));
   const base::CommandLine::StringVector& argv = cmd_line.argv();
   EXPECT_EQ(2u, argv.size());
@@ -101,9 +101,9 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineExpandsUrl) {
 }
 
 TEST_F(AlternativeBrowserDriverTest, GetBrowserName) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::string expected = "Internet Explorer";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   std::string expected = "Safari";
 #else
   std::string expected;
@@ -115,14 +115,14 @@ TEST_F(AlternativeBrowserDriverTest, GetBrowserName) {
   actual = driver()->GetBrowserName();
   EXPECT_EQ("", actual);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   SetBrowserPath("${ie}");
   actual = driver()->GetBrowserName();
   EXPECT_EQ("Internet Explorer", actual);
 
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   SetBrowserPath("${safari}");
   actual = driver()->GetBrowserName();
   EXPECT_EQ("Safari", actual);
@@ -142,9 +142,9 @@ TEST_F(AlternativeBrowserDriverTest, GetBrowserName) {
 }
 
 TEST_F(AlternativeBrowserDriverTest, GetBrowserType) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   BrowserType expected = BrowserType::kIE;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   BrowserType expected = BrowserType::kSafari;
 #else
   BrowserType expected = BrowserType::kUnknown;
@@ -156,7 +156,7 @@ TEST_F(AlternativeBrowserDriverTest, GetBrowserType) {
   actual = driver()->GetBrowserType();
   EXPECT_EQ(BrowserType::kUnknown, actual);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   SetBrowserPath("${ie}");
   actual = driver()->GetBrowserType();
   EXPECT_EQ(BrowserType::kIE, actual);
@@ -180,7 +180,7 @@ TEST_F(AlternativeBrowserDriverTest, GetBrowserType) {
   EXPECT_EQ(BrowserType::kChrome, actual);
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   SetBrowserPath("${safari}");
   actual = driver()->GetBrowserType();
   EXPECT_EQ(BrowserType::kSafari, actual);
@@ -199,16 +199,16 @@ TEST_F(AlternativeBrowserDriverTest, GetBrowserType) {
   EXPECT_EQ(BrowserType::kOpera, actual);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(AlternativeBrowserDriverTest, CreateCommandLineExpandsEnvVars) {
   _putenv("A=AAA");
   _putenv("B=BBB");
   _putenv("CC=CCC");
   _putenv("D=DDD");
   SetBrowserPath("something.exe");
-  auto params = UTF8VectorToListValue(
+  auto params = UTF8VectorToValueList(
       {"%A%", "%B%", "before_%CC%_between_%D%_after", "%NONEXISTENT%"});
-  SetBrowserParameters(&params);
+  SetBrowserParameters(params);
   auto cmd_line = driver()->CreateCommandLine(GURL("http://example.com/"));
   const base::CommandLine::StringVector& argv = cmd_line.argv();
   EXPECT_EQ(6u, argv.size());
@@ -229,16 +229,16 @@ TEST_F(AlternativeBrowserDriverTest,
   EXPECT_EQ(L"something.exe", cmd_line.argv()[0]);
   EXPECT_EQ(L"http://evil.com/%A%", cmd_line.argv()[1]);
 
-  auto params = UTF8VectorToListValue({"${url}"});
-  SetBrowserParameters(&params);
+  auto params = UTF8VectorToValueList({"${url}"});
+  SetBrowserParameters(params);
   cmd_line = driver()->CreateCommandLine(GURL("http://evil.com/%A%"));
   EXPECT_EQ(2u, cmd_line.argv().size());
   EXPECT_EQ(L"something.exe", cmd_line.argv()[0]);
   EXPECT_EQ(L"http://evil.com/%A%", cmd_line.argv()[1]);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(AlternativeBrowserDriverTest, CreateCommandLineUsesOpen) {
   // Use `open(1)' to launch browser paths that aren't absolute.
 
@@ -276,8 +276,8 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineContainsUrl) {
   // Args come after `--args', e.g.:
   //     open -a Safari http://example.com/ --args abc def
   SetBrowserPath("");
-  auto params = UTF8VectorToListValue({"abc", "def"});
-  SetBrowserParameters(&params);
+  auto params = UTF8VectorToValueList({"abc", "def"});
+  SetBrowserParameters(params);
   auto cmd_line = driver()->CreateCommandLine(GURL("http://example.com/"));
   EXPECT_EQ(7u, cmd_line.argv().size());
   EXPECT_EQ("open", cmd_line.argv()[0]);
@@ -291,8 +291,8 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineContainsUrl) {
   // If args contain "${url}", only put the URL together with the other
   // args. e.g.:
   //     open -a Safari --args abc http://example.com/ def
-  params = UTF8VectorToListValue({"abc", "${url}", "def"});
-  SetBrowserParameters(&params);
+  params = UTF8VectorToValueList({"abc", "${url}", "def"});
+  SetBrowserParameters(params);
   cmd_line = driver()->CreateCommandLine(GURL("http://example.com/"));
   EXPECT_EQ(7u, cmd_line.argv().size());
   EXPECT_EQ("open", cmd_line.argv()[0]);
@@ -303,15 +303,15 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineContainsUrl) {
   EXPECT_EQ("http://example.com/", cmd_line.argv()[5]);
   EXPECT_EQ("def", cmd_line.argv()[6]);
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 TEST_F(AlternativeBrowserDriverTest, CreateCommandLineExpandsTilde) {
   setenv("HOME", "/home/foobar", true);
 
   SetBrowserPath("/usr/bin/true");
-  auto params = UTF8VectorToListValue({"~/file.txt", "/tmp/backup.txt~"});
-  SetBrowserParameters(&params);
+  auto params = UTF8VectorToValueList({"~/file.txt", "/tmp/backup.txt~"});
+  SetBrowserParameters(params);
   auto cmd_line = driver()->CreateCommandLine(GURL("http://example.com/"));
   const base::CommandLine::StringVector& argv = cmd_line.argv();
   EXPECT_EQ(4u, argv.size());
@@ -328,9 +328,9 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineExpandsEnvVars) {
   setenv("D", "DDD", true);
 
   SetBrowserPath("/usr/bin/true");
-  auto params = UTF8VectorToListValue(
+  auto params = UTF8VectorToValueList(
       {"$A", "${B}", "before_${CC}_between_${D}_after", "$NONEXISTENT"});
-  SetBrowserParameters(&params);
+  SetBrowserParameters(params);
   auto cmd_line = driver()->CreateCommandLine(GURL("http://example.com/"));
   const base::CommandLine::StringVector& argv = cmd_line.argv();
   EXPECT_EQ(6u, argv.size());
@@ -352,13 +352,13 @@ TEST_F(AlternativeBrowserDriverTest, CreateCommandLineDoesntExpandUrlContent) {
   EXPECT_EQ(UTF8ToNative("/usr/bin/true"), cmd_line.argv()[0]);
   EXPECT_EQ("http://evil.com/$A$%7BB%7D", cmd_line.argv()[1]);
 
-  auto params = UTF8VectorToListValue({"${url}"});
-  SetBrowserParameters(&params);
+  auto params = UTF8VectorToValueList({"${url}"});
+  SetBrowserParameters(params);
   cmd_line = driver()->CreateCommandLine(GURL("http://evil.com/$A${B}"));
   EXPECT_EQ(2u, cmd_line.argv().size());
   EXPECT_EQ(UTF8ToNative("/usr/bin/true"), cmd_line.argv()[0]);
   EXPECT_EQ("http://evil.com/$A$%7BB%7D", cmd_line.argv()[1]);
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace browser_switcher

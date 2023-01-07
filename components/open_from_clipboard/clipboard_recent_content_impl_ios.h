@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,6 +52,11 @@ extern ContentType const ContentTypeImage;
 // not been suppressed and will not trigger a pasteboard access notification.
 // Otherwise, returns nil.
 - (UIImage*)recentImageFromClipboard;
+
+// Returns the set of content types being currently used on the clipboard; will
+// be nil if the current pasteboard contents are unknown, or if the clipboard
+// content age is expired.
+- (NSSet<ContentType>*)cachedClipboardContentTypes;
 
 // Uses the new iOS 14 pasteboard detection pattern API to asynchronously detect
 // if the clipboard contains content (that has not been suppressed) of the

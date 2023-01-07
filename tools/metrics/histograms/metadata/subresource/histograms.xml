@@ -1,0 +1,659 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Subresource histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="SubresourceFilter.Actions2" enum="SubresourceFilterActions2"
+    expires_after="2023-03-19">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts of various UI and user action events related to the
+    SubresourceFilter. This will be triggered when portions of the UI are shown
+    or interacted with.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Browser.HadAliases"
+    units="BooleanHadAliases" expires_after="2022-01-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records whether or not a given NavigationRequest has a nonempty vector of
+    CNAME aliases. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromBrowser is enabled.
+    Recorded in a method called in the ChildFrameNavigationFilteringThrottle's
+    destructor.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Browser.InvalidCount"
+    units="count" expires_after="2022-04-17">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of invalid CNAME aliases seen for a NavigationRequest by
+    the ChildFrameNavigationFilteringThrottle. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromBrowser is enabled and the
+    request has a nonempty vector of CNAME aliases. Recorded in a method called
+    in the ChildFrameNavigationFilteringThrottle's destructor.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Browser.ListLength"
+    units="length" expires_after="2022-04-17">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records the lengths of each CNAME aliases vector passed to the
+    ChildFrameNavigationFilteringThrottle, not including empty alias vectors.
+    Only recorded if features::kSendCnameAliasesToSubresourceFilterFromBrowser
+    is enabled and the request has a nonempty vector of CNAME aliases. Recorded
+    in a method called in the ChildFrameNavigationFilteringThrottle's
+    destructor.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Browser.RedundantCount"
+    units="count" expires_after="2022-04-17">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of CNAME aliases seen by the
+    ChildFrameNavigationFilteringThrottle that match the host of the requested
+    URL. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromBrowser is enabled and the
+    request has a nonempty vector of CNAME aliases. Recorded in a method called
+    in the ChildFrameNavigationFilteringThrottle's destructor.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.CnameAlias.Browser.WasAdTaggedBasedOnAliasCount"
+    units="count" expires_after="2022-01-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of CNAME aliases seen for a given NavigationRequest for
+    which LoadPolicy::kWouldDisallow was returned due to an alias match. Only
+    recorded if features::kSendCnameAliasesToSubresourceFilterFromBrowser is
+    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
+    a method called in the ChildFrameNavigationFilteringThrottle's destructor.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.CnameAlias.Browser.WasBlockedBasedOnAliasCount"
+    units="count" expires_after="2022-06-12">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of CNAME aliases seen for a given NavigationRequest for
+    which LoadPolicy::kDisallow was returned due to an alias match. Only
+    recorded if features::kSendCnameAliasesToSubresourceFilterFromBrowser is
+    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
+    a method called in the ChildFrameNavigationFilteringThrottle's destructor.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Renderer.HadAliases"
+    units="BooleanHadAliases" expires_after="2022-06-12">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records whether or not a given ResourceLoader's ResourceRequest has a
+    nonempty vector of CNAME aliases. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromRenderer is enabled.
+    Recorded in a method called by
+    blink::ResourceLoader::DidReceiveResponseInternal.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Renderer.InvalidCount"
+    units="count" expires_after="2022-04-17">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of invalid CNAME aliases encountered by the
+    ResourceLoader, as these are not sent to the SubResourceFilter. Only
+    recorded if features::kSendCnameAliasesToSubresourceFilterFromRenderer is
+    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
+    a method called by blink::ResourceLoader::DidReceiveResponseInternal.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Renderer.ListLength"
+    units="length" expires_after="2022-06-19">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records the length of the CNAME aliases vector passed to the ResourceLoader,
+    not including empty alias vectors. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromRenderer is enabled and
+    the request has a nonempty vector of CNAME aliases. Recorded in a method
+    called by blink::ResourceLoader::DidReceiveResponseInternal.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Renderer.RedundantCount"
+    units="count" expires_after="2022-04-17">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Counts the number of CNAME aliases encountered by the ResourceLoader that
+    match the host of the requested URL (as well as the number of any that the
+    match the host of the original URL in the case of redirects), as these
+    aliases are not sent to the SubResourceFilter. Only recorded if
+    features::kSendCnameAliasesToSubresourceFilterFromRenderer is enabled and
+    the request has a nonempty vector of CNAME aliases. Recorded in a method
+    called by blink::ResourceLoader::DidReceiveResponseInternal.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Renderer.WasAdTaggedBasedOnAlias"
+    units="BooleanTagged" expires_after="2022-06-12">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records whether or not a given ResourceLoader's ResourceRequest has CNAME
+    alias for which the returned LoadPolicy was LoadPolicy::kWouldDisallow. Only
+    recorded if features::kSendCnameAliasesToSubresourceFilterFromRenderer is
+    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
+    a method called by blink::ResourceLoader::DidReceiveResponseInternal.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.CnameAlias.Renderer.WasBlockedBasedOnAlias"
+    enum="BooleanBlocked" expires_after="2022-06-12">
+  <owner>cammie@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records whether or not a given ResourceLoader's ResourceRequest has CNAME
+    alias for which the returned LoadPolicy was LoadPolicy::kDisallow. Only
+    recorded if features::kSendCnameAliasesToSubresourceFilterFromRenderer is
+    enabled and the request has a nonempty vector of CNAME aliases. Recorded in
+    a method called by the destructor of blink::ResourceLoader.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.DocumentLoad.Activation.CPUDuration"
+    units="microseconds" expires_after="M77">
+  <owner>pkalinnikov@chromium.org</owner>
+  <summary>
+    Records how much thread CPU time it takes to decide whether subresource
+    filtering should be activated for a main frame or subframe.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.DocumentLoad.Activation.WallDuration"
+    units="microseconds" expires_after="M77">
+  <owner>pkalinnikov@chromium.org</owner>
+  <summary>
+    Records how long it takes to decide whether subresource filtering should be
+    activated for a main frame or subframe.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.DocumentLoad.ActivationState"
+    enum="SubresourceFilterActivationState" expires_after="2020-10-04">
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    Whenever a document load is committed in any frame, records whether
+    subresource filtering should be activated for that load.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.DocumentLoad.RulesetIsAvailable"
+    enum="BooleanAvailable" expires_after="M77">
+  <owner>engedy@chromium.org</owner>
+  <summary>
+    Whenever a document load is committed in any frame and subresource filtering
+    should be activated, records whether the filtering rules are available.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Allowed"
+    units="microseconds" expires_after="2023-08-09">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records the total time a child frame navigation was delayed while
+    calculating whether it should be disallowed or not. Logged for all
+    navigations that were allowed.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.Disallowed2"
+    units="microseconds" expires_after="2023-06-01">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records the total time a child frame navigation was delayed while
+    calculating whether it should be disallowed or not. Logged for all
+    navigations with the disallowed load policy.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.DocumentLoad.SubframeFilteringDelay.WouldDisallow"
+    units="microseconds" expires_after="2023-06-01">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records the total time a child frame navigation was delayed while
+    calculating whether it should be disallowed or not. Logged for all
+    navigations with the would_disallow load policy.
+
+    This metric uses UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES to acccount for
+    clients with low-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2"
+    enum="Boolean" expires_after="2023-08-14">
+  <owner>alexmt@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    For every navigation observed by the subresource filter that passes through
+    ReadyToCommitNavigation, whether the navigation results in a commit.
+    Recorded when the navigation finishes.
+
+    Excludes top-level frame navigations, same-document navigations, navigations
+    that are not handled by the network stack (e.g. about: URLs), navigations
+    with no available RenderFrameHost, and navigations with a dead RenderFrame.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.Experimental.ReadyToCommitResultsInCommit2.RestrictedAdFrameNavigation"
+    enum="Boolean" expires_after="2023-08-28">
+  <owner>alexmt@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    For every 'restricted' navigation observed by the subresource filter that
+    passes through ReadyToCommitNavigation and occurs in an ad frame, whether
+    the navigation results in a commit. Recorded when the navigation finishes.
+
+    A restricted navigation is one that is either to a URL matching an allowlist
+    rule on the filter list, or is both to a URL that matches no filter list
+    rule and is same-origin with the top-level frame's URL. Note that, if there
+    is a sequence of restricted navigations, each will be counted individually.
+
+    Excludes top-level frame navigations, same-document navigations, navigations
+    that are not handled by the network stack (e.g. about: URLs), navigations
+    with no available RenderFrameHost, and navigations with a dead RenderFrame.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.IndexRuleset.CPUDuration" units="ms"
+    expires_after="2020-02-02">
+  <owner>pkalinnikov@chromium.org</owner>
+  <summary>
+    The total CPU time it took to parse and index all rules. Does not include
+    time when the indexing thread was not doing actual work, e.g. waiting for
+    I/O or being descheduled. Recorded every time the RulesetService kicks off a
+    ruleset indexing process.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.IndexRuleset.NumUnsupportedRules"
+    units="rules" expires_after="2022-09-15">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    The number of rules that could be not be successfully indexed and therefore
+    have been ignored. Recorded every time the RulesetService kicks off a
+    ruleset indexing process and it reaches the point where rules are getting
+    indexed. This is logged when a new ruleset is indexed for the first time on
+    Chrome start.
+
+    Warning: This metric expired after M90 (around 05/2021) and was unexpired
+    09/2021. Data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.IndexRuleset.Verify.Status"
+    enum="SubresourceFilterVerifyStatus" expires_after="2023-03-05">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    The result of the IndexRulesetMatcher Verify method. Either pass if both the
+    checksum and verifier succeeded, or a value indicating which combination of
+    them failed. Note that a zero checksum indicates that the checksum has not
+    yet been stored during indexing (for rulesets indexed prior to the
+    checksumming code). This is logged when the indexed ruleset is loaded on
+    Chrome start.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.IndexRuleset.Verify2.WallDuration"
+    units="ms" expires_after="2023-06-01">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    The total time it took to verify the indexed ruleset in the browser process.
+    Logged every time verification occurs, which usually occurs when the first
+    page with activation is navigated to. This is logged when the indexed
+    ruleset is loaded on Chrome start.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.IndexRuleset.WallDuration" units="ms"
+    expires_after="2023-06-01">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    The total time it took to read and index all rules. Includes I/O time for
+    reading the unindexed rules, but not for writing the indexed ruleset.
+    Recorded every time the RulesetService kicks off a ruleset indexing process.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.MainFrameLoad.RulesetIsAvailableAnyActivationLevel"
+    enum="BooleanAvailable" expires_after="2023-08-09">
+  <owner>alexmt@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    Whenever a document load is committed in the root frame, records whether the
+    filtering rules are available. This is independent of whether or not
+    subresource filtering should be activated.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.ActivationDecision"
+    enum="SubresourceFilterActivationDecision" expires_after="2021-08-22">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records the policy decision to activate subresource filtering for a page
+    load. 'Activated' indicates that subresource filtering was activated. All
+    other reasons indicate that subresource filtering was not activated.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.ActivationList"
+    enum="ActivationList" expires_after="2023-04-02">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    The ActivationList or NONE that the root frame's navigation matched with.
+    Recorded at WillProcessResponse time for an outermost main frame navigation.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.ActivationState"
+    enum="SubresourceFilterActivationState" expires_after="2023-04-02">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whenever a document load is committed in a root frame, records whether
+    subresource filtering should be activated for that load. Also records the
+    same for the initial document load, even if it was not committed.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.ActivationState.DidInherit"
+    enum="SubresourceFilterActivationState" expires_after="2022-11-02">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whenever a document load is committed in a root frame that inherits from its
+    same-origin opener, records whether subresource filtering should be
+    activated for that load. Also records the same for the initial document load
+    (if it inherits its activation) even if it was not committed.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.AdsInterventionTriggered"
+    enum="AdsViolations" expires_after="M90">
+  <owner>yaoxia@google.com</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records that an ads violation has been triggered on a page load. Logged at
+    the time the ads violation is detected.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.Disallowed"
+    units="resource loads" expires_after="2021-08-09">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total number of subresource loads that have been disallowed.
+    This only differs from `MatchedRules` when filtering is performed in dry-run
+    mode.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.Evaluated"
+    units="resource loads" expires_after="2023-06-01">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total number of subresource loads that have been evaluated. This
+    only differs from 'Total' when some of subdocuments is subject to a
+    deactivating rule with DOCUMENT activation type.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.MatchedRules"
+    units="resource loads" expires_after="2023-02-12">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total number of subresource loads that have matched filtering
+    rules. This only differs from `Disallowed` when filtering is performed in
+    dry-run mode.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.NumSubresourceLoads.Total"
+    units="resource loads" expires_after="2023-06-01">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total number of subresource loads that have gone through the
+    subresource filtering pipeline.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.SafeBrowsingDelay" units="ms"
+    expires_after="2023-07-31">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    The navigation delay imposed by the subresource filter on a given navigation
+    due to Safe Browsing checks.
+
+    This metric expired after M83 and was renewed in M88, so it has incomplete
+    data between M84 and M87 inclusively.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.PageLoad.SubresourceEvaluation.TotalCPUDuration"
+    units="microseconds" expires_after="2023-01-12">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total thread CPU time spent on evaluating subresource requests,
+    aggregated across all frames.
+
+    Note: this histogram is emitted for all clients, both ones which have
+    high-resolution timer available and those which don't.
+
+    Warning: This metric expired after 01/2020 and was unexpired 07/2021. Data
+    may be missing.
+  </summary>
+</histogram>
+
+<histogram
+    name="SubresourceFilter.PageLoad.SubresourceEvaluation.TotalWallDuration"
+    units="microseconds" expires_after="2023-01-12">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whenever a page load is finished with subresource filtering activated,
+    records the total real time spent on evaluating subresource requests,
+    aggregated across all frames. This includes the time spent on waiting or
+    being descheduled.
+
+    Note: this histogram is emitted for all clients, both ones which have
+    high-resolution timer available and those which don't.
+
+    Warning: This metric expired after M78 and was unexpired 07/2021. Data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.PageLoad.TimeSinceLastActiveAdsIntervention"
+    units="hours" expires_after="M90">
+  <owner>yaoxia@google.com</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records the time since the last ads intervention when loading a page that
+    has previously triggered an ads intervention. This is limited by the maximum
+    expiry time of intervention data, 7 days. Recorded at the time page
+    activation is computed during page load when a previous intervention was
+    previously recorded and has not expired from the intervention data.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.RulesetVerificationStatus"
+    enum="RulesetVerificationStatus" expires_after="M77">
+  <owner>yaoxia@chromium.org</owner>
+  <summary>
+    Records the ruleset verification status at some point in a browsing session.
+    If AdTagging is disabled, this happens when the user first visits a site
+    that is failing the Better Ads Standard, and gets ads blocked on that site;
+    if AdTagging is enabled, this happens immediately on startup. Note that this
+    is recorded only once per browsing session (the lifetime of the browser
+    process).
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.SafeBrowsing.TotalCheckTime" units="ms"
+    expires_after="2023-02-26">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    The time an individual Safe Browsing URL check took before finishing,
+    including posting tasks to and from the IO thread. Measured on the UI thread
+    on navigation.
+
+    This metric expired after M83 and was renewed in M88, so it has incomplete
+    data between M84 and M87 inclusively.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.SubresourceLoad.Evaluation.CPUDuration"
+    units="microseconds" expires_after="2023-07-25">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whenever a subresource of a document is evaluated against the ruleset,
+    records the thread CPU time spent on calculating whether it should be
+    allowed to load.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+
+    Warning: This metric expired after 01/2020 and was unexpired 07/2021. Data
+    may be missing.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.SubresourceLoad.Evaluation.WallDuration"
+    units="microseconds" expires_after="2023-01-12">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whenever a subresource of a document is evaluated against the ruleset,
+    records how much time was spent on calculating whether it should be allowed
+    to load.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+
+    Warning: This metric expired after M85 and was unexpired 07/2021. Data may
+    be missing
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.WriteRuleset.ReplaceFileError"
+    enum="PlatformFileError" expires_after="M90">
+  <owner>jkarlin@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Records the exact error whenever writing a ruleset fails at the step where
+    the ruleset would be moved from the scratch directory to its final location.
+    Recorded every time the RulesetService kicks off a ruleset indexing process.
+  </summary>
+</histogram>
+
+<histogram name="SubresourceFilter.WriteRuleset.Result"
+    enum="SubresourceFilterWriteRulesetResult" expires_after="2023-06-01">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Whether indexing a version of the ruleset and writing it to disk succeeded,
+    or failed at a particular step. Recorded every time the RulesetService kicks
+    off a ruleset indexing process.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

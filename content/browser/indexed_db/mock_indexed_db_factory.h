@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/browser/indexed_db/indexed_db_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -19,86 +18,98 @@ namespace content {
 class MockIndexedDBFactory : public IndexedDBFactory {
  public:
   MockIndexedDBFactory();
+
+  MockIndexedDBFactory(const MockIndexedDBFactory&) = delete;
+  MockIndexedDBFactory& operator=(const MockIndexedDBFactory&) = delete;
+
   ~MockIndexedDBFactory() override;
   MOCK_METHOD3(GetDatabaseNames,
                void(scoped_refptr<IndexedDBCallbacks> callbacks,
-                    const url::Origin& origin,
+                    const blink::StorageKey& storage_key,
                     const base::FilePath& data_directory));
   MOCK_METHOD3(GetDatabaseInfo,
                void(scoped_refptr<IndexedDBCallbacks> callbacks,
-                    const url::Origin& origin,
+                    const storage::BucketLocator& bucket_locator,
                     const base::FilePath& data_directory));
   MOCK_METHOD4(OpenProxy,
                void(const std::u16string& name,
                     IndexedDBPendingConnection* connection,
-                    const url::Origin& origin,
+                    const blink::StorageKey& storage_key,
                     const base::FilePath& data_directory));
   // Googlemock can't deal with move-only types, so *Proxy() is a workaround.
   void Open(const std::u16string& name,
             std::unique_ptr<IndexedDBPendingConnection> connection,
-            const url::Origin& origin,
+            const storage::BucketLocator& bucket_locator,
             const base::FilePath& data_directory) override {
-    OpenProxy(name, connection.get(), origin, data_directory);
+    OpenProxy(name, connection.get(), bucket_locator.storage_key,
+              data_directory);
   }
   MOCK_METHOD5(DeleteDatabase,
                void(const std::u16string& name,
                     scoped_refptr<IndexedDBCallbacks> callbacks,
-                    const url::Origin& origin,
+                    const storage::BucketLocator& bucket_locator,
                     const base::FilePath& data_directory,
                     bool force_close));
   MOCK_METHOD2(AbortTransactionsAndCompactDatabaseProxy,
                void(base::OnceCallback<void(leveldb::Status)>* callback,
-                    const url::Origin& origin));
+                    const storage::BucketLocator& bucket_locator));
   void AbortTransactionsAndCompactDatabase(
       base::OnceCallback<void(leveldb::Status)> callback,
-      const url::Origin& origin) override {
+      const storage::BucketLocator& bucket_locator) override {
     base::OnceCallback<void(leveldb::Status)>* callback_ref = &callback;
-    AbortTransactionsAndCompactDatabaseProxy(callback_ref, origin);
+    AbortTransactionsAndCompactDatabaseProxy(callback_ref, bucket_locator);
   }
   MOCK_METHOD2(AbortTransactionsForDatabaseProxy,
                void(base::OnceCallback<void(leveldb::Status)>* callback,
-                    const url::Origin& origin));
+                    const storage::BucketLocator& bucket_locator));
   void AbortTransactionsForDatabase(
       base::OnceCallback<void(leveldb::Status)> callback,
-      const url::Origin& origin) override {
+      const storage::BucketLocator& bucket_locator) override {
     base::OnceCallback<void(leveldb::Status)>* callback_ref = &callback;
-    AbortTransactionsForDatabaseProxy(callback_ref, origin);
+    AbortTransactionsForDatabaseProxy(callback_ref, bucket_locator);
   }
 
-  MOCK_METHOD1(HandleBackingStoreFailure, void(const url::Origin& origin));
+  MOCK_METHOD1(HandleBackingStoreFailure,
+               void(const storage::BucketLocator& bucket_locator));
   MOCK_METHOD2(HandleBackingStoreCorruption,
-               void(const url::Origin& origin,
+               void(const storage::BucketLocator& bucket_locator,
                     const IndexedDBDatabaseError& error));
   // The Android NDK implements a subset of STL, and the gtest templates can't
   // deal with std::pair's. This means we can't use GoogleMock for this method
-  std::vector<IndexedDBDatabase*> GetOpenDatabasesForOrigin(
-      const url::Origin& origin) const override;
+  std::vector<IndexedDBDatabase*> GetOpenDatabasesForBucket(
+      const storage::BucketLocator& bucket_locator) const override;
   MOCK_METHOD2(ForceClose,
-               void(const url::Origin& origin, bool delete_in_memory_store));
-  MOCK_METHOD1(ForceSchemaDowngrade, void(const url::Origin& origin));
-  MOCK_METHOD1(HasV2SchemaCorruption,
-               V2SchemaCorruptionStatus(const url::Origin& origin));
+               void(storage::BucketId bucket_locator,
+                    bool delete_in_memory_store));
+  MOCK_METHOD1(ForceSchemaDowngrade,
+               void(const storage::BucketLocator& bucket_locator));
+  MOCK_METHOD1(
+      HasV2SchemaCorruption,
+      V2SchemaCorruptionStatus(const storage::BucketLocator& bucket_locator));
   MOCK_METHOD0(ContextDestroyed, void());
 
-  MOCK_METHOD1(BlobFilesCleaned, void(const url::Origin& origin));
+  MOCK_METHOD1(BlobFilesCleaned,
+               void(const storage::BucketLocator& bucket_locator));
 
-  MOCK_CONST_METHOD1(GetConnectionCount, size_t(const url::Origin& origin));
+  MOCK_CONST_METHOD1(GetConnectionCount,
+                     size_t(storage::BucketId bucket_locator));
 
-  MOCK_CONST_METHOD1(GetInMemoryDBSize, int64_t(const url::Origin& origin));
+  MOCK_CONST_METHOD1(GetInMemoryDBSize,
+                     int64_t(const storage::BucketLocator& bucket_locator));
 
-  MOCK_CONST_METHOD1(GetLastModified, base::Time(const url::Origin& origin));
+  MOCK_CONST_METHOD1(GetLastModified,
+                     base::Time(const storage::BucketLocator& bucket_locator));
 
   MOCK_METHOD2(ReportOutstandingBlobs,
-               void(const url::Origin& origin, bool blobs_outstanding));
+               void(const storage::BucketLocator& bucket_locator,
+                    bool blobs_outstanding));
 
-  MOCK_METHOD1(NotifyIndexedDBListChanged, void(const url::Origin& origin));
+  MOCK_METHOD1(NotifyIndexedDBListChanged,
+               void(const blink::StorageKey& storage_key));
   MOCK_METHOD3(NotifyIndexedDBContentChanged,
-               void(const url::Origin& origin,
+               void(const storage::BucketLocator& bucket_locator,
                     const std::u16string& database_name,
                     const std::u16string& object_store_name));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockIndexedDBFactory);
 };
 
 }  // namespace content

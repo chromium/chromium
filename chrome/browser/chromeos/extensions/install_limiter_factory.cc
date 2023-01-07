@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "chrome/browser/chromeos/extensions/install_limiter.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
 
@@ -24,9 +23,14 @@ InstallLimiterFactory* InstallLimiterFactory::GetInstance() {
 }
 
 InstallLimiterFactory::InstallLimiterFactory()
-    : BrowserContextKeyedServiceFactory(
-        "InstallLimiter",
-        BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory(
+          "InstallLimiter",
+          ProfileSelections::Builder()
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+              // Use OTR profile for Guest Session.
+              .WithGuest(ProfileSelection::kOffTheRecordOnly)
+#endif
+              .Build()) {
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,7 @@
 #include <stddef.h>
 
 #include <memory>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
 #include "components/subresource_filter/core/common/load_policy.h"
@@ -39,6 +37,10 @@ class DocumentSubresourceFilter {
   DocumentSubresourceFilter(url::Origin document_origin,
                             mojom::ActivationState activation_state,
                             scoped_refptr<const MemoryMappedRuleset> ruleset);
+
+  DocumentSubresourceFilter(const DocumentSubresourceFilter&) = delete;
+  DocumentSubresourceFilter& operator=(const DocumentSubresourceFilter&) =
+      delete;
 
   ~DocumentSubresourceFilter();
 
@@ -79,8 +81,6 @@ class DocumentSubresourceFilter {
   std::unique_ptr<FirstPartyOrigin> document_origin_;
 
   mojom::DocumentLoadStatistics statistics_;
-
-  DISALLOW_COPY_AND_ASSIGN(DocumentSubresourceFilter);
 };
 
 }  // namespace subresource_filter

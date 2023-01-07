@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,24 +32,27 @@ class MultiResolutionImageResourceFetcher::ClientImpl
 
  public:
   explicit ClientImpl(StartCallback callback)
-      : completed_(false), status_(LOADING), callback_(std::move(callback)) {}
+      : completed_(false), status_(kLoading), callback_(std::move(callback)) {}
+
+  ClientImpl(const ClientImpl&) = delete;
+  ClientImpl& operator=(const ClientImpl&) = delete;
 
   ~ClientImpl() override {}
 
-  virtual void Cancel() { OnLoadCompleteInternal(LOAD_FAILED); }
+  virtual void Cancel() { OnLoadCompleteInternal(kLoadFailed); }
 
   bool completed() const { return completed_; }
 
  private:
   enum LoadStatus {
-    LOADING,
-    LOAD_FAILED,
-    LOAD_SUCCEEDED,
+    kLoading,
+    kLoadFailed,
+    kLoadSucceeded,
   };
 
   void OnLoadCompleteInternal(LoadStatus status) {
     DCHECK(!completed_);
-    DCHECK_EQ(status_, LOADING);
+    DCHECK_EQ(status_, kLoading);
 
     completed_ = true;
     status_ = status;
@@ -57,8 +60,8 @@ class MultiResolutionImageResourceFetcher::ClientImpl
     if (callback_.is_null())
       return;
     std::move(callback_).Run(
-        status_ == LOAD_FAILED ? WebURLResponse() : response_,
-        status_ == LOAD_FAILED ? std::string() : data_);
+        status_ == kLoadFailed ? WebURLResponse() : response_,
+        status_ == kLoadFailed ? std::string() : data_);
   }
 
   // WebAssociatedURLLoaderClient methods:
@@ -80,10 +83,10 @@ class MultiResolutionImageResourceFetcher::ClientImpl
     // For example, for an Access Control error.
     if (completed_)
       return;
-    OnLoadCompleteInternal(LOAD_SUCCEEDED);
+    OnLoadCompleteInternal(kLoadSucceeded);
   }
   void DidFail(const WebURLError& error) override {
-    OnLoadCompleteInternal(LOAD_FAILED);
+    OnLoadCompleteInternal(kLoadFailed);
   }
 
  private:
@@ -100,8 +103,6 @@ class MultiResolutionImageResourceFetcher::ClientImpl
 
   // Callback when we're done.
   StartCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientImpl);
 };
 
 MultiResolutionImageResourceFetcher::MultiResolutionImageResourceFetcher(
@@ -132,8 +133,8 @@ MultiResolutionImageResourceFetcher::MultiResolutionImageResourceFetcher(
 
   Start(frame, is_favicon, network::mojom::RequestMode::kNoCors,
         network::mojom::CredentialsMode::kInclude,
-        WTF::Bind(&MultiResolutionImageResourceFetcher::OnURLFetchComplete,
-                  WTF::Unretained(this)));
+        WTF::BindOnce(&MultiResolutionImageResourceFetcher::OnURLFetchComplete,
+                      WTF::Unretained(this)));
 }
 
 MultiResolutionImageResourceFetcher::~MultiResolutionImageResourceFetcher() {

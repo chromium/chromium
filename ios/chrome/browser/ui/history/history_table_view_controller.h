@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,6 +31,9 @@ enum class UrlLoadStrategy;
 @property(nonatomic, assign) history::BrowsingHistoryService* historyService;
 // Opaque instructions on how to open urls.
 @property(nonatomic) UrlLoadStrategy loadStrategy;
+// Optional: If provided, search terms to filter the displayed history items.
+// `searchTerms` will be the initial value of the text in the search bar.
+@property(nonatomic, copy) NSString* searchTerms;
 // Delegate for this HistoryTableView.
 @property(nonatomic, weak) id<HistoryUIDelegate> delegate;
 // Delegate used to make the Tab UI visible.

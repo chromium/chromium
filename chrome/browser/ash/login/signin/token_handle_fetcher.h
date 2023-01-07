@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
@@ -16,21 +15,26 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
 
+class Profile;
+
 namespace signin {
 class IdentityManager;
 }
 
+namespace ash {
 class TokenHandleUtil;
-class Profile;
 
 // This class is resposible for obtaining new token handle for user.
 // It can be used in two ways. When user have just used GAIA signin there is
 // an OAuth2 token available. If there is profile already loaded, then
 // minting additional access token might be required.
-
 class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
  public:
   TokenHandleFetcher(TokenHandleUtil* util, const AccountId& account_id);
+
+  TokenHandleFetcher(const TokenHandleFetcher&) = delete;
+  TokenHandleFetcher& operator=(const TokenHandleFetcher&) = delete;
+
   ~TokenHandleFetcher() override;
 
   using TokenFetchingCallback =
@@ -52,8 +56,7 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   // GaiaOAuthClient::Delegate overrides:
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
-  void OnGetTokenInfoResponse(
-      std::unique_ptr<base::DictionaryValue> token_info) override;
+  void OnGetTokenInfoResponse(const base::Value::Dict& token_info) override;
 
   void FillForAccessToken(const std::string& access_token);
 
@@ -71,8 +74,8 @@ class TokenHandleFetcher : public gaia::GaiaOAuthClient::Delegate {
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       access_token_fetcher_;
   base::CallbackListSubscription profile_shutdown_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(TokenHandleFetcher);
 };
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_TOKEN_HANDLE_FETCHER_H_

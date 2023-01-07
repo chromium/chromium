@@ -1,9 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_DOWNGRADE_SNAPSHOT_FILE_COLLECTOR_H_
 #define CHROME_BROWSER_DOWNGRADE_SNAPSHOT_FILE_COLLECTOR_H_
+
+#include <stdint.h>
 
 #include <vector>
 
@@ -43,7 +45,7 @@ struct SnapshotItemDetails {
 
   SnapshotItemDetails(base::FilePath path,
                       ItemType type,
-                      int data_types,
+                      uint64_t data_types,
                       SnapshotItemId id);
   ~SnapshotItemDetails() = default;
   const base::FilePath path;
@@ -51,7 +53,7 @@ struct SnapshotItemDetails {
 
   // Bitfield from ChromeBrowsingDataRemoverDelegate::DataType representing
   // the data types affected by this item.
-  const int data_types;
+  const uint64_t data_types;
   const SnapshotItemId id;
 };
 

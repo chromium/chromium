@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,7 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/syncer_error.h"
@@ -22,6 +20,7 @@
 
 namespace syncer {
 
+class ActiveDevicesInvalidationInfo;
 class CommitProcessor;
 class StatusController;
 class SyncCycle;
@@ -43,17 +42,20 @@ class Commit {
          const sync_pb::ClientToServerMessage& message,
          ExtensionsActivity::Records extensions_activity_buffer);
 
+  Commit(const Commit&) = delete;
+  Commit& operator=(const Commit&) = delete;
+
   ~Commit();
 
   // |extensions_activity| may be null.
   static std::unique_ptr<Commit> Init(
       ModelTypeSet enabled_types,
+      bool proxy_tabs_datatype_enabled,
       size_t max_entries,
       const std::string& account_name,
       const std::string& cache_guid,
       bool cookie_jar_mismatch,
-      bool single_client,
-      const std::vector<std::string>& fcm_registration_tokens,
+      const ActiveDevicesInvalidationInfo& active_devices_invalidation_info,
       CommitProcessor* commit_processor,
       ExtensionsActivity* extensions_activity);
 
@@ -73,8 +75,6 @@ class Commit {
 
   sync_pb::ClientToServerMessage message_;
   ExtensionsActivity::Records extensions_activity_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Commit);
 };
 
 }  // namespace syncer

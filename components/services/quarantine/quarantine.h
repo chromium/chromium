@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,18 +60,20 @@ using mojom::QuarantineFileResult;
 //   |referrer_url|: Referring URL. This is empty for off-the-record download.
 //   |client_guid|: Only used on Windows. Identifies the client application
 //     that downloaded the file.
+//   |callback|: Will be called with the quarantine result on completion.
 //
 // Note: The |source_url| and |referrer_url| will be stripped of unnecessary
 //   parts using SanitizeUrlForQuarantine() before they are used for annotation
 //   or notification purposes. If the URLs are sensitive -- e.g. because the
 //   download was made using an off-the-record profile -- then pass in an empty
 //   GURL() instead.
-QuarantineFileResult QuarantineFile(const base::FilePath& file,
-                                    const GURL& source_url,
-                                    const GURL& referrer_url,
-                                    const std::string& client_guid);
+void QuarantineFile(const base::FilePath& file,
+                    const GURL& source_url,
+                    const GURL& referrer_url,
+                    const std::string& client_guid,
+                    mojom::Quarantine::QuarantineFileCallback callback);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 QuarantineFileResult SetInternetZoneIdentifierDirectly(
     const base::FilePath& full_path,
     const GURL& source_url,

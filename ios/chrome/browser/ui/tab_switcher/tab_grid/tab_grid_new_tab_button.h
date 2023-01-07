@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,7 @@
 
 // Init with image for regular/incognito page.
 - (instancetype)initWithRegularImage:(UIImage*)regularImage
-                      incognitoImage:(UIImage*)incognitoImage
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
+                      incognitoImage:(UIImage*)incognitoImage;
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 

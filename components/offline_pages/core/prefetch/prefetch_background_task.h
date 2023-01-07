@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_PREFETCH_BACKGROUND_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_PREFETCH_BACKGROUND_TASK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 
 namespace offline_pages {
@@ -15,6 +16,10 @@ class PrefetchService;
 class PrefetchBackgroundTask {
  public:
   explicit PrefetchBackgroundTask(PrefetchService* service);
+
+  PrefetchBackgroundTask(const PrefetchBackgroundTask&) = delete;
+  PrefetchBackgroundTask& operator=(const PrefetchBackgroundTask&) = delete;
+
   virtual ~PrefetchBackgroundTask();
 
   // Tells the system how to reschedule the running of next background task when
@@ -33,9 +38,7 @@ class PrefetchBackgroundTask {
       PrefetchBackgroundTaskRescheduleType::NO_RESCHEDULE;
 
   // The PrefetchService owns |this|, so a raw pointer is OK.
-  PrefetchService* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchBackgroundTask);
+  raw_ptr<PrefetchService> service_;
 };
 
 }  // namespace offline_pages

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,28 +7,34 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/mojo_system_info_dispatcher.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/screens/user_selection_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/user_board_view_mojo.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
-namespace chromeos {
+namespace ash {
 
-class UserBoardViewMojo;
-class UserSelectionScreen;
-class MojoSystemInfoDispatcher;
-
-// ViewsScreenLocker acts like LoginScreenClient::Delegate which handles method
-// calls coming from ash into chrome.
+// ViewsScreenLocker acts like LoginScreenClientImpl::Delegate which handles
+// method calls coming from ash into chrome.
 // It is also a ScreenLocker::Delegate which handles calls from chrome into
 // ash (views-based lockscreen).
-class ViewsScreenLocker : public LoginScreenClient::Delegate,
+class ViewsScreenLocker : public LoginScreenClientImpl::Delegate,
                           public ScreenLocker::Delegate,
-                          public PowerManagerClient::Observer,
+                          public chromeos::PowerManagerClient::Observer,
                           public lock_screen_apps::FocusCyclerDelegate {
  public:
   explicit ViewsScreenLocker(ScreenLocker* screen_locker);
+
+  ViewsScreenLocker(const ViewsScreenLocker&) = delete;
+  ViewsScreenLocker& operator=(const ViewsScreenLocker&) = delete;
+
   ~ViewsScreenLocker() override;
 
   void Init();
@@ -39,7 +45,7 @@ class ViewsScreenLocker : public LoginScreenClient::Delegate,
   void ClearErrors() override;
   void OnAshLockAnimationFinished() override;
 
-  // LoginScreenClient::Delegate
+  // LoginScreenClientImpl::Delegate
   void HandleAuthenticateUserWithPasswordOrPin(
       const AccountId& account_id,
       const std::string& password,
@@ -90,10 +96,8 @@ class ViewsScreenLocker : public LoginScreenClient::Delegate,
   std::unique_ptr<MojoSystemInfoDispatcher> system_info_updater_;
 
   base::WeakPtrFactory<ViewsScreenLocker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsScreenLocker);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOCK_VIEWS_SCREEN_LOCKER_H_

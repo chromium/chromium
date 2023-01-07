@@ -1,6 +1,0 @@
-include_rules = [
-  "+gin",
-  "+ui/accessibility",
-  "+ui/gfx",
-  "+v8",
-]

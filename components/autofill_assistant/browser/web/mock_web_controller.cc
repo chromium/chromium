@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,12 @@
 
 namespace autofill_assistant {
 
-MockWebController::MockWebController() : WebController(nullptr, nullptr) {}
+MockWebController::MockWebController()
+    : WebController(/* web_contents= */ nullptr,
+                    /* devtools_client= */ nullptr,
+                    /* user_data= */ nullptr,
+                    /* log_info= */ nullptr,
+                    /* annotate_dom_model_service= */ nullptr) {}
 MockWebController::~MockWebController() {}
 
 }  // namespace autofill_assistant

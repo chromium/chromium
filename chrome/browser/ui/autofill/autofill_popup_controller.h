@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,14 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
+#include "components/autofill/core/browser/ui/suggestion.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace autofill {
-
-struct Suggestion;
 
 // This interface provides data to an AutofillPopupView.
 class AutofillPopupController : public AutofillPopupViewDelegate {
@@ -37,14 +35,27 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   // Returns the full set of autofill suggestions, if applicable.
   virtual std::vector<Suggestion> GetSuggestions() const = 0;
 
-  // Returns the suggestion at the given |row| index.
+  // Returns the suggestion at the given |row| index. The |Suggestion| is the
+  // data model including information that is to be shown in the UI.
   virtual const Suggestion& GetSuggestionAt(int row) const = 0;
 
-  // Returns the suggestion value string at the given |row| index.
-  virtual const std::u16string& GetSuggestionValueAt(int row) const = 0;
+  // Returns the suggestion main text string at the given |row| index. The main
+  // text is shown in primary or secondary text style, serving as the title of
+  // the suggestion.
+  virtual std::u16string GetSuggestionMainTextAt(int row) const = 0;
 
-  // Returns the suggestion label string at the given |row| index.
-  virtual const std::u16string& GetSuggestionLabelAt(int row) const = 0;
+  // Returns the suggestion minor text string at the given |row| index. The
+  // minor text is shown in secondary text style, serving as the sub-title of
+  // the suggestion item.
+  virtual std::u16string GetSuggestionMinorTextAt(int row) const = 0;
+
+  // Returns all the labels of the suggestion at the given |row| index. The
+  // labels are presented as a N*M matrix, and the position of the text in the
+  // matrix decides where the text will be shown on the UI. (e.g. The text
+  // labels[1][2] will be shown on the second line, third column in the grid
+  // view of label).
+  virtual std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsAt(
+      int row) const = 0;
 
   // Returns whether the item at |list_index| can be removed. If so, fills
   // out |title| and |body| (when non-null) with relevant user-facing text.
@@ -56,11 +67,11 @@ class AutofillPopupController : public AutofillPopupViewDelegate {
   virtual bool RemoveSuggestion(int index) = 0;
 
   // Change which line is currently selected by the user.
-  virtual void SetSelectedLine(base::Optional<int> selected_line) = 0;
+  virtual void SetSelectedLine(absl::optional<int> selected_line) = 0;
 
   // Returns the index of the selected line. A line is "selected" when it is
   // hovered or has keyboard focus.
-  virtual base::Optional<int> selected_line() const = 0;
+  virtual absl::optional<int> selected_line() const = 0;
 
   // Returns the popup type corresponding to the controller.
   virtual PopupType GetPopupType() const = 0;

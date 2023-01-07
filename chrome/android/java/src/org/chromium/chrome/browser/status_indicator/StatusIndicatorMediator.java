@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,14 +19,15 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.HashSet;
 
-class StatusIndicatorMediator
-        implements BrowserControlsStateProvider.Observer, View.OnLayoutChangeListener {
+class StatusIndicatorMediator implements BrowserControlsStateProvider.Observer,
+                                         View.OnLayoutChangeListener, TabObscuringHandler.Observer {
     private static final int STATUS_BAR_COLOR_TRANSITION_DURATION_MS = 200;
     private static final int FADE_TEXT_DURATION_MS = 150;
     private static final int UPDATE_COLOR_TRANSITION_DURATION_MS = 400;
@@ -35,6 +36,7 @@ class StatusIndicatorMediator
     private BrowserControlsStateProvider mBrowserControlsStateProvider;
     private HashSet<StatusIndicatorCoordinator.StatusIndicatorObserver> mObservers =
             new HashSet<>();
+    private final TabObscuringHandler mTabObscuringHandler;
     private Supplier<Integer> mStatusBarWithoutIndicatorColorSupplier;
     private Runnable mOnShowAnimationEnd;
     private Runnable mRegisterResource;
@@ -56,6 +58,7 @@ class StatusIndicatorMediator
      * Constructs the status indicator mediator.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} to listen to
      *                                     for the changes in controls offsets.
+     * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param statusBarWithoutIndicatorColorSupplier A supplier that will get the status bar color
      *                                               without taking the status indicator into
      *                                               account.
@@ -65,9 +68,11 @@ class StatusIndicatorMediator
      *                                        tab switcher.
      */
     StatusIndicatorMediator(BrowserControlsStateProvider browserControlsStateProvider,
+            TabObscuringHandler tabObscuringHandler,
             Supplier<Integer> statusBarWithoutIndicatorColorSupplier,
             Supplier<Boolean> canAnimateNativeBrowserControls) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
+        mTabObscuringHandler = tabObscuringHandler;
         mStatusBarWithoutIndicatorColorSupplier = statusBarWithoutIndicatorColorSupplier;
         mCanAnimateNativeBrowserControls = canAnimateNativeBrowserControls;
     }
@@ -89,6 +94,7 @@ class StatusIndicatorMediator
         mUnregisterResource = unregisterResource;
         mInvalidateCompositorView = invalidateCompositorView;
         mRequestLayout = requestLayout;
+        mTabObscuringHandler.addObserver(this);
     }
 
     @Override
@@ -114,6 +120,7 @@ class StatusIndicatorMediator
         if (mUpdateAnimatorSet != null)  mUpdateAnimatorSet.cancel();
         if (mHideAnimatorSet != null) mHideAnimatorSet.cancel();
         mBrowserControlsStateProvider.removeObserver(this);
+        mTabObscuringHandler.removeObserver(this);
     }
 
     void addObserver(StatusIndicatorCoordinator.StatusIndicatorObserver observer) {
@@ -168,6 +175,7 @@ class StatusIndicatorMediator
             mModel.set(StatusIndicatorProperties.TEXT_COLOR, textColor);
             mModel.set(StatusIndicatorProperties.ICON_TINT, iconTint);
             mModel.set(StatusIndicatorProperties.ANDROID_VIEW_VISIBILITY, View.INVISIBLE);
+            mModel.set(StatusIndicatorProperties.IS_OBSCURED, false);
             mOnShowAnimationEnd = () -> animateTextFadeIn();
         };
 
@@ -441,5 +449,26 @@ class StatusIndicatorMediator
     @VisibleForTesting
     void updateVisibilityForTesting(boolean hiding) {
         updateVisibility(hiding);
+    }
+
+    @VisibleForTesting
+    void finishAnimationsForTesting() {
+        if (mStatusBarAnimation != null && mStatusBarAnimation.isRunning()) {
+            mStatusBarAnimation.end();
+        }
+        if (mTextFadeInAnimation != null && mTextFadeInAnimation.isRunning()) {
+            mTextFadeInAnimation.end();
+        }
+        if (mUpdateAnimatorSet != null && mUpdateAnimatorSet.isRunning()) {
+            mUpdateAnimatorSet.end();
+        }
+        if (mHideAnimatorSet != null && mHideAnimatorSet.isRunning()) {
+            mHideAnimatorSet.end();
+        }
+    }
+
+    @Override
+    public void updateObscured(boolean obscureTabContent, boolean obscureToolbar) {
+        mModel.set(StatusIndicatorProperties.IS_OBSCURED, obscureToolbar);
     }
 }

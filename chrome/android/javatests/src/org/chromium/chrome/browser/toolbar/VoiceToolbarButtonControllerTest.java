@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,14 +18,17 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
-import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
-import static org.chromium.chrome.test.util.ViewUtils.waitForView;
+import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.waitForView;
 
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
@@ -35,33 +38,30 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.ViewUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.ViewUtils;
 
 /** Tests {@link VoiceToolbarButtonController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableFeatures({ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR})
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=" + ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR + "<FakeStudy",
-        "force-fieldtrials=FakeStudy/Enabled"})
+@EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 public final class VoiceToolbarButtonControllerTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
 
@@ -81,6 +81,16 @@ public final class VoiceToolbarButtonControllerTest {
 
     @Mock
     VoiceRecognitionHandler mVoiceRecognitionHandler;
+
+    @BeforeClass
+    public static void setUpBeforeActivityLaunched() {
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(AdaptiveToolbarButtonVariant.VOICE);
+    }
+
+    @AfterClass
+    public static void tearDownAfterActivityDestroyed() {
+        AdaptiveToolbarStatePredictor.setToolbarStateForTesting(null);
+    }
 
     @Before
     public void setUp() {
@@ -109,7 +119,7 @@ public final class VoiceToolbarButtonControllerTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=FakeStudy.Enabled:minimum_width_dp/0"})
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonInToolbarIsDisabledOnNTP() {
         // Ensure the button starts visible.
         onView(isRoot()).check(waitForView(allOf(withId(R.id.optional_toolbar_button),
@@ -122,7 +132,6 @@ public final class VoiceToolbarButtonControllerTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=FakeStudy.Enabled:minimum_width_dp/0"})
     public void testVoiceButtonInToolbarIsMissingWhenVoiceDisabled() {
         doReturn(false).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
 
@@ -134,7 +143,7 @@ public final class VoiceToolbarButtonControllerTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=FakeStudy.Enabled:minimum_width_dp/0"})
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonDisabledOnIncognito() {
         // Ensure the button starts visible.
         onView(isRoot()).check(waitForView(allOf(withId(R.id.optional_toolbar_button),
@@ -147,7 +156,7 @@ public final class VoiceToolbarButtonControllerTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=FakeStudy.Enabled:minimum_width_dp/0"})
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonInToolbarIsDisabledDuringModal() {
         // Ensure the button starts visible.
         onView(isRoot()).check(waitForView(allOf(withId(R.id.optional_toolbar_button),
@@ -164,9 +173,11 @@ public final class VoiceToolbarButtonControllerTest {
             public void onDismiss(PropertyModel model, int dismissalCause) {}
         };
 
-        PropertyModel dialogModel = (new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
-                                             .with(ModalDialogProperties.CONTROLLER, controller)
-                                             .build());
+        PropertyModel dialogModel = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                    .with(ModalDialogProperties.CONTROLLER, controller)
+                    .build();
+        });
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             sActivityTestRule.getActivity().getModalDialogManager().showDialog(
@@ -186,20 +197,12 @@ public final class VoiceToolbarButtonControllerTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=FakeStudy.Enabled:minimum_width_dp/0"})
+    @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     public void testVoiceButtonInToolbarStartsVoiceRecognition() {
         onViewWaiting(allOf(withId(R.id.optional_toolbar_button), isDisplayed(), isEnabled(),
                               withContentDescription(mButtonString)))
                 .perform(click());
 
         verify(mVoiceRecognitionHandler).startVoiceRecognition(VoiceInteractionSource.TOOLBAR);
-    }
-
-    @Test
-    @MediumTest
-    @RequiresRestart
-    @CommandLineFlags.Add({"force-fieldtrial-params=FakeStudy.Enabled:minimum_width_dp/200000"})
-    public void testVoiceButtonInToolbarScreenNotWideEnough() {
-        assertButtonMissingOrNonVoice();
     }
 }

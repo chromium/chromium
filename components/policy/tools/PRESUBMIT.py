@@ -1,11 +1,14 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import os
 
 
-def RunOtherPresubmit(function_name, input_api, output_api):
+USE_PYTHON3 = True
+
+
+def _RunOtherPresubmit(function_name, input_api, output_api):
   # Apply the PRESUBMIT for components/policy/resources to run the syntax check
   component_resources_path = os.path.join('components', 'policy', 'resources')
 
@@ -22,9 +25,23 @@ def RunOtherPresubmit(function_name, input_api, output_api):
   return global_vars[function_name](input_api, output_api)
 
 
+def _RunPythonUnitTests(input_api, output_api):
+  tests = input_api.canned_checks.GetUnitTestsInDirectory(
+      input_api,
+      output_api,
+      directory='.',
+      files_to_check=[r'^.+_test\.py$'],
+      run_on_python2=False)
+  return input_api.RunTests(tests)
+
+
 def CheckChangeOnUpload(input_api, output_api):
-  return RunOtherPresubmit("CheckChangeOnUpload", input_api, output_api)
+  output = _RunOtherPresubmit("CheckChangeOnUpload", input_api, output_api)
+  output.extend(_RunPythonUnitTests(input_api, output_api))
+  return output
 
 
 def CheckChangeOnCommit(input_api, output_api):
-  return RunOtherPresubmit("CheckChangeOnCommit", input_api, output_api)
+  output = _RunOtherPresubmit("CheckChangeOnCommit", input_api, output_api)
+  output.extend(_RunPythonUnitTests(input_api, output_api))
+  return output

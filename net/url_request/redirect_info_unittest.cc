@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,7 @@ TEST(RedirectInfoTest, MethodForRedirect) {
         test.original_method, kOriginalUrl, kOriginalSiteForCookies,
         kOriginalFirstPartyUrlPolicy, kOriginalReferrerPolicy,
         kOriginalReferrer, test.http_status_code, kNewLocation,
-        base::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
+        absl::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
         kCopyFragment);
 
     EXPECT_EQ(test.expected_new_method, redirect_info.new_method);
@@ -104,7 +104,7 @@ TEST(RedirectInfoTest, CopyFragment) {
         kOriginalMethod, GURL(test.original_url), kOriginalSiteForCookies,
         kOriginalFirstPartyUrlPolicy, kOriginalReferrerPolicy,
         kOriginalReferrer, kHttpStatusCode, GURL(test.new_location),
-        base::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
+        absl::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
         test.copy_fragment);
 
     EXPECT_EQ(GURL(test.expected_new_url), redirect_info.new_url);
@@ -143,7 +143,7 @@ TEST(RedirectInfoTest, FirstPartyURLPolicy) {
         kOriginalMethod, kOriginalUrl, kOriginalSiteForCookies,
         test.original_first_party_url_policy, kOriginalReferrerPolicy,
         kOriginalReferrer, kHttpStatusCode, kNewLocation,
-        base::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
+        absl::nullopt /* referrer_policy_header */, kInsecureSchemeWasUpgraded,
         kCopyFragment);
 
     EXPECT_TRUE(redirect_info.new_site_for_cookies.IsEquivalent(

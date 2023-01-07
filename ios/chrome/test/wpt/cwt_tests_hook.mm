@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,13 @@ namespace tests_hook {
 bool DisableAppGroupAccess() {
   return true;
 }
+bool DisableClientSideFieldTrials() {
+  return true;
+}
 bool DisableContentSuggestions() {
+  return true;
+}
+bool DisableDiscoverFeed() {
   return true;
 }
 bool DisableFirstRun() {
@@ -26,7 +32,7 @@ bool DisableFirstRun() {
 bool DisableGeolocation() {
   return true;
 }
-bool DisableSigninRecallPromo() {
+bool DisableUpgradeSigninPromo() {
   return true;
 }
 bool DisableUpdateService() {

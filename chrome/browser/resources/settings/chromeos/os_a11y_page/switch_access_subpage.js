@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,30 @@
  * Switch Access settings.
  */
 
+import 'chrome://resources/cr_elements/md_select.css.js';
+import '../../controls/settings_slider.js';
+import '../../controls/settings_toggle_button.js';
+import '../../settings_shared.css.js';
+import './switch_access_action_assignment_dialog.js';
+import './switch_access_setup_guide_dialog.js';
+import './switch_access_setup_guide_warning_dialog.js';
+
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {Route} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {routes} from '../os_route.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+
+import {getLabelForAssignment} from './switch_access_action_assignment_pane.js';
+import {AUTO_SCAN_SPEED_RANGE_MS, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
+import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
+
 /**
  * The portion of the setting name common to all Switch Access preferences.
  * @const
@@ -14,18 +38,11 @@
 const PREFIX = 'settings.a11y.switch_access.';
 
 /** @type {!Array<number>} */
-const AUTO_SCAN_SPEED_RANGE_MS = [
-  4000, 3900, 3800, 3700, 3600, 3500, 3400, 3300, 3200, 3100, 3000, 2900,
-  2800, 2700, 2600, 2500, 2400, 2300, 2200, 2100, 2000, 1900, 1800, 1700,
-  1600, 1500, 1400, 1300, 1200, 1100, 1000, 900,  800,  700
-];
-
-/** @type {!Array<number>} */
 const POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND = [25, 50, 75, 100, 150, 200, 300];
 
 /**
  * @param {!Array<number>} ticksInMs
- * @return {!Array<!cr_slider.SliderTick>}
+ * @return {!Array<!SliderTick>}
  */
 function ticksWithLabelsInSec(ticksInMs) {
   // Dividing by 1000 to convert milliseconds to seconds for the label.
@@ -34,219 +51,273 @@ function ticksWithLabelsInSec(ticksInMs) {
 
 /**
  * @param {!Array<number>} ticks
- * @return {!Array<!cr_slider.SliderTick>}
+ * @return {!Array<!SliderTick>}
  */
 function ticksWithCountingLabels(ticks) {
   return ticks.map((x, i) => ({label: i + 1, value: x}));
 }
 
-Polymer({
-  is: 'settings-switch-access-subpage',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsSwitchAccessSubpageElementBase = mixinBehaviors(
+    [
+      DeepLinkingBehavior,
+      I18nBehavior,
+      PrefsBehavior,
+      RouteObserverBehavior,
+      WebUIListenerBehavior,
+    ],
+    PolymerElement);
 
-  behaviors: [
-    DeepLinkingBehavior,
-    I18nBehavior,
-    PrefsBehavior,
-    settings.RouteObserverBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class SettingsSwitchAccessSubpageElement extends
+    SettingsSwitchAccessSubpageElementBase {
+  static get is() {
+    return 'settings-switch-access-subpage';
+  }
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
-    selectAssignments_: {
-      type: Array,
-      value: [],
-      notify: true,
-    },
-
-    /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
-    nextAssignments_: {
-      type: Array,
-      value: [],
-      notify: true,
-    },
-
-    /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
-    previousAssignments_: {
-      type: Array,
-      value: [],
-      notify: true,
-    },
-
-    /** @private {Array<number>} */
-    autoScanSpeedRangeMs_: {
-      readOnly: true,
-      type: Array,
-      value: ticksWithLabelsInSec(AUTO_SCAN_SPEED_RANGE_MS),
-    },
-
-    /** @private {Array<number>} */
-    pointScanSpeedRangeDipsPerSecond_: {
-      readOnly: true,
-      type: Array,
-      value: ticksWithCountingLabels(POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND),
-    },
-
-    /** @private {Object} */
-    formatter_: {
-      type: Object,
-      value() {
-        // navigator.language actually returns a locale, not just a language.
-        const locale = window.navigator.language;
-        const options = {minimumFractionDigits: 1, maximumFractionDigits: 1};
-        return new Intl.NumberFormat(locale, options);
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /** @private {number} */
-    maxScanSpeedMs_: {
-      readOnly: true,
-      type: Number,
-      value: AUTO_SCAN_SPEED_RANGE_MS[AUTO_SCAN_SPEED_RANGE_MS.length - 1]
-    },
-
-    /** @private {string} */
-    maxScanSpeedLabelSec_: {
-      readOnly: true,
-      type: String,
-      value() {
-        return this.scanSpeedStringInSec_(this.maxScanSpeedMs_);
+      /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
+      selectAssignments_: {
+        type: Array,
+        value: [],
+        notify: true,
       },
-    },
 
-    /** @private {number} */
-    minScanSpeedMs_:
-        {readOnly: true, type: Number, value: AUTO_SCAN_SPEED_RANGE_MS[0]},
-
-    /** @private {string} */
-    minScanSpeedLabelSec_: {
-      readOnly: true,
-      type: String,
-      value() {
-        return this.scanSpeedStringInSec_(this.minScanSpeedMs_);
+      /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
+      nextAssignments_: {
+        type: Array,
+        value: [],
+        notify: true,
       },
-    },
 
-    /** @private {number} */
-    maxPointScanSpeed_: {
-      readOnly: true,
-      type: Number,
-      value: POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND.length
-    },
+      /** @private {!Array<{key: string, device: !SwitchAccessDeviceType}>} */
+      previousAssignments_: {
+        type: Array,
+        value: [],
+        notify: true,
+      },
 
-    /** @private {number} */
-    minPointScanSpeed_: {readOnly: true, type: Number, value: 1},
+      /** @private {Array<number>} */
+      autoScanSpeedRangeMs_: {
+        readOnly: true,
+        type: Array,
+        value: ticksWithLabelsInSec(AUTO_SCAN_SPEED_RANGE_MS),
+      },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kSwitchActionAssignment,
-        chromeos.settings.mojom.Setting.kSwitchActionAutoScan,
-        chromeos.settings.mojom.Setting.kSwitchActionAutoScanKeyboard,
-      ]),
-    },
+      /** @private {Array<number>} */
+      pointScanSpeedRangeDipsPerSecond_: {
+        readOnly: true,
+        type: Array,
+        value: ticksWithCountingLabels(POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND),
+      },
 
-    /** @private */
-    showSwitchAccessActionAssignmentDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {Object} */
+      formatter_: {
+        type: Object,
+        value() {
+          // navigator.language actually returns a locale, not just a language.
+          const locale = window.navigator.language;
+          const options = {minimumFractionDigits: 1, maximumFractionDigits: 1};
+          return new Intl.NumberFormat(locale, options);
+        },
+      },
 
-    /** @private */
-    showSwitchAccessSetupGuideDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {number} */
+      maxScanSpeedMs_: {
+        readOnly: true,
+        type: Number,
+        value: AUTO_SCAN_SPEED_RANGE_MS[AUTO_SCAN_SPEED_RANGE_MS.length - 1],
+      },
 
-    /** @private {?SwitchAccessCommand} */
-    action_: {
-      type: String,
-      value: null,
-      notify: true,
-    },
-  },
+      /** @private {string} */
+      maxScanSpeedLabelSec_: {
+        readOnly: true,
+        type: String,
+        value() {
+          return this.scanSpeedStringInSec_(this.maxScanSpeedMs_);
+        },
+      },
 
-  /** @private {?SwitchAccessSubpageBrowserProxy} */
-  switchAccessBrowserProxy_: null,
+      /** @private {number} */
+      minScanSpeedMs_:
+          {readOnly: true, type: Number, value: AUTO_SCAN_SPEED_RANGE_MS[0]},
+
+      /** @private {string} */
+      minScanSpeedLabelSec_: {
+        readOnly: true,
+        type: String,
+        value() {
+          return this.scanSpeedStringInSec_(this.minScanSpeedMs_);
+        },
+      },
+
+      /** @private {number} */
+      maxPointScanSpeed_: {
+        readOnly: true,
+        type: Number,
+        value: POINT_SCAN_SPEED_RANGE_DIPS_PER_SECOND.length,
+      },
+
+      /** @private {number} */
+      minPointScanSpeed_: {readOnly: true, type: Number, value: 1},
+
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          Setting.kSwitchActionAssignment,
+          Setting.kSwitchActionAutoScan,
+          Setting.kSwitchActionAutoScanKeyboard,
+        ]),
+      },
+
+      /** @private */
+      showSwitchAccessActionAssignmentDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      showSwitchAccessSetupGuideDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      showSwitchAccessSetupGuideWarningDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {?SwitchAccessCommand} */
+      action_: {
+        type: String,
+        value: null,
+        notify: true,
+      },
+    };
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** @private {!SwitchAccessSubpageBrowserProxy} */
     this.switchAccessBrowserProxy_ =
         SwitchAccessSubpageBrowserProxyImpl.getInstance();
-  },
+
+    /** @private {?HTMLElement} */
+    this.focusAfterDialogClose_ = null;
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.addWebUIListener(
         'switch-access-assignments-changed',
-        this.onAssignmentsChanged_.bind(this));
+        value => this.onAssignmentsChanged_(value));
     this.switchAccessBrowserProxy_.refreshAssignmentsFromPrefs();
-  },
+  }
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route=} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.MANAGE_SWITCH_ACCESS_SETTINGS) {
+    if (route !== routes.MANAGE_SWITCH_ACCESS_SETTINGS) {
       return;
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /** @private */
-  onSetupGuideClick_() {
-    if (this.showSetupGuide_()) {
-      this.showSwitchAccessSetupGuideDialog_ = true;
+  onSetupGuideRerunClick_() {
+    this.showSwitchAccessSetupGuideWarningDialog_ = true;
+  }
+
+  /** @private */
+  onSetupGuideWarningDialogCancel_() {
+    this.showSwitchAccessSetupGuideWarningDialog_ = false;
+  }
+
+  /** @private */
+  onSetupGuideWarningDialogClose_() {
+    // The on_cancel is followed by on_close, so check cancel didn't happen
+    // first.
+    if (this.showSwitchAccessSetupGuideWarningDialog_) {
+      this.openSetupGuide_();
+      this.showSwitchAccessSetupGuideWarningDialog_ = false;
     }
-  },
+  }
+
+  /** @private */
+  openSetupGuide_() {
+    this.showSwitchAccessSetupGuideWarningDialog_ = false;
+    this.showSwitchAccessSetupGuideDialog_ = true;
+  }
 
   /** @private */
   onSelectAssignClick_() {
     this.action_ = SwitchAccessCommand.SELECT;
     this.showSwitchAccessActionAssignmentDialog_ = true;
-    this.focusAfterDialogClose_ = this.$.selectLinkRow;
-  },
+    this.focusAfterDialogClose_ =
+        /** @type {?HTMLElement} */ (this.$.selectLinkRow);
+  }
 
   /** @private */
   onNextAssignClick_() {
     this.action_ = SwitchAccessCommand.NEXT;
     this.showSwitchAccessActionAssignmentDialog_ = true;
-    this.focusAfterDialogClose_ = this.$.nextLinkRow;
-  },
+    this.focusAfterDialogClose_ =
+        /** @type {?HTMLElement} */ (this.$.nextLinkRow);
+  }
 
   /** @private */
   onPreviousAssignClick_() {
     this.action_ = SwitchAccessCommand.PREVIOUS;
     this.showSwitchAccessActionAssignmentDialog_ = true;
-    this.focusAfterDialogClose_ = this.$.previousLinkRow;
-  },
+    this.focusAfterDialogClose_ =
+        /** @type {?HTMLElement} */ (this.$.previousLinkRow);
+  }
 
   /** @private */
   onSwitchAccessSetupGuideDialogClose_() {
     this.showSwitchAccessSetupGuideDialog_ = false;
     this.$.setupGuideLink.focus();
-  },
+  }
 
   /** @private */
   onSwitchAccessActionAssignmentDialogClose_() {
     this.showSwitchAccessActionAssignmentDialog_ = false;
     this.focusAfterDialogClose_.focus();
-  },
+  }
 
   /**
    * @param {!Object<SwitchAccessCommand, !Array<{key: string, device:
@@ -257,7 +328,14 @@ Polymer({
     this.selectAssignments_ = value[SwitchAccessCommand.SELECT];
     this.nextAssignments_ = value[SwitchAccessCommand.NEXT];
     this.previousAssignments_ = value[SwitchAccessCommand.PREVIOUS];
-  },
+
+    // Any complete assignment will have at least one switch assigned to SELECT.
+    // If this method is called with no SELECT switches, then the page has just
+    // loaded, and we should open the setup guide.
+    if (Object.keys(this.selectAssignments_).length === 0) {
+      this.openSetupGuide_();
+    }
+  }
 
   /**
    * @param {{key: string, device: !SwitchAccessDeviceType}} assignment
@@ -266,7 +344,7 @@ Polymer({
    */
   getLabelForAssignment_(assignment) {
     return getLabelForAssignment(assignment);
-  },
+  }
 
   /**
    * @param {!Array<{key: string, device: !SwitchAccessDeviceType}>} assignments
@@ -294,7 +372,7 @@ Polymer({
             'assignSwitchSubLabel5OrMoreSwitches', ...switches.slice(0, 3),
             switches.length - 3);
     }
-  },
+  }
 
   /**
    * @return {boolean} Whether to show settings for auto-scan within the
@@ -307,23 +385,7 @@ Polymer({
     const autoScanEnabled = /** @type {boolean} */
         (this.getPref(PREFIX + 'auto_scan.enabled').value);
     return improvedTextInputEnabled && autoScanEnabled;
-  },
-
-  /**
-   * @return {boolean} Whether to show the Switch Access setup guide.
-   * @private
-   */
-  showSetupGuide_() {
-    return loadTimeData.getBoolean('showSwitchAccessSetupGuide');
-  },
-
-  /**
-   * @return {boolean} Whether Switch Access point scanning is enabled.
-   * @private
-   */
-  isSwitchAccessPointScanningEnabled_() {
-    return loadTimeData.getBoolean('isSwitchAccessPointScanningEnabled');
-  },
+  }
 
   /**
    * @param {number} scanSpeedValueMs
@@ -334,5 +396,8 @@ Polymer({
     const scanSpeedValueSec = scanSpeedValueMs / 1000;
     return this.i18n(
         'durationInSeconds', this.formatter_.format(scanSpeedValueSec));
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsSwitchAccessSubpageElement.is, SettingsSwitchAccessSubpageElement);

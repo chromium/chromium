@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,14 +27,14 @@ TypeConverter<ui::mojom::blink::AttributedStringPtr, NSAttributedString*>::
         [ns_attributed_string attributesAtIndex:i
                                  effectiveRange:&effective_range];
 
-    NSFont* font = [ns_attributes objectForKey:NSFontAttributeName];
+    NSFont* font = ns_attributes[NSFontAttributeName];
     String font_name;
     float font_point_size;
     // Only encode the attributes if the filtered set contains font information.
     if (font) {
       font_name = String([font fontName]);
       font_point_size = [font pointSize];
-      if (!font_name.IsEmpty()) {
+      if (!font_name.empty()) {
         // Convert the attributes.
         ui::mojom::blink::FontAttributePtr attrs =
             ui::mojom::blink::FontAttribute::New(font_name, font_point_size,

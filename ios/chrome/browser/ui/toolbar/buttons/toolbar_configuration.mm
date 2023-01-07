@@ -1,14 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/dynamic_color_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -28,42 +24,35 @@
 }
 
 - (UIColor*)NTPBackgroundColor {
-  return color::DarkModeDynamicColor(ntp_home::kNTPBackgroundColor(),
-                                     self.style == INCOGNITO,
-                                     [UIColor colorNamed:kBackgroundDarkColor]);
+  return ntp_home::NTPBackgroundColor();
 }
 
 - (UIColor*)backgroundColor {
-  return color::DarkModeDynamicColor([UIColor colorNamed:kBackgroundColor],
-                                     self.style == INCOGNITO,
-                                     [UIColor colorNamed:kBackgroundDarkColor]);
+  return [UIColor colorNamed:kBackgroundColor];
+}
+
+- (UIColor*)focusedBackgroundColor {
+  return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+}
+
+- (UIColor*)focusedLocationBarBackgroundColor {
+  return [UIColor colorNamed:kTextfieldFocusedBackgroundColor];
 }
 
 - (UIColor*)buttonsTintColor {
-  return color::DarkModeDynamicColor(
-      [UIColor colorNamed:kToolbarButtonColor], self.style == INCOGNITO,
-      [UIColor colorNamed:kToolbarButtonDarkColor]);
+  return [UIColor colorNamed:kToolbarButtonColor];
 }
 
 - (UIColor*)buttonsTintColorHighlighted {
-  return color::DarkModeDynamicColor(
-      [UIColor colorNamed:@"tab_toolbar_button_color_highlighted"],
-      self.style == INCOGNITO,
-      [UIColor colorNamed:@"tab_toolbar_button_color_highlighted_incognito"]);
+  return [UIColor colorNamed:@"tab_toolbar_button_color_highlighted"];
 }
 
 - (UIColor*)buttonsSpotlightColor {
-  return color::DarkModeDynamicColor(
-      [UIColor colorNamed:@"tab_toolbar_button_halo_color"],
-      self.style == INCOGNITO,
-      [UIColor colorNamed:@"tab_toolbar_button_halo_color_incognito"]);
+  return [UIColor colorNamed:@"tab_toolbar_button_halo_color"];
 }
 
 - (UIColor*)dimmedButtonsSpotlightColor {
-  return color::DarkModeDynamicColor(
-      [UIColor colorNamed:@"tab_toolbar_button_halo_color"],
-      self.style == INCOGNITO,
-      [UIColor colorNamed:@"tab_toolbar_button_halo_color_incognito"]);
+  return [UIColor colorNamed:@"tab_toolbar_button_halo_color"];
 }
 
 - (UIColor*)locationBarBackgroundColorWithVisibility:(CGFloat)visibilityFactor {

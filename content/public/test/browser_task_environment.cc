@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,16 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/after_startup_task_utils.h"
-#include "content/browser/browser_process_sub_thread.h"
+#include "content/browser/browser_process_io_thread.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/scheduler/browser_io_thread_delegate.h"
 #include "content/browser/scheduler/browser_task_executor.h"
@@ -27,11 +26,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/task_scheduler/post_task_android.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -47,6 +46,9 @@ class TestBrowserThread {
   TestBrowserThread(BrowserThread::ID identifier,
                     scoped_refptr<base::SingleThreadTaskRunner> thread_runner);
 
+  TestBrowserThread(const TestBrowserThread&) = delete;
+  TestBrowserThread& operator=(const TestBrowserThread&) = delete;
+
   ~TestBrowserThread();
 
   // Stops the thread, no-op if this is not a real thread.
@@ -55,19 +57,17 @@ class TestBrowserThread {
  private:
   explicit TestBrowserThread(
       BrowserThread::ID identifier,
-      std::unique_ptr<BrowserProcessSubThread> real_thread);
+      std::unique_ptr<BrowserProcessIOThread> real_thread);
 
   const BrowserThread::ID identifier_;
 
   // A real thread which represents |identifier_| when StartIOThread() is used
   // (null otherwise).
-  std::unique_ptr<BrowserProcessSubThread> real_thread_;
+  std::unique_ptr<BrowserProcessIOThread> real_thread_;
 
   // Binds |identifier_| to |thread_runner| when the public constructor is used
   // (null otherwise).
   std::unique_ptr<BrowserThreadImpl> fake_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserThread);
 };
 
 // static
@@ -80,7 +80,7 @@ std::unique_ptr<TestBrowserThread> TestBrowserThread::StartIOThread() {
 
 TestBrowserThread::TestBrowserThread(
     BrowserThread::ID identifier,
-    std::unique_ptr<BrowserProcessSubThread> real_thread)
+    std::unique_ptr<BrowserProcessIOThread> real_thread)
     : identifier_(identifier), real_thread_(std::move(real_thread)) {}
 
 TestBrowserThread::TestBrowserThread(
@@ -143,9 +143,9 @@ BrowserTaskEnvironment::~BrowserTaskEnvironment() {
 
   // Run DestructionObservers before our fake threads go away to ensure
   // BrowserThread::CurrentlyOn() returns the results expected by the observers.
-  NotifyDestructionObserversAndReleaseSequenceManager();
+  DestroyTaskEnvironment();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   com_initializer_.reset();
 #endif
 }
@@ -165,7 +165,7 @@ void BrowserTaskEnvironment::Init() {
 
   CHECK(!real_io_thread_ || !HasIOMainLoop()) << "Can't have two IO threads";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Similar to Chrome's UI thread, we need to initialize COM separately for
   // this thread as we don't call Start() for the UI TestBrowserThread; it's
   // already started!
@@ -173,8 +173,10 @@ void BrowserTaskEnvironment::Init() {
   CHECK(com_initializer_->Succeeded());
 #endif
 
-  auto browser_ui_thread_scheduler = BrowserUIThreadScheduler::CreateForTesting(
-      sequence_manager(), GetTimeDomain());
+  if (GetMockTimeDomain())
+    sequence_manager()->SetTimeDomain(GetMockTimeDomain());
+  auto browser_ui_thread_scheduler =
+      BrowserUIThreadScheduler::CreateForTesting(sequence_manager());
   auto default_ui_task_runner =
       browser_ui_thread_scheduler->GetHandle()->GetDefaultTaskRunner();
   auto browser_io_thread_delegate =

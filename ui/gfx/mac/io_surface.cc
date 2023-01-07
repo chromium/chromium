@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/bits.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
@@ -25,8 +25,9 @@ namespace gfx {
 
 namespace {
 
-const base::Feature kIOSurfaceUseNamedSRGBForREC709{
-    "IOSurfaceUseNamedSRGBForREC709", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kIOSurfaceUseNamedSRGBForREC709,
+             "IOSurfaceUseNamedSRGBForREC709",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 void AddIntegerValue(CFMutableDictionaryRef dictionary,
                      const CFStringRef key,
@@ -41,9 +42,19 @@ int32_t BytesPerElement(gfx::BufferFormat format, int plane) {
     case gfx::BufferFormat::R_8:
       DCHECK_EQ(plane, 0);
       return 1;
+    case gfx::BufferFormat::R_16:
+      DCHECK_EQ(plane, 0);
+      return 2;
+    case gfx::BufferFormat::RG_88:
+      DCHECK_EQ(plane, 0);
+      return 2;
+    case gfx::BufferFormat::RG_1616:
+      DCHECK_EQ(plane, 0);
+      return 4;
     case gfx::BufferFormat::BGRA_8888:
     case gfx::BufferFormat::BGRX_8888:
     case gfx::BufferFormat::RGBA_8888:
+    case gfx::BufferFormat::RGBX_8888:
     case gfx::BufferFormat::BGRA_1010102:
       DCHECK_EQ(plane, 0);
       return 4;
@@ -52,19 +63,16 @@ int32_t BytesPerElement(gfx::BufferFormat format, int plane) {
       return 8;
     case gfx::BufferFormat::YUV_420_BIPLANAR: {
       constexpr int32_t bytes_per_element[] = {1, 2};
-      DCHECK_LT(static_cast<size_t>(plane), base::size(bytes_per_element));
+      DCHECK_LT(static_cast<size_t>(plane), std::size(bytes_per_element));
       return bytes_per_element[plane];
     }
     case gfx::BufferFormat::P010: {
       constexpr int32_t bytes_per_element[] = {2, 4};
-      DCHECK_LT(static_cast<size_t>(plane), base::size(bytes_per_element));
+      DCHECK_LT(static_cast<size_t>(plane), std::size(bytes_per_element));
       return bytes_per_element[plane];
     }
-    case gfx::BufferFormat::R_16:
-    case gfx::BufferFormat::RG_88:
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_4444:
-    case gfx::BufferFormat::RGBX_8888:
     case gfx::BufferFormat::RGBA_1010102:
     case gfx::BufferFormat::YVU_420:
       NOTREACHED();
@@ -81,11 +89,18 @@ uint32_t BufferFormatToIOSurfacePixelFormat(gfx::BufferFormat format) {
   switch (format) {
     case gfx::BufferFormat::R_8:
       return 'L008';
+    case gfx::BufferFormat::RG_88:
+      return '2C08';
+    case gfx::BufferFormat::R_16:
+      return 'L016';
+    case gfx::BufferFormat::RG_1616:
+      return '2C16';
     case gfx::BufferFormat::BGRA_1010102:
       return 'l10r';  // little-endian ARGB2101010 full-range ARGB
     case gfx::BufferFormat::BGRA_8888:
     case gfx::BufferFormat::BGRX_8888:
     case gfx::BufferFormat::RGBA_8888:
+    case gfx::BufferFormat::RGBX_8888:
       return 'BGRA';
     case gfx::BufferFormat::RGBA_F16:
       return 'RGhA';
@@ -93,11 +108,8 @@ uint32_t BufferFormatToIOSurfacePixelFormat(gfx::BufferFormat format) {
       return '420v';
     case gfx::BufferFormat::P010:
       return 'x420';
-    case gfx::BufferFormat::R_16:
-    case gfx::BufferFormat::RG_88:
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_4444:
-    case gfx::BufferFormat::RGBX_8888:
     case gfx::BufferFormat::RGBA_1010102:
     // Technically RGBA_1010102 should be accepted as 'R10k', but then it won't
     // be supported by CGLTexImageIOSurface2D(), so it's best to reject it here.
@@ -137,19 +149,18 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
 
   // Prefer using named spaces.
   CFStringRef color_space_name = nullptr;
-  if (__builtin_available(macos 10.12, *)) {
-    if (color_space == ColorSpace::CreateSRGB() ||
-        (base::FeatureList::IsEnabled(kIOSurfaceUseNamedSRGBForREC709) &&
-         color_space == ColorSpace::CreateREC709())) {
-      color_space_name = kCGColorSpaceSRGB;
-    } else if (color_space == ColorSpace::CreateDisplayP3D65()) {
-      color_space_name = kCGColorSpaceDisplayP3;
-    } else if (color_space == ColorSpace::CreateExtendedSRGB()) {
-      color_space_name = kCGColorSpaceExtendedSRGB;
-    } else if (color_space == ColorSpace::CreateSCRGBLinear()) {
-      color_space_name = kCGColorSpaceExtendedLinearSRGB;
-    }
+  if (color_space == ColorSpace::CreateSRGB() ||
+      (base::FeatureList::IsEnabled(kIOSurfaceUseNamedSRGBForREC709) &&
+       color_space == ColorSpace::CreateREC709())) {
+    color_space_name = kCGColorSpaceSRGB;
+  } else if (color_space == ColorSpace::CreateDisplayP3D65()) {
+    color_space_name = kCGColorSpaceDisplayP3;
+  } else if (color_space == ColorSpace::CreateExtendedSRGB()) {
+    color_space_name = kCGColorSpaceExtendedSRGB;
+  } else if (color_space == ColorSpace::CreateSRGBLinear()) {
+    color_space_name = kCGColorSpaceExtendedLinearSRGB;
   }
+
   // The symbols kCGColorSpaceITUR_2020_PQ_EOTF and kCGColorSpaceITUR_2020_HLG
   // have been deprecated. Claim that we were able to set the color space,
   // because the path that will render these color spaces will use the
@@ -160,7 +171,7 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
   // https://crbug.com/1061723: Discussion of issues related to HLG.
   if (__builtin_available(macos 10.15, *)) {
     if (color_space == ColorSpace(ColorSpace::PrimaryID::BT2020,
-                                  ColorSpace::TransferID::SMPTEST2084,
+                                  ColorSpace::TransferID::PQ,
                                   ColorSpace::MatrixID::BT2020_NCL,
                                   ColorSpace::RangeID::LIMITED)) {
       if (__builtin_available(macos 11.0, *)) {
@@ -170,7 +181,7 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
         return true;
       }
     } else if (color_space == ColorSpace(ColorSpace::PrimaryID::BT2020,
-                                         ColorSpace::TransferID::ARIB_STD_B67,
+                                         ColorSpace::TransferID::HLG,
                                          ColorSpace::MatrixID::BT2020_NCL,
                                          ColorSpace::RangeID::LIMITED)) {
       if (__builtin_available(macos 11.0, *)) {
@@ -242,13 +253,16 @@ IOSurfaceRef CreateIOSurface(const gfx::Size& size,
     for (size_t plane = 0; plane < num_planes; ++plane) {
       const size_t factor =
           gfx::SubsamplingFactorForBufferFormat(format, plane);
-      const size_t plane_width = size.width() / factor;
-      const size_t plane_height = size.height() / factor;
+      const size_t plane_width = (size.width() + factor - 1) / factor;
+      const size_t plane_height = (size.height() + factor - 1) / factor;
       const size_t plane_bytes_per_element = BytesPerElement(format, plane);
-      const size_t plane_bytes_per_row = IOSurfaceAlignProperty(
-          kIOSurfacePlaneBytesPerRow, plane_width * plane_bytes_per_element);
+      const size_t plane_bytes_per_row =
+          IOSurfaceAlignProperty(kIOSurfacePlaneBytesPerRow,
+                                 base::bits::AlignUp(plane_width, size_t{2}) *
+                                     plane_bytes_per_element);
       const size_t plane_bytes_alloc = IOSurfaceAlignProperty(
-          kIOSurfacePlaneSize, plane_height * plane_bytes_per_row);
+          kIOSurfacePlaneSize,
+          base::bits::AlignUp(plane_height, size_t{2}) * plane_bytes_per_row);
       const size_t plane_offset =
           IOSurfaceAlignProperty(kIOSurfacePlaneOffset, total_bytes_alloc);
 
@@ -275,9 +289,11 @@ IOSurfaceRef CreateIOSurface(const gfx::Size& size,
   } else {
     const size_t bytes_per_element = BytesPerElement(format, 0);
     const size_t bytes_per_row = IOSurfaceAlignProperty(
-        kIOSurfaceBytesPerRow, size.width() * bytes_per_element);
+        kIOSurfaceBytesPerRow,
+        base::bits::AlignUp(size.width(), 2) * bytes_per_element);
     const size_t bytes_alloc = IOSurfaceAlignProperty(
-        kIOSurfaceAllocSize, size.height() * bytes_per_row);
+        kIOSurfaceAllocSize,
+        base::bits::AlignUp(size.height(), 2) * bytes_per_row);
     AddIntegerValue(properties, kIOSurfaceBytesPerElement, bytes_per_element);
     AddIntegerValue(properties, kIOSurfaceBytesPerRow, bytes_per_row);
     AddIntegerValue(properties, kIOSurfaceAllocSize, bytes_alloc);
@@ -300,14 +316,7 @@ IOSurfaceRef CreateIOSurface(const gfx::Size& size,
   }
 
   // Ensure that all IOSurfaces start as sRGB.
-  if (__builtin_available(macos 10.12, *)) {
-    IOSurfaceSetValue(surface, CFSTR("IOSurfaceColorSpace"), kCGColorSpaceSRGB);
-  } else {
-    CGColorSpaceRef color_space = base::mac::GetSRGBColorSpace();
-    base::ScopedCFTypeRef<CFDataRef> color_space_icc(
-        CGColorSpaceCopyICCProfile(color_space));
-    IOSurfaceSetValue(surface, CFSTR("IOSurfaceColorSpace"), color_space_icc);
-  }
+  IOSurfaceSetValue(surface, CFSTR("IOSurfaceColorSpace"), kCGColorSpaceSRGB);
 
   UMA_HISTOGRAM_TIMES("GPU.IOSurface.CreateTime",
                       base::TimeTicks::Now() - start_time);

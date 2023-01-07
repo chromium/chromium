@@ -38,11 +38,13 @@
 #include "third_party/blink/public/platform/web_source_buffer_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/mediasource/media_source_attachment_supplement.h"
 #include "third_party/blink/renderer/modules/mediasource/track_default_list.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -52,8 +54,6 @@ namespace blink {
 class AudioTrackList;
 class DOMArrayBuffer;
 class DOMArrayBufferView;
-class
-    EncodedAudioChunkOrEncodedVideoChunkSequenceOrEncodedAudioChunkOrEncodedVideoChunk;
 class EventQueue;
 class ExceptionState;
 class MediaSource;
@@ -77,10 +77,6 @@ class SourceBuffer final : public EventTargetWithInlineData,
   static AtomicString SegmentsKeyword();
   static AtomicString SequenceKeyword();
 
-  // Mirror the IDL's typedef for EncodedChunks.
-  using EncodedChunks =
-      EncodedAudioChunkOrEncodedVideoChunkSequenceOrEncodedAudioChunkOrEncodedVideoChunk;
-
   SourceBuffer(std::unique_ptr<WebSourceBuffer>, MediaSource*, EventQueue*);
   ~SourceBuffer() override;
 
@@ -93,13 +89,15 @@ class SourceBuffer final : public EventTargetWithInlineData,
   void setTimestampOffset(double, ExceptionState&);
   void appendBuffer(DOMArrayBuffer* data, ExceptionState&);
   void appendBuffer(NotShared<DOMArrayBufferView> data, ExceptionState&);
-  ScriptPromise appendEncodedChunks(ScriptState*,
-                                    const EncodedChunks&,
-                                    ExceptionState&);
+  ScriptPromise appendEncodedChunks(ScriptState* script_state,
+                                    const V8EncodedChunks* chunks,
+                                    ExceptionState& exception_state);
   void abort(ExceptionState&);
   void remove(double start, double end, ExceptionState&);
   void changeType(const String& type, ExceptionState&);
-  void ChangeTypeUsingConfig(const SourceBufferConfig*, ExceptionState&);
+  void ChangeTypeUsingConfig(ExecutionContext*,
+                             const SourceBufferConfig*,
+                             ExceptionState&);
   double appendWindowStart() const;
   void setAppendWindowStart(double, ExceptionState&);
   double appendWindowEnd() const;
@@ -126,6 +124,10 @@ class SourceBuffer final : public EventTargetWithInlineData,
   void GetBuffered_Locked(
       WebTimeRanges* /* out */,
       MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */) const;
+  void Remove_Locked(double start,
+                     double end,
+                     ExceptionState*,
+                     MediaSourceAttachmentSupplement::ExclusiveKey pass_key);
 
   void RemovedFromMediaSource();
   double HighestPresentationTimestamp();
@@ -147,10 +149,30 @@ class SourceBuffer final : public EventTargetWithInlineData,
   void Trace(Visitor*) const override;
 
  private:
+  struct PendingAppendDataDeleter {
+    void operator()(unsigned char* buffer) {
+      WTF::Partitions::BufferFree(buffer);
+    }
+  };
+  using PendingAppendDataPtr =
+      std::unique_ptr<unsigned char[], PendingAppendDataDeleter>;
+
   void Dispose();
 
   bool IsRemoved() const;
   void ScheduleEvent(const AtomicString& event_name);
+
+  // A zero |size| is invalid. |pending_append_data_| must previously own
+  // nothing. If the allocation is unsuccessful, |pending_append_data_| will
+  // own the allocated space. Returns true on success, false otherwise.
+  [[nodiscard]] bool AllocatePendingAppendData(wtf_size_t size);
+
+  // Note that zero-sized async appends are possible. In such case,
+  // |pending_append_data_| will be nullptr. Calling ClearPendingAppendData() in
+  // this case is still ok upon async work completion or abort (the actual free
+  // is conditioned). Likewise, even if there is no pending append, it is ok to
+  // call this to simplify reset paths.
+  void ClearPendingAppendData();
 
   bool PrepareAppend(double media_time, size_t new_data_size, ExceptionState&);
   bool EvictCodedFrames(double media_time, size_t new_data_size);
@@ -181,11 +203,6 @@ class SourceBuffer final : public EventTargetWithInlineData,
       double,
       MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */);
   void Abort_Locked(
-      MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */);
-  void Remove_Locked(
-      double start,
-      double end,
-      ExceptionState*,
       MediaSourceAttachmentSupplement::ExclusiveKey /* passkey */);
   void ChangeType_Locked(
       const String& type,
@@ -262,8 +279,15 @@ class SourceBuffer final : public EventTargetWithInlineData,
   // respectively track the async state for these pending operations:
 
   // These are valid only during the scope of synchronous and asynchronous
-  // follow-up of appendBuffer().
-  Vector<unsigned char> pending_append_data_;
+  // follow-up of appendBuffer(). No residual bytes in |pending_append_data_|
+  // can remain outside of that scope; it is reset and the backing store is
+  // freed when it is cleared. See AllocatePendingAppendData() and
+  // ClearPendingAppendData(). |pending_append_data_| evaluates to a nullptr if
+  // it is empty. In addition to when there is no async appendBuffer() work
+  // pending, this can also occur during the asynchronous follow-up of a
+  // zero-byte appendBuffer() call.
+  PendingAppendDataPtr pending_append_data_;
+  wtf_size_t pending_append_data_size_;
   wtf_size_t pending_append_data_offset_;
   TaskHandle append_buffer_async_task_handle_;
 

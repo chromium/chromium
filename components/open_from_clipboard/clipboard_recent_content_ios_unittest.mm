@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,7 @@
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForCookiesTimeout;
+using base::test::ios::kWaitForActionTimeout;
 
 namespace {
 
@@ -107,13 +108,11 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
  protected:
   ClipboardRecentContentIOSTest() {
     // By default, set that the device booted 10 days ago.
-    ResetClipboardRecentContent(kAppSpecificScheme,
-                                base::TimeDelta::FromDays(10));
+    ResetClipboardRecentContent(kAppSpecificScheme, base::Days(10));
   }
 
   void SimulateDeviceRestart() {
-    ResetClipboardRecentContent(kAppSpecificScheme,
-                                base::TimeDelta::FromSeconds(0));
+    ResetClipboardRecentContent(kAppSpecificScheme, base::Seconds(0));
   }
 
   void ResetClipboardRecentContent(const std::string& application_scheme,
@@ -172,9 +171,9 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
     VerifyClipboardTypeExists(ClipboardContentType::URL, true);
 
     __block BOOL callback_called = NO;
-    __block base::Optional<GURL> optional_gurl;
+    __block absl::optional<GURL> optional_gurl;
     clipboard_content_->GetRecentURLFromClipboard(
-        base::BindOnce(^(base::Optional<GURL> copied_url) {
+        base::BindOnce(^(absl::optional<GURL> copied_url) {
           optional_gurl = copied_url;
           callback_called = YES;
         }));
@@ -184,6 +183,17 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
     }));
     ASSERT_TRUE(optional_gurl.has_value());
     EXPECT_STREQ(expected_url, optional_gurl.value().spec().c_str());
+  }
+
+  bool VerifyCacheClipboardContentTypeExists(ClipboardContentType type) {
+    absl::optional<std::set<ClipboardContentType>> cached_content_types =
+        clipboard_content_->GetCachedClipboardContentTypes();
+    if (cached_content_types.has_value()) {
+      return cached_content_types.value().find(type) !=
+             cached_content_types.value().end();
+    } else {
+      return false;
+    }
   }
 
   void VerifiyClipboardURLIsInvalid() {
@@ -197,9 +207,9 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
     }
 
     __block BOOL callback_called = NO;
-    __block base::Optional<GURL> optional_gurl;
+    __block absl::optional<GURL> optional_gurl;
     clipboard_content_->GetRecentURLFromClipboard(
-        base::BindOnce(^(base::Optional<GURL> copied_url) {
+        base::BindOnce(^(absl::optional<GURL> copied_url) {
           optional_gurl = copied_url;
           callback_called = YES;
         }));
@@ -208,6 +218,14 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
       return callback_called;
     }));
     EXPECT_FALSE(optional_gurl.has_value());
+  }
+
+  bool WaitForClipboardContentTypesRefresh() {
+    bool success = WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
+      return clipboard_content_->GetCachedClipboardContentTypes().has_value();
+    });
+
+    return success;
   }
 };
 
@@ -225,7 +243,7 @@ TEST_F(ClipboardRecentContentIOSTest, SchemeFiltering) {
   VerifyClipboardURLExists(kAppSpecificURL);
 
   // Test URL without app specific scheme.
-  ResetClipboardRecentContent(std::string(), base::TimeDelta::FromDays(10));
+  ResetClipboardRecentContent(std::string(), base::Days(10));
 
   SetPasteboardContent(kAppSpecificURL);
   VerifiyClipboardURLIsInvalid();
@@ -246,8 +264,7 @@ TEST_F(ClipboardRecentContentIOSTest, PasteboardURLObsolescence) {
 
   // Tests that if chrome is relaunched, old pasteboard data is still
   // not provided.
-  ResetClipboardRecentContent(kAppSpecificScheme,
-                              base::TimeDelta::FromDays(10));
+  ResetClipboardRecentContent(kAppSpecificScheme, base::Days(10));
   VerifyClipboardTypeExists(ClipboardContentType::URL, false);
   VerifyClipboardTypeExists(ClipboardContentType::Text, false);
 
@@ -256,6 +273,44 @@ TEST_F(ClipboardRecentContentIOSTest, PasteboardURLObsolescence) {
   // not provided.
   VerifyClipboardTypeExists(ClipboardContentType::URL, false);
   VerifyClipboardTypeExists(ClipboardContentType::Text, false);
+}
+
+TEST_F(ClipboardRecentContentIOSTest,
+       CacheClipboardContentTypesUpdatesForCopiedURL) {
+  SetPasteboardContent(kRecognizedURL);
+  ASSERT_TRUE(WaitForClipboardContentTypesRefresh());
+
+  EXPECT_TRUE(VerifyCacheClipboardContentTypeExists(ClipboardContentType::URL));
+  EXPECT_FALSE(
+      VerifyCacheClipboardContentTypeExists(ClipboardContentType::Image));
+  EXPECT_FALSE(
+      VerifyCacheClipboardContentTypeExists(ClipboardContentType::Text));
+}
+
+TEST_F(ClipboardRecentContentIOSTest,
+       CacheClipboardContentTypesUpdatesForCopiedImage) {
+  SetPasteboardImage(TestUIImage());
+  ASSERT_TRUE(WaitForClipboardContentTypesRefresh());
+
+  EXPECT_TRUE(
+      VerifyCacheClipboardContentTypeExists(ClipboardContentType::Image));
+  EXPECT_FALSE(
+      VerifyCacheClipboardContentTypeExists(ClipboardContentType::URL));
+  EXPECT_FALSE(
+      VerifyCacheClipboardContentTypeExists(ClipboardContentType::Text));
+}
+
+TEST_F(ClipboardRecentContentIOSTest,
+       CacheClipboardContentTypesUpdatesForCopiedText) {
+  SetPasteboardContent("foobar");
+  ASSERT_TRUE(WaitForClipboardContentTypesRefresh());
+
+  EXPECT_TRUE(
+      VerifyCacheClipboardContentTypeExists(ClipboardContentType::Text));
+  EXPECT_FALSE(
+      VerifyCacheClipboardContentTypeExists(ClipboardContentType::Image));
+  EXPECT_FALSE(
+      VerifyCacheClipboardContentTypeExists(ClipboardContentType::URL));
 }
 
 // Checks that if the pasteboard is marked as having confidential data, it is
@@ -286,8 +341,7 @@ TEST_F(ClipboardRecentContentIOSTest, SuppressedPasteboardContent) {
   VerifyClipboardTypeExists(ClipboardContentType::URL, false);
 
   // Create a new clipboard content to test persistence.
-  ResetClipboardRecentContent(kAppSpecificScheme,
-                              base::TimeDelta::FromDays(10));
+  ResetClipboardRecentContent(kAppSpecificScheme, base::Days(10));
 
   // Check that the pasteboard content is still suppressed.
   VerifyClipboardTypeExists(ClipboardContentType::URL, false);
@@ -318,8 +372,7 @@ TEST_F(ClipboardRecentContentIOSTest, SuppressedPasteboardImage) {
   VerifyClipboardTypeExists(ClipboardContentType::Image, false);
 
   // Create a new clipboard content to test persistence.
-  ResetClipboardRecentContent(kAppSpecificScheme,
-                              base::TimeDelta::FromDays(10));
+  ResetClipboardRecentContent(kAppSpecificScheme, base::Days(10));
 
   // Check that the pasteboard content is still suppressed.
   VerifyClipboardTypeExists(ClipboardContentType::Image, false);

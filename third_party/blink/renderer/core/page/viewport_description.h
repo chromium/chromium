@@ -29,13 +29,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_VIEWPORT_DESCRIPTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_VIEWPORT_DESCRIPTION_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/base/ime/mojom/virtual_keyboard_types.mojom-blink.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -49,9 +50,11 @@ struct CORE_EXPORT ViewportDescription {
     kUserAgentStyleSheet,
     kHandheldFriendlyMeta,
     kMobileOptimizedMeta,
-    kViewportMeta,
-    kAuthorStyleSheet
+    kViewportMeta
   } type;
+
+  ui::mojom::blink::VirtualKeyboardMode virtual_keyboard_mode =
+      ui::mojom::blink::VirtualKeyboardMode::kUnset;
 
   // Enums used to record the kind of viewport in the Viewport.MetaTagType
   // histogram. These must match the enums in histograms.xml and existing
@@ -93,13 +96,12 @@ struct CORE_EXPORT ViewportDescription {
         user_zoom_is_explicit(false) {}
 
   // All arguments are in CSS units.
-  PageScaleConstraints Resolve(const FloatSize& initial_viewport_size,
+  PageScaleConstraints Resolve(const gfx::SizeF& initial_viewport_size,
                                const Length& legacy_fallback_width) const;
 
-  // When --use-zoom-for-dsf is enabled, if the type is kFixed, these Length
-  // values (i.e., |min_width|, |max_width|, |min_height|, and |max_height|)
-  // must be in physical pixel scale. When --use-zoom-for-dsf is disabled, if
-  // the type is kFixed, these Length values must be in DIP scale.
+  // If the type is kFixed, these Length values (i.e., |min_width|,
+  // |max_width|, |min_height|, and |max_height|) must be in physical pixel
+  // scale.
   Length min_width;
   Length max_width;
   Length min_height;
@@ -137,6 +139,7 @@ struct CORE_EXPORT ViewportDescription {
            min_zoom_is_explicit == other.min_zoom_is_explicit &&
            max_zoom_is_explicit == other.max_zoom_is_explicit &&
            user_zoom_is_explicit == other.user_zoom_is_explicit &&
+           virtual_keyboard_mode == other.virtual_keyboard_mode &&
            viewport_fit_ == other.viewport_fit_;
   }
 
@@ -156,16 +159,16 @@ struct CORE_EXPORT ViewportDescription {
   void ReportMobilePageStats(const LocalFrame*) const;
 
  private:
-  enum Direction { kHorizontal, kVertical };
+  enum class Direction { kHorizontal, kVertical };
   static float ResolveViewportLength(const Length&,
-                                     const FloatSize& initial_viewport_size,
+                                     const gfx::SizeF& initial_viewport_size,
                                      Direction);
 
   // Optional is used to identify if |viewport_fit_| has been explicitly set.
   // This is because a Document will have multiple ViewportDescriptions are
   // which one that will be used is dependent on whether any values have been
   // explicitly set.
-  base::Optional<mojom::ViewportFit> viewport_fit_;
+  absl::optional<mojom::ViewportFit> viewport_fit_;
 };
 
 }  // namespace blink

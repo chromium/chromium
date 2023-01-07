@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,67 +6,94 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/existing_user_controller.h"
-#include "chrome/browser/ash/login/signin_specifics.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login/login_api_lock_handler.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/extensions/api/login.h"
-#include "chrome/common/pref_names.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/user_context.h"
-#include "components/prefs/pref_service.h"
-#include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
-#include "components/user_manager/user_type.h"
-#include "ui/base/user_activity/user_activity_detector.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#else
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/login_ash.h"
+#endif
 
 namespace extensions {
 
 namespace {
 
-std::string GetLaunchExtensionIdPrefValue(const user_manager::User* user) {
-  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
-  DCHECK(profile);
-  PrefService* prefs = profile->GetPrefs();
-  return prefs->GetString(prefs::kLoginExtensionApiLaunchExtensionId);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+crosapi::LoginAsh* GetLoginApiAsh() {
+  return crosapi::CrosapiManager::Get()->crosapi_ash()->login_ash();
 }
+#endif
+
+crosapi::mojom::Login* GetLoginApi() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::Login>()
+      .get();
+#else
+  return GetLoginApiAsh();
+#endif
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kCannotBeCalledFromLacros[] = "API cannot be called from Lacros";
+const char kUnsupportedByAsh[] = "Unsupported by ash";
+
+// Performs common crosapi validation. These errors are not caused by the
+// extension so they are considered recoverable. Returns an error message on
+// error, or nullopt on success.
+// |min_version| is the minimum version of the ash implementation of
+// crosapi::mojom::Login necessary to run a specific API method.
+absl::optional<std::string> ValidateCrosapi(int min_version = 0) {
+  if (!chromeos::LacrosService::Get()->IsAvailable<crosapi::mojom::Login>())
+    return kUnsupportedByAsh;
+
+  if (min_version == 0)
+    return absl::nullopt;
+  int interface_version = chromeos::LacrosService::Get()->GetInterfaceVersion(
+      crosapi::mojom::Login::Uuid_);
+  if (interface_version < min_version)
+    return kUnsupportedByAsh;
+
+  return absl::nullopt;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
-namespace login_api {
+ExtensionFunctionWithOptionalErrorResult::
+    ~ExtensionFunctionWithOptionalErrorResult() = default;
 
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kLoginExtensionApiDataForNextLoginAttempt,
-                               "");
+void ExtensionFunctionWithOptionalErrorResult::OnResult(
+    const absl::optional<std::string>& error) {
+  if (error) {
+    Respond(Error(*error));
+    return;
+  }
+
+  return Respond(NoArguments());
 }
 
-}  // namespace login_api
+ExtensionFunctionWithStringResult::~ExtensionFunctionWithStringResult() =
+    default;
 
-namespace login_api_errors {
+void ExtensionFunctionWithStringResult::OnResult(const std::string& result) {
+  Respond(WithArguments(result));
+}
 
-const char kAlreadyActiveSession[] = "There is already an active session";
-const char kAnotherLoginAttemptInProgress[] =
-    "Another login attempt is in progress";
-const char kNoManagedGuestSessionAccounts[] =
-    "No managed guest session accounts";
-const char kNoPermissionToLock[] =
-    "The extension does not have permission to lock this session";
-const char kSessionIsNotActive[] = "Session is not active";
-const char kNoPermissionToUnlock[] =
-    "The extension does not have permission to unlock this session";
-const char kSessionIsNotLocked[] = "Session is not locked";
-const char kAnotherUnlockAttemptInProgress[] =
-    "Another unlock attempt is in progress";
-const char kAuthenticationFailed[] = "Authentication failed";
+ExtensionFunctionWithVoidResult::~ExtensionFunctionWithVoidResult() = default;
 
-}  // namespace login_api_errors
+void ExtensionFunctionWithVoidResult::OnResult() {
+  Respond(NoArguments());
+}
 
 LoginLaunchManagedGuestSessionFunction::
     LoginLaunchManagedGuestSessionFunction() = default;
@@ -75,60 +102,50 @@ LoginLaunchManagedGuestSessionFunction::
 
 ExtensionFunction::ResponseAction
 LoginLaunchManagedGuestSessionFunction::Run() {
-  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
-
-  std::unique_ptr<api::login::LaunchManagedGuestSession::Params> parameters =
-      api::login::LaunchManagedGuestSession::Params::Create(*args_);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return RespondNow(Error(kCannotBeCalledFromLacros));
+#else
+  auto parameters =
+      api::login::LaunchManagedGuestSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  if (session_manager::SessionManager::Get()->session_state() !=
-      session_manager::SessionState::LOGIN_PRIMARY) {
-    return RespondNow(Error(login_api_errors::kAlreadyActiveSession));
-  }
+  auto callback =
+      base::BindOnce(&LoginLaunchManagedGuestSessionFunction::OnResult, this);
 
-  chromeos::ExistingUserController* existing_user_controller =
-      chromeos::ExistingUserController::current_controller();
-  if (existing_user_controller->IsSigninInProgress()) {
-    return RespondNow(Error(login_api_errors::kAnotherLoginAttemptInProgress));
+  absl::optional<std::string> password;
+  if (parameters->password) {
+    password = std::move(*parameters->password);
   }
-
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  for (const user_manager::User* user : user_manager->GetUsers()) {
-    if (!user || user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT)
-      continue;
-    chromeos::UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                                  user->GetAccountId());
-    if (parameters->password) {
-      context.SetKey(chromeos::Key(*parameters->password));
-      context.SetManagedGuestSessionLaunchExtensionId(extension_id());
-    }
-
-    existing_user_controller->Login(context, chromeos::SigninSpecifics());
-    return RespondNow(NoArguments());
-  }
-  return RespondNow(Error(login_api_errors::kNoManagedGuestSessionAccounts));
+  GetLoginApiAsh()->LaunchManagedGuestSession(password, std::move(callback));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+#endif
 }
 
 LoginExitCurrentSessionFunction::LoginExitCurrentSessionFunction() = default;
 LoginExitCurrentSessionFunction::~LoginExitCurrentSessionFunction() = default;
 
 ExtensionFunction::ResponseAction LoginExitCurrentSessionFunction::Run() {
-  std::unique_ptr<api::login::ExitCurrentSession::Params> parameters =
-      api::login::ExitCurrentSession::Params::Create(*args_);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<std::string> error = ValidateCrosapi();
+  if (error.has_value()) {
+    return RespondNow(Error(error.value()));
+  }
+#endif
+
+  auto parameters = api::login::ExitCurrentSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
+  auto callback =
+      base::BindOnce(&LoginExitCurrentSessionFunction::OnResult, this);
 
+  absl::optional<std::string> data_for_next_login_attempt;
   if (parameters->data_for_next_login_attempt) {
-    local_state->SetString(prefs::kLoginExtensionApiDataForNextLoginAttempt,
-                           *parameters->data_for_next_login_attempt);
-  } else {
-    local_state->ClearPref(prefs::kLoginExtensionApiDataForNextLoginAttempt);
+    data_for_next_login_attempt =
+        std::move(*parameters->data_for_next_login_attempt);
   }
-
-  chrome::AttemptUserExit();
-  return RespondNow(NoArguments());
+  GetLoginApi()->ExitCurrentSession(data_for_next_login_attempt,
+                                    std::move(callback));
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 LoginFetchDataForNextLoginAttemptFunction::
@@ -138,13 +155,18 @@ LoginFetchDataForNextLoginAttemptFunction::
 
 ExtensionFunction::ResponseAction
 LoginFetchDataForNextLoginAttemptFunction::Run() {
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-  std::string data_for_next_login_attempt =
-      local_state->GetString(prefs::kLoginExtensionApiDataForNextLoginAttempt);
-  local_state->ClearPref(prefs::kLoginExtensionApiDataForNextLoginAttempt);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<std::string> error = ValidateCrosapi();
+  if (error.has_value()) {
+    return RespondNow(Error(error.value()));
+  }
+#endif
 
-  return RespondNow(OneArgument(base::Value(data_for_next_login_attempt)));
+  auto callback = base::BindOnce(
+      &LoginFetchDataForNextLoginAttemptFunction::OnResult, this);
+
+  GetLoginApi()->FetchDataForNextLoginAttempt(std::move(callback));
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 LoginLockManagedGuestSessionFunction::LoginLockManagedGuestSessionFunction() =
@@ -153,24 +175,18 @@ LoginLockManagedGuestSessionFunction::~LoginLockManagedGuestSessionFunction() =
     default;
 
 ExtensionFunction::ResponseAction LoginLockManagedGuestSessionFunction::Run() {
-  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
-
-  const user_manager::UserManager* user_manager =
-      user_manager::UserManager::Get();
-  const user_manager::User* active_user = user_manager->GetActiveUser();
-  if (!active_user ||
-      active_user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
-      !user_manager->CanCurrentUserLock()) {
-    return RespondNow(Error(login_api_errors::kNoPermissionToLock));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<std::string> error = ValidateCrosapi();
+  if (error.has_value()) {
+    return RespondNow(Error(error.value()));
   }
+#endif
 
-  if (session_manager::SessionManager::Get()->session_state() !=
-      session_manager::SessionState::ACTIVE) {
-    return RespondNow(Error(login_api_errors::kSessionIsNotActive));
-  }
+  auto callback =
+      base::BindOnce(&LoginLockManagedGuestSessionFunction::OnResult, this);
 
-  chromeos::LoginApiLockHandler::Get()->RequestLockScreen();
-  return RespondNow(NoArguments());
+  GetLoginApi()->LockManagedGuestSession(std::move(callback));
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 LoginUnlockManagedGuestSessionFunction::
@@ -180,49 +196,221 @@ LoginUnlockManagedGuestSessionFunction::
 
 ExtensionFunction::ResponseAction
 LoginUnlockManagedGuestSessionFunction::Run() {
-  ui::UserActivityDetector::Get()->HandleExternalUserActivity();
-
-  std::unique_ptr<api::login::UnlockManagedGuestSession::Params> parameters =
-      api::login::UnlockManagedGuestSession::Params::Create(*args_);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return RespondNow(Error(kCannotBeCalledFromLacros));
+#else
+  auto parameters =
+      api::login::UnlockManagedGuestSession::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  const user_manager::User* active_user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  if (!active_user ||
-      active_user->GetType() != user_manager::USER_TYPE_PUBLIC_ACCOUNT ||
-      extension_id() != GetLaunchExtensionIdPrefValue(active_user)) {
-    return RespondNow(Error(login_api_errors::kNoPermissionToUnlock));
-  }
+  auto callback =
+      base::BindOnce(&LoginUnlockManagedGuestSessionFunction::OnResult, this);
 
-  if (session_manager::SessionManager::Get()->session_state() !=
-      session_manager::SessionState::LOCKED) {
-    return RespondNow(Error(login_api_errors::kSessionIsNotLocked));
-  }
+  GetLoginApiAsh()->UnlockManagedGuestSession(parameters->password,
+                                              std::move(callback));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+#endif
+}
 
-  chromeos::LoginApiLockHandler* handler = chromeos::LoginApiLockHandler::Get();
-  if (handler->IsUnlockInProgress()) {
-    return RespondNow(Error(login_api_errors::kAnotherUnlockAttemptInProgress));
-  }
+LoginLockCurrentSessionFunction::LoginLockCurrentSessionFunction() = default;
+LoginLockCurrentSessionFunction::~LoginLockCurrentSessionFunction() = default;
 
-  chromeos::UserContext context(user_manager::USER_TYPE_PUBLIC_ACCOUNT,
-                                active_user->GetAccountId());
-  context.SetKey(chromeos::Key(parameters->password));
-  handler->Authenticate(
-      context,
-      base::BindOnce(
-          &LoginUnlockManagedGuestSessionFunction::OnAuthenticationComplete,
-          this));
+ExtensionFunction::ResponseAction LoginLockCurrentSessionFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<std::string> error =
+      ValidateCrosapi(crosapi::mojom::Login::kLockCurrentSessionMinVersion);
+  if (error.has_value()) {
+    return RespondNow(Error(error.value()));
+  }
+#endif
+
+  auto callback =
+      base::BindOnce(&LoginLockCurrentSessionFunction::OnResult, this);
+
+  GetLoginApi()->LockCurrentSession(std::move(callback));
+  return RespondLater();
+}
+
+LoginUnlockCurrentSessionFunction::LoginUnlockCurrentSessionFunction() =
+    default;
+LoginUnlockCurrentSessionFunction::~LoginUnlockCurrentSessionFunction() =
+    default;
+
+ExtensionFunction::ResponseAction LoginUnlockCurrentSessionFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return RespondNow(Error(kCannotBeCalledFromLacros));
+#else
+  auto parameters = api::login::UnlockCurrentSession::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  auto callback =
+      base::BindOnce(&LoginUnlockCurrentSessionFunction::OnResult, this);
+
+  GetLoginApiAsh()->UnlockCurrentSession(parameters->password,
+                                         std::move(callback));
+  return RespondLater();
+#endif
+}
+
+LoginLaunchSamlUserSessionFunction::LoginLaunchSamlUserSessionFunction() =
+    default;
+LoginLaunchSamlUserSessionFunction::~LoginLaunchSamlUserSessionFunction() =
+    default;
+
+ExtensionFunction::ResponseAction LoginLaunchSamlUserSessionFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return RespondNow(Error(kCannotBeCalledFromLacros));
+#else
+  auto parameters = api::login::LaunchSamlUserSession::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  auto callback =
+      base::BindOnce(&LoginLaunchSamlUserSessionFunction::OnResult, this);
+
+  GetLoginApiAsh()->LaunchSamlUserSession(
+      parameters->properties.email, parameters->properties.gaia_id,
+      parameters->properties.password, parameters->properties.oauth_code,
+      std::move(callback));
+  return RespondLater();
+#endif
+}
+
+LoginLaunchSharedManagedGuestSessionFunction::
+    LoginLaunchSharedManagedGuestSessionFunction() = default;
+LoginLaunchSharedManagedGuestSessionFunction::
+    ~LoginLaunchSharedManagedGuestSessionFunction() = default;
+
+ExtensionFunction::ResponseAction
+LoginLaunchSharedManagedGuestSessionFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return RespondNow(Error(kCannotBeCalledFromLacros));
+#else
+  auto parameters =
+      api::login::LaunchSharedManagedGuestSession::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  auto callback = base::BindOnce(
+      &LoginLaunchSharedManagedGuestSessionFunction::OnResult, this);
+
+  GetLoginApiAsh()->LaunchSharedManagedGuestSession(parameters->password,
+                                                    std::move(callback));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+#endif
+}
+
+LoginEnterSharedSessionFunction::LoginEnterSharedSessionFunction() = default;
+LoginEnterSharedSessionFunction::~LoginEnterSharedSessionFunction() = default;
+
+ExtensionFunction::ResponseAction LoginEnterSharedSessionFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return RespondNow(Error(kCannotBeCalledFromLacros));
+#else
+  auto parameters = api::login::EnterSharedSession::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  auto callback =
+      base::BindOnce(&LoginEnterSharedSessionFunction::OnResult, this);
+
+  GetLoginApiAsh()->EnterSharedSession(parameters->password,
+                                       std::move(callback));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+#endif
+}
+
+LoginUnlockSharedSessionFunction::LoginUnlockSharedSessionFunction() = default;
+LoginUnlockSharedSessionFunction::~LoginUnlockSharedSessionFunction() = default;
+
+ExtensionFunction::ResponseAction LoginUnlockSharedSessionFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return RespondNow(Error(kCannotBeCalledFromLacros));
+#else
+  auto parameters = api::login::EnterSharedSession::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  auto callback =
+      base::BindOnce(&LoginUnlockSharedSessionFunction::OnResult, this);
+
+  GetLoginApiAsh()->UnlockSharedSession(parameters->password,
+                                        std::move(callback));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+#endif
+}
+
+LoginEndSharedSessionFunction::LoginEndSharedSessionFunction() = default;
+LoginEndSharedSessionFunction::~LoginEndSharedSessionFunction() = default;
+
+ExtensionFunction::ResponseAction LoginEndSharedSessionFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(b:217155485): Enable for Lacros after cleanup handlers are
+  // added.
+  return RespondNow(Error(kCannotBeCalledFromLacros));
+#else
+  auto callback =
+      base::BindOnce(&LoginEndSharedSessionFunction::OnResult, this);
+
+  GetLoginApi()->EndSharedSession(std::move(callback));
+  return did_respond() ? AlreadyResponded() : RespondLater();
+#endif
+}
+
+LoginSetDataForNextLoginAttemptFunction::
+    LoginSetDataForNextLoginAttemptFunction() = default;
+LoginSetDataForNextLoginAttemptFunction::
+    ~LoginSetDataForNextLoginAttemptFunction() = default;
+
+ExtensionFunction::ResponseAction
+LoginSetDataForNextLoginAttemptFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<std::string> error = ValidateCrosapi();
+  if (error.has_value()) {
+    return RespondNow(Error(error.value()));
+  }
+#endif
+
+  auto parameters =
+      api::login::SetDataForNextLoginAttempt::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  auto callback =
+      base::BindOnce(&LoginSetDataForNextLoginAttemptFunction::OnResult, this);
+
+  GetLoginApi()->SetDataForNextLoginAttempt(
+      parameters->data_for_next_login_attempt, std::move(callback));
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-void LoginUnlockManagedGuestSessionFunction::OnAuthenticationComplete(
-    bool success) {
-  if (!success) {
-    Respond(Error(login_api_errors::kAuthenticationFailed));
-    return;
-  }
+LoginRequestExternalLogoutFunction::LoginRequestExternalLogoutFunction() =
+    default;
+LoginRequestExternalLogoutFunction::~LoginRequestExternalLogoutFunction() =
+    default;
 
-  Respond(NoArguments());
+ExtensionFunction::ResponseAction LoginRequestExternalLogoutFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return RespondNow(Error(kCannotBeCalledFromLacros));
+#else
+  GetLoginApiAsh()->NotifyOnRequestExternalLogout();
+
+  return RespondNow(NoArguments());
+#endif
+}
+
+LoginNotifyExternalLogoutDoneFunction::LoginNotifyExternalLogoutDoneFunction() =
+    default;
+LoginNotifyExternalLogoutDoneFunction::
+    ~LoginNotifyExternalLogoutDoneFunction() = default;
+
+ExtensionFunction::ResponseAction LoginNotifyExternalLogoutDoneFunction::Run() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<std::string> error = ValidateCrosapi(
+      crosapi::mojom::Login::kNotifyOnExternalLogoutDoneMinVersion);
+  if (error.has_value()) {
+    return RespondNow(Error(error.value()));
+  }
+#endif
+
+  GetLoginApi()->NotifyOnExternalLogoutDone();
+
+  return RespondNow(NoArguments());
 }
 
 }  // namespace extensions

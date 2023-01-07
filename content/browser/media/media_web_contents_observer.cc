@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@
 #include <tuple>
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "content/browser/media/audible_metrics.h"
-#include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -35,19 +36,6 @@ namespace {
 AudibleMetrics* GetAudibleMetrics() {
   static AudibleMetrics* metrics = new AudibleMetrics();
   return metrics;
-}
-
-static void OnAudioOutputDeviceIdTranslated(
-    base::WeakPtr<MediaWebContentsObserver> observer,
-    const MediaPlayerId& player_id,
-    const base::Optional<std::string>& raw_device_id) {
-  if (!raw_device_id)
-    return;
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MediaWebContentsObserver::OnReceivedTranslatedDeviceId,
-                     std::move(observer), player_id, raw_device_id.value()));
 }
 
 }  // anonymous namespace
@@ -74,6 +62,8 @@ class MediaWebContentsObserver::PlayerInfo {
   bool has_video() const { return has_video_; }
   void set_has_video(bool has_video) { has_video_ = has_video; }
 
+  void set_muted(bool muted) { muted_ = muted; }
+
   bool is_playing() const { return is_playing_; }
 
   void SetIsPlaying() {
@@ -93,6 +83,8 @@ class MediaWebContentsObserver::PlayerInfo {
             : WebContentsObserver::MediaStoppedReason::kUnspecified,
         MediaPowerExperimentManager::NotificationMode::kNotify);
   }
+
+  bool IsAudible() const { return has_audio_ && is_playing_ && !muted_; }
 
  private:
   void NotifyPlayerStarted() {
@@ -126,10 +118,11 @@ class MediaWebContentsObserver::PlayerInfo {
   }
 
   const MediaPlayerId id_;
-  MediaWebContentsObserver* const observer_;
+  const raw_ptr<MediaWebContentsObserver> observer_;
 
   bool has_audio_ = false;
   bool has_video_ = false;
+  bool muted_ = false;
   bool is_playing_ = false;
 };
 
@@ -163,14 +156,14 @@ void MediaWebContentsObserver::WebContentsDestroyed() {
   media_player_remotes_.clear();
 
   session_controllers_manager_.reset();
+  fullscreen_player_.reset();
 }
 
 void MediaWebContentsObserver::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
   use_after_free_checker_.check();
 
-  GlobalFrameRoutingId frame_routing_id =
-      render_frame_host->GetGlobalFrameRoutingId();
+  GlobalRenderFrameHostId frame_routing_id = render_frame_host->GetGlobalId();
 
   base::EraseIf(
       player_info_map_,
@@ -193,12 +186,25 @@ void MediaWebContentsObserver::RenderFrameDeleted(
                media_player_observer_hosts_value_type.first.frame_routing_id;
       });
 
-  base::EraseIf(media_player_remotes_,
-                [frame_routing_id](const MediaPlayerRemotesMap::value_type&
-                                       media_player_remotes_value_type) {
-                  return frame_routing_id ==
-                         media_player_remotes_value_type.first.frame_routing_id;
-                });
+  std::vector<MediaPlayerId> removed_media_players;
+  base::EraseIf(
+      media_player_remotes_, [&](const MediaPlayerRemotesMap::value_type&
+                                     media_player_remotes_value_type) {
+        const MediaPlayerId& player_id = media_player_remotes_value_type.first;
+        if (frame_routing_id == player_id.frame_routing_id) {
+          removed_media_players.push_back(player_id);
+          return true;
+        }
+        return false;
+      });
+
+  for (const MediaPlayerId& player_id : removed_media_players) {
+    // Call MediaDestroyed() after all state associated with the media player is
+    // deleted, to ensure that observers see up-to-date state. For example,
+    // HasActiveEffectivelyFullscreenVideo() should return false if `player_id`
+    // was the only fullscreen media.
+    web_contents_impl()->MediaDestroyed(player_id);
+  }
 
   session_controllers_manager_->RenderFrameDeleted(render_frame_host);
 
@@ -245,7 +251,7 @@ bool MediaWebContentsObserver::IsPictureInPictureAllowedForFullscreenVideo()
   return *picture_in_picture_allowed_in_fullscreen_;
 }
 
-const base::Optional<MediaPlayerId>&
+const absl::optional<MediaPlayerId>&
 MediaWebContentsObserver::GetFullscreenVideoMediaPlayerId() const {
   return fullscreen_player_;
 }
@@ -258,6 +264,17 @@ void MediaWebContentsObserver::MediaPictureInPictureChanged(
 
 void MediaWebContentsObserver::DidUpdateAudioMutingState(bool muted) {
   session_controllers_manager_->WebContentsMutedStateChanged(muted);
+}
+
+void MediaWebContentsObserver::GetHasPlayedBefore(
+    GetHasPlayedBeforeCallback callback) {
+  std::move(callback).Run(has_played_before_);
+}
+
+void MediaWebContentsObserver::BindMediaPlayerObserverClient(
+    mojo::PendingReceiver<media::mojom::MediaPlayerObserverClient>
+        pending_receiver) {
+  receivers_.Add(this, std::move(pending_receiver));
 }
 
 void MediaWebContentsObserver::RequestPersistentVideo(bool value) {
@@ -277,8 +294,10 @@ bool MediaWebContentsObserver::IsPlayerActive(
   return false;
 }
 
+// MediaWebContentsObserver::MediaPlayerHostImpl
+
 MediaWebContentsObserver::MediaPlayerHostImpl::MediaPlayerHostImpl(
-    GlobalFrameRoutingId frame_routing_id,
+    GlobalRenderFrameHostId frame_routing_id,
     MediaWebContentsObserver* media_web_contents_observer)
     : frame_routing_id_(frame_routing_id),
       media_web_contents_observer_(media_web_contents_observer) {}
@@ -292,10 +311,15 @@ void MediaWebContentsObserver::MediaPlayerHostImpl::BindMediaPlayerHostReceiver(
 
 void MediaWebContentsObserver::MediaPlayerHostImpl::OnMediaPlayerAdded(
     mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> media_player,
+    mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerObserver>
+        media_player_observer,
     int32_t player_id) {
   media_web_contents_observer_->OnMediaPlayerAdded(
-      std::move(media_player), MediaPlayerId(frame_routing_id_, player_id));
+      std::move(media_player), std::move(media_player_observer),
+      MediaPlayerId(frame_routing_id_, player_id));
 }
+
+// MediaWebContentsObserver::MediaPlayerObserverHostImpl
 
 MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     MediaPlayerObserverHostImpl(
@@ -307,27 +331,33 @@ MediaWebContentsObserver::MediaPlayerObserverHostImpl::
 MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     ~MediaPlayerObserverHostImpl() = default;
 
-mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>
-MediaWebContentsObserver::MediaPlayerObserverHostImpl::
-    BindMediaPlayerObserverReceiverAndPassRemote() {
-  media_player_observer_receiver_.reset();
-  mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>
-      pending_remote =
-          media_player_observer_receiver_.BindNewEndpointAndPassRemote();
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    BindMediaPlayerObserverReceiver(
+        mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerObserver>
+            media_player_observer) {
+  media_player_observer_receiver_.Bind(std::move(media_player_observer));
 
   // |media_web_contents_observer_| outlives MediaPlayerHostImpl, so it's safe
   // to use base::Unretained().
   media_player_observer_receiver_.set_disconnect_handler(base::BindOnce(
       &MediaWebContentsObserver::OnMediaPlayerObserverDisconnected,
       base::Unretained(media_web_contents_observer_), media_player_id_));
-
-  return pending_remote;
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     OnMutedStatusChanged(bool muted) {
   media_web_contents_observer_->web_contents_impl()->MediaMutedStatusChanged(
       media_player_id_, muted);
+
+  media_web_contents_observer_->session_controllers_manager()
+      ->OnMediaMutedStatusChanged(media_player_id_, muted);
+
+  PlayerInfo* player_info = GetPlayerInfo();
+  if (!player_info)
+    return;
+
+  player_info->set_muted(muted);
+  NotifyAudioStreamMonitorIfNeeded();
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
@@ -336,6 +366,8 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
                            media::MediaContentType media_content_type) {
   media_web_contents_observer_->OnMediaMetadataChanged(
       media_player_id_, has_audio, has_video, media_content_type);
+
+  NotifyAudioStreamMonitorIfNeeded();
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
@@ -366,8 +398,47 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     OnAudioOutputSinkChanged(const std::string& hashed_device_id) {
-  media_web_contents_observer_->OnAudioOutputSinkChanged(media_player_id_,
-                                                         hashed_device_id);
+  auto* render_frame_host =
+      RenderFrameHost::FromID(media_player_id_.frame_routing_id);
+  DCHECK(render_frame_host);
+
+  auto salt_and_origin = content::GetMediaDeviceSaltAndOrigin(
+      render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetRoutingID());
+
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          // TODO(dcheng): GetMediaDeviceIDForHMAC should not be overloaded,
+          // which would avoid the need for static_casts / wrapper lambdas
+          // (which are not zero cost).
+          static_cast<void (*)(
+              blink::mojom::MediaDeviceType, std::string, url::Origin,
+              std::string, scoped_refptr<base::SequencedTaskRunner>,
+              base::OnceCallback<void(const absl::optional<std::string>&)>)>(
+              &MediaStreamManager::GetMediaDeviceIDForHMAC),
+          blink::mojom::MediaDeviceType::MEDIA_AUDIO_OUTPUT,
+          salt_and_origin.device_id_salt, std::move(salt_and_origin.origin),
+          hashed_device_id, content::GetUIThreadTaskRunner({}),
+          base::BindOnce(
+              &MediaPlayerObserverHostImpl::OnReceivedTranslatedDeviceId,
+              weak_factory_.GetWeakPtr())));
+}
+
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    OnReceivedTranslatedDeviceId(
+        const absl::optional<std::string>& translated_id) {
+  if (!translated_id)
+    return;
+
+  media_web_contents_observer_->OnAudioOutputSinkChangedWithRawDeviceId(
+      media_player_id_, *translated_id);
+}
+
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    OnUseAudioServiceChanged(bool uses_audio_service) {
+  uses_audio_service_ = uses_audio_service;
+  NotifyAudioStreamMonitorIfNeeded();
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
@@ -377,19 +448,15 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
-    OnBufferUnderflow() {
-  media_web_contents_observer_->web_contents_impl()->MediaBufferUnderflow(
-      media_player_id_);
-}
-
-void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnSeek() {
-  media_web_contents_observer_->web_contents_impl()->MediaPlayerSeek(
-      media_player_id_);
+    OnRemotePlaybackMetadataChange(
+        media_session::mojom::RemotePlaybackMetadataPtr
+            remote_playback_metadata) {
+  media_web_contents_observer_->OnRemotePlaybackMetadataChange(
+      media_player_id_, std::move(remote_playback_metadata));
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnMediaPlaying() {
-  PlayerInfo* player_info =
-      media_web_contents_observer_->GetPlayerInfo(media_player_id_);
+  PlayerInfo* player_info = GetPlayerInfo();
   if (!player_info)
     return;
 
@@ -403,12 +470,14 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnMediaPlaying() {
 
   if (!player_info->is_playing())
     player_info->SetIsPlaying();
+
+  media_web_contents_observer_->OnMediaPlaying();
+  NotifyAudioStreamMonitorIfNeeded();
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnMediaPaused(
     bool stream_ended) {
-  PlayerInfo* player_info =
-      media_web_contents_observer_->GetPlayerInfo(media_player_id_);
+  PlayerInfo* player_info = GetPlayerInfo();
   if (!player_info || !player_info->is_playing())
     return;
 
@@ -416,7 +485,33 @@ void MediaWebContentsObserver::MediaPlayerObserverHostImpl::OnMediaPaused(
 
   media_web_contents_observer_->session_controllers_manager()->OnPause(
       media_player_id_, stream_ended);
+
+  NotifyAudioStreamMonitorIfNeeded();
 }
+
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    NotifyAudioStreamMonitorIfNeeded() {
+  PlayerInfo* player_info = GetPlayerInfo();
+  if (!player_info)
+    return;
+
+  bool should_add_client = player_info->IsAudible() && !uses_audio_service_;
+  auto* audio_stream_monitor =
+      media_web_contents_observer_->web_contents_impl()->audio_stream_monitor();
+
+  if (should_add_client && !audio_client_registration_) {
+    audio_client_registration_ = audio_stream_monitor->RegisterAudibleClient();
+  } else if (!should_add_client && audio_client_registration_) {
+    audio_client_registration_.reset();
+  }
+}
+
+MediaWebContentsObserver::PlayerInfo*
+MediaWebContentsObserver::MediaPlayerObserverHostImpl::GetPlayerInfo() {
+  return media_web_contents_observer_->GetPlayerInfo(media_player_id_);
+}
+
+// MediaWebContentsObserver
 
 MediaWebContentsObserver::PlayerInfo* MediaWebContentsObserver::GetPlayerInfo(
     const MediaPlayerId& id) const {
@@ -472,40 +567,22 @@ void MediaWebContentsObserver::OnMediaEffectivelyFullscreenChanged(
   web_contents_impl()->MediaEffectivelyFullscreenChanged(is_fullscreen);
 }
 
-void MediaWebContentsObserver::OnAudioOutputSinkChanged(
-    const MediaPlayerId& player_id,
-    std::string hashed_device_id) {
-  auto* render_frame_host = RenderFrameHost::FromID(player_id.frame_routing_id);
-  DCHECK(render_frame_host);
-
-  auto salt_and_origin = content::GetMediaDeviceSaltAndOrigin(
-      render_frame_host->GetProcess()->GetID(),
-      render_frame_host->GetRoutingID());
-
-  auto callback_on_io_thread = base::BindOnce(
-      [](const std::string& salt, const url::Origin& origin,
-         const std::string& hashed_device_id,
-         base::OnceCallback<void(const base::Optional<std::string>&)>
-             callback) {
-        MediaStreamManager::GetMediaDeviceIDForHMAC(
-            blink::mojom::MediaDeviceType::MEDIA_AUDIO_OUTPUT, salt,
-            std::move(origin), hashed_device_id,
-            base::SequencedTaskRunnerHandle::Get(), std::move(callback));
-      },
-      salt_and_origin.device_id_salt, std::move(salt_and_origin.origin),
-      hashed_device_id,
-      base::BindOnce(&OnAudioOutputDeviceIdTranslated,
-                     weak_ptr_factory_.GetWeakPtr(), player_id));
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, std::move(callback_on_io_thread));
+void MediaWebContentsObserver::OnMediaPlaying() {
+  has_played_before_ = true;
 }
 
-void MediaWebContentsObserver::OnReceivedTranslatedDeviceId(
+void MediaWebContentsObserver::OnAudioOutputSinkChangedWithRawDeviceId(
     const MediaPlayerId& player_id,
     const std::string& raw_device_id) {
   session_controllers_manager_->OnAudioOutputSinkChanged(player_id,
                                                          raw_device_id);
+}
+
+void MediaWebContentsObserver::OnRemotePlaybackMetadataChange(
+    const MediaPlayerId& player_id,
+    media_session::mojom::RemotePlaybackMetadataPtr remote_playback_metadata) {
+  session_controllers_manager_->OnRemotePlaybackMetadataChange(
+      player_id, std::move(remote_playback_metadata));
 }
 
 bool MediaWebContentsObserver::IsMediaPlayerRemoteAvailable(
@@ -547,7 +624,8 @@ void MediaWebContentsObserver::LockAudio() {
 }
 
 void MediaWebContentsObserver::CancelAudioLock() {
-  GetAudioWakeLock()->CancelWakeLock();
+  if (audio_wake_lock_)
+    GetAudioWakeLock()->CancelWakeLock();
   has_audio_wake_lock_for_testing_ = false;
 }
 
@@ -556,7 +634,7 @@ WebContentsImpl* MediaWebContentsObserver::web_contents_impl() const {
 }
 
 void MediaWebContentsObserver::BindMediaPlayerHost(
-    GlobalFrameRoutingId frame_routing_id,
+    GlobalRenderFrameHostId frame_routing_id,
     mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost>
         player_receiver) {
   if (!media_player_hosts_.contains(frame_routing_id)) {
@@ -570,6 +648,8 @@ void MediaWebContentsObserver::BindMediaPlayerHost(
 
 void MediaWebContentsObserver::OnMediaPlayerAdded(
     mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
+    mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerObserver>
+        media_player_observer,
     MediaPlayerId player_id) {
   auto* const rfh = RenderFrameHost::FromID(player_id.frame_routing_id);
   DCHECK(rfh);
@@ -591,6 +671,10 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
         observer->player_info_map_.erase(player_id);
         observer->media_player_remotes_.erase(player_id);
         observer->session_controllers_manager_->OnEnd(player_id);
+        if (observer->fullscreen_player_ &&
+            *observer->fullscreen_player_ == player_id) {
+          observer->fullscreen_player_.reset();
+        }
         observer->web_contents_impl()->MediaDestroyed(player_id);
       },
       base::Unretained(this), player_id));
@@ -602,9 +686,8 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
     media_player_observer_hosts_[player_id] =
         std::make_unique<MediaPlayerObserverHostImpl>(player_id, this);
   }
-  media_player_remotes_[player_id]->AddMediaPlayerObserver(
-      media_player_observer_hosts_[player_id]
-          ->BindMediaPlayerObserverReceiverAndPassRemote());
+  media_player_observer_hosts_[player_id]->BindMediaPlayerObserverReceiver(
+      std::move(media_player_observer));
 }
 
 void MediaWebContentsObserver::SuspendAllMediaPlayers() {
@@ -617,8 +700,7 @@ void MediaWebContentsObserver::OnExperimentStateChanged(MediaPlayerId id,
                                                         bool is_starting) {
   use_after_free_checker_.check();
 
-  GetMediaPlayerRemote(*fullscreen_player_)
-      ->SetPowerExperimentState(is_starting);
+  GetMediaPlayerRemote(id)->SetPowerExperimentState(is_starting);
 }
 
 base::WeakPtr<MediaWebContentsObserver>

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
@@ -25,7 +27,10 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.UiDisableIf;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -137,7 +142,13 @@ public class UndoBarControllerTest {
 
     @Test
     @SmallTest
+    // When both START_SURFACE_ANDROID and TAB_GROUPS_CONTINUATION_ANDROID are enabled, changing
+    // accessibility status won't recreate ChromeTabbedActivity.
+    @EnableFeatures({ChromeFeatureList.START_SURFACE_ANDROID,
+            ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    // clang-format off
     public void testUndoSnackbarDisabled_AccessibilityEnabled() throws Exception {
+        // clang-format on
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
         ChromeTabUtils.newTabFromMenu(
@@ -151,6 +162,28 @@ public class UndoBarControllerTest {
 
         Assert.assertNull(
                 "Undo snack bar should not be showing in accessibility mode", getCurrentSnackbar());
+    }
+
+    @Test
+    @SmallTest
+    @DisableIf.Device(type = {UiDisableIf.TABLET}) // crbug/1199248
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID})
+    public void testUndoSnackbarEnabled_AccessibilityEnabledWithGroupM5() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true));
+
+        Assert.assertNull("Snack bar should be null initially", getCurrentSnackbar());
+        Assert.assertEquals("Tab Model should contain 1 tab", 1, mTabModel.getCount());
+
+        ChromeTabUtils.closeAllTabs(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+
+        Snackbar currentSnackbar = getCurrentSnackbar();
+        Assert.assertEquals("Incorrect snackbar text", "Closed about:blank", getSnackbarText());
+        Assert.assertTrue("Incorrect SnackbarController type",
+                currentSnackbar.getController() instanceof UndoBarController);
+        Assert.assertEquals(
+                "Tab Model should contain 0 tab after tab closed", 0, mTabModel.getCount());
     }
 
     private void clickSnackbar() {

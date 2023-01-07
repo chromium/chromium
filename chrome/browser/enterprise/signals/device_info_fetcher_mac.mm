@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,9 +22,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "chrome/browser/enterprise/signals/signals_common.h"
 #include "net/base/network_interfaces.h"
-
-using SettingValue = enterprise_signals::DeviceInfo::SettingValue;
 
 namespace enterprise_signals {
 

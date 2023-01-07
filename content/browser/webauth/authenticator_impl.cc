@@ -1,92 +1,85 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/webauth/authenticator_impl.h"
 
-#include <string>
+#include <memory>
 #include <utility>
 
-#include "base/timer/timer.h"
-#include "content/browser/webauth/authenticator_common.h"
-#include "content/public/browser/navigation_handle.h"
+#include "content/browser/webauth/authenticator_common_impl.h"
+#include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/web_contents.h"
-#include "url/origin.h"
 
 namespace content {
 
-AuthenticatorImpl::AuthenticatorImpl(RenderFrameHost* render_frame_host)
-    : AuthenticatorImpl(
-          render_frame_host,
-          std::make_unique<AuthenticatorCommon>(render_frame_host)) {}
+void AuthenticatorImpl::Create(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
+  CHECK(render_frame_host);
+  // Avoid creating the service if the RenderFrameHost isn't active, e.g. if a
+  // request arrives during a navigation.
+  if (!render_frame_host->IsActive()) {
+    return;
+  }
+  // AuthenticatorImpl owns itself. It self-destructs when the RenderFrameHost
+  // navigates or is deleted. See DocumentService for details.
+  new AuthenticatorImpl(
+      *render_frame_host, std::move(receiver),
+      std::make_unique<AuthenticatorCommonImpl>(render_frame_host));
+}
+
+void AuthenticatorImpl::CreateForTesting(
+    RenderFrameHost& render_frame_host,
+    mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
+    std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl) {
+  new AuthenticatorImpl(render_frame_host, std::move(receiver),
+                        std::move(authenticator_common_impl));
+}
 
 AuthenticatorImpl::AuthenticatorImpl(
-    RenderFrameHost* render_frame_host,
-    std::unique_ptr<AuthenticatorCommon> authenticator_common)
-    : WebContentsObserver(WebContents::FromRenderFrameHost(render_frame_host)),
-      authenticator_common_(std::move(authenticator_common)) {
-  DCHECK(authenticator_common_);
+    RenderFrameHost& render_frame_host,
+    mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
+    std::unique_ptr<AuthenticatorCommonImpl> authenticator_common_impl)
+    : DocumentService(render_frame_host, std::move(receiver)),
+      authenticator_common_impl_(std::move(authenticator_common_impl)) {
+  authenticator_common_impl_->EnableRequestProxyExtensionsAPISupport();
+  DCHECK(authenticator_common_impl_);
 }
 
 AuthenticatorImpl::~AuthenticatorImpl() = default;
-
-void AuthenticatorImpl::Bind(
-    mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
-  // If the RenderFrameHost is being unloaded then binding requests are
-  // rejected.
-  if (!authenticator_common_->GetRenderFrameHost()->IsCurrent()) {
-    return;
-  }
-
-  DCHECK(!receiver_.is_bound());
-  receiver_.Bind(std::move(receiver));
-}
 
 // mojom::Authenticator
 void AuthenticatorImpl::MakeCredential(
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     MakeCredentialCallback callback) {
-  authenticator_common_->MakeCredential(
-      authenticator_common_->GetRenderFrameHost()->GetLastCommittedOrigin(),
-      std::move(options), std::move(callback));
+  authenticator_common_impl_->MakeCredential(origin(), std::move(options),
+                                             std::move(callback));
 }
 
-// mojom:Authenticator
+// mojom::Authenticator
 void AuthenticatorImpl::GetAssertion(
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
     GetAssertionCallback callback) {
-  authenticator_common_->GetAssertion(
-      authenticator_common_->GetRenderFrameHost()->GetLastCommittedOrigin(),
-      std::move(options), std::move(callback));
+  authenticator_common_impl_->GetAssertion(origin(), std::move(options),
+                                           /*payment=*/nullptr,
+                                           std::move(callback));
 }
 
 void AuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
     IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) {
-  authenticator_common_->IsUserVerifyingPlatformAuthenticatorAvailable(
+  authenticator_common_impl_->IsUserVerifyingPlatformAuthenticatorAvailable(
+      std::move(callback));
+}
+
+void AuthenticatorImpl::IsConditionalMediationAvailable(
+    IsConditionalMediationAvailableCallback callback) {
+  authenticator_common_impl_->IsConditionalMediationAvailable(
       std::move(callback));
 }
 
 void AuthenticatorImpl::Cancel() {
-  authenticator_common_->Cancel();
-}
-
-void AuthenticatorImpl::DidFinishNavigation(
-    NavigationHandle* navigation_handle) {
-  // If the RenderFrameHost itself is navigated then this function will cause
-  // request state to be cleaned up. It's also possible for a navigation in the
-  // same frame to use a fresh RenderFrameHost. In this case,
-  // |render_frame_host_->IsCurrent()| will start returning false, causing all
-  // focus checks to fail if any Mojo requests are made in that state.
-  if (!navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument() ||
-      navigation_handle->GetRenderFrameHost() !=
-          authenticator_common_->GetRenderFrameHost()) {
-    return;
-  }
-
-  receiver_.reset();
-  authenticator_common_->Cleanup();
+  authenticator_common_impl_->Cancel();
 }
 
 }  // namespace content

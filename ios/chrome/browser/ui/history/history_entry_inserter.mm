@@ -1,18 +1,17 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/history/history_entry_inserter.h"
 
-#include "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/time/time.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/ui/history/history_entry_item_interface.h"
-#include "ios/chrome/browser/ui/history/history_util.h"
+#import "ios/chrome/browser/ui/history/history_util.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -142,7 +141,7 @@
 
 - (void)removeSection:(NSInteger)sectionIndex {
   NSUInteger sectionIdentifier =
-      [_listModel sectionIdentifierForSection:sectionIndex];
+      [_listModel sectionIdentifierForSectionIndex:sectionIndex];
 
   // Sections should not be removed unless there are no items in that section.
   DCHECK(![[_listModel itemsInSectionWithIdentifier:sectionIdentifier] count]);

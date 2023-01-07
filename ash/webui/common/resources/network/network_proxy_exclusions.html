@@ -1,0 +1,25 @@
+<style include="network-shared cr-hidden-style iron-flex">
+  #container {
+    align-self: stretch;
+    border: 1px solid lightgrey;
+    height: 100px;
+    margin-top: 10px;
+    overflow-y: auto;
+    padding: 5px;
+  }
+
+  cr-icon-button {
+    --cr-icon-button-margin-end: 0;
+  }
+</style>
+<div id="container">
+  <template is="dom-repeat" items="[[exclusions]]">
+    <div class="layout horizontal center">
+      <div class="flex">[[item]]</div>
+      <cr-icon-button class="icon-clear" hidden="[[!editable]]"
+          title="[[i18n('networkProxyExceptionRemoveA11yLabel', item)]]"
+          on-click="onRemoveTap_">
+      </cr-icon-button>
+    </div>
+  </template>
+</div>

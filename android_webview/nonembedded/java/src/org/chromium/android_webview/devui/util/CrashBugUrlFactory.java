@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@ import android.os.Build;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.crash.CrashInfo;
+import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.base.ContextUtils;
 
 import java.util.Locale;

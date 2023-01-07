@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,6 +15,8 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//components/feature_engagement/public:public_java",

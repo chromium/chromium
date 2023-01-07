@@ -11,7 +11,7 @@ If you want to use Android code you must write a [Robolectric](http://robolectri
 
 ### JUnit tests (without Android)
 
-Build these types of test using the `junit_binary` GN template.
+Build these types of test using the `robolectric_binary` GN template.
 
 If you don't need to use any Android code in your tests, you can write plain,
 old JUnit tests. Some more documentation about writing JUnit tests can be
@@ -45,7 +45,7 @@ See the [junit_unit_tests](https://cs.chromium.org/chromium/src/testing/android/
 
 ### JUnit tests with Robolectric
 
-Build these types of test using the `junit_binary` GN template.
+Build these types of test using the `robolectric_binary` GN template.
 
 Robolectric is a unit testing framework that lets you run tests with Android
 code on your workstation. It does this by providing a special version of the
@@ -62,7 +62,7 @@ This works even for static and final methods.
 
 #### Useful Tips
 
-* Use `@RunWith(LocalRobolectricTestRunner.class)` for all Chromium Robolectric tests.
+* Use `@RunWith(BaseRobolectricTestRunner.class)` for all Chromium Robolectric tests.
 * You can specify the Android SDK to run your test with with `@Config(sdk = ??)`.
 
 > Currently, only SDK levels 18, 21, and 25 are supported in Chromium
@@ -81,11 +81,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
-import org.chromium.testing.local.LocalRobolectricTestRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 
-// Be sure to specify to run tests with the LocalRobolectricTestRunner. The
+// Be sure to specify to run tests with a RobolectricTestRunner. The
 // default JUnit test runner won't load the Robolectric Android code properly.
-@RunWith(LocalRobolectricTestRunner.class)
+// BaseRobolectricTestRunner will do some common initializations. If this is
+// not desired, then LocalRobolectricTestRunner could be used.
+@RunWith(BaseRobolectricTestRunner.class)
 // Can specify some Robolectric related configs here.
 // More about configuring Robolectric at http://robolectric.org/configuring/.
 // SDK will default to the latest we support in Chromium.
@@ -103,10 +105,10 @@ public class MyRobolectricJUnitTest {
 }
 ```
 
-#### Example junit_binary build template.
+#### Example robolectric_binary build template.
 
 ```python
-junit_binary("my_robolectric_tests") {
+robolectric_binary("my_robolectric_tests") {
 
     sources = [
         "java/src/foo/bar/MyJUnitTest.java"
@@ -131,7 +133,7 @@ See the [content_junit_tests](https://cs.chromium.org/chromium/src/content/publi
 
 After writing a test, you can run it by:
 
-1. Adding the test file to a `junit_binary` GN target.
+1. Adding the test file to a `robolectric_binary` GN target.
 2. Rebuild.
 3. GN will generate binary `<out_dir>/bin/run_<suite name>` which
    can be used to run your test.

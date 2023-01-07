@@ -1,43 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/udev_linux/fake_udev_loader.h"
 
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 
 struct udev {
   // empty
-};
-
-struct udev_device {
-  udev_device(std::string name,
-              std::string syspath,
-              std::string subsystem,
-              base::Optional<std::string> devnode,
-              base::Optional<std::string> devtype,
-              std::map<std::string, std::string> sysattrs,
-              std::map<std::string, std::string> properties)
-      : name(std::move(name)),
-        syspath(std::move(syspath)),
-        subsystem(std::move(subsystem)),
-        devnode(std::move(devnode)),
-        devtype(std::move(devtype)),
-        sysattrs(std::move(sysattrs)),
-        properties(std::move(properties)) {}
-  udev_device(const udev_device& other) = delete;
-  udev_device& operator=(const udev_device& other) = delete;
-
-  const std::string name;
-  const std::string syspath;
-  const std::string subsystem;
-  const base::Optional<std::string> devnode;
-  const base::Optional<std::string> devtype;
-  std::map<std::string, std::string> sysattrs;
-  std::map<std::string, std::string> properties;
 };
 
 struct udev_list_entry {
@@ -46,7 +23,42 @@ struct udev_list_entry {
   udev_list_entry& operator=(const udev_list_entry& other) = delete;
 
   const std::string name;
-  udev_list_entry* next = nullptr;
+  raw_ptr<udev_list_entry> next = nullptr;
+};
+
+struct udev_device {
+  udev_device(std::string name,
+              std::string syspath,
+              std::string subsystem,
+              absl::optional<std::string> devnode,
+              absl::optional<std::string> devtype,
+              std::map<std::string, std::string> sysattrs,
+              std::map<std::string, std::string> prop_map)
+      : name(std::move(name)),
+        syspath(std::move(syspath)),
+        subsystem(std::move(subsystem)),
+        devnode(std::move(devnode)),
+        devtype(std::move(devtype)),
+        sysattrs(std::move(sysattrs)) {
+    properties = std::move(prop_map);
+    for (auto const& pair : properties) {
+      auto prop = std::make_unique<udev_list_entry>(pair.first);
+      if (!udev_prop_list.empty())
+        udev_prop_list.back()->next = prop.get();
+      udev_prop_list.push_back(std::move(prop));
+    }
+  }
+  udev_device(const udev_device& other) = delete;
+  udev_device& operator=(const udev_device& other) = delete;
+
+  const std::string name;
+  const std::string syspath;
+  const std::string subsystem;
+  const absl::optional<std::string> devnode;
+  const absl::optional<std::string> devtype;
+  std::map<std::string, std::string> sysattrs;
+  std::map<std::string, std::string> properties;
+  std::vector<std::unique_ptr<udev_list_entry>> udev_prop_list;
 };
 
 struct udev_enumerate {
@@ -98,8 +110,8 @@ udev_device* FakeUdevLoader::AddFakeDevice(
     std::string name,
     std::string syspath,
     std::string subsystem,
-    base::Optional<std::string> devnode,
-    base::Optional<std::string> devtype,
+    absl::optional<std::string> devnode,
+    absl::optional<std::string> devtype,
     std::map<std::string, std::string> sysattrs,
     std::map<std::string, std::string> properties) {
   devices_.emplace_back(
@@ -160,6 +172,12 @@ udev_device* FakeUdevLoader::udev_device_get_parent_with_subsystem_devtype(
   return nullptr;
 }
 
+udev_list_entry* FakeUdevLoader::udev_device_get_properties_list_entry(
+    struct udev_device* device) {
+  DCHECK(device);
+  return device->udev_prop_list.front().get();
+}
+
 const char* FakeUdevLoader::udev_device_get_property_value(udev_device* device,
                                                            const char* key) {
   DCHECK(device && key);
@@ -206,9 +224,7 @@ udev_device* FakeUdevLoader::udev_device_new_from_subsystem_sysname(
 udev_device* FakeUdevLoader::udev_device_new_from_syspath(udev* udev_context,
                                                           const char* syspath) {
   DCHECK(syspath);
-  auto it =
-      std::find_if(devices_.begin(), devices_.end(),
-                   [syspath](const auto& d) { return d->syspath == syspath; });
+  auto it = base::ranges::find(devices_, syspath, &udev_device::syspath);
   return it == devices_.end() ? nullptr : it->get();
 }
 

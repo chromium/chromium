@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 #include "chrome/android/chrome_jni_headers/AutofillOfferNotificationInfoBar_jni.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "components/autofill/core/browser/payments/autofill_offer_notification_infobar_delegate_mobile.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_mobile.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
 #include "url/android/gurl_android.h"
@@ -25,7 +25,7 @@ using base::android::ScopedJavaLocalRef;
 AutofillOfferNotificationInfoBar::AutofillOfferNotificationInfoBar(
     std::unique_ptr<autofill::AutofillOfferNotificationInfoBarDelegateMobile>
         delegate)
-    : ChromeConfirmInfoBar(std::move(delegate)) {}
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
 AutofillOfferNotificationInfoBar::~AutofillOfferNotificationInfoBar() {}
 

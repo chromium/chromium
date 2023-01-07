@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,14 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/drive_backend/drive_backend_constants.h"
@@ -47,6 +49,11 @@ class SyncEngineInitializerTest : public testing::Test {
   };
 
   SyncEngineInitializerTest() {}
+
+  SyncEngineInitializerTest(const SyncEngineInitializerTest&) = delete;
+  SyncEngineInitializerTest& operator=(const SyncEngineInitializerTest&) =
+      delete;
+
   ~SyncEngineInitializerTest() override {}
 
   void SetUp() override {
@@ -57,15 +64,15 @@ class SyncEngineInitializerTest : public testing::Test {
         new drive::FakeDriveService);
     fake_drive_service_ = fake_drive_service.get();
 
-    sync_context_.reset(new SyncEngineContext(
+    sync_context_ = std::make_unique<SyncEngineContext>(
         std::move(fake_drive_service),
         std::unique_ptr<drive::DriveUploaderInterface>(),
         nullptr /* task_logger */, base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get()));
+        base::ThreadTaskRunnerHandle::Get());
 
-    sync_task_manager_.reset(new SyncTaskManager(
+    sync_task_manager_ = std::make_unique<SyncTaskManager>(
         base::WeakPtr<SyncTaskManager::Client>(), 1 /* maximum_parallel_task */,
-        base::ThreadTaskRunnerHandle::Get()));
+        base::ThreadTaskRunnerHandle::Get());
     sync_task_manager_->Initialize(SYNC_STATUS_OK);
   }
 
@@ -79,10 +86,8 @@ class SyncEngineInitializerTest : public testing::Test {
   base::FilePath database_path() { return database_dir_.GetPath(); }
 
   SyncStatusCode RunInitializer() {
-    SyncEngineInitializer* initializer =
-        new SyncEngineInitializer(sync_context_.get(),
-                                  database_path(),
-                                  in_memory_env_.get());
+    SyncEngineInitializer* initializer = new SyncEngineInitializer(
+        sync_context_.get(), database_path(), in_memory_env_.get());
     SyncStatusCode status = SYNC_STATUS_UNKNOWN;
 
     sync_task_manager_->ScheduleSyncTask(
@@ -112,21 +117,20 @@ class SyncEngineInitializerTest : public testing::Test {
     if (status != SYNC_STATUS_OK)
       return status;
 
-    status = database->PopulateInitialData(
-        kInitialLargestChangeID, sync_root, app_root_list);
+    status = database->PopulateInitialData(kInitialLargestChangeID, sync_root,
+                                           app_root_list);
     return status;
   }
 
   std::unique_ptr<google_apis::FileResource> CreateRemoteFolder(
       const std::string& parent_folder_id,
       const std::string& title) {
-    google_apis::DriveApiErrorCode error = google_apis::DRIVE_OTHER_ERROR;
+    google_apis::ApiErrorCode error = google_apis::OTHER_ERROR;
     std::unique_ptr<google_apis::FileResource> entry;
     drive::AddNewDirectoryOptions options;
     options.visibility = google_apis::drive::FILE_VISIBILITY_PRIVATE;
     sync_context_->GetDriveService()->AddNewDirectory(
-        parent_folder_id, title, options,
-        CreateResultReceiver(&error, &entry));
+        parent_folder_id, title, options, CreateResultReceiver(&error, &entry));
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(google_apis::HTTP_CREATED, error);
@@ -138,10 +142,9 @@ class SyncEngineInitializerTest : public testing::Test {
         CreateRemoteFolder(std::string(), kSyncRootFolderTitle));
 
     for (size_t i = 0; i < sync_root->parents().size(); ++i) {
-      google_apis::DriveApiErrorCode error = google_apis::DRIVE_OTHER_ERROR;
+      google_apis::ApiErrorCode error = google_apis::OTHER_ERROR;
       sync_context_->GetDriveService()->RemoveResourceFromDirectory(
-          sync_root->parents()[i].file_id(),
-          sync_root->file_id(),
+          sync_root->parents()[i].file_id(), sync_root->file_id(),
           CreateResultReceiver(&error));
       base::RunLoop().RunUntilIdle();
       EXPECT_EQ(google_apis::HTTP_NO_CONTENT, error);
@@ -153,16 +156,15 @@ class SyncEngineInitializerTest : public testing::Test {
   std::string GetSyncRootFolderID() {
     int64_t sync_root_tracker_id = metadata_database_->GetSyncRootTrackerID();
     FileTracker sync_root_tracker;
-    EXPECT_TRUE(metadata_database_->FindTrackerByTrackerID(
-        sync_root_tracker_id, &sync_root_tracker));
+    EXPECT_TRUE(metadata_database_->FindTrackerByTrackerID(sync_root_tracker_id,
+                                                           &sync_root_tracker));
     return sync_root_tracker.file_id();
   }
 
   bool VerifyFolderVisibility(const std::string& folder_id) {
     google_apis::drive::FileVisibility visibility;
     if (google_apis::HTTP_SUCCESS !=
-        fake_drive_service_->GetFileVisibility(
-            folder_id, &visibility))
+        fake_drive_service_->GetFileVisibility(folder_id, &visibility))
       return false;
     if (visibility != google_apis::drive::FILE_VISIBILITY_PRIVATE)
       return false;
@@ -178,35 +180,29 @@ class SyncEngineInitializerTest : public testing::Test {
   bool HasActiveTracker(const std::string& file_id) {
     TrackerIDSet trackers;
     return metadata_database_->FindTrackersByFileID(file_id, &trackers) &&
-        trackers.has_active();
+           trackers.has_active();
   }
 
   bool HasNoParent(const std::string& file_id) {
-    google_apis::DriveApiErrorCode error = google_apis::DRIVE_OTHER_ERROR;
+    google_apis::ApiErrorCode error = google_apis::OTHER_ERROR;
     std::unique_ptr<google_apis::FileResource> entry;
     sync_context_->GetDriveService()->GetFileResource(
-        file_id,
-        CreateResultReceiver(&error, &entry));
+        file_id, CreateResultReceiver(&error, &entry));
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(google_apis::HTTP_SUCCESS, error);
     return entry->parents().empty();
   }
 
-  size_t CountFileMetadata() {
-    return metadata_database_->CountFileMetadata();
-  }
+  size_t CountFileMetadata() { return metadata_database_->CountFileMetadata(); }
 
-  size_t CountFileTracker() {
-    return metadata_database_->CountFileTracker();
-  }
+  size_t CountFileTracker() { return metadata_database_->CountFileTracker(); }
 
-  google_apis::DriveApiErrorCode AddParentFolder(
+  google_apis::ApiErrorCode AddParentFolder(
       const std::string& new_parent_folder_id,
       const std::string& file_id) {
-    google_apis::DriveApiErrorCode error = google_apis::DRIVE_OTHER_ERROR;
+    google_apis::ApiErrorCode error = google_apis::OTHER_ERROR;
     sync_context_->GetDriveService()->AddResourceToDirectory(
-        new_parent_folder_id, file_id,
-        CreateResultReceiver(&error));
+        new_parent_folder_id, file_id, CreateResultReceiver(&error));
     base::RunLoop().RunUntilIdle();
     return error;
   }
@@ -219,9 +215,7 @@ class SyncEngineInitializerTest : public testing::Test {
   std::unique_ptr<MetadataDatabase> metadata_database_;
   std::unique_ptr<SyncTaskManager> sync_task_manager_;
   std::unique_ptr<SyncEngineContext> sync_context_;
-  drive::FakeDriveService* fake_drive_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEngineInitializerTest);
+  raw_ptr<drive::FakeDriveService> fake_drive_service_ = nullptr;
 };
 
 TEST_F(SyncEngineInitializerTest, EmptyDatabase_NoRemoteSyncRoot) {

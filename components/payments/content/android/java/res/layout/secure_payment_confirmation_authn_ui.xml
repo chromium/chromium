@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+
+    <!-- Drag handlebar -->
+    <ImageView
+        android:id="@+id/handlebar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:paddingVertical="@dimen/secure_payment_confirmation_ui_drag_handle_spacing"
+        android:importantForAccessibility="no"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/drag_handlebar" />
+
+    <ScrollView
+        android:id="@+id/scroll_view"
+        android:layout_below="@id/handlebar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+
+        <RelativeLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:textDirection="locale"
+            android:paddingHorizontal="@dimen/secure_payment_confirmation_ui_large_padding"
+            android:paddingTop="@dimen/secure_payment_confirmation_ui_small_padding"
+            android:paddingBottom="@dimen/secure_payment_confirmation_ui_large_padding">
+
+            <!-- Shopping cart image -->
+            <ImageView
+                android:id="@+id/secure_payment_confirmation_image"
+                android:importantForAccessibility="no"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:scaleType="centerInside"/>
+
+            <!-- "Verify your purchase" label -->
+            <TextView
+                android:id="@+id/secure_payment_confirmation_title"
+                android:layout_below="@id/secure_payment_confirmation_image"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_medium_padding"
+                android:paddingVertical="@dimen/secure_payment_confirmation_ui_medium_padding"
+                android:layout_centerHorizontal="true"
+                android:textAppearance="@style/TextAppearance.Headline.Primary"
+                android:text="@string/secure_payment_confirmation_verify_purchase"/>
+
+            <!-- "Store" label -->
+            <TextView
+                android:id="@+id/store_label"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/secure_payment_confirmation_title"
+                android:layout_height="wrap_content"
+                android:layout_width="@dimen/secure_payment_confirmation_authn_ui_label_size"
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+                android:layout_marginEnd="@dimen/secure_payment_confirmation_ui_medium_padding"
+                android:text="@string/secure_payment_confirmation_store_label"/>
+
+            <!-- "Store" field -->
+            <TextView
+                android:id="@+id/store"
+                android:layout_toEndOf="@id/store_label"
+                android:layout_below="@id/secure_payment_confirmation_title"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+
+            <!-- "Store" row divider -->
+            <View
+                style="@style/HorizontalDivider"
+                android:id="@+id/store_divider"
+                android:layout_below="@id/store_label"
+                android:layout_marginVertical="@dimen/secure_payment_confirmation_ui_medium_padding"/>
+
+            <!-- "Payment" row -->
+            <LinearLayout
+                android:id="@+id/payment_row"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/store_divider"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_height="wrap_content"
+                    android:layout_width="@dimen/secure_payment_confirmation_authn_ui_label_size"
+                    android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+                    android:layout_marginEnd="@dimen/secure_payment_confirmation_ui_medium_padding"
+                    android:text="@string/payment_request_payment_method_section_name"/>
+
+                <ImageView
+                    android:id="@+id/payment_icon"
+                    android:importantForAccessibility="no"
+                    android:layout_height="@dimen/secure_payment_confirmation_ui_icon_width"
+                    android:layout_width="@dimen/secure_payment_confirmation_ui_icon_height"
+                    android:scaleType="fitCenter"/>
+
+                <TextView
+                    android:id="@+id/payment"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:paddingHorizontal="@dimen/secure_payment_confirmation_ui_small_padding"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+
+            </LinearLayout>
+
+            <!-- "Payment" row divider -->
+            <View
+                style="@style/HorizontalDivider"
+                android:id="@+id/payment_divider"
+                android:layout_below="@id/payment_row"
+                android:layout_marginVertical="@dimen/secure_payment_confirmation_ui_medium_padding"/>
+
+            <!-- "Total" label -->
+            <TextView
+                android:id="@+id/total_label"
+                android:layout_alignParentStart="true"
+                android:layout_below="@id/payment_divider"
+                android:layout_height="wrap_content"
+                android:layout_width="@dimen/secure_payment_confirmation_authn_ui_label_size"
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+                android:layout_marginEnd="@dimen/secure_payment_confirmation_ui_medium_padding"
+                android:text="@string/secure_payment_confirmation_total_label"/>
+
+            <!-- "Total" field -->
+            <TextView
+                android:id="@+id/total"
+                android:layout_toEndOf="@id/total_label"
+                android:layout_below="@id/payment_divider"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+
+            <!-- "Currency" field -->
+            <TextView
+                android:id="@+id/currency"
+                android:layout_toEndOf="@id/total"
+                android:layout_below="@id/payment_divider"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:paddingHorizontal="@dimen/secure_payment_confirmation_authn_ui_amount_currency_spacing"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+
+            <!-- "Total" row divider -->
+            <View
+                style="@style/HorizontalDivider"
+                android:id="@+id/total_divider"
+                android:layout_below="@id/total_label"
+                android:layout_marginVertical="@dimen/secure_payment_confirmation_ui_medium_padding"/>
+
+            <!-- Opt Out text, if requested by SPC caller -->
+            <org.chromium.ui.widget.TextViewWithClickableSpans
+                android:id="@+id/secure_payment_confirmation_nocredmatch_opt_out"
+                android:layout_below="@id/total_divider"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:layout_marginHorizontal="@dimen/secure_payment_confirmation_ui_small_padding"
+                android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_medium_padding"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+                android:text="@string/secure_payment_confirmation_opt_out_label"/>
+
+            <!-- "Continue" button -->
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/continue_button"
+                android:layout_below="@id/secure_payment_confirmation_nocredmatch_opt_out"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="@string/payments_continue_button"
+                style="@style/FilledButton.Flat"/>
+
+            <!-- "Cancel" button -->
+            <org.chromium.ui.widget.ButtonCompat
+                android:id="@+id/cancel_button"
+                android:layout_below="@id/continue_button"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="@string/cancel"
+                style="@style/TextButton"/>
+
+        </RelativeLayout>
+    </ScrollView>
+</RelativeLayout>

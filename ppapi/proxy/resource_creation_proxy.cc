@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "ppapi/proxy/file_io_resource.h"
 #include "ppapi/proxy/file_ref_resource.h"
 #include "ppapi/proxy/file_system_resource.h"
-#include "ppapi/proxy/flash_font_file_resource.h"
 #include "ppapi/proxy/graphics_2d_resource.h"
 #include "ppapi/proxy/host_resolver_private_resource.h"
 #include "ppapi/proxy/host_resolver_resource.h"
@@ -266,7 +265,7 @@ PP_Resource ResourceCreationProxy::CreateImageData(
   // On the plugin side, we create PlatformImageData resources for trusted
   // plugins and SimpleImageData resources for untrusted ones.
   PPB_ImageData_Shared::ImageDataType type =
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
       PPB_ImageData_Shared::PLATFORM;
 #else
       PPB_ImageData_Shared::SIMPLE;
@@ -375,12 +374,12 @@ PP_Resource ResourceCreationProxy::CreateWebSocket(PP_Instance instance) {
   return (new WebSocketResource(GetConnection(), instance))->GetReference();
 }
 
+#if !BUILDFLAG(IS_NACL)
 PP_Resource ResourceCreationProxy::CreateX509CertificatePrivate(
     PP_Instance instance) {
   return PPB_X509Certificate_Private_Proxy::CreateProxyResource(instance);
 }
 
-#if !defined(OS_NACL)
 PP_Resource ResourceCreationProxy::CreateAudioInput(
     PP_Instance instance) {
   return (new AudioInputResource(GetConnection(), instance))->GetReference();
@@ -405,14 +404,6 @@ PP_Resource ResourceCreationProxy::CreateBuffer(PP_Instance instance,
   return PPB_Buffer_Proxy::CreateProxyResource(instance, size);
 }
 
-PP_Resource ResourceCreationProxy::CreateFlashFontFile(
-    PP_Instance instance,
-    const PP_BrowserFont_Trusted_Description* description,
-    PP_PrivateFontCharset charset) {
-  return (new FlashFontFileResource(
-      GetConnection(), instance, description, charset))->GetReference();
-}
-
 PP_Resource ResourceCreationProxy::CreateVideoCapture(PP_Instance instance) {
   PluginDispatcher* dispatcher = PluginDispatcher::GetForInstance(instance);
   if (!dispatcher)
@@ -429,7 +420,7 @@ PP_Resource ResourceCreationProxy::CreateVideoDecoderDev(
       instance, context3d_id, profile);
 }
 
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 bool ResourceCreationProxy::Send(IPC::Message* msg) {
   return dispatcher()->Send(msg);

@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// Implemented in ash-chrome, called by lacros-chrome. This interface is used by
+// Lacros to provide Ash the metadata necessary to link AppService app_ids with
+// Wayland/exo/aura Windows.
+[Stable, Uuid="e678d21e-8c5c-4a2f-ab43-fa1299a03c46"]
+interface AppWindowTracker{
+  // Called by Lacros when an app window is created. |app_id| is the AppService
+  // id, and |window_id| is the wayland app_id property for the window. This is
+  // guaranteed to be unique and is confusingly known as app_id even though for
+  // Lacros it's a unique window id.
+  OnAppWindowAdded@0(string app_id, string window_id);
+
+  // Called by Lacros when an app window is destroyed.
+  OnAppWindowRemoved@1(string app_id, string window_id);
+};
+

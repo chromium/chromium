@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "ui/base/page_transition_types.h"
@@ -22,6 +21,7 @@ class WebFrame;
 class WebLocalFrame;
 struct WebPluginParams;
 class WebURL;
+class WebView;
 }
 
 namespace content {
@@ -31,7 +31,6 @@ struct WebPluginInfo;
 
 namespace extensions {
 class Dispatcher;
-class ExtensionsGuestViewContainerDispatcher;
 class RendererPermissionsPolicyDelegate;
 class ResourceRequestPolicy;
 }
@@ -59,6 +58,12 @@ class ChromeExtensionsRendererClient
     : public extensions::ExtensionsRendererClient {
  public:
   ChromeExtensionsRendererClient();
+
+  ChromeExtensionsRendererClient(const ChromeExtensionsRendererClient&) =
+      delete;
+  ChromeExtensionsRendererClient& operator=(
+      const ChromeExtensionsRendererClient&) = delete;
+
   ~ChromeExtensionsRendererClient() override;
 
   // Get the LazyInstance for ChromeExtensionsRendererClient.
@@ -78,6 +83,8 @@ class ChromeExtensionsRendererClient
 
   // See ChromeContentRendererClient methods with the same names.
   void RenderThreadStarted();
+  void WebViewCreated(blink::WebView* web_view,
+                      const url::Origin* outermost_origin);
   void RenderFrameCreated(content::RenderFrame* render_frame,
                           service_manager::BinderRegistry* registry);
   bool OverrideCreatePlugin(content::RenderFrame* render_frame,
@@ -120,11 +127,7 @@ class ChromeExtensionsRendererClient
   std::unique_ptr<extensions::Dispatcher> extension_dispatcher_;
   std::unique_ptr<extensions::RendererPermissionsPolicyDelegate>
       permissions_policy_delegate_;
-  std::unique_ptr<extensions::ExtensionsGuestViewContainerDispatcher>
-      guest_view_container_dispatcher_;
   std::unique_ptr<extensions::ResourceRequestPolicy> resource_request_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeExtensionsRendererClient);
 };
 
 #endif  // CHROME_RENDERER_EXTENSIONS_CHROME_EXTENSIONS_RENDERER_CLIENT_H_

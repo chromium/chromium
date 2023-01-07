@@ -12,7 +12,7 @@ description('Test that web settings are applied early enough when creating a new
 
 if (window.testRunner) {
   testRunner.setAllowFileAccessFromFileURLs(false);
-  testRunner.setCanOpenWindows(true);
+  testRunner.setPopupBlockingEnabled(false);
 }
 
 window.addEventListener('message', function (e) {

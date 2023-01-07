@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,25 +9,27 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/escape.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/common/utils.h"
-#include "components/safe_browsing/core/db/database_manager.h"
-#include "components/safe_browsing/core/file_type_policies.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 using content::BrowserThread;
 
@@ -38,19 +40,25 @@ const char PPAPIDownloadRequest::kDownloadRequestUrl[] =
 
 PPAPIDownloadRequest::PPAPIDownloadRequest(
     const GURL& requestor_url,
-    const GURL& initiating_frame_url,
-    content::WebContents* web_contents,
+    content::RenderFrameHost* initiating_frame,
     const base::FilePath& default_file_path,
     const std::vector<base::FilePath::StringType>& alternate_extensions,
     Profile* profile,
     CheckDownloadCallback callback,
     DownloadProtectionService* service,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager)
-    : requestor_url_(requestor_url),
-      initiating_frame_url_(initiating_frame_url),
+    : content::WebContentsObserver(
+          content::WebContents::FromRenderFrameHost(initiating_frame)),
+      requestor_url_(requestor_url),
+      initiating_frame_url_(
+          initiating_frame ? initiating_frame->GetLastCommittedURL() : GURL()),
+      initiating_outermost_main_frame_id_(
+          initiating_frame
+              ? initiating_frame->GetOutermostMainFrame()->GetGlobalId()
+              : content::GlobalRenderFrameHostId()),
       initiating_main_frame_url_(
-          web_contents ? web_contents->GetLastCommittedURL() : GURL()),
-      tab_id_(sessions::SessionTabHelper::IdForTab(web_contents)),
+          web_contents() ? web_contents()->GetLastCommittedURL() : GURL()),
+      tab_id_(sessions::SessionTabHelper::IdForTab(web_contents())),
       default_file_path_(default_file_path),
       alternate_extensions_(alternate_extensions),
       callback_(std::move(callback)),
@@ -64,12 +72,17 @@ PPAPIDownloadRequest::PPAPIDownloadRequest(
   is_extended_reporting_ = IsExtendedReportingEnabled(*profile->GetPrefs());
   is_enhanced_protection_ = IsEnhancedProtectionEnabled(*profile->GetPrefs());
 
-  if (service->navigation_observer_manager()) {
-    has_user_gesture_ =
-        service->navigation_observer_manager()->HasUserGesture(web_contents);
+  // web_contents can be null in tests.
+  if (!web_contents()) {
+    return;
+  }
+
+  SafeBrowsingNavigationObserverManager* observer_manager =
+      service->GetNavigationObserverManager(web_contents());
+  if (observer_manager) {
+    has_user_gesture_ = observer_manager->HasUserGesture(web_contents());
     if (has_user_gesture_) {
-      service->navigation_observer_manager()->OnUserGestureConsumed(
-          web_contents);
+      observer_manager->OnUserGestureConsumed(web_contents());
     }
   }
 }
@@ -111,8 +124,7 @@ void PPAPIDownloadRequest::Start() {
       FROM_HERE,
       base::BindOnce(&PPAPIDownloadRequest::OnRequestTimedOut,
                      weakptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(
-          service_->download_request_timeout_ms()));
+      base::Milliseconds(service_->download_request_timeout_ms()));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -126,9 +138,13 @@ GURL PPAPIDownloadRequest::GetDownloadRequestUrl() {
   GURL url(kDownloadRequestUrl);
   std::string api_key = google_apis::GetAPIKey();
   if (!api_key.empty())
-    url = url.Resolve("?key=" + net::EscapeQueryParamValue(api_key, true));
+    url = url.Resolve("?key=" + base::EscapeQueryParamValue(api_key, true));
 
   return url;
+}
+
+void PPAPIDownloadRequest::WebContentsDestroyed() {
+  Finish(RequestOutcome::REQUEST_DESTROYED, DownloadCheckResult::UNKNOWN);
 }
 
 // Allowlist checking needs to the done on the IO thread.
@@ -150,7 +166,6 @@ void PPAPIDownloadRequest::CheckAllowlistsOnIOThread(
 void PPAPIDownloadRequest::AllowlistCheckComplete(bool was_on_allowlist) {
   DVLOG(2) << __func__ << " was_on_allowlist:" << was_on_allowlist;
   if (was_on_allowlist) {
-    RecordCountOfAllowlistedDownload(URL_ALLOWLIST);
     // TODO(asanka): Should sample allowlisted downloads based on
     // service_->allowlist_sample_rate(). http://crbug.com/610924
     Finish(RequestOutcome::ALLOWLIST_HIT, DownloadCheckResult::SAFE);
@@ -197,7 +212,8 @@ void PPAPIDownloadRequest::SendRequest() {
   }
 
   service_->AddReferrerChainToPPAPIClientDownloadRequest(
-      initiating_frame_url_, initiating_main_frame_url_, tab_id_,
+      web_contents(), initiating_frame_url_,
+      initiating_outermost_main_frame_id_, initiating_main_frame_url_, tab_id_,
       has_user_gesture_, &request);
 
   if (!request.SerializeToString(&client_download_request_data_)) {
@@ -325,6 +341,8 @@ PPAPIDownloadRequest::DownloadCheckResultFromClientDownloadResponse(
       return DownloadCheckResult::DANGEROUS_HOST;
     case ClientDownloadResponse::UNKNOWN:
       return DownloadCheckResult::UNKNOWN;
+    case ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE:
+      return DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE;
   }
   return DownloadCheckResult::UNKNOWN;
 }

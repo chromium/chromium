@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define ASH_APP_MENU_NOTIFICATION_MENU_VIEW_TEST_API_H_
 
 #include <string>
-
-#include "base/macros.h"
 
 namespace ash {
 
@@ -19,6 +17,11 @@ class NotificationMenuViewTestAPI {
  public:
   explicit NotificationMenuViewTestAPI(
       NotificationMenuView* notification_menu_view);
+
+  NotificationMenuViewTestAPI(const NotificationMenuViewTestAPI&) = delete;
+  NotificationMenuViewTestAPI& operator=(const NotificationMenuViewTestAPI&) =
+      delete;
+
   ~NotificationMenuViewTestAPI();
 
   // Returns the numeric string contained in the counter view.
@@ -32,8 +35,6 @@ class NotificationMenuViewTestAPI {
 
  private:
   NotificationMenuView* const notification_menu_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationMenuViewTestAPI);
 };
 
 }  // namespace ash

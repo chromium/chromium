@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 
 #include <memory>
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -21,19 +21,8 @@ namespace views {
 class Widget;
 }
 
-namespace chromeos {
-
+namespace ash {
 class CaptivePortalView;
-
-// Delegate interface for CaptivePortalWindowProxy.
-class CaptivePortalWindowProxyDelegate {
- public:
-  // Called when a captive portal is detected.
-  virtual void OnPortalDetected() = 0;
-
- protected:
-  virtual ~CaptivePortalWindowProxyDelegate() = default;
-};
 
 // Proxy which manages showing of the window for CaptivePortal sign-in.
 class CaptivePortalWindowProxy : public views::WidgetObserver {
@@ -50,10 +39,7 @@ class CaptivePortalWindowProxy : public views::WidgetObserver {
     virtual void OnAfterCaptivePortalHidden() {}
   };
 
-  using Delegate = CaptivePortalWindowProxyDelegate;
-
-  CaptivePortalWindowProxy(Delegate* delegate,
-                           content::WebContents* web_contents);
+  explicit CaptivePortalWindowProxy(content::WebContents* web_contents);
   CaptivePortalWindowProxy(const CaptivePortalWindowProxy&) = delete;
   CaptivePortalWindowProxy& operator=(const CaptivePortalWindowProxy&) = delete;
   ~CaptivePortalWindowProxy() override;
@@ -84,6 +70,8 @@ class CaptivePortalWindowProxy : public views::WidgetObserver {
 
   // Overridden from views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override;
+
+  bool IsDisplayedForTesting() const { return GetState() == STATE_DISPLAYED; }
 
  private:
   friend class CaptivePortalWindowTest;
@@ -117,21 +105,17 @@ class CaptivePortalWindowProxy : public views::WidgetObserver {
   // notifications from `widget_` and resets it.
   void DetachFromWidget(views::Widget* widget);
 
-  CaptivePortalView* captive_portal_view_for_testing() {
-    return captive_portal_view_for_testing_;
-  }
-
   Profile* profile_ = ProfileHelper::GetSigninProfile();
-  Delegate* delegate_;
   content::WebContents* web_contents_;
   views::Widget* widget_ = nullptr;
 
   std::unique_ptr<CaptivePortalView> captive_portal_view_;
-  CaptivePortalView* captive_portal_view_for_testing_ = nullptr;
 
   base::ObserverList<Observer> observers_;
+
+  base::WeakPtrFactory<CaptivePortalWindowProxy> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_CAPTIVE_PORTAL_WINDOW_PROXY_H_

@@ -1,15 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/vr/elements/resizer.h"
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/math_constants.h"
-#include "base/numerics/ranges.h"
 #include "chrome/browser/vr/pose_util.h"
 #include "chrome/browser/vr/ui_scene_constants.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/angle_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/quaternion.h"
 
 namespace vr {
@@ -62,7 +63,7 @@ void Resizer::Reset() {
 
 void Resizer::UpdateTransform(const gfx::Transform& head_pose) {
   float delta = touchpad_position_.y() - initial_touchpad_position_.y();
-  t_ = base::ClampToRange(initial_t_ + delta, 0.0f, 1.0f);
+  t_ = base::clamp(initial_t_ + delta, 0.0f, 1.0f);
   float scale =
       gfx::Tween::FloatValueBetween(t_, kMinResizerScale, kMaxResizerScale);
   transform_.MakeIdentity();
@@ -80,9 +81,7 @@ bool Resizer::OnBeginFrame(const gfx::Transform& head_pose) {
 
 #ifndef NDEBUG
 void Resizer::DumpGeometry(std::ostringstream* os) const {
-  gfx::Transform t = LocalTransform();
-  gfx::Vector3dF right = {1, 0, 0};
-  t.TransformVector(&right);
+  gfx::Vector3dF right = LocalTransform().MapVector(gfx::Vector3dF(1, 0, 0));
   *os << "s(" << right.x() << ") ";
 }
 #endif

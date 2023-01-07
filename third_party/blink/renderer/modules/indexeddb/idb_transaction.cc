@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
@@ -38,10 +39,11 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_object_store.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_open_db_request.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_queue_item.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -55,8 +57,8 @@ IDBTransaction* IDBTransaction::CreateNonVersionChange(
     mojom::IDBTransactionDurability durability,
     IDBDatabase* db) {
   DCHECK_NE(mode, mojom::IDBTransactionMode::VersionChange);
-  DCHECK(!scope.IsEmpty()) << "Non-version transactions should operate on a "
-                              "well-defined set of stores";
+  DCHECK(!scope.empty()) << "Non-version transactions should operate on a "
+                            "well-defined set of stores";
   return MakeGarbageCollected<IDBTransaction>(script_state,
                                               std::move(transaction_backend),
                                               id, scope, mode, durability, db);
@@ -99,16 +101,18 @@ IDBTransaction::IDBTransaction(
                   SchedulingPolicy::Feature::kOutstandingIndexedDBTransaction,
                   {SchedulingPolicy::DisableBackForwardCache()})) {
   DCHECK(database_);
-  DCHECK(!scope_.IsEmpty()) << "Non-versionchange transactions must operate "
-                               "on a well-defined set of stores";
+  DCHECK(!scope_.empty()) << "Non-versionchange transactions must operate "
+                             "on a well-defined set of stores";
   DCHECK(mode_ == mojom::IDBTransactionMode::ReadOnly ||
          mode_ == mojom::IDBTransactionMode::ReadWrite)
       << "Invalid transaction mode";
 
   DCHECK_EQ(state_, kActive);
-  V8PerIsolateData::From(script_state->GetIsolate())
-      ->AddEndOfScopeTask(
-          WTF::Bind(&IDBTransaction::SetActive, WrapPersistent(this), false));
+  ExecutionContext::From(script_state)
+      ->GetAgent()
+      ->event_loop()
+      ->EnqueueEndOfMicrotaskCheckpointTask(WTF::BindOnce(
+          &IDBTransaction::SetActive, WrapPersistent(this), false));
 
   database_->TransactionCreated(this);
 }
@@ -134,7 +138,7 @@ IDBTransaction::IDBTransaction(
                                            TaskType::kDatabaseAccess)) {
   DCHECK(database_);
   DCHECK(open_db_request_);
-  DCHECK(scope_.IsEmpty());
+  DCHECK(scope_.empty());
 
   database_->TransactionCreated(this);
 }
@@ -144,7 +148,7 @@ IDBTransaction::~IDBTransaction() {
   // ContextClient) only in order to be able call upon GetExecutionContext()
   // during this destructor.
   DCHECK(state_ == kFinished || !GetExecutionContext());
-  DCHECK(request_list_.IsEmpty() || !GetExecutionContext());
+  DCHECK(request_list_.empty() || !GetExecutionContext());
 }
 
 void IDBTransaction::Trace(Visitor* visitor) const {
@@ -323,12 +327,12 @@ void IDBTransaction::IndexDeleted(IDBIndex* index) {
 void IDBTransaction::SetActive(bool new_is_active) {
   DCHECK_NE(state_, kFinished)
       << "A finished transaction tried to SetActive(" << new_is_active << ")";
-  if (state_ == kFinishing)
+  if (IsFinishing())
     return;
   DCHECK_NE(new_is_active, (state_ == kActive));
   state_ = new_is_active ? kActive : kInactive;
 
-  if (!new_is_active && request_list_.IsEmpty() && transaction_backend())
+  if (!new_is_active && request_list_.empty() && transaction_backend())
     transaction_backend()->Commit(num_errors_handled_);
 }
 
@@ -345,14 +349,14 @@ void IDBTransaction::SetActiveDuringSerialization(bool new_is_active) {
 }
 
 void IDBTransaction::abort(ExceptionState& exception_state) {
-  if (state_ == kFinishing || state_ == kFinished) {
+  if (IsFinishing() || IsFinished()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         IDBDatabase::kTransactionFinishedErrorMessage);
     return;
   }
 
-  state_ = kFinishing;
+  state_ = kAborting;
 
   if (!GetExecutionContext())
     return;
@@ -365,7 +369,7 @@ void IDBTransaction::abort(ExceptionState& exception_state) {
 }
 
 void IDBTransaction::commit(ExceptionState& exception_state) {
-  if (state_ == kFinishing || state_ == kFinished) {
+  if (IsFinishing() || IsFinished()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         IDBDatabase::kTransactionFinishedErrorMessage);
@@ -382,10 +386,15 @@ void IDBTransaction::commit(ExceptionState& exception_state) {
   if (!GetExecutionContext())
     return;
 
-  state_ = kFinishing;
+  state_ = kCommitting;
 
   if (transaction_backend())
     transaction_backend()->Commit(num_errors_handled_);
+
+  // Once IDBtransaction.commit() is called, the page should no longer be
+  // prevented from entering back/forward cache for having outstanding IDB
+  // connections. Commit ends the inflight IDB transactions.
+  feature_handle_for_scheduler_.reset();
 }
 
 void IDBTransaction::RegisterRequest(IDBRequest* request) {
@@ -429,14 +438,14 @@ void IDBTransaction::OnResultReady() {
 }
 
 void IDBTransaction::OnAbort(DOMException* error) {
-  IDB_TRACE1("IDBTransaction::onAbort", "txn.id", id_);
+  TRACE_EVENT1("IndexedDB", "IDBTransaction::onAbort", "txn.id", id_);
   if (!GetExecutionContext()) {
     Finished();
     return;
   }
 
   DCHECK_NE(state_, kFinished);
-  if (state_ != kFinishing) {
+  if (state_ != kAborting) {
     // Abort was not triggered by front-end.
     DCHECK(error);
     SetError(error);
@@ -444,7 +453,7 @@ void IDBTransaction::OnAbort(DOMException* error) {
     AbortOutstandingRequests();
     RevertDatabaseMetadata();
 
-    state_ = kFinishing;
+    state_ = kAborting;
   }
 
   if (IsVersionChange())
@@ -460,14 +469,14 @@ void IDBTransaction::OnComplete() {
   // https://linear.app/replay/issue/RUN-969
   recordreplay::Diagnostic("IDBTransaction::OnComplete %p", this);
 
-  IDB_TRACE1("IDBTransaction::onComplete", "txn.id", id_);
+  TRACE_EVENT1("IndexedDB", "IDBTransaction::onComplete", "txn.id", id_);
   if (!GetExecutionContext()) {
     Finished();
     return;
   }
 
   DCHECK_NE(state_, kFinished);
-  state_ = kFinishing;
+  state_ = kCommitting;
 
   // Enqueue events before notifying database, as database may close which
   // enqueues more events and order matters.
@@ -557,7 +566,8 @@ const char* IDBTransaction::InactiveErrorMessage() const {
       return nullptr;
     case kInactive:
       return IDBDatabase::kTransactionInactiveErrorMessage;
-    case kFinishing:
+    case kCommitting:
+    case kAborting:
     case kFinished:
       return IDBDatabase::kTransactionFinishedErrorMessage;
   }
@@ -566,7 +576,7 @@ const char* IDBTransaction::InactiveErrorMessage() const {
 }
 
 DispatchEventResult IDBTransaction::DispatchEventInternal(Event& event) {
-  IDB_TRACE1("IDBTransaction::dispatchEvent", "txn.id", id_);
+  TRACE_EVENT1("IndexedDB", "IDBTransaction::dispatchEvent", "txn.id", id_);
 
   event.SetTarget(this);
 

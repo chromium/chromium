@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
@@ -21,7 +23,7 @@ class AudioOutputDeviceThreadCallback;
 
 namespace audio {
 
-class OutputDevice {
+class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) OutputDevice {
  public:
   // media::AudioRendererSink::RenderCallback must outlive |this|.
   OutputDevice(
@@ -29,6 +31,9 @@ class OutputDevice {
       const media::AudioParameters& params,
       media::AudioRendererSink::RenderCallback* callback,
       const std::string& device_id);
+
+  OutputDevice(const OutputDevice&) = delete;
+  OutputDevice& operator=(const OutputDevice&) = delete;
 
   // Blocking call; see base/threading/thread_restrictions.h.
   ~OutputDevice();
@@ -47,13 +52,11 @@ class OutputDevice {
   std::unique_ptr<media::AudioOutputDeviceThreadCallback> audio_callback_;
   std::unique_ptr<media::AudioDeviceThread> audio_thread_;
   media::AudioParameters audio_parameters_;
-  media::AudioRendererSink::RenderCallback* render_callback_;
+  raw_ptr<media::AudioRendererSink::RenderCallback> render_callback_;
   mojo::Remote<media::mojom::AudioOutputStream> stream_;
   mojo::Remote<media::mojom::AudioStreamFactory> stream_factory_;
 
   base::WeakPtrFactory<OutputDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OutputDevice);
 };
 
 }  // namespace audio

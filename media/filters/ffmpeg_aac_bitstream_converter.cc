@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -195,14 +195,15 @@ bool FFmpegAACBitstreamConverter::ConvertPacket(AVPacket* packet) {
   if (!header_generated_ || codec_ != stream_codec_parameters_->codec_id ||
       audio_profile_ != stream_codec_parameters_->profile ||
       sample_rate_index_ != sample_rate_index ||
-      channel_configuration_ != stream_codec_parameters_->channels ||
+      channel_configuration_ !=
+          stream_codec_parameters_->ch_layout.nb_channels ||
       frame_length_ != header_plus_packet_size) {
     header_generated_ =
         GenerateAdtsHeader(stream_codec_parameters_->codec_id,
                            0,  // layer
                            stream_codec_parameters_->profile, sample_rate_index,
                            0,  // private stream
-                           stream_codec_parameters_->channels,
+                           stream_codec_parameters_->ch_layout.nb_channels,
                            0,  // originality
                            0,  // home
                            0,  // copyrighted_stream
@@ -214,7 +215,7 @@ bool FFmpegAACBitstreamConverter::ConvertPacket(AVPacket* packet) {
     codec_ = stream_codec_parameters_->codec_id;
     audio_profile_ = stream_codec_parameters_->profile;
     sample_rate_index_ = sample_rate_index;
-    channel_configuration_ = stream_codec_parameters_->channels;
+    channel_configuration_ = stream_codec_parameters_->ch_layout.nb_channels;
     frame_length_ = header_plus_packet_size;
   }
 

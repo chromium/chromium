@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,12 +20,15 @@ base::AtomicSequenceNumber g_gpu_memory_buffer_id_generator;
 
 class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
  public:
-  GpuMemoryBufferImpl(const gfx::Size& size, gfx::BufferFormat format)
+  GpuMemoryBufferImpl(const gfx::Size& size,
+                      gfx::BufferFormat format,
+                      bool fail_to_map_gpu_memory_buffer)
       : mapped_(false),
         format_(format),
         size_(size),
         num_planes_(gfx::NumberOfPlanesForLinearBufferFormat(format)),
-        id_(g_gpu_memory_buffer_id_generator.GetNext() + 1) {
+        id_(g_gpu_memory_buffer_id_generator.GetNext() + 1),
+        fail_to_map_gpu_memory_buffer_(fail_to_map_gpu_memory_buffer) {
     DCHECK(gfx::BufferFormat::R_8 == format_ ||
            gfx::BufferFormat::RG_88 == format_ ||
            gfx::BufferFormat::YUV_420_BIPLANAR == format_ ||
@@ -36,14 +39,14 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
            gfx::BufferFormat::BGRA_8888 == format_);
     DCHECK(num_planes_ <= kMaxPlanes);
     for (int i = 0; i < static_cast<int>(num_planes_); ++i) {
-      bytes_[i].resize(gfx::RowSizeForBufferFormat(size_.width(), format_, i) *
-                       size_.height() /
-                       gfx::SubsamplingFactorForBufferFormat(format_, i));
+      bytes_[i].resize(gfx::PlaneSizeForBufferFormat(size_, format_, i));
     }
   }
 
   // Overridden from gfx::GpuMemoryBuffer:
   bool Map() override {
+    if (fail_to_map_gpu_memory_buffer_)
+      return false;
     DCHECK(!mapped_);
     mapped_ = true;
     return true;
@@ -54,6 +57,8 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
     return &bytes_[plane][0];
   }
   void Unmap() override {
+    if (fail_to_map_gpu_memory_buffer_)
+      return;
     DCHECK(mapped_);
     mapped_ = false;
   }
@@ -69,11 +74,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
     return gfx::SHARED_MEMORY_BUFFER;
   }
   gfx::GpuMemoryBufferHandle CloneHandle() const override {
-    NOTREACHED();
     return gfx::GpuMemoryBufferHandle();
-  }
-  ClientBuffer AsClientBuffer() override {
-    return reinterpret_cast<ClientBuffer>(this);
   }
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
@@ -90,6 +91,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   size_t num_planes_;
   std::vector<uint8_t> bytes_[kMaxPlanes];
   gfx::GpuMemoryBufferId id_;
+  bool fail_to_map_gpu_memory_buffer_ = false;
 };
 
 }  // unnamed namespace
@@ -100,7 +102,11 @@ MockGpuVideoAcceleratorFactories::MockGpuVideoAcceleratorFactories(
 
 MockGpuVideoAcceleratorFactories::~MockGpuVideoAcceleratorFactories() = default;
 
-bool MockGpuVideoAcceleratorFactories::IsGpuVideoAcceleratorEnabled() {
+bool MockGpuVideoAcceleratorFactories::IsGpuVideoDecodeAcceleratorEnabled() {
+  return true;
+}
+
+bool MockGpuVideoAcceleratorFactories::IsGpuVideoEncodeAcceleratorEnabled() {
   return true;
 }
 
@@ -112,8 +118,8 @@ MockGpuVideoAcceleratorFactories::CreateGpuMemoryBuffer(
   base::AutoLock guard(lock_);
   if (fail_to_allocate_gpu_memory_buffer_)
     return nullptr;
-  std::unique_ptr<gfx::GpuMemoryBuffer> ret(
-      new GpuMemoryBufferImpl(size, format));
+  auto ret = std::make_unique<GpuMemoryBufferImpl>(
+      size, format, fail_to_map_gpu_memory_buffer_);
   created_memory_buffers_.push_back(ret.get());
   return ret;
 }

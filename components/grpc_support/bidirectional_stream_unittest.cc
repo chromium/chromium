@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
@@ -47,6 +47,11 @@ namespace grpc_support {
 #endif
 
 class MAYBE_BidirectionalStreamTest : public ::testing::TestWithParam<bool> {
+ public:
+  MAYBE_BidirectionalStreamTest(const MAYBE_BidirectionalStreamTest&) = delete;
+  MAYBE_BidirectionalStreamTest& operator=(
+      const MAYBE_BidirectionalStreamTest&) = delete;
+
  protected:
   void SetUp() override {
     net::QuicSimpleTestServer::Start();
@@ -70,8 +75,6 @@ class MAYBE_BidirectionalStreamTest : public ::testing::TestWithParam<bool> {
 
  private:
   std::string quic_server_hello_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(MAYBE_BidirectionalStreamTest);
 };
 
 class TestBidirectionalStreamCallback {
@@ -95,12 +98,14 @@ class TestBidirectionalStreamCallback {
     bool flush;
 
     WriteData(const std::string& buffer, bool flush);
-    ~WriteData();
 
-    DISALLOW_COPY_AND_ASSIGN(WriteData);
+    WriteData(const WriteData&) = delete;
+    WriteData& operator=(const WriteData&) = delete;
+
+    ~WriteData();
   };
 
-  bidirectional_stream* stream;
+  raw_ptr<bidirectional_stream> stream;
   base::WaitableEvent stream_done_event;
 
   // Test parameters.
@@ -112,7 +117,7 @@ class TestBidirectionalStreamCallback {
 
   // Test results.
   ResponseStep response_step;
-  char* read_buffer;
+  raw_ptr<char> read_buffer;
   std::map<std::string, std::string> response_headers;
   std::map<std::string, std::string> response_trailers;
   std::vector<std::string> read_data;
@@ -138,8 +143,9 @@ class TestBidirectionalStreamCallback {
         stream->annotation);
   }
 
-  virtual bool MaybeCancel(bidirectional_stream* stream, ResponseStep step) {
-    DCHECK_EQ(stream, this->stream);
+  virtual bool MaybeCancel(bidirectional_stream* bidir_stream,
+                           ResponseStep step) {
+    DCHECK_EQ(bidir_stream, stream);
     response_step = step;
     DVLOG(3) << "Step: " << step;
 
@@ -161,8 +167,8 @@ class TestBidirectionalStreamCallback {
     write_data.push_back(std::make_unique<WriteData>(data, flush));
   }
 
-  virtual void MaybeWriteNextData(bidirectional_stream* stream) {
-    DCHECK_EQ(stream, this->stream);
+  virtual void MaybeWriteNextData(bidirectional_stream* bidir_stream) {
+    DCHECK_EQ(bidir_stream, stream);
     if (write_data.empty())
       return;
     for (const auto& data : write_data) {
@@ -636,8 +642,8 @@ TEST_P(MAYBE_BidirectionalStreamTest, ReadFailsBeforeRequestStarted) {
   bidirectional_stream_destroy(test.stream);
 }
 
-// TODO(https://crbug.com/880474): This test is flaky on fuchsia_x64 builder.
-#if defined(OS_FUCHSIA)
+// TODO(https://crbug.com/880474): This test is flaky on fuchsia-x64 builder.
+#if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_StreamFailBeforeReadIsExecutedOnNetworkThread \
   DISABLED_StreamFailBeforeReadIsExecutedOnNetworkThread
 #else
@@ -712,12 +718,23 @@ TEST_P(MAYBE_BidirectionalStreamTest, StreamFailAfterStreamReadyCallback) {
   ASSERT_EQ(TestBidirectionalStreamCallback::ON_FAILED, test.response_step);
   ASSERT_TRUE(test.net_error == net::ERR_QUIC_PROTOCOL_ERROR ||
               test.net_error == net::ERR_QUIC_HANDSHAKE_FAILED ||
-              test.net_error == net::ERR_CONNECTION_REFUSED);
+              test.net_error == net::ERR_CONNECTION_REFUSED ||
+              test.net_error == net::ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED)
+      << net::ErrorToString(test.net_error);
   bidirectional_stream_destroy(test.stream);
 }
 
+// TODO(crbug.com/1246489): Flaky on Win64.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_StreamFailBeforeWriteIsExecutedOnNetworkThread \
+  DISABLED_StreamFailBeforeWriteIsExecutedOnNetworkThread
+#else
+#define MAYBE_StreamFailBeforeWriteIsExecutedOnNetworkThread \
+  StreamFailBeforeWriteIsExecutedOnNetworkThread
+#endif
+
 TEST_P(MAYBE_BidirectionalStreamTest,
-       StreamFailBeforeWriteIsExecutedOnNetworkThread) {
+       MAYBE_StreamFailBeforeWriteIsExecutedOnNetworkThread) {
   class CustomTestBidirectionalStreamCallback
       : public TestBidirectionalStreamCallback {
     bool MaybeCancel(bidirectional_stream* stream, ResponseStep step) override {

@@ -1,28 +1,27 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MULTIDEVICE_SETUP_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MULTIDEVICE_SETUP_SCREEN_HANDLER_H_
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace chromeos {
 
-class MultiDeviceSetupScreen;
-
 // Interface for dependency injection between MultiDeviceSetupScreen and its
 // WebUI representation.
-class MultiDeviceSetupScreenView {
+class MultiDeviceSetupScreenView
+    : public base::SupportsWeakPtr<MultiDeviceSetupScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"multidevice-setup-screen"};
+  inline constexpr static StaticOobeScreenId kScreenId{
+      "multidevice-setup-screen", "MultiDeviceSetupScreen"};
 
   virtual ~MultiDeviceSetupScreenView() = default;
 
-  virtual void Bind(MultiDeviceSetupScreen* screen) = 0;
   virtual void Show() = 0;
-  virtual void Hide() = 0;
 };
 
 // Concrete MultiDeviceSetupScreenView WebUI-based implementation.
@@ -31,26 +30,30 @@ class MultiDeviceSetupScreenHandler : public BaseScreenHandler,
  public:
   using TView = MultiDeviceSetupScreenView;
 
-  explicit MultiDeviceSetupScreenHandler(JSCallsContainer* js_calls_container);
+  MultiDeviceSetupScreenHandler();
+
+  MultiDeviceSetupScreenHandler(const MultiDeviceSetupScreenHandler&) = delete;
+  MultiDeviceSetupScreenHandler& operator=(
+      const MultiDeviceSetupScreenHandler&) = delete;
+
   ~MultiDeviceSetupScreenHandler() override;
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void GetAdditionalParameters(base::DictionaryValue* dict) override;
+  void GetAdditionalParameters(base::Value::Dict* dict) override;
 
   // MultiDeviceSetupScreenView:
-  void Bind(MultiDeviceSetupScreen* screen) override;
   void Show() override;
-  void Hide() override;
-
- private:
-  // BaseScreenHandler:
-  void Initialize() override;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupScreenHandler);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::MultiDeviceSetupScreenHandler;
+using ::chromeos::MultiDeviceSetupScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_MULTIDEVICE_SETUP_SCREEN_HANDLER_H_

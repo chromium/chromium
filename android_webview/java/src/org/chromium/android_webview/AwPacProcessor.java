@@ -1,27 +1,31 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.android_webview;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.LinkAddress;
 import android.net.LinkProperties;
 import android.net.Network;
 import android.net.NetworkRequest;
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.UsedByReflection;
+
+import java.net.InetAddress;
 
 /**
  * Class to evaluate PAC scripts.
  */
 @JNINamespace("android_webview")
-@TargetApi(28)
+@RequiresApi(Build.VERSION_CODES.P)
 // TODO(amalova): remove UsedByReflection
 @UsedByReflection("Android")
 public class AwPacProcessor {
@@ -54,7 +58,8 @@ public class AwPacProcessor {
         } else {
             String[] addresses = linkProperties.getLinkAddresses()
                                          .stream()
-                                         .map(LinkAddress::toString)
+                                         .map(LinkAddress::getAddress)
+                                         .map(InetAddress::getHostAddress)
                                          .toArray(String[] ::new);
             setNetworkAndLinkAddresses(network.getNetworkHandle(), addresses);
         }

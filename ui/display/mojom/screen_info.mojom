@@ -1,0 +1,69 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module display.mojom;
+
+import "ui/display/mojom/screen_orientation.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/display_color_spaces.mojom";
+
+// Information about the screen on which a WidgetBase is being displayed. This
+// is the content counterpart to display::ScreenInfo, and it roughly parallels
+// display.mojom.Display. It may be desirable to deprecate derived counterparts
+// of ui/display types, but doing so is complicated by widespread use and legacy
+// quirks around display::ScreenInfo.
+struct ScreenInfo {
+  // Device scale factor. Specifies the ratio between physical and logical
+  // pixels.
+  float device_scale_factor = 1;
+
+  // The color spaces and buffer formats that this screen will use for various
+  // content types.
+  gfx.mojom.DisplayColorSpaces display_color_spaces;
+
+  // The screen depth in bits per pixel.
+  uint32 depth;
+
+  // The bits per colour component. This assumes that the colours are balanced
+  // equally.
+  uint32 depth_per_component;
+
+  // This can be true for black and white printers
+  bool is_monochrome = false;
+
+  // The display frequency in Hz of the monitor. Set to 0 if it fails in the
+  // monitor frequency query.
+  uint32 display_frequency;
+
+  // The display monitor rectangle in virtual-screen coordinates. Note that
+  // this may be negative.
+  gfx.mojom.Rect rect;
+
+  // The portion of the monitor's rectangle that can be used by applications.
+  gfx.mojom.Rect available_rect;
+
+  // The monitor's orientation.
+  ScreenOrientation orientation_type = ScreenOrientation.kUndefined;
+
+  // This is the orientation angle of the displayed content in degrees.
+  // It is the opposite of the physical rotation.
+  uint16 orientation_angle;
+
+  // Whether this Screen is part of a multi-screen extended visual workspace.
+  bool is_extended;
+
+  // Whether this screen is designated as the 'primary' screen by the OS
+  // (otherwise it is a 'secondary' screen).
+  bool is_primary = false;
+
+  // Whether this screen is an 'internal' panel built into the device, like a
+  // laptop display (otherwise it is 'external', like a wired monitor).
+  bool is_internal = false;
+
+  // A user-friendly label for the screen, determined by the platform.
+  string label;
+
+  // Not web-exposed; the display::Display::id(), for internal tracking only.
+  int64 display_id;
+};

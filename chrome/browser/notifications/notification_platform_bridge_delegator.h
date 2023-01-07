@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,8 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
-#include "base/scoped_observer.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_handler.h"
@@ -56,12 +55,12 @@ class NotificationPlatformBridgeDelegator {
   // Called when the |system_bridge_| may have been initialized.
   void OnSystemNotificationPlatformBridgeReady(bool success);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Bridge responsible for displaying notifications on the platform. The
   // message center's bridge is maintained for platforms where it is available.
-  std::unique_ptr<NotificationPlatformBridge> message_center_bridge_;
-  NotificationPlatformBridge* system_bridge_;
+  raw_ptr<NotificationPlatformBridge> message_center_bridge_;
+  raw_ptr<NotificationPlatformBridge> system_bridge_;
   base::OnceClosure ready_callback_;
 
   base::WeakPtrFactory<NotificationPlatformBridgeDelegator> weak_factory_{this};

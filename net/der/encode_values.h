@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,7 @@ namespace base {
 class Time;
 }
 
-namespace net {
-
-namespace der {
+namespace net::der {
 
 struct GeneralizedTime;
 
@@ -45,8 +43,6 @@ static const size_t kUTCTimeLength = 13;
 NET_EXPORT bool EncodeUTCTime(const GeneralizedTime& time,
                               uint8_t out[kUTCTimeLength]);
 
-}  // namespace der
-
-}  // namespace net
+}  // namespace net::der
 
 #endif  // NET_DER_ENCODE_VALUES_H_

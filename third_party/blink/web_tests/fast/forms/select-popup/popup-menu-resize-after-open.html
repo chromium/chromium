@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/picker-common.js"></script>
 <style>
 #menu {
@@ -17,13 +19,13 @@ function openPickerErrorCallback() {
     finishJSTest();
 }
 function checkPopupWidth() {
-    shouldBe('popupWindow.innerWidth', '150');
+    shouldBe('internals.pagePopupWindow.innerWidth', '150');
     finishJSTest();
 }
 var menu = document.getElementById('menu');
-openPicker(menu, function() {
-    shouldBe('popupWindow.innerWidth', '100');
-    popupWindow.addEventListener("resize", checkPopupWidth, false);
+openPickerDeprecatedJsTest(menu, function() {
+    shouldBe('internals.pagePopupWindow.innerWidth', '100');
+    internals.pagePopupWindow.addEventListener("resize", checkPopupWidth, false);
     setTimeout(function() {
         testFailed('Popup wasn\'t resized.');
         finishJSTest();

@@ -159,7 +159,7 @@ TEST_F(PerThreadSemTest, Timeouts) {
   const absl::Duration elapsed = absl::Now() - start;
   // Allow for a slight early return, to account for quality of implementation
   // issues on various platforms.
-  const absl::Duration slop = absl::Microseconds(200);
+  const absl::Duration slop = absl::Milliseconds(1);
   EXPECT_LE(delay - slop, elapsed)
       << "Wait returned " << delay - elapsed
       << " early (with " << slop << " slop), start time was " << start;
@@ -172,6 +172,15 @@ TEST_F(PerThreadSemTest, Timeouts) {
   // The wait here has an expired timeout, but we have a wake to consume,
   // so this should succeed
   EXPECT_TRUE(Wait(negative_timeout));
+}
+
+TEST_F(PerThreadSemTest, ThreadIdentityReuse) {
+  // Create a base_internal::ThreadIdentity object and keep reusing it. There
+  // should be no memory or resource leaks.
+  for (int i = 0; i < 10000; i++) {
+    std::thread t([]() { GetOrCreateCurrentThreadIdentity(); });
+    t.join();
+  }
 }
 
 }  // namespace

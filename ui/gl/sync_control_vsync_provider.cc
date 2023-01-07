@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // These constants define a reasonable range for a calculated refresh interval.
 // Calculating refreshes out of this range will be considered a fatal error.
 const int64_t kMinVsyncIntervalUs = base::Time::kMicrosecondsPerSecond / 400;
@@ -26,11 +26,11 @@ const double kRelativeIntervalDifferenceThreshold = 0.05;
 namespace gl {
 
 SyncControlVSyncProvider::SyncControlVSyncProvider() : gfx::VSyncProvider() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On platforms where we can't get an accurate reading on the refresh
   // rate we fall back to the assumption that we're displaying 60 frames
   // per second.
-  last_good_interval_ = base::TimeDelta::FromSeconds(1) / 60;
+  last_good_interval_ = base::Seconds(1) / 60;
 #endif
 }
 
@@ -48,7 +48,7 @@ bool SyncControlVSyncProvider::GetVSyncParametersIfAvailable(
     base::TimeTicks* timebase_out,
     base::TimeDelta* interval_out) {
   TRACE_EVENT0("gpu", "SyncControlVSyncProvider::GetVSyncParameters");
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The actual clock used for the system time returned by glXGetSyncValuesOML
   // is unspecified. In practice, the clock used is likely to be either
   // CLOCK_REALTIME or CLOCK_MONOTONIC, so we compare the returned time to the
@@ -107,7 +107,7 @@ bool SyncControlVSyncProvider::GetVSyncParametersIfAvailable(
     return false;
 
   const base::TimeTicks timebase =
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(system_time);
+      base::TimeTicks() + base::Microseconds(system_time);
 
   // Only need the previous calculated interval for our filtering.
   while (last_computed_intervals_.size() > 1)
@@ -115,8 +115,7 @@ bool SyncControlVSyncProvider::GetVSyncParametersIfAvailable(
 
   int32_t numerator, denominator;
   if (GetMscRate(&numerator, &denominator) && numerator) {
-    last_computed_intervals_.push(base::TimeDelta::FromSeconds(denominator) /
-                                  numerator);
+    last_computed_intervals_.push(base::Seconds(denominator) / numerator);
   } else if (!last_timebase_.is_null()) {
     base::TimeDelta timebase_diff = timebase - last_timebase_;
     int64_t counter_diff = media_stream_counter - last_media_stream_counter_;
@@ -156,11 +155,11 @@ bool SyncControlVSyncProvider::GetVSyncParametersIfAvailable(
   return true;
 #else
   return false;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 
 bool SyncControlVSyncProvider::SupportGetVSyncParametersIfAvailable() const {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;

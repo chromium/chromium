@@ -1,5 +1,0 @@
-Tests synchronizing the search input field to the editor selection.
-
-Search controller: 'return'
-Advanced search controller: 'return'
-

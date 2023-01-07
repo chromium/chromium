@@ -1,13 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SYNC_USER_EVENT_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SYNC_USER_EVENT_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -17,10 +16,13 @@ class UserEventService;
 
 namespace browser_sync {
 
-class UserEventServiceFactory : public BrowserContextKeyedServiceFactory {
+class UserEventServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static syncer::UserEventService* GetForProfile(Profile* profile);
   static UserEventServiceFactory* GetInstance();
+
+  UserEventServiceFactory(const UserEventServiceFactory&) = delete;
+  UserEventServiceFactory& operator=(const UserEventServiceFactory&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<UserEventServiceFactory>;
@@ -31,10 +33,6 @@ class UserEventServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(UserEventServiceFactory);
 };
 
 }  // namespace browser_sync

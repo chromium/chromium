@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/win_util.h"
@@ -41,9 +40,9 @@ std::wstring GetAutoLaunchKeyName() {
 
   std::string input(path.AsUTF8Unsafe());
   uint8_t hash[16];
-  crypto::SHA256HashString(input, hash, base::size(hash));
+  crypto::SHA256HashString(input, hash, std::size(hash));
   return std::wstring(kAutolaunchKeyValue) + L"_" +
-         base::ASCIIToWide(base::HexEncode(hash, base::size(hash)));
+         base::ASCIIToWide(base::HexEncode(hash, std::size(hash)));
 }
 
 }  // namespace

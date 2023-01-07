@@ -1,0 +1,92 @@
+<style include="cr-shared-style cr-icons shared-style">
+  #etld-row {
+    align-items: center;
+    /* border-bottom: var(--cr-separator-line); */
+    display: flex;
+    height: var(--cr-section-two-line-min-height);
+  }
+
+  #etld-and-subtext {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    margin: 0 calc(var(--cr-section-padding) + var(--cr-icon-ripple-margin));
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #etldOrSiteSubtext {
+    color: var(--cr-secondary-text-color);
+  }
+
+  #sites-list {
+    margin-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .site-row {
+    align-items: center;
+    /* border-top: var(--cr-separator-line); */
+    display: flex;
+    height: var(--cr-section-min-height);
+  }
+
+  .site-and-subtext {
+    display: flex;
+    flex-grow: 1;
+    margin: 0 calc(var(--cr-section-padding) + var(--cr-icon-ripple-margin));
+    overflow: hidden;
+  }
+
+  .site {
+    margin-inline-end: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .site-subtext {
+    color: var(--cr-secondary-text-color);
+    flex-shrink: 0;
+  }
+</style>
+<div id="etld-row" class$="[[getClassForIndex_(listIndex)]]">
+  <div class="site-favicon"
+      style$="background-image:[[getEtldOrSiteFaviconUrl_(data)]]"></div>
+  <div id="etld-and-subtext">
+    <span id="etldOrSite">[[getDisplayUrl_(data)]]</span>
+    <span id="etldOrSiteSubtext">[[getEtldOrSiteSubText_(data)]]</span>
+  </div>
+  <template is="dom-if" if="[[isExpandable_]]">
+    <cr-expand-button no-hover id="expand-sites-button"
+        expanded="{{expanded_}}">
+    </cr-expand-button>
+  </template>
+  <template is="dom-if" if="[[!isExpandable_]]">
+    <cr-icon-button class="subpage-arrow" id="edit-one-site-button"
+        on-click="onEditSiteClick_">
+    </cr-icon-button>
+  </template>
+</div>
+<div id="sites-list" hidden$="[[!expanded_]]">
+  <template is="dom-repeat" items="[[data.sites]]">
+    <div class="site-row hr">
+      <div class="site-favicon"
+          style$="background-image:[[getFaviconUrl_(item.site)]]"></div>
+      <div class="site-and-subtext">
+        <span class="site">[[item.site]]</span>
+        <span class="site-subtext">[[getSiteSubtext_(item)]]</span>
+      </div>
+      <cr-icon-button class="subpage-arrow" on-click="onEditSiteInListClick_">
+      </cr-icon-button>
+    </div>
+  </template>
+</div>
+
+<template is="dom-if" if="[[showEditSitePermissionsDialog_]]" restamp>
+  <site-permissions-edit-permissions-dialog
+      delegate="[[delegate]]"
+      extensions="[[extensions]]"
+      site="[[siteToEdit_.site]]"
+      original-site-set="[[siteToEdit_.siteSet]]"
+      on-close="onEditSitePermissionsDialogClose_">
+  </site-permissions-edit-permissions-dialog>
+</template>

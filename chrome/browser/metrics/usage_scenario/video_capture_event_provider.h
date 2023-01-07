@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_METRICS_USAGE_SCENARIO_VIDEO_CAPTURE_EVENT_PROVIDER_H_
 #define CHROME_BROWSER_METRICS_USAGE_SCENARIO_VIDEO_CAPTURE_EVENT_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -29,7 +30,7 @@ class VideoCaptureEventProvider : public MediaStreamCaptureIndicator::Observer {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The data store for the video capture events. Must outlive |this|.
-  UsageScenarioDataStoreImpl* const data_store_
+  const raw_ptr<UsageScenarioDataStoreImpl> data_store_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::ScopedObservation<MediaStreamCaptureIndicator,

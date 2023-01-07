@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -171,7 +171,7 @@ public class SadTabTest {
     private static void simulateRendererKilled(final Tab tab, final boolean visible) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             if (!visible) tab.hide(TabHidingType.CHANGED_TABS);
-            ChromeTabUtils.simulateRendererKilledForTesting(tab, false);
+            ChromeTabUtils.simulateRendererKilledForTesting(tab);
         });
     }
 

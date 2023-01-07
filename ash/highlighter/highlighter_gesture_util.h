@@ -1,11 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_HIGHLIGHTER_HIGHLIGHTER_GESTURE_UTIL_H_
 #define ASH_HIGHLIGHTER_HIGHLIGHTER_GESTURE_UTIL_H_
-
-#include <vector>
 
 #include "ash/ash_export.h"
 #include "ui/gfx/geometry/rect_f.h"

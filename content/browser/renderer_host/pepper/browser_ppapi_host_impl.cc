@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 
-#include "base/metrics/histogram_functions.h"
-#include "content/browser/renderer_host/pepper/pepper_message_filter.h"
+#include "base/observer_list.h"
 #include "content/common/pepper_renderer_instance_data.h"
 #include "content/public/common/process_type.h"
 #include "ipc/ipc_message_macros.h"
@@ -19,8 +18,6 @@ BrowserPpapiHost* BrowserPpapiHost::CreateExternalPluginProcess(
     ppapi::PpapiPermissions permissions,
     base::Process plugin_child_process,
     IPC::ChannelProxy* channel,
-    int render_process_id,
-    int render_view_id,
     const base::FilePath& profile_directory) {
   // The plugin name and path shouldn't be needed for external plugins.
   BrowserPpapiHostImpl* browser_ppapi_host =
@@ -32,10 +29,6 @@ BrowserPpapiHost* BrowserPpapiHost::CreateExternalPluginProcess(
                                false /* in_process */,
                                true /* external_plugin */);
   browser_ppapi_host->set_plugin_process(std::move(plugin_child_process));
-
-  scoped_refptr<PepperMessageFilter> pepper_message_filter(
-      new PepperMessageFilter());
-  channel->AddFilter(pepper_message_filter->GetFilter());
   channel->AddFilter(browser_ppapi_host->message_filter().get());
 
   return browser_ppapi_host;
@@ -199,14 +192,7 @@ bool BrowserPpapiHostImpl::HostMessageFilter::OnMessageReceived(
   if (!ppapi_host_)
     return false;
 
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(BrowserPpapiHostImpl::HostMessageFilter, msg)
-  // Add necessary message handlers here.
-  IPC_MESSAGE_HANDLER(PpapiHostMsg_LogInterfaceUsage,
-                      OnHostMsgLogInterfaceUsage)
-  IPC_MESSAGE_UNHANDLED(handled = ppapi_host_->OnMessageReceived(msg))
-  IPC_END_MESSAGE_MAP()
-  return handled;
+  return ppapi_host_->OnMessageReceived(msg);
 }
 
 void BrowserPpapiHostImpl::HostMessageFilter::OnHostDestroyed() {
@@ -216,11 +202,6 @@ void BrowserPpapiHostImpl::HostMessageFilter::OnHostDestroyed() {
 }
 
 BrowserPpapiHostImpl::HostMessageFilter::~HostMessageFilter() {}
-
-void BrowserPpapiHostImpl::HostMessageFilter::OnHostMsgLogInterfaceUsage(
-    int hash) const {
-  base::UmaHistogramSparse("Pepper.InterfaceUsed", hash);
-}
 
 BrowserPpapiHostImpl::InstanceData::InstanceData(
     const PepperRendererInstanceData& renderer_data)

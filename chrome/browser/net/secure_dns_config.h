@@ -1,16 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_NET_SECURE_DNS_CONFIG_H_
 #define CHROME_BROWSER_NET_SECURE_DNS_CONFIG_H_
 
-#include <vector>
-
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
-#include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Representation of a complete Secure DNS configuration.
 class SecureDnsConfig {
@@ -35,7 +33,7 @@ class SecureDnsConfig {
   static constexpr char kModeSecure[] = "secure";
 
   SecureDnsConfig(net::SecureDnsMode mode,
-                  std::vector<net::DnsOverHttpsServerConfig> servers,
+                  net::DnsOverHttpsConfig doh_config,
                   ManagementMode management_mode);
   // This class is move-only to avoid any accidental copying.
   SecureDnsConfig(SecureDnsConfig&& other);
@@ -44,19 +42,17 @@ class SecureDnsConfig {
 
   // Identifies the SecureDnsMode corresponding to one of the above names, or
   // returns nullopt if the name is unrecognized.
-  static base::Optional<net::SecureDnsMode> ParseMode(base::StringPiece name);
+  static absl::optional<net::SecureDnsMode> ParseMode(base::StringPiece name);
   // Converts a secure DNS mode to one of the above names.
   static const char* ModeToString(net::SecureDnsMode mode);
 
   net::SecureDnsMode mode() { return mode_; }
-  const std::vector<net::DnsOverHttpsServerConfig>& servers() {
-    return servers_;
-  }
+  const net::DnsOverHttpsConfig& doh_servers() { return doh_servers_; }
   ManagementMode management_mode() { return management_mode_; }
 
  private:
   net::SecureDnsMode mode_;
-  std::vector<net::DnsOverHttpsServerConfig> servers_;
+  net::DnsOverHttpsConfig doh_servers_;
   ManagementMode management_mode_;
 };
 

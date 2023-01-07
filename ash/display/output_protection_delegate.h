@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
@@ -28,6 +28,10 @@ class ASH_EXPORT OutputProtectionDelegate : public aura::WindowObserver,
   using SetProtectionCallback = base::OnceCallback<void(bool success)>;
 
   explicit OutputProtectionDelegate(aura::Window* window);
+
+  OutputProtectionDelegate(const OutputProtectionDelegate&) = delete;
+  OutputProtectionDelegate& operator=(const OutputProtectionDelegate&) = delete;
+
   ~OutputProtectionDelegate() override;
 
   void QueryStatus(QueryStatusCallback callback);
@@ -61,7 +65,7 @@ class ASH_EXPORT OutputProtectionDelegate : public aura::WindowObserver,
   struct ClientIdHolder;
   std::unique_ptr<ClientIdHolder> client_;
 
-  DISALLOW_COPY_AND_ASSIGN(OutputProtectionDelegate);
+  absl::optional<display::ScopedDisplayObserver> display_observer_{this};
 };
 
 }  // namespace ash

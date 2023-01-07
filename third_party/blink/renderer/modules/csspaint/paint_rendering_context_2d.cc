@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,27 +10,29 @@
 namespace blink {
 
 PaintRenderingContext2D::PaintRenderingContext2D(
-    const IntSize& container_size,
+    const gfx::Size& container_size,
     const PaintRenderingContext2DSettings* context_settings,
     float zoom,
-    float device_scale_factor)
+    float device_scale_factor,
+    PaintWorkletGlobalScope* global_scope)
     : container_size_(container_size),
       context_settings_(context_settings),
-      effective_zoom_(zoom) {
+      effective_zoom_(zoom),
+      global_scope_(global_scope) {
   InitializePaintRecorder();
 
   clip_antialiasing_ = kAntiAliased;
-  ModifiableState().SetShouldAntialias(true);
+  GetState().SetShouldAntialias(true);
 
-  GetPaintCanvas()->clear(context_settings->alpha() ? SK_ColorTRANSPARENT
-                                                    : SK_ColorBLACK);
+  GetPaintCanvas()->clear(context_settings->alpha() ? SkColors::kTransparent
+                                                    : SkColors::kBlack);
   did_record_draw_commands_in_paint_recorder_ = true;
 }
 
 void PaintRenderingContext2D::InitializePaintRecorder() {
   paint_recorder_ = std::make_unique<PaintRecorder>();
   cc::PaintCanvas* canvas = paint_recorder_->beginRecording(
-      container_size_.Width(), container_size_.Height());
+      container_size_.width(), container_size_.height());
 
   // Always save an initial frame, to support resetting the top level matrix
   // and clip.
@@ -41,16 +43,12 @@ void PaintRenderingContext2D::InitializePaintRecorder() {
   did_record_draw_commands_in_paint_recorder_ = false;
 }
 
-void PaintRenderingContext2D::DidDraw(const SkIRect&) {
-  did_record_draw_commands_in_paint_recorder_ = true;
-}
-
 int PaintRenderingContext2D::Width() const {
-  return container_size_.Width();
+  return container_size_.width();
 }
 
 int PaintRenderingContext2D::Height() const {
-  return container_size_.Height();
+  return container_size_.height();
 }
 
 bool PaintRenderingContext2D::ParseColorOrCurrentColor(
@@ -98,6 +96,19 @@ cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvas() const {
   return paint_recorder_->getRecordingCanvas();
 }
 
+cc::PaintCanvas* PaintRenderingContext2D::GetDrawingPaintCanvas() {
+  DCHECK(paint_recorder_);
+  DCHECK(paint_recorder_->getRecordingCanvas());
+  did_record_draw_commands_in_paint_recorder_ = true;
+  return paint_recorder_->getRecordingCanvas();
+}
+
+cc::PaintCanvas* PaintRenderingContext2D::GetPaintCanvasForDraw(
+    const SkIRect&,
+    CanvasPerformanceMonitor::DrawType) {
+  return GetDrawingPaintCanvas();
+}
+
 void PaintRenderingContext2D::ValidateStateStackWithCanvas(
     const cc::PaintCanvas* canvas) const {
 #if DCHECK_IS_ON()
@@ -108,18 +119,15 @@ void PaintRenderingContext2D::ValidateStateStackWithCanvas(
 #endif
 }
 
-bool PaintRenderingContext2D::StateHasFilter() {
-  return GetState().HasFilterForOffscreenCanvas(IntSize(Width(), Height()),
-                                                this);
-}
-
 sk_sp<PaintFilter> PaintRenderingContext2D::StateGetFilter() {
-  return GetState().GetFilterForOffscreenCanvas(IntSize(Width(), Height()),
-                                                this);
+  return GetState().GetFilterForOffscreenCanvas(container_size_, this);
 }
 
-CanvasColorParams PaintRenderingContext2D::GetCanvas2DColorParams() const {
-  return CanvasColorParams();
+PredefinedColorSpace PaintRenderingContext2D::GetDefaultImageDataColorSpace()
+    const {
+  // PaintRenderingContext2D does not call getImageData or createImageData.
+  NOTREACHED();
+  return PredefinedColorSpace::kSRGB;
 }
 
 void PaintRenderingContext2D::WillOverwriteCanvas() {
@@ -132,7 +140,7 @@ void PaintRenderingContext2D::WillOverwriteCanvas() {
 }
 
 DOMMatrix* PaintRenderingContext2D::getTransform() {
-  const TransformationMatrix& t = GetState().GetTransform();
+  const AffineTransform& t = GetState().GetTransform();
   DOMMatrix* m = DOMMatrix::Create();
   m->setA(t.A() / effective_zoom_);
   m->setB(t.B() / effective_zoom_);

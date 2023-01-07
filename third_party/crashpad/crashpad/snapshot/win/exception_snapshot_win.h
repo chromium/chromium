@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/exception_snapshot.h"
@@ -50,6 +49,10 @@ union CPUContextUnion {
 class ExceptionSnapshotWin final : public ExceptionSnapshot {
  public:
   ExceptionSnapshotWin();
+
+  ExceptionSnapshotWin(const ExceptionSnapshotWin&) = delete;
+  ExceptionSnapshotWin& operator=(const ExceptionSnapshotWin&) = delete;
+
   ~ExceptionSnapshotWin() override;
 
   //! \brief Initializes the object.
@@ -69,7 +72,8 @@ class ExceptionSnapshotWin final : public ExceptionSnapshot {
   //!     an appropriate message logged.
   bool Initialize(ProcessReaderWin* process_reader,
                   DWORD thread_id,
-                  WinVMAddress exception_pointers);
+                  WinVMAddress exception_pointers,
+                  uint32_t* gather_indirectly_referenced_memory_cap);
 
   // ExceptionSnapshot:
 
@@ -89,7 +93,7 @@ class ExceptionSnapshotWin final : public ExceptionSnapshot {
       ProcessReaderWin* process_reader,
       WinVMAddress exception_pointers_address,
       DWORD exception_thread_id,
-      void (*native_to_cpu_context)(const ContextType& context_record,
+      void (*native_to_cpu_context)(const ContextType* context_record,
                                     CPUContext* context,
                                     CPUContextUnion* context_union));
 
@@ -102,8 +106,6 @@ class ExceptionSnapshotWin final : public ExceptionSnapshot {
   uint32_t exception_flags_;
   DWORD exception_code_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionSnapshotWin);
 };
 
 }  // namespace internal

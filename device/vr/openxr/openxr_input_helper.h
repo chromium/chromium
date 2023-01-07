@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "device/vr/openxr/openxr_controller.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
@@ -29,6 +29,9 @@ class OpenXRInputHelper {
 
   OpenXRInputHelper(XrSession session, XrSpace local_space);
 
+  OpenXRInputHelper(const OpenXRInputHelper&) = delete;
+  OpenXRInputHelper& operator=(const OpenXRInputHelper&) = delete;
+
   ~OpenXRInputHelper();
 
   std::vector<mojom::XRInputSourceStatePtr> GetInputState(
@@ -38,7 +41,7 @@ class OpenXRInputHelper {
   XrResult OnInteractionProfileChanged();
 
  private:
-  base::Optional<Gamepad> GetWebXRGamepad(const OpenXrController& controller);
+  absl::optional<Gamepad> GetWebXRGamepad(const OpenXrController& controller);
 
   XrResult Initialize(XrInstance instance,
                       XrSystemId system,
@@ -56,14 +59,13 @@ class OpenXRInputHelper {
   struct OpenXrControllerState {
     OpenXrController controller;
     bool primary_button_pressed;
+    bool squeeze_button_pressed;
   };
   std::array<OpenXrControllerState,
              static_cast<size_t>(OpenXrHandednessType::kCount)>
       controller_states_;
 
   std::unique_ptr<OpenXRPathHelper> path_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenXRInputHelper);
 };
 
 }  // namespace device

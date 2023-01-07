@@ -1,0 +1,21 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+{
+  include: [
+    "//build/config/fuchsia/test/audio_output.shard.test-cml",
+    "//build/config/fuchsia/test/fonts.shard.test-cml",
+    "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
+    "//build/config/fuchsia/test/network.shard.test-cml",
+    "//build/config/fuchsia/test/platform_video_codecs.shard.test-cml",
+    "//build/config/fuchsia/test/test_ui_stack.shard.test-cml",
+    "vulkan/client.shard.cml",
+  ],
+  use: [
+    {
+      protocol: [
+        "fuchsia.memorypressure.Provider",
+      ],
+    },
+  ],
+}

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,13 +40,9 @@ class JniPaymentApp : public PaymentApp::Delegate {
 
   bool HandlesPayerPhone(JNIEnv* env);
 
-  base::android::ScopedJavaLocalRef<jstring> GetCountryCode(JNIEnv* env);
-
-  bool CanMakePayment(JNIEnv* env);
+  bool HasEnrolledInstrument(JNIEnv* env);
 
   bool CanPreselect(JNIEnv* env);
-
-  bool IsUserGestureRequiredToSkipUi(JNIEnv* env);
 
   void InvokePaymentApp(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& jcallback);
@@ -62,12 +58,6 @@ class JniPaymentApp : public PaymentApp::Delegate {
   void AbortPaymentApp(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& jcallback);
 
-  bool IsReadyForMinimalUI(JNIEnv* env);
-
-  base::android::ScopedJavaLocalRef<jstring> AccountBalance(JNIEnv* env);
-
-  void DisableShowingOwnUI(JNIEnv* env);
-
   base::android::ScopedJavaLocalRef<jstring> GetApplicationIdentifierToHide(
       JNIEnv* env);
 
@@ -79,6 +69,10 @@ class JniPaymentApp : public PaymentApp::Delegate {
   void SetPaymentHandlerHost(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jpayment_handler_host);
+
+  base::android::ScopedJavaLocalRef<jbyteArray> SetAppSpecificResponseFields(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jpayment_response);
 
   void FreeNativeObject(JNIEnv* env);
 

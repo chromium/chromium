@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "weblayer/browser/background_download_service_factory.h"
 #include "weblayer/browser/browser_context_impl.h"
-#include "weblayer/browser/download_service_factory.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/system_network_context_manager.h"
 #include "weblayer/public/download_delegate.h"
@@ -32,15 +32,17 @@ BackgroundFetchDelegateImpl::~BackgroundFetchDelegateImpl() = default;
 void BackgroundFetchDelegateImpl::MarkJobComplete(const std::string& job_id) {
   BackgroundFetchDelegateBase::MarkJobComplete(job_id);
 
-#if defined(OS_ANDROID)
-  if (GetJobDetails(job_id)->job_state ==
-      background_fetch::JobDetails::State::kJobComplete) {
+#if BUILDFLAG(IS_ANDROID)
+  background_fetch::JobDetails* job_details =
+      GetJobDetails(job_id, /*allow_null=*/true);
+  if (job_details && job_details->job_state ==
+                         background_fetch::JobDetails::State::kJobComplete) {
     // The UI should have already been updated to the Completed state, however,
     // sometimes Android drops notification updates if there have been too many
     // requested in a short span of time, so make sure the completed state is
     // reflected in the UI after a brief delay. See
     // https://developer.android.com/training/notify-user/build-notification#Updating
-    static constexpr auto kDelay = base::TimeDelta::FromMilliseconds(1500);
+    static constexpr auto kDelay = base::Milliseconds(1500);
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&BackgroundFetchDelegateImpl::DoUpdateUi,
@@ -52,8 +54,8 @@ void BackgroundFetchDelegateImpl::MarkJobComplete(const std::string& job_id) {
 
 void BackgroundFetchDelegateImpl::UpdateUI(
     const std::string& job_id,
-    const base::Optional<std::string>& title,
-    const base::Optional<SkBitmap>& icon) {
+    const absl::optional<std::string>& title,
+    const absl::optional<SkBitmap>& icon) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(title || icon);             // One of the UI options must be updatable.
   DCHECK(!icon || !icon->isNull());  // The |icon|, if provided, is not null.
@@ -75,15 +77,9 @@ void BackgroundFetchDelegateImpl::UpdateUI(
     client->OnUIUpdated(job_id);
 }
 
-void BackgroundFetchDelegateImpl::GetPermissionForOriginWithoutWebContents(
-    const url::Origin& origin,
-    GetPermissionForOriginCallback callback) {
-  // TODO(estade): handle the case where there's no WebContents.
-  std::move(callback).Run(content::BackgroundFetchPermission::BLOCKED);
-}
-
-download::DownloadService* BackgroundFetchDelegateImpl::GetDownloadService() {
-  return DownloadServiceFactory::GetForBrowserContext(context());
+download::BackgroundDownloadService*
+BackgroundFetchDelegateImpl::GetDownloadService() {
+  return BackgroundDownloadServiceFactory::GetForBrowserContext(context());
 }
 
 void BackgroundFetchDelegateImpl::OnJobDetailsCreated(

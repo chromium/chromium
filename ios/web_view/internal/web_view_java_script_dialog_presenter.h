@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,12 @@ class WebViewJavaScriptDialogPresenter final
  public:
   WebViewJavaScriptDialogPresenter(CWVWebView* web_view,
                                    id<CWVUIDelegate> ui_delegate);
+
+  WebViewJavaScriptDialogPresenter(const WebViewJavaScriptDialogPresenter&) =
+      delete;
+  WebViewJavaScriptDialogPresenter& operator=(
+      const WebViewJavaScriptDialogPresenter&) = delete;
+
   ~WebViewJavaScriptDialogPresenter() override;
 
   void SetUIDelegate(id<CWVUIDelegate> ui_delegate);
@@ -53,8 +59,6 @@ class WebViewJavaScriptDialogPresenter final
   __weak id<CWVUIDelegate> ui_delegate_ = nil;
   // The web view which originated the dialogs.
   __weak CWVWebView* web_view_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewJavaScriptDialogPresenter);
 };
 
 }  // namespace ios_web_view

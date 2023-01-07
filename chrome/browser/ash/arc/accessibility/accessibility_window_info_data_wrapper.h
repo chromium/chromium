@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,11 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
   AccessibilityWindowInfoDataWrapper(
       AXTreeSourceArc* tree_source,
       mojom::AccessibilityWindowInfoData* window);
+
+  AccessibilityWindowInfoDataWrapper(
+      const AccessibilityWindowInfoDataWrapper&) = delete;
+  AccessibilityWindowInfoDataWrapper& operator=(
+      const AccessibilityWindowInfoDataWrapper&) = delete;
 
   // AccessibilityInfoDataWrapper overrides.
   bool IsNode() const override;
@@ -53,8 +58,6 @@ class AccessibilityWindowInfoDataWrapper : public AccessibilityInfoDataWrapper {
                    std::vector<int32_t>* out_value) const;
 
   mojom::AccessibilityWindowInfoData* window_ptr_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityWindowInfoDataWrapper);
 };
 
 }  // namespace arc

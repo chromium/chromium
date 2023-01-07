@@ -1,4 +1,0 @@
-
-js_unittest("importer_common_unittest.m") {
-  deps = [ ":mock_entry" ]
-}

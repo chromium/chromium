@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Navigating to URL with a data scheme Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
-Harness: the test ran to completion.
-

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -24,7 +25,7 @@ class SkCanvas;
 
 namespace gfx {
 class Point;
-class ScrollOffset;
+class PointF;
 class Transform;
 }  // namespace gfx
 
@@ -49,6 +50,10 @@ class CONTENT_EXPORT SynchronousCompositor {
 
   struct Frame {
     Frame();
+
+    Frame(const Frame&) = delete;
+    Frame& operator=(const Frame&) = delete;
+
     ~Frame();
 
     // Movable type.
@@ -59,10 +64,7 @@ class CONTENT_EXPORT SynchronousCompositor {
     std::unique_ptr<viz::CompositorFrame> frame;
     // Invalid if |frame| is nullptr.
     viz::LocalSurfaceId local_surface_id;
-    base::Optional<viz::HitTestRegionList> hit_test_region_list;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Frame);
+    absl::optional<viz::HitTestRegionList> hit_test_region_list;
   };
 
   class FrameFuture : public base::RefCountedThreadSafe<FrameFuture> {
@@ -95,7 +97,13 @@ class CONTENT_EXPORT SynchronousCompositor {
   // Note that all resources must be returned before ReleaseHwDraw.
   virtual void ReturnResources(
       uint32_t layer_tree_frame_sink_id,
-      const std::vector<viz::ReturnedResource>& resources) = 0;
+      std::vector<viz::ReturnedResource> resources) = 0;
+
+  // Notifies the client when a directive for DocumentTransition, submitted in
+  // a previous CompositorFrame, has finished executing.
+  virtual void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id) = 0;
 
   virtual void DidPresentCompositorFrames(
       viz::FrameTimingDetailsMap timing_details,
@@ -103,7 +111,9 @@ class CONTENT_EXPORT SynchronousCompositor {
 
   // "On demand" SW draw, into the supplied canvas (observing the transform
   // and clip set there-in).
-  virtual bool DemandDrawSw(SkCanvas* canvas) = 0;
+  // `software canvas` being true means drawing happens immediately instead
+  // of being cached, which allows more efficient drawing.
+  virtual bool DemandDrawSw(SkCanvas* canvas, bool software_canvas) = 0;
 
   // Set the memory limit policy of this compositor.
   virtual void SetMemoryPolicy(size_t bytes_limit) = 0;
@@ -114,9 +124,9 @@ class CONTENT_EXPORT SynchronousCompositor {
 
   // Should be called by the embedder after the embedder had modified the
   // scroll offset of the root layer. |root_offset| must be in physical pixel
-  // scale if --use-zoom-for-dsf is enabled. Otherwise, it must be in DIP scale.
+  // scale.
   virtual void DidChangeRootLayerScrollOffset(
-      const gfx::ScrollOffset& root_offset) = 0;
+      const gfx::PointF& root_offset) = 0;
 
   // Allows embedder to synchronously update the zoom level, ie page scale
   // factor, around the anchor point.

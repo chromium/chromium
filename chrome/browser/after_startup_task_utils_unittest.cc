@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
+#include "base/test/bind.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -111,7 +111,7 @@ class AfterStartupTaskTest : public testing::Test {
         FROM_HERE,
         base::BindOnce(&AfterStartupTaskUtils::PostTask, from_here,
                        std::move(task_runner), std::move(task)),
-        base::BindOnce(&base::RunLoop::Quit, base::Unretained(&run_loop)));
+        base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
     run_loop.Run();
   }
 
@@ -120,7 +120,7 @@ class AfterStartupTaskTest : public testing::Test {
     base::RunLoop run_loop;
     background_sequence_->real_runner()->PostTaskAndReply(
         FROM_HERE, base::DoNothing(),
-        base::BindOnce(&base::RunLoop::Quit, base::Unretained(&run_loop)));
+        base::BindLambdaForTesting([&]() { run_loop.Quit(); }));
     run_loop.Run();
   }
 

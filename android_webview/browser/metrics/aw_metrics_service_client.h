@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "android_webview/browser/lifecycle/webview_app_state_observer.h"
-#include "base/macros.h"
+#include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
@@ -23,6 +23,11 @@
 
 namespace android_webview {
 
+namespace prefs {
+extern const char kMetricsAppPackageNameLoggingRule[];
+extern const char kAppPackageNameLoggingRuleLastUpdateTime[];
+}  // namespace prefs
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // TODO(https://crbug.com/1012025): remove this when the kInstallDate pref has
@@ -33,6 +38,12 @@ enum class BackfillInstallDate {
   kPersistedPackageManagerInstallDate = 2,
   kMaxValue = kPersistedPackageManagerInstallDate,
 };
+
+// The amount of delay before calculating and recording the app data directory
+// size, intended for avoiding IO contention when an app is initializing.
+//
+// Visible for testing.
+extern const base::TimeDelta kRecordAppDataDirectorySizeDelay;
 
 // AwMetricsServiceClient is a singleton which manages WebView metrics
 // collection.
@@ -88,6 +99,16 @@ enum class BackfillInstallDate {
 // the client ID (generating a new ID if there was none). If this client is in
 // the sample, it then calls MetricsService::Start(). If consent was not
 // granted, MaybeStartMetrics() instead clears the client ID, if any.
+//
+// Similarly, when
+// `android_webview::features::kWebViewAppsPackageNamesAllowlist` is enabled,
+// WebView will try to lookup the embedding app's package name in a list of apps
+// whose package names are allowed to be recorded. This operation takes place on
+// a background thread. The result of the lookup is then posted back on the UI
+// thread and SetAppPackageNameLoggingRule() will be called. Unlike user's
+// consent, the metrics service doesn't currently block on the allowlist lookup
+// result. If the result isn't present at the moment of creating a metrics log,
+// it assumes that the app package name isn't allowed to be logged.
 
 class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
                                public WebViewAppStateObserver {
@@ -114,11 +135,30 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
     virtual bool HasAwContentsEverCreated() const = 0;
   };
 
+  // An enum to track the status of AppPackageNameLoggingRule used in
+  // ShouldRecordPackageName. These values are persisted to logs. Entries should
+  // not be renumbered and numeric values should never be reused.
+  enum class AppPackageNameLoggingRuleStatus {
+    kNotLoadedNoCache = 0,
+    kNotLoadedUseCache = 1,
+    kNewVersionFailedNoCache = 2,
+    kNewVersionFailedUseCache = 3,
+    kNewVersionLoaded = 4,
+    kSameVersionAsCache = 5,
+    kMaxValue = kSameVersionAsCache,
+  };
+
   static AwMetricsServiceClient* GetInstance();
   static void SetInstance(
       std::unique_ptr<AwMetricsServiceClient> aw_metrics_service_client);
 
+  static void RegisterMetricsPrefs(PrefRegistrySimple* registry);
+
   AwMetricsServiceClient(std::unique_ptr<Delegate> delegate);
+
+  AwMetricsServiceClient(const AwMetricsServiceClient&) = delete;
+  AwMetricsServiceClient& operator=(const AwMetricsServiceClient&) = delete;
+
   ~AwMetricsServiceClient() override;
 
   // metrics::MetricsServiceClient
@@ -135,11 +175,53 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   void RegisterAdditionalMetricsProviders(
       metrics::MetricsService* service) override;
 
+  // Gets the embedding app's package name if it's OK to log. Otherwise, this
+  // returns the empty string.
+  std::string GetAppPackageNameIfLoggable() override;
+
+  // If `android_webview::features::kWebViewAppsPackageNamesAllowlist` is
+  // enabled:
+  // - It returns `true` if the app is in the list of allowed apps.
+  // - It returns `false` if the app isn't in the allowlist or if the lookup
+  //   operation fails or hasn't finished yet.
+  //
+  // If the feature isn't enabled, the default sampling behaviour in
+  // `::metrics::AndroidMetricsServiceClient::ShouldRecordPackageName` is used.
+  bool ShouldRecordPackageName() override;
+
+  // Sets that the embedding app's package name is allowed to be recorded in
+  // UMA logs. This is determened by looking up the app package name in a
+  // dynamically downloaded allowlist of apps see
+  // `AwAppsPackageNamesAllowlistComponentLoaderPolicy`.
+  //
+  // `record` If it has a null value, then it will be ignored and the cached
+  //          record will be used if any.
+  void SetAppPackageNameLoggingRule(
+      absl::optional<AppPackageNameLoggingRule> record);
+
+  // Get the cached record of the app package names allowlist set by
+  // `SetAppPackageNameLoggingRule` if any.
+  absl::optional<AppPackageNameLoggingRule>
+  GetCachedAppPackageNameLoggingRule();
+
+  // The last time the apps package name allowlist was queried from the
+  // component update service, regardless if it was successful or not.
+  base::Time GetAppPackageNameLoggingRuleLastUpdateTime() const;
+  void SetAppPackageNameLoggingRuleLastUpdateTime(base::Time update_time);
+
+ protected:
+  // Restrict usage of the inherited AndroidMetricsServiceClient::RegisterPrefs,
+  // RegisterMetricsPrefs should be used instead.
+  using AndroidMetricsServiceClient::RegisterPrefs;
+
  private:
   bool app_in_foreground_ = false;
+  base::Time time_created_;
   std::unique_ptr<Delegate> delegate_;
 
-  DISALLOW_COPY_AND_ASSIGN(AwMetricsServiceClient);
+  absl::optional<AppPackageNameLoggingRule> cached_package_name_record_;
+  AppPackageNameLoggingRuleStatus package_name_record_status_ =
+      AppPackageNameLoggingRuleStatus::kNotLoadedNoCache;
 };
 
 }  // namespace android_webview

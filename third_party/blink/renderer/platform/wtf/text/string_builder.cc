@@ -27,37 +27,37 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 #include <algorithm>
-#include "base/optional.h"
 #include "base/strings/string_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/text/integer_to_string_conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace WTF {
 
+String StringBuilder::ReleaseString() {
+  if (!length_)
+    return g_empty_string;
+  if (string_.IsNull())
+    BuildString<String>();
+  String string = std::move(string_);
+  Clear();
+  return string;
+}
+
 String StringBuilder::ToString() {
   if (!length_)
     return g_empty_string;
-  if (string_.IsNull()) {
-    if (is_8bit_)
-      string_ = String(Characters8(), length_);
-    else
-      string_ = String(Characters16(), length_);
-    ClearBuffer();
-  }
+  if (string_.IsNull())
+    BuildString<String>();
   return string_;
 }
 
 AtomicString StringBuilder::ToAtomicString() {
   if (!length_)
     return g_empty_atom;
-  if (string_.IsNull()) {
-    if (is_8bit_)
-      string_ = AtomicString(Characters8(), length_);
-    else
-      string_ = AtomicString(Characters16(), length_);
-    ClearBuffer();
-  }
+  if (string_.IsNull())
+    BuildString<AtomicString>();
   return AtomicString(string_);
 }
 
@@ -73,8 +73,8 @@ String StringBuilder::Substring(unsigned start, unsigned length) const {
 }
 
 void StringBuilder::Swap(StringBuilder& builder) {
-  base::Optional<Buffer8> buffer8;
-  base::Optional<Buffer16> buffer16;
+  absl::optional<Buffer8> buffer8;
+  absl::optional<Buffer16> buffer16;
   if (has_buffer_) {
     if (is_8bit_) {
       buffer8 = std::move(buffer8_);
@@ -144,16 +144,16 @@ void StringBuilder::ReserveCapacity(unsigned new_capacity) {
     return;
   }
   if (is_8bit_)
-    buffer8_.ReserveCapacity(new_capacity);
+    buffer8_.reserve(new_capacity);
   else
-    buffer16_.ReserveCapacity(new_capacity);
+    buffer16_.reserve(new_capacity);
 }
 
 void StringBuilder::Reserve16BitCapacity(unsigned new_capacity) {
   if (is_8bit_ || !HasBuffer())
     CreateBuffer16(new_capacity);
   else
-    buffer16_.ReserveCapacity(new_capacity);
+    buffer16_.reserve(new_capacity);
 }
 
 void StringBuilder::Resize(unsigned new_size) {
@@ -208,7 +208,7 @@ void StringBuilder::CreateBuffer16(unsigned added_size) {
   buffer16_.ReserveInitialCapacity(capacity);
   is_8bit_ = false;
   length_ = 0;
-  if (!buffer8.IsEmpty()) {
+  if (!buffer8.empty()) {
     Append(buffer8.data(), length);
     return;
   }

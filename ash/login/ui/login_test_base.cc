@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,16 @@
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/strings/strcat.h"
+#include "components/user_manager/known_user.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 
 LoginTestBase::LoginTestBase()
-    : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+    : NoSessionAshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+  user_manager::KnownUser::RegisterPrefs(local_state()->registry());
+}
 
 LoginTestBase::~LoginTestBase() = default;
 
@@ -35,11 +38,13 @@ void LoginTestBase::ShowLockScreen() {
   base::RunLoop().RunUntilIdle();
 }
 
-void LoginTestBase::ShowLoginScreen() {
+void LoginTestBase::ShowLoginScreen(bool set_wallpaper) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_PRIMARY);
   // The login screen can't be shown without a wallpaper.
-  Shell::Get()->wallpaper_controller()->ShowDefaultWallpaperForTesting();
+  if (set_wallpaper)
+    Shell::Get()->wallpaper_controller()->ShowDefaultWallpaperForTesting();
+
   Shell::Get()->login_screen_controller()->ShowLoginScreen();
   // Allow focus to reach the appropriate View.
   base::RunLoop().RunUntilIdle();

@@ -15,11 +15,33 @@ if (!srcDir || !dstDir) {
 }
 
 for (const file of fs.readdirSync(srcDir)) {
-  if (["chrome", "icudtl.dat", "v8_context_snapshot.bin"].includes(file) ||
-      file.endsWith(".pak") ||
-      file.endsWith(".pak.info") ||
-      file.endsWith(".so")) {
+  if (shouldCopyFile(file)) {
     spawnSync("cp", [`${srcDir}/${file}`, dstDir], { stdio: "inherit" });
   }
 }
 spawnSync("cp", ["-R", `${srcDir}/locales`, dstDir], { stdio: "inherit" });
+
+function shouldCopyFile(file) {
+  const names = [
+    "chrome",
+    "chrome_crashpad_handler",
+    "icudtl.dat",
+    "v8_context_snapshot.bin",
+    "vk_swiftshader_icd.json",
+  ];
+  if (names.includes(file)) {
+    return true;
+  }
+
+  const extensions = [
+    ".pak",
+    ".pak.info",
+    ".so",
+    ".so.1",
+  ];
+  if (extensions.some(extension => file.endsWith(extension))) {
+    return true;
+  }
+
+  return false;
+}

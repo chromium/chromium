@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "remoting/host/setup/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,12 +34,13 @@ NativeMessagingWriterTest::~NativeMessagingWriterTest() = default;
 
 void NativeMessagingWriterTest::SetUp() {
   ASSERT_TRUE(MakePipe(&read_file_, &write_file_));
-  writer_.reset(new NativeMessagingWriter(std::move(write_file_)));
+  writer_ = std::make_unique<NativeMessagingWriter>(std::move(write_file_));
 }
 
 TEST_F(NativeMessagingWriterTest, GoodMessage) {
-  base::DictionaryValue message;
-  message.SetInteger("foo", 42);
+  base::Value::Dict dict;
+  dict.Set("foo", 42);
+  base::Value message(std::move(dict));
   EXPECT_TRUE(writer_->WriteMessage(message));
 
   // Read from the pipe and verify the content.
@@ -48,13 +48,13 @@ TEST_F(NativeMessagingWriterTest, GoodMessage) {
   int read = read_file_.ReadAtCurrentPos(reinterpret_cast<char*>(&length), 4);
   EXPECT_EQ(4, read);
   std::string content(length, '\0');
-  read = read_file_.ReadAtCurrentPos(base::data(content), length);
+  read = read_file_.ReadAtCurrentPos(std::data(content), length);
   EXPECT_EQ(static_cast<int>(length), read);
 
   // |content| should now contain serialized |message|.
   std::unique_ptr<base::Value> written_message =
       base::JSONReader::ReadDeprecated(content);
-  EXPECT_TRUE(message.Equals(written_message.get()));
+  EXPECT_EQ(message, *written_message);
 
   // Nothing more should have been written. Close the write-end of the pipe,
   // and verify the read end immediately hits EOF.
@@ -65,9 +65,10 @@ TEST_F(NativeMessagingWriterTest, GoodMessage) {
 }
 
 TEST_F(NativeMessagingWriterTest, SecondMessage) {
-  base::DictionaryValue message1;
-  base::DictionaryValue message2;
-  message2.SetInteger("foo", 42);
+  base::Value message1(base::Value::Dict{});
+  base::Value::Dict dict2;
+  dict2.Set("foo", 42);
+  base::Value message2(std::move(dict2));
   EXPECT_TRUE(writer_->WriteMessage(message1));
   EXPECT_TRUE(writer_->WriteMessage(message2));
   writer_.reset(nullptr);
@@ -80,21 +81,21 @@ TEST_F(NativeMessagingWriterTest, SecondMessage) {
     read = read_file_.ReadAtCurrentPos(reinterpret_cast<char*>(&length), 4);
     EXPECT_EQ(4, read) << "i = " << i;
     content.resize(length);
-    read = read_file_.ReadAtCurrentPos(base::data(content), length);
+    read = read_file_.ReadAtCurrentPos(std::data(content), length);
     EXPECT_EQ(static_cast<int>(length), read) << "i = " << i;
   }
 
   // |content| should now contain serialized |message2|.
   std::unique_ptr<base::Value> written_message2 =
       base::JSONReader::ReadDeprecated(content);
-  EXPECT_TRUE(message2.Equals(written_message2.get()));
+  EXPECT_EQ(message2, *written_message2);
 }
 
 TEST_F(NativeMessagingWriterTest, FailedWrite) {
   // Close the read end so that writing fails immediately.
   read_file_.Close();
 
-  base::DictionaryValue message;
+  base::Value message(base::Value::Dict{});
   EXPECT_FALSE(writer_->WriteMessage(message));
 }
 

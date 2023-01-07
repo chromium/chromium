@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 
 #include <memory>
 
-#include "base/containers/span.h"
-#include "base/macros.h"
-#include "base/timer/timer.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 
@@ -20,21 +18,18 @@ class AuthenticatorQRSheetView : public AuthenticatorRequestSheetView {
   explicit AuthenticatorQRSheetView(
       std::unique_ptr<AuthenticatorQRSheetModel> model);
 
-  ~AuthenticatorQRSheetView() override;
+  AuthenticatorQRSheetView(const AuthenticatorQRSheetView&) = delete;
+  AuthenticatorQRSheetView& operator=(const AuthenticatorQRSheetView&) = delete;
 
-  // RefreshQRCode causes a fresh QR code to be painted.
-  void RefreshQRCode(base::span<const uint8_t> new_qr_data);
+  ~AuthenticatorQRSheetView() override;
 
  private:
   // AuthenticatorRequestSheetView:
-  std::unique_ptr<views::View> BuildStepSpecificContent() override;
-  void Update();
+  std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
+      override;
 
-  AuthenticatorQRViewCentered* qr_view_ = nullptr;
+  raw_ptr<AuthenticatorQRViewCentered> qr_view_ = nullptr;
   const std::string qr_string_;
-  base::RepeatingTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorQRSheetView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_QR_SHEET_VIEW_H_

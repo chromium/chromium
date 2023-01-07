@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,21 +10,18 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/types/expected.h"
+#include "base/values.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "extensions/common/features/feature.h"
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
 class ChromeExtensionFunctionDetails;
-class GURL;
-class TabStripModel;
 class ExtensionFunction;
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-}
-
+class GURL;
+class Profile;
+class TabStripModel;
 namespace content {
 class BrowserContext;
 class WebContents;
@@ -61,46 +58,47 @@ class ExtensionTabUtil {
     OpenTabParams();
     ~OpenTabParams();
 
-    bool create_browser_if_needed;
-    std::unique_ptr<int> window_id;
-    std::unique_ptr<int> opener_tab_id;
-    std::unique_ptr<std::string> url;
-    std::unique_ptr<bool> active;
-    std::unique_ptr<bool> pinned;
-    std::unique_ptr<int> index;
-  };
-
-  // Platform specific delegate.
-  class Delegate {
-   public:
-    virtual ~Delegate() {}
-    // Platform specific scrubbing of tab info for |extension|.
-    virtual ExtensionTabUtil::ScrubTabBehaviorType GetScrubTabBehavior(
-        const Extension* extension) = 0;
+    bool create_browser_if_needed = false;
+    absl::optional<int> window_id;
+    absl::optional<int> opener_tab_id;
+    absl::optional<std::string> url;
+    absl::optional<bool> active;
+    absl::optional<bool> pinned;
+    absl::optional<int> index;
+    absl::optional<int> bookmark_id;
   };
 
   // Opens a new tab given an extension function |function| and creation
-  // parameters |params|. Returns a Tab object if successful, or NULL and
-  // optionally sets |error| if an error occurs.
-  static base::DictionaryValue* OpenTab(ExtensionFunction* function,
-                                        const OpenTabParams& params,
-                                        bool user_gesture,
-                                        std::string* error);
+  // parameters |params|. If a tab can be produced, it will return a
+  // base::Value::Dict representing the tab, otherwise it will optionally return
+  // an error message, if any is appropriate.
+  static base::expected<base::Value::Dict, std::string> OpenTab(
+      ExtensionFunction* function,
+      const OpenTabParams& params,
+      bool user_gesture);
 
   static int GetWindowId(const Browser* browser);
   static int GetWindowIdOfTabStripModel(const TabStripModel* tab_strip_model);
   static int GetTabId(const content::WebContents* web_contents);
   static std::string GetTabStatusText(content::WebContents* web_contents);
   static int GetWindowIdOfTab(const content::WebContents* web_contents);
-  static std::unique_ptr<base::ListValue> CreateTabList(
-      const Browser* browser,
-      const Extension* extension,
-      Feature::Context context);
+  static base::Value::List CreateTabList(const Browser* browser,
+                                         const Extension* extension,
+                                         Feature::Context context);
 
   static Browser* GetBrowserFromWindowID(
       const ChromeExtensionFunctionDetails& details,
       int window_id,
       std::string* error_message);
+
+  // Returns the Browser with the specified `window id` and the associated
+  // `profile`. Optionally, this will also look at browsers associated with the
+  // incognito version of `profile` if `also_match_incognito_profile` is true.
+  // Populates `error_message` if no matching browser is found.
+  static Browser* GetBrowserInProfileWithId(Profile* profile,
+                                            int window_id,
+                                            bool also_match_incognito_profile,
+                                            std::string* error_message);
 
   // Returns the tabs:: API constant for the window type of the |browser|.
   static std::string GetBrowserWindowTypeText(const Browser& browser);
@@ -112,27 +110,25 @@ class ExtensionTabUtil {
   // treated as having no permissions.
   // By default, tab information should always be scrubbed (kScrubTab) for any
   // data passed to any extension.
-  static std::unique_ptr<api::tabs::Tab> CreateTabObject(
-      content::WebContents* web_contents,
-      ScrubTabBehavior scrub_tab_behavior,
-      const Extension* extension) {
+  static api::tabs::Tab CreateTabObject(content::WebContents* web_contents,
+                                        ScrubTabBehavior scrub_tab_behavior,
+                                        const Extension* extension) {
     return CreateTabObject(web_contents, scrub_tab_behavior, extension, nullptr,
                            -1);
   }
-  static std::unique_ptr<api::tabs::Tab> CreateTabObject(
-      content::WebContents* web_contents,
-      ScrubTabBehavior scrub_tab_behavior,
-      const Extension* extension,
-      TabStripModel* tab_strip,
-      int tab_index);
+  static api::tabs::Tab CreateTabObject(content::WebContents* web_contents,
+                                        ScrubTabBehavior scrub_tab_behavior,
+                                        const Extension* extension,
+                                        TabStripModel* tab_strip,
+                                        int tab_index);
 
-  // Creates a DictionaryValue representing the window for the given |browser|,
-  // and scrubs any privacy-sensitive data that |extension| does not have
-  // access to. |populate_tab_behavior| determines whether tabs will be
+  // Creates a base::Value::Dict representing the window for the given
+  // |browser|, and scrubs any privacy-sensitive data that |extension| does not
+  // have access to. |populate_tab_behavior| determines whether tabs will be
   // populated in the result. |context| is used to determine the
   // ScrubTabBehavior for the populated tabs data.
   // TODO(devlin): Convert this to a api::Windows::Window object.
-  static std::unique_ptr<base::DictionaryValue> CreateWindowValueForExtension(
+  static base::Value::Dict CreateWindowValueForExtension(
       const Browser& browser,
       const Extension* extension,
       PopulateTabBehavior populate_tab_behavior,
@@ -140,12 +136,7 @@ class ExtensionTabUtil {
 
   // Creates a tab MutedInfo object (see chrome/common/extensions/api/tabs.json)
   // with information about the mute state of a browser tab.
-  static std::unique_ptr<api::tabs::MutedInfo> CreateMutedInfo(
-      content::WebContents* contents);
-
-  // Platform specific logic moved to delegate. This should be set during
-  // startup.
-  static void SetPlatformDelegate(std::unique_ptr<Delegate> delegate);
+  static api::tabs::MutedInfo CreateMutedInfo(content::WebContents* contents);
 
   // Gets the level of scrubbing of tab data that needs to happen for a given
   // extension and web contents. This is the preferred way to get
@@ -191,6 +182,12 @@ class ExtensionTabUtil {
   static std::vector<content::WebContents*> GetAllActiveWebContentsForContext(
       content::BrowserContext* browser_context,
       bool include_incognito);
+
+  // Determines if the |web_contents| is in |browser_context| or it's OTR
+  // BrowserContext if |include_incognito| is true.
+  static bool IsWebContentsInContext(content::WebContents* web_contents,
+                                     content::BrowserContext* browser_context,
+                                     bool include_incognito);
 
   // Takes |url_string| and returns a GURL which is either valid and absolute
   // or invalid. If |url_string| is not directly interpretable as a valid (it is
@@ -253,6 +250,18 @@ class ExtensionTabUtil {
   // some non-const member functions of |contents|, but actually leaves it
   // unmodified.
   static api::tabs::TabStatus GetLoadingStatus(content::WebContents* contents);
+
+  // Clears the back-forward cache for all active tabs across all browser
+  // contexts.
+  static void ClearBackForwardCache();
+
+  // Check TabStripModel editability in every browser because a drag session
+  // could be running in another browser that reverts to the current browser. Or
+  // a drag could be mid-handoff if from one browser to another.
+  static bool IsTabStripEditable();
+
+  // Retrieve a TabStripModel only if every browser is editable.
+  static TabStripModel* GetEditableTabStripModel(Browser* browser);
 };
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,4 +14,7 @@ interface IUrlBarController {
       in Bundle options,
       in IObjectWrapper /* View.OnClickListener */ textClickListener,
       in IObjectWrapper /* View.OnLongClickListener */ textLongClickListener) = 1;
+
+  // Added in 95.
+  void showPageInfo(in Bundle options) = 2;
 }

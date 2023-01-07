@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "crypto/crypto_export.h"
 
 namespace crypto {
@@ -21,6 +20,11 @@ class CRYPTO_EXPORT ScopedTestNSSChromeOSUser {
   // Opens the software database and sets the public slot for the user. The
   // private slot will not be initialized until FinishInit() is called.
   explicit ScopedTestNSSChromeOSUser(const std::string& username_hash);
+
+  ScopedTestNSSChromeOSUser(const ScopedTestNSSChromeOSUser&) = delete;
+  ScopedTestNSSChromeOSUser& operator=(const ScopedTestNSSChromeOSUser&) =
+      delete;
+
   ~ScopedTestNSSChromeOSUser();
 
   std::string username_hash() const { return username_hash_; }
@@ -34,8 +38,6 @@ class CRYPTO_EXPORT ScopedTestNSSChromeOSUser {
   const std::string username_hash_;
   base::ScopedTempDir temp_dir_;
   bool constructed_successfully_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestNSSChromeOSUser);
 };
 
 }  // namespace crypto

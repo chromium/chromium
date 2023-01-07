@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,15 +56,16 @@ JNI_DomDistillerTabUtils_GetFormattedUrlFromOriginalDistillerUrl(
   auto url = *url::GURLAndroid::ToNativeGURL(env, j_url);
 
   if (url.spec().length() > content::kMaxURLDisplayChars)
-    url = url.IsStandard() ? url.GetOrigin() : GURL(url.scheme() + ":");
+    url = url.IsStandard() ? url.DeprecatedGetOriginAsURL()
+                           : GURL(url.scheme() + ":");
 
   // Note that we can't unescape spaces here, because if the user copies this
   // and pastes it into another program, that program may think the URL ends at
   // the space.
   return base::android::ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrl(url, url_formatter::kFormatUrlOmitDefaults,
-                                    net::UnescapeRule::NORMAL, nullptr, nullptr,
-                                    nullptr));
+                                    base::UnescapeRule::NORMAL, nullptr,
+                                    nullptr, nullptr));
 }
 
 jint JNI_DomDistillerTabUtils_GetDistillerHeuristics(JNIEnv* env) {

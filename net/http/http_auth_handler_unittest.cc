@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
 #include "net/http/http_auth_handler_mock.h"
@@ -19,13 +19,15 @@
 #include "net/log/test_net_log_util.h"
 #include "net/ssl/ssl_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
 TEST(HttpAuthHandlerTest, NetLog) {
   base::test::TaskEnvironment task_environment;
 
-  GURL origin("http://www.example.com");
+  url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
   std::string challenge = "Mock asdf";
   AuthCredentials credentials(u"user", u"pass");
   std::string auth_token;
@@ -36,15 +38,15 @@ TEST(HttpAuthHandlerTest, NetLog) {
       TestCompletionCallback test_callback;
       HttpAuthChallengeTokenizer tokenizer(challenge.begin(), challenge.end());
       HttpAuthHandlerMock mock_handler;
-      RecordingBoundTestNetLog test_net_log;
+      RecordingNetLogObserver net_log_observer;
 
       // set_connection_based(true) indicates that the HandleAnotherChallenge()
       // call after GenerateAuthToken() is expected and does not result in
       // AUTHORIZATION_RESULT_REJECT.
       mock_handler.set_connection_based(true);
-      mock_handler.InitFromChallenge(&tokenizer, target, SSLInfo(),
-                                     NetworkIsolationKey(), origin,
-                                     test_net_log.bound());
+      mock_handler.InitFromChallenge(
+          &tokenizer, target, SSLInfo(), NetworkAnonymizationKey(),
+          scheme_host_port, NetLogWithSource::Make(NetLogSourceType::NONE));
       mock_handler.SetGenerateExpectation(async, OK);
       mock_handler.GenerateAuthToken(&credentials, &request,
                                      test_callback.callback(), &auth_token);
@@ -53,7 +55,7 @@ TEST(HttpAuthHandlerTest, NetLog) {
 
       mock_handler.HandleAnotherChallenge(&tokenizer);
 
-      auto entries = test_net_log.GetEntries();
+      auto entries = net_log_observer.GetEntries();
 
       ASSERT_EQ(5u, entries.size());
       EXPECT_TRUE(LogContainsBeginEvent(entries, 0,

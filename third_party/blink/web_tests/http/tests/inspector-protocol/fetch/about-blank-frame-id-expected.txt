@@ -1,0 +1,5 @@
+Test frame attirbution of requests from about:blank frames
+http://127.0.0.1:8000/inspector-protocol/network/resources/test.css requested by http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+http://127.0.0.1:8000/inspector-protocol/network/resources/test.css?url=about:blank requested by http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
+http://127.0.0.1:8000/inspector-protocol/network/resources/test.css?url=http://127.0.0.1:8000/inspector-protocol/fetch/../network/resources/simple-iframe.html requested by http://127.0.0.1:8000/inspector-protocol/network/resources/simple-iframe.html
+

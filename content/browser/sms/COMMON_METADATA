@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>WebOTP"
+}
+team_email: "fugu-dev@chromium.org"

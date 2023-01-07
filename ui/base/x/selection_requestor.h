@@ -1,28 +1,22 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_BASE_X_SELECTION_REQUESTOR_H_
 #define UI_BASE_X_SELECTION_REQUESTOR_H_
 
-#include <stddef.h>
-
+#include <cstddef>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
-#include "ui/events/platform_event.h"
-#include "ui/gfx/x/event.h"
-
-namespace x11 {
-class EventObserver;
-}
+#include "ui/gfx/x/connection.h"
 
 namespace ui {
 class SelectionData;
+class XClipboardHelper;
 
 // Requests and later receives data from the X11 server through the selection
 // system.
@@ -31,9 +25,11 @@ class SelectionData;
 // drop. This class interprets messages from the stateful selection request
 // API. SelectionRequestor should only deal with the X11 details; it does not
 // implement per-component fast-paths.
-class COMPONENT_EXPORT(UI_BASE) SelectionRequestor {
+class COMPONENT_EXPORT(UI_BASE_X) SelectionRequestor {
  public:
-  SelectionRequestor(x11::Window xwindow, x11::EventObserver* observer);
+  SelectionRequestor(x11::Window xwindow, XClipboardHelper* helper);
+  SelectionRequestor(const SelectionRequestor&) = delete;
+  SelectionRequestor& operator=(const SelectionRequestor&) = delete;
   ~SelectionRequestor();
 
   // Does the work of requesting |target| from |selection|, spinning up the
@@ -94,9 +90,6 @@ class COMPONENT_EXPORT(UI_BASE) SelectionRequestor {
     // The time when the request should be aborted.
     base::TimeTicks timeout;
 
-    // Called to terminate the nested run loop.
-    base::OnceClosure quit_closure;
-
     // True if the request is complete.
     bool completed;
   };
@@ -119,18 +112,14 @@ class COMPONENT_EXPORT(UI_BASE) SelectionRequestor {
   Request* GetCurrentRequest();
 
   // Our X11 state.
-  x11::Window x_window_;
+  const x11::Window x_window_;
+
+  // Not owned.
+  const raw_ptr<XClipboardHelper> helper_;
 
   // The property on |x_window_| set by the selection owner with the value of
   // the selection.
-  x11::Atom x_property_;
-
-  // Observer which handles SelectionNotify and SelectionRequest for
-  // |selection_name_|. PerformBlockingConvertSelection() calls the
-  // observer directly if PerformBlockingConvertSelection() is called after
-  // the PlatformEventSource is destroyed.
-  // Not owned.
-  x11::EventObserver* observer_;
+  const x11::Atom x_property_;
 
   // In progress requests. Requests are added to the list at the start of
   // PerformBlockingConvertSelection() and are removed and destroyed right
@@ -140,9 +129,7 @@ class COMPONENT_EXPORT(UI_BASE) SelectionRequestor {
   // The index of the currently active request in |requests_|. The active
   // request is the request for which XConvertSelection() has been
   // called and for which we are waiting for a SelectionNotify response.
-  size_t current_request_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelectionRequestor);
+  size_t current_request_index_ = 0u;
 };
 
 }  // namespace ui

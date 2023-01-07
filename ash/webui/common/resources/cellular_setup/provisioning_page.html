@@ -1,0 +1,41 @@
+<style include="iron-flex cr-hidden-style">
+  paper-spinner-lite {
+    height: 32px;
+    width: 32px;
+  }
+
+  #portalContainer {
+    height: 100%;
+    width: 100%;
+  }
+
+  #error-icon-container {
+    background-image: url(chrome://resources/ash/common/cellular_setup/error.svg);
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 100%;
+    width: 100%;
+  }
+
+  @media(prefers-color-scheme: dark) {
+    #error-icon-container {
+      background-image: url(chrome://resources/ash/common/cellular_setup/error_dark.svg);
+    }
+  }
+</style>
+<base-page title="[[getPageTitle_(
+                        showError, carrierName_, hasCarrierPortalLoaded_)]]"
+    message="[[getPageMessage_(showError)]]">
+  <div slot="page-body" class="layout horizontal center-center">
+    <paper-spinner-lite active
+        hidden$="[[!shouldShowSpinner_(
+                        showError, hasCarrierPortalLoaded_)]]">
+    </paper-spinner-lite>
+    <div id="portalContainer"
+        hidden$="[[!shouldShowPortal_(
+                        showError, hasCarrierPortalLoaded_)]]">
+    </div>
+    <div id="error-icon-container" hidden$="[[!showError]]"></div>
+  </div>
+</base-page>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,26 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/views_content_client/views_content_client_main_parts.h"
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 namespace wm {
 class WMState;
 }
+#endif
 
 namespace ui {
 
 class ViewsContentClientMainPartsAura : public ViewsContentClientMainParts {
+ public:
+  ViewsContentClientMainPartsAura(const ViewsContentClientMainPartsAura&) =
+      delete;
+  ViewsContentClientMainPartsAura& operator=(
+      const ViewsContentClientMainPartsAura&) = delete;
+
  protected:
-  ViewsContentClientMainPartsAura(
-      const content::MainFunctionParams& content_params,
+  explicit ViewsContentClientMainPartsAura(
       ViewsContentClient* views_content_client);
   ~ViewsContentClientMainPartsAura() override;
 
@@ -28,9 +35,9 @@ class ViewsContentClientMainPartsAura : public ViewsContentClientMainParts {
   void PostMainMessageLoopRun() override;
 
  private:
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<::wm::WMState> wm_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentClientMainPartsAura);
+#endif
 };
 
 }  // namespace ui

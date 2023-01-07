@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -49,7 +49,7 @@
 
       function onSelected() {
         var section = ElementsTestRunner.firstMatchedStyleSection();
-        section._highlight();
+        section.highlight();
         TestRunner.callFunctionInPageAsync('requestAnimationFramePromise').then(onHighlighted);
       }
 
@@ -67,7 +67,7 @@
 
       function onHighlightCountReset() {
         var section = ElementsTestRunner.firstMatchedStyleSection();
-        section._highlight();
+        section.highlight();
         TestRunner.callFunctionInPageAsync('requestAnimationFramePromise').then(onHighlighted);
       }
 
@@ -85,7 +85,7 @@
 
       function onHighlightCountReset() {
         var section = ElementsTestRunner.firstMatchedStyleSection();
-        section._highlight();
+        section.highlight();
         TestRunner.callFunctionInPageAsync('requestAnimationFramePromise').then(onHighlighted);
       }
 

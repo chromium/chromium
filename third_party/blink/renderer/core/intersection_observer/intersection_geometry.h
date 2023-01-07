@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -42,7 +41,8 @@ class CORE_EXPORT IntersectionGeometry {
 
     // These flags will be computed
     kRootIsImplicit = 1 << 7,
-    kIsVisible = 1 << 8
+    kDidComputeGeometry = 1 << 8,
+    kIsVisible = 1 << 9
   };
 
   struct RootGeometry {
@@ -115,16 +115,17 @@ class CORE_EXPORT IntersectionGeometry {
 
   PhysicalRect RootRect() const { return root_rect_; }
 
-  IntRect IntersectionIntRect() const {
-    return PixelSnappedIntRect(intersection_rect_);
+  gfx::Rect IntersectionIntRect() const {
+    return ToPixelSnappedRect(intersection_rect_);
   }
-  IntRect TargetIntRect() const { return PixelSnappedIntRect(target_rect_); }
-  IntRect RootIntRect() const { return PixelSnappedIntRect(root_rect_); }
+  gfx::Rect TargetIntRect() const { return ToPixelSnappedRect(target_rect_); }
+  gfx::Rect RootIntRect() const { return ToPixelSnappedRect(root_rect_); }
 
   double IntersectionRatio() const { return intersection_ratio_; }
   unsigned ThresholdIndex() const { return threshold_index_; }
 
   bool RootIsImplicit() const { return flags_ & kRootIsImplicit; }
+  bool DidComputeGeometry() const { return flags_ & kDidComputeGeometry; }
   bool IsIntersecting() const { return threshold_index_ > 0; }
   bool IsVisible() const { return flags_ & kIsVisible; }
 

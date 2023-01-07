@@ -1,0 +1,30 @@
+caption: Limit cookies from matching URLs to the current session
+desc: |-
+  Unless the <ph name="RESTORE_ON_STARTUP_POLICY_NAME">RestoreOnStartup</ph> policy is set to permanently restore URLs from previous sessions, then setting <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME">CookiesSessionOnlyForUrls</ph> lets you make a list of URL patterns that specify sites that can and can't set cookies for one session.
+
+        Leaving the policy unset results in the use of <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME">DefaultCookiesSetting</ph> for all sites, if it's set. If not, the user's personal setting applies. URLs not covered by the patterns specified also result in the use of defaults.
+
+        While no specific policy takes precedence, see <ph name="COOKIES_BLOCKED_FOR_URLS_POLICY_NAME">CookiesBlockedForUrls</ph> and <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME">CookiesAllowedForUrls</ph>. URL patterns among these 3 policies must not conflict.
+
+        For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- dullweber@google.com
+- file://components/content_settings/OWNERS
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:11-
+- chrome_os:11-
+- android:30-
+tags: []
+type: list

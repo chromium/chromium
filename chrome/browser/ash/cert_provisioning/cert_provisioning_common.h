@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,25 +9,25 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/values.h"
-// TODO(https://crbug.com/1164001): forward declare KeyPermissionsManager
-// after //chrom/browser/chromeos/platform_keys is moved to ash.
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-// TODO(https://crbug.com/1164001): forward declare PlatformKeysService
-// after //chrom/browser/chromeos/platform_keys is moved to ash.
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class Profile;
 
 namespace ash {
+
+namespace platform_keys {
+class KeyPermissionsManager;
+class PlatformKeysService;
+}  // namespace platform_keys
+
 namespace cert_provisioning {
 
 // Used for both DeleteVaKey and DeleteVaKeysByPrefix
@@ -72,6 +72,10 @@ enum class DeviceManagementServerRequestType {
   kDownloadCert = 2,
 };
 
+// Converts the worker |state| to a string. This is mainly for logging purposes.
+std::string CertificateProvisioningWorkerStateToString(
+    CertProvisioningWorkerState state);
+
 // Returns true if the |state| is one of final states, i. e. worker should
 // finish its task in one of them.
 bool IsFinalState(CertProvisioningWorkerState state);
@@ -88,7 +92,7 @@ const char kCertProfilePolicyVersionKey[] = "policy_version";
 const char kCertProfileIsVaEnabledKey[] = "enable_remote_attestation_check";
 
 struct CertProfile {
-  static base::Optional<CertProfile> MakeFromValue(const base::Value& value);
+  static absl::optional<CertProfile> MakeFromValue(const base::Value& value);
 
   CertProfile();
   // For tests.
@@ -107,7 +111,7 @@ struct CertProfile {
   bool is_va_enabled = true;
   // Default renewal period 0 means that a certificate will be renewed only
   // after the previous one has expired (0 seconds before it is expires).
-  base::TimeDelta renewal_period = base::TimeDelta::FromSeconds(0);
+  base::TimeDelta renewal_period = base::Seconds(0);
 
   // IMPORTANT:
   // Increment this when you add/change any member in CertProfile (and update
@@ -131,7 +135,7 @@ const char* GetPrefNameForSerialization(CertScope scope);
 std::string GetKeyName(CertProfileId profile_id);
 // Returns the key type for VA API calls for |scope|.
 attestation::AttestationKeyType GetVaKeyType(CertScope scope);
-platform_keys::TokenId GetPlatformKeysTokenId(CertScope scope);
+chromeos::platform_keys::TokenId GetPlatformKeysTokenId(CertScope scope);
 
 // This functions should be used to delete keys that were created by
 // TpmChallengeKey* and were not registered yet. (To delete registered keys

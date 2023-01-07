@@ -1,17 +1,15 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_FILTERS_FFMPEG_AUDIO_DECODER_H_
 #define MEDIA_FILTERS_FFMPEG_AUDIO_DECODER_H_
 
-#include <list>
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/demuxer_stream.h"
@@ -34,9 +32,15 @@ class FFmpegDecodingLoop;
 
 class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
  public:
+  FFmpegAudioDecoder() = delete;
+
   FFmpegAudioDecoder(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       MediaLog* media_log);
+
+  FFmpegAudioDecoder(const FFmpegAudioDecoder&) = delete;
+  FFmpegAudioDecoder& operator=(const FFmpegAudioDecoder&) = delete;
+
   ~FFmpegAudioDecoder() override;
 
   // AudioDecoder implementation.
@@ -74,12 +78,7 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
   //     A decoding error occurs and decoding needs to stop.
   // (any state) -> kNormal:
   //     Any time Reset() is called.
-  enum DecoderState {
-    kUninitialized,
-    kNormal,
-    kDecodeFinished,
-    kError
-  };
+  enum class DecoderState { kUninitialized, kNormal, kDecodeFinished, kError };
 
   // Reset decoder and call |reset_cb_|.
   void DoReset();
@@ -117,13 +116,11 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
 
   std::unique_ptr<AudioDiscardHelper> discard_helper_;
 
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   scoped_refptr<AudioBufferMemoryPool> pool_;
 
   std::unique_ptr<FFmpegDecodingLoop> decoding_loop_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(FFmpegAudioDecoder);
 };
 
 }  // namespace media

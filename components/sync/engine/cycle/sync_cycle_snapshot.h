@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/progress_marker_map.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 
 namespace base {
 class DictionaryValue;
@@ -35,15 +36,10 @@ class SyncCycleSnapshot {
                     const ModelNeutralState& model_neutral_state,
                     const ProgressMarkerMap& download_progress_markers,
                     bool is_silenced,
-                    int num_encryption_conflicts,
-                    int num_hierarchy_conflicts,
                     int num_server_conflicts,
                     bool notifications_enabled,
-                    size_t num_entries,
                     base::Time sync_start_time,
                     base::Time poll_finish_time,
-                    const std::vector<int>& num_entries_by_type,
-                    const std::vector<int>& num_to_delete_entries_by_type,
                     sync_pb::SyncEnums::GetUpdatesOrigin get_updates_origin,
                     base::TimeDelta poll_interval,
                     bool has_remaining_local_changes);
@@ -59,15 +55,10 @@ class SyncCycleSnapshot {
   ModelNeutralState model_neutral_state() const { return model_neutral_state_; }
   const ProgressMarkerMap& download_progress_markers() const;
   bool is_silenced() const;
-  int num_encryption_conflicts() const;
-  int num_hierarchy_conflicts() const;
   int num_server_conflicts() const;
   bool notifications_enabled() const;
-  size_t num_entries() const;
   base::Time sync_start_time() const;
   base::Time poll_finish_time() const;
-  const std::vector<int>& num_entries_by_type() const;
-  const std::vector<int>& num_to_delete_entries_by_type() const;
   sync_pb::SyncEnums::GetUpdatesOrigin get_updates_origin() const;
   base::TimeDelta poll_interval() const;
   // Whether usynced items existed at the time the sync cycle completed.
@@ -82,16 +73,10 @@ class SyncCycleSnapshot {
   ModelNeutralState model_neutral_state_;
   ProgressMarkerMap download_progress_markers_;
   bool is_silenced_;
-  int num_encryption_conflicts_;
-  int num_hierarchy_conflicts_;
   int num_server_conflicts_;
   bool notifications_enabled_;
-  size_t num_entries_;
   base::Time sync_start_time_;
   base::Time poll_finish_time_;
-
-  std::vector<int> num_entries_by_type_;
-  std::vector<int> num_to_delete_entries_by_type_;
 
   sync_pb::SyncEnums::GetUpdatesOrigin get_updates_origin_;
 

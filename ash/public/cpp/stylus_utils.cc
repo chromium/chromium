@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/public/cpp/stylus_utils.h"
 
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "ui/display/display.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -38,7 +38,8 @@ bool HasStylusInput() {
   for (const ui::TouchscreenDevice& device :
        ui::DeviceDataManager::GetInstance()->GetTouchscreenDevices()) {
     if (device.has_stylus &&
-        device.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL) {
+        (device.type == ui::InputDeviceType::INPUT_DEVICE_INTERNAL ||
+         device.type == ui::InputDeviceType::INPUT_DEVICE_USB)) {
       return true;
     }
   }

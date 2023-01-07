@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/media/webrtc/webrtc_text_log_handler.h"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -35,18 +36,19 @@
 #include "content/public/common/content_features.h"
 #include "gpu/config/gpu_info.h"
 #include "media/audio/audio_manager.h"
-#include "media/webrtc/webrtc_switches.h"
+#include "media/base/media_switches.h"
+#include "media/webrtc/webrtc_features.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_interfaces.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/linux_util.h"
 #include "base/task/thread_pool.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -71,8 +73,14 @@ std::string Format(const std::string& message,
                    base::Time start_time) {
   int32_t interval_ms =
       static_cast<int32_t>((timestamp - start_time).InMilliseconds());
-  return base::StringPrintf("[%03d:%03d] %s", interval_ms / 1000,
-                            interval_ms % 1000, message.c_str());
+  // Log start time (current time). We don't use base/i18n/time_formatting.h
+  // here because we don't want the format of the current locale.
+  base::Time::Exploded now = {0};
+  base::Time::Now().LocalExplode(&now);
+  return base::StringPrintf("[%03d:%03d, %02d:%02d:%02d.%03d] %s",
+                            interval_ms / 1000, interval_ms % 1000, now.hour,
+                            now.minute, now.second, now.millisecond,
+                            message.c_str());
 }
 
 std::string FormatMetaDataAsLogMessage(const WebRtcLogMetaDataMap& meta_data) {
@@ -112,7 +120,9 @@ std::string IPAddressToSensitiveString(const net::IPAddress& address) {
       sensitive_address = net::IPAddress(stripped).ToString();
       break;
     }
-    default: { break; }
+    default: {
+      break;
+    }
   }
   return sensitive_address;
 #else
@@ -205,9 +215,9 @@ bool WebRtcTextLogHandler::StartLogging(WebRtcLogUploader* log_uploader,
   logging_state_ = STARTING;
 
   DCHECK(!log_buffer_);
-  log_buffer_.reset(new WebRtcLogBuffer());
+  log_buffer_ = std::make_unique<WebRtcLogBuffer>();
   if (!meta_data_)
-    meta_data_.reset(new WebRtcLogMetaDataMap());
+    meta_data_ = std::make_unique<WebRtcLogMetaDataMap>();
 
   content::GetNetworkService()->GetNetworkList(
       net::EXCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,
@@ -410,8 +420,8 @@ void WebRtcTextLogHandler::SetWebAppId(int web_app_id) {
 
 void WebRtcTextLogHandler::OnGetNetworkInterfaceList(
     GenericDoneCallback callback,
-    const base::Optional<net::NetworkInterfaceList>& networks) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+    const absl::optional<net::NetworkInterfaceList>& networks) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Hop to a background thread to get the distro string, which can block.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()}, base::BindOnce(&base::GetLinuxDistro),
@@ -425,7 +435,7 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceList(
 
 void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
     GenericDoneCallback callback,
-    const base::Optional<net::NetworkInterfaceList>& networks,
+    const absl::optional<net::NetworkInterfaceList>& networks,
     const std::string& linux_distro) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -457,7 +467,7 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
   LogToCircularBuffer(base::SysInfo::OperatingSystemName() + " " +
                       base::SysInfo::OperatingSystemVersion() + " " +
                       base::SysInfo::OperatingSystemArchitecture());
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   { LogToCircularBuffer("Linux distribution: " + linux_distro); }
 #endif
 
@@ -472,7 +482,7 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
 
   // Computer model
   std::string computer_model = "Not available";
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   computer_model = base::mac::GetModelIdentifier();
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
@@ -509,6 +519,24 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
            features::kAudioServiceLaunchOnStartup),
        ", Sandbox=",
        enabled_or_disabled_bool_string(IsAudioServiceSandboxEnabled())}));
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (media::IsChromeWideEchoCancellationEnabled()) {
+    LogToCircularBuffer(base::StrCat(
+        {"ChromeWideEchoCancellation : Enabled", ", processing_fifo_size = ",
+         NumberToString(
+             media::kChromeWideEchoCancellationProcessingFifoSize.Get()),
+         ", minimize_resampling = ",
+         media::kChromeWideEchoCancellationMinimizeResampling.Get() ? "true"
+                                                                    : "false",
+         ", allow_all_sample_rates = ",
+         media::kChromeWideEchoCancellationAllowAllSampleRates.Get()
+             ? "true"
+             : "false"}));
+  } else {
+    LogToCircularBuffer("ChromeWideEchoCancellation : Disabled");
+  }
+#endif
 
   // Audio manager
   // On some platforms, this can vary depending on build flags and failure

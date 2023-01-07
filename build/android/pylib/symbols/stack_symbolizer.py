@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -27,7 +27,7 @@ def _DeviceAbiToArch(device_abi):
   raise RuntimeError('Unknown device ABI: %s' % device_abi)
 
 
-class Symbolizer(object):
+class Symbolizer:
   """A helper class to symbolize stack."""
 
   def __init__(self, apk_under_test=None):
@@ -72,7 +72,7 @@ class Symbolizer(object):
            constants.GetOutDirectory(), '--more-info']
     env = dict(os.environ)
     env['PYTHONDONTWRITEBYTECODE'] = '1'
-    with tempfile.NamedTemporaryFile() as f:
+    with tempfile.NamedTemporaryFile(mode='w') as f:
       f.write('\n'.join(data_to_symbolize))
       f.flush()
       start = time.time()

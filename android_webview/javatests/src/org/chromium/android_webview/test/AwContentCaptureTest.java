@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@ import android.view.View;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
+import org.json.JSONArray;
+import org.json.JSONTokener;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -21,23 +23,23 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContents;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.components.content_capture.ContentCaptureConsumer;
 import org.chromium.components.content_capture.ContentCaptureData;
 import org.chromium.components.content_capture.ContentCaptureDataBase;
 import org.chromium.components.content_capture.ContentCaptureFrame;
-import org.chromium.components.content_capture.ExperimentContentCaptureConsumer;
+import org.chromium.components.content_capture.ContentCaptureTestSupport;
 import org.chromium.components.content_capture.FrameSession;
+import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.content_capture.UrlAllowlist;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -49,7 +51,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(AwJUnit4ClassRunner.class)
 @CommandLineFlags.Add({"enable-features=ContentCapture"})
 public class AwContentCaptureTest {
-    private static class TestAwContentCaptureConsumer extends ContentCaptureConsumer {
+    private static class TestAwContentCaptureConsumer implements ContentCaptureConsumer {
         private static final long DEFAULT_TIMEOUT_IN_SECONDS = 30;
 
         public static final int CONTENT_CAPTURED = 1;
@@ -57,9 +59,9 @@ public class AwContentCaptureTest {
         public static final int CONTENT_REMOVED = 3;
         public static final int SESSION_REMOVED = 4;
         public static final int TITLE_UPDATED = 5;
+        public static final int FAVICON_UPDATED = 6;
 
-        public TestAwContentCaptureConsumer(WebContents webContents) {
-            super(webContents);
+        public TestAwContentCaptureConsumer() {
             mCapturedContentIds = new HashSet<Long>();
         }
 
@@ -117,6 +119,13 @@ public class AwContentCaptureTest {
         }
 
         @Override
+        public void onFaviconUpdated(ContentCaptureFrame contentCaptureFrame) {
+            mFaviconUpdatedFrame = contentCaptureFrame;
+            mCallbacks.add(FAVICON_UPDATED);
+            mCallbackHelper.notifyCalled();
+        }
+
+        @Override
         public boolean shouldCapture(String[] urls) {
             if (mUrlAllowlist == null) return true;
             return mUrlAllowlist.isAllowed(urls);
@@ -132,6 +141,10 @@ public class AwContentCaptureTest {
 
         public ContentCaptureFrame getUpdatedContent() {
             return mUpdatedContent;
+        }
+
+        public ContentCaptureFrame getFaviconUpdatedFrame() {
+            return mFaviconUpdatedFrame;
         }
 
         public FrameSession getCurrentFrameSession() {
@@ -194,6 +207,7 @@ public class AwContentCaptureTest {
         private volatile FrameSession mRemovedSession;
         private volatile long[] mRemovedIds;
         private volatile ContentCaptureFrame mTitleUpdatedFrame;
+        private volatile ContentCaptureFrame mFaviconUpdatedFrame;
         private volatile ArrayList<Integer> mCallbacks = new ArrayList<Integer>();
 
         private CallbackHelper mCallbackHelper = new CallbackHelper();
@@ -213,6 +227,7 @@ public class AwContentCaptureTest {
     private AwTestContainerView mContainerView;
     private TestAwContentCaptureConsumer mConsumer;
     private TestAwContentCaptureConsumer mSecondConsumer;
+    private OnscreenContentProvider mOnscreenContentProvider;
 
     private void loadUrlSync(String url) {
         try {
@@ -236,8 +251,12 @@ public class AwContentCaptureTest {
         mAwContents = mContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mConsumer = new TestAwContentCaptureConsumer(mAwContents.getWebContents());
-            mAwContents.setContentCaptureConsumer(mConsumer);
+            mConsumer = new TestAwContentCaptureConsumer();
+            mOnscreenContentProvider = new OnscreenContentProvider(
+                    mRule.getActivity(), mContainerView, mAwContents.getWebContents());
+            mOnscreenContentProvider.addConsumer(mConsumer);
+            mOnscreenContentProvider.removePlatformConsumerForTesting();
+            mAwContents.setOnscreenContentProvider(mOnscreenContentProvider);
         });
     }
 
@@ -374,6 +393,15 @@ public class AwContentCaptureTest {
                 expectedCallbacks, results);
     }
 
+    private static void waitAndVerifyCallbacks(int[] expectedCallbacks, int callCount,
+            TestAwContentCaptureConsumer consumer) throws Throwable {
+        try {
+            consumer.waitForCallback(callCount, expectedCallbacks.length);
+        } finally {
+            verifyCallbacks(expectedCallbacks, consumer.getCallbacks());
+        }
+    }
+
     private void runAndVerifyCallbacks(final Runnable testCase, int[] expectedCallbacks)
             throws Throwable {
         try {
@@ -391,13 +419,13 @@ public class AwContentCaptureTest {
         ContentCaptureFrame c = data;
         Rect r = c.getBounds();
         session.add(ContentCaptureFrame.createContentCaptureFrame(
-                c.getId(), c.getUrl(), r.left, r.top, r.width(), r.height(), null));
+                c.getId(), c.getUrl(), r.left, r.top, r.width(), r.height(), null, null));
         return session;
     }
 
     private FrameSession createFrameSession(String url) {
         FrameSession session = new FrameSession(1);
-        session.add(ContentCaptureFrame.createContentCaptureFrame(0, url, 0, 0, 0, 0, null));
+        session.add(ContentCaptureFrame.createContentCaptureFrame(0, url, 0, 0, 0, 0, null, null));
         return session;
     }
 
@@ -578,7 +606,6 @@ public class AwContentCaptureTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/1156418")
     public void testChangeContent() throws Throwable {
         final String response = "<html><head></head><body>"
                 + "<div id='editable_id'>Hello</div>"
@@ -676,12 +703,13 @@ public class AwContentCaptureTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1126950")
     @Feature({"AndroidWebView"})
     public void testMultipleConsumers() throws Throwable {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSecondConsumer = new TestAwContentCaptureConsumer(mAwContents.getWebContents());
+            mSecondConsumer = new TestAwContentCaptureConsumer();
+            mOnscreenContentProvider.addConsumer(mSecondConsumer);
         });
+        int callCount = mSecondConsumer.getCallCount();
         final String response = "<html><head></head><body>"
                 + "<div id='place_holder'>"
                 + "<p style=\"height: 100vh\">Hello</p>"
@@ -692,8 +720,8 @@ public class AwContentCaptureTest {
             loadUrlSync(url);
         }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
         // Verify the other one also get the content.
-        verifyCallbacks(toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED),
-                mSecondConsumer.getCallbacks());
+        waitAndVerifyCallbacks(toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED), callCount,
+                mSecondConsumer);
     }
 
     @Test
@@ -701,9 +729,8 @@ public class AwContentCaptureTest {
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"enable-features=ContentCaptureTriggeringForExperiment"})
     public void testHostNotAllowed() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSecondConsumer = new TestAwContentCaptureConsumer(mAwContents.getWebContents());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mSecondConsumer = new TestAwContentCaptureConsumer(); });
         final String response = "<html><head></head><body>"
                 + "<div id='place_holder'>"
                 + "<p style=\"height: 100vh\">Hello</p>"
@@ -752,7 +779,9 @@ public class AwContentCaptureTest {
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"disable-features=ContentCaptureTriggeringForExperiment"})
     public void testCantCreateExperimentConsumer() throws Throwable {
-        Assert.assertNull(ExperimentContentCaptureConsumer.create(mAwContents.getWebContents()));
+        List<ContentCaptureConsumer> consumers = mOnscreenContentProvider.getConsumersForTesting();
+        Assert.assertEquals(1, consumers.size());
+        Assert.assertTrue(consumers.get(0) instanceof TestAwContentCaptureConsumer);
     }
 
     @Test
@@ -817,5 +846,147 @@ public class AwContentCaptureTest {
         runAndVerifyCallbacks(() -> {
             runScript("document.title='hello world'");
         }, toIntArray(TestAwContentCaptureConsumer.TITLE_UPDATED));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testFaviconRetrievedAtFirstContentCapture() throws Throwable {
+        // Starts with a empty document, so no content shall be streamed.
+        final String response = "<html><head>"
+                + "<link rel=\"apple-touch-icon\" href=\"image.png\">"
+                + "</head><body>"
+                + "<p id='place_holder'></p>"
+                + "</body></html>";
+        final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
+        int count = mContentsClient.getTouchIconHelper().getCallCount();
+        loadUrlSync(url);
+        // To simulate favicon being retrieved by WebContents before first Content is streamed,
+        // wait favicon being available in WebContents, then insert the text to document.
+        mContentsClient.getTouchIconHelper().waitForCallback(count);
+        Assert.assertEquals(1, mContentsClient.getTouchIconHelper().getTouchIconsCount());
+        runAndVerifyCallbacks(() -> {
+            runScript("document.getElementById('place_holder').innerHTML = 'world';");
+        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        GURL gurl = new GURL(url);
+        String origin = gurl.getOrigin().getSpec();
+        // Blink attaches the default favicon if it is not specified in page.
+        final String expectedJson = String.format("["
+                        + "    {"
+                        + "        \"type\" : \"favicon\","
+                        + "        \"url\" : \"%sfavicon.ico\""
+                        + "    },"
+                        + "    {"
+                        + "        \"type\" : \"touch icon\","
+                        + "        \"url\" : \"%simage.png\""
+                        + "    }"
+                        + "]",
+                origin, origin);
+        verifyFaviconResult(expectedJson, mConsumer.getCapturedContent().getFavicon());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testFaviconRetrievedAfterFirstContentCapture() throws Throwable {
+        final String response = "<html><head'>"
+                + "</head><body>"
+                + "<p id='place_holder'>world</p>"
+                + "</body></html>";
+        final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
+        // Direct ContentCaptureReveiver and OnscreenContentProvider not to get the favicon
+        // from Webontents, because there is no way to control the time of favicon update.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { ContentCaptureTestSupport.disableGetFaviconFromWebContents(); });
+        runAndVerifyCallbacks(() -> {
+            loadUrlSync(url);
+        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        GURL gurl = new GURL(url);
+        String origin = gurl.getOrigin().getSpec();
+        final String expectedJson = String.format("["
+                        + "    {"
+                        + "        \"type\" : \"favicon\","
+                        + "        \"url\" : \"%sfavicon.ico\""
+                        + "    },"
+                        + "    {"
+                        + "        \"type\" : \"touch icon\","
+                        + "        \"url\" : \"%simage.png\""
+                        + "    }"
+                        + "]",
+                origin, origin);
+        // Simulates favicon update by calling OnscreenContentProvider's test method.
+        runAndVerifyCallbacks(() -> {
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                ContentCaptureTestSupport.simulateDidUpdateFaviconURL(
+                        mAwContents.getWebContents(), expectedJson);
+            });
+        }, toIntArray(TestAwContentCaptureConsumer.FAVICON_UPDATED));
+        verifyFaviconResult(expectedJson, mConsumer.getFaviconUpdatedFrame().getFavicon());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testFavicon() throws Throwable {
+        final String response = "<html><head>"
+                + "<link rel=icon href=mac.icns sizes=\"128x128 512x512 8192x8192 32768x32768\">"
+                + "</head><body>"
+                + "<p>world</p>"
+                + "</body></html>";
+        final String url = mWebServer.setResponse(MAIN_FRAME_FILE, response, null);
+
+        runAndVerifyCallbacks(() -> {
+            loadUrlSync(url);
+        }, toIntArray(TestAwContentCaptureConsumer.CONTENT_CAPTURED));
+        Long frameId = null;
+        Set<Long> capturedContentIds = null;
+        // Verify only on-screen content is captured.
+        verifyCapturedContent(null, frameId, url, null, toStringSet("world"), capturedContentIds,
+                mConsumer.getParentFrame(), mConsumer.getCapturedContent());
+        // The favicon could be from either first capture or FaviconUpdated callback.
+        String favicon = mConsumer.getCapturedContent().getFavicon();
+        if (favicon == null) {
+            // Update the title and verify the result.
+            runAndVerifyCallbacks(
+                    () -> {}, toIntArray(TestAwContentCaptureConsumer.FAVICON_UPDATED));
+            favicon = mConsumer.getFaviconUpdatedFrame().getFavicon();
+        }
+        GURL gurl = new GURL(url);
+        String origin = gurl.getOrigin().getSpec();
+        final String expectedJson = String.format("["
+                        + "     {"
+                        + "         \"sizes\" : "
+                        + "         ["
+                        + "             {"
+                        + "                 \"height\" : 128,"
+                        + "                 \"width\" : 128"
+                        + "             },"
+                        + "             {"
+                        + "                 \"height\" : 512,"
+                        + "                 \"width\" : 512"
+                        + "             },"
+                        + "             {"
+                        + "                 \"height\" : 8192,"
+                        + "                 \"width\" : 8192"
+                        + "             },"
+                        + "             {"
+                        + "                 \"height\" : 32768,"
+                        + "                 \"width\" : 32768"
+                        + "             }"
+                        + "         ],"
+                        + "         \"type\" : \"favicon\","
+                        + "         \"url\" : \"%smac.icns\""
+                        + "     }"
+                        + " ]",
+                origin);
+        verifyFaviconResult(expectedJson, favicon);
+    }
+
+    private static void verifyFaviconResult(String expectedJson, String resultJson)
+            throws Throwable {
+        JSONArray expectedResult = (JSONArray) new JSONTokener(expectedJson).nextValue();
+        JSONArray actualResult = (JSONArray) new JSONTokener(resultJson).nextValue();
+        Assert.assertEquals(String.format("Actual:%s\n Expected:\n%s\n", resultJson, expectedJson),
+                expectedResult.toString(), actualResult.toString());
     }
 }

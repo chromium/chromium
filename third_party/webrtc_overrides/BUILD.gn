@@ -1,9 +1,13 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
 import("//third_party/webrtc/webrtc.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
 
 webrtc_configs = [ "//third_party/webrtc:common_config" ]
 
@@ -13,11 +17,17 @@ webrtc_public_deps = [
   ":init_webrtc",
   ":metrics",
   ":task_queue_factory",
+  "//third_party/webrtc/api:array_view",
   "//third_party/webrtc/api:callfactory_api",
+  "//third_party/webrtc/api:candidate",
+  "//third_party/webrtc/api:dtls_transport_interface",
+  "//third_party/webrtc/api:field_trials_view",
   "//third_party/webrtc/api:frame_transformer_interface",
   "//third_party/webrtc/api:ice_transport_factory",
+  "//third_party/webrtc/api:ice_transport_interface",
   "//third_party/webrtc/api:libjingle_logging_api",
   "//third_party/webrtc/api:libjingle_peerconnection_api",
+  "//third_party/webrtc/api:make_ref_counted",
   "//third_party/webrtc/api:media_stream_interface",
   "//third_party/webrtc/api:packet_socket_factory",
   "//third_party/webrtc/api:rtc_error",
@@ -26,6 +36,7 @@ webrtc_public_deps = [
   "//third_party/webrtc/api:rtp_packet_info",
   "//third_party/webrtc/api:rtp_parameters",
   "//third_party/webrtc/api:scoped_refptr",
+  "//third_party/webrtc/api:turn_customizer",
   "//third_party/webrtc/api/adaptation:resource_adaptation_api",
   "//third_party/webrtc/api/audio:aec3_config",
   "//third_party/webrtc/api/audio:aec3_config_json",
@@ -43,7 +54,9 @@ webrtc_public_deps = [
   "//third_party/webrtc/api/audio_codecs/opus:audio_decoder_opus",
   "//third_party/webrtc/api/audio_codecs/opus:audio_encoder_multiopus",
   "//third_party/webrtc/api/audio_codecs/opus:audio_encoder_opus",
+  "//third_party/webrtc/api/metronome",
   "//third_party/webrtc/api/rtc_event_log:rtc_event_log_factory",
+  "//third_party/webrtc/api/task_queue:task_queue",
   "//third_party/webrtc/api/transport:enums",
   "//third_party/webrtc/api/transport/rtp:rtp_source",
   "//third_party/webrtc/api/video:recordable_encoded_frame",
@@ -57,12 +70,10 @@ webrtc_public_deps = [
   "//third_party/webrtc/common_video",
   "//third_party/webrtc/common_video:common_video",
   "//third_party/webrtc/media:rtc_audio_video",
-  "//third_party/webrtc/media:rtc_h264_profile_id",
   "//third_party/webrtc/media:rtc_internal_video_codecs",
   "//third_party/webrtc/media:rtc_media",
   "//third_party/webrtc/media:rtc_media_base",
   "//third_party/webrtc/media:rtc_simulcast_encoder_adapter",
-  "//third_party/webrtc/media:rtc_vp9_profile",
   "//third_party/webrtc/modules/audio_device",
   "//third_party/webrtc/modules/audio_device:audio_device_api",
   "//third_party/webrtc/modules/audio_processing",
@@ -76,19 +87,28 @@ webrtc_public_deps = [
   "//third_party/webrtc/modules/video_coding:webrtc_h264",
   "//third_party/webrtc/p2p:libstunprober",
   "//third_party/webrtc/p2p:rtc_p2p",
+  "//third_party/webrtc/pc:ice_server_parsing",
   "//third_party/webrtc/pc:libjingle_peerconnection",
-  "//third_party/webrtc/pc:peerconnection",
+  "//third_party/webrtc/pc:media_session",
   "//third_party/webrtc/pc:rtc_pc",
-  "//third_party/webrtc/pc:rtc_pc_base",
+  "//third_party/webrtc/pc:session_description",
+  "//third_party/webrtc/pc:webrtc_sdp",
   "//third_party/webrtc/rtc_base",
   "//third_party/webrtc/rtc_base:async_resolver_interface",
+  "//third_party/webrtc/rtc_base:byte_order",
+  "//third_party/webrtc/rtc_base:event_tracer",
   "//third_party/webrtc/rtc_base:ip_address",
+  "//third_party/webrtc/rtc_base:logging",
+  "//third_party/webrtc/rtc_base:net_helpers",
+  "//third_party/webrtc/rtc_base:refcount",
   "//third_party/webrtc/rtc_base:rtc_base",
-  "//third_party/webrtc/rtc_base:rtc_base_approved",
   "//third_party/webrtc/rtc_base:rtc_task_queue",
+  "//third_party/webrtc/rtc_base:socket",
   "//third_party/webrtc/rtc_base:socket_address",
   "//third_party/webrtc/rtc_base:threading",
+  "//third_party/webrtc/rtc_base:timestamp_aligner",
   "//third_party/webrtc/rtc_base:timeutils",
+  "//third_party/webrtc/rtc_base/system:rtc_export",
   "//third_party/webrtc/rtc_base/third_party/base64",
   "//third_party/webrtc/rtc_base/third_party/sigslot",
   "//third_party/webrtc/rtc_base/third_party/sigslot:sigslot",
@@ -100,24 +120,22 @@ webrtc_public_deps = [
 if (defined(rtc_exclude_system_time) && rtc_exclude_system_time) {
   webrtc_public_deps += [ ":system_time" ]
 }
-if (is_chromecast) {
+if (is_castos || is_cast_android) {
   webrtc_public_deps += [
     "//third_party/webrtc/api:network_state_predictor_api",
     "//third_party/webrtc/api/audio:audio_frame_api",
-    "//third_party/webrtc/api/task_queue",
     "//third_party/webrtc/api/transport:goog_cc",
     "//third_party/webrtc/api/transport:network_control",
     "//third_party/webrtc/api/units:time_delta",
     "//third_party/webrtc/api/video:encoded_image",
     "//third_party/webrtc/call:call_interfaces",
-    "//third_party/webrtc/media:rtc_h264_profile_id",
     "//third_party/webrtc/media:rtc_media_engine_defaults",
     "//third_party/webrtc/modules/audio_device:audio_device_default",
     "//third_party/webrtc/modules/audio_mixer:audio_mixer_impl",
     "//third_party/webrtc/modules/video_coding:codec_globals_headers",
   ]
 }
-if (is_chromecast || is_nacl) {
+if (is_castos || is_cast_android || is_nacl) {
   # For chromecast and NaCL, provide a default field trial implementation.
   webrtc_public_deps += [ "//third_party/webrtc/system_wrappers:field_trial" ]
 } else {
@@ -132,54 +150,6 @@ component("webrtc_component") {
   configs += webrtc_configs
   public_configs = webrtc_public_configs
   public_deps = webrtc_public_deps
-}
-
-if (rtc_include_tests) {
-  component("webrtc_test_component") {
-    configs += webrtc_configs
-    public_configs = webrtc_public_configs
-
-    testonly = true
-
-    public_deps = webrtc_public_deps
-
-    public_deps += [
-      "//third_party/webrtc/api:audio_quality_analyzer_api",
-      "//third_party/webrtc/api:create_frame_generator",
-      "//third_party/webrtc/api:create_network_emulation_manager",
-      "//third_party/webrtc/api:create_peer_connection_quality_test_frame_generator",
-      "//third_party/webrtc/api:create_simulcast_test_fixture_api",
-      "//third_party/webrtc/api:create_time_controller",
-      "//third_party/webrtc/api:create_videocodec_test_fixture_api",
-      "//third_party/webrtc/api:dummy_peer_connection",
-      "//third_party/webrtc/api:fake_frame_decryptor",
-      "//third_party/webrtc/api:fake_frame_encryptor",
-      "//third_party/webrtc/api:frame_generator_api",
-      "//third_party/webrtc/api:mock_audio_mixer",
-      "//third_party/webrtc/api:mock_data_channel",
-      "//third_party/webrtc/api:mock_fec_controller_override",
-      "//third_party/webrtc/api:mock_frame_decryptor",
-      "//third_party/webrtc/api:mock_frame_encryptor",
-      "//third_party/webrtc/api:mock_media_stream_interface",
-      "//third_party/webrtc/api:mock_peer_connection_factory_interface",
-      "//third_party/webrtc/api:mock_peerconnectioninterface",
-      "//third_party/webrtc/api:mock_rtp",
-      "//third_party/webrtc/api:mock_transformable_video_frame",
-      "//third_party/webrtc/api:mock_video_bitrate_allocator",
-      "//third_party/webrtc/api:mock_video_bitrate_allocator_factory",
-      "//third_party/webrtc/api:mock_video_codec_factory",
-      "//third_party/webrtc/api:mock_video_decoder",
-      "//third_party/webrtc/api:mock_video_encoder",
-      "//third_party/webrtc/api:peer_connection_quality_test_fixture_api",
-      "//third_party/webrtc/api:simulcast_test_fixture_api",
-      "//third_party/webrtc/api:stats_observer_interface",
-      "//third_party/webrtc/api:test_dependency_factory",
-      "//third_party/webrtc/api:video_quality_analyzer_api",
-      "//third_party/webrtc/api:video_quality_test_fixture_api",
-      "//third_party/webrtc/api:videocodec_test_fixture_api",
-      "//third_party/webrtc/media:rtc_media_tests_utils",
-    ]
-  }
 }
 
 source_set("init_webrtc") {
@@ -205,6 +175,8 @@ source_set("init_webrtc") {
   deps = [
     "//base",
     "//third_party/webrtc/rtc_base",
+    "//third_party/webrtc/rtc_base:event_tracer",
+    "//third_party/webrtc/rtc_base:logging",
     "//third_party/webrtc/rtc_base/system:rtc_export",
     "//third_party/webrtc/system_wrappers",
   ]
@@ -224,17 +196,57 @@ source_set("field_trial") {
   deps = [ "//base" ]
 }
 
+# If you want to depend on this target you should depend on :webrtc_component
+# instead (which has a public dependency on this target).
 source_set("task_queue_factory") {
   visibility = [ ":*" ]
   sources = [
+    # Tested in
+    # third_party/blink/renderer/platform/peerconnection/coalesced_tasks_test.cc
+    "coalesced_tasks.cc",
+    "coalesced_tasks.h",
+
+    # Tested in
+    # third_party/blink/renderer/platform/peerconnection/metronome_source_test.cc
+    "metronome_source.cc",
+    "metronome_source.h",
+
+    # Tested in
+    # third_party/blink/renderer/platform/peerconnection/task_queue_factory_test.cc
     "task_queue_factory.cc",
     "task_queue_factory.h",
+
+    # Tested in
+    # third_party/blink/renderer/platform/peerconnection/low_precision_timer_test.cc
+    "low_precision_timer.cc",
+    "low_precision_timer.h",
   ]
   configs += [ "//third_party/webrtc:library_impl_config" ]
   deps = [
     "//base",
+    "//third_party/webrtc/api/metronome",
     "//third_party/webrtc/api/task_queue",
+    "//third_party/webrtc/api/task_queue:pending_task_safety_flag",
+    "//third_party/webrtc/api/units:time_delta",
     "//third_party/webrtc/rtc_base/system:rtc_export",
+  ]
+}
+
+source_set("metronome_like_task_queue_test") {
+  configs += webrtc_configs
+  public_configs = webrtc_public_configs
+
+  testonly = true
+
+  sources = [
+    "test/metronome_like_task_queue_test.cc",
+    "test/metronome_like_task_queue_test.h",
+  ]
+  deps = [
+    ":webrtc_component",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest:gtest",
   ]
 }
 

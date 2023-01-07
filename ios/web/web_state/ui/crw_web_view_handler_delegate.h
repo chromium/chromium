@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ class WebStateImpl;
 // The actual URL of the document object.
 - (const GURL&)documentURLForWebViewHandler:(CRWWebViewHandler*)handler;
 
-// Asks the delegate for the associated |UserInteractionState|.
+// Asks the delegate for the associated `UserInteractionState`.
 - (web::UserInteractionState*)userInteractionStateForWebViewHandler:
     (CRWWebViewHandler*)handler;
 

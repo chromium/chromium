@@ -1,0 +1,64 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("session_state") {
+  sources = [
+    "web_session_state_cache.h",
+    "web_session_state_cache.mm",
+    "web_session_state_cache_factory.h",
+    "web_session_state_cache_factory.mm",
+    "web_session_state_cache_web_state_list_observer.h",
+    "web_session_state_cache_web_state_list_observer.mm",
+    "web_session_state_tab_helper.h",
+    "web_session_state_tab_helper.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//build:branding_buildflags",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/strings",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/browser/web:feature_flags",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/public/provider/chrome/browser",
+    "//ios/web/common:features",
+    "//ios/web/navigation:wk_navigation_util",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/session",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "web_session_state_cache_unittest.mm",
+    "web_session_state_tab_helper_unittest.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":session_state",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web:feature_flags",
+    "//ios/chrome/browser/web:web_internal",
+    "//ios/web/common:features",
+    "//ios/web/navigation:wk_navigation_util",
+    "//ios/web/public/session",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}

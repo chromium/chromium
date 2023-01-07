@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,16 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chromecast/chromecast_buildflags.h"
 
 class PrefService;
 
-namespace net {
-class NetLog;
-}  // namespace net
-
 namespace chromecast {
 class CastService;
 class CastScreen;
-class CastWebViewFactory;
+class CastWindowManager;
 class ConnectivityChecker;
 
 namespace metrics {
@@ -30,10 +25,6 @@ class CastBrowserMetrics;
 }  // namespace metrics
 
 namespace shell {
-
-#if defined(USE_AURA) && BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-class AccessibilityManager;
-#endif  // defined(USE_AURA) && BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
 
 class CastBrowserContext;
 class CastContentBrowserClient;
@@ -47,21 +38,19 @@ class CastBrowserProcess {
   static CastBrowserProcess* GetInstance();
 
   CastBrowserProcess();
+
+  CastBrowserProcess(const CastBrowserProcess&) = delete;
+  CastBrowserProcess& operator=(const CastBrowserProcess&) = delete;
+
   virtual ~CastBrowserProcess();
+
+  void PreMainMessageLoopRun(CastWindowManager* window_manager);
 
   void SetBrowserContext(std::unique_ptr<CastBrowserContext> browser_context);
   void SetCastContentBrowserClient(CastContentBrowserClient* browser_client);
   void SetCastService(std::unique_ptr<CastService> cast_service);
 
 #if defined(USE_AURA)
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  void SetAccessibilityManager(
-      std::unique_ptr<AccessibilityManager> accessibility_manager);
-  void ClearAccessibilityManager();
-  void AccessibilityStateChanged(bool enabled);
-#endif  // BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-
   void SetCastScreen(CastScreen* cast_screen);
   void SetDisplayConfigurator(
       std::unique_ptr<CastDisplayConfigurator> display_configurator);
@@ -74,8 +63,6 @@ class CastBrowserProcess {
       std::unique_ptr<RemoteDebuggingServer> remote_debugging_server);
   void SetConnectivityChecker(
       scoped_refptr<ConnectivityChecker> connectivity_checker);
-  void SetNetLog(net::NetLog* net_log);
-  void SetWebViewFactory(CastWebViewFactory* web_view_factory);
 
   CastContentBrowserClient* browser_client() const {
     return cast_content_browser_client_;
@@ -87,13 +74,6 @@ class CastBrowserProcess {
   CastDisplayConfigurator* display_configurator() const {
     return display_configurator_.get();
   }
-
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  AccessibilityManager* accessibility_manager() const {
-    return accessibility_manager_.get();
-  }
-#endif  //  BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-
 #endif  // defined(USE_AURA)
   metrics::CastBrowserMetrics* cast_browser_metrics() const {
     return cast_browser_metrics_.get();
@@ -105,35 +85,29 @@ class CastBrowserProcess {
   RemoteDebuggingServer* remote_debugging_server() const {
     return remote_debugging_server_.get();
   }
-  net::NetLog* net_log() const { return net_log_; }
-  CastWebViewFactory* web_view_factory() const { return web_view_factory_; }
 
  private:
-  // Note: The following order should match the order they are set in
-  // CastBrowserMainParts.
-#if defined(USE_AURA)
-  CastScreen* cast_screen_;
-  std::unique_ptr<CastDisplayConfigurator> display_configurator_;
+  // Note: The following objects should be declared in the same order as they
+  // are set in CastBrowserMainParts.
 
-#if BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
-  std::unique_ptr<AccessibilityManager> accessibility_manager_;
-#endif  // BUILDFLAG(ENABLE_CHROMECAST_EXTENSIONS)
+  // Created just after CastBrowserMainParts ctor:
+  CastContentBrowserClient* cast_content_browser_client_ = nullptr;
 
-#endif  // defined(USE_AURA)
+  // Created in CastBrowserMainParts::PreCreateThreads:
   std::unique_ptr<PrefService> pref_service_;
-  scoped_refptr<ConnectivityChecker> connectivity_checker_;
+#if defined(USE_AURA)
+  CastScreen* cast_screen_ = nullptr;
+  std::unique_ptr<CastDisplayConfigurator> display_configurator_;
+#endif  // defined(USE_AURA)
+
+  // Created in CastBrowserMainParts::PreMainMessageLoopRun:
   std::unique_ptr<CastBrowserContext> browser_context_;
+  scoped_refptr<ConnectivityChecker> connectivity_checker_;
   std::unique_ptr<metrics::CastBrowserMetrics> cast_browser_metrics_;
   std::unique_ptr<RemoteDebuggingServer> remote_debugging_server_;
 
-  CastWebViewFactory* web_view_factory_;
-  CastContentBrowserClient* cast_content_browser_client_;
-  net::NetLog* net_log_;
-
   // Note: CastService must be destroyed before others.
   std::unique_ptr<CastService> cast_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastBrowserProcess);
 };
 
 }  // namespace shell

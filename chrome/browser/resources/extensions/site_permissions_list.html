@@ -1,0 +1,85 @@
+<style include="cr-shared-style cr-icons shared-style">
+  #site-list-header-container {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #no-sites {
+    color: var(--cr-secondary-text-color);
+    margin: var(--cr-section-padding);
+  }
+
+  .site-row {
+    align-items: center;
+    display: flex;
+    height: var(--cr-section-min-height);
+    margin-inline-start: 24px;
+  }
+
+  #sites-list {
+    margin: 12px 0;
+  }
+
+  .site {
+    flex-grow: 1;
+    margin: 0 calc(var(--cr-section-padding) + var(--cr-icon-ripple-margin));
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .separator {
+    margin: 0 calc(
+        var(--cr-section-padding) + var(--cr-icon-ripple-margin));
+  }
+</style>
+<div id="site-list-header-container">
+  <span>[[header]]</span>
+  <cr-button id="addSite" on-click="onAddSiteClick_">$i18n{add}</cr-button>
+</div>
+<div id="no-sites" hidden$="[[hasSites_(sites)]]">$i18n{noSitesAdded}</div>
+<div id="sites-list" hidden$="[[!hasSites_(sites)]]">
+  <template is="dom-repeat" items="[[sites]]">
+    <div class="site-row">
+      <div class="site-favicon"
+          style$="background-image:[[getFaviconUrl_(item)]]"></div>
+      <span class="site">[[item]]</span>
+      <cr-icon-button class="icon-more-vert no-overlap" on-click="onDotsClick_">
+      </cr-icon-button>
+    </div>
+  </template>
+</div>
+
+<cr-action-menu id="siteActionMenu">
+  <button class="dropdown-item" id="edit-site-url"
+      on-click="onEditSiteUrlClick_">
+    $i18n{sitePermissionsEditUrl}
+  </button>
+  <button class="dropdown-item" id="edit-site-permissions"
+      on-click="onEditSitePermissionsClick_">
+    $i18n{sitePermissionsEditPermissions}
+  </button>
+  <button class="dropdown-item" id="remove-site"
+      on-click="onRemoveSiteClick_">
+    $i18n{remove}
+  </button>
+</cr-action-menu>
+
+<template is="dom-if" if="[[showEditSiteUrlDialog_]]" restamp>
+  <site-permissions-edit-url-dialog
+      delegate="[[delegate]]"
+      site-to-edit="[[siteToEdit_]]"
+      site-set="[[siteSet]]"
+      on-close="onEditSiteUrlDialogClose_">
+  </site-permissions-edit-url-dialog>
+</template>
+
+<template is="dom-if" if="[[showEditSitePermissionsDialog_]]" restamp>
+  <site-permissions-edit-permissions-dialog
+      delegate="[[delegate]]"
+      extensions="[[extensions]]"
+      site="[[siteToEdit_]]"
+      original-site-set="[[siteSet]]"
+      on-close="onEditSitePermissionsDialogClose_">
+  </site-permissions-edit-permissions-dialog>
+</template>

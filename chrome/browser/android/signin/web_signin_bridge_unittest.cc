@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,6 +79,9 @@ class WebSigninBridgeTest : public ::testing::Test {
         identity_test_env_.identity_manager(), &signin_client_);
   }
 
+  WebSigninBridgeTest(const WebSigninBridgeTest&) = delete;
+  WebSigninBridgeTest& operator=(const WebSigninBridgeTest&) = delete;
+
   ~WebSigninBridgeTest() override { account_reconcilor_->Shutdown(); }
 
   std::unique_ptr<WebSigninBridge> CreateWebSigninBridge(
@@ -95,8 +98,6 @@ class WebSigninBridgeTest : public ::testing::Test {
   TestSigninClient signin_client_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<StubAccountReconcilor> account_reconcilor_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSigninBridgeTest);
 };
 
 TEST_F(WebSigninBridgeTest,
@@ -108,7 +109,8 @@ TEST_F(WebSigninBridgeTest,
       CreateWebSigninBridge(account, callback.Get());
   EXPECT_CALL(callback, Run(GoogleServiceAuthError()));
 
-  identity_test_env_.SetPrimaryAccount(account.email);
+  identity_test_env_.SetPrimaryAccount(account.email,
+                                       signin::ConsentLevel::kSync);
   signin::CookieParamsForTest cookie_params{account.email, account.gaia};
   identity_test_env_.SetCookieAccounts({cookie_params});
 }
@@ -125,7 +127,8 @@ TEST_F(
   EXPECT_CALL(callback,
               Run(GoogleServiceAuthError(
                   GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS)));
-  identity_test_env_.SetPrimaryAccount(account.email);
+  identity_test_env_.SetPrimaryAccount(account.email,
+                                       signin::ConsentLevel::kSync);
   identity_test_env_.SetInvalidRefreshTokenForAccount(account.account_id);
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account.account_id,
@@ -153,7 +156,8 @@ TEST_F(WebSigninBridgeTest,
       CreateWebSigninBridge(signin_account, callback.Get());
   EXPECT_CALL(callback, Run(_)).Times(0);
 
-  identity_test_env_.SetPrimaryAccount(non_signin_account.email);
+  identity_test_env_.SetPrimaryAccount(non_signin_account.email,
+                                       signin::ConsentLevel::kSync);
   signin::CookieParamsForTest cookie_params{non_signin_account.email,
                                             non_signin_account.gaia};
   identity_test_env_.SetCookieAccounts({cookie_params});
@@ -169,7 +173,8 @@ TEST_F(WebSigninBridgeTest, ReconcilorErrorShouldTriggerOnSigninFailed) {
               Run(GoogleServiceAuthError(
                   GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS)));
 
-  identity_test_env_.SetPrimaryAccount(account.email);
+  identity_test_env_.SetPrimaryAccount(account.email,
+                                       signin::ConsentLevel::kSync);
   identity_test_env_.SetInvalidRefreshTokenForAccount(account.account_id);
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account.account_id,

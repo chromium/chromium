@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import android.app.Instrumentation;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.support.test.InstrumentationRegistry;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -29,8 +31,10 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.weblayer.BrowserControlsOffsetCallback;
 import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TestWebLayer;
@@ -100,6 +104,22 @@ public class BrowserControlsTest {
 
         mTopViewHeight = mBrowserControlsHelper.getTopViewHeight();
         mPageHeightWithTopView = getVisiblePageHeight();
+    }
+
+    private View createBottomView() throws Exception {
+        InstrumentationActivity activity = mActivityTestRule.getActivity();
+        View bottomView = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TextView view = new TextView(activity);
+            view.setText("BOTTOM");
+            activity.getBrowser().setBottomView(view);
+            return view;
+        });
+        mBrowserControlsHelper.waitForBrowserControlsViewToBeVisible(bottomView);
+        int bottomViewHeight =
+                TestThreadUtils.runOnUiThreadBlocking(() -> { return bottomView.getHeight(); });
+        mBrowserControlsHelper.waitForBrowserControlsMetadataState(
+                mTopViewHeight, bottomViewHeight);
+        return bottomView;
     }
 
     // Disabled on L bots due to unexplained flakes. See crbug.com/1035894.
@@ -248,6 +268,82 @@ public class BrowserControlsTest {
         });
     }
 
+    @MinWebLayerVersion(94)
+    @Test
+    @SmallTest
+    public void testEvents() throws Exception {
+        createActivityWithTopView();
+        InstrumentationActivity activity = mActivityTestRule.getActivity();
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        View topView = activity.getTopContentsContainer();
+        View bottomView = createBottomView();
+
+        int fragmentHeight = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return mActivityTestRule.getFragment().getView().getHeight(); });
+        int pageHeight = getVisiblePageHeight();
+
+        // Record the maximum y position of clicks to detect if we clicked at the top or bottom.
+        mActivityTestRule.executeScriptSync(
+                "var max = 0; document.onclick = (e) => { max = Math.max(max, e.pageY); };",
+                true /* useSeparateIsolate */);
+
+        // Clicks on the bottom view should not propagate to the content layer.
+        TestTouchUtils.singleClickView(instrumentation, bottomView, 0, 0);
+        TestTouchUtils.sleepForDoubleTapTimeout(instrumentation);
+
+        // Click below the top view inside the content layer in the middle of the page.
+        TestTouchUtils.singleClickView(
+                instrumentation, topView, 0, topView.getHeight() + fragmentHeight / 2);
+        TestTouchUtils.sleepForDoubleTapTimeout(instrumentation);
+
+        // Wait until we see the click from the middle of the page.
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            int max = mActivityTestRule.executeScriptAndExtractInt("max");
+            Criteria.checkThat(max, Matchers.greaterThan(pageHeight * 1 / 4));
+            Criteria.checkThat(max, Matchers.lessThan(pageHeight * 3 / 4));
+        });
+    }
+
+    @MinWebLayerVersion(100)
+    @Test
+    @SmallTest
+    public void testEventBelowView() throws Exception {
+        createActivityWithTopView();
+        InstrumentationActivity activity = mActivityTestRule.getActivity();
+        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
+        View topContents = activity.getTopContentsContainer();
+
+        View fragmentView = TestThreadUtils.runOnUiThreadBlocking(
+                () -> { return mActivityTestRule.getFragment().getView(); });
+
+        // Move by the size of the top-controls.
+        EventUtils.simulateDragFromCenterOfView(
+                activity.getWindow().getDecorView(), 0, -mTopViewHeight);
+
+        // Moving should collapse the top-controls to their min height and change the page height.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(topContents.getVisibility(), Matchers.is(View.INVISIBLE));
+        });
+        // Click to stop any flings.
+        TestTouchUtils.singleClickView(instrumentation, activity.getWindow().getDecorView());
+        TestTouchUtils.sleepForDoubleTapTimeout(instrumentation);
+
+        // Record when page is clicked.
+        mActivityTestRule.executeScriptSync(
+                "var didClick = false; document.onclick = (e) => { didClick = true; };",
+                true /* useSeparateIsolate */);
+
+        // Click the area inside where top control would be if it's not hidden.
+        TestTouchUtils.singleClickView(instrumentation, fragmentView, 0, mTopViewHeight / 2);
+        TestTouchUtils.sleepForDoubleTapTimeout(instrumentation);
+
+        // Wait until page sees click.
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            boolean didClick = mActivityTestRule.executeScriptAndExtractBoolean("didClick");
+            Criteria.checkThat(didClick, Matchers.is(true));
+        });
+    }
+
     // Disabled on L bots due to unexplained flakes. See crbug.com/1035894.
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     @Test
@@ -290,6 +386,7 @@ public class BrowserControlsTest {
 
     // Disabled on L bots due to unexplained flakes. See crbug.com/1035894.
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @DisabledTest(message = "https://crbug.com/1256861")
     @Test
     @SmallTest
     public void testOnlyExpandTopControlsAtPageTop() throws Exception {
@@ -336,6 +433,7 @@ public class BrowserControlsTest {
     //
     // Disabled on L bots due to unexplained flakes. See crbug.com/1035894.
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @DisabledTest(message = "https://crbug.com/1319870")
     @Test
     @SmallTest
     public void testAlertDoesntShowTopControlsIfOnlyExpandTopControlsAtPageTop() throws Exception {

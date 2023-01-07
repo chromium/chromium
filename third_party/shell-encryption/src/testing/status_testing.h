@@ -43,6 +43,6 @@
 #define RLWE_ASSERT_OK_AND_ASSIGN_IMPL_(statusor, lhs, rexpr) \
   auto statusor = (rexpr);                                    \
   ASSERT_THAT(statusor.ok(), ::testing::Eq(true));            \
-  lhs = std::move(statusor).ValueOrDie()
+  lhs = std::move(statusor).value()
 
 #endif  // RLWE_TESTING_STATUS_TESTING_H_

@@ -65,8 +65,9 @@ HRTFDatabase::HRTFDatabase(float sample_rate)
     for (unsigned i = 0; i < kNumberOfTotalElevations;
          i += kInterpolationFactor) {
       unsigned j = (i + kInterpolationFactor);
-      if (j >= kNumberOfTotalElevations)
+      if (j >= kNumberOfTotalElevations) {
         j = i;  // for last elevation interpolate with itself
+      }
 
       // Create the interpolated convolution kernels and delays.
       for (unsigned jj = 1; jj < kInterpolationFactor; ++jj) {
@@ -86,13 +87,14 @@ void HRTFDatabase::GetKernelsFromAzimuthElevation(double azimuth_blend,
                                                   HRTFKernel*& kernel_l,
                                                   HRTFKernel*& kernel_r,
                                                   double& frame_delay_l,
-                                                  double& frame_delay_r) {
+                                                  double& frame_delay_r) const {
   unsigned elevation_index = IndexFromElevationAngle(elevation_angle);
   SECURITY_DCHECK(elevation_index < elevations_.size());
   SECURITY_DCHECK(elevations_.size() > 0);
 
-  if (elevation_index > elevations_.size() - 1)
+  if (elevation_index > elevations_.size() - 1) {
     elevation_index = elevations_.size() - 1;
+  }
 
   HRTFElevation* hrtf_elevation = elevations_[elevation_index].get();
   DCHECK(hrtf_elevation);
@@ -104,7 +106,7 @@ void HRTFDatabase::GetKernelsFromAzimuthElevation(double azimuth_blend,
 unsigned HRTFDatabase::IndexFromElevationAngle(double elevation_angle) {
   // Clamp to allowed range.
   elevation_angle =
-      clampTo<double, double>(elevation_angle, kMinElevation, kMaxElevation);
+      ClampTo<double, double>(elevation_angle, kMinElevation, kMaxElevation);
 
   unsigned elevation_index = static_cast<int>(
       kInterpolationFactor * (elevation_angle - kMinElevation) /

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -203,7 +203,7 @@ class NET_EXPORT ProxyInfo {
   MutableNetworkTrafficAnnotationTag traffic_annotation_;
 
   // Whether the proxy result represent a proxy bypass.
-  bool did_bypass_proxy_;
+  bool did_bypass_proxy_ = false;
 
   // How long it took to resolve the proxy.  Times are both null if proxy was
   // determined synchronously without running a PAC.

@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/cast/logging/raw_event_subscriber_bundle.h"
+
+#include <memory>
 
 #include "media/cast/cast_environment.h"
 #include "media/cast/logging/receiver_time_offset_estimator_impl.h"
@@ -51,7 +53,8 @@ RawEventSubscriberBundle::~RawEventSubscriberBundle() {
 
 void RawEventSubscriberBundle::AddEventSubscribers(bool is_audio) {
   if (!receiver_offset_estimator_.get()) {
-    receiver_offset_estimator_.reset(new ReceiverTimeOffsetEstimatorImpl);
+    receiver_offset_estimator_ =
+        std::make_unique<ReceiverTimeOffsetEstimatorImpl>();
     cast_environment_->logger()->Subscribe(receiver_offset_estimator_.get());
   }
   auto it = subscribers_.find(is_audio);

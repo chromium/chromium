@@ -1,0 +1,4 @@
+Tests that Page.handleJavaScriptDialog() in a fenced frame is not allowed.
+Page.handleJavaScriptDialog() from a fenced frame:
+PASS: Command can only be executed on top-level targets
+

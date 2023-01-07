@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,37 +7,76 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "base/util/values/values_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "components/accuracy_tips/features.h"
+#include "components/history_clusters/core/features.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
+#include "components/permissions/constants.h"
+#include "components/permissions/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/network_change_notifier.h"
 
-constexpr char kHatsSurveyTriggerTesting[] = "testing";
+constexpr char kHatsSurveyTriggerAccuracyTips[] = "accuracy-tips";
+constexpr char kHatsSurveyTriggerAutofillAddress[] = "autofill-address";
+constexpr char kHatsSurveyTriggerAutofillCard[] = "autofill-card";
+constexpr char kHatsSurveyTriggerAutofillPassword[] = "autofill-password";
+constexpr char kHatsSurveyTriggerJourneysHistoryEntrypoint[] =
+    "journeys-history-entrypoint";
+constexpr char kHatsSurveyTriggerJourneysOmniboxEntrypoint[] =
+    "journeys-omnibox-entrypoint";
+constexpr char kHatsSurveyTriggerNtpModules[] = "ntp-modules";
+constexpr char kHatsSurveyTriggerNtpPhotosModuleOptOut[] =
+    "ntp-photos-module-opt-out";
+constexpr char kHatsSurveyTriggerPermissionsPostPrompt[] =
+    "permissions-post-prompt";
+constexpr char kHatsSurveyTriggerPrivacyGuide[] = "privacy-guide";
 constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
-constexpr char kHatsSurveyTriggerSatisfaction[] = "satisfaction";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
+constexpr char kHatsSurveyTriggerTesting[] = "testing";
+constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentAccept[] =
+    "ts-ps3-consent-accept";
+constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentDecline[] =
+    "ts-ps3-consent-decline";
+constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeDismiss[] =
+    "ts-ps3-notice-dismiss";
+constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeOk[] =
+    "ts-ps3-notice-ok";
+constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeSettings[] =
+    "ts-ps3-notice-settings";
+constexpr char kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeLearnMore[] =
+    "ts-ps3-notice-learn-more";
+constexpr char kHatsSurveyTriggerTrustSafetyPrivacySettings[] =
+    "ts-privacy-settings";
+constexpr char kHatsSurveyTriggerTrustSafetyTrustedSurface[] =
+    "ts-trusted-surface";
+constexpr char kHatsSurveyTriggerTrustSafetyTransactions[] = "ts-transactions";
+constexpr char kHatsSurveyTriggerWhatsNew[] = "whats-new";
 
 constexpr char kHatsNextSurveyTriggerIDTesting[] =
-    "zishSVViB0kPN8UwQ150VGjBKuBP";
+    "HLpeYy5Av0ugnJ3q1cK0XzzA8UHv";
 
 constexpr char kHatsShouldShowSurveyReasonHistogram[] =
     "Feedback.HappinessTrackingSurvey.ShouldShowSurveyReason";
@@ -53,16 +92,13 @@ constexpr double kHatsSurveyProbabilityDefault = 0;
 // TODO(crbug.com/1160661): When the minimum time between any survey, and the
 // minimum time between a specific survey, are the same, the logic supporting
 // the latter check is superfluous.
-constexpr base::TimeDelta kMinimumTimeBetweenSurveyStarts =
-    base::TimeDelta::FromDays(180);
+constexpr base::TimeDelta kMinimumTimeBetweenSurveyStarts = base::Days(180);
 
-constexpr base::TimeDelta kMinimumTimeBetweenAnySurveyStarts =
-    base::TimeDelta::FromDays(180);
+constexpr base::TimeDelta kMinimumTimeBetweenAnySurveyStarts = base::Days(180);
 
-constexpr base::TimeDelta kMinimumTimeBetweenSurveyChecks =
-    base::TimeDelta::FromDays(1);
+constexpr base::TimeDelta kMinimumTimeBetweenSurveyChecks = base::Days(1);
 
-constexpr base::TimeDelta kMinimumProfileAge = base::TimeDelta::FromDays(30);
+constexpr base::TimeDelta kMinimumProfileAge = base::Days(30);
 
 // Preferences Data Model
 // The kHatsSurveyMetadata pref points to a dictionary.
@@ -94,10 +130,6 @@ constexpr char kAnyLastSurveyStartedTimePath[] = "any_last_survey_started_time";
 std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
   std::vector<HatsService::SurveyConfig> survey_configs;
 
-  // NTP survey.
-  survey_configs.emplace_back(&features::kHappinessTrackingSurveysForDesktop,
-                              kHatsSurveyTriggerSatisfaction);
-
   // Dev tools surveys.
   survey_configs.emplace_back(&features::kHaTSDesktopDevToolsIssuesCOEP,
                               "devtools-issues-coep",
@@ -115,9 +147,14 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
   survey_configs.emplace_back(&features::kHaTSDesktopDevToolsIssuesCSP,
                               "devtools-issues-csp",
                               "c9fjDmwjb0ugnJ3q1cK0USeAJJ9C");
-  survey_configs.emplace_back(&features::kHaTSDesktopDevToolsLayoutPanel,
-                              "devtools-layout-panel",
-                              "hhoMFLFq70ugnJ3q1cK0XYpqkErh");
+
+  // Journeys surveys.
+  survey_configs.emplace_back(
+      &history_clusters::kJourneysSurveyForHistoryEntrypoint,
+      kHatsSurveyTriggerJourneysHistoryEntrypoint);
+  survey_configs.emplace_back(
+      &history_clusters::kJourneysSurveyForOmniboxEntrypoint,
+      kHatsSurveyTriggerJourneysOmniboxEntrypoint);
 
   // Settings surveys.
   survey_configs.emplace_back(
@@ -125,13 +162,125 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
       kHatsSurveyTriggerSettings);
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
-      kHatsSurveyTriggerSettingsPrivacy);
+      kHatsSurveyTriggerSettingsPrivacy,
+      /*presupplied_trigger_id=*/absl::nullopt,
+      std::vector<std::string>{"3P cookies blocked",
+                               "Privacy Sandbox enabled"});
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForDesktopPrivacyGuide,
+      kHatsSurveyTriggerPrivacyGuide);
   survey_configs.emplace_back(
       &features::kHappinessTrackingSurveysForDesktopPrivacySandbox,
       kHatsSurveyTriggerPrivacySandbox,
-      /*presupplied_trigger_id=*/base::nullopt,
+      /*presupplied_trigger_id=*/absl::nullopt,
       std::vector<std::string>{"3P cookies blocked",
                                "Privacy Sandbox enabled"});
+
+  // NTP modules survey.
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForDesktopNtpModules,
+      kHatsSurveyTriggerNtpModules);
+  // NTP Photos module opt-out survey.
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForNtpPhotosOptOut,
+      kHatsSurveyTriggerNtpPhotosModuleOptOut);
+
+  // Trust & Safety Sentiment surveys.
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurvey,
+      kHatsSurveyTriggerTrustSafetyPrivacySettings,
+      features::kTrustSafetySentimentSurveyPrivacySettingsTriggerId.Get(),
+      std::vector<std::string>{"Non default setting", "Ran safety check"});
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurvey,
+      kHatsSurveyTriggerTrustSafetyTrustedSurface,
+      features::kTrustSafetySentimentSurveyTrustedSurfaceTriggerId.Get(),
+      std::vector<std::string>{"Interacted with Page Info"});
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurvey,
+      kHatsSurveyTriggerTrustSafetyTransactions,
+      features::kTrustSafetySentimentSurveyTransactionsTriggerId.Get(),
+      std::vector<std::string>{"Saved password"});
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurvey,
+      kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentAccept,
+      features::kTrustSafetySentimentSurveyPrivacySandbox3ConsentAcceptTriggerId
+          .Get(),
+      std::vector<std::string>{"Stable channel", "3P cookies blocked",
+                               "Privacy Sandbox enabled"});
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurvey,
+      kHatsSurveyTriggerTrustSafetyPrivacySandbox3ConsentDecline,
+      features::
+          kTrustSafetySentimentSurveyPrivacySandbox3ConsentDeclineTriggerId
+              .Get(),
+      std::vector<std::string>{"Stable channel", "3P cookies blocked",
+                               "Privacy Sandbox enabled"});
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurvey,
+      kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeDismiss,
+      features::kTrustSafetySentimentSurveyPrivacySandbox3NoticeDismissTriggerId
+          .Get(),
+      std::vector<std::string>{"Stable channel", "3P cookies blocked",
+                               "Privacy Sandbox enabled"});
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurvey,
+      kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeOk,
+      features::kTrustSafetySentimentSurveyPrivacySandbox3NoticeOkTriggerId
+          .Get(),
+      std::vector<std::string>{"Stable channel", "3P cookies blocked",
+                               "Privacy Sandbox enabled"});
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurvey,
+      kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeSettings,
+      features::
+          kTrustSafetySentimentSurveyPrivacySandbox3NoticeSettingsTriggerId
+              .Get(),
+      std::vector<std::string>{"Stable channel", "3P cookies blocked",
+                               "Privacy Sandbox enabled"});
+  survey_configs.emplace_back(
+      &features::kTrustSafetySentimentSurvey,
+      kHatsSurveyTriggerTrustSafetyPrivacySandbox3NoticeLearnMore,
+      features::
+          kTrustSafetySentimentSurveyPrivacySandbox3NoticeLearnMoreTriggerId
+              .Get(),
+      std::vector<std::string>{"Stable channel", "3P cookies blocked",
+                               "Privacy Sandbox enabled"});
+
+  // Accuracy tips survey.
+  survey_configs.emplace_back(
+      &accuracy_tips::features::kAccuracyTipsSurveyFeature,
+      kHatsSurveyTriggerAccuracyTips,
+      /*presupplied_trigger_id=*/absl::nullopt, std::vector<std::string>{},
+      std::vector<std::string>{"Tip shown for URL", "UI interaction"});
+
+  // Autofill surveys.
+  survey_configs.emplace_back(&features::kAutofillAddressSurvey,
+                              kHatsSurveyTriggerAutofillAddress);
+  survey_configs.emplace_back(&features::kAutofillCardSurvey,
+                              kHatsSurveyTriggerAutofillCard);
+  survey_configs.emplace_back(&features::kAutofillPasswordSurvey,
+                              kHatsSurveyTriggerAutofillPassword);
+
+  // What's New survey.
+  survey_configs.emplace_back(
+      &features::kHappinessTrackingSurveysForDesktopWhatsNew,
+      kHatsSurveyTriggerWhatsNew);
+
+  // Permissions surveys.
+  survey_configs.emplace_back(
+      &permissions::features::kPermissionsPostPromptSurvey,
+      kHatsSurveyTriggerPermissionsPostPrompt,
+      permissions::feature_params::kPermissionsPostPromptSurveyTriggerId.Get(),
+      std::vector<std::string>{
+          permissions::kPermissionsPostPromptSurveyHadGestureKey},
+      std::vector<std::string>{
+          /* String values correspond to known enumerators in
+           * permissions::PermissionPromptDisposition. */
+          permissions::kPermissionsPostPromptSurveyPromptDispositionKey,
+          /* String values correspond to known enumerators in
+           * permissions::PermissionPromptDispositionReason. */
+          permissions::kPermissionsPostPromptSurveyPromptDispositionReasonKey});
 
   return survey_configs;
 }
@@ -141,12 +290,17 @@ std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
 HatsService::SurveyConfig::SurveyConfig(
     const base::Feature* feature,
     const std::string& trigger,
-    const base::Optional<std::string>& presupplied_trigger_id,
-    const std::vector<std::string>& product_specific_data_fields)
+    const absl::optional<std::string>& presupplied_trigger_id,
+    const std::vector<std::string>& product_specific_bits_data_fields,
+    const std::vector<std::string>& product_specific_string_data_fields)
     : trigger(trigger),
-      product_specific_data_fields(product_specific_data_fields) {
-  DCHECK(product_specific_data_fields.size() <= 3)
-      << "A maximum of 3 survey specific data fields is supported";
+      product_specific_bits_data_fields(product_specific_bits_data_fields),
+      product_specific_string_data_fields(product_specific_string_data_fields) {
+  DCHECK_LE(product_specific_bits_data_fields.size() +
+                product_specific_string_data_fields.size(),
+            3u)
+      << "A maximum of 3 survey specific data fields (bits and string data "
+         "together) is supported";
 
   enabled = base::FeatureList::IsEnabled(*feature);
   if (!enabled)
@@ -185,10 +339,14 @@ HatsService::DelayedSurveyTask::DelayedSurveyTask(
     HatsService* hats_service,
     const std::string& trigger,
     content::WebContents* web_contents,
-    const std::map<std::string, bool>& product_specific_data)
+    const SurveyBitsData& product_specific_bits_data,
+    const SurveyStringData& product_specific_string_data,
+    bool require_same_origin)
     : hats_service_(hats_service),
       trigger_(trigger),
-      product_specific_data_(product_specific_data) {
+      product_specific_bits_data_(product_specific_bits_data),
+      product_specific_string_data_(product_specific_string_data),
+      require_same_origin_(require_same_origin) {
   Observe(web_contents);
 }
 
@@ -201,20 +359,27 @@ HatsService::DelayedSurveyTask::GetWeakPtr() {
 
 void HatsService::DelayedSurveyTask::Launch() {
   hats_service_->LaunchSurveyForWebContents(trigger_, web_contents(),
-                                            product_specific_data_);
+                                            product_specific_bits_data_,
+                                            product_specific_string_data_);
+  hats_service_->RemoveTask(*this);
+}
+
+void HatsService::DelayedSurveyTask::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  if (!require_same_origin_ || !navigation_handle ||
+      !navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument() ||
+      (navigation_handle->HasCommitted() &&
+       navigation_handle->IsSameOrigin())) {
+    return;
+  }
+
   hats_service_->RemoveTask(*this);
 }
 
 void HatsService::DelayedSurveyTask::WebContentsDestroyed() {
   hats_service_->RemoveTask(*this);
 }
-
-struct SurveyIdentifiers {
-  const base::Feature* feature;
-  const char* trigger;
-  const char* trigger_id;
-  std::vector<std::string> product_specific_data_fields;
-};
 
 HatsService::HatsService(Profile* profile) : profile_(profile) {
   auto surveys = GetSurveyConfigs();
@@ -236,8 +401,9 @@ HatsService::HatsService(Profile* profile) : profile_(profile) {
   default_survey.probability = 1.0f;
   default_survey.trigger = kHatsSurveyTriggerTesting;
   default_survey.trigger_id = kHatsNextSurveyTriggerIDTesting;
-  default_survey.product_specific_data_fields = {"Test Field 1", "Test Field 2",
-                                                 "Test Field 3"};
+  default_survey.product_specific_bits_data_fields = {"Test Field 1",
+                                                      "Test Field 2"};
+  default_survey.product_specific_string_data_fields = {"Test Field 3"};
   survey_configs_by_triggers_.emplace(kHatsSurveyTriggerTesting,
                                       default_survey);
 }
@@ -256,39 +422,45 @@ void HatsService::LaunchSurvey(
     const std::string& trigger,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const std::map<std::string, bool>& product_specific_data) {
+    const SurveyBitsData& product_specific_bits_data,
+    const SurveyStringData& product_specific_string_data) {
   if (!ShouldShowSurvey(trigger)) {
     std::move(failure_callback).Run();
     return;
   }
 
-  LaunchSurveyForBrowser(chrome::FindLastActiveWithProfile(profile_), trigger,
-                         std::move(success_callback),
-                         std::move(failure_callback), product_specific_data);
+  LaunchSurveyForBrowser(
+      chrome::FindLastActiveWithProfile(profile_), trigger,
+      std::move(success_callback), std::move(failure_callback),
+      product_specific_bits_data, product_specific_string_data);
 }
 
 bool HatsService::LaunchDelayedSurvey(
     const std::string& trigger,
     int timeout_ms,
-    const std::map<std::string, bool>& product_specific_data) {
+    const SurveyBitsData& product_specific_bits_data,
+    const SurveyStringData& product_specific_string_data) {
   return base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&HatsService::LaunchSurvey, weak_ptr_factory_.GetWeakPtr(),
-                     trigger, base::DoNothing::Once(), base::DoNothing::Once(),
-                     product_specific_data),
-      base::TimeDelta::FromMilliseconds(timeout_ms));
+                     trigger, base::DoNothing(), base::DoNothing(),
+                     product_specific_bits_data, product_specific_string_data),
+      base::Milliseconds(timeout_ms));
 }
 
 bool HatsService::LaunchDelayedSurveyForWebContents(
     const std::string& trigger,
     content::WebContents* web_contents,
     int timeout_ms,
-    const std::map<std::string, bool>& product_specific_data) {
+    const SurveyBitsData& product_specific_bits_data,
+    const SurveyStringData& product_specific_string_data,
+    bool require_same_origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!web_contents)
     return false;
-  auto result = pending_tasks_.emplace(this, trigger, web_contents,
-                                       product_specific_data);
+  auto result = pending_tasks_.emplace(
+      this, trigger, web_contents, product_specific_bits_data,
+      product_specific_string_data, require_same_origin);
   if (!result.second)
     return false;
   auto success = base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
@@ -297,7 +469,7 @@ bool HatsService::LaunchDelayedSurveyForWebContents(
           &HatsService::DelayedSurveyTask::Launch,
           const_cast<HatsService::DelayedSurveyTask&>(*(result.first))
               .GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(timeout_ms));
+      base::Milliseconds(timeout_ms));
   if (!success) {
     pending_tasks_.erase(result.first);
   }
@@ -309,11 +481,11 @@ void HatsService::RecordSurveyAsShown(std::string trigger_id) {
   // of the trigger ID itself, as the ID is specific to individual survey
   // versions. There should be a cooldown before a user is prompted to take a
   // survey from the same trigger, regardless of whether the survey was updated.
-  auto trigger_survey_config = std::find_if(
-      survey_configs_by_triggers_.begin(), survey_configs_by_triggers_.end(),
-      [&](const std::pair<std::string, SurveyConfig>& pair) {
-        return pair.second.trigger_id == trigger_id;
-      });
+  auto trigger_survey_config =
+      base::ranges::find(survey_configs_by_triggers_, trigger_id,
+                         [](const SurveyConfigs::value_type& pair) {
+                           return pair.second.trigger_id;
+                         });
 
   DCHECK(trigger_survey_config != survey_configs_by_triggers_.end());
   std::string trigger = trigger_survey_config->first;
@@ -321,14 +493,15 @@ void HatsService::RecordSurveyAsShown(std::string trigger_id) {
   UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
                             ShouldShowSurveyReasons::kYes);
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
-  base::DictionaryValue* pref_data = update.Get();
-  pref_data->SetIntPath(GetMajorVersionPath(trigger),
-                        version_info::GetVersion().components()[0]);
-  pref_data->SetPath(GetLastSurveyStartedTime(trigger),
-                     util::TimeToValue(base::Time::Now()));
-  pref_data->SetPath(kAnyLastSurveyStartedTimePath,
-                     util::TimeToValue(base::Time::Now()));
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
+  base::Value::Dict& pref_data = update.Get();
+  pref_data.SetByDottedPath(
+      GetMajorVersionPath(trigger),
+      static_cast<int>(version_info::GetVersion().components()[0]));
+  pref_data.SetByDottedPath(GetLastSurveyStartedTime(trigger),
+                            base::TimeToValue(base::Time::Now()));
+  pref_data.SetByDottedPath(kAnyLastSurveyStartedTimePath,
+                            base::TimeToValue(base::Time::Now()));
 }
 
 void HatsService::HatsNextDialogClosed() {
@@ -337,80 +510,83 @@ void HatsService::HatsNextDialogClosed() {
 
 void HatsService::SetSurveyMetadataForTesting(
     const HatsService::SurveyMetadata& metadata) {
-  const std::string& trigger = kHatsSurveyTriggerSatisfaction;
-  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
-  base::DictionaryValue* pref_data = update.Get();
+  const std::string& trigger = kHatsSurveyTriggerSettings;
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
+  base::Value::Dict& pref_data = update.Get();
   if (!metadata.last_major_version.has_value() &&
       !metadata.last_survey_started_time.has_value() &&
       !metadata.is_survey_full.has_value() &&
       !metadata.last_survey_check_time.has_value()) {
-    pref_data->RemovePath(trigger);
+    pref_data.RemoveByDottedPath(trigger);
   }
 
   if (metadata.last_major_version.has_value()) {
-    pref_data->SetIntPath(GetMajorVersionPath(trigger),
-                          *metadata.last_major_version);
+    pref_data.SetByDottedPath(GetMajorVersionPath(trigger),
+                              *metadata.last_major_version);
   } else {
-    pref_data->RemovePath(GetMajorVersionPath(trigger));
+    pref_data.RemoveByDottedPath(GetMajorVersionPath(trigger));
   }
 
   if (metadata.last_survey_started_time.has_value()) {
-    pref_data->SetPath(GetLastSurveyStartedTime(trigger),
-                       util::TimeToValue(*metadata.last_survey_started_time));
+    pref_data.SetByDottedPath(
+        GetLastSurveyStartedTime(trigger),
+        base::TimeToValue(*metadata.last_survey_started_time));
   } else {
-    pref_data->RemovePath(GetLastSurveyStartedTime(trigger));
+    pref_data.RemoveByDottedPath(GetLastSurveyStartedTime(trigger));
   }
 
   if (metadata.any_last_survey_started_time.has_value()) {
-    pref_data->SetPath(
+    pref_data.SetByDottedPath(
         kAnyLastSurveyStartedTimePath,
-        util::TimeToValue(*metadata.any_last_survey_started_time));
+        base::TimeToValue(*metadata.any_last_survey_started_time));
   } else {
-    pref_data->RemovePath(kAnyLastSurveyStartedTimePath);
+    pref_data.RemoveByDottedPath(kAnyLastSurveyStartedTimePath);
   }
 
   if (metadata.is_survey_full.has_value()) {
-    pref_data->SetBoolPath(GetIsSurveyFull(trigger), *metadata.is_survey_full);
+    pref_data.SetByDottedPath(GetIsSurveyFull(trigger),
+                              *metadata.is_survey_full);
   } else {
-    pref_data->RemovePath(GetIsSurveyFull(trigger));
+    pref_data.RemoveByDottedPath(GetIsSurveyFull(trigger));
   }
 
   if (metadata.last_survey_check_time.has_value()) {
-    pref_data->SetPath(GetLastSurveyCheckTime(trigger),
-                       util::TimeToValue(*metadata.last_survey_check_time));
+    pref_data.SetByDottedPath(
+        GetLastSurveyCheckTime(trigger),
+        base::TimeToValue(*metadata.last_survey_check_time));
   } else {
-    pref_data->RemovePath(GetLastSurveyCheckTime(trigger));
+    pref_data.RemoveByDottedPath(GetLastSurveyCheckTime(trigger));
   }
 }
 
 void HatsService::GetSurveyMetadataForTesting(
     HatsService::SurveyMetadata* metadata) const {
-  const std::string& trigger = kHatsSurveyTriggerSatisfaction;
-  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
-  base::DictionaryValue* pref_data = update.Get();
+  const std::string& trigger = kHatsSurveyTriggerSettings;
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
+  base::Value::Dict& pref_data = update.Get();
 
-  base::Optional<int> last_major_version =
-      pref_data->FindIntPath(GetMajorVersionPath(trigger));
+  absl::optional<int> last_major_version =
+      pref_data.FindIntByDottedPath(GetMajorVersionPath(trigger));
   if (last_major_version.has_value())
     metadata->last_major_version = last_major_version;
 
-  base::Optional<base::Time> last_survey_started_time =
-      util::ValueToTime(pref_data->FindPath(GetLastSurveyStartedTime(trigger)));
+  absl::optional<base::Time> last_survey_started_time = base::ValueToTime(
+      pref_data.FindByDottedPath(GetLastSurveyStartedTime(trigger)));
   if (last_survey_started_time.has_value())
     metadata->last_survey_started_time = last_survey_started_time;
 
-  base::Optional<base::Time> any_last_survey_started_time =
-      util::ValueToTime(pref_data->FindPath(kAnyLastSurveyStartedTimePath));
+  absl::optional<base::Time> any_last_survey_started_time = base::ValueToTime(
+      pref_data.FindByDottedPath(kAnyLastSurveyStartedTimePath));
   if (any_last_survey_started_time.has_value())
     metadata->any_last_survey_started_time = any_last_survey_started_time;
 
-  base::Optional<bool> is_survey_full =
-      pref_data->FindBoolPath(GetIsSurveyFull(trigger));
+  absl::optional<bool> is_survey_full =
+      pref_data.FindBoolByDottedPath(GetIsSurveyFull(trigger));
   if (is_survey_full.has_value())
     metadata->is_survey_full = is_survey_full;
 
-  base::Optional<base::Time> last_survey_check_time =
-      util::ValueToTime(pref_data->FindPath(GetLastSurveyCheckTime(trigger)));
+  absl::optional<base::Time> last_survey_check_time = base::ValueToTime(
+      pref_data.FindByDottedPath(GetLastSurveyCheckTime(trigger)));
   if (last_survey_check_time.has_value())
     metadata->last_survey_check_time = last_survey_check_time;
 }
@@ -426,12 +602,14 @@ bool HatsService::HasPendingTasks() {
 void HatsService::LaunchSurveyForWebContents(
     const std::string& trigger,
     content::WebContents* web_contents,
-    const std::map<std::string, bool>& product_specific_data) {
+    const SurveyBitsData& product_specific_bits_data,
+    const SurveyStringData& product_specific_string_data) {
   if (ShouldShowSurvey(trigger) && web_contents &&
       web_contents->GetVisibility() == content::Visibility::VISIBLE) {
     LaunchSurveyForBrowser(chrome::FindBrowserWithWebContents(web_contents),
                            trigger, base::DoNothing(), base::DoNothing(),
-                           product_specific_data);
+                           product_specific_bits_data,
+                           product_specific_string_data);
   }
 }
 
@@ -440,7 +618,8 @@ void HatsService::LaunchSurveyForBrowser(
     const std::string& trigger,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const std::map<std::string, bool>& product_specific_data) {
+    const SurveyBitsData& product_specific_bits_data,
+    const SurveyStringData& product_specific_string_data) {
   if (!browser ||
       (!browser->is_type_normal() && !browser->is_type_devtools()) ||
       !profiles::IsRegularOrGuestSession(browser)) {
@@ -451,7 +630,7 @@ void HatsService::LaunchSurveyForBrowser(
     return;
   }
   if (IncognitoModePrefs::GetAvailability(profile_->GetPrefs()) ==
-      IncognitoModePrefs::DISABLED) {
+      IncognitoModePrefs::Availability::kDisabled) {
     // Incognito mode needs to be enabled to create an off-the-record profile
     // for HaTS dialog.
     UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
@@ -463,7 +642,8 @@ void HatsService::LaunchSurveyForBrowser(
   // we check it at the last.
   CheckSurveyStatusAndMaybeShow(browser, trigger, std::move(success_callback),
                                 std::move(failure_callback),
-                                product_specific_data);
+                                product_specific_bits_data,
+                                product_specific_string_data);
 }
 
 bool HatsService::CanShowSurvey(const std::string& trigger) const {
@@ -486,11 +666,16 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
   }
   const SurveyConfig config = config_iterator->second;
 
+  // Always show the survey in demo mode. This check is duplicated in
+  // CanShowAnySurvey, but because of the semantics of that function, must be
+  // included here.
   if (base::FeatureList::IsEnabled(
           features::kHappinessTrackingSurveysForDesktopDemo)) {
-    // Always show the survey in demo mode.
     return true;
   }
+
+  if (!CanShowAnySurvey(config.user_prompted))
+    return false;
 
   // Survey can not be loaded and shown if there is no network connection.
   if (net::NetworkChangeNotifier::IsOffline()) {
@@ -499,21 +684,10 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
     return false;
   }
 
-  bool consent_given =
-      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven();
-  if (!consent_given)
-    return false;
-
-  if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
-    UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
-                              ShouldShowSurveyReasons::kNoLastSessionCrashed);
-    return false;
-  }
-
-  const base::DictionaryValue* pref_data =
-      profile_->GetPrefs()->GetDictionary(prefs::kHatsSurveyMetadata);
-  base::Optional<int> last_major_version =
-      pref_data->FindIntPath(GetMajorVersionPath(trigger));
+  const base::Value::Dict& pref_data =
+      profile_->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
+  absl::optional<int> last_major_version =
+      pref_data.FindIntByDottedPath(GetMajorVersionPath(trigger));
   if (last_major_version.has_value() &&
       static_cast<uint32_t>(*last_major_version) ==
           version_info::GetVersion().components()[0]) {
@@ -523,20 +697,12 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
     return false;
   }
 
-  base::Time now = base::Time::Now();
-
   if (!config.user_prompted) {
-    if ((now - profile_->GetCreationTime()) < kMinimumProfileAge) {
-      UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
-                                ShouldShowSurveyReasons::kNoProfileTooNew);
-      return false;
-    }
-
-    base::Optional<base::Time> last_survey_started_time = util::ValueToTime(
-        pref_data->FindPath(GetLastSurveyStartedTime(trigger)));
+    absl::optional<base::Time> last_survey_started_time = base::ValueToTime(
+        pref_data.FindByDottedPath(GetLastSurveyStartedTime(trigger)));
     if (last_survey_started_time.has_value()) {
       base::TimeDelta elapsed_time_since_last_start =
-          now - *last_survey_started_time;
+          base::Time::Now() - *last_survey_started_time;
       if (elapsed_time_since_last_start < kMinimumTimeBetweenSurveyStarts) {
         UMA_HISTOGRAM_ENUMERATION(
             kHatsShouldShowSurveyReasonHistogram,
@@ -544,12 +710,65 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
         return false;
       }
     }
+  }
 
-    // The time any survey was started will always be equal or more recent than
-    // the time a particular survey was started, so it is checked afterwards to
-    // improve UMA logging.
-    base::Optional<base::Time> last_any_started_time =
-        util::ValueToTime(pref_data->FindPath(kAnyLastSurveyStartedTimePath));
+  // If an attempt to check with the HaTS servers whether a survey should be
+  // delivered was made too recently, another survey cannot be shown.
+  absl::optional<base::Time> last_survey_check_time = base::ValueToTime(
+      pref_data.FindByDottedPath(GetLastSurveyCheckTime(trigger)));
+  if (last_survey_check_time.has_value()) {
+    base::TimeDelta elapsed_time_since_last_check =
+        base::Time::Now() - *last_survey_check_time;
+    if (elapsed_time_since_last_check < kMinimumTimeBetweenSurveyChecks)
+      return false;
+  }
+
+  return true;
+}
+
+bool HatsService::CanShowAnySurvey(bool user_prompted) const {
+  // Surveys can always be shown in Demo mode.
+  if (base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForDesktopDemo)) {
+    return true;
+  }
+
+  // HaTS requires metrics consent to run. This is also how HaTS can be disabled
+  // by policy.
+  if (!g_browser_process->GetMetricsServicesManager()
+           ->IsMetricsConsentGiven()) {
+    return false;
+  }
+
+  // Do not show surveys if Chrome's last exit was a crash. This avoids
+  // biasing survey results unnecessarily.
+  if (ExitTypeService::GetLastSessionExitType(profile_) == ExitType::kCrashed) {
+    UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
+                              ShouldShowSurveyReasons::kNoLastSessionCrashed);
+    return false;
+  }
+
+  // Some surveys may be "user prompted", which means the user has already been
+  // asked in context if they would like to take a survey (in a less
+  // confrontational manner than the standard HaTS prompt). The bar for whether
+  // a user is eligible is thus lower for these types of surveys.
+  if (!user_prompted) {
+    const base::Value::Dict& pref_data =
+        profile_->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
+
+    // If the profile is too new, measured as the age of the profile directory,
+    // the user is ineligible.
+    base::Time now = base::Time::Now();
+    if ((now - profile_->GetCreationTime()) < kMinimumProfileAge) {
+      UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
+                                ShouldShowSurveyReasons::kNoProfileTooNew);
+      return false;
+    }
+
+    // If a user has received any HaTS survey too recently, they are also
+    // ineligible.
+    absl::optional<base::Time> last_any_started_time =
+        base::ValueToTime(pref_data.Find(kAnyLastSurveyStartedTimePath));
     if (last_any_started_time.has_value()) {
       base::TimeDelta elapsed_time_any_started = now - *last_any_started_time;
       if (elapsed_time_any_started < kMinimumTimeBetweenAnySurveyStarts) {
@@ -559,17 +778,6 @@ bool HatsService::CanShowSurvey(const std::string& trigger) const {
         return false;
       }
     }
-  }
-
-  // If an attempt to check with the HaTS servers whether a survey should be
-  // delivered was made too recently, another survey cannot be shown.
-  base::Optional<base::Time> last_survey_check_time =
-      util::ValueToTime(pref_data->FindPath(GetLastSurveyCheckTime(trigger)));
-  if (last_survey_check_time.has_value()) {
-    base::TimeDelta elapsed_time_since_last_check =
-        base::Time::Now() - *last_survey_check_time;
-    if (elapsed_time_since_last_check < kMinimumTimeBetweenSurveyChecks)
-      return false;
   }
 
   return true;
@@ -595,44 +803,52 @@ void HatsService::CheckSurveyStatusAndMaybeShow(
     const std::string& trigger,
     base::OnceClosure success_callback,
     base::OnceClosure failure_callback,
-    const std::map<std::string, bool>& product_specific_data) {
+    const SurveyBitsData& product_specific_bits_data,
+    const SurveyStringData& product_specific_string_data) {
   // Check the survey status in profile first.
   // We record the survey's over capacity information in user profile to avoid
   // duplicated checks since the survey won't change once it is full.
-  const base::DictionaryValue* pref_data =
-      profile_->GetPrefs()->GetDictionary(prefs::kHatsSurveyMetadata);
-  base::Optional<int> is_full =
-      pref_data->FindBoolPath(GetIsSurveyFull(trigger));
+  const base::Value::Dict& pref_data =
+      profile_->GetPrefs()->GetDict(prefs::kHatsSurveyMetadata);
+  absl::optional<int> is_full =
+      pref_data.FindBoolByDottedPath(GetIsSurveyFull(trigger));
   if (is_full.has_value() && is_full) {
     std::move(failure_callback).Run();
     return;
   }
 
-  DCHECK(survey_configs_by_triggers_.find(trigger) !=
-         survey_configs_by_triggers_.end());
+  CHECK(survey_configs_by_triggers_.find(trigger) !=
+        survey_configs_by_triggers_.end());
   auto survey_config = survey_configs_by_triggers_[trigger];
 
-  // Check that the |product_specific_data| matches the fields for this trigger.
-  // If fields are set for a trigger, they must be provided.
-  DCHECK_EQ(product_specific_data.size(),
-            survey_config.product_specific_data_fields.size());
-  for (auto field_value : product_specific_data) {
-    DCHECK(std::find(survey_config.product_specific_data_fields.begin(),
-                     survey_config.product_specific_data_fields.end(),
-                     field_value.first) !=
-           survey_config.product_specific_data_fields.end());
+  // Check that the |product_specific_bits_data| matches the fields for this
+  // trigger. If fields are set for a trigger, they must be provided.
+  CHECK_EQ(product_specific_bits_data.size(),
+           survey_config.product_specific_bits_data_fields.size());
+  for (auto field_value : product_specific_bits_data) {
+    CHECK(base::Contains(survey_config.product_specific_bits_data_fields,
+                         field_value.first));
+  }
+
+  // Check that the |product_specific_string_data| matches the fields for this
+  // trigger. If fields are set for a trigger, they must be provided.
+  CHECK_EQ(product_specific_string_data.size(),
+           survey_config.product_specific_string_data_fields.size());
+  for (auto field_value : product_specific_string_data) {
+    CHECK(base::Contains(survey_config.product_specific_string_data_fields,
+                         field_value.first));
   }
 
   // As soon as the HaTS Next dialog is created it will attempt to contact
   // the HaTS servers to check for a survey.
-  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
-  update->SetPath(GetLastSurveyCheckTime(trigger),
-                  util::TimeToValue(base::Time::Now()));
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
+  update->SetByDottedPath(GetLastSurveyCheckTime(trigger),
+                          base::TimeToValue(base::Time::Now()));
 
   DCHECK(!hats_next_dialog_exists_);
   browser->window()->ShowHatsDialog(
       survey_configs_by_triggers_[trigger].trigger_id,
       std::move(success_callback), std::move(failure_callback),
-      product_specific_data);
+      product_specific_bits_data, product_specific_string_data);
   hats_next_dialog_exists_ = true;
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "components/services/app_service/public/mojom/types.mojom.h"
+#include "components/services/app_service/public/cpp/intent.h"
 
 class Browser;
 
@@ -29,12 +29,13 @@ struct SharedField {
 
 std::vector<SharedField> ExtractSharedFields(
     const apps::ShareTarget& share_target,
-    const apps::mojom::Intent& intent);
+    const apps::Intent& intent);
 
 NavigateParams NavigateParamsForShareTarget(
     Browser* browser,
     const apps::ShareTarget& share_target,
-    const apps::mojom::Intent& intent);
+    const apps::Intent& intent,
+    const std::vector<base::FilePath>& launch_files);
 
 }  // namespace web_app
 

@@ -132,7 +132,7 @@ void ThreadPoolManager::StartInitialThreads() {
 }
 
 void ThreadPoolManager::WaitForAllThreads() {
-  if (threads_.IsEmpty())
+  if (threads_.empty())
     return;
   AutoLock lock(lock_);
   while (threads_ready_to_terminate_ != threads_.size())
@@ -154,7 +154,7 @@ SequenceManagerFuzzerProcessor* ThreadPoolManager::processor() const {
 
 ThreadManager* ThreadPoolManager::GetThreadManagerFor(uint64_t thread_id) {
   AutoLock lock(lock_);
-  if (thread_managers_.IsEmpty())
+  if (thread_managers_.empty())
     return nullptr;
   int id = thread_id % thread_managers_.size();
   return thread_managers_[id];

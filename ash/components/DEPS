@@ -1,0 +1,7 @@
+include_rules = [
+  "+mojo/core",
+  "+ui",
+
+  # Codes in //ash/components are used by ash-chrome, so allow it.
+  "+chromeos/ash",
+]

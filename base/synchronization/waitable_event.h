@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,11 @@
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
 
 #include <list>
@@ -23,8 +22,7 @@
 #include "base/callback_forward.h"
 #include "base/mac/scoped_mach_port.h"
 #include "base/memory/ref_counted.h"
-#include "base/synchronization/lock.h"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <list>
 #include <utility>
 
@@ -67,12 +65,15 @@ class BASE_EXPORT WaitableEvent {
   WaitableEvent(ResetPolicy reset_policy = ResetPolicy::MANUAL,
                 InitialState initial_state = InitialState::NOT_SIGNALED);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Create a WaitableEvent from an Event HANDLE which has already been
   // created. This objects takes ownership of the HANDLE and will close it when
   // deleted.
   explicit WaitableEvent(win::ScopedHandle event_handle);
 #endif
+
+  WaitableEvent(const WaitableEvent&) = delete;
+  WaitableEvent& operator=(const WaitableEvent&) = delete;
 
   ~WaitableEvent();
 
@@ -105,8 +106,8 @@ class BASE_EXPORT WaitableEvent {
   // TimedWait can synchronise its own destruction like |Wait|.
   bool NOT_TAIL_CALLED TimedWait(const TimeDelta& wait_delta);
 
-#if defined(OS_WIN)
-  HANDLE handle() const { return handle_.Get(); }
+#if BUILDFLAG(IS_WIN)
+  HANDLE handle() const { return handle_.get(); }
 #endif
 
   // Declares that this WaitableEvent will only ever be used by a thread that is
@@ -167,19 +168,9 @@ class BASE_EXPORT WaitableEvent {
  private:
   friend class WaitableEventWatcher;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   win::ScopedHandle handle_;
-#elif defined(OS_APPLE)
-  // Prior to macOS 10.12, a TYPE_MACH_RECV dispatch source may not be invoked
-  // immediately. If a WaitableEventWatcher is used on a manual-reset event,
-  // and another thread that is Wait()ing on the event calls Reset()
-  // immediately after waking up, the watcher may not receive the callback.
-  // On macOS 10.12 and higher, dispatch delivery is reliable. But for OSes
-  // prior, a lock-protected list of callbacks is used for manual-reset event
-  // watchers. Automatic-reset events are not prone to this issue, since the
-  // first thread to wake will claim the event.
-  static bool UseSlowWatchList(ResetPolicy policy);
-
+#elif BUILDFLAG(IS_APPLE)
   // Peeks the message queue named by |port| and returns true if a message
   // is present and false if not. If |dequeue| is true, the messsage will be
   // drained from the queue. If |dequeue| is false, the queue will only be
@@ -194,36 +185,18 @@ class BASE_EXPORT WaitableEvent {
   // must be reference-counted manually.
   class ReceiveRight : public RefCountedThreadSafe<ReceiveRight> {
    public:
-    ReceiveRight(mach_port_t name, bool create_slow_watch_list);
+    explicit ReceiveRight(mach_port_t name);
+
+    ReceiveRight(const ReceiveRight&) = delete;
+    ReceiveRight& operator=(const ReceiveRight&) = delete;
 
     mach_port_t Name() const { return right_.get(); }
-
-    // This structure is used iff UseSlowWatchList() is true. See the comment
-    // in Signal() for details.
-    struct WatchList {
-      WatchList();
-      ~WatchList();
-
-      // The lock protects a list of closures to be run when the event is
-      // Signal()ed. The closures are invoked on the signaling thread, so they
-      // must be safe to be called from any thread.
-      Lock lock;
-      std::list<OnceClosure> list;
-    };
-
-    WatchList* SlowWatchList() const { return slow_watch_list_.get(); }
 
    private:
     friend class RefCountedThreadSafe<ReceiveRight>;
     ~ReceiveRight();
 
     mac::ScopedMachReceiveRight right_;
-
-    // This is allocated iff UseSlowWatchList() is true. It is created on the
-    // heap to avoid performing initialization when not using the slow path.
-    std::unique_ptr<WatchList> slow_watch_list_;
-
-    DISALLOW_COPY_AND_ASSIGN(ReceiveRight);
   };
 
   const ResetPolicy policy_;
@@ -235,7 +208,7 @@ class BASE_EXPORT WaitableEvent {
   // the event, unlike the receive right, since a deleted event cannot be
   // signaled.
   mac::ScopedMachSendRight send_right_;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // On Windows, you must not close a HANDLE which is currently being waited on.
   // The MSDN documentation says that the resulting behaviour is 'undefined'.
   // To solve that issue each WaitableEventWatcher duplicates the given event
@@ -288,8 +261,6 @@ class BASE_EXPORT WaitableEvent {
 
   // When recording/replaying, this is used to order wait/signal calls.
   int record_replay_ordered_lock_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WaitableEvent);
 };
 
 }  // namespace base

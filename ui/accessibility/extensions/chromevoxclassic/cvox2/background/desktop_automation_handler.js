@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@ DesktopAutomationHandler = function(node) {
   this.addListener_(e.HOVER, this.onHover);
   this.addListener_(e.LOAD_COMPLETE, this.onLoadComplete);
   this.addListener_(e.MENU_END, this.onMenuEnd);
-  this.addListener_(e.MENU_LIST_ITEM_SELECTED, this.onEventIfSelected);
+  this.addListener_(e.MENU_ITEM_SELECTED, this.onEventIfSelected);
   this.addListener_(e.MENU_START, this.onMenuStart);
   this.addListener_(e.SCROLL_POSITION_CHANGED, this.onScrollPositionChanged);
   this.addListener_(e.SELECTION, this.onSelection);

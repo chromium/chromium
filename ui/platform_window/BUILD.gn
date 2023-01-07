@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,7 +19,7 @@ component("platform_window") {
 
   defines = [ "IS_PLATFORM_WINDOW_IMPL" ]
 
-  public_deps = [ "//ui/base/cursor:cursor_base" ]
+  public_deps = []
 
   deps = [
     "//base",
@@ -31,9 +31,11 @@ component("platform_window") {
     sources += [
       "fuchsia/initialize_presenter_api_view.cc",
       "fuchsia/initialize_presenter_api_view.h",
+      "fuchsia/scenic_window_delegate.h",
     ]
 
     public_deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.element",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.views",
       "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
@@ -43,8 +45,18 @@ component("platform_window") {
 
   if (is_linux || is_chromeos) {
     sources += [
+      "extensions/desk_extension.cc",
+      "extensions/desk_extension.h",
+      "extensions/pinned_mode_extension.cc",
+      "extensions/pinned_mode_extension.h",
+      "extensions/system_modal_extension.cc",
+      "extensions/system_modal_extension.h",
       "extensions/wayland_extension.cc",
       "extensions/wayland_extension.h",
+    ]
+  }
+  if (is_linux || is_chromeos_ash) {
+    sources += [
       "extensions/x11_extension.cc",
       "extensions/x11_extension.h",
       "extensions/x11_extension_delegate.h",
@@ -54,9 +66,7 @@ component("platform_window") {
 
 group("platform_impls") {
   public_deps = [ "//ui/platform_window/stub" ]
-  if (use_x11) {
-    public_deps += [ "//ui/platform_window/x11" ]
-  } else if (is_win) {
+  if (is_win) {
     public_deps += [ "//ui/platform_window/win" ]
   }
 }

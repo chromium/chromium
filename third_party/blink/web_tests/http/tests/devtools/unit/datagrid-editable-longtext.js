@@ -1,5 +1,5 @@
 (async function() {
-  await TestRunner.loadModule('data_grid');
+  await TestRunner.loadLegacyModule('data_grid');
 
   TestRunner.addResult("This tests long text in datagrid.");
 
@@ -14,15 +14,15 @@
   var node = new DataGrid.DataGridNode({key: "k".repeat(1500), value: "v".repeat(1500)});
   rootNode.appendChild(node);
 
-  var keyElement = dataGrid.element.querySelector(".data .key-column");
-  var valueElement = dataGrid.element.querySelector(".data .value-column");
+  var keyElement = dataGrid.element.querySelector("tbody .key-column");
+  var valueElement = dataGrid.element.querySelector("tbody .value-column");
 
   TestRunner.addResult("Original lengths");
   dumpKeyLength();
   dumpValueLength();
 
   TestRunner.addResult("\nTest committing a long key");
-  dataGrid._startEditing(keyElement);
+  dataGrid.startEditing(keyElement);
   keyElement.textContent = "k".repeat(3000);
   dumpKeyLength();
   TestRunner.addResult("Blurring the key");
@@ -30,14 +30,14 @@
   dumpKeyLength();
 
   TestRunner.addResult("\nTest no-op editing the key");
-  dataGrid._startEditing(keyElement);
+  dataGrid.startEditing(keyElement);
   dumpKeyLength();
   TestRunner.addResult("Blurring the key");
   keyElement.blur();
   dumpKeyLength();
 
   TestRunner.addResult("\nTest committing a long value");
-  dataGrid._startEditing(valueElement);
+  dataGrid.startEditing(valueElement);
   valueElement.textContent = "v".repeat(3000);
   dumpValueLength();
   TestRunner.addResult("Blurring the value");
@@ -45,7 +45,7 @@
   dumpValueLength();
 
   TestRunner.addResult("\nTest no-op editing the value");
-  dataGrid._startEditing(valueElement);
+  dataGrid.startEditing(valueElement);
   dumpValueLength();
   TestRunner.addResult("Blurring the value");
   valueElement.blur();

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "device/bluetooth/test/bluetooth_test.h"
 
 namespace device {
@@ -24,6 +23,12 @@ class FakeBluetoothLEAdvertisementWatcherWinrt
               IBluetoothLEAdvertisementWatcher> {
  public:
   FakeBluetoothLEAdvertisementWatcherWinrt();
+
+  FakeBluetoothLEAdvertisementWatcherWinrt(
+      const FakeBluetoothLEAdvertisementWatcherWinrt&) = delete;
+  FakeBluetoothLEAdvertisementWatcherWinrt& operator=(
+      const FakeBluetoothLEAdvertisementWatcherWinrt&) = delete;
+
   ~FakeBluetoothLEAdvertisementWatcherWinrt() override;
 
   // IBluetoothLEAdvertisementWatcher:
@@ -98,8 +103,6 @@ class FakeBluetoothLEAdvertisementWatcherWinrt
       ABI::Windows::Devices::Bluetooth::Advertisement::
           BluetoothLEAdvertisementWatcherStoppedEventArgs*>>
       stopped_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothLEAdvertisementWatcherWinrt);
 };
 
 }  // namespace device

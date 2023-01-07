@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include "base/bind.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/stack_trace.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/devtools_external_agent_proxy_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
@@ -28,9 +28,11 @@ namespace {
 bool ShouldSendOnIO(crdtp::span<uint8_t> method) {
   static auto* kEntries = new std::vector<crdtp::span<uint8_t>>{
       crdtp::SpanFrom("Debugger.getPossibleBreakpoints"),
+      crdtp::SpanFrom("Debugger.getScriptSource"),
       crdtp::SpanFrom("Debugger.getStackTrace"),
       crdtp::SpanFrom("Debugger.pause"),
       crdtp::SpanFrom("Debugger.removeBreakpoint"),
+      crdtp::SpanFrom("Debugger.resume"),
       crdtp::SpanFrom("Debugger.setBreakpoint"),
       crdtp::SpanFrom("Debugger.setBreakpointByUrl"),
       crdtp::SpanFrom("Debugger.setBreakpointsActive"),
@@ -42,6 +44,26 @@ bool ShouldSendOnIO(crdtp::span<uint8_t> method) {
   DCHECK(std::is_sorted(kEntries->begin(), kEntries->end(), crdtp::SpanLt()));
   return std::binary_search(kEntries->begin(), kEntries->end(), method,
                             crdtp::SpanLt());
+}
+
+// During navigation, we only suspend the main-thread messages. The IO thread
+// messages should go through so that the renderer can be woken up
+// via the IO thread even if the renderer does not process message loops.
+//
+// In particular, we are looking to deadlocking the renderer when
+// reloading the page during the instrumentation pause (crbug.com/1354043):
+//
+// - If we are in the pause, there is no way to commit or fail the navigation
+//   in the renderer because the instrumentation pause does not process message
+//   loops.
+// - At the same time, the instrumentation pause could not wake up if
+//   the resume message was blocked by the suspension of message sending during
+//   navigation.
+//
+// To give the renderer a chance to wake up, we always forward the messages
+// for the IO thread to the renderer.
+bool ShouldSuspendDuringNavigation(crdtp::span<uint8_t> method) {
+  return !ShouldSendOnIO(method);
 }
 
 // Async control commands (such as CSS.enable) are idempotant and can
@@ -84,11 +106,20 @@ DevToolsSession::PendingMessage::PendingMessage(int call_id,
 
 DevToolsSession::PendingMessage::~PendingMessage() = default;
 
+DevToolsSession::DevToolsSession(DevToolsAgentHostClient* client, Mode mode)
+    : client_(client), mode_(mode) {}
+
 DevToolsSession::DevToolsSession(DevToolsAgentHostClient* client,
-                                 const std::string& session_id)
+                                 const std::string& session_id,
+                                 DevToolsSession* parent,
+                                 Mode mode)
     : client_(client),
-      dispatcher_(new protocol::UberDispatcher(this)),
-      session_id_(session_id) {}
+      root_session_(parent->GetRootSession()),
+      session_id_(session_id),
+      mode_(mode) {
+  DCHECK(root_session_);
+  DCHECK(!session_id_.empty());
+}
 
 DevToolsSession::~DevToolsSession() {
   if (proxy_delegate_)
@@ -161,11 +192,11 @@ void DevToolsSession::AttachToAgent(blink::mojom::DevToolsAgent* agent,
   }
 
   use_io_session_ = force_using_io_session;
-  agent->AttachDevToolsSession(receiver_.BindNewEndpointAndPassRemote(),
-                               session_.BindNewEndpointAndPassReceiver(),
-                               io_session_.BindNewPipeAndPassReceiver(),
-                               session_state_cookie_.Clone(),
-                               client_->UsesBinaryProtocol(), session_id_);
+  agent->AttachDevToolsSession(
+      receiver_.BindNewEndpointAndPassRemote(),
+      session_.BindNewEndpointAndPassReceiver(),
+      io_session_.BindNewPipeAndPassReceiver(), session_state_cookie_.Clone(),
+      client_->UsesBinaryProtocol(), client_->IsTrusted(), session_id_);
   session_.set_disconnect_handler(base::BindOnce(
       &DevToolsSession::MojoConnectionDestroyed, base::Unretained(this)));
 
@@ -285,8 +316,17 @@ void DevToolsSession::DispatchProtocolMessage(
   std::string session_id(dispatchable.SessionId().begin(),
                          dispatchable.SessionId().end());
   auto it = child_sessions_.find(session_id);
-  if (it == child_sessions_.end())
+  if (it == child_sessions_.end()) {
+    auto error = crdtp::DispatchResponse::SessionNotFound(
+        "Session with given id not found.");
+    DispatchProtocolMessageToClient(
+        (dispatchable.HasCallId()
+             ? crdtp::CreateErrorResponse(dispatchable.CallId(),
+                                          std::move(error))
+             : crdtp::CreateErrorNotification(std::move(error)))
+            ->Serialize());
     return;
+  }
   DevToolsSession* session = it->second;
   DCHECK(!session->proxy_delegate_);
   session->DispatchProtocolMessageInternal(std::move(dispatchable), message);
@@ -338,9 +378,18 @@ void DevToolsSession::FallThrough(int call_id,
   // In browser-only mode, we should've handled everything in dispatcher.
   DCHECK(!browser_only_);
 
+  if (waiting_for_response_.find(call_id) != waiting_for_response_.end()) {
+    DispatchProtocolMessageToClient(
+        crdtp::CreateErrorResponse(call_id,
+                                   crdtp::DispatchResponse::InvalidRequest(
+                                       "Duplicate `id` in protocol request"))
+            ->Serialize());
+  }
+
   auto it = pending_messages_.emplace(pending_messages_.end(), call_id, method,
                                       message);
-  if (suspended_sending_messages_to_agent_)
+  if (suspended_sending_messages_to_agent_ &&
+      ShouldSuspendDuringNavigation(method))
     return;
 
   DispatchToAgent(pending_messages_.back());
@@ -419,7 +468,7 @@ void DevToolsSession::ResumeSendingMessagesToAgent() {
   }
 }
 
-void DevToolsSession::ClearPendingMessages() {
+void DevToolsSession::ClearPendingMessages(bool did_crash) {
   for (auto it = pending_messages_.begin(); it != pending_messages_.end();) {
     const PendingMessage& message = *it;
     if (SpanEquals(crdtp::SpanFrom("Page.reload"),
@@ -428,11 +477,14 @@ void DevToolsSession::ClearPendingMessages() {
       continue;
     }
     // Send error to the client and remove the message from pending.
+    std::string error_message =
+        did_crash ? kTargetCrashedMessage : kTargetClosedMessage;
     SendProtocolResponse(
         message.call_id,
         crdtp::CreateErrorResponse(
             message.call_id,
-            crdtp::DispatchResponse::ServerError(kTargetCrashedMessage)));
+            crdtp::DispatchResponse::ServerError(error_message)));
+    waiting_for_response_.erase(message.call_id);
     it = pending_messages_.erase(it);
   }
 }
@@ -452,7 +504,10 @@ void DevToolsSession::SendProtocolNotification(
   // |this| may be deleted at this point.
 }
 
-void DevToolsSession::FlushProtocolNotifications() {}
+void DevToolsSession::FlushProtocolNotifications() {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("DevToolsSession::FlushProtocolNotifications ALTERNATE");
+}
 
 // The following methods handle responses or notifications coming from the
 // renderer (blink) to the client. It is important that these messages not be
@@ -540,11 +595,12 @@ void DevToolsSession::ApplySessionStateUpdates(
 DevToolsSession* DevToolsSession::AttachChildSession(
     const std::string& session_id,
     DevToolsAgentHostImpl* agent_host,
-    DevToolsAgentHostClient* client) {
+    DevToolsAgentHostClient* client,
+    Mode mode) {
   DCHECK(!agent_host->SessionByClient(client));
   DCHECK(!root_session_);
-  auto session = std::make_unique<DevToolsSession>(client, session_id);
-  session->root_session_ = this;
+  std::unique_ptr<DevToolsSession> session(
+      new DevToolsSession(client, session_id, this, mode));
   DevToolsSession* session_ptr = session.get();
   // If attach did not succeed, |session| is already destroyed.
   if (!agent_host->AttachInternal(std::move(session)))

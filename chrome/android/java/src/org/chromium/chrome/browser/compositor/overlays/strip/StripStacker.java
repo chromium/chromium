@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.ui.base.LocalizationUtils;
 
 /**
  * An interface that defines how to stack tabs and how they should look visually.  This lets
@@ -60,10 +62,12 @@ public abstract class StripStacker {
      * @param stripRightMargin The right margin of the tab strip.
      * @param stripWidth The width of the tab strip.
      * @param inReorderMode Whether the strip is in reorder mode.
+     * @param tabClosing Whether a tab is being closed.
      */
     public abstract void setTabOffsets(int selectedIndex, StripLayoutTab[] indexOrderedTabs,
             float tabStackWidth, int maxTabsToStack, float tabOverlapWidth, float stripLeftMargin,
-            float stripRightMargin, float stripWidth, boolean inReorderMode);
+            float stripRightMargin, float stripWidth, boolean inReorderMode, boolean tabClosing,
+            float cachedTabWidth);
 
     /**
      * Computes the X offset for the new tab button.
@@ -73,12 +77,77 @@ public abstract class StripStacker {
      * @param stripLeftMargin The left margin of the tab strip.
      * @param stripRightMargin The right margin of the tab strip.
      * @param stripWidth The width of the tab strip.
-     * @param mNewTabButtonWidth The width of the new tab button.
+     * @param buttonWidth The width of the new tab button.
+     * @param touchTargetOffset Touch target offset applied to the button position.
      * @return The x offset for the new tab button.
      */
-    public abstract float computeNewTabButtonOffset(StripLayoutTab[] indexOrderedTabs,
+    public float computeNewTabButtonOffset(StripLayoutTab[] indexOrderedTabs, float tabOverlapWidth,
+            float stripLeftMargin, float stripRightMargin, float stripWidth, float buttonWidth,
+            float touchTargetOffset, float cachedTabWidth, boolean animate) {
+        return LocalizationUtils.isLayoutRtl()
+                ? computeNewTabButtonOffsetRtl(indexOrderedTabs, stripLeftMargin, stripRightMargin,
+                        stripWidth, buttonWidth, touchTargetOffset, cachedTabWidth, animate)
+                : computeNewTabButtonOffsetLtr(indexOrderedTabs, tabOverlapWidth, stripLeftMargin,
+                        stripRightMargin, stripWidth, touchTargetOffset, cachedTabWidth, animate);
+    }
+
+    private float computeNewTabButtonOffsetLtr(StripLayoutTab[] indexOrderedTabs,
             float tabOverlapWidth, float stripLeftMargin, float stripRightMargin, float stripWidth,
-            float mNewTabButtonWidth);
+            float touchTargetOffset, float cachedTabWidth, boolean animate) {
+        float rightEdge = stripLeftMargin;
+        boolean tabStripImpEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
+
+        for (StripLayoutTab tab : indexOrderedTabs) {
+            float tabWidth;
+            float tabDrawX;
+            float tabWidthWeight;
+            if (tabStripImpEnabled && animate) {
+                // This value is set to 1.f to avoid the new tab button jitter for the improved tab
+                // strip design. The tab.width and tab.drawX may not reflect the final values before
+                // the tab closing animations are completed.
+                tabWidthWeight = 1.f;
+                tabWidth = cachedTabWidth;
+                tabDrawX = tab.getIdealX();
+            } else {
+                tabWidthWeight = tab.getWidthWeight();
+                tabWidth = tab.getWidth();
+                tabDrawX = tab.getDrawX();
+            }
+            float layoutWidth = (tabWidth - tabOverlapWidth) * tabWidthWeight;
+            rightEdge = Math.max(tabDrawX + layoutWidth, rightEdge); // use idealX here
+        }
+
+        rightEdge = Math.min(rightEdge + tabOverlapWidth, stripWidth - stripRightMargin);
+
+        // Adjust the new tab button to be away from the tabs to account for the touch target skew.
+        rightEdge += touchTargetOffset;
+
+        // The draw X position for the new tab button is the rightEdge of the tab strip.
+        return rightEdge;
+    }
+
+    private float computeNewTabButtonOffsetRtl(StripLayoutTab[] indexOrderedTabs,
+            float stripLeftMargin, float stripRightMargin, float stripWidth,
+            float newTabButtonWidth, float touchTargetOffset, float cachedTabWidth,
+            boolean animate) {
+        boolean tabStripImpEnabled = ChromeFeatureList.sTabStripImprovements.isEnabled();
+
+        float leftEdge = stripWidth - stripRightMargin;
+
+        for (StripLayoutTab tab : indexOrderedTabs) {
+            float drawX = (tabStripImpEnabled && animate) ? tab.getIdealX() : tab.getDrawX();
+            leftEdge = Math.min(drawX, leftEdge);
+        }
+
+        leftEdge = Math.max(leftEdge, stripLeftMargin);
+
+        // Adjust the new tab button to be away from the tabs to account for the touch target skew.
+        leftEdge -= touchTargetOffset;
+
+        // The draw X position for the new tab button is the left edge of the tab strip minus
+        // the new tab button width.
+        return leftEdge - newTabButtonWidth;
+    }
 
     /**
      * Performs an occlusion pass, setting the visibility on tabs. This is relegated to this

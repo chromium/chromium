@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,74 +9,19 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-
-namespace {
-
-const base::flat_map<UINT, std::string>& PredefinedFormatToNameMap() {
-  // These formats are described in winuser.h and
-  // https://docs.microsoft.com/en-us/windows/win32/dataxchg/standard-clipboard-formats
-  static const base::NoDestructor<base::flat_map<UINT, std::string>>
-      format_to_name({
-          {CF_TEXT, "CF_TEXT"},
-          {CF_DIF, "CF_DIF"},
-          {CF_TIFF, "CF_TIFF"},
-          {CF_OEMTEXT, "CF_OEMTEXT"},
-          {CF_DIB, "CF_DIB"},
-          {CF_PENDATA, "CF_PENDATA"},
-          {CF_RIFF, "CF_RIFF"},
-          {CF_WAVE, "CF_WAVE"},
-          {CF_UNICODETEXT, "CF_UNICODETEXT"},
-          {CF_DIBV5, "CF_DIBV5"},
-          {CF_OWNERDISPLAY, "CF_OWNERDISPLAY"},
-
-          // These formats are predefined but explicitly blocked from use,
-          // either due to passing along handles, or concerns regarding exposing
-          // private information.
-          // {CF_MAX, "CF_MAX"},
-          // {CF_PRIVATEFIRST, "CF_PRIVATEFIRST"},
-          // {CF_PRIVATELAST, "CF_PRIVATELAST"},
-          // {CF_GDIOBJFIRST, "CF_GDIOBJFIRST"},
-          // {CF_GDIOBJLAST, "CF_GDIOBJLAST"},
-          // {CF_BITMAP, "CF_BITMAP"},
-          // {CF_SYLK, "CF_SYLK"},
-          // {CF_METAFILEPICT, "CF_METAFILEPICT"},
-          // {CF_DSPTEXT, "CF_DSPTEXT"},
-          // {CF_DSPBITMAP, "CF_DSPBITMAP"},
-          // {CF_DSPMETAFILEPICT, "CF_DSPMETAFILEPICT"},
-          // {CF_DSPENHMETAFILE, "CF_DSPENHMETAFILE"},
-          // {CF_ENHMETAFILE, "CF_ENHMETAFILE"},
-          // {CF_HDROP, "CF_HDROP"},
-          // {CF_LOCALE, "CF_LOCALE"},
-          // {CF_PALETTE, "CF_PALETTE"},
-
-      });
-  return *format_to_name;
-}
-
-const base::flat_map<std::string, UINT>& PredefinedNameToFormatMap() {
-  // Use lambda constructor for thread-safe initialization of name_to_format.
-  static const base::NoDestructor<base::flat_map<std::string, UINT>>
-      name_to_format([] {
-        base::flat_map<std::string, UINT> new_name_to_format;
-        const auto& format_to_name = PredefinedFormatToNameMap();
-        new_name_to_format.reserve(format_to_name.size());
-        for (const auto& it : format_to_name)
-          new_name_to_format.emplace(it.second, it.first);
-        return new_name_to_format;
-      }());
-  return *name_to_format;
-}
-
-}  // namespace
+#include "ui/base/clipboard/clipboard_constants.h"
 
 namespace ui {
 
 // ClipboardFormatType implementation.
+// Windows formats are backed by "Clipboard Formats", documented here:
+// https://docs.microsoft.com/en-us/windows/win32/dataxchg/clipboard-formats
 ClipboardFormatType::ClipboardFormatType() = default;
 
 ClipboardFormatType::ClipboardFormatType(UINT native_format)
@@ -91,17 +36,7 @@ ClipboardFormatType::ClipboardFormatType(UINT native_format,
                                          DWORD tymed)
     : data_{/* .cfFormat */ static_cast<CLIPFORMAT>(native_format),
             /* .ptd */ nullptr, /* .dwAspect */ DVASPECT_CONTENT,
-            /* .lindex */ index, /* .tymed*/ tymed} {
-  // Log the frequency of invalid formats being input into the constructor.
-  if (!native_format) {
-    static int error_count = 0;
-    ++error_count;
-    // TODO(https://crbug.com/1000919): Evaluate and remove UMA metrics after
-    // enough data is gathered.
-    base::UmaHistogramCounts100("Clipboard.RegisterClipboardFormatFailure",
-                                error_count);
-  }
-}
+            /* .lindex */ index, /* .tymed*/ tymed} {}
 
 ClipboardFormatType::~ClipboardFormatType() = default;
 
@@ -122,22 +57,37 @@ ClipboardFormatType ClipboardFormatType::Deserialize(
   return ClipboardFormatType(clipboard_format);
 }
 
+// static
+std::string ClipboardFormatType::WebCustomFormatName(int index) {
+  return base::StrCat({"Web Custom Format", base::NumberToString(index)});
+}
+
+// static
+std::string ClipboardFormatType::WebCustomFormatMapName() {
+  return "Web Custom Format Map";
+}
+
+// static
+ClipboardFormatType ClipboardFormatType::CustomPlatformType(
+    const std::string& format_string) {
+  // Once these formats are registered, `RegisterClipboardFormat` just returns
+  // the `cfFormat` associated with it and doesn't register a new format.
+  DCHECK(base::IsStringASCII(format_string));
+  return ClipboardFormatType(
+      ::RegisterClipboardFormat(base::ASCIIToWide(format_string).c_str()));
+}
+
+// static
+const ClipboardFormatType& ClipboardFormatType::WebCustomFormatMap() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      ::RegisterClipboardFormat(
+          base::ASCIIToWide(ClipboardFormatType::WebCustomFormatMapName())
+              .c_str()));
+  return *format;
+}
+
 std::string ClipboardFormatType::GetName() const {
-  const auto& predefined_format_to_name = PredefinedFormatToNameMap();
-  const auto it = predefined_format_to_name.find(data_.cfFormat);
-  if (it != predefined_format_to_name.end())
-    return it->second;
-
-  constexpr size_t kMaxFormatSize = 1024;
-  static base::NoDestructor<std::vector<wchar_t>> name_buffer(kMaxFormatSize);
-  int name_size = GetClipboardFormatName(data_.cfFormat, name_buffer->data(),
-                                         kMaxFormatSize);
-  if (!name_size) {
-    // Input format doesn't exist or is predefined.
-    return std::string();
-  }
-
-  return base::WideToUTF8(std::wstring(name_buffer->data(), name_size));
+  return Serialize();
 }
 
 bool ClipboardFormatType::operator<(const ClipboardFormatType& other) const {
@@ -153,11 +103,6 @@ bool ClipboardFormatType::operator==(const ClipboardFormatType& other) const {
 // static
 ClipboardFormatType ClipboardFormatType::GetType(
     const std::string& format_string) {
-  const auto& predefined_name_to_format = PredefinedNameToFormatMap();
-  const auto it = predefined_name_to_format.find(format_string);
-  if (it != predefined_name_to_format.end())
-    return ClipboardFormatType(it->second);
-
   return ClipboardFormatType(
       ::RegisterClipboardFormat(base::ASCIIToWide(format_string).c_str()));
 }
@@ -169,19 +114,19 @@ ClipboardFormatType ClipboardFormatType::GetType(
 // ClipboardFormatTypes thread-safe on all platforms.
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetFilenamesType() {
-  return GetFilenameType();
+const ClipboardFormatType& ClipboardFormatType::FilenamesType() {
+  return FilenameType();
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetUrlType() {
+const ClipboardFormatType& ClipboardFormatType::UrlType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(CFSTR_INETURLW));
   return *format;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetPlainTextType() {
+const ClipboardFormatType& ClipboardFormatType::PlainTextType() {
   static base::NoDestructor<ClipboardFormatType> format(CF_UNICODETEXT);
   return *format;
 }
@@ -189,14 +134,14 @@ const ClipboardFormatType& ClipboardFormatType::GetPlainTextType() {
 // MS HTML Format
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetHtmlType() {
+const ClipboardFormatType& ClipboardFormatType::HtmlType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(L"HTML Format"));
   return *format;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetSvgType() {
+const ClipboardFormatType& ClipboardFormatType::SvgType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(CFSTR_MIME_SVG_XML));
   return *format;
@@ -205,33 +150,40 @@ const ClipboardFormatType& ClipboardFormatType::GetSvgType() {
 // MS RTF Format
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetRtfType() {
+const ClipboardFormatType& ClipboardFormatType::RtfType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(L"Rich Text Format"));
   return *format;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetBitmapType() {
-  static base::NoDestructor<ClipboardFormatType> format(CF_BITMAP);
+const ClipboardFormatType& ClipboardFormatType::PngType() {
+  static base::NoDestructor<ClipboardFormatType> format(
+      ::RegisterClipboardFormat(L"PNG"));
   return *format;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetUrlAType() {
+const ClipboardFormatType& ClipboardFormatType::BitmapType() {
+  static base::NoDestructor<ClipboardFormatType> format(CF_DIBV5);
+  return *format;
+}
+
+// static
+const ClipboardFormatType& ClipboardFormatType::UrlAType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(CFSTR_INETURLA));
   return *format;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetPlainTextAType() {
+const ClipboardFormatType& ClipboardFormatType::PlainTextAType() {
   static base::NoDestructor<ClipboardFormatType> format(CF_TEXT);
   return *format;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetFilenameAType() {
+const ClipboardFormatType& ClipboardFormatType::FilenameAType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(CFSTR_FILENAMEA));
   return *format;
@@ -239,14 +191,14 @@ const ClipboardFormatType& ClipboardFormatType::GetFilenameAType() {
 
 // Firefox text/html
 // static
-const ClipboardFormatType& ClipboardFormatType::GetTextHtmlType() {
+const ClipboardFormatType& ClipboardFormatType::TextHtmlType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(L"text/html"));
   return *format;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetCFHDropType() {
+const ClipboardFormatType& ClipboardFormatType::CFHDropType() {
   static base::NoDestructor<ClipboardFormatType> format(CF_HDROP);
   return *format;
 }
@@ -255,24 +207,24 @@ const ClipboardFormatType& ClipboardFormatType::GetCFHDropType() {
 // ANSI format (e.g., it could be that it doesn't support Unicode). So need to
 // register both the ANSI and Unicode file group descriptors.
 // static
-const ClipboardFormatType& ClipboardFormatType::GetFileDescriptorAType() {
+const ClipboardFormatType& ClipboardFormatType::FileDescriptorAType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(CFSTR_FILEDESCRIPTORA));
   return *format;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetFileDescriptorType() {
+const ClipboardFormatType& ClipboardFormatType::FileDescriptorType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(CFSTR_FILEDESCRIPTORW));
   return *format;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetFileContentZeroType() {
+const ClipboardFormatType& ClipboardFormatType::FileContentZeroType() {
   // This uses a storage media type of TYMED_HGLOBAL, which is not commonly
   // used with CFSTR_FILECONTENTS (but used in Chromium--see
-  // OSExchangeDataProviderWin::SetFileContents). Use GetFileContentAtIndexType
+  // OSExchangeDataProviderWin::SetFileContents). Use FileContentAtIndexType
   // if TYMED_ISTREAM and TYMED_ISTORAGE are needed.
   // TODO(https://crbug.com/950756): Should TYMED_ISTREAM / TYMED_ISTORAGE be
   // used instead of TYMED_HGLOBAL in
@@ -285,17 +237,16 @@ const ClipboardFormatType& ClipboardFormatType::GetFileContentZeroType() {
 }
 
 // static
-std::map<LONG, ClipboardFormatType>&
-ClipboardFormatType::GetFileContentTypeMap() {
+std::map<LONG, ClipboardFormatType>& ClipboardFormatType::FileContentTypeMap() {
   static base::NoDestructor<std::map<LONG, ClipboardFormatType>>
       index_to_type_map;
   return *index_to_type_map;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetFileContentAtIndexType(
+const ClipboardFormatType& ClipboardFormatType::FileContentAtIndexType(
     LONG index) {
-  auto& index_to_type_map = GetFileContentTypeMap();
+  auto& index_to_type_map = FileContentTypeMap();
 
   auto insert_or_assign_result = index_to_type_map.insert(
       {index,
@@ -305,35 +256,35 @@ const ClipboardFormatType& ClipboardFormatType::GetFileContentAtIndexType(
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetFilenameType() {
+const ClipboardFormatType& ClipboardFormatType::FilenameType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(CFSTR_FILENAMEW));
   return *format;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetIDListType() {
+const ClipboardFormatType& ClipboardFormatType::IDListType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(CFSTR_SHELLIDLIST));
   return *format;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetMozUrlType() {
+const ClipboardFormatType& ClipboardFormatType::MozUrlType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(L"text/x-moz-url"));
   return *format;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetWebKitSmartPasteType() {
+const ClipboardFormatType& ClipboardFormatType::WebKitSmartPasteType() {
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(L"WebKit Smart Paste Format"));
   return *format;
 }
 
 // static
-const ClipboardFormatType& ClipboardFormatType::GetWebCustomDataType() {
+const ClipboardFormatType& ClipboardFormatType::WebCustomDataType() {
   // TODO(http://crbug.com/106449): Standardize this name.
   static base::NoDestructor<ClipboardFormatType> format(
       ::RegisterClipboardFormat(L"Chromium Web Custom MIME Data Format"));

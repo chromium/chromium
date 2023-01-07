@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/region_capture_data.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -33,21 +34,27 @@ class BoxPainter {
   // shadows and border image outsets. |paint_rect| is the border box rect in
   // paint coordinates.
   void PaintBoxDecorationBackgroundWithRect(
-      const PaintInfo&,
-      const IntRect& visual_rect,
+      const PaintInfo& paint_info,
+      const gfx::Rect& visual_rect,
       const PhysicalRect& paint_rect,
       const DisplayItemClient& background_client);
 
   // Expands the bounds of the current paint chunk for hit test, and records
   // special touch action if any. This should be called in the background paint
   // phase even if there is no other painted content.
-  void RecordHitTestData(const PaintInfo&,
+  void RecordHitTestData(const PaintInfo& paint_info,
                          const PhysicalRect& paint_rect,
                          const DisplayItemClient& background_client);
 
+  // Records the bounds of the current paint chunk for potential cropping later
+  // as part of tab capture.
+  void RecordRegionCaptureData(const PaintInfo& paint_info,
+                               const PhysicalRect& paint_rect,
+                               const DisplayItemClient& background_client);
+
   // This should be called in the background paint phase even if there is no
   // other painted content.
-  void RecordScrollHitTestData(const PaintInfo&,
+  void RecordScrollHitTestData(const PaintInfo& paint_info,
                                const DisplayItemClient& background_client);
 
   // Calculates the visual rect (see DisplayItem::VisualRect() for definition)
@@ -57,7 +64,7 @@ class BoxPainter {
   // this visual rect, if it's easy and beneficial to do so.
   // In most cases we use BoxDrawingRecorder which calls this function, instead
   // of directly using this function.
-  IntRect VisualRect(const PhysicalOffset& paint_offset);
+  gfx::Rect VisualRect(const PhysicalOffset& paint_offset);
 
  private:
   void PaintBackground(const PaintInfo&,
@@ -93,4 +100,4 @@ class BoxDrawingRecorder : public DrawingRecorder {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_BOX_PAINTER_H_

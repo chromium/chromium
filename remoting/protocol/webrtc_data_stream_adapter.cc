@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,13 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/net_errors.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/protocol/message_serialization.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 WebrtcDataStreamAdapter::WebrtcDataStreamAdapter(
     rtc::scoped_refptr<webrtc::DataChannelInterface> channel)
@@ -34,10 +32,10 @@ WebrtcDataStreamAdapter::~WebrtcDataStreamAdapter() {
     channel_->Close();
 
     // Destroy |channel_| asynchronously as it may be on stack.
+    // TODO(dcheng): This could probably be ReleaseSoon.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(base::DoNothing::Once<
-                           rtc::scoped_refptr<webrtc::DataChannelInterface>>(),
+        base::BindOnce([](rtc::scoped_refptr<webrtc::DataChannelInterface>) {},
                        std::move(channel_)));
   }
 }
@@ -51,12 +49,6 @@ void WebrtcDataStreamAdapter::Start(EventHandler* event_handler) {
 
 void WebrtcDataStreamAdapter::Send(google::protobuf::MessageLite* message,
                                    base::OnceClosure done) {
-  // This shouldn't DCHECK in the CLOSED case, because the connection may be
-  // abruptly closed at any time and the caller may not have been notified, yet.
-  // The message will still be enqueued so that the outstanding done callbacks
-  // are dropped at the expected time in the expected order.
-  DCHECK(state_ != State::CONNECTING);
-
   rtc::CopyOnWriteBuffer buffer;
   buffer.SetSize(message->ByteSize());
   message->SerializeWithCachedSizesToArray(buffer.MutableData());
@@ -170,5 +162,4 @@ WebrtcDataStreamAdapter::PendingMessage::PendingMessage(PendingMessage&&) =
 
 WebrtcDataStreamAdapter::PendingMessage::~PendingMessage() = default;
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

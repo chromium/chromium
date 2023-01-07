@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
@@ -50,9 +50,9 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // Will be empty if |link_url| is empty.
   std::u16string link_text;
 
-  // The impression declared by the link. May be base::nullopt even if
+  // The impression declared by the link. May be absl::nullopt even if
   // |link_url| is non-empty.
-  base::Optional<blink::Impression> impression;
+  absl::optional<blink::Impression> impression;
 
   // The link URL to be used ONLY for "copy link address". We don't validate
   // this field in the frontend process.
@@ -126,7 +126,9 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // If this node is an input field, the type of that field.
   blink::mojom::ContextMenuDataInputFieldType input_field_type;
 
-  // Rect representing the coordinates in the document space of the selection.
+  // For the outermost main frame's widget, this will be the selection rect in
+  // viewport space. For a local root, this is in the coordinates of the local
+  // frame root.
   gfx::Rect selection_rect;
 
   // Start position of the selection text.
@@ -135,6 +137,15 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // The context menu was opened by right clicking on an existing
   // highlight/fragment.
   bool opened_from_highlight = false;
+
+  // The context menu was opened on an input or textarea field. Denotes the
+  // renderer id of the form containing the input or the textarea field.
+  // `absl::nullopt` if the click was not on an input field or a formless field.
+  absl::optional<uint64_t> form_renderer_id;
+
+  // The context menu was opened on an input or textarea field.
+  // Otherwise, `absl::nullopt`.
+  absl::optional<uint64_t> field_renderer_id;
 
  private:
   void Assign(const UntrustworthyContextMenuParams& other);

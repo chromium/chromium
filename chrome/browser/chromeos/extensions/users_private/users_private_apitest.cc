@@ -1,13 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
@@ -22,8 +23,8 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/users_private.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/prefs/pref_service.h"
@@ -51,11 +52,11 @@ class TestPrefsUtil : public PrefsUtil {
     pref_object->key = name;
     pref_object->type = api::settings_private::PrefType::PREF_TYPE_LIST;
 
-    base::ListValue* value = new base::ListValue();
+    base::Value::List value;
     for (auto& email : user_list_) {
-      value->AppendString(email);
+      value.Append(email);
     }
-    pref_object->value.reset(value);
+    pref_object->value = base::Value(std::move(value));
 
     return pref_object;
   }
@@ -63,7 +64,8 @@ class TestPrefsUtil : public PrefsUtil {
   bool AppendToListCrosSetting(const std::string& pref_name,
                                const base::Value& value) override {
     std::string email;
-    value.GetAsString(&email);
+    if (value.is_string())
+      email = value.GetString();
 
     for (auto& user : user_list_) {
       if (email == user)
@@ -77,9 +79,10 @@ class TestPrefsUtil : public PrefsUtil {
   bool RemoveFromListCrosSetting(const std::string& pref_name,
                                  const base::Value& value) override {
     std::string email;
-    value.GetAsString(&email);
+    if (value.is_string())
+      email = value.GetString();
 
-    auto iter = std::find(user_list_.begin(), user_list_.end(), email);
+    auto iter = base::ranges::find(user_list_, email);
     if (iter != user_list_.end())
       user_list_.erase(iter);
 
@@ -96,11 +99,15 @@ class TestDelegate : public UsersPrivateDelegate {
     profile_ = profile;
     prefs_util_ = nullptr;
   }
+
+  TestDelegate(const TestDelegate&) = delete;
+  TestDelegate& operator=(const TestDelegate&) = delete;
+
   ~TestDelegate() override = default;
 
   PrefsUtil* GetPrefsUtil() override {
     if (!prefs_util_)
-      prefs_util_.reset(new TestPrefsUtil(profile_));
+      prefs_util_ = std::make_unique<TestPrefsUtil>(profile_);
 
     return prefs_util_.get();
   }
@@ -108,8 +115,6 @@ class TestDelegate : public UsersPrivateDelegate {
  private:
   Profile* profile_;  // weak
   std::unique_ptr<TestPrefsUtil> prefs_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDelegate);
 };
 
 class UsersPrivateApiTest : public ExtensionApiTest {
@@ -119,14 +124,19 @@ class UsersPrivateApiTest : public ExtensionApiTest {
     // OwnerSettingsServiceAsh is created.
     scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util =
         new ownership::MockOwnerKeyUtil();
-    owner_key_util->SetPrivateKey(crypto::RSAPrivateKey::Create(512));
+    owner_key_util->ImportPrivateKeyAndSetPublicKey(
+        crypto::RSAPrivateKey::Create(512));
 
     ash::OwnerSettingsServiceAshFactory::GetInstance()
         ->SetOwnerKeyUtilForTesting(owner_key_util);
 
     scoped_testing_cros_settings_.device_settings()->Set(
-        chromeos::kDeviceOwner, base::Value("testuser@gmail.com"));
+        ash::kDeviceOwner, base::Value("testuser@gmail.com"));
   }
+
+  UsersPrivateApiTest(const UsersPrivateApiTest&) = delete;
+  UsersPrivateApiTest& operator=(const UsersPrivateApiTest&) = delete;
+
   ~UsersPrivateApiTest() override = default;
 
   static std::unique_ptr<KeyedService> GetUsersPrivateDelegate(
@@ -148,10 +158,10 @@ class UsersPrivateApiTest : public ExtensionApiTest {
 
  protected:
   bool RunSubtest(const std::string& subtest) {
-    const std::string page_url = "main.html?" + subtest;
-    return RunExtensionTest({.name = "users_private",
-                             .page_url = page_url.c_str(),
-                             .load_as_component = true});
+    const std::string extension_url = "main.html?" + subtest;
+    return RunExtensionTest("users_private",
+                            {.extension_url = extension_url.c_str()},
+                            {.load_as_component = true});
   }
 
   // Static pointer to the TestDelegate so that it can be accessed in
@@ -159,14 +169,12 @@ class UsersPrivateApiTest : public ExtensionApiTest {
   static TestDelegate* s_test_delegate_;
 
  private:
-  chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
+  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsersPrivateApiTest);
 };
 
 // static
-TestDelegate* UsersPrivateApiTest::s_test_delegate_ = NULL;
+TestDelegate* UsersPrivateApiTest::s_test_delegate_ = nullptr;
 
 class LoginStatusTestConfig {
  public:
@@ -233,9 +241,9 @@ IN_PROC_BROWSER_TEST_F(UsersPrivateApiTest, IsOwner) {
 
 // User profile - logged in, screen not locked.
 IN_PROC_BROWSER_TEST_F(UsersPrivateApiLoginStatusTest, User) {
-  EXPECT_TRUE(RunExtensionTest({.name = "users_private",
-                                .page_url = "main.html?getLoginStatus",
-                                .load_as_component = true}))
+  EXPECT_TRUE(RunExtensionTest("users_private",
+                               {.extension_url = "main.html?getLoginStatus"},
+                               {.load_as_component = true}))
       << message_;
 }
 
@@ -243,10 +251,10 @@ IN_PROC_BROWSER_TEST_F(UsersPrivateApiLoginStatusTest, User) {
 
 // Screenlock - logged in, screen locked.
 IN_PROC_BROWSER_TEST_F(UsersPrivateApiLockStatusTest, ScreenLock) {
-  chromeos::ScreenLockerTester().Lock();
-  EXPECT_TRUE(RunExtensionTest({.name = "users_private",
-                                .page_url = "main.html?getLoginStatus",
-                                .load_as_component = true}))
+  ash::ScreenLockerTester().Lock();
+  EXPECT_TRUE(RunExtensionTest("users_private",
+                               {.extension_url = "main.html?getLoginStatus"},
+                               {.load_as_component = true}))
       << message_;
 }
 

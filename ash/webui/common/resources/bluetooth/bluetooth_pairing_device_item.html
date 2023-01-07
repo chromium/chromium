@@ -1,0 +1,67 @@
+<style include="cr-shared-style">
+  :host([pairing-failed_]) #secondaryLabel {
+    color: var(--cros-text-color-alert);
+  }
+
+  bluetooth-icon {
+    align-self: center;
+    justify-self: center;
+  }
+
+  #deviceName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 404px;
+  }
+
+  #container:hover {
+    background-color: var(--cr-hover-background-color);
+    cursor: pointer;
+  }
+
+  .text-row {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-inline-start: 24px;
+    max-height: 48px;
+  }
+
+  .cr-row {
+    padding: 0;
+  }
+
+  .secondary {
+    color: var(--cros-text-color-disabled);
+    font-size: 11px;
+  }
+
+</style>
+<div id="wrapper" focus-row-container>
+  <div id="container"
+      class="cr-row continuation"
+      actionable
+      focus-row-control
+      selectable
+      aria-label$="[[getAriaLabel_(device.*, itemIndex, listSize)]]"
+      role="button"
+      focus-type="rowWrapper"
+      on-keydown="onKeydown_"
+      on-click="onSelected_">
+    <bluetooth-icon device="[[device]]"></bluetooth-icon>
+    <div aria-live="polite"
+        aria-label="[[getSecondaryAriaLabel_(
+          secondaryLabel_, pairingFailed_, device.*)]]"
+        class="text-row">
+      <div id="deviceName" aria-hidden="true">
+        [[getDeviceName_(device.*)]]
+      </div>
+      <div id="secondaryLabel"
+          aria-hidden="true"
+          class="secondary">
+        [[secondaryLabel_]]
+      </div>
+    </div>
+  </div>
+</div>

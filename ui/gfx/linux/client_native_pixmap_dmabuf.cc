@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,6 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/memory.h"
 #include "base/process/process_metrics.h"
-#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -109,6 +108,7 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
              format == gfx::BufferFormat::BGRA_8888 ||
              format == gfx::BufferFormat::RGBA_1010102 ||
              format == gfx::BufferFormat::BGRA_1010102;
+    case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
     case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
       // TODO(crbug.com/954233): RG_88 is enabled only with
       // --enable-native-gpu-memory-buffers . Otherwise it breaks some telemetry
@@ -211,24 +211,8 @@ ClientNativePixmapDmaBuf::ImportFromDmabuf(gfx::NativePixmapHandle handle,
     if (!base::IsValueInRangeForNumericType<int>(plane_stride))
       return nullptr;
 
-    const size_t map_size = base::checked_cast<size_t>(handle.planes[i].size);
     plane_info[i].offset = handle.planes[i].offset;
-    plane_info[i].size = map_size;
-
-    void* data = mmap(nullptr, map_size + handle.planes[i].offset,
-                      (PROT_READ | PROT_WRITE), MAP_SHARED,
-                      handle.planes[i].fd.get(), 0);
-
-    if (data == MAP_FAILED) {
-      logging::SystemErrorCode mmap_error = logging::GetLastSystemErrorCode();
-      if (mmap_error == ENOMEM)
-        base::TerminateBecauseOutOfMemory(map_size +
-                                          handle.planes[i].offset);
-      LOG(ERROR) << "Failed to mmap dmabuf: "
-                 << logging::SystemErrorCodeToString(mmap_error);
-      return nullptr;
-    }
-    plane_info[i].data = data;
+    plane_info[i].size = base::checked_cast<size_t>(handle.planes[i].size);
   }
 
   return base::WrapUnique(new ClientNativePixmapDmaBuf(std::move(handle), size,
@@ -251,26 +235,58 @@ ClientNativePixmapDmaBuf::~ClientNativePixmapDmaBuf() {
 
 bool ClientNativePixmapDmaBuf::Map() {
   TRACE_EVENT0("drm", "DmaBuf:Map");
-  for (size_t i = 0; i < pixmap_handle_.planes.size(); ++i)
-    PrimeSyncStart(pixmap_handle_.planes[i].fd.get());
+  if (!mapped_) {
+    TRACE_EVENT0("drm", "DmaBuf:InitialMap");
+    for (size_t i = 0; i < pixmap_handle_.planes.size(); ++i) {
+      const auto& plane = pixmap_handle_.planes[i];
+      void* data =
+          mmap(nullptr, plane.size + plane.offset, (PROT_READ | PROT_WRITE),
+               MAP_SHARED, plane.fd.get(), 0);
+
+      if (data == MAP_FAILED) {
+        logging::SystemErrorCode mmap_error = logging::GetLastSystemErrorCode();
+        if (mmap_error == ENOMEM)
+          base::TerminateBecauseOutOfMemory(plane.size + plane.offset);
+        LOG(ERROR) << "Failed to mmap dmabuf: "
+                   << logging::SystemErrorCodeToString(mmap_error);
+        return false;
+      }
+      plane_info_[i].data = data;
+    }
+
+    mapped_ = true;
+  }
+
+  for (const auto& plane : pixmap_handle_.planes)
+    PrimeSyncStart(plane.fd.get());
+
   return true;
 }
 
 void ClientNativePixmapDmaBuf::Unmap() {
   TRACE_EVENT0("drm", "DmaBuf:Unmap");
-  for (size_t i = 0; i < pixmap_handle_.planes.size(); ++i)
-    PrimeSyncEnd(pixmap_handle_.planes[i].fd.get());
+  DCHECK(mapped_);
+  for (const auto& plane : pixmap_handle_.planes)
+    PrimeSyncEnd(plane.fd.get());
+}
+
+size_t ClientNativePixmapDmaBuf::GetNumberOfPlanes() const {
+  return pixmap_handle_.planes.size();
 }
 
 void* ClientNativePixmapDmaBuf::GetMemoryAddress(size_t plane) const {
   DCHECK_LT(plane, pixmap_handle_.planes.size());
+  CHECK(mapped_);
   return static_cast<uint8_t*>(plane_info_[plane].data) +
          plane_info_[plane].offset;
 }
 
 int ClientNativePixmapDmaBuf::GetStride(size_t plane) const {
   DCHECK_LT(plane, pixmap_handle_.planes.size());
-  return pixmap_handle_.planes[plane].stride;
+  return base::checked_cast<int>(pixmap_handle_.planes[plane].stride);
 }
 
+NativePixmapHandle ClientNativePixmapDmaBuf::CloneHandleForIPC() const {
+  return gfx::CloneHandleForIPC(pixmap_handle_);
+}
 }  // namespace gfx

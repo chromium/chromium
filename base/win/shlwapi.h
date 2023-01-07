@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef BASE_WIN_SHLWAPI_H_
@@ -9,11 +9,11 @@
 // Undefine before windows header will make the poisonous defines
 #include "base/win/windows_undefines.inc"
 
-#include <shlwapi.h>
+#include <shlwapi.h>  // NOLINT(build/include_order)
 
 // Undefine the poisonous defines
-#include "base/win/windows_undefines.inc"
+#include "base/win/windows_undefines.inc"  // NOLINT(build/include)
 // Check no poisonous defines follow this include
-#include "base/win/windows_defines.inc"
+#include "base/win/windows_defines.inc"  // NOLINT(build/include)
 
 #endif  // BASE_WIN_SHLWAPI_H_

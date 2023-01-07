@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,13 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HASH_PASSWORD_MANAGER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_hash_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 
@@ -24,6 +25,10 @@ class HashPasswordManager {
  public:
   HashPasswordManager();
   explicit HashPasswordManager(PrefService* prefs);
+
+  HashPasswordManager(const HashPasswordManager&) = delete;
+  HashPasswordManager& operator=(const HashPasswordManager&) = delete;
+
   ~HashPasswordManager();
 
   bool SavePasswordHash(const std::string username,
@@ -45,7 +50,7 @@ class HashPasswordManager {
 
   // Returns empty if no hash matching |username| and |is_gaia_password| is
   // available.
-  base::Optional<PasswordHashData> RetrievePasswordHash(
+  absl::optional<PasswordHashData> RetrievePasswordHash(
       const std::string& username,
       bool is_gaia_password);
 
@@ -66,7 +71,7 @@ class HashPasswordManager {
   // Encrypts and saves |password_hash_data| to prefs. Returns true on success.
   bool EncryptAndSave(const PasswordHashData& password_hash_data);
 
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
 
   // Callbacks when |kPasswordHashDataList| might have changed.
   // Should only be accessed on the UI thread. The callback is only called when
@@ -74,8 +79,6 @@ class HashPasswordManager {
   // saving the password hash actually succeeded.
   base::RepeatingCallbackList<void(const std::string& username)>
       state_callback_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(HashPasswordManager);
 };
 
 }  // namespace password_manager

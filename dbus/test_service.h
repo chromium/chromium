@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,10 @@
 #define DBUS_TEST_SERVICE_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/threading/thread.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/threading/thread.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
 
@@ -223,8 +224,8 @@ class TestService : public base::Thread {
   bool has_ownership_;
 
   scoped_refptr<Bus> bus_;
-  ExportedObject* exported_object_;
-  ExportedObject* exported_object_manager_;
+  raw_ptr<ExportedObject> exported_object_;
+  raw_ptr<ExportedObject> exported_object_manager_;
 };
 
 }  // namespace dbus

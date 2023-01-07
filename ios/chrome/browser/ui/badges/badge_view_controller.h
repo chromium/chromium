@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 @interface BadgeViewController
     : UIViewController <BadgeConsumer, FullscreenUIElement>
 
-// |buttonFactory| must be non-nil.
+// `buttonFactory` must be non-nil.
 - (instancetype)initWithButtonFactory:(BadgeButtonFactory*)buttonFactory
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

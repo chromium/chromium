@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,10 +43,10 @@ template <>
 struct COMPONENT_EXPORT(IME_SHARED_MOJOM_TRAITS)
     StructTraits<ui::mojom::ImeTextSpanDataView, ui::ImeTextSpan> {
   static ui::ImeTextSpan::Type type(const ui::ImeTextSpan& c) { return c.type; }
-  static uint32_t start_offset(const ui::ImeTextSpan& c) {
+  static size_t start_offset(const ui::ImeTextSpan& c) {
     return c.start_offset;
   }
-  static uint32_t end_offset(const ui::ImeTextSpan& c) { return c.end_offset; }
+  static size_t end_offset(const ui::ImeTextSpan& c) { return c.end_offset; }
   static uint32_t underline_color(const ui::ImeTextSpan& c) {
     return c.underline_color;
   }

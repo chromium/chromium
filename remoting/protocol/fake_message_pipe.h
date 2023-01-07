@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,11 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "remoting/protocol/message_pipe.h"
 
 namespace google {
@@ -17,8 +20,7 @@ class MessageLite;
 }  // namespace protobuf
 }  // namespace google
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class FakeMessagePipeWrapper;
 
@@ -44,14 +46,24 @@ class FakeMessagePipe final : public MessagePipe {
   // Forwards |message| to EventHandler.
   void Receive(std::unique_ptr<CompoundBuffer> message);
 
+  // Similar to Receive(), but takes a protobuf and serializes it before sending
+  // it to EventHandler.
+  void ReceiveProtobufMessage(const google::protobuf::MessageLite& message);
+
   // Simulates the operation to open the pipe.
   void OpenPipe();
 
   // Simulates the operation to close the pipe.
   void ClosePipe();
 
+  // Returns true if there is at least one valid wrapper that hasn't been
+  // destroyed.
+  bool HasWrappers() const;
+
   // Returns all messages sent using Send().
   const base::queue<std::string>& sent_messages() { return sent_messages_; }
+
+  bool pipe_opened() const { return pipe_opened_; }
 
  private:
   void SendImpl(google::protobuf::MessageLite* message, base::OnceClosure done);
@@ -61,11 +73,11 @@ class FakeMessagePipe final : public MessagePipe {
 
   const bool asynchronous_;
   bool pipe_opened_ = false;
-  EventHandler* event_handler_ = nullptr;
+  raw_ptr<EventHandler> event_handler_ = nullptr;
   base::queue<std::string> sent_messages_;
+  std::vector<base::WeakPtr<FakeMessagePipeWrapper>> wrappers_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_FAKE_MESSAGE_PIPE_H_

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -150,22 +150,8 @@ bool ProxyOverriddenBubbleDelegate::ShouldShowExtensionList() const {
   return false;
 }
 
-bool ProxyOverriddenBubbleDelegate::ShouldHighlightExtensions() const {
-  return true;
-}
-
 bool ProxyOverriddenBubbleDelegate::ShouldLimitToEnabledExtensions() const {
   return true;
-}
-
-void ProxyOverriddenBubbleDelegate::LogExtensionCount(size_t count) {
-}
-
-void ProxyOverriddenBubbleDelegate::LogAction(
-    ExtensionMessageBubbleController::BubbleAction action) {
-  UMA_HISTOGRAM_ENUMERATION("ProxyOverriddenBubble.UserSelection",
-                            action,
-                            ExtensionMessageBubbleController::ACTION_BOUNDARY);
 }
 
 bool ProxyOverriddenBubbleDelegate::SupportsPolicyIndicator() {

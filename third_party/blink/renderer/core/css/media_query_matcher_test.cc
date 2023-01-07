@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,15 +13,15 @@
 namespace blink {
 
 TEST(MediaQueryMatcherTest, LostFrame) {
-  auto page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+  auto page_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   auto* matcher =
       MakeGarbageCollected<MediaQueryMatcher>(page_holder->GetDocument());
-  scoped_refptr<MediaQuerySet> query_set =
+  MediaQuerySet* query_set =
       MediaQuerySet::Create(media_type_names::kAll, nullptr);
-  ASSERT_TRUE(matcher->Evaluate(query_set.get()));
+  ASSERT_TRUE(matcher->Evaluate(query_set));
 
   matcher->DocumentDetached();
-  ASSERT_FALSE(matcher->Evaluate(query_set.get()));
+  ASSERT_FALSE(matcher->Evaluate(query_set));
 }
 
 }  // namespace blink

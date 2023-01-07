@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/autofill/core/browser/proto",
+  "+components/password_manager/core/browser/generation",
+  "+ios/components/credential_provider_extension",
+]

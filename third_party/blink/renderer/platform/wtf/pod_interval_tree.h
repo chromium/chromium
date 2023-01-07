@@ -26,9 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_INTERVAL_TREE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_INTERVAL_TREE_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/wtf/pod_arena.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval.h"
 #include "third_party/blink/renderer/platform/wtf/pod_red_black_tree.h"
@@ -89,6 +87,9 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
     Init();
   }
 
+  PODIntervalTree(const PODIntervalTree&) = delete;
+  PODIntervalTree& operator=(const PODIntervalTree&) = delete;
+
   // Returns all intervals in the tree which overlap the given query
   // interval. The returned intervals are sorted by increasing low
   // endpoint.
@@ -132,8 +133,8 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
   }
 
   // Returns the next interval point (start or end) after the given starting
-  // point (non-inclusive). If there is no such point, returns |base::nullopt|.
-  base::Optional<T> NextIntervalPoint(T start) const {
+  // point (non-inclusive). If there is no such point, returns |absl::nullopt|.
+  absl::optional<T> NextIntervalPoint(T start) const {
     return NextIntervalPoint(start, this->Root());
   }
 
@@ -173,12 +174,12 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
     SearchForOverlapsFrom(node->Right(), adapter);
   }
 
-  static base::Optional<T> NextIntervalPoint(T start,
+  static absl::optional<T> NextIntervalPoint(T start,
                                              IntervalNode const* node) {
     // If this node doesn't exist or is entirely out of scope, just return. This
     // prevents recursing deeper than necessary on the left.
     if (!node || node->Data().MaxHigh() < start) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     // Easy shortcut: If the lowest point in this subtree is in scope, just
     // return that. This prevents recursing deeper than necessary on the right.
@@ -200,7 +201,7 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
 
     // If the current node's high point is in scope, consider that against the
     // left branch
-    base::Optional<T> current_candidate;
+    absl::optional<T> current_candidate;
     if (start < node->Data().High()) {
       if (left_candidate.has_value()) {
         current_candidate =
@@ -328,8 +329,6 @@ class PODIntervalTree final : public PODRedBlackTree<PODInterval<T, UserData>> {
 #else
   static void LogVerificationFailedAtNode(IntervalNode const*) {}
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(PODIntervalTree);
 };
 
 #ifndef NDEBUG

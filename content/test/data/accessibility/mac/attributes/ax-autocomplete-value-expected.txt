@@ -1,0 +1,4 @@
+autocomplete.accessibilityAttributeNames.has(AXAutocompleteValue)='yes'
+autocomplete.accessibilityAttributeValue(AXAutocompleteValue)='list'
+not_applicable.accessibilityAttributeNames.has(AXAutocompleteValue)='no'
+not_applicable.accessibilityAttributeValue(AXAutocompleteValue)=NULL

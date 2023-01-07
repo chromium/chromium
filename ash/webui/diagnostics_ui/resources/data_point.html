@@ -1,0 +1,79 @@
+<style include="diagnostics-shared">
+  :host([orientation=horizontal]) {
+    line-height: 18px;
+  }
+
+  :host([orientation=horizontal]) .header,
+  :host([orientation=horizontal]) .value {
+    font-size: 12px;
+  }
+
+  .data-point {
+    display: flex;
+  }
+
+  :host([orientation=vertical]) .data-point {
+    flex-direction: column;
+    height: 40px;
+    justify-content: space-between;
+    margin: 12px 0;
+    width: max-content;
+  }
+
+  .header {
+    color: var(--cros-text-color-primary);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 13px;
+    font-weight: var(--diagnostics-regular-font-weight);
+  }
+
+  :host([orientation=horizontal]) .header {
+    margin-inline-end: 16px;
+    max-width: 96px;
+    min-width: 90px;
+  }
+
+  :host([orientation=horizontal]) #headerText::after {
+    content: ':';
+  }
+
+  #infoIcon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    bottom: 1px;
+    fill: var(--cros-icon-color-secondary);
+    left: 4px;
+  }
+
+  .value {
+    color: var(--cros-text-color-secondary);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 13px;
+    font-weight: var(--diagnostics-regular-font-weight);
+    word-wrap: break-word;
+  }
+
+  :host([orientation=horizontal]) .value {
+    max-width: 150px;
+    min-width: 108px;
+  }
+
+  .text-red {
+    color: var(--cros-color-alert);
+  }
+</style>
+<div class="data-point" tabindex="0" aria-labelledby="headerText value"
+    aria-describedby="tooltipText">
+  <div class="header">
+    <span id="headerText" aria-hidden="true">[[header]]</span>
+    <iron-icon slot="icon" icon="diagnostics:info" id="infoIcon"
+        hidden$="[[!tooltipText]]">
+    </iron-icon>
+    <paper-tooltip for="infoIcon" aria-hidden="true">
+      <span id="tooltipText">[[tooltipText]]</span>
+    </paper-tooltip>
+  </div>
+  <div class$="[[getValueClass_(warningState)]]" id="value" aria-hidden="true">
+    [[value]]
+  </div>
+</div>

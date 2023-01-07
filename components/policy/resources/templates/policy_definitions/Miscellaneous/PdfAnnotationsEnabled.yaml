@@ -1,0 +1,26 @@
+caption: Enable PDF Annotations
+default: true
+desc: |-
+  Controls if the PDF viewer in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> can annotate PDFs.
+
+        When this policy is not set, or is set to true, then the PDF viewer will be able to annotate PDFs.
+
+        When this policy is set to false, then the PDF viewer will not be able to annotate PDFs.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: The PDF viewer can annotate PDFs
+  value: true
+- caption: The PDF viewer cannot annotate PDFs
+  value: false
+owners:
+- thestig@chromium.org
+- file://pdf/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome_os:91-
+tags: []
+type: main

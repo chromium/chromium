@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include <string>
 
 #include "base/time/time.h"
-#include "google_apis/drive/auth_service_interface.h"
-#include "google_apis/drive/base_requests.h"
+#include "google_apis/common/auth_service_interface.h"
 #include "google_apis/drive/drive_api_requests.h"
+#include "google_apis/drive/drive_base_requests.h"
 #include "google_apis/drive/drive_common_callbacks.h"
 #include "google_apis/gaia/core_account_id.h"
 

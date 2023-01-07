@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,9 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/task/lazy_thread_pool_task_runner.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
@@ -130,16 +128,14 @@ std::unique_ptr<FrameNodeImpl> PerformanceManagerImpl::CreateFrameNode(
     ProcessNodeImpl* process_node,
     PageNodeImpl* page_node,
     FrameNodeImpl* parent_frame_node,
-    int frame_tree_node_id,
     int render_frame_id,
     const blink::LocalFrameToken& frame_token,
-    int32_t browsing_instance_id,
-    int32_t site_instance_id,
+    content::BrowsingInstanceId browsing_instance_id,
+    content::SiteInstanceId site_instance_id,
     FrameNodeCreationCallback creation_callback) {
   return CreateNodeImpl<FrameNodeImpl>(
       std::move(creation_callback), process_node, page_node, parent_frame_node,
-      frame_tree_node_id, render_frame_id, frame_token, browsing_instance_id,
-      site_instance_id);
+      render_frame_id, frame_token, browsing_instance_id, site_instance_id);
 }
 
 // static
@@ -149,11 +145,12 @@ std::unique_ptr<PageNodeImpl> PerformanceManagerImpl::CreatePageNode(
     const GURL& visible_url,
     bool is_visible,
     bool is_audible,
-    base::TimeTicks visibility_change_time) {
+    base::TimeTicks visibility_change_time,
+    PageNode::PageState page_state) {
   return CreateNodeImpl<PageNodeImpl>(base::OnceCallback<void(PageNodeImpl*)>(),
                                       contents_proxy, browser_context_id,
                                       visible_url, is_visible, is_audible,
-                                      visibility_change_time);
+                                      visibility_change_time, page_state);
 }
 
 // static
@@ -368,6 +365,7 @@ void PerformanceManagerImpl::OnStartImpl(GraphImplCallback on_start) {
   DCHECK(!g_performance_manager);
 
   g_performance_manager = this;
+  graph_.SetUp();
   graph_.set_ukm_recorder(ukm::UkmRecorder::Get());
   std::move(on_start).Run(&graph_);
 }

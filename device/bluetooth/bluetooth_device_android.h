@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/bluetooth/bluetooth_adapter_android.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -37,6 +36,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
       const base::android::JavaRef<jobject>&
           bluetooth_device_wrapper);  // Java Type: bluetoothDeviceWrapper
 
+  BluetoothDeviceAndroid(const BluetoothDeviceAndroid&) = delete;
+  BluetoothDeviceAndroid& operator=(const BluetoothDeviceAndroid&) = delete;
+
   ~BluetoothDeviceAndroid() override;
 
   // Returns the associated ChromeBluetoothDevice Java object.
@@ -56,7 +58,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
   uint16_t GetProductID() const override;
   uint16_t GetDeviceID() const override;
   uint16_t GetAppearance() const override;
-  base::Optional<std::string> GetName() const override;
+  absl::optional<std::string> GetName() const override;
   bool IsPaired() const override;
   bool IsConnected() const override;
   bool IsGattConnected() const override;
@@ -69,9 +71,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
   void SetConnectionLatency(ConnectionLatency connection_latency,
                             base::OnceClosure callback,
                             ErrorCallback error_callback) override;
-  void Connect(device::BluetoothDevice::PairingDelegate* pairing_delegate,
-               base::OnceClosure callback,
-               ConnectErrorCallback error_callback) override;
+  void Connect(PairingDelegate* pairing_delegate,
+               ConnectCallback callback) override;
   void SetPinCode(const std::string& pincode) override;
   void SetPasskey(uint32_t passkey) override;
   void ConfirmPairing() override;
@@ -117,15 +118,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceAndroid final
 
   // BluetoothDevice:
   void CreateGattConnectionImpl(
-      base::Optional<device::BluetoothUUID> service_uuid) override;
+      absl::optional<device::BluetoothUUID> service_uuid) override;
   void DisconnectGatt() override;
 
   // Java object org.chromium.device.bluetooth.ChromeBluetoothDevice.
   base::android::ScopedJavaGlobalRef<jobject> j_device_;
 
   bool gatt_connected_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDeviceAndroid);
 };
 
 }  // namespace device

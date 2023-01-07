@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,17 +12,17 @@
 
 #include "base/base_export.h"
 #include "base/debug/debugging_buildflags.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
-#if !defined(OS_NACL)
+#if BUILDFLAG(IS_POSIX)
+#if !BUILDFLAG(IS_NACL)
 #include <signal.h>
 #endif
 #include <unistd.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 struct _EXCEPTION_POINTERS;
 struct _CONTEXT;
 #endif
@@ -41,7 +41,7 @@ namespace debug {
 // done in official builds because it has security implications).
 BASE_EXPORT bool EnableInProcessStackDumping();
 
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 // Sets a first-chance callback for the stack dump signal handler. This callback
 // is called at the beginning of the signal handler to handle special kinds of
 // signals, like out-of-bounds memory accesses in WebAssembly (WebAssembly Trap
@@ -76,13 +76,17 @@ class BASE_EXPORT StackTrace {
   // limited to at most |kMaxTraces|.
   StackTrace(const void* const* trace, size_t count);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Creates a stacktrace for an exception.
   // Note: this function will throw an import not found (StackWalk64) exception
   // on system without dbghelp 5.1.
   StackTrace(_EXCEPTION_POINTERS* exception_pointers);
   StackTrace(const _CONTEXT* context);
 #endif
+
+  // Returns true if this current test environment is expected to have
+  // symbolized frames when printing a stack trace.
+  static bool WillSymbolizeToStreamForTesting();
 
   // Copying and assignment are allowed with the default functions.
 
@@ -99,7 +103,7 @@ class BASE_EXPORT StackTrace {
   // each output line.
   void PrintWithPrefix(const char* prefix_string) const;
 
-#if !defined(__UCLIBC__) & !defined(_AIX)
+#if !defined(__UCLIBC__) && !defined(_AIX)
   // Resolves backtrace to symbols and write to stream.
   void OutputToStream(std::ostream* os) const;
   // Resolves backtrace to symbols and write to stream, with the provided
@@ -116,11 +120,11 @@ class BASE_EXPORT StackTrace {
   std::string ToStringWithPrefix(const char* prefix_string) const;
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void InitTrace(const _CONTEXT* context_record);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(https://crbug.com/925525): Testing indicates that Android has issues
   // with a larger value here, so leave Android at 62.
   static constexpr int kMaxTraces = 62;
@@ -152,7 +156,7 @@ BASE_EXPORT size_t CollectStackTrace(void** trace, size_t count);
 // scanning area at the origin of the stack, wasting time and not finding any
 // frames (since Android libraries don't have frame pointers). Scanning is not
 // enabled on other posix platforms due to legacy reasons.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 constexpr bool kEnableScanningByDefault = true;
 #else
 constexpr bool kEnableScanningByDefault = false;
@@ -225,21 +229,23 @@ BASE_EXPORT size_t TraceStackFramePointersFromBuffer(
 class BASE_EXPORT ScopedStackFrameLinker {
  public:
   ScopedStackFrameLinker(void* fp, void* parent_fp);
+
+  ScopedStackFrameLinker(const ScopedStackFrameLinker&) = delete;
+  ScopedStackFrameLinker& operator=(const ScopedStackFrameLinker&) = delete;
+
   ~ScopedStackFrameLinker();
 
  private:
-  void* fp_;
-  void* parent_fp_;
-  void* original_parent_fp_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedStackFrameLinker);
+  raw_ptr<void> fp_;
+  raw_ptr<void> parent_fp_;
+  raw_ptr<void> original_parent_fp_;
 };
 
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
 namespace internal {
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 // POSIX doesn't define any async-signal safe function for converting
 // an integer to ASCII. We'll have to define our own version.
 // itoa_r() converts a (signed) integer to ASCII. It returns "buf", if the
@@ -251,7 +257,7 @@ BASE_EXPORT char *itoa_r(intptr_t i,
                          size_t sz,
                          int base,
                          size_t padding);
-#endif  // defined(OS_POSIX) && !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace internal
 

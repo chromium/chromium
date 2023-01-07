@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,17 +12,99 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
+#include "components/policy/core/common/cloud/enterprise_metrics.h"
+#include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace policy {
 
-const int PolicyStatisticsCollector::kStatisticsUpdateRate =
-    24 * 60 * 60 * 1000;  // 24 hours.
+namespace {
+
+constexpr char kPoliciesSourceMetricsName[] = "Enterprise.Policies.Sources";
+#if !BUILDFLAG(IS_CHROMEOS)
+constexpr char kBrowserSigninModeMetricsName[] =
+    "Enterprise.BrowserSigninPolicy";
+#endif
+
+constexpr const char* kCBCMEnrollmentPolicies[] = {
+    "CloudManagementEnrollmentToken", "CloudManagementEnrollmentMandatory"};
+
+enum SimplePolicySource {
+  kNone = 0,
+  kCloud = 1 << 0,
+  kPlatform = 1 << 1,
+  kMerge = kCloud | kPlatform,
+  kEnrollment = 1 << 2,
+};
+
+SimplePolicySource SimplifyPolicySource(PolicySource source,
+                                        const std::string& policy_name) {
+  switch (source) {
+    case POLICY_SOURCE_CLOUD:
+    case POLICY_SOURCE_CLOUD_FROM_ASH:
+      return kCloud;
+    case POLICY_SOURCE_PLATFORM:
+    case POLICY_SOURCE_ACTIVE_DIRECTORY:
+      // Adjust for enrollment policies which can never be set from cloud.
+      // Count them as cloud policy so that a device is considered as cloud
+      // managed even if there is enrollment token only.
+      for (const char* enrollment_policy : kCBCMEnrollmentPolicies) {
+        if (policy_name == enrollment_policy)
+          return kEnrollment;
+      }
+      return kPlatform;
+    case POLICY_SOURCE_MERGED:
+      return kMerge;
+    default:
+      // Other sources are only used for speicial cases and will not be counted.
+      return kNone;
+  }
+}
+
+void RecordPoliciesSources(SimplePolicySource source) {
+  if ((source & kMerge) == kMerge) {
+    base::UmaHistogramEnumeration(kPoliciesSourceMetricsName,
+                                  PoliciesSources::kHybrid);
+  } else if (source & kPlatform) {
+    base::UmaHistogramEnumeration(kPoliciesSourceMetricsName,
+                                  PoliciesSources::kPlatformOnly);
+  } else if (source & kCloud) {
+    if (source & kEnrollment) {
+      base::UmaHistogramEnumeration(
+          kPoliciesSourceMetricsName,
+          PoliciesSources::kCloudOnlyExceptEnrollment);
+    } else {
+      base::UmaHistogramEnumeration(kPoliciesSourceMetricsName,
+                                    PoliciesSources::kCloudOnly);
+    }
+  } else if (source & kEnrollment) {
+    base::UmaHistogramEnumeration(kPoliciesSourceMetricsName,
+                                  PoliciesSources::kEnrollmentOnly);
+  }
+}
+#if !BUILDFLAG(IS_CHROMEOS)
+// Records UMA metrics for signin mode
+void RecordBrowserSigninMode(const base::Value* value) {
+  if (value && value->is_int() && 0 <= value->GetInt() &&
+      value->GetInt() <= static_cast<int>(BrowserSigninMode::kMaxValue)) {
+    base::UmaHistogramEnumeration(
+        kBrowserSigninModeMetricsName,
+        static_cast<BrowserSigninMode>(value->GetInt()));
+  };
+}
+#endif
+}  // namespace
+
+const base::TimeDelta PolicyStatisticsCollector::kStatisticsUpdateRate =
+    base::Days(1);
 
 PolicyStatisticsCollector::PolicyStatisticsCollector(
     const GetChromePolicyDetailsCallback& get_details,
@@ -34,24 +116,19 @@ PolicyStatisticsCollector::PolicyStatisticsCollector(
       chrome_schema_(chrome_schema),
       policy_service_(policy_service),
       prefs_(prefs),
-      task_runner_(task_runner) {
-}
+      task_runner_(task_runner) {}
 
-PolicyStatisticsCollector::~PolicyStatisticsCollector() {
-}
+PolicyStatisticsCollector::~PolicyStatisticsCollector() = default;
 
 void PolicyStatisticsCollector::Initialize() {
-  using base::Time;
-  using base::TimeDelta;
-
-  TimeDelta update_rate = TimeDelta::FromMilliseconds(kStatisticsUpdateRate);
-  Time last_update = Time::FromInternalValue(
-      prefs_->GetInt64(policy_prefs::kLastPolicyStatisticsUpdate));
-  TimeDelta delay = std::max(Time::Now() - last_update, TimeDelta::FromDays(0));
-  if (delay >= update_rate)
+  base::Time last_update =
+      prefs_->GetTime(policy_prefs::kLastPolicyStatisticsUpdate);
+  base::TimeDelta delay =
+      std::max(base::Time::Now() - last_update, base::TimeDelta());
+  if (delay >= kStatisticsUpdateRate)
     CollectStatistics();
   else
-    ScheduleUpdate(update_rate - delay);
+    ScheduleUpdate(kStatisticsUpdateRate - delay);
 }
 
 // static
@@ -59,59 +136,74 @@ void PolicyStatisticsCollector::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(policy_prefs::kLastPolicyStatisticsUpdate, 0);
 }
 
-void PolicyStatisticsCollector::RecordPolicyUse(int id) {
-  base::UmaHistogramSparse("Enterprise.Policies", id);
-}
-
-void PolicyStatisticsCollector::RecordPolicyGroupWithConflicts(int id) {
-  base::UmaHistogramSparse("Enterprise.Policies.SourceConflicts", id);
-}
-
-void PolicyStatisticsCollector::RecordPolicyIgnoredByAtomicGroup(int id) {
-  base::UmaHistogramSparse("Enterprise.Policies.IgnoredByPolicyGroup", id);
+void PolicyStatisticsCollector::RecordPolicyUse(int id, Condition condition) {
+  std::string suffix;
+  switch (condition) {
+    case kDefault:
+      break;
+    case kMandatory:
+      suffix = ".Mandatory";
+      break;
+    case kRecommended:
+      suffix = ".Recommended";
+      break;
+    case kIgnoredByAtomicGroup:
+      suffix = ".IgnoredByPolicyGroup";
+      break;
+  }
+  base::UmaHistogramSparse("Enterprise.Policies" + suffix, id);
 }
 
 void PolicyStatisticsCollector::CollectStatistics() {
   const PolicyMap& policies = policy_service_->GetPolicies(
       PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()));
 
+  int source = kNone;
   // Collect statistics.
   for (Schema::Iterator it(chrome_schema_.GetPropertiesIterator());
        !it.IsAtEnd(); it.Advance()) {
-    if (policies.Get(it.key())) {
-      const PolicyDetails* details = get_details_.Run(it.key());
-      if (details)
-        RecordPolicyUse(details->id);
-      else
-        NOTREACHED();
+    const PolicyMap::Entry* policy_entry = policies.Get(it.key());
+    if (!policy_entry)
+      continue;
+    const PolicyDetails* details = get_details_.Run(it.key());
+    if (details) {
+      RecordPolicyUse(details->id, kDefault);
+      if (policies.Get(it.key())->level == POLICY_LEVEL_MANDATORY) {
+        RecordPolicyUse(details->id, kMandatory);
+      } else {
+        RecordPolicyUse(details->id, kRecommended);
+      }
+    } else {
+      NOTREACHED();
     }
+    source |= SimplifyPolicySource(policy_entry->source, it.key());
   }
 
   for (size_t i = 0; i < kPolicyAtomicGroupMappingsLength; ++i) {
     const AtomicGroup& group = kPolicyAtomicGroupMappings[i];
-    bool group_has_conflicts = false;
     // Find the policy with the highest priority that is both in |policies|
     // and |group.policies|, an array ending with a nullptr.
     for (const char* const* policy_name = group.policies; *policy_name;
          ++policy_name) {
       if (policies.IsPolicyIgnoredByAtomicGroup(*policy_name)) {
-        group_has_conflicts = true;
         const PolicyDetails* details = get_details_.Run(*policy_name);
         if (details)
-          RecordPolicyIgnoredByAtomicGroup(details->id);
+          RecordPolicyUse(details->id, kIgnoredByAtomicGroup);
         else
           NOTREACHED();
       }
     }
-
-    if (group_has_conflicts)
-      RecordPolicyGroupWithConflicts(group.id);
   }
 
+  RecordPoliciesSources(static_cast<SimplePolicySource>(source));
+#if !BUILDFLAG(IS_CHROMEOS)
+  RecordBrowserSigninMode(
+      policies.GetValue(key::kBrowserSignin, base::Value::Type::INTEGER));
+#endif
+
   // Take care of next update.
-  prefs_->SetInt64(policy_prefs::kLastPolicyStatisticsUpdate,
-                   base::Time::Now().ToInternalValue());
-  ScheduleUpdate(base::TimeDelta::FromMilliseconds(kStatisticsUpdateRate));
+  prefs_->SetTime(policy_prefs::kLastPolicyStatisticsUpdate, base::Time::Now());
+  ScheduleUpdate(kStatisticsUpdateRate);
 }
 
 void PolicyStatisticsCollector::ScheduleUpdate(base::TimeDelta delay) {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace ash {
@@ -17,6 +16,7 @@ namespace ash {
 class ShelfItemDelegate;
 
 // A context menu shown for shelf items, the shelf itself, or the desktop area.
+// In tablet mode the "desktop area" includes the app list.
 class ASH_EXPORT ShelfContextMenuModel : public ui::SimpleMenuModel,
                                          public ui::SimpleMenuModel::Delegate {
  public:
@@ -33,11 +33,18 @@ class ASH_EXPORT ShelfContextMenuModel : public ui::SimpleMenuModel,
     MENU_ALIGNMENT_LEFT = 502,
     MENU_ALIGNMENT_RIGHT = 503,
     MENU_ALIGNMENT_BOTTOM = 504,
-    MENU_CHANGE_WALLPAPER = 505,
+    // Note: Value 505 was for MENU_CHANGE_WALLPAPER. Do not reuse.
+    MENU_PERSONALIZATION_HUB = 506,
+    MENU_HIDE_CONTINUE_SECTION = 507,
+    MENU_SHOW_CONTINUE_SECTION = 508,
     MENU_ASH_END
   };
 
   ShelfContextMenuModel(ShelfItemDelegate* delegate, int64_t display_id);
+
+  ShelfContextMenuModel(const ShelfContextMenuModel&) = delete;
+  ShelfContextMenuModel& operator=(const ShelfContextMenuModel&) = delete;
+
   ~ShelfContextMenuModel() override;
 
   // ui::SimpleMenuModel::Delegate overrides:
@@ -51,8 +58,6 @@ class ASH_EXPORT ShelfContextMenuModel : public ui::SimpleMenuModel,
   ShelfItemDelegate* delegate_;
   const int64_t display_id_;
   std::unique_ptr<ui::SimpleMenuModel> alignment_submenu_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfContextMenuModel);
 };
 
 }  // namespace ash

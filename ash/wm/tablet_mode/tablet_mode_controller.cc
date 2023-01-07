@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -30,6 +30,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
@@ -43,10 +45,14 @@
 #include "ui/aura/window_observer.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/tablet_state.h"
+#include "ui/display/util/display_util.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event.h"
@@ -78,8 +84,7 @@ constexpr float kMaxStableAngle = 340.0f;
 // to prevent entering tablet mode if an erroneous accelerometer reading makes
 // the lid appear to be fully open when the user is opening the lid from a
 // closed position or is closing the lid from an opened position.
-constexpr base::TimeDelta kUnstableLidAngleDuration =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kUnstableLidAngleDuration = base::Seconds(2);
 
 // When the device approaches vertical orientation (i.e. portrait orientation)
 // the accelerometers for the base and lid approach the same values (i.e.
@@ -100,13 +105,11 @@ constexpr float kHingeVerticalSmoothingMaximum = 8.7f;
 constexpr float kNoisyMagnitudeDeviation = 1.0f;
 
 // Interval between calls to RecordLidAngle().
-constexpr base::TimeDelta kRecordLidAngleInterval =
-    base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kRecordLidAngleInterval = base::Hours(1);
 
 // Time that should wait to reset |occlusion_tracker_pauser_| on
 // entering/exiting tablet mode.
-constexpr base::TimeDelta kOcclusionTrackerTimeout =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kOcclusionTrackerTimeout = base::Seconds(1);
 
 // Histogram names for recording animation smoothness when entering or exiting
 // tablet mode.
@@ -129,15 +132,9 @@ bool IsAngleBetweenAccelerometerReadingsStable(
          kNoisyMagnitudeDeviation;
 }
 
-// Returns the UiMode given by the force-table-mode or
-// supports-clamshell-auto-rotation command line.
+// Returns the UiMode given by the force-table-mode command line.
 TabletModeController::UiMode GetUiMode() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  // TODO(minch): Remove this once crbug.com/1189420 is fixed. Since Dooly will
-  // stay in clamshell without |touchview| USE flag.
-  if (command_line->HasSwitch(switches::kSupportsClamshellAutoRotation))
-    return TabletModeController::UiMode::kClamshell;
-
   if (command_line->HasSwitch(switches::kAshUiMode)) {
     std::string switch_value =
         command_line->GetSwitchValueASCII(switches::kAshUiMode);
@@ -152,7 +149,7 @@ TabletModeController::UiMode GetUiMode() {
 
 // Returns true if the device has an active internal display.
 bool HasActiveInternalDisplay() {
-  return display::Display::HasInternalDisplay() &&
+  return display::HasInternalDisplay() &&
          Shell::Get()->display_manager()->IsActiveDisplayId(
              display::Display::InternalDisplayId());
 }
@@ -372,6 +369,8 @@ class TabletModeController::ScopedShelfHider {
 };
 
 constexpr char TabletModeController::kLidAngleHistogramName[];
+constexpr char TabletModeController::kTabletInactiveTimeHistogramName[];
+constexpr char TabletModeController::kTabletActiveTimeHistogramName[];
 
 ////////////////////////////////////////////////////////////////////////////////
 // TabletModeController, public:
@@ -389,7 +388,6 @@ TabletModeController::GetObservedTabletTransitionProperty() {
 
 TabletModeController::TabletModeController()
     : event_blocker_(std::make_unique<InternalInputDevicesEventBlocker>()),
-      tablet_mode_usage_interval_start_time_(base::Time::Now()),
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   Shell::Get()->AddShellObserver(this);
   base::RecordAction(base::UserMetricsAction("Touchview_Initially_Disabled"));
@@ -457,9 +455,9 @@ bool TabletModeController::ShouldAutoHideTitlebars(views::Widget* widget) {
   const bool tablet_mode = InTabletMode();
   if (!tablet_mode)
     return false;
-
   return widget->IsMaximized() ||
-         WindowState::Get(widget->GetNativeWindow())->IsSnapped();
+         (WindowState::Get(widget->GetNativeWindow()) &&
+          WindowState::Get(widget->GetNativeWindow())->IsSnapped());
 }
 
 bool TabletModeController::AreInternalInputDeviceEventsBlocked() const {
@@ -539,7 +537,7 @@ bool TabletModeController::InTabletMode() const {
 }
 
 bool TabletModeController::ForceUiTabletModeState(
-    base::Optional<bool> enabled) {
+    absl::optional<bool> enabled) {
   if (!enabled.has_value()) {
     tablet_mode_behavior_ = kDefault;
     AccelerometerReader::GetInstance()->SetEnabled(true);
@@ -599,13 +597,19 @@ void TabletModeController::OnChromeTerminating() {
   // metrics based on whether TabletMode mode is currently active.
   RecordTabletModeUsageInterval(CurrentTabletModeIntervalType());
 
-  if (CanEnterTabletMode()) {
+  // Only when |tablet_mode_usage_interval_start_time_| is not null,
+  // |total_tablet_mode_time_| and |total_non_tablet_mode_time_| will have valid
+  // values.
+  if (!tablet_mode_usage_interval_start_time_.is_null()) {
+    DCHECK(CanEnterTabletMode() && initial_input_device_set_up_finished_ &&
+           have_seen_tablet_mode_event_);
+
     UMA_HISTOGRAM_CUSTOM_COUNTS("Ash.TouchView.TouchViewActiveTotal",
                                 total_tablet_mode_time_.InMinutes(), 1,
-                                base::TimeDelta::FromDays(7).InMinutes(), 50);
+                                base::Days(7).InMinutes(), 50);
     UMA_HISTOGRAM_CUSTOM_COUNTS("Ash.TouchView.TouchViewInactiveTotal",
                                 total_non_tablet_mode_time_.InMinutes(), 1,
-                                base::TimeDelta::FromDays(7).InMinutes(), 50);
+                                base::Days(7).InMinutes(), 50);
     base::TimeDelta total_runtime =
         total_tablet_mode_time_ + total_non_tablet_mode_time_;
     if (total_runtime.InSeconds() > 0) {
@@ -618,6 +622,17 @@ void TabletModeController::OnChromeTerminating() {
 
 void TabletModeController::OnECLidAngleDriverStatusChanged(bool is_supported) {
   is_ec_lid_angle_driver_supported_ = is_supported;
+
+  // OnECLidAngleDriverStatusChanged is guaranteed to be called before
+  // OnAccelerometerUpdated. Thus calling
+  // StartTrackingTabletUsageMetricsIfApplicable() before or after
+  // `!is_supported` won't make any difference. The reason is that for
+  // `!is_supported` case, because we haven't seen any accelerometer data yet,
+  // we won't start logging here anyway.
+  // OnECLidAngleDriverStatusChanged can be called before or after
+  // TabletModeEventReceived. Thus we'll need the logging both here and in
+  // TabletModeEventReceived function.
+  StartTrackingTabletUsageMetricsIfApplicable();
 
   if (!is_supported)
     return;
@@ -643,26 +658,22 @@ void TabletModeController::OnAccelerometerUpdated(
   if (!can_detect_lid_angle_) {
     if (record_lid_angle_timer_.IsRunning())
       record_lid_angle_timer_.Stop();
-    return;
+  } else if (HasActiveInternalDisplay() && tablet_mode_behavior_.use_sensor) {
+    // Whether or not we enter tablet mode affects whether we handle screen
+    // rotation, so determine whether to enter tablet mode first.
+    if (update.IsReadingStable(ACCELEROMETER_SOURCE_SCREEN) &&
+        update.IsReadingStable(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD) &&
+        IsAngleBetweenAccelerometerReadingsStable(update)) {
+      // update.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD)
+      // Ignore the reading if it appears unstable. The reading is considered
+      // unstable if it deviates too much from gravity and/or the magnitude of
+      // the reading from the lid differs too much from the reading from the
+      // base.
+      HandleHingeRotation(update);
+    }
   }
 
-  if (!HasActiveInternalDisplay())
-    return;
-
-  if (!tablet_mode_behavior_.use_sensor)
-    return;
-
-  // Whether or not we enter tablet mode affects whether we handle screen
-  // rotation, so determine whether to enter tablet mode first.
-  if (update.IsReadingStable(ACCELEROMETER_SOURCE_SCREEN) &&
-      update.IsReadingStable(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD) &&
-      IsAngleBetweenAccelerometerReadingsStable(update)) {
-    // update.has(ACCELEROMETER_SOURCE_ATTACHED_KEYBOARD)
-    // Ignore the reading if it appears unstable. The reading is considered
-    // unstable if it deviates too much from gravity and/or the magnitude of the
-    // reading from the lid differs too much from the reading from the base.
-    HandleHingeRotation(update);
-  }
+  StartTrackingTabletUsageMetricsIfApplicable();
 }
 
 void TabletModeController::LidEventReceived(
@@ -686,16 +697,18 @@ void TabletModeController::LidEventReceived(
 void TabletModeController::TabletModeEventReceived(
     chromeos::PowerManagerClient::TabletMode mode,
     base::TimeTicks time) {
-  if (!tablet_mode_behavior_.use_sensor)
-    return;
+  have_seen_tablet_mode_event_ = true;
+  if (tablet_mode_behavior_.use_sensor) {
+    VLOG(1) << "Tablet mode event received: " << ToString(mode);
+    const bool on = mode == chromeos::PowerManagerClient::TabletMode::ON;
 
-  VLOG(1) << "Tablet mode event received: " << ToString(mode);
-  const bool on = mode == chromeos::PowerManagerClient::TabletMode::ON;
+    tablet_mode_switch_is_on_ = on;
+    tablet_mode_behavior_ = on ? kOnBySensor : kDefault;
 
-  tablet_mode_switch_is_on_ = on;
-  tablet_mode_behavior_ = on ? kOnBySensor : kDefault;
+    SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState());
+  }
 
-  SetIsInTabletPhysicalState(CalculateIsInTabletPhysicalState());
+  StartTrackingTabletUsageMetricsIfApplicable();
 }
 
 void TabletModeController::SuspendImminent(
@@ -715,7 +728,8 @@ void TabletModeController::SuspendImminent(
 
 void TabletModeController::SuspendDone(base::TimeDelta sleep_duration) {
   // We do not want TabletMode usage metrics to include time spent in suspend.
-  tablet_mode_usage_interval_start_time_ = base::Time::Now();
+  if (!tablet_mode_usage_interval_start_time_.is_null())
+    tablet_mode_usage_interval_start_time_ = base::Time::Now();
 
   // Start listening to the input device changes again.
   if (IsBoardTypeMarkedAsTabletCapable()) {
@@ -747,6 +761,8 @@ void TabletModeController::OnInputDeviceConfigurationChanged(
 void TabletModeController::OnDeviceListsComplete() {
   initial_input_device_set_up_finished_ = true;
   HandlePointingDeviceAddedOrRemoved();
+
+  StartTrackingTabletUsageMetricsIfApplicable();
 }
 
 void TabletModeController::OnLayerAnimationStarted(
@@ -812,6 +828,17 @@ bool TabletModeController::ShouldShowOverviewButton() const {
          tablet_mode_behavior_.always_show_overview_button;
 }
 
+bool TabletModeController::CanEnterTabletMode() const {
+  // If ChromeOS EC lid angle driver is supported, EC can handle lid angle
+  // calculation, and trigger tablet mode at some point.
+  // Otherwise, lid angle calculation is done on Chrome side for convertible
+  // device. If we have ever seen accelerometer data, then HandleHingeRotation
+  // may trigger tablet mode at some point in the future.
+  return IsBoardTypeMarkedAsTabletCapable() &&
+         (is_ec_lid_angle_driver_supported_.value_or(false) ||
+          have_seen_accelerometer_data_);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // TabletModeController, private:
 
@@ -829,7 +856,7 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
   DeleteScreenshot();
 
   if (should_enable) {
-    Shell::Get()->display_manager()->NotifyDisplayTabletStateChanged(
+    Shell::Get()->display_manager()->SetTabletState(
         display::TabletState::kEnteringTabletMode);
 
     // Take a screenshot if there is a top window that will get animated.
@@ -859,7 +886,7 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
       FinishInitTabletMode();
     }
   } else {
-    Shell::Get()->display_manager()->NotifyDisplayTabletStateChanged(
+    Shell::Get()->display_manager()->SetTabletState(
         display::TabletState::kExitingTabletMode);
 
     // We may have entered tablet mode, then tried to exit before the screenshot
@@ -876,7 +903,7 @@ void TabletModeController::SetTabletModeEnabledInternal(bool should_enable) {
 
     base::RecordAction(base::UserMetricsAction("Touchview_Disabled"));
     RecordTabletModeUsageInterval(TABLET_MODE_INTERVAL_ACTIVE);
-    Shell::Get()->display_manager()->NotifyDisplayTabletStateChanged(
+    Shell::Get()->display_manager()->SetTabletState(
         display::TabletState::kInClamshellMode);
     for (auto& observer : tablet_mode_observers_)
       observer.OnTabletModeEnded();
@@ -900,11 +927,10 @@ void TabletModeController::HandleHingeRotation(
   // accuracy.
   float largest_hinge_acceleration =
       std::max(std::abs(base_reading.x()), std::abs(lid_reading.x()));
-  float smoothing_ratio =
-      std::max(0.0f, std::min(1.0f, (largest_hinge_acceleration -
-                                     kHingeVerticalSmoothingStart) /
-                                        (kHingeVerticalSmoothingMaximum -
-                                         kHingeVerticalSmoothingStart)));
+  float smoothing_ratio = base::clamp(
+      (largest_hinge_acceleration - kHingeVerticalSmoothingStart) /
+          (kHingeVerticalSmoothingMaximum - kHingeVerticalSmoothingStart),
+      0.0f, 1.0f);
 
   // We cannot trust the computed lid angle when the device is held vertically.
   bool is_angle_reliable =
@@ -967,7 +993,7 @@ void TabletModeController::HandleHingeRotation(
 }
 
 void TabletModeController::OnGetSwitchStates(
-    base::Optional<chromeos::PowerManagerClient::SwitchStates> result) {
+    absl::optional<chromeos::PowerManagerClient::SwitchStates> result) {
   if (!result.has_value())
     return;
 
@@ -984,27 +1010,26 @@ bool TabletModeController::CanUseUnstableLidAngle() const {
   return elapsed_time >= kUnstableLidAngleDuration;
 }
 
-bool TabletModeController::CanEnterTabletMode() {
-  // If we have ever seen accelerometer data, then HandleHingeRotation may
-  // trigger tablet mode at some point in the future.
-  // All TabletMode-enabled devices can enter tablet mode.
-  return have_seen_accelerometer_data_ || InTabletMode();
-}
-
 void TabletModeController::RecordTabletModeUsageInterval(
     TabletModeIntervalType type) {
-  if (!CanEnterTabletMode())
+  // If |tablet_mode_usage_interval_start_time_| is null, do not record any
+  // tablet mode usage metrics. It may happen when we have some false positive
+  // tablet mode activations during startup.
+  if (tablet_mode_usage_interval_start_time_.is_null())
     return;
+
+  DCHECK(CanEnterTabletMode() && initial_input_device_set_up_finished_ &&
+         have_seen_tablet_mode_event_);
 
   base::Time current_time = base::Time::Now();
   base::TimeDelta delta = current_time - tablet_mode_usage_interval_start_time_;
   switch (type) {
     case TABLET_MODE_INTERVAL_INACTIVE:
-      UMA_HISTOGRAM_LONG_TIMES("Ash.TouchView.TouchViewInactive", delta);
+      UMA_HISTOGRAM_LONG_TIMES(kTabletInactiveTimeHistogramName, delta);
       total_non_tablet_mode_time_ += delta;
       break;
     case TABLET_MODE_INTERVAL_ACTIVE:
-      UMA_HISTOGRAM_LONG_TIMES("Ash.TouchView.TouchViewActive", delta);
+      UMA_HISTOGRAM_LONG_TIMES(kTabletActiveTimeHistogramName, delta);
       total_tablet_mode_time_ += delta;
       break;
   }
@@ -1130,7 +1155,7 @@ void TabletModeController::FinishInitTabletMode() {
 
   base::RecordAction(base::UserMetricsAction("Touchview_Enabled"));
   RecordTabletModeUsageInterval(TABLET_MODE_INTERVAL_INACTIVE);
-  Shell::Get()->display_manager()->NotifyDisplayTabletStateChanged(
+  Shell::Get()->display_manager()->SetTabletState(
       display::TabletState::kInTabletMode);
 
   for (auto& observer : tablet_mode_observers_)
@@ -1143,9 +1168,10 @@ void TabletModeController::FinishInitTabletMode() {
   // no snapped window).
   const auto state =
       SplitViewController::Get(Shell::GetPrimaryRootWindow())->state();
-  if (state == SplitViewController::State::kLeftSnapped ||
-      state == SplitViewController::State::kRightSnapped) {
-    Shell::Get()->overview_controller()->StartOverview();
+  if (state == SplitViewController::State::kPrimarySnapped ||
+      state == SplitViewController::State::kSecondarySnapped) {
+    Shell::Get()->overview_controller()->StartOverview(
+        OverviewStartAction::kSplitView);
   }
 
   UpdateInternalInputDevicesEventBlocker();
@@ -1287,13 +1313,8 @@ bool TabletModeController::ShouldUiBeInTabletMode() const {
   if (is_in_tablet_physical_state_)
     return true;
 
-  const bool can_enter_tablet_mode =
-      IsBoardTypeMarkedAsTabletCapable() && HasActiveInternalDisplay() &&
-      (is_ec_lid_angle_driver_supported_.value_or(false) ||
-       have_seen_accelerometer_data_);
-
-  return !has_internal_pointing_device_ && can_enter_tablet_mode &&
-         chromeos::IsRunningAsSystemCompositor();
+  return !has_internal_pointing_device_ && CanEnterTabletMode() &&
+         HasActiveInternalDisplay() && chromeos::IsRunningAsSystemCompositor();
 }
 
 bool TabletModeController::SetIsInTabletPhysicalState(bool new_state) {
@@ -1326,6 +1347,16 @@ bool TabletModeController::UpdateUiTabletState() {
           should_be_in_tablet_mode ? IDS_ASH_SWITCH_TO_TABLET_MODE
                                    : IDS_ASH_SWITCH_TO_LAPTOP_MODE));
   return true;
+}
+
+void TabletModeController::StartTrackingTabletUsageMetricsIfApplicable() {
+  if (!CanEnterTabletMode() || !initial_input_device_set_up_finished_ ||
+      !have_seen_tablet_mode_event_ ||
+      !tablet_mode_usage_interval_start_time_.is_null()) {
+    return;
+  }
+
+  tablet_mode_usage_interval_start_time_ = base::Time::Now();
 }
 
 }  // namespace ash

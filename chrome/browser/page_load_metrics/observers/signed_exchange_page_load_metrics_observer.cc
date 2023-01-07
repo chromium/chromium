@@ -1,10 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/page_load_metrics/observers/signed_exchange_page_load_metrics_observer.h"
 
+#include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "content/public/browser/navigation_handle.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
@@ -67,9 +69,6 @@ SXG_LOAD_METRIC_VARIABLE(
     FirstMeaningfulPaint,
     "Experimental.PaintTiming.NavigationToFirstMeaningfulPaint")
 SXG_LOAD_METRIC_VARIABLE(
-    ParseStartToFirstMeaningfulPaint,
-    "Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint")
-SXG_LOAD_METRIC_VARIABLE(
     DomContentLoaded,
     "DocumentTiming.NavigationToDOMContentLoadedEventFired")
 SXG_LOAD_METRIC_VARIABLE(Load, "DocumentTiming.NavigationToLoadEventFired")
@@ -103,11 +102,31 @@ SignedExchangePageLoadMetricsObserver::SignedExchangePageLoadMetricsObserver() {
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-SignedExchangePageLoadMetricsObserver::OnCommit(
+SignedExchangePageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    const GURL& currently_committed_url) {
+  // This class is interested only in events that are preprocessed and
+  // dispatched also to the outermost page at PageLoadTracker. So, this class
+  // doesn't need to forward events for FencedFrames.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+SignedExchangePageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This observer focuses on evaluating the performance gain of the Signed
+  // Exchanges, and we'd exclude prerendered cases to measure the pure benefit
+  // coming from the Signed Exchanges adoption.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+SignedExchangePageLoadMetricsObserver::OnCommit(
+    content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsSignedExchangeInnerResponse()) {
-    ukm::builders::PageLoad_SignedExchange builder(source_id);
+    ukm::builders::PageLoad_SignedExchange builder(
+        GetDelegate().GetPageUkmSourceId());
     if (IsServedFromGoogleCache(navigation_handle))
       builder.SetServedFromGoogleCache(1);
     builder.Record(ukm::UkmRecorder::Get());
@@ -155,9 +174,6 @@ void SignedExchangePageLoadMetricsObserver::
 
   SXG_PAGE_LOAD_HISTOGRAM(FirstMeaningfulPaint,
                           timing.paint_timing->first_meaningful_paint.value());
-  SXG_PAGE_LOAD_HISTOGRAM(ParseStartToFirstMeaningfulPaint,
-                          timing.paint_timing->first_meaningful_paint.value() -
-                              timing.parse_timing->parse_start.value());
 }
 
 void SignedExchangePageLoadMetricsObserver::OnDomContentLoadedEventStart(
@@ -195,27 +211,23 @@ void SignedExchangePageLoadMetricsObserver::OnFirstInputInPage(
   UMA_HISTOGRAM_CUSTOM_TIMES(
       internal::kHistogramSignedExchangeFirstInputDelay,
       timing.interactive_timing->first_input_delay.value(),
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-      50);
+      base::Milliseconds(1), base::Seconds(60), 50);
   if (was_cached_) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         internal::kHistogramCachedSignedExchangeFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+        base::Milliseconds(1), base::Seconds(60), 50);
   } else {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         internal::kHistogramNotCachedSignedExchangeFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+        base::Milliseconds(1), base::Seconds(60), 50);
   }
   if (had_prefetched_alt_sxg_) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         internal::kHistogramAltSubSxgSignedExchangeFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+        base::Milliseconds(1), base::Seconds(60), 50);
   }
 }
 

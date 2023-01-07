@@ -1,26 +1,39 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
+<translation id="1143896152279775643">Parolingiz Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlanadi.</translation>
 <translation id="1282031177488366470">Chrome funksiyalari va unumdorligini yaxshilashga yordam bering</translation>
-<translation id="1314663809820920746">Bu qurilmadagi bukmarklar, tarix, parollar va boshqa sozlamalarni koʻrishingiz mumkin. Oʻzgartirish kiritilsa, ular Google hisobingizga sinxronlanmaydi.</translation>
+<translation id="1462727070346936664">Chromening barcha imkoniyatlaridan foydalanish uchun hisobga kiring.</translation>
 <translation id="1479202195792305274">Google hisobingizga kirsangiz, Chrome parollaringizni tekshira oladi.</translation>
+<translation id="1493827051843127077">Chrome brauzerini varaqlar, parollar va toʻlov axborotlarini barcha qurilmalarga sinxronlovchi asosiy ilova sifatida belgilash</translation>
 <translation id="1504372625950710826">Chrome yangilanishlar chiqqanini tekshira olmadi. Internet aloqasini tekshiring.</translation>
+<translation id="1511320244449497906">Siz tizimga kirdingiz va maʼlumotlaringizni <ph name="DOMAIN" /> boshqaradigan hisob bilan sinxronladingiz. Uning administratori endi Chrome funksiyasini oʻzgartirishi mumkin boʻlgan oʻsha hisobga tegishli foydalanuvchi siyosatlarini oʻrnatishi mumkin.</translation>
 <translation id="1682483655351012182">Chrome axborotini sinxronlash</translation>
 <translation id="1759842336958782510">Chrome</translation>
+<translation id="1812249337131447686">Foydalanish statistikasi va nosozlik hisobotlarini Googlega yuborish orqali Chrome brauzerini yaxshilashga yordam bering</translation>
 <translation id="1917964099031477364">Bu hisob va uning barcha saqlanmagan maʼlumotlari Chromedan olib tashlanadi.</translation>
+<translation id="1968388653333775699">Chrome bilan koʻproq amallarni bajaring</translation>
 <translation id="2009224836393115614">Chrome parollaringizni tekshira olmadi. Internet aloqasini tekshiring.</translation>
+<translation id="2056123005618757196">Oddiy, xavfsiz va har qachongidan tezkor Google Chrome brauzerida koʻplab imkoniyatlar.</translation>
 <translation id="2147651015520127414">Chrome ushbu veb-sayt haqiqiyligi <ph name="ISSUER" /> tomonidan tasdiqlanganligini aniqladi.</translation>
 <translation id="2199719347983604670">Chrome sync maʼlumotlari</translation>
+<translation id="2313070403598893276">Google Chrome – oddiy, xavfsiz va har qachongidan tezkor</translation>
+<translation id="2339201583852607431">Parolingiz Google hisobingizda (<ph name="EMAIL" />) saqlanadi.</translation>
 <translation id="2342919707875585281">Chrome joylashuvingiz axborotini siz ruxsat bergan saytlarga ulashadi.</translation>
-<translation id="2347208864470321755">Agar bu funksiya yoniq bo‘lsa, Chrome sahifalarni Google Tarjimon xizmati yordamida tarjima qilishni taklif qiladi. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
-<translation id="2415682770504543561">Chrome brauzerini asosiy brauzer qilib belgilash</translation>
+<translation id="2347208864470321755">Agar bu funksiya yoniq bo‘lsa, Chrome sahifalarni Google Tarjima xizmati yordamida tarjima qilishni taklif qiladi. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
+<translation id="2427791862912929107">Google Chrome brauzerida Internet maʼlumotlarini qayta ishlash parametrlari va sahifalarning yuklanish tezligini belgilash mumkin.
+<ph name="BEGIN_LINK" />Batafsil axborot<ph name="END_LINK" /></translation>
+<translation id="2561231791489583059">Internetni xavfsiz kezish va parollaringizni himoyalashda Chrome birlamchi brauzer sifatida ishlatilsin</translation>
 <translation id="2574249610672786438">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun barcha qurilmalarda hisobingizga kiring</translation>
 <translation id="2576431527583832481">Chrome ancha yaxshilandi! Uning yangi versiyasi chiqdi.</translation>
 <translation id="257708665678654955">Google Chrome ushbu saytning <ph name="LANGUAGE_NAME" /> tilidagi sahifalarini tarjima qilishni har doim taklif qilsinmi?</translation>
+<translation id="2671426118752779020">Google Parollar menejeriga saqlangan parollarni iPhonedagi boshqa ilovalarda ishlatish mumkin.</translation>
+<translation id="2689064829982324496">Barcha saytlarda Google hisobingizdan chiqish uchun <ph name="BEGIN_LINK" />Chrome brauzerida hisobdan chiqing<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome yangilanishlar chiqqanini tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="2732745070297234559">Chrome barcha parollarni tekshira olmadi. Ertaga qayta urining.</translation>
-<translation id="2740105938841089077">Havolalarni ochish uchun Chrome ishlating</translation>
+<translation id="2869959624320573933">Chrome hisobiga kirish</translation>
 <translation id="2919738076569633423">Chrome ishlatish orqali siz <ph name="BEGIN_LINK_TOS" />Xizmat shartlariga<ph name="END_LINK_TOS" /> rozilik bildirgan hisoblanasiz.</translation>
+<translation id="2957447865124070833"><ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /> brauzerini tanlang.</translation>
 <translation id="3030414234702425231">Siz <ph name="SIGNOUT_MANAGED_DOMAIN" /> domenida boshqariladigan hisobdan chiqish arafasidasiz. Barcha Chrome maʼlumotlari ushbu qurilmadan tozalanadi, lekin Google hisobingizda saqlanib qoladi.</translation>
 <translation id="3167189358072330585">Hisobingiz Google Chrome tizimida ishlamaydi. Domen administratoriga murojaat qiling yoki tizimga oddiy Google hisobidan kiring.</translation>
 <translation id="3173834708294760622">Google Chrome sahifasi</translation>
@@ -29,66 +42,102 @@
 <translation id="3345341804167540816">Chrome’ni o‘zingiz bilan olib yuring</translation>
 <translation id="3522659714780527202">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun sinxronizatsiyani yoqing</translation>
 <translation id="3533694711092285624">Hech qanday parol saqlanmagan. Chrome faqat saqlangan parollaringizni tekshira oladi.</translation>
+<translation id="3641179212828090796">Tezroq kirish uchun Chromeda saqlangan paroldan foydalaning</translation>
+<translation id="3655656110921623717">Bunda Chrome har safar saytning mobil versiyasini talab qiladi.</translation>
 <translation id="3706101708757577809">Siz endi Chromium brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="3720541637541300822">Chrome yopilganda, Inkognito varaqlar qulflansin</translation>
 <translation id="384394811301901750">Google Chrome hozir kamerangizdan foydalana olmaydi.</translation>
-<translation id="38949020760388809">Chrome maʼlumotlari bu qurilmadan tozalansinmi?</translation>
 <translation id="3980220367029651214">Siz <ph name="USER_EMAIL1" /> hisobi ma’lumotlarini <ph name="USER_EMAIL2" /> hisobiga ko‘chirish arafasizdasiz. Mavjud Chrome ma’lumotlaringiz <ph name="DOMAIN" /> domenida boshqariladi. Barcha Chrome ma’lumotlari ushbu qurilmadan o‘chiriladi, lekin <ph name="USER_EMAIL1" /> hisobida saqlanib qoladi.</translation>
 <translation id="3984746313391923992">Tashkilotingiz Chrome hisobidan chiqishingizni talab qilmoqda.</translation>
 <translation id="3988789688219830639">Google Chrome rasm va videolaringizni ko‘ra olmayapti. “Sozlamalar &gt; Maxfiylik &gt; Rasmlar” oynasida ruxsat bering.</translation>
 <translation id="4099578267706723511">Google’ga foydalanish statistikasi va ishdan chiqish hisobotlarini jo‘natish orqali Chrome’ning takomillashtirishga yordam bering</translation>
-<translation id="415767770115540173">Brauzerga joylashuvingiz haqidagi ma’lumotlardan foydalanishga ruxsat bering va Google imkoniyatlaridan ko‘proq foydalaning.</translation>
 <translation id="417201473131094001">Chrome Canary nashrida ishlamaydi</translation>
+<translation id="4192781968753717021">Bu parol oshkor qilinganligi aniqlandi. Google Parollar menejeri bu parolni hoziroq almashtirishni tavsiya etadi.</translation>
+<translation id="4233521129555661685"><ph name="USER_EMAIL1" /> Chrome ishlatardi va bu qurilmada uning bukmarklar, parollar va boshqa sozlamalari qolgan.</translation>
 <translation id="424864128008805179">Chrome hisobidan chiqmoqchimisiz?</translation>
 <translation id="4249068189593983585">Chrome maslahati. Ko‘proq varaqlarni tanlash uchun ekranning quyi yoki yuqorisida joylashgan asboblar panelidan Varaqlarni ko‘rsatish tugmasi ustiga bosib turing.</translation>
 <translation id="4523886039239821078">Ba’zi kengaytmalar Chrome brauzerini ishdan chiqaradi. O‘chirilishi kerak bo‘lgan kengaytmalar:</translation>
 <translation id="4633328489441962921">Chrome yangilanishlar chiqqanini tekshira olmadi</translation>
+<translation id="4636900170638246267">Bu sayt va Chrome hisobiga kiring.</translation>
 <translation id="4698415050768537821">Chrome barcha parollarni tekshira olmadi. Ertaga qaytadan urining yoki <ph name="BEGIN_LINK" />Google hisobingizdagi parollarni tekshiring.<ph name="END_LINK" /></translation>
+<translation id="4802922164792993118">Chrome maslahati. Klaviaturaning yuqori qismidagi saqlangan parolni tanlash orqali tezkor kiring.</translation>
+<translation id="4819268619367838612">Ilovani yaxshilash maqsadida Chrome foydalanish statistikasi va ishdan chiqishlar axborotini Googlega yuboradi. <ph name="BEGIN_LINK" />Boshqarish<ph name="END_LINK" /></translation>
 <translation id="484033449593719797">Chrome Beta nashrida ishlamaydi</translation>
 <translation id="5030102366287574140">Chrome maʼlumotlaringizni axborotlar sizib chiqishi va xavfsizlikka oid boshqa muammolardan himoyalaydi.</translation>
+<translation id="5108659628347594808">Chromeni yaxshilash</translation>
+<translation id="5119391094379141756">Chrome brauzerini tanlang</translation>
 <translation id="5162467219239570114">Chrome versiyasi eskirgan. Agar <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> orqali chiqmasa, demak qurilmangizda yangi versiyadagi Chrome nashrlari ishlamasligi mumkin.</translation>
 <translation id="5389212809648216794">Google Chrome kamerangizdan foydalana olmaydi, chuki boshqa ilova allaqachon kamerani ishlatmoqda.</translation>
+<translation id="5460571915754665838">4. Chrome brauzerini tanlang</translation>
+<translation id="5552137475244467770">Vaqti-vaqti bilan Chrome internetda oshkor etilgan roʻyxatlarda parolingiz borligini tekshirib turadi. Bunda parolingiz va foydalanuvchi nomingiz shifrlanadi, hatto Google xodimlariga ham koʻrinmaydi.</translation>
 <translation id="5639704535586432836">Kameradan foydalanishga ruxsat berish uchun “Sozlamalar &gt; Maxfiylik &gt; Kamera &gt; Google Chrome” bandini oching.</translation>
 <translation id="5642200033778930880">Google Chrome kamerangizdan Split View rejimida foydalana olmaydi.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="571296537125272375">Oflayn, Chrome yangilanishlar chiqqanini tekshira olmadi</translation>
+<translation id="5716154293141027663">Chromeni istalgan vaqt boshqa ilovalardagi havolalarni bosib ochish</translation>
 <translation id="5854621639439811139">Chrome maslahati. Ba’zi tugmalar endi ekranning quyi qismida. Masalan: Orqaga, Oldinga va Qidiruv tugmalari.</translation>
-<translation id="6036420186814142909">Google Chrome brauzerida Internet ma’lumotlarini qayta ishlash va sahifalar yuklanishi tezligini boshqarish mumkin.
-<ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
+<translation id="5998675059699164418">Chrome brauzeridan foydalanishingiz uchun tashkilotingiz roʻyxatdan oʻtishni talab qiladi.</translation>
+<translation id="6054613632208573261">Chrome birlamchi boʻlsin</translation>
+<translation id="6063091872902370735">Chrome hisobiga kirishga ruxsat berish</translation>
+<translation id="6110625574506755980">Ayrim Chrome funksiyalari endi ishlamaydi.</translation>
 <translation id="6181930887571472871">Chrome brauzeriga almashing</translation>
 <translation id="6238746320622508509">Chrome bilan Inkognito varaqlarni himoyalang.</translation>
-<translation id="6573431926118603307">Boshqa qurilmalaringizda ochilgan Chrome sahifalari shu yerda ko‘rsatiladi.</translation>
+<translation id="6412673304250309937">URL manzillar Chrome bilgan zararli saytlar roʻyxati orqali tekshiriladi. Agar sayt parolingizni oʻgirlashga urinsa yoki zararli fayl yuklab olsangiz, Chrome ham URL manzillar kabi sahifa elementlarini Saytlarni xavfsiz kezish tizimiga yuborishi mumkin.</translation>
+<translation id="6427126399757991875">Chrome tashkilotingiz tomonidan sozlanmoqda...</translation>
+<translation id="651403856614361404">Bu parol oshkor qilinganligi aniqlandi. Chrome parolingizni hoziroq oʻzgartirishni tavsiya etadi.</translation>
 <translation id="6600954340915313787">Chrome’ga nusxalandi</translation>
 <translation id="6634107063912726160">Hisobingizdan chiqsangiz, Chrome yangi maʼlumotlarni Google hisobingizga sinxronlamaydi. Oldin sinxronlangan maʼlumotlar hisobingizda qoladi.</translation>
 <translation id="6648150602980899529"><ph name="DOMAIN" /> domenida boshqariladigan hisobga kirish bilan siz administratorga Chrome ma’lumotlaringizni boshqarishiga rozilik bildirasiz. Barcha Chrome ma’lumotlaringiz bu hisobga butunlay bog‘langan. Agar hisobdan chiqadigan bo‘lsangiz, bu qurilmadagi barcha ma’lumotlaringiz o‘chib ketadi, lekin Google hisobingizda saqlanib qoladi.</translation>
 <translation id="6676840375528380067">Chrome maʼlumotlaringiz bu qurilmadan tozalansinmi?</translation>
 <translation id="6822673484890854830">Chrome ayrim parollarni tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="6964931465519938134">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
+<translation id="701356708427365932">Yangi Chrome menyusi bilan tanishing</translation>
+<translation id="7059914902409643750">Chrome brauzerini oʻzingizga moslashtiring</translation>
 <translation id="7124339256045485976">Chrome brauzerini yangilab boring</translation>
 <translation id="7161390184744336561">Google Chrome versiyasi eskirdi</translation>
 <translation id="7165736900384873061">Google Chrome QR-kod skaneridan foydalaning</translation>
-<translation id="7172660552945675509">Maslahat: <ph name="BEGIN_LINK" />Chrome brauzerini sevimli ilovalar paneliga qadab oling<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Parollaringizga tezkor ruxsat olish uchun Chrome – Face ID tekshiruvini ishlatadi.</translation>
+<translation id="7187993566681480880">Hisobingizga kirganingizda Chrome va boshqa Google ilovalaridan xavfsiz foydalanishingizni taʼminlaydi.</translation>
+<translation id="72119412072970160">Google Parollar menejeriga saqlangan parollarni iPaddagi boshqa ilovalarda ishlatish mumkin.</translation>
 <translation id="7261678641327190792">Chrome parollaringizni tekshira olmadi</translation>
-<translation id="7265369419224458312">Mobil qurilmangiz brauzeridagi ichki oynalarni kompyuteringiz brauzerida ham ko‘rishingiz mumkin. Buning uchun kompyuteringizdagi Chrome brauzerini ochib, menyudan “Chrome’ga kirish” bandini tanlang.</translation>
 <translation id="7272930098487145294">Rasmlarni saqlash uchun Sozlamalar ustiga bosib, Chromega rasmlarni ochishga ruxsat bering.</translation>
+<translation id="7275945473750112644">Hisobingiz <ph name="HOSTED_DOMAIN" /> domenida boshqariladi, shuning uchun bu qurilmadagi Chrome maʼlumotlari tozalanadi</translation>
 <translation id="7400722733683201933">Google Chrome haqida</translation>
 <translation id="7501046334262221972">Chrome brauzerini asosiy deb belgilash uchun Sozlamalarni oching. Standart brauzer ilovasi ustiga bosing va Chromeni tanlang.</translation>
 <translation id="756809126120519699">Chrome ma’lumotlari tozalandi</translation>
 <translation id="7626032353295482388">Chrome brauzeriga xush kelibsiz!</translation>
 <translation id="7662994914830945754">Boshqa qurilmalardagi Chrome varaqlarini koʻrish uchun hisobga kiring va sinxronizatsiyani yoqing</translation>
-<translation id="766361182512894255">Parolingiz oshkor qilingan. Chrome parolni hoziroq yangilashni tavsiya qiladi.</translation>
+<translation id="7693590760643069321">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="7698568245838009292">Chrome kameradan foydalanmoqchi</translation>
+<translation id="7754633291442704733">Tashkilotingiz (<ph name="DOMAIN" />) hisobingizdagi Chrome maʼlumotlari, bukmarklar, tarix, parollar va boshqa sozlamalaringizni koʻra oladi. Hisobdan chiqsangiz, bu qurilmadagi maʼlumotlaringiz tozalanadi.  Lekin, boshqaruvdagi Google hisobi maʼlumotlari joyida qoladi va tashkilotingiz ularni koʻra oladi. Tashkilotingiz Chrome funksiyasini oʻzgartirish mumkin boʻlgan oʻsha hisobga tegishli foydalanuvchi siyosatlarini oʻrnatishi ham mumkin.</translation>
+<translation id="7780154209050837198">Chrome imkoniyatlaridan maksimal foydalanish uchun Chromega Google hisobingiz bilan kiring.</translation>
 <translation id="7855730255114109580">Google Chrome versiyasi yangi</translation>
-<translation id="8109233255338845204">Hisobingiz <ph name="HOSTED_DOMAIN" /> domenida boshqariladi, shuning uchun bu qurilmadagi Chrome maʼlumotlari tozalanadi.</translation>
+<translation id="8022947259858476807">Havolalarni ochish, vidjetlar orqali qidiruv, boshqa ilovalarda parollar avtomatik kitilishda Chrome birlamchi ilova sifatida ishlatilsin</translation>
+<translation id="81358522153858150">Chrome endi boshqariladigan hisobingiz uchun foydalanuvchi siyosatlarini qoʻllab-quvvatlaydi</translation>
 <translation id="8160472928944011082">Chrome yangilanmadi</translation>
+<translation id="8357607116237445042">Chrome maʼlumotlari bu qurilmadan tozalanishi yoki saqlanib qolishini tanlang</translation>
 <translation id="8370517070665726704">© Google LLC, <ph name="YEAR" /> Barcha huquqlar himoyalangan.</translation>
 <translation id="840168496893712993">Ba’zi kengaytmalar Chrome brauzerini ishdan chiqaradi. Ularni o‘chirib tashlang.</translation>
+<translation id="8414886616817913619">Chrome brauzeridan foydalanishingiz uchun tashkilotingiz roʻyxatdan oʻtishni talab qiladi. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8459495907675268833">Tanlangan ma’lumotlar Chrome va sinxronlangan qurilmalardan o‘chirildi. Google hisobingiz orqali amalga oshirilgan qidiruvlar, brauzer tarixi va boshqa internetdagi faoliyatingizni history.google.com sahifasi orqali ko‘rishingiz mumkin.</translation>
 <translation id="850555388806794946">Chrome brauzerini asosiy deb belgilash uchun:
   1. Sozlamalarni oching
   2. Asosiy brauzer ilovasi ustiga bosing
   3. Chrome brauzerini tanlang.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="9135668017386497357">Geolokatsiyadan foydalanishga ruxsat bersangiz, Chrome bu maʼlumotlarni asosiy qidiruv tizimingizga va siz ruxsat bergan saytlarga yuboradi. Saytlar atrofdagi doʻkonlar yoki yangiliklar kabi axborotlarni chiqarish uchun joylashuvingizni soʻrashi mumkin.</translation>
+<translation id="8736550665979974340">Google Chrome bilan himoyalaning</translation>
+<translation id="8772179140489533211">Chrome orqali kirish oynasi chiqadi.</translation>
+<translation id="8788269841521769222">Bu parolni eslab qolishingiz shart emas. U Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlanadi.</translation>
+<translation id="8897749957032330183">Parollar shu qurilmadagi Google Parollar menejeriga saqlanadi.</translation>
+<translation id="8969290730818637510">Yoniq boʻlsa:
+<ph name="BEGIN_INDENT" />  • Chromeni siz kabi ishlatadigan odamlar uchun yaxshilashga yordam beradi<ph name="END_INDENT" />
+
+Bularni hisobga olish kerak:
+<ph name="BEGIN_INDENT" />  • Chromedan foydalanish maʼlumotlari Googlega yuboriladi, lekin siz bilan bogʻlanilmaydi
+
+  • Chromeda nosozlik yuz bersa, u haqidagi maʼlumotlar, shuningdek, ayrim shaxsiy axborotlar ham yuboriladi
+
+  • Sinxronizatsiya yoqilsa, koʻrsatkichlarga siz kiritgan URL manzillar ham biriktiriladi<ph name="END_INDENT" /></translation>
+<translation id="9112744793181547300">Chrome asosiy brauzer sifatida tanlansinmi?</translation>
+<translation id="9122931302567044771">Bunda Chrome har safar saytning kompyuter versiyasini talab qiladi.</translation>
 </translationbundle>

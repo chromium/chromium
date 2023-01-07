@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chromecast/external_mojo/public/mojom/connector.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -36,6 +35,10 @@ class ChromiumServiceWrapper : public external_mojo::mojom::ExternalService {
       mojo::Remote<service_manager::mojom::Service> service_remote,
       std::unique_ptr<service_manager::Service> chromium_service,
       const std::string& service_name);
+
+  ChromiumServiceWrapper(const ChromiumServiceWrapper&) = delete;
+  ChromiumServiceWrapper& operator=(const ChromiumServiceWrapper&) = delete;
+
   ~ChromiumServiceWrapper() override;
 
  private:
@@ -47,8 +50,6 @@ class ChromiumServiceWrapper : public external_mojo::mojom::ExternalService {
   const std::unique_ptr<service_manager::Service> chromium_service_;
 
   mojo::Receiver<external_mojo::mojom::ExternalService> service_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromiumServiceWrapper);
 };
 
 // Creates a ServiceRequest (analogous to one created by Chromium

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/controller.h"
 #include "chrome/browser/vr/elements/environment/background.h"
 #include "chrome/browser/vr/elements/environment/grid.h"
@@ -23,7 +23,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
 class RectF;
@@ -51,6 +51,10 @@ class TransparentQuadRenderer;
 class UiElementRenderer {
  public:
   UiElementRenderer();
+
+  UiElementRenderer(const UiElementRenderer&) = delete;
+  UiElementRenderer& operator=(const UiElementRenderer&) = delete;
+
   VIRTUAL_FOR_MOCKS ~UiElementRenderer();
 
   VIRTUAL_FOR_MOCKS void DrawTexturedQuad(
@@ -130,7 +134,7 @@ class UiElementRenderer {
   void Init();
   void FlushIfNecessary(BaseRenderer* renderer);
 
-  BaseRenderer* last_renderer_ = nullptr;
+  raw_ptr<BaseRenderer> last_renderer_ = nullptr;
 
   std::unique_ptr<ExternalTexturedQuadRenderer>
       external_textured_quad_renderer_;
@@ -146,8 +150,6 @@ class UiElementRenderer {
   std::unique_ptr<Stars::Renderer> stars_renderer_;
   std::unique_ptr<Background::Renderer> background_renderer_;
   std::unique_ptr<Keyboard::Renderer> keyboard_renderer_;
-
-  DISALLOW_COPY_AND_ASSIGN(UiElementRenderer);
 };
 
 }  // namespace vr

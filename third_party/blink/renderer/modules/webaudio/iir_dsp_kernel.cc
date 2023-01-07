@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,12 +36,13 @@ void IIRDSPKernel::GetFrequencyResponse(int n_frequencies,
 
   Vector<float> frequency(n_frequencies);
 
-  double nyquist = this->Nyquist();
+  double nyquist = Nyquist();
 
   // Convert from frequency in Hz to normalized frequency (0 -> 1),
   // with 1 equal to the Nyquist frequency.
-  for (int k = 0; k < n_frequencies; ++k)
+  for (int k = 0; k < n_frequencies; ++k) {
     frequency[k] = frequency_hz[k] / nyquist;
+  }
 
   iir_.GetFrequencyResponse(n_frequencies, frequency.data(), mag_response,
                             phase_response);

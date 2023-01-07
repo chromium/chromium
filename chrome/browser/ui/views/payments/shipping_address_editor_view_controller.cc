@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/payments/validating_combobox.h"
 #include "chrome/browser/ui/views/payments/validating_textfield.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -170,7 +171,7 @@ ShippingAddressEditorViewController::GetComboboxModelForType(
       NOTREACHED();
       break;
   }
-  return std::unique_ptr<ui::ComboboxModel>();
+  return nullptr;
 }
 
 void ShippingAddressEditorViewController::OnPerformAction(
@@ -178,10 +179,9 @@ void ShippingAddressEditorViewController::OnPerformAction(
   EditorViewController::OnPerformAction(sender);
   if (sender->GetID() != GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY))
     return;
-  DCHECK_GE(sender->GetSelectedIndex(), 0);
-  if (chosen_country_index_ !=
-      static_cast<size_t>(sender->GetSelectedIndex())) {
-    chosen_country_index_ = sender->GetSelectedIndex();
+  DCHECK(sender->GetSelectedIndex().has_value());
+  if (chosen_country_index_ != sender->GetSelectedIndex()) {
+    chosen_country_index_ = sender->GetSelectedIndex().value();
     failed_to_load_region_data_ = false;
     // View update must be asynchronous to let the combobox finish performing
     // the action.
@@ -198,8 +198,7 @@ void ShippingAddressEditorViewController::UpdateEditorView() {
         static_cast<views::Combobox*>(dialog()->GetViewByID(
             GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY)));
     DCHECK(country_combo_box);
-    DCHECK_EQ(countries_.size(),
-              static_cast<size_t>(country_combo_box->GetRowCount()));
+    DCHECK_EQ(countries_.size(), country_combo_box->GetRowCount());
     country_combo_box->SetSelectedIndex(chosen_country_index_);
   } else if (countries_.size() > 0UL) {
     chosen_country_index_ = 0UL;
@@ -254,8 +253,9 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
     IsValidCombobox(ValidatingCombobox* combobox,
                     std::u16string* error_message) {
-  return ValidateValue(combobox->GetTextForRow(combobox->GetSelectedIndex()),
-                       error_message);
+  return ValidateValue(
+      combobox->GetTextForRow(combobox->GetSelectedIndex().value()),
+      error_message);
 }
 
 bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
@@ -273,7 +273,8 @@ bool ShippingAddressEditorViewController::ShippingAddressValidationDelegate::
     ComboboxValueChanged(ValidatingCombobox* combobox) {
   std::u16string error_message;
   bool is_valid = ValidateValue(
-      combobox->GetTextForRow(combobox->GetSelectedIndex()), &error_message);
+      combobox->GetTextForRow(combobox->GetSelectedIndex().value()),
+      &error_message);
   controller_->DisplayErrorMessageForField(field_.type, error_message);
   return is_valid;
 }
@@ -431,10 +432,10 @@ void ShippingAddressEditorViewController::UpdateEditorFields() {
   if (chosen_country_index_ < countries_.size())
     chosen_country_code = countries_[chosen_country_index_].first;
 
-  std::unique_ptr<base::ListValue> components(new base::ListValue);
-  autofill::GetAddressComponents(chosen_country_code,
-                                 state()->GetApplicationLocale(),
-                                 components.get(), &language_code_);
+  std::vector<std::vector<::i18n::addressinput::AddressUiComponent>> components;
+  autofill::GetAddressComponents(
+      chosen_country_code, state()->GetApplicationLocale(),
+      /*include_literals=*/false, &components, &language_code_);
 
   // Insert the Country combobox at the top.
   editor_fields_.emplace_back(
@@ -443,43 +444,18 @@ void ShippingAddressEditorViewController::UpdateEditorFields() {
       EditorField::LengthHint::HINT_SHORT, /*required=*/true,
       EditorField::ControlType::COMBOBOX);
 
-  for (size_t line_index = 0; line_index < components->GetSize();
-       ++line_index) {
-    const base::ListValue* line = nullptr;
-    if (!components->GetList(line_index, &line)) {
-      NOTREACHED();
-      return;
-    }
-    DCHECK_NE(nullptr, line);
-    for (size_t component_index = 0; component_index < line->GetSize();
-         ++component_index) {
-      const base::DictionaryValue* component = nullptr;
-      if (!line->GetDictionary(component_index, &component)) {
-        NOTREACHED();
-        return;
-      }
-      std::string field_type;
-      if (!component->GetString(autofill::kFieldTypeKey, &field_type)) {
-        NOTREACHED();
-        return;
-      }
-      std::string field_name;
-      if (!component->GetString(autofill::kFieldNameKey, &field_name)) {
-        NOTREACHED();
-        return;
-      }
-      bool field_length;
-      if (!component->GetBoolean(autofill::kFieldLengthKey, &field_length)) {
-        NOTREACHED();
-        return;
-      }
-      EditorField::LengthHint length_hint = EditorField::LengthHint::HINT_SHORT;
-      if (field_length == autofill::kLongField)
-        length_hint = EditorField::LengthHint::HINT_LONG;
-      else
-        DCHECK_EQ(autofill::kShortField, field_length);
+  for (const std::vector<::i18n::addressinput::AddressUiComponent>& line :
+       components) {
+    for (const ::i18n::addressinput::AddressUiComponent& component : line) {
+      EditorField::LengthHint length_hint =
+          component.length_hint ==
+                  i18n::addressinput::AddressUiComponent::HINT_LONG
+              ? EditorField::LengthHint::HINT_LONG
+              : EditorField::LengthHint::HINT_SHORT;
+
       autofill::ServerFieldType server_field_type =
-          autofill::GetFieldTypeFromString(field_type);
+          autofill::i18n::TypeForField(component.field);
+
       EditorField::ControlType control_type =
           EditorField::ControlType::TEXTFIELD;
       if (server_field_type == autofill::ADDRESS_HOME_COUNTRY ||
@@ -487,12 +463,12 @@ void ShippingAddressEditorViewController::UpdateEditorFields() {
            !failed_to_load_region_data_)) {
         control_type = EditorField::ControlType::COMBOBOX;
       }
-      editor_fields_.emplace_back(server_field_type,
-                                  base::UTF8ToUTF16(field_name), length_hint,
-                                  autofill::i18n::IsFieldRequired(
-                                      server_field_type, chosen_country_code) ||
-                                      server_field_type == autofill::NAME_FULL,
-                                  control_type);
+      editor_fields_.emplace_back(
+          server_field_type, base::UTF8ToUTF16(component.name), length_hint,
+          autofill::i18n::IsFieldRequired(server_field_type,
+                                          chosen_country_code) ||
+              server_field_type == autofill::NAME_FULL,
+          control_type);
     }
   }
   // Always add phone number at the end.
@@ -534,7 +510,7 @@ bool ShippingAddressEditorViewController::SaveFieldsToProfile(
   // the view.
   if (combobox) {
     std::u16string country(
-        combobox->GetTextForRow(combobox->GetSelectedIndex()));
+        combobox->GetTextForRow(combobox->GetSelectedIndex().value()));
     bool success =
         profile->SetInfo(autofill::ADDRESS_HOME_COUNTRY, country, locale);
     LOG_IF(ERROR, !success && !ignore_errors)
@@ -560,21 +536,24 @@ bool ShippingAddressEditorViewController::SaveFieldsToProfile(
   }
   for (const auto& field : comboboxes()) {
     // ValidatingCombobox* is the key, EditorField is the value.
-    ValidatingCombobox* combobox = field.first;
+    ValidatingCombobox* validating_combobox = field.first;
     // The country has already been dealt with.
-    if (combobox->GetID() ==
+    if (validating_combobox->GetID() ==
         GetInputFieldViewId(autofill::ADDRESS_HOME_COUNTRY))
       continue;
-    if (combobox->IsValid()) {
-      success = profile->SetInfo(
-          field.second.type,
-          combobox->GetTextForRow(combobox->GetSelectedIndex()), locale);
+    if (validating_combobox->IsValid()) {
+      success =
+          profile->SetInfo(field.second.type,
+                           validating_combobox->GetTextForRow(
+                               validating_combobox->GetSelectedIndex().value()),
+                           locale);
     } else {
       success = false;
     }
     LOG_IF(ERROR, !success && !ignore_errors)
         << "Can't setinfo(" << field.second.type << ", "
-        << combobox->GetTextForRow(combobox->GetSelectedIndex());
+        << validating_combobox->GetTextForRow(
+               validating_combobox->GetSelectedIndex().value());
     if (!success && !ignore_errors)
       return false;
   }

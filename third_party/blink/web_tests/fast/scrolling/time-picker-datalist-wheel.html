@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<!--
+
+  This test is based on tests in fast/forms/time, but placed in fast/scrolling
+  so that it runs in the virtual/threaded-prefer-compositing configuration.
+
+ -->
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="../forms/resources/common.js"></script>
+<script src="../forms/resources/picker-common.js"></script>
+<script src="../forms/calendar-picker/resources/calendar-picker-common.js"></script>
+<script src="../forms/resources/common-wheel-event.js"></script>
+<input type="time" id="time" list="dl0">
+<datalist id="dl0"></datalist>
+<script>
+
+const opt_strs = ["00:00", "00:30", "01:00", "01:30", "02:00", "02:30",
+                  "03:00", "03:30", "04:00", "04:30", "05:00", "05:30",
+                  "06:00", "06:30", "07:00", "07:30", "08:00", "08:30",
+                  "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+                  "12:00", "12:30", "13:00", "13:30", "14:00", "14:30",
+                  "15:00", "15:30", "16:00", "16:30", "17:00", "17:30",
+                  "18:00", "18:30", "19:00", "19:30", "20:00", "20:30",
+                  "21:00", "21:30", "22:00", "22:30", "23:00", "23:30"];
+
+for (let str of opt_strs) {
+  let opt = document.createElement("option");
+  opt.setAttribute("value", str);
+  dl0.appendChild(opt);
+}
+
+promise_test(async t => {
+  await waitForCompositorCommit();
+  await openPicker(document.getElementById('time'));
+  let scroller = internals.pagePopupWindow.global.picker.containerElement_;
+
+  // Scroll down two ticks, and make sure the scroll offset changed.
+  await dispatchWheelEvent(scroller, 0, 2);
+  await waitFor(() => scroller.scrollTop > 0);
+}, "Test scrolling in time picker with suggestion list.");
+
+</script>

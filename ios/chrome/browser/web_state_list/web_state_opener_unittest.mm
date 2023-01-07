@@ -1,15 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 
-#include <memory>
+#import <memory>
 
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -22,6 +22,9 @@ class FakeNavigationManager : public web::FakeNavigationManager {
   explicit FakeNavigationManager(int last_committed_item_index)
       : last_committed_item_index_(last_committed_item_index) {}
 
+  FakeNavigationManager(const FakeNavigationManager&) = delete;
+  FakeNavigationManager& operator=(const FakeNavigationManager&) = delete;
+
   // web::NavigationManager implementation.
   int GetLastCommittedItemIndex() const override {
     return last_committed_item_index_;
@@ -29,8 +32,6 @@ class FakeNavigationManager : public web::FakeNavigationManager {
 
  private:
   int last_committed_item_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNavigationManager);
 };
 
 }  // namespace
@@ -39,15 +40,15 @@ class WebStateOpenerTest : public PlatformTest {
  public:
   WebStateOpenerTest() = default;
 
+  WebStateOpenerTest(const WebStateOpenerTest&) = delete;
+  WebStateOpenerTest& operator=(const WebStateOpenerTest&) = delete;
+
   std::unique_ptr<web::WebState> CreateWebState(int last_committed_item_index) {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetNavigationManager(
         std::make_unique<FakeNavigationManager>(last_committed_item_index));
     return web_state;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateOpenerTest);
 };
 
 TEST_F(WebStateOpenerTest, NullWebState) {

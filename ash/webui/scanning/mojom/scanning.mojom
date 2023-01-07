@@ -1,0 +1,222 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.scanning.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Updates should be reflected in the
+// ScanJobSettings histogram enumeration.
+
+// The color modes that can be used to perform a scan.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum ColorMode {
+  kBlackAndWhite = 0,
+  kGrayscale = 1,
+  kColor = 2,
+};
+
+// The file types that can be used when saving scanned images.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum FileType {
+  kJpg = 0,
+  kPdf = 1,
+  kPng = 2,
+};
+
+// The source types from which a scan can be obtained.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum SourceType {
+  // An unknown source type.
+  kUnknown = 0,
+  // A flatbed that scans a single page.
+  kFlatbed = 1,
+  // An automatic document feeder that scans a single side of each page.
+  kAdfSimplex = 2,
+  // An automatic document feeder that scans both sides of each page.
+  kAdfDuplex = 3,
+  // The implicit source type used for scanners that do not report any source
+  // options.
+  kDefault = 4,
+};
+
+// The page sizes that can be used to perform a scan.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum PageSize {
+  // ISO A3 (297 x 420 mm).
+  kIsoA3 = 0,
+  // ISO A4 (210 x 297 mm).
+  kIsoA4 = 1,
+  // ISO B4 [JIS] (257 x 364 mm).
+  kIsoB4 = 2,
+  // Legal (215.9 x 355.6 mm).
+  kLegal = 3,
+  // NA Letter (216 x 279 mm).
+  kNaLetter = 4,
+  // Tabloid (279.4 x 431.8 mm).
+  kTabloid = 5,
+  // The page size resulting from scanning the scanner's entire scannable area.
+  kMax = 6,
+};
+
+// The source from which a scan can be obtained.
+struct ScanSource {
+  // The type of this source.
+  SourceType type;
+  // The name of this source. Source names are unique to each SANE backend and
+  // are required to perform scans.
+  string name;
+  // The page sizes supported by this source.
+  array<PageSize> page_sizes;
+  // The color modes supported by this source.
+  array<ColorMode> color_modes;
+  // The resolutions supported by this source.
+  array<uint32> resolutions;
+};
+
+// The capabilities a scanner supports.
+struct ScannerCapabilities {
+  array<ScanSource> sources;
+};
+
+// Settings used to perform a scan.
+struct ScanSettings {
+  // The SANE name of the ScanSource from which to scan.
+  string source_name;
+  // The location to save scanned images to.
+  mojo_base.mojom.FilePath scan_to_path;
+  // The file type to use when saving scanned images.
+  FileType file_type;
+  // The color mode with which to scan.
+  ColorMode color_mode;
+  // The page size with which to scan.
+  PageSize page_size;
+  // The resolution with which to scan in DPI.
+  uint32 resolution_dpi;
+};
+
+// Represents a connected scanner.
+struct Scanner {
+  // The scanner's unique identifier.
+  mojo_base.mojom.UnguessableToken id;
+  // The scanner's display name.
+  mojo_base.mojom.String16 display_name;
+};
+
+// The result of a scan job.
+enum ScanResult {
+  // The scan completed successfully.
+  kSuccess,
+  // An unknown or generic error occurred.
+  kUnknownError,
+  // The device is busy.
+  kDeviceBusy,
+  // The document feeder is jammed.
+  kAdfJammed,
+  // The document feeder is empty.
+  kAdfEmpty,
+  // The flatbed cover is open.
+  kFlatbedOpen,
+  // An error occurred while communicating with the device.
+  kIoError,
+};
+
+// Observer interface used to send remote updates about an in-progress scan job
+// to the Scan app (chrome://scanning) receiver. When the corresponding scan job
+// is complete, the remote and receiver are disconnected.
+interface ScanJobObserver {
+  // Called when the progress percent of the page currently being scanned
+  // changes. |page_number| indicates which page the update is for.
+  OnPageProgress(uint32 page_number, uint32 progress_percent);
+
+  // Called when scanning a page is complete. |page_data| contains the page's
+  // image data encoded as a PNG. |new_page_index| is the expected index of this
+  // page in the array of scanned images.
+  // TODO(b/184747389): Send a lower resolution preview.
+  OnPageComplete(array<uint8> page_data, uint32 new_page_index);
+
+  // Called when the scan is complete. |result| indicates the result of the scan
+  // and is set to kSuccess when the scan completes successfully.
+  // |scanned_file_paths| contains all the file paths of the pages scanned in a
+  // scan job. |scanned_file_paths| is an empty array for failed scans.
+  OnScanComplete(ScanResult result,
+      array<mojo_base.mojom.FilePath> scanned_file_paths);
+
+  // Called when canceling the current scan job is complete. |success|
+  // indicates whether the scan job was cancelled successfully.
+  OnCancelComplete(bool success);
+
+  // Called when a scan in a multi-page scan session fails. This does not end
+  // the multi-page scan session. The user is allowed to attempt the scan again.
+  OnMultiPageScanFail(ScanResult result);
+};
+
+// Interface used to obtain information about and interact with connected
+// scanners. It is implemented in the browser and exposed to the Scan app
+// (chrome://scanning).
+interface ScanService {
+  // Returns the connected scanners. Obtaining a scanner's capabilities is
+  // implemented in a separate method to minimize the amount of time clients
+  // must wait before receiving the scanners and displaying their display names.
+  GetScanners() => (array<Scanner> scanners);
+
+  // Returns the capabilities of the scanner identified by |scanner_id|.
+  // TODO(b/184747756): Return a boolean to indicate whether the capabilities
+  // were obtained via a secure protocol.
+  GetScannerCapabilities(mojo_base.mojom.UnguessableToken scanner_id)
+      => (ScannerCapabilities capabilities);
+
+  // Starts a scan with the scanner identified by |scanner_id| using the
+  // provided |settings|. Scan job events are reported to the client via the
+  // |observer|. |success| indicates whether the scan started successfully.
+  StartScan(mojo_base.mojom.UnguessableToken scanner_id, ScanSettings settings,
+      pending_remote<ScanJobObserver> observer) => (bool success);
+
+  // Starts a multi-page scan session with the scanner identified by
+  // |scanner_id| using the provided |settings|. Scan job events are reported to
+  // the client via the |observer|. |success| indicates whether the first scan
+  // started successfully. All subsequent multi-page scan actions are made
+  // through the |controller|. There can only be one multi-page scan session
+  // started at at a time.
+  StartMultiPageScan(mojo_base.mojom.UnguessableToken scanner_id,
+      ScanSettings settings, pending_remote<ScanJobObserver> observer)
+      => (pending_remote<MultiPageScanController>? controller);
+
+  // Attempts to cancel the currently running scan job. The success of the
+  // cancel attempt is reported through the ScanJobObserver.
+  CancelScan();
+};
+
+// Interface used for performing the actions in a multi-page scan session. It is
+// exposed to the Scan app only after a successful call to
+// ScanService::StartMultiPageScan(). Closing the message pipe for this
+// interface without calling CompleteMultiPageScan() cancels the current
+// multipage scan session. The previously scanned images from that session
+// will be discarded.
+interface MultiPageScanController {
+  // Scans the next page in a multi-page scan session. |success| indicates
+  // whether the scan started successfully.
+  ScanNextPage(mojo_base.mojom.UnguessableToken scanner_id,
+      ScanSettings settings) => (bool success);
+
+  // Removes a scanned image from an ongoing multi-page scan session at the
+  // specified |page_index|. |page_index| is zero-based.
+  RemovePage(uint32 page_index);
+
+  // Starts a new scan in an ongoing multi-page scan session then replaces the
+  // scanned image specified at |page_index| on completion. If the scan fails,
+  // no existing image is deleted or replaced. |page_index| is zero-based.
+  RescanPage(mojo_base.mojom.UnguessableToken scanner_id,
+      ScanSettings settings, uint32 page_index) => (bool success);
+
+  // Ends a multi-page scan session and saves the scan to disk.
+  CompleteMultiPageScan();
+};

@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,6 +49,10 @@ class ExceptionHandlerServerRun : public UniversalMachExcServer::Interface,
     composite_mach_message_server_.AddHandler(&mach_exc_server_);
     composite_mach_message_server_.AddHandler(&notify_server_);
   }
+
+  ExceptionHandlerServerRun(const ExceptionHandlerServerRun&) = delete;
+  ExceptionHandlerServerRun& operator=(const ExceptionHandlerServerRun&) =
+      delete;
 
   ~ExceptionHandlerServerRun() {
   }
@@ -183,8 +187,6 @@ class ExceptionHandlerServerRun : public UniversalMachExcServer::Interface,
   mach_port_t notify_port_;  // weak
   bool running_;
   bool launchd_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionHandlerServerRun);
 };
 
 }  // namespace

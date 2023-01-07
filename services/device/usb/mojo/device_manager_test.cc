@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/device/usb/usb_device.h"
 #include "services/device/usb/usb_device_handle.h"
@@ -23,13 +22,14 @@ class TestUsbDevice : public UsbDevice {
                 const std::string& serial_number,
                 const GURL& landing_page);
 
+  TestUsbDevice(const TestUsbDevice&) = delete;
+  TestUsbDevice& operator=(const TestUsbDevice&) = delete;
+
   // device::UsbDevice overrides:
   void Open(OpenCallback callback) override;
 
  private:
   ~TestUsbDevice() override;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUsbDevice);
 };
 
 TestUsbDevice::TestUsbDevice(const std::string& name,

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,12 +48,6 @@ class LabelFormatter {
   virtual std::u16string GetLabelForProfile(
       const AutofillProfile& profile,
       FieldTypeGroup focused_group) const = 0;
-
-  // Returns the FieldTypeGroup with which |focused_field_type_| is associated.
-  // Billing field types are mapped to their corresponding home address field
-  // types. For example, if focused_field_type_ is ADDRESS_BILLING_ZIP, then
-  // the resulting FieldTypeGroup is kAddressHome instead of kAddressBilling.
-  FieldTypeGroup GetFocusedNonBillingGroup() const;
 
   const std::string& app_locale() const { return app_locale_; }
 

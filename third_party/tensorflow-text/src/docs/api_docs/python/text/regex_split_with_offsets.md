@@ -29,15 +29,23 @@ Split `input` by delimiters that match a regex pattern; returns offsets.
 <!-- Placeholder for "Used in" -->
 
 `regex_split_with_offsets` will split `input` using delimiters that match a
-regex pattern in `delim_regex_pattern`. Here is an example:
+regex pattern in `delim_regex_pattern`. It will return three tensors: one
+containing the split substrings ('result' in the examples below), one containing
+the offsets of the starts of each substring ('begin' in the examples below), and
+one containing the offsets of the ends of each substring ('end' in the examples
+below).
+
+#### Here is an example:
 
 ```
-text_input=["hello there"]
-# split by whitespace
-result, begin, end = regex_split_with_offsets(text_input, "\s")
-# result = [["hello", "there"]]
-# begin = [[0, 7]]
-# end = [[5, 11]]
+>>> text_input=["hello there"]
+>>> # split by whitespace
+>>> result, begin, end = regex_split_with_offsets(input=text_input,
+...                                               delim_regex_pattern="\s")
+>>> print("result: %s\nbegin: %s\nend: %s" % (result, begin, end))
+result: <tf.RaggedTensor [[b'hello', b'there']]>
+begin: <tf.RaggedTensor [[0, 6]]>
+end: <tf.RaggedTensor [[5, 11]]>
 ```
 
 By default, delimiters are not included in the split string results.
@@ -45,22 +53,29 @@ Delimiters may be included by specifying a regex pattern
 `keep_delim_regex_pattern`. For example:
 
 ```
-text_input=["hello there"]
-# split by whitespace
-result, begin, end = regex_split_with_offsets(text_input, "\s", "\s")
-# result = [["hello", " ", "there"]]
-# begin = [[0, 5, 7]]
-# end = [[5, 6, 11]]
+>>> text_input=["hello there"]
+>>> # split by whitespace
+>>> result, begin, end = regex_split_with_offsets(input=text_input,
+...                                             delim_regex_pattern="\s",
+...                                             keep_delim_regex_pattern="\s")
+>>> print("result: %s\nbegin: %s\nend: %s" % (result, begin, end))
+result: <tf.RaggedTensor [[b'hello', b' ', b'there']]>
+begin: <tf.RaggedTensor [[0, 5, 6]]>
+end: <tf.RaggedTensor [[5, 6, 11]]>
 ```
 
 If there are multiple delimiters in a row, there are no empty splits emitted.
 For example:
 
 ```
-text_input=["hello  there"]  # two continuous whitespace characters
-# split by whitespace
-result, begin, end = regex_split_with_offsets(text_input, "\s")
-# result = [["hello", "there"]]
+>>> text_input=["hello  there"]  #  Note the two spaces between the words.
+>>> # split by whitespace
+>>> result, begin, end = regex_split_with_offsets(input=text_input,
+...                                               delim_regex_pattern="\s")
+>>> print("result: %s\nbegin: %s\nend: %s" % (result, begin, end))
+result: <tf.RaggedTensor [[b'hello', b'there']]>
+begin: <tf.RaggedTensor [[0, 7]]>
+end: <tf.RaggedTensor [[5, 12]]>
 ```
 
 See https://github.com/google/re2/wiki/Syntax for the full list of supported
@@ -110,7 +125,7 @@ be kept in the result.
 <tr class="alt">
 <td colspan="2">
 A tuple of RaggedTensors containing:
-(split_results, begin_offsets, end_offsets)
+  (split_results, begin_offsets, end_offsets)
 where tokens is of type string, begin_offsets and end_offsets are of type
 int64.
 </td>

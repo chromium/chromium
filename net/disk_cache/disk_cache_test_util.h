@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -39,6 +39,31 @@ bool CheckCacheIntegrity(const base::FilePath& path,
 
 // -----------------------------------------------------------------------
 
+// Like net::TestCompletionCallback, but for BackendResultCallback.
+struct BackendResultIsPendingHelper {
+  bool operator()(const disk_cache::BackendResult& result) const {
+    return result.net_error == net::ERR_IO_PENDING;
+  }
+};
+using TestBackendResultCompletionCallbackBase =
+    net::internal::TestCompletionCallbackTemplate<disk_cache::BackendResult,
+                                                  BackendResultIsPendingHelper>;
+
+class TestBackendResultCompletionCallback
+    : public TestBackendResultCompletionCallbackBase {
+ public:
+  TestBackendResultCompletionCallback();
+
+  TestBackendResultCompletionCallback(
+      const TestBackendResultCompletionCallback&) = delete;
+  TestBackendResultCompletionCallback& operator=(
+      const TestBackendResultCompletionCallback&) = delete;
+
+  ~TestBackendResultCompletionCallback() override;
+
+  disk_cache::BackendResultCallback callback();
+};
+
 // Like net::TestCompletionCallback, but for EntryResultCallback.
 
 struct EntryResultIsPendingHelper {
@@ -54,12 +79,38 @@ class TestEntryResultCompletionCallback
     : public TestEntryResultCompletionCallbackBase {
  public:
   TestEntryResultCompletionCallback();
+
+  TestEntryResultCompletionCallback(const TestEntryResultCompletionCallback&) =
+      delete;
+  TestEntryResultCompletionCallback& operator=(
+      const TestEntryResultCompletionCallback&) = delete;
+
   ~TestEntryResultCompletionCallback() override;
 
   disk_cache::Backend::EntryResultCallback callback();
+};
+
+// Like net::TestCompletionCallback, but for RangeResultCallback.
+struct RangeResultIsPendingHelper {
+  bool operator()(const disk_cache::RangeResult& result) const {
+    return result.net_error == net::ERR_IO_PENDING;
+  }
+};
+
+class TestRangeResultCompletionCallback
+    : public net::internal::TestCompletionCallbackTemplate<
+          disk_cache::RangeResult,
+          RangeResultIsPendingHelper> {
+ public:
+  TestRangeResultCompletionCallback();
+  ~TestRangeResultCompletionCallback() override;
+
+  disk_cache::RangeResultCallback callback();
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(TestEntryResultCompletionCallback);
+  // Reference -> Value adapter --- disk_cache wants reference for callback,
+  // base class wants a value.
+  void HelpSetResult(const disk_cache::RangeResult& result);
 };
 
 // -----------------------------------------------------------------------
@@ -68,6 +119,10 @@ class TestEntryResultCompletionCallback
 class MessageLoopHelper {
  public:
   MessageLoopHelper();
+
+  MessageLoopHelper(const MessageLoopHelper&) = delete;
+  MessageLoopHelper& operator=(const MessageLoopHelper&) = delete;
+
   ~MessageLoopHelper();
 
   // Run the message loop and wait for num_callbacks before returning. Returns
@@ -99,16 +154,14 @@ class MessageLoopHelper {
   void TimerExpired();
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  int num_callbacks_;
-  int num_iterations_;
-  int last_;
-  bool completed_;
+  int num_callbacks_ = 0;
+  int num_iterations_ = 0;
+  int last_ = 0;
+  bool completed_ = false;
 
   // True if a callback was called/reused more than expected.
-  bool callback_reused_error_;
-  int callbacks_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageLoopHelper);
+  bool callback_reused_error_ = false;
+  int callbacks_called_ = 0;
 };
 
 // -----------------------------------------------------------------------
@@ -122,6 +175,10 @@ class CallbackTest {
   // once, or if |reuse| is true and a callback is called more than twice, an
   // error will be reported to |helper|.
   CallbackTest(MessageLoopHelper* helper, bool reuse);
+
+  CallbackTest(const CallbackTest&) = delete;
+  CallbackTest& operator=(const CallbackTest&) = delete;
+
   ~CallbackTest();
 
   void Run(int result);
@@ -133,11 +190,10 @@ class CallbackTest {
   }
 
  private:
-  MessageLoopHelper* helper_;
+  raw_ptr<MessageLoopHelper> helper_;
   int reuse_;
   int last_result_;
   disk_cache::EntryResult last_entry_result_;
-  DISALLOW_COPY_AND_ASSIGN(CallbackTest);
 };
 
 #endif  // NET_DISK_CACHE_DISK_CACHE_TEST_UTIL_H_

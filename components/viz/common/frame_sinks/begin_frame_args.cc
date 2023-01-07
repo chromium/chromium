@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/traced_value.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_compositor_scheduler_state.pbzero.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/source_location.pbzero.h"
@@ -84,14 +85,41 @@ std::string BeginFrameId::ToString() const {
   return value.ToJSON();
 }
 
+PossibleDeadline::PossibleDeadline(int64_t vsync_id,
+                                   base::TimeDelta latch_delta,
+                                   base::TimeDelta present_delta)
+    : vsync_id(vsync_id),
+      latch_delta(latch_delta),
+      present_delta(present_delta) {}
+PossibleDeadline::PossibleDeadline(const PossibleDeadline& other) = default;
+PossibleDeadline::PossibleDeadline(PossibleDeadline&& other) = default;
+PossibleDeadline::~PossibleDeadline() = default;
+PossibleDeadline& PossibleDeadline::operator=(const PossibleDeadline& other) =
+    default;
+PossibleDeadline& PossibleDeadline::operator=(PossibleDeadline&& other) =
+    default;
+
+PossibleDeadlines::PossibleDeadlines(size_t preferred_index)
+    : preferred_index(preferred_index) {}
+PossibleDeadlines::PossibleDeadlines(const PossibleDeadlines& other) = default;
+PossibleDeadlines::PossibleDeadlines(PossibleDeadlines&& other) = default;
+PossibleDeadlines::~PossibleDeadlines() = default;
+PossibleDeadlines& PossibleDeadlines::operator=(
+    const PossibleDeadlines& other) = default;
+PossibleDeadlines& PossibleDeadlines::operator=(PossibleDeadlines&& other) =
+    default;
+
+const PossibleDeadline& PossibleDeadlines::GetPreferredDeadline() const {
+  return deadlines[preferred_index];
+}
+
 BeginFrameArgs::BeginFrameArgs()
     : frame_time(base::TimeTicks::Min()),
       deadline(base::TimeTicks::Min()),
-      interval(base::TimeDelta::FromMicroseconds(-1)),
-      frame_id(BeginFrameId(0, kInvalidFrameNumber)),
-      type(BeginFrameArgs::INVALID),
-      on_critical_path(true),
-      animate_only(false) {}
+      interval(base::Microseconds(-1)),
+      frame_id(BeginFrameId(0, kInvalidFrameNumber)) {}
+
+BeginFrameArgs::~BeginFrameArgs() = default;
 
 BeginFrameArgs::BeginFrameArgs(uint64_t source_id,
                                uint64_t sequence_number,
@@ -103,9 +131,7 @@ BeginFrameArgs::BeginFrameArgs(uint64_t source_id,
       deadline(deadline),
       interval(interval),
       frame_id(BeginFrameId(source_id, sequence_number)),
-      type(type),
-      on_critical_path(true),
-      animate_only(false) {
+      type(type) {
   DCHECK_LE(kStartingFrameNumber, sequence_number);
 }
 
@@ -144,6 +170,7 @@ void BeginFrameArgs::AsValueInto(base::trace_event::TracedValue* state) const {
   state->SetString("subtype", TypeToString(type));
   state->SetInteger("source_id", frame_id.source_id);
   state->SetInteger("sequence_number", frame_id.sequence_number);
+  state->SetInteger("frames_throttled_since_last", frames_throttled_since_last);
   state->SetDouble("frame_time_us",
                    frame_time.since_origin().InMicrosecondsF());
   state->SetDouble("deadline_us", deadline.since_origin().InMicrosecondsF());
@@ -153,29 +180,26 @@ void BeginFrameArgs::AsValueInto(base::trace_event::TracedValue* state) const {
 #endif
   state->SetBoolean("on_critical_path", on_critical_path);
   state->SetBoolean("animate_only", animate_only);
+  state->SetBoolean("has_possible_deadlines", !!possible_deadlines);
 }
 
 void BeginFrameArgs::AsProtozeroInto(
+    perfetto::EventContext& ctx,
     perfetto::protos::pbzero::BeginFrameArgs* state) const {
   state->set_type(TypeToProtozeroEnum(type));
   state->set_source_id(frame_id.source_id);
   state->set_sequence_number(frame_id.sequence_number);
+  // TODO(yjliu) add frames_throttled_since_last to third_party
+  // chrome_compositor_scheduler_state.proto
+  // state->set_frames_throttled_since_last(frames_throttled_since_last);
   state->set_frame_time_us(frame_time.since_origin().InMicroseconds());
   state->set_deadline_us(deadline.since_origin().InMicroseconds());
   state->set_interval_delta_us(interval.InMicroseconds());
   state->set_on_critical_path(on_critical_path);
   state->set_animate_only(animate_only);
 #ifndef NDEBUG
-  auto* src_loc = state->set_source_location();
-  if (created_from.file_name()) {
-    src_loc->set_file_name(created_from.file_name());
-  }
-  if (created_from.function_name()) {
-    src_loc->set_function_name(created_from.function_name());
-  }
-  if (created_from.line_number() != -1) {
-    src_loc->set_line_number(created_from.line_number());
-  }
+  state->set_source_location_iid(
+      base::trace_event::InternedSourceLocation::Get(&ctx, created_from));
 #endif
 }
 
@@ -185,13 +209,10 @@ std::string BeginFrameArgs::ToString() const {
   return value.ToJSON();
 }
 
-BeginFrameAck::BeginFrameAck() : has_damage(false) {}
-
 BeginFrameAck::BeginFrameAck(const BeginFrameArgs& args, bool has_damage)
-    : BeginFrameAck(args.frame_id.source_id,
-                    args.frame_id.sequence_number,
-                    has_damage,
-                    args.trace_id) {}
+    : frame_id(args.frame_id),
+      trace_id(args.trace_id),
+      has_damage(has_damage) {}
 
 BeginFrameAck::BeginFrameAck(uint64_t source_id,
                              uint64_t sequence_number,

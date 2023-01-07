@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,18 +82,17 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyTest, SignedExchangeDisabled) {
   SetSignedExchangePolicy(false);
 
   content::DownloadTestObserverTerminal download_observer(
-      content::BrowserContext::GetDownloadManager(browser()->profile()), 1,
+      browser()->profile()->GetDownloadManager(), 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_DENY);
 
   GURL url = embedded_test_server()->GetURL("/sxg/test.example.org_test.sxg");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   download_observer.WaitForFinished();
 
   // Check that the SXG file was not loaded as a page, but downloaded.
   std::vector<download::DownloadItem*> downloads;
-  content::BrowserContext::GetDownloadManager(browser()->profile())
-      ->GetAllDownloads(&downloads);
+  browser()->profile()->GetDownloadManager()->GetAllDownloads(&downloads);
   ASSERT_EQ(1u, downloads.size());
   EXPECT_EQ(downloads[0]->GetURL(), url);
 
@@ -110,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangePolicyTest, SignedExchangeEnabled) {
   std::u16string title = u"Fallback URL response";
   content::TitleWatcher title_watcher(
       browser()->tab_strip_model()->GetActiveWebContents(), title);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Check that the SXG file was handled as a Signed Exchange, and the
   // navigation was redirected to the SXG's fallback URL.

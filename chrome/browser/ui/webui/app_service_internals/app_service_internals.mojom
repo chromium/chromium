@@ -1,0 +1,42 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojom.app_service_internals;
+
+// Contains debugging information for a single installed app.
+struct AppInfo {
+  // The unique ID for the app.
+  string id;
+
+  // The app's human-readable name.
+  string name;
+
+  // Preformatted plain-text containing information about the internal state of
+  // the app.
+  string debug_info;
+};
+
+// Contains debugging information for the PreferredAppsList data for a single
+// installed app.
+struct PreferredAppInfo {
+  // The unique ID for the app.
+  string id;
+
+  // The app's human-readable name.
+  string name;
+
+  // Preformatted plain-text containing the app's preferred intent filters.
+  string preferred_filters;
+};
+
+// Handler providing access to App Service information from the
+// chrome://app-service-internals WebUI.
+interface AppServiceInternalsPageHandler {
+
+  // Returns an array of debug information about every installed app.
+  GetApps() => (array<AppInfo> app_list);
+
+  // Returns an array of debug information about preferred apps.
+  GetPreferredApps() => (array<PreferredAppInfo> preferred_app_list_);
+};

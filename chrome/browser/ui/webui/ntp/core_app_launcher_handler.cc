@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,15 +28,14 @@ void CoreAppLauncherHandler::RegisterProfilePrefs(
 }
 
 void CoreAppLauncherHandler::HandleRecordAppLaunchByUrl(
-    const base::ListValue* args) {
-  std::string url;
-  CHECK(args->GetString(0, &url));
-  double source;
-  CHECK(args->GetDouble(1, &source));
+    const base::Value::List& args) {
+  const std::string& url = args[0].GetString();
+  double source = args[1].GetDouble();
+  int source_int = static_cast<int>(source);
 
+  CHECK(source_int < extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
   extension_misc::AppLaunchBucket bucket =
-      static_cast<extension_misc::AppLaunchBucket>(static_cast<int>(source));
-  CHECK(source < extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
+      static_cast<extension_misc::AppLaunchBucket>(source_int);
 
   RecordAppLaunchByUrl(Profile::FromWebUI(web_ui()), url, bucket);
 }

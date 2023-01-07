@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,38 +9,45 @@
 #include <string>
 #include <vector>
 
+#include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chromeos/components/scanning/mojom/scanning.mojom.h"
-#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
+#include "chrome/browser/ash/scanning/scanning_file_path_helper.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace ash {
 
 class LorgnetteScannerManager;
 
-// Implementation of the chromeos::scanning::mojom::ScanService interface. Used
+// Implementation of the ash::scanning::mojom::ScanService interface. Used
 // by the scanning WebUI (chrome://scanning) to get connected scanners, obtain
 // scanner capabilities, and perform scans.
-class ScanService : public chromeos::scanning::mojom::ScanService,
+class ScanService : public scanning::mojom::ScanService,
+                    public scanning::mojom::MultiPageScanController,
                     public KeyedService {
  public:
   ScanService(LorgnetteScannerManager* lorgnette_scanner_manager,
               base::FilePath my_files_path,
-              base::FilePath google_drive_path);
+              base::FilePath google_drive_path,
+              content::BrowserContext* context);
   ~ScanService() override;
 
   ScanService(const ScanService&) = delete;
@@ -50,23 +57,35 @@ class ScanService : public chromeos::scanning::mojom::ScanService,
   void GetScanners(GetScannersCallback callback) override;
   void GetScannerCapabilities(const base::UnguessableToken& scanner_id,
                               GetScannerCapabilitiesCallback callback) override;
-  void StartScan(
+  void StartScan(const base::UnguessableToken& scanner_id,
+                 scanning::mojom::ScanSettingsPtr settings,
+                 mojo::PendingRemote<scanning::mojom::ScanJobObserver> observer,
+                 StartScanCallback callback) override;
+  void StartMultiPageScan(
       const base::UnguessableToken& scanner_id,
-      chromeos::scanning::mojom::ScanSettingsPtr settings,
-      mojo::PendingRemote<chromeos::scanning::mojom::ScanJobObserver> observer,
-      StartScanCallback callback) override;
+      scanning::mojom::ScanSettingsPtr settings,
+      mojo::PendingRemote<scanning::mojom::ScanJobObserver> observer,
+      StartMultiPageScanCallback callback) override;
   void CancelScan() override;
+
+  // scanning::mojom::MultiPageScanController:
+  void ScanNextPage(const base::UnguessableToken& scanner_id,
+                    scanning::mojom::ScanSettingsPtr settings,
+                    ScanNextPageCallback callback) override;
+  void RemovePage(uint32_t page_index) override;
+  void RescanPage(const base::UnguessableToken& scanner_id,
+                  scanning::mojom::ScanSettingsPtr settings,
+                  uint32_t page_index,
+                  ScanNextPageCallback callback) override;
+  void CompleteMultiPageScan() override;
 
   // Binds receiver_ by consuming |pending_receiver|.
   void BindInterface(
-      mojo::PendingReceiver<chromeos::scanning::mojom::ScanService>
-          pending_receiver);
+      mojo::PendingReceiver<scanning::mojom::ScanService> pending_receiver);
 
-  // Sets |google_drive_path_| for tests.
-  void SetGoogleDrivePathForTesting(const base::FilePath& google_drive_path);
-
-  // Sets |my_files_path_| for tests.
-  void SetMyFilesPathForTesting(const base::FilePath& my_files_path);
+  // Returns |scanned_images_| to verify the correct images are added/removed in
+  // unit tests.
+  std::vector<std::string> GetScannedImagesForTesting() const;
 
  private:
   // KeyedService:
@@ -80,7 +99,7 @@ class ScanService : public chromeos::scanning::mojom::ScanService,
   // LorgnetteScannerManager::GetScannerCapabilities().
   void OnScannerCapabilitiesReceived(
       GetScannerCapabilitiesCallback callback,
-      const base::Optional<lorgnette::ScannerCapabilities>& capabilities);
+      const absl::optional<lorgnette::ScannerCapabilities>& capabilities);
 
   // Receives progress updates after calling LorgnetteScannerManager::Scan().
   // |page_number| indicates the page the |progress_percent| corresponds to.
@@ -90,14 +109,23 @@ class ScanService : public chromeos::scanning::mojom::ScanService,
   // Processes each |scanned_image| received after calling
   // LorgnetteScannerManager::Scan(). |scan_to_path| is where images will be
   // saved, and |file_type| specifies the file type to use when saving scanned
-  // images.
+  // images. If |page_index_to_replace| exists then |scanned_image| will replace
+  // an existing scanned image instead of being appended.
   void OnPageReceived(const base::FilePath& scan_to_path,
-                      const chromeos::scanning::mojom::FileType file_type,
+                      const scanning::mojom::FileType file_type,
+                      const absl::optional<uint32_t> page_index_to_replace,
                       std::string scanned_image,
                       uint32_t page_number);
 
   // Processes the final result of calling LorgnetteScannerManager::Scan().
-  void OnScanCompleted(bool success);
+  // |failure_mode| is set to SCAN_FAILURE_MODE_NO_FAILURE when the scan
+  // succeeds; otherwise, its value indicates what caused the scan to fail.
+  void OnScanCompleted(bool is_multi_page_scan,
+                       lorgnette::ScanFailureMode failure_mode);
+
+  // For a multi-page scan, when a page scan completes, report a failure if it
+  // exists.
+  void OnMultiPageScanPageCompleted(lorgnette::ScanFailureMode failure_mode);
 
   // Processes the final result of calling
   // LorgnetteScannerManager::CancelScan().
@@ -109,14 +137,27 @@ class ScanService : public chromeos::scanning::mojom::ScanService,
   // Called once the task runner finishes saving a page of a scan.
   void OnPageSaved(const base::FilePath& saved_file_path);
 
+  // Sends the scan request to the scanner.
+  bool SendScanRequest(
+      const base::UnguessableToken& scanner_id,
+      scanning::mojom::ScanSettingsPtr settings,
+      const absl::optional<uint32_t> page_index_to_replace,
+      base::OnceCallback<void(lorgnette::ScanFailureMode failure_mode)>
+          completion_callback);
+
   // Called once the task runner finishes saving the last page of a scan.
-  void OnAllPagesSaved(bool success);
+  void OnAllPagesSaved(lorgnette::ScanFailureMode failure_mode);
 
   // Sets the local member variables back to their initial empty state.
   void ClearScanState();
 
-  // TODO(jschettler): Replace this with a generic helper function when one is
-  // available.
+  // Sets the ScanJobOberver for a new scan.
+  void SetScanJobObserver(
+      mojo::PendingRemote<scanning::mojom::ScanJobObserver> observer);
+
+  // Resets the mojo::Receiver |multi_page_controller_receiver_|.
+  void ResetMultiPageScanController();
+
   // Determines whether the service supports saving scanned images to
   // |file_path|.
   bool FilePathSupported(const base::FilePath& file_path);
@@ -130,20 +171,23 @@ class ScanService : public chromeos::scanning::mojom::ScanService,
   base::flat_map<base::UnguessableToken, std::string> scanner_names_;
 
   // Receives and dispatches method calls to this implementation of the
-  // chromeos::scanning::mojom::ScanService interface.
-  mojo::Receiver<chromeos::scanning::mojom::ScanService> receiver_{this};
+  // ash::scanning::mojom::ScanService interface.
+  mojo::Receiver<scanning::mojom::ScanService> receiver_{this};
+
+  // Receives and dispatches method calls to this implementation of the
+  // ash::scanning::mojom::MultiPageScanController interface.
+  mojo::Receiver<scanning::mojom::MultiPageScanController>
+      multi_page_controller_receiver_{this};
 
   // Used to send scan job events to an observer. The remote is bound when a
   // scan job is started and is disconnected when the scan job is complete.
-  mojo::Remote<chromeos::scanning::mojom::ScanJobObserver> scan_job_observer_;
+  mojo::Remote<scanning::mojom::ScanJobObserver> scan_job_observer_;
 
   // Unowned. Used to get scanner information and perform scans.
   LorgnetteScannerManager* lorgnette_scanner_manager_;
 
-  // The paths to the user's My files and Google Drive directories. Used to
-  // determine if a selected file path is supported.
-  base::FilePath my_files_path_;
-  base::FilePath google_drive_path_;
+  // The browser context from which scans are initiated.
+  content::BrowserContext* const context_;
 
   // Indicates whether there was a failure to save scanned images.
   bool page_save_failed_;
@@ -163,9 +207,23 @@ class ScanService : public chromeos::scanning::mojom::ScanService,
   // Tracks the number of pages scanned for histogram recording.
   int num_pages_scanned_;
 
+  // Indicates whether alternate pages must be rotated to account for an ADF
+  // scanner that flips them.
+  bool rotate_alternate_pages_;
+
+  // Stores the dots per inch (DPI) of the requested scan.
+  absl::optional<int> scan_dpi_;
+
   // The time at which GetScanners() is called. Used to record the time between
   // a user launching the Scan app and being able to interact with it.
   base::TimeTicks get_scanners_time_;
+
+  // The time a multi-page scan session starts. Used to record the duration of a
+  // multi-page scan session.
+  base::TimeTicks multi_page_start_time_;
+
+  // Helper class for for file path manipulation and verification.
+  ScanningFilePathHelper file_path_helper_;
 
   base::WeakPtrFactory<ScanService> weak_ptr_factory_{this};
 };

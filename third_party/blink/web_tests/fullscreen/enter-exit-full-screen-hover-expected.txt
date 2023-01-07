@@ -1,8 +1,8 @@
-PASS getHoverActiveState(enterButton) is "hovered"
 PASS successfullyParsed is true
 
 TEST COMPLETE
 
+PASS getHoverActiveState(enterButton) is "hovered"
 PASS document.webkitIsFullScreen is true
 PASS getHoverActiveState(enterButton) is "default"
 PASS getHoverActiveState(exitButton) is "hovered"

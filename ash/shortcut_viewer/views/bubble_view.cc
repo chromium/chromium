@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,11 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/default_style.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
@@ -25,14 +29,32 @@ namespace {
 
 constexpr int kIconTextSpacing = 6;
 
+// Light mode colors:
+constexpr SkColor kShadowColorLight = SkColorSetARGB(0x15, 0, 0, 0);
+constexpr SkColor kBackgroundColorLight = gfx::kGoogleGrey100;
+constexpr SkColor kIconColorSecondaryLight =
+    SkColorSetARGB(0xFF, 0x5C, 0x5D, 0x60);
+
+// Dark mode colors:
+constexpr SkColor kShadowColorDark = SkColorSetARGB(0x4C, 0, 0, 0);
+constexpr SkColor kBackgroundColorDark = SkColorSetARGB(0xFF, 0x1A, 0x1A, 0x1D);
+
+bool ShouldUseDarkModeColors() {
+  return ash::features::IsDarkLightModeEnabled() &&
+         ash::DarkLightModeControllerImpl::Get()->IsDarkModeEnabled();
+}
+
 }  // namespace
 
 BubbleView::BubbleView() {
+  color_provider_ = ash::ColorProvider::Get();
   // Shadow parameters.
   constexpr int kShadowXOffset = 0;
   constexpr int kShadowYOffset = 2;
   constexpr int kShadowBlur = 4;
-  constexpr SkColor kShadowColor = SkColorSetARGB(0x15, 0, 0, 0);
+
+  const SkColor kShadowColor =
+      ShouldUseDarkModeColors() ? kShadowColorDark : kShadowColorLight;
   shadows_ = {gfx::ShadowValue(gfx::Vector2d(kShadowXOffset, kShadowYOffset),
                                kShadowBlur, kShadowColor)};
   // Preferred padding. The difference between the top and bottom paddings is to
@@ -42,8 +64,8 @@ BubbleView::BubbleView() {
   constexpr int kVerticalBottomPadding = 6;
   constexpr int kHorizontalPadding = 8;
   SetBorder(views::CreateEmptyBorder(
-      gfx::Insets(kVerticalTopPadding, kHorizontalPadding,
-                  kVerticalBottomPadding, kHorizontalPadding)));
+      gfx::Insets::TLBR(kVerticalTopPadding, kHorizontalPadding,
+                        kVerticalBottomPadding, kHorizontalPadding)));
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
@@ -62,15 +84,25 @@ void BubbleView::SetIcon(const gfx::VectorIcon& icon) {
   }
 
   constexpr int kIconSize = 16;
-  constexpr SkColor kIconColor = SkColorSetARGB(0xFF, 0x5C, 0x5D, 0x60);
+  const SkColor kIconColor =
+      ShouldUseDarkModeColors()
+          ? color_provider_->GetContentLayerColor(
+                ash::ColorProvider::ContentLayerType::kIconColorSecondary)
+          : kIconColorSecondaryLight;
   icon_->SetImage(gfx::CreateVectorIcon(icon, kIconColor));
   icon_->SetImageSize(gfx::Size(kIconSize, kIconSize));
 }
 
 void BubbleView::SetText(const std::u16string& text) {
   if (!text_) {
+    DCHECK(color_provider_);
     text_ = AddChildView(std::make_unique<views::Label>());
-    text_->SetEnabledColor(gfx::kGoogleGrey700);
+    const SkColor enabled_color =
+        ShouldUseDarkModeColors()
+            ? color_provider_->GetContentLayerColor(
+                  ash::ColorProvider::ContentLayerType::kTextColorSecondary)
+            : gfx::kGoogleGrey700;
+    text_->SetEnabledColor(enabled_color);
     text_->SetElideBehavior(gfx::NO_ELIDE);
     constexpr int kLabelFontSizeDelta = 1;
     text_->SetFontList(
@@ -107,7 +139,8 @@ gfx::Size BubbleView::CalculatePreferredSize() const {
 void BubbleView::OnPaint(gfx::Canvas* canvas) {
   views::View::OnPaint(canvas);
 
-  constexpr SkColor kBackgroundColor = gfx::kGoogleGrey100;
+  const SkColor kBackgroundColor =
+      ShouldUseDarkModeColors() ? kBackgroundColorDark : kBackgroundColorLight;
   constexpr int kCornerRadius = 22;
   // Draw a round rect with background color and shadow.
   cc::PaintFlags flags;

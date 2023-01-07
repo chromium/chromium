@@ -59,7 +59,7 @@ std::string TextEncoding::Encode(const String& string,
   if (!name_)
     return std::string();
 
-  if (string.IsEmpty())
+  if (string.empty())
     return std::string();
 
   std::unique_ptr<TextCodec> text_codec = NewTextCodec(*this);

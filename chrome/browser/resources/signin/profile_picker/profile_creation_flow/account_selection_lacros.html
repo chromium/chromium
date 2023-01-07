@@ -1,0 +1,211 @@
+<style include="profile-creation-shared profile-picker-shared cr-shared-style">
+  :host {
+    --account-button-hover-color: var(--md-background-color);
+  }
+
+  #accountsContainer {
+    --account-container-min-width: 416px;
+    --account-container-max-width: 582px;
+    --banner-min-width: 92px;
+    --account-container-width: calc(max(var(--account-container-min-width),
+                                        min(var(--account-container-max-width),
+                                            100% - 2*var(--banner-min-width))));
+    align-items: center;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    left: calc((100% - var(--account-container-width))/2);
+    margin: 0;
+    padding-bottom: 30px;
+    padding-top: 36px;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: var(--account-container-width);
+  }
+
+  #product-logo {
+    height: 32px;
+    margin-bottom: 20px;
+  }
+
+  #textContainer {
+    margin-inline-end: 50px;
+    margin-inline-start: 50px;
+  }
+
+  #textContainer h2 {
+    color: var(--cr-primary-text-color);
+    font-family: 'Google Sans', Roboto, sans-serif;
+    font-size: 24px;
+    line-height: 32px;
+    margin-bottom: 8px;
+    margin-top: 0;
+  }
+
+  #textContainer h3 {
+    color: var(--cr-secondary-text-color);
+    font-family: Roboto;
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 24px;
+    margin-top: 0;
+  }
+
+  .account-button {
+    --account-avatar-size: 44px;
+    background: none;
+    border: var(--cr-hairline);
+    border-color: var(--google-grey-300);
+    border-radius: 16px;
+    cursor: pointer;
+    display: flex;
+    margin-bottom: 12px;
+    padding: 16px;
+    text-align: start;
+    width: 336px;
+  }
+
+  .account-button:hover {
+    background-color: var(--account-button-hover-color);
+  }
+
+  .account-button:focus-visible {
+    border-color: var(--google-blue-500);
+    outline: var(--google-blue-500) solid 1px;
+  }
+
+  #other-account-button {
+    --account-avatar-size: 16px;
+    --other-account-height: 32px;
+    height: var(--other-account-height);
+    margin-bottom: 24px;
+    padding: 0 16px;
+    width: auto;
+  }
+
+  .account-avatar {
+    align-items: center;
+    border-radius: 50%;
+    display: flex;
+    height: var(--account-avatar-size);
+    justify-content: center;
+    margin: auto 0;
+    width: var(--account-avatar-size);
+  }
+
+  .account-text {
+    display: flex;
+    flex-direction: column;
+    height : var(--account-avatar-size);
+    justify-content: center;
+    margin: 0 10px 0 10px;
+    width: calc(100% - var(--account-avatar-size));  /* Required for ellipsis */
+  }
+
+  #other-account-button .account-text {
+    height: var(--other-account-height);
+  }
+
+  .account-name {
+    color: var(--cr-primary-text-color);
+    font-family: 'Google Sans', Roboto, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 22px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #other-account-button .account-name {
+    font-size: 13px;
+    line-height: var(--other-account-height);
+  }
+
+  .account-email {
+    color: var(--cr-secondary-text-color);
+    font-family: Roboto;
+    font-size: 13px;
+    line-height: 22px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #otherAccountIcon {
+    --account-icon-size: 16px;
+    --iron-icon-fill-color: var(--md-background-color);
+    --iron-icon-stroke-color: var(--cr-primary-text-color);
+    --iron-icon-height: var(--account-icon-size);
+    --iron-icon-width: var(--account-icon-size);
+  }
+
+  #footer {
+    padding-top: 50px;
+  }
+
+  button[disabled] {
+    cursor: auto;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --account-button-hover-color: var(--google-grey-800);
+    }
+
+    #accountsContainer {
+      background-color: var(--md-background-color);
+    }
+  }
+
+  @media (min-width: 768px) {
+    .account-button {
+      width: 366px;
+    }
+  }
+</style>
+
+<div id="leftBanner" class="banner"></div>
+<div style$="--theme-frame-color:[[profileThemeInfo.themeFrameColor]];
+             --theme-text-color:[[profileThemeInfo.themeFrameTextColor]];">
+  <template is="dom-if" if="[[hasPreviousRoute_]]">
+    <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
+        on-click="onBackClick_" aria-label$="[[getBackButtonAriaLabel_()]]">
+    </cr-icon-button>
+  </template>
+</div>
+<div id="accountsContainer">
+  <img id="product-logo" on-click="onProductLogoTap_"
+      srcset="chrome://theme/current-channel-logo@1x 1x,
+              chrome://theme/current-channel-logo@2x 2x"
+      role="presentation">
+  <div id="textContainer">
+    <h2>$i18n{accountSelectionLacrosTitle}</h2>
+    <h3>$i18n{accountSelectionLacrosSubtitle}</h3>
+  </div>
+  <button id="other-account-button" class="account-button"
+          on-click="onOtherAccountClick_" disabled$="[[accountSelected_]]">
+    <div class="account-avatar">
+      <iron-icon icon="profiles:account-circle" id="otherAccountIcon">
+      </iron-icon>
+    </div>
+    <div class="account-text">
+      <div class="account-name">
+        $i18n{accountSelectionLacrosOtherAccountButtonLabel}
+      </div>
+    </div>
+  </button>
+  <div id="buttonsContainer">
+    <template is="dom-repeat" items="[[availableAccounts_]]">
+      <button class="account-button" on-click="onAccountClick_"
+          disabled$="[[accountSelected_]]">
+        <img class="account-avatar" src="[[item.accountImageUrl]]">
+        <div class="account-text">
+          <div class="account-name">[[item.name]]</div>
+          <div class="account-email">[[item.email]]</div>
+        </div>
+      </button>
+    </template>
+  </div>
+</div>
+<div id="rightBanner" class="banner"></div>
+<div id="footer"></div>

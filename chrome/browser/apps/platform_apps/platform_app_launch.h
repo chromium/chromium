@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_APPS_PLATFORM_APPS_PLATFORM_APP_LAUNCH_H_
 
 #include <string>
+
+#include "build/build_config.h"
 
 class GURL;
 class Profile;
@@ -33,6 +35,14 @@ bool OpenExtensionApplicationWindow(Profile* profile,
 // application tab. Returns true if |app_id| was successfully opened in a tab,
 // and false otherwise.
 bool OpenExtensionApplicationTab(Profile* profile, const std::string& app_id);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Opens the deprecated Chrome Apps flow if |app_id| refers to a Chrome App and
+// Chrome Apps are deprecated on the |profile|. Returns true if that was the
+// case, or false otherwise.
+bool OpenDeprecatedApplicationPrompt(Profile* profile,
+                                     const std::string& app_id);
+#endif
 
 // Tries to open |app_id|, and prompts the user if the app is disabled. Returns
 // true if the app was successfully opened and false otherwise.

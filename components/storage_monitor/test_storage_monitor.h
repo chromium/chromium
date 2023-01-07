@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@ class TestStorageMonitor : public StorageMonitor {
   bool GetStorageInfoForPath(const base::FilePath& path,
                              StorageInfo* device_info) const override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool GetMTPStorageInfoFromDeviceId(
       const std::string& storage_device_id,
       std::wstring* device_location,

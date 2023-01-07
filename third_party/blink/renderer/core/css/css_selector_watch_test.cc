@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,6 +81,57 @@ TEST_F(CSSSelectorWatchTest, RecalcOnDocumentChange) {
 
   EXPECT_EQ(1u, RemovedSelectors(watch).size());
   EXPECT_TRUE(RemovedSelectors(watch).Contains(".b"));
+}
+
+class CSSSelectorWatchCQTest : public CSSSelectorWatchTest,
+                               private ScopedCSSContainerQueriesForTest,
+                               private ScopedLayoutNGForTest {
+ protected:
+  CSSSelectorWatchCQTest()
+      : ScopedCSSContainerQueriesForTest(true), ScopedLayoutNGForTest(true) {}
+};
+
+TEST_F(CSSSelectorWatchCQTest, ContainerQueryDisplayNone) {
+  CSSSelectorWatch& watch = CSSSelectorWatch::From(GetDocument());
+
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .c #container {
+        container-name: c1;
+        container-type: inline-size;
+      }
+      .c #inner { display: none; }
+      @container c1 (min-width: 200px) {
+        .c #inner { display: inline }
+      }
+    </style>
+    <div id="container">
+      <span id="inner"></span>
+    </div>
+  )HTML");
+
+  Vector<String> selectors;
+  selectors.push_back("#inner");
+  watch.WatchCSSSelectors(selectors);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(1u, AddedSelectors(watch).size());
+  EXPECT_TRUE(AddedSelectors(watch).Contains("#inner"));
+  EXPECT_EQ(0u, RemovedSelectors(watch).size());
+
+  // Setting the class 'c' on body will make #inner display:none, but also make
+  // #container a container 'c1' which is flipping the span back to
+  // display:inline.
+  ClearAddedRemoved(watch);
+  GetDocument().body()->setAttribute(html_names::kClassAttr, "c");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Element::UpdateCallbackSelectors() will both remove and add #inner in the
+  // two passes. First without the CQ matching, and then in an interleaved style
+  // and layout pass. The accounting in CSSSelectorWatch::UpdateSelectorMatches
+  // will make sure we up with a zero balance.
+  EXPECT_EQ(0u, AddedSelectors(watch).size());
+  EXPECT_EQ(0u, RemovedSelectors(watch).size());
 }
 
 }  // namespace blink

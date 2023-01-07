@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -22,8 +23,8 @@ namespace net {
 namespace {
 
 // SCDynamicStore API does not exist on iOS.
-#if !defined(OS_IOS)
-const base::TimeDelta kRetryInterval = base::TimeDelta::FromSeconds(1);
+#if !BUILDFLAG(IS_IOS)
+const base::TimeDelta kRetryInterval = base::Seconds(1);
 const int kMaxRetry = 5;
 
 // Maps SCError to an enum for UMA logging. These values are persisted to logs,
@@ -113,7 +114,7 @@ void DynamicStoreCallback(SCDynamicStoreRef /* store */,
       static_cast<NetworkConfigWatcherMac::Delegate*>(config_delegate);
   net_config_delegate->OnNetworkConfigChange(changed_keys);
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -140,10 +141,10 @@ class NetworkConfigWatcherMacThread : public base::Thread {
   bool InitNotificationsHelper();
 
   base::ScopedCFTypeRef<CFRunLoopSourceRef> run_loop_source_;
-  NetworkConfigWatcherMac::Delegate* const delegate_;
-#if !defined(OS_IOS)
-  int num_retry_;
-#endif  // !defined(OS_IOS)
+  const raw_ptr<NetworkConfigWatcherMac::Delegate> delegate_;
+#if !BUILDFLAG(IS_IOS)
+  int num_retry_ = 0;
+#endif  // !BUILDFLAG(IS_IOS)
   base::WeakPtrFactory<NetworkConfigWatcherMacThread> weak_factory_;
 };
 
@@ -151,11 +152,7 @@ NetworkConfigWatcherMacThread::NetworkConfigWatcherMacThread(
     NetworkConfigWatcherMac::Delegate* delegate)
     : base::Thread("NetworkConfigWatcher"),
       delegate_(delegate),
-#if !defined(OS_IOS)
-      num_retry_(0),
-#endif  // !defined(OS_IOS)
-      weak_factory_(this) {
-}
+      weak_factory_(this) {}
 
 NetworkConfigWatcherMacThread::~NetworkConfigWatcherMacThread() {
   // This is expected to be invoked during shutdown.
@@ -164,12 +161,11 @@ NetworkConfigWatcherMacThread::~NetworkConfigWatcherMacThread() {
 }
 
 void NetworkConfigWatcherMacThread::Init() {
-  base::ThreadRestrictions::SetIOAllowed(true);
   delegate_->Init();
 
   // TODO(willchan): Look to see if there's a better signal for when it's ok to
   // initialize this, rather than just delaying it by a fixed time.
-  const base::TimeDelta kInitializationDelay = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta kInitializationDelay = base::Seconds(1);
   task_runner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&NetworkConfigWatcherMacThread::InitNotifications,
@@ -190,7 +186,7 @@ void NetworkConfigWatcherMacThread::InitNotifications() {
   // If initialization fails, retry after a 1s delay.
   bool success = InitNotificationsHelper();
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   if (!success && num_retry_ < kMaxRetry) {
     LOG(ERROR) << "Retrying SystemConfiguration registration in 1 second.";
     task_runner()->PostDelayedTask(
@@ -214,22 +210,22 @@ void NetworkConfigWatcherMacThread::InitNotifications() {
       kMaxRetry + 2);
 #else
   DCHECK(success);
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 bool NetworkConfigWatcherMacThread::InitNotificationsHelper() {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // SCDynamicStore API does not exist on iOS.
   // Add a run loop source for a dynamic store to the current run loop.
   SCDynamicStoreContext context = {
-    0,          // Version 0.
-    delegate_,  // User data.
-    NULL,       // This is not reference counted.  No retain function.
-    NULL,       // This is not reference counted.  No release function.
-    NULL,       // No description for this.
+      0,          // Version 0.
+      delegate_,  // User data.
+      nullptr,    // This is not reference counted.  No retain function.
+      nullptr,    // This is not reference counted.  No release function.
+      nullptr,    // No description for this.
   };
   base::ScopedCFTypeRef<SCDynamicStoreRef> store(SCDynamicStoreCreate(
-      NULL, CFSTR("org.chromium"), DynamicStoreCallback, &context));
+      nullptr, CFSTR("org.chromium"), DynamicStoreCallback, &context));
   if (!store) {
     int error = SCError();
     LOG(ERROR) << "SCDynamicStoreCreate failed with Error: " << error << " - "
@@ -239,8 +235,8 @@ bool NetworkConfigWatcherMacThread::InitNotificationsHelper() {
         ConvertToSCStatusCode(error), SCStatusCode::SC_COUNT);
     return false;
   }
-  run_loop_source_.reset(SCDynamicStoreCreateRunLoopSource(
-      NULL, store.get(), 0));
+  run_loop_source_.reset(
+      SCDynamicStoreCreateRunLoopSource(nullptr, store.get(), 0));
   if (!run_loop_source_) {
     int error = SCError();
     LOG(ERROR) << "SCDynamicStoreCreateRunLoopSource failed with Error: "
@@ -252,25 +248,26 @@ bool NetworkConfigWatcherMacThread::InitNotificationsHelper() {
   }
   CFRunLoopAddSource(CFRunLoopGetCurrent(), run_loop_source_.get(),
                      kCFRunLoopCommonModes);
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   // Set up notifications for interface and IP address changes.
   delegate_->StartReachabilityNotifications();
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   delegate_->SetDynamicStoreNotificationKeys(store.get());
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
   return true;
 }
 
 NetworkConfigWatcherMac::NetworkConfigWatcherMac(Delegate* delegate)
-    : notifier_thread_(new NetworkConfigWatcherMacThread(delegate)) {
+    : notifier_thread_(
+          std::make_unique<NetworkConfigWatcherMacThread>(delegate)) {
   // We create this notifier thread because the notification implementation
   // needs a thread with a CFRunLoop, and there's no guarantee that
   // CurrentThread::Get() meets that criterion.
   base::Thread::Options thread_options(base::MessagePumpType::UI, 0);
-  notifier_thread_->StartWithOptions(thread_options);
+  notifier_thread_->StartWithOptions(std::move(thread_options));
 }
 
-NetworkConfigWatcherMac::~NetworkConfigWatcherMac() {}
+NetworkConfigWatcherMac::~NetworkConfigWatcherMac() = default;
 
 }  // namespace net

@@ -3,13 +3,13 @@
         padding-bottom: 10px;
         padding-inline-end: var(--cr-section-padding);
         /* In order to line up with the checkbox text. */
-        padding-inline-start: var(--cr-section-indent-padding);
+        padding-inline-start: calc(var(--cr-section-padding) + 32px);
         padding-top: 10px;
       }
 
       #wideFooter {
         /* Override the cr-dialog footer padding. */
-        padding: 16px 0;
+        padding: 0;
       }
 
       #dialog-body {
@@ -27,7 +27,7 @@
       </div>
       <div slot="button-container">
         <cr-button id="disconnectCancel" class="cancel-button"
-            on-click="onDisconnectCancel_" >
+            on-click="onDisconnectCancel_">
           $i18n{cancel}
         </cr-button>
         <cr-button id="disconnectConfirm" class="action-button"
@@ -40,8 +40,9 @@
           $i18n{syncDisconnectConfirm}
         </cr-button>
       </div>
-<if expr="(not chromeos and is_posix) or is_win or is_macosx">
-      <template is="dom-if" if="[[!syncStatus.domain]]">
+<if expr="(not chromeos_ash and is_posix) or is_win or is_macosx">
+      <template is="dom-if"
+          if="[[isDeleteProfileFooterVisible_(syncStatus.domain)]]">
         <div id="wideFooter" slot="footer">
           <div class="cr-row first">
             <cr-checkbox id="deleteProfile" class="flex"

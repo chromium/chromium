@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 
 #include "base/containers/queue.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -38,6 +37,9 @@ class BluetoothChannelMac;
 class BluetoothSocketMac : public BluetoothSocket {
  public:
   static scoped_refptr<BluetoothSocketMac> CreateSocket();
+
+  BluetoothSocketMac(const BluetoothSocketMac&) = delete;
+  BluetoothSocketMac& operator=(const BluetoothSocketMac&) = delete;
 
   // Connects this socket to the service on |device| published as UUID |uuid|.
   // The underlying protocol and PSM or Channel is obtained through service
@@ -195,8 +197,6 @@ class BluetoothSocketMac : public BluetoothSocket {
 
   // Queue of incoming connections.
   base::queue<std::unique_ptr<BluetoothChannelMac>> accept_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketMac);
 };
 
 }  // namespace device

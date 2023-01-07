@@ -1,0 +1,29 @@
+caption: Define domains allowed to access <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google
+  Workspace</ph>
+desc: |-
+  Setting the policy turns on Chrome's restricted sign-in feature in <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph> and prevents users from changing this setting. Users can only access Google tools using accounts from the specified domains (to allow gmail or googlemail accounts, add consumer_accounts to the list of domains). This setting prevents users from signing in and adding a Secondary Account on a managed device that requires Google authentication, if that account doesn't belong to one of the explicitly allowed domains.
+
+        Leaving this setting empty or unset means users can access <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph> with any account.
+
+        Users cannot change or override this setting.
+
+        Note: This policy causes the X-GoogApps-Allowed-Domains header to be appended to all HTTP and HTTPS requests to all google.com domains, as described in https://support.google.com/a/answer/1668854.
+example_value: managedchrome.com,example.com
+features:
+  can_be_recommended: false
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- igorcov@chromium.org
+- atwilson@chromium.org
+schema:
+  type: string
+supported_on:
+- chrome.*:51-
+- chrome_os:51-
+- android:51-
+tags:
+- filtering
+type: string

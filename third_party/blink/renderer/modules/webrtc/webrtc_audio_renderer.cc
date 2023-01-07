@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
+#include "base/ranges/algorithm.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "media/audio/audio_sink_parameters.h"
@@ -17,6 +19,7 @@
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_latency.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/channel_layout.h"
 #include "media/base/sample_rates.h"
@@ -30,6 +33,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/webrtc/peer_connection_remote_audio_source.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
@@ -56,11 +60,10 @@ const media::AudioParameters::Format kFormat =
 // Time constant for AudioPowerMonitor. See See AudioPowerMonitor ctor comments
 // for details.
 constexpr base::TimeDelta kPowerMeasurementTimeConstant =
-    base::TimeDelta::FromMilliseconds(10);
+    base::Milliseconds(10);
 
 // Time in seconds between two successive measurements of audio power levels.
-constexpr base::TimeDelta kPowerMonitorLogInterval =
-    base::TimeDelta::FromSeconds(15);
+constexpr base::TimeDelta kPowerMonitorLogInterval = base::Seconds(15);
 
 // Used for UMA histograms.
 const int kRenderTimeHistogramMinMicroseconds = 100;
@@ -83,11 +86,11 @@ const char* OutputDeviceStatusToString(media::OutputDeviceStatus status) {
 
 const char* StateToString(WebRtcAudioRenderer::State state) {
   switch (state) {
-    case WebRtcAudioRenderer::UNINITIALIZED:
+    case WebRtcAudioRenderer::kUninitialized:
       return "UNINITIALIZED";
-    case WebRtcAudioRenderer::PLAYING:
+    case WebRtcAudioRenderer::kPlaying:
       return "PLAYING";
-    case WebRtcAudioRenderer::PAUSED:
+    case WebRtcAudioRenderer::kPaused:
       return "PAUSED";
   }
 }
@@ -200,25 +203,6 @@ class SharedAudioRenderer : public WebMediaStreamAudioRenderer {
 
 }  // namespace
 
-class WebRtcAudioRenderer::InternalFrame {
- public:
-  explicit InternalFrame(WebLocalFrame* web_frame)
-      : frame_(web_frame ? static_cast<LocalFrame*>(
-                               WebLocalFrame::ToCoreFrame(*web_frame))
-                         : nullptr) {}
-
-  LocalFrame* frame() { return frame_.Get(); }
-  WebLocalFrame* web_frame() {
-    if (!frame_)
-      return nullptr;
-
-    return static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(frame()));
-  }
-
- private:
-  WeakPersistent<LocalFrame> frame_;
-};
-
 WebRtcAudioRenderer::AudioStreamTracker::AudioStreamTracker(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     WebRtcAudioRenderer* renderer,
@@ -236,7 +220,7 @@ WebRtcAudioRenderer::AudioStreamTracker::AudioStreamTracker(
   // CheckAlive() will look to see if |render_callbacks_started_| is true
   // after the timeout expires and log this. If the stream is paused/closed
   // before the timer fires, a warning is logged instead.
-  check_alive_timer_.StartOneShot(base::TimeDelta::FromSeconds(5), FROM_HERE);
+  check_alive_timer_.StartOneShot(base::Seconds(5), FROM_HERE);
 }
 
 WebRtcAudioRenderer::AudioStreamTracker::~AudioStreamTracker() {
@@ -303,13 +287,13 @@ void WebRtcAudioRenderer::AudioStreamTracker::CheckAlive(TimerBase*) {
 WebRtcAudioRenderer::WebRtcAudioRenderer(
     const scoped_refptr<base::SingleThreadTaskRunner>& signaling_thread,
     MediaStreamDescriptor* media_stream_descriptor,
-    WebLocalFrame* web_frame,
+    WebLocalFrame& web_frame,
     const base::UnguessableToken& session_id,
     const String& device_id,
     base::RepeatingCallback<void()> on_render_error_callback)
-    : task_runner_(Thread::Current()->GetTaskRunner()),
-      state_(UNINITIALIZED),
-      source_internal_frame_(std::make_unique<InternalFrame>(web_frame)),
+    : task_runner_(web_frame.GetTaskRunner(TaskType::kInternalMediaRealTime)),
+      state_(kUninitialized),
+      source_frame_(To<LocalFrame>(WebFrame::ToCoreFrame(web_frame))),
       session_id_(session_id),
       signaling_thread_(signaling_thread),
       media_stream_descriptor_(media_stream_descriptor),
@@ -317,12 +301,12 @@ WebRtcAudioRenderer::WebRtcAudioRenderer(
       source_(nullptr),
       play_ref_count_(0),
       start_ref_count_(0),
-      sink_params_(kFormat, media::CHANNEL_LAYOUT_STEREO, 0, 0),
+      sink_params_(kFormat, media::ChannelLayoutConfig::Stereo(), 0, 0),
       output_device_id_(device_id),
       on_render_error_callback_(std::move(on_render_error_callback)) {
-  if (web_frame && web_frame->Client()) {
+  if (web_frame.Client()) {
     speech_recognition_client_ =
-        web_frame->Client()->CreateSpeechRecognitionClient(
+        web_frame.Client()->CreateSpeechRecognitionClient(
             media::BindToCurrentLoop(
                 ConvertToBaseOnceCallback(CrossThreadBindOnce(
                     &WebRtcAudioRenderer::EnableSpeechRecognition,
@@ -337,7 +321,7 @@ WebRtcAudioRenderer::WebRtcAudioRenderer(
 
 WebRtcAudioRenderer::~WebRtcAudioRenderer() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_EQ(state_, UNINITIALIZED);
+  DCHECK_EQ(state_, kUninitialized);
 }
 
 bool WebRtcAudioRenderer::Initialize(WebRtcAudioRendererSource* source) {
@@ -346,16 +330,16 @@ bool WebRtcAudioRenderer::Initialize(WebRtcAudioRendererSource* source) {
   DCHECK(!sink_.get());
   {
     base::AutoLock auto_lock(lock_);
-    DCHECK_EQ(state_, UNINITIALIZED);
+    DCHECK_EQ(state_, kUninitialized);
     DCHECK(!source_);
   }
   SendLogMessage(
       String::Format("%s([state=%s])", __func__, StateToString(state_)));
 
   media::AudioSinkParameters sink_params(session_id_, output_device_id_.Utf8());
-  sink_params.processing_id = source->GetAudioProcessingId();
   sink_ = Platform::Current()->NewAudioRendererSink(
-      WebAudioDeviceSourceType::kWebRtc, source_internal_frame_->web_frame(),
+      WebAudioDeviceSourceType::kWebRtc,
+      static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(source_frame_)),
       sink_params);
 
   media::OutputDeviceStatus sink_status =
@@ -379,7 +363,7 @@ bool WebRtcAudioRenderer::Initialize(WebRtcAudioRendererSource* source) {
     source_ = source;
 
     // User must call Play() before any audio can be heard.
-    state_ = PAUSED;
+    state_ = kPaused;
   }
   source_->SetOutputDeviceForAec(output_device_id_);
   sink_->Start();
@@ -395,8 +379,8 @@ WebRtcAudioRenderer::CreateSharedAudioRendererProxy(
   SharedAudioRenderer::OnPlayStateChanged on_play_state_changed =
       WTF::BindRepeating(&WebRtcAudioRenderer::OnPlayStateChanged,
                          WrapRefCounted(this));
-  SharedAudioRenderer::OnPlayStateRemoved on_play_state_removed =
-      WTF::Bind(&WebRtcAudioRenderer::OnPlayStateRemoved, WrapRefCounted(this));
+  SharedAudioRenderer::OnPlayStateRemoved on_play_state_removed = WTF::BindOnce(
+      &WebRtcAudioRenderer::OnPlayStateRemoved, WrapRefCounted(this));
   return new SharedAudioRenderer(this, media_stream_descriptor,
                                  std::move(on_play_state_changed),
                                  std::move(on_play_state_removed));
@@ -437,14 +421,14 @@ void WebRtcAudioRenderer::EnterPlayState() {
   SendLogMessage(
       String::Format("%s([state=%s])", __func__, StateToString(state_)));
   base::AutoLock auto_lock(lock_);
-  if (state_ == UNINITIALIZED)
+  if (state_ == kUninitialized)
     return;
 
-  DCHECK(play_ref_count_ == 0 || state_ == PLAYING);
+  DCHECK(play_ref_count_ == 0 || state_ == kPlaying);
   ++play_ref_count_;
 
-  if (state_ != PLAYING) {
-    state_ = PLAYING;
+  if (state_ != kPlaying) {
+    state_ = kPlaying;
 
     audio_stream_tracker_.emplace(task_runner_, this,
                                   sink_params_.sample_rate());
@@ -476,13 +460,13 @@ void WebRtcAudioRenderer::EnterPauseState() {
   SendLogMessage(
       String::Format("%s([state=%s])", __func__, StateToString(state_)));
   base::AutoLock auto_lock(lock_);
-  if (state_ == UNINITIALIZED)
+  if (state_ == kUninitialized)
     return;
 
-  DCHECK_EQ(state_, PLAYING);
+  DCHECK_EQ(state_, kPlaying);
   DCHECK_GT(play_ref_count_, 0);
   if (!--play_ref_count_)
-    state_ = PAUSED;
+    state_ = kPaused;
   SendLogMessage(
       String::Format("%s => (state=%s)", __func__, StateToString(state_)));
 }
@@ -493,7 +477,7 @@ void WebRtcAudioRenderer::Stop() {
     SendLogMessage(
         String::Format("%s([state=%s])", __func__, StateToString(state_)));
     base::AutoLock auto_lock(lock_);
-    if (state_ == UNINITIALIZED)
+    if (state_ == kUninitialized)
       return;
 
     if (--start_ref_count_)
@@ -502,7 +486,7 @@ void WebRtcAudioRenderer::Stop() {
     audio_stream_tracker_.reset();
     source_->RemoveAudioRenderer(this);
     source_ = nullptr;
-    state_ = UNINITIALIZED;
+    state_ = kUninitialized;
   }
 
   // Apart from here, |max_render_time_| is only accessed in SourceCallback(),
@@ -560,23 +544,18 @@ void WebRtcAudioRenderer::SwitchOutputDevice(
 
   {
     base::AutoLock auto_lock(lock_);
-    DCHECK_NE(state_, UNINITIALIZED);
+    DCHECK_NE(state_, kUninitialized);
   }
 
-  auto* web_frame = source_internal_frame_->web_frame();
-#if !defined(OS_ANDROID)
-  // Frames are allowed to be null in Android due to an issue in tests.
-  // In practice, this is not an issue, since Android does not support
-  // setSinkId(). https://crbug.com/1119689
+  auto* web_frame =
+      static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(source_frame_));
   if (!web_frame) {
     SendLogMessage(String::Format("%s => (ERROR: No Frame)", __func__));
     std::move(callback).Run(media::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
     return;
   }
-#endif
 
   media::AudioSinkParameters sink_params(session_id_, device_id);
-  sink_params.processing_id = source_->GetAudioProcessingId();
   scoped_refptr<media::AudioRendererSink> new_sink =
       Platform::Current()->NewAudioRendererSink(
           WebAudioDeviceSourceType::kWebRtc, web_frame, sink_params);
@@ -661,7 +640,7 @@ int WebRtcAudioRenderer::Render(base::TimeDelta delay,
   else
     SourceCallback(0, audio_bus);
 
-  if (state_ == PLAYING && audio_stream_tracker_) {
+  if (state_ == kPlaying && audio_stream_tracker_) {
     // Mark the stream as alive the first time this method is called.
     audio_stream_tracker_->OnRenderCallbackCalled();
     audio_stream_tracker_->MeasurePower(*audio_bus, audio_bus->frames());
@@ -676,7 +655,7 @@ int WebRtcAudioRenderer::Render(base::TimeDelta delay,
                                    sink_params_.channel_layout());
   }
 
-  return (state_ == PLAYING) ? audio_bus->frames() : 0;
+  return (state_ == kPlaying) ? audio_bus->frames() : 0;
 }
 
 void WebRtcAudioRenderer::OnRenderError() {
@@ -701,23 +680,19 @@ void WebRtcAudioRenderer::SourceCallback(int fifo_frame_delay,
   DVLOG(2) << "WRAR::SourceCallback(" << fifo_frame_delay << ", "
            << audio_bus->channels() << ", " << audio_bus->frames() << ")";
 
-  int output_delay_milliseconds =
-      static_cast<int>(audio_delay_.InMilliseconds());
-  // TODO(grunell): This integer division by sample_rate will cause loss of
-  // partial milliseconds, and may cause avsync drift. http://crbug.com/586540
-  output_delay_milliseconds += fifo_frame_delay *
-                               base::Time::kMillisecondsPerSecond /
-                               sink_params_.sample_rate();
-  DVLOG(2) << "output_delay_milliseconds: " << output_delay_milliseconds;
+  const base::TimeDelta output_delay =
+      audio_delay_ + media::AudioTimestampHelper::FramesToTime(
+                         fifo_frame_delay, sink_params_.sample_rate());
+  DVLOG(2) << "output_delay (ms): " << output_delay.InMillisecondsF();
 
   // We need to keep render data for the |source_| regardless of |state_|,
   // otherwise the data will be buffered up inside |source_|.
-  source_->RenderData(audio_bus, sink_params_.sample_rate(),
-                      output_delay_milliseconds, &current_time_);
+  source_->RenderData(audio_bus, sink_params_.sample_rate(), output_delay,
+                      &current_time_);
 
   // Avoid filling up the audio bus if we are not playing; instead
   // return here and ensure that the returned value in Render() is 0.
-  if (state_ != PLAYING)
+  if (state_ != kPlaying)
     audio_bus->Zero();
 
   // Measure the elapsed time for this function and log it to UMA. Store the max
@@ -800,7 +775,7 @@ bool WebRtcAudioRenderer::RemovePlayingState(
     return false;
 
   PlayingStates& array = found->second;
-  auto state_it = std::find(array.begin(), array.end(), state);
+  auto state_it = base::ranges::find(array, state);
   if (state_it == array.end())
     return false;
 
@@ -925,11 +900,8 @@ void WebRtcAudioRenderer::PrepareSink() {
   }
   const int sink_frames_per_buffer = media::AudioLatency::GetRtcBufferSize(
       sample_rate, device_info.output_params().frames_per_buffer());
-  new_sink_params.Reset(kFormat, channel_layout, sample_rate,
+  new_sink_params.Reset(kFormat, {channel_layout, channels}, sample_rate,
                         sink_frames_per_buffer);
-  if (channel_layout == media::CHANNEL_LAYOUT_DISCRETE) {
-    new_sink_params.set_channels_for_discrete(channels);
-  }
   DCHECK(new_sink_params.IsValid());
 
   // Create a FIFO if re-buffering is required to match the source input with
@@ -946,7 +918,8 @@ void WebRtcAudioRenderer::PrepareSink() {
     base::AutoLock lock(lock_);
     if ((!audio_fifo_ && different_source_sink_frames) ||
         (audio_fifo_ &&
-         audio_fifo_->SizeInFrames() != source_frames_per_buffer)) {
+         (audio_fifo_->SizeInFrames() != source_frames_per_buffer ||
+          channels != sink_params_.channels()))) {
       audio_fifo_ = std::make_unique<media::AudioPullFifo>(
           channels, source_frames_per_buffer,
           ConvertToBaseRepeatingCallback(

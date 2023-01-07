@@ -72,7 +72,7 @@ PASS elem.role is "AXRole: AXInputTime"
 input_reset_id
 PASS elem.role is "AXRole: AXButton"
 select_id
-PASS elem.role is "AXRole: AXPopUpButton"
+PASS elem.role is "AXRole: AXComboBoxSelect"
 PASS axMenuListPopup.role is "AXRole: AXMenuListPopup"
 select_option_id
 PASS axMenuListOption.role is "AXRole: AXMenuListOption"

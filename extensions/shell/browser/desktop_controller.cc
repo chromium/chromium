@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,11 @@
 #include <ostream>
 
 #include "base/check.h"
-#include "base/macros.h"
 
 namespace extensions {
 namespace {
 
-DesktopController* g_instance = NULL;
+DesktopController* g_instance = nullptr;
 
 }  // namespace
 
@@ -28,7 +27,7 @@ DesktopController::DesktopController() {
 
 DesktopController::~DesktopController() {
   DCHECK(g_instance);
-  g_instance = NULL;
+  g_instance = nullptr;
 }
 
 }  // namespace extensions

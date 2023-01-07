@@ -1,11 +1,10 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/first_run/first_run.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
 #include "base/values.h"
@@ -29,6 +28,10 @@ base::FilePath GetTestDataPath(const std::string& test_name) {
 }  // namespace
 
 class FirstRunTest : public testing::Test {
+ public:
+  FirstRunTest(const FirstRunTest&) = delete;
+  FirstRunTest& operator=(const FirstRunTest&) = delete;
+
  protected:
   FirstRunTest() : user_data_dir_override_(chrome::DIR_USER_DATA) {}
   ~FirstRunTest() override {}
@@ -40,8 +43,6 @@ class FirstRunTest : public testing::Test {
 
  private:
   base::ScopedPathOverride user_data_dir_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirstRunTest);
 };
 
 TEST_F(FirstRunTest, SetupInitialPrefsFromInstallPrefs_NoVariationsSeed) {
@@ -136,7 +137,7 @@ TEST_F(FirstRunTest, GetFirstRunSentinelCreationTime_NotCreated) {
 // TODO(ellyjones): Add a scoped override for
 // NSSearchPathForDirectoriesInDomains, then re-enable these on macOS.
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_InitialPrefsUsedIfReadable DISABLED_InitialPrefsUsedIfReadable
 #else
 #define MAYBE_InitialPrefsUsedIfReadable InitialPrefsUsedIfReadable
@@ -146,11 +147,17 @@ TEST_F(FirstRunTest, MAYBE_InitialPrefsUsedIfReadable) {
   base::ScopedPathOverride override(base::DIR_EXE, GetTestDataPath("initial"));
   std::unique_ptr<installer::InitialPreferences> prefs =
       first_run::LoadInitialPrefs();
+#if BUILDFLAG(IS_FUCHSIA)
+  // Initial preferences are not supported on Fuchsia and will thus return a
+  // null result.
+  ASSERT_FALSE(prefs);
+#else
   ASSERT_TRUE(prefs);
   EXPECT_EQ(prefs->GetFirstRunTabs()[0], "https://www.chromium.org/initial");
+#endif
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_LegacyInitialPrefsUsedIfNewFileIsNotPresent \
   DISABLED_LegacyInitialPrefsUsedIfNewFileIsNotPresent
 #else
@@ -162,8 +169,15 @@ TEST_F(FirstRunTest, MAYBE_LegacyInitialPrefsUsedIfNewFileIsNotPresent) {
   base::ScopedPathOverride override(base::DIR_EXE, GetTestDataPath("legacy"));
   std::unique_ptr<installer::InitialPreferences> prefs =
       first_run::LoadInitialPrefs();
+
+#if BUILDFLAG(IS_FUCHSIA)
+  // Initial preferences are not supported on Fuchsia and will thus return a
+  // null result.
+  ASSERT_FALSE(prefs);
+#else
   ASSERT_TRUE(prefs);
   EXPECT_EQ(prefs->GetFirstRunTabs()[0], "https://www.chromium.org/legacy");
+#endif
 }
 
 }  // namespace first_run

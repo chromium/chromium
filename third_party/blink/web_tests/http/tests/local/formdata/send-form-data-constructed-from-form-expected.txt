@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 28: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
       
 Test that FormData constructor takes a HTML Form element.
 Response: submitted=true&checkbox=value2&radio=value3&text=value4&file=test.txt:text/plain:Hello

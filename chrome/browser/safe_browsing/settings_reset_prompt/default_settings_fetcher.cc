@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/settings_reset_prompt/default_settings_fetcher.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -91,7 +92,7 @@ void DefaultSettingsFetcher::PostCallbackAndDeleteSelf(
     std::unique_ptr<BrandcodedDefaultSettings> default_settings) {
   // Use default settings if fetching of BrandcodedDefaultSettings failed.
   if (!default_settings)
-    default_settings.reset(new BrandcodedDefaultSettings());
+    default_settings = std::make_unique<BrandcodedDefaultSettings>();
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,

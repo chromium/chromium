@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,9 @@
 #define IOS_CHROME_BROWSER_NTP_NEW_TAB_PAGE_TAB_HELPER_DELEGATE_H_
 
 class NewTabPageTabHelper;
+namespace web {
+class WebState;
+}
 
 // Protocol defining a delegate for the NTP tab helper.
 @protocol NewTabPageTabHelperDelegate

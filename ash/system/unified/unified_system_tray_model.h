@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace display {
 class Display;
@@ -21,7 +24,8 @@ class Shelf;
 // Model class that stores UnifiedSystemTray's UI specific variables. Owned by
 // UnifiedSystemTray status area button. Not to be confused with UI agnostic
 // SystemTrayModel.
-class ASH_EXPORT UnifiedSystemTrayModel {
+class ASH_EXPORT UnifiedSystemTrayModel
+    : public base::RefCounted<UnifiedSystemTrayModel> {
  public:
   enum class StateOnOpen {
     // The user has not made any changes to the quick settings state.
@@ -57,17 +61,20 @@ class ASH_EXPORT UnifiedSystemTrayModel {
 
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // |by_user| is true when brightness is changed by user action.
     virtual void OnDisplayBrightnessChanged(bool by_user) {}
-    virtual void OnKeyboardBrightnessChanged(bool by_user) {}
+    virtual void OnKeyboardBrightnessChanged(
+        power_manager::BacklightBrightnessChange_Cause cause) {}
     virtual void OnSystemTrayButtonSizeChanged(
         SystemTrayButtonSize system_tray_size) {}
   };
 
   explicit UnifiedSystemTrayModel(Shelf* shelf);
-  ~UnifiedSystemTrayModel();
+
+  UnifiedSystemTrayModel(const UnifiedSystemTrayModel&) = delete;
+  UnifiedSystemTrayModel& operator=(const UnifiedSystemTrayModel&) = delete;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -75,14 +82,14 @@ class ASH_EXPORT UnifiedSystemTrayModel {
   // Returns true if the tray should be expanded when initially opened.
   bool IsExpandedOnOpen() const;
 
-  // Returns true if the user explicity set the tray to its
+  // Returns true if the user explicitly set the tray to its
   // expanded state.
   bool IsExplicitlyExpanded() const;
 
   // Returns empty if it's not manually expanded/collapsed. Otherwise, the value
   // is true if the notification is manually expanded, and false if it's
   // manually collapsed.
-  base::Optional<bool> GetNotificationExpanded(
+  absl::optional<bool> GetNotificationExpanded(
       const std::string& notification_id) const;
 
   // Sets a notification of |notification_id| is manually |expanded|.
@@ -92,7 +99,7 @@ class ASH_EXPORT UnifiedSystemTrayModel {
   // Removes the state of the notification of |notification_id|.
   void RemoveNotificationExpanded(const std::string& notification_id);
 
-  // Clears all changes by SetNotificatinExpanded().
+  // Clears all changes by SetNotificationExpanded().
   void ClearNotificationChanges();
 
   // Set the notification id of the target. This sets target mode as
@@ -124,13 +131,25 @@ class ASH_EXPORT UnifiedSystemTrayModel {
   PaginationModel* pagination_model() { return pagination_model_.get(); }
 
  private:
+  friend class UnifiedSystemTrayControllerTest;
+  // Required for private destructor to be called from RefCounted<>.
+  friend class base::RefCounted<UnifiedSystemTrayModel>;
+
   class DBusObserver;
 
   // Keeps track all the sources that can change the size of system tray button.
   class SizeObserver;
 
+  // Private destructor to prevent subverting reference counting.
+  // TODO(crbug/1269517): The use of this class should be refactored so that
+  // reference counting is not required. Likely, Message Center and Quick
+  // Settings will need to be combined.
+  ~UnifiedSystemTrayModel();
+
   void DisplayBrightnessChanged(float brightness, bool by_user);
-  void KeyboardBrightnessChanged(float brightness, bool by_user);
+  void KeyboardBrightnessChanged(
+      float brightness,
+      power_manager::BacklightBrightnessChange_Cause cause);
   void SystemTrayButtonSizeChanged(SystemTrayButtonSize system_tray_size);
 
   // Get the display that owns the tray.
@@ -168,8 +187,6 @@ class ASH_EXPORT UnifiedSystemTrayModel {
   base::ObserverList<Observer>::Unchecked observers_;
 
   std::unique_ptr<PaginationModel> pagination_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedSystemTrayModel);
 };
 
 }  // namespace ash

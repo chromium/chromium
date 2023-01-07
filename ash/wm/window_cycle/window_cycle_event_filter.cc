@@ -1,13 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/window_cycle/window_cycle_event_filter.h"
 
 #include "ash/accelerators/debug_commands.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_ash.h"
-#include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
@@ -81,7 +80,7 @@ void WindowCycleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
   if (!has_user_used_mouse_)
     SetHasUserUsedMouse(event);
 
-  if (features::IsInteractiveWindowCycleListEnabled() && has_user_used_mouse_) {
+  if (has_user_used_mouse_) {
     WindowCycleController* window_cycle_controller =
         Shell::Get()->window_cycle_controller();
     const bool cycle_list_is_visible =
@@ -127,22 +126,13 @@ void WindowCycleEventFilter::OnScrollEvent(ui::ScrollEvent* event) {
 }
 
 void WindowCycleEventFilter::OnGestureEvent(ui::GestureEvent* event) {
-  if (features::IsInteractiveWindowCycleListEnabled()) {
-    ProcessGestureEvent(event);
-  } else {
-    // Prevent any form of tap from doing anything while the Alt+Tab UI is
-    // active.
-    if (event->type() == ui::ET_GESTURE_TAP ||
-        event->type() == ui::ET_GESTURE_DOUBLE_TAP ||
-        event->type() == ui::ET_GESTURE_TAP_CANCEL ||
-        event->type() == ui::ET_GESTURE_TAP_DOWN ||
-        event->type() == ui::ET_GESTURE_TAP_UNCONFIRMED ||
-        event->type() == ui::ET_GESTURE_TWO_FINGER_TAP ||
-        event->type() == ui::ET_GESTURE_LONG_PRESS ||
-        event->type() == ui::ET_GESTURE_LONG_TAP) {
-      event->StopPropagation();
-    }
+  if (Shell::Get()->window_cycle_controller()->IsEventInTabSliderContainer(
+          event)) {
+    // Return immediately if the event is on the tab slider container. Pass
+    // the event to the tab slider buttons to handle it.
+    return;
   }
+  ProcessGestureEvent(event);
 }
 
 void WindowCycleEventFilter::HandleTriggerKey(ui::KeyEvent* event) {
@@ -151,7 +141,7 @@ void WindowCycleEventFilter::HandleTriggerKey(ui::KeyEvent* event) {
     repeat_timer_.Stop();
   } else if (ShouldRepeatKey(event)) {
     repeat_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromMilliseconds(180),
+        FROM_HERE, base::Milliseconds(180),
         base::BindRepeating(
             &WindowCycleController::HandleCycleWindow,
             base::Unretained(Shell::Get()->window_cycle_controller()),
@@ -166,7 +156,6 @@ void WindowCycleEventFilter::HandleTriggerKey(ui::KeyEvent* event) {
 bool WindowCycleEventFilter::IsTriggerKey(ui::KeyEvent* event) const {
   const ui::KeyboardCode key_code = event->key_code();
   const bool interactive_trigger_key =
-      features::IsInteractiveWindowCycleListEnabled() &&
       (key_code == ui::VKEY_LEFT || key_code == ui::VKEY_RIGHT);
 
   const bool nav_trigger_key =
@@ -182,9 +171,8 @@ bool WindowCycleEventFilter::IsTriggerKey(ui::KeyEvent* event) const {
 }
 
 bool WindowCycleEventFilter::IsExitKey(ui::KeyEvent* event) const {
-  return features::IsInteractiveWindowCycleListEnabled() &&
-         (event->key_code() == ui::VKEY_RETURN ||
-          event->key_code() == ui::VKEY_SPACE);
+  return event->key_code() == ui::VKEY_RETURN ||
+         event->key_code() == ui::VKEY_SPACE;
 }
 
 bool WindowCycleEventFilter::ShouldRepeatKey(ui::KeyEvent* event) const {
@@ -278,7 +266,11 @@ void WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
       if (!window_cycle_controller->IsEventInCycleView(event))
         return;
 
-      window_cycle_controller->StartFling(event->details().velocity_x());
+      // Only start a fling if the x-velocity is non-zero to avoid crashing when
+      // creating a fling curve. See crbug.com/1224969.
+      float velocity_x = event->details().velocity_x();
+      if (velocity_x != 0.f)
+        window_cycle_controller->StartFling(velocity_x);
       break;
     }
     case ui::ET_GESTURE_END: {
@@ -286,10 +278,9 @@ void WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
         // Defer calling WindowCycleController::CompleteCycling() until we've
         // set |event| to handled and stop its propagation.
         should_complete_cycling = true;
-      } else {
-        tapped_window_ = nullptr;
-        touch_scrolling_ = false;
       }
+      tapped_window_ = nullptr;
+      touch_scrolling_ = false;
       break;
     }
     default:
@@ -311,7 +302,7 @@ void WindowCycleEventFilter::ProcessGestureEvent(ui::GestureEvent* event) {
 bool WindowCycleEventFilter::ProcessEventImpl(int finger_count,
                                               float delta_x,
                                               float delta_y) {
-  if (!scroll_data_ || !features::IsInteractiveWindowCycleListEnabled())
+  if (!scroll_data_)
     return false;
 
   if (finger_count != 2 && finger_count != 3) {
@@ -346,10 +337,8 @@ bool WindowCycleEventFilter::ProcessEventImpl(int finger_count,
 bool WindowCycleEventFilter::CycleWindowCycleList(int finger_count,
                                                   float scroll_x,
                                                   float scroll_y) {
-  if (!features::IsInteractiveWindowCycleListEnabled() ||
-      (finger_count != 2 && finger_count != 3)) {
+  if (finger_count != 2 && finger_count != 3)
     return false;
-  }
 
   auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
   if (!window_cycle_controller->IsCycling() ||
@@ -405,6 +394,7 @@ void WindowCycleEventFilter::AltReleaseHandler::OnKeyEvent(
   // Views uses VKEY_MENU for both left and right Alt keys.
   if (event->key_code() == ui::VKEY_MENU &&
       event->type() == ui::ET_KEY_RELEASED) {
+    event->StopPropagation();
     Shell::Get()->window_cycle_controller()->CompleteCycling();
     // Warning: |this| will be deleted from here on.
   }

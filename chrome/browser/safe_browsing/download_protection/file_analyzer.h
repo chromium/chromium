@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,20 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_rar_analyzer.h"
+#include "chrome/services/file_util/public/cpp/sandboxed_seven_zip_analyzer.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_zip_analyzer.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+#include "chrome/services/file_util/public/cpp/sandboxed_document_analyzer.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
 #include "chrome/common/safe_browsing/disk_image_type_sniffer_mac.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_dmg_analyzer_mac.h"
 #endif
@@ -40,10 +46,6 @@ class FileAnalyzer {
     // inspection (does it contain binaries/archives?). So we return a type.
     ClientDownloadRequest::DownloadType type;
 
-    // For archive files, whether the archive is valid. Has unspecified contents
-    // for non-archive files.
-    ArchiveValid archive_is_valid;
-
     // For archive files, whether the archive contains an executable. Has
     // unspecified contents for non-archive files.
     bool archived_executable = false;
@@ -63,7 +65,7 @@ class FileAnalyzer {
     // For executables, information about the file headers.
     ClientDownloadRequest::ImageHeaders image_headers;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // For DMG files, the signature of the DMG.
     std::vector<uint8_t> disk_image_signature;
 
@@ -73,11 +75,11 @@ class FileAnalyzer {
         detached_code_signatures;
 #endif
 
-    // For archive files, the number of contained files.
-    int file_count = 0;
+    // For office documents, the features and metadata extracted from the file.
+    ClientDownloadRequest::DocumentSummary document_summary;
 
-    // For archive files, the number of contained directories.
-    int directory_count = 0;
+    // For archives, the features and metadata extracted from the file.
+    ClientDownloadRequest::ArchiveSummary archive_summary;
   };
 
   explicit FileAnalyzer(
@@ -97,29 +99,46 @@ class FileAnalyzer {
   void StartExtractRarFeatures();
   void OnRarAnalysisFinished(const ArchiveAnalyzerResults& archive_results);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void StartExtractDmgFeatures();
   void ExtractFileOrDmgFeatures(bool download_file_has_koly_signature);
   void OnDmgAnalysisFinished(
       const safe_browsing::ArchiveAnalyzerResults& archive_results);
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  void StartExtractDocumentFeatures();
+  void OnDocumentAnalysisFinished(
+      const DocumentAnalyzerResults& document_results);
+#endif
+
+  void StartExtractSevenZipFeatures();
+  void OnSevenZipAnalysisFinished(
+      const ArchiveAnalyzerResults& archive_results);
+
+  void LogAnalysisDurationWithAndWithoutSuffix(const std::string& suffix);
+
   base::FilePath target_path_;
   base::FilePath tmp_path_;
   scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor_;
   base::OnceCallback<void(Results)> callback_;
+  base::Time start_time_;
   Results results_;
 
   scoped_refptr<SandboxedZipAnalyzer> zip_analyzer_;
-  base::TimeTicks zip_analysis_start_time_;
 
   scoped_refptr<SandboxedRarAnalyzer> rar_analyzer_;
-  base::TimeTicks rar_analysis_start_time_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   scoped_refptr<SandboxedDMGAnalyzer> dmg_analyzer_;
-  base::TimeTicks dmg_analysis_start_time_;
 #endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+  scoped_refptr<SandboxedDocumentAnalyzer> document_analyzer_;
+  base::TimeTicks document_analysis_start_time_;
+#endif
+
+  scoped_refptr<SandboxedSevenZipAnalyzer> seven_zip_analyzer_;
 
   base::WeakPtrFactory<FileAnalyzer> weakptr_factory_{this};
 };

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/big_endian.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
-#include "web_bundle_builder.h"
+#include "components/web_package/web_bundle_builder.h"
 
 namespace data_decoder {
 
@@ -75,7 +75,7 @@ void WebBundler::OnGetResourceInfo(mojom::SerializedResourceInfoPtr info) {
       base::BindOnce(&WebBundler::OnGetResourceBody, base::Unretained(this)));
 }
 
-void WebBundler::OnGetResourceBody(base::Optional<mojo_base::BigBuffer> body) {
+void WebBundler::OnGetResourceBody(absl::optional<mojo_base::BigBuffer> body) {
   if (body->size() > kMaxBodySize) {
     std::move(callback_).Run(0, mojom::WebBundlerError::kInvalidInput);
     return;
@@ -93,11 +93,10 @@ void WebBundler::WriteWebBundleIndex() {
   GURL::Replacements replacements;
   replacements.ClearRef();
   url = url.ReplaceComponents(replacements);
-  WebBundleBuilder builder(url.spec());
   std::set<GURL> url_set;
   CHECK_EQ(resources_.size(), bodies_.size());
   std::vector<mojom::SerializedResourceInfoPtr> resources;
-  std::vector<base::Optional<mojo_base::BigBuffer>> bodies;
+  std::vector<absl::optional<mojo_base::BigBuffer>> bodies;
   for (size_t i = 0; i < resources_.size(); ++i) {
     auto& info_list = resources_[i];
     auto& body_list = bodies_[i];
@@ -113,8 +112,27 @@ void WebBundler::WriteWebBundleIndex() {
       }
     }
   }
-  std::vector<uint8_t> bundle =
-      builder.CreateBundle(std::move(resources), std::move(bodies));
+
+  CHECK_EQ(resources.size(), bodies.size());
+  web_package::WebBundleBuilder builder(web_package::BundleVersion::kB2);
+  builder.AddPrimaryURL(url.spec());
+  for (size_t i = 0; i < resources.size(); ++i) {
+    const auto& info = resources[i];
+    const auto& body = bodies[i];
+    web_package::WebBundleBuilder::Headers headers = {
+        {":status", "200"}, {"content-type", info->mime_type}};
+    web_package::WebBundleBuilder::ResponseLocation response_location =
+        builder.AddResponse(
+            headers, body ? base::StringPiece(
+                                reinterpret_cast<const char*>(body->data()),
+                                body->size())
+                          : "");
+    GURL::Replacements resource_replacements;
+    resource_replacements.ClearRef();
+    GURL resource_url = info->url.ReplaceComponents(resource_replacements);
+    builder.AddIndexEntry(resource_url.spec(), response_location);
+  }
+  std::vector<uint8_t> bundle = builder.CreateBundle();
   int written_size = file_.WriteAtCurrentPos(
       reinterpret_cast<const char*>(bundle.data()), bundle.size());
   DCHECK_EQ(static_cast<int>(bundle.size()), written_size);

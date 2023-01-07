@@ -1,15 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -21,6 +19,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "content/public/browser/web_contents.h"
@@ -37,6 +36,11 @@ using extensions::Extension;
 class ExtensionInstallUIBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   ExtensionInstallUIBrowserTest() {}
+
+  ExtensionInstallUIBrowserTest(const ExtensionInstallUIBrowserTest&) = delete;
+  ExtensionInstallUIBrowserTest& operator=(
+      const ExtensionInstallUIBrowserTest&) = delete;
+
   ~ExtensionInstallUIBrowserTest() override {}
 
   // Checks that a theme info bar is currently visible and issues an undo to
@@ -45,15 +49,15 @@ class ExtensionInstallUIBrowserTest : public extensions::ExtensionBrowserTest {
     WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ASSERT_TRUE(web_contents);
-    InfoBarService* infobar_service =
-        InfoBarService::FromWebContents(web_contents);
-    ASSERT_EQ(1U, infobar_service->infobar_count());
+    infobars::ContentInfoBarManager* infobar_manager =
+        infobars::ContentInfoBarManager::FromWebContents(web_contents);
+    ASSERT_EQ(1U, infobar_manager->infobar_count());
     ConfirmInfoBarDelegate* delegate =
-        infobar_service->infobar_at(0)->delegate()->AsConfirmInfoBarDelegate();
+        infobar_manager->infobar_at(0)->delegate()->AsConfirmInfoBarDelegate();
     ASSERT_TRUE(delegate);
     delegate->Cancel();
     WaitForThemeChange();
-    ASSERT_EQ(0U, infobar_service->infobar_count());
+    ASSERT_EQ(0U, infobar_manager->infobar_count());
   }
 
   // Install the given theme from the data dir and verify expected name.
@@ -89,9 +93,6 @@ class ExtensionInstallUIBrowserTest : public extensions::ExtensionBrowserTest {
         ThemeServiceFactory::GetForProfile(browser()->profile()));
     waiter.WaitForThemeChanged();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallUIBrowserTest);
 };
 
 // Fails on Linux and Windows (http://crbug.com/580907).
@@ -105,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
   ASSERT_TRUE(theme);
   std::string theme_id = theme->id();
   VerifyThemeInfoBarAndUndoInstall();
-  ASSERT_EQ(NULL, GetTheme());
+  ASSERT_EQ(nullptr, GetTheme());
 
   // Set the same theme twice and undo to verify we go back to default theme.
   ASSERT_TRUE(InstallExtensionWithUIAutoConfirm(theme_crx, 0, browser()));
@@ -119,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,
   ASSERT_TRUE(theme);
   ASSERT_EQ(theme_id, theme->id());
   VerifyThemeInfoBarAndUndoInstall();
-  ASSERT_EQ(NULL, GetTheme());
+  ASSERT_EQ(nullptr, GetTheme());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionInstallUIBrowserTest,

@@ -1,8 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/events/win/keyboard_hook_monitor_impl.h"
+
+#include "base/no_destructor.h"
 
 namespace ui {
 

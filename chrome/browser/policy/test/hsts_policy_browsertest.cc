@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "url/gurl.h"
@@ -25,10 +26,10 @@ class HSTSPolicyTest : public PolicyTest {
   void SetUpInProcessBrowserTestFixture() override {
     PolicyTest::SetUpInProcessBrowserTestFixture();
     PolicyMap policies;
-    std::vector<base::Value> bypass_list;
-    bypass_list.emplace_back(base::Value("example"));
+    base::Value::List bypass_list;
+    bypass_list.Append("example");
     SetPolicy(&policies, key::kHSTSPolicyBypassList,
-              base::ListValue(bypass_list));
+              base::Value(std::move(bypass_list)));
     provider_.UpdateChromePolicy(policies);
   }
 };
@@ -44,13 +45,13 @@ IN_PROC_BROWSER_TEST_F(HSTSPolicyTest, HSTSPolicyBypassList) {
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url("http://example/");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   // If the policy didn't take effect, the request to http://example would be
   // upgraded to https://example. This checks that the HSTS upgrade to https
   // didn't happen.
-  EXPECT_EQ(url, contents->GetURL());
+  EXPECT_EQ(url, contents->GetLastCommittedURL());
 }
 
 }  // namespace policy

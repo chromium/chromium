@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.embedder_support.view.ContentViewRenderView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 
 class CastWebContentsScopes {
@@ -32,8 +33,10 @@ class CastWebContentsScopes {
     public static Observer<WebContents> onLayoutActivity(
             Activity activity, FrameLayout layout, @ColorInt int backgroundColor) {
         layout.setBackgroundColor(backgroundColor);
-        return onLayoutInternal(
-                activity, layout, () -> new ActivityWindowAndroid(activity), backgroundColor);
+        return onLayoutInternal(activity, layout, () -> {
+            return new ActivityWindowAndroid(activity, /* listenToActivityState= */ true,
+                    IntentRequestTracker.createFromActivity(activity));
+        }, backgroundColor);
     }
 
     public static Observer<WebContents> onLayoutFragment(
@@ -48,7 +51,7 @@ class CastWebContentsScopes {
         layout.setBackgroundColor(backgroundColor);
         return onLayoutInternal(context, layout, () -> new WindowAndroid(context) {
             @Override
-            protected IBinder getWindowToken() {
+            public IBinder getWindowToken() {
                 return windowTokenProvider.provideWindowToken();
             }
         }, backgroundColor);

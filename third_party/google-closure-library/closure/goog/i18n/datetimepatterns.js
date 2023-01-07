@@ -1,21 +1,12 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 /**
  * @fileoverview Extended date/time patterns.
  *
- * File generated from CLDR ver. 36
+ * File generated from CLDR ver. 39
  *
  * To reduce the file size (which may cause issues in some JS
  * developing environments), this file will only contain locales
@@ -25,7 +16,7 @@
  * "datetimepatternsext.js", which will be generated at
  * the same time together with this file.
  *
- * @suppress {const}
+ * @suppress {const,useOfGoogProvide}
  */
 
 // clang-format off
@@ -155,6 +146,8 @@ goog.provide('goog.i18n.DateTimePatterns_zh_HK');
 goog.provide('goog.i18n.DateTimePatterns_zh_TW');
 goog.provide('goog.i18n.DateTimePatterns_zu');
 
+goog.requireType('goog.i18n.DateTimePatternsType');
+
 
 /**
  * Extended set of localized date/time patterns for locale af.
@@ -218,7 +211,7 @@ goog.i18n.DateTimePatterns_ar = {
   WEEKDAY_MONTH_DAY_MEDIUM: 'EEE، d MMM',
   WEEKDAY_MONTH_DAY_YEAR_MEDIUM: 'EEE، d MMM y',
   DAY_ABBR: 'd',
-  MONTH_DAY_TIME_ZONE_SHORT: 'd MMM h:mm a zzzz'
+  MONTH_DAY_TIME_ZONE_SHORT: 'd MMM, h:mm a zzzz'
 };
 
 
@@ -298,7 +291,7 @@ goog.i18n.DateTimePatterns_bg = {
   WEEKDAY_MONTH_DAY_MEDIUM: 'EEE, d.MM',
   WEEKDAY_MONTH_DAY_YEAR_MEDIUM: 'EEE, d.MM.y \'г\'.',
   DAY_ABBR: 'd',
-  MONTH_DAY_TIME_ZONE_SHORT: 'd.MM, HH:mm zzzz'
+  MONTH_DAY_TIME_ZONE_SHORT: 'd.MM, HH:mm \'ч\'. zzzz'
 };
 
 
@@ -748,14 +741,14 @@ goog.i18n.DateTimePatterns_es = {
 goog.i18n.DateTimePatterns_es_419 = {
   YEAR_FULL: 'y',
   YEAR_FULL_WITH_ERA: 'y G',
-  YEAR_MONTH_ABBR: 'MMMM \'de\' y',
+  YEAR_MONTH_ABBR: 'MMM \'de\' y',
   YEAR_MONTH_FULL: 'MMMM \'de\' y',
   YEAR_MONTH_SHORT: 'M/y',
   MONTH_DAY_ABBR: 'd MMM',
   MONTH_DAY_FULL: 'dd \'de\' MMMM',
   MONTH_DAY_SHORT: 'd/M',
   MONTH_DAY_MEDIUM: 'd \'de\' MMMM',
-  MONTH_DAY_YEAR_MEDIUM: 'd \'de\' MMMM \'de\' y',
+  MONTH_DAY_YEAR_MEDIUM: 'd \'de\' MMM \'de\' y',
   WEEKDAY_MONTH_DAY_MEDIUM: 'EEE, d MMM',
   WEEKDAY_MONTH_DAY_YEAR_MEDIUM: 'EEE, d \'de\' MMM \'de\' y',
   DAY_ABBR: 'd',
@@ -777,16 +770,16 @@ goog.i18n.DateTimePatterns_es_ES = goog.i18n.DateTimePatterns_es;
 goog.i18n.DateTimePatterns_es_MX = {
   YEAR_FULL: 'y',
   YEAR_FULL_WITH_ERA: 'y G',
-  YEAR_MONTH_ABBR: 'MMMM \'de\' y',
+  YEAR_MONTH_ABBR: 'MMM \'de\' y',
   YEAR_MONTH_FULL: 'MMMM \'de\' y',
   YEAR_MONTH_SHORT: 'MM/y',
   MONTH_DAY_ABBR: 'd MMM',
   MONTH_DAY_FULL: 'dd \'de\' MMMM',
   MONTH_DAY_SHORT: 'd/M',
   MONTH_DAY_MEDIUM: 'd \'de\' MMMM',
-  MONTH_DAY_YEAR_MEDIUM: 'd \'de\' MMMM \'de\' y',
+  MONTH_DAY_YEAR_MEDIUM: 'd \'de\' MMM \'de\' y',
   WEEKDAY_MONTH_DAY_MEDIUM: 'EEE d \'de\' MMM',
-  WEEKDAY_MONTH_DAY_YEAR_MEDIUM: 'EEE, d \'de\' MMMM \'de\' y',
+  WEEKDAY_MONTH_DAY_YEAR_MEDIUM: 'EEE, d \'de\' MMM \'de\' y',
   DAY_ABBR: 'd',
   MONTH_DAY_TIME_ZONE_SHORT: 'd MMM HH:mm zzzz'
 };
@@ -799,16 +792,16 @@ goog.i18n.DateTimePatterns_es_MX = {
 goog.i18n.DateTimePatterns_es_US = {
   YEAR_FULL: 'y',
   YEAR_FULL_WITH_ERA: 'y G',
-  YEAR_MONTH_ABBR: 'MMMM \'de\' y',
+  YEAR_MONTH_ABBR: 'MMM \'de\' y',
   YEAR_MONTH_FULL: 'MMMM \'de\' y',
   YEAR_MONTH_SHORT: 'MM/y',
   MONTH_DAY_ABBR: 'd MMM',
   MONTH_DAY_FULL: 'dd \'de\' MMMM',
   MONTH_DAY_SHORT: 'd/M',
   MONTH_DAY_MEDIUM: 'd \'de\' MMMM',
-  MONTH_DAY_YEAR_MEDIUM: 'd \'de\' MMMM \'de\' y',
+  MONTH_DAY_YEAR_MEDIUM: 'd \'de\' MMM \'de\' y',
   WEEKDAY_MONTH_DAY_MEDIUM: 'EEE, d \'de\' MMM',
-  WEEKDAY_MONTH_DAY_YEAR_MEDIUM: 'EEE, d \'de\' MMMM \'de\' y',
+  WEEKDAY_MONTH_DAY_YEAR_MEDIUM: 'EEE, d \'de\' MMM \'de\' y',
   DAY_ABBR: 'd',
   MONTH_DAY_TIME_ZONE_SHORT: 'd MMM h:mm a zzzz'
 };
@@ -942,7 +935,7 @@ goog.i18n.DateTimePatterns_fr = {
   WEEKDAY_MONTH_DAY_MEDIUM: 'EEE d MMM',
   WEEKDAY_MONTH_DAY_YEAR_MEDIUM: 'EEE d MMM y',
   DAY_ABBR: 'd',
-  MONTH_DAY_TIME_ZONE_SHORT: 'd MMM \'à\' HH:mm zzzz'
+  MONTH_DAY_TIME_ZONE_SHORT: 'd MMM, HH:mm zzzz'
 };
 
 
@@ -964,7 +957,7 @@ goog.i18n.DateTimePatterns_fr_CA = {
   WEEKDAY_MONTH_DAY_MEDIUM: 'EEE d MMM',
   WEEKDAY_MONTH_DAY_YEAR_MEDIUM: 'EEE d MMM y',
   DAY_ABBR: 'd',
-  MONTH_DAY_TIME_ZONE_SHORT: 'd MMM HH \'h\' mm zzzz'
+  MONTH_DAY_TIME_ZONE_SHORT: 'd MMM, HH \'h\' mm zzzz'
 };
 
 
@@ -1558,7 +1551,7 @@ goog.i18n.DateTimePatterns_mk = {
   WEEKDAY_MONTH_DAY_MEDIUM: 'EEE, d MMM',
   WEEKDAY_MONTH_DAY_YEAR_MEDIUM: 'EEE, d MMM y \'г\'.',
   DAY_ABBR: 'd',
-  MONTH_DAY_TIME_ZONE_SHORT: 'd MMM HH:mm zzzz'
+  MONTH_DAY_TIME_ZONE_SHORT: 'd MMM, \'во\' HH:mm zzzz'
 };
 
 
@@ -2446,55 +2439,6 @@ goog.i18n.DateTimePatterns_zu = {
   DAY_ABBR: 'd',
   MONTH_DAY_TIME_ZONE_SHORT: 'MMM d HH:mm zzzz'
 };
-
-
-/**
- * @record
- * @struct
- */
-goog.i18n.DateTimePatternsType = function() {};
-
-/** @type {string} */
-goog.i18n.DateTimePatternsType.prototype.YEAR_FULL;
-
-/** @type {string} */
-goog.i18n.DateTimePatternsType.prototype.YEAR_FULL_WITH_ERA;
-
-/** @type {string} */
-goog.i18n.DateTimePatternsType.prototype.YEAR_MONTH_ABBR;
-
-/** @type {string} */
-goog.i18n.DateTimePatternsType.prototype.YEAR_MONTH_FULL;
-
-/** @type {string} */
-goog.i18n.DateTimePatternsType.prototype.YEAR_MONTH_SHORT;
-
-/** @type {string} */
-goog.i18n.DateTimePatternsType.prototype.MONTH_DAY_ABBR;
-
-/** @type {string} */
-goog.i18n.DateTimePatternsType.prototype.MONTH_DAY_FULL;
-
-/** @type {string} */
-goog.i18n.DateTimePatternsType.prototype.MONTH_DAY_SHORT;
-
-/** @type {string} */
-goog.i18n.DateTimePatternsType.prototype.MONTH_DAY_MEDIUM;
-
-/** @type {string} */
-goog.i18n.DateTimePatternsType.prototype.MONTH_DAY_YEAR_MEDIUM;
-
-/** @type {string} */
-goog.i18n.DateTimePatternsType.prototype.WEEKDAY_MONTH_DAY_MEDIUM;
-
-/** @type {string} */
-goog.i18n.DateTimePatternsType.prototype.WEEKDAY_MONTH_DAY_YEAR_MEDIUM;
-
-/** @type {string} */
-goog.i18n.DateTimePatternsType.prototype.DAY_ABBR;
-
-/** @type {string} */
-goog.i18n.DateTimePatternsType.prototype.MONTH_DAY_TIME_ZONE_SHORT;
 
 
 /**

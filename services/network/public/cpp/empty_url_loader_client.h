@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -25,6 +24,10 @@ class COMPONENT_EXPORT(NETWORK_CPP) EmptyURLLoaderClient
       public mojo::DataPipeDrainer::Client {
  public:
   EmptyURLLoaderClient();
+
+  EmptyURLLoaderClient(const EmptyURLLoaderClient&) = delete;
+  EmptyURLLoaderClient& operator=(const EmptyURLLoaderClient&) = delete;
+
   ~EmptyURLLoaderClient() override;
 
   // Calls |callback| when the request is done.
@@ -35,16 +38,16 @@ class COMPONENT_EXPORT(NETWORK_CPP) EmptyURLLoaderClient
 
   // mojom::URLLoaderClient overrides:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
-  void OnReceiveResponse(mojom::URLResponseHeadPtr head) override;
+  void OnReceiveResponse(
+      mojom::URLResponseHeadPtr head,
+      mojo::ScopedDataPipeConsumerHandle body,
+      absl::optional<mojo_base::BigBuffer> cached_metadata) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback callback) override;
-  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
-  void OnStartLoadingResponseBody(
-      mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const URLLoaderCompletionStatus& status) override;
 
   // mojo::DataPipeDrainer::Client overrides:
@@ -53,10 +56,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) EmptyURLLoaderClient
 
   std::unique_ptr<mojo::DataPipeDrainer> response_body_drainer_;
 
-  base::Optional<URLLoaderCompletionStatus> done_status_;
+  absl::optional<URLLoaderCompletionStatus> done_status_;
   base::OnceCallback<void(const URLLoaderCompletionStatus&)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmptyURLLoaderClient);
 };
 
 // Self-owned helper class for using EmptyURLLoaderClient.

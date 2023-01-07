@@ -1,20 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/navigation/crw_error_page_helper.h"
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/public/test/web_view_content_test_util.h"
+#import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/test/web_int_test.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "url/url_canon.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "url/url_canon.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,7 +39,7 @@ class CRWErrorPageHelperIntTest : public WebIntTest {
     EXPECT_TRUE(server_.Start()) << "Server didn't start";
   }
 
-  // Returns an error page helper initialized with |url| as the url of the
+  // Returns an error page helper initialized with `url` as the url of the
   // failing page (original page).
   CRWErrorPageHelper* HelperForUrl(const std::string& url) {
     NSString* url_string = base::SysUTF8ToNSString(url);
@@ -100,8 +101,10 @@ TEST_F(CRWErrorPageHelperIntTest, InjectHTMLAndReload) {
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), kInitialBody));
 
   // Inject the HTML and check that it is replacing the content.
-  ExecuteJavaScript([helper scriptForInjectingHTML:GetInjectedHtml()
-                                addAutomaticReload:YES]);
+  web::test::ExecuteJavaScript(
+      web_state(),
+      base::SysNSStringToUTF8([helper scriptForInjectingHTML:GetInjectedHtml()
+                                          addAutomaticReload:YES]));
 
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), kInjectedBody));
   ASSERT_TRUE(test::WaitForWebViewNotContainingText(web_state(), kInitialBody));
@@ -130,8 +133,10 @@ TEST_F(CRWErrorPageHelperIntTest, InjectHTMLWithoutReload) {
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), kInitialBody));
 
   // Inject the HTML and check that it is replacing the content.
-  ExecuteJavaScript([helper scriptForInjectingHTML:GetInjectedHtml()
-                                addAutomaticReload:NO]);
+  web::test::ExecuteJavaScript(
+      web_state(),
+      base::SysNSStringToUTF8([helper scriptForInjectingHTML:GetInjectedHtml()
+                                          addAutomaticReload:NO]));
 
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), kInjectedBody));
   ASSERT_TRUE(test::WaitForWebViewNotContainingText(web_state(), kInitialBody));

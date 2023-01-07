@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@
 // dismissed on screen.
 @protocol ActivityServicePresentation
 
-// Called after the activity services UI has been dismissed.  The UIKit-provided
-// UIViewController dismisses itself automatically, so the UI does not need to
-// be dismissed in this method.  Instead, it is provided to allow implementors
-// to perform cleanup after the UI is gone.
+// Called after the activity services UI has been completed successfully.
+// It is provided to allow implementors to dismiss the UI and perform cleanup.
 - (void)activityServiceDidEndPresenting;
 
 @end

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,6 @@ GPUComputePassEncoder::GPUComputePassEncoder(
     GPUDevice* device,
     WGPUComputePassEncoder compute_pass_encoder)
     : DawnObject<WGPUComputePassEncoder>(device, compute_pass_encoder) {}
-
-void GPUComputePassEncoder::setBindGroup(uint32_t index,
-                                         GPUBindGroup* bindGroup) {
-  GetProcs().computePassEncoderSetBindGroup(GetHandle(), index,
-                                            bindGroup->GetHandle(), 0, nullptr);
-}
 
 void GPUComputePassEncoder::setBindGroup(
     uint32_t index,
@@ -53,42 +47,29 @@ void GPUComputePassEncoder::setBindGroup(
                                             dynamic_offsets_data_length, data);
 }
 
-void GPUComputePassEncoder::pushDebugGroup(String groupLabel) {
-  std::string label = groupLabel.Utf8();
-  GetProcs().computePassEncoderPushDebugGroup(GetHandle(), label.c_str());
-}
-
-void GPUComputePassEncoder::popDebugGroup() {
-  GetProcs().computePassEncoderPopDebugGroup(GetHandle());
-}
-
-void GPUComputePassEncoder::insertDebugMarker(String markerLabel) {
-  std::string label = markerLabel.Utf8();
-  GetProcs().computePassEncoderInsertDebugMarker(GetHandle(), label.c_str());
-}
-
-void GPUComputePassEncoder::setPipeline(GPUComputePipeline* pipeline) {
-  GetProcs().computePassEncoderSetPipeline(GetHandle(), pipeline->GetHandle());
-}
-
-void GPUComputePassEncoder::dispatch(uint32_t x, uint32_t y, uint32_t z) {
-  GetProcs().computePassEncoderDispatch(GetHandle(), x, y, z);
-}
-
-void GPUComputePassEncoder::dispatchIndirect(GPUBuffer* indirectBuffer,
-                                             uint64_t indirectOffset) {
-  GetProcs().computePassEncoderDispatchIndirect(
-      GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
-}
-
-void GPUComputePassEncoder::writeTimestamp(GPUQuerySet* querySet,
-                                           uint32_t queryIndex) {
-  GetProcs().computePassEncoderWriteTimestamp(
-      GetHandle(), querySet->GetHandle(), queryIndex);
-}
-
 void GPUComputePassEncoder::endPass() {
-  GetProcs().computePassEncoderEndPass(GetHandle());
+  device_->AddConsoleWarning(
+      "endPass() has been deprecated and will soon be "
+      "removed. Use end() instead.");
+  end();
+}
+
+void GPUComputePassEncoder::dispatch(uint32_t workgroup_count_x,
+                                     uint32_t workgroup_count_y,
+                                     uint32_t workgroup_count_z) {
+  device_->AddConsoleWarning(
+      "dispatch() has been deprecated and will soon be "
+      "removed. Use dispatchWorkgroups() instead.");
+  dispatchWorkgroups(workgroup_count_x, workgroup_count_y, workgroup_count_z);
+}
+
+void GPUComputePassEncoder::dispatchIndirect(
+    const DawnObject<WGPUBuffer>* indirectBuffer,
+    uint64_t indirectOffset) {
+  device_->AddConsoleWarning(
+      "dispatchIndirect() has been deprecated and will soon be "
+      "removed. Use dispatchWorkgroupsIndirect() instead.");
+  dispatchWorkgroupsIndirect(indirectBuffer, indirectOffset);
 }
 
 }  // namespace blink

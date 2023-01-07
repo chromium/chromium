@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,17 @@
 #include "base/files/scoped_file.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/synchronization/lock.h"
+#include "ui/ozone/platform/wayland/test/test_gtk_primary_selection.h"
+#include "ui/ozone/platform/wayland/test/test_zwp_primary_selection.h"
 
 namespace wl {
+
+namespace {
+// TODO(1365887): This is a lock that workarounds a problem when wl_client_flush
+// is called from multiple threads.
+static base::Lock g_global_lock_;
+}  // namespace
 
 void DisplayDeleter::operator()(wl_display* display) {
   wl_display_destroy(display);
@@ -30,6 +38,8 @@ TestWaylandServerThread::TestWaylandServerThread()
                    base::WaitableEvent::InitialState::NOT_SIGNALED),
       resume_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                     base::WaitableEvent::InitialState::NOT_SIGNALED),
+      compositor_v4_(4),
+      compositor_v3_(3),
       controller_(FROM_HERE) {}
 
 TestWaylandServerThread::~TestWaylandServerThread() {
@@ -44,7 +54,14 @@ TestWaylandServerThread::~TestWaylandServerThread() {
   Stop();
 }
 
-bool TestWaylandServerThread::Start(uint32_t shell_version) {
+// static
+void TestWaylandServerThread::FlushClientForResource(wl_resource* resource) {
+  DCHECK(resource);
+  base::AutoLock scoped_lock(g_global_lock_);
+  wl_client_flush(wl_resource_get_client(resource));
+}
+
+bool TestWaylandServerThread::Start(const ServerConfig& config) {
   display_.reset(wl_display_create());
   if (!display_)
     return false;
@@ -58,11 +75,18 @@ bool TestWaylandServerThread::Start(uint32_t shell_version) {
 
   if (wl_display_init_shm(display_.get()) < 0)
     return false;
-  if (!compositor_.Initialize(display_.get()))
-    return false;
+  if (config.compositor_version == CompositorVersion::kV3) {
+    if (!compositor_v3_.Initialize(display_.get()))
+      return false;
+  } else {
+    if (!compositor_v4_.Initialize(display_.get()))
+      return false;
+  }
   if (!sub_compositor_.Initialize(display_.get()))
     return false;
   if (!viewporter_.Initialize(display_.get()))
+    return false;
+  if (!alpha_compositing_.Initialize(display_.get()))
     return false;
   if (!output_.Initialize(display_.get()))
     return false;
@@ -70,20 +94,34 @@ bool TestWaylandServerThread::Start(uint32_t shell_version) {
 
   if (!data_device_manager_.Initialize(display_.get()))
     return false;
+  if (!SetupPrimarySelectionManager(config.primary_selection_protocol))
+    return false;
+
   if (!seat_.Initialize(display_.get()))
     return false;
-  if (shell_version == 6) {
+  if (config.shell_version == ShellVersion::kV6) {
     if (!zxdg_shell_v6_.Initialize(display_.get()))
       return false;
-  } else if (shell_version == 7) {
+  } else {
     if (!xdg_shell_.Initialize(display_.get()))
       return false;
-  } else {
-    NOTREACHED() << "Unsupported shell version: " << shell_version;
+    if (!zaura_shell_.Initialize(display_.get()))
+      return false;
   }
+  if (!zcr_stylus_.Initialize(display_.get()))
+    return false;
+  if (!zcr_text_input_extension_v1_.Initialize(display_.get()))
+    return false;
   if (!zwp_text_input_manager_v1_.Initialize(display_.get()))
     return false;
+  if (!SetupExplicitSynchronizationProtocol(
+          config.use_explicit_synchronization))
+    return false;
   if (!zwp_linux_dmabuf_v1_.Initialize(display_.get()))
+    return false;
+  if (!overlay_prioritizer_.Initialize(display_.get()))
+    return false;
+  if (!wp_pointer_gestures_.Initialize(display_.get()))
     return false;
 
   client_ = wl_client_create(display_.get(), server_fd.release());
@@ -93,7 +131,7 @@ bool TestWaylandServerThread::Start(uint32_t shell_version) {
   base::Thread::Options options;
   options.message_pump_factory = base::BindRepeating(
       &TestWaylandServerThread::CreateMessagePump, base::Unretained(this));
-  if (!base::Thread::StartWithOptions(options))
+  if (!base::Thread::StartWithOptions(std::move(options)))
     return false;
 
   setenv("WAYLAND_SOCKET", base::NumberToString(client_fd.release()).c_str(),
@@ -110,14 +148,22 @@ void TestWaylandServerThread::Pause() {
 }
 
 void TestWaylandServerThread::Resume() {
-  if (display_)
+  if (display_) {
+    base::AutoLock scoped_lock(g_global_lock_);
     wl_display_flush_clients(display_.get());
+  }
   resume_event_.Signal();
 }
 
 MockWpPresentation* TestWaylandServerThread::EnsureWpPresentation() {
   if (wp_presentation_.Initialize(display_.get()))
     return &wp_presentation_;
+  return nullptr;
+}
+
+TestSurfaceAugmenter* TestWaylandServerThread::EnsureSurfaceAugmenter() {
+  if (surface_augmenter_.Initialize(display_.get()))
+    return &surface_augmenter_;
   return nullptr;
 }
 
@@ -131,6 +177,33 @@ void TestWaylandServerThread::SetupOutputs() {
   }
   if (output_.GetRect().IsEmpty())
     output_.SetRect(gfx::Rect{0, 0, 800, 600});
+}
+
+bool TestWaylandServerThread::SetupPrimarySelectionManager(
+    PrimarySelectionProtocol protocol) {
+  switch (protocol) {
+    case PrimarySelectionProtocol::kNone:
+      return true;
+    case PrimarySelectionProtocol::kZwp:
+      primary_selection_device_manager_.reset(CreateTestSelectionManagerZwp());
+      break;
+    case PrimarySelectionProtocol::kGtk:
+      primary_selection_device_manager_.reset(CreateTestSelectionManagerGtk());
+      break;
+  }
+  return primary_selection_device_manager_->Initialize(display_.get());
+}
+
+bool TestWaylandServerThread::SetupExplicitSynchronizationProtocol(
+    ShouldUseExplicitSynchronizationProtocol usage) {
+  switch (usage) {
+    case ShouldUseExplicitSynchronizationProtocol::kNone:
+      return true;
+    case ShouldUseExplicitSynchronizationProtocol::kUse:
+      return zwp_linux_explicit_synchronization_v1_.Initialize(display_.get());
+  }
+  NOTREACHED();
+  return false;
 }
 
 void TestWaylandServerThread::DoPause() {
@@ -150,8 +223,10 @@ TestWaylandServerThread::CreateMessagePump() {
 
 void TestWaylandServerThread::OnFileCanReadWithoutBlocking(int fd) {
   wl_event_loop_dispatch(event_loop_, 0);
-  if (display_)
+  if (display_) {
+    base::AutoLock scoped_lock(g_global_lock_);
     wl_display_flush_clients(display_.get());
+  }
 }
 
 void TestWaylandServerThread::OnFileCanWriteWithoutBlocking(int fd) {}

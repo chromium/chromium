@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@ message AppLaunchEvent {
     SUGGESTION_CHIP = 2;
     SHELF = 3;
     SEARCH_BOX = 4;
+    RECENT_APPS = 5;
+    CONTINUE_TASKS = 6;
   }
   // The component that the user launched the app from.
   optional LaunchedFrom launched_from = 1;
@@ -22,7 +24,6 @@ message AppLaunchEvent {
     OTHER = 0;
     CHROME = 1;
     PLAY = 2;
-    // PWA AppType includes bookmark apps in addition to PWAs.
     PWA = 3;
   }
   // The type of App.

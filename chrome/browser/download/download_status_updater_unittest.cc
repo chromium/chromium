@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,20 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/download/chrome_download_manager_delegate.h"
+#include "chrome/browser/download/download_core_service.h"
+#include "chrome/browser/download/download_core_service_factory.h"
+#include "chrome/browser/download/download_core_service_impl.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_status_updater.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -51,7 +58,7 @@ class TestDownloadStatusUpdater : public DownloadStatusUpdater {
   }
  private:
   size_t notification_count_;
-  download::DownloadItem* acceptable_notification_item_;
+  raw_ptr<download::DownloadItem> acceptable_notification_item_;
 };
 
 class DownloadStatusUpdaterTest : public testing::Test {
@@ -107,6 +114,9 @@ class DownloadStatusUpdaterTest : public testing::Test {
         base::StringPrintf("Profile %d", i + 1));
     testing_profiles_.push_back(profile);
     EXPECT_CALL(*mgr, GetBrowserContext()).WillRepeatedly(Return(profile));
+    auto delegate = std::make_unique<ChromeDownloadManagerDelegate>(profile);
+    DownloadCoreServiceFactory::GetForBrowserContext(profile)
+        ->SetDownloadManagerDelegateForTesting(std::move(delegate));
     updater_->AddManager(mgr);
   }
 
@@ -125,6 +135,7 @@ class DownloadStatusUpdaterTest : public testing::Test {
       download::DownloadItem::DownloadState state =
           i < in_progress_count ? download::DownloadItem::IN_PROGRESS
                                 : download::DownloadItem::CANCELLED;
+      EXPECT_CALL(*item, IsTransient()).WillRepeatedly(Return(false));
       EXPECT_CALL(*item, GetState()).WillRepeatedly(Return(state));
       manager_items_[manager_index].push_back(item.get());
       all_owned_items_.push_back(std::move(item));
@@ -194,13 +205,12 @@ class DownloadStatusUpdaterTest : public testing::Test {
 
   // Pointer so we can verify that destruction triggers appropriate
   // changes.
-  TestDownloadStatusUpdater* updater_;
+  raw_ptr<TestDownloadStatusUpdater> updater_;
 
   // Thread so that the DownloadManager (which is a DeleteOnUIThread
   // object) can be deleted.
-  // TODO(rdsmith): This can be removed when the DownloadManager
-  // is no longer required to be deleted on the UI thread.
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   // To test ScopedProfileKeepAlive behavior.
   TestingProfileManager profile_manager_;
@@ -395,4 +405,77 @@ TEST_F(DownloadStatusUpdaterTest, HoldsKeepAlive) {
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(profile_manager->HasKeepAliveForTesting(
       profile1, ProfileKeepAliveOrigin::kDownloadInProgress));
+}
+
+// Test that the last completion time is logged in pref.
+TEST_F(DownloadStatusUpdaterTest, LogLastCompletionTimeInPrefs) {
+  SetupManagers(/*manager_count=*/1);
+  AddItems(/*manager_index=*/0, /*item_count=*/3, /*in_progress_count=*/0);
+  LinkManager(0);
+
+  DownloadPrefs* download_prefs =
+      DownloadPrefs::FromDownloadManager(Manager(0));
+  base::Time initial_time = download_prefs->GetLastCompleteTime();
+  base::Time current_time = base::Time::Now();
+
+  // Set the first download to in progress and notify the update.
+  SetItemValues(/*manager_index=*/0, /*item_index=*/0, /*received_bytes=*/90,
+                /*total_bytes=*/100, /*notify=*/true);
+  // The last complete time is still the initial time, because the download is
+  // not complete yet.
+  EXPECT_EQ(initial_time, download_prefs->GetLastCompleteTime());
+
+  // The first download has completed.
+  CompleteItem(/*manager_index=*/0, /*item_index=*/0);
+  // The last complete time is updated.
+  EXPECT_EQ(current_time, download_prefs->GetLastCompleteTime());
+
+  task_environment_.FastForwardBy(base::Hours(1));
+  // Set the second download item to in progress and notify the update.
+  SetItemValues(/*manager_index=*/0, /*item_index=*/1, /*received_bytes=*/90,
+                /*total_bytes=*/100, /*notify=*/true);
+  // The last complete time is not updated yet, because the second download is
+  // still in progress.
+  EXPECT_EQ(current_time, download_prefs->GetLastCompleteTime());
+
+  task_environment_.FastForwardBy(base::Hours(1));
+  // The second download has completed.
+  CompleteItem(/*manager_index=*/0, /*item_index=*/1);
+  // Completed time is updated
+  EXPECT_EQ(current_time + base::Hours(2),
+            download_prefs->GetLastCompleteTime());
+
+  task_environment_.FastForwardBy(base::Hours(1));
+  SetItemValues(/*manager_index=*/0, /*item_index=*/2, /*received_bytes=*/90,
+                /*total_bytes=*/100, /*notify=*/true);
+  EXPECT_CALL(*Item(/*manager_index=*/0, /*item_index=*/2), IsTransient())
+      .WillRepeatedly(Return(true));
+  CompleteItem(/*manager_index=*/0, /*item_index=*/2);
+  // Completed time is not updated, because this download is transient.
+  EXPECT_EQ(current_time + base::Hours(2),
+            download_prefs->GetLastCompleteTime());
+}
+
+// Tests that transient download will not trigger any updates.
+TEST_F(DownloadStatusUpdaterTest, TransientDownload) {
+  SetupManagers(/*manager_count=*/1);
+  AddItems(/*manager_index=*/0, /*item_count=*/2, /*in_progress_count=*/0);
+  LinkManager(0);
+
+  std::unique_ptr<download::MockDownloadItem> item =
+      std::make_unique<StrictMock<download::MockDownloadItem>>();
+
+  EXPECT_CALL(*item, GetState())
+      .WillRepeatedly(Return(download::DownloadItem::IN_PROGRESS));
+  EXPECT_CALL(*item, IsTransient()).WillRepeatedly(Return(true));
+  manager_items_[0].push_back(item.get());
+  all_owned_items_.push_back(std::move(item));
+  manager_observers_[0]->OnDownloadCreated(
+      managers_[0].get(), manager_items_[0][manager_items_[0].size() - 1]);
+
+  float progress = -1;
+  int download_count = -1;
+  EXPECT_TRUE(updater_->GetProgress(&progress, &download_count));
+  EXPECT_FLOAT_EQ(0.0f, progress);
+  EXPECT_EQ(0, download_count);
 }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ namespace {
 // be expensive, this is delayed so that it does not happen during startup.
 scoped_refptr<network::SharedURLLoaderFactory>
 CreateURLLoaderFactoryForBrowserContext(content::BrowserContext* context) {
-  return content::BrowserContext::GetDefaultStoragePartition(context)
+  return context->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 

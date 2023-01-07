@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,17 +12,19 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "cc/base/devtools_instrumentation.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/frame_info.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/scheduler/scheduler.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_timing_details.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 struct FrameTimingDetails;
@@ -30,7 +32,16 @@ struct FrameTimingDetails;
 
 namespace cc {
 class DroppedFrameCounter;
+class EventLatencyTracker;
+class FrameSequenceTrackerCollection;
 class LatencyUkmReporter;
+
+struct GlobalMetricsTrackers {
+  raw_ptr<DroppedFrameCounter> dropped_frame_counter = nullptr;
+  raw_ptr<LatencyUkmReporter> latency_ukm_reporter = nullptr;
+  raw_ptr<FrameSequenceTrackerCollection> frame_sequence_trackers = nullptr;
+  raw_ptr<EventLatencyTracker> event_latency_tracker = nullptr;
+};
 
 // This is used for tracing and reporting the duration of pipeline stages within
 // a single frame.
@@ -112,15 +123,18 @@ class CC_EXPORT CompositorFrameReporter {
     kAnimate = 1,
     kStyleUpdate = 2,
     kLayoutUpdate = 3,
-    kPrepaint = 4,
-    kCompositingInputs = 5,
-    kCompositingAssignments = 6,
+    kAccessibility = 4,
+    kPrepaint = 5,
+    kCompositingInputs = 6,
     kPaint = 7,
     kCompositeCommit = 8,
     kUpdateLayers = 9,
     kBeginMainSentToStarted = 10,
     kBreakdownCount
   };
+
+  // To distinguish between impl and main reporter
+  enum class ReporterType { kImpl = 0, kMain = 1 };
 
   struct CC_EXPORT StageData {
     StageType stage_type;
@@ -134,12 +148,19 @@ class CC_EXPORT CompositorFrameReporter {
     ~StageData();
   };
 
-  enum SmoothThread {
-    kSmoothNone,
-    kSmoothCompositor,
-    kSmoothMain,
-    kSmoothBoth
+  struct CC_EXPORT EventLatencyInfo {
+    std::vector<base::TimeDelta> dispatch_durations;
+    base::TimeDelta transition_duration;
+    std::vector<base::TimeDelta> compositor_durations;
+    base::TimeDelta total_duration;
+    std::string transition_name;
+    EventLatencyInfo(const int num_dispatch_stages,
+                     const int num_compositor_stages);
+    EventLatencyInfo(const EventLatencyInfo&);
+    ~EventLatencyInfo();
   };
+
+  using SmoothThread = FrameInfo::SmoothThread;
 
   // Holds a processed list of Blink breakdowns with an `Iterator` class to
   // easily iterator over them.
@@ -156,7 +177,7 @@ class CC_EXPORT CompositorFrameReporter {
       base::TimeDelta GetLatency() const;
 
      private:
-      const ProcessedBlinkBreakdown* owner_;
+      raw_ptr<const ProcessedBlinkBreakdown> owner_;
 
       size_t index_ = 0;
     };
@@ -194,7 +215,7 @@ class CC_EXPORT CompositorFrameReporter {
       base::TimeDelta GetDuration() const;
 
      private:
-      const ProcessedVizBreakdown* owner_;
+      raw_ptr<const ProcessedVizBreakdown> owner_;
       const bool skip_swap_start_to_swap_end_;
 
       size_t index_ = 0;
@@ -216,28 +237,53 @@ class CC_EXPORT CompositorFrameReporter {
     base::TimeTicks swap_start() const { return swap_start_; }
 
    private:
-    base::Optional<std::pair<base::TimeTicks, base::TimeTicks>>
+    absl::optional<std::pair<base::TimeTicks, base::TimeTicks>>
         list_[static_cast<int>(VizBreakdown::kBreakdownCount)];
 
     bool buffer_ready_available_ = false;
     base::TimeTicks swap_start_;
   };
 
-  using ActiveTrackers =
-      std::bitset<static_cast<size_t>(FrameSequenceTrackerType::kMaxType)>;
+  // Wrapper for all level of breakdown stages' prediction
+  struct CC_EXPORT CompositorLatencyInfo {
+    CompositorLatencyInfo();
+    explicit CompositorLatencyInfo(base::TimeDelta init_value);
+    ~CompositorLatencyInfo();
+
+    std::vector<base::TimeDelta> top_level_stages;
+    std::vector<base::TimeDelta> blink_breakdown_stages;
+    std::vector<base::TimeDelta> viz_breakdown_stages;
+
+    base::TimeDelta total_latency;
+    base::TimeDelta total_blink_latency;
+    base::TimeDelta total_viz_latency;
+  };
 
   CompositorFrameReporter(const ActiveTrackers& active_trackers,
                           const viz::BeginFrameArgs& args,
-                          LatencyUkmReporter* latency_ukm_reporter,
-                          bool should_report_metrics,
+                          bool should_report_histograms,
                           SmoothThread smooth_thread,
+                          FrameInfo::SmoothEffectDrivingThread scrolling_thread,
                           int layer_tree_host_id,
-                          DroppedFrameCounter* dropped_frame_counter);
+                          const GlobalMetricsTrackers& trackers);
   ~CompositorFrameReporter();
 
   CompositorFrameReporter(const CompositorFrameReporter& reporter) = delete;
   CompositorFrameReporter& operator=(const CompositorFrameReporter& reporter) =
       delete;
+
+  // Name for `CompositorFrameReporter::StageType`, possibly suffixed with the
+  // name of the appropriate breakdown.
+  static const char* GetStageName(
+      StageType stage_type,
+      absl::optional<VizBreakdown> viz_breakdown = absl::nullopt,
+      absl::optional<BlinkBreakdown> blink_breakdown = absl::nullopt,
+      bool impl_only = false);
+
+  // Name for the viz breakdowns which are shown in traces as substages under
+  // PipelineReporter -> SubmitCompositorFrameToPresentationCompositorFrame or
+  // EventLatency -> SubmitCompositorFrameToPresentationCompositorFrame.
+  static const char* GetVizBreakdownName(VizBreakdown breakdown);
 
   // Creates and returns a clone of the reporter, only if it is currently in the
   // 'begin impl frame' stage. For any other state, it returns null.
@@ -254,9 +300,15 @@ class CC_EXPORT CompositorFrameReporter {
   void SetBlinkBreakdown(std::unique_ptr<BeginMainFrameMetrics> blink_breakdown,
                          base::TimeTicks begin_main_start);
   void SetVizBreakdown(const viz::FrameTimingDetails& viz_breakdown);
-  void SetEventsMetrics(EventMetrics::List events_metrics);
 
-  int stage_history_size_for_testing() const { return stage_history_.size(); }
+  void AddEventsMetrics(EventMetrics::List events_metrics);
+
+  // Erase and return all EventMetrics objects from our list.
+  EventMetrics::List TakeEventsMetrics();
+
+  size_t stage_history_size_for_testing() const {
+    return stage_history_.size();
+  }
 
   void OnFinishImplFrame(base::TimeTicks timestamp);
   void OnAbortBeginMainFrame(base::TimeTicks timestamp);
@@ -302,6 +354,15 @@ class CC_EXPORT CompositorFrameReporter {
     return owned_partial_update_dependents_.size();
   }
 
+  void set_is_accompanied_by_main_thread_update(
+      bool is_accompanied_by_main_thread_update) {
+    is_accompanied_by_main_thread_update_ =
+        is_accompanied_by_main_thread_update;
+  }
+
+  void set_is_forked(bool is_forked) { is_forked_ = is_forked; }
+  void set_is_backfill(bool is_backfill) { is_backfill_ = is_backfill; }
+
   const viz::BeginFrameId& frame_id() const { return args_.frame_id; }
 
   // Adopts |cloned_reporter|, i.e. keeps |cloned_reporter| alive until after
@@ -315,6 +376,38 @@ class CC_EXPORT CompositorFrameReporter {
   CompositorFrameReporter* partial_update_decider() const {
     return partial_update_decider_.get();
   }
+  using FrameReportTypes =
+      std::bitset<static_cast<size_t>(FrameReportType::kMaxValue) + 1>;
+
+  // This function is called to calculate breakdown stage duration's prediction
+  // based on the `previous_predictions` and update the `previous_predictions`
+  // to the new prediction calculated.
+  void CalculateCompositorLatencyPrediction(
+      CompositorLatencyInfo& previous_predictions,
+      base::TimeDelta prediction_deviation_threshold);
+
+  // Sets EventLatency stage duration predictions based on previous trace
+  // durations using exponentially weighted averages.
+  void CalculateEventLatencyPrediction(
+      CompositorFrameReporter::EventLatencyInfo& predicted_event_latency,
+      base::TimeDelta prediction_deviation_threshold);
+
+  ReporterType get_reporter_type() { return reporter_type_; }
+
+  void set_reporter_type_to_impl() { reporter_type_ = ReporterType::kImpl; }
+  void set_reporter_type_to_main() { reporter_type_ = ReporterType::kMain; }
+
+  const std::vector<std::string>& high_latency_substages_for_testing() {
+    return high_latency_substages_;
+  }
+
+  void ClearHighLatencySubstagesForTesting() {
+    high_latency_substages_.clear();
+  }
+
+  std::vector<std::unique_ptr<EventMetrics>>& events_metrics_for_testing() {
+    return events_metrics_;
+  }
 
  protected:
   void set_has_partial_update(bool has_partial_update) {
@@ -325,7 +418,7 @@ class CC_EXPORT CompositorFrameReporter {
   void TerminateReporter();
   void EndCurrentStage(base::TimeTicks end_time);
 
-  void ReportCompositorLatencyHistograms() const;
+  void ReportCompositorLatencyMetrics() const;
   void ReportStageHistogramWithBreakdown(
       const StageData& stage,
       FrameSequenceTrackerType frame_sequence_tracker_type =
@@ -336,12 +429,13 @@ class CC_EXPORT CompositorFrameReporter {
       FrameSequenceTrackerType frame_sequence_tracker_type) const;
   void ReportCompositorLatencyHistogram(
       FrameSequenceTrackerType intraction_type,
-      const int stage_type_index,
+      StageType stage_type,
+      absl::optional<VizBreakdown> viz_breakdown,
+      absl::optional<BlinkBreakdown> blink_breakdown,
       base::TimeDelta time_delta) const;
 
-  void ReportEventLatencyHistograms() const;
-
-  void ReportCompositorLatencyTraceEvents() const;
+  void ReportEventLatencyMetrics() const;
+  void ReportCompositorLatencyTraceEvents(const FrameInfo& info) const;
   void ReportEventLatencyTraceEvents() const;
 
   void EnableReportType(FrameReportType report_type) {
@@ -359,11 +453,26 @@ class CC_EXPORT CompositorFrameReporter {
 
   base::TimeTicks Now() const;
 
-  bool IsDroppedFrameAffectingSmoothness() const;
+  FrameInfo GenerateFrameInfo() const;
 
   base::WeakPtr<CompositorFrameReporter> GetWeakPtr();
 
-  const bool should_report_metrics_;
+  // Erase and return only the EventMetrics objects which depend on main thread
+  // updates (see comments on EventMetrics::requires_main_thread_update_).
+  EventMetrics::List TakeMainBlockedEventsMetrics();
+
+  void FindHighLatencyAttribution(
+      CompositorLatencyInfo& previous_predictions,
+      CompositorLatencyInfo& current_stage_durations);
+
+  void FindEventLatencyAttribution(
+      EventMetrics* event_metrics,
+      CompositorFrameReporter::EventLatencyInfo& predicted_event_latency,
+      CompositorFrameReporter::EventLatencyInfo& actual_event_latency);
+
+  // Whether UMA histograms should be reported or not.
+  const bool should_report_histograms_;
+
   const viz::BeginFrameArgs args_;
 
   StageData current_stage_;
@@ -384,8 +493,7 @@ class CC_EXPORT CompositorFrameReporter {
   // List of metrics for events affecting this frame.
   EventMetrics::List events_metrics_;
 
-  std::bitset<static_cast<size_t>(FrameReportType::kMaxValue) + 1>
-      report_types_;
+  FrameReportTypes report_types_;
 
   base::TimeTicks frame_termination_time_;
   base::TimeTicks begin_main_frame_start_;
@@ -393,8 +501,7 @@ class CC_EXPORT CompositorFrameReporter {
       FrameTerminationStatus::kUnknown;
 
   const ActiveTrackers active_trackers_;
-
-  LatencyUkmReporter* latency_ukm_reporter_;
+  const FrameInfo::SmoothEffectDrivingThread scrolling_thread_;
 
   // Indicates if work on Impl frame is finished.
   bool did_finish_impl_frame_ = false;
@@ -404,14 +511,17 @@ class CC_EXPORT CompositorFrameReporter {
 
   // The timestamp of when the frame was marked as not having produced a frame
   // (through a call to DidNotProduceFrame()).
-  base::Optional<base::TimeTicks> did_not_produce_frame_time_;
-  base::Optional<FrameSkippedReason> frame_skip_reason_;
-  base::Optional<base::TimeTicks> main_frame_abort_time_;
+  absl::optional<base::TimeTicks> did_not_produce_frame_time_;
+  absl::optional<FrameSkippedReason> frame_skip_reason_;
+  absl::optional<base::TimeTicks> main_frame_abort_time_;
 
-  const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
+  raw_ptr<const base::TickClock> tick_clock_ =
+      base::DefaultTickClock::GetInstance();
 
-  DroppedFrameCounter* dropped_frame_counter_ = nullptr;
   bool has_partial_update_ = false;
+
+  // If the submitted frame has update from main thread
+  bool is_accompanied_by_main_thread_update_ = false;
 
   const SmoothThread smooth_thread_;
   const int layer_tree_host_id_;
@@ -419,6 +529,14 @@ class CC_EXPORT CompositorFrameReporter {
   // Indicates whether the submitted frame had any missing content (i.e. content
   // with checkerboarding).
   bool has_missing_content_ = false;
+
+  // Indicates whether the frame is forked (i.e. a PipelineReporter event starts
+  // at the same frame sequence as another PipelineReporter).
+  bool is_forked_ = false;
+
+  // Indicates whether the frame is backfill (i.e. dropped frames when there are
+  // no partial compositor updates).
+  bool is_backfill_ = false;
 
   // For a reporter A, if the main-thread takes a long time to respond
   // to a begin-main-frame, then all reporters created (and terminated) until
@@ -439,9 +557,15 @@ class CC_EXPORT CompositorFrameReporter {
   std::queue<std::unique_ptr<CompositorFrameReporter>>
       owned_partial_update_dependents_;
 
+  const GlobalMetricsTrackers global_trackers_;
+
+  std::vector<std::string> high_latency_substages_;
+
+  ReporterType reporter_type_;
+
   base::WeakPtrFactory<CompositorFrameReporter> weak_factory_{this};
 };
 
 }  // namespace cc
 
-#endif  // CC_METRICS_COMPOSITOR_FRAME_REPORTER_H_"
+#endif  // CC_METRICS_COMPOSITOR_FRAME_REPORTER_H_

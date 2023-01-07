@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,11 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
-#include "base/memory/ref_counted.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_config_service.h"
+#include "net/dns/public/win_dns_system_settings.h"
 
 // The general effort of DnsConfigServiceWin is to configure |nameservers| and
 // |search| in DnsConfig. The settings are stored in the Windows registry, but
@@ -48,76 +47,10 @@ std::string NET_EXPORT_PRIVATE ParseDomainASCII(base::WStringPiece widestr);
 std::vector<std::string> NET_EXPORT_PRIVATE
 ParseSearchList(base::WStringPiece value);
 
-// All relevant settings read from registry and IP Helper. This isolates our
-// logic from system calls and is exposed for unit tests. Keep it an aggregate
-// struct for easy initialization.
-struct NET_EXPORT_PRIVATE DnsSystemSettings {
-  // The |set| flag distinguishes between empty and unset values.
-  struct RegString {
-    bool set;
-    std::wstring value;
-  };
-
-  struct RegDword {
-    bool set;
-    DWORD value;
-  };
-
-  struct DevolutionSetting {
-    // UseDomainNameDevolution
-    RegDword enabled;
-    // DomainNameDevolutionLevel
-    RegDword level;
-  };
-
-  DnsSystemSettings();
-  ~DnsSystemSettings();
-
-  DnsSystemSettings(DnsSystemSettings&&);
-  DnsSystemSettings& operator=(DnsSystemSettings&&);
-
-  // Filled in by GetAdapterAddresses. Note that the alternative
-  // GetNetworkParams does not include IPv6 addresses.
-  std::unique_ptr<IP_ADAPTER_ADDRESSES, base::FreeDeleter> addresses;
-
-  // SOFTWARE\Policies\Microsoft\Windows NT\DNSClient\SearchList
-  RegString policy_search_list;
-  // SYSTEM\CurrentControlSet\Tcpip\Parameters\SearchList
-  RegString tcpip_search_list;
-  // SYSTEM\CurrentControlSet\Tcpip\Parameters\Domain
-  RegString tcpip_domain;
-  // SOFTWARE\Policies\Microsoft\System\DNSClient\PrimaryDnsSuffix
-  RegString primary_dns_suffix;
-
-  // SOFTWARE\Policies\Microsoft\Windows NT\DNSClient
-  DevolutionSetting policy_devolution;
-  // SYSTEM\CurrentControlSet\Dnscache\Parameters
-  DevolutionSetting dnscache_devolution;
-  // SYSTEM\CurrentControlSet\Tcpip\Parameters
-  DevolutionSetting tcpip_devolution;
-
-  // SOFTWARE\Policies\Microsoft\Windows NT\DNSClient\AppendToMultiLabelName
-  RegDword append_to_multi_label_name;
-
-  // True when the Name Resolution Policy Table (NRPT) has at least one rule:
-  // SOFTWARE\Policies\Microsoft\Windows NT\DNSClient\DnsPolicyConfig\Rule*
-  // (or)
-  // SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\DnsPolicyConfig\Rule*
-  bool have_name_resolution_policy = false;
-
-  // True when a proxy is configured via at least one rule:
-  // SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\DnsConnections
-  // (or)
-  // SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\DnsActiveIfs
-  // (or)
-  // SYSTEM\CurrentControlSet\Services\Dnscache\Parameters\DnsConnectionsProxies
-  bool have_proxy = false;
-};
-
 // Fills in |dns_config| from |settings|. Exposed for tests. Returns nullopt if
 // a valid config could not be determined.
-base::Optional<DnsConfig> NET_EXPORT_PRIVATE
-ConvertSettingsToDnsConfig(const DnsSystemSettings& settings);
+absl::optional<DnsConfig> NET_EXPORT_PRIVATE
+ConvertSettingsToDnsConfig(const WinDnsSystemSettings& settings);
 
 // Service for reading and watching Windows system DNS settings. This object is
 // not thread-safe and methods may perform blocking I/O so methods must be
@@ -128,6 +61,10 @@ ConvertSettingsToDnsConfig(const DnsSystemSettings& settings);
 class NET_EXPORT_PRIVATE DnsConfigServiceWin : public DnsConfigService {
  public:
   DnsConfigServiceWin();
+
+  DnsConfigServiceWin(const DnsConfigServiceWin&) = delete;
+  DnsConfigServiceWin& operator=(const DnsConfigServiceWin&) = delete;
+
   ~DnsConfigServiceWin() override;
 
  private:
@@ -141,10 +78,8 @@ class NET_EXPORT_PRIVATE DnsConfigServiceWin : public DnsConfigService {
   bool StartWatching() override;
 
   std::unique_ptr<Watcher> watcher_;
-  scoped_refptr<ConfigReader> config_reader_;
-  scoped_refptr<HostsReader> hosts_reader_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsConfigServiceWin);
+  std::unique_ptr<ConfigReader> config_reader_;
+  std::unique_ptr<HostsReader> hosts_reader_;
 };
 
 }  // namespace internal

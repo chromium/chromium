@@ -1,0 +1,56 @@
+<script type="text/javascript">
+
+function reportProgress(msg) {
+  if (window.domAutomationController) {
+    window.domAutomationController.send(msg);
+  }
+  console.log(msg);
+}
+
+async function requestDevice() {
+  const adapter = await navigator.gpu.requestAdapter();
+  if (!adapter) {
+    reportProgress('FAILED');
+    console.log('TEST FAILED - Could not get a GPUAdapter');
+    return null;
+  }
+
+  try {
+    return await adapter.requestDevice();
+  } catch {
+    reportProgress('FAILED');
+    console.log('TEST FAILED - Could not get a GPUDevice');
+    return null;
+  }
+}
+
+async function init() {
+  const device = await requestDevice();
+  if (device == null) {
+    return;
+  }
+  reportProgress('LOADED');
+
+  // The test runner forces the GPU process to terminate normally. This should
+  // NOT result in the domain being blocked.
+  console.log('Waiting for GPU termination to cause device loss');
+  const lost = await device.lost;
+  if (lost.reason !== undefined) {
+    console.log('TEST FAILED - Expected undefined device lost reason');
+    reportProgress('FAILED');
+    return;
+  }
+
+  try {
+    // Check that we can acquire a new device successfully.
+    const newDevice = await requestDevice();
+    if (newDevice) {
+      reportProgress('SUCCESS');
+      return;
+    }
+  } catch {
+  }
+}
+
+init();
+</script>

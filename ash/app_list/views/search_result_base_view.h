@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 
 #include "ash/app_list/model/search/search_result_observer.h"
 #include "ash/ash_export.h"
-#include "base/optional.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/controls/button/button.h"
 
 namespace ash {
@@ -21,6 +22,9 @@ class ASH_EXPORT SearchResultBaseView : public views::Button,
  public:
   SearchResultBaseView();
 
+  SearchResultBaseView(const SearchResultBaseView&) = delete;
+  SearchResultBaseView& operator=(const SearchResultBaseView&) = delete;
+
   // Set whether the result is selected. It updates the background highlight,
   // and selects the result action associated with the result if
   // SearchBoxSelection feature is enabled.
@@ -28,7 +32,7 @@ class ASH_EXPORT SearchResultBaseView : public views::Button,
   // |reverse_tab_order| - Indicates whether the selection was set as part of
   //     reverse tab traversal. Should be set when selection was changed while
   //     handling TAB keyboard key. Ignored if |selected| is false.
-  void SetSelected(bool selected, base::Optional<bool> reverse_tab_order);
+  void SetSelected(bool selected, absl::optional<bool> reverse_tab_order);
 
   // Selects the initial action that should be associated with the result view,
   // notifying a11y hierarchy of the selection. If the result view does not
@@ -63,7 +67,7 @@ class ASH_EXPORT SearchResultBaseView : public views::Button,
   void OnResultDestroying() override;
 
   // Computes the button's spoken feedback name.
-  virtual std::u16string ComputeAccessibleName() const;
+  std::u16string ComputeAccessibleName() const;
 
   // Clears the result without calling |OnResultChanged| or |OnResultChanging|
   void ClearResult();
@@ -119,7 +123,7 @@ class ASH_EXPORT SearchResultBaseView : public views::Button,
   SearchResultActionsView* actions_view_ = nullptr;
 
   // The index of this view within a |SearchResultContainerView| that holds it.
-  base::Optional<int> index_in_container_;
+  absl::optional<int> index_in_container_;
 
   // The starting time when |result_| is being displayed.
   base::TimeTicks result_display_start_time_;
@@ -128,8 +132,6 @@ class ASH_EXPORT SearchResultBaseView : public views::Button,
   // activated by user by pressing ENTER key.
   bool is_default_result_ = false;
   SearchResult* result_ = nullptr;  // Owned by SearchModel::SearchResults.
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultBaseView);
 };
 
 }  // namespace ash

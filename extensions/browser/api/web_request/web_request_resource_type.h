@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -28,6 +27,8 @@ enum class WebRequestResourceType : uint8_t {
   CSP_REPORT,
   MEDIA,
   WEB_SOCKET,
+  WEB_TRANSPORT,
+  WEBBUNDLE,
 
   OTHER,  // The type is unknown, or differs from all the above.
 };

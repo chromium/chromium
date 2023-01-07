@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,14 @@
 #ifndef REMOTING_PROTOCOL_CLIENT_STUB_H_
 #define REMOTING_PROTOCOL_CLIENT_STUB_H_
 
-#include "base/macros.h"
 #include "remoting/protocol/clipboard_stub.h"
 #include "remoting/protocol/cursor_shape_stub.h"
 #include "remoting/protocol/keyboard_layout_stub.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class Capabilities;
 class ExtensionMessage;
-class OpenUrlRequest;
 class PairingResponse;
 class TransportInfo;
 class VideoLayout;
@@ -30,6 +27,10 @@ class ClientStub : public ClipboardStub,
                    public KeyboardLayoutStub {
  public:
   ClientStub() {}
+
+  ClientStub(const ClientStub&) = delete;
+  ClientStub& operator=(const ClientStub&) = delete;
+
   ~ClientStub() override {}
 
   // Passes the set of capabilities supported by the host to the client.
@@ -46,15 +47,8 @@ class ClientStub : public ClipboardStub,
 
   // Passes the host's transport info to the client.
   virtual void SetTransportInfo(const TransportInfo& transport_info) = 0;
-
-  // Opens an URL on the client.
-  virtual void OpenUrl(const OpenUrlRequest& open_url_request) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ClientStub);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_CLIENT_STUB_H_

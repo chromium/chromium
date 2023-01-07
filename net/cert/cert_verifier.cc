@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,14 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
+#include "net/cert/caching_cert_verifier.h"
 #include "net/cert/cert_verify_proc.h"
+#include "net/cert/coalescing_cert_verifier.h"
 #include "net/cert/crl_set.h"
+#include "net/cert/multi_threaded_cert_verifier.h"
+#include "net/net_buildflags.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
-
-#if defined(OS_NACL)
-#include "base/notreached.h"
-#else
-#include "net/cert/caching_cert_verifier.h"
-#include "net/cert/coalescing_cert_verifier.h"
-#include "net/cert/multi_threaded_cert_verifier.h"
-#endif
 
 namespace net {
 
@@ -35,10 +31,10 @@ CertVerifier::RequestParams::RequestParams() = default;
 
 CertVerifier::RequestParams::RequestParams(
     scoped_refptr<X509Certificate> certificate,
-    const std::string& hostname,
+    base::StringPiece hostname,
     int flags,
-    const std::string& ocsp_response,
-    const std::string& sct_list)
+    base::StringPiece ocsp_response,
+    base::StringPiece sct_list)
     : certificate_(std::move(certificate)),
       hostname_(hostname),
       flags_(flags),
@@ -56,7 +52,7 @@ CertVerifier::RequestParams::RequestParams(
     SHA256_Update(&ctx, CRYPTO_BUFFER_data(cert_handle.get()),
                   CRYPTO_BUFFER_len(cert_handle.get()));
   }
-  SHA256_Update(&ctx, hostname_.data(), hostname.size());
+  SHA256_Update(&ctx, hostname.data(), hostname.size());
   SHA256_Update(&ctx, &flags, sizeof(flags));
   SHA256_Update(&ctx, ocsp_response.data(), ocsp_response.size());
   SHA256_Update(&ctx, sct_list.data(), sct_list.size());
@@ -82,29 +78,25 @@ bool CertVerifier::RequestParams::operator<(
 // static
 std::unique_ptr<CertVerifier> CertVerifier::CreateDefaultWithoutCaching(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
-#if defined(OS_NACL)
-  NOTIMPLEMENTED();
-  return std::unique_ptr<CertVerifier>();
-#else
   scoped_refptr<CertVerifyProc> verify_proc;
-#if defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-  verify_proc =
-      CertVerifyProc::CreateBuiltinVerifyProc(std::move(cert_net_fetcher));
-#elif BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
-  if (base::FeatureList::IsEnabled(features::kCertVerifierBuiltinFeature)) {
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  if (!verify_proc &&
+      base::FeatureList::IsEnabled(features::kChromeRootStoreUsed)) {
+    verify_proc = CertVerifyProc::CreateBuiltinWithChromeRootStore(
+        std::move(cert_net_fetcher));
+  }
+#endif
+  if (!verify_proc) {
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     verify_proc =
         CertVerifyProc::CreateBuiltinVerifyProc(std::move(cert_net_fetcher));
-  } else {
+#else
     verify_proc =
         CertVerifyProc::CreateSystemVerifyProc(std::move(cert_net_fetcher));
-  }
-#else
-  verify_proc =
-      CertVerifyProc::CreateSystemVerifyProc(std::move(cert_net_fetcher));
 #endif
+  }
 
   return std::make_unique<MultiThreadedCertVerifier>(std::move(verify_proc));
-#endif
 }
 
 // static

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2021 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -12,9 +14,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <RelativeLayout
+    <!-- Footer with cancel/accept controls and dialog title. -->
+    <LinearLayout
         android:id="@+id/footer"
-        android:gravity="center_vertical"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/long_screenshots_button_margin"
         android:layout_alignParentBottom="true"
         android:layout_height="56dp"
         android:layout_width="match_parent">
@@ -23,95 +28,131 @@
             android:id="@+id/close_button"
             android:contentDescription="@string/close"
             android:src="@drawable/btn_close"
-            android:layout_alignParentStart="true"
-            android:layout_height="@dimen/long_screenshots_button_size"
-            android:layout_marginStart="@dimen/long_screenshots_button_padding"
+            android:layout_height="match_parent"
             android:layout_width="@dimen/long_screenshots_button_size"
+            android:paddingHorizontal="@dimen/long_screenshots_button_padding"
             app:tint="@color/default_icon_color_tint_list"
             style="@style/ToolbarButton" />
 
         <TextView
-            android:id="@+id/qrcode_camera_error_text"
-            android:layout_width="fill_parent"
+            android:id="@+id/sharing_long_screenshot_dialog_title"
+            android:gravity="center"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:layout_gravity="center_horizontal"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_gravity="center"
             android:text="@string/sharing_long_screenshot"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/done_button"
-            android:contentDescription="@string/close"
-            android:src="@drawable/ic_checkmark_24dp"
-            android:layout_alignParentEnd="true"
-            android:layout_height="@dimen/long_screenshots_button_size"
-            android:layout_marginEnd="@dimen/long_screenshots_button_padding"
+            android:contentDescription="@string/screenshot_save_title"
+            android:src="@drawable/ic_check_googblue_24dp"
+            android:layout_height="match_parent"
             android:layout_width="@dimen/long_screenshots_button_size"
+            android:paddingHorizontal="@dimen/long_screenshots_button_padding"
             app:tint="@color/default_icon_color_tint_list"
             style="@style/ToolbarButton" />
-
-    </RelativeLayout>
+    </LinearLayout> <!-- end footer -->
 
     <View
         android:id="@+id/divider"
-        android:background="@color/divider_line_bg_color"
+        android:background="@macro/divider_line_bg_color"
         android:layout_above="@id/footer"
         android:layout_height="1dp"
         android:layout_width="match_parent"/>
 
-    <FrameLayout
-        android:id="@+id/bitmap_container"
-        android:background="@color/black_alpha_65"
+    <TextView
+        android:id="@+id/sharing_long_screenshot_dialog_instructions"
+        android:background="@color/default_scrim_color"
         android:layout_above="@id/divider"
-        android:layout_alignParentTop="true"
         android:layout_width="match_parent"
-        android:layout_height="0dp">
+        android:layout_height="wrap_content"
+        android:paddingBottom="6dp"
+        android:gravity="center_horizontal"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/sharing_long_screenshot_instructions"
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary.Baseline.Light" />
 
-        <ImageView
-            android:id="@+id/screenshot_image"
+    <ScrollView
+        android:id="@+id/long_screenshot_scroll_view"
+        android:background="@color/default_scrim_color"
+        android:layout_above="@id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- The ScrollView must have a single child; this child view contains
+             the entire bitmap, and top/bottom mask selectors to define the region.
+             The framing layouts are defined after the image to be placed above it.
+             clipChildren is set false for grandchild buttons to render outside the masks. -->
+        <RelativeLayout
+            android:id="@+id/bitmap_container_inner"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:layout_marginEnd="30dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            android:background="@color/modern_white"
-            android:contentDescription="@string/sharing_long_screenshot"
-            android:padding="1dp"/>
+            android:layout_height="wrap_content"
+            android:clipChildren="false">
 
-        <ImageView
-            android:id="@+id/next_screenshot_image"
-            android:layout_width="match_parent"
-            android:layout_height="fill_parent"
-            android:layout_marginEnd="30dp"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            android:background="@color/modern_white"
-            android:contentDescription="@string/sharing_long_screenshot"
-            android:padding="1dp"
-            android:visibility="gone"/>
+            <ImageView
+                android:id="@+id/screenshot_image"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:layout_marginHorizontal="30dp"
+                android:layout_marginVertical="20dp"
+                android:background="@color/modern_white"
+                android:contentDescription="@string/sharing_long_screenshot"
+                android:padding="1dp"/>
 
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/down_button"
-            android:contentDescription="@string/close"
-            android:src="@drawable/arrow_down"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_height="@dimen/long_screenshots_button_size"
-            android:layout_width="@dimen/long_screenshots_button_size"
-            android:layout_marginBottom="10dp"
-            style="@style/ToolbarButton" />
+            <!-- Top draggable mask -->
+            <LinearLayout
+                android:id="@+id/region_selection_top"
+                android:background="@color/black_alpha_65"
+                android:orientation="vertical"
+                android:clipChildren="false"
+                android:layout_alignParentTop="true"
+                android:layout_height="150dp"
+                android:layout_width="match_parent"
+                android:layout_marginHorizontal="30dp"
+                android:gravity="bottom|center_horizontal">
+                <org.chromium.ui.widget.ChromeImageButton
+                    android:id="@+id/up_button"
+                    android:src="@drawable/arrow_up"
+                    android:contentDescription="@string/sharing_long_screenshot_move_up_button_description"
+                    android:elevation="@dimen/default_elevation_3"
+                    android:layout_width="@dimen/long_screenshots_button_size"
+                    android:translationY="30dp"
+                    style="@style/ToolbarButton" />
+                <View
+                    android:id="@+id/top_mask_border"
+                    android:background="@color/modern_white"
+                    android:layout_height="2dp"
+                    android:layout_width="match_parent"/>
+            </LinearLayout>
 
-        <org.chromium.ui.widget.ChromeImageButton
-            android:id="@+id/up_button"
-            android:contentDescription="@string/close"
-            android:src="@drawable/arrow_up"
-            android:layout_gravity="top|center_horizontal"
-            android:layout_height="@dimen/long_screenshots_button_size"
-            android:layout_width="@dimen/long_screenshots_button_size"
-            android:layout_marginTop="10dp"
-            style="@style/ToolbarButton" />
-
-    </FrameLayout>
-
+            <!-- Bottom draggable mask -->
+            <LinearLayout
+                android:id="@+id/region_selection_bottom"
+                android:background="@color/black_alpha_65"
+                android:orientation="vertical"
+                android:clipChildren="false"
+                android:layout_alignParentBottom="true"
+                android:layout_height="150dp"
+                android:layout_width="match_parent"
+                android:layout_marginHorizontal="30dp"
+                android:gravity="top|center_horizontal">
+                <View
+                    android:id="@+id/bottom_mask_border"
+                    android:background="@color/modern_white"
+                    android:layout_height="2dp"
+                    android:layout_width="match_parent"/>
+                <org.chromium.ui.widget.ChromeImageButton
+                    android:id="@+id/down_button"
+                    android:src="@drawable/arrow_down"
+                    android:contentDescription="@string/sharing_long_screenshot_move_down_button_description"
+                    android:elevation="@dimen/default_elevation_3"
+                    android:layout_width="@dimen/long_screenshots_button_size"
+                    android:translationY="-30dp"
+                    style="@style/ToolbarButton" />
+            </LinearLayout>
+        </RelativeLayout>
+    </ScrollView>
 </RelativeLayout>

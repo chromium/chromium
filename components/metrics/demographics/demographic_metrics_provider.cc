@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/driver/sync_service_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 
 namespace metrics {
@@ -18,12 +18,9 @@ namespace {
 bool CanUploadDemographicsToGoogle(syncer::SyncService* sync_service) {
   DCHECK(sync_service);
 
-  // Require that the user has opted into sync the feature, without just relying
-  // on PRIORITY_PREFERENCES start sync-ing.
-  if (!sync_service->IsSyncFeatureEnabled()) {
-    return false;
-  }
-
+  // PRIORITY_PREFERENCES is the sync datatype used to propagate demographics
+  // information to the client. In its absence, demographics info is unavailable
+  // thus cannot be uploaded.
   switch (GetUploadToGoogleState(sync_service, syncer::PRIORITY_PREFERENCES)) {
     case syncer::UploadState::NOT_ACTIVE:
       return false;
@@ -38,8 +35,9 @@ bool CanUploadDemographicsToGoogle(syncer::SyncService* sync_service) {
 }  // namespace
 
 // static
-const base::Feature DemographicMetricsProvider::kDemographicMetricsReporting = {
-    "DemographicMetricsReporting", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kDemographicMetricsReporting,
+             "DemographicMetricsReporting",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 DemographicMetricsProvider::DemographicMetricsProvider(
     std::unique_ptr<ProfileClient> profile_client,
@@ -51,11 +49,11 @@ DemographicMetricsProvider::DemographicMetricsProvider(
 
 DemographicMetricsProvider::~DemographicMetricsProvider() {}
 
-base::Optional<UserDemographics>
+absl::optional<UserDemographics>
 DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   // Skip if feature disabled.
   if (!base::FeatureList::IsEnabled(kDemographicMetricsReporting))
-    return base::nullopt;
+    return absl::nullopt;
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   // Skip if not exactly one Profile on disk. Having more than one Profile that
@@ -71,7 +69,7 @@ DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   if (profile_client_->GetNumberOfProfilesOnDisk() != 1) {
     LogUserDemographicsStatusInHistogram(
         UserDemographicsStatus::kMoreThanOneProfile);
-    return base::nullopt;
+    return absl::nullopt;
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -80,13 +78,13 @@ DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   if (!sync_service) {
     LogUserDemographicsStatusInHistogram(
         UserDemographicsStatus::kNoSyncService);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!CanUploadDemographicsToGoogle(sync_service)) {
     LogUserDemographicsStatusInHistogram(
         UserDemographicsStatus::kSyncNotEnabled);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   UserDemographicsResult demographics_result =
@@ -97,7 +95,7 @@ DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   if (demographics_result.IsSuccess())
     return demographics_result.value();
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void DemographicMetricsProvider::ProvideCurrentSessionData(
@@ -117,7 +115,7 @@ void DemographicMetricsProvider::LogUserDemographicsStatusInHistogram(
       base::UmaHistogramEnumeration("UMA.UserDemographics.Status", status);
       // If the user demographics data was retrieved successfully, then the user
       // must be between the ages of |kUserDemographicsMinAgeInYears|+1=21 and
-      // |kUserDemographicsMaxAgeinYears|=85, so the user is not a minor.
+      // |kUserDemographicsMaxAgeInYears|=85, so the user is not a minor.
       base::UmaHistogramBoolean("UMA.UserDemographics.IsNoisedAgeOver21Under85",
                                 status == UserDemographicsStatus::kSuccess);
       return;

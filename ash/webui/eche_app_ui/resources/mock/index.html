@@ -1,0 +1,21 @@
+<!-- Copyright 2021 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Eche</title>
+    <header id='title'>Eche App</header>
+    <meta charset="utf-8">
+    <link rel="icon" href="system_assets/app_icon_32.png" sizes="32x32" type="image/png" />
+    <link rel="stylesheet" href="assets/app_bundle.css" />
+  </head>
+  <body>
+    <!-- Below mojo script required to run browser tests -->
+    <script src="mojo_bindings_lite.js"></script>
+    <script src="big_buffer.mojom-lite.js"></script>
+    <script src="string16.mojom-lite.js"></script>
+    <script src="js/app_bundle.js"></script>
+    <iframe src="chrome-untrusted://eche-app/untrusted_index.html"></iframe>
+  </body>
+</html>

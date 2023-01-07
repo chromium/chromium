@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,10 @@
 #include <windows.h>
 
 class ModuleWatcherTest : public testing::Test {
+ public:
+  ModuleWatcherTest(const ModuleWatcherTest&) = delete;
+  ModuleWatcherTest& operator=(const ModuleWatcherTest&) = delete;
+
  protected:
   ModuleWatcherTest()
       : module_(nullptr),
@@ -72,9 +76,6 @@ class ModuleWatcherTest : public testing::Test {
   int module_already_loaded_event_count_;
   // Total number of MODULE_LOADED events seen.
   int module_loaded_event_count_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ModuleWatcherTest);
 };
 
 TEST_F(ModuleWatcherTest, SingleModuleWatcherOnly) {

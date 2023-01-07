@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
-<!-- TODO(crbug/928388): Handle elevation for KitKat.-->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
        xmlns:app="http://schemas.android.com/apk/res-auto">
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/background_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/hovered_tab_grid_card_background"
-        android:layout_margin="8dp"
-        android:visibility="gone"/>
-    <org.chromium.ui.widget.ChromeImageView
-        android:id="@+id/selected_view_below_lollipop"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/selected_tab_background"
-        android:layout_margin="6dp"
+        android:background="@drawable/tab_grid_card_background"
+        android:layout_margin="@dimen/tab_grid_card_margin"
         android:visibility="gone"/>
     <FrameLayout
         android:id="@+id/content_view"
@@ -28,26 +22,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_gravity="center"
-            android:background="@drawable/popup_bg_tinted"
-            android:layout_margin="2dp">
+            android:background="@drawable/tab_grid_card_background"
+            android:layout_margin="@dimen/tab_grid_card_margin">
             <ImageView
                 android:id="@+id/tab_favicon"
+                android:layout_height="@dimen/tab_grid_card_header_height"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/tab_grid_favicon_size"
-                android:minWidth="8dp"
+                android:minWidth="@dimen/tab_grid_card_favicon_padding"
                 android:adjustViewBounds="true"
                 android:importantForAccessibility="no"
-                app:srcCompat="@drawable/ic_globe_24dp"/>
+                app:srcCompat="@drawable/ic_globe_24dp" />
             <TextView
                 android:id="@+id/tab_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/tab_favicon"
-                android:layout_marginEnd="32dp"
-                android:gravity="center_vertical"
-                android:minHeight="32dp"
+                android:layout_marginEnd="@dimen/tab_grid_card_title_end_margin"
                 android:requiresFadingEdge="horizontal"
-                android:fadingEdgeLength="24dp"
+                android:fadingEdgeLength="@dimen/tab_grid_card_title_fading_length"
+                android:minHeight="@dimen/tab_grid_card_header_height"
+                android:gravity="center_vertical"
                 android:ellipsize="none"
                 android:singleLine="true"
                 android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"/>
@@ -56,25 +50,43 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/tab_title"
+                android:layout_marginLeft="@dimen/tab_grid_card_thumbnail_margin"
+                android:layout_marginRight="@dimen/tab_grid_card_thumbnail_margin"
+                android:layout_marginBottom="@dimen/tab_grid_card_thumbnail_margin"
                 android:gravity="center_horizontal"
-                android:adjustViewBounds="true"
                 android:scaleType="fitCenter"
+                android:adjustViewBounds="true"
                 android:importantForAccessibility="no"
                 android:src="@color/thumbnail_placeholder_on_primary_bg"
-                app:cornerRadiusBottomStart="@dimen/tab_list_card_radius"
-                app:cornerRadiusBottomEnd="@dimen/tab_list_card_radius"/>
+                app:cornerRadiusTopStart="@dimen/tab_grid_card_thumbnail_corner_radius_top"
+                app:cornerRadiusTopEnd="@dimen/tab_grid_card_thumbnail_corner_radius_top"
+                app:cornerRadiusBottomStart="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"
+                app:cornerRadiusBottomEnd="@dimen/tab_grid_card_thumbnail_corner_radius_bottom"/>
             <org.chromium.chrome.browser.tasks.tab_management.PriceCardView
                 android:id="@+id/price_info_box_outer"
                 android:layout_below="@id/tab_title"
                 android:background="@drawable/price_card_scrim"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
+                android:layout_marginStart="4dp"
                 android:visibility="gone"/>
-            <View
-                android:id="@+id/divider_view"
-                style="@style/HorizontalDivider"
+            <org.chromium.chrome.browser.tasks.tab_management.CouponCardView
+                android:id="@+id/coupon_info_box_outer"
                 android:layout_below="@id/tab_title"
-                android:background="@color/divider_line_bg_color"/>
+                android:background="@drawable/price_card_scrim"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="4dp"
+                android:visibility="gone"/>
+            <!-- TODO(crbug/1198288): Make decision on duplication of PriceCardView code.-->
+            <org.chromium.chrome.browser.tasks.tab_management.StoreHoursCardView
+                android:id="@+id/store_hours_box_outer"
+                android:layout_below="@id/tab_title"
+                android:background="@drawable/price_card_scrim"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:visibility="gone"/>
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/create_group_button"
                 android:layout_width="wrap_content"
@@ -86,7 +98,7 @@
                 android:text="@string/tabswitcher_create_group"
                 android:visibility="gone"
                 style="@style/FilledButton"/>
-            <org.chromium.ui.widget.ChipView
+            <org.chromium.components.browser_ui.widget.chips.ChipView
                 android:id="@+id/page_info_button"
                 android:gravity="center"
                 android:layout_height="wrap_content"
@@ -100,10 +112,11 @@
         </RelativeLayout>
         <org.chromium.ui.widget.ChromeImageView
             android:id="@+id/action_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/tab_list_card_action_button_size"
+            android:layout_height="@dimen/tab_list_card_action_button_size"
+            android:layout_margin="@dimen/tab_list_card_action_button_margin"
             android:scaleType="center"
             android:layout_gravity="end"
-            android:tint="@color/default_icon_color"/>
+            android:tint="@macro/default_icon_color"/>
     </FrameLayout>
 </merge>

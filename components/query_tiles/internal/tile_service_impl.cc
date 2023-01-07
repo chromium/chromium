@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,12 +50,12 @@ void TileServiceImpl::OnTileManagerInitialized(SuccessCallback callback,
 }
 
 void TileServiceImpl::GetQueryTiles(GetTilesCallback callback) {
-  tile_manager_->GetTiles(std::move(callback));
+  tile_manager_->GetTiles(true /*shuffle_tiles*/, std::move(callback));
 }
 
 void TileServiceImpl::GetTile(const std::string& tile_id,
                               TileCallback callback) {
-  tile_manager_->GetTile(tile_id, std::move(callback));
+  tile_manager_->GetTile(tile_id, true /*shuffle_tiles*/, std::move(callback));
 }
 
 void TileServiceImpl::StartFetchForTiles(
@@ -147,7 +147,7 @@ void TileServiceImpl::OnTileClicked(const std::string& tile_id) {
 }
 
 void TileServiceImpl::OnQuerySelected(
-    const base::Optional<std::string>& parent_tile_id,
+    const absl::optional<std::string>& parent_tile_id,
     const std::u16string& query_text) {
   tile_manager_->OnQuerySelected(std::move(parent_tile_id), query_text);
 }

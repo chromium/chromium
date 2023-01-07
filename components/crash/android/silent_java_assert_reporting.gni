@@ -1,0 +1,16 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+declare_args() {
+  # Whether java assertions should be silently reported to Crash, instead of
+  # being removed or fully enabled. This overrides any value set for
+  # enable_java_asserts.
+  enable_silent_java_assert_reporting = android_channel == "canary"
+}
+
+if (enable_silent_java_assert_reporting) {
+  crash_reporting_assertion_handler =
+      "org.chromium.components.crash.CustomAssertionHandler.assertionHandler"
+}

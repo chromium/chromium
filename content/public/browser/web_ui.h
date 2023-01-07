@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,8 +40,8 @@ class CONTENT_EXPORT WebUI {
   // Returns JavaScript code that, when executed, calls the function specified
   // by |function_name| with the arguments specified in |arg_list|.
   static std::u16string GetJavascriptCall(
-      const std::string& function_name,
-      const std::vector<const base::Value*>& arg_list);
+      base::StringPiece function_name,
+      base::span<const base::ValueView> arg_list);
 
   virtual ~WebUI() {}
 
@@ -75,9 +75,10 @@ class CONTENT_EXPORT WebUI {
 
   // Used by WebUIMessageHandlers. If the given message is already registered,
   // the call has no effect.
-  using MessageCallback = base::RepeatingCallback<void(const base::ListValue*)>;
+  using MessageCallback =
+      base::RepeatingCallback<void(const base::Value::List&)>;
   virtual void RegisterMessageCallback(base::StringPiece message,
-                                       const MessageCallback& callback) = 0;
+                                       MessageCallback callback) = 0;
 
   template <typename... Args>
   void RegisterHandlerCallback(
@@ -93,7 +94,7 @@ class CONTENT_EXPORT WebUI {
   // then later wants to undo that, or to route it to a different WebUI object.
   virtual void ProcessWebUIMessage(const GURL& source_url,
                                    const std::string& message,
-                                   const base::ListValue& args) = 0;
+                                   base::Value::List args) = 0;
 
   // Returns true if this WebUI can currently call JavaScript.
   virtual bool CanCallJavascript() = 0;
@@ -110,24 +111,19 @@ class CONTENT_EXPORT WebUI {
   // All function names in WebUI must consist of only ASCII characters.
   // There are variants for calls with more arguments.
   virtual void CallJavascriptFunctionUnsafe(
-      const std::string& function_name) = 0;
-  virtual void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                            const base::Value& arg) = 0;
-  virtual void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                            const base::Value& arg1,
-                                            const base::Value& arg2) = 0;
-  virtual void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                            const base::Value& arg1,
-                                            const base::Value& arg2,
-                                            const base::Value& arg3) = 0;
-  virtual void CallJavascriptFunctionUnsafe(const std::string& function_name,
-                                            const base::Value& arg1,
-                                            const base::Value& arg2,
-                                            const base::Value& arg3,
-                                            const base::Value& arg4) = 0;
+      base::StringPiece function_name) = 0;
+
   virtual void CallJavascriptFunctionUnsafe(
-      const std::string& function_name,
-      const std::vector<const base::Value*>& args) = 0;
+      base::StringPiece function_name,
+      base::span<const base::ValueView> args) = 0;
+
+  template <typename... Args>
+  void CallJavascriptFunctionUnsafe(base::StringPiece function_name,
+                                    const base::ValueView arg1,
+                                    const Args&... arg) {
+    base::ValueView args[] = {arg1, arg...};
+    CallJavascriptFunctionUnsafe(function_name, args);
+  }
 
   // Allows mutable access to this WebUI's message handlers for testing.
   virtual std::vector<std::unique_ptr<WebUIMessageHandler>>*
@@ -140,14 +136,18 @@ class CONTENT_EXPORT WebUI {
   template <typename Is, typename... Args>
   struct Call;
 
+  // Helper to unpack a  base::Value::List  and invoke a callback, passing
+  // list[0] as the first argument, list[1] as the second argument, et cetera.
+  // Each value in the list will be coerced to the type of the corresponding
+  // function parameter, CHECK()ing if the conversion is not possible or if the
+  // number of arguments is wrong.
   template <size_t... Is, typename... Args>
   struct Call<std::index_sequence<Is...>, Args...> {
     static void Impl(base::RepeatingCallback<void(Args...)> callback,
                      base::StringPiece message,
-                     const base::ListValue* list) {
-      base::span<const base::Value> args = list->GetList();
-      CHECK_EQ(args.size(), sizeof...(Args)) << message;
-      callback.Run(GetValue<Args>(args[Is])...);
+                     const base::Value::List& list) {
+      CHECK_EQ(list.size(), sizeof...(Args)) << message;
+      callback.Run(GetValue<Args>(list[Is])...);
     }
   };
 };
@@ -166,6 +166,18 @@ template <>
 inline const std::string& WebUI::GetValue<const std::string&>(
     const base::Value& value) {
   return value.GetString();
+}
+
+template <>
+inline const base::Value::Dict& WebUI::GetValue<const base::Value::Dict&>(
+    const base::Value& value) {
+  return value.GetDict();
+}
+
+template <>
+inline const base::Value::List& WebUI::GetValue<const base::Value::List&>(
+    const base::Value& value) {
+  return value.GetList();
 }
 
 }  // namespace content

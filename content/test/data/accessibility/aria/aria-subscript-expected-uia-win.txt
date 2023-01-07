@@ -1,0 +1,21 @@
+Document
+++Group IsControlElement=false
+++++Text Name='This text contains '
+++++Text
+++++++Text Name='subscript'
+++++Text Name=' text.'
+++Group IsControlElement=false
+++++Text Name='H'
+++++Text
+++++++Text Name=' '
+++++++Group IsControlElement=false
+++++++++Group Name='3'
+++++++++++Group Name='oops'
+++++++++++++Text Name='3'
+++++++Text Name=' '
+++++++Group IsControlElement=false
+++++++++Hyperlink Name='2'
+++++++++++Group Name='better'
+++++++++++++Text Name='2' IsControlElement=false
+++++++Text Name=' '
+++++Text Name='O'

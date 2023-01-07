@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,9 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/nqe/cached_network_quality.h"
@@ -33,19 +32,24 @@ class NET_EXPORT NetworkQualitiesPrefsManager
   // Provides an interface that must be implemented by the embedder.
   class NET_EXPORT PrefDelegate {
    public:
-    virtual ~PrefDelegate() {}
+    virtual ~PrefDelegate() = default;
 
     // Sets the persistent pref to the given value.
-    virtual void SetDictionaryValue(const base::DictionaryValue& value) = 0;
+    virtual void SetDictionaryValue(const base::Value::Dict& dict) = 0;
 
     // Returns a copy of the persistent prefs.
-    virtual std::unique_ptr<base::DictionaryValue> GetDictionaryValue() = 0;
+    virtual base::Value::Dict GetDictionaryValue() = 0;
   };
 
   // Creates an instance of the NetworkQualitiesPrefsManager. Ownership of
   // |pref_delegate| is taken by this class.
   explicit NetworkQualitiesPrefsManager(
       std::unique_ptr<PrefDelegate> pref_delegate);
+
+  NetworkQualitiesPrefsManager(const NetworkQualitiesPrefsManager&) = delete;
+  NetworkQualitiesPrefsManager& operator=(const NetworkQualitiesPrefsManager&) =
+      delete;
+
   ~NetworkQualitiesPrefsManager() override;
 
   // Initialize on the Network thread. Must be called after pref service has
@@ -68,7 +72,7 @@ class NET_EXPORT NetworkQualitiesPrefsManager
   std::unique_ptr<PrefDelegate> pref_delegate_;
 
   // Current prefs on the disk.
-  std::unique_ptr<base::DictionaryValue> prefs_;
+  base::Value::Dict prefs_;
 
   // nqe::internal::NetworkQualityStore::NetworkQualitiesCacheObserver
   // implementation:
@@ -77,14 +81,12 @@ class NET_EXPORT NetworkQualitiesPrefsManager
       const nqe::internal::CachedNetworkQuality& cached_network_quality)
       override;
 
-  NetworkQualityEstimator* network_quality_estimator_;
+  raw_ptr<NetworkQualityEstimator> network_quality_estimator_ = nullptr;
 
   // Network quality prefs read from the disk at the time of startup.
   ParsedPrefs read_prefs_startup_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualitiesPrefsManager);
 };
 
 }  // namespace net

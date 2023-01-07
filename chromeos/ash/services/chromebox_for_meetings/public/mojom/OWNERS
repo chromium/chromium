@@ -1,0 +1,7 @@
+# Mojo interfaces are only used for Chromebox for Meetings devices; as such
+# they are outside of the scope of the regular mojo security review process.
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://chromeos/ash/components/chromebox_for_meetings/OWNERS
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+per-file *.mojom=file://chromeos/SECURITY_OWNERS

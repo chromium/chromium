@@ -1,16 +1,8 @@
-// Copyright 2016 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 
 goog.provide('goog.dom.Attr');
@@ -27,6 +19,54 @@ goog.dom.Attr = {
   ACTION: 'action',
   ALIGN: 'align',
   ALT: 'alt',
+  ARIA_ACTIVEDESCENDANT: 'aria-activedescendant',
+  ARIA_ATOMIC: 'aria-atomic',
+  ARIA_AUTOCOMPLETE: 'aria-autocomplete',
+  ARIA_BUSY: 'aria-busy',
+  ARIA_CHECKED: 'aria-checked',
+  ARIA_COLCOUNT: 'aria-colcount',
+  ARIA_COLINDEX: 'aria-colindex',
+  ARIA_COLSPAN: 'aria-colspan',
+  ARIA_CONTROLS: 'aria-controls',
+  ARIA_CURRENT: 'aria-current',
+  ARIA_DESCRIBEDBY: 'aria-describedby',
+  ARIA_DETAILS: 'aria-details',
+  ARIA_DISABLED: 'aria-disabled',
+  ARIA_DROPEFFECT: 'aria-dropeffect',
+  ARIA_ERRORMESSAGE: 'aria-errormessage',
+  ARIA_EXPANDED: 'aria-expanded',
+  ARIA_FLOWTO: 'aria-flowto',
+  ARIA_GRABBED: 'aria-grabbed',
+  ARIA_HASPOPUP: 'aria-haspopup',
+  ARIA_HIDDEN: 'aria-hidden',
+  ARIA_INVALID: 'aria-invalid',
+  ARIA_KEYSHORTCUTS: 'aria-keyshortcuts',
+  ARIA_LABEL: 'aria-label',
+  ARIA_LABELLEDBY: 'aria-labelledby',
+  ARIA_LEVEL: 'aria-level',
+  ARIA_LIVE: 'aria-live',
+  ARIA_MODAL: 'aria-modal',
+  ARIA_MULTILINE: 'aria-multiline',
+  ARIA_MULTISELECTABLE: 'aria-multiselectable',
+  ARIA_ORIENTATION: 'aria-orientation',
+  ARIA_OWNS: 'aria-owns',
+  ARIA_PLACEHOLDER: 'aria-placeholder',
+  ARIA_POSINSET: 'aria-posinset',
+  ARIA_PRESSED: 'aria-pressed',
+  ARIA_READONLY: 'aria-readonly',
+  ARIA_RELEVANT: 'aria-relevant',
+  ARIA_REQUIRED: 'aria-required',
+  ARIA_ROLEDESCRIPTION: 'aria-roledescription',
+  ARIA_ROWCOUNT: 'aria-rowcount',
+  ARIA_ROWINDEX: 'aria-rowindex',
+  ARIA_ROWSPAN: 'aria-rowspan',
+  ARIA_SELECTED: 'aria-selected',
+  ARIA_SETSIZE: 'aria-setsize',
+  ARIA_SORT: 'aria-sort',
+  ARIA_VALUEMAX: 'aria-valuemax',
+  ARIA_VALUEMIN: 'aria-valuemin',
+  ARIA_VALUENOW: 'aria-valuenow',
+  ARIA_VALUETEXT: 'aria-valuetext',
   ASYNC: 'async',
   AUTOCOMPLETE: 'autocomplete',
   AUTOFOCUS: 'autofocus',
@@ -36,6 +76,8 @@ goog.dom.Attr = {
   BORDER: 'border',
   BUFFERED: 'buffered',
   CHALLENGE: 'challenge',
+  CELLPADDING: 'cellpadding',
+  CELLSPACING: 'cellspacing',
   CHARSET: 'charset',
   CHECKED: 'checked',
   CITE: 'cite',
@@ -93,6 +135,24 @@ goog.dom.Attr = {
   MUTED: 'muted',
   NAME: 'name',
   NOVALIDATE: 'novalidate',
+  ONBLUR: 'onblur',
+  ONCHANGE: 'onchange',
+  ONCLICK: 'onclick',
+  ONDBLCLICK: 'ondblclick',
+  ONFOCUS: 'onfocus',
+  ONKEYDOWN: 'onkeydown',
+  ONKEYPRESS: 'onkeypress',
+  ONKEYUP: 'onkeyup',
+  ONLOAD: 'onload',
+  ONMOUSEDOWN: 'onmousedown',
+  ONMOUSEMOVE: 'onmousemove',
+  ONMOUSEOUT: 'onmouseout',
+  ONMOUSEOVER: 'onmouseover',
+  ONMOUSEUP: 'onmouseup',
+  ONRESET: 'onreset',
+  ONSELECT: 'onselect',
+  ONSUBMIT: 'onsubmit',
+  ONUNLOAD: 'onunload',
   OPEN: 'open',
   OPTIMUM: 'optimum',
   PATTERN: 'pattern',
@@ -105,6 +165,7 @@ goog.dom.Attr = {
   REL: 'rel',
   REQUIRED: 'required',
   REVERSED: 'reversed',
+  ROLE: 'role',
   ROWS: 'rows',
   ROWSPAN: 'rowspan',
   SANDBOX: 'sandbox',
@@ -128,6 +189,7 @@ goog.dom.Attr = {
   TABINDEX: 'tabindex',
   TARGET: 'target',
   TITLE: 'title',
+  TRANSLATE: 'translate',
   TYPE: 'type',
   USEMAP: 'usemap',
   VALUE: 'value',

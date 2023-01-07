@@ -1,14 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_UBERTOKEN_FETCHER_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_UBERTOKEN_FETCHER_H_
 
-#include <memory>
+#include <string>
 
-#include "base/bind.h"
-#include "base/macros.h"
+#include "base/callback_forward.h"
 
 class GoogleServiceAuthError;
 
@@ -24,10 +23,11 @@ class UbertokenFetcher {
 
   // Constructs an instance and start fetching the token for |account_id|.
   UbertokenFetcher() = default;
-  virtual ~UbertokenFetcher() = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(UbertokenFetcher);
+  UbertokenFetcher(const UbertokenFetcher&) = delete;
+  UbertokenFetcher& operator=(const UbertokenFetcher&) = delete;
+
+  virtual ~UbertokenFetcher() = 0;
 };
 
 }  // namespace signin

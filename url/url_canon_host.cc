@@ -1,12 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/check.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/cpu_reduction_experiment.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
-#include "url/url_canon_ip.h"
 
 namespace url {
 
@@ -70,7 +69,7 @@ const unsigned char kHostCharLookup[0x80] = {
     'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',kEsc,kEsc,kEsc,  0 ,  0 };
 
 // RFC1034 maximum FQDN length.
-constexpr int kMaxHostLength = 253;
+constexpr size_t kMaxHostLength = 253;
 
 // Generous padding to account for the fact that UTS#46 normalization can cause
 // a long string to actually shrink and fit within the 253 character RFC1034
@@ -78,11 +77,11 @@ constexpr int kMaxHostLength = 253;
 // cases: An arbitrary number of characters (e.g. U+00AD SOFT HYPHEN) can be
 // removed from the input by UTS#46 processing. However, this should be
 // sufficient for all normally-encountered, non-abusive hostname strings.
-constexpr int kMaxHostBufferLength = kMaxHostLength*5;
+constexpr size_t kMaxHostBufferLength = kMaxHostLength * 5;
 
-const int kTempHostBufferLen = 1024;
-typedef RawCanonOutputT<char, kTempHostBufferLen> StackBuffer;
-typedef RawCanonOutputT<char16_t, kTempHostBufferLen> StackBufferW;
+constexpr size_t kTempHostBufferLen = 1024;
+using StackBuffer = RawCanonOutputT<char, kTempHostBufferLen>;
+using StackBufferW = RawCanonOutputT<char16_t, kTempHostBufferLen>;
 
 // Scans a host name and fills in the output flags according to what we find.
 // |has_non_ascii| will be true if there are any non-7-bit characters, and
@@ -124,15 +123,15 @@ void ScanHostname(const CHAR* spec,
 //    |*has_non_ascii| flag.
 //
 // The return value indicates if the output is a potentially valid host name.
-template<typename INCHAR, typename OUTCHAR>
+template <typename INCHAR, typename OUTCHAR>
 bool DoSimpleHost(const INCHAR* host,
-                  int host_len,
+                  size_t host_len,
                   CanonOutputT<OUTCHAR>* output,
                   bool* has_non_ascii) {
   *has_non_ascii = false;
 
   bool success = true;
-  for (int i = 0; i < host_len; ++i) {
+  for (size_t i = 0; i < host_len; ++i) {
     unsigned int source = host[i];
     if (source == '%') {
       // Unescape first, if possible.
@@ -176,7 +175,7 @@ bool DoSimpleHost(const INCHAR* host,
 }
 
 // Canonicalizes a host that requires IDN conversion. Returns true on success
-bool DoIDNHost(const char16_t* src, int src_len, CanonOutput* output) {
+bool DoIDNHost(const char16_t* src, size_t src_len, CanonOutput* output) {
   int original_output_len = output->length();  // So we can rewind below.
 
   // We need to escape URL before doing IDN conversion, since punicode strings
@@ -202,9 +201,8 @@ bool DoIDNHost(const char16_t* src, int src_len, CanonOutput* output) {
   // Now we check the ASCII output like a normal host. It will also handle
   // unescaping. Although we unescaped everything before this function call, if
   // somebody does %00 as fullwidth, ICU will convert this to ASCII.
-  bool success = DoSimpleHost(wide_output.data(),
-                              wide_output.length(),
-                              output, &has_non_ascii);
+  bool success = DoSimpleHost(wide_output.data(), wide_output.length(), output,
+                              &has_non_ascii);
   if (has_non_ascii) {
     // ICU generated something that DoSimpleHost didn't think looked like
     // ASCII. This is quite rare, but ICU might convert some characters to
@@ -231,16 +229,19 @@ bool DoIDNHost(const char16_t* src, int src_len, CanonOutput* output) {
 // 8-bit convert host to its ASCII version: this converts the UTF-8 input to
 // UTF-16. The has_escaped flag should be set if the input string requires
 // unescaping.
-bool DoComplexHost(const char* host, int host_len,
-                   bool has_non_ascii, bool has_escaped, CanonOutput* output) {
+bool DoComplexHost(const char* host,
+                   size_t host_len,
+                   bool has_non_ascii,
+                   bool has_escaped,
+                   CanonOutput* output) {
   // Save the current position in the output. We may write stuff and rewind it
   // below, so we need to know where to rewind to.
-  int begin_length = output->length();
+  size_t begin_length = output->length();
 
   // Points to the UTF-8 data we want to convert. This will either be the
   // input or the unescaped version written to |*output| if necessary.
   const char* utf8_source;
-  int utf8_source_len;
+  size_t utf8_source_len;
   bool are_all_escaped_valid = true;
   if (has_escaped) {
     // Unescape before converting to UTF-16 for IDN. We write this into the
@@ -281,7 +282,7 @@ bool DoComplexHost(const char* host, int host_len,
   if (!ConvertUTF8ToUTF16(utf8_source, utf8_source_len, &utf16)) {
     // In this error case, the input may or may not be the output.
     StackBuffer utf8;
-    for (int i = 0; i < utf8_source_len; i++)
+    for (size_t i = 0; i < utf8_source_len; i++)
       utf8.push_back(utf8_source[i]);
     output->set_length(begin_length);
     AppendInvalidNarrowString(utf8.data(), 0, utf8.length(), output);
@@ -299,7 +300,7 @@ bool DoComplexHost(const char* host, int host_len,
 // the backend, so we just pass through. The has_escaped flag should be set if
 // the input string requires unescaping.
 bool DoComplexHost(const char16_t* host,
-                   int host_len,
+                   size_t host_len,
                    bool has_non_ascii,
                    bool has_escaped,
                    CanonOutput* output) {
@@ -320,8 +321,8 @@ bool DoComplexHost(const char16_t* host,
 
     // Once we convert to UTF-8, we can use the 8-bit version of the complex
     // host handling code above.
-    return DoComplexHost(utf8.data(), utf8.length(), has_non_ascii,
-                         has_escaped, output);
+    return DoComplexHost(utf8.data(), utf8.length(), has_non_ascii, has_escaped,
+                         output);
   }
 
   // No unescaping necessary, we can safely pass the input to ICU. This
@@ -335,16 +336,18 @@ template <typename CHAR, typename UCHAR>
 bool DoHostSubstring(const CHAR* spec,
                      const Component& host,
                      CanonOutput* output) {
+  DCHECK(host.is_valid());
+
   bool has_non_ascii, has_escaped;
   ScanHostname<CHAR, UCHAR>(spec, host, &has_non_ascii, &has_escaped);
 
   if (has_non_ascii || has_escaped) {
-    return DoComplexHost(&spec[host.begin], host.len, has_non_ascii,
-                         has_escaped, output);
+    return DoComplexHost(&spec[host.begin], static_cast<size_t>(host.len),
+                         has_non_ascii, has_escaped, output);
   }
 
-  const bool success =
-      DoSimpleHost(&spec[host.begin], host.len, output, &has_non_ascii);
+  const bool success = DoSimpleHost(
+      &spec[host.begin], static_cast<size_t>(host.len), output, &has_non_ascii);
   DCHECK(!has_non_ascii);
   return success;
 }
@@ -354,7 +357,7 @@ void DoHost(const CHAR* spec,
             const Component& host,
             CanonOutput* output,
             CanonHostInfo* host_info) {
-  if (host.len <= 0) {
+  if (!host.is_nonempty()) {
     // Empty hosts don't need anything.
     host_info->family = CanonHostInfo::NEUTRAL;
     host_info->out_host = Component();
@@ -379,16 +382,6 @@ void DoHost(const CHAR* spec,
     if (host_info->IsIPAddress()) {
       output->set_length(output_begin);
       output->Append(canon_ip.data(), canon_ip.length());
-    } else if (host_info->family == CanonHostInfo::NEUTRAL) {
-      // Only need to call CheckHostnameSafety() for valid hosts that aren't IP
-      // addresses and aren't broken.
-      HostSafetyStatus host_safety_status = CheckHostnameSafety(spec, host);
-      // Don't record kOK.  Ratio of OK to not-OK statuses is not meaningful at
-      // this layer, and hostnames are canonicalized a lot.
-      if (host_safety_status != HostSafetyStatus::kOk) {
-        UMA_HISTOGRAM_ENUMERATION("Net.Url.HostSafetyStatus",
-                                  host_safety_status);
-      }
     }
   } else {
     // Canonicalization failed. Set BROKEN to notify the caller.

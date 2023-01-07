@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 namespace blink {
 
 network::OptionalTrustTokenParams ConvertTrustTokenParams(
-    const base::Optional<network::mojom::blink::TrustTokenParams>& maybe_in) {
+    const absl::optional<network::mojom::blink::TrustTokenParams>& maybe_in) {
   if (!maybe_in)
-    return base::nullopt;
+    return absl::nullopt;
   const network::mojom::blink::TrustTokenParams& in = *maybe_in;
 
   network::mojom::TrustTokenParamsPtr out =

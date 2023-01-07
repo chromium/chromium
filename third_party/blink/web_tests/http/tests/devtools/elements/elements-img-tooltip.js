@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests the tooltip for the image on hover.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('elements');
   const imgURL = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANcAAACuCAIAAAAqMg/rAAAAAXNSR0IArs4c6QAAAU9JREFUeNrt0jERAAAIxDDAv+dHAxNLIqHXTlLwaiTAheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSF4EJcCC7EheBCXAguxIXgQlwILsSFEuBCcCEuBBfiQnAhLgQX4kJwIS4EF+JCcCEuBBfiQnAhLgQX4kJwIS4EF+JCcCEuBBfiQnAhLgQX4kJwIS4EF+JCcCEuBBfiQnAhLoSDBZXqBFnkRyeqAAAAAElFTkSuQmCC`;

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,25 +20,25 @@ LocalCardMigrationStrikeDatabase::LocalCardMigrationStrikeDatabase(
   RemoveExpiredStrikes();
 }
 
-LocalCardMigrationStrikeDatabase::~LocalCardMigrationStrikeDatabase() {}
+LocalCardMigrationStrikeDatabase::~LocalCardMigrationStrikeDatabase() = default;
 
-std::string LocalCardMigrationStrikeDatabase::GetProjectPrefix() {
+std::string LocalCardMigrationStrikeDatabase::GetProjectPrefix() const {
   return "LocalCardMigration";
 }
 
-int LocalCardMigrationStrikeDatabase::GetMaxStrikesLimit() {
+int LocalCardMigrationStrikeDatabase::GetMaxStrikesLimit() const {
   return 6;
 }
 
-base::Optional<int64_t>
-LocalCardMigrationStrikeDatabase::GetExpiryTimeMicros() {
+absl::optional<base::TimeDelta>
+LocalCardMigrationStrikeDatabase::GetExpiryTimeDelta() const {
   // Ideally, we should be able to annotate cards deselected at migration time
   // as cards the user is not interested in uploading.  Until then, we have been
   // asked to not expire local card migration strikes.
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-bool LocalCardMigrationStrikeDatabase::UniqueIdsRequired() {
+bool LocalCardMigrationStrikeDatabase::UniqueIdsRequired() const {
   return false;
 }
 

@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 33: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
 Make sure prototypes are set up using the window a property came from, instead of the lexical global object.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

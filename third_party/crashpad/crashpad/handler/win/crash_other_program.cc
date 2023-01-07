@@ -1,4 +1,4 @@
-// Copyright 2016 The Crashpad Authors. All rights reserved.
+// Copyright 2016 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@
 #include "test/test_paths.h"
 #include "test/win/child_launcher.h"
 #include "util/file/file_io.h"
+#include "util/win/exception_codes.h"
 #include "util/win/scoped_handle.h"
 #include "util/win/xp_compat.h"
 
@@ -108,7 +109,7 @@ int CrashOtherProgram(int argc, wchar_t* argv[]) {
 
   DWORD expect_exit_code;
   if (argc == 3 && wcscmp(argv[2], L"noexception") == 0) {
-    expect_exit_code = CrashpadClient::kTriggeredExceptionCode;
+    expect_exit_code = ExceptionCodes::kTriggeredExceptionCode;
     if (!CrashpadClient::DumpAndCrashTargetProcess(
             child.process_handle(), 0, 0))
       return EXIT_FAILURE;

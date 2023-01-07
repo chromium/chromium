@@ -1,0 +1,37 @@
+caption: Show Journeys on the Chrome history page
+default: null
+desc: "This policy controls the visibility of Journeys on the Chrome history page.\n\
+  \n      If the policy is set to Enabled, Journeys will be visible at chrome://history/journeys.\n\
+  \n      If the policy is set to Disabled, Journeys will not be visible at chrome://history/journeys.\n\
+  \n      If the policy is left unset, Journeys will be visible at chrome://history/journeys\
+  \ by default and users can change the visibility of Journeys.\n\n      Please note,\
+  \ if <ph name=\"COMPONENT_UPDATES_ENABLED_POLICY_NAME\">ComponentUpdatesEnabled</ph>\
+  \ policy is set to Disabled, but <ph name=\"HISTORY_CLUSTERS_VISIBLE_POLICY_NAME\"\
+  >HistoryClustersVisible</ph> is set to Enabled or unset, Journeys will still be\
+  \ available at chrome://history/journeys, but may be absent from the omnibox, and\
+  \ less relevant to the user.\n      "
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Journeys will be visible at chrome://history/journeys.
+  value: true
+- caption: Journeys will not be visible at chrome://history/journeys.
+  value: false
+- caption: Journeys will be visible at chrome://history/journeys by default and users
+    can change the visibility of Journeys.
+  value: null
+owners:
+- file://components/history_clusters/OWNERS
+- mahmadi@chromium.org
+- chrome-journeys@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome.*:97-
+- chrome_os:97-
+tags: []
+type: main

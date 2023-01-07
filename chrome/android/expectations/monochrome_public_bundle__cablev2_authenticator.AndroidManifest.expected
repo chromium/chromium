@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    featureSplit="cablev2_authenticator"
+    package="org.chromium.chrome.stable"
+    platformBuildVersionCode="33"
+    platformBuildVersionName="13">
+  <dist:module dist:onDemand="false" dist:title="@string/cablev2_authenticator_module_title">  # DIFF-ANCHOR: 4362cefb
+    <dist:fusing dist:include="true"/>
+  </dist:module>  # DIFF-ANCHOR: 4362cefb
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33"/>
+  <uses-split android:name="chrome"/>
+  <application/>
+</manifest>

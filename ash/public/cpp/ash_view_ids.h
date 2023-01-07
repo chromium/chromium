@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,19 +28,32 @@ enum ViewID {
   VIEW_ID_CAST_MAIN_VIEW,
   VIEW_ID_CAST_SELECT_VIEW,
   VIEW_ID_MEDIA_TRAY_VIEW,
-  // Power button in system tray.
-  VIEW_ID_POWER_BUTTON,
+
+  // System tray quick settings view buttons:
+  VIEW_ID_QS_MIN,
+  VIEW_ID_QS_BATTERY_BUTTON = VIEW_ID_QS_MIN,
+  VIEW_ID_QS_COLLAPSE_BUTTON,
+  VIEW_ID_QS_DATE_VIEW_BUTTON,
+  VIEW_ID_QS_FEEDBACK_BUTTON,
+  VIEW_ID_QS_LOCK_BUTTON,
+  VIEW_ID_QS_MANAGED_BUTTON,
+  VIEW_ID_QS_POWER_BUTTON,
+  VIEW_ID_QS_POWER_LOCK_MENU_BUTTON,
+  VIEW_ID_QS_POWER_OFF_MENU_BUTTON,
+  VIEW_ID_QS_POWER_RESTART_MENU_BUTTON,
+  VIEW_ID_QS_POWER_SIGNOUT_MENU_BUTTON,
+  VIEW_ID_QS_SETTINGS_BUTTON,
+  VIEW_ID_QS_SIGN_OUT_BUTTON,
+  VIEW_ID_QS_USER_AVATAR_BUTTON,
+  VIEW_ID_QS_VERSION_BUTTON,
+  VIEW_ID_QS_MAX = VIEW_ID_QS_VERSION_BUTTON,
+
   // Sticky header rows in a scroll view.
   VIEW_ID_STICKY_HEADER,
-  // System tray menu item for "device is managed by example.com".
-  VIEW_ID_TRAY_ENTERPRISE,
-  VIEW_ID_TRAY_ENTERPRISE_LABEL,
   // System tray up-arrow icon that shows an update is available.
   VIEW_ID_TRAY_UPDATE_ICON,
   // System tray menu item label for updates (e.g. "Restart to update").
   VIEW_ID_TRAY_UPDATE_MENU_LABEL,
-  // System tray UserAvatarButton in TopShortcutsView.
-  VIEW_ID_USER_AVATAR_BUTTON,
 
   // Start and end of system tray UserItemButton in UserChooserView. First
   // user gets VIEW_ID_USER_ITEM_BUTTON_START. DCHECKs if the number of user

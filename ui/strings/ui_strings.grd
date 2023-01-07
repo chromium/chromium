@@ -16,45 +16,18 @@ need to be translated for each locale.-->
     <output filename="grit/ui_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
-    <if expr="is_android">
-      <output filename="ui_strings_af.pak" type="data_package" lang="af" />
-      <output filename="ui_strings_as.pak" type="data_package" lang="as" />
-      <output filename="ui_strings_az.pak" type="data_package" lang="az" />
-      <output filename="ui_strings_be.pak" type="data_package" lang="be" />
-      <output filename="ui_strings_bs.pak" type="data_package" lang="bs" />
-      <output filename="ui_strings_eu.pak" type="data_package" lang="eu" />
-      <output filename="ui_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
-      <output filename="ui_strings_gl.pak" type="data_package" lang="gl" />
-      <output filename="ui_strings_hy.pak" type="data_package" lang="hy" />
-      <output filename="ui_strings_is.pak" type="data_package" lang="is" />
-      <output filename="ui_strings_ka.pak" type="data_package" lang="ka" />
-      <output filename="ui_strings_kk.pak" type="data_package" lang="kk" />
-      <output filename="ui_strings_km.pak" type="data_package" lang="km" />
-      <output filename="ui_strings_ky.pak" type="data_package" lang="ky" />
-      <output filename="ui_strings_lo.pak" type="data_package" lang="lo" />
-      <output filename="ui_strings_mk.pak" type="data_package" lang="mk" />
-      <output filename="ui_strings_mn.pak" type="data_package" lang="mn" />
-      <output filename="ui_strings_my.pak" type="data_package" lang="my" />
-      <output filename="ui_strings_ne.pak" type="data_package" lang="ne" />
-      <output filename="ui_strings_or.pak" type="data_package" lang="or" />
-      <output filename="ui_strings_pa.pak" type="data_package" lang="pa" />
-      <output filename="ui_strings_si.pak" type="data_package" lang="si" />
-      <output filename="ui_strings_sq.pak" type="data_package" lang="sq" />
-      <output filename="ui_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
-      <output filename="ui_strings_ur.pak" type="data_package" lang="ur" />
-      <output filename="ui_strings_uz.pak" type="data_package" lang="uz" />
-      <output filename="ui_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
-      <output filename="ui_strings_zu.pak" type="data_package" lang="zu" />
-    </if>
-    <if expr="chromeos or lacros">
-      <output filename="ui_strings_is.pak" type="data_package" lang="is" />
-    </if>
+    <output filename="ui_strings_af.pak" type="data_package" lang="af" />
     <output filename="ui_strings_am.pak" type="data_package" lang="am" />
     <output filename="ui_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="ui_strings_as.pak" type="data_package" lang="as" />
+    <output filename="ui_strings_az.pak" type="data_package" lang="az" />
+    <output filename="ui_strings_be.pak" type="data_package" lang="be" />
     <output filename="ui_strings_bg.pak" type="data_package" lang="bg" />
     <output filename="ui_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="ui_strings_bs.pak" type="data_package" lang="bs" />
     <output filename="ui_strings_ca.pak" type="data_package" lang="ca" />
     <output filename="ui_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="ui_strings_cy.pak" type="data_package" lang="cy" />
     <output filename="ui_strings_da.pak" type="data_package" lang="da" />
     <output filename="ui_strings_de.pak" type="data_package" lang="de" />
     <output filename="ui_strings_el.pak" type="data_package" lang="el" />
@@ -69,29 +42,44 @@ need to be translated for each locale.-->
       <output filename="ui_strings_es-419.pak" type="data_package" lang="es-419" />
     </if>
     <output filename="ui_strings_et.pak" type="data_package" lang="et" />
+    <output filename="ui_strings_eu.pak" type="data_package" lang="eu" />
     <output filename="ui_strings_fa.pak" type="data_package" lang="fa" />
     <output filename="ui_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="ui_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="ui_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
     <output filename="ui_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="ui_strings_gl.pak" type="data_package" lang="gl" />
     <output filename="ui_strings_gu.pak" type="data_package" lang="gu" />
     <output filename="ui_strings_he.pak" type="data_package" lang="he" />
     <output filename="ui_strings_hi.pak" type="data_package" lang="hi" />
     <output filename="ui_strings_hr.pak" type="data_package" lang="hr" />
     <output filename="ui_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="ui_strings_hy.pak" type="data_package" lang="hy" />
     <output filename="ui_strings_id.pak" type="data_package" lang="id" />
+    <output filename="ui_strings_is.pak" type="data_package" lang="is" />
     <output filename="ui_strings_it.pak" type="data_package" lang="it" />
     <output filename="ui_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="ui_strings_ka.pak" type="data_package" lang="ka" />
+    <output filename="ui_strings_kk.pak" type="data_package" lang="kk" />
+    <output filename="ui_strings_km.pak" type="data_package" lang="km" />
     <output filename="ui_strings_kn.pak" type="data_package" lang="kn" />
     <output filename="ui_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="ui_strings_ky.pak" type="data_package" lang="ky" />
+    <output filename="ui_strings_lo.pak" type="data_package" lang="lo" />
     <output filename="ui_strings_lt.pak" type="data_package" lang="lt" />
     <output filename="ui_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="ui_strings_mk.pak" type="data_package" lang="mk" />
     <output filename="ui_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="ui_strings_mn.pak" type="data_package" lang="mn" />
     <output filename="ui_strings_mr.pak" type="data_package" lang="mr" />
     <output filename="ui_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="ui_strings_my.pak" type="data_package" lang="my" />
+    <output filename="ui_strings_ne.pak" type="data_package" lang="ne" />
     <output filename="ui_strings_nl.pak" type="data_package" lang="nl" />
     <!-- The translation console uses 'no' for Norwegian Bokmål. It should
          be 'nb'. -->
     <output filename="ui_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="ui_strings_pa.pak" type="data_package" lang="pa" />
     <output filename="ui_strings_pl.pak" type="data_package" lang="pl" />
     <if expr="is_ios">
       <!-- iOS uses pt for pt-BR -->
@@ -101,10 +89,14 @@ need to be translated for each locale.-->
       <output filename="ui_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
     </if>
     <output filename="ui_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="ui_strings_or.pak" type="data_package" lang="or" />
     <output filename="ui_strings_ro.pak" type="data_package" lang="ro" />
     <output filename="ui_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="ui_strings_si.pak" type="data_package" lang="si" />
     <output filename="ui_strings_sk.pak" type="data_package" lang="sk" />
     <output filename="ui_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="ui_strings_sq.pak" type="data_package" lang="sq" />
+    <output filename="ui_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
     <output filename="ui_strings_sr.pak" type="data_package" lang="sr" />
     <output filename="ui_strings_sv.pak" type="data_package" lang="sv" />
     <output filename="ui_strings_sw.pak" type="data_package" lang="sw" />
@@ -113,10 +105,13 @@ need to be translated for each locale.-->
     <output filename="ui_strings_th.pak" type="data_package" lang="th" />
     <output filename="ui_strings_tr.pak" type="data_package" lang="tr" />
     <output filename="ui_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="ui_strings_ur.pak" type="data_package" lang="ur" />
+    <output filename="ui_strings_uz.pak" type="data_package" lang="uz" />
     <output filename="ui_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="ui_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="ui_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
     <output filename="ui_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
-
+    <output filename="ui_strings_zu.pak" type="data_package" lang="zu" />
     <!-- Pseudolocales -->
     <output filename="ui_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
     <output filename="ui_strings_en-XA.pak" type="data_package" lang="en-XA" />
@@ -133,6 +128,7 @@ need to be translated for each locale.-->
     <file path="translations/ui_strings_bs.xtb" lang="bs" />
     <file path="translations/ui_strings_ca.xtb" lang="ca" />
     <file path="translations/ui_strings_cs.xtb" lang="cs" />
+    <file path="translations/ui_strings_cy.xtb" lang="cy" />
     <file path="translations/ui_strings_da.xtb" lang="da" />
     <file path="translations/ui_strings_de.xtb" lang="de" />
     <file path="translations/ui_strings_el.xtb" lang="el" />
@@ -390,6 +386,12 @@ need to be translated for each locale.-->
       <message name="IDS_CLIPBOARD_MENU_DELETE_ALL" desc="Used to indicate to a user that all clipboard items will be deleted if selected">
         Delete All
       </message>
+      <message name="IDS_EXTENSION_PINNED" desc="Used to indicate to a screen reader user that an extension icon has been pinned.">
+        Extension pinned
+      </message>
+      <message name="IDS_EXTENSION_UNPINNED" desc="Used to indicate to a screen reader user that an extension icon has been unpinned.">
+        Extension unpinned
+      </message>
 
       <!-- New Badge (user education) -->
       <message name="IDS_NEW_BADGE" desc="Appears as a badge on UI elements like menus, denoting new features">
@@ -495,46 +497,12 @@ need to be translated for each locale.-->
         Upload
       </message>
 
-      <!--Accessible action strings-->
-      <message name="IDS_AX_ACTIVATE_ACTION_VERB" desc="Verb stating the action that will occur when an element such as a text field is selected, as used by accessibility.">
-        activate
-      </message>
-      <message name="IDS_AX_CHECK_ACTION_VERB" desc="Verb stating the action that will occur when an unchecked checkbox is clicked, as used by accessibility.">
-        check
-      </message>
-      <message name="IDS_AX_CLICK_ACTION_VERB" desc="Verb stating the action that will occur when clicking on a generic clickable object, when we don't have a more specific action description, as used by accessibility.">
-        click
-      </message>
-      <message name="IDS_AX_CLICK_ANCESTOR_ACTION_VERB" desc="Verb stating the action that will occur when clicking on a generic object that is not itself clickable but one of its ancestors is, as used by accessibility.">
-        click ancestor
-      </message>
-      <message name="IDS_AX_JUMP_ACTION_VERB" desc="Verb stating the action that will occur when an element such as an in-page link is activated, as used by accessibility.">
-        jump
-      </message>
-      <message name="IDS_AX_OPEN_ACTION_VERB" desc="Verb stating the action that will occur when an element such as a pop-up button is pressed, as used by accessibility.">
-        open
-      </message>
-<message name="IDS_AX_PRESS_ACTION_VERB" desc="Verb stating the action that will occur when an element such as a button is pressed, as used by accessibility.">
-        press
-      </message>
-      <message name="IDS_AX_SELECT_ACTION_VERB" desc="Verb stating the action that will occur when an element such as a radio button is selected, as used by accessibility.">
-        select
-      </message>
-      <message name="IDS_AX_UNCHECK_ACTION_VERB" desc="Verb stating the action that will occur when a checked checkbox is clicked, as used by accessibility.">
-        uncheck
-      </message>
-
       <!--Accessible name strings-->
-      <if expr="is_macosx">
-        <message name="IDS_ACCNAME_TAB_ROLE_DESCRIPTION" desc="A generic description of a tab button's role." meaning="UI element">
-          Tab
-        </message>
-        <message name="IDS_ACCNAME_DISCLOSURE_TRIANGLE_ROLE_DESCRIPTION" desc="A generic description of a disclosure triangle's role.">
-          Disclosure triangle
-        </message>
-      </if>
       <message name="IDS_APP_ACCNAME_BACK" desc="The accessible name for the back button on the window frame.">
         Back button
+      </message>
+      <message name="IDS_APP_ACCNAME_CENTER" desc="The accessible name for the center button on the window frame.">
+        Center button
       </message>
       <message name="IDS_APP_ACCNAME_CLOSE" desc="The accessible name for the Close button.">
         Close
@@ -551,8 +519,23 @@ need to be translated for each locale.-->
       <message name="IDS_APP_ACCNAME_MENU" desc="The accessible name for the Menu button.">
         Menu
       </message>
+      <message name="IDS_APP_ACCNAME_FLOAT" desc="The accessible name for the Floating button.">
+        Float
+      </message>
       <message name="IDS_APP_ACCNAME_COLOR_CHOOSER_HEX_INPUT" desc="The accessible name for the color chooser hexadecimal input field">
         Hex color value
+      </message>
+      <message name="IDS_APP_ACCNAME_HALF" desc="The accessible name for the Half button on Multitask Menu">
+        Half
+      </message>
+      <message name="IDS_APP_ACCNAME_PARTIAL" desc="The accessible name for the Partial button on the Multitask Menu">
+        Partial
+      </message>
+      <message name="IDS_APP_ACCNAME_FULL" desc="The accessible name for the Full button on the Multitask Menu">
+        Full
+      </message>
+      <message name="IDS_APP_ACCNAME_FLOAT_ON_TOP" desc="The accessible name for the Float on top button on the Multitask Menu">
+        Float on top
       </message>
 
       <!-- Scroll Bar Context Menu Labels -->
@@ -588,6 +571,17 @@ need to be translated for each locale.-->
       </message>
       <message name="IDS_APP_SCROLLBAR_CXMENU_SCROLLDOWN" desc="The label for the 'Scroll Down' item">
         Scroll Down
+      </message>
+
+      <!-- TableView accessible strings -->
+      <message name="IDS_APP_TABLE_COLUMN_NOT_SORTED_ACCNAME" desc="The text to be announced when specified column becomes unsorted.">
+        Column <ph name="COLUMN_NAME">$1<ex>Column Name</ex></ph> unsorted.
+      </message>
+      <message name="IDS_APP_TABLE_COLUMN_SORTED_ASC_ACCNAME" desc="The text to be announced when specified column is sorted in ascending order.">
+        Column <ph name="COLUMN_NAME">$1<ex>Column Name</ex></ph> sorted in ascending order.
+      </message>
+      <message name="IDS_APP_TABLE_COLUMN_SORTED_DESC_ACCNAME" desc="The text to be announced when specified column is sorted in descending order.">
+        Column <ph name="COLUMN_NAME">$1<ex>Column Name</ex></ph> sorted in descending order.
       </message>
 
       <!-- Textfield context menu item labels. -->
@@ -626,7 +620,7 @@ need to be translated for each locale.-->
           Emoji &amp;&amp; Symbols
         </message>
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
         <message name="IDS_APP_SHOW_CLIPBOARD_HISTORY" desc="The context menu item to show the clipboard history menu.">
           Clipboard
         </message>
@@ -689,6 +683,12 @@ need to be translated for each locale.-->
       <message name="IDS_APP_F1_KEY" desc="F1 key">
         F1
       </message>
+      <message name="IDS_APP_F5_KEY" desc="F5 key">
+        F5
+      </message>
+      <message name="IDS_APP_F6_KEY" is_accessibility_with_no_ui="true" desc="F6 key">
+        F6
+      </message>
       <message name="IDS_APP_F11_KEY" desc="F11 key">
         F11
       </message>
@@ -734,9 +734,15 @@ need to be translated for each locale.-->
           Win
         </message>
       </if>
-      <if expr="chromeos">
+      <if expr="chromeos_ash">
+        <message name="IDS_APP_META_KEY" desc="External Meta key (Search key on ChromeOS keyboards, Windows key on Windows keyboards, and Command key on Mac keyboards)">
+          Meta
+        </message>
         <message name="IDS_APP_FULLSCREEN_KEY" desc="This refers to the 'Fullscreen' media key on certain keyboards.">
           Fullscreen
+        </message>
+        <message name="IDS_APP_OVERVIEW_KEY" desc="This refers to the 'Overview' or 'Show All Windows' media key on ChromeOS keyboards.">
+          Overview
         </message>
       </if>
 
@@ -809,7 +815,7 @@ need to be translated for each locale.-->
         <ph name="NUMBER">$1<ex>75</ex></ph> %
       </message>
       <message name="IDS_MESSAGE_CENTER_NOTIFICATION_CHROMEOS_SYSTEM" desc="The label to describe the notification comes from ChromeOS system.">
-        <ph name="IDS_SHORT_PRODUCT_OS_NAME">$1<ex>Chrome OS</ex></ph> system
+        <ph name="IDS_SHORT_PRODUCT_OS_NAME">$1<ex>ChromeOS</ex></ph> system
       </message>
       <message name="IDS_MESSAGE_CENTER_NOTIFICATION_INLINE_REPLY_PLACEHOLDER" desc="The default placeholder text for notification inline reply.">
         Send message
@@ -883,198 +889,14 @@ need to be translated for each locale.-->
       <message name="IDS_MESSAGE_NOTIFICATION_SEND_TAB_TO_SELF_CONFIRMATION_FAILURE_MESSAGE" desc="The message text for the comformation notification when the user failed to share a tab to other devices.">
         Please try again
       </message>
-      <if expr="chromeos">
-        <message name="IDS_MESSAGE_CENTER_NOTIFIER_SCREENSHOT_NAME" desc="The name of screenshot notifier that is a system component">
-          Screenshot
-        </message>
-        <message name="IDS_MESSAGE_CENTER_NOTIFICATION_BUTTON_COPY_SCREENSHOT_TO_CLIPBOARD" desc="The button label for the screenshot notification which copies the screenshot image to clipboard on click.">
-          Copy to clipboard
-        </message>
-        <message name="IDS_MESSAGE_CENTER_NOTIFICATION_BUTTON_ANNOTATE_SCREENSHOT" desc="The label for the screenshot notification button that opens the note-taking app to annotate the screenhsot.">
-          Annotate image
-        </message>
+      <if expr="chromeos_ash">
         <message name="IDS_MESSAGE_CENTER_NOTIFIER_HATS_NAME" desc="The name of hats notifier that is a system component">
           Survey
         </message>
       </if>
 
-      <!-- App list -->
-      <message name="IDS_SUGGESTED_APPS_INDICATOR" desc="Indicator text in the launcher on top of suggested apps.">
-        SUGGESTED APPS
-      </message>
-      <message name="IDS_FREQUENTLY_USED_INDICATOR" desc="Indicator text in the launcher on top of frequently used apps.">
-        FREQUENTLY USED
-      </message>
-      <message name="IDS_RECOMMENDED_APPS_INDICATOR" desc="Indicator text in the launcher on top of reccomended apps.">
-        RECOMMENDED APPS
-      </message>
-      <message name="IDS_MOST_LIKELY_INDICATOR" desc="Indicator text in the launcher on top of most likely apps to be clicked.">
-        MOST LIKELY
-      </message>
-      <message name="IDS_APP_SUGGESTIONS_INDICATOR" desc="Indicator text in the launcher on top of app suggestions.">
-        APP SUGGESTIONS
-      </message>
-      <message name="IDS_ALL_APPS_INDICATOR" desc="Indicator text in the launcher on top of all apps.">
-        ALL APPS
-      </message>
-      <message name="IDS_APP_LIST_APP_FOCUS_NOTIFICATION_BADGE" desc="The spoken feedback text for when an app icon is focused and has a notification badge shown on the icon.">
-        <ph name="FOCUSED_APP_NAME">$1<ex>App Name</ex></ph> requests your attention.
-      </message>
-      <message name="IDS_APP_LIST_APP_DRAG_LOCATION_ACCESSIBILE_NAME" desc="The spoken feedback which tells the location that a dragged app has dropped to.">
-        Moved to Page <ph name="PAGE_NUMBER">$1<ex>1</ex></ph>, row <ph name="ROW_NUMBER">$2<ex>4</ex></ph>, column <ph name="COLUMN_NUMBER">$3<ex>2</ex></ph>.
-      </message>
-      <message name="IDS_APP_LIST_APP_DRAG_CREATE_FOLDER_ACCESSIBILE_NAME" desc="The spoken feedback text which describes the app that is currently being dragged over another app, and how to create a folder.">
-        <ph name="DRAGGED_APP_NAME">$1<ex>App Name</ex></ph> on top of <ph name="IN_PLACE_APP">$2<ex>Other App Name</ex></ph>, release to create folder.
-      </message>
-      <message name="IDS_APP_LIST_APP_DRAG_MOVE_TO_FOLDER_ACCESSIBILE_NAME" desc="The spoken feedback given while dragging an app, which describes the folder name the app would drop into if the drag were ended.">
-        Move <ph name="DRAGGED_APP">$1<ex>App Name</ex></ph> to folder <ph name="FOLDER_NAME">$2<ex>Folder Name</ex></ph>.
-      </message>
-      <message name="IDS_APP_LIST_APP_KEYBOARD_CREATE_FOLDER_ACCESSIBILE_NAME" desc="The spoken feedback after making a new folder with the keyboard, which describes the apps that have been combined to create a new folder.">
-        <ph name="MOVED_APP_NAME">$1<ex>App Name</ex></ph> combined with <ph name="IN_PLACE_APP">$2<ex>Other App Name</ex></ph> to create new folder.
-      </message>
-      <message name="IDS_APP_LIST_APP_KEYBOARD_MOVE_TO_FOLDER_ACCESSIBILE_NAME" desc="The spoken feedback after keyboard moving an app into a folder, which describes the folder name the app has been moved to.">
-        <ph name="MOVED_APP_NAME">$1<ex>App Name</ex></ph> moved to folder <ph name="FOLDER_NAME">$2<ex>Folder Name</ex></ph>.
-      </message>
-      <message name="IDS_APP_LIST_BACK" desc="The name of the button that goes to the previous screen in the launcher.">
-        Back
-      </message>
-      <message name="IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER" desc="The placeholder text for app list folder name.">
-        Unnamed
-      </message>
-      <message name="IDS_APP_LIST_SEARCH_BOX_AUTOCOMPLETE" desc="The spoken feedback text for when the search box autocompletes a result">
-        <ph name="TEXT">$1<ex>typed text + autocomplete</ex></ph>, Autocomplete
-      </message>
-      <message name="IDS_APP_LIST_FOLDER_BUTTON_ACCESSIBILE_NAME" desc="The spoken feedback text for navigating to a folder button in top level app list">
-        Folder <ph name="folder_name">$1<ex>OEM Apps</ex></ph>
-      </message>
-      <message name="IDS_APP_LIST_FOLDER_OPEN_FOLDER_ACCESSIBILE_NAME" desc="The spoken feedback text for opening an app launcher folder">
-        Open folder
-      </message>
-      <message name="IDS_APP_LIST_FOLDER_CLOSE_FOLDER_ACCESSIBILE_NAME" desc="The spoken feedback text for closing an app launcher folder">
-        Close folder
-      </message>
-      <message name="IDS_APP_LIST_EXPAND_BUTTON" desc="Tooltip for the button that expands the app list from suggested apps to a fullscreen view which shows all apps.">
-        Expand to all apps
-      </message>
-      <message name="IDS_APP_LIST_ALL_APPS_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement that notifies users that all of their apps are showing, as opposed to showing only suggested apps">
-        Launcher, all apps
-      </message>
-      <message name="IDS_APP_LIST_SUGGESTED_APPS_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement that notifies users that the UI is showing a small version of the app list">
-        Launcher, partial view
-      </message>
-      <message name="IDS_APP_LIST_LAUNCHER_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement that notifies users that the UI is showing the search results">
-        Launcher
-      </message>
-      <message name="IDS_APP_LIST_CLEAR_SEARCHBOX" desc="Tooltip for the button that clears all text from the search box in the app list.">
-        Clear searchbox text
-      </message>
-      <message name="IDS_APP_LIST_SEARCHBOX_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_ZERO_STATE" desc="The accessibility announcement notifying the user that app list search is displaying a set of suggested items - i.e. items  shown as search results by default when the user has not entered any search query.">
-        Displaying suggestions
-      </message>
-      <message name="IDS_APP_LIST_SEARCHBOX_RESULTS_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement notifying the user about the number of results shown in app list search, and the query for which the results are displayed.">
-          Displaying <ph name="result_count">$1<ex>10</ex></ph> results for <ph name="query">$2<ex>search query</ex></ph>
-      </message>
-      <message name="IDS_APP_LIST_SEARCHBOX_RESULTS_ACCESSIBILITY_ANNOUNCEMENT_SINGLE_RESULT"  desc="The accessibility announcement notifying the user about the number of results shown in app list search, and the query for which the results are displayed. Used if search results contain a single item.">
-          Displaying 1 result for <ph name="query">$1<ex>search query</ex></ph>
-      </message>
-      <message name="IDS_SHELF_ALIGNMENT_BOTTOM" desc="Accessibility announcement notifying users that the shelf is now placed at the bottom of the screen">
-        Shelf on bottom
-      </message>
-      <message name="IDS_SHELF_ALIGNMENT_LEFT" desc="Accessibility announcement notifying users that the shelf is now placed on the left of the screen">
-        Shelf on left
-      </message>
-      <message name="IDS_SHELF_ALIGNMENT_RIGHT" desc="Accessibility announcement notifying users that the shelf is now placed on the right of the screen">
-        Shelf on right
-      </message>
-      <message name="IDS_SHELF_STATE_ALWAYS_SHOWN" desc="Accessibility announcement notifying users that the shelf is now always being shown">
-        Shelf always shown
-      </message>
-      <message name="IDS_SHELF_STATE_ALWAYS_HIDDEN" desc="Accessibility announcement notifying users that the shelf is now always being hidden">
-        Shelf always hidden
-      </message>
-      <message name="IDS_SHELF_STATE_AUTO_HIDE" desc="Accessibility announcement notifying users that the shelf will now hide itself automatically">
-        Shelf auto hidden
-      </message>
-      <message name="IDS_SHELF_ITEM_GENERIC_NAME" desc="The generic name of a shelf item, in situations where it does not have an explicit title">
-        Shelf item
-      </message>
-      <message name="IDS_SHELF_ITEM_WAS_PINNED" desc="Accessibility announcement notifying users that an item was pinned to the shelf">
-        <ph name="ITEM_TITLE">$1<ex>Files</ex></ph> was pinned
-      </message>
-      <message name="IDS_SHELF_ITEM_WAS_UNPINNED" desc="Accessibility announcement notifying users that an item was un-pinned from the shelf">
-        <ph name="ITEM_TITLE">$1<ex>Files</ex></ph> was un-pinned
-      </message>
-      <message name="IDS_SHELF_ITEMS_WERE_SWAPPED" desc="Accessibility announcement notifying users that two shelf items have been swapped">
-        <ph name="FIRST_ITEM_TITLE">$1<ex>Files</ex></ph> swapped with <ph name="SECOND_ITEM_TITLE">$2<ex>Settings</ex></ph>
-      </message>
-      <message name="IDS_SHELF_ITEM_HAS_NOTIFICATION_BADGE" desc="Accessibility announcement notifying users that the currently focused shelf app button has a notification badge shown on the app button's icon.">
-        <ph name="APP_ITEM_TITLE">$1<ex>App Name</ex></ph> requests your attention.
-      </message>
-      <message name="IDS_SHELF_NEXT" desc="Tooltip for the shelf arrow button that scrolls the shelf forward">
-        Next
-      </message>
-      <message name="IDS_SHELF_PREVIOUS" desc="Tooltip for the shelf arrow button that scrolls the shelf backward">
-        Previous
-      </message>
-      <message name="IDS_REMOVE_ZERO_STATE_SUGGESTION_TITLE" desc="Titlebar of removing zero state suggestion confirmation dialog">
-        Delete this search from your history?
-      </message>
-      <message name="IDS_REMOVE_ZERO_STATE_SUGGESTION_DETAILS" desc="Detailed explanation message for removing zero state suggestion">
-        You searched for this before. Deleting "<ph name="query">$1<ex>Previously Searched Query</ex></ph>" from your history will permanently remove it from your account across all your devices.
-      </message>
-      <message name="IDS_REMOVE_SUGGESTION_BUTTON_LABEL" desc="Remove suggestion button label">
-        Remove
-      </message>
-      <message name="IDS_APP_LIST_START_ASSISTANT" desc="Tooltip for the button that starts Google Assistant from the search box in the app list.">
-        Google Assistant
-      </message>
-      <message name="IDS_APP_LIST_PAGE_SWITCHER" desc="Tooltip for page switcher for each page in fullscreen view which shows all apps.">
-        Page <ph name="selected_page">$1<ex>1</ex></ph> of <ph name="total_page_num">$2<ex>3</ex></ph>
-      </message>
-      <message name="IDS_APP_LIST_CONTINUE_READING_ACCESSIBILE_NAME" desc="The spoken feedback text for the suggestion chip of continue reading.">
-        Continue reading from your mobile device <ph name="title">$1<ex>Title</ex></ph>
-      </message>
-      <message name="IDS_APP_LIST_LEARN_MORE" desc="Text of Learn more links.">
-        Learn more
-      </message>
-      <message name="IDS_APP_LIST_MANAGE_SETTINGS" desc="Text of Manage settings links.">
-        Manage settings
-      </message>
-      <message name="IDS_APP_LIST_SUGGESTED_CONTENT_INFO" desc="Text shown in launcher to notify users about Suggested Content. Suggested Content includes app search recommendations and website recommendations which can show up in places such as launcher search and suggestion chips.">
-          Chrome OS shows suggestions for new content to explore. Sends statistics to improve quality only if you’ve chosen to share usage data. <ph name="MANAGE_SETTINGS">$1<ex>Manage settings</ex></ph>
-      </message>
-
-
-      <message name="IDS_APP_ACCESSIBILITY_APP_WITH_STAR_RATING_ARC" desc="Accessibility text for a Play Store app with star rating.">
-        <ph name="APP_NAME_TYPE">$1<ex>Snapchat, Playstore App</ex></ph>, Star rating <ph name="RATING_SCORE">$2<ex>5.0</ex></ph>
-      </message>
-       <message name="IDS_APP_ACCESSIBILITY_APP_WITH_PRICE_ARC" desc="Accessibility text for a Play Store app with price.">
-        <ph name="APP_NAME_INFO">$1<ex>Snapchat, Playstore App, Star rating 4.1</ex></ph>, <ph name="PRICE">$2<ex>Free</ex></ph>
-      </message>
-      <message name="IDS_APP_ACCESSIBILITY_ARC_APP_ANNOUNCEMENT" desc="Accessibility text to specify a search result is a play store app.">
-        <ph name="APP_NAME">$1<ex>Snapchat</ex></ph>, Play Store App
-      </message>
-      <message name="IDS_APP_ACCESSIBILITY_INSTALLED_APP_ANNOUNCEMENT" desc="Accessibility text to specify a search result is an installed app.">
-        <ph name="APP_NAME">$1<ex>Files</ex></ph>, Installed App
-      </message>
-      <message name="IDS_APP_ACCESSIBILITY_INTERNAL_APP_ANNOUNCEMENT" desc="Accessibility text to specify a search result is an internal app.">
-        <ph name="APP_NAME">$1<ex>Camera</ex></ph>, App
-      </message>
-      <message name="IDS_APP_ACCESSIBILITY_APP_RECOMMENDATION_ARC" desc="Accessibility text to specify a search result is an app recommendation.">
-        <ph name="APP_NAME">$1<ex>Instagram</ex></ph>, App recommendation
-      </message>
-      <message name="IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL" desc="Hint text for the search box in fullscreen app list window with additional instructions to use the arrow keys in Accessibility mode.">
-        Search your device, apps, settings, and web. Use the arrow keys to navigate your apps.
-      </message>
-      <message name="IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET" desc="Hint text for the search box in fullscreen app list window. Tablet mode only, so we don't mention the arrow keys.">
-        Search your device, apps, settings, and web.
-      </message>
-      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER" desc="Placeholder text for the search box shown in the app list UI.">
-        Search your device, apps, settings, web...
-      </message>
-
       <!-- Clipboard history menu -->
-      <message name="IDS_CLIPBOARD_HISTORY_MENU_BITMAP_IMAGE" desc="Accessibility text for the bitmap image shown on the clipboard history menu">
+      <message name="IDS_CLIPBOARD_HISTORY_MENU_PNG_IMAGE" desc="Accessibility text for the PNG image shown on the clipboard history menu">
         Image.
       </message>
       <message name="IDS_CLIPBOARD_HISTORY_MENU_HTML_IMAGE" desc="Accessibility text for the HTML-rendered image shown on the clipboard history menu">
@@ -1206,6 +1028,19 @@ need to be translated for each locale.-->
           Checking your internet connection
         </message>
       </if>
+
+      <!-- Settings string -->
+      <message name="IDS_SETTINGS_PASSWORD_SHOW" desc="A tool tip on a button that reveals the saved password.">
+       Show password
+      </message>
+      <message name="IDS_SETTINGS_PASSWORD_HIDE" desc="A tool tip on a button that hides the saved password that is being shown.">
+       Hide password
+      </message>
+
+      <!-- Table View -->
+      <message name="IDS_TABLE_VIEW_AX_ANNOUNCE_ROW_SELECTED" desc="Screenreader announcement that a row is selected">
+        <ph name="ROW_NAME">$1<ex>A row in the table</ex></ph> is selected.
+      </message>
     </messages>
   </release>
 </grit>

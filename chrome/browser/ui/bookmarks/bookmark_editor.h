@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 
 class GURL;
@@ -23,6 +26,9 @@ class BookmarkModel;
 // bookmark editor dialog.
 class BookmarkEditor {
  public:
+  // A callback which is run when clicking on the Save button in the editor.
+  using OnSaveCallback = base::OnceClosure;
+
   // An enumeration of the possible configurations offered.
   enum Configuration {
     // If Configuration is SHOW_TREE, a tree is shown allowing the user to
@@ -34,6 +40,18 @@ class BookmarkEditor {
   // Describes what the user is editing.
   class EditDetails {
    public:
+    struct BookmarkData {
+      BookmarkData();
+      BookmarkData(BookmarkData const& other);
+      ~BookmarkData();
+
+      std::u16string title;
+
+      // Exactly one of the following should be non-empty.
+      absl::optional<GURL> url;
+      std::vector<BookmarkData> children;
+    };
+
     // Returns the type of the existing or new node.
     bookmarks::BookmarkNode::Type GetNodeType() const;
 
@@ -79,23 +97,20 @@ class BookmarkEditor {
     const Type type;
 
     // If type == EXISTING_NODE this gives the existing node.
-    const bookmarks::BookmarkNode* existing_node = nullptr;
+    raw_ptr<const bookmarks::BookmarkNode> existing_node = nullptr;
 
     // If type == NEW_URL or type == NEW_FOLDER this gives the initial parent
     // node to place the new node in.
-    const bookmarks::BookmarkNode* parent_node = nullptr;
+    raw_ptr<const bookmarks::BookmarkNode> parent_node = nullptr;
 
     // If type == NEW_URL or type == NEW_FOLDER this gives the index to insert
     // the new node at.
-    base::Optional<size_t> index;
+    absl::optional<size_t> index;
 
-    // If type == NEW_URL this gives the URL/title.
-    GURL url;
-    std::u16string title;
-
-    // If type == NEW_FOLDER, this is the urls/title pairs to add to the
-    // folder.
-    std::vector<std::pair<GURL, std::u16string>> urls;
+    // If type == NEW_URL this contains the URL/title. If type == NEW_FOLDER,
+    // this contains the folder title and any urls/title pairs or nested
+    // folders it should contain.
+    BookmarkData bookmark_data;
 
    private:
     explicit EditDetails(Type node_type);
@@ -107,7 +122,8 @@ class BookmarkEditor {
   static void Show(gfx::NativeWindow parent_window,
                    Profile* profile,
                    const EditDetails& details,
-                   Configuration configuration);
+                   Configuration configuration,
+                   OnSaveCallback on_save_callback = base::DoNothing());
 
   // Modifies a bookmark node (assuming that there's no magic that needs to be
   // done regarding moving from one folder to another).  If a new node is

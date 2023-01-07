@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">ਅਚਾਨਕ ਇੱਕ ਗੜਬੜ ਹੋਈ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਵਿਕਾਸਕਾਰਾਂ ਨੂੰ ਇਸ ਸਮੱਸਿਆ ਦੀ ਰਿਪੋਰਟ ਕਰੋ।</translation>
 <translation id="1697532407822776718">ਤੁਸੀਂ ਸਾਰਾ ਸੈਟ ਕਰ ਲਿਆ ਹੈ!</translation>
 <translation id="1742469581923031760">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ…</translation>
+<translation id="177040763384871009">ਰਿਮੋਟ ਡੀਵਾਈਸ 'ਤੇ ਕਲਿੱਕ ਕੀਤੇ ਲਿੰਕਾਂ ਨੂੰ ਕਲਾਇੰਟ ਬ੍ਰਾਊਜ਼ਰ 'ਤੇ ਖੋਲ੍ਹਣ ਦੀ ਆਗਿਆ ਦੇਣ ਲਈ, ਤੁਹਾਨੂੰ ਸਿਸਟਮ ਦੇ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ "<ph name="URL_FORWARDER_NAME" />" ਵਿੱਚ ਬਦਲਣ ਦੀ ਲੋੜ ਹੈ।</translation>
 <translation id="177096447311351977">ਕਲਾਇੰਟ ਲਈ ਚੈਨਲ IP: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' ਚੈਨਲ='<ph name="CHANNEL_TYPE" />' ਕਨੈਕਸ਼ਨ='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">ਮਿਟਾਓ</translation>
 <translation id="2009755455353575666">ਕਨੈਕਸ਼ਨ ਅਸਫਲ</translation>
@@ -24,7 +25,7 @@
 ਜੇ '<ph name="SERVICE_SCRIPT_NAME" />' 'ਤੇ ਪਹਿਲਾਂ ਹੀ ਨਿਸ਼ਾਨ ਲੱਗਾ ਹੋਇਆ ਹੈ, ਤਾਂ ਇਸ ਤੋਂ ਨਿਸ਼ਾਨ ਹਟਾਓ ਅਤੇ ਫਿਰ ਦੁਬਾਰਾ ਨਿਸ਼ਾਨ ਲਗਾਓ।</translation>
 <translation id="225614027745146050">ਸੁਆਗਤ ਹੈ</translation>
 <translation id="2320166752086256636">ਕੀ-ਬੋਰਡ ਲੁੁਕਾਓ</translation>
-<translation id="2333212046079545895">ਕਾਪੀਰਾਈਟ 2021 Google LLC. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
+<translation id="2329392777730037872">ਕਲਾਇੰਟ 'ਤੇ <ph name="URL" /> ਖੋਲ੍ਹਣ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2366718077645204424">ਹੋਸਟ ਤੱਕ ਪਹੁੰਚਣ ਵਿੱਚ ਅਸਮਰੱਥ। ਇਹ ਸ਼ਾਇਦ ਤੁਹਾਡੇ ਵੱਲੋਂ ਵਰਤੇ ਜਾ ਰਹੇ ਨੈੱਟਵਰਕ ਦਸੰਰੂਪਣ ਦੇ ਕਾਰਨ ਹੈ।</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> ਆਖਰੀ ਵਾਰ ਆਨਲਾਈਨ <ph name="RELATIVE_TIMESTAMP" />।</translation>
@@ -35,6 +36,7 @@
 <translation id="2599300881200251572">ਇਹ ਸੇਵਾ ਕਲਾਇੰਟਾਂ ਦੇ 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਤੋਂ ਆਉਣ ਵਾਲੇ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਚਾਲੂ ਕਰਦੀ ਹੈ।</translation>
 <translation id="2647232381348739934">Chromoting ਸੇਵਾ</translation>
 <translation id="2676780859508944670">ਚਾਲੂ....</translation>
+<translation id="2692522824157224199">Copyright 2022 Google LLC. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">ਪ੍ਰਮਾਣੀਕਰਨ ਸਮੇਂ ਕੋਈ ਸਮੱਸਿਆ ਹੋ ਗਈ, ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਲੌਗ-ਇਨ ਕਰੋ।</translation>
 <translation id="2803375539583399270">PIN ਦਾਖਲ ਕਰੋ</translation>
@@ -55,6 +57,7 @@
 <translation id="369442766917958684">ਆਫ਼ਲਾਈਨ।</translation>
 <translation id="3695446226812920698">ਜਾਣੋ ਕਿਵੇਂ</translation>
 <translation id="3776024066357219166">ਤੁਹਾਡਾ 'Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ' ਸੈਸ਼ਨ ਸਮਾਪਤ ਹੋ ਗਿਆ ਹੈ।</translation>
+<translation id="3858860766373142691">ਨਾਮ</translation>
 <translation id="3897092660631435901">ਮੀਨੂ</translation>
 <translation id="3905196214175737742">ਅਵੈਧ ਹੋਸਟ ਮਾਲਕ ਡੋਮੇਨ।</translation>
 <translation id="3931191050278863510">ਹੋਸਟ ਬੰਦ ਕੀਤਾ।</translation>
@@ -67,14 +70,16 @@
 <translation id="4176825807642096119">ਪਹੁੰਚ ਕੋਡ</translation>
 <translation id="4227991223508142681">ਹੋਸਟ ਪ੍ਰੋਵੀਜ਼ਨਿੰਗ ਯੂਟਿਲਟੀ</translation>
 <translation id="4240294130679914010">Chromoting ਹੋਸਟ ਅਣਸਥਾਪਨਾਕਾਰ</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL ਅੱਗੇ ਭੇਜਣ ਵਾਲਾ</translation>
 <translation id="4277736576214464567">ਪਹੁੰਚ ਕੋਡ ਅਵੈਧ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="4281844954008187215">ਸੇਵਾ ਦੀਆਂ ਮਦਾਂ</translation>
+<translation id="4372650392690220936">Copyright 2022 The Chromium Authors. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
 <translation id="4405930547258349619">ਕੋਰ ਲਾਇਬ੍ਰੇਰੀ</translation>
 <translation id="443560535555262820">ਪਹੁੰਚਯੋਗਤਾ ਤਰਜੀਹਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="4450893287417543264">ਦੁਬਾਰਾ ਨਾ ਦਿਖਾਓ</translation>
-<translation id="4512952200932940229">Copyright 2021 The Chromium Authors. ਸਾਰੇ ਹੱਕ ਰਾਖਵੇਂ ਹਨ।</translation>
-<translation id="4513946894732546136">ਫ਼ੀਡਬੈਕ</translation>
+<translation id="4513946894732546136">ਵਿਚਾਰ</translation>
 <translation id="4563926062592110512">ਕਲਾਇੰਟ ਡਿਸਕਨੈਕਟ ਹੋ ਗਿਆ: <ph name="CLIENT_USERNAME" />।</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ਦਾ ਸੰਰੂਪਣ ਸਹੀ ਤਰ੍ਹਾਂ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਕੋਈ ਵੱਖਰਾ ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ਰ ਚੁਣੋ ਅਤੇ ਫਿਰ URL ਫਾਰਵਰਡਿੰਗ ਨੂੰ ਦੁਬਾਰਾ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="4635770493235256822">ਰਿਮੋਟ ਡਿਵਾਈਸਾਂ</translation>
 <translation id="4660011489602794167">ਕੀ-ਬੋਰਡ ਦਿਖਾਓ</translation>
 <translation id="4703799847237267011">ਤੁਹਾਡਾ Chromoting ਸੈਸ਼ਨ ਖ਼ਤਮ ਹੋ ਗਿਆ ਹੈ।</translation>
@@ -87,6 +92,7 @@
 <translation id="4867841927763172006">PrtScn ਭੇਜੋ</translation>
 <translation id="4974476491460646149"><ph name="HOSTNAME" /> ਲਈ ਕਨੈਕਸ਼ਨ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4985296110227979402">ਤੁਹਾਨੂੰ ਪਹਿਲਾਂ ਆਪਣੇ ਕੰਪਿਊਟਰ ਨੂੰ ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਪਹੁੰਚ ਲਈ ਸਥਾਪਤ ਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
+<translation id="4987330545941822761">Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਸਥਾਨਕ ਤੌਰ 'ਤੇ URL ਖੋਲ੍ਹਣ ਲਈ ਬ੍ਰਾਊਜ਼ਰ ਨੂੰ ਨਿਰਧਾਰਿਤ ਨਹੀਂ ਕਰ ਸਕਦਾ। ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਨੂੰ ਹੇਠਾਂ ਦਿੱਤੀ ਸੂਚੀ ਵਿੱਚੋਂ ਚੁਣੋ।</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (ਆਫ਼ਲਾਈਨ)</translation>
 <translation id="507204348399810022">ਕੀ ਤੁਸੀਂ ਪੱਕਾ <ph name="HOSTNAME" /> ਲਈ ਰੀਮੋਟ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਬੰਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="5170982930780719864">ਅਵੈਧ ਹੋਸਟ ਆਈ.ਡੀ.</translation>
@@ -94,7 +100,6 @@
 <translation id="5222676887888702881">ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="5234764350956374838">ਬਰਖ਼ਾਸਤ ਕਰੋ</translation>
 <translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
-<translation id="5327248766486351172">ਨਾਮ</translation>
 <translation id="533625276787323658">ਇੱਥੇ ਕਨੈਕਟ ਕਰਨ ਲਈ ਕੁਝ ਨਹੀਂ ਹੈ</translation>
 <translation id="5397086374758643919">Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਹੋਸਟ ਅਣਸਥਾਪਨਾਕਾਰ</translation>
 <translation id="5419418238395129586">ਪਿਛਲੀ ਵਾਰ ਆਨਲਾਈਨ ਹੋਣ ਦੀ ਤਾਰੀਖ: <ph name="DATE" /></translation>
@@ -105,6 +110,7 @@
 <translation id="5750083143895808682"><ph name="EMAIL_ADDRESS" /> ਵਜੋਂ ਸਾਈਨ ਇਨ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="579702532610384533">ਰੀਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5810269635982033450">ਸਕ੍ਰੀਨ ਕਿਸੇ ਟਰੈਕਪੈਡ ਦੀ ਤਰ੍ਹਾਂ ਕੰਮ ਕਰਦੀ ਹੈ</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ਨੇ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ ਦੇਖਣ ਅਤੇ ਤੁਹਾਡੇ ਕੀ-ਬੋਰਡ ਅਤੇ ਮਾਊਸ ਨੂੰ ਕੰਟਰੋਲ ਕਰਨ ਲਈ ਪਹੁੰਚ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਹੈ। ਜੇ ਤੁਸੀਂ ਇਸ ਬੇਨਤੀ ਦੀ ਉਮੀਦ ਨਹੀਂ ਕਰ ਰਹੇ ਹੋ, ਤਾਂ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' ਦਬਾਓ। ਨਹੀਂ ਤਾਂ ਤਿਆਰ ਹੋਣ 'ਤੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਆਗਿਆ ਦੇਣ ਲਈ ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' ਚੁਣੋ।</translation>
 <translation id="5823658491130719298">ਤੁਸੀਂ ਜਿਸ ਕੰਪਿਊਟਰ 'ਤੇ ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਪਹੁੰਚ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ, ਉਸ 'ਤੇ Chrome ਖੋਲ੍ਹੋ ਅਤੇ <ph name="INSTALLATION_LINK" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="5841343754884244200">ਦਿਖਾਉਣ ਦੇ ਵਿਕਲਪ</translation>
 <translation id="6033507038939587647">ਕੀ-ਬੋਰਡ ਵਿਕਲਪ</translation>
@@ -121,6 +127,7 @@
 <translation id="6612717000975622067">Ctrl-Alt-Del ਭੇਜੋ</translation>
 <translation id="6654753848497929428">ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="677755392401385740">ਵਰਤੋਂਕਾਰ ਲਈ ਸ਼ੁਰੂ ਕੀਤਾ ਹੋਸਟ: <ph name="HOST_USERNAME" />।</translation>
+<translation id="6902524959760471898"><ph name="PRODUCT_NAME" /> ਕਲਾਇੰਟ 'ਤੇ URL ਖੋਲ੍ਹਣ ਲਈ ਸਹਾਇਕ ਐਪਲੀਕੇਸ਼ਨ</translation>
 <translation id="6939719207673461467">ਕੀ-ਬੋਰਡ ਦਿਖਾਓ/ਲੁਕਾਓ।</translation>
 <translation id="6963936880795878952">ਰਿਮੋਟ ਕੰਪਿਊਟਰ 'ਤੇ ਕਨੈਕਸ਼ਨਾਂ ਨੂੰ ਅਸਥਾਈ ਤੌਰ 'ਤੇ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ ਕਿਉਂਕਿ ਕੋਈ ਵਿਅਕਤੀ ਅਵੈਧ ਪਿੰਨ ਨਾਲ ਇਸ ਨਾਲ ਕਨੈਕਟ ਹੋਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਸੀ। ਕਿਰਪਾ ਕਰਕੇ ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6965382102122355670">ਠੀਕ</translation>
@@ -133,10 +140,12 @@
 <translation id="7144878232160441200">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7312846573060934304">ਹੋਸਟ ਆਫ਼ਲਾਈਨ ਹੈ।</translation>
 <translation id="7319983568955948908">ਸ਼ੇਅਰਿੰਗ ਰੋਕੋ</translation>
+<translation id="7359298090707901886">ਸਥਾਨਕ ਮਸ਼ੀਨ 'ਤੇ URL ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਚੁਣੇ ਗਏ ਬ੍ਰਾਊਜ਼ਰ ਦੀ ਵਰਤੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ।</translation>
 <translation id="7401733114166276557">Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ</translation>
 <translation id="7434397035092923453">ਕਲਾਇੰਟ ਲਈ ਪਹੁੰਚ ਅਸਵੀਕਾਰ ਕੀਤੀ ਗਈ: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">ਕਲਾਇੰਟ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">ਖਾਤਾ ਬਦਲੋ</translation>
+<translation id="7535110896613603182">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਐਪਾਂ ਦੀਆਂ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="7628469622942688817">ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਮੇਰਾ ਪਿੰਨ ਯਾਦ ਰੱਖੋ।</translation>
 <translation id="7649070708921625228">ਸਹਾਇਤਾ</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
@@ -161,12 +170,13 @@
 ਇਹ ਇਜਾਜ਼ਤ ਦੇਣ ਲਈ, ਹੇਠਾਂ '<ph name="BUTTON_NAME" />' ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਖੁੱਲ੍ਹਣ ਵਾਲੇ 'ਪਹੁੰਚਯੋਗਤਾ' ਤਰਜੀਹਾਂ ਪੇਨ ਵਿੱਚ '<ph name="SERVICE_SCRIPT_NAME" />' ਦੇ ਨਾਲ ਵਾਲੇ ਬਾਕਸ ਵਿੱਚ ਨਿਸ਼ਾਨ ਲਗਾਓ।
 
 ਜੇ '<ph name="SERVICE_SCRIPT_NAME" />' 'ਤੇ ਪਹਿਲਾਂ ਹੀ ਨਿਸ਼ਾਨ ਲੱਗਾ ਹੋਇਆ ਹੈ, ਤਾਂ ਇਸ ਤੋਂ ਨਿਸ਼ਾਨ ਹਟਾਓ ਅਤੇ ਫਿਰ ਦੁਬਾਰਾ ਨਿਸ਼ਾਨ ਲਗਾਓ।</translation>
+<translation id="8305209735512572429">ਵੈੱਬ ਪ੍ਰਮਾਣੀਕਰਨ ਰਿਮੋਟਿੰਗ ਪ੍ਰਕਿਰਿਆ</translation>
 <translation id="8383794970363966105">Chromoting ਨੂੰ ਵਰਤਣ ਲਈ, ਤੁਹਾਨੂੰ ਆਪਣੇ ਡੀਵਾਈਸ 'ਤੇ ਕੋਈ Google ਖਾਤਾ ਸ਼ਾਮਲ ਕਰਨਾ ਪਵੇਗਾ।</translation>
 <translation id="8386846956409881180">ਹੋਸਟ ਨੂੰ ਅਵੈਧ OAuth ਕ੍ਰੀਡੈਂਸ਼ੀਅਲਾਂ ਨਾਲ ਸੰਰੂਪਿਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="8397385476380433240"><ph name="PRODUCT_NAME" /> ਨੂੰ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="8406498562923498210">ਆਪਣੇ Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਵਾਤਾਵਰਨ ਅੰਦਰ ਲਾਂਚ ਕਰਨ ਲਈ ਸੈਸ਼ਨ ਚੁਣੋ। (ਨੋਟ ਕਰੋ ਕਿ ਕੁਝ ਸੈਸ਼ਨ ਕਿਸਮਾਂ ਸ਼ਾਇਦ ਇੱਕੋ ਵੇਲੇ Chrome ਰਿਮੋਟ ਡੈਸਕਟਾਪ ਅਤੇ ਸਥਾਨਕ ਕੰਸੋਲ 'ਤੇ ਚਲਣ ਦਾ ਸਮਰਥਨ ਨਾ ਕਰਨ।)</translation>
 <translation id="8428213095426709021">ਸੈਟਿੰਗਾਂ</translation>
-<translation id="8445362773033888690">Google Play ਸਟੋਰ ਵਿੱਚ ਦੇਖੋ</translation>
+<translation id="8445362773033888690">Google Play Store ਵਿੱਚ ਦੇਖੋ</translation>
 <translation id="8509907436388546015">ਡੈਸਕਟਾਪ ਇੰਟੀਗ੍ਰੇਸ਼ਨ ਪ੍ਰਕਿਰਿਆ-ਅਧੀਨ</translation>
 <translation id="8513093439376855948">ਰਿਮੋਟਿੰਗ ਹੋਸਟ ਪ੍ਰਬੰਧਨ ਲਈ ਨੇਟਿਵ ਸੁਨੇਹਾ ਹੋਸਟ</translation>
 <translation id="8525306231823319788">ਪੂਰੀ ਸਕ੍ਰੀਨ</translation>

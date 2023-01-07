@@ -26,7 +26,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -60,23 +60,6 @@ bool HTMLSummaryElement::IsMainSummary() const {
   if (HTMLDetailsElement* details = DetailsElement())
     return details->FindMainSummary() == this;
 
-  return false;
-}
-
-bool HTMLSummaryElement::IsClickableControl(Node* node) {
-  auto* element = DynamicTo<Element>(node);
-  if (!element)
-    return false;
-  if (element->IsFormControlElement())
-    return true;
-  Element* host = element->OwnerShadowHost();
-  if (host && host->IsFormControlElement())
-    return true;
-  while (node && this != node) {
-    if (node->HasActivationBehavior())
-      return true;
-    node = node->ParentOrShadowHostNode();
-  }
   return false;
 }
 

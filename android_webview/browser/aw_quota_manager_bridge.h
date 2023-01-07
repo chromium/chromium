@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 
@@ -28,9 +28,14 @@ namespace android_webview {
 
 class AwBrowserContext;
 
+// TODO(crbug.com/1215208): Change the functions in this class to reference
+// StorageKey instead of Origin.
 class AwQuotaManagerBridge
     : public base::RefCountedThreadSafe<AwQuotaManagerBridge> {
  public:
+  AwQuotaManagerBridge(const AwQuotaManagerBridge&) = delete;
+  AwQuotaManagerBridge& operator=(const AwQuotaManagerBridge&) = delete;
+
   static scoped_refptr<AwQuotaManagerBridge> Create(
       AwBrowserContext* browser_context);
 
@@ -43,12 +48,12 @@ class AwQuotaManagerBridge
                     const base::android::JavaParamRef<jstring>& origin);
   void GetOrigins(JNIEnv* env,
                   const base::android::JavaParamRef<jobject>& object,
-                  jint callback_id);
+                  const base::android::JavaParamRef<jobject>& callback);
   void GetUsageAndQuotaForOrigin(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& object,
       const base::android::JavaParamRef<jstring>& origin,
-      jint callback_id,
+      const base::android::JavaParamRef<jobject>& callback,
       bool is_quota);
 
   using GetOriginsCallback =
@@ -67,28 +72,10 @@ class AwQuotaManagerBridge
 
   storage::QuotaManager* GetQuotaManager() const;
 
-  void DeleteAllDataOnUiThread();
-  void DeleteOriginOnUiThread(const std::u16string& origin);
-  void GetOriginsOnUiThread(jint callback_id);
-  void GetUsageAndQuotaForOriginOnUiThread(const std::u16string& origin,
-                                           jint callback_id,
-                                           bool is_quota);
-
-  void GetOriginsCallbackImpl(int jcallback_id,
-                              const std::vector<std::string>& origin,
-                              const std::vector<int64_t>& usage,
-                              const std::vector<int64_t>& quota);
-  void QuotaUsageCallbackImpl(int jcallback_id,
-                              bool is_quota,
-                              int64_t usage,
-                              int64_t quota);
-
-  AwBrowserContext* browser_context_;
+  raw_ptr<AwBrowserContext> browser_context_;
   JavaObjectWeakGlobalRef java_ref_;
 
   base::WeakPtrFactory<AwQuotaManagerBridge> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AwQuotaManagerBridge);
 };
 
 }  // namespace android_webview

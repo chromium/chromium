@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
 
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -32,8 +33,12 @@ CSSMediaRule::CSSMediaRule(StyleRuleMedia* media_rule, CSSStyleSheet* parent)
 
 CSSMediaRule::~CSSMediaRule() = default;
 
-scoped_refptr<MediaQuerySet> CSSMediaRule::MediaQueries() const {
+const MediaQuerySet* CSSMediaRule::MediaQueries() const {
   return To<StyleRuleMedia>(group_rule_.Get())->MediaQueries();
+}
+
+void CSSMediaRule::SetMediaQueries(const MediaQuerySet* media_queries) {
+  To<StyleRuleMedia>(group_rule_.Get())->SetMediaQueries(media_queries);
 }
 
 String CSSMediaRule::cssText() const {
@@ -46,33 +51,32 @@ String CSSMediaRule::cssText() const {
   result.Append("{\n");
   AppendCSSTextForItems(result);
   result.Append('}');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 String CSSMediaRule::conditionText() const {
+  if (MediaQueries() && MediaQueries()->HasUnknown())
+    CountUse(WebFeature::kCSSOMMediaConditionUnknown);
+  return ConditionTextInternal();
+}
+
+String CSSMediaRule::ConditionTextInternal() const {
   if (!MediaQueries())
     return String();
   return MediaQueries()->MediaText();
 }
 
-MediaList* CSSMediaRule::media() const {
+MediaList* CSSMediaRule::media() {
   if (!MediaQueries())
     return nullptr;
-  if (!media_cssom_wrapper_) {
-    media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(
-        MediaQueries(), const_cast<CSSMediaRule*>(this));
-  }
+  if (!media_cssom_wrapper_)
+    media_cssom_wrapper_ = MakeGarbageCollected<MediaList>(this);
   return media_cssom_wrapper_.Get();
-}
-
-void CSSMediaRule::Reattach(StyleRuleBase* rule) {
-  CSSConditionRule::Reattach(rule);
-  if (media_cssom_wrapper_ && MediaQueries())
-    media_cssom_wrapper_->Reattach(MediaQueries());
 }
 
 void CSSMediaRule::Trace(Visitor* visitor) const {
   visitor->Trace(media_cssom_wrapper_);
   CSSConditionRule::Trace(visitor);
 }
+
 }  // namespace blink

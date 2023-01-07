@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ public class AdsBlockedInfoBar extends ConfirmInfoBar implements OnCheckedChange
             description.append(learnMore);
 
             NoUnderlineClickableSpan clickableSpan =
-                    new NoUnderlineClickableSpan(layout.getResources(), (view) -> onLinkClicked());
+                    new NoUnderlineClickableSpan(layout.getContext(), (view) -> onLinkClicked());
             description.setSpan(clickableSpan, spanStart, description.length(),
                     Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
             layout.getMessageLayout().addDescription(description);

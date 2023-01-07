@@ -42,11 +42,11 @@ ROW Array(3) |
 console-format-table.js:37 Array of strings as columns
 HEADER (index) | a | b | 
 ROW 1 | 2 | 
-ROW "foo" | "bar" | 
+ROW 'foo' | 'bar' | 
 console-format-table.js:40 Good and bad column names
 HEADER (index) | a | b | 
 ROW 1 | 2 | 
-ROW "foo" | 
+ROW 'foo' | 
 console-format-table.js:43 Missing column name
 HEADER (index) | Value | 
 ROW {…} | 
@@ -54,7 +54,7 @@ ROW {…} |
 console-format-table.js:46 Shallow array
 HEADER (index) | Value | 
 ROW 1 | 
-ROW "foo" | 
+ROW 'foo' | 
 ROW null | 
 console-format-table.js:49 Shallow array with 'Value' column
 HEADER (index) | Value | Value | 
@@ -63,7 +63,7 @@ ROW 2 |
 console-format-table.js:52 Deep and shallow array
 HEADER (index) | Value | 0 | 
 ROW 1 | 
-ROW "foo" | 
+ROW 'foo' | 
 ROW 2 | 
 console-format-table.js:55 Non-standard call should use fallback
 console-format-table.js:56 foo (3) [1, 2, 3]

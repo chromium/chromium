@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
@@ -30,11 +29,11 @@ namespace {
 constexpr base::FilePath::CharType kMediaEngagementPreloadBinaryPbFileName[] =
     FILE_PATH_LITERAL("preloaded_data.pb");
 
-// The extension id is: aemomkdncapdnfajjbbcbdebjljbpmpj
+// The extension id is: laoigpblnllgcgjnjnllmfolckpjlhki
 constexpr uint8_t kMeiPreloadPublicKeySHA256[32] = {
-    0x04, 0xce, 0xca, 0x3d, 0x20, 0xf3, 0xd5, 0x09, 0x91, 0x12, 0x13,
-    0x41, 0x9b, 0x91, 0xfc, 0xf9, 0x19, 0xc4, 0x94, 0x6a, 0xb9, 0x9a,
-    0xe1, 0xaf, 0x3b, 0x9a, 0x95, 0x85, 0x5b, 0x9e, 0x99, 0xed};
+    0xb0, 0xe8, 0x6f, 0x1b, 0xdb, 0xb6, 0x26, 0x9d, 0x9d, 0xbb, 0xc5,
+    0xeb, 0x2a, 0xf9, 0xb7, 0xa8, 0x50, 0x35, 0x43, 0x88, 0xc2, 0x09,
+    0x04, 0x02, 0xc1, 0xfb, 0x3a, 0xca, 0x7b, 0x11, 0xf9, 0xa9};
 
 constexpr char kMediaEngagementPreloadManifestName[] = "MEI Preload";
 
@@ -57,7 +56,7 @@ MediaEngagementPreloadComponentInstallerPolicy::
 
 bool MediaEngagementPreloadComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool MediaEngagementPreloadComponentInstallerPolicy::RequiresNetworkEncryption()
@@ -67,7 +66,7 @@ bool MediaEngagementPreloadComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 MediaEngagementPreloadComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -82,7 +81,7 @@ base::FilePath MediaEngagementPreloadComponentInstallerPolicy::GetInstalledPath(
 void MediaEngagementPreloadComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   constexpr base::TaskTraits kTaskTraits = {
       base::MayBlock(), base::TaskPriority::BEST_EFFORT,
       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
@@ -99,7 +98,7 @@ void MediaEngagementPreloadComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool MediaEngagementPreloadComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   // No need to actually validate the proto here, since we'll do the checking
   // in LoadFromFile().
@@ -115,7 +114,7 @@ void MediaEngagementPreloadComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   hash->assign(
       kMeiPreloadPublicKeySHA256,
-      kMeiPreloadPublicKeySHA256 + base::size(kMeiPreloadPublicKeySHA256));
+      kMeiPreloadPublicKeySHA256 + std::size(kMeiPreloadPublicKeySHA256));
 }
 
 std::string MediaEngagementPreloadComponentInstallerPolicy::GetName() const {

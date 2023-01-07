@@ -1,0 +1,5 @@
+file://ash/webui/PLATFORM_OWNERS
+
+# For horizontal changes, usually related to the WebUI toolchain. For any
+# changes that have to do with business logic direct to CrOS OWNERS above.
+file://ui/webui/PLATFORM_OWNERS

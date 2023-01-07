@@ -1,35 +1,64 @@
 [Python-Markdown][]
 ===================
 
-[![Build Status](http://img.shields.io/travis/waylan/Python-Markdown.svg)](https://travis-ci.org/waylan/Python-Markdown)
-[![Coverage Status](https://img.shields.io/coveralls/waylan/Python-Markdown.svg)](https://coveralls.io/r/waylan/Python-Markdown?branch=master)
-[![Downloads](http://img.shields.io/pypi/dm/Markdown.svg)](https://pypi.python.org/pypi/Markdown#downloads)
-[![Latest Version](http://img.shields.io/pypi/v/Markdown.svg)](http://pypi.python.org/pypi/Markdown)
-[![BSD License](http://img.shields.io/badge/license-BSD-yellow.svg)](http://opensource.org/licenses/BSD-3-Clause)
+[![Build Status][build-button]][build]
+[![Coverage Status][codecov-button]][codecov]
+[![Latest Version][mdversion-button]][md-pypi]
+[![Python Versions][pyversion-button]][md-pypi]
+[![BSD License][bsdlicense-button]][bsdlicense]
+[![Code of Conduct][codeofconduct-button]][Code of Conduct]
 
-This is a Python implementation of John Gruber's [Markdown][]. 
+[build-button]: https://github.com/Python-Markdown/markdown/workflows/CI/badge.svg?event=push
+[build]: https://github.com/Python-Markdown/markdown/actions?query=workflow%3ACI+event%3Apush
+[codecov-button]: https://codecov.io/gh/Python-Markdown/markdown/branch/master/graph/badge.svg
+[codecov]: https://codecov.io/gh/Python-Markdown/markdown
+[mdversion-button]: https://img.shields.io/pypi/v/Markdown.svg
+[md-pypi]: https://pypi.org/project/Markdown/
+[pyversion-button]: https://img.shields.io/pypi/pyversions/Markdown.svg
+[bsdlicense-button]: https://img.shields.io/badge/license-BSD-yellow.svg
+[bsdlicense]: https://opensource.org/licenses/BSD-3-Clause
+[codeofconduct-button]: https://img.shields.io/badge/code%20of%20conduct-contributor%20covenant-green.svg?style=flat-square
+[Code of Conduct]: https://github.com/Python-Markdown/markdown/blob/master/CODE_OF_CONDUCT.md
+
+This is a Python implementation of John Gruber's [Markdown][].
 It is almost completely compliant with the reference implementation,
-though there are a few known issues. See [Features][] for information 
-on what exactly is supported and what is not. Additional features are 
+though there are a few known issues. See [Features][] for information
+on what exactly is supported and what is not. Additional features are
 supported by the [Available Extensions][].
 
-[Python-Markdown]: https://pythonhosted.org/Markdown/
-[Markdown]: http://daringfireball.net/projects/markdown/
-[Features]: https://pythonhosted.org/Markdown/index.html#Features
-[Available Extensions]: https://pythonhosted.org/Markdown/extensions/index.html
-
+[Python-Markdown]: https://Python-Markdown.github.io/
+[Markdown]: https://daringfireball.net/projects/markdown/
+[Features]: https://Python-Markdown.github.io#Features
+[Available Extensions]: https://Python-Markdown.github.io/extensions
 
 Documentation
 -------------
 
-Installation and usage documentation is available in the `docs/` directory
-of the distribution and on the project website at 
-<https://pythonhosted.org/Markdown/>.
+```bash
+pip install markdown
+```
+```python
+import markdown
+html = markdown.markdown(your_text_string)
+```
+
+For more advanced [installation] and [usage] documentation, see the `docs/` directory
+of the distribution or the project website at <https://Python-Markdown.github.io/>.
+
+[installation]: https://python-markdown.github.io/install/
+[usage]: https://python-markdown.github.io/reference/
+
+See the change log at <https://Python-Markdown.github.io/change_log>.
 
 Support
 -------
 
-You may ask for help and discuss various other issues on the [mailing list][] and report bugs on the [bug tracker][].
+You may report bugs, ask for help, and discuss various other issues on the [bug tracker][].
 
-[mailing list]: http://lists.sourceforge.net/lists/listinfo/python-markdown-discuss
-[bug tracker]: http://github.com/waylan/Python-Markdown/issues 
+[bug tracker]: https://github.com/Python-Markdown/markdown/issues
+
+Code of Conduct
+---------------
+
+Everyone interacting in the Python-Markdown project's codebases, issue trackers,
+and mailing lists is expected to follow the [Code of Conduct].

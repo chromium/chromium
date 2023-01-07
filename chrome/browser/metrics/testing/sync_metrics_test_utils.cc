@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,21 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/test/fake_server/fake_server_network_resources.h"
+#include "components/sync/test/fake_server_network_resources.h"
 
 namespace metrics {
 namespace test {
 
-std::unique_ptr<ProfileSyncServiceHarness> InitializeProfileForSync(
+std::unique_ptr<SyncServiceImplHarness> InitializeProfileForSync(
     Profile* profile,
     base::WeakPtr<fake_server::FakeServer> fake_server) {
   DCHECK(profile);
 
-  ProfileSyncServiceFactory::GetAsProfileSyncServiceForProfile(profile)
+  SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(profile)
       ->OverrideNetworkForTest(
           fake_server::CreateFakeServerHttpPostProviderFactory(
               fake_server->AsWeakPtr()));
@@ -38,9 +38,9 @@ std::unique_ptr<ProfileSyncServiceHarness> InitializeProfileForSync(
     username = "user@gmail.com";
   }
 
-  return ProfileSyncServiceHarness::Create(
+  return SyncServiceImplHarness::Create(
       profile, username, "unused" /* password */,
-      ProfileSyncServiceHarness::SigninType::FAKE_SIGNIN);
+      SyncServiceImplHarness::SigninType::FAKE_SIGNIN);
 }
 
 }  // namespace test

@@ -441,7 +441,7 @@ but pointed it at the wrong document by accident. bit.ly URLs can't easily be
 updated :(.
 
 [1]: https://bit.ly/chromium-test-runner-api
-[2]: https://chromium.googlesource.com/infra/infra/+/master/doc/users/services/about_luci.md
+[2]: https://chromium.googlesource.com/infra/infra/+/main/doc/users/services/about_luci.md
 [3]: https://docs.google.com/document/d/1MwnIx8kavuLSpZo3JmL9T7nkjTz1rpaJA4Vdj_9cRYw/edit?usp=sharing
 [4]: ../../testing/buildbot/test_suites.pyl
 [5]: ../../testing/buildbot/gn_isolate_map.pyl

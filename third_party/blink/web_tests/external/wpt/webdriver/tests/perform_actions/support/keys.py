@@ -21,7 +21,6 @@ import sys
 
 from collections import OrderedDict
 from inspect import getmembers
-from six import text_type
 
 class Keys(object):
     """
@@ -107,7 +106,7 @@ class Keys(object):
     R_DELETE = u"\uE05D"
 
 
-ALL_KEYS = getmembers(Keys, lambda x: type(x) == text_type)
+ALL_KEYS = getmembers(Keys, lambda x: type(x) == str)
 
 ALL_EVENTS = OrderedDict(
     [
@@ -443,7 +442,7 @@ ALL_EVENTS = OrderedDict(
         )),
         ("META", OrderedDict(
             [
-                ("code", "MetaLeft"),
+                ("code", "OSLeft"),
                 ("ctrl", False),
                 ("key", "Meta"),
                 ("location", 1),
@@ -751,7 +750,7 @@ ALL_EVENTS = OrderedDict(
         )),
         ("R_META", OrderedDict(
             [
-                ("code", "MetaRight"),
+                ("code", "OSRight"),
                 ("ctrl", False),
                 ("key", "Meta"),
                 ("location", 2),
@@ -904,8 +903,3 @@ ALTERNATIVE_KEY_NAMES = {
     "SUBTRACT": "Subtract",
     "UP": "Up",
 }
-
-if sys.platform == "darwin":
-    MODIFIER_KEY = Keys.META
-else:
-    MODIFIER_KEY = Keys.CONTROL

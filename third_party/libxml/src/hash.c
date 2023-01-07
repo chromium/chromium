@@ -21,20 +21,15 @@
 #include "libxml.h"
 
 #include <string.h>
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
-#ifdef HAVE_TIME_H
 #include <time.h>
-#endif
 
 /*
  * Following http://www.ocert.org/advisories/ocert-2011-003.html
  * it seems that having hash randomization might be a good idea
  * when using XML with untrusted data
  */
-#if defined(HAVE_RAND) && defined(HAVE_SRAND) && defined(HAVE_TIME) && \
-    !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
+#if !defined(FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION)
 #define HASH_RANDOMIZATION
 #endif
 
@@ -43,6 +38,8 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlerror.h>
 #include <libxml/globals.h>
+
+#include "private/dict.h"
 
 #define MAX_HASH_LEN 8
 
@@ -86,7 +83,7 @@ static unsigned long
 xmlHashComputeKey(xmlHashTablePtr table, const xmlChar *name,
 	          const xmlChar *name2, const xmlChar *name3) {
     unsigned long value = 0L;
-    char ch;
+    unsigned long ch;
 
 #ifdef HASH_RANDOMIZATION
     value = table->random_seed;
@@ -94,19 +91,19 @@ xmlHashComputeKey(xmlHashTablePtr table, const xmlChar *name,
     if (name != NULL) {
 	value += 30 * (*name);
 	while ((ch = *name++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
     }
     value = value ^ ((value << 5) + (value >> 3));
     if (name2 != NULL) {
 	while ((ch = *name2++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
     }
     value = value ^ ((value << 5) + (value >> 3));
     if (name3 != NULL) {
 	while ((ch = *name3++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
     }
     return (value % table->size);
@@ -121,7 +118,7 @@ xmlHashComputeQKey(xmlHashTablePtr table,
 		   const xmlChar *prefix2, const xmlChar *name2,
 		   const xmlChar *prefix3, const xmlChar *name3) {
     unsigned long value = 0L;
-    char ch;
+    unsigned long ch;
 
 #ifdef HASH_RANDOMIZATION
     value = table->random_seed;
@@ -133,37 +130,37 @@ xmlHashComputeQKey(xmlHashTablePtr table,
 
     if (prefix != NULL) {
 	while ((ch = *prefix++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
-	value = value ^ ((value << 5) + (value >> 3) + (unsigned long)':');
+	value = value ^ ((value << 5) + (value >> 3) + ':');
     }
     if (name != NULL) {
 	while ((ch = *name++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
     }
     value = value ^ ((value << 5) + (value >> 3));
     if (prefix2 != NULL) {
 	while ((ch = *prefix2++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
-	value = value ^ ((value << 5) + (value >> 3) + (unsigned long)':');
+	value = value ^ ((value << 5) + (value >> 3) + ':');
     }
     if (name2 != NULL) {
 	while ((ch = *name2++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
     }
     value = value ^ ((value << 5) + (value >> 3));
     if (prefix3 != NULL) {
 	while ((ch = *prefix3++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
-	value = value ^ ((value << 5) + (value >> 3) + (unsigned long)':');
+	value = value ^ ((value << 5) + (value >> 3) + ':');
     }
     if (name3 != NULL) {
 	while ((ch = *name3++) != 0) {
-	    value = value ^ ((value << 5) + (value >> 3) + (unsigned long)ch);
+	    value = value ^ ((value << 5) + (value >> 3) + ch);
 	}
     }
     return (value % table->size);
@@ -1142,5 +1139,3 @@ xmlHashRemoveEntry3(xmlHashTablePtr table, const xmlChar *name,
     }
 }
 
-#define bottom_hash
-#include "elfgcchack.h"

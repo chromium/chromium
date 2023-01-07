@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_DEFAULT_CONTROLLER_WITH_SCRIPT_SCOPE_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "v8/include/v8.h"
@@ -22,11 +22,8 @@ class CORE_EXPORT ReadableStreamDefaultControllerWithScriptScope
   ReadableStreamDefaultControllerWithScriptScope(ScriptState* script_state,
                                                  ScriptValue controller);
 
-  // Users of the ReadableStreamDefaultControllerWithScriptScope can call this
-  // to note that the stream has been canceled and thus they don't anticipate
-  // using the ReadableStreamDefaultControllerWithScriptScope anymore.
-  // (Close/DesiredSize/Enqueue/Error will become no-ops afterward.)
-  void NoteHasBeenCanceled();
+  // After calling this the other methods will no longer do anything.
+  void Deactivate();
 
   void Close();
   double DesiredSize() const;

@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test that the insertion point is not defined in the error event of a
-  parser-inserted script that has an unparseable URL assert_equals: expected "text" but got "Some text"
-Harness: the test ran to completion.
-

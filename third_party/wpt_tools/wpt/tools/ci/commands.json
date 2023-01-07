@@ -20,6 +20,16 @@
     "help": "Regenerate the WPT certificates",
     "virtualenv": false
   },
+  "update-built": {
+    "path": "update_built.py",
+    "script": "run",
+    "parser": "get_parser",
+    "help": "Update built tests",
+    "virtualenv": true,
+    "requirements": [
+      "requirements_build.txt"
+    ]
+  },
   "tc-download": {
     "path": "tc/download.py",
     "script": "run",
@@ -27,9 +37,8 @@
     "parse_known": true,
     "help": "Download logs from taskcluster",
     "virtualenv": true,
-    "install": [
-      "requests",
-      "pygithub"
+    "requirements": [
+      "requirements_tc.txt"
     ]
   },
   "tc-taskgraph": {
@@ -37,9 +46,8 @@
     "script": "run",
     "help": "Build the taskgraph",
     "virtualenv": true,
-    "install": [
-      "requests",
-      "pyyaml"
+    "requirements": [
+      "requirements_tc.txt"
     ]
   },
   "tc-decision": {
@@ -48,10 +56,8 @@
     "script": "run",
     "help": "Run the decision task",
     "virtualenv": true,
-    "install": [
-        "requests",
-        "pyyaml",
-        "taskcluster"
+    "requirements": [
+      "requirements_tc.txt"
     ]
   },
   "tc-sink-task": {
@@ -60,8 +66,8 @@
     "script": "run",
     "help": "Run the sink task",
     "virtualenv": true,
-    "install": [
-        "taskcluster"
+    "requirements": [
+      "requirements_tc.txt"
     ]
   }
 }

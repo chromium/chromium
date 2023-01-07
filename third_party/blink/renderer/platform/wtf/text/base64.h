@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_BASE64_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_BASE64_H_
 
-#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
@@ -41,9 +40,9 @@ enum Base64DecodePolicy { kBase64DoNotValidatePadding, kBase64ValidatePadding };
 WTF_EXPORT void Base64Encode(base::span<const uint8_t>,
                              Vector<char>&,
                              Base64EncodePolicy = kBase64DoNotInsertLFs);
-WTF_EXPORT String Base64Encode(base::span<const uint8_t>,
-                               Base64EncodePolicy = kBase64DoNotInsertLFs)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] WTF_EXPORT String
+    Base64Encode(base::span<const uint8_t>,
+                 Base64EncodePolicy = kBase64DoNotInsertLFs);
 
 WTF_EXPORT bool Base64Decode(
     const String&,

@@ -33,10 +33,9 @@
 
 #include <memory>
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink-forward.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -86,16 +85,8 @@ class CORE_EXPORT WorkerReportingProxy {
   // or InstalledScriptsManager).
   virtual void DidFailToFetchModuleScript() {}
 
-  // Invoked when the main classic script is about to be evaluated.
-  virtual void WillEvaluateClassicScript(size_t script_size,
-                                         size_t cached_metadata_size) {}
-
-  // Invoked when an imported classic script is about to be evaluated.
-  virtual void WillEvaluateImportedClassicScript(size_t script_size,
-                                                 size_t cached_metadata_size) {}
-
-  // Invoked when the worker's main module script is about to be evaluated.
-  virtual void WillEvaluateModuleScript() {}
+  // Invoked when the main classic/module script is about to be evaluated.
+  virtual void WillEvaluateScript() {}
 
   // Invoked when the worker main script is evaluated. |success| is true if the
   // evaluation completed with no uncaught exception.

@@ -1,15 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_scheduler_user_service.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 namespace cert_provisioning {
@@ -45,10 +44,8 @@ CertProvisioningSchedulerUserServiceFactory::GetInstance() {
 
 CertProvisioningSchedulerUserServiceFactory::
     CertProvisioningSchedulerUserServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "CertProvisioningSchedulerUserService",
-          BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(chromeos::platform_keys::PlatformKeysServiceFactory::GetInstance());
+    : ProfileKeyedServiceFactory("CertProvisioningSchedulerUserService") {
+  DependsOn(platform_keys::PlatformKeysServiceFactory::GetInstance());
   DependsOn(invalidation::ProfileInvalidationProviderFactory::GetInstance());
 }
 

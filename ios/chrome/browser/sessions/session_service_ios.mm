@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,23 +6,23 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/files/file_path.h"
-#include "base/format_macros.h"
-#include "base/location.h"
-#include "base/logging.h"
+#import "base/bind.h"
+#import "base/callback_helpers.h"
+#import "base/files/file_path.h"
+#import "base/format_macros.h"
+#import "base/location.h"
+#import "base/logging.h"
 #import "base/mac/foundation_util.h"
-#include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/scoped_blocking_call.h"
-#include "base/time/time.h"
+#import "base/memory/ref_counted.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/task/thread_pool.h"
+#import "base/threading/scoped_blocking_call.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/sessions/scene_util.h"
+#import "ios/chrome/browser/sessions/session_features.h"
 #import "ios/chrome/browser/sessions/session_ios.h"
 #import "ios/chrome/browser/sessions/session_ios_factory.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
@@ -34,10 +34,10 @@
 #error "This file requires ARC support."
 #endif
 
-// When C++ exceptions are disabled, the C++ library defines |try| and
-// |catch| so as to allow exception-expecting C++ code to build properly when
+// When C++ exceptions are disabled, the C++ library defines `try` and
+// `catch` so as to allow exception-expecting C++ code to build properly when
 // language support for exceptions is not present.  These macros interfere
-// with the use of |@try| and |@catch| in Objective-C files such as this one.
+// with the use of `@try` and `@catch` in Objective-C files such as this one.
 // Undefine these macros here, after everything has been #included, since
 // there will be no C++ uses and only Objective-C uses from this point on.
 #undef try
@@ -110,7 +110,7 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
     [NSObject cancelPreviousPerformRequestsWithTarget:self];
     [self performSaveToPathInBackground:sessionPath];
   } else if (!hadPendingSession) {
-    // If there wasn't previously a delayed save pending for |sessionPath|,
+    // If there wasn't previously a delayed save pending for `sessionPath`,
     // enqueue one now.
     [self performSelector:@selector(performSaveToPathInBackground:)
                withObject:sessionPath
@@ -179,12 +179,6 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
       contentsOfDirectoryAtPath:sessionsDirectory
                           error:nil];
 
-  // If there were no session ids, then scenes are not supported fall back to
-  // the original location.
-  if ([allSessionIDs count] == 0) {
-    allSessionIDs = @[ @"" ];
-  }
-
   [self deleteSessions:allSessionIDs
              directory:directory
             completion:std::move(callback)];
@@ -210,9 +204,22 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
           .AsUTF8Unsafe());
 }
 
++ (NSString*)filePathForTabID:(NSString*)tabID
+                    sessionID:(NSString*)sessionID
+                    directory:(const base::FilePath&)directory {
+  return [self filePathForTabID:tabID
+                    sessionPath:[self sessionPathForSessionID:sessionID
+                                                    directory:directory]];
+}
+
++ (NSString*)filePathForTabID:(NSString*)tabID
+                  sessionPath:(NSString*)sessionPath {
+  return [NSString stringWithFormat:@"%@-%@", sessionPath, tabID];
+}
+
 #pragma mark - Private methods
 
-// Delete files/folders of the given |paths|.
+// Delete files/folders of the given `paths`.
 - (void)deletePaths:(NSArray<NSString*>*)paths
          completion:(base::OnceClosure)callback {
   _taskRunner->PostTaskAndReply(
@@ -223,16 +230,47 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
         for (NSString* path : paths) {
           if (![fileManager fileExistsAtPath:path])
             continue;
-
-          NSError* error = nil;
-          if (![fileManager removeItemAtPath:path error:&error] || error) {
-            CHECK(false) << "Unable to delete path: "
-                         << base::SysNSStringToUTF8(path) << ": "
-                         << base::SysNSStringToUTF8([error description]);
-          }
+          [self deleteSessionPaths:path keepFiles:@[]];
         }
       }),
       std::move(callback));
+}
+
+- (void)deleteSessionPaths:(NSString*)sessionPath
+                 keepFiles:(NSArray*)keepFiles {
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  NSString* directory = [sessionPath stringByDeletingLastPathComponent];
+  NSString* sessionFilename = [sessionPath lastPathComponent];
+  NSError* error = nil;
+  BOOL isDirectory = NO;
+  if (![fileManager fileExistsAtPath:directory isDirectory:&isDirectory] ||
+      !isDirectory) {
+    return;
+  }
+  NSArray<NSString*>* fileList =
+      [fileManager contentsOfDirectoryAtPath:directory error:&error];
+  if (error) {
+    CHECK(false) << "Unable to get session path list: "
+                 << base::SysNSStringToUTF8(directory) << ": "
+                 << base::SysNSStringToUTF8([error description]);
+  }
+  for (NSString* filename : fileList) {
+    if (![filename hasPrefix:sessionFilename] ||
+        [keepFiles containsObject:filename]) {
+      continue;
+    }
+    NSString* filepath = [directory stringByAppendingPathComponent:filename];
+
+    if (![fileManager fileExistsAtPath:filepath isDirectory:&isDirectory] ||
+        isDirectory) {
+      continue;
+    }
+    if (![fileManager removeItemAtPath:filepath error:&error] || error) {
+      CHECK(false) << "Unable to delete path: "
+                   << base::SysNSStringToUTF8(filepath) << ": "
+                   << base::SysNSStringToUTF8([error description]);
+    }
+  }
 }
 
 // Do the work of saving on a background thread.
@@ -252,9 +290,16 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
   @try {
     NSError* error = nil;
     size_t previous_cert_policy_bytes = web::GetCertPolicyBytesEncoded();
+    base::TimeTicks start_time = base::TimeTicks::Now();
     NSData* sessionData = [NSKeyedArchiver archivedDataWithRootObject:session
                                                 requiringSecureCoding:NO
                                                                 error:&error];
+    NSDictionary* tabContentsById = nil;
+    if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
+      tabContentsById = [session sessionTabContents];
+    }
+    UmaHistogramTimes("Session.WebStates.ArchivedDataWithRootObjectTime",
+                      base::TimeTicks::Now() - start_time);
     if (!sessionData || error) {
       DLOG(WARNING) << "Error serializing session for path: "
                     << base::SysNSStringToUTF8(sessionPath) << ": "
@@ -271,6 +316,7 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 
     _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
                             [self performSaveSessionData:sessionData
+                                             tabContents:tabContentsById
                                              sessionPath:sessionPath];
                           }));
   } @catch (NSException* exception) {
@@ -286,12 +332,14 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 @implementation SessionServiceIOS (SubClassing)
 
 - (void)performSaveSessionData:(NSData*)sessionData
+                   tabContents:(NSDictionary*)tabContents
                    sessionPath:(NSString*)sessionPath {
   base::ScopedBlockingCall scoped_blocking_call(
             FROM_HERE, base::BlockingType::MAY_BLOCK);
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
   NSString* directory = [sessionPath stringByDeletingLastPathComponent];
+  NSString* sessionFilename = [sessionPath lastPathComponent];
 
   NSError* error = nil;
   BOOL isDirectory = NO;
@@ -316,7 +364,35 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
   }
 
   NSDataWritingOptions options =
-      NSDataWritingAtomic | NSDataWritingFileProtectionComplete;
+      NSDataWritingAtomic |
+      NSDataWritingFileProtectionCompleteUntilFirstUserAuthentication;
+
+  NSMutableArray* filesToKeep =
+      [NSMutableArray arrayWithArray:@[ sessionFilename ]];
+  if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
+    for (NSString* sessionId : tabContents) {
+      [filesToKeep
+          addObject:[SessionServiceIOS filePathForTabID:sessionId
+                                            sessionPath:sessionFilename]];
+    }
+  }
+
+  [self deleteSessionPaths:sessionPath keepFiles:filesToKeep];
+  if (sessions::ShouldSaveSessionTabsToSeparateFiles()) {
+    for (NSString* existingTab : tabContents) {
+      NSData* data = tabContents[existingTab];
+      NSString* filepath = [SessionServiceIOS filePathForTabID:existingTab
+                                                   sessionPath:sessionPath];
+      if (data.length) {
+        if (![data writeToFile:filepath options:options error:&error]) {
+          NOTREACHED() << "Error writing session file: "
+                       << base::SysNSStringToUTF8(filepath) << ": "
+                       << base::SysNSStringToUTF8([error description]);
+          return;
+        }
+      }
+    }
+  }
 
   base::TimeTicks start_time = base::TimeTicks::Now();
   if (![sessionData writeToFile:sessionPath options:options error:&error]) {

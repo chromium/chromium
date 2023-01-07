@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/gles2_lib.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 
 namespace vr {
 
@@ -51,8 +53,11 @@ bool GraphicsDelegateWin::InitializeOnMainThread() {
 
 void GraphicsDelegateWin::InitializeOnGLThread() {
   DCHECK(context_provider_);
-  if (context_provider_->BindToCurrentThread() == gpu::ContextResult::kSuccess)
+  if (context_provider_->BindToCurrentThread() ==
+      gpu::ContextResult::kSuccess) {
     gl_ = context_provider_->ContextGL();
+    sii_ = context_provider_->SharedImageInterface();
+  }
 }
 
 bool GraphicsDelegateWin::BindContext() {
@@ -68,9 +73,9 @@ void GraphicsDelegateWin::ClearContext() {
 }
 
 gfx::Rect GraphicsDelegateWin::GetTextureSize() {
-  int width = info_->left_eye->render_width + info_->right_eye->render_width;
-  int height =
-      std::max(info_->left_eye->render_height, info_->right_eye->render_width);
+  int width = left_->viewport.width() + right_->viewport.width();
+  int height = std::max(left_->viewport.height(), right_->viewport.height());
+
   return gfx::Rect(width, height);
 }
 
@@ -81,18 +86,21 @@ bool GraphicsDelegateWin::PreRender() {
   BindContext();
   gfx::Rect size = GetTextureSize();
 
-  // Create a memory buffer, and an image referencing that memory buffer.
+  // Create a memory buffer and a shared image referencing that memory buffer.
   if (!EnsureMemoryBuffer(size.width(), size.height()))
     return false;
 
-  // Create a texture id, and associate it with our image.
-  gl_->GenTextures(1, &dest_texture_id_);
+  // Create a texture id and associate it with shared image.
+  dest_texture_id_ =
+      gl_->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox_.name);
+  gl_->BeginSharedImageAccessDirectCHROMIUM(
+      dest_texture_id_, GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM);
+
   gl_->BindTexture(GL_TEXTURE_2D, dest_texture_id_);
   gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
   gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
   gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   gl_->TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-  gl_->BindTexImage2DCHROMIUM(GL_TEXTURE_2D, image_id_);
   gl_->BindTexture(GL_TEXTURE_2D, 0);
 
   // Bind our image/texture/memory buffer as the draw framebuffer.
@@ -115,12 +123,15 @@ void GraphicsDelegateWin::PostRender() {
   // Unbind the drawing buffer.
   gl_->BindFramebuffer(GL_FRAMEBUFFER, 0);
   gl_->DeleteFramebuffers(1, &draw_frame_buffer_);
-  gl_->BindTexture(GL_TEXTURE_2D, dest_texture_id_);
-  gl_->ReleaseTexImage2DCHROMIUM(GL_TEXTURE_2D, image_id_);
+
+  gl_->EndSharedImageAccessDirectCHROMIUM(dest_texture_id_);
   gl_->DeleteTextures(1, &dest_texture_id_);
   gl_->BindTexture(GL_TEXTURE_2D, 0);
   dest_texture_id_ = 0;
   draw_frame_buffer_ = 0;
+
+  // Generate a SyncToken after GPU is done accessing the texture.
+  gl_->GenSyncTokenCHROMIUM(access_done_sync_token_.GetData());
 
   // Flush.
   gl_->ShallowFlushCHROMIUM();
@@ -135,19 +146,23 @@ mojo::PlatformHandle GraphicsDelegateWin::GetTexture() {
   return mojo::PlatformHandle(std::move(gpu_handle.dxgi_handle));
 }
 
+const gpu::SyncToken& GraphicsDelegateWin::GetSyncToken() {
+  return access_done_sync_token_;
+}
+
 gfx::RectF GraphicsDelegateWin::GetLeft() {
   gfx::Rect size = GetTextureSize();
   return gfx::RectF(
-      0, 0, static_cast<float>(info_->left_eye->render_width) / size.width(),
-      static_cast<float>(info_->left_eye->render_height) / size.height());
+      0, 0, static_cast<float>(left_->viewport.width()) / size.width(),
+      static_cast<float>(left_->viewport.height()) / size.height());
 }
 
 gfx::RectF GraphicsDelegateWin::GetRight() {
   gfx::Rect size = GetTextureSize();
   return gfx::RectF(
-      static_cast<float>(info_->left_eye->render_width) / size.width(), 0,
-      static_cast<float>(info_->right_eye->render_width) / size.width(),
-      static_cast<float>(info_->right_eye->render_height) / size.height());
+      static_cast<float>(left_->viewport.width()) / size.width(), 0,
+      static_cast<float>(right_->viewport.width()) / size.width(),
+      static_cast<float>(right_->viewport.height()) / size.height());
 }
 
 bool GraphicsDelegateWin::EnsureMemoryBuffer(int width, int height) {
@@ -155,26 +170,28 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer(int width, int height) {
     if (!gpu_memory_buffer_manager_)
       return false;
 
-    if (image_id_) {
-      gl_->DestroyImageCHROMIUM(image_id_);
-      image_id_ = 0;
+    if (!mailbox_.IsZero()) {
+      sii_->DestroySharedImage(access_done_sync_token_, mailbox_);
+      mailbox_.SetZero();
+      access_done_sync_token_.Clear();
     }
 
     gpu_memory_buffer_ = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
         gfx::Size(width, height), gfx::BufferFormat::RGBA_8888,
-        gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle);
+        gfx::BufferUsage::SCANOUT, gpu::kNullSurfaceHandle, nullptr);
     if (!gpu_memory_buffer_)
       return false;
 
     last_width_ = width;
     last_height_ = height;
 
-    image_id_ = gl_->CreateImageCHROMIUM(gpu_memory_buffer_->AsClientBuffer(),
-                                         width, height, GL_RGBA);
-    if (!image_id_) {
-      gpu_memory_buffer_ = nullptr;
-      return false;
-    }
+    mailbox_ = sii_->CreateSharedImage(
+        gpu_memory_buffer_.get(), gpu_memory_buffer_manager_, gfx::ColorSpace(),
+        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+        gpu::SHARED_IMAGE_USAGE_GLES2 |
+            gpu::SHARED_IMAGE_USAGE_GLES2_FRAMEBUFFER_HINT);
+
+    gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   }
   return true;
 }
@@ -184,25 +201,36 @@ void GraphicsDelegateWin::ResetMemoryBuffer() {
   gpu_memory_buffer_ = nullptr;
 }
 
-void GraphicsDelegateWin::SetVRDisplayInfo(
-    device::mojom::VRDisplayInfoPtr info) {
-  info_ = std::move(info);
+void GraphicsDelegateWin::SetXrViews(
+    const std::vector<device::mojom::XRViewPtr>& views) {
+  // Store the first left and right views.
+  for (auto& view : views) {
+    if (view->eye == device::mojom::XREye::kLeft) {
+      left_ = view.Clone();
+    } else if (view->eye == device::mojom::XREye::kRight) {
+      right_ = view.Clone();
+    }
+  }
+
+  DCHECK(left_);
+  DCHECK(right_);
 }
 
 FovRectangles GraphicsDelegateWin::GetRecommendedFovs() {
-  DCHECK(info_);
+  DCHECK(left_);
+  DCHECK(right_);
   FovRectangle left = {
-      info_->left_eye->field_of_view->left_degrees,
-      info_->left_eye->field_of_view->right_degrees,
-      info_->left_eye->field_of_view->down_degrees,
-      info_->left_eye->field_of_view->up_degrees,
+      left_->field_of_view->left_degrees,
+      left_->field_of_view->right_degrees,
+      left_->field_of_view->down_degrees,
+      left_->field_of_view->up_degrees,
   };
 
   FovRectangle right = {
-      info_->right_eye->field_of_view->left_degrees,
-      info_->right_eye->field_of_view->right_degrees,
-      info_->right_eye->field_of_view->down_degrees,
-      info_->right_eye->field_of_view->up_degrees,
+      right_->field_of_view->left_degrees,
+      right_->field_of_view->right_degrees,
+      right_->field_of_view->down_degrees,
+      right_->field_of_view->up_degrees,
   };
 
   return std::pair<FovRectangle, FovRectangle>(left, right);
@@ -214,34 +242,33 @@ float GraphicsDelegateWin::GetZNear() {
 
 namespace {
 
-CameraModel CameraModelViewProjFromVREyeParameters(
-    const device::mojom::VREyeParametersPtr& eye_params,
-    gfx::Transform head_from_world) {
+CameraModel CameraModelViewProjFromXRView(
+    const device::mojom::XRViewPtr& view) {
   CameraModel model = {};
 
-  DCHECK(eye_params->head_from_eye.IsInvertible());
-  gfx::Transform eye_from_head;
-  if (eye_params->head_from_eye.GetInverse(&eye_from_head)) {
-    model.view_matrix = eye_from_head * head_from_world;
-  }
+  // TODO(https://crbug.com/1070380): mojo space is currently equivalent to
+  // world space, so the view matrix is world_from_view.
+  model.view_matrix = view->mojo_from_view;
 
-  float up_tan =
-      tanf(eye_params->field_of_view->up_degrees * base::kPiFloat / 180.0);
+  bool is_invertible = model.view_matrix.GetInverse(&model.view_matrix);
+  DCHECK(is_invertible);
+
+  float up_tan = tanf(view->field_of_view->up_degrees * base::kPiFloat / 180.0);
   float left_tan =
-      tanf(eye_params->field_of_view->left_degrees * base::kPiFloat / 180.0);
+      tanf(view->field_of_view->left_degrees * base::kPiFloat / 180.0);
   float right_tan =
-      tanf(eye_params->field_of_view->right_degrees * base::kPiFloat / 180.0);
+      tanf(view->field_of_view->right_degrees * base::kPiFloat / 180.0);
   float down_tan =
-      tanf(eye_params->field_of_view->down_degrees * base::kPiFloat / 180.0);
+      tanf(view->field_of_view->down_degrees * base::kPiFloat / 180.0);
   float x_scale = 2.0f / (left_tan + right_tan);
   float y_scale = 2.0f / (up_tan + down_tan);
   // clang-format off
-  model.proj_matrix =
-      gfx::Transform(x_scale, 0, -((left_tan - right_tan) * x_scale * 0.5), 0,
-                     0, y_scale, ((up_tan - down_tan) * y_scale * 0.5), 0,
-                     0, 0, (kZFar + kZNear) / (kZNear - kZFar),
-                        2 * kZFar * kZNear / (kZNear - kZFar),
-                     0, 0, -1, 0);
+  model.proj_matrix = gfx::Transform::RowMajor(
+      x_scale, 0, -((left_tan - right_tan) * x_scale * 0.5), 0,
+      0, y_scale, ((up_tan - down_tan) * y_scale * 0.5), 0,
+      0, 0, (kZFar + kZNear) / (kZNear - kZFar),
+          2 * kZFar * kZNear / (kZNear - kZFar),
+      0, 0, -1, 0);
   // clang-format on
   model.view_proj_matrix = model.proj_matrix * model.view_matrix;
   return model;
@@ -254,19 +281,17 @@ RenderInfo GraphicsDelegateWin::GetRenderInfo(FrameType frame_type,
   RenderInfo info;
   info.head_pose = head_pose;
 
-  CameraModel left =
-      CameraModelViewProjFromVREyeParameters(info_->left_eye, head_pose);
+  CameraModel left = CameraModelViewProjFromXRView(left_);
   left.eye_type = kLeftEye;
-  left.viewport = gfx::Rect(0, 0, info_->left_eye->render_width,
-                            info_->left_eye->render_height);
+  left.viewport =
+      gfx::Rect(0, 0, left_->viewport.width(), left_->viewport.height());
   info.left_eye_model = left;
 
-  CameraModel right =
-      CameraModelViewProjFromVREyeParameters(info_->right_eye, head_pose);
+  CameraModel right = CameraModelViewProjFromXRView(right_);
   right.eye_type = kRightEye;
-  right.viewport = gfx::Rect(info_->left_eye->render_width, 0,
-                             info_->right_eye->render_width,
-                             info_->right_eye->render_height);
+  right.viewport =
+      gfx::Rect(left_->viewport.width(), 0, right_->viewport.width(),
+                right_->viewport.height());
   info.right_eye_model = right;
   cached_info_ = info;
   return info;

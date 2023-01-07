@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ipc/ipc_message_macros.h"
+#include "ipc/ipc_message_start.h"
 #include "media/base/eme_constants.h"
 
 #define IPC_MESSAGE_START EncryptedMediaMsgStart

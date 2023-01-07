@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 // A protocol to update information reported to the ScreenTime system.
 @protocol ScreenTimeConsumer
-// Sets |URL| as the active URL reported to the ScreenTime system when the
+// Sets `URL` as the active URL reported to the ScreenTime system when the
 // underlying web view is visible.
 - (void)setURL:(NSURL*)URL;
 

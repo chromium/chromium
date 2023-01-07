@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -27,6 +25,11 @@ class CONTENT_EXPORT BackgroundSyncOpScheduler {
  public:
   explicit BackgroundSyncOpScheduler(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  BackgroundSyncOpScheduler(const BackgroundSyncOpScheduler&) = delete;
+  BackgroundSyncOpScheduler& operator=(const BackgroundSyncOpScheduler&) =
+      delete;
+
   virtual ~BackgroundSyncOpScheduler();
 
   // Adds the operation to the tail of the queue and starts it if possible.
@@ -81,8 +84,6 @@ class CONTENT_EXPORT BackgroundSyncOpScheduler {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<BackgroundSyncOpScheduler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncOpScheduler);
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,20 +28,29 @@ extern NSString* const kPlaceholderImageTintColor;
 // Primary background color.
 extern NSString* const kPrimaryBackgroundColor;
 extern NSString* const kScrimBackgroundColor;
+extern NSString* const kDarkerScrimBackgroundColor;
 // Secondary background color.
 extern NSString* const kSecondaryBackgroundColor;
 extern NSString* const kSeparatorColor;
 extern NSString* const kSolidButtonTextColor;
 extern NSString* const kTableViewRowHighlightColor;
 extern NSString* const kTertiaryBackgroundColor;
+extern NSString* const kUpdatedTertiaryBackgroundColor;
 extern NSString* const kTextPrimaryColor;
 extern NSString* const kTextSecondaryColor;
+extern NSString* const kTextTertiaryColor;
+extern NSString* const kTextQuaternaryColor;
 extern NSString* const kTextfieldBackgroundColor;
+extern NSString* const kTextfieldFocusedBackgroundColor;
+extern NSString* const kTextfieldHighlightBackgroundColor;
 extern NSString* const kTextfieldPlaceholderColor;
 // Color used for buttons on a toolbar.
 extern NSString* const kToolbarButtonColor;
 // Color used for a shadow/separator next to a toolbar.
 extern NSString* const kToolbarShadowColor;
+// Simple primary color based on theme. White for light theme, black for dark
+// theme.
+extern NSString* const kSolidPrimaryColor;
 
 // Standard Colors
 
@@ -49,14 +58,44 @@ extern NSString* const kToolbarShadowColor;
 // standard buttons and controls.
 extern NSString* const kBlueColor;
 // Lighter blue color sometimes used as background for buttons or views where
-// the main content is |kBlueColor| (e.g the background of the collections
+// the main content is `kBlueColor` (e.g the background of the collections
 // shortcuts on the NTP).
 extern NSString* const kBlueHaloColor;
+
+// Blue palette
+extern NSString* const kBlue500Color;
+extern NSString* const kBlue600Color;
+extern NSString* const kBlue700Color;
+
 // Standard green color.
 extern NSString* const kGreenColor;
+
+// Green palette.
+extern NSString* const kGreen50Color;
+extern NSString* const kGreen500Color;
+extern NSString* const kGreen700Color;
+
 // Standard red color. This is most commonly used for the tint color on
 // destructive controls.
 extern NSString* const kRedColor;
+
+// Red palette
+extern NSString* const kRed500Color;
+extern NSString* const kRed600Color;
+
+// Pink palette.
+extern NSString* const kPink400Color;
+extern NSString* const kPink500Color;
+
+// Purple palette.
+extern NSString* const kPurple500Color;
+extern NSString* const kPurple600Color;
+
+// Yellow palette.
+extern NSString* const kYellow500Color;
+
+// Orange palette.
+extern NSString* const kOrange500Color;
 
 // Grey Color Palette.
 extern NSString* const kGrey50Color;
@@ -69,25 +108,5 @@ extern NSString* const kGrey600Color;
 extern NSString* const kGrey700Color;
 extern NSString* const kGrey800Color;
 extern NSString* const kGrey900Color;
-
-// Temporary colors for iOS 12. Because overridePreferredInterfaceStyle isn't
-// available in iOS 12, any views that should always be dark (e.g. incognito)
-// need to use colorsets that always use the dark variant.
-// TODO(crbug.com/981889): Clean up after iOS 12 support is dropped.
-
-extern NSString* const kBackgroundDarkColor;
-extern NSString* const kSecondaryBackgroundDarkColor;
-extern NSString* const kTertiaryBackgroundDarkColor;
-extern NSString* const kCloseButtonDarkColor;
-extern NSString* const kTableViewRowHighlightDarkColor;
-extern NSString* const kTextPrimaryDarkColor;
-extern NSString* const kTextSecondaryDarkColor;
-extern NSString* const kTextfieldBackgroundDarkColor;
-extern NSString* const kTextfieldPlaceholderDarkColor;
-extern NSString* const kToolbarButtonDarkColor;
-
-extern NSString* const kBlueDarkColor;
-extern NSString* const kGreenDarkColor;
-extern NSString* const kRedDarkColor;
 
 #endif  // IOS_CHROME_COMMON_UI_COLORS_SEMANTIC_COLOR_NAMES_H_

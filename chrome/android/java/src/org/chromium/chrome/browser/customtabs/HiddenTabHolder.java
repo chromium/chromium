@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.chrome.browser.IntentHandler;
@@ -90,14 +91,16 @@ public class HiddenTabHolder {
     /**
      * Creates a hidden tab and initiates a navigation.
      *
+     * @param tabCreatedCallback Callback run with the tab that is created. This is run before the
+     *        url is loaded.
      * @param session The {@link CustomTabsSessionToken} for the Tab to be associated with.
      * @param clientManager The {@link ClientManager} to get referrer information and link
      *                      PostMessage.
      * @param url The URL to load into the Tab.
      * @param extras Extras to be passed that may contain referrer information.
      */
-    void launchUrlInHiddenTab(CustomTabsSessionToken session, ClientManager clientManager,
-            String url, @Nullable Bundle extras) {
+    void launchUrlInHiddenTab(Callback<Tab> tabCreatedCallback, CustomTabsSessionToken session,
+            ClientManager clientManager, String url, @Nullable Bundle extras) {
         Intent extrasIntent = new Intent();
         if (extras != null) extrasIntent.putExtras(extras);
 
@@ -105,6 +108,7 @@ public class HiddenTabHolder {
         if (IntentHandler.getExtraHeadersFromIntent(extrasIntent) != null) return;
 
         Tab tab = buildDetachedTab();
+        tabCreatedCallback.onResult(tab);
 
         HiddenTabObserver observer = new HiddenTabObserver(tab.getWindowAndroid());
         tab.addObserver(observer);
@@ -136,6 +140,8 @@ public class HiddenTabHolder {
      */
     private static Tab buildDetachedTab() {
         Context context = ContextUtils.getApplicationContext();
+        // TODO(crbug.com/1190971): Set isIncognito flag here if hidden tabs are allowed for
+        // incognito mode.
         Tab tab = new TabBuilder()
                           .setWindow(new WindowAndroid(context))
                           .setLaunchType(TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION)
@@ -189,6 +195,11 @@ public class HiddenTabHolder {
                 return null;
             }
         }
+    }
+
+    @VisibleForTesting
+    public Tab getHiddenTab() {
+        return mSpeculation != null ? mSpeculation.tab : null;
     }
 
     /** Cancels the speculation for a given session, or any session if null. */

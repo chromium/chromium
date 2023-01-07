@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/font_display.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
@@ -46,15 +47,16 @@
 namespace blink {
 
 class CSSFontFace;
+class CSSFontFamilyValue;
+class CSSPropertyValueSet;
 class CSSValue;
 class DOMArrayBuffer;
 class DOMArrayBufferView;
 class Document;
 class ExceptionState;
 class FontFaceDescriptors;
-class StringOrArrayBufferOrArrayBufferView;
-class CSSPropertyValueSet;
 class StyleRuleFontFace;
+class V8UnionArrayBufferOrArrayBufferViewOrString;
 struct FontMetricsOverride;
 
 class CORE_EXPORT FontFace : public ScriptWrappable,
@@ -63,15 +65,18 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum LoadStatusType { kUnloaded, kLoading, kLoaded, kError };
+  enum LoadStatusType : uint8_t { kUnloaded, kLoading, kLoaded, kError };
 
-  static FontFace* Create(ExecutionContext*,
-                          const AtomicString& family,
-                          StringOrArrayBufferOrArrayBufferView&,
-                          const FontFaceDescriptors*);
-  static FontFace* Create(Document*, const StyleRuleFontFace*);
+  static FontFace* Create(
+      ExecutionContext* execution_context,
+      const AtomicString& family,
+      const V8UnionArrayBufferOrArrayBufferViewOrString* source,
+      const FontFaceDescriptors* descriptors);
+  static FontFace* Create(Document*,
+                          const StyleRuleFontFace*,
+                          bool is_user_style);
 
-  explicit FontFace(ExecutionContext*);
+  FontFace(ExecutionContext*, const StyleRuleFontFace*, bool is_user_style);
   FontFace(ExecutionContext*,
            const AtomicString& family,
            const FontFaceDescriptors*);
@@ -152,6 +157,11 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   bool HasSizeAdjust() const { return size_adjust_; }
   float GetSizeAdjust() const;
 
+  Document* GetDocument() const;
+
+  const StyleRuleFontFace* GetStyleRule() const { return style_rule_; }
+  bool IsUserStyle() const { return is_user_style_; }
+
  private:
   static FontFace* Create(ExecutionContext*,
                           const AtomicString& family,
@@ -167,20 +177,21 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
                           const FontFaceDescriptors*);
 
   void InitCSSFontFace(ExecutionContext*, const CSSValue& src);
-  void InitCSSFontFace(const unsigned char* data, size_t);
+  void InitCSSFontFace(ExecutionContext*, const unsigned char* data, size_t);
   void SetPropertyFromString(const ExecutionContext*,
                              const String&,
                              AtRuleDescriptorID,
                              ExceptionState* = nullptr);
   bool SetPropertyFromStyle(const CSSPropertyValueSet&, AtRuleDescriptorID);
   bool SetPropertyValue(const CSSValue*, AtRuleDescriptorID);
-  bool SetFamilyValue(const CSSValue&);
+  void SetFamilyValue(const CSSFontFamilyValue&);
   ScriptPromise FontStatusPromise(ScriptState*);
   void RunCallbacks();
 
-  using LoadedProperty = ScriptPromiseProperty<Member<FontFace>,
-                                               Member<DOMException>>;
+  using LoadedProperty =
+      ScriptPromiseProperty<Member<FontFace>, Member<DOMException>>;
 
+  HeapVector<Member<LoadFontCallback>> callbacks_;
   AtomicString family_;
   String ots_parse_message_;
   Member<const CSSValue> style_;
@@ -195,12 +206,16 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   Member<const CSSValue> line_gap_override_;
   Member<const CSSValue> advance_override_;
   Member<const CSSValue> size_adjust_;
-  LoadStatusType status_;
   Member<DOMException> error_;
 
   Member<LoadedProperty> loaded_property_;
   Member<CSSFontFace> css_font_face_;
-  HeapVector<Member<LoadFontCallback>> callbacks_;
+  Member<const StyleRuleFontFace> style_rule_;
+
+  LoadStatusType status_;
+  // Note that we will also need to distinguish font faces in different tree
+  // scopes when we allow @font-face in shadow DOM. See crbug.com/336876.
+  bool is_user_style_ = false;
 };
 
 using FontFaceArray = HeapVector<Member<FontFace>>;

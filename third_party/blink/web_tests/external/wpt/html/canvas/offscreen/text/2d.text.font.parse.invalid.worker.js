@@ -13,8 +13,8 @@ var t_fail = t.step_func(function(reason) {
 });
 t.step(function() {
 
-var offscreenCanvas = new OffscreenCanvas(100, 50);
-var ctx = offscreenCanvas.getContext('2d');
+var canvas = new OffscreenCanvas(100, 50);
+var ctx = canvas.getContext('2d');
 
 ctx.font = '20px serif';
 _assertSame(ctx.font, '20px serif', "ctx.font", "'20px serif'");
@@ -45,6 +45,18 @@ _assertSame(ctx.font, '20px serif', "ctx.font", "'20px serif'");
 
 ctx.font = '20px serif';
 ctx.font = '10px inherit';
+_assertSame(ctx.font, '20px serif', "ctx.font", "'20px serif'");
+
+ctx.font = '20px serif';
+ctx.font = '10px revert';
+_assertSame(ctx.font, '20px serif', "ctx.font", "'20px serif'");
+
+ctx.font = '20px serif';
+ctx.font = 'var(--x)';
+_assertSame(ctx.font, '20px serif', "ctx.font", "'20px serif'");
+
+ctx.font = '20px serif';
+ctx.font = 'var(--x, 10px serif)';
 _assertSame(ctx.font, '20px serif', "ctx.font", "'20px serif'");
 
 ctx.font = '20px serif';

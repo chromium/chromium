@@ -1,13 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -110,10 +110,15 @@ namespace content {
 class CompositorEventAckBrowserTest : public ContentBrowserTest {
  public:
   CompositorEventAckBrowserTest() {}
+
+  CompositorEventAckBrowserTest(const CompositorEventAckBrowserTest&) = delete;
+  CompositorEventAckBrowserTest& operator=(
+      const CompositorEventAckBrowserTest&) = delete;
+
   ~CompositorEventAckBrowserTest() override {}
 
   RenderWidgetHostImpl* GetWidgetHost() {
-    auto* main_frame = shell()->web_contents()->GetMainFrame();
+    auto* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
     return RenderWidgetHostImpl::From(
         main_frame->GetRenderViewHost()->GetWidget());
   }
@@ -132,17 +137,32 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
 
     std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
-    ignore_result(watcher.WaitAndGetTitle());
+    std::ignore = watcher.WaitAndGetTitle();
 
-    HitTestRegionObserver observer(host->GetFrameSinkId());
-    observer.WaitForHitTestData();
+    // SetSize triggers an animation of the size, leading to a a new
+    // viz::LocalSurfaceId being generated. Since this was done right after
+    // navigation Viz could be processing an old surface.
+    //
+    // We want the HitTestData for the post resize surface. So wait until that
+    // surface has submitted a frame.
+    viz::LocalSurfaceId target = host->GetView()->GetLocalSurfaceId();
+    RenderFrameSubmissionObserver rfm_observer(
+        GetWidgetHost()->render_frame_metadata_provider());
+    while (!rfm_observer.LastRenderFrameMetadata()
+                .local_surface_id.value_or(viz::LocalSurfaceId())
+                .is_valid() ||
+           target !=
+               rfm_observer.LastRenderFrameMetadata().local_surface_id.value_or(
+                   viz::LocalSurfaceId::MaxSequenceId())) {
+      rfm_observer.WaitForMetadataChange();
+    }
+
+    HitTestRegionObserver hit_test_observer(host->GetFrameSinkId());
+    hit_test_observer.WaitForHitTestData();
   }
 
   int ExecuteScriptAndExtractInt(const std::string& script) {
-    int value = 0;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractInt(
-        shell(), "domAutomationController.send(" + script + ")", &value));
-    return value;
+    return EvalJs(shell(), script).ExtractInt();
   }
 
   int GetScrollTop() {
@@ -176,7 +196,7 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
 
     // Expect that the compositor scrolled at least one pixel while the
     // main thread was in a busy loop.
-    gfx::Vector2dF default_scroll_offset;
+    gfx::PointF default_scroll_offset;
     while (observer.LastRenderFrameMetadata()
                .root_scroll_offset.value_or(default_scroll_offset)
                .y() <= 0) {
@@ -209,16 +229,13 @@ class CompositorEventAckBrowserTest : public ContentBrowserTest {
 
     // Expect that the compositor scrolled at least one pixel while the
     // main thread was in a busy loop.
-    gfx::Vector2dF default_scroll_offset;
+    gfx::PointF default_scroll_offset;
     while (observer.LastRenderFrameMetadata()
                .root_scroll_offset.value_or(default_scroll_offset)
                .y() <= 0) {
       observer.WaitForMetadataChange();
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CompositorEventAckBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest, MouseWheel) {
@@ -227,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest, MouseWheel) {
 }
 
 // Disabled on MacOS because it doesn't support touch input.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TouchStart DISABLED_TouchStart
 #else
 #define MAYBE_TouchStart TouchStart
@@ -238,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest, MAYBE_TouchStart) {
 }
 
 // Disabled on MacOS because it doesn't support touch input.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TouchStartDuringFling DISABLED_TouchStartDuringFling
 #else
 #define MAYBE_TouchStartDuringFling TouchStartDuringFling
@@ -281,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest,
   GetWidgetHost()->ForwardGestureEvent(gesture_fling_start);
   RenderFrameSubmissionObserver observer(
       GetWidgetHost()->render_frame_metadata_provider());
-  gfx::Vector2dF default_scroll_offset;
+  gfx::PointF default_scroll_offset;
   while (observer.LastRenderFrameMetadata()
              .root_scroll_offset.value_or(default_scroll_offset)
              .y() <= 0)
@@ -310,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(CompositorEventAckBrowserTest,
 }
 
 // Disabled on MacOS because it doesn't support touch input.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_PassiveTouchStartBlockingTouchEnd \
   DISABLED_PassiveTouchStartBlockingTouchEnd
 #else

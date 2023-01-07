@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/files/file.h"
+#include "base/time/time.h"
 #include "content/common/download/mhtml_file_writer.mojom-forward.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
@@ -40,6 +41,10 @@ class MHTMLHandleWriter {
 
   MHTMLHandleWriter(scoped_refptr<base::TaskRunner> main_thread_task_runner,
                     MHTMLWriteCompleteCallback callback);
+
+  MHTMLHandleWriter(const MHTMLHandleWriter&) = delete;
+  MHTMLHandleWriter& operator=(const MHTMLHandleWriter&) = delete;
+
   virtual ~MHTMLHandleWriter();
 
   void WriteContents(std::vector<blink::WebThreadSafeData> mhtml_contents);
@@ -59,8 +64,6 @@ class MHTMLHandleWriter {
 
   scoped_refptr<base::TaskRunner> main_thread_task_runner_;
   MHTMLWriteCompleteCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MHTMLHandleWriter);
 };
 
 // Wraps a base::File target to write MHTML contents to.
@@ -71,6 +74,10 @@ class MHTMLFileHandleWriter : public MHTMLHandleWriter {
   MHTMLFileHandleWriter(scoped_refptr<base::TaskRunner> main_thread_task_runner,
                         MHTMLWriteCompleteCallback callback,
                         base::File file);
+
+  MHTMLFileHandleWriter(const MHTMLFileHandleWriter&) = delete;
+  MHTMLFileHandleWriter& operator=(const MHTMLFileHandleWriter&) = delete;
+
   ~MHTMLFileHandleWriter() override;
 
  protected:
@@ -83,8 +90,6 @@ class MHTMLFileHandleWriter : public MHTMLHandleWriter {
 
  private:
   base::File file_;
-
-  DISALLOW_COPY_AND_ASSIGN(MHTMLFileHandleWriter);
 };
 
 // Wraps a mojo::ScopedDataPipeProducerHandle target to write MHTML contents to.
@@ -97,6 +102,11 @@ class MHTMLProducerHandleWriter : public MHTMLHandleWriter {
       scoped_refptr<base::TaskRunner> main_thread_task_runner,
       MHTMLWriteCompleteCallback callback,
       mojo::ScopedDataPipeProducerHandle producer);
+
+  MHTMLProducerHandleWriter(const MHTMLProducerHandleWriter&) = delete;
+  MHTMLProducerHandleWriter& operator=(const MHTMLProducerHandleWriter&) =
+      delete;
+
   ~MHTMLProducerHandleWriter() override;
 
  protected:
@@ -121,8 +131,6 @@ class MHTMLProducerHandleWriter : public MHTMLHandleWriter {
 
   size_t current_block_;
   size_t write_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(MHTMLProducerHandleWriter);
 };
 
 }  // namespace content

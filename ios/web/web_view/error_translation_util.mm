@@ -1,18 +1,18 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/web_view/error_translation_util.h"
 
-#include <CFNetwork/CFNetwork.h>
-#include <Foundation/Foundation.h>
+#import <CFNetwork/CFNetwork.h>
+#import <Foundation/Foundation.h>
 
 #import "base/ios/ns_error_util.h"
 #import "ios/net/protocol_handler_util.h"
 #import "ios/web/public/web_client.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/base/net_errors.h"
-#include "url/gurl.h"
+#import "net/base/net_errors.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ WebVector<int64_t> TaskSession::DocumentSession::MoveDetachedNodes() {
 }
 
 ContentHolder* TaskSession::DocumentSession::GetNextUnsentNode() {
-  while (!captured_content_.IsEmpty()) {
+  while (!captured_content_.empty()) {
     auto node = captured_content_.begin()->key;
     const gfx::Rect rect = captured_content_.Take(node);
     if (node && node->GetLayoutObject() && !sent_nodes_.Contains(node)) {
@@ -60,7 +60,7 @@ ContentHolder* TaskSession::DocumentSession::GetNextUnsentNode() {
 }
 
 ContentHolder* TaskSession::DocumentSession::GetNextChangedNode() {
-  while (!changed_content_.IsEmpty()) {
+  while (!changed_content_.empty()) {
     auto node = changed_content_.begin()->key;
     const gfx::Rect rect = changed_content_.Take(node);
     if (node.Get() && node->GetLayoutObject()) {
@@ -152,7 +152,7 @@ TaskSession::DocumentSession* TaskSession::GetNextUnsentDocumentSession() {
 void TaskSession::SetCapturedContent(
     const Vector<cc::NodeInfo>& captured_content) {
   DCHECK(!HasUnsentData());
-  DCHECK(!captured_content.IsEmpty());
+  DCHECK(!captured_content.empty());
   GroupCapturedContentByDocument(captured_content);
   has_unsent_data_ = true;
 }

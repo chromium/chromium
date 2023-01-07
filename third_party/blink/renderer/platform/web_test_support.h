@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEB_TEST_SUPPORT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WEB_TEST_SUPPORT_H_
 
+#include "base/auto_reset.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -41,11 +42,26 @@ class WebTestSupport {
 
  public:
   PLATFORM_EXPORT static bool IsRunningWebTest();
-  PLATFORM_EXPORT static void SetIsRunningWebTest(bool);
   PLATFORM_EXPORT static bool IsFontAntialiasingEnabledForTest();
-  PLATFORM_EXPORT static void SetFontAntialiasingEnabledForTest(bool);
   PLATFORM_EXPORT static bool IsTextSubpixelPositioningAllowedForTest();
+
+ private:
+  // In harfbuzz_shaper_test.cc. It knows how to restore the settings.
+  friend class ScopedSubpixelOverride;
+  PLATFORM_EXPORT static void SetFontAntialiasingEnabledForTest(bool);
   PLATFORM_EXPORT static void SetTextSubpixelPositioningAllowedForTest(bool);
+};
+
+// Web test mode is enabled by default in blink_unittests, while disabled by
+// default in blink_platform_unittests. This class is for unit tests needing a
+// specific web test mode. See the callers of WebTestSupport::IsRunningWebTest()
+// for what are different in the mode.
+class PLATFORM_EXPORT ScopedWebTestMode {
+ public:
+  explicit ScopedWebTestMode(bool enable_web_test_mode);
+
+ private:
+  base::AutoReset<bool> auto_reset_;
 };
 
 }  // namespace blink

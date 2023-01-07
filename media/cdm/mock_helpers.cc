@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,16 @@ MockCdmAuxiliaryHelper::~MockCdmAuxiliaryHelper() = default;
 void MockCdmAuxiliaryHelper::SetFileReadCB(FileReadCB file_read_cb) {}
 
 cdm::Buffer* MockCdmAuxiliaryHelper::CreateCdmBuffer(size_t capacity) {
+  if (!allocator_)
+    return nullptr;
+
   return allocator_->CreateCdmBuffer(capacity);
 }
 
 std::unique_ptr<VideoFrameImpl> MockCdmAuxiliaryHelper::CreateCdmVideoFrame() {
+  if (!allocator_)
+    return nullptr;
+
   return allocator_->CreateCdmVideoFrame();
 }
 

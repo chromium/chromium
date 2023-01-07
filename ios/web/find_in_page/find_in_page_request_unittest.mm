@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/find_in_page/find_in_page_request.h"
 
-#include "ios/web/public/test/fakes/fake_web_frame.h"
-#include "ios/web/public/test/web_test.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "ios/web/public/test/web_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -49,7 +49,7 @@ TEST_F(FindInPageRequestTest, Reset) {
   EXPECT_EQ(-1, request_.GetMatchCountForSelectedFrame());
 }
 
-// Tests that FindinPageRequest properly decrements |pending_frame_call_count_|
+// Tests that FindinPageRequest properly decrements `pending_frame_call_count_`
 // properly.
 TEST_F(FindInPageRequestTest, AllFindResponsesReturned) {
   request_.DidReceiveFindResponseFromOneFrame();

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@ package org.chromium.chrome.browser.modules;
 import android.content.Context;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.infobar.InfoBarIdentifier;
-import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
 
 /**
@@ -18,10 +19,19 @@ import org.chromium.ui.widget.Toast;
  * toast for install start and success UI and an infobar in the failure case.
  */
 public class ModuleInstallUi {
-    private final Tab mTab;
+    private final Delegate mDelegate;
     private final int mModuleTitleStringId;
     private final FailureUiListener mFailureUiListener;
     private Toast mInstallStartToast;
+
+    /**
+     * Delegate holding methods getting the {@link WindowAndroid} and {@link Context} used to
+     * display the UI. This is in case either changes over the lifetime of the class.
+     */
+    public interface Delegate {
+        WindowAndroid getWindowAndroid();
+        Context getContext();
+    }
 
     /** Listener for when the user interacts with the install failure UI. */
     public interface FailureUiListener {
@@ -36,23 +46,21 @@ public class ModuleInstallUi {
     /*
      * Creates new UI.
      *
-     * @param tab Tab in whose context to show the UI.
+     * @param delegate Delegate providing the WindowAndroid and Context to display the UI.
      * @param moduleTitleStringId String resource ID of the module title
      * @param failureUiListener Listener for when the user interacts with the install failure UI.
      */
-    public ModuleInstallUi(Tab tab, int moduleTitleStringId, FailureUiListener failureUiListener) {
-        mTab = tab;
+    public ModuleInstallUi(
+            Delegate delegate, int moduleTitleStringId, FailureUiListener failureUiListener) {
+        mDelegate = delegate;
         mModuleTitleStringId = moduleTitleStringId;
         mFailureUiListener = failureUiListener;
     }
 
     /** Show UI indicating the start of a module install. */
     public void showInstallStartUi() {
-        Context context = TabUtils.getActivity(mTab);
-        if (context == null) {
-            // Tab is detached. Don't show UI.
-            return;
-        }
+        Context context = mDelegate.getContext();
+        if (context == null) return;
         mInstallStartToast = Toast.makeText(context,
                 context.getString(R.string.module_install_start_text,
                         context.getString(mModuleTitleStringId)),
@@ -67,11 +75,8 @@ public class ModuleInstallUi {
             mInstallStartToast = null;
         }
 
-        Context context = TabUtils.getActivity(mTab);
-        if (context == null) {
-            // Tab is detached. Don't show UI.
-            return;
-        }
+        Context context = mDelegate.getContext();
+        if (context == null) return;
         Toast.makeText(context, R.string.module_install_success_text, Toast.LENGTH_SHORT).show();
     }
 
@@ -85,39 +90,34 @@ public class ModuleInstallUi {
             mInstallStartToast = null;
         }
 
-        Context context = TabUtils.getActivity(mTab);
-        if (context == null) {
-            // Tab is detached. Cancel.
+        Context context = mDelegate.getContext();
+        WindowAndroid windowAndroid = mDelegate.getWindowAndroid();
+        if (context == null || windowAndroid == null) {
             if (mFailureUiListener != null) mFailureUiListener.onFailureUiResponse(false);
             return;
         }
 
-        SimpleConfirmInfoBarBuilder.Listener listener = new SimpleConfirmInfoBarBuilder.Listener() {
-            @Override
-            public void onInfoBarDismissed() {
-                if (mFailureUiListener != null) mFailureUiListener.onFailureUiResponse(false);
-            }
-
-            @Override
-            public boolean onInfoBarButtonClicked(boolean isPrimary) {
-                if (mFailureUiListener != null) {
-                    mFailureUiListener.onFailureUiResponse(isPrimary);
-                }
-                return false;
-            }
-
-            @Override
-            public boolean onInfoBarLinkClicked() {
-                return false;
-            }
-        };
-
         String text = String.format(context.getString(R.string.module_install_failure_text),
                 context.getResources().getString(mModuleTitleStringId));
-        SimpleConfirmInfoBarBuilder.create(mTab.getWebContents(), listener,
-                InfoBarIdentifier.MODULE_INSTALL_FAILURE_INFOBAR_ANDROID, context,
-                R.drawable.ic_error_outline_googblue_24dp, text,
-                context.getString(R.string.try_again), context.getString(R.string.cancel),
-                /* linkText = */ null, /* autoExpire = */ true);
+        Snackbar snackbar = Snackbar.make(text, new SnackbarController() {
+            @Override
+            public void onAction(Object actionData) {
+                if (mFailureUiListener != null) {
+                    mFailureUiListener.onFailureUiResponse(true);
+                }
+            }
+
+            @Override
+            public void onDismissNoAction(Object actionData) {
+                if (mFailureUiListener != null) {
+                    mFailureUiListener.onFailureUiResponse(false);
+                }
+            }
+        }, Snackbar.TYPE_ACTION, Snackbar.UMA_MODULE_INSTALL_FAILURE);
+        snackbar.setAction(context.getString(R.string.try_again), null);
+        snackbar.setSingleLine(false);
+        snackbar.setDuration(SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS);
+        SnackbarManager snackbarManager = SnackbarManagerProvider.from(windowAndroid);
+        snackbarManager.showSnackbar(snackbar);
     }
 }

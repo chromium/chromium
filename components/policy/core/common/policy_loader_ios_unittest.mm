@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/values.h"
 #include "components/policy/core/common/async_policy_provider.h"
@@ -38,6 +37,8 @@ namespace {
 class TestHarness : public PolicyProviderTestHarness {
  public:
   TestHarness(bool encode_complex_data_as_json);
+  TestHarness(const TestHarness&) = delete;
+  TestHarness& operator=(const TestHarness&) = delete;
   ~TestHarness() override;
 
   void SetUp() override;
@@ -55,9 +56,8 @@ class TestHarness : public PolicyProviderTestHarness {
                             bool policy_value) override;
   void InstallStringListPolicy(const std::string& policy_name,
                                const base::ListValue* policy_value) override;
-  void InstallDictionaryPolicy(
-      const std::string& policy_name,
-      const base::DictionaryValue* policy_value) override;
+  void InstallDictionaryPolicy(const std::string& policy_name,
+                               const base::Value::Dict& policy_value) override;
 
   static PolicyProviderTestHarness* Create();
   static PolicyProviderTestHarness* CreateWithJSONEncoding();
@@ -71,8 +71,6 @@ class TestHarness : public PolicyProviderTestHarness {
   // If true, the test harness will encode complex data (dicts and lists) as
   // JSON strings.
   bool encode_complex_data_as_json_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHarness);
 };
 
 TestHarness::TestHarness(bool encode_complex_data_as_json)
@@ -134,13 +132,6 @@ void TestHarness::InstallStringListPolicy(const std::string& policy_name,
   NSString* key = base::SysUTF8ToNSString(policy_name);
   base::ScopedCFTypeRef<CFPropertyListRef> value(
       ValueToProperty(*policy_value));
-  AddPolicies(@{key : (__bridge NSArray*)(value.get())});
-}
-
-void TestHarness::InstallDictionaryPolicy(
-    const std::string& policy_name,
-    const base::DictionaryValue* policy_value) {
-  NSString* key = base::SysUTF8ToNSString(policy_name);
 
   if (encode_complex_data_as_json_) {
     // Convert |policy_value| to a JSON-encoded string.
@@ -150,8 +141,25 @@ void TestHarness::InstallDictionaryPolicy(
 
     AddPolicies(@{key : base::SysUTF8ToNSString(json_string)});
   } else {
+    AddPolicies(@{key : (__bridge NSArray*)(value.get())});
+  }
+}
+
+void TestHarness::InstallDictionaryPolicy(
+    const std::string& policy_name,
+    const base::Value::Dict& policy_value) {
+  NSString* key = base::SysUTF8ToNSString(policy_name);
+
+  if (encode_complex_data_as_json_) {
+    // Convert |policy_value| to a JSON-encoded string.
+    std::string json_string;
+    JSONStringValueSerializer serializer(&json_string);
+    ASSERT_TRUE(serializer.Serialize(policy_value));
+
+    AddPolicies(@{key : base::SysUTF8ToNSString(json_string)});
+  } else {
     base::ScopedCFTypeRef<CFPropertyListRef> value(
-        ValueToProperty(*policy_value));
+        ValueToProperty(base::Value(policy_value.Clone())));
     AddPolicies(@{key : (__bridge NSDictionary*)(value.get())});
   }
 }

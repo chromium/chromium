@@ -1,38 +1,34 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/compiler_specific.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
-#include "base/time/default_clock.h"
-#include "components/policy/policy_constants.h"
-#include "components/reading_list/core/reading_list_entry.h"
-#include "components/reading_list/core/reading_list_model_impl.h"
+#import "base/bind.h"
+#import "base/command_line.h"
+#import "base/files/scoped_temp_dir.h"
+#import "base/test/scoped_feature_list.h"
+#import "base/test/task_environment.h"
+#import "base/time/default_clock.h"
+#import "components/policy/policy_constants.h"
+#import "components/reading_list/core/reading_list_entry.h"
+#import "components/reading_list/core/reading_list_model_impl.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/app_launcher/fake_app_launcher_abuse_detector.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_switches.h"
-#import "ios/chrome/browser/chrome_url_util.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/policy/enterprise_policy_test_helper.h"
-#import "ios/chrome/browser/policy/policy_features.h"
-#include "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
-#include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
-#import "ios/chrome/browser/u2f/u2f_tab_helper.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
+#import "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
+#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/url/url_util.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -72,7 +68,7 @@ class FakeAppLauncherTabHelperDelegate : public AppLauncherTabHelperDelegate {
   // Number of times the repeated launches alert has been shown.
   size_t alert_shown_count_ = 0;
   // Simulates the user tapping the accept button when prompted via
-  // |-appLauncherTabHelper:showAlertOfRepeatedLaunchesWithCompletionHandler|.
+  // `-appLauncherTabHelper:showAlertOfRepeatedLaunchesWithCompletionHandler`.
   bool should_accept_prompt_ = false;
 };
 // A fake NavigationManager to be used by the WebState object for the
@@ -81,10 +77,11 @@ class FakeNavigationManager : public web::FakeNavigationManager {
  public:
   FakeNavigationManager() = default;
 
+  FakeNavigationManager(const FakeNavigationManager&) = delete;
+  FakeNavigationManager& operator=(const FakeNavigationManager&) = delete;
+
   // web::NavigationManager implementation.
   void DiscardNonCommittedItems() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNavigationManager);
 };
 
 std::unique_ptr<KeyedService> BuildReadingListModel(
@@ -102,33 +99,44 @@ std::unique_ptr<KeyedService> BuildReadingListModel(
 class AppLauncherTabHelperTest : public PlatformTest {
  protected:
   AppLauncherTabHelperTest()
-      : abuse_detector_([[FakeAppLauncherAbuseDetector alloc] init]) {
+      : browser_state_(TestChromeBrowserState::Builder().Build()),
+        abuse_detector_([[FakeAppLauncherAbuseDetector alloc] init]) {
     AppLauncherTabHelper::CreateForWebState(&web_state_, abuse_detector_);
-    U2FTabHelper::CreateForWebState(&web_state_);
     // Allow is the default policy for this test.
     abuse_detector_.policy = ExternalAppLaunchPolicyAllow;
     auto navigation_manager = std::make_unique<FakeNavigationManager>();
     navigation_manager_ = navigation_manager.get();
     web_state_.SetNavigationManager(std::move(navigation_manager));
     web_state_.SetCurrentURL(GURL("https://chromium.org"));
+    web_state_.SetBrowserState(browser_state_.get());
     tab_helper_ = AppLauncherTabHelper::FromWebState(&web_state_);
     tab_helper_->SetDelegate(&delegate_);
   }
 
-  bool TestShouldAllowRequest(NSString* url_string,
-                              bool target_frame_is_main,
-                              bool target_frame_is_cross_origin,
-                              bool has_user_gesture,
-                              ui::PageTransition transition_type =
-                                  ui::PageTransition::PAGE_TRANSITION_LINK)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] bool TestShouldAllowRequest(
+      NSString* url_string,
+      bool target_frame_is_main,
+      bool target_frame_is_cross_origin,
+      bool has_user_gesture,
+      ui::PageTransition transition_type =
+          ui::PageTransition::PAGE_TRANSITION_LINK) {
     NSURL* url = [NSURL URLWithString:url_string];
-    web::WebStatePolicyDecider::RequestInfo request_info(
+    const web::WebStatePolicyDecider::RequestInfo request_info(
         transition_type, target_frame_is_main, target_frame_is_cross_origin,
         has_user_gesture);
-    return tab_helper_
-        ->ShouldAllowRequest([NSURLRequest requestWithURL:url], request_info)
-        .ShouldAllowNavigation();
+    __block bool callback_called = false;
+    __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
+        web::WebStatePolicyDecider::PolicyDecision::Allow();
+    auto callback =
+        base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+          policy_decision = decision;
+          callback_called = true;
+        });
+    tab_helper_->ShouldAllowRequest([NSURLRequest requestWithURL:url],
+                                    request_info, std::move(callback));
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(callback_called);
+    return policy_decision.ShouldAllowNavigation();
   }
 
   // Initialize reading list model and its required tab helpers.
@@ -139,11 +147,10 @@ class AppLauncherTabHelperTest : public PlatformTest {
     ReadingListModelFactory::GetInstance()->SetTestingFactoryAndUse(
         chrome_browser_state_.get(),
         base::BindRepeating(&BuildReadingListModel));
-    TabIdTabHelper::CreateForWebState(&web_state_);
     is_reading_list_initialized_ = true;
   }
 
-  // Returns true if the |expected_read_status| matches the read status for any
+  // Returns true if the `expected_read_status` matches the read status for any
   // non empty source URL based on the transition type and the app policy.
   bool TestReadingListUpdate(bool is_app_blocked,
                              bool is_link_transition,
@@ -171,20 +178,30 @@ class AppLauncherTabHelperTest : public PlatformTest {
 
     NSURL* url = [NSURL
         URLWithString:@"itms-apps://itunes.apple.com/us/app/appname/id123"];
-    web::WebStatePolicyDecider::RequestInfo request_info(
+    const web::WebStatePolicyDecider::RequestInfo request_info(
         transition_type,
         /*target_frame_is_main=*/true, /*target_frame_is_cross_origin=*/false,
         /*has_user_gesture=*/true);
-    EXPECT_TRUE(tab_helper_
-                    ->ShouldAllowRequest([NSURLRequest requestWithURL:url],
-                                         request_info)
-                    .ShouldCancelNavigation());
+    __block bool callback_called = false;
+    __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
+        web::WebStatePolicyDecider::PolicyDecision::Allow();
+    auto callback =
+        base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+          policy_decision = decision;
+          callback_called = true;
+        });
+    tab_helper_->ShouldAllowRequest([NSURLRequest requestWithURL:url],
+                                    request_info, std::move(callback));
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(callback_called);
+    EXPECT_TRUE(policy_decision.ShouldCancelNavigation());
 
     const ReadingListEntry* entry = model->GetEntryByURL(pending_url);
     return entry->IsRead() == expected_read_status;
   }
 
   base::test::TaskEnvironment task_environment;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   web::FakeWebState web_state_;
   FakeNavigationManager* navigation_manager_ = nullptr;
 
@@ -402,53 +419,6 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_TelUrls) {
   EXPECT_EQ(1U, delegate_.app_launch_count());
 }
 
-// Tests that URLs with U2F schemes are handled correctly.
-// This test is using https://chromeiostesting-dot-u2fdemo.appspot.com URL which
-// is a URL allowed for the purpose of testing, but the test doesn't send any
-// requests to the server.
-// TODO(crbug.com/1172516): The test fails on device.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_U2FUrls U2FUrls
-#else
-#define MAYBE_U2FUrls DISABLED_U2FUrls
-#endif
-TEST_F(AppLauncherTabHelperTest, MAYBE_U2FUrls) {
-  // Add required tab helpers for the U2F check.
-  TabIdTabHelper::CreateForWebState(&web_state_);
-  std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
-
-  // "u2f-x-callback" scheme should only be created by the browser. External
-  // URLs with that scheme should be blocked to prevent malicious sites from
-  // bypassing the browser origin/security check for u2f schemes.
-  item->SetURL(GURL("https://chromeiostesting-dot-u2fdemo.appspot.com"));
-  navigation_manager_->SetLastCommittedItem(item.get());
-  EXPECT_FALSE(TestShouldAllowRequest(@"u2f-x-callback://chromium.test",
-                                      /*target_frame_is_main=*/true,
-                                      /*target_frame_is_cross_origin=*/false,
-                                      /*has_user_gesture=*/false));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
-
-  // Source URL is not trusted, so u2f scheme should not be allowed.
-  item->SetURL(GURL("https://chromium.test"));
-  navigation_manager_->SetLastCommittedItem(item.get());
-  EXPECT_FALSE(TestShouldAllowRequest(@"u2f://chromium.test",
-                                      /*target_frame_is_main=*/true,
-                                      /*target_frame_is_cross_origin=*/false,
-                                      /*has_user_gesture=*/false));
-  EXPECT_EQ(0U, delegate_.app_launch_count());
-
-  // Source URL is trusted, so u2f scheme should be allowed and an external app
-  // is launched via URL with u2f-x-callback scheme.
-  item->SetURL(GURL("https://chromeiostesting-dot-u2fdemo.appspot.com"));
-  navigation_manager_->SetLastCommittedItem(item.get());
-  EXPECT_FALSE(TestShouldAllowRequest(@"u2f://chromium.test",
-                                      /*target_frame_is_main=*/true,
-                                      /*target_frame_is_cross_origin=*/false,
-                                      /*has_user_gesture=*/false));
-  EXPECT_EQ(1U, delegate_.app_launch_count());
-  EXPECT_TRUE(delegate_.last_launched_app_url().SchemeIs("u2f-x-callback"));
-}
-
 // Tests that URLs with Chrome Bundle schemes are blocked on iframes.
 // TODO(crbug.com/1172516): The test fails on device.
 #if TARGET_IPHONE_SIMULATOR
@@ -539,13 +509,6 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_LaunchSmsApp_JavaScriptRedirect) {
 class BlockedUrlPolicyAppLauncherTabHelperTest
     : public AppLauncherTabHelperTest {
  protected:
-  BlockedUrlPolicyAppLauncherTabHelperTest() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kInstallURLBlocklistHandlers);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kEnableEnterprisePolicy);
-  }
-
   void SetUp() override {
     AppLauncherTabHelperTest::SetUp();
 
@@ -580,12 +543,6 @@ class BlockedUrlPolicyAppLauncherTabHelperTest
 
 // Tests that URLs to blocked domains do not open native apps.
 TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, BlockedUrl) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{kURLBlocklistIOS,
-                            web::features::kUseJSForErrorPage},
-      /*disabled_features=*/{});
-
   NSString* url_string = @"itms-apps://itunes.apple.com/us/app/appname/id123";
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
@@ -602,12 +559,6 @@ TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, BlockedUrl) {
 #define MAYBE_AllowedUrl DISABLED_AllowedUrl
 #endif
 TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, MAYBE_AllowedUrl) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{kURLBlocklistIOS,
-                            web::features::kUseJSForErrorPage},
-      /*disabled_features=*/{});
-
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,

@@ -1,0 +1,15 @@
+<script type="text/javascript">
+var initFinished = false;
+var gotAdapter = false;
+
+async function init()
+{
+  const adapter = await navigator.gpu.requestAdapter();
+  if (adapter !== null) {
+    gotAdapter = true;
+  }
+  initFinished = true;
+}
+
+init();
+</script>

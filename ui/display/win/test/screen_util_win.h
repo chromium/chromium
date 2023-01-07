@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,4 +26,4 @@ MONITORINFOEX CreateMonitorInfo(const gfx::Rect& monitor,
 }  // namespace win
 }  // namespace display
 
-#endif  // UI_GFX_TEST_SCREEN_UTIL_WIN_H_
+#endif  // UI_DISPLAY_WIN_TEST_SCREEN_UTIL_WIN_H_

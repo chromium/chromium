@@ -1,0 +1,47 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package chrome_browser_key_pinning;
+
+import "kp_timestamp.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+message PinSet {
+  // Name of the pinset.
+  string name = 1;
+  // Set of allowed SPKIs hashes, represented as the SHA256 of the public key.
+  repeated bytes static_spki_hashes_sha256 = 2;
+  // Optional set of forbidden SPKIs hashes, represented as the SHA256 of the
+  // public key.
+  repeated bytes bad_static_spki_hashes_sha256 = 3;
+  // Optional URI to send bad pin reports to.
+  string report_uri = 4;
+}
+
+message PinSetInfo {
+  // Hostname this pinset applies to.
+  string hostname = 1;
+  // Name of the pinset.
+  string pinset_name = 2;
+  // Whether this pinset applies to subdomains.
+  bool include_subdomains = 3;
+}
+
+message PinList {
+  // Timestamp at which the list was last considered up-to-date. This is updated
+  // periodically even if the list contents do not change.
+  KPTimestamp timestamp = 1;
+  // Compatibility version incremented if the list structure changes in a non
+  // backwards compatible way.
+  uint64 compatibility_version = 2;
+  // All known pinsets.
+  repeated PinSet pinsets = 3;
+  // List of known hosts with pins. Each element represents a different
+  // hostname, and includes the name of the pinset that applies to it, and
+  // whether it applies to subdomains.
+  repeated PinSetInfo host_pins = 4;
+}

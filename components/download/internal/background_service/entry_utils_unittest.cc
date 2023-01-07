@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace download {
+
+namespace {
+constexpr char kKey[] = "k";
+constexpr char kValue[] = "v";
+}  // namespace
 
 TEST(DownloadServiceEntryUtilsTest, TestGetNumberOfLiveEntriesForClient) {
   Entry entry1 = test::BuildBasicEntry();
@@ -155,10 +160,13 @@ TEST(DownloadServiceEntryUtilsTest, BuildDownloadMetaData) {
   entry = test::BuildBasicEntry(Entry::State::COMPLETE);
   entry.target_file_path = base::FilePath::FromUTF8Unsafe("123");
   entry.bytes_downloaded = 100u;
+  entry.custom_data = {{kKey, kValue}};
   meta_data = util::BuildDownloadMetaData(&entry, &driver);
   EXPECT_EQ(entry.guid, meta_data.guid);
   EXPECT_TRUE(meta_data.completion_info.has_value());
   EXPECT_EQ(entry.target_file_path, meta_data.completion_info->path);
+  EXPECT_EQ(1u, meta_data.completion_info->custom_data.size());
+  EXPECT_EQ(kValue, meta_data.completion_info->custom_data[kKey]);
   EXPECT_EQ(entry.bytes_downloaded,
             meta_data.completion_info->bytes_downloaded);
 }

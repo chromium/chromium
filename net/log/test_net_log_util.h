@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,13 @@
 #define NET_LOG_TEST_NET_LOG_UTIL_H_
 
 #include <stddef.h>
+#include <string>
+#include <vector>
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/log/net_log_event_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-namespace base {
-class ListValue;
-}
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -75,14 +73,14 @@ size_t ExpectLogContainsSomewhereAfter(const std::vector<NetLogEntry>& entries,
 
 // The following methods return a parameter of the given type at the given path,
 // or nullopt if there is none.
-base::Optional<std::string> GetOptionalStringValueFromParams(
+absl::optional<std::string> GetOptionalStringValueFromParams(
     const NetLogEntry& entry,
     base::StringPiece path);
-base::Optional<bool> GetOptionalBooleanValueFromParams(const NetLogEntry& entry,
+absl::optional<bool> GetOptionalBooleanValueFromParams(const NetLogEntry& entry,
                                                        base::StringPiece path);
-base::Optional<int> GetOptionalIntegerValueFromParams(const NetLogEntry& entry,
+absl::optional<int> GetOptionalIntegerValueFromParams(const NetLogEntry& entry,
                                                       base::StringPiece path);
-base::Optional<int> GetOptionalNetErrorCodeFromParams(const NetLogEntry& entry);
+absl::optional<int> GetOptionalNetErrorCodeFromParams(const NetLogEntry& entry);
 
 // Same as the *Optional* versions above, except will add a Gtest failure if the
 // value was not present, and then return some default.
@@ -92,11 +90,6 @@ int GetIntegerValueFromParams(const NetLogEntry& entry, base::StringPiece path);
 bool GetBooleanValueFromParams(const NetLogEntry& entry,
                                base::StringPiece path);
 int GetNetErrorCodeFromParams(const NetLogEntry& entry);
-
-// TODO(eroman): Remove use of base::ListValue.
-bool GetListValueFromParams(const NetLogEntry& entry,
-                            base::StringPiece path,
-                            const base::ListValue** value);
 
 }  // namespace net
 

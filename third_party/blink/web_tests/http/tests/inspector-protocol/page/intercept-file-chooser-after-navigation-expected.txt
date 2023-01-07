@@ -1,0 +1,5 @@
+Tests that Page.setInterceptFileChooserDialog state is preserved after cross-process navigation
+Navigating cross-process
+Did navigate
+Intercepted file chooser in mode: selectSingle
+

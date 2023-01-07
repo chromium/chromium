@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +42,7 @@ TEST(ContentHashTreeTest, HashTreeBasics) {
   std::unique_ptr<SecureHash> hash(SecureHash::Create(SecureHash::SHA256));
   hash->Update(node1.data(), node1.size());
   hash->Update(node2.data(), node2.size());
-  hash->Finish(base::data(expected), expected.size());
+  hash->Finish(std::data(expected), expected.size());
   EXPECT_EQ(expected, ComputeTreeHashRoot(nodes, 16));
 }
 

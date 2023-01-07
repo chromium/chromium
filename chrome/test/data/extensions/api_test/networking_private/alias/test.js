@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,20 +88,6 @@ chrome.test.runTests([
       chrome.networking.onc.getVisibleNetworks('All',
           chrome.test.callbackFail(expectedError));
       chrome.networking.onc.getEnabledNetworkTypes(
-          chrome.test.callbackFail(expectedError));
-      var stubVerificationProperties = {
-        certificate: '',
-        publicKey: '',
-        nonce: '',
-        signedData: '',
-        deviceSerial: '',
-        deviceSsid: '',
-        deviceBssid: ''
-      };
-      chrome.networking.onc.verifyDestination(
-          stubVerificationProperties, chrome.test.callbackFail(expectedError));
-      chrome.networking.onc.verifyAndEncryptData(
-          stubVerificationProperties, '',
           chrome.test.callbackFail(expectedError));
     }
 ]);

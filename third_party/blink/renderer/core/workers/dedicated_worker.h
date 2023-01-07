@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_DEDICATED_WORKER_H_
 
 #include <memory>
+#include "base/functional/function_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_dedicated_worker.h"
 #include "third_party/blink/public/platform/web_dedicated_worker_host_factory_client.h"
@@ -22,9 +25,9 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/workers/abstract_worker.h"
-#include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
-#include "third_party/blink/renderer/platform/graphics/begin_frame_provider.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "v8/include/v8-inspector.h"
@@ -36,7 +39,9 @@ class ExceptionState;
 class ExecutionContext;
 class PostMessageOptions;
 class ScriptState;
+class WebContentSettingsClient;
 class WorkerClassicScriptLoader;
+struct GlobalScopeCreationParams;
 
 // Implementation of the Worker interface defined in the WebWorker HTML spec:
 // https://html.spec.whatwg.org/C/#worker
@@ -63,6 +68,13 @@ class CORE_EXPORT DedicatedWorker final
   DedicatedWorker(ExecutionContext*,
                   const KURL& script_request_url,
                   const WorkerOptions*);
+  // Exposed for testing.
+  DedicatedWorker(
+      ExecutionContext*,
+      const KURL& script_request_url,
+      const WorkerOptions*,
+      base::FunctionRef<DedicatedWorkerMessagingProxy*(DedicatedWorker*)>
+          context_proxy_factory);
   ~DedicatedWorker() override;
 
   void Dispose();
@@ -76,7 +88,6 @@ class CORE_EXPORT DedicatedWorker final
                    const PostMessageOptions*,
                    ExceptionState&);
   void terminate();
-  BeginFrameProviderParams CreateBeginFrameProviderParams();
 
   // Implements ExecutionContextLifecycleObserver (via AbstractWorker).
   void ContextDestroyed() override;
@@ -91,8 +102,12 @@ class CORE_EXPORT DedicatedWorker final
           browser_interface_broker,
       CrossVariantMojoRemote<mojom::blink::DedicatedWorkerHostInterfaceBase>
           dedicated_worker_host) override;
-  void OnScriptLoadStarted(std::unique_ptr<WorkerMainScriptLoadParameters>
-                               worker_main_script_load_params) override;
+  void OnScriptLoadStarted(
+      std::unique_ptr<WorkerMainScriptLoadParameters>
+          worker_main_script_load_params,
+      CrossVariantMojoRemote<
+          mojom::blink::BackForwardCacheControllerHostInterfaceBase>
+          back_forward_cache_controller_host) override;
   void OnScriptLoadStartFailed() override;
 
   void DispatchErrorEventForScriptFetchFailure();
@@ -116,13 +131,17 @@ class CORE_EXPORT DedicatedWorker final
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params,
       network::mojom::ReferrerPolicy,
-      base::Optional<network::mojom::IPAddressSpace> response_address_space,
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+          response_content_security_policies,
       const String& source_code,
-      RejectCoepUnsafeNone reject_coep_unsafe_none);
+      RejectCoepUnsafeNone reject_coep_unsafe_none,
+      mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
+          back_forward_cache_controller_host);
   std::unique_ptr<GlobalScopeCreationParams> CreateGlobalScopeCreationParams(
       const KURL& script_url,
       network::mojom::ReferrerPolicy,
-      base::Optional<network::mojom::IPAddressSpace> response_address_space);
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+          response_content_security_policies);
   scoped_refptr<WebWorkerFetchContext> CreateWebWorkerFetchContext();
   // May return nullptr.
   std::unique_ptr<WebContentSettingsClient> CreateWebContentSettingsClient();
@@ -130,11 +149,16 @@ class CORE_EXPORT DedicatedWorker final
   void OnHostCreated(
       mojo::PendingRemote<network::mojom::blink::URLLoaderFactory>
           blob_url_loader_factory,
-      const network::CrossOriginEmbedderPolicy& parent_coep);
+      const network::CrossOriginEmbedderPolicy& parent_coep,
+      CrossVariantMojoRemote<
+          mojom::blink::BackForwardCacheControllerHostInterfaceBase>
+          back_forward_cache_controller_host);
 
   // Callbacks for |classic_script_loader_|.
   void OnResponse();
-  void OnFinished();
+  void OnFinished(
+      mojo::PendingRemote<mojom::blink::BackForwardCacheControllerHost>
+          back_forward_cache_controller_host);
 
   // Implements EventTarget (via AbstractWorker -> EventTargetWithInlineData).
   const AtomicString& InterfaceName() const final;
@@ -152,7 +176,6 @@ class CORE_EXPORT DedicatedWorker final
 
   Member<WorkerClassicScriptLoader> classic_script_loader_;
 
-  // Used only when PlzDedicatedWorker is enabled.
   std::unique_ptr<WebDedicatedWorkerHostFactoryClient> factory_client_;
 
   // Used for tracking cross-debugger calls.

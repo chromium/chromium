@@ -1,14 +1,17 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/rules.gni")
 import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
-import("//third_party/protobuf/proto_library.gni")
+import("./features.gni")
 import("./tast_control.gni")
+
+if (is_chromeos_device) {
+  import("//build/config/chromeos/rules.gni")
+}
 
 assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 
@@ -17,87 +20,31 @@ config("chromeos_implementation") {
   defines = [ "CHROMEOS_IMPLEMENTATION" ]
 }
 
-declare_args() {
-  # Defines a buildflag for ease of iteration on the print team's
-  # PpdProvider class.
-  # TODO(crbug.com/1025995): remove this and all related scaffolding
-  # once we're ready to cut over.
-  is_printing_ppd_provider_v3 = true
+buildflag_header("features") {
+  header = "features.h"
+  flags = [ "USE_REAL_CHROMEOS_SERVICES=$use_real_chromeos_services" ]
 }
 
 component("chromeos") {
-  public_deps = []
-  deps = []
+  deps = [ "//chromeos/dbus/constants" ]
   sources = []
 
   if (is_chromeos_ash) {
-    configs += [
-      ":chromeos_implementation",
-      "//build/config/linux/nss:system_nss_no_ssl_config",
-    ]
+    configs += [ ":chromeos_implementation" ]
     if (is_chromeos_device) {
       configs += [ "//build/config/compiler:use_orderfile_for_hugepage" ]
     }
 
-    public_deps += [ "//components/policy/proto" ]
     deps += [
       ":chromeos_export",
       "//base",
-      "//base:i18n",
-      "//chromeos/dbus",
-      "//chromeos/dbus/constants",
-      "//google_apis",
-      "//services/network/public/cpp:cpp",
-      "//third_party/protobuf:protobuf_lite",
     ]
     sources += [
       "hugepage_text/hugepage_text.cc",
       "hugepage_text/hugepage_text.h",
-      "policy/weekly_time/time_utils.cc",
-      "policy/weekly_time/time_utils.h",
-      "policy/weekly_time/weekly_time.cc",
-      "policy/weekly_time/weekly_time.h",
-      "policy/weekly_time/weekly_time_interval.cc",
-      "policy/weekly_time/weekly_time_interval.h",
-      "printing/cups_printer_status.cc",
-      "printing/cups_printer_status.h",
-      "printing/epson_driver_matching.cc",
-      "printing/epson_driver_matching.h",
-      "printing/ppd_cache.cc",
-      "printing/ppd_cache.h",
-      "printing/ppd_line_reader.cc",
-      "printing/ppd_line_reader.h",
-      "printing/ppd_provider.h",
-      "printing/printer_configuration.cc",
-      "printing/printer_configuration.h",
-      "printing/printer_translator.cc",
-      "printing/printer_translator.h",
-      "printing/uri.cc",
-      "printing/uri.h",
-      "printing/uri_impl.cc",
-      "printing/uri_impl.h",
-      "printing/usb_printer_id.cc",
-      "printing/usb_printer_id.h",
-      "scanning/scanner.cc",
-      "scanning/scanner.h",
     ]
     if (current_cpu == "arm" || current_cpu == "x86") {
       defines = [ "BINDER_IPC_32BIT" ]
-    }
-
-    if (is_printing_ppd_provider_v3) {
-      sources += [
-        "printing/ppd_metadata_manager.cc",
-        "printing/ppd_metadata_manager.h",
-        "printing/ppd_metadata_parser.cc",
-        "printing/ppd_metadata_parser.h",
-        "printing/ppd_provider_v3.cc",
-        "printing/ppd_provider_v3.h",
-        "printing/printer_config_cache.cc",
-        "printing/printer_config_cache.h",
-      ]
-    } else {
-      sources += [ "printing/ppd_provider.cc" ]
     }
   }
 }
@@ -129,14 +76,9 @@ source_set("test_support_source_set") {
   ]
   if (is_chromeos_ash) {
     deps += [
-      "//chromeos/attestation:test_support",
-      "//chromeos/cryptohome:test_support",
-      "//chromeos/dbus:test_support",
-      "//chromeos/disks:test_support",
-      "//chromeos/login/auth:test_support",
+      "//chromeos/ash/components/dbus:test_support",
+      "//chromeos/ash/components/network:test_support",
       "//chromeos/login/login_state:test_support",
-      "//chromeos/network:test_support",
-      "//chromeos/tpm:test_support",
       "//google_apis",
       "//net:test_support",
       "//services/network:test_support",
@@ -153,93 +95,51 @@ source_set("test_utils") {
 }
 
 test("chromeos_unittests") {
-  configs += [
-    "//build/config/linux/dbus",
-    "//build/config/linux/nss:system_nss_no_ssl_config",
-  ]
+  configs += [ "//build/config/linux/dbus" ]
 
   deps = [
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//mojo/core/embedder",
-    "//testing/gmock",
-    "//testing/gtest",
   ]
 
   sources = [ "test/run_all_unittests.cc" ]
 
   # Tests that common to Ash and Lacros.
-  deps += [ "//chromeos/system:unit_tests" ]
+  deps += [
+    "//chromeos/constants:unit_tests",
+    "//chromeos/system:unit_tests",
+  ]
 
   if (is_chromeos_ash) {
     deps += [
       ":test_support",
-      "//chromeos/attestation:unit_tests",
+      "//chromeos/ash/components:unit_tests",
+      "//chromeos/ash/components/dbus:test_support",
+      "//chromeos/ash/components/network:test_support",
+      "//chromeos/ash/services:unit_tests",
       "//chromeos/crosapi/cpp:unit_tests",
-      "//chromeos/cryptohome:unit_tests",
-      "//chromeos/dbus:test_support",
+      "//chromeos/crosapi/mojom:unit_tests",
       "//chromeos/dbus:unit_tests",
-      "//chromeos/dbus/services:unit_tests",
-      "//chromeos/disks:unit_tests",
-      "//chromeos/geolocation:unit_tests",
-      "//chromeos/login/auth:unit_tests",
       "//chromeos/login/login_state:unit_tests",
-      "//chromeos/login/session:unit_tests",
-      "//chromeos/memory:unit_tests",
-      "//chromeos/memory/userspace_swap:unit_tests",
-      "//chromeos/network:test_support",
-      "//chromeos/network:unit_tests",
+      "//chromeos/printing:unit_tests",
       "//chromeos/process_proxy:unit_tests",
       "//chromeos/services:unit_tests",
-      "//chromeos/settings:unit_tests",
       "//chromeos/startup:unit_tests",
-      "//chromeos/timezone:unit_tests",
-      "//chromeos/tpm:unit_tests",
+      "//chromeos/ui/base:unit_tests",
+      "//chromeos/utils:unit_tests",
+      "//chromeos/version:unit_tests",
       "//components/onc",
-      "//components/policy:generated",
-      "//components/policy/proto",
       "//components/prefs:test_support",
       "//components/proxy_config",
       "//crypto",
-      "//crypto:platform",
       "//dbus:test_support",
       "//google_apis",
       "//net",
       "//net:test_support",
-      "//services/network:test_support",
       "//services/network/public/cpp",
-      "//third_party/icu",
       "//url",
     ]
-    sources += [
-      "policy/weekly_time/time_utils_unittest.cc",
-      "policy/weekly_time/weekly_time_interval_unittest.cc",
-      "policy/weekly_time/weekly_time_unittest.cc",
-      "printing/cups_printer_status_unittest.cc",
-      "printing/epson_driver_matching_unittest.cc",
-      "printing/ppd_cache_unittest.cc",
-      "printing/ppd_line_reader_unittest.cc",
-      "printing/printer_configuration_unittest.cc",
-      "printing/printer_translator_unittest.cc",
-      "printing/uri_unittest.cc",
-      "printing/uri_unittest.h",
-      "printing/uri_unittest_consistency.cc",
-      "printing/usb_printer_id_unittest.cc",
-    ]
-
-    if (is_printing_ppd_provider_v3) {
-      sources += [
-        "printing/fake_printer_config_cache.cc",
-        "printing/fake_printer_config_cache.h",
-        "printing/ppd_metadata_manager_unittest.cc",
-        "printing/ppd_metadata_matchers.h",
-        "printing/ppd_metadata_parser_unittest.cc",
-        "printing/ppd_provider_v3_unittest.cc",
-        "printing/printer_config_cache_unittest.cc",
-      ]
-    } else {
-      sources += [ "printing/ppd_provider_unittest.cc" ]
-    }
   }
 
   data = [ "test/data/" ]
@@ -247,8 +147,8 @@ test("chromeos_unittests") {
 
 # The following definitions only apply when building for a CrOS board (ie: not
 # linux-chromeos). See the following for reference:
-# https://chromium.googlesource.com/chromium/src/+/master/docs/chromeos_build_instructions.md
-# https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
+# https://chromium.googlesource.com/chromium/src/+/main/docs/chromeos_build_instructions.md
+# https://chromium.googlesource.com/chromiumos/docs/+/main/simple_chrome_workflow.md
 if (is_chromeos_ash && is_chromeos_device) {
   # This builds a tool that prepares a DUT or VM for testing, which can be
   # utilized by wrapping a host-side script test.
@@ -258,6 +158,12 @@ if (is_chromeos_ash && is_chromeos_device) {
     # Assume every time we build cros_test_wrapper, we also build chrome and
     # want to deploy it to the DUT.
     deploy_chrome = true
+
+    # The only targets that currently use cros_test_wrapper are Telemetry-based
+    # tests, which have their own crash/symbolization handling code. So, strip
+    # Chrome before deploying in order to save disk space and avoid potential
+    # memory issues on 32-bit devices.
+    strip_chrome = true
   }
 
   tast_test("chrome_login_tast_tests") {
@@ -282,8 +188,20 @@ if (is_chromeos_ash && is_chromeos_device) {
     tast_disabled_tests = tast_disabled_tests_from_chrome_all
   }
 
+  tast_test("chrome_all_tast_tests_with_lacros") {
+    # To disable a specific test, add it to the
+    # tast_disabled_tests_from_chrome_all list in "tast_control.gni" and cite
+    # a bug.
+    tast_disabled_tests = tast_disabled_tests_from_chrome_all
+    deploy_lacros_chrome = true
+  }
+
   tast_test("chrome_all_tast_tests_informational") {
     enable_tast_informational_tests = true
+  }
+
+  tast_test("chrome_variations_tast_tests") {
+    tast_tests = [ "ui.ChromeVariationsSmoke" ]
   }
 
   group("cros_chrome_deploy") {
@@ -292,7 +210,7 @@ if (is_chromeos_ash && is_chromeos_device) {
     # https://codesearch.chromium.org/chromium/src/third_party/chromite/lib/chrome_util.py?l=341
     # Most of these are copy targets, for which GN doesn't add their outputs
     # as runtime-deps. See the link below for more details:
-    # https://chromium.googlesource.com/chromium/src/+/master/tools/gn/docs/reference.md#actions-and-copies
+    # https://chromium.googlesource.com/chromium/src/+/main/tools/gn/docs/reference.md#actions-and-copies
     data_deps = [
       "//chrome:xdg_mime",
       "//mojo/core:shared_library_arc32",
@@ -302,18 +220,5 @@ if (is_chromeos_ash && is_chromeos_device) {
     # TODO(bpastene): Figure out what's generating resources/chromeos/ and
     # declare it as a dep instead of adding the dir directly.
     data = [ "$root_out_dir/resources/chromeos/" ]
-  }
-}
-
-if (is_chromeos_ash) {
-  fuzzer_test("ppd_line_reader_fuzzer") {
-    sources = [ "printing/ppd_line_reader_fuzzer.cc" ]
-    deps = [ ":chromeos" ]
-  }
-
-  fuzzer_test("uri_fuzzer") {
-    sources = [ "printing/uri_fuzzer.cc" ]
-    seed_corpus = "printing/uri_fuzzer_seed_corpus"
-    deps = [ ":chromeos" ]
   }
 }

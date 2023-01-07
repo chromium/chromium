@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,13 +99,13 @@ function RequestQueue(sysTimer) {
  * @private
  */
 RequestQueue.prototype.insertToken_ = function(token) {
-  console.log(UTIL_fmt('token ' + this.id_ + ' inserted'));
+  console.info(UTIL_fmt('token ' + this.id_ + ' inserted'));
   if (this.head_ === null) {
     this.head_ = token;
     this.tail_ = token;
   } else {
     if (!this.tail_) {
-      throw 'Non-empty list missing tail';
+      throw new Error('Non-empty list missing tail');
     }
     this.tail_.next = token;
     token.prev = this.tail_;
@@ -170,13 +170,13 @@ RequestQueue.prototype.removeToken_ = function(token) {
 RequestQueue.prototype.complete = function(token) {
   var next = this.removeToken_(token);
   if (next) {
-    console.log(
+    console.info(
         UTIL_fmt('token ' + token.id() + ' completed, starting ' + next.id()));
     next.begin();
   } else if (this.empty()) {
-    console.log(UTIL_fmt('token ' + token.id() + ' completed, queue empty'));
+    console.info(UTIL_fmt('token ' + token.id() + ' completed, queue empty'));
   } else {
-    console.log(UTIL_fmt(
+    console.info(UTIL_fmt(
         'token ' + token.id() + ' completed (earlier token still running)'));
   }
 };

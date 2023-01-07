@@ -1,0 +1,13 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generate_grd("build_grdp") {
+  grd_prefix = "d3"
+  out_grd = "$target_gen_dir/d3_resources.grdp"
+  input_files_base_dir = rebase_path("./src", "//")
+  input_files = [ "d3.min.js" ]
+  resource_path_prefix = "d3"
+}

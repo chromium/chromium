@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-Copyright 2021 The Chromium Authors. All rights reserved.
+Copyright 2021 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -11,10 +11,9 @@ found in the LICENSE file.
   <title>Payment request delegation child frame</title>
 </head>
 <script>
-  async function tryPaymentRequestAndReport() {
+  async function tryPaymentRequestAndReport(event) {
       const request = new PaymentRequest([{
-          supportedMethods: "basic-card",
-          data: { supportedNetworks: ["visa"] }
+          supportedMethods: event.data,
       }], {
           total: {
               label: "total",
@@ -29,7 +28,7 @@ found in the LICENSE file.
       // When show() is not allowed, the Promise above throws a "NotAllowedError"
       // right away.  Otherwise, the visible dialog is aborted after a short delay
       // below, which causes the Promise above to throw an "AbortError".
-      window.setTimeout(() => request.abort().catch(()=>{}), 0);
+      window.setTimeout(() => request.abort().catch(()=>{}), 50);
   }
 
   window.addEventListener("message", tryPaymentRequestAndReport);

@@ -1,21 +1,30 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/intent_helper/page_transition_util.h"
 
+#include "base/check_op.h"
+#include "base/stl_util.h"
+
 namespace apps {
 
 bool ShouldIgnoreNavigation(ui::PageTransition page_transition,
                             bool allow_form_submit,
-                            bool allow_client_redirect) {
-  // |allow_client_redirect| is true only for non-http(s) cases, and for those
-  // we can ignore the CLIENT/SERVER REDIRECT flags, otherwise mask out the
-  // SERVER_REDIRECT flag only.
-  page_transition = MaskOutPageTransition(
-      page_transition, allow_client_redirect
-                           ? ui::PAGE_TRANSITION_IS_REDIRECT_MASK
-                           : ui::PAGE_TRANSITION_SERVER_REDIRECT);
+                            bool is_in_fenced_frame_tree,
+                            bool has_user_gesture) {
+  // Navigations inside fenced frame trees are marked with
+  // PAGE_TRANSITION_AUTO_SUBFRAME in order not to add session history items
+  // (see https://crrev.com/c/3265344). So we only check |has_user_gesture|.
+  if (is_in_fenced_frame_tree) {
+    DCHECK(ui::PageTransitionCoreTypeIs(page_transition,
+                                        ui::PAGE_TRANSITION_AUTO_SUBFRAME));
+    return !has_user_gesture;
+  }
+
+  // Mask out any redirect qualifiers
+  page_transition = MaskOutPageTransition(page_transition,
+                                          ui::PAGE_TRANSITION_IS_REDIRECT_MASK);
 
   if (!ui::PageTransitionCoreTypeIs(page_transition,
                                     ui::PAGE_TRANSITION_LINK) &&
@@ -27,7 +36,8 @@ bool ShouldIgnoreNavigation(ui::PageTransition page_transition,
     return true;
   }
 
-  if (ui::PageTransitionGetQualifier(page_transition) != 0) {
+  if (base::to_underlying(ui::PageTransitionGetQualifier(page_transition)) !=
+      0) {
     // Qualifiers indicate that this navigation was the result of a click on a
     // forward/back button, or typing in the URL bar. Don't handle any of those
     // types of navigations.

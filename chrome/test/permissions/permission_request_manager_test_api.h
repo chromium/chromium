@@ -1,13 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_TEST_PERMISSIONS_PERMISSION_REQUEST_MANAGER_TEST_API_H_
 #define CHROME_TEST_PERMISSIONS_PERMISSION_REQUEST_MANAGER_TEST_API_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/request_type.h"
 
 class Browser;
 
@@ -29,13 +30,18 @@ class PermissionRequestManagerTestApi {
   // Wraps the PermissionRequestManager for the active tab in |browser|.
   explicit PermissionRequestManagerTestApi(Browser* browser);
 
+  PermissionRequestManagerTestApi(const PermissionRequestManagerTestApi&) =
+      delete;
+  PermissionRequestManagerTestApi& operator=(
+      const PermissionRequestManagerTestApi&) = delete;
+
   permissions::PermissionRequestManager* manager() { return manager_; }
 
   // Add a "simple" permission request originating from the given frame. One
-  // that uses PermissionRequestImpl, such as for ContentSettingsType including
-  // MIDI_SYSEX, PUSH_MESSAGING, NOTIFICATIONS, GEOLOCATON, or PLUGINS.
+  // that uses base PermissionRequest, such as for RequestType kMidiSysex,
+  // kNotifications, or kGeolocation.
   void AddSimpleRequest(content::RenderFrameHost* source_frame,
-                        ContentSettingsType type);
+                        permissions::RequestType type);
 
   // Return the Widget for the permission prompt bubble, or nullptr if
   // there is no prompt currently showing.
@@ -44,9 +50,7 @@ class PermissionRequestManagerTestApi {
   void SimulateWebContentsDestroyed();
 
  private:
-  permissions::PermissionRequestManager* manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionRequestManagerTestApi);
+  raw_ptr<permissions::PermissionRequestManager> manager_;
 };
 
 }  // namespace test

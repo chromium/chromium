@@ -1,11 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/mojo/services/cdm_service.h"
+
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
@@ -13,7 +17,6 @@
 #include "media/base/mock_filters.h"
 #include "media/cdm/default_cdm_factory.h"
 #include "media/media_buildflags.h"
-#include "media/mojo/services/cdm_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,21 +49,19 @@ class CdmFactoryWrapper : public CdmFactory {
       : cdm_factory_(cdm_factory) {}
 
   // CdmFactory implementation.
-  void Create(const std::string& key_system,
-              const CdmConfig& cdm_config,
+  void Create(const CdmConfig& cdm_config,
               const SessionMessageCB& session_message_cb,
               const SessionClosedCB& session_closed_cb,
               const SessionKeysChangeCB& session_keys_change_cb,
               const SessionExpirationUpdateCB& session_expiration_update_cb,
               CdmCreatedCB cdm_created_cb) override {
-    cdm_factory_->Create(key_system, cdm_config, session_message_cb,
-                         session_closed_cb, session_keys_change_cb,
-                         session_expiration_update_cb,
+    cdm_factory_->Create(cdm_config, session_message_cb, session_closed_cb,
+                         session_keys_change_cb, session_expiration_update_cb,
                          std::move(cdm_created_cb));
   }
 
  private:
-  CdmFactory* const cdm_factory_;
+  const raw_ptr<CdmFactory> cdm_factory_;
 };
 
 class MockCdmServiceClient : public media::CdmService::Client {
@@ -82,12 +83,16 @@ class MockCdmServiceClient : public media::CdmService::Client {
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
  private:
-  CdmFactory* const cdm_factory_;
+  const raw_ptr<CdmFactory> cdm_factory_;
 };
 
 class CdmServiceTest : public testing::Test {
  public:
   CdmServiceTest() = default;
+
+  CdmServiceTest(const CdmServiceTest&) = delete;
+  CdmServiceTest& operator=(const CdmServiceTest&) = delete;
+
   ~CdmServiceTest() override = default;
 
   MOCK_METHOD0(CdmServiceIdle, void());
@@ -110,7 +115,7 @@ class CdmServiceTest : public testing::Test {
                                                base::Unretained(this)));
 
     mojo::PendingRemote<mojom::FrameInterfaceFactory> interfaces;
-    ignore_result(interfaces.InitWithNewPipeAndPassReceiver());
+    std::ignore = interfaces.InitWithNewPipeAndPassReceiver();
 
     ASSERT_FALSE(cdm_factory_remote_);
     cdm_service_remote_->CreateCdmFactory(
@@ -124,7 +129,7 @@ class CdmServiceTest : public testing::Test {
 
   void InitializeCdm(const std::string& key_system, bool expected_result) {
     cdm_factory_remote_->CreateCdm(
-        key_system, CdmConfig(),
+        {key_system, false, false, false},
         base::BindOnce(&CdmServiceTest::OnCdmCreated, base::Unretained(this),
                        expected_result));
     cdm_factory_remote_.FlushForTesting();
@@ -167,30 +172,10 @@ class CdmServiceTest : public testing::Test {
         &CdmServiceTest::CdmConnectionClosed, base::Unretained(this)));
   }
   std::unique_ptr<CdmService> service_;
-  MockCdmServiceClient* mock_cdm_service_client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmServiceTest);
+  raw_ptr<MockCdmServiceClient> mock_cdm_service_client_ = nullptr;
 };
 
 }  // namespace
-
-TEST_F(CdmServiceTest, LoadCdm) {
-  Initialize();
-
-  // Even with a dummy path where the CDM cannot be loaded, EnsureSandboxed()
-  // should still be called to ensure the process is sandboxed.
-  EXPECT_CALL(*mock_cdm_service_client(), EnsureSandboxed());
-
-  base::FilePath cdm_path(FILE_PATH_LITERAL("dummy path"));
-#if defined(OS_MAC)
-  // Token provider will not be used since the path is a dummy path.
-  cdm_service_remote_->LoadCdm(cdm_path, mojo::NullRemote());
-#else
-  cdm_service_remote_->LoadCdm(cdm_path);
-#endif
-
-  cdm_service_remote_.FlushForTesting();
-}
 
 TEST_F(CdmServiceTest, InitializeCdm_Success) {
   Initialize();

@@ -26,7 +26,12 @@ quad_list: [
     }
     tile_quad: {
       needs_blending: false
-      texture_color: 0xffff0000
+      texture_color: {
+        r: 1
+        g: 0
+        b: 0
+        a: 1
+      }
       texture_size: {
         width: 100
         height: 100
@@ -88,7 +93,12 @@ quad_list: [
       height: 100
     }
     solid_color_quad: {
-      color: 0xffffffff
+      color: {
+        r: 1
+        g: 1
+        b: 1
+        a: 1
+      }
       force_anti_aliasing_off: false
     }
     sqs: {
@@ -138,7 +148,12 @@ quad_list: [
     }
     tile_quad: {
       needs_blending: false
-      texture_color: 0xff000000
+      texture_color: {
+        r: 0
+        g: 0
+        b: 0
+        a: 1
+      }
       texture_size: {
         width: 256
         height: 256
@@ -200,7 +215,12 @@ quad_list: [
       height: 256
     }
     solid_color_quad: {
-      color: 0xff00ff00
+      color: {
+        r: 0
+        g: 1
+        b: 0
+        a: 1
+      }
       force_anti_aliasing_off: false
     }
     sqs: {
@@ -249,7 +269,12 @@ quad_list: [
       height: 256
     }
     solid_color_quad: {
-      color: 0xff0000ff
+      color: {
+        r: 0
+        g: 0
+        b: 1
+        a: 1
+      }
       force_anti_aliasing_off: false
     }
     sqs: {
@@ -298,7 +323,12 @@ quad_list: [
       height: 144
     }
     solid_color_quad: {
-      color: 0xff0000ff
+      color: {
+        r: 0
+        g: 0
+        b: 1
+        a: 1
+      }
       force_anti_aliasing_off: false
     }
     sqs: {
@@ -347,7 +377,12 @@ quad_list: [
       height: 144
     }
     solid_color_quad: {
-      color: 0xff00ff00
+      color: {
+        r: 0
+        g: 1
+        b: 0
+        a: 1
+      }
       force_anti_aliasing_off: false
     }
     sqs: {
@@ -396,7 +431,12 @@ quad_list: [
       height: 144
     }
     solid_color_quad: {
-      color: 0xff000000
+      color: {
+        r: 0
+        g: 0
+        b: 0
+        a: 1
+      }
       force_anti_aliasing_off: false
     }
     sqs: {

@@ -45,6 +45,8 @@ class GlobalEventHandlers {
                                          kAnimationiteration)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(animationstart, kAnimationstart)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(auxclick, kAuxclick)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(beforeinput, kBeforeinput)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(beforematch, kBeforematch)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(blur, kBlur)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(cancel, kCancel)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(canplay, kCanplay)
@@ -52,7 +54,11 @@ class GlobalEventHandlers {
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(change, kChange)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(click, kClick)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(close, kClose)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(contentvisibilityautostatechanged,
+                                         kContentvisibilityautostatechanged)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(contextmenu, kContextmenu)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(contextlost, kContextlost)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(contextrestored, kContextrestored)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(cuechange, kCuechange)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(dblclick, kDblclick)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(drag, kDrag)
@@ -101,17 +107,22 @@ class GlobalEventHandlers {
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(pointerover, kPointerover)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(pointerrawupdate, kPointerrawupdate)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(pointerup, kPointerup)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(popuphide, kPopuphide)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(popupshow, kPopupshow)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(progress, kProgress)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(ratechange, kRatechange)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(reset, kReset)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(resize, kResize)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(scroll, kScroll)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(scrollend, kScrollend)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(securitypolicyviolation,
+                                         kSecuritypolicyviolation)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(seeked, kSeeked)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(seeking, kSeeking)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(select, kSelect)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(selectionchange, kSelectionchange)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(selectstart, kSelectstart)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(slotchange, kSlotchange)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(stalled, kStalled)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(submit, kSubmit)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(suspend, kSuspend)
@@ -140,4 +151,4 @@ class GlobalEventHandlers {
 
 }  // namespace
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_GLOBAL_EVENT_HANDLERS_H_

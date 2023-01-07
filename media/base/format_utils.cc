@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 namespace media {
 
-base::Optional<VideoPixelFormat> GfxBufferFormatToVideoPixelFormat(
+absl::optional<VideoPixelFormat> GfxBufferFormatToVideoPixelFormat(
     gfx::BufferFormat format) {
   switch (format) {
     case gfx::BufferFormat::BGRX_8888:
@@ -40,11 +40,11 @@ base::Optional<VideoPixelFormat> GfxBufferFormatToVideoPixelFormat(
     default:
       DLOG(WARNING) << "Unsupported BufferFormat: "
                     << gfx::BufferFormatToString(format);
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
+absl::optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
     VideoPixelFormat pixel_format) {
   switch (pixel_format) {
     case PIXEL_FORMAT_ARGB:
@@ -70,7 +70,7 @@ base::Optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
 
     default:
       DLOG(WARNING) << "Unsupported VideoPixelFormat: " << pixel_format;
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

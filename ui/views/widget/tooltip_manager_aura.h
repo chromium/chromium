@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/tooltip_manager.h"
@@ -29,6 +28,10 @@ class Widget;
 class VIEWS_EXPORT TooltipManagerAura : public TooltipManager {
  public:
   explicit TooltipManagerAura(Widget* widget);
+
+  TooltipManagerAura(const TooltipManagerAura&) = delete;
+  TooltipManagerAura& operator=(const TooltipManagerAura&) = delete;
+
   ~TooltipManagerAura() override;
 
   // If |source| has capture this finds the Widget under the mouse and invokes
@@ -55,10 +58,8 @@ class VIEWS_EXPORT TooltipManagerAura : public TooltipManager {
   // Returns the Window the tooltip text is installed on.
   aura::Window* GetWindow();
 
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
   std::u16string tooltip_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipManagerAura);
 };
 
 }  // namespace views

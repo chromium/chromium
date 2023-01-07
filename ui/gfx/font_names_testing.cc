@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,29 +22,29 @@ Note that we have to support the full range from JellyBean to the latest
 dessert.
 */
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 const char kTestFontName[] = "Arimo";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 const char kTestFontName[] = "sans-serif";
 #else
 const char kTestFontName[] = "Arial";
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 const char kSymbolFontName[] = "DejaVu Sans";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 const char kSymbolFontName[] = "monospace";
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 const char kSymbolFontName[] = "Segoe UI Symbol";
 #else
 const char kSymbolFontName[] = "Symbol";
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 const char kCJKFontName[] = "Noto Sans CJK JP";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 const char kCJKFontName[] = "serif";
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 const char kCJKFontName[] = "Heiti SC";
 #else
 const char kCJKFontName[] = "SimSun";

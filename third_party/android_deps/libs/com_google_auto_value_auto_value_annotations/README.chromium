@@ -1,13 +1,14 @@
 Name: AutoValue Annotations
 Short Name: auto-value-annotations
 URL: https://github.com/google/auto/tree/master/value
-Version: 1.7
+Version: 1.9
 License: Apache 2.0
 License File: NOT_SHIPPED
+CPEPrefix: unknown
 Security Critical: no
 
 Description:
-Immutable value-type code generation for Java 1.6+.
+Immutable value-type code generation for Java 1.7+.
 
 Local Modifications:
 No modifications.

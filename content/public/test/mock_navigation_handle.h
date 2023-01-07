@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
+#include "base/types/optional_util.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
@@ -18,10 +19,12 @@
 #include "content/public/common/child_process_host.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
+#include "net/http/http_request_headers.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
-#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
+#include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -40,8 +43,8 @@ class MockNavigationHandle : public NavigationHandle {
                                   ukm::SourceIdObj::Type::NAVIGATION_ID);
   }
   const GURL& GetURL() override { return url_; }
-  const GURL& GetPreviousMainFrameURL() override {
-    return previous_main_frame_url_;
+  const GURL& GetPreviousPrimaryMainFrameURL() override {
+    return previous_primary_main_frame_url_;
   }
   SiteInstance* GetStartingSiteInstance() override {
     return starting_site_instance_;
@@ -49,24 +52,55 @@ class MockNavigationHandle : public NavigationHandle {
   SiteInstance* GetSourceSiteInstance() override {
     return nullptr;  // Good enough for unit tests...
   }
-  bool IsInMainFrame() override {
+  bool IsInMainFrame() const override {
     return render_frame_host_ ? !render_frame_host_->GetParent() : true;
+  }
+  MOCK_METHOD0(IsInPrerenderedMainFrame, bool());
+  bool IsPrerenderedPageActivation() const override {
+    return is_prerendered_page_activation_;
+  }
+  bool IsInFencedFrameTree() const override { return is_in_fenced_frame_tree_; }
+  FrameType GetNavigatingFrameType() const override {
+    NOTIMPLEMENTED();
+    return FrameType::kPrimaryMainFrame;
   }
   // By default, MockNavigationHandles are renderer-initiated navigations.
   bool IsRendererInitiated() override { return is_renderer_initiated_; }
+  bool IsSameOrigin() override {
+    NOTIMPLEMENTED();
+    return false;
+  }
+  bool IsInPrimaryMainFrame() const override {
+    return is_in_primary_main_frame_;
+  }
+  bool IsInOutermostMainFrame() override {
+    return !GetParentFrameOrOuterDocument();
+  }
   MOCK_METHOD0(GetFrameTreeNodeId, int());
-  MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalFrameRoutingId());
+  MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalRenderFrameHostId());
+  MOCK_METHOD(int, GetExpectedRenderProcessHostId, ());
   bool IsServedFromBackForwardCache() override {
     return is_served_from_bfcache_;
   }
+  bool IsPageActivation() const override {
+    MockNavigationHandle* handle = const_cast<MockNavigationHandle*>(this);
+    return handle->IsPrerenderedPageActivation() ||
+           handle->IsServedFromBackForwardCache();
+  }
   RenderFrameHost* GetParentFrame() override {
     return render_frame_host_ ? render_frame_host_->GetParent() : nullptr;
+  }
+  RenderFrameHost* GetParentFrameOrOuterDocument() override {
+    return render_frame_host_ ? render_frame_host_->GetParentOrOuterDocument()
+                              : nullptr;
   }
   WebContents* GetWebContents() override { return web_contents_; }
   MOCK_METHOD0(NavigationStart, base::TimeTicks());
   MOCK_METHOD0(NavigationInputStart, base::TimeTicks());
   MOCK_METHOD0(GetNavigationHandleTiming, const NavigationHandleTiming&());
-  MOCK_METHOD0(WasStartedFromContextMenu, bool());
+  bool WasStartedFromContextMenu() override {
+    return was_started_from_context_menu_;
+  }
   MOCK_METHOD0(GetSearchableFormURL, const GURL&());
   MOCK_METHOD0(GetSearchableFormEncoding, const std::string&());
   ReloadType GetReloadType() override { return reload_type_; }
@@ -74,20 +108,24 @@ class MockNavigationHandle : public NavigationHandle {
   const GURL& GetBaseURLForDataURL() override { return base_url_for_data_url_; }
   MOCK_METHOD0(IsPost, bool());
   const blink::mojom::Referrer& GetReferrer() override { return referrer_; }
-  void SetReferrer(blink::mojom::ReferrerPtr referrer) override {}
+  void SetReferrer(blink::mojom::ReferrerPtr referrer) override {
+    referrer_ = *referrer;
+  }
   MOCK_METHOD0(HasUserGesture, bool());
   ui::PageTransition GetPageTransition() override { return page_transition_; }
   MOCK_METHOD0(GetNavigationUIData, NavigationUIData*());
   MOCK_METHOD0(IsExternalProtocol, bool());
   net::Error GetNetErrorCode() override { return net_error_code_; }
-  RenderFrameHost* GetRenderFrameHost() override { return render_frame_host_; }
-  bool IsSameDocument() override { return is_same_document_; }
+  RenderFrameHost* GetRenderFrameHost() const override {
+    return render_frame_host_;
+  }
+  bool IsSameDocument() const override { return is_same_document_; }
   MOCK_METHOD0(WasServerRedirect, bool());
   const std::vector<GURL>& GetRedirectChain() override {
     return redirect_chain_;
   }
-  bool HasCommitted() override { return has_committed_; }
-  bool IsErrorPage() override { return is_error_page_; }
+  bool HasCommitted() const override { return has_committed_; }
+  bool IsErrorPage() const override { return is_error_page_; }
   MOCK_METHOD0(HasSubframeNavigationEntryCommitted, bool());
   MOCK_METHOD0(DidReplaceEntry, bool());
   MOCK_METHOD0(ShouldUpdateHistory, bool());
@@ -103,10 +141,10 @@ class MockNavigationHandle : public NavigationHandle {
     return response_headers_.get();
   }
   MOCK_METHOD0(GetConnectionInfo, net::HttpResponseInfo::ConnectionInfo());
-  const base::Optional<net::SSLInfo>& GetSSLInfo() override {
+  const absl::optional<net::SSLInfo>& GetSSLInfo() override {
     return ssl_info_;
   }
-  const base::Optional<net::AuthChallengeInfo>& GetAuthChallengeInfo()
+  const absl::optional<net::AuthChallengeInfo>& GetAuthChallengeInfo()
       override {
     return auth_challenge_info_;
   }
@@ -126,15 +164,15 @@ class MockNavigationHandle : public NavigationHandle {
   bool WasResponseCached() override { return was_response_cached_; }
   const net::ProxyServer& GetProxyServer() override { return proxy_server_; }
   const std::string& GetHrefTranslate() override { return href_translate_; }
-  const base::Optional<blink::Impression>& GetImpression() override {
+  const absl::optional<blink::Impression>& GetImpression() override {
     return impression_;
   }
-  const base::Optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
+  const absl::optional<blink::LocalFrameToken>& GetInitiatorFrameToken()
       override {
     return initiator_frame_token_;
   }
   int GetInitiatorProcessID() override { return initiator_process_id_; }
-  const base::Optional<url::Origin>& GetInitiatorOrigin() override {
+  const absl::optional<url::Origin>& GetInitiatorOrigin() override {
     return initiator_origin_;
   }
   const std::vector<std::string>& GetDnsAliases() override {
@@ -146,6 +184,7 @@ class MockNavigationHandle : public NavigationHandle {
               RegisterThrottleForTesting,
               (std::unique_ptr<NavigationThrottle>));
   MOCK_METHOD(bool, IsDeferredForTesting, ());
+  MOCK_METHOD(bool, IsCommitDeferringConditionDeferredForTesting, ());
   MOCK_METHOD(void,
               RegisterSubresourceOverride,
               (blink::mojom::TransferrableURLLoaderPtr));
@@ -156,17 +195,34 @@ class MockNavigationHandle : public NavigationHandle {
               ForceEnableOriginTrials,
               (const std::vector<std::string>& trials));
   MOCK_METHOD(void, SetIsOverridingUserAgent, (bool));
-  MOCK_METHOD(bool, GetIsOverridingUserAgent, ());
   MOCK_METHOD(void, SetSilentlyIgnoreErrors, ());
   MOCK_METHOD(network::mojom::WebSandboxFlags, SandboxFlagsToCommit, ());
   MOCK_METHOD(bool, IsWaitingToCommit, ());
-  void WriteIntoTracedValue(perfetto::TracedValue context) override {
-    auto dict = std::move(context).WriteDictionary();
-  }
+  MOCK_METHOD(bool, WasResourceHintsReceived, ());
+  MOCK_METHOD(bool, IsPdf, ());
+  void WriteIntoTrace(perfetto::TracedProto<TraceProto>) const override {}
+  MOCK_METHOD(bool, SetNavigationTimeout, (base::TimeDelta));
+  MOCK_METHOD(PrerenderTriggerType, GetPrerenderTriggerType, ());
+  MOCK_METHOD(std::string, GetPrerenderEmbedderHistogramSuffix, ());
 
+#if BUILDFLAG(IS_ANDROID)
+  MOCK_METHOD(const base::android::JavaRef<jobject>&,
+              GetJavaNavigationHandle,
+              ());
+#endif
+
+  base::SafeRef<NavigationHandle> GetSafeRef() override {
+    return weak_factory_.GetSafeRef();
+  }
+  MOCK_METHOD(bool, ExistingDocumentWasDiscarded, (), (const));
+
+  CommitDeferringCondition* GetCommitDeferringConditionForTesting() override {
+    return nullptr;
+  }
   void set_url(const GURL& url) { url_ = url; }
-  void set_previous_main_frame_url(const GURL& previous_main_frame_url) {
-    previous_main_frame_url_ = previous_main_frame_url;
+  void set_previous_primary_main_frame_url(
+      const GURL& previous_primary_main_frame_url) {
+    previous_primary_main_frame_url_ = previous_primary_main_frame_url;
   }
   void set_starting_site_instance(SiteInstance* site_instance) {
     starting_site_instance_ = site_instance;
@@ -186,8 +242,17 @@ class MockNavigationHandle : public NavigationHandle {
   void set_is_served_from_bfcache(bool is_served_from_bfcache) {
     is_served_from_bfcache_ = is_served_from_bfcache;
   }
+  void set_is_prerendered_page_activation(bool is_prerendered_page_activation) {
+    is_prerendered_page_activation_ = is_prerendered_page_activation;
+  }
+  void set_is_in_fenced_frame_tree(bool is_in_fenced_frame_tree) {
+    is_in_fenced_frame_tree_ = is_in_fenced_frame_tree;
+  }
   void set_is_renderer_initiated(bool is_renderer_initiated) {
     is_renderer_initiated_ = is_renderer_initiated;
+  }
+  void set_is_in_primary_main_frame(bool is_in_primary_main_frame) {
+    is_in_primary_main_frame_ = is_in_primary_main_frame;
   }
   void set_redirect_chain(const std::vector<GURL>& redirect_chain) {
     redirect_chain_ = redirect_chain;
@@ -228,39 +293,48 @@ class MockNavigationHandle : public NavigationHandle {
     initiator_origin_ = initiator_origin;
   }
   void set_reload_type(ReloadType reload_type) { reload_type_ = reload_type; }
+  void set_was_started_from_context_menu(bool was_started_from_context_menu) {
+    was_started_from_context_menu_ = was_started_from_context_menu;
+  }
 
  private:
   int64_t navigation_id_;
   GURL url_;
-  GURL previous_main_frame_url_;
-  SiteInstance* starting_site_instance_ = nullptr;
-  WebContents* web_contents_ = nullptr;
+  GURL previous_primary_main_frame_url_;
+  raw_ptr<SiteInstance> starting_site_instance_ = nullptr;
+  raw_ptr<WebContents> web_contents_ = nullptr;
   GURL base_url_for_data_url_;
   blink::mojom::Referrer referrer_;
   ui::PageTransition page_transition_ = ui::PAGE_TRANSITION_LINK;
   net::Error net_error_code_ = net::OK;
-  RenderFrameHost* render_frame_host_ = nullptr;
+  raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
   bool is_same_document_ = false;
   bool is_served_from_bfcache_ = false;
+  bool is_prerendered_page_activation_ = false;
+  bool is_in_fenced_frame_tree_ = false;
   bool is_renderer_initiated_ = true;
+  bool is_in_primary_main_frame_ = true;
   std::vector<GURL> redirect_chain_;
   bool has_committed_ = false;
   bool is_error_page_ = false;
   net::HttpRequestHeaders request_headers_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
-  base::Optional<net::SSLInfo> ssl_info_;
-  base::Optional<net::AuthChallengeInfo> auth_challenge_info_;
+  absl::optional<net::SSLInfo> ssl_info_;
+  absl::optional<net::AuthChallengeInfo> auth_challenge_info_;
   net::ResolveErrorInfo resolve_error_info_;
   content::GlobalRequestID global_request_id_;
   bool is_form_submission_ = false;
   bool was_response_cached_ = false;
   net::ProxyServer proxy_server_;
-  base::Optional<url::Origin> initiator_origin_;
+  absl::optional<url::Origin> initiator_origin_;
   ReloadType reload_type_ = content::ReloadType::NONE;
   std::string href_translate_;
-  base::Optional<blink::Impression> impression_;
-  base::Optional<blink::LocalFrameToken> initiator_frame_token_;
+  absl::optional<blink::Impression> impression_;
+  absl::optional<blink::LocalFrameToken> initiator_frame_token_;
   int initiator_process_id_ = ChildProcessHost::kInvalidUniqueID;
+  bool was_started_from_context_menu_ = false;
+
+  base::WeakPtrFactory<MockNavigationHandle> weak_factory_{this};
 };
 
 }  // namespace content

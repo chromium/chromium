@@ -1,13 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_MESSAGE_LOOP_OBSERVER_H_
 #define CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_MESSAGE_LOOP_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/task/task_observer.h"
-#include "content/common/content_export.h"
 
 namespace base {
 struct PendingTask;
@@ -19,7 +17,7 @@ namespace responsiveness {
 // This object is not thread safe. It must be constructed and destroyed on the
 // same thread. The callbacks will occur synchronously from WillProcessTask()
 // and DidProcessTask().
-class CONTENT_EXPORT MessageLoopObserver : base::TaskObserver {
+class MessageLoopObserver : base::TaskObserver {
  public:
   using WillProcessTaskCallback =
       base::RepeatingCallback<void(const base::PendingTask* task,
@@ -31,6 +29,10 @@ class CONTENT_EXPORT MessageLoopObserver : base::TaskObserver {
   // MessageLoop. The destructor will unregister the object.
   MessageLoopObserver(WillProcessTaskCallback will_process_task_callback,
                       DidProcessTaskCallback did_process_task_callback);
+
+  MessageLoopObserver(const MessageLoopObserver&) = delete;
+  MessageLoopObserver& operator=(const MessageLoopObserver&) = delete;
+
   ~MessageLoopObserver() override;
 
  private:
@@ -40,8 +42,6 @@ class CONTENT_EXPORT MessageLoopObserver : base::TaskObserver {
 
   const WillProcessTaskCallback will_process_task_callback_;
   const DidProcessTaskCallback did_process_task_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageLoopObserver);
 };
 
 }  // namespace responsiveness

@@ -26,8 +26,10 @@
 
 #include "third_party/blink/renderer/core/editing/editing_style.h"
 
+#include "base/memory/values_equivalent.h"
 #include "base/stl_util.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "mojo/public/mojom/base/text_direction.mojom-blink.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -65,7 +67,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -99,10 +101,10 @@ enum EditingPropertiesType {
 static const Vector<const CSSProperty*>& AllEditingProperties(
     const ExecutionContext* execution_context) {
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
-  if (properties.IsEmpty()) {
+  if (properties.empty()) {
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
         execution_context, kStaticEditingProperties,
-        base::size(kStaticEditingProperties), properties);
+        std::size(kStaticEditingProperties), properties);
     for (wtf_size_t index = 0; index < properties.size(); index++) {
       if (properties[index]->IDEquals(CSSPropertyID::kTextDecoration)) {
         properties.EraseAt(index);
@@ -116,10 +118,10 @@ static const Vector<const CSSProperty*>& AllEditingProperties(
 static const Vector<const CSSProperty*>& InheritableEditingProperties(
     const ExecutionContext* execution_context) {
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
-  if (properties.IsEmpty()) {
+  if (properties.empty()) {
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
         execution_context, kStaticEditingProperties,
-        base::size(kStaticEditingProperties), properties);
+        std::size(kStaticEditingProperties), properties);
     for (wtf_size_t index = 0; index < properties.size();) {
       if (!properties[index]->IsInherited()) {
         properties.EraseAt(index);
@@ -340,7 +342,7 @@ bool HTMLAttributeEquivalent::ValueIsPresentInStyle(
   const CSSValue* value = AttributeValueAsCSSValue(element);
   const CSSValue* style_value = style->GetPropertyCSSValue(property_id_);
 
-  return DataEquivalent(value, style_value);
+  return base::ValuesEquivalent(value, style_value);
 }
 
 void HTMLAttributeEquivalent::AddToStyle(Element* element,
@@ -426,14 +428,14 @@ static Color CssValueToColor(const CSSValue* value) {
   if (!value)
     return Color::kTransparent;
 
-  auto* color_value = DynamicTo<cssvalue::CSSColorValue>(value);
+  auto* color_value = DynamicTo<cssvalue::CSSColor>(value);
   if (!color_value && !value->IsPrimitiveValue() && !value->IsIdentifierValue())
     return Color::kTransparent;
 
   if (color_value)
     return color_value->Value();
 
-  Color color = 0;
+  Color color = Color::kTransparent;
   // FIXME: Why ignore the return value?
   CSSParser::ParseColor(color, value->CssText());
   return color;
@@ -759,15 +761,15 @@ static const CSSPropertyID kStaticBlockProperties[] = {
     CSSPropertyID::kPageBreakAfter, CSSPropertyID::kPageBreakBefore,
     CSSPropertyID::kPageBreakInside, CSSPropertyID::kTextAlign,
     CSSPropertyID::kTextAlignLast, CSSPropertyID::kTextIndent,
-    CSSPropertyID::kTextJustify, CSSPropertyID::kWidows};
+    CSSPropertyID::kWidows};
 
 static const Vector<const CSSProperty*>& BlockPropertiesVector(
     const ExecutionContext* execution_context) {
   DEFINE_STATIC_LOCAL(Vector<const CSSProperty*>, properties, ());
-  if (properties.IsEmpty()) {
+  if (properties.empty()) {
     CSSProperty::FilterWebExposedCSSPropertiesIntoVector(
         execution_context, kStaticBlockProperties,
-        base::size(kStaticBlockProperties), properties);
+        std::size(kStaticBlockProperties), properties);
   }
   return properties;
 }
@@ -909,7 +911,7 @@ EditingTriState EditingStyle::TriStateOfStyle(
   };
   if (should_ignore_text_only_properties == kIgnoreTextOnlyProperties) {
     difference->RemovePropertiesInSet(kTextOnlyProperties,
-                                      base::size(kTextOnlyProperties));
+                                      std::size(kTextOnlyProperties));
   }
 
   if (difference->IsEmpty())
@@ -936,7 +938,7 @@ EditingTriState EditingStyle::TriStateOfStyle(
   EditingTriState state = EditingTriState::kFalse;
   bool node_is_start = true;
   for (Node& node : NodeTraversal::StartsAt(*selection.Start().AnchorNode())) {
-    if (node.GetLayoutObject() && HasEditableStyle(node)) {
+    if (node.GetLayoutObject() && IsEditable(node)) {
       auto* node_style =
           MakeGarbageCollected<CSSComputedStyleDeclaration>(&node);
       if (node_style) {
@@ -984,7 +986,7 @@ bool EditingStyle::ConflictsWithInlineStyleOfElement(
     EditingStyle* extracted_style,
     Vector<CSSPropertyID>* conflicting_properties) const {
   DCHECK(element);
-  DCHECK(!conflicting_properties || conflicting_properties->IsEmpty());
+  DCHECK(!conflicting_properties || conflicting_properties->empty());
 
   const CSSPropertyValueSet* inline_style = element->InlineStyle();
   if (!mutable_style_ || !inline_style)
@@ -1048,7 +1050,7 @@ bool EditingStyle::ConflictsWithInlineStyleOfElement(
     }
   }
 
-  return conflicting_properties && !conflicting_properties->IsEmpty();
+  return conflicting_properties && !conflicting_properties->empty();
 }
 
 static const HeapVector<Member<HTMLElementEquivalent>>&
@@ -1274,6 +1276,7 @@ void EditingStyle::PrepareToApplyAt(
     ShouldPreserveWritingDirection should_preserve_writing_direction) {
   if (!mutable_style_)
     return;
+  DCHECK(position.IsNotNull());
 
   // ReplaceSelectionCommand::handleStyleSpans() requires that this function
   // only removes the editing style. If this function was modified in the future
@@ -1576,8 +1579,7 @@ void EditingStyle::RemoveStyleFromRulesAndContext(Element* element,
   // 1. Remove style from matched rules because style remain without repeating
   // it in inline style declaration
   MutableCSSPropertyValueSet* style_from_matched_rules =
-      StyleFromMatchedRulesForElement(element,
-                                      StyleResolver::kAllButEmptyCSSRules);
+      StyleFromMatchedRulesForElement(element, StyleResolver::kAllCSSRules);
   if (style_from_matched_rules && !style_from_matched_rules->IsEmpty()) {
     mutable_style_ =
         GetPropertiesNotIn(mutable_style_.Get(), element,
@@ -1818,7 +1820,9 @@ void StyleChange::ExtractTextStyles(Document* document,
   }
 
   if (style->GetPropertyCSSValue(CSSPropertyID::kColor)) {
-    apply_font_color_ = GetFontColor(style).Serialized();
+    // The <font> tag cannot handle rgb colors, so we need to serialize as hex
+    // here in order to continue supporting it.
+    apply_font_color_ = GetFontColor(style).SerializeAsCanvasColor();
     style->RemoveProperty(CSSPropertyID::kColor);
   }
 
@@ -1982,7 +1986,7 @@ int LegacyFontSizeFromCSSValue(Document* document,
             CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
                 length_unit);
         int pixel_font_size =
-            clampTo<int>(primitive_value->GetDoubleValue() * conversion);
+            ClampTo<int>(primitive_value->GetDoubleValue() * conversion);
         int legacy_font_size = FontSizeFunctions::LegacyFontSize(
             document, pixel_font_size, is_monospace_font);
         // Use legacy font size only if pixel value matches exactly to that of

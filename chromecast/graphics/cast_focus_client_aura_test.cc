@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,14 +22,15 @@ class TestWindow {
     window_.Show();
   }
 
+  TestWindow(const TestWindow&) = delete;
+  TestWindow& operator=(const TestWindow&) = delete;
+
   aura::test::TestWindowDelegate* delegate() { return &delegate_; }
   aura::Window* window() { return &window_; }
 
  private:
   aura::test::TestWindowDelegate delegate_;
   aura::Window window_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindow);
 };
 
 }  // namespace
@@ -120,7 +121,7 @@ TEST_F(CastFocusClientAuraTest, ZOrder) {
   // Add the window with the lowest z-order.
   std::unique_ptr<TestWindow> low(new TestWindow);
   low->delegate()->set_can_focus(true);
-  low->window()->set_id(1);
+  low->window()->SetId(1);
   window_tree_host->window()->AddChild(low->window());
   focus_client.FocusWindow(low->window());
   EXPECT_EQ(low->window(), focus_client.GetFocusedWindow());
@@ -128,7 +129,7 @@ TEST_F(CastFocusClientAuraTest, ZOrder) {
   // Add the window with the highest z-order, and confirm that it gets focus.
   std::unique_ptr<TestWindow> high(new TestWindow);
   high->delegate()->set_can_focus(true);
-  high->window()->set_id(3);
+  high->window()->SetId(3);
   window_tree_host->window()->AddChild(high->window());
   focus_client.FocusWindow(high->window());
   EXPECT_EQ(high->window(), focus_client.GetFocusedWindow());
@@ -137,7 +138,7 @@ TEST_F(CastFocusClientAuraTest, ZOrder) {
   // the highest z-order window.
   std::unique_ptr<TestWindow> middle(new TestWindow);
   middle->delegate()->set_can_focus(true);
-  middle->window()->set_id(2);
+  middle->window()->SetId(2);
   window_tree_host->window()->AddChild(middle->window());
   focus_client.FocusWindow(middle->window());
   EXPECT_EQ(high->window(), focus_client.GetFocusedWindow());
@@ -173,7 +174,7 @@ TEST_F(CastFocusClientAuraTest, ZOrderWithChildWindows) {
 
   // Add the window with the highest z-order.
   std::unique_ptr<TestWindow> high_parent(new TestWindow);
-  high_parent->window()->set_id(3);
+  high_parent->window()->SetId(3);
   std::unique_ptr<TestWindow> high_child(new TestWindow);
   high_child->delegate()->set_can_focus(true);
   high_parent->window()->AddChild(high_child->window());
@@ -183,7 +184,7 @@ TEST_F(CastFocusClientAuraTest, ZOrderWithChildWindows) {
 
   // Add the window with the lowest z-order.
   std::unique_ptr<TestWindow> low_parent(new TestWindow);
-  low_parent->window()->set_id(1);
+  low_parent->window()->SetId(1);
   std::unique_ptr<TestWindow> low_child(new TestWindow);
   low_child->delegate()->set_can_focus(true);
   low_parent->window()->AddChild(low_child->window());

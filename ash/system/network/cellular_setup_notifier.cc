@@ -1,17 +1,20 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/network/cellular_setup_notifier.h"
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/model/system_tray_model.h"
+#include "base/bind.h"
 #include "base/timer/timer.h"
 #include "components/onc/onc_constants.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -26,7 +29,7 @@ namespace {
 const char kNotifierCellularSetup[] = "ash.cellular-setup";
 
 // Delay after OOBE until notification should be shown.
-constexpr base::TimeDelta kNotificationDelay = base::TimeDelta::FromMinutes(15);
+constexpr base::TimeDelta kNotificationDelay = base::Minutes(15);
 
 bool DoesCellularDeviceExist(
     const std::vector<
@@ -88,6 +91,8 @@ CellularSetupNotifier::CellularSetupNotifier()
     : timer_(std::make_unique<base::OneShotTimer>()) {
   GetNetworkConfigService(
       remote_cros_network_config_.BindNewPipeAndPassReceiver());
+  remote_cros_network_config_->AddObserver(
+      cros_network_config_observer_receiver_.BindNewPipeAndPassRemote());
   Shell::Get()->session_controller()->AddObserver(this);
 }
 
@@ -119,6 +124,30 @@ void CellularSetupNotifier::OnSessionStateChanged(
 }
 
 void CellularSetupNotifier::OnTimerFired() {
+  timer_fired_ = true;
+  MaybeShowCellularSetupNotification();
+}
+
+void CellularSetupNotifier::OnNetworkStateListChanged() {
+  MaybeShowCellularSetupNotification();
+}
+
+void CellularSetupNotifier::OnNetworkStateChanged(
+    chromeos::network_config::mojom::NetworkStatePropertiesPtr network) {
+  if (network->type !=
+          chromeos::network_config::mojom::NetworkType::kCellular ||
+      network->type_state->get_cellular()->activation_state !=
+          chromeos::network_config::mojom::ActivationStateType::kActivated) {
+    return;
+  }
+
+  SetCellularSetupNotificationCannotBeShown();
+  message_center::MessageCenter* message_center =
+      message_center::MessageCenter::Get();
+  message_center->RemoveNotification(kCellularSetupNotificationId, false);
+}
+
+void CellularSetupNotifier::MaybeShowCellularSetupNotification() {
   remote_cros_network_config_->GetDeviceStateList(base::BindOnce(
       &CellularSetupNotifier::OnGetDeviceStateList, base::Unretained(this)));
 }
@@ -153,9 +182,19 @@ void CellularSetupNotifier::OnCellularNetworksList(
       // keep starting the timer for a user who already has an activated
       // cellular network.
       SetCellularSetupNotificationCannotBeShown();
+      message_center::MessageCenter* message_center =
+          message_center::MessageCenter::Get();
+      message_center->RemoveNotification(kCellularSetupNotificationId, false);
       return;
     }
   }
+
+  // Do not show notification if it has already been shown, or the timer
+  // has not yet been fired.
+  if (!GetCanCellularSetupNotificationBeShown() || !timer_fired_) {
+    return;
+  }
+
   ShowCellularSetupNotification();
 }
 
@@ -179,11 +218,11 @@ void CellularSetupNotifier::ShowCellularSetupNotification() {
           /*display_source=*/std::u16string(), GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
-              kNotifierCellularSetup),
+              kNotifierCellularSetup, NotificationCatalogName::kCellularSetup),
           message_center::RichNotificationData(),
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
               base::BindRepeating(&OnCellularSetupNotificationClicked)),
-          vector_icons::kAddCellularNetworkIcon,
+          kAddCellularNetworkIcon,
           message_center::SystemNotificationWarningLevel::NORMAL);
 
   message_center::MessageCenter* message_center =

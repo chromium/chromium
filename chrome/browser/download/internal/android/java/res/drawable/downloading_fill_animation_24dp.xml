@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<animated-vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    tools:targetApi="21">
+
+    <aapt:attr name="android:drawable">
+        <vector
+            android:width="24dp"
+            android:height="24dp"
+            android:viewportWidth="72.0"
+            android:viewportHeight="72.0">
+
+            <path
+                android:name="arrow_grey"
+                android:fillColor="@color/icon_animated_faded_color_list"
+                android:pathData="M30,15 L42,15 L42,30 L52,30 L36,46 L20,30 L30,30 Z"
+                android:strokeColor="@android:color/transparent"/>
+
+            <group>
+                <clip-path
+                    android:name="arrow_clip"
+                    android:pathData="M 0,0 L 72,0 L 72,60 L 0,60 L 0,0 Z"/>
+
+                <path
+                    android:name="arrow_blue"
+                    android:fillColor="@macro/default_icon_color_accent1"
+                    android:pathData="M30,15 L42,15 L42,30 L52,30 L36,46 L20,30 L30,30 Z"
+                    android:strokeColor="@android:color/transparent"/>
+            </group>
+
+            <path
+                android:name="bar_grey"
+                android:pathData="M12,54 L60,54"
+                android:strokeColor="@color/icon_animated_faded_color_list"
+                android:strokeWidth="6"/>
+
+            <path
+                android:name="bar"
+                android:pathData="M12,54 L60,54"
+                android:strokeColor="@macro/default_icon_color_accent1"
+                android:strokeWidth="6"/>
+
+        </vector>
+    </aapt:attr>
+
+    <target android:name="arrow_clip">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="@integer/download_infobar_fill_in_delay"
+                android:interpolator="@android:interpolator/linear"
+                android:propertyName="pathData"
+                android:valueTo="M 0,0 L 72,0 L 72,60 L 0,60 L 0,0 Z"
+                android:valueFrom="M 0,0 L 72,0 L 72,0 L 0,0 L 0,0 Z"
+                android:valueType="pathType"/>
+        </aapt:attr>
+    </target>
+
+    <target android:name="arrow_blue">
+        <aapt:attr name="android:animation">
+            <set android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="0"
+                    android:interpolator="@android:interpolator/linear"
+                    android:propertyName="fillColor"
+                    android:valueFrom="@macro/default_icon_color_accent1"
+                    android:valueTo="@macro/default_icon_color_accent1"/>
+                <objectAnimator
+                    android:duration="@integer/download_infobar_fill_out_delay"
+                    android:startOffset="@integer/download_infobar_fill_in_delay"
+                    android:interpolator="@android:interpolator/linear"
+                    android:propertyName="fillColor"
+                    android:valueFrom="@macro/default_icon_color_accent1"
+                    android:valueTo="@android:color/transparent"/>
+            </set>
+        </aapt:attr>
+    </target>
+
+    <target android:name="bar">
+        <aapt:attr name="android:animation">
+            <set android:ordering="sequentially">
+                <objectAnimator
+                    android:duration="@integer/download_infobar_bar_fill_in_delay"
+                    android:startOffset="@integer/download_infobar_bar_start_offset"
+                    android:interpolator="@android:interpolator/linear"
+                    android:propertyName="trimPathEnd"
+                    android:valueFrom="0"
+                    android:valueTo="1"/>
+                <objectAnimator
+                    android:duration="@integer/download_infobar_bar_fill_out_delay"
+                    android:interpolator="@android:interpolator/linear"
+                    android:propertyName="trimPathStart"
+                    android:valueFrom="0"
+                    android:valueTo="1"/>
+            </set>
+        </aapt:attr>
+    </target>
+</animated-vector>

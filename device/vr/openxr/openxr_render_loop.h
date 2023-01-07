@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "device/vr/openxr/context_provider_callbacks.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
@@ -39,15 +38,18 @@ class OpenXrRenderLoop : public XRCompositorCommon,
                          public viz::ContextLostObserver {
  public:
   OpenXrRenderLoop(
-      base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
-          on_display_info_changed,
       VizContextProviderFactoryAsync context_provider_factory_async,
       XrInstance instance,
       const OpenXrExtensionHelper& extension_helper_);
+
+  OpenXrRenderLoop(const OpenXrRenderLoop&) = delete;
+  OpenXrRenderLoop& operator=(const OpenXrRenderLoop&) = delete;
+
   ~OpenXrRenderLoop() override;
 
  private:
   // XRCompositorCommon:
+  gpu::gles2::GLES2Interface* GetContextGL() override;
   void ClearPendingFrameInternal() override;
   bool IsUsingSharedImages() const override;
   void SubmitFrameDrawnIntoTexture(int16_t frame_index,
@@ -70,15 +72,18 @@ class OpenXrRenderLoop : public XRCompositorCommon,
   device::mojom::XRInteractionMode GetInteractionMode(
       device::mojom::XRSessionMode session_mode) override;
   bool CanEnableAntiAliasing() const override;
+  std::vector<mojom::XRViewPtr> GetDefaultViews() const override;
 
   // viz::ContextLostObserver Implementation
   void OnContextLost() override;
 
-  void InitializeDisplayInfo();
-  bool UpdateEyeParameters();
-  bool UpdateEye(const XrView& view_head,
-                 const gfx::Size& view_size,
-                 mojom::VREyeParametersPtr* eye) const;
+  void OnOpenXrSessionStarted(StartRuntimeCallback start_runtime_callback,
+                              XrResult result);
+  bool UpdateViews();
+  bool UpdateView(const XrView& view_head,
+                  int width,
+                  int height,
+                  mojom::XRViewPtr* view) const;
   void UpdateStageParameters();
 
   // XREnvironmentIntegrationProvider
@@ -126,15 +131,13 @@ class OpenXrRenderLoop : public XRCompositorCommon,
                             GLuint id,
                             std::unique_ptr<gfx::GpuFence> gpu_fence);
 
+  bool IsFeatureEnabled(device::mojom::XRSessionFeature feature) const;
+
   // Owned by OpenXrStatics
   XrInstance instance_;
   const OpenXrExtensionHelper& extension_helper_;
 
   std::unique_ptr<OpenXrApiWrapper> openxr_;
-
-  base::RepeatingCallback<void(mojom::VRDisplayInfoPtr)>
-      on_display_info_changed_;
-  mojom::VRDisplayInfoPtr current_display_info_;
 
   mojo::AssociatedReceiver<mojom::XREnvironmentIntegrationProvider>
       environment_receiver_{this};
@@ -144,8 +147,6 @@ class OpenXrRenderLoop : public XRCompositorCommon,
 
   // This must be the last member
   base::WeakPtrFactory<OpenXrRenderLoop> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OpenXrRenderLoop);
 };
 
 }  // namespace device

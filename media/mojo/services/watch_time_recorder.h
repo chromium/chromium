@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define MEDIA_MOJO_SERVICES_WATCH_TIME_RECORDER_H_
 
 #include <stdint.h>
-#include <string>
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
@@ -35,13 +34,17 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
                     bool is_top_frame,
                     uint64_t player_id,
                     RecordAggregateWatchTimeCallback record_playback_cb);
+
+  WatchTimeRecorder(const WatchTimeRecorder&) = delete;
+  WatchTimeRecorder& operator=(const WatchTimeRecorder&) = delete;
+
   ~WatchTimeRecorder() override;
 
   // mojom::WatchTimeRecorder implementation:
   void RecordWatchTime(WatchTimeKey key, base::TimeDelta watch_time) override;
   void FinalizeWatchTime(
       const std::vector<WatchTimeKey>& watch_time_keys) override;
-  void OnError(PipelineStatus status) override;
+  void OnError(const PipelineStatus& status) override;
   void UpdateSecondaryProperties(
       mojom::SecondaryPlaybackPropertiesPtr secondary_properties) override;
   void SetAutoplayInitiated(bool value) override;
@@ -123,13 +126,11 @@ class MEDIA_MOJO_EXPORT WatchTimeRecorder : public mojom::WatchTimeRecorder {
   int completed_underflow_count_ = 0;
   base::TimeDelta underflow_duration_;
 
-  PipelineStatus pipeline_status_ = PIPELINE_OK;
+  PipelineStatusCodes pipeline_status_ = PIPELINE_OK;
   base::TimeDelta duration_ = kNoTimestamp;
   base::TimeDelta last_timestamp_ = kNoTimestamp;
-  base::Optional<bool> autoplay_initiated_;
+  absl::optional<bool> autoplay_initiated_;
   RecordAggregateWatchTimeCallback record_playback_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(WatchTimeRecorder);
 };
 
 }  // namespace media

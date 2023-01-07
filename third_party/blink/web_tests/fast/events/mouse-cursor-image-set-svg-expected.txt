@@ -50,6 +50,10 @@ TEST CASE: Explicit hotspot at (7,3) logical in 0.7x and 1.4x - should round to 
 Cursor Info: type=Custom hotSpot=10,4 image=30x30 scale=1.4
 
 
+TEST CASE: SVG image with no specified size
+Cursor Info: type=Hand
+
+
 Checking cursors with device pixel ratio of 2
 ----------------------------------------------
 TEST CASE: 25x25 image at 1x
@@ -94,6 +98,10 @@ Cursor Info: type=Custom hotSpot=10,48 image=50x50 scale=2
 
 TEST CASE: Explicit hotspot at (7,3) logical in 0.7x and 1.4x - should round to nearest integer
 Cursor Info: type=Custom hotSpot=20,8 image=60x60 scale=2.8
+
+
+TEST CASE: SVG image with no specified size
+Cursor Info: type=Hand
 
 
 PASS successfullyParsed is true

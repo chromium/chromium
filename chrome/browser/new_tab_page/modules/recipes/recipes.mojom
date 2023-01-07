@@ -1,0 +1,56 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module recipes.mojom;
+
+import "url/mojom/url.mojom";
+
+// A food recipe.
+struct Recipe {
+  // Human-readable name.
+  string name;
+  // URL to image associated with the recipe.
+  url.mojom.Url image_url;
+  // Human-readable info.
+  string info;
+  // Website name.
+  string? site_name;
+  // URL of the target page.
+  url.mojom.Url target_url;
+};
+
+// A related search query.
+struct RelatedSearch {
+  // Text of the search query.
+  string text;
+  // URL of the query target page.
+  url.mojom.Url target_url;
+};
+
+// A task search journey that is currently active for the user.
+struct Task {
+  // Human-readable title.
+  string title;
+  // Human-readable name.
+  string name;
+  // Recipe associated with the task.
+  array<Recipe> recipes;
+  // Searches related to the task.
+  array<RelatedSearch> related_searches;
+};
+
+// Interface for handling requests from a task module's JS code.
+// Bound to the NTP WebUI handler.
+interface RecipesHandler {
+  // Returns the primary task if available.
+  GetPrimaryTask() => (Task? task);
+  // Dismisses the task with the given name and remembers that setting.
+  DismissTask(string task_name);
+  // Restores the task with the given name and remembers that setting.
+  RestoreTask(string task_name);
+  // Logs that the recipe at position |index| has been clicked.
+  OnRecipeClicked(uint32 index);
+  // Logs that the related search pill at position |index| has been clicked.
+  OnRelatedSearchClicked(uint32 index);
+};

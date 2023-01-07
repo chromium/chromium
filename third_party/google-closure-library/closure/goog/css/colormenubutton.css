@@ -7,9 +7,13 @@
 
 /*
  * Standard styling for buttons created by goog.ui.ColorMenuButtonRenderer.
- *
- * @provide {goog.css.colormenubutton}
  */
+
+@provide 'goog.css.colormenubutton';
+
+@require './colorpalette';
+@require './common';
+@require './menubutton';
 
 /* Color indicator. */
 .goog-color-menu-button-indicator {

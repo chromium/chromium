@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,7 @@ SendTabToSelfModelTypeController::SendTabToSelfModelTypeController(
     : ModelTypeController(syncer::SEND_TAB_TO_SELF,
                           std::move(delegate_for_full_sync_mode),
                           std::move(delegate_for_transport_mode)) {
-  DCHECK_EQ(base::FeatureList::IsEnabled(
-                send_tab_to_self::kSendTabToSelfWhenSignedIn),
-            ShouldRunInTransportOnlyMode());
+  DCHECK(ShouldRunInTransportOnlyMode());
 }
 
 SendTabToSelfModelTypeController::~SendTabToSelfModelTypeController() = default;
@@ -31,15 +29,15 @@ void SendTabToSelfModelTypeController::Stop(
     StopCallback callback) {
   DCHECK(CalledOnValidThread());
   switch (shutdown_reason) {
-    case syncer::STOP_SYNC:
+    case syncer::ShutdownReason::STOP_SYNC_AND_KEEP_DATA:
       // Special case: We want to clear all data even when Sync is stopped
       // temporarily. This is also needed to make sure the feature stops being
       // offered to the user, because predicates like IsUserSyncTypeActive()
       // should return false upon stop.
-      shutdown_reason = syncer::DISABLE_SYNC;
+      shutdown_reason = syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA;
       break;
-    case syncer::DISABLE_SYNC:
-    case syncer::BROWSER_SHUTDOWN:
+    case syncer::ShutdownReason::DISABLE_SYNC_AND_CLEAR_DATA:
+    case syncer::ShutdownReason::BROWSER_SHUTDOWN_AND_KEEP_DATA:
       break;
   }
   ModelTypeController::Stop(shutdown_reason, std::move(callback));

@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <iterator>
 #include <utility>
 
 #include "base/check_op.h"
@@ -33,7 +34,6 @@
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "util/file/file_io.h"
 #include "util/mach/bootstrap.h"
@@ -51,6 +51,10 @@ namespace {
 class ChildPortHandshakeServer final : public ChildPortServer::Interface {
  public:
   ChildPortHandshakeServer();
+
+  ChildPortHandshakeServer(const ChildPortHandshakeServer&) = delete;
+  ChildPortHandshakeServer& operator=(const ChildPortHandshakeServer&) = delete;
+
   ~ChildPortHandshakeServer();
 
   mach_port_t RunServer(base::ScopedFD server_write_fd,
@@ -69,8 +73,6 @@ class ChildPortHandshakeServer final : public ChildPortServer::Interface {
   mach_port_t port_;
   mach_msg_type_name_t right_type_;
   bool checked_in_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildPortHandshakeServer);
 };
 
 ChildPortHandshakeServer::ChildPortHandshakeServer()
@@ -165,8 +167,8 @@ mach_port_t ChildPortHandshakeServer::RunServer(
          0,
          0,
          nullptr);
-  int rv = HANDLE_EINTR(kevent(
-      kq.get(), changelist, base::size(changelist), nullptr, 0, nullptr));
+  int rv = HANDLE_EINTR(
+      kevent(kq.get(), changelist, std::size(changelist), nullptr, 0, nullptr));
   PCHECK(rv != -1) << "kevent";
 
   ChildPortServer child_port_server(this);

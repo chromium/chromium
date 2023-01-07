@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
@@ -18,8 +19,7 @@
 namespace updater {
 
 TEST(DMMessage, GetRegisterBrowserRequestData) {
-  std::string message =
-      GetRegisterBrowserRequestData("MachineFoo", "Mac OSX", "10.15");
+  std::string message = GetRegisterBrowserRequestData();
   EXPECT_FALSE(message.empty());
 }
 

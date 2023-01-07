@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ void PerformanceManagerTestHarnessHelper::SetUp() {
   base::RunLoop run_loop;
   GraphImplCallback callback =
       base::BindLambdaForTesting([&](GraphImpl* graph) {
-        graph_features_helper_.ConfigureGraph(graph);
+        graph_features_.ConfigureGraph(graph);
         if (graph_impl_callback_)
           std::move(graph_impl_callback_).Run(graph);
         run_loop.Quit();

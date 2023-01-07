@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,22 +11,13 @@
 
 namespace metrics {
 
-#if !defined(OS_ANDROID)
-
-// This function makes it possible to tell from the callstack why startup is
-// taking too long.
-NOINLINE void StartupHang();
+#if !BUILDFLAG(IS_ANDROID)
 
 // This function makes it possible to tell from the callstack why shutdown is
 // taking too long.
 NOINLINE void ShutdownHang();
 
-#endif  // !defined(OS_ANDROID)
-
-// This function makes it possible to tell from the callstack alone what thread
-// was unresponsive.
-NOINLINE void CrashBecauseThreadWasUnresponsive(
-    content::BrowserThread::ID thread_id);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace metrics
 

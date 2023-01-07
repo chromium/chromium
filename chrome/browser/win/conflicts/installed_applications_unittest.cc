@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <map>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
@@ -68,6 +67,11 @@ class TestInstalledApplications : public InstalledApplications {
 class InstalledApplicationsTest : public testing::Test {
  public:
   InstalledApplicationsTest() = default;
+
+  InstalledApplicationsTest(const InstalledApplicationsTest&) = delete;
+  InstalledApplicationsTest& operator=(const InstalledApplicationsTest&) =
+      delete;
+
   ~InstalledApplicationsTest() override = default;
 
   // Overrides HKLM and HKCU to prevent real keys from messing with the tests.
@@ -131,8 +135,6 @@ class InstalledApplicationsTest : public testing::Test {
   std::unique_ptr<TestInstalledApplications> installed_applications_;
 
   std::map<std::wstring, std::vector<std::wstring>> component_paths_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstalledApplicationsTest);
 };
 
 }  // namespace

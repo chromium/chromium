@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ bool Image::LoadMetafile(const Metafile& metafile) {
     return false;
 
   size_ = rect.size();
-  // The data in this |bitmap| will be tightly-packed 32-bit ARGB data.
+  // The data in this `bitmap` will be tightly-packed 32-bit ARGB data.
   gfx::CreateBitmapV4HeaderForARGB888(rect.width(), rect.height(), &hdr);
   unsigned char* bits = NULL;
   base::win::ScopedBitmap bitmap(

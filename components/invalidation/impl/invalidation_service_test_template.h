@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,7 +72,6 @@
 #define COMPONENTS_INVALIDATION_IMPL_INVALIDATION_SERVICE_TEST_TEMPLATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/invalidation/impl/fake_invalidation_handler.h"
 #include "components/invalidation/impl/topic_invalidation_map_test_util.h"
 #include "components/invalidation/public/ack_handle.h"
@@ -112,7 +111,7 @@ TYPED_TEST_P(InvalidationServiceTest, Basic) {
   InvalidationService* const invalidator =
       this->CreateAndInitializeInvalidationService();
 
-  FakeInvalidationHandler handler;
+  FakeInvalidationHandler handler("owner");
 
   invalidator->RegisterInvalidationHandler(&handler);
 
@@ -176,10 +175,10 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleHandlers) {
   InvalidationService* const invalidator =
       this->CreateAndInitializeInvalidationService();
 
-  FakeInvalidationHandler handler1;
-  FakeInvalidationHandler handler2;
-  FakeInvalidationHandler handler3;
-  FakeInvalidationHandler handler4;
+  FakeInvalidationHandler handler1(/*owner=*/"owner_1");
+  FakeInvalidationHandler handler2(/*owner=*/"owner_2");
+  FakeInvalidationHandler handler3(/*owner=*/"owner_3");
+  FakeInvalidationHandler handler4(/*owner=*/"owner_4");
 
   invalidator->RegisterInvalidationHandler(&handler1);
   invalidator->RegisterInvalidationHandler(&handler2);
@@ -257,8 +256,8 @@ TYPED_TEST_P(InvalidationServiceTest, MultipleRegistrations) {
   InvalidationService* const invalidator =
       this->CreateAndInitializeInvalidationService();
 
-  FakeInvalidationHandler handler1;
-  FakeInvalidationHandler handler2;
+  FakeInvalidationHandler handler1(/*owner=*/"owner_1");
+  FakeInvalidationHandler handler2(/*owner=*/"owner_2");
 
   invalidator->RegisterInvalidationHandler(&handler1);
   invalidator->RegisterInvalidationHandler(&handler2);
@@ -280,10 +279,10 @@ TYPED_TEST_P(InvalidationServiceTest, EmptySetUnregisters) {
   InvalidationService* const invalidator =
       this->CreateAndInitializeInvalidationService();
 
-  FakeInvalidationHandler handler1;
+  FakeInvalidationHandler handler1(/*owner=*/"owner_1");
 
   // Control observer.
-  FakeInvalidationHandler handler2;
+  FakeInvalidationHandler handler2(/*owner=*/"owner_2");
 
   invalidator->RegisterInvalidationHandler(&handler1);
   invalidator->RegisterInvalidationHandler(&handler2);
@@ -332,7 +331,13 @@ TYPED_TEST_P(InvalidationServiceTest, EmptySetUnregisters) {
 // the bound InvalidationService.
 class BoundFakeInvalidationHandler : public FakeInvalidationHandler {
  public:
-  explicit BoundFakeInvalidationHandler(const InvalidationService& invalidator);
+  BoundFakeInvalidationHandler(const InvalidationService& invalidator,
+                               const std::string& owner);
+
+  BoundFakeInvalidationHandler(const BoundFakeInvalidationHandler&) = delete;
+  BoundFakeInvalidationHandler& operator=(const BoundFakeInvalidationHandler&) =
+      delete;
+
   ~BoundFakeInvalidationHandler() override;
 
   // Returns the last return value of GetInvalidatorState() on the
@@ -346,15 +351,13 @@ class BoundFakeInvalidationHandler : public FakeInvalidationHandler {
  private:
   const InvalidationService& invalidator_;
   InvalidatorState last_retrieved_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(BoundFakeInvalidationHandler);
 };
 
 TYPED_TEST_P(InvalidationServiceTest, GetInvalidatorStateAlwaysCurrent) {
   InvalidationService* const invalidator =
       this->CreateAndInitializeInvalidationService();
 
-  BoundFakeInvalidationHandler handler(*invalidator);
+  BoundFakeInvalidationHandler handler(*invalidator, "owner");
   invalidator->RegisterInvalidationHandler(&handler);
 
   this->delegate_.TriggerOnInvalidatorStateChange(INVALIDATIONS_ENABLED);

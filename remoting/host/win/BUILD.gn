@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -83,6 +83,31 @@ windows_manifest("dpi_aware_uiaccess_require_admin_exe_manifest") {
   ]
 }
 
+source_set("security_descriptor") {
+  sources = [
+    "security_descriptor.cc",
+    "security_descriptor.h",
+  ]
+  deps = [ "//remoting/base" ]
+}
+
+source_set("acl_util") {
+  sources = [
+    "acl_util.cc",
+    "acl_util.h",
+  ]
+  deps = [ "//base" ]
+}
+
+source_set("trust_util") {
+  sources = [
+    "trust_util.cc",
+    "trust_util.h",
+  ]
+  deps = [ "//base" ]
+  libs = [ "Wintrust.lib" ]
+}
+
 source_set("win") {
   sources = [
     "audio_volume_filter_win.cc",
@@ -90,12 +115,18 @@ source_set("win") {
     "com_imported_mstscax.h",
     "com_security.cc",
     "com_security.h",
+    "core_resource.h",
     "default_audio_device_change_detector.cc",
     "default_audio_device_change_detector.h",
+    "etw_trace_consumer.h",
     "evaluate_3d_display_mode.cc",
     "evaluate_3d_display_mode.h",
     "evaluate_d3d.cc",
     "evaluate_d3d.h",
+    "host_event_file_logger.h",
+    "host_event_logger.h",
+    "host_event_windows_event_logger.h",
+    "host_service.h",
     "launch_process_with_token.cc",
     "launch_process_with_token.h",
     "omaha.cc",
@@ -104,20 +135,24 @@ source_set("win") {
     "rdp_client.h",
     "rdp_client_window.cc",
     "rdp_client_window.h",
-    "security_descriptor.cc",
-    "security_descriptor.h",
     "session_action_executor.cc",
     "session_action_executor.h",
     "session_desktop_environment.cc",
     "session_desktop_environment.h",
     "session_input_injector.cc",
     "session_input_injector.h",
+    "simple_task_dialog.cc",
+    "simple_task_dialog.h",
+    "unprivileged_process_delegate.h",
     "window_station_and_desktop.cc",
     "window_station_and_desktop.h",
     "windows_event_logger.cc",
     "windows_event_logger.h",
     "worker_process_launcher.cc",
     "worker_process_launcher.h",
+    "wts_session_change_observer.cc",
+    "wts_session_change_observer.h",
+    "wts_session_process_delegate.h",
     "wts_terminal_monitor.cc",
     "wts_terminal_monitor.h",
     "wts_terminal_observer.h",
@@ -136,12 +171,16 @@ source_set("win") {
 
   defines = [ "WEBRTC_CHROMIUM_BUILD" ]
 
+  public_deps = [ ":security_descriptor" ]
   deps = [
     "//base:i18n",
     "//components/policy/core/common",
     "//crypto",
     "//ipc",
     "//remoting/base",
+    "//remoting/host:ipc_constants",
+    "//remoting/host/base",
+    "//remoting/host/mojom",
     "//remoting/host/security_key",
     "//remoting/host/win:messages",
     "//remoting/host/win:remoting_lib_idl",
@@ -164,22 +203,23 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "elevated_native_messaging_host.cc",
-    "elevated_native_messaging_host.h",
     "event_trace_data.cc",
     "event_trace_data.h",
     "event_trace_data_unittest.cc",
-    "launch_native_messaging_host_process.cc",
-    "launch_native_messaging_host_process.h",
     "rdp_client_unittest.cc",
     "worker_process_launcher_unittest.cc",
   ]
 
   deps = [
+    ":elevated_native_messaging_host",
+    ":win",
+    "//base/test:test_support",
     "//ipc",
     "//remoting/host:common",
     "//remoting/host:test_support",
+    "//remoting/host/base",
     "//remoting/host/it2me:common",
+    "//remoting/host/mojom",
     "//remoting/host/native_messaging",
     "//remoting/host/security_key:unit_tests",
     "//remoting/host/setup:common",
@@ -277,6 +317,7 @@ executable("remoting_console") {
     ":remoting_core",
     ":remoting_windows_resources",
     "//base:clang_profiling_buildflags",
+    "//remoting/host:host_main_headers",
   ]
 
   sources = [
@@ -306,6 +347,8 @@ executable("remoting_me2me_host") {
     ":dpi_aware_exe_manifest",
     ":remoting_core",
     ":remoting_windows_resources",
+    "//base:clang_profiling_buildflags",
+    "//remoting/host:host_main_headers",
   ]
 
   sources = [
@@ -324,57 +367,39 @@ executable("remoting_me2me_host") {
   }
 }
 
+source_set("elevated_native_messaging_host") {
+  sources = [
+    "elevated_native_messaging_host.cc",
+    "elevated_native_messaging_host.h",
+    "launch_native_messaging_host_process.cc",
+    "launch_native_messaging_host_process.h",
+  ]
+  deps = [
+    ":security_descriptor",
+    "//base",
+    "//extensions/browser/api/messaging:native_messaging",
+    "//ipc",
+    "//remoting/host/base",
+    "//remoting/host/native_messaging",
+  ]
+}
+
 shared_library("remoting_core") {
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  defines = host_predefines + [
-              "_ATL_APARTMENT_THREADED",
-              "_ATL_CSTRING_EXPLICIT_CONSTRUCTORS",
-              "_ATL_NO_AUTOMATIC_NAMESPACE",
-              "_ATL_NO_EXCEPTIONS",
-              "REMOTING_HOST_BINARY=BINARY_CORE",
-              "RDP_DESKTOP_SESSION_CLSID=\"$rdp_desktop_session_clsid\"",
-              "HOST_IMPLEMENTATION",
-              "ISOLATION_AWARE_ENABLED=1",
-              "STRICT",
-              "VERSION=$chrome_version_full",
-            ]
-
-  if (is_chrome_branded && is_official_build) {
-    defines += [ "REMOTING_ENABLE_BREAKPAD" ]
-  }
-
-  if (remoting_multi_process != 0 && remoting_rdp_session != 0) {
-    defines += [ "REMOTING_RDP_SESSION" ]
-  }
-
-  if (remoting_multi_process != 0) {
-    defines += [ "REMOTING_MULTI_PROCESS" ]
-  }
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//remoting/build/config:host_implementation",
+    "//remoting/build/config:version",
+  ]
 
   sources = [
     "$root_gen_dir/remoting/core.rc",
     "$root_gen_dir/remoting/host/win/remoting_host_messages.rc",
     "$root_gen_dir/remoting/version.rc",
     "//remoting/host/desktop_process_main.cc",
-    "//remoting/host/host_main.cc",
-    "//remoting/host/it2me/it2me_native_messaging_host_main.cc",
-    "//remoting/host/it2me/it2me_native_messaging_host_main.h",
-    "//remoting/host/setup/host_starter.cc",
-    "//remoting/host/setup/host_starter.h",
-    "//remoting/host/setup/host_stopper.cc",
-    "//remoting/host/setup/host_stopper.h",
-    "//remoting/host/setup/me2me_native_messaging_host_main.cc",
-    "//remoting/host/setup/me2me_native_messaging_host_main.h",
-    "//remoting/host/setup/start_host_main.cc",
-    "//remoting/host/setup/start_host_main.h",
     "chromoting_lib.rc",
     "chromoting_module.cc",
     "chromoting_module.h",
     "core.cc",
-    "core.h",
-    "elevated_native_messaging_host.cc",
-    "elevated_native_messaging_host.h",
     "etw_trace_consumer.cc",
     "etw_trace_controller.cc",
     "etw_trace_controller.h",
@@ -383,26 +408,12 @@ shared_library("remoting_core") {
     "host_event_file_logger.cc",
     "host_event_windows_event_logger.cc",
     "host_service.cc",
-    "launch_native_messaging_host_process.cc",
-    "launch_native_messaging_host_process.h",
     "rdp_desktop_session.cc",
     "rdp_desktop_session.h",
     "unprivileged_process_delegate.cc",
     "wts_session_process_delegate.cc",
-
-    # TODO(crbug.com/1184893): These files are also listed in //remoting/host:common, so they should probably be moved to a shared target they can both depend on.
-    "//remoting/host/host_main.h",
-    "//remoting/host/worker_process_ipc_delegate.h",
-    "core_resource.h",
-    "etw_trace_consumer.h",
-    "host_event_file_logger.h",
-    "host_event_logger.h",
-    "host_event_windows_event_logger.h",
-    "host_service.h",
-    "unprivileged_process_delegate.h",
-    "wts_session_process_delegate.h",
   ]
-
+  public_deps = [ ":elevated_native_messaging_host" ]
   deps = [
     ":messages",
     ":remoting_lib_idl",
@@ -411,25 +422,40 @@ shared_library("remoting_core") {
     ":win",
     "//base",
     "//base:base_static",
-    "//base/allocator",
+    "//base:i18n",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//build/win:default_exe_manifest",
     "//ipc",
+    "//mojo/core/embedder:embedder",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
     "//net",
     "//remoting/base",
+    "//remoting/base:authorization",
     "//remoting/base:breakpad",
     "//remoting/host:host",
-    "//remoting/host:remoting_me2me_host_static",
+    "//remoting/host:host_main_headers",
+    "//remoting/host:implementation",
+    "//remoting/host:ipc_constants",
+    "//remoting/host:resources",
+    "//remoting/host:settings",
+    "//remoting/host/base",
     "//remoting/host/it2me:common",
+    "//remoting/host/mojom",
     "//remoting/host/native_messaging",
+    "//remoting/host/remote_open_url:main",
     "//remoting/host/security_key:main",
     "//remoting/host/setup",
+    "//remoting/host/webauthn:main",
     "//remoting/protocol",
     "//sandbox/win:sandbox",  # Should always use Windows version
+    "//services/network:network_service",
+    "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//third_party/webrtc_overrides:webrtc_component",
+    "//ui/base",
+    "//url",
   ]
 
   ldflags = [
@@ -443,7 +469,6 @@ shared_library("remoting_core") {
     "comctl32.lib",
     "rpcns4.lib",
     "rpcrt4.lib",
-    "sas.lib",
     "uuid.lib",
     "wtsapi32.lib",
   ]
@@ -464,6 +489,8 @@ executable("remoting_desktop") {
   deps = [
     ":remoting_core",
     ":remoting_windows_resources",
+    "//base:clang_profiling_buildflags",
+    "//remoting/host:host_main_headers",
   ]
 
   if (is_official_build) {
@@ -496,6 +523,7 @@ executable("remoting_native_messaging_host") {
     ":remoting_core",
     ":remoting_windows_resources",
     "//build/win:default_exe_manifest",
+    "//remoting/host/setup:native_messaging_host_main_headers",
   ]
 
   sources = [

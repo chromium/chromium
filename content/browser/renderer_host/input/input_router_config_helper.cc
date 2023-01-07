@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,11 +23,11 @@ PassthroughTouchEventQueue::Config GetTouchEventQueueConfig() {
   PassthroughTouchEventQueue::Config config;
 
   config.desktop_touch_ack_timeout_delay =
-      base::TimeDelta::FromMilliseconds(kDesktopTouchAckTimeoutDelayMs);
+      base::Milliseconds(kDesktopTouchAckTimeoutDelayMs);
   config.mobile_touch_ack_timeout_delay =
-      base::TimeDelta::FromMilliseconds(kMobileTouchAckTimeoutDelayMs);
+      base::Milliseconds(kMobileTouchAckTimeoutDelayMs);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // For historical reasons only Android enables the touch ack timeout.
   config.touch_ack_timeout_supported = true;
 #else
@@ -41,20 +41,19 @@ GestureEventQueue::Config GetGestureEventQueueConfig() {
   GestureEventQueue::Config config;
   ui::GestureConfiguration* gesture_config =
       ui::GestureConfiguration::GetInstance();
-  config.debounce_interval = base::TimeDelta::FromMilliseconds(
-      gesture_config->scroll_debounce_interval_in_ms());
+  config.debounce_interval =
+      base::Milliseconds(gesture_config->scroll_debounce_interval_in_ms());
 
   config.fling_config.touchscreen_tap_suppression_config.enabled =
       gesture_config->fling_touchscreen_tap_suppression_enabled();
   config.fling_config.touchscreen_tap_suppression_config
-      .max_cancel_to_down_time = base::TimeDelta::FromMilliseconds(
-      gesture_config->fling_max_cancel_to_down_time_in_ms());
+      .max_cancel_to_down_time =
+      base::Milliseconds(gesture_config->fling_max_cancel_to_down_time_in_ms());
 
   config.fling_config.touchpad_tap_suppression_config.enabled =
       gesture_config->fling_touchpad_tap_suppression_enabled();
   config.fling_config.touchpad_tap_suppression_config.max_cancel_to_down_time =
-      base::TimeDelta::FromMilliseconds(
-          gesture_config->fling_max_cancel_to_down_time_in_ms());
+      base::Milliseconds(gesture_config->fling_max_cancel_to_down_time_in_ms());
 
   return config;
 }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/process_type.h"
 
 using base::android::AttachCurrentThread;
@@ -53,26 +54,10 @@ void ProcessIdFeedbackSource::PrepareProcessIds() {
     process_ids_[content::PROCESS_TYPE_RENDERER].push_back(
         host->GetProcess().Pid());
   }
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ProcessIdFeedbackSource::PrepareProcessIdsOnIOThread,
-                     this));
-}
-
-void ProcessIdFeedbackSource::PrepareProcessIdsOnIOThread() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   for (content::BrowserChildProcessHostIterator iter; !iter.Done(); ++iter)
     process_ids_[iter.GetData().process_type].push_back(
         iter.GetData().GetProcess().Handle());
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ProcessIdFeedbackSource::PrepareCompleted, this));
-}
-
-void ProcessIdFeedbackSource::PrepareCompleted() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);

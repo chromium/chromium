@@ -19,6 +19,7 @@ bluetooth_test(async (t) => {
   const fake_device = await fake_central.simulatePreconnectedPeripheral({
     address: fake_device_address,
     name: 'Some Device',
+    manufacturerData: {},
     knownServiceUUIDs: [],
   });
 

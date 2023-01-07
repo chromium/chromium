@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,11 +87,9 @@ namespace vr {
 namespace {
 vr::VrShell* g_vr_shell_instance;
 
-constexpr base::TimeDelta kPollCapturingStateInterval =
-    base::TimeDelta::FromSecondsD(0.2);
+constexpr base::TimeDelta kPollCapturingStateInterval = base::Seconds(0.2);
 
-constexpr base::TimeDelta kAssetsComponentWaitDelay =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kAssetsComponentWaitDelay = base::Seconds(2);
 
 static constexpr float kInchesToMeters = 0.0254f;
 // Screen pixel density of the Google Pixel phone in pixels per inch.
@@ -587,12 +585,11 @@ void VrShell::CancelToast(JNIEnv* env,
 }
 
 void VrShell::ConnectPresentingService(
-    device::mojom::VRDisplayInfoPtr display_info,
     device::mojom::XRRuntimeSessionOptionsPtr options) {
-  PostToGlThread(FROM_HERE,
-                 base::BindOnce(&BrowserRenderer::ConnectPresentingService,
-                                gl_thread_->GetBrowserRenderer(),
-                                std::move(display_info), std::move(options)));
+  PostToGlThread(
+      FROM_HERE,
+      base::BindOnce(&BrowserRenderer::ConnectPresentingService,
+                     gl_thread_->GetBrowserRenderer(), std::move(options)));
 }
 
 void VrShell::SetHistoryButtonsEnabled(JNIEnv* env,
@@ -715,7 +712,7 @@ void VrShell::UpdateWebInputIndices(
 }
 
 content::WebContents* VrShell::GetNonNativePageWebContents() const {
-  return !web_contents_is_native_page_ ? web_contents_ : nullptr;
+  return !web_contents_is_native_page_ ? web_contents_.get() : nullptr;
 }
 
 void VrShell::OnUnsupportedMode(UiUnsupportedMode mode) {
@@ -818,7 +815,7 @@ void VrShell::SetVoiceSearchActive(bool active) {
     std::string profile_locale = g_browser_process->GetApplicationLocale();
     speech_recognizer_.reset(new SpeechRecognizer(
         this, ui_,
-        content::BrowserContext::GetDefaultStoragePartition(profile)
+        profile->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcessIOThread(),
         profile->GetPrefs()->GetString(language::prefs::kAcceptLanguages),
         profile_locale));
@@ -977,7 +974,7 @@ content::WebContents* VrShell::GetActiveWebContents() const {
 
 bool VrShell::ShouldDisplayURL() const {
   content::NavigationEntry* entry = GetNavigationEntry();
-  if (!entry) {
+  if (!entry || entry->IsInitialEntry()) {
     return ChromeLocationBarModelDelegate::ShouldDisplayURL();
   }
   GURL url = entry->GetVirtualURL();
@@ -1174,7 +1171,7 @@ std::unique_ptr<PageInfo> VrShell::CreatePageInfo() {
   auto page_info = std::make_unique<PageInfo>(
       std::make_unique<ChromePageInfoDelegate>(web_contents_), web_contents_,
       entry->GetVirtualURL());
-  page_info->InitializeUiState(this);
+  page_info->InitializeUiState(this, base::DoNothing());
   return page_info;
 }
 

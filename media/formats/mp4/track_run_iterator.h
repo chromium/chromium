@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
@@ -38,6 +38,10 @@ class MEDIA_EXPORT TrackRunIterator {
   // Create a new TrackRunIterator. A reference to |moov| will be retained for
   // the lifetime of this object.
   TrackRunIterator(const Movie* moov, MediaLog* media_log);
+
+  TrackRunIterator(const TrackRunIterator&) = delete;
+  TrackRunIterator& operator=(const TrackRunIterator&) = delete;
+
   ~TrackRunIterator();
 
   // Sets up the iterator to handle all the runs from the current fragment.
@@ -106,8 +110,8 @@ class MEDIA_EXPORT TrackRunIterator {
   const std::vector<uint8_t>& GetKeyId(size_t sample_index) const;
   bool ApplyConstantIv(size_t sample_index, SampleEncryptionEntry* entry) const;
 
-  const Movie* moov_;
-  MediaLog* media_log_;
+  raw_ptr<const Movie> moov_;
+  raw_ptr<MediaLog> media_log_;
 
   std::vector<TrackRunInfo> runs_;
   std::vector<TrackRunInfo>::const_iterator run_itr_;
@@ -116,8 +120,6 @@ class MEDIA_EXPORT TrackRunIterator {
   int64_t sample_dts_;
   int64_t sample_cts_;
   int64_t sample_offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrackRunIterator);
 };
 
 }  // namespace mp4

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,13 @@ import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemFilter;
-import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.OpenParams;
 import org.chromium.components.offline_items_collection.RenameResult;
 import org.chromium.components.offline_items_collection.ShareCallback;
 import org.chromium.components.offline_items_collection.VisualsCallback;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -82,9 +83,6 @@ public class StubbedProvider {
         public void resumeDownload(ContentId id, boolean hasUserGesture) {}
 
         @Override
-        public void changeSchedule(final ContentId id, final OfflineItemSchedule schedule) {}
-
-        @Override
         public void cancelDownload(ContentId id) {}
 
         @Override
@@ -125,28 +123,32 @@ public class StubbedProvider {
         long startTime = dateToEpoch(date);
         int downloadState = OfflineItemState.COMPLETE;
         if (which == 0) {
-            return createOfflineItem("offline_guid_1", "https://url.com", downloadState, 0,
-                    "page 1", "/data/fake_path/Downloads/first_file", startTime, 1000, filter);
+            return createOfflineItem("offline_guid_1", JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1),
+                    downloadState, 0, "page 1", "/data/fake_path/Downloads/first_file", startTime,
+                    1000, filter);
         } else if (which == 1) {
-            return createOfflineItem("offline_guid_2", "http://stuff_and_things.com", downloadState,
-                    0, "page 2", "/data/fake_path/Downloads/file_two", startTime, 10000, filter);
+            return createOfflineItem("offline_guid_2", JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2),
+                    downloadState, 0, "page 2", "/data/fake_path/Downloads/file_two", startTime,
+                    10000, filter);
         } else if (which == 2) {
-            return createOfflineItem("offline_guid_3", "https://url.com", downloadState, 100,
-                    "page 3", "/data/fake_path/Downloads/3_file", startTime, 100000, filter);
+            return createOfflineItem("offline_guid_3", JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1),
+                    downloadState, 100, "page 3", "/data/fake_path/Downloads/3_file", startTime,
+                    100000, filter);
         } else if (which == 3) {
-            return createOfflineItem("offline_guid_4", "https://things.com", downloadState, 1024,
-                    "page 4", "/data/fake_path/Downloads/4", startTime, ONE_GIGABYTE * 5L, filter);
+            return createOfflineItem("offline_guid_4", JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_3),
+                    downloadState, 1024, "page 4", "/data/fake_path/Downloads/4", startTime,
+                    ONE_GIGABYTE * 5L, filter);
         } else {
             return null;
         }
     }
 
-    public static OfflineItem createOfflineItem(String guid, String url, int state,
+    public static OfflineItem createOfflineItem(String guid, GURL url, int state,
             long downloadProgressBytes, String title, String targetPath, long startTime,
             long totalSize, int filter) {
         OfflineItem offlineItem = new OfflineItem();
         offlineItem.id = new ContentId(LegacyHelpers.LEGACY_OFFLINE_PAGE_NAMESPACE, guid);
-        offlineItem.pageUrl = url;
+        offlineItem.url = url;
         offlineItem.state = state;
         offlineItem.receivedBytes = downloadProgressBytes;
         offlineItem.title = title;

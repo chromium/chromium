@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_convolve_matrix.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -34,7 +34,7 @@ class SVGAnimatedNumberOptionalNumber;
 class SVGAnimatedInteger;
 class SVGAnimatedIntegerOptionalInteger;
 
-DECLARE_SVG_ENUM_MAP(EdgeModeType);
+DECLARE_SVG_ENUM_MAP(FEConvolveMatrix::EdgeModeType);
 
 class SVGFEConvolveMatrixElement final
     : public SVGFilterPrimitiveStandardAttributes {
@@ -50,7 +50,9 @@ class SVGFEConvolveMatrixElement final
   SVGAnimatedNumber* kernelUnitLengthY();
   SVGAnimatedNumberList* kernelMatrix() { return kernel_matrix_.Get(); }
   SVGAnimatedString* in1() { return in1_.Get(); }
-  SVGAnimatedEnumeration<EdgeModeType>* edgeMode() { return edge_mode_.Get(); }
+  SVGAnimatedEnumeration<FEConvolveMatrix::EdgeModeType>* edgeMode() {
+    return edge_mode_.Get();
+  }
   SVGAnimatedInteger* orderX() const;
   SVGAnimatedInteger* orderY() const;
   SVGAnimatedInteger* targetX() { return target_x_.Get(); }
@@ -59,8 +61,8 @@ class SVGFEConvolveMatrixElement final
   void Trace(Visitor*) const override;
 
  private:
-  IntSize MatrixOrder() const;
-  IntPoint TargetPoint() const;
+  gfx::Size MatrixOrder() const;
+  gfx::Point TargetPoint() const;
   float ComputeDivisor() const;
 
   bool SetFilterEffectAttribute(FilterEffect*, const QualifiedName&) override;
@@ -71,7 +73,7 @@ class SVGFEConvolveMatrixElement final
   Member<SVGAnimatedNumber> bias_;
   Member<SVGAnimatedNumber> divisor_;
   Member<SVGAnimatedString> in1_;
-  Member<SVGAnimatedEnumeration<EdgeModeType>> edge_mode_;
+  Member<SVGAnimatedEnumeration<FEConvolveMatrix::EdgeModeType>> edge_mode_;
   Member<SVGAnimatedNumberList> kernel_matrix_;
   Member<SVGAnimatedNumberOptionalNumber> kernel_unit_length_;
   Member<SVGAnimatedIntegerOptionalInteger> order_;

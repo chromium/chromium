@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,14 @@
 #include <memory>
 #include <string>
 
-#include "base/observer_list.h"
+#include "base/callback_forward.h"
 #include "base/time/clock.h"
-#include "base/time/time.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_dialogs.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chrome/browser/ui/webui/ash/in_session_password_change/lock_screen_reauth_dialogs.h"
+#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -26,11 +25,12 @@ namespace user_manager {
 class User;
 }
 
-namespace chromeos {
+namespace ash {
+
 class CryptohomeAuthenticator;
 class ExtendedAuthenticator;
 
-using PasswordChangedCallback = base::RepeatingClosure;
+using PasswordChangedCallback = ::base::RepeatingClosure;
 
 // Manages SAML password sync for multiple customer devices. Handles online
 // re-auth requests triggered by online signin policy or by checking validity
@@ -99,7 +99,7 @@ class InSessionPasswordSyncManager
 
   // AuthStatusConsumer:
   // Shows password changed dialog.
-  void OnAuthFailure(const chromeos::AuthFailure& error) override;
+  void OnAuthFailure(const AuthFailure& error) override;
 
   // Unlocks the screen if active user successfully verified the password
   // with an IdP.
@@ -114,11 +114,38 @@ class InSessionPasswordSyncManager
   // Reset lockscreen re-authentication dialog.
   void ResetDialog();
 
+  // Get lockscreen reauth dialog width.
+  int GetDialogWidth();
+
+  // Get web contents of lockscreen reauth dialog.
+  content::WebContents* GetDialogWebContents();
+
+  // Check if reauth dialog is loaded and ready for testing.
+  bool IsReauthDialogLoadedForTesting(base::OnceClosure callback);
+
+  // Check if reauth dialog is closed.
+  // |callback| is used to notify test that the reauth dialog is closed.
+  bool IsReauthDialogClosedForTesting(base::OnceClosure callback);
+
+  // Notify test that the reauth dialog is ready for testing.
+  void OnReauthDialogReadyForTesting();
+
+  // Forces network state update because webview reported frame loading error.
+  void OnWebviewLoadAborted();
+
+  LockScreenStartReauthDialog* get_reauth_dialog_for_testing() {
+    return lock_screen_start_reauth_dialog_.get();
+  }
+
  private:
   void UpdateOnlineAuth();
+  void OnCookiesTransfered();
   // Password sync token API calls.
   void CreateTokenAsync();
   void FetchTokenAsync();
+
+  // Notify test that the reauth dialog is closed.
+  void OnReauthDialogClosedForTesting();
 
   Profile* const primary_profile_;
   UserContext user_context_;
@@ -138,12 +165,26 @@ class InSessionPasswordSyncManager
 
   PasswordChangedCallback password_changed_callback_;
 
+  // A callback that is used to notify test that the reauth dialog is loaded.
+  base::OnceClosure on_dialog_loaded_callback_for_testing_;
+
+  // A callback that is used to notify test that the reauth dialog is closed.
+  base::OnceClosure on_dialog_closed_callback_for_testing_;
+
+  bool is_dialog_loaded_for_testing_ = false;
+
   friend class InSessionPasswordSyncManagerTest;
   friend class InSessionPasswordSyncManagerFactory;
 
   base::WeakPtrFactory<InSessionPasswordSyncManager> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::InSessionPasswordSyncManager;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_IN_SESSION_PASSWORD_SYNC_MANAGER_H_

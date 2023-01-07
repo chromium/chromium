@@ -1,47 +1,65 @@
 # Mac Installer API
-This document briefly goes over the installer API for the updater on macOS.
+This document describes how macOS software integrates with Chromium Updater for
+software updates.
 
 ## Design
-The Installer API is the integration between the app installer and the updater,
-and is platform specific. The main functionality for doing the updates in the
-new updater will be an update executable (.install). The update executable will
-be invoked by the updater when there is an update available.
+macOS software updates are delivered as archives (often DMG or ZIP) that contain
+an `.install` executable at the root of the archive. (Typically the archives
+also contain an app bundle, i.e. the new version of the app.)
 
-The Installer API will be called through `Installer::RunApplicationInstaller()`,
-which takes `const base::FilePath&` for the path to the installer and
-`const std::string& arguments` for any arguments. This will then call
-`InstallFromDMG()`, which takes the same parameters. `InstallFromDMG()` then
-executes `.install` with the correct arguments.
+The updater will execute all of the following executables in the archive, if
+they exist, in order:
 
-## .install
+1. `.preinstall`
+2. `.keystone_preinstall`
+3. `.install`
+4. `.keystone_install`
+5. `.postinstall`
+6. `.keystone_postinstall`
 
-### Usage
-The installer DMG will have the .install executable in the root of the volume
-and the new application embedded within.
+If any fail (exit with a non-zero status), the remaining executables are not
+run and the installation fails.
 
-Currently the install executable takes just three arguments - an absolute path
-to the DMG, an absolute path to the currently installed app, and the version of
-the currently installed app. `Installer::RunApplicationInstaller()`, will append
-the existence checker path (path to the installed app) and the version from the
-registration into the args.
+If none exist, the installation fails.
 
-For example, `Google Chrome.dmg`, will contain `Google Chrome.app` and
-`.install` executable. Here is an example of what `InstallFromDMG()` will run:
+## Execution Environment
 
-i.e.
-```
-./.install "/Volumes/Google Chrome.dmg" "/Applications/Google Chrome.app" \
-"81.0.416.0"
-```
+### Environment Variables
+Installer executables are executed in an environment with the following
+environment variables:
 
-### Exit Codes
-The current constraint for exit codes for the `.install` executable is that 0 is
-a successful update, and every other value is an error of some kind. For
-documentation on the existing exit codes for the implemented .install
-executable, please refer to `//chrome/updater/mac/setup/.install.sh`.
+-   `KS_TICKET_AP`: The ap value of the currently-installed version of the app.
+ (Note: "ap" was called "tag" in Keystone.)
+-   `KS_TICKET_XC_PATH`: The absolute path to the installation of the app, based
+ on its existence-checker value.
+-   `PATH`: '/bin:/usr/bin:/Path/To/ksadmin'.
+-   `PREVIOUS_VERSION`: The version of the app before this update.
+-   `SERVER_ARGS`: The arguments sent from the server, if any. Refer to
+ the [Omaha protocol](protocol_3_1.md)'s description of `manifest` response
+ objects.
+-   `UPDATE_IS_MACHINE`: An indicator of the updater's scope.
+    -   0 if the updater is per-user.
+    -   1 if the updater is cross-user.
+-   `UNPACK_DIR`: The absolute path to the unpacked update archive (i.e. the
+ parent directory of the install executable.)
 
-### Non-executable Error Codes
-When executing `InstallFromDMG()`, there can also be cases in which the
-Installer API fails before the install executable is executed. These are
-translated from the enum `updater::InstallErrors`. Please refer to
-`//chrome/updater/mac/install.h` for documentation on these error codes.
+### Command-Line Arguments
+Installer executables are passed the following arguments, in this order:
+
+1. The absolute path to the unpacked update archive (i.e. the parent directory
+of the install executable.)
+2. The absolute path to the installation of the app, based on its
+existence-checker value.
+3. The version of the app before this update.
+
+New install executables should instead depend on environment variables rather
+than positional arguments.
+
+## Updating Product Metadata
+If the install executables succeed, the updater will automatically record the
+new version of the application without any special action from the installers.
+
+If the installers must also change other elements of the installation, such as
+the brand, path, ap, or similar, they may do so by executing ksadmin, for
+example by running
+`ksadmin --register --product-id com.google.MyProductId --tag MyNewAp`.

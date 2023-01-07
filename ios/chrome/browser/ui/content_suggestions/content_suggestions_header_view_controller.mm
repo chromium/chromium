@@ -1,40 +1,47 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 
-#include "base/check.h"
-#include "base/feature_list.h"
-#include "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/metrics/user_metrics.h"
-#include "components/signin/public/base/account_consistency_method.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/check.h"
+#import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/lens_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_synchronizing.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
+#import "ios/chrome/browser/ui/content_suggestions/ntp_home_metrics.h"
 #import "ios/chrome/browser/ui/content_suggestions/user_account_image_update_delegate.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
+#import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/ui/logo_vendor.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -48,18 +55,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 }  // namespace
 
-@interface ContentSuggestionsHeaderViewController (Pointer) <
-    UIPointerInteractionDelegate>
-@end
-
-#if defined(__IPHONE_14_0)
-@interface ContentSuggestionsHeaderViewController (Scribble) <
-    UIIndirectScribbleInteractionDelegate>
-@end
-#endif  // defined(__IPHONE14_0)
-
 @interface ContentSuggestionsHeaderViewController () <
     DoodleObserver,
+    UIIndirectScribbleInteractionDelegate,
+    UIPointerInteractionDelegate,
     UserAccountImageUpdateDelegate>
 
 // If YES the animations of the fake omnibox triggered when the collection is
@@ -67,10 +66,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 // animations so the constraints aren't changed while the ntp is scrolled.
 @property(nonatomic, assign) BOOL disableScrollAnimation;
 
-// |YES| when notifications indicate the omnibox is focused.
+// `YES` when notifications indicate the omnibox is focused.
 @property(nonatomic, assign, getter=isOmniboxFocused) BOOL omniboxFocused;
 
-// |YES| if this consumer is has voice search enabled.
+// `YES` if this consumer is has voice search enabled.
 @property(nonatomic, assign) BOOL voiceSearchIsEnabled;
 
 // Exposes view and methods to drive the doodle.
@@ -86,6 +85,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxWidthConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxHeightConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxTopMarginConstraint;
+@property(nonatomic, strong) NSLayoutConstraint* headerViewHeightConstraint;
 @property(nonatomic, assign) BOOL logoFetched;
 
 @end
@@ -93,7 +93,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 @implementation ContentSuggestionsHeaderViewController
 
 @synthesize collectionSynchronizer = _collectionSynchronizer;
-@synthesize promoCanShow = _promoCanShow;
 @synthesize showing = _showing;
 @synthesize omniboxFocused = _omniboxFocused;
 @synthesize headerView = _headerView;
@@ -107,9 +106,13 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 @synthesize voiceSearchIsEnabled = _voiceSearchIsEnabled;
 @synthesize logoIsShowing = _logoIsShowing;
 @synthesize logoFetched = _logoFetched;
+@synthesize layoutGuideCenter = _layoutGuideCenter;
 
 - (instancetype)init {
-  return [super initWithNibName:nil bundle:nil];
+  if (self = [super initWithNibName:nil bundle:nil]) {
+    _focusOmniboxWhenViewAppears = YES;
+  }
+  return self;
 }
 
 #pragma mark - Public
@@ -123,7 +126,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   if (self.traitCollection.horizontalSizeClass !=
       previousTraitCollection.horizontalSizeClass) {
     [self updateFakeboxDisplay];
-    [self updateIdentityDiscInsets];
   }
 }
 
@@ -184,7 +186,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 - (void)updateFakeOmniboxForWidth:(CGFloat)width {
   self.fakeOmniboxWidthConstraint.constant =
-      content_suggestions::searchFieldWidth(width, self.traitCollection);
+      content_suggestions::SearchFieldWidth(width, self.traitCollection);
 }
 
 - (void)unfocusOmnibox {
@@ -199,21 +201,17 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   [self.headerView layoutIfNeeded];
 }
 
-// Update the doodle top margin to the new -doodleTopMargin value.
+// Update the doodle top margin to the new value.
 - (void)updateConstraints {
   self.doodleTopMarginConstraint.constant =
-      content_suggestions::doodleTopMargin(YES, [self topInset],
+      content_suggestions::DoodleTopMargin([self topInset],
                                            self.traitCollection);
   [self.headerView updateForTopSafeAreaInset:[self topInset]];
 }
 
 - (CGFloat)pinnedOffsetY {
-  CGFloat headerHeight = content_suggestions::heightForLogoHeader(
-      self.logoIsShowing, self.logoVendor.isShowingDoodle, self.promoCanShow,
-      YES, [self topInset], self.traitCollection);
-
   CGFloat offsetY =
-      headerHeight - ntp_header::kScrolledToTopOmniboxBottomMargin;
+      [self headerHeight] - ntp_header::kScrolledToTopOmniboxBottomMargin;
   if (IsSplitToolbarMode(self)) {
     offsetY -= ToolbarExpandedHeight(
                    self.traitCollection.preferredContentSizeCategory) +
@@ -223,29 +221,35 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   return AlignValueToPixel(offsetY);
 }
 
-- (void)loadView {
-  self.view = [[ContentSuggestionsHeaderView alloc] init];
-}
-
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
-                                  self.fakeOmnibox);
+
+  if (self.focusOmniboxWhenViewAppears && !self.omniboxFocused) {
+    [self focusAccessibilityOnOmnibox];
+  }
 }
 
 - (CGFloat)headerHeight {
-  return content_suggestions::heightForLogoHeader(
-      self.logoIsShowing, self.logoVendor.isShowingDoodle, self.promoCanShow,
-      YES, [self topInset], self.traitCollection);
+  return content_suggestions::HeightForLogoHeader(
+      self.logoIsShowing, self.logoVendor.isShowingDoodle, [self topInset],
+      self.traitCollection);
 }
 
-#pragma mark - ContentSuggestionsHeaderProvider
+- (void)viewDidLoad {
+  [super viewDidLoad];
 
-- (UIView*)headerForWidth:(CGFloat)width
-           safeAreaInsets:(UIEdgeInsets)safeAreaInsets {
   if (!self.headerView) {
-    self.headerView =
-        base::mac::ObjCCastStrict<ContentSuggestionsHeaderView>(self.view);
+    self.view.translatesAutoresizingMaskIntoConstraints = NO;
+
+    CGFloat width = self.view.frame.size.width;
+
+    self.headerView = [[ContentSuggestionsHeaderView alloc] init];
+    self.headerView.isGoogleDefaultSearchEngine =
+        self.isGoogleDefaultSearchEngine;
+    self.headerView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.headerView];
+    AddSameConstraints(self.headerView, self.view);
+
     [self addFakeOmnibox];
 
     [self.headerView addSubview:self.logoVendor.view];
@@ -253,6 +257,8 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
     [self addFakeTapView];
     [self.headerView addSubview:self.fakeOmnibox];
     self.logoVendor.view.translatesAutoresizingMaskIntoConstraints = NO;
+    self.logoVendor.view.accessibilityIdentifier =
+        ntp_home::NTPLogoAccessibilityID();
     self.fakeOmnibox.translatesAutoresizingMaskIntoConstraints = NO;
 
     [self.headerView addSeparatorToSearchField:self.fakeOmnibox];
@@ -261,21 +267,12 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
     // needs to respond to user taps first.
     [self addIdentityDisc];
 
-    // -headerForView is regularly called before self.headerView has been added
-    // to the view hierarchy, so there's no simple way to get the correct
-    // safeAreaInsets.  Since this situation is universally called for the full
-    // screen new tab animation, it's safe to check the rootViewController's
-    // view instead.
-    // TODO(crbug.com/791784) : Remove use of rootViewController.
-    if (self.headerView.window) {
-      safeAreaInsets =
-          self.headerView.window.rootViewController.view.safeAreaInsets;
-    }
+    UIEdgeInsets safeAreaInsets = self.baseViewController.view.safeAreaInsets;
     width = std::max<CGFloat>(
         0, width - safeAreaInsets.left - safeAreaInsets.right);
 
     self.fakeOmniboxWidthConstraint = [self.fakeOmnibox.widthAnchor
-        constraintEqualToConstant:content_suggestions::searchFieldWidth(
+        constraintEqualToConstant:content_suggestions::SearchFieldWidth(
                                       width, self.traitCollection)];
     [self addConstraintsForLogoView:self.logoVendor.view
                         fakeOmnibox:self.fakeOmnibox
@@ -283,7 +280,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
     [self.logoVendor fetchDoodle];
   }
-  return self.headerView;
 }
 
 #pragma mark - Private
@@ -308,7 +304,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
                      forControlEvents:UIControlEventTouchUpInside];
   // Because the visual fakebox background is implemented within
   // ContentSuggestionsHeaderView, KVO the highlight events of
-  // |accessibilityButton| and pass them along.
+  // `accessibilityButton` and pass them along.
   [self.accessibilityButton addObserver:self
                              forKeyPath:@"highlighted"
                                 options:NSKeyValueObservingOptionNew
@@ -320,20 +316,14 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   self.accessibilityButton.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.fakeOmnibox, self.accessibilityButton);
 
-  if (@available(iOS 13.4, *)) {
-      [self.fakeOmnibox
-          addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
-  }
+  [self.fakeOmnibox
+      addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
 
   [self.headerView addViewsToSearchField:self.fakeOmnibox];
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    UIIndirectScribbleInteraction* scribbleInteraction =
-        [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
-    [self.fakeOmnibox addInteraction:scribbleInteraction];
-  }
-#endif  // defined(__IPHONE_14_0)
+  UIIndirectScribbleInteraction* scribbleInteraction =
+      [[UIIndirectScribbleInteraction alloc] initWithDelegate:self];
+  [self.fakeOmnibox addInteraction:scribbleInteraction];
 
   [self.headerView.voiceSearchButton addTarget:self
                                         action:@selector(loadVoiceSearch:)
@@ -341,6 +331,11 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   [self.headerView.voiceSearchButton addTarget:self
                                         action:@selector(preloadVoiceSearch:)
                               forControlEvents:UIControlEventTouchDown];
+  if (self.headerView.lensButton) {
+    [self.headerView.lensButton addTarget:self
+                                   action:@selector(openLens)
+                         forControlEvents:UIControlEventTouchUpInside];
+  }
   [self updateVoiceSearchDisplay];
 }
 
@@ -371,28 +366,28 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   self.identityDiscButton = [UIButton buttonWithType:UIButtonTypeCustom];
   self.identityDiscButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_ACCNAME_PARTICLE_DISC);
-  [self updateIdentityDiscInsets];
+  self.identityDiscButton.imageEdgeInsets = UIEdgeInsetsMake(
+      ntp_home::kIdentityAvatarMargin, ntp_home::kIdentityAvatarMargin,
+      ntp_home::kIdentityAvatarMargin, ntp_home::kIdentityAvatarMargin);
   [self.identityDiscButton addTarget:self
                               action:@selector(identityDiscTapped)
                     forControlEvents:UIControlEventTouchUpInside];
 
-  if (@available(iOS 13.4, *)) {
-      self.identityDiscButton.pointerInteractionEnabled = YES;
-      self.identityDiscButton.pointerStyleProvider =
-          ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
-                           UIPointerShape* proposedShape) {
-        // The identity disc button is oversized to the avatar image to meet the
-        // minimum touch target dimensions. The hover pointer effect should
-        // match the avatar image dimensions, not the button dimensions.
-        CGFloat singleInset =
-            (button.frame.size.width - ntp_home::kIdentityAvatarDimension) / 2;
-        CGRect rect = CGRectInset(button.frame, singleInset, singleInset);
-        UIPointerShape* shape =
-            [UIPointerShape shapeWithRoundedRect:rect
-                                    cornerRadius:rect.size.width / 2];
-        return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
-      };
-  }
+  self.identityDiscButton.pointerInteractionEnabled = YES;
+  self.identityDiscButton.pointerStyleProvider =
+      ^UIPointerStyle*(UIButton* button, UIPointerEffect* proposedEffect,
+                       UIPointerShape* proposedShape) {
+    // The identity disc button is oversized to the avatar image to meet the
+    // minimum touch target dimensions. The hover pointer effect should
+    // match the avatar image dimensions, not the button dimensions.
+    CGFloat singleInset =
+        (button.frame.size.width - ntp_home::kIdentityAvatarDimension) / 2;
+    CGRect rect = CGRectInset(button.frame, singleInset, singleInset);
+    UIPointerShape* shape =
+        [UIPointerShape shapeWithRoundedRect:rect
+                                cornerRadius:rect.size.width / 2];
+    return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
+  };
 
     // TODO(crbug.com/965958): Set action on button to launch into Settings.
     [self.headerView setIdentityDiscView:self.identityDiscButton];
@@ -401,28 +396,20 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   [self.delegate registerImageUpdater:self];
 }
 
-- (void)updateIdentityDiscInsets {
-  if (ShouldShrinkLogoForStartSurface() &&
-      self.traitCollection.verticalSizeClass ==
-          UIUserInterfaceSizeClassCompact) {
-    self.identityDiscButton.imageEdgeInsets = UIEdgeInsetsZero;
-  } else {
-    self.identityDiscButton.imageEdgeInsets = UIEdgeInsetsMake(
-        ntp_home::kIdentityAvatarMargin, ntp_home::kIdentityAvatarMargin,
-        ntp_home::kIdentityAvatarMargin, ntp_home::kIdentityAvatarMargin);
-  }
+- (void)openLens {
+  base::RecordAction(
+      UserMetricsAction("Mobile.LensIOS.NewTabPageEntrypointTapped"));
+  [self.dispatcher openInputSelectionForEntrypoint:LensEntrypoint::NewTabPage];
 }
 
 - (void)loadVoiceSearch:(id)sender {
-  [self.commandHandler dismissModals];
-
   if ([self.delegate ignoreLoadRequests])
     return;
   DCHECK(self.voiceSearchIsEnabled);
   base::RecordAction(UserMetricsAction("MobileNTPMostVisitedVoiceSearch"));
   UIView* voiceSearchButton = base::mac::ObjCCastStrict<UIView>(sender);
-  [NamedGuide guideWithName:kVoiceSearchButtonGuide view:voiceSearchButton]
-      .constrainedView = voiceSearchButton;
+  [self.layoutGuideCenter referenceView:voiceSearchButton
+                              underName:kVoiceSearchButtonGuide];
   [self.dispatcher startVoiceSearch];
 }
 
@@ -438,6 +425,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   if ([self.delegate ignoreLoadRequests])
     return;
   base::RecordAction(base::UserMetricsAction("MobileFakeViewNTPTapped"));
+  [self logOmniboxAction];
   [self focusFakebox];
 }
 
@@ -445,7 +433,18 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   if ([self.delegate ignoreLoadRequests])
     return;
   base::RecordAction(base::UserMetricsAction("MobileFakeboxNTPTapped"));
+  [self logOmniboxAction];
   [self focusFakebox];
+}
+
+- (void)logOmniboxAction {
+  if (self.isStartShowing) {
+    UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnStartSurface",
+                              IOSContentSuggestionsActionType::kFakebox);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("IOS.ContentSuggestions.ActionOnNTP",
+                              IOSContentSuggestionsActionType::kFakebox);
+  }
 }
 
 - (void)focusFakebox {
@@ -454,13 +453,14 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   [self shiftTilesUp];
 }
 
+- (void)focusAccessibilityOnOmnibox {
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.fakeOmnibox);
+}
+
 - (void)identityDiscTapped {
   base::RecordAction(base::UserMetricsAction("MobileNTPIdentityDiscTapped"));
-  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    [self.dispatcher showSettingsFromViewController:self];
-  } else {
-    [self.dispatcher showGoogleServicesSettingsFromViewController:nil];
-  }
+  [self.dispatcher showSettingsFromViewController:self.baseViewController];
 }
 
 // TODO(crbug.com/807330) The fakebox is currently a collection of views spread
@@ -479,12 +479,16 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 // shows fakebox if the logo is visible and hides otherwise
 - (void)updateFakeboxDisplay {
   [self.doodleHeightConstraint
-      setConstant:content_suggestions::doodleHeight(
+      setConstant:content_suggestions::DoodleHeight(
                       self.logoVendor.showingLogo,
                       self.logoVendor.isShowingDoodle, self.traitCollection)];
   self.fakeOmnibox.hidden =
       IsRegularXRegularSizeClass(self) && !self.logoIsShowing;
-  [self.collectionSynchronizer invalidateLayout];
+  [self.headerView layoutIfNeeded];
+  self.headerViewHeightConstraint.constant =
+      content_suggestions::HeightForLogoHeader(
+          self.logoIsShowing, self.logoVendor.isShowingDoodle, [self topInset],
+          self.traitCollection);
 }
 
 // If Google is not the default search engine, hides the logo, doodle and
@@ -505,17 +509,17 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
       self.voiceSearchIsEnabled;
 }
 
-// Adds the constraints for the |logoView|, the |fakeomnibox| related to the
-// |headerView|. It also sets the properties constraints related to those views.
+// Adds the constraints for the `logoView`, the `fakeomnibox` related to the
+// `headerView`. It also sets the properties constraints related to those views.
 - (void)addConstraintsForLogoView:(UIView*)logoView
                       fakeOmnibox:(UIView*)fakeOmnibox
                     andHeaderView:(UIView*)headerView {
   self.doodleTopMarginConstraint = [logoView.topAnchor
       constraintEqualToAnchor:headerView.topAnchor
-                     constant:content_suggestions::doodleTopMargin(
-                                  YES, [self topInset], self.traitCollection)];
+                     constant:content_suggestions::DoodleTopMargin(
+                                  [self topInset], self.traitCollection)];
   self.doodleHeightConstraint = [logoView.heightAnchor
-      constraintEqualToConstant:content_suggestions::doodleHeight(
+      constraintEqualToConstant:content_suggestions::DoodleHeight(
                                     self.logoVendor.showingLogo,
                                     self.logoVendor.isShowingDoodle,
                                     self.traitCollection)];
@@ -525,7 +529,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
                                         .preferredContentSizeCategory)];
   self.fakeOmniboxTopMarginConstraint = [logoView.bottomAnchor
       constraintEqualToAnchor:fakeOmnibox.topAnchor
-                     constant:-content_suggestions::searchFieldTopMargin()];
+                     constant:-content_suggestions::SearchFieldTopMargin()];
+  self.headerViewHeightConstraint =
+      [headerView.heightAnchor constraintEqualToConstant:[self headerHeight]];
+  self.headerViewHeightConstraint.active = YES;
   self.doodleTopMarginConstraint.active = YES;
   self.doodleHeightConstraint.active = YES;
   self.fakeOmniboxWidthConstraint.active = YES;
@@ -544,8 +551,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
     [self.dispatcher onFakeboxBlur];
   }
   [self.collectionSynchronizer shiftTilesDown];
-
-  [self.commandHandler dismissModals];
 }
 
 - (void)shiftTilesUp {
@@ -553,7 +558,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
     return;
 
   void (^animations)() = nil;
-  if (![self.delegate isScrolledToTop]) {
+  if (![self.delegate isScrolledToMinimumHeight]) {
     // Only trigger the fake omnibox animation if the header isn't scrolled to
     // the top. Otherwise just rely on the normal animation.
     self.disableScrollAnimation = YES;
@@ -606,7 +611,7 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
         self.headerView.voiceSearchButton.alpha = 1;
         self.disableScrollAnimation = NO;
         if (finalPosition == UIViewAnimatingPositionEnd &&
-            [self.delegate isScrolledToTop]) {
+            [self.delegate isScrolledToMinimumHeight]) {
           // Check to see if the collection are still scrolled to the top --
           // it's possible (and difficult) to unfocus the omnibox and initiate a
           // -shiftTilesDown before the animation here completes.
@@ -622,12 +627,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (CGFloat)topInset {
-  return self.parentViewController.view.safeAreaInsets.top;
+  return 0;
 }
 
 #pragma mark - UIIndirectScribbleInteractionDelegate
-
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 
 - (void)indirectScribbleInteraction:(UIIndirectScribbleInteraction*)interaction
               requestElementsInRect:(CGRect)rect
@@ -678,8 +681,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   return YES;
 }
 
-#endif  // defined(__IPHONE_14_0)
-
 #pragma mark - LogoAnimationControllerOwnerOwner
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
@@ -699,9 +700,14 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 - (void)doodleDisplayStateChanged:(BOOL)doodleShowing {
   [self.doodleHeightConstraint
-      setConstant:content_suggestions::doodleHeight(self.logoVendor.showingLogo,
+      setConstant:content_suggestions::DoodleHeight(self.logoVendor.showingLogo,
                                                     doodleShowing,
                                                     self.traitCollection)];
+  self.headerViewHeightConstraint.constant =
+      content_suggestions::HeightForLogoHeader(
+          self.logoIsShowing, self.logoVendor.isShowingDoodle, [self topInset],
+          self.traitCollection);
+  [self.commandHandler updateForHeaderSizeChange];
 }
 
 #pragma mark - NTPHomeConsumer
@@ -726,13 +732,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 }
 
 - (void)locationBarResignsFirstResponder {
-  if (!self.isShowing && ![self.delegate isScrolledToTop])
+  if (!self.isShowing && ![self.delegate isScrolledToMinimumHeight])
     return;
 
   self.omniboxFocused = NO;
-  if ([self.delegate isContextMenuVisible]) {
-    return;
-  }
 
   [self shiftTilesDown];
 }
@@ -748,6 +751,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 - (void)updateAccountImage:(UIImage*)image {
   self.identityDiscButton.hidden = !image;
+  DCHECK(image == nil ||
+         (image.size.width == ntp_home::kIdentityAvatarDimension &&
+          image.size.height == ntp_home::kIdentityAvatarDimension))
+      << base::SysNSStringToUTF8([image description]);
   [self.identityDiscButton setImage:image forState:UIControlStateNormal];
   self.identityDiscButton.imageView.layer.cornerRadius = image.size.width / 2;
   self.identityDiscButton.imageView.layer.masksToBounds = YES;

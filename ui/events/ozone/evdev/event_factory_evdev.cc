@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,14 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/microphone_mute_switch_monitor.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_manager.h"
@@ -93,11 +94,13 @@ class ProxyDeviceEventDispatcher : public DeviceEventDispatcherEvdev {
   }
 
   void DispatchKeyboardDevicesUpdated(
-      const std::vector<InputDevice>& devices) override {
+      const std::vector<InputDevice>& devices,
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {
     ui_thread_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&EventFactoryEvdev::DispatchKeyboardDevicesUpdated,
-                       event_factory_evdev_, devices));
+                       event_factory_evdev_, devices,
+                       std::move(key_bits_mapping)));
   }
   void DispatchTouchscreenDevicesUpdated(
       const std::vector<TouchscreenDevice>& devices) override {
@@ -115,12 +118,12 @@ class ProxyDeviceEventDispatcher : public DeviceEventDispatcherEvdev {
                        event_factory_evdev_, devices, has_mouse,
                        has_pointing_stick));
   }
-  void DispatchTouchpadDevicesUpdated(
-      const std::vector<InputDevice>& devices) override {
+  void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices,
+                                      bool has_haptic_touchpad) override {
     ui_thread_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&EventFactoryEvdev::DispatchTouchpadDevicesUpdated,
-                       event_factory_evdev_, devices));
+                       event_factory_evdev_, devices, has_haptic_touchpad));
   }
   void DispatchDeviceListsComplete() override {
     ui_thread_runner_->PostTask(
@@ -136,12 +139,22 @@ class ProxyDeviceEventDispatcher : public DeviceEventDispatcherEvdev {
                        event_factory_evdev_, stylus_state));
   }
 
+  void DispatchMicrophoneMuteSwitchValueChanged(bool muted) override {
+    ui_thread_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &EventFactoryEvdev::DispatchMicrophoneMuteSwitchValueChanged,
+            event_factory_evdev_, muted));
+  }
+
   void DispatchGamepadDevicesUpdated(
-      const std::vector<GamepadDevice>& devices) override {
+      const std::vector<GamepadDevice>& devices,
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {
     ui_thread_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&EventFactoryEvdev::DispatchGamepadDevicesUpdated,
-                       event_factory_evdev_, devices));
+                       event_factory_evdev_, devices,
+                       std::move(key_bits_mapping)));
   }
 
   void DispatchUncategorizedDevicesUpdated(
@@ -385,8 +398,10 @@ void EventFactoryEvdev::DispatchUiEvent(Event* event) {
 }
 
 void EventFactoryEvdev::DispatchKeyboardDevicesUpdated(
-    const std::vector<InputDevice>& devices) {
+    const std::vector<InputDevice>& devices,
+    base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {
   TRACE_EVENT0("evdev", "EventFactoryEvdev::DispatchKeyboardDevicesUpdated");
+  input_controller_.SetKeyboardKeyBitsMapping(std::move(key_bits_mapping));
   DeviceHotplugEventObserver* observer = DeviceDataManager::GetInstance();
   observer->OnKeyboardDevicesUpdated(devices);
 }
@@ -412,11 +427,13 @@ void EventFactoryEvdev::DispatchMouseDevicesUpdated(
 }
 
 void EventFactoryEvdev::DispatchTouchpadDevicesUpdated(
-    const std::vector<InputDevice>& devices) {
+    const std::vector<InputDevice>& devices,
+    bool has_haptic_touchpad) {
   TRACE_EVENT0("evdev", "EventFactoryEvdev::DispatchTouchpadDevicesUpdated");
 
   // There's no list of touchpads in DeviceDataManager.
   input_controller_.set_has_touchpad(devices.size() != 0);
+  input_controller_.set_has_haptic_touchpad(has_haptic_touchpad);
   DeviceHotplugEventObserver* observer = DeviceDataManager::GetInstance();
   observer->OnTouchpadDevicesUpdated(devices);
 }
@@ -433,6 +450,12 @@ void EventFactoryEvdev::DispatchStylusStateChanged(StylusState stylus_state) {
   observer->OnStylusStateChanged(stylus_state);
 }
 
+void EventFactoryEvdev::DispatchMicrophoneMuteSwitchValueChanged(bool muted) {
+  TRACE_EVENT0("evdev",
+               "EventFactoryEvdev::DispatchMicrophoneMuteSwitchValueChanged");
+  MicrophoneMuteSwitchMonitor::Get()->SetMicrophoneMuteSwitchValue(muted);
+}
+
 void EventFactoryEvdev::DispatchUncategorizedDevicesUpdated(
     const std::vector<InputDevice>& devices) {
   TRACE_EVENT0("evdev",
@@ -442,8 +465,10 @@ void EventFactoryEvdev::DispatchUncategorizedDevicesUpdated(
 }
 
 void EventFactoryEvdev::DispatchGamepadDevicesUpdated(
-    const std::vector<GamepadDevice>& devices) {
+    const std::vector<GamepadDevice>& devices,
+    base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {
   TRACE_EVENT0("evdev", "EventFactoryEvdev::DispatchGamepadDevicesUpdated");
+  input_controller_.SetGamepadKeyBitsMapping(std::move(key_bits_mapping));
   gamepad_provider_->DispatchGamepadDevicesUpdated(devices);
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -25,7 +24,7 @@ TEST(FetchHeaderListTest, Append) {
       std::make_pair("ConTenT-TyPe", "application/xml"),
       std::make_pair("ConTenT-TyPe", "foo"), std::make_pair("X-Foo", "bar"),
   };
-  EXPECT_EQ(base::size(expectedHeaders), headerList->size());
+  EXPECT_EQ(std::size(expectedHeaders), headerList->size());
   size_t i = 0;
   for (const auto& header : headerList->List()) {
     EXPECT_EQ(expectedHeaders[i].first, header.first);
@@ -48,7 +47,7 @@ TEST(FetchHeaderListTest, Set) {
       std::make_pair("some-header", "some value"),
       std::make_pair("X-Foo", "bar"),
   };
-  EXPECT_EQ(base::size(expectedHeaders), headerList->size());
+  EXPECT_EQ(std::size(expectedHeaders), headerList->size());
   size_t i = 0;
   for (const auto& header : headerList->List()) {
     EXPECT_EQ(expectedHeaders[i].first, header.first);
@@ -70,7 +69,7 @@ TEST(FetchHeaderListTest, Erase) {
   const std::pair<String, String> expectedHeaders[] = {
       std::make_pair("X-Foo", "bar"),
   };
-  EXPECT_EQ(base::size(expectedHeaders), headerList->size());
+  EXPECT_EQ(std::size(expectedHeaders), headerList->size());
   size_t i = 0;
   for (const auto& header : headerList->List()) {
     EXPECT_EQ(expectedHeaders[i].first, header.first);
@@ -104,7 +103,7 @@ TEST(FetchHeaderListTest, Contains) {
 
 TEST(FetchHeaderListTest, SortAndCombine) {
   auto* headerList = MakeGarbageCollected<FetchHeaderList>();
-  EXPECT_TRUE(headerList->SortAndCombine().IsEmpty());
+  EXPECT_TRUE(headerList->SortAndCombine().empty());
   headerList->Append("content-type", "multipart/form-data");
   headerList->Append("ConTenT-TyPe", "application/xml");
   headerList->Append("Accept", "XYZ");
@@ -115,7 +114,7 @@ TEST(FetchHeaderListTest, SortAndCombine) {
       std::make_pair("x-foo", "bar")};
   const Vector<FetchHeaderList::Header> sortedAndCombined =
       headerList->SortAndCombine();
-  EXPECT_EQ(base::size(expectedHeaders), sortedAndCombined.size());
+  EXPECT_EQ(std::size(expectedHeaders), sortedAndCombined.size());
   size_t i = 0;
   for (const auto& headerPair : headerList->SortAndCombine()) {
     EXPECT_EQ(expectedHeaders[i].first, headerPair.first);

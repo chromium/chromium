@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,35 @@
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/media/remote_playback_controller.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
+namespace {
+
+Page* GetContainingPage(HTMLVideoElement& video) {
+  LocalDOMWindow* window = video.DomWindow();
+  if (!window)
+    return nullptr;
+
+  LocalFrame* frame = window->GetFrame();
+  if (!frame)
+    return nullptr;
+
+  return frame->GetPage();
+}
+
+}  // namespace
+
 VideoWakeLock::VideoWakeLock(HTMLVideoElement& video)
-    : PageVisibilityObserver(video.GetDocument().GetPage()),
+    : PageVisibilityObserver(GetContainingPage(video)),
       ExecutionContextLifecycleStateObserver(video.GetExecutionContext()),
       video_element_(video) {
   VideoElement().addEventListener(event_type_names::kPlaying, this, true);
@@ -45,6 +63,7 @@ VideoWakeLock::VideoWakeLock(HTMLVideoElement& video)
 
 void VideoWakeLock::ElementDidMoveToNewDocument() {
   SetExecutionContext(VideoElement().GetExecutionContext());
+  SetPage(GetContainingPage(VideoElement()));
 
   if (RuntimeEnabledFeatures::VideoWakeLockOptimisationHiddenMutedEnabled()) {
     intersection_observer_->disconnect();
@@ -130,12 +149,15 @@ bool VideoWakeLock::ShouldBeActive() const {
        (page_visible &&
         (is_visible_ || VideoElement().EffectiveMediaVolume())));
 
-  // The video wake lock should be active iif:
+  bool has_video = VideoElement().HasVideo();
+
+  // The video wake lock should be active iff:
   //  - it's playing;
+  //  - it has video frames;
   //  - the visibility requirements are met (see above);
   //  - it's *not* playing in Remote Playback;
   //  - the document is not paused nor destroyed.
-  return playing_ && visibility_requirements_met &&
+  return playing_ && has_video && visibility_requirements_met &&
          remote_playback_state_ !=
              mojom::blink::PresentationConnectionState::CONNECTED &&
          context_is_running;
@@ -159,8 +181,8 @@ void VideoWakeLock::EnsureWakeLockService() {
                        device::mojom::blink::WakeLockReason::kVideoPlayback,
                        "Video Wake Lock",
                        wake_lock_service_.BindNewPipeAndPassReceiver());
-  wake_lock_service_.set_disconnect_handler(
-      WTF::Bind(&VideoWakeLock::OnConnectionError, WrapWeakPersistent(this)));
+  wake_lock_service_.set_disconnect_handler(WTF::BindOnce(
+      &VideoWakeLock::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 void VideoWakeLock::OnConnectionError() {

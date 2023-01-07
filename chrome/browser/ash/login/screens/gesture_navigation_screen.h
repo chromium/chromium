@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,13 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ui/webui/chromeos/login/gesture_navigation_screen_handler.h"
 
-namespace chromeos {
+namespace ash {
 
 // The OOBE screen dedicated to gesture navigation education.
 class GestureNavigationScreen : public BaseScreen {
@@ -22,7 +25,7 @@ class GestureNavigationScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  GestureNavigationScreen(GestureNavigationScreenView* view,
+  GestureNavigationScreen(base::WeakPtr<GestureNavigationScreenView> view,
                           const ScreenExitCallback& exit_callback);
   ~GestureNavigationScreen() override;
 
@@ -37,26 +40,23 @@ class GestureNavigationScreen : public BaseScreen {
     return exit_callback_;
   }
 
-  // Returns whether the gesture screen was shown.
-  bool was_shown() const { return was_shown_; }
-
   // Called when the currently shown page is changed.
   void GesturePageChange(const std::string& new_page);
 
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
 
  protected:
   // BaseScreen:
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
  private:
   // Record metrics for the elapsed time that each page was shown for.
   void RecordPageShownTimeMetrics();
 
-  GestureNavigationScreenView* view_;
+  base::WeakPtr<GestureNavigationScreenView> view_;
   ScreenExitCallback exit_callback_;
 
   // Used to keep track of the current elapsed time that each page has been
@@ -68,11 +68,14 @@ class GestureNavigationScreen : public BaseScreen {
 
   // The starting time for the most recently shown page.
   base::TimeTicks start_time_;
-
-  // Whether the gesture screen was shown.
-  bool was_shown_ = false;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::GestureNavigationScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_GESTURE_NAVIGATION_SCREEN_H_

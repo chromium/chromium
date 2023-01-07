@@ -1,22 +1,22 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator.h"
 
 #import "base/bind.h"
-#include "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
-#include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#include "ios/chrome/browser/overlays/public/overlay_dispatch_callback.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
-#include "ios/chrome/browser/overlays/public/overlay_request_support.h"
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
-#include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/public/overlay_dispatch_callback.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_request_support.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
+#import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
+#import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -57,7 +57,7 @@ class InfobarBannerOverlayMediatorTest : public PlatformTest {
     callback_installer_.InstallCallbacks(request_.get());
   }
   ~InfobarBannerOverlayMediatorTest() override {
-    // |callback_receiver_|'s completion callback is guaranteed to be called
+    // `callback_receiver_`'s completion callback is guaranteed to be called
     // when the test fixture is torn down.  This functionality is already tested
     // in OverlayRequestCallbackInstaller's unittests.  This EXPECT_CALL() for
     // the completion callback is added here instead of in individual tests

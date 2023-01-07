@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,6 +100,13 @@ extern const char kTotalRequired[];
 
 // Used when user dismissed the Payment Request dialog.
 extern const char kUserCancelled[];
+
+// Used when user cancels authentication or when there are no matching
+// credentials
+extern const char kWebAuthnOperationTimedOutOrNotAllowed[];
+
+// Used when the user opts out of SPC for a given RP.
+extern const char kSpcUserOptedOut[];
 
 // Used when the renderer does not provide valid payment details, such as a null
 // struct or missing ID or total.

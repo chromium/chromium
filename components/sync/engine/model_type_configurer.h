@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,27 +23,24 @@ class ModelTypeConfigurer {
   // Utility struct for holding ConfigureDataTypes options.
   struct ConfigureParams {
     ConfigureParams();
+
+    ConfigureParams(const ConfigureParams&) = delete;
+    ConfigureParams& operator=(const ConfigureParams&) = delete;
+
     ConfigureParams(ConfigureParams&& other);
-    ~ConfigureParams();
     ConfigureParams& operator=(ConfigureParams&& other);
 
+    ~ConfigureParams();
+
     ConfigureReason reason;
-    ModelTypeSet enabled_types;
     ModelTypeSet to_download;
     ModelTypeSet to_purge;
-    // Run when configuration is done with the set of all types that failed
-    // configuration (if its argument isn't empty, an error was encountered).
-    // TODO(akalin): Use a Delegate class with OnConfigureSuccess,
-    // OnConfigureFailure, and OnConfigureRetry instead of a pair of callbacks.
-    // The awkward part is handling when SyncEngine calls ConfigureDataTypes on
-    // itself to configure Nigori.
-    base::OnceCallback<void(ModelTypeSet, ModelTypeSet)> ready_task;
+
+    base::OnceCallback<void(ModelTypeSet succeeded, ModelTypeSet failed)>
+        ready_task;
 
     // Whether full sync (or sync the feature) is enabled;
     bool is_sync_feature_enabled;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ConfigureParams);
   };
 
   ModelTypeConfigurer();
@@ -52,21 +49,22 @@ class ModelTypeConfigurer {
   // Changes the set of data types that are currently being synced.
   virtual void ConfigureDataTypes(ConfigureParams params) = 0;
 
-  // Activates change processing for the given data type.
-  // This must be called before initial sync for data type.
-  virtual void ActivateDataType(
+  // Connects the datatype |type|, which means the sync engine will propagate
+  // changes between the server and datatype's processor, as provided in
+  // |activation_response|. This must be called before requesting the initial
+  // download of a datatype via ConfigureDataTypes().
+  virtual void ConnectDataType(
       ModelType type,
       std::unique_ptr<DataTypeActivationResponse> activation_response) = 0;
 
-  // Deactivates change processing for the given data type.
-  virtual void DeactivateDataType(ModelType type) = 0;
+  // Opposite of the above: stops treating |type| as a datatype that is
+  // propagating changes between the server and the processor. No-op if the
+  // type is not connected.
+  virtual void DisconnectDataType(ModelType type) = 0;
 
-  // Activates a proxy type, which determines whether protocol fields such as
-  // |tabs_datatype_enabled| should be true.
-  virtual void ActivateProxyDataType(ModelType type) = 0;
-
-  // Deactivates a proxy type.
-  virtual void DeactivateProxyDataType(ModelType type) = 0;
+  // Propagates whether PROXY_TABS is enabled, which influences a bit exposed to
+  // the server during commits.
+  virtual void SetProxyTabsDatatypeEnabled(bool enabled) = 0;
 };
 
 }  // namespace syncer

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,52 +6,55 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/ash/login/mock_network_state_helper.h"
 #include "chrome/browser/ash/login/screens/mock_network_screen.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-using testing::_;
-using testing::AnyNumber;
-using testing::Return;
+namespace ash {
 
-namespace chromeos {
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::Return;
 
 class NetworkScreenUnitTest : public testing::Test {
  public:
   NetworkScreenUnitTest() = default;
+
+  NetworkScreenUnitTest(const NetworkScreenUnitTest&) = delete;
+  NetworkScreenUnitTest& operator=(const NetworkScreenUnitTest&) = delete;
+
   ~NetworkScreenUnitTest() override = default;
 
   // testing::Test:
   void SetUp() override {
-    // Initialize the thread manager.
-    DBusThreadManager::Initialize();
-
     // Configure the browser to use Hands-Off Enrollment.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
 
     // Create the NetworkScreen we will use for testing.
     network_screen_ = std::make_unique<NetworkScreen>(
-        &mock_view_,
+        std::move(mock_view_),
         base::BindRepeating(&NetworkScreenUnitTest::HandleScreenExit,
                             base::Unretained(this)));
     mock_network_state_helper_ = new login::MockNetworkStateHelper();
     network_screen_->SetNetworkStateHelperForTest(mock_network_state_helper_);
+    EXPECT_CALL(*mock_network_state_helper_, IsConnectedToEthernet())
+        .Times(AnyNumber())
+        .WillRepeatedly((Return(false)));
   }
 
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
     network_screen_.reset();
-    DBusThreadManager::Shutdown();
   }
 
  protected:
@@ -59,7 +62,7 @@ class NetworkScreenUnitTest : public testing::Test {
   std::unique_ptr<NetworkScreen> network_screen_;
 
   login::MockNetworkStateHelper* mock_network_state_helper_ = nullptr;
-  base::Optional<NetworkScreen::Result> last_screen_result_;
+  absl::optional<NetworkScreen::Result> last_screen_result_;
 
  private:
   void HandleScreenExit(NetworkScreen::Result screen_result) {
@@ -71,9 +74,7 @@ class NetworkScreenUnitTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   // More accessory objects needed by NetworkScreen.
-  MockNetworkScreenView mock_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkScreenUnitTest);
+  base::WeakPtr<NetworkScreenView> mock_view_;
 };
 
 TEST_F(NetworkScreenUnitTest, ContinuesAutomatically) {
@@ -115,4 +116,4 @@ TEST_F(NetworkScreenUnitTest, ContinuesOnlyOnce) {
   EXPECT_EQ(1, network_screen_->continue_attempts_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

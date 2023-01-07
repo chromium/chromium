@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(
       `The test verifies that SelectedNodeChanged event is not fired whenever a child gets added to the node.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div>
@@ -26,7 +26,7 @@
   function onNodeSelected() {
     ElementsTestRunner.firstElementsTreeOutline().addEventListener(
         Elements.ElementsTreeOutline.Events.SelectedNodeChanged, onSelectionChangedEvent);
-    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, '_updateChildren', onNodeAppended);
+    TestRunner.addSniffer(Elements.ElementsTreeOutline.prototype, 'updateChildren', onNodeAppended);
     TestRunner.evaluateInPage('appendNewNode()');
   }
 

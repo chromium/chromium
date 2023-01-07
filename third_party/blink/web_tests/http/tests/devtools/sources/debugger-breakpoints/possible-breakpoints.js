@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Checks that BreakpointManager.possibleBreakpoints returns correct locations\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPageAnonymously(`
       function foo() {
@@ -19,7 +19,7 @@
       () => SourcesTestRunner.showScriptSource('foo.js', didShowScriptSource));
 
   function didShowScriptSource(sourceFrame) {
-    var uiSourceCode = sourceFrame._uiSourceCode;
+    var uiSourceCode = sourceFrame.uiSourceCode();
     var breakpointManager = Bindings.breakpointManager;
 
     TestRunner.addResult('Locations for first line');

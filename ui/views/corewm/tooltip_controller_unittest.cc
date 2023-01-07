@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/at_exit.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -38,9 +38,10 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
+#include "ui/wm/public/activation_client.h"
 #include "ui/wm/public/tooltip_client.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/scoped_ole_initializer.h"
 #endif
 
@@ -48,11 +49,7 @@
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #endif
 
-using base::ASCIIToUTF16;
-
-namespace views {
-namespace corewm {
-namespace test {
+namespace views::corewm::test {
 namespace {
 
 views::Widget* CreateWidget(aura::Window* root) {
@@ -61,7 +58,7 @@ views::Widget* CreateWidget(aura::Window* root) {
   params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
   params.accept_events = true;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
+#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
   params.parent = root;
 #endif
   params.bounds = gfx::Rect(0, 0, 200, 100);
@@ -80,6 +77,10 @@ TooltipController* GetController(Widget* widget) {
 class TooltipControllerTest : public ViewsTestBase {
  public:
   TooltipControllerTest() = default;
+
+  TooltipControllerTest(const TooltipControllerTest&) = delete;
+  TooltipControllerTest& operator=(const TooltipControllerTest&) = delete;
+
   ~TooltipControllerTest() override = default;
 
   void SetUp() override {
@@ -90,11 +91,12 @@ class TooltipControllerTest : public ViewsTestBase {
     ViewsTestBase::SetUp();
 
     aura::Window* root_window = GetContext();
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
+#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
     if (root_window) {
       tooltip_aura_ = new views::corewm::TooltipAura();
       controller_ = std::make_unique<TooltipController>(
-          std::unique_ptr<views::corewm::Tooltip>(tooltip_aura_));
+          std::unique_ptr<views::corewm::Tooltip>(tooltip_aura_),
+          /* activation_client */ nullptr);
       root_window->AddPreTargetHandler(controller_.get());
       SetTooltipClient(root_window, controller_.get());
     }
@@ -102,7 +104,7 @@ class TooltipControllerTest : public ViewsTestBase {
     widget_.reset(CreateWidget(root_window));
     widget_->SetContentsView(std::make_unique<View>());
     view_ = new TooltipTestView;
-    widget_->GetContentsView()->AddChildView(view_);
+    widget_->GetContentsView()->AddChildView(view_.get());
     view_->SetBoundsRect(widget_->GetContentsView()->GetLocalBounds());
     helper_ = std::make_unique<TooltipControllerTestHelper>(
         GetController(widget_.get()));
@@ -110,7 +112,7 @@ class TooltipControllerTest : public ViewsTestBase {
   }
 
   void TearDown() override {
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
+#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
     aura::Window* root_window = GetContext();
     if (root_window) {
       root_window->RemovePreTargetHandler(controller_.get());
@@ -136,7 +138,7 @@ class TooltipControllerTest : public ViewsTestBase {
         delegate
             ? delegate
             : aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate());
-    window->set_id(id);
+    window->SetId(id);
     window->Init(ui::LAYER_TEXTURED);
     parent->AddChild(window);
     window->SetBounds(gfx::Rect(0, 0, 100, 100));
@@ -153,23 +155,21 @@ class TooltipControllerTest : public ViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  TooltipTestView* view_ = nullptr;
+  raw_ptr<TooltipTestView> view_ = nullptr;
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
  protected:
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
-  TooltipAura* tooltip_aura_;  // not owned.
+#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
+  raw_ptr<TooltipAura> tooltip_aura_;  // not owned.
 #endif
 
  private:
   std::unique_ptr<TooltipController> controller_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipControllerTest);
 };
 
 TEST_F(TooltipControllerTest, ViewTooltip) {
@@ -238,12 +238,12 @@ TEST_F(TooltipControllerTest, DontShowTooltipOnTouch) {
   EXPECT_EQ(GetWindow(), helper_->GetTooltipParentWindow());
 }
 
-#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || defined(OS_WIN)
+#if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
 // crbug.com/664370.
 TEST_F(TooltipControllerTest, MaxWidth) {
-  std::u16string text = base::ASCIIToUTF16(
-      "Really really realy long long long long  long tooltips that exceeds max "
-      "width");
+  std::u16string text =
+      u"Really, really, really, really, really, really long tooltip that "
+      u"exceeds max width";
   view_->set_tooltip_text(text);
   gfx::Point center = GetWindow()->bounds().CenterPoint();
 
@@ -293,11 +293,9 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
   {
     // A. When attached to the cursor, the tooltip should be positioned at the
     // bottom-right corner of the cursor.
-    gfx::Rect bounds =
-        test::TooltipAuraTestApi(tooltip_aura_)
-            .GetTooltipBounds(
-                tooltip_size,
-                {anchor_point, TooltipPositionBehavior::kRelativeToCursor});
+    gfx::Rect bounds = test::TooltipAuraTestApi(tooltip_aura_)
+                           .GetTooltipBounds(tooltip_size, anchor_point,
+                                             TooltipTrigger::kCursor);
     gfx::Point expected_position(anchor_point.x() + TooltipAura::kCursorOffsetX,
                                  a_expected_y);
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
@@ -305,9 +303,8 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
     // B. When not attached to the cursor, the tooltip should be horizontally
     // centered with the anchor point.
     bounds = test::TooltipAuraTestApi(tooltip_aura_)
-                 .GetTooltipBounds(
-                     tooltip_size,
-                     {anchor_point, TooltipPositionBehavior::kCentered});
+                 .GetTooltipBounds(tooltip_size, anchor_point,
+                                   TooltipTrigger::kKeyboard);
     expected_position =
         gfx::Point(anchor_point.x() - tooltip_size.width() / 2, b_expected_y);
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
@@ -319,20 +316,17 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
 
     // A. When attached to the cursor, the tooltip should be positioned at the
     // bottom-right corner of the cursor.
-    gfx::Rect bounds =
-        test::TooltipAuraTestApi(tooltip_aura_)
-            .GetTooltipBounds(
-                tooltip_size,
-                {anchor_point, TooltipPositionBehavior::kRelativeToCursor});
+    gfx::Rect bounds = test::TooltipAuraTestApi(tooltip_aura_)
+                           .GetTooltipBounds(tooltip_size, anchor_point,
+                                             TooltipTrigger::kCursor);
     gfx::Point expected_position(0, a_expected_y);
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
 
     // B. When not attached to the cursor, the tooltip should be horizontally
     // centered with the anchor point.
     bounds = test::TooltipAuraTestApi(tooltip_aura_)
-                 .GetTooltipBounds(
-                     tooltip_size,
-                     {anchor_point, TooltipPositionBehavior::kCentered});
+                 .GetTooltipBounds(tooltip_size, anchor_point,
+                                   TooltipTrigger::kKeyboard);
     expected_position = gfx::Point(0, b_expected_y);
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
   }
@@ -343,11 +337,9 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
 
     // A. When attached to the cursor, the tooltip should be positioned at the
     // bottom-right corner of the cursor.
-    gfx::Rect bounds =
-        test::TooltipAuraTestApi(tooltip_aura_)
-            .GetTooltipBounds(
-                tooltip_size,
-                {anchor_point, TooltipPositionBehavior::kRelativeToCursor});
+    gfx::Rect bounds = test::TooltipAuraTestApi(tooltip_aura_)
+                           .GetTooltipBounds(tooltip_size, anchor_point,
+                                             TooltipTrigger::kCursor);
     gfx::Point expected_position(display_bounds.right() - tooltip_size.width(),
                                  a_expected_y);
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
@@ -355,9 +347,8 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
     // B. When not attached to the cursor, the tooltip should be horizontally
     // centered with the anchor point.
     bounds = test::TooltipAuraTestApi(tooltip_aura_)
-                 .GetTooltipBounds(
-                     tooltip_size,
-                     {anchor_point, TooltipPositionBehavior::kCentered});
+                 .GetTooltipBounds(tooltip_size, anchor_point,
+                                   TooltipTrigger::kKeyboard);
     expected_position =
         gfx::Point(display_bounds.right() - tooltip_size.width(), b_expected_y);
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
@@ -368,11 +359,9 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
 
     // A. When attached to the cursor, the tooltip should be positioned at the
     // bottom-right corner of the cursor.
-    gfx::Rect bounds =
-        test::TooltipAuraTestApi(tooltip_aura_)
-            .GetTooltipBounds(
-                tooltip_size,
-                {anchor_point, TooltipPositionBehavior::kRelativeToCursor});
+    gfx::Rect bounds = test::TooltipAuraTestApi(tooltip_aura_)
+                           .GetTooltipBounds(tooltip_size, anchor_point,
+                                             TooltipTrigger::kCursor);
     gfx::Point expected_position(anchor_point.x() + TooltipAura::kCursorOffsetX,
                                  anchor_point.y() - tooltip_size.height());
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
@@ -380,9 +369,8 @@ TEST_F(TooltipControllerTest, TooltipBounds) {
     // B. When not attached to the cursor, the tooltip should be horizontally
     // centered with the anchor point.
     bounds = test::TooltipAuraTestApi(tooltip_aura_)
-                 .GetTooltipBounds(
-                     tooltip_size,
-                     {anchor_point, TooltipPositionBehavior::kCentered});
+                 .GetTooltipBounds(tooltip_size, anchor_point,
+                                   TooltipTrigger::kKeyboard);
     expected_position = gfx::Point(anchor_point.x() - tooltip_size.width() / 2,
                                    anchor_point.y() - tooltip_size.height());
     EXPECT_EQ(bounds, gfx::Rect(expected_position, tooltip_size));
@@ -539,6 +527,23 @@ TEST_F(TooltipControllerTest, TooltipHidesOnKeyPressAndStaysHiddenUntilChange) {
   EXPECT_EQ(window, helper_->GetTooltipParentWindow());
 }
 
+TEST_F(TooltipControllerTest, TooltipStaysVisibleOnKeyRelease) {
+  view_->set_tooltip_text(u"my tooltip");
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
+  EXPECT_EQ(nullptr, helper_->GetTooltipParentWindow());
+
+  generator_->MoveMouseRelativeTo(GetWindow(), view_->bounds().CenterPoint());
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+
+  // This shouldn't hide the tooltip.
+  generator_->ReleaseKey(ui::VKEY_1, 0);
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+
+  // This should hide the tooltip.
+  generator_->PressKey(ui::VKEY_1, 0);
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+}
+
 TEST_F(TooltipControllerTest, TooltipHidesOnTimeoutAndStaysHiddenUntilChange) {
   view_->set_tooltip_text(u"Tooltip Text for view 1");
   EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
@@ -643,7 +648,7 @@ TEST_F(TooltipControllerTest, ReshowOnClickAfterEnterExit) {
 }
 
 TEST_F(TooltipControllerTest, ShowAndHideTooltipTriggeredFromKeyboard) {
-  std::u16string expected_tooltip = ASCIIToUTF16("Tooltip Text");
+  std::u16string expected_tooltip = u"Tooltip Text";
 
   wm::SetTooltipText(GetWindow(), &expected_tooltip);
   view_->set_tooltip_text(expected_tooltip);
@@ -665,6 +670,52 @@ TEST_F(TooltipControllerTest, ShowAndHideTooltipTriggeredFromKeyboard) {
 
   EXPECT_FALSE(helper_->IsTooltipVisible());
   EXPECT_EQ(nullptr, helper_->GetTooltipParentWindow());
+}
+
+TEST_F(TooltipControllerTest,
+       KeyboardTriggeredTooltipStaysVisibleOnMouseExitedEvent) {
+  std::u16string expected_tooltip = u"Tooltip Text";
+
+  wm::SetTooltipText(GetWindow(), &expected_tooltip);
+  view_->set_tooltip_text(expected_tooltip);
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
+  EXPECT_EQ(nullptr, helper_->GetTooltipParentWindow());
+
+  // For this test to execute properly, make sure that the cursor location is
+  // somewhere out of the |view_|, different than (0, 0). This shouldn't show
+  // the tooltip.
+  gfx::Point off_view_point = view_->bounds().bottom_right();
+  off_view_point.Offset(1, 1);
+  generator_->MoveMouseRelativeTo(widget_->GetNativeWindow(), off_view_point);
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+
+  // Trigger the tooltip from the keyboard.
+  helper_->controller()->UpdateTooltipFromKeyboard(
+      view_->ConvertRectToWidget(view_->bounds()), GetWindow());
+
+  EXPECT_EQ(expected_tooltip, wm::GetTooltipText(GetWindow()));
+  EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
+  EXPECT_EQ(GetWindow(), helper_->GetTooltipParentWindow());
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+  EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
+            TooltipTrigger::kKeyboard);
+
+  // Sending a mouse exited event shouldn't hide a keyboard triggered tooltip.
+  generator_->SendMouseExit();
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+
+  helper_->HideAndReset();
+  expected_tooltip = u"Tooltip Text 2";
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+
+  // However, a cursor triggered tooltip should still be hidden by a mouse
+  // exited event.
+  generator_->MoveMouseRelativeTo(widget_->GetNativeWindow(),
+                                  view_->bounds().CenterPoint());
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+
+  generator_->SendMouseExit();
+  EXPECT_FALSE(helper_->IsTooltipVisible());
 }
 
 namespace {
@@ -700,10 +751,10 @@ TEST_F(TooltipControllerTest, DISABLED_CloseOnCaptureLost) {
   EXPECT_TRUE(helper_->GetTooltipParentWindow() == nullptr);
 }
 
-// Disabled on X11 as DesktopScreenX11::GetWindowAtScreenPoint() doesn't
-// consider z-order.
+// Disabled on Linux as X11ScreenOzone::GetAcceleratedWidgetAtScreenPoint
+// and WaylandScreen::GetAcceleratedWidgetAtScreenPoint don't consider z-order.
 // Disabled on Windows due to failing bots. http://crbug.com/604479
-#if defined(USE_X11) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_Capture DISABLED_Capture
 #else
 #define MAYBE_Capture Capture
@@ -752,11 +803,137 @@ TEST_F(TooltipControllerTest, MAYBE_Capture) {
   widget2.reset();
 }
 
+TEST_F(TooltipControllerTest, ShowTooltipOnTooltipTextUpdate) {
+  std::u16string expected_tooltip;
+
+  wm::SetTooltipText(GetWindow(), &expected_tooltip);
+
+  // Create a mouse event. This event shouldn't trigger the tooltip to show
+  // since the tooltip text is empty, but should set the |observed_window_|
+  // correctly.
+  gfx::Point point(1, 1);
+  View::ConvertPointToWidget(view_, &point);
+  generator_->MoveMouseRelativeTo(GetWindow(), point);
+
+  EXPECT_EQ(std::u16string(), helper_->GetTooltipText());
+  EXPECT_EQ(nullptr, helper_->GetTooltipParentWindow());
+  EXPECT_EQ(GetWindow(), helper_->GetObservedWindow());
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+
+  // This is the heart of the test: we update the tooltip text and call
+  // UpdateTooltip. It should trigger the tooltip to show up because the
+  // |observed_window_| will be set to GetWindow() and the tooltip text on the
+  // window will be different than it previously was.
+  expected_tooltip = u"Tooltip text";
+  helper_->controller()->UpdateTooltip(GetWindow());
+
+  EXPECT_EQ(expected_tooltip, wm::GetTooltipText(GetWindow()));
+  EXPECT_EQ(expected_tooltip, helper_->GetTooltipText());
+  EXPECT_EQ(GetWindow(), helper_->GetTooltipParentWindow());
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+  EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
+            TooltipTrigger::kCursor);
+
+  helper_->HideAndReset();
+
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+  EXPECT_EQ(nullptr, helper_->GetTooltipParentWindow());
+}
+
+// This test validates that the TooltipController correctly triggers a position
+// update for a tooltip that is about to be shown.
+TEST_F(TooltipControllerTest, TooltipPositionUpdatedWhenTimerRunning) {
+  EXPECT_EQ(nullptr, helper_->state_manager()->tooltip_parent_window());
+  EXPECT_EQ(std::u16string(), helper_->state_manager()->tooltip_text());
+
+  std::u16string expected_text = u"Tooltip Text";
+  view_->set_tooltip_text(expected_text);
+
+  helper_->SetTooltipShowDelayEnable(true);
+
+  // Testing that the position will be updated when triggered from cursor.
+  {
+    gfx::Point position = view_->bounds().CenterPoint();
+    generator_->MoveMouseRelativeTo(GetWindow(), position);
+
+    EXPECT_EQ(expected_text, wm::GetTooltipText(GetWindow()));
+    EXPECT_EQ(expected_text, helper_->GetTooltipText());
+    EXPECT_EQ(GetWindow(), helper_->GetTooltipParentWindow());
+    EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
+              TooltipTrigger::kCursor);
+    EXPECT_EQ(position, helper_->GetTooltipPosition());
+
+    // Since the |will_show_tooltip_timer_| is running, this should update the
+    // position of the already active tooltip.
+    generator_->MoveMouseBy(2, 0);
+
+    position.Offset(2, 0);
+    EXPECT_EQ(position, helper_->GetTooltipPosition());
+
+    helper_->HideAndReset();
+  }
+
+  // Testing that the position will be updated when triggered from cursor.
+  {
+    gfx::Rect bounds = view_->ConvertRectToWidget(view_->bounds());
+    helper_->controller()->UpdateTooltipFromKeyboard(bounds, GetWindow());
+
+    EXPECT_EQ(expected_text, wm::GetTooltipText(GetWindow()));
+    EXPECT_EQ(expected_text, helper_->GetTooltipText());
+    EXPECT_EQ(GetWindow(), helper_->GetTooltipParentWindow());
+    EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
+              TooltipTrigger::kKeyboard);
+    EXPECT_EQ(bounds.bottom_center(), helper_->GetTooltipPosition());
+
+    // Since the |will_show_tooltip_timer_| is running, this should update the
+    // position of the already active tooltip.
+    bounds.Offset(2, 0);
+    helper_->controller()->UpdateTooltipFromKeyboard(bounds, GetWindow());
+
+    EXPECT_EQ(bounds.bottom_center(), helper_->GetTooltipPosition());
+
+    helper_->HideAndReset();
+  }
+
+  helper_->SetTooltipShowDelayEnable(false);
+}
+
+// This test validates that tooltips are hidden when the currently active window
+// loses focus to another window.
+TEST_F(TooltipControllerTest, TooltipHiddenWhenWindowDeactivated) {
+  EXPECT_EQ(nullptr, helper_->state_manager()->tooltip_parent_window());
+  EXPECT_EQ(std::u16string(), helper_->state_manager()->tooltip_text());
+
+  view_->set_tooltip_text(u"Tooltip text 1");
+
+  // Start by showing the tooltip.
+  gfx::Point in_view_point = view_->bounds().CenterPoint();
+  generator_->MoveMouseRelativeTo(GetWindow(), in_view_point);
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+  EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
+            TooltipTrigger::kCursor);
+
+  // Then mock a window deactivation event.
+  helper_->MockWindowActivated(GetWindow(), /* active */ false);
+
+  // The previously visible tooltip should have been closed by that event.
+  EXPECT_FALSE(helper_->IsTooltipVisible());
+
+  // The tooltip should show up again if we move the cursor again.
+  view_->set_tooltip_text(u"Tooltip text 2");
+  generator_->MoveMouseBy(1, 1);
+  EXPECT_TRUE(helper_->IsTooltipVisible());
+}
+
 namespace {
 
 class TestTooltip : public Tooltip {
  public:
   TestTooltip() = default;
+
+  TestTooltip(const TestTooltip&) = delete;
+  TestTooltip& operator=(const TestTooltip&) = delete;
+
   ~TestTooltip() override = default;
 
   const std::u16string& tooltip_text() const { return tooltip_text_; }
@@ -765,21 +942,23 @@ class TestTooltip : public Tooltip {
   int GetMaxWidth(const gfx::Point& location) const override { return 100; }
   void Update(aura::Window* window,
               const std::u16string& tooltip_text,
-              const TooltipPosition& position) override {
+              const gfx::Point& position,
+              const TooltipTrigger trigger) override {
     tooltip_text_ = tooltip_text;
-    position_ = position;
+    anchor_point_ = position + window->GetBoundsInScreen().OffsetFromOrigin();
+    trigger_ = trigger;
   }
   void Show() override { is_visible_ = true; }
   void Hide() override { is_visible_ = false; }
   bool IsVisible() override { return is_visible_; }
-  const TooltipPosition& position() { return position_; }
+  const gfx::Point& anchor_point() { return anchor_point_; }
+  TooltipTrigger trigger() { return trigger_; }
 
  private:
   bool is_visible_ = false;
   std::u16string tooltip_text_;
-  TooltipPosition position_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTooltip);
+  gfx::Point anchor_point_;
+  TooltipTrigger trigger_;
 };
 
 }  // namespace
@@ -788,13 +967,18 @@ class TestTooltip : public Tooltip {
 class TooltipControllerTest2 : public aura::test::AuraTestBase {
  public:
   TooltipControllerTest2() : test_tooltip_(new TestTooltip) {}
+
+  TooltipControllerTest2(const TooltipControllerTest2&) = delete;
+  TooltipControllerTest2& operator=(const TooltipControllerTest2&) = delete;
+
   ~TooltipControllerTest2() override = default;
 
   void SetUp() override {
     at_exit_manager_ = std::make_unique<base::ShadowingAtExitManager>();
     aura::test::AuraTestBase::SetUp();
     controller_ = std::make_unique<TooltipController>(
-        std::unique_ptr<corewm::Tooltip>(test_tooltip_));
+        std::unique_ptr<corewm::Tooltip>(test_tooltip_),
+        /* activation_client */ nullptr);
     root_window()->AddPreTargetHandler(controller_.get());
     SetTooltipClient(root_window(), controller_.get());
     helper_ = std::make_unique<TooltipControllerTestHelper>(controller_.get());
@@ -813,7 +997,7 @@ class TooltipControllerTest2 : public aura::test::AuraTestBase {
 
  protected:
   // Owned by |controller_|.
-  TestTooltip* test_tooltip_;
+  raw_ptr<TestTooltip> test_tooltip_;
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
 
@@ -821,8 +1005,6 @@ class TooltipControllerTest2 : public aura::test::AuraTestBase {
   // Needed to make sure the DeviceDataManager is cleaned up between test runs.
   std::unique_ptr<base::ShadowingAtExitManager> at_exit_manager_;
   std::unique_ptr<TooltipController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipControllerTest2);
 };
 
 TEST_F(TooltipControllerTest2, VerifyLeadingTrailingWhitespaceStripped) {
@@ -864,6 +1046,10 @@ TEST_F(TooltipControllerTest2, CloseOnCancelMode) {
 class TooltipControllerTest3 : public ViewsTestBase {
  public:
   TooltipControllerTest3() = default;
+
+  TooltipControllerTest3(const TooltipControllerTest3&) = delete;
+  TooltipControllerTest3& operator=(const TooltipControllerTest3&) = delete;
+
   ~TooltipControllerTest3() override = default;
 
   void SetUp() override {
@@ -878,13 +1064,14 @@ class TooltipControllerTest3 : public ViewsTestBase {
     widget_.reset(CreateWidget(root_window));
     widget_->SetContentsView(std::make_unique<View>());
     view_ = new TooltipTestView;
-    widget_->GetContentsView()->AddChildView(view_);
+    widget_->GetContentsView()->AddChildView(view_.get());
     view_->SetBoundsRect(widget_->GetContentsView()->GetLocalBounds());
 
     generator_ = std::make_unique<ui::test::EventGenerator>(GetRootWindow());
     auto tooltip = std::make_unique<TestTooltip>();
     test_tooltip_ = tooltip.get();
-    controller_ = std::make_unique<TooltipController>(std::move(tooltip));
+    controller_ = std::make_unique<TooltipController>(
+        std::move(tooltip), /* activation_client */ nullptr);
     auto* tooltip_controller = static_cast<TooltipController*>(
         wm::GetTooltipClient(widget_->GetNativeWindow()->GetRootWindow()));
     if (tooltip_controller)
@@ -909,22 +1096,20 @@ class TooltipControllerTest3 : public ViewsTestBase {
 
  protected:
   // Owned by |controller_|.
-  TestTooltip* test_tooltip_ = nullptr;
+  raw_ptr<TestTooltip> test_tooltip_ = nullptr;
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<views::Widget> widget_;
-  TooltipTestView* view_;
+  raw_ptr<TooltipTestView> view_;
 
  private:
   std::unique_ptr<TooltipController> controller_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer_;
 #endif
 
   aura::Window* GetRootWindow() { return GetWindow()->GetRootWindow(); }
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipControllerTest3);
 };
 
 TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
@@ -973,7 +1158,7 @@ TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
   EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
             TooltipTrigger::kCursor);
   EXPECT_EQ(reference_string, helper_->GetTooltipText());
-  gfx::Point tooltip_bounds1 = test_tooltip_->position().anchor_point;
+  gfx::Point tooltip_bounds1 = test_tooltip_->anchor_point();
 
   // Test whether the toolbar changes position on mouse over v2
   center = v2->bounds().CenterPoint();
@@ -982,7 +1167,7 @@ TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
   EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
             TooltipTrigger::kCursor);
   EXPECT_EQ(reference_string, helper_->GetTooltipText());
-  gfx::Point tooltip_bounds2 = test_tooltip_->position().anchor_point;
+  gfx::Point tooltip_bounds2 = test_tooltip_->anchor_point();
 
   EXPECT_NE(tooltip_bounds1, gfx::Point());
   EXPECT_NE(tooltip_bounds2, gfx::Point());
@@ -993,7 +1178,7 @@ TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
   center = v2_1->GetLocalBounds().CenterPoint();
   views::View::ConvertPointToTarget(v2_1, view_, &center);
   generator_->MoveMouseRelativeTo(GetWindow(), center);
-  gfx::Point tooltip_bounds2_1 = test_tooltip_->position().anchor_point;
+  gfx::Point tooltip_bounds2_1 = test_tooltip_->anchor_point();
 
   EXPECT_NE(tooltip_bounds2, tooltip_bounds2_1);
   EXPECT_TRUE(helper_->IsTooltipVisible());
@@ -1006,7 +1191,7 @@ TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
   center = v2_2->GetLocalBounds().CenterPoint();
   views::View::ConvertPointToTarget(v2_2, view_, &center);
   generator_->MoveMouseRelativeTo(GetWindow(), center);
-  gfx::Point tooltip_bounds2_2 = test_tooltip_->position().anchor_point;
+  gfx::Point tooltip_bounds2_2 = test_tooltip_->anchor_point();
 
   EXPECT_NE(tooltip_bounds2_1, tooltip_bounds2_2);
   EXPECT_TRUE(helper_->IsTooltipVisible());
@@ -1019,7 +1204,7 @@ TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
   center = v1_1->GetLocalBounds().CenterPoint();
   views::View::ConvertPointToTarget(v1_1, view_, &center);
   generator_->MoveMouseRelativeTo(GetWindow(), center);
-  gfx::Point tooltip_bounds1_1 = test_tooltip_->position().anchor_point;
+  gfx::Point tooltip_bounds1_1 = test_tooltip_->anchor_point();
 
   EXPECT_TRUE(helper_->IsTooltipVisible());
   EXPECT_EQ(helper_->state_manager()->tooltip_trigger(),
@@ -1028,7 +1213,7 @@ TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
 
   center = v1->bounds().CenterPoint();
   generator_->MoveMouseRelativeTo(GetWindow(), center);
-  tooltip_bounds1 = test_tooltip_->position().anchor_point;
+  tooltip_bounds1 = test_tooltip_->anchor_point();
 
   EXPECT_NE(tooltip_bounds1_1, tooltip_bounds1);
   EXPECT_EQ(reference_string, helper_->GetTooltipText());
@@ -1037,9 +1222,11 @@ TEST_F(TooltipControllerTest3, TooltipPositionChangesOnTwoViewsWithSameLabel) {
 class TooltipStateManagerTest : public TooltipControllerTest {
  public:
   TooltipStateManagerTest() = default;
-  ~TooltipStateManagerTest() override = default;
 
-  DISALLOW_COPY_AND_ASSIGN(TooltipStateManagerTest);
+  TooltipStateManagerTest(const TooltipStateManagerTest&) = delete;
+  TooltipStateManagerTest& operator=(const TooltipStateManagerTest&) = delete;
+
+  ~TooltipStateManagerTest() override = default;
 };
 
 TEST_F(TooltipStateManagerTest, ShowAndHideTooltip) {
@@ -1109,8 +1296,7 @@ TEST_F(TooltipStateManagerTest, ShowTooltipWithDelay) {
 // |will_show_tooltip_timer_| has been started. This is needed because the
 // cursor might still move between the moment Show is called and the timer
 // fires.
-TEST_F(TooltipStateManagerTest,
-       UpdatePositionWhileWillShowTooltipTimerIsRunning) {
+TEST_F(TooltipStateManagerTest, UpdatePositionIfNeeded) {
   EXPECT_EQ(nullptr, helper_->state_manager()->tooltip_parent_window());
   EXPECT_EQ(std::u16string(), helper_->state_manager()->tooltip_text());
 
@@ -1118,32 +1304,78 @@ TEST_F(TooltipStateManagerTest,
 
   helper_->SetTooltipShowDelayEnable(true);
 
-  gfx::Point position(0, 0);
-  // 1. When the |will_show_tooltip_timer_| is running, validate that we can
-  // update the position.
-  helper_->state_manager()->Show(GetRootWindow(), expected_text, position,
-                                 TooltipTrigger::kCursor, {});
-  EXPECT_EQ(GetRootWindow(), helper_->state_manager()->tooltip_parent_window());
-  EXPECT_EQ(expected_text, helper_->state_manager()->tooltip_text());
-  EXPECT_EQ(position, helper_->GetTooltipPosition());
-  EXPECT_FALSE(helper_->IsTooltipVisible());
-  EXPECT_TRUE(helper_->state_manager()->IsWillShowTooltipTimerRunning());
+  {
+    gfx::Point position(0, 0);
+    // 1. When the |will_show_tooltip_timer_| is running, validate that we can
+    // update the position.
+    helper_->state_manager()->Show(GetRootWindow(), expected_text, position,
+                                   TooltipTrigger::kCursor, {});
+    EXPECT_EQ(GetRootWindow(),
+              helper_->state_manager()->tooltip_parent_window());
+    EXPECT_EQ(expected_text, helper_->state_manager()->tooltip_text());
+    EXPECT_EQ(position, helper_->GetTooltipPosition());
+    EXPECT_FALSE(helper_->IsTooltipVisible());
+    EXPECT_TRUE(helper_->state_manager()->IsWillShowTooltipTimerRunning());
 
-  position = gfx::Point(10, 10);
-  helper_->state_manager()->UpdatePositionIfWillShowTooltipTimerIsRunning(
-      position);
-  EXPECT_EQ(position, helper_->GetTooltipPosition());
+    gfx::Point new_position = gfx::Point(10, 10);
+    // Because the tooltip was triggered by the cursor, the position should be
+    // updated by a keyboard triggered modification.
+    helper_->state_manager()->UpdatePositionIfNeeded(new_position,
+                                                     TooltipTrigger::kKeyboard);
+    EXPECT_EQ(position, helper_->GetTooltipPosition());
 
-  // 2. Validate that we can't update the position when the timer isn't running.
-  helper_->HideAndReset();
-  position = gfx::Point(20, 20);
-  helper_->state_manager()->UpdatePositionIfWillShowTooltipTimerIsRunning(
-      position);
-  EXPECT_NE(position, helper_->GetTooltipPosition());
+    // But it should be updated when the position's update is triggered by the
+    // cursor.
+    helper_->state_manager()->UpdatePositionIfNeeded(new_position,
+                                                     TooltipTrigger::kCursor);
+    EXPECT_EQ(new_position, helper_->GetTooltipPosition());
 
+    // 2. Validate that we can't update the position when the timer isn't
+    // running.
+    helper_->HideAndReset();
+    position = new_position;
+    new_position = gfx::Point(20, 20);
+    helper_->state_manager()->UpdatePositionIfNeeded(new_position,
+                                                     TooltipTrigger::kCursor);
+    EXPECT_EQ(position, helper_->GetTooltipPosition());
+  }
+
+  {
+    gfx::Point position(0, 0);
+    // 1. When the |will_show_tooltip_timer_| is running, validate that we can
+    // update the position.
+    helper_->state_manager()->Show(GetRootWindow(), expected_text, position,
+                                   TooltipTrigger::kKeyboard, {});
+    EXPECT_EQ(GetRootWindow(),
+              helper_->state_manager()->tooltip_parent_window());
+    EXPECT_EQ(expected_text, helper_->state_manager()->tooltip_text());
+    EXPECT_EQ(position, helper_->GetTooltipPosition());
+    EXPECT_FALSE(helper_->IsTooltipVisible());
+    EXPECT_TRUE(helper_->state_manager()->IsWillShowTooltipTimerRunning());
+
+    gfx::Point new_position = gfx::Point(10, 10);
+    // Because the tooltip was triggered by the keyboard, the position shouldn't
+    // be updated by a cursor triggered modification.
+    helper_->state_manager()->UpdatePositionIfNeeded(new_position,
+                                                     TooltipTrigger::kCursor);
+    EXPECT_EQ(position, helper_->GetTooltipPosition());
+
+    // But it should be updated when the position's update is triggered by a
+    // keyboard action.
+    helper_->state_manager()->UpdatePositionIfNeeded(new_position,
+                                                     TooltipTrigger::kKeyboard);
+    EXPECT_EQ(new_position, helper_->GetTooltipPosition());
+
+    // 2. Validate that we can't update the position when the timer isn't
+    // running.
+    helper_->HideAndReset();
+    position = new_position;
+    new_position = gfx::Point(20, 20);
+    helper_->state_manager()->UpdatePositionIfNeeded(new_position,
+                                                     TooltipTrigger::kKeyboard);
+    EXPECT_EQ(position, helper_->GetTooltipPosition());
+  }
   helper_->SetTooltipShowDelayEnable(false);
 }
 
-}  // namespace test
-}  // namespace corewm
-}  // namespace views
+}  // namespace views::corewm::test

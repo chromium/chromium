@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,18 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/chromeos/policy/device_local_account.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "components/arc/arc_util.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,13 +37,14 @@ class NotificationWaiter : public KioskAppManagerObserver {
       : manager_(manager), expected_notifications_(expected_notifications) {
     manager_->AddObserver(this);
   }
-
+  NotificationWaiter(const NotificationWaiter&) = delete;
+  NotificationWaiter& operator=(const NotificationWaiter&) = delete;
   ~NotificationWaiter() override { manager_->RemoveObserver(this); }
 
   void Wait() {
     if (notification_received_)
       return;
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -67,8 +67,6 @@ class NotificationWaiter : public KioskAppManagerObserver {
   ArcKioskAppManager* manager_;
   bool notification_received_ = false;
   int expected_notifications_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationWaiter);
 };
 
 std::string GenerateAccountId(std::string package_name) {
@@ -80,6 +78,8 @@ std::string GenerateAccountId(std::string package_name) {
 class ArcKioskAppManagerTest : public InProcessBrowserTest {
  public:
   ArcKioskAppManagerTest() : settings_helper_(false) {}
+  ArcKioskAppManagerTest(const ArcKioskAppManagerTest&) = delete;
+  ArcKioskAppManagerTest& operator=(const ArcKioskAppManagerTest&) = delete;
   ~ArcKioskAppManagerTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -99,26 +99,25 @@ class ArcKioskAppManagerTest : public InProcessBrowserTest {
 
   void SetApps(const std::vector<policy::ArcKioskAppBasicInfo>& apps,
                const std::string& auto_login_account) {
-    base::ListValue device_local_accounts;
+    base::Value::List device_local_accounts;
     for (const policy::ArcKioskAppBasicInfo& app : apps) {
-      std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue);
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyId,
-                    base::Value(GenerateAccountId(app.package_name())));
-      entry->SetKey(
-          kAccountsPrefDeviceLocalAccountsKeyType,
-          base::Value(policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP));
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
-                    base::Value(app.package_name()));
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
-                    base::Value(app.class_name()));
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
-                    base::Value(app.action()));
-      entry->SetKey(kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
-                    base::Value(app.display_name()));
+      base::Value::Dict entry;
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyId,
+                GenerateAccountId(app.package_name()));
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyType,
+                policy::DeviceLocalAccount::TYPE_ARC_KIOSK_APP);
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskPackage,
+                app.package_name());
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskClass,
+                app.class_name());
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskAction,
+                app.action());
+      entry.Set(kAccountsPrefDeviceLocalAccountsKeyArcKioskDisplayName,
+                app.display_name());
       device_local_accounts.Append(std::move(entry));
     }
     owner_settings_service_->Set(kAccountsPrefDeviceLocalAccounts,
-                                 device_local_accounts);
+                                 base::Value(std::move(device_local_accounts)));
 
     if (!auto_login_account.empty()) {
       owner_settings_service_->SetString(
@@ -141,9 +140,6 @@ class ArcKioskAppManagerTest : public InProcessBrowserTest {
  protected:
   ScopedCrosSettingsTestHelper settings_helper_;
   std::unique_ptr<FakeOwnerSettingsService> owner_settings_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskAppManagerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcKioskAppManagerTest, Basic) {

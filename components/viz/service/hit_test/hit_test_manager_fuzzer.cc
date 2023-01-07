@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -109,7 +109,7 @@ void SubmitHitTestRegionList(
     return;
   }
 
-  base::Optional<viz::HitTestRegionList> hit_test_region_list;
+  absl::optional<viz::HitTestRegionList> hit_test_region_list;
   if (fuzz->ConsumeBool()) {
     hit_test_region_list.emplace();
     hit_test_region_list->flags = fuzz->ConsumeIntegral<uint32_t>();
@@ -142,7 +142,8 @@ void SubmitHitTestRegionList(
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t num_bytes) {
   FuzzedDataProvider fuzz(data, num_bytes);
   viz::ServerSharedBitmapManager shared_bitmap_manager;
-  viz::FrameSinkManagerImpl frame_sink_manager(&shared_bitmap_manager);
+  viz::FrameSinkManagerImpl frame_sink_manager{
+      viz::FrameSinkManagerImpl::InitParams(&shared_bitmap_manager)};
   viz::TestLatestLocalSurfaceIdLookupDelegate delegate;
   viz::TestLatestLocalSurfaceIdLookupDelegate* lsi_delegate =
       fuzz.ConsumeBool() ? &delegate : nullptr;
@@ -167,12 +168,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t num_bytes) {
 
   viz::SurfaceId aggregate_surface_id = surface_id;
   if (fuzz.ConsumeBool() && fuzz.remaining_bytes() >= sizeof(viz::SurfaceId)) {
-    viz::FrameSinkId frame_sink_id(GetNextUInt32NonZero(&fuzz),
-                                   GetNextUInt32NonZero(&fuzz));
-    viz::LocalSurfaceId local_surface_id(GetNextUInt32NonZero(&fuzz),
-                                         GetNextUInt32NonZero(&fuzz),
-                                         base::UnguessableToken::Create());
-    aggregate_surface_id = viz::SurfaceId(frame_sink_id, local_surface_id);
+    aggregate_surface_id =
+        viz::SurfaceId(viz::FrameSinkId(GetNextUInt32NonZero(&fuzz),
+                                        GetNextUInt32NonZero(&fuzz)),
+                       viz::LocalSurfaceId(GetNextUInt32NonZero(&fuzz),
+                                           GetNextUInt32NonZero(&fuzz),
+                                           base::UnguessableToken::Create()));
   }
   aggregator.Aggregate(aggregate_surface_id);
   viz::Surface* surface = frame_sink_manager.surface_manager()->GetSurfaceForId(

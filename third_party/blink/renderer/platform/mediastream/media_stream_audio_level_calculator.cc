@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <limits>
 
 #include "base/check.h"
-#include "base/stl_util.h"
 #include "media/base/audio_bus.h"
 
 namespace blink {

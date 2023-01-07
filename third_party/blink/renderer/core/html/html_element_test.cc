@@ -1,12 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
@@ -244,6 +247,39 @@ TEST_F(HTMLElementTest,
             GetDocument().getElementById("box"));
   EXPECT_FALSE(
       GetDocument().GetPage()->Animator().has_inline_style_mutation_for_test());
+}
+
+TEST_F(HTMLElementTest, DirAutoByChildChanged) {
+  ScopedCSSPseudoDirForTest scoped_feature(false);
+
+  SetBodyInnerHTML("<div id='target' dir='auto'></div>");
+  auto* element = GetDocument().getElementById("target");
+  element->setTextContent(u"\u05D1");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element->GetComputedStyle()->Direction(), TextDirection::kRtl);
+
+  element->RemoveChildren();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(element->GetComputedStyle()->Direction(), TextDirection::kLtr);
+}
+
+TEST_F(HTMLElementTest, SlotDirAutoBySingleSlottedNodeRemoved) {
+  ScopedCSSPseudoDirForTest scoped_feature(false);
+
+  SetBodyInnerHTML("<div id='host'>slotted text</div>");
+  auto* element = GetDocument().getElementById("host");
+  ShadowRoot& shadow_root =
+      element->AttachShadowRootInternal(ShadowRootType::kOpen);
+  shadow_root.setInnerHTML(
+      "<slot id='inner' dir='auto'><div>&#1571;</div></slot>");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* slot = shadow_root.getElementById("inner");
+  EXPECT_EQ(slot->GetComputedStyle()->Direction(), TextDirection::kLtr);
+
+  element->RemoveChildren();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(slot->GetComputedStyle()->Direction(), TextDirection::kRtl);
 }
 
 }  // namespace blink

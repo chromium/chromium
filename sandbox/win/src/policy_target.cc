@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,12 +17,6 @@
 #include "sandbox/win/src/target_services.h"
 
 namespace sandbox {
-
-// Handle for our private heap.
-extern void* g_heap;
-
-// This is the list of all imported symbols from ntdll.dll.
-SANDBOX_INTERCEPT NtExports g_nt;
 
 // Policy data.
 extern void* volatile g_shared_policy_memory;

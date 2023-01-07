@@ -1,0 +1,5 @@
+Document
+++Group Name='description'
+++Group Name='both'
+++ToolTip Name='Description from describedby'
+++++Text Name='Description from describedby' IsControlElement=false

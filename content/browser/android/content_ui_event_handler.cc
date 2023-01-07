@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "ui/events/android/key_event_android.h"
 #include "ui/events/android/motion_event_android.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event_utils.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -95,13 +96,10 @@ void ContentUiEventHandler::SendMouseWheelEvent(
   if (!event_handler)
     return;
 
-  // Compute Event.Latency.OS.MOUSE_WHEEL histogram.
+  // Compute Event.Latency.OS2.MOUSE_WHEEL histogram.
   base::TimeTicks current_time = ui::EventTimeForNow();
-  base::TimeTicks event_time =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(time_ms);
-  base::TimeDelta delta = current_time - event_time;
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Event.Latency.OS.MOUSE_WHEEL",
-                              delta.InMicroseconds(), 1, 1000000, 50);
+  base::TimeTicks event_time = base::TimeTicks() + base::Milliseconds(time_ms);
+  ComputeEventLatencyOS(ui::ET_MOUSEWHEEL, event_time, current_time);
   ui::MotionEventAndroid::Pointer pointer(
       0, x, y, 0.0f /* touch_major */, 0.0f /* touch_minor */, 0.0f, 0.0f, 0);
 

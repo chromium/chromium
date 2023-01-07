@@ -1,0 +1,125 @@
+android.webkit.WebView focusable focused scrollable
+++android.widget.ListView collection item_count=1 row_count=1 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++++++android.widget.TextView name='disc'
+++android.widget.ListView collection item_count=1 row_count=1 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='%E2%97%A6 '
+++++++android.widget.TextView name='circle'
+++android.widget.ListView collection item_count=1 row_count=1 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='%E2%96%A0 '
+++++++android.widget.TextView name='square'
+++android.widget.ListView collection item_count=1 row_count=1 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='%E2%96%BE '
+++++++android.widget.TextView name='disclosure-open'
+++android.widget.ListView collection item_count=1 row_count=1 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='%E2%96%B8 '
+++++++android.widget.TextView name='disclosure-closed'
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++++++android.widget.TextView name='explicit-bullets'
+++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='1. '
+++++++android.widget.TextView name='explicit-numbers'
+++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View name='2. '
+++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View name='3. '
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='One. '
+++++++android.widget.TextView name='explicit-words'
+++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View name='Two. '
+++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View name='Three. '
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='One. '
+++++++android.widget.TextView name='auto-alphabetic'
+++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View name='Two. '
+++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View name='Three. '
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++++++android.widget.TextView name='auto-cyclic'
+++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++++++android.widget.TextView name='auto-extends'
+++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='1. '
+++++++android.widget.TextView name='auto-fixed'
+++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View name='2. '
+++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View name='3. '
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='1. '
+++++++android.widget.TextView name='auto-symbolic'
+++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View name='2. '
+++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View name='3. '
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='1. '
+++++++android.widget.TextView name='auto-numeric'
+++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View name='2. '
+++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View name='3. '
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='1. '
+++++++android.widget.TextView name='auto-additive'
+++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View name='2. '
+++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View name='3. '
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++++++android.widget.TextView name='reference-bullets'
+++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View name='%E2%80%A2 '
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='1> '
+++++++android.widget.TextView name='reference-numbers'
+++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View name='2> '
+++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View name='3> '
+++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++android.view.View collection_item row_span=1 column_span=1
+++++++android.view.View name='One> '
+++++++android.widget.TextView name='reference-words'
+++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++android.view.View name='Two> '
+++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++android.view.View name='Three> '

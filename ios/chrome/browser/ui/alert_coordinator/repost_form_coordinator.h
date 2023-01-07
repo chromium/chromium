@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,14 +18,14 @@ class WebState;
 // buttons.
 @interface RepostFormCoordinator : ChromeCoordinator
 
-// Initializes a coordinator for displaying an alert on this |viewController|.
-// |browser| should be passed as a parameter in the initializer for the
+// Initializes a coordinator for displaying an alert on this `viewController`.
+// `browser` should be passed as a parameter in the initializer for the
 // providing model-layer dependencies and a command dispatcher that can be used
-// by the coordinator and its children. |dialogLocation| is a point where the
-// repost form dialog should be presented on iPad (in |viewController|'s
-// coordinate space). |webState| must not be null and must be owned by the
-// caller. |completionHandler| will be called with YES when Continue button is
-// tapped and with NO when Cancel button is tapped. |completionHandler| can not
+// by the coordinator and its children. `dialogLocation` is a point where the
+// repost form dialog should be presented on iPad (in `viewController`'s
+// coordinate space). `webState` must not be null and must be owned by the
+// caller. `completionHandler` will be called with YES when Continue button is
+// tapped and with NO when Cancel button is tapped. `completionHandler` can not
 // be null.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser

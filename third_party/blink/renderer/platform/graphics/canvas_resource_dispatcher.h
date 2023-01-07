@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "cc/paint/paint_flags.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -16,9 +17,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/resource_id_traits.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -27,7 +28,8 @@ class CanvasResource;
 class CanvasResourceDispatcherClient {
  public:
   virtual bool BeginFrame() = 0;
-  virtual void SetFilterQualityInResource(SkFilterQuality filter_quality) = 0;
+  virtual void SetFilterQualityInResource(
+      cc::PaintFlags::FilterQuality filter_quality) = 0;
 };
 
 class PLATFORM_EXPORT CanvasResourceDispatcher
@@ -49,20 +51,22 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
                            uint32_t client_id,
                            uint32_t sink_id,
                            int placeholder_canvas_id,
-                           const IntSize&);
+                           const gfx::Size&);
 
   ~CanvasResourceDispatcher() override;
   void SetNeedsBeginFrame(bool);
   void SetSuspendAnimation(bool);
   bool NeedsBeginFrame() const { return needs_begin_frame_; }
   bool IsAnimationSuspended() const { return suspend_animation_; }
-  void DispatchFrame(scoped_refptr<CanvasResource>,
+  void DispatchFrame(scoped_refptr<CanvasResource>&&,
                      base::TimeTicks commit_start_time,
                      const SkIRect& damage_rect,
                      bool needs_vertical_flip,
                      bool is_opaque);
-  void ReclaimResource(viz::ResourceId);
-  void DispatchFrameSync(scoped_refptr<CanvasResource>,
+  // virtual for mocking
+  virtual void ReclaimResource(viz::ResourceId,
+                               scoped_refptr<CanvasResource>&&);
+  void DispatchFrameSync(scoped_refptr<CanvasResource>&&,
                          base::TimeTicks commit_start_time,
                          const SkIRect& damage_rect,
                          bool needs_vertical_flip,
@@ -72,17 +76,16 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   }
   bool HasTooManyPendingFrames() const;
 
-  void Reshape(const IntSize&);
+  void Reshape(const gfx::Size&);
 
   // viz::mojom::blink::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
-      const WTF::Vector<viz::ReturnedResource>& resources) final;
+      WTF::Vector<viz::ReturnedResource> resources) final;
   void OnBeginFrame(
       const viz::BeginFrameArgs&,
       const WTF::HashMap<uint32_t, viz::FrameTimingDetails>&) final;
   void OnBeginFramePausedChanged(bool paused) final {}
-  void ReclaimResources(
-      const WTF::Vector<viz::ReturnedResource>& resources) final;
+  void ReclaimResources(WTF::Vector<viz::ReturnedResource> resources) final;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) final {}
 
@@ -90,17 +93,18 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
                                const gpu::Mailbox& id);
   void DidDeleteSharedBitmap(const gpu::Mailbox& id);
 
-  void SetFilterQuality(SkFilterQuality filter_quality);
+  void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
   void SetPlaceholderCanvasDispatcher(int placeholder_canvas_id);
 
  private:
+  friend class OffscreenCanvasPlaceholderTest;
   friend class CanvasResourceDispatcherTest;
   struct FrameResource;
 
   using ResourceMap =
       HashMap<viz::ResourceId, std::unique_ptr<FrameResource>, ResourceIdHash>;
 
-  bool PrepareFrame(scoped_refptr<CanvasResource>,
+  bool PrepareFrame(scoped_refptr<CanvasResource>&&,
                     base::TimeTicks commit_start_time,
                     const SkIRect& damage_rect,
                     bool needs_vertical_flip,
@@ -111,7 +115,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
   viz::ParentLocalSurfaceIdAllocator parent_local_surface_id_allocator_;
   const viz::FrameSinkId frame_sink_id_;
 
-  IntSize size_;
+  gfx::Size size_;
   bool change_size_for_next_commit_;
   bool suspend_animation_ = false;
   bool needs_begin_frame_ = false;
@@ -119,14 +123,15 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   void SetNeedsBeginFrameInternal();
 
-  bool VerifyImageSize(const IntSize);
-  void PostImageToPlaceholderIfNotBlocked(scoped_refptr<CanvasResource>,
+  bool VerifyImageSize(const gfx::Size&);
+  void PostImageToPlaceholderIfNotBlocked(scoped_refptr<CanvasResource>&&,
                                           viz::ResourceId resource_id);
   // virtual for testing
-  virtual void PostImageToPlaceholder(scoped_refptr<CanvasResource>,
+  virtual void PostImageToPlaceholder(scoped_refptr<CanvasResource>&&,
                                       viz::ResourceId resource_id);
 
-  void ReclaimResourceInternal(viz::ResourceId resource_id);
+  void ReclaimResourceInternal(viz::ResourceId resource_id,
+                               scoped_refptr<CanvasResource>&&);
   void ReclaimResourceInternal(const ResourceMap::iterator&);
 
   mojo::Remote<viz::mojom::blink::CompositorFrameSink> sink_;
@@ -150,14 +155,14 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
 
   CanvasResourceDispatcherClient* client_;
 
+  std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
+
   scoped_refptr<base::SingleThreadTaskRunner>
       agent_group_scheduler_compositor_task_runner_;
-
-  std::unique_ptr<power_scheduler::PowerModeVoter> animation_power_mode_voter_;
 
   base::WeakPtrFactory<CanvasResourceDispatcher> weak_ptr_factory_{this};
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_OFFSCREEN_CANVAS_FRAME_DISPATCHER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_RESOURCE_DISPATCHER_H_

@@ -42,14 +42,6 @@ specific_include_rules = {
     "+base/i18n",
   ],
 
-  "ftp_util\.cc": [
-    "+base/i18n",
-    "+third_party/icu",
-  ],
-  "ftp_directory_listing_parser\.cc": [
-    "+base/i18n",
-  ],
-
   "brotli_source_stream\.cc": [
     "+third_party/brotli",
   ],

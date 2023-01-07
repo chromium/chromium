@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,11 @@
 #include <cstddef>
 #include <utility>
 
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "net/spdy/spdy_stream.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-
-namespace test {
+namespace net::test {
 
 ClosingDelegate::ClosingDelegate(
     const base::WeakPtr<SpdyStream>& stream) : stream_(stream) {
@@ -52,12 +49,8 @@ NetLogSource ClosingDelegate::source_dependency() const {
   return NetLogSource();
 }
 
-StreamDelegateBase::StreamDelegateBase(
-    const base::WeakPtr<SpdyStream>& stream)
-    : stream_(stream),
-      stream_id_(0),
-      send_headers_completed_(false) {
-}
+StreamDelegateBase::StreamDelegateBase(const base::WeakPtr<SpdyStream>& stream)
+    : stream_(stream) {}
 
 StreamDelegateBase::~StreamDelegateBase() = default;
 
@@ -116,8 +109,7 @@ std::string StreamDelegateBase::TakeReceivedData() {
   size_t len = received_data_queue_.GetTotalSize();
   std::string received_data(len, '\0');
   if (len > 0) {
-    EXPECT_EQ(len,
-              received_data_queue_.Dequeue(base::data(received_data), len));
+    EXPECT_EQ(len, received_data_queue_.Dequeue(std::data(received_data), len));
   }
   return received_data;
 }
@@ -139,6 +131,17 @@ StreamDelegateDoNothing::StreamDelegateDoNothing(
     : StreamDelegateBase(stream) {}
 
 StreamDelegateDoNothing::~StreamDelegateDoNothing() = default;
+
+StreamDelegateConsumeData::StreamDelegateConsumeData(
+    const base::WeakPtr<SpdyStream>& stream)
+    : StreamDelegateBase(stream) {}
+
+StreamDelegateConsumeData::~StreamDelegateConsumeData() = default;
+
+void StreamDelegateConsumeData::OnDataReceived(
+    std::unique_ptr<SpdyBuffer> buffer) {
+  buffer->Consume(buffer->GetRemainingSize());
+}
 
 StreamDelegateSendImmediate::StreamDelegateSendImmediate(
     const base::WeakPtr<SpdyStream>& stream,
@@ -197,6 +200,4 @@ void StreamDelegateDetectEOF::OnDataReceived(
     eof_detected_ = true;
 }
 
-}  // namespace test
-
-}  // namespace net
+}  // namespace net::test

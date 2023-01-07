@@ -1,20 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/bind.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/bind.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/testing/embedded_test_server_handlers.h"
-#include "ios/web/common/features.h"
-#include "net/test/embedded_test_server/default_handlers.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
-#include "net/test/embedded_test_server/request_handler_util.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/testing/embedded_test_server_handlers.h"
+#import "ios/web/common/features.h"
+#import "net/test/embedded_test_server/default_handlers.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

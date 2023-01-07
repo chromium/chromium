@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/ffmpeg/ffmpeg_deleters.h"
 
@@ -44,6 +44,10 @@ class MEDIA_EXPORT FFmpegDecodingLoop {
   // true; note: send packet failures are always fatal.
   FFmpegDecodingLoop(AVCodecContext* context,
                      bool continue_on_decoding_errors = false);
+
+  FFmpegDecodingLoop(const FFmpegDecodingLoop&) = delete;
+  FFmpegDecodingLoop& operator=(const FFmpegDecodingLoop&) = delete;
+
   ~FFmpegDecodingLoop();
 
   // Callback issued when the decoding loop has produced a frame. |frame| is
@@ -65,11 +69,9 @@ class MEDIA_EXPORT FFmpegDecodingLoop {
 
  private:
   const bool continue_on_decoding_errors_;
-  AVCodecContext* const context_;
+  const raw_ptr<AVCodecContext> context_;
   std::unique_ptr<AVFrame, ScopedPtrAVFreeFrame> frame_;
   int last_averror_code_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegDecodingLoop);
 };
 
 }  // namespace media

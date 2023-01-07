@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/service_worker/navigation_preload_manager.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -106,6 +107,11 @@ class ServiceWorkerRegistration final
   void SetUpdateViaCache(
       mojom::blink::ServiceWorkerUpdateViaCache update_via_cache) override;
   void UpdateFound() override;
+
+  void UpdateInternal(
+      mojom::blink::FetchClientSettingsObjectPtr mojom_settings_object,
+      ScriptPromiseResolver* resolver);
+  void UnregisterInternal(ScriptPromiseResolver* resolver);
 
   Member<ServiceWorker> installing_;
   Member<ServiceWorker> waiting_;

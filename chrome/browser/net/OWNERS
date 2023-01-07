@@ -1,5 +1,5 @@
 file://net/OWNERS
 
-per-file disk_cache_dir_policy_handler*=atwilson@chromium.org
+per-file android_network_service_browsertest.cc=wfh@chromium.org
 per-file network_quality*=file://net/nqe/OWNERS
 per-file private_network_access_browsertest*=titouan@chromium.org

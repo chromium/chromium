@@ -2,7 +2,7 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++grid name='1: Individual rows get their own wrappers' tableRowCount=2 tableColumnCount=2
-++++++++genericContainer name='r1-wrap'
+++++++++genericContainer description='r1-wrap'
 ++++++++++row name='r1-real' tableRowIndex=0
 ++++++++++++cell name='A1' tableCellColumnIndex=0 tableCellRowIndex=0
 ++++++++++++++staticText name='A1'
@@ -10,8 +10,8 @@ rootWebArea
 ++++++++++++cell name='A2' tableCellColumnIndex=1 tableCellRowIndex=0
 ++++++++++++++staticText name='A2'
 ++++++++++++++++inlineTextBox name='A2'
-++++++++genericContainer name='r2-wrap'
-++++++++++genericContainer name='r2-vanilla'
+++++++++genericContainer description='r2-wrap'
+++++++++++genericContainer description='r2-vanilla'
 ++++++++++++row name='r2-real' tableRowIndex=1
 ++++++++++++++cell name='B1' tableCellColumnIndex=0 tableCellRowIndex=1
 ++++++++++++++++staticText name='B1'

@@ -1,0 +1,25 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/device/public/mojom/hid.mojom";
+import "third_party/blink/public/mojom/hid/hid.mojom";
+
+// Chrome OS HID API for System Extensions.
+interface CrosHID {
+  // Access logical HID devices. No request dialog is shown. If |filters| is
+  // non-empty, return devices matching one or more of the filters. If
+  // |filters| is empty, return all connected devices. |devices| contains
+  // logical HID interfaces exposed by one or multiple physical devices.
+  AccessDevices(array<HidDeviceFilter> filters)
+    => (array<device.mojom.HidDeviceInfo> devices);
+
+  // Opens a connection to the device with GUID matching |device_guid|.
+  // |device_guid| is returned in |HidDeviceInfo|. |client| will be notified
+  // when an input report is received from the device. |connection| contains
+  // the opened connection, or a null remote if the device could not be opened.
+  Connect(string device_guid, pending_remote<device.mojom.HidConnectionClient> client)
+      => (pending_remote<device.mojom.HidConnection>? connection);
+};

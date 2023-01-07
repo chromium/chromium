@@ -20,10 +20,10 @@ The legacy permissions system is implemented by `bluetooth_allowed_devices.h`,
 which is created per origin.
 
 The new permissions system is implemented by providing an implementation for
-the `//content/public/browser/bluetooth_delegate.h` interface. In Chrome, the
-implementation of this interface is provided by
-`//chrome/browser/chrome_bluetooth_delegate.h` which forwards permission
-queries to `//chrome/browser/bluetooth/bluetooth_chooser_context.h`. This
+the `//content/public/browser/bluetooth_delegate.h` interface. In Chrome and
+WebLayer, the implementation of this interface is provided by
+`//components/permissions/bluetooth_delegate_impl.h` which forwards permission
+queries to `//components/permissions/contexts/bluetooth_chooser_context.h`. This
 class uses `//components/permissions/chooser_context_base.h` as the base.
 This base class is also in use by other device APIs, like WebUSB. The new
 permission system enables Web Bluetooth permissions to be persistent and to
@@ -33,6 +33,16 @@ Permissions] design document.
 
 [Web Bluetooth Persistent Permissions]:
 https://docs.google.com/document/d/1h3uAVXJARHrNWaNACUPiQhLt7XI-fFFQoARSs1WgMDM/edit?usp=sharing
+
+## Secure Characteristics
+
+The Bluetooth client implementation will authenticate (i.e. pair) when needed.
+This allows clients to read values that do not require pairing without going
+through the pairing process. In practice this means that pairing will be
+initiated during a read/write operation. Some operating system Bluetooth
+implementations (like macOS and Android) do this transparently for the
+application. Other OS's (like Windows and Linux/BlueZ) need to explicitly
+pair when a read/write fails due to an authentication error.
 
 ## Testing
 

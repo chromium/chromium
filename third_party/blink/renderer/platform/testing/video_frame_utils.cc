@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
           pixel_format, coded_size, visible_rect, natural_size,
           base::TimeDelta());
     case media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER: {
-      base::Optional<gfx::BufferFormat> buffer_format =
+      absl::optional<gfx::BufferFormat> buffer_format =
           media::VideoPixelFormatToGfxBufferFormat(pixel_format);
       CHECK(buffer_format) << "Pixel format "
                            << media::VideoPixelFormatToString(pixel_format)
@@ -46,7 +46,7 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
           base::NullCallback(), base::TimeDelta());
     }
     case media::VideoFrame::STORAGE_OPAQUE: {
-      base::Optional<gfx::BufferFormat> buffer_format =
+      absl::optional<gfx::BufferFormat> buffer_format =
           media::VideoPixelFormatToGfxBufferFormat(pixel_format);
       CHECK(buffer_format) << "Pixel format "
                            << media::VideoPixelFormatToString(pixel_format)

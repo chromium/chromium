@@ -1,0 +1,41 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.local_search_service.mojom;
+
+import "chromeos/ash/components/local_search_service/public/mojom/types.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+
+// An Index has a registry of searchable data, which can be updated. It also
+// runs a search function to find matching items for a given query.
+// Each Index can serve multiple clients, but only one client (the primary
+// client) that owns the data should be allowed to modify the Index.
+interface Index {
+  // Returns number of data items.
+  GetSize() => (uint64 num_items);
+
+  // Adds or updates data and callbacks upon completion.
+  // Only the primary client should be allowed to do this operation.
+  AddOrUpdate(array<Data> data) => ();
+
+  // Deletes data with |ids| and returns the number of items deleted.
+  // If an id doesn't exist in the Index, no operation will be done.
+  // Only the primary client should be allowed to do this operation.
+  Delete(array<string> ids) => (uint32 num_deleted);
+
+  // This method is a combination of two calls above. If the content
+  // field of Data is empty then it means the document should be deleted.
+  UpdateDocuments(array<Data> data) => (uint32 num_deleted);
+
+  // Takes an asynchronous search request call and returns results and status
+  // code via a callback. |results| will be null if there is an error.
+  Find(mojo_base.mojom.String16 query, uint32 max_results)
+      => (ResponseStatus status, array<Result>? results);
+
+  // Clears all data stored by the index.
+  ClearIndex() => ();
+
+  // Sets search parameters for the index.
+  SetSearchParams(SearchParams search_params) => ();
+};

@@ -17,13 +17,13 @@
 ++[link] name='Paragraph with content'
 ++++[static] name='Paragraph with content'
 ++[paragraph]
-++++[link]
+++++[section]
 ++++[static] name='After empty anchor'
 ++[paragraph]
-++++[link] name='Anchor with content'
+++++[section]
 ++++++[static] name='Anchor with content'
 ++[paragraph]
-++++[link] name='Anchor with ID'
+++++[section]
 ++++++[static] name='Anchor with ID'
 ++[paragraph]
 ++++[section]

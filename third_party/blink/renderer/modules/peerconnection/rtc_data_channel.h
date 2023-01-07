@@ -28,13 +28,14 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
@@ -66,11 +67,11 @@ class MODULES_EXPORT RTCDataChannel final
   bool reliable() const;
 
   bool ordered() const;
-  base::Optional<uint16_t> maxPacketLifeTime() const;
-  base::Optional<uint16_t> maxRetransmits() const;
+  absl::optional<uint16_t> maxPacketLifeTime() const;
+  absl::optional<uint16_t> maxRetransmits() const;
   String protocol() const;
   bool negotiated() const;
-  base::Optional<uint16_t> id() const;
+  absl::optional<uint16_t> id() const;
   String readyState() const;
   unsigned bufferedAmount() const;
 
@@ -164,8 +165,9 @@ class MODULES_EXPORT RTCDataChannel final
   void ScheduledEventTimerFired(TimerBase*);
 
   const scoped_refptr<webrtc::DataChannelInterface>& channel() const;
-  bool SendRawData(const char* data, size_t length);
-  bool SendDataBuffer(webrtc::DataBuffer data_buffer);
+  bool ValidateSendLength(size_t length, ExceptionState& exception_state);
+  void SendRawData(const char* data, size_t length);
+  void SendDataBuffer(webrtc::DataBuffer data_buffer);
 
   // Initializes |feature_handle_for_scheduler_|, which must not yet have been
   // initialized.
@@ -193,7 +195,6 @@ class MODULES_EXPORT RTCDataChannel final
   unsigned buffered_amount_;
   bool stopped_;
   bool closed_from_owner_;
-  bool is_rtp_data_channel_;
   scoped_refptr<Observer> observer_;
   scoped_refptr<base::SingleThreadTaskRunner> signaling_thread_;
   THREAD_CHECKER(thread_checker_);

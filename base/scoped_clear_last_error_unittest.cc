@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,9 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#include "base/logging.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace base {
 
@@ -33,7 +32,7 @@ TEST(ScopedClearLastError, TestError) {
   EXPECT_EQ(1, errno);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 TEST(ScopedClearLastError, TestNoErrorWin) {
   ::SetLastError(1);
@@ -53,6 +52,6 @@ TEST(ScopedClearLastError, TestErrorWin) {
   EXPECT_EQ(logging::SystemErrorCode(1), ::GetLastError());
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace base

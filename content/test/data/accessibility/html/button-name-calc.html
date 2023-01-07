@@ -1,6 +1,8 @@
 <!--
+@BLINK-ALLOW:description*
 @WIN-ALLOW:description*
 @WIN-ALLOW:explicit-name*
+@UIA-WIN-ALLOW:ClassName*
 @UIA-WIN-ALLOW:FullDescription*
 @AURALINUX-ALLOW:description*
 @AURALINUX-ALLOW:explicit-name*
@@ -21,7 +23,7 @@
   <button>Outer <div>inner</div></button>
   <button>Outer <div aria-label="inner1">inner2</div></button>
   <button>Outer <section><div>grandchild</div></section></button>
-  <p aria-label="@NO_DUMP">
+  <p class="foo @NO_DUMP bar">
     <span id="lb3">LabelledBy3</span>
     <span id="lb4">LabelledBy4</span>
     <span id="db4">DescribedBy4</span>

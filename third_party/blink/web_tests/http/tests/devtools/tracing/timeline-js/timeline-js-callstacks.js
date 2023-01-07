@@ -1,17 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Test JS callstacks in timeline.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '6.23';
   var rawTraceEvents = [
     {
       'args': {'name': 'Renderer'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 17851,
@@ -20,7 +20,7 @@
     },
     {
       'args': {'name': 'CrRendererMain'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': 17851,
@@ -498,7 +498,7 @@
     }
   ];
 
-  PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents);
+  await PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents);
   PerformanceTestRunner.mainTrackEvents()
       .filter(function(e) {
         return e.duration;

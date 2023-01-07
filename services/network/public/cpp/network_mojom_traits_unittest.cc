@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,10 @@ namespace {
 
 class NetworkStructTraitsTest : public testing::Test,
                                 public mojom::TraitsTestService {
+ public:
+  NetworkStructTraitsTest(const NetworkStructTraitsTest&) = delete;
+  NetworkStructTraitsTest& operator=(const NetworkStructTraitsTest&) = delete;
+
  protected:
   NetworkStructTraitsTest() = default;
 
@@ -36,7 +40,6 @@ class NetworkStructTraitsTest : public testing::Test,
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   mojo::ReceiverSet<TraitsTestService> traits_test_receivers_;
-  DISALLOW_COPY_AND_ASSIGN(NetworkStructTraitsTest);
 };
 
 }  // namespace

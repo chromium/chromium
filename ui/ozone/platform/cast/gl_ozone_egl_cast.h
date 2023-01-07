@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_surface.h"
@@ -25,12 +24,18 @@ class GLOzoneEglCast : public GLOzoneEGL {
  public:
   explicit GLOzoneEglCast(
       std::unique_ptr<chromecast::CastEglPlatform> egl_platform);
+
+  GLOzoneEglCast(const GLOzoneEglCast&) = delete;
+  GLOzoneEglCast& operator=(const GLOzoneEglCast&) = delete;
+
   ~GLOzoneEglCast() override;
 
   // GLOzoneEGL implementation:
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
+      gl::GLDisplay* display,
       gfx::AcceleratedWidget widget) override;
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
+      gl::GLDisplay* display,
       const gfx::Size& size) override;
   gl::EGLDisplayPlatform GetNativeDisplay() override;
   bool LoadGLES2Bindings(
@@ -50,8 +55,6 @@ class GLOzoneEglCast : public GLOzoneEGL {
   void* window_ = 0;
   gfx::Size display_size_;
   std::unique_ptr<chromecast::CastEglPlatform> egl_platform_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEglCast);
 };
 
 }  // namespace ui

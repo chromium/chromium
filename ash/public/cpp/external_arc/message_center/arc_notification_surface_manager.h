@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define ASH_PUBLIC_CPP_EXTERNAL_ARC_MESSAGE_CENTER_ARC_NOTIFICATION_SURFACE_MANAGER_H_
 
 #include <string>
-
-#include "base/macros.h"
 
 namespace ash {
 
@@ -31,6 +29,10 @@ class ArcNotificationSurfaceManager {
   };
   static ArcNotificationSurfaceManager* Get();
 
+  ArcNotificationSurfaceManager(const ArcNotificationSurfaceManager&) = delete;
+  ArcNotificationSurfaceManager& operator=(
+      const ArcNotificationSurfaceManager&) = delete;
+
   virtual ~ArcNotificationSurfaceManager();
 
   virtual ArcNotificationSurface* GetArcSurface(
@@ -43,8 +45,6 @@ class ArcNotificationSurfaceManager {
 
  private:
   static ArcNotificationSurfaceManager* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationSurfaceManager);
 };
 
 }  // namespace ash

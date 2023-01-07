@@ -1,0 +1,79 @@
+.suggestion-list {
+    list-style: none;
+    margin: 0;
+    font: -webkit-small-control;
+    border: 1px solid #bfbfbf;
+    background-color: white;
+    overflow: hidden;
+    padding: 4px;
+}
+
+
+.suggestion-list-entry {
+    white-space: nowrap;
+    -webkit-select: none;
+    cursor: default;
+    border-radius: 2px;
+    font-size: 14px;
+    height: 32px;
+    line-height: 32px;
+}
+
+.suggestion-list-entry:focus {
+    background-color: #E5E5E5 !important;
+    outline: solid 2px -webkit-focus-ring-color;
+    outline-offset: -2px;
+}
+
+.suggestion-list-entry .content {
+    padding: 0 4px;
+}
+
+.suggestion-list-entry .label {
+    text-align: right;
+    float: right;
+    padding: 0 4px 0 20px;
+    color: rgba(16, 16, 16, 0.6) !important;
+}
+
+.rtl .suggestion-list-entry .label {
+    float: left;
+    padding: 0 20px 0 4px;
+}
+
+.suggestion-list-entry .title {
+    direction: ltr;
+    display: inline-block;
+    color: #101010;
+}
+
+.locale-rtl .suggestion-list-entry .title {
+    direction: rtl;
+}
+
+.measuring-width .suggestion-list-entry .label {
+    float: none;
+    margin-right: 0;
+}
+
+.suggestion-list .separator {
+    border-top: 1px solid #dcdcdc;
+    height: 0;
+}
+
+@media (forced-colors: active) {
+  .suggestion-list-entry:focus {
+    background-color: Highlight !important;
+    forced-color-adjust: none;
+  }
+
+  .suggestion-list-entry:focus .label,
+  .suggestion-list-entry:focus .title {
+    color: HighlightText !important;
+  }
+
+  .suggestion-list-entry .label,
+  .suggestion-list-entry .title {
+    color: WindowText !important;
+  }
+}

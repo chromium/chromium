@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ ProcessMitigationsWin32KDispatcher::~ProcessMitigationsWin32KDispatcher() {}
 bool ProcessMitigationsWin32KDispatcher::SetupService(
     InterceptionManager* manager,
     IpcTag service) {
-  if (!(policy_base_->GetProcessMitigations() &
+  if (!(policy_base_->GetConfig()->GetProcessMitigations() &
         sandbox::MITIGATION_WIN32K_DISABLE)) {
     return false;
   }

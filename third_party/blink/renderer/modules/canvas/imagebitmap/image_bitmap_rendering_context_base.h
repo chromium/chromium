@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
 class Layer;
@@ -19,7 +19,7 @@ namespace blink {
 
 class ImageBitmap;
 class ImageLayerBridge;
-class HTMLCanvasElementOrOffscreenCanvas;
+class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 
 class MODULES_EXPORT ImageBitmapRenderingContextBase
     : public CanvasRenderingContext {
@@ -30,15 +30,8 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
 
   void Trace(Visitor*) const override;
 
-  // TODO(juanmihd): Remove this method crbug.com/941579
-  HTMLCanvasElement* canvas() const {
-    if (Host()->IsOffscreenCanvas())
-      return nullptr;
-    return static_cast<HTMLCanvasElement*>(Host());
-  }
-
   bool CanCreateCanvas2dResourceProvider() const;
-  void getHTMLOrOffscreenCanvas(HTMLCanvasElementOrOffscreenCanvas&) const;
+  V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
 
   void SetIsInHiddenPage(bool) override {}
   void SetIsBeingDisplayed(bool) override {}
@@ -48,7 +41,7 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
   void SetImage(ImageBitmap*);
   scoped_refptr<StaticBitmapImage> GetImage() final;
 
-  void SetUV(const FloatPoint& left_top, const FloatPoint& right_bottom);
+  void SetUV(const gfx::PointF& left_top, const gfx::PointF& right_bottom);
   bool IsComposited() const final { return true; }
   bool IsAccelerated() const final;
   bool PushFrame() override;
@@ -64,6 +57,8 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
   bool IsPaintable() const final;
 
  protected:
+  void Dispose() override;
+
   Member<ImageLayerBridge> image_layer_bridge_;
 
   // This function resets the internal image resource to a image of the same
@@ -77,4 +72,4 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_IMAGEBITMAP_IMAGE_BITMAP_RENDERING_CONTEXT_BASE_H_

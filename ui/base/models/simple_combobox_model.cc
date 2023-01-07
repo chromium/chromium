@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,26 +8,55 @@
 
 namespace ui {
 
-SimpleComboboxModel::SimpleComboboxModel(std::vector<std::u16string> items)
-    : items_(std::move(items)) {}
+SimpleComboboxModel::Item::Item(std::u16string text) : text(std::move(text)) {}
+SimpleComboboxModel::Item::Item(std::u16string text,
+                                std::u16string dropdown_secondary_text,
+                                ui::ImageModel icon)
+    : text(std::move(text)),
+      dropdown_secondary_text(std::move(dropdown_secondary_text)),
+      icon(std::move(icon)) {}
+SimpleComboboxModel::Item::Item(const SimpleComboboxModel::Item& other) =
+    default;
+SimpleComboboxModel::Item& SimpleComboboxModel::Item::operator=(
+    const SimpleComboboxModel::Item& other) = default;
+SimpleComboboxModel::Item::Item(SimpleComboboxModel::Item&& other) = default;
+SimpleComboboxModel::Item& SimpleComboboxModel::Item::operator=(
+    SimpleComboboxModel::Item&& other) = default;
+SimpleComboboxModel::Item::~Item() = default;
 
-SimpleComboboxModel::~SimpleComboboxModel() {
+// static
+SimpleComboboxModel::Item SimpleComboboxModel::Item::CreateSeparator() {
+  return SimpleComboboxModel::Item(std::u16string());
 }
 
-int SimpleComboboxModel::GetItemCount() const {
+SimpleComboboxModel::SimpleComboboxModel(std::vector<Item> items)
+    : items_(std::move(items)) {}
+
+SimpleComboboxModel::~SimpleComboboxModel() = default;
+
+size_t SimpleComboboxModel::GetItemCount() const {
   return items_.size();
 }
 
-std::u16string SimpleComboboxModel::GetItemAt(int index) const {
-  return items_[index];
+std::u16string SimpleComboboxModel::GetItemAt(size_t index) const {
+  return items_[index].text;
 }
 
-bool SimpleComboboxModel::IsItemSeparatorAt(int index) const {
-  return items_[index].empty();
+std::u16string SimpleComboboxModel::GetDropDownSecondaryTextAt(
+    size_t index) const {
+  return items_[index].dropdown_secondary_text;
 }
 
-int SimpleComboboxModel::GetDefaultIndex() const {
-  return 0;
+ui::ImageModel SimpleComboboxModel::GetIconAt(size_t index) const {
+  return items_[index].icon;
+}
+
+bool SimpleComboboxModel::IsItemSeparatorAt(size_t index) const {
+  return items_[index].text.empty();
+}
+
+absl::optional<size_t> SimpleComboboxModel::GetDefaultIndex() const {
+  return size_t{0};
 }
 
 }  // namespace ui

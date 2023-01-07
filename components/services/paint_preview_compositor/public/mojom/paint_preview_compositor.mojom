@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@ module paint_preview.mojom;
 
 import "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom";
 import "components/paint_preview/common/mojom/paint_preview_types.mojom";
+import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
@@ -24,7 +26,7 @@ struct PaintPreviewBeginCompositeRequest {
 // A struct representing the clip rect of a subframe within its parent.
 struct SubframeClipRect {
   mojo_base.mojom.UnguessableToken frame_guid;
-  gfx.mojom.Rect clip_rect;
+  gfx.mojom.RectF clip_rect;
 };
 
 // A struct representing the scroll extents and subframes of a parent frame.
@@ -134,6 +136,8 @@ interface PaintPreviewCompositor {
 
 // Holds a collection of PaintPreviewCompositor instances running in the same
 // process.
+// TODO(crbug/1074323): Investigate using a different Sandbox.
+[ServiceSandbox=sandbox.mojom.Sandbox.kPrintCompositor]
 interface PaintPreviewCompositorCollection {
   // Provides an interface for managing discardable shared memory regions. Must
   // be called before calling any methods on managed PaintPreviewCompositors.
@@ -145,6 +149,9 @@ interface PaintPreviewCompositorCollection {
   // the compositor.
   CreateCompositor(pending_receiver<PaintPreviewCompositor> compositor)
     => (mojo_base.mojom.UnguessableToken compositor_id);
+
+  // Called when the system is low on memory.
+  OnMemoryPressure(mojo_base.mojom.MemoryPressureLevel memory_pressure_level);
 
   // Returns a list of active compositor IDs.
   ListCompositors() => (array<mojo_base.mojom.UnguessableToken> compositor_ids);

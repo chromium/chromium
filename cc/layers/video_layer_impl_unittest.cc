@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "cc/trees/single_thread_proxy.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/service/display/output_surface.h"
@@ -179,12 +178,12 @@ TEST(VideoLayerImplTest, Rotated0) {
 
   gfx::Point3F p1(0, impl.quad_list().front()->rect.height(), 0);
   gfx::Point3F p2(impl.quad_list().front()->rect.width(), 0, 0);
-  impl.quad_list()
-      .front()
-      ->shared_quad_state->quad_to_target_transform.TransformPoint(&p1);
-  impl.quad_list()
-      .front()
-      ->shared_quad_state->quad_to_target_transform.TransformPoint(&p2);
+  p1 = impl.quad_list()
+           .front()
+           ->shared_quad_state->quad_to_target_transform.MapPoint(p1);
+  p2 = impl.quad_list()
+           .front()
+           ->shared_quad_state->quad_to_target_transform.MapPoint(p2);
   EXPECT_EQ(gfx::Point3F(0, 50, 0), p1);
   EXPECT_EQ(gfx::Point3F(100, 0, 0), p2);
 }
@@ -216,12 +215,12 @@ TEST(VideoLayerImplTest, Rotated90) {
 
   gfx::Point3F p1(0, impl.quad_list().front()->rect.height(), 0);
   gfx::Point3F p2(impl.quad_list().front()->rect.width(), 0, 0);
-  impl.quad_list()
-      .front()
-      ->shared_quad_state->quad_to_target_transform.TransformPoint(&p1);
-  impl.quad_list()
-      .front()
-      ->shared_quad_state->quad_to_target_transform.TransformPoint(&p2);
+  p1 = impl.quad_list()
+           .front()
+           ->shared_quad_state->quad_to_target_transform.MapPoint(p1);
+  p2 = impl.quad_list()
+           .front()
+           ->shared_quad_state->quad_to_target_transform.MapPoint(p2);
   EXPECT_EQ(gfx::Point3F(0, 0, 0), p1);
   EXPECT_EQ(gfx::Point3F(100, 50, 0), p2);
 }
@@ -251,14 +250,16 @@ TEST(VideoLayerImplTest, Rotated180) {
 
   EXPECT_EQ(1u, impl.quad_list().size());
 
-  gfx::Point3F p1(0, impl.quad_list().front()->rect.height(), 0);
-  gfx::Point3F p2(impl.quad_list().front()->rect.width(), 0, 0);
-  impl.quad_list()
-      .front()
-      ->shared_quad_state->quad_to_target_transform.TransformPoint(&p1);
-  impl.quad_list()
-      .front()
-      ->shared_quad_state->quad_to_target_transform.TransformPoint(&p2);
+  gfx::Point3F p1 =
+      impl.quad_list()
+          .front()
+          ->shared_quad_state->quad_to_target_transform.MapPoint(
+              gfx::Point3F(0, impl.quad_list().front()->rect.height(), 0));
+  gfx::Point3F p2 =
+      impl.quad_list()
+          .front()
+          ->shared_quad_state->quad_to_target_transform.MapPoint(
+              gfx::Point3F(impl.quad_list().front()->rect.width(), 0, 0));
   EXPECT_EQ(gfx::Point3F(100, 0, 0), p1);
   EXPECT_EQ(gfx::Point3F(0, 50, 0), p2);
 }
@@ -288,14 +289,16 @@ TEST(VideoLayerImplTest, Rotated270) {
 
   EXPECT_EQ(1u, impl.quad_list().size());
 
-  gfx::Point3F p1(0, impl.quad_list().front()->rect.height(), 0);
-  gfx::Point3F p2(impl.quad_list().front()->rect.width(), 0, 0);
-  impl.quad_list()
-      .front()
-      ->shared_quad_state->quad_to_target_transform.TransformPoint(&p1);
-  impl.quad_list()
-      .front()
-      ->shared_quad_state->quad_to_target_transform.TransformPoint(&p2);
+  gfx::Point3F p1 =
+      impl.quad_list()
+          .front()
+          ->shared_quad_state->quad_to_target_transform.MapPoint(
+              gfx::Point3F(0, impl.quad_list().front()->rect.height(), 0));
+  gfx::Point3F p2 =
+      impl.quad_list()
+          .front()
+          ->shared_quad_state->quad_to_target_transform.MapPoint(
+              gfx::Point3F(impl.quad_list().front()->rect.width(), 0, 0));
   EXPECT_EQ(gfx::Point3F(100, 50, 0), p1);
   EXPECT_EQ(gfx::Point3F(0, 0, 0), p2);
 }
@@ -334,10 +337,10 @@ TEST(VideoLayerImplTest, SoftwareVideoFrameGeneratesYUVQuad) {
 
   const auto* yuv_draw_quad =
       static_cast<const viz::YUVVideoDrawQuad*>(draw_quad);
-  EXPECT_EQ(yuv_draw_quad->uv_tex_size.height(),
-            (yuv_draw_quad->ya_tex_size.height() + 1) / 2);
-  EXPECT_EQ(yuv_draw_quad->uv_tex_size.width(),
-            (yuv_draw_quad->ya_tex_size.width() + 1) / 2);
+  EXPECT_EQ(yuv_draw_quad->uv_tex_size().height(),
+            (yuv_draw_quad->ya_tex_size().height() + 1) / 2);
+  EXPECT_EQ(yuv_draw_quad->uv_tex_size().width(),
+            (yuv_draw_quad->ya_tex_size().width() + 1) / 2);
 }
 
 TEST(VideoLayerImplTest, HibitSoftwareVideoFrameGeneratesYUVQuad) {
@@ -374,8 +377,8 @@ TEST(VideoLayerImplTest, HibitSoftwareVideoFrameGeneratesYUVQuad) {
 
   const auto* yuv_draw_quad =
       static_cast<const viz::YUVVideoDrawQuad*>(draw_quad);
-  EXPECT_EQ(5, yuv_draw_quad->uv_tex_size.height());
-  EXPECT_EQ(10, yuv_draw_quad->uv_tex_size.width());
+  EXPECT_EQ(5, yuv_draw_quad->uv_tex_size().height());
+  EXPECT_EQ(10, yuv_draw_quad->uv_tex_size().width());
 }
 
 TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
@@ -416,10 +419,10 @@ TEST(VideoLayerImplTest, NativeYUVFrameGeneratesYUVQuad) {
 
   const auto* yuv_draw_quad =
       static_cast<const viz::YUVVideoDrawQuad*>(draw_quad);
-  EXPECT_EQ(yuv_draw_quad->uv_tex_size.height(),
-            (yuv_draw_quad->ya_tex_size.height() + 1) / 2);
-  EXPECT_EQ(yuv_draw_quad->uv_tex_size.width(),
-            (yuv_draw_quad->ya_tex_size.width() + 1) / 2);
+  EXPECT_EQ(yuv_draw_quad->uv_tex_size().height(),
+            (yuv_draw_quad->ya_tex_size().height() + 1) / 2);
+  EXPECT_EQ(yuv_draw_quad->uv_tex_size().width(),
+            (yuv_draw_quad->ya_tex_size().width() + 1) / 2);
 }
 
 TEST(VideoLayerImplTest, NativeARGBFrameGeneratesTextureQuad) {

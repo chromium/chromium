@@ -27,8 +27,8 @@
  */
 
 // Web IDL exceptions are defined in prose rather than IDL.
-// https://heycam.github.io/webidl/#idl-exceptions
-// https://heycam.github.io/webidl/#es-DOMException
+// https://webidl.spec.whatwg.org/#idl-exceptions
+// https://webidl.spec.whatwg.org/#es-DOMException
 
 [
     Exposed=(Window,Worker),

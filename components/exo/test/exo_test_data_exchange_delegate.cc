@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/pickle.h"
 #include "base/strings/string_split.h"
@@ -83,23 +84,11 @@ void TestDataExchangeDelegate::RunSendPickleCallback(std::vector<GURL> urls) {
       .Run(base::RefCountedString::TakeString(&result));
 }
 
-base::Pickle TestDataExchangeDelegate::CreateClipboardFilenamesPickle(
-    ui::EndpointType source,
-    const std::vector<uint8_t>& data) const {
-  base::Pickle result;
-  result.WriteData(reinterpret_cast<const char*>(data.data()), data.size());
-  return result;
-}
-
-std::vector<ui::FileInfo>
-TestDataExchangeDelegate::ParseClipboardFilenamesPickle(
-    const ui::EndpointType target,
-    const ui::Clipboard& data) const {
+std::vector<ui::FileInfo> TestDataExchangeDelegate::ParseFileSystemSources(
+    const ui::DataTransferEndpoint* source,
+    const base::Pickle& pickle) const {
   std::vector<ui::FileInfo> file_info;
-  const ui::DataTransferEndpoint data_dst(target);
-  std::string lines;
-  data.ReadData(ui::ClipboardFormatType::GetWebCustomDataType(), &data_dst,
-                &lines);
+  std::string lines(static_cast<const char*>(pickle.data()), pickle.size());
   for (const base::StringPiece& line : base::SplitStringPiece(
            lines, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     base::FilePath path;
@@ -107,6 +96,37 @@ TestDataExchangeDelegate::ParseClipboardFilenamesPickle(
       file_info.push_back(ui::FileInfo(std::move(path), base::FilePath()));
   }
   return file_info;
+}
+
+TestDataSourceDelegate::TestDataSourceDelegate() = default;
+TestDataSourceDelegate::~TestDataSourceDelegate() = default;
+
+void TestDataSourceDelegate::OnSend(const std::string& mime_type,
+                                    base::ScopedFD fd) {
+  constexpr char kText[] = "test";
+  if (data_map_.empty()) {
+    base::WriteFileDescriptor(fd.get(), kText);
+  } else {
+    base::WriteFileDescriptor(fd.get(), data_map_[mime_type]);
+  }
+}
+
+void TestDataSourceDelegate::OnCancelled() {
+  cancelled_ = true;
+}
+
+void TestDataSourceDelegate::OnDndFinished() {
+  finished_ = true;
+}
+
+bool TestDataSourceDelegate::CanAcceptDataEventsForSurface(
+    Surface* surface) const {
+  return true;
+}
+
+void TestDataSourceDelegate::SetData(const std::string& mime_type,
+                                     std::vector<uint8_t> data) {
+  data_map_[mime_type] = std::move(data);
 }
 
 }  // namespace exo

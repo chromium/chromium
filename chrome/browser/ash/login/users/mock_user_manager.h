@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/users/affiliation.h"
@@ -24,7 +23,7 @@ class FakeSupervisedUserManager;
 class MockUserManager : public ChromeUserManager {
  public:
   MockUserManager();
-  virtual ~MockUserManager();
+  ~MockUserManager() override;
 
   MOCK_METHOD0(Shutdown, void(void));
   MOCK_CONST_METHOD0(GetUsersAllowedForMultiProfile,
@@ -34,8 +33,10 @@ class MockUserManager : public ChromeUserManager {
   MOCK_METHOD4(UserLoggedIn,
                void(const AccountId&, const std::string&, bool, bool));
   MOCK_METHOD0(SessionStarted, void(void));
-  MOCK_METHOD2(RemoveUser,
-               void(const AccountId&, user_manager::RemoveUserDelegate*));
+  MOCK_METHOD3(RemoveUser,
+               void(const AccountId&,
+                    user_manager::UserRemovalReason reason,
+                    user_manager::RemoveUserDelegate*));
   MOCK_METHOD1(RemoveUserFromList, void(const AccountId&));
   MOCK_CONST_METHOD1(IsKnownUser, bool(const AccountId&));
   MOCK_CONST_METHOD1(FindUser, const user_manager::User*(const AccountId&));
@@ -81,8 +82,8 @@ class MockUserManager : public ChromeUserManager {
                           const user_manager::User*,
                           bool));
   MOCK_CONST_METHOD1(AsyncRemoveCryptohome, void(const AccountId&));
-  MOCK_CONST_METHOD3(GetPlatformKnownUserId,
-                     bool(const std::string&, const std::string&, AccountId*));
+  MOCK_CONST_METHOD2(GetPlatformKnownUserId,
+                     bool(const std::string&, AccountId*));
   MOCK_CONST_METHOD0(GetGuestAccountId, const AccountId&());
   MOCK_CONST_METHOD0(IsFirstExecAfterBoot, bool(void));
   MOCK_CONST_METHOD1(IsGuestAccountId, bool(const AccountId&));
@@ -102,7 +103,6 @@ class MockUserManager : public ChromeUserManager {
   MOCK_CONST_METHOD1(IsKioskApp, bool(const AccountId&));
   MOCK_CONST_METHOD1(IsDeviceLocalAccountMarkedForRemoval,
                      bool(const AccountId&));
-  MOCK_METHOD0(DemoAccountLoggedIn, void(void));
   MOCK_METHOD1(KioskAppLoggedIn, void(user_manager::User*));
   MOCK_METHOD1(PublicAccountUserLoggedIn, void(user_manager::User*));
   MOCK_METHOD1(OnUserRemoved, void(const AccountId&));
@@ -139,10 +139,15 @@ class MockUserManager : public ChromeUserManager {
                     const AffiliationIDSet& user_affiliation_ids));
 
   bool ShouldReportUser(const std::string& user_id) const override;
-  MOCK_CONST_METHOD1(IsManagedSessionEnabledForUser,
-                     bool(const user_manager::User&));
   MOCK_CONST_METHOD1(IsFullManagementDisclosureNeeded,
                      bool(policy::DeviceLocalAccountPolicyBroker*));
+  MOCK_METHOD2(CacheRemovedUser,
+               void(const std::string&, user_manager::UserRemovalReason));
+  MOCK_CONST_METHOD0(
+      GetRemovedUserCache,
+      std::vector<std::pair<std::string, user_manager::UserRemovalReason>>(
+          void));
+  MOCK_METHOD0(MarkReporterInitialized, void(void));
 
   // We cannot mock ScheduleResolveLocale directly because of
   // base::OnceClosure's removed deleter. This is a trampoline to the actual

@@ -1,12 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.signin;
 
 import android.content.Context;
-import android.content.Intent;
-import android.provider.Settings;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +13,11 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.chrome.browser.signin.ui.SigninActivityLauncher.AccessPoint;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
-import org.chromium.chrome.browser.sync.settings.SyncAndServicesSettings;
+import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
+import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -30,8 +27,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
  * If inflated manually, {@link SyncPromoView#init(int)} must be called before
  * attaching this View to a ViewGroup.
  */
-public class SyncPromoView
-        extends LinearLayout implements ProfileSyncService.SyncStateChangedListener {
+public class SyncPromoView extends LinearLayout implements SyncService.SyncStateChangedListener {
     private @AccessPoint int mAccessPoint;
     private boolean mInitialized;
 
@@ -60,7 +56,7 @@ public class SyncPromoView
         super(context, attrs);
         // This promo is about enabling sync, so no sense in showing it if
         // syncing isn't possible.
-        assert ProfileSyncService.get() != null;
+        assert SyncService.get() != null;
     }
 
     @Override
@@ -96,9 +92,8 @@ public class SyncPromoView
 
     private void update() {
         ViewState viewState;
-        if (!ProfileSyncService.get().isSyncAllowedByPlatform()) {
-            viewState = getStateForEnableAndroidSync();
-        } else if (!ProfileSyncService.get().isSyncRequested()) {
+        if (!SyncService.get().isSyncRequested()
+                || SyncService.get().getSelectedTypes().isEmpty()) {
             viewState = getStateForEnableChromeSync();
         } else {
             viewState = getStateForStartUsing();
@@ -160,19 +155,6 @@ public class SyncPromoView
         }
     }
 
-    private ViewState getStateForEnableAndroidSync() {
-        assert mAccessPoint == SigninAccessPoint.RECENT_TABS
-                : "Enable Android Sync should not be showing from bookmarks";
-
-        int descId = R.string.recent_tabs_sync_promo_enable_android_sync;
-
-        ButtonState positiveButton = new ButtonPresent(R.string.open_settings_button, view -> {
-            IntentUtils.safeStartActivity(getContext(), new Intent(Settings.ACTION_SYNC_SETTINGS));
-        });
-
-        return new ViewState(descId, positiveButton);
-    }
-
     private ViewState getStateForEnableChromeSync() {
         int descId = mAccessPoint == SigninAccessPoint.BOOKMARK_MANAGER
                 ? R.string.bookmarks_sync_promo_enable_sync
@@ -180,8 +162,8 @@ public class SyncPromoView
 
         ButtonState positiveButton = new ButtonPresent(R.string.enable_sync_button, view -> {
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
-            settingsLauncher.launchSettingsActivity(getContext(), SyncAndServicesSettings.class,
-                    SyncAndServicesSettings.createArguments(false));
+            settingsLauncher.launchSettingsActivity(getContext(), ManageSyncSettings.class,
+                    ManageSyncSettings.createArguments(false));
         });
 
         return new ViewState(descId, positiveButton);
@@ -201,17 +183,17 @@ public class SyncPromoView
         assert mInitialized : "init(...) must be called on SyncPromoView before use.";
 
         super.onAttachedToWindow();
-        ProfileSyncService.get().addSyncStateChangedListener(this);
+        SyncService.get().addSyncStateChangedListener(this);
         update();
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        ProfileSyncService.get().removeSyncStateChangedListener(this);
+        SyncService.get().removeSyncStateChangedListener(this);
     }
 
-    // ProfileSyncService.SyncStateChangedListener
+    // SyncService.SyncStateChangedListener
     @Override
     public void syncStateChanged() {
         update();

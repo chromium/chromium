@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,27 +8,27 @@
 
 #include "base/callback_helpers.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
+#include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager.h"
-#include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service_factory.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace cert_provisioning {
 
 namespace {
-base::Optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
+absl::optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
   switch (scope) {
     case CertScope::kDevice: {
       return EmptyAccountId();
@@ -37,7 +37,7 @@ base::Optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
       user_manager::User* user =
           ProfileHelper::Get()->GetUserByProfile(profile);
       if (!user) {
-        return base::nullopt;
+        return absl::nullopt;
       }
 
       return user->GetAccountId();
@@ -77,6 +77,36 @@ void DeleteVaKeysWithMatchBehavior(
 
 }  // namespace
 
+std::string CertificateProvisioningWorkerStateToString(
+    CertProvisioningWorkerState state) {
+  switch (state) {
+    case CertProvisioningWorkerState::kInitState:
+      return "InitState";
+    case CertProvisioningWorkerState::kKeypairGenerated:
+      return "KeypairGenerated";
+    case CertProvisioningWorkerState::kStartCsrResponseReceived:
+      return "StartCsrResponseReceived";
+    case CertProvisioningWorkerState::kVaChallengeFinished:
+      return "VaChallengeFinished";
+    case CertProvisioningWorkerState::kKeyRegistered:
+      return "KeyRegistered";
+    case CertProvisioningWorkerState::kKeypairMarked:
+      return "KeypairMarked";
+    case CertProvisioningWorkerState::kSignCsrFinished:
+      return "SignCsrFinished";
+    case CertProvisioningWorkerState::kFinishCsrResponseReceived:
+      return "FinishCsrResponseReceived";
+    case CertProvisioningWorkerState::kSucceeded:
+      return "Succeeded";
+    case CertProvisioningWorkerState::kInconsistentDataError:
+      return "InconsistentDataError";
+    case CertProvisioningWorkerState::kFailed:
+      return "Failed";
+    case CertProvisioningWorkerState::kCanceled:
+      return "Canceled";
+  }
+}
+
 bool IsFinalState(CertProvisioningWorkerState state) {
   switch (state) {
     case CertProvisioningWorkerState::kSucceeded:
@@ -107,7 +137,7 @@ CertProfile::CertProfile(const CertProfile& other) = default;
 CertProfile::CertProfile() = default;
 CertProfile::~CertProfile() = default;
 
-base::Optional<CertProfile> CertProfile::MakeFromValue(
+absl::optional<CertProfile> CertProfile::MakeFromValue(
     const base::Value& value) {
   static_assert(kVersion == 5, "This function should be updated");
 
@@ -115,13 +145,13 @@ base::Optional<CertProfile> CertProfile::MakeFromValue(
   const std::string* name = value.FindStringKey(kCertProfileNameKey);
   const std::string* policy_version =
       value.FindStringKey(kCertProfilePolicyVersionKey);
-  base::Optional<bool> is_va_enabled =
+  absl::optional<bool> is_va_enabled =
       value.FindBoolKey(kCertProfileIsVaEnabledKey);
-  base::Optional<int> renewal_period_sec =
+  absl::optional<int> renewal_period_sec =
       value.FindIntKey(kCertProfileRenewalPeroidSec);
 
   if (!id || !policy_version) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   CertProfile result;
@@ -129,8 +159,7 @@ base::Optional<CertProfile> CertProfile::MakeFromValue(
   result.name = name ? *name : std::string();
   result.policy_version = *policy_version;
   result.is_va_enabled = is_va_enabled.value_or(true);
-  result.renewal_period =
-      base::TimeDelta::FromSeconds(renewal_period_sec.value_or(0));
+  result.renewal_period = base::Seconds(renewal_period_sec.value_or(0));
 
   return result;
 }
@@ -200,12 +229,12 @@ attestation::AttestationKeyType GetVaKeyType(CertScope scope) {
   }
 }
 
-platform_keys::TokenId GetPlatformKeysTokenId(CertScope scope) {
+chromeos::platform_keys::TokenId GetPlatformKeysTokenId(CertScope scope) {
   switch (scope) {
     case CertScope::kUser:
-      return platform_keys::TokenId::kUser;
+      return chromeos::platform_keys::TokenId::kUser;
     case CertScope::kDevice:
-      return platform_keys::TokenId::kSystem;
+      return chromeos::platform_keys::TokenId::kSystem;
   }
 }
 
@@ -232,7 +261,8 @@ scoped_refptr<net::X509Certificate> CreateSingleCertificateFromBytes(
     size_t length) {
   net::CertificateList cert_list =
       net::X509Certificate::CreateCertificateListFromBytes(
-          data, length, net::X509Certificate::FORMAT_AUTO);
+          base::as_bytes(base::make_span(data, length)),
+          net::X509Certificate::FORMAT_AUTO);
 
   if (cert_list.size() != 1) {
     return {};

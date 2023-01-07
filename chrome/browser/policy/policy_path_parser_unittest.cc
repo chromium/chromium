@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -79,7 +79,7 @@ TEST_F(PolicyPathParserTests, AllPlatformVariables) {
                        FILE_PATH_LITERAL("${machine_name}"));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 TEST_F(PolicyPathParserTests, MacVariables) {
   CheckForSubstitution(FILE_PATH_LITERAL("//$C/${users}"),
@@ -88,7 +88,7 @@ TEST_F(PolicyPathParserTests, MacVariables) {
                        FILE_PATH_LITERAL("${documents}"));
 }
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 TEST_F(PolicyPathParserTests, WinVariables) {
   CheckForSubstitution(FILE_PATH_LITERAL("//$C/${documents}"),
@@ -111,6 +111,6 @@ TEST_F(PolicyPathParserTests, WinVariables) {
                        FILE_PATH_LITERAL("${session_name}"));
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace policy

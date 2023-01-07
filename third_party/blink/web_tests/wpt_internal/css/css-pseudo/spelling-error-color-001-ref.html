@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8" />
+<title>CSS Pseudo-Elements Test: Reference</title>
+<link rel="author" title="Manuel Rego Casasnovas" href="mailto:rego@igalia.com">
+<script src="../support/markers.js"></script>
+
+<p>The test passes if "quikc" has a spelling error marker that is not the default color (usually red).</p>
+<div id="target" contenteditable spellcheck>The quikc brown fox.</div>
+
+<script>
+  target.focus();
+  addSpellingMarker(target, 4, 9);
+</script>

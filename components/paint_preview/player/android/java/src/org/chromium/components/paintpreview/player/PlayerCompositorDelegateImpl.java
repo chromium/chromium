@@ -1,23 +1,23 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.paintpreview.player;
 
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.SysUtils;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.UnguessableToken;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.components.paint_preview.common.proto.PaintPreview.PaintPreviewProto;
 import org.chromium.components.paintpreview.browser.NativePaintPreviewServiceProvider;
 import org.chromium.url.GURL;
 
@@ -37,15 +37,17 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
     private List<Runnable> mMemoryPressureListeners = new ArrayList<>();
 
     public PlayerCompositorDelegateImpl(NativePaintPreviewServiceProvider service,
-            @Nullable PaintPreviewProto proto, GURL url, String directoryKey, boolean mainFrameMode,
+            long nativeCaptureResultPtr, GURL url, String directoryKey, boolean mainFrameMode,
             @NonNull CompositorListener compositorListener,
             Callback<Integer> compositorErrorCallback) {
         mCompositorListener = compositorListener;
         if (service != null && service.getNativeBaseService() != 0) {
+            TraceEvent.begin("PlayerCompositorDelegateImplJni.initialize()");
             mNativePlayerCompositorDelegate = PlayerCompositorDelegateImplJni.get().initialize(this,
-                    service.getNativeBaseService(), (proto != null) ? proto.toByteArray() : null,
-                    url.getSpec(), directoryKey, mainFrameMode, compositorErrorCallback,
+                    service.getNativeBaseService(), nativeCaptureResultPtr, url.getSpec(),
+                    directoryKey, mainFrameMode, compositorErrorCallback,
                     SysUtils.amountOfPhysicalMemoryKB() < LOW_MEMORY_THRESHOLD_KB);
+            TraceEvent.end("PlayerCompositorDelegateImplJni.initialize()");
         }
         // TODO(crbug.com/1021590): Handle initialization errors when
         // mNativePlayerCompositorDelegate == 0.
@@ -54,9 +56,11 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
     @CalledByNative
     void onCompositorReady(UnguessableToken rootFrameGuid, UnguessableToken[] frameGuids,
             int[] frameContentSize, int[] scrollOffsets, int[] subFramesCount,
-            UnguessableToken[] subFrameGuids, int[] subFrameClipRects, long nativeAxTree) {
+            UnguessableToken[] subFrameGuids, int[] subFrameClipRects, float pageScaleFactor,
+            long nativeAxTree) {
         mCompositorListener.onCompositorReady(rootFrameGuid, frameGuids, frameContentSize,
-                scrollOffsets, subFramesCount, subFrameGuids, subFrameClipRects, nativeAxTree);
+                scrollOffsets, subFramesCount, subFrameGuids, subFrameClipRects, pageScaleFactor,
+                nativeAxTree);
     }
 
     @CalledByNative
@@ -123,6 +127,17 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
     }
 
     @Override
+    public Point getRootFrameOffsets() {
+        if (mNativePlayerCompositorDelegate == 0) {
+            return new Point();
+        }
+
+        int[] offsets = PlayerCompositorDelegateImplJni.get().getRootFrameOffsets(
+                mNativePlayerCompositorDelegate);
+        return new Point(offsets[0], offsets[1]);
+    }
+
+    @Override
     public void setCompressOnClose(boolean compressOnClose) {
         if (mNativePlayerCompositorDelegate == 0) {
             return;
@@ -145,7 +160,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
     @NativeMethods
     interface Natives {
         long initialize(PlayerCompositorDelegateImpl caller, long nativePaintPreviewBaseService,
-                byte[] proto, String urlSpec, String directoryKey, boolean mainFrameMode,
+                long captureResultPtr, String urlSpec, String directoryKey, boolean mainFrameMode,
                 Callback<Integer> compositorErrorCallback, boolean isLowMemory);
         void destroy(long nativePlayerCompositorDelegateAndroid);
         int requestBitmap(long nativePlayerCompositorDelegateAndroid, UnguessableToken frameGuid,
@@ -155,6 +170,7 @@ public class PlayerCompositorDelegateImpl implements PlayerCompositorDelegate {
         void cancelAllBitmapRequests(long nativePlayerCompositorDelegateAndroid);
         String onClick(long nativePlayerCompositorDelegateAndroid, UnguessableToken frameGuid,
                 int x, int y);
+        int[] getRootFrameOffsets(long nativePlayerCompositorDelegateAndroid);
         void setCompressOnClose(
                 long nativePlayerCompositorDelegateAndroid, boolean compressOnClose);
     }

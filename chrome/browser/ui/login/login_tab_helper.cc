@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,7 +48,7 @@ void LoginTabHelper::DidStartNavigation(
   // these could happen in the case of 401/407 error pages that have fancy
   // response bodies that have subframes or can trigger same-document
   // navigations.
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument())
     return;
 
@@ -61,7 +61,7 @@ void LoginTabHelper::DidStartNavigation(
 
 void LoginTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
   }
@@ -98,21 +98,18 @@ void LoginTabHelper::DidFinishNavigation(
     return;
   }
 
-  // Show a login prompt with the navigation's AuthChallengeInfo on FTP
-  // navigations and on HTTP 401/407 responses.
-  if (!navigation_handle->GetURL().SchemeIs(url::kFtpScheme)) {
-    int response_code =
-        navigation_handle->GetResponseHeaders()->response_code();
-    if (response_code !=
-            net::HttpStatusCode::HTTP_PROXY_AUTHENTICATION_REQUIRED &&
-        response_code != net::HttpStatusCode::HTTP_UNAUTHORIZED) {
-      return;
-    }
+  // Show a login prompt with the navigation's AuthChallengeInfo on HTTP 401/407
+  // responses.
+  int response_code = navigation_handle->GetResponseHeaders()->response_code();
+  if (response_code !=
+          net::HttpStatusCode::HTTP_PROXY_AUTHENTICATION_REQUIRED &&
+      response_code != net::HttpStatusCode::HTTP_UNAUTHORIZED) {
+    return;
   }
 
   challenge_ = navigation_handle->GetAuthChallengeInfo().value();
-  network_isolation_key_ =
-      navigation_handle->GetIsolationInfo().network_isolation_key();
+  network_anonymization_key_ =
+      navigation_handle->GetIsolationInfo().network_anonymization_key();
 
   url_for_login_handler_ = navigation_handle->GetURL();
   login_handler_ = LoginHandler::Create(
@@ -214,23 +211,23 @@ LoginTabHelper::WillProcessMainFrameUnauthorizedResponse(
 }
 
 LoginTabHelper::LoginTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<LoginTabHelper>(*web_contents) {}
 
 void LoginTabHelper::HandleCredentials(
-    const base::Optional<net::AuthCredentials>& credentials) {
+    const absl::optional<net::AuthCredentials>& credentials) {
   login_handler_.reset();
   url_for_login_handler_ = GURL();
 
   if (credentials.has_value()) {
     content::StoragePartition* storage_partition =
-        content::BrowserContext::GetStoragePartition(
-            web_contents()->GetBrowserContext(),
+        web_contents()->GetBrowserContext()->GetStoragePartition(
             web_contents()->GetSiteInstance());
     // Pass a weak pointer for the callback, as the WebContents (and thus this
     // LoginTabHelper) could be destroyed while the network service is
     // processing the new cache entry.
     storage_partition->GetNetworkContext()->AddAuthCacheEntry(
-        challenge_, network_isolation_key_, credentials.value(),
+        challenge_, network_anonymization_key_, credentials.value(),
         base::BindOnce(&LoginTabHelper::Reload,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -268,4 +265,4 @@ void LoginTabHelper::Reload() {
                                          false /* check_for_repost */);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(LoginTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(LoginTabHelper);

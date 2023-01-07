@@ -1,0 +1,33 @@
+// Copyright 2017 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package puffin.metadata;
+option optimize_for = LITE_RUNTIME;
+
+message BitExtent {
+  uint64 offset = 1;
+  uint64 length = 2;
+}
+
+message StreamInfo {
+  repeated BitExtent deflates = 1;
+  repeated BitExtent puffs = 2;
+  uint64 puff_length = 3;
+}
+
+message PatchHeader {
+  enum PatchType {
+    BSDIFF = 0;
+    ZUCCHINI = 1;
+  }
+
+  int32 version = 1;
+  StreamInfo src = 2;
+  StreamInfo dst = 3;
+  // The bsdiff patch is installed right after this protobuf.
+
+  PatchType type = 4;
+}

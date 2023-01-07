@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -676,7 +676,7 @@ class MockD3D11Device final : public MockInterface<ID3D11Device1> {
   Microsoft::WRL::ComPtr<MockD3D11DeviceContext> mock_immediate_context_;
 
  private:
-  ~MockD3D11Device();
+  ~MockD3D11Device() override;
 };
 
 class MockDXGIResource final

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_list.h"
 
 class ProfileAttributesStorage;
@@ -21,6 +21,10 @@ class ProfileAttributesStorage;
 class ProfileListDesktop : public ProfileList {
  public:
   explicit ProfileListDesktop(ProfileAttributesStorage* profile_storage);
+
+  ProfileListDesktop(const ProfileListDesktop&) = delete;
+  ProfileListDesktop& operator=(const ProfileListDesktop&) = delete;
+
   ~ProfileListDesktop() override;
 
  private:
@@ -36,15 +40,13 @@ class ProfileListDesktop : public ProfileList {
       const base::FilePath& active_profile_path) override;
 
   // The storage that provides the profile attributes. Not owned.
-  ProfileAttributesStorage* profile_storage_;
+  raw_ptr<ProfileAttributesStorage> profile_storage_;
 
   // The path of the currently active profile.
   base::FilePath active_profile_path_;
 
   // List of built "menu items."
   std::vector<std::unique_ptr<AvatarMenu::Item>> items_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileListDesktop);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_LIST_DESKTOP_H_

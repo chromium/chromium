@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/mock_callback.h"
@@ -23,6 +21,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -37,8 +36,8 @@ const char kTextAttachmentBody[] = "Test text payload";
 std::vector<std::unique_ptr<Attachment>> CreateTextAttachments() {
   std::vector<std::unique_ptr<Attachment>> attachments;
   attachments.push_back(std::make_unique<TextAttachment>(
-      TextAttachment::Type::kText, kTextAttachmentBody, /*title=*/base::nullopt,
-      /*mime_type=*/base::nullopt));
+      TextAttachment::Type::kText, kTextAttachmentBody, /*title=*/absl::nullopt,
+      /*mime_type=*/absl::nullopt));
   return attachments;
 }
 
@@ -100,7 +99,7 @@ class MockTransferUpdateListener
   MOCK_METHOD(void,
               OnTransferUpdate,
               (nearby_share::mojom::TransferStatus status,
-               const base::Optional<std::string>&),
+               const absl::optional<std::string>&),
               (override));
 
  private:
@@ -115,9 +114,25 @@ class NearbyPerSessionDiscoveryManagerTest : public testing::Test {
       NearbyPerSessionDiscoveryManager::StartDiscoveryCallback>;
   using MockGetPayloadPreviewCallback = base::MockCallback<
       nearby_share::mojom::DiscoveryManager::GetPayloadPreviewCallback>;
+  enum SharingServiceState { None, Transferring, Connecting, Scanning };
 
   NearbyPerSessionDiscoveryManagerTest() = default;
   ~NearbyPerSessionDiscoveryManagerTest() override = default;
+
+  void SetUp() override {
+    EXPECT_CALL(sharing_service(), IsTransferring())
+        .WillRepeatedly(testing::ReturnPointee(&is_transferring_));
+    EXPECT_CALL(sharing_service(), IsConnecting())
+        .WillRepeatedly(testing::ReturnPointee(&is_connecting_));
+    EXPECT_CALL(sharing_service(), IsScanning())
+        .WillRepeatedly(testing::ReturnPointee(&is_scanning_));
+  }
+
+  void SetSharingServiceState(SharingServiceState state) {
+    is_transferring_ = state == SharingServiceState::Transferring;
+    is_connecting_ = state == SharingServiceState::Connecting;
+    is_scanning_ = state == SharingServiceState::Scanning;
+  }
 
   MockNearbySharingService& sharing_service() { return sharing_service_; }
 
@@ -128,6 +143,9 @@ class NearbyPerSessionDiscoveryManagerTest : public testing::Test {
   MockNearbySharingService sharing_service_;
   NearbyPerSessionDiscoveryManager manager_{&sharing_service_,
                                             CreateTextAttachments()};
+  bool is_transferring_ = false;
+  bool is_scanning_ = false;
+  bool is_connecting_ = false;
 };
 
 }  // namespace
@@ -184,20 +202,37 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, StartDiscovery_Success) {
 
 TEST_F(NearbyPerSessionDiscoveryManagerTest, StartDiscovery_ErrorInProgress) {
   MockStartDiscoveryCallback callback;
+  MockShareTargetListener listener;
+
   EXPECT_CALL(callback,
               Run(/*result=*/nearby_share::mojom::StartDiscoveryResult::
                       kErrorInProgressTransferring));
+  SetSharingServiceState(SharingServiceState::Transferring);
+  manager().StartDiscovery(listener.Bind(), callback.Get());
 
-  // Expect that "IsTransfering()" gets called once but mock it to return true
-  // to simulate another file transfer is in progress.
-  EXPECT_CALL(sharing_service(), IsTransferring())
-      .WillOnce(testing::Return(/*is_transferring=*/true));
+  listener.reset();
+  EXPECT_CALL(callback,
+              Run(/*result=*/nearby_share::mojom::StartDiscoveryResult::
+                      kErrorInProgressTransferring));
+  SetSharingServiceState(SharingServiceState::Connecting);
+  manager().StartDiscovery(listener.Bind(), callback.Get());
 
-  MockShareTargetListener listener;
+  listener.reset();
+  EXPECT_CALL(callback,
+              Run(/*result=*/nearby_share::mojom::StartDiscoveryResult::
+                      kErrorInProgressTransferring));
+  SetSharingServiceState(SharingServiceState::Scanning);
+  manager().StartDiscovery(listener.Bind(), callback.Get());
+
+  listener.reset();
+  EXPECT_CALL(
+      callback,
+      Run(/*result=*/nearby_share::mojom::StartDiscoveryResult::kSuccess));
+  SetSharingServiceState(SharingServiceState::None);
   manager().StartDiscovery(listener.Bind(), callback.Get());
 }
 
-TEST_F(NearbyPerSessionDiscoveryManagerTest, StartDiscovery_Error) {
+TEST_F(NearbyPerSessionDiscoveryManagerTest, StartDiscovery_GenericError) {
   EXPECT_CALL(sharing_service(), IsTransferring()).Times(1);
   MockStartDiscoveryCallback callback;
   EXPECT_CALL(
@@ -210,6 +245,26 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, StartDiscovery_Error) {
       RegisterSendSurface(&manager(), &manager(),
                           NearbySharingService::SendSurfaceState::kForeground))
       .WillOnce(testing::Return(NearbySharingService::StatusCodes::kError));
+  EXPECT_CALL(sharing_service(), UnregisterSendSurface(&manager(), &manager()))
+      .Times(0);
+
+  MockShareTargetListener listener;
+  manager().StartDiscovery(listener.Bind(), callback.Get());
+}
+
+TEST_F(NearbyPerSessionDiscoveryManagerTest,
+       StartDiscovery_NoConnectionMedium) {
+  EXPECT_CALL(sharing_service(), IsTransferring()).Times(1);
+  MockStartDiscoveryCallback callback;
+  EXPECT_CALL(callback, Run(/*result=*/nearby_share::mojom::
+                                StartDiscoveryResult ::kNoConnectionMedium));
+
+  EXPECT_CALL(
+      sharing_service(),
+      RegisterSendSurface(&manager(), &manager(),
+                          NearbySharingService::SendSurfaceState::kForeground))
+      .WillOnce(testing::Return(
+          NearbySharingService::StatusCodes ::kNoAvailableConnectionMedium));
   EXPECT_CALL(sharing_service(), UnregisterSendSurface(&manager(), &manager()))
       .Times(0);
 
@@ -413,7 +468,7 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, OnTransferUpdate_WaitRemote) {
   EXPECT_CALL(transfer_listener, OnTransferUpdate(_, _))
       .WillOnce(testing::Invoke(
           [&run_loop](nearby_share::mojom::TransferStatus status,
-                      const base::Optional<std::string>& token) {
+                      const absl::optional<std::string>& token) {
             EXPECT_EQ(
                 nearby_share::mojom::TransferStatus::kAwaitingRemoteAcceptance,
                 status);
@@ -469,7 +524,7 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, OnTransferUpdate_WaitLocal) {
   EXPECT_CALL(transfer_listener, OnTransferUpdate(_, _))
       .WillOnce(testing::Invoke([&run_loop, &expected_token](
                                     nearby_share::mojom::TransferStatus status,
-                                    const base::Optional<std::string>& token) {
+                                    const absl::optional<std::string>& token) {
         EXPECT_EQ(
             nearby_share::mojom::TransferStatus::kAwaitingLocalConfirmation,
             status);

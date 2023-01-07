@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,10 @@ unsigned int ToMTLPixelFormat(ResourceFormat format) {
       break;
   }
   return static_cast<unsigned int>(mtl_pixel_format);
+}
+
+unsigned int ToMTLPixelFormat(SharedImageFormat format) {
+  return ToMTLPixelFormat(format.resource_format());
 }
 
 }  // namespace viz

@@ -1,10 +1,12 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/test/launcher/test_result.h"
 
 #include <stddef.h>
+
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/notreached.h"

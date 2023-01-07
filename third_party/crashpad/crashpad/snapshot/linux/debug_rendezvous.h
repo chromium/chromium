@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "util/linux/address_types.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/process/process_memory_range.h"
@@ -48,6 +47,10 @@ class DebugRendezvous {
   };
 
   DebugRendezvous();
+
+  DebugRendezvous(const DebugRendezvous&) = delete;
+  DebugRendezvous& operator=(const DebugRendezvous&) = delete;
+
   ~DebugRendezvous();
 
   //! \brief Initializes this object by reading an `r_debug` struct from a
@@ -79,8 +82,6 @@ class DebugRendezvous {
   std::vector<LinkEntry> modules_;
   LinkEntry executable_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(DebugRendezvous);
 };
 
 }  // namespace crashpad

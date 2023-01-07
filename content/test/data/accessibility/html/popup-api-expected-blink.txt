@@ -1,0 +1,88 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Div popup'
+++++++listBox ignored invisible
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored name='Listbox role on ul'
+++++++listBox ignored invisible
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored name='Listbox role on ul'
+++++++details ignored invisible
+++++++button collapsed name='Button pointing to hidden popup'
+++++++++staticText name='Button pointing to hidden popup'
+++++++++++inlineTextBox name='Button pointing to hidden popup'
+++++++textField
+++++++++genericContainer
+++++++staticText name='Text input pointing to hidden popup '
+++++++++inlineTextBox name='Text input pointing to hidden popup '
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Popup'
+++++++button description='Hint' name='Show button pointing to hidden hint' descriptionFrom=popupElement
+++++++++staticText name='Show button pointing to hidden hint'
+++++++++++inlineTextBox name='Show button pointing to hidden hint'
+++++++searchBox
+++++++++genericContainer
+++++++staticText name='Search input pointing to hidden hint '
+++++++++inlineTextBox name='Search input pointing to hidden hint '
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Hint'
+++++++button name='Hide button pointing to hidden manual'
+++++++++staticText name='Hide button pointing to hidden manual'
+++++++++++inlineTextBox name='Hide button pointing to hidden manual'
+++++++textField
+++++++++genericContainer
+++++++staticText name='Email input pointing to hidden manual '
+++++++++inlineTextBox name='Email input pointing to hidden manual '
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Manual'
+++++++button name='Button pointing to showing popup'
+++++++++staticText name='Button pointing to showing popup'
+++++++++++inlineTextBox name='Button pointing to showing popup'
+++++++textField
+++++++++genericContainer
+++++++staticText name='Tel input pointing to showing popup '
+++++++++inlineTextBox name='Tel input pointing to showing popup '
+++++++button description='Hint (nested)' name='Show button pointing to showing hint' descriptionFrom=popupElement
+++++++++staticText name='Show button pointing to showing hint'
+++++++++++inlineTextBox name='Show button pointing to showing hint'
+++++++textField
+++++++++genericContainer
+++++++staticText name='Url input pointing to showing hint '
+++++++++inlineTextBox name='Url input pointing to showing hint '
+++++++genericContainer
+++++++++staticText name='Popup'
+++++++++++inlineTextBox name='Popup'
+++++++++genericContainer
+++++++++++staticText name='Hint (nested)'
+++++++++++++inlineTextBox name='Hint (nested)'
+++++++button name='Hide button pointing to showing manual'
+++++++++staticText name='Hide button pointing to showing manual'
+++++++++++inlineTextBox name='Hide button pointing to showing manual'
+++++++textField
+++++++++genericContainer
+++++++staticText name='Text input pointing to showing manual '
+++++++++inlineTextBox name='Text input pointing to showing manual '
+++++++genericContainer
+++++++++staticText name='Manual'
+++++++++++inlineTextBox name='Manual'
+++++++button name='Button pointing to non-popup'
+++++++++staticText name='Button pointing to non-popup'
+++++++++++inlineTextBox name='Button pointing to non-popup'
+++++++textField
+++++++++genericContainer
+++++++staticText name='Text input pointing to non-popup'
+++++++++inlineTextBox name='Text input pointing to non-popup'
+++++++genericContainer
+++++++++staticText name='No popup attribute'
+++++++++++inlineTextBox name='No popup attribute'
+++++++button name='Button pointing to invalid popup value'
+++++++++staticText name='Button pointing to invalid popup value'
+++++++++++inlineTextBox name='Button pointing to invalid popup value'
+++++++textField
+++++++++genericContainer
+++++++staticText name='Text input pointing to invalid popup value'
+++++++++inlineTextBox name='Text input pointing to invalid popup value'
+++++++genericContainer ignored invisible
+++++++++staticText ignored name='Invalid popup attribute value'

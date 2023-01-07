@@ -1,10 +1,6 @@
 <body>
     <p>This tests that the video element's timeline controls are draggable in full screen.  Press any key to continue.</p>
     <video id="video" width="300" controls></video>
-    <script>
-        if (window.internals)
-            runPixelTests = internals.runtimeFlags.forceOverlayFullscreenVideoEnabled;
-    </script>
     <script src="full-screen-test.js"></script>
     <script src="../media/media-controls.js"></script>
     <script>

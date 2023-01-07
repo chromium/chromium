@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,12 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -27,7 +30,7 @@ class Textfield;
 // This class displays the contents of a message box. It is intended for use
 // within a constrained window, and has options for a message, prompt, OK
 // and Cancel buttons.
-class VIEWS_EXPORT MessageBoxView : public View {
+class VIEWS_EXPORT MessageBoxView : public BoxLayoutView {
  public:
   METADATA_HEADER(MessageBoxView);
 
@@ -42,6 +45,9 @@ class VIEWS_EXPORT MessageBoxView : public View {
   // align all paragraphs according to the direction of the first paragraph.
   explicit MessageBoxView(const std::u16string& message = std::u16string(),
                           bool detect_directionality = false);
+
+  MessageBoxView(const MessageBoxView&) = delete;
+  MessageBoxView& operator=(const MessageBoxView&) = delete;
 
   ~MessageBoxView() override;
 
@@ -100,26 +106,35 @@ class VIEWS_EXPORT MessageBoxView : public View {
   std::vector<Label*> message_labels_;
 
   // Scrolling view containing the message labels.
-  ScrollView* scroll_view_ = nullptr;
+  raw_ptr<ScrollView> scroll_view_ = nullptr;
 
   // Input text field for the message box.
-  Textfield* prompt_field_ = nullptr;
+  raw_ptr<Textfield> prompt_field_ = nullptr;
 
   // Checkbox for the message box.
-  Checkbox* checkbox_ = nullptr;
+  raw_ptr<Checkbox> checkbox_ = nullptr;
 
   // Link displayed at the bottom of the view.
-  Link* link_ = nullptr;
+  raw_ptr<Link> link_ = nullptr;
 
   // Spacing between rows in the grid layout.
   int inter_row_vertical_spacing_ = 0;
 
   // Maximum width of the message label.
   int message_width_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageBoxView);
 };
 
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, MessageBoxView, BoxLayoutView)
+VIEW_BUILDER_PROPERTY(const std::u16string&, CheckBoxLabel)
+VIEW_BUILDER_PROPERTY(bool, CheckBoxSelected)
+VIEW_BUILDER_METHOD(SetLink, const std::u16string&, Link::ClickedCallback)
+VIEW_BUILDER_PROPERTY(int, InterRowVerticalSpacing)
+VIEW_BUILDER_PROPERTY(int, MessageWidth)
+VIEW_BUILDER_PROPERTY(const std::u16string&, PromptField)
+END_VIEW_BUILDER
+
 }  // namespace views
+
+DEFINE_VIEW_BUILDER(VIEWS_EXPORT, views::MessageBoxView)
 
 #endif  // UI_VIEWS_CONTROLS_MESSAGE_BOX_VIEW_H_

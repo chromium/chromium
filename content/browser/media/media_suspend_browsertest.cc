@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ class MediaSuspendTest : public MediaBrowserTest {
         media::GetTestDataFilePath("media_suspend_test.html"),
         media::GetURLQueryString(query_params));
 
-    const std::u16string kError = base::ASCIIToUTF16(media::kError);
+    const std::u16string kError = base::ASCIIToUTF16(media::kErrorTitle);
 
     {
       VLOG(0) << "Waiting for test URL: " << gurl << ", to load.";
@@ -61,10 +61,10 @@ class MediaSuspendTest : public MediaBrowserTest {
 
     {
       VLOG(0) << "Waiting for playback to resume.";
-      const std::u16string kEnded = base::ASCIIToUTF16(media::kEnded);
+      const std::u16string kEnded = base::ASCIIToUTF16(media::kEndedTitle);
       TitleWatcher title_watcher(shell()->web_contents(), kEnded);
       title_watcher.AlsoWaitForTitle(kError);
-      ASSERT_TRUE(ExecuteScript(shell(), "video.play();"));
+      ASSERT_TRUE(ExecJs(shell(), "video.play();"));
       ASSERT_EQ(kEnded, title_watcher.WaitAndGetTitle());
     }
 

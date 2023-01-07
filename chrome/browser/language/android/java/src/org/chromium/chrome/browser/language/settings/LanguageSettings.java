@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.AppLocaleUtils;
+import org.chromium.chrome.browser.language.GlobalAppLocaleController;
 import org.chromium.chrome.browser.language.LanguageSplitInstaller;
 import org.chromium.chrome.browser.language.R;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -37,7 +38,7 @@ import org.chromium.components.user_prefs.UserPrefs;
  * seamlessly find and manage their languages preferences across platforms.
  */
 public class LanguageSettings extends PreferenceFragmentCompat
-        implements AddLanguageFragment.Launcher, FragmentSettingsLauncher {
+        implements SelectLanguageFragment.Launcher, FragmentSettingsLauncher {
     // Return codes from launching Intents on preferences.
     private static final int REQUEST_CODE_ADD_ACCEPT_LANGUAGE = 1;
     private static final int REQUEST_CODE_CHANGE_APP_LANGUAGE = 2;
@@ -59,6 +60,8 @@ public class LanguageSettings extends PreferenceFragmentCompat
 
     // SettingsLauncher injected from main Settings Activity.
     private SettingsLauncher mSettingsLauncher;
+    private AppLanguagePreferenceDelegate mAppLanguageDelegate =
+            new AppLanguagePreferenceDelegate();
     private PrefChangeRegistrar mPrefChangeRegistrar;
 
     @Override
@@ -66,14 +69,26 @@ public class LanguageSettings extends PreferenceFragmentCompat
         getActivity().setTitle(R.string.language_settings);
         mPrefChangeRegistrar = new PrefChangeRegistrar();
 
-        // Show the detailed language settings if DETAILED_LANGUAGE_SETTINGS feature is enabled.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)) {
+        // Create the correct version of language settings.
+        if (shouldShowDetailedPreferences()) {
             createDetailedPreferences(savedInstanceState, rootKey);
         } else {
             createBasicPreferences(savedInstanceState, rootKey);
         }
 
         LanguagesManager.recordImpression(LanguagesManager.LanguageSettingsPageType.PAGE_MAIN);
+    }
+
+    /**
+     * The detailed language preferences should be shown if the flag to enable them or the app
+     * language prompt is enabled. If neither flag is enabled, but an override language is set the
+     * detailed language preferences should still be shown.
+     * @return Whether or not to show the detailed language preferences.
+     */
+    private boolean shouldShowDetailedPreferences() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)
+                || ChromeFeatureList.isEnabled(ChromeFeatureList.APP_LANGUAGE_PROMPT)
+                || GlobalAppLocaleController.getInstance().isOverridden();
     }
 
     /**
@@ -144,8 +159,10 @@ public class LanguageSettings extends PreferenceFragmentCompat
         appLanguagePreference.setLanguageItem(AppLocaleUtils.getAppLanguagePref());
         appLanguagePreference.useLanguageItemForTitle(true);
         setSelectLanguageLauncher(appLanguagePreference,
-                AddLanguageFragment.LANGUAGE_OPTIONS_UI_LANGUAGES, REQUEST_CODE_CHANGE_APP_LANGUAGE,
-                LanguagesManager.LanguageSettingsPageType.CHROME_LANGUAGE);
+                LanguagesManager.LanguageListType.UI_LANGUAGES, REQUEST_CODE_CHANGE_APP_LANGUAGE,
+                LanguagesManager.LanguageSettingsPageType.CHANGE_CHROME_LANGUAGE);
+
+        mAppLanguageDelegate.setup(this, appLanguagePreference);
     }
 
     /**
@@ -169,11 +186,15 @@ public class LanguageSettings extends PreferenceFragmentCompat
         // Setup target language preference.
         LanguageItemPickerPreference targetLanguagePreference =
                 (LanguageItemPickerPreference) findPreference(TARGET_LANGUAGE_KEY);
-        targetLanguagePreference.setLanguageItem(TranslateBridge.getTargetLanguage());
+        targetLanguagePreference.setLanguageItem(TranslateBridge.getTargetLanguageForChromium());
         setSelectLanguageLauncher(targetLanguagePreference,
-                AddLanguageFragment.LANGUAGE_OPTIONS_TRANSLATE_LANGUAGES,
+                LanguagesManager.LanguageListType.TARGET_LANGUAGES,
                 REQUEST_CODE_CHANGE_TARGET_LANGUAGE,
-                LanguagesManager.LanguageSettingsPageType.TARGET_LANGUAGE);
+                LanguagesManager.LanguageSettingsPageType.CHANGE_TARGET_LANGUAGE);
+        mPrefChangeRegistrar.addObserver(Pref.PREF_TRANSLATE_RECENT_TARGET, () -> {
+            targetLanguagePreference.setLanguageItem(
+                    TranslateBridge.getTargetLanguageForChromium());
+        });
 
         // Setup always translate preference.
         LanguageItemListPreference alwaysTranslatePreference =
@@ -189,7 +210,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
                 (LanguageItemListPreference) findPreference(NEVER_LANGUAGES_KEY);
         neverTranslatePreference.setFragmentListDelegate(
                 new NeverTranslateListFragment.ListDelegate());
-        mPrefChangeRegistrar.addObserver(Pref.FLUENT_LANGUAGES, neverTranslatePreference);
+        mPrefChangeRegistrar.addObserver(Pref.BLOCKED_LANGUAGES, neverTranslatePreference);
         setLanguageListPreferenceClickListener(neverTranslatePreference);
 
         // Setup translate switch to toggle advanced section on and off.
@@ -217,6 +238,12 @@ public class LanguageSettings extends PreferenceFragmentCompat
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        mAppLanguageDelegate.maybeShowSnackbar();
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         LanguagesManager.recycle();
@@ -226,18 +253,26 @@ public class LanguageSettings extends PreferenceFragmentCompat
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        String code = data.getStringExtra(AddLanguageFragment.INTENT_SELECTED_LANGUAGE);
-        if (requestCode == REQUEST_CODE_ADD_ACCEPT_LANGUAGE && resultCode == Activity.RESULT_OK) {
+        if (resultCode != Activity.RESULT_OK) return;
+
+        String code = data.getStringExtra(SelectLanguageFragment.INTENT_SELECTED_LANGUAGE);
+        if (requestCode == REQUEST_CODE_ADD_ACCEPT_LANGUAGE) {
             LanguagesManager.getInstance().addToAcceptLanguages(code);
             LanguagesManager.recordAction(
                     LanguagesManager.LanguageSettingsActionType.LANGUAGE_ADDED);
-        } else if (requestCode == REQUEST_CODE_CHANGE_APP_LANGUAGE
-                && resultCode == Activity.RESULT_OK) {
+        } else if (requestCode == REQUEST_CODE_CHANGE_APP_LANGUAGE) {
             LanguagesManager.recordAction(
                     LanguagesManager.LanguageSettingsActionType.CHANGE_CHROME_LANGUAGE);
-            startLanguageSplitDownload(code);
-        } else if (requestCode == REQUEST_CODE_CHANGE_TARGET_LANGUAGE
-                && resultCode == Activity.RESULT_OK) {
+            mAppLanguageDelegate.startLanguageSplitDownload(code);
+            if (AppLocaleUtils.isFollowSystemLanguage(code)) {
+                // Get the actual default system language to set as target language.
+                code = GlobalAppLocaleController.getInstance()
+                               .getOriginalSystemLocale()
+                               .getLanguage();
+            }
+            // Set the default target language to match the new app language.
+            TranslateBridge.setDefaultTargetLanguage(code);
+        } else if (requestCode == REQUEST_CODE_CHANGE_TARGET_LANGUAGE) {
             LanguageItemPickerPreference targetLanguagePreference =
                     (LanguageItemPickerPreference) findPreference(TARGET_LANGUAGE_KEY);
             targetLanguagePreference.setLanguageItem(code);
@@ -248,14 +283,14 @@ public class LanguageSettings extends PreferenceFragmentCompat
     }
 
     /**
-     * Overrides AddLanguageFragment.Launcher.launchAddLanguage to handle click events on the
+     * Overrides SelectLanguageFragment.Launcher.launchAddLanguage to handle click events on the
      * Add Language button inside the ContentLanguagesPreference.
      */
     @Override
     public void launchAddLanguage() {
         LanguagesManager.recordImpression(
-                LanguagesManager.LanguageSettingsPageType.PAGE_ADD_LANGUAGE);
-        launchSelectLanguage(AddLanguageFragment.LANGUAGE_OPTIONS_ACCEPT_LANGUAGES,
+                LanguagesManager.LanguageSettingsPageType.CONTENT_LANGUAGE_ADD_LANGUAGE);
+        launchSelectLanguage(LanguagesManager.LanguageListType.ACCEPT_LANGUAGES,
                 REQUEST_CODE_ADD_ACCEPT_LANGUAGE);
     }
 
@@ -269,97 +304,47 @@ public class LanguageSettings extends PreferenceFragmentCompat
     }
 
     /**
+     * Set the action to restart Chrome for the App Language Snackbar.
+     */
+    public void setRestartAction(AppLanguagePreferenceDelegate.RestartAction action) {
+        AppLanguagePreferenceDelegate.RestartAction wrappedAction = () -> {
+            LanguagesManager.recordAction(
+                    LanguagesManager.LanguageSettingsActionType.RESTART_CHROME);
+            action.restart();
+        };
+        mAppLanguageDelegate.setRestartAction(wrappedAction);
+    }
+
+    /**
      * Set preference's OnPreferenceClickListener to launch the Select Language Fragment.
      * @param Preference preference The Preference to set listener on.
      * @param int launchCode The language options code to filter selectable languages.
      * @param int requestCode The code to return from the select language fragment with.
      * @param int pageType The LanguageSettingsPageType to record impression for.
      */
-    private void setSelectLanguageLauncher(Preference preference, int launchCode, int requestCode,
+    private void setSelectLanguageLauncher(Preference preference,
+            @LanguagesManager.LanguageListType int languageListType, int requestCode,
             @LanguagesManager.LanguageSettingsPageType int pageType) {
         preference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 LanguagesManager.recordImpression(pageType);
-                launchSelectLanguage(launchCode, requestCode);
+                launchSelectLanguage(languageListType, requestCode);
                 return true;
             }
         });
     }
 
     /**
-     * Start the download and installation of a language split for the BCP-47 formatted language
-     * |code| and register a listener when the installation is complete or has failed. The App
-     * Language preference is disabled while the download is occurring to prevent simultaneous
-     * language downloads.
-     * @param code String language code to be downloaded and installed.
-     */
-    private void startLanguageSplitDownload(String code) {
-        LanguageItemPickerPreference appLanguagePreference =
-                (LanguageItemPickerPreference) findPreference(APP_LANGUAGE_PREFERENCE_KEY);
-
-        // Set language text and initial downloading summary.
-        appLanguagePreference.setLanguageItem(code);
-        CharSequence nativeName = appLanguagePreference.getLanguageItem().getNativeDisplayName();
-        CharSequence downloadingMessage =
-                getActivity().getResources().getString(R.string.languages_split_downloading);
-        CharSequence summary = TextUtils.concat(nativeName, " - ", downloadingMessage);
-        appLanguagePreference.setSummary(summary);
-
-        // Disable preference so a second downloaded cannot be started while one is in progress.
-        appLanguagePreference.setEnabled(false);
-
-        AppLocaleUtils.setAppLanguagePref(code, (success) -> {
-            if (success) {
-                languageSplitDownloadComplete();
-            } else {
-                languageSplitDownloadFailed();
-            }
-        });
-    }
-
-    /**
-     * Callback to update the UI when a language split has successfully been installed.
-     */
-    private void languageSplitDownloadComplete() {
-        LanguageItemPickerPreference appLanguagePreference =
-                (LanguageItemPickerPreference) findPreference(APP_LANGUAGE_PREFERENCE_KEY);
-        CharSequence nativeName = appLanguagePreference.getLanguageItem().getNativeDisplayName();
-        CharSequence appName = BuildInfo.getInstance().hostPackageLabel;
-        CharSequence downloadReadyMessage =
-                getActivity().getResources().getString(R.string.languages_split_ready, appName);
-        CharSequence summary = TextUtils.concat(nativeName, " - ", downloadReadyMessage);
-        appLanguagePreference.setSummary(summary);
-        appLanguagePreference.setEnabled(true);
-    }
-
-    /**
-     * Callback to update the UI when a language split installation has failed.
-     */
-    private void languageSplitDownloadFailed() {
-        LanguageItemPickerPreference appLanguagePreference =
-                (LanguageItemPickerPreference) findPreference(APP_LANGUAGE_PREFERENCE_KEY);
-        LanguageItem appLanguageItem = appLanguagePreference.getLanguageItem();
-        CharSequence nativeName = appLanguageItem.getNativeDisplayName();
-        CharSequence downloadFailedMessage = getActivity().getResources().getString(
-                R.string.download_failed_reason_unknown_error, "");
-        CharSequence summary = TextUtils.concat(nativeName, " - ", downloadFailedMessage);
-        appLanguagePreference.setSummary(summary);
-        appLanguagePreference.setEnabled(true);
-
-        // Start a deferred install of the language split on failure.
-        LanguageSplitInstaller.getInstance().deferredLanguageInstall(appLanguageItem.getCode());
-    }
-
-    /**
-     * Launch the AddLanguageFragment with launch and request codes to select a single language.
+     * Launch the SelectLanguageFragment with launch and request codes to select a single language.
      * @param int launchCode The language options code to filter selectable languages.
      * @param int requestCode The code to return from the select language fragment with.
      */
-    private void launchSelectLanguage(int launchCode, int requestCode) {
+    private void launchSelectLanguage(
+            @LanguagesManager.LanguageListType int languageListType, int requestCode) {
         Intent intent = mSettingsLauncher.createSettingsActivityIntent(
-                getActivity(), AddLanguageFragment.class.getName());
-        intent.putExtra(AddLanguageFragment.INTENT_LANGUAGE_OPTIONS, launchCode);
+                getActivity(), SelectLanguageFragment.class.getName());
+        intent.putExtra(SelectLanguageFragment.INTENT_POTENTIAL_LANGUAGES, languageListType);
         startActivityForResult(intent, requestCode);
     }
 

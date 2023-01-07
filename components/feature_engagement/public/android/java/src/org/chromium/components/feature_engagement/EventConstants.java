@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,6 +69,11 @@ public final class EventConstants {
      * A page load used a preview.
      */
     public static final String PREVIEWS_PAGE_LOADED = "preview_page_load";
+
+    /**
+     * Add to homescreen events.
+     */
+    public static final String ADD_TO_HOMESCREEN_DIALOG_SHOWN = "add_to_homescreen_dialog_shown";
 
     /**
      * Contextual Search panel was opened.
@@ -161,7 +166,7 @@ public final class EventConstants {
 
     /** The keyboard accessory was used to fill payment data into a form. */
     public static final String KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED =
-            "keyboard_accessory_payment_suggestion_accepted";
+            "autofill_virtual_card_suggestion_accepted";
 
     /** The keyboard accessory was swiped to reveal more suggestions. */
     public static final String KEYBOARD_ACCESSORY_BAR_SWIPED = "keyboard_accessory_bar_swiped";
@@ -178,11 +183,12 @@ public final class EventConstants {
     /** User has used Ephemeral Tab i.e. opened and browsed the content. */
     public static final String EPHEMERAL_TAB_USED = "ephemeral_tab_used";
 
-    /** HomepagePromo has been accepted. */
-    public static final String NTP_SHOWN = "ntp_shown";
-    public static final String NTP_HOME_BUTTON_CLICKED = "ntp_homebutton_clicked";
+    /** 'Manage windows' menu for multi-instance support feature was tapped. */
+    public static final String INSTANCE_SWITCHER_IPH_USED = "instance_switcher_iph_used";
 
     public static final String TAB_SWITCHER_BUTTON_CLICKED = "tab_switcher_button_clicked";
+
+    public static final String FOREGROUND_SESSION_DESTROYED = "foreground_session_destroyed";
 
     /** Read later related events. */
     public static final String APP_MENU_BOOKMARK_STAR_ICON_PRESSED =
@@ -224,14 +230,74 @@ public final class EventConstants {
     /** PageInfo events. */
     public static final String PAGE_INFO_OPENED = "page_info_opened";
 
+    /** PageInfoStoreInfo events. */
+    public static final String PAGE_INFO_STORE_INFO_ROW_CLICKED =
+            "page_info_store_info_row_clicked";
+
     /** Permission events. */
     public static final String PERMISSION_REQUEST_SHOWN = "permission_request_shown";
 
     /** Screenshot events */
     public static final String SHARE_SCREENSHOT_SELECTED = "share_screenshot_clicked";
 
+    /** Sharing Hub link toggle events. */
+    public static final String SHARING_HUB_LINK_TOGGLE_CLICKED = "sharing_hub_link_toggle_clicked";
+
+    /** Crow events. */
+    public static final String CROW_TAB_MENU_ITEM_CLICKED = "crow_tab_menu_item_clicked";
+
     /** Mic toolbar IPH event */
     public static final String SUCCESSFUL_VOICE_SEARCH = "successful_voice_search";
+
+    /** AdaptiveButtonInTopToolbarCustomization new tab events. */
+    public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_NEW_TAB_OPENED =
+            "adaptive_toolbar_customization_new_tab_opened";
+
+    /** AdaptiveButtonInTopToolbarCustomization share events. */
+    public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_SHARE_OPENED =
+            "adaptive_toolbar_customization_share_opened";
+
+    /** AdaptiveButtonInTopToolbarCustomization voice search events. */
+    public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_OPENED =
+            "adaptive_toolbar_customization_voice_search_opened";
+
+    /** Open new incognito tab from app menu. */
+    public static final String APP_MENU_NEW_INCOGNITO_TAB_CLICKED =
+            "app_menu_new_incognito_tab_clicked";
+
+    /** Voice search button click on NTP. */
+    public static final String NTP_VOICE_SEARCH_BUTTON_CLICKED = "ntp_voice_search_button_clicked";
+
+    /** WebFeed events. */
+    public static final String WEB_FEED_FOLLOW_INTRO_CLICKED = "web_feed_follow_intro_clicked";
+
+    /** Shared Highlighting button event */
+    public static final String IPH_SHARED_HIGHLIGHTING_USED = "iph_shared_highlighting_used";
+
+    /** Webnotes Stylize feature used from Sharing Hub */
+    public static final String SHARING_HUB_WEBNOTES_STYLIZE_USED =
+            "sharing_hub_webnotes_stylize_used";
+
+    /** AutoDark disabled from app menu events. */
+    public static final String AUTO_DARK_DISABLED_IN_APP_MENU = "auto_dark_disabled_in_app_menu";
+
+    /** AutoDark theme settings opened while feature enabled. */
+    public static final String AUTO_DARK_SETTINGS_OPENED = "auto_dark_settings_opened";
+
+    /** The feed swipe refresh event. */
+    public static final String FEED_SWIPE_REFRESHED = "feed_swipe_refresh_shown";
+
+    /** The option to track the price of a product was selected from the main menu. */
+    public static final String SHOPPING_LIST_PRICE_TRACK_FROM_MENU =
+            "shopping_list_track_price_from_menu";
+
+    /** A tap on the folder icon in the enhanced bookmark save flow. */
+    public static final String SHOPPING_LIST_SAVE_FLOW_FOLDER_TAP =
+            "shopping_list_save_flow_folder_tap";
+
+    /** An app menu (tab-level) desktop site setting update event. */
+    public static final String APP_MENU_DESKTOP_SITE_FOR_TAB_CLICKED =
+            "app_menu_desktop_site_for_tab_clicked";
 
     /**
      * Do not instantiate.

@@ -659,6 +659,88 @@ TEST(MarshallingTest, TestVectorOfStringParsing) {
 
 // --------------------------------------------------------------------
 
+TEST(MarshallingTest, TestOptionalBoolParsing) {
+  std::string err;
+  absl::optional<bool> value;
+
+  EXPECT_TRUE(absl::ParseFlag("", &value, &err));
+  EXPECT_FALSE(value.has_value());
+
+  EXPECT_TRUE(absl::ParseFlag("true", &value, &err));
+  EXPECT_TRUE(value.has_value());
+  EXPECT_TRUE(*value);
+
+  EXPECT_TRUE(absl::ParseFlag("false", &value, &err));
+  EXPECT_TRUE(value.has_value());
+  EXPECT_FALSE(*value);
+
+  EXPECT_FALSE(absl::ParseFlag("nullopt", &value, &err));
+}
+
+// --------------------------------------------------------------------
+
+TEST(MarshallingTest, TestOptionalIntParsing) {
+  std::string err;
+  absl::optional<int> value;
+
+  EXPECT_TRUE(absl::ParseFlag("", &value, &err));
+  EXPECT_FALSE(value.has_value());
+
+  EXPECT_TRUE(absl::ParseFlag("10", &value, &err));
+  EXPECT_TRUE(value.has_value());
+  EXPECT_EQ(*value, 10);
+
+  EXPECT_TRUE(absl::ParseFlag("0x1F", &value, &err));
+  EXPECT_TRUE(value.has_value());
+  EXPECT_EQ(*value, 31);
+
+  EXPECT_FALSE(absl::ParseFlag("nullopt", &value, &err));
+}
+
+// --------------------------------------------------------------------
+
+TEST(MarshallingTest, TestOptionalDoubleParsing) {
+  std::string err;
+  absl::optional<double> value;
+
+  EXPECT_TRUE(absl::ParseFlag("", &value, &err));
+  EXPECT_FALSE(value.has_value());
+
+  EXPECT_TRUE(absl::ParseFlag("1.11", &value, &err));
+  EXPECT_TRUE(value.has_value());
+  EXPECT_EQ(*value, 1.11);
+
+  EXPECT_TRUE(absl::ParseFlag("-0.12", &value, &err));
+  EXPECT_TRUE(value.has_value());
+  EXPECT_EQ(*value, -0.12);
+
+  EXPECT_FALSE(absl::ParseFlag("nullopt", &value, &err));
+}
+
+// --------------------------------------------------------------------
+
+TEST(MarshallingTest, TestOptionalStringParsing) {
+  std::string err;
+  absl::optional<std::string> value;
+
+  EXPECT_TRUE(absl::ParseFlag("", &value, &err));
+  EXPECT_FALSE(value.has_value());
+
+  EXPECT_TRUE(absl::ParseFlag(" ", &value, &err));
+  EXPECT_TRUE(value.has_value());
+  EXPECT_EQ(*value, " ");
+
+  EXPECT_TRUE(absl::ParseFlag("aqswde", &value, &err));
+  EXPECT_TRUE(value.has_value());
+  EXPECT_EQ(*value, "aqswde");
+
+  EXPECT_TRUE(absl::ParseFlag("nullopt", &value, &err));
+  EXPECT_TRUE(value.has_value());
+  EXPECT_EQ(*value, "nullopt");
+}
+
+// --------------------------------------------------------------------
+
 TEST(MarshallingTest, TestBoolUnparsing) {
   EXPECT_EQ(absl::UnparseFlag(true), "true");
   EXPECT_EQ(absl::UnparseFlag(false), "false");
@@ -807,6 +889,90 @@ TEST(MarshallingTest, TestStringUnparsing) {
 }
 
 // --------------------------------------------------------------------
+
+TEST(MarshallingTest, TestOptionalBoolUnparsing) {
+  absl::optional<bool> value;
+
+  EXPECT_EQ(absl::UnparseFlag(value), "");
+  value = true;
+  EXPECT_EQ(absl::UnparseFlag(value), "true");
+  value = false;
+  EXPECT_EQ(absl::UnparseFlag(value), "false");
+  value = absl::nullopt;
+  EXPECT_EQ(absl::UnparseFlag(value), "");
+}
+
+// --------------------------------------------------------------------
+
+TEST(MarshallingTest, TestOptionalIntUnparsing) {
+  absl::optional<int> value;
+
+  EXPECT_EQ(absl::UnparseFlag(value), "");
+  value = 0;
+  EXPECT_EQ(absl::UnparseFlag(value), "0");
+  value = -12;
+  EXPECT_EQ(absl::UnparseFlag(value), "-12");
+  value = absl::nullopt;
+  EXPECT_EQ(absl::UnparseFlag(value), "");
+}
+
+// --------------------------------------------------------------------
+
+TEST(MarshallingTest, TestOptionalDoubleUnparsing) {
+  absl::optional<double> value;
+
+  EXPECT_EQ(absl::UnparseFlag(value), "");
+  value = 1.;
+  EXPECT_EQ(absl::UnparseFlag(value), "1");
+  value = -1.23;
+  EXPECT_EQ(absl::UnparseFlag(value), "-1.23");
+  value = absl::nullopt;
+  EXPECT_EQ(absl::UnparseFlag(value), "");
+}
+
+// --------------------------------------------------------------------
+
+TEST(MarshallingTest, TestOptionalStringUnparsing) {
+  absl::optional<std::string> strvalue;
+  EXPECT_EQ(absl::UnparseFlag(strvalue), "");
+
+  strvalue = "asdfg";
+  EXPECT_EQ(absl::UnparseFlag(strvalue), "asdfg");
+
+  strvalue = " ";
+  EXPECT_EQ(absl::UnparseFlag(strvalue), " ");
+
+  strvalue = "";  // It is UB to set an optional string flag to ""
+  EXPECT_EQ(absl::UnparseFlag(strvalue), "");
+}
+
+// --------------------------------------------------------------------
+
+#if defined(ABSL_HAVE_STD_OPTIONAL) && !defined(ABSL_USES_STD_OPTIONAL)
+
+TEST(MarshallingTest, TestStdOptionalUnparsing) {
+  std::optional<std::string> strvalue;
+  EXPECT_EQ(absl::UnparseFlag(strvalue), "");
+
+  strvalue = "asdfg";
+  EXPECT_EQ(absl::UnparseFlag(strvalue), "asdfg");
+
+  strvalue = " ";
+  EXPECT_EQ(absl::UnparseFlag(strvalue), " ");
+
+  strvalue = "";  // It is UB to set an optional string flag to ""
+  EXPECT_EQ(absl::UnparseFlag(strvalue), "");
+
+  std::optional<int> intvalue;
+  EXPECT_EQ(absl::UnparseFlag(intvalue), "");
+
+  intvalue = 10;
+  EXPECT_EQ(absl::UnparseFlag(intvalue), "10");
+}
+
+// --------------------------------------------------------------------
+
+#endif
 
 template <typename T>
 void TestRoundtrip(T v) {

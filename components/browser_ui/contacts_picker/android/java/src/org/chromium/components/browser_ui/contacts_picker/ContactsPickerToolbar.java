@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,6 @@ package org.chromium.components.browser_ui.contacts_picker;
 
 import android.content.Context;
 import android.util.AttributeSet;
-
-import androidx.appcompat.widget.AppCompatImageView;
-import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar;
@@ -100,13 +97,9 @@ public class ContactsPickerToolbar extends SelectableListToolbar<ContactDetails>
         ButtonCompat done = findViewById(R.id.done);
         done.setEnabled(doneEnabled);
 
-        AppCompatImageView search = findViewById(R.id.search);
-        ImageViewCompat.setImageTintList(search,
-                useDarkIcons() ? getDarkIconColorStateList() : getLightIconColorStateList());
-
         if (doneEnabled) {
             ApiCompatibilityUtils.setTextAppearance(
-                    done, R.style.TextAppearance_TextMedium_Primary_Inverse);
+                    done, R.style.TextAppearance_TextMedium_Secondary);
         } else {
             ApiCompatibilityUtils.setTextAppearance(
                     done, R.style.TextAppearance_TextMedium_Disabled);

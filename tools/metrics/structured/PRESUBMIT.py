@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into gcl.
 """
+
+USE_PYTHON3 = True
 
 STRUCTURED_XML = 'structured.xml'
 STRUCTURED_OLD_XML = 'structured.old.xml'
@@ -25,7 +27,7 @@ def CheckChange(input_api, output_api):
     if basename == STRUCTURED_XML:
       cwd = input_api.os_path.dirname(path)
       exit_code = input_api.subprocess.call(
-          [input_api.python_executable, 'pretty_print.py', '--presubmit'],
+          [input_api.python3_executable, 'pretty_print.py', '--presubmit'],
           cwd=cwd)
       if exit_code != 0:
         errors.append(

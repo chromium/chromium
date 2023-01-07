@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,7 @@
 using content::WebContents;
 
 WebDragBookmarkHandlerMac::WebDragBookmarkHandlerMac()
-    : bookmark_tab_helper_(NULL),
-      web_contents_(NULL) {
-}
+    : bookmark_tab_helper_(nullptr), web_contents_(nullptr) {}
 
 WebDragBookmarkHandlerMac::~WebDragBookmarkHandlerMac() {}
 

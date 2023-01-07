@@ -1,6 +1,5 @@
 include_rules = [
     "+base/bit_cast.h",
     "+base/compiler_specific.h",
-    "+base/macros.h",
     "+build/build_config.h",
 ]

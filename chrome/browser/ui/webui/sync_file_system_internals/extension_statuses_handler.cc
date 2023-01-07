@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,17 +35,17 @@ namespace {
 // ExtensionStatusesHandler and FileMetadataHandler.
 void ConvertExtensionStatusToDictionary(
     const base::WeakPtr<extensions::ExtensionService>& extension_service,
-    base::OnceCallback<void(const base::ListValue&)> callback,
+    base::OnceCallback<void(const base::Value::List)> callback,
     const std::map<GURL, std::string>& status_map) {
   if (!extension_service) {
-    std::move(callback).Run(base::ListValue());
+    std::move(callback).Run(base::Value::List());
     return;
   }
 
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(extension_service->profile());
 
-  base::ListValue list;
+  base::Value::List list;
   for (auto itr = status_map.begin(); itr != status_map.end(); ++itr) {
     std::string extension_id = itr->first.HostNoBrackets();
 
@@ -56,14 +56,14 @@ void ConvertExtensionStatusToDictionary(
     if (!extension)
       continue;
 
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-    dict->SetString("extensionID", extension_id);
-    dict->SetString("extensionName", extension->name());
-    dict->SetString("status", itr->second);
+    base::Value::Dict dict;
+    dict.Set("extensionID", extension_id);
+    dict.Set("extensionName", extension->name());
+    dict.Set("status", itr->second);
     list.Append(std::move(dict));
   }
 
-  std::move(callback).Run(list);
+  std::move(callback).Run(std::move(list));
 }
 
 }  // namespace
@@ -83,20 +83,20 @@ void ExtensionStatusesHandler::RegisterMessages() {
 // static
 void ExtensionStatusesHandler::GetExtensionStatusesAsDictionary(
     Profile* profile,
-    base::OnceCallback<void(const base::ListValue&)> callback) {
+    base::OnceCallback<void(const base::Value::List)> callback) {
   DCHECK(profile);
 
   sync_file_system::SyncFileSystemService* sync_service =
       SyncFileSystemServiceFactory::GetForProfile(profile);
   if (!sync_service) {
-    std::move(callback).Run(base::ListValue());
+    std::move(callback).Run(base::Value::List());
     return;
   }
 
   extensions::ExtensionService* extension_service =
       extensions::ExtensionSystem::Get(profile)->extension_service();
   if (!extension_service) {
-    std::move(callback).Run(base::ListValue());
+    std::move(callback).Run(base::Value::List());
     return;
   }
 
@@ -106,19 +106,17 @@ void ExtensionStatusesHandler::GetExtensionStatusesAsDictionary(
 }
 
 void ExtensionStatusesHandler::HandleGetExtensionStatuses(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   AllowJavascript();
-  DCHECK(args);
   GetExtensionStatusesAsDictionary(
       profile_,
       base::BindOnce(&ExtensionStatusesHandler::DidGetExtensionStatuses,
                      weak_ptr_factory_.GetWeakPtr(),
-                     args->GetList()[0].GetString() /* callback_id */));
+                     args[0].GetString() /* callback_id */));
 }
 
-void ExtensionStatusesHandler::DidGetExtensionStatuses(
-    std::string callback_id,
-    const base::ListValue& list) {
+void ExtensionStatusesHandler::DidGetExtensionStatuses(std::string callback_id,
+                                                       base::Value::List list) {
   ResolveJavascriptCallback(base::Value(callback_id), list);
 }
 

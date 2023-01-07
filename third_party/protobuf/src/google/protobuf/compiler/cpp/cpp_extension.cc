@@ -33,32 +33,23 @@
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
 #include <google/protobuf/compiler/cpp/cpp_extension.h>
+
 #include <map>
-#include <google/protobuf/compiler/cpp/cpp_helpers.h>
-#include <google/protobuf/descriptor.pb.h>
+
 #include <google/protobuf/io/printer.h>
 #include <google/protobuf/stubs/strutil.h>
+#include <google/protobuf/compiler/cpp/cpp_helpers.h>
+#include <google/protobuf/descriptor.pb.h>
 
 namespace google {
 namespace protobuf {
 namespace compiler {
 namespace cpp {
 
-namespace {
-
-// Returns the fully-qualified class name of the message that this field
-// extends. This function is used in the Google-internal code to handle some
-// legacy cases.
-std::string ExtendeeClassName(const FieldDescriptor* descriptor) {
-  const Descriptor* extendee = descriptor->containing_type();
-  return ClassName(extendee, true);
-}
-
-}  // anonymous namespace
-
 ExtensionGenerator::ExtensionGenerator(const FieldDescriptor* descriptor,
-                                       const Options& options)
-    : descriptor_(descriptor), options_(options) {
+                                       const Options& options,
+                                       MessageSCCAnalyzer* scc_analyzer)
+    : descriptor_(descriptor), options_(options), scc_analyzer_(scc_analyzer) {
   // Construct type_traits_.
   if (descriptor_->is_repeated()) {
     type_traits_ = "Repeated";
@@ -87,7 +78,9 @@ ExtensionGenerator::ExtensionGenerator(const FieldDescriptor* descriptor,
       break;
   }
   SetCommonVars(options, &variables_);
-  variables_["extendee"] = ExtendeeClassName(descriptor_);
+  SetCommonMessageDataVariables(&variables_);
+  variables_["extendee"] =
+      QualifiedClassName(descriptor_->containing_type(), options_);
   variables_["type_traits"] = type_traits_;
   std::string name = descriptor_->name();
   variables_["name"] = ResolveKeyword(name);
@@ -99,9 +92,21 @@ ExtensionGenerator::ExtensionGenerator(const FieldDescriptor* descriptor,
   std::string scope =
       IsScoped() ? ClassName(descriptor_->extension_scope(), false) + "::" : "";
   variables_["scope"] = scope;
-  std::string scoped_name = scope + ResolveKeyword(name);
-  variables_["scoped_name"] = scoped_name;
+  variables_["scoped_name"] = ExtensionName(descriptor_);
   variables_["number"] = StrCat(descriptor_->number());
+
+  bool add_verify_fn =
+      // Only verify msgs.
+      descriptor_->cpp_type() == FieldDescriptor::CPPTYPE_MESSAGE &&
+      // Options say to verify.
+      ShouldVerify(descriptor_->message_type(), options_, scc_analyzer_) &&
+      ShouldVerify(descriptor_->containing_type(), options_, scc_analyzer_);
+
+  variables_["verify_fn"] =
+      add_verify_fn
+          ? StrCat("&", FieldMessageTypeName(descriptor_, options_),
+                         "::InternalVerify")
+          : "nullptr";
 }
 
 ExtensionGenerator::~ExtensionGenerator() {}
@@ -169,15 +174,16 @@ void ExtensionGenerator::GenerateDefinition(io::Printer* printer) {
   // Likewise, class members need to declare the field constant variable.
   if (IsScoped()) {
     format(
-        "#if !defined(_MSC_VER) || _MSC_VER >= 1900\n"
+        "#if !defined(_MSC_VER) || (_MSC_VER >= 1900 && _MSC_VER < 1912)\n"
         "const int $scope$$constant_name$;\n"
         "#endif\n");
   }
 
   format(
+      "PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 "
       "::$proto_ns$::internal::ExtensionIdentifier< $extendee$,\n"
-      "    ::$proto_ns$::internal::$type_traits$, $field_type$, $packed$ >\n"
-      "  $scoped_name$($constant_name$, $1$);\n",
+      "    ::$proto_ns$::internal::$type_traits$, $field_type$, $packed$>\n"
+      "  $scoped_name$($constant_name$, $1$, $verify_fn$);\n",
       default_str);
 }
 

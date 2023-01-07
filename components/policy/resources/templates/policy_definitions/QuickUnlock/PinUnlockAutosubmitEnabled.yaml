@@ -1,0 +1,26 @@
+caption: Enable PIN auto-submit feature on the lock and login screen.
+default_for_enterprise_users: false
+desc: |-
+  The PIN auto-submit feature changes how PINs are entered in ChromeOS.
+            Instead of showing the same textfield that is used for password input, this
+            feature shows a special UI that clearly shows to the user how many
+            digits are necessary for their PIN. As a consequence, the user's PIN length
+            will be stored outside the user encrypted data. Only supports PINs that are
+            between 6 and 12 digits long.
+
+            If this policy is set to false, users will not have the option of enabling
+            the feature on the Settings page.
+example_value: true
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- rrsilva@google.com
+- cros-oac@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:86-
+tags: []
+type: main

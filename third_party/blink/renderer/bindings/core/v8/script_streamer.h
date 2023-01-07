@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,19 @@
 #include <memory>
 #include <tuple>
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/check_op.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/script/script_scheduling_type.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "v8/include/v8.h"
 
 namespace mojo {
@@ -27,14 +33,9 @@ class ScriptResource;
 class SourceStream;
 class ResponseBodyLoaderClient;
 
-// ScriptStreamer streams incomplete script data to V8 so that it can be parsed
-// while it's loaded. ScriptResource holds a reference to ScriptStreamer. If the
-// Document and the ClassicPendingScript are destroyed while the streaming is in
-// progress, and ScriptStreamer handles it gracefully.
-class CORE_EXPORT ScriptStreamer final
-    : public GarbageCollected<ScriptStreamer> {
-  USING_PRE_FINALIZER(ScriptStreamer, Prefinalize);
-
+// Base class for streaming scripts. Subclasses should expose streamed script
+// data by overriding the Source() method.
+class CORE_EXPORT ScriptStreamer : public GarbageCollected<ScriptStreamer> {
  public:
   // For tracking why some scripts are not streamed. Not streaming is part of
   // normal operation (e.g., script already loaded, script too small) and
@@ -62,22 +63,19 @@ class CORE_EXPORT ScriptStreamer final
     kLoadingCancelled,
     kNonJavascriptModule,
     kDisabledByFeatureList,
+    kErrorScriptTypeMismatch,
 
     // Pseudo values that should never be seen in reported metrics
-    kMaxValue = kDisabledByFeatureList,
+    kMaxValue = kErrorScriptTypeMismatch,
     kInvalid = -1,
   };
 
-  ScriptStreamer(
-      ScriptResource* resource,
-      mojo::ScopedDataPipeConsumerHandle data_pipe,
-      ResponseBodyLoaderClient* response_body_loader_client,
-      scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner);
-  ~ScriptStreamer();
-  void Trace(Visitor*) const;
+  virtual ~ScriptStreamer() = default;
 
-  static std::tuple<ScriptStreamer*, NotStreamingReason> TakeFrom(
-      ScriptResource*);
+  virtual v8::ScriptCompiler::StreamedSource* Source(
+      v8::ScriptType expected_type) = 0;
+  virtual void Trace(Visitor*) const {}
+
   static void RecordStreamingHistogram(ScriptSchedulingType type,
                                        bool can_use_streamer,
                                        ScriptStreamer::NotStreamingReason);
@@ -85,6 +83,40 @@ class CORE_EXPORT ScriptStreamer final
   // Returns false if we cannot stream the given encoding.
   static bool ConvertEncoding(const char* encoding_name,
                               v8::ScriptCompiler::StreamedSource::Encoding*);
+};
+
+// ResourceScriptStreamer streams incomplete script data to V8 so that it can be
+// parsed while it's loaded. ScriptResource holds a reference to
+// ResourceScriptStreamer. If the Document and the ClassicPendingScript are
+// destroyed while the streaming is in progress, and ScriptStreamer handles it
+// gracefully.
+class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
+  USING_PRE_FINALIZER(ResourceScriptStreamer, Prefinalize);
+
+ public:
+  ResourceScriptStreamer(
+      ScriptResource* resource,
+      mojo::ScopedDataPipeConsumerHandle data_pipe,
+      ResponseBodyLoaderClient* response_body_loader_client,
+      std::unique_ptr<TextResourceDecoder> decoder,
+      scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner);
+
+  ResourceScriptStreamer(const ResourceScriptStreamer&) = delete;
+  ResourceScriptStreamer& operator=(const ResourceScriptStreamer&) = delete;
+
+  ~ResourceScriptStreamer() override;
+  void Trace(Visitor*) const override;
+
+  // Get a successful ScriptStreamer for the given ScriptResource.
+  // If
+  // - there was no streamer,
+  // - or streaming was suppressed,
+  // - or the expected_type does not match the one with which the ScripStramer
+  //    was started,
+  // nullptr instead of a valid ScriptStreamer is returned.
+  static std::tuple<ResourceScriptStreamer*, NotStreamingReason> TakeFrom(
+      ScriptResource* resource,
+      mojom::blink::ScriptType expected_type);
 
   bool IsStreamingStarted() const;     // Have we actually started streaming?
   bool CanStartStreaming() const;      // Can we still start streaming later?
@@ -92,7 +124,14 @@ class CORE_EXPORT ScriptStreamer final
   bool IsFinished() const;             // Has loading & streaming finished?
   bool IsStreamingSuppressed() const;  // Has streaming been suppressed?
 
-  v8::ScriptCompiler::StreamedSource* Source() { return source_.get(); }
+  // ScriptStreamer implementation:
+  v8::ScriptCompiler::StreamedSource* Source(
+      v8::ScriptType expected_type) override {
+    DCHECK_EQ(expected_type, script_type_);
+    DCHECK(IsFinished());
+    DCHECK(!IsStreamingSuppressed());
+    return source_.get();
+  }
 
   // Called when the script is not needed any more (e.g., loading was
   // cancelled). After calling cancel, ClassicPendingScript can drop its
@@ -110,10 +149,6 @@ class CORE_EXPORT ScriptStreamer final
     return script_resource_identifier_;
   }
 
-  static void SetSmallScriptThresholdForTesting(size_t threshold) {
-    small_script_threshold_ = threshold;
-  }
-
  private:
   friend class SourceStream;
 
@@ -125,6 +160,8 @@ class CORE_EXPORT ScriptStreamer final
   //          v        v         v
   //      kLoaded   kFailed  kCancelled
   enum class LoadingState { kLoading, kLoaded, kFailed, kCancelled };
+
+  v8::ScriptType GetScriptType() const;
 
   static const char* str(LoadingState state) {
     switch (state) {
@@ -140,14 +177,14 @@ class CORE_EXPORT ScriptStreamer final
   }
 
   // Scripts whose first data chunk is smaller than this constant won't be
-  // streamed. Non-const for testing.
-  static size_t small_script_threshold_;
+  // streamed, unless small script streaming is enabled.
+  static constexpr size_t kSmallScriptThreshold = 30 * 1024;
   // Maximum size of the BOM marker.
   static constexpr size_t kMaximumLengthOfBOM = 4;
 
   static void RunScriptStreamingTask(
       std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask> task,
-      ScriptStreamer* streamer,
+      ResourceScriptStreamer* streamer,
       SourceStream* stream);
 
   void OnDataPipeReadable(MojoResult result,
@@ -156,6 +193,8 @@ class CORE_EXPORT ScriptStreamer final
   // Given the data we have collected already, try to start an actual V8
   // streaming task. Returns true if the task was started.
   bool TryStartStreamingTask();
+
+  static v8::ScriptType ScriptTypeForStreamingTask(ScriptResource*);
 
   void Prefinalize();
 
@@ -198,6 +237,14 @@ class CORE_EXPORT ScriptStreamer final
   Member<ScriptResource> script_resource_;
   Member<ResponseBodyLoaderClient> response_body_loader_client_;
 
+  // |script_decoder_| should only be accessed on the decoding thread.
+  class ScriptDecoder;
+  struct ScriptDecoderDeleter {
+    void operator()(const ScriptDecoder* ptr);
+  };
+  using ScriptDecoderPtr = std::unique_ptr<ScriptDecoder, ScriptDecoderDeleter>;
+  ScriptDecoderPtr script_decoder_;
+
   // Fields active during asynchronous (non-streaming) reads.
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
   std::unique_ptr<mojo::SimpleWatcher> watcher_;
@@ -218,9 +265,62 @@ class CORE_EXPORT ScriptStreamer final
   // Encoding of the streamed script. Saved for sanity checking purposes.
   v8::ScriptCompiler::StreamedSource::Encoding encoding_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
+  v8::ScriptType script_type_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(ScriptStreamer);
+// BackgroundInlineScriptStreamer allows parsing and compiling inline scripts in
+// the background before they have been parsed by the HTML parser. Use
+// InlineScriptStreamer::From() to create a ScriptStreamer from this class.
+class CORE_EXPORT BackgroundInlineScriptStreamer final
+    : public WTF::ThreadSafeRefCounted<BackgroundInlineScriptStreamer> {
+ public:
+  BackgroundInlineScriptStreamer(
+      const String& text,
+      v8::ScriptCompiler::CompileOptions compile_options);
+
+  void Run();
+  bool IsStarted() const { return started_.IsSet(); }
+  void Cancel() { cancelled_.Set(); }
+
+  // This may return false if V8 failed to create a background streaming task.
+  bool CanStream() const { return task_.get(); }
+
+  v8::ScriptCompiler::StreamedSource* Source(v8::ScriptType expected_type);
+
+ private:
+  friend class WTF::ThreadSafeRefCounted<BackgroundInlineScriptStreamer>;
+  ~BackgroundInlineScriptStreamer() = default;
+
+  std::unique_ptr<v8::ScriptCompiler::StreamedSource> source_;
+  std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask> task_;
+  base::WaitableEvent event_;
+  base::AtomicFlag started_;
+  base::AtomicFlag cancelled_;
+};
+
+// ScriptStreamer is garbage collected so must be created on the main thread.
+// This class wraps a BackgroundInlineScriptStreamer to be used on the main
+// thread.
+class CORE_EXPORT InlineScriptStreamer final : public ScriptStreamer {
+ public:
+  static InlineScriptStreamer* From(
+      scoped_refptr<BackgroundInlineScriptStreamer> streamer);
+
+  explicit InlineScriptStreamer(
+      scoped_refptr<BackgroundInlineScriptStreamer> streamer)
+      : streamer_(std::move(streamer)) {}
+
+  v8::ScriptCompiler::StreamedSource* Source(
+      v8::ScriptType expected_type) override {
+    return streamer_->Source(expected_type);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ScriptStreamer::Trace(visitor);
+  }
+
+ private:
+  scoped_refptr<BackgroundInlineScriptStreamer> streamer_;
 };
 
 }  // namespace blink

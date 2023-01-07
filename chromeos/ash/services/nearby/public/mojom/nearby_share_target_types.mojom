@@ -1,0 +1,21 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module nearby_share.mojom;
+
+// Describes the type of device for a share target.
+// The numeric values are used to encode/decode advertisement bytes, and must
+// kept in sync with Android implementation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum ShareTargetType {
+  // Unknown device type.
+  kUnknown = 0,
+  // A phone.
+  kPhone = 1,
+  // A tablet.
+  kTablet = 2,
+  // A laptop.
+  kLaptop = 3,
+};

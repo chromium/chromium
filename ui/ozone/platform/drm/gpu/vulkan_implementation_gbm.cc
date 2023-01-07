@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/native_library.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_instance.h"
@@ -25,21 +24,15 @@ VulkanImplementationGbm::~VulkanImplementationGbm() {}
 
 bool VulkanImplementationGbm::InitializeVulkanInstance(bool using_surface) {
   DLOG_IF(ERROR, using_surface) << "VK_KHR_surface is not supported.";
-  gpu::VulkanFunctionPointers* vulkan_function_pointers =
-      gpu::GetVulkanFunctionPointers();
-
-  base::NativeLibraryLoadError native_library_load_error;
-  vulkan_function_pointers->vulkan_loader_library = base::LoadNativeLibrary(
-      base::FilePath("libvulkan.so.1"), &native_library_load_error);
-  if (!vulkan_function_pointers->vulkan_loader_library)
-    return false;
 
   std::vector<const char*> required_extensions = {
       "VK_KHR_external_fence_capabilities",
       "VK_KHR_get_physical_device_properties2",
   };
-  if (!vulkan_instance_.Initialize(required_extensions, {}))
+  if (!vulkan_instance_.Initialize(base::FilePath("libvulkan.so.1"),
+                                   required_extensions, {})) {
     return false;
+  }
 
   vkGetPhysicalDeviceExternalFencePropertiesKHR_ =
       reinterpret_cast<PFN_vkGetPhysicalDeviceExternalFencePropertiesKHR>(
@@ -96,7 +89,10 @@ VulkanImplementationGbm::GetRequiredDeviceExtensions() {
 
 std::vector<const char*>
 VulkanImplementationGbm::GetOptionalDeviceExtensions() {
-  return {};
+  return {
+      VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME,
+      VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME,
+  };
 }
 
 VkFence VulkanImplementationGbm::CreateVkFenceForGpuFence(VkDevice vk_device) {
@@ -163,8 +159,14 @@ VulkanImplementationGbm::GetExternalImageHandleType() {
 }
 
 bool VulkanImplementationGbm::CanImportGpuMemoryBuffer(
+    gpu::VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferType memory_buffer_type) {
-  return false;
+  const auto& enabled_extensions = device_queue->enabled_extensions();
+  return gfx::HasExtension(enabled_extensions,
+                           VK_EXT_EXTERNAL_MEMORY_DMA_BUF_EXTENSION_NAME) &&
+         gfx::HasExtension(enabled_extensions,
+                           VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME) &&
+         memory_buffer_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
 }
 
 std::unique_ptr<gpu::VulkanImage>
@@ -172,9 +174,18 @@ VulkanImplementationGbm::CreateImageFromGpuMemoryHandle(
     gpu::VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferHandle gmb_handle,
     gfx::Size size,
-    VkFormat vk_formae) {
-  NOTIMPLEMENTED();
-  return nullptr;
+    VkFormat vk_format,
+    const gfx::ColorSpace& color_space) {
+  constexpr auto kUsage =
+      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
+      VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+  auto tiling = gmb_handle.native_pixmap_handle.modifier ==
+                        gfx::NativePixmapHandle::kNoModifier
+                    ? VK_IMAGE_TILING_OPTIMAL
+                    : VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT;
+  return gpu::VulkanImage::CreateFromGpuMemoryBufferHandle(
+      device_queue, std::move(gmb_handle), size, vk_format, kUsage, /*flags=*/0,
+      tiling, VK_QUEUE_FAMILY_FOREIGN_EXT);
 }
 
 }  // namespace ui

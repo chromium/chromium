@@ -1,10 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_ITEM_SEGMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_ITEM_SEGMENT_H_
 
+#include <unicode/ubidi.h>
+#include <unicode/uscript.h>
+
+#include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_style_variant.h"
@@ -13,9 +18,6 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
-#include <unicode/ubidi.h>
-#include <unicode/uscript.h>
 
 namespace blink {
 
@@ -72,21 +74,23 @@ class CORE_EXPORT NGInlineItemSegments {
 
  public:
   unsigned size() const { return segments_.size(); }
-  bool IsEmpty() const { return segments_.IsEmpty(); }
+  bool IsEmpty() const { return segments_.empty(); }
 
   // Start/end offset of each segment/entire segments.
   unsigned OffsetForSegment(const NGInlineItemSegment& segment) const;
   unsigned EndOffset() const { return segments_.back().EndOffset(); }
 
-  void ReserveCapacity(unsigned capacity) {
-    segments_.ReserveCapacity(capacity);
-  }
+  void ReserveCapacity(unsigned capacity) { segments_.reserve(capacity); }
 
   // Append a |NGInlineItemSegment| using one of its constructors.
   template <class... Args>
   void Append(Args&&... args) {
     segments_.emplace_back(std::forward<Args>(args)...);
   }
+
+  // Compute segments from the given |RunSegmenter|.
+  void ComputeSegments(RunSegmenter* segmenter,
+                       RunSegmenter::RunSegmenterRange* range);
 
   // Append mixed-vertical font orientation segments for the specified range.
   // This is separated from |ComputeSegments| because this result depends on
@@ -97,7 +101,7 @@ class CORE_EXPORT NGInlineItemSegments {
                                       unsigned segment_index);
 
   // Compute an internal items-to-segments index for faster access.
-  void ComputeItemIndex(const Vector<NGInlineItem>& items);
+  void ComputeItemIndex(const HeapVector<NGInlineItem>& items);
 
   // Iterates |RunSegmenterRange| for the given offsets.
   class Iterator {

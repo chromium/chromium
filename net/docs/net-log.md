@@ -123,14 +123,14 @@ at all capture modes.
 
 ```
 net_log.AddEvent(NetLogEventType::SSL_CERTIFICATES_RECEIVED, [&] {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   base::Value certs(base::Value::Type::LIST);
   std::vector<std::string> encoded_chain;
   server_cert_->GetPEMEncodedChain(&encoded_chain);
   for (auto& pem : encoded_chain)
     certs.Append(std::move(pem));
-  dict.SetKey("certificates", std::move(certs));
-  return dict;
+  dict.Set("certificates", std::move(certs));
+  return base::Value(std::move(dict));
 });
 ```
 
@@ -156,10 +156,10 @@ net_log.AddEvent(NetLogEventType::COOKIE_STORE_COOKIE_ADDED,
                  [&](NetLogCaptureMode capture_mode) {
                    if (!NetLogCaptureIncludesSensitive(capture_mode))
                      return base::Value();
-                   base::Value dict(base::Value::Type::DICTIONARY);
-                   dict.SetStringKey("name", cookie->Name());
-                   dict.SetStringKey("value", cookie->Value());
-                   return dict;
+                   base::Value::Dict dict;
+                   dict.Set("name", cookie->Name());
+                   dict.Set("value", cookie->Value());
+                   return base::Value(std::move(dict));
                  });
 ```
 

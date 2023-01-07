@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
-#include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database_error.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
@@ -30,18 +28,18 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
   MockWebIDBCallbacks(const MockWebIDBCallbacks&) = delete;
   MockWebIDBCallbacks& operator=(const MockWebIDBCallbacks&) = delete;
 
-  void SetState(base::WeakPtr<WebIDBCursorImpl>, int64_t) override;
+  void SetState(base::WeakPtr<WebIDBCursor>, int64_t) override;
 
   MOCK_METHOD2(Error, void(mojom::blink::IDBException, const String&));
 
   void SuccessCursorContinue(
       std::unique_ptr<IDBKey>,
       std::unique_ptr<IDBKey> primaryKey,
-      base::Optional<std::unique_ptr<IDBValue>>) override;
+      absl::optional<std::unique_ptr<IDBValue>>) override;
   MOCK_METHOD3(DoSuccessCursorContinue,
                void(const std::unique_ptr<IDBKey>& key,
                     const std::unique_ptr<IDBKey>& primaryKey,
-                    const base::Optional<std::unique_ptr<IDBValue>>& value));
+                    const absl::optional<std::unique_ptr<IDBValue>>& value));
 
   MOCK_METHOD1(SuccessNamesAndVersionsList,
                void(Vector<mojom::blink::IDBNameAndVersionPtr>));
@@ -50,14 +48,14 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
       mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
       std::unique_ptr<IDBKey> key,
       std::unique_ptr<IDBKey> primary_key,
-      base::Optional<std::unique_ptr<IDBValue>> optional_value) override;
+      absl::optional<std::unique_ptr<IDBValue>> optional_value) override;
   MOCK_METHOD4(
       DoSuccessCursor,
       void(const mojo::PendingAssociatedRemote<mojom::blink::IDBCursor>&
                cursor_info,
            const std::unique_ptr<IDBKey>& key,
            const std::unique_ptr<IDBKey>& primary_key,
-           const base::Optional<std::unique_ptr<IDBValue>>& optional_value));
+           const absl::optional<std::unique_ptr<IDBValue>>& optional_value));
 
   MOCK_METHOD3(SuccessCursorPrefetch,
                void(Vector<std::unique_ptr<IDBKey>> keys,
@@ -77,6 +75,12 @@ class MockWebIDBCallbacks : public WebIDBCallbacks {
   void SuccessArray(Vector<mojom::blink::IDBReturnValuePtr>) override;
   MOCK_METHOD1(DoSuccessArray,
                void(const Vector<mojom::blink::IDBReturnValuePtr>&));
+
+  void SuccessArrayArray(
+      Vector<Vector<mojom::blink::IDBReturnValuePtr>>) override;
+
+  MOCK_METHOD1(DoSuccessArrayArray,
+               void(const Vector<Vector<mojom::blink::IDBReturnValuePtr>>&));
 
   MOCK_METHOD1(SuccessInteger, void(int64_t));
 

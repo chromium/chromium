@@ -76,7 +76,7 @@ Change that `#if 0` to `#if 1`, build a debug build, then run in a debugger.
 The debugger will break when any renderer code sees a GL error, and you should
 be able to examine the call stack to find the issue.
 
-[gles2_implementation.h]: https://chromium.googlesource.com/chromium/src/+/master/gpu/command_buffer/client/gles2_implementation.h
+[gles2_implementation.h]: https://chromium.googlesource.com/chromium/src/+/main/gpu/command_buffer/client/gles2_implementation.h
 
 ### Labeling your calls
 
@@ -237,6 +237,15 @@ If you see this message in `about:gpu` or your console and you didn't cause it
 directly (by calling `glLoseContextCHROMIUM`) and it's something other than 5
 that means there's likely a bug. Please file an issue at <http://crbug.com/new>.
 
+## Tracing OpenGL calls
+
+Passing the command line flag `--enable-gpu-service-tracing` causes
+the GPU process to emit one trace event per OpenGL API call. (See
+"Debugging Performance", below.) This is useful when trying to
+understand where the expensive operations are in a given set of work
+sent from a renderer process to the GPU process, and processed
+underneath `CommandBufferService::PutChanged`.
+
 ## Debugging Performance
 
 If you have something to add here please add it. Most perf debugging is done
@@ -253,4 +262,4 @@ printf("elapsedTime = %f\n", end - start);
 
 **will not** give you meaningful results.
 
-[See Trace Event Profiling for details]: https://sites.google.com/a/chromium.org/dev/developers/how-tos/trace-event-profiling-tool
+[Trace Event Profiling]: https://sites.google.com/a/chromium.org/dev/developers/how-tos/trace-event-profiling-tool

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,39 +6,15 @@
 #define COMPONENTS_SYNC_ENGINE_SYNC_SCHEDULER_H_
 
 #include <memory>
-#include <string>
 
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
-#include "components/sync/base/invalidation_interface.h"
+#include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cycle/sync_cycle.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 
-namespace base {
-class Location;
-}  // namespace base
-
 namespace syncer {
-
-struct ConfigurationParams {
-  ConfigurationParams();
-  ConfigurationParams(sync_pb::SyncEnums::GetUpdatesOrigin origin,
-                      ModelTypeSet types_to_download,
-                      base::OnceClosure ready_task);
-  ConfigurationParams(const ConfigurationParams&) = delete;
-  ConfigurationParams(ConfigurationParams&& other);
-  ConfigurationParams& operator=(const ConfigurationParams&) = delete;
-  ConfigurationParams& operator=(ConfigurationParams&&);
-  ~ConfigurationParams();
-
-  // Origin for the configuration.
-  sync_pb::SyncEnums::GetUpdatesOrigin origin;
-  // The types that should be downloaded.
-  ModelTypeSet types_to_download;
-  // Callback to invoke on configuration completion.
-  base::OnceClosure ready_task;
-};
 
 // A class to schedule syncer tasks intelligently.
 class SyncScheduler : public SyncCycle::Delegate {
@@ -66,14 +42,13 @@ class SyncScheduler : public SyncCycle::Delegate {
   // be used to decide what the poll timer should be initialized with.
   virtual void Start(Mode mode, base::Time last_poll_time) = 0;
 
-  // Schedules the configuration task specified by |params|. Returns true if
-  // the configuration task executed immediately, false if it had to be
-  // scheduled for a later attempt. |params.ready_task| is invoked whenever the
-  // configuration task executes. |params.retry_task| is invoked once if the
-  // configuration task could not execute. |params.ready_task| will still be
-  // called when configuration finishes.
+  // Schedules the configuration task. |ready_task| is invoked when the
+  // configuration finishes.
   // Note: must already be in CONFIGURATION mode.
-  virtual void ScheduleConfiguration(ConfigurationParams params) = 0;
+  virtual void ScheduleConfiguration(
+      sync_pb::SyncEnums::GetUpdatesOrigin origin,
+      ModelTypeSet types_to_download,
+      base::OnceClosure ready_task) = 0;
 
   // Request that the syncer avoid starting any new tasks and prepare for
   // shutdown.
@@ -90,16 +65,13 @@ class SyncScheduler : public SyncCycle::Delegate {
 
   // The LocalNudge indicates that we've made a local change, and that the
   // syncer should plan to commit this to the server some time soon.
-  virtual void ScheduleLocalNudge(ModelTypeSet types,
-                                  const base::Location& nudge_location) = 0;
+  virtual void ScheduleLocalNudge(ModelType type) = 0;
 
   // The LocalRefreshRequest occurs when we decide for some reason to manually
   // request updates.  This should be used sparingly.  For example, one of its
   // uses is to fetch the latest tab sync data when it's relevant to the UI on
   // platforms where tab sync is not registered for invalidations.
-  virtual void ScheduleLocalRefreshRequest(
-      ModelTypeSet types,
-      const base::Location& nudge_location) = 0;
+  virtual void ScheduleLocalRefreshRequest(ModelTypeSet types) = 0;
 
   // Invalidations are notifications the server sends to let us know when other
   // clients have committed data.  We need to contact the sync server (being
@@ -107,8 +79,7 @@ class SyncScheduler : public SyncCycle::Delegate {
   // order to fetch the update.
   virtual void ScheduleInvalidationNudge(
       ModelType type,
-      std::unique_ptr<InvalidationInterface> invalidation,
-      const base::Location& nudge_location) = 0;
+      std::unique_ptr<SyncInvalidation> invalidation) = 0;
 
   // Requests a non-blocking initial sync request for the specified type.
   //

@@ -1,7 +1,6 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 
 /**
  * @fileoverview This class acts as the persistent store for all static data
@@ -12,15 +11,15 @@
  *
  * If you are looking to add a user command, follow the below steps for best
  * integration with existing components:
- * 1. Add a command below in CommandStore.CMD_ALLOWLIST. Pick a
- * programmatic name and fill in each of the relevant JSON keys.
+ * 1. Add the command to the |Command| enum.
+ * 2. Add a command below in CommandStore.CMD_ALLOWLIST. Fill in each of the
+ * relevant JSON keys.
  * Be sure to add a msg id and define it in chromevox/messages/messages.js which
  * describes the command. Please also add a category msg id so that the command
  * will show up in the options page.
- * 2. Add the command's logic to UserCommands inside of our switch-based
- * dispatch method (doCommand_).
- * 3. Add a key binding in chromevox/background/keymaps/classic_keymap.json and
- * chromevox/background/keymaps/flat_keymap.json.
+ * 2. Add the command's logic to CommandHandler inside of our switch-based
+ * dispatch method (onCommand).
+ * 3. Add a key binding to KeySequence.
  *
  * Class description:
  * This class is entirely static and holds a JSON structure that stores
@@ -30,32 +29,11 @@
  * categories.
  */
 
-
-goog.provide('CommandStore');
-
-/**
- * Returns all of the categories in the store as an array.
- * @return {Array<string>} The collection of categories.
- */
-CommandStore.categories = function() {
-  const categorySet = {};
-  for (const cmd in CommandStore.CMD_ALLOWLIST) {
-    const struct = CommandStore.CMD_ALLOWLIST[cmd];
-    if (struct.category) {
-      categorySet[struct.category] = true;
-    }
-  }
-  const ret = [];
-  for (const category in categorySet) {
-    ret.push(category);
-  }
-  return ret;
-};
-
+export const CommandStore = {};
 
 /**
  * Gets a message given a command.
- * @param {string} command The command to query.
+ * @param {!Command} command The command to query.
  * @return {string|undefined} The message id, if any.
  */
 CommandStore.messageForCommand = function(command) {
@@ -65,18 +43,31 @@ CommandStore.messageForCommand = function(command) {
 
 /**
  * Gets a category given a command.
- * @param {string} command The command to query.
- * @return {string|undefined} The command, if any.
+ * @param {!Command} command The command to query.
+ * @return {string|undefined} The category, if any.
  */
 CommandStore.categoryForCommand = function(command) {
   return (CommandStore.CMD_ALLOWLIST[command] || {}).category;
 };
 
+/**
+ * Gets the first command associated with the message id
+ * @param {string} msgId
+ * @return {!Command|undefined} The command, if any.
+ */
+CommandStore.commandForMessage = function(msgId) {
+  for (const commandName in CommandStore.CMD_ALLOWLIST) {
+    const command = CommandStore.CMD_ALLOWLIST[commandName];
+    if (command.msgId === msgId) {
+      return commandName;
+    }
+  }
+};
 
 /**
  * Gets all commands for a category.
  * @param {string} category The category to query.
- * @return {Array<string>} The commands, if any.
+ * @return {Array<!Command>} The commands, if any.
  */
 CommandStore.commandsForCategory = function(category) {
   const ret = [];
@@ -90,989 +81,980 @@ CommandStore.commandsForCategory = function(category) {
 };
 
 /**
- * @param {string} command The command to query.
+ * @param {!Command} command The command to query.
  * @return {boolean} Whether or not this command is denied in the OOBE.
  */
-CommandStore.denyOOBE = function(command) {
+CommandStore.denySignedOut = function(command) {
   if (!CommandStore.CMD_ALLOWLIST[command]) {
     return false;
   }
-  return !!CommandStore.CMD_ALLOWLIST[command].denyOOBE;
+  return Boolean(CommandStore.CMD_ALLOWLIST[command].denySignedOut);
 };
 
+/**
+ * List of commands. Please keep list alphabetical.
+ * @enum {string}
+ */
+export const Command = {
+  ANNOUNCE_BATTERY_DESCRIPTION: 'announceBatteryDescription',
+  ANNOUNCE_HEADERS: 'announceHeaders',
+  ANNOUNCE_RICH_TEXT_DESCRIPTION: 'announceRichTextDescription',
+  AUTORUNNER: 'autorunner',
+  BACKWARD: 'backward',
+  BOTTOM: 'bottom',
+  CONTEXT_MENU: 'contextMenu',
+  COPY: 'copy',
+  CYCLE_PUNCTUATION_ECHO: 'cyclePunctuationEcho',
+  CYCLE_TYPING_ECHO: 'cycleTypingEcho',
+  DEBUG: 'debug',
+  DECREASE_TTS_PITCH: 'decreaseTtsPitch',
+  DECREASE_TTS_RATE: 'decreaseTtsRate',
+  DECREASE_TTS_VOLUME: 'decreaseTtsVolume',
+  DISABLE_CHROMEVOX_ARC_SUPPORT_FOR_CURRENT_APP:
+      'disableChromeVoxArcSupportForCurrentApp',
+  DISABLE_LOGGING: 'disableLogging',
+  DUMP_TREE: 'dumpTree',
+  ENABLE_CHROMEVOX_ARC_SUPPORT_FOR_CURRENT_APP:
+      'enableChromeVoxArcSupportForCurrentApp',
+  ENABLE_CONSOLE_TTS: 'enableConsoleTts',
+  ENABLE_LOGGING: 'enableLogging',
+  ENTER_SHIFTER: 'enterShifter',
+  EXIT_SHIFTER: 'exitShifter',
+  EXIT_SHIFTER_CONTENT: 'exitShifterContent',
+  FORCE_CLICK_ON_CURRENT_ITEM: 'forceClickOnCurrentItem',
+  FORCE_DOUBLE_CLICK_ON_CURRENT_ITEM: 'forceDoubleClickOnCurrentItem',
+  FORCE_LONG_CLICK_ON_CURRENT_ITEM: 'forceLongClickOnCurrentItem',
+  FORWARD: 'forward',
+  FULLY_DESCRIBE: 'fullyDescribe',
+  GO_TO_COL_FIRST_CELL: 'goToColFirstCell',
+  GO_TO_COL_LAST_CELL: 'goToColLastCell',
+  GO_TO_FIRST_CELL: 'goToFirstCell',
+  GO_TO_LAST_CELL: 'goToLastCell',
+  GO_TO_ROW_FIRST_CELL: 'goToRowFirstCell',
+  GO_TO_ROW_LAST_CELL: 'goToRowLastCell',
+  HANDLE_TAB: 'handleTab',
+  HANDLE_TAB_PREV: 'handleTabPrev',
+  HELP: 'help',
+  INCREASE_TTS_PITCH: 'increaseTtsPitch',
+  INCREASE_TTS_RATE: 'increaseTtsRate',
+  INCREASE_TTS_VOLUME: 'increaseTtsVolume',
+  JUMP_TO_BOTTOM: 'jumpToBottom',
+  JUMP_TO_DETAILS: 'jumpToDetails',
+  JUMP_TO_TOP: 'jumpToTop',
+  LEFT: 'left',
+  LINE_DOWN: 'lineDown',
+  LINE_UP: 'lineUp',
+  MOVE_TO_END_OF_LINE: 'moveToEndOfLine',
+  MOVE_TO_START_OF_LINE: 'moveToStartOfLine',
+  NOP: 'nop',
+  NATIVE_NEXT_CHARACTER: 'nativeNextCharacter',
+  NATIVE_NEXT_WORD: 'nativeNextWord',
+  NATIVE_PREVIOUS_CHARACTER: 'nativePreviousCharacter',
+  NATIVE_PREVIOUS_WORD: 'nativePreviousWord',
+  NEXT_ARTICLE: 'nextArticle',
+  NEXT_AT_GRANULARITY: 'nextAtGranularity',
+  NEXT_BUTTON: 'nextButton',
+  NEXT_CHARACTER: 'nextCharacter',
+  NEXT_CHECKBOX: 'nextCheckbox',
+  NEXT_COL: 'nextCol',
+  NEXT_COMBO_BOX: 'nextComboBox',
+  NEXT_CONTROL: 'nextControl',
+  NEXT_EDIT_TEXT: 'nextEditText',
+  NEXT_FORM_FIELD: 'nextFormField',
+  NEXT_GRANULARITY: 'nextGranularity',
+  NEXT_GRAPHIC: 'nextGraphic',
+  NEXT_GROUP: 'nextGroup',
+  NEXT_HEADING: 'nextHeading',
+  NEXT_HEADING_1: 'nextHeading1',
+  NEXT_HEADING_2: 'nextHeading2',
+  NEXT_HEADING_3: 'nextHeading3',
+  NEXT_HEADING_4: 'nextHeading4',
+  NEXT_HEADING_5: 'nextHeading5',
+  NEXT_HEADING_6: 'nextHeading6',
+  NEXT_INVALID_ITEM: 'nextInvalidItem',
+  NEXT_LANDMARK: 'nextLandmark',
+  NEXT_LINE: 'nextLine',
+  NEXT_LINK: 'nextLink',
+  NEXT_LIST: 'nextList',
+  NEXT_LIST_ITEM: 'nextListItem',
+  NEXT_MATH: 'nextMath',
+  NEXT_MEDIA: 'nextMedia',
+  NEXT_OBJECT: 'nextObject',
+  NEXT_PAGE: 'nextPage',
+  NEXT_RADIO: 'nextRadio',
+  NEXT_ROW: 'nextRow',
+  NEXT_SECTION: 'nextSection',
+  NEXT_SENTENCE: 'nextSentence',
+  NEXT_SIMILAR_ITEM: 'nextSimilarItem',
+  NEXT_SLIDER: 'nextSlider',
+  NEXT_TABLE: 'nextTable',
+  NEXT_VISITED_LINK: 'nextVisitedLink',
+  NEXT_WORD: 'nextWord',
+  OPEN_CHROMEVOX_MENUS: 'openChromeVoxMenus',
+  OPEN_LONG_DESC: 'openLongDesc',
+  PAN_LEFT: 'panLeft',
+  PAN_RIGHT: 'panRight',
+  PASS_THROUGH_MODE: 'passThroughMode',
+  PAUSE_ALL_MEDIA: 'pauseAllMedia',
+  PREVIOUS_ARTICLE: 'previousArticle',
+  PREVIOUS_AT_GRANULARITY: 'previousAtGranularity',
+  PREVIOUS_BUTTON: 'previousButton',
+  PREVIOUS_CHARACTER: 'previousCharacter',
+  PREVIOUS_CHECKBOX: 'previousCheckbox',
+  PREVIOUS_COMBO_BOX: 'previousComboBox',
+  PREVIOUS_COL: 'previousCol',
+  PREVIOUS_CONTROL: 'previousControl',
+  PREVIOUS_EDIT_TEXT: 'previousEditText',
+  PREVIOUS_FORM_FIELD: 'previousFormField',
+  PREVIOUS_GRANULARITY: 'previousGranularity',
+  PREVIOUS_GRAPHIC: 'previousGraphic',
+  PREVIOUS_GROUP: 'previousGroup',
+  PREVIOUS_HEADING: 'previousHeading',
+  PREVIOUS_HEADING_1: 'previousHeading1',
+  PREVIOUS_HEADING_2: 'previousHeading2',
+  PREVIOUS_HEADING_3: 'previousHeading3',
+  PREVIOUS_HEADING_4: 'previousHeading4',
+  PREVIOUS_HEADING_5: 'previousHeading5',
+  PREVIOUS_HEADING_6: 'previousHeading6',
+  PREVIOUS_INVALID_ITEM: 'previousInvalidItem',
+  PREVIOUS_LANDMARK: 'previousLandmark',
+  PREVIOUS_LINE: 'previousLine',
+  PREVIOUS_LINK: 'previousLink',
+  PREVIOUS_LIST: 'previousList',
+  PREVIOUS_LIST_ITEM: 'previousListItem',
+  PREVIOUS_MATH: 'previousMath',
+  PREVIOUS_MEDIA: 'previousMedia',
+  PREVIOUS_OBJECT: 'previousObject',
+  PREVIOUS_PAGE: 'previousPage',
+  PREVIOUS_RADIO: 'previousRadio',
+  PREVIOUS_ROW: 'previousRow',
+  PREVIOUS_SECTION: 'previousSection',
+  PREVIOUS_SENTENCE: 'previousSentence',
+  PREVIOUS_SIMILAR_ITEM: 'previousSimilarItem',
+  PREVIOUS_SLIDER: 'previousSlider',
+  PREVIOUS_TABLE: 'previousTable',
+  PREVIOUS_VISITED_LINK: 'previousVisitedLink',
+  PREVIOUS_WORD: 'previousWord',
+  READ_CURRENT_TITLE: 'readCurrentTitle',
+  READ_CURRENT_URL: 'readCurrentURL',
+  READ_FROM_HERE: 'readFromHere',
+  READ_LINK_URL: 'readLinkURL',
+  READ_PHONETIC_PRONUNCIATION: 'readPhoneticPronunciation',
+  REPORT_ISSUE: 'reportIssue',
+  RESET_TEXT_TO_SPEECH_SETTINGS: 'resetTextToSpeechSettings',
+  RIGHT: 'right',
+  ROUTING: 'routing',
+  SCROLL_BACKWARD: 'scrollBackward',
+  SCROLL_FORWARD: 'scrollForward',
+  SHOW_ACTIONS_MENU: 'showActionsMenu',
+  SHOW_FORMS_LIST: 'showFormsList',
+  SHOW_HEADINGS_LIST: 'showHeadingsList',
+  SHOW_LANDMARKS_LIST: 'showLandmarksList',
+  SHOW_LEARN_MODE_PAGE: 'showLearnModePage',
+  SHOW_LINKS_LIST: 'showLinksList',
+  SHOW_LOG_PAGE: 'showLogPage',
+  SHOW_OPTIONS_PAGE: 'showOptionsPage',
+  SHOW_PANEL_MENU_MOST_RECENT: 'showPanelMenuMostRecent',
+  SHOW_TABLES_LIST: 'showTablesList',
+  SHOW_TALKBACK_KEYBOARD_SHORTCUTS: 'showTalkBackKeyboardShortcuts',
+  SHOW_TTS_SETTINGS: 'showTtsSettings',
+  SPEAK_TABLE_LOCATION: 'speakTableLocation',
+  SPEAK_TIME_AND_DATE: 'speakTimeAndDate',
+  START_HISTORY_RECORDING: 'startHistoryRecording',
+  STOP_HISTORY_RECORDING: 'stopHistoryRecording',
+  STOP_SPEECH: 'stopSpeech',
+  TOGGLE_BRAILLE_CAPTIONS: 'toggleBrailleCaptions',
+  TOGGLE_BRAILLE_TABLE: 'toggleBrailleTable',
+  TOGGLE_DICTATION: 'toggleDictation',
+  TOGGLE_EARCONS: 'toggleEarcons',
+  TOGGLE_KEYBOARD_HELP: 'toggleKeyboardHelp',
+  TOGGLE_SCREEN: 'toggleScreen',
+  TOGGLE_SEARCH_WIDGET: 'toggleSearchWidget',
+  TOGGLE_SELECTION: 'toggleSelection',
+  TOGGLE_SEMANTICS: 'toggleSemantics',
+  TOGGLE_SPEECH_ON_OR_OFF: 'toggleSpeechOnOrOff',
+  TOGGLE_STICKY_MODE: 'toggleStickyMode',
+  TOP: 'top',
+  VIEW_GRAPHIC_AS_BRAILLE: 'viewGraphicAsBraille',
+};
 
 /**
- * List of commands and their properties
- * @type {Object<{forward: (undefined|boolean),
- *                backward: (undefined|boolean),
- *                announce: boolean,
- *                category: (undefined|string),
- *                findNext: (undefined|string),
- *                doDefault: (undefined|boolean),
- *                msgId: (undefined|string),
- *                nodeList: (undefined|string),
- *                skipInput: (undefined|boolean),
- *                allowEvents: (undefined|boolean),
- *                denyContinuation: (undefined|boolean),
- *                denyOOBE: (undefined|boolean)}>}
- *  forward: Whether this command points forward.
- *  backward: Whether this command points backward. If neither forward or
- *            backward are specified, it stays facing in the current direction.
+ * List of categories for the commands.
+ * Note that the values here must correspond to the message resource tag for the
+ * category.
+ * @enum {string}
+ */
+export const CommandCategory = {
+  ACTIONS: 'actions',
+  BRAILLE: 'braille',
+  CONTROLLING_SPEECH: 'controlling_speech',
+  DEVELOPER: 'developer',
+  HELP_COMMANDS: 'help_commands',
+  INFORMATION: 'information',
+  JUMP_COMMANDS: 'jump_commands',
+  MODIFIER_KEYS: 'modifier_keys',
+  NAVIGATION: 'navigation',
+  OVERVIEW: 'overview',
+  TABLES: 'tables',
+};
+
+/**
+ * Collection of command properties.
+ * @type {Object<!Command, {
+ *                  announce: boolean,
+ *                  category: (undefined|!CommandCategory),
+ *                  msgId: (undefined|string),
+ *                  allowEvents: (undefined|boolean),
+ *                  denySignedOut: (undefined|boolean)}>}
  *  announce: Whether to call finishNavCommand and announce the current
  *            position after the command is done.
- *  findNext: The id from the map above if this command is used for
- *            finding next/previous of something.
- *  category: The message resource describing the command's category.
- *  doDefault: Whether to do the default action. This means that keys will be
- *             passed through to the usual DOM capture/bubble phases.
+ *  category: The command's category.
  *  msgId: The message resource describing the command.
- *  nodeList: The id from the map above if this command is used for
- *            showing a list of nodes.
- *  skipInput: Explicitly skips this command when text input has focus.
- *             Defaults to false.
- *  denyOOBE: Explicitly denies this command when on chrome://oobe/*.
- *             Defaults to false.
+ *  denySignedOut: Explicitly denies this command when on chrome://oobe/* or
+ *             other signed-out contexts. Defaults to false.
  *  allowEvents: Allows EventWatcher to continue processing events which can
  * trump TTS.
- *  denyContinuation: denies continuous read to proceed. Defaults to
- * false.
  */
 CommandStore.CMD_ALLOWLIST = {
-  'toggleStickyMode':
-      {announce: false, msgId: 'toggle_sticky_mode', category: 'modifier_keys'},
-  'passThroughMode': {
+  [Command.TOGGLE_STICKY_MODE]: {
+    announce: false,
+    msgId: 'toggle_sticky_mode',
+    category: CommandCategory.MODIFIER_KEYS,
+  },
+  [Command.PASS_THROUGH_MODE]: {
     announce: false,
     msgId: 'pass_through_key_description',
-    category: 'modifier_keys'
+    category: CommandCategory.MODIFIER_KEYS,
   },
 
-  'stopSpeech': {
+  [Command.STOP_SPEECH]: {
     announce: false,
-    denyContinuation: true,
-    doDefault: true,
     msgId: 'stop_speech_key',
-    category: 'controlling_speech'
+    category: CommandCategory.CONTROLLING_SPEECH,
   },
-  'openChromeVoxMenus': {announce: false, msgId: 'menus_title'},
-  'resetTextToSpeechSettings': {
+  [Command.OPEN_CHROMEVOX_MENUS]: {announce: false, msgId: 'menus_title'},
+  [Command.RESET_TEXT_TO_SPEECH_SETTINGS]: {
     announce: false,
     msgId: 'reset_tts_settings',
-    category: 'controlling_speech'
+    category: CommandCategory.CONTROLLING_SPEECH,
   },
-  'decreaseTtsRate': {
+  [Command.DECREASE_TTS_RATE]: {
     announce: false,
     msgId: 'decrease_tts_rate',
-    category: 'controlling_speech'
+    category: CommandCategory.CONTROLLING_SPEECH,
   },
-  'increaseTtsRate': {
+  [Command.INCREASE_TTS_RATE]: {
     announce: false,
     msgId: 'increase_tts_rate',
-    category: 'controlling_speech'
+    category: CommandCategory.CONTROLLING_SPEECH,
   },
-  'decreaseTtsPitch': {
+  [Command.DECREASE_TTS_PITCH]: {
     announce: false,
     msgId: 'decrease_tts_pitch',
-    category: 'controlling_speech'
+    category: CommandCategory.CONTROLLING_SPEECH,
   },
-  'increaseTtsPitch': {
+  [Command.INCREASE_TTS_PITCH]: {
     announce: false,
     msgId: 'increase_tts_pitch',
-    category: 'controlling_speech'
+    category: CommandCategory.CONTROLLING_SPEECH,
   },
-  'decreaseTtsVolume': {
+  [Command.DECREASE_TTS_VOLUME]: {
     announce: false,
     msgId: 'decrease_tts_volume',
-    category: 'controlling_speech'
+    category: CommandCategory.CONTROLLING_SPEECH,
   },
-  'increaseTtsVolume': {
+  [Command.INCREASE_TTS_VOLUME]: {
     announce: false,
     msgId: 'increase_tts_volume',
-    category: 'controlling_speech'
+    category: CommandCategory.CONTROLLING_SPEECH,
   },
-  'cyclePunctuationEcho': {
+  [Command.CYCLE_PUNCTUATION_ECHO]: {
     announce: false,
     msgId: 'cycle_punctuation_echo',
-    category: 'controlling_speech'
+    category: CommandCategory.CONTROLLING_SPEECH,
   },
-  'cycleTypingEcho': {
+  [Command.CYCLE_TYPING_ECHO]: {
     announce: false,
     msgId: 'cycle_typing_echo',
-    category: 'controlling_speech'
+    category: CommandCategory.CONTROLLING_SPEECH,
   },
 
+  [Command.TOGGLE_DICTATION]: {
+    announce: false,
+    msgId: 'toggle_dictation',
+    category: CommandCategory.ACTIONS,
+  },
 
-  'toggleEarcons':
-      {announce: true, msgId: 'toggle_earcons', category: 'controlling_speech'},
+  [Command.TOGGLE_EARCONS]: {
+    announce: true,
+    msgId: 'toggle_earcons',
+    category: CommandCategory.CONTROLLING_SPEECH,
+  },
 
-  'toggleSpeechOnOrOff':
-      {msgId: 'speech_on_off_description', category: 'controlling_speech'},
+  [Command.TOGGLE_SPEECH_ON_OR_OFF]: {
+    msgId: 'speech_on_off_description',
+    category: CommandCategory.CONTROLLING_SPEECH,
+  },
 
-  'handleTab': {
+  [Command.HANDLE_TAB]: {
     allowEvents: true,
     msgId: 'handle_tab_next',
-    denyContinuation: true,
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'handleTabPrev': {
+  [Command.HANDLE_TAB_PREV]: {
     allowEvents: true,
     msgId: 'handle_tab_prev',
-    denyContinuation: true,
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'forward':
-      {forward: true, announce: true, msgId: 'forward', category: 'navigation'},
-  'backward': {
-    backward: true,
+  [Command.FORWARD]: {
+    announce: true,
+    msgId: 'forward',
+    category: CommandCategory.NAVIGATION,
+  },
+  [Command.BACKWARD]: {
     announce: true,
     msgId: 'backward',
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'right':
-      {forward: true, announce: true, msgId: 'right', category: 'navigation'},
-  'left':
-      {backward: true, announce: true, msgId: 'left', category: 'navigation'},
-  'previousGranularity':
-      {announce: true, msgId: 'previous_granularity', category: 'navigation'},
-  'nextGranularity':
-      {announce: true, msgId: 'next_granularity', category: 'navigation'},
-  'previousAtGranularity': {
+  [Command.RIGHT]: {
+    announce: true,
+    msgId: 'right',
+    category: CommandCategory.NAVIGATION,
+  },
+  [Command.LEFT]: {
+    announce: true,
+    msgId: 'left',
+    category: CommandCategory.NAVIGATION,
+  },
+  [Command.PREVIOUS_GRANULARITY]: {
+    announce: true,
+    msgId: 'previous_granularity',
+    category: CommandCategory.NAVIGATION,
+  },
+  [Command.NEXT_GRANULARITY]: {
+    announce: true,
+    msgId: 'next_granularity',
+    category: CommandCategory.NAVIGATION,
+  },
+  [Command.PREVIOUS_AT_GRANULARITY]: {
     announce: true,
     msgId: 'previous_at_granularity',
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'nextAtGranularity':
-      {announce: true, msgId: 'next_at_granularity', category: 'navigation'},
+  [Command.NEXT_AT_GRANULARITY]: {
+    announce: true,
+    msgId: 'next_at_granularity',
+    category: CommandCategory.NAVIGATION,
+  },
 
-  'previousCharacter': {
-    backward: true,
+  [Command.PREVIOUS_CHARACTER]: {
     announce: true,
     msgId: 'previous_character',
-    skipInput: true,
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'nextCharacter': {
-    forward: true,
+  [Command.NEXT_CHARACTER]: {
     announce: true,
     msgId: 'next_character',
-    skipInput: true,
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'previousWord': {
-    backward: true,
+  [Command.PREVIOUS_WORD]: {
     announce: true,
     msgId: 'previous_word',
-    skipInput: true,
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'nextWord': {
-    forward: true,
+  [Command.NEXT_WORD]: {
     announce: true,
     msgId: 'next_word',
-    skipInput: true,
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'previousLine': {
-    backward: true,
+  [Command.PREVIOUS_LINE]: {
     announce: true,
     msgId: 'previous_line',
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'nextLine': {
-    forward: true,
+  [Command.NEXT_LINE]: {
     announce: true,
     msgId: 'next_line',
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'previousSentence': {
-    backward: true,
+  [Command.PREVIOUS_SENTENCE]: {
     announce: true,
     msgId: 'previous_sentence',
-    skipInput: true,
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'nextSentence': {
-    forward: true,
+  [Command.NEXT_SENTENCE]: {
     announce: true,
     msgId: 'next_sentence',
-    skipInput: true,
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'previousObject': {
-    backward: true,
+  [Command.PREVIOUS_OBJECT]: {
     announce: true,
     msgId: 'previous_object',
-    skipInput: true,
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'nextObject': {
-    forward: true,
+  [Command.NEXT_OBJECT]: {
     announce: true,
     msgId: 'next_object',
-    skipInput: true,
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'previousGroup': {
-    backward: true,
+  [Command.PREVIOUS_GROUP]: {
     announce: true,
     msgId: 'previous_group',
-    skipInput: true,
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'nextGroup': {
-    forward: true,
+  [Command.NEXT_GROUP]: {
     announce: true,
     msgId: 'next_group',
-    skipInput: true,
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'previousSimilarItem': {
-    backward: true,
+  [Command.PREVIOUS_SIMILAR_ITEM]: {
     announce: true,
     msgId: 'previous_similar_item',
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'nextSimilarItem': {
-    forward: true,
+  [Command.NEXT_SIMILAR_ITEM]: {
     announce: true,
     msgId: 'next_similar_item',
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
+  },
+  [Command.PREVIOUS_INVALID_ITEM]: {
+    announce: true,
+    msgId: 'previous_invalid_item',
+    category: CommandCategory.NAVIGATION,
+  },
+  [Command.NEXT_INVALID_ITEM]: {
+    announce: true,
+    msgId: 'next_invalid_item',
+    category: CommandCategory.NAVIGATION,
   },
 
-  'jumpToTop': {
-    forward: true,
+  [Command.JUMP_TO_TOP]: {
     announce: true,
     msgId: 'jump_to_top',
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
-  'jumpToBottom': {
-    backward: true,
+  [Command.JUMP_TO_BOTTOM]: {
     announce: true,
     msgId: 'jump_to_bottom',
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
   // Intentionally uncategorized.
-  'moveToStartOfLine': {forward: true, announce: true},
-  'moveToEndOfLine': {backward: true, announce: true},
+  [Command.MOVE_TO_START_OF_LINE]: {announce: true},
+  [Command.MOVE_TO_END_OF_LINE]: {announce: true},
 
-  'jumpToDetails':
-      {announce: false, msgId: 'jump_to_details', category: 'navigation'},
+  [Command.JUMP_TO_DETAILS]: {
+    announce: false,
+    msgId: 'jump_to_details',
+    category: CommandCategory.NAVIGATION,
+  },
 
-  'readFromHere': {
-    forward: true,
+  [Command.READ_FROM_HERE]: {
     announce: false,
     msgId: 'read_from_here',
-    category: 'navigation'
+    category: CommandCategory.NAVIGATION,
   },
 
-  'forceClickOnCurrentItem': {
+  [Command.FORCE_CLICK_ON_CURRENT_ITEM]: {
     announce: true,
-    denyContinuation: true,
     allowEvents: true,
     msgId: 'force_click_on_current_item',
-    category: 'actions'
+    category: CommandCategory.ACTIONS,
   },
-  'forceDoubleClickOnCurrentItem':
-      {announce: true, allowEvents: true, denyContinuation: true},
+  [Command.FORCE_LONG_CLICK_ON_CURRENT_ITEM]: {
+    announce: true,
+    allowEvents: true,
+    msgId: 'force_long_click_on_current_item',
+  },
+  [Command.FORCE_DOUBLE_CLICK_ON_CURRENT_ITEM]:
+      {announce: true, allowEvents: true},
 
-  'readLinkURL':
-      {announce: false, msgId: 'read_link_url', category: 'information'},
-  'readCurrentTitle':
-      {announce: false, msgId: 'read_current_title', category: 'information'},
-  'readCurrentURL':
-      {announce: false, msgId: 'read_current_url', category: 'information'},
-
-  'fullyDescribe':
-      {announce: false, msgId: 'fully_describe', category: 'information'},
-  'speakTimeAndDate':
-      {announce: false, msgId: 'speak_time_and_date', category: 'information'},
-  'toggleSelection':
-      {announce: true, msgId: 'toggle_selection', category: 'actions'},
-
-  'toggleSearchWidget': {
+  [Command.READ_LINK_URL]: {
     announce: false,
-    denyContinuation: true,
+    msgId: 'read_link_url',
+    category: CommandCategory.INFORMATION,
+  },
+  [Command.READ_CURRENT_TITLE]: {
+    announce: false,
+    msgId: 'read_current_title',
+    category: CommandCategory.INFORMATION,
+  },
+  [Command.READ_CURRENT_URL]: {
+    announce: false,
+    msgId: 'read_current_url',
+    category: CommandCategory.INFORMATION,
+  },
+
+  [Command.FULLY_DESCRIBE]: {
+    announce: false,
+    msgId: 'fully_describe',
+    category: CommandCategory.INFORMATION,
+  },
+  [Command.SPEAK_TIME_AND_DATE]: {
+    announce: false,
+    msgId: 'speak_time_and_date',
+    category: CommandCategory.INFORMATION,
+  },
+  [Command.TOGGLE_SELECTION]: {
+    announce: true,
+    msgId: 'toggle_selection',
+    category: CommandCategory.ACTIONS,
+  },
+
+  [Command.TOGGLE_SEARCH_WIDGET]: {
+    announce: false,
     msgId: 'toggle_search_widget',
-    category: 'information'
+    category: CommandCategory.INFORMATION,
   },
 
-  'toggleScreen':
-      {announce: false, msgId: 'toggle_screen', category: 'modifier_keys'},
-
-  'toggleBrailleTable':
-      {msgId: 'toggle_braille_table', category: 'help_commands'},
-
-  'toggleKeyboardHelp': {
+  [Command.TOGGLE_SCREEN]: {
     announce: false,
-    denyContinuation: true,
-    msgId: 'show_panel_menu',
-    category: 'help_commands'
+    msgId: 'toggle_screen',
+    category: CommandCategory.MODIFIER_KEYS,
   },
-  'showPanelMenuMostRecent':
-      {announce: false, msgId: 'show_panel_menu', category: 'help_commands'},
-  'help': {
+
+  [Command.TOGGLE_BRAILLE_TABLE]:
+      {msgId: 'toggle_braille_table', category: CommandCategory.HELP_COMMANDS},
+
+  [Command.TOGGLE_KEYBOARD_HELP]: {
+    announce: false,
+    msgId: 'show_panel_menu',
+    category: CommandCategory.HELP_COMMANDS,
+  },
+  [Command.SHOW_PANEL_MENU_MOST_RECENT]: {
+    announce: false,
+    msgId: 'show_panel_menu',
+    category: CommandCategory.HELP_COMMANDS,
+  },
+  [Command.HELP]: {
     announce: false,
     msgId: 'help',
-    denyContinuation: true,
-    category: 'help_commands'
+    category: CommandCategory.HELP_COMMANDS,
   },
-  'contextMenu': {
+  [Command.CONTEXT_MENU]: {
     announce: false,
     msgId: 'show_context_menu',
-    denyContinuation: true,
-    category: 'information'
+    category: CommandCategory.INFORMATION,
   },
 
-  'showOptionsPage': {
+  [Command.SHOW_OPTIONS_PAGE]: {
     announce: false,
-    denyContinuation: true,
     msgId: 'show_options_page',
-    denyOOBE: true,
-    category: 'help_commands'
+    denySignedOut: true,
+    category: CommandCategory.HELP_COMMANDS,
   },
-  'showLogPage': {
+  [Command.SHOW_LOG_PAGE]: {
     announce: false,
-    denyContinuation: true,
     msgId: 'show_log_page',
-    denyOOBE: true,
-    category: 'help_commands'
+    denySignedOut: true,
+    category: CommandCategory.HELP_COMMANDS,
   },
-  'showKbExplorerPage': {
+  [Command.SHOW_LEARN_MODE_PAGE]: {
     announce: false,
-    denyContinuation: true,
     msgId: 'show_kb_explorer_page',
-    denyOOBE: true,
-    category: 'help_commands'
+    denySignedOut: true,
+    category: CommandCategory.HELP_COMMANDS,
   },
-  'showTtsSettings': {
+  [Command.SHOW_TTS_SETTINGS]: {
     announce: false,
     msgId: 'show_tts_settings',
-    category: 'help_commands',
-    denyOOBE: true
+    category: CommandCategory.HELP_COMMANDS,
+    denySignedOut: true,
   },
-  'toggleBrailleCaptions':
-      {announce: false, msgId: 'braille_captions', category: 'help_commands'},
-  'reportIssue': {
+  [Command.TOGGLE_BRAILLE_CAPTIONS]: {
     announce: false,
-    denyOOBE: true,
+    msgId: 'braille_captions',
+    category: CommandCategory.HELP_COMMANDS,
+  },
+  [Command.REPORT_ISSUE]: {
+    announce: false,
+    denySignedOut: true,
     msgId: 'panel_menu_item_report_issue',
-    category: 'help_commands'
+    category: CommandCategory.HELP_COMMANDS,
   },
 
-  'showFormsList': {
+  [Command.SHOW_FORMS_LIST]: {
     announce: false,
-    denyContinuation: true,
-    nodeList: 'formField',
     msgId: 'show_forms_list',
-    category: 'overview'
+    category: CommandCategory.OVERVIEW,
   },
-  'showHeadingsList': {
+  [Command.SHOW_HEADINGS_LIST]: {
     announce: false,
-    nodeList: 'heading',
-    denyContinuation: true,
     msgId: 'show_headings_list',
-    category: 'overview'
+    category: CommandCategory.OVERVIEW,
   },
-  'showLandmarksList': {
+  [Command.SHOW_LANDMARKS_LIST]: {
     announce: false,
-    nodeList: 'landmark',
-    denyContinuation: true,
     msgId: 'show_landmarks_list',
-    category: 'overview'
+    category: CommandCategory.OVERVIEW,
   },
-  'showLinksList': {
+  [Command.SHOW_LINKS_LIST]: {
     announce: false,
-    nodeList: 'link',
-    denyContinuation: true,
     msgId: 'show_links_list',
-    category: 'overview'
+    category: CommandCategory.OVERVIEW,
   },
-  'showTablesList': {
+  [Command.SHOW_TABLES_LIST]: {
     announce: false,
-    nodeList: 'table',
-    denyContinuation: true,
     msgId: 'show_tables_list',
-    category: 'overview'
+    category: CommandCategory.OVERVIEW,
   },
 
-  'nextArticle': {forward: true, findNext: 'article'},
+  [Command.NEXT_ARTICLE]: {},
 
-  'nextButton': {
-    forward: true,
-    findNext: 'button',
+  [Command.NEXT_BUTTON]: {
     msgId: 'next_button',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextCheckbox': {
-    forward: true,
-    findNext: 'checkbox',
+  [Command.NEXT_CHECKBOX]: {
     msgId: 'next_checkbox',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextComboBox': {
-    forward: true,
-    findNext: 'combobox',
+  [Command.NEXT_COMBO_BOX]: {
     msgId: 'next_combo_box',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextControl': {forward: true, findNext: 'control'},
-  'nextEditText': {
-    forward: true,
-    findNext: 'editText',
+  [Command.NEXT_CONTROL]: {},
+  [Command.NEXT_EDIT_TEXT]: {
     msgId: 'next_edit_text',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextFormField': {
-    forward: true,
-    findNext: 'formField',
+  [Command.NEXT_FORM_FIELD]: {
     msgId: 'next_form_field',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextGraphic': {
-    forward: true,
-    findNext: 'graphic',
+  [Command.NEXT_GRAPHIC]: {
     msgId: 'next_graphic',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextHeading': {
-    forward: true,
-    findNext: 'heading',
+  [Command.NEXT_HEADING]: {
     msgId: 'next_heading',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextHeading1': {
-    forward: true,
-    findNext: 'heading1',
+  [Command.NEXT_HEADING_1]: {
     msgId: 'next_heading1',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextHeading2': {
-    forward: true,
-    findNext: 'heading2',
+  [Command.NEXT_HEADING_2]: {
     msgId: 'next_heading2',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextHeading3': {
-    forward: true,
-    findNext: 'heading3',
+  [Command.NEXT_HEADING_3]: {
     msgId: 'next_heading3',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextHeading4': {
-    forward: true,
-    findNext: 'heading4',
+  [Command.NEXT_HEADING_4]: {
     msgId: 'next_heading4',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextHeading5': {
-    forward: true,
-    findNext: 'heading5',
+  [Command.NEXT_HEADING_5]: {
     msgId: 'next_heading5',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextHeading6': {
-    forward: true,
-    findNext: 'heading6',
+  [Command.NEXT_HEADING_6]: {
     msgId: 'next_heading6',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
 
-  'nextLandmark': {
-    forward: true,
-    findNext: 'landmark',
+  [Command.NEXT_LANDMARK]: {
     msgId: 'next_landmark',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextLink': {
-    forward: true,
-    findNext: 'link',
+  [Command.NEXT_LINK]: {
     msgId: 'next_link',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextList': {
-    forward: true,
-    findNext: 'list',
+  [Command.NEXT_LIST]: {
     msgId: 'next_list',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextListItem': {
-    forward: true,
-    findNext: 'listItem',
+  [Command.NEXT_LIST_ITEM]: {
     msgId: 'next_list_item',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextMath': {
-    forward: true,
-    findNext: 'math',
+  [Command.NEXT_MATH]: {
     msgId: 'next_math',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextMedia': {
-    forward: true,
-    findNext: 'media',
+  [Command.NEXT_MEDIA]: {
     msgId: 'next_media',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextRadio': {
-    forward: true,
-    findNext: 'radio',
+  [Command.NEXT_RADIO]: {
     msgId: 'next_radio',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextSection': {forward: true, findNext: 'section'},
-  'nextSlider': {forward: true, findNext: 'slider'},
-  'nextTable': {
-    forward: true,
-    findNext: 'table',
+  [Command.NEXT_SECTION]: {},
+  [Command.NEXT_SLIDER]: {},
+  [Command.NEXT_TABLE]: {
     msgId: 'next_table',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'nextVisitedLink': {
-    forward: true,
-    findNext: 'visitedLink',
+  [Command.NEXT_VISITED_LINK]: {
     msgId: 'next_visited_link',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
 
 
-  'previousArticle': {backward: true, findNext: 'article'},
+  [Command.PREVIOUS_ARTICLE]: {},
 
-  'previousButton': {
-    backward: true,
-    findNext: 'button',
+  [Command.PREVIOUS_BUTTON]: {
     msgId: 'previous_button',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousCheckbox': {
-    backward: true,
-    findNext: 'checkbox',
+  [Command.PREVIOUS_CHECKBOX]: {
     msgId: 'previous_checkbox',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousComboBox': {
-    backward: true,
-    findNext: 'combobox',
+  [Command.PREVIOUS_COMBO_BOX]: {
     msgId: 'previous_combo_box',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousControl': {backward: true, findNext: 'control'},
-  'previousEditText': {
-    backward: true,
-    findNext: 'editText',
+  [Command.PREVIOUS_CONTROL]: {},
+  [Command.PREVIOUS_EDIT_TEXT]: {
     msgId: 'previous_edit_text',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousFormField': {
-    backward: true,
-    findNext: 'formField',
+  [Command.PREVIOUS_FORM_FIELD]: {
     msgId: 'previous_form_field',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousGraphic': {
-    backward: true,
-    findNext: 'graphic',
+  [Command.PREVIOUS_GRAPHIC]: {
     msgId: 'previous_graphic',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousHeading': {
-    backward: true,
-    findNext: 'heading',
+  [Command.PREVIOUS_HEADING]: {
     msgId: 'previous_heading',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousHeading1': {
-    backward: true,
-    findNext: 'heading1',
+  [Command.PREVIOUS_HEADING_1]: {
     msgId: 'previous_heading1',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousHeading2': {
-    backward: true,
-    findNext: 'heading2',
+  [Command.PREVIOUS_HEADING_2]: {
     msgId: 'previous_heading2',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousHeading3': {
-    backward: true,
-    findNext: 'heading3',
+  [Command.PREVIOUS_HEADING_3]: {
     msgId: 'previous_heading3',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousHeading4': {
-    backward: true,
-    findNext: 'heading4',
+  [Command.PREVIOUS_HEADING_4]: {
     msgId: 'previous_heading4',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousHeading5': {
-    backward: true,
-    findNext: 'heading5',
+  [Command.PREVIOUS_HEADING_5]: {
     msgId: 'previous_heading5',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousHeading6': {
-    backward: true,
-    findNext: 'heading6',
+  [Command.PREVIOUS_HEADING_6]: {
     msgId: 'previous_heading6',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-
-  'previousLandmark': {
-    backward: true,
-    findNext: 'landmark',
+  [Command.PREVIOUS_LANDMARK]: {
     msgId: 'previous_landmark',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousLink': {
-    backward: true,
-    findNext: 'link',
+  [Command.PREVIOUS_LINK]: {
     msgId: 'previous_link',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousList': {
-    backward: true,
-    findNext: 'list',
+  [Command.PREVIOUS_LIST]: {
     msgId: 'previous_list',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousListItem': {
-    backward: true,
-    findNext: 'listItem',
+  [Command.PREVIOUS_LIST_ITEM]: {
     msgId: 'previous_list_item',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousMath': {
-    backward: true,
-    findNext: 'math',
+  [Command.PREVIOUS_MATH]: {
     msgId: 'previous_math',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousMedia': {
-    backward: true,
-    findNext: 'media',
+  [Command.PREVIOUS_MEDIA]: {
     msgId: 'previous_media',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousRadio': {
-    backward: true,
-    findNext: 'radio',
+  [Command.PREVIOUS_RADIO]: {
     msgId: 'previous_radio',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousSection': {backward: true, findNext: 'section'},
-  'previousSlider': {backward: true, findNext: 'slider'},
-  'previousTable': {
-    backward: true,
-    findNext: 'table',
+  [Command.PREVIOUS_SECTION]: {},
+  [Command.PREVIOUS_SLIDER]: {},
+  [Command.PREVIOUS_TABLE]: {
     msgId: 'previous_table',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
-  'previousVisitedLink': {
-    backward: true,
-    findNext: 'visitedLink',
+  [Command.PREVIOUS_VISITED_LINK]: {
     msgId: 'previous_visited_link',
-    category: 'jump_commands'
+    category: CommandCategory.JUMP_COMMANDS,
   },
 
 
   // Table Actions.
-  'announceHeaders':
-      {announce: false, msgId: 'announce_headers', category: 'tables'},
-  'speakTableLocation':
-      {announce: false, msgId: 'speak_table_location', category: 'tables'},
-  'goToFirstCell':
-      {announce: true, msgId: 'skip_to_beginning', category: 'tables'},
-  'goToLastCell': {announce: true, msgId: 'skip_to_end', category: 'tables'},
-  'goToRowFirstCell':
-      {announce: true, msgId: 'skip_to_row_beginning', category: 'tables'},
-  'goToRowLastCell':
-      {announce: true, msgId: 'skip_to_row_end', category: 'tables'},
-  'goToColFirstCell':
-      {announce: true, msgId: 'skip_to_col_beginning', category: 'tables'},
-  'goToColLastCell':
-      {announce: true, msgId: 'skip_to_col_end', category: 'tables'},
-  'previousRow': {
-    backward: true,
+  [Command.ANNOUNCE_HEADERS]: {
+    announce: false,
+    msgId: 'announce_headers',
+    category: CommandCategory.TABLES,
+  },
+  [Command.SPEAK_TABLE_LOCATION]: {
+    announce: false,
+    msgId: 'speak_table_location',
+    category: CommandCategory.TABLES,
+  },
+  [Command.GO_TO_FIRST_CELL]: {
     announce: true,
-    skipInput: true,
+    msgId: 'skip_to_beginning',
+    category: CommandCategory.TABLES,
+  },
+  [Command.GO_TO_LAST_CELL]:
+      {announce: true, msgId: 'skip_to_end', category: CommandCategory.TABLES},
+  [Command.GO_TO_ROW_FIRST_CELL]: {
+    announce: true,
+    msgId: 'skip_to_row_beginning',
+    category: CommandCategory.TABLES,
+  },
+  [Command.GO_TO_ROW_LAST_CELL]: {
+    announce: true,
+    msgId: 'skip_to_row_end',
+    category: CommandCategory.TABLES,
+  },
+  [Command.GO_TO_COL_FIRST_CELL]: {
+    announce: true,
+    msgId: 'skip_to_col_beginning',
+    category: CommandCategory.TABLES,
+  },
+  [Command.GO_TO_COL_LAST_CELL]: {
+    announce: true,
+    msgId: 'skip_to_col_end',
+    category: CommandCategory.TABLES,
+  },
+  [Command.PREVIOUS_ROW]: {
+    announce: true,
     msgId: 'skip_to_prev_row',
-    category: 'tables'
+    category: CommandCategory.TABLES,
   },
-  'previousCol': {
-    backward: true,
+  [Command.PREVIOUS_COL]: {
     announce: true,
-    skipInput: true,
     msgId: 'skip_to_prev_col',
-    category: 'tables'
+    category: CommandCategory.TABLES,
   },
-  'nextRow': {
-    forward: true,
+  [Command.NEXT_ROW]: {
     announce: true,
-    skipInput: true,
     msgId: 'skip_to_next_row',
-    category: 'tables'
+    category: CommandCategory.TABLES,
   },
-  'nextCol': {
-    forward: true,
+  [Command.NEXT_COL]: {
     announce: true,
-    skipInput: true,
     msgId: 'skip_to_next_col',
-    category: 'tables'
+    category: CommandCategory.TABLES,
   },
 
   // Generic Actions.
-  'enterShifter':
-      {announce: true, msgId: 'enter_content', category: 'navigation'},
-  'exitShifter':
-      {announce: true, msgId: 'exit_content', category: 'navigation'},
-  'exitShifterContent': {announce: true},
+  [Command.ENTER_SHIFTER]: {
+    announce: true,
+    msgId: 'enter_content',
+    category: CommandCategory.NAVIGATION,
+  },
+  [Command.EXIT_SHIFTER]: {
+    announce: true,
+    msgId: 'exit_content',
+    category: CommandCategory.NAVIGATION,
+  },
+  [Command.EXIT_SHIFTER_CONTENT]: {announce: true},
 
-  'openLongDesc':
-      {announce: false, msgId: 'open_long_desc', category: 'information'},
+  [Command.OPEN_LONG_DESC]: {
+    announce: false,
+    msgId: 'open_long_desc',
+    category: CommandCategory.INFORMATION,
+  },
 
-  'pauseAllMedia':
-      {announce: false, msgId: 'pause_all_media', category: 'information'},
+  [Command.PAUSE_ALL_MEDIA]: {
+    announce: false,
+    msgId: 'pause_all_media',
+    category: CommandCategory.INFORMATION,
+  },
 
-  'announceBatteryDescription': {
+  [Command.ANNOUNCE_BATTERY_DESCRIPTION]: {
     announce: true,
     msgId: 'announce_battery_description',
-    category: 'information'
+    category: CommandCategory.INFORMATION,
   },
-  'announceRichTextDescription': {
+  [Command.ANNOUNCE_RICH_TEXT_DESCRIPTION]: {
     announce: true,
     msgId: 'announce_rich_text_description',
-    category: 'information'
+    category: CommandCategory.INFORMATION,
   },
-  'readPhoneticPronunciation': {
+  [Command.READ_PHONETIC_PRONUNCIATION]: {
     announce: true,
     msgId: 'read_phonetic_pronunciation',
-    category: 'information'
+    category: CommandCategory.INFORMATION,
   },
 
   // Scrolling actions.
-  'scrollBackward': {msgId: 'action_scroll_backward_description'},
-  'scrollForward': {msgId: 'action_scroll_forward_description'},
+  [Command.SCROLL_BACKWARD]: {msgId: 'action_scroll_backward_description'},
+  [Command.SCROLL_FORWARD]: {msgId: 'action_scroll_forward_description'},
 
   // Math specific commands.
-  'toggleSemantics':
-      {announce: false, msgId: 'toggle_semantics', category: 'information'},
+  [Command.TOGGLE_SEMANTICS]: {
+    announce: false,
+    msgId: 'toggle_semantics',
+    category: CommandCategory.INFORMATION,
+  },
 
   // Braille specific commands.
-  'routing': {
+  [Command.ROUTING]: {
     announce: false,
     allowEvents: true,
     msgId: 'braille_routing',
-    category: 'braille'
+    category: CommandCategory.BRAILLE,
   },
-  'pan_left': {
-    backward: true,
+  [Command.PAN_LEFT]: {
     announce: true,
     msgId: 'braille_pan_left',
-    category: 'braille'
+    category: CommandCategory.BRAILLE,
   },
-  'pan_right': {
-    forward: true,
+  [Command.PAN_RIGHT]: {
     announce: true,
     msgId: 'braille_pan_right',
-    category: 'braille'
+    category: CommandCategory.BRAILLE,
   },
-  'line_up': {
-    backward: true,
+  [Command.LINE_UP]: {
     announce: true,
     msgId: 'braille_line_up',
-    category: 'braille'
+    category: CommandCategory.BRAILLE,
   },
-  'line_down': {
-    forward: true,
+  [Command.LINE_DOWN]: {
     announce: true,
     msgId: 'braille_line_down',
-    category: 'braille'
+    category: CommandCategory.BRAILLE,
   },
-  'top': {
-    forward: true,
+  [Command.TOP]: {
     announce: true,
     msgId: 'braille_top',
-    category: 'braille'
+    category: CommandCategory.BRAILLE,
   },
-  'bottom': {
-    backward: true,
+  [Command.BOTTOM]: {
     announce: true,
     msgId: 'braille_bottom',
-    category: 'braille'
+    category: CommandCategory.BRAILLE,
   },
-  'viewGraphicAsBraille':
-      {announce: true, msgId: 'view_graphic_as_braille', category: 'braille'},
+  [Command.VIEW_GRAPHIC_AS_BRAILLE]: {
+    announce: true,
+    msgId: 'view_graphic_as_braille',
+    category: CommandCategory.BRAILLE,
+  },
 
   // Developer commands.
-  'enableConsoleTts':
-      {announce: false, msgId: 'enable_tts_log', category: 'developer'},
-
-  'startHistoryRecording': {announce: false},
-  'stopHistoryRecording': {announce: false},
-  'autorunner': {announce: false},
-
-  'debug': {announce: false},
-
-  'nop': {announce: false}
-};
-
-
-/**
- * List of find next commands and their associated data.
- * @type {Object<{predicate: string,
- *                typeMsg: string,
- *                forwardError: string,
- *                backwardError: string}>}
- *  predicate: The name of the predicate. This must be defined in DomPredicates.
- *  forwardError: The message id of the error string when moving forward.
- *  backwardError: The message id of the error string when moving backward.
- */
-CommandStore.NODE_INFO_MAP = {
-  'checkbox': {
-    predicate: 'checkboxPredicate',
-    forwardError: 'no_next_checkbox',
-    backwardError: 'no_previous_checkbox',
-    typeMsg: 'role_checkbox'
-  },
-  'radio': {
-    predicate: 'radioPredicate',
-    forwardError: 'no_next_radio_button',
-    backwardError: 'no_previous_radio_button',
-    typeMsg: 'role_radio'
-  },
-  'slider': {
-    predicate: 'sliderPredicate',
-    forwardError: 'no_next_slider',
-    backwardError: 'no_previous_slider',
-    typeMsg: 'role_slider'
-  },
-  'graphic': {
-    predicate: 'graphicPredicate',
-    forwardError: 'no_next_graphic',
-    backwardError: 'no_previous_graphic',
-    typeMsg: 'UNUSED'
-  },
-  'article': {
-    predicate: 'articlePredicate',
-    forwardError: 'no_next_ARTICLE',
-    backwardError: 'no_previous_ARTICLE',
-    typeMsg: 'TAG_ARTICLE'
-  },
-  'button': {
-    predicate: 'buttonPredicate',
-    forwardError: 'no_next_button',
-    backwardError: 'no_previous_button',
-    typeMsg: 'role_button'
-  },
-  'combobox': {
-    predicate: 'comboBoxPredicate',
-    forwardError: 'no_next_combo_box',
-    backwardError: 'no_previous_combo_box',
-    typeMsg: 'role_combobox'
-  },
-  'editText': {
-    predicate: 'editTextPredicate',
-    forwardError: 'no_next_edit_text',
-    backwardError: 'no_previous_edit_text',
-    typeMsg: 'input_type_text'
-  },
-  'heading': {
-    predicate: 'headingPredicate',
-    forwardError: 'no_next_heading',
-    backwardError: 'no_previous_heading',
-    typeMsg: 'role_heading'
-  },
-  'heading1': {
-    predicate: 'heading1Predicate',
-    forwardError: 'no_next_heading_1',
-    backwardError: 'no_previous_heading_1'
-  },
-  'heading2': {
-    predicate: 'heading2Predicate',
-    forwardError: 'no_next_heading_2',
-    backwardError: 'no_previous_heading_2'
-  },
-  'heading3': {
-    predicate: 'heading3Predicate',
-    forwardError: 'no_next_heading_3',
-    backwardError: 'no_previous_heading_3'
-  },
-  'heading4': {
-    predicate: 'heading4Predicate',
-    forwardError: 'no_next_heading_4',
-    backwardError: 'no_previous_heading_4'
-  },
-  'heading5': {
-    predicate: 'heading5Predicate',
-    forwardError: 'no_next_heading_5',
-    backwardError: 'no_previous_heading_5'
-  },
-  'heading6': {
-    predicate: 'heading6Predicate',
-    forwardError: 'no_next_heading_6',
-    backwardError: 'no_previous_heading_6'
+  [Command.ENABLE_CONSOLE_TTS]: {
+    announce: false,
+    msgId: 'enable_tts_log',
+    category: CommandCategory.DEVELOPER,
   },
 
-  'link': {
-    predicate: 'linkPredicate',
-    forwardError: 'no_next_link',
-    backwardError: 'no_previous_link',
-    typeMsg: 'role_link'
-  },
-  'table': {
-    predicate: 'tablePredicate',
-    forwardError: 'no_next_table',
-    backwardError: 'no_previous_table',
-    typeMsg: 'table_strategy'
-  },
-  'visitedLink': {
-    predicate: 'visitedLinkPredicate',
-    forwardError: 'no_next_visited_link',
-    backwardError: 'no_previous_visited_link',
-    typeMsg: 'role_link'
-  },
-  'list': {
-    predicate: 'listPredicate',
-    forwardError: 'no_next_list',
-    backwardError: 'no_previous_list',
-    typeMsg: 'role_list'
-  },
-  'listItem': {
-    predicate: 'listItemPredicate',
-    forwardError: 'no_next_list_item',
-    backwardError: 'no_previous_list_item',
-    typeMsg: 'role_listitem'
-  },
-  'formField': {
-    predicate: 'formFieldPredicate',
-    forwardError: 'no_next_form_field',
-    backwardError: 'no_previous_form_field',
-    typeMsg: 'role_form'
-  },
-  'landmark': {
-    predicate: 'landmarkPredicate',
-    forwardError: 'no_next_landmark',
-    backwardError: 'no_previous_landmark',
-    typeMsg: 'role_landmark'
-  },
-  'math': {
-    predicate: 'mathPredicate',
-    forwardError: 'no_next_math',
-    backwardError: 'no_previous_math',
-    typeMsg: 'math_expr'
-  },
-  'media': {
-    predicate: 'mediaPredicate',
-    forwardError: 'no_next_media_widget',
-    backwardError: 'no_previous_media_widget'
-  },
-  'section': {
-    predicate: 'sectionPredicate',
-    forwardError: 'no_next_section',
-    backwardError: 'no_previous_section'
-  },
-  'control': {
-    predicate: 'controlPredicate',
-    forwardError: 'no_next_control',
-    backwardError: 'no_previous_control'
-  }
+  [Command.START_HISTORY_RECORDING]: {announce: false},
+  [Command.STOP_HISTORY_RECORDING]: {announce: false},
+  [Command.AUTORUNNER]: {announce: false},
+
+  [Command.DEBUG]: {announce: false},
+
+  [Command.NOP]: {announce: false},
 };

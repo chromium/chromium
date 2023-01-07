@@ -1,17 +1,15 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/proxy_resolution/proxy_bypass_rules.h"
 
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "net/proxy_resolution/proxy_config_service_common_unittest.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // On Windows, "loopback" resolves to localhost and is implicitly bypassed to
 // match WinInet.
 #define BYPASS_LOOPBACK
@@ -69,7 +67,7 @@ void ExpectBypassLocalhost(
 #endif
   };
 
-  ExpectRulesMatch(rules, kHosts, base::size(kHosts), bypasses, inverted_hosts);
+  ExpectRulesMatch(rules, kHosts, std::size(kHosts), bypasses, inverted_hosts);
 }
 
 // Tests calling |rules.Matches()| for link-local URLs returns |bypasses|.
@@ -79,7 +77,7 @@ void ExpectBypassLinkLocal(const ProxyBypassRules& rules, bool bypasses) {
       "[fe91::1]",   "[::ffff:169.254.3.2]",
   };
 
-  ExpectRulesMatch(rules, kHosts, base::size(kHosts), bypasses, {});
+  ExpectRulesMatch(rules, kHosts, std::size(kHosts), bypasses, {});
 }
 
 // Tests calling |rules.Matches()| with miscelaneous URLs that are neither
@@ -107,7 +105,7 @@ void ExpectBypassMisc(
 #endif
   };
 
-  ExpectRulesMatch(rules, kHosts, base::size(kHosts), bypasses, inverted_hosts);
+  ExpectRulesMatch(rules, kHosts, std::size(kHosts), bypasses, inverted_hosts);
 }
 
 TEST(ProxyBypassRulesTest, ParseAndMatchBasicHost) {

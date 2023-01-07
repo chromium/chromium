@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="24dp" android:viewportHeight="36"
+    android:viewportWidth="36" android:width="24dp">
+    <path android:fillColor="@macro/default_control_color_active" android:fillType="evenOdd"
+        android:pathData="M18,0L18,0C27.9411,-0 36,8.0589 36,18L36,18C36,27.9411 27.9411,36 18,36L18,36C8.0589,36 0,27.9411 0,18L0,18C-0,8.0589 8.0589,0 18,0Z" />
+    <path android:fillColor="@macro/default_icon_color_inverse" android:fillType="nonZero"
+        android:pathData="M12.76,11.29L10.96,9.5L9.55,10.91L11.34,12.7L12.76,11.29ZM10,16.95L7,16.95L7,18.95L10,18.95L10,16.95ZM19,7L17,7L17,9.95L19,9.95L19,7ZM26.45,10.91L25.04,9.5L23.25,11.29L24.66,12.7L26.45,10.91ZM23.24,24.61L25.03,26.41L26.44,25L24.64,23.21L23.24,24.61ZM26,16.95L26,18.95L29,18.95L29,16.95L26,16.95ZM18,11.95C14.69,11.95 12,14.64 12,17.95C12,21.26 14.69,23.95 18,23.95C21.31,23.95 24,21.26 24,17.95C24,14.64 21.31,11.95 18,11.95ZM17,28.9L19,28.9L19,25.95L17,25.95L17,28.9ZM9.55,24.99L10.96,26.4L12.75,24.6L11.34,23.19L9.55,24.99Z" />
+</vector>

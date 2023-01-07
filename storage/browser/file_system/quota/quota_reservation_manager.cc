@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,11 +18,11 @@ namespace storage {
 QuotaReservationManager::QuotaReservationManager(
     std::unique_ptr<QuotaBackend> backend)
     : backend_(std::move(backend)) {
-  sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 QuotaReservationManager::~QuotaReservationManager() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void QuotaReservationManager::ReserveQuota(const url::Origin& origin,
@@ -62,7 +62,7 @@ void QuotaReservationManager::DecrementDirtyCount(const url::Origin& origin,
 scoped_refptr<QuotaReservationBuffer>
 QuotaReservationManager::GetReservationBuffer(const url::Origin& origin,
                                               FileSystemType type) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!origin.opaque());
   QuotaReservationBuffer** buffer =
       &reservation_buffers_[std::make_pair(origin, type)];
@@ -75,7 +75,7 @@ QuotaReservationManager::GetReservationBuffer(const url::Origin& origin,
 
 void QuotaReservationManager::ReleaseReservationBuffer(
     QuotaReservationBuffer* reservation_buffer) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::pair<url::Origin, FileSystemType> key(reservation_buffer->origin(),
                                              reservation_buffer->type());
   DCHECK_EQ(reservation_buffers_[key], reservation_buffer);

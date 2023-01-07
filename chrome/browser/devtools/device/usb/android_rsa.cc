@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -251,7 +251,7 @@ std::string AndroidRSAPublicKey(crypto::RSAPrivateKey* key) {
   r[kRSANumWords * 2] = 1;
 
   uint32_t* rr;
-  BnDiv(r, n, NULL, &rr);
+  BnDiv(r, n, nullptr, &rr);
 
   for (size_t i = 0; i < kRSANumWords; ++i) {
     pkey.n[i] = n[i];

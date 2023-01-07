@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_TEST_BASE_TEST_BROWSER_WINDOW_AURA_H_
 #define CHROME_TEST_BASE_TEST_BROWSER_WINDOW_AURA_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/test_browser_window.h"
 
 #include <memory>
@@ -37,7 +38,7 @@ class TestBrowserWindowAura : public TestBrowserWindow {
   std::unique_ptr<Browser> CreateBrowser(Browser::CreateParams* params);
 
  private:
-  Browser* browser_;  // not owned
+  raw_ptr<Browser> browser_;  // not owned
   std::unique_ptr<aura::Window> native_window_;
 };
 
@@ -60,7 +61,7 @@ class TestBrowserWindowViews : public TestBrowserWindow {
   std::unique_ptr<Browser> CreateBrowser(const Browser::CreateParams& params);
 
  private:
-  Browser* browser_;  // not owned
+  raw_ptr<Browser> browser_;  // not owned
   std::unique_ptr<views::Widget> widget_;
 };
 

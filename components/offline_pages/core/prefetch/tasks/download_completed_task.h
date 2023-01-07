@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_DOWNLOAD_COMPLETED_TASK_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_TASKS_DOWNLOAD_COMPLETED_TASK_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "components/offline_pages/task/task.h"
@@ -20,6 +20,10 @@ class DownloadCompletedTask : public Task {
   DownloadCompletedTask(PrefetchDispatcher* prefetch_dispatcher,
                         PrefetchStore* prefetch_store,
                         const PrefetchDownloadResult& download_result);
+
+  DownloadCompletedTask(const DownloadCompletedTask&) = delete;
+  DownloadCompletedTask& operator=(const DownloadCompletedTask&) = delete;
+
   ~DownloadCompletedTask() override;
 
   struct UpdateInfo {
@@ -33,13 +37,11 @@ class DownloadCompletedTask : public Task {
   void Run() override;
   void OnPrefetchItemUpdated(bool successful_download, UpdateInfo update_info);
 
-  PrefetchDispatcher* prefetch_dispatcher_;  // Outlives this class.
-  PrefetchStore* prefetch_store_;            // Outlives this class.
+  raw_ptr<PrefetchDispatcher> prefetch_dispatcher_;  // Outlives this class.
+  raw_ptr<PrefetchStore> prefetch_store_;            // Outlives this class.
   PrefetchDownloadResult download_result_;
 
   base::WeakPtrFactory<DownloadCompletedTask> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadCompletedTask);
 };
 
 }  // namespace offline_pages

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,6 @@
 #define IOS_CHROME_BROWSER_POLICY_REPORTING_REPORT_SCHEDULER_IOS_H_
 
 #include "components/enterprise/browser/reporting/report_scheduler.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
 
 namespace enterprise_reporting {
 
@@ -23,7 +19,7 @@ class ReportSchedulerIOS : public ReportScheduler::Delegate {
   ~ReportSchedulerIOS() override;
 
   // ReportScheduler::Delegate implementation.
-  PrefService* GetLocalState() override;
+  PrefService* GetPrefService() override;
   void StartWatchingUpdatesIfNeeded(base::Time last_upload,
                                     base::TimeDelta upload_interval) override;
   void StopWatchingUpdates() override;
@@ -31,6 +27,8 @@ class ReportSchedulerIOS : public ReportScheduler::Delegate {
   void StartWatchingExtensionRequestIfNeeded() override;
   void StopWatchingExtensionRequest() override;
   void OnExtensionRequestUploaded() override;
+  policy::DMToken GetProfileDMToken() override;
+  std::string GetProfileClientId() override;
 };
 
 }  // namespace enterprise_reporting

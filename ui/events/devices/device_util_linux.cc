@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,16 +30,18 @@ InputDeviceType GetInputDeviceTypeFromPath(const base::FilePath& path) {
     return InputDeviceType::INPUT_DEVICE_UNKNOWN;
 
   // Check ancestor devices for a known bus attachment.
-  for (base::FilePath path = sysfs_path; path != base::FilePath("/");
-       path = path.DirName()) {
+  for (base::FilePath ancestor_path = sysfs_path;
+       ancestor_path != base::FilePath("/");
+       ancestor_path = ancestor_path.DirName()) {
     // Bluetooth LE devices are virtual "uhid" devices.
-    if (path ==
+    if (ancestor_path ==
         base::FilePath(FILE_PATH_LITERAL("/sys/devices/virtual/misc/uhid"))) {
       return InputDeviceType::INPUT_DEVICE_BLUETOOTH;
     }
 
     std::string subsystem_path =
-        base::MakeAbsoluteFilePath(path.Append(FILE_PATH_LITERAL("subsystem")))
+        base::MakeAbsoluteFilePath(
+            ancestor_path.Append(FILE_PATH_LITERAL("subsystem")))
             .value();
     if (subsystem_path.empty())
       continue;

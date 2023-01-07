@@ -1,4 +1,4 @@
-CONSOLE MESSAGE: line 1: PASS: Executed script in data URL
+CONSOLE MESSAGE: PASS: Executed script in data URL
 Verify that sandboxed frames with sandbox='allow-scripts' can execute script from data: URLs.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

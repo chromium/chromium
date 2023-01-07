@@ -1,6 +1,10 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import("//ppapi/buildflags/buildflags.gni")
+
+assert(enable_ppapi)
 
 # These are just headers.
 source_set("c") {
@@ -118,13 +122,10 @@ source_set("c") {
     "private/ppb_ext_crx_file_system_private.h",
     "private/ppb_file_io_private.h",
     "private/ppb_file_ref_private.h",
-    "private/ppb_find_private.h",
-    "private/ppb_flash_font_file.h",
     "private/ppb_host_resolver_private.h",
     "private/ppb_instance_private.h",
     "private/ppb_isolated_file_system_private.h",
     "private/ppb_net_address_private.h",
-    "private/ppb_pdf.h",
     "private/ppb_proxy_private.h",
     "private/ppb_tcp_server_socket_private.h",
     "private/ppb_tcp_socket_private.h",
@@ -132,9 +133,7 @@ source_set("c") {
     "private/ppb_udp_socket_private.h",
     "private/ppb_uma_private.h",
     "private/ppb_x509_certificate_private.h",
-    "private/ppp_find_private.h",
     "private/ppp_instance_private.h",
-    "private/ppp_pdf.h",
     "private/ppp_pexe_stream_handler.h",
 
     # Deprecated interfaces.

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,13 +22,11 @@
 // Otherwise the permission is already decided.
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "components/location/android/location_settings.h"
 #include "components/location/android/location_settings_dialog_context.h"
 #include "components/location/android/location_settings_dialog_outcome.h"
-#include "components/permissions/contexts//geolocation_permission_context.h"
+#include "components/permissions/contexts/geolocation_permission_context.h"
 #include "components/permissions/permission_request_id.h"
 
 namespace content {
@@ -57,6 +55,12 @@ class GeolocationPermissionContextAndroid
 
   GeolocationPermissionContextAndroid(content::BrowserContext* browser_context,
                                       std::unique_ptr<Delegate> delegate);
+
+  GeolocationPermissionContextAndroid(
+      const GeolocationPermissionContextAndroid&) = delete;
+  GeolocationPermissionContextAndroid& operator=(
+      const GeolocationPermissionContextAndroid&) = delete;
+
   ~GeolocationPermissionContextAndroid() override;
 
   static void AddDayOffsetForTesting(int days);
@@ -68,8 +72,7 @@ class GeolocationPermissionContextAndroid
 
  private:
   // GeolocationPermissionContext:
-  void RequestPermission(content::WebContents* web_contents,
-                         const PermissionRequestID& id,
+  void RequestPermission(const PermissionRequestID& id,
                          const GURL& requesting_frame_origin,
                          bool user_gesture,
                          BrowserPermissionCallback callback) override;
@@ -143,8 +146,6 @@ class GeolocationPermissionContextAndroid
   // Must be the last member, to ensure that it will be destroyed first, which
   // will invalidate weak pointers.
   base::WeakPtrFactory<GeolocationPermissionContextAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationPermissionContextAndroid);
 };
 
 }  // namespace permissions

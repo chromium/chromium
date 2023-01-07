@@ -1,8 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/trace_event/trace_event_filter_test_utils.h"
+
+#include <memory>
 
 #include "base/check.h"
 
@@ -22,7 +24,7 @@ std::unique_ptr<TraceEventFilter> TestEventFilter::Factory(
     const std::string& predicate_name) {
   std::unique_ptr<TraceEventFilter> res;
   if (predicate_name == kName)
-    res.reset(new TestEventFilter());
+    res = std::make_unique<TestEventFilter>();
   return res;
 }
 

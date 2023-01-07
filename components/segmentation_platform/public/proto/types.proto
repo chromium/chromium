@@ -1,0 +1,17 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package segmentation_platform.proto;
+
+// Used to distinguish between different types of signals.
+enum SignalType {
+  UNKNOWN_SIGNAL_TYPE = 0;
+  USER_ACTION = 1;
+  HISTOGRAM_ENUM = 2;
+  HISTOGRAM_VALUE = 3;
+  UKM_EVENT = 4;
+}

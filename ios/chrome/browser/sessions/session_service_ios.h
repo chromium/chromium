@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 @class SessionIOS;
 @class SessionIOSFactory;
@@ -22,16 +22,16 @@
 + (SessionServiceIOS*)sharedService;
 
 // Initializes a SessionServiceIOS with a given task runner. Prefer to use the
-// |sharedService| method.
+// `sharedService` method.
 - (instancetype)initWithTaskRunner:
     (const scoped_refptr<base::SequencedTaskRunner>&)taskRunner
     NS_DESIGNATED_INITIALIZER;
 
-// Saves the session (list of tabs) returned by |factory|. The save location
-// is derived from the scene identifier |sessionID| and the ChromeBrowserState
-// |directory|. If |immediately| is NO, the save is done after a fixed delay,
+// Saves the session (list of tabs) returned by `factory`. The save location
+// is derived from the scene identifier `sessionID` and the ChromeBrowserState
+// `directory`. If `immediately` is NO, the save is done after a fixed delay,
 // or ignored if another delayed save for the same location is still pending.
-// If |immediately| is YES, then the save is done immediately and any pending
+// If `immediately` is YES, then the save is done immediately and any pending
 // save is cancelled. Either way, the save is done on a separate thread to
 // avoid blocking the UI thread.
 - (void)saveSession:(__weak SessionIOSFactory*)factory
@@ -40,27 +40,38 @@
         immediately:(BOOL)immediately;
 
 // Loads a session (list of tabs) from the save location derived from the scene
-// identifier |sessionID| and the ChromeBrowserState |directory|.
+// identifier `sessionID` and the ChromeBrowserState `directory`.
 - (SessionIOS*)loadSessionWithSessionID:(NSString*)sessionID
                               directory:(const base::FilePath&)directory;
 
-// Loads the session from |sessionPath| on the main thread. Returns nil in case
+// Loads the session from `sessionPath` on the main thread. Returns nil in case
 // of errors.
 - (SessionIOS*)loadSessionFromPath:(NSString*)sessionPath;
 
-// Schedules deletion of the all session files from a specific |directory|.
+// Schedules deletion of the all session files from a specific `directory`.
 - (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
                               completion:(base::OnceClosure)callback;
 
-// Schedule deletion of session directories with |sessionIDs| which resides in
-// a specific browser state |directory|.
+// Schedule deletion of session directories with `sessionIDs` which resides in
+// a specific browser state `directory`.
 - (void)deleteSessions:(NSArray<NSString*>*)sessionIDs
              directory:(const base::FilePath&)directory
             completion:(base::OnceClosure)callback;
 
-// Returns the path of the session with |sessionID| within a |directory|.
+// Returns the path of the session with `sessionID` within a `directory`.
 + (NSString*)sessionPathForSessionID:(NSString*)sessionID
                            directory:(const base::FilePath&)directory;
+
+// Returns the path of the tab file with id `tabID` for session with `sessionID`
+// within a `directory`.
++ (NSString*)filePathForTabID:(NSString*)tabID
+                    sessionID:(NSString*)sessionID
+                    directory:(const base::FilePath&)directory;
+
+// Returns the path of the tab file with id `tabID` for session at
+// `sessionPath`.
++ (NSString*)filePathForTabID:(NSString*)tabID
+                  sessionPath:(NSString*)sessionPath;
 
 @end
 
@@ -71,6 +82,7 @@
 // is not a situation we normally expect to be in because we never
 // want the session being saved on the main thread in the production app.
 - (void)performSaveSessionData:(NSData*)sessionData
+                   tabContents:(NSDictionary*)tabContents
                    sessionPath:(NSString*)sessionPath;
 
 @end

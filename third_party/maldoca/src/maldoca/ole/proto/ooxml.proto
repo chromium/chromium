@@ -1,0 +1,64 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// proto to hold the data from parsed ooxml stream.
+
+syntax = "proto2";
+
+package maldoca.ooxml;
+
+option optimize_for = LITE_RUNTIME;
+
+import "maldoca/ole/proto/ole.proto";
+
+// File entry inside the OOXML archive.
+// Note: file_name contains the full path of the file.
+message OOXMLArchiveEntry {
+  // Actual content of the file.
+  optional bytes content = 1;
+  // SHA256 hash value of the content, stored in hex.
+  optional string hash = 2;
+  optional string file_name = 3;
+  optional int64 file_size = 4;
+}
+
+// Relationships stored inside the _rels/.rels file.
+// For more info on relationships in ooxml files, check
+// http://officeopenxml.com/anatomyofOOXML-xlsx.php
+message OOXMLRelationship {
+  optional bytes type = 1;
+  optional bytes ID = 2;
+  optional bytes target = 3;
+}
+
+// Stores a single OLE2 entry inside the archive.
+message OleEntry {
+  optional string filename = 1;
+  // SHA256 hash value of the content, stored in hex.
+  optional string hash = 2;
+  optional int64 filesize = 3;
+  // Parsed content.
+  optional maldoca.ole.OleFile ole_content = 4;
+}
+
+message OOXMLFile {
+  optional ole.PropertySetStream summary_information = 1;
+  optional ole.PropertySetStream document_summary_information = 2;
+  // Parsed OLE entries.
+  repeated OleEntry ole_entries = 3;
+  // Non-OLE entries.
+  repeated OOXMLArchiveEntry entries = 4;
+  // Relationships sorted in the `_rels/.rels` file.
+  repeated OOXMLRelationship relationships = 5;
+}

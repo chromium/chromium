@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<title>Frame content to load from document-domain.https.html</title>
+<script>
+
+// Pass all deprecation reports on to our parent window.
+new ReportingObserver((reports, observer) => {
+  for (report of reports) {
+    window.parent.postMessage({
+      type: report.type,
+      url: report.url,
+      id: report.body.id,
+      body: report.body.toJSON(),
+    }, "*");
+  }
+}).observe();
+
+window.addEventListener("message", event => {
+  var result;
+  if (event.data == "relax") {
+    // Relax same-origin restrictions by setting document.domain.
+    try {
+      const dd = document.domain;
+      document.domain = dd.substring(1 + dd.indexOf("."));
+    } catch {};
+    window.parent.postMessage({
+      type: "relaxed",
+      body: document.domain,
+    }, "*");
+  } else {
+    // For debugging: We received a message we can't process.
+    window.parent.postMessage({
+      type: "unknown",
+      body: event.data,
+    }, "*");
+  }
+}, false);
+</script>

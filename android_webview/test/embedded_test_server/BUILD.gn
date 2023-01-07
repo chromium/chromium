@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,8 +13,8 @@ android_library("aw_net_java_test_support") {
     "java/src/org/chromium/android_webview/test/AwEmbeddedTestServerService.java",
   ]
   deps = [
-    "//base:base_java",
     "//base:base_java_test_support",
+    "//base:jni_java",
     "//net/android:embedded_test_server_aidl_java",
     "//net/android:net_java",
     "//net/android:net_java_test_support",
@@ -64,10 +64,7 @@ android_apk("aw_net_test_support_apk") {
   # just disable it.
   enable_multidex = false
 
-  deps = [
-    ":aw_net_java_test_support",
-    "//base:base_java",
-  ]
+  deps = [ ":aw_net_java_test_support" ]
   android_manifest = "java/AndroidManifest.xml"
   apk_name = "ChromiumNetTestAwSupport"
   shared_libraries = [ ":aw_net_java_test_native_support" ]

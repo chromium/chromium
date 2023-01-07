@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
 
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
@@ -39,16 +39,12 @@
 
 namespace blink {
 
-constexpr Color kDefaultLinkColorLight = Color::CreateUnchecked(0, 0, 238);
-constexpr Color kDefaultLinkColorDark = Color::CreateUnchecked(158, 158, 255);
-constexpr Color kDefaultVisitedLinkColorLight =
-    Color::CreateUnchecked(85, 26, 139);
-constexpr Color kDefaultVisitedLinkColorDark =
-    Color::CreateUnchecked(208, 173, 240);
-constexpr Color kDefaultActiveLinkColorLight =
-    Color::CreateUnchecked(255, 0, 0);
-constexpr Color kDefaultActiveLinkColorDark =
-    Color::CreateUnchecked(255, 158, 158);
+constexpr Color kDefaultLinkColorLight = Color::FromRGB(0, 0, 238);
+constexpr Color kDefaultLinkColorDark = Color::FromRGB(158, 158, 255);
+constexpr Color kDefaultVisitedLinkColorLight = Color::FromRGB(85, 26, 139);
+constexpr Color kDefaultVisitedLinkColorDark = Color::FromRGB(208, 173, 240);
+constexpr Color kDefaultActiveLinkColorLight = Color::FromRGB(255, 0, 0);
+constexpr Color kDefaultActiveLinkColorDark = Color::FromRGB(255, 158, 158);
 
 TextLinkColors::TextLinkColors() : text_color_(Color::kBlack) {
   ResetLinkColor();
@@ -131,7 +127,7 @@ Color TextLinkColors::ColorFromCSSValue(const CSSValue& value,
                                         Color current_color,
                                         mojom::blink::ColorScheme color_scheme,
                                         bool for_visited_link) const {
-  if (auto* color_value = DynamicTo<cssvalue::CSSColorValue>(value))
+  if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value))
     return color_value->Value();
 
   if (auto* pair = DynamicTo<CSSLightDarkValuePair>(value)) {

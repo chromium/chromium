@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/extensions/api/tabs/app_base_window.h"
 #include "chrome/browser/extensions/api/tabs/app_window_controller.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
@@ -20,11 +20,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/windows.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 
 using content::BrowserContext;
 
@@ -58,15 +58,17 @@ bool ControllerVisibleToListener(WindowController* window_controller,
              WindowController::GetFilterFromWindowTypesValues(filter_value));
 }
 
-bool WillDispatchWindowEvent(WindowController* window_controller,
-                             BrowserContext* browser_context,
-                             Feature::Context target_context,
-                             const Extension* extension,
-                             Event* event,
-                             const base::DictionaryValue* listener_filter) {
+bool WillDispatchWindowEvent(
+    WindowController* window_controller,
+    BrowserContext* browser_context,
+    Feature::Context target_context,
+    const Extension* extension,
+    const base::DictionaryValue* listener_filter,
+    std::unique_ptr<base::Value::List>* event_args_out,
+    mojom::EventFilteringInfoPtr* event_filtering_info_out) {
   bool has_filter =
       listener_filter &&
-      listener_filter->HasKey(extensions::tabs_constants::kWindowTypesKey);
+      listener_filter->FindKey(extensions::tabs_constants::kWindowTypesKey);
   // TODO(https://crbug.com/807313): Remove this.
   bool allow_dev_tools_windows = has_filter;
   if (!window_controller->IsVisibleToTabsAPIForExtension(
@@ -74,14 +76,15 @@ bool WillDispatchWindowEvent(WindowController* window_controller,
     return false;
   }
 
-  // Cleanup previous values.
-  event->filter_info = EventFilteringInfo();
+  *event_filtering_info_out = mojom::EventFilteringInfo::New();
   // Only set the window type if the listener has set a filter.
   // Otherwise we set the window visibility relative to the extension.
   if (has_filter) {
-    event->filter_info.window_type = window_controller->GetWindowTypeText();
+    (*event_filtering_info_out)->window_type =
+        window_controller->GetWindowTypeText();
   } else {
-    event->filter_info.window_exposed_by_default = true;
+    (*event_filtering_info_out)->has_window_exposed_by_default = true;
+    (*event_filtering_info_out)->window_exposed_by_default = true;
   }
   return true;
 }
@@ -91,13 +94,14 @@ bool WillDispatchWindowFocusedEvent(
     BrowserContext* browser_context,
     Feature::Context target_context,
     const Extension* extension,
-    Event* event,
-    const base::DictionaryValue* listener_filter) {
+    const base::DictionaryValue* listener_filter,
+    std::unique_ptr<base::Value::List>* event_args_out,
+    mojom::EventFilteringInfoPtr* event_filtering_info_out) {
   int window_id = extension_misc::kUnknownWindowId;
   Profile* new_active_context = nullptr;
   bool has_filter =
       listener_filter &&
-      listener_filter->HasKey(extensions::tabs_constants::kWindowTypesKey);
+      listener_filter->FindKey(extensions::tabs_constants::kWindowTypesKey);
 
   // We might not have a window controller if the focus moves away
   // from chromium's windows.
@@ -106,18 +110,18 @@ bool WillDispatchWindowFocusedEvent(
     new_active_context = window_controller->profile();
   }
 
-  // Cleanup previous values.
-  event->filter_info = EventFilteringInfo();
+  *event_filtering_info_out = mojom::EventFilteringInfo::New();
   // Only set the window type if the listener has set a filter,
   // otherwise set the visibility to true (if the window is not
   // supposed to be visible by the extension, we will clear out the
   // window id later).
   if (has_filter) {
-    event->filter_info.window_type =
+    (*event_filtering_info_out)->window_type =
         window_controller ? window_controller->GetWindowTypeText()
                           : extensions::tabs_constants::kWindowTypeValueNormal;
   } else {
-    event->filter_info.window_exposed_by_default = true;
+    (*event_filtering_info_out)->has_window_exposed_by_default = true;
+    (*event_filtering_info_out)->window_exposed_by_default = true;
   }
 
   // When switching between windows in the default and incognito profiles,
@@ -132,12 +136,11 @@ bool WillDispatchWindowFocusedEvent(
   bool visible_to_listener = ControllerVisibleToListener(
       window_controller, extension, listener_filter);
 
+  *event_args_out = std::make_unique<base::Value::List>();
   if (cant_cross_incognito || !visible_to_listener) {
-    event->event_args->Clear();
-    event->event_args->AppendInteger(extension_misc::kUnknownWindowId);
+    (*event_args_out)->Append(extension_misc::kUnknownWindowId);
   } else {
-    event->event_args->Clear();
-    event->event_args->AppendInteger(window_id);
+    (*event_args_out)->Append(window_id);
   }
   return true;
 }
@@ -157,11 +160,9 @@ WindowsEventRouter::WindowsEventRouter(Profile* profile)
   // rely on the notification sent by AppControllerMac after AppKit sends
   // NSWindowDidBecomeKeyNotification and there is no [NSApp keyWindo7w]. This
   // allows windows not created by toolkit-views to be tracked.
-  // TODO(tapted): Remove the ifdefs (and NOTIFICATION_NO_KEY_WINDOW) when
-  // Chrome on Mac only makes windows with toolkit-views.
-#if defined(OS_MAC)
-  registrar_.Add(this, chrome::NOTIFICATION_NO_KEY_WINDOW,
-                 content::NotificationService::AllSources());
+#if BUILDFLAG(IS_MAC)
+  observed_key_window_notifier_.Observe(
+      &g_browser_process->platform_part()->key_window_notifier());
 #elif defined(TOOLKIT_VIEWS)
   views::WidgetFocusManager::GetInstance()->AddFocusChangeListener(this);
 #else
@@ -174,7 +175,7 @@ WindowsEventRouter::WindowsEventRouter(Profile* profile)
 }
 
 WindowsEventRouter::~WindowsEventRouter() {
-#if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
   views::WidgetFocusManager::GetInstance()->RemoveFocusChangeListener(this);
 #endif
 }
@@ -212,12 +213,12 @@ void WindowsEventRouter::OnWindowControllerAdded(
   if (!window_controller->GetBrowser())
     return;
 
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
+  base::Value::List args;
   // Since we don't populate tab info here, the context type doesn't matter.
   constexpr ExtensionTabUtil::PopulateTabBehavior populate_behavior =
       ExtensionTabUtil::kDontPopulateTabs;
   constexpr Feature::Context context_type = Feature::UNSPECIFIED_CONTEXT;
-  args->Append(ExtensionTabUtil::CreateWindowValueForExtension(
+  args.Append(ExtensionTabUtil::CreateWindowValueForExtension(
       *window_controller->GetBrowser(), nullptr, populate_behavior,
       context_type));
   DispatchEvent(events::WINDOWS_ON_CREATED, windows::OnCreated::kEventName,
@@ -235,8 +236,8 @@ void WindowsEventRouter::OnWindowControllerRemoved(
     return;
 
   int window_id = window_controller->GetWindowId();
-  std::unique_ptr<base::ListValue> args(new base::ListValue());
-  args->AppendInteger(window_id);
+  base::Value::List args;
+  args.Append(window_id);
   DispatchEvent(events::WINDOWS_ON_REMOVED, windows::OnRemoved::kEventName,
                 window_controller, std::move(args));
 }
@@ -251,12 +252,12 @@ void WindowsEventRouter::OnWindowBoundsChanged(
   if (!window_controller->GetBrowser())
     return;
 
-  auto args = std::make_unique<base::ListValue>();
+  base::Value::List args;
   // Since we don't populate tab info here, the context type doesn't matter.
   constexpr ExtensionTabUtil::PopulateTabBehavior populate_behavior =
       ExtensionTabUtil::kDontPopulateTabs;
   constexpr Feature::Context context_type = Feature::UNSPECIFIED_CONTEXT;
-  args->Append(ExtensionTabUtil::CreateWindowValueForExtension(
+  args.Append(ExtensionTabUtil::CreateWindowValueForExtension(
       *window_controller->GetBrowser(), nullptr, populate_behavior,
       context_type));
   DispatchEvent(events::WINDOWS_ON_BOUNDS_CHANGED,
@@ -264,22 +265,18 @@ void WindowsEventRouter::OnWindowBoundsChanged(
                 std::move(args));
 }
 
-#if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
+#if defined(TOOLKIT_VIEWS) && !BUILDFLAG(IS_MAC)
 void WindowsEventRouter::OnNativeFocusChanged(gfx::NativeView focused_now) {
   if (!focused_now)
     OnActiveWindowChanged(nullptr);
 }
 #endif
 
-void WindowsEventRouter::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-#if defined(OS_MAC)
-  DCHECK_EQ(chrome::NOTIFICATION_NO_KEY_WINDOW, type);
+#if BUILDFLAG(IS_MAC)
+void WindowsEventRouter::OnNoKeyWindow() {
   OnActiveWindowChanged(nullptr);
-#endif
 }
+#endif
 
 void WindowsEventRouter::OnActiveWindowChanged(
     WindowController* window_controller) {
@@ -304,7 +301,7 @@ void WindowsEventRouter::OnActiveWindowChanged(
 
   std::unique_ptr<Event> event = std::make_unique<Event>(
       events::WINDOWS_ON_FOCUS_CHANGED, windows::OnFocusChanged::kEventName,
-      std::make_unique<base::ListValue>());
+      base::Value::List());
   event->will_dispatch_callback =
       base::BindRepeating(&WillDispatchWindowFocusedEvent, window_controller);
   EventRouter::Get(profile_)->BroadcastEvent(std::move(event));
@@ -313,7 +310,7 @@ void WindowsEventRouter::OnActiveWindowChanged(
 void WindowsEventRouter::DispatchEvent(events::HistogramValue histogram_value,
                                        const std::string& event_name,
                                        WindowController* window_controller,
-                                       std::unique_ptr<base::ListValue> args) {
+                                       base::Value::List args) {
   auto event =
       std::make_unique<Event>(histogram_value, event_name, std::move(args),
                               window_controller->profile());

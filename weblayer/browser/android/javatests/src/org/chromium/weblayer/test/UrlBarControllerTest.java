@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,7 @@ import org.chromium.base.test.util.AnnotationRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.weblayer.Tab;
@@ -47,6 +48,7 @@ import java.util.concurrent.ExecutionException;
  * Test class to test UrlBarController logic.
  */
 @RunWith(WebLayerJUnit4ClassRunner.class)
+@DisabledTest(message = "https://crbug.com/1315403")
 public class UrlBarControllerTest {
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =

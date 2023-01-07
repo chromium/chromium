@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,8 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
     VkFormat format,
     VkImageUsageFlags usage,
     VkImageCreateFlags flags,
-    VkImageTiling image_tiling) {
+    VkImageTiling image_tiling,
+    uint32_t queue_family_index) {
   NOTIMPLEMENTED();
   return false;
 }

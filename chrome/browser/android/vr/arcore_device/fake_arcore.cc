@@ -1,12 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/android/vr/arcore_device/fake_arcore.h"
 
 #include "base/android/android_hardware_buffer_compat.h"
+#include "base/containers/contains.h"
 #include "base/numerics/math_constants.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace {}
 
@@ -21,14 +22,14 @@ ArCore::MinMaxRange FakeArCore::GetTargetFramerateRange() {
   return {30.f, 30.f};
 }
 
-base::Optional<ArCore::InitializeResult> FakeArCore::Initialize(
+absl::optional<ArCore::InitializeResult> FakeArCore::Initialize(
     base::android::ScopedJavaLocalRef<jobject> application_context,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         required_features,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         optional_features,
     const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
-    base::Optional<ArCore::DepthSensingConfiguration> depth_sensing_config) {
+    absl::optional<ArCore::DepthSensingConfiguration> depth_sensing_config) {
   DCHECK(IsOnGlThread());
 
   std::unordered_set<device::mojom::XRSessionFeature> enabled_features;
@@ -38,7 +39,7 @@ base::Optional<ArCore::InitializeResult> FakeArCore::Initialize(
   // Fake device does not support depth for now:
   if (base::Contains(required_features,
                      device::mojom::XRSessionFeature::DEPTH)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (base::Contains(optional_features,
@@ -46,7 +47,7 @@ base::Optional<ArCore::InitializeResult> FakeArCore::Initialize(
     enabled_features.erase(device::mojom::XRSessionFeature::DEPTH);
   }
 
-  return ArCore::InitializeResult(enabled_features, base::nullopt);
+  return ArCore::InitializeResult(enabled_features, absl::nullopt);
 }
 
 void FakeArCore::SetDisplayGeometry(
@@ -56,6 +57,10 @@ void FakeArCore::SetDisplayGeometry(
 
   display_rotation_ = display_rotation;
   frame_size_ = frame_size;
+}
+
+gfx::Size FakeArCore::GetUncroppedCameraImageSize() const {
+  return {1920, 960};
 }
 
 void FakeArCore::SetCameraTexture(uint32_t texture) {
@@ -199,12 +204,12 @@ gfx::Transform FakeArCore::GetProjectionMatrix(float near, float far) {
   }
   // Calculate a perspective matrix based on the FOV values.
   gfx::Transform result;
-  result.matrix().set(0, 0, 1.f / right_tan);
-  result.matrix().set(1, 1, 1.f / up_tan);
-  result.matrix().set(2, 2, (near + far) / (near - far));
-  result.matrix().set(3, 2, -1.0f);
-  result.matrix().set(2, 3, (2.0f * far * near) / (near - far));
-  result.matrix().set(3, 3, 0.0f);
+  result.set_rc(0, 0, 1.f / right_tan);
+  result.set_rc(1, 1, 1.f / up_tan);
+  result.set_rc(2, 2, (near + far) / (near - far));
+  result.set_rc(3, 2, -1.0f);
+  result.set_rc(2, 3, (2.0f * far * near) / (near - far));
+  result.set_rc(3, 3, 0.0f);
   return result;
 }
 
@@ -241,20 +246,20 @@ bool FakeArCore::RequestHitTest(
   return true;
 }
 
-base::Optional<uint64_t> FakeArCore::SubscribeToHitTest(
+absl::optional<uint64_t> FakeArCore::SubscribeToHitTest(
     mojom::XRNativeOriginInformationPtr nativeOriginInformation,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<uint64_t> FakeArCore::SubscribeToHitTestForTransientInput(
+absl::optional<uint64_t> FakeArCore::SubscribeToHitTestForTransientInput(
     const std::string& profile_name,
     const std::vector<mojom::EntityTypeForHitTest>& entity_types,
     mojom::XRRayPtr ray) {
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 mojom::XRHitTestSubscriptionResultsDataPtr
@@ -363,7 +368,7 @@ void FakeArCore::DetachAnchor(uint64_t anchor_id) {
 
 mojom::XRTrackedImagesDataPtr FakeArCore::GetTrackedImages() {
   std::vector<mojom::XRTrackedImageDataPtr> images_data;
-  return mojom::XRTrackedImagesData::New(std::move(images_data), base::nullopt);
+  return mojom::XRTrackedImagesData::New(std::move(images_data), absl::nullopt);
 }
 
 void FakeArCore::Pause() {

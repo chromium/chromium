@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,7 @@ class COMPONENT_EXPORT(CERT_VERIFIER_CPP) CertNetFetcherURLLoader
   std::unique_ptr<Request> FetchCrl(const GURL& url,
                                     int timeout_milliseconds,
                                     int max_response_bytes) override;
-  WARN_UNUSED_RESULT std::unique_ptr<Request> FetchOcsp(
+  [[nodiscard]] std::unique_ptr<Request> FetchOcsp(
       const GURL& url,
       int timeout_milliseconds,
       int max_response_bytes) override;

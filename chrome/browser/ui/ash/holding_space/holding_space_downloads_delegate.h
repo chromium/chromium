@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,72 +6,126 @@
 #define CHROME_BROWSER_UI_ASH_HOLDING_SPACE_HOLDING_SPACE_DOWNLOADS_DELEGATE_H_
 
 #include <memory>
+#include <set>
+#include <string>
+#include <vector>
 
-#include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/containers/unique_ptr_adapters.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
+#include "chrome/browser/ash/crosapi/download_controller_ash.h"
+#include "chrome/browser/download/notification/multi_profile_download_notifier.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_delegate.h"
-#include "components/download/public/common/download_item.h"
-#include "content/public/browser/download_manager.h"
+#include "chromeos/crosapi/mojom/download_controller.mojom-forward.h"
 
-namespace base {
-class FilePath;
-}  // namespace base
+namespace content {
+class DownloadManager;
+}  // namespace content
 
 namespace ash {
 
 // A delegate of `HoldingSpaceKeyedService` tasked with monitoring the status of
-// of downloads and notifying a callback on download completion.
-class HoldingSpaceDownloadsDelegate : public HoldingSpaceKeyedServiceDelegate,
-                                      public content::DownloadManager::Observer,
-                                      public download::DownloadItem::Observer {
+// of downloads on its behalf.
+class HoldingSpaceDownloadsDelegate
+    : public HoldingSpaceKeyedServiceDelegate,
+      public MultiProfileDownloadNotifier::Client,
+      public arc::ArcFileSystemBridge::Observer,
+      public crosapi::DownloadControllerAsh::DownloadControllerObserver {
  public:
-  // Callback to be invoked when a download is completed. Note that this
-  // callback will only be invoked after holding space persistence is restored.
-  using ItemDownloadedCallback =
-      base::RepeatingCallback<void(const base::FilePath&)>;
-
-  HoldingSpaceDownloadsDelegate(
-      Profile* profile,
-      HoldingSpaceModel* model,
-      ItemDownloadedCallback item_downloaded_callback);
+  HoldingSpaceDownloadsDelegate(HoldingSpaceKeyedService* service,
+                                HoldingSpaceModel* model);
   HoldingSpaceDownloadsDelegate(const HoldingSpaceDownloadsDelegate&) = delete;
   HoldingSpaceDownloadsDelegate& operator=(
       const HoldingSpaceDownloadsDelegate&) = delete;
   ~HoldingSpaceDownloadsDelegate() override;
 
-  // Sets the `content::DownloadManager` to be used for testing.
-  // NOTE: This method must be called prior to delegate initialization.
-  static void SetDownloadManagerForTesting(
-      content::DownloadManager* download_manager);
+  // Attempts to mark the download underlying the given `item` to open when
+  // complete. Returns `absl::nullopt` on success or the reason if the attempt
+  // was not successful.
+  absl::optional<holding_space_metrics::ItemFailureToLaunchReason>
+  OpenWhenComplete(const HoldingSpaceItem* item);
 
  private:
-  // HoldingSpaceKeyedServiceDelegate:
-  void Init() override;
-  void OnPersistenceRestored() override;
+  class InProgressDownload;
+  class InProgressAshDownload;
+  class InProgressLacrosDownload;
 
-  // content::DownloadManager::Observer:
-  void OnManagerInitialized() override;
-  void ManagerGoingDown(content::DownloadManager* manager) override;
+  // HoldingSpaceKeyedServiceDelegate:
+  void OnPersistenceRestored() override;
+  void OnHoldingSpaceItemsRemoved(
+      const std::vector<const HoldingSpaceItem*>& items) override;
+
+  // MultiProfileDownloadNotifier::Client:
+  void OnManagerInitialized(content::DownloadManager* manager) override;
+  void OnManagerGoingDown(content::DownloadManager* manager) override;
   void OnDownloadCreated(content::DownloadManager* manager,
                          download::DownloadItem* item) override;
+  void OnDownloadUpdated(content::DownloadManager* manager,
+                         download::DownloadItem* item) override;
 
-  // download::DownloadItem::Observer:
-  void OnDownloadUpdated(download::DownloadItem* item) override;
+  // arc::ArcFileSystemBridge::Observer:
+  void OnMediaStoreUriAdded(
+      const GURL& uri,
+      const arc::mojom::MediaStoreMetadata& metadata) override;
 
-  // Invoked when the specified `file_path` has completed downloading.
-  void OnDownloadCompleted(const base::FilePath& file_path);
+  // crosapi::DownloadControllerAsh::DownloadControllerObserver:
+  void OnLacrosDownloadCreated(
+      const crosapi::mojom::DownloadItem& mojo_download_item) override;
+  void OnLacrosDownloadUpdated(
+      const crosapi::mojom::DownloadItem& mojo_download_item) override;
 
-  // Removes all observers.
-  void RemoveObservers();
+  // Invoked when the initial collection of `mojo_download_items` are synced
+  // from Lacros. Downloads are sorted chronologically by start time.
+  void OnLacrosDownloadsSynced(
+      std::vector<crosapi::mojom::DownloadItemPtr> mojo_download_items);
 
-  // Callback to invoke when a download is completed.
-  ItemDownloadedCallback item_downloaded_callback_;
+  // Invoked when the specified `in_progress_download` is updated. If
+  // `invalidate_image` is `true`, the image for the associated holding space
+  // item will be explicitly invalidated. This is necessary if, for example, the
+  // underlying download is transitioning to/from a dangerous or mixed content
+  // state.
+  void OnDownloadUpdated(InProgressDownload* in_progress_download,
+                         bool invalidate_image);
 
-  ScopedObserver<content::DownloadManager, content::DownloadManager::Observer>
-      download_manager_observer_{this};
+  // Invoked when the specified `in_progress_download` is completed.
+  void OnDownloadCompleted(InProgressDownload* in_progress_download);
 
-  ScopedObserver<download::DownloadItem, download::DownloadItem::Observer>
-      download_item_observer_{this};
+  // Invoked when the specified `in_progress_download` fails. This may be due to
+  // cancellation, interruption, or destruction of the underlying download.
+  void OnDownloadFailed(const InProgressDownload* in_progress_download);
+
+  // Invoked to erase the specified `in_progress_download` when it is no longer
+  // needed either due to completion or failure of the underlying download.
+  void EraseDownload(const InProgressDownload* in_progress_download);
+
+  // Creates or updates the holding space item in the model associated with the
+  // specified `in_progress_download`. If `invalidate_image` is `true`, the
+  // image for the holding space item will be explicitly invalidated. This is
+  // necessary if, for example, the underlying download is transitioning to/from
+  // a dangerous or mixed content state.
+  void CreateOrUpdateHoldingSpaceItem(InProgressDownload* in_progress_download,
+                                      bool invalidate_image);
+
+  // Attempts to cancel/pause/resume the download underlying the given `item`.
+  void Cancel(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
+  void Pause(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
+  void Resume(const HoldingSpaceItem* item, HoldingSpaceCommandId command_id);
+
+  // The collection of currently in-progress downloads.
+  std::set<std::unique_ptr<InProgressDownload>, base::UniquePtrComparator>
+      in_progress_downloads_;
+
+  base::ScopedObservation<arc::ArcFileSystemBridge,
+                          arc::ArcFileSystemBridge::Observer>
+      arc_file_system_bridge_observation_{this};
+
+  // Notifies this delegate of download events created for the profile
+  // associated with this delegate's service. If the incognito profile
+  // integration feature is enabled, the delegate is also notified of download
+  // events created for incognito profiles spawned from the service's main
+  // profile.
+  MultiProfileDownloadNotifier download_notifier_{
+      this, /*wait_for_manager_initialization=*/true};
 
   base::WeakPtrFactory<HoldingSpaceDownloadsDelegate> weak_factory_{this};
 };

@@ -1,9 +1,11 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
+const MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED = 10;
+const MAX_NUMBER_OF_EXPANDED_MEDIASECTIONS = 10;
 /**
  * The data of a peer connection update.
  * @param {number} pid The id of the renderer.
@@ -81,18 +83,9 @@ export class PeerConnectionUpdateTable {
     timeItem.textContent = time.toLocaleString();
     row.appendChild(timeItem);
 
-    // map internal event names to spec event names.
-    let type = {
-      onRenegotiationNeeded: 'negotiationneeded',
-      signalingStateChange: 'signalingstatechange',
-      iceGatheringStateChange: 'icegatheringstatechange',
-      legacyIceConnectionStateChange: 'iceconnectionstatechange (legacy)',
-      iceConnectionStateChange: 'iceconnectionstatechange',
-      connectionStateChange: 'connectionstatechange',
-      onIceCandidate: 'icecandidate',
-      stop: 'close'
-    }[update.type] ||
-        update.type;
+    // `type` is a display variant of update.type which does not get serialized
+    // into chrome://webrtc-internals.
+    let type = update.type;
 
     if (update.value.length === 0) {
       const typeItem = document.createElement('td');
@@ -101,7 +94,7 @@ export class PeerConnectionUpdateTable {
       return;
     }
 
-    if (update.type === 'onIceCandidate' || update.type === 'addIceCandidate') {
+    if (update.type === 'icecandidate' || update.type === 'addIceCandidate') {
       // extract ICE candidate type from the field following typ.
       const candidateType = update.value.match(/(?: typ )(host|srflx|relay)/);
       if (candidateType) {
@@ -118,6 +111,20 @@ export class PeerConnectionUpdateTable {
     } else if (update.type === 'setConfiguration') {
       // Update the configuration that is displayed at the top.
       peerConnectionElement.firstChild.children[2].textContent = update.value;
+    } else if (['iceconnectionstatechange', 'connectionstatechange',
+        'signalingstatechange'].includes(update.type)) {
+      const fieldName = {
+        'iceconnectionstatechange' : 'iceconnectionstate',
+        'connectionstatechange' : 'connectionstate',
+        'signalingstatechange' : 'signalingstate',
+      }[update.type];
+      const el = peerConnectionElement.getElementsByClassName(fieldName)[0];
+      const numberOfEvents = el.textContent.split(' => ').length;
+      if (numberOfEvents < MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED) {
+        el.textContent += ' => ' + update.value;
+      } else if (numberOfEvents === MAX_NUMBER_OF_STATE_CHANGES_DISPLAYED) {
+        el.textContent += ' ...';
+      }
     }
 
     const summaryItem = $('summary-template').content.cloneNode(true);
@@ -129,46 +136,14 @@ export class PeerConnectionUpdateTable {
     const details = row.cells[1].childNodes[0];
     details.appendChild(valueContainer);
 
-    // Highlight ICE failures and failure callbacks.
-    if ((update.type === 'iceConnectionStateChange' &&
-         update.value === 'ICEConnectionStateFailed') ||
+    // Highlight ICE/DTLS failures and failure callbacks.
+    if ((update.type === 'iceconnectionstatechange' &&
+         update.value === 'failed') ||
+        (update.type === 'connectionstatechange' &&
+         update.value === 'failed') ||
         update.type.indexOf('OnFailure') !== -1 ||
         update.type === 'addIceCandidateFailed') {
       valueContainer.parentElement.classList.add('update-log-failure');
-    }
-
-    let {value} = update;
-    // map internal names and values to names and events from the
-    // specification. This is a display change which shall not
-    // change the JSON dump.
-    if (update.type === 'iceConnectionStateChange') {
-      value = {
-        ICEConnectionStateNew: 'new',
-        ICEConnectionStateChecking: 'checking',
-        ICEConnectionStateConnected: 'connected',
-        ICEConnectionStateCompleted: 'completed',
-        ICEConnectionStateFailed: 'failed',
-        ICEConnectionStateDisconnected: 'disconnected',
-        ICEConnectionStateClosed: 'closed',
-      }[value] ||
-          value;
-    } else if (update.type === 'iceGatheringStateChange') {
-      value = {
-        ICEGatheringStateNew: 'new',
-        ICEGatheringStateGathering: 'gathering',
-        ICEGatheringStateComplete: 'complete',
-      }[value] ||
-          value;
-    } else if (update.type === 'signalingStateChange') {
-      value = {
-        SignalingStateStable: 'stable',
-        SignalingStateHaveLocalOffer: 'have-local-offer',
-        SignalingStateHaveRemoteOffer: 'have-remote-offer',
-        SignalingStateHaveLocalPrAnswer: 'have-local-pranswer',
-        SignalingStateHaveRemotePrAnswer: 'have-remote-pranswer',
-        SignalingStateClosed: 'closed',
-      }[value] ||
-          value;
     }
 
     // RTCSessionDescription is serialized as 'type: <type>, sdp:'
@@ -191,19 +166,27 @@ export class PeerConnectionUpdateTable {
         ' (type: "' + type + '", ' + sections.length + ' sections)';
       sections.forEach(section => {
         const lines = section.trim().split('\n');
+        // Extract the mid attribute.
+        const mid = lines
+            .filter(line => line.startsWith('a=mid:'))
+            .map(line => line.substr(6))[0];
         const sectionDetails = document.createElement('details');
-        sectionDetails.open = true;
+        // Fold by default for large SDP.
+        sectionDetails.open =
+          sections.length <= MAX_NUMBER_OF_EXPANDED_MEDIASECTIONS;
         sectionDetails.textContent = lines.slice(1).join('\n');
 
         const sectionSummary = document.createElement('summary');
         sectionSummary.textContent =
-          lines[0].trim() + ' (' + (lines.length - 1) + ' more lines)';
+          lines[0].trim() +
+          ' (' + (lines.length - 1) + ' more lines)' +
+          (mid ? ' mid=' + mid : '');
         sectionDetails.appendChild(sectionSummary);
 
         valueContainer.appendChild(sectionDetails);
       });
     } else {
-      valueContainer.textContent = value;
+      valueContainer.textContent = update.value;
     }
   }
 

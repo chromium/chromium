@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -11,20 +11,19 @@
 
 #include <windows.h>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/types/strong_alias.h"
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "chrome/installer/util/util_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class WorkItemList;
 
@@ -33,6 +32,9 @@ class WorkItemList;
 // independently.
 class InstallUtil {
  public:
+  InstallUtil(const InstallUtil&) = delete;
+  InstallUtil& operator=(const InstallUtil&) = delete;
+
   // Attempts to trigger the command that would be run by Active Setup for a
   // system-level Chrome. For use only when system-level Chrome is installed.
   static void TriggerActiveSetupCommand();
@@ -91,69 +93,6 @@ class InstallUtil {
   // Populates |path| with EULA sentinel file path. Returns false on error.
   static bool GetEulaSentinelFilePath(base::FilePath* path);
 
-  // Deletes the registry key at path key_path under the key given by root_key.
-  static bool DeleteRegistryKey(HKEY root_key,
-                                const std::wstring& key_path,
-                                REGSAM wow64_access);
-
-  // Deletes the registry value named value_name at path key_path under the key
-  // given by reg_root.
-  static bool DeleteRegistryValue(HKEY reg_root,
-                                  const std::wstring& key_path,
-                                  REGSAM wow64_access,
-                                  const std::wstring& value_name);
-
-  // An interface to a predicate function for use by DeleteRegistryKeyIf and
-  // DeleteRegistryValueIf.
-  class RegistryValuePredicate {
-   public:
-    virtual ~RegistryValuePredicate() {}
-    virtual bool Evaluate(const std::wstring& value) const = 0;
-  };
-
-  // The result of a conditional delete operation (i.e., DeleteFOOIf).
-  enum ConditionalDeleteResult {
-    NOT_FOUND,     // The condition was not satisfied.
-    DELETED,       // The condition was satisfied and the delete succeeded.
-    DELETE_FAILED  // The condition was satisfied but the delete failed.
-  };
-
-  // Deletes the key |key_to_delete_path| under |root_key| iff the value
-  // |value_name| in the key |key_to_test_path| under |root_key| satisfies
-  // |predicate|.  |value_name| may be either nullptr or an empty string to test
-  // the key's default value.
-  static ConditionalDeleteResult DeleteRegistryKeyIf(
-      HKEY root_key,
-      const std::wstring& key_to_delete_path,
-      const std::wstring& key_to_test_path,
-      REGSAM wow64_access,
-      const wchar_t* value_name,
-      const RegistryValuePredicate& predicate);
-
-  // Deletes the value |value_name| in the key |key_path| under |root_key| iff
-  // its current value satisfies |predicate|.  |value_name| may be either
-  // nullptr or an empty string to test/delete the key's default value.
-  static ConditionalDeleteResult DeleteRegistryValueIf(
-      HKEY root_key,
-      const wchar_t* key_path,
-      REGSAM wow64_access,
-      const wchar_t* value_name,
-      const RegistryValuePredicate& predicate);
-
-  // A predicate that performs a case-sensitive string comparison.
-  class ValueEquals : public RegistryValuePredicate {
-   public:
-    explicit ValueEquals(const std::wstring& value_to_match)
-        : value_to_match_(value_to_match) {}
-    bool Evaluate(const std::wstring& value) const override;
-
-   protected:
-    std::wstring value_to_match_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ValueEquals);
-  };
-
   // Returns zero on install success, or an InstallStatus value otherwise.
   static int GetInstallReturnCode(installer::InstallStatus install_status);
 
@@ -171,7 +110,7 @@ class InstallUtil {
 
   // Returns the highest Chrome version that was installed prior to a downgrade,
   // or no value if Chrome was not previously downgraded from a newer version.
-  static base::Optional<base::Version> GetDowngradeVersion();
+  static absl::optional<base::Version> GetDowngradeVersion();
 
   // Returns pairs of registry key paths and value names where the enrollment
   // token is stored for machine level user cloud policies. The locations are
@@ -182,6 +121,12 @@ class InstallUtil {
   using ReadOnly = base::StrongAlias<class ReadOnlyTag, bool>;
   using BrowserLocation = base::StrongAlias<class BrowserLocationTag, bool>;
 
+  // Returns the path where the cloud management DMToken should be read/written.
+  // |browser_location| indicates whether the legacy browser-specific path is
+  // returned rather than the app-neutral path.
+  static std::pair<std::wstring, std::wstring> GetCloudManagementDmTokenPath(
+      BrowserLocation browser_location);
+
   // Returns the registry key and value name from/to which a cloud management DM
   // token may be read/written. |read_only| indicates whether they key is opened
   // for reading the value or writing it. |browser_location| indicates whether
@@ -191,6 +136,13 @@ class InstallUtil {
   static std::pair<base::win::RegKey, std::wstring>
   GetCloudManagementDmTokenLocation(ReadOnly read_only,
                                     BrowserLocation browser_location);
+
+  // Returns the registry key and value names from/to which the device trust
+  // signing key and trust level may be read/written. |read_only| indicates
+  // whether they key is opened for reading the value or writing it. The
+  // returned key will be invalid if it could not be opened/created.
+  static std::tuple<base::win::RegKey, std::wstring, std::wstring>
+  GetDeviceTrustSigningKeyLocation(ReadOnly read_only);
 
   // Returns the token used to enroll this chrome instance for machine level
   // user cloud policies.  Returns an empty string if this machine should not
@@ -226,36 +178,9 @@ class InstallUtil {
   // with Windows.
   static std::wstring GetLongAppDescription();
 
-  // A predicate that compares the program portion of a command line with a
-  // given file path.  First, the file paths are compared directly.  If they do
-  // not match, the filesystem is consulted to determine if the paths reference
-  // the same file.
-  class ProgramCompare : public RegistryValuePredicate {
-   public:
-    explicit ProgramCompare(const base::FilePath& path_to_match);
-    ~ProgramCompare() override;
-    bool Evaluate(const std::wstring& value) const override;
-    bool EvaluatePath(const base::FilePath& path) const;
-
-   protected:
-    static bool OpenForInfo(const base::FilePath& path, base::File* file);
-    static bool GetInfo(const base::File& file,
-                        BY_HANDLE_FILE_INFORMATION* info);
-
-    base::FilePath path_to_match_;
-    base::File file_;
-    BY_HANDLE_FILE_INFORMATION file_info_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ProgramCompare);
-  };  // class ProgramCompare
-
   // Converts a product GUID into a SQuished gUID that is used for MSI installer
   // registry entries.
   static std::wstring GuidToSquid(base::WStringPiece guid);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstallUtil);
 };
 
 #endif  // CHROME_INSTALLER_UTIL_INSTALL_UTIL_H_

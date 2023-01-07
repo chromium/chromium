@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,13 @@
 #include <unordered_map>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/dom.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/input.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/network.h"
+#include "components/autofill_assistant/browser/devtools/devtools/domains/page.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/runtime.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/target.h"
 #include "components/autofill_assistant/browser/devtools/message_dispatcher.h"
@@ -33,14 +33,19 @@ namespace autofill_assistant {
 class DevtoolsClient : public MessageDispatcher,
                        public content::DevToolsAgentHostClient {
  public:
-  explicit DevtoolsClient(scoped_refptr<content::DevToolsAgentHost> agent_host);
+  explicit DevtoolsClient(scoped_refptr<content::DevToolsAgentHost> agent_host,
+                          bool enable_full_stack_traces);
+
+  DevtoolsClient(const DevtoolsClient&) = delete;
+  DevtoolsClient& operator=(const DevtoolsClient&) = delete;
+
   ~DevtoolsClient() override;
 
   input::Domain* GetInput();
   dom::Domain* GetDOM();
   runtime::Domain* GetRuntime();
-  network::Domain* GetNetwork();
   target::ExperimentalDomain* GetTarget();
+  page::ExperimentalDomain* GetPage();
 
   // MessageDispatcher implementation:
   void SendMessage(
@@ -88,6 +93,10 @@ class DevtoolsClient : public MessageDispatcher,
     // Register the event handlers and start tracking new targets. |client|
     // must outlive this frame tracker.
     FrameTracker(DevtoolsClient* client);
+
+    FrameTracker(const FrameTracker&) = delete;
+    FrameTracker& operator=(const FrameTracker&) = delete;
+
     ~FrameTracker();
 
     void Start();
@@ -117,7 +126,6 @@ class DevtoolsClient : public MessageDispatcher,
     std::unordered_map<std::string, std::string> sessions_map_;
 
     base::WeakPtrFactory<FrameTracker> weak_ptr_factory_{this};
-    DISALLOW_COPY_AND_ASSIGN(FrameTracker);
   };
 
   // If the frame is known to devtools, return the session id for it.
@@ -152,15 +160,14 @@ class DevtoolsClient : public MessageDispatcher,
   input::ExperimentalDomain input_domain_;
   dom::ExperimentalDomain dom_domain_;
   runtime::ExperimentalDomain runtime_domain_;
-  network::ExperimentalDomain network_domain_;
   target::ExperimentalDomain target_domain_;
+  page::ExperimentalDomain page_domain_;
   std::unordered_map<int, Callback> pending_messages_;
   EventHandlerMap event_handlers_;
   int next_message_id_;
   FrameTracker frame_tracker_;
 
   base::WeakPtrFactory<DevtoolsClient> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DevtoolsClient);
 };
 
 }  // namespace autofill_assistant.

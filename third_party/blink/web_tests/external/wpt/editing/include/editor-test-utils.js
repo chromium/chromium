@@ -2,6 +2,8 @@
  * EditorTestUtils is a helper utilities to test HTML editor.  This can be
  * instantiated per an editing host.  If you test `designMode`, the editing
  * host should be the <body> element.
+ * Note that if you want to use sendKey in a sub-document, you need to include
+ * testdriver.js (and related files) from the sub-document before creating this.
  */
 class EditorTestUtils {
   kShift = "\uE008";
@@ -13,7 +15,7 @@ class EditorTestUtils {
 
   constructor(aEditingHost, aHarnessWindow = window) {
     this.editingHost = aEditingHost;
-    if (aHarnessWindow != this.window) {
+    if (aHarnessWindow != this.window && this.window.test_driver) {
       this.window.test_driver.set_test_context(aHarnessWindow);
     }
   }
@@ -73,6 +75,20 @@ class EditorTestUtils {
     return this.sendKey(kEnd, modifier);
   }
 
+  sendEnterKey(modifier) {
+    const kEnter = "\uE007";
+    return this.sendKey(kEnter, modifier);
+  }
+
+  sendSelectAllShortcutKey() {
+    return this.sendKey(
+      "a",
+      this.window.navigator.platform.includes("Mac")
+        ? this.kMeta
+        : this.kControl
+    );
+  }
+
   // Similar to `setupDiv` in editing/include/tests.js, this method sets
   // innerHTML value of this.editingHost, and sets multiple selection ranges
   // specified with the markers.
@@ -106,6 +122,9 @@ class EditorTestUtils {
         };
         if (node.hasChildNodes()) {
           return inclusiveDeepestFirstChildNode(node);
+        }
+        if (node === this.editingHost) {
+          return null;
         }
         if (node.nextSibling) {
           return inclusiveDeepestFirstChildNode(node.nextSibling);
@@ -142,7 +161,7 @@ class EditorTestUtils {
           return {
             marker: scanResult[0],
             container: textNode,
-            offset: scanResult.index + offset
+            offset: scanResult.index + offset,
           };
         };
         if (startContainer.nodeType === Node.TEXT_NODE) {
@@ -181,7 +200,7 @@ class EditorTestUtils {
           return {
             marker: scanResult[0],
             container: textNode,
-            offset: scanResult.index + offset
+            offset: scanResult.index + offset,
           };
         };
         if (startContainer.nodeType === Node.TEXT_NODE) {
@@ -339,6 +358,30 @@ class EditorTestUtils {
 
     if (this.selection.rangeCount != ranges.length) {
       throw `Failed to set selection to the given ranges whose length is ${ranges.length}, but only ${this.selection.rangeCount} ranges are added`;
+    }
+  }
+
+  // Originated from normalizeSerializedStyle in include/tests.js
+  normalizeStyleAttributeValues() {
+    for (const element of Array.from(
+      this.editingHost.querySelectorAll("[style]")
+    )) {
+      element.setAttribute(
+        "style",
+        element
+          .getAttribute("style")
+          // Random spacing differences
+          .replace(/; ?$/, "")
+          .replace(/: /g, ":")
+          // Gecko likes "transparent"
+          .replace(/transparent/g, "rgba(0, 0, 0, 0)")
+          // WebKit likes to look overly precise
+          .replace(/, 0.496094\)/g, ", 0.5)")
+          // Gecko converts anything with full alpha to "transparent" which
+          // then becomes "rgba(0, 0, 0, 0)", so we have to make other
+          // browsers match
+          .replace(/rgba\([0-9]+, [0-9]+, [0-9]+, 0\)/g, "rgba(0, 0, 0, 0)")
+      );
     }
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 #include <tuple>
 
-#include "base/macros.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
 #include "chrome/browser/extensions/api/declarative_content/declarative_content_condition_tracker_test.h"
@@ -15,6 +14,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "extensions/browser/api/declarative/rules_registry_service.h"
+#include "extensions/browser/api/declarative_content/content_rules_registry.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/mojom/renderer.mojom.h"
@@ -58,6 +59,9 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   // mojom::Renderer implementation:
   void ActivateExtension(const std::string& extension_id) override {}
   void SetActivityLoggingEnabled(bool enabled) override {}
+  void LoadExtensions(
+      std::vector<mojom::ExtensionLoadedParamsPtr> loaded_extensions) override {
+  }
   void UnloadExtension(const std::string& extension_id) override {}
   void SuspendExtension(
       const std::string& extension_id,
@@ -65,6 +69,7 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
     std::move(callback).Run();
   }
   void CancelSuspendExtension(const std::string& extension_id) override {}
+  void SetDeveloperMode(bool current_developer_mode) override {}
   void SetSessionInfo(version_info::Channel channel,
                       mojom::FeatureSessionType session,
                       bool is_lock_screen_context) override {}
@@ -79,17 +84,23 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   void TransferBlobs(TransferBlobsCallback callback) override {
     std::move(callback).Run();
   }
+  void UpdatePermissions(const std::string& extension_id,
+                         PermissionSet active_permissions,
+                         PermissionSet withheld_permissions,
+                         URLPatternSet policy_blocked_hosts,
+                         URLPatternSet policy_allowed_hosts,
+                         bool uses_default_policy_host_restrictions) override {}
   void UpdateDefaultPolicyHostRestrictions(
-      const URLPatternSet& default_policy_blocked_hosts,
-      const URLPatternSet& default_policy_allowed_hosts) override {}
+      URLPatternSet default_policy_blocked_hosts,
+      URLPatternSet default_policy_allowed_hosts) override {}
+  void UpdateUserHostRestrictions(URLPatternSet user_blocked_hosts,
+                                  URLPatternSet user_allowed_hosts) override {}
   void UpdateTabSpecificPermissions(const std::string& extension_id,
-                                    const URLPatternSet& new_hosts,
+                                    URLPatternSet new_hosts,
                                     int tab_id,
                                     bool update_origin_allowlist) override {}
   void UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
-                         mojom::HostIDPtr host_id,
-                         std::vector<mojom::HostIDPtr> changed_hosts,
-                         bool allowlisted_only) override {}
+                         mojom::HostIDPtr host_id) override {}
   void ClearTabSpecificPermissions(
       const std::vector<std::string>& extension_ids,
       int tab_id,
@@ -110,6 +121,12 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
 
 class DeclarativeContentCssConditionTrackerTest
     : public DeclarativeContentConditionTrackerTest {
+ public:
+  DeclarativeContentCssConditionTrackerTest(
+      const DeclarativeContentCssConditionTrackerTest&) = delete;
+  DeclarativeContentCssConditionTrackerTest& operator=(
+      const DeclarativeContentCssConditionTrackerTest&) = delete;
+
  protected:
   DeclarativeContentCssConditionTrackerTest() : tracker_(&delegate_) {}
 
@@ -132,6 +149,9 @@ class DeclarativeContentCssConditionTrackerTest
    public:
     Delegate() : evaluation_requests_(0) {}
 
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     int evaluation_requests() { return evaluation_requests_; }
 
     // ContentPredicateEvaluator::Delegate:
@@ -146,8 +166,6 @@ class DeclarativeContentCssConditionTrackerTest
 
    private:
     int evaluation_requests_;
-
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // Creates a predicate with appropriate expectations of success.
@@ -191,13 +209,11 @@ class DeclarativeContentCssConditionTrackerTest
     EXPECT_FALSE(helper->IsWatchPagesCalled());
   }
 
-  // Sends an OnWatchedPageChange message to the tab.
-  void SendOnWatchedPageChangeMessage(
-      content::WebContents* tab,
-      const std::vector<std::string>& selectors) {
-    ExtensionHostMsg_OnWatchedPageChange page_change(
-        tab->GetMainFrame()->GetRenderViewHost()->GetRoutingID(), selectors);
-    EXPECT_TRUE(GetMockRenderProcessHost(tab)->OnMessageReceived(page_change));
+  // Calls OnWatchedPageChanged() with the tab to simulate the watched page
+  // is changed.
+  void SimulateWatchedPageChanged(content::WebContents* tab,
+                                  const std::vector<std::string>& selectors) {
+    tracker_.OnWatchedPageChanged(tab, selectors);
   }
 
   Delegate delegate_;
@@ -214,8 +230,6 @@ class DeclarativeContentCssConditionTrackerTest
     EXPECT_EQ("", error);
     ASSERT_TRUE(*predicate);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(DeclarativeContentCssConditionTrackerTest);
 };
 
 TEST(DeclarativeContentCssPredicateTest, WrongCssDatatype) {
@@ -367,7 +381,7 @@ TEST_F(DeclarativeContentCssConditionTrackerTest, WatchedPageChange) {
   // Check that receiving an OnWatchedPageChange message from the tab results in
   // a request for condition evaluation.
   const std::vector<std::string> matched_selectors(1, "div");
-  SendOnWatchedPageChangeMessage(tab.get(), matched_selectors);
+  SimulateWatchedPageChanged(tab.get(), matched_selectors);
   EXPECT_EQ(++expected_evaluation_requests, delegate_.evaluation_requests());
 
   // Check that only the div predicate matches.
@@ -399,7 +413,7 @@ TEST_F(DeclarativeContentCssConditionTrackerTest, Navigation) {
 
   // Set up the tab to have a matching selector.
   const std::vector<std::string> matched_selectors(1, "div");
-  SendOnWatchedPageChangeMessage(tab.get(), matched_selectors);
+  SimulateWatchedPageChanged(tab.get(), matched_selectors);
   EXPECT_EQ(++expected_evaluation_requests, delegate_.evaluation_requests());
 
   // Check that an in-page navigation has no effect on the matching selectors.

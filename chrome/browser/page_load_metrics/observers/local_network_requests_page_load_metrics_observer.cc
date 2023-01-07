@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "content/public/browser/navigation_handle.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/url_util.h"
@@ -124,19 +125,18 @@ bool GetIPAndPort(
   // from the URL. If none was returned, try matching the hostname from the URL
   // itself as it might be an IP address if it is a local network request, which
   // is what we care about.
-  if (!ip_exists && !extra_request_info.origin_of_final_url.opaque()) {
+  if (!ip_exists && extra_request_info.final_url.IsValid()) {
     // TODO(csharrison): https://crbug.com/1023042: Avoid the url::Origin->GURL
     // conversion.  Today the conversion is necessary, because net::IsLocalhost
     // and EffectiveIntPort are only available for GURL.
-    GURL origin_of_final_url = extra_request_info.origin_of_final_url.GetURL();
-    if (net::IsLocalhost(origin_of_final_url)) {
+    GURL final_url = extra_request_info.final_url.GetURL();
+    if (net::IsLocalhost(final_url)) {
       *resource_ip = net::IPAddress::IPv4Localhost();
       ip_exists = true;
     } else {
-      ip_exists = net::ParseURLHostnameToAddress(origin_of_final_url.host(),
-                                                 resource_ip);
+      ip_exists = net::ParseURLHostnameToAddress(final_url.host(), resource_ip);
     }
-    *resource_port = origin_of_final_url.EffectiveIntPort();
+    *resource_port = final_url.EffectiveIntPort();
   }
 
   if (net::HostStringIsLocalhost(resource_ip->ToString())) {
@@ -304,10 +304,31 @@ LocalNetworkRequestsPageLoadMetricsObserver::
 LocalNetworkRequestsPageLoadMetricsObserver::
     ~LocalNetworkRequestsPageLoadMetricsObserver() {}
 
+const char* LocalNetworkRequestsPageLoadMetricsObserver::GetObserverName()
+    const {
+  static const char kName[] = "LocalNetworkRequestsPageLoadMetricsObserver";
+  return kName;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+LocalNetworkRequestsPageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class needs forwarding for the event OnLoadedResource.
+  return FORWARD_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+LocalNetworkRequestsPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class will be deprecated in the near future. No need to support.
+  return STOP_OBSERVING;
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 LocalNetworkRequestsPageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
   // Upon page load, we want to determine whether the page loaded was a public
   // domain or private domain and generate an event describing the domain type.
   net::IPEndPoint remote_endpoint = navigation_handle->GetSocketAddress();
@@ -343,7 +364,7 @@ LocalNetworkRequestsPageLoadMetricsObserver::OnCommit(
     page_domain_type_ = internal::DOMAIN_TYPE_PUBLIC;
   }
 
-  RecordUkmDomainType(source_id);
+  RecordUkmDomainType(GetDelegate().GetPageUkmSourceId());
 
   // If the load was localhost, we don't track it because it isn't meaningful
   // for our purposes.

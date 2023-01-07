@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,21 +8,16 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/policy/enrollment_status.h"
-
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
-class DMAuth;
-class EnrollmentStatus;
 
 // Implements the logic that initializes device account during enrollment.
 //   1. Download the OAuth2 authorization code for device-level API access.
@@ -46,8 +41,13 @@ class DeviceAccountInitializer : public CloudPolicyClient::Observer,
     // Called when OAuth2 refresh token is successfully stored.
     virtual void OnDeviceAccountTokenStored() = 0;
 
-    // Called when an error happens during token fetching or saving.
-    virtual void OnDeviceAccountTokenError(EnrollmentStatus status) = 0;
+    // Called when an error happens during token fetching. `dm_status` is
+    // nullopt if error happened before requesting device management service.
+    virtual void OnDeviceAccountTokenFetchError(
+        absl::optional<DeviceManagementStatus> dm_status) = 0;
+
+    // Called when an error happens during token saving.
+    virtual void OnDeviceAccountTokenStoreError() = 0;
 
     // Called when an error happens during cloud policy client calls.
     virtual void OnDeviceAccountClientError(DeviceManagementStatus status) = 0;
@@ -67,6 +67,8 @@ class DeviceAccountInitializer : public CloudPolicyClient::Observer,
   };
 
   DeviceAccountInitializer(CloudPolicyClient* client, Delegate* delegate);
+  DeviceAccountInitializer(const DeviceAccountInitializer&) = delete;
+  DeviceAccountInitializer& operator=(const DeviceAccountInitializer&) = delete;
   ~DeviceAccountInitializer() override;
 
   // Starts process that downloads OAuth2 auth code and exchanges it to OAuth2
@@ -96,9 +98,6 @@ class DeviceAccountInitializer : public CloudPolicyClient::Observer,
   void OnNetworkError(int response_code) override;
 
  private:
-  // Initiates storing of robot auth token.
-  void StartStoreRobotAuth();
-
   // Handles completion of the robot token store operation.
   void HandleStoreRobotAuthTokenResult(bool result);
 
@@ -107,11 +106,10 @@ class DeviceAccountInitializer : public CloudPolicyClient::Observer,
                                const std::string& auth_code);
 
   // Owned by this class owner.
-  CloudPolicyClient* client_;
-  Delegate* delegate_;
+  raw_ptr<CloudPolicyClient> client_;
+  raw_ptr<Delegate> delegate_;
 
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_oauth_client_;
-  std::unique_ptr<DMAuth> dm_auth_;
 
   // Flag that undicates if there are requests that were not completed yet.
   // It is used to ignore CloudPolicyClient errors that are not relevant to
@@ -122,7 +120,6 @@ class DeviceAccountInitializer : public CloudPolicyClient::Observer,
   std::string robot_refresh_token_;
 
   base::WeakPtrFactory<DeviceAccountInitializer> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DeviceAccountInitializer);
 };
 
 }  // namespace policy

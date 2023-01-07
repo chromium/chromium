@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/video_rvfc/video_frame_callback_requester_impl.h"
 
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -15,7 +16,6 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 using testing::_;
@@ -38,20 +38,11 @@ class MockWebMediaPlayer : public EmptyWebMediaPlayer {
                std::unique_ptr<VideoFramePresentationMetadata>());
 };
 
-class MockFunction : public ScriptFunction {
+class MockFunction : public ScriptFunction::Callable {
  public:
-  static testing::StrictMock<MockFunction>* Create(ScriptState* script_state) {
-    return MakeGarbageCollected<testing::StrictMock<MockFunction>>(
-        script_state);
-  }
+  MockFunction() = default;
 
-  v8::Local<v8::Function> Bind() { return BindToV8Function(); }
-
-  MOCK_METHOD1(Call, ScriptValue(ScriptValue));
-
- protected:
-  explicit MockFunction(ScriptState* script_state)
-      : ScriptFunction(script_state) {}
+  MOCK_METHOD2(Call, ScriptValue(ScriptState*, ScriptValue));
 };
 
 // Helper class to wrap a VideoFramePresentationData, which can't have a copy
@@ -86,19 +77,14 @@ class MetadataHelper {
     // have sub-microsecond resolution for those values.
 
     metadata_.presented_frames = 42;
-    metadata_.presentation_time =
-        now + base::TimeDelta::FromMillisecondsD(10.1234);
-    metadata_.expected_display_time =
-        now + base::TimeDelta::FromMillisecondsD(26.3467);
+    metadata_.presentation_time = now + base::Milliseconds(10.1234);
+    metadata_.expected_display_time = now + base::Milliseconds(26.3467);
     metadata_.width = 320;
     metadata_.height = 480;
-    metadata_.media_time = base::TimeDelta::FromSecondsD(3.14);
-    metadata_.metadata.processing_time =
-        base::TimeDelta::FromMillisecondsD(60.982);
-    metadata_.metadata.capture_begin_time =
-        now + base::TimeDelta::FromMillisecondsD(5.6785);
-    metadata_.metadata.receive_time =
-        now + base::TimeDelta::FromMillisecondsD(17.1234);
+    metadata_.media_time = base::Seconds(3.14);
+    metadata_.metadata.processing_time = base::Milliseconds(60.982);
+    metadata_.metadata.capture_begin_time = now + base::Milliseconds(5.6785);
+    metadata_.metadata.receive_time = now + base::Milliseconds(17.1234);
     metadata_.metadata.rtp_timestamp = 12345;
   }
 
@@ -163,9 +149,8 @@ class VfcRequesterParameterVerifierCallback
 
   double TicksToClampedMillisecondsF(base::TimeTicks ticks) {
     return Performance::ClampTimeResolution(
-               timing_.MonotonicTimeToZeroBasedDocumentTime(ticks).InSecondsF(),
-               /*cross_origin_isolated_capability_=*/false) *
-           base::Time::kMillisecondsPerSecond;
+        timing_.MonotonicTimeToZeroBasedDocumentTime(ticks),
+        /*cross_origin_isolated_capability_=*/false);
   }
 
   double TicksToMillisecondsF(base::TimeTicks ticks) {
@@ -174,8 +159,7 @@ class VfcRequesterParameterVerifierCallback
   }
 
   static double ClampElapsedProcessingTime(base::TimeDelta time) {
-    return time.FloorToMultiple(base::TimeDelta::FromMicroseconds(100))
-        .InSecondsF();
+    return time.FloorToMultiple(base::Microseconds(100)).InSecondsF();
   }
 
   double now_;
@@ -185,13 +169,8 @@ class VfcRequesterParameterVerifierCallback
 
 }  // namespace
 
-class VideoFrameCallbackRequesterImplTest
-    : public PageTestBase,
-      private ScopedRequestVideoFrameCallbackForTest {
+class VideoFrameCallbackRequesterImplTest : public PageTestBase {
  public:
-  VideoFrameCallbackRequesterImplTest()
-      : ScopedRequestVideoFrameCallbackForTest(true) {}
-
   virtual void SetUpWebMediaPlayer() {
     auto mock_media_player = std::make_unique<MockWebMediaPlayer>();
     media_player_ = mock_media_player.get();
@@ -227,8 +206,11 @@ class VideoFrameCallbackRequesterImplTest
         now);
   }
 
-  V8VideoFrameRequestCallback* GetCallback(MockFunction* function) {
-    return V8VideoFrameRequestCallback::Create(function->Bind());
+  V8VideoFrameRequestCallback* GetCallback(ScriptState* script_state,
+                                           MockFunction* function) {
+    return V8VideoFrameRequestCallback::Create(
+        MakeGarbageCollected<ScriptFunction>(script_state, function)
+            ->V8Function());
   }
 
   void RegisterCallbackDirectly(
@@ -258,16 +240,17 @@ class VideoFrameCallbackRequesterImplNullMediaPlayerTest
 TEST_F(VideoFrameCallbackRequesterImplTest, VerifyRequestVideoFrameCallback) {
   V8TestingScope scope;
 
-  auto* function = MockFunction::Create(scope.GetScriptState());
+  auto* function = MakeGarbageCollected<MockFunction>();
 
   // Queuing up a video.rVFC call should propagate to the WebMediaPlayer.
   EXPECT_CALL(*media_player(), RequestVideoFrameCallback()).Times(1);
-  vfc_requester().requestVideoFrameCallback(GetCallback(function));
+  vfc_requester().requestVideoFrameCallback(
+      GetCallback(scope.GetScriptState(), function));
 
   testing::Mock::VerifyAndClear(media_player());
 
   // Callbacks should not be run immediately when a frame is presented.
-  EXPECT_CALL(*function, Call(_)).Times(0);
+  EXPECT_CALL(*function, Call(_, _)).Times(0);
   SimulateFramePresented();
 
   testing::Mock::VerifyAndClear(function);
@@ -276,7 +259,7 @@ TEST_F(VideoFrameCallbackRequesterImplTest, VerifyRequestVideoFrameCallback) {
   auto metadata = std::make_unique<VideoFramePresentationMetadata>();
   metadata->presented_frames = 1;
 
-  EXPECT_CALL(*function, Call(_)).Times(1);
+  EXPECT_CALL(*function, Call(_, _)).Times(1);
   EXPECT_CALL(*media_player(), GetVideoFramePresentationMetadata())
       .WillOnce(Return(ByMove(std::move(metadata))));
   SimulateVideoFrameCallback(base::TimeTicks::Now());
@@ -288,14 +271,14 @@ TEST_F(VideoFrameCallbackRequesterImplTest,
        VerifyCancelVideoFrameCallback_BeforePresentedFrame) {
   V8TestingScope scope;
 
-  auto* function = MockFunction::Create(scope.GetScriptState());
+  auto* function = MakeGarbageCollected<MockFunction>();
 
   // Queue and cancel a request before a frame is presented.
-  int callback_id =
-      vfc_requester().requestVideoFrameCallback(GetCallback(function));
+  int callback_id = vfc_requester().requestVideoFrameCallback(
+      GetCallback(scope.GetScriptState(), function));
   vfc_requester().cancelVideoFrameCallback(callback_id);
 
-  EXPECT_CALL(*function, Call(_)).Times(0);
+  EXPECT_CALL(*function, Call(_, _)).Times(0);
   SimulateFramePresented();
   SimulateVideoFrameCallback(base::TimeTicks::Now());
 
@@ -306,15 +289,15 @@ TEST_F(VideoFrameCallbackRequesterImplTest,
        VerifyCancelVideoFrameCallback_AfterPresentedFrame) {
   V8TestingScope scope;
 
-  auto* function = MockFunction::Create(scope.GetScriptState());
+  auto* function = MakeGarbageCollected<MockFunction>();
 
   // Queue a request.
-  int callback_id =
-      vfc_requester().requestVideoFrameCallback(GetCallback(function));
+  int callback_id = vfc_requester().requestVideoFrameCallback(
+      GetCallback(scope.GetScriptState(), function));
   SimulateFramePresented();
 
   // The callback should be scheduled for execution, but not yet run.
-  EXPECT_CALL(*function, Call(_)).Times(0);
+  EXPECT_CALL(*function, Call(_, _)).Times(0);
   vfc_requester().cancelVideoFrameCallback(callback_id);
   SimulateVideoFrameCallback(base::TimeTicks::Now());
 
@@ -325,14 +308,15 @@ TEST_F(VideoFrameCallbackRequesterImplTest,
        VerifyClearedMediaPlayerCancelsPendingExecution) {
   V8TestingScope scope;
 
-  auto* function = MockFunction::Create(scope.GetScriptState());
+  auto* function = MakeGarbageCollected<MockFunction>();
 
   // Queue a request.
-  vfc_requester().requestVideoFrameCallback(GetCallback(function));
+  vfc_requester().requestVideoFrameCallback(
+      GetCallback(scope.GetScriptState(), function));
   SimulateFramePresented();
 
   // The callback should be scheduled for execution, but not yet run.
-  EXPECT_CALL(*function, Call(_)).Times(0);
+  EXPECT_CALL(*function, Call(_, _)).Times(0);
 
   // Simulate the HTMLVideoElement getting changing its WebMediaPlayer.
   vfc_requester().OnWebMediaPlayerCleared();
@@ -381,8 +365,9 @@ TEST_F(VideoFrameCallbackRequesterImplTest, OnXrFrameData) {
 
   testing::Mock::VerifyAndClear(media_player());
 
-  auto* function = MockFunction::Create(scope.GetScriptState());
-  vfc_requester().requestVideoFrameCallback(GetCallback(function));
+  auto* function = MakeGarbageCollected<MockFunction>();
+  vfc_requester().requestVideoFrameCallback(
+      GetCallback(scope.GetScriptState(), function));
 
   // Immersive frames should trigger video frame updates when there are pending
   // callbacks.
@@ -396,9 +381,10 @@ TEST_F(VideoFrameCallbackRequesterImplTest, OnXrFrameData) {
 TEST_F(VideoFrameCallbackRequesterImplNullMediaPlayerTest, VerifyNoCrash) {
   V8TestingScope scope;
 
-  auto* function = MockFunction::Create(scope.GetScriptState());
+  auto* function = MakeGarbageCollected<MockFunction>();
 
-  vfc_requester().requestVideoFrameCallback(GetCallback(function));
+  vfc_requester().requestVideoFrameCallback(
+      GetCallback(scope.GetScriptState(), function));
 
   SimulateFramePresented();
   SimulateVideoFrameCallback(base::TimeTicks::Now());

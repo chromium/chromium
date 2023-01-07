@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/numeric/checked_range.h"
 #include "util/process/process_id.h"
@@ -87,6 +86,10 @@ class ProcessInfo {
   };
 
   ProcessInfo();
+
+  ProcessInfo(const ProcessInfo&) = delete;
+  ProcessInfo& operator=(const ProcessInfo&) = delete;
+
   ~ProcessInfo();
 
   //! \brief Initializes this object with information about the given
@@ -202,8 +205,6 @@ class ProcessInfo {
   bool is_64_bit_;
   bool is_wow64_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessInfo);
 };
 
 //! \brief Given a memory map of a process, and a range to be read from the

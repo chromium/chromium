@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class BrowserView;
@@ -31,7 +31,7 @@ class BrowserWindowPropertyManager {
   void OnProfileIconVersionChange();
 
   PrefChangeRegistrar profile_pref_registrar_;
-  const BrowserView* view_;
+  raw_ptr<const BrowserView> view_;
   const HWND hwnd_;
 
 };

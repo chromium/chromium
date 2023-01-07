@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@ import android.os.Build;
 import android.os.RemoteException;
 import android.text.TextUtils;
 
+import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
 
 import org.chromium.base.ContentUriUtils;
@@ -531,6 +532,13 @@ public final class DownloadImpl extends IDownload.Stub {
     private static Uri getDownloadUri(String location) {
         if (ContentUriUtils.isContentUri(location)) return Uri.parse(location);
         return ContentUriUtils.getContentUriFromFile(new File(location));
+    }
+
+    @VisibleForTesting
+    public static void activateNotificationForTesting(int id) {
+        DownloadImpl download = sMap.get(id);
+        assert download != null;
+        DownloadImplJni.get().onFinishedImpl(download.mNativeDownloadImpl, /*activated=*/true);
     }
 
     @CalledByNative

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/unguessable_token.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -51,8 +52,7 @@ void MediaInspectorContextImpl::Trace(Visitor* visitor) const {
 
 Vector<WebString> MediaInspectorContextImpl::AllPlayerIdsAndMarkSent() {
   Vector<WebString> existing_players;
-  const auto& keys = players_.Keys();
-  existing_players.AppendRange(keys.begin(), keys.end());
+  WTF::CopyKeysToVector(players_, existing_players);
   unsent_players_.clear();
   return existing_players;
 }
@@ -69,8 +69,10 @@ WebString MediaInspectorContextImpl::CreatePlayer() {
       String::FromUTF8(base::UnguessableToken::Create().ToString());
   players_.insert(next_player_id, MakeGarbageCollected<MediaPlayer>());
   probe::PlayersCreated(GetSupplementable(), {next_player_id});
-  if (!GetSupplementable()->GetProbeSink()->HasInspectorMediaAgents())
+  if (!GetSupplementable()->GetProbeSink() ||
+      !GetSupplementable()->GetProbeSink()->HasInspectorMediaAgents()) {
     unsent_players_.push_back(next_player_id);
+  }
   return next_player_id;
 }
 
@@ -111,14 +113,14 @@ void MediaInspectorContextImpl::CullPlayers(const WebString& prefer_keep) {
     RemovePlayer(playerId);
   dead_players_.clear();
 
-  while (!expendable_players_.IsEmpty()) {
+  while (!expendable_players_.empty()) {
     if (total_event_count_ <= kMaxCachedPlayerEvents)
       return;
     RemovePlayer(expendable_players_.back());
     expendable_players_.pop_back();
   }
 
-  while (!unsent_players_.IsEmpty()) {
+  while (!unsent_players_.empty()) {
     if (total_event_count_ <= kMaxCachedPlayerEvents)
       return;
     RemovePlayer(unsent_players_.back());
@@ -189,14 +191,13 @@ void MediaInspectorContextImpl::SetPlayerProperties(
     WebString playerId,
     const InspectorPlayerProperties& props) {
   const auto& player = players_.find(playerId);
+  Vector<InspectorPlayerProperty> properties;
   if (player != players_.end()) {
     for (const auto& property : props)
-      player->value->properties.insert(property.name, property);
+      player->value->properties.Set(property.name, property);
+    WTF::CopyValuesToVector(player->value->properties, properties);
   }
-
-  Vector<InspectorPlayerProperty> vector =
-      Iter2Vector<InspectorPlayerProperty>(props);
-  probe::PlayerPropertiesChanged(GetSupplementable(), playerId, vector);
+  probe::PlayerPropertiesChanged(GetSupplementable(), playerId, properties);
 }
 
 void MediaInspectorContextImpl::NotifyPlayerMessages(

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,23 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/image_downloader.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -50,29 +52,18 @@ namespace ash {
 
 namespace {
 
-// Delay betweeen user login and attempt to update user's profile data.
+// Delay between user login and attempt to update user's profile data.
 const int kProfileDataDownloadDelaySec = 10;
 
-// Interval betweeen retries to update user's profile data.
+// Interval between retries to update user's profile data.
 const int kProfileDataDownloadRetryIntervalSec = 300;
 
-// Delay betweeen subsequent profile refresh attempts (24 hrs).
+// Delay between subsequent profile refresh attempts (24 hrs).
 const int kProfileRefreshIntervalSec = 24 * 3600;
 
 static bool g_ignore_profile_data_download_delay_ = false;
 
-// Converts `image_index` to UMA histogram value.
-int ImageIndexToHistogramIndex(int image_index) {
-  switch (image_index) {
-    case user_manager::User::USER_IMAGE_EXTERNAL:
-      // TODO(ivankr): Distinguish this from selected from file.
-      return default_user_image::kHistogramImageFromCamera;
-    case user_manager::User::USER_IMAGE_PROFILE:
-      return default_user_image::kHistogramImageFromProfile;
-    default:
-      return image_index;
-  }
-}
+static bool g_skip_profile_download = false;
 
 // Saves `image_bytes` at `image_path`, and delete the old file at
 // `old_image_path` if needed.
@@ -98,10 +89,9 @@ bool SaveAndDeleteImage(scoped_refptr<base::RefCountedBytes> image_bytes,
 }
 
 // Returns the codec enum for the given image path's extension.
-ImageDecoder::ImageCodec ChooseCodecFromPath(
-    const base::FilePath& image_path) {
+ImageDecoder::ImageCodec ChooseCodecFromPath(const base::FilePath& image_path) {
   if (image_path.Extension() == FILE_PATH_LITERAL(".png"))
-    return ImageDecoder::ROBUST_PNG_CODEC;
+    return ImageDecoder::PNG_CODEC;
 
   return ImageDecoder::DEFAULT_CODEC;
 }
@@ -126,6 +116,30 @@ const char UserImageManagerImpl::kUserImageProperties[] = "user_image_info";
 const char UserImageManagerImpl::kImagePathNodeName[] = "path";
 const char UserImageManagerImpl::kImageIndexNodeName[] = "index";
 const char UserImageManagerImpl::kImageURLNodeName[] = "url";
+const char UserImageManagerImpl::kImageCacheUpdated[] = "cache_updated";
+
+// static
+int UserImageManager::ImageIndexToHistogramIndex(int image_index) {
+  switch (image_index) {
+    case user_manager::User::USER_IMAGE_EXTERNAL:
+      return default_user_image::kHistogramImageExternal;
+    case user_manager::User::USER_IMAGE_PROFILE:
+      return default_user_image::kHistogramImageFromProfile;
+    default:
+      return image_index + default_user_image::kHistogramSpecialImagesMaxCount;
+  }
+}
+
+// static
+void UserImageManager::RecordUserImageChanged(int histogram_value) {
+  // Although |UserImageManager::kUserImageChangedHistogramName| is an
+  // enumerated histogram, we intentionally use UmaHistogramExactLinear() to
+  // emit the metric rather than UmaHistogramEnumeration(). This is because the
+  // enums.xml values correspond to (a) special constants and (b) indexes of an
+  // array containing resource IDs.
+  base::UmaHistogramExactLinear(kUserImageChangedHistogramName, histogram_value,
+                                default_user_image::kHistogramImagesCount + 1);
+}
 
 // static
 void UserImageManager::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -144,6 +158,10 @@ class UserImageManagerImpl::Job {
  public:
   // The `Job` will update the user object corresponding to `parent`.
   explicit Job(UserImageManagerImpl* parent);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job();
 
   // Loads the image at `image_path` or one of the default images,
@@ -215,7 +233,18 @@ class UserImageManagerImpl::Job {
   // Notifies the `parent_` that the Job is done.
   void NotifyJobDone();
 
-  const std::string& user_id() const { return parent_->user_id(); }
+  const base::Value::Dict* GetImageProperties() {
+    PrefService* local_state = g_browser_process->local_state();
+    const base::Value::Dict& prefs_images =
+        local_state->GetDict(kUserImageProperties);
+
+    const base::Value::Dict* image_properties =
+        prefs_images.FindDict(account_id().GetUserEmail());
+
+    return image_properties;
+  }
+
+  const AccountId& account_id() const { return parent_->account_id_; }
 
   UserImageManagerImpl* parent_;
 
@@ -227,8 +256,6 @@ class UserImageManagerImpl::Job {
   base::FilePath image_path_;
 
   base::WeakPtrFactory<Job> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 UserImageManagerImpl::Job::Job(UserImageManagerImpl* parent)
@@ -248,15 +275,47 @@ void UserImageManagerImpl::Job::LoadImage(base::FilePath image_path,
 
   if (default_user_image::IsValidIndex(image_index_)) {
     // Load one of the default images. This happens synchronously.
-    std::unique_ptr<user_manager::UserImage> user_image(
-        new user_manager::UserImage(
-            default_user_image::GetDefaultImage(image_index_)));
-    UpdateUser(std::move(user_image));
-    NotifyJobDone();
+    if (ash::features::IsAvatarsCloudMigrationEnabled()) {
+      bool image_cache_updated = false;
+      if (const base::Value::Dict* image_properties = GetImageProperties()) {
+        image_cache_updated =
+            image_properties->FindBool(kImageCacheUpdated).value_or(false);
+      }
+      // Load default image from local cached version if available,
+      // otherwise download from gstatic resources if possible.
+      if (!image_path_.empty() && image_cache_updated &&
+          base::PathExists(image_path_) &&
+          !base::DirectoryExists(image_path_)) {
+        // Will refactor to remove this redundant call after the feature flag
+        // IsAvatarsCloudMigrationEnabled is no longer needed.
+        user_image_loader::StartWithFilePath(
+            parent_->background_task_runner_, image_path_,
+            ChooseCodecFromPath(image_path_),
+            0,  // Do not crop.
+            base::BindOnce(&Job::OnLoadImageDone, weak_factory_.GetWeakPtr(),
+                           false));
+      } else {
+        // Fetch the default image from cloud before caching it.
+        image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
+        user_image_loader::StartWithGURL(
+            image_url_, base::BindOnce(&Job::OnLoadImageDone,
+                                       weak_factory_.GetWeakPtr(), true));
+      }
+    } else {
+      gfx::ImageSkia default_image =
+          default_user_image::GetDefaultImageDeprecated(image_index_);
+      std::unique_ptr<user_manager::UserImage> user_image(
+          user_manager::UserImage::CreateAndEncode(
+              default_image, user_manager::UserImage::ChooseImageFormat(
+                                 *default_image.bitmap())));
+      // Cache the in-use default image as part of the migration of avatar
+      // images to cloud.
+      UpdateUserAndSaveImage(std::move(user_image));
+    }
   } else if (image_index_ == user_manager::User::USER_IMAGE_EXTERNAL ||
              image_index_ == user_manager::User::USER_IMAGE_PROFILE) {
     // Load the user image from a file referenced by `image_path`. This happens
-    // asynchronously. ROBUST_PNG_CODEC can be used here because LoadImage() is
+    // asynchronously. PNG_CODEC can be used here because LoadImage() is
     // called only for users whose user image has previously been set by one of
     // the Set*() methods, which transcode to JPEG or PNG format.
     DCHECK(!image_path_.empty());
@@ -279,13 +338,25 @@ void UserImageManagerImpl::Job::SetToDefaultImage(int default_image_index) {
   DCHECK(default_user_image::IsValidIndex(default_image_index));
 
   image_index_ = default_image_index;
-  std::unique_ptr<user_manager::UserImage> user_image(
-      new user_manager::UserImage(
-          default_user_image::GetDefaultImage(image_index_)));
+  if (ash::features::IsAvatarsCloudMigrationEnabled()) {
+    // Fetch the default image from cloud before caching it.
+    image_url_ = default_user_image::GetDefaultImageUrl(image_index_);
+    user_image_loader::StartWithGURL(
+        image_url_, base::BindOnce(&Job::OnLoadImageDone,
+                                   weak_factory_.GetWeakPtr(), true));
+  } else {
+    gfx::ImageSkia default_image =
+        default_user_image::GetDefaultImageDeprecated(image_index_);
+    std::unique_ptr<user_manager::UserImage> user_image(
+        user_manager::UserImage::CreateAndEncode(
+            default_image, user_manager::UserImage::ChooseImageFormat(
+                               *default_image.bitmap())));
 
-  UpdateUser(std::move(user_image));
-  UpdateLocalState();
-  NotifyJobDone();
+    // Now that default images are served from the cloud, the current in-use
+    // user avatar image needs to be saved and cached in local state for
+    // offline usage.
+    UpdateUserAndSaveImage(std::move(user_image));
+  }
 }
 
 void UserImageManagerImpl::Job::SetToImage(
@@ -348,7 +419,6 @@ void UserImageManagerImpl::Job::UpdateUser(
   user_manager::User* user = parent_->GetUserAndModify();
   if (!user)
     return;
-
   if (!user_image->image().isNull()) {
     user->SetImage(std::move(user_image), image_index_);
   } else {
@@ -382,6 +452,13 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
     bool image_is_safe_format,
     scoped_refptr<base::RefCountedBytes> image_bytes,
     user_manager::UserImage::ImageFormat image_format) {
+  // Ignore if data stored or cached outside the user's cryptohome is to be
+  // treated as ephemeral.
+  if (parent_->user_manager_->IsUserNonCryptohomeDataEphemeral(account_id())) {
+    OnSaveImageDone(false);
+    return;
+  }
+
   // This can happen if a stub profile image is chosen (i.e. the profile
   // image hasn't been downloaded yet).
   if (!image_bytes) {
@@ -406,9 +483,10 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
 
   base::FilePath user_data_dir;
   base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
-  // TODO(crbug.com/670557): Use GetAccountIdKey() instead of user_id().
-  image_path_ = user_data_dir.AppendASCII(
-      user_id() + ChooseExtensionFromImageFormat(image_format));
+  // TODO(crbug.com/670557): Use GetAccountIdKey() instead of GetUserEmail().
+  image_path_ =
+      user_data_dir.AppendASCII(account_id().GetUserEmail() +
+                                ChooseExtensionFromImageFormat(image_format));
 
   // The old image file should be removed if the path is different. This
   // can happen if the user image format is changed from JPEG to PNG or
@@ -416,18 +494,10 @@ void UserImageManagerImpl::Job::SaveImageAndUpdateLocalState(
   base::FilePath old_image_path;
   // Because the user ID (i.e. email address) contains '.', the code here
   // cannot use the dots notation (path expantion) hence is verbose.
-  PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* prefs_images =
-      local_state->GetDictionary(kUserImageProperties);
-  if (prefs_images) {
-    const base::DictionaryValue* image_properties = nullptr;
-    prefs_images->GetDictionaryWithoutPathExpansion(user_id(),
-                                                    &image_properties);
-    if (image_properties) {
-      std::string value;
-      image_properties->GetString(kImagePathNodeName, &value);
-      old_image_path = base::FilePath::FromUTF8Unsafe(value);
-    }
+  if (const base::Value::Dict* image_properties = GetImageProperties()) {
+    const std::string* value = image_properties->FindString(kImagePathNodeName);
+    if (value)
+      old_image_path = base::FilePath::FromUTF8Unsafe(*value);
   }
 
   base::PostTaskAndReplyWithResult(
@@ -446,20 +516,29 @@ void UserImageManagerImpl::Job::OnSaveImageDone(bool success) {
 void UserImageManagerImpl::Job::UpdateLocalState() {
   // Ignore if data stored or cached outside the user's cryptohome is to be
   // treated as ephemeral.
-  if (parent_->user_manager_->IsUserNonCryptohomeDataEphemeral(
-          AccountId::FromUserEmail(user_id())))
+  if (parent_->user_manager_->IsUserNonCryptohomeDataEphemeral(account_id()))
     return;
 
-  std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue);
-  entry->Set(kImagePathNodeName,
-             std::make_unique<base::Value>(image_path_.value()));
-  entry->Set(kImageIndexNodeName, std::make_unique<base::Value>(image_index_));
+  PrefService* local_state = g_browser_process->local_state();
+
+  base::Value::Dict entry;
+  entry.Set(kImagePathNodeName, image_path_.value());
+  entry.Set(kImageIndexNodeName, image_index_);
+  entry.Set(kImageCacheUpdated, true);
   if (!image_url_.is_empty())
-    entry->Set(kImageURLNodeName,
-               std::make_unique<base::Value>(image_url_.spec()));
-  DictionaryPrefUpdate update(g_browser_process->local_state(),
-                              kUserImageProperties);
-  update->SetWithoutPathExpansion(user_id(), std::move(entry));
+    entry.Set(kImageURLNodeName, image_url_.spec());
+
+  const base::Value::Dict* existing_value =
+      local_state->GetDict(kUserImageProperties)
+          .FindDict(account_id().GetUserEmail());
+
+  if (existing_value && *existing_value == entry) {
+    return;
+  }
+
+  ScopedDictPrefUpdate update(local_state, kUserImageProperties);
+
+  update->Set(account_id().GetUserEmail(), std::move(entry));
 
   parent_->user_manager_->NotifyLocalStateChanged();
 }
@@ -469,9 +548,9 @@ void UserImageManagerImpl::Job::NotifyJobDone() {
 }
 
 UserImageManagerImpl::UserImageManagerImpl(
-    const std::string& user_id,
+    const AccountId& account_id,
     user_manager::UserManager* user_manager)
-    : UserImageManager(user_id),
+    : UserImageManager(account_id),
       user_manager_(user_manager),
       downloading_profile_image_(false),
       profile_image_requested_(false),
@@ -485,14 +564,12 @@ UserImageManagerImpl::~UserImageManagerImpl() {}
 
 void UserImageManagerImpl::LoadUserImage() {
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* prefs_images =
-      local_state->GetDictionary(kUserImageProperties);
-  if (!prefs_images)
-    return;
+  const base::Value::Dict& prefs_images =
+      local_state->GetDict(kUserImageProperties);
   user_manager::User* user = GetUserAndModify();
 
-  const base::DictionaryValue* image_properties = nullptr;
-  prefs_images->GetDictionaryWithoutPathExpansion(user_id(), &image_properties);
+  const base::Value::Dict* image_properties =
+      prefs_images.FindDict(account_id_.GetUserEmail());
 
   // If the user image for `user_id` is managed by policy and the policy-set
   // image is being loaded and persisted right now, let that job continue. It
@@ -505,26 +582,18 @@ void UserImageManagerImpl::LoadUserImage() {
     return;
   }
 
-  int image_index = user_manager::User::USER_IMAGE_INVALID;
-  image_properties->GetInteger(kImageIndexNodeName, &image_index);
-  if (default_user_image::IsValidIndex(image_index)) {
-    user->SetImage(std::make_unique<user_manager::UserImage>(
-                       default_user_image::GetDefaultImage(image_index)),
-                   image_index);
-    return;
-  }
-
-  if (image_index != user_manager::User::USER_IMAGE_EXTERNAL &&
-      image_index != user_manager::User::USER_IMAGE_PROFILE) {
+  int image_index = image_properties->FindInt(kImageIndexNodeName)
+                        .value_or(user_manager::User::USER_IMAGE_INVALID);
+  if (image_index == user_manager::User::USER_IMAGE_INVALID) {
     NOTREACHED();
     return;
   }
 
-  std::string image_url_string;
-  image_properties->GetString(kImageURLNodeName, &image_url_string);
-  GURL image_url(image_url_string);
-  std::string image_path;
-  image_properties->GetString(kImagePathNodeName, &image_path);
+  const std::string* image_url_string =
+      image_properties->FindString(kImageURLNodeName);
+  GURL image_url(image_url_string ? *image_url_string : std::string());
+  const std::string* image_path =
+      image_properties->FindString(kImagePathNodeName);
 
   user->SetImageURL(image_url);
   user->SetStubImage(
@@ -532,16 +601,18 @@ void UserImageManagerImpl::LoadUserImage() {
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LOGIN_DEFAULT_USER)),
       image_index, true);
-  DCHECK(!image_path.empty() ||
-         image_index == user_manager::User::USER_IMAGE_PROFILE);
-  if (image_path.empty()) {
+  DCHECK((image_path && !image_path->empty()) ||
+         image_index == user_manager::User::USER_IMAGE_PROFILE ||
+         default_user_image::IsValidIndex(image_index));
+  if (!default_user_image::IsValidIndex(image_index) &&
+      (!image_path || image_path->empty())) {
     // Return if the profile image is to be used but has not been downloaded
     // yet. The profile image will be downloaded after login.
     return;
   }
 
-  job_.reset(new Job(this));
-  job_->LoadImage(base::FilePath(image_path), image_index, image_url);
+  job_ = std::make_unique<Job>(this);
+  job_->LoadImage(base::FilePath(*image_path), image_index, image_url);
 }
 
 void UserImageManagerImpl::UserLoggedIn(bool user_is_new, bool user_is_local) {
@@ -559,9 +630,14 @@ void UserImageManagerImpl::UserLoggedIn(bool user_is_new, bool user_is_local) {
       DownloadProfileImage();
     }
   } else {
-    UMA_HISTOGRAM_EXACT_LINEAR("UserImage.LoggedIn",
-                               ImageIndexToHistogramIndex(user->image_index()),
-                               default_user_image::kHistogramImagesCount);
+    // Although UserImage.LoggedIn3 is an enumerated histogram, we intentionally
+    // use UmaHistogramExactLinear() to emit the metric rather than
+    // UmaHistogramEnumeration(). This is because the enums.xml values
+    // correspond to (a) special constants and (b) indexes of an array
+    // containing resource IDs.
+    base::UmaHistogramExactLinear(
+        "UserImage.LoggedIn3", ImageIndexToHistogramIndex(user->image_index()),
+        default_user_image::kHistogramImagesCount + 1);
   }
 
   user_image_sync_observer_.reset();
@@ -578,12 +654,12 @@ void UserImageManagerImpl::UserProfileCreated() {
         FROM_HERE,
         g_ignore_profile_data_download_delay_
             ? base::TimeDelta()
-            : base::TimeDelta::FromSeconds(kProfileDataDownloadDelaySec),
+            : base::Seconds(kProfileDataDownloadDelaySec),
         base::BindOnce(&UserImageManagerImpl::DownloadProfileData,
                        base::Unretained(this)));
     // Schedule periodic refreshes of the profile data.
     profile_download_periodic_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(kProfileRefreshIntervalSec),
+        FROM_HERE, base::Seconds(kProfileRefreshIntervalSec),
         base::BindRepeating(&UserImageManagerImpl::DownloadProfileData,
                             base::Unretained(this)));
   } else {
@@ -596,7 +672,7 @@ void UserImageManagerImpl::SaveUserDefaultImageIndex(int default_image_index) {
   is_random_image_set_ = false;
   if (IsUserImageManaged())
     return;
-  job_.reset(new Job(this));
+  job_ = std::make_unique<Job>(this);
   job_->SetToDefaultImage(default_image_index);
 }
 
@@ -604,7 +680,7 @@ void UserImageManagerImpl::SaveUserImage(
     std::unique_ptr<user_manager::UserImage> user_image) {
   if (IsUserImageManaged())
     return;
-  job_.reset(new Job(this));
+  job_ = std::make_unique<Job>(this);
   job_->SetToImage(user_manager::User::USER_IMAGE_EXTERNAL,
                    std::move(user_image));
 }
@@ -612,7 +688,7 @@ void UserImageManagerImpl::SaveUserImage(
 void UserImageManagerImpl::SaveUserImageFromFile(const base::FilePath& path) {
   if (IsUserImageManaged())
     return;
-  job_.reset(new Job(this));
+  job_ = std::make_unique<Job>(this);
   job_->SetToPath(path, user_manager::User::USER_IMAGE_EXTERNAL, GURL(), true);
 }
 
@@ -629,7 +705,7 @@ void UserImageManagerImpl::SaveUserImageFromProfileImage() {
         downloaded_profile_image_, user_manager::UserImage::ChooseImageFormat(
                                        *downloaded_profile_image_.bitmap()));
   }
-  job_.reset(new Job(this));
+  job_ = std::make_unique<Job>(this);
   job_->SetToImage(user_manager::User::USER_IMAGE_PROFILE,
                    std::move(user_image));
   // If no profile image has been downloaded yet, ensure that a download is
@@ -644,6 +720,8 @@ void UserImageManagerImpl::DeleteUserImage() {
 }
 
 void UserImageManagerImpl::DownloadProfileImage() {
+  if (g_skip_profile_download)
+    return;
   profile_image_requested_ = true;
   DownloadProfileData();
 }
@@ -661,6 +739,10 @@ void UserImageManagerImpl::Shutdown() {
   user_image_sync_observer_.reset();
 }
 
+bool UserImageManagerImpl::IsUserImageManaged() const {
+  return has_managed_image_;
+}
+
 void UserImageManagerImpl::OnExternalDataSet(const std::string& policy) {
   DCHECK_EQ(policy::key::kUserAvatarImage, policy);
   if (IsUserImageManaged())
@@ -670,10 +752,16 @@ void UserImageManagerImpl::OnExternalDataSet(const std::string& policy) {
   job_.reset();
 
   const user_manager::User* user = GetUser();
+  if (!user) {
+    return;
+  }
   // If the user image for the currently logged-in user became managed, stop the
   // sync observer so that the policy-set image does not get synced out.
-  if (user && user->is_logged_in())
+  if (user->is_logged_in())
     user_image_sync_observer_.reset();
+
+  user_manager_->NotifyUserImageIsEnterpriseManagedChanged(
+      *user, /*is_enterprise_managed=*/true);
 }
 
 void UserImageManagerImpl::OnExternalDataCleared(const std::string& policy) {
@@ -682,6 +770,12 @@ void UserImageManagerImpl::OnExternalDataCleared(const std::string& policy) {
     return;
 
   has_managed_image_ = false;
+
+  const auto* user = GetUser();
+  if (user) {
+    user_manager_->NotifyUserImageIsEnterpriseManagedChanged(
+        *user, /*is_enterprise_managed=*/false);
+  }
   SetInitialUserImage();
   TryToCreateImageSyncObserver();
 }
@@ -692,14 +786,24 @@ void UserImageManagerImpl::OnExternalDataFetched(
   DCHECK_EQ(policy::key::kUserAvatarImage, policy);
   DCHECK(IsUserImageManaged());
   if (data) {
-    job_.reset(new Job(this));
+    job_ = std::make_unique<Job>(this);
     job_->SetToImageData(std::move(data));
   }
+}
+
+void UserImageManagerImpl::SetDownloadedProfileImageForTesting(
+    const gfx::ImageSkia& image) {
+  downloaded_profile_image_ = image;
 }
 
 // static
 void UserImageManagerImpl::IgnoreProfileDataDownloadDelayForTesting() {
   g_ignore_profile_data_download_delay_ = true;
+}
+
+// static
+void UserImageManagerImpl::SkipProfileImageDownloadForTesting() {
+  g_skip_profile_download = true;
 }
 
 bool UserImageManagerImpl::NeedsProfilePicture() const {
@@ -711,13 +815,18 @@ int UserImageManagerImpl::GetDesiredImageSideLength() const {
 }
 
 signin::IdentityManager* UserImageManagerImpl::GetIdentityManager() {
+  const user_manager::User* user = GetUser();
+  DCHECK(user && user->is_profile_created());
   return IdentityManagerFactory::GetForProfile(
-      ProfileHelper::Get()->GetProfileByUserUnsafe(GetUser()));
+      ProfileHelper::Get()->GetProfileByUser(user));
 }
 
 network::mojom::URLLoaderFactory* UserImageManagerImpl::GetURLLoaderFactory() {
-  return content::BrowserContext::GetDefaultStoragePartition(
-             ProfileHelper::Get()->GetProfileByUserUnsafe(GetUser()))
+  const user_manager::User* user = GetUser();
+  DCHECK(user && user->is_profile_created());
+  return ProfileHelper::Get()
+      ->GetProfileByUser(user)
+      ->GetDefaultStoragePartition()
       ->GetURLLoaderFactoryForBrowserProcess()
       .get();
 }
@@ -734,7 +843,7 @@ void UserImageManagerImpl::OnProfileDownloadSuccess(
   DCHECK_EQ(downloader, profile_downloader.get());
 
   user_manager_->UpdateUserAccountData(
-      AccountId::FromUserEmail(user_id()),
+      account_id_,
       user_manager::UserManager::UserAccountData(
           downloader->GetProfileFullName(), downloader->GetProfileGivenName(),
           downloader->GetProfileLocale()));
@@ -784,17 +893,12 @@ void UserImageManagerImpl::OnProfileDownloadFailure(
   if (reason == ProfileDownloaderDelegate::NETWORK_ERROR) {
     // Retry download after a delay if a network error occurred.
     profile_download_one_shot_timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromSeconds(kProfileDataDownloadRetryIntervalSec),
+        FROM_HERE, base::Seconds(kProfileDataDownloadRetryIntervalSec),
         base::BindOnce(&UserImageManagerImpl::DownloadProfileData,
                        base::Unretained(this)));
   }
 
   user_manager_->NotifyUserProfileImageUpdateFailed(*GetUser());
-}
-
-bool UserImageManagerImpl::IsUserImageManaged() const {
-  return has_managed_image_;
 }
 
 void UserImageManagerImpl::SetInitialUserImage() {
@@ -836,26 +940,26 @@ void UserImageManagerImpl::DownloadProfileData() {
   }
 
   downloading_profile_image_ = NeedProfileImage();
-  profile_downloader_.reset(new ProfileDownloader(this));
+  profile_downloader_ = std::make_unique<ProfileDownloader>(this);
   profile_downloader_->Start();
 }
 
 void UserImageManagerImpl::DeleteUserImageAndLocalStateEntry(
     const char* prefs_dict_root) {
-  DictionaryPrefUpdate update(g_browser_process->local_state(),
+  ScopedDictPrefUpdate update(g_browser_process->local_state(),
                               prefs_dict_root);
-  const base::DictionaryValue* image_properties;
-  if (!update->GetDictionaryWithoutPathExpansion(user_id(), &image_properties))
+  const base::Value::Dict* image_properties =
+      update->FindDict(account_id_.GetUserEmail());
+  if (!image_properties)
     return;
 
-  std::string image_path;
-  image_properties->GetString(kImagePathNodeName, &image_path);
-  if (!image_path.empty()) {
+  const std::string* image_path =
+      image_properties->FindString(kImagePathNodeName);
+  if (image_path && !image_path->empty()) {
     background_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(),
-                                  base::FilePath(image_path)));
+        FROM_HERE, base::GetDeleteFileCallback(base::FilePath(*image_path)));
   }
-  update->RemoveKey(user_id());
+  update->Remove(account_id_.GetUserEmail());
 }
 
 void UserImageManagerImpl::OnJobChangedUserImage() {
@@ -878,16 +982,16 @@ void UserImageManagerImpl::TryToCreateImageSyncObserver() {
   // must not be started so that the policy-set image does not get synced out.
   if (!user_image_sync_observer_ && user && user->CanSyncImage() &&
       !IsUserImageManaged()) {
-    user_image_sync_observer_.reset(new UserImageSyncObserver(user));
+    user_image_sync_observer_ = std::make_unique<UserImageSyncObserver>(user);
   }
 }
 
 const user_manager::User* UserImageManagerImpl::GetUser() const {
-  return user_manager_->FindUser(AccountId::FromUserEmail(user_id()));
+  return user_manager_->FindUser(account_id_);
 }
 
 user_manager::User* UserImageManagerImpl::GetUserAndModify() const {
-  return user_manager_->FindUserAndModify(AccountId::FromUserEmail(user_id()));
+  return user_manager_->FindUserAndModify(account_id_);
 }
 
 bool UserImageManagerImpl::IsUserLoggedInAndHasGaiaAccount() const {

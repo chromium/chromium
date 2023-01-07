@@ -1,15 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/script/js_module_script.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "v8/include/v8.h"
 
@@ -47,7 +49,7 @@ JSModuleScript* JSModuleScript::Create(
   ModuleRecordProduceCacheData* produce_cache_data = nullptr;
 
   v8::Local<v8::Module> result = ModuleRecord::Compile(
-      isolate, params, options, start_position, exception_state,
+      script_state, params, options, start_position, exception_state,
       modulator->GetV8CacheOptions(), &produce_cache_data);
 
   // CreateInternal processes Steps 4 and 8-10.
@@ -76,7 +78,7 @@ JSModuleScript* JSModuleScript::Create(
   // <spec step="9">For each string requested of
   // result.[[RequestedModules]]:</spec>
   for (const auto& requested :
-       modulator->ModuleRequestsFromModuleRecord(result)) {
+       ModuleRecord::ModuleRequests(script_state, result)) {
     // <spec step="9.1">Let url be the result of resolving a module specifier
     // given script's base URL and requested.</spec>
     //
@@ -164,9 +166,9 @@ JSModuleScript::JSModuleScript(Modulator* settings_object,
                    record,
                    source_url,
                    base_url,
-                   fetch_options),
+                   fetch_options,
+                   start_position),
       source_text_length_(source_text_length),
-      start_position_(start_position),
       produce_cache_data_(produce_cache_data) {}
 
 void JSModuleScript::ProduceCache() {
@@ -177,8 +179,11 @@ void JSModuleScript::ProduceCache() {
   v8::Isolate* isolate = script_state->GetIsolate();
   ScriptState::Scope scope(script_state);
 
-  V8CodeCache::ProduceCache(isolate, produce_cache_data_, source_text_length_,
-                            SourceURL(), StartPosition());
+  ExecutionContext* execution_context =
+      ExecutionContext::From(isolate->GetCurrentContext());
+  V8CodeCache::ProduceCache(
+      isolate, ExecutionContext::GetCodeCacheHostFromContext(execution_context),
+      produce_cache_data_, source_text_length_, SourceUrl(), StartPosition());
 
   produce_cache_data_ = nullptr;
 }

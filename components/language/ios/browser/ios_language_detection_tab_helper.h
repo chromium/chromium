@@ -1,12 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_LANUGUAGE_IOS_BROWSER_IOS_LANGUAGE_DETECTION_TAB_HELPER_H_
-#define COMPONENTS_LANUGUAGE_IOS_BROWSER_IOS_LANGUAGE_DETECTION_TAB_HELPER_H_
+#ifndef COMPONENTS_LANGUAGE_IOS_BROWSER_IOS_LANGUAGE_DETECTION_TAB_HELPER_H_
+#define COMPONENTS_LANGUAGE_IOS_BROWSER_IOS_LANGUAGE_DETECTION_TAB_HELPER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -35,35 +34,31 @@ class IOSLanguageDetectionTabHelper
     virtual ~Observer() {}
   };
 
+  IOSLanguageDetectionTabHelper(const IOSLanguageDetectionTabHelper&) = delete;
+  IOSLanguageDetectionTabHelper& operator=(
+      const IOSLanguageDetectionTabHelper&) = delete;
+
   ~IOSLanguageDetectionTabHelper() override;
 
   // Adds or Removes observers.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  // Attach a new helper to the given WebState. We cannot use the implementation
-  // from WebStateUserData as we are injecting the histogram and translate
-  // callback differently on iOS and iOS WebView.
-  static void CreateForWebState(web::WebState* web_state,
-                                UrlLanguageHistogram* url_language_histogram);
-
   // Called on page language detection.
   void OnLanguageDetermined(const translate::LanguageDetectionDetails& details);
 
  private:
-  base::ObserverList<Observer, true>::Unchecked observer_list_;
-
-  IOSLanguageDetectionTabHelper(
-      UrlLanguageHistogram* const url_language_histogram);
   friend class web::WebStateUserData<IOSLanguageDetectionTabHelper>;
 
+  IOSLanguageDetectionTabHelper(web::WebState* web_state,
+                                UrlLanguageHistogram* url_language_histogram);
+
+  base::ObserverList<Observer, true>::Unchecked observer_list_;
   UrlLanguageHistogram* const url_language_histogram_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(IOSLanguageDetectionTabHelper);
 };
 
 }  // namespace language
 
-#endif  // COMPONENTS_LANUGUAGE_IOS_BROWSER_IOS_LANGUAGE_DETECTION_TAB_HELPER_H_
+#endif  // COMPONENTS_LANGUAGE_IOS_BROWSER_IOS_LANGUAGE_DETECTION_TAB_HELPER_H_

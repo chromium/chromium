@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/api/system_info/system_info_provider.h"
 #include "extensions/common/api/system_storage.h"
@@ -19,6 +18,9 @@ typedef std::vector<api::system_storage::StorageUnitInfo> StorageUnitInfoList;
 
 class StorageInfoProvider : public SystemInfoProvider {
  public:
+  StorageInfoProvider(const StorageInfoProvider&) = delete;
+  StorageInfoProvider& operator=(const StorageInfoProvider&) = delete;
+
   // Get the single shared instance of StorageInfoProvider.
   static StorageInfoProvider* Get();
 
@@ -58,8 +60,6 @@ class StorageInfoProvider : public SystemInfoProvider {
 
   static base::LazyInstance<
       scoped_refptr<StorageInfoProvider>>::DestructorAtExit provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(StorageInfoProvider);
 };
 
 }  // namespace extensions

@@ -1,0 +1,13 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.external_mojo.mojom;
+
+// Helper interface to bind to registered Mojo services in unittests where
+// clients clone the FakeExternalConnector instance before using it.
+interface TestExternalConnector {
+  // Directs the call to FakeExternalConnector::BindInterface
+  BindInterfaceInternal(string service_name, string interface_name,
+                        handle<message_pipe> interface_pipe);
+};

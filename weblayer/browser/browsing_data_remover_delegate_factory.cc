@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/browser/browsing_data_remover_delegate_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "weblayer/browser/browsing_data_remover_delegate.h"
 

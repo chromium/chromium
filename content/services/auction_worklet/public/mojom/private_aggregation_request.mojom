@@ -1,0 +1,16 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module auction_worklet.mojom;
+
+import "content/common/aggregatable_report.mojom";
+import "content/common/private_aggregation_host.mojom";
+
+// Represents a request made to the Private Aggregation API (e.g. via
+// `privateAggregation.sendHistogramReport()`).
+struct PrivateAggregationRequest {
+  content.mojom.AggregatableReportHistogramContribution contribution;
+  content.mojom.AggregationServiceMode aggregation_mode;
+  content.mojom.DebugModeDetails debug_mode_details;
+};

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "components/digital_asset_links/digital_asset_links_handler.h"
-#include "components/embedder_support/android/browser_context/browser_context_handle.h"
 #include "components/installedapp/android/jni_headers/InstalledAppProviderImpl_jni.h"
+#include "content/public/browser/android/browser_context_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 
@@ -35,7 +35,7 @@ void JNI_InstalledAppProviderImpl_CheckDigitalAssetLinksRelationshipForWebApk(
     const base::android::JavaParamRef<jstring>& jmanifestUrl,
     const base::android::JavaParamRef<jobject>& jcallback) {
   content::BrowserContext* browser_context =
-      browser_context::BrowserContextFromJavaHandle(jhandle);
+      content::BrowserContextFromJavaHandle(jhandle);
 
   std::string web_domain = ConvertJavaStringToUTF8(env, jwebDomain);
   std::string manifest_url = ConvertJavaStringToUTF8(env, jmanifestUrl);
@@ -45,7 +45,7 @@ void JNI_InstalledAppProviderImpl_CheckDigitalAssetLinksRelationshipForWebApk(
 
   auto handler =
       std::make_unique<digital_asset_links::DigitalAssetLinksHandler>(
-          content::BrowserContext::GetDefaultStoragePartition(browser_context)
+          browser_context->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess());
   auto* handler_ptr = handler.get();
 

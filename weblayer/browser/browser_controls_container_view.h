@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define WEBLAYER_BROWSER_BROWSER_CONTROLS_CONTAINER_VIEW_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -32,6 +32,11 @@ class BrowserControlsContainerView : public content::WebContentsObserver {
                                    java_browser_controls_container_view,
                                ContentViewRenderView* content_view_render_view,
                                bool is_top);
+
+  BrowserControlsContainerView(const BrowserControlsContainerView&) = delete;
+  BrowserControlsContainerView& operator=(const BrowserControlsContainerView&) =
+      delete;
+
   ~BrowserControlsContainerView() override;
 
   // Height needed to display the control.
@@ -89,15 +94,13 @@ class BrowserControlsContainerView : public content::WebContentsObserver {
 
   base::android::ScopedJavaGlobalRef<jobject>
       java_browser_controls_container_view_;
-  ContentViewRenderView* content_view_render_view_;
+  raw_ptr<ContentViewRenderView> content_view_render_view_;
   const bool is_top_;
   int controls_resource_id_ = -1;
 
   // Layer containing showing the image for the controls. This is a sibling of
   // the WebContents layer.
   scoped_refptr<cc::UIResourceLayer> controls_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserControlsContainerView);
 };
 
 }  // namespace weblayer

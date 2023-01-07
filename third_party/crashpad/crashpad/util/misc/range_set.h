@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "util/misc/address_types.h"
 
 namespace crashpad {
@@ -26,6 +25,10 @@ namespace crashpad {
 class RangeSet {
  public:
   RangeSet();
+
+  RangeSet(const RangeSet&) = delete;
+  RangeSet& operator=(const RangeSet&) = delete;
+
   ~RangeSet();
 
   //! \brief Inserts a range into the set.
@@ -42,8 +45,6 @@ class RangeSet {
   // the range. Overlapping ranges are merged on insertion. Adjacent ranges may
   // be merged.
   std::map<VMAddress, VMAddress> ranges_;
-
-  DISALLOW_COPY_AND_ASSIGN(RangeSet);
 };
 
 }  // namespace crashpad

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,14 @@
 
 #include "base/containers/queue.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/capture/video/linux/scoped_v4l2_device_fd.h"
 #include "media/capture/video/linux/v4l2_capture_device_impl.h"
 #include "media/capture/video/video_capture_device.h"
 
-#if defined(OS_OPENBSD)
+#if BUILDFLAG(IS_OPENBSD)
 #include <sys/videoio.h>
 #else
 #include <linux/videodev2.h>
@@ -53,6 +54,10 @@ class CAPTURE_EXPORT V4L2CaptureDelegate final {
       const scoped_refptr<base::SingleThreadTaskRunner>& v4l2_task_runner,
       int power_line_frequency,
       int rotation);
+
+  V4L2CaptureDelegate(const V4L2CaptureDelegate&) = delete;
+  V4L2CaptureDelegate& operator=(const V4L2CaptureDelegate&) = delete;
+
   ~V4L2CaptureDelegate();
 
   // Forward-to versions of VideoCaptureDevice virtual methods.
@@ -108,7 +113,7 @@ class CAPTURE_EXPORT V4L2CaptureDelegate final {
                      const base::Location& from_here,
                      const std::string& reason);
 
-  V4L2CaptureDevice* const v4l2_;
+  const raw_ptr<V4L2CaptureDevice> v4l2_;
   const scoped_refptr<base::SingleThreadTaskRunner> v4l2_task_runner_;
   const VideoCaptureDeviceDescriptor device_descriptor_;
   const int power_line_frequency_;
@@ -133,8 +138,6 @@ class CAPTURE_EXPORT V4L2CaptureDelegate final {
   int rotation_;
 
   base::WeakPtrFactory<V4L2CaptureDelegate> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2CaptureDelegate);
 };
 
 }  // namespace media

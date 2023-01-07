@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,16 +11,22 @@ assert(is_android)
 cast_shell_android_manifest =
     "$root_gen_dir/cast_shell_manifest/AndroidManifest.xml"
 
-manifest_variables = [
-  "is_android_things=$is_android_things",
-  "is_android_things_non_public=$is_android_things_non_public",
-]
-
 jinja_template("cast_shell_manifest") {
   input = "apk/AndroidManifest.xml.jinja2"
   output = cast_shell_android_manifest
+}
 
-  variables = manifest_variables
+cast_browser_android_manifest =
+    "$root_gen_dir/cast_browser_manifest/AndroidManifest.xml"
+
+jinja_template("cast_browser_manifest") {
+  input = "apk/CastBrowserAndroidManifest.xml.jinja2"
+  output = cast_browser_android_manifest
+
+  variables = [
+    "cast_build_architecture=$target_cpu",
+    "cast_build_incremental=$cast_build_incremental",
+  ]
 }
 
 java_cpp_template("cast_shell_build_config_gen") {
@@ -29,10 +35,6 @@ java_cpp_template("cast_shell_build_config_gen") {
   defines = []
   if (display_web_contents_in_service) {
     defines += [ "_DISPLAY_WEB_CONTENTS_IN_SERVICE" ]
-  }
-
-  if (enable_cast_fragment) {
-    defines += [ "_ENABLE_CAST_FRAGMENT" ]
   }
 
   if (use_remote_service_logcat) {
@@ -50,21 +52,30 @@ common_resources = [
   "apk/res-values/values/strings.xml",
 ]
 
+extra_resources = [
+  "apk/res/drawable-hdpi/ic_notification_cast.png",
+  "apk/res/drawable-hdpi/ic_settings_cast.png",
+  "apk/res/drawable-mdpi/ic_notification_cast.png",
+  "apk/res/drawable-mdpi/ic_settings_cast.png",
+  "apk/res/drawable-xhdpi/ic_notification_cast.png",
+  "apk/res/drawable-xhdpi/ic_settings_cast.png",
+  "apk/res/drawable-xxhdpi/ic_notification_cast.png",
+  "apk/res/drawable-xxhdpi/ic_settings_cast.png",
+  "apk/res/drawable-xxxhdpi/ic_notification_cast.png",
+  "apk/res/drawable-xxxhdpi/ic_settings_cast.png",
+  "apk/res/layout/cast_web_contents_activity.xml",
+]
+
 android_resources("cast_shell_android_resources") {
   android_manifest = cast_shell_android_manifest
   android_manifest_dep = ":cast_shell_manifest"
-  sources = common_resources + [
-              "apk/res/drawable-hdpi/ic_settings_cast.png",
-              "apk/res/drawable-mdpi/ic_settings_cast.png",
-              "apk/res/drawable-xhdpi/ic_settings_cast.png",
-              "apk/res/drawable-xxhdpi/ic_settings_cast.png",
-              "apk/res/drawable-xxxhdpi/ic_settings_cast.png",
-              "apk/res/layout/cast_web_contents_activity.xml",
-              "apk/res/mipmap-hdpi/app_icon.png",
-              "apk/res/mipmap-mdpi/app_icon.png",
-              "apk/res/mipmap-xhdpi/app_icon.png",
-              "apk/res/mipmap-xxhdpi/app_icon.png",
-            ]
+  sources = common_resources + extra_resources
+}
+
+android_resources("cast_browser_android_resources") {
+  android_manifest = cast_browser_android_manifest
+  android_manifest_dep = ":cast_browser_manifest"
+  sources = extra_resources
 }
 
 android_resources("cast_shell_android_stub_resources") {
@@ -73,27 +84,19 @@ android_resources("cast_shell_android_stub_resources") {
   sources = common_resources
 }
 
-android_library("cast_audio_manager_java") {
+android_library("cast_command_line_helper_java") {
   java_src_dir = "//chromecast/browser/android/apk/src"
-
-  alternative_android_sdk_dep =
-      "//third_party/android_sdk:public_framework_system_java"
-
   sources = [
-    "$java_src_dir/org/chromium/chromecast/shell/CastAudioFocusRequest.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastAudioManager.java",
+    "$java_src_dir/org/chromium/chromecast/shell/CastCommandLineHelper.java",
   ]
-  deps = [
-    "//base:base_java",
-    "//chromecast/base:base_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-  ]
+  deps = [ "//base:base_java" ]
 }
 
 android_library("cast_intents_java") {
   java_src_dir = "//chromecast/browser/android/apk/src"
   sources = [ "$java_src_dir/org/chromium/chromecast/shell/CastIntents.java" ]
 }
+
 android_aidl("logs_provider_aidl") {
   java_src_dir = "//chromecast/browser/android/apk/src"
   interface_file =
@@ -107,130 +110,127 @@ android_library("reactive_android_java") {
   java_src_dir = "//chromecast/browser/android/apk/src"
   sources = [
     "$java_src_dir/org/chromium/chromecast/shell/AsyncTaskRunner.java",
+    "$java_src_dir/org/chromium/chromecast/shell/HandlerScheduler.java",
     "$java_src_dir/org/chromium/chromecast/shell/LocalBroadcastReceiverScope.java",
   ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//chromecast/base:base_java",
     "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
   ]
 }
 
-generate_product_config_srcjar("chromecast_product_config") {
-  java_package = "org.chromium.chromecast.shell"
-}
+common_android_library_deps = [
+  ":cast_command_line_helper_java",
+  ":cast_intents_java",
+  ":reactive_android_java",
+  "//base:base_java",
+  "//base:jni_java",
+  "//build/android:build_java",
+  "//chromecast/base:base_java",
+  "//chromecast/media/cma/backend/android:audio_track_java",
+  "//components/crash/android:java",
+  "//components/embedder_support/android:content_view_java",
+  "//components/embedder_support/android:view_java",
+  "//components/minidump_uploader:minidump_uploader_java",
+  "//components/module_installer/android:module_installer_java",
+  "//components/module_installer/android:module_interface_java",
+  "//content/public/android:content_java",
+  "//media/base/android:media_java",
+  "//net/android:net_java",
+  "//third_party/androidx:androidx_annotation_annotation_java",
+  "//third_party/androidx:androidx_core_core_java",
 
-android_library("resume_intents_java") {
-  java_src_dir = "//chromecast/browser/android/apk/src"
-  sources = [ "$java_src_dir/org/chromium/chromecast/shell/ResumeIntents.java" ]
-  deps = [ "//chromecast/base:base_java" ]
-}
+  # TODO(slan): We may need to pass this in as a parameter.
+  "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
+  "//third_party/androidx:androidx_slice_slice_builders_java",
+
+  # Used internally for Settings UI.
+  "//third_party/androidx:androidx_slice_slice_core_java",
+  "//ui/android:ui_java",
+]
+
+common_java_src_dir = "//chromecast/browser/android/apk/src"
+common_java_sources = [
+  "$common_java_src_dir/org/chromium/chromecast/shell/AndroidAppLogcatProvider.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowser.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserHelper.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserImpl.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastBrowserService.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastCrashHandler.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastCrashUploader.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastCrashUploaderFactory.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastMetricsHelper.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsActivity.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsComponent.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsIntentUtils.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsScopes.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsService.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/CastWebContentsSurfaceHelper.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/ElidedLogcatProvider.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/ExternalServiceDeviceLogcatProvider.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/LogcatElision.java",
+  "$common_java_src_dir/org/chromium/chromecast/shell/WebContentsRegistry.java",
+]
 
 android_library("cast_shell_java") {
-  java_src_dir = "//chromecast/browser/android/apk/src"
-  sources = [
-    "$java_src_dir/org/chromium/chromecast/shell/AndroidAppLogcatProvider.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastApplication.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastBrowserHelper.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastCommandLineHelper.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastCrashHandler.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastCrashUploader.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastCrashUploaderFactory.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastMetricsHelper.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastSerialGenerator.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastSysInfoAndroid.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsActivity.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsComponent.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsFragment.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsIntentUtils.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsScopes.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsService.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsSurfaceHelper.java",
-    "$java_src_dir/org/chromium/chromecast/shell/CastWebContentsView.java",
-    "$java_src_dir/org/chromium/chromecast/shell/ElidedLogcatProvider.java",
-    "$java_src_dir/org/chromium/chromecast/shell/ExternalServiceDeviceLogcatProvider.java",
-    "$java_src_dir/org/chromium/chromecast/shell/LogcatElision.java",
-    "$java_src_dir/org/chromium/chromecast/shell/WebContentsRegistry.java",
-  ]
+  sources = common_java_sources
 
   resources_package = "org.chromium.chromecast.shell"
   srcjar_deps = [
     ":cast_shell_build_config_gen",
-    ":chromecast_product_config",
     ":logs_provider_aidl",
     "//chromecast/browser:java_enums",
   ]
 
   jar_excluded_patterns = [ "*/ProductConfig.class" ]
 
-  deps = [
-    ":cast_audio_manager_java",
-    ":cast_intents_java",
-    ":cast_shell_android_resources",
-    ":cast_shell_manifest",
-    ":reactive_android_java",
-    ":resume_intents_java",
-    "//base:base_java",
-    "//chromecast/base:base_java",
-    "//chromecast/media/cma/backend/android:audio_track_java",
-    "//components/crash/android:java",
-    "//components/embedder_support/android:content_view_java",
-    "//components/embedder_support/android:view_java",
-    "//components/minidump_uploader:minidump_uploader_java",
-    "//content/public/android:content_java",
-    "//media/base/android:media_java",
-    "//net/android:net_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_core_core_java",
-
-    # TODO(slan): We may need to pass this in as a parameter.
-    "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
-    "//third_party/androidx:androidx_slice_slice_builders_java",
-
-    # Used internally for Settings UI.
-    "//third_party/androidx:androidx_slice_slice_core_java",
-    "//ui/android:ui_java",
+  deps = common_android_library_deps + [
+           ":cast_shell_android_resources",
+           ":cast_shell_manifest",
+         ]
+  annotation_processor_deps = [
+    "//base/android/jni_generator:jni_processor",
+    "//components/module_installer/android:module_interface_processor",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-
-  if (is_android_things_non_public) {
-    deps += [ ":cast_shell_android_things_sys_info_java" ]
-    if (enable_assistant) {
-      deps += [ "//chromecast/internal/assistant/ui:boot_parameters_java" ]
-    }
-  } else if (is_android_appliance) {
-    deps += [ "//chromecast/internal/assistant/ui:boot_parameters_java" ]
-  }
 }
 
-if (is_android_things_non_public) {
-  android_library("cast_shell_android_things_sys_info_java") {
-    sources = [ "//chromecast/browser/android/apk/src/org/chromium/chromecast/shell/CastSysInfoAndroidThings.java" ]
-    deps = [
-      "//base:base_java",
-      "//chromecast/internal/android/prebuilt/things:support_lib_java",
-    ]
-  }
+android_library("cast_browser_java") {
+  sources = common_java_sources
 
-  generate_jni("cast_shell_android_things_sys_info_jni_headers") {
-    sources = [ "//chromecast/browser/android/apk/src/org/chromium/chromecast/shell/CastSysInfoAndroidThings.java" ]
-    deps = [ "//chromecast/internal/android/prebuilt/things:support_lib_java" ]
-  }
+  resources_package = "org.chromium.chromecast.shell"
+  srcjar_deps = [
+    ":cast_shell_build_config_gen",
+    ":logs_provider_aidl",
+    "//chromecast/browser:java_enums",
+  ]
+
+  jar_excluded_patterns = [ "*/ProductConfig.class" ]
+
+  deps = common_android_library_deps + [
+           ":cast_browser_android_resources",
+           ":cast_browser_manifest",
+         ]
+  annotation_processor_deps = [
+    "//base/android/jni_generator:jni_processor",
+    "//components/module_installer/android:module_interface_processor",
+  ]
 }
 
-junit_binary("cast_shell_junit_tests") {
+robolectric_binary("cast_shell_junit_tests") {
   sources = [
     "junit/src/org/chromium/chromecast/shell/AsyncTaskRunnerTest.java",
-    "junit/src/org/chromium/chromecast/shell/CastAudioFocusRequestTest.java",
-    "junit/src/org/chromium/chromecast/shell/CastAudioManagerTest.java",
-    "junit/src/org/chromium/chromecast/shell/CastCommandLineHelperTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsActivityTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsComponentTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsIntentUtilsTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsServiceTest.java",
     "junit/src/org/chromium/chromecast/shell/CastWebContentsSurfaceHelperTest.java",
     "junit/src/org/chromium/chromecast/shell/ElidedLogcatProviderUnitTest.java",
+    "junit/src/org/chromium/chromecast/shell/HandlerSchedulerTest.java",
     "junit/src/org/chromium/chromecast/shell/LocalBroadcastReceiverScopeTest.java",
     "junit/src/org/chromium/chromecast/shell/LogcatElisionUnitTest.java",
   ]
@@ -238,16 +238,18 @@ junit_binary("cast_shell_junit_tests") {
   srcjar_deps = [ ":cast_shell_build_config_gen" ]
 
   deps = [
-    ":cast_audio_manager_java",
     ":cast_intents_java",
     ":cast_shell_java",
     ":reactive_android_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//chromecast/base:base_java",
     "//chromecast/base:cast_base_test_utils_java",
     "//content/public/android:content_java",
+    "//testing/android/junit:junit_test_support",
     "//third_party/androidx:androidx_localbroadcastmanager_localbroadcastmanager_java",
     "//third_party/hamcrest:hamcrest_java",
   ]

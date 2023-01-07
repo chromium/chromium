@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,15 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/task/post_task.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_switcher/alternative_browser_driver.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service_factory.h"
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
-#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/navigation_interception/intercept_navigation_throttle.h"
-#include "components/navigation_interception/navigation_params.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -29,9 +28,12 @@ namespace browser_switcher {
 namespace {
 
 // Open 'chrome://browser-switch/?url=...' in the current tab.
-void OpenBrowserSwitchPage(content::WebContents* web_contents,
+void OpenBrowserSwitchPage(base::WeakPtr<content::WebContents> web_contents,
                            const GURL& url,
                            ui::PageTransition transition_type) {
+  if (!web_contents)
+    return;
+
   GURL about_url(chrome::kChromeUIBrowserSwitchURL);
   about_url = net::AppendQueryParameter(about_url, "url", url.spec());
   content::OpenURLParams params(about_url, content::Referrer(),
@@ -41,14 +43,16 @@ void OpenBrowserSwitchPage(content::WebContents* web_contents,
 }
 
 bool MaybeLaunchAlternativeBrowser(
-    content::WebContents* web_contents,
-    const navigation_interception::NavigationParams& params) {
+    content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   BrowserSwitcherService* service =
       BrowserSwitcherServiceFactory::GetForBrowserContext(
-          web_contents->GetBrowserContext());
-  const GURL& url = params.url();
+          navigation_handle->GetWebContents()->GetBrowserContext());
+  if (!service)
+    return false;
+
+  const GURL& url = navigation_handle->GetURL();
   bool should_switch = service->sitelist()->ShouldSwitch(url);
 
   if (!should_switch)
@@ -57,14 +61,14 @@ bool MaybeLaunchAlternativeBrowser(
   // Redirect top-level navigations only. This excludes iframes and webviews
   // in particular. Since we can only navigate a guest after attaching to the
   // outer WebContents, this check works for both guests and portals.
-  if (web_contents->GetOuterWebContents())
+  if (navigation_handle->GetWebContents()->GetOuterWebContents())
     return false;
 
   // If no-state prefetching, don't launch the alternative browser but abort the
   // navigation.
   prerender::NoStatePrefetchContents* no_state_prefetch_contents =
       prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
-          web_contents);
+          navigation_handle->GetWebContents());
   if (no_state_prefetch_contents) {
     no_state_prefetch_contents->Destroy(prerender::FINAL_STATUS_BROWSER_SWITCH);
     return true;
@@ -72,8 +76,9 @@ bool MaybeLaunchAlternativeBrowser(
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
-      base::BindOnce(&OpenBrowserSwitchPage, base::Unretained(web_contents),
-                     url, params.transition_type()));
+      base::BindOnce(&OpenBrowserSwitchPage,
+                     navigation_handle->GetWebContents()->GetWeakPtr(), url,
+                     navigation_handle->GetPageTransition()));
   return true;
 }
 
@@ -87,11 +92,12 @@ BrowserSwitcherNavigationThrottle::MaybeCreateThrottleFor(
 
   content::BrowserContext* browser_context =
       navigation->GetWebContents()->GetBrowserContext();
+  Profile* profile = Profile::FromBrowserContext(browser_context);
 
-  if (browser_context->IsOffTheRecord())
+  if (!profile->IsRegularProfile())
     return nullptr;
 
-  if (!navigation->IsInMainFrame())
+  if (!navigation->IsInPrimaryMainFrame())
     return nullptr;
 
   return std::make_unique<navigation_interception::InterceptNavigationThrottle>(

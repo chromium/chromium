@@ -1,16 +1,28 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/ambient/ambient_photo_cache.h"
 
+#include <fstream>
+#include <iostream>
+
+#include "ash/ambient/ambient_access_token_controller.h"
 #include "ash/ambient/ambient_constants.h"
-#include "base/callback_forward.h"
+#include "ash/ambient/test/ambient_ash_test_helper.h"
+#include "ash/ambient/test/test_ambient_client.h"
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
+#include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -28,20 +40,43 @@ base::FilePath GetTestPath() {
 
 class AmbientPhotoCacheTest : public testing::Test {
  public:
+  AmbientPhotoCacheTest() = default;
+
   void SetUp() override {
+    ambient_ash_test_helper_ = std::make_unique<AmbientAshTestHelper>();
+    access_token_controller_ = std::make_unique<AmbientAccessTokenController>();
+
     auto test_path = GetTestPath();
     base::DeletePathRecursively(test_path);
-    photo_cache_ = AmbientPhotoCache::Create(test_path);
+    photo_cache_ = AmbientPhotoCache::Create(
+        test_path, ambient_ash_test_helper_->ambient_client(),
+        *access_token_controller_);
   }
 
   void TearDown() override { base::DeletePathRecursively(GetTestPath()); }
 
   AmbientPhotoCache* photo_cache() { return photo_cache_.get(); }
 
- protected:
-  base::test::TaskEnvironment task_environment_;
+  network::TestURLLoaderFactory& test_url_loader_factory() {
+    return ambient_ash_test_helper_->ambient_client().test_url_loader_factory();
+  }
+
+  bool IsAccessTokenRequestPending() {
+    return ambient_ash_test_helper_->ambient_client()
+        .IsAccessTokenRequestPending();
+  }
+
+  void IssueAccessToken() {
+    ambient_ash_test_helper_->ambient_client().IssueAccessToken(
+        /*is_empty=*/false);
+  }
+
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
  private:
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<AmbientAshTestHelper> ambient_ash_test_helper_;
+  std::unique_ptr<AmbientAccessTokenController> access_token_controller_;
   std::unique_ptr<AmbientPhotoCache> photo_cache_;
 };
 
@@ -50,68 +85,43 @@ TEST_F(AmbientPhotoCacheTest, ReadsBackWrittenFiles) {
   std::string image("image");
   std::string details("details");
   std::string related_image("related image");
+  std::string related_details("related details");
+  bool is_portrait = true;
 
   {
+    ambient::PhotoCacheEntry cache;
+    cache.mutable_primary_photo()->set_image(image);
+    cache.mutable_primary_photo()->set_details(details);
+    cache.mutable_primary_photo()->set_is_portrait(is_portrait);
+    cache.mutable_related_photo()->set_image(related_image);
+    cache.mutable_related_photo()->set_details(related_details);
+    cache.mutable_related_photo()->set_is_portrait(is_portrait);
+
     base::RunLoop loop;
-    photo_cache()->WriteFiles(cache_index, &image, &details, &related_image,
-                              loop.QuitClosure());
+    photo_cache()->WritePhotoCache(cache_index, cache, loop.QuitClosure());
     loop.Run();
   }
 
   {
     base::RunLoop loop;
     // Read the files back using photo cache.
-    photo_cache()->ReadFiles(
+    ambient::PhotoCacheEntry cache_read;
+    photo_cache()->ReadPhotoCache(
         cache_index,
-        base::BindOnce(
-            [](base::OnceClosure done, PhotoCacheEntry cache_read) {
-              EXPECT_EQ(*cache_read.image, "image");
-              EXPECT_EQ(*cache_read.details, "details");
-              EXPECT_EQ(*cache_read.related_image, "related image");
-              std::move(done).Run();
-            },
-            loop.QuitClosure()));
+        base::BindLambdaForTesting(
+            [&cache_read, &loop](ambient::PhotoCacheEntry cache_entry_in) {
+              cache_read = std::move(cache_entry_in);
+              loop.Quit();
+            }));
     loop.Run();
+
+    EXPECT_EQ(cache_read.primary_photo().image(), "image");
+    EXPECT_EQ(cache_read.primary_photo().details(), "details");
+    EXPECT_TRUE(cache_read.primary_photo().is_portrait());
+    EXPECT_EQ(cache_read.related_photo().image(), "related image");
+    EXPECT_EQ(cache_read.related_photo().details(), "related details");
+    EXPECT_TRUE(cache_read.related_photo().is_portrait());
   }
-}
-
-TEST_F(AmbientPhotoCacheTest, WritesFileToDisk) {
-  base::FilePath test_path = GetTestPath();
-
-  int cache_index = 5;
-  std::string image("image 5");
-  std::string details("details 5");
-  std::string related_image("related image 5");
-
-  // Make sure files are not on disk.
-  EXPECT_FALSE(base::PathExists(test_path.Append(FILE_PATH_LITERAL("5.img"))));
-  EXPECT_FALSE(base::PathExists(test_path.Append(FILE_PATH_LITERAL("5.txt"))));
-  EXPECT_FALSE(
-      base::PathExists(test_path.Append(FILE_PATH_LITERAL("5_r.img"))));
-
-  // Write the data to the cache.
-  {
-    base::RunLoop loop;
-    photo_cache()->WriteFiles(cache_index, &image, &details, &related_image,
-                              loop.QuitClosure());
-    loop.Run();
-  }
-
-  // Verify that expected files are written to disk.
-  std::string actual_image;
-  EXPECT_TRUE(base::ReadFileToString(
-      test_path.Append(FILE_PATH_LITERAL("5.img")), &actual_image));
-  EXPECT_EQ(actual_image, image);
-
-  std::string actual_details;
-  EXPECT_TRUE(base::ReadFileToString(
-      test_path.Append(FILE_PATH_LITERAL("5.txt")), &actual_details));
-  EXPECT_EQ(actual_details, details);
-
-  std::string actual_related_image;
-  EXPECT_TRUE(base::ReadFileToString(
-      test_path.Append(FILE_PATH_LITERAL("5_r.img")), &actual_related_image));
-  EXPECT_EQ(actual_related_image, related_image);
 }
 
 TEST_F(AmbientPhotoCacheTest, SetsDataToEmptyStringWhenFilesMissing) {
@@ -119,17 +129,63 @@ TEST_F(AmbientPhotoCacheTest, SetsDataToEmptyStringWhenFilesMissing) {
   EXPECT_FALSE(base::DirectoryExists(test_path));
   {
     base::RunLoop loop;
-    photo_cache()->ReadFiles(
+    ambient::PhotoCacheEntry cache_read;
+    photo_cache()->ReadPhotoCache(
         /*cache_index=*/1,
-        base::BindOnce(
-            [](base::OnceClosure done, PhotoCacheEntry cache_read) {
-              EXPECT_TRUE(cache_read.image->empty());
-              EXPECT_TRUE(cache_read.details->empty());
-              EXPECT_TRUE(cache_read.related_image->empty());
-              std::move(done).Run();
-            },
-            loop.QuitClosure()));
+        base::BindLambdaForTesting(
+            [&cache_read, &loop](ambient::PhotoCacheEntry cache_entry_in) {
+              cache_read = std::move(cache_entry_in);
+              loop.Quit();
+            }));
+    loop.Run();
+
+    EXPECT_TRUE(cache_read.primary_photo().image().empty());
+    EXPECT_TRUE(cache_read.primary_photo().details().empty());
+    EXPECT_FALSE(cache_read.primary_photo().is_portrait());
+    EXPECT_TRUE(cache_read.related_photo().image().empty());
+    EXPECT_TRUE(cache_read.related_photo().details().empty());
+    EXPECT_FALSE(cache_read.related_photo().is_portrait());
   }
+}
+
+TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadRequest) {
+  std::string fake_url = "https://faketesturl/";
+
+  photo_cache()->DownloadPhoto(fake_url, base::BindOnce([](std::string&&) {}));
+  RunUntilIdle();
+  EXPECT_TRUE(IsAccessTokenRequestPending());
+  IssueAccessToken();
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
+  auto* pending_requests = test_url_loader_factory().pending_requests();
+  EXPECT_EQ(pending_requests->size(), std::size_t{1});
+  EXPECT_EQ(pending_requests->at(0).request.url, fake_url);
+  std::string header;
+  pending_requests->at(0).request.headers.GetHeader("Authorization", &header);
+
+  EXPECT_EQ(header,
+            std::string("Bearer ") + TestAmbientClient::kTestAccessToken);
+}
+
+TEST_F(AmbientPhotoCacheTest, AttachTokenToDownloadToFileRequest) {
+  std::string fake_url = "https://faketesturl/";
+
+  photo_cache()->DownloadPhotoToFile(fake_url, /*cache_index=*/1,
+                                     base::BindOnce([](bool) {}));
+
+  RunUntilIdle();
+  EXPECT_TRUE(IsAccessTokenRequestPending());
+  IssueAccessToken();
+  EXPECT_FALSE(IsAccessTokenRequestPending());
+
+  auto* pending_requests = test_url_loader_factory().pending_requests();
+  EXPECT_EQ(pending_requests->size(), std::size_t{1});
+  EXPECT_EQ(pending_requests->at(0).request.url, fake_url);
+  std::string header;
+  pending_requests->at(0).request.headers.GetHeader("Authorization", &header);
+
+  EXPECT_EQ(header,
+            std::string("Bearer ") + TestAmbientClient::kTestAccessToken);
 }
 
 }  // namespace ash

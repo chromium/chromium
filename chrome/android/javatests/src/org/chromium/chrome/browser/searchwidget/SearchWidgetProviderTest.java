@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import android.app.Instrumentation.ActivityMonitor;
 import android.content.Context;
 import android.content.Intent;
 import android.support.test.InstrumentationRegistry;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -32,16 +33,18 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.searchwidget.SearchActivity.SearchActivityDelegate;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityConstants;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager.SearchActivityPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -115,44 +118,64 @@ public class SearchWidgetProviderTest {
         ChromeApplicationTestUtils.tearDown(InstrumentationRegistry.getTargetContext());
     }
 
-    @Test
-    @SmallTest
-    public void testUpdateAll() {
-        SearchWidgetProvider.handleAction(
-                new Intent(SearchWidgetProvider.ACTION_UPDATE_ALL_WIDGETS));
-
-        // Without any idea of what the default search engine is, widgets should default to saying
-        // just "Search".
-        checkWidgetStates(TEXT_GENERIC, View.VISIBLE);
-
-        // The microphone icon should disappear if voice queries are unavailable.
-        mDelegate.mViews.clear();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> SearchWidgetProvider.updateCachedVoiceSearchAvailability(false));
-        checkWidgetStates(TEXT_GENERIC, View.GONE);
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> SearchWidgetProvider.updateCachedEngineName(TEXT_SEARCH_ENGINE));
-        checkWidgetStates(TEXT_GENERIC, View.GONE);
-
-        // After recording that the default search engine is "X" and search engine promo check,
-        // it should say "Search with X".
-        mDelegate.mViews.clear();
+    /**
+     * Update the SearchWidgetProvider with the supplied information.
+     * Guarantees that the update will be performed on the UI thread.
+     *
+     * @param searchEngineName The new search engine name.
+     * @param voiceSearchAvailable Whether voice search is available.
+     */
+    private void performUpdate(String searchEngineName, boolean voiceSearchAvailable) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LocaleManager.setInstanceForTest(new LocaleManager() {
+            SearchWidgetProvider.performUpdate(null,
+                    new SearchActivityPreferences(searchEngineName, null, voiceSearchAvailable,
+                            /* lensAvailable=*/false, /* incognitoAvailable=*/true));
+        });
+    }
+
+    /**
+     * Instrument the LocaleManager to report that the FirstRunExperience has not yet been run and
+     * that the default search engine is not yet selected.
+     */
+    private void setNeedToCheckForSearchEnginePromo() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            LocaleManager.getInstance().setDelegateForTest(new LocaleManagerDelegate() {
                 @Override
                 public boolean needToCheckForSearchEnginePromo() {
                     return false;
                 }
             });
-            SearchWidgetProvider.updateCachedEngineName(TEXT_SEARCH_ENGINE);
         });
+    }
+
+    @Test
+    @SmallTest
+    public void testUpdateAll() {
+        // Without any idea of what the default search engine is, widgets should default to saying
+        // just "Search".
+        performUpdate(null, true);
+        checkWidgetStates(TEXT_GENERIC, View.VISIBLE);
+
+        // The microphone icon should disappear if voice queries are unavailable.
+        mDelegate.mViews.clear();
+        performUpdate(null, false);
+        checkWidgetStates(TEXT_GENERIC, View.GONE);
+
+        // Text should reappear when the default search engine is known.
+        mDelegate.mViews.clear();
+        performUpdate(TEXT_SEARCH_ENGINE, false);
+        checkWidgetStates(TEXT_GENERIC, View.GONE);
+
+        // After recording that the default search engine is "X" and search engine promo check,
+        // it should say "Search with X".
+        mDelegate.mViews.clear();
+        setNeedToCheckForSearchEnginePromo();
+        performUpdate(TEXT_SEARCH_ENGINE, false);
         checkWidgetStates(TEXT_SEARCH_ENGINE_FULL, View.GONE);
 
         // The microphone icon should appear if voice queries are available.
         mDelegate.mViews.clear();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> SearchWidgetProvider.updateCachedVoiceSearchAvailability(true));
+        performUpdate(TEXT_SEARCH_ENGINE, true);
         checkWidgetStates(TEXT_SEARCH_ENGINE_FULL, View.VISIBLE);
     }
 
@@ -160,32 +183,19 @@ public class SearchWidgetProviderTest {
     @SmallTest
     @CommandLineFlags.Remove(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     public void testUpdateCachedEngineNameBeforeFirstRun() throws ExecutionException {
-        Assert.assertFalse(TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return SearchWidgetProvider.shouldShowFullString();
-            }
-        }));
-        SearchWidgetProvider.handleAction(
-                new Intent(SearchWidgetProvider.ACTION_UPDATE_ALL_WIDGETS));
+        Assert.assertFalse(TestThreadUtils.runOnUiThreadBlocking(
+                () -> SearchWidgetProvider.shouldShowFullString()));
 
         // Without any idea of what the default search engine is, widgets should default to saying
         // just "Search".
+        performUpdate(null, true);
         checkWidgetStates(TEXT_GENERIC, View.VISIBLE);
 
         // Until First Run is complete, no search engine branding should be displayed.  Widgets are
         // already displaying the generic string, and should continue doing so, so they don't get
         // updated.
         mDelegate.mViews.clear();
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            LocaleManager.setInstanceForTest(new LocaleManager() {
-                @Override
-                public boolean needToCheckForSearchEnginePromo() {
-                    return false;
-                }
-            });
-            SearchWidgetProvider.updateCachedEngineName(TEXT_SEARCH_ENGINE);
-        });
+        setNeedToCheckForSearchEnginePromo();
         Assert.assertEquals(0, mDelegate.mViews.size());
 
         // Manually set the preference, then update the cached engine name again.  The
@@ -194,8 +204,7 @@ public class SearchWidgetProviderTest {
         mDelegate.mViews.clear();
         mDelegate.getSharedPreferencesManager().writeString(
                 ChromePreferenceKeys.SEARCH_WIDGET_SEARCH_ENGINE_SHORTNAME, TEXT_SEARCH_ENGINE);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> SearchWidgetProvider.updateCachedEngineName(TEXT_SEARCH_ENGINE));
+        performUpdate(TEXT_SEARCH_ENGINE, true);
         checkWidgetStates(TEXT_GENERIC, View.VISIBLE);
     }
 
@@ -229,8 +238,6 @@ public class SearchWidgetProviderTest {
     @Test
     @SmallTest
     public void testMicrophoneClick() {
-        SearchWidgetProvider.handleAction(
-                new Intent(SearchWidgetProvider.ACTION_UPDATE_ALL_WIDGETS));
         for (int i = 0; i < mDelegate.mViews.size(); i++) {
             RemoteViews views = mDelegate.mViews.get(i).second;
             clickOnWidget(views, R.id.microphone_icon, true);
@@ -240,8 +247,6 @@ public class SearchWidgetProviderTest {
     @Test
     @SmallTest
     public void testTextClick() {
-        SearchWidgetProvider.handleAction(
-                new Intent(SearchWidgetProvider.ACTION_UPDATE_ALL_WIDGETS));
         for (int i = 0; i < mDelegate.mViews.size(); i++) {
             RemoteViews views = mDelegate.mViews.get(i).second;
             clickOnWidget(views, R.id.text_container, true);
@@ -252,8 +257,6 @@ public class SearchWidgetProviderTest {
     @SmallTest
     @CommandLineFlags.Remove(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     public void testOnboardingRequired() {
-        SearchWidgetProvider.handleAction(
-                new Intent(SearchWidgetProvider.ACTION_UPDATE_ALL_WIDGETS));
         for (int i = 0; i < mDelegate.mViews.size(); i++) {
             RemoteViews views = mDelegate.mViews.get(i).second;
             clickOnWidget(views, R.id.text_container, false);
@@ -283,8 +286,8 @@ public class SearchWidgetProviderTest {
         if (isFirstRunComplete) {
             // Check that the Activity was launched in the right mode.
             Intent intent = activity.getIntent();
-            boolean microphoneState = IntentUtils.safeGetBooleanExtra(
-                    intent, SearchWidgetProvider.EXTRA_START_VOICE_SEARCH, false);
+            boolean microphoneState = TextUtils.equals(
+                    intent.getAction(), SearchActivityConstants.ACTION_START_VOICE_SEARCH);
             Assert.assertEquals(clickTarget == R.id.microphone_icon, microphoneState);
             boolean fromWidget = IntentUtils.safeGetBooleanExtra(
                     intent, SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false);

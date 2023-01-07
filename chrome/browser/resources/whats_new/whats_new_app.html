@@ -1,0 +1,10 @@
+<style include="cr-hidden-style">
+  #content {
+    border: none;
+    height: 100%;
+    width: 100%;
+  }
+</style>
+<template is="dom-if" if="[[url_]]">
+  <iframe id="content" src="[[url_]]"></iframe>
+</template>

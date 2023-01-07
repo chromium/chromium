@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_V8_MEMORY_V8_MEMORY_TEST_HELPERS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_V8_MEMORY_V8_MEMORY_TEST_HELPERS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/public/v8_memory/v8_detailed_memory.h"
 #include "components/performance_manager/v8_memory/v8_detailed_memory_decorator.h"
 
@@ -13,8 +14,7 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/performance_manager/v8_detailed_memory_reporter.mojom.h"
 
@@ -213,8 +214,8 @@ class V8MemoryPerformanceManagerTestHarness
       override;
 
  private:
-  content::RenderFrameHost* main_frame_ = nullptr;
-  content::RenderFrameHost* child_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost> main_frame_ = nullptr;
+  raw_ptr<content::RenderFrameHost> child_frame_ = nullptr;
   RenderProcessHostId main_process_id_;
   RenderProcessHostId child_process_id_;
 };
@@ -226,7 +227,7 @@ class WebMemoryTestHarness : public GraphTestHarness {
   using Super = GraphTestHarness;
 
   // Wrapper for memory usage bytes to improve test readability.
-  using Bytes = base::Optional<uint64_t>;
+  using Bytes = absl::optional<uint64_t>;
 
   WebMemoryTestHarness();
   ~WebMemoryTestHarness() override;
@@ -238,21 +239,34 @@ class WebMemoryTestHarness : public GraphTestHarness {
       std::string url,
       Bytes bytes,
       FrameNodeImpl* parent = nullptr,
-      base::Optional<std::string> id_attribute = base::nullopt,
-      base::Optional<std::string> src_attribute = base::nullopt) {
+      absl::optional<std::string> id_attribute = absl::nullopt,
+      absl::optional<std::string> src_attribute = absl::nullopt) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes, parent,
                             /*opener=*/nullptr, process_.get(), id_attribute,
                             src_attribute);
   }
 
+  // Creates and adds a new frame node to the graph.
+  FrameNodeImpl* AddFrameNodeWithCanvasMemory(
+      std::string url,
+      Bytes bytes,
+      Bytes canvas_bytes,
+      FrameNodeImpl* parent = nullptr,
+      absl::optional<std::string> id_attribute = absl::nullopt,
+      absl::optional<std::string> src_attribute = absl::nullopt) {
+    return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes, parent,
+                            /*opener=*/nullptr, process_.get(), id_attribute,
+                            src_attribute, canvas_bytes);
+  }
+
   // Creates a frame node as if from window.open and adds it to the graph.
-  FrameNodeImpl* AddFrameNodeFromOpener(base::Optional<std::string> url,
+  FrameNodeImpl* AddFrameNodeFromOpener(absl::optional<std::string> url,
                                         Bytes bytes,
                                         FrameNodeImpl* opener) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes,
                             /*parent=*/nullptr, opener, process_.get(),
-                            /*id_attribute=*/base::nullopt,
-                            /*src_attribute=*/base::nullopt);
+                            /*id_attribute=*/absl::nullopt,
+                            /*src_attribute=*/absl::nullopt);
   }
 
   // Creates a frame node in a different browsing instance and adds it to the
@@ -261,8 +275,8 @@ class WebMemoryTestHarness : public GraphTestHarness {
       std::string url,
       Bytes bytes,
       FrameNodeImpl* parent = nullptr,
-      base::Optional<std::string> id_attribute = base::nullopt,
-      base::Optional<std::string> src_attribute = base::nullopt) {
+      absl::optional<std::string> id_attribute = absl::nullopt,
+      absl::optional<std::string> src_attribute = absl::nullopt) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId + 1, bytes, parent,
                             /*opener=*/nullptr, process_.get(), id_attribute,
                             src_attribute);
@@ -276,8 +290,8 @@ class WebMemoryTestHarness : public GraphTestHarness {
       FrameNodeImpl* opener) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId + 1, bytes,
                             /*parent=*/nullptr, opener, process_.get(),
-                            /*id_attribute=*/base::nullopt,
-                            /*src_attribute=*/base::nullopt);
+                            /*id_attribute=*/absl::nullopt,
+                            /*src_attribute=*/absl::nullopt);
   }
 
   // Creates a frame node in a different process and adds it to the graph.
@@ -285,8 +299,8 @@ class WebMemoryTestHarness : public GraphTestHarness {
       std::string url,
       Bytes bytes,
       FrameNodeImpl* parent,
-      base::Optional<std::string> id_attribute = base::nullopt,
-      base::Optional<std::string> src_attribute = base::nullopt) {
+      absl::optional<std::string> id_attribute = absl::nullopt,
+      absl::optional<std::string> src_attribute = absl::nullopt) {
     return AddFrameNodeImpl(url, kDefaultBrowsingInstanceId, bytes, parent,
                             /*opener=*/nullptr, other_process_.get(),
                             id_attribute, src_attribute);
@@ -313,14 +327,15 @@ class WebMemoryTestHarness : public GraphTestHarness {
   static constexpr int kDefaultBrowsingInstanceId = 0;
 
   // Creates and adds a new frame node to the graph.
-  FrameNodeImpl* AddFrameNodeImpl(base::Optional<std::string> url,
+  FrameNodeImpl* AddFrameNodeImpl(absl::optional<std::string> url,
                                   int browsing_instance_id,
                                   Bytes bytes,
                                   FrameNodeImpl* parent,
                                   FrameNodeImpl* opener,
                                   ProcessNodeImpl* process,
-                                  base::Optional<std::string> id_attribute,
-                                  base::Optional<std::string> src_attribute);
+                                  absl::optional<std::string> id_attribute,
+                                  absl::optional<std::string> src_attribute,
+                                  Bytes canvas_bytes = absl::nullopt);
   WorkerNodeImpl* AddWorkerNodeImpl(WorkerNode::WorkerType worker_type,
                                     std::string url,
                                     Bytes bytes);
@@ -343,6 +358,13 @@ blink::mojom::PerProcessV8MemoryUsagePtr NewPerProcessV8MemoryUsage(
 void AddIsolateMemoryUsage(blink::ExecutionContextToken token,
                            uint64_t bytes_used,
                            blink::mojom::PerIsolateV8MemoryUsage* isolate);
+
+// Finds the PerContextCanvasMemoryUsage in |isolate| whose token is |token|,
+// or creates it if it does not exist, and sets its bytes_used to |bytes_used|.
+void AddIsolateCanvasMemoryUsage(
+    blink::ExecutionContextToken token,
+    uint64_t bytes_used,
+    blink::mojom::PerIsolateV8MemoryUsage* isolate);
 
 }  // namespace v8_memory
 }  // namespace performance_manager

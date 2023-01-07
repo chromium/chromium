@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <list>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/protocol/audio_stub.h"
@@ -23,6 +22,9 @@ class AudioPlayer : public protocol::AudioStub {
   // for now).
   static const int kChannels = 2;
   static const int kSampleSizeBytes = 2;
+
+  AudioPlayer(const AudioPlayer&) = delete;
+  AudioPlayer& operator=(const AudioPlayer&) = delete;
 
   ~AudioPlayer() override;
 
@@ -70,8 +72,6 @@ class AudioPlayer : public protocol::AudioStub {
 
   // The number of bytes from |queued_packets_| that have been consumed.
   size_t bytes_consumed_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPlayer);
 };
 
 }  // namespace remoting

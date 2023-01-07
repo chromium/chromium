@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,11 +19,10 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include <iterator>
 #include <set>
 
 #include "base/mac/scoped_mach_port.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
 #include "test/mac/mach_multiprocess.h"
@@ -181,6 +180,9 @@ class TestMachMessageServer : public MachMessageServer::Interface,
         parent_complex_message_port_(MACH_PORT_NULL) {
   }
 
+  TestMachMessageServer(const TestMachMessageServer&) = delete;
+  TestMachMessageServer& operator=(const TestMachMessageServer&) = delete;
+
   // Runs the test.
   void Test() {
     EXPECT_EQ(replies_, requests_);
@@ -282,7 +284,7 @@ class TestMachMessageServer : public MachMessageServer::Interface,
   std::set<mach_msg_id_t> MachMessageServerRequestIDs() override {
     static constexpr mach_msg_id_t request_ids[] = {kRequestMessageID};
     return std::set<mach_msg_id_t>(&request_ids[0],
-                                   &request_ids[base::size(request_ids)]);
+                                   &request_ids[std::size(request_ids)]);
   }
 
   mach_msg_size_t MachMessageServerRequestSize() override {
@@ -592,8 +594,6 @@ class TestMachMessageServer : public MachMessageServer::Interface,
 
   static constexpr mach_msg_id_t kRequestMessageID = 16237;
   static constexpr mach_msg_id_t kReplyMessageID = kRequestMessageID + 100;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMachMessageServer);
 };
 
 uint32_t TestMachMessageServer::requests_;

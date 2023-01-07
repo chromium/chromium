@@ -1,15 +1,14 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SEARCH_MOST_VISITED_IFRAME_SOURCE_H_
 #define CHROME_BROWSER_SEARCH_MOST_VISITED_IFRAME_SOURCE_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/public/browser/url_data_source.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error "Instant is only used on desktop";
 #endif
 
@@ -18,6 +17,10 @@
 class MostVisitedIframeSource : public content::URLDataSource {
  public:
   MostVisitedIframeSource();
+
+  MostVisitedIframeSource(const MostVisitedIframeSource&) = delete;
+  MostVisitedIframeSource& operator=(const MostVisitedIframeSource&) = delete;
+
   ~MostVisitedIframeSource() override;
 
   // content::URLDataSource:
@@ -26,7 +29,9 @@ class MostVisitedIframeSource : public content::URLDataSource {
       const GURL& url,
       const content::WebContents::Getter& wc_getter,
       content::URLDataSource::GotDataCallback callback) override;
-  std::string GetMimeType(const std::string& path_and_query) override;
+  std::string GetMimeType(const GURL& url) override;
+  bool ShouldServeMimeTypeAsContentTypeHeader() override;
+
   bool AllowCaching() override;
   bool ShouldDenyXFrameOptions() override;
   bool ShouldServiceRequest(const GURL& url,
@@ -52,9 +57,6 @@ class MostVisitedIframeSource : public content::URLDataSource {
   // does not exist
   virtual bool GetOrigin(const content::WebContents::Getter& wc_getter,
                          std::string* origin) const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MostVisitedIframeSource);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_MOST_VISITED_IFRAME_SOURCE_H_

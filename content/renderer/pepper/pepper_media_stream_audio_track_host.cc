@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/numerics/ostream_operators.h"
 #include "base/numerics/safe_math.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/audio_bus.h"
 #include "ppapi/c/pp_errors.h"
@@ -237,9 +237,9 @@ void PepperMediaStreamAudioTrackHost::AudioSink::OnData(
       // The active buffer is new, so initialise the header and metadata fields.
       buffer->header.size = host_->buffer_manager()->buffer_size();
       buffer->header.type = ppapi::MediaStreamBuffer::TYPE_AUDIO;
-      const base::TimeTicks time_at_offset = estimated_capture_time +
-          frame_offset * base::TimeDelta::FromSeconds(1) /
-              audio_params_.sample_rate();
+      const base::TimeTicks time_at_offset =
+          estimated_capture_time +
+          frame_offset * base::Seconds(1) / audio_params_.sample_rate();
       buffer->timestamp =
           (time_at_offset - first_frame_capture_time_).InSecondsF();
       buffer->sample_rate =

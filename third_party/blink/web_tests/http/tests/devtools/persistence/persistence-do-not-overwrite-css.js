@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Verify that persistence does not overwrite CSS files when CSS model reports error on getStyleSheetText.\n`);
   await TestRunner.loadTestModule('bindings_test_runner');
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.loadHTML(`
       <style>
       body {
@@ -26,7 +26,7 @@
           .then(onCSSContent);
 
       function onCSSContent({ content, error, isEncoded }) {
-        fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+        fs = new BindingsTestRunner.TestFileSystem('/var/www');
         BindingsTestRunner.addFiles(fs, {
           'simple.css': {content: content},
         });
@@ -57,12 +57,12 @@
       var styleSheet =
           TestRunner.cssModel.styleSheetHeaders().find(header => header.contentURL().endsWith('simple.css'));
       // Make CSSModel constantly return errors on all getStyleSheetText requests.
-      TestRunner.override(TestRunner.cssModel._agent, 'invoke_getStyleSheetText', throwProtocolError, true);
+      TestRunner.override(TestRunner.cssModel.agent, 'invoke_getStyleSheetText', throwProtocolError, true);
       // Set a new stylesheet text
       TestRunner.cssModel.setStyleSheetText(styleSheet.id, 'body {color: blue}');
       // Expect StylesSourceMapping to sync styleSheet with network UISourceCode.
       // Persistence acts synchronously.
-      TestRunner.addSniffer(Bindings.StyleFile.prototype, '_styleFileSyncedForTest', next);
+      TestRunner.addSniffer(Bindings.StyleFile.prototype, 'styleFileSyncedForTest', next);
 
       function throwProtocolError(styleSheetId) {
         TestRunner.addResult('Protocol Error: FAKE PROTOCOL ERROR');

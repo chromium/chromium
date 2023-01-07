@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,10 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/gpu_stream_constants.h"
@@ -19,7 +20,6 @@
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
 #include "content/renderer/pepper/plugin_module.h"
 #include "content/renderer/render_thread_impl.h"
-#include "content/renderer/render_view_impl.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/ipc/client/command_buffer_proxy_impl.h"
@@ -180,13 +180,13 @@ int32_t PPB_Graphics3D_Impl::DoSwapBuffers(const gpu::SyncToken& sync_token,
     bool is_overlay_candidate = use_image_chromium_;
     // TODO(reveman): Get texture target from browser process.
     uint32_t target = GL_TEXTURE_2D;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (use_image_chromium_)
       target = GL_TEXTURE_RECTANGLE_ARB;
 #endif
-    viz::TransferableResource resource = viz::TransferableResource::MakeGL(
+    viz::TransferableResource resource = viz::TransferableResource::MakeGpu(
         taken_front_buffer_, GL_LINEAR, target, sync_token, size,
-        is_overlay_candidate);
+        viz::RGBA_8888, is_overlay_candidate);
     HostGlobals::Get()
         ->GetInstance(pp_instance())
         ->CommitTransferableResource(resource);
@@ -315,9 +315,6 @@ void PPB_Graphics3D_Impl::OnGpuControlLostContext() {
 void PPB_Graphics3D_Impl::OnGpuControlLostContextMaybeReentrant() {
   // No internal state to update on lost context.
 }
-
-void PPB_Graphics3D_Impl::OnGpuControlSwapBuffersCompleted(
-    const gpu::SwapBuffersCompleteParams& params) {}
 
 void PPB_Graphics3D_Impl::OnGpuControlReturnData(
     base::span<const uint8_t> data) {

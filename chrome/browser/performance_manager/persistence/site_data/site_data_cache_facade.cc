@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ SiteDataCacheFacade::SiteDataCacheFacade(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   SiteDataCacheFacadeFactory::GetInstance()->OnBeforeFacadeCreated(PassKey());
 
-  base::Optional<std::string> parent_context_id;
+  absl::optional<std::string> parent_context_id;
   if (browser_context->IsOffTheRecord()) {
     content::BrowserContext* parent_context =
         chrome::GetBrowserContextRedirectedInIncognito(browser_context);
@@ -68,7 +68,6 @@ void SiteDataCacheFacade::IsDataCacheRecordingForTesting(
   SiteDataCacheFacadeFactory::GetInstance()
       ->cache_factory()
       ->PostTaskWithThisObject(
-          FROM_HERE,
           base::BindOnce(
               [](base::OnceCallback<void(bool)> cb,
                  const std::string& browser_context_id,
@@ -84,21 +83,19 @@ void SiteDataCacheFacade::WaitUntilCacheInitializedForTesting() {
   base::RunLoop run_loop;
   SiteDataCacheFacadeFactory::GetInstance()
       ->cache_factory()
-      ->PostTaskWithThisObject(
-          FROM_HERE, base::BindOnce(
-                         [](base::OnceClosure quit_closure,
-                            const std::string& browser_context_id,
-                            SiteDataCacheFactory* cache_factory) {
-                           auto* cache =
-                               cache_factory->GetDataCacheForBrowserContext(
-                                   browser_context_id);
-                           if (cache->IsRecording()) {
-                             static_cast<SiteDataCacheImpl*>(cache)
-                                 ->SetInitializationCallbackForTesting(
-                                     std::move(quit_closure));
-                           }
-                         },
-                         run_loop.QuitClosure(), browser_context_->UniqueId()));
+      ->PostTaskWithThisObject(base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             const std::string& browser_context_id,
+             SiteDataCacheFactory* cache_factory) {
+            auto* cache = cache_factory->GetDataCacheForBrowserContext(
+                browser_context_id);
+            if (cache->IsRecording()) {
+              static_cast<SiteDataCacheImpl*>(cache)
+                  ->SetInitializationCallbackForTesting(
+                      std::move(quit_closure));
+            }
+          },
+          run_loop.QuitClosure(), browser_context_->UniqueId()));
   run_loop.Run();
 }
 
@@ -117,7 +114,7 @@ void SiteDataCacheFacade::OnURLsDeleted(
         browser_context_->UniqueId());
     SiteDataCacheFacadeFactory::GetInstance()
         ->cache_factory()
-        ->PostTaskWithThisObject(FROM_HERE, std::move(clear_all_site_data_cb));
+        ->PostTaskWithThisObject(std::move(clear_all_site_data_cb));
   } else {
     std::vector<url::Origin> origins_to_remove;
 
@@ -148,7 +145,7 @@ void SiteDataCacheFacade::OnURLsDeleted(
         browser_context_->UniqueId(), std::move(origins_to_remove));
     SiteDataCacheFacadeFactory::GetInstance()
         ->cache_factory()
-        ->PostTaskWithThisObject(FROM_HERE, std::move(clear_site_data_cb));
+        ->PostTaskWithThisObject(std::move(clear_site_data_cb));
   }
 }
 

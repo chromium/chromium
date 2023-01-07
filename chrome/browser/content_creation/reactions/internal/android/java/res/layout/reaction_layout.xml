@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.content_creation.reactions.scene.ReactionLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <!-- ContentDescription is added at runtime. -->
+    <ImageView
+        tools:ignore="ContentDescription"
+        android:id="@+id/reaction_view"
+        android:focusable="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="@dimen/reaction_padding"
+        android:background="@drawable/border_inset"/>
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/delete_button"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:scaleType="fitCenter"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/delete"
+        android:src="@drawable/lr_delete" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/copy_button"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:contentDescription="@string/lightweight_reactions_duplicate_button"
+        android:src="@drawable/lr_copy" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/adjust_button"
+        android:layout_width="@dimen/button_size"
+        android:layout_height="@dimen/button_size"
+        android:src="@drawable/lr_resize"
+        android:background="@android:color/transparent"
+        android:scaleType="fitCenter"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:contentDescription="@string/lightweight_reactions_resize_and_rotate_button"/>
+
+</org.chromium.chrome.browser.content_creation.reactions.scene.ReactionLayout>

@@ -1,16 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_PUBLIC_CPP_TEST_TEST_NEARBY_SHARE_DELEGATE_H_
 #define ASH_PUBLIC_CPP_TEST_TEST_NEARBY_SHARE_DELEGATE_H_
 
+#include <vector>
+
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/nearby_share_delegate.h"
-
-namespace base {
-class TimeTicks;
-}  // namespace base
+#include "base/time/time.h"
 
 namespace ash {
 

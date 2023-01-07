@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/limits.h"
 #include "media/base/subsample_entry.h"
+#include "media/base/video_types.h"
 #include "media/gpu/accelerated_video_decoder.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/media_gpu_export.h"
@@ -60,6 +60,10 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
     };
 
     H264Accelerator();
+
+    H264Accelerator(const H264Accelerator&) = delete;
+    H264Accelerator& operator=(const H264Accelerator&) = delete;
+
     virtual ~H264Accelerator();
 
     // Create a new H264Picture that the decoder client can use for decoding
@@ -70,6 +74,18 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
     // any new pictures at given time. The decoder is expected to handle
     // this situation as normal and return from Decode() with kRanOutOfSurfaces.
     virtual scoped_refptr<H264Picture> CreateH264Picture() = 0;
+
+    // Provides the raw NALU data for an SPS. The |sps| passed to
+    // SubmitFrameMetadata() is always the most recent SPS passed to
+    // ProcessSPS() with the same |seq_parameter_set_id|.
+    virtual void ProcessSPS(const H264SPS* sps,
+                            base::span<const uint8_t> sps_nalu_data);
+
+    // Provides the raw NALU data for a PPS. The |pps| passed to
+    // SubmitFrameMetadata() is always the most recent PPS passed to
+    // ProcessPPS() with the same |pic_parameter_set_id|.
+    virtual void ProcessPPS(const H264PPS* pps,
+                            base::span<const uint8_t> pps_nalu_data);
 
     // Submit metadata for the current frame, providing the current |sps| and
     // |pps| for it, |dpb| has to contain all the pictures in DPB for current
@@ -103,8 +119,6 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
     virtual Status ParseEncryptedSliceHeader(
         const std::vector<base::span<const uint8_t>>& data,
         const std::vector<SubsampleEntry>& subsamples,
-        const std::vector<uint8_t>& sps_nalu_data,
-        const std::vector<uint8_t>& pps_nalu_data,
         H264SliceHeader* slice_header_out);
 
     // Submit one slice for the current frame, passing the current |pps| and
@@ -158,25 +172,27 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
     // kNotSupported.
     virtual Status SetStream(base::span<const uint8_t> stream,
                              const DecryptConfig* decrypt_config);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(H264Accelerator);
   };
 
   H264Decoder(std::unique_ptr<H264Accelerator> accelerator,
               VideoCodecProfile profile,
               const VideoColorSpace& container_color_space = VideoColorSpace());
+
+  H264Decoder(const H264Decoder&) = delete;
+  H264Decoder& operator=(const H264Decoder&) = delete;
+
   ~H264Decoder() override;
 
   // AcceleratedVideoDecoder implementation.
   void SetStream(int32_t id, const DecoderBuffer& decoder) override;
-  bool Flush() override WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Flush() override;
   void Reset() override;
-  DecodeResult Decode() override WARN_UNUSED_RESULT;
+  [[nodiscard]] DecodeResult Decode() override;
   gfx::Size GetPicSize() const override;
   gfx::Rect GetVisibleRect() const override;
   VideoCodecProfile GetProfile() const override;
   uint8_t GetBitDepth() const override;
+  VideoChromaSampling GetChromaSampling() const override;
   size_t GetRequiredNumOfPictures() const override;
   size_t GetNumReferenceFrames() const override;
 
@@ -194,7 +210,7 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
 
  private:
   // Internal state of the decoder.
-  enum State {
+  enum class State {
     // After initialization, need an SPS.
     kNeedStreamMetadata,
     // Ready to decode from any point.
@@ -370,26 +386,22 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   // the stream).
   int last_parsed_pps_id_;
 
-  // Copies of the last SPS and PPS NALUs, used for full sample encryption.
-  std::vector<uint8_t> last_sps_nalu_;
-  std::vector<uint8_t> last_pps_nalu_;
-
   // Current NALU and slice header being processed.
   std::unique_ptr<H264NALU> curr_nalu_;
   std::unique_ptr<H264SliceHeader> curr_slice_hdr_;
 
-  // Encrypted SEI NALUs preceding a fully encrypted slice NALU. We need to
+  // Encrypted NALUs preceding a fully encrypted (CENCv1) slice NALU. We need to
   // save these that are part of a single sample so they can all be decrypted
   // together.
-  std::vector<base::span<const uint8_t>> encrypted_sei_nalus_;
-  std::vector<SubsampleEntry> sei_subsamples_;
+  std::vector<base::span<const uint8_t>> prior_cencv1_nalus_;
+  std::vector<SubsampleEntry> prior_cencv1_subsamples_;
 
-  // These are base::nullopt unless get recovery point SEI message after Reset.
+  // These are absl::nullopt unless get recovery point SEI message after Reset.
   // A frame_num of the frame at output order that is correct in content.
-  base::Optional<int> recovery_frame_num_;
+  absl::optional<int> recovery_frame_num_;
   // A value in the recovery point SEI message to compute |recovery_frame_num_|
   // later.
-  base::Optional<int> recovery_frame_cnt_;
+  absl::optional<int> recovery_frame_cnt_;
 
   // Output picture size.
   gfx::Size pic_size_;
@@ -400,13 +412,13 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   VideoCodecProfile profile_;
   // Bit depth of input bitstream.
   uint8_t bit_depth_ = 0;
+  // Chroma subsampling format of input bitstream.
+  VideoChromaSampling chroma_sampling_ = VideoChromaSampling::kUnknown;
 
   // PicOrderCount of the previously outputted frame.
   int last_output_poc_;
 
   const std::unique_ptr<H264Accelerator> accelerator_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264Decoder);
 };
 
 }  // namespace media

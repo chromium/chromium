@@ -1,0 +1,20 @@
+caption: Set minimal size limit for data leak prevention clipboard restriction
+default: 0
+desc: |-
+  This policy sets the minimal data size (in bytes) of the data in the clipboard that will be checked against clipboard restriction rules defined in DataLeakPreventionRulesList policy.
+        If not set, it defaults to 0 that means that all pastes from the clipboard will be checked according to the configured rules.
+example_value: 50
+features:
+  can_be_recommended: false
+  dynamic_refresh: false
+  per_profile: false
+owners:
+- file://chrome/browser/ash/policy/dlp/OWNERS
+- poromov@chromium.org
+schema:
+  minimum: 0
+  type: integer
+supported_on:
+- chrome_os:93-
+tags: []
+type: int

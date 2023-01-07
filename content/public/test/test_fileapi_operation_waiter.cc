@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/public/test/test_fileapi_operation_waiter.h"
 
 #include "base/callback_helpers.h"
+#include "components/services/filesystem/public/mojom/types.mojom.h"
 
 namespace content {
 

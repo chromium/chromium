@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.testing.stacktraceTest');
 goog.setTestOnly();
@@ -45,53 +37,63 @@ testSuite({
 
   testParseStackFrameInV8() {
     let frameString = '    at Error (unknown source)';
+    /** @suppress {visibility} suppression added to enable type checking */
     let frame = stacktrace.parseStackFrame_(frameString);
     let expected = new Frame('', 'Error', '', '');
     assertObjectEquals('exception name only', expected, frame);
 
     frameString = '    at Object.assert (file:///.../asserts.js:29:10)';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected =
         new Frame('Object', 'assert', '', 'file:///.../asserts.js:29:10');
     assertObjectEquals('context object + function name + url', expected, frame);
 
     frameString = '    at Object.x.y.z (/Users/bob/file.js:564:9)';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('Object.x.y', 'z', '', '/Users/bob/file.js:564:9');
     assertObjectEquals(
         'nested context object + function name + url', expected, frame);
 
     frameString = '    at http://www.example.com/jsunit.js:117:13';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', '', '', 'http://www.example.com/jsunit.js:117:13');
     assertObjectEquals('url only', expected, frame);
 
     frameString = '    at [object Object].exec [as execute] (file:///foo)';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('[object Object]', 'exec', 'execute', 'file:///foo');
     assertObjectEquals('function alias', expected, frame);
 
     frameString = '    at new Class (file:///foo)';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', 'new Class', '', 'file:///foo');
     assertObjectEquals('constructor call', expected, frame);
 
     frameString = '    at new <anonymous> (file:///foo)';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', 'new <anonymous>', '', 'file:///foo');
     assertObjectEquals('anonymous constructor call', expected, frame);
 
     frameString = '    at Array.forEach (native)';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('Array', 'forEach', '', '');
     assertObjectEquals('native function call', expected, frame);
 
     frameString = '    at foo (eval at file://bar)';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', 'foo', '', 'eval at file://bar');
     assertObjectEquals('eval', expected, frame);
 
     frameString = '    at foo.bar (closure/goog/foo.js:11:99)';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('foo', 'bar', '', 'closure/goog/foo.js:11:99');
     assertObjectEquals('Path without schema', expected, frame);
@@ -99,6 +101,7 @@ testSuite({
     // In the Chrome console, execute: console.log(eval('Error().stack')).
     frameString =
         '    at eval (eval at <anonymous> (unknown source), <anonymous>:1:1)';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame(
         '', 'eval', '',
@@ -108,16 +111,19 @@ testSuite({
 
   testParseStackFrameInOpera() {
     let frameString = '@';
+    /** @suppress {visibility} suppression added to enable type checking */
     let frame = stacktrace.parseStackFrame_(frameString);
     let expected = new Frame('', '', '', '');
     assertObjectEquals('empty frame', expected, frame);
 
     frameString = '@javascript:console.log(Error().stack):1';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', '', '', 'javascript:console.log(Error().stack):1');
     assertObjectEquals('javascript path only', expected, frame);
 
     frameString = '@file:///foo:42';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', '', '', 'file:///foo:42');
     assertObjectEquals('path only', expected, frame);
@@ -125,11 +131,13 @@ testSuite({
     // (function go() { throw new Error() })()
     // var c = go; c()
     frameString = 'go([arguments not available])@';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', 'go', '', '');
     assertObjectEquals('name and empty path', expected, frame);
 
     frameString = 'go([arguments not available])@file:///foo:42';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', 'go', '', 'file:///foo:42');
     assertObjectEquals('name and path', expected, frame);
@@ -137,28 +145,33 @@ testSuite({
     // (function() { throw new Error() })()
     frameString =
         '<anonymous function>([arguments not available])@file:///foo:42';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', '', '', 'file:///foo:42');
     assertObjectEquals('anonymous function', expected, frame);
 
     // var b = {foo: function() { throw new Error() }}
     frameString = '<anonymous function: foo>()@file:///foo:42';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', 'foo', '', 'file:///foo:42');
     assertObjectEquals('object literal function', expected, frame);
 
     // var c = {}; c.foo = function() { throw new Error() }
     frameString = '<anonymous function: c.foo>()@file:///foo:42';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('c', 'foo', '', 'file:///foo:42');
     assertObjectEquals('named object literal function', expected, frame);
 
     frameString = '<anonymous function: Foo.prototype.bar>()@';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('Foo.prototype', 'bar', '', '');
     assertObjectEquals('prototype function', expected, frame);
 
     frameString = '<anonymous function: goog.Foo.prototype.bar>()@';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('goog.Foo.prototype', 'bar', '', '');
     assertObjectEquals('namespaced prototype function', expected, frame);
@@ -168,16 +181,19 @@ testSuite({
   // frame algorithms.
   testParseStackFrameInFirefox() {
     let frameString = 'Error("Assertion failed")@:0';
+    /** @suppress {visibility} suppression added to enable type checking */
     let frame = stacktrace.parseStackFrame_(frameString);
     let expected = new Frame('', 'Error', '', '');
     assertObjectEquals('function name + arguments', expected, frame);
 
     frameString = '()@file:///foo:42';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', '', '', 'file:///foo:42');
     assertObjectEquals('anonymous function', expected, frame);
 
     frameString = '@javascript:alert(0)';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', '', '', 'javascript:alert(0)');
     assertObjectEquals('anonymous function', expected, frame);
@@ -187,6 +203,7 @@ testSuite({
   // frame algorithms.
   testParseStackFrameInFirefoxWithQualifiedName() {
     const frameString = 'ns.method@http://some.thing/a.js:1:2';
+    /** @suppress {visibility} suppression added to enable type checking */
     const frame = stacktrace.parseStackFrame_(frameString);
     const expected =
         new Frame('', 'ns.method', '', 'http://some.thing/a.js:1:2');
@@ -215,6 +232,7 @@ testSuite({
     const normalFrame = new Frame('', 'foo', '', '');
     const anonFrame = new Frame('', '', '', '');
     const frames = [normalFrame, anonFrame, null, anonFrame];
+    /** @suppress {visibility} suppression added to enable type checking */
     const stack = stacktrace.framesToString_(frames);
     assertEquals('framesToString', '> foo\n> anonymous\n> (unknown)\n', stack);
   },
@@ -228,6 +246,7 @@ testSuite({
     const stackTrace = googString.buildString(
         'shortFrame()@:0\n', 'longFrame', longArg,
         '@http://google.com/somescript:0\n');
+    /** @suppress {visibility} suppression added to enable type checking */
     const frames = stacktrace.parse_(stackTrace);
     assertEquals('number of returned frames', 2, frames.length);
     const expected = new Frame('', 'shortFrame', '', '');
@@ -238,27 +257,32 @@ testSuite({
 
   testParseStackFrameInIE10() {
     let frameString = '   at foo (http://bar:4000/bar.js:150:3)';
+    /** @suppress {visibility} suppression added to enable type checking */
     let frame = stacktrace.parseStackFrame_(frameString);
     let expected = new Frame('', 'foo', '', 'http://bar:4000/bar.js:150:3');
     assertObjectEquals('name and path', expected, frame);
 
     frameString = '   at Anonymous function (http://bar:4000/bar.js:150:3)';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected =
         new Frame('', 'Anonymous function', '', 'http://bar:4000/bar.js:150:3');
     assertObjectEquals('Anonymous function', expected, frame);
 
     frameString = '   at Global code (http://bar:4000/bar.js:150:3)';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', 'Global code', '', 'http://bar:4000/bar.js:150:3');
     assertObjectEquals('Global code', expected, frame);
 
     frameString = '   at foo (eval code:150:3)';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', 'foo', '', 'eval code:150:3');
     assertObjectEquals('eval code', expected, frame);
 
     frameString = '   at eval code (eval code:150:3)';
+    /** @suppress {visibility} suppression added to enable type checking */
     frame = stacktrace.parseStackFrame_(frameString);
     expected = new Frame('', 'eval code', '', 'eval code:150:3');
     assertObjectEquals('nested eval', expected, frame);
@@ -266,6 +290,7 @@ testSuite({
 
   testParseStackFrameInIE11() {
     const frameString = '   at a.b.c (Unknown script code:150:3)';
+    /** @suppress {visibility} suppression added to enable type checking */
     const frame = stacktrace.parseStackFrame_(frameString);
     const expected = new Frame('', 'a.b.c', '', 'Unknown script code:150:3');
     assertObjectEquals('name and path', expected, frame);
@@ -273,6 +298,7 @@ testSuite({
 
   testParseStackFrameInEdge() {
     const frameString = '   at a.b.c (http://host.com:80/some/file.js:101:2)';
+    /** @suppress {visibility} suppression added to enable type checking */
     const frame = stacktrace.parseStackFrame_(frameString);
     const expected =
         new Frame('', 'a.b.c', '', 'http://host.com:80/some/file.js:101:2');

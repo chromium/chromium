@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -50,7 +49,7 @@ TEST(TextCodecReplacement, EncodesToUTF8) {
 
   // "Kanji" in Chinese characters.
   const UChar kTestCase[] = {0x6F22, 0x5B57};
-  wtf_size_t test_case_size = base::size(kTestCase);
+  wtf_size_t test_case_size = std::size(kTestCase);
   std::string result =
       codec->Encode(kTestCase, test_case_size, kEntitiesForUnencodables);
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
@@ -22,6 +22,8 @@
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/security_state/core/security_state.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
@@ -40,13 +42,23 @@ class PasswordAccessoryControllerImpl
     : public PasswordAccessoryController,
       public content::WebContentsUserData<PasswordAccessoryControllerImpl> {
  public:
+  using PasswordDriverSupplierForFocusedFrame =
+      base::RepeatingCallback<password_manager::PasswordManagerDriver*(
+          content::WebContents*)>;
+
+  PasswordAccessoryControllerImpl(const PasswordAccessoryControllerImpl&) =
+      delete;
+  PasswordAccessoryControllerImpl& operator=(
+      const PasswordAccessoryControllerImpl&) = delete;
+
   ~PasswordAccessoryControllerImpl() override;
 
   // AccessoryController:
   void RegisterFillingSourceObserver(FillingSourceObserver observer) override;
-  base::Optional<autofill::AccessorySheetData> GetSheetData() const override;
-  void OnFillingTriggered(autofill::FieldGlobalId focused_field_id,
-                          const autofill::UserInfo::Field& selection) override;
+  absl::optional<autofill::AccessorySheetData> GetSheetData() const override;
+  void OnFillingTriggered(
+      autofill::FieldGlobalId focused_field_id,
+      const autofill::AccessorySheetField& selection) override;
   void OnOptionSelected(autofill::AccessoryAction selected_action) override;
   void OnToggleChanged(autofill::AccessoryAction toggled_action,
                        bool enabled) override;
@@ -72,7 +84,8 @@ class PasswordAccessoryControllerImpl
       content::WebContents* web_contents,
       password_manager::CredentialCache* credential_cache,
       base::WeakPtr<ManualFillingController> mf_controller,
-      password_manager::PasswordManagerClient* password_client);
+      password_manager::PasswordManagerClient* password_client,
+      PasswordDriverSupplierForFocusedFrame driver_supplier);
 
   // True if the focus event was sent for the current focused frame or if it is
   // a blur event and no frame is focused. This check avoids reacting to
@@ -95,6 +108,16 @@ class PasswordAccessoryControllerImpl
     security_level_for_testing_ = security_level;
   }
 #endif
+ protected:
+  // This constructor can also be used by |CreateForWebContentsForTesting|
+  // to inject a fake |ManualFillingController| and a fake
+  // |PasswordManagerClient|.
+  PasswordAccessoryControllerImpl(
+      content::WebContents* web_contents,
+      password_manager::CredentialCache* credential_cache,
+      base::WeakPtr<ManualFillingController> mf_controller,
+      password_manager::PasswordManagerClient* password_client,
+      PasswordDriverSupplierForFocusedFrame driver_supplier);
 
  private:
   friend class content::WebContentsUserData<PasswordAccessoryControllerImpl>;
@@ -119,15 +142,6 @@ class PasswordAccessoryControllerImpl
     bool is_manual_generation_available = false;
   };
 
-  // This constructor can also be used by |CreateForWebContentsForTesting|
-  // to inject a fake |ManualFillingController| and a fake
-  // |PasswordManagerClient|.
-  PasswordAccessoryControllerImpl(
-      content::WebContents* web_contents,
-      password_manager::CredentialCache* credential_cache,
-      base::WeakPtr<ManualFillingController> mf_controller,
-      password_manager::PasswordManagerClient* password_client);
-
   // Enables or disables saving for the focused origin. This involves removing
   // or adding blocklisted entry in the |PasswordStore|.
   void ChangeCurrentOriginSavePasswordsStatus(bool enabled);
@@ -150,31 +164,52 @@ class PasswordAccessoryControllerImpl
 
   url::Origin GetFocusedFrameOrigin() const;
 
+  // Returns true if authentication should be triggered before filling
+  // |selection| in to the field.
+  bool ShouldTriggerBiometricReauth(
+      const autofill::AccessorySheetField& selection) const;
+
+  // Called when the biometric authentication completes. If |auth_succeeded| is
+  // true, |selection| will be passed on to be filled.
+  void OnReauthCompleted(autofill::AccessorySheetField selection,
+                         bool auth_succeeded);
+
+  // Sends |selection| to the renderer to be filled, if it's a valid
+  // entry for the origin of the frame that is currently focused.
+  void FillSelection(const autofill::AccessorySheetField& selection);
+
   // Called From |AllPasswordsBottomSheetController| when
   // the Bottom Sheet view is destroyed.
   void AllPasswordsSheetDismissed();
 
-  // The tab for which this class is scoped.
-  content::WebContents* web_contents_ = nullptr;
+  content::WebContents& GetWebContents() const;
 
   // Keeps track of credentials which are stored for all origins in this tab.
-  password_manager::CredentialCache* credential_cache_ = nullptr;
+  raw_ptr<password_manager::CredentialCache> credential_cache_ = nullptr;
 
   // The password accessory controller object to forward client requests to.
   base::WeakPtr<ManualFillingController> mf_controller_;
 
   // The password manager client is used to update the save passwords status
   // for the currently focused origin.
-  password_manager::PasswordManagerClient* password_client_ = nullptr;
+  raw_ptr<password_manager::PasswordManagerClient> password_client_ = nullptr;
+
+  // The authenticator used to trigger a biometric re-auth before filling.
+  // null, if there is no ongoing authentication.
+  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator_;
 
   // Information about the currently focused field. This is the only place
   // allowed to store frame-specific data. If a new field is focused or focus is
-  // lost, this data needs to be reset to base::nullopt to make sure that data
+  // lost, this data needs to be reset to absl::nullopt to make sure that data
   // related to a former frame isn't displayed incorrectly in a different one.
-  base::Optional<LastFocusedFieldInfo> last_focused_field_info_ = base::nullopt;
+  absl::optional<LastFocusedFieldInfo> last_focused_field_info_ = absl::nullopt;
 
   // The observer to notify if available suggestions change.
   FillingSourceObserver source_observer_;
+
+  // Callback that returns a |PasswordManagerDriver| corresponding to the
+  // currently-focused frame of the passed-in |WebContents|.
+  PasswordDriverSupplierForFocusedFrame driver_supplier_;
 
   // Controller for the all passwords bottom sheet. Created on demand during the
   // first call to |ShowAllPasswords()|.
@@ -190,8 +225,6 @@ class PasswordAccessoryControllerImpl
       security_state::NONE;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordAccessoryControllerImpl);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_ACCESSORY_CONTROLLER_IMPL_H_

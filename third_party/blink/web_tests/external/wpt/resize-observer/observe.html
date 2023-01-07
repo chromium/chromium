@@ -3,13 +3,11 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="./resources/resizeTestHelper.js"></script>
+<body>
 <div id="log"></div>
+
 <script>
 'use strict';
-
-// allow uncaught exception because ResizeObserver posts exceptions
-// to window error handler when limit is exceeded.
-setup({allow_uncaught_exception: true});
 
 function test0() {
   let t = createAndAppendElement("div");
@@ -130,24 +128,6 @@ function test5() {
   img.style.height = "15px";
   img.src = "resources/image.png";
 
-  let helper = new ResizeTestHelper("test5: observe img",[
-    {
-      setup: observer => {
-        observer.observe(img);
-      },
-      notify: entries => {
-      }
-    },
-    {
-      setup: observer => {
-        img.style.width = "15.5px";
-      },
-      notify: entries => {
-        assert_equals(entries.length, 1);
-        assert_equals(entries[0].contentRect.width, 15.5);
-      }
-    }
-  ]);
   return img.decode().then(() => {
     return new Promise(resolve => {
       requestAnimationFrame(() => {
@@ -155,52 +135,80 @@ function test5() {
         resolve();
       });
     });
-  }).catch(error => {
-    assert_unreached("decode image failed");
   }).then(() => {
+    let helper = new ResizeTestHelper("test5: observe img",[
+      {
+        setup: observer => {
+          observer.observe(img);
+        },
+        notify: entries => {
+          return true;
+        }
+      },
+      {
+        setup: observer => {
+          img.style.width = "15.5px";
+        },
+        notify: entries => {
+          assert_equals(entries.length, 1);
+          assert_equals(entries[0].contentRect.width, 15.5);
+        }
+      }
+    ]);
     return helper.start(() => img.remove());
+  }, () => {
+    // dummy test for dumping the error message.
+    test(_ => {
+      assert_unreached("decode image failed");
+    }, "test5: observe img");
   });
 }
 
 function test6() {
   let iframe = createAndAppendElement("iframe");
-  iframe.src = "./resources/iframe.html";
   iframe.width = "300px";
   iframe.height = "100px";
   iframe.style.display = "block";
 
+  let resolvePromise;
+  let promise = new Promise((resolve) => {
+    resolvePromise = resolve;
+  });
+  let test = async_test('test6: iframe notifications');
+  let testRequested = false;
+  test.add_cleanup(() => iframe.remove());
+
+  window.addEventListener('message', event => {
+    switch(event.data) {
+    case 'readyToTest':
+      if (!testRequested) {
+        iframe.contentWindow.postMessage('startTest', '*');
+        testRequested = true;
+      }
+    break;
+    case 'success':
+    case 'fail':
+      window.requestAnimationFrame(() => {
+        resolvePromise();
+        test.step(() => {
+          assert_equals(event.data, 'success');
+          test.done();
+        });
+      });
+    break;
+    }
+  }, false);
+
+  iframe.src = "./resources/iframe.html";
   return new Promise(function(resolve, reject) {
     iframe.onload = () => resolve();
+    iframe.onerror = () => reject();
   }).then(() => {
-    let resolvePromise;
-    let promise = new Promise((resolve) => {
-      resolvePromise = resolve;
-    });
-    let test = async_test('test6: iframe notifications');
-    let testRequested = false;
-    test.add_cleanup(() => iframe.remove());
-
-    window.addEventListener('message', event => {
-      switch(event.data) {
-      case 'readyToTest':
-        if (!testRequested) {
-          iframe.contentWindow.postMessage('startTest', '*');
-          testRequested = true;
-        }
-      break;
-      case 'success':
-      case 'fail':
-        window.requestAnimationFrame(() => {
-          test.step( () => {
-            assert_equals(event.data, 'success');
-            test.done();
-            resolvePromise();
-          });
-        });
-      break;
-      }
-    }, false);
     return promise;
+  }).catch(error => {
+    test.step(() => {
+      assert_unreached("loading iframe is error");
+    });
   });
 }
 
@@ -209,7 +217,6 @@ function test7() {
   let resolvePromise;
   let ro = new ResizeObserver( function(entries, obs)  {
     let callbackThis = this;
-    resolvePromise();
     harnessTest.step(() => {
       assert_equals(callbackThis, ro, "callback.this is ResizeObserver");
       assert_equals(obs, ro, "2nd argument is ResizeObserver");
@@ -219,7 +226,10 @@ function test7() {
       ro = null;
       callbackThis = null;
       obs = null;
-      harnessTest.done();
+      harnessTest.step_timeout( _ => {
+        harnessTest.done();
+        resolvePromise();
+      }, 0);
      });
     }
   );
@@ -245,6 +255,7 @@ function test8() {
   [
     {
       setup: observer => {
+
         observer.observe(t, { box: "content-box" });
       },
       notify: entries => {
@@ -262,6 +273,7 @@ function test8() {
                       "target border-box inline size");
         assert_equals(entries[0].borderBoxSize[0].blockSize, 100,
                       "target border-box block size");
+        return true;
       }
     },
     {
@@ -284,6 +296,7 @@ function test8() {
                       "target border-box inline size");
         assert_equals(entries[0].borderBoxSize[0].blockSize, 90,
                       "target border-box block size");
+        return true;
       }
     },
     {
@@ -330,6 +343,7 @@ function test9() {
                       "target border-box inline size");
         assert_equals(entries[0].borderBoxSize[0].blockSize, 100,
                       "target border-box block size");
+        return true;
       }
     },
     {
@@ -387,6 +401,7 @@ function test10() {
                       "target border-box inline size");
         assert_equals(entries[0].borderBoxSize[0].blockSize, 100,
                       "target border-box block size");
+        return true;
       }
     },
     {
@@ -457,6 +472,7 @@ function test11() {
                       "target border-box inline size");
         assert_equals(entries[0].borderBoxSize[0].blockSize, 50,
                       "target border-box block size");
+        return true;
       }
     },
     {
@@ -509,6 +525,7 @@ function test12() {
                       "target content-box inline size");
         assert_equals(entries[0].contentBoxSize[0].blockSize, 50,
                       "target content-box block size");
+        return true;
       }
     },
     {
@@ -550,6 +567,7 @@ function test13() {
                       "target content-box inline size");
         assert_equals(entries[0].contentBoxSize[0].blockSize, 50,
                       "target content-box block size");
+        return true;
       }
     },
     {
@@ -601,6 +619,7 @@ function test14() {
                       "target border-box inline size");
         assert_equals(entries[0].borderBoxSize[0].blockSize, 100,
                       "target border-box block size");
+        return true;
       }
     },
     {
@@ -670,6 +689,7 @@ function test15() {
                       "target content-box inline size");
         assert_equals(entries[0].borderBoxSize[0].blockSize, 100,
                       "target content-box block size");
+        return true;
       }
     },
     {
@@ -699,16 +719,26 @@ function test16() {
 
   let helper = new ResizeTestHelper(
     // See: https://drafts.csswg.org/resize-observer/#intro.
-    "test16: observations do not fire for non-replaced inline elements",
+    "test16: observations fire once with 0x0 size for non-replaced inline elements",
   [
     {
       setup: observer => {
         observer.observe(t);
       },
       notify: entries => {
-        assert_unreached("No observation should fire for non box element")
-      },
-      timeout: () => {}
+        assert_equals(entries.length, 1, "1 pending notification");
+        assert_equals(entries[0].target, t, "target is t");
+        assert_equals(entries[0].contentRect.width, 0, "target width");
+        assert_equals(entries[0].contentRect.height, 0, "target height");
+        assert_equals(entries[0].contentBoxSize[0].inlineSize, 0,
+                      "target content-box inline size");
+        assert_equals(entries[0].contentBoxSize[0].blockSize, 0,
+                      "target content-box block size");
+        assert_equals(entries[0].borderBoxSize[0].inlineSize, 0,
+                      "target border-box inline size");
+        assert_equals(entries[0].borderBoxSize[0].blockSize, 0,
+                      "target border-box block size");
+      }
     }
   ]);
 
@@ -758,6 +788,7 @@ function test17() {
                       "target border-box inline size");
         assert_equals(entries[0].borderBoxSize[0].blockSize, 50,
                       "target border-box block size");
+        return true;
       }
     },
     {
@@ -782,6 +813,7 @@ function test17() {
                       "target border-box inline size");
         assert_equals(entries[0].borderBoxSize[0].blockSize, 50,
                       "target border-box block size");
+        return true;
       }
     },
     {
@@ -805,6 +837,7 @@ function test17() {
                       "target border-box inline size");
         assert_equals(entries[0].borderBoxSize[0].blockSize, 50,
                       "target border-box block size");
+        return true;
       }
     },
     {
@@ -826,6 +859,7 @@ function test17() {
                       "target border-box inline size");
         assert_equals(entries[0].borderBoxSize[0].blockSize, 50,
                       "target border-box block size");
+        return true;
       }
     },
     {
@@ -878,6 +912,35 @@ function test18() {
                       "target device-pixel-content-box block size");
       }
     },
+  ]);
+
+  return helper.start(() => t.remove());
+}
+
+function test19() {
+  // zoom is not a standard css property, so we should check it first. If the
+  // browser doesn't support it, we skip this test.
+  if (!CSS.supports("zoom", "3")) {
+    return Promise.resolve();
+  }
+
+  let t = createAndAppendElement("div");
+  t.style.height = "100px";
+  t.style.width = "50px";
+
+  let helper = new ResizeTestHelper(
+    "test19: an observation is fired when device-pixel-content-box is being " +
+    "observed and zoom change",
+  [
+    {
+      setup: observer => {
+        observer.observe(t, {box: "device-pixel-content-box"});
+      },
+      notify: entries => {
+        // No need to test again (see test18), so skip this event loop.
+        return true;
+      }
+    },
     {
       setup: observer => {
         document.body.style.zoom = 3;
@@ -899,7 +962,14 @@ function test18() {
                       "target device-pixel-content-box inline size");
         assert_equals(entries[0].devicePixelContentBoxSize[0].blockSize, 300,
                       "target device-pixel-content-box block size");
+        return true;
       }
+    },
+    {
+      setup: observer => {
+        document.body.style.zoom = '';
+      },
+      notify: entries => {}
     }
   ]);
 
@@ -931,6 +1001,7 @@ test0()
   .then(() => test16())
   .then(() => test17())
   .then(() => test18())
+  .then(() => test19())
   .then(() => guard.done());
 
 </script>

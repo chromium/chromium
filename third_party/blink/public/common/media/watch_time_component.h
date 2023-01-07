@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/watch_time_keys.h"
@@ -25,7 +25,7 @@ namespace blink {
 // time, flip the actual value, and then start recording from that previous
 // finalize time. They may also clear the pending value flip if the value
 // changes back to the previous value.
-// TODO(https://crbug.com/1116920): Move to renderer/platform/media once its
+// TODO(https://crbug.com/1198341): Move to renderer/platform/media once its
 // dependencies are moved to Blink.
 template <typename T>
 class WatchTimeComponent {
@@ -52,6 +52,8 @@ class WatchTimeComponent {
                      ValueToKeyCB value_to_key_cb,
                      GetMediaTimeCB get_media_time_cb,
                      media::mojom::WatchTimeRecorder* recorder);
+  WatchTimeComponent(const WatchTimeComponent&) = delete;
+  WatchTimeComponent& operator=(const WatchTimeComponent&) = delete;
   ~WatchTimeComponent();
 
   // Called when the main WatchTimeReporter timer is started. Reinitializes
@@ -110,7 +112,7 @@ class WatchTimeComponent {
   const std::vector<media::WatchTimeKey> keys_to_finalize_;
   const ValueToKeyCB value_to_key_cb_;
   const GetMediaTimeCB get_media_time_cb_;
-  media::mojom::WatchTimeRecorder* const recorder_;
+  const raw_ptr<media::mojom::WatchTimeRecorder> recorder_;
 
   // The current value which will be used to select keys for reporting WatchTime
   // during the next RecordWatchTime() call.
@@ -127,8 +129,6 @@ class WatchTimeComponent {
 
   // The last media timestamp seen by RecordWatchTime().
   base::TimeDelta last_timestamp_ = media::kNoTimestamp;
-
-  DISALLOW_COPY_AND_ASSIGN(WatchTimeComponent);
 };
 
 }  // namespace blink

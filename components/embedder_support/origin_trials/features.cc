@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,12 @@ namespace embedder_support {
 // Users from experiment group will behave the same as default.
 // Users from control group will have the feature disabled, excluding them
 // from the origin trial.
-const base::Feature kOriginTrialsSampleAPIThirdPartyAlternativeUsage{
-    "OriginTrialsSampleAPIThirdPartyAlternativeUsage",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kOriginTrialsSampleAPIThirdPartyAlternativeUsage,
+             "OriginTrialsSampleAPIThirdPartyAlternativeUsage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::Feature kConversionMeasurementAPIAlternativeUsage{
-    "ConversionMeasurementAPIAlternativeUsage",
-    base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kConversionMeasurementAPIAlternativeUsage,
+             "ConversionMeasurementAPIAlternativeUsage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace embedder_support

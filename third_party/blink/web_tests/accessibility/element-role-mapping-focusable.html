@@ -86,7 +86,7 @@ if (window.testRunner && window.accessibilityController) {
     function hasSingleSelectRole(select_id, option_id) {
         debug(select_id);
         window.elem = accessibilityController.accessibleElementById(select_id);
-        shouldBe("elem.role", "\"AXRole: AXPopUpButton\"");
+        shouldBe("elem.role", "\"AXRole: AXComboBoxSelect\"");
         
         window.axMenuListPopup = elem.childAtIndex(0);
         shouldBe("axMenuListPopup.role", "\"AXRole: AXMenuListPopup\"");

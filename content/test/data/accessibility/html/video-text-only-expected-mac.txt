@@ -1,0 +1,5 @@
+AXWebArea
+++AXGroup
+++++AXGroup AXDescription='Unable to play media.'
+++++AXStaticText AXValue=' '
+++++AXGroup AXDescription='Unable to play media.'

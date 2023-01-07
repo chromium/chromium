@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,24 +41,24 @@ FileEnumerator::FileInfo::FileInfo() {
 }
 
 bool FileEnumerator::FileInfo::IsDirectory() const {
-  return (find_data_.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+  return (find_data().dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 }
 
 FilePath FileEnumerator::FileInfo::GetName() const {
-  return FilePath(find_data_.cFileName);
+  return FilePath(find_data().cFileName);
 }
 
 int64_t FileEnumerator::FileInfo::GetSize() const {
   ULARGE_INTEGER size;
-  size.HighPart = find_data_.nFileSizeHigh;
-  size.LowPart = find_data_.nFileSizeLow;
+  size.HighPart = find_data().nFileSizeHigh;
+  size.LowPart = find_data().nFileSizeLow;
   DCHECK_LE(size.QuadPart,
             static_cast<ULONGLONG>(std::numeric_limits<int64_t>::max()));
   return static_cast<int64_t>(size.QuadPart);
 }
 
 Time FileEnumerator::FileInfo::GetLastModifiedTime() const {
-  return Time::FromFileTime(find_data_.ftLastWriteTime);
+  return Time::FromFileTime(find_data().ftLastWriteTime);
 }
 
 // FileEnumerator --------------------------------------------------------------
@@ -107,6 +107,14 @@ FileEnumerator::FileEnumerator(const FilePath& root_path,
       error_policy_(error_policy) {
   // INCLUDE_DOT_DOT must not be specified if recursive.
   DCHECK(!(recursive && (INCLUDE_DOT_DOT & file_type_)));
+
+  if (file_type_ & FileType::NAMES_ONLY) {
+    DCHECK(!recursive_);
+    DCHECK_EQ(file_type_ & ~(FileType::NAMES_ONLY | FileType::INCLUDE_DOT_DOT),
+              0);
+    file_type_ |= (FileType::FILES | FileType::DIRECTORIES);
+  }
+
   memset(&find_data_, 0, sizeof(find_data_));
   pending_paths_.push(root_path);
 }
@@ -117,6 +125,7 @@ FileEnumerator::~FileEnumerator() {
 }
 
 FileEnumerator::FileInfo FileEnumerator::GetInfo() const {
+  DCHECK(!(file_type_ & FileType::NAMES_ONLY));
   if (!has_find_data_) {
     NOTREACHED();
     return FileInfo();
@@ -140,12 +149,13 @@ FilePath FileEnumerator::Next() {
           BuildSearchFilter(folder_search_policy_, root_path_, pattern_);
       find_handle_ = FindFirstFileEx(src.value().c_str(),
                                      FindExInfoBasic,  // Omit short name.
-                                     &find_data_, FindExSearchNameMatch,
-                                     nullptr, FIND_FIRST_EX_LARGE_FETCH);
+                                     ChromeToWindowsType(&find_data_),
+                                     FindExSearchNameMatch, nullptr,
+                                     FIND_FIRST_EX_LARGE_FETCH);
       has_find_data_ = true;
     } else {
       // Search for the next file/directory.
-      if (!FindNextFile(find_handle_, &find_data_)) {
+      if (!FindNextFile(find_handle_, ChromeToWindowsType(&find_data_))) {
         FindClose(find_handle_);
         find_handle_ = INVALID_HANDLE_VALUE;
       }
@@ -175,12 +185,12 @@ FilePath FileEnumerator::Next() {
       return FilePath();
     }
 
-    const FilePath filename(find_data_.cFileName);
+    const FilePath filename(find_data().cFileName);
     if (ShouldSkip(filename))
       continue;
 
     const bool is_dir =
-        (find_data_.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+        (find_data().dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
     const FilePath abs_path = root_path_.Append(filename);
 
     // Check if directory should be processed recursive.

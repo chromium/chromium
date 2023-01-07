@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,13 @@
 #include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/ash/login/enrollment/enterprise_enrollment_helper_mock.h"
-#include "chrome/browser/chromeos/policy/enrollment_config.h"
-#include "chrome/browser/policy/enrollment_status.h"
-#include "chromeos/tpm/install_attributes.h"
+#include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace test {
 
 // Result of Demo Mode setup.
@@ -45,8 +43,19 @@ void SetupMockDemoModeOfflineEnrollmentHelper(DemoModeSetupResult result);
 bool SetupDummyOfflinePolicyDir(const std::string& account_id,
                                 base::ScopedTempDir* temp_dir);
 
-}  // namespace test
+// Set Install Attributes as part of faked enrollment so that the device is
+// considered enterprise managed
+void LockDemoDeviceInstallAttributes();
 
+}  // namespace test
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace test {
+using ::ash::test::SetupDummyOfflinePolicyDir;
+}
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_SETUP_TEST_UTILS_H_

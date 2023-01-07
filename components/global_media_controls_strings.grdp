@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_BACK_TO_TAB" desc="A11y text for the Global Media Controls container describing how clicking it takes you back to the tab.">
+   Back to tab
+  </message>
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_DISMISS_ICON_TOOLTIP_TEXT" desc="Tooltip for the dismiss button within the Global Media Controls dialog. The tooltip appears on mouseover of the icon.">
+   Dismiss
+  </message>
+</grit-part>

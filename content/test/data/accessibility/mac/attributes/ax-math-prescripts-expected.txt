@@ -1,0 +1,15 @@
+multiscripts1.AXMathPrescripts.count=3
+multiscripts1.AXMathPrescripts[0].AXMathSuperscript.AXChildren[0].AXValue='pre2'
+multiscripts1.AXMathPrescripts[1].AXMathSubscript.AXChildren[0].AXValue='pre3'
+multiscripts1.AXMathPrescripts[1].AXMathSuperscript.AXChildren[0].AXValue='pre4'
+multiscripts1.AXMathPrescripts[2].AXMathSubscript.AXChildren[0].AXValue='pre5'
+multiscripts1.AXMathPrescripts[2].AXMathSuperscript.AXChildren[0].AXValue='pre6'
+multiscripts2.AXMathPrescripts.count=2
+multiscripts2.AXMathPrescripts[0].AXMathSubscript.AXChildren[0].AXValue='pre1'
+multiscripts2.AXMathPrescripts[0].AXMathSuperscript.AXChildren.count=0
+multiscripts2.AXMathPrescripts[1].AXMathSubscript.AXChildren.count=0
+multiscripts2.AXMathPrescripts[1].AXMathSuperscript.AXChildren[0].AXValue='pre4'
+multiscripts3.AXMathPrescripts=NULL
+multiscripts4.AXMathPrescripts.count=1
+multiscripts4.AXMathPrescripts[0].AXMathSuperscript.AXChildren[0].AXValue='2'
+multiscripts4.AXMathPrescripts[0].AXMathSubscript.AXChildren[0].AXValue='1'

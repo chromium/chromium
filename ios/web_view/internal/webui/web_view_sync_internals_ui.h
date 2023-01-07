@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ios/components/webui/sync_internals/sync_internals_ui.h"
 
 namespace web {
@@ -19,15 +18,14 @@ namespace ios_web_view {
 // ios/web_view specific SyncInternalsUI.
 class WebViewSyncInternalsUI : public SyncInternalsUI {
  public:
-  explicit WebViewSyncInternalsUI(web::WebUIIOS* web_ui,
-                                  const std::string& host);
+  WebViewSyncInternalsUI(web::WebUIIOS* web_ui, const std::string& host);
+
+  WebViewSyncInternalsUI(const WebViewSyncInternalsUI&) = delete;
+  WebViewSyncInternalsUI& operator=(const WebViewSyncInternalsUI&) = delete;
+
   ~WebViewSyncInternalsUI() override;
   bool OverrideHandleWebUIIOSMessage(const GURL& source_url,
-                                     const std::string& message,
-                                     const base::ListValue& args) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebViewSyncInternalsUI);
+                                     base::StringPiece message) override;
 };
 
 }  // namespace ios_web_view

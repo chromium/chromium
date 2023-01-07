@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "media/base/audio_bus.h"
 #include "media/base/media_export.h"
 
@@ -35,6 +34,9 @@ class MEDIA_EXPORT AudioPushFifo final {
   // Creates a new AudioPushFifo which delivers re-buffered audio by running
   // |callback|.
   explicit AudioPushFifo(const OutputCallback& callback);
+
+  AudioPushFifo(const AudioPushFifo&) = delete;
+  AudioPushFifo& operator=(const AudioPushFifo&) = delete;
 
   ~AudioPushFifo();
 
@@ -69,8 +71,6 @@ class MEDIA_EXPORT AudioPushFifo final {
   // Queue of frames pending for delivery.
   std::unique_ptr<AudioBus> audio_queue_;
   int queued_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPushFifo);
 };
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <array>
 
-#include "base/macros.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/gpu_gles2_export.h"
@@ -23,6 +22,10 @@ class GLES2Decoder;
 class GPU_GLES2_EXPORT SRGBConverter {
  public:
   explicit SRGBConverter(const gles2::FeatureInfo* feature_info);
+
+  SRGBConverter(const SRGBConverter&) = delete;
+  SRGBConverter& operator=(const SRGBConverter&) = delete;
+
   ~SRGBConverter();
 
   void InitializeSRGBConverter(const gles2::GLES2Decoder* decoder);
@@ -67,8 +70,6 @@ class GPU_GLES2_EXPORT SRGBConverter {
   GLuint srgb_encoder_fbo_ = 0;
 
   GLuint srgb_converter_vao_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SRGBConverter);
 };
 
 }  // namespace gles2.

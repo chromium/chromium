@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,4 +14,4 @@ CrossOriginAttributeValue GetCrossOriginAttributeValue(const String& value);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CROSS_ORIGIN_ATTRIBUTE_H_

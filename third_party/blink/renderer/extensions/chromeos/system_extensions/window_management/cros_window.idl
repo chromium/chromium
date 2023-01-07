@@ -1,0 +1,88 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// WindowState reflects which of the mutually exclusive states of maximized,
+// minimized, or fullscreen that the CrosWindow is in.
+enum CrosWindowState {
+  "normal",     // The window is at the default size or user-selected size.
+  "fullscreen", // The window is running as a full screen application.
+  "maximized",  // The window fills the screen on which it is displayed not
+                // including any screen areas reserved by the operating system.
+  "minimized",  // The window is only visible as an icon.
+};
+
+// CrosWindowVisibilityState reflects whether the CrosWindow is rendered.
+// This is intrinsic to the window and separate from occlusion state which
+// refers to visibility relative to other windows.
+enum CrosWindowVisibilityState {
+  "hidden",  // Window is not placed on any screens.
+  "shown",   // Window is placed on a screen.
+};
+
+// Currently, all screen space related methods and arguments correspond the top
+// left corner as (0, 0). This might change once we support multiple screens and
+// we use the multi-screen origin:
+// https://w3c.github.io/window-placement/#multi-screen-origin
+interface CrosWindow {
+  readonly attribute DOMString id;
+
+  readonly attribute DOMString title;
+  readonly attribute DOMString appId;
+  readonly attribute CrosWindowState windowState;
+  readonly attribute boolean isFocused;
+  readonly attribute CrosWindowVisibilityState visibilityState;
+
+  // Returns horizontal distance, in CSS pixels, from the left border of the
+  // user's browser viewport to the left side of the screen.
+  readonly attribute long screenLeft;
+  [ImplementedAs=screenLeft] readonly attribute long screenX;
+
+  // Returns the vertical distance, in CSS pixels, from the top border of the
+  // user's browser viewport to the top side of the screen.
+  readonly attribute long screenTop;
+  [ImplementedAs=screenTop] readonly attribute long screenY;
+
+  // Returns width of the window.
+  readonly attribute long width;
+
+  // Returns height of the window.
+  readonly attribute long height;
+
+  // Moves the window such that the window's top left corner is at coordinates
+  // (x, y) relative to the top left corner of the current screen. Measured in
+  // CSS pixels of the window.
+  [CallWith=ScriptState] Promise<void> moveTo(long x, long y);
+
+  // Moves the current window by a specified amount. Positive deltas move right
+  // and down. Negative deltas move up and left.
+  [CallWith=ScriptState] Promise<void> moveBy(long deltaX, long deltaY);
+
+  // Sets the window dimensions to  width  and  height.
+  [CallWith=ScriptState] Promise<void> resizeTo(long width, long height);
+
+  // Resizes the current window by a specified amount.
+  [CallWith=ScriptState] Promise<void> resizeBy(long deltaWidth, long deltaHeight);
+
+  // Sets or unsets window to fullscreen.
+  [CallWith=ScriptState] Promise<void> setFullscreen(boolean fullscreen);
+
+  // Sets window state to maximized. Promise resolves when window starts
+  // maximizing. Promise rejects with an error if the window can't be maximized.
+  [CallWith=ScriptState] Promise<void> maximize();
+
+  // Sets window state to minimized. Promise resolves when window starts
+  // minimizing. Promise rejects with an error if the window can't be minimized.
+  [CallWith=ScriptState] Promise<void> minimize();
+
+  // Sets the window state from the current state to `normal`. As an example, if
+  // the current state is minimized, `restore()` will change the window's state
+  // to `normal`. If the state is already `kNormal` the state won't change.
+  [CallWith=ScriptState] Promise<void> restore();
+
+  // Allocates focus to the CrosWindow identified by id and brings to front.
+  [CallWith=ScriptState] Promise<void> focus();
+
+  // Closes the window.
+  [CallWith=ScriptState] Promise<void> close();
+};

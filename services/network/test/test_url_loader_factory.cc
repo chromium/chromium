@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -122,6 +122,8 @@ void TestURLLoaderFactory::CreateLoaderAndStart(
     const ResourceRequest& url_request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+  ++total_requests_;
+
   if (interceptor_)
     interceptor_.Run(url_request);
 
@@ -131,8 +133,10 @@ void TestURLLoaderFactory::CreateLoaderAndStart(
 
   PendingRequest pending_request;
   pending_request.client = std::move(client_remote);
-  pending_request.request = url_request;
+  pending_request.request_id = request_id;
   pending_request.options = options;
+  pending_request.request = url_request;
+  pending_request.traffic_annotation = traffic_annotation;
   pending_requests_.push_back(std::move(pending_request));
 }
 
@@ -155,8 +159,7 @@ bool TestURLLoaderFactory::CreateLoaderAndStartInternal(
 
   Redirects redirects;
   for (auto& redirect : it->second.redirects) {
-    redirects.push_back(
-        std::make_pair(redirect.first, redirect.second.Clone()));
+    redirects.emplace_back(redirect.first, redirect.second.Clone());
   }
   SimulateResponse(client, std::move(redirects), it->second.head.Clone(),
                    it->second.content, it->second.status, it->second.flags);
@@ -260,23 +263,23 @@ void TestURLLoaderFactory::SimulateResponse(
   if (response_flags & kResponseOnlyRedirectsNoDestination)
     return;
 
-  if ((response_flags & kSendHeadersOnNetworkError) ||
-      status.error_code == net::OK) {
-    client->OnReceiveResponse(std::move(head));
-  }
+  mojo::ScopedDataPipeConsumerHandle body;
 
   if (status.error_code == net::OK) {
     mojo::ScopedDataPipeProducerHandle producer_handle;
-    mojo::ScopedDataPipeConsumerHandle consumer_handle;
-    CHECK_EQ(
-        mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
-        MOJO_RESULT_OK);
+    CHECK_EQ(mojo::CreateDataPipe(content.size(), producer_handle, body),
+             MOJO_RESULT_OK);
     uint32_t bytes_written = content.size();
     CHECK_EQ(MOJO_RESULT_OK,
              producer_handle->WriteData(content.data(), &bytes_written,
                                         MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
-    client->OnStartLoadingResponseBody(std::move(consumer_handle));
   }
+
+  if ((response_flags & kSendHeadersOnNetworkError) ||
+      status.error_code == net::OK) {
+    client->OnReceiveResponse(std::move(head), std::move(body), absl::nullopt);
+  }
+
   client->OnComplete(status);
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 
 #include "base/files/file_path.h"
 #include "util/linux/thread_info.h"
-#include "util/process/process_memory.h"
+#include "util/process/process_memory_linux.h"
 
 namespace crashpad {
 
@@ -64,7 +64,7 @@ class PtraceConnection {
   //!
   //! The caller does not take ownership of the reader. The reader is valid for
   //! the lifetime of the PtraceConnection that created it.
-  virtual ProcessMemory* Memory() = 0;
+  virtual ProcessMemoryLinux* Memory() = 0;
 
   //! \brief Determines the thread IDs of the threads in the connected process.
   //!
@@ -73,6 +73,20 @@ class PtraceConnection {
   //!     this method returns `false`, \a threads may contain a partial list of
   //!     thread IDs.
   virtual bool Threads(std::vector<pid_t>* threads) = 0;
+
+  //! \brief Copies memory from the connected process into a caller-provided
+  //!     buffer in the current process, up to a maximum number of bytes.
+  //!
+  //! \param[in] address The address, in the connected process' address space,
+  //!     of the memory region to copy.
+  //! \param[in] size The maximum size, in bytes, of the memory region to copy.
+  //!     \a buffer must be at least this size.
+  //! \param[out] buffer The buffer into which the contents of the other
+  //!     process' memory will be copied.
+  //!
+  //! \return the number of bytes copied, 0 if there is no more data to read, or
+  //!     -1 on failure with a message logged.
+  virtual ssize_t ReadUpTo(VMAddress address, size_t size, void* buffer) = 0;
 };
 
 }  // namespace crashpad

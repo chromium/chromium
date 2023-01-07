@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -38,13 +39,19 @@ class FakeExternalBeginFrameSource : public BeginFrameSource {
   void AddObserver(BeginFrameObserver* obs) override;
   void RemoveObserver(BeginFrameObserver* obs) override;
   void DidFinishFrame(BeginFrameObserver* obs) override;
-  bool IsThrottled() const override;
   void OnGpuNoLongerBusy() override {}
+  void SetDynamicBeginFrameDeadlineOffsetSource(
+      DynamicBeginFrameDeadlineOffsetSource*
+          dynamic_begin_frame_deadline_offset_source) override;
 
   BeginFrameArgs CreateBeginFrameArgs(
       BeginFrameArgs::CreationLocation location);
   BeginFrameArgs CreateBeginFrameArgs(BeginFrameArgs::CreationLocation location,
                                       const base::TickClock* now_src);
+  BeginFrameArgs CreateBeginFrameArgsWithGenerator(
+      base::TimeTicks frame_time,
+      base::TimeTicks next_frame_time,
+      base::TimeDelta vsync_interval);
   uint64_t next_begin_frame_number() const { return next_begin_frame_number_; }
 
   void TestOnBeginFrame(const BeginFrameArgs& args);
@@ -58,12 +65,13 @@ class FakeExternalBeginFrameSource : public BeginFrameSource {
 
   const bool tick_automatically_;
   const double milliseconds_per_frame_;
-  Client* client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
   bool paused_ = false;
   BeginFrameArgs current_args_;
   uint64_t next_begin_frame_number_ = BeginFrameArgs::kStartingFrameNumber;
   std::set<BeginFrameObserver*> observers_;
   base::CancelableOnceClosure begin_frame_task_;
+  BeginFrameSource::BeginFrameArgsGenerator begin_frame_args_generator_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

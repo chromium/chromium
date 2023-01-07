@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {TestBrowserProxy} from '../../test_browser_proxy.m.js';
-// #import {BrowserChannel,UpdateStatus} from 'chrome://os-settings/chromeos/os_settings.js';
-// clang-format on
+import {BrowserChannel, UpdateStatus} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 
-/** @implements {settings.AboutPageBrowserProxy} */
-/* #export */ class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
+import {TestBrowserProxy} from '../../test_browser_proxy.js';
+
+/** @implements {AboutPageBrowserProxy} */
+export class TestAboutPageBrowserProxyChromeOS extends TestBrowserProxy {
   constructor() {
     super([
       'pageReady',
@@ -25,11 +25,20 @@
       'openOsHelpPage',
       'openDiagnostics',
       'refreshTPMFirmwareUpdateStatus',
+      'requestUpdate',
       'setChannel',
+      'getFirmwareUpdateCount',
+      'openFirmwareUpdatesPage',
+      'isManagedAutoUpdateEnabled',
+      'isConsumerAutoUpdateEnabled',
+      'setConsumerAutoUpdate',
     ]);
 
     /** @private {!UpdateStatus} */
     this.updateStatus_ = UpdateStatus.UPDATED;
+
+    /** @private {!boolean} */
+    this.sendUpdateStatus_ = true;
 
     /** @private {!VersionInfo} */
     this.versionInfo_ = {
@@ -59,6 +68,15 @@
       hasEndOfLife: false,
       aboutPageEndOfLifeMessage: '',
     };
+
+    /** @private {!boolean} */
+    this.managedAutoUpdateEnabled_ = true;
+
+    /** @private {!boolean} */
+    this.consumerAutoUpdateEnabled_ = true;
+
+    /** @private {number} */
+    this.firmwareUpdateCount_ = 0;
   }
 
   /** @param {!UpdateStatus} updateStatus */
@@ -66,13 +84,27 @@
     this.updateStatus_ = updateStatus;
   }
 
+  blockRefreshUpdateStatus() {
+    this.sendUpdateStatus_ = false;
+  }
+
   sendStatusNoInternet() {
-    cr.webUIListenerCallback('update-status-changed', {
+    webUIListenerCallback('update-status-changed', {
       progress: 0,
       status: UpdateStatus.FAILED,
       message: 'offline',
       connectionTypes: 'no internet',
     });
+  }
+
+  /** @param {boolean} enabled */
+  setManagedAutoUpdate(enabled) {
+    this.managedAutoUpdateEnabled_ = enabled;
+  }
+
+  /** @param {boolean} enabled */
+  resetConsumerAutoUpdate(enabled) {
+    this.consumerAutoUpdateEnabled_ = enabled;
   }
 
   /** @override */
@@ -82,10 +114,12 @@
 
   /** @override */
   refreshUpdateStatus() {
-    cr.webUIListenerCallback('update-status-changed', {
-      progress: 1,
-      status: this.updateStatus_,
-    });
+    if (this.sendUpdateStatus_) {
+      webUIListenerCallback('update-status-changed', {
+        progress: 1,
+        status: this.updateStatus_,
+      });
+    }
     this.methodCalled('refreshUpdateStatus');
   }
 
@@ -182,8 +216,15 @@
   /** @override */
   refreshTPMFirmwareUpdateStatus() {
     this.methodCalled('refreshTPMFirmwareUpdateStatus');
-    cr.webUIListenerCallback(
+    webUIListenerCallback(
         'tpm-firmware-update-status-changed', this.tpmFirmwareUpdateStatus_);
+  }
+
+  /** @override */
+  requestUpdate() {
+    this.setUpdateStatus(UpdateStatus.UPDATING);
+    this.refreshUpdateStatus();
+    this.methodCalled('requestUpdate');
   }
 
   /** @override */
@@ -199,5 +240,39 @@
   /** @override */
   launchReleaseNotes() {
     this.methodCalled('launchReleaseNotes');
+  }
+
+  /** @override */
+  openFirmwareUpdatesPage() {
+    this.methodCalled('openFirmwareUpdatesPage');
+  }
+
+  /** @override */
+  getFirmwareUpdateCount() {
+    this.methodCalled('getFirmwareUpdateCount');
+    return Promise.resolve(this.firmwareUpdateCount_);
+  }
+
+  /** @param {number} firmwareUpdatesCount */
+  setFirmwareUpdatesCount(firmwareUpdatesCount) {
+    this.firmwareUpdateCount_ = firmwareUpdatesCount;
+  }
+
+  /** @override */
+  isManagedAutoUpdateEnabled() {
+    this.methodCalled('isManagedAutoUpdateEnabled');
+    return Promise.resolve(this.managedAutoUpdateEnabled_);
+  }
+
+  /** @override */
+  isConsumerAutoUpdateEnabled() {
+    this.methodCalled('isConsumerAutoUpdateEnabled');
+    return Promise.resolve(this.consumerAutoUpdateEnabled_);
+  }
+
+  /** @override */
+  setConsumerAutoUpdate(enable) {
+    this.consumerAutoUpdateEnabled_ = enable;
+    this.methodCalled('setConsumerAutoUpdate');
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,17 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#include "base/bind.h"
-#include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/values.h"
+#import "base/bind.h"
+#import "base/run_loop.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,11 +45,23 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 @end
 
 namespace {
-// Script that returns document.body as a string.
+// Script that returns the document contents as a string.
 char kGetDocumentBodyJavaScript[] =
-    "document.body ? document.body.textContent : null";
+    "function allTextContent(element) { "
+    "  if (!element) { return ''; }"
+    "  let textString = element.textContent;"
+    "  if (element == document.body || element instanceof HTMLElement) {"
+    "    for (let e of element.getElementsByTagName('*')) {"
+    "      if (e && e.shadowRoot) {"
+    "        textString += '|' + allTextContent(e.shadowRoot);"
+    "      }"
+    "    }"
+    "  }"
+    "  return textString;"
+    "}"
+    "allTextContent(document.body);";
 
-// Fetches the image from |image_url|.
+// Fetches the image from `image_url`.
 UIImage* LoadImage(const GURL& image_url) {
   __block UIImage* image;
   __block NSError* error;
@@ -94,8 +106,8 @@ bool IsWebViewContainingText(web::WebState* web_state,
   std::unique_ptr<base::Value> value =
       web::test::ExecuteJavaScript(web_state, kGetDocumentBodyJavaScript);
   std::string body;
-  if (value && value->GetAsString(&body)) {
-    return body.find(text) != std::string::npos;
+  if (value && value->is_string()) {
+    return value->GetString().find(text) != std::string::npos;
   }
   return false;
 }
@@ -110,7 +122,7 @@ bool IsWebViewContainingTextInFrame(web::WebState* web_state,
     FindInPageJavaScriptFeature* find_in_page_feature =
         FindInPageJavaScriptFeature::GetInstance();
     find_in_page_feature->Search(
-        frame, text, base::BindOnce(^(base::Optional<int> result_matches) {
+        frame, text, base::BindOnce(^(absl::optional<int> result_matches) {
           if (result_matches && result_matches.value() >= 1) {
             text_found = true;
           }
@@ -127,7 +139,7 @@ bool IsWebViewContainingTextInFrame(web::WebState* web_state,
 
 bool WaitForWebViewContainingText(web::WebState* web_state,
                                   std::string text,
-                                  NSTimeInterval timeout) {
+                                  base::TimeDelta timeout) {
   return WaitUntilConditionOrTimeout(timeout, ^{
     base::RunLoop().RunUntilIdle();
     return IsWebViewContainingText(web_state, text);
@@ -136,7 +148,7 @@ bool WaitForWebViewContainingText(web::WebState* web_state,
 
 bool WaitForWebViewNotContainingText(web::WebState* web_state,
                                      std::string text,
-                                     NSTimeInterval timeout) {
+                                     base::TimeDelta timeout) {
   return WaitUntilConditionOrTimeout(timeout, ^{
     base::RunLoop().RunUntilIdle();
     return !IsWebViewContainingText(web_state, text);
@@ -145,7 +157,7 @@ bool WaitForWebViewNotContainingText(web::WebState* web_state,
 
 bool WaitForWebViewContainingTextInFrame(web::WebState* web_state,
                                          std::string text,
-                                         NSTimeInterval timeout) {
+                                         base::TimeDelta timeout) {
   return WaitUntilConditionOrTimeout(timeout, ^{
     base::RunLoop().RunUntilIdle();
     return IsWebViewContainingTextInFrame(web_state, text);
@@ -159,11 +171,10 @@ bool WaitForWebViewContainingImage(std::string image_id,
       base::StringPrintf("document.getElementById('%s').src", image_id.c_str());
   std::unique_ptr<base::Value> url_as_value =
       web::test::ExecuteJavaScript(web_state, get_url_script);
-  std::string url_as_string;
-  if (!url_as_value->GetAsString(&url_as_string))
+  if (!url_as_value->is_string())
     return false;
 
-  UIImage* image = LoadImage(GURL(url_as_string));
+  UIImage* image = LoadImage(GURL(url_as_value->GetString()));
   if (!image)
     return false;
 
@@ -181,9 +192,8 @@ bool WaitForWebViewContainingImage(std::string image_id,
                                    base::SysUTF8ToNSString(image_id)];
     std::unique_ptr<base::Value> value = web::test::ExecuteJavaScript(
         web_state, base::SysNSStringToUTF8(kGetElementAttributesScript));
-    std::string result;
-    if (value && value->GetAsString(&result)) {
-      NSString* evaluation_result = base::SysUTF8ToNSString(result);
+    if (value && value->is_string()) {
+      NSString* evaluation_result = base::SysUTF8ToNSString(value->GetString());
       NSData* image_attributes_as_data =
           [evaluation_result dataUsingEncoding:NSUTF8StringEncoding];
       NSDictionary* image_attributes =
@@ -209,13 +219,11 @@ bool IsWebViewContainingElement(web::WebState* web_state,
   std::string script = base::SysNSStringToUTF8(
       [NSString stringWithFormat:@"!!(%@)", selector.selectorScript]);
 
-  bool did_succeed = false;
   std::unique_ptr<base::Value> value =
       web::test::ExecuteJavaScript(web_state, script);
-  if (value) {
-    value->GetAsBoolean(&did_succeed);
-  }
-  return did_succeed;
+  if (!value)
+    return false;
+  return value->GetIfBool().value_or(false);
 }
 
 bool WaitForWebViewContainingElement(web::WebState* web_state,

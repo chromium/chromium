@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,5 +43,8 @@ public class PriceCardView extends FrameLayout {
         mPreviousPriceInfoBox = (TextView) findViewById(R.id.previous_price);
         mPreviousPriceInfoBox.setPaintFlags(
                 mPreviousPriceInfoBox.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        mPriceInfoBox.setTextColor(getContext().getColor(R.color.price_drop_annotation_text_green));
+        mPreviousPriceInfoBox.setTextColor(
+                getContext().getColor(R.color.chip_text_color_secondary_list));
     }
 }

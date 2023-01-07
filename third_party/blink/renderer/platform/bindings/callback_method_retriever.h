@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_CALLBACK_METHOD_RETRIEVER_H_
 
 #include "third_party/blink/renderer/platform/bindings/callback_function_base.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -25,6 +26,8 @@ class PLATFORM_EXPORT CallbackMethodRetriever {
 
  public:
   explicit CallbackMethodRetriever(CallbackFunctionBase* constructor);
+  CallbackMethodRetriever(const CallbackMethodRetriever&) = delete;
+  CallbackMethodRetriever& operator=(const CallbackMethodRetriever&) = delete;
 
   // Get the prototype object from the callback function. Must be invoked prior
   // to GetMethod or GetStaticMethod.
@@ -79,8 +82,6 @@ class PLATFORM_EXPORT CallbackMethodRetriever {
   v8::Isolate* isolate_;
   v8::Local<v8::Context> current_context_;
   v8::Local<v8::Object> prototype_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallbackMethodRetriever);
 };
 
 }  // namespace blink

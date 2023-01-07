@@ -1,7 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-'use strict';
+
+import {ENTRIES, EntryType, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {navigateWithDirectoryTree, remoteCall, setupAndWaitUntilReady, waitForMediaApp} from './background.js';
+import {BASIC_DRIVE_ENTRY_SET, FILE_MANAGER_EXTENSIONS_ID, OFFLINE_ENTRY_SET, SHARED_WITH_ME_ENTRY_SET} from './test_data.js';
 
 /**
  * Expected autocomplete results for 'hello'.
@@ -16,7 +21,7 @@ const EXPECTED_AUTOCOMPLETE_LIST = [
 /**
  * Expected files shown in the search results for 'hello'
  *
- * @type {Array<TestEntryInfo>}
+ * @type {!Array<!TestEntryInfo>}
  * @const
  */
 const SEARCH_RESULTS_ENTRY_SET = [
@@ -33,6 +38,9 @@ const ENABLE_DOCS_OFFLINE_MESSAGE =
     'Enable Google Docs Offline to make Docs, Sheets and Slides ' +
     'available offline.';
 
+/** The query selector for the search box input field. */
+const searchBox = '#search-box cr-input';
+
 /**
  * Returns the steps to start a search for 'hello' and wait for the
  * autocomplete results to appear.
@@ -46,8 +54,7 @@ async function startDriveSearchWithAutoComplete() {
       'fakeEvent', appId, ['#search-box cr-input', 'focus']));
 
   // Input a text.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, ['#search-box cr-input', 'hello']);
+  await remoteCall.inputText(appId, '#search-box cr-input', 'hello');
 
   // Notify the element of the input.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
@@ -146,8 +153,8 @@ testcase.driveOpenSidebarSharedWithMe = async () => {
   // Open Files app on Drive containing "Shared with me" file entries.
   const appId = await setupAndWaitUntilReady(
       RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET.concat([
-        ENTRIES.sharedDirectory,
-        ENTRIES.sharedDirectoryFile,
+        ENTRIES.sharedWithMeDirectory,
+        ENTRIES.sharedWithMeDirectoryFile,
       ]));
 
   // Click the icon of the Shared With Me volume.
@@ -162,7 +169,7 @@ testcase.driveOpenSidebarSharedWithMe = async () => {
   await remoteCall.waitForFiles(
       appId,
       TestEntryInfo.getExpectedRows(
-          SHARED_WITH_ME_ENTRY_SET.concat([ENTRIES.sharedDirectory])));
+          SHARED_WITH_ME_ENTRY_SET.concat([ENTRIES.sharedWithMeDirectory])));
 
   // Navigate to the directory within Shared with me.
   chrome.test.assertFalse(!await remoteCall.callRemoteTestUtil(
@@ -174,7 +181,8 @@ testcase.driveOpenSidebarSharedWithMe = async () => {
 
   // Verify the file list.
   await remoteCall.waitForFiles(
-      appId, TestEntryInfo.getExpectedRows([ENTRIES.sharedDirectoryFile]));
+      appId,
+      TestEntryInfo.getExpectedRows([ENTRIES.sharedWithMeDirectoryFile]));
 };
 
 /**
@@ -232,18 +240,50 @@ testcase.drivePressEnterToSearch = async () => {
 };
 
 /**
+ * Tests that the breadcrumbs always shows "My Drive" when searching inside any
+ * folder in Drive.
+ */
+testcase.driveSearchAlwaysDisplaysMyDrive = async () => {
+  // Open Files app on Drive.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
+
+  // Start the search from a sub-folder.
+  await navigateWithDirectoryTree(appId, '/My Drive/photos');
+
+  // Search the text.
+  remoteCall.typeSearchText(appId, 'hello');
+
+  // Wait for the auto complete list to appear;
+  await remoteCall.waitForSearchAutoComplete(appId);
+
+  // Send Enter to perform the search.
+  const enterKey = ['Enter', false, false, false];
+  await remoteCall.fakeKeyDown(appId, searchBox, ...enterKey);
+
+  // Wait for the result in the file list.
+  await remoteCall.waitForFiles(
+      appId, TestEntryInfo.getExpectedRows(SEARCH_RESULTS_ENTRY_SET));
+
+  // When displaying the search result the breadcrumbs should always display "My
+  // drive".
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(appId, '/My Drive');
+
+  return appId;
+};
+
+/**
  * Tests that pressing the clear search button announces an a11y message and
  * shows all files/folders.
  */
 testcase.drivePressClearSearch = async () => {
-  const appId = await testcase.drivePressEnterToSearch();
+  const appId = await testcase.driveSearchAlwaysDisplaysMyDrive();
 
   // Click on the clear search button.
   await remoteCall.waitAndClickElement(appId, '#search-box cr-input .clear');
 
   // Wait for fil list to display all files.
-  await remoteCall.waitForFiles(
-      appId, TestEntryInfo.getExpectedRows(BASIC_DRIVE_ENTRY_SET));
+  await remoteCall.waitForFiles(appId, []);
 
   // Check that a11y message for clearing the search term has been issued.
   const a11yMessages =
@@ -251,10 +291,15 @@ testcase.drivePressClearSearch = async () => {
   chrome.test.assertEq(2, a11yMessages.length, 'Missing a11y message');
   chrome.test.assertEq(
       'Search text cleared, showing all files and folders.', a11yMessages[1]);
+
+  // The breadcrumbs should return back to the previous original folder.
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      appId, '/My Drive/photos');
 };
 
 /**
- * Tests that pinning multiple files affects the pin action of individual files.
+ * Tests that pinning multiple files affects the pin action of individual
+ * files.
  */
 testcase.drivePinMultiple = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
@@ -391,7 +436,7 @@ testcase.drivePinFileMobileNetwork = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
   const caller = getCaller();
   await sendTestMessage({name: 'useCellularNetwork'});
-  await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']);
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
   await repeatUntil(() => {
     return navigator.connection.type != 'cellular' ?
         pending(caller, 'Network state is not changed to cellular.') :
@@ -429,7 +474,7 @@ testcase.drivePinFileMobileNetwork = async () => {
     name: 'clickNotificationButton',
     extensionId: FILE_MANAGER_EXTENSIONS_ID,
     notificationId: 'disabled-mobile-sync',
-    index: 0
+    index: 0,
   });
   await repeatUntil(async () => {
     const preferences =
@@ -487,8 +532,8 @@ testcase.drivePinToggleUpdatesInFakeEntries = async () => {
 };
 
 /**
- * Tests that pressing Ctrl+A (select all files) from the search box doesn't put
- * the Files App into check-select mode (crbug.com/849253).
+ * Tests that pressing Ctrl+A (select all files) from the search box doesn't
+ * put the Files App into check-select mode (crbug.com/849253).
  */
 testcase.drivePressCtrlAFromSearch = async () => {
   // Open Files app on Drive.
@@ -525,56 +570,6 @@ function formatDate(date) {
 }
 
 /**
- * Test that a images within a DCIM directory on removable media is backed up to
- * Drive, in the Chrome OS Cloud backup/<current date> directory.
- */
-testcase.driveBackupPhotos = async () => {
-  const USB_VOLUME_QUERY = '#directory-tree [volume-type-icon="removable"]';
-
-  // Open Files app on local downloads.
-  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
-
-  // Mount USB volume in the Downloads window.
-  await sendTestMessage({name: 'mountFakeUsbDcim'});
-
-  // Wait for the USB mount.
-  await remoteCall.waitForElement(appId, USB_VOLUME_QUERY);
-
-  if (await isSinglePartitionFormat(appId)) {
-    // Navigate to the DCIM directory.
-    await navigateWithDirectoryTree(appId, '/FAKEUSB/fake-usb/DCIM');
-  } else {
-    // Navigate to the DCIM directory.
-    await remoteCall.navigateWithDirectoryTree(
-        appId, '/DCIM', 'fake-usb', 'removable');
-  }
-
-  // Wait for the import button to be ready.
-  await remoteCall.waitForElement(
-      appId, '#cloud-import-button [icon="files:cloud-upload"]');
-
-  // Start the import.
-  const date = new Date();
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['#cloud-import-button']));
-
-  // Wait for the image to be marked as imported.
-  await remoteCall.waitForElement(
-      appId, '.status-icon[file-status-icon="imported"]');
-
-  // Navigate to today's backup directory in Drive.
-  const formattedDate = formatDate(date);
-  await remoteCall.navigateWithDirectoryTree(
-      appId, `/root/Chrome OS Cloud backup/${formattedDate}`, 'My Drive',
-      'drive');
-
-  // Verify the backed-up file list contains only a copy of the image within
-  // DCIM in the removable storage.
-  const files = TestEntryInfo.getExpectedRows([ENTRIES.image3]);
-  await remoteCall.waitForFiles(appId, files, {ignoreLastModifiedTime: true});
-};
-
-/**
  * Verify that "Available Offline" is not available from the gear menu for a
  * drive file.
  */
@@ -586,9 +581,7 @@ testcase.driveAvailableOfflineGearMenu = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
 
   // Select a file.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['hello.txt']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'hello.txt');
 
   // Wait for the entry to be selected.
   await remoteCall.waitForElement(appId, '.table-row[selected]');
@@ -624,9 +617,7 @@ testcase.driveAvailableOfflineDirectoryGearMenu = async () => {
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
 
   // Select a file.
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['photos']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'photos');
 
   // Wait for the entry to be selected.
   await remoteCall.waitForElement(appId, '.table-row[selected]');
@@ -743,9 +734,7 @@ testcase.driveLinkToDirectory = async () => {
       ]));
 
   // Select the link
-  chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, ['G']),
-      'selectFile failed');
+  await remoteCall.waitUntilSelected(appId, 'G');
   await remoteCall.waitForElement(appId, '.table-row[selected]');
 
   // Open the link
@@ -826,27 +815,27 @@ testcase.driveWelcomeBanner = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
 
+  await remoteCall.isolateBannerForTesting(appId, 'drive-welcome-banner');
+  const driveWelcomeBannerQuery = '#banners > drive-welcome-banner';
+  const driveWelcomeBannerDismissButtonQuery = [
+    '#banners > drive-welcome-banner',
+    'educational-banner',
+    '#dismiss-button',
+  ];
+
   // Open the Drive volume in the files-list.
   chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['.drive-volume']));
 
   // Check: the Drive welcome banner should appear.
-  await remoteCall.waitForElement(appId, '.drive-welcome-wrapper');
+  await remoteCall.waitForElement(appId, driveWelcomeBannerQuery);
 
   // Close the Drive welcome banner.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, ['cr-button.banner-close']));
+  await remoteCall.waitAndClickElement(
+      appId, driveWelcomeBannerDismissButtonQuery);
 
-  // Check: the Drive banner should close.
-  const caller = getCaller();
-  await repeatUntil(async () => {
-    const banner = await remoteCall.waitForElementStyles(
-        appId, '.drive-welcome', ['visibility']);
-
-    if (banner.styles.visibility !== 'hidden') {
-      return pending(caller, 'Welcome banner is still visible.');
-    }
-  });
+  await remoteCall.waitForElement(
+      appId, '#banners > drive-welcome-banner[hidden]');
 };
 
 /**
@@ -857,20 +846,29 @@ testcase.driveOfflineInfoBanner = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
 
+  await remoteCall.isolateBannerForTesting(
+      appId, 'drive-offline-pinning-banner');
+  const driveOfflineBannerShownQuery =
+      '#banners > drive-offline-pinning-banner:not([hidden])';
+  const driveOfflineBannerHiddenQuery =
+      '#banners > drive-offline-pinning-banner[hidden]';
+  const driveOfflineLearnMoreLinkQuery =
+      ['#banners > drive-offline-pinning-banner', '[slot="extra-button"]'];
+
   // Check: the Drive Offline info banner should appear.
-  await remoteCall.waitForElement(appId, '#offline-info-banner:not([hidden])');
+  await remoteCall.waitForElement(appId, driveOfflineBannerShownQuery);
 
   // Click on the 'Learn more' button.
-  await remoteCall.waitAndClickElement(appId, '#offline-learn-more');
+  await remoteCall.waitAndClickElement(appId, driveOfflineLearnMoreLinkQuery);
 
   // Check: the Drive offline info banner should disappear.
-  await remoteCall.waitForElement(appId, '#offline-info-banner[hidden]');
+  await remoteCall.waitForElement(appId, driveOfflineBannerHiddenQuery);
 
   // Navigate to a different directory within Drive.
   await navigateWithDirectoryTree(appId, '/My Drive/photos');
 
   // Check: the Drive offline info banner should stay hidden.
-  await remoteCall.waitForElement(appId, '#offline-info-banner[hidden]');
+  await remoteCall.waitForElement(appId, driveOfflineBannerHiddenQuery);
 };
 
 /**
@@ -881,9 +879,58 @@ testcase.driveOfflineInfoBannerWithoutFlag = async () => {
   // Open Files app on Drive.
   const appId = await setupAndWaitUntilReady(RootPath.DRIVE, []);
 
+  await remoteCall.isolateBannerForTesting(
+      appId, 'drive-offline-pinning-banner');
+  const driveOfflineInfoBannerHiddenQuery =
+      '#banners > drive-offline-pinning-banner';
+
   // Check: the Drive Offline info banner should not appear.
-  await remoteCall.waitForElementLost(
-      appId, '#offline-info-banner:not([hidden])');
+  await remoteCall.waitForElementLost(appId, driveOfflineInfoBannerHiddenQuery);
+};
+
+/**
+ * Tests that the inline file sync icons are displayed in Drive as files
+ * start syncing.
+ */
+testcase.driveInlineSyncStatus = async () => {
+  const toBeUploaded = new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'video.ogv',
+    thumbnailFileName: 'image.png',
+    targetPath: 'world.ogv',
+    mimeType: 'video/ogg',
+    lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
+    nameText: 'world.ogv',
+    sizeText: '59 KB',
+    typeText: 'OGG video',
+    availableOffline: true,
+  });
+
+  // Open Files app on Drive and copy over entry to be uploaded.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], [toBeUploaded]);
+
+  // Fake syncing the file to Drive.
+  await sendTestMessage({
+    name: 'setDriveFileSyncStatus',
+    path: `/root/${toBeUploaded.targetPath}`,
+    syncStatus: 'in_progress',
+  });
+
+  const syncStatusQuery = '[data-sync-status=in_progress]';
+
+  // Verify the "sync in progress" icon is displayed.
+  await remoteCall.waitForElement(appId, syncStatusQuery);
+
+  // Fake completing the file sync.
+  await sendTestMessage({
+    name: 'setDriveFileSyncStatus',
+    path: `/root/${toBeUploaded.targetPath}`,
+    syncStatus: 'completed',
+  });
+
+  // Verify the "sync in progress" icon is no longer displayed.
+  await remoteCall.waitForElementLost(appId, syncStatusQuery);
 };
 
 /**
@@ -916,9 +963,6 @@ testcase.driveEnableDocsOfflineDialog = async () => {
   // Open the Enable Docs Offline dialog.
   await openAndWaitForEnableDocsOfflineDialog(appId);
 
-  // Close Files App.
-  await remoteCall.closeWindowAndWait(appId);
-
   // Check: the last dialog result should be 3 (dismiss).
   await waitForLastDriveDialogResult('3');
 };
@@ -942,7 +986,7 @@ testcase.driveEnableDocsOfflineDialogWithoutWindow = async () => {
     name: 'clickNotificationButton',
     extensionId: FILE_MANAGER_EXTENSIONS_ID,
     notificationId: 'enable-docs-offline',
-    index: 1
+    index: 1,
   });
 
   // Check: the last dialog result should be 1 (accept).
@@ -959,7 +1003,7 @@ testcase.driveEnableDocsOfflineDialogWithoutWindow = async () => {
     name: 'clickNotificationButton',
     extensionId: FILE_MANAGER_EXTENSIONS_ID,
     notificationId: 'enable-docs-offline',
-    index: 0
+    index: 0,
   });
 
   // Check: the last dialog result should be 2 (reject).

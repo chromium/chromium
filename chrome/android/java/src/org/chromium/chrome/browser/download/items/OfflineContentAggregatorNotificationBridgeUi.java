@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ import org.chromium.components.offline_items_collection.OfflineItemVisuals;
 import org.chromium.components.offline_items_collection.OpenParams;
 import org.chromium.components.offline_items_collection.UpdateDelta;
 import org.chromium.components.offline_items_collection.VisualsCallback;
+import org.chromium.ui.permissions.ContextualNotificationPermissionRequester;
 
 import java.util.HashMap;
 import java.util.List;
@@ -152,7 +153,7 @@ public class OfflineContentAggregatorNotificationBridgeUi
         // TODO(http://crbug.com/855141): Find a cleaner way to hide unimportant UI updates.
         // If it's a suggested page, or the user choose to download later. Do not add it to the
         // notification UI.
-        if (item.isSuggested || item.schedule != null) return;
+        if (item.isSuggested) return;
 
         // If the download is cancelled, no need to DownloadInfo object and it is enough to notify
         // that the download is canceled.
@@ -160,6 +161,9 @@ public class OfflineContentAggregatorNotificationBridgeUi
             mUi.notifyDownloadCanceled(item.id);
             return;
         }
+
+        // Request notification permission if needed.
+        ContextualNotificationPermissionRequester.getInstance().requestPermissionIfNeeded();
 
         DownloadInfo info = DownloadInfo.fromOfflineItem(item, visuals);
         switch (item.state) {

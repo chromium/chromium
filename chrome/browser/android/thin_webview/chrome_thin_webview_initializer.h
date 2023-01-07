@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,14 @@ class ChromeThinWebViewInitializer : public ThinWebViewInitializer {
   static void Initialize();
 
   ChromeThinWebViewInitializer() = default;
+
+  ChromeThinWebViewInitializer(const ChromeThinWebViewInitializer&) = delete;
+  ChromeThinWebViewInitializer& operator=(const ChromeThinWebViewInitializer&) =
+      delete;
+
   ~ChromeThinWebViewInitializer() = default;
 
   void AttachTabHelpers(content::WebContents* web_contents) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeThinWebViewInitializer);
 };
 
 }  // namespace android

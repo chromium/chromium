@@ -1,13 +1,4 @@
 <!DOCTYPE html>
-<!--
-Distributed under both the W3C Test Suite License [1] and the W3C
-3-clause BSD License [2]. To contribute to a W3C Test Suite, see the
-policies and contribution forms [3].
-
-[1] http://www.w3.org/Consortium/Legal/2008/04-testsuite-license
-[2] http://www.w3.org/Consortium/Legal/2008/03-bsd-license
-[3] http://www.w3.org/2004/10/27-testcases
--->
 <html>
 <head>
 <title>Shadow DOM Test: Upper-boundary encapsuration on ownerDocument: with all HTML5 elements</title>
@@ -20,7 +11,6 @@ policies and contribution forms [3].
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="../../../../html/resources/common.js"></script>
-<script src="../../../resources/shadow-dom-utils.js"></script>
 </head>
 <body>
 <div id="log"></div>
@@ -30,7 +20,7 @@ function testElement(elementName) {
     var element = doc.createElement(elementName);
     doc.body.appendChild(element);
     var shadowRoot = element.attachShadow({mode: 'open'});
-    ATTACHSHADOW_SAFELISTED_ELEMENTS.forEach(function (name) {
+    HTML5_SHADOW_ALLOWED_ELEMENTS.forEach(function (name) {
         shadowRoot.appendChild(doc.createElement(name));
     });
 
@@ -41,7 +31,7 @@ function testElement(elementName) {
     }
 }
 
-var testParameters = ATTACHSHADOW_SAFELISTED_ELEMENTS.map(function (name) {
+var testParameters = HTML5_SHADOW_ALLOWED_ELEMENTS.map(function (name) {
     return [
         'ownerDocument property of any elements in a shadow tree should ' +
         'match the document of the shadow host, when the host is a "' +

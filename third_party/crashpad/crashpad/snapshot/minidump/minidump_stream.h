@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -29,14 +28,15 @@ class MinidumpStream {
   MinidumpStream(uint32_t stream_type, std::vector<uint8_t> data)
       : stream_type_(stream_type), data_(data) {}
 
+  MinidumpStream(const MinidumpStream&) = delete;
+  MinidumpStream& operator=(const MinidumpStream&) = delete;
+
   uint32_t stream_type() const { return stream_type_; }
   const std::vector<uint8_t>& data() const { return data_; }
 
  private:
   uint32_t stream_type_;
   std::vector<uint8_t> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpStream);
 };
 
 }  // namespace crashpad

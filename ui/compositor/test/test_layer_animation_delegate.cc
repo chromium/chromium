@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/compositor/test/test_layer_animation_delegate.h"
 
-#include "base/optional.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer.h"
 
 namespace ui {
@@ -51,7 +51,7 @@ void TestLayerAnimationDelegate::ExpectLastPropertyChangeReason(
 }
 
 void TestLayerAnimationDelegate::SetFrameNumber(
-    base::Optional<int> frame_number) {
+    absl::optional<int> frame_number) {
   frame_number_ = frame_number;
 }
 
@@ -127,6 +127,14 @@ void TestLayerAnimationDelegate::SetRoundedCornersFromAnimation(
   last_property_change_reason_is_set_ = true;
 }
 
+void TestLayerAnimationDelegate::SetGradientMaskFromAnimation(
+    const gfx::LinearGradient& gradient_mask,
+    PropertyChangeReason reason) {
+  gradient_mask_ = gradient_mask;
+  last_property_change_reason_ = reason;
+  last_property_change_reason_is_set_ = true;
+}
+
 void TestLayerAnimationDelegate::ScheduleDrawForAnimation() {
 }
 
@@ -167,6 +175,11 @@ gfx::RoundedCornersF TestLayerAnimationDelegate::GetRoundedCornersForAnimation()
   return rounded_corners_;
 }
 
+const gfx::LinearGradient&
+TestLayerAnimationDelegate::GetGradientMaskForAnimation() const {
+  return gradient_mask_;
+}
+
 float TestLayerAnimationDelegate::GetDeviceScaleFactor() const {
   return 1.0f;
 }
@@ -189,7 +202,7 @@ TestLayerAnimationDelegate::GetThreadedAnimationDelegate() {
   return &threaded_delegate_;
 }
 
-base::Optional<int> TestLayerAnimationDelegate::GetFrameNumber() const {
+absl::optional<int> TestLayerAnimationDelegate::GetFrameNumber() const {
   return frame_number_;
 }
 

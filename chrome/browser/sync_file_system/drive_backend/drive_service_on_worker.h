@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -36,6 +35,10 @@ class DriveServiceOnWorker : public drive::DriveServiceInterface {
       const base::WeakPtr<DriveServiceWrapper>& wrapper,
       base::SingleThreadTaskRunner* ui_task_runner,
       base::SequencedTaskRunner* worker_task_runner);
+
+  DriveServiceOnWorker(const DriveServiceOnWorker&) = delete;
+  DriveServiceOnWorker& operator=(const DriveServiceOnWorker&) = delete;
+
   ~DriveServiceOnWorker() override;
 
   google_apis::CancelCallbackOnce AddNewDirectory(
@@ -200,9 +203,7 @@ class DriveServiceOnWorker : public drive::DriveServiceInterface {
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
 
-  base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveServiceOnWorker);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace drive_backend

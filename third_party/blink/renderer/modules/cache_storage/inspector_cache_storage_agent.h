@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/CacheStorage.h"
+#include "third_party/blink/renderer/core/inspector/protocol/cache_storage.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -25,6 +24,11 @@ class MODULES_EXPORT InspectorCacheStorageAgent final
   using CachesMap = HashMap<String, mojo::Remote<mojom::blink::CacheStorage>>;
 
   explicit InspectorCacheStorageAgent(InspectedFrames*);
+
+  InspectorCacheStorageAgent(const InspectorCacheStorageAgent&) = delete;
+  InspectorCacheStorageAgent& operator=(const InspectorCacheStorageAgent&) =
+      delete;
+
   ~InspectorCacheStorageAgent() override;
   void Trace(Visitor*) const override;
 
@@ -51,8 +55,6 @@ class MODULES_EXPORT InspectorCacheStorageAgent final
   Member<InspectedFrames> frames_;
 
   CachesMap caches_;
-
-  DISALLOW_COPY_AND_ASSIGN(InspectorCacheStorageAgent);
 };
 
 }  // namespace blink

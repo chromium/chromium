@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,8 +92,7 @@ bool WebBundleInterceptorForNetwork::MaybeCreateLoaderForResponse(
 
   reader_ = base::MakeRefCounted<WebBundleReader>(
       std::move(source), length_hint, std::move(*response_body),
-      url_loader->Unbind(),
-      BrowserContext::GetBlobStorageContext(browser_context_));
+      url_loader->Unbind(), browser_context_->GetBlobStorageContext());
   reader_->ReadMetadata(
       base::BindOnce(&WebBundleInterceptorForNetwork::OnMetadataReady,
                      weak_factory_.GetWeakPtr(), request));
@@ -110,13 +109,33 @@ void WebBundleInterceptorForNetwork::OnMetadataReady(
     return;
   }
   primary_url_ = reader_->GetPrimaryURL();
+  if (primary_url_.is_empty()) {
+    web_bundle_utils::CompleteWithInvalidWebBundleError(
+        std::move(forwarding_client_), frame_tree_node_id_,
+        web_bundle_utils::kNoPrimaryUrlErrorMessage);
+    return;
+  }
+  if (!web_bundle_utils::IsAllowedExchangeUrl(primary_url_)) {
+    web_bundle_utils::CompleteWithInvalidWebBundleError(
+        std::move(forwarding_client_), frame_tree_node_id_,
+        web_bundle_utils::kInvalidPrimaryUrlErrorMessage);
+    return;
+  }
+  if (!base::ranges::all_of(reader_->GetEntries(),
+                            &web_bundle_utils::IsAllowedExchangeUrl)) {
+    web_bundle_utils::CompleteWithInvalidWebBundleError(
+        std::move(forwarding_client_), frame_tree_node_id_,
+        web_bundle_utils::kInvalidExchangeUrlErrorMessage);
+    return;
+  }
   if (!reader_->HasEntry(primary_url_)) {
     web_bundle_utils::CompleteWithInvalidWebBundleError(
         std::move(forwarding_client_), frame_tree_node_id_,
         "The primary URL resource is not found in the web bundle.");
     return;
   }
-  if (primary_url_.GetOrigin() != reader_->source().url().GetOrigin()) {
+  if (primary_url_.DeprecatedGetOriginAsURL() !=
+      reader_->source().url().DeprecatedGetOriginAsURL()) {
     web_bundle_utils::CompleteWithInvalidWebBundleError(
         std::move(forwarding_client_), frame_tree_node_id_,
         "The origin of primary URL doesn't match with the origin of the web "

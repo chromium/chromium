@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_suite.h"
 #include "ui/aura/env.h"
@@ -17,7 +16,13 @@ namespace ash {
 class AshTestSuite : public base::TestSuite {
  public:
   AshTestSuite(int argc, char** argv);
+
+  AshTestSuite(const AshTestSuite&) = delete;
+  AshTestSuite& operator=(const AshTestSuite&) = delete;
+
   ~AshTestSuite() override;
+
+  static void LoadTestResources();
 
  protected:
   // base::TestSuite:
@@ -28,8 +33,6 @@ class AshTestSuite : public base::TestSuite {
   std::unique_ptr<aura::Env> env_;
 
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshTestSuite);
 };
 
 }  // namespace ash

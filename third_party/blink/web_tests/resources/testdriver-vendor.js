@@ -358,6 +358,8 @@
     mojoOptions.hasResidentKey = options.hasResidentKey;
     mojoOptions.hasUserVerification = options.hasUserVerification;
     mojoOptions.hasLargeBlob = options.extensions.indexOf("largeBlob") !== -1;
+    mojoOptions.hasCredBlob = options.extensions.indexOf("credBlob") !== -1;
+    mojoOptions.hasMinPinLength = options.extensions.indexOf("minPinLength") !== -1;
     mojoOptions.isUserPresent = options.isUserConsenting;
 
     let authenticator = (await manager.createAuthenticator(mojoOptions)).authenticator;
@@ -438,6 +440,34 @@
   window.test_driver_internal.set_storage_access = function(origin, embedding_origin, blocked) {
     return internals.setStorageAccess(origin, embedding_origin, blocked);
   }
+
+  window.test_driver_internal.delete_all_cookies = function() {
+    return internals.deleteAllCookies();
+  }
+
+  window.test_driver_internal.get_all_cookies = function() {
+    return internals.getAllCookies();
+  }
+
+  window.test_driver_internal.get_named_cookie = function(name) {
+    return internals.getNamedCookie(name);
+  }
+
+  window.test_driver_internal.minimize_window = async () => {
+    window.testRunner.setMainWindowHidden(true);
+    // Wait until the new state is reflected in the document
+    while (!document.hidden) {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+  };
+
+  window.test_driver_internal.set_window_rect = async () => {
+    window.testRunner.setMainWindowHidden(false);
+    // Wait until the new state is reflected in the document
+    while (document.hidden) {
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+  };
 
   // Enable automation so we don't wait for user input on unimplemented APIs
   window.test_driver_internal.in_automation = true;

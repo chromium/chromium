@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,18 +13,19 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "build/build_config.h"
 #include "components/exo/frame_sink_resource_manager.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_id.h"
-#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/common/resources/returned_resource.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/context_support.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -34,7 +35,13 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "ui/aura/env.h"
 #include "ui/compositor/compositor.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+#include "base/files/scoped_file.h"
+#include "base/posix/eintr_wrapper.h"
+#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
 namespace exo {
 namespace {
@@ -60,7 +67,12 @@ class Buffer::Texture : public viz::ContextLostObserver {
           gfx::GpuMemoryBuffer* gpu_memory_buffer,
           unsigned texture_target,
           unsigned query_type,
-          base::TimeDelta wait_for_release_time);
+          base::TimeDelta wait_for_release_time,
+          bool is_overlay_candidate);
+
+  Texture(const Texture&) = delete;
+  Texture& operator=(const Texture&) = delete;
+
   ~Texture() override;
 
   // Overridden from viz::ContextLostObserver:
@@ -71,9 +83,8 @@ class Buffer::Texture : public viz::ContextLostObserver {
 
   // Allow texture to be reused after |sync_token| has passed and runs
   // |callback|.
-  void Release(base::OnceClosure callback,
-               const gpu::SyncToken& sync_token,
-               bool is_lost);
+  void Release(base::OnceCallback<void(gfx::GpuFenceHandle)> callback,
+               viz::ReturnedResource resource);
 
   // Updates the contents referenced by |gpu_memory_buffer_| returned by
   // mailbox().
@@ -84,9 +95,9 @@ class Buffer::Texture : public viz::ContextLostObserver {
 
   // Releases the contents referenced by |mailbox_| after |sync_token| has
   // passed and runs |callback| when completed.
-  void ReleaseSharedImage(base::OnceClosure callback,
-                          const gpu::SyncToken& sync_token,
-                          bool is_lost);
+  void ReleaseSharedImage(
+      base::OnceCallback<void(gfx::GpuFenceHandle)> callback,
+      viz::ReturnedResource resource);
 
   // Copy the contents of texture to |destination| and runs |callback| when
   // completed. Returns a sync token that can be used when accessing texture
@@ -117,8 +128,6 @@ class Buffer::Texture : public viz::ContextLostObserver {
   base::TimeTicks wait_for_release_time_;
   bool wait_for_release_pending_ = false;
   base::WeakPtrFactory<Texture> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Texture);
 };
 
 Buffer::Texture::Texture(
@@ -130,13 +139,16 @@ Buffer::Texture::Texture(
       texture_target_(GL_TEXTURE_2D),
       query_type_(GL_COMMANDS_COMPLETED_CHROMIUM) {
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
-  const uint32_t usage =
-      gpu::SHARED_IMAGE_USAGE_RASTER | gpu::SHARED_IMAGE_USAGE_DISPLAY;
 
-  mailbox_ = sii->CreateSharedImage(viz::ResourceFormat::RGBA_8888, size,
-                                    gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-                                    kPremul_SkAlphaType, usage,
-                                    gpu::kNullSurfaceHandle);
+  // Add GLES2 usage as it is used by RasterImplementationGLES.
+  const uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
+                         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                         gpu::SHARED_IMAGE_USAGE_GLES2;
+
+  mailbox_ = sii->CreateSharedImage(
+      viz::ResourceFormat::RGBA_8888, size, gfx::ColorSpace::CreateSRGB(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+      gpu::kNullSurfaceHandle);
   DCHECK(!mailbox_.IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
@@ -151,7 +163,8 @@ Buffer::Texture::Texture(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     unsigned texture_target,
     unsigned query_type,
-    base::TimeDelta wait_for_release_delay)
+    base::TimeDelta wait_for_release_delay,
+    bool is_overlay_candidate)
     : gpu_memory_buffer_(gpu_memory_buffer),
       size_(gpu_memory_buffer->GetSize()),
       context_provider_(std::move(context_provider)),
@@ -159,13 +172,18 @@ Buffer::Texture::Texture(
       query_type_(query_type),
       wait_for_release_delay_(wait_for_release_delay) {
   gpu::SharedImageInterface* sii = context_provider_->SharedImageInterface();
-  const uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
-                         gpu::SHARED_IMAGE_USAGE_DISPLAY |
-                         gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
+  // Add GLES2 usage as it is used by RasterImplementationGLES.
+  uint32_t usage = gpu::SHARED_IMAGE_USAGE_RASTER |
+                   gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                   gpu::SHARED_IMAGE_USAGE_GLES2;
+  if (is_overlay_candidate) {
+    usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
   mailbox_ = sii->CreateSharedImage(
-      gpu_memory_buffer_, gpu_memory_buffer_manager, gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage);
+      gpu_memory_buffer_, gpu_memory_buffer_manager,
+      gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, usage);
   DCHECK(!mailbox_.IsZero());
   gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
   ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
@@ -195,19 +213,20 @@ bool Buffer::Texture::IsLost() {
   return true;
 }
 
-void Buffer::Texture::Release(base::OnceClosure callback,
-                              const gpu::SyncToken& sync_token,
-                              bool is_lost) {
+void Buffer::Texture::Release(
+    base::OnceCallback<void(gfx::GpuFenceHandle)> callback,
+    viz::ReturnedResource resource) {
   if (context_provider_) {
-    if (sync_token.HasData()) {
+    // Only need to wait on the sync token if we don't have a release fence.
+    if (resource.sync_token.HasData() && resource.release_fence.is_null()) {
       gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-      ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+      ri->WaitSyncTokenCHROMIUM(resource.sync_token.GetConstData());
     }
   }
 
   // Run callback as texture can be reused immediately after waiting for sync
   // token.
-  std::move(callback).Run();
+  std::move(callback).Run(std::move(resource.release_fence));
 }
 
 gpu::SyncToken Buffer::Texture::UpdateSharedImage(
@@ -229,25 +248,28 @@ gpu::SyncToken Buffer::Texture::UpdateSharedImage(
   return sync_token;
 }
 
-void Buffer::Texture::ReleaseSharedImage(base::OnceClosure callback,
-                                         const gpu::SyncToken& sync_token,
-                                         bool is_lost) {
-  if (context_provider_) {
+void Buffer::Texture::ReleaseSharedImage(
+    base::OnceCallback<void(gfx::GpuFenceHandle)> callback,
+    viz::ReturnedResource resource) {
+  // Only need to wait on the sync token and query if we don't have a release
+  // fence.
+  if (context_provider_ && resource.release_fence.is_null()) {
     gpu::raster::RasterInterface* ri = context_provider_->RasterInterface();
-    if (sync_token.HasData())
-      ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+    if (resource.sync_token.HasData())
+      ri->WaitSyncTokenCHROMIUM(resource.sync_token.GetConstData());
     ri->BeginQueryEXT(query_type_, query_id_);
     ri->EndQueryEXT(query_type_);
     // Run callback when query result is available (i.e., when all operations on
     // the shared image have completed and it's ready to be reused) if sync
     // token has data and buffer has been used. If buffer was never used then
     // run the callback immediately.
-    if (sync_token.HasData()) {
-      ReleaseWhenQueryResultIsAvailable(std::move(callback));
+    if (resource.sync_token.HasData()) {
+      ReleaseWhenQueryResultIsAvailable(base::BindOnce(
+          std::move(callback), /*release_fence=*/gfx::GpuFenceHandle()));
       return;
     }
   }
-  std::move(callback).Run();
+  std::move(callback).Run(std::move(resource.release_fence));
 }
 
 gpu::SyncToken Buffer::Texture::CopyTexImage(
@@ -353,6 +375,21 @@ void Buffer::Texture::WaitForRelease() {
   std::move(callback).Run();
 }
 
+Buffer::BufferRelease::BufferRelease(
+    gfx::GpuFenceHandle release_fence,
+    std::unique_ptr<base::FileDescriptorWatcher::Controller> controller,
+    base::OnceClosure buffer_release_callback)
+    : release_fence(std::move(release_fence)),
+      controller(std::move(controller)),
+      buffer_release_callback(std::move(buffer_release_callback)) {}
+
+Buffer::BufferRelease::~BufferRelease() = default;
+
+Buffer::BufferRelease::BufferRelease(BufferRelease&&) = default;
+
+Buffer::BufferRelease& Buffer::BufferRelease::operator=(BufferRelease&&) =
+    default;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Buffer, public:
 
@@ -376,8 +413,7 @@ Buffer::Buffer(std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
       use_zero_copy_(use_zero_copy),
       is_overlay_candidate_(is_overlay_candidate),
       y_invert_(y_invert),
-      wait_for_release_delay_(
-          base::TimeDelta::FromMilliseconds(kWaitForReleaseDelayMs)) {}
+      wait_for_release_delay_(base::Milliseconds(kWaitForReleaseDelayMs)) {}
 
 Buffer::~Buffer() {}
 
@@ -385,10 +421,13 @@ bool Buffer::ProduceTransferableResource(
     FrameSinkResourceManager* resource_manager,
     std::unique_ptr<gfx::GpuFence> acquire_fence,
     bool secure_output_only,
-    viz::TransferableResource* resource) {
+    viz::TransferableResource* resource,
+    ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
+    PerCommitExplicitReleaseCallback per_commit_explicit_release_callback) {
   TRACE_EVENT1("exo", "Buffer::ProduceTransferableResource", "buffer_id",
                static_cast<const void*>(gfx_buffer()));
   DCHECK(attach_count_);
+  next_commit_id_++;
 
   // If textures are lost, destroy them to ensure that we create new ones below.
   if (contents_texture_ && contents_texture_->IsLost())
@@ -405,11 +444,20 @@ bool Buffer::ProduceTransferableResource(
     DLOG(WARNING) << "Failed to acquire a context provider";
     resource->id = viz::kInvalidResourceId;
     resource->size = gfx::Size();
+    if (per_commit_explicit_release_callback)
+      std::move(per_commit_explicit_release_callback)
+          .Run(/*release_fence=*/gfx::GpuFenceHandle());
     return false;
   }
 
+  const bool request_release_fence =
+      !per_commit_explicit_release_callback.is_null();
+  if (per_commit_explicit_release_callback)
+    pending_explicit_releases_.emplace(
+        next_commit_id_, std::move(per_commit_explicit_release_callback));
+
   resource->id = resource_manager->AllocateResourceId();
-  resource->format = viz::RGBA_8888;
+  resource->format = viz::SharedImageFormat::SinglePlane(viz::RGBA_8888);
   resource->filter = GL_LINEAR;
   resource->size = gpu_memory_buffer_->GetSize();
 
@@ -420,7 +468,7 @@ bool Buffer::ProduceTransferableResource(
     contents_texture_ = std::make_unique<Texture>(
         context_provider, context_factory->GetGpuMemoryBufferManager(),
         gpu_memory_buffer_.get(), texture_target_, query_type_,
-        wait_for_release_delay_);
+        wait_for_release_delay_, is_overlay_candidate_);
   }
   Texture* contents_texture = contents_texture_.get();
 
@@ -433,6 +481,27 @@ bool Buffer::ProduceTransferableResource(
   release_contents_callback_.Reset(
       base::BindOnce(&Buffer::ReleaseContents, base::Unretained(this)));
 
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+  // Check if this buffer needs HW protection. This can only happen if we
+  // require a secure output.
+  if (secure_output_only &&
+      protected_buffer_state_ == ProtectedBufferState::UNKNOWN &&
+      gpu_memory_buffer_ && protected_native_pixmap_query) {
+    gfx::GpuMemoryBufferHandle gmb_handle = gpu_memory_buffer_->CloneHandle();
+    if (!gmb_handle.native_pixmap_handle.planes.empty()) {
+      base::ScopedFD pixmap_handle(HANDLE_EINTR(
+          dup(gmb_handle.native_pixmap_handle.planes[0].fd.get())));
+      if (pixmap_handle.is_valid()) {
+        protected_buffer_state_ = ProtectedBufferState::QUERYING;
+        protected_native_pixmap_query->IsProtectedNativePixmapHandle(
+            std::move(pixmap_handle),
+            base::BindOnce(&Buffer::OnIsProtectedNativePixmapHandle,
+                           AsWeakPtr()));
+      }
+    }
+  }
+#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+
   // Zero-copy means using the contents texture directly.
   if (use_zero_copy_) {
     // This binds the latest contents of this buffer to |contents_texture|.
@@ -441,7 +510,13 @@ bool Buffer::ProduceTransferableResource(
     resource->mailbox_holder = gpu::MailboxHolder(contents_texture->mailbox(),
                                                   sync_token, texture_target_);
     resource->is_overlay_candidate = is_overlay_candidate_;
-    resource->format = viz::GetResourceFormat(gpu_memory_buffer_->GetFormat());
+    resource->format = viz::SharedImageFormat::SinglePlane(
+        viz::GetResourceFormat(gpu_memory_buffer_->GetFormat()));
+    if (context_provider->ContextCapabilities().chromium_gpu_fence &&
+        request_release_fence) {
+      resource->synchronization_type =
+          viz::TransferableResource::SynchronizationType::kReleaseFence;
+    }
 
     // The contents texture will be released when no longer used by the
     // compositor.
@@ -451,7 +526,8 @@ bool Buffer::ProduceTransferableResource(
                        base::Unretained(contents_texture),
                        base::BindOnce(&Buffer::ReleaseContentsTexture,
                                       AsWeakPtr(), std::move(contents_texture_),
-                                      release_contents_callback_.callback())));
+                                      release_contents_callback_.callback(),
+                                      next_commit_id_)));
     return true;
   }
 
@@ -469,7 +545,8 @@ bool Buffer::ProduceTransferableResource(
       std::move(acquire_fence), texture,
       base::BindOnce(&Buffer::ReleaseContentsTexture, AsWeakPtr(),
                      std::move(contents_texture_),
-                     release_contents_callback_.callback()));
+                     release_contents_callback_.callback(), next_commit_id_,
+                     /*release_fence=*/gfx::GpuFenceHandle()));
   resource->mailbox_holder =
       gpu::MailboxHolder(texture->mailbox(), sync_token, GL_TEXTURE_2D);
   resource->is_overlay_candidate = false;
@@ -512,6 +589,19 @@ gfx::BufferFormat Buffer::GetFormat() const {
   return gpu_memory_buffer_->GetFormat();
 }
 
+SkColor4f Buffer::GetColor() const {
+  return SkColors::kBlack;
+}
+
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+bool Buffer::NeedsHardwareProtection() {
+  // We don't indicate protection is needed in the UNKNOWN state because we have
+  // not seen a pixmap yet that could be protected.
+  return protected_buffer_state_ == ProtectedBufferState::PROTECTED ||
+         protected_buffer_state_ == ProtectedBufferState::QUERYING;
+}
+#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+
 ////////////////////////////////////////////////////////////////////////////////
 // Buffer, private:
 
@@ -523,14 +613,20 @@ void Buffer::Release() {
     release_callback_.Run();
 }
 
-void Buffer::ReleaseTexture(std::unique_ptr<Texture> texture) {
+void Buffer::ReleaseTexture(std::unique_ptr<Texture> texture,
+                            gfx::GpuFenceHandle release_fence) {
+  // Buffer was composited - we should not receive a release fence.
+  DCHECK(release_fence.is_null());
   texture_ = std::move(texture);
 }
 
 void Buffer::ReleaseContentsTexture(std::unique_ptr<Texture> texture,
-                                    base::OnceClosure callback) {
+                                    base::OnceClosure callback,
+                                    uint64_t commit_id,
+                                    gfx::GpuFenceHandle release_fence) {
   contents_texture_ = std::move(texture);
-  std::move(callback).Run();
+  MaybeRunPerCommitRelease(commit_id, std::move(release_fence),
+                           std::move(callback));
 }
 
 void Buffer::ReleaseContents() {
@@ -547,6 +643,89 @@ void Buffer::ReleaseContents() {
     // Release buffer if not attached to surface.
     Release();
   }
+}
+
+void Buffer::MaybeRunPerCommitRelease(
+    uint64_t commit_id,
+    gfx::GpuFenceHandle release_fence,
+    base::OnceClosure buffer_release_callback) {
+  auto iter = pending_explicit_releases_.find(commit_id);
+  if (iter != pending_explicit_releases_.end()) {
+    std::move(iter->second).Run(release_fence.Clone());
+    pending_explicit_releases_.erase(iter);
+  }
+
+  // We are still required to send these wl_buffer.release events even if
+  // the client supports explicit synchronization.
+  if (release_fence.is_null()) {
+    std::move(buffer_release_callback).Run();
+  } else {
+#if BUILDFLAG(IS_POSIX)
+    // Watching the release fence's fd results in a context switch to the I/O
+    // thread. That may steal thread time from other applications, which can
+    // do something useful during that time. Moreover, most of the time the
+    // fence can have already been signalled. Thus, only watch the fence is
+    // readable iff it hasn't been signalled yet.
+    base::TimeTicks ticks;
+    auto status = gfx::GpuFence::GetStatusChangeTime(
+        release_fence.owned_fd.get(), &ticks);
+    if (status == gfx::GpuFence::kSignaled) {
+      std::move(buffer_release_callback).Run();
+      return;
+    }
+
+    auto controller = base::FileDescriptorWatcher::WatchReadable(
+        release_fence.owned_fd.get(),
+        base::BindRepeating(&Buffer::FenceSignalled, AsWeakPtr(), commit_id));
+    buffer_releases_.emplace(
+        commit_id,
+        BufferRelease(std::move(release_fence), std::move(controller),
+                      std::move(buffer_release_callback)));
+#else
+    NOTREACHED();
+#endif
+  }
+}
+
+void Buffer::FenceSignalled(uint64_t commit_id) {
+  auto iter = buffer_releases_.find(commit_id);
+  DCHECK(iter != buffer_releases_.end());
+  std::move(iter->second.buffer_release_callback).Run();
+  buffer_releases_.erase(iter);
+}
+
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+void Buffer::OnIsProtectedNativePixmapHandle(bool is_protected) {
+  protected_buffer_state_ = is_protected ? ProtectedBufferState::PROTECTED
+                                         : ProtectedBufferState::UNPROTECTED;
+}
+#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+
+SolidColorBuffer::SolidColorBuffer(const SkColor4f& color,
+                                   const gfx::Size& size)
+    : Buffer(nullptr), color_(color), size_(size) {}
+
+SolidColorBuffer::~SolidColorBuffer() = default;
+
+bool SolidColorBuffer::ProduceTransferableResource(
+    FrameSinkResourceManager* resource_manager,
+    std::unique_ptr<gfx::GpuFence> acquire_fence,
+    bool secure_output_only,
+    viz::TransferableResource* resource,
+    ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
+    PerCommitExplicitReleaseCallback per_commit_explicit_release_callback) {
+  if (per_commit_explicit_release_callback)
+    std::move(per_commit_explicit_release_callback)
+        .Run(/*release_fence=*/gfx::GpuFenceHandle());
+  return false;
+}
+
+SkColor4f SolidColorBuffer::GetColor() const {
+  return color_;
+}
+
+gfx::Size SolidColorBuffer::GetSize() const {
+  return size_;
 }
 
 }  // namespace exo

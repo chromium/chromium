@@ -1,8 +1,3 @@
-CONSOLE WARNING: line 28: WebSocket connection to 'ws://127.0.0.1:8880/echo' failed: WebSocket is closed before the connection is established.
-CONSOLE ERROR: line 80: WebSocket connection to 'ws://127.0.0.1:8880/close-code-and-reason' failed: Received a broken close frame containing an invalid size body.
-CONSOLE ERROR: line 80: WebSocket connection to 'ws://127.0.0.1:8880/close-code-and-reason' failed: Received a broken close frame containing a reserved status code.
-CONSOLE ERROR: line 80: WebSocket connection to 'ws://127.0.0.1:8880/close-code-and-reason' failed: Received a broken close frame containing a reserved status code.
-CONSOLE ERROR: line 80: WebSocket connection to 'ws://127.0.0.1:8880/close-code-and-reason' failed: Received a broken close frame containing a reserved status code.
 Test CloseEvent code and reason property.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

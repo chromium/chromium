@@ -1,13 +1,16 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/tracing/common/trace_startup_config.h"
 
+#include <algorithm>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/ranges/algorithm.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,6 +21,7 @@ namespace {
 const char kTraceConfig[] =
     "{"
     "\"enable_argument_filter\":true,"
+    "\"enable_package_name_filter\":false,"
     "\"enable_systrace\":true,"
     "\"excluded_categories\":[\"excluded\",\"exc_pattern*\"],"
     "\"included_categories\":[\"included\","
@@ -140,8 +144,7 @@ TEST(TraceStartupConfigTest, ContentWithAbsoluteResultFilePath) {
   ASSERT_TRUE(result_file_path.IsAbsolute());
 
   std::string result_file_path_str = result_file_path.AsUTF8Unsafe();
-  auto it =
-      std::find(result_file_path_str.begin(), result_file_path_str.end(), '\\');
+  auto it = base::ranges::find(result_file_path_str, '\\');
   while (it != result_file_path_str.end()) {
     auto it2 = result_file_path_str.insert(it, '\\');
     it = std::find(it2 + 2, result_file_path_str.end(), '\\');

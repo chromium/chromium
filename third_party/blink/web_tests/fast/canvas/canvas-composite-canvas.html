@@ -17,7 +17,7 @@
         var canvas = document.getElementById('source-canvas');
         canvas.width = imageElement.width;
         canvas.height = imageElement.height;
-        var context = canvas.getContext('2d');
+        var context = canvas.getContext('2d', {willReadFrequently: true});
         context.drawImage(imageElement, 0, 0);
       }
 

@@ -1,10 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kEasyUnlockKeyMetaNameBluetoothAddress[] = "eu.btaddr";
 const char kEasyUnlockKeyMetaNamePsk[] = "eu.psk";
@@ -21,4 +21,4 @@ EasyUnlockDeviceKeyData::EasyUnlockDeviceKeyData(
 
 EasyUnlockDeviceKeyData::~EasyUnlockDeviceKeyData() = default;
 
-}  // namespace chromeos
+}  // namespace ash

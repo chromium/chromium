@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,7 @@ struct HostFrameStats {
   int bandwidth_estimate_kbps = -1;
   uint32_t capturer_id = webrtc::DesktopCapturerId::kUnknown;
   int frame_quality = -1;
+  webrtc::ScreenId screen_id = webrtc::kInvalidScreenId;
 };
 
 struct ClientFrameStats {

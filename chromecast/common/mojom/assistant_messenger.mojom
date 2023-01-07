@@ -1,0 +1,49 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.mojom;
+
+import "mojo/public/mojom/base/values.mojom";
+
+// The following APIs define a simple messaging protocol between the Assistant
+// Service and a Cast App web client. All messages are either dictionary values
+// or a list of dictionary values (for multiple messages). The message protocol
+// is specific to each app, though the general command format uses a "className"
+// key which identifies the type of command to be handled by the Assistant.
+
+// A handle to the Assistant message API. Returned by CreateMessagePipe().
+// Each client has unique copy.
+//
+// Security: See notes for AssistantMessageService.
+interface AssistantMessagePipe {
+  // Send a message to the Assistant service.
+  SendMessage(mojo_base.mojom.Value message);
+};
+
+// The interface for clients of the Assistant message API. Clients should
+// register with AssistantMessageService::CreateMessagePipe() below.
+//
+// Security: This interface is hosted by the render frame. It receives messages
+// from the Assistant service (see notes for AssistantMessageService).
+interface AssistantMessageClient {
+  // Receive a message from the Assistant service.
+  OnMessage(mojo_base.mojom.Value message);
+};
+
+// Assistant service messaging endpoint.
+//
+// Security: This interface is hosted by the Cast Service. It is exposed to a
+// small set of allow-listed renderers, based on the Cast App ID. These
+// renderers exclusively belong to trusted first-party apps. This interface
+// allows for communication with the Assistant service using an opaque messaging
+// protocol.
+interface AssistantMessageService {
+  // Request a handle to the Assistant message API. |client|'s OnMessage will be
+  // called to alert the client of this interface of messages and other events.
+  // For JS clients, |client_id| is the Cast App ID.
+  CreateMessagePipe(
+      string client_id,
+      pending_remote<AssistantMessageClient> client,
+      pending_receiver<AssistantMessagePipe> pipe);
+};

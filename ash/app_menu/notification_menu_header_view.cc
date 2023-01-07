@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ constexpr int kNotificationHeaderLineHeight = 20;
 }  // namespace
 
 NotificationMenuHeaderView::NotificationMenuHeaderView() {
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(
+  SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
       kNotificationVerticalPadding, kNotificationHorizontalPadding)));
 
   notification_title_ = new views::Label(

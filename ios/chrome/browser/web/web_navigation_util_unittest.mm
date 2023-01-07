@@ -1,19 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web/web_navigation_util.h"
 
-#include "base/test/metrics/user_action_tester.h"
-#include "components/search_engines/template_url.h"
+#import "base/test/metrics/user_action_tester.h"
+#import "components/search_engines/template_url.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "ui/base/page_transition_types.h"
-#include "url/gurl.h"
+#import "testing/platform_test.h"
+#import "ui/base/page_transition_types.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

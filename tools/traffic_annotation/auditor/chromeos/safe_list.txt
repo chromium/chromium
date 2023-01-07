@@ -1,0 +1,33 @@
+# Chrome OS safelist for network annotator.
+# Please do not add any new safelist.
+#
+missing,chrome/browser/ash/customization/customization_wallpaper_downloader.cc
+missing,ash/wallpaper/wallpaper_controller_impl.cc
+all,chromeos/printing/printer_config_cache.cc
+all,chrome/browser/ash/customization/customization_document.cc
+all,ash/webui/projector_app/projector_xhr_sender.cc
+all,chromeos/ash/components/geolocation/simple_geolocation_request.cc
+all,chromeos/ash/components/trial_group/trial_group_checker.cc
+all,chrome/browser/ash/net/network_portal_detector_impl.cc
+all,chrome/browser/ash/policy/uploading/system_log_uploader.cc
+all,chromeos/geolocation/simple_geolocation_request.cc
+all,components/quirks/quirks_client.cc
+all,ash/services/device_sync/cryptauth_client_impl.cc
+all,chrome/browser/supervised_user/child_accounts/family_info_fetcher.cc
+all,chrome/services/sharing/nearby/platform/webrtc.cc
+all,chrome/browser/nearby_sharing/client/nearby_share_client_impl.cc
+all,chrome/browser/supervised_user/child_accounts/permission_request_creator_apiary.cc
+all,chrome/browser/supervised_user/kids_chrome_management/kids_chrome_management_client.cc
+all,chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.cc
+all,chrome/browser/ash/net/network_diagnostics/http_request_manager.cc
+all,chrome/browser/ash/net/network_diagnostics/tls_prober.cc
+all,ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.cc
+all,chrome/browser/search/background/ntp_background_service.cc
+all,chrome/browser/apps/app_service/webapk/webapk_install_task.cc
+all,chrome/browser/ash/login/saml/password_sync_token_fetcher.cc
+all,chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_impl.cc
+all,chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_web_request_service.cc
+all,chrome/browser/ui/app_list/search/arc/recommend_apps_fetcher_impl.cc
+all,chrome/browser/ui/ash/projector/screencast_manager.cc
+all,chrome/services/cups_proxy/socket_manager.cc
+all,chromeos/components/projector_app/projector_xhr_sender.cc

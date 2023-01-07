@@ -1,13 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_FIRST_APP_RUN_TOAST_MANAGER_H_
 #define CHROME_BROWSER_ASH_LOCK_SCREEN_APPS_FIRST_APP_RUN_TOAST_MANAGER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -27,6 +26,10 @@ class FirstAppRunToastManager : public extensions::AppWindowRegistry::Observer,
                                 public views::WidgetObserver {
  public:
   explicit FirstAppRunToastManager(Profile* profile);
+
+  FirstAppRunToastManager(const FirstAppRunToastManager&) = delete;
+  FirstAppRunToastManager& operator=(const FirstAppRunToastManager&) = delete;
+
   ~FirstAppRunToastManager() override;
 
   // Runs the manager for an app window launch. It determines whether the first
@@ -73,18 +76,16 @@ class FirstAppRunToastManager : public extensions::AppWindowRegistry::Observer,
   // The widget associated with the first run dialog, if the dialog is shown.
   views::Widget* toast_widget_ = nullptr;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> toast_widget_observer_{
-      this};
-  ScopedObserver<extensions::AppWindowRegistry,
-                 extensions::AppWindowRegistry::Observer>
-      app_window_observer_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      toast_widget_observation_{this};
+  base::ScopedObservation<extensions::AppWindowRegistry,
+                          extensions::AppWindowRegistry::Observer>
+      app_window_observation_{this};
 
   class AppWidgetObserver;
   std::unique_ptr<AppWidgetObserver> app_widget_observer_;
 
   base::WeakPtrFactory<FirstAppRunToastManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FirstAppRunToastManager);
 };
 
 }  // namespace lock_screen_apps

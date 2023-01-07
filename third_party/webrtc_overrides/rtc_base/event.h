@@ -1,13 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_WEBRTC_OVERRIDES_RTC_BASE_EVENT_H_
 #define THIRD_PARTY_WEBRTC_OVERRIDES_RTC_BASE_EVENT_H_
 
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
+#include "third_party/webrtc/api/units/time_delta.h"
 #include "third_party/webrtc/rtc_base/system/rtc_export.h"
 
 namespace rtc {
@@ -15,25 +15,30 @@ namespace rtc {
 // Overrides WebRTC's internal event implementation to use Chromium's.
 class RTC_EXPORT Event {
  public:
-  static const int kForever = -1;
+  // TODO(bugs.webrtc.org/14366): Consider removing this redundant alias.
+  static constexpr webrtc::TimeDelta kForever =
+      webrtc::TimeDelta::PlusInfinity();
 
   Event();
   Event(bool manual_reset, bool initially_signaled);
+
+  Event(const Event&) = delete;
+  Event& operator=(const Event&) = delete;
+
   ~Event();
 
   void Set();
   void Reset();
 
-  // Wait for the event to become signaled, for the specified number of
-  // milliseconds.  To wait indefinetly, pass kForever.
-  bool Wait(int give_up_after_ms);
-  bool Wait(int give_up_after_ms, int /*warn_after_ms*/) {
-    return Wait(give_up_after_ms);
+  // Wait for the event to become signaled, for the specified duration. To wait
+  // indefinitely, pass kForever.
+  bool Wait(webrtc::TimeDelta give_up_after);
+  bool Wait(webrtc::TimeDelta give_up_after, webrtc::TimeDelta /*warn_after*/) {
+    return Wait(give_up_after);
   }
 
  private:
   base::WaitableEvent event_;
-  DISALLOW_COPY_AND_ASSIGN(Event);
 };
 
 // Pull ScopedAllowBaseSyncPrimitives(ForTesting) into the rtc namespace.

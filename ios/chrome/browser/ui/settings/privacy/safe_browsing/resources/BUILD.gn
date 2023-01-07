@@ -1,0 +1,45 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("bar_chart") {
+  sources = [
+    "bar_chart.imageset/Contents.json",
+    "bar_chart.imageset/bar_chart@2x.png",
+    "bar_chart.imageset/bar_chart@3x.png",
+  ]
+}
+
+imageset("g_icon") {
+  sources = [
+    "g_icon.imageset/Contents.json",
+    "g_icon.imageset/g_icon@2x.png",
+    "g_icon.imageset/g_icon@3x.png",
+  ]
+}
+
+imageset("globe") {
+  sources = [
+    "globe.imageset/Contents.json",
+    "globe.imageset/globe@2x.png",
+    "globe.imageset/globe@3x.png",
+  ]
+}
+
+imageset("key") {
+  sources = [
+    "key.imageset/Contents.json",
+    "key.imageset/key@2x.png",
+    "key.imageset/key@3x.png",
+  ]
+}
+
+imageset("shield") {
+  sources = [
+    "shield.imageset/Contents.json",
+    "shield.imageset/shield@2x.png",
+    "shield.imageset/shield@3x.png",
+  ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,13 +17,10 @@
 // styles and configurations, depending on its type.
 @interface BadgeButtonFactory : NSObject
 
-// Yes if in Incognito mode.
-@property(nonatomic, assign) BOOL incognito;
-
 // Action handler delegate for the buttons.
 @property(nonatomic, weak) id<BadgeDelegate> delegate;
 
-// Returns a properly configured BadgButton associated with |badgeType|.
+// Returns a properly configured BadgButton associated with `badgeType`.
 - (BadgeButton*)badgeButtonForBadgeType:(BadgeType)badgeType;
 
 @end

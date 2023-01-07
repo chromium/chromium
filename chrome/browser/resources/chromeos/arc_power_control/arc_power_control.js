@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -148,7 +148,7 @@ function refreshModel() {
         new Events(
             activeModel.system.memory, 2 /* kSwapRead */, 2 /* kSwapRead */),
         new Events(
-            activeModel.system.memory, 3 /* kSwapWrite */, 3 /* kSwapWrite */)
+            activeModel.system.memory, 3 /* kSwapWrite */, 3 /* kSwapWrite */),
       ],
       true /* smooth */);
   // Geom objects and size.

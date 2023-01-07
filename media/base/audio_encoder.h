@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,25 +12,31 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
-#include "media/base/status.h"
+#include "media/base/timestamp_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
 // Defines a move-only wrapper to hold the encoded audio data.
 struct MEDIA_EXPORT EncodedAudioBuffer {
+  EncodedAudioBuffer();
   EncodedAudioBuffer(const AudioParameters& params,
                      std::unique_ptr<uint8_t[]> data,
                      size_t size,
-                     base::TimeTicks timestamp);
+                     base::TimeTicks timestamp,
+                     base::TimeDelta duration = media::kNoTimestamp);
   EncodedAudioBuffer(EncodedAudioBuffer&&);
+  EncodedAudioBuffer& operator=(EncodedAudioBuffer&&);
   ~EncodedAudioBuffer();
 
   // The audio parameters the encoder used to encode the input audio. They may
   // differ from the original parameters given to the encoder initially, as the
   // encoder may convert the audio to a format more suitable for encoding.
-  const AudioParameters params;
+  AudioParameters params;
 
   // The buffer containing the encoded data.
   std::unique_ptr<uint8_t[]> encoded_data;
@@ -40,11 +46,16 @@ struct MEDIA_EXPORT EncodedAudioBuffer {
   // bigger buffer and fill it only with |encoded_data_size| data without
   // bothering to allocate another shrunk buffer and copy the data in, since the
   // number of encoded bytes may not be known in advance.
-  const size_t encoded_data_size;
+  size_t encoded_data_size = 0;
 
   // The capture time of the first sample of the current AudioBus, or a previous
   // AudioBus If this output was generated because of a call to Flush().
-  const base::TimeTicks timestamp;
+  base::TimeTicks timestamp;
+
+  // The duration of the encoded samples, if they were decoded and played out.
+  // A duration of media::kNoTimestamp means we don't know the duration or don't
+  // care about it.
+  base::TimeDelta duration;
 };
 
 // Defines an interface for audio encoders.
@@ -55,7 +66,9 @@ class MEDIA_EXPORT AudioEncoder {
     Options(const Options&);
     ~Options();
 
-    base::Optional<int> bitrate;
+    AudioCodec codec;
+
+    absl::optional<int> bitrate;
 
     int channels;
 
@@ -69,10 +82,10 @@ class MEDIA_EXPORT AudioEncoder {
   // invoked on the same sequence on which EncodeAudio() is called.
   using OutputCB =
       base::RepeatingCallback<void(EncodedAudioBuffer output,
-                                   base::Optional<CodecDescription>)>;
+                                   absl::optional<CodecDescription>)>;
 
   // Signature of the callback to report errors.
-  using StatusCB = base::OnceCallback<void(Status error)>;
+  using EncoderStatusCB = base::OnceCallback<void(EncoderStatus error)>;
 
   AudioEncoder();
   AudioEncoder(const AudioEncoder&) = delete;
@@ -86,7 +99,7 @@ class MEDIA_EXPORT AudioEncoder {
   // No AudioEncoder calls should be made before |done_cb| is executed.
   virtual void Initialize(const Options& options,
                           OutputCB output_cb,
-                          StatusCB done_cb) = 0;
+                          EncoderStatusCB done_cb) = 0;
 
   // Requests contents of |audio_bus| to be encoded.
   // |capture_time| is a media time at the end of the audio piece in the
@@ -102,12 +115,12 @@ class MEDIA_EXPORT AudioEncoder {
   // including before Encode() returns.
   virtual void Encode(std::unique_ptr<AudioBus> audio_bus,
                       base::TimeTicks capture_time,
-                      StatusCB done_cb) = 0;
+                      EncoderStatusCB done_cb) = 0;
 
   // Some encoders may choose to buffer audio frames before they encode them.
   // Requests all outputs for already encoded frames to be
   // produced via |output_cb| and calls |done_cb| after that.
-  virtual void Flush(StatusCB done_cb) = 0;
+  virtual void Flush(EncoderStatusCB done_cb) = 0;
 
  protected:
   Options options_;
@@ -116,6 +129,8 @@ class MEDIA_EXPORT AudioEncoder {
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
+
+using AudioEncoderConfig = AudioEncoder::Options;
 
 }  // namespace media
 

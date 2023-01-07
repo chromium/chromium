@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,16 @@
 
 namespace blink {
 
-class FragmentDataTest : public RenderingTest {
- protected:
-  bool HasRareData(const FragmentData& data) { return !!data.rare_data_; }
-};
+class FragmentDataTest : public RenderingTest {};
 
-TEST_F(FragmentDataTest, PreEffectClipProperties) {
+TEST_F(FragmentDataTest, PreClip) {
   SetBodyInnerHTML(R"HTML(
     <style>
       #target {
         width: 400px; height: 400px; position: absolute;
         clip: rect(0, 50px, 100px, 0);
         clip-path: inset(0%);
+        filter: blur(10px);
       }
     </style>
     <div id='target'></div>
@@ -29,9 +27,12 @@ TEST_F(FragmentDataTest, PreEffectClipProperties) {
       target->FirstFragment().PaintProperties();
   EXPECT_TRUE(properties->ClipPathClip());
   EXPECT_TRUE(properties->CssClip());
+  EXPECT_TRUE(properties->PixelMovingFilterClipExpander());
+  EXPECT_EQ(properties->CssClip(),
+            properties->PixelMovingFilterClipExpander()->Parent());
   EXPECT_EQ(properties->ClipPathClip(), properties->CssClip()->Parent());
   EXPECT_EQ(properties->ClipPathClip()->Parent(),
-            &target->FirstFragment().PreEffectProperties().Clip());
+            &target->FirstFragment().PreClip());
 }
 
 }  // namespace blink

@@ -1,12 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_COMPOSITOR_CANVAS_PAINTER_H_
 #define UI_COMPOSITOR_CANVAS_PAINTER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/gfx/geometry/rect.h"
@@ -31,6 +33,10 @@ class COMPOSITOR_EXPORT CanvasPainter {
                 float device_scale_factor,
                 SkColor clear_color,
                 bool is_pixel_canvas);
+
+  CanvasPainter(const CanvasPainter&) = delete;
+  CanvasPainter& operator=(const CanvasPainter&) = delete;
+
   ~CanvasPainter();
 
   const PaintContext& context() const { return context_; }
@@ -38,14 +44,12 @@ class COMPOSITOR_EXPORT CanvasPainter {
  private:
   friend class CanvasPainterTest;
 
-  SkBitmap* const output_;
+  const raw_ptr<SkBitmap> output_;
   const gfx::Size pixel_output_size_;
   const float raster_scale_;
   const SkColor clear_color_;
   scoped_refptr<cc::DisplayItemList> list_;
   PaintContext context_;
-
-  DISALLOW_COPY_AND_ASSIGN(CanvasPainter);
 };
 
 }  // namespace ui

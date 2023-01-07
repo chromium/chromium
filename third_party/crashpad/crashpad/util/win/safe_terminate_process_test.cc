@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,13 +16,12 @@
 
 #include <string.h>
 
-#include <string>
+#include <iterator>
 #include <memory>
+#include <string>
 
 #include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
@@ -45,6 +44,9 @@ class ScopedExecutablePatch {
     ScopedVirtualProtectRWX protect_rwx(target_, size_);
     memcpy(target_, source, size_);
   }
+
+  ScopedExecutablePatch(const ScopedExecutablePatch&) = delete;
+  ScopedExecutablePatch& operator=(const ScopedExecutablePatch&) = delete;
 
   ~ScopedExecutablePatch() {
     ScopedVirtualProtectRWX protect_rwx(target_, size_);
@@ -71,6 +73,9 @@ class ScopedExecutablePatch {
           << "VirtualProtect";
     }
 
+    ScopedVirtualProtectRWX(const ScopedVirtualProtectRWX&) = delete;
+    ScopedVirtualProtectRWX& operator=(const ScopedVirtualProtectRWX&) = delete;
+
     ~ScopedVirtualProtectRWX() {
       DWORD last_protect_;
       PCHECK(VirtualProtect(address_, size_, old_protect_, &last_protect_))
@@ -81,15 +86,11 @@ class ScopedExecutablePatch {
     void* address_;
     size_t size_;
     DWORD old_protect_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedVirtualProtectRWX);
   };
 
   std::unique_ptr<uint8_t[]> original_;
   void* target_;
   size_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedExecutablePatch);
 };
 
 // SafeTerminateProcess is calling convention specific only for x86.
@@ -149,7 +150,7 @@ TEST(SafeTerminateProcess, PatchBadly) {
     };
 
     void* target = reinterpret_cast<void*>(TerminateProcess);
-    ScopedExecutablePatch executable_patch(target, patch, base::size(patch));
+    ScopedExecutablePatch executable_patch(target, patch, std::size(patch));
 
     // Make sure that SafeTerminateProcess() can be called. Since it’s been
     // patched with a no-op stub, GetLastError() shouldn’t be modified.

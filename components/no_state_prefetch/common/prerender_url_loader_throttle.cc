@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
-#include "components/no_state_prefetch/common/prerender_util.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_utils.h"
 #include "content/public/common/content_constants.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
@@ -91,7 +91,7 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
     return;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (request->is_favicon) {
     // Delay icon fetching until the contents are getting swapped in
     // to conserve network usage in mobile devices.
@@ -111,12 +111,11 @@ void PrerenderURLLoaderThrottle::WillStartRequest(
     original_request_priority_ = request->priority;
     request->priority = net::IDLE;
   }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
-  detached_timer_.Start(FROM_HERE,
-                        base::TimeDelta::FromMilliseconds(
-                            content::kDefaultDetachableCancelDelayMs),
-                        this, &PrerenderURLLoaderThrottle::OnTimedOut);
+  detached_timer_.Start(
+      FROM_HERE, base::Milliseconds(content::kDefaultDetachableCancelDelayMs),
+      this, &PrerenderURLLoaderThrottle::OnTimedOut);
 }
 
 const char* PrerenderURLLoaderThrottle::NameForLoggingWillStartRequest() {

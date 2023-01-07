@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_policy.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -33,6 +32,7 @@
 #include "chrome/updater/updater_scope.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
 
@@ -84,7 +84,7 @@ class StateChangeTestEngine {
   static constexpr vec_size_t kDone = kNotStarted - 1;
 
   // Implementation of the callback created by Watch().
-  void GotState(UpdateService::UpdateState state);
+  void GotState(const UpdateService::UpdateState& state);
 
   // Push the next event (if any).
   void Next();
@@ -214,7 +214,7 @@ void StateChangeTestEngine::Finish() {
                                                    std::move(done_cb_));
 }
 
-void StateChangeTestEngine::GotState(UpdateService::UpdateState state) {
+void StateChangeTestEngine::GotState(const UpdateService::UpdateState& state) {
   if (next_observation_ == kDone) {
     ADD_FAILURE() << "StateChangeTestEngine received StateChangeCallback "
                      "event after it became done.";
@@ -293,8 +293,8 @@ void MacUpdateServiceProxyTest::SetUp() {
   run_loop_ = std::make_unique<base::RunLoop>();
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this]() {
-        service_ =
-            base::MakeRefCounted<UpdateServiceProxy>(UpdaterScope::kUser);
+        service_ = base::MakeRefCounted<UpdateServiceProxy>(
+            UpdaterScope::kUser, base::TimeDelta::Max());
       }));
 }
 
@@ -444,8 +444,8 @@ StateChangeTestEngine::StatePair UpdatedStates(const std::string& app_id,
 }
 
 #pragma mark Test cases
-
-TEST_F(MacUpdateServiceProxyTest, NoProductsUpdateAll) {
+// TODO(crbug.com/1247504): Flaky on macOS 10.12.6.
+TEST_F(MacUpdateServiceProxyTest, DISABLED_NoProductsUpdateAll) {
   ScopedXPCServiceMock::ConnectionMockRecord* conn_rec =
       mock_driver_.PrepareNewMockConnection();
   ScopedXPCServiceMock::RemoteObjectMockRecord* mock_rec =
@@ -467,8 +467,9 @@ TEST_F(MacUpdateServiceProxyTest, NoProductsUpdateAll) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this]() {
         service_->UpdateAll(
-            base::BindRepeating(&ExpectNoCalls<UpdateService::UpdateState>,
-                                "no state updates expected"),
+            base::BindRepeating(
+                &ExpectNoCalls<const UpdateService::UpdateState&>,
+                "no state updates expected"),
             base::BindLambdaForTesting(
                 [this](UpdateService::Result actual_result) {
                   EXPECT_EQ(UpdateService::Result::kAppNotFound, actual_result);
@@ -496,9 +497,14 @@ TEST_F(MacUpdateServiceProxyTest, SimpleProductUpdate) {
   OCMockObjectCapturer<CRUUpdateStateObserver> update_state_observer_capturer;
 
   const std::string test_app_id("test_app_id");
+  const std::string test_install_data_index("test_install_data_index");
   base::scoped_nsobject<CRUPriorityWrapper> wrapped_priority(
       [[CRUPriorityWrapper alloc]
           initWithPriority:UpdateService::Priority::kForeground]);
+  base::scoped_nsobject<CRUPolicySameVersionUpdateWrapper>
+      wrapped_policySameVersionUpdate([[CRUPolicySameVersionUpdateWrapper alloc]
+          initWithPolicySameVersionUpdate:
+              UpdateService::PolicySameVersionUpdate::kNotAllowed]);
   StateChangeTestEngine state_change_engine(
       std::vector<StateChangeTestEngine::StatePair>{
           CheckingForUpdatesStates(test_app_id), UpdateFoundStates(test_app_id),
@@ -516,8 +522,11 @@ TEST_F(MacUpdateServiceProxyTest, SimpleProductUpdate) {
   auto* update_state_observer_capturer_ptr = &update_state_observer_capturer;
   auto* state_change_engine_ptr = &state_change_engine;
   OCMExpect([mock_remote_object
-                checkForUpdateWithAppID:base::SysUTF8ToNSString(test_app_id)
+                checkForUpdateWithAppId:base::SysUTF8ToNSString(test_app_id)
+                       installDataIndex:base::SysUTF8ToNSString(
+                                            test_install_data_index)
                                priority:wrapped_priority.get()
+                policySameVersionUpdate:wrapped_policySameVersionUpdate.get()
                             updateState:update_state_observer_capturer.Capture()
                                   reply:reply_block_capturer.Capture()])
       .andDo(^(NSInvocation*) {
@@ -531,7 +540,9 @@ TEST_F(MacUpdateServiceProxyTest, SimpleProductUpdate) {
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindLambdaForTesting([this, &state_change_engine]() {
-        service_->Update("test_app_id", UpdateService::Priority::kForeground,
+        service_->Update("test_app_id", "test_install_data_index",
+                         UpdateService::Priority::kForeground,
+                         UpdateService::PolicySameVersionUpdate::kNotAllowed,
                          state_change_engine.Watch(),
                          base::BindLambdaForTesting(
                              [this](UpdateService::Result actual_result) {

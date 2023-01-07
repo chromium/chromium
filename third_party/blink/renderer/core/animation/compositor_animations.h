@@ -32,6 +32,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_COMPOSITOR_ANIMATIONS_H_
 
 #include <memory>
+#include "base/time/time.h"
+#include "cc/animation/keyframe_model.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/keyframe.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
@@ -84,44 +87,71 @@ class CORE_EXPORT CompositorAnimations {
     // Cases where the target is invalid (but that we could feasibly address).
     kTargetHasIncompatibleAnimations = 1 << 6,
     kTargetHasCSSOffset = 1 << 7,
-    kTargetHasMultipleTransformProperties = 1 << 8,
+
+    // This failure reason is no longer used, as multiple transform-related
+    // animations are allowed on the same target provided they target different
+    // transform properties (e.g. rotate vs scale).
+    kObsoleteTargetHasMultipleTransformProperties = 1 << 8,
 
     // Cases relating to the properties being animated.
     kAnimationAffectsNonCSSProperties = 1 << 9,
     kTransformRelatedPropertyCannotBeAcceleratedOnTarget = 1 << 10,
-    kTransformRelatedPropertyDependsOnBoxSize = 1 << 11,
     kFilterRelatedPropertyMayMovePixels = 1 << 12,
     kUnsupportedCSSProperty = 1 << 13,
-    kMultipleTransformAnimationsOnSameTarget = 1 << 14,
+
+    // This failure reason is no longer used, as multiple transform-related
+    // animations are allowed on the same target provided they target different
+    // transform properties (e.g. rotate vs scale).
+    kObsoleteMultipleTransformAnimationsOnSameTarget = 1 << 14,
+
     kMixedKeyframeValueTypes = 1 << 15,
 
     // Cases where the scroll timeline source is not composited.
     kTimelineSourceHasInvalidCompositingState = 1 << 16,
 
+    // Cases where there is an animation of compositor properties but they have
+    // been optimized out so the animation of those properties has no effect.
+    kCompositorPropertyAnimationsHaveNoEffect = 1 << 17,
+
+    // Cases where we are animating a property that is marked important.
+    kAffectsImportantProperty = 1 << 18,
+
+    kSVGTargetHasIndependentTransformProperty = 1 << 19,
+
+    // When adding new values, update the count below *and* add a description
+    // of the value to CompositorAnimationsFailureReason in
+    // tools/metrics/histograms/enums.xml .
+
     // The maximum number of flags in this enum (excluding itself). New flags
     // should increment this number but it should never be decremented because
     // the values are used in UMA histograms. It should also be noted that it
     // excludes the kNoFailure value.
-    kFailureReasonCount = 17,
+    kFailureReasonCount = 20,
   };
 
   static FailureReasons CheckCanStartAnimationOnCompositor(
       const Timing&,
+      const Timing::NormalizedTiming&,
       const Element&,
       const Animation*,
       const EffectModel&,
       const PaintArtifactCompositor*,
       double animation_playback_rate,
       PropertyHandleSet* unsupported_properties = nullptr);
+  static bool CompositorPropertyAnimationsHaveNoEffect(
+      const Element& target_element,
+      const EffectModel& effect,
+      const PaintArtifactCompositor*);
   static void CancelIncompatibleAnimationsOnCompositor(const Element&,
                                                        const Animation&,
                                                        const EffectModel&);
   static void StartAnimationOnCompositor(
       const Element&,
       int group,
-      base::Optional<double> start_time,
+      absl::optional<double> start_time,
       base::TimeDelta time_offset,
       const Timing&,
+      const Timing::NormalizedTiming&,
       const Animation*,
       CompositorAnimation&,
       const EffectModel&,
@@ -150,6 +180,7 @@ class CORE_EXPORT CompositorAnimations {
   };
 
   static bool ConvertTimingForCompositor(const Timing&,
+                                         const Timing::NormalizedTiming&,
                                          base::TimeDelta time_offset,
                                          CompositorTiming& out,
                                          double animation_playback_rate);
@@ -157,11 +188,12 @@ class CORE_EXPORT CompositorAnimations {
   static void GetAnimationOnCompositor(
       const Element&,
       const Timing&,
+      const Timing::NormalizedTiming&,
       int group,
-      base::Optional<double> start_time,
+      absl::optional<double> start_time,
       base::TimeDelta time_offset,
       const KeyframeEffectModelBase&,
-      Vector<std::unique_ptr<CompositorKeyframeModel>>& animations,
+      Vector<std::unique_ptr<cc::KeyframeModel>>& animations,
       double animation_playback_rate);
 
   static CompositorElementIdNamespace CompositorElementNamespaceForProperty(
@@ -174,6 +206,7 @@ class CORE_EXPORT CompositorAnimations {
  private:
   static FailureReasons CheckCanStartEffectOnCompositor(
       const Timing&,
+      const Timing::NormalizedTiming&,
       const Element&,
       const Animation*,
       const EffectModel&,
@@ -193,4 +226,4 @@ class CORE_EXPORT CompositorAnimations {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_COMPOSITOR_ANIMATIONS_H_

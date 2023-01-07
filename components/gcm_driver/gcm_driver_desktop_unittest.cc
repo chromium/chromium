@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,12 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
@@ -18,6 +19,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #include "components/gcm_driver/fake_gcm_app_handler.h"
 #include "components/gcm_driver/fake_gcm_client.h"
@@ -99,6 +101,10 @@ class GCMDriverTest : public testing::Test {
   };
 
   GCMDriverTest();
+
+  GCMDriverTest(const GCMDriverTest&) = delete;
+  GCMDriverTest& operator=(const GCMDriverTest&) = delete;
+
   ~GCMDriverTest() override;
 
   // testing::Test:
@@ -180,8 +186,6 @@ class GCMDriverTest : public testing::Test {
   GCMClient::Result unregistration_result_;
   std::string p256dh_;
   std::string auth_secret_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMDriverTest);
 };
 
 GCMDriverTest::GCMDriverTest()
@@ -237,14 +241,12 @@ FakeGCMClient* GCMDriverTest::GetGCMClient() {
 }
 
 void GCMDriverTest::CreateDriver() {
-  scoped_refptr<net::URLRequestContextGetter> request_context =
-      new net::TestURLRequestContextGetter(io_thread_.task_runner());
   GCMClient::ChromeBuildInfo chrome_build_info;
   chrome_build_info.product_category_for_subtypes = "com.chrome.macosx";
   driver_ = std::make_unique<GCMDriverDesktop>(
       std::unique_ptr<GCMClientFactory>(new FakeGCMClientFactory(
           base::ThreadTaskRunnerHandle::Get(), io_thread_.task_runner())),
-      chrome_build_info, "user-agent-string", &prefs_, temp_dir_.GetPath(),
+      chrome_build_info, &prefs_, temp_dir_.GetPath(),
       /*remove_account_mappings_with_email_key=*/true, base::DoNothing(),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_),
@@ -252,8 +254,8 @@ void GCMDriverTest::CreateDriver() {
       base::ThreadTaskRunnerHandle::Get(), io_thread_.task_runner(),
       task_environment_.GetMainThreadTaskRunner());
 
-  gcm_app_handler_.reset(new FakeGCMAppHandler);
-  gcm_connection_observer_.reset(new FakeGCMConnectionObserver);
+  gcm_app_handler_ = std::make_unique<FakeGCMAppHandler>();
+  gcm_connection_observer_ = std::make_unique<FakeGCMConnectionObserver>();
 
   driver_->AddConnectionObserver(gcm_connection_observer_.get());
 }
@@ -523,13 +525,14 @@ TEST_F(GCMDriverTest, GCMClientNotReadyBeforeSending) {
 class GCMDriverFunctionalTest : public GCMDriverTest {
  public:
   GCMDriverFunctionalTest();
+
+  GCMDriverFunctionalTest(const GCMDriverFunctionalTest&) = delete;
+  GCMDriverFunctionalTest& operator=(const GCMDriverFunctionalTest&) = delete;
+
   ~GCMDriverFunctionalTest() override;
 
   // GCMDriverTest:
   void SetUp() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GCMDriverFunctionalTest);
 };
 
 GCMDriverFunctionalTest::GCMDriverFunctionalTest() {
@@ -880,6 +883,10 @@ TEST_F(GCMDriverFunctionalTest, LastTokenFetchTime) {
 class GCMDriverInstanceIDTest : public GCMDriverTest {
  public:
   GCMDriverInstanceIDTest();
+
+  GCMDriverInstanceIDTest(const GCMDriverInstanceIDTest&) = delete;
+  GCMDriverInstanceIDTest& operator=(const GCMDriverInstanceIDTest&) = delete;
+
   ~GCMDriverInstanceIDTest() override;
 
   void GetReady();
@@ -911,8 +918,6 @@ class GCMDriverInstanceIDTest : public GCMDriverTest {
   std::string extra_data_;
 
   int instance_id_resolved_counter_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMDriverInstanceIDTest);
 };
 
 GCMDriverInstanceIDTest::GCMDriverInstanceIDTest() {

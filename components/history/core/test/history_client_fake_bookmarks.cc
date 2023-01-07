@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/history/core/browser/history_backend_client.h"
 #include "url/gurl.h"
@@ -19,6 +19,9 @@ class FakeBookmarkDatabase
     : public base::RefCountedThreadSafe<FakeBookmarkDatabase> {
  public:
   FakeBookmarkDatabase() {}
+
+  FakeBookmarkDatabase(const FakeBookmarkDatabase&) = delete;
+  FakeBookmarkDatabase& operator=(const FakeBookmarkDatabase&) = delete;
 
   void ClearAllBookmarks();
   void AddBookmarkWithTitle(const GURL& url, const std::u16string& title);
@@ -34,8 +37,6 @@ class FakeBookmarkDatabase
 
   base::Lock lock_;
   std::map<GURL, std::u16string> bookmarks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBookmarkDatabase);
 };
 
 void FakeBookmarkDatabase::ClearAllBookmarks() {
@@ -77,6 +78,12 @@ class HistoryBackendClientFakeBookmarks : public HistoryBackendClient {
  public:
   explicit HistoryBackendClientFakeBookmarks(
       const scoped_refptr<FakeBookmarkDatabase>& bookmarks);
+
+  HistoryBackendClientFakeBookmarks(const HistoryBackendClientFakeBookmarks&) =
+      delete;
+  HistoryBackendClientFakeBookmarks& operator=(
+      const HistoryBackendClientFakeBookmarks&) = delete;
+
   ~HistoryBackendClientFakeBookmarks() override;
 
   // HistoryBackendClient implementation.
@@ -86,8 +93,6 @@ class HistoryBackendClientFakeBookmarks : public HistoryBackendClient {
 
  private:
   scoped_refptr<FakeBookmarkDatabase> bookmarks_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryBackendClientFakeBookmarks);
 };
 
 HistoryBackendClientFakeBookmarks::HistoryBackendClientFakeBookmarks(
@@ -160,5 +165,9 @@ std::unique_ptr<HistoryBackendClient>
 HistoryClientFakeBookmarks::CreateBackendClient() {
   return std::make_unique<HistoryBackendClientFakeBookmarks>(bookmarks_);
 }
+
+void HistoryClientFakeBookmarks::UpdateBookmarkLastUsedTime(
+    int64_t bookmark_node_id,
+    base::Time time) {}
 
 }  // namespace history

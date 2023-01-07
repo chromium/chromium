@@ -312,35 +312,35 @@ function checkCropRight(ctx, imageBitmap, tolerance) {
 
 function checkOverCrop(ctx, imageBitmap, tolerance) {
     shouldBeType(imageBitmap, "ImageBitmap");
-    assert_equals(imageBitmap.width, 20);
-    assert_equals(imageBitmap.height, 20);
+    assert_equals(imageBitmap.width, 60);
+    assert_equals(imageBitmap.height, 60);
 
-    // should be drawn to (0, 0), (20, 20)
+    // should be drawn to (10, 10), (30, 30)
     clearContext(ctx, 50, 50);
     ctx.drawImage(imageBitmap, 0, 0);
-    redPixels = [[9, 9]];
-    greenPixels = [[11, 9]];
-    bluePixels = [[9, 11]];
-    blackPixels = [[11, 11], [19, 19]];
-    transparentPixels = [[1, 21], [21, 1], [21, 21]];
+    redPixels = [[19, 19]];
+    greenPixels = [[21, 19]];
+    bluePixels = [[19, 21]];
+    blackPixels = [[21, 21], [29, 29]];
+    transparentPixels = [[21, 31], [31, 11], [31, 31]];
     checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels,
                 transparentPixels, tolerance);
 
     // shrunk to (0, 0), (10, 10)
     clearContext(ctx, 50, 50);
     ctx.drawImage(imageBitmap, 0, 0, 10, 10);
-    redPixels = [[4, 4]];
-    greenPixels = [[6, 4]];
-    bluePixels = [[4, 6]];
-    blackPixels = [[6, 6], [9, 9]];
+    redPixels = [[2, 2]];
+    greenPixels = [[4, 2]];
+    bluePixels = [[2, 4]];
+    blackPixels = [[3, 3], [4, 4]];
     transparentPixels = [[1, 11], [11, 1], [11, 11]];
     checkPixels(ctx, redPixels, greenPixels, bluePixels, blackPixels,
                 transparentPixels, tolerance);
 }
 
 function checkOverCropRight(ctx, imageBitmap, tolerance) {
-    assert_equals(imageBitmap.width, 10);
-    assert_equals(imageBitmap.height, 10);
+    assert_equals(imageBitmap.width, 50);
+    assert_equals(imageBitmap.height, 50);
 
     // black should be drawn to (0, 0), (10, 10)
     clearContext(ctx, 50, 50);
@@ -351,7 +351,7 @@ function checkOverCropRight(ctx, imageBitmap, tolerance) {
 
     // black should be drawn to (0, 0), (4, 4)
     clearContext(ctx, 50, 50);
-    ctx.drawImage(imageBitmap, 0, 0, 4, 4);
+    ctx.drawImage(imageBitmap, 0, 0, 20, 20);
     blackPixels = [[1, 1], [3, 3]];
     transparentPixels = [[5, 5], [1, 5], [5, 1]];
     checkPixels(ctx, [], [], [], blackPixels, transparentPixels, tolerance);

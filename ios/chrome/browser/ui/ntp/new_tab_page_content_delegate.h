@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,12 @@
 
 // Reloads content suggestions collection view.
 - (void)reloadContentSuggestions;
+
+// YES if the content requires the header to stick while scrolling.
+- (BOOL)isContentHeaderSticky;
+
+// Handles what happens when the feed top section changes visibility in the NTP.
+- (void)feedTopSectionHasChangedVisibility:(BOOL)visible;
 
 @end
 

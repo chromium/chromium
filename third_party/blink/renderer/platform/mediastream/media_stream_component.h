@@ -32,118 +32,96 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_COMPONENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_COMPONENT_H_
 
-#include <memory>
-
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
-#include "third_party/blink/public/platform/web_vector.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
-#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
 class MediaStreamSource;
-class WebAudioSourceProvider;
+class WebLocalFrame;
 
 // A MediaStreamComponent is a MediaStreamTrack.
 // TODO(hta): Consider merging the two classes.
 
-class PLATFORM_EXPORT MediaStreamComponent final
-    : public GarbageCollected<MediaStreamComponent> {
-  USING_PRE_FINALIZER(MediaStreamComponent, Dispose);
-
- private:
-  static int GenerateUniqueId();
-
+class PLATFORM_EXPORT MediaStreamComponent : public GarbageCollectedMixin {
  public:
-  MediaStreamComponent(MediaStreamSource*);
-  MediaStreamComponent(const String& id, MediaStreamSource*);
+  // TODO(crbug.com/1302689): Clone the platform track internally rather than
+  // taking it as a parameter.
+  virtual MediaStreamComponent* Clone(
+      std::unique_ptr<MediaStreamTrackPlatform> cloned_platform_track =
+          nullptr) const = 0;
 
-  MediaStreamComponent* Clone() const;
-
-  // |m_trackData| may hold pointers to GC objects indirectly, and it may touch
-  // eagerly finalized objects in destruction.
-  // So this class runs pre-finalizer to finalize |m_trackData| promptly.
-  void Dispose();
-
-  MediaStreamSource* Source() const { return source_.Get(); }
+  virtual MediaStreamSource* Source() const = 0;
 
   // This is the same as the id of the |MediaStreamTrack|. It is unique in most
   // contexts but collisions can occur e.g. if tracks are created by different
   // |RTCPeerConnection|s or a remote track ID is signaled to be added, removed
   // and then re-added resulting in a new track object the second time around.
-  String Id() const { return id_; }
+  virtual String Id() const = 0;
   // Uniquely identifies this component.
-  int UniqueId() const { return unique_id_; }
-  bool Enabled() const { return enabled_; }
-  void SetEnabled(bool enabled) { enabled_ = enabled; }
-  bool Muted() const { return muted_; }
-  void SetMuted(bool muted) { muted_ = muted; }
-  WebMediaStreamTrack::ContentHintType ContentHint() { return content_hint_; }
-  void SetContentHint(WebMediaStreamTrack::ContentHintType);
-  const MediaConstraints& Constraints() const { return constraints_; }
-  void SetConstraints(const MediaConstraints& constraints) {
-    constraints_ = constraints;
-  }
-  AudioSourceProvider* GetAudioSourceProvider() { return &source_provider_; }
-  void SetSourceProvider(WebAudioSourceProvider* provider) {
-    source_provider_.Wrap(provider);
-  }
+  virtual int UniqueId() const = 0;
+  virtual MediaStreamSource::StreamType GetSourceType() const = 0;
+  virtual const String& GetSourceName() const = 0;
+  virtual MediaStreamSource::ReadyState GetReadyState() const = 0;
+  virtual bool Remote() const = 0;
+  virtual bool Enabled() const = 0;
+  virtual void SetEnabled(bool enabled) = 0;
+  virtual WebMediaStreamTrack::ContentHintType ContentHint() = 0;
+  virtual void SetContentHint(WebMediaStreamTrack::ContentHintType) = 0;
 
-  MediaStreamTrackPlatform* GetPlatformTrack() const {
-    return platform_track_.get();
-  }
-  void SetPlatformTrack(
-      std::unique_ptr<MediaStreamTrackPlatform> platform_track) {
-    platform_track_ = std::move(platform_track);
-  }
-  void GetSettings(MediaStreamTrackPlatform::Settings&);
+  virtual MediaStreamTrackPlatform* GetPlatformTrack() const = 0;
+
+  // Add an audio sink to the underlying platform track. This function must only
+  // be called if the component has an audio platform track. It will trigger a
+  // OnSetFormat() call on the |sink| before the first chunk of audio is
+  // delivered.
+  // TODO(crbug.com/1354563) Create separate MSC types for audio and video
+  virtual void AddSink(WebMediaStreamAudioSink* sink) = 0;
+  // Add a video sink to the underlying platform track. This function must only
+  // be called if the component has a video platform track.  The |sink| will
+  // receive video track state changes on the main render thread and video
+  // frames in the |callback| method on the IO-thread.  |callback| will be reset
+  // on the render thread.
+  // TODO(crbug.com/1354563) Create separate MSC types for audio and video
+  virtual void AddSink(WebMediaStreamSink* sink,
+                       const VideoCaptureDeliverFrameCB& callback,
+                       MediaStreamVideoSink::IsSecure is_secure,
+                       MediaStreamVideoSink::UsesAlpha uses_alpha) = 0;
+
+  virtual void GetSettings(MediaStreamTrackPlatform::Settings&) = 0;
+  virtual MediaStreamTrackPlatform::CaptureHandle GetCaptureHandle() = 0;
+
+  virtual WebLocalFrame* CreationFrame() = 0;
+  virtual void SetCreationFrame(WebLocalFrame* creation_frame) = 0;
+
+  virtual void AddSourceObserver(MediaStreamSource::Observer*) = 0;
+
+  virtual String ToString() const = 0;
+};
+
+class PLATFORM_EXPORT MediaStreamComponents final
+    : public GarbageCollected<MediaStreamComponents> {
+ public:
+  // At least one of audio_track / video_track must be non-null.
+  MediaStreamComponents(MediaStreamComponent* audio_track,
+                        MediaStreamComponent* video_track);
 
   void Trace(Visitor*) const;
 
- private:
-  // AudioSourceProviderImpl wraps a WebAudioSourceProvider::provideInput()
-  // calls into chromium to get a rendered audio stream.
-
-  class PLATFORM_EXPORT AudioSourceProviderImpl final
-      : public AudioSourceProvider {
-   public:
-    AudioSourceProviderImpl() : web_audio_source_provider_(nullptr) {}
-
-    ~AudioSourceProviderImpl() override = default;
-
-    // Wraps the given blink::WebAudioSourceProvider to
-    // blink::AudioSourceProvider.
-    void Wrap(WebAudioSourceProvider*);
-
-    // blink::AudioSourceProvider
-    void ProvideInput(AudioBus*, uint32_t frames_to_process) override;
-
-   private:
-    WebAudioSourceProvider* web_audio_source_provider_;
-    Mutex provide_input_lock_;
-
-    // Used to wrap AudioBus to be passed into |web_audio_source_provider_|.
-    WebVector<float*> web_audio_data_;
-  };
-
-  AudioSourceProviderImpl source_provider_;
-  Member<MediaStreamSource> source_;
-  String id_;
-  int unique_id_;
-  bool enabled_ = true;
-  bool muted_ = false;
-  WebMediaStreamTrack::ContentHintType content_hint_ =
-      WebMediaStreamTrack::ContentHintType::kNone;
-  MediaConstraints constraints_;
-  std::unique_ptr<MediaStreamTrackPlatform> platform_track_;
+  Member<MediaStreamComponent> audio_track_;
+  Member<MediaStreamComponent> video_track_;
 };
 
-typedef HeapVector<Member<MediaStreamComponent>> MediaStreamComponentVector;
+using MediaStreamComponentVector = HeapVector<Member<MediaStreamComponent>>;
+using MediaStreamsComponentsVector = HeapVector<Member<MediaStreamComponents>>;
 
 }  // namespace blink
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/string_split.h"
+#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager.h"
 #include "chrome/browser/nearby_sharing/file_attachment.h"
 #include "chrome/browser/nearby_sharing/nearby_per_session_discovery_manager.h"
@@ -16,15 +17,21 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/nearby_sharing/text_attachment.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/nearby_share/shared_resources.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
+#include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/nearby_share_dialog_resources.h"
 #include "chrome/grit/nearby_share_dialog_resources_map.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/components/sharesheet/constants.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -33,8 +40,19 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/views/controls/webview/webview.h"
 
 namespace nearby_share {
+
+// Keep in sync with //chrome/browser/resources/nearby_share/shared/types.js
+enum class CloseReason {
+  kUnknown = 0,
+  kTransferStarted = 1,
+  kTransferSucceeded = 2,
+  kCancelled = 3,
+  kRejected = 4,
+  kMax = kRejected
+};
 
 NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
@@ -46,6 +64,9 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
 
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::Create(chrome::kChromeUINearbyShareHost);
+
+  content::URLDataSource::Add(profile,
+                              std::make_unique<SanitizedImageSource>(profile));
 
   webui::SetupWebUIDataSource(html_source,
                               base::make_span(kNearbyShareDialogResources,
@@ -60,9 +81,13 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
 
+  html_source->AddBoolean(
+      "isOnePageOnboardingEnabled",
+      base::FeatureList::IsEnabled(features::kNearbySharingOnePageOnboarding));
   RegisterNearbySharedStrings(html_source);
   html_source->UseStringsJs();
 
+  // Register callback to handle "cancel-button-event" from nearby_*.html files.
   web_ui->RegisterMessageCallback(
       "close", base::BindRepeating(&NearbyShareDialogUI::HandleClose,
                                    base::Unretained(this)));
@@ -83,18 +108,15 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
 
 NearbyShareDialogUI::~NearbyShareDialogUI() = default;
 
-void NearbyShareDialogUI::AddObserver(NearbyShareDialogUI::Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void NearbyShareDialogUI::RemoveObserver(
-    NearbyShareDialogUI::Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 void NearbyShareDialogUI::SetAttachments(
     std::vector<std::unique_ptr<Attachment>> attachments) {
   attachments_ = std::move(attachments);
+}
+
+void NearbyShareDialogUI::SetWebView(views::WebView* web_view) {
+  CHECK(web_view);
+  web_view_ = web_view;
+  web_view_->GetWebContents()->SetDelegate(this);
 }
 
 void NearbyShareDialogUI::BindInterface(
@@ -121,10 +143,57 @@ void NearbyShareDialogUI::BindInterface(
   nearby_sharing_service->GetContactManager()->Bind(std::move(receiver));
 }
 
-void NearbyShareDialogUI::HandleClose(const base::ListValue* args) {
-  for (auto& observer : observers_) {
-    observer.OnClose();
+bool NearbyShareDialogUI::HandleKeyboardEvent(
+    content::WebContents* source,
+    const content::NativeWebKeyboardEvent& event) {
+  if (!web_view_) {
+    return false;
   }
+
+  return unhandled_keyboard_event_handler_.HandleKeyboardEvent(
+      event, web_view_->GetFocusManager());
+}
+
+void NearbyShareDialogUI::WebContentsCreated(
+    content::WebContents* source_contents,
+    int opener_render_process_id,
+    int opener_render_frame_id,
+    const std::string& frame_name,
+    const GURL& target_url,
+    content::WebContents* new_contents) {
+  chrome::ScopedTabbedBrowserDisplayer displayer(Profile::FromWebUI(web_ui()));
+  NavigateParams nav_params(displayer.browser(), target_url,
+                            ui::PageTransition::PAGE_TRANSITION_LINK);
+  Navigate(&nav_params);
+}
+
+void NearbyShareDialogUI::HandleClose(const base::Value::List& args) {
+  if (!sharesheet_controller_)
+    return;
+
+  CHECK_EQ(1u, args.size());
+  CHECK_GE(args[0].GetInt(), 0);
+  CHECK_LE(args[0].GetInt(), static_cast<int>(CloseReason::kMax));
+  CloseReason reason = static_cast<CloseReason>(args[0].GetInt());
+
+  sharesheet::SharesheetResult sharesheet_result;
+  switch (reason) {
+    case CloseReason::kTransferStarted:
+    case CloseReason::kTransferSucceeded:
+      sharesheet_result = sharesheet::SharesheetResult::kSuccess;
+      break;
+    case CloseReason::kUnknown:
+    case CloseReason::kCancelled:
+    case CloseReason::kRejected:
+      sharesheet_result = sharesheet::SharesheetResult::kCancel;
+      break;
+  }
+
+  sharesheet_controller_->CloseBubble(sharesheet_result);
+
+  // We need to clear out the controller here to protect against calling
+  // CloseBubble() more than once, which will cause a crash.
+  sharesheet_controller_ = nullptr;
 }
 
 void NearbyShareDialogUI::SetAttachmentFromQueryParameter(const GURL& url) {
@@ -138,8 +207,8 @@ void NearbyShareDialogUI::SetAttachmentFromQueryParameter(const GURL& url) {
            {"text", TextAttachment::Type::kText}}) {
     if (net::GetValueForKeyInQuery(url, text_type.first, &value)) {
       attachments.push_back(std::make_unique<TextAttachment>(
-          text_type.second, value, /*title=*/base::nullopt,
-          /*mime_type=*/base::nullopt));
+          text_type.second, value, /*title=*/absl::nullopt,
+          /*mime_type=*/absl::nullopt));
       SetAttachments(std::move(attachments));
       return;
     }

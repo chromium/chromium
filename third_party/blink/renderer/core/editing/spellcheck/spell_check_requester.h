@@ -26,12 +26,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SPELLCHECK_SPELL_CHECK_REQUESTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SPELLCHECK_SPELL_CHECK_REQUESTER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/text_checking.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -83,6 +84,8 @@ class CORE_EXPORT SpellCheckRequester final
     : public GarbageCollected<SpellCheckRequester> {
  public:
   explicit SpellCheckRequester(LocalDOMWindow&);
+  SpellCheckRequester(const SpellCheckRequester&) = delete;
+  SpellCheckRequester& operator=(const SpellCheckRequester&) = delete;
   ~SpellCheckRequester();
   void Trace(Visitor*) const;
 
@@ -94,6 +97,9 @@ class CORE_EXPORT SpellCheckRequester final
   int LastRequestSequence() const { return last_request_sequence_; }
 
   int LastProcessedSequence() const { return last_processed_sequence_; }
+
+  // Returns the total length of all text that has been requested for checking.
+  int SpellCheckedTextLength() const { return spell_checked_text_length_; }
 
   // Called to clean up pending requests when no more checking is needed. For
   // example, when document is closed.
@@ -115,8 +121,9 @@ class CORE_EXPORT SpellCheckRequester final
 
   Member<LocalDOMWindow> window_;
 
-  int last_request_sequence_;
-  int last_processed_sequence_;
+  int last_request_sequence_ = 0;
+  int last_processed_sequence_ = 0;
+  wtf_size_t spell_checked_text_length_ = 0;
 
   TaskHandle timer_to_process_queued_request_;
 
@@ -124,8 +131,6 @@ class CORE_EXPORT SpellCheckRequester final
 
   typedef HeapDeque<Member<SpellCheckRequest>> RequestQueue;
   RequestQueue request_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckRequester);
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,6 +53,10 @@ std::unique_ptr<KeyedService> BuildOfflinePageModel(SimpleFactoryKey* key) {
 class SigninManagerAndroidTest : public ::testing::Test {
  public:
   SigninManagerAndroidTest() = default;
+
+  SigninManagerAndroidTest(const SigninManagerAndroidTest&) = delete;
+  SigninManagerAndroidTest& operator=(const SigninManagerAndroidTest&) = delete;
+
   ~SigninManagerAndroidTest() override = default;
 
   void SetUp() override {
@@ -101,8 +105,6 @@ class SigninManagerAndroidTest : public ::testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninManagerAndroidTest);
 };
 
 // TODO(crbug.com/929456): This test does not actually test anything; the
@@ -136,12 +138,12 @@ TEST_F(SigninManagerAndroidTest, DISABLED_DeleteGoogleServiceWorkerCaches) {
   // be able to observe deletions.
   // Add service workers.
   auto helper = base::MakeRefCounted<browsing_data::CannedCacheStorageHelper>(
-      content::BrowserContext::GetDefaultStoragePartition(profile()));
+      profile()->GetDefaultStoragePartition());
 
   for (const TestCase& test_case : kTestCases)
     helper->Add(url::Origin::Create(GURL(test_case.worker_url)));
 
-  ASSERT_EQ(base::size(kTestCases), helper->GetCount());
+  ASSERT_EQ(std::size(kTestCases), helper->GetCount());
 
   // Delete service workers and wait for completion.
   base::RunLoop run_loop;

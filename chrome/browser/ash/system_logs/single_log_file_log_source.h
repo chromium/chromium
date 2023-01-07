@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <sys/types.h>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 
@@ -49,6 +48,10 @@ class SingleLogFileLogSource : public SystemLogsSource {
   };
 
   explicit SingleLogFileLogSource(SupportedSource source);
+
+  SingleLogFileLogSource(const SingleLogFileLogSource&) = delete;
+  SingleLogFileLogSource& operator=(const SingleLogFileLogSource&) = delete;
+
   ~SingleLogFileLogSource() override;
 
   // During testing, use this to set a custom Chrome start time to override the
@@ -117,8 +120,6 @@ class SingleLogFileLogSource : public SystemLogsSource {
   ino_t file_inode_;
 
   base::WeakPtrFactory<SingleLogFileLogSource> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SingleLogFileLogSource);
 };
 
 }  // namespace system_logs

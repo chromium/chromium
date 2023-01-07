@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef EXTENSIONS_SHELL_BROWSER_FEEDBACK_SYSTEM_LOGS_SHELL_SYSTEM_LOGS_FETCHER_H_
-#define EXTENSIONS_SHELL_BROWSER_FEEDBACK_SYSTEM_LOGS_SHELL_SYSTEM_LOGS_FETCHER_H_
+#ifndef EXTENSIONS_SHELL_BROWSER_SYSTEM_LOGS_SHELL_SYSTEM_LOGS_FETCHER_H_
+#define EXTENSIONS_SHELL_BROWSER_SYSTEM_LOGS_SHELL_SYSTEM_LOGS_FETCHER_H_
 
 namespace content {
 class BrowserContext;
@@ -20,4 +20,4 @@ SystemLogsFetcher* BuildShellSystemLogsFetcher(
 
 }  // namespace system_logs
 
-#endif  // EXTENSIONS_SHELL_BROWSER_FEEDBACK_SYSTEM_LOGS_SHELL_SYSTEM_LOGS_FETCHER_H_
+#endif  // EXTENSIONS_SHELL_BROWSER_SYSTEM_LOGS_SHELL_SYSTEM_LOGS_FETCHER_H_

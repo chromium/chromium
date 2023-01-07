@@ -1,10 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module media.mojom;
 
+import "media/mojo/mojom/media_log.mojom";
 import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "media/mojo/mojom/video_encoder_info.mojom";
@@ -34,12 +36,20 @@ import "media/mojo/mojom/video_encoder_info.mojom";
 // of these messages are acknowledged.
 
 
+enum VideoEncodeAcceleratorSupportedRateControlMode {
+  kNoMode,
+  kConstantMode,
+  kVariableMode
+};
+
 struct VideoEncodeAcceleratorSupportedProfile {
   VideoCodecProfile profile;
   gfx.mojom.Size min_resolution;
   gfx.mojom.Size max_resolution;
   uint32 max_framerate_numerator;
   uint32 max_framerate_denominator;
+  array<VideoEncodeAcceleratorSupportedRateControlMode> rate_control_modes;
+  array<SVCScalabilityMode> scalability_modes;
 };
 
 // A renderer process calls this interface's functions. GPU process implements
@@ -54,10 +64,17 @@ interface VideoEncodeAcceleratorProvider {
       => (array<VideoEncodeAcceleratorSupportedProfile> profiles);
 };
 
+// This defines a mojo transport format used in the
+// mojo::VideoBitrateAllocation that corresponds to media::Bitrate::peak_bps_
+struct VariableBitratePeak {
+  uint32 bps;
+};
+
 // Class that describes how video bitrate, in bps, is allocated across temporal
 // and spatial layers. See media::VideoBitrateAllocation for more details.
 struct VideoBitrateAllocation {
-  array<int32> bitrates;
+  array<uint32> bitrates;
+  VariableBitratePeak? variable_bitrate_peak;
 };
 
 // This defines a mojo transport format for
@@ -71,6 +88,25 @@ struct SpatialLayer {
   uint8 num_of_temporal_layers;
 };
 
+// This defines a mojo transport format for a media::Bitrate of type kConstant.
+// The default target here matches that in media::Bitrate.
+struct ConstantBitrate {
+  uint32 target_bps = 0;
+};
+
+// This defines a mojo transport format for a media::Bitrate of type kVariable.
+// The default target here matches that in media::Bitrate.
+struct VariableBitrate {
+  uint32 target_bps = 0;
+  uint32 peak_bps;
+};
+
+// This defines a mojo transport format for media::Bitrate.
+union Bitrate {
+  ConstantBitrate constant;
+  VariableBitrate variable;
+};
+
 // This defines a mojo transport format for
 // media::VideoEncodeAccelerator::Config.
 struct VideoEncodeAcceleratorConfig {
@@ -78,6 +114,13 @@ struct VideoEncodeAcceleratorConfig {
   enum ContentType {
     kCamera,
     kDisplay
+  };
+
+  // See media::VideoEncodeAccelerator::Config::InterLayerPredMode
+  enum InterLayerPredMode {
+    kOff,
+    kOn,
+    kOnKeyPic
   };
 
   // See media::VideoEncodeAccelerator::Config::StorageType
@@ -89,7 +132,7 @@ struct VideoEncodeAcceleratorConfig {
   VideoPixelFormat input_format;
   gfx.mojom.Size input_visible_size;
   VideoCodecProfile output_profile;
-  uint32 initial_bitrate;
+  Bitrate bitrate;
   uint32 initial_framerate;
   bool has_initial_framerate;  // Whether or not config has initial framerate
   uint32 gop_length;
@@ -101,6 +144,8 @@ struct VideoEncodeAcceleratorConfig {
   bool has_storage_type;  // Whether or not config has storage type config
   ContentType content_type;
   array<SpatialLayer> spatial_layers;
+  InterLayerPredMode inter_layer_pred;
+  bool require_low_delay;
 };
 
 interface VideoEncodeAccelerator {
@@ -114,17 +159,38 @@ interface VideoEncodeAccelerator {
   // Responded by VideoEncodeAcceleratorClient.RequireBitstreamBuffers().
   [Sync]
   Initialize(VideoEncodeAcceleratorConfig config,
-             pending_remote<VideoEncodeAcceleratorClient> client)
+             pending_associated_remote<VideoEncodeAcceleratorClient> client,
+             pending_remote<MediaLog> media_log)
       => (bool result);
 
   // Encodes a |frame|, being completely done with it after its callback.
   Encode(VideoFrame frame, bool force_keyframe) => ();
 
   UseOutputBitstreamBuffer(int32 bitstream_buffer_id,
-                           handle<shared_buffer> buffer);
+                           mojo_base.mojom.UnsafeSharedMemoryRegion region);
 
-  RequestEncodingParametersChange(
+  // Request a change to the encoding parameters. This is only a request,
+  // fulfilled on a best-effort basis. This method is intended for use with
+  // spatial or temporal layers, and is implicitly a constant bitrate encoding.
+  // Parameters:
+  //  |bitrate_allocation| is the requested new bitrate, per spatial and
+  //                       temporal layer.
+  //  |framerate| is the requested new framerate, in frames per second.
+  RequestEncodingParametersChangeWithLayers(
     VideoBitrateAllocation bitrate_allocation,
+    uint32 framerate);
+
+  // Request a change to the encoding parameters. This is only a request,
+  // fulfilled on a best-effort basis. This method is for use with non-layered
+  // bitrates, and may make requests for constant or variable bitrates based on
+  // the initially-configured bitrate mode.
+  // Parameters:
+  //  |bitrate| is the requested new bitrate for non-layered encoding, which
+  //            may be constant or variable bitrate. This should not change the
+  //            encoding mode (constant -> variable or variable -> constant).
+  //  |framerate| is the requested new framerate, in frames per second.
+  RequestEncodingParametersChangeWithBitrate(
+    Bitrate bitrate,
     uint32 framerate);
 
   [Sync]
@@ -133,31 +199,63 @@ interface VideoEncodeAccelerator {
   Flush() => (bool result);
 };
 
+// H264Metadata, Vp8Metadata, Vp9Metadata define mojo transport formats for
+// media::H264Metadata, media::Vp8Metadata and media::Vp9Metadata, respectively.
+// See the structures defined video_encode_accelerator.h for the descriptions of
+// the variables.
+// Either of them is filled in GPU process only in the case of temporal/spatial
+// SVC encoding. That is, none of them is filled in the case of non
+// temporal/spatial SVC encoding. Thus CodecMetadata is union and CodecMetadata
+// exists as optional in BitstreamBufferMetadata.
+// BitstreamBufferMetadata is metadata about a bitstream buffer produced by a
+// hardware encoder. The structure is passed from GPU process to renderer
+// process in BitstreamBufferReady() call.
+struct H264Metadata {
+  uint8 temporal_idx;
+  bool layer_sync;
+};
+
 struct Vp8Metadata {
   bool non_reference;
   uint8 temporal_idx;
   bool layer_sync;
 };
 
-// This defines a mojo transport format for media::Vp9Metadata.
-// See media::Vp9Metadata for the descriptions of the variables.
 struct Vp9Metadata {
-  bool has_reference;
+  bool inter_pic_predicted;
   bool temporal_up_switch;
+  bool referenced_by_upper_spatial_layers;
+  bool reference_lower_spatial_layers;
+  bool end_of_picture;
   uint8 temporal_idx;
+  uint8 spatial_idx;
+  array<gfx.mojom.Size> spatial_layer_resolutions;
   array<uint8> p_diffs;
+};
+
+struct Av1Metadata {
+  bool inter_pic_predicted;
+  bool switch_frame;
+  bool end_of_picture;
+  uint8 temporal_idx;
+  uint8 spatial_idx;
+  array<gfx.mojom.Size> spatial_layer_resolutions;
+  array<uint8> f_diffs;
 };
 
 // Codec specific metadata.
 union CodecMetadata {
+  H264Metadata h264;
   Vp8Metadata vp8;
   Vp9Metadata vp9;
+  Av1Metadata av1;
 };
 
 struct BitstreamBufferMetadata {
   uint32 payload_size_bytes;
   bool key_frame;
   mojo_base.mojom.TimeDelta timestamp;
+  int32 qp;
   CodecMetadata? codec_metadata;
 };
 

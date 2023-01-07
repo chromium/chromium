@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include <memory>
 #include <string>
-#include <unordered_map>
-#include <unordered_set>
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/cld_3/src/src/nnet_language_identifier.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
@@ -150,7 +150,7 @@ class AX_EXPORT AXLanguageInfoStats {
   friend class AXLanguageDetectionTestFixture;
 
   // Store a count of the occurrences of a given language.
-  std::unordered_map<std::string, int> lang_counts_;
+  base::flat_map<std::string, int> lang_counts_;
 
   // Cache of last calculated top language results.
   // A vector of pairs of (score, language) sorted by descending score.
@@ -201,7 +201,7 @@ class AX_EXPORT AXLanguageInfoStats {
 
   // Set of top language detected for every node, used to generate the unique
   // number of detected languages metric (LangsPerPage).
-  std::unordered_set<std::string> unique_top_lang_detected_;
+  base::flat_set<std::string> unique_top_lang_detected_;
 };
 
 // AXLanguageDetectionObserver is registered as a change observer on an AXTree
@@ -236,7 +236,7 @@ class AX_EXPORT AXLanguageDetectionObserver : public ui::AXTreeObserver {
                               const std::vector<Change>& changes) override;
 
   // Non-owning pointer to AXTree, used to de-register observer on destruction.
-  AXTree* const tree_;
+  const raw_ptr<AXTree> tree_;
 };
 
 // AXLanguageDetectionManager manages all of the context needed for language
@@ -308,7 +308,7 @@ class AX_EXPORT AXLanguageDetectionManager {
   std::unique_ptr<AXLanguageDetectionObserver> language_detection_observer_;
 
   // Non-owning back pointer to the tree which owns this manager.
-  AXTree* tree_;
+  raw_ptr<AXTree> tree_;
 
   AXLanguageInfoStats lang_info_stats_;
 };

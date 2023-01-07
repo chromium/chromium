@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/recommend_apps/scoped_test_recommend_apps_fetcher_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 ScopedTestRecommendAppsFetcherFactory::ScopedTestRecommendAppsFetcherFactory(
     const RecommendAppsFetcher::FactoryCallback& factory_callback)
@@ -17,4 +17,4 @@ ScopedTestRecommendAppsFetcherFactory::
   RecommendAppsFetcher::SetFactoryCallbackForTesting(nullptr);
 }
 
-}  // namespace chromeos
+}  // namespace ash

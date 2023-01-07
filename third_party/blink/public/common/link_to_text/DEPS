@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "link_to_text_mojom_traits\.(cc|h)": [
+    "+components/shared_highlighting/core/common",
+    "+mojo/public/cpp/bindings",
+  ]
+}

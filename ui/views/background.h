@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,12 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/themed_vector_icon.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/themed_vector_icon.h"
 #include "ui/views/views_export.h"
-
-#if defined(OS_WIN)
-#include <windows.h>
-#endif  // defined(OS_WIN)
 
 namespace gfx {
 class Canvas;
@@ -49,6 +44,10 @@ class View;
 class VIEWS_EXPORT Background {
  public:
   Background();
+
+  Background(const Background&) = delete;
+  Background& operator=(const Background&) = delete;
+
   virtual ~Background();
 
   // Render the background for the provided view
@@ -58,6 +57,10 @@ class VIEWS_EXPORT Background {
   // controls.  Unfortunately alpha=0 is not an option.
   void SetNativeControlColor(SkColor color);
 
+  // This is called by the View on which it is attached. This is overridden for
+  // subclasses that depend on theme colors.
+  virtual void OnViewThemeChanged(View* view);
+
   // Returns the "background color".  This is equivalent to the color set in
   // SetNativeControlColor().  For solid backgrounds, this is the color; for
   // gradient backgrounds, it's the midpoint of the gradient; for painter
@@ -66,23 +69,39 @@ class VIEWS_EXPORT Background {
 
  private:
   SkColor color_ = gfx::kPlaceholderColor;
-
-  DISALLOW_COPY_AND_ASSIGN(Background);
 };
 
 // Creates a background that fills the canvas in the specified color.
 VIEWS_EXPORT std::unique_ptr<Background> CreateSolidBackground(SkColor color);
 
 // Creates a background that fills the canvas with rounded corners.
+// If using a rounded rect border as well, pass its radius as `radius` and its
+// thickness as `for_border_thickness`.  This will inset the background properly
+// so it doesn't bleed through the border.
 VIEWS_EXPORT std::unique_ptr<Background> CreateRoundedRectBackground(
     SkColor color,
-    float radius);
+    float radius,
+    int for_border_thickness = 0);
+
+// Same as above except it uses the color specified by the views's ColorProvider
+// and the given color identifier.
+VIEWS_EXPORT std::unique_ptr<Background> CreateThemedRoundedRectBackground(
+    ui::ColorId color_id,
+    float radius,
+    int for_border_thickness = 0);
+
+// Same as above except its top corner radius and bottom corner radius can be
+// different and customized.
+VIEWS_EXPORT std::unique_ptr<Background> CreateThemedRoundedRectBackground(
+    ui::ColorId color_id,
+    float top_radius,
+    float bottom_radius,
+    int for_border_thickness);
 
 // Creates a background that fills the canvas in the color specified by the
-// view's NativeTheme and the given color identifier.
+// view's ColorProvider and the given color identifier.
 VIEWS_EXPORT std::unique_ptr<Background> CreateThemedSolidBackground(
-    View* view,
-    ui::NativeTheme::ColorId color_id);
+    ui::ColorId color_id);
 
 // Creates a background from the specified Painter.
 VIEWS_EXPORT std::unique_ptr<Background> CreateBackgroundFromPainter(
@@ -90,7 +109,6 @@ VIEWS_EXPORT std::unique_ptr<Background> CreateBackgroundFromPainter(
 
 // Creates a background from the specified ThemedVectorIcon.
 VIEWS_EXPORT std::unique_ptr<Background> CreateThemedVectorIconBackground(
-    View* view,
     const ui::ThemedVectorIcon& icon);
 
 }  // namespace views

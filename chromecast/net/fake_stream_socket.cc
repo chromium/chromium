@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,10 @@ namespace chromecast {
 class SocketBuffer {
  public:
   SocketBuffer() : pending_read_data_(nullptr), pending_read_len_(0) {}
+
+  SocketBuffer(const SocketBuffer&) = delete;
+  SocketBuffer& operator=(const SocketBuffer&) = delete;
+
   ~SocketBuffer() {}
 
   // Reads |len| bytes from the buffer and writes it to |data|. Returns the
@@ -99,8 +103,6 @@ class SocketBuffer {
   net::CompletionOnceCallback pending_read_callback_;
   bool eos_ = false;
   base::WeakPtrFactory<SocketBuffer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SocketBuffer);
 };
 
 FakeStreamSocket::FakeStreamSocket() : FakeStreamSocket(net::IPEndPoint()) {}
@@ -210,14 +212,6 @@ net::NextProto FakeStreamSocket::GetNegotiatedProtocol() const {
 bool FakeStreamSocket::GetSSLInfo(net::SSLInfo* /* ssl_info */) {
   return false;
 }
-
-void FakeStreamSocket::GetConnectionAttempts(
-    net::ConnectionAttempts* /* out */) const {}
-
-void FakeStreamSocket::ClearConnectionAttempts() {}
-
-void FakeStreamSocket::AddConnectionAttempts(
-    const net::ConnectionAttempts& /* attempts */) {}
 
 int64_t FakeStreamSocket::GetTotalReceivedBytes() const {
   return 0;

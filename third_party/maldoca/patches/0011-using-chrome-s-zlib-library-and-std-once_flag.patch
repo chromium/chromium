@@ -1,0 +1,54 @@
+From 8598469528af29192af121a8820a6b5e344880bc Mon Sep 17 00:00:00 2001
+From: Olabode Anise <anise@chromium.org>
+Date: Sun, 29 Aug 2021 20:56:43 -0700
+Subject: [PATCH] using chrome's zlib library and std::once_flag
+
+---
+ third_party/maldoca/src/maldoca/ole/oss_utils.cc          | 8 ++++++++
+ .../maldoca/src/third_party/zlibwrapper/zlibwrapper.h     | 2 +-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/third_party/maldoca/src/maldoca/ole/oss_utils.cc b/third_party/maldoca/src/maldoca/ole/oss_utils.cc
+index 45e3f8936729..07402f956855 100644
+--- a/third_party/maldoca/src/maldoca/ole/oss_utils.cc
++++ b/third_party/maldoca/src/maldoca/ole/oss_utils.cc
+@@ -53,7 +53,11 @@ namespace maldoca {
+ namespace utils {
+ namespace {
+ xmlSAXHandler sax_handler;
++#if defined (OS_WIN)
++std::once_flag once_init;
++#else
+ absl::once_flag once_init;
++#endif
+ 
+ void InitSAXHandler() {
+   xmlSAXVersion(&sax_handler, 2);
+@@ -955,7 +959,11 @@ bool BufferToUtf8::ConvertEncodingBufferToUTF8String(absl::string_view input,
+ }
+ 
+ xmlDocPtr XmlParseMemory(const char* buffer, int size) {
++  #if defined(OS_WIN)
++  std::call_once(once_init, &InitSAXHandler);
++  #else
+   absl::call_once(once_init, &InitSAXHandler);
++  #endif
+   return xmlSAXParseMemory(&sax_handler, buffer, size, 0);
+ }
+ 
+diff --git a/third_party/maldoca/src/third_party/zlibwrapper/zlibwrapper.h b/third_party/maldoca/src/third_party/zlibwrapper/zlibwrapper.h
+index d534fb048f3e..25ecf0ff6aad 100644
+--- a/third_party/maldoca/src/third_party/zlibwrapper/zlibwrapper.h
++++ b/third_party/maldoca/src/third_party/zlibwrapper/zlibwrapper.h
+@@ -17,7 +17,7 @@
+  * limitations under the License.
+  */
+ 
+-#include "zlib.h"
++#include "third_party/zlib/zlib.h"
+ 
+ class GZipHeader;
+ 
+-- 
+2.30.2.windows.1
+

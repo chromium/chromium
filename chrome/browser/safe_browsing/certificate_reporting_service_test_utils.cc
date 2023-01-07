@@ -1,12 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/safe_browsing/certificate_reporting_service_test_utils.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/strings/string_piece.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "components/encrypted_messages/message_encrypter.h"
@@ -17,6 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,7 +83,7 @@ void RequestObserver::Wait(unsigned int num_events_to_wait_for) {
 
   if (num_received_events_ < num_events_to_wait_for) {
     num_events_to_wait_for_ = num_events_to_wait_for;
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
     run_loop_.reset(nullptr);
     EXPECT_EQ(0u, num_received_events_);
@@ -209,7 +211,7 @@ void CertificateReportingServiceObserver::WaitForReset() {
   DCHECK(!run_loop_);
   if (did_reset_)
     return;
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   run_loop_.reset();
 }
@@ -311,7 +313,8 @@ void CertificateReportingServiceTestHelper::SendResponse(
   head->headers = new net::HttpResponseHeaders(
       "HTTP/1.1 200 OK\nContent-type: text/html\n\n");
   head->mime_type = "text/html";
-  client_remote->OnReceiveResponse(std::move(head));
+  client_remote->OnReceiveResponse(
+      std::move(head), mojo::ScopedDataPipeConsumerHandle(), absl::nullopt);
   client_remote->OnComplete(network::URLLoaderCompletionStatus());
 }
 

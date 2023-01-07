@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,10 @@
 #define IOS_CHROME_BROWSER_SESSIONS_SESSION_IOS_FACTORY_H_
 
 #import <Foundation/Foundation.h>
+
+namespace web {
+class WebState;
+}
 
 class WebStateList;
 @class SessionIOS;
@@ -25,6 +29,12 @@ class WebStateList;
 // Creates a sessionIOS object with a serialized webStateList. This method can't
 // be used without initializing the object with a non-null WebStateList.
 - (SessionIOS*)sessionForSaving;
+
+// Call that function when `webState` state changed and the new state must be
+// persisted. This webState content will be added in the SessionIOS on the next
+// call to `sessionForSaving`.
+// Dirty webStates are reset when calling `sessionForSaving`.
+- (void)markWebStateDirty:(web::WebState*)webState;
 
 @end
 

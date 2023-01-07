@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -204,7 +204,8 @@ void WriteImageElement(XmlWriter* xml_writer,
 void WriteIconElement(XmlWriter* xml_writer,
                       NotificationImageRetainer* image_retainer,
                       const message_center::Notification& notification) {
-  WriteImageElement(xml_writer, image_retainer, notification.icon(),
+  WriteImageElement(xml_writer, image_retainer,
+                    gfx::Image(notification.icon().Rasterize(nullptr)),
                     kPlacementAppLogoOverride, kHintCropNone);
 }
 

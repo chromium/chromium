@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ class RefCountedMemory;
 }  // namespace base
 
 namespace ui {
-class Clipboard;
+class DataTransferEndpoint;
 struct FileInfo;
 enum class EndpointType;
 }  // namespace ui
@@ -67,19 +67,11 @@ class DataExchangeDelegate {
                           const base::Pickle& pickle,
                           SendDataCallback callback) = 0;
 
-  // Reads filenames from text/uri-list |data| which was provided by |source|
-  // endpoint. Translates paths into filesystem URLs suitable for FilesApp by
-  // setting custom mime type fs/tag to 'exo' and fs/sources with
-  // newline-separated filesystem URLs.
-  virtual base::Pickle CreateClipboardFilenamesPickle(
-      ui::EndpointType source,
-      const std::vector<uint8_t>& data) const = 0;
-
-  // Reads clipboard custom data pickle for fs/sources with newline-separated
-  // filesystem URLs to send to |target| endpoint.
-  virtual std::vector<ui::FileInfo> ParseClipboardFilenamesPickle(
-      const ui::EndpointType target,
-      const ui::Clipboard& data) const = 0;
+  // Reads pickle for FilesApp fs/sources with newline-separated filesystem
+  // URLs. Validates that |source| is FilesApp.
+  virtual std::vector<ui::FileInfo> ParseFileSystemSources(
+      const ui::DataTransferEndpoint* source,
+      const base::Pickle& pickle) const = 0;
 };
 
 }  // namespace exo

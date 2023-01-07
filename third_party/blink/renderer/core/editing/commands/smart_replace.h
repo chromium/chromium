@@ -29,7 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_SMART_REPLACE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_COMMANDS_SMART_REPLACE_H_
 
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 

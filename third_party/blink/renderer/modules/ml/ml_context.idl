@@ -1,0 +1,20 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This will be a shared interface by two APIs:
+// - The Model Loader API,
+//     https://github.com/webmachinelearning/model-loader/blob/main/explainer.md
+// - The WebNN API,
+//     https://github.com/webmachinelearning/webnn/blob/main/explainer.md
+// We follow WebNN spec's definition,
+//   - https://webmachinelearning.github.io/webnn/#api-mlcontext
+// In the future, this interface may be extended when WebNN is implemented so
+// a dictionary may be insufficient.
+
+[
+  RuntimeEnabled=MachineLearningCommon,
+  SecureContext,
+  Exposed=Window
+] interface MLContext {
+};

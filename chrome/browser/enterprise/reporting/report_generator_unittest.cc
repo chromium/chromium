@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,26 +14,37 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
+#include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
-#include "components/enterprise/browser/reporting/report_request_definition.h"
+#include "components/enterprise/browser/reporting/report_request.h"
+#include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
-#include "content/public/browser/plugin_service.h"
 #include "content/public/common/webplugininfo.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/extension_builder.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/test/fake_app_instance.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
+#else
+#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension_builder.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "content/public/browser/plugin_service.h"
 #endif
 
 namespace em = enterprise_management;
@@ -43,10 +54,12 @@ namespace {
 
 constexpr char kProfile[] = "Profile";
 
-const char kPluginName[] = "plugin";
-const char kPluginVersion[] = "1.0";
-const char kPluginDescription[] = "This is a plugin.";
+#if BUILDFLAG(ENABLE_PLUGINS)
+const char16_t kPluginName16[] = u"plugin";
+const char16_t kPluginVersion16[] = u"1.0";
+const char16_t kPluginDescription16[] = u"This is a plugin.";
 const char kPluginFileName[] = "file_name";
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kArcAppName1[] = "app_name1";
@@ -55,12 +68,16 @@ const char kArcActivityName1[] = "activity_name1";
 const char kArcAppName2[] = "app_name2";
 const char kArcPackageName2[] = "package_name2";
 const char kArcActivityName2[] = "activity_name2";
+#elif BUILDFLAG(ENABLE_PLUGINS)
+const char kPluginName[] = "plugin";
+const char kPluginVersion[] = "1.0";
+const char kPluginDescription[] = "This is a plugin.";
 #endif
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // We only upload serial number on Windows.
 void VerifySerialNumber(const std::string& serial_number) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_NE(std::string(), serial_number);
 #else
   EXPECT_EQ(std::string(), serial_number);
@@ -87,6 +104,7 @@ void FindAndRemoveProfileName(std::set<std::string>* names,
 }
 
 void AddExtensionToProfile(TestingProfile* profile) {
+#if !BUILDFLAG(IS_ANDROID)
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile);
 
@@ -96,20 +114,21 @@ void AddExtensionToProfile(TestingProfile* profile) {
   extension_registry->AddEnabled(extensions::ExtensionBuilder(extension_name)
                                      .SetID("abcdefghijklmnoabcdefghijklmnoab")
                                      .Build());
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-arc::mojom::AppInfo CreateArcApp(const std::string& app_name,
-                                 const std::string& package_name,
-                                 const std::string& activity_name) {
-  arc::mojom::AppInfo app;
-  app.name = app_name;
-  app.package_name = package_name;
-  app.activity = activity_name;
-  app.suspended = false;
-  app.sticky = true;
-  app.notifications_enabled = true;
+arc::mojom::AppInfoPtr CreateArcApp(const std::string& app_name,
+                                    const std::string& package_name,
+                                    const std::string& activity_name) {
+  auto app = arc::mojom::AppInfo::New();
+  app->name = app_name;
+  app->package_name = package_name;
+  app->activity = activity_name;
+  app->suspended = false;
+  app->sticky = true;
+  app->notifications_enabled = true;
   return app;
 }
 
@@ -127,34 +146,38 @@ void AddArcPackageAndApp(ArcAppTest* arc_app_test,
   arc::mojom::ArcPackageInfoPtr package = CreateArcPackage(package_name);
   arc_app_test->app_instance()->SendPackageAdded(std::move(package));
 
-  arc::mojom::AppInfo app = CreateArcApp(app_name, package_name, activity_name);
-  arc_app_test->app_instance()->SendAppAdded(app);
+  arc::mojom::AppInfoPtr app =
+      CreateArcApp(app_name, package_name, activity_name);
+  arc_app_test->app_instance()->SendAppAdded(*app);
 }
 
 #endif
 
 }  // namespace
 
-class ReportGeneratorTest : public ::testing::Test,
-                            public ::testing::WithParamInterface<bool> {
+class ReportGeneratorTest : public ::testing::Test {
  public:
-  using ReportRequest = definition::ReportRequest;
-
   ReportGeneratorTest()
       : generator_(&delegate_factory_),
-        profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-        scoped_feature_list_, GetParam());
-  }
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+
+  ReportGeneratorTest(const ReportGeneratorTest&) = delete;
+  ReportGeneratorTest& operator=(const ReportGeneratorTest&) = delete;
+
   ~ReportGeneratorTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
 
     profile_manager_.CreateGuestProfile();
-    profile_manager_.CreateSystemProfile();
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+    profile_manager_.CreateSystemProfile();
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(ENABLE_PLUGINS)
     content::PluginService::GetInstance()->Init();
+#endif
   }
 
   // Creates |number| of Profiles. Returns the set of their names. The profile
@@ -170,12 +193,15 @@ class ReportGeneratorTest : public ::testing::Test,
       std::string profile_name =
           std::string(kProfile) + base::NumberToString(i);
       switch (status) {
-        case kIdle:
+        case kIdle: {
+          ProfileAttributesInitParams params;
+          params.profile_path =
+              profile_manager()->profiles_dir().AppendASCII(profile_name);
+          params.profile_name = base::ASCIIToUTF16(profile_name);
           profile_manager_.profile_attributes_storage()->AddProfile(
-              profile_manager()->profiles_dir().AppendASCII(profile_name),
-              base::ASCIIToUTF16(profile_name), std::string(), std::u16string(),
-              false, 0, std::string(), EmptyAccountId());
+              std::move(params));
           break;
+        }
         case kActive:
           profile_manager_.CreateTestingProfile(profile_name);
           break;
@@ -191,16 +217,18 @@ class ReportGeneratorTest : public ::testing::Test,
   }
 
   void CreatePlugin() {
+#if BUILDFLAG(ENABLE_PLUGINS)
     content::WebPluginInfo info;
-    info.name = base::ASCIIToUTF16(kPluginName);
-    info.version = base::ASCIIToUTF16(kPluginVersion);
-    info.desc = base::ASCIIToUTF16(kPluginDescription);
+    info.name = kPluginName16;
+    info.version = kPluginVersion16;
+    info.desc = kPluginDescription16;
     info.path =
         base::FilePath().AppendASCII("path").AppendASCII(kPluginFileName);
     content::PluginService* plugin_service =
         content::PluginService::GetInstance();
     plugin_service->RegisterInternalPlugin(info, true);
     plugin_service->RefreshPlugins();
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
   }
 
   std::vector<std::unique_ptr<ReportRequest>> GenerateRequests(
@@ -208,18 +236,17 @@ class ReportGeneratorTest : public ::testing::Test,
     histogram_tester_ = std::make_unique<base::HistogramTester>();
     base::RunLoop run_loop;
     std::vector<std::unique_ptr<ReportRequest>> rets;
-    generator_.Generate(
-        report_type,
-        base::BindLambdaForTesting(
-            [&run_loop, &rets](ReportGenerator::ReportRequests requests) {
-              while (!requests.empty()) {
-                rets.push_back(std::move(requests.front()));
-                requests.pop();
-              }
-              run_loop.Quit();
-            }));
+    generator_.Generate(report_type,
+                        base::BindLambdaForTesting(
+                            [&run_loop, &rets](ReportRequestQueue requests) {
+                              while (!requests.empty()) {
+                                rets.push_back(std::move(requests.front()));
+                                requests.pop();
+                              }
+                              run_loop.Quit();
+                            }));
     run_loop.Run();
-    if (report_type == kFull)
+    if (report_type == ReportType::kFull)
       VerifyMetrics(rets);  // Only generated for reports with profiles.
     return rets;
   }
@@ -285,18 +312,61 @@ class ReportGeneratorTest : public ::testing::Test,
         .AsUTF8Unsafe();
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  ReportingDelegateFactoryAndroid delegate_factory_;
+#else
   ReportingDelegateFactoryDesktop delegate_factory_;
+#endif  // BUILDFLAG(IS_ANDROID)
   ReportGenerator generator_;
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportGeneratorTest);
 };
 
-TEST_P(ReportGeneratorTest, GenerateBasicReport) {
+#if BUILDFLAG(IS_ANDROID)
+
+TEST_F(ReportGeneratorTest, GenerateBasicReport) {
+  auto requests = GenerateRequests(ReportType::kFull);
+  EXPECT_EQ(1u, requests.size());
+
+  // Verify the basic request
+  auto* basic_request = requests[0].get();
+
+  EXPECT_NE(std::string(),
+            basic_request->GetDeviceReportRequest().brand_name());
+  EXPECT_NE(std::string(),
+            basic_request->GetDeviceReportRequest().device_model());
+  VerifySerialNumber(basic_request->GetDeviceReportRequest().serial_number());
+
+  EXPECT_EQ(policy::GetBrowserDeviceIdentifier()->SerializePartialAsString(),
+            basic_request->GetDeviceReportRequest()
+                .browser_device_identifier()
+                .SerializePartialAsString());
+
+  // Verify the OS report
+  EXPECT_TRUE(basic_request->GetDeviceReportRequest().has_os_report());
+  auto& os_report = basic_request->GetDeviceReportRequest().os_report();
+  EXPECT_NE(std::string(), os_report.name());
+  EXPECT_NE(std::string(), os_report.arch());
+  EXPECT_NE(std::string(), os_report.version());
+
+  // Ensure there are no partial reports
+  EXPECT_EQ(
+      0, basic_request->GetDeviceReportRequest().partial_report_types_size());
+
+  // Verify the browser report
+  EXPECT_TRUE(basic_request->GetDeviceReportRequest().has_browser_report());
+  auto& browser_report =
+      basic_request->GetDeviceReportRequest().browser_report();
+  EXPECT_NE(std::string(), browser_report.browser_version());
+  EXPECT_TRUE(browser_report.has_channel());
+  EXPECT_NE(std::string(), browser_report.executable_path());
+}
+
+#else  // BUILDFLAG(IS_ANDROID)
+
+TEST_F(ReportGeneratorTest, GenerateBasicReport) {
   auto profile_names = CreateProfiles(/*number*/ 2, kIdle);
   CreatePlugin();
 
@@ -308,24 +378,29 @@ TEST_P(ReportGeneratorTest, GenerateBasicReport) {
   // In the ChromeOsUserReportRequest for Chrome OS, these fields are not
   // existing. Therefore, they are skipped according to current environment.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_NE(std::string(), basic_request->computer_name());
-  EXPECT_NE(std::string(), basic_request->os_user_name());
-  VerifySerialNumber(basic_request->serial_number());
-  EXPECT_EQ(
-      policy::GetBrowserDeviceIdentifier()->SerializePartialAsString(),
-      basic_request->browser_device_identifier().SerializePartialAsString());
+  EXPECT_NE(std::string(),
+            basic_request->GetDeviceReportRequest().computer_name());
+  EXPECT_NE(std::string(),
+            basic_request->GetDeviceReportRequest().os_user_name());
+  VerifySerialNumber(basic_request->GetDeviceReportRequest().serial_number());
+  EXPECT_EQ(policy::GetBrowserDeviceIdentifier()->SerializePartialAsString(),
+            basic_request->GetDeviceReportRequest()
+                .browser_device_identifier()
+                .SerializePartialAsString());
 
-  EXPECT_TRUE(basic_request->has_os_report());
-  auto& os_report = basic_request->os_report();
+  EXPECT_TRUE(basic_request->GetDeviceReportRequest().has_os_report());
+  auto& os_report = basic_request->GetDeviceReportRequest().os_report();
   EXPECT_NE(std::string(), os_report.name());
   EXPECT_NE(std::string(), os_report.arch());
   EXPECT_NE(std::string(), os_report.version());
 #endif
 
-  EXPECT_EQ(0, basic_request->partial_report_types_size());
+  EXPECT_EQ(
+      0, basic_request->GetDeviceReportRequest().partial_report_types_size());
 
-  EXPECT_TRUE(basic_request->has_browser_report());
-  auto& browser_report = basic_request->browser_report();
+  EXPECT_TRUE(basic_request->GetDeviceReportRequest().has_browser_report());
+  auto& browser_report =
+      basic_request->GetDeviceReportRequest().browser_report();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(browser_report.has_browser_version());
   EXPECT_FALSE(browser_report.has_channel());
@@ -337,7 +412,7 @@ TEST_P(ReportGeneratorTest, GenerateBasicReport) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(0, browser_report.plugins_size());
-#else
+#elif BUILDFLAG(ENABLE_PLUGINS)
   // There might be other plugins like PDF plugin, however, our fake plugin
   // should be the first one in the report.
   EXPECT_LE(1, browser_report.plugins_size());
@@ -345,13 +420,13 @@ TEST_P(ReportGeneratorTest, GenerateBasicReport) {
   EXPECT_EQ(kPluginVersion, browser_report.plugins(0).version());
   EXPECT_EQ(kPluginDescription, browser_report.plugins(0).description());
   EXPECT_EQ(kPluginFileName, browser_report.plugins(0).filename());
-#endif
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
   VerifyProfileReport(/*active_profile_names*/ std::set<std::string>(),
                       profile_names, browser_report);
 }
 
-TEST_P(ReportGeneratorTest, GenerateWithoutProfiles) {
+TEST_F(ReportGeneratorTest, GenerateWithoutProfiles) {
   auto profile_names = CreateProfiles(/*number*/ 2, kActive);
   CreatePlugin();
 
@@ -363,19 +438,22 @@ TEST_P(ReportGeneratorTest, GenerateWithoutProfiles) {
   // In the ChromeOsUserReportRequest for Chrome OS, these fields are not
   // existing. Therefore, they are skipped according to current environment.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_NE(std::string(), basic_request->computer_name());
-  EXPECT_NE(std::string(), basic_request->os_user_name());
-  VerifySerialNumber(basic_request->serial_number());
+  EXPECT_NE(std::string(),
+            basic_request->GetDeviceReportRequest().computer_name());
+  EXPECT_NE(std::string(),
+            basic_request->GetDeviceReportRequest().os_user_name());
+  VerifySerialNumber(basic_request->GetDeviceReportRequest().serial_number());
 
-  EXPECT_TRUE(basic_request->has_os_report());
-  auto& os_report = basic_request->os_report();
+  EXPECT_TRUE(basic_request->GetDeviceReportRequest().has_os_report());
+  auto& os_report = basic_request->GetDeviceReportRequest().os_report();
   EXPECT_NE(std::string(), os_report.name());
   EXPECT_NE(std::string(), os_report.arch());
   EXPECT_NE(std::string(), os_report.version());
 #endif
 
-  EXPECT_TRUE(basic_request->has_browser_report());
-  auto& browser_report = basic_request->browser_report();
+  EXPECT_TRUE(basic_request->GetDeviceReportRequest().has_browser_report());
+  auto& browser_report =
+      basic_request->GetDeviceReportRequest().browser_report();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(browser_report.has_browser_version());
   EXPECT_FALSE(browser_report.has_channel());
@@ -387,7 +465,7 @@ TEST_P(ReportGeneratorTest, GenerateWithoutProfiles) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(0, browser_report.plugins_size());
-#else
+#elif BUILDFLAG(ENABLE_PLUGINS)
   // There might be other plugins like PDF plugin, however, our fake plugin
   // should be the first one in the report.
   EXPECT_LE(1, browser_report.plugins_size());
@@ -395,39 +473,17 @@ TEST_P(ReportGeneratorTest, GenerateWithoutProfiles) {
   EXPECT_EQ(kPluginVersion, browser_report.plugins(0).version());
   EXPECT_EQ(kPluginDescription, browser_report.plugins(0).description());
   EXPECT_EQ(kPluginFileName, browser_report.plugins(0).filename());
-#endif
+#endif  // BUILDFLAG(ENABLE_PLUGINS)
 
   VerifyProfileReport(/*active_profile_names*/ std::set<std::string>(),
                       profile_names, browser_report);
 }
 
-TEST_P(ReportGeneratorTest, ExtensionRequestOnly) {
-  auto profile_names = CreateProfiles(/*number*/ 2, kActive);
-  CreatePlugin();
-
-  auto requests = GenerateRequests(ReportType::kExtensionRequest);
-  EXPECT_EQ(1u, requests.size());
-
-  auto* basic_request = requests[0].get();
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_FALSE(basic_request->has_computer_name());
-  EXPECT_FALSE(basic_request->has_os_user_name());
-  EXPECT_FALSE(basic_request->has_os_report());
-  EXPECT_FALSE(basic_request->has_serial_number());
-#else
-  EXPECT_EQ(0, basic_request->android_app_infos_size());
-#endif
-  EXPECT_TRUE(basic_request->has_browser_report());
-
-  EXPECT_EQ(1, basic_request->partial_report_types_size());
-  EXPECT_EQ(em::PartialReportType::EXTENSION_REQUEST,
-            basic_request->partial_report_types(0));
-}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
-TEST_P(ReportGeneratorTest, ReportArcAppInChromeOS) {
+TEST_F(ReportGeneratorTest, ReportArcAppInChromeOS) {
   ArcAppTest arc_app_test;
   TestingProfile primary_profile;
   arc_app_test.SetUp(&primary_profile);
@@ -446,10 +502,12 @@ TEST_P(ReportGeneratorTest, ReportArcAppInChromeOS) {
   EXPECT_EQ(1u, requests.size());
 
   ReportRequest* request = requests.front().get();
-  EXPECT_EQ(2, request->android_app_infos_size());
-  em::AndroidAppInfo app_info1 = request->android_app_infos(1);
+  EXPECT_EQ(2, request->GetDeviceReportRequest().android_app_infos_size());
+  em::AndroidAppInfo app_info1 =
+      request->GetDeviceReportRequest().android_app_infos(1);
   EXPECT_EQ(kArcAppName1, app_info1.app_name());
-  em::AndroidAppInfo app_info2 = request->android_app_infos(0);
+  em::AndroidAppInfo app_info2 =
+      request->GetDeviceReportRequest().android_app_infos(0);
   EXPECT_EQ(kArcAppName2, app_info2.app_name());
 
   // Generate the Arc application information again and make sure the report
@@ -458,16 +516,16 @@ TEST_P(ReportGeneratorTest, ReportArcAppInChromeOS) {
   EXPECT_EQ(1u, requests.size());
 
   request = requests.front().get();
-  EXPECT_EQ(2, request->android_app_infos_size());
-  app_info1 = request->android_app_infos(1);
+  EXPECT_EQ(2, request->GetDeviceReportRequest().android_app_infos_size());
+  app_info1 = request->GetDeviceReportRequest().android_app_infos(1);
   EXPECT_EQ(kArcAppName1, app_info1.app_name());
-  app_info2 = request->android_app_infos(0);
+  app_info2 = request->GetDeviceReportRequest().android_app_infos(0);
   EXPECT_EQ(kArcAppName2, app_info2.app_name());
 
   arc_app_test.TearDown();
 }
 
-TEST_P(ReportGeneratorTest, ArcPlayStoreDisabled) {
+TEST_F(ReportGeneratorTest, ArcPlayStoreDisabled) {
   ArcAppTest arc_app_test;
   TestingProfile primary_profile;
   arc_app_test.SetUp(&primary_profile);
@@ -487,15 +545,11 @@ TEST_P(ReportGeneratorTest, ArcPlayStoreDisabled) {
   EXPECT_EQ(1u, requests.size());
 
   ReportRequest* request = requests.front().get();
-  EXPECT_EQ(0, request->android_app_infos_size());
+  EXPECT_EQ(0, request->GetDeviceReportRequest().android_app_infos_size());
 
   arc_app_test.TearDown();
 }
 
-#endif
-
-INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
-                         ReportGeneratorTest,
-                         /*is_ephemeral=*/testing::Bool());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace enterprise_reporting

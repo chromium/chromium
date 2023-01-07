@@ -1,0 +1,6 @@
+Name: remove_dir_all
+URL: https://crates.io/crates/remove_dir_all
+Description: A safe, reliable implementation of remove_dir_all for Windows
+Version: 0.5.3
+Security Critical: no
+License: Apache 2.0

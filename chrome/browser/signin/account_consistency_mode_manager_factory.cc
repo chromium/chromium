@@ -1,14 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 
 #include "base/check.h"
-#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 // static
 AccountConsistencyModeManagerFactory*
@@ -25,9 +22,8 @@ AccountConsistencyModeManagerFactory::GetForProfile(Profile* profile) {
 }
 
 AccountConsistencyModeManagerFactory::AccountConsistencyModeManagerFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AccountConsistencyModeManager",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("AccountConsistencyModeManager",
+                                 ProfileSelections::BuildForRegularProfile()) {}
 
 AccountConsistencyModeManagerFactory::~AccountConsistencyModeManagerFactory() =
     default;
@@ -37,9 +33,7 @@ KeyedService* AccountConsistencyModeManagerFactory::BuildServiceInstanceFor(
   DCHECK(!context->IsOffTheRecord());
   Profile* profile = Profile::FromBrowserContext(context);
 
-  return AccountConsistencyModeManager::ShouldBuildServiceForProfile(profile)
-             ? new AccountConsistencyModeManager(profile)
-             : nullptr;
+  return new AccountConsistencyModeManager(profile);
 }
 
 void AccountConsistencyModeManagerFactory::RegisterProfilePrefs(

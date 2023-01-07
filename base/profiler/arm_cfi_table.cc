@@ -1,10 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/profiler/arm_cfi_table.h"
 
+#include "base/check_op.h"
 #include "base/ranges/algorithm.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -40,10 +42,11 @@ struct CFIDataRow {
   uint16_t cfi_data;
 
   // Helper functions to convert the to ArmCFITable::FrameEntry
-  size_t ra_offset() const {
-    return (cfi_data & kReturnAddressMask) << kReturnAddressShift;
+  uint16_t ra_offset() const {
+    return static_cast<uint16_t>((cfi_data & kReturnAddressMask)
+                                 << kReturnAddressShift);
   }
-  size_t cfa_offset() const { return cfi_data & kCFAMask; }
+  uint16_t cfa_offset() const { return cfi_data & kCFAMask; }
 };
 
 static_assert(sizeof(CFIDataRow) == 4,
@@ -84,7 +87,7 @@ ArmCFITable::ArmCFITable(span<const uint32_t> function_addresses,
 
 ArmCFITable::~ArmCFITable() = default;
 
-Optional<ArmCFITable::FrameEntry> ArmCFITable::FindEntryForAddress(
+absl::optional<ArmCFITable::FrameEntry> ArmCFITable::FindEntryForAddress(
     uintptr_t address) const {
   DCHECK(!function_addresses_.empty());
 
@@ -94,35 +97,35 @@ Optional<ArmCFITable::FrameEntry> ArmCFITable::FindEntryForAddress(
   auto func_it = ranges::upper_bound(function_addresses_, address);
   // If no function comes before |address|, no CFI entry  is returned.
   if (func_it == function_addresses_.begin())
-    return nullopt;
+    return absl::nullopt;
   --func_it;
 
   uint32_t func_start_addr = *func_it;
-  size_t row_num = func_it - function_addresses_.begin();
+  size_t row_num = static_cast<size_t>(func_it - function_addresses_.begin());
   uint16_t index = entry_data_indices_[row_num];
   DCHECK_LE(func_start_addr, address);
 
   if (index == kNoUnwindInformation)
-    return nullopt;
+    return absl::nullopt;
 
   // The unwind data for the current function is at a 2 bytes offset of the
   // index found in UNW_INDEX table.
   if (entry_data_.size() <= index * sizeof(uint16_t))
-    return nullopt;
+    return absl::nullopt;
   BufferIterator<const uint8_t> entry_iterator(entry_data_);
   entry_iterator.Seek(index * sizeof(uint16_t));
 
   // The value of first 2 bytes is the CFI data row count for the function.
   const uint16_t* row_count = entry_iterator.Object<uint16_t>();
   if (row_count == nullptr)
-    return nullopt;
+    return absl::nullopt;
   // And the actual CFI rows start after 2 bytes from the |unwind_data|. Cast
   // the data into an array of CFIUnwindDataRow since the struct is designed to
   // represent each row. We should be careful to read only |row_count| number of
   // elements in the array.
   auto function_cfi = entry_iterator.Span<CFIDataRow>(*row_count);
   if (function_cfi.size() != *row_count)
-    return nullopt;
+    return absl::nullopt;
 
   FrameEntry last_frame_entry = {0, 0};
   // Iterate through all function entries to find a range covering |address|.
@@ -136,12 +139,12 @@ Optional<ArmCFITable::FrameEntry> ArmCFITable::FindEntryForAddress(
     if (func_start_addr + entry.addr_offset > address)
       break;
 
-    uint32_t cfa_offset = entry.cfa_offset();
+    uint16_t cfa_offset = entry.cfa_offset();
     if (cfa_offset == 0)
-      return nullopt;
+      return absl::nullopt;
     last_frame_entry.cfa_offset = cfa_offset;
 
-    uint32_t ra_offset = entry.ra_offset();
+    uint16_t ra_offset = entry.ra_offset();
     // The RA offset of the last specified row should be used, if unspecified.
     // Update |last_ra_offset| only if valid for this row. Otherwise, tthe last
     // valid |last_ra_offset| is used. TODO(ssid): This should be fixed in the
@@ -150,7 +153,7 @@ Optional<ArmCFITable::FrameEntry> ArmCFITable::FindEntryForAddress(
       last_frame_entry.ra_offset = ra_offset;
 
     if (last_frame_entry.ra_offset == 0)
-      return nullopt;
+      return absl::nullopt;
   }
 
   return last_frame_entry;

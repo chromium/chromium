@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -6,12 +6,15 @@
 
 #include "chrome/browser/download/download_crx_util.h"
 
+#include <memory>
+
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/webstore_installer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/download/public/common/download_item.h"
@@ -33,7 +36,7 @@ bool g_allow_offstore_install_for_testing = false;
 
 // Hold a mock ExtensionInstallPrompt object that will be used when the
 // download system opens a CRX.
-ExtensionInstallPrompt* mock_install_prompt_for_testing = NULL;
+ExtensionInstallPrompt* mock_install_prompt_for_testing = nullptr;
 
 // Called to get an extension install UI object.  In tests, will return
 // a mock if the test calls download_util::SetMockInstallPromptForTesting()
@@ -45,7 +48,7 @@ std::unique_ptr<ExtensionInstallPrompt> CreateExtensionInstallPrompt(
   // install UI.
   if (mock_install_prompt_for_testing) {
     ExtensionInstallPrompt* result = mock_install_prompt_for_testing;
-    mock_install_prompt_for_testing = NULL;
+    mock_install_prompt_for_testing = nullptr;
     return std::unique_ptr<ExtensionInstallPrompt>(result);
   } else {
     content::WebContents* web_contents =
@@ -59,8 +62,7 @@ std::unique_ptr<ExtensionInstallPrompt> CreateExtensionInstallPrompt(
       }
       web_contents = browser->tab_strip_model()->GetActiveWebContents();
     }
-    return std::unique_ptr<ExtensionInstallPrompt>(
-        new ExtensionInstallPrompt(web_contents));
+    return std::make_unique<ExtensionInstallPrompt>(web_contents);
   }
 }
 

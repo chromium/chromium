@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/marketing_opt_in_screen_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 
-namespace chromeos {
-
-class MarketingOptInScreenView;
+namespace ash {
 
 // This is Sync settings screen that is displayed as a part of user first
 // sign-in flow.
@@ -52,14 +51,20 @@ class MarketingOptInScreen : public BaseScreen {
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  MarketingOptInScreen(MarketingOptInScreenView* view,
+  MarketingOptInScreen(base::WeakPtr<MarketingOptInScreenView> view,
                        const ScreenExitCallback& exit_callback);
+
+  MarketingOptInScreen(const MarketingOptInScreen&) = delete;
+  MarketingOptInScreen& operator=(const MarketingOptInScreen&) = delete;
+
   ~MarketingOptInScreen() override;
 
   // On "Get Started" button pressed.
   void OnGetStarted(bool chromebook_email_opt_in);
 
   void SetA11yButtonVisibilityForTest(bool shown);
+
+  void SetA11yNavigationButtonsEnabled(bool enabled);
 
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
     exit_callback_ = exit_callback;
@@ -75,13 +80,13 @@ class MarketingOptInScreen : public BaseScreen {
 
  protected:
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
 
  private:
   void OnA11yShelfNavigationButtonPrefChanged();
-
+  void OnUserAction(const base::Value::List& args) override;
   // Checks whether this user is managed.
   bool IsCurrentUserManaged();
 
@@ -90,7 +95,7 @@ class MarketingOptInScreen : public BaseScreen {
   void Initialize();
 
   // Sets the country to be used if the feature is available in this region.
-  void SetCountryFromTimezoneIfAvailable(const std::string& timezone_id);
+  void SetCountryFromTimezoneIfAvailable(const std::string& timezone);
 
   // Whether the screen should be shown depending if it was shown before and if
   // the user had the option to subscribe to emails.
@@ -100,7 +105,7 @@ class MarketingOptInScreen : public BaseScreen {
     return default_opt_in_countries_.count(country_);
   }
 
-  MarketingOptInScreenView* const view_;
+  base::WeakPtr<MarketingOptInScreenView> view_;
   ScreenExitCallback exit_callback_;
   std::unique_ptr<PrefChangeRegistrar> active_user_pref_change_registrar_;
 
@@ -137,10 +142,21 @@ class MarketingOptInScreen : public BaseScreen {
   // Countries that require the screen to show a footer with legal information.
   const base::flat_set<base::StringPiece> countries_with_legal_footer{"ca"};
 
+  // Timer to record user changed value for the accessibility setting to turn
+  // shelf navigation buttons on in tablet mode. The metric is recorded with 10
+  // second delay to avoid overreporting when the user keeps toggling the
+  // setting value in the screen UI.
+  base::OneShotTimer a11y_nav_buttons_toggle_metrics_reporter_timer_;
+
   base::WeakPtrFactory<MarketingOptInScreen> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(MarketingOptInScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::MarketingOptInScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_MARKETING_OPT_IN_SCREEN_H_

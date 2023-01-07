@@ -1,8 +1,20 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/ios/asset_catalog.gni")
+
+colorset("fake_omnibox_bottom_gradient_color") {
+  sources = [ "fake_omnibox_bottom_gradient_color.colorset/Contents.json" ]
+}
+
+colorset("fake_omnibox_top_gradient_color") {
+  sources = [ "fake_omnibox_top_gradient_color.colorset/Contents.json" ]
+}
+
+colorset("ntp_background_bottom_gradient_color") {
+  sources = [ "ntp_background_bottom_gradient_color.colorset/Contents.json" ]
+}
 
 imageset("ntp_opentabs_last_row_h") {
   sources = [

@@ -1,4 +1,0 @@
-include_rules = [
-  "+chrome/services/mac_notifications/public",
-  "+ui/message_center",
-]

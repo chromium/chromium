@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,9 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/gfx/skia_util.h"
+#include "media/capture/mojom/video_capture_buffer.mojom.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 BackgroundThumbnailVideoCapturer::BackgroundThumbnailVideoCapturer(
     content::WebContents* contents,
@@ -38,7 +40,10 @@ void BackgroundThumbnailVideoCapturer::Start(
     return;
 
   content::RenderWidgetHostView* const source_view =
-      contents_->GetMainFrame()->GetRenderViewHost()->GetWidget()->GetView();
+      contents_->GetPrimaryMainFrame()
+          ->GetRenderViewHost()
+          ->GetWidget()
+          ->GetView();
   if (!source_view)
     return;
 
@@ -63,11 +68,9 @@ void BackgroundThumbnailVideoCapturer::Start(
                                             capture_info_.target_size, false);
   video_capturer_->SetAutoThrottlingEnabled(false);
   video_capturer_->SetMinSizeChangePeriod(base::TimeDelta());
-  video_capturer_->SetFormat(media::PIXEL_FORMAT_ARGB,
-                             gfx::ColorSpace::CreateREC709());
-  video_capturer_->SetMinCapturePeriod(base::TimeDelta::FromSeconds(1) /
-                                       kMaxFrameRate);
-  video_capturer_->Start(this);
+  video_capturer_->SetFormat(media::PIXEL_FORMAT_ARGB);
+  video_capturer_->SetMinCapturePeriod(base::Seconds(1) / kMaxFrameRate);
+  video_capturer_->Start(this, viz::mojom::BufferFormatPreference::kDefault);
 }
 
 void BackgroundThumbnailVideoCapturer::Stop() {
@@ -88,7 +91,7 @@ void BackgroundThumbnailVideoCapturer::Stop() {
 }
 
 void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
-    base::ReadOnlySharedMemoryRegion data,
+    ::media::mojom::VideoBufferHandlePtr data,
     ::media::mojom::VideoFrameInfoPtr info,
     const gfx::Rect& content_rect,
     mojo::PendingRemote<::viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
@@ -101,12 +104,19 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
   mojo::Remote<::viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
       callbacks_remote(std::move(callbacks));
 
+  CHECK(data->is_read_only_shmem_region());
+  base::ReadOnlySharedMemoryRegion& shmem_region =
+      data->get_read_only_shmem_region();
+
+  // The |data| parameter is not nullable and mojo type mapping for
+  // `base::ReadOnlySharedMemoryRegion` defines that nullable version of it is
+  // the same type, with null check being equivalent to IsValid() check. Given
+  // the above, we should never be able to receive a read only shmem region that
+  // is not valid - mojo will enforce it for us.
+  DCHECK(shmem_region.IsValid());
+
   // Process captured image.
-  if (!data.IsValid()) {
-    callbacks_remote->Done();
-    return;
-  }
-  base::ReadOnlySharedMemoryMapping mapping = data.Map();
+  base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
   if (!mapping.IsValid()) {
     DLOG(ERROR) << "Shared memory mapping failed.";
     return;
@@ -151,11 +161,11 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
 
   // Subtract back out the scroll bars if we decided there was enough canvas to
   // account for them and still have a decent preview image.
-  const float scale_ratio =
-      float{content_rect.width()} / float{capture_info_.copy_rect.width()};
+  const float scale_ratio = static_cast<float>(content_rect.width()) /
+                            capture_info_.copy_rect.width();
 
   const gfx::Insets original_scroll_insets = capture_info_.scrollbar_insets;
-  const gfx::Insets scroll_insets(
+  const auto scroll_insets = gfx::Insets::TLBR(
       0, 0, std::round(original_scroll_insets.width() * scale_ratio),
       std::round(original_scroll_insets.height() * scale_ratio));
   gfx::Rect effective_content_rect = content_rect;
@@ -184,12 +194,16 @@ void BackgroundThumbnailVideoCapturer::OnFrameCaptured(
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Tab.Preview.TimeToStoreAfterFrameReceived",
-      base::TimeTicks::Now() - time_of_call,
-      base::TimeDelta::FromMicroseconds(10),
-      base::TimeDelta::FromMilliseconds(10), 50);
+      base::TimeTicks::Now() - time_of_call, base::Microseconds(10),
+      base::Milliseconds(10), 50);
 
   got_frame_callback_.Run(cropped_frame, frame_id);
 }
+
+void BackgroundThumbnailVideoCapturer::OnNewCropVersion(uint32_t crop_version) {
+}
+
+void BackgroundThumbnailVideoCapturer::OnFrameWithEmptyRegionCapture() {}
 
 void BackgroundThumbnailVideoCapturer::OnStopped() {}
 

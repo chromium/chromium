@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,11 @@ LayoutNGButton::LayoutNGButton(Element* element)
     : LayoutNGFlexibleBox(element), inner_(nullptr) {}
 
 LayoutNGButton::~LayoutNGButton() = default;
+
+void LayoutNGButton::Trace(Visitor* visitor) const {
+  visitor->Trace(inner_);
+  LayoutNGFlexibleBox::Trace(visitor);
+}
 
 void LayoutNGButton::AddChild(LayoutObject* new_child,
                               LayoutObject* before_child) {

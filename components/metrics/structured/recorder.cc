@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #include <utility>
 
-#include "base/bind.h"
+#include "base/no_destructor.h"
 #include "base/task/current_thread.h"
-#include "base/task/post_task.h"
-#include "components/metrics/structured/event_base.h"
 #include "components/metrics/structured/histogram_util.h"
+#include "components/metrics/structured/structured_metrics_features.h"
+#include "components/metrics/structured/structured_metrics_validator.h"
 
 namespace metrics {
 namespace structured {
@@ -23,23 +23,28 @@ Recorder* Recorder::GetInstance() {
   return recorder.get();
 }
 
-void Recorder::Record(const EventBase& event) {
+void Recorder::RecordEvent(Event&& event) {
   // All calls to StructuredMetricsProvider (the observer) must be on the UI
   // sequence, so re-call Record if needed. If a UI task runner hasn't been set
   // yet, ignore this Record.
-  if (!ui_task_runner_)
+  if (!ui_task_runner_) {
+    LogInternalError(StructuredMetricsError::kUninitializedClient);
     return;
+  }
 
   if (!ui_task_runner_->RunsTasksInCurrentSequence()) {
     ui_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&Recorder::Record, base::Unretained(this), event));
+        FROM_HERE, base::BindOnce(&Recorder::RecordEvent,
+                                  base::Unretained(this), std::move(event)));
     return;
   }
 
   DCHECK(base::CurrentUIThread::IsSet());
+
+  // Make a copy of an event that all observers can share.
+  const auto event_clone = event.Clone();
   for (auto& observer : observers_)
-    observer.OnRecord(event);
+    observer.OnEventRecord(event_clone);
 
   if (observers_.empty()) {
     // Other values of EventRecordingState are recorded in
@@ -58,16 +63,44 @@ void Recorder::ProfileAdded(const base::FilePath& profile_path) {
     observer.OnProfileAdded(profile_path);
 }
 
+absl::optional<int> Recorder::LastKeyRotation(const Event& event) {
+  auto project_validator = validator::GetProjectValidator(event.project_name());
+  if (!project_validator.has_value())
+    return absl::nullopt;
+
+  auto project_name_hash = project_validator.value()->project_hash();
+
+  absl::optional<int> result;
+  // |observers_| will contain at most one observer, despite being an
+  // ObserverList.
+  for (auto& observer : observers_) {
+    result = observer.LastKeyRotation(project_name_hash);
+  }
+  return result;
+}
+
+void Recorder::OnReportingStateChanged(bool enabled) {
+  for (auto& observer : observers_) {
+    observer.OnReportingStateChanged(enabled);
+  }
+}
+
+void Recorder::OnSystemProfileInitialized() {
+  for (auto& observer : observers_) {
+    observer.OnSystemProfileInitialized();
+  }
+}
+
 void Recorder::SetUiTaskRunner(
     const scoped_refptr<base::SequencedTaskRunner> ui_task_runner) {
   ui_task_runner_ = ui_task_runner;
 }
 
-void Recorder::AddObserver(Observer* observer) {
+void Recorder::AddObserver(RecorderImpl* observer) {
   observers_.AddObserver(observer);
 }
 
-void Recorder::RemoveObserver(Observer* observer) {
+void Recorder::RemoveObserver(RecorderImpl* observer) {
   observers_.RemoveObserver(observer);
 }
 

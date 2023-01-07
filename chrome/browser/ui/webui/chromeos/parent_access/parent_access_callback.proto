@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package kids.platform.parentaccess.client.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// Copied from well known Google Timestamp proto message:
+// https://source.chromium.org/chromium/chromium/src/+/master:third_party/protobuf/src/google/protobuf/timestamp.proto;drc=b51864c7aae4372308052b9fd5c1913ceeee3884
+message Timestamp {
+  // Represents seconds of UTC time since Unix epoch
+  // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+  // 9999-12-31T23:59:59Z inclusive.
+  int64 seconds = 1;
+
+  // Non-negative fractions of a second at nanosecond resolution. Negative
+  // second values with fractions must still have non-negative nanos values
+  // that count forward in time. Must be from 0 to 999,999,999
+  // inclusive.
+  int32 nanos = 2;
+}
+
+// Collection of callbacks that the Parent Access Interface will invoke at the
+// end of the flow. The caller should register a single listener to listen for
+// various callbacks.
+//
+// Currently the message is serialized, Base64 encoded, and then passed as a
+// string to the listener. i.e.
+//     postMessage(base64.encodeByteArray(callback.serializeBinary()))
+//
+// Next ID: 5
+message ParentAccessCallback {
+  oneof callback {
+    OnParentVerified on_parent_verified = 1;
+    OnConsentDeclined on_consent_declined = 2;
+    OnPageSizeChanged on_page_size_changed = 3;
+    OnCommunicationEstablished on_communication_established = 4;
+  }
+}
+
+// Callback invoked when the communication mechanism is verified. Currently this
+// callback is only sent when Android WebMessageChannel is specified.
+message OnCommunicationEstablished {}
+
+// This callback is invoked when the page size has changed, for example when an
+// expandable button is clicked, so the client knows if size adjustments are
+// needed to their container.
+message OnPageSizeChanged {
+  // Width and height of the content area of the parent access view.
+  int32 content_width = 1;
+  int32 content_height = 2;
+}
+
+// Callback invoked when the user has passed the parent presence verification.
+// Next ID: 3
+message OnParentVerified {
+  oneof verification_proof {
+    // Proof of the verification that the caller should consume later when
+    // performing the privileged action. See go/warpstar-sspv.
+    ParentAccessToken parent_access_token = 1;
+
+    // This empty proto is a success signal returned to the caller when no token
+    // is needed.
+    ParentAccessTokenNotRequested parent_access_token_not_requested = 2;
+  }
+
+  message ParentAccessTokenNotRequested {}
+}
+
+// Next ID: 3
+message ParentAccessToken {
+  // The Parent Access Token in URL-safe base64 encoding. It can be verified,
+  // and certain information can be extracted from it via the
+  // /ParentAccessService.VerifyToken RPC.
+  string token = 1;
+
+  // The timestamp when the token is considered to be expired.
+  Timestamp expire_time = 2;
+}
+
+// Callback invoked when the user has explicitly declined the consent language
+// by clicking on the "No thank you" button.
+message OnConsentDeclined {}

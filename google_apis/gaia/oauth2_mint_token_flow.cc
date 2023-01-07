@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -24,10 +24,10 @@
 #include "base/values.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_constants.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -75,7 +75,7 @@ static GoogleServiceAuthError CreateAuthError(
   if (body)
     response_body = std::move(*body);
 
-  base::Optional<base::Value> value = base::JSONReader::Read(response_body);
+  absl::optional<base::Value> value = base::JSONReader::Read(response_body);
   if (!value || !value->is_dict()) {
     int http_response_code = -1;
     if (head && head->headers)
@@ -203,30 +203,32 @@ std::string OAuth2MintTokenFlow::CreateApiCallBody() {
       parameters_.enable_granular_permissions ? kValueTrue : kValueFalse;
   std::string body = base::StringPrintf(
       kOAuth2IssueTokenBodyFormat,
-      net::EscapeUrlEncodedData(force_value, true).c_str(),
-      net::EscapeUrlEncodedData(response_type_value, true).c_str(),
-      net::EscapeUrlEncodedData(base::JoinString(parameters_.scopes, " "), true)
+      base::EscapeUrlEncodedData(force_value, true).c_str(),
+      base::EscapeUrlEncodedData(response_type_value, true).c_str(),
+      base::EscapeUrlEncodedData(base::JoinString(parameters_.scopes, " "),
+                                 true)
           .c_str(),
-      net::EscapeUrlEncodedData(enable_granular_permissions_value, true)
+      base::EscapeUrlEncodedData(enable_granular_permissions_value, true)
           .c_str(),
-      net::EscapeUrlEncodedData(parameters_.client_id, true).c_str(),
-      net::EscapeUrlEncodedData(parameters_.extension_id, true).c_str(),
-      net::EscapeUrlEncodedData(parameters_.version, true).c_str(),
-      net::EscapeUrlEncodedData(parameters_.channel, true).c_str());
+      base::EscapeUrlEncodedData(parameters_.client_id, true).c_str(),
+      base::EscapeUrlEncodedData(parameters_.extension_id, true).c_str(),
+      base::EscapeUrlEncodedData(parameters_.version, true).c_str(),
+      base::EscapeUrlEncodedData(parameters_.channel, true).c_str());
   if (!parameters_.device_id.empty()) {
     body.append(base::StringPrintf(
         kOAuth2IssueTokenBodyFormatDeviceIdAddendum,
-        net::EscapeUrlEncodedData(parameters_.device_id, true).c_str()));
+        base::EscapeUrlEncodedData(parameters_.device_id, true).c_str()));
   }
   if (!parameters_.selected_user_id.empty()) {
     body.append(base::StringPrintf(
         kOAuth2IssueTokenBodyFormatSelectedUserIdAddendum,
-        net::EscapeUrlEncodedData(parameters_.selected_user_id, true).c_str()));
+        base::EscapeUrlEncodedData(parameters_.selected_user_id, true)
+            .c_str()));
   }
   if (!parameters_.consent_result.empty()) {
     body.append(base::StringPrintf(
         kOAuth2IssueTokenBodyFormatConsentResultAddendum,
-        net::EscapeUrlEncodedData(parameters_.consent_result, true).c_str()));
+        base::EscapeUrlEncodedData(parameters_.consent_result, true).c_str()));
   }
   return body;
 }
@@ -238,7 +240,7 @@ void OAuth2MintTokenFlow::ProcessApiCallSuccess(
   if (body)
     response_body = std::move(*body);
 
-  base::Optional<base::Value> value = base::JSONReader::Read(response_body);
+  absl::optional<base::Value> value = base::JSONReader::Read(response_body);
   if (!value || !value->is_dict()) {
     RecordApiCallResult(OAuth2MintTokenApiCallResult::kParseJsonFailure);
     ReportFailure(GoogleServiceAuthError::FromUnexpectedServiceResponse(
@@ -363,7 +365,7 @@ bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
       resolution_dict->FindListKey("browserCookies");
   base::span<const base::Value> cookie_list;
   if (browser_cookies)
-    cookie_list = browser_cookies->GetList();
+    cookie_list = browser_cookies->GetListDeprecated();
 
   base::Time time_now = base::Time::Now();
   bool success = true;
@@ -388,8 +390,8 @@ bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
     const std::string* path = cookie_dict.FindStringKey("path");
     const std::string* max_age_seconds =
         cookie_dict.FindStringKey("maxAgeSeconds");
-    base::Optional<bool> is_secure = cookie_dict.FindBoolKey("isSecure");
-    base::Optional<bool> is_http_only = cookie_dict.FindBoolKey("isHttpOnly");
+    absl::optional<bool> is_secure = cookie_dict.FindBoolKey("isSecure");
+    absl::optional<bool> is_http_only = cookie_dict.FindBoolKey("isHttpOnly");
     const std::string* same_site = cookie_dict.FindStringKey("sameSite");
 
     int64_t max_age = -1;
@@ -400,7 +402,7 @@ bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
 
     base::Time expiration_time = base::Time();
     if (max_age > 0)
-      expiration_time = time_now + base::TimeDelta::FromSeconds(max_age);
+      expiration_time = time_now + base::Seconds(max_age);
 
     std::unique_ptr<net::CanonicalCookie> cookie =
         net::CanonicalCookie::CreateSanitizedCookie(
@@ -408,7 +410,8 @@ bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
             time_now, expiration_time, time_now, is_secure ? *is_secure : false,
             is_http_only ? *is_http_only : false,
             net::StringToCookieSameSite(same_site ? *same_site : ""),
-            net::COOKIE_PRIORITY_DEFAULT, /* same_party */ false);
+            net::COOKIE_PRIORITY_DEFAULT, /* same_party */ false,
+            /* partition_key */ absl::nullopt);
     cookies.push_back(*cookie);
   }
 

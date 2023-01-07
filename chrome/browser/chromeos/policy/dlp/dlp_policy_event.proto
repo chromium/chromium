@@ -1,0 +1,73 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+// The source of the data that triggered the DLP restriction.
+message DlpPolicyEventSource {
+  optional string url = 1;
+}
+
+// In case of a DLP event with transferring the data - where it was going to be
+// transferred to.
+message DlpPolicyEventDestination {
+  enum Component {
+    UNDEFINED_COMPONENT = 0;
+    ARC = 1;
+    CROSTINI = 2;
+    PLUGIN_VM = 3;
+    USB = 4;
+    DRIVE = 5;
+  }
+
+  // Either |url| or |component| should be set.
+  optional string url = 1;
+  optional Component component = 2;
+}
+
+message DlpPolicyEvent {
+  // The restriction that was triggered.
+  enum Restriction {
+    UNDEFINED_RESTRICTION = 0;
+    CLIPBOARD = 1;
+    SCREENSHOT = 2;
+    SCREENCAST = 3;
+    PRINTING = 4;
+    EPRIVACY = 5;
+    FILES = 6;
+  }
+  // The mode of the applied restriction.
+  enum Mode {
+    UNDEFINED_MODE = 0;
+    BLOCK = 1;
+    REPORT = 2;
+    // WARN event is reported when a user either receives a warning dialog
+    // or repeats an action that was previously accepted.
+    WARN = 3;
+    // WARN_PROCEED event is only reported when a user selects to proceed with
+    // an action in a warn dialog.
+    WARN_PROCEED = 4;
+  }
+
+  // Type of user session from which the event is reported.
+  enum UserType {
+    UNDEFINED_USER_TYPE = 0;
+    REGULAR = 1;
+    MANAGED_GUEST = 2;
+    KIOSK = 3;
+  }
+
+  optional DlpPolicyEventSource source = 1;
+  optional DlpPolicyEventDestination destination = 2;
+  optional Restriction restriction = 3;
+  optional Mode mode = 4;
+  // Whether the restriction was enforced or not. Valuable for WARN.
+  optional bool restriction_enforced = 5;
+  optional int64 timestamp_micro = 6;
+  optional UserType user_type = 7;
+  // Currently used for the filename involved in a file event.
+  optional string content_name = 8;
+}

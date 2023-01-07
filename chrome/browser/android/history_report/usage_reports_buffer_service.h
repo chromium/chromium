@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 class FilePath;
@@ -29,6 +28,11 @@ class UsageReportsBufferBackend;
 class UsageReportsBufferService {
  public:
   explicit UsageReportsBufferService(const base::FilePath& dir);
+
+  UsageReportsBufferService(const UsageReportsBufferService&) = delete;
+  UsageReportsBufferService& operator=(const UsageReportsBufferService&) =
+      delete;
+
   virtual ~UsageReportsBufferService();
 
   // Init buffer. All calls to buffer before it's initialized are ignored. It's
@@ -57,8 +61,6 @@ class UsageReportsBufferService {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   // Non thread safe backend.
   std::unique_ptr<UsageReportsBufferBackend> backend_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsageReportsBufferService);
 };
 
 }  // namespace history_report

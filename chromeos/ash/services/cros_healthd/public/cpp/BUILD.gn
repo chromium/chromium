@@ -1,0 +1,53 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/args.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/dbus/config/use_real_dbus_clients.gni")
+
+assert(is_chromeos_ash)
+
+source_set("cpp") {
+  defines = []
+  if (is_chromeos_device) {
+    defines += [ "USE_EVDEV_GESTURES" ]
+  }
+  if (use_libinput) {
+    defines += [ "USE_LIBINPUT" ]
+  }
+  sources = [
+    "service_connection.cc",
+    "service_connection.h",
+  ]
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/ash/components/dbus/cros_healthd",
+    "//chromeos/ash/components/mojo_service_manager",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//ui/events/ozone/evdev:event_device_info",
+  ]
+  if (use_real_dbus_clients) {
+    defines += [ "USE_REAL_DBUS_CLIENTS" ]
+  } else {
+    sources += [
+      "fake_cros_healthd.cc",
+      "fake_cros_healthd.h",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "service_connection_unittest.cc" ]
+  deps = [
+    ":cpp",
+    "//base/test:test_support",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

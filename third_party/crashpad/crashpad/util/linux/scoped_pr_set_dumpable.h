@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
 #ifndef CRASHPAD_UTIL_LINUX_SCOPED_PR_SET_DUMPABLE_H_
 #define CRASHPAD_UTIL_LINUX_SCOPED_PR_SET_DUMPABLE_H_
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -30,13 +29,14 @@ class ScopedPrSetDumpable {
   //! \param[in] may_log `true` if this object may log error messages.
   explicit ScopedPrSetDumpable(bool may_log);
 
+  ScopedPrSetDumpable(const ScopedPrSetDumpable&) = delete;
+  ScopedPrSetDumpable& operator=(const ScopedPrSetDumpable&) = delete;
+
   ~ScopedPrSetDumpable();
 
  private:
   bool was_dumpable_;
   bool may_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPrSetDumpable);
 };
 
 }  // namespace crashpad

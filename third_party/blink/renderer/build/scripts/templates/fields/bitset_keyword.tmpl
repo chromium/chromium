@@ -1,0 +1,8 @@
+{% import 'templates/fields/keyword.tmpl' as keyword %}
+
+{% macro decl_public_methods(field) -%}
+{{keyword.decl_public_methods(field)}}
+{%- endmacro %}
+
+{% macro decl_protected_methods(field) -%}
+{%- endmacro %}

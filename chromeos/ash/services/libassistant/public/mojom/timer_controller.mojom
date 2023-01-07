@@ -1,0 +1,52 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.libassistant.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Interface managing Libassistant timers.
+// This controller is hosted in the Libassistant mojom service, and will be
+// invoked from the browser process.
+interface TimerController {
+  // Add time to the timer identified by |id|.
+  AddTimeToTimer(string id, mojo_base.mojom.TimeDelta duration);
+
+  // Pause the timer identified by |id|.
+  PauseTimer(string id);
+
+  // Remove the timer identified by |id|.
+  RemoveTimer(string id);
+
+  // Resume the timer identified by |id|.
+  ResumeTimer(string id);
+};
+
+// Delegate hosted in the browser process, that will be informed of all
+// server side changes to the timers.
+interface TimerDelegate {
+  // Called when a timer changes. The given list of timers will always
+  // contain all existing timers.
+  OnTimerStateChanged(array<AssistantTimer> timers);
+};
+
+struct AssistantTimer {
+  string id;
+  string label;
+  mojo_base.mojom.Time fire_time;
+  mojo_base.mojom.TimeDelta original_duration;
+  mojo_base.mojom.TimeDelta remaining_time;
+  AssistantTimerState state;
+};
+
+enum AssistantTimerState {
+  kUnknown,
+  // The timer is scheduled to fire at some future date.
+  kScheduled,
+  // The timer will not fire but is kept in the queue of scheduled events.
+  kPaused,
+  // The timer has fired. In the simplest case this means the timer has begun
+  // ringing.
+  kFired,
+};

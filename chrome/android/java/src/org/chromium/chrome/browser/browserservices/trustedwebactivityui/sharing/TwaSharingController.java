@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,11 +14,11 @@ import androidx.browser.trusted.sharing.ShareTarget;
 
 import org.chromium.base.Function;
 import org.chromium.base.Promise;
-import org.chromium.chrome.browser.browserservices.TrustedWebActivityUmaRecorder;
-import org.chromium.chrome.browser.browserservices.TrustedWebActivityUmaRecorder.ShareRequestMethod;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
+import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
+import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder.ShareRequestMethod;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,12 @@
 #include <atk/atk.h>
 #endif  // BUILDFLAG(USE_ATK)
 
-#ifdef OS_WIN
+#if BUILDFLAG(IS_WIN)
 #include <oleacc.h>
 #include <uiautomation.h>
 
 #include "third_party/iaccessible2/ia2_api_all.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace ui {
 
@@ -34,14 +34,14 @@ AX_EXPORT ax::mojom::TextBoundary FromAtkTextGranularity(
 #endif  // ATK_CHECK_VERSION(2, 10, 0)
 #endif  // BUILDFLAG(USE_ATK)
 
-#ifdef OS_WIN
+#if BUILDFLAG(IS_WIN)
 // Converts from an IAccessible2 text boundary to an ax::mojom::TextBoundary.
 AX_EXPORT ax::mojom::TextBoundary FromIA2TextBoundary(
     IA2TextBoundaryType boundary);
 
 // Converts from a UI Automation text unit to an ax::mojom::TextBoundary.
 AX_EXPORT ax::mojom::TextBoundary FromUIATextUnit(TextUnit unit);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace ui
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,13 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/feed/web_feed_tab_helper.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/usb/usb_tab_helper.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -53,8 +54,7 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
   if (contents->IsScanningForBluetoothDevices())
     states.push_back(TabAlertState::BLUETOOTH_SCAN_ACTIVE);
 
-  UsbTabHelper* usb_tab_helper = UsbTabHelper::FromWebContents(contents);
-  if (usb_tab_helper && usb_tab_helper->IsDeviceConnected())
+  if (contents->IsConnectedToUsbDevice())
     states.push_back(TabAlertState::USB_CONNECTED);
 
   if (contents->IsConnectedToHidDevice())
@@ -70,7 +70,8 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
   if (vr::VrTabHelper::IsContentDisplayedInHeadset(contents))
     states.push_back(TabAlertState::VR_PRESENTING_IN_HEADSET);
 
-  if (contents->HasPictureInPictureVideo())
+  if (contents->HasPictureInPictureVideo() ||
+      contents->HasPictureInPictureDocument())
     states.push_back(TabAlertState::PIP_PLAYING);
 
   // Only tabs have a RecentlyAudibleHelper, but this function is abused for
@@ -195,6 +196,35 @@ bool AreAllSitesMuted(const TabStripModel& tab_strip,
   return true;
 }
 
+TabWebFeedFollowState GetSiteFollowState(const TabStripModel& tab_strip,
+                                         const int index) {
+  content::WebContents* web_contents = tab_strip.GetWebContentsAt(index);
+  DCHECK(web_contents);
+
+  return feed::WebFeedTabHelper::GetFollowState(web_contents);
+}
+
+TabWebFeedFollowState GetAggregatedFollowStateOfAllSites(
+    const TabStripModel& tab_strip,
+    const std::vector<int>& indices) {
+  bool all_followed = true;
+  for (int tab_index : indices) {
+    TabWebFeedFollowState state = GetSiteFollowState(tab_strip, tab_index);
+    if (state == TabWebFeedFollowState::kUnknown)
+      return TabWebFeedFollowState::kUnknown;
+    // Don't return kNotFollowed immediately since kUnknown should be returned
+    // when a later tab is found with kUnknown.
+    else if (state == TabWebFeedFollowState::kNotFollowed)
+      all_followed = false;
+  }
+
+  return all_followed ? TabWebFeedFollowState::kFollowed
+                      : TabWebFeedFollowState::kNotFollowed;
+}
+
 }  // namespace chrome
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(LastMuteMetadata)
+LastMuteMetadata::LastMuteMetadata(content::WebContents* contents)
+    : content::WebContentsUserData<LastMuteMetadata>(*contents) {}
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(LastMuteMetadata);

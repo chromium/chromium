@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/shared_impl/resource.h"
 #include "ppapi/thunk/ppb_camera_capabilities_api.h"
@@ -26,6 +25,10 @@ class PPAPI_PROXY_EXPORT CameraCapabilitiesResource
   CameraCapabilitiesResource(PP_Instance instance,
                              const std::vector<PP_VideoCaptureFormat>& formats);
 
+  CameraCapabilitiesResource(const CameraCapabilitiesResource&) = delete;
+  CameraCapabilitiesResource& operator=(const CameraCapabilitiesResource&) =
+      delete;
+
   ~CameraCapabilitiesResource() override;
 
   // Resource overrides.
@@ -39,8 +42,6 @@ class PPAPI_PROXY_EXPORT CameraCapabilitiesResource
  private:
   size_t num_video_capture_formats_;
   std::unique_ptr<PP_VideoCaptureFormat[]> video_capture_formats_;
-
-  DISALLOW_COPY_AND_ASSIGN(CameraCapabilitiesResource);
 };
 
 }  // namespace proxy

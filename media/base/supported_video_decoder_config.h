@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
@@ -38,6 +37,18 @@ struct MEDIA_EXPORT SupportedVideoDecoderConfig {
   // Returns true if and only if |config| is a supported config.
   bool Matches(const VideoDecoderConfig& config) const;
 
+  bool operator==(const SupportedVideoDecoderConfig& other) const {
+    return profile_min == other.profile_min &&
+           profile_max == other.profile_max &&
+           coded_size_min == other.coded_size_min &&
+           coded_size_max == other.coded_size_max &&
+           allow_encrypted == other.allow_encrypted &&
+           require_encrypted == other.require_encrypted;
+  }
+  bool operator!=(const SupportedVideoDecoderConfig& other) const {
+    return !(*this == other);
+  }
+
   // Range of VideoCodecProfiles to match, inclusive.
   VideoCodecProfile profile_min = VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoCodecProfile profile_max = VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -58,19 +69,7 @@ struct MEDIA_EXPORT SupportedVideoDecoderConfig {
   // Allow copy and assignment.
 };
 
-// Enumeration of possible implementations for (Mojo)VideoDecoders.
-enum class VideoDecoderImplementation {
-  kDefault = 0,
-  kAlternate = 1,
-  kMaxValue = kAlternate
-};
-
 using SupportedVideoDecoderConfigs = std::vector<SupportedVideoDecoderConfig>;
-
-// Map of mojo VideoDecoder implementations to the vector of configs that they
-// (probably) support.
-using SupportedVideoDecoderConfigMap =
-    base::flat_map<VideoDecoderImplementation, SupportedVideoDecoderConfigs>;
 
 // Helper method to determine if |config| is supported by |supported_configs|.
 MEDIA_EXPORT bool IsVideoDecoderConfigSupported(

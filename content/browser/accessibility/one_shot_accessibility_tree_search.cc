@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -127,7 +127,7 @@ void OneShotAccessibilityTreeSearch::SearchByIteratingOverChildren() {
   // If start_node_ is specified, iterate over the first child past that
   // node.
 
-  uint32_t count = scope_node_->PlatformChildCount();
+  size_t count = scope_node_->PlatformChildCount();
   if (count == 0)
     return;
 
@@ -137,9 +137,9 @@ void OneShotAccessibilityTreeSearch::SearchByIteratingOverChildren() {
   while (start_node_ && start_node_->PlatformGetParent() != scope_node_)
     start_node_ = start_node_->PlatformGetParent();
 
-  uint32_t index = (direction_ == FORWARDS ? 0 : count - 1);
+  size_t index = (direction_ == FORWARDS ? 0 : count - 1);
   if (start_node_) {
-    index = start_node_->GetIndexInParent();
+    index = start_node_->GetIndexInParent().value();
     if (direction_ == FORWARDS)
       index++;
     else
@@ -182,7 +182,7 @@ void OneShotAccessibilityTreeSearch::SearchByWalkingTree() {
       // This needs to be handled carefully. If not, there is a chance of
       // getting into infinite loop.
       if (can_wrap_to_last_element_ && !stop_node &&
-          node->manager()->GetRoot() == node) {
+          node->manager()->GetBrowserAccessibilityRoot() == node) {
         stop_node = node;
       }
       node = tree_->PreviousInTreeOrder(node, can_wrap_to_last_element_);
@@ -267,7 +267,7 @@ bool AccessibilityComboboxPredicate(BrowserAccessibility* start,
   return (node->GetRole() == ax::mojom::Role::kComboBoxGrouping ||
           node->GetRole() == ax::mojom::Role::kComboBoxMenuButton ||
           node->GetRole() == ax::mojom::Role::kTextFieldWithComboBox ||
-          node->GetRole() == ax::mojom::Role::kPopUpButton);
+          node->GetRole() == ax::mojom::Role::kComboBoxSelect);
 }
 
 bool AccessibilityControlPredicate(BrowserAccessibility* start,
@@ -287,7 +287,7 @@ bool AccessibilityControlPredicate(BrowserAccessibility* start,
 bool AccessibilityFocusablePredicate(BrowserAccessibility* start,
                                      BrowserAccessibility* node) {
   bool focusable = node->HasState(ax::mojom::State::kFocusable);
-  if (ui::IsIframe(node->GetRole()) || node->IsPlatformDocument())
+  if (ui::IsIframe(node->GetRole()) || ui::IsPlatformDocument(node->GetRole()))
     focusable = false;
   return focusable;
 }
@@ -355,7 +355,7 @@ bool AccessibilityHeadingSameLevelPredicate(BrowserAccessibility* start,
 
 bool AccessibilityFramePredicate(BrowserAccessibility* start,
                                  BrowserAccessibility* node) {
-  if (node->IsWebAreaForPresentationalIframe())
+  if (node->IsRootWebAreaForPresentationalIframe())
     return false;
   if (!node->PlatformGetParent())
     return false;
@@ -370,6 +370,9 @@ bool AccessibilityLandmarkPredicate(BrowserAccessibility* start,
     case ax::mojom::Role::kBanner:
     case ax::mojom::Role::kComplementary:
     case ax::mojom::Role::kContentInfo:
+    case ax::mojom::Role::kFooter:
+    case ax::mojom::Role::kForm:
+    case ax::mojom::Role::kHeader:
     case ax::mojom::Role::kMain:
     case ax::mojom::Role::kNavigation:
     case ax::mojom::Role::kRegion:
@@ -424,6 +427,12 @@ bool AccessibilityRadioGroupPredicate(BrowserAccessibility* start,
   return node->GetRole() == ax::mojom::Role::kRadioGroup;
 }
 
+bool AccessibilitySectionPredicate(BrowserAccessibility* start,
+                                   BrowserAccessibility* node) {
+  return AccessibilityLandmarkPredicate(start, node) ||
+         node->GetRole() == ax::mojom::Role::kHeading;
+}
+
 bool AccessibilityTablePredicate(BrowserAccessibility* start,
                                  BrowserAccessibility* node) {
   return ui::IsTableLike(node->GetRole());
@@ -431,27 +440,27 @@ bool AccessibilityTablePredicate(BrowserAccessibility* start,
 
 bool AccessibilityTextfieldPredicate(BrowserAccessibility* start,
                                      BrowserAccessibility* node) {
-  return (node->IsPlainTextField() || node->IsRichTextField());
+  return node->IsTextField();
 }
 
 bool AccessibilityTextStyleBoldPredicate(BrowserAccessibility* start,
                                          BrowserAccessibility* node) {
-  return node->GetData().HasTextStyle(ax::mojom::TextStyle::kBold);
+  return node->HasTextStyle(ax::mojom::TextStyle::kBold);
 }
 
 bool AccessibilityTextStyleItalicPredicate(BrowserAccessibility* start,
                                            BrowserAccessibility* node) {
-  return node->GetData().HasTextStyle(ax::mojom::TextStyle::kItalic);
+  return node->HasTextStyle(ax::mojom::TextStyle::kItalic);
 }
 
 bool AccessibilityTextStyleUnderlinePredicate(BrowserAccessibility* start,
                                               BrowserAccessibility* node) {
-  return node->GetData().HasTextStyle(ax::mojom::TextStyle::kUnderline);
+  return node->HasTextStyle(ax::mojom::TextStyle::kUnderline);
 }
 
 bool AccessibilityTreePredicate(BrowserAccessibility* start,
                                 BrowserAccessibility* node) {
-  return (node->IsPlainTextField() || node->IsRichTextField());
+  return node->IsTextField();
 }
 
 bool AccessibilityUnvisitedLinkPredicate(BrowserAccessibility* start,

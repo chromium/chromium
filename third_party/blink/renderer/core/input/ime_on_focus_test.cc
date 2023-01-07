@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,11 +31,11 @@ class ImeOnFocusTest : public testing::Test {
   }
 
  protected:
-  void SendGestureTap(WebViewImpl*, IntPoint);
+  void SendGestureTap(WebViewImpl*, gfx::Point);
   void Focus(const AtomicString& element);
   void RunImeOnFocusTest(String file_name,
                          size_t,
-                         IntPoint tap_point = IntPoint(-1, -1),
+                         gfx::Point tap_point = gfx::Point(-1, -1),
                          const AtomicString& focus_element = g_null_atom,
                          String frame = "");
 
@@ -45,14 +45,14 @@ class ImeOnFocusTest : public testing::Test {
 };
 
 void ImeOnFocusTest::SendGestureTap(WebViewImpl* web_view,
-                                    IntPoint client_point) {
+                                    gfx::Point client_point) {
   WebGestureEvent web_gesture_event(WebInputEvent::Type::kGestureTap,
                                     WebInputEvent::kNoModifiers,
                                     WebInputEvent::GetStaticTimeStampForTests(),
                                     WebGestureDevice::kTouchscreen);
   // GestureTap is only ever from touch screens.
-  web_gesture_event.SetPositionInWidget(FloatPoint(client_point));
-  web_gesture_event.SetPositionInScreen(FloatPoint(client_point));
+  web_gesture_event.SetPositionInWidget(gfx::PointF(client_point));
+  web_gesture_event.SetPositionInScreen(gfx::PointF(client_point));
   web_gesture_event.data.tap.tap_count = 1;
   web_gesture_event.data.tap.width = 10;
   web_gesture_event.data.tap.height = 10;
@@ -63,13 +63,13 @@ void ImeOnFocusTest::SendGestureTap(WebViewImpl* web_view,
 }
 
 void ImeOnFocusTest::Focus(const AtomicString& element) {
-  document_->body()->getElementById(element)->focus();
+  document_->body()->getElementById(element)->Focus();
 }
 
 void ImeOnFocusTest::RunImeOnFocusTest(
     String file_name,
     size_t expected_virtual_keyboard_request_count,
-    IntPoint tap_point,
+    gfx::Point tap_point,
     const AtomicString& focus_element,
     String frame) {
   RegisterMockedURLLoadFromBase(WebString(base_url_), test::CoreTestDataPath(),
@@ -87,10 +87,10 @@ void ImeOnFocusTest::RunImeOnFocusTest(
     Focus(focus_element);
   EXPECT_EQ(0u, widget_host.VirtualKeyboardRequestCount());
 
-  if (tap_point.X() >= 0 && tap_point.Y() >= 0)
+  if (tap_point.x() >= 0 && tap_point.y() >= 0)
     SendGestureTap(web_view, tap_point);
 
-  if (!frame.IsEmpty()) {
+  if (!frame.empty()) {
     RegisterMockedURLLoadFromBase(WebString(base_url_),
                                   test::CoreTestDataPath(), WebString(frame));
     WebLocalFrame* child_frame =
@@ -122,22 +122,22 @@ TEST_F(ImeOnFocusTest, OnAutofocus) {
 }
 
 TEST_F(ImeOnFocusTest, OnUserGesture) {
-  RunImeOnFocusTest("ime-on-focus-on-user-gesture.html", 1, IntPoint(50, 50));
+  RunImeOnFocusTest("ime-on-focus-on-user-gesture.html", 1, gfx::Point(50, 50));
 }
 
 TEST_F(ImeOnFocusTest, AfterFirstGesture) {
   RunImeOnFocusTest("ime-on-focus-after-first-gesture.html", 1,
-                    IntPoint(50, 50), "input");
+                    gfx::Point(50, 50), "input");
 }
 
 TEST_F(ImeOnFocusTest, AfterNavigationWithinPage) {
   RunImeOnFocusTest("ime-on-focus-after-navigation-within-page.html", 1,
-                    IntPoint(50, 50), "input");
+                    gfx::Point(50, 50), "input");
 }
 
 TEST_F(ImeOnFocusTest, AfterFrameLoadOnGesture) {
   RunImeOnFocusTest("ime-on-focus-after-frame-load-on-gesture.html", 1,
-                    IntPoint(50, 50), "input", "frame.html");
+                    gfx::Point(50, 50), "input", "frame.html");
 }
 
 }  // namespace blink

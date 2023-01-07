@@ -30,12 +30,13 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "cc/layers/texture_layer.h"
+#include "cc/paint/paint_flags.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/stub_decode_cache.h"
-#include "components/viz/common/resources/single_release_callback.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
@@ -47,10 +48,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
+#include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
@@ -94,9 +96,9 @@ class ImageTrackingDecodeCache : public cc::StubDecodeCache {
     bitmap.allocPixelsFlags(SkImageInfo::MakeN32Premul(10, 10),
                             SkBitmap::kZeroPixels_AllocFlag);
     sk_sp<SkImage> sk_image = SkImage::MakeFromBitmap(bitmap);
-    return cc::DecodedDrawImage(sk_image, nullptr, SkSize::Make(0, 0),
-                                SkSize::Make(1, 1), kLow_SkFilterQuality,
-                                !budget_exceeded_);
+    return cc::DecodedDrawImage(
+        sk_image, nullptr, SkSize::Make(0, 0), SkSize::Make(1, 1),
+        cc::PaintFlags::FilterQuality::kLow, !budget_exceeded_);
   }
 
   void set_budget_exceeded(bool exceeded) { budget_exceeded_ = exceeded; }
@@ -126,13 +128,13 @@ class ImageTrackingDecodeCache : public cc::StubDecodeCache {
 class Canvas2DLayerBridgeTest : public Test {
  public:
   std::unique_ptr<Canvas2DLayerBridge> MakeBridge(
-      const IntSize& size,
+      const gfx::Size& size,
       RasterMode raster_mode,
-      const CanvasColorParams& color_params,
+      OpacityMode opacity_mode,
       std::unique_ptr<FakeCanvasResourceHost> custom_host = nullptr) {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
-        std::make_unique<Canvas2DLayerBridge>(size, raster_mode, color_params);
-    bridge->DontUseIdleSchedulingForTesting();
+        std::make_unique<Canvas2DLayerBridge>(size, raster_mode, opacity_mode);
+    bridge->AlwaysMeasureForTesting();
     if (custom_host)
       host_ = std::move(custom_host);
     if (!host_)
@@ -167,7 +169,7 @@ class Canvas2DLayerBridgeTest : public Test {
 
 TEST_F(Canvas2DLayerBridgeTest, DisableAcceleration) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 150), RasterMode::kCPU, CanvasColorParams());
+      MakeBridge(gfx::Size(300, 150), RasterMode::kCPU, kNonOpaque);
 
   bool has_backend_texture =
       bridge->NewImageSnapshot()->PaintImageForCurrentFrame().IsTextureBacked();
@@ -177,9 +179,9 @@ TEST_F(Canvas2DLayerBridgeTest, DisableAcceleration) {
 
 TEST_F(Canvas2DLayerBridgeTest, NoDrawOnContextLost) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
+      MakeBridge(gfx::Size(300, 150), RasterMode::kGPU, kNonOpaque);
   EXPECT_TRUE(bridge->IsValid());
-  PaintFlags flags;
+  cc::PaintFlags flags;
   uint32_t gen_id = bridge->GetOrCreateResourceProvider()->ContentUniqueID();
   bridge->GetPaintCanvas()->drawRect(SkRect::MakeXYWH(0, 0, 1, 1), flags);
   EXPECT_EQ(gen_id, bridge->GetOrCreateResourceProvider()->ContentUniqueID());
@@ -191,7 +193,7 @@ TEST_F(Canvas2DLayerBridgeTest, NoDrawOnContextLost) {
 
 TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhenContextIsLost) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
+      MakeBridge(gfx::Size(300, 150), RasterMode::kGPU, kNonOpaque);
 
   EXPECT_TRUE(bridge->IsAccelerated());
   bridge->FinalizeFrame();  // Trigger the creation of a backing store
@@ -200,7 +202,7 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhenContextIsLost) {
   test_context_provider_->TestContextGL()->set_context_lost(true);
 
   viz::TransferableResource resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
   EXPECT_FALSE(bridge->PrepareTransferableResource(nullptr, &resource,
                                                    &release_callback));
 }
@@ -208,7 +210,7 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhenContextIsLost) {
 TEST_F(Canvas2DLayerBridgeTest,
        PrepareMailboxWhenContextIsLostWithFailedRestore) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
+      MakeBridge(gfx::Size(300, 150), RasterMode::kGPU, kNonOpaque);
 
   bridge->GetOrCreateResourceProvider();
   EXPECT_TRUE(bridge->IsValid());
@@ -224,7 +226,7 @@ TEST_F(Canvas2DLayerBridgeTest,
   bridge->Restore();
 
   viz::TransferableResource resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
   EXPECT_FALSE(bridge->PrepareTransferableResource(nullptr, &resource,
                                                    &release_callback));
 }
@@ -234,25 +236,25 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxAndLoseResource) {
   // This test passes by not crashing and not triggering assertions.
   {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
-        MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
+        MakeBridge(gfx::Size(300, 150), RasterMode::kGPU, kNonOpaque);
     bridge->FinalizeFrame();
     viz::TransferableResource resource;
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+    viz::ReleaseCallback release_callback;
     EXPECT_TRUE(bridge->PrepareTransferableResource(nullptr, &resource,
                                                     &release_callback));
 
     bool lost_resource = true;
-    release_callback->Run(gpu::SyncToken(), lost_resource);
+    std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
   }
 
   // Retry with mailbox released while bridge destruction is in progress.
   {
     viz::TransferableResource resource;
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+    viz::ReleaseCallback release_callback;
 
     {
       std::unique_ptr<Canvas2DLayerBridge> bridge =
-          MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
+          MakeBridge(gfx::Size(300, 150), RasterMode::kGPU, kNonOpaque);
       bridge->FinalizeFrame();
       bridge->PrepareTransferableResource(nullptr, &resource,
                                           &release_callback);
@@ -265,17 +267,17 @@ TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxAndLoseResource) {
     // Before fixing crbug.com/411864, the following line would cause a memory
     // use after free that sometimes caused a crash in normal builds and
     // crashed consistently with ASAN.
-    release_callback->Run(gpu::SyncToken(), lost_resource);
+    std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
   }
 }
 
 TEST_F(Canvas2DLayerBridgeTest, ReleaseCallbackWithNullContextProviderWrapper) {
   viz::TransferableResource resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
 
   {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
-        MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
+        MakeBridge(gfx::Size(300, 150), RasterMode::kGPU, kNonOpaque);
     bridge->FinalizeFrame();
     EXPECT_TRUE(bridge->PrepareTransferableResource(nullptr, &resource,
                                                     &release_callback));
@@ -287,14 +289,14 @@ TEST_F(Canvas2DLayerBridgeTest, ReleaseCallbackWithNullContextProviderWrapper) {
   // This is the test to make sure that ReleaseMailboxImageResource() handles
   // null context_provider_wrapper properly.
   SharedGpuContext::ContextProviderWrapper();
-  release_callback->Run(gpu::SyncToken(), lost_resource);
+  std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
 }
 
 TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
   {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
-        MakeBridge(IntSize(300, 300), RasterMode::kGPU, CanvasColorParams());
-    PaintFlags flags;
+        MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
+    cc::PaintFlags flags;
     bridge->GetPaintCanvas()->drawRect(SkRect::MakeXYWH(0, 0, 1, 1), flags);
     scoped_refptr<StaticBitmapImage> image = bridge->NewImageSnapshot();
     EXPECT_TRUE(bridge->IsValid());
@@ -303,8 +305,8 @@ TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
 
   {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
-        MakeBridge(IntSize(300, 300), RasterMode::kGPU, CanvasColorParams());
-    PaintFlags flags;
+        MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
+    cc::PaintFlags flags;
     bridge->GetPaintCanvas()->drawRect(SkRect::MakeXYWH(0, 0, 1, 1), flags);
     scoped_refptr<StaticBitmapImage> image = bridge->NewImageSnapshot();
     EXPECT_TRUE(bridge->IsValid());
@@ -313,8 +315,8 @@ TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
 
   {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
-        MakeBridge(IntSize(300, 300), RasterMode::kCPU, CanvasColorParams());
-    PaintFlags flags;
+        MakeBridge(gfx::Size(300, 300), RasterMode::kCPU, kNonOpaque);
+    cc::PaintFlags flags;
     bridge->GetPaintCanvas()->drawRect(SkRect::MakeXYWH(0, 0, 1, 1), flags);
     scoped_refptr<StaticBitmapImage> image = bridge->NewImageSnapshot();
     EXPECT_TRUE(bridge->IsValid());
@@ -323,8 +325,8 @@ TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
 
   {
     std::unique_ptr<Canvas2DLayerBridge> bridge =
-        MakeBridge(IntSize(300, 300), RasterMode::kCPU, CanvasColorParams());
-    PaintFlags flags;
+        MakeBridge(gfx::Size(300, 300), RasterMode::kCPU, kNonOpaque);
+    cc::PaintFlags flags;
     bridge->GetPaintCanvas()->drawRect(SkRect::MakeXYWH(0, 0, 1, 1), flags);
     scoped_refptr<StaticBitmapImage> image = bridge->NewImageSnapshot();
     EXPECT_TRUE(bridge->IsValid());
@@ -335,13 +337,13 @@ TEST_F(Canvas2DLayerBridgeTest, RasterModeHint) {
 TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareIfContextLost) {
   test_context_provider_->TestContextGL()->set_context_lost(true);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
+      MakeBridge(gfx::Size(300, 150), RasterMode::kGPU, kNonOpaque);
   EXPECT_TRUE(bridge->IsValid());
   EXPECT_FALSE(bridge->IsAccelerated());
 }
 
 void DrawSomething(Canvas2DLayerBridge* bridge) {
-  bridge->DidDraw(FloatRect(0, 0, 1, 1));
+  bridge->DidDraw();
   bridge->FinalizeFrame();
   // Grabbing an image forces a flush
   bridge->NewImageSnapshot();
@@ -351,7 +353,7 @@ TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareOnFailedTextureAlloc) {
   {
     // No fallback case.
     std::unique_ptr<Canvas2DLayerBridge> bridge =
-        MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
+        MakeBridge(gfx::Size(300, 150), RasterMode::kGPU, kNonOpaque);
     EXPECT_TRUE(bridge->IsValid());
     EXPECT_TRUE(bridge->IsAccelerated());
     scoped_refptr<StaticBitmapImage> snapshot = bridge->NewImageSnapshot();
@@ -365,16 +367,16 @@ TEST_F(Canvas2DLayerBridgeTest, FallbackToSoftwareOnFailedTextureAlloc) {
                               ->ContextProvider()
                               ->GetGrContext();
     std::unique_ptr<Canvas2DLayerBridge> bridge =
-        std::make_unique<Canvas2DLayerBridge>(
-            IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
-    bridge->DontUseIdleSchedulingForTesting();
+        std::make_unique<Canvas2DLayerBridge>(gfx::Size(300, 150),
+                                              RasterMode::kGPU, kNonOpaque);
+    bridge->AlwaysMeasureForTesting();
     EXPECT_TRUE(bridge->IsValid());
     EXPECT_TRUE(bridge->IsAccelerated());  // We don't yet know that
                                            // allocation will fail.
     // This will cause SkSurface_Gpu creation to fail without
     // Canvas2DLayerBridge otherwise detecting that anything was disabled.
     gr->abandonContext();
-    host_ = std::make_unique<FakeCanvasResourceHost>(IntSize(300, 150));
+    host_ = std::make_unique<FakeCanvasResourceHost>(gfx::Size(300, 150));
     bridge->SetCanvasResourceHost(host_.get());
     DrawSomething(bridge.get());
     scoped_refptr<StaticBitmapImage> snapshot = bridge->NewImageSnapshot();
@@ -391,16 +393,13 @@ class MockLogger : public Canvas2DLayerBridge::Logger {
   ~MockLogger() override = default;
 };
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, HibernationLifeCycle)
-#else
-TEST_F(Canvas2DLayerBridgeTest, DISABLED_HibernationLifeCycle)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, HibernationLifeCycle) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 300), RasterMode::kGPU, CanvasColorParams());
-  bridge->DontUseIdleSchedulingForTesting();
+      MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
   DrawSomething(bridge.get());
   EXPECT_TRUE(bridge->IsAccelerated());
 
@@ -416,6 +415,9 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_HibernationLifeCycle)
   EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
 
   bridge->SetIsInHiddenPage(true);
+  scheduler::RunIdleTasksForTesting(
+      scheduler::WebThreadScheduler::MainThreadScheduler(),
+      base::BindOnce([]() {}));
   platform->RunUntilIdle();
 
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
@@ -436,16 +438,13 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_HibernationLifeCycle)
   EXPECT_TRUE(bridge->IsValid());
 }
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, HibernationReEntry)
-#else
-TEST_F(Canvas2DLayerBridgeTest, DISABLED_HibernationReEntry)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, HibernationReEntry) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 300), RasterMode::kGPU, CanvasColorParams());
-  bridge->DontUseIdleSchedulingForTesting();
+      MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
   // Register an alternate Logger for tracking hibernation events
@@ -463,6 +462,9 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_HibernationReEntry)
   // chance to run.
   bridge->SetIsInHiddenPage(false);
   bridge->SetIsInHiddenPage(true);
+  scheduler::RunIdleTasksForTesting(
+      scheduler::WebThreadScheduler::MainThreadScheduler(),
+      base::BindOnce([]() {}));
   platform->RunUntilIdle();
 
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
@@ -483,16 +485,13 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_HibernationReEntry)
   EXPECT_TRUE(bridge->IsValid());
 }
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernating)
-#else
-TEST_F(Canvas2DLayerBridgeTest, DISABLED_TeardownWhileHibernating)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernating) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 300), RasterMode::kGPU, CanvasColorParams());
-  bridge->DontUseIdleSchedulingForTesting();
+      MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
   // Register an alternate Logger for tracking hibernation events
@@ -506,6 +505,9 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_TeardownWhileHibernating)
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationScheduled));
   EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
   bridge->SetIsInHiddenPage(true);
+  scheduler::RunIdleTasksForTesting(
+      scheduler::WebThreadScheduler::MainThreadScheduler(),
+      base::BindOnce([]() {}));
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_FALSE(bridge->IsAccelerated());
@@ -520,16 +522,13 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_TeardownWhileHibernating)
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
 }
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, SnapshotWhileHibernating)
-#else
-TEST_F(Canvas2DLayerBridgeTest, DISABLED_SnapshotWhileHibernating)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, SnapshotWhileHibernating) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 300), RasterMode::kGPU, CanvasColorParams());
-  bridge->DontUseIdleSchedulingForTesting();
+      MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
   // Register an alternate Logger for tracking hibernation events
@@ -543,6 +542,9 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_SnapshotWhileHibernating)
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationScheduled));
   EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
   bridge->SetIsInHiddenPage(true);
+  scheduler::RunIdleTasksForTesting(
+      scheduler::WebThreadScheduler::MainThreadScheduler(),
+      base::BindOnce([]() {}));
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_FALSE(bridge->IsAccelerated());
@@ -567,16 +569,13 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_SnapshotWhileHibernating)
   bridge->SetIsInHiddenPage(false);
 }
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernationIsPending)
-#else
-TEST_F(Canvas2DLayerBridgeTest, DISABLED_TeardownWhileHibernationIsPending)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernationIsPending) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 300), RasterMode::kGPU, CanvasColorParams());
-  bridge->DontUseIdleSchedulingForTesting();
+      MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
   // Register an alternate Logger for tracking hibernation events
@@ -594,22 +593,21 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_TeardownWhileHibernationIsPending)
   // HibernationAbortedDueToDestructionWhileHibernatePending event to be
   // fired, but that signal is lost in the unit test due to no longer having
   // a bridge to hold the mockLogger.
+  scheduler::RunIdleTasksForTesting(
+      scheduler::WebThreadScheduler::MainThreadScheduler(),
+      base::BindOnce([]() {}));
   platform->RunUntilIdle();
   // This test passes by not crashing, which proves that the WeakPtr logic
   // is sound.
 }
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToVisibilityChange)
-#else
-TEST_F(Canvas2DLayerBridgeTest,
-       DISABLED_HibernationAbortedDueToVisibilityChange)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToVisibilityChange) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 300), RasterMode::kGPU, CanvasColorParams());
-  bridge->DontUseIdleSchedulingForTesting();
+      MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
   // Register an alternate Logger for tracking hibernation events
@@ -628,6 +626,9 @@ TEST_F(Canvas2DLayerBridgeTest,
       .Times(1);
   bridge->SetIsInHiddenPage(true);
   bridge->SetIsInHiddenPage(false);
+  scheduler::RunIdleTasksForTesting(
+      scheduler::WebThreadScheduler::MainThreadScheduler(),
+      base::BindOnce([]() {}));
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_TRUE(bridge->IsAccelerated());
@@ -635,16 +636,13 @@ TEST_F(Canvas2DLayerBridgeTest,
   EXPECT_TRUE(bridge->IsValid());
 }
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToLostContext)
-#else
-TEST_F(Canvas2DLayerBridgeTest, DISABLED_HibernationAbortedDueToLostContext)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToLostContext) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 300), RasterMode::kGPU, CanvasColorParams());
-  bridge->DontUseIdleSchedulingForTesting();
+      MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
   // Register an alternate Logger for tracking hibernation events
@@ -664,21 +662,21 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_HibernationAbortedDueToLostContext)
       .Times(1);
 
   bridge->SetIsInHiddenPage(true);
+  scheduler::RunIdleTasksForTesting(
+      scheduler::WebThreadScheduler::MainThreadScheduler(),
+      base::BindOnce([]() {}));
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
   EXPECT_FALSE(bridge->IsHibernating());
 }
 
-#if CANVAS2D_HIBERNATION_ENABLED
-TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhileHibernating)
-#else
-TEST_F(Canvas2DLayerBridgeTest, DISABLED_PrepareMailboxWhileHibernating)
-#endif
-{
+TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhileHibernating) {
+  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+    GTEST_SKIP();
+
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 300), RasterMode::kGPU, CanvasColorParams());
-  bridge->DontUseIdleSchedulingForTesting();
+      MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kNonOpaque);
   DrawSomething(bridge.get());
 
   // Register an alternate Logger for tracking hibernation events
@@ -692,12 +690,15 @@ TEST_F(Canvas2DLayerBridgeTest, DISABLED_PrepareMailboxWhileHibernating)
       ReportHibernationEvent(Canvas2DLayerBridge::kHibernationScheduled));
   EXPECT_CALL(*mock_logger_ptr, DidStartHibernating()).Times(1);
   bridge->SetIsInHiddenPage(true);
+  scheduler::RunIdleTasksForTesting(
+      scheduler::WebThreadScheduler::MainThreadScheduler(),
+      base::BindOnce([]() {}));
   platform->RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(mock_logger_ptr);
 
   // Test PrepareTransferableResource() while hibernating
   viz::TransferableResource resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
   EXPECT_FALSE(bridge->PrepareTransferableResource(nullptr, &resource,
                                                    &release_callback));
   EXPECT_TRUE(bridge->IsValid());
@@ -719,11 +720,11 @@ TEST_F(Canvas2DLayerBridgeTest, ResourceRecycling) {
       .gpu_memory_buffer_formats.Add(gfx::BufferFormat::BGRA_8888);
 
   viz::TransferableResource resources[3];
-  std::unique_ptr<viz::SingleReleaseCallback> callbacks[3];
-  PaintFlags flags;
+  viz::ReleaseCallback callbacks[3];
+  cc::PaintFlags flags;
 
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
+      MakeBridge(gfx::Size(300, 150), RasterMode::kGPU, kNonOpaque);
   bridge->GetPaintCanvas()->drawLine(0, 0, 2, 2, flags);
   DrawSomething(bridge.get());
   ASSERT_TRUE(bridge->PrepareTransferableResource(nullptr, &resources[0],
@@ -738,7 +739,7 @@ TEST_F(Canvas2DLayerBridgeTest, ResourceRecycling) {
 
   // Now release the first resource and draw again. It should be reused due to
   // recycling.
-  callbacks[0]->Run(gpu::SyncToken(), false);
+  std::move(callbacks[0]).Run(gpu::SyncToken(), false);
   bridge->GetPaintCanvas()->drawLine(0, 0, 2, 2, flags);
   DrawSomething(bridge.get());
   ASSERT_TRUE(bridge->PrepareTransferableResource(nullptr, &resources[2],
@@ -746,8 +747,8 @@ TEST_F(Canvas2DLayerBridgeTest, ResourceRecycling) {
   EXPECT_EQ(resources[0].mailbox_holder.mailbox,
             resources[2].mailbox_holder.mailbox);
 
-  callbacks[1]->Run(gpu::SyncToken(), false);
-  callbacks[2]->Run(gpu::SyncToken(), false);
+  std::move(callbacks[1]).Run(gpu::SyncToken(), false);
+  std::move(callbacks[2]).Run(gpu::SyncToken(), false);
 }
 
 TEST_F(Canvas2DLayerBridgeTest, NoResourceRecyclingWhenPageHidden) {
@@ -758,11 +759,11 @@ TEST_F(Canvas2DLayerBridgeTest, NoResourceRecyclingWhenPageHidden) {
       .gpu_memory_buffer_formats.Add(gfx::BufferFormat::BGRA_8888);
 
   viz::TransferableResource resources[2];
-  std::unique_ptr<viz::SingleReleaseCallback> callbacks[2];
-  PaintFlags flags;
+  viz::ReleaseCallback callbacks[2];
+  cc::PaintFlags flags;
 
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
+      MakeBridge(gfx::Size(300, 150), RasterMode::kGPU, kNonOpaque);
   bridge->GetPaintCanvas()->drawLine(0, 0, 2, 2, flags);
   DrawSomething(bridge.get());
   ASSERT_TRUE(bridge->PrepareTransferableResource(nullptr, &resources[0],
@@ -776,7 +777,7 @@ TEST_F(Canvas2DLayerBridgeTest, NoResourceRecyclingWhenPageHidden) {
 
   // Now release the first resource and mark the page hidden. The recycled
   // resource should be dropped.
-  callbacks[0]->Run(gpu::SyncToken(), false);
+  std::move(callbacks[0]).Run(gpu::SyncToken(), false);
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 2u);
   bridge->SetIsInHiddenPage(true);
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
@@ -784,7 +785,7 @@ TEST_F(Canvas2DLayerBridgeTest, NoResourceRecyclingWhenPageHidden) {
   // Release second frame, this resource is not released because its the current
   // render target for the canvas. It should only be released if the canvas is
   // hibernated.
-  callbacks[1]->Run(gpu::SyncToken(), false);
+  std::move(callbacks[1]).Run(gpu::SyncToken(), false);
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
 }
 
@@ -796,10 +797,10 @@ TEST_F(Canvas2DLayerBridgeTest, ReleaseResourcesAfterBridgeDestroyed) {
       .gpu_memory_buffer_formats.Add(gfx::BufferFormat::BGRA_8888);
 
   viz::TransferableResource resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
 
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
+      MakeBridge(gfx::Size(300, 150), RasterMode::kGPU, kNonOpaque);
   DrawSomething(bridge.get());
   bridge->PrepareTransferableResource(nullptr, &resource, &release_callback);
 
@@ -807,25 +808,21 @@ TEST_F(Canvas2DLayerBridgeTest, ReleaseResourcesAfterBridgeDestroyed) {
   bridge.reset();
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 1u);
   constexpr bool lost_resource = false;
-  release_callback->Run(gpu::SyncToken(), lost_resource);
+  std::move(release_callback).Run(gpu::SyncToken(), lost_resource);
   EXPECT_EQ(test_context_provider_->TestContextGL()->NumTextures(), 0u);
-  release_callback = nullptr;
 }
 
 TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUse) {
-  auto color_params = CanvasColorParams(CanvasColorSpace::kSRGB,
-                                        CanvasPixelFormat::kF16, kOpaque);
-
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 300), RasterMode::kGPU, color_params);
-  gfx::ColorSpace expected_color_space = gfx::ColorSpace::CreateSRGB();
+      MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kOpaque);
   Vector<cc::DrawImage> images = {
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
-                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality,
-                    SkMatrix::I(), 0u, expected_color_space),
+                    SkIRect::MakeWH(10, 10),
+                    cc::PaintFlags::FilterQuality::kNone, SkM44(), 0u,
+                    cc::TargetColorParams()),
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(20, 20)), false,
-                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkMatrix::I(),
-                    0u, expected_color_space)};
+                    SkIRect::MakeWH(5, 5), cc::PaintFlags::FilterQuality::kNone,
+                    SkM44(), 0u, cc::TargetColorParams())};
 
   bridge->GetPaintCanvas()->drawImage(images[0].paint_image(), 0u, 0u);
   bridge->GetPaintCanvas()->drawImageRect(
@@ -837,17 +834,16 @@ TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUse) {
 }
 
 TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUseWithColorConversion) {
-  auto color_params = CanvasColorParams(CanvasColorSpace::kSRGB,
-                                        CanvasPixelFormat::kUint8, kOpaque);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 300), RasterMode::kGPU, color_params);
+      MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kOpaque);
   Vector<cc::DrawImage> images = {
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
-                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality,
-                    SkMatrix::I(), 0u, color_params.GetStorageGfxColorSpace()),
+                    SkIRect::MakeWH(10, 10),
+                    cc::PaintFlags::FilterQuality::kNone, SkM44(), 0u,
+                    cc::TargetColorParams()),
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(20, 20)), false,
-                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkMatrix::I(),
-                    0u, color_params.GetStorageGfxColorSpace())};
+                    SkIRect::MakeWH(5, 5), cc::PaintFlags::FilterQuality::kNone,
+                    SkM44(), 0u, cc::TargetColorParams())};
 
   bridge->GetPaintCanvas()->drawImage(images[0].paint_image(), 0u, 0u);
   bridge->GetPaintCanvas()->drawImageRect(
@@ -859,21 +855,20 @@ TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUseWithColorConversion) {
 }
 
 TEST_F(Canvas2DLayerBridgeTest, ImagesLockedUntilCacheLimit) {
-  auto color_params = CanvasColorParams(CanvasColorSpace::kSRGB,
-                                        CanvasPixelFormat::kF16, kOpaque);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 300), RasterMode::kGPU, color_params);
+      MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kOpaque);
 
   Vector<cc::DrawImage> images = {
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
-                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality,
-                    SkMatrix::I(), 0u, color_params.GetStorageGfxColorSpace()),
+                    SkIRect::MakeWH(10, 10),
+                    cc::PaintFlags::FilterQuality::kNone, SkM44(), 0u,
+                    cc::TargetColorParams()),
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(20, 20)), false,
-                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkMatrix::I(),
-                    0u, color_params.GetStorageGfxColorSpace()),
+                    SkIRect::MakeWH(5, 5), cc::PaintFlags::FilterQuality::kNone,
+                    SkM44(), 0u, cc::TargetColorParams()),
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(20, 20)), false,
-                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkMatrix::I(),
-                    0u, color_params.GetStorageGfxColorSpace())};
+                    SkIRect::MakeWH(5, 5), cc::PaintFlags::FilterQuality::kNone,
+                    SkM44(), 0u, cc::TargetColorParams())};
 
   // First 2 images are budgeted, they should remain locked after the op.
   bridge->GetPaintCanvas()->drawImage(images[0].paint_image(), 0u, 0u);
@@ -894,15 +889,13 @@ TEST_F(Canvas2DLayerBridgeTest, ImagesLockedUntilCacheLimit) {
 }
 
 TEST_F(Canvas2DLayerBridgeTest, QueuesCleanupTaskForLockedImages) {
-  auto color_params = CanvasColorParams(CanvasColorSpace::kSRGB,
-                                        CanvasPixelFormat::kF16, kOpaque);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 300), RasterMode::kGPU, color_params);
+      MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kOpaque);
 
-  auto image =
-      cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
-                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality,
-                    SkMatrix::I(), 0u, color_params.GetStorageGfxColorSpace());
+  auto image = cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)),
+                             false, SkIRect::MakeWH(10, 10),
+                             cc::PaintFlags::FilterQuality::kNone, SkM44(), 0u,
+                             cc::TargetColorParams());
   bridge->GetPaintCanvas()->drawImage(image.paint_image(), 0u, 0u);
 
   bridge->GetOrCreateResourceProvider()->FlushCanvas();
@@ -913,17 +906,16 @@ TEST_F(Canvas2DLayerBridgeTest, QueuesCleanupTaskForLockedImages) {
 }
 
 TEST_F(Canvas2DLayerBridgeTest, ImageCacheOnContextLost) {
-  auto color_params = CanvasColorParams(CanvasColorSpace::kSRGB,
-                                        CanvasPixelFormat::kF16, kOpaque);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 300), RasterMode::kGPU, color_params);
+      MakeBridge(gfx::Size(300, 300), RasterMode::kGPU, kOpaque);
   Vector<cc::DrawImage> images = {
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
-                    SkIRect::MakeWH(10, 10), kNone_SkFilterQuality,
-                    SkMatrix::I(), 0u, color_params.GetStorageGfxColorSpace()),
+                    SkIRect::MakeWH(10, 10),
+                    cc::PaintFlags::FilterQuality::kNone, SkM44(), 0u,
+                    cc::TargetColorParams()),
       cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(20, 20)), false,
-                    SkIRect::MakeWH(5, 5), kNone_SkFilterQuality, SkMatrix::I(),
-                    0u, color_params.GetStorageGfxColorSpace())};
+                    SkIRect::MakeWH(5, 5), cc::PaintFlags::FilterQuality::kNone,
+                    SkM44(), 0u, cc::TargetColorParams())};
   bridge->GetPaintCanvas()->drawImage(images[0].paint_image(), 0u, 0u);
 
   // Lose the context and ensure that the image provider is not used.
@@ -936,29 +928,29 @@ TEST_F(Canvas2DLayerBridgeTest, ImageCacheOnContextLost) {
 
 TEST_F(Canvas2DLayerBridgeTest,
        PrepareTransferableResourceTracksCanvasChanges) {
-  IntSize size = IntSize(300, 300);
+  gfx::Size size(300, 300);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(size, RasterMode::kGPU, CanvasColorParams());
+      MakeBridge(size, RasterMode::kGPU, kNonOpaque);
 
-  bridge->GetPaintCanvas()->clear(SK_ColorRED);
+  bridge->GetPaintCanvas()->clear(SkColors::kRed);
   DrawSomething(bridge.get());
   ASSERT_TRUE(bridge->layer_for_testing());
 
   viz::TransferableResource resource;
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+  viz::ReleaseCallback release_callback;
   EXPECT_TRUE(bridge->PrepareTransferableResource(nullptr, &resource,
                                                   &release_callback));
   bridge->layer_for_testing()->SetTransferableResource(
       resource, std::move(release_callback));
 
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback2;
+  viz::ReleaseCallback release_callback2;
   EXPECT_FALSE(bridge->PrepareTransferableResource(nullptr, &resource,
                                                    &release_callback2));
-  EXPECT_EQ(release_callback2, nullptr);
+  EXPECT_FALSE(release_callback2);
 }
 class CustomFakeCanvasResourceHost : public FakeCanvasResourceHost {
  public:
-  explicit CustomFakeCanvasResourceHost(const IntSize& size)
+  explicit CustomFakeCanvasResourceHost(const gfx::Size& size)
       : FakeCanvasResourceHost(size) {}
   void RestoreCanvasMatrixClipStack(cc::PaintCanvas* canvas) const override {
     // Alter canvas' matrix to emulate a restore
@@ -967,20 +959,18 @@ class CustomFakeCanvasResourceHost : public FakeCanvasResourceHost {
 };
 
 TEST_F(Canvas2DLayerBridgeTest, WritePixelsRestoresClipStack) {
-  CanvasColorParams color_params(CanvasColorSpace::kSRGB,
-                                 CanvasPixelFormat::kF16, kOpaque);
-  IntSize size = IntSize(300, 300);
+  gfx::Size size(300, 300);
   auto host = std::make_unique<CustomFakeCanvasResourceHost>(size);
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(size, RasterMode::kGPU, color_params, std::move(host));
-  PaintFlags flags;
+      MakeBridge(size, RasterMode::kGPU, kOpaque, std::move(host));
+  cc::PaintFlags flags;
 
   // MakeBridge() results in a call to restore the matrix. So we already have 1.
   EXPECT_EQ(bridge->GetPaintCanvas()->getTotalMatrix().get(SkMatrix::kMTransX),
             5);
   // Drawline so WritePixels has something to flush
   bridge->GetPaintCanvas()->drawLine(0, 0, 2, 2, flags);
-  bridge->DidDraw(FloatRect(0, 0, 1, 1));
+  bridge->DidDraw();
 
   // WritePixels flushes recording. Post flush, a new drawing canvas is created
   // that should have the matrix restored onto it.
@@ -999,7 +989,7 @@ TEST_F(Canvas2DLayerBridgeTest, WritePixelsRestoresClipStack) {
 
 TEST_F(Canvas2DLayerBridgeTest, DisplayedCanvasIsRateLimited) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
+      MakeBridge(gfx::Size(300, 150), RasterMode::kGPU, kNonOpaque);
   EXPECT_TRUE(bridge->IsValid());
   bridge->SetIsBeingDisplayed(true);
   EXPECT_FALSE(bridge->HasRateLimiterForTesting());
@@ -1010,7 +1000,7 @@ TEST_F(Canvas2DLayerBridgeTest, DisplayedCanvasIsRateLimited) {
 
 TEST_F(Canvas2DLayerBridgeTest, NonDisplayedCanvasIsNotRateLimited) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(IntSize(300, 150), RasterMode::kGPU, CanvasColorParams());
+      MakeBridge(gfx::Size(300, 150), RasterMode::kGPU, kNonOpaque);
   EXPECT_TRUE(bridge->IsValid());
   bridge->SetIsBeingDisplayed(true);
   bridge->FinalizeFrame();

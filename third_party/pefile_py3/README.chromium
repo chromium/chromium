@@ -1,0 +1,17 @@
+Name: pefile
+Short Name: pefile
+URL: https://github.com/erocarrera/pefile
+Version: 2021.5.24
+Revision: 95b6541e42fa0596c87809d7e96645ddeab6700d
+License: MIT
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+pefile is a multi-platform Python module to parse and work with Portable
+Executable (PE) files. Most of the information contained in the PE file
+headers is accessible, as well as all the sections' details and data.
+
+Local Modifications:
+ - Only pefile.py, ordlookup, and LICENSE are present.
+ - OWNERS and README.chromium files were added.

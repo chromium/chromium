@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Blink feature-policy presubmit script.
@@ -8,6 +8,9 @@ for more details about the presubmit API built into gcl.
 """
 
 import os
+
+
+USE_PYTHON3 = True
 
 
 def _dynamic_import(module_dir, module_name):

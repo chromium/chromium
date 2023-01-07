@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,10 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/safe_browsing/core/db/util.h"
+#include "components/safe_browsing/core/browser/db/util.h"
 
 class GURL;
 
@@ -63,6 +62,11 @@ class SubresourceFilterSafeBrowsingClient {
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> throttle_task_runner);
 
+  SubresourceFilterSafeBrowsingClient(
+      const SubresourceFilterSafeBrowsingClient&) = delete;
+  SubresourceFilterSafeBrowsingClient& operator=(
+      const SubresourceFilterSafeBrowsingClient&) = delete;
+
   ~SubresourceFilterSafeBrowsingClient();
 
   void CheckUrlOnIO(const GURL& url,
@@ -84,8 +88,6 @@ class SubresourceFilterSafeBrowsingClient {
   base::WeakPtr<SubresourceFilterSafeBrowsingActivationThrottle> throttle_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> throttle_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterSafeBrowsingClient);
 };
 
 }  // namespace subresource_filter

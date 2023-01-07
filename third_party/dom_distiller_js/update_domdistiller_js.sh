@@ -100,7 +100,7 @@
     gen_message > $message
 
     git commit -a -F $message
-    git push origin master:refs/for/master
+    git push origin main:refs/for/main
   else
     # No changes to external repo, but need to check if DEPS refers to same SHA1.
     if [[ -n "$gerrit_url" ]]; then

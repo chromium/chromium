@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,68 +21,118 @@ namespace features {
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 
-extern const base::Feature kChromeLabs;
+// TODO(https://crbug.com/896640): Remove this when the tab dragging
+// interactive_ui_tests pass on Wayland.
+BASE_DECLARE_FEATURE(kAllowWindowDragUsingSystemDragDrop);
+
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kDesktopPWAsAppHomePage);
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+
+BASE_DECLARE_FEATURE(kChromeLabs);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-extern const base::Feature kChromeTipsInMainMenu;
+BASE_DECLARE_FEATURE(kChromeTipsInMainMenu);
+
+BASE_DECLARE_FEATURE(kChromeTipsInMainMenuNewBadge);
 #endif
 
-extern const base::Feature kCommander;
+BASE_DECLARE_FEATURE(kChromeWhatsNewUI);
 
-extern const base::Feature kEvDetailsInPageInfo;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+BASE_DECLARE_FEATURE(kChromeWhatsNewInMainMenuNewBadge);
+#endif
+
+#if !defined(ANDROID)
+BASE_DECLARE_FEATURE(kAccessCodeCastUI);
+#endif
+
+BASE_DECLARE_FEATURE(kDisplayOpenLinkAsProfile);
+
+BASE_DECLARE_FEATURE(kEvDetailsInPageInfo);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-extern const base::Feature kExtensionSettingsOverriddenDialogs;
+BASE_DECLARE_FEATURE(kLightweightExtensionOverrideConfirmations);
 #endif
 
-extern const base::Feature kExtensionsToolbarMenu;
+BASE_DECLARE_FEATURE(kPowerBookmarksSidePanel);
 
-extern const base::Feature kNewProfilePicker;
+BASE_DECLARE_FEATURE(kProminentDarkModeActiveTabTitle);
 
-extern const base::Feature kNewTabstripAnimation;
+BASE_DECLARE_FEATURE(kQuickCommands);
 
-extern const base::Feature kProminentDarkModeActiveTabTitle;
-
-extern const base::Feature kScrollableTabStrip;
+BASE_DECLARE_FEATURE(kScrollableTabStrip);
 extern const char kMinimumTabWidthFeatureParameterName[];
 
-extern const base::Feature kScrollableTabStripButtons;
+BASE_DECLARE_FEATURE(kSplitTabStrip);
 
-extern const base::Feature kSidePanel;
+// TODO(pbos): Once kReadLater is cleaned up on Desktop, move definition into
+// ui_features.cc. This is currently temporarily in reading_list_switches.h.
+BASE_DECLARE_FEATURE(kSidePanelImprovedClobbering);
 
-extern const base::Feature kSidePanelPrototype;
+BASE_DECLARE_FEATURE(kSidePanelWebView);
 
-extern const base::Feature kSyncConfirmationUpdatedText;
+BASE_DECLARE_FEATURE(kSidePanelJourneys);
+extern const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox;
+BASE_DECLARE_FEATURE(kSidePanelJourneysQueryless);
 
-extern const base::Feature kSignInProfileCreation;
+BASE_DECLARE_FEATURE(kSideSearch);
+BASE_DECLARE_FEATURE(kSideSearchFeedback);
+BASE_DECLARE_FEATURE(kSideSearchDSESupport);
+BASE_DECLARE_FEATURE(kSearchWebInSidePanel);
+BASE_DECLARE_FEATURE(kClobberAllSideSearchSidePanels);
 
-extern const base::Feature kSignInProfileCreationEnterprise;
+BASE_DECLARE_FEATURE(kSideSearchAutoTriggering);
+extern const base::FeatureParam<int> kSideSearchAutoTriggeringReturnCount;
 
-extern const base::Feature kTabGroupsAutoCreate;
+BASE_DECLARE_FEATURE(kTabGroupsNewBadgePromo);
 
-extern const base::Feature kTabGroupsCollapseFreezing;
+BASE_DECLARE_FEATURE(kTabGroupsSave);
 
-extern const base::Feature kTabGroupsFeedback;
+BASE_DECLARE_FEATURE(kTabHoverCardImages);
 
-extern const base::Feature kTabGroupsNewBadgePromo;
-
-extern const base::Feature kTabHoverCards;
-extern const char kTabHoverCardsFeatureParameterName[];
-
-extern const base::Feature kTabHoverCardImages;
+// These parameters control how long the hover card system waits before
+// requesting a preview image from a tab where no preview image is available.
+// Values are in ms.
 extern const char kTabHoverCardImagesNotReadyDelayParameterName[];
 extern const char kTabHoverCardImagesLoadingDelayParameterName[];
 extern const char kTabHoverCardImagesLoadedDelayParameterName[];
 
-extern const base::Feature kTabOutlinesInLowContrastThemes;
+// Determines how long to wait during a hover card slide transition before a
+// placeholder image is displayed via crossfade.
+// -1: disable crossfade entirely
+//  0: show placeholder immediately
+//  1: show placeholder when the card lands on the new tab
+//  between 0 and 1: show at a percentage of transition
+//
+// Note: crossfade is automatically disabled if animations are disabled at the
+// OS level (e.g. for accessibility).
+extern const char kTabHoverCardImagesCrossfadePreviewAtParameterName[];
 
-extern const base::Feature kTabSearch;
+// Adds an amount of time (in ms) to the show delay when tabs are max width -
+// typically when there are less than 5 or 6 tabs in a browser window.
+extern const char kTabHoverCardAdditionalMaxWidthDelay[];
 
-extern const base::Feature kTabSearchFeedback;
+// When set to 1, reverses the order of elements in the hover card, so that
+// the title and site are on bottom and the tab status and preview image are
+// on top. 0 is the default layout.
+extern const char kTabHoverCardAlternateFormat[];
+
+BASE_DECLARE_FEATURE(kTabOutlinesInLowContrastThemes);
+
+BASE_DECLARE_FEATURE(kTabSearchChevronIcon);
+
+BASE_DECLARE_FEATURE(kTabSearchFeedback);
+
+BASE_DECLARE_FEATURE(kTabSearchFuzzySearch);
+
+extern const char kTabSearchSearchThresholdName[];
 
 // Setting this to true will ignore the distance parameter when finding matches.
 // This means that it will not matter where in the string the pattern occurs.
 extern const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation;
+
+extern const char kTabSearchAlsoShowMediaTabsinOpenTabsSectionParameterName[];
 
 // Determines how close the match must be to the beginning of the string. Eg a
 // distance of 100 and threshold of 0.8 would require a perfect match to be
@@ -99,29 +149,72 @@ extern const base::FeatureParam<double> kTabSearchSearchThreshold;
 constexpr double kTabSearchSearchThresholdMin = 0.0;
 constexpr double kTabSearchSearchThresholdMax = 1.0;
 
-// Controls how heavily weighted the tab's title is relative to the hostname.
-extern const base::FeatureParam<double> kTabSearchTitleToHostnameWeightRatio;
+// Controls the weight associated with a tab's title for filtering and ordering
+// list items.
+extern const base::FeatureParam<double> kTabSearchTitleWeight;
+
+// Controls the weight associated with a tab's hostname when filering and
+// odering list items.
+extern const base::FeatureParam<double> kTabSearchHostnameWeight;
+
+// Controls the weight associated with a tab's group title filering and
+// odering list items
+extern const base::FeatureParam<double> kTabSearchGroupTitleWeight;
 
 // Whether to move the active tab to the bottom of the list.
 extern const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom;
 
+BASE_DECLARE_FEATURE(kTabSearchRecentlyClosed);
+
+// Default number of recently closed entries to display by default when no
+// search text is provided.
+extern const base::FeatureParam<int>
+    kTabSearchRecentlyClosedDefaultItemDisplayCount;
+
+// A threshold of recently closed tabs after which to stop adding recently
+// closed item data to the profile data payload should the minimum display
+// count have been met.
+extern const base::FeatureParam<int> kTabSearchRecentlyClosedTabCountThreshold;
+
+BASE_DECLARE_FEATURE(kTabSearchUseMetricsReporter);
+
 // Determines how screenshots of the toolbar uses Software or Hardware drawing.
 // Works on Android 10+.
-extern const base::Feature kToolbarUseHardwareBitmapDraw;
+BASE_DECLARE_FEATURE(kToolbarUseHardwareBitmapDraw);
 
-extern const base::Feature kWebFooterExperiment;
+BASE_DECLARE_FEATURE(kTopChromeWebUIUsesSpareRenderer);
 
-extern const base::Feature kWebUIBubblePerProfilePersistence;
+BASE_DECLARE_FEATURE(kUnifiedSidePanel);
 
-extern const base::Feature kWebUIDownloadShelf;
+BASE_DECLARE_FEATURE(kWebUIBubblePerProfilePersistence);
 
-extern const base::Feature kWebUITabStrip;
+BASE_DECLARE_FEATURE(kWebUITabStrip);
 
-extern const base::Feature kWebUIFeedback;
+// Controls whether the context menu is shown on a touch press or a touch
+// tap gesture on the WebUI Tab Strip.
+BASE_DECLARE_FEATURE(kWebUITabStripContextMenuAfterTap);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-extern const base::Feature kHiddenNetworkWarning;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_DECLARE_FEATURE(kChromeOSTabSearchCaptionButton);
+#endif
+
+// Cocoa to views migration.
+#if BUILDFLAG(IS_MAC)
+BASE_DECLARE_FEATURE(kLocationPermissionsExperiment);
+
+BASE_DECLARE_FEATURE(kViewsFirstRunDialog);
+BASE_DECLARE_FEATURE(kViewsTaskManager);
+BASE_DECLARE_FEATURE(kViewsJSAppModalDialog);
+
+int GetLocationPermissionsExperimentBubblePromptLimit();
+int GetLocationPermissionsExperimentLabelPromptLimit();
+#endif
+
+#if BUILDFLAG(IS_WIN)
+BASE_DECLARE_FEATURE(kWin10TabSearchCaptionButton);
+#endif
+
+BASE_DECLARE_FEATURE(kStopLoadingAnimationForHiddenWindow);
 
 }  // namespace features
 

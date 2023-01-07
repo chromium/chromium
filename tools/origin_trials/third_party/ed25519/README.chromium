@@ -18,4 +18,6 @@ of signatures. This classification may change if the package is used for other
 purposes in the future.
 
 Local Modifications:
-None.
+Minimal python3 compatibility modifications were made. Specifically, division
+operators were modified to use python 2 and 3-compatible integer division rather
+than python3's default of floating point division.

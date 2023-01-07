@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/compositor_extra/shadow.h"
 
-#include "base/macros.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
@@ -20,7 +19,8 @@ constexpr int kElevationLarge = 24;
 constexpr int kElevationSmall = 6;
 
 gfx::Insets InsetsForElevation(int elevation) {
-  return -gfx::Insets(2 * elevation) + gfx::Insets(elevation, 0, -elevation, 0);
+  return -gfx::Insets(2 * elevation) +
+         gfx::Insets::TLBR(elevation, 0, -elevation, 0);
 }
 
 gfx::Size NineboxImageSizeForElevationAndCornerRadius(int elevation,
@@ -33,6 +33,10 @@ gfx::Size NineboxImageSizeForElevationAndCornerRadius(int elevation,
 }
 
 class ShadowTest : public testing::Test {
+ public:
+  ShadowTest(const ShadowTest&) = delete;
+  ShadowTest& operator=(const ShadowTest&) = delete;
+
  protected:
   ShadowTest() {}
   ~ShadowTest() override {}
@@ -48,8 +52,6 @@ class ShadowTest : public testing::Test {
 
  private:
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShadowTest);
 };
 
 // Test if the proper content bounds is calculated based on the current style.

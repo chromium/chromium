@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,9 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
+#include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "components/url_formatter/spoof_checks/skeleton_generator.h"
 #include "net/extras/preload_data/decoder.h"
 
@@ -102,6 +104,8 @@ class IDNSpoofChecker {
 
   IDNSpoofChecker();
   ~IDNSpoofChecker();
+  IDNSpoofChecker(const IDNSpoofChecker&) = delete;
+  IDNSpoofChecker& operator=(const IDNSpoofChecker&) = delete;
 
   // Returns kSafe if |label| is safe to display as Unicode. Some of the checks
   // depend on the TLD of the full domain name, so this function also takes
@@ -146,6 +150,24 @@ class IDNSpoofChecker {
   TopDomainEntry LookupSkeletonInTopDomains(
       const std::string& skeleton,
       SkeletonType skeleton_type = SkeletonType::kFull);
+
+  // Removes diacritics from |hostname| and returns the new string if the input
+  // only contains Latin-Greek-Cyrillic characters. Otherwise, returns the
+  // input string.
+  std::u16string MaybeRemoveDiacritics(const std::u16string& hostname);
+
+  // Returns the first IDNA 2008 deviation character if `hostname` contains any.
+  // Deviation characters are four characters that are treated differently
+  // between IDNA 2003 and IDNA 2008: ß, ς, ZERO WIDTH JOINER, ZERO WIDTH
+  // NON-JOINER.
+  // As a result, a domain containing deviation characters can map to a
+  // different IP address between user agents that implement different IDNA
+  // versions.
+  // See
+  // https://www.unicode.org/reports/tr46/tr46-27.html#Table_Deviation_Characters
+  // for details.
+  IDNA2008DeviationCharacter GetDeviationCharacter(
+      base::StringPiece16 hostname) const;
 
   // Used for unit tests.
   static void SetTrieParamsForTesting(const HuffmanTrieParams& trie_params);
@@ -196,7 +218,7 @@ class IDNSpoofChecker {
   // characters that look like digits (but not exclusively actual digits).
   bool IsDigitLookalike(const icu::UnicodeString& label);
 
-  USpoofChecker* checker_;
+  raw_ptr<USpoofChecker> checker_;
   icu::UnicodeSet deviation_characters_;
   icu::UnicodeSet non_ascii_latin_letters_;
   icu::UnicodeSet kana_letters_exceptions_;
@@ -205,13 +227,12 @@ class IDNSpoofChecker {
   icu::UnicodeSet digit_lookalikes_;
   icu::UnicodeSet icelandic_characters_;
 
+  // skeleton_generator_ may be null if uspoof_open fails. It's unclear why this
+  // happens, see crbug.com/1169079.
   std::unique_ptr<SkeletonGenerator> skeleton_generator_;
 
   // List of scripts containing whole-script-confusable information.
   std::vector<std::unique_ptr<WholeScriptConfusable>> wholescriptconfusables_;
-
-  IDNSpoofChecker(const IDNSpoofChecker&) = delete;
-  void operator=(const IDNSpoofChecker&) = delete;
 };
 
 }  // namespace url_formatter

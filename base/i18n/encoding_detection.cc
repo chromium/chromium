@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 // anything related to Windows or Windows headers those will then use
 // the ASCII versions which we do not want. To avoid that happening in
 // jumbo builds, we redefine UNICODE again here.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define UNICODE 1
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace base {
 

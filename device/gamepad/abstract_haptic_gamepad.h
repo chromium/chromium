@@ -1,15 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_GAMEPAD_ABSTRACT_HAPTIC_GAMEPAD_
-#define DEVICE_GAMEPAD_ABSTRACT_HAPTIC_GAMEPAD_
+#ifndef DEVICE_GAMEPAD_ABSTRACT_HAPTIC_GAMEPAD_H_
+#define DEVICE_GAMEPAD_ABSTRACT_HAPTIC_GAMEPAD_H_
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "base/time/time.h"
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/public/mojom/gamepad.mojom.h"
 
@@ -56,7 +55,7 @@ class DEVICE_GAMEPAD_EXPORT AbstractHapticGamepad {
   bool IsShuttingDown() { return is_shutting_down_; }
 
   // Set the vibration magnitude for the strong and weak vibration actuators.
-  virtual void SetVibration(double strong_magnitude, double weak_magnitude) = 0;
+  virtual void SetVibration(mojom::GamepadEffectParametersPtr params) = 0;
 
   // Set the vibration magnitude for both actuators to zero.
   virtual void SetZeroVibration();
@@ -72,15 +71,11 @@ class DEVICE_GAMEPAD_EXPORT AbstractHapticGamepad {
   // are halted and callbacks are issued.
   virtual void DoShutdown() {}
 
-  void PlayDualRumbleEffect(int sequence_id,
-                            double duration,
-                            double start_delay,
-                            double strong_magnitude,
-                            double weak_magnitude);
+  void PlayVibrationEffect(int sequence_id,
+                           mojom::GamepadEffectParametersPtr params);
   void StartVibration(int sequence_id,
                       double duration,
-                      double strong_magnitude,
-                      double weak_magnitude);
+                      mojom::GamepadEffectParametersPtr params);
   void FinishEffect(int sequence_id);
 
   bool is_shutting_down_ = false;
@@ -94,4 +89,4 @@ class DEVICE_GAMEPAD_EXPORT AbstractHapticGamepad {
 
 }  // namespace device
 
-#endif  // DEVICE_GAMEPAD_ABSTRACT_HAPTIC_GAMEPAD_
+#endif  // DEVICE_GAMEPAD_ABSTRACT_HAPTIC_GAMEPAD_H_

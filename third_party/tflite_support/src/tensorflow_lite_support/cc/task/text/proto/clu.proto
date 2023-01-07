@@ -1,0 +1,91 @@
+/* Copyright 2022 The TensorFlow Authors. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================*/
+
+syntax = "proto2";
+
+package tflite.task.text;
+
+import "tensorflow_lite_support/cc/task/core/proto/class.proto";
+
+// The input to CLU (Conversational Language Understanding).
+message CluRequest {
+  // The utterances of dialogue conversation turns in the chronological order.
+  // The last utterance is the current turn.
+  repeated string utterances = 1;
+}
+
+// The output of CLU.
+//
+// Example input request:
+// ```
+// utterances: "I would like to make a restaurant reservation at morning 11:15."
+// utterances: "Which restaurant do you want to go to?"
+// utterances: "Can I get a reservation for two people at Andes Cafe? Where is
+// their address?"
+// ```
+//
+// Example output:
+// ```
+// domains { display_name: "Restaurants" score: 0.91 }
+// intents { display_name: "request(street_address)" score: 0.79 }
+// categorical_slots {
+//    slot: "party_size"
+//    prediction: { display_name="2" score: 0.78 }
+// }
+// mentioned_slots {
+//   slot: "restaurant_name"
+//   mention: { value: "Andes Cafe" confidence: 0.91 start: 42 end: 52 }
+// }
+// ```
+message CluResponse {
+  // The list of predicted domains.
+  repeated tflite.task.core.Class domains = 1;
+  // The list of predicted intents.
+  repeated tflite.task.core.Class intents = 2;
+  // The list of predicted categorical slots.
+  repeated CategoricalSlot categorical_slots = 3;
+  // The list of predicted mentioned slots.
+  repeated MentionedSlot mentioned_slots = 4;
+}
+
+// Represents a categorical slot whose values are within a finite set.
+message CategoricalSlot {
+  // The name of the slot.
+  optional string slot = 1;
+  // The predicted class.
+  optional tflite.task.core.Class prediction = 2;
+}
+
+// A single mention.
+message Mention {
+  // The text value of the mention.
+  optional string value = 2;
+  // The score for this mention e.g. (but not necessarily) a probability in
+  // [0,1].
+  optional float score = 3;
+  // Start of the bytes of this mention.
+  optional uint32 start = 4;
+  // Exclusive end of the bytes of this mention.
+  optional uint32 end = 5;
+}
+
+// Represents a mentioned slot whose values are open text extracted from
+// the input text.
+message MentionedSlot {
+  // The name of the slot.
+  optional string slot = 1;
+  // The predicted mention.
+  optional Mention mention = 2;
+}

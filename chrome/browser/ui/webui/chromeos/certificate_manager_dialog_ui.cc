@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/webui/certificate_manager_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
-#include "chrome/browser/ui/webui/chromeos/bluetooth_dialog_localized_strings_provider.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"

@@ -1,0 +1,51 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+source_set("adjustments") {
+  sources = [
+    "link_capturing_pref_migration.cc",
+    "link_capturing_pref_migration.h",
+    "preinstalled_web_app_duplication_fixer.cc",
+    "preinstalled_web_app_duplication_fixer.h",
+    "web_app_adjustments.cc",
+    "web_app_adjustments.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//components/keyed_service/content",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/cpp:app_update",
+    "//components/services/app_service/public/cpp:types",
+  ]
+}
+
+source_set("adjustments_browser_tests") {
+  testonly = true
+
+  sources = []
+
+  if (is_chromeos_ash) {
+    sources += [ "link_capturing_pref_migration_browsertest.cc" ]
+  }
+
+  if (!is_chromeos_lacros) {
+    sources += [ "preinstalled_web_app_duplication_fixer_browsertest.cc" ]
+  }
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":adjustments",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+  ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,12 @@ enum class LayoutSwitcherState {
 // Interface to manage interactive animated transitions of layout.
 @protocol LayoutSwitcher
 
+// Returns current layout state.
+@property(nonatomic, readonly) LayoutSwitcherState currentLayoutSwitcherState;
+
 // Notifies of a transition of layout to the specified state. Called when the
 // view revealing vertical pan handler starts a transition of layout. The
-// conformer should prepare its layout for a transition to |nextState|, that
+// conformer should prepare its layout for a transition to `nextState`, that
 // should execute the specified completion block on completion.
 - (void)willTransitionToLayout:(LayoutSwitcherState)nextState
                     completion:
@@ -28,7 +31,7 @@ enum class LayoutSwitcherState {
 - (void)didUpdateTransitionLayoutProgress:(CGFloat)progress;
 
 // Notifies of a transition animation that happened in the correct direction if
-// |success| and in the reverse direction otherwise.
+// `success` and in the reverse direction otherwise.
 - (void)didTransitionToLayoutSuccessfully:(BOOL)success;
 
 @end

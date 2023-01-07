@@ -18,6 +18,7 @@ PASS Check redirect attribute
 PASS Check integrity attribute
 FAIL Check isReloadNavigation attribute assert_true: request has isReloadNavigation attribute expected true got false
 PASS Check isHistoryNavigation attribute
+FAIL Check duplex attribute assert_true: request has duplex attribute expected true got false
 PASS Check bodyUsed attribute
 Harness: the test ran to completion.
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "net/http/http_status_code.h"
@@ -33,7 +33,7 @@ class HttpServer {
   // destroy the HttpServer in any of these callbacks.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     virtual void OnConnect(int connection_id) = 0;
     virtual void OnHttpRequest(int connection_id,
@@ -50,6 +50,10 @@ class HttpServer {
   // callbacks yet.
   HttpServer(std::unique_ptr<ServerSocket> server_socket,
              HttpServer::Delegate* delegate);
+
+  HttpServer(const HttpServer&) = delete;
+  HttpServer& operator=(const HttpServer&) = delete;
+
   ~HttpServer();
 
   void AcceptWebSocket(int connection_id,
@@ -126,14 +130,12 @@ class HttpServer {
 
   const std::unique_ptr<ServerSocket> server_socket_;
   std::unique_ptr<StreamSocket> accepted_socket_;
-  HttpServer::Delegate* const delegate_;
+  const raw_ptr<HttpServer::Delegate> delegate_;
 
-  int last_id_;
+  int last_id_ = 0;
   std::map<int, std::unique_ptr<HttpConnection>> id_to_connection_;
 
   base::WeakPtrFactory<HttpServer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpServer);
 };
 
 }  // namespace net

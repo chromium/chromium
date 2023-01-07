@@ -30,10 +30,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -150,6 +148,9 @@ class PODArena final : public RefCounted<PODArena> {
       base_ = static_cast<uint8_t*>(allocator_->Allocate(size));
     }
 
+    Chunk(const Chunk&) = delete;
+    Chunk& operator=(const Chunk&) = delete;
+
     // Frees the memory allocated from the Allocator in the
     // constructor.
     ~Chunk() { allocator_->Free(base_); }
@@ -174,9 +175,6 @@ class PODArena final : public RefCounted<PODArena> {
     uint8_t* base_;
     size_t size_;
     size_t current_offset_;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Chunk);
   };
 
   scoped_refptr<Allocator> allocator_;

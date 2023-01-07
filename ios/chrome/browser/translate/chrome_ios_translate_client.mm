@@ -1,61 +1,46 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 
-#include <utility>
-#include <vector>
+#import <utility>
+#import <vector>
 
-#include "base/check_op.h"
-#include "base/feature_list.h"
-#include "base/memory/ptr_util.h"
-#include "base/notreached.h"
-#include "components/infobars/core/infobar.h"
-#include "components/language/core/browser/language_model_manager.h"
-#include "components/language/core/browser/pref_names.h"
-#include "components/prefs/pref_service.h"
-#include "components/translate/core/browser/page_translated_details.h"
-#include "components/translate/core/browser/translate_accept_languages.h"
-#include "components/translate/core/browser/translate_infobar_delegate.h"
-#include "components/translate/core/browser/translate_manager.h"
-#include "components/translate/core/browser/translate_step.h"
-#include "components/translate/core/common/language_detection_details.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/infobars/infobar_controller.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#include "ios/chrome/browser/language/language_model_manager_factory.h"
-#import "ios/chrome/browser/translate/language_selection_handler.h"
-#include "ios/chrome/browser/translate/translate_accept_languages_factory.h"
-#import "ios/chrome/browser/translate/translate_infobar_controller.h"
-#import "ios/chrome/browser/translate/translate_option_selection_handler.h"
-#include "ios/chrome/browser/translate/translate_ranker_factory.h"
-#include "ios/chrome/browser/translate/translate_service_ios.h"
-#import "ios/chrome/browser/ui/infobars/coordinators/infobar_translate_coordinator.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
-#import "ios/chrome/browser/ui/translate/translate_notification_handler.h"
-#include "ios/chrome/grit/ios_theme_resources.h"
-#include "ios/web/public/browser_state.h"
-#include "ios/web/public/navigation/navigation_item.h"
-#include "ios/web/public/navigation/navigation_manager.h"
+#import "base/check_op.h"
+#import "base/feature_list.h"
+#import "base/memory/ptr_util.h"
+#import "base/notreached.h"
+#import "components/infobars/core/infobar.h"
+#import "components/language/core/browser/accept_languages_service.h"
+#import "components/language/core/browser/language_model_manager.h"
+#import "components/language/core/browser/pref_names.h"
+#import "components/prefs/pref_service.h"
+#import "components/translate/core/browser/page_translated_details.h"
+#import "components/translate/core/browser/translate_infobar_delegate.h"
+#import "components/translate/core/browser/translate_manager.h"
+#import "components/translate/core/browser/translate_metrics_logger_impl.h"
+#import "components/translate/core/browser/translate_step.h"
+#import "components/translate/core/common/language_detection_details.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/language/accept_languages_service_factory.h"
+#import "ios/chrome/browser/language/language_model_manager_factory.h"
+#import "ios/chrome/browser/translate/language_detection_model_service_factory.h"
+#import "ios/chrome/browser/translate/translate_model_service_factory.h"
+#import "ios/chrome/browser/translate/translate_ranker_factory.h"
+#import "ios/chrome/browser/translate/translate_service_ios.h"
+#import "ios/chrome/grit/ios_theme_resources.h"
+#import "ios/web/public/browser_state.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
-#include "third_party/metrics_proto/translate_event.pb.h"
-#include "url/gurl.h"
+#import "third_party/metrics_proto/translate_event.pb.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-// static
-void ChromeIOSTranslateClient::CreateForWebState(web::WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new ChromeIOSTranslateClient(web_state)));
-  }
-}
 
 ChromeIOSTranslateClient::ChromeIOSTranslateClient(web::WebState* web_state)
     : web_state_(web_state),
@@ -68,9 +53,12 @@ ChromeIOSTranslateClient::ChromeIOSTranslateClient(web::WebState* web_state)
               ChromeBrowserState::FromBrowserState(
                   web_state->GetBrowserState()))
               ->GetPrimaryModel())),
-      translate_driver_(web_state,
-                        web_state->GetNavigationManager(),
-                        translate_manager_.get()) {
+      translate_driver_(
+          web_state,
+          translate_manager_.get(),
+          LanguageDetectionModelServiceFactory::GetForBrowserState(
+              ChromeBrowserState::FromBrowserState(
+                  web_state->GetBrowserState()))) {
   web_state_->AddObserver(this);
 }
 
@@ -95,23 +83,15 @@ std::unique_ptr<infobars::InfoBar> ChromeIOSTranslateClient::CreateInfoBar(
     std::unique_ptr<translate::TranslateInfoBarDelegate> delegate) const {
   bool skip_banner = delegate->translate_step() ==
                      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING;
-  if (IsInfobarOverlayUIEnabled()) {
     return std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeTranslate,
                                         std::move(delegate), skip_banner);
-  } else {
-    TranslateInfobarCoordinator* coordinator =
-        [[TranslateInfobarCoordinator alloc]
-            initWithInfoBarDelegate:delegate.get()];
-    return std::make_unique<InfoBarIOS>(coordinator, std::move(delegate),
-                                        skip_banner);
-  }
 }
 
 bool ChromeIOSTranslateClient::ShowTranslateUI(
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
-    translate::TranslateErrors::Type error_type,
+    translate::TranslateErrors error_type,
     bool triggered_from_menu) {
   DCHECK(web_state_);
   if (error_type != translate::TranslateErrors::NONE)
@@ -121,8 +101,7 @@ bool ChromeIOSTranslateClient::ShowTranslateUI(
   translate::TranslateInfoBarDelegate::Create(
       step != translate::TRANSLATE_STEP_BEFORE_TRANSLATE,
       translate_manager_->GetWeakPtr(),
-      InfoBarManagerImpl::FromWebState(web_state_),
-      web_state_->GetBrowserState()->IsOffTheRecord(), step, source_language,
+      InfoBarManagerImpl::FromWebState(web_state_), step, source_language,
       target_language, error_type, triggered_from_menu);
 
   return true;
@@ -147,10 +126,10 @@ ChromeIOSTranslateClient::GetTranslatePrefs() {
   return CreateTranslatePrefs(chrome_browser_state->GetPrefs());
 }
 
-translate::TranslateAcceptLanguages*
-ChromeIOSTranslateClient::GetTranslateAcceptLanguages() {
+language::AcceptLanguagesService*
+ChromeIOSTranslateClient::GetAcceptLanguagesService() {
   DCHECK(web_state_);
-  return TranslateAcceptLanguagesFactory::GetForBrowserState(
+  return AcceptLanguagesServiceFactory::GetForBrowserState(
       ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
 }
 
@@ -166,15 +145,44 @@ bool ChromeIOSTranslateClient::IsAutofillAssistantRunning() const {
   return false;
 }
 
-void ChromeIOSTranslateClient::ShowReportLanguageDetectionErrorUI(
-    const GURL& report_url) {
-  NOTREACHED();
+void ChromeIOSTranslateClient::DidStartNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  if (navigation_context->IsSameDocument())
+    return;
+
+  DidPageLoadComplete();
+  // Lifetime of TranslateMetricsLogger should be each page load. So, we need to
+  // detect the page load completion, i.e. the tab was closed, new navigation
+  // replaced the page load, etc, and clear the logger.
+  translate_metrics_logger_ =
+      std::make_unique<translate::TranslateMetricsLoggerImpl>(
+          translate_manager_->GetWeakPtr());
+  translate_metrics_logger_->OnPageLoadStart(web_state->IsVisible());
 }
 
-void ChromeIOSTranslateClient::DidStartLoading(web::WebState* web_state) {
-  [language_selection_handler_ dismissLanguageSelector];
-  [translate_option_selection_handler_ dismissTranslateOptionSelector];
-  [translate_notification_handler_ dismissNotification];
+void ChromeIOSTranslateClient::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  if (navigation_context->GetError()) {
+    translate_metrics_logger_.reset();
+    return;
+  }
+
+  if (!navigation_context->IsSameDocument() && translate_metrics_logger_) {
+    translate_metrics_logger_->SetUkmSourceId(
+        translate_driver_.GetUkmSourceId());
+  }
+}
+
+void ChromeIOSTranslateClient::WasShown(web::WebState* web_state) {
+  if (translate_metrics_logger_)
+    translate_metrics_logger_->OnForegroundChange(true);
+}
+
+void ChromeIOSTranslateClient::WasHidden(web::WebState* web_state) {
+  if (translate_metrics_logger_)
+    translate_metrics_logger_->OnForegroundChange(false);
 }
 
 void ChromeIOSTranslateClient::WebStateDestroyed(web::WebState* web_state) {
@@ -182,14 +190,19 @@ void ChromeIOSTranslateClient::WebStateDestroyed(web::WebState* web_state) {
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
 
-  [language_selection_handler_ dismissLanguageSelector];
-  [translate_option_selection_handler_ dismissTranslateOptionSelector];
-  [translate_notification_handler_ dismissNotification];
+  DidPageLoadComplete();
 
   // Translation process can be interrupted.
   // Destroying the TranslateManager now guarantees that it never has to deal
   // with nullptr WebState.
   translate_manager_.reset();
+}
+
+void ChromeIOSTranslateClient::DidPageLoadComplete() {
+  if (translate_metrics_logger_) {
+    translate_metrics_logger_->RecordMetrics(true);
+    translate_metrics_logger_.reset();
+  }
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(ChromeIOSTranslateClient)

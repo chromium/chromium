@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,12 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_EQUALS_TRAITS_H_
 
 #include <type_traits>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -18,50 +19,46 @@ namespace mojo {
 // objects. By default objects can be compared if they implement operator==()
 // or have a method named Equals().
 
-template <typename T>
-struct HasEqualsMethod {
-  template <typename U>
-  static char Test(decltype(&U::Equals));
-  template <typename U>
-  static int Test(...);
-  static const bool value = sizeof(Test<T>(0)) == sizeof(char);
-
- private:
-  internal::EnsureTypeIsComplete<T> check_t_;
+template <typename T, typename SFINAE = void>
+struct HasEqualsMethod : std::false_type {
+  static_assert(sizeof(T), "T must be a complete type.");
 };
 
-template <typename T, bool has_equals_method = HasEqualsMethod<T>::value>
-struct EqualsTraits;
+template <typename T>
+struct HasEqualsMethod<T,
+                       std::void_t<decltype(std::declval<const T&>().Equals(
+                           std::declval<const T&>()))>> : std::true_type {};
 
 template <typename T>
 bool Equals(const T& a, const T& b);
 
 template <typename T>
-struct EqualsTraits<T, true> {
-  static bool Equals(const T& a, const T& b) { return a.Equals(b); }
+struct EqualsTraits {
+  static bool Equals(const T& a, const T& b) {
+    if constexpr (HasEqualsMethod<T>::value) {
+      return a.Equals(b);
+    } else {
+      return a == b;
+    }
+  }
 };
 
 template <typename T>
-struct EqualsTraits<T, false> {
-  static bool Equals(const T& a, const T& b) { return a == b; }
-};
-
-template <typename T>
-struct EqualsTraits<base::Optional<T>, false> {
-  static bool Equals(const base::Optional<T>& a, const base::Optional<T>& b) {
+struct EqualsTraits<absl::optional<T>> {
+  static bool Equals(const absl::optional<T>& a, const absl::optional<T>& b) {
     if (!a && !b)
       return true;
     if (!a || !b)
       return false;
 
     // NOTE: Not just Equals() because that's EqualsTraits<>::Equals() and we
-    // want mojo::Equals() for things like base::Optional<std::vector<T>>.
+    // want mojo::Equals() for things like absl::optional<std::vector<T>>.
     return mojo::Equals(*a, *b);
   }
 };
 
 template <typename T>
-struct EqualsTraits<std::vector<T>, false> {
+struct EqualsTraits<std::vector<T>> {
   static bool Equals(const std::vector<T>& a, const std::vector<T>& b) {
     if (a.size() != b.size())
       return false;
@@ -74,7 +71,7 @@ struct EqualsTraits<std::vector<T>, false> {
 };
 
 template <typename K, typename V>
-struct EqualsTraits<base::flat_map<K, V>, false> {
+struct EqualsTraits<base::flat_map<K, V>> {
   static bool Equals(const base::flat_map<K, V>& a,
                      const base::flat_map<K, V>& b) {
     if (a.size() != b.size())

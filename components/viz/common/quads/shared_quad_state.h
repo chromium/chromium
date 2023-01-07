@@ -1,19 +1,17 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_SHARED_QUAD_STATE_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_SHARED_QUAD_STATE_H_
 
-#include <memory>
-
-#include "base/optional.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBlendMode.h"
+#include "ui/gfx/geometry/mask_filter_info.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/mask_filter_info.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace base {
 namespace trace_event {
@@ -22,6 +20,7 @@ class TracedValue;
 }  // namespace base
 
 namespace viz {
+
 
 // SharedQuadState holds a set of properties that are common across multiple
 // DrawQuads. It's purely an optimization - the properties behave in exactly the
@@ -34,16 +33,20 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   SharedQuadState(const SharedQuadState& other);
   ~SharedQuadState();
 
-  void SetAll(const gfx::Transform& quad_to_target_transform,
-              const gfx::Rect& quad_layer_rect,
+  // No comparison for |overlay_damage_index| and |is_fast_rounded_corner|.
+  bool Equals(const SharedQuadState& other) const;
+
+  void SetAll(const SharedQuadState& other);
+
+  void SetAll(const gfx::Transform& transform,
+              const gfx::Rect& layer_rect,
               const gfx::Rect& visible_layer_rect,
-              const gfx::MaskFilterInfo& mask_filter_info,
-              const gfx::Rect& clip_rect,
-              bool is_clipped,
-              bool are_contents_opaque,
-              float opacity,
-              SkBlendMode blend_mode,
-              int sorting_context_id);
+              const gfx::MaskFilterInfo& filter_info,
+              const absl::optional<gfx::Rect>& clip,
+              bool contents_opaque,
+              float opacity_f,
+              SkBlendMode blend,
+              int sorting_context);
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 
   // Transforms quad rects into the target content space.
@@ -57,11 +60,11 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   // of the quad rects.
   gfx::Rect visible_quad_layer_rect;
   // This mask filter's coordinates is in the target content space. It defines
-  // the corner radius to clip the quads with.
+  // the corner radius to clip the quads with, and the gradient mask applied to
+  // the clip rect given by the Rect part of |roudned_corner_bounds|.
   gfx::MaskFilterInfo mask_filter_info;
   // This rect lives in the target content space.
-  gfx::Rect clip_rect;
-  bool is_clipped = false;
+  absl::optional<gfx::Rect> clip_rect;
   // Indicates whether the content in |quad_layer_rect| are fully opaque.
   bool are_contents_opaque = true;
   float opacity = 1.f;
@@ -75,14 +78,9 @@ class VIZ_COMMON_EXPORT SharedQuadState {
   // and the OverlayProcessor. Do not set the value in CompositorRenderPass.
   // This index points to the damage rect in the surface damage rect list where
   // the overlay quad belongs to. SetAll() doesn't update this data.
-  base::Optional<size_t> overlay_damage_index;
+  absl::optional<size_t> overlay_damage_index;
   // The amount to skew quads in this layer. For experimental de-jelly effect.
   float de_jelly_delta_y = 0.0f;
-
-  // If true, indicates that the quads do not contribute damage to their
-  // render pass's damage; if false, whether or not the quads contribute
-  // damage is unknown. Only meaningful in root render passes.
-  bool no_damage = false;
 };
 
 }  // namespace viz

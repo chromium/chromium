@@ -1,8 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.payments;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -79,7 +81,8 @@ public class CurrencyFormatter {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         long initCurrencyFormatterAndroid(
                 CurrencyFormatter caller, String currencyCode, String localeName);
         void destroy(long nativeCurrencyFormatterAndroid, CurrencyFormatter caller);

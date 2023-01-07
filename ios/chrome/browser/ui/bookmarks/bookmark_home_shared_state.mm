@@ -1,24 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_shared_state.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_table_cell_title_editing.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
+#import "ios/chrome/common/ui/favicon/favicon_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-// Minimal acceptable favicon size, in points.
-const CGFloat kMinFaviconSizePt = 16.0;
-
-// Desired favicon size, in points.
-const CGFloat kDesiredFaviconSizePt = 32.0;
-
 // Minimium spacing between keyboard and the titleText when creating new folder,
 // in points.
 const CGFloat kKeyboardSpacingPt = 16.0;
@@ -80,7 +75,7 @@ const NSUInteger kMaxDownloadFaviconCount = 50;
 }
 
 + (CGFloat)desiredFaviconSizePt {
-  return kDesiredFaviconSizePt;
+  return kDesiredMediumFaviconSizePt;
 }
 
 + (CGFloat)keyboardSpacingPt {

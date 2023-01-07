@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/platform/fonts/segmented_font_data.h"
 
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -81,15 +80,6 @@ bool SegmentedFontData::ShouldSkipDrawing() const {
   auto* end = faces_.end();
   for (auto* it = faces_.begin(); it != end; ++it) {
     if ((*it)->FontData()->ShouldSkipDrawing())
-      return true;
-  }
-  return false;
-}
-
-bool SegmentedFontData::HasAdvanceOverride() const {
-  auto* end = faces_.end();
-  for (auto* it = faces_.begin(); it != end; ++it) {
-    if ((*it)->FontData()->HasAdvanceOverride())
       return true;
   }
   return false;

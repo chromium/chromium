@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -124,7 +124,8 @@ class SurfaceReferencesTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     // Start each test with a fresh SurfaceManager instance.
-    manager_ = std::make_unique<FrameSinkManagerImpl>(&shared_bitmap_manager_);
+    manager_ = std::make_unique<FrameSinkManagerImpl>(
+        FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_));
   }
   void TearDown() override {
     supports_.clear();
@@ -521,7 +522,7 @@ TEST_F(SurfaceReferencesTest, InvalidateHasNoEffectOnSurfaceReferences) {
 // Check that old temporary references are deleted, but only for surfaces marked
 // as destroyed.
 TEST_F(SurfaceReferencesTest, MarkOldTemporaryReferences) {
-  constexpr base::TimeDelta kFastForwardTime = base::TimeDelta::FromSeconds(30);
+  constexpr base::TimeDelta kFastForwardTime = base::Seconds(30);
 
   // There are no temporary references so the timer should be stopped.
   EXPECT_FALSE(IsTemporaryReferenceTimerRunning());

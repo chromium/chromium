@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -55,7 +55,7 @@ int SandboxedVfsDelegate::DeleteFile(const base::FilePath& file_path,
       StringFromFullPath(file_path), sync_dir);
 }
 
-base::Optional<sql::SandboxedVfs::PathAccessInfo>
+absl::optional<sql::SandboxedVfs::PathAccessInfo>
 SandboxedVfsDelegate::GetPathAccess(const base::FilePath& file_path) {
   int32_t attributes = WebDatabaseHost::GetInstance().GetFileAttributes(
       StringFromFullPath(file_path));
@@ -63,24 +63,24 @@ SandboxedVfsDelegate::GetPathAccess(const base::FilePath& file_path) {
   // TODO(pwnall): Make the mojo interface portable across OSes, instead of
   //               messing around with OS-dependent constants here.
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const bool file_exists =
       static_cast<DWORD>(attributes) != INVALID_FILE_ATTRIBUTES;
 #else
   const bool file_exists = attributes >= 0;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   if (!file_exists)
-    return base::nullopt;
+    return absl::nullopt;
 
   sql::SandboxedVfs::PathAccessInfo access;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   access.can_read = true;
   access.can_write = (attributes & FILE_ATTRIBUTE_READONLY) == 0;
 #else
   access.can_read = (attributes & R_OK) != 0;
   access.can_write = (attributes & W_OK) != 0;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   return access;
 }
 

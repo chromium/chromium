@@ -7,7 +7,7 @@
 /* at a redacted point in time
  */
 /* Compiler settings for ../../third_party/isimpledom/ISimpleDOMText.idl:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0622 
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0626 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -41,6 +41,14 @@
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
+#endif
+
+#ifndef DECLSPEC_XFGVIRT
+#if _CONTROL_FLOW_GUARD_XFG
+#define DECLSPEC_XFGVIRT(base, func) __declspec(xfg_virtual(base, func))
+#else
+#define DECLSPEC_XFGVIRT(base, func)
+#endif
 #endif
 
 /* Forward Declarations */ 
@@ -164,22 +172,27 @@ EXTERN_C const IID IID_ISimpleDOMText;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             ISimpleDOMText * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             ISimpleDOMText * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             ISimpleDOMText * This);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMText, get_domText)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_domText )( 
             ISimpleDOMText * This,
             /* [retval][out] */ BSTR *domText);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMText, get_clippedSubstringBounds)
         HRESULT ( STDMETHODCALLTYPE *get_clippedSubstringBounds )( 
             ISimpleDOMText * This,
             /* [in] */ unsigned int startIndex,
@@ -189,6 +202,7 @@ EXTERN_C const IID IID_ISimpleDOMText;
             /* [out] */ int *width,
             /* [out] */ int *height);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMText, get_unclippedSubstringBounds)
         HRESULT ( STDMETHODCALLTYPE *get_unclippedSubstringBounds )( 
             ISimpleDOMText * This,
             /* [in] */ unsigned int startIndex,
@@ -198,11 +212,13 @@ EXTERN_C const IID IID_ISimpleDOMText;
             /* [out] */ int *width,
             /* [out] */ int *height);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMText, scrollToSubstring)
         HRESULT ( STDMETHODCALLTYPE *scrollToSubstring )( 
             ISimpleDOMText * This,
             /* [in] */ unsigned int startIndex,
             /* [in] */ unsigned int endIndex);
         
+        DECLSPEC_XFGVIRT(ISimpleDOMText, get_fontFamily)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_fontFamily )( 
             ISimpleDOMText * This,
             /* [retval][out] */ BSTR *fontFamily);

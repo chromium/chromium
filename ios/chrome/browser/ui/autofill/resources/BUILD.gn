@@ -1,0 +1,31 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/asset_catalog.gni")
+
+imageset("fullcolor_branding_icon") {
+  sources = [
+    "fullcolor_branding_icon.imageset/Contents.json",
+    "fullcolor_branding_icon.imageset/fullcolor_branding_icon@2x.png",
+    "fullcolor_branding_icon.imageset/fullcolor_branding_icon@3x.png",
+  ]
+}
+
+imageset("monotone_branding_icon") {
+  sources = [
+    "monotone_branding_icon.imageset/Contents.json",
+    "monotone_branding_icon.imageset/monotone_branding_icon_dark@2x.png",
+    "monotone_branding_icon.imageset/monotone_branding_icon_dark@3x.png",
+    "monotone_branding_icon.imageset/monotone_branding_icon_light@2x.png",
+    "monotone_branding_icon.imageset/monotone_branding_icon_light@3x.png",
+  ]
+}
+
+imageset("password_suggestion_icon") {
+  sources = [
+    "password_suggestion_icon.imageset/Contents.json",
+    "password_suggestion_icon.imageset/password_suggestion_icon@2x.png",
+    "password_suggestion_icon.imageset/password_suggestion_icon@3x.png",
+  ]
+}

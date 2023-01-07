@@ -1,0 +1,3 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
+++++Image text:"alternative text" viewIdResName:"element" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="image", hasImage="true", roleDescription="graphic"]

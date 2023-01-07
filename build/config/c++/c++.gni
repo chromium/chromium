@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,11 +11,10 @@ declare_args() {
   # standard library support.
   # Don't check in changes that set this to false for more platforms; doing so
   # is not supported.
-  use_custom_libcxx = is_fuchsia || is_android || is_mac ||
-                      (is_ios && !use_xcode_clang) || (is_win && is_clang) ||
-                      ((is_linux || is_chromeos) &&
-                       (!is_chromeos_ash ||
-                        default_toolchain != "//build/toolchain/cros:target"))
+  use_custom_libcxx =
+      is_fuchsia || is_android || is_apple || is_linux || is_chromeos_lacros ||
+      (is_win && is_clang) ||
+      (is_chromeos && default_toolchain != "//build/toolchain/cros:target")
 
   # Use libc++ instead of stdlibc++ when using the host_cpu toolchain, even if
   # use_custom_libcxx is false. This is useful for cross-compiles where a custom
@@ -59,7 +58,7 @@ declare_args() {
 # libc++abi needs to be exported from executables to be picked up by shared
 # libraries on certain instrumented builds.
 export_libcxxabi_from_executables =
-    use_custom_libcxx && !is_ios && !is_win && !is_component_build &&
+    use_custom_libcxx && !is_apple && !is_win && !is_component_build &&
     (is_asan || is_ubsan_vptr)
 
 # On Android, many shared libraries get loaded from the context of a JRE.  In
@@ -80,3 +79,6 @@ if (is_android && export_libcxxabi_from_executables) {
 
 libcxx_prefix = "//buildtools/third_party/libc++/trunk"
 libcxxabi_prefix = "//buildtools/third_party/libc++abi/trunk"
+
+assert(!(is_ios && libcxx_is_shared),
+       "Can't build libc++ as a shared library on iOS.")

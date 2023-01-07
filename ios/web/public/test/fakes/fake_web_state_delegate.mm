@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,7 +65,7 @@ void FakeWebStateDelegate::CloseWebState(WebState* source) {
   last_close_web_state_request_ = std::make_unique<FakeCloseWebStateRequest>();
   last_close_web_state_request_->web_state = source;
 
-  // Remove WebState from |child_windows_|.
+  // Remove WebState from `child_windows_`.
   for (size_t i = 0; i < child_windows_.size(); i++) {
     if (child_windows_[i].get() == source) {
       closed_child_windows_.push_back(std::move(child_windows_[i]));
@@ -88,11 +88,6 @@ JavaScriptDialogPresenter* FakeWebStateDelegate::GetJavaScriptDialogPresenter(
     WebState*) {
   get_java_script_dialog_presenter_called_ = true;
   return &java_script_dialog_presenter_;
-}
-
-void FakeWebStateDelegate::HandleContextMenu(WebState*,
-                                             const ContextMenuParams&) {
-  handle_context_menu_called_ = true;
 }
 
 void FakeWebStateDelegate::ShowRepostFormWarningDialog(
@@ -118,25 +113,6 @@ void FakeWebStateDelegate::OnAuthRequired(
   last_authentication_request_->protection_space = protection_space;
   last_authentication_request_->credential = credential;
   last_authentication_request_->auth_callback = std::move(callback);
-}
-
-bool FakeWebStateDelegate::ShouldPreviewLink(WebState* source,
-                                             const GURL& link_url) {
-  last_link_url_ = link_url;
-  return should_preview_link_;
-}
-
-UIViewController* FakeWebStateDelegate::GetPreviewingViewController(
-    WebState* source,
-    const GURL& link_url) {
-  last_link_url_ = link_url;
-  return previewing_view_controller_;
-}
-
-void FakeWebStateDelegate::CommitPreviewingViewController(
-    WebState* source,
-    UIViewController* previewing_view_controller) {
-  last_previewing_view_controller_ = previewing_view_controller;
 }
 
 }  // namespace web

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,8 @@
 #define COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_SYNC_SERVICE_IMPL_H_
 
 #include <memory>
-#include <string>
 
-#include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/invalidations/fcm_registration_token_observer.h"
 #include "components/sync/invalidations/interested_data_types_handler.h"
 #include "components/sync/model/model_type_store.h"
@@ -38,20 +37,26 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
       std::unique_ptr<DeviceInfoPrefs> device_info_prefs,
       std::unique_ptr<DeviceInfoSyncClient> device_info_sync_client,
       SyncInvalidationsService* sync_invalidations_service);
+
+  DeviceInfoSyncServiceImpl(const DeviceInfoSyncServiceImpl&) = delete;
+  DeviceInfoSyncServiceImpl& operator=(const DeviceInfoSyncServiceImpl&) =
+      delete;
+
   ~DeviceInfoSyncServiceImpl() override;
 
   // DeviceInfoSyncService implementation.
   LocalDeviceInfoProvider* GetLocalDeviceInfoProvider() override;
   DeviceInfoTracker* GetDeviceInfoTracker() override;
   base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
-  void RefreshLocalDeviceInfo(
-      base::OnceClosure callback = base::DoNothing()) override;
+  void RefreshLocalDeviceInfo() override;
 
   // FCMRegistrationTokenObserver implementation.
   void OnFCMRegistrationTokenChanged() override;
 
   // InterestedDataTypesHandler implementation.
-  void OnInterestedDataTypesChanged(base::OnceClosure callback) override;
+  void OnInterestedDataTypesChanged() override;
+  void SetCommittedAdditionalInterestedDataTypesCallback(
+      base::RepeatingCallback<void(const ModelTypeSet&)> callback) override;
 
   // KeyedService overrides.
   void Shutdown() override;
@@ -60,9 +65,7 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
   std::unique_ptr<DeviceInfoSyncClient> device_info_sync_client_;
   std::unique_ptr<DeviceInfoSyncBridge> bridge_;
 
-  SyncInvalidationsService* const sync_invalidations_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceInfoSyncServiceImpl);
+  const raw_ptr<SyncInvalidationsService> sync_invalidations_service_;
 };
 
 }  // namespace syncer

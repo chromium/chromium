@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,8 @@
 namespace ash {
 
 void BindCrosDisplayConfigController(
-    mojo::PendingReceiver<mojom::CrosDisplayConfigController> receiver) {
+    mojo::PendingReceiver<crosapi::mojom::CrosDisplayConfigController>
+        receiver) {
   if (Shell::HasInstance())
     Shell::Get()->cros_display_config()->BindReceiver(std::move(receiver));
 }

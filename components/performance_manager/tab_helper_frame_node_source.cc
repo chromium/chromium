@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ TabHelperFrameNodeSource::~TabHelperFrameNodeSource() {
 }
 
 FrameNodeImpl* TabHelperFrameNodeSource::GetFrameNode(
-    content::GlobalFrameRoutingId render_process_host_id) {
+    content::GlobalRenderFrameHostId render_process_host_id) {
   // Retrieve the client's RenderFrameHost and its associated
   // PerformanceManagerTabHelper.
   auto* render_frame_host =
@@ -38,7 +38,7 @@ FrameNodeImpl* TabHelperFrameNodeSource::GetFrameNode(
 }
 
 void TabHelperFrameNodeSource::SubscribeToFrameNode(
-    content::GlobalFrameRoutingId render_process_host_id,
+    content::GlobalRenderFrameHostId render_process_host_id,
     OnbeforeFrameNodeRemovedCallback on_before_frame_node_removed_callback) {
   auto* render_frame_host =
       content::RenderFrameHost::FromID(render_process_host_id);
@@ -71,7 +71,7 @@ void TabHelperFrameNodeSource::SubscribeToFrameNode(
 }
 
 void TabHelperFrameNodeSource::UnsubscribeFromFrameNode(
-    content::GlobalFrameRoutingId render_process_host_id) {
+    content::GlobalRenderFrameHostId render_process_host_id) {
   auto* render_frame_host =
       content::RenderFrameHost::FromID(render_process_host_id);
   DCHECK(render_frame_host);

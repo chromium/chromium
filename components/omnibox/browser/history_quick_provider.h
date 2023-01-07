@@ -1,19 +1,19 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_OMNIBOX_BROWSER_HISTORY_QUICK_PROVIDER_H_
 #define COMPONENTS_OMNIBOX_BROWSER_HISTORY_QUICK_PROVIDER_H_
 
-#include <string>
-
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/history_provider.h"
 #include "components/omnibox/browser/in_memory_url_index.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct ScoredHistoryMatch;
 
@@ -44,27 +44,17 @@ class HistoryQuickProvider : public HistoryProvider {
 
  private:
   friend class HistoryQuickProviderTest;
-  FRIEND_TEST_ALL_PREFIXES(HistoryQuickProviderTest, Spans);
-  FRIEND_TEST_ALL_PREFIXES(HistoryQuickProviderTest, Relevance);
-  FRIEND_TEST_ALL_PREFIXES(HistoryQuickProviderTest, DoTrimHttpScheme);
-  FRIEND_TEST_ALL_PREFIXES(HistoryQuickProviderTest,
-                           DontTrimHttpSchemeIfInputHasScheme);
-  FRIEND_TEST_ALL_PREFIXES(HistoryQuickProviderTest,
-                           DontTrimHttpSchemeIfInputMatches);
-  FRIEND_TEST_ALL_PREFIXES(HistoryQuickProviderTest,
-                           DontTrimHttpsSchemeIfInputHasScheme);
-  FRIEND_TEST_ALL_PREFIXES(HistoryQuickProviderTest, DoTrimHttpsScheme);
-  FRIEND_TEST_ALL_PREFIXES(HistoryQuickProviderTest,
-                           CorrectAutocompleteWithTrailingSlash);
 
   ~HistoryQuickProvider() override;
 
   // Performs the autocomplete matching and scoring.
   void DoAutocomplete();
 
-  // Calculates the initial max match score for applying to matches, lowering
-  // it if we believe that there will be a URL-what-you-typed match.
-  int FindMaxMatchScore(const ScoredHistoryMatches& matches);
+  // Predicts if there may be a URL-what-you-typed match. If so, returns a
+  // prediction of its score, which HQP suggestions shouldn't exceed. Returns
+  // `nullopt` otherwise. The goal is for URL-what-you-typed matches for visited
+  // URLs to beat out any longer URLs, no matter how frequently they're visited.
+  absl::optional<int> MaxMatchScore();
 
   // Creates an AutocompleteMatch from |history_match|, assigning it
   // the score |score|.
@@ -72,7 +62,8 @@ class HistoryQuickProvider : public HistoryProvider {
                                         int score);
 
   AutocompleteInput autocomplete_input_;
-  InMemoryURLIndex* in_memory_url_index_;  // Not owned by this class.
+  raw_ptr<InMemoryURLIndex> in_memory_url_index_;  // Not owned by this class.
+  const TemplateURL* starter_pack_engine_;
 
   // This provider is disabled when true.
   static bool disabled_;

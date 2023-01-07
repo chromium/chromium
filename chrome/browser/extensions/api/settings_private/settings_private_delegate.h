@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -32,6 +32,10 @@ using TypedPrefMap = std::map<std::string, api::settings_private::PrefType>;
 class SettingsPrivateDelegate : public KeyedService {
  public:
   explicit SettingsPrivateDelegate(Profile* profile);
+
+  SettingsPrivateDelegate(const SettingsPrivateDelegate&) = delete;
+  SettingsPrivateDelegate& operator=(const SettingsPrivateDelegate&) = delete;
+
   ~SettingsPrivateDelegate() override;
 
   // Sets the pref with the given name and value in the proper PrefService.
@@ -39,7 +43,7 @@ class SettingsPrivateDelegate : public KeyedService {
                                                   const base::Value* value);
 
   // Gets the value of the pref with the given |name|.
-  virtual std::unique_ptr<base::Value> GetPref(const std::string& name);
+  base::Value GetPref(const std::string& name);
 
   // Gets the values of all allowlisted prefs.
   virtual std::unique_ptr<base::Value> GetAllPrefs();
@@ -53,11 +57,8 @@ class SettingsPrivateDelegate : public KeyedService {
   Profile* profile_for_test() { return profile_; }
 
  protected:
-  Profile* profile_;  // weak; not owned by us
+  raw_ptr<Profile> profile_;  // weak; not owned by us
   std::unique_ptr<PrefsUtil> prefs_util_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SettingsPrivateDelegate);
 };
 
 }  // namespace extensions

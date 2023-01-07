@@ -3,6 +3,8 @@
 <head>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
@@ -13,7 +15,7 @@
 
 promise_test(() => {
   let dateTimeElement = document.getElementById('datetime-local-0');
-  return openPickerWithPromise(dateTimeElement)
+  return openPicker(dateTimeElement)
   .then(() => {
     eventSender.keyDown('PageDown');
     assert_equals(dateTimeElement.value, "2019-03-14T13:02", "Next month hotkey should have incremented month");

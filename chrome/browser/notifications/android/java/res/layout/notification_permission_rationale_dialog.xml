@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+  <ImageView
+      android:layout_width="wrap_content"
+      android:layout_height="0dp"
+      android:layout_marginVertical="20dp"
+      android:layout_gravity="center_horizontal"
+      android:importantForAccessibility="no"
+      android:layout_weight="1"
+      android:src="@drawable/notification_permission_rationale_dialog_header"
+      app:srcCompat="@drawable/notification_permission_rationale_dialog_header" />
+
+  <TextView
+      android:id="@+id/notification_permission_rationale_title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginHorizontal="16dp"
+      android:text="@string/notification_permission_rationale_dialog_title"
+      android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+  <TextView
+      android:id="@+id/notification_permission_rationale_message"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
+      android:layout_marginHorizontal="16dp"
+      android:text="@string/notification_permission_rationale_dialog_message"
+      android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+</LinearLayout>

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ using testing::Test;
 class MockInputStream : public embedder_support::InputStream {
  public:
   MockInputStream() {}
-  virtual ~MockInputStream() {}
+  ~MockInputStream() override {}
 
   MOCK_CONST_METHOD1(BytesAvailable, bool(int* bytes_available));
   MOCK_METHOD2(Skip, bool(int64_t n, int64_t* bytes_skipped));

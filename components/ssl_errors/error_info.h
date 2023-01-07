@@ -1,14 +1,13 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SSL_ERRORS_SSL_ERROR_INFO_H_
-#define COMPONENTS_SSL_ERRORS_SSL_ERROR_INFO_H_
+#ifndef COMPONENTS_SSL_ERRORS_ERROR_INFO_H_
+#define COMPONENTS_SSL_ERRORS_ERROR_INFO_H_
 
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 
@@ -80,4 +79,4 @@ class ErrorInfo {
 
 }  // namespace ssl_errors
 
-#endif  // COMPONENTS_SSL_ERRORS_SSL_ERROR_INFO_H_
+#endif  // COMPONENTS_SSL_ERRORS_ERROR_INFO_H_

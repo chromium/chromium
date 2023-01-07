@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,30 +6,36 @@
 
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/variations/active_field_trials.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/prefs/pref_service.h"
 #include "net/base/url_util.h"
 #include "url/url_canon.h"
 
-namespace optimization_guide {
-
-std::string GetStringNameForOptimizationTarget(
-    optimization_guide::proto::OptimizationTarget optimization_target) {
-  switch (optimization_target) {
-    case proto::OPTIMIZATION_TARGET_UNKNOWN:
-      return "Unknown";
-    case proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD:
-      return "PainfulPageLoad";
-    case proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION:
-      return "LanguageDetection";
-    case proto::OPTIMIZATION_TARGET_PAGE_TOPICS:
-      return "PageTopics";
-  }
-  NOTREACHED();
-  return std::string();
+namespace {
+optimization_guide::proto::Platform GetPlatform() {
+#if BUILDFLAG(IS_WIN)
+  return optimization_guide::proto::PLATFORM_WINDOWS;
+#elif BUILDFLAG(IS_IOS)
+  return optimization_guide::proto::PLATFORM_IOS;
+#elif BUILDFLAG(IS_MAC)
+  return optimization_guide::proto::PLATFORM_MAC;
+#elif BUILDFLAG(IS_CHROMEOS)
+  return optimization_guide::proto::PLATFORM_CHROMEOS;
+#elif BUILDFLAG(IS_ANDROID)
+  return optimization_guide::proto::PLATFORM_ANDROID;
+#elif BUILDFLAG(IS_LINUX)
+  return optimization_guide::proto::PLATFORM_LINUX;
+#else
+  return optimization_guide::proto::PLATFORM_UNKNOWN;
+#endif
 }
+}  // namespace
+
+namespace optimization_guide {
 
 bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host) {
   if (net::HostStringIsLocalhost(host))
@@ -43,60 +49,61 @@ bool IsHostValidToFetchFromRemoteOptimizationGuide(const std::string& host) {
   return true;
 }
 
-google::protobuf::RepeatedPtrField<proto::FieldTrial>
-GetActiveFieldTrialsAllowedForFetch() {
-  google::protobuf::RepeatedPtrField<proto::FieldTrial>
-      filtered_active_field_trials;
-
-  base::flat_set<uint32_t> allowed_field_trials_for_fetch =
-      features::FieldTrialNameHashesAllowedForFetch();
-  if (allowed_field_trials_for_fetch.empty())
-    return filtered_active_field_trials;
-
-  std::vector<variations::ActiveGroupId> active_field_trials;
-  variations::GetFieldTrialActiveGroupIds(/*suffix=*/"", &active_field_trials);
-  for (const auto& active_field_trial : active_field_trials) {
-    if (static_cast<size_t>(filtered_active_field_trials.size()) ==
-        allowed_field_trials_for_fetch.size()) {
-      // We've found all the field trials that we are allowed to send to the
-      // server.
-      break;
-    }
-
-    if (allowed_field_trials_for_fetch.find(active_field_trial.name) ==
-        allowed_field_trials_for_fetch.end()) {
-      // Continue if we are not allowed to send the field trial to the server.
-      continue;
-    }
-
-    proto::FieldTrial* ft_proto = filtered_active_field_trials.Add();
-    ft_proto->set_name_hash(active_field_trial.name);
-    ft_proto->set_group_hash(active_field_trial.group);
+std::string GetStringForOptimizationGuideDecision(
+    OptimizationGuideDecision decision) {
+  switch (decision) {
+    case OptimizationGuideDecision::kUnknown:
+      return "Unknown";
+    case OptimizationGuideDecision::kTrue:
+      return "True";
+    case OptimizationGuideDecision::kFalse:
+      return "False";
   }
-  return filtered_active_field_trials;
+  NOTREACHED();
+  return std::string();
 }
 
-base::Optional<base::FilePath> GetFilePathFromPredictionModel(
-    const proto::PredictionModel& model) {
-  if (!model.model().has_download_url())
-    return base::nullopt;
-
-#if defined(OS_WIN)
-  return base::FilePath(base::UTF8ToWide(model.model().download_url()));
-#else
-  return base::FilePath(model.model().download_url());
-#endif
+optimization_guide::proto::OriginInfo GetClientOriginInfo() {
+  optimization_guide::proto::OriginInfo origin_info;
+  origin_info.set_platform(GetPlatform());
+  return origin_info;
 }
 
-void SetFilePathInPredictionModel(const base::FilePath& file_path,
-                                  proto::PredictionModel* model) {
-  DCHECK(model);
-
-#if defined(OS_WIN)
-  model->mutable_model()->set_download_url(base::WideToUTF8(file_path.value()));
-#else
-  model->mutable_model()->set_download_url(file_path.value());
-#endif
+void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
+                         bool is_off_the_record,
+                         PrefService* pref_service) {
+  if (!optimization_guide::switches::IsDebugLogsEnabled())
+    return;
+  if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+        optimization_guide_logger, "FEATURE_FLAG Hints component disabled");
+  }
+  if (!optimization_guide::features::IsRemoteFetchingEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+        optimization_guide_logger,
+        "FEATURE_FLAG remote fetching feature disabled");
+  }
+  if (!optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          is_off_the_record, pref_service)) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+        optimization_guide_logger,
+        "FEATURE_FLAG remote fetching user permission disabled");
+  }
+  if (!optimization_guide::features::IsPushNotificationsEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+        optimization_guide_logger,
+        "FEATURE_FLAG remote push notification feature disabled");
+  }
+  if (!optimization_guide::features::IsModelDownloadingEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,
+        optimization_guide_logger,
+        "FEATURE_FLAG model downloading feature disabled");
+  }
 }
 
 }  // namespace optimization_guide

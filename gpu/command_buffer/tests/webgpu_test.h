@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "gpu/command_buffer/common/webgpu_cmd_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "gpu/ipc/service/gpu_memory_buffer_factory_io_surface.h"
 #endif
 
@@ -36,15 +36,18 @@ class WebGPUImplementation;
 }  // namespace webgpu
 
 class WebGPUTest : public testing::Test {
- protected:
+ public:
   struct Options {
     Options();
 
     // Shared memory limits
     SharedMemoryLimits shared_memory_limits =
         SharedMemoryLimits::ForWebGPUContext();
+    bool force_fallback_adapter = false;
+    bool enable_unsafe_webgpu = false;
   };
 
+ protected:
   WebGPUTest();
   ~WebGPUTest() override;
 
@@ -62,6 +65,7 @@ class WebGPUTest : public testing::Test {
 
   void RunPendingTasks();
   void WaitForCompletion(wgpu::Device device);
+  void PollUntilIdle();
 
   wgpu::Device GetNewDevice();
 
@@ -69,23 +73,35 @@ class WebGPUTest : public testing::Test {
     return gpu_service_holder_.get();
   }
 
-  uint32_t GetAdapterId() const { return adapter_id_; }
+  static std::map<std::pair<WGPUDevice, WGPUErrorType>, /* matched */ bool>
+      s_expected_errors;
 
-  const WGPUDeviceProperties& GetDeviceProperties() const {
-    return device_properties_;
-  }
+  wgpu::Instance instance_ = nullptr;
+  wgpu::Adapter adapter_ = nullptr;
 
  private:
   std::unique_ptr<viz::TestGpuServiceHolder> gpu_service_holder_;
   std::unique_ptr<WebGPUInProcessContext> context_;
   std::unique_ptr<webgpu::WebGPUCmdHelper> cmd_helper_;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // SharedImages on macOS require a valid image factory.
   GpuMemoryBufferFactoryIOSurface image_factory_;
 #endif
-  uint32_t adapter_id_;
-  WGPUDeviceProperties device_properties_;
 };
+
+#define EXPECT_WEBGPU_ERROR(device, type, statement)                           \
+  do {                                                                         \
+    PollUntilIdle();                                                           \
+    auto it =                                                                  \
+        s_expected_errors.insert({std::make_pair(device.Get(), type), false}); \
+    EXPECT_TRUE(it.second)                                                     \
+        << "Only one expectation per-device-per-type supported.";              \
+    statement;                                                                 \
+    PollUntilIdle();                                                           \
+    EXPECT_TRUE(it.first->second)                                              \
+        << "Expected error (" << type << ") in `" #statement "`";              \
+    s_expected_errors.erase(it.first);                                         \
+  } while (0)
 
 }  // namespace gpu
 

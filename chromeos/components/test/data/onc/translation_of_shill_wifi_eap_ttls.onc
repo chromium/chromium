@@ -1,0 +1,17 @@
+{
+  "GUID": "{77db0089-0bc8-4358-929c-123xcv}",
+  "Type": "WiFi",
+  "Name": "",
+  "IPAddressConfigType":"DHCP",
+  "NameServersConfigType":"DHCP",
+  "WiFi": {
+    "Security": "WPA-EAP",
+    "EAP": {
+      "Outer": "EAP-TTLS",
+      "Inner": "MSCHAPv2",
+      "Identity": "my_identity",
+      "UseSystemCAs": true,
+      "SaveCredentials": true
+    }
+  },
+}

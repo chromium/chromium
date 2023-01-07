@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -125,7 +125,7 @@ public interface MessagePipeHandle extends Handle {
         /**
          * If a message was read, this contains the raw handle values.
          */
-        public int[] mRawHandles;
+        public long[] mRawHandles;
         /**
          * If a message was read, the handles contained in the message, undefined otherwise.
          */

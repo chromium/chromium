@@ -1,0 +1,71 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.settings.app_notification.mojom;
+
+import "ui/webui/resources/cr_components/app_management/app_management.mojom";
+
+// Whether an app is ready to launch, i.e. installed.
+enum Readiness {
+  kUnknown = 0,
+  kReady,                // Installed and launchable.
+  kDisabledByBlocklist,  // Disabled by SafeBrowsing.
+  kDisabledByPolicy,     // Disabled by admin policy.
+  kDisabledByUser,       // Disabled by explicit user action.
+  kTerminated,           // Renderer process crashed.
+  kUninstalledByUser,
+  kRemoved,
+  kUninstalledByMigration,
+};
+
+// Implementation of App
+// Contains the app's id, title, and only the notification permission, as this
+// is the only permission used in the AppNotificationsHandler.
+// Only represents Apps with an app_type of kArc or kWeb (Pwa).
+struct App {
+  // Unique identifier of the App.
+  string id;
+
+  // The title of the app,
+  // this field may be null when this struct is used to signal updates.
+  string? title;
+
+  // Whether an app is ready to launch, i.e. installed.
+  Readiness readiness;
+
+  // Contains the current permission state of the App's notification.
+  app_management.mojom.Permission notification_permission;
+};
+
+// Browser interface.
+// Interface for for fetching and setting App notification
+// properties in OSSettings.
+interface AppNotificationsHandler {
+  // Updates QuietMode to enabled or disabled based on toggle state.
+  SetQuietMode(bool enabled);
+
+  // Binds remote and notifies receiver in OsSettings app notifications page UI.
+  AddObserver(pending_remote<AppNotificationsObserver> observer);
+
+  // Updates the permission of the specified app (via app_id).
+  SetNotificationPermission(string app_id,
+                            app_management.mojom.Permission permission);
+
+  // Get the list of installed apps.
+  GetApps() => (array<App> apps);
+
+  // Get the Quiet Mode state.
+  GetQuietMode() => (bool enabled);
+};
+
+// Frontend interface.
+// Observer interface that sends remote updates to the App notifications
+// subpage in OSSettings.
+interface AppNotificationsObserver {
+  // Notifies clients when an app has been added, removed, or its notification
+  // permission changed.
+  OnNotificationAppChanged(App app);
+  // Notifies client when the DoNotDisturb (QuietMode) state changes.
+  OnQuietModeChanged(bool enabled);
+};

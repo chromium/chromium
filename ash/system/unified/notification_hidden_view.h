@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,10 @@ namespace ash {
 class NotificationHiddenView : public views::View {
  public:
   NotificationHiddenView();
+
+  NotificationHiddenView(const NotificationHiddenView&) = delete;
+  NotificationHiddenView& operator=(const NotificationHiddenView&) = delete;
+
   ~NotificationHiddenView() override = default;
 
   // views::View:
@@ -34,8 +38,6 @@ class NotificationHiddenView : public views::View {
   views::View* const container_;
   views::Label* const label_;
   views::Button* change_button_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationHiddenView);
 };
 
 }  // namespace ash

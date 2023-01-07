@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CREDENTIALS_FILTER_H_
 
 #include <string>
-
-#include "base/macros.h"
 
 namespace password_manager {
 
@@ -19,6 +17,8 @@ struct PasswordForm;
 class CredentialsFilter {
  public:
   CredentialsFilter() = default;
+  CredentialsFilter(const CredentialsFilter&) = delete;
+  CredentialsFilter& operator=(const CredentialsFilter&) = delete;
   virtual ~CredentialsFilter() = default;
 
   // Should |form| be offered to be saved?
@@ -44,9 +44,6 @@ class CredentialsFilter {
   // it matches |username| against the sync account email used in its original
   // profile.
   virtual bool IsSyncAccountEmail(const std::string& username) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CredentialsFilter);
 };
 
 }  // namespace password_manager

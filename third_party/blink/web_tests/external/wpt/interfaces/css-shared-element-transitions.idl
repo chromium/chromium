@@ -1,0 +1,22 @@
+// GENERATED CONTENT - DO NOT EDIT
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
+// Source: CSS Shared Element Transitions Module Level 1 (https://drafts.csswg.org/css-shared-element-transitions-1/)
+
+partial interface Document {
+    DOMTransition createTransition(DOMTransitionInit init);
+};
+
+dictionary DOMTransitionInit {
+    required UpdateDOMCallback updateDOM;
+};
+
+callback UpdateDOMCallback = Promise<any> ();
+
+[Exposed=Window]
+interface DOMTransition {
+    undefined skipTransition();
+    readonly attribute Promise<undefined> finished;
+    readonly attribute Promise<undefined> ready;
+    readonly attribute Promise<undefined> domUpdated;
+};

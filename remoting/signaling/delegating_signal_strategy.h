@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define REMOTING_SIGNALING_DELEGATING_SIGNAL_STRATEGY_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "remoting/signaling/signal_strategy.h"
@@ -39,6 +38,10 @@ class DelegatingSignalStrategy : public SignalStrategy {
       const SignalingAddress& local_address,
       scoped_refptr<base::SingleThreadTaskRunner> client_task_runner,
       const IqCallback& send_iq_callback);
+
+  DelegatingSignalStrategy(const DelegatingSignalStrategy&) = delete;
+  DelegatingSignalStrategy& operator=(const DelegatingSignalStrategy&) = delete;
+
   ~DelegatingSignalStrategy() override;
 
   IqCallback GetIncomingMessageCallback();
@@ -73,8 +76,6 @@ class DelegatingSignalStrategy : public SignalStrategy {
   base::ObserverList<Listener> listeners_;
 
   base::WeakPtrFactory<DelegatingSignalStrategy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DelegatingSignalStrategy);
 };
 
 }  // namespace remoting

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-
-class PrefRegistrySimple;
 
 namespace enterprise_connectors {
 
@@ -31,6 +29,7 @@ class AccessTokenFetcher : public OAuth2AccessTokenFetcherImpl,
       const GURL& token_endpoint,
       const std::string& refresh_token,
       const std::string& auth_code,
+      const std::string& consumer_name,
       TokenCallback callback);
   ~AccessTokenFetcher() override;
 
@@ -43,41 +42,14 @@ class AccessTokenFetcher : public OAuth2AccessTokenFetcherImpl,
   // OAuth2AccessTokenConsumer interface.
   void OnGetTokenSuccess(const TokenResponse& token_response) override;
   void OnGetTokenFailure(const GoogleServiceAuthError& error) override;
+  std::string GetConsumerName() const override;
 
  private:
   GURL token_endpoint_;
   net::NetworkTrafficAnnotationTag annotation_;
+  const std::string consumer_name_;
   TokenCallback callback_;
 };
-
-// Registers all the preferences needed to support the given service provider
-// for use with the file system connector.
-void RegisterFileSystemPrefsForServiceProvider(
-    PrefRegistrySimple* registry,
-    const std::string& service_provider);
-
-// Stores the OAuth2 tokens for the given service provider.  Returns true
-// if both tokens were successfully stored and false if either store fails.
-bool SetFileSystemOAuth2Tokens(PrefService* prefs,
-                               const std::string& service_provider,
-                               const std::string& access_token,
-                               const std::string& refresh_token);
-
-// Clears the OAuth2 tokens for the given service provider.
-bool ClearFileSystemAccessToken(PrefService* prefs,
-                                const std::string& service_provider);
-bool ClearFileSystemRefreshToken(PrefService* prefs,
-                                 const std::string& service_provider);
-bool ClearFileSystemOAuth2Tokens(PrefService* prefs,
-                                 const std::string& service_provider);
-
-// Retrieves the OAuth2 tokens for the given service provider.  If a token
-// argument is null that token is not retrieved.  Returns true if all requested
-// tokens are retrieved and false if any fail.
-bool GetFileSystemOAuth2Tokens(PrefService* prefs,
-                               const std::string& service_provider,
-                               std::string* access_token,
-                               std::string* refresh_token);
 
 }  // namespace enterprise_connectors
 

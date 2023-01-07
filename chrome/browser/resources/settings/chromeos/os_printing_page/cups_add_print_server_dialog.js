@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,80 +7,116 @@
  *   add a print server.
  */
 
-Polymer({
-  is: 'add-print-server-dialog',
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import './cups_add_printer_dialog.js';
+import './cups_printer_dialog_error.js';
+import './cups_printer_shared_css.js';
 
-  properties: {
-    /** @private {string} */
-    printServerAddress_: {
-      type: String,
-      value: '',
-    },
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    /** @private {string} */
-    errorText_: {
-      type: String,
-      value: '',
-    },
+import {getPrintServerErrorText} from './cups_printer_dialog_util.js';
+import {CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, CupsPrintersList, PrintServerResult} from './cups_printers_browser_proxy.js';
 
-    /** @private {boolean} */
-    inProgress_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+/** @polymer */
+class AddPrintServerDialogElement extends PolymerElement {
+  static get is() {
+    return 'add-print-server-dialog';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /** @private {string} */
+      printServerAddress_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private {string} */
+      errorText_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private {boolean} */
+      inProgress_: {
+        type: Boolean,
+        value: false,
+      },
+
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {!CupsPrintersBrowserProxy} */
+    this.browserProxy_ = CupsPrintersBrowserProxyImpl.getInstance();
+  }
 
   /** @private */
-  onCancelTap_: function() {
-    this.$$('add-printer-dialog').close();
-  },
+  onCancelTap_() {
+    this.shadowRoot.querySelector('add-printer-dialog').close();
+  }
 
   /** @private */
-  onAddPrintServerTap_: function() {
+  onAddPrintServerTap_() {
     this.inProgress_ = true;
-    this.$$('#printServerAddressInput').invalid = false;
-    settings.CupsPrintersBrowserProxyImpl.getInstance()
-        .queryPrintServer(this.printServerAddress_)
+    this.shadowRoot.querySelector('#printServerAddressInput').invalid = false;
+    this.browserProxy_.queryPrintServer(this.printServerAddress_)
         .then(
             this.onPrintServerAddedSucceeded_.bind(this),
             this.onPrintServerAddedFailed_.bind(this));
-  },
+  }
 
   /**
    * @param {!CupsPrintersList} printers
    * @private
    */
-  onPrintServerAddedSucceeded_: function(printers) {
+  onPrintServerAddedSucceeded_(printers) {
     this.inProgress_ = false;
-    this.fire('add-print-server-and-show-toast', {printers: printers});
-    this.$$('add-printer-dialog').close();
-  },
+    const addPrintServerEvent =
+        new CustomEvent('add-print-server-and-show-toast', {
+          bubbles: true,
+          composed: true,
+          detail: {printers},
+        });
+    this.dispatchEvent(addPrintServerEvent);
+    this.shadowRoot.querySelector('add-printer-dialog').close();
+  }
 
   /**
    * @param {*} addPrintServerError
    * @private
    */
-  onPrintServerAddedFailed_: function(addPrintServerError) {
+  onPrintServerAddedFailed_(addPrintServerError) {
     this.inProgress_ = false;
     if (addPrintServerError === PrintServerResult.INCORRECT_URL) {
-      this.$$('#printServerAddressInput').invalid = true;
+      this.shadowRoot.querySelector('#printServerAddressInput').invalid = true;
       return;
     }
-    this.errorText_ = settings.printing.getPrintServerErrorText(
+    this.errorText_ = getPrintServerErrorText(
         /** @type {PrintServerResult} */ (addPrintServerError));
-  },
+  }
 
   /**
    * Keypress event handler. If enter is pressed, trigger the add event.
    * @param {!Event} event
    * @private
    */
-  onKeypress_: function(event) {
+  onKeypress_(event) {
     if (event.key !== 'Enter') {
       return;
     }
     event.stopPropagation();
 
     this.onAddPrintServerTap_();
-  },
-});
+  }
+}
+
+customElements.define(
+    AddPrintServerDialogElement.is, AddPrintServerDialogElement);

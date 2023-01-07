@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,20 +10,21 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <string>
 #include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/numerics/ranges.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/gl_helper_scaling.h"
@@ -33,7 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace gpu {
 
@@ -56,6 +57,8 @@ const char* kQualityNames[] = {
 class GLHelperTest : public testing::Test {
  protected:
   void SetUp() override {
+    feature_list_.Init();
+
     ContextCreationAttribs attributes;
     attributes.alpha_size = 8;
     attributes.depth_size = 24;
@@ -69,22 +72,14 @@ class GLHelperTest : public testing::Test {
 
     context_ = std::make_unique<GLInProcessContext>();
     auto result = context_->Initialize(
-        viz::TestGpuServiceHolder::GetInstance()->task_executor(),
-        nullptr,            /* surface */
-        true,               /* offscreen */
-        kNullSurfaceHandle, /* window */
-        attributes, SharedMemoryLimits(),
-        nullptr, /* gpu_memory_buffer_manager */
-        nullptr, /* image_factory */
-        nullptr, /* gpu_task_scheduler */
-        nullptr, /* display_compositor_memory_and_task_controller_on_gpu */
-        base::ThreadTaskRunnerHandle::Get());
+        viz::TestGpuServiceHolder::GetInstance()->task_executor(), attributes,
+        SharedMemoryLimits(), /*image_factory=*/nullptr);
     DCHECK_EQ(result, ContextResult::kSuccess);
     gl_ = context_->GetImplementation();
     ContextSupport* support = context_->GetImplementation();
 
-    helper_.reset(new GLHelper(gl_, support));
-    helper_scaling_.reset(new GLHelperScaling(gl_, helper_.get()));
+    helper_ = std::make_unique<GLHelper>(gl_, support);
+    helper_scaling_ = std::make_unique<GLHelperScaling>(gl_, helper_.get());
   }
 
   void TearDown() override {
@@ -113,14 +108,14 @@ class GLHelperTest : public testing::Test {
   int Channel(SkBitmap* pixels, int x, int y, int c) {
     if (pixels->bytesPerPixel() == 4) {
       uint32_t* data =
-          pixels->getAddr32(base::ClampToRange(x, 0, pixels->width() - 1),
-                            base::ClampToRange(y, 0, pixels->height() - 1));
+          pixels->getAddr32(base::clamp(x, 0, pixels->width() - 1),
+                            base::clamp(y, 0, pixels->height() - 1));
       return (*data) >> (c * 8) & 0xff;
     } else {
       DCHECK_EQ(pixels->bytesPerPixel(), 1);
       DCHECK_EQ(c, 0);
-      return *pixels->getAddr8(base::ClampToRange(x, 0, pixels->width() - 1),
-                               base::ClampToRange(y, 0, pixels->height() - 1));
+      return *pixels->getAddr8(base::clamp(x, 0, pixels->width() - 1),
+                               base::clamp(y, 0, pixels->height() - 1));
     }
   }
 
@@ -133,13 +128,13 @@ class GLHelperTest : public testing::Test {
     DCHECK_LT(y, pixels->height());
     if (pixels->bytesPerPixel() == 4) {
       uint32_t* data = pixels->getAddr32(x, y);
-      v = base::ClampToRange(v, 0, 255);
+      v = base::clamp(v, 0, 255);
       *data = (*data & ~(0xffu << (c * 8))) | (v << (c * 8));
     } else {
       DCHECK_EQ(pixels->bytesPerPixel(), 1);
       DCHECK_EQ(c, 0);
       uint8_t* data = pixels->getAddr8(x, y);
-      v = base::ClampToRange(v, 0, 255);
+      v = base::clamp(v, 0, 255);
       *data = v;
     }
   }
@@ -682,14 +677,10 @@ class GLHelperTest : public testing::Test {
         SkImageInfo::Make(scaled_size.width(), scaled_size.height(),
                           kRGBA_8888_SkColorType, kPremul_SkAlphaType));
 
-    EXPECT_TRUE(
-        ReadBackTexture(dst_texture, scaled_size,
-                        static_cast<unsigned char*>(output_pixels.getPixels()),
-                        kRGBA_8888_SkColorType));
-    if (flip_output) {
-      // Flip the pixels back.
-      FlipSKBitmap(&output_pixels);
-    }
+    EXPECT_TRUE(ReadBackTexture(
+        dst_texture, scaled_size,
+        static_cast<unsigned char*>(output_pixels.getPixels()),
+        output_pixels.rowBytes(), flip_output, kRGBA_8888_SkColorType));
 
     // If the bitmap shouldn't have changed - compare against input.
     if (source_rect == gfx::Rect(scaled_size)) {
@@ -771,10 +762,10 @@ class GLHelperTest : public testing::Test {
         entire_output_size.width(), entire_output_size.height(),
         kRGBA_8888_SkColorType, kPremul_SkAlphaType));
 
-    EXPECT_TRUE(
-        ReadBackTexture(dst_texture, entire_output_size,
-                        static_cast<unsigned char*>(entire_output.getPixels()),
-                        kRGBA_8888_SkColorType));
+    EXPECT_TRUE(ReadBackTexture(
+        dst_texture, entire_output_size,
+        static_cast<unsigned char*>(entire_output.getPixels()),
+        entire_output.rowBytes(), /*flip_y=*/false, kRGBA_8888_SkColorType));
 
     const std::string human_readable_test_params = base::StringPrintf(
         "scale from: %s "
@@ -817,7 +808,7 @@ class GLHelperTest : public testing::Test {
         EXPECT_TRUE(ReadBackTexture(
             dst_texture, patch_size,
             static_cast<unsigned char*>(patch_output.getPixels()),
-            kRGBA_8888_SkColorType));
+            patch_output.rowBytes(), /*flip_y=*/false, kRGBA_8888_SkColorType));
         SkBitmap expected;
         SkIRect expected_subrect{patch_rect.x(), patch_rect.y(),
                                  patch_rect.right(), patch_rect.bottom()};
@@ -861,6 +852,7 @@ class GLHelperTest : public testing::Test {
           EXPECT_TRUE(ReadBackTexture(
               dst_texture, patch_size,
               static_cast<unsigned char*>(patch_output.getPixels()),
+              patch_output.rowBytes(), /*flip_y=*/false,
               kRGBA_8888_SkColorType));
           Compare(&expected, &patch_output, 2, test_bitmap.get(), stages,
                   "METHOD2 " + human_readable_test_params +
@@ -1013,6 +1005,8 @@ class GLHelperTest : public testing::Test {
   bool ReadBackTexture(GLuint src_texture,
                        const gfx::Size& src_size,
                        unsigned char* pixels,
+                       size_t pixels_stride,
+                       bool flip_y,
                        SkColorType color_type) {
     DCHECK(color_type == kRGBA_8888_SkColorType ||
            color_type == kBGRA_8888_SkColorType);
@@ -1025,7 +1019,8 @@ class GLHelperTest : public testing::Test {
       format = GL_BGRA_EXT;
 
     helper_->ReadbackTextureAsync(
-        src_texture, GL_TEXTURE_2D, src_size, pixels, format,
+        src_texture, GL_TEXTURE_2D, src_size, pixels, pixels_stride, flip_y,
+        format,
         base::BindOnce(
             [](bool* success, base::OnceClosure callback, bool result) {
               *success = result;
@@ -1056,7 +1051,9 @@ class GLHelperTest : public testing::Test {
     // When the readback is over output bitmap should have the red color.
     output_pixels.eraseColor(SK_ColorGREEN);
     uint8_t* pixels = static_cast<uint8_t*>(output_pixels.getPixels());
-    if (!ReadBackTexture(src_texture, src_size, pixels, color_type) ||
+    if (!ReadBackTexture(src_texture, src_size, pixels,
+                         output_pixels.rowBytes(), /*flip_y=*/false,
+                         color_type) ||
         !IsEqual(input_pixels, output_pixels)) {
       LOG(ERROR) << "Bitmap comparison failure Pattern-1";
       return false;
@@ -1068,7 +1065,9 @@ class GLHelperTest : public testing::Test {
                      src_grid_pitch, src_grid_width, input_pixels);
     BindAndAttachTextureWithPixels(src_texture, color_type, src_size,
                                    input_pixels);
-    if (!ReadBackTexture(src_texture, src_size, pixels, color_type) ||
+    if (!ReadBackTexture(src_texture, src_size, pixels,
+                         output_pixels.rowBytes(), /*flip_y=*/false,
+                         color_type) ||
         !IsEqual(input_pixels, output_pixels)) {
       LOG(ERROR) << "Bitmap comparison failure Pattern-2";
       return false;
@@ -1078,7 +1077,9 @@ class GLHelperTest : public testing::Test {
                         rect_w, rect_h, input_pixels);
     BindAndAttachTextureWithPixels(src_texture, color_type, src_size,
                                    input_pixels);
-    if (!ReadBackTexture(src_texture, src_size, pixels, color_type) ||
+    if (!ReadBackTexture(src_texture, src_size, pixels,
+                         output_pixels.rowBytes(), /*flip_y=*/false,
+                         color_type) ||
         !IsEqual(input_pixels, output_pixels)) {
       LOG(ERROR) << "Bitmap comparison failure Pattern-3";
       return false;
@@ -1263,8 +1264,9 @@ class GLHelperTest : public testing::Test {
                    "8x1 -> 1x1 bilinear4 X\n");
   }
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<GLInProcessContext> context_;
-  gles2::GLES2Interface* gl_;
+  raw_ptr<gles2::GLES2Interface> gl_;
   std::unique_ptr<GLHelper> helper_;
   std::unique_ptr<GLHelperScaling> helper_scaling_;
   base::circular_deque<GLHelperScaling::ScaleOp> x_ops_, y_ops_;
@@ -1301,7 +1303,13 @@ class GLHelperPixelReadbackTest
 
 // Per pixel tests, all sizes are small so that we can print
 // out the generated bitmaps.
-TEST_P(GLHelperPixelReadbackTest, ScaleTest) {
+// TODO(crbug.com/1367486): Very flaky on Linux ASAN.
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ScaleTest DISABLED_ScaleTest
+#else
+#define MAYBE_ScaleTest ScaleTest
+#endif
+TEST_P(GLHelperPixelReadbackTest, MAYBE_ScaleTest) {
   unsigned int q_index = std::get<0>(GetParam());
   unsigned int x = std::get<1>(GetParam());
   unsigned int y = std::get<2>(GetParam());
@@ -1347,20 +1355,20 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     GLHelperPixelReadbackTest,
     ::testing::Combine(
-        ::testing::Range<unsigned int>(0, base::size(kQualities)),
-        ::testing::Range<unsigned int>(0, base::size(kRGBReadBackSizes)),
-        ::testing::Range<unsigned int>(0, base::size(kRGBReadBackSizes)),
-        ::testing::Range<unsigned int>(0, base::size(kRGBReadBackSizes)),
-        ::testing::Range<unsigned int>(0, base::size(kRGBReadBackSizes))));
+        ::testing::Range<unsigned int>(0, std::size(kQualities)),
+        ::testing::Range<unsigned int>(0, std::size(kRGBReadBackSizes)),
+        ::testing::Range<unsigned int>(0, std::size(kRGBReadBackSizes)),
+        ::testing::Range<unsigned int>(0, std::size(kRGBReadBackSizes)),
+        ::testing::Range<unsigned int>(0, std::size(kRGBReadBackSizes))));
 
 // Validate that all scaling generates valid pipelines.
 TEST_F(GLHelperTest, ValidateScalerPipelines) {
   int sizes[] = {7, 99, 128, 256, 512, 719, 720, 721, 1920, 2011, 3217, 4096};
-  for (size_t q = 0; q < base::size(kQualities); q++) {
-    for (size_t x = 0; x < base::size(sizes); x++) {
-      for (size_t y = 0; y < base::size(sizes); y++) {
-        for (size_t dst_x = 0; dst_x < base::size(sizes); dst_x++) {
-          for (size_t dst_y = 0; dst_y < base::size(sizes); dst_y++) {
+  for (size_t q = 0; q < std::size(kQualities); q++) {
+    for (size_t x = 0; x < std::size(sizes); x++) {
+      for (size_t y = 0; y < std::size(sizes); y++) {
+        for (size_t dst_x = 0; dst_x < std::size(sizes); dst_x++) {
+          for (size_t dst_y = 0; dst_y < std::size(sizes); dst_y++) {
             TestScalerPipeline(q, sizes[x], sizes[y], sizes[dst_x],
                                sizes[dst_y]);
             if (HasFailure()) {
@@ -1411,4 +1419,4 @@ TEST_F(GLHelperTest, CheckOptimizations) {
 
 }  // namespace gpu
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

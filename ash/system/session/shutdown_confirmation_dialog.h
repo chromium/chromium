@@ -1,14 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_SESSION_SHUTDOWN_CONFIRMATION_DIALOG_H_
 #define ASH_SYSTEM_SESSION_SHUTDOWN_CONFIRMATION_DIALOG_H_
 
-#include <string>
-
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -25,6 +22,11 @@ class ShutdownConfirmationDialog : public views::DialogDelegateView {
                              int dialog_text_id,
                              base::OnceClosure on_accept_callback,
                              base::OnceClosure on_cancel_callback);
+
+  ShutdownConfirmationDialog(const ShutdownConfirmationDialog&) = delete;
+  ShutdownConfirmationDialog& operator=(const ShutdownConfirmationDialog&) =
+      delete;
+
   ~ShutdownConfirmationDialog() override;
 
   // views::View:
@@ -32,8 +34,6 @@ class ShutdownConfirmationDialog : public views::DialogDelegateView {
 
  private:
   views::Label* label_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownConfirmationDialog);
 };
 
 }  // namespace ash

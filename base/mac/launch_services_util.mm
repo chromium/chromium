@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 NSRunningApplication* OpenApplicationWithPath(
     const base::FilePath& bundle_path,
@@ -24,9 +23,9 @@ NSRunningApplication* OpenApplicationWithPath(
   // NSWorkspace automatically adds the binary path as the first argument and
   // it should not be included into the list.
   std::vector<std::string> argv = command_line.argv();
-  int argc = argv.size();
+  size_t argc = argv.size();
   NSMutableArray* launch_args = [NSMutableArray arrayWithCapacity:argc - 1];
-  for (int i = 1; i < argc; ++i) {
+  for (size_t i = 1; i < argc; ++i) {
     [launch_args addObject:base::SysUTF8ToNSString(argv[i])];
   }
 
@@ -49,5 +48,4 @@ NSRunningApplication* OpenApplicationWithPath(
   return app;
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

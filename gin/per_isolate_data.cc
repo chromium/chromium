@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,12 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gin/public/gin_embedders.h"
 #include "gin/v8_foreground_task_runner.h"
 #include "gin/v8_foreground_task_runner_with_locker.h"
+#include "v8/include/v8-isolate.h"
 
 using v8::ArrayBuffer;
 using v8::Eternal;
@@ -41,9 +42,7 @@ PerIsolateData::PerIsolateData(
   }
 }
 
-PerIsolateData::~PerIsolateData() {
-  isolate_->SetData(kEmbedderNativeGin, NULL);
-}
+PerIsolateData::~PerIsolateData() = default;
 
 PerIsolateData* PerIsolateData::From(Isolate* isolate) {
   return static_cast<PerIsolateData*>(isolate->GetData(kEmbedderNativeGin));

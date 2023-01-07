@@ -1,0 +1,18 @@
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+
+promise_test(async t => {
+  // This should not crash.
+  const pc = new RTCPeerConnection();
+  pc.addTransceiver('audio', { sendEncodings: [ {rid:'1'}, {rid:'2'} ] });
+  await pc.setLocalDescription();
+  assert_equals(pc.getSenders()[0].getParameters().encodings.length, 1);
+}, 'Multiple encodings for audio does not crash, and results in one encoding');
+</script>
+</body>
+</html>

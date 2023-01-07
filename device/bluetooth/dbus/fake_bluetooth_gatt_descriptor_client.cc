@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_forward.h"
 #include "base/logging.h"
+#include "base/observer_list.h"
 #include "dbus/bus.h"
 #include "dbus/property.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_characteristic_client.h"
@@ -121,7 +121,8 @@ void FakeBluetoothGattDescriptorClient::ReadValue(
     }
   }
 
-  std::move(callback).Run(iter->second->properties->value.value());
+  std::move(callback).Run(/*error_code=*/absl::nullopt,
+                          iter->second->properties->value.value());
 }
 
 void FakeBluetoothGattDescriptorClient::WriteValue(

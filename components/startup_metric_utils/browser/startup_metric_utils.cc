@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,21 +11,24 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/lazy_instance.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/containers/flat_set.h"
+#include "base/dcheck_is_on.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/process/process.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/platform_thread.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include <winternl.h>
 #include "base/win/win_util.h"
@@ -52,10 +55,6 @@ base::TimeTicks g_message_loop_start_ticks;
 
 base::TimeTicks g_browser_window_display_ticks;
 
-base::MemoryPressureListener::MemoryPressureLevel
-    g_max_pressure_level_before_first_non_empty_paint = base::
-        MemoryPressureListener::MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE;
-
 // An enumeration of startup temperatures. This must be kept in sync with the
 // UMA StartupType enumeration defined in histograms.xml.
 enum StartupTemperature {
@@ -77,7 +76,7 @@ enum StartupTemperature {
 
 StartupTemperature g_startup_temperature = UNDETERMINED_STARTUP_TEMPERATURE;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // These values are taken from the Startup.BrowserMessageLoopStartHardFaultCount
 // histogram. The latest revision landed on <5 and >3500 for a good split
@@ -129,13 +128,13 @@ typedef NTSTATUS (WINAPI *NtQuerySystemInformationPtr)(
 
 // Returns the hard fault count of the current process, or nullopt if it can't
 // be determined.
-base::Optional<uint32_t> GetHardFaultCountForCurrentProcess() {
+absl::optional<uint32_t> GetHardFaultCountForCurrentProcess() {
   // Get the function pointer.
   static const NtQuerySystemInformationPtr query_sys_info =
       reinterpret_cast<NtQuerySystemInformationPtr>(::GetProcAddress(
           GetModuleHandle(L"ntdll.dll"), "NtQuerySystemInformation"));
   if (query_sys_info == nullptr)
-    return base::nullopt;
+    return absl::nullopt;
 
   // The output of this system call depends on the number of threads and
   // processes on the entire system, and this can change between calls. Retry
@@ -164,7 +163,7 @@ base::Optional<uint32_t> GetHardFaultCountForCurrentProcess() {
       // fill a large buffer just to record histograms.
       constexpr ULONG kMaxLength = 512 * 1024;
       if (return_length >= kMaxLength)
-        return base::nullopt;
+        return absl::nullopt;
 
       // Resize the buffer and retry, if the buffer hasn't already been resized
       // too many times.
@@ -179,7 +178,7 @@ base::Optional<uint32_t> GetHardFaultCountForCurrentProcess() {
     // insufficient buffer length, or if the buffer was resized too many times.
     DCHECK(return_length <= buffer.size() ||
            num_buffer_resize >= kMaxNumBufferResize);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Look for the struct housing information for the current process.
@@ -194,13 +193,13 @@ base::Optional<uint32_t> GetHardFaultCountForCurrentProcess() {
     // The list ends when NextEntryOffset is zero. This also prevents busy
     // looping if the data is in fact invalid.
     if (proc_info->NextEntryOffset <= 0)
-      return base::nullopt;
+      return absl::nullopt;
     index += proc_info->NextEntryOffset;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Helper function for splitting out an UMA histogram based on startup
 // temperature. |histogram_function| is the histogram type, and corresponds to
@@ -244,60 +243,27 @@ void UmaHistogramWithTemperature(
 
 void UmaHistogramWithTraceAndTemperature(
     void (*histogram_function)(const std::string& name, base::TimeDelta),
-    const std::string& histogram_basename,
+    const char* histogram_basename,
     base::TimeTicks begin_ticks,
     base::TimeTicks end_ticks) {
   UmaHistogramWithTemperature(histogram_function, histogram_basename,
                               end_ticks - begin_ticks);
-  TRACE_EVENT_ASYNC_BEGIN_WITH_TIMESTAMP1("startup", histogram_basename.c_str(),
-                                          0, begin_ticks, "Temperature",
-                                          g_startup_temperature);
-  TRACE_EVENT_ASYNC_END_WITH_TIMESTAMP1("startup", histogram_basename.c_str(),
-                                        0, end_ticks, "Temperature",
-                                        g_startup_temperature);
-}
-
-// Extension to the UmaHistogramWithTraceAndTemperature that records a
-// suffixed version of the histogram indicating the maximum pressure encountered
-// until now. Note that this is based on the
-// |g_max_pressure_level_before_first_non_empty_paint| value.
-void UmaHistogramAndTraceWithTemperatureAndMaxPressure(
-    void (*histogram_function)(const std::string& name, base::TimeDelta),
-    const std::string& histogram_basename,
-    base::TimeTicks begin_ticks,
-    base::TimeTicks end_ticks) {
-  UmaHistogramWithTraceAndTemperature(histogram_function, histogram_basename,
-                                      begin_ticks, end_ticks);
-  const auto value = end_ticks - begin_ticks;
-  switch (g_max_pressure_level_before_first_non_empty_paint) {
-    case base::MemoryPressureListener::MemoryPressureLevel::
-        MEMORY_PRESSURE_LEVEL_NONE:
-      (*histogram_function)(histogram_basename + ".NoMemoryPressure", value);
-      break;
-    case base::MemoryPressureListener::MemoryPressureLevel::
-        MEMORY_PRESSURE_LEVEL_MODERATE:
-      (*histogram_function)(histogram_basename + ".ModerateMemoryPressure",
-                            value);
-      break;
-    case base::MemoryPressureListener::MemoryPressureLevel::
-        MEMORY_PRESSURE_LEVEL_CRITICAL:
-      (*histogram_function)(histogram_basename + ".CriticalMemoryPressure",
-                            value);
-      break;
-    default:
-      NOTREACHED();
-      break;
-  }
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+      "startup", histogram_basename, TRACE_ID_WITH_SCOPE(histogram_basename, 0),
+      begin_ticks, "Temperature", g_startup_temperature);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      "startup", histogram_basename, TRACE_ID_WITH_SCOPE(histogram_basename, 0),
+      end_ticks);
 }
 
 // On Windows, records the number of hard-faults that have occurred in the
 // current chrome.exe process since it was started. This is a nop on other
 // platforms.
 void RecordHardFaultHistogram() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK_EQ(UNDETERMINED_STARTUP_TEMPERATURE, g_startup_temperature);
 
-  const base::Optional<uint32_t> hard_fault_count =
+  const absl::optional<uint32_t> hard_fault_count =
       GetHardFaultCountForCurrentProcess();
 
   if (hard_fault_count.has_value()) {
@@ -325,7 +291,7 @@ void RecordHardFaultHistogram() {
   // Record the startup 'temperature'.
   base::UmaHistogramEnumeration("Startup.Temperature", g_startup_temperature,
                                 STARTUP_TEMPERATURE_COUNT);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 // Converts a base::Time value to a base::TimeTicks value. The conversion isn't
@@ -335,34 +301,26 @@ void RecordHardFaultHistogram() {
 // base::TimeTicks::Now() at play, but in practice it is pretty much instant
 // compared to multi-seconds startup timings.
 base::TimeTicks StartupTimeToTimeTicks(base::Time time) {
-// First get a base which represents the same point in time in both units.
-// Bump the priority of this thread while doing this as the wall clock time it
-// takes to resolve these two calls affects the precision of this method and
-// bumping the priority reduces the likelihood of a context switch interfering
-// with this computation.
+  // First get a base which represents the same point in time in both units.
+  // Bump the priority of this thread while doing this as the wall clock time it
+  // takes to resolve these two calls affects the precision of this method and
+  // bumping the priority reduces the likelihood of a context switch interfering
+  // with this computation.
+  absl::optional<base::ScopedBoostPriority> scoped_boost_priority;
 
 // Enabling this logic on OS X causes a significant performance regression.
-// https://crbug.com/601270
-#if !defined(OS_APPLE)
+// TODO(crbug.com/601270): Remove IS_APPLE ifdef once priority changes are
+// ignored on Mac main thread.
+#if !BUILDFLAG(IS_APPLE)
   static bool statics_initialized = false;
-
-  base::ThreadPriority previous_priority = base::ThreadPriority::NORMAL;
   if (!statics_initialized) {
-    previous_priority = base::PlatformThread::GetCurrentThreadPriority();
-    base::PlatformThread::SetCurrentThreadPriority(
-        base::ThreadPriority::DISPLAY);
+    statics_initialized = true;
+    scoped_boost_priority.emplace(base::ThreadType::kDisplayCritical);
   }
-#endif
+#endif  // !BUILDFLAG(IS_APPLE)
 
   static const base::Time time_base = base::Time::Now();
   static const base::TimeTicks trace_ticks_base = base::TimeTicks::Now();
-
-#if !defined(OS_APPLE)
-  if (!statics_initialized) {
-    base::PlatformThread::SetCurrentThreadPriority(previous_priority);
-  }
-  statics_initialized = true;
-#endif
 
   // Then use the TimeDelta common ground between the two units to make the
   // conversion.
@@ -384,7 +342,34 @@ bool ShouldLogStartupHistogram() {
   return !WasMainWindowStartupInterrupted();
 }
 
+#if DCHECK_IS_ON()
+base::flat_set<int>& GetSessionLog() {
+  static base::NoDestructor<base::flat_set<int>> session_log;
+  return *session_log;
+}
+#endif  // DCHECK_IS_ON()
+
+// DCHECKs that this is the first time |method_id| is passed to this assertion
+// in this session (a session is typically process-lifetime but this can be
+// reset in tests via ResetSessionForTesting()). Callers should use __LINE__ as
+// a unique id in this file.
+void AssertFirstCallInSession(int method_id) {
+#if DCHECK_IS_ON()
+  DCHECK(GetSessionLog().insert(method_id).second);
+#endif  // DCHECK_IS_ON()
+}
+
 }  // namespace
+
+void ResetSessionForTesting() {
+#if DCHECK_IS_ON()
+  GetSessionLog().clear();
+#endif  // DCHECK_IS_ON()
+  // Reset global ticks that will be recorded multiple times when multiple
+  // tests run in the same process.
+  g_message_loop_start_ticks = base::TimeTicks();
+  g_browser_window_display_ticks = base::TimeTicks();
+}
 
 bool WasMainWindowStartupInterrupted() {
   return g_main_window_startup_interrupted;
@@ -476,6 +461,18 @@ void RecordBrowserMainMessageLoopStart(base::TimeTicks ticks,
   }
 }
 
+void RecordBrowserMainLoopFirstIdle(base::TimeTicks ticks) {
+  DCHECK(!g_application_start_ticks.is_null());
+  AssertFirstCallInSession(__LINE__);
+
+  if (!ShouldLogStartupHistogram())
+    return;
+
+  UmaHistogramWithTraceAndTemperature(&base::UmaHistogramLongTimes100,
+                                      "Startup.BrowserMessageLoopFirstIdle",
+                                      g_application_start_ticks, ticks);
+}
+
 void RecordBrowserWindowDisplay(base::TimeTicks ticks) {
   DCHECK(!ticks.is_null());
 
@@ -496,20 +493,15 @@ void RecordFirstWebContentsNonEmptyPaint(
     base::TimeTicks now,
     base::TimeTicks render_process_host_init_time) {
   DCHECK(!g_application_start_ticks.is_null());
-
-#if DCHECK_IS_ON()
-  static bool is_first_call = true;
-  DCHECK(is_first_call);
-  is_first_call = false;
-#endif  // DCHECK_IS_ON()
+  AssertFirstCallInSession(__LINE__);
 
   if (!ShouldLogStartupHistogram())
     return;
 
-  UmaHistogramAndTraceWithTemperatureAndMaxPressure(
-      &base::UmaHistogramLongTimes100,
-      "Startup.FirstWebContents.NonEmptyPaint3", g_application_start_ticks,
-      now);
+  UmaHistogramWithTraceAndTemperature(&base::UmaHistogramLongTimes100,
+                                      "Startup.FirstWebContents.NonEmptyPaint3",
+                                      g_application_start_ticks, now);
+
   UmaHistogramWithTemperature(
       &base::UmaHistogramLongTimes100,
       "Startup.BrowserMessageLoopStart.To.NonEmptyPaint2",
@@ -523,12 +515,7 @@ void RecordFirstWebContentsNonEmptyPaint(
 
 void RecordFirstWebContentsMainNavigationStart(base::TimeTicks ticks) {
   DCHECK(!g_application_start_ticks.is_null());
-
-#if DCHECK_IS_ON()
-  static bool is_first_call = true;
-  DCHECK(is_first_call);
-  is_first_call = false;
-#endif  // DCHECK_IS_ON()
+  AssertFirstCallInSession(__LINE__);
 
   if (!ShouldLogStartupHistogram())
     return;
@@ -541,12 +528,7 @@ void RecordFirstWebContentsMainNavigationStart(base::TimeTicks ticks) {
 
 void RecordFirstWebContentsMainNavigationFinished(base::TimeTicks ticks) {
   DCHECK(!g_application_start_ticks.is_null());
-
-#if DCHECK_IS_ON()
-  static bool is_first_call = true;
-  DCHECK(is_first_call);
-  is_first_call = false;
-#endif  // DCHECK_IS_ON()
+  AssertFirstCallInSession(__LINE__);
 
   if (!ShouldLogStartupHistogram())
     return;
@@ -576,39 +558,7 @@ base::TimeTicks MainEntryPointTicks() {
   return g_chrome_main_entry_ticks;
 }
 
-void RecordWebFooterDidFirstVisuallyNonEmptyPaint(base::TimeTicks ticks) {
-  DCHECK(!g_application_start_ticks.is_null());
-
-  static bool is_first_call = true;
-  if (!is_first_call || ticks.is_null())
-    return;
-  is_first_call = false;
-  if (!ShouldLogStartupHistogram())
-    return;
-
-  UmaHistogramWithTraceAndTemperature(
-      &base::UmaHistogramMediumTimes,
-      "Startup.WebFooterExperiment.DidFirstVisuallyNonEmptyPaint",
-      g_application_start_ticks, ticks);
-}
-
-void RecordWebFooterCreation(base::TimeTicks ticks) {
-  DCHECK(!g_application_start_ticks.is_null());
-
-  static bool is_first_call = true;
-  if (!is_first_call || ticks.is_null())
-    return;
-  is_first_call = false;
-  if (!ShouldLogStartupHistogram())
-    return;
-
-  UmaHistogramWithTraceAndTemperature(
-      &base::UmaHistogramMediumTimes,
-      "Startup.WebFooterExperiment.WebFooterCreation",
-      g_application_start_ticks, ticks);
-}
-
-void RecordExternalStartupMetric(const std::string& histogram_name,
+void RecordExternalStartupMetric(const char* histogram_name,
                                  base::TimeTicks completion_ticks,
                                  bool set_non_browser_ui_displayed) {
   DCHECK(!g_application_start_ticks.is_null());
@@ -622,12 +572,6 @@ void RecordExternalStartupMetric(const std::string& histogram_name,
 
   if (set_non_browser_ui_displayed)
     SetNonBrowserUIDisplayed();
-}
-
-void OnMemoryPressureBeforeFirstNonEmptyPaint(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
-  if (level > g_max_pressure_level_before_first_non_empty_paint)
-    g_max_pressure_level_before_first_non_empty_paint = level;
 }
 
 }  // namespace startup_metric_utils

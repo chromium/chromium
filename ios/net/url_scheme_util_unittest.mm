@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/stl_util.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
@@ -28,7 +27,7 @@ const char* kSchemeTestData[] = {
 using URLSchemeUtilTest = PlatformTest;
 
 TEST_F(URLSchemeUtilTest, NSURLHasDataScheme) {
-  for (unsigned int i = 0; i < base::size(kSchemeTestData); ++i) {
+  for (unsigned int i = 0; i < std::size(kSchemeTestData); ++i) {
     const char* url = kSchemeTestData[i];
     bool nsurl_result = UrlHasDataScheme(
         [NSURL URLWithString:[NSString stringWithUTF8String:url]]);

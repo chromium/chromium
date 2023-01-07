@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,13 @@
 
 #include "base/check.h"
 #include "base/hash/hash.h"
+#include "base/hash/md5.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
-#include "ui/display/types/display_constants.h"
 #include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -24,6 +25,13 @@ namespace display {
 namespace {
 
 constexpr char kParseEdidFailureMetric[] = "Display.ParseEdidFailure";
+constexpr char kParseExternalDisplayEdidOptionalsMetric[] =
+    "Display.External.ParseEdidOptionals";
+constexpr char kBlockZeroSerialNumberTypeMetric[] =
+    "Display.External.BlockZeroSerialNumberType";
+constexpr char kNumOfSerialNumbersProvidedByExternalDisplay[] =
+    "Display.External.NumOfSerialNumbersProvided";
+constexpr uint8_t kMaxSerialNumberCount = 2;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -37,12 +45,57 @@ enum class ParseEdidFailure {
   kChromaticityCoordinates = 6,
   kDisplayName = 7,
   kExtensions = 8,
-  kMaxValue = kExtensions,
+  kSerialNumber = 9,
+  kWeekOfManufacture = 10,
+  kPhysicalSize = 11,
+  kMaxValue = kPhysicalSize,
 };
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum is used to track the
+// availability (or lack thereof) of optional fields during EDID parsing.
+enum class ParseEdidOptionals {
+  kAllAvailable = 0,
+  kBlockZeroSerialNumber = 1,
+  kDescriptorBlockSerialNumber = 2,
+  kWeekOfManufacture = 3,
+  kPhysicalSize = 4,
+  kMaxValue = kPhysicalSize,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum is used to track the
+// serial number types that can be retrieved from an EDID's block zero.
+enum class BlockZeroSerialNumberType {
+  kNormal = 0,
+  kRepeatingPattern = 1,
+  kNoSerialNumber = 2,
+  kMaxValue = kNoSerialNumber,
+};
+
+BlockZeroSerialNumberType GetSerialNumberType(const uint8_t serial_number[],
+                                              size_t size) {
+  int sum = serial_number[0];
+  bool all_equal = true;
+  for (size_t i = 1; i < size; ++i) {
+    sum += serial_number[i];
+    if (serial_number[i - 1] != serial_number[i])
+      all_equal = false;
+  }
+
+  if (sum == 0)
+    return BlockZeroSerialNumberType::kNoSerialNumber;
+
+  if (all_equal)
+    return BlockZeroSerialNumberType::kRepeatingPattern;
+
+  return BlockZeroSerialNumberType::kNormal;
+}
 }  // namespace
 
-EdidParser::EdidParser(const std::vector<uint8_t>& edid_blob)
-    : manufacturer_id_(0),
+EdidParser::EdidParser(const std::vector<uint8_t>& edid_blob, bool is_external)
+    : is_external_display_(is_external),
+      manufacturer_id_(0),
       product_id_(0),
       year_of_manufacture_(display::kInvalidYearOfManufacture),
       gamma_(0.0),
@@ -58,13 +111,23 @@ uint32_t EdidParser::GetProductCode() const {
           (static_cast<uint32_t>(product_id_)));
 }
 
-int64_t EdidParser::GetDisplayId(uint8_t output_index) const {
+int64_t EdidParser::GetIndexBasedDisplayId(uint8_t output_index) const {
   // Generates product specific value from product_name instead of product code.
   // See https://crbug.com/240341
   const uint32_t product_code_hash =
       display_name_.empty() ? 0 : base::Hash(display_name_);
   // An ID based on display's index will be assigned later if this call fails.
   return GenerateDisplayID(manufacturer_id_, product_code_hash, output_index);
+}
+
+int64_t EdidParser::GetEdidBasedDisplayId() const {
+  const std::string string_to_hash =
+      base::NumberToString(manufacturer_id_) +
+      base::NumberToString(product_id_) + display_name_ +
+      base::NumberToString(week_of_manufacture()) +
+      base::NumberToString(year_of_manufacture_) + max_image_size().ToString() +
+      block_zero_serial_number_hash() + descriptor_block_serial_number_hash();
+  return static_cast<int64_t>(base::PersistentHash(string_to_hash));
 }
 
 // static
@@ -136,11 +199,63 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   }
   product_id_ = (edid[kProductIdOffset] << 8) + edid[kProductIdOffset + 1];
 
+  //   Bytes 12-15: dislay serial number, in little-endian (LSB). This field is
+  //   optional and its absence is marked by having all bytes set to 0x00.
+  //   Values do not represent ASCII characters.
+  constexpr size_t kSerialNumberOffset = 12;
+  constexpr size_t kSerialNumberLength = 4;
+
+  if (edid.size() < kSerialNumberOffset + kSerialNumberLength) {
+    base::UmaHistogramEnumeration(kParseEdidFailureMetric,
+                                  ParseEdidFailure::kSerialNumber);
+    return;  // Any other fields below are beyond this edid offset.
+  }
+
+  const uint8_t serial_number_bytes[kSerialNumberLength] = {
+      edid[kSerialNumberOffset], edid[kSerialNumberOffset + 1],
+      edid[kSerialNumberOffset + 2], edid[kSerialNumberOffset + 3]};
+
+  // Report the type of serial number encountered in block zero of external
+  // displays: empty (==0), repeating pattern (e.g. 01010101 or 0F0F0F0F),
+  // or normal.
+  if (is_external_display_) {
+    base::UmaHistogramEnumeration(
+        kBlockZeroSerialNumberTypeMetric,
+        GetSerialNumberType(serial_number_bytes,
+                            std::size(serial_number_bytes)));
+  }
+
+  const uint32_t serial_number =
+      serial_number_bytes[0] + (serial_number_bytes[1] << 8) +
+      (serial_number_bytes[2] << 16) + (serial_number_bytes[3] << 24);
+  if (serial_number) {
+    block_zero_serial_number_hash_ =
+        base::MD5String(base::NumberToString(serial_number));
+  }
+
   // Constants are taken from "VESA Enhanced EDID Standard" Release A, Revision
   // 2, Sep 2006, Sec 3.4.4 "Week and Year of Manufacture or Model Year: 2
   // Bytes".
+  constexpr size_t kWeekOfManufactureOffset = 16;
+  constexpr uint32_t kValidWeekValueUpperBound = 0x36;
+  constexpr uint32_t kModelYearMarker = 0xFF;
+
+  if (edid.size() < kWeekOfManufactureOffset + 1) {
+    base::UmaHistogramEnumeration(kParseEdidFailureMetric,
+                                  ParseEdidFailure::kWeekOfManufacture);
+    return;  // Any other fields below are beyond this edid offset.
+  }
+  {
+    const uint8_t byte_data = edid[kWeekOfManufactureOffset];
+    // Store the value if it's within the range of 1-54 or equals to 0xFF.
+    if ((byte_data > 0x00 && byte_data <= kValidWeekValueUpperBound) ||
+        byte_data == kModelYearMarker) {
+      week_of_manufacture_ = byte_data;
+    }
+  }
+
   constexpr size_t kYearOfManufactureOffset = 17;
-  constexpr uint32_t kValidValueLowerBound = 0x10;
+  constexpr uint32_t kValidYearValueLowerBound = 0x10;
   constexpr int32_t kYearOffset = 1990;
 
   if (edid.size() < kYearOfManufactureOffset + 1) {
@@ -148,9 +263,11 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
                                   ParseEdidFailure::kYearOfManufacture);
     return;  // Any other fields below are beyond this edid offset.
   }
-  const uint8_t byte_data = edid[kYearOfManufactureOffset];
-  if (byte_data >= kValidValueLowerBound)
-    year_of_manufacture_ = byte_data + kYearOffset;
+  {
+    const uint8_t byte_data = edid[kYearOfManufactureOffset];
+    if (byte_data >= kValidYearValueLowerBound)
+      year_of_manufacture_ = byte_data + kYearOffset;
+  }
 
   // Constants are taken from "VESA Enhanced EDID Standard" Release A, Revision
   // 1, Feb 2000, Sec 3.6 "Basic Display Parameters and Features: 5 bytes"
@@ -177,6 +294,19 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
         (edid[kVideoInputDefinitionOffset] & kColorBitDepthMask) >>
         kColorBitDepthOffset)];
   }
+
+  constexpr size_t kEDIDMaxHorizontalImageSizeOffset = 21;
+  constexpr size_t kEDIDMaxVerticalImageSizeOffset = 22;
+
+  if (edid.size() < kEDIDMaxVerticalImageSizeOffset + 1) {
+    base::UmaHistogramEnumeration(kParseEdidFailureMetric,
+                                  ParseEdidFailure::kPhysicalSize);
+    return;  // Any other fields below are beyond this edid offset.
+  }
+  const gfx::Size max_image_size(edid[kEDIDMaxHorizontalImageSizeOffset],
+                                 edid[kEDIDMaxVerticalImageSizeOffset]);
+  if (!max_image_size.IsEmpty())
+    max_image_size_ = max_image_size;
 
   // Constants are taken from "VESA Enhanced EDID Standard" Release A, Revision
   // 2, Sep 2006, Sec. 3.6.3 "Display Transfer Characteristics (GAMMA ): 1 Byte"
@@ -277,6 +407,8 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   constexpr size_t kDescriptorLength = 18;
   // The specifier types.
   constexpr uint8_t kMonitorNameDescriptor = 0xfc;
+  constexpr uint8_t kDisplayRangeLimitsDescriptor = 0xfd;
+  constexpr uint8_t kMonitorSerialNumberDescriptor = 0xff;
 
   display_name_.clear();
   for (size_t i = 0; i < kNumDescriptors; ++i) {
@@ -314,7 +446,7 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
     // If the descriptor contains the display name, it has the following
     // structure:
     //   bytes 0-2, 4: \0
-    //   byte 3: descriptor type, defined above.
+    //   byte 3: 0xfc
     //   bytes 5-17: text data, ending with \r, padding with spaces
     // we should check bytes 0-2 and 4, since it may have other values in
     // case that the descriptor contains other type of data.
@@ -323,6 +455,67 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
       std::string name(reinterpret_cast<const char*>(&edid[offset + 5]),
                        kDescriptorLength - 5);
       base::TrimWhitespaceASCII(name, base::TRIM_TRAILING, &display_name_);
+      continue;
+    }
+
+    // If the descriptor contains the display's range limits, it has the
+    // following structure:
+    //   bytes 0-2: \0
+    //   byte 3: 0xfd
+    //   byte 4: Offsets for display range limits
+    //   bytes 5-17: Display range limits and timing information
+    if (edid[offset] == 0 && edid[offset + 1] == 0 && edid[offset + 2] == 0 &&
+        edid[offset + 3] == kDisplayRangeLimitsDescriptor) {
+      // byte 4: Offsets for display range limits
+      const uint8_t kRateOffset = edid[offset + 4];
+      // bits 7-4: Reserved \0
+      if (kRateOffset & 0x10)
+        continue;
+      // bit 3: Horizontal max rate offset (not used)
+      // bit 2: Horizontal min rate offset (not used)
+      // bit 1: Vertical max rate offset
+      const uint8_t verticalMaxRateOffset = kRateOffset & (1 << 1) ? 255 : 0;
+      // bit 0: Vertical min rate offset
+      const uint8_t verticalMinRateOffset = kRateOffset & (1 << 0) ? 255 : 0;
+
+      // bytes 5-8: Rate limits
+      // Each byte must be within [1, 255].
+      if (edid[offset + 5] == 0 || edid[offset + 6] == 0 ||
+          edid[offset + 7] == 0 || edid[offset + 8] == 0)
+        continue;
+      // byte 5: Min vertical rate in Hz
+      min_vfreq_ = edid[offset + 5] + verticalMinRateOffset;
+      // byte 6: Max vertical rate in Hz
+      max_vfreq_ = edid[offset + 6] + verticalMaxRateOffset;
+      // byte 7: Min horizontal rate in kHz (not used)
+      // byte 8: Max horizontal rate in kHz (not used)
+
+      // byte 9: Maximum pixel clock rate (not used)
+      // byte 10: Extended timing information type (not used)
+      // bytes 11-17: Video timing parameters (not used)
+
+      continue;
+    }
+
+    // If the descriptor contains the display's product serial number, it has
+    // the following structure:
+    //   bytes 0-2, 4: \0
+    //   byte 3: 0xff
+    //   bytes 5-17: text data, ending with \r, padding with spaces
+    // we should check bytes 0-2 and 4, since it may have other values in
+    // case that the descriptor contains other type of data.
+    if (edid[offset] == 0 && edid[offset + 1] == 0 && edid[offset + 2] == 0 &&
+        edid[offset + 3] == kMonitorSerialNumberDescriptor &&
+        edid[offset + 4] == 0) {
+      std::string serial_number_str(
+          reinterpret_cast<const char*>(&edid[offset + 5]),
+          kDescriptorLength - 5);
+      base::TrimWhitespaceASCII(serial_number_str, base::TRIM_TRAILING,
+                                &serial_number_str);
+      if (!serial_number_str.empty()) {
+        descriptor_block_serial_number_hash_ =
+            base::MD5String(serial_number_str);
+      }
       continue;
     }
   }
@@ -375,9 +568,9 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   constexpr gfx::ColorSpace::TransferID kTransferIDMap[] = {
       gfx::ColorSpace::TransferID::BT709,
       gfx::ColorSpace::TransferID::GAMMA24,
-      gfx::ColorSpace::TransferID::SMPTEST2084,
+      gfx::ColorSpace::TransferID::PQ,
       // STD B67 is also known as Hybrid-log Gamma (HLG).
-      gfx::ColorSpace::TransferID::ARIB_STD_B67,
+      gfx::ColorSpace::TransferID::HLG,
   };
   constexpr uint8_t kHDRStaticMetadataDataBlockLengthMask = 0x1F;
 
@@ -435,11 +628,11 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
           const std::bitset<kMaxNumColorimetryEntries>
               supported_primaries_bitfield(edid[data_offset + 2]);
           static_assert(
-              kMaxNumColorimetryEntries == base::size(kPrimaryIDMap),
+              kMaxNumColorimetryEntries == std::size(kPrimaryIDMap),
               "kPrimaryIDMap should describe all possible colorimetry entries");
-          for (size_t i = 0; i < kMaxNumColorimetryEntries; ++i) {
-            if (supported_primaries_bitfield[i])
-              supported_color_primary_ids_.insert(kPrimaryIDMap[i]);
+          for (size_t entry = 0; entry < kMaxNumColorimetryEntries; ++entry) {
+            if (supported_primaries_bitfield[entry])
+              supported_color_primary_ids_.insert(kPrimaryIDMap[entry]);
           }
           break;
         }
@@ -449,11 +642,12 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
           const std::bitset<kMaxNumHDRStaticMedatataEntries>
               supported_eotfs_bitfield(edid[data_offset + 2]);
           static_assert(
-              kMaxNumHDRStaticMedatataEntries == base::size(kTransferIDMap),
+              kMaxNumHDRStaticMedatataEntries == std::size(kTransferIDMap),
               "kTransferIDMap should describe all possible transfer entries");
-          for (size_t i = 0; i < kMaxNumHDRStaticMedatataEntries; ++i) {
-            if (supported_eotfs_bitfield[i])
-              supported_color_transfer_ids_.insert(kTransferIDMap[i]);
+          for (size_t entry = 0; entry < kMaxNumHDRStaticMedatataEntries;
+               ++entry) {
+            if (supported_eotfs_bitfield[entry])
+              supported_color_transfer_ids_.insert(kTransferIDMap[entry]);
           }
 
           // See CEA 861.3-2015, Sec.7.5.13, "HDR Static Metadata Data Block"
@@ -463,22 +657,24 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
           if (length_of_data_block <= 3)
             break;
           const uint8_t desired_content_max_luminance = edid[data_offset + 4];
-          luminance_ = base::make_optional<Luminance>({});
-          luminance_->max = 50.0 * pow(2, desired_content_max_luminance / 32.0);
+          hdr_static_metadata_ =
+              absl::make_optional<gfx::HDRStaticMetadata>({});
+          hdr_static_metadata_->max =
+              50.0 * pow(2, desired_content_max_luminance / 32.0);
 
           if (length_of_data_block <= 4)
             break;
           const uint8_t desired_content_max_frame_average_luminance =
               edid[data_offset + 5];
-          luminance_->max_avg =
+          hdr_static_metadata_->max_avg =
               50.0 * pow(2, desired_content_max_frame_average_luminance / 32.0);
 
           if (length_of_data_block <= 5)
             break;
           const uint8_t desired_content_min_luminance = edid[data_offset + 6];
-          luminance_->min = luminance_->max *
-                            pow(desired_content_min_luminance / 255.0, 2) /
-                            100.0;
+          hdr_static_metadata_->min =
+              hdr_static_metadata_->max *
+              pow(desired_content_min_luminance / 255.0, 2) / 100.0;
           break;
         }
         default:
@@ -490,6 +686,46 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   }
   base::UmaHistogramEnumeration(kParseEdidFailureMetric,
                                 ParseEdidFailure::kNoError);
+  ReportEdidOptionalsForExternalDisplay();
+}
+
+void EdidParser::ReportEdidOptionalsForExternalDisplay() const {
+  if (!is_external_display_)
+    return;
+
+  bool all_optionals_available = true;
+
+  if (!week_of_manufacture_.has_value()) {
+    all_optionals_available = false;
+    base::UmaHistogramEnumeration(kParseExternalDisplayEdidOptionalsMetric,
+                                  ParseEdidOptionals::kWeekOfManufacture);
+  }
+  if (!max_image_size_.has_value()) {
+    all_optionals_available = false;
+    base::UmaHistogramEnumeration(kParseExternalDisplayEdidOptionalsMetric,
+                                  ParseEdidOptionals::kPhysicalSize);
+  }
+  uint8_t serial_number_count = kMaxSerialNumberCount;
+  if (!block_zero_serial_number_hash_.has_value()) {
+    all_optionals_available = false;
+    serial_number_count--;
+    base::UmaHistogramEnumeration(kParseExternalDisplayEdidOptionalsMetric,
+                                  ParseEdidOptionals::kBlockZeroSerialNumber);
+  }
+  if (!descriptor_block_serial_number_hash_.has_value()) {
+    all_optionals_available = false;
+    serial_number_count--;
+    base::UmaHistogramEnumeration(
+        kParseExternalDisplayEdidOptionalsMetric,
+        ParseEdidOptionals::kDescriptorBlockSerialNumber);
+  }
+  base::UmaHistogramExactLinear(kNumOfSerialNumbersProvidedByExternalDisplay,
+                                serial_number_count, kMaxSerialNumberCount);
+
+  if (all_optionals_available) {
+    base::UmaHistogramEnumeration(kParseExternalDisplayEdidOptionalsMetric,
+                                  ParseEdidOptionals::kAllAvailable);
+  }
 }
 
 }  // namespace display

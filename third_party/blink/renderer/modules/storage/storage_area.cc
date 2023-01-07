@@ -28,18 +28,22 @@
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/action_after_pagehide.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/storage/dom_window_storage.h"
 #include "third_party/blink/renderer/modules/storage/inspector_dom_storage_agent.h"
 #include "third_party/blink/renderer/modules/storage/storage_controller.h"
 #include "third_party/blink/renderer/modules/storage/storage_event.h"
 #include "third_party/blink/renderer/modules/storage/storage_namespace.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -74,6 +78,11 @@ StorageArea::StorageArea(LocalDOMWindow* window,
   DCHECK(window);
   DCHECK(cached_area_);
   cached_area_->RegisterSource(this);
+  if (cached_area_->is_session_storage_for_prerendering()) {
+    DomWindow()->document()->AddWillDispatchPrerenderingchangeCallback(
+        WTF::BindOnce(&StorageArea::OnDocumentActivatedForPrerendering,
+                      WrapWeakPersistent(this)));
+  }
 }
 
 StorageArea::~StorageArea() {
@@ -190,6 +199,12 @@ bool StorageArea::CanAccessStorage() const {
 
   if (did_check_can_access_storage_)
     return can_access_storage_cached_result_;
+
+  // We can't perform synchronous IPC calls after diverging from the recording,
+  // as the calls will never complete.
+  if (recordreplay::HasDivergedFromRecording())
+    return false;
+
   can_access_storage_cached_result_ = StorageController::CanAccessStorageArea(
       DomWindow()->GetFrame(), storage_type_);
   did_check_can_access_storage_ = true;
@@ -249,6 +264,23 @@ blink::WebScopedVirtualTimePauser StorageArea::CreateWebScopedVirtualTimePauser(
       ->GetFrame()
       ->GetFrameScheduler()
       ->CreateWebScopedVirtualTimePauser(name, duration);
+}
+
+LocalDOMWindow* StorageArea::GetDOMWindow() {
+  return DomWindow();
+}
+
+void StorageArea::OnDocumentActivatedForPrerendering() {
+  StorageNamespace* storage_namespace =
+      StorageNamespace::From(DomWindow()->GetFrame()->GetPage());
+  if (!storage_namespace)
+    return;
+
+  // Swap out the session storage state used within prerendering, and replace it
+  // with the normal session storage state. For more details:
+  // https://docs.google.com/document/d/1I5Hr8I20-C1GBr4tAXdm0U8a1RDUKHt4n7WcH4fxiSE/edit?usp=sharing
+  cached_area_ = storage_namespace->GetCachedArea(DomWindow());
+  cached_area_->RegisterSource(this);
 }
 
 }  // namespace blink

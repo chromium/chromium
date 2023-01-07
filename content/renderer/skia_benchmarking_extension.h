@@ -1,11 +1,10 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_RENDERER_SKIA_BENCHMARKING_EXTENSION_H_
 #define CONTENT_RENDERER_SKIA_BENCHMARKING_EXTENSION_H_
 
-#include "base/macros.h"
 #include "gin/wrappable.h"
 
 namespace blink {
@@ -21,6 +20,10 @@ namespace content {
 class SkiaBenchmarking : public gin::Wrappable<SkiaBenchmarking> {
  public:
   static gin::WrapperInfo kWrapperInfo;
+
+  SkiaBenchmarking(const SkiaBenchmarking&) = delete;
+  SkiaBenchmarking& operator=(const SkiaBenchmarking&) = delete;
+
   static void Install(blink::WebLocalFrame* frame);
 
   // Wrapper around SkGraphics::Init that can be invoked multiple times.
@@ -69,8 +72,6 @@ class SkiaBenchmarking : public gin::Wrappable<SkiaBenchmarking> {
   // Takes a base64 encoded SKP and returns
   // { 'width': {Number}, 'height': {Number} }
   void GetInfo(gin::Arguments* args);
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaBenchmarking);
 };
 
 }  // namespace content

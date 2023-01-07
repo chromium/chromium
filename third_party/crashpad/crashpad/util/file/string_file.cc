@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 #include <limits>
 
 #include "base/logging.h"
+#include "base/numerics/ostream_operators.h"
 #include "base/numerics/safe_math.h"
 #include "util/misc/implicit_cast.h"
 #include "util/numeric/safe_assignment.h"

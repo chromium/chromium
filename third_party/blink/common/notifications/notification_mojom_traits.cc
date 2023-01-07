@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@ bool StructTraits<blink::mojom::NotificationDataDataView,
   // platform_notification_data.data once it stores a vector of ints not chars.
   std::vector<uint8_t> data;
 
-  base::Optional<std::string> lang;
+  absl::optional<std::string> lang;
   if (!notification_data.ReadTitle(&platform_notification_data->title) ||
       !notification_data.ReadDirection(
           &platform_notification_data->direction) ||

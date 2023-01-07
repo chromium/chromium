@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/metrics/window_configuration_recorder.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/timer/timer.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/timer/timer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,8 +24,7 @@
 namespace {
 
 // Delay between a recording of a new configuration.
-static constexpr base::TimeDelta kRecordDelay =
-    base::TimeDelta::FromSeconds(20);
+static constexpr base::TimeDelta kRecordDelay = base::Seconds(20);
 
 // Timer callback for recording configuration after a delay.
 void RecordWindowGeometryMetrics(WindowConfigurationRecorder* recorder) {
@@ -37,22 +36,18 @@ NSArray<UIWindow*>* ForegroundWindowsForApplication(
     UIApplication* application) {
   NSMutableArray<UIWindow*>* windows = [NSMutableArray arrayWithCapacity:3];
 
-  if (base::ios::IsSceneStartupSupported()) {
-    if (@available(iOS 13, *)) {
-      for (UIScene* scene in application.connectedScenes) {
-        if (scene.activationState != UISceneActivationStateForegroundActive)
-          continue;
+  for (UIScene* scene in application.connectedScenes) {
+    if (scene.activationState != UISceneActivationStateForegroundActive)
+      continue;
 
-        UIWindowScene* windowScene = base::mac::ObjCCast<UIWindowScene>(scene);
-        for (UIWindow* window in windowScene.windows) {
-          // Skip other windows (like keyboard) that keep showing up.
-          if (![window isKindOfClass:NSClassFromString(@"ChromeOverlayWindow")])
-            continue;
+    UIWindowScene* windowScene = base::mac::ObjCCast<UIWindowScene>(scene);
+    for (UIWindow* window in windowScene.windows) {
+      // Skip other windows (like keyboard) that keep showing up.
+      if (![window isKindOfClass:NSClassFromString(@"ChromeOverlayWindow")])
+        continue;
 
-          [windows addObject:window];
-          break;  // Stop after one window per scene. This may be wrong.
-        }
-      }
+      [windows addObject:window];
+      break;  // Stop after one window per scene. This may be wrong.
     }
   }
   return [windows copy];

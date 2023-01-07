@@ -1,12 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_INFOBAR_DELEGATE_H_
 
-#include "chrome/browser/infobars/infobar_service.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/shell_integration.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 class Profile;
@@ -19,8 +20,9 @@ namespace chrome {
 class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates a default browser infobar and delegate and adds the infobar to
-  // |infobar_service|.
-  static void Create(InfoBarService* infobar_service, Profile* profile);
+  // |infobar_manager|.
+  static void Create(infobars::ContentInfoBarManager* infobar_manager,
+                     Profile* profile);
 
   DefaultBrowserInfoBarDelegate(const DefaultBrowserInfoBarDelegate&) = delete;
   DefaultBrowserInfoBarDelegate& operator=(
@@ -59,7 +61,7 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
   bool Accept() override;
 
   // The WebContents's corresponding profile.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Whether the info bar should be dismissed on the next navigation.
   bool should_expire_ = false;

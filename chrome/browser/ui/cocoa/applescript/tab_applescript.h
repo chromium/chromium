@@ -1,9 +1,11 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_COCOA_APPLESCRIPT_TAB_APPLESCRIPT_H_
 #define CHROME_BROWSER_UI_COCOA_APPLESCRIPT_TAB_APPLESCRIPT_H_
+
+#include "base/memory/raw_ptr.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -18,9 +20,9 @@ class Profile;
 // Represents a tab scriptable item in applescript.
 @interface TabAppleScript : ElementAppleScript {
  @private
-  content::WebContents* _webContents;  // weak.
+  raw_ptr<content::WebContents> _webContents;  // weak.
 
-  Profile* _profile;  // weak.
+  raw_ptr<Profile> _profile;  // weak.
 
   // Contains the temporary URL when a user creates a new folder/item with
   // url specified like

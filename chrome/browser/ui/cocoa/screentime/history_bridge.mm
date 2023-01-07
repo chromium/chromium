@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/cocoa/screentime/history_bridge.h"
 
-//#import <ScreenTime/ScreenTime.h>
+#import <ScreenTime/ScreenTime.h>
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"

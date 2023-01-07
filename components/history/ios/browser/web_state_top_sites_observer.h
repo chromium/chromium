@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_HISTORY_IOS_BROWSER_WEB_STATE_TOP_SITES_OBSERVER_H_
 #define COMPONENTS_HISTORY_IOS_BROWSER_WEB_STATE_TOP_SITES_OBSERVER_H_
 
-#include "base/macros.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -19,9 +18,10 @@ class WebStateTopSitesObserver
     : public web::WebStateObserver,
       public web::WebStateUserData<WebStateTopSitesObserver> {
  public:
-  ~WebStateTopSitesObserver() override;
+  WebStateTopSitesObserver(const WebStateTopSitesObserver&) = delete;
+  WebStateTopSitesObserver& operator=(const WebStateTopSitesObserver&) = delete;
 
-  static void CreateForWebState(web::WebState* web_state, TopSites* top_sites);
+  ~WebStateTopSitesObserver() override;
 
  private:
   friend class web::WebStateUserData<WebStateTopSitesObserver>;
@@ -37,8 +37,6 @@ class WebStateTopSitesObserver
   TopSites* top_sites_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebStateTopSitesObserver);
 };
 
 }  // namespace history

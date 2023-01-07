@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,12 @@
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace ash {
@@ -60,6 +59,8 @@ ImeModeIndicatorView::ImeModeIndicatorView(const gfx::Rect& cursor_bounds,
   set_accept_events(false);
   set_shadow(views::BubbleBorder::STANDARD_SHADOW);
   SetArrow(views::BubbleBorder::TOP_CENTER);
+  // Ignore this view for accessibility purposes.
+  SetAccessibleRole(ax::mojom::Role::kNone);
 }
 
 ImeModeIndicatorView::~ImeModeIndicatorView() = default;
@@ -68,8 +69,8 @@ void ImeModeIndicatorView::ShowAndFadeOut() {
   ::wm::SetWindowVisibilityAnimationTransition(GetWidget()->GetNativeView(),
                                                ::wm::ANIMATE_HIDE);
   GetWidget()->Show();
-  timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(kShowingDuration),
-               GetWidget(), &views::Widget::Close);
+  timer_.Start(FROM_HERE, base::Milliseconds(kShowingDuration), GetWidget(),
+               &views::Widget::Close);
 }
 
 void ImeModeIndicatorView::OnBeforeBubbleWidgetInit(
@@ -102,8 +103,9 @@ ImeModeIndicatorView::CreateNonClientFrameView(views::Widget* widget) {
   auto frame = std::make_unique<ModeIndicatorFrameView>();
   // arrow adjustment in BubbleDialogDelegateView is unnecessary because arrow
   // of this bubble is always center.
-  frame->SetBubbleBorder(
-      std::make_unique<views::BubbleBorder>(arrow(), GetShadow(), color()));
+  auto border = std::make_unique<views::BubbleBorder>(arrow(), GetShadow());
+  border->SetColor(color());
+  frame->SetBubbleBorder(std::move(border));
   return frame;
 }
 

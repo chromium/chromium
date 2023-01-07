@@ -1,12 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/protocol/stream_packet_socket.h"
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "jingle/glue/utils.h"
+#include "components/webrtc/net_address_utils.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
 #include "net/log/net_log_source.h"
@@ -15,8 +14,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/protocol/stun_tcp_packet_processor.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -72,7 +70,7 @@ rtc::SocketAddress GetAddress(
     LOG(ERROR) << "Failed to get address: " << result;
     return address;
   }
-  bool success = jingle_glue::IPEndPointToSocketAddress(ip_endpoint, &address);
+  bool success = webrtc::IPEndPointToSocketAddress(ip_endpoint, &address);
   if (!success) {
     LOG(ERROR) << "failed to convert IPEndPoint to Socket address";
   }
@@ -142,13 +140,12 @@ bool StreamPacketSocket::InitClientTcp(
   }
 
   net::IPEndPoint local_endpoint;
-  if (!jingle_glue::SocketAddressToIPEndPoint(local_address, &local_endpoint)) {
+  if (!webrtc::SocketAddressToIPEndPoint(local_address, &local_endpoint)) {
     return false;
   }
 
   net::IPEndPoint remote_endpoint;
-  if (!jingle_glue::SocketAddressToIPEndPoint(remote_address,
-                                              &remote_endpoint)) {
+  if (!webrtc::SocketAddressToIPEndPoint(remote_address, &remote_endpoint)) {
     return false;
   }
 
@@ -447,5 +444,4 @@ void StreamPacketSocket::CloseWithNetError(int net_error) {
   SignalClose(this, error_);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

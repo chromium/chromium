@@ -1,3 +1,1 @@
 per-file *audio*=file://media/audio/OWNERS
-
-per-file media_switches.*=mlamouri@chromium.org

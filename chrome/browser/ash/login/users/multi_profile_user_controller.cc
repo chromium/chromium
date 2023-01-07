@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -161,27 +161,28 @@ void MultiProfileUserController::StartObserving(Profile* user_profile) {
 
 void MultiProfileUserController::RemoveCachedValues(
     const std::string& user_email) {
-  DictionaryPrefUpdate update(local_state_,
+  ScopedDictPrefUpdate update(local_state_,
                               prefs::kCachedMultiProfileUserBehavior);
-  update->RemoveKey(user_email);
+  update->Remove(user_email);
 }
 
 std::string MultiProfileUserController::GetCachedValue(
     const std::string& user_email) const {
-  const base::DictionaryValue* dict =
-      local_state_->GetDictionary(prefs::kCachedMultiProfileUserBehavior);
-  std::string value;
-  if (dict && dict->GetStringWithoutPathExpansion(user_email, &value))
-    return SanitizeBehaviorValue(value);
+  const base::Value::Dict& dict =
+      local_state_->GetDict(prefs::kCachedMultiProfileUserBehavior);
+
+  const std::string* value = dict.FindString(user_email);
+  if (value)
+    return SanitizeBehaviorValue(*value);
 
   return std::string(kBehaviorUnrestricted);
 }
 
 void MultiProfileUserController::SetCachedValue(const std::string& user_email,
                                                 const std::string& behavior) {
-  DictionaryPrefUpdate update(local_state_,
+  ScopedDictPrefUpdate update(local_state_,
                               prefs::kCachedMultiProfileUserBehavior);
-  update->SetKey(user_email, base::Value(SanitizeBehaviorValue(behavior)));
+  update->Set(user_email, SanitizeBehaviorValue(behavior));
 }
 
 void MultiProfileUserController::CheckSessionUsers() {
@@ -189,7 +190,8 @@ void MultiProfileUserController::CheckSessionUsers() {
       user_manager::UserManager::Get()->GetLoggedInUsers();
   for (user_manager::UserList::const_iterator it = users.begin();
        it != users.end(); ++it) {
-    if (!IsUserAllowedInSession((*it)->GetAccountId().GetUserEmail(), NULL)) {
+    if (!IsUserAllowedInSession((*it)->GetAccountId().GetUserEmail(),
+                                nullptr)) {
       delegate_->OnUserNotAllowed((*it)->GetAccountId().GetUserEmail());
       return;
     }
@@ -206,9 +208,9 @@ void MultiProfileUserController::OnUserPrefChanged(Profile* user_profile) {
           ->IsDefaultValue()) {
     // Migration code to clear cached default behavior.
     // TODO(xiyuan): Remove this after M35.
-    DictionaryPrefUpdate update(local_state_,
+    ScopedDictPrefUpdate update(local_state_,
                                 prefs::kCachedMultiProfileUserBehavior);
-    update->RemoveKey(user_email);
+    update->Remove(user_email);
   } else {
     const std::string behavior =
         prefs->GetString(prefs::kMultiProfileUserBehavior);

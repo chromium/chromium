@@ -1,16 +1,8 @@
-// Copyright 2012 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.events.eventTargetTester');
 goog.setTestOnly();
@@ -18,7 +10,8 @@ goog.setTestOnly();
 const GoogEventsEvent = goog.require('goog.events.Event');
 const GoogEventsEventTarget = goog.require('goog.events.EventTarget');
 const GoogEventsListenable = goog.require('goog.events.Listenable');
-const googArray = goog.require('goog.array');
+const dispose = goog.require('goog.dispose');
+const events = goog.require('goog.events');
 const recordFunction = goog.require('goog.testing.recordFunction');
 /** @suppress {extraRequire} */
 goog.require('goog.testing.asserts');
@@ -89,7 +82,7 @@ function assertListenerIsCalled(listener, numCount) {
  * resetListeners().
  */
 function assertNoOtherListenerIsCalled() {
-  googArray.forEach(listeners, function(l, index) {
+  listeners.forEach(function(l, index) {
     if (!l[exports.ALREADY_CHECKED_PROP]) {
       assertEquals(
           'Listeners ' + index + ' is unexpectedly called.', 0,
@@ -107,7 +100,7 @@ function assertNoOtherListenerIsCalled() {
  * Resets all listeners call count to 0.
  */
 function resetListeners() {
-  googArray.forEach(listeners, function(l) {
+  listeners.forEach(function(l) {
     l.reset();
     l[exports.ALREADY_CHECKED_PROP] = false;
   });
@@ -151,9 +144,9 @@ const UnlistenReturnType = {
  * @enum {string}
  */
 var EventType = {
-  A: goog.events.getUniqueId('a'),
-  B: goog.events.getUniqueId('b'),
-  C: goog.events.getUniqueId('c')
+  A: events.getUniqueId('a'),
+  B: events.getUniqueId('b'),
+  C: events.getUniqueId('c')
 };
 
 /**
@@ -261,7 +254,7 @@ exports = {
    */
   tearDown() {
     for (var i = 0; i < MAX_INSTANCE_COUNT; i++) {
-      goog.dispose(eventTargets[i]);
+      dispose(eventTargets[i]);
     }
   },
 
@@ -376,7 +369,7 @@ exports = {
     },
 
     testDispatchEventDoesNotThrowWithDisposedEventTarget() {
-      goog.dispose(eventTargets[0]);
+      dispose(eventTargets[0]);
       assertTrue(dispatchEvent(eventTargets[0], EventType.A));
     },
 
@@ -407,7 +400,7 @@ exports = {
         return;
       }
       listen(eventTargets[0], EventType.A, listeners[0]);
-      goog.dispose(eventTargets[0]);
+      dispose(eventTargets[0]);
       dispatchEvent(eventTargets[0], EventType.A);
 
       assertNoOtherListenerIsCalled();
@@ -423,7 +416,7 @@ exports = {
      */
     testUnlistenWorksAfterDisposal() {
       var key = listen(eventTargets[0], EventType.A, listeners[0]);
-      goog.dispose(eventTargets[0]);
+      dispose(eventTargets[0]);
       unlisten(eventTargets[0], EventType.A, listeners[1]);
       if (unlistenByKey) {
         unlistenByKey(eventTargets[0], key);
@@ -1033,6 +1026,7 @@ exports = {
       };
       goog.inherits(MockTarget, GoogEventsEventTarget);
 
+      /** @suppress {visibility} */
       MockTarget.prototype.disposeInternal = function() {
         dispatchEvent(this, EventType.A);
         MockTarget.base(this, 'disposeInternal');
@@ -1044,7 +1038,7 @@ exports = {
         t.dispose();
         assertListenerIsCalled(listeners[0], times(1));
       } catch (e) {
-        goog.dispose(t);
+        dispose(t);
       }
     },
 

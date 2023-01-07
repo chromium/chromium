@@ -3,6 +3,8 @@
 <head>
 <script src='../../../resources/testharness.js'></script>
 <script src='../../../resources/testharnessreport.js'></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src='../../../fast/forms/resources/picker-common.js'></script>
 </head>
 <body>
@@ -13,9 +15,10 @@
 let t = async_test('Color picker: Mouse and touch events should produce the same values.');
 t.step(() => {
   let colorControl = document.getElementById('color');
-  openPicker(colorControl, t.step_func_done(() => {
-    popupWindow.focus();
-    const popupDocument = popupWindow.document;
+  openPicker(colorControl)
+  .then(t.step_func_done(() => {
+    internals.pagePopupWindow.focus();
+    const popupDocument = internals.pagePopupWindow.document;
     const colorWell = popupDocument.querySelector('color-well');
     const colorWellRect = colorWell.getBoundingClientRect();
     const xPosition = colorWellRect.left + (colorWellRect.width * 4 / 10) + 0.6243;

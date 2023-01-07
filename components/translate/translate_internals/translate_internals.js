@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,11 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import './strings.m.js';
+import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 
 import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 
 const detectionLogs = [];
 
@@ -22,27 +21,23 @@ const detectionLogs = [];
  */
 function initialize() {
   addMessageHandlers();
-  decorate('tabbox', TabBox);
+  const tabbox = document.querySelector('cr-tab-box');
+  tabbox.hidden = false;
   chrome.send('requestInfo');
 
   const button = $('detection-logs-dump');
   button.addEventListener('click', onDetectionLogsDump);
 
-  const tabpanelNodeList = document.getElementsByTagName('tabpanel');
+  const tabpanelNodeList = document.querySelectorAll('div[slot=\'panel\']');
   const tabpanels = Array.prototype.slice.call(tabpanelNodeList, 0);
   const tabpanelIds = tabpanels.map(function(tab) {
     return tab.id;
   });
 
-  const tabNodeList = document.getElementsByTagName('tab');
-  const tabs = Array.prototype.slice.call(tabNodeList, 0);
-  tabs.forEach(function(tab) {
-    tab.onclick = function(e) {
-      const tabbox = document.querySelector('tabbox');
-      const tabpanel = tabpanels[tabbox.selectedIndex];
-      const hash = tabpanel.id.match(/(?:^tabpanel-)(.+)/)[1];
-      window.location.hash = hash;
-    };
+  tabbox.addEventListener('selected-index-change', e => {
+    const tabpanel = tabpanels[e.detail];
+    const hash = tabpanel.id.match(/(?:^tabpanel-)(.+)/)[1];
+    window.location.hash = hash;
   });
 
   const activateTabByHash = function() {
@@ -52,11 +47,11 @@ function initialize() {
     hash = hash.substring(1);
 
     const id = 'tabpanel-' + hash;
-    if (tabpanelIds.indexOf(id) === -1) {
+    const index = tabpanelIds.indexOf(id);
+    if (index === -1) {
       return;
     }
-
-    $(id).selected = true;
+    tabbox.setAttribute('selected-index', `${index}`);
   };
 
   window.onhashchange = activateTabByHash;
@@ -178,41 +173,25 @@ function onPrefsUpdated(detail) {
     });
   }
 
-  ul = document.querySelector('#prefs-language-blacklist ul');
+  ul = document.querySelector('#prefs-site-blocklist ul');
   ul.innerHTML = emptyHTML();
 
-  if ('translate_language_blacklist' in detail) {
-    const langs = detail['translate_language_blacklist'];
-
-    langs.forEach(function(langCode) {
-      const text = formatLanguageCode(langCode);
-
-      const li = createLIWithDismissingButton(text, function() {
-        chrome.send('removePrefItem', ['language_blacklist', langCode]);
-      });
-      ul.appendChild(li);
-    });
-  }
-
-  ul = document.querySelector('#prefs-site-blacklist ul');
-  ul.innerHTML = emptyHTML();
-
-  if ('translate_site_blacklist' in detail) {
-    const sites = detail['translate_site_blacklist'];
+  if ('translate_site_blocklist' in detail) {
+    const sites = detail['translate_site_blocklist'];
 
     sites.forEach(function(site) {
       const li = createLIWithDismissingButton(site, function() {
-        chrome.send('removePrefItem', ['site_blacklist', site]);
+        chrome.send('removePrefItem', ['site_blocklist', site]);
       });
       ul.appendChild(li);
     });
   }
 
-  ul = document.querySelector('#prefs-whitelists ul');
+  ul = document.querySelector('#prefs-allowlists ul');
   ul.innerHTML = emptyHTML();
 
-  if ('translate_whitelists' in detail) {
-    const pairs = detail['translate_whitelists'];
+  if ('translate_allowlists' in detail) {
+    const pairs = detail['translate_allowlists'];
 
     Object.keys(pairs).forEach(function(fromLangCode) {
       const toLangCode = pairs[fromLangCode];
@@ -220,22 +199,16 @@ function onPrefsUpdated(detail) {
           formatLanguageCode(toLangCode);
 
       const li = createLIWithDismissingButton(text, function() {
-        chrome.send('removePrefItem', ['whitelists', fromLangCode, toLangCode]);
+        chrome.send('removePrefItem', ['allowlists', fromLangCode, toLangCode]);
       });
       ul.appendChild(li);
     });
   }
 
-  let p = $('prefs-too-often-denied');
-  p.classList.toggle(
-      'prefs-setting-disabled', !detail['translate_too_often_denied']);
-  p.appendChild(createDismissingButton(
-      chrome.send.bind(null, 'removePrefItem', ['too_often_denied'])));
-
   if ('translate_recent_target' in detail) {
     const recentTarget = detail['translate_recent_target'];
 
-    p = $('recent-override');
+    const p = $('recent-override');
 
     p.innerHTML = emptyHTML();
 
@@ -244,7 +217,7 @@ function onPrefsUpdated(detail) {
     });
   }
 
-  p = document.querySelector('#prefs-dump p');
+  const p = document.querySelector('#prefs-dump p');
   const content = JSON.stringify(detail, null, 2);
   p.textContent = content;
 }

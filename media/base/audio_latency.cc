@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,26 +7,32 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <cmath>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "media/base/mac/audio_latency_mac.h"
+#endif
+
+#if BUILDFLAG(IS_FUCHSIA)
+#include "base/fuchsia/scheduler.h"
 #endif
 
 namespace media {
 
 namespace {
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_FUCHSIA)
 // Taken from "Bit Twiddling Hacks"
 // http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
 uint32_t RoundUpToPowerOfTwo(uint32_t v) {
@@ -41,7 +47,7 @@ uint32_t RoundUpToPowerOfTwo(uint32_t v) {
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // WebAudio renderer's quantum size (frames per callback) that is used for
 // calculating the "interactive" buffer size.
 // TODO(crbug.com/988121): This number needs to be passed down from Blink when
@@ -65,7 +71,9 @@ int LCM(int a, int b) {
 bool AudioLatency::IsResamplingPassthroughSupported(LatencyType type) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_FUCHSIA)
+  return true;
+#elif BUILDFLAG(IS_ANDROID)
   // Only N MR1+ has support for OpenSLES performance modes which allow for
   // power efficient playback. Per the Android audio team, we shouldn't waste
   // cycles on resampling when using the playback mode. See OpenSLESOutputStream
@@ -81,12 +89,20 @@ bool AudioLatency::IsResamplingPassthroughSupported(LatencyType type) {
 // static
 int AudioLatency::GetHighLatencyBufferSize(int sample_rate,
                                            int preferred_buffer_size) {
-  // Empirically, we consider 20ms of samples to be high latency.
-#if !defined(USE_CRAS)
+#if defined(USE_CRAS)
+  // Use 80ms rounded to a power of 2.
+  const double eighty_ms_size = 8.0 * sample_rate / 100;
+  const int high_latency_buffer_size = RoundUpToPowerOfTwo(eighty_ms_size);
+#elif BUILDFLAG(IS_FUCHSIA)
+  // Use 80ms buffers. Doesn't need to be aligned to power of 2, but it should
+  // be a multiple of the scheduling period used for audio threads.
+  constexpr base::TimeDelta period = base::Milliseconds(80);
+  static_assert(static_cast<int>(period / base::kAudioSchedulingPeriod) ==
+                period / base::kAudioSchedulingPeriod);
+  const int high_latency_buffer_size = period.InMilliseconds() * sample_rate /
+                                       base::Time::kMillisecondsPerSecond;
+#elif BUILDFLAG(IS_WIN)
   const double twenty_ms_size = 2.0 * sample_rate / 100;
-#endif
-
-#if defined(OS_WIN)
   preferred_buffer_size = std::max(preferred_buffer_size, 1);
 
   // Windows doesn't use power of two buffer sizes, so we should always round up
@@ -107,13 +123,9 @@ int AudioLatency::GetHighLatencyBufferSize(int sample_rate,
   //
   // On Linux, the minimum hardware buffer size is 512, so the lower calculated
   // values are unused.  OSX may have a value as low as 128.
-#if defined(USE_CRAS)
-  const double eighty_ms_size = 8.0 * sample_rate / 100;
-  const int high_latency_buffer_size = RoundUpToPowerOfTwo(eighty_ms_size);
-#else
+  const double twenty_ms_size = 2.0 * sample_rate / 100;
   const int high_latency_buffer_size = RoundUpToPowerOfTwo(twenty_ms_size);
-#endif  // defined(USE_CRAS)
-#endif  // defined(OS_WIN)
+#endif
 
   return std::max(preferred_buffer_size, high_latency_buffer_size);
 }
@@ -134,13 +146,13 @@ int AudioLatency::GetRtcBufferSize(int sample_rate, int hardware_buffer_size) {
     return frames_per_buffer;
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_FUCHSIA)
   // On Linux, MacOS and Fuchsia, the low level IO implementations on the
   // browser side supports all buffer size the clients want. We use the native
   // peer connection buffer size (10ms) to achieve best possible performance.
   frames_per_buffer = sample_rate / 100;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // TODO(olka/henrika): This settings are very old, need to be revisited.
   int frames_per_10ms = sample_rate / 100;
   if (frames_per_buffer < 2 * frames_per_10ms) {
@@ -161,7 +173,7 @@ int AudioLatency::GetRtcBufferSize(int sample_rate, int hardware_buffer_size) {
 int AudioLatency::GetInteractiveBufferSize(int hardware_buffer_size) {
   CHECK_GT(hardware_buffer_size, 0);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Always log this because it's relatively hard to get this
   // information out.
   LOG(INFO) << "audioHardwareBufferSize = " << hardware_buffer_size;
@@ -180,7 +192,7 @@ int AudioLatency::GetInteractiveBufferSize(int hardware_buffer_size) {
   return sensible_buffer_size;
 #else
   return hardware_buffer_size;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 int AudioLatency::GetExactBufferSize(base::TimeDelta duration,
@@ -207,7 +219,7 @@ int AudioLatency::GetExactBufferSize(base::TimeDelta duration,
   if (requested_buffer_size <= hardware_buffer_size)
     return hardware_buffer_size;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows we allow either exactly the minimum buffer size (using
   // IAudioClient3) or multiples of the default buffer size using the previous
   // IAudioClient API.

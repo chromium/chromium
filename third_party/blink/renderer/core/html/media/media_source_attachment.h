@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
 #include "third_party/blink/renderer/core/html/media/media_source_tracer.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
@@ -33,9 +31,6 @@ class WebMediaSource;
 // increased complexity for handling the latter. Concrete implementations of
 // this interface are reference counted to ensure they are available potentially
 // cross-thread and from the registry.
-//
-// TODO(https://crbug.com/878133): This is not yet implementing the multi-thread
-// aspect.
 class CORE_EXPORT MediaSourceAttachment
     : public URLRegistrable,
       public WTF::ThreadSafeRefCounted<MediaSourceAttachment> {
@@ -51,6 +46,8 @@ class CORE_EXPORT MediaSourceAttachment
       const String& url);
 
   MediaSourceAttachment();
+  MediaSourceAttachment(const MediaSourceAttachment&) = delete;
+  MediaSourceAttachment& operator=(const MediaSourceAttachment&) = delete;
   ~MediaSourceAttachment() override;
 
   // This is called on the main thread when the URLRegistry unregisters the
@@ -136,8 +133,6 @@ class CORE_EXPORT MediaSourceAttachment
   friend class WTF::ThreadSafeRefCounted<MediaSourceAttachment>;
 
   static URLRegistry* registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSourceAttachment);
 };
 
 }  // namespace blink

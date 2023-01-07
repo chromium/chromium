@@ -42,16 +42,15 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_object.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 HTMLObjectElement::HTMLObjectElement(Document& document,
                                      const CreateElementFlags flags)
-    : HTMLPlugInElement(html_names::kObjectTag,
-                        document,
-                        flags,
-                        kShouldNotPreferPlugInsForImages),
-      use_fallback_content_(false) {
+    : HTMLPlugInElement(html_names::kObjectTag, document, flags),
+      use_fallback_content_(false),
+      should_use_count_param_url_(false) {
   EnsureUserAgentShadowRoot();
 }
 
@@ -127,35 +126,41 @@ void HTMLObjectElement::ParseAttribute(
 // serviceType!
 void HTMLObjectElement::ParametersForPlugin(PluginParameters& plugin_params) {
   HashSet<StringImpl*, CaseFoldingHash> unique_param_names;
+  if (RuntimeEnabledFeatures::HTMLParamElementUrlSupportEnabled()) {
+    // Scan the PARAM children and store their name/value pairs.
+    // Get the URL and type from the params if we don't already have them.
+    // Only scan <param> children if this functionality hasn't been disabled.
+    for (HTMLParamElement* p = Traversal<HTMLParamElement>::FirstChild(*this);
+         p; p = Traversal<HTMLParamElement>::NextSibling(*p)) {
+      String name = p->GetName();
+      if (name.empty())
+        continue;
 
-  // Scan the PARAM children and store their name/value pairs.
-  // Get the URL and type from the params if we don't already have them.
-  for (HTMLParamElement* p = Traversal<HTMLParamElement>::FirstChild(*this); p;
-       p = Traversal<HTMLParamElement>::NextSibling(*p)) {
-    String name = p->GetName();
-    if (name.IsEmpty())
-      continue;
+      unique_param_names.insert(name.Impl());
+      plugin_params.AppendNameWithValue(p->GetName(), p->Value());
 
-    unique_param_names.insert(name.Impl());
-    plugin_params.AppendNameWithValue(p->GetName(), p->Value());
-
-    // TODO(schenney): crbug.com/572908 url adjustment does not belong in this
-    // function.
-    // HTML5 says that an object resource's URL is specified by the object's
-    // data attribute, not by a param element with a name of "data". However,
-    // for compatibility, allow the resource's URL to be given by a param
-    // element with one of the common names if we know that resource points
-    // to a plugin.
-    if (url_.IsEmpty() && !EqualIgnoringASCIICase(name, "data") &&
-        HTMLParamElement::IsURLParameter(name)) {
-      SetUrl(StripLeadingAndTrailingHTMLSpaces(p->Value()));
-    }
-    // TODO(schenney): crbug.com/572908 serviceType calculation does not belong
-    // in this function.
-    if (service_type_.IsEmpty() && EqualIgnoringASCIICase(name, "type")) {
-      wtf_size_t pos = p->Value().Find(";");
-      if (pos != kNotFound)
-        SetServiceType(p->Value().GetString().Left(pos));
+      // TODO(schenney): crbug.com/572908 url adjustment does not belong in this
+      // function.
+      // HTML5 says that an object resource's URL is specified by the object's
+      // data attribute, not by a param element with a name of "data". However,
+      // for compatibility, allow the resource's URL to be given by a param
+      // element with one of the common names if we know that resource points
+      // to a plugin.
+      if (url_.empty() && !EqualIgnoringASCIICase(name, "data") &&
+          HTMLParamElement::IsURLParameter(name)) {
+        UseCounter::Count(GetDocument(),
+                          WebFeature::kHTMLParamElementURLParameter);
+        // Use count this <param> usage, if it loads a PDF.
+        should_use_count_param_url_ = true;
+        SetUrl(StripLeadingAndTrailingHTMLSpaces(p->Value()));
+      }
+      // TODO(schenney): crbug.com/572908 serviceType calculation does not
+      // belong in this function.
+      if (service_type_.empty() && EqualIgnoringASCIICase(name, "type")) {
+        wtf_size_t pos = p->Value().Find(";");
+        if (pos != kNotFound)
+          SetServiceType(p->Value().GetString().Left(pos));
+      }
     }
   }
 
@@ -164,13 +169,25 @@ void HTMLObjectElement::ParametersForPlugin(PluginParameters& plugin_params) {
   AttributeCollection attributes = Attributes();
   for (const Attribute& attribute : attributes) {
     const AtomicString& name = attribute.GetName().LocalName();
-    if (!unique_param_names.Contains(name.Impl()))
+    if (unique_param_names.Contains(name.Impl())) {
+      DCHECK(RuntimeEnabledFeatures::HTMLParamElementUrlSupportEnabled());
+    } else {
       plugin_params.AppendAttribute(attribute);
+    }
   }
 
   // Some plugins don't understand the "data" attribute of the OBJECT tag (i.e.
   // Real and WMP require "src" attribute).
   plugin_params.MapDataParamToSrc();
+}
+
+void HTMLObjectElement::UseCountParamUrlUsageIfNeeded(bool is_pdf) const {
+  if (should_use_count_param_url_) {
+    UseCounter::Count(
+        GetDocument(),
+        is_pdf ? WebFeature::kHTMLParamElementURLParameterInUsePdf
+               : WebFeature::kHTMLParamElementURLParameterInUseNonPdf);
+  }
 }
 
 bool HTMLObjectElement::HasFallbackContent() const {
@@ -195,7 +212,7 @@ bool HTMLObjectElement::HasValidClassId() const {
 
   // HTML5 says that fallback content should be rendered if a non-empty
   // classid is specified for which the UA can't find a suitable plugin.
-  return ClassId().IsEmpty();
+  return ClassId().empty();
 }
 
 void HTMLObjectElement::ReloadPluginOnAttributeChange(
@@ -268,10 +285,10 @@ void HTMLObjectElement::UpdatePluginInternal() {
   }
 
   if (!HasValidClassId() || !RequestObject(plugin_params)) {
-    if (!url_.IsEmpty())
+    if (!url_.empty())
       DispatchErrorEvent();
     if (HasFallbackContent())
-      RenderFallbackContent(ContentFrame());
+      RenderFallbackContent(ErrorEventPolicy::kDoNotDispatch);
   } else {
     if (IsErrorplaceholder())
       DispatchErrorEvent();
@@ -291,11 +308,11 @@ void HTMLObjectElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void HTMLObjectElement::ChildrenChanged(const ChildrenChange& change) {
+  HTMLPlugInElement::ChildrenChanged(change);
   if (isConnected() && !UseFallbackContent()) {
     SetNeedsPluginUpdate(true);
     ReattachOnPluginChangeIfNeeded();
   }
-  HTMLPlugInElement::ChildrenChanged(change);
 }
 
 bool HTMLObjectElement::IsURLAttribute(const Attribute& attribute) const {
@@ -330,8 +347,18 @@ void HTMLObjectElement::ReattachFallbackContent() {
   }
 }
 
-void HTMLObjectElement::RenderFallbackContent(Frame* frame) {
-  DCHECK(!frame || frame == ContentFrame());
+void HTMLObjectElement::RenderFallbackContent(
+    ErrorEventPolicy should_dispatch_error_event) {
+  // This method approximately corresponds to step 7 from
+  // https://whatwg.org/C/iframe-embed-object.html#the-object-element:
+  //
+  // If the load failed (e.g. there was an HTTP 404 error, there was a DNS
+  // error), fire an event named error at the element, then jump to the step
+  // below labeled fallback.
+  if (should_dispatch_error_event == ErrorEventPolicy::kDispatch) {
+    DispatchErrorEvent();
+  }
+
   if (UseFallbackContent())
     return;
 
@@ -353,8 +380,18 @@ void HTMLObjectElement::RenderFallbackContent(Frame* frame) {
     }
   }
 
+  // TODO(dcheng): Detach the content frame here.
+  UseCounter::Count(GetDocument(), WebFeature::kHTMLObjectElementFallback);
   use_fallback_content_ = true;
   ReattachFallbackContent();
+}
+
+// static
+bool HTMLObjectElement::IsClassOf(const FrameOwner& owner) {
+  auto* owner_element = DynamicTo<HTMLFrameOwnerElement>(owner);
+  if (!owner_element)
+    return false;
+  return IsA<HTMLObjectElement>(owner_element);
 }
 
 bool HTMLObjectElement::IsExposed() const {

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,21 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/float/float_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_state.h"
+#include "ash/wm/wm_event.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/window_properties.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "chromeos/ui/wm/features.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/test_views.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/caption_button_layout_constants.h"
@@ -30,22 +41,30 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
 
   FrameCaptionButtonContainerViewTest() = default;
 
+  FrameCaptionButtonContainerViewTest(
+      const FrameCaptionButtonContainerViewTest&) = delete;
+  FrameCaptionButtonContainerViewTest& operator=(
+      const FrameCaptionButtonContainerViewTest&) = delete;
+
   ~FrameCaptionButtonContainerViewTest() override = default;
 
   // Creates a widget which allows maximizing based on |maximize_allowed|.
   // The caller takes ownership of the returned widget.
-  views::Widget* CreateTestWidget(MaximizeAllowed maximize_allowed,
-                                  MinimizeAllowed minimize_allowed,
-                                  CloseButtonVisible close_button_visible)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] views::Widget* CreateTestWidget(
+      MaximizeAllowed maximize_allowed,
+      MinimizeAllowed minimize_allowed,
+      CloseButtonVisible close_button_visible) {
     views::Widget* widget = new views::Widget;
-    views::Widget::InitParams params;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     auto delegate = std::make_unique<views::WidgetDelegateView>();
     delegate->SetCanMaximize(maximize_allowed == MAXIMIZE_ALLOWED);
     delegate->SetCanMinimize(minimize_allowed == MINIMIZE_ALLOWED);
+    delegate->SetCanResize(true);
     delegate->SetShowCloseButton(close_button_visible == CLOSE_BUTTON_VISIBLE);
     params.delegate = delegate.release();
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    params.bounds = gfx::Rect(10, 10, 100, 100);
     params.context = GetContext();
     widget->Init(std::move(params));
     return widget;
@@ -84,8 +103,42 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
     return false;
   }
 
+  void ClickSizeButton(FrameCaptionButtonContainerView::TestApi* testApi) {
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    generator->MoveMouseTo(
+        testApi->size_button()->GetBoundsInScreen().CenterPoint());
+    generator->ClickLeftButton();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void ClickFloatButton(FrameCaptionButtonContainerView::TestApi* testApi) {
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    auto* float_button = testApi->float_button();
+    generator->MoveMouseTo(float_button->GetBoundsInScreen().CenterPoint());
+    generator->ClickLeftButton();
+    base::RunLoop().RunUntilIdle();
+  }
+};
+
+// Test float button requires kFloatWindow feature to be enabled during setup.
+class WindowFloatButtonTest : public FrameCaptionButtonContainerViewTest {
+ public:
+  WindowFloatButtonTest() = default;
+
+  WindowFloatButtonTest(const WindowFloatButtonTest&) = delete;
+  WindowFloatButtonTest& operator=(const WindowFloatButtonTest&) = delete;
+
+  ~WindowFloatButtonTest() override = default;
+
+  void SetUp() override {
+    // Ensure float feature is enabled.
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::wm::features::kFloatWindow);
+    AshTestBase::SetUp();
+  }
+
  private:
-  DISALLOW_COPY_AND_ASSIGN(FrameCaptionButtonContainerViewTest);
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test how the allowed actions affect which caption buttons are visible.
@@ -95,7 +148,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, ButtonVisibility) {
   FrameCaptionButtonContainerView container1(CreateTestWidget(
       MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED, CLOSE_BUTTON_VISIBLE));
   InitContainer(&container1);
-  container1.Layout();
+  views::test::RunScheduledLayout(&container1);
   FrameCaptionButtonContainerView::TestApi t1(&container1);
   EXPECT_TRUE(t1.minimize_button()->GetVisible());
   EXPECT_TRUE(t1.size_button()->GetVisible());
@@ -108,7 +161,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, ButtonVisibility) {
   FrameCaptionButtonContainerView container2(CreateTestWidget(
       MAXIMIZE_DISALLOWED, MINIMIZE_ALLOWED, CLOSE_BUTTON_VISIBLE));
   InitContainer(&container2);
-  container2.Layout();
+  views::test::RunScheduledLayout(&container2);
   FrameCaptionButtonContainerView::TestApi t2(&container2);
   EXPECT_TRUE(t2.minimize_button()->GetVisible());
   EXPECT_FALSE(t2.size_button()->GetVisible());
@@ -121,7 +174,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, ButtonVisibility) {
   FrameCaptionButtonContainerView container3(CreateTestWidget(
       MAXIMIZE_DISALLOWED, MINIMIZE_DISALLOWED, CLOSE_BUTTON_VISIBLE));
   InitContainer(&container3);
-  container3.Layout();
+  views::test::RunScheduledLayout(&container3);
   FrameCaptionButtonContainerView::TestApi t3(&container3);
   EXPECT_FALSE(t3.minimize_button()->GetVisible());
   EXPECT_FALSE(t3.size_button()->GetVisible());
@@ -144,7 +197,7 @@ TEST_F(FrameCaptionButtonContainerViewTest,
   container.AddChildViewAt(extra_button, 0);
 
   InitContainer(&container);
-  container.Layout();
+  views::test::RunScheduledLayout(&container);
 
   FrameCaptionButtonContainerView::TestApi test(&container);
   gfx::Rect initial_extra_button_bounds = extra_button->bounds();
@@ -160,33 +213,32 @@ TEST_F(FrameCaptionButtonContainerViewTest,
   ASSERT_EQ(initial_close_button_bounds.x(),
             initial_size_button_bounds.right());
 
-  // Button positions should be the same when entering tablet mode.
+  // Maximize/restore button is hidden in tablet mode and the other buttons
+  // should shift accordingly.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   container.UpdateCaptionButtonState(false /*=animate*/);
   test.EndAnimations();
   // Parent needs to layout in response to size change.
-  container.Layout();
+  views::test::RunScheduledLayout(&container);
 
   EXPECT_TRUE(test.minimize_button()->GetVisible());
-  EXPECT_TRUE(test.size_button()->GetVisible());
+  EXPECT_FALSE(test.size_button()->GetVisible());
   EXPECT_TRUE(test.close_button()->GetVisible());
   gfx::Rect extra_button_bounds = extra_button->bounds();
   gfx::Rect minimize_button_bounds = test.minimize_button()->bounds();
-  gfx::Rect size_button_bounds = test.size_button()->bounds();
   gfx::Rect close_button_bounds = test.close_button()->bounds();
   EXPECT_EQ(minimize_button_bounds.x(), extra_button_bounds.right());
-  EXPECT_EQ(size_button_bounds.x(), minimize_button_bounds.right());
-  EXPECT_EQ(close_button_bounds.x(), size_button_bounds.right());
-  EXPECT_EQ(initial_size_button_bounds, test.size_button()->bounds());
+  EXPECT_EQ(close_button_bounds.x(), minimize_button_bounds.right());
   EXPECT_EQ(initial_close_button_bounds.size(), close_button_bounds.size());
-  EXPECT_EQ(container.GetPreferredSize().width(),
-            initial_container_bounds.width());
+  EXPECT_EQ(
+      initial_container_bounds.width() - initial_size_button_bounds.width(),
+      container.GetPreferredSize().width());
 
   // Button positions should be the same when leaving tablet mode.
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   container.UpdateCaptionButtonState(false /*=animate*/);
   // Calling code needs to layout in response to size change.
-  container.Layout();
+  views::test::RunScheduledLayout(&container);
   test.EndAnimations();
   EXPECT_TRUE(test.minimize_button()->GetVisible());
   EXPECT_TRUE(test.size_button()->GetVisible());
@@ -205,7 +257,7 @@ TEST_F(FrameCaptionButtonContainerViewTest, ShouldShowCloseButtonTrue) {
   FrameCaptionButtonContainerView container(CreateTestWidget(
       MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED, CLOSE_BUTTON_VISIBLE));
   InitContainer(&container);
-  container.Layout();
+  views::test::RunScheduledLayout(&container);
   FrameCaptionButtonContainerView::TestApi testApi(&container);
   EXPECT_TRUE(testApi.close_button()->GetVisible());
   EXPECT_TRUE(testApi.close_button()->GetEnabled());
@@ -217,10 +269,131 @@ TEST_F(FrameCaptionButtonContainerViewTest, ShouldShowCloseButtonFalse) {
   FrameCaptionButtonContainerView container(CreateTestWidget(
       MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED, CLOSE_BUTTON_NOT_VISIBLE));
   InitContainer(&container);
-  container.Layout();
+  views::test::RunScheduledLayout(&container);
   FrameCaptionButtonContainerView::TestApi testApi(&container);
   EXPECT_FALSE(testApi.close_button()->GetVisible());
   EXPECT_TRUE(testApi.close_button()->GetEnabled());
+}
+
+// Test that overriding size button behavior works properly.
+TEST_F(FrameCaptionButtonContainerViewTest, TestSizeButtonBehaviorOverride) {
+  auto* widget = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
+                                  CLOSE_BUTTON_VISIBLE);
+  widget->Show();
+
+  auto* window_state = WindowState::Get(widget->GetNativeWindow());
+
+  FrameCaptionButtonContainerView container(widget);
+  InitContainer(&container);
+  widget->GetContentsView()->AddChildView(&container);
+  views::test::RunScheduledLayout(&container);
+  FrameCaptionButtonContainerView::TestApi testApi(&container);
+
+  EXPECT_TRUE(window_state->IsNormalStateType());
+
+  // Test that the size button works without override.
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsMaximized());
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+
+  // Test that the size button behavior is overridden when override callback
+  // returning true is set.
+  bool called = false;
+  container.SetOnSizeButtonPressedCallback(
+      base::BindLambdaForTesting([&called]() {
+        called = true;
+        return true;
+      }));
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_TRUE(called);
+
+  // Test that the override callback is removable.
+  called = false;
+  container.ClearOnSizeButtonPressedCallback();
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsMaximized());
+  EXPECT_FALSE(called);
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_FALSE(called);
+
+  // Test that the size button behavior fall back to the default one when
+  // override callback returns false.
+  called = false;
+  container.SetOnSizeButtonPressedCallback(
+      base::BindLambdaForTesting([&called]() {
+        called = true;
+        return false;
+      }));
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsMaximized());
+  EXPECT_TRUE(called);
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_TRUE(called);
+}
+
+TEST_F(FrameCaptionButtonContainerViewTest, ResizeButtonRestoreBehavior) {
+  auto* widget = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
+                                  CLOSE_BUTTON_VISIBLE);
+  widget->Show();
+
+  auto* window_state = WindowState::Get(widget->GetNativeWindow());
+
+  FrameCaptionButtonContainerView container(widget);
+  InitContainer(&container);
+  widget->GetContentsView()->AddChildView(&container);
+  views::test::RunScheduledLayout(&container);
+  FrameCaptionButtonContainerView::TestApi testApi(&container);
+
+  // Test using size button to restore the maximized window to its normal window
+  // state.
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsMaximized());
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+
+  // Snap the window.
+  const WindowSnapWMEvent snap_event(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_event);
+  // Check the window is now snapped.
+  EXPECT_TRUE(window_state->IsSnapped());
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsMaximized());
+  ClickSizeButton(&testApi);
+  // Check instead of returning back to normal window state, the window should
+  // return back to Snapped window state.
+  EXPECT_TRUE(window_state->IsSnapped());
+}
+
+// Test float button behavior.
+TEST_F(WindowFloatButtonTest, TestFloatButtonBehavior) {
+  auto* widget = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
+                                  CLOSE_BUTTON_VISIBLE);
+  widget->GetNativeWindow()->SetProperty(
+      aura::client::kAppType, static_cast<int>(ash::AppType::BROWSER));
+  widget->Show();
+
+  FrameCaptionButtonContainerView container(widget);
+  InitContainer(&container);
+  widget->GetContentsView()->AddChildView(&container);
+  views::test::RunScheduledLayout(&container);
+  FrameCaptionButtonContainerView::TestApi testApi(&container);
+  ClickFloatButton(&testApi);
+  auto* window_state = WindowState::Get(widget->GetNativeWindow());
+  // Check if window is floated.
+  auto* window = widget->GetNativeWindow();
+  EXPECT_TRUE(window_state->IsFloated());
+  EXPECT_EQ(window->GetProperty(chromeos::kWindowStateTypeKey),
+            chromeos::WindowStateType::kFloated);
+  ClickFloatButton(&testApi);
+  // Check if window is unfloated.
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_FALSE(window_state->IsFloated());
+  EXPECT_EQ(window->GetProperty(chromeos::kWindowStateTypeKey),
+            chromeos::WindowStateType::kNormal);
 }
 
 }  // namespace ash

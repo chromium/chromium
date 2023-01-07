@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,9 @@
 #include "base/containers/span.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
+#include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/blob_storage_context.h"
@@ -88,11 +89,28 @@ class DataPipeConsumerHelper {
 
  private:
   void DataPipeReady(MojoResult result, const mojo::HandleSignalsState& state) {
+    if (result != MOJO_RESULT_OK) {
+      // We requested a trap on a condition that can never occur. The state of
+      // `pipe_` likely changed.
+      DCHECK_EQ(result, MOJO_RESULT_FAILED_PRECONDITION);
+      InvokeDone(mojo::ScopedDataPipeConsumerHandle(), PassProgressClient(),
+                 /*success=*/true, current_offset_);
+      delete this;
+      return;
+    }
+
     while (current_offset_ < max_bytes_to_read_) {
       const void* data;
       uint32_t size;
-      MojoResult result =
-          pipe_->BeginReadData(&data, &size, MOJO_READ_DATA_FLAG_NONE);
+      result = pipe_->BeginReadData(&data, &size, MOJO_READ_DATA_FLAG_NONE);
+      if (result == MOJO_RESULT_INVALID_ARGUMENT) {
+        // `pipe_` is not actually a ScopedDataPipeConsumerHandle.
+        InvokeDone(mojo::ScopedDataPipeConsumerHandle(), PassProgressClient(),
+                   /*success=*/false, /*bytes_written=*/0);
+        delete this;
+        return;
+      }
+
       if (result == MOJO_RESULT_SHOULD_WAIT) {
         watcher_.ArmOrNotify();
         return;
@@ -650,21 +668,15 @@ void BlobBuilderFromStream::OnError(Result result) {
 
   if (!callback_)
     return;
-  RecordResult(result);
   std::move(callback_).Run(this, nullptr);
 }
 
 void BlobBuilderFromStream::OnSuccess() {
   DCHECK(context_);
   DCHECK(callback_);
-  RecordResult(Result::kSuccess);
   std::move(callback_).Run(
       this, context_->AddFinishedBlob(base::GenerateGUID(), content_type_,
                                       content_disposition_, std::move(items_)));
-}
-
-void BlobBuilderFromStream::RecordResult(Result result) {
-  UMA_HISTOGRAM_ENUMERATION("Storage.Blob.BuildFromStreamResult", result);
 }
 
 bool BlobBuilderFromStream::ShouldStoreNextBlockOnDisk(uint64_t length_hint) {

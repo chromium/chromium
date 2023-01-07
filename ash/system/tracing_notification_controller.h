@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,11 @@ namespace ash {
 class ASH_EXPORT TracingNotificationController : public TracingObserver {
  public:
   TracingNotificationController();
+
+  TracingNotificationController(const TracingNotificationController&) = delete;
+  TracingNotificationController& operator=(
+      const TracingNotificationController&) = delete;
+
   ~TracingNotificationController() override;
 
   // TracingObserver:
@@ -32,8 +37,6 @@ class ASH_EXPORT TracingNotificationController : public TracingObserver {
   bool was_tracing_ = false;
 
   TracingModel* const model_;
-
-  DISALLOW_COPY_AND_ASSIGN(TracingNotificationController);
 };
 
 }  // namespace ash

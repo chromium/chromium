@@ -1,12 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module nearby_share.mojom;
 
 import "chrome/browser/ui/webui/nearby_share/nearby_share_share_type.mojom";
-import "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom";
+import "chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "url/mojom/url.mojom";
 
 // Contains the minimum amount of information needed to show the user a preview
 // of their share when they are confirming a send or receive with a share
@@ -33,6 +34,8 @@ struct ShareTarget {
   string name;
   // Device type of this share target.
   ShareTargetType type;
+  // URL of the share target image.
+  url.mojom.Url? image_url;
   // Payload preview for the attachment(s).
   PayloadPreview payload_preview;
 };
@@ -151,6 +154,9 @@ enum StartDiscoveryResult {
   // Nearby cannot start discovery because there is an existing file transfer
   // in progress.
   kErrorInProgressTransferring,
+  // No supported discovery medium (i.e. Bluetooth, Wi-Fi, etc) is available.
+  // This usually means the user does not have Bluetooth enabled/powered.
+  kNoConnectionMedium,
   // Generic error for failing to start the nearby discovery process.
   kErrorGeneric,
 };
@@ -162,7 +168,8 @@ enum RegisterReceiveSurfaceResult {
   kSuccess,
   // Failed.
   kFailure,
-  // Bluetooth and Wi-Fi are unavailable.
+  // No supported discovery medium (i.e. Bluetooth, Wi-Fi, etc) is available.
+  // This usually means the user does not have Bluetooth enabled/powered.
   kNoConnectionMedium,
   // There is already a transfer in progress.
   kTransferInProgress,
@@ -189,8 +196,13 @@ interface DiscoveryManager {
   // Starts discovering nearby devices. The passed |listener| will be called
   // with any discovered devices. Returns before discovery has actually
   // started; see |DiscoveryObserver.OnStartDiscoveryResult()|.
+  // Ensure StopDiscovery is called before invoking StartDiscovery again.
   StartDiscovery(pending_remote<ShareTargetListener> listener)
       => (StartDiscoveryResult result);
+
+  // Stops the current discovery session. Call StartDiscovery to start
+  // the session again.
+  StopDiscovery() => ();
 
   // Select a previously discovered |share_target_id| to send data to. On
   // success this will return valid ConfirmationManager and
@@ -275,4 +287,9 @@ interface ReceiveManager {
 
   // Reject the incoming share request by the share target id.
   Reject(mojo_base.mojom.UnguessableToken share_target_id) => (bool success);
+
+  // Records via Standard Feature Usage Logging whether or not
+  // advertising successfully starts when the user clicks the
+  // "Device nearby is sharing" notification.
+  RecordFastInitiationNotificationUsage(bool success);
 };

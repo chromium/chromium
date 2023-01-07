@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,26 +9,27 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_manager_utilities.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/insets_conversions.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
-
-#if defined(OS_WIN)
-#include <windows.h>
-#include "ui/display/win/dpi.h"
-#endif
 
 namespace display {
 namespace {
@@ -42,7 +43,7 @@ const float kDpi96 = 96.0;
 
 // Check the content of |spec| and fill |bounds| and |device_scale_factor|.
 // Returns true when |bounds| is found.
-bool GetDisplayBounds(const std::string& spec,
+void GetDisplayBounds(const std::string& spec,
                       gfx::Rect* bounds,
                       float* device_scale_factor) {
   int width = 0;
@@ -60,14 +61,16 @@ bool GetDisplayBounds(const std::string& spec,
     };
     if (equals_within_epsilon(1.77f)) {
       *device_scale_factor = kDsf_1_777;
+    } else if (equals_within_epsilon(1.8f)) {
+      *device_scale_factor = kDsf_1_8;
     } else if (equals_within_epsilon(2.25f)) {
       *device_scale_factor = kDsf_2_252;
-    } else if (equals_within_epsilon(2.66)) {
+    } else if (equals_within_epsilon(2.66f)) {
       *device_scale_factor = kDsf_2_666;
     }
-    return true;
+    return;
   }
-  return false;
+  LOG(FATAL) << "Invalid format:" << spec;
 }
 
 // Display mode list is sorted by:
@@ -160,10 +163,6 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpec(const std::string& spec) {
 ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
     const std::string& spec,
     int64_t id) {
-#if defined(OS_WIN)
-  gfx::Rect bounds_in_native(
-      gfx::Size(GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN)));
-#else
   // Default bounds for a display.
   const int kDefaultHostWindowX = 200;
   const int kDefaultHostWindowY = 200;
@@ -171,12 +170,37 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
   const int kDefaultHostWindowHeight = 768;
   gfx::Rect bounds_in_native(kDefaultHostWindowX, kDefaultHostWindowY,
                              kDefaultHostWindowWidth, kDefaultHostWindowHeight);
-#endif
-  std::string main_spec = spec;
+  base::StringPiece main_spec = spec;
+
+  gfx::RoundedCornersF rounded_corners_radii;
+  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+      main_spec, "~", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (parts.size() == 2) {
+    std::vector<base::StringPiece> radii_part = base::SplitStringPiece(
+        parts[1], "|", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+    DCHECK(radii_part.size() == 1 || radii_part.size() == 4);
+
+    float radii[4];
+    int radius_in_int = 0;
+    for (size_t idx = 0; idx < radii_part.size(); ++idx) {
+      const base::StringPiece& radius = radii_part[idx];
+      bool conversion_success = base::StringToInt(radius, &radius_in_int);
+      DCHECK(conversion_success);
+      radii[idx] = static_cast<float>(radius_in_int);
+    }
+
+    rounded_corners_radii =
+        (radii_part.size() == 1)
+            ? gfx::RoundedCornersF{radii[0]}
+            : gfx::RoundedCornersF{radii[0], radii[1], radii[2], radii[3]};
+
+    main_spec = parts[0];
+  }
 
   float zoom_factor = 1.0f;
-  std::vector<std::string> parts = base::SplitString(
-      main_spec, "@", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  parts = base::SplitStringPiece(main_spec, "@", base::KEEP_WHITESPACE,
+                                 base::SPLIT_WANT_NONEMPTY);
   if (parts.size() == 2) {
     double scale_in_double = 0;
     if (base::StringToDouble(parts[1], &scale_in_double))
@@ -184,19 +208,22 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
     main_spec = parts[0];
   }
 
-  parts = base::SplitString(main_spec, "/", base::KEEP_WHITESPACE,
-                            base::SPLIT_WANT_NONEMPTY);
+  parts = base::SplitStringPiece(main_spec, "/", base::KEEP_WHITESPACE,
+                                 base::SPLIT_WANT_NONEMPTY);
   Display::Rotation rotation(Display::ROTATE_0);
   bool has_overscan = false;
+  bool has_hdr = false;
   if (!parts.empty()) {
     main_spec = parts[0];
     if (parts.size() >= 2) {
-      std::string options = parts[1];
-      for (size_t i = 0; i < options.size(); ++i) {
-        char c = options[i];
+      base::StringPiece options = parts[1];
+      for (char c : options) {
         switch (c) {
           case 'o':
             has_overscan = true;
+            break;
+          case 'h':
+            has_hdr = true;
             break;
           case 'r':  // rotate 90 degrees to 'right'.
             rotation = Display::ROTATE_90;
@@ -213,35 +240,40 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
   }
 
   float device_scale_factor = 1.0f;
-  if (!GetDisplayBounds(main_spec, &bounds_in_native, &device_scale_factor)) {
-#if defined(OS_WIN)
-    device_scale_factor = win::GetDPIScale();
-#endif
-  }
-
   ManagedDisplayModeList display_modes;
-  parts = base::SplitString(main_spec, "#", base::KEEP_WHITESPACE,
-                            base::SPLIT_WANT_NONEMPTY);
-  if (parts.size() == 2) {
-    size_t native_mode = 0;
-    int largest_area = -1;
-    float highest_refresh_rate = -1.0f;
-    main_spec = parts[0];
-    std::string resolution_list = parts[1];
-    parts = base::SplitString(resolution_list, "|", base::KEEP_WHITESPACE,
-                              base::SPLIT_WANT_NONEMPTY);
-    for (size_t i = 0; i < parts.size(); ++i) {
-      gfx::Size size;
-      float refresh_rate = 60.0f;
-      bool is_interlaced = false;
 
-      gfx::Rect mode_bounds;
-      std::vector<std::string> resolution = base::SplitString(
-          parts[i], "%", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-      if (GetDisplayBounds(resolution[0], &mode_bounds, &device_scale_factor)) {
+  if (!main_spec.empty()) {
+    GetDisplayBounds(std::string(main_spec), &bounds_in_native,
+                     &device_scale_factor);
+
+    parts = base::SplitStringPiece(main_spec, "#", base::KEEP_WHITESPACE,
+                                   base::SPLIT_WANT_NONEMPTY);
+    if (parts.size() == 2) {
+      size_t native_mode = 0;
+      int largest_area = -1;
+      float highest_refresh_rate = -1.0f;
+      main_spec = parts[0];
+      base::StringPiece resolution_list = parts[1];
+      parts =
+          base::SplitStringPiece(resolution_list, "|", base::KEEP_WHITESPACE,
+                                 base::SPLIT_WANT_NONEMPTY);
+      for (size_t i = 0; i < parts.size(); ++i) {
+        gfx::Size size;
+        float refresh_rate = 60.0f;
+        bool is_interlaced = false;
+
+        gfx::Rect mode_bounds;
+        std::vector<base::StringPiece> resolution = base::SplitStringPiece(
+            parts[i], "%", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+        float device_scale_factor_for_mode = device_scale_factor;
+        GetDisplayBounds(std::string(resolution[0]), &mode_bounds,
+                         &device_scale_factor_for_mode);
         size = mode_bounds.size();
-        if (resolution.size() > 1)
-          sscanf(resolution[1].c_str(), "%f", &refresh_rate);
+        if (resolution.size() > 1) {
+          double refresh_rate_in_double = 0.0;
+          if (base::StringToDouble(resolution[1], &refresh_rate_in_double))
+            refresh_rate = refresh_rate_in_double;
+        }
         if (size.GetArea() >= largest_area &&
             refresh_rate > highest_refresh_rate) {
           // Use mode with largest area and highest refresh rate as native.
@@ -249,14 +281,15 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
           highest_refresh_rate = refresh_rate;
           native_mode = i;
         }
-        display_modes.push_back(ManagedDisplayMode(
-            size, refresh_rate, is_interlaced, false, device_scale_factor));
+        display_modes.push_back(
+            ManagedDisplayMode(size, refresh_rate, is_interlaced, false,
+                               device_scale_factor_for_mode));
       }
+      ManagedDisplayMode dm = display_modes[native_mode];
+      display_modes[native_mode] =
+          ManagedDisplayMode(dm.size(), dm.refresh_rate(), dm.is_interlaced(),
+                             true, dm.device_scale_factor());
     }
-    ManagedDisplayMode dm = display_modes[native_mode];
-    display_modes[native_mode] =
-        ManagedDisplayMode(dm.size(), dm.refresh_rate(), dm.is_interlaced(),
-                           true, dm.device_scale_factor());
   }
 
   if (id == kInvalidDisplayId) {
@@ -267,8 +300,10 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
       id, base::StringPrintf("Display-%d", static_cast<int>(id)), has_overscan);
   display_info.set_device_scale_factor(device_scale_factor);
   display_info.SetRotation(rotation, Display::RotationSource::ACTIVE);
+  display_info.SetRotation(rotation, Display::RotationSource::USER);
   display_info.set_zoom_factor(zoom_factor);
   display_info.SetBounds(bounds_in_native);
+  display_info.set_rounded_corners_radii(rounded_corners_radii);
 
   if (!display_modes.size()) {
     display_modes.push_back(ManagedDisplayMode(
@@ -282,8 +317,14 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
   if (has_overscan) {
     int width = bounds_in_native.width() / device_scale_factor / 40;
     int height = bounds_in_native.height() / device_scale_factor / 40;
-    display_info.SetOverscanInsets(gfx::Insets(height, width, height, width));
+    display_info.SetOverscanInsets(gfx::Insets::VH(height, width));
     display_info.UpdateDisplaySize();
+  }
+
+  if (has_hdr) {
+    gfx::DisplayColorSpaces display_color_spaces{
+        gfx::ColorSpace::CreateHDR10(), gfx::BufferFormat::BGRA_1010102};
+    display_info.set_display_color_spaces(display_color_spaces);
   }
 
   DVLOG(1) << "DisplayInfoFromSpec info=" << display_info.ToString()
@@ -300,7 +341,6 @@ ManagedDisplayInfo::ManagedDisplayInfo()
       device_scale_factor_(1.0f),
       device_dpi_(kDpi96),
       panel_orientation_(display::PanelOrientation::kNormal),
-      overscan_insets_in_dip_(0, 0, 0, 0),
       zoom_factor_(1.f),
       refresh_rate_(60.f),
       is_interlaced_(false),
@@ -322,7 +362,6 @@ ManagedDisplayInfo::ManagedDisplayInfo(int64_t id,
       device_scale_factor_(1.0f),
       device_dpi_(kDpi96),
       panel_orientation_(display::PanelOrientation::kNormal),
-      overscan_insets_in_dip_(0, 0, 0, 0),
       zoom_factor_(1.f),
       refresh_rate_(60.f),
       is_interlaced_(false),
@@ -380,10 +419,16 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   display_modes_ = native_info.display_modes_;
   maximum_cursor_size_ = native_info.maximum_cursor_size_;
   display_color_spaces_ = native_info.display_color_spaces_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  snapshot_color_space_ = native_info.snapshot_color_space_;
+#endif
+
   bits_per_channel_ = native_info.bits_per_channel_;
   refresh_rate_ = native_info.refresh_rate_;
   is_interlaced_ = native_info.is_interlaced_;
   native_ = native_info.native_;
+  rounded_corners_radii_ = native_info.rounded_corners_radii_;
 
   // Rotation, color_profile and overscan are given by preference,
   // or unit tests. Don't copy if this native_info came from
@@ -393,7 +438,7 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   // Update the overscan_insets_in_dip_ either if the inset should be
   // cleared, or has non empty insts.
   if (native_info.clear_overscan_insets())
-    overscan_insets_in_dip_.Set(0, 0, 0, 0);
+    overscan_insets_in_dip_ = gfx::Insets();
   else if (!native_info.overscan_insets_in_dip_.IsEmpty())
     overscan_insets_in_dip_ = native_info.overscan_insets_in_dip_;
 
@@ -402,6 +447,13 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
 }
 
 void ManagedDisplayInfo::SetBounds(const gfx::Rect& new_bounds_in_native) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  static bool reject_square = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kRejectSquareDisplay);
+  if (reject_square)
+    DCHECK_NE(new_bounds_in_native.width(), new_bounds_in_native.height());
+#endif
+
   bounds_in_native_ = new_bounds_in_native;
   size_in_pixel_ = new_bounds_in_native.size();
   UpdateDisplaySize();
@@ -427,7 +479,7 @@ void ManagedDisplayInfo::UpdateDisplaySize() {
     gfx::Insets insets_in_pixel = GetOverscanInsetsInPixel();
     size_in_pixel_.Enlarge(-insets_in_pixel.width(), -insets_in_pixel.height());
   } else {
-    overscan_insets_in_dip_.Set(0, 0, 0, 0);
+    overscan_insets_in_dip_ = gfx::Insets();
   }
 
   if (GetActiveRotation() == Display::ROTATE_90 ||
@@ -444,6 +496,17 @@ gfx::Insets ManagedDisplayInfo::GetOverscanInsetsInPixel() const {
   return gfx::ToFlooredInsets(gfx::ConvertInsetsToPixels(
       overscan_insets_in_dip_, device_scale_factor_));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ManagedDisplayInfo::SetSnapshotColorSpace(
+    const gfx::ColorSpace& snapshot_color) {
+  snapshot_color_space_ = snapshot_color;
+}
+
+gfx::ColorSpace ManagedDisplayInfo::GetSnapshotColorSpace() const {
+  return snapshot_color_space_;
+}
+#endif
 
 void ManagedDisplayInfo::SetManagedDisplayModes(
     const ManagedDisplayModeList& display_modes) {
@@ -465,14 +528,15 @@ std::string ManagedDisplayInfo::ToString() const {
 
   std::string result = base::StringPrintf(
       "ManagedDisplayInfo[%lld] native bounds=%s, size=%s, device-scale=%g, "
-      "display-zoom=%g, overscan=%s, rotation=%d, touchscreen=%s",
+      "display-zoom=%g, overscan=%s, rotation=%d, touchscreen=%s, "
+      "corner_radii=%s",
       static_cast<long long int>(id_), bounds_in_native_.ToString().c_str(),
       size_in_pixel_.ToString().c_str(), device_scale_factor_, zoom_factor_,
       overscan_insets_in_dip_.ToString().c_str(), rotation_degree,
-      touch_support_ == Display::TouchSupport::AVAILABLE
-          ? "yes"
-          : touch_support_ == Display::TouchSupport::UNAVAILABLE ? "no"
-                                                                 : "unknown");
+      touch_support_ == Display::TouchSupport::AVAILABLE     ? "yes"
+      : touch_support_ == Display::TouchSupport::UNAVAILABLE ? "no"
+                                                             : "unknown",
+      rounded_corners_radii_.ToString().c_str());
 
   return result;
 }

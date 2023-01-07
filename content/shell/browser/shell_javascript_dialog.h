@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,17 @@
 #define CONTENT_SHELL_BROWSER_SHELL_JAVASCRIPT_DIALOG_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #if __OBJC__
 @class ShellJavaScriptDialogHelper;
 #else
 class ShellJavaScriptDialogHelper;
 #endif  // __OBJC__
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
 
@@ -30,17 +30,21 @@ class ShellJavaScriptDialog {
                         const std::u16string& message_text,
                         const std::u16string& default_prompt_text,
                         JavaScriptDialogManager::DialogClosedCallback callback);
+
+  ShellJavaScriptDialog(const ShellJavaScriptDialog&) = delete;
+  ShellJavaScriptDialog& operator=(const ShellJavaScriptDialog&) = delete;
+
   ~ShellJavaScriptDialog();
 
   // Called to cancel a dialog mid-flight.
   void Cancel();
 
  private:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ShellJavaScriptDialogHelper* helper_;  // owned
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   JavaScriptDialogManager::DialogClosedCallback callback_;
-  ShellJavaScriptDialogManager* manager_;
+  raw_ptr<ShellJavaScriptDialogManager> manager_;
   JavaScriptDialogType dialog_type_;
   HWND dialog_win_;
   std::u16string message_text_;
@@ -48,8 +52,6 @@ class ShellJavaScriptDialog {
   static INT_PTR CALLBACK DialogProc(HWND dialog, UINT message, WPARAM wparam,
                                      LPARAM lparam);
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ShellJavaScriptDialog);
 };
 
 }  // namespace content

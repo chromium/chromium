@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "sql/test/scoped_error_expecter.h"
@@ -28,8 +26,7 @@ using ::testing::IsEmpty;
 namespace {
 
 base::Time TimeFromTimestamp(const int64_t& time) {
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(time));
+  return base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(time));
 }
 
 constexpr ContentSettingsType kTestTypes[] = {
@@ -65,6 +62,11 @@ class PermissionAuditingDatabaseTest : public testing::Test {
   PermissionAuditingDatabaseTest()
       : test_sessions_(GeneratePermissionSessions()) {}
 
+  PermissionAuditingDatabaseTest(const PermissionAuditingDatabaseTest&) =
+      delete;
+  PermissionAuditingDatabaseTest& operator=(
+      const PermissionAuditingDatabaseTest&) = delete;
+
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_directory_.CreateUniqueTempDir());
@@ -80,7 +82,7 @@ class PermissionAuditingDatabaseTest : public testing::Test {
     return db_.GetPermissionUsageHistory(type, GetOrigin(url), starting_from);
   }
 
-  base::Optional<base::Time> GetLastUsageTime(ContentSettingsType type,
+  absl::optional<base::Time> GetLastUsageTime(ContentSettingsType type,
                                               const char* url) {
     return db_.GetLastPermissionUsageTime(type, GetOrigin(url));
   }
@@ -115,14 +117,14 @@ class PermissionAuditingDatabaseTest : public testing::Test {
  private:
   std::vector<PermissionUsageSession> GeneratePermissionSessions() {
     std::vector<PermissionUsageSession> sessions;
-    for (size_t i = 0; i < base::size(test_times_); ++i) {
-      for (size_t j = i + 1; j <= base::size(test_times_); ++j) {
+    for (size_t i = 0; i < std::size(test_times_); ++i) {
+      for (size_t j = i + 1; j <= std::size(test_times_); ++j) {
         for (bool had_user_activation : {false, true}) {
           for (bool was_foreground : {false, true}) {
             for (bool had_focus : {false, true}) {
               base::Time start = test_times_[i];
-              base::Time end = (j == base::size(test_times_)) ? test_times_[i]
-                                                              : test_times_[j];
+              base::Time end = (j == std::size(test_times_)) ? test_times_[i]
+                                                             : test_times_[j];
               sessions.push_back({.usage_start = start,
                                   .usage_end = end,
                                   .had_user_activation = had_user_activation,
@@ -140,8 +142,6 @@ class PermissionAuditingDatabaseTest : public testing::Test {
 
   base::ScopedTempDir temp_directory_;
   base::FilePath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionAuditingDatabaseTest);
 };
 
 TEST_F(PermissionAuditingDatabaseTest, IsUsageHistorySizeCorrect) {
@@ -188,23 +188,22 @@ TEST_F(PermissionAuditingDatabaseTest, AreFieldsStoredCorrectlyInUsageHistory) {
 
 TEST_F(PermissionAuditingDatabaseTest, UsageHistoryContainsOnlyLastSessions) {
   for (const auto time : test_times_) {
-    ASSERT_TRUE(db().StorePermissionUsage(
-        {.origin = GetOrigin(kTestUrl1),
-         .type = kTestTypes[0],
-         .usage_start = time,
-         .usage_end = time + base::TimeDelta::FromMicroseconds(1),
-         .had_user_activation = false,
-         .was_foreground = false,
-         .had_focus = false}));
+    ASSERT_TRUE(
+        db().StorePermissionUsage({.origin = GetOrigin(kTestUrl1),
+                                   .type = kTestTypes[0],
+                                   .usage_start = time,
+                                   .usage_end = time + base::Microseconds(1),
+                                   .had_user_activation = false,
+                                   .was_foreground = false,
+                                   .had_focus = false}));
   }
   EXPECT_EQ(GetPermissionUsageHistory(kTestTypes[0], kTestUrl1).size(),
-            base::size(test_times_));
-  for (size_t i = 0; i < base::size(test_times_); ++i) {
-    EXPECT_EQ(GetPermissionUsageHistory(
-                  kTestTypes[0], kTestUrl1,
-                  test_times_[i] + base::TimeDelta::FromMicroseconds(2))
+            std::size(test_times_));
+  for (size_t i = 0; i < std::size(test_times_); ++i) {
+    EXPECT_EQ(GetPermissionUsageHistory(kTestTypes[0], kTestUrl1,
+                                        test_times_[i] + base::Microseconds(2))
                   .size(),
-              base::size(test_times_) - i - 1);
+              std::size(test_times_) - i - 1);
   }
 }
 
@@ -229,7 +228,7 @@ TEST_F(PermissionAuditingDatabaseTest, UpdateEndTime) {
     ASSERT_TRUE(db().StorePermissionUsage(
         SessionLike(kTestTypes[0], url.c_str(), session)));
     const auto& end_time = session.usage_end;
-    auto tomorrow = end_time + base::TimeDelta::FromDays(1);
+    auto tomorrow = end_time + base::Days(1);
     ASSERT_TRUE(GetLastUsageTime(kTestTypes[0], url.c_str()) == end_time);
     ASSERT_TRUE(UpdateEndTime(kTestTypes[0], url.c_str(), session.usage_start,
                               tomorrow));
@@ -241,7 +240,7 @@ TEST_F(PermissionAuditingDatabaseTest, UpdateEndTime) {
 }
 
 TEST_F(PermissionAuditingDatabaseTest, DeleteSessionsBetween) {
-  size_t current_size = base::size(test_times_);
+  size_t current_size = std::size(test_times_);
   StoreSessionForEachTime();
   for (const auto& time : test_times_) {
     ASSERT_TRUE(db().DeleteSessionsBetween(time, time));
@@ -263,10 +262,10 @@ TEST_F(PermissionAuditingDatabaseTest,
        DeleteSessionsBetweenWithUnspecifiedStartTime) {
   StoreSessionForEachTime();
   ASSERT_TRUE(db().DeleteSessionsBetween(
-      base::Time(), test_times_[base::size(test_times_) - 2]));
+      base::Time(), test_times_[std::size(test_times_) - 2]));
   ASSERT_EQ(GetPermissionUsageHistory(kTestTypes[0], kTestUrl1).size(), 1u);
   ASSERT_TRUE(db().DeleteSessionsBetween(
-      base::Time(), test_times_[base::size(test_times_) - 1]));
+      base::Time(), test_times_[std::size(test_times_) - 1]));
   EXPECT_THAT(GetPermissionUsageHistory(kTestTypes[0], kTestUrl1), IsEmpty());
 }
 
@@ -274,7 +273,7 @@ TEST_F(PermissionAuditingDatabaseTest,
        DeleteSessionsBetweenWithUnspecifiedStartAndEndTime) {
   StoreSessionForEachTime();
   ASSERT_EQ(GetPermissionUsageHistory(kTestTypes[0], kTestUrl1).size(),
-            base::size(test_times_));
+            std::size(test_times_));
   ASSERT_TRUE(db().DeleteSessionsBetween(base::Time(), base::Time()));
   EXPECT_THAT(GetPermissionUsageHistory(kTestTypes[0], kTestUrl1), IsEmpty());
 }

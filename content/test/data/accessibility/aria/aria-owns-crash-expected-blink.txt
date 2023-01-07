@@ -7,7 +7,8 @@ rootWebArea name='done'
 ++++++++++++textField ignored invisible
 ++++++++++++++genericContainer ignored invisible
 ++++++++++++listBox ignored invisible
-++++++++++++++listItem ignored invisible
-++++++++++++++++listMarker ignored invisible
+++++++++++++++none ignored invisible
+++++++++++++++++none ignored invisible
 ++++++++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++++++staticText ignored invisible name='Test'
 ++++++++genericContainer ignored invisible

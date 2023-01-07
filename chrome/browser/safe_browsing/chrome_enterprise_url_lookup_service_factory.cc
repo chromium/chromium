@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,15 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/safe_browsing/user_population.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
+#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/utils.h"
-#include "components/safe_browsing/core/features.h"
-#include "components/safe_browsing/core/verdict_cache_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 
@@ -42,11 +42,10 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::GetInstance() {
 
 ChromeEnterpriseRealTimeUrlLookupServiceFactory::
     ChromeEnterpriseRealTimeUrlLookupServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ChromeEnterpriseRealTimeUrlLookupService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("ChromeEnterpriseRealTimeUrlLookupService") {
   DependsOn(VerdictCacheManagerFactory::GetInstance());
   DependsOn(enterprise_connectors::ConnectorsServiceFactory::GetInstance());
+  DependsOn(SafeBrowsingNavigationObserverManagerFactory::GetInstance());
 }
 
 KeyedService*
@@ -58,17 +57,14 @@ ChromeEnterpriseRealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
   auto url_loader_factory =
       std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
-          g_browser_process->safe_browsing_service()->GetURLLoaderFactory());
-  if (base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookies)) {
-    url_loader_factory =
-        std::make_unique<network::CrossThreadPendingSharedURLLoaderFactory>(
-            profile->GetURLLoaderFactory());
-  }
+          profile->GetURLLoaderFactory());
   return new ChromeEnterpriseRealTimeUrlLookupService(
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory)),
       VerdictCacheManagerFactory::GetForProfile(profile), profile,
-      base::BindRepeating(&safe_browsing::GetUserPopulation, profile),
+      base::BindRepeating(&safe_browsing::GetUserPopulationForProfile, profile),
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
+          profile),
+      SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile));
 }
 

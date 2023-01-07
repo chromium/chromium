@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/profiler/stack_buffer.h"
 #include "base/profiler/stack_copier_signal.h"
 #include "base/profiler/thread_delegate_posix.h"
-#include "base/stl_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
@@ -41,8 +40,8 @@ class TargetThread : public SimpleThread {
 
     // Copy the sentinel values onto the stack. Volatile to defeat compiler
     // optimizations.
-    volatile uint32_t sentinels[size(kStackSentinels)];
-    for (size_t i = 0; i < size(kStackSentinels); ++i)
+    volatile uint32_t sentinels[std::size(kStackSentinels)];
+    for (size_t i = 0; i < std::size(kStackSentinels); ++i)
       sentinels[i] = kStackSentinels[i];
 
     started_.Signal();
@@ -103,8 +102,8 @@ TEST(StackCopierSignalTest, MAYBE_CopyStack) {
   StackCopierSignal copier(std::move(thread_delegate));
 
   // Copy the sentinel values onto the stack.
-  uint32_t sentinels[size(kStackSentinels)];
-  for (size_t i = 0; i < size(kStackSentinels); ++i)
+  uint32_t sentinels[std::size(kStackSentinels)];
+  for (size_t i = 0; i < std::size(kStackSentinels); ++i)
     sentinels[i] = kStackSentinels[i];
   base::debug::Alias((void*)sentinels);  // Defeat compiler optimizations.
 
@@ -180,7 +179,7 @@ TEST(StackCopierSignalTest, MAYBE_CopyStackDelegateInvoked) {
 // Limit to 32-bit Android, which is the platform we care about for this
 // functionality. The test is broken on too many other varied platforms to try
 // to selectively disable.
-#if !(defined(OS_ANDROID) && defined(ARCH_CPU_32_BITS))
+#if !(BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_32_BITS))
 #define MAYBE_CopyStackFromOtherThread DISABLED_CopyStackFromOtherThread
 #else
 #define MAYBE_CopyStackFromOtherThread CopyStackFromOtherThread

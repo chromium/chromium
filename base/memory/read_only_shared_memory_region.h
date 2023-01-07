@@ -1,15 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_MEMORY_READ_ONLY_SHARED_MEMORY_REGION_H_
 #define BASE_MEMORY_READ_ONLY_SHARED_MEMORY_REGION_H_
 
-#include <utility>
-
-#include "base/macros.h"
+#include "base/base_export.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
+
+#include <stdint.h>
 
 namespace base {
 
@@ -32,7 +34,8 @@ class BASE_EXPORT ReadOnlySharedMemoryRegion {
   // This means that the caller's process is the only process that can modify
   // the region content. If you need to pass write access to another process,
   // consider using WritableSharedMemoryRegion or UnsafeSharedMemoryRegion.
-  static MappedReadOnlyRegion Create(size_t size);
+  static MappedReadOnlyRegion Create(size_t size,
+                                     SharedMemoryMapper* mapper = nullptr);
   using CreateFunction = decltype(Create);
 
   // Returns a ReadOnlySharedMemoryRegion built from a platform-specific handle
@@ -58,6 +61,10 @@ class BASE_EXPORT ReadOnlySharedMemoryRegion {
   ReadOnlySharedMemoryRegion(ReadOnlySharedMemoryRegion&&);
   ReadOnlySharedMemoryRegion& operator=(ReadOnlySharedMemoryRegion&&);
 
+  ReadOnlySharedMemoryRegion(const ReadOnlySharedMemoryRegion&) = delete;
+  ReadOnlySharedMemoryRegion& operator=(const ReadOnlySharedMemoryRegion&) =
+      delete;
+
   // Destructor closes shared memory region if valid.
   // All created mappings will remain valid.
   ~ReadOnlySharedMemoryRegion();
@@ -72,14 +79,23 @@ class BASE_EXPORT ReadOnlySharedMemoryRegion {
   // read-only access. The mapped address is guaranteed to have an alignment of
   // at least |subtle::PlatformSharedMemoryRegion::kMapMinimumAlignment|.
   // Returns a valid ReadOnlySharedMemoryMapping instance on success, invalid
-  // otherwise.
-  ReadOnlySharedMemoryMapping Map() const;
+  // otherwise. A custom |SharedMemoryMapper| for mapping (and later unmapping)
+  // the region can be provided using the optional |mapper| parameter.
+  ReadOnlySharedMemoryMapping Map(SharedMemoryMapper* mapper = nullptr) const;
 
-  // Same as above, but maps only |size| bytes of the shared memory region
-  // starting with the given |offset|. |offset| must be aligned to value of
-  // |SysInfo::VMAllocationGranularity()|. Returns an invalid mapping if
-  // requested bytes are out of the region limits.
-  ReadOnlySharedMemoryMapping MapAt(off_t offset, size_t size) const;
+  // Similar to `Map()`, but maps only `size` bytes of the shared memory block
+  // at byte `offset`. Returns an invalid mapping if requested bytes are out of
+  // the region limits.
+  //
+  // `offset` does not need to be aligned; if `offset` is not a multiple of
+  // `subtle::PlatformSharedMemoryRegion::kMapMinimumAlignment`, then the
+  // returned mapping will not respect alignment either. Internally, `offset`
+  // and `size` are still first adjusted to respect alignment when mapping in
+  // the shared memory region, but the returned mapping will be "unadjusted" to
+  // match the exact `offset` and `size` requested.
+  ReadOnlySharedMemoryMapping MapAt(uint64_t offset,
+                                    size_t size,
+                                    SharedMemoryMapper* mapper = nullptr) const;
 
   // Whether the underlying platform handle is valid.
   bool IsValid() const;
@@ -98,7 +114,7 @@ class BASE_EXPORT ReadOnlySharedMemoryRegion {
 
   // Returns a platform shared memory handle. |this| remains the owner of the
   // handle.
-  subtle::PlatformSharedMemoryRegion::PlatformHandle GetPlatformHandle() const {
+  subtle::PlatformSharedMemoryHandle GetPlatformHandle() const {
     DCHECK(IsValid());
     return handle_.GetPlatformHandle();
   }
@@ -114,8 +130,6 @@ class BASE_EXPORT ReadOnlySharedMemoryRegion {
   static CreateFunction* create_hook_;
 
   subtle::PlatformSharedMemoryRegion handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadOnlySharedMemoryRegion);
 };
 
 // Helper struct for return value of ReadOnlySharedMemoryRegion::Create().

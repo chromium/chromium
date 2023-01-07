@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ GpuModeManager::GpuModeManager()
     // Do nothing when the pref changes. It takes effect after
     // chrome restarts.
     pref_registrar_.Add(prefs::kHardwareAccelerationModeEnabled,
-                        base::DoNothing::Repeatedly<>());
+                        base::DoNothingAs<void()>());
 
     initial_gpu_mode_pref_ = IsGpuModePrefEnabled();
     bool previous_gpu_mode_pref = GetPreviousGpuModePref();

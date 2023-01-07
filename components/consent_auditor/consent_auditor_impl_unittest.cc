@@ -1,47 +1,60 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/consent_auditor/consent_auditor_impl.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/hash/sha1.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/simple_test_clock.h"
-#include "base/time/default_clock.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "components/consent_auditor/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/sync/test/model/fake_model_type_controller_delegate.h"
+#include "components/sync/protocol/user_consent_specifics.pb.h"
+#include "components/sync/test/fake_model_type_controller_delegate.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ArcPlayTermsOfServiceConsent =
     sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent;
 using AssistantActivityControlConsent =
     sync_pb::UserConsentTypes::AssistantActivityControlConsent;
+using AutofillAssistantConsent =
+    sync_pb::UserConsentTypes::AutofillAssistantConsent;
 using SyncConsent = sync_pb::UserConsentTypes::SyncConsent;
 using sync_pb::UserConsentSpecifics;
 using sync_pb::UserConsentTypes;
+using ::testing::ElementsAreArray;
 
 namespace consent_auditor {
 
 namespace {
 
-const char kLocalConsentDescriptionKey[] = "description";
-const char kLocalConsentConfirmationKey[] = "confirmation";
-const char kLocalConsentVersionKey[] = "version";
-const char kLocalConsentLocaleKey[] = "locale";
+constexpr char kLocalConsentDescriptionKey[] = "description";
+constexpr char kLocalConsentConfirmationKey[] = "confirmation";
+constexpr char kLocalConsentVersionKey[] = "version";
+constexpr char kLocalConsentLocaleKey[] = "locale";
 
 // Fake product version for testing.
-const char kCurrentAppVersion[] = "1.2.3.4";
-const char kCurrentAppLocale[] = "en-US";
+constexpr char kCurrentAppVersion[] = "1.2.3.4";
+constexpr char kCurrentAppLocale[] = "en-US";
+
+// Fake message ids.
+constexpr std::array<int, 3> kDescriptionMessageIds = {12, 37, 42};
+constexpr int kConfirmationMessageId = 47;
 
 // A helper function to load the |description|, |confirmation|, |version|,
 // and |locale|, in that order, from a record for the |feature| in
 // the |consents| dictionary.
-void LoadEntriesFromLocalConsentRecord(const base::Value* consents,
+void LoadEntriesFromLocalConsentRecord(const base::Value::Dict& consents,
                                        const std::string& feature,
                                        std::string* description,
                                        std::string* confirmation,
@@ -49,27 +62,19 @@ void LoadEntriesFromLocalConsentRecord(const base::Value* consents,
                                        std::string* locale) {
   SCOPED_TRACE(::testing::Message() << "|feature| = " << feature);
 
-  const base::Value* record =
-      consents->FindKeyOfType(feature, base::Value::Type::DICTIONARY);
+  const base::Value::Dict* record = consents.FindDict(feature);
   ASSERT_TRUE(record);
   SCOPED_TRACE(::testing::Message() << "|record| = " << record);
 
-  const base::Value* description_entry =
-      record->FindKey(kLocalConsentDescriptionKey);
-  const base::Value* confirmation_entry =
-      record->FindKey(kLocalConsentConfirmationKey);
-  const base::Value* version_entry = record->FindKey(kLocalConsentVersionKey);
-  const base::Value* locale_entry = record->FindKey(kLocalConsentLocaleKey);
+  *description = *record->FindString(kLocalConsentDescriptionKey);
+  *confirmation = *record->FindString(kLocalConsentConfirmationKey);
+  *version = *record->FindString(kLocalConsentVersionKey);
+  *locale = *record->FindString(kLocalConsentLocaleKey);
 
-  ASSERT_TRUE(description_entry);
-  ASSERT_TRUE(confirmation_entry);
-  ASSERT_TRUE(version_entry);
-  ASSERT_TRUE(locale_entry);
-
-  *description = description_entry->GetString();
-  *confirmation = confirmation_entry->GetString();
-  *version = version_entry->GetString();
-  *locale = locale_entry->GetString();
+  ASSERT_TRUE(description);
+  ASSERT_TRUE(confirmation);
+  ASSERT_TRUE(version);
+  ASSERT_TRUE(locale);
 }
 
 class FakeConsentSyncBridge : public ConsentSyncBridge {
@@ -114,53 +119,38 @@ class ConsentAuditorImplTest : public testing::Test {
 
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
-    // Use normal clock by default.
-    clock_ = base::DefaultClock::GetInstance();
-    consent_sync_bridge_ = std::make_unique<FakeConsentSyncBridge>();
     ConsentAuditorImpl::RegisterProfilePrefs(pref_service_->registry());
-    app_version_ = kCurrentAppVersion;
-    app_locale_ = kCurrentAppLocale;
-    BuildConsentAuditorImpl();
+    CreateConsentAuditorImpl(std::make_unique<FakeConsentSyncBridge>());
   }
 
-  // TODO(vitaliii): Add a real builder class instead.
-  void BuildConsentAuditorImpl() {
+  void CreateConsentAuditorImpl(
+      std::unique_ptr<FakeConsentSyncBridge> bridge,
+      const std::string& app_version = kCurrentAppVersion,
+      const std::string& app_locale = kCurrentAppLocale) {
+    consent_sync_bridge_ = bridge.get();
     consent_auditor_ = std::make_unique<ConsentAuditorImpl>(
-        pref_service_.get(), std::move(consent_sync_bridge_), app_version_,
-        app_locale_, clock_);
+        pref_service_.get(), std::move(bridge), app_version, app_locale,
+        clock());
   }
 
-  // These have no effect before |BuildConsentAuditorImpl|.
-  void SetAppVersion(const std::string& new_app_version) {
-    app_version_ = new_app_version;
-  }
-  void SetAppLocale(const std::string& new_app_locale) {
-    app_locale_ = new_app_locale;
-  }
-  void SetConsentSyncBridge(std::unique_ptr<ConsentSyncBridge> bridge) {
-    consent_sync_bridge_ = std::move(bridge);
-  }
-  void SetClock(base::Clock* clock) { clock_ = clock; }
-
+  base::SimpleTestClock* clock() { return &test_clock_; }
   ConsentAuditorImpl* consent_auditor() { return consent_auditor_.get(); }
+  FakeConsentSyncBridge* consent_sync_bridge() {
+    return consent_sync_bridge_.get();
+  }
   PrefService* pref_service() const { return pref_service_.get(); }
 
  private:
-  std::unique_ptr<ConsentAuditorImpl> consent_auditor_;
-  base::Clock* clock_;
-
+  // Test helpers.
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  std::string app_version_;
-  std::string app_locale_;
-  std::unique_ptr<ConsentSyncBridge> consent_sync_bridge_;
+  base::SimpleTestClock test_clock_;
+  raw_ptr<FakeConsentSyncBridge> consent_sync_bridge_ = nullptr;
+
+  // Test object to be tested.
+  std::unique_ptr<ConsentAuditorImpl> consent_auditor_;
 };
 
 TEST_F(ConsentAuditorImplTest, LocalConsentPrefRepresentation) {
-  SetAppVersion(kCurrentAppVersion);
-  SetAppLocale(kCurrentAppLocale);
-  SetConsentSyncBridge(std::make_unique<FakeConsentSyncBridge>());
-  BuildConsentAuditorImpl();
-
   // No consents are written at first.
   EXPECT_FALSE(pref_service()->HasPrefPath(prefs::kLocalConsentsDictionary));
 
@@ -170,13 +160,10 @@ TEST_F(ConsentAuditorImplTest, LocalConsentPrefRepresentation) {
   consent_auditor()->RecordLocalConsent("feature1", kFeature1Description,
                                         kFeature1Confirmation);
   ASSERT_TRUE(pref_service()->HasPrefPath(prefs::kLocalConsentsDictionary));
-  const base::DictionaryValue* consents =
-      pref_service()->GetDictionary(prefs::kLocalConsentsDictionary);
-  ASSERT_TRUE(consents);
-  std::string description;
-  std::string confirmation;
-  std::string version;
-  std::string locale;
+  const base::Value::Dict& consents =
+      pref_service()->GetDict(prefs::kLocalConsentsDictionary);
+
+  std::string description, confirmation, version, locale;
   LoadEntriesFromLocalConsentRecord(consents, "feature1", &description,
                                     &confirmation, &version, &locale);
   EXPECT_EQ(kFeature1Description, description);
@@ -197,9 +184,8 @@ TEST_F(ConsentAuditorImplTest, LocalConsentPrefRepresentation) {
   EXPECT_EQ(kCurrentAppLocale, locale);
 
   // They are two separate records; the latter did not overwrite the former.
-  EXPECT_EQ(2u, consents->size());
-  EXPECT_TRUE(
-      consents->FindKeyOfType("feature1", base::Value::Type::DICTIONARY));
+  EXPECT_EQ(2u, consents.size());
+  EXPECT_TRUE(consents.FindDict("feature1"));
 
   // Overwrite an existing consent, this time use a different product version
   // and a different locale.
@@ -207,12 +193,11 @@ TEST_F(ConsentAuditorImplTest, LocalConsentPrefRepresentation) {
   const std::string kFeature2NewConfirmation = "Yes again.";
   const std::string kFeature2NewAppVersion = "5.6.7.8";
   const std::string kFeature2NewAppLocale = "de";
-  SetAppVersion(kFeature2NewAppVersion);
-  SetAppLocale(kFeature2NewAppLocale);
-  SetConsentSyncBridge(std::make_unique<FakeConsentSyncBridge>());
+
   // We rebuild consent auditor to emulate restarting Chrome. This is the only
   // way to change app version or app locale.
-  BuildConsentAuditorImpl();
+  CreateConsentAuditorImpl(std::make_unique<FakeConsentSyncBridge>(),
+                           kFeature2NewAppVersion, kFeature2NewAppLocale);
 
   consent_auditor()->RecordLocalConsent("feature2", kFeature2NewDescription,
                                         kFeature2NewConfirmation);
@@ -224,26 +209,13 @@ TEST_F(ConsentAuditorImplTest, LocalConsentPrefRepresentation) {
   EXPECT_EQ(kFeature2NewAppLocale, locale);
 
   // We still have two records.
-  EXPECT_EQ(2u, consents->size());
+  EXPECT_EQ(2u, consents.size());
 }
 
 TEST_F(ConsentAuditorImplTest, RecordGaiaConsentAsUserConsent) {
-  auto wrapped_fake_bridge = std::make_unique<FakeConsentSyncBridge>();
-  FakeConsentSyncBridge* fake_bridge = wrapped_fake_bridge.get();
-  base::SimpleTestClock test_clock;
-
-  SetConsentSyncBridge(std::move(wrapped_fake_bridge));
-  SetAppVersion(kCurrentAppVersion);
-  SetAppLocale(kCurrentAppLocale);
-  SetClock(&test_clock);
-  BuildConsentAuditorImpl();
-
-  std::vector<int> kDescriptionMessageIds = {12, 37, 42};
-  int kConfirmationMessageId = 47;
-
   base::Time now;
   ASSERT_TRUE(base::Time::FromUTCString("2017-11-14T15:15:38Z", &now));
-  test_clock.SetNow(now);
+  clock()->SetNow(now);
 
   SyncConsent sync_consent;
   sync_consent.set_status(UserConsentTypes::GIVEN);
@@ -254,9 +226,9 @@ TEST_F(ConsentAuditorImplTest, RecordGaiaConsentAsUserConsent) {
   consent_auditor()->RecordSyncConsent(kAccountId, sync_consent);
 
   std::vector<UserConsentSpecifics> consents =
-      fake_bridge->GetRecordedUserConsents();
+      consent_sync_bridge()->GetRecordedUserConsents();
   ASSERT_EQ(1U, consents.size());
-  UserConsentSpecifics consent = consents[0];
+  const UserConsentSpecifics& consent = consents[0];
 
   EXPECT_EQ(now.since_origin().InMicroseconds(),
             consent.client_consent_time_usec());
@@ -265,33 +237,15 @@ TEST_F(ConsentAuditorImplTest, RecordGaiaConsentAsUserConsent) {
 
   EXPECT_TRUE(consent.has_sync_consent());
   const SyncConsent& actual_sync_consent = consent.sync_consent();
-  EXPECT_EQ(3, actual_sync_consent.description_grd_ids_size());
-  EXPECT_EQ(kDescriptionMessageIds[0],
-            actual_sync_consent.description_grd_ids(0));
-  EXPECT_EQ(kDescriptionMessageIds[1],
-            actual_sync_consent.description_grd_ids(1));
-  EXPECT_EQ(kDescriptionMessageIds[2],
-            actual_sync_consent.description_grd_ids(2));
-  EXPECT_EQ(kConfirmationMessageId, actual_sync_consent.confirmation_grd_id());
+  EXPECT_THAT(actual_sync_consent.description_grd_ids(),
+              ElementsAreArray(kDescriptionMessageIds));
+  EXPECT_EQ(actual_sync_consent.confirmation_grd_id(), kConfirmationMessageId);
 }
 
 TEST_F(ConsentAuditorImplTest, RecordArcPlayConsentRevocation) {
-  auto wrapped_fake_bridge = std::make_unique<FakeConsentSyncBridge>();
-  FakeConsentSyncBridge* fake_bridge = wrapped_fake_bridge.get();
-  base::SimpleTestClock test_clock;
-
-  SetConsentSyncBridge(std::move(wrapped_fake_bridge));
-  SetAppVersion(kCurrentAppVersion);
-  SetAppLocale(kCurrentAppLocale);
-  SetClock(&test_clock);
-  BuildConsentAuditorImpl();
-
-  std::vector<int> kDescriptionMessageIds = {12, 37, 42};
-  int kConfirmationMessageId = 47;
-
   base::Time now;
   ASSERT_TRUE(base::Time::FromUTCString("2017-11-14T15:15:38Z", &now));
-  test_clock.SetNow(now);
+  clock()->SetNow(now);
 
   ArcPlayTermsOfServiceConsent play_consent;
   play_consent.set_status(UserConsentTypes::NOT_GIVEN);
@@ -302,10 +256,10 @@ TEST_F(ConsentAuditorImplTest, RecordArcPlayConsentRevocation) {
   play_consent.set_consent_flow(ArcPlayTermsOfServiceConsent::SETTING_CHANGE);
   consent_auditor()->RecordArcPlayConsent(kAccountId, play_consent);
 
-  std::vector<UserConsentSpecifics> consents =
-      fake_bridge->GetRecordedUserConsents();
+  const std::vector<UserConsentSpecifics> consents =
+      consent_sync_bridge()->GetRecordedUserConsents();
   ASSERT_EQ(1U, consents.size());
-  UserConsentSpecifics consent = consents[0];
+  const UserConsentSpecifics& consent = consents[0];
 
   EXPECT_EQ(kAccountId.ToString(), consent.account_id());
   EXPECT_EQ(kCurrentAppLocale, consent.locale());
@@ -316,32 +270,15 @@ TEST_F(ConsentAuditorImplTest, RecordArcPlayConsentRevocation) {
   EXPECT_EQ(UserConsentTypes::NOT_GIVEN, actual_play_consent.status());
   EXPECT_EQ(ArcPlayTermsOfServiceConsent::SETTING_CHANGE,
             actual_play_consent.consent_flow());
-  EXPECT_EQ(3, actual_play_consent.description_grd_ids_size());
-  EXPECT_EQ(kDescriptionMessageIds[0],
-            actual_play_consent.description_grd_ids(0));
-  EXPECT_EQ(kDescriptionMessageIds[1],
-            actual_play_consent.description_grd_ids(1));
-  EXPECT_EQ(kDescriptionMessageIds[2],
-            actual_play_consent.description_grd_ids(2));
+  EXPECT_THAT(actual_play_consent.description_grd_ids(),
+              ElementsAreArray(kDescriptionMessageIds));
   EXPECT_EQ(kConfirmationMessageId, actual_play_consent.confirmation_grd_id());
 }
 
 TEST_F(ConsentAuditorImplTest, RecordArcPlayConsent) {
-  auto wrapped_fake_bridge = std::make_unique<FakeConsentSyncBridge>();
-  FakeConsentSyncBridge* fake_bridge = wrapped_fake_bridge.get();
-  base::SimpleTestClock test_clock;
-
-  SetConsentSyncBridge(std::move(wrapped_fake_bridge));
-  SetAppVersion(kCurrentAppVersion);
-  SetAppLocale(kCurrentAppLocale);
-  SetClock(&test_clock);
-  BuildConsentAuditorImpl();
-
-  int kConfirmationMessageId = 47;
-
   base::Time now;
   ASSERT_TRUE(base::Time::FromUTCString("2017-11-14T15:15:38Z", &now));
-  test_clock.SetNow(now);
+  clock()->SetNow(now);
 
   ArcPlayTermsOfServiceConsent play_consent;
   play_consent.set_status(UserConsentTypes::GIVEN);
@@ -349,19 +286,19 @@ TEST_F(ConsentAuditorImplTest, RecordArcPlayConsent) {
   play_consent.set_consent_flow(ArcPlayTermsOfServiceConsent::SETUP);
 
   // Verify the hash: 2fd4e1c6 7a2d28fc ed849ee1 bb76e739 1b93eb12.
-  const char play_tos_hash[] = {0x2f, 0xd4, 0xe1, 0xc6, 0x7a, 0x2d, 0x28,
-                                0xfc, 0xed, 0x84, 0x9e, 0xe1, 0xbb, 0x76,
-                                0xe7, 0x39, 0x1b, 0x93, 0xeb, 0x12};
-  play_consent.set_play_terms_of_service_hash(
-      std::string(play_tos_hash, base::kSHA1Length));
+  const uint8_t play_tos_hash[] = {0x2f, 0xd4, 0xe1, 0xc6, 0x7a, 0x2d, 0x28,
+                                   0xfc, 0xed, 0x84, 0x9e, 0xe1, 0xbb, 0x76,
+                                   0xe7, 0x39, 0x1b, 0x93, 0xeb, 0x12};
+  play_consent.set_play_terms_of_service_hash(std::string(
+      reinterpret_cast<const char*>(play_tos_hash), base::kSHA1Length));
   play_consent.set_play_terms_of_service_text_length(7);
 
   consent_auditor()->RecordArcPlayConsent(kAccountId, play_consent);
 
-  std::vector<UserConsentSpecifics> consents =
-      fake_bridge->GetRecordedUserConsents();
+  const std::vector<UserConsentSpecifics> consents =
+      consent_sync_bridge()->GetRecordedUserConsents();
   ASSERT_EQ(1U, consents.size());
-  UserConsentSpecifics consent = consents[0];
+  const UserConsentSpecifics& consent = consents[0];
 
   EXPECT_EQ(kAccountId.ToString(), consent.account_id());
   EXPECT_EQ(kCurrentAppLocale, consent.locale());
@@ -371,7 +308,8 @@ TEST_F(ConsentAuditorImplTest, RecordArcPlayConsent) {
       consent.arc_play_terms_of_service_consent();
 
   EXPECT_EQ(7, actual_play_consent.play_terms_of_service_text_length());
-  EXPECT_EQ(std::string(play_tos_hash, base::kSHA1Length),
+  EXPECT_EQ(std::string(reinterpret_cast<const char*>(play_tos_hash),
+                        base::kSHA1Length),
             actual_play_consent.play_terms_of_service_hash());
 
   EXPECT_EQ(kConfirmationMessageId, actual_play_consent.confirmation_grd_id());
@@ -388,9 +326,7 @@ TEST_F(ConsentAuditorImplTest, ShouldReturnSyncDelegateWhenBridgePresent) {
   auto expected_delegate_ptr = fake_delegate.GetWeakPtr();
   DCHECK(expected_delegate_ptr);
   fake_bridge->SetControllerDelegate(expected_delegate_ptr);
-
-  SetConsentSyncBridge(std::move(fake_bridge));
-  BuildConsentAuditorImpl();
+  CreateConsentAuditorImpl(std::move(fake_bridge));
 
   // There is a bridge (i.e. separate sync type for consents is enabled), thus,
   // there should be a delegate as well.
@@ -399,38 +335,59 @@ TEST_F(ConsentAuditorImplTest, ShouldReturnSyncDelegateWhenBridgePresent) {
 }
 
 TEST_F(ConsentAuditorImplTest, RecordAssistantActivityControlConsent) {
-  auto wrapped_fake_bridge = std::make_unique<FakeConsentSyncBridge>();
-  FakeConsentSyncBridge* fake_bridge = wrapped_fake_bridge.get();
-  base::SimpleTestClock test_clock;
-
-  SetConsentSyncBridge(std::move(wrapped_fake_bridge));
-  SetAppVersion(kCurrentAppVersion);
-  SetAppLocale(kCurrentAppLocale);
-  SetClock(&test_clock);
-  BuildConsentAuditorImpl();
+  constexpr char ui_audit_key[] = {0x67, 0x23, 0x78};
 
   AssistantActivityControlConsent assistant_consent;
   assistant_consent.set_status(UserConsentTypes::GIVEN);
-
-  const char ui_audit_key[] = {0x67, 0x23, 0x78};
   assistant_consent.set_ui_audit_key(std::string(ui_audit_key, 3));
+  assistant_consent.set_setting_type(AssistantActivityControlConsent::ALL);
 
   consent_auditor()->RecordAssistantActivityControlConsent(kAccountId,
                                                            assistant_consent);
 
   std::vector<UserConsentSpecifics> consents =
-      fake_bridge->GetRecordedUserConsents();
-  ASSERT_EQ(1U, consents.size());
-  UserConsentSpecifics consent = consents[0];
+      consent_sync_bridge()->GetRecordedUserConsents();
+  ASSERT_EQ(consents.size(), 1u);
+  const UserConsentSpecifics& consent = consents[0];
 
   EXPECT_EQ(kAccountId.ToString(), consent.account_id());
   EXPECT_EQ(kCurrentAppLocale, consent.locale());
 
-  EXPECT_EQ(true, consent.has_assistant_activity_control_consent());
+  EXPECT_TRUE(consent.has_assistant_activity_control_consent());
   EXPECT_EQ(UserConsentTypes::GIVEN,
             consent.assistant_activity_control_consent().status());
   EXPECT_EQ(std::string(ui_audit_key, 3),
             consent.assistant_activity_control_consent().ui_audit_key());
+  EXPECT_EQ(AssistantActivityControlConsent::ALL,
+            consent.assistant_activity_control_consent().setting_type());
+}
+
+TEST_F(ConsentAuditorImplTest, RecordAutofillAssistantAssistantConsent) {
+  AutofillAssistantConsent assistant_consent;
+  assistant_consent.set_status(UserConsentTypes::GIVEN);
+  assistant_consent.set_confirmation_grd_id(kConfirmationMessageId);
+  for (int id : kDescriptionMessageIds) {
+    assistant_consent.add_description_grd_ids(id);
+  }
+
+  consent_auditor()->RecordAutofillAssistantConsent(kAccountId,
+                                                    assistant_consent);
+
+  const std::vector<UserConsentSpecifics> consents =
+      consent_sync_bridge()->GetRecordedUserConsents();
+  ASSERT_EQ(consents.size(), 1u);
+  const UserConsentSpecifics& consent = consents[0];
+
+  EXPECT_EQ(consent.account_id(), kAccountId.ToString());
+  EXPECT_EQ(consent.locale(), kCurrentAppLocale);
+
+  EXPECT_TRUE(consent.has_autofill_assistant_consent());
+  const AutofillAssistantConsent& actual_consent =
+      consent.autofill_assistant_consent();
+  EXPECT_THAT(actual_consent.description_grd_ids(),
+              ElementsAreArray(kDescriptionMessageIds));
+  EXPECT_EQ(actual_consent.confirmation_grd_id(), kConfirmationMessageId);
+  EXPECT_EQ(actual_consent.status(), UserConsentTypes::GIVEN);
 }
 
 }  // namespace consent_auditor

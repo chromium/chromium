@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/extensions/browsertest_util.h"
@@ -20,6 +19,7 @@
 #include "extensions/browser/updater/update_service.h"
 #include "extensions/browser/updater/update_service_factory.h"
 #include "extensions/common/extension_features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -34,9 +34,13 @@ class TestChromeUpdateClientConfig
   TestChromeUpdateClientConfig(content::BrowserContext* context,
                                const std::vector<GURL>& update_url,
                                const std::vector<GURL>& ping_url)
-      : extensions::ChromeUpdateClientConfig(context, base::nullopt),
+      : extensions::ChromeUpdateClientConfig(context, absl::nullopt),
         update_url_(update_url),
         ping_url_(ping_url) {}
+
+  TestChromeUpdateClientConfig(const TestChromeUpdateClientConfig&) = delete;
+  TestChromeUpdateClientConfig& operator=(const TestChromeUpdateClientConfig&) =
+      delete;
 
   // Overrides for update_client::Configurator.
   std::vector<GURL> UpdateUrl() const final { return update_url_; }
@@ -56,8 +60,6 @@ class TestChromeUpdateClientConfig
  private:
   std::vector<GURL> update_url_;
   std::vector<GURL> ping_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestChromeUpdateClientConfig);
 };
 
 // This class implements a simple Chrome extra part that is used to
@@ -67,15 +69,19 @@ class TestChromeBrowserMainExtraParts : public ChromeBrowserMainExtraParts {
  public:
   explicit TestChromeBrowserMainExtraParts(ExtensionUpdateClientBaseTest* test)
       : test_(test) {}
+
+  TestChromeBrowserMainExtraParts(const TestChromeBrowserMainExtraParts&) =
+      delete;
+  TestChromeBrowserMainExtraParts& operator=(
+      const TestChromeBrowserMainExtraParts&) = delete;
+
   ~TestChromeBrowserMainExtraParts() override = default;
 
   // ChromeBrowserMainExtraParts:
   void PreProfileInit() override { test_->SetUpNetworkInterceptors(); }
 
  private:
-  ExtensionUpdateClientBaseTest* test_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestChromeBrowserMainExtraParts);
+  raw_ptr<ExtensionUpdateClientBaseTest> test_;
 };
 
 class UpdateClientCompleteEventWaiter
@@ -86,13 +92,19 @@ class UpdateClientCompleteEventWaiter
   explicit UpdateClientCompleteEventWaiter(const std::string& id)
       : id_(id), event_(UpdateClientEvents::COMPONENT_UPDATE_ERROR) {}
 
+  UpdateClientCompleteEventWaiter(const UpdateClientCompleteEventWaiter&) =
+      delete;
+  UpdateClientCompleteEventWaiter& operator=(
+      const UpdateClientCompleteEventWaiter&) = delete;
+
   ~UpdateClientCompleteEventWaiter() override = default;
 
   void OnEvent(update_client::UpdateClient::Observer::Events event,
                const std::string& id) final {
-    if (id_ == id && (event == UpdateClientEvents::COMPONENT_UPDATED ||
-                      event == UpdateClientEvents::COMPONENT_NOT_UPDATED ||
-                      event == UpdateClientEvents::COMPONENT_UPDATE_ERROR)) {
+    if (id_ == id &&
+        (event == UpdateClientEvents::COMPONENT_UPDATED ||
+         event == UpdateClientEvents::COMPONENT_ALREADY_UP_TO_DATE ||
+         event == UpdateClientEvents::COMPONENT_UPDATE_ERROR)) {
       event_ = event;
       run_loop_.Quit();
     }
@@ -107,8 +119,6 @@ class UpdateClientCompleteEventWaiter
   const std::string id_;
   UpdateClientEvents event_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateClientCompleteEventWaiter);
 };
 
 }  // namespace

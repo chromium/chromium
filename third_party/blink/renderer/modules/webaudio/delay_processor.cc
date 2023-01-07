@@ -42,8 +42,9 @@ DelayProcessor::DelayProcessor(float sample_rate,
       max_delay_time_(max_delay_time) {}
 
 DelayProcessor::~DelayProcessor() {
-  if (IsInitialized())
+  if (IsInitialized()) {
     Uninitialize();
+  }
 }
 
 std::unique_ptr<AudioDSPKernel> DelayProcessor::CreateKernel() {

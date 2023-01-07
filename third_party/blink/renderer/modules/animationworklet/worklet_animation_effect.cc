@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,12 @@
 namespace blink {
 
 WorkletAnimationEffect::WorkletAnimationEffect(
-    base::Optional<base::TimeDelta> local_time,
-    const Timing& specified_timing)
+    absl::optional<base::TimeDelta> local_time,
+    const Timing& specified_timing,
+    const Timing::NormalizedTiming& normalized_timing)
     : local_time_(local_time),
       specified_timing_(specified_timing),
+      normalized_timing_(normalized_timing),
       calculated_() {
   specified_timing_.AssertValid();
 }
@@ -22,35 +24,35 @@ EffectTiming* WorkletAnimationEffect::getTiming() const {
 }
 
 ComputedEffectTiming* WorkletAnimationEffect::getComputedTiming() const {
-  base::Optional<double> local_time;
-  if (local_time_)
-    local_time = base::Optional<double>(local_time_.value().InSecondsF());
-
-  bool needs_update = last_update_time_ != local_time;
-  last_update_time_ = local_time;
+  bool needs_update = last_update_time_ != local_time_;
+  last_update_time_ = local_time_;
 
   if (needs_update) {
     // The playback rate is needed to calculate whether the effect is current or
     // not (https://drafts.csswg.org/web-animations-1/#current). Since we only
     // use this information to create a ComputedEffectTiming, which does not
     // include that information, we do not need to supply one.
-    base::Optional<double> playback_rate = base::nullopt;
+    absl::optional<double> playback_rate = absl::nullopt;
+    absl::optional<AnimationTimeDelta> local_time;
+    if (local_time_) {
+      local_time = AnimationTimeDelta(local_time_.value());
+    }
     calculated_ = specified_timing_.CalculateTimings(
-        local_time, base::nullopt, Timing::AnimationDirection::kForwards, false,
-        playback_rate);
+        local_time, /*at_progress_timeline_boundary*/ false, normalized_timing_,
+        Timing::AnimationDirection::kForwards, false, playback_rate);
   }
 
-  return specified_timing_.getComputedTiming(calculated_,
+  return specified_timing_.getComputedTiming(calculated_, normalized_timing_,
                                              /*is_keyframe_effect*/ false);
 }
 
-base::Optional<double> WorkletAnimationEffect::localTime() const {
+absl::optional<double> WorkletAnimationEffect::localTime() const {
   if (!local_time_)
-    return base::nullopt;
+    return absl::nullopt;
   return local_time_.value().InMillisecondsF();
 }
 
-void WorkletAnimationEffect::setLocalTime(base::Optional<double> time_ms) {
+void WorkletAnimationEffect::setLocalTime(absl::optional<double> time_ms) {
   if (!time_ms) {
     local_time_.reset();
     return;
@@ -66,10 +68,10 @@ void WorkletAnimationEffect::setLocalTime(base::Optional<double> time_ms) {
   // value back provides the actual value we use in further computation which
   // is the least surprising path.
   // [1] https://drafts.csswg.org/web-animations/#precision-of-time-values
-  local_time_ = base::TimeDelta::FromMillisecondsD(time_ms.value());
+  local_time_ = base::Milliseconds(time_ms.value());
 }
 
-base::Optional<base::TimeDelta> WorkletAnimationEffect::local_time() const {
+absl::optional<base::TimeDelta> WorkletAnimationEffect::local_time() const {
   return local_time_;
 }
 

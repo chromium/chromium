@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -27,7 +27,7 @@ inline float HarfBuzzUnitsToFloat(hb_position_t value) {
   return kFloatToHbRatio * value;
 }
 
-base::Optional<OpenTypeMathStretchData::AssemblyParameters>
+absl::optional<OpenTypeMathStretchData::AssemblyParameters>
 GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
                       Glyph base_glyph,
                       OpenTypeMathStretchData::StretchAxis stretch_axis,
@@ -36,11 +36,10 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
   Vector<OpenTypeMathStretchData::GlyphPartRecord> parts =
       OpenTypeMathSupport::GetGlyphPartRecords(harfbuzz_face, base_glyph,
                                                stretch_axis, italic_correction);
-  if (parts.IsEmpty())
-    return base::nullopt;
+  if (parts.empty())
+    return absl::nullopt;
 
-  hb_font_t* hb_font =
-      harfbuzz_face->GetScaledFont(nullptr, HarfBuzzFace::NoVerticalLayout);
+  hb_font_t* const hb_font = harfbuzz_face->GetScaledFont();
 
   auto hb_stretch_axis =
       stretch_axis == OpenTypeMathStretchData::StretchAxis::Horizontal
@@ -48,7 +47,7 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
           : HB_DIRECTION_BTT;
 
   // Go over the assembly parts and determine parameters used below.
-  // https://mathml-refresh.github.io/mathml-core/#the-glyphassembly-table
+  // https://w3c.github.io/mathml-core/#the-glyphassembly-table
   float min_connector_overlap = HarfBuzzUnitsToFloat(
       hb_ot_math_get_min_connector_overlap(hb_font, hb_stretch_axis));
   float max_connector_overlap = std::numeric_limits<float>::max();
@@ -83,7 +82,7 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
       extender_advance_sum - min_connector_overlap * extender_count;
   if (extender_count == 0 || max_connector_overlap < min_connector_overlap ||
       extender_non_overlapping_advance_sum <= 0)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Calculate the minimal number of repetitions needed to obtain an assembly
   // size of size at least target size (r_min in MathML Core).
@@ -120,7 +119,7 @@ GetAssemblyParameters(const HarfBuzzFace* harfbuzz_face,
                        repetition_count * extender_advance_sum -
                        connector_overlap * (glyph_count - 1);
 
-  return base::Optional<OpenTypeMathStretchData::AssemblyParameters>(
+  return absl::optional<OpenTypeMathStretchData::AssemblyParameters>(
       {connector_overlap, repetition_count, glyph_count, stretch_size,
        std::move(parts)});
 }
@@ -147,18 +146,18 @@ scoped_refptr<ShapeResult> StretchyOperatorShaper::Shape(
   for (auto& variant : OpenTypeMathSupport::GetGlyphVariantRecords(
            harfbuzz_face, base_glyph, stretch_axis_)) {
     glyph_variant = variant;
-    FloatRect bounds = primary_font->BoundsForGlyph(glyph_variant);
+    gfx::RectF bounds = primary_font->BoundsForGlyph(glyph_variant);
     if (metrics) {
       italic_correction =
           OpenTypeMathSupport::MathItalicCorrection(harfbuzz_face, variant)
               .value_or(0);
-      *metrics = {primary_font->WidthForGlyph(variant), -bounds.Y(),
-                  bounds.MaxY(), italic_correction};
+      *metrics = {primary_font->WidthForGlyph(variant), -bounds.y(),
+                  bounds.bottom(), italic_correction};
     }
     glyph_variant_stretch_size =
         stretch_axis_ == OpenTypeMathStretchData::StretchAxis::Horizontal
-            ? bounds.Width()
-            : bounds.Height();
+            ? bounds.width()
+            : bounds.height();
     if (glyph_variant_stretch_size >= target_size) {
       return ShapeResult::CreateForStretchyMathOperator(
           font, direction, glyph_variant, glyph_variant_stretch_size);
@@ -180,9 +179,9 @@ scoped_refptr<ShapeResult> StretchyOperatorShaper::Shape(
   if (metrics) {
     // The OpenType MATH specification does provide any distinction between
     // the advance width and ink width, so the latter is returned here.
-    FloatRect bounds = shape_result_for_glyph_assembly->ComputeInkBounds();
+    gfx::RectF bounds = shape_result_for_glyph_assembly->ComputeInkBounds();
     if (stretch_axis_ == OpenTypeMathStretchData::StretchAxis::Horizontal) {
-      *metrics = {bounds.Width(), -bounds.Y(), bounds.MaxY(),
+      *metrics = {bounds.width(), -bounds.y(), bounds.bottom(),
                   italic_correction};
     } else {
       // For assemblies growing in the vertical direction, the distribution of
@@ -193,7 +192,7 @@ scoped_refptr<ShapeResult> StretchyOperatorShaper::Shape(
       // run that is HB_DIRECTION_TTB in order to stack the parts vertically but
       // the actual glyph assembly is still horizontal text, so height and width
       // are inverted.
-      *metrics = {bounds.Height(), bounds.Width(), 0, italic_correction};
+      *metrics = {bounds.height(), bounds.width(), 0, italic_correction};
     }
   }
   return shape_result_for_glyph_assembly;

@@ -1,0 +1,20 @@
+caption: Enable sending downloads to Google for deep scanning for users enrolled in
+  the Advanced Protection program
+deprecated: true
+desc: |-
+  This policy is deprecated, and has been replaced with AdvancedProtectionAllowed.
+
+        This policy controls whether users enrolled in the Advanced Protection program are allowed to send their downloads to Google for malware scanning. If set to True or not set, enrolled users will be be prompted to send their files to Google for deep scanning. If the user selects 'Scan', their download will be sent to Google. If set to False, users will not be prompted and their downloads will not be sent to Google.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://chrome/browser/safe_browsing/OWNERS
+- drubery@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:81-81
+tags: []
+type: main

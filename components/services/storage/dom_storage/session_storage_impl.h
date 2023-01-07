@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,17 +29,21 @@
 #include "components/services/storage/public/mojom/session_storage_control.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom.h"
-#include "url/origin.h"
 
 namespace base {
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace storage {
 
 // The Session Storage implementation. An instance of this class exists for each
-// storage partition using Session Storage, managing storage for all origins
+// storage partition using Session Storage, managing storage for all StorageKeys
 // and namespaces within the partition.
 class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
                            public mojom::SessionStorageControl,
@@ -76,12 +80,12 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
       mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver,
       BindNamespaceCallback callback) override;
   void BindStorageArea(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       const std::string& namespace_id,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
       BindStorageAreaCallback callback) override;
   void GetUsage(GetUsageCallback callback) override;
-  void DeleteStorage(const url::Origin& origin,
+  void DeleteStorage(const blink::StorageKey& storage_key,
                      const std::string& namespace_id,
                      DeleteStorageCallback callback) override;
   void CleanUpStorage(CleanUpStorageCallback callback) override;
@@ -115,7 +119,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   AsyncDomStorageDatabase* DatabaseForTesting() { return database_.get(); }
 
   void FlushAreaForTesting(const std::string& namespace_id,
-                           const url::Origin& origin);
+                           const blink::StorageKey& storage_key);
 
   // Access the underlying DomStorageDatabase. May be null if the database is
   // not yet open.
@@ -155,7 +159,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   scoped_refptr<SessionStorageMetadata::MapData> RegisterNewAreaMap(
       SessionStorageMetadata::NamespaceEntry namespace_entry,
-      const url::Origin& origin);
+      const blink::StorageKey& storage_key);
 
   // SessionStorageAreaImpl::Listener implementation:
   void OnDataMapCreation(const std::vector<uint8_t>& map_prefix,
@@ -171,8 +175,8 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   void RegisterShallowClonedNamespace(
       SessionStorageMetadata::NamespaceEntry source_namespace_entry,
       const std::string& new_namespace_id,
-      const SessionStorageNamespaceImpl::OriginAreas& clone_from_areas)
-      override;
+      const SessionStorageNamespaceImpl::StorageKeyAreas&
+          clone_from_storage_keys) override;
 
   std::unique_ptr<SessionStorageNamespaceImpl>
   CreateSessionStorageNamespaceImpl(std::string namespace_id);

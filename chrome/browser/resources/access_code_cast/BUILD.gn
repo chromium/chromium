@@ -1,0 +1,36 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/build_webui.gni")
+
+assert(!is_android, "access_code_cast is not for android.")
+
+build_webui("build") {
+  grd_prefix = "access_code_cast"
+
+  static_files = [ "index.html" ]
+
+  web_component_files = [
+    "access_code_cast.ts",
+    "error_message/error_message.ts",
+    "passcode_input/passcode_input.ts",
+  ]
+
+  non_web_component_files = [ "browser_proxy.ts" ]
+
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/access_code_cast:mojo_bindings_webui_js",
+    "//components/media_router/common/mojom:route_request_result_code_webui_js",
+  ]
+  mojo_files = [
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/components/media_router/common/mojom/route_request_result_code.mojom-webui.js",
+  ]
+
+  ts_composite = true
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+}

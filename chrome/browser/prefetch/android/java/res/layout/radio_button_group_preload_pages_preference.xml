@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:focusable="false">
+
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
+        android:id="@+id/no_preloading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:primaryText="@string/preload_pages_no_preloading_title"
+        app:descriptionText="@string/preload_pages_no_preloading_summary" />
+
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton
+        android:id="@+id/standard_preloading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:primaryText="@string/preload_pages_standard_preloading_title"
+        app:descriptionText="@string/preload_pages_standard_preloading_summary" />
+
+    <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton
+        android:id="@+id/extended_preloading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:primaryText="@string/preload_pages_extended_preloading_title"
+        app:descriptionText="@string/preload_pages_extended_preloading_summary" />
+
+</org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>

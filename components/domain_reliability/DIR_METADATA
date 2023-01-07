@@ -1,5 +1,2 @@
-monorail {
-  component: "Internals>Network>ReportingAndNEL"
-}
+mixins: "//components/domain_reliability/COMMON_METADATA"
 
-team_email: "net-dev@chromium.org"

@@ -3,6 +3,8 @@
 <head>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../../forms/resources/picker-common.js"></script>
 <script src="resources/calendar-picker-common.js"></script>
 </head>
@@ -14,7 +16,7 @@
 let t = async_test('Test Japanase imperial era names');
 
 function test1() {
-  let pw = popupWindow;
+  let pw = internals.pagePopupWindow;
   const NEN = '\u5e74';
   const GANNEN = '\u5143\u5e74';
   const REIWA = '\u4ee4\u548c';
@@ -45,7 +47,8 @@ function test1() {
 }
 
 t.step(() => {
-  openPicker(document.getElementById('date'), t.step_func_done(test1));
+  openPicker(document.getElementById('date'))
+  .then(t.step_func_done(test1));
 });
 </script>
 </body>

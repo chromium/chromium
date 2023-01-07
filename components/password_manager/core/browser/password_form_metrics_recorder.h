@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,8 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/clock.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
@@ -22,6 +21,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -55,6 +55,10 @@ class PasswordFormMetricsRecorder
   PasswordFormMetricsRecorder(bool is_main_frame_secure,
                               ukm::SourceId source_id,
                               PrefService* pref_service);
+
+  PasswordFormMetricsRecorder(const PasswordFormMetricsRecorder&) = delete;
+  PasswordFormMetricsRecorder& operator=(const PasswordFormMetricsRecorder&) =
+      delete;
 
   // ManagerAction - What does the PasswordFormManager do with this form? Either
   // it fills it, or it doesn't. If it doesn't fill it, that's either
@@ -196,7 +200,8 @@ class PasswordFormMetricsRecorder
     kRendererFieldIDs = 1 << 1,
     kAutocompleteAttributes = 1 << 2,
     kFormControlTypes = 1 << 3,
-    kMaxFormDifferencesValue = 1 << 4,
+    kFormFieldNames = 1 << 4,
+    kMaxFormDifferencesValue = 1 << 5,
   };
 
   // Used in UMA histogram, please do NOT reorder.
@@ -221,17 +226,43 @@ class PasswordFormMetricsRecorder
     kFormNotGoodForFilling = 3,
     // User is on a site with an insecure main frame origin.
     kInsecureOrigin = 4,
-    // The Touch To Fill feature is enabled.
-    kTouchToFill = 5,
+    // kTouchToFill = 5, Obsolete
     // Show suggestion on account selection feature is enabled.
     kFoasFeature = 6,
-    // Re-authenticaion for filling passwords is required.
-    kReauthRequired = 7,
+    // kReauthRequired = 7, Obsolete
     // Password is already filled
     kPasswordPrefilled = 8,
     // A credential exists for affiliated website.
     kAffiliatedWebsite = 9,
-    kMaxValue = kAffiliatedWebsite,
+    // The form may accept WebAuthn credentials.
+    kAcceptsWebAuthnCredentials = 10,
+    // User need to reauthenticate using biometric.
+    kBiometricAuthentication = 11,
+    kMaxValue = kBiometricAuthentication,
+  };
+
+  // Used in UMA histogram, please do NOT reorder.
+  // Metric: "PasswordManager.MatchedFormType"
+  // This metric records the type of the preferred password for filling. It is
+  // recorded when the browser instructs the renderer to fill the credentials
+  // on page load. This decision is only recorded for the first time, the
+  // browser informs the renderer about credentials for a given form.
+  //
+  // Needs to stay in sync with PasswordManagerMatchedFormType in
+  // enums.xml.
+  enum class MatchedFormType {
+    // The form is an exact match.
+    kExactMatch = 0,
+    // A credential exists for a PSL matched site but not for the current
+    // security origin.
+    kPublicSuffixMatch = 1,
+    // A credential exists for an affiliated matched android app but not for the
+    // current security origin.
+    kAffiliatedApp = 2,
+    // A credential exists for an affiliated matched site but not for the
+    // current security origin.
+    kAffiliatedWebsites = 3,
+    kMaxValue = kAffiliatedWebsites,
   };
 
   // This metric records the user experience with the passwords filling. The
@@ -371,6 +402,7 @@ class PasswordFormMetricsRecorder
 
   void RecordFirstFillingResult(int32_t result);
   void RecordFirstWaitForUsernameReason(WaitForUsernameReason reason);
+  void RecordMatchedFormType(MatchedFormType type);
 
   // Calculates FillingAssistance metric for |submitted_form|. The result is
   // stored in |filling_assistance_| and recorded in the destructor in case when
@@ -390,14 +422,6 @@ class PasswordFormMetricsRecorder
   // JavaScript. The result is stored in |js_only_input_|.
   void CalculateJsOnlyInput(const autofill::FormData& submitted_form);
 
-  void set_user_typed_password_on_chrome_sign_in_page() {
-    user_typed_password_on_chrome_sign_in_page_ = true;
-  }
-
-  void set_password_hash_saved_on_chrome_sing_in_page() {
-    password_hash_saved_on_chrome_sing_in_page_ = true;
-  }
-
   void set_possible_username_used(bool value) {
     possible_username_used_ = value;
   }
@@ -407,6 +431,11 @@ class PasswordFormMetricsRecorder
   }
 
   void set_clock_for_testing(base::Clock* clock) { clock_ = clock; }
+
+  void set_submitted_form_frame(
+      metrics_util::SubmittedFormFrame submitted_form_frame) {
+    submitted_form_frame_ = submitted_form_frame;
+  }
 
  private:
   friend class base::RefCounted<PasswordFormMetricsRecorder>;
@@ -428,7 +457,7 @@ class PasswordFormMetricsRecorder
 
   // Not owned. Points to base::DefaultClock::GetInstance() by default, but can
   // be overridden for testing.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // True if the main frame's committed URL, at the time PasswordFormManager
   // was created, is secure.
@@ -439,7 +468,7 @@ class PasswordFormMetricsRecorder
 
   // Contains the generated password's status, which resulted from a user
   // action.
-  base::Optional<GeneratedPasswordStatus> generated_password_status_;
+  absl::optional<GeneratedPasswordStatus> generated_password_status_;
 
   // Tracks which bubble is currently being displayed to the user.
   CurrentBubbleOfInterest current_bubble_ = CurrentBubbleOfInterest::kNone;
@@ -472,7 +501,7 @@ class PasswordFormMetricsRecorder
   // Holds URL keyed metrics (UKMs) to be recorded on destruction.
   ukm::builders::PasswordForm ukm_entry_builder_;
 
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
 
   // Counter for DetailedUserActions observed during the lifetime of a
   // PasswordFormManager. Reported upon destruction.
@@ -482,30 +511,30 @@ class PasswordFormMetricsRecorder
   // 1 = the fallback was shown.
   // 2 = the password was generated.
   // 4 = this was an update prompt.
-  base::Optional<uint32_t> showed_manual_fallback_for_saving_;
+  absl::optional<uint32_t> showed_manual_fallback_for_saving_;
 
-  base::Optional<uint32_t> form_changes_bitmask_;
+  absl::optional<uint32_t> form_changes_bitmask_;
 
   bool recorded_first_filling_result_ = false;
 
   bool recorded_wait_for_username_reason_ = false;
 
-  bool user_typed_password_on_chrome_sign_in_page_ = false;
-  bool password_hash_saved_on_chrome_sing_in_page_ = false;
+  bool recorded_preferred_matched_password_type = false;
 
-  base::Optional<FillingAssistance> filling_assistance_;
-  base::Optional<FillingSource> filling_source_;
-  base::Optional<metrics_util::PasswordAccountStorageUsageLevel>
+  absl::optional<FillingAssistance> filling_assistance_;
+  absl::optional<FillingSource> filling_source_;
+  absl::optional<metrics_util::PasswordAccountStorageUsageLevel>
       account_storage_usage_level_;
+  absl::optional<metrics_util::SubmittedFormFrame> submitted_form_frame_;
 
+  // Whether a single username candidate was populated in prompt.
   bool possible_username_used_ = false;
+
   bool username_updated_in_bubble_ = false;
 
-  base::Optional<JsOnlyInput> js_only_input_;
+  absl::optional<JsOnlyInput> js_only_input_;
 
   bool is_mixed_content_form_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordFormMetricsRecorder);
 };
 
 }  // namespace password_manager

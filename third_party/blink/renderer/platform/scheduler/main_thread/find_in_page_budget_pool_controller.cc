@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/find_in_page_budget_pool_controller.h"
+
+#include <memory>
 
 #include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
@@ -13,8 +15,7 @@ namespace scheduler {
 
 namespace {
 // We will accumulate at most 1000ms for find-in-page budget.
-constexpr base::TimeDelta kFindInPageMaxBudget =
-    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kFindInPageMaxBudget = base::Seconds(1);
 // At least 25% of the total CPU time will go to find-in-page tasks.
 // TODO(rakina): Experiment with this number to figure out the right percentage
 // for find-in-page. Currently this is following CompositorPriorityExperiments.
@@ -38,11 +39,8 @@ FindInPageBudgetPoolController::FindInPageBudgetPoolController(
   }
 
   base::TimeTicks now = scheduler_->GetTickClock()->NowTicks();
-  find_in_page_budget_pool_.reset(new CPUTimeBudgetPool(
-      "FindInPageBudgetPool", this, &scheduler_->tracing_controller_, now));
-  // Set no minimum budget for find-in-page, so that we won't delay running
-  // find-in-page tasks when budget is available.
-  find_in_page_budget_pool_->SetMinBudgetLevelToRun(now, base::TimeDelta());
+  find_in_page_budget_pool_ = std::make_unique<CPUTimeBudgetPool>(
+      "FindInPageBudgetPool", &scheduler_->tracing_controller_, now);
   find_in_page_budget_pool_->SetMaxBudgetLevel(now, kFindInPageMaxBudget);
   find_in_page_budget_pool_->SetTimeBudgetRecoveryRate(
       now, kFindInPageBudgetRecoveryRate);
@@ -58,12 +56,12 @@ void FindInPageBudgetPoolController::OnTaskCompleted(
   DCHECK(find_in_page_budget_pool_);
   if (queue->GetPrioritisationType() ==
       MainThreadTaskQueue::QueueTraits::PrioritisationType::kFindInPage) {
-    find_in_page_budget_pool_->RecordTaskRunTime(
-        nullptr, task_timing->start_time(), task_timing->end_time());
+    find_in_page_budget_pool_->RecordTaskRunTime(task_timing->start_time(),
+                                                 task_timing->end_time());
   }
 
-  bool is_exhausted = !find_in_page_budget_pool_->CanRunTasksAt(
-      task_timing->end_time(), false /* is_wake_up */);
+  bool is_exhausted =
+      !find_in_page_budget_pool_->CanRunTasksAt(task_timing->end_time());
   QueuePriority task_priority = is_exhausted
                                     ? kFindInPageBudgetExhaustedPriority
                                     : kFindInPageBudgetNotExhaustedPriority;

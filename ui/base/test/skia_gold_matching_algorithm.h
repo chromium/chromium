@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,6 @@ class SkiaGoldMatchingAlgorithm {
   // Append the algorithm parameter to |cmd|.
   virtual void AppendAlgorithmToCmdline(base::CommandLine& cmd) const;
 
- protected:
   // The algorithm name for commandline.
   virtual std::string GetCommandLineSwitchName() const = 0;
 };

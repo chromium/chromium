@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_DISPLAY_DISPLAY_SWITCHES_H_
 #define UI_DISPLAY_DISPLAY_SWITCHES_H_
 
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -27,6 +26,9 @@ DISPLAY_EXPORT extern const char kUseFirstDisplayAsInternal[];
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 DISPLAY_EXPORT extern const char kEnableUnifiedDesktop[];
+
+// TODO(oshima): Remove once all tests are fixed. crbug.com/1225308.
+DISPLAY_EXPORT extern const char kRejectSquareDisplay[];
 #endif
 
 }  // namespace switches

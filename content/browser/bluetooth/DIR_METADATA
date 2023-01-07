@@ -1,4 +1,1 @@
-monorail {
-  component: "Blink>Bluetooth"
-}
-team_email: "web-bluetooth@chromium.org"
+mixins: "//content/browser/bluetooth/COMMON_METADATA"

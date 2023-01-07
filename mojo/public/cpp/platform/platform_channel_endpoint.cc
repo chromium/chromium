@@ -1,10 +1,57 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 
+#include <string>
+#include <tuple>
+#include <utility>
+
+#include "base/command_line.h"
+#include "base/logging.h"
+#include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
+#include "mojo/public/cpp/platform/platform_channel.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <mach/port.h>
+
+#include "base/mac/scoped_mach_port.h"
+#elif BUILDFLAG(IS_FUCHSIA)
+#include <lib/zx/handle.h>
+#elif BUILDFLAG(IS_POSIX)
+#include "base/files/scoped_file.h"
+#include "base/posix/global_descriptors.h"
+#elif BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/win/scoped_handle.h"
+#endif
+
 namespace mojo {
+
+namespace {
+
+#if BUILDFLAG(IS_ANDROID)
+// Leave room for any other descriptors defined in content for example.
+// TODO(https://crbug.com/676442): Consider changing base::GlobalDescriptors to
+// generate a key when setting the file descriptor.
+constexpr int kAndroidClientHandleDescriptor =
+    base::GlobalDescriptors::kBaseDescriptor + 10000;
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+bool IsTargetDescriptorUsed(const base::FileHandleMappingVector& mapping,
+                            int target_fd) {
+  for (auto& [i, fd] : mapping) {
+    if (fd == target_fd)
+      return true;
+  }
+  return false;
+}
+#endif
+
+}  // namespace
 
 PlatformChannelEndpoint::PlatformChannelEndpoint() = default;
 
@@ -25,6 +72,142 @@ void PlatformChannelEndpoint::reset() {
 
 PlatformChannelEndpoint PlatformChannelEndpoint::Clone() const {
   return PlatformChannelEndpoint(handle_.Clone());
+}
+
+void PlatformChannelEndpoint::PrepareToPass(HandlePassingInfo& info,
+                                            base::CommandLine& command_line) {
+  std::string value;
+  PrepareToPass(info, value);
+  if (!value.empty()) {
+    command_line.AppendSwitchASCII(PlatformChannel::kHandleSwitch, value);
+  }
+}
+
+void PlatformChannelEndpoint::PrepareToPass(HandlePassingInfo& info,
+                                            std::string& value) {
+  DCHECK(is_valid());
+#if BUILDFLAG(IS_WIN)
+  info.push_back(platform_handle().GetHandle().Get());
+  value =
+      base::NumberToString(HandleToLong(platform_handle().GetHandle().Get()));
+#elif BUILDFLAG(IS_FUCHSIA)
+  const uint32_t id = base::LaunchOptions::AddHandleToTransfer(
+      &info, platform_handle().GetHandle().get());
+  value = base::NumberToString(id);
+#elif BUILDFLAG(IS_ANDROID)
+  int fd = platform_handle().GetFD().get();
+  int mapped_fd = kAndroidClientHandleDescriptor + info.size();
+  info.emplace_back(fd, mapped_fd);
+  value = base::NumberToString(mapped_fd);
+#elif BUILDFLAG(IS_MAC)
+  DCHECK(platform_handle().is_mach_receive());
+  base::mac::ScopedMachReceiveRight receive_right =
+      TakePlatformHandle().TakeMachReceiveRight();
+  base::MachPortsForRendezvous::key_type rendezvous_key = 0;
+  do {
+    rendezvous_key = static_cast<decltype(rendezvous_key)>(base::RandUint64());
+  } while (info.find(rendezvous_key) != info.end());
+  auto it = info.insert(std::make_pair(
+      rendezvous_key, base::MachRendezvousPort(std::move(receive_right))));
+  DCHECK(it.second) << "Failed to insert port for rendezvous.";
+  value = base::NumberToString(rendezvous_key);
+#elif BUILDFLAG(IS_POSIX)
+  // Arbitrary sanity check to ensure the loop below terminates reasonably
+  // quickly.
+  CHECK_LT(info.size(), 1000u);
+
+  // Find a suitable FD to map the remote endpoint handle to in the child
+  // process. This has quadratic time complexity in the size of |*info|, but
+  // |*info| should be very small and is usually empty.
+  int target_fd = base::GlobalDescriptors::kBaseDescriptor;
+  while (IsTargetDescriptorUsed(info, target_fd)) {
+    ++target_fd;
+  }
+  info.emplace_back(platform_handle().GetFD().get(), target_fd);
+  value = base::NumberToString(target_fd);
+#endif
+}
+
+void PlatformChannelEndpoint::PrepareToPass(base::LaunchOptions& options,
+                                            base::CommandLine& command_line) {
+#if BUILDFLAG(IS_WIN)
+  PrepareToPass(options.handles_to_inherit, command_line);
+#elif BUILDFLAG(IS_FUCHSIA)
+  PrepareToPass(options.handles_to_transfer, command_line);
+#elif BUILDFLAG(IS_MAC)
+  PrepareToPass(options.mach_ports_for_rendezvous, command_line);
+#elif BUILDFLAG(IS_POSIX)
+  PrepareToPass(options.fds_to_remap, command_line);
+#else
+#error "Platform not supported."
+#endif
+}
+
+void PlatformChannelEndpoint::ProcessLaunchAttempted() {
+#if BUILDFLAG(IS_FUCHSIA)
+  // Unlike other platforms, Fuchsia transfers handle ownership to the new
+  // process, rather than duplicating it. For consistency the process-launch
+  // call will have consumed the handle regardless of whether launch succeeded.
+  DCHECK(platform_handle().is_valid_handle());
+  std::ignore = TakePlatformHandle().ReleaseHandle();
+#else
+  reset();
+#endif
+}
+
+// static
+PlatformChannelEndpoint PlatformChannelEndpoint::RecoverFromString(
+    base::StringPiece value) {
+#if BUILDFLAG(IS_WIN)
+  int handle_value = 0;
+  if (value.empty() || !base::StringToInt(value, &handle_value)) {
+    DLOG(ERROR) << "Invalid PlatformChannel endpoint string.";
+    return PlatformChannelEndpoint();
+  }
+  return PlatformChannelEndpoint(
+      PlatformHandle(base::win::ScopedHandle(LongToHandle(handle_value))));
+#elif BUILDFLAG(IS_FUCHSIA)
+  unsigned int handle_value = 0;
+  if (value.empty() || !base::StringToUint(value, &handle_value)) {
+    DLOG(ERROR) << "Invalid PlatformChannel endpoint string.";
+    return PlatformChannelEndpoint();
+  }
+  return PlatformChannelEndpoint(PlatformHandle(zx::handle(
+      zx_take_startup_handle(base::checked_cast<uint32_t>(handle_value)))));
+#elif BUILDFLAG(IS_ANDROID)
+  base::GlobalDescriptors::Key key = -1;
+  if (value.empty() || !base::StringToUint(value, &key)) {
+    DLOG(ERROR) << "Invalid PlatformChannel endpoint string.";
+    return PlatformChannelEndpoint();
+  }
+  return PlatformChannelEndpoint(PlatformHandle(
+      base::ScopedFD(base::GlobalDescriptors::GetInstance()->Get(key))));
+#elif BUILDFLAG(IS_MAC)
+  auto* client = base::MachPortRendezvousClient::GetInstance();
+  if (!client) {
+    DLOG(ERROR) << "Mach rendezvous failed.";
+    return PlatformChannelEndpoint();
+  }
+  uint32_t rendezvous_key = 0;
+  if (value.empty() || !base::StringToUint(value, &rendezvous_key)) {
+    DLOG(ERROR) << "Invalid PlatformChannel rendezvous key.";
+    return PlatformChannelEndpoint();
+  }
+  auto receive = client->TakeReceiveRight(rendezvous_key);
+  if (!receive.is_valid()) {
+    DLOG(ERROR) << "Invalid PlatformChannel receive right.";
+    return PlatformChannelEndpoint();
+  }
+  return PlatformChannelEndpoint(PlatformHandle(std::move(receive)));
+#elif BUILDFLAG(IS_POSIX)
+  int fd = -1;
+  if (value.empty() || !base::StringToInt(value, &fd) ||
+      fd < base::GlobalDescriptors::kBaseDescriptor) {
+    DLOG(ERROR) << "Invalid PlatformChannel endpoint string.";
+    return PlatformChannelEndpoint();
+  }
+  return PlatformChannelEndpoint(PlatformHandle(base::ScopedFD(fd)));
+#endif
 }
 
 }  // namespace mojo

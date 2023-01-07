@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,6 +43,10 @@ namespace crashpad {
 class MinidumpHandleDataWriter final : public internal::MinidumpStreamWriter {
  public:
   MinidumpHandleDataWriter();
+
+  MinidumpHandleDataWriter(const MinidumpHandleDataWriter&) = delete;
+  MinidumpHandleDataWriter& operator=(const MinidumpHandleDataWriter&) = delete;
+
   ~MinidumpHandleDataWriter() override;
 
   //! \brief Adds a MINIDUMP_HANDLE_DESCRIPTOR for each handle in \a
@@ -68,8 +72,6 @@ class MinidumpHandleDataWriter final : public internal::MinidumpStreamWriter {
   MINIDUMP_HANDLE_DATA_STREAM handle_data_stream_base_;
   std::vector<MINIDUMP_HANDLE_DESCRIPTOR> handle_descriptors_;
   std::map<std::string, internal::MinidumpUTF16StringWriter*> strings_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpHandleDataWriter);
 };
 
 }  // namespace crashpad

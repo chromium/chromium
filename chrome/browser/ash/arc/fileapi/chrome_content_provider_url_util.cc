@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include <string>
 
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
-#include "net/base/escape.h"
 
 namespace arc {
 
@@ -20,7 +20,7 @@ constexpr char kChromeContentProviderUrl[] =
 
 GURL EncodeToChromeContentProviderUrl(const GURL& url) {
   const std::string escaped =
-      net::EscapeQueryParamValue(url.spec(), false /* use_plus */);
+      base::EscapeQueryParamValue(url.spec(), false /* use_plus */);
   return GURL(kChromeContentProviderUrl).Resolve(escaped);
 }
 
@@ -31,7 +31,7 @@ GURL DecodeFromChromeContentProviderUrl(
                         base::CompareCase::SENSITIVE))
     return GURL();
   const std::string escaped = spec.substr(strlen(kChromeContentProviderUrl));
-  return GURL(net::UnescapeBinaryURLComponent(escaped));
+  return GURL(base::UnescapeBinaryURLComponent(escaped));
 }
 
 }  // namespace arc

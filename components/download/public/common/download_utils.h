@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -78,7 +79,7 @@ CreateDownloadDBEntryFromItem(const DownloadItemImpl& item);
 // Helper function to convert DownloadDBEntry to DownloadEntry.
 // TODO(qinmin): remove this function after DownloadEntry is deprecated.
 COMPONENTS_DOWNLOAD_EXPORT std::unique_ptr<DownloadEntry>
-CreateDownloadEntryFromDownloadDBEntry(base::Optional<DownloadDBEntry> entry);
+CreateDownloadEntryFromDownloadDBEntry(absl::optional<DownloadDBEntry> entry);
 
 COMPONENTS_DOWNLOAD_EXPORT uint64_t GetUniqueDownloadId();
 
@@ -105,6 +106,26 @@ COMPONENTS_DOWNLOAD_EXPORT DownloadItem::DownloadRenameResult
 RenameDownloadedFile(const base::FilePath& from_path,
                      const base::FilePath& display_name);
 
+// Callback to be invoked when DetermineLocalPath() completes. The argument
+// |file_path| should be the determined local path. It should be non-empty
+// on success.
+// On Android, |file_path| could be a content Uri (e.g. content://media/1234).
+// In such cases, |file_name| is provided for displaying the file to the user
+// (e.g. test.apk). If |file_path| is not a content Uri, file name could
+// be empty and should be ignored.
+using LocalPathCallback =
+    base::OnceCallback<void(const base::FilePath& file_path,
+                            const base::FilePath& file_name)>;
+
+// If |virtual_path| is not a local path, should return a possibly temporary
+// local path to use for storing the downloaded file. If |virtual_path| is
+// already local, then it should return the same path. |callback| should be
+// invoked to return the path.
+COMPONENTS_DOWNLOAD_EXPORT
+void DetermineLocalPath(DownloadItem* download,
+                        const base::FilePath& virtual_path,
+                        LocalPathCallback callback);
+
 // Finch parameter key value for number of bytes used for content validation
 // during resumption.
 constexpr char kDownloadContentValidationLengthFinchKey[] =
@@ -121,11 +142,17 @@ constexpr char kExpiredDownloadDeleteTimeFinchKey[] =
 constexpr char kOverwrittenDownloadDeleteTimeFinchKey[] =
     "overwritten_download_delete_days";
 
+// Finch parameter key value for the buffer size to write to the download file.
+constexpr char kDownloadFileBufferSizeFinchKey[] = "download_file_buffer_size";
+
 // Returns the time to delete expired downloads.
 COMPONENTS_DOWNLOAD_EXPORT base::TimeDelta GetExpiredDownloadDeleteTime();
 
 // Returns the time in days to delete download that is overwritten by others.
 COMPONENTS_DOWNLOAD_EXPORT base::TimeDelta GetOverwrittenDownloadDeleteTime();
+
+// Returns the size of the file buffer that reads data from the data pipe.
+COMPONENTS_DOWNLOAD_EXPORT int GetDownloadFileBufferSize();
 }  // namespace download
 
 #endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_UTILS_H_

@@ -1,0 +1,160 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non ChromeOS builds must not depend on //chromeos/ash")
+
+source_set("assistant_client") {
+  sources = [
+    "./utils/media_status_utils.cc",
+    "./utils/media_status_utils.h",
+    "./utils/settings_utils.cc",
+    "./utils/settings_utils.h",
+    "./utils/timer_utils.cc",
+    "./utils/timer_utils.h",
+    "assistant_client.cc",
+    "assistant_client.h",
+    "assistant_client_impl.cc",
+    "assistant_client_impl.h",
+    "assistant_client_observer.h",
+    "assistant_client_v1.cc",
+    "assistant_client_v1.h",
+  ]
+
+  deps = [
+    ":grpc_service",
+    ":libassistant_client",
+    "external_services:grpc_services_initializer",
+    "external_services:grpc_services_observer",
+    "//base",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//chromeos/ash/services/libassistant:callback_utils",
+    "//chromeos/assistant/internal",
+    "//chromeos/assistant/internal:libassistant_shared_headers",
+  ]
+}
+
+source_set("grpc_client") {
+  sources = [
+    "grpc_client_thread.cc",
+    "grpc_client_thread.h",
+    "grpc_state.h",
+  ]
+
+  public_deps = [
+    ":grpc_util",
+    "//third_party/grpc:grpc++",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/assistant/internal",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+
+  # Make grpc_config as all dependent to avoid adding public deps
+  # for any top-level targets that are not immediate dependents and
+  # indirectly includes headers from grpc through grpc_libassistant_client header.
+  all_dependent_configs = [ "//third_party/grpc:grpc_config" ]
+}
+
+source_set("grpc_service") {
+  sources = [
+    "async_service_driver.h",
+    "rpc_method_driver.h",
+    "services_initializer_base.cc",
+    "services_initializer_base.h",
+    "services_status_observer.h",
+    "services_status_provider.cc",
+    "services_status_provider.h",
+  ]
+
+  public_deps = [ "//chromeos/assistant/internal/proto:assistant" ]
+
+  deps = [
+    ":grpc_util",
+    "external_services:grpc_services_observer",
+    "//base",
+    "//third_party/grpc:grpc++",
+  ]
+
+  all_dependent_configs = [ "//third_party/grpc:grpc_config" ]
+}
+
+source_set("grpc_util") {
+  sources = [
+    "grpc_util.cc",
+    "grpc_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//third_party/grpc:grpc++",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+source_set("libassistant_client") {
+  sources = [
+    "grpc_libassistant_client.cc",
+    "grpc_libassistant_client.h",
+  ]
+
+  public_deps = [ "//chromeos/assistant/internal/proto:assistant" ]
+
+  deps = [
+    ":grpc_client",
+    "//base",
+    "//chromeos/assistant/internal:support",
+  ]
+
+  # Make grpc_config as all dependent to avoid adding public deps
+  # for any top-level targets that are not immediate dependents and
+  # indirectly includes headers from grpc through grpc_libassistant_client header.
+  all_dependent_configs = [ "//third_party/grpc:grpc_config" ]
+}
+
+source_set("http_connection_client") {
+  sources = [
+    "grpc_http_connection_client.cc",
+    "grpc_http_connection_client.h",
+    "grpc_http_connection_delegate.cc",
+    "grpc_http_connection_delegate.h",
+  ]
+
+  public_deps = [
+    "//chromeos/assistant/internal/proto:assistant",
+    "//chromeos/assistant/internal/proto:assistant_grpc",
+  ]
+
+  deps = [
+    ":grpc_client",
+    "//base",
+    "//chromeos/assistant/internal",
+    "//chromeos/assistant/internal:libassistant_shared_headers",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "assistant_client_v1_unittests.cc",
+    "grpc_http_connection_client_unittests.cc",
+  ]
+
+  deps = [
+    ":assistant_client",
+    ":grpc_service",
+    ":http_connection_client",
+    "//base/test:test_support",
+    "//chromeos/assistant/internal",
+    "//chromeos/assistant/internal:libassistant_shared_headers",
+    "//chromeos/assistant/internal:test_support",
+    "//chromeos/assistant/internal/proto:assistant",
+    "//chromeos/assistant/internal/proto:assistant_grpc",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

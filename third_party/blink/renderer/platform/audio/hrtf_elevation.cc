@@ -34,46 +34,76 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
+#include "third_party/blink/renderer/platform/audio/hrtf_database.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_panner.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
-#include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 
 namespace blink {
 
-const unsigned HRTFElevation::kAzimuthSpacing = 15;
-const unsigned HRTFElevation::kNumberOfRawAzimuths = 360 / kAzimuthSpacing;
-const unsigned HRTFElevation::kInterpolationFactor = 8;
-const unsigned HRTFElevation::kNumberOfTotalAzimuths =
-    kNumberOfRawAzimuths * kInterpolationFactor;
+namespace {
 
 // Total number of components of an HRTF database.
-const size_t kTotalNumberOfResponses = 240;
+constexpr size_t kTotalNumberOfResponses = 240;
 
 // Number of frames in an individual impulse response.
-const size_t kResponseFrameSize = 256;
+constexpr size_t kResponseFrameSize = 256;
 
 // Sample-rate of the spatialization impulse responses as stored in the resource
 // file.  The impulse responses may be resampled to a different sample-rate
 // (depending on the audio hardware) when they are loaded.
-const float kResponseSampleRate = 44100;
+constexpr float kResponseSampleRate = 44100;
 
 // This table maps the index into the elevation table with the corresponding
 // angle. See https://bugs.webkit.org/show_bug.cgi?id=98294#c9 for the
 // elevation angles and their order in the concatenated response.
-const int kElevationIndexTableSize = 10;
-const int kElevationIndexTable[kElevationIndexTableSize] = {
+constexpr int kElevationIndexTableSize = 10;
+constexpr int kElevationIndexTable[kElevationIndexTableSize] = {
     0, 15, 30, 45, 60, 75, 90, 315, 330, 345};
+
+// The range of elevations for the IRCAM impulse responses varies depending on
+// azimuth, but the minimum elevation appears to always be -45.
+//
+// Here's how it goes:
+constexpr int kMaxElevations[] = {
+    //  Azimuth
+    //
+    90,  // 0
+    45,  // 15
+    60,  // 30
+    45,  // 45
+    75,  // 60
+    45,  // 75
+    60,  // 90
+    45,  // 105
+    75,  // 120
+    45,  // 135
+    60,  // 150
+    45,  // 165
+    75,  // 180
+    45,  // 195
+    60,  // 210
+    45,  // 225
+    75,  // 240
+    45,  // 255
+    60,  // 270
+    45,  // 285
+    75,  // 300
+    45,  // 315
+    60,  // 330
+    45   // 345
+};
 
 // Lazily load a concatenated HRTF database for given subject and store it in a
 // local hash table to ensure quick efficient future retrievals.
-static scoped_refptr<AudioBus> GetConcatenatedImpulseResponsesForSubject(
+scoped_refptr<AudioBus> GetConcatenatedImpulseResponsesForSubject(
     int subject_resource_id) {
   typedef HashMap<int, scoped_refptr<AudioBus>> AudioBusMap;
   DEFINE_THREAD_SAFE_STATIC_LOCAL(AudioBusMap, audio_bus_map, ());
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(Mutex, mutex, ());
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
 
-  MutexLocker locker(mutex);
+  base::AutoLock locker(lock);
   scoped_refptr<AudioBus> bus;
   AudioBusMap::iterator iterator = audio_bus_map.find(subject_resource_id);
   if (iterator == audio_bus_map.end()) {
@@ -83,8 +113,9 @@ static scoped_refptr<AudioBus> GetConcatenatedImpulseResponsesForSubject(
 
     bus = concatenated_impulse_responses;
     audio_bus_map.Set(subject_resource_id, bus);
-  } else
+  } else {
     bus = iterator->value;
+  }
 
   size_t response_length = bus->length();
   size_t expected_length =
@@ -96,6 +127,8 @@ static scoped_refptr<AudioBus> GetConcatenatedImpulseResponsesForSubject(
 
   return bus;
 }
+
+}  // namespace
 
 bool HRTFElevation::CalculateKernelsForAzimuthElevation(
     int azimuth,
@@ -115,13 +148,14 @@ bool HRTFElevation::CalculateKernelsForAzimuthElevation(
   DCHECK_LE(elevation, 90);
   DCHECK_EQ((elevation / 15) * 15, elevation);
 
-  int positive_elevation = elevation < 0 ? elevation + 360 : elevation;
+  const int positive_elevation = elevation < 0 ? elevation + 360 : elevation;
 
   scoped_refptr<AudioBus> bus(
       GetConcatenatedImpulseResponsesForSubject(subject_resource_id));
 
-  if (!bus)
+  if (!bus) {
     return false;
+  }
 
   // Just sequentially search the table to find the correct index.
   int elevation_index = -1;
@@ -157,7 +191,7 @@ bool HRTFElevation::CalculateKernelsForAzimuthElevation(
 
   // Note that depending on the fftSize returned by the panner, we may be
   // truncating the impulse response we just loaded in, or we might zero-pad it.
-  const size_t fft_size = HRTFPanner::FftSizeForSampleRate(sample_rate);
+  const unsigned fft_size = HRTFPanner::FftSizeForSampleRate(sample_rate);
 
   if (2 * response->length() < fft_size) {
     // Need to resize the response buffer length so that it fis the fft size.
@@ -188,39 +222,6 @@ bool HRTFElevation::CalculateKernelsForAzimuthElevation(
   return true;
 }
 
-// The range of elevations for the IRCAM impulse responses varies depending on
-// azimuth, but the minimum elevation appears to always be -45.
-//
-// Here's how it goes:
-static int g_max_elevations[] = {
-    //  Azimuth
-    //
-    90,  // 0
-    45,  // 15
-    60,  // 30
-    45,  // 45
-    75,  // 60
-    45,  // 75
-    60,  // 90
-    45,  // 105
-    75,  // 120
-    45,  // 135
-    60,  // 150
-    45,  // 165
-    75,  // 180
-    45,  // 195
-    60,  // 210
-    45,  // 225
-    75,  // 240
-    45,  // 255
-    60,  // 270
-    45,  // 285
-    75,  // 300
-    45,  // 315
-    60,  // 330
-    45   //  345
-};
-
 std::unique_ptr<HRTFElevation> HRTFElevation::CreateForSubject(
     int subject_resource_id,
     int elevation,
@@ -238,15 +239,16 @@ std::unique_ptr<HRTFElevation> HRTFElevation::CreateForSubject(
   int interpolated_index = 0;
   for (unsigned raw_index = 0; raw_index < kNumberOfRawAzimuths; ++raw_index) {
     // Don't let elevation exceed maximum for this azimuth.
-    int max_elevation = g_max_elevations[raw_index];
-    int actual_elevation = std::min(elevation, max_elevation);
+    const int max_elevation = kMaxElevations[raw_index];
+    const int actual_elevation = std::min(elevation, max_elevation);
 
-    bool success = CalculateKernelsForAzimuthElevation(
+    const bool success = CalculateKernelsForAzimuthElevation(
         raw_index * kAzimuthSpacing, actual_elevation, sample_rate,
         subject_resource_id, kernel_list_l->at(interpolated_index),
         kernel_list_r->at(interpolated_index));
-    if (!success)
+    if (!success) {
       return nullptr;
+    }
 
     interpolated_index += kInterpolationFactor;
   }
@@ -258,7 +260,8 @@ std::unique_ptr<HRTFElevation> HRTFElevation::CreateForSubject(
     // Create the interpolated convolution kernels and delays.
     for (unsigned jj = 1; jj < kInterpolationFactor; ++jj) {
       float x =
-          float(jj) / float(kInterpolationFactor);  // interpolate from 0 -> 1
+          static_cast<float>(jj) /
+          static_cast<float>(kInterpolationFactor);  // interpolate from 0 -> 1
 
       (*kernel_list_l)[i + jj] = HRTFKernel::CreateInterpolatedKernel(
           kernel_list_l->at(i).get(), kernel_list_l->at(j).get(), x);
@@ -303,8 +306,8 @@ std::unique_ptr<HRTFElevation> HRTFElevation::CreateByInterpolatingSlices(
   }
 
   // Interpolate elevation angle.
-  double angle = (1.0 - x) * hrtf_elevation1->ElevationAngle() +
-                 x * hrtf_elevation2->ElevationAngle();
+  const double angle = (1.0 - x) * hrtf_elevation1->ElevationAngle() +
+                       x * hrtf_elevation2->ElevationAngle();
 
   std::unique_ptr<HRTFElevation> hrtf_elevation = base::WrapUnique(
       new HRTFElevation(std::move(kernel_list_l), std::move(kernel_list_r),
@@ -321,7 +324,7 @@ void HRTFElevation::GetKernelsFromAzimuth(double azimuth_blend,
   DCHECK_GE(azimuth_blend, 0.0);
   DCHECK_LT(azimuth_blend, 1.0);
 
-  unsigned num_kernels = kernel_list_l_->size();
+  const unsigned num_kernels = kernel_list_l_->size();
 
   DCHECK_LT(azimuth_index, num_kernels);
 
@@ -332,9 +335,9 @@ void HRTFElevation::GetKernelsFromAzimuth(double azimuth_blend,
   frame_delay_l = kernel_list_l_->at(azimuth_index)->FrameDelay();
   frame_delay_r = kernel_list_r_->at(azimuth_index)->FrameDelay();
 
-  int azimuth_index2 = (azimuth_index + 1) % num_kernels;
-  double frame_delay2l = kernel_list_l_->at(azimuth_index2)->FrameDelay();
-  double frame_delay2r = kernel_list_r_->at(azimuth_index2)->FrameDelay();
+  const int azimuth_index2 = (azimuth_index + 1) % num_kernels;
+  const double frame_delay2l = kernel_list_l_->at(azimuth_index2)->FrameDelay();
+  const double frame_delay2r = kernel_list_r_->at(azimuth_index2)->FrameDelay();
 
   // Linearly interpolate delays.
   frame_delay_l =

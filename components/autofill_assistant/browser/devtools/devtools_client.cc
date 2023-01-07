@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -22,18 +22,28 @@ namespace autofill_assistant {
 constexpr long kSessionIdLookupFailedError = -10;
 
 DevtoolsClient::DevtoolsClient(
-    scoped_refptr<content::DevToolsAgentHost> agent_host)
+    scoped_refptr<content::DevToolsAgentHost> agent_host,
+    bool enable_full_stack_traces)
     : agent_host_(agent_host),
       input_domain_(this),
       dom_domain_(this),
       runtime_domain_(this),
-      network_domain_(this),
       target_domain_(this),
+      page_domain_(this),
       next_message_id_(0),
       frame_tracker_(this) {
   browser_main_thread_ = content::GetUIThreadTaskRunner({});
   agent_host_->AttachClientWithoutWakeLock(this);
   frame_tracker_.Start();
+
+  if (enable_full_stack_traces) {
+    // This is necessary in order to get full stack traces in the case of
+    // exceptions. Without this, only the top-most stack frame is available.
+    // For now, this is only done for the main frame, since that's good enough
+    // for JS flows. Enabling this for JS snippets will require calling this on
+    // every frame instead.
+    GetRuntime()->Enable(/* optional_node_frame_id = */ std::string());
+  }
 }
 
 DevtoolsClient::~DevtoolsClient() {
@@ -53,12 +63,12 @@ runtime::Domain* DevtoolsClient::GetRuntime() {
   return &runtime_domain_;
 }
 
-network::Domain* DevtoolsClient::GetNetwork() {
-  return &network_domain_;
-}
-
 target::ExperimentalDomain* DevtoolsClient::GetTarget() {
   return &target_domain_;
+}
+
+page::ExperimentalDomain* DevtoolsClient::GetPage() {
+  return &page_domain_;
 }
 
 void DevtoolsClient::SendMessage(
@@ -154,7 +164,7 @@ void DevtoolsClient::DispatchProtocolMessage(
   bool success = message->GetAsDictionary(&message_dict);
   DCHECK(success);
 
-  success = message_dict->HasKey("id")
+  success = message_dict->FindKey("id")
                 ? DispatchMessageReply(std::move(message), *message_dict)
                 : DispatchEvent(std::move(message), *message_dict);
   if (!success)
@@ -254,8 +264,8 @@ bool DevtoolsClient::DispatchEvent(std::unique_ptr<base::Value> owning_message,
       return false;
     }
     if (browser_main_thread_) {
-      // DevTools assumes event handling is async so we must post a task here or
-      // we risk breaking things.
+      // DevTools assumes event handling is async so we must post a task here
+      // or we risk breaking things.
       browser_main_thread_->PostTask(
           FROM_HERE,
           base::BindOnce(&DevtoolsClient::DispatchEventTask,
@@ -278,16 +288,11 @@ void DevtoolsClient::DispatchEventTask(
 void DevtoolsClient::FillReplyStatusFromErrorDict(
     ReplyStatus* status,
     const base::DictionaryValue& error_dict) {
-  const base::Value* code;
-  if (error_dict.Get("code", &code) && code->is_int()) {
-    status->error_code = code->GetInt();
-  } else {
-    status->error_code = -1;  // unknown error code
-  }
+  status->error_code = error_dict.FindIntKey("code").value_or(-1);
 
-  const base::Value* message;
-  if (error_dict.Get("message", &message) && message->is_string()) {
-    status->error_message = message->GetString();
+  const std::string* message = error_dict.FindStringKey("message");
+  if (message) {
+    status->error_message = *message;
   } else {
     status->error_message = "unknown";
   }
@@ -335,8 +340,9 @@ void DevtoolsClient::FrameTracker::Start() {
 
   started_ = true;
 
-  // Start auto attaching so that we can keep track of what session got started
-  // for what target. We use flatten = true to cover the entire frame tree.
+  // Start auto attaching so that we can keep track of what session got
+  // started for what target. We use flatten = true to cover the entire frame
+  // tree.
   client_->GetTarget()->SetAutoAttach(
       target::SetAutoAttachParams::Builder()
           .SetAutoAttach(true)

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/dom_action.pb.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
 
 namespace autofill_assistant {
 
@@ -21,10 +21,10 @@ namespace autofill_assistant {
 class PerformOnSingleElementAction : public Action {
  public:
   using PerformAction =
-      base::OnceCallback<void(const ElementFinder::Result&,
+      base::OnceCallback<void(const ElementFinderResult&,
                               base::OnceCallback<void(const ClientStatus&)>)>;
   using PerformTimedAction = base::OnceCallback<void(
-      const ElementFinder::Result&,
+      const ElementFinderResult&,
       base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)>;
 
   ~PerformOnSingleElementAction() override;
@@ -67,7 +67,7 @@ class PerformOnSingleElementAction : public Action {
 
   void EndAction(const ClientStatus& status);
 
-  ElementFinder::Result element_;
+  ElementFinderResult element_;
   ProcessActionCallback callback_;
 
   std::string client_id_;

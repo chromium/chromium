@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -27,6 +28,10 @@ class MouseCursorMonitorProxy : public webrtc::MouseCursorMonitor {
   MouseCursorMonitorProxy(
       scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
       const webrtc::DesktopCaptureOptions& options);
+
+  MouseCursorMonitorProxy(const MouseCursorMonitorProxy&) = delete;
+  MouseCursorMonitorProxy& operator=(const MouseCursorMonitorProxy&) = delete;
+
   ~MouseCursorMonitorProxy() override;
 
   // webrtc::MouseCursorMonitor interface.
@@ -46,11 +51,9 @@ class MouseCursorMonitorProxy : public webrtc::MouseCursorMonitor {
 
   std::unique_ptr<Core> core_;
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
-  Callback* callback_ = nullptr;
+  raw_ptr<Callback> callback_ = nullptr;
 
   base::WeakPtrFactory<MouseCursorMonitorProxy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MouseCursorMonitorProxy);
 };
 
 }  // namespace remoting

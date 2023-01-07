@@ -1,0 +1,49 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
+
+component("settings") {
+  defines = [ "IS_CHROMEOS_ASH_COMPONENTS_SETTINGS_IMPL" ]
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base:i18n",
+    "//chromeos/login/login_state",
+    "//third_party/icu",
+  ]
+  sources = [
+    "cros_settings_names.cc",
+    "cros_settings_names.h",
+    "cros_settings_provider.cc",
+    "cros_settings_provider.h",
+    "scoped_timezone_settings.cc",
+    "scoped_timezone_settings.h",
+    "system_settings_provider.cc",
+    "system_settings_provider.h",
+    "timezone_settings.cc",
+    "timezone_settings.h",
+    "timezone_settings_helper.cc",
+    "timezone_settings_helper.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":settings",
+    "//base",
+    "//base:i18n",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/icu",
+  ]
+  sources = [
+    "scoped_timezone_settings_unittest.cc",
+    "timezone_settings_unittest.cc",
+  ]
+}

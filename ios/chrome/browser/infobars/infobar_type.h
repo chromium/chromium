@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,14 @@ enum class InfobarType {
   kInfobarTypeTranslate = 4,
   // Message Infobar for Saving an address profile.
   kInfobarTypeSaveAutofillAddressProfile = 5,
+  // Message Infobar for Adding to Reading List.
+  kInfobarTypeAddToReadingList = 6,
+  // Message Infobar for media permissions.
+  kInfobarTypePermissions = 7,
+  // Message Infobar for Tailored Security Service.
+  kInfobarTypeTailoredSecurityService = 8,
+  // Message Infobar for Sync Error.
+  kInfobarTypeSyncError = 9,
 };
 
 // Message "Confirm Infobars" types, these are the generic kInfobarTypeConfirm

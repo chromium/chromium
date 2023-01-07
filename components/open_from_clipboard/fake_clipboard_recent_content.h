@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_OPEN_FROM_CLIPBOARD_FAKE_CLIPBOARD_RECENT_CONTENT_H_
 #define COMPONENTS_OPEN_FROM_CLIPBOARD_FAKE_CLIPBOARD_RECENT_CONTENT_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "ui/gfx/image/image.h"
@@ -16,12 +15,19 @@
 class FakeClipboardRecentContent : public ClipboardRecentContent {
  public:
   FakeClipboardRecentContent();
+
+  FakeClipboardRecentContent(const FakeClipboardRecentContent&) = delete;
+  FakeClipboardRecentContent& operator=(const FakeClipboardRecentContent&) =
+      delete;
+
   ~FakeClipboardRecentContent() override;
 
   // ClipboardRecentContent implementation.
-  base::Optional<GURL> GetRecentURLFromClipboard() override;
-  base::Optional<std::u16string> GetRecentTextFromClipboard() override;
+  absl::optional<GURL> GetRecentURLFromClipboard() override;
+  absl::optional<std::u16string> GetRecentTextFromClipboard() override;
   void GetRecentImageFromClipboard(GetRecentImageCallback callback) override;
+  absl::optional<std::set<ClipboardContentType>>
+  GetCachedClipboardContentTypes() override;
   bool HasRecentImageFromClipboard() override;
   void HasRecentContentFromClipboard(std::set<ClipboardContentType> types,
                                      HasDataCallback callback) override;
@@ -40,13 +46,11 @@ class FakeClipboardRecentContent : public ClipboardRecentContent {
   void SetClipboardImage(const gfx::Image& image, base::TimeDelta content_age);
 
  private:
-  base::Optional<GURL> clipboard_url_content_;
-  base::Optional<std::u16string> clipboard_text_content_;
-  base::Optional<gfx::Image> clipboard_image_content_;
+  absl::optional<GURL> clipboard_url_content_;
+  absl::optional<std::u16string> clipboard_text_content_;
+  absl::optional<gfx::Image> clipboard_image_content_;
   base::TimeDelta content_age_;
   bool suppress_content_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClipboardRecentContent);
 };
 
 #endif  // COMPONENTS_OPEN_FROM_CLIPBOARD_FAKE_CLIPBOARD_RECENT_CONTENT_H_

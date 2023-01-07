@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,7 +87,7 @@ bool LegalMessageLine::Parse(const base::Value& legal_message,
     LegalMessageLines lines;
     lines.reserve(lines_list->GetList().size());
     for (const base::Value& single_line : lines_list->GetList()) {
-      lines.emplace_back(LegalMessageLine());
+      lines.emplace_back();
       if (!single_line.is_dict() ||
           !lines.back().ParseLine(single_line, escape_apostrophes))
         return false;
@@ -112,7 +112,7 @@ bool LegalMessageLine::ParseLine(const base::Value& line,
   const base::Value* template_parameters =
       line.FindKeyOfType("template_parameter", base::Value::Type::LIST);
   if (template_parameters) {
-    base::Value::ConstListView template_parameters_view =
+    const base::Value::List& template_parameters_view =
         template_parameters->GetList();
     display_texts.reserve(template_parameters_view.size());
     links_.reserve(template_parameters_view.size());

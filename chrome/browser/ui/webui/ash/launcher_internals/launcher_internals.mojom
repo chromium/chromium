@@ -1,0 +1,48 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module launcher_internals.mojom;
+
+// A single search result. More fields can be added when needed.
+struct Result {
+  // Unique ID string for the result.
+  string id;
+
+  // Title text for the result.
+  string title;
+
+  // Description text that is displayed below the title. This can be empty.
+  string description;
+
+  // Which provider this result came from.
+  string result_type;
+
+  // The type that is reported in UMA metrics for this result.
+  string metrics_type;
+
+  // Which UI surface the result is displayed in.
+  string display_type;
+
+  // The score associated with this result, in the range [0,1].
+  double score;
+
+  // Scores corresponding to different ranking methods. These are keyed by a
+  // string describing the ranking method.
+  map<string, double> ranker_scores;
+};
+
+// Interface for creating internals page handlers. Implemented by the WebUI
+// controller and used by chrome://launcher-internals.
+interface PageHandlerFactory {
+  // Creates a page handler that observes the launcher and updates the
+  // internals page.
+  CreatePageHandler(pending_remote<Page> page);
+};
+
+// Interface for the launcher internals page. Implemented in Javascript and
+// used by the page handler.
+interface Page {
+  // Updates the page with the new results.
+  UpdateResults(string query, array<Result> results);
+};

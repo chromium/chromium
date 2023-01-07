@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,10 +25,10 @@ bool NetworkInfo::operator==(const NetworkInfo& other) const {
   return guid == other.guid && label == other.label &&
          tooltip == other.tooltip && image.BackedBySameObjectAs(other.image) &&
          type == other.type && disable == other.disable &&
+         sim_locked == other.sim_locked && sim_eid == other.sim_eid &&
          connection_state == other.connection_state && source == other.source &&
          activation_state == other.activation_state &&
-         battery_percentage == other.battery_percentage &&
-         inhibited == other.inhibited;
+         battery_percentage == other.battery_percentage;
 }
 
 }  // namespace ash

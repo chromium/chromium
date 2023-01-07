@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -25,6 +25,7 @@ source_set("public") {
 
   deps = [
     "//base",
+    "//components/feed:feature_list",
     "//components/flags_ui",
     "//components/keyed_service/core",
   ]
@@ -61,11 +62,13 @@ if (is_android) {
       "android/java/src/org/chromium/components/feature_engagement/EventConstants.java",
       "android/java/src/org/chromium/components/feature_engagement/FeatureConstants.java",
       "android/java/src/org/chromium/components/feature_engagement/Tracker.java",
+      "android/java/src/org/chromium/components/feature_engagement/TriggerDetails.java",
     ]
 
     deps = [
       ":jni_headers",
       "//base:base_java",
+      "//base:jni_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

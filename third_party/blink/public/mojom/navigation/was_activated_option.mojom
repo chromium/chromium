@@ -1,0 +1,19 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Whether the navigation should propagate user activation. This can be
+// specified by embedders in NavigationController::LoadURLParams.
+enum WasActivatedOption {
+  // The content layer should make a decision about whether to propagate user
+  // activation.
+  kUnknown,
+
+  // The navigation should propagate user activation.
+  kYes,
+
+  // The navigation should not propagate user activation.
+  kNo,
+};

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom-test-utils.h"
-#include "chromeos/components/drivefs/mojom/drivefs.mojom.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-test-utils.h"
+#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,6 +30,9 @@ class MockClient : public extensions::NativeMessageHost::Client {
  public:
   MockClient() {}
 
+  MockClient(const MockClient&) = delete;
+  MockClient& operator=(const MockClient&) = delete;
+
   MOCK_METHOD(void,
               PostMessageFromNativeHost,
               (const std::string& message),
@@ -38,9 +41,6 @@ class MockClient : public extensions::NativeMessageHost::Client {
               CloseChannel,
               (const std::string& error_message),
               (override));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClient);
 };
 
 class DriveFsNativeMessageHostTest
@@ -53,6 +53,10 @@ class DriveFsNativeMessageHostTest
         chromeos::features::kDriveFsBidirectionalNativeMessaging);
   }
 
+  DriveFsNativeMessageHostTest(const DriveFsNativeMessageHostTest&) = delete;
+  DriveFsNativeMessageHostTest& operator=(const DriveFsNativeMessageHostTest&) =
+      delete;
+
   DriveFs* GetForwardingInterface() override {
     NOTREACHED();
     return nullptr;
@@ -61,7 +65,7 @@ class DriveFsNativeMessageHostTest
   void CreateNativeHostSession(
       drivefs::mojom::ExtensionConnectionParamsPtr params,
       mojo::PendingReceiver<drivefs::mojom::NativeMessagingHost> session,
-      mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> port) {
+      mojo::PendingRemote<drivefs::mojom::NativeMessagingPort> port) override {
     params_ = std::move(params);
     extension_port_.Bind(std::move(port));
     receiver_.Bind(std::move(session));
@@ -79,8 +83,6 @@ class DriveFsNativeMessageHostTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsNativeMessageHostTest);
 };
 
 TEST_F(DriveFsNativeMessageHostTest, DriveFsInitiatedMessaging) {
@@ -172,10 +174,13 @@ class DriveFsNativeMessageHostTestWithoutFlag
         chromeos::features::kDriveFsBidirectionalNativeMessaging);
   }
 
+  DriveFsNativeMessageHostTestWithoutFlag(
+      const DriveFsNativeMessageHostTestWithoutFlag&) = delete;
+  DriveFsNativeMessageHostTestWithoutFlag& operator=(
+      const DriveFsNativeMessageHostTestWithoutFlag&) = delete;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveFsNativeMessageHostTestWithoutFlag);
 };
 
 TEST_F(DriveFsNativeMessageHostTestWithoutFlag,

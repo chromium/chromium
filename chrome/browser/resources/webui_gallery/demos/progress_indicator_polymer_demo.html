@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Progress indicators demo</title>
+    <link rel="stylesheet" href="demo.css">
+    <style>
+      paper-progress {
+        --paper-progress-active-color: var(--google-blue-500);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        paper-progress {
+          --paper-progress-active-color: var(--google-blue-300);
+        }
+      }
+
+      paper-spinner-lite {
+        --paper-spinner-color: var(--google-blue-500);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        paper-spinner-lite {
+          --paper-spinner-color: var(--google-blue-300);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>paper-progress</h1>
+    <div class="demos">
+      <paper-progress indeterminate></paper-progress>
+    </div>
+
+    <h1>paper-spinner-lite</h1>
+    <div class="demos">
+      <paper-spinner-lite active></paper-spinner-lite>
+    </div>
+
+    <script src="//resources/cr_elements/cr_shared_vars.css.js"
+        type="module"></script>
+    <script
+        src="//resources/polymer/v3_0/paper-progress/paper-progress.js"
+        type="module"></script>
+    <script
+        src="//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js"
+        type="module"></script>
+  </body>
+</html>

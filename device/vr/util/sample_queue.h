@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace device {
 
@@ -19,6 +18,10 @@ namespace device {
 class COMPONENT_EXPORT(DEVICE_VR_UTIL) SampleQueue {
  public:
   explicit SampleQueue(size_t window_size);
+
+  SampleQueue(const SampleQueue&) = delete;
+  SampleQueue& operator=(const SampleQueue&) = delete;
+
   ~SampleQueue();
 
   int64_t GetSum() const { return sum_; }
@@ -35,7 +38,6 @@ class COMPONENT_EXPORT(DEVICE_VR_UTIL) SampleQueue {
   size_t current_index_ = 0;
   size_t window_size_;
   std::vector<int64_t> samples_;
-  DISALLOW_COPY_AND_ASSIGN(SampleQueue);
 };
 
 }  // namespace device

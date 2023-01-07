@@ -1,0 +1,6 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='This test is for body tag'
+++++++++++UNKNOWN label='This test is for body tag'

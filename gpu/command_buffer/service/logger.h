@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/gpu_gles2_export.h"
 
 namespace gpu {
@@ -30,6 +30,10 @@ class GPU_GLES2_EXPORT Logger {
   Logger(const DebugMarkerManager* debug_marker_manager,
          const LogMessageCallback& callback,
          bool disable_gl_error_limit);
+
+  Logger(const Logger&) = delete;
+  Logger& operator=(const Logger&) = delete;
+
   ~Logger();
 
   void LogMessage(const char* filename, int line, const std::string& msg);
@@ -45,15 +49,13 @@ class GPU_GLES2_EXPORT Logger {
 
  private:
   // Uses the current marker to add information to logs.
-  const DebugMarkerManager* debug_marker_manager_;
+  raw_ptr<const DebugMarkerManager> debug_marker_manager_;
   const LogMessageCallback log_message_callback_;
   std::string this_in_hex_;
 
   int log_message_count_;
   bool log_synthesized_gl_errors_;
   bool disable_gl_error_limit_;
-
-  DISALLOW_COPY_AND_ASSIGN(Logger);
 };
 
 }  // namespace gles2

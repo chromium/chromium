@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,13 +51,13 @@ SyncProtocolError::SyncProtocolError()
 
 SyncProtocolError::SyncProtocolError(const SyncProtocolError& other) = default;
 
-SyncProtocolError::~SyncProtocolError() {}
+SyncProtocolError::~SyncProtocolError() = default;
 
 std::unique_ptr<base::DictionaryValue> SyncProtocolError::ToValue() const {
   auto value = std::make_unique<base::DictionaryValue>();
-  value->SetString("ErrorType", GetSyncErrorTypeString(error_type));
-  value->SetString("ErrorDescription", error_description);
-  value->SetString("action", GetClientActionString(action));
+  value->SetStringKey("ErrorType", GetSyncErrorTypeString(error_type));
+  value->SetStringKey("ErrorDescription", error_description);
+  value->SetStringKey("action", GetClientActionString(action));
   return value;
 }
 

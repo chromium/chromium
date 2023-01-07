@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,15 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
+#include "base/time/time.h"
+#include "components/download/public/common/download_item_rename_progress_update.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/input_stream.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -38,10 +41,10 @@ class MockDownloadManager : public DownloadManager {
     base::FilePath target_path;
     std::vector<GURL> url_chain;
     GURL referrer_url;
-    GURL site_url;
+    std::string serialized_embedder_download_data;
     GURL tab_url;
     GURL tab_referrer_url;
-    base::Optional<url::Origin> request_initiator;
+    absl::optional<url::Origin> request_initiator;
     std::string mime_type;
     std::string original_mime_type;
     base::Time start_time;
@@ -58,6 +61,7 @@ class MockDownloadManager : public DownloadManager {
     base::Time last_access_time;
     bool transient;
     std::vector<download::DownloadItem::ReceivedSlice> received_slices;
+    download::DownloadItemRerouteInfo reroute_info;
 
     CreateDownloadItemAdapter(
         const std::string& guid,
@@ -66,10 +70,10 @@ class MockDownloadManager : public DownloadManager {
         const base::FilePath& target_path,
         const std::vector<GURL>& url_chain,
         const GURL& referrer_url,
-        const GURL& site_url,
+        const std::string& serialized_embedder_download_data,
         const GURL& tab_url,
         const GURL& tab_refererr_url,
-        const base::Optional<url::Origin>& request_initiator,
+        const absl::optional<url::Origin>& request_initiator,
         const std::string& mime_type,
         const std::string& original_mime_type,
         base::Time start_time,
@@ -86,7 +90,9 @@ class MockDownloadManager : public DownloadManager {
         base::Time last_access_time,
         bool transient,
         const std::vector<download::DownloadItem::ReceivedSlice>&
-            received_slices);
+            received_slices,
+        const download::DownloadItemRerouteInfo& reroute_info);
+
     // Required by clang compiler.
     CreateDownloadItemAdapter(const CreateDownloadItemAdapter& rhs);
     ~CreateDownloadItemAdapter();
@@ -128,10 +134,10 @@ class MockDownloadManager : public DownloadManager {
       const base::FilePath& target_path,
       const std::vector<GURL>& url_chain,
       const GURL& referrer_url,
-      const GURL& site_url,
+      const StoragePartitionConfig& storage_partition_config,
       const GURL& tab_url,
       const GURL& tab_refererr_url,
-      const base::Optional<url::Origin>& request_initiator,
+      const absl::optional<url::Origin>& request_initiator,
       const std::string& mime_type,
       const std::string& original_mime_type,
       base::Time start_time,
@@ -147,8 +153,8 @@ class MockDownloadManager : public DownloadManager {
       bool opened,
       base::Time last_access_time,
       bool transient,
-      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices)
-      override;
+      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
+      const download::DownloadItemRerouteInfo& reroute_info) override;
 
   MOCK_METHOD1(MockCreateDownloadItem,
                download::DownloadItem*(CreateDownloadItemAdapter adapter));
@@ -163,6 +169,15 @@ class MockDownloadManager : public DownloadManager {
   MOCK_METHOD1(GetDownloadByGuid, download::DownloadItem*(const std::string&));
   MOCK_METHOD1(GetNextId, void(base::OnceCallback<void(uint32_t)>));
   MOCK_METHOD1(CanDownload, bool(download::DownloadUrlParameters*));
+  MOCK_METHOD1(GetStoragePartitionConfigForSiteUrl,
+               StoragePartitionConfig(const GURL&));
+
+  // Implement a simple serialization and deserialization of
+  // StoragePartitionConfig for the mock.
+  std::string StoragePartitionConfigToSerializedEmbedderDownloadData(
+      const StoragePartitionConfig& storage_partition_config) override;
+  StoragePartitionConfig SerializedEmbedderDownloadDataToStoragePartitionConfig(
+      const std::string& serialized_embedder_download_data) override;
 
   void OnHistoryQueryComplete(
       base::OnceClosure load_history_downloads_cb) override;

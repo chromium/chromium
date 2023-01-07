@@ -125,6 +125,24 @@ All the benchmarks using System Health stories tear down the browser after singl
 This ensures that every story is completely independent and modifications to the
 System Health story set won’t cause as many regressions/improvements on the perf dashboard.
 
+## How do I run a story locally?
+
+Running on Pinpoint is best to determine the performance of a change, but
+running locally is useful when you would like to dive deep into a story or
+iterate faster on potential solutions to the problem. In order to run locally,
+run the following:
+
+```
+$ tools/perf/run_benchmark benchmark_name --story-filter story_name \
+    --allow-software-compositing
+```
+
+Here, `benchmark_name` could be something like `system_health.common_desktop`,
+`story_name` could be `load:news:nytimes:2018` (find the exact name on Pinpoint),
+and `--allow-software-compositing` is often required because System Health will
+force a crash when the GPU is not available in order to avoid getting skewed
+results.
+
 ## Should I add new System Health stories and how?
 
 First, check this list of [System Health stories](https://docs.google.com/spreadsheets/d/1t15Ya5ssYBeXAZhHm3RJqfwBRpgWsxoib8_kwQEHMwI/edit#gid=0)
@@ -133,7 +151,7 @@ to see if your intended user stories are already covered by existing ones.
 If there is a good reason for your stories to be added, please make one CL for
 each of the new stories so they can be landed (and reverted if needed)
 individually. On each CL, make sure that the perf trybots all pass before
-comitting.
+committing.
 
 Once your patch makes it through the CQ, you’re done… unless your story starts
 failing on some random platform, in which case the perf bot sheriff will very
@@ -143,68 +161,7 @@ out why the story fails, fix it and re-land the patch.
 Add new SystemHealthStory subclass(es) to either one of the existing files or a
 new file in [tools/perf/page_sets/system_health/](../../../../tools/perf/page_sets/system_health).
 The new class(es) will automatically be picked up and added to the story set.
-To run the story through the memory benchmark against live sites, use the
-following commands:
 
-```
-$ tools/perf/run_benchmark system_health.memory_desktop \
-      --browser=reference --device=desktop \
-      --story-filter=<NAME-OF-YOUR-STORY> \
-      --use-live-sites
-$ tools/perf/run_benchmark system_health.memory_mobile \
-      --browser=reference --device=android \
-      --story-filter=<NAME-OF-YOUR-STORY> \
-      --also-run-disabled-tests --use-live-sites
-```
-
-Once you’re happy with the stories, record them:
-
-```
-$ tools/perf/record_wpr --story desktop_system_health_story_set \
-      --browser=reference --device=desktop \
-      --story-filter=<NAME-OF-YOUR-STORY>
-$ tools/perf/record_wpr --story mobile_system_health_story_set \
-      --browser=reference --device=android \
-      --story-filter=<NAME-OF-YOUR-STORY>
-```
-
-You can now replay the stories from the recording by omitting the
-`--use-live-sites` flag:
-
-```
-$ tools/perf/run_benchmark system_health.memory_desktop \
-      --browser=reference --device=desktop \
-      --story-filter=<NAME-OF-YOUR-STORY> \
-      --also-run-disabled-tests
-$ tools/perf/run_benchmark system_health.memory_mobile \
-      --browser=reference --device=android \
-      --story-filter=<NAME-OF-YOUR-STORY> \
-      --also-run-disabled-tests
-```
-
-The recordings are stored in `system_health_desktop_MMM.wprgo` and
-`system_health_mobile_NNN.wprgo` files in the
-[tools/perf/page_sets/data](../../../../tools/perf/page_sets/data) directory.
-You can find the MMM and NNN values by inspecting the changes to
-`system_health_desktop.json` and `system_health_mobile.json`:
-
-```
-$ git diff tools/perf/page_sets/data/system_health_desktop.json
-$ git diff tools/perf/page_sets/data/system_health_mobile.json
-```
-
-Once you verified that the replay works as you expect, you can upload the .wprgo
-files to the cloud and include the .wprgo.sha1 files in your patch:
-
-```
-$ upload_to_google_storage.py --bucket chrome-partner-telemetry \
-      system_health_desktop_MMM.wprgo
-$ upload_to_google_storage.py --bucket chrome-partner-telemetry \
-      system_health_mobile_NNN.wprgo
-$ git add tools/perf/page_sets/data/system_health_desktop_MMM.wprgo.sha1
-$ git add tools/perf/page_sets/data/system_health_mobile_NNN.wprgo.sha1
-```
-
-If the stories work as they should (certain website features don’t work well
-under WPR and need to be worked around), send them out for review in the patch
-that is adding the new story.
+Next you will need to record the story, validate it works, upload the new recording, and submit the
+test case. To do so, follow
+[these instructions](https://source.chromium.org/chromium/chromium/src/+/main:tools/perf/recording_benchmarks.md).

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,21 @@
 
 #include <stdint.h>
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/input/touch_action.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom.h"
 #include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-shared.h"
+#include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -83,6 +86,11 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // |frame_proxy_in_parent_renderer| corresponds to A2 in the example above.
   explicit CrossProcessFrameConnector(
       RenderFrameProxyHost* frame_proxy_in_parent_renderer);
+
+  CrossProcessFrameConnector(const CrossProcessFrameConnector&) = delete;
+  CrossProcessFrameConnector& operator=(const CrossProcessFrameConnector&) =
+      delete;
+
   virtual ~CrossProcessFrameConnector();
 
   // |view| corresponds to B2's RenderWidgetHostViewChildFrame in the example
@@ -128,14 +136,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
 
   // Return the rect in DIP that the RenderWidgetHostViewChildFrame's content
   // will render into.
-  const gfx::Rect& screen_space_rect_in_dip() const {
-    return screen_space_rect_in_dip_;
-  }
-
-  // Return the rect in pixels that the RenderWidgetHostViewChildFrame's content
-  // will render into.
-  const gfx::Rect& screen_space_rect_in_pixels() const {
-    return screen_space_rect_in_pixels_;
+  const gfx::Rect& rect_in_parent_view_in_dip() const {
+    return rect_in_parent_view_in_dip_;
   }
 
   // Return the latest capture sequence number for this subframe.
@@ -164,7 +166,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // for processing.
   void ForwardAckedTouchpadZoomEvent(
       const blink::WebGestureEvent& event,
-      blink::mojom::InputEventResultState ack_result);
+      blink::mojom::InputEventResultState ack_result,
+      blink::mojom::ScrollResultDataPtr scroll_result_data);
 
   // A gesture scroll sequence that is not consumed by a child must be bubbled
   // to ancestors who may consume it.
@@ -172,8 +175,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // not attempt to bubble the rest of the scroll sequence in this case.
   // Otherwise, returns true.
   // Made virtual for test override.
-  virtual bool BubbleScrollEvent(const blink::WebGestureEvent& event)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool BubbleScrollEvent(
+      const blink::WebGestureEvent& event);
 
   // Determines whether the root RenderWidgetHostView (and thus the current
   // page) has focus.
@@ -205,13 +208,9 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
     return local_surface_id_;
   }
 
-  // Returns the ScreenInfo propagated from the parent to be used by this
+  // Returns the ScreenInfos propagated from the parent to be used by this
   // child frame.
-  const blink::ScreenInfo& screen_info() const { return screen_info_; }
-
-  void SetScreenInfoForTesting(const blink::ScreenInfo& screen_info) {
-    screen_info_ = screen_info;
-  }
+  const display::ScreenInfos& screen_infos() const { return screen_infos_; }
 
   // Informs the parent the child will enter auto-resize mode, automatically
   // resizing itself to the provided |min_size| and |max_size| constraints.
@@ -254,7 +253,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   bool has_size() const { return has_size_; }
 
   void DidAckGestureEvent(const blink::WebGestureEvent& event,
-                          blink::mojom::InputEventResultState ack_result);
+                          blink::mojom::InputEventResultState ack_result,
+                          blink::mojom::ScrollResultDataPtr scroll_result_data);
 
   // Called by RenderWidgetHostViewChildFrame to update the visibility of any
   // nested child RWHVCFs inside it.
@@ -265,9 +265,9 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // if not.
   void SetLocalFrameSize(const gfx::Size& local_frame_size);
 
-  // Called to resize the child renderer. |screen_space_rect| is in pixels if
-  // zoom-for-dsf is enabled, and in DIP if not.
-  void SetScreenSpaceRect(const gfx::Rect& screen_space_rect);
+  // Called to resize the child renderer. |rect_in_parent_view| is in physical
+  // pixels.
+  void SetRectInParentView(const gfx::Rect& rect_in_parent_view);
 
   void SetIsInert(bool inert);
 
@@ -286,7 +286,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
                                     bool display_locked);
   void UpdateViewportIntersection(
       const blink::mojom::ViewportIntersectionState& intersection_state,
-      const base::Optional<blink::FrameVisualProperties>& visual_properties);
+      const absl::optional<blink::FrameVisualProperties>& visual_properties);
 
   // These enums back crashed frame histograms - see MaybeLogCrash() and
   // MaybeLogShownCrash() below.  Please do not modify or remove existing enum
@@ -329,11 +329,6 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
     child_frame_crash_shown_closure_for_testing_ = std::move(closure);
   }
 
-  void set_use_zoom_for_device_scale_factor_for_testing(
-      bool use_zoom_for_device_scale_factor) {
-    use_zoom_for_device_scale_factor_ = use_zoom_for_device_scale_factor;
-  }
-
  protected:
   friend class MockCrossProcessFrameConnector;
   friend class SitePerProcessBrowserTestBase;
@@ -343,7 +338,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
 
   // Resets the rect and the viz::LocalSurfaceId of the connector to ensure the
   // unguessable surface ID is not reused after a cross-process navigation.
-  void ResetScreenSpaceRect();
+  void ResetRectInParentView();
 
   // Logs the Stability.ChildFrameCrash.Visibility metric after checking that a
   // crash has indeed happened and checking that the crash has not already been
@@ -355,27 +350,24 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   void MaybeLogShownCrash(ShownAfterCrashingReason reason);
 
   void UpdateViewportIntersectionInternal(
-      const blink::mojom::ViewportIntersectionState& intersection_state);
+      const blink::mojom::ViewportIntersectionState& intersection_state,
+      bool include_visual_properties);
 
   // The RenderWidgetHostView for the frame. Initially nullptr.
-  RenderWidgetHostViewChildFrame* view_ = nullptr;
+  raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
 
   // This is here rather than in the implementation class so that
   // intersection_state() can return a reference.
   blink::mojom::ViewportIntersectionState intersection_state_;
 
-  blink::ScreenInfo screen_info_;
+  display::ScreenInfos screen_infos_;
   gfx::Size local_frame_size_in_dip_;
   gfx::Size local_frame_size_in_pixels_;
-  gfx::Rect screen_space_rect_in_dip_;
-  gfx::Rect screen_space_rect_in_pixels_;
+  gfx::Rect rect_in_parent_view_in_dip_;
 
   viz::LocalSurfaceId local_surface_id_;
 
   bool has_size_ = false;
-
-  // This allows a test override for UseZoomForDSF().
-  bool use_zoom_for_device_scale_factor_;
 
   uint32_t capture_sequence_number_ = 0u;
 
@@ -388,7 +380,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // The RenderFrameProxyHost that routes messages to the parent frame's
   // renderer process.
   // Can be nullptr in tests.
-  RenderFrameProxyHost* frame_proxy_in_parent_renderer_;
+  raw_ptr<RenderFrameProxyHost> frame_proxy_in_parent_renderer_;
 
   bool is_inert_ = false;
   cc::TouchAction inherited_effective_touch_action_ = cc::TouchAction::kAuto;
@@ -426,8 +418,6 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // Closure that will be run whenever a sad frame is shown and its visibility
   // metrics have been logged. Used for testing only.
   base::OnceClosure child_frame_crash_shown_closure_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrossProcessFrameConnector);
 };
 
 }  // namespace content

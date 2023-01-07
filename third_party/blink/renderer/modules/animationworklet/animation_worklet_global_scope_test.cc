@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -62,7 +61,11 @@ std::unique_ptr<AnimationWorkletOutput> ProxyClientMutate(
 std::unique_ptr<WorkletAnimationEffectTimings> CreateEffectTimings() {
   auto timings = base::MakeRefCounted<base::RefCountedData<Vector<Timing>>>();
   timings->data.push_back(Timing());
-  return std::make_unique<WorkletAnimationEffectTimings>(std::move(timings));
+  auto normalized_timings = base::MakeRefCounted<
+      base::RefCountedData<Vector<Timing::NormalizedTiming>>>();
+  normalized_timings->data.push_back(Timing::NormalizedTiming());
+  return std::make_unique<WorkletAnimationEffectTimings>(
+      std::move(timings), std::move(normalized_timings));
 }
 
 }  // namespace
@@ -72,7 +75,7 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
   AnimationWorkletGlobalScopeTest() = default;
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     NavigateTo(KURL("https://example.com/"));
     reporting_proxy_ = std::make_unique<WorkerReportingProxy>();
   }
@@ -102,9 +105,9 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
                           base::WaitableEvent* waitable_event) {
     ASSERT_TRUE(thread->IsCurrentThread());
     auto* global_scope = To<AnimationWorkletGlobalScope>(thread->GlobalScope());
-    ASSERT_TRUE(
-        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source_code))
-            ->RunScriptOnWorkerOrWorklet(*global_scope));
+    ClassicScript::CreateUnspecifiedScript(source_code)
+        ->RunScriptOnScriptState(
+            global_scope->ScriptController()->GetScriptState());
 
     waitable_event->Signal();
   }
@@ -124,9 +127,9 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
               animate () {}
             });
           )JS";
-      ASSERT_TRUE(
-          ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source_code))
-              ->RunScriptOnWorkerOrWorklet(*global_scope));
+      ClassicScript::CreateUnspecifiedScript(source_code)
+          ->RunScriptOnScriptState(
+              global_scope->ScriptController()->GetScriptState());
 
       AnimatorDefinition* definition =
           global_scope->FindDefinitionForTest("test");
@@ -137,9 +140,9 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
       // registerAnimator() with a null class definition should fail to define
       // an animator.
       String source_code = "registerAnimator('null', null);";
-      ASSERT_FALSE(
-          ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source_code))
-              ->RunScriptOnWorkerOrWorklet(*global_scope));
+      ClassicScript::CreateUnspecifiedScript(source_code)
+          ->RunScriptOnScriptState(
+              global_scope->ScriptController()->GetScriptState());
       EXPECT_FALSE(global_scope->FindDefinitionForTest("null"));
     }
 
@@ -158,7 +161,7 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
     v8::HandleScope scope(isolate);
 
     ClassicScript* classic_script =
-        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(script));
+        ClassicScript::CreateUnspecifiedScript(script);
 
     ScriptEvaluationResult result =
         classic_script->RunScriptOnScriptStateAndReturnValue(script_state);
@@ -190,9 +193,9 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
               }
             });
         )JS";
-    ASSERT_TRUE(
-        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source_code))
-            ->RunScriptOnWorkerOrWorklet(*global_scope));
+    ClassicScript::CreateUnspecifiedScript(source_code)
+        ->RunScriptOnScriptState(
+            global_scope->ScriptController()->GetScriptState());
 
     EXPECT_FALSE(RunScriptAndGetBoolean(
         global_scope, "Function('return this')().constructed"))
@@ -250,9 +253,9 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
             registerAnimator('stateless_animator', Stateless);
             registerAnimator('foo', Foo);
         )JS";
-    ASSERT_TRUE(
-        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source_code))
-            ->RunScriptOnWorkerOrWorklet(*global_scope));
+    ClassicScript::CreateUnspecifiedScript(source_code)
+        ->RunScriptOnScriptState(
+            global_scope->ScriptController()->GetScriptState());
 
     AnimatorDefinition* first_definition =
         global_scope->FindDefinitionForTest("stateful_animator");
@@ -273,15 +276,15 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
         static_cast<AnimationWorkletGlobalScope*>(thread->GlobalScope());
     ASSERT_TRUE(global_scope);
     ASSERT_TRUE(global_scope->IsAnimationWorkletGlobalScope());
-    ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(
-                                               R"JS(
+    ClassicScript::CreateUnspecifiedScript(R"JS(
             registerAnimator('test', class {
               animate (currentTime, effect) {
                 effect.localTime = 123;
               }
             });
-          )JS"))
-        ->RunScriptOnWorkerOrWorklet(*global_scope);
+          )JS")
+        ->RunScriptOnScriptState(
+            global_scope->ScriptController()->GetScriptState());
 
     // Passing a new input state with a new animation id should cause the
     // worklet to create and animate an animator.
@@ -296,8 +299,7 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
         ProxyClientMutate(state, global_scope);
 
     EXPECT_EQ(output->animations.size(), 1ul);
-    EXPECT_EQ(output->animations[0].local_times[0],
-              base::TimeDelta::FromMillisecondsD(123));
+    EXPECT_EQ(output->animations[0].local_times[0], base::Milliseconds(123));
 
     waitable_event->Signal();
   }
@@ -313,15 +315,15 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
     ASSERT_TRUE(global_scope);
     ASSERT_TRUE(global_scope->IsAnimationWorkletGlobalScope());
     EXPECT_EQ(global_scope->GetAnimatorsSizeForTest(), 0u);
-    ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(
-                                               R"JS(
+    ClassicScript::CreateUnspecifiedScript(R"JS(
             registerAnimator('test', class {
               animate (currentTime, effect) {
                 effect.localTime = 123;
               }
             });
-          )JS"))
-        ->RunScriptOnWorkerOrWorklet(*global_scope);
+          )JS")
+        ->RunScriptOnScriptState(
+            global_scope->ScriptController()->GetScriptState());
 
     cc::WorkletAnimationId animation_id = {1, 1};
     AnimationWorkletInput state;
@@ -361,15 +363,15 @@ class AnimationWorkletGlobalScopeTest : public PageTestBase {
     ASSERT_TRUE(global_scope);
     ASSERT_TRUE(global_scope->IsAnimationWorkletGlobalScope());
     EXPECT_EQ(global_scope->GetAnimatorsSizeForTest(), 0u);
-    ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(
-                                               R"JS(
+    ClassicScript::CreateUnspecifiedScript(R"JS(
             registerAnimator('test', class {
               animate (currentTime, effect) {
                 effect.localTime = 123;
               }
             });
-          )JS"))
-        ->RunScriptOnWorkerOrWorklet(*global_scope);
+          )JS")
+        ->RunScriptOnScriptState(
+            global_scope->ScriptController()->GetScriptState());
 
     cc::WorkletAnimationId animation_id = {1, 1};
     AnimationWorkletInput state;

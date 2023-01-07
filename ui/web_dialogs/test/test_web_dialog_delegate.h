@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 #include "url/gurl.h"
@@ -19,6 +18,10 @@ namespace test {
 class TestWebDialogDelegate : public WebDialogDelegate {
  public:
   explicit TestWebDialogDelegate(const GURL& url);
+
+  TestWebDialogDelegate(const TestWebDialogDelegate&) = delete;
+  TestWebDialogDelegate& operator=(const TestWebDialogDelegate&) = delete;
+
   ~TestWebDialogDelegate() override;
 
   void set_size(int width, int height) {
@@ -50,10 +53,8 @@ class TestWebDialogDelegate : public WebDialogDelegate {
  protected:
   const GURL url_;
   gfx::Size size_;
-  bool* did_delete_;
+  raw_ptr<bool> did_delete_;
   bool close_on_escape_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebDialogDelegate);
 };
 
 }  // namespace test

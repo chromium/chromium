@@ -1,0 +1,51 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "cookie_access_filter_unittest.cc",
+    "dips_bounce_detector_unittest.cc",
+    "dips_database_unittest.cc",
+    "dips_storage_unittest.cc",
+    "dips_utils_unittest.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//components/ukm:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "dips_bounce_detector_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/ukm:test_support",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+    "//third_party/blink/public/common",
+  ]
+
+  if (is_android) {
+    deps += [ "//chrome/test:test_support_ui_android" ]
+  } else {
+    # TODO(rtarpine): make DIPSTabHelperBrowserTest run on Android.
+    sources += [ "dips_helper_browsertest.cc" ]
+    deps += [ "//chrome/test:test_support_ui" ]
+  }
+}

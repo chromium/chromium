@@ -59,4 +59,30 @@ specific_include_rules = {
   "window_open_by_dom_egtest\.mm": [
     "+ios/web/public/test/http_server",
   ],
+
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^chrome_web_client.mm": [
+    "+ios/chrome/browser/ui/elements/windowed_container_view.h",
+    "+ios/chrome/browser/ui/reading_list/reading_list_features.h",
+    "+ios/chrome/browser/ui/reading_list/reading_list_javascript_feature.h",
+    "+ios/chrome/browser/ui/ui_feature_flags.h",
+  ],
+  "^page_placeholder_tab_helper.h": [
+    "+ios/chrome/browser/ui/elements/top_aligned_image_view.h",
+  ],
+  "^page_placeholder_tab_helper.mm": [
+    "+ios/chrome/browser/ui/util/named_guide.h",
+  ],
+  "^sad_tab_tab_helper.mm": [
+    "+ios/chrome/browser/ui/fullscreen/fullscreen_controller.h",
+    "+ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h",
+  ],
+  "^web_state_delegate_browser_agent.h": [
+    "+ios/chrome/browser/ui/dialogs/overlay_java_script_dialog_presenter.h",
+  ],
+  "^web_state_delegate_browser_agent.mm": [
+    "+ios/chrome/browser/ui/dialogs/nsurl_protection_space_util.h",
+    "+ios/chrome/browser/ui/context_menu/context_menu_configuration_provider.h",
+  ],
+
 }

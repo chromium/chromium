@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ios/chrome/browser/browser_about_rewriter.h"
 
 #include "base/test/gtest_util.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/url/chrome_url_constants.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
 

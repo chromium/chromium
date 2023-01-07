@@ -11,7 +11,7 @@ include_rules = [
   "+mojo/public/cpp/system/buffer.h",
   "+mojo/public/cpp/system/platform_handle.h",
   "+skia/buildflags.h",
-  "+third_party/dawn/src/include",
+  "+third_party/dawn/include",
   "+third_party/khronos/GLES2",
   "+third_party/skia",
   "+third_party/vulkan-deps/vulkan-headers/src",

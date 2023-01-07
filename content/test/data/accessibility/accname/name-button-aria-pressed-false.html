@@ -1,0 +1,19 @@
+<!--
+@BLINK-DENY:descri*
+-->
+<!doctype html>
+<html>
+<body>
+  <!--
+    A button with aria-pressed becomes a toggle button, but that does not work
+    on native buttons. Anyway, we want to test the consistency of the name
+    calculation here: it should get the same name as from:
+      <button id="test">
+      <div id="test" role="button" aria-pressed="false">
+  -->
+  <button id="test" aria-pressed="false">
+    <div aria-hidden="true">13</div>
+    <span class="sr-only">13 December</span>
+  </button>
+</body>
+</html>

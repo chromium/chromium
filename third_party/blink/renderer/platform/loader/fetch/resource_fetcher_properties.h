@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,13 @@
 
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_status.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -47,8 +50,8 @@ class PLATFORM_EXPORT ResourceFetcherProperties
   virtual const FetchClientSettingsObject& GetFetchClientSettingsObject()
       const = 0;
 
-  // Returns whether this global context is a top-level frame.
-  virtual bool IsMainFrame() const = 0;
+  // Returns whether this global context is the outermost main frame.
+  virtual bool IsOutermostMainFrame() const = 0;
 
   // Returns whether a controller service worker exists and if it has a fetch
   // handler.
@@ -65,18 +68,13 @@ class PLATFORM_EXPORT ResourceFetcherProperties
   // https://html.spec.whatwg.org/C/webappapis.html#pause
   virtual bool IsPaused() const = 0;
 
-  // Returns the deferred status of the loading in the global context.
-  virtual WebURLLoader::DeferType DeferType() const = 0;
+  // Returns the freezing mode set to this context.
+  virtual LoaderFreezeMode FreezeMode() const = 0;
 
   // Returns whether this global context is detached. Note that in some cases
   // the loading pipeline continues working after detached (e.g., for fetch()
   // operations with "keepalive" specified).
   virtual bool IsDetached() const = 0;
-
-  // Returns whether the loading is deferred. When true, loading tasks keep
-  // running but the data is queued in the loading pipeline on the renderer.
-  // Upon resume the data is given to client modules such as scripts.
-  virtual bool IsLoadDeferred() const = 0;
 
   // Returns whether the main resource for this global context is loaded.
   virtual bool IsLoadComplete() const = 0;
@@ -121,8 +119,9 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
     return properties_ ? properties_->GetFetchClientSettingsObject()
                        : *fetch_client_settings_object_;
   }
-  bool IsMainFrame() const override {
-    return properties_ ? properties_->IsMainFrame() : is_main_frame_;
+  bool IsOutermostMainFrame() const override {
+    return properties_ ? properties_->IsOutermostMainFrame()
+                       : is_outermost_main_frame_;
   }
   ControllerServiceWorkerMode GetControllerServiceWorkerMode() const override {
     return properties_ ? properties_->GetControllerServiceWorkerMode()
@@ -137,14 +136,11 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
   bool IsPaused() const override {
     return properties_ ? properties_->IsPaused() : paused_;
   }
-  WebURLLoader::DeferType DeferType() const override {
-    return properties_ ? properties_->DeferType() : defer_type_;
+  LoaderFreezeMode FreezeMode() const override {
+    return properties_ ? properties_->FreezeMode() : freeze_mode_;
   }
   bool IsDetached() const override {
     return properties_ ? properties_->IsDetached() : true;
-  }
-  bool IsLoadDeferred() const override {
-    return properties_ ? properties_->IsLoadDeferred() : false;
   }
   bool IsLoadComplete() const override {
     return properties_ ? properties_->IsLoadComplete() : load_complete_;
@@ -178,9 +174,9 @@ class PLATFORM_EXPORT DetachableResourceFetcherProperties final
 
   // The following members are used when detached.
   Member<const FetchClientSettingsObject> fetch_client_settings_object_;
-  bool is_main_frame_ = false;
+  bool is_outermost_main_frame_ = false;
   bool paused_ = false;
-  WebURLLoader::DeferType defer_type_;
+  LoaderFreezeMode freeze_mode_;
   bool load_complete_ = false;
   bool is_subframe_deprioritization_enabled_ = false;
   KURL web_bundle_physical_url_;

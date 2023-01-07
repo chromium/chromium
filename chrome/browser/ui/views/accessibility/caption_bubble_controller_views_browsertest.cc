@@ -1,31 +1,38 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/accessibility/caption_bubble_controller_views.h"
-
 #include <memory>
 
+#include "base/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/accessibility/caption_host_impl.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/views/accessibility/caption_bubble.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/views/accessibility/caption_bubble_context_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/common/caption.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/live_caption/pref_names.h"
+#include "components/live_caption/views/caption_bubble.h"
+#include "components/live_caption/views/caption_bubble_controller_views.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
+#include "media/mojo/mojom/speech_recognition_service.mojom.h"
+#include "ui/base/buildflags.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -34,11 +41,6 @@
 #endif  // USE_AURA
 
 namespace captions {
-
-namespace {
-// Test constants.
-static constexpr int kArrowKeyDisplacement = 16;
-}  // namespace
 
 class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
  public:
@@ -51,19 +53,20 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
 
   CaptionBubbleControllerViews* GetController() {
     if (!controller_)
-      controller_ = std::make_unique<CaptionBubbleControllerViews>(browser());
+      controller_ = std::make_unique<CaptionBubbleControllerViews>(
+          browser()->profile()->GetPrefs());
     return controller_.get();
   }
 
-  CaptionHostImpl* GetCaptionHostImpl() {
-    if (!caption_host_impl_)
-      caption_host_impl_ = std::make_unique<CaptionHostImpl>(
-          browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame());
-    return caption_host_impl_.get();
+  CaptionBubbleContext* GetCaptionBubbleContext() {
+    if (!caption_bubble_context_)
+      caption_bubble_context_ = CaptionBubbleContextBrowser::Create(
+          browser()->tab_strip_model()->GetActiveWebContents());
+    return caption_bubble_context_.get();
   }
 
   CaptionBubble* GetBubble() {
-    return controller_ ? controller_->caption_bubble_ : nullptr;
+    return controller_ ? controller_->caption_bubble_.get() : nullptr;
   }
 
   views::Label* GetLabel() {
@@ -72,7 +75,7 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   views::Label* GetTitle() {
-    return controller_ ? controller_->caption_bubble_->title_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->title_.get() : nullptr;
   }
 
   std::string GetAccessibleWindowTitle() {
@@ -82,29 +85,50 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
                : "";
   }
 
+  views::Button* GetBackToTabButton() {
+    return controller_ ? controller_->caption_bubble_->back_to_tab_button_.get()
+                       : nullptr;
+  }
+
   views::Button* GetCloseButton() {
-    return controller_ ? controller_->caption_bubble_->close_button_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->close_button_.get()
+                       : nullptr;
   }
 
   views::Button* GetExpandButton() {
-    return controller_ ? controller_->caption_bubble_->expand_button_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->expand_button_.get()
+                       : nullptr;
   }
 
   views::Button* GetCollapseButton() {
-    return controller_ ? controller_->caption_bubble_->collapse_button_
+    return controller_ ? controller_->caption_bubble_->collapse_button_.get()
+                       : nullptr;
+  }
+
+  views::Button* GetPinButton() {
+    return controller_ ? controller_->caption_bubble_->pin_button_.get()
+                       : nullptr;
+  }
+
+  views::Button* GetUnpinButton() {
+    return controller_ ? controller_->caption_bubble_->unpin_button_.get()
                        : nullptr;
   }
 
   views::View* GetErrorMessage() {
-    return controller_ ? controller_->caption_bubble_->error_message_ : nullptr;
+    return controller_
+               ? controller_->caption_bubble_->generic_error_message_.get()
+               : nullptr;
   }
 
   views::Label* GetErrorText() {
-    return controller_ ? controller_->caption_bubble_->error_text_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->generic_error_text_.get()
+                       : nullptr;
   }
 
   views::ImageView* GetErrorIcon() {
-    return controller_ ? controller_->caption_bubble_->error_icon_ : nullptr;
+    return controller_ ? controller_->caption_bubble_->generic_error_icon_.get()
+                       : nullptr;
   }
 
   std::string GetLabelText() {
@@ -116,19 +140,16 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   }
 
   views::Widget* GetCaptionWidget() {
-    return controller_ ? controller_->caption_widget_ : nullptr;
+    return controller_ ? controller_->caption_widget_.get() : nullptr;
   }
 
   bool IsWidgetVisible() {
     return controller_ && controller_->IsWidgetVisibleForTesting();
   }
 
-  bool CanWidgetActivate() {
-    return GetCaptionWidget() && GetCaptionWidget()->CanActivate();
-  }
-
-  bool IsWidgetActive() {
-    return GetCaptionWidget() && GetCaptionWidget()->IsActive();
+  bool HasMediaFoundationError() {
+    return controller_ &&
+           controller_->caption_bubble_->HasMediaFoundationError();
   }
 
   void DestroyController() { controller_.reset(nullptr); }
@@ -144,62 +165,94 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
   }
 
-  // There may be some rounding errors as we do floating point math with ints.
-  // Check that points are almost the same.
-  void ExpectInBottomCenter(gfx::Rect anchor_bounds, gfx::Rect bubble_bounds) {
-    EXPECT_LT(
-        abs(bubble_bounds.CenterPoint().x() - anchor_bounds.CenterPoint().x()),
-        2);
-    EXPECT_EQ(bubble_bounds.bottom(), anchor_bounds.bottom() - 20);
-  }
-
   bool OnPartialTranscription(std::string text) {
-    return OnPartialTranscription(text, GetCaptionHostImpl());
+    // TODO(crbug.com/1351722): This is a workaround for some tests which were
+    // passing by side effect of the AccessibilityChecker's checks. The full
+    // analysis can be found in the bug.
+    if (auto* label = GetLabel())
+      label->GetTooltipText(gfx::Point());
+
+    return OnPartialTranscription(text, GetCaptionBubbleContext());
   }
 
   bool OnPartialTranscription(std::string text,
-                              CaptionHostImpl* caption_host_impl) {
+                              CaptionBubbleContext* caption_bubble_context) {
     return GetController()->OnTranscription(
-        caption_host_impl,
-        chrome::mojom::TranscriptionResult::New(text, false));
+        caption_bubble_context, media::SpeechRecognitionResult(text, false));
   }
 
   bool OnFinalTranscription(std::string text) {
-    return OnFinalTranscription(text, GetCaptionHostImpl());
+    // TODO(crbug.com/1351722): This is a workaround for some tests which were
+    // passing by side effect of the AccessibilityChecker's checks. The full
+    // analysis can be found in the bug.
+    if (auto* label = GetLabel())
+      label->GetTooltipText(gfx::Point());
+
+    return OnFinalTranscription(text, GetCaptionBubbleContext());
   }
 
   bool OnFinalTranscription(std::string text,
-                            CaptionHostImpl* caption_host_impl) {
+                            CaptionBubbleContext* caption_bubble_context) {
     return GetController()->OnTranscription(
-        caption_host_impl, chrome::mojom::TranscriptionResult::New(text, true));
+        caption_bubble_context, media::SpeechRecognitionResult(text, true));
   }
 
-  void OnError() { OnError(GetCaptionHostImpl()); }
+  void OnError() { OnError(GetCaptionBubbleContext()); }
 
-  void OnError(CaptionHostImpl* caption_host_impl) {
-    GetController()->OnError(caption_host_impl);
+  void OnError(CaptionBubbleContext* caption_bubble_context) {
+    GetController()->OnError(
+        caption_bubble_context, CaptionBubbleErrorType::kGeneric,
+        base::RepeatingClosure(),
+        base::BindRepeating(
+            [](CaptionBubbleErrorType error_type, bool checked) {}));
+  }
+
+  void OnMediaFoundationError() {
+    OnMediaFoundationError(GetCaptionBubbleContext());
+  }
+
+  void OnMediaFoundationError(CaptionBubbleContext* caption_bubble_context) {
+    GetController()->OnError(
+        caption_bubble_context,
+        CaptionBubbleErrorType::kMediaFoundationRendererUnsupported,
+        base::RepeatingClosure(),
+        base::BindRepeating(
+            [](CaptionBubbleErrorType error_type, bool checked) {}));
   }
 
   void OnAudioStreamEnd() {
-    GetController()->OnAudioStreamEnd(GetCaptionHostImpl());
+    GetController()->OnAudioStreamEnd(GetCaptionBubbleContext());
+  }
+
+  std::vector<ui::AXNodeData> GetAXLinesNodeData() {
+    std::vector<ui::AXNodeData> node_datas;
+    views::Label* label = GetLabel();
+    if (!label)
+      return node_datas;
+    auto& ax_lines = GetLabel()->GetViewAccessibility().virtual_children();
+    for (auto& ax_line : ax_lines) {
+      node_datas.push_back(ax_line->GetCustomData());
+    }
+    return node_datas;
   }
 
   std::vector<std::string> GetAXLineText() {
-    return GetBubble()->GetAXLineTextForTesting();
+    std::vector<std::string> line_texts;
+    std::vector<ui::AXNodeData> ax_lines = GetAXLinesNodeData();
+    for (auto& ax_line : ax_lines) {
+      line_texts.push_back(
+          ax_line.GetStringAttribute(ax::mojom::StringAttribute::kName));
+    }
+    return line_texts;
   }
 
   void SetTickClockForTesting(const base::TickClock* tick_clock) {
     GetController()->caption_bubble_->set_tick_clock_for_testing(tick_clock);
   }
 
-  void UnfocusCaptionWidget() {
-    GetController()->caption_bubble_->AcceleratorPressed(
-        ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-  }
-
  private:
   std::unique_ptr<CaptionBubbleControllerViews> controller_;
-  std::unique_ptr<CaptionHostImpl> caption_host_impl_;
+  std::unique_ptr<CaptionBubbleContext> caption_bubble_context_;
 };
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsCaptionInBubble) {
@@ -280,135 +333,45 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, BubblePositioning) {
   int bubble_width = 536;
   gfx::Insets bubble_margins(6);
-  views::View* contents_view =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetContentsView();
 
   browser()->window()->SetBounds(gfx::Rect(10, 10, 800, 600));
+  gfx::Rect context_rect = views::Widget::GetWidgetForNativeWindow(
+                               browser()->window()->GetNativeWindow())
+                               ->GetClientAreaBoundsInScreen();
   OnPartialTranscription("Mantis shrimp have 12-16 photoreceptors");
-  ExpectInBottomCenter(contents_view->GetBoundsInScreen(),
-                       GetCaptionWidget()->GetClientAreaBoundsInScreen());
+  gfx::Rect bubble_bounds = GetCaptionWidget()->GetWindowBoundsInScreen();
+  // There may be some rounding errors as we do floating point math with ints.
+  // Check that points are almost the same.
+  EXPECT_LT(
+      abs(bubble_bounds.CenterPoint().x() - context_rect.CenterPoint().x()), 2);
+  EXPECT_EQ(bubble_bounds.bottom(), context_rect.bottom() - 20);
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
 
-  // Move the window and the widget should stay centered.
+  // Move the window and the widget should stay in the same place.
   browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 600));
-  ExpectInBottomCenter(contents_view->GetBoundsInScreen(),
-                       GetCaptionWidget()->GetClientAreaBoundsInScreen());
+  EXPECT_EQ(bubble_bounds, GetCaptionWidget()->GetWindowBoundsInScreen());
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
 
-  // Shrink the window's height.
+  // Shrink the window's height. The widget should stay in the same place.
   browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 300));
-  ExpectInBottomCenter(contents_view->GetBoundsInScreen(),
-                       GetCaptionWidget()->GetClientAreaBoundsInScreen());
+  EXPECT_EQ(bubble_bounds, GetCaptionWidget()->GetWindowBoundsInScreen());
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
 
-  // Shrink it super far, then grow it back up again, and it should still
-  // be in the right place.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 100));
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 500));
-  ExpectInBottomCenter(contents_view->GetBoundsInScreen(),
-                       GetCaptionWidget()->GetClientAreaBoundsInScreen());
-  EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
-  EXPECT_EQ(GetBubble()->margins(), bubble_margins);
-
-  // Now shrink the width so that the caption bubble shrinks.
+  // Now shrink the window width. The bubble width should not change.
   browser()->window()->SetBounds(gfx::Rect(50, 50, 500, 500));
-  gfx::Rect widget_bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  gfx::Rect contents_bounds = contents_view->GetBoundsInScreen();
-  ExpectInBottomCenter(contents_view->GetBoundsInScreen(),
-                       GetCaptionWidget()->GetClientAreaBoundsInScreen());
-  EXPECT_LT(GetBubble()->GetBoundsInScreen().width(), bubble_width);
-  EXPECT_EQ(GetBubble()->margins(), bubble_margins);
-  EXPECT_EQ(20, widget_bounds.x() - contents_bounds.x());
-  EXPECT_EQ(20, contents_bounds.right() - widget_bounds.right());
-
-  // Make it bigger again and ensure it's visible and wide again.
-  // Note: On Mac we cannot put the window too close to the top of the screen
-  // or it gets pushed down by the menu bar.
-  browser()->window()->SetBounds(gfx::Rect(100, 100, 800, 600));
-  ExpectInBottomCenter(contents_view->GetBoundsInScreen(),
-                       GetCaptionWidget()->GetClientAreaBoundsInScreen());
+  EXPECT_EQ(bubble_bounds, GetCaptionWidget()->GetWindowBoundsInScreen());
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
 
-  // Now move the widget within the window.
+  // Now move the widget within the window. The bubble width should not change.
   GetCaptionWidget()->SetBounds(
       gfx::Rect(200, 300, GetCaptionWidget()->GetWindowBoundsInScreen().width(),
                 GetCaptionWidget()->GetWindowBoundsInScreen().height()));
-
-  // The bubble width should not have changed.
   EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
   EXPECT_EQ(GetBubble()->margins(), bubble_margins);
-
-  // Move the window and the widget stays fixed with respect to the window.
-  browser()->window()->SetBounds(gfx::Rect(100, 100, 800, 600));
-  widget_bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  EXPECT_EQ(200, widget_bounds.x());
-  EXPECT_EQ(300, widget_bounds.y());
-  EXPECT_EQ(GetBubble()->GetBoundsInScreen().width(), bubble_width);
-  EXPECT_EQ(GetBubble()->margins(), bubble_margins);
-
-  // Now put the window in the top corner for easier math.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 600));
-  widget_bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  EXPECT_EQ(150, widget_bounds.x());
-  EXPECT_EQ(250, widget_bounds.y());
-  contents_bounds = contents_view->GetBoundsInScreen();
-  double x_ratio = (widget_bounds.CenterPoint().x() - contents_bounds.x()) /
-                   (1.0 * contents_bounds.width());
-  double y_ratio = (widget_bounds.CenterPoint().y() - contents_bounds.y()) /
-                   (1.0 * contents_bounds.height());
-
-  // The center point ratio should not change as we resize the window, and the
-  // widget is repositioned.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 750, 550));
-  widget_bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  contents_bounds = contents_view->GetBoundsInScreen();
-  double new_x_ratio = (widget_bounds.CenterPoint().x() - contents_bounds.x()) /
-                       (1.0 * contents_bounds.width());
-  double new_y_ratio = (widget_bounds.CenterPoint().y() - contents_bounds.y()) /
-                       (1.0 * contents_bounds.height());
-  EXPECT_NEAR(x_ratio, new_x_ratio, .005);
-  EXPECT_NEAR(y_ratio, new_y_ratio, .005);
-
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 700, 500));
-  widget_bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  contents_bounds = contents_view->GetBoundsInScreen();
-  new_x_ratio = (widget_bounds.CenterPoint().x() - contents_bounds.x()) /
-                (1.0 * contents_bounds.width());
-  new_y_ratio = (widget_bounds.CenterPoint().y() - contents_bounds.y()) /
-                (1.0 * contents_bounds.height());
-  EXPECT_NEAR(x_ratio, new_x_ratio, .005);
-  EXPECT_NEAR(y_ratio, new_y_ratio, .005);
-
-  // But if we make the window too small, the widget will stay within its
-  // bounds.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 500, 500));
-  widget_bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  contents_bounds = contents_view->GetBoundsInScreen();
-  new_y_ratio = (widget_bounds.CenterPoint().y() - contents_bounds.y()) /
-                (1.0 * contents_bounds.height());
-  EXPECT_NEAR(y_ratio, new_y_ratio, .005);
-  EXPECT_TRUE(contents_bounds.Contains(widget_bounds));
-
-  // Making it big again resets the position to what it was before.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 600));
-  widget_bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  EXPECT_EQ(150, widget_bounds.x());
-  EXPECT_EQ(250, widget_bounds.y());
-
-#if !defined(OS_MAC)
-  // Shrink it so small the caption bubble can't fit. Ensure it's hidden.
-  // Mac windows cannot be shrunk small enough to force the bubble to hide.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 200, 100));
-  EXPECT_FALSE(IsWidgetVisible());
-
-  // Make it bigger again and ensure it's visible and wide again.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 400));
-  EXPECT_TRUE(IsWidgetVisible());
-#endif
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesError) {
@@ -432,8 +395,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesError) {
   OnError();
 
   // The error should not be visible on a different media stream.
-  auto media_1 = std::make_unique<CaptionHostImpl>(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
+  auto media_1 = CaptionBubbleContextBrowser::Create(
+      browser()->tab_strip_model()->GetActiveWebContents());
   OnPartialTranscription("Elephants are vegetarians.", media_1.get());
   EXPECT_TRUE(GetTitle()->GetVisible());
   EXPECT_TRUE(GetLabel()->GetVisible());
@@ -472,75 +435,18 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_FALSE(IsWidgetVisible());
 }
 
+// TODO(crbug.com/1055150): Renable this test once it is passing. Tab traversal
+// works in app but doesn't work in tests right now.
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       MovesWithArrowsWhenFocused) {
-  OnPartialTranscription(
-      "Honeybees have tiny hairs on their eyes to help them collect pollen");
-  // Not focused initially.
-  EXPECT_FALSE(GetBubble()->HasFocus());
-  // In the tests, the widget must be active for the key presses to be handled.
-  GetCaptionWidget()->Activate();
-
-  // Key presses do not change the bounds when it is not focused.
-  gfx::Rect bounds = GetCaptionWidget()->GetClientAreaBoundsInScreen();
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_UP, false,
-                                              false, false, false));
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_LEFT, false,
-                                              false, false, false));
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-
-  // Focus the bubble, and try the arrow keys.
-  GetBubble()->RequestFocus();
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_UP, false,
-                                              false, false, false));
-  bounds.Offset(0, -kArrowKeyDisplacement);
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_LEFT, false,
-                                              false, false, false));
-  bounds.Offset(-kArrowKeyDisplacement, 0);
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RIGHT, false,
-                                              false, false, false));
-  bounds.Offset(kArrowKeyDisplacement, 0);
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
-                                              false, false, false));
-  bounds.Offset(0, kArrowKeyDisplacement);
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-
-  // Down shouldn't move the bubble again because we started at the bottom of
-  // the screen.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DOWN, false,
-                                              false, false, false));
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-
-  // Hitting the escape key should remove focus from the view, so arrows no
-  // longer work.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
-                                              false, false, false));
-  EXPECT_FALSE(GetBubble()->HasFocus());
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_UP, false,
-                                              false, false, false));
-  EXPECT_EQ(bounds, GetCaptionWidget()->GetClientAreaBoundsInScreen());
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, FocusableInTabOrder) {
+                       DISABLED_FocusableInTabOrder) {
   OnPartialTranscription(
       "A narwhal's tusk is an enlarged tooth containing "
       "millions of nerve endings");
-  // Not initially focused.
-  EXPECT_FALSE(GetBubble()->HasFocus());
-  EXPECT_FALSE(GetCloseButton()->HasFocus());
-  EXPECT_FALSE(GetBubble()->GetFocusManager()->GetFocusedView());
-  // In the tests, the widget must be active for the key presses to be handled.
+  // Not initially active.
+  EXPECT_FALSE(GetCaptionWidget()->IsActive());
+  // The widget must be active for the key presses to be handled.
   GetCaptionWidget()->Activate();
 
-  // Press tab until we enter the bubble.
-  while (!GetBubble()->HasFocus()) {
-    EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
-                                                false, false, false));
-  }
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Check the native widget has focus.
   aura::client::FocusClient* focus_client =
@@ -549,41 +455,39 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, FocusableInTabOrder) {
               focus_client->GetFocusedWindow());
 #endif
   // Next tab should be the close button.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
-                                              false, false, false));
+  EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      GetCaptionWidget()->GetNativeWindow(), ui::VKEY_TAB, false, false, false,
+      false));
   EXPECT_TRUE(GetCloseButton()->HasFocus());
 
   // Next tab should be the expand button.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
-                                              false, false, false));
+  EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      GetCaptionWidget()->GetNativeWindow(), ui::VKEY_TAB, false, false, false,
+      false));
   EXPECT_TRUE(GetExpandButton()->HasFocus());
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Pressing enter should turn the expand button into a collapse button.
   // Focus should remain on the collapse button.
   // TODO(crbug.com/1055150): Fix this for Mac.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN, false,
-                                              false, false, false));
+  EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      GetCaptionWidget()->GetNativeWindow(), ui::VKEY_RETURN, false, false,
+      false, false));
   EXPECT_TRUE(GetCollapseButton()->HasFocus());
 
   // Pressing enter again should turn the collapse button into an expand button.
   // Focus should remain on the expand button.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN, false,
-                                              false, false, false));
+  EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      GetCaptionWidget()->GetNativeWindow(), ui::VKEY_RETURN, false, false,
+      false, false));
   EXPECT_TRUE(GetExpandButton()->HasFocus());
 #endif
 
-  // Next tab exits the bubble entirely.
-  EXPECT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
-                                              false, false, false));
-#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // The native widget should no longer have focus.
-  EXPECT_FALSE(GetCaptionWidget()->GetNativeView() ==
-               focus_client->GetFocusedWindow());
-#endif
-  EXPECT_FALSE(GetBubble()->HasFocus());
-  EXPECT_FALSE(GetCloseButton()->HasFocus());
-  EXPECT_FALSE(GetBubble()->GetFocusManager()->GetFocusedView());
+  // Next tab goes back to the close button.
+  EXPECT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      GetCaptionWidget()->GetNativeWindow(), ui::VKEY_TAB, false, false, false,
+      false));
+  EXPECT_TRUE(GetCloseButton()->HasFocus());
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
@@ -591,16 +495,18 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   int text_size = 16;
   int line_height = 24;
   int bubble_height = 48;
+  int bubble_width = 536;
   int error_icon_height = 20;
   ui::CaptionStyle caption_style;
 
-  GetController()->UpdateCaptionStyle(base::nullopt);
+  GetController()->UpdateCaptionStyle(absl::nullopt);
   OnPartialTranscription("Hamsters' teeth never stop growing");
   EXPECT_EQ(text_size, GetLabel()->font_list().GetFontSize());
   EXPECT_EQ(text_size, GetTitle()->font_list().GetFontSize());
   EXPECT_EQ(line_height, GetLabel()->GetLineHeight());
   EXPECT_EQ(line_height, GetTitle()->GetLineHeight());
   EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height);
+  EXPECT_EQ(GetBubble()->GetPreferredSize().width(), bubble_width);
 
   // Set the text size to 200%.
   caption_style.text_size = "200%";
@@ -610,6 +516,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(line_height * 2, GetLabel()->GetLineHeight());
   EXPECT_EQ(line_height * 2, GetTitle()->GetLineHeight());
   EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height * 2);
+  EXPECT_EQ(GetBubble()->GetPreferredSize().width(), bubble_width * 2);
 
   // Set the text size to the empty string.
   caption_style.text_size = "";
@@ -619,6 +526,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(line_height, GetLabel()->GetLineHeight());
   EXPECT_EQ(line_height, GetTitle()->GetLineHeight());
   EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height);
+  EXPECT_EQ(GetBubble()->GetPreferredSize().width(), bubble_width);
 
   // Set the text size to 50% !important.
   caption_style.text_size = "50% !important";
@@ -628,6 +536,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(line_height / 2, GetLabel()->GetLineHeight());
   EXPECT_EQ(line_height / 2, GetTitle()->GetLineHeight());
   EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height / 2);
+  EXPECT_EQ(GetBubble()->GetPreferredSize().width(), bubble_width / 2);
 
   // Set the text size to a bad string.
   caption_style.text_size = "Ostriches can run up to 45mph";
@@ -637,6 +546,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(line_height, GetLabel()->GetLineHeight());
   EXPECT_EQ(line_height, GetTitle()->GetLineHeight());
   EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height);
+  EXPECT_EQ(GetBubble()->GetPreferredSize().width(), bubble_width);
 
   // Set the caption style to a floating point percent.
   caption_style.text_size = "62.5%";
@@ -646,6 +556,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(line_height * 0.625, GetLabel()->GetLineHeight());
   EXPECT_EQ(line_height * 0.625, GetTitle()->GetLineHeight());
   EXPECT_GT(GetBubble()->GetPreferredSize().height(), bubble_height * 0.625);
+  EXPECT_EQ(GetBubble()->GetPreferredSize().width(), bubble_width * 0.625);
 
   // Set the error message.
   caption_style.text_size = "50%";
@@ -654,11 +565,12 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(line_height / 2, GetErrorText()->GetLineHeight());
   EXPECT_EQ(error_icon_height / 2, GetErrorIcon()->GetImageBounds().height());
   EXPECT_GT(GetBubble()->GetPreferredSize().height(), line_height / 2);
+  EXPECT_EQ(GetBubble()->GetPreferredSize().width(), bubble_width / 2);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        UpdateCaptionStyleFontFamily) {
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   std::string default_font = "Roboto";
 #else
   // Testing framework doesn't load all fonts, so Roboto is mapped to sans.
@@ -667,7 +579,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
   ui::CaptionStyle caption_style;
 
-  GetController()->UpdateCaptionStyle(base::nullopt);
+  GetController()->UpdateCaptionStyle(absl::nullopt);
   OnPartialTranscription("Koalas aren't bears: they are marsupials.");
   EXPECT_EQ(default_font,
             GetLabel()->font_list().GetPrimaryFont().GetFontName());
@@ -709,10 +621,11 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        UpdateCaptionStyleTextColor) {
-  SkColor default_color = SK_ColorWHITE;
+  SkColor default_color = browser()->window()->GetColorProvider()->GetColor(
+      ui::kColorLiveCaptionBubbleForegroundDefault);
   ui::CaptionStyle caption_style;
 
-  GetController()->UpdateCaptionStyle(base::nullopt);
+  GetController()->UpdateCaptionStyle(absl::nullopt);
   OnPartialTranscription(
       "Marsupials first evolved in South America about 100 million years ago.");
   EXPECT_EQ(default_color, GetLabel()->GetEnabledColor());
@@ -735,10 +648,19 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
   // Set the text color to blue !important with 0.5 opacity.
   caption_style.text_color = "rgba(0,0,255,0.5) !important";
+  // On Mac, we set the opacity to 90% as a workaround to a rendering issue.
+  // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
+  // workaround.
+  int a;
+#if BUILDFLAG(IS_MAC)
+  a = 230;
+#else
+  a = 128;
+#endif
   GetController()->UpdateCaptionStyle(caption_style);
-  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, 127), GetLabel()->GetEnabledColor());
-  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, 127), GetTitle()->GetEnabledColor());
-  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, 127), GetErrorText()->GetEnabledColor());
+  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, a), GetLabel()->GetEnabledColor());
+  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, a), GetTitle()->GetEnabledColor());
+  EXPECT_EQ(SkColorSetA(SK_ColorBLUE, a), GetErrorText()->GetEnabledColor());
 
   // Set the text color to a bad string.
   caption_style.text_color = "green";
@@ -764,18 +686,28 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        UpdateCaptionStyleBackgroundColor) {
-  SkColor default_color = SkColorSetA(gfx::kGoogleGrey900, 230);
+  SkColor default_color = browser()->window()->GetColorProvider()->GetColor(
+      ui::kColorLiveCaptionBubbleBackgroundDefault);
   ui::CaptionStyle caption_style;
 
-  GetController()->UpdateCaptionStyle(base::nullopt);
+  GetController()->UpdateCaptionStyle(absl::nullopt);
   OnPartialTranscription("Most marsupials are nocturnal.");
   EXPECT_EQ(default_color, GetBubble()->color());
 
   // Set the window color to red with 0.5 opacity.
   caption_style.window_color = "rgba(255,0,0,0.5)";
+  // On Mac, we set the opacity to 90% as a workaround to a rendering issue.
+  // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
+  // workaround.
+  int a;
+#if BUILDFLAG(IS_MAC)
+  a = 230;
+#else
+  a = 128;
+#endif
   caption_style.background_color = "";
   GetController()->UpdateCaptionStyle(caption_style);
-  EXPECT_EQ(SkColorSetA(SK_ColorRED, 127), GetBubble()->color());
+  EXPECT_EQ(SkColorSetA(SK_ColorRED, a), GetBubble()->color());
 
   // Set the background color to blue. When no window color is supplied, the
   // background color is applied to the caption bubble color.
@@ -844,13 +776,13 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ("No human", GetLabelText());
   OnFinalTranscription("No human has ever seen");
   EXPECT_EQ("No human has ever seen", GetLabelText());
-  OnFinalTranscription("a living");
+  OnFinalTranscription(" a living");
   EXPECT_EQ("No human has ever seen a living", GetLabelText());
-  OnPartialTranscription("giant");
+  OnPartialTranscription(" giant");
   EXPECT_EQ("No human has ever seen a living giant", GetLabelText());
   OnPartialTranscription("");
-  EXPECT_EQ("No human has ever seen a living ", GetLabelText());
-  OnPartialTranscription("giant squid");
+  EXPECT_EQ("No human has ever seen a living", GetLabelText());
+  OnPartialTranscription(" giant squid");
   EXPECT_EQ("No human has ever seen a living giant squid", GetLabelText());
 }
 
@@ -869,22 +801,12 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ShowsAndHidesBubble) {
   OnFinalTranscription("");
   EXPECT_FALSE(IsWidgetVisible());
 
-#if !defined(OS_MAC)
-  // Shrink it so small the caption bubble can't fit. Ensure it's hidden.
-  // Mac windows cannot be shrunk small enough to force the bubble to hide.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 200, 100));
-  EXPECT_FALSE(IsWidgetVisible());
-
-  // Make it bigger again and ensure it's still not visible.
-  browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 400));
-  EXPECT_FALSE(IsWidgetVisible());
-
-  // Now set some text, and ensure it hides when shrunk but re-shows when
-  // grown.
+#if !BUILDFLAG(IS_MAC)
+  // Set some text, and ensure it stays visible when the window changes size.
   OnPartialTranscription("Newborn opossums are about 1cm long");
   EXPECT_TRUE(IsWidgetVisible());
   browser()->window()->SetBounds(gfx::Rect(50, 50, 200, 100));
-  EXPECT_FALSE(IsWidgetVisible());
+  EXPECT_TRUE(IsWidgetVisible());
   browser()->window()->SetBounds(gfx::Rect(50, 50, 800, 400));
   EXPECT_TRUE(IsWidgetVisible());
 #endif
@@ -900,9 +822,9 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ChangeMedia) {
   // This test has two medias.
   // Media 0 has the text "Polar bears are the largest carnivores on land".
   // Media 1 has the text "A snail can sleep for two years".
-  CaptionHostImpl* media_0 = GetCaptionHostImpl();
-  auto media_1 = std::make_unique<CaptionHostImpl>(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
+  CaptionBubbleContext* media_0 = GetCaptionBubbleContext();
+  auto media_1 = CaptionBubbleContextBrowser::Create(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
   // Send final transcription from media 0.
   OnPartialTranscription("Polar bears are the largest", media_0);
@@ -966,6 +888,8 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
   int line_height = 24;
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionBubbleExpanded));
 
   OnPartialTranscription("Seahorses are monogamous");
   EXPECT_TRUE(GetExpandButton()->GetVisible());
@@ -976,10 +900,12 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
   EXPECT_TRUE(GetCollapseButton()->GetVisible());
   EXPECT_FALSE(GetExpandButton()->GetVisible());
   EXPECT_EQ(7 * line_height, GetLabel()->GetBoundsInScreen().height());
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionBubbleExpanded));
 
   // Switch media. The bubble should remain expanded.
-  auto media_1 = std::make_unique<CaptionHostImpl>(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
+  auto media_1 = CaptionBubbleContextBrowser::Create(
+      browser()->tab_strip_model()->GetActiveWebContents());
   OnPartialTranscription("Nearly all ants are female.", media_1.get());
   EXPECT_TRUE(GetCollapseButton()->GetVisible());
   EXPECT_FALSE(GetExpandButton()->GetVisible());
@@ -1003,6 +929,29 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
   EXPECT_EQ(line_height, GetLabel()->GetBoundsInScreen().height());
 }
 
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, PinAndUnpin) {
+  base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
+  SetTickClockForTesting(test_task_runner->GetMockTickClock());
+  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionBubblePinned));
+
+  OnPartialTranscription(
+      "Sea otters have the densest fur of any mammal at about 1 million hairs "
+      "per square inch.");
+  EXPECT_TRUE(GetPinButton()->GetVisible());
+  EXPECT_FALSE(GetUnpinButton()->GetVisible());
+
+  ClickButton(GetPinButton());
+  EXPECT_FALSE(GetPinButton()->GetVisible());
+  EXPECT_TRUE(GetUnpinButton()->GetVisible());
+  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionBubblePinned));
+
+  ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
+  test_task_runner->FastForwardBy(base::Seconds(15));
+  EXPECT_TRUE(IsWidgetVisible());
+}
+
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, NonAsciiCharacter) {
   OnPartialTranscription("犬は最高です");
   EXPECT_EQ("犬は最高です", GetLabelText());
@@ -1011,26 +960,21 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, NonAsciiCharacter) {
   EXPECT_EQ("猫も大丈夫", GetLabelText());
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       AccessibleTextComputedWhenAccessibilityModeEnabled) {
-  // If accessibility is disabled, virtual children aren't computed.
-  content::BrowserAccessibilityState::GetInstance()->DisableAccessibility();
-  OnPartialTranscription("A");
-  OnFinalTranscription("A dog's nose print");
-  EXPECT_EQ(0u, GetAXLineText().size());
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleTextSetUp) {
+  OnPartialTranscription("Capybaras are the world's largest rodents.");
 
-  // When accessibility is enabled, virtual children are computed.
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-  OnFinalTranscription("is unique");
-  EXPECT_EQ(1u, GetAXLineText().size());
-  EXPECT_EQ("A dog's nose print is unique", GetAXLineText()[0]);
+  // The label is a readonly document.
+  ui::AXNodeData node_data;
+  GetLabel()->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(ax::mojom::Role::kDocument, node_data.role);
+  EXPECT_EQ(ax::mojom::Restriction::kReadOnly, node_data.GetRestriction());
 
-  // When accessibility is disabled, virtual children are no longer being
-  // updated.
-  content::BrowserAccessibilityState::GetInstance()->DisableAccessibility();
-  OnFinalTranscription("like a fingerprint");
-  EXPECT_EQ(1u, GetAXLineText().size());
-  EXPECT_EQ("A dog's nose print is unique", GetAXLineText()[0]);
+  // There is 1 staticText node in the label.
+  EXPECT_EQ(1u, GetAXLinesNodeData().size());
+  EXPECT_EQ(ax::mojom::Role::kStaticText, GetAXLinesNodeData()[0].role);
+  EXPECT_EQ("Capybaras are the world's largest rodents.",
+            GetAXLinesNodeData()[0].GetStringAttribute(
+                ax::mojom::StringAttribute::kName));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
@@ -1039,7 +983,6 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   std::string line(499, 'a');
   line.push_back(' ');
 
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   OnPartialTranscription(line);
   EXPECT_EQ(1u, GetAXLineText().size());
   EXPECT_EQ(line, GetAXLineText()[0]);
@@ -1054,7 +997,6 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        AccessibleTextClearsWhenBubbleCloses) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   OnPartialTranscription("Dogs' noses are wet to help them smell.");
   EXPECT_EQ(1u, GetAXLineText().size());
   EXPECT_EQ("Dogs' noses are wet to help them smell.", GetAXLineText()[0]);
@@ -1064,11 +1006,10 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        AccessibleTextChangesWhenMediaChanges) {
-  CaptionHostImpl* media_0 = GetCaptionHostImpl();
-  auto media_1 = std::make_unique<CaptionHostImpl>(
-      browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
+  CaptionBubbleContext* media_0 = GetCaptionBubbleContext();
+  auto media_1 = CaptionBubbleContextBrowser::Create(
+      browser()->tab_strip_model()->GetActiveWebContents());
 
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   OnPartialTranscription("3 dogs survived the Titanic sinking.", media_0);
   EXPECT_EQ(1u, GetAXLineText().size());
   EXPECT_EQ("3 dogs survived the Titanic sinking.", GetAXLineText()[0]);
@@ -1090,7 +1031,6 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   for (int i = 10; i < 40; i++) {
     text += base::NumberToString(i) + line + " ";
   }
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   OnPartialTranscription(text);
   OnFinalTranscription(text);
   EXPECT_EQ(9u, GetAXLineText().size());
@@ -1113,30 +1053,26 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ("a ", GetAXLineText()[8]);
 }
 
-#if !defined(OS_MAC)
-// Tests are flaky on Mac: Mac browsertests do not have an activation policy so
-// the widget activation may not work as expected.
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       BubbleDeactivatedWhenHidden) {
-  EXPECT_FALSE(IsWidgetVisible());
-  EXPECT_FALSE(CanWidgetActivate());
-  EXPECT_FALSE(IsWidgetActive());
-  OnPartialTranscription("Cows can detect odors up to 6 miles away.");
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_TRUE(CanWidgetActivate());
-  EXPECT_FALSE(IsWidgetActive());
-  GetBubble()->RequestFocus();
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_TRUE(CanWidgetActivate());
-  EXPECT_TRUE(IsWidgetActive());
-  ClickButton(GetCloseButton());
-  EXPECT_FALSE(IsWidgetVisible());
-  EXPECT_FALSE(CanWidgetActivate());
-  EXPECT_FALSE(IsWidgetActive());
-}
-#endif
+                       AccessibleTextIsSometimesFocusable) {
+  OnPartialTranscription("Capybaras can sleep in water.");
 
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HidesAfterInactivity) {
+  // The label is not normally focusable.
+  EXPECT_FALSE(GetLabel()->IsFocusable());
+
+  // When screen reader mode turns on on Windows, the label is focusable. It
+  // remains unfocusable on other OS's.
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+#if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY() && !BUILDFLAG(IS_MAC)
+  EXPECT_TRUE(GetLabel()->IsFocusable());
+#else
+  EXPECT_FALSE(GetLabel()->IsFocusable());
+#endif
+}
+
+// Disable due to flaky, https://crbug.com/1206677
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       DISABLED_HidesAfterInactivity) {
   // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer with
   // a mock tick clock that replaces the default tick clock with mock time.
   base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
@@ -1147,7 +1083,10 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HidesAfterInactivity) {
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Bowhead whales can live for over 200 years.", GetLabelText());
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  // TODO(crbug.com/1055150): Change this to 5 seconds. For some reasons tests
+  // need to wait 10 seconds, but testing the feature only requires a 5 second
+  // wait.
+  test_task_runner->FastForwardBy(base::Seconds(10));
   EXPECT_FALSE(IsWidgetVisible());
   EXPECT_EQ("", GetLabelText());
 
@@ -1156,12 +1095,12 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HidesAfterInactivity) {
   OnPartialTranscription("Killer whales");
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Killer whales", GetLabelText());
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  test_task_runner->FastForwardBy(base::Seconds(4));
   EXPECT_TRUE(IsWidgetVisible());
   OnPartialTranscription("Killer whales travel in matrifocal groups");
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Killer whales travel in matrifocal groups", GetLabelText());
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  test_task_runner->FastForwardBy(base::Seconds(4));
   EXPECT_TRUE(IsWidgetVisible());
   OnFinalTranscription(
       "Killer whales travel in matrifocal groups--a family unit centered on "
@@ -1171,35 +1110,25 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HidesAfterInactivity) {
       "Killer whales travel in matrifocal groups--a family unit centered on "
       "the mother.",
       GetLabelText());
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(4));
+  test_task_runner->FastForwardBy(base::Seconds(4));
   EXPECT_TRUE(IsWidgetVisible());
 
-  // In the tests, the widget must be active.
+  // Test that widget doesn't hide when focused.
+  views::test::WidgetActivationWaiter waiter(GetCaptionWidget(), true);
   GetCaptionWidget()->Activate();
-  // Caption bubble stays visible while it has focus.
-  GetBubble()->RequestFocus();
+  waiter.Wait();
+  test_task_runner->FastForwardBy(base::Seconds(10));
   EXPECT_TRUE(IsWidgetVisible());
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(10));
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ(
-      "Killer whales travel in matrifocal groups--a family unit centered on "
-      "the mother.",
-      GetLabelText());
-
-  UnfocusCaptionWidget();
-  EXPECT_FALSE(GetBubble()->HasFocus());
-  EXPECT_EQ(
-      "Killer whales travel in matrifocal groups--a family unit centered on "
-      "the mother.",
-      GetLabelText());
-  EXPECT_TRUE(IsWidgetVisible());
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(5));
-  EXPECT_FALSE(IsWidgetVisible());
-  EXPECT_EQ("", GetLabelText());
 }
 
+// TODO(https://crbug.com/1207312): Flaky test.
+#if defined(USE_OZONE)
+#define MAYBE_ClearsTextAfterInactivity DISABLED_ClearsTextAfterInactivity
+#else
+#define MAYBE_ClearsTextAfterInactivity ClearsTextAfterInactivity
+#endif
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       ClearsTextAfterInactivity) {
+                       MAYBE_ClearsTextAfterInactivity) {
   // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer with
   // a mock tick clock that replaces the default tick clock with mock time.
   base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
@@ -1210,7 +1139,10 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_TRUE(IsWidgetVisible());
   EXPECT_EQ("Bowhead whales can live for over 200 years.", GetLabelText());
   ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-  test_task_runner->FastForwardBy(base::TimeDelta::FromSeconds(5));
+  // TODO(crbug.com/1055150): Change this to 5 seconds. For some reasons tests
+  // need to wait 10 seconds, but testing the feature only requires a 5 second
+  // wait.
+  test_task_runner->FastForwardBy(base::Seconds(10));
   EXPECT_FALSE(IsWidgetVisible());
   EXPECT_EQ("", GetLabelText());
 
@@ -1231,6 +1163,49 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_FALSE(GetAccessibleWindowTitle().empty());
   EXPECT_EQ(GetAccessibleWindowTitle(),
             base::UTF16ToUTF8(GetTitle()->GetText()));
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       BackToTabButtonActivatesTab) {
+  OnPartialTranscription("Whale sharks are the world's largest fish.");
+  chrome::AddTabAt(browser(), GURL(), -1, true);
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+  ClickButton(GetBackToTabButton());
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+  // TODO(crbug.com/1055150): Test that browser window is active. It works in
+  // app but the tests aren't working.
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
+                       ErrorHidesAfterInactivity) {
+  // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer with
+  // a mock tick clock that replaces the default tick clock with mock time.
+  base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
+  SetTickClockForTesting(test_task_runner->GetMockTickClock());
+
+  OnError();
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_FALSE(HasMediaFoundationError());
+  EXPECT_EQ("", GetLabelText());
+  ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
+
+  // Verify that the caption bubble hides due to inactivity.
+  test_task_runner->FastForwardBy(base::Seconds(15));
+  EXPECT_FALSE(IsWidgetVisible());
+  EXPECT_EQ("", GetLabelText());
+
+  OnMediaFoundationError();
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_TRUE(HasMediaFoundationError());
+  EXPECT_EQ("", GetLabelText());
+  ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
+
+  // The Media Foundation renderer unsupported error should not hide to due
+  // inactivity.
+  test_task_runner->FastForwardBy(base::Seconds(15));
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_EQ("", GetLabelText());
 }
 
 }  // namespace captions

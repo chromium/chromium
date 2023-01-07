@@ -113,7 +113,7 @@ void ConstructBidiRunsForLine(InlineBidiResolver& top_resolver,
   top_resolver.CreateBidiRunsForLine(end_of_line, override,
                                      previous_line_broke_cleanly);
 
-  while (!top_resolver.IsolatedRuns().IsEmpty()) {
+  while (!top_resolver.IsolatedRuns().empty()) {
     // It does not matter which order we resolve the runs as long as we
     // resolve them all.
     BidiIsolatedRun isolated_run = top_resolver.IsolatedRuns().back();
@@ -177,7 +177,7 @@ void ConstructBidiRunsForLine(InlineBidiResolver& top_resolver,
 
     // If we encountered any nested isolate runs, save them for later
     // processing.
-    while (!isolated_resolver.IsolatedRuns().IsEmpty()) {
+    while (!isolated_resolver.IsolatedRuns().empty()) {
       BidiIsolatedRun run_with_context =
           isolated_resolver.IsolatedRuns().back();
       isolated_resolver.IsolatedRuns().pop_back();

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,10 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner_helpers.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
 #include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/common/plugin.mojom.h"
@@ -66,9 +65,7 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
                             const std::string& plugin_identifier,
                             chrome::mojom::PluginStatus* status) const;
     bool FindEnabledPlugin(
-        int render_frame_id,
         const GURL& url,
-        const url::Origin& main_frame_origin,
         const std::string& mime_type,
         chrome::mojom::PluginStatus* status,
         content::WebPluginInfo* plugin,
@@ -83,28 +80,31 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
    private:
     int render_process_id_;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-    extensions::ExtensionRegistry* extension_registry_;
+    raw_ptr<extensions::ExtensionRegistry> extension_registry_;
 #endif
-    const HostContentSettingsMap* host_content_settings_map_;
+    raw_ptr<const HostContentSettingsMap> host_content_settings_map_;
     scoped_refptr<PluginPrefs> plugin_prefs_;
 
     BooleanPrefMember allow_outdated_plugins_;
   };
 
   PluginInfoHostImpl(int render_process_id, Profile* profile);
+
+  PluginInfoHostImpl(const PluginInfoHostImpl&) = delete;
+  PluginInfoHostImpl& operator=(const PluginInfoHostImpl&) = delete;
+
   ~PluginInfoHostImpl() override;
 
   static void RegisterUserPrefs(user_prefs::PrefRegistrySyncable* registry);
 
- private:
-  void ShutdownOnUIThread();
-
   // chrome::mojom::PluginInfoHost
-  void GetPluginInfo(int32_t render_frame_id,
-                     const GURL& url,
+  void GetPluginInfo(const GURL& url,
                      const url::Origin& origin,
                      const std::string& mime_type,
                      GetPluginInfoCallback callback) override;
+
+ private:
+  void ShutdownOnUIThread();
 
   // |params| wraps the parameters passed to |OnGetPluginInfo|, because
   // |base::Bind| doesn't support the required arity <http://crbug.com/98542>.
@@ -121,8 +121,6 @@ class PluginInfoHostImpl : public chrome::mojom::PluginInfoHost {
   base::CallbackListSubscription shutdown_subscription_;
 
   base::WeakPtrFactory<PluginInfoHostImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginInfoHostImpl);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_INFO_HOST_IMPL_H_

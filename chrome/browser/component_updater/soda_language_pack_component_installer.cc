@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ SodaLanguagePackComponentInstallerPolicy::
 
 std::string SodaLanguagePackComponentInstallerPolicy::GetExtensionId(
     speech::LanguageCode language_code) {
-  base::Optional<speech::SodaLanguagePackComponentConfig> config =
+  absl::optional<speech::SodaLanguagePackComponentConfig> config =
       speech::GetLanguageComponentConfig(language_code);
 
   if (config) {
@@ -93,7 +93,7 @@ void SodaLanguagePackComponentInstallerPolicy::
 }
 
 bool SodaLanguagePackComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   return base::PathExists(
       install_dir.Append(speech::kSodaLanguagePackDirectoryRelativePath));
@@ -111,7 +111,7 @@ bool SodaLanguagePackComponentInstallerPolicy::RequiresNetworkEncryption()
 
 update_client::CrxInstaller::Result
 SodaLanguagePackComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return SodaComponentInstallerPolicy::SetComponentDirectoryPermission(
       install_dir);
@@ -122,14 +122,14 @@ void SodaLanguagePackComponentInstallerPolicy::OnCustomUninstall() {}
 void SodaLanguagePackComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
   if (on_installed_callback_)
     on_installed_callback_.Run(install_dir);
 
   if (on_ready_callback_)
-    std::move(on_ready_callback_).Run();
+    std::move(on_ready_callback_).Run(language_config_.language_code);
 }
 
 base::FilePath SodaLanguagePackComponentInstallerPolicy::GetRelativeInstallDir()
@@ -157,8 +157,8 @@ SodaLanguagePackComponentInstallerPolicy::GetInstallerAttributes() const {
 void UpdateSodaLanguagePackInstallDirPref(speech::LanguageCode language_code,
                                           PrefService* prefs,
                                           const base::FilePath& install_dir) {
-#if !defined(OS_ANDROID)
-  base::Optional<speech::SodaLanguagePackComponentConfig> config =
+#if !BUILDFLAG(IS_ANDROID)
+  absl::optional<speech::SodaLanguagePackComponentConfig> config =
       speech::GetLanguageComponentConfig(language_code);
   if (config) {
     prefs->SetFilePath(
@@ -172,7 +172,7 @@ void RegisterSodaLanguagePackComponent(
     speech::SodaLanguagePackComponentConfig language_config,
     ComponentUpdateService* cus,
     PrefService* prefs,
-    base::OnceClosure on_ready_callback) {
+    OnSodaLanguagePackComponentReadyCallback on_ready_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(

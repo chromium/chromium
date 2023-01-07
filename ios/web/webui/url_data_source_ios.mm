@@ -1,12 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/public/webui/url_data_source_ios.h"
+#import "ios/web/public/webui/url_data_source_ios.h"
 
 #import "ios/web/public/web_client.h"
-#include "ios/web/webui/url_data_manager_ios.h"
-#include "net/url_request/url_request.h"
+#import "ios/web/webui/url_data_manager_ios.h"
+#import "net/url_request/url_request.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,6 +37,10 @@ bool URLDataSourceIOS::ShouldDenyXFrameOptions() const {
 
 bool URLDataSourceIOS::ShouldServiceRequest(const GURL& url) const {
   return GetWebClient()->IsAppSpecificURL(url);
+}
+
+bool URLDataSourceIOS::ShouldReplaceI18nInJS() const {
+  return false;
 }
 
 }  // namespace web

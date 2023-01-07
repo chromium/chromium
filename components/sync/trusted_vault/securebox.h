@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,10 @@
 
 #include <cstdint>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace crypto {
@@ -19,6 +18,25 @@ class OpenSSLErrStackTracer;
 }  // namespace crypto
 
 namespace syncer {
+
+// Encrypts |payload| according to SecureBox v2 spec:
+// 1. Encryption key is derived from |shared_secret| using HKDF-SHA256.
+// 2. |payload| is encrypted using AES-128-GCM, using random 96-bit nonce and
+// given |header|.
+// |shared_secret|, |header| and |payload| may be empty, though empty
+// |shared_secret| shouldn't be used.
+std::vector<uint8_t> SecureBoxSymmetricEncrypt(
+    base::span<const uint8_t> shared_secret,
+    base::span<const uint8_t> header,
+    base::span<const uint8_t> payload);
+
+// Decrypts |encrypted_payload| according to SecureBox v2 spec (see
+// above). Returns nullopt if payload was encrypted with different parameters or
+// |encrypted_payload| isn't a valid SecureBox encrypted data.
+absl::optional<std::vector<uint8_t>> SecureBoxSymmetricDecrypt(
+    base::span<const uint8_t> shared_secret,
+    base::span<const uint8_t> header,
+    base::span<const uint8_t> encrypted_payload);
 
 class SecureBoxPublicKey {
  public:
@@ -87,7 +105,7 @@ class SecureBoxPrivateKey {
   // SecureBoxPublicKey::Encrypt()). Returns nullopt if payload was encrypted
   // with different parameters or |encrypted_payload| isn't a valid SecureBox
   // encrypted data.
-  base::Optional<std::vector<uint8_t>> Decrypt(
+  absl::optional<std::vector<uint8_t>> Decrypt(
       base::span<const uint8_t> shared_secret,
       base::span<const uint8_t> header,
       base::span<const uint8_t> encrypted_payload) const;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,7 @@ std::unique_ptr<VideoTutorialService> CreateVideoTutorialService(
     const std::string& api_key,
     const std::string& client_version,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const std::string& default_server_url,
     PrefService* pref_service);
 
 }  // namespace video_tutorials

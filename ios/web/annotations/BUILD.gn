@@ -1,0 +1,42 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+import("//ios/web/public/js_messaging/optimize_ts.gni")
+
+source_set("annotations") {
+  deps = [
+    ":annotations_ts",
+    "//base",
+    "//components/shared_highlighting/ios",
+    "//ios/web/common",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/navigation",
+    "//ui/base",
+  ]
+
+  sources = [
+    "annotations_java_script_feature.h",
+    "annotations_java_script_feature.mm",
+    "annotations_text_manager.h",
+    "annotations_text_manager.mm",
+    "annotations_utils.h",
+    "annotations_utils.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+optimize_ts("annotations_ts") {
+  visibility = [ ":annotations" ]
+
+  sources = [ "resources/annotations.ts" ]
+
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
+  ]
+}

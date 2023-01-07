@@ -25,4 +25,7 @@ top
   127.0.0.1:8000
     devtools/resources
       inspected-page.html
+  frame (dynamic-frame.html)
+    (no domain)
+      dynamic-script.js
 

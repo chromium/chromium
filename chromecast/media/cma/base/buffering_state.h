@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 
@@ -19,6 +18,9 @@ class BufferingConfig : public base::RefCountedThreadSafe<BufferingConfig> {
  public:
   BufferingConfig(base::TimeDelta low_level_threshold,
                   base::TimeDelta high_level_threshold);
+
+  BufferingConfig(const BufferingConfig&) = delete;
+  BufferingConfig& operator=(const BufferingConfig&) = delete;
 
   base::TimeDelta low_level() const { return low_level_threshold_; }
   base::TimeDelta high_level() const { return high_level_threshold_; }
@@ -36,8 +38,6 @@ class BufferingConfig : public base::RefCountedThreadSafe<BufferingConfig> {
 
   base::TimeDelta low_level_threshold_;
   base::TimeDelta high_level_threshold_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferingConfig);
 };
 
 class BufferingState
@@ -61,6 +61,9 @@ class BufferingState
                  const scoped_refptr<BufferingConfig>& config,
                  const base::RepeatingClosure& state_changed_cb,
                  const HighLevelBufferCB& high_level_buffer_cb);
+
+  BufferingState(const BufferingState&) = delete;
+  BufferingState& operator=(const BufferingState&) = delete;
 
   // Returns the buffering state.
   State GetState() const { return state_; }
@@ -130,8 +133,6 @@ class BufferingState
   // Buffered media time.
   // Equal to kNoTimestamp when not known.
   base::TimeDelta buffered_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferingState);
 };
 
 }  // namespace media

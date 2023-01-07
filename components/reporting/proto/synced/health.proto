@@ -1,0 +1,75 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package reporting;
+
+import "components/reporting/proto/synced/record_constants.proto";
+import "components/reporting/util/status.proto";
+
+// Information about records being removed from a storage queue.
+message StorageDequeue {
+  optional int64 sequencing_id = 1;
+  optional int64 records_count = 2;
+}
+
+// Information about records being added to a storage queue.
+message StorageEnqueue {
+  optional int64 sequencing_id = 1;
+}
+
+// Data about a record being added or removed from a storage queue
+message StorageQueueAction {
+  oneof action {
+    StorageDequeue storage_dequeue = 1;
+    StorageEnqueue storage_enqueue = 2;
+  }
+
+  optional StatusProto status = 3;
+}
+
+// Data about the EnqueueRecord dBus call.
+message EnqueueRecordCall {
+  optional Priority priority = 1;
+  optional StatusProto status = 2;
+}
+
+// Data about the FlushPriority dBus call.
+message FlushPriorityCall {
+  optional Priority priority = 1;
+  optional StatusProto status = 2;
+}
+
+// Data about the UploadEncryptedRecord dBus call.
+message UploadEncryptedRecordCall {
+  optional int64 sequencing_id = 1;
+  optional bool encryption_key_requested = 2;
+  optional StatusProto status = 3;
+}
+
+// Data about the ConfirmRecordUpload dBus call.
+message ConfirmRecordUploadCall {
+  optional int64 sequencing_id = 1;
+  optional bool force_confirm = 2;
+}
+
+message HealthDataHistory {
+  oneof record {
+    EnqueueRecordCall enqueue_record_call = 1;
+    FlushPriorityCall flush_priority_call = 2;
+    UploadEncryptedRecordCall upload_encrypted_record_call = 3;
+    ConfirmRecordUploadCall confirm_record_upload_call = 4;
+    StorageQueueAction storage_queue_action = 5;
+  }
+
+  optional int64 timestamp_seconds = 6;
+}
+
+// Aggregate health data of the ERP.
+message ERPHealthData {
+  repeated HealthDataHistory history = 1;
+}

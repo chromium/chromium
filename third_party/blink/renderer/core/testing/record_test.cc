@@ -1,8 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/testing/record_test.h"
+
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_boolean_bytestringbytestringrecord.h"
 
 namespace blink {
 
@@ -20,11 +22,11 @@ Vector<std::pair<String, int32_t>> RecordTest::getStringLongRecord() {
 }
 
 void RecordTest::setNullableStringLongRecord(
-    const base::Optional<Vector<std::pair<String, int32_t>>>& arg) {
+    const absl::optional<Vector<std::pair<String, int32_t>>>& arg) {
   nullable_string_long_record_ = arg;
 }
 
-base::Optional<Vector<std::pair<String, int32_t>>>
+absl::optional<Vector<std::pair<String, int32_t>>>
 RecordTest::getNullableStringLongRecord() {
   return nullable_string_long_record_;
 }
@@ -72,8 +74,8 @@ RecordTest::returnStringByteStringSequenceRecord() {
 }
 
 bool RecordTest::unionReceivedARecord(
-    const BooleanOrByteStringByteStringRecord& arg) {
-  return arg.IsByteStringByteStringRecord();
+    const V8UnionBooleanOrByteStringByteStringRecord* arg) {
+  return arg->IsByteStringByteStringRecord();
 }
 
 void RecordTest::Trace(Visitor* visitor) const {

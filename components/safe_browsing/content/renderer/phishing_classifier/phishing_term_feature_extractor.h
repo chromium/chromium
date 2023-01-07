@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -25,7 +25,6 @@
 #include <unordered_set>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
@@ -57,12 +56,17 @@ class PhishingTermFeatureExtractor {
   // |clock| is used for timing feature extractor operations, and may be mocked
   // for testing.  The caller keeps ownership of the clock.
   PhishingTermFeatureExtractor(
-      const std::unordered_set<std::string>* page_term_hashes,
-      const std::unordered_set<uint32_t>* page_word_hashes,
+      base::RepeatingCallback<bool(const std::string&)> find_page_term_callback,
+      base::RepeatingCallback<bool(uint32_t)> find_page_word_callback,
       size_t max_words_per_term,
       uint32_t murmurhash3_seed,
       size_t max_shingles_per_page,
       size_t shingle_size);
+
+  PhishingTermFeatureExtractor(const PhishingTermFeatureExtractor&) = delete;
+  PhishingTermFeatureExtractor& operator=(const PhishingTermFeatureExtractor&) =
+      delete;
+
   ~PhishingTermFeatureExtractor();
 
   // Begins extracting features from |page_text| into the given FeatureMap.
@@ -121,15 +125,16 @@ class PhishingTermFeatureExtractor {
   // Clears all internal feature extraction state.
   void Clear();
 
-  // All of the term hashes that we are looking for in the page.
-  const std::unordered_set<std::string>* page_term_hashes_;
+  // Check if a term hash is in the CSD Model.
+  base::RepeatingCallback<bool(const std::string&)> find_page_term_callback_;
 
   // Murmur3 hashes of all the individual words in page_term_hashes_.  If
   // page_term_hashes_ included (hashed) "one" and "one two", page_word_hashes_
   // would contain (hashed) "one" and "two".  We do this so that we can have a
   // quick out in the common case that the current word we are processing
   // doesn't contain any part of one of our terms.
-  const std::unordered_set<uint32_t>* page_word_hashes_;
+  // Check if a murmur3 hash word is in the CSD Model.
+  base::RepeatingCallback<bool(uint32_t)> find_page_word_callback_;
 
   // The maximum number of words in an n-gram.
   const size_t max_words_per_term_;
@@ -158,8 +163,6 @@ class PhishingTermFeatureExtractor {
   // Used in scheduling ExtractFeaturesWithTimeout tasks.
   // These pointers are invalidated if extraction is cancelled.
   base::WeakPtrFactory<PhishingTermFeatureExtractor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PhishingTermFeatureExtractor);
 };
 
 }  // namespace safe_browsing

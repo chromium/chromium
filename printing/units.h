@@ -1,11 +1,11 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef PRINTING_UNITS_H_
 #define PRINTING_UNITS_H_
 
-#include "printing/printing_export.h"
+#include "base/component_export.h"
 
 namespace printing {
 
@@ -44,21 +44,12 @@ constexpr float kA3WidthInch = 11.69f;
 constexpr float kA3HeightInch = 16.54f;
 
 // Converts from one unit system to another using integer arithmetics.
-PRINTING_EXPORT int ConvertUnit(double value, int old_unit, int new_unit);
+COMPONENT_EXPORT(PRINTING_BASE)
+int ConvertUnit(float value, int old_unit, int new_unit);
 
-// Converts from one unit system to another using doubles.
-PRINTING_EXPORT double ConvertUnitDouble(double value,
-                                         double old_unit,
-                                         double new_unit);
-
-// Converts from 1 pixel to 1 point using integers.
-PRINTING_EXPORT int ConvertPixelsToPoint(int pixels);
-
-// Converts from 1 pixel to 1 point using doubles.
-PRINTING_EXPORT double ConvertPixelsToPointDouble(double pixels);
-
-// Converts from 1 point to 1 pixel using doubles.
-PRINTING_EXPORT double ConvertPointsToPixelDouble(double points);
+// Converts from one unit system to another using floats.
+COMPONENT_EXPORT(PRINTING_BASE)
+float ConvertUnitFloat(float value, float old_unit, float new_unit);
 
 }  // namespace printing
 

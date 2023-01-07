@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,13 @@
 #include <stddef.h>
 
 #include <cmath>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "ui/events/gesture_detection/motion_event.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace ui {
@@ -283,7 +284,7 @@ void VelocityTracker::AddMovement(const TimeTicks& event_time,
 
   if ((current_pointer_id_bits_.value & id_bits.value) &&
       (event_time - last_event_time_) >=
-          base::TimeDelta::FromMilliseconds(kAssumePointerMoveStoppedTimeMs)) {
+          base::Milliseconds(kAssumePointerMoveStoppedTimeMs)) {
     // We have not received any movements for too long. Assume that all pointers
     // have stopped.
     strategy_->Clear();
@@ -328,7 +329,7 @@ void VelocityTracker::AddMovement(const MotionEvent& event) {
       // because of (difficult albeit possible) prolonged stationary screen
       // contact, assume that motion has stopped.
       if ((event.GetEventTime() - last_event_time_) >=
-          base::TimeDelta::FromMilliseconds(kAssumePointerUpStoppedTimeMs))
+          base::Milliseconds(kAssumePointerUpStoppedTimeMs))
         strategy_->Clear();
       return;
     default:
@@ -600,7 +601,7 @@ bool LeastSquaresVelocityTrackerStrategy::GetEstimator(
   float time[kHistorySize];
   uint32_t m = 0;
   uint32_t index = index_;
-  const base::TimeDelta horizon = base::TimeDelta::FromMilliseconds(kHorizonMS);
+  const base::TimeDelta horizon = base::Milliseconds(kHorizonMS);
   const Movement& newest_movement = movements_[index_];
   const Movement* first_movement = nullptr;
 
@@ -610,7 +611,7 @@ bool LeastSquaresVelocityTrackerStrategy::GetEstimator(
       break;
 
     first_movement = &movement;
-    TimeDelta age = newest_movement.event_time - movement.event_time;
+    base::TimeDelta age = newest_movement.event_time - movement.event_time;
     if (age > horizon)
       break;
 
@@ -799,7 +800,7 @@ void IntegratingVelocityTrackerStrategy::UpdateState(
     const TimeTicks& event_time,
     float xpos,
     float ypos) const {
-  const base::TimeDelta MIN_TIME_DELTA = TimeDelta::FromMicroseconds(2);
+  const base::TimeDelta MIN_TIME_DELTA = base::Microseconds(2);
   const float FILTER_TIME_CONSTANT = 0.010f;  // 10 milliseconds
 
   if (event_time <= state.update_time + MIN_TIME_DELTA)

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -34,6 +35,13 @@ void XdgShellSurface::OverrideInitParams(views::Widget::InitParams* params) {
       chromeos::kAutoMaximizeXdgShellEnabled);
   if (auto_maximize_enabled && ShouldAutoMaximize())
     params->show_state = ui::SHOW_STATE_MAXIMIZED;
+
+  // Show state should be overridden when set via window property.
+  if (params->init_properties_container.GetProperty(
+          aura::client::kShowStateKey)) {
+    params->show_state = params->init_properties_container.GetProperty(
+        aura::client::kShowStateKey);
+  }
 }
 
 bool XdgShellSurface::ShouldAutoMaximize() {
@@ -52,10 +60,10 @@ bool XdgShellSurface::ShouldAutoMaximize() {
   // We rely on unit tests to guard against changes in the size of the window
   // decorations.
   if (frame_enabled()) {
-    window_bounds.Inset(0, 0, 0,
-                        -views::GetCaptionButtonLayoutSize(
-                             views::CaptionButtonLayoutSize::kNonBrowserCaption)
-                             .height());
+    window_bounds.Inset(gfx::Insets().set_bottom(
+        -views::GetCaptionButtonLayoutSize(
+             views::CaptionButtonLayoutSize::kNonBrowserCaption)
+             .height()));
   }
   return window_bounds.width() >= work_area_size.width() &&
          window_bounds.height() >= work_area_size.height();

@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/devtools/shared_worker_devtools_manager.h"
 
+#include "base/ranges/algorithm.h"
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/worker_host/shared_worker_host.h"
 #include "content/public/browser/browser_thread.h"
@@ -29,11 +30,11 @@ void SharedWorkerDevToolsManager::WorkerCreated(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(live_hosts_.find(worker_host) == live_hosts_.end());
 
-  auto it =
-      std::find_if(terminated_hosts_.begin(), terminated_hosts_.end(),
-                   [&worker_host](SharedWorkerDevToolsAgentHost* agent_host) {
-                     return agent_host->Matches(worker_host);
-                   });
+  auto it = base::ranges::find_if(
+      terminated_hosts_,
+      [&worker_host](SharedWorkerDevToolsAgentHost* agent_host) {
+        return agent_host->Matches(worker_host);
+      });
   if (it == terminated_hosts_.end()) {
     *devtools_worker_token = base::UnguessableToken::Create();
     live_hosts_[worker_host] =

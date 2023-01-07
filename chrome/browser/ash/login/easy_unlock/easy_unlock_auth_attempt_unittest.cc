@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,15 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/command_line.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Fake user ids used in tests.
@@ -35,17 +36,17 @@ const unsigned char kWrappedSecret[] = {
 
 std::string GetSecret() {
   return std::string(reinterpret_cast<const char*>(kSecret),
-                     base::size(kSecret));
+                     std::size(kSecret));
 }
 
 std::string GetWrappedSecret() {
   return std::string(reinterpret_cast<const char*>(kWrappedSecret),
-                     base::size(kWrappedSecret));
+                     std::size(kWrappedSecret));
 }
 
 std::string GetSessionKey() {
   return std::string(reinterpret_cast<const char*>(kSessionKey),
-                     base::size(kSessionKey));
+                     std::size(kSessionKey));
 }
 
 // Fake lock handler to be used in these tests.
@@ -66,6 +67,9 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
       : state_(STATE_NONE),
         auth_type_(proximity_auth::mojom::AuthType::USER_CLICK),
         account_id_(account_id) {}
+
+  TestLockHandler(const TestLockHandler&) = delete;
+  TestLockHandler& operator=(const TestLockHandler&) = delete;
 
   ~TestLockHandler() override {}
 
@@ -90,7 +94,7 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
 
   void ShowUserPodCustomIcon(
       const AccountId& account_id,
-      const proximity_auth::ScreenlockBridge::UserPodCustomIconOptions& icon)
+      const proximity_auth::ScreenlockBridge::UserPodCustomIconInfo& icon_info)
       override {
     ADD_FAILURE() << "Should not be reached.";
   }
@@ -145,33 +149,47 @@ class TestLockHandler : public proximity_auth::ScreenlockBridge::LockHandler {
     }
   }
 
+  void SetSmartLockState(const AccountId& account_id,
+                         ash::SmartLockState state) override {
+    GTEST_FAIL();
+  }
+
+  void NotifySmartLockAuthResult(const AccountId& account_id,
+                                 bool successful) override {
+    GTEST_FAIL();
+  }
+
  private:
   AuthState state_;
   proximity_auth::mojom::AuthType auth_type_;
   const AccountId account_id_;
   std::string expected_secret_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLockHandler);
 };
 
 class EasyUnlockAuthAttemptUnlockTest : public testing::Test {
  public:
   EasyUnlockAuthAttemptUnlockTest() {}
+
+  EasyUnlockAuthAttemptUnlockTest(const EasyUnlockAuthAttemptUnlockTest&) =
+      delete;
+  EasyUnlockAuthAttemptUnlockTest& operator=(
+      const EasyUnlockAuthAttemptUnlockTest&) = delete;
+
   ~EasyUnlockAuthAttemptUnlockTest() override {}
 
   void SetUp() override {
-    auth_attempt_.reset(new EasyUnlockAuthAttempt(
-        test_account_id1_, EasyUnlockAuthAttempt::TYPE_UNLOCK));
+    auth_attempt_ = std::make_unique<EasyUnlockAuthAttempt>(
+        test_account_id1_, EasyUnlockAuthAttempt::TYPE_UNLOCK);
   }
 
   void TearDown() override {
-    proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
+    proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
     auth_attempt_.reset();
   }
 
  protected:
   void InitScreenLock() {
-    lock_handler_.reset(new TestLockHandler(test_account_id1_));
+    lock_handler_ = std::make_unique<TestLockHandler>(test_account_id1_);
     lock_handler_->set_state(TestLockHandler::STATE_ATTEMPTING_UNLOCK);
     proximity_auth::ScreenlockBridge::Get()->SetLockHandler(
         lock_handler_.get());
@@ -182,9 +200,6 @@ class EasyUnlockAuthAttemptUnlockTest : public testing::Test {
 
   const AccountId test_account_id1_ = AccountId::FromUserEmail(kTestUser1);
   const AccountId test_account_id2_ = AccountId::FromUserEmail(kTestUser2);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockAuthAttemptUnlockTest);
 };
 
 TEST_F(EasyUnlockAuthAttemptUnlockTest, StartWhenNotLocked) {
@@ -289,21 +304,27 @@ TEST_F(EasyUnlockAuthAttemptUnlockTest, FinalizeUnlockCalledForWrongUser) {
 class EasyUnlockAuthAttemptSigninTest : public testing::Test {
  public:
   EasyUnlockAuthAttemptSigninTest() {}
+
+  EasyUnlockAuthAttemptSigninTest(const EasyUnlockAuthAttemptSigninTest&) =
+      delete;
+  EasyUnlockAuthAttemptSigninTest& operator=(
+      const EasyUnlockAuthAttemptSigninTest&) = delete;
+
   ~EasyUnlockAuthAttemptSigninTest() override {}
 
   void SetUp() override {
-    auth_attempt_.reset(new EasyUnlockAuthAttempt(
-        test_account_id1_, EasyUnlockAuthAttempt::TYPE_SIGNIN));
+    auth_attempt_ = std::make_unique<EasyUnlockAuthAttempt>(
+        test_account_id1_, EasyUnlockAuthAttempt::TYPE_SIGNIN);
   }
 
   void TearDown() override {
-    proximity_auth::ScreenlockBridge::Get()->SetLockHandler(NULL);
+    proximity_auth::ScreenlockBridge::Get()->SetLockHandler(nullptr);
     auth_attempt_.reset();
   }
 
  protected:
   void InitScreenLock() {
-    lock_handler_.reset(new TestLockHandler(test_account_id1_));
+    lock_handler_ = std::make_unique<TestLockHandler>(test_account_id1_);
     lock_handler_->set_state(TestLockHandler::STATE_ATTEMPTING_SIGNIN);
     proximity_auth::ScreenlockBridge::Get()->SetLockHandler(
         lock_handler_.get());
@@ -314,9 +335,6 @@ class EasyUnlockAuthAttemptSigninTest : public testing::Test {
 
   const AccountId test_account_id1_ = AccountId::FromUserEmail(kTestUser1);
   const AccountId test_account_id2_ = AccountId::FromUserEmail(kTestUser2);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockAuthAttemptSigninTest);
 };
 
 TEST_F(EasyUnlockAuthAttemptSigninTest, StartWhenNotLocked) {
@@ -463,4 +481,4 @@ TEST_F(EasyUnlockAuthAttemptSigninTest, FinalizeSigninCalledForWrongUser) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

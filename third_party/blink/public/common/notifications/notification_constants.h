@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,7 @@ namespace blink {
 
 // Maximum allowed time delta into the future for show triggers. Allow a bit
 // more than a year to account for leap years and seconds.
-constexpr base::TimeDelta kMaxNotificationShowTriggerDelay =
-    base::TimeDelta::FromDays(367);
+constexpr base::TimeDelta kMaxNotificationShowTriggerDelay = base::Days(367);
 
 // TODO(johnme): The maximum number of actions is platform-specific and should
 // be indicated by the embedder.

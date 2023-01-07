@@ -1,1 +1,0 @@
-This text was set by a script inside a canvas element. Such scripts run even though the content is not displayed.

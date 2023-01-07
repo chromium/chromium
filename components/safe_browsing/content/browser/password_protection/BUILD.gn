@@ -1,0 +1,135 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/safe_browsing/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+source_set("password_protection") {
+  if (safe_browsing_mode == 1 || safe_browsing_mode == 2) {
+    sources = [
+      "password_protection_commit_deferring_condition.cc",
+      "password_protection_commit_deferring_condition.h",
+      "password_protection_request_content.cc",
+      "password_protection_request_content.h",
+      "password_protection_service.cc",
+      "password_protection_service.h",
+      "request_canceler_content.cc",
+      "request_canceler_content.h",
+    ]
+
+    public_deps = [ "//google_apis:google_apis" ]
+
+    deps = [
+      "//base:base",
+      "//components/content_settings/core/browser:browser",
+      "//components/history/core/browser:browser",
+      "//components/password_manager/core/browser:browser",
+      "//components/safe_browsing/content/browser/web_ui:web_ui",
+      "//components/safe_browsing/content/common:interfaces",
+      "//components/safe_browsing/content/common:visual_utils",
+      "//components/safe_browsing/core/browser:referrer_chain_provider",
+      "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
+      "//components/safe_browsing/core/browser/db:allowlist_checker_client",
+      "//components/safe_browsing/core/browser/db:database_manager",
+      "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+      "//components/safe_browsing/core/browser/password_protection",
+      "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
+      "//components/safe_browsing/core/common:common",
+      "//components/safe_browsing/core/common:interfaces",
+      "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//components/safe_browsing/core/common/proto:client_model_proto",
+      "//components/safe_browsing/core/common/proto:csd_proto",
+      "//components/sessions",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/url_formatter",
+      "//content/public/browser:browser",
+      "//net:net",
+      "//third_party/protobuf:protobuf_lite",
+      "//ui/gfx:color_utils",
+    ]
+  }
+  if (safe_browsing_mode == 1) {
+    deps += [ "//components/zoom" ]
+  }
+  if (is_android && safe_browsing_mode == 2) {
+    deps += [
+      "//components/zoom",
+      "//ui/android",
+    ]
+  }
+}
+
+source_set("password_protection_unittest") {
+  testonly = true
+  if (safe_browsing_mode > 0) {
+    sources = [
+      "password_protection_commit_deferring_condition_unittest.cc",
+      "password_protection_service_unittest.cc",
+    ]
+
+    deps = [
+      ":mock_password_protection",
+      ":password_protection",
+      "//base",
+      "//base/test:test_support",
+      "//components/content_settings/core/browser:browser",
+      "//components/history/core/browser:browser",
+      "//components/password_manager/core/browser:browser",
+      "//components/safe_browsing/content/common:interfaces",
+      "//components/safe_browsing/core/browser:verdict_cache_manager",
+      "//components/safe_browsing/core/browser/db:test_database_manager",
+      "//components/safe_browsing/core/browser/password_protection",
+      "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
+      "//components/safe_browsing/core/common:common",
+      "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//components/safe_browsing/core/common/proto:csd_proto",
+      "//components/signin/public/base",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync_preferences:test_support",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//services/network:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+  }
+}
+
+source_set("mock_password_protection") {
+  testonly = true
+  if (safe_browsing_mode > 0) {
+    sources = [
+      "mock_password_protection_service.cc",
+      "mock_password_protection_service.h",
+    ]
+    deps = [
+      ":password_protection",
+      "//base",
+      "//components/content_settings/core/browser:browser",
+      "//components/safe_browsing/core/browser/db:database_manager",
+      "//net:test_support",
+      "//services/network/public/cpp:cpp",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "password_protection_test_util.cc",
+    "password_protection_test_util.h",
+  ]
+  deps = [
+    ":mock_password_protection",
+    ":password_protection",
+    "//base",
+    "//content/public/browser",
+    "//testing/gmock",
+  ]
+}

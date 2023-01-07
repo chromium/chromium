@@ -1,12 +1,16 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_PLAYER_OBSERVER_H_
 #define CONTENT_BROWSER_MEDIA_SESSION_MEDIA_SESSION_PLAYER_OBSERVER_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace media {
+enum class MediaContentType;
+}
 
 namespace media_session {
 struct MediaPosition;
@@ -52,8 +56,11 @@ class MediaSessionPlayerObserver {
   virtual void OnSetAudioSinkId(int player_id,
                                 const std::string& raw_device_id) = 0;
 
+  // The given |player_id| has been requested to mute or unmute.
+  virtual void OnSetMute(int player_id, bool mute) = 0;
+
   // Returns the position for |player_id|.
-  virtual base::Optional<media_session::MediaPosition> GetPosition(
+  virtual absl::optional<media_session::MediaPosition> GetPosition(
       int player_id) const = 0;
 
   // Returns if picture-in-picture is available for |player_id|.
@@ -71,6 +78,8 @@ class MediaSessionPlayerObserver {
 
   // Returns true if the |player_id| supports audio output device switching.
   virtual bool SupportsAudioOutputDeviceSwitching(int player_id) const = 0;
+
+  virtual media::MediaContentType GetMediaContentType() const = 0;
 
   // Returns the RenderFrameHost this player observer belongs to. Returns
   // nullptr if unavailable.

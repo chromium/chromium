@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/drive/drive_api_requests.h"
 #include "google_apis/drive/drive_api_url_generator.h"
@@ -37,6 +37,9 @@ class FilesListRequestRunner {
       const std::string& fields,
       FileListCallback callback);
 
+  FilesListRequestRunner(const FilesListRequestRunner&) = delete;
+  FilesListRequestRunner& operator=(const FilesListRequestRunner&) = delete;
+
   ~FilesListRequestRunner();
 
   void SetRequestCompletedCallbackForTesting(base::OnceClosure callback);
@@ -57,17 +60,16 @@ class FilesListRequestRunner {
                    const std::string& fields,
                    FileListCallback callback,
                    CancelCallbackOnce* cancel_callback,
-                   DriveApiErrorCode error,
+                   ApiErrorCode error,
                    std::unique_ptr<FileList> entry);
 
-  RequestSender* request_sender_;                          // Not owned.
+  raw_ptr<RequestSender> request_sender_;                  // Not owned.
   const google_apis::DriveApiUrlGenerator url_generator_;  // Not owned.
   base::OnceClosure request_completed_callback_for_testing_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FilesListRequestRunner> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FilesListRequestRunner);
 };
 
 }  // namespace google_apis

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,14 @@ package org.chromium.chrome.browser.payments;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
@@ -26,7 +25,6 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityS
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.payments.Event;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.TimeoutException;
 
@@ -36,10 +34,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestContactDetailsTest implements MainActivityStartCallback {
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
-
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule("payment_request_contact_details_test.html", this);
@@ -79,6 +73,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Provide the existing valid payer name, phone number and email address to the merchant. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -91,6 +86,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Attempt to add invalid contact information and cancel the transaction. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddInvalidContactAndCancel() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -113,6 +109,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Add new payer name, phone number and email address and provide that to the merchant. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddContactAndPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -136,7 +133,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     @Test
     @MediumTest
     @Feature({"Payments"})
-    @FlakyTest(message = "https://crbug.com/1182528")
+    @DisabledTest(message = "https://crbug.com/1182528")
     public void testQuickAddContactAndCloseShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickInContactInfoAndWait(
@@ -167,6 +164,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Quickly pressing on [X] and then "add contact info" should not crash. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickCloseAndAddContactShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -194,6 +192,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Test that going into the editor and cancelling will leave the row checked. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditContactAndCancelEditorShouldKeepContactSelected() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -214,6 +213,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Test that going into the "add" flow and cancelling will leave existing row checked. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddContactAndCancelEditorShouldKeepContactSelected() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -234,6 +234,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Quickly pressing on "add contact info" and then "cancel" should not crash. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickAddContactAndCancelShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -265,6 +266,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
     /** Quickly pressing on "cancel" and then "add contact info" should not crash. */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testQuickCancelAndAddContactShouldNotCrash() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -295,6 +297,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSuggestionsDeduped() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -309,6 +312,7 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
      */
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         // Start and complete the Payment Request.
@@ -327,5 +331,32 @@ public class PaymentRequestContactDetailsTest implements MainActivityStartCallba
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
+    }
+
+    /**
+     * Test that requesting contact details in an incognito window does not crash. Previously the
+     * helper text ("Cards and addresses are from...") would try to fetch the signed-in user in
+     * incognito and hit a null-deference in doing so.
+     *
+     * See https://crbug.com/1311352
+     */
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
+    public void testPaymentRequestIncognitoMode() throws TimeoutException {
+        // Open the test page in an incognito window.
+        mPaymentRequestTestRule.newIncognitoTabFromMenu();
+        mPaymentRequestTestRule.loadUrl(mPaymentRequestTestRule.getTestServer().getURL(
+                "/components/test/data/payments/payment_request_contact_details_test.html"));
+
+        // Trigger the PaymentRequest, and expand the contact info section to show the text. This is
+        // where the code would previously crash.
+        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.clickInContactInfoAndWait(
+                R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
+
+        // Close the dialog.
+        mPaymentRequestTestRule.clickAndWait(
+                R.id.button_primary, mPaymentRequestTestRule.getDismissed());
     }
 }

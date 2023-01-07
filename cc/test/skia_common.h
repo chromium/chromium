@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,21 @@
 #define CC_TEST_SKIA_COMMON_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_piece.h"
 #include "cc/base/region.h"
 #include "cc/paint/discardable_image_map.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_animation_count.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_generator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -54,15 +59,15 @@ PaintImage CreateDiscardablePaintImage(
     bool allocate_encoded_memory = true,
     PaintImage::Id id = PaintImage::kInvalidId,
     SkColorType color_type = kN32_SkColorType,
-    base::Optional<YUVSubsampling> yuv_format = base::nullopt,
+    absl::optional<YUVSubsampling> yuv_format = absl::nullopt,
     SkYUVAPixmapInfo::DataType yuv_data_type =
         SkYUVAPixmapInfo::DataType::kUnorm8);
 
 DrawImage CreateDiscardableDrawImage(const gfx::Size& size,
                                      sk_sp<SkColorSpace> color_space,
                                      SkRect rect,
-                                     SkFilterQuality filter_quality,
-                                     const SkMatrix& matrix);
+                                     PaintFlags::FilterQuality filter_quality,
+                                     const SkM44& matrix);
 
 PaintImage CreateAnimatedImage(
     const gfx::Size& size,
@@ -75,6 +80,11 @@ PaintImage CreateBitmapImage(const gfx::Size& size,
 
 scoped_refptr<SkottieWrapper> CreateSkottie(const gfx::Size& size,
                                             int duration_secs);
+scoped_refptr<SkottieWrapper> CreateSkottieFromString(base::StringPiece json);
+std::string LoadSkottieFileFromTestData(
+    base::FilePath::StringPieceType animation_file_name);
+scoped_refptr<SkottieWrapper> CreateSkottieFromTestDataDir(
+    base::FilePath::StringPieceType animation_file_name);
 
 PaintImage CreateNonDiscardablePaintImage(const gfx::Size& size);
 

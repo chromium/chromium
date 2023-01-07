@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,11 +8,11 @@ import("//testing/test.gni")
 source_set("common") {
   sources = [
     "page_end_reason.h",
-    "page_load_metrics_constants.h",
     "page_load_metrics_util.cc",
     "page_load_metrics_util.h",
     "page_load_timing.cc",
     "page_load_timing.h",
+    "page_visit_final_status.h",
   ]
   deps = [
     ":page_load_metrics_mojom",
@@ -46,8 +46,10 @@ mojom("page_load_metrics_mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//third_party/blink/public/mojom:mobile_metrics",
-    "//third_party/blink/public/mojom:web_feature_mojo_bindings",
+    "//third_party/blink/public/mojom:mojom_platform",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_origin",
   ]
+  overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+  component_deps = [ "//third_party/blink/public/common" ]
 }

@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/base/resource/resource_bundle.h"
 
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,10 +16,11 @@ namespace ui {
 class CastResourceBundleTest : public testing::Test {
  public:
   CastResourceBundleTest() {}
-  ~CastResourceBundleTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastResourceBundleTest);
+  CastResourceBundleTest(const CastResourceBundleTest&) = delete;
+  CastResourceBundleTest& operator=(const CastResourceBundleTest&) = delete;
+
+  ~CastResourceBundleTest() override {}
 };
 
 TEST_F(CastResourceBundleTest, DelegateLoadLocalizedResourceBytes) {
@@ -36,7 +36,7 @@ TEST_F(CastResourceBundleTest, DelegateLoadLocalizedResourceBytes) {
   int resource_id = 5;
 
   EXPECT_CALL(delegate,
-              LoadDataResourceBytes(resource_id, ui::SCALE_FACTOR_NONE))
+              LoadDataResourceBytes(resource_id, ui::kScaleFactorNone))
       .Times(1)
       .WillOnce(Return(static_memory.get()));
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "chrome/browser/win/conflicts/module_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FilePath;
@@ -41,8 +41,9 @@ enum class ReadCacheResult {
   kMaxValue = kFailInvalidMD5
 };
 
-constexpr base::Feature kInspectionResultsCache{
-    "InspectionResultsCache", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kInspectionResultsCache,
+             "InspectionResultsCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The InspectionResultsCache maps ModuleInfoKey to a ModuleInspectionResult.
 // The uint32_t is a time stamp that keep tracks of when the inspection result
@@ -59,9 +60,9 @@ void AddInspectionResultToCache(
 
 // Helper function to retrieve a ModuleInspectionResult from an existing cache.
 // Also updates the time stamp of the element found to base::Time::Now().
-// Returns base::nullopt if the cache does not contains an entry for
+// Returns absl::nullopt if the cache does not contains an entry for
 // |module_key|.
-base::Optional<ModuleInspectionResult> GetInspectionResultFromCache(
+absl::optional<ModuleInspectionResult> GetInspectionResultFromCache(
     const ModuleInfoKey& module_key,
     InspectionResultsCache* inspection_results_cache);
 

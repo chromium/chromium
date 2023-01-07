@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SESSIONS_IOS_IOS_WEBSTATE_LIVE_TAB_H_
 #define COMPONENTS_SESSIONS_IOS_IOS_WEBSTATE_LIVE_TAB_H_
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "components/sessions/ios/ios_live_tab.h"
 #include "components/sessions/ios/ios_serialized_navigation_builder.h"
@@ -22,6 +21,9 @@ namespace sessions {
 class SESSIONS_EXPORT IOSWebStateLiveTab : public IOSLiveTab,
                                            public base::SupportsUserData::Data {
  public:
+  IOSWebStateLiveTab(const IOSWebStateLiveTab&) = delete;
+  IOSWebStateLiveTab& operator=(const IOSWebStateLiveTab&) = delete;
+
   ~IOSWebStateLiveTab() override;
 
   // Returns the IOSLiveTab associated with |web_state|, creating it if
@@ -49,8 +51,6 @@ class SESSIONS_EXPORT IOSWebStateLiveTab : public IOSLiveTab,
   }
 
   web::WebState* web_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSWebStateLiveTab);
 };
 
 }  // namespace sessions

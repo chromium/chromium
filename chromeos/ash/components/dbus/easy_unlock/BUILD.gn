@@ -1,0 +1,33 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
+
+component("easy_unlock") {
+  output_name = "ash_easy_unlock"
+  defines = [ "IS_ASH_DBUS_EASY_UNLOCK_IMPL" ]
+  deps = [
+    "//base",
+    "//chromeos/dbus/common",
+    "//dbus",
+  ]
+  sources = [
+    "easy_unlock_client.cc",
+    "easy_unlock_client.h",
+    "fake_easy_unlock_client.cc",
+    "fake_easy_unlock_client.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":easy_unlock",
+    "//base",
+    "//testing/gtest",
+  ]
+  sources = [ "fake_easy_unlock_client_unittest.cc" ]
+}

@@ -1,13 +1,15 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# All paths in this file should be absolute so it can be imported into
-# different contexts.
+# The database file produced by
+# "//third_party/blink/renderer/bindings:web_idl_database".
+web_idl_database_filepath =
+    get_path_info(".", "gen_dir") + "/web_idl_database.pickle"
 
-import("//third_party/blink/renderer/bindings/modules/v8/v8.gni")
-
-bindings_core_v8_files =
+# Source files to be part of
+# "//third_party/blink/renderer/core:core".
+blink_core_sources_bindings =
     get_path_info([
                     "core/v8/active_script_wrappable.cc",
                     "core/v8/active_script_wrappable.h",
@@ -19,6 +21,8 @@ bindings_core_v8_files =
                     "core/v8/callback_invoke_helper.cc",
                     "core/v8/callback_invoke_helper.h",
                     "core/v8/callback_promise_adapter.h",
+                    "core/v8/capture_source_location.cc",
+                    "core/v8/capture_source_location.h",
                     "core/v8/custom/v8_custom_xpath_ns_resolver.cc",
                     "core/v8/custom/v8_custom_xpath_ns_resolver.h",
                     "core/v8/custom/v8_dev_tools_host_custom.cc",
@@ -34,8 +38,6 @@ bindings_core_v8_files =
                     "core/v8/dictionary_helper_for_core.cc",
                     "core/v8/generated_code_helper.cc",
                     "core/v8/generated_code_helper.h",
-                    "core/v8/idl_dictionary_base.cc",
-                    "core/v8/idl_dictionary_base.h",
                     "core/v8/idl_types.h",
                     "core/v8/idl_types_base.h",
                     "core/v8/isolated_world_csp.cc",
@@ -57,8 +59,13 @@ bindings_core_v8_files =
                     "core/v8/module_request.cc",
                     "core/v8/module_request.h",
                     "core/v8/native_value_traits.h",
+                    "core/v8/native_value_traits_buffer_sources.cc",
                     "core/v8/native_value_traits_impl.cc",
                     "core/v8/native_value_traits_impl.h",
+                    "core/v8/observable_array.h",
+                    "core/v8/observable_array_exotic_object_handler.h",
+                    "core/v8/observable_array_exotic_object_impl.cc",
+                    "core/v8/observable_array_exotic_object_impl.h",
                     "core/v8/profiler_trace_builder.cc",
                     "core/v8/profiler_trace_builder.h",
                     "core/v8/record_replay_interface.cc",
@@ -73,6 +80,9 @@ bindings_core_v8_files =
                     "core/v8/sanitize_script_errors.h",
                     "core/v8/scheduled_action.cc",
                     "core/v8/scheduled_action.h",
+                    "core/v8/script_cache_consumer.cc",
+                    "core/v8/script_cache_consumer.h",
+                    "core/v8/script_cache_consumer_client.h",
                     "core/v8/script_controller.cc",
                     "core/v8/script_controller.h",
                     "core/v8/script_custom_element_definition.cc",
@@ -93,8 +103,6 @@ bindings_core_v8_files =
                     "core/v8/script_promise_resolver.h",
                     "core/v8/script_regexp.cc",
                     "core/v8/script_regexp.h",
-                    "core/v8/script_source_code.cc",
-                    "core/v8/script_source_code.h",
                     "core/v8/script_source_location_type.h",
                     "core/v8/script_streamer.cc",
                     "core/v8/script_streamer.h",
@@ -117,20 +125,17 @@ bindings_core_v8_files =
                     "core/v8/serialization/v8_script_value_deserializer.h",
                     "core/v8/serialization/v8_script_value_serializer.cc",
                     "core/v8/serialization/v8_script_value_serializer.h",
-                    "core/v8/source_location.cc",
-                    "core/v8/source_location.h",
                     "core/v8/to_v8_for_core.h",
                     "core/v8/to_v8_traits.h",
                     "core/v8/use_counter_callback.cc",
                     "core/v8/use_counter_callback.h",
                     "core/v8/v8_binding_for_core.cc",
                     "core/v8/v8_binding_for_core.h",
+                    "core/v8/v8_ctype_traits.h",
                     "core/v8/v8_code_cache.cc",
                     "core/v8/v8_code_cache.h",
                     "core/v8/v8_context_snapshot.cc",
                     "core/v8/v8_context_snapshot.h",
-                    "core/v8/v8_dom_configuration.cc",
-                    "core/v8/v8_dom_configuration.h",
                     "core/v8/v8_embedder_graph_builder.cc",
                     "core/v8/v8_embedder_graph_builder.h",
                     "core/v8/v8_event_listener_info.h",
@@ -174,14 +179,31 @@ bindings_core_v8_files =
                   ],
                   "abspath")
 
-bindings_dir = get_path_info(".", "abspath")
-blink_output_dir = "$root_gen_dir/third_party/blink/renderer"
-bindings_output_dir = "$root_gen_dir/third_party/blink/renderer/bindings"
-bindings_core_v8_output_dir = "$bindings_output_dir/core/v8"
-web_idl_database_filepath = "${bindings_output_dir}/web_idl_database.pickle"
+# Source files to be part of
+# "//third_party/blink/renderer/modules:modules".
+blink_modules_sources_bindings = get_path_info(
+        [
+          "modules/v8/module_bindings_initializer.cc",
+          "modules/v8/module_bindings_initializer.h",
+          "modules/v8/serialization/serialized_script_value_for_modules_factory.cc",
+          "modules/v8/serialization/serialized_script_value_for_modules_factory.h",
+          "modules/v8/serialization/v8_script_value_deserializer_for_modules.cc",
+          "modules/v8/serialization/v8_script_value_deserializer_for_modules.h",
+          "modules/v8/serialization/v8_script_value_serializer_for_modules.cc",
+          "modules/v8/serialization/v8_script_value_serializer_for_modules.h",
+          "modules/v8/serialization/serialized_track_params.cc",
+          "modules/v8/serialization/serialized_track_params.h",
+          "modules/v8/to_v8_for_modules.h",
+          "modules/v8/v8_binding_for_modules.cc",
+          "modules/v8/v8_binding_for_modules.h",
+          "modules/v8/v8_context_snapshot_impl.cc",
+          "modules/v8/v8_context_snapshot_impl.h",
+          "modules/v8/webgl_any.cc",
+          "modules/v8/webgl_any.h",
+        ],
+        "abspath")
 
-bindings_unittest_files =
-    get_path_info(
+bindings_unittest_files = get_path_info(
         [
           "core/v8/activity_logger_test.cc",
           "core/v8/binding_security_test.cc",
@@ -193,6 +215,7 @@ bindings_unittest_files =
           "core/v8/native_value_traits_impl_test.cc",
           "core/v8/native_value_traits_test.cc",
           "core/v8/no_alloc_direct_call_host_test.cc",
+          "core/v8/profiler_trace_builder_test.cc",
           "core/v8/referrer_script_info_test.cc",
           "core/v8/script_promise_property_test.cc",
           "core/v8/script_promise_resolver_test.cc",
@@ -211,10 +234,10 @@ bindings_unittest_files =
           "core/v8/serialization/serialized_script_value_test.cc",
           "core/v8/serialization/serialized_script_value_threaded_test.cc",
           "core/v8/serialization/v8_script_value_serializer_test.cc",
-          "core/v8/v8_extras_test_utils.cc",
-          "core/v8/v8_extras_test_utils.h",
           "core/v8/script_promise_tester.cc",
           "core/v8/script_promise_tester.h",
+          "modules/v8/serialization/v8_script_value_serializer_for_modules_test.cc",
+          "modules/v8/v8_binding_for_modules_test.cc",
+          "modules/v8/v8_element_test.cc",
         ],
         "abspath")
-bindings_unittest_files += bindings_modules_v8_unittest_files

@@ -1,24 +1,25 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/test/testing_application_context.h"
+#import "ios/chrome/test/testing_application_context.h"
 
-#include "base/check_op.h"
-#include "base/feature_list.h"
-#include "base/memory/ptr_util.h"
-#include "base/notreached.h"
-#include "base/time/default_clock.h"
-#include "base/time/default_tick_clock.h"
-#include "components/network_time/network_time_tracker.h"
-#include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
-#include "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
-#import "ios/chrome/browser/safe_browsing/fake_safe_browsing_service.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "net/url_request/url_request_context_getter.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_network_connection_tracker.h"
-#include "services/network/test/test_url_loader_factory.h"
+#import "base/check_op.h"
+#import "base/feature_list.h"
+#import "base/memory/ptr_util.h"
+#import "base/notreached.h"
+#import "base/time/default_clock.h"
+#import "base/time/default_tick_clock.h"
+#import "components/network_time/network_time_tracker.h"
+#import "ios/chrome/browser/policy/browser_policy_connector_ios.h"
+#import "ios/chrome/browser/policy/configuration_policy_handler_list_factory.h"
+#import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_service.h"
+#import "ios/public/provider/chrome/browser/push_notification/push_notification_api.h"
+#import "ios/public/provider/chrome/browser/signin/signin_sso_api.h"
+#import "net/url_request/url_request_context_getter.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/test/test_network_connection_tracker.h"
+#import "services/network/test/test_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -211,8 +212,38 @@ TestingApplicationContext::GetBrowserPolicyConnector() {
   return browser_policy_connector_.get();
 }
 
-BreadcrumbPersistentStorageManager*
+PromosManager* TestingApplicationContext::GetPromosManager() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return nullptr;
+}
+
+breadcrumbs::BreadcrumbPersistentStorageManager*
 TestingApplicationContext::GetBreadcrumbPersistentStorageManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
   return nullptr;
+}
+
+id<SingleSignOnService> TestingApplicationContext::GetSSOService() {
+  if (!single_sign_on_service_) {
+    single_sign_on_service_ = ios::provider::CreateSSOService();
+    DCHECK(single_sign_on_service_);
+  }
+  return single_sign_on_service_;
+}
+
+segmentation_platform::OTRWebStateObserver*
+TestingApplicationContext::GetSegmentationOTRWebStateObserver() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return nullptr;
+}
+
+PushNotificationService*
+TestingApplicationContext::GetPushNotificationService() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  if (!push_notification_service_) {
+    push_notification_service_ = ios::provider::CreatePushNotificationService();
+    DCHECK(push_notification_service_);
+  }
+
+  return push_notification_service_.get();
 }

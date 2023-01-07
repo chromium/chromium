@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -1683,6 +1683,18 @@
 
 #if !defined(__NR_mount_setattr)
 #define __NR_mount_setattr (__NR_Linux + 442)
+#endif
+
+#if !defined(__NR_landlock_create_ruleset)
+#define __NR_landlock_create_ruleset (__NR_Linux + 444)
+#endif
+
+#if !defined(__NR_landlock_add_rule)
+#define __NR_landlock_add_rule (__NR_Linux + 445)
+#endif
+
+#if !defined(__NR_landlock_restrict_self)
+#define __NR_landlock_restrict_self (__NR_Linux + 446)
 #endif
 
 #endif  // SANDBOX_LINUX_SYSTEM_HEADERS_MIPS_LINUX_SYSCALLS_H_

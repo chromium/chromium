@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 
-namespace chromeos {
+namespace ash {
+
 FORWARD_DECLARE_TEST(ErrorScreensHistogramHelperTest, TestShowHideTime);
 FORWARD_DECLARE_TEST(ErrorScreensHistogramHelperTest, TestShowHideShowHideTime);
 FORWARD_DECLARE_TEST(ErrorScreensHistogramHelperTest, TestShowShowHideTime);
@@ -41,6 +42,12 @@ class ErrorScreensHistogramHelper {
   base::TimeDelta time_on_error_screens_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::ErrorScreensHistogramHelper;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_ERROR_SCREENS_HISTOGRAM_HELPER_H_

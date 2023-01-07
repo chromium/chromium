@@ -1,25 +1,39 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/safe_browsing/core/common/utils.h"
 
+#include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "crypto/sha2.h"
 #include "net/base/ip_address.h"
 #include "net/base/url_util.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/resource_request.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #endif
 
 namespace safe_browsing {
+
+namespace {
+
+// The bearer token prefix in authorization header. Used when various Safe
+// Browsing requests are GAIA-keyed by attaching oauth2 tokens as bearer tokens.
+const char kAuthHeaderBearer[] = "Bearer ";
+
+}  // namespace
 
 std::string ShortURLForReporting(const GURL& url) {
   std::string spec(url.spec());
@@ -36,18 +50,18 @@ std::string ShortURLForReporting(const GURL& url) {
 
 ChromeUserPopulation::ProfileManagementStatus GetProfileManagementStatus(
     const policy::BrowserPolicyConnector* bpc) {
-#if defined(OS_WIN)
-  if (base::IsMachineExternallyManaged())
+#if BUILDFLAG(IS_WIN)
+  if (base::IsManagedDevice())
     return ChromeUserPopulation::ENTERPRISE_MANAGED;
   else
     return ChromeUserPopulation::NOT_MANAGED;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!bpc || !bpc->IsEnterpriseManaged())
+#elif BUILDFLAG(IS_CHROMEOS)
+  if (!bpc || !bpc->IsDeviceEnterpriseManaged())
     return ChromeUserPopulation::NOT_MANAGED;
   return ChromeUserPopulation::ENTERPRISE_MANAGED;
 #else
   return ChromeUserPopulation::UNAVAILABLE;
-#endif  // #if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 }
 
 void SetDelayInPref(PrefService* prefs,
@@ -69,7 +83,7 @@ base::TimeDelta GetDelayFromPref(PrefService* prefs, const char* pref_name) {
     return zero_delay;
 
   base::Time next_event = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSeconds(seconds_since_epoch));
+      base::Seconds(seconds_since_epoch));
   base::Time now = base::Time::Now();
   if (now > next_event)
     return zero_delay;
@@ -78,6 +92,7 @@ base::TimeDelta GetDelayFromPref(PrefService* prefs, const char* pref_name) {
 }
 
 bool CanGetReputationOfUrl(const GURL& url) {
+  // net::IsLocalhost(url) includes: "//localhost/", "//127.0.0.1/"
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS() || net::IsLocalhost(url)) {
     return false;
   }
@@ -85,11 +100,6 @@ bool CanGetReputationOfUrl(const GURL& url) {
   // A valid hostname should be longer than 3 characters and have at least 1
   // dot.
   if (hostname.size() < 4 || base::STLCount(hostname, '.') < 1) {
-    return false;
-  }
-
-  if (net::IsLocalhost(url)) {
-    // Includes: "//localhost/", "//127.0.0.1/"
     return false;
   }
 
@@ -103,52 +113,25 @@ bool CanGetReputationOfUrl(const GURL& url) {
   return true;
 }
 
-ResourceType GetResourceTypeFromRequestDestination(
-    network::mojom::RequestDestination request_destination) {
-  // This doesn't fully convert network::mojom::RequestDestination to
-  // ResourceType since they are not 1:1. It returns kSubResource for kPrefetch,
-  // kFavicon, kXhr, kPing, kNavigationPreloadMainFrame, and
-  // kNavigationPreloadSubFrame.
-  switch (request_destination) {
-    case network::mojom::RequestDestination::kDocument:
-      return ResourceType::kMainFrame;
-    case network::mojom::RequestDestination::kIframe:
-    case network::mojom::RequestDestination::kFrame:
-      return ResourceType::kSubFrame;
-    case network::mojom::RequestDestination::kStyle:
-    case network::mojom::RequestDestination::kXslt:
-      return ResourceType::kStylesheet;
-    case network::mojom::RequestDestination::kScript:
-      return ResourceType::kScript;
-    case network::mojom::RequestDestination::kImage:
-      return ResourceType::kImage;
-    case network::mojom::RequestDestination::kFont:
-      return ResourceType::kFontResource;
-    case network::mojom::RequestDestination::kObject:
-      return ResourceType::kObject;
-    case network::mojom::RequestDestination::kEmbed:
-      return ResourceType::kPluginResource;
-    case network::mojom::RequestDestination::kAudio:
-    case network::mojom::RequestDestination::kTrack:
-    case network::mojom::RequestDestination::kVideo:
-      return ResourceType::kMedia;
-    case network::mojom::RequestDestination::kWorker:
-      return ResourceType::kWorker;
-    case network::mojom::RequestDestination::kSharedWorker:
-      return ResourceType::kSharedWorker;
-    case network::mojom::RequestDestination::kServiceWorker:
-      return ResourceType::kServiceWorker;
-    case network::mojom::RequestDestination::kReport:
-      return ResourceType::kCspReport;
-    case network::mojom::RequestDestination::kAudioWorklet:
-    case network::mojom::RequestDestination::kManifest:
-    case network::mojom::RequestDestination::kPaintWorklet:
-    case network::mojom::RequestDestination::kWebBundle:
-    case network::mojom::RequestDestination::kEmpty:
-      return ResourceType::kSubResource;
+void SetAccessTokenAndClearCookieInResourceRequest(
+    network::ResourceRequest* resource_request,
+    const std::string& access_token) {
+  resource_request->headers.SetHeader(
+      net::HttpRequestHeaders::kAuthorization,
+      base::StrCat({kAuthHeaderBearer, access_token}));
+  if (base::FeatureList::IsEnabled(kSafeBrowsingRemoveCookiesInAuthRequests)) {
+    resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   }
-  NOTREACHED();
-  return ResourceType::kSubResource;
+}
+
+void RecordHttpResponseOrErrorCode(const char* metric_name,
+                                   int net_error,
+                                   int response_code) {
+  base::UmaHistogramSparse(
+      metric_name,
+      net_error == net::OK || net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE
+          ? response_code
+          : net_error);
 }
 
 }  // namespace safe_browsing

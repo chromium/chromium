@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,34 +13,31 @@
 #include "build/chromeos_buildflags.h"
 #include "sandbox/policy/export.h"
 
-namespace sandbox {
-namespace policy {
-namespace features {
+namespace sandbox::policy::features {
 
-#if !defined(OS_MAC) && !defined(OS_FUCHSIA)
-SANDBOX_POLICY_EXPORT extern const base::Feature kNetworkServiceSandbox;
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kNetworkServiceSandbox);
 #endif
 
-#if defined(OS_WIN)
-SANDBOX_POLICY_EXPORT extern const base::Feature kWinSboxDisableKtmComponent;
-SANDBOX_POLICY_EXPORT extern const base::Feature kWinSboxDisableExtensionPoints;
-SANDBOX_POLICY_EXPORT extern const base::Feature kGpuAppContainer;
-SANDBOX_POLICY_EXPORT extern const base::Feature kGpuLPAC;
-SANDBOX_POLICY_EXPORT extern const base::Feature kNetworkServiceSandboxLPAC;
-#endif  // defined(OS_WIN)
-
-#if !defined(OS_ANDROID)
-SANDBOX_POLICY_EXPORT extern const base::Feature kXRSandbox;
-#endif  // !defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN)
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kWinSboxDisableKtmComponent);
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kWinSboxDisableExtensionPoints);
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kGpuAppContainer);
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kGpuLPAC);
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kRendererAppContainer);
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kSharedSandboxPolicies);
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-SANDBOX_POLICY_EXPORT extern const base::Feature kSpectreVariant2Mitigation;
-SANDBOX_POLICY_EXPORT extern const base::Feature
-    kForceSpectreVariant2Mitigation;
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kSpectreVariant2Mitigation);
+SANDBOX_POLICY_EXPORT BASE_DECLARE_FEATURE(kForceSpectreVariant2Mitigation);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-}  // namespace features
-}  // namespace policy
-}  // namespace sandbox
+// Returns whether the network sandbox is enabled for the current platform
+// configuration. This might be overridden by the content embedder so prefer
+// calling ContentBrowserClient::ShouldSandboxNetworkService().
+SANDBOX_POLICY_EXPORT bool IsNetworkSandboxEnabled();
+
+}  // namespace sandbox::policy::features
 
 #endif  // SANDBOX_POLICY_FEATURES_H_

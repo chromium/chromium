@@ -7,6 +7,7 @@
     color: var(--theme-text-color);
     font-weight: normal;
     padding-top: 84px;
+    position: relative;
     text-align: center;
   }
 
@@ -14,6 +15,19 @@
     --edit-avatar-border: 3px;
     --edit-avatar-size : 36px;
   }
+
+  #headerContainer {
+      background-color: var(--theme-frame-color);
+  }
+
+  .banner {
+      background-size: 100% 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      z-index: 0;
+    }
 
   #customizeAvatarEllipse {
     background-color: var(--md-background-color);
@@ -34,12 +48,15 @@
     background-color: var(--md-background-color);
     border-radius: 50%;
     bottom: var(--edit-avatar-border);
-    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
     box-sizing: border-box;
     margin: auto;
     position: absolute;
     right: var(--edit-avatar-border);
     z-index: 3;
+  }
+
+  #customizeAvatarIcon:not(:focus-visible:focus) {
+    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
   }
 
   :host-context([dir='rtl']) #customizeAvatarEllipse {
@@ -86,7 +103,7 @@
   }
 
   #colorPickerContainer {
-    border: 1px solid var(--google-grey-refresh-300);
+    border: 1px solid var(--google-grey-300);
     border-radius: 4px;
     display: flex;
     flex-direction: column;
@@ -156,17 +173,23 @@
     width : 32px;
   }
 
+  @media (forced-colors: none) {
+    #backButton {
+      --cr-icon-button-fill-color: var(--theme-text-color);
+    }
+  }
+
   @media (prefers-color-scheme: dark) {
     #nameInput {
       --cr-input-placeholder-color: rgba(var(--google-grey-200-rgb), .5);
     }
 
     #customizeAvatarIcon {
-      border: 1px solid var(--google-grey-refresh-500);
+      border: 1px solid var(--google-grey-500);
     }
 
     #colorPickerContainer {
-      border-color: var(--google-grey-refresh-700);
+      border-color: var(--google-grey-700);
     }
   }
 </style>
@@ -177,14 +200,14 @@
             --theme-shape-color:[[profileThemeInfo.themeShapeColor]]">
   <iron-icon class="banner" icon="profiles:customize-banner"></iron-icon>
   <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
-      on-click="onClickBack_" aria-label$="[[getBackButtonAriaLabel_()]]">
+      on-click="onBackClick_" aria-label$="[[getBackButtonAriaLabel_()]]">
   </cr-icon-button>
   <h2 id="title">$i18n{localProfileCreationTitle}</h2>
   <div id="avatarContainer">
     <img class="avatar" alt="" src$="[[selectedAvatar_.url]]">
     <div id="customizeAvatarEllipse"></div>
     <cr-icon-button id="customizeAvatarIcon"
-        iron-icon="profiles:create" on-click="onCustomizeAvatarClick_"
+        iron-icon="cr:create" on-click="onCustomizeAvatarClick_"
         aria-label="$i18n{localProfileCreationCustomizeAvatarLabel}">
     </cr-icon-button>
   </div>
@@ -215,7 +238,7 @@
   </cr-checkbox>
 
   <cr-button id="save" class="action-button" on-click="onSaveClick_"
-      disabled="[[isSaveDisabled_(createInProgress_, profileName_)]]">
+      disabled="[[isSaveDisabled_(profileCreationInProgress, profileName_)]]">
     $i18n{createProfileConfirm}
   </cr-button>
 </div>

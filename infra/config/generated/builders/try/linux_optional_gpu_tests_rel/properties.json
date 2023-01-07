@@ -1,0 +1,63 @@
+{
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "try",
+              "builder": "linux_optional_gpu_tests_rel",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-gpu-fyi-archive",
+              "builder_group": "tryserver.chromium.linux",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "angle_internal"
+                ],
+                "config": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "try",
+          "builder": "linux_optional_gpu_tests_rel",
+          "project": "chromium"
+        }
+      ],
+      "retry_failed_shards": false
+    }
+  },
+  "$build/goma": {
+    "enable_ats": true,
+    "rpc_extra_params": "?prod",
+    "server_host": "goma.chromium.org",
+    "use_luci_auth": true
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-untrusted",
+    "metrics_project": "chromium-reclient-metrics"
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "tryserver.chromium.linux",
+  "recipe": "chromium_trybot"
+}

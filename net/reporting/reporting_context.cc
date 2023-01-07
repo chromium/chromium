@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,9 +71,25 @@ void ReportingContext::NotifyCachedReportsUpdated() {
     observer.OnReportsUpdated();
 }
 
+void ReportingContext::NotifyReportAdded(const ReportingReport* report) {
+  for (auto& observer : cache_observers_)
+    observer.OnReportAdded(report);
+}
+
+void ReportingContext::NotifyReportUpdated(const ReportingReport* report) {
+  for (auto& observer : cache_observers_)
+    observer.OnReportUpdated(report);
+}
+
 void ReportingContext::NotifyCachedClientsUpdated() {
   for (auto& observer : cache_observers_)
     observer.OnClientsUpdated();
+}
+
+void ReportingContext::NotifyEndpointsUpdatedForOrigin(
+    const std::vector<ReportingEndpoint>& endpoints) {
+  for (auto& observer : cache_observers_)
+    observer.OnEndpointsUpdatedForOrigin(endpoints);
 }
 
 bool ReportingContext::IsReportDataPersisted() const {

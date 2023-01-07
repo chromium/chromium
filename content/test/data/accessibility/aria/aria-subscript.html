@@ -1,0 +1,23 @@
+<!--
+@AURALINUX-ALLOW:text-position*
+@BLINK-ALLOW:textPosition=*
+@WIN-ALLOW:font*
+@WIN-DENY:font-size*
+@WIN-DENY:font-family*
+@WIN-ALLOW:ia2_hypertext=*
+@WIN-ALLOW:offset:*
+@WIN-ALLOW:text*
+@WIN-DENY:text-align*
+@WIN-DENY:text-indent*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+
+<p>This text contains <span role="subscript">subscript</span> text.</p>
+<p>H<span role="subscript">
+       <del><span tabindex="0"><span title="oops">3</span></span></del>
+       <ins><a href="#"><span title="better">2</span></a></ins>
+    </span>O</p>
+</body>
+</html>

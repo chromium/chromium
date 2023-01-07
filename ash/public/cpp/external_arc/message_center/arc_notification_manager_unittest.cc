@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,15 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/session/connection_holder.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_notifications_instance.h"
 #include "ash/public/cpp/arc_app_id_provider.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_manager.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_delegate.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "components/arc/session/connection_holder.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_notifications_instance.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,25 +27,36 @@ namespace ash {
 
 namespace {
 
-const char kDummyNotificationKey[] = "DUMMY_NOTIFICATION_KEY";
+constexpr char kDummyNotificationKey[] = "DUMMY_NOTIFICATION_KEY";
+constexpr char kHistogramNameActionEnabled[] =
+    "Arc.Notifications.ActionEnabled";
+constexpr char kHistogramNameExpandState[] = "Arc.Notifications.ExpandState";
+constexpr char kHistogramNameStyle[] = "Arc.Notifications.Style";
+constexpr char kHistogramNameInlineReplyEnabled[] =
+    "Arc.Notifications.InlineReplyEnabled";
 
 class TestArcAppIdProvider : public ArcAppIdProvider {
  public:
   TestArcAppIdProvider() = default;
+
+  TestArcAppIdProvider(const TestArcAppIdProvider&) = delete;
+  TestArcAppIdProvider& operator=(const TestArcAppIdProvider&) = delete;
+
   ~TestArcAppIdProvider() override = default;
 
   // ArcAppIdProvider:
   std::string GetAppIdByPackageName(const std::string& package_name) override {
     return {};
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestArcAppIdProvider);
 };
 
 class MockMessageCenter : public message_center::FakeMessageCenter {
  public:
   MockMessageCenter() = default;
+
+  MockMessageCenter(const MockMessageCenter&) = delete;
+  MockMessageCenter& operator=(const MockMessageCenter&) = delete;
+
   ~MockMessageCenter() override = default;
 
   void AddNotification(
@@ -83,23 +95,24 @@ class MockMessageCenter : public message_center::FakeMessageCenter {
   std::map<std::string, std::unique_ptr<message_center::Notification>>
       owned_notifications_;
   bool in_quiet_mode_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMessageCenter);
 };
 
 class FakeArcNotificationManagerDelegate
     : public ArcNotificationManagerDelegate {
  public:
   FakeArcNotificationManagerDelegate() = default;
+
+  FakeArcNotificationManagerDelegate(
+      const FakeArcNotificationManagerDelegate&) = delete;
+  FakeArcNotificationManagerDelegate& operator=(
+      const FakeArcNotificationManagerDelegate&) = delete;
+
   ~FakeArcNotificationManagerDelegate() override = default;
 
   // ArcNotificationManagerDelegate:
   bool IsPublicSessionOrKiosk() const override { return false; }
   void ShowMessageCenter() override {}
   void HideMessageCenter() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeArcNotificationManagerDelegate);
 };
 
 }  // anonymous namespace
@@ -107,6 +120,11 @@ class FakeArcNotificationManagerDelegate
 class ArcNotificationManagerTest : public testing::Test {
  public:
   ArcNotificationManagerTest() = default;
+
+  ArcNotificationManagerTest(const ArcNotificationManagerTest&) = delete;
+  ArcNotificationManagerTest& operator=(const ArcNotificationManagerTest&) =
+      delete;
+
   ~ArcNotificationManagerTest() override = default;
 
  protected:
@@ -174,8 +192,6 @@ class ArcNotificationManagerTest : public testing::Test {
   std::unique_ptr<mojo::Receiver<arc::mojom::NotificationsInstance>> receiver_;
   std::unique_ptr<ArcNotificationManager> arc_notification_manager_;
   std::unique_ptr<MockMessageCenter> message_center_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationManagerTest);
 };
 
 TEST_F(ArcNotificationManagerTest, NotificationCreatedAndRemoved) {
@@ -313,6 +329,29 @@ TEST_F(ArcNotificationManagerTest, DoNotDisturbSyncInitialEnabledState) {
       arc_notifications_instance()->latest_do_not_disturb_status().is_null());
   EXPECT_TRUE(
       arc_notifications_instance()->latest_do_not_disturb_status()->enabled);
+}
+
+TEST_F(ArcNotificationManagerTest,
+       UmaMeticsPublishedOnlyWhenNotificationCreated) {
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(kHistogramNameActionEnabled, 0);
+  histogram_tester.ExpectTotalCount(kHistogramNameExpandState, 0);
+  histogram_tester.ExpectTotalCount(kHistogramNameStyle, 0);
+  histogram_tester.ExpectTotalCount(kHistogramNameInlineReplyEnabled, 0);
+
+  // Create notification
+  std::string key = CreateNotification();
+  histogram_tester.ExpectTotalCount(kHistogramNameActionEnabled, 1);
+  histogram_tester.ExpectTotalCount(kHistogramNameExpandState, 1);
+  histogram_tester.ExpectTotalCount(kHistogramNameStyle, 1);
+  histogram_tester.ExpectTotalCount(kHistogramNameInlineReplyEnabled, 1);
+
+  // Update notification
+  CreateNotificationWithKey(key);
+  histogram_tester.ExpectTotalCount(kHistogramNameActionEnabled, 1);
+  histogram_tester.ExpectTotalCount(kHistogramNameExpandState, 1);
+  histogram_tester.ExpectTotalCount(kHistogramNameStyle, 1);
+  histogram_tester.ExpectTotalCount(kHistogramNameInlineReplyEnabled, 1);
 }
 
 }  // namespace ash

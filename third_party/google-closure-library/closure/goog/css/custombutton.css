@@ -9,6 +9,10 @@
  * Styling for custom buttons rendered by goog.ui.CustomButtonRenderer.
  */
 
+@provide 'goog.css.custombutton';
+
+@require './common';
+
 .goog-custom-button {
   margin: 2px;
   border: 0;

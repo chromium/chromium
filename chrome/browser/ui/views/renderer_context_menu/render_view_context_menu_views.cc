@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
@@ -16,6 +18,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/renderer_context_menu/views/toolkit_delegate_views.h"
@@ -67,8 +70,12 @@ class RenderViewContextMenuViews::SubmenuViewObserver
 
   void OnViewBoundsChanged(views::View* observed_view) override {
     DCHECK_EQ(submenu_view_, observed_view);
-    parent_->OnSubmenuViewBoundsChanged(
-        submenu_view_->host()->GetWindowBoundsInScreen());
+    // Check to make sure the host exists. The SubmenuView can drop the
+    // reference to the host.
+    if (submenu_view_->host()) {
+      parent_->OnSubmenuViewBoundsChanged(
+          submenu_view_->host()->GetWindowBoundsInScreen());
+    }
   }
 
   void OnViewAddedToWidget(views::View* observed_view) override {
@@ -81,20 +88,23 @@ class RenderViewContextMenuViews::SubmenuViewObserver
   // WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds_in_screen) override {
-    DCHECK_EQ(submenu_view_->host(), widget);
-    parent_->OnSubmenuViewBoundsChanged(new_bounds_in_screen);
+    // The SubmenuView can drop its reference to the host widget before the
+    // asynchronous widget destruction starts.
+    if (submenu_view_->host() == widget) {
+      parent_->OnSubmenuViewBoundsChanged(new_bounds_in_screen);
+    }
   }
 
-  void OnWidgetClosing(views::Widget* widget) override {
+  void OnWidgetDestroying(views::Widget* widget) override {
     // The widget is being closed, make sure the parent bubble no longer
-    // observes it.
-    DCHECK_EQ(submenu_view_->host(), widget);
+    // observes it. Note that the SubmenuView may already have dropped the
+    // reference to the host widget before this is called.
     parent_->OnSubmenuClosed();
   }
 
  private:
-  RenderViewContextMenuViews* const parent_;
-  views::SubmenuView* const submenu_view_;
+  const raw_ptr<RenderViewContextMenuViews> parent_;
+  const raw_ptr<views::SubmenuView> submenu_view_;
   base::ScopedObservation<views::View, views::ViewObserver>
       submenu_view_observation_{this};
   base::ScopedObservation<views::Widget, views::WidgetObserver>
@@ -105,7 +115,7 @@ class RenderViewContextMenuViews::SubmenuViewObserver
 // RenderViewContextMenuViews, public:
 
 RenderViewContextMenuViews::RenderViewContextMenuViews(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params)
     : RenderViewContextMenu(render_frame_host, params),
       bidi_submenu_model_(this) {
@@ -118,7 +128,7 @@ RenderViewContextMenuViews::~RenderViewContextMenuViews() {
 
 // static
 RenderViewContextMenuViews* RenderViewContextMenuViews::Create(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   return new RenderViewContextMenuViews(render_frame_host, params);
 }
@@ -159,11 +169,6 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
 
     case IDC_CONTENT_CONTEXT_COPY:
       *accel = ui::Accelerator(ui::VKEY_C, ui::EF_CONTROL_DOWN);
-      return true;
-
-    case IDC_CONTENT_CONTEXT_INSPECTELEMENT:
-      *accel = ui::Accelerator(ui::VKEY_I,
-                               ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
       return true;
 
     case IDC_CONTENT_CONTEXT_PASTE:
@@ -238,10 +243,10 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
       return true;
 
     case IDC_CONTENT_CONTEXT_EMOJI:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       *accel = ui::Accelerator(ui::VKEY_OEM_PERIOD, ui::EF_COMMAND_DOWN);
       return true;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
       *accel = ui::Accelerator(ui::VKEY_SPACE,
                                ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
       return true;
@@ -257,6 +262,8 @@ bool RenderViewContextMenuViews::GetAcceleratorForCommandId(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       *accel = ui::Accelerator(ui::VKEY_V, ui::EF_COMMAND_DOWN);
       return true;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+      return false;
 #else
       NOTREACHED();
       return false;
@@ -354,6 +361,13 @@ void RenderViewContextMenuViews::AppendPlatformEditableItems() {
       &bidi_submenu_model_);
 }
 
+void RenderViewContextMenuViews::ExecOpenInReadAnything() {
+  Browser* browser = GetBrowser();
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  browser_view->side_panel_coordinator()->Show(
+      SidePanelEntry::Id::kReadAnything);
+}
+
 void RenderViewContextMenuViews::Show() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode))
     return;
@@ -406,7 +420,7 @@ aura::Window* RenderViewContextMenuViews::GetActiveNativeView() {
       WebContents::FromRenderFrameHost(GetRenderFrameHost());
   if (!web_contents) {
     LOG(ERROR) << "RenderViewContextMenuViews::Show, couldn't find WebContents";
-    return NULL;
+    return nullptr;
   }
   return web_contents->GetNativeView();
 }

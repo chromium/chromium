@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,19 @@
 #include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_uint8_array.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
+#include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
@@ -54,7 +56,7 @@ class IncomingStreamTest : public ::testing::Test {
     auto* script_state = scope.GetScriptState();
     auto* incoming_stream = MakeGarbageCollected<IncomingStream>(
         script_state, mock_on_abort_.Get(), std::move(data_pipe_consumer_));
-    incoming_stream->Init();
+    incoming_stream->Init(ASSERT_NO_EXCEPTION);
     return incoming_stream;
   }
 
@@ -69,12 +71,13 @@ class IncomingStreamTest : public ::testing::Test {
   void ClosePipe() { data_pipe_producer_.reset(); }
 
   // Copies the contents of a v8::Value containing a Uint8Array to a Vector.
-  static Vector<uint8_t> ToVector(const V8TestingScope& scope,
+  static Vector<uint8_t> ToVector(V8TestingScope& scope,
                                   v8::Local<v8::Value> v8value) {
     Vector<uint8_t> ret;
 
-    DOMUint8Array* value =
-        V8Uint8Array::ToImplWithTypeCheck(scope.GetIsolate(), v8value);
+    NotShared<DOMUint8Array> value =
+        NativeValueTraits<NotShared<DOMUint8Array>>::NativeValue(
+            scope.GetIsolate(), v8value, scope.GetExceptionState());
     if (!value) {
       ADD_FAILURE() << "chunk is not an Uint8Array";
       return ret;
@@ -91,7 +94,7 @@ class IncomingStreamTest : public ::testing::Test {
 
   // Performs a single read from |reader|, converting the output to the
   // Iterator type. Assumes that the readable stream is not errored.
-  static Iterator Read(const V8TestingScope& scope,
+  static Iterator Read(V8TestingScope& scope,
                        ReadableStreamDefaultReader* reader) {
     auto* script_state = scope.GetScriptState();
     ScriptPromise read_promise =
@@ -102,7 +105,7 @@ class IncomingStreamTest : public ::testing::Test {
     return IteratorFromReadResult(scope, tester.Value().V8Value());
   }
 
-  static Iterator IteratorFromReadResult(const V8TestingScope& scope,
+  static Iterator IteratorFromReadResult(V8TestingScope& scope,
                                          v8::Local<v8::Value> result) {
     CHECK(result->IsObject());
     Iterator ret;
@@ -122,7 +125,7 @@ class IncomingStreamTest : public ::testing::Test {
     return ret;
   }
 
-  base::MockOnceClosure mock_on_abort_;
+  base::MockOnceCallback<void(absl::optional<uint8_t>)> mock_on_abort_;
   mojo::ScopedDataPipeProducerHandle data_pipe_producer_;
   mojo::ScopedDataPipeConsumerHandle data_pipe_consumer_;
 };
@@ -131,51 +134,6 @@ TEST_F(IncomingStreamTest, Create) {
   V8TestingScope scope;
   auto* incoming_stream = CreateIncomingStream(scope);
   EXPECT_TRUE(incoming_stream->Readable());
-}
-
-TEST_F(IncomingStreamTest, AbortReading) {
-  V8TestingScope scope;
-
-  auto* incoming_stream = CreateIncomingStream(scope);
-  auto* script_state = scope.GetScriptState();
-  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
-      script_state, ASSERT_NO_EXCEPTION);
-  ScriptPromise reading_aborted = incoming_stream->ReadingAborted();
-
-  EXPECT_CALL(mock_on_abort_, Run());
-
-  incoming_stream->AbortReading(nullptr);
-
-  // Allow the close signal to propagate down the pipe.
-  test::RunPendingTasks();
-
-  // Check that the pipe was closed.
-  const char data[] = "foo";
-  uint32_t num_bytes = 3;
-  EXPECT_EQ(data_pipe_producer_->WriteData(data, &num_bytes,
-                                           MOJO_WRITE_DATA_FLAG_ALL_OR_NONE),
-            MOJO_RESULT_FAILED_PRECONDITION);
-
-  ScriptPromiseTester abort_tester(script_state, reading_aborted);
-  abort_tester.WaitUntilSettled();
-  EXPECT_TRUE(abort_tester.IsFulfilled());
-
-  // Calling AbortReading() does not error the stream, it simply closes it.
-  Iterator result = Read(scope, reader);
-  EXPECT_TRUE(result.done);
-}
-
-TEST_F(IncomingStreamTest, AbortReadingTwice) {
-  V8TestingScope scope;
-
-  auto* incoming_stream = CreateIncomingStream(scope);
-
-  EXPECT_CALL(mock_on_abort_, Run());
-
-  incoming_stream->AbortReading(nullptr);
-
-  // The second call to AbortReading should be a no-op.
-  incoming_stream->AbortReading(nullptr);
 }
 
 TEST_F(IncomingStreamTest, ReadArrayBuffer) {
@@ -197,6 +155,9 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithFin) {
   V8TestingScope scope;
 
   auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -225,6 +186,9 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithoutFin) {
   V8TestingScope scope;
 
   auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -260,10 +224,56 @@ TEST_F(IncomingStreamTest, ReadThenClosedWithoutFin) {
             "The stream was aborted by the remote server");
 }
 
+// Reading after remote close should not lose data.
+TEST_F(IncomingStreamTest, ClosedWithFinThenRead) {
+  V8TestingScope scope;
+
+  auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
+  WriteToPipe({'B'});
+  incoming_stream->OnIncomingStreamClosed(true);
+  ClosePipe();
+
+  Iterator result1 = Read(scope, reader);
+  EXPECT_FALSE(result1.done);
+  EXPECT_THAT(result1.value, ElementsAre('B'));
+
+  Iterator result2 = Read(scope, reader);
+  EXPECT_TRUE(result2.done);
+}
+
+// reader.closed is fulfilled without any read() call, when the stream is empty.
+TEST_F(IncomingStreamTest, ClosedWithFinWithoutRead) {
+  V8TestingScope scope;
+
+  auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+
+  auto* script_state = scope.GetScriptState();
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
+  incoming_stream->OnIncomingStreamClosed(true);
+  ClosePipe();
+
+  ScriptPromiseTester tester(
+      script_state, reader->ClosedPromise()->GetScriptPromise(script_state));
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+}
+
 TEST_F(IncomingStreamTest, DataPipeResetBeforeClosedWithFin) {
   V8TestingScope scope;
 
   auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -283,6 +293,9 @@ TEST_F(IncomingStreamTest, DataPipeResetBeforeClosedWithoutFin) {
   V8TestingScope scope;
 
   auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::optional<uint8_t>()));
+
   auto* script_state = scope.GetScriptState();
   auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -327,6 +340,74 @@ TEST_F(IncomingStreamTest, WriteToPipeWithPendingRead) {
   Iterator result = IteratorFromReadResult(scope, tester.Value().V8Value());
   EXPECT_FALSE(result.done);
   EXPECT_THAT(result.value, ElementsAre('A'));
+}
+
+TEST_F(IncomingStreamTest, Cancel) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+
+  auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::make_optional<uint8_t>(0)));
+
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromise promise = reader->cancel(script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, promise);
+
+  test::RunPendingTasks();
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+}
+
+TEST_F(IncomingStreamTest, CancelWithWebTransportError) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::make_optional<uint8_t>(0)));
+
+  v8::Local<v8::Value> error =
+      WebTransportError::Create(isolate,
+                                /*stream_error_code=*/absl::nullopt, "foobar",
+                                WebTransportError::Source::kStream);
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromise promise = reader->cancel(
+      script_state, ScriptValue(isolate, error), ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, promise);
+
+  test::RunPendingTasks();
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
+}
+
+TEST_F(IncomingStreamTest, CancelWithWebTransportErrorWithCode) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+  v8::Isolate* isolate = scope.GetIsolate();
+
+  auto* incoming_stream = CreateIncomingStream(scope);
+
+  EXPECT_CALL(mock_on_abort_, Run(absl::make_optional<uint8_t>(19)));
+
+  v8::Local<v8::Value> error = WebTransportError::Create(
+      isolate,
+      /*stream_error_code=*/19, "foobar", WebTransportError::Source::kStream);
+  auto* reader = incoming_stream->Readable()->GetDefaultReaderForTesting(
+      script_state, ASSERT_NO_EXCEPTION);
+  ScriptPromise promise = reader->cancel(
+      script_state, ScriptValue(isolate, error), ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, promise);
+
+  test::RunPendingTasks();
+
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsFulfilled());
 }
 
 }  // namespace

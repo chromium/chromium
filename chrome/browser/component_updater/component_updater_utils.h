@@ -1,9 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_COMPONENT_UPDATER_COMPONENT_UPDATER_UTILS_H_
 #define CHROME_BROWSER_COMPONENT_UPDATER_COMPONENT_UPDATER_UTILS_H_
+
+namespace base {
+class FilePath;
+}  // namespace base
 
 namespace component_updater {
 
@@ -12,6 +16,9 @@ namespace component_updater {
 // don't support this type of install. In this case, assume it is a user
 // install and return true.
 bool IsPerUserInstall();
+
+// A helper function to delete the path and directory for removed compoennts.
+void DeleteFilesAndParentDirectory(const base::FilePath& file_path);
 
 }  // namespace component_updater
 

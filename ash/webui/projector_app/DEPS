@@ -1,0 +1,10 @@
+include_rules = [
+  "+chromeos/grit/chromeos_media_app_bundle_resources.h",
+  "+chromeos/grit/chromeos_media_app_bundle_resources_map.h",
+  "+chromeos/grit/chromeos_projector_app_bundle_resources.h",
+  "+chromeos/grit/chromeos_projector_app_bundle_resources_map.h",
+  "+components/signin/public/identity_manager",
+  "+components/signin/public/base",
+  "+google_apis/gaia",
+  "+google_apis",
+]

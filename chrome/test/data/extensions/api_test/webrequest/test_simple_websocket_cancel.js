@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,8 @@ chrome.tabs.getCurrent(function(tab) {
                     url: url,
                     type: 'websocket',
                     frameUrl: 'unknown frame URL',
-                    initiator: getDomain(initiators.WEB_INITIATED)
+                    initiator: getDomain(initiators.WEB_INITIATED),
+                    documentId: 1
                   },
                   retval: {cancel: true}
                 },
@@ -34,7 +35,8 @@ chrome.tabs.getCurrent(function(tab) {
                     type: 'websocket',
                     fromCache: false,
                     initiator: getDomain(initiators.WEB_INITIATED),
-                    error: 'net::ERR_BLOCKED_BY_CLIENT'
+                    error: 'net::ERR_BLOCKED_BY_CLIENT',
+                    documentId: 1
                   }
                 },
               ],

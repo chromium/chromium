@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/tracing/public/cpp/background_tracing/background_tracing_agent_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 
@@ -78,7 +79,7 @@ class BackgroundTracingAgentImplTest : public testing::Test {
       provider_set_;
   mojo::UniqueReceiverSet<tracing::mojom::BackgroundTracingAgentClient>
       client_set_;
-  BackgroundTracingAgentClientRecorder* recorder_ = nullptr;
+  raw_ptr<BackgroundTracingAgentClientRecorder> recorder_ = nullptr;
 };
 
 TEST_F(BackgroundTracingAgentImplTest, TestInitialize) {

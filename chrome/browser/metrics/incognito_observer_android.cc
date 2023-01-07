@@ -1,9 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/metrics/incognito_observer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
@@ -19,6 +18,9 @@ class IncognitoObserverAndroid : public IncognitoObserver,
     TabModelList::AddObserver(this);
   }
 
+  IncognitoObserverAndroid(const IncognitoObserverAndroid&) = delete;
+  IncognitoObserverAndroid& operator=(const IncognitoObserverAndroid&) = delete;
+
   ~IncognitoObserverAndroid() override { TabModelList::RemoveObserver(this); }
 
   // TabModelListObserver:
@@ -27,8 +29,6 @@ class IncognitoObserverAndroid : public IncognitoObserver,
 
  private:
   const base::RepeatingClosure update_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncognitoObserverAndroid);
 };
 
 }  // namespace

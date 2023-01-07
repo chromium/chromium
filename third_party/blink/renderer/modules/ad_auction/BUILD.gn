@@ -1,0 +1,38 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("ad_auction") {
+  sources = [
+    "ads.cc",
+    "ads.h",
+    "join_leave_queue.h",
+    "navigator_auction.cc",
+    "navigator_auction.h",
+    "validate_blink_interest_group.cc",
+    "validate_blink_interest_group.h",
+  ]
+
+  deps = [ "//third_party/blink/renderer/modules/geolocation:geolocation" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "join_leave_queue_test.cc",
+    "validate_blink_interest_group_test.cc",
+  ]
+
+  deps = [
+    "//base",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/public/common:headers",
+    "//third_party/blink/renderer/modules:modules",
+    "//url",
+  ]
+}

@@ -47,4 +47,4 @@ class CORE_EXPORT HTMLParserScriptRunnerHost : public GarbageCollectedMixin {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_HTML_PARSER_SCRIPT_RUNNER_HOST_H_

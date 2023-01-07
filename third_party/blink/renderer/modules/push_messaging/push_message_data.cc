@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,14 @@
 #include <memory>
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/modules/v8/array_buffer_or_array_buffer_view_or_usv_string.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_usvstring.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "v8/include/v8.h"
 
@@ -27,29 +27,40 @@ PushMessageData* PushMessageData::Create(const String& message_string) {
   if (message_string.IsNull())
     return nullptr;
   return PushMessageData::Create(
-      ArrayBufferOrArrayBufferViewOrUSVString::FromUSVString(message_string));
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrUSVString>(
+          message_string));
 }
 
 PushMessageData* PushMessageData::Create(
-    const ArrayBufferOrArrayBufferViewOrUSVString& message_data) {
-  if (message_data.IsArrayBuffer() || message_data.IsArrayBufferView()) {
-    DOMArrayBuffer* buffer = message_data.IsArrayBufferView()
-                                 ? message_data.GetAsArrayBufferView()->buffer()
-                                 : message_data.GetAsArrayBuffer();
-
-    return MakeGarbageCollected<PushMessageData>(
-        static_cast<const char*>(buffer->Data()),
-        base::checked_cast<wtf_size_t>(buffer->ByteLength()));
+    const V8UnionArrayBufferOrArrayBufferViewOrUSVString* message_data) {
+  if (!message_data)
+    return nullptr;
+  switch (message_data->GetContentType()) {
+    case V8UnionArrayBufferOrArrayBufferViewOrUSVString::ContentType::
+        kArrayBuffer: {
+      DOMArrayBuffer* buffer = message_data->GetAsArrayBuffer();
+      return MakeGarbageCollected<PushMessageData>(
+          static_cast<const char*>(buffer->Data()),
+          base::checked_cast<wtf_size_t>(buffer->ByteLength()));
+    }
+    case V8UnionArrayBufferOrArrayBufferViewOrUSVString::ContentType::
+        kArrayBufferView: {
+      DOMArrayBufferView* buffer_view =
+          message_data->GetAsArrayBufferView().Get();
+      return MakeGarbageCollected<PushMessageData>(
+          static_cast<const char*>(buffer_view->BaseAddress()),
+          base::checked_cast<wtf_size_t>(buffer_view->byteLength()));
+    }
+    case V8UnionArrayBufferOrArrayBufferViewOrUSVString::ContentType::
+        kUSVString: {
+      std::string encoded_string = UTF8Encoding().Encode(
+          message_data->GetAsUSVString(), WTF::kNoUnencodables);
+      return MakeGarbageCollected<PushMessageData>(
+          encoded_string.c_str(),
+          static_cast<unsigned>(encoded_string.length()));
+    }
   }
-
-  if (message_data.IsUSVString()) {
-    std::string encoded_string = UTF8Encoding().Encode(
-        message_data.GetAsUSVString(), WTF::kNoUnencodables);
-    return MakeGarbageCollected<PushMessageData>(
-        encoded_string.c_str(), static_cast<unsigned>(encoded_string.length()));
-  }
-
-  DCHECK(message_data.IsNull());
+  NOTREACHED();
   return nullptr;
 }
 

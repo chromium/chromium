@@ -1,21 +1,18 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_ACCELERATED_WIDGET_MAC_CA_TRANSACTION_OBSERVER_H_
 #define UI_ACCELERATED_WIDGET_MAC_CA_TRANSACTION_OBSERVER_H_
 
+#include <set>
+
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 
 #include "ui/accelerated_widget_mac/accelerated_widget_mac_export.h"
-
-namespace base {
-template <typename T>
-class NoDestructor;
-}  // namespace base
 
 namespace ui {
 
@@ -70,6 +67,9 @@ class ACCELERATED_WIDGET_MAC_EXPORT CATransactionCoordinator {
 
   static CATransactionCoordinator& Get();
 
+  CATransactionCoordinator(const CATransactionCoordinator&) = delete;
+  CATransactionCoordinator& operator=(const CATransactionCoordinator&) = delete;
+
   void Synchronize();
   void DisableForTesting() { disabled_for_testing_ = true; }
 
@@ -92,8 +92,6 @@ class ACCELERATED_WIDGET_MAC_EXPORT CATransactionCoordinator {
   bool disabled_for_testing_ = false;
   base::ObserverList<PreCommitObserver>::Unchecked pre_commit_observers_;
   std::set<scoped_refptr<PostCommitObserver>> post_commit_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CATransactionCoordinator);
 };
 
 }  // namespace ui

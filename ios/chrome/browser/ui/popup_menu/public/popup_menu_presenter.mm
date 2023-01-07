@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_view_controller.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_view_controller_delegate.h"
@@ -181,10 +181,10 @@ const CGFloat kDamping = 0.85;
 
 #pragma mark - Private
 
-// Animate the |animations| then execute |completion|.
+// Animate the `animations` then execute `completion`.
 - (void)animate:(void (^)(void))animation
     withCompletion:(void (^)(BOOL finished))completion {
-  [UIView animateWithDuration:ios::material::kDuration1
+  [UIView animateWithDuration:kMaterialDuration1
                         delay:0
        usingSpringWithDamping:kDamping
         initialSpringVelocity:0
@@ -193,8 +193,8 @@ const CGFloat kDamping = 0.85;
                    completion:completion];
 }
 
-// Sets |presentedConstraints| up, such as they are positioning the popup
-// relatively to the |guideName| layout guide. The popup is positioned closest
+// Sets `presentedConstraints` up, such as they are positioning the popup
+// relatively to the `guideName` layout guide. The popup is positioned closest
 // to the layout guide, by default it is presented below the layout guide,
 // aligned on its leading edge. However, it is respecting the safe area bounds.
 - (void)setUpPresentedConstraints {

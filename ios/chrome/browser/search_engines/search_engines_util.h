@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,10 @@ void UpdateSearchEnginesIfNeeded(PrefService* preferences,
 // Checks whether the default url of the given template url supports searching
 // by image.
 bool SupportsSearchByImage(TemplateURLService* service);
+
+// Checks whether the default url of the given template url supports searching
+// an image with Google Lens.
+bool SupportsSearchImageWithLens(TemplateURLService* service);
 
 }  // namespace search_engines
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define MEDIA_GPU_ANDROID_ANDROID_VIDEO_SURFACE_CHOOSER_IMPL_H_
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -26,12 +26,18 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooserImpl
   // provided, then it must outlast |this|.
   AndroidVideoSurfaceChooserImpl(bool allow_dynamic,
                                  const base::TickClock* tick_clock = nullptr);
+
+  AndroidVideoSurfaceChooserImpl(const AndroidVideoSurfaceChooserImpl&) =
+      delete;
+  AndroidVideoSurfaceChooserImpl& operator=(
+      const AndroidVideoSurfaceChooserImpl&) = delete;
+
   ~AndroidVideoSurfaceChooserImpl() override;
 
   // AndroidVideoSurfaceChooser
   void SetClientCallbacks(UseOverlayCB use_overlay_cb,
                           UseTextureOwnerCB use_texture_owner_cb) override;
-  void UpdateState(base::Optional<AndroidOverlayFactoryCB> new_factory,
+  void UpdateState(absl::optional<AndroidOverlayFactoryCB> new_factory,
                    const State& new_state) override;
 
  private:
@@ -84,14 +90,12 @@ class MEDIA_GPU_EXPORT AndroidVideoSurfaceChooserImpl
   bool initial_state_received_ = false;
 
   // Not owned by us.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Time at which we most recently got a failed overlay request.
   base::TimeTicks most_recent_overlay_failure_;
 
   base::WeakPtrFactory<AndroidVideoSurfaceChooserImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidVideoSurfaceChooserImpl);
 };
 
 }  // namespace media

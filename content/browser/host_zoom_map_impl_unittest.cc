@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "base/test/simple_test_clock.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -72,8 +71,8 @@ TEST_F(HostZoomMapTest, GetAllZoomLevels) {
        zoomed},
       {HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST, "zoomed.com", "https",
        zoomed}, };
-  ASSERT_EQ(base::size(expected), levels.size());
-  for (size_t i = 0; i < base::size(expected); ++i) {
+  ASSERT_EQ(std::size(expected), levels.size());
+  for (size_t i = 0; i < std::size(expected); ++i) {
     SCOPED_TRACE(testing::Message() << "levels[" << i << "]");
     EXPECT_EQ(expected[i].mode, levels[i].mode);
     EXPECT_EQ(expected[i].scheme, levels[i].scheme);
@@ -93,7 +92,7 @@ TEST_F(HostZoomMapTest, LastModifiedTimestamp) {
   host_zoom_map.SetZoomLevelForHost("zoomed.com", 1.5);
   host_zoom_map.SetZoomLevelForHost("zoomed2.com", 2.0);
 
-  base::Time later = now + base::TimeDelta::FromSeconds(1);
+  base::Time later = now + base::Seconds(1);
   test_clock.SetNow(later);
   host_zoom_map.SetZoomLevelForHost("zoomed2.com", 2.5);
   host_zoom_map.SetZoomLevelForHost("zoomzoom.com", 3);
@@ -108,8 +107,8 @@ TEST_F(HostZoomMapTest, LastModifiedTimestamp) {
       {HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST, "login", "chrome", 3.0,
        base::Time()},
   };
-  ASSERT_EQ(base::size(expected), levels.size());
-  for (size_t i = 0; i < base::size(expected); ++i) {
+  ASSERT_EQ(std::size(expected), levels.size());
+  for (size_t i = 0; i < std::size(expected); ++i) {
     SCOPED_TRACE(testing::Message() << "levels[" << i << "]");
     EXPECT_EQ(expected[i].mode, levels[i].mode);
     EXPECT_EQ(expected[i].scheme, levels[i].scheme);
@@ -125,22 +124,20 @@ TEST_F(HostZoomMapTest, ClearZoomLevels) {
   host_zoom_map.SetClockForTesting(&test_clock);
 
   base::Time now = base::Time::Now();
-  test_clock.SetNow(now - base::TimeDelta::FromHours(3));
+  test_clock.SetNow(now - base::Hours(3));
   host_zoom_map.SetZoomLevelForHost("zoomzoom.com", 3.5);
-  test_clock.SetNow(now - base::TimeDelta::FromHours(1));
+  test_clock.SetNow(now - base::Hours(1));
   host_zoom_map.SetZoomLevelForHost("zoom.com", 1.5);
-  test_clock.SetNow(now - base::TimeDelta::FromDays(31));
+  test_clock.SetNow(now - base::Days(31));
   host_zoom_map.SetZoomLevelForHost("zoom2.com", 2.5);
   EXPECT_EQ(3u, host_zoom_map.GetAllZoomLevels().size());
 
-  host_zoom_map.ClearZoomLevels(now - base::TimeDelta::FromHours(2),
-                                base::Time::Max());
+  host_zoom_map.ClearZoomLevels(now - base::Hours(2), base::Time::Max());
   ASSERT_EQ(2u, host_zoom_map.GetAllZoomLevels().size());
   EXPECT_EQ("zoom2.com", host_zoom_map.GetAllZoomLevels()[0].host);
   EXPECT_EQ("zoomzoom.com", host_zoom_map.GetAllZoomLevels()[1].host);
 
-  host_zoom_map.ClearZoomLevels(base::Time(),
-                                now - base::TimeDelta::FromDays(30));
+  host_zoom_map.ClearZoomLevels(base::Time(), now - base::Days(30));
   ASSERT_EQ(1u, host_zoom_map.GetAllZoomLevels().size());
   EXPECT_EQ("zoomzoom.com", host_zoom_map.GetAllZoomLevels()[0].host);
 

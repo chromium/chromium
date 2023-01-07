@@ -5,7 +5,6 @@
 <translation id="104962181688258143">ಫೈಲ್‌ಗಳ ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯಿರಿ</translation>
 <translation id="1122869341872663659"><ph name="QUERY" /> ಗಾಗಿ <ph name="N" /> ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳನ್ನು ಪ್ರದರ್ಶಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1195667586424773550">ಟ್ಯಾಬ್‌ನ ವಿಳಾಸ ಪಟ್ಟಿಗೆ ಲಿಂಕ್‌ ಅನ್ನು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
-<translation id="1204450209689312104">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಹೊಸ ವಿಂಡೋ ತೆರೆಯಿರಿ</translation>
 <translation id="1251638888133819822">ಪೂರ್ಣಪರದೆ ವರ್ಧಕವನ್ನು ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -15,8 +14,10 @@
 <translation id="1477442857810932985">ಸಾಲಿನ ಅಂತ್ಯಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="1499072997694708844">ತೆರೆದಿರುವ ಹುಡುಕಾಟ ವಿಂಡೋವನ್ನು ಮುಚ್ಚಿ ಅಥವಾ ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪುಟದ ಲೋಡ್ ಮಾಡುವಿಕೆಯನ್ನು ನಿಲ್ಲಿಸಿ</translation>
 <translation id="1510238584712386396">ಲಾಂಚರ್</translation>
+<translation id="1516966594427080024">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಹೊಸ ವಿಂಡೋ ತೆರೆಯಿರಿ</translation>
 <translation id="152892567002884378">ವಾಲ್ಯೂಮ್ ಹೆಚ್ಚು ಮಾಡಿ</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ನಂತರ <ph name="ESC" /></translation>
+<translation id="1586324912145647027">1 ರಿಂದ 8 ನೇ ಡೆಸ್ಕ್‌ವರೆಗೆ ಹೋಗಿ</translation>
 <translation id="1652741121070700329">ಹಿಂದಿನ ಪದದ ಆರಂಭಕ್ಕೆ ಸರಿಸಿ</translation>
 <translation id="1679841710523778799">ಪ್ರಖರತೆ ಹೆಚ್ಚು ಮಾಡುವಿಕೆಯನ್ನು ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="168356808214100546"><ph name="ALT" /> ಅನ್ನು ಒತ್ತಿ ಹಿಡಿದುಕೊಳ್ಳಿ, ನೀವು ತೆರೆಯಲು ಬಯಸುವ ವಿಂಡೋವನ್ನು ಪಡೆಯುವವರೆಗೂ <ph name="TAB" /> ಅನ್ನು ಟ್ಯಾಪ್‌ ಮಾಡಿ, ನಂತರ ಬಿಡುಗಡೆಗೊಳಿಸಿ.</translation>
@@ -45,14 +46,13 @@
 <translation id="2441202986792279177">ವಿಂಡೋಗಳ ನಡುವೆ ತ್ವರಿತವಾಗಿ ಬದಲಿಸಿ</translation>
 <translation id="2454251766545114447">ಡಿಸ್‌ಪ್ಲೇ ಅನ್ನು ಝೂಮ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="2478303094958140141">ChromeVox (ಮಾತಿನ ಪ್ರತಿಕ್ರಿಯೆ) ಆನ್‌ ಅಥವಾ ಆಫ್‌ ಮಾಡಿ</translation>
-<translation id="2480851840841871861">Google ಅಸಿಸ್ಟೆಂಟ್‌ ಅನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="2480851840841871861">Google Assistant ಅನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="2488661730534396940">ಎಡಭಾಗದಲ್ಲಿರುವ ಡೆಸ್ಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2516999188535378855">Diagnostics ಆ್ಯಪ್ ತೆರೆಯಿರಿ</translation>
 <translation id="2530339807289914946">ವೆಬ್‌ ಪುಟವನ್ನು ಸ್ಕ್ರಾಲ್ ಡೌನ್ ಮಾಡಿ</translation>
 <translation id="2530896289327917474">ಕೆರೆಟ್ ಬ್ರೌಸಿಂಗ್ ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="2574014812750545982">ಪುಟದಲ್ಲಿನ ಝೂಮ್ ಮಟ್ಟವನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
-<translation id="2596078834055697711">ವಿಂಡೋ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, ನಂತರ <ph name="TAB" /> ಅಥವಾ <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪುಟವನ್ನು ಮರುಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="2764005613199379871">ಹುಡುಕಾಟ ವಿಳಾಸ ಪಟ್ಟಿಯಲ್ಲಿ ಫೋಕಸ್ ಇರಿಸಿ</translation>
@@ -67,12 +67,14 @@
 <translation id="3020183492814296499">ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="3084301071537457911">ನಿಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ ಮುಂದಿನ ಐಟಂ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
 <translation id="309173601632226815">ನಿಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ ಲಾಂಚರ್ ಬಟನ್ ಅನ್ನು ಹೈಲೈಟ್ ಮಾಡಿ</translation>
-<translation id="3105917916468784889">ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">ವಿಳಾಸ ಪಟ್ಟಿಯನ್ನು ಗಮನಿಸಿ</translation>
 <translation id="3256109297135787951">ನಿಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ ಐಟಂನಿಂದ ಹೈಲೈಟ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="3288816184963444640">ಪ್ರಸ್ತುತ ವಿಂಡೋ ಮುಚ್ಚಿ</translation>
+<translation id="3322797428033495633">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರದ ವಿಂಡೋವನ್ನು ಫೋಕಸ್ ಮಾಡಿ</translation>
+<translation id="3350805006883559974">ಮೇಲ್ಭಾಗದಲ್ಲಿ ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3407560819924487926">ಹೊಸ ಕಾರ್ಯ ನಿರ್ವಾಹಕವನ್ನು ತೆರೆಯುತ್ತದೆ</translation>
+<translation id="3417835166382867856">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="3422679037938588196">ನಿಮ್ಮ ಹುಡುಕಾಟಕ್ಕೆ ಹೊಂದಿಕೆಯಾಗುವ ಹಿಂದಿನದಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="353037708190149633">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ವಿಂಡೋದಲ್ಲಿ ತೆರೆದಿರುವ ಎಲ್ಲಾ ಪುಟಗಳನ್ನು ಹೊಸ ಫೋಲ್ಡರ್‌ನಲ್ಲಿ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳಂತೆ ಉಳಿಸಿ</translation>
 <translation id="355103131818127604">ಹಿನ್ನೆಲೆಯಲ್ಲಿ ಲಿಂಕ್‌ ಅನ್ನು ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">ಅಲ್ಪವಿರಾಮ</translation>
 <translation id="3976863468609830880">ನಿಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ ಕೊನೆಯ ಐಕಾನ್ ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
 <translation id="3994783594793697310">ಡಿಸ್‌ಪ್ಲೇ ಝೂಮ್‌ ಮಟ್ಟವನ್ನು ಮರುಹೊಂದಿಸಿ</translation>
+<translation id="4026837045671473537">ಬಣ್ಣ ವಿಲೋಮದ ಮೋಡ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="4026843240379844265">ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು ಡಿಸ್‌ಪ್ಲೇಗಳ ನಡುವೆ ಸರಿಸಿ</translation>
 <translation id="4035482366624727273">ಪುಟದಲ್ಲಿರುವ ಎಲ್ಲವನ್ನೂ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="4060703249685950734">ನೀವು ಮುಚ್ಚಿದ ಕೊನೆಯ ಟ್ಯಾಬ್‌ ಅಥವಾ ವಿಂಡೋವನ್ನು ಮರುತೆರೆಯಿರಿ</translation>
@@ -108,7 +111,6 @@
 <translation id="4556221320735744018">ಕೀಬೋರ್ಡ್‌ ಶಾರ್ಟ್‌ಕಟ್‌ ಸಹಾಯಕವನ್ನು ನೋಡಿ</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> ಅಥವಾ <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">ಸ್ಥಿತಿ ಪ್ರದೇಶವನ್ನು ತೆರೆಯಿರಿ (ನಿಮ್ಮ ಖಾತೆ ಚಿತ್ರ ಗೋಚರಿಸುವಲ್ಲಿ)</translation>
-<translation id="4642092649622328492">ಭಾಗಶಃ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="4698850295812410683">ಸ್ಟೈಲಸ್‌ ಪರಿಕರಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="4801989101741319327">ಮುಂದಿನ ಅಕ್ಷರದ ಕೊನೆಗೆ ಸರಿಸಿ</translation>
 <translation id="4866066940972151697">ಬಲಭಾಗದಲ್ಲಿರುವ ಡೆಸ್ಕ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
@@ -124,11 +126,13 @@
 <translation id="526651782186312376">ಸಾಲಿನ ಪ್ರಾರಂಭದವರೆಗಿನ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="5316716239522500219">ಪ್ರತಿಬಿಂಬಿಸುವ ಮಾನೀಟರ್‌ಗಳು</translation>
 <translation id="539072479502328326">ಡಾಕ್ ಮಾಡಿರುವ ವರ್ಧಕವನ್ನು ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
+<translation id="5466615362193675484">ಲಾಕ್ ಮೋಡ್ ಅನ್ನು ಮರುಗಾತ್ರಗೊಳಿಸಲು ಮೆನುವನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="5541719484267030947">ಟ್ಯಾಬ್‌ ಅನ್ನು ಡ್ರ್ಯಾಗ್‌ ಮಾಡುವಾಗ, <ph name="ESC" /> ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="5554139136362089836">ಪ್ರಸ್ತುತ ಪುಟವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ಒತ್ತಿರಿ ಮತ್ತು ಲಿಂಕ್‌ ಅನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
 <translation id="561814908794220892">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ವೆಬ್‌ಪುಟವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="5620219513321115856">ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು, ಬಲಬದಿಯಲ್ಲಿರುವ ಡೆಸ್ಕ್‌ಗೆ ಸರಿಸಿ</translation>
+<translation id="5699366815052349604">ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳಿಗೆ ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು ನಿಯೋಜಿಸಿ</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> ಅಥವಾ <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="5757474750054631686">ಮಂದ ಕೀಬೋರ್ಡ್(ಬ್ಯಾಕ್‌‌ಲಿಟ್‌‌ ಕೀಬೋರ್ಡ್‌ಗಳಿಗಾಗಿ ಮಾತ್ರ)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">ವಿಂಡೋ ತಿರುಗಿಸಿ</translation>
 <translation id="5926306472221400972">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ</translation>
 <translation id="6022924867608035986">ಹುಡುಕಾಟ ಬಾಕ್ಸ್ ಪಠ್ಯವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
-<translation id="6045998054441862242">ಅಧಿಕ ಕಾಂಟ್ರಾಸ್ಟ್ ಮೋಡ್ ಅನ್ನು ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="6052614013050385269">ಲಿಂಕ್‌ ಅನ್ನು ರೈಟ್ ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="6129953537138746214">ಸ್ಪೇಸ್</translation>
 <translation id="6143669479988153888">ಪುಟದಲ್ಲಿ ಝೂಮ್ ಇನ್ ಮಾಡಿ</translation>
@@ -147,6 +150,7 @@
 <translation id="6276708887952587684">ಪುಟದ ಮೂಲವನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="6321940490215594447">ಇತಿಹಾಸದ ಪುಟ ತೆರೆಯಿರಿ</translation>
 <translation id="6340769215862220182">ಡಿಸ್‌ಪ್ಲೇ ಅನ್ನು ಝೂಮ್‌ ಇನ್‌ ಮಾಡಿ</translation>
+<translation id="634687982629734605">ಇವುಗಳ ನಡುವೆ ಫೋಕಸ್ ಅನ್ನು ಬದಲಾಯಿಸಿ: ಸ್ಥಿತಿ ಕ್ಷೇತ್ರ (ನಿಮ್ಮ ಖಾತೆಯ ಚಿತ್ರ ಕಾಣಿಸಿಕೊಳ್ಳುವ ಸ್ಥಳ), ಲಾಂಚರ್, ವಿಳಾಸ ಪಟ್ಟಿ, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳ ಪಟ್ಟಿ (ಗೋಚರಿಸಿದರೆ), ತೆರೆದಿರುವ ವೆಬ್‌ಪುಟ ಮತ್ತು ಡೌನ್‌ಲೋಡ್‌ಗಳ ಪಟ್ಟಿ (ಗೋಚರಿಸಿದರೆ). ಫೋಕಸ್ ಮಾಡಬಹುದಾದ ಡೈಲಾಗ್ ಕಾಣಿಸಿದರೆ, ಬದಲಾಗಿ ಫೋಕಸ್ ಅನ್ನು ಅಲ್ಲಿಗೆ ಸರಿಸಿ.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">ಸಾಲಿನ ಕೊನೆಯವರೆಗಿನ ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6425378783626925378">ನಿಮ್ಮ ಶೆಲ್ಫ್‌ನಲ್ಲಿರುವ 1-8 ಐಟಂಗಳನ್ನು ಕ್ಲಿಕ್‌ ಮಾಡಿ</translation>
@@ -154,6 +158,7 @@
 <translation id="6445033640292336367">ಟ್ಯಾಬ್ ಅನ್ನು ಅದರ ಮೂಲ ಸ್ಥಿತಿಗೆ ಹಿಂತಿರುಗಿಸಿ</translation>
 <translation id="6474744297082284761">ಝೂಮ್ ಔಟ್ ಮಾಡಿ (ಡಾಕ್ ಆಗಿರುವಾಗ ಅಥವಾ ಪೂರ್ಣಪರದೆ ವರ್ಧಕಗಳು ಸಕ್ರಿಯಗೊಂಡಿರುವಾಗ)</translation>
 <translation id="649811797655257835">ಫೈಲ್‌ ಆಯ್ಕೆ ಮಾಡಿ, ನಂತರ <ph name="SPACE" /> ಅನ್ನು ಒತ್ತಿರಿ</translation>
+<translation id="6515089016094047210">ಕ್ಯಾಲೆಂಡರ್ ವಿಜೆಟ್ ತೆರೆಯಿರಿ ಮತ್ತು ಮುಚ್ಚಿರಿ.</translation>
 <translation id="6551886416582667425">ಭಾಗಶಃ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ತೆಗೆದುಕೊಳ್ಳಿ/ರೆಕಾರ್ಡಿಂಗ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="6556040137485212400">ದೀರ್ಘಕಾಲದವರೆಗೆ ಬಳಕೆಯಾಗದ ವಿಂಡೋವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="666343722268997814">ಹೈಲೈಟ್ ಮಾಡಿದ ಐಟಂಗಾಗಿ ಬಲ-ಕ್ಲಿಕ್ ಮೆನು ತೆರೆಯಿರಿ</translation>
@@ -190,7 +195,6 @@
 <translation id="8026334261755873520">ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
 <translation id="8130528849632411619">ಡಾಕ್ಯುಮೆಂಟ್‌ನ ಪ್ರಾರಂಭಕ್ಕೆ ಹೋಗಿ</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> ಅಥವಾ <ph name="E" /></translation>
-<translation id="8232835244134740473">ಇವುಗಳ ನಡುವೆ ಫೋಕಸ್ ಅನ್ನು ಬದಲಾಯಿಸಿ: ಸ್ಥಿತಿ ಪ್ರದೇಶ (ನಿಮ್ಮ ಖಾತೆಯ ಚಿತ್ರ ಕಾಣಿಸಿಕೊಳ್ಳುವ ಸ್ಥಳ), ಲಾಂಚರ್ ವಿಳಾಸ ಪಟ್ಟಿ, ಬುಕ್‌ಮಾರ್ಕ್‌‌ಗಳ ಪಟ್ಟಿ (ಗೋಚರಿಸಿದರೆ), ತೆರೆದಿರುವ ವೆಬ್‍ಪುಟ, ಡೌನ್‍ಲೋಡ್‍ಗಳ ಪಟ್ಟಿ (ಗೋಚರಿಸಿದರೆ)</translation>
 <translation id="8234414138295101081">ಪರದೆಯನ್ನು 90 ಡಿಗ್ರಿಗಳಲ್ಲಿ ತಿರುಗಿಸಿ</translation>
 <translation id="8241665785394195545">ಬಲ ಆವರಣ</translation>
 <translation id="8264941229485248811">ಡೆವಲಪರ್ ಪರಿಕರಗಳ ಪರೀಕ್ಷಕವನ್ನು ತೋರಿಸಿ ಅಥವಾ ಮರೆಮಾಡಿ</translation>
@@ -198,16 +202,17 @@
 <translation id="8388247778047144397">ಟ್ಯಾಬ್ ಪಟ್ಟಿಯಲ್ಲಿನ ಖಾಲಿ ವಲಯಕ್ಕೆ ಲಿಂಕ್ ಎಳೆಯಿರಿ</translation>
 <translation id="8389638407792712197">ಹೊಸ ವಿಂಡೋವನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8429696719963529183">F ಕೀಗಳನ್ನು ಬಳಸಿ (F1 ನಿಂದ F12)</translation>
-<translation id="8537650670971624753">ಹುಡುಕಾಟ ಮೋಡ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="85690795166292698">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಲಿಂಕ್ ತೆರೆಯಿರಿ</translation>
 <translation id="8609384513243082612">ಹೊಸ ಟ್ಯಾಬ್ ತೆರೆಯಿರಿ</translation>
 <translation id="8644639153978066712">ಫೈಲ್‌ಗಳ ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ಮರೆಮಾಡಿದ ಫೈಲ್‌ಗಳನ್ನು ಪ್ರದರ್ಶಿಸಿ</translation>
 <translation id="8717459106217102612">ಹಿಂದಿನ ಪದ ಅಥವಾ ಅಕ್ಷರವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="8727232706774971183">ನಿಮ್ಮ ಅಧಿಸೂಚನೆಗಳನ್ನು ನೋಡಿ</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 ರಿಂದ 8</translation>
 <translation id="8855885154700222542">ಪೂರ್ಣಪರದೆ ಕೀ</translation>
 <translation id="8881584919399569791">ಸಕ್ರಿಯ ವಿಂಡೋವನ್ನು, ಎಡಬದಿಯಲ್ಲಿರುವ ಡೆಸ್ಕ್‌ಗೆ ಸರಿಸಿ</translation>
 <translation id="88986195241502842">Page down</translation>
 <translation id="8924883688469390268">ಹಿಂದಿನ ಬಳಕೆದಾರರಿಗೆ ಬದಲಿಸಿ</translation>
+<translation id="8941626538514548667">ಬ್ರೌಸರ್‌ನಲ್ಲಿರುವ ವೆಬ್ ವಿಷಯವನ್ನು ಫೋಕಸ್ ಮಾಡಿ</translation>
 <translation id="8977648847395357314">ವಿಳಾಸದ ಪಟ್ಟಿಯಲ್ಲಿರುವ ವಿಷಯವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="8982190978301344584">ಲಭ್ಯವಿರುವ IME ಗಳ ಪಟ್ಟಿಯನ್ನು ಪ್ರದರ್ಶಿಸುವ ಮೆನುವನ್ನು ತೋರಿಸಿ</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1 ರಿಂದ 8 ರವರೆಗೆ</translation>

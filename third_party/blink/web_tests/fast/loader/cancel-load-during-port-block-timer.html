@@ -2,7 +2,7 @@
     if (window.testRunner) {
         testRunner.dumpAsText();
         testRunner.waitUntilDone();
-        testRunner.setCanOpenWindows();
+        testRunner.setPopupBlockingEnabled(false);
     }
 
     window.open("http://127.0.0.1:22").document.write('');

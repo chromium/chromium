@@ -1,0 +1,5 @@
+monorail {
+  component: "Blink>SecurityFeature>COOP"
+}
+team_email: "chrome-security-owp-team@google.com"
+

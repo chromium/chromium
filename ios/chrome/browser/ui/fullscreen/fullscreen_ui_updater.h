@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CLEAN_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_UPDATER_H_
-#define IOS_CLEAN_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_UPDATER_H_
+#ifndef IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_UPDATER_H_
+#define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_UPDATER_H_
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"
 
@@ -15,16 +15,16 @@
 // FullscreenUIElements.
 class FullscreenUIUpdater {
  public:
-  // Constructor for an updater that updates |ui_element| for observed events
-  // from |controller|.  Both arguments must be non-null.  |ui_element| is not
-  // retained.  The updater will observe |controller| until the controller is
+  // Constructor for an updater that updates `ui_element` for observed events
+  // from `controller`.  Both arguments must be non-null.  `ui_element` is not
+  // retained.  The updater will observe `controller` until the controller is
   // shut down or the updater is destroyed.
   FullscreenUIUpdater(FullscreenController* controller,
                       id<FullscreenUIElement> ui_element);
   ~FullscreenUIUpdater();
 
  private:
-  // Stops observing |controller_|.
+  // Stops observing `controller_`.
   void Disconnect();
 
   // Helper object that forwards FullscreenControllerObserver callbacks to their
@@ -32,7 +32,7 @@ class FullscreenUIUpdater {
   class FullscreenControllerObserverForwarder
       : public FullscreenControllerObserver {
    public:
-    // Constructor for a forwarder that updates |ui_element| for |updater|.
+    // Constructor for a forwarder that updates `ui_element` for `updater`.
     FullscreenControllerObserverForwarder(FullscreenUIUpdater* updater,
                                           id<FullscreenUIElement> ui_element);
 
@@ -59,8 +59,9 @@ class FullscreenUIUpdater {
   FullscreenController* controller_ = nullptr;
   // The observer forwarder.
   FullscreenControllerObserverForwarder forwarder_;
-  // Scoped observer for |forwarder_|.
-  ScopedObserver<FullscreenController, FullscreenControllerObserver> observer_;
+  // Scoped observer for `forwarder_`.
+  base::ScopedObservation<FullscreenController, FullscreenControllerObserver>
+      observation_{&forwarder_};
 };
 
-#endif  // IOS_CLEAN_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_UPDATER_H_
+#endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_UI_UPDATER_H_

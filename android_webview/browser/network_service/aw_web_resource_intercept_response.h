@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 
 namespace embedder_support {
 class WebResourceResponse;
@@ -27,6 +26,12 @@ class AwWebResourceInterceptResponse {
   // org.chromium.android_webview.AwWebResourceInterceptResponse class.
   explicit AwWebResourceInterceptResponse(
       const base::android::JavaRef<jobject>& obj);
+
+  AwWebResourceInterceptResponse(const AwWebResourceInterceptResponse&) =
+      delete;
+  AwWebResourceInterceptResponse& operator=(
+      const AwWebResourceInterceptResponse&) = delete;
+
   ~AwWebResourceInterceptResponse();
 
   // True if the call to shouldInterceptRequest raised an exception.
@@ -43,8 +48,6 @@ class AwWebResourceInterceptResponse {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwWebResourceInterceptResponse);
 };
 
 }  // namespace android_webview

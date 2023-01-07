@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,10 @@
 
 #include "ash/ash_export.h"
 #include "third_party/skia/include/core/SkColor.h"
+
+namespace ui {
+class ColorProvider;
+}  // namespace ui
 
 namespace ash {
 
@@ -18,15 +22,19 @@ struct LoginPalette {
   SkColor password_text_color;
   SkColor password_placeholder_text_color;
   SkColor password_background_color;
+  SkColor password_row_background_color;
   SkColor button_enabled_color;
   SkColor button_annotation_color;
   SkColor pin_ink_drop_highlight_color;
   SkColor pin_ink_drop_ripple_color;
   SkColor pin_input_text_color;
+  SkColor submit_button_background_color;
+  SkColor submit_button_icon_color;
 };
 
 // For login screen and lock screen.
-ASH_EXPORT LoginPalette CreateDefaultLoginPalette();
+ASH_EXPORT LoginPalette
+CreateDefaultLoginPalette(ui::ColorProvider* color_provider);
 
 // For in-session auth dialog.
 ASH_EXPORT LoginPalette CreateInSessionAuthPalette();

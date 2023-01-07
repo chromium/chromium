@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewStub;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.FrameLayout;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.base.ViewUtils;
 
@@ -68,8 +69,7 @@ public class IncognitoNewTabPageView extends FrameLayout {
         super.onFinishInflate();
 
         mScrollView = (NewTabPageScrollView) findViewById(R.id.ntp_scrollview);
-        mScrollView.setBackgroundColor(
-                ApiCompatibilityUtils.getColor(getResources(), R.color.ntp_bg_incognito));
+        mScrollView.setBackgroundColor(getContext().getColor(R.color.ntp_bg_incognito));
         setContentDescription(
                 getResources().getText(R.string.accessibility_new_incognito_tab_page));
 
@@ -77,11 +77,17 @@ public class IncognitoNewTabPageView extends FrameLayout {
         // any shortcut causes the UrlBar to be focused. See ViewRootImpl.leaveTouchMode().
         mScrollView.setDescendantFocusability(FOCUS_BEFORE_DESCENDANTS);
 
-        mDescriptionView =
-                (IncognitoDescriptionView) findViewById(R.id.new_tab_incognito_container);
+        ViewStub viewStub = findViewById(R.id.incognito_description_layout_stub);
+        if (shouldShowRevampedIncognitoNTP()) {
+            viewStub.setLayoutResource(R.layout.revamped_incognito_description_layout);
+        } else {
+            viewStub.setLayoutResource(R.layout.incognito_description_layout);
+        }
+
+        mDescriptionView = (IncognitoDescriptionView) viewStub.inflate();
         mDescriptionView.setLearnMoreOnclickListener(new OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 mManager.loadIncognitoLearnMore();
             }
         });
@@ -122,6 +128,10 @@ public class IncognitoNewTabPageView extends FrameLayout {
                 || getHeight() != mSnapshotHeight || mScrollView.getScrollY() != mSnapshotScrollY;
     }
 
+    boolean shouldShowRevampedIncognitoNTP() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP);
+    }
+
     /**
      * @see org.chromium.chrome.browser.compositor.layouts.content.
      *         InvalidationAwareThumbnailProvider#captureThumbnail(Canvas)
@@ -131,14 +141,6 @@ public class IncognitoNewTabPageView extends FrameLayout {
         mSnapshotWidth = getWidth();
         mSnapshotHeight = getHeight();
         mSnapshotScrollY = mScrollView.getScrollY();
-    }
-
-    /**
-     * Set the visibility of the cookie controls card on the incognito description.
-     * @param isVisible Whether it's visible or not.
-     */
-    void setIncognitoCookieControlsCardVisibility(boolean isVisible) {
-        mDescriptionView.showCookieControlsCard(isVisible);
     }
 
     /**

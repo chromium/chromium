@@ -1,0 +1,17 @@
+include_rules = [
+  "+ash/public",
+  "+chromeos/crosapi/cpp/lacros_startup_state.h",
+  "+chromeos/ui/base/window_state_type.h",
+  "+components/account_id/account_id.h",
+  "+components/app_constants/constants.h",
+  "+components/app_restore",
+  "+components/keyed_service/core",
+  "+components/services/app_service/public/cpp",
+  "+components/sync",
+  "+components/tab_groups",
+  "+components/version_info",
+  "+third_party/re2",
+  "+ui/base/ui_base_types.h",
+  "+ui/base/window_open_disposition.h",
+  "+ui/gfx/geometry"
+]

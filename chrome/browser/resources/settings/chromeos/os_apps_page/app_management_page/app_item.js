@@ -1,34 +1,61 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-Polymer({
-  is: 'app-management-app-item',
+import './shared_style.js';
+import './shared_vars.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
 
-  behaviors: [
-    app_management.AppManagementStoreClient,
-  ],
+import {AppManagementEntryPoint, AppManagementEntryPointsHistogramName, AppType} from 'chrome://resources/cr_components/app_management/constants.js';
+import {getAppIcon} from 'chrome://resources/cr_components/app_management/util.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  properties: {
-    /** @type {App} */
-    app: {
-      type: Object,
-    },
-  },
+import {AppManagementStoreClient, AppManagementStoreClientInterface} from './store_client.js';
+import {openAppDetailPage} from './util.js';
 
-  listeners: {
-    'click': 'onClick_',
-  },
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {AppManagementStoreClientInterface}
+ */
+const AppManagementAppItemElementBase =
+    mixinBehaviors([AppManagementStoreClient], PolymerElement);
+
+/** @polymer */
+class AppManagementAppItemElement extends AppManagementAppItemElementBase {
+  static get is() {
+    return 'app-management-app-item';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /** @type {App} */
+      app: {
+        type: Object,
+      },
+    };
+  }
+
+  ready() {
+    super.ready();
+
+    this.addEventListener('click', this.onClick_);
+  }
 
   /**
    * @private
    */
   onClick_() {
-    app_management.util.openAppDetailPage(this.app.id);
+    openAppDetailPage(this.app.id);
     chrome.metricsPrivate.recordEnumerationValue(
         AppManagementEntryPointsHistogramName,
         this.getAppManagementEntryPoint_(this.app.type),
         Object.keys(AppManagementEntryPoint).length);
-  },
+  }
 
   /**
    * @param {App} app
@@ -36,25 +63,34 @@ Polymer({
    * @private
    */
   iconUrlFromId_(app) {
-    return app_management.util.getAppIcon(app);
-  },
+    return getAppIcon(app);
+  }
 
   /**
-   * @param {AppType} appType
-   * @return {AppManagementEntryPoint}
+   * @param {appManagement.mojom.AppType} appType
+   * @return {AppManagementEntryPointType}
    */
   getAppManagementEntryPoint_(appType) {
     switch (appType) {
       case AppType.kArc:
-        return AppManagementEntryPoint.MainViewArc;
-      case AppType.kExtension:
-        return AppManagementEntryPoint.MainViewChromeApp;
+        return AppManagementEntryPoint.MAIN_VIEW_ARC;
+      case AppType.kChromeApp:
+      case AppType.kStandaloneBrowser:
+      case AppType.kStandaloneBrowserChromeApp:
+        // TODO(https://crbug.com/1225848): Figure out appropriate behavior for
+        // Lacros-hosted chrome-apps.
+        return AppManagementEntryPoint.MAIN_VIEW_CHROME_APP;
       case AppType.kWeb:
-        return AppManagementEntryPoint.MainViewWebApp;
+        return AppManagementEntryPoint.MAIN_VIEW_WEB_APP;
       case AppType.kPluginVm:
-        return AppManagementEntryPoint.MainViewPluginVm;
+        return AppManagementEntryPoint.MAIN_VIEW_PLUGIN_VM;
+      case AppType.kBorealis:
+        return AppManagementEntryPoint.MAIN_VIEW_BOREALIS;
       default:
         assertNotReached();
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    AppManagementAppItemElement.is, AppManagementAppItemElement);

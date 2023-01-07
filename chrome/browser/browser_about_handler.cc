@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
@@ -58,14 +58,14 @@ bool HandleChromeAboutAndChromeSyncRewrite(
 bool HandleNonNavigationAboutURL(const GURL& url) {
   const std::string spec(url.spec());
 
-  if (base::LowerCaseEqualsASCII(spec, chrome::kChromeUIRestartURL)) {
+  if (base::EqualsCaseInsensitiveASCII(spec, chrome::kChromeUIRestartURL)) {
     // Call AttemptRestart after chrome::Navigate() completes to avoid access of
     // gtk objects after they are destroyed by BrowserWindowGtk::Close().
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&chrome::AttemptRestart));
     return true;
   }
-  if (base::LowerCaseEqualsASCII(spec, chrome::kChromeUIQuitURL)) {
+  if (base::EqualsCaseInsensitiveASCII(spec, chrome::kChromeUIQuitURL)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&chrome::AttemptExit));
     return true;

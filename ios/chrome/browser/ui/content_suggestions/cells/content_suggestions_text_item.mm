@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_text_item.h"
 
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_text_cell.h"
-#import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestion_identifier.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -55,7 +54,7 @@
 
 #pragma mark - Private
 
-// Configures the |textLabel|.
+// Configures the `textLabel`.
 - (void)configureTextLabel:(UILabel*)textLabel {
   textLabel.text = self.text;
   textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
@@ -65,7 +64,7 @@
   textLabel.numberOfLines = 0;
 }
 
-// Configures the |detailTextLabel|.
+// Configures the `detailTextLabel`.
 - (void)configureDetailTextLabel:(UILabel*)detailTextLabel {
   detailTextLabel.text = self.detailText;
   detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];

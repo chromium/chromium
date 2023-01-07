@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!-- System colors for Android S+.-->
+    <color name="system_neutral1_10">@android:color/system_neutral1_10</color>
+    <color name="system_neutral1_900">@android:color/system_neutral1_900</color>
+</resources>

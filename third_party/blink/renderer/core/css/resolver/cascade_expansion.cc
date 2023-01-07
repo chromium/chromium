@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,8 @@ CascadeFilter AddValidPropertiesFilter(
       return filter.Add(CSSProperty::kValidForFirstLine, false);
     case ValidPropertyFilter::kMarker:
       return filter.Add(CSSProperty::kValidForMarker, false);
+    case ValidPropertyFilter::kHighlightLegacy:
+      return filter.Add(CSSProperty::kValidForHighlightLegacy, false);
     case ValidPropertyFilter::kHighlight:
       return filter.Add(CSSProperty::kValidForHighlight, false);
   }
@@ -45,153 +47,25 @@ CascadeFilter AddLinkFilter(CascadeFilter filter,
   }
 }
 
-CascadeFilter AmendFilter(CascadeFilter filter,
-                          const MatchedProperties& matched_properties) {
-  return AddLinkFilter(AddValidPropertiesFilter(filter, matched_properties),
-                       matched_properties);
-}
-
 }  // anonymous namespace
 
-CascadeExpansion::CascadeExpansion(const MatchedProperties& matched_properties,
-                                   const Document& document,
-                                   CascadeFilter filter,
-                                   size_t matched_properties_index)
-    : document_(document),
-      matched_properties_(matched_properties),
-      size_(matched_properties.properties->PropertyCount()),
-      filter_(AmendFilter(filter, matched_properties)),
-      matched_properties_index_(matched_properties_index) {
-  // We can't handle a MatchResult with more than 0xFFFF MatchedProperties,
-  // or a MatchedProperties object with more than 0xFFFF declarations. If this
-  // happens, we skip right to the end, and emit nothing.
-  if (size_ > kMaxDeclarationIndex + 1 ||
-      matched_properties_index_ > kMaxMatchedPropertiesIndex) {
-    index_ = size_;
-  } else {
-    Next();
-  }
+CORE_EXPORT CascadeFilter
+CreateExpansionFilter(const MatchedProperties& matched_properties) {
+  return AddLinkFilter(
+      AddValidPropertiesFilter(CascadeFilter(), matched_properties),
+      matched_properties);
 }
 
-CascadeExpansion::CascadeExpansion(const CascadeExpansion& o)
-    : document_(o.document_),
-      state_(o.state_),
-      matched_properties_(o.matched_properties_),
-      priority_(o.priority_),
-      index_(o.index_),
-      size_(o.size_),
-      filter_(o.filter_),
-      matched_properties_index_(o.matched_properties_index_),
-      id_(o.id_),
-      property_(id_ == CSSPropertyID::kVariable ? &custom_ : o.property_),
-      custom_(o.custom_) {}
-
-void CascadeExpansion::Next() {
-  do {
-    switch (state_) {
-      case State::kInit:
-        AdvanceNormal();
-        break;
-      case State::kNormal:
-        if (ShouldEmitVisited() && AdvanceVisited())
-          break;
-        AdvanceNormal();
-        break;
-      case State::kVisited:
-        AdvanceNormal();
-        break;
-      case State::kAll:
-        AdvanceAll();
-        break;
-    }
-  } while (!AtEnd() && filter_.Rejects(*property_));
-}
-
-bool CascadeExpansion::IsAffectedByAll(CSSPropertyID id) {
+CORE_EXPORT bool IsInAllExpansion(CSSPropertyID id) {
   const CSSProperty& property = CSSProperty::Get(id);
-  return !property.IsShorthand() && property.IsAffectedByAll();
-}
-
-bool CascadeExpansion::ShouldEmitVisited() const {
-  // This check is slightly redundant, as the emitted property would anyway
-  // be skipped by the do-while in Next(). However, it's probably good to avoid
-  // entering State::kVisited at all, if we can avoid it.
-  return !filter_.Rejects(CSSProperty::kVisited, true);
-}
-
-void CascadeExpansion::AdvanceNormal() {
-  state_ = State::kNormal;
-  ++index_;
-  if (AtEnd())
-    return;
-  auto reference = PropertyAt(index_);
-  const auto& metadata = reference.PropertyMetadata();
-  id_ = metadata.PropertyID();
-  priority_ = CascadePriority(
-      matched_properties_.types_.origin, metadata.important_,
-      matched_properties_.types_.tree_order,
-      EncodeMatchResultPosition(matched_properties_index_, index_));
-
-  switch (id_) {
-    case CSSPropertyID::kVariable:
-      custom_ = CustomProperty(reference.Name().ToAtomicString(), document_);
-      property_ = &custom_;
-      break;
-    case CSSPropertyID::kAll:
-      state_ = State::kAll;
-      id_ = kFirstCSSProperty;
-      property_ = &CSSProperty::Get(id_);
-      // If this DCHECK is triggered, it means firstCSSProperty is not affected
-      // by 'all', and we need a function for figuring out the first property
-      // that _is_ affected by 'all'.
-      DCHECK(IsAffectedByAll(id_));
-      break;
-    default:
-      property_ = &CSSProperty::Get(id_);
-      break;
-  }
-
-  DCHECK(property_);
-}
-
-bool CascadeExpansion::AdvanceVisited() {
-  DCHECK(ShouldEmitVisited());
-  DCHECK(property_);
-  const CSSProperty* visited = property_->GetVisitedProperty();
-  if (!visited)
-    return false;
-  property_ = visited;
-  id_ = visited->PropertyID();
-  state_ = State::kVisited;
-  return true;
-}
-
-void CascadeExpansion::AdvanceAll() {
-  state_ = State::kAll;
-
-  int i = static_cast<int>(id_) + 1;
-  int end = kIntLastCSSProperty + 1;
-
-  for (; i < end; ++i) {
-    id_ = ConvertToCSSPropertyID(i);
-    if (IsAffectedByAll(id_))
-      break;
-  }
-
-  if (i >= end)
-    AdvanceNormal();
-  else
-    property_ = &CSSProperty::Get(id_);
-}
-
-CSSPropertyValueSet::PropertyReference CascadeExpansion::PropertyAt(
-    size_t index) const {
-  DCHECK(!AtEnd());
-  return matched_properties_.properties->PropertyAt(index_);
-}
-
-uint16_t CascadeExpansion::TreeOrder() const {
-  return matched_properties_.types_.tree_order;
+  // Only web-exposed properties are affected by 'all' (IsAffectedByAll).
+  // This excludes -internal-visited properties from being affected, but for
+  // the purposes of cascade expansion, they need to be included, otherwise
+  // rules like :visited { all:unset; } will not work.
+  const CSSProperty* unvisited = property.GetUnvisitedProperty();
+  return !property.IsShorthand() &&
+         (property.IsAffectedByAll() ||
+          (unvisited && unvisited->IsAffectedByAll()));
 }
 
 }  // namespace blink

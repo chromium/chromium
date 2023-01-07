@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/time/time.h"
 #include "media/base/channel_layout.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/timestamp_constants.h"
@@ -127,7 +128,7 @@ TEST_F(WebMTracksParserTest, IgnoringTextTracks) {
   EXPECT_TRUE(ignored_tracks.find(2) != ignored_tracks.end());
 
   // Test again w/o ignoring the test tracks.
-  parser.reset(new WebMTracksParser(&media_log_, false));
+  parser = std::make_unique<WebMTracksParser>(&media_log_, false);
 
   result = parser->Parse(&buf[0], buf.size());
   EXPECT_GT(result, 0);
@@ -181,14 +182,14 @@ TEST_F(WebMTracksParserTest, AudioVideoDefaultDurationSet) {
   EXPECT_LE(0, result);
   EXPECT_EQ(static_cast<int>(buf.size()), result);
 
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(12000),
+  EXPECT_EQ(base::Microseconds(12000),
             parser->GetAudioDefaultDuration(kOneMsInNs));
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(985000),
+  EXPECT_EQ(base::Microseconds(985000),
             parser->GetVideoDefaultDuration(5000000));  // 5 ms resolution
   EXPECT_EQ(kNoTimestamp, parser->GetAudioDefaultDuration(12346000));
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(12345),
+  EXPECT_EQ(base::Microseconds(12345),
             parser->GetAudioDefaultDuration(12345000));
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(12003),
+  EXPECT_EQ(base::Microseconds(12003),
             parser->GetAudioDefaultDuration(1000300));  // 1.0003 ms resolution
 }
 
@@ -262,10 +263,10 @@ TEST_F(WebMTracksParserTest, PrecisionCapping) {
       {kOneMsInNs, 0, kNoTimestamp},
       {kOneMsInNs, 1, kNoTimestamp},
       {kOneMsInNs, 999999, kNoTimestamp},
-      {kOneMsInNs, 1000000, base::TimeDelta::FromMilliseconds(1)},
-      {kOneMsInNs, 1000001, base::TimeDelta::FromMilliseconds(1)},
-      {kOneMsInNs, 1999999, base::TimeDelta::FromMilliseconds(1)},
-      {kOneMsInNs, 2000000, base::TimeDelta::FromMilliseconds(2)},
+      {kOneMsInNs, 1000000, base::Milliseconds(1)},
+      {kOneMsInNs, 1000001, base::Milliseconds(1)},
+      {kOneMsInNs, 1999999, base::Milliseconds(1)},
+      {kOneMsInNs, 2000000, base::Milliseconds(2)},
       {1, -1, kNoTimestamp},
       {1, 0, kNoTimestamp},
 
@@ -273,17 +274,17 @@ TEST_F(WebMTracksParserTest, PrecisionCapping) {
       {1, 1, kNoTimestamp},
       {1, 999, kNoTimestamp},
 
-      {1, 1000, base::TimeDelta::FromMicroseconds(1)},
-      {1, 1999, base::TimeDelta::FromMicroseconds(1)},
-      {1, 2000, base::TimeDelta::FromMicroseconds(2)},
+      {1, 1000, base::Microseconds(1)},
+      {1, 1999, base::Microseconds(1)},
+      {1, 2000, base::Microseconds(2)},
 
-      {64, 1792, base::TimeDelta::FromMicroseconds(1)},
+      {64, 1792, base::Microseconds(1)},
   };
 
   std::unique_ptr<WebMTracksParser> parser(
       new WebMTracksParser(&media_log_, false));
 
-  for (size_t i = 0; i < base::size(kCappingCases); ++i) {
+  for (size_t i = 0; i < std::size(kCappingCases); ++i) {
     InSequence s;
     int64_t scale_ns = kCappingCases[i].scale_ns;
     int64_t duration_ns = kCappingCases[i].duration_ns;

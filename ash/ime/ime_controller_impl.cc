@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,11 @@
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/display/manager/display_manager.h"
 
 namespace ash {
@@ -29,6 +31,10 @@ enum class ModeChangeKeyAction {
   kSwitchIme = 1,
   kMaxValue = kSwitchIme
 };
+
+// The ID for the Accessibility Common IME (used for Dictation).
+const char* kAccessibilityCommonIMEId =
+    "_ext_ime_egfdjlfmgnehecnclamagfafdccgfndpdictation";
 
 }  // namespace
 
@@ -47,11 +53,20 @@ void ImeControllerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+const std::vector<ImeInfo>& ImeControllerImpl::GetVisibleImes() const {
+  return visible_imes_;
+}
+
+bool ImeControllerImpl::IsCurrentImeVisible() const {
+  return current_ime_.id != kAccessibilityCommonIMEId;
+}
+
 void ImeControllerImpl::SetClient(ImeControllerClient* client) {
   if (client_) {
     if (CastConfigController::Get())
       CastConfigController::Get()->RemoveObserver(this);
     Shell::Get()->display_manager()->RemoveObserver(this);
+    Shell::Get()->system_tray_notifier()->RemoveScreenCaptureObserver(this);
   }
 
   client_ = client;
@@ -59,6 +74,7 @@ void ImeControllerImpl::SetClient(ImeControllerClient* client) {
   if (client_) {
     if (CastConfigController::Get())
       CastConfigController::Get()->AddObserver(this);
+    Shell::Get()->system_tray_notifier()->AddScreenCaptureObserver(this);
     Shell::Get()->display_manager()->AddObserver(this);
   }
 }
@@ -70,7 +86,7 @@ bool ImeControllerImpl::CanSwitchIme() const {
 
   // Do not consume key event if there is only one input method is enabled.
   // Ctrl+Space or Alt+Shift may be used by other application.
-  return available_imes_.size() > 1;
+  return GetVisibleImes().size() > 1;
 }
 
 void ImeControllerImpl::SwitchToNextIme() {
@@ -112,8 +128,7 @@ void ImeControllerImpl::SwitchImeWithAccelerator(
       GetCandidateImesForAccelerator(accelerator);
   if (candidate_ids.empty())
     return;
-  auto it =
-      std::find(candidate_ids.begin(), candidate_ids.end(), current_ime_.id);
+  auto it = base::ranges::find(candidate_ids, current_ime_.id);
   if (it != candidate_ids.end())
     ++it;
   if (it == candidate_ids.end())
@@ -130,12 +145,17 @@ void ImeControllerImpl::RefreshIme(const std::string& current_ime_id,
 
   available_imes_.clear();
   available_imes_.reserve(available_imes.size());
+  visible_imes_.clear();
+  visible_imes_.reserve(visible_imes_.size());
   for (const auto& ime : available_imes) {
     if (ime.id.empty()) {
       DLOG(ERROR) << "Received IME with invalid ID.";
       continue;
     }
     available_imes_.push_back(ime);
+    if (ime.id != kAccessibilityCommonIMEId) {
+      visible_imes_.push_back(ime);
+    }
     if (ime.id == current_ime_id)
       current_ime_ = ime;
   }
@@ -227,13 +247,12 @@ void ImeControllerImpl::SetCapsLockEnabled(bool caps_enabled) {
     client_->SetCapsLockEnabled(caps_enabled);
 }
 
-void ImeControllerImpl::OverrideKeyboardKeyset(
-    chromeos::input_method::ImeKeyset keyset) {
+void ImeControllerImpl::OverrideKeyboardKeyset(input_method::ImeKeyset keyset) {
   OverrideKeyboardKeyset(keyset, base::DoNothing());
 }
 
 void ImeControllerImpl::OverrideKeyboardKeyset(
-    chromeos::input_method::ImeKeyset keyset,
+    input_method::ImeKeyset keyset,
     ImeControllerClient::OverrideKeyboardKeysetCallback callback) {
   if (client_)
     client_->OverrideKeyboardKeyset(keyset, std::move(callback));
@@ -247,7 +266,7 @@ std::vector<std::string> ImeControllerImpl::GetCandidateImesForAccelerator(
     const ui::Accelerator& accelerator) const {
   std::vector<std::string> candidate_ids;
 
-  using chromeos::extension_ime_util::GetInputMethodIDByEngineID;
+  using extension_ime_util::GetInputMethodIDByEngineID;
   std::vector<std::string> input_method_ids_to_switch;
   switch (accelerator.key_code()) {
     case ui::VKEY_CONVERT:  // Henkan key on JP106 keyboard
@@ -279,6 +298,17 @@ std::vector<std::string> ImeControllerImpl::GetCandidateImesForAccelerator(
       candidate_ids.push_back(ime.id);
   }
   return candidate_ids;
+}
+
+void ImeControllerImpl::OnScreenCaptureStart(
+    const base::RepeatingClosure& stop_callback,
+    const base::RepeatingClosure& source_callback,
+    const std::u16string& screen_capture_status) {
+  client_->UpdateCastingState(true);
+}
+
+void ImeControllerImpl::OnScreenCaptureStop() {
+  client_->UpdateCastingState(false);
 }
 
 }  // namespace ash

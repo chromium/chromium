@@ -1,6 +1,6 @@
 <!---
   The live version of this document can be viewed at:
-  https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/platform/graphics/paint/README.md
+  https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/graphics/paint/README.md
 -->
 
 # Platform paint code
@@ -18,10 +18,10 @@ This code is owned by the [rendering team](https://www.chromium.org/teams/render
 
 ## Paint artifact
 
-The CompositeAfterPaint [paint artifact](paint_artifact.h) consists of a list of
-display items in paint order (ideally mostly or all drawings), partitioned into
-*paint chunks* which define certain *paint properties* which affect how the
-content should be drawn or composited.
+[Paint artifact](paint_artifact.h) consists of a list of display items in paint
+order (ideally mostly or all drawings), partitioned into *paint chunks* which
+define certain *paint properties* which affect how the content should be drawn
+or composited.
 
 ## Paint properties
 
@@ -156,13 +156,6 @@ emit display items to a `PaintController` (using `GraphicsContext`).
 Holds a `PaintRecord` which contains the paint operations required to draw some
 atom of content.
 
-#### [GraphicsLayerDisplayItem](graphics_layer_display_item.h)
-
-Placeholder for `GraphicsLayers` allocated by the pre-CompositeAfterPaint
-compositing logic. Each one of these may or may not ultimately produce a
-`cc::PictureLayer`, depending on the layer squashing mechanism. This class
-becomes obsolete with CompositeAfterPaint.
-
 #### [ForeignLayerDisplayItem](foreign_layer_display_item.h)
 
 Draws an atom of content, but using a `cc::Layer` produced by some agent outside
@@ -170,12 +163,15 @@ of the normal Blink paint system (for example, a plugin). Since they always map
 to a `cc::Layer`, they are always the only display item in their paint chunk,
 and are ineligible for squashing with other layers.
 
-#### [ScrollHitTestDisplayItem](scroll_hit_test_display_item.h)
+#### [ScrollbarDisplayItem](scrollbar_display_item.h)
 
-Placeholder for creating a cc::Layer for scrolling in paint order. Hit testing
-in the compositor requires both property trees (scroll nodes) and a scrollable
-`cc::layer` in paint order. This should be associated with the scroll
-translation paint property node as well as any overflow clip nodes.
+Contains a [cc::Scrollbar](../../../../../../cc/input/scrollbar.h) and other
+information that are needed to paint a scrollbar into a paint record or to
+create a cc scrollbar layer. During the PaintArtifactCompositor update, we
+decide whether to composite the scrollbar and, if not composited, actually paint
+the scrollbar as a paint record, otherwise create a cc scrollbar layer of type
+cc::SolidColorScrollbarLayer, cc::PaintedScrollbarLayer or
+cc::PaintedOverlayScrollbarLayer depending on the type of the scrollbar.
 
 ## Paint controller
 
@@ -211,16 +207,34 @@ module using `PaintController` API.
 responsible for consuming the `PaintArtifact` produced by the `PaintController`,
 and converting it into a form suitable for the compositor to consume.
 
-At present, `PaintArtifactCompositor` creates a cc layer tree, with one layer
-for each paint chunk. In the future, it is expected that we will use heuristics
-to combine paint chunks into a smaller number of layers.
+`PaintArtifactCompositor` creates a list of cc::Layers from the paint chunks.
+The entry point to layerization is `PaintArtifactCompositor::LayerizeGroup`.
+This algorithm has to make tradeoffs between GPU memory and reducing the costs
+when things change. The algorithm starts by creating `PendingLayer`s for each
+paint chunk, and then tries to combine `PendingLayer`s whenever possible.
+Reasons that prevent combining `PendingLayer`s include: having a direct
+compositing reason on property nodes, having interleaving composited content
+(known as "overlap testing"), and avoiding wasting large areas (known as
+"sparsity", see `kMergeSparsityAreaTolerance`). Once the list of `PendingLayer`s
+is known, `cc::Layer`s area created for each (see: PaintChunksToCcLayer).
 
-The owner of the `PaintArtifactCompositor` (e.g. `WebView`) can then attach its
-root layer to the overall layer hierarchy to be displayed to the user.
+### Direct paint property updates
 
-In the future we would like to explore moving to a single shared property tree
-representation across both cc and
-Blink. See [Web Page Geometries](https://goo.gl/MwVIto) for more.
+PaintArtifactCompositor::Update is expensive and can be avoided for simple
+paint property updates where layerization is known to not change. For example,
+the `kWillChangeTransform` direct compositing reason will force the layerization
+algorithm to create cc::Layers so the will-change content can move without
+needing to change cc::Layers. `DirectlyUpdateTransform` can then be used to
+update the transform property node without doing a full
+PaintArtifactCompositor::Update.
+
+### Repaint-only updates
+
+PaintArtifactCompositor::Update is expensive and can be avoided for simple
+paint changes where layerization is known to not change. For example, if the
+color of a display item changes in a way that does not affect layerization, we
+can just update the display items of the existing cc::Layers. This is
+implemented in `UpdateRepaintedLayers`.
 
 ## Raster invalidation
 

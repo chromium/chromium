@@ -1,0 +1,52 @@
+{
+  "android-rust-arm-dbg": {
+    "gn_args": {
+      "debuggable_apks": false,
+      "enable_rust": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": true,
+      "is_debug": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm",
+      "target_os": "android",
+      "use_remoteexec": true
+    }
+  },
+  "android-rust-arm-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "debuggable_apks": false,
+      "enable_rust": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm",
+      "target_os": "android",
+      "use_remoteexec": true
+    }
+  },
+  "linux-rust-x64-dbg": {
+    "gn_args": {
+      "enable_rust": true,
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "use_remoteexec": true
+    }
+  },
+  "linux-rust-x64-rel": {
+    "gn_args": {
+      "dcheck_always_on": true,
+      "enable_rust": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x64",
+      "use_remoteexec": true
+    }
+  }
+}

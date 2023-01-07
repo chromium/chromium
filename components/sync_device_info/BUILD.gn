@@ -1,9 +1,13 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+}
 
 static_library("sync_device_info") {
   sources = [
@@ -54,12 +58,20 @@ static_library("sync_device_info") {
     sources += [ "local_device_info_util_android.cc" ]
   }
 
+  if (is_chromeos) {
+    sources += [ "local_device_info_util_chromeos.cc" ]
+  }
+
   if (is_ios) {
     sources += [ "local_device_info_util_ios.mm" ]
   }
 
-  if (is_linux || is_chromeos) {
+  if (is_linux) {
     sources += [ "local_device_info_util_linux.cc" ]
+  }
+
+  if (is_fuchsia) {
+    sources += [ "local_device_info_util_fuchsia.cc" ]
   }
 
   if (is_mac) {
@@ -74,9 +86,11 @@ static_library("sync_device_info") {
     sources += [ "local_device_info_util_win.cc" ]
   }
 
-  if (is_chromeos_ash) {
-    # Required by device_info_util_linux.cc on Chrome OS.
-    deps += [ "//ash/constants" ]
+  if (is_chromeos) {
+    deps += [
+      "//chromeos/constants",
+      "//chromeos/system",
+    ]
   }
 }
 
@@ -93,7 +107,7 @@ static_library("test_support") {
 
   public_deps = [ ":sync_device_info" ]
 
-  deps = [ "//components/sync:test_support_model" ]
+  deps = [ "//components/sync:test_support" ]
 }
 
 source_set("unit_tests") {
@@ -117,9 +131,23 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//components/prefs:test_support",
     "//components/sync:test_support",
-    "//components/sync/invalidations:test_support",
     "//components/version_info:version_string",
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/system" ]
+  }
+}
+
+if (is_android) {
+  java_cpp_enum("java_enums") {
+    sources = [ "//components/sync_device_info/device_info.h" ]
+  }
+
+  android_library("sync_device_info_java") {
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+    srcjar_deps = [ ":java_enums" ]
+  }
 }

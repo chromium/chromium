@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -30,6 +30,10 @@ class PageActionIconView;
 class FakeWebPushSender : public WebPushSender {
  public:
   FakeWebPushSender() : WebPushSender(/*url_loader_factory=*/nullptr) {}
+
+  FakeWebPushSender(const FakeWebPushSender&) = delete;
+  FakeWebPushSender& operator=(const FakeWebPushSender&) = delete;
+
   ~FakeWebPushSender() override = default;
 
   void SendMessage(const std::string& fcm_token,
@@ -43,13 +47,15 @@ class FakeWebPushSender : public WebPushSender {
  private:
   std::string fcm_token_;
   WebPushMessage message_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWebPushSender);
 };
 
 class FakeSharingMessageBridge : public SharingMessageBridge {
  public:
   FakeSharingMessageBridge() = default;
+
+  FakeSharingMessageBridge(const FakeSharingMessageBridge&) = delete;
+  FakeSharingMessageBridge& operator=(const FakeSharingMessageBridge&) = delete;
+
   ~FakeSharingMessageBridge() override = default;
 
   // SharingMessageBridge:
@@ -67,14 +73,15 @@ class FakeSharingMessageBridge : public SharingMessageBridge {
 
  private:
   sync_pb::SharingMessageSpecifics specifics_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSharingMessageBridge);
 };
 
 // Base test class for testing sharing features.
 class SharingBrowserTest : public SyncTest {
  public:
   SharingBrowserTest();
+
+  SharingBrowserTest(const SharingBrowserTest&) = delete;
+  SharingBrowserTest& operator=(const SharingBrowserTest&) = delete;
 
   ~SharingBrowserTest() override;
 
@@ -113,14 +120,12 @@ class SharingBrowserTest : public SyncTest {
 
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
       scoped_testing_factory_installer_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   syncer::FakeDeviceInfoTracker fake_device_info_tracker_;
   std::vector<std::unique_ptr<syncer::DeviceInfo>> device_infos_;
-  SharingService* sharing_service_;
-  FakeWebPushSender* fake_web_push_sender_;
+  raw_ptr<SharingService> sharing_service_;
+  raw_ptr<FakeWebPushSender> fake_web_push_sender_;
   FakeSharingMessageBridge fake_sharing_message_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharingBrowserTest);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SHARING_SHARING_BROWSERTEST_H_

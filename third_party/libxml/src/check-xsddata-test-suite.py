@@ -1,9 +1,13 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 import sys
 import time
 import os
-import string
-import StringIO
+try:
+    # Python 2
+    from StringIO import StringIO
+except ImportError:
+    # Python 3
+    from io import StringIO
 sys.path.insert(0, "python")
 import libxml2
 
@@ -44,8 +48,8 @@ resources = {}
 def resolver(URL, ID, ctxt):
     global resources
 
-    if resources.has_key(URL):
-        return(StringIO.StringIO(resources[URL]))
+    if URL in resources:
+        return(StringIO(resources[URL]))
     log.write("Resolver failure: asked %s\n" % (URL))
     log.write("resources: %s\n" % (resources))
     return None
@@ -59,49 +63,49 @@ def handle_valid(node, schema):
     global nb_instances_failed
 
     instance = node.prop("dtd")
-    if instance == None:
+    if instance is None:
         instance = ""
     child = node.children
     while child != None:
         if child.type != 'text':
-	    instance = instance + child.serialize()
-	child = child.next
+            instance = instance + child.serialize()
+        child = child.next
 
     mem = libxml2.debugMemory(1);
     try:
-	doc = libxml2.parseDoc(instance)
+        doc = libxml2.parseDoc(instance)
     except:
         doc = None
 
-    if doc == None:
+    if doc is None:
         log.write("\nFailed to parse correct instance:\n-----\n")
-	log.write(instance)
+        log.write(instance)
         log.write("\n-----\n")
-	nb_instances_failed = nb_instances_failed + 1
-	return
+        nb_instances_failed = nb_instances_failed + 1
+        return
 
     if debug:
-        print "instance line %d" % (node.lineNo())
-       
+        print("instance line %d" % (node.lineNo()))
+
     try:
         ctxt = schema.relaxNGNewValidCtxt()
-	ret = doc.relaxNGValidateDoc(ctxt)
-	del ctxt
+        ret = doc.relaxNGValidateDoc(ctxt)
+        del ctxt
     except:
         ret = -1
 
     doc.freeDoc()
     if mem != libxml2.debugMemory(1):
-	print "validating instance %d line %d leaks" % (
-		  nb_instances_tests, node.lineNo())
+        print("validating instance %d line %d leaks" % (
+                  nb_instances_tests, node.lineNo()))
 
     if ret != 0:
         log.write("\nFailed to validate correct instance:\n-----\n")
-	log.write(instance)
+        log.write(instance)
         log.write("\n-----\n")
-	nb_instances_failed = nb_instances_failed + 1
+        nb_instances_failed = nb_instances_failed + 1
     else:
-	nb_instances_success = nb_instances_success + 1
+        nb_instances_success = nb_instances_success + 1
 
 #
 # handle an invalid instance
@@ -112,50 +116,50 @@ def handle_invalid(node, schema):
     global nb_instances_failed
 
     instance = node.prop("dtd")
-    if instance == None:
+    if instance is None:
         instance = ""
     child = node.children
     while child != None:
         if child.type != 'text':
-	    instance = instance + child.serialize()
-	child = child.next
+            instance = instance + child.serialize()
+        child = child.next
 
 #    mem = libxml2.debugMemory(1);
 
     try:
-	doc = libxml2.parseDoc(instance)
+        doc = libxml2.parseDoc(instance)
     except:
         doc = None
 
-    if doc == None:
+    if doc is None:
         log.write("\nStrange: failed to parse incorrect instance:\n-----\n")
-	log.write(instance)
+        log.write(instance)
         log.write("\n-----\n")
-	return
+        return
 
     if debug:
-        print "instance line %d" % (node.lineNo())
-       
+        print("instance line %d" % (node.lineNo()))
+
     try:
         ctxt = schema.relaxNGNewValidCtxt()
-	ret = doc.relaxNGValidateDoc(ctxt)
-	del ctxt
+        ret = doc.relaxNGValidateDoc(ctxt)
+        del ctxt
 
     except:
         ret = -1
 
     doc.freeDoc()
 #    if mem != libxml2.debugMemory(1):
-#	print "validating instance %d line %d leaks" % (
-#		  nb_instances_tests, node.lineNo())
-    
+#        print("validating instance %d line %d leaks" % (
+#                  nb_instances_tests, node.lineNo()))
+
     if ret == 0:
         log.write("\nFailed to detect validation problem in instance:\n-----\n")
-	log.write(instance)
+        log.write(instance)
         log.write("\n-----\n")
-	nb_instances_failed = nb_instances_failed + 1
+        nb_instances_failed = nb_instances_failed + 1
     else:
-	nb_instances_success = nb_instances_success + 1
+        nb_instances_success = nb_instances_success + 1
 
 #
 # handle an incorrect test
@@ -169,23 +173,23 @@ def handle_correct(node):
     child = node.children
     while child != None:
         if child.type != 'text':
-	    schema = schema + child.serialize()
-	child = child.next
+            schema = schema + child.serialize()
+        child = child.next
 
     try:
-	rngp = libxml2.relaxNGNewMemParserCtxt(schema, len(schema))
-	rngs = rngp.relaxNGParse()
+        rngp = libxml2.relaxNGNewMemParserCtxt(schema, len(schema))
+        rngs = rngp.relaxNGParse()
     except:
         rngs = None
-    if rngs == None:
+    if rngs is None:
         log.write("\nFailed to compile correct schema:\n-----\n")
-	log.write(schema)
+        log.write(schema)
         log.write("\n-----\n")
-	nb_schemas_failed = nb_schemas_failed + 1
+        nb_schemas_failed = nb_schemas_failed + 1
     else:
-	nb_schemas_success = nb_schemas_success + 1
+        nb_schemas_success = nb_schemas_success + 1
     return rngs
-        
+
 def handle_incorrect(node):
     global log
     global nb_schemas_success
@@ -195,24 +199,24 @@ def handle_incorrect(node):
     child = node.children
     while child != None:
         if child.type != 'text':
-	    schema = schema + child.serialize()
-	child = child.next
+            schema = schema + child.serialize()
+        child = child.next
 
     try:
-	rngp = libxml2.relaxNGNewMemParserCtxt(schema, len(schema))
-	rngs = rngp.relaxNGParse()
+        rngp = libxml2.relaxNGNewMemParserCtxt(schema, len(schema))
+        rngs = rngp.relaxNGParse()
     except:
         rngs = None
     if rngs != None:
         log.write("\nFailed to detect schema error in:\n-----\n")
-	log.write(schema)
+        log.write(schema)
         log.write("\n-----\n")
-	nb_schemas_failed = nb_schemas_failed + 1
+        nb_schemas_failed = nb_schemas_failed + 1
     else:
-#	log.write("\nSuccess detecting schema error in:\n-----\n")
-#	log.write(schema)
-#	log.write("\n-----\n")
-	nb_schemas_success = nb_schemas_success + 1
+#        log.write("\nSuccess detecting schema error in:\n-----\n")
+#        log.write(schema)
+#        log.write("\n-----\n")
+        nb_schemas_success = nb_schemas_success + 1
     return None
 
 #
@@ -222,14 +226,14 @@ def handle_resource(node, dir):
     global resources
 
     try:
-	name = node.prop('name')
+        name = node.prop('name')
     except:
         name = None
 
-    if name == None or name == '':
+    if name is None or name == '':
         log.write("resource has no name")
-	return;
-        
+        return;
+
     if dir != None:
 #        name = libxml2.buildURI(name, dir)
         name = dir + '/' + name
@@ -238,8 +242,8 @@ def handle_resource(node, dir):
     child = node.children
     while child != None:
         if child.type != 'text':
-	    res = res + child.serialize()
-	child = child.next
+            res = res + child.serialize()
+        child = child.next
     resources[name] = res
 
 #
@@ -247,14 +251,14 @@ def handle_resource(node, dir):
 #
 def handle_dir(node, dir):
     try:
-	name = node.prop('name')
+        name = node.prop('name')
     except:
         name = None
 
-    if name == None or name == '':
+    if name is None or name == '':
         log.write("resource has no name")
-	return;
-        
+        return;
+
     if dir != None:
 #        name = libxml2.buildURI(name, dir)
         name = dir + '/' + name
@@ -280,7 +284,7 @@ def handle_testCase(node):
               nb_schemas_tests, node.lineNo(), sections))
     resources = {}
     if debug:
-        print "test %d line %d" % (nb_schemas_tests, node.lineNo())
+        print("test %d line %d" % (nb_schemas_tests, node.lineNo()))
 
     dirs = node.xpathEval('dir')
     for dir in dirs:
@@ -292,27 +296,27 @@ def handle_testCase(node):
     tsts = node.xpathEval('incorrect')
     if tsts != []:
         if len(tsts) != 1:
-	    print "warning test line %d has more than one <incorrect> example" %(node.lineNo())
-	schema = handle_incorrect(tsts[0])
+            print("warning test line %d has more than one <incorrect> example" %(node.lineNo()))
+        schema = handle_incorrect(tsts[0])
     else:
         tsts = node.xpathEval('correct')
-	if tsts != []:
-	    if len(tsts) != 1:
-		print "warning test line %d has more than one <correct> example"% (node.lineNo())
-	    schema = handle_correct(tsts[0])
-	else:
-	    print "warning <testCase> line %d has no <correct> nor <incorrect> child" % (node.lineNo())
+        if tsts != []:
+            if len(tsts) != 1:
+                print("warning test line %d has more than one <correct> example"% (node.lineNo()))
+            schema = handle_correct(tsts[0])
+        else:
+            print("warning <testCase> line %d has no <correct> nor <incorrect> child" % (node.lineNo()))
 
     nb_schemas_tests = nb_schemas_tests + 1;
-    
+
     valids = node.xpathEval('valid')
     invalids = node.xpathEval('invalid')
     nb_instances_tests = nb_instances_tests + len(valids) + len(invalids)
     if schema != None:
         for valid in valids:
-	    handle_valid(valid, schema)
+            handle_valid(valid, schema)
         for invalid in invalids:
-	    handle_invalid(invalid, schema)
+            handle_invalid(invalid, schema)
 
 
 #
@@ -322,60 +326,60 @@ def handle_testSuite(node, level = 0):
     global nb_schemas_tests, nb_schemas_success, nb_schemas_failed
     global nb_instances_tests, nb_instances_success, nb_instances_failed
     if verbose and level >= 0:
-	old_schemas_tests = nb_schemas_tests
-	old_schemas_success = nb_schemas_success
-	old_schemas_failed = nb_schemas_failed
-	old_instances_tests = nb_instances_tests
-	old_instances_success = nb_instances_success
-	old_instances_failed = nb_instances_failed
+        old_schemas_tests = nb_schemas_tests
+        old_schemas_success = nb_schemas_success
+        old_schemas_failed = nb_schemas_failed
+        old_instances_tests = nb_instances_tests
+        old_instances_success = nb_instances_success
+        old_instances_failed = nb_instances_failed
 
     docs = node.xpathEval('documentation')
     authors = node.xpathEval('author')
     if docs != []:
         msg = ""
         for doc in docs:
-	    msg = msg + doc.content + " "
-	if authors != []:
-	    msg = msg + "written by "
-	    for author in authors:
-	        msg = msg + author.content + " "
-	if quiet == 0:
-	    print msg
+            msg = msg + doc.content + " "
+        if authors != []:
+            msg = msg + "written by "
+            for author in authors:
+                msg = msg + author.content + " "
+        if quiet == 0:
+            print(msg)
     sections = node.xpathEval('section')
     if verbose and sections != [] and level <= 0:
         msg = ""
         for section in sections:
-	    msg = msg + section.content + " "
-	if quiet == 0:
-	    print "Tests for section %s" % (msg)
+            msg = msg + section.content + " "
+        if quiet == 0:
+            print("Tests for section %s" % (msg))
     for test in node.xpathEval('testCase'):
         handle_testCase(test)
     for test in node.xpathEval('testSuite'):
         handle_testSuite(test, level + 1)
-	        
+
 
     if verbose and level >= 0 :
         if sections != []:
-	    msg = ""
-	    for section in sections:
-		msg = msg + section.content + " "
-	    print "Result of tests for section %s" % (msg)
-	elif docs != []:
-	    msg = ""
-	    for doc in docs:
-	        msg = msg + doc.content + " "
-	    print "Result of tests for %s" % (msg)
+            msg = ""
+            for section in sections:
+                msg = msg + section.content + " "
+            print("Result of tests for section %s" % (msg))
+        elif docs != []:
+            msg = ""
+            for doc in docs:
+                msg = msg + doc.content + " "
+            print("Result of tests for %s" % (msg))
 
         if nb_schemas_tests != old_schemas_tests:
-	    print "found %d test schemas: %d success %d failures" % (
-		  nb_schemas_tests - old_schemas_tests,
-		  nb_schemas_success - old_schemas_success,
-		  nb_schemas_failed - old_schemas_failed)
-	if nb_instances_tests != old_instances_tests:
-	    print "found %d test instances: %d success %d failures" % (
-		  nb_instances_tests - old_instances_tests,
-		  nb_instances_success - old_instances_success,
-		  nb_instances_failed - old_instances_failed)
+            print("found %d test schemas: %d success %d failures" % (
+                  nb_schemas_tests - old_schemas_tests,
+                  nb_schemas_success - old_schemas_success,
+                  nb_schemas_failed - old_schemas_failed))
+        if nb_instances_tests != old_instances_tests:
+            print("found %d test instances: %d success %d failures" % (
+                  nb_instances_tests - old_instances_tests,
+                  nb_instances_success - old_instances_success,
+                  nb_instances_failed - old_instances_failed))
 #
 # Parse the conf file
 #
@@ -394,18 +398,18 @@ libxml2.registerErrorHandler(callback, "")
 libxml2.setEntityLoader(resolver)
 root = testsuite.getRootElement()
 if root.name != 'testSuite':
-    print "%s doesn't start with a testSuite element, aborting" % (CONF)
+    print("%s doesn't start with a testSuite element, aborting" % (CONF))
     sys.exit(1)
 if quiet == 0:
-    print "Running Relax NG testsuite"
+    print("Running Relax NG testsuite")
 handle_testSuite(root)
 
 if quiet == 0 or nb_schemas_failed != 0:
-    print "\nTOTAL:\nfound %d test schemas: %d success %d failures" % (
-      nb_schemas_tests, nb_schemas_success, nb_schemas_failed)
+    print("\nTOTAL:\nfound %d test schemas: %d success %d failures" % (
+      nb_schemas_tests, nb_schemas_success, nb_schemas_failed))
 if quiet == 0 or nb_instances_failed != 0:
-    print "found %d test instances: %d success %d failures" % (
-      nb_instances_tests, nb_instances_success, nb_instances_failed)
+    print("found %d test instances: %d success %d failures" % (
+      nb_instances_tests, nb_instances_success, nb_instances_failed))
 
 testsuite.freeDoc()
 
@@ -414,7 +418,7 @@ libxml2.relaxNGCleanupTypes()
 libxml2.cleanupParser()
 if libxml2.debugMemory(1) == 0:
     if quiet == 0:
-	print "OK"
+        print("OK")
 else:
-    print "Memory leak %d bytes" % (libxml2.debugMemory(1))
+    print("Memory leak %d bytes" % (libxml2.debugMemory(1)))
     libxml2.dumpMemory()

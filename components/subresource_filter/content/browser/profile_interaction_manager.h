@@ -1,43 +1,45 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PROFILE_INTERACTION_MANAGER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PROFILE_INTERACTION_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
-#include "content/public/browser/web_contents_observer.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/subresource_filter/content/browser/ads_blocked_message_delegate.h"
+#endif
 
 namespace content {
+class Page;
 class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
 namespace subresource_filter {
 
-class SubresourceFilterClient;
 class SubresourceFilterProfileContext;
 
-// Class that manages interaction between interaction between the
-// per-navigation/per-tab subresource filter objects (i.e., the throttles and
-// throttle manager) and the per-profile objects (e.g., content settings).
+// Class that manages interaction between the per-navigation/per-page
+// subresource filter objects (i.e., the throttles and throttle manager) and
+// the per-profile objects (e.g., content settings).
 class ProfileInteractionManager
-    : public content::WebContentsObserver,
-      public SubresourceFilterSafeBrowsingActivationThrottle::Delegate {
+    : public SubresourceFilterSafeBrowsingActivationThrottle::Delegate {
  public:
-  ProfileInteractionManager(content::WebContents* web_contents,
-                            SubresourceFilterProfileContext* profile_context);
+  explicit ProfileInteractionManager(
+      SubresourceFilterProfileContext* profile_context);
   ~ProfileInteractionManager() override;
 
   ProfileInteractionManager(const ProfileInteractionManager&) = delete;
   ProfileInteractionManager& operator=(const ProfileInteractionManager&) =
       delete;
 
-  // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
+  void DidCreatePage(content::Page& page);
 
   // Invoked when the user has requested a reload of a page with blocked ads
   // (e.g., via an infobar).
@@ -49,9 +51,10 @@ class ProfileInteractionManager
 
   // Invoked when a notification should potentially be shown to the user that
   // ads are being blocked on this page. Will make the final determination as to
-  // whether the notification should be shown and call out to |client| to show
-  // the notification if so.
-  void MaybeShowNotification(SubresourceFilterClient* client);
+  // whether the notification should be shown. On Android this will show an
+  // infobar if appropriate and if an infobar::ContentInfoBarManager instance
+  // has been installed in web_contents() by the embedder.
+  void MaybeShowNotification();
 
   // SubresourceFilterSafeBrowsingActivationThrottle::Delegate:
   mojom::ActivationLevel OnPageActivationComputed(
@@ -59,11 +62,29 @@ class ProfileInteractionManager
       mojom::ActivationLevel initial_activation_level,
       ActivationDecision* decision) override;
 
+#if BUILDFLAG(IS_ANDROID)
+  AdsBlockedMessageDelegate* ads_blocked_message_delegate_for_testing() {
+    return ads_blocked_message_delegate_;
+  }
+#endif
+
  private:
+  content::WebContents* GetWebContents();
+
+  // Tracks the current page in the frame tree the owning
+  // ContentSubresourceFilterThrottleManager is associated with. This will be
+  // nullptr initially until the main frame navigation commits and a Page is
+  // created, at which point the throttle manager will set this member.
+  raw_ptr<content::Page> page_ = nullptr;
+
   // Unowned and must outlive this object.
-  SubresourceFilterProfileContext* profile_context_ = nullptr;
+  raw_ptr<SubresourceFilterProfileContext> profile_context_ = nullptr;
 
   bool ads_violation_triggered_for_last_committed_navigation_ = false;
+
+#if BUILDFLAG(IS_ANDROID)
+  raw_ptr<AdsBlockedMessageDelegate> ads_blocked_message_delegate_;
+#endif
 };
 
 }  // namespace subresource_filter

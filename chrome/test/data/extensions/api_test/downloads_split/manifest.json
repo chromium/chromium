@@ -10,6 +10,7 @@
     "downloads",
     "downloads.open",
     "downloads.shelf",
+    "downloads.ui",
     "http://*/*",
     "file://*"
   ]

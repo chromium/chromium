@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/basic_types.h"
@@ -113,14 +114,10 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   // TODO(crbug.com/839071): Find a good compromise between performance and
   // data granularity (mainly relevant to running with small buffer sizes
   // when we use background tracing) on Android.
-#if defined(OS_ANDROID)
   static constexpr size_t kSMBPageSizeBytes = 4 * 1024;
-#else
-  static constexpr size_t kSMBPageSizeBytes = 32 * 1024;
-#endif
 
   // TODO(crbug.com/839071): Figure out a good buffer size.
-  static constexpr size_t kSMBSizeBytes = 4 * 1024 * 1024;
+  static constexpr size_t kDefaultSMBSizeBytes = 4 * 1024 * 1024;
 
   // TODO(lri): replace this constant with its version in the client library,
   // when we move over.
@@ -140,6 +137,8 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
 
   base::tracing::PerfettoTaskRunner* task_runner();
 
+  size_t GetPreferredSmbSizeBytes();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
@@ -152,9 +151,9 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoProducer {
   // flags, but the tracing session got disabled in the service while it was
   // initializing (in which case, the tracing service will not tell the
   // subprocess to start tracing after it connects).
-  base::TimeDelta startup_tracing_timeout_ = base::TimeDelta::FromSeconds(60);
+  base::TimeDelta startup_tracing_timeout_ = base::Seconds(60);
 
-  base::tracing::PerfettoTaskRunner* const task_runner_;
+  const raw_ptr<base::tracing::PerfettoTaskRunner> task_runner_;
 
   std::atomic<bool> startup_tracing_active_{false};
 

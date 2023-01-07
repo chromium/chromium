@@ -5,11 +5,11 @@ var delay = 100;
 var results = [];
 
 function waitForNotification(f, data) {
-  // Note about data.raf: when an OOPIF is hidden, it stops running lifecycle
-  // updates, so using rAF to wait for notifications doesn't work. Instead, just
-  // wait for as long as the 'delay' parameter. The IntersectionObserver
-  // implementation should be aware that lifecycle udpates have been stopped,
-  // and it should still generate the proper notifications.
+  // Note about data.raf: when a cross-origin iframe is hidden, it stops running
+  // lifecycle updates, so using rAF to wait for notifications doesn't work.
+  // Instead, just wait for as long as the 'delay' parameter. The
+  // IntersectionObserver implementation should be aware that lifecycle udpates
+  // have been stopped, and it should still generate the proper notifications.
   if (data.raf) {
     setTimeout(() => {
       requestAnimationFrame(function () {

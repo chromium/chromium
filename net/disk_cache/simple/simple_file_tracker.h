@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "net/base/net_export.h"
@@ -21,6 +21,7 @@
 
 namespace disk_cache {
 
+class BackendFileOperations;
 class SimpleSynchronousEntry;
 
 // This keeps track of all the files SimpleCache has open, across all the
@@ -46,6 +47,10 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
    public:
     FileHandle();
     FileHandle(FileHandle&& other);
+
+    FileHandle(const FileHandle&) = delete;
+    FileHandle& operator=(const FileHandle&) = delete;
+
     ~FileHandle();
     FileHandle& operator=(FileHandle&& other);
     base::File* operator->() const;
@@ -63,15 +68,14 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
                base::File* file);
 
     // All the pointer fields are nullptr in the default/moved away from form.
-    SimpleFileTracker* file_tracker_ = nullptr;
-    const SimpleSynchronousEntry* entry_ = nullptr;
+    raw_ptr<SimpleFileTracker> file_tracker_ = nullptr;
+    raw_ptr<const SimpleSynchronousEntry> entry_ = nullptr;
     SimpleFileTracker::SubFile subfile_;
-    base::File* file_ = nullptr;
-    DISALLOW_COPY_AND_ASSIGN(FileHandle);
+    raw_ptr<base::File> file_ = nullptr;
   };
 
   struct EntryFileKey {
-    EntryFileKey() {}
+    EntryFileKey() = default;
     explicit EntryFileKey(uint64_t hash) : entry_hash(hash) {}
 
     uint64_t entry_hash = 0;
@@ -86,7 +90,11 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
 
   // The default limit here is half of what's available on our target OS where
   // Chrome has the lowest limit.
-  SimpleFileTracker(int file_limit = 512);
+  explicit SimpleFileTracker(int file_limit = 512);
+
+  SimpleFileTracker(const SimpleFileTracker&) = delete;
+  SimpleFileTracker& operator=(const SimpleFileTracker&) = delete;
+
   ~SimpleFileTracker();
 
   // Established |file| as what's backing |subfile| for |owner|. This is
@@ -105,7 +113,9 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
   // pressure, and that open may have failed. This should not be called twice
   // with the exact same arguments until the handle returned from the previous
   // such call is destroyed.
-  FileHandle Acquire(const SimpleSynchronousEntry* owner, SubFile subfile);
+  FileHandle Acquire(BackendFileOperations* file_operations,
+                     const SimpleSynchronousEntry* owner,
+                     SubFile subfile);
 
   // Tells SimpleFileTracker that SimpleSynchronousEntry will not be interested
   // in the file further, so it can be closed and forgotten about.  It's OK to
@@ -160,7 +170,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
     // 2) To get info on the caller of our operation.
     //    Accessing |owner| from any other TrackedFiles would be unsafe (as it
     //    may be doing its own thing in a different thread).
-    const SimpleSynchronousEntry* owner;
+    raw_ptr<const SimpleSynchronousEntry> owner;
     EntryFileKey key;
 
     // Some of these may be nullptr, if they are not open. Non-null pointers
@@ -176,7 +186,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
     // true if position_in_lru is valid. For entries where we closed everything,
     // we try not to keep them in the LRU so that we don't have to constantly
     // rescan them.
-    bool in_lru;
+    bool in_lru = false;
   };
 
   // Marks the file that was previously returned by Acquire as eligible for
@@ -197,7 +207,9 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
       std::vector<std::unique_ptr<base::File>>* files_to_close);
 
   // Tries to reopen given file, updating |*owners_files| if successful.
-  void ReopenFile(TrackedFiles* owners_files, SubFile subfile);
+  void ReopenFile(BackendFileOperations* file_operations,
+                  TrackedFiles* owners_files,
+                  SubFile subfile);
 
   // Makes sure the entry is marked as most recently used, adding it to LRU
   // if needed.
@@ -218,8 +230,6 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
   // number of threads, and getting it exact would require re-acquiring the
   // lock after closing the file.
   int open_files_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleFileTracker);
 };
 
 }  // namespace disk_cache

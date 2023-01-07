@@ -7,6 +7,7 @@
 <script>
   var t_script = async_test(
     "SRI with script with non-empty body after failed revalidation");
+  window.onload = () => t_script.step_timeout(revalidate_script, 0);
   function revalidate_script() {
     var script = document.createElement('script');
     script.integrity = "sha256-YsI40D9FX0QghiYVdxQyySP2TOmARkLC5uPRO8RL2dE=";
@@ -21,7 +22,6 @@
   src="../../cache/resources/etag-200-different.php?revalidation-failed-script"
   type="text/javascript"
   integrity="sha256-YsI40D9FX0QghiYVdxQyySP2TOmARkLC5uPRO8RL2dE="
-  onload="t_script.step_timeout(revalidate_script, 0)"
   onerror="t_script.unreached_func('First request should pass')()"
 ></script>
 </html>

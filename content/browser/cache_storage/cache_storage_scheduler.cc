@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/location.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/cache_storage/cache_storage_histogram_utils.h"
 #include "content/browser/cache_storage/cache_storage_operation.h"
@@ -52,8 +52,9 @@ bool OpPointerLessThan(const std::unique_ptr<CacheStorageOperation>& left,
 
 // Enables support for parallel cache_storage operations via the
 // "max_shared_ops" fieldtrial parameter.
-const base::Feature kCacheStorageParallelOps{"CacheStorageParallelOps",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kCacheStorageParallelOps,
+             "CacheStorageParallelOps",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 CacheStorageScheduler::CacheStorageScheduler(
     CacheStorageSchedulerClient client_type,

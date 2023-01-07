@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/files/file_path.h"
+#include "base/strings/string_piece_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Collection of test-only convenience functions.
 
@@ -23,8 +23,10 @@ namespace sql {
 class Database;
 }
 
-namespace sql {
-namespace test {
+namespace sql::test {
+
+// Read a database's page size. Returns nullopt in case of error.
+absl::optional<int> ReadDatabasePageSize(const base::FilePath& db_path);
 
 // SQLite stores the database size in the header, and if the actual
 // OS-derived size is smaller, the database is considered corrupt.
@@ -38,49 +40,31 @@ namespace test {
 // CorruptSizeInHeaderWithLock().
 //
 // Returns false if any error occurs accessing the file.
-bool CorruptSizeInHeader(const base::FilePath& db_path) WARN_UNUSED_RESULT;
-
-// Common implementation of CorruptSizeInHeader() which operates on loaded
-// memory. Shared between CorruptSizeInHeader() and the the mojo proxy testing
-// code.
-void CorruptSizeInHeaderMemory(unsigned char* header, int64_t db_size);
+[[nodiscard]] bool CorruptSizeInHeader(const base::FilePath& db_path);
 
 // Call CorruptSizeInHeader() while holding a SQLite-compatible lock
 // on the database.  This can be used to corrupt a database which is
 // already open elsewhere.  Blocks until a write lock can be acquired.
-bool CorruptSizeInHeaderWithLock(
-    const base::FilePath& db_path) WARN_UNUSED_RESULT;
+[[nodiscard]] bool CorruptSizeInHeaderWithLock(const base::FilePath& db_path);
 
-// Frequently corruption is a result of failure to atomically update
-// pages in different structures.  For instance, if an index update
-// takes effect but the corresponding table update does not.  This
-// helper restores the prior version of a b-tree root after running an
-// update which changed that b-tree.  The named b-tree must exist and
-// must be a leaf node (either index or table).  Returns true if the
-// on-disk file is successfully modified, and the restored page
-// differs from the updated page.
+// Simulates total index corruption by zeroing the root page of an index B-tree.
 //
-// The resulting database should be possible to open, and many
-// statements should work.  SQLITE_CORRUPT will be thrown if a query
-// through the index finds the row missing in the table.
-//
-// TODO(shess): It would be very helpful to allow a parameter to the
-// sql statement.  Perhaps a version with a string parameter would be
-// sufficient, given affinity rules?
-bool CorruptTableOrIndex(const base::FilePath& db_path,
-                         const char* tree_name,
-                         const char* update_sql) WARN_UNUSED_RESULT;
+// The corrupted database will still open successfully. SELECTs on the table
+// associated with the index will work, as long as they don't access the index.
+// However, any query that accesses the index will fail with SQLITE_CORRUPT.
+// DROPping the table or the index will fail.
+[[nodiscard]] bool CorruptIndexRootPage(const base::FilePath& db_path,
+                                        base::StringPiece index_name);
 
-// Return the number of tables in sqlite_master.
-size_t CountSQLTables(sql::Database* db) WARN_UNUSED_RESULT;
+// Return the number of tables in sqlite_schema.
+[[nodiscard]] size_t CountSQLTables(sql::Database* db);
 
-// Return the number of indices in sqlite_master.
-size_t CountSQLIndices(sql::Database* db) WARN_UNUSED_RESULT;
+// Return the number of indices in sqlite_schema.
+[[nodiscard]] size_t CountSQLIndices(sql::Database* db);
 
 // Returns the number of columns in the named table.  0 indicates an
 // error (probably no such table).
-size_t CountTableColumns(sql::Database* db,
-                         const char* table) WARN_UNUSED_RESULT;
+[[nodiscard]] size_t CountTableColumns(sql::Database* db, const char* table);
 
 // Sets |*count| to the number of rows in |table|.  Returns false in
 // case of error, such as the table not existing.
@@ -90,13 +74,11 @@ bool CountTableRows(sql::Database* db, const char* table, size_t* count);
 // at |sql_path|.  Returns false if |db_path| already exists, or if
 // sql_path does not exist or cannot be read, or if there is an error
 // executing the statements.
-bool CreateDatabaseFromSQL(const base::FilePath& db_path,
-                           const base::FilePath& sql_path) WARN_UNUSED_RESULT;
+[[nodiscard]] bool CreateDatabaseFromSQL(const base::FilePath& db_path,
+                                         const base::FilePath& sql_path);
 
-// Return the results of running "PRAGMA integrity_check" on |db|.
-// TODO(shess): sql::Database::IntegrityCheck() is basically the
-// same, but not as convenient for testing.  Maybe combine.
-std::string IntegrityCheck(sql::Database* db) WARN_UNUSED_RESULT;
+// Test-friendly wrapper around sql::Database::IntegrityCheck().
+[[nodiscard]] std::string IntegrityCheck(sql::Database& db);
 
 // ExecuteWithResult() executes |sql| and returns the first column of the first
 // row as a string.  The empty string is returned for no rows.  This makes it
@@ -135,10 +117,10 @@ struct ColumnInfo {
   //
   // This is a static method rather than a function so it can be listed in the
   // InternalApiToken access control list.
-  static ColumnInfo Create(sql::Database* db,
-                           const std::string& db_name,
-                           const std::string& table_name,
-                           const std::string& column_name) WARN_UNUSED_RESULT;
+  [[nodiscard]] static ColumnInfo Create(sql::Database* db,
+                                         const std::string& db_name,
+                                         const std::string& table_name,
+                                         const std::string& column_name);
 
   // The native data type. Example: "INTEGER".
   std::string data_type;
@@ -152,7 +134,6 @@ struct ColumnInfo {
   bool is_auto_incremented;
 };
 
-}  // namespace test
-}  // namespace sql
+}  // namespace sql::test
 
 #endif  // SQL_TEST_TEST_HELPERS_H_

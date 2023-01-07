@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/lazy_instance.h"
+#include "base/time/time.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/picture_layer.h"
 #include "content/public/browser/android/compositor.h"
@@ -24,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -36,67 +38,6 @@ using base::android::ScopedJavaLocalRef;
 
 namespace weblayer {
 
-namespace {
-
-// Setting the page's various background color is convoluted and brittle and
-// buggy. This is code inspired from chromeos views and should be considered
-// temporary until content API can be fixed to be more robust. This is
-// effectively only passing 1 bit of information, whether the background color
-// is fully transparent or not, as the actual color isn't used by anything.
-class WebContentsSetBackgroundColor
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<WebContentsSetBackgroundColor> {
- public:
-  static void Set(content::WebContents* web_contents,
-                  SkColor background_color) {
-    if (auto* set = FromWebContents(web_contents)) {
-      set->SetBackgroundColor(background_color);
-      return;
-    }
-
-    // SupportsUserData::Data takes ownership over the
-    // WebContentsSetBackgroundColor instance and will destroy it when the
-    // WebContents instance is destroyed.
-    web_contents->SetUserData(
-        UserDataKey(), base::WrapUnique(new WebContentsSetBackgroundColor(
-                           web_contents, background_color)));
-  }
-
-  ~WebContentsSetBackgroundColor() override = default;
-
- private:
-  friend class content::WebContentsUserData<WebContentsSetBackgroundColor>;
-  WebContentsSetBackgroundColor(content::WebContents* web_contents,
-                                SkColor color)
-      : content::WebContentsObserver(web_contents), color_(color) {}
-
-  // content::WebContentsObserver:
-  void RenderViewHostChanged(content::RenderViewHost* old_host,
-                             content::RenderViewHost* new_host) override {
-    new_host->GetWidget()->GetView()->SetBackgroundColor(color_);
-  }
-
-  void SetBackgroundColor(SkColor background_color) {
-    if (color_ == background_color)
-      return;
-
-    color_ = background_color;
-    web_contents()
-        ->GetRenderViewHost()
-        ->GetWidget()
-        ->GetView()
-        ->SetBackgroundColor(color_);
-  }
-
-  SkColor color_;
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
-};
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsSetBackgroundColor)
-
-}  // namespace
-
 ContentViewRenderView::ContentViewRenderView(JNIEnv* env,
                                              jobject obj,
                                              gfx::NativeWindow root_window)
@@ -105,13 +46,13 @@ ContentViewRenderView::ContentViewRenderView(JNIEnv* env,
 }
 
 ContentViewRenderView::~ContentViewRenderView() {
-  DCHECK(height_changed_listener_.is_null());
+  DCHECK(content_height_changed_listener_.is_null());
 }
 
-void ContentViewRenderView::SetHeightChangedListener(
+void ContentViewRenderView::SetContentHeightChangedListener(
     base::RepeatingClosure callback) {
-  DCHECK(height_changed_listener_.is_null() || callback.is_null());
-  height_changed_listener_ = std::move(callback);
+  DCHECK(content_height_changed_listener_.is_null() || callback.is_null());
+  content_height_changed_listener_ = std::move(callback);
 }
 
 // static
@@ -136,11 +77,8 @@ void ContentViewRenderView::SetCurrentWebContents(
   InitCompositor();
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
-  if (web_contents_) {
-    WebContentsSetBackgroundColor::Set(
-        web_contents_,
-        Java_ContentViewRenderView_getBackgroundColor(env, java_obj_));
-  }
+  if (web_contents_)
+    web_contents_->SetPageBaseBackgroundColor(absl::nullopt);
   if (web_contents_layer_)
     web_contents_layer_->RemoveFromParent();
 
@@ -153,14 +91,21 @@ void ContentViewRenderView::SetCurrentWebContents(
     root_container_layer_->AddChild(web_contents_layer_);
 }
 
+void ContentViewRenderView::OnViewportSizeChanged(JNIEnv* env,
+                                                  jint width,
+                                                  jint height) {
+  bool content_height_changed = content_height_ != height;
+  content_height_ = height;
+  if (content_height_changed && !content_height_changed_listener_.is_null())
+    content_height_changed_listener_.Run();
+}
+
 void ContentViewRenderView::OnPhysicalBackingSizeChanged(
     JNIEnv* env,
     const JavaParamRef<jobject>& jweb_contents,
     jint width,
     jint height,
     jboolean for_config_change) {
-  bool height_changed = height_ != height;
-  height_ = height;
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   gfx::Size size(width, height);
@@ -172,14 +117,11 @@ void ContentViewRenderView::OnPhysicalBackingSizeChanged(
   // is interacting with the page, in which case the timeout is too long.
   // For now, use the default long timeout only for rotation (ie config change)
   // and just use a zero timeout for all other cases.
-  base::Optional<base::TimeDelta> override_deadline;
+  absl::optional<base::TimeDelta> override_deadline;
   if (!for_config_change)
     override_deadline = base::TimeDelta();
   web_contents->GetNativeView()->OnPhysicalBackingSizeChanged(
       size, override_deadline);
-
-  if (height_changed && !height_changed_listener_.is_null())
-    height_changed_listener_.Run();
 }
 
 void ContentViewRenderView::SurfaceCreated(JNIEnv* env) {
@@ -206,16 +148,21 @@ void ContentViewRenderView::SurfaceChanged(
     jint width,
     jint height,
     jboolean transparent_background,
-    const JavaParamRef<jobject>& surface) {
+    const JavaParamRef<jobject>& new_surface) {
   use_transparent_background_ = transparent_background;
   UpdateWebContentsBaseBackgroundColor();
   compositor_->SetRequiresAlphaChannel(use_transparent_background_);
-  compositor_->SetSurface(surface, can_be_used_with_surface_control);
+  // Java side will pass a null `new_surface` if the surface did not change.
+  if (new_surface) {
+    compositor_->SetSurface(new_surface, can_be_used_with_surface_control);
+  }
   compositor_->SetWindowBounds(gfx::Size(width, height));
 }
 
 void ContentViewRenderView::SetNeedsRedraw(JNIEnv* env) {
-  compositor_->SetNeedsRedraw();
+  if (compositor_) {
+    compositor_->SetNeedsRedraw();
+  }
 }
 
 base::android::ScopedJavaLocalRef<jobject>
@@ -227,7 +174,22 @@ void ContentViewRenderView::UpdateBackgroundColor(JNIEnv* env) {
   if (!compositor_)
     return;
   compositor_->SetBackgroundColor(
-      Java_ContentViewRenderView_getBackgroundColor(env, java_obj_));
+      requires_alpha_channel_
+          ? SK_ColorTRANSPARENT
+          : Java_ContentViewRenderView_getBackgroundColor(env, java_obj_));
+}
+
+void ContentViewRenderView::SetRequiresAlphaChannel(
+    JNIEnv* env,
+    jboolean requires_alpha_channel) {
+  requires_alpha_channel_ = requires_alpha_channel;
+  UpdateBackgroundColor(env);
+}
+
+void ContentViewRenderView::SetDidSwapBuffersCallbackEnabled(JNIEnv* env,
+                                                             jboolean enable) {
+  InitCompositor();
+  compositor_->SetDidSwapBuffersCallbackEnabled(enable);
 }
 
 void ContentViewRenderView::UpdateLayerTreeHost() {
@@ -271,12 +233,9 @@ void ContentViewRenderView::InitCompositor() {
 void ContentViewRenderView::UpdateWebContentsBaseBackgroundColor() {
   if (!web_contents_)
     return;
-  JNIEnv* env = base::android::AttachCurrentThread();
-  WebContentsSetBackgroundColor::Set(
-      web_contents_,
-      use_transparent_background_
-          ? SK_ColorTRANSPARENT
-          : Java_ContentViewRenderView_getBackgroundColor(env, java_obj_));
+  web_contents_->SetPageBaseBackgroundColor(
+      use_transparent_background_ ? absl::make_optional(SK_ColorTRANSPARENT)
+                                  : absl::nullopt);
 }
 
 }  // namespace weblayer

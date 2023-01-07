@@ -36,30 +36,63 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
 
 namespace blink {
+
+namespace {
+
+}  // anonymous namespace
 
 FrameCaret::FrameCaret(LocalFrame& frame,
                        const SelectionEditor& selection_editor)
     : selection_editor_(&selection_editor),
       frame_(frame),
-      display_item_client_(new CaretDisplayItemClient()),
+      display_item_client_(MakeGarbageCollected<CaretDisplayItemClient>()),
       caret_blink_timer_(frame.GetTaskRunner(TaskType::kInternalDefault),
                          this,
-                         &FrameCaret::CaretBlinkTimerFired) {}
+                         &FrameCaret::CaretBlinkTimerFired),
+      effect_(EffectPaintPropertyNode::Create(
+          EffectPaintPropertyNode::Root(),
+          CaretEffectNodeState(/*visible*/ true,
+                               TransformPaintPropertyNode::Root()))) {
+#if DCHECK_IS_ON()
+  effect_->SetDebugName("Caret");
+#endif
+}
 
 FrameCaret::~FrameCaret() = default;
 
 void FrameCaret::Trace(Visitor* visitor) const {
   visitor->Trace(selection_editor_);
   visitor->Trace(frame_);
+  visitor->Trace(display_item_client_);
   visitor->Trace(caret_blink_timer_);
+}
+
+EffectPaintPropertyNode::State FrameCaret::CaretEffectNodeState(
+    bool visible,
+    const TransformPaintPropertyNodeOrAlias& local_transform_space) const {
+  EffectPaintPropertyNode::State state;
+  // Use 0.001f instead of 0 to ensure cc will add quad for the caret layer.
+  // This is especially useful on Mac to limit the damage during caret blinking
+  // within the CALayer for the caret.
+  state.opacity = visible ? 1.f : 0.001f;
+  state.local_transform_space = &local_transform_space;
+  DEFINE_STATIC_LOCAL(
+      CompositorElementId, element_id,
+      (CompositorElementIdFromUniqueObjectId(
+          NewUniqueObjectId(), CompositorElementIdNamespace::kPrimaryEffect)));
+  state.compositor_element_id = element_id;
+  state.direct_compositing_reasons = CompositingReason::kActiveOpacityAnimation;
+  return state;
 }
 
 const PositionWithAffinity FrameCaret::CaretPosition() const {
@@ -78,12 +111,6 @@ bool FrameCaret::IsActive() const {
 void FrameCaret::UpdateAppearance() {
   DCHECK_GE(frame_->GetDocument()->Lifecycle().GetState(),
             DocumentLifecycle::kLayoutClean);
-  // Paint a block cursor instead of a caret in overtype mode unless the caret
-  // is at the end of a line (in this case the FrameSelection will paint a
-  // blinking caret as usual).
-  const bool paint_block_cursor =
-      should_show_block_cursor_ && IsActive() &&
-      !IsLogicalEndOfLine(CreateVisiblePosition(CaretPosition()));
 
   bool new_should_show_caret = ShouldShowCaret();
   if (new_should_show_caret != should_show_caret_) {
@@ -91,8 +118,7 @@ void FrameCaret::UpdateAppearance() {
     ScheduleVisualUpdateForPaintInvalidationIfNeeded();
   }
 
-  bool should_blink = !paint_block_cursor && should_show_caret_;
-  if (!should_blink) {
+  if (!should_show_caret_) {
     StopCaretBlinkTimer();
     return;
   }
@@ -102,11 +128,11 @@ void FrameCaret::UpdateAppearance() {
 }
 
 void FrameCaret::StopCaretBlinkTimer() {
-  if (caret_blink_timer_.IsActive() ||
-      display_item_client_->IsVisibleIfActive())
+  if (caret_blink_timer_.IsActive() || IsVisibleIfActive())
     ScheduleVisualUpdateForPaintInvalidationIfNeeded();
-  display_item_client_->SetVisibleIfActive(false);
   caret_blink_timer_.Stop();
+  display_item_client_->SetActive(false);
+  SetVisibleIfActive(false);
 }
 
 void FrameCaret::StartBlinkCaret() {
@@ -119,7 +145,8 @@ void FrameCaret::StartBlinkCaret() {
   if (!blink_interval.is_zero())
     caret_blink_timer_.StartRepeating(blink_interval, FROM_HERE);
 
-  display_item_client_->SetVisibleIfActive(true);
+  display_item_client_->SetActive(true);
+  SetVisibleIfActive(true);
   ScheduleVisualUpdateForPaintInvalidationIfNeeded();
 }
 
@@ -151,7 +178,7 @@ void FrameCaret::InvalidatePaint(const LayoutBlock& block,
   display_item_client_->InvalidatePaint(block, context);
 }
 
-IntRect FrameCaret::AbsoluteCaretBounds() const {
+gfx::Rect FrameCaret::AbsoluteCaretBounds() const {
   DCHECK_NE(frame_->GetDocument()->Lifecycle().GetState(),
             DocumentLifecycle::kInPrePaint);
   DCHECK(!frame_->GetDocument()->NeedsLayoutTreeUpdate());
@@ -161,20 +188,59 @@ IntRect FrameCaret::AbsoluteCaretBounds() const {
   return AbsoluteCaretBoundsOf(CaretPosition());
 }
 
-void FrameCaret::SetShouldShowBlockCursor(bool should_show_block_cursor) {
-  should_show_block_cursor_ = should_show_block_cursor;
-  ScheduleVisualUpdateForPaintInvalidationIfNeeded();
-}
-
 bool FrameCaret::ShouldPaintCaret(const LayoutBlock& block) const {
   return display_item_client_->ShouldPaintCaret(block);
 }
 
+bool FrameCaret::ShouldPaintCaret(
+    const NGPhysicalBoxFragment& box_fragment) const {
+  return display_item_client_->ShouldPaintCaret(box_fragment);
+}
+
+void FrameCaret::SetVisibleIfActive(bool visible) {
+  if (visible == IsVisibleIfActive())
+    return;
+
+  DCHECK(frame_);
+  DCHECK(effect_);
+  if (!frame_->View())
+    return;
+
+  auto change_type = effect_->Update(
+      *effect_->Parent(),
+      CaretEffectNodeState(visible, effect_->LocalTransformSpace()));
+  DCHECK_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues, change_type);
+  if (auto* compositor = frame_->View()->GetPaintArtifactCompositor()) {
+    if (compositor->DirectlyUpdateCompositedOpacityValue(*effect_)) {
+      effect_->CompositorSimpleValuesUpdated();
+      return;
+    }
+  }
+  // Fallback to full update if direct update is not available.
+  frame_->View()->SetPaintArtifactCompositorNeedsUpdate(
+      PaintArtifactCompositorUpdateReason::kFrameCaretSetVisible);
+}
+
 void FrameCaret::PaintCaret(GraphicsContext& context,
                             const PhysicalOffset& paint_offset) const {
+  if (effect_->Update(
+          context.GetPaintController().CurrentPaintChunkProperties().Effect(),
+          CaretEffectNodeState(IsVisibleIfActive(),
+                               context.GetPaintController()
+                                   .CurrentPaintChunkProperties()
+                                   .Transform())) !=
+      PaintPropertyChangeType::kUnchanged) {
+    // Needs full PaintArtifactCompositor update if the parent or the local
+    // transform space changed.
+    frame_->View()->SetPaintArtifactCompositorNeedsUpdate(
+        PaintArtifactCompositorUpdateReason::kFrameCaretPaint);
+  }
+  ScopedPaintChunkProperties scoped_properties(context.GetPaintController(),
+                                               *effect_, *display_item_client_,
+                                               DisplayItem::kCaret);
+
   display_item_client_->PaintCaret(context, paint_offset, DisplayItem::kCaret);
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      frame_->Selection().IsHandleVisible() && !frame_->Selection().IsHidden())
+  if (frame_->Selection().IsHandleVisible() && !frame_->Selection().IsHidden())
     display_item_client_->RecordSelection(context, paint_offset);
 }
 
@@ -208,10 +274,9 @@ bool FrameCaret::ShouldShowCaret() const {
 
 void FrameCaret::CaretBlinkTimerFired(TimerBase*) {
   DCHECK(is_caret_enabled_);
-  if (IsCaretBlinkingSuspended() && display_item_client_->IsVisibleIfActive())
+  if (IsCaretBlinkingSuspended() && IsVisibleIfActive())
     return;
-  display_item_client_->SetVisibleIfActive(
-      !display_item_client_->IsVisibleIfActive());
+  SetVisibleIfActive(!IsVisibleIfActive());
   ScheduleVisualUpdateForPaintInvalidationIfNeeded();
 }
 
@@ -221,12 +286,10 @@ void FrameCaret::ScheduleVisualUpdateForPaintInvalidationIfNeeded() {
 }
 
 void FrameCaret::RecreateCaretBlinkTimerForTesting(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  caret_blink_timer_.MoveToNewTaskRunner(std::move(task_runner));
-}
-
-bool FrameCaret::IsVisibleIfActiveForTesting() const {
-  return display_item_client_->IsVisibleIfActive();
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const base::TickClock* tick_clock) {
+  caret_blink_timer_.SetTaskRunnerForTesting(std::move(task_runner),
+                                             tick_clock);
 }
 
 }  // namespace blink

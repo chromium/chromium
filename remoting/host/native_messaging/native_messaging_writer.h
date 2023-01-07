@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define REMOTING_HOST_NATIVE_MESSAGING_NATIVE_MESSAGING_WRITER_H_
 
 #include "base/files/file.h"
-#include "base/macros.h"
 
 namespace base {
 class Value;
@@ -19,6 +18,10 @@ namespace remoting {
 class NativeMessagingWriter {
  public:
   explicit NativeMessagingWriter(base::File file);
+
+  NativeMessagingWriter(const NativeMessagingWriter&) = delete;
+  NativeMessagingWriter& operator=(const NativeMessagingWriter&) = delete;
+
   ~NativeMessagingWriter();
 
   // Sends a message to the Native Messaging client, returning true if
@@ -28,8 +31,6 @@ class NativeMessagingWriter {
  private:
   base::File write_stream_;
   bool fail_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeMessagingWriter);
 };
 
 }  // namespace remoting

@@ -1,6 +1,8 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
 
 source_set("unit_tests") {
   testonly = true
@@ -9,9 +11,7 @@ source_set("unit_tests") {
 
   deps = [
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/browser",
-    "//chrome/browser/chromeos:chromeos",
     "//chrome/browser/webshare:storage",
     "//chrome/common",
     "//chrome/test:test_support",
@@ -20,4 +20,8 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//chrome/browser/ash" ]
+  }
 }

@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_TRACING_PUBLIC_CPP_STACK_SAMPLING_STACK_SAMPLER_ANDROID_H_
 #define SERVICES_TRACING_PUBLIC_CPP_STACK_SAMPLING_STACK_SAMPLER_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
 #include "base/profiler/stack_sampler.h"
@@ -30,11 +31,12 @@ class StackSamplerAndroid : public base::StackSampler {
   // StackSampler:
   void AddAuxUnwinder(std::unique_ptr<base::Unwinder> unwinder) override;
   void RecordStackFrames(base::StackBuffer* stack_buffer,
-                         base::ProfileBuilder* profile_builder) override;
+                         base::ProfileBuilder* profile_builder,
+                         base::PlatformThreadId thread_id) override;
 
  private:
   base::SamplingProfilerThreadToken thread_token_;
-  base::ModuleCache* module_cache_;
+  raw_ptr<base::ModuleCache> module_cache_;
   StackUnwinderAndroid unwinder_;
 };
 

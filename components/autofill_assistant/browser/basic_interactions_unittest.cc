@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,12 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/mock_callback.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill_assistant/browser/fake_script_executor_delegate.h"
+#include "components/autofill_assistant/browser/actions/action_test_utils.h"
+#include "components/autofill_assistant/browser/fake_script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/generic_ui.pb.h"
+#include "components/autofill_assistant/browser/mock_execution_delegate.h"
+#include "components/autofill_assistant/browser/test_util.h"
+#include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/user_model.h"
 #include "components/autofill_assistant/browser/value_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,6 +25,8 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Property;
+using ::testing::Return;
+using ::testing::ReturnRef;
 using ::testing::StrEq;
 namespace {
 DateProto CreateDateProto(int year, int month, int day) {
@@ -33,14 +39,28 @@ DateProto CreateDateProto(int year, int month, int day) {
 }  // namespace
 
 class BasicInteractionsTest : public testing::Test {
+ public:
+  void SetUp() override {
+    ON_CALL(execution_delegate_, GetClientSettings)
+        .WillByDefault(ReturnRef(settings_));
+    ON_CALL(execution_delegate_, GetUserModel)
+        .WillByDefault(Return(&user_model_));
+  }
+
  protected:
-  BasicInteractionsTest() { delegate_.SetUserModel(&user_model_); }
+  BasicInteractionsTest() {}
   ~BasicInteractionsTest() override {}
 
-  FakeScriptExecutorDelegate delegate_;
+  FakeScriptExecutorUiDelegate ui_delegate_;
+  MockExecutionDelegate execution_delegate_;
+  ClientSettings settings_;
   UserModel user_model_;
-  BasicInteractions basic_interactions_{&delegate_};
+  BasicInteractions basic_interactions_{&ui_delegate_, &execution_delegate_};
 };
+
+TEST_F(BasicInteractionsTest, GetWeakPtr) {
+  EXPECT_EQ(basic_interactions_.GetWeakPtr().get(), &basic_interactions_);
+}
 
 TEST_F(BasicInteractionsTest, SetValue) {
   SetModelValueProto proto;
@@ -52,6 +72,109 @@ TEST_F(BasicInteractionsTest, SetValue) {
   proto.set_model_identifier("output");
   EXPECT_TRUE(basic_interactions_.SetValue(proto));
   EXPECT_EQ(user_model_.GetValue("output"), proto.value().value());
+}
+
+TEST_F(BasicInteractionsTest, SetUserActions) {
+  SetUserActionsProto proto;
+  // UserActions not set
+  EXPECT_FALSE(basic_interactions_.SetUserActions(proto));
+
+  // UserActions value not set
+  proto.mutable_user_actions();
+  EXPECT_FALSE(basic_interactions_.SetUserActions(proto));
+
+  // UserActions value doesn't have any actions
+  ValueProto done_user_actions_value;
+  *proto.mutable_user_actions()->mutable_value() = done_user_actions_value;
+  EXPECT_FALSE(basic_interactions_.SetUserActions(proto));
+
+  // Successfully set user action
+  UserActionProto done_user_action;
+  done_user_action.set_identifier("done_identifier");
+  done_user_action.mutable_chip()->set_type(ChipType::HIGHLIGHTED_ACTION);
+  done_user_action.mutable_chip()->set_text("Done");
+  done_user_action.set_enabled(true);
+  *done_user_actions_value.mutable_user_actions()->add_values() =
+      done_user_action;
+  *proto.mutable_user_actions()->mutable_value() = done_user_actions_value;
+  EXPECT_TRUE(basic_interactions_.SetUserActions(proto));
+
+  EXPECT_THAT(*ui_delegate_.GetUserActions(),
+              ElementsAre(AllOf(
+                  Property(&UserAction::identifier, StrEq("done_identifier")),
+                  Property(&UserAction::has_chip, Eq(true)),
+                  Property(&UserAction::enabled, Eq(true)))));
+
+  // Successfully replace user actions
+  ValueProto cancel_user_actions_value;
+  UserActionProto cancel_user_action;
+  cancel_user_action.set_identifier("cancel_identifier");
+  cancel_user_action.mutable_chip()->set_type(ChipType::CANCEL_ACTION);
+  cancel_user_action.mutable_chip()->set_text("Cancel");
+  cancel_user_action.set_enabled(false);
+  *cancel_user_actions_value.mutable_user_actions()->add_values() =
+      cancel_user_action;
+  *proto.mutable_user_actions()->mutable_value() = cancel_user_actions_value;
+  EXPECT_TRUE(basic_interactions_.SetUserActions(proto));
+
+  EXPECT_THAT(*ui_delegate_.GetUserActions(),
+              ElementsAre(AllOf(
+                  Property(&UserAction::identifier, StrEq("cancel_identifier")),
+                  Property(&UserAction::has_chip, Eq(true)),
+                  Property(&UserAction::enabled, Eq(false)))));
+}
+
+TEST_F(BasicInteractionsTest, ComputeValueNoKindOrValue) {
+  // Kind not set
+  ComputeValueProto proto_no_kind_or_value;
+  proto_no_kind_or_value.set_result_model_identifier("output");
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_no_kind_or_value));
+
+  // Kind set but no value was added
+  ComputeValueProto proto_boolean_and;
+  proto_boolean_and.set_result_model_identifier("output");
+  proto_boolean_and.mutable_boolean_and();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_boolean_and));
+
+  ComputeValueProto proto_boolean_or;
+  proto_boolean_or.set_result_model_identifier("output");
+  proto_boolean_or.mutable_boolean_or();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_boolean_or));
+
+  ComputeValueProto proto_boolean_not;
+  proto_boolean_not.set_result_model_identifier("output");
+  proto_boolean_not.mutable_boolean_not();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_boolean_not));
+
+  ComputeValueProto proto_to_string;
+  proto_to_string.set_result_model_identifier("output");
+  proto_to_string.mutable_to_string();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_to_string));
+
+  ComputeValueProto proto_comparison;
+  proto_comparison.set_result_model_identifier("output");
+  proto_comparison.mutable_comparison();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_comparison));
+
+  ComputeValueProto proto_integer_sum;
+  proto_integer_sum.set_result_model_identifier("output");
+  proto_integer_sum.mutable_integer_sum();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_integer_sum));
+
+  ComputeValueProto proto_credit_card_response;
+  proto_credit_card_response.set_result_model_identifier("output");
+  proto_credit_card_response.mutable_create_credit_card_response();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_credit_card_response));
+
+  ComputeValueProto proto_login_options_response;
+  proto_login_options_response.set_result_model_identifier("output");
+  proto_login_options_response.mutable_create_login_option_response();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_login_options_response));
+
+  ComputeValueProto proto_string_empty;
+  proto_string_empty.set_result_model_identifier("output");
+  proto_string_empty.mutable_string_empty();
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto_string_empty));
 }
 
 TEST_F(BasicInteractionsTest, ComputeValueBooleanAnd) {
@@ -242,12 +365,24 @@ TEST_F(BasicInteractionsTest, ComputeValueToString) {
   credit_cards_value.mutable_credit_cards()->add_values()->set_guid(
       credit_card_b.guid());
   user_model_.SetValue("value", credit_cards_value);
-  // Formatting credit cards fails if pattern or locale are not set.
+  // Formatting credit cards fails if value_expression or locale are not set.
   proto.mutable_to_string()->mutable_autofill_format()->set_locale("en-US");
   EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
   // {name} {network} **** {last-4-digits} ({month/year})
-  proto.mutable_to_string()->mutable_autofill_format()->set_pattern(
-      "${51}. ${-5} **** ${-4} (${53}/${54})");
+  *proto.mutable_to_string()
+       ->mutable_autofill_format()
+       ->mutable_value_expression() = test_util::ValueExpressionBuilder()
+                                          .addChunk(51)
+                                          .addChunk(". ")
+                                          .addChunk(-5)
+                                          .addChunk(" **** ")
+                                          .addChunk(-4)
+                                          .addChunk(" (")
+                                          .addChunk(53)
+                                          .addChunk("/")
+                                          .addChunk(54)
+                                          .addChunk(")")
+                                          .toProto();
   EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
   ValueProto expected_result;
   expected_result.mutable_strings()->add_values(
@@ -279,11 +414,24 @@ TEST_F(BasicInteractionsTest, ComputeValueToString) {
   profiles_value.mutable_profiles()->add_values()->set_guid(profile_a.guid());
   profiles_value.mutable_profiles()->add_values()->set_guid(profile_b.guid());
   user_model_.SetValue("value", profiles_value);
-  // Formatting profiles fails if pattern is not set.
+  // Formatting profiles fails if value_expression is empty.
   EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
   // {name_full}, {address_line_1} {address_line_2} {zip code} {city} {country}
-  proto.mutable_to_string()->mutable_autofill_format()->set_pattern(
-      "${7} ${30} ${31} ${35} ${33} ${36}");
+  *proto.mutable_to_string()
+       ->mutable_autofill_format()
+       ->mutable_value_expression() = test_util::ValueExpressionBuilder()
+                                          .addChunk(7)
+                                          .addChunk(" ")
+                                          .addChunk(30)
+                                          .addChunk(" ")
+                                          .addChunk(31)
+                                          .addChunk(" ")
+                                          .addChunk(35)
+                                          .addChunk(" ")
+                                          .addChunk(33)
+                                          .addChunk(" ")
+                                          .addChunk(36)
+                                          .toProto();
   EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
   expected_result.Clear();
   expected_result.mutable_strings()->add_values(
@@ -378,6 +526,107 @@ TEST_F(BasicInteractionsTest, ComputeValueIntegerSum) {
   EXPECT_TRUE(user_model_.GetValue("result")->is_client_side_only());
 }
 
+TEST_F(BasicInteractionsTest, ComputeValueArrayLength) {
+  ComputeValueProto proto;
+  proto.set_result_model_identifier("result");
+  proto.mutable_array_length();
+
+  // Missing fields.
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+
+  // Add missing field, but |value| doesn't exist in |user_model_|
+  proto.mutable_array_length()->mutable_value()->set_model_identifier("value");
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+
+  // Empty value
+  user_model_.SetValue("value", ValueProto());
+  EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
+  EXPECT_EQ(user_model_.GetValue("result"), SimpleValue(0));
+
+  // Empty array
+  ValueProto value;
+  value.mutable_ints();
+  user_model_.SetValue("value", value);
+  EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
+  EXPECT_EQ(user_model_.GetValue("result"), SimpleValue(0));
+
+  // Non-Empty array
+  value.mutable_ints()->add_values(5);
+  value.mutable_ints()->add_values(6);
+  user_model_.SetValue("value", value);
+  EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
+  EXPECT_EQ(user_model_.GetValue("result"), SimpleValue(2));
+}
+
+TEST_F(BasicInteractionsTest, RequestBackendDataWithoutCallbackFails) {
+  EndActionProto proto;
+  EXPECT_FALSE(
+      basic_interactions_.RequestBackendData(RequestBackendDataProto{}));
+}
+
+TEST_F(BasicInteractionsTest, RequestBackendDataWithCallbackSucceeds) {
+  base::MockCallback<
+      base::RepeatingCallback<void(const RequestBackendDataProto&)>>
+      callback;
+  basic_interactions_.SetRequestBackendDataCallback(callback.Get());
+  RequestBackendDataProto request;
+  request.set_output_success_model_identifier("output_success");
+  EXPECT_CALL(
+      callback,
+      Run(Property(&RequestBackendDataProto::output_success_model_identifier,
+                   "output_success")));
+  EXPECT_TRUE(basic_interactions_.RequestBackendData(request));
+}
+
+TEST_F(BasicInteractionsTest, RequestBackendDataFailOnClearedCallbacks) {
+  base::MockCallback<
+      base::RepeatingCallback<void(const RequestBackendDataProto&)>>
+      callback;
+  basic_interactions_.SetRequestBackendDataCallback(callback.Get());
+  RequestBackendDataProto request;
+  request.set_output_success_model_identifier("output_success");
+  EXPECT_CALL(
+      callback,
+      Run(Property(&RequestBackendDataProto::output_success_model_identifier,
+                   "output_success")));
+  EXPECT_TRUE(basic_interactions_.RequestBackendData(request));
+
+  EXPECT_CALL(callback, Run(request)).Times(0);
+  basic_interactions_.ClearCallbacks();
+  EXPECT_FALSE(basic_interactions_.RequestBackendData(request));
+}
+
+TEST_F(BasicInteractionsTest, ShowAccountScreenFails) {
+  EndActionProto proto;
+  EXPECT_FALSE(basic_interactions_.ShowAccountScreen(ShowAccountScreenProto{}));
+}
+
+TEST_F(BasicInteractionsTest, ShowAccountScreenSucceeds) {
+  base::MockCallback<
+      base::RepeatingCallback<void(const ShowAccountScreenProto&)>>
+      callback;
+  basic_interactions_.SetShowAccountScreenCallback(callback.Get());
+  ShowAccountScreenProto proto;
+  proto.set_gms_account_intent_screen_id(10004);
+  EXPECT_CALL(callback, Run(proto));
+  EXPECT_TRUE(basic_interactions_.ShowAccountScreen(proto));
+}
+
+TEST_F(BasicInteractionsTest, ShowAccountScreenFailOnClearedCallbacks) {
+  base::MockCallback<
+      base::RepeatingCallback<void(const ShowAccountScreenProto&)>>
+      callback;
+  basic_interactions_.SetShowAccountScreenCallback(callback.Get());
+  ShowAccountScreenProto proto;
+  proto.set_gms_account_intent_screen_id(10004);
+  EXPECT_CALL(callback, Run(proto));
+  EXPECT_TRUE(basic_interactions_.ShowAccountScreen(proto));
+
+  EXPECT_CALL(callback, Run(proto)).Times(0);
+  basic_interactions_.ClearCallbacks();
+  EXPECT_FALSE(basic_interactions_.ShowAccountScreen(proto));
+}
+
 TEST_F(BasicInteractionsTest, EndActionWithoutCallbackFails) {
   EndActionProto proto;
   EXPECT_FALSE(basic_interactions_.EndAction(ClientStatus(INVALID_ACTION)));
@@ -398,7 +647,31 @@ TEST_F(BasicInteractionsTest, NotifyViewInflationFinishedRunsCallback) {
 
   EXPECT_CALL(callback,
               Run(Property(&ClientStatus::proto_status, ACTION_APPLIED)));
-  basic_interactions_.NotifyViewInflationFinished(ClientStatus(ACTION_APPLIED));
+  EXPECT_TRUE(basic_interactions_.NotifyViewInflationFinished(
+      ClientStatus(ACTION_APPLIED)));
+}
+
+TEST_F(BasicInteractionsTest, NotifyPersistentViewInflationFinishedCallback) {
+  base::MockCallback<base::OnceCallback<void(const ClientStatus&)>> callback;
+
+  // |persistent_view_inflation_finished_callback_| not set
+  EXPECT_FALSE(basic_interactions_.NotifyPersistentViewInflationFinished(
+      ClientStatus(ACTION_APPLIED)));
+
+  basic_interactions_.SetPersistentViewInflationFinishedCallback(
+      callback.Get());
+  EXPECT_CALL(callback,
+              Run(Property(&ClientStatus::proto_status, ACTION_APPLIED)));
+
+  EXPECT_TRUE(basic_interactions_.NotifyPersistentViewInflationFinished(
+      ClientStatus(ACTION_APPLIED)));
+
+  // |persistent_view_inflation_finished_callback_| cleared
+  basic_interactions_.SetPersistentViewInflationFinishedCallback(
+      callback.Get());
+  basic_interactions_.ClearPersistentUiCallbacks();
+  EXPECT_FALSE(basic_interactions_.NotifyPersistentViewInflationFinished(
+      ClientStatus(ACTION_APPLIED)));
 }
 
 TEST_F(BasicInteractionsTest, EndActionResetsViewInflationCallback) {
@@ -633,6 +906,33 @@ TEST_F(BasicInteractionsTest, ComputeValueCreateLoginOptionResponse) {
   EXPECT_EQ(user_model_.GetValue("result"), expected_response_value);
 }
 
+TEST_F(BasicInteractionsTest, ComputeValueCreateLoginOptionResponseWithTag) {
+  ComputeValueProto proto;
+  proto.mutable_create_login_option_response();
+
+  // Missing fields.
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+  proto.mutable_create_login_option_response()
+      ->mutable_value()
+      ->set_model_identifier("value");
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+  proto.set_result_model_identifier("result");
+  EXPECT_FALSE(basic_interactions_.ComputeValue(proto));
+
+  ValueProto value;
+  value.mutable_login_options()->add_values()->set_tag("tag");
+  value.set_is_client_side_only(true);
+  user_model_.SetValue("value", value);
+  EXPECT_TRUE(basic_interactions_.ComputeValue(proto));
+
+  // LoginOptionResponseProto is allowed to extract the payload from
+  // client-only values.
+  ValueProto expected_response_value;
+  expected_response_value.mutable_strings()->add_values("tag");
+  expected_response_value.set_is_client_side_only(false);
+  EXPECT_EQ(user_model_.GetValue("result"), expected_response_value);
+}
+
 TEST_F(BasicInteractionsTest, ComputeStringEmpty) {
   ComputeValueProto proto;
   proto.set_result_model_identifier("result");
@@ -750,6 +1050,15 @@ TEST_F(BasicInteractionsTest, RunConditionalCallback) {
   user_model_.SetValue("condition", SimpleValue(true));
   EXPECT_TRUE(
       basic_interactions_.RunConditionalCallback("condition", callback.Get()));
+}
+
+TEST_F(BasicInteractionsTest, GetClientSettings) {
+  settings_.display_strings_locale = "hi-IN";
+  EXPECT_EQ(basic_interactions_.GetClientSettings().display_strings_locale,
+            "hi-IN");
+  settings_.display_strings_locale = "";
+  EXPECT_TRUE(
+      basic_interactions_.GetClientSettings().display_strings_locale.empty());
 }
 
 }  // namespace autofill_assistant

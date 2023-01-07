@@ -1,9 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/formats/mp4/hevc.h"
-#include "base/stl_util.h"
+
 #include "media/formats/mp4/nalu_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,7 +21,7 @@ TEST(HEVCAnalyzeAnnexBTest, ValidAnnexBConstructs) {
       {"AUD SPS P", false}, {"AUD,I", true},   {"AUD,SPS,I", true},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
     HevcStringToAnnexB(test_cases[i].case_string, &buf, nullptr);
@@ -39,16 +39,16 @@ TEST(HEVCAnalyzeAnnexBTest, ValidAnnexBConstructs) {
 TEST(HEVCAnalyzeAnnexBTest, InvalidAnnexBConstructs) {
   struct {
     const char* case_string;
-    const base::Optional<bool> is_keyframe;
+    const absl::optional<bool> is_keyframe;
   } test_cases[] = {
       // For these cases, lack of conformance is determined before detecting any
       // IDR or non-IDR slices, so the non-conformant frames' keyframe analysis
-      // reports base::nullopt (which means undetermined analysis result).
-      {"AUD", base::nullopt},        // No VCL present.
-      {"AUD,SPS", base::nullopt},    // No VCL present.
-      {"SPS AUD I", base::nullopt},  // Parameter sets must come after AUD.
-      {"EOS", base::nullopt},        // EOS must come after a VCL.
-      {"EOB", base::nullopt},        // EOB must come after a VCL.
+      // reports absl::nullopt (which means undetermined analysis result).
+      {"AUD", absl::nullopt},        // No VCL present.
+      {"AUD,SPS", absl::nullopt},    // No VCL present.
+      {"SPS AUD I", absl::nullopt},  // Parameter sets must come after AUD.
+      {"EOS", absl::nullopt},        // EOS must come after a VCL.
+      {"EOB", absl::nullopt},        // EOB must come after a VCL.
 
       // For these cases, IDR slice is first VCL and is detected before
       // conformance failure, so the non-conformant frame is reported as a
@@ -65,7 +65,7 @@ TEST(HEVCAnalyzeAnnexBTest, InvalidAnnexBConstructs) {
   BitstreamConverter::AnalysisResult expected;
   expected.is_conformant = false;
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
     HevcStringToAnnexB(test_cases[i].case_string, &buf, nullptr);

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,12 @@ class TestDiceWebSigninInterceptorDelegate
     std::move(callback).Run(SigninInterceptionResult::kDeclined);
     return nullptr;
   }
-  void ShowProfileCustomizationBubble(Browser* browser) override {}
+
+  void ShowFirstRunExperienceInNewProfile(
+      Browser* browser,
+      const CoreAccountId& account_id,
+      DiceWebSigninInterceptor::SigninInterceptionType interception_type)
+      override {}
 };
 
 class MockDiceWebSigninInterceptor : public DiceWebSigninInterceptor {
@@ -93,7 +98,7 @@ class ProcessDiceHeaderDelegateImplTest
       InitializeIdentityTestEnvironment();
     if (is_primary) {
       identity_test_environment_profile_adaptor_->identity_test_env()
-          ->SetPrimaryAccount(email_);
+          ->SetPrimaryAccount(email_, signin::ConsentLevel::kSync);
     } else {
       identity_test_environment_profile_adaptor_->identity_test_env()
           ->MakeAccountAvailable(email_);
@@ -110,7 +115,7 @@ class ProcessDiceHeaderDelegateImplTest
   std::unique_ptr<ProcessDiceHeaderDelegateImpl>
   CreateDelegateAndNavigateToSignin(
       bool is_sync_signin_tab,
-      Reason reason = Reason::REASON_SIGNIN_PRIMARY_ACCOUNT) {
+      Reason reason = Reason::kSigninPrimaryAccount) {
     signin_reason_ = reason;
     if (!identity_test_environment_profile_adaptor_)
       InitializeIdentityTestEnvironment();
@@ -194,7 +199,7 @@ class ProcessDiceHeaderDelegateImplTest
   CoreAccountId account_id_;
   std::string email_;
   GoogleServiceAuthError auth_error_;
-  Reason signin_reason_ = Reason::REASON_SIGNIN_PRIMARY_ACCOUNT;
+  Reason signin_reason_ = Reason::kSigninPrimaryAccount;
 };
 
 // Check that sync is enabled if the tab is closed during signin.
@@ -327,12 +332,12 @@ struct TokenExchangeSuccessConfiguration {
 
 TokenExchangeSuccessConfiguration kHandleTokenExchangeSuccessTestCases[] = {
     // clang-format off
-    // is_reauth | signin_tab |       reason                       | sync_signin
-    {  false,      false,     Reason::REASON_SIGNIN_PRIMARY_ACCOUNT, false },
-    {  false,      true,      Reason::REASON_SIGNIN_PRIMARY_ACCOUNT, true },
-    {  false,      true,      Reason::REASON_ADD_SECONDARY_ACCOUNT,  false },
-    {  true,       false,     Reason::REASON_SIGNIN_PRIMARY_ACCOUNT, false },
-    {  true,       true,      Reason::REASON_SIGNIN_PRIMARY_ACCOUNT, true },
+    // is_reauth | signin_tab |       reason               | sync_signin
+    {  false,      false,     Reason::kSigninPrimaryAccount, false },
+    {  false,      true,      Reason::kSigninPrimaryAccount, true },
+    {  false,      true,      Reason::kAddSecondaryAccount,  false },
+    {  true,       false,     Reason::kSigninPrimaryAccount, false },
+    {  true,       true,      Reason::kSigninPrimaryAccount, true },
     // clang-format on
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ template<typename T> bool BufferReader::Read(T* v) {
   RCHECK(HasBytes(sizeof(T)));
 
   // MPEG-4 uses big endian byte order
-  base::ReadBigEndian(reinterpret_cast<const char*>(buf_ + pos_), v);
+  base::ReadBigEndian(buf_ + pos_, v);
   pos_ += sizeof(T);
   return true;
 }

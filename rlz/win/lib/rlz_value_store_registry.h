@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "rlz/lib/rlz_value_store.h"
 
 namespace rlz_lib {
@@ -17,6 +16,9 @@ namespace rlz_lib {
 // Implements RlzValueStore by storing values in the windows registry.
 class RlzValueStoreRegistry : public RlzValueStore {
  public:
+  RlzValueStoreRegistry(const RlzValueStoreRegistry&) = delete;
+  RlzValueStoreRegistry& operator=(const RlzValueStoreRegistry&) = delete;
+
   static std::wstring GetWideLibKeyName();
 
   bool HasAccess(AccessType type) override;
@@ -50,7 +52,6 @@ class RlzValueStoreRegistry : public RlzValueStore {
 
  private:
   RlzValueStoreRegistry() {}
-  DISALLOW_COPY_AND_ASSIGN(RlzValueStoreRegistry);
   friend class ScopedRlzValueStoreLock;
 };
 

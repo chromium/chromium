@@ -1,12 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(
       `Tests single resource search in inspector page agent with non existing resource url does not cause a crash.\n`);
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('application_test_runner');
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.addIframe('resources/search.html');
   await TestRunner
@@ -20,8 +20,7 @@
     var resource = Bindings.resourceForURL('http://127.0.0.1:8000/devtools/search/resources/search.js');
     var url = 'http://127.0.0.1:8000/devtools/search/resources/non-existing.js';
     var response = await TestRunner.PageAgent.invoke_searchInResource({frameId: resource.frameId, url, query: text});
-    TestRunner.addResult(
-        response[ProtocolClient.InspectorBackend.ProtocolError]);
+    TestRunner.addResult(response.getError());
     TestRunner.completeTest();
   }
 })();

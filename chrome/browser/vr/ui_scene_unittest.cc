@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@
 #include "chrome/browser/vr/test/animation_utils.h"
 #include "chrome/browser/vr/test/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/geometry/vector3d_f.h"
-#include "ui/gfx/transform_util.h"
 
 #define TOLERANCE 0.0001
 
@@ -142,12 +142,10 @@ TEST(UiScene, ParentTransformAppliesToChild) {
   UiElement* child = element.get();
   parent->AddChild(std::move(element));
 
-  gfx::Point3F origin(0, 0, 0);
-  gfx::Point3F point(1, 0, 0);
-
   scene.OnBeginFrame(gfx::MsToTicks(0), kStartHeadPose);
-  child->world_space_transform().TransformPoint(&origin);
-  child->world_space_transform().TransformPoint(&point);
+  gfx::Point3F origin = child->world_space_transform().MapPoint(gfx::Point3F());
+  gfx::Point3F point =
+      child->world_space_transform().MapPoint(gfx::Point3F(1, 0, 0));
   EXPECT_VEC3F_NEAR(gfx::Point3F(6, 10, 0), origin);
   EXPECT_VEC3F_NEAR(gfx::Point3F(0, 10, 0), point);
 }

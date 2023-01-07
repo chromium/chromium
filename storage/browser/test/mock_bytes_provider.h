@@ -1,10 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef STORAGE_BROWSER_TEST_MOCK_BYTES_PROVIDER_H_
 #define STORAGE_BROWSER_TEST_MOCK_BYTES_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom.h"
 
@@ -20,7 +22,7 @@ class MockBytesProvider : public blink::mojom::BytesProvider {
       size_t* reply_request_count = nullptr,
       size_t* stream_request_count = nullptr,
       size_t* file_request_count = nullptr,
-      base::Optional<base::Time> file_modification_time = base::Time());
+      absl::optional<base::Time> file_modification_time = base::Time());
   ~MockBytesProvider() override;
 
   // BytesProvider implementation:
@@ -34,10 +36,10 @@ class MockBytesProvider : public blink::mojom::BytesProvider {
 
  private:
   std::vector<uint8_t> data_;
-  size_t* reply_request_count_;
-  size_t* stream_request_count_;
-  size_t* file_request_count_;
-  base::Optional<base::Time> file_modification_time_;
+  raw_ptr<size_t> reply_request_count_;
+  raw_ptr<size_t> stream_request_count_;
+  raw_ptr<size_t> file_request_count_;
+  absl::optional<base::Time> file_modification_time_;
 };
 
 }  // namespace storage

@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_bounds_observer.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "chrome/browser/apps/platform_apps/app_window_registry_util.h"
@@ -12,8 +13,9 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "ui/aura/window.h"
-#include "ui/base/ime/chromeos/ime_bridge.h"
+#include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
@@ -59,6 +61,18 @@ ChromeKeyboardBoundsObserver::~ChromeKeyboardBoundsObserver() {
 
   ChromeKeyboardControllerClient::Get()->RemoveObserver(this);
   CHECK(!views::WidgetObserver::IsInObserverList());
+}
+
+void ChromeKeyboardBoundsObserver::OnKeyboardVisibleBoundsChanged(
+    const gfx::Rect& screen_bounds) {
+  std::unique_ptr<content::RenderWidgetHostIterator> hosts(
+      content::RenderWidgetHost::GetRenderWidgetHosts());
+
+  while (content::RenderWidgetHost* host = hosts->GetNextHost()) {
+    content::RenderWidgetHostView* view = host->GetView();
+    if (view)
+      view->NotifyVirtualKeyboardOverlayRect(screen_bounds);
+  }
 }
 
 void ChromeKeyboardBoundsObserver::OnKeyboardOccludedBoundsChanged(
@@ -165,6 +179,11 @@ void ChromeKeyboardBoundsObserver::OnWidgetDestroying(views::Widget* widget) {
 void ChromeKeyboardBoundsObserver::UpdateInsets(
     aura::Window* window,
     content::RenderWidgetHostView* view) {
+  if (view->GetVirtualKeyboardMode() ==
+      ui::mojom::VirtualKeyboardMode::kOverlaysContent) {
+    view->SetInsets(gfx::Insets());
+    return;
+  }
   gfx::Rect view_bounds_in_screen = view->GetViewBounds();
   if (!ShouldEnableInsets(window)) {
     DVLOG(2) << "ResetInsets: " << window->GetName()
@@ -179,7 +198,7 @@ void ChromeKeyboardBoundsObserver::UpdateInsets(
            << " Bounds: " << view_bounds_in_screen.ToString()
            << " Overlap: " << overlap;
   if (overlap > 0 && overlap < view_bounds_in_screen.height())
-    view->SetInsets(gfx::Insets(0, 0, overlap, 0));
+    view->SetInsets(gfx::Insets::TLBR(0, 0, overlap, 0));
   else
     view->SetInsets(gfx::Insets());
 }

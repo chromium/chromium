@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,11 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 
-#include "base/macros.h"
 #include "base/version.h"
+#include "extensions/browser/updater/extension_downloader_task.h"
+#include "extensions/browser/updater/extension_downloader_types.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "url/gurl.h"
@@ -47,42 +49,6 @@ class ManifestFetchData {
     ACTIVE,
   };
 
-  // What is the priority of the update request.
-  enum FetchPriority {
-    // Used for update requests not initiated by a user, for example regular
-    // extension updates started by the scheduler.
-    BACKGROUND,
-
-    // Used for on-demate update requests i.e. requests initiated by a users.
-    FOREGROUND,
-  };
-
-  struct PingData {
-    // The number of days it's been since our last rollcall or active ping,
-    // respectively. These are calculated based on the start of day from the
-    // server's perspective.
-    int rollcall_days;
-    int active_days;
-
-    // Whether the extension is enabled or not.
-    bool is_enabled;
-
-    // A bitmask of disable_reason::DisableReason's, which may contain one or
-    // more reasons why an extension is disabled.
-    int disable_reasons;
-
-    PingData()
-        : rollcall_days(0),
-          active_days(0),
-          is_enabled(true),
-          disable_reasons(0) {}
-    PingData(int rollcall, int active, bool enabled, int reasons)
-        : rollcall_days(rollcall),
-          active_days(active),
-          is_enabled(enabled),
-          disable_reasons(reasons) {}
-  };
-
   // Returns a string to use for reporting an extension's install location.
   // Some locations with a common purpose, such as the external locations, are
   // grouped together and will return the same string.
@@ -93,7 +59,11 @@ class ManifestFetchData {
                     const std::string& brand_code,
                     const std::string& base_query_params,
                     PingMode ping_mode,
-                    FetchPriority fetch_priority);
+                    DownloadFetchPriority fetch_priority);
+
+  ManifestFetchData(const ManifestFetchData&) = delete;
+  ManifestFetchData& operator=(const ManifestFetchData&) = delete;
+
   ~ManifestFetchData();
 
   // Returns true if this extension information was successfully added. If the
@@ -102,18 +72,24 @@ class ManifestFetchData {
   // this ManifestFetchData object remains unchanged.
   bool AddExtension(const std::string& id,
                     const std::string& version,
-                    const PingData* ping_data,
+                    const DownloadPingData* ping_data,
                     const std::string& update_url_data,
                     const std::string& install_source,
                     mojom::ManifestLocation install_location,
-                    FetchPriority fetch_priority);
+                    DownloadFetchPriority fetch_priority);
+
+  // Stores a task in list of associated tasks, call this after successful
+  // AddExtension.
+  void AddAssociatedTask(ExtensionDownloaderTask task);
 
   const GURL& base_url() const { return base_url_; }
   const GURL& full_url() const { return full_url_; }
   ExtensionIdSet GetExtensionIds() const;
   const std::set<int>& request_ids() const { return request_ids_; }
-  bool foreground_check() const { return fetch_priority_ == FOREGROUND; }
-  FetchPriority fetch_priority() const { return fetch_priority_; }
+  bool foreground_check() const {
+    return fetch_priority_ == DownloadFetchPriority::kForeground;
+  }
+  DownloadFetchPriority fetch_priority() const { return fetch_priority_; }
   bool is_all_external_policy_download() const {
     return is_all_external_policy_download_;
   }
@@ -134,10 +110,19 @@ class ManifestFetchData {
   // full_url, this method merges the other information associated with the
   // fetch (in particular this adds all request ids associated with |other|
   // to this ManifestFetchData).
-  void Merge(const ManifestFetchData& other);
+  void Merge(std::unique_ptr<ManifestFetchData> other);
 
   // Assigns true if all the extensions are force installed.
   void set_is_all_external_policy_download();
+
+  // Returns list of associated tasks, added previously by `AddAssociatedTask`.
+  const std::vector<ExtensionDownloaderTask>& GetAssociatedTasks() const {
+    return associated_tasks_;
+  }
+
+  // Returns list of associated tasks. Note that the list will be moved from
+  // ManifestFetchData.
+  std::vector<ExtensionDownloaderTask> TakeAssociatedTasks();
 
  private:
   // Contains supplementary data needed to construct update manifest fetch
@@ -169,7 +154,7 @@ class ManifestFetchData {
   std::map<std::string, ExtensionData> extensions_data_;
 
   // The set of ping data we actually sent.
-  std::map<std::string, PingData> pings_;
+  std::map<std::string, DownloadPingData> pings_;
 
   // The base update url without any arguments added.
   GURL base_url_;
@@ -193,13 +178,14 @@ class ManifestFetchData {
   const PingMode ping_mode_;
 
   // The priority of the update.
-  FetchPriority fetch_priority_;
+  DownloadFetchPriority fetch_priority_;
 
   // The flag is set to true if all the extensions are force installed
   // extensions.
-  bool is_all_external_policy_download_;
+  bool is_all_external_policy_download_{false};
 
-  DISALLOW_COPY_AND_ASSIGN(ManifestFetchData);
+  // List of associated tasks for ExtensionDownloader.
+  std::vector<ExtensionDownloaderTask> associated_tasks_;
 };
 
 }  // namespace extensions

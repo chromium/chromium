@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "net/base/net_export.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
 namespace net {
 
@@ -56,9 +56,6 @@ class NET_EXPORT_PRIVATE Http2PriorityDependencies {
   // given order.
   std::vector<DependencyUpdate> OnStreamUpdate(spdy::SpdyStreamId id,
                                                spdy::SpdyPriority new_priority);
-
-  // Returns the estimate of dynamically allocated memory in bytes.
-  size_t EstimateMemoryUsage() const;
 
  private:
   // The requirements for the internal data structure for this class are:

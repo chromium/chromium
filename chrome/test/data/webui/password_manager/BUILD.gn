@@ -1,0 +1,55 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(!is_android)
+
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://password-manager/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/password_manager/tsc/*",
+            target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
+  ]
+
+  in_files = [
+    "checkup_section_test.ts",
+    "password_manager_app_test.ts",
+    "password_manager_routing_test.ts",
+    "password_manager_side_bar_test.ts",
+    "passwords_section_test.ts",
+    "settings_section_test.ts",
+    "test_password_manager_proxy.ts",
+    "test_prefs_browser_proxy.ts",
+    "test_util.ts",
+  ]
+
+  definitions = [
+    "//tools/typescript/definitions/passwords_private.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+  ]
+
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/password_manager:build_ts",
+  ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_password_manager"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "password_manager"
+}

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@
 #define CC_TREES_PROXY_IMPL_H_
 
 #include <memory>
+#include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/base/completion_event.h"
 #include "cc/base/delayed_unique_notifier.h"
@@ -26,7 +28,7 @@ class ProxyMain;
 class RenderFrameMetadataObserver;
 
 class JankInjector;
-class ScopedCompletionEvent;
+class ScopedCommitCompletionEvent;
 
 // This class aggregates all the interactions that the main side of the
 // compositor needs to have with the impl side.
@@ -36,6 +38,9 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
  public:
   ProxyImpl(base::WeakPtr<ProxyMain> proxy_main_weak_ptr,
             LayerTreeHost* layer_tree_host,
+            int id,
+            const LayerTreeSettings* settings,
+            RenderingStatsInstrumentation* rendering_stats_instrumentation,
             TaskRunnerProvider* task_runner_provider);
   ProxyImpl(const ProxyImpl&) = delete;
   ~ProxyImpl() override;
@@ -51,51 +56,51 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void InitializeMutatorOnImpl(std::unique_ptr<LayerTreeMutator> mutator);
   void InitializePaintWorkletLayerPainterOnImpl(
       std::unique_ptr<PaintWorkletLayerPainter> painter);
-  void SetDeferBeginMainFrameOnImpl(bool defer_begin_main_frame) const;
+  void SetDeferBeginMainFrameFromMain(bool defer_begin_main_frame);
+  void SetPauseRendering(bool pause_rendering);
   void SetNeedsRedrawOnImpl(const gfx::Rect& damage_rect);
   void SetNeedsCommitOnImpl();
+  void SetTargetLocalSurfaceIdOnImpl(
+      const viz::LocalSurfaceId& target_local_surface_id);
   void BeginMainFrameAbortedOnImpl(
       CommitEarlyOutReason reason,
       base::TimeTicks main_thread_start_time,
-      std::vector<std::unique_ptr<SwapPromise>> swap_promises);
+      std::vector<std::unique_ptr<SwapPromise>> swap_promises,
+      bool scroll_and_viewport_changes_synced);
   void SetVisibleOnImpl(bool visible);
   void ReleaseLayerTreeFrameSinkOnImpl(CompletionEvent* completion);
   void FinishGLOnImpl(CompletionEvent* completion);
-  void NotifyReadyToCommitOnImpl(CompletionEvent* completion,
-                                 LayerTreeHost* layer_tree_host,
+  void NotifyReadyToCommitOnImpl(CompletionEvent* completion_event,
+                                 std::unique_ptr<CommitState> commit_state,
+                                 const ThreadUnsafeCommitState* unsafe_state,
                                  base::TimeTicks main_thread_start_time,
                                  const viz::BeginFrameArgs& commit_args,
-                                 bool hold_commit_for_activation);
+                                 bool scroll_and_viewport_changes_synced,
+                                 CommitTimestamps* commit_timestamps,
+                                 bool commit_timeout = false);
   void SetSourceURL(ukm::SourceId source_id, const GURL& url);
   void SetUkmSmoothnessDestination(
       base::WritableSharedMemoryMapping ukm_smoothness_data);
-  void ClearHistory();
   void SetRenderFrameObserver(
       std::unique_ptr<RenderFrameMetadataObserver> observer);
-  void SetEnableFrameRateThrottling(bool enable_frame_rate_throttling);
 
   void MainFrameWillHappenOnImplForTesting(CompletionEvent* completion,
                                            bool* main_frame_will_happen);
+  void RequestBeginMainFrameNotExpectedOnImpl(bool new_state);
 
-  void RequestBeginMainFrameNotExpected(bool new_state) override;
+  void ClearHistory() override;
+  size_t CommitDurationSampleCountForTesting() const override;
 
   void RecordReplayRepaint();
 
  private:
-  // The members of this struct should be accessed on the impl thread only when
-  // the main thread is blocked for a commit.
-  struct BlockedMainCommitOnly {
-    BlockedMainCommitOnly();
-    ~BlockedMainCommitOnly();
-    LayerTreeHost* layer_tree_host;
-  };
-
   // LayerTreeHostImplClient implementation
   void DidLoseLayerTreeFrameSinkOnImplThread() override;
   void SetBeginFrameSource(viz::BeginFrameSource* source) override;
   void DidReceiveCompositorFrameAckOnImplThread() override;
   void OnCanDrawStateChanged(bool can_draw) override;
   void NotifyReadyToActivate() override;
+  bool IsReadyToActivate() override;
   void NotifyReadyToDraw() override;
   // Please call these 2 functions through
   // LayerTreeHostImpl's SetNeedsRedraw() and SetNeedsOneBeginImplFrame().
@@ -104,8 +109,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void SetNeedsPrepareTilesOnImplThread() override;
   void SetNeedsCommitOnImplThread() override;
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override;
+  void SetDeferBeginMainFrameFromImpl(bool defer_begin_main_frame) override;
   bool IsInsideDraw() override;
-  bool IsBeginMainFrameExpected() override;
   void RenewTreePriority() override;
   void PostDelayedAnimationTaskOnImplThread(base::OnceClosure task,
                                             base::TimeDelta delay) override;
@@ -117,6 +122,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
                                    bool skip_draw) override;
   void NeedsImplSideInvalidation(bool needs_first_draw_on_activation) override;
   void NotifyImageDecodeRequestFinished() override;
+  void NotifyTransitionRequestFinished(uint32_t sequence_id) override;
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
       PresentationTimeCallbackBuffer::PendingCallbacks activated,
@@ -133,6 +139,8 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   bool IsInSynchronousComposite() const override;
   void FrameSinksToThrottleUpdated(
       const base::flat_set<viz::FrameSinkId>& id) override;
+  void ReportEventLatency(
+      std::vector<EventLatencyTracker::LatencyData> latencies) override;
 
   // SchedulerClient implementation
   bool WillBeginImplFrame(const viz::BeginFrameArgs& args) override;
@@ -146,6 +154,7 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   DrawResult ScheduledActionDrawIfPossible() override;
   DrawResult ScheduledActionDrawForced() override;
   void ScheduledActionCommit() override;
+  void ScheduledActionPostCommit() override;
   void ScheduledActionActivateSyncTree() override;
   void ScheduledActionBeginLayerTreeFrameSinkCreation() override;
   void ScheduledActionPrepareTiles() override;
@@ -155,26 +164,43 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   void ScheduledActionBeginMainFrameNotExpectedUntil(
       base::TimeTicks time) override;
   void FrameIntervalUpdated(base::TimeDelta interval) override {}
-  bool HasCustomPropertyAnimations() const override;
+  bool HasInvalidationAnimation() const override;
 
   DrawResult DrawInternal(bool forced_draw);
 
   bool IsImplThread() const;
   bool IsMainThreadBlocked() const;
   base::SingleThreadTaskRunner* MainThreadTaskRunner();
+  bool ShouldDeferBeginMainFrame() const;
 
   const int layer_tree_host_id_;
 
   std::unique_ptr<Scheduler> scheduler_;
 
-  // Set when the main thread is waiting on a pending tree activation.
-  bool commit_completion_waits_for_activation_;
+  struct DataForCommit {
+    DataForCommit(
+        std::unique_ptr<ScopedCommitCompletionEvent> commit_completion_event,
+        std::unique_ptr<CommitState> commit_state,
+        const ThreadUnsafeCommitState* unsafe_state,
+        CommitTimestamps* commit_timestamps);
 
-  // Set when the main thread is waiting on a commit to complete.
-  std::unique_ptr<ScopedCompletionEvent> commit_completion_event_;
+    ~DataForCommit();
+
+    bool IsValid() const;
+
+    // Set when the main thread is waiting on a commit to complete.
+    std::unique_ptr<ScopedCommitCompletionEvent> commit_completion_event;
+    std::unique_ptr<CommitState> commit_state;
+    raw_ptr<const ThreadUnsafeCommitState> unsafe_state;
+    // This is passed from the main thread so the impl thread can record
+    // timestamps at the beginning and end of commit.
+    raw_ptr<CommitTimestamps> commit_timestamps = nullptr;
+  };
+
+  std::unique_ptr<DataForCommit> data_for_commit_;
 
   // Set when the main thread is waiting for activation to complete.
-  std::unique_ptr<ScopedCompletionEvent> activation_completion_event_;
+  std::unique_ptr<ScopedCommitCompletionEvent> activation_completion_event_;
 
   // Set when the next draw should post DidCommitAndDrawFrame to the main
   // thread.
@@ -188,15 +214,11 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
 
   TreePriority last_raster_priority_;
 
-  TaskRunnerProvider* task_runner_provider_;
+  raw_ptr<TaskRunnerProvider> task_runner_provider_;
 
   DelayedUniqueNotifier smoothness_priority_expiration_notifier_;
 
   std::unique_ptr<LayerTreeHostImpl> host_impl_;
-
-  // Use accessors instead of this variable directly.
-  BlockedMainCommitOnly main_thread_blocked_commit_vars_unsafe_;
-  BlockedMainCommitOnly& blocked_main_commit();
 
   bool is_jank_injection_enabled_ = false;
 
@@ -206,6 +228,10 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
   // A weak pointer to ProxyMain that is invalidated when LayerTreeFrameSink is
   // released.
   base::WeakPtr<ProxyMain> proxy_main_frame_sink_bound_weak_ptr_;
+
+  // Either thread can request deferring BeginMainFrame; keep track of both.
+  bool main_wants_defer_begin_main_frame_ = false;
+  bool impl_wants_defer_begin_main_frame_ = false;
 };
 
 }  // namespace cc

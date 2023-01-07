@@ -19,7 +19,7 @@ function processMessage(event) {
 if (window.gamepadController) {
     if (window.testRunner) {
         testRunner.dumpAsText();
-        testRunner.setCanOpenWindows();
+        testRunner.setPopupBlockingEnabled(false);
         testRunner.waitUntilDone();
     }
     w = window.open('../resources/window-postmessage-open-close.html');

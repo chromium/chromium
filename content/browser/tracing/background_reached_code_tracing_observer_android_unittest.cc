@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/android/reached_code_profiler.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/values.h"
 #include "content/browser/tracing/background_tracing_rule.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,33 +36,32 @@ const BackgroundTracingRule* FindReachedCodeRuleInConfig(
 }
 
 std::unique_ptr<BackgroundTracingConfigImpl> GetStartupConfig() {
-  auto rules_dict = std::make_unique<base::DictionaryValue>();
-  rules_dict->SetString("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-  rules_dict->SetString("trigger_name", "test");
-  rules_dict->SetString("category", "BENCHMARK_STARTUP");
-  base::DictionaryValue dict;
-  auto rules_list = std::make_unique<base::ListValue>();
-  rules_list->Append(std::move(rules_dict));
+  base::Value::Dict rules_dict;
+  rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+  rules_dict.Set("trigger_name", "test");
+  rules_dict.Set("category", "BENCHMARK_STARTUP");
+  base::Value::Dict dict;
+  base::Value::List rules_list;
+  rules_list.Append(std::move(rules_dict));
   dict.Set("configs", std::move(rules_list));
-  return BackgroundTracingConfigImpl::ReactiveFromDict(&dict);
+  return BackgroundTracingConfigImpl::ReactiveFromDict(dict);
 }
 
 std::unique_ptr<BackgroundTracingConfigImpl> GetReachedCodeConfig() {
-  auto rules_dict = std::make_unique<base::DictionaryValue>();
-  rules_dict->SetString("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-  rules_dict->SetString("trigger_name", "reached-code-config");
-  rules_dict->SetInteger("trigger_delay", 30);
+  base::Value::Dict rules_dict;
+  rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+  rules_dict.Set("trigger_name", "reached-code-config");
+  rules_dict.Set("trigger_delay", 30);
 
-  base::DictionaryValue dict;
-  auto rules_list = std::make_unique<base::ListValue>();
-  rules_list->Append(std::move(rules_dict));
+  base::Value::Dict dict;
+  base::Value::List rules_list;
+  rules_list.Append(std::move(rules_dict));
   dict.Set("configs", std::move(rules_list));
-  dict.SetString(
-      "enabled_data_sources",
-      "org.chromium.trace_metadata,org.chromium.reached_code_profiler");
-  dict.SetString("category", "CUSTOM");
-  dict.SetString("custom_categories", "-*");
-  auto config = BackgroundTracingConfigImpl::ReactiveFromDict(&dict);
+  dict.Set("enabled_data_sources",
+           "org.chromium.trace_metadata,org.chromium.reached_code_profiler");
+  dict.Set("category", "CUSTOM");
+  dict.Set("custom_categories", "-*");
+  auto config = BackgroundTracingConfigImpl::ReactiveFromDict(dict);
   EXPECT_TRUE(FindReachedCodeRuleInConfig(*config));
   return config;
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ ThirdPartyMetricsRecorder::ThirdPartyMetricsRecorder() {
   // It is safe to use base::Unretained() since the timer is a member variable
   // of this class.
   heartbeat_metrics_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMinutes(5),
+      FROM_HERE, base::Minutes(5),
       base::BindRepeating(&ThirdPartyMetricsRecorder::RecordHeartbeatMetrics,
                           base::Unretained(this)));
 
@@ -130,7 +130,7 @@ void ThirdPartyMetricsRecorder::AddUnsignedModuleToCrashkeys(
       {"unsigned-modules-5", UnsignedModulesKey::Tag::kArray},
   };
 
-  if (current_key_index_ >= base::size(unsigned_modules_keys))
+  if (current_key_index_ >= std::size(unsigned_modules_keys))
     return;
 
   std::string module = base::WideToUTF8(module_basename);
@@ -147,7 +147,7 @@ void ThirdPartyMetricsRecorder::AddUnsignedModuleToCrashkeys(
   if (module_length > length_remaining) {
     current_value_.clear();
 
-    if (++current_key_index_ >= base::size(unsigned_modules_keys))
+    if (++current_key_index_ >= std::size(unsigned_modules_keys))
       return;
   }
 

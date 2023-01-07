@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS click the form submission button should close the dialog
-PASS form submission should return correct value
-PASS no returnValue when there's no result.
-FAIL input image button should return the coordianates assert_equals: returnValue should be the offsets of the click expected "20.5,20.5" but got "20,20"
-PASS formmethod attribute should use dialog form submission
-PASS closing the dialog while submitting should stop the submission
-Harness: the test ran to completion.
-

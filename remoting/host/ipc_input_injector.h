@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_HOST_IPC_INPUT_INJECTOR_H_
 #define REMOTING_HOST_IPC_INPUT_INJECTOR_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/host/input_injector.h"
 #include "remoting/proto/event.pb.h"
@@ -20,6 +19,10 @@ class IpcInputInjector : public InputInjector {
  public:
   explicit IpcInputInjector(
       scoped_refptr<DesktopSessionProxy> desktop_session_proxy);
+
+  IpcInputInjector(const IpcInputInjector&) = delete;
+  IpcInputInjector& operator=(const IpcInputInjector&) = delete;
+
   ~IpcInputInjector() override;
 
   // ClipboardStub interface.
@@ -38,8 +41,6 @@ class IpcInputInjector : public InputInjector {
  private:
   // Wraps the IPC channel to the desktop process.
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcInputInjector);
 };
 
 }  // namespace remoting

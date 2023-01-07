@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 
 // Implements a file Open / Save dialog in a utility process. The utility
@@ -16,15 +15,17 @@
 class ChromeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
  public:
   ChromeSelectFileDialogFactory();
+
+  ChromeSelectFileDialogFactory(const ChromeSelectFileDialogFactory&) = delete;
+  ChromeSelectFileDialogFactory& operator=(
+      const ChromeSelectFileDialogFactory&) = delete;
+
   ~ChromeSelectFileDialogFactory() override;
 
   // ui::SelectFileDialogFactory:
   ui::SelectFileDialog* Create(
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeSelectFileDialogFactory);
 };
 
 #endif  // CHROME_BROWSER_WIN_CHROME_SELECT_FILE_DIALOG_FACTORY_H_

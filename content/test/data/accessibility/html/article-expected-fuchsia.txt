@@ -1,0 +1,6 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++STATIC_TEXT label='This is an article element.'
+++++++++++UNKNOWN label='This is an article element.'

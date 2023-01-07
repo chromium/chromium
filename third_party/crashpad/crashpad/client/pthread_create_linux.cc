@@ -1,4 +1,4 @@
-// Copyright 2020 The Crashpad Authors. All rights reserved.
+// Copyright 2020 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,10 +31,11 @@ struct StartParams {
 void* InitializeSignalStackAndStart(StartParams* params) {
   crashpad::CrashpadClient::InitializeSignalStackForThread();
 
-  StartParams local_params = *params;
+  crashpad::NoCfiIcall<StartRoutineType> start_routine(params->start_routine);
+  void* arg = params->arg;
   delete params;
 
-  return local_params.start_routine(local_params.arg);
+  return start_routine(arg);
 }
 
 }  // namespace

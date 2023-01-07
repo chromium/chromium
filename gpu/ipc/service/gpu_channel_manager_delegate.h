@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,9 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/config/gpu_info.h"
+#include "gpu/ipc/common/gpu_disk_cache_type.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "gpu/ipc/service/display_context.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
 
@@ -19,11 +20,6 @@ namespace gpu {
 // functionality to multiple classes in src/gpu/ so delegate is inaccurate.
 class GpuChannelManagerDelegate {
  public:
-  // Registers/unregistered display compositor contexts that don't have a GPU
-  // channel and aren't tracked by GpuChannelManager.
-  virtual void RegisterDisplayContext(DisplayContext* display_context) = 0;
-  virtual void UnregisterDisplayContext(DisplayContext* display_context) = 0;
-
   // Force the loss of all GL contexts.
   virtual void LoseAllContexts() = 0;
 
@@ -51,12 +47,20 @@ class GpuChannelManagerDelegate {
                               error::ContextLostReason reason,
                               const GURL& active_url) = 0;
 
-  // Tells the delegate to cache the given shader information in persistent
+  // Tells the delegate to cache the given blob information in persistent
   // storage. The embedder is expected to repopulate the in-memory cache through
   // the respective GpuChannelManager API.
-  virtual void StoreShaderToDisk(int32_t client_id,
-                                 const std::string& key,
-                                 const std::string& shader) = 0;
+  virtual void StoreBlobToDisk(const gpu::GpuDiskCacheHandle& handle,
+                               const std::string& key,
+                               const std::string& shader) = 0;
+
+  // Tells the delegate to ask for a unique isolation key given a client id and
+  // identifying token on the client.
+  using GetIsolationKeyCallback =
+      base::OnceCallback<void(const std::string& isolation_key)>;
+  virtual void GetIsolationKey(int client_id,
+                               const blink::WebGPUExecutionContextToken& token,
+                               GetIsolationKeyCallback cb) = 0;
 
   // Cleanly exits the GPU process in response to an error. This will not exit
   // with in-process GPU as that would also exit the browser. This can only be
@@ -70,13 +74,7 @@ class GpuChannelManagerDelegate {
   // Returns GPU Scheduler
   virtual gpu::Scheduler* GetGpuScheduler() = 0;
 
-#if defined(OS_WIN)
-  // Tells the delegate that overlay info was updated.
-  virtual void DidUpdateOverlayInfo(const gpu::OverlayInfo& overlay_info) = 0;
-
-  // Tells the delegate that HDR status was updated.
-  virtual void DidUpdateHDRStatus(bool hdr_enabled) = 0;
-
+#if BUILDFLAG(IS_WIN)
   // Tells the delegate that |child_window| was created in the GPU process and
   // to send an IPC to make SetParent() syscall. This syscall is blocked by the
   // GPU sandbox and must be made in the browser process.

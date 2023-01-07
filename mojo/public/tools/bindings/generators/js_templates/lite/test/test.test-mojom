@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ struct TestStruct {
   map<uint32, string> numberToStringMap;
   map<Message, array<Message>> messageToArrayMap;
   map<TestEnum, map<TestEnum, TestEnum>> enumToMapMap;
-  map<uint32, TestPage> numberToInterfaceProxyMap;
+  map<uint32, pending_remote<TestPage>> numberToInterfaceProxyMap;
 };
 
 interface TestPageHandler {

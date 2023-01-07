@@ -1,0 +1,23 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=./shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+.card {
+  background-color: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-card-shadow);
+}
+
+.page-title {
+  font-weight: 400;
+}
+
+.label {
+  line-height: 20px;
+}

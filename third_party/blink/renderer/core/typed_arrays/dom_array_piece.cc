@@ -1,25 +1,13 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 
 namespace blink {
 
-DOMArrayPiece::DOMArrayPiece(
-    const ArrayBufferOrArrayBufferView& array_buffer_or_view) {
-  if (array_buffer_or_view.IsArrayBuffer()) {
-    DOMArrayBuffer* array_buffer = array_buffer_or_view.GetAsArrayBuffer();
-    InitWithArrayBuffer(array_buffer);
-  } else if (array_buffer_or_view.IsArrayBufferView()) {
-    DOMArrayBufferView* array_buffer_view =
-        array_buffer_or_view.GetAsArrayBufferView().Get();
-    InitWithArrayBufferView(array_buffer_view);
-  }
-}
-///////////////////////////////////////////////////////
 DOMArrayPiece::DOMArrayPiece() {
   InitNull();
 }
@@ -30,6 +18,24 @@ DOMArrayPiece::DOMArrayPiece(DOMArrayBuffer* buffer) {
 
 DOMArrayPiece::DOMArrayPiece(DOMArrayBufferView* buffer) {
   InitWithArrayBufferView(buffer);
+}
+
+DOMArrayPiece::DOMArrayPiece(
+    const V8UnionArrayBufferOrArrayBufferView* array_buffer_or_view) {
+  DCHECK(array_buffer_or_view);
+
+  switch (array_buffer_or_view->GetContentType()) {
+    case V8UnionArrayBufferOrArrayBufferView::ContentType::kArrayBuffer:
+      InitWithArrayBuffer(array_buffer_or_view->GetAsArrayBuffer());
+      return;
+    case V8UnionArrayBufferOrArrayBufferView::ContentType::kArrayBufferView:
+      InitWithArrayBufferView(
+          array_buffer_or_view->GetAsArrayBufferView().Get());
+      return;
+  }
+
+  NOTREACHED();
+  InitNull();
 }
 
 bool DOMArrayPiece::IsNull() const {

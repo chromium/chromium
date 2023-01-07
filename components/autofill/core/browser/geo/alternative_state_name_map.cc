@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -16,7 +17,7 @@ namespace {
 constexpr int kMaxMapSize = 500;
 
 // The characters to be removed from the state strings before the comparison.
-constexpr char kCharsToStrip[] = ".- ";
+constexpr char16_t kCharsToStrip[] = u".- ";
 
 }  // namespace
 
@@ -31,13 +32,12 @@ AlternativeStateNameMap* AlternativeStateNameMap::GetInstance() {
 AlternativeStateNameMap::StateName AlternativeStateNameMap::NormalizeStateName(
     const StateName& text) {
   std::u16string normalized_text;
-  base::RemoveChars(text.value(), base::ASCIIToUTF16(kCharsToStrip),
-                    &normalized_text);
+  base::RemoveChars(text.value(), kCharsToStrip, &normalized_text);
   return StateName(normalized_text);
 }
 
 // static
-base::Optional<AlternativeStateNameMap::CanonicalStateName>
+absl::optional<AlternativeStateNameMap::CanonicalStateName>
 AlternativeStateNameMap::GetCanonicalStateName(
     const std::string& country_code,
     const std::u16string& state_name) {
@@ -48,7 +48,7 @@ AlternativeStateNameMap::GetCanonicalStateName(
 
 AlternativeStateNameMap::AlternativeStateNameMap() = default;
 
-base::Optional<AlternativeStateNameMap::CanonicalStateName>
+absl::optional<AlternativeStateNameMap::CanonicalStateName>
 AlternativeStateNameMap::GetCanonicalStateName(
     const CountryCode& country_code,
     const StateName& state_name,
@@ -78,17 +78,17 @@ AlternativeStateNameMap::GetCanonicalStateName(
   if (it != localized_state_names_reverse_lookup_map_.end())
     return it->second;
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<StateEntry> AlternativeStateNameMap::GetEntry(
+absl::optional<StateEntry> AlternativeStateNameMap::GetEntry(
     const CountryCode& country_code,
     const StateName& state_string_from_profile) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(alternative_state_name_map_sequence_checker_);
 
   StateName normalized_state_string_from_profile =
       NormalizeStateName(state_string_from_profile);
-  base::Optional<CanonicalStateName> canonical_state_name =
+  absl::optional<CanonicalStateName> canonical_state_name =
       GetCanonicalStateName(country_code, normalized_state_string_from_profile,
                             /*is_state_name_normalized=*/true);
 
@@ -99,7 +99,7 @@ base::Optional<StateEntry> AlternativeStateNameMap::GetEntry(
       return it->second;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void AlternativeStateNameMap::AddEntry(

@@ -1,0 +1,57 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.protocol;
+
+// Composite message type for messages sent over the remote-open-url data
+// channel.
+// Next ID: 3
+message RemoteOpenUrl {
+  // Message sent requesting the remote end to open |url|.
+  // Next ID: 3
+  message OpenUrlRequest {
+    // An ID used to associate the request with the response.
+    optional uint64 id = 1;
+
+    // The URL to be opened by the remote end.
+    optional string url = 2;
+  }
+
+  // Message sent from the remote end to the requester.
+  // Next ID: 3
+  message OpenUrlResponse {
+    // An ID used to associate the request with the response.
+    optional uint64 id = 1;
+
+    // The outcome of opening the URL remotely.
+    // Must be synced with remoting/host/mojom/remote_url_opener.mojom
+    // Next ID: 4
+    enum Result {
+      UNSPECIFIED_OPEN_URL_RESULT = 0;
+
+      // The URL was successfully opened.
+      SUCCESS = 1;
+
+      // The URL failed to open, and the requester should not try to open the
+      // URL locally.
+      FAILURE = 2;
+
+      // The remote end has decided that the URL should be opened locally by the
+      // requester.
+      LOCAL_FALLBACK = 3;
+    }
+
+    // The result of opening the URL remotely.
+    optional Result result = 2;
+  }
+
+  oneof message {
+    OpenUrlRequest open_url_request = 1;
+    OpenUrlResponse open_url_response = 2;
+  }
+}

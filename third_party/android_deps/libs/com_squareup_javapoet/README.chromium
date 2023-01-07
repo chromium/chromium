@@ -4,6 +4,7 @@ URL: http://github.com/square/javapoet/
 Version: 1.13.0
 License: Apache 2.0
 License File: NOT_SHIPPED
+CPEPrefix: unknown
 Security Critical: no
 
 Description:

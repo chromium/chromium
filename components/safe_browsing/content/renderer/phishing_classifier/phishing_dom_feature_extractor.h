@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -14,7 +14,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/tick_clock.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -36,6 +35,11 @@ class PhishingDOMFeatureExtractor {
 
   // Creates a PhishingDOMFeatureExtractor instance.
   PhishingDOMFeatureExtractor();
+
+  PhishingDOMFeatureExtractor(const PhishingDOMFeatureExtractor&) = delete;
+  PhishingDOMFeatureExtractor& operator=(const PhishingDOMFeatureExtractor&) =
+      delete;
+
   virtual ~PhishingDOMFeatureExtractor();
 
   // Begins extracting features into the given FeatureMap for the page.
@@ -138,8 +142,6 @@ class PhishingDOMFeatureExtractor {
   // Used in scheduling ExtractFeaturesWithTimeout tasks.
   // These pointers are invalidated if extraction is cancelled.
   base::WeakPtrFactory<PhishingDOMFeatureExtractor> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PhishingDOMFeatureExtractor);
 };
 
 }  // namespace safe_browsing

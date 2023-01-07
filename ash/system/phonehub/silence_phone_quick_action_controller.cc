@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/quick_action_item.h"
+#include "base/bind.h"
 #include "base/timer/timer.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -20,13 +21,12 @@ using phone_hub_metrics::QuickAction;
 
 // Time to wait until we check the state of the phone to prevent showing wrong
 // state
-constexpr base::TimeDelta kWaitForRequestTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kWaitForRequestTimeout = base::Seconds(10);
 
 }  // namespace
 
 SilencePhoneQuickActionController::SilencePhoneQuickActionController(
-    chromeos::phonehub::DoNotDisturbController* dnd_controller)
+    phonehub::DoNotDisturbController* dnd_controller)
     : dnd_controller_(dnd_controller) {
   DCHECK(dnd_controller_);
   dnd_controller_->AddObserver(this);
@@ -43,8 +43,7 @@ bool SilencePhoneQuickActionController::IsItemEnabled() {
 QuickActionItem* SilencePhoneQuickActionController::CreateItem() {
   DCHECK(!item_);
   item_ = new QuickActionItem(this, IDS_ASH_PHONE_HUB_SILENCE_PHONE_TITLE,
-                              kPhoneHubSilencePhoneOnIcon,
-                              kPhoneHubSilencePhoneOffIcon);
+                              kPhoneHubSilencePhoneIcon);
   item_->icon_button()->set_button_behavior(
       FeaturePodIconButton::DisabledButtonBehavior::
           kCanDisplayDisabledToggleValue);
@@ -119,11 +118,11 @@ void SilencePhoneQuickActionController::SetItemState(ActionState state) {
   item_->SetToggled(icon_enabled);
   item_->SetSubLabel(l10n_util::GetStringUTF16(sub_label_text));
   if (state == ActionState::kDisabled) {
-    item_->SetIconTooltip(l10n_util::GetStringUTF16(state_text_id));
+    item_->SetTooltip(l10n_util::GetStringUTF16(state_text_id));
   } else {
     std::u16string tooltip_state =
         l10n_util::GetStringFUTF16(state_text_id, item_->GetItemLabel());
-    item_->SetIconTooltip(l10n_util::GetStringFUTF16(
+    item_->SetTooltip(l10n_util::GetStringFUTF16(
         IDS_ASH_PHONE_HUB_QUICK_ACTIONS_TOGGLE_TOOLTIP, item_->GetItemLabel(),
         tooltip_state));
   }

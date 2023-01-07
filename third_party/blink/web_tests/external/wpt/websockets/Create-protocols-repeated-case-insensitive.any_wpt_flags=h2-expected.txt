@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Create WebSocket - Pass a valid URL and an array of protocol strings with repeated values but different case - SYNTAX_ERR is thrown assert_throws_dom: function "function() {
+    wsocket = CreateWebSocketWithRepeatedProtocolsCaseInsensitive()
+  }" did not throw
+Harness: the test ran to completion.
+

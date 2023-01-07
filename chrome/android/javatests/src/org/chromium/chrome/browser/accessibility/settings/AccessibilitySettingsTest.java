@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,13 +29,14 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.accessibility.FontSizePrefs;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
+import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
+import org.chromium.components.browser_ui.accessibility.TextScalePreference;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.UiUtils;
@@ -44,9 +45,14 @@ import java.text.NumberFormat;
 
 /**
  * Tests for the Accessibility Settings menu.
+ *
+ * TODO(crbug.com/1296642): This tests the class in //components/browser_ui, but we don't have a
+ * good way of testing with native code there.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AccessibilitySettingsTest {
+    private static final String PREF_IMAGE_DESCRIPTIONS = "image_descriptions";
+
     @Rule
     public SettingsActivityTestRule<AccessibilitySettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AccessibilitySettings.class);
@@ -183,23 +189,6 @@ public class AccessibilitySettingsTest {
     @Test
     @SmallTest
     @Feature({"Accessibility"})
-    @Features.DisableFeatures({ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS})
-    public void testImageDescriptionsPreferences_Disabled() {
-        mSettingsActivityTestRule.startSettingsActivity();
-        AccessibilitySettings accessibilitySettings = mSettingsActivityTestRule.getFragment();
-
-        Preference imageDescriptionsPref =
-                accessibilitySettings.findPreference(AccessibilitySettings.PREF_IMAGE_DESCRIPTIONS);
-
-        Assert.assertNotNull(imageDescriptionsPref);
-        Assert.assertFalse(
-                "Image Descriptions should not be visible", imageDescriptionsPref.isVisible());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Accessibility"})
-    @Features.EnableFeatures({ContentFeatureList.EXPERIMENTAL_ACCESSIBILITY_LABELS})
     public void testImageDescriptionsPreferences_Enabled() {
         // Enable touch exploration to display settings option.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -211,7 +200,7 @@ public class AccessibilitySettingsTest {
         AccessibilitySettings accessibilitySettings = mSettingsActivityTestRule.getFragment();
 
         Preference imageDescriptionsPref =
-                accessibilitySettings.findPreference(AccessibilitySettings.PREF_IMAGE_DESCRIPTIONS);
+                accessibilitySettings.findPreference(PREF_IMAGE_DESCRIPTIONS);
 
         Assert.assertNotNull(imageDescriptionsPref);
         Assert.assertTrue(
@@ -219,7 +208,7 @@ public class AccessibilitySettingsTest {
 
         Instrumentation.ActivityMonitor monitor =
                 InstrumentationRegistry.getInstrumentation().addMonitor(
-                        new IntentFilter(Intent.ACTION_MAIN), null, false);
+                        new IntentFilter(Intent.ACTION_MAIN), null, true);
 
         // First scroll to bottom of the page, then click.
         onView(ViewMatchers.isRoot()).perform(swipeUp());
@@ -235,7 +224,8 @@ public class AccessibilitySettingsTest {
     private void assertFontSizePrefs(
             final boolean expectedForceEnableZoom, final float expectedFontScale) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            FontSizePrefs fontSizePrefs = FontSizePrefs.getInstance();
+            FontSizePrefs fontSizePrefs =
+                    FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile());
             Assert.assertEquals(expectedForceEnableZoom, fontSizePrefs.getForceEnableZoom());
             Assert.assertEquals(expectedFontScale, fontSizePrefs.getFontScaleFactor(), 0.001f);
         });

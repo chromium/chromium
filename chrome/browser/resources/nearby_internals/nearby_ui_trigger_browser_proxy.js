@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -117,6 +117,48 @@ export class NearbyUiTriggerBrowserProxy {
    */
   getState() {
     return sendWithPromise('getStates');
+  }
+
+  /**
+   * Tells C++ side to trigger a Fast Pair error notification.
+   */
+  notifyFastPairError() {
+    chrome.send('notifyFastPairError');
+  }
+
+  /**
+   * Tells C++ side to trigger a Fast Pair discovery notification.
+   */
+  notifyFastPairDiscovery() {
+    chrome.send('notifyFastPairDiscovery');
+  }
+
+  /**
+   * Tells C++ side to trigger a Fast Pair pairing notification.
+   */
+  notifyFastPairPairing() {
+    chrome.send('notifyFastPairPairing');
+  }
+
+  /**
+   * Tells C++ side to trigger a Fast Pair application available notification.
+   */
+  notifyFastPairApplicationAvailable() {
+    chrome.send('notifyFastPairApplicationAvailable');
+  }
+
+  /**
+   * Tells C++ side to trigger a Fast Pair application installed notification.
+   */
+  notifyFastPairApplicationInstalled() {
+    chrome.send('notifyFastPairApplicationInstalled');
+  }
+
+  /**
+   * Tells C++ side to trigger a Fast Pair associate account notification.
+   */
+  notifyFastPairAssociateAccount() {
+    chrome.send('notifyFastPairAssociateAccount');
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,11 @@
 
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/common/aw_content_client.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/app/content_main_delegate.h"
 
 namespace content {
 class BrowserMainRunner;
-}
-
-namespace safe_browsing {
-class SafeBrowsingApiHandler;
 }
 
 namespace android_webview {
@@ -34,19 +29,24 @@ class AwContentRendererClient;
 class AwMainDelegate : public content::ContentMainDelegate {
  public:
   AwMainDelegate();
+
+  AwMainDelegate(const AwMainDelegate&) = delete;
+  AwMainDelegate& operator=(const AwMainDelegate&) = delete;
+
   ~AwMainDelegate() override;
 
  private:
   // content::ContentMainDelegate implementation:
-  bool BasicStartupComplete(int* exit_code) override;
+  absl::optional<int> BasicStartupComplete() override;
   void PreSandboxStartup() override;
-  int RunProcess(
+  absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
-      const content::MainFunctionParams& main_function_params) override;
+      content::MainFunctionParams main_function_params) override;
   void ProcessExiting(const std::string& process_type) override;
-  bool ShouldCreateFeatureList() override;
-  void PostEarlyInitialization(bool is_running_tests) override;
-  void PostFieldTrialInitialization() override;
+  bool ShouldCreateFeatureList(InvokedIn invoked_in) override;
+  bool ShouldInitializeMojo(InvokedIn invoked_in) override;
+  variations::VariationsIdsProvider* CreateVariationsIdsProvider() override;
+  absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
   content::ContentClient* CreateContentClient() override;
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentGpuClient* CreateContentGpuClient() override;
@@ -61,10 +61,6 @@ class AwMainDelegate : public content::ContentMainDelegate {
   std::unique_ptr<AwContentBrowserClient> content_browser_client_;
   std::unique_ptr<AwContentGpuClient> content_gpu_client_;
   std::unique_ptr<AwContentRendererClient> content_renderer_client_;
-  std::unique_ptr<safe_browsing::SafeBrowsingApiHandler>
-      safe_browsing_api_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwMainDelegate);
 };
 
 }  // namespace android_webview

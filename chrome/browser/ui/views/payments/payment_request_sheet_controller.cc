@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,18 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 #include "chrome/browser/ui/views/payments/payment_request_views_util.h"
 #include "components/payments/content/payment_request.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/background.h"
@@ -19,16 +26,14 @@
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/focus/focus_search.h"
-#include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/table_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/painter.h"
 
 namespace payments {
 
-namespace {
+namespace internal {
 
 // This class is the actual sheet that gets pushed on the view_stack_. It
 // implements views::FocusTraversable to trap focus within its hierarchy. This
@@ -38,7 +43,7 @@ namespace {
 // view should be focused first (through SetFirstFocusableView). If no initial
 // view is specified, the first view added to the hierarchy will get focus when
 // this SheetView's RequestFocus() is called.
-class SheetView : public views::View, public views::FocusTraversable {
+class SheetView : public views::BoxLayoutView, public views::FocusTraversable {
  public:
   METADATA_HEADER(SheetView);
   explicit SheetView(const base::RepeatingCallback<void(bool*)>&
@@ -71,7 +76,7 @@ class SheetView : public views::View, public views::FocusTraversable {
   void RequestFocus() override {
     // In accessibility contexts, we want to focus the title of the sheet.
     views::View* title =
-        GetViewByID(static_cast<int>(DialogViewID::SHEET_TITLE));
+        GetViewByID(static_cast<int>(payments::DialogViewID::SHEET_TITLE));
     views::FocusManager* focus = GetFocusManager();
     DCHECK(focus);
 
@@ -116,7 +121,7 @@ class SheetView : public views::View, public views::FocusTraversable {
       first_focusable_ = nullptr;
   }
 
-  views::View* first_focusable_ = nullptr;
+  raw_ptr<views::View> first_focusable_ = nullptr;
   std::unique_ptr<views::FocusSearch> focus_search_ =
       std::make_unique<views::FocusSearch>(/*root=*/this,
                                            /*cycle=*/true,
@@ -125,8 +130,11 @@ class SheetView : public views::View, public views::FocusTraversable {
   base::RepeatingCallback<void(bool*)> enter_key_accelerator_callback_;
 };
 
-BEGIN_METADATA(SheetView, views::View)
+BEGIN_METADATA(SheetView, views::BoxLayoutView)
 END_METADATA
+
+BEGIN_VIEW_BUILDER(, SheetView, views::BoxLayoutView)
+END_VIEW_BUILDER
 
 // A scroll view that displays a separator on the bounds where content is
 // scrolled out of view. For example, if the view can be scrolled up to reveal
@@ -167,18 +175,12 @@ class BorderedScrollView : public views::ScrollView {
    private:
     SkColor color_;
     // The scroll view that owns the border that owns this painter.
-    BorderedScrollView* scroll_view_;
+    raw_ptr<BorderedScrollView> scroll_view_;
   };
 
   BorderedScrollView() {
-    SetBackground(views::CreateThemedSolidBackground(
-        this, ui::NativeTheme::kColorId_DialogBackground));
-    SetBorder(views::CreateBorderPainter(
-        std::make_unique<BorderedScrollViewBorderPainter>(
-            GetNativeTheme()->GetSystemColor(
-                ui::NativeTheme::kColorId_SeparatorColor),
-            this),
-        gfx::Insets(1, 0)));
+    SetBackground(
+        views::CreateThemedSolidBackground(ui::kColorDialogBackground));
   }
 
   bool GetTopBorder() const { return GetVisibleRect().y() > 0; }
@@ -192,6 +194,13 @@ class BorderedScrollView : public views::ScrollView {
     views::ScrollView::ScrollToPosition(source, position);
     SchedulePaint();
   }
+  void OnThemeChanged() override {
+    ScrollView::OnThemeChanged();
+    SetBorder(views::CreateBorderPainter(
+        std::make_unique<BorderedScrollViewBorderPainter>(
+            GetColorProvider()->GetColor(ui::kColorSeparator), this),
+        gfx::Insets::VH(1, 0)));
+  }
 };
 
 BEGIN_METADATA(BorderedScrollView, views::ScrollView)
@@ -199,7 +208,13 @@ ADD_READONLY_PROPERTY_METADATA(bool, TopBorder)
 ADD_READONLY_PROPERTY_METADATA(bool, BottomBorder)
 END_METADATA
 
-}  // namespace
+}  // namespace internal
+
+}  // namespace payments
+
+DEFINE_VIEW_BUILDER(, payments::internal::SheetView)
+
+namespace payments {
 
 PaymentRequestSheetController::PaymentRequestSheetController(
     base::WeakPtr<PaymentRequestSpec> spec,
@@ -214,77 +229,88 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
   // before creating the sheet view. This way, it's possible to determine
   // whether there's something to do when the user hits enter.
   std::unique_ptr<views::View> footer = CreateFooterView();
-  auto view = std::make_unique<SheetView>(
-      primary_button_
-          ? base::BindRepeating(
-                &PaymentRequestSheetController::PerformPrimaryButtonAction,
-                weak_ptr_factory_.GetWeakPtr())
-          : base::RepeatingCallback<void(bool*)>());
+  auto view =
+      views::Builder<internal::SheetView>(
+          std::make_unique<internal::SheetView>(
+              primary_button_
+                  ? base::BindRepeating(&PaymentRequestSheetController::
+                                            PerformPrimaryButtonAction,
+                                        weak_ptr_factory_.GetWeakPtr())
+                  : base::RepeatingCallback<void(bool*)>()))
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .CustomConfigure(base::BindOnce(
+              [](PaymentRequestSheetController* controller,
+                 internal::SheetView* sheet_view) {
+                DialogViewID sheet_id;
+                if (controller->GetSheetId(&sheet_id))
+                  sheet_view->SetID(static_cast<int>(sheet_id));
 
-  DialogViewID sheet_id;
-  if (GetSheetId(&sheet_id))
-    view->SetID(static_cast<int>(sheet_id));
+                sheet_view->SetBackground(views::CreateThemedSolidBackground(
+                    ui::kColorDialogBackground));
 
-  view->SetBackground(views::CreateThemedSolidBackground(
-      view.get(), ui::NativeTheme::kColorId_DialogBackground));
+                // Paint the sheets to layers, otherwise the MD buttons (which
+                // do paint to a layer) won't do proper clipping.
+                sheet_view->SetPaintToLayer();
+              },
+              base::Unretained(this)))
+          .AddChildren(
+              views::Builder<views::View>()
+                  .CopyAddressTo(&header_view_)
+                  .CustomConfigure(base::BindOnce(
+                      [](PaymentRequestSheetController* controller,
+                         views::View* view) {
+                        PopulateSheetHeaderView(
+                            controller->ShouldShowHeaderBackArrow(),
+                            controller->CreateHeaderContentView(view),
+                            base::BindRepeating(&PaymentRequestSheetController::
+                                                    BackButtonPressed,
+                                                base::Unretained(controller)),
+                            view, controller->GetHeaderBackground(view));
+                      },
+                      base::Unretained(this))),
+              views::Builder<views::View>()
+                  .CopyAddressTo(&header_content_separator_container_)
+                  .SetUseDefaultFillLayout(true),
+              // |content_view| will go into a views::ScrollView so it needs to
+              // be sized now otherwise it'll be sized to the ScrollView's
+              // viewport height, preventing the scroll bar from ever being
+              // shown.
+              views::Builder<views::ScrollView>(
+                  DisplayDynamicBorderForHiddenContents()
+                      ? std::make_unique<internal::BorderedScrollView>()
+                      : std::make_unique<views::ScrollView>())
+                  .CopyAddressTo(&scroll_)
+                  .SetHorizontalScrollBarMode(
+                      views::ScrollView::ScrollBarMode::kDisabled)
+                  .SetContents(
+                      views::Builder<views::TableLayoutView>()
+                          .CopyAddressTo(&pane_)
+                          .AddColumn(views::LayoutAlignment::kStretch,
+                                     views::LayoutAlignment::kStart,
+                                     views::TableLayout::kFixedSize,
+                                     views::TableLayout::ColumnSize::kFixed,
+                                     dialog_->GetActualDialogWidth(),
+                                     dialog_->GetActualDialogWidth())
+                          .AddRows(1, views::TableLayout::kFixedSize, 0)
+                          .AddChild(
+                              views::Builder<views::View>()
+                                  .CopyAddressTo(&content_view_)
+                                  .SetID(static_cast<int>(
+                                      DialogViewID::CONTENT_VIEW))
+                                  .CustomConfigure(base::BindOnce(
+                                      [](views::View* content_view) {
+                                        content_view->SetPaintToLayer();
+                                        content_view->layer()
+                                            ->SetFillsBoundsOpaquely(true);
+                                        content_view->SetBackground(
+                                            views::CreateThemedSolidBackground(
+                                                ui::kColorDialogBackground));
+                                      })))))
+          .Build();
 
-  // Paint the sheets to layers, otherwise the MD buttons (which do paint to a
-  // layer) won't do proper clipping.
-  view->SetPaintToLayer();
-
-  views::GridLayout* layout =
-      view->SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  // Note: each view is responsible for its own padding (insets).
-  views::ColumnSet* columns = layout->AddColumnSet(0);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  header_view_ = layout->AddView(std::make_unique<views::View>());
-  PopulateSheetHeaderView(
-      ShouldShowHeaderBackArrow(), CreateHeaderContentView(header_view_),
-      base::BindRepeating(&PaymentRequestSheetController::BackButtonPressed,
-                          base::Unretained(this)),
-      header_view_, GetHeaderBackground(header_view_));
-
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  header_content_separator_container_ =
-      layout->AddView(std::make_unique<views::View>());
-  header_content_separator_container_->SetLayoutManager(
-      std::make_unique<views::FillLayout>());
-
-  layout->StartRow(1.0, 0);
-  // |content_view| will go into a views::ScrollView so it needs to be sized now
-  // otherwise it'll be sized to the ScrollView's viewport height, preventing
-  // the scroll bar from ever being shown.
-  scroll_ = layout->AddView(DisplayDynamicBorderForHiddenContents()
-                                ? std::make_unique<BorderedScrollView>()
-                                : std::make_unique<views::ScrollView>());
-  scroll_->SetHorizontalScrollBarMode(
-      views::ScrollView::ScrollBarMode::kDisabled);
-  pane_ = scroll_->SetContents(std::make_unique<views::View>());
-  views::GridLayout* pane_layout =
-      pane_->SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* pane_columns = pane_layout->AddColumnSet(0);
-  pane_columns->AddColumn(
-      views::GridLayout::Alignment::FILL, views::GridLayout::Alignment::LEADING,
-      views::GridLayout::kFixedSize, views::GridLayout::ColumnSize::kFixed,
-      dialog_->GetActualDialogWidth(), dialog_->GetActualDialogWidth());
-  pane_layout->StartRow(views::GridLayout::kFixedSize, 0);
-  // This is owned by its parent. It's the container passed to FillContentView.
-  content_view_ = pane_layout->AddView(std::make_unique<views::View>());
-  content_view_->SetPaintToLayer();
-  content_view_->layer()->SetFillsBoundsOpaquely(true);
-  content_view_->SetBackground(views::CreateThemedSolidBackground(
-      content_view_, ui::NativeTheme::kColorId_DialogBackground));
-  content_view_->SetID(static_cast<int>(DialogViewID::CONTENT_VIEW));
-  pane_->SizeToPreferredSize();
-
-  if (footer) {
-    layout->StartRow(views::GridLayout::kFixedSize, 0);
-    layout->AddView(std::move(footer));
-  }
+  view->SetFlexForView(scroll_, 1.0);
+  if (footer)
+    view->AddChildView(std::move(footer));
 
   UpdateContentView();
 
@@ -297,7 +323,7 @@ void PaymentRequestSheetController::UpdateContentView() {
   if (!is_active_)
     return;
 
-  content_view_->RemoveAllChildViews(true);
+  content_view_->RemoveAllChildViews();
   FillContentView(content_view_);
   RelayoutPane();
 }
@@ -307,20 +333,20 @@ void PaymentRequestSheetController::UpdateHeaderView() {
   if (!is_active_)
     return;
 
-  header_view_->RemoveAllChildViews(true);
+  header_view_->RemoveAllChildViews();
   PopulateSheetHeaderView(
       ShouldShowHeaderBackArrow(), CreateHeaderContentView(header_view_),
       base::BindRepeating(&PaymentRequestSheetController::BackButtonPressed,
                           base::Unretained(this)),
       header_view_, GetHeaderBackground(header_view_));
-  header_view_->Layout();
+  header_view_->InvalidateLayout();
   header_view_->SchedulePaint();
 }
 
 void PaymentRequestSheetController::UpdateFocus(views::View* focused_view) {
   DialogViewID sheet_id;
   if (GetSheetId(&sheet_id)) {
-    SheetView* sheet_view = static_cast<SheetView*>(
+    internal::SheetView* sheet_view = static_cast<internal::SheetView*>(
         dialog()->GetViewByID(static_cast<int>(sheet_id)));
     // This will be null on first call since it's not been set until CreateView
     // returns, and the first call to UpdateFocus() comes from CreateView.
@@ -336,11 +362,11 @@ void PaymentRequestSheetController::RelayoutPane() {
   if (!is_active_)
     return;
 
-  content_view_->Layout();
+  content_view_->InvalidateLayout();
   pane_->SizeToPreferredSize();
   // Now that the content and its surrounding pane are updated, force a Layout
   // on the ScrollView so that it updates its scroll bars now.
-  scroll_->Layout();
+  scroll_->InvalidateLayout();
 }
 
 bool PaymentRequestSheetController::ShouldShowPrimaryButton() {
@@ -348,11 +374,7 @@ bool PaymentRequestSheetController::ShouldShowPrimaryButton() {
 }
 
 std::u16string PaymentRequestSheetController::GetPrimaryButtonLabel() {
-  const bool continue_button =
-      state()->selected_app() &&
-      state()->selected_app()->type() != PaymentApp::Type::AUTOFILL;
-  return l10n_util::GetStringUTF16(
-      continue_button ? IDS_PAYMENTS_CONTINUE_BUTTON : IDS_PAYMENTS_PAY_BUTTON);
+  return l10n_util::GetStringUTF16(IDS_PAYMENTS_CONTINUE_BUTTON);
 }
 
 PaymentRequestSheetController::ButtonCallback
@@ -403,67 +425,65 @@ PaymentRequestSheetController::CreateExtraFooterView() {
 std::unique_ptr<views::View>
 PaymentRequestSheetController::CreateHeaderContentView(
     views::View* header_view) {
-  auto title_label = std::make_unique<views::Label>(
-      GetSheetTitle(), views::style::CONTEXT_DIALOG_TITLE);
-  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label->SetID(static_cast<int>(DialogViewID::SHEET_TITLE));
-  title_label->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
-  return title_label;
+  return views::Builder<views::Label>()
+      .SetText(GetSheetTitle())
+      .SetTextContext(views::style::CONTEXT_DIALOG_TITLE)
+      .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+      .SetID(static_cast<int>(DialogViewID::SHEET_TITLE))
+      .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
+      .Build();
 }
 
 std::unique_ptr<views::Background>
 PaymentRequestSheetController::GetHeaderBackground(views::View* header_view) {
-  return views::CreateThemedSolidBackground(
-      header_view, ui::NativeTheme::kColorId_DialogBackground);
+  return views::CreateThemedSolidBackground(ui::kColorDialogBackground);
 }
 
 std::unique_ptr<views::View> PaymentRequestSheetController::CreateFooterView() {
-  auto container = std::make_unique<views::View>();
-
-  // The distance between the elements and the dialog borders.
-  container->SetBorder(views::CreateEmptyBorder(gfx::Insets(16)));
-
-  views::GridLayout* layout =
-      container->SetLayoutManager(std::make_unique<views::GridLayout>());
-
-  views::ColumnSet* columns = layout->AddColumnSet(0);
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  columns->AddPaddingColumn(1.0, 0);
-  columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
   std::unique_ptr<views::View> extra_view = CreateExtraFooterView();
-  if (extra_view)
-    layout->AddView(std::move(extra_view));
-  else
-    layout->SkipColumns(1);
+  views::BoxLayoutView* trailing_buttons_container = nullptr;
+  bool has_extra_view = !!extra_view;
 
-  auto trailing_buttons_container = std::make_unique<views::View>();
-  trailing_buttons_container->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-          kPaymentRequestButtonSpacing));
-
-#if defined(OS_MAC)
-  AddSecondaryButton(trailing_buttons_container.get());
-  AddPrimaryButton(trailing_buttons_container.get());
+  auto container =
+      views::Builder<views::TableLayoutView>()
+          .SetBorder(views::CreateEmptyBorder(16))
+          .AddColumn(views::LayoutAlignment::kStart,
+                     views::LayoutAlignment::kCenter,
+                     views::TableLayout::kFixedSize,
+                     views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+          .AddPaddingColumn(1.0, 0)
+          .AddColumn(views::LayoutAlignment::kEnd,
+                     views::LayoutAlignment::kCenter,
+                     views::TableLayout::kFixedSize,
+                     views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+          .AddRows(1, views::TableLayout::kFixedSize, 0)
+          .AddChildren(
+              views::Builder<views::View>(
+                  extra_view ? std::move(extra_view)
+                             : std::make_unique<views::View>()),
+              views::Builder<views::BoxLayoutView>()
+                  .CopyAddressTo(&trailing_buttons_container)
+                  .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+                  .SetBetweenChildSpacing(kPaymentRequestButtonSpacing)
+                  .CustomConfigure(base::BindOnce(
+                      [](PaymentRequestSheetController* controller,
+                         views::BoxLayoutView* container) {
+#if BUILDFLAG(IS_MAC)
+                        controller->AddSecondaryButton(container);
+                        controller->AddPrimaryButton(container);
 #else
-  AddPrimaryButton(trailing_buttons_container.get());
-  AddSecondaryButton(trailing_buttons_container.get());
-#endif  // defined(OS_MAC)
+                        controller->AddPrimaryButton(container);
+                        controller->AddSecondaryButton(container);
+#endif  // BUILDFLAG(IS_MAC)
+                      },
+                      base::Unretained(this))))
+          .Build();
 
-  if (container->children().empty() &&
-      trailing_buttons_container->children().empty()) {
+  if (!has_extra_view && trailing_buttons_container->children().empty()) {
     // If there's no extra view and no button, return null to signal that no
     // footer should be rendered.
     return nullptr;
   }
-
-  layout->AddView(std::move(trailing_buttons_container));
 
   return container;
 }
@@ -494,23 +514,29 @@ void PaymentRequestSheetController::CloseButtonPressed() {
 
 void PaymentRequestSheetController::AddPrimaryButton(views::View* container) {
   if (ShouldShowPrimaryButton()) {
-    primary_button_ =
-        container->AddChildView(std::make_unique<views::MdTextButton>(
-            GetPrimaryButtonCallback(), GetPrimaryButtonLabel()));
-    primary_button_->SetID(GetPrimaryButtonId());
-    primary_button_->SetEnabled(GetPrimaryButtonEnabled());
-    primary_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    primary_button_->SetProminent(true);
+    views::Builder<views::View>(container)
+        .AddChild(views::Builder<views::MdTextButton>()
+                      .CopyAddressTo(&primary_button_)
+                      .SetCallback(GetPrimaryButtonCallback())
+                      .SetText(GetPrimaryButtonLabel())
+                      .SetID(GetPrimaryButtonId())
+                      .SetEnabled(GetPrimaryButtonEnabled())
+                      .SetFocusBehavior(views::View::FocusBehavior::ALWAYS)
+                      .SetProminent(true))
+        .BuildChildren();
   }
 }
 
 void PaymentRequestSheetController::AddSecondaryButton(views::View* container) {
   if (ShouldShowSecondaryButton()) {
-    secondary_button_ =
-        container->AddChildView(std::make_unique<views::MdTextButton>(
-            GetSecondaryButtonCallback(), GetSecondaryButtonLabel()));
-    secondary_button_->SetID(GetSecondaryButtonId());
-    secondary_button_->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+    views::Builder<views::View>(container)
+        .AddChild(views::Builder<views::MdTextButton>()
+                      .CopyAddressTo(&secondary_button_)
+                      .SetCallback(GetSecondaryButtonCallback())
+                      .SetText(GetSecondaryButtonLabel())
+                      .SetID(GetSecondaryButtonId())
+                      .SetFocusBehavior(views::View::FocusBehavior::ALWAYS))
+        .BuildChildren();
   }
 }
 

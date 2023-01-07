@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,9 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -45,24 +44,29 @@ class LevelDBWriteBatch;
 class TransactionalLevelDBTransaction
     : public base::RefCounted<TransactionalLevelDBTransaction> {
  public:
-  leveldb::Status Put(const base::StringPiece& key,
-                      std::string* value) WARN_UNUSED_RESULT;
+  TransactionalLevelDBTransaction(const TransactionalLevelDBTransaction&) =
+      delete;
+  TransactionalLevelDBTransaction& operator=(
+      const TransactionalLevelDBTransaction&) = delete;
 
-  leveldb::Status Remove(const base::StringPiece& key) WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status Put(const base::StringPiece& key,
+                                    std::string* value);
 
-  leveldb::Status RemoveRange(const base::StringPiece& begin,
-                              const base::StringPiece& end,
-                              LevelDBScopeDeletionMode deletion_mode)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status Remove(const base::StringPiece& key);
 
-  virtual leveldb::Status Get(const base::StringPiece& key,
-                              std::string* value,
-                              bool* found) WARN_UNUSED_RESULT;
-  virtual leveldb::Status Commit(bool sync_on_commit) WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status RemoveRange(
+      const base::StringPiece& begin,
+      const base::StringPiece& end,
+      LevelDBScopeDeletionMode deletion_mode);
+
+  [[nodiscard]] virtual leveldb::Status Get(const base::StringPiece& key,
+                                            std::string* value,
+                                            bool* found);
+  [[nodiscard]] virtual leveldb::Status Commit(bool sync_on_commit);
 
   // If the underlying scopes system is in single-sequence mode, then this
   // method will return the result of the rollback task.
-  leveldb::Status Rollback() WARN_UNUSED_RESULT;
+  [[nodiscard]] leveldb::Status Rollback();
 
   // The returned iterator must be destroyed before the destruction of this
   // transaction.  This may return null, if it does, status will explain why.
@@ -104,7 +108,7 @@ class TransactionalLevelDBTransaction
 
   void EvictLoadedIterators();
 
-  TransactionalLevelDBDatabase* const db_;
+  const raw_ptr<TransactionalLevelDBDatabase> db_;
   // Non-null until the transaction is committed or rolled back.
   std::unique_ptr<LevelDBScope> scope_;
   bool finished_ = false;
@@ -135,8 +139,6 @@ class TransactionalLevelDBTransaction
   bool is_evicting_all_loaded_iterators_ = false;
 
   base::WeakPtrFactory<TransactionalLevelDBTransaction> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TransactionalLevelDBTransaction);
 };
 
 // Reads go straight to the database, ignoring any writes cached in
@@ -146,6 +148,9 @@ class TransactionalLevelDBTransaction
 // WriteBatch.
 class LevelDBDirectTransaction {
  public:
+  LevelDBDirectTransaction(const LevelDBDirectTransaction&) = delete;
+  LevelDBDirectTransaction& operator=(const LevelDBDirectTransaction&) = delete;
+
   virtual ~LevelDBDirectTransaction();
 
   leveldb::Status Put(const base::StringPiece& key, const std::string* value);
@@ -164,10 +169,8 @@ class LevelDBDirectTransaction {
 
   bool IsFinished() const { return write_batch_ == nullptr; }
 
-  TransactionalLevelDBDatabase* const db_;
+  const raw_ptr<TransactionalLevelDBDatabase> db_;
   std::unique_ptr<LevelDBWriteBatch> write_batch_;
-
-  DISALLOW_COPY_AND_ASSIGN(LevelDBDirectTransaction);
 };
 
 }  // namespace content

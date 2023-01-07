@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,18 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "chromeos/dbus/common/dbus_method_call_status.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
-#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
 class Value;
 
-}  // base
+}  // namespace base
 
 namespace chromeos {
 
@@ -29,6 +27,9 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
  public:
   CryptohomeWebUIHandler();
 
+  CryptohomeWebUIHandler(const CryptohomeWebUIHandler&) = delete;
+  CryptohomeWebUIHandler& operator=(const CryptohomeWebUIHandler&) = delete;
+
   ~CryptohomeWebUIHandler() override;
 
   // WebUIMessageHandler override.
@@ -36,13 +37,13 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
 
  private:
   // This method is called from JavaScript.
-  void OnPageLoaded(const base::ListValue* args);
+  void OnPageLoaded(const base::Value::List& args);
 
-  void DidGetNSSUtilInfoOnUIThread(bool is_tpm_token_ready);
+  void GotIsTPMTokenEnabledOnUIThread(bool is_tpm_token_enabled);
 
-  void OnIsMounted(base::Optional<user_data_auth::IsMountedReply> reply);
+  void OnIsMounted(absl::optional<user_data_auth::IsMountedReply> reply);
   void OnPkcs11IsTpmTokenReady(
-      base::Optional<user_data_auth::Pkcs11IsTpmTokenReadyReply> reply);
+      absl::optional<user_data_auth::Pkcs11IsTpmTokenReadyReply> reply);
 
   // This method is called when TpmManager D-Bus GetTpmNonsensitiveStatus call
   // completes.
@@ -54,7 +55,6 @@ class CryptohomeWebUIHandler : public content::WebUIMessageHandler {
                              const base::Value& value);
 
   base::WeakPtrFactory<CryptohomeWebUIHandler> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(CryptohomeWebUIHandler);
 };
 
 }  // namespace chromeos

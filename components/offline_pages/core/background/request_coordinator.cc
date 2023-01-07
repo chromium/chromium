@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/offline_pages/core/background/request_coordinator.h"
 
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -13,9 +14,11 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/background/offliner.h"
 #include "components/offline_pages/core/background/offliner_client.h"
@@ -34,8 +37,8 @@ namespace offline_pages {
 namespace {
 const bool kUserRequest = true;
 const bool kStartOfProcessing = true;
-constexpr base::TimeDelta kMinDuration = base::TimeDelta::FromSeconds(1);
-constexpr base::TimeDelta kMaxDuration = base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kMinDuration = base::Seconds(1);
+constexpr base::TimeDelta kMaxDuration = base::Days(7);
 const int kDurationBuckets = 50;
 const int kDisabledTaskRecheckSeconds = 5;
 
@@ -103,7 +106,7 @@ void RecordStartTimeUMA(const SavePageRequest& request) {
   base::TimeDelta duration = OfflineTimeNow() - request.creation_time();
   base::UmaHistogramCustomTimes(
       AddHistogramSuffix(request.client_id(), histogram_name.c_str()), duration,
-      base::TimeDelta::FromMilliseconds(100), base::TimeDelta::FromDays(7), 50);
+      base::Milliseconds(100), base::Days(7), 50);
 }
 
 void RecordCancelTimeUMA(const SavePageRequest& canceled_request) {
@@ -205,9 +208,9 @@ constexpr bool IsCanceledOrInternalFailure(Offliner::RequestStatus status) {
 }
 
 // Returns the |BackgroundSavePageResult| appropriate for a single attempt
-// status. Returns |base::nullopt| for indeterminate status values that can be
+// status. Returns |absl::nullopt| for indeterminate status values that can be
 // retried.
-base::Optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
+absl::optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
     Offliner::RequestStatus status) {
   switch (status) {
       // Success status values.
@@ -223,7 +226,7 @@ base::Optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
     case Offliner::RequestStatus::LOADING_DEFERRED:
     case Offliner::RequestStatus::BACKGROUND_SCHEDULER_CANCELED:
     case Offliner::RequestStatus::REQUEST_COORDINATOR_CANCELED:
-      return base::nullopt;
+      return absl::nullopt;
 
       // Other failure status values.
     case Offliner::RequestStatus::LOADING_FAILED_NO_RETRY:
@@ -240,7 +243,7 @@ base::Optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
     case Offliner::RequestStatus::LOADING_FAILED_HTTP_ERROR:
     case Offliner::RequestStatus::LOADING_FAILED_NO_NEXT:
     case Offliner::RequestStatus::REQUEST_COORDINATOR_TIMED_OUT:
-      return base::nullopt;
+      return absl::nullopt;
 
     // Only used by |Offliner| internally.
     case Offliner::RequestStatus::UNKNOWN:
@@ -250,7 +253,7 @@ base::Optional<RequestNotifier::BackgroundSavePageResult> SingleAttemptResult(
     // Only recorded by |RequestCoordinator| directly.
     case Offliner::RequestStatus::BROWSER_KILLED:
       DCHECK(false) << "Received invalid status: " << static_cast<int>(status);
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
@@ -503,8 +506,7 @@ void RequestCoordinator::PauseRequests(
     const std::vector<int64_t>& request_ids) {
   // Remove the paused requests from prioritized list.
   for (int64_t id : request_ids) {
-    auto it = std::find(prioritized_requests_.begin(),
-                        prioritized_requests_.end(), id);
+    auto it = base::ranges::find(prioritized_requests_, id);
     if (it != prioritized_requests_.end())
       prioritized_requests_.erase(it);
   }
@@ -644,7 +646,7 @@ bool RequestCoordinator::StartScheduledProcessing(
     const DeviceConditions& device_conditions,
     const base::RepeatingCallback<void(bool)>& callback) {
   DVLOG(2) << "Scheduled " << __func__;
-  current_conditions_.reset(new DeviceConditions(device_conditions));
+  current_conditions_ = std::make_unique<DeviceConditions>(device_conditions);
   return StartProcessingInternal(ProcessingWindowState::SCHEDULED_WINDOW,
                                  callback);
 }
@@ -717,9 +719,9 @@ RequestCoordinator::TryImmediateStart(
 }
 
 void RequestCoordinator::RequestConnectedEventForStarting() {
-  connection_notifier_.reset(new ConnectionNotifier(
+  connection_notifier_ = std::make_unique<ConnectionNotifier>(
       base::BindOnce(&RequestCoordinator::HandleConnectedEventForStarting,
-                     weak_ptr_factory_.GetWeakPtr())));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RequestCoordinator::ClearConnectedEventRequest() {
@@ -772,11 +774,11 @@ void RequestCoordinator::TryNextRequest(bool is_start_of_processing) {
 
   base::TimeDelta processing_time_budget;
   if (processing_state_ == ProcessingWindowState::SCHEDULED_WINDOW) {
-    processing_time_budget = base::TimeDelta::FromSeconds(
+    processing_time_budget = base::Seconds(
         policy_->GetProcessingTimeBudgetWhenBackgroundScheduledInSeconds());
   } else {
     DCHECK(processing_state_ == ProcessingWindowState::IMMEDIATE_WINDOW);
-    processing_time_budget = base::TimeDelta::FromSeconds(
+    processing_time_budget = base::Seconds(
         policy_->GetProcessingTimeBudgetForImmediateLoadInSeconds());
   }
 
@@ -971,10 +973,10 @@ void RequestCoordinator::StartOffliner(int64_t request_id,
 
   base::TimeDelta timeout;
   if (processing_state_ == ProcessingWindowState::SCHEDULED_WINDOW) {
-    timeout = base::TimeDelta::FromSeconds(
+    timeout = base::Seconds(
         policy_->GetSinglePageTimeLimitWhenBackgroundScheduledInSeconds());
   } else {
-    timeout = base::TimeDelta::FromSeconds(
+    timeout = base::Seconds(
         policy_->GetSinglePageTimeLimitForImmediateLoadInSeconds());
   }
   // Start the load and save process in the offliner (Async).
@@ -1011,7 +1013,7 @@ void RequestCoordinator::OfflinerDoneCallback(const SavePageRequest& request,
 void RequestCoordinator::UpdateRequestForAttempt(
     const SavePageRequest& request,
     Offliner::RequestStatus status) {
-  base::Optional<RequestNotifier::BackgroundSavePageResult> attempt_result =
+  absl::optional<RequestNotifier::BackgroundSavePageResult> attempt_result =
       SingleAttemptResult(status);
 
   // If the request failed, report the connection type as of the start of the

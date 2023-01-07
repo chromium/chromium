@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,54 +15,49 @@ namespace prerender {
 
 namespace {
 
-bool ListEntryMatches(base::ListValue* list,
+bool ListEntryMatches(const base::Value::List& list,
                       size_t index,
                       const char* expected_url,
                       FinalStatus expected_final_status,
                       Origin expected_origin,
                       const std::string& expected_end_time) {
-  if (index >= list->GetSize())
+  if (index >= list.size())
     return false;
-  base::DictionaryValue* dict = nullptr;
-  if (!list->GetDictionary(index, &dict))
+  const base::Value& dict = list[index];
+  if (!dict.is_dict())
     return false;
-  if (dict->size() != 4u)
+  if (dict.DictSize() != 4u)
     return false;
-  std::string url;
-  if (!dict->GetString("url", &url))
+  const std::string* url = dict.FindStringPath("url");
+  if (!url)
     return false;
-  if (url != expected_url)
+  if (*url != expected_url)
     return false;
-  std::string final_status;
-  if (!dict->GetString("final_status", &final_status))
+  const std::string* final_status = dict.FindStringPath("final_status");
+  if (!final_status)
     return false;
-  if (final_status != NameFromFinalStatus(expected_final_status))
+  if (*final_status != NameFromFinalStatus(expected_final_status))
     return false;
-  std::string origin;
-  if (!dict->GetString("origin", &origin))
+  const std::string* origin = dict.FindStringPath("origin");
+  if (!origin)
     return false;
-  if (origin != NameFromOrigin(expected_origin))
+  if (*origin != NameFromOrigin(expected_origin))
     return false;
-  std::string end_time;
-  if (!dict->GetString("end_time", &end_time))
+  const std::string* end_time = dict.FindStringPath("end_time");
+  if (!end_time)
     return false;
-  if (end_time != expected_end_time)
+  if (*end_time != expected_end_time)
     return false;
   return true;
 }
 
 TEST(PrerenderHistoryTest, GetAsValue) {
-  std::unique_ptr<base::Value> entry_value;
-  base::ListValue* entry_list = nullptr;
-
   // Create a history with only 2 values.
   PrerenderHistory history(2);
 
   // Make sure an empty list exists when retrieving as value.
-  entry_value = history.CopyEntriesAsValue();
-  ASSERT_TRUE(entry_value.get() != nullptr);
-  ASSERT_TRUE(entry_value->GetAsList(&entry_list));
-  EXPECT_TRUE(entry_list->empty());
+  base::Value::List entry_value = history.CopyEntriesAsValue();
+  EXPECT_TRUE(entry_value.empty());
 
   // Base time used for all events.  Each event is given a time 1 millisecond
   // after that of the previous one.
@@ -76,52 +71,44 @@ TEST(PrerenderHistoryTest, GetAsValue) {
                                       kFirstOrigin, epoch_start);
   history.AddEntry(entry_first);
   entry_value = history.CopyEntriesAsValue();
-  ASSERT_TRUE(entry_value.get() != nullptr);
-  ASSERT_TRUE(entry_value->GetAsList(&entry_list));
-  EXPECT_EQ(1u, entry_list->GetSize());
-  EXPECT_TRUE(ListEntryMatches(entry_list, 0u, kFirstUrl, kFirstFinalStatus,
+  EXPECT_EQ(1u, entry_value.size());
+  EXPECT_TRUE(ListEntryMatches(entry_value, 0u, kFirstUrl, kFirstFinalStatus,
                                kFirstOrigin, "0"));
 
   // Add a second entry and make sure both first and second appear.
   const char* const kSecondUrl = "http://www.beta.com/";
   const FinalStatus kSecondFinalStatus = FINAL_STATUS_DUPLICATE;
   const Origin kSecondOrigin = ORIGIN_OMNIBOX;
-  PrerenderHistory::Entry entry_second(
-      GURL(kSecondUrl), kSecondFinalStatus, kSecondOrigin,
-      epoch_start + base::TimeDelta::FromMilliseconds(1));
+  PrerenderHistory::Entry entry_second(GURL(kSecondUrl), kSecondFinalStatus,
+                                       kSecondOrigin,
+                                       epoch_start + base::Milliseconds(1));
   history.AddEntry(entry_second);
   entry_value = history.CopyEntriesAsValue();
-  ASSERT_TRUE(entry_value.get() != nullptr);
-  ASSERT_TRUE(entry_value->GetAsList(&entry_list));
-  EXPECT_EQ(2u, entry_list->GetSize());
-  EXPECT_TRUE(ListEntryMatches(entry_list, 0u, kSecondUrl, kSecondFinalStatus,
+  EXPECT_EQ(2u, entry_value.size());
+  EXPECT_TRUE(ListEntryMatches(entry_value, 0u, kSecondUrl, kSecondFinalStatus,
                                kSecondOrigin, "1"));
-  EXPECT_TRUE(ListEntryMatches(entry_list, 1u, kFirstUrl, kFirstFinalStatus,
+  EXPECT_TRUE(ListEntryMatches(entry_value, 1u, kFirstUrl, kFirstFinalStatus,
                                kFirstOrigin, "0"));
 
   // Add a third entry and make sure that the first one drops off.
   const char* const kThirdUrl = "http://www.gamma.com/";
   const FinalStatus kThirdFinalStatus = FINAL_STATUS_AUTH_NEEDED;
   const Origin kThirdOrigin = ORIGIN_LINK_REL_PRERENDER_CROSSDOMAIN;
-  PrerenderHistory::Entry entry_third(
-      GURL(kThirdUrl), kThirdFinalStatus, kThirdOrigin,
-      epoch_start + base::TimeDelta::FromMilliseconds(2));
+  PrerenderHistory::Entry entry_third(GURL(kThirdUrl), kThirdFinalStatus,
+                                      kThirdOrigin,
+                                      epoch_start + base::Milliseconds(2));
   history.AddEntry(entry_third);
   entry_value = history.CopyEntriesAsValue();
-  ASSERT_TRUE(entry_value.get() != nullptr);
-  ASSERT_TRUE(entry_value->GetAsList(&entry_list));
-  EXPECT_EQ(2u, entry_list->GetSize());
-  EXPECT_TRUE(ListEntryMatches(entry_list, 0u, kThirdUrl, kThirdFinalStatus,
+  EXPECT_EQ(2u, entry_value.size());
+  EXPECT_TRUE(ListEntryMatches(entry_value, 0u, kThirdUrl, kThirdFinalStatus,
                                kThirdOrigin, "2"));
-  EXPECT_TRUE(ListEntryMatches(entry_list, 1u, kSecondUrl, kSecondFinalStatus,
+  EXPECT_TRUE(ListEntryMatches(entry_value, 1u, kSecondUrl, kSecondFinalStatus,
                                kSecondOrigin, "1"));
 
   // Make sure clearing history acts as expected.
   history.Clear();
   entry_value = history.CopyEntriesAsValue();
-  ASSERT_TRUE(entry_value.get() != nullptr);
-  ASSERT_TRUE(entry_value->GetAsList(&entry_list));
-  EXPECT_TRUE(entry_list->empty());
+  EXPECT_TRUE(entry_value.empty());
 }
 
 }  // namespace

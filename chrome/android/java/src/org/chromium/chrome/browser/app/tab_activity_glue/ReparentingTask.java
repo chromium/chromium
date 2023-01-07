@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.IntentHandler;
@@ -25,7 +26,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
-import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
 import org.chromium.content_public.browser.WebContents;
@@ -94,25 +95,37 @@ public class ReparentingTask implements UserData {
      * @param startActivityOptions Options to pass to {@link Activity#startActivity(Intent, Bundle)}
      * @param finalizeCallback A callback that will be called after the tab is attached to the new
      *                         host activity in {@link #attachAndFinishReparenting}.
-     * @return Whether reparenting succeeded. If false, the tab was not removed and the intent was
-     *         not fired.
      */
-    public boolean begin(Context context, Intent intent, Bundle startActivityOptions,
+    public void begin(Context context, Intent intent, Bundle startActivityOptions,
             Runnable finalizeCallback) {
+        setupIntent(context, intent, finalizeCallback);
+        context.startActivity(intent, startActivityOptions);
+    }
+
+    /**
+     * Sets up the given intent to be used for reparenting a tab.
+     * @param context {@link Context} object used to start a new activity.
+     * @param intent An optional intent with the desired component, flags, or extras to use when
+     *               launching the new host activity. This intent's URI and action will be
+     *               overridden. This may be null if no intent customization is needed.
+     * @param finalizeCallback A callback that will be called after the tab is attached to the new
+     *                         host activity in {@link #attachAndFinishReparenting}.
+     */
+    public void setupIntent(Context context, Intent intent, Runnable finalizeCallback) {
         if (intent == null) intent = new Intent();
         if (intent.getComponent() == null) {
             intent.setClass(ContextUtils.getApplicationContext(), ChromeLauncherActivity.class);
         }
         intent.setAction(Intent.ACTION_VIEW);
         if (TextUtils.isEmpty(intent.getDataString())) {
-            intent.setData(Uri.parse(mTab.getUrlString()));
+            intent.setData(Uri.parse(mTab.getUrl().getSpec()));
         }
         if (mTab.isIncognito()) {
             intent.putExtra(Browser.EXTRA_APPLICATION_ID,
                     ContextUtils.getApplicationContext().getPackageName());
             intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
         }
-        IntentHandler.addTrustedIntentExtras(intent);
+        IntentUtils.addTrustedIntentExtras(intent);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_REPARENTING)) {
             // Add the tab to AsyncTabParamsManager before removing it from the current model to
@@ -123,9 +136,6 @@ public class ReparentingTask implements UserData {
 
             detach();
         }
-
-        context.startActivity(intent, startActivityOptions);
-        return true;
     }
 
     /**
@@ -158,7 +168,7 @@ public class ReparentingTask implements UserData {
     public void finish(@NonNull Delegate delegate, @Nullable Runnable finalizeCallback) {
         delegate.getCompositorViewHolder().prepareForTabReparenting();
         attach(delegate.getWindowAndroid(), delegate.getTabDelegateFactory());
-        ((TabImpl) mTab).setIsTabStateDirty(true);
+        if (!mTab.isDestroyed()) TabStateAttributes.from(mTab).setIsTabStateDirty(true);
         if (finalizeCallback != null) finalizeCallback.run();
     }
 

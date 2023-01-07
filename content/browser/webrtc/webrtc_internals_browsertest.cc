@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -144,7 +144,7 @@ class UserMediaRequestEntry {
 
 static const int64_t FAKE_TIME_STAMP = 3600000;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // All tests are flaky on Windows: crbug.com/277322.
 #define MAYBE_WebRtcInternalsBrowserTest DISABLED_WebRtcInternalsBrowserTest
 #else
@@ -253,20 +253,22 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
     base::ListValue* list_request =
         static_cast<base::ListValue*>(value_requests.get());
-    EXPECT_EQ(requests.size(), list_request->GetSize());
+    EXPECT_EQ(requests.size(), list_request->GetList().size());
 
     for (size_t i = 0; i < requests.size(); ++i) {
-      base::DictionaryValue* dict = nullptr;
-      ASSERT_TRUE(list_request->GetDictionary(i, &dict));
-      int rid, pid;
+      const base::Value& value = list_request->GetList()[i];
+      ASSERT_TRUE(value.is_dict());
+      absl::optional<int> rid = value.FindIntKey("rid");
+      absl::optional<int> pid = value.FindIntKey("pid");
       std::string origin, audio, video;
-      ASSERT_TRUE(dict->GetInteger("rid", &rid));
-      ASSERT_TRUE(dict->GetInteger("pid", &pid));
-      ASSERT_TRUE(dict->GetString("origin", &origin));
-      ASSERT_TRUE(dict->GetString("audio", &audio));
-      ASSERT_TRUE(dict->GetString("video", &video));
-      EXPECT_EQ(requests[i].rid, rid);
-      EXPECT_EQ(requests[i].pid, pid);
+      ASSERT_TRUE(rid);
+      ASSERT_TRUE(pid);
+      const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
+      ASSERT_TRUE(dict.GetString("origin", &origin));
+      ASSERT_TRUE(dict.GetString("audio", &audio));
+      ASSERT_TRUE(dict.GetString("video", &video));
+      EXPECT_EQ(requests[i].rid, *rid);
+      EXPECT_EQ(requests[i].pid, *pid);
       EXPECT_EQ(requests[i].origin, origin);
       EXPECT_EQ(requests[i].audio_constraints, audio);
       EXPECT_EQ(requests[i].video_constraints, video);
@@ -458,33 +460,22 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
                                int update_number,
                                int stats_number) {
     EXPECT_NE((base::Value*)nullptr, dump);
-    EXPECT_EQ(base::Value::Type::DICTIONARY, dump->type());
+    ASSERT_EQ(base::Value::Type::DICTIONARY, dump->type());
 
-    base::DictionaryValue* dict_dump =
-        static_cast<base::DictionaryValue*>(dump);
-    EXPECT_EQ((size_t) peer_connection_number, dict_dump->size());
-
-    base::DictionaryValue::Iterator it(*dict_dump);
-    for (; !it.IsAtEnd(); it.Advance()) {
-      base::Value* value = nullptr;
-      dict_dump->Get(it.key(), &value);
-      EXPECT_EQ(base::Value::Type::DICTIONARY, value->type());
-      base::DictionaryValue* pc_dump =
-          static_cast<base::DictionaryValue*>(value);
-      EXPECT_TRUE(pc_dump->HasKey("updateLog"));
-      EXPECT_TRUE(pc_dump->HasKey("stats"));
+    EXPECT_EQ((size_t)peer_connection_number, dump->DictSize());
+    for (auto kv : dump->DictItems()) {
+      const base::Value& pc_dump = kv.second;
+      ASSERT_EQ(base::Value::Type::DICTIONARY, pc_dump.type());
 
       // Verifies the number of updates.
-      pc_dump->Get("updateLog", &value);
-      EXPECT_EQ(base::Value::Type::LIST, value->type());
-      base::ListValue* list = static_cast<base::ListValue*>(value);
-      EXPECT_EQ((size_t) update_number, list->GetSize());
+      const base::Value* value = pc_dump.FindListKey("updateLog");
+      ASSERT_TRUE(value);
+      EXPECT_EQ(static_cast<size_t>(update_number), value->GetList().size());
 
       // Verifies the number of stats tables.
-      pc_dump->Get("stats", &value);
-      EXPECT_EQ(base::Value::Type::DICTIONARY, value->type());
-      base::DictionaryValue* dict = static_cast<base::DictionaryValue*>(value);
-      EXPECT_EQ((size_t) stats_number, dict->size());
+      value = pc_dump.FindDictKey("stats");
+      ASSERT_TRUE(value);
+      EXPECT_EQ(static_cast<size_t>(stats_number), value->DictSize());
     }
   }
 
@@ -511,7 +502,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
     base::DictionaryValue* dataSeries =
         static_cast<base::DictionaryValue*>(value);
-    EXPECT_EQ(stats.values.size(), dataSeries->size());
+    EXPECT_EQ(stats.values.size(), dataSeries->DictSize());
   }
 };
 

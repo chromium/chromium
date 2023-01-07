@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace remoting {
 
@@ -31,9 +31,12 @@ class TypedBuffer {
 
   TypedBuffer(TypedBuffer&& rvalue) : TypedBuffer() { Swap(rvalue); }
 
+  TypedBuffer(const TypedBuffer&) = delete;
+  TypedBuffer& operator=(const TypedBuffer&) = delete;
+
   ~TypedBuffer() {
     if (buffer_) {
-      delete[] reinterpret_cast<uint8_t*>(buffer_);
+      delete[] reinterpret_cast<uint8_t*>(buffer_.get());
       buffer_ = nullptr;
     }
   }
@@ -60,7 +63,8 @@ class TypedBuffer {
   // Helper returning a pointer to the structure starting at a specified byte
   // offset.
   T* GetAtOffset(uint32_t offset) {
-    return reinterpret_cast<T*>(reinterpret_cast<uint8_t*>(buffer_) + offset);
+    return reinterpret_cast<T*>(reinterpret_cast<uint8_t*>(buffer_.get()) +
+                                offset);
   }
 
   // Allow TypedBuffer<T> to be used in boolean expressions.
@@ -74,12 +78,10 @@ class TypedBuffer {
 
  private:
   // Points to the owned buffer.
-  T* buffer_;
+  raw_ptr<T> buffer_;
 
   // Length of the owned buffer in bytes.
   uint32_t length_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypedBuffer);
 };
 
 }  // namespace remoting

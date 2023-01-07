@@ -1,15 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/renderer/binding_generating_native_handler.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
-#include "base/timer/elapsed_timer.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/v8_helpers.h"
 #include "gin/data_object_builder.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-microtask-queue.h"
 
 namespace extensions {
 
@@ -29,7 +29,6 @@ bool BindingGeneratingNativeHandler::IsInitialized() {
 }
 
 v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
-  base::ElapsedTimer timer;
   // This long sequence of commands effectively runs the JavaScript code,
   // such that result[bind_to] is the compiled schema for |api_name|:
   //
@@ -87,7 +86,7 @@ v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
         v8_context->GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
     // TODO(devlin): We should not be using v8::Function::Call() directly here.
     // Instead, we should use JSRunner once it's used outside native bindings.
-    if (!create_binding->Call(v8_context, binding, base::size(argv), argv)
+    if (!create_binding->Call(v8_context, binding, std::size(argv), argv)
              .ToLocal(&binding_instance_value) ||
         !binding_instance_value->ToObject(v8_context)
              .ToLocal(&binding_instance)) {
@@ -124,12 +123,6 @@ v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
   v8::Local<v8::Object> object =
       gin::DataObjectBuilder(isolate).Set(bind_to_, compiled_schema).Build();
 
-  // Log UMA with microsecond accuracy*; maxes at 10 seconds.
-  // *Obviously, limited by our TimeTicks implementation, but as close as
-  // possible.
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.ApiBindingObjectGenerationTime",
-                              timer.Elapsed().InMicroseconds(),
-                              1, 10000000, 100);
   // return result;
   return scope.Escape(object);
 }

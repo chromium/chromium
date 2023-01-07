@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,11 @@
 #include "base/memory/free_deleter.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/windows_version.h"
 #include "services/device/geolocation/wifi_data_provider_common.h"
 #include "services/device/geolocation/wifi_data_provider_common_win.h"
-#include "services/device/geolocation/wifi_data_provider_manager.h"
+#include "services/device/geolocation/wifi_data_provider_handle.h"
 
 namespace device {
 
@@ -111,7 +110,7 @@ std::unique_ptr<WindowsWlanApi> WindowsWlanApi::Create() {
   // Use an absolute path to load the DLL to avoid DLL preloading attacks.
   static const wchar_t* const kDLL = L"%WINDIR%\\system32\\wlanapi.dll";
   wchar_t path[MAX_PATH] = {0};
-  ExpandEnvironmentStrings(kDLL, path, base::size(path));
+  ExpandEnvironmentStrings(kDLL, path, std::size(path));
   HINSTANCE library = LoadLibraryEx(path, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
   if (!library)
     return nullptr;
@@ -216,7 +215,7 @@ bool WindowsWlanApi::GetInterfaceDataWLAN(const HANDLE wlan_handle,
 
 }  // anonymous namespace
 
-WifiDataProvider* WifiDataProviderManager::DefaultFactoryFunction() {
+WifiDataProvider* WifiDataProviderHandle::DefaultFactoryFunction() {
   return new WifiDataProviderWin();
 }
 

@@ -1,0 +1,34 @@
+<!--
+@BLINK-ALLOW:display*
+@BLINK-ALLOW:tag*
+@BLINK-ALLOW:class*
+@BLINK-ALLOW:isLineBreakingObject*
+-->
+<!-- The parser does not actually create the structure below, but rather
+  duplicates <a name="a">! both as a first child of the <span>, and a first
+  child of <div#ever>. The final DOM looks like:
+<div>
+  <span>
+    <a name="a" class="copied-element">
+      <div id="before" class="before">Before</div>
+    </a>
+    <div id="ever" class="ever">
+      <a name="a" class="copied-element">
+        Ever
+      </a>
+      <a href="#" class="after">After</a>
+    </div>
+  </span>
+</div>
+-->
+<div>
+  <span>
+    <a name="a" class="copied-element">
+      <div id="before" class="before">Before</div>
+      <div id="ever" class="ever">
+        Ever
+        <a href="#" class="after">After</a>
+      </div>
+    </a>
+  </span>
+</div>

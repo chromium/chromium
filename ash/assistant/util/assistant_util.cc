@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,6 @@ namespace ash {
 namespace assistant {
 namespace util {
 
-using chromeos::assistant::AssistantEntryPoint;
-
 bool IsStartingSession(AssistantVisibility new_visibility,
                        AssistantVisibility old_visibility) {
   return old_visibility == AssistantVisibility::kClosed &&
@@ -42,9 +40,7 @@ bool IsVoiceEntryPoint(AssistantEntryPoint entry_point, bool prefer_voice) {
       return prefer_voice;
     case AssistantEntryPoint::kUnspecified:
     case AssistantEntryPoint::kDeepLink:
-    case AssistantEntryPoint::kLauncherChip:
     case AssistantEntryPoint::kLauncherSearchResult:
-    case AssistantEntryPoint::kProactiveSuggestions:
     case AssistantEntryPoint::kSetup:
     case AssistantEntryPoint::kStylus:
       return false;

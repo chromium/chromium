@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/navigation/navigation_item_impl.h"
-#include "net/http/http_response_headers.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "net/http/http_response_headers.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -40,7 +40,7 @@ class CRWWKNavigationStatesTest : public PlatformTest {
   CRWWKNavigationStates* states_;
 };
 
-// Tests |removeNavigation:| method.
+// Tests `removeNavigation:` method.
 TEST_F(CRWWKNavigationStatesTest, RemovingNavigation) {
   // navigation_1 is the only navigation and it is the latest.
   [states_ setState:WKNavigationState::REQUESTED forNavigation:navigation1_];
@@ -52,7 +52,7 @@ TEST_F(CRWWKNavigationStatesTest, RemovingNavigation) {
   EXPECT_EQ(WKNavigationState::NONE, [states_ stateForNavigation:navigation1_]);
 }
 
-// Tests |lastAddedNavigation| method.
+// Tests `lastAddedNavigation` method.
 TEST_F(CRWWKNavigationStatesTest, LastAddedNavigation) {
   // navigation_1 is the only navigation and it is the latest.
   [states_ setState:WKNavigationState::REQUESTED forNavigation:navigation1_];
@@ -93,7 +93,7 @@ TEST_F(CRWWKNavigationStatesTest, LastAddedNavigation) {
   EXPECT_EQ(WKNavigationState::NONE, [states_ lastAddedNavigationState]);
 }
 
-// Tests |lastNavigationWithPendingItemInNavigationContext| method.
+// Tests `lastNavigationWithPendingItemInNavigationContext` method.
 TEST_F(CRWWKNavigationStatesTest,
        LastNavigationWithPendingItemInNavigationContext) {
   // Empty state.
@@ -140,7 +140,7 @@ TEST_F(CRWWKNavigationStatesTest,
             [states_ lastNavigationWithPendingItemInNavigationContext]);
 }
 
-// Tests |setContext:forNavigation:| and |contextForNavigation:| methods.
+// Tests `setContext:forNavigation:` and `contextForNavigation:` methods.
 TEST_F(CRWWKNavigationStatesTest, Context) {
   EXPECT_FALSE([states_ contextForNavigation:navigation1_]);
   EXPECT_FALSE([states_ contextForNavigation:navigation2_]);

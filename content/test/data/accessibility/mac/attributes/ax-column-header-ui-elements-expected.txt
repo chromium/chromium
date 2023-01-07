@@ -1,0 +1,6 @@
+table.accessibilityAttributeNames.has(AXColumnHeaderUIElements)='yes'
+table.accessibilityAttributeValue(AXColumnHeaderUIElements)=[:4]
+cell.accessibilityAttributeNames.has(AXColumnHeaderUIElements)='yes'
+cell.accessibilityAttributeValue(AXColumnHeaderUIElements)=[:4]
+columnheader.accessibilityAttributeNames.has(AXColumnHeaderUIElements)='no'
+columnheader.accessibilityAttributeValue(AXColumnHeaderUIElements)=[:4]

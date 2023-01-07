@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -17,6 +17,10 @@ namespace gl {
 
 class GLContext;
 
+typedef void(GL_BINDING_CALL* glAcquireTexturesANGLEProc)(
+    GLuint numTextures,
+    const GLuint* textures,
+    const GLenum* layouts);
 typedef void(GL_BINDING_CALL* glActiveShaderProgramProc)(GLuint pipeline,
                                                          GLuint program);
 typedef void(GL_BINDING_CALL* glActiveTextureProc)(GLenum texture);
@@ -1412,6 +1416,10 @@ typedef void(GL_BINDING_CALL* glReadPixelsRobustANGLEProc)(GLint x,
                                                            GLsizei* rows,
                                                            void* pixels);
 typedef void(GL_BINDING_CALL* glReleaseShaderCompilerProc)(void);
+typedef void(GL_BINDING_CALL* glReleaseTexturesANGLEProc)(
+    GLuint numTextures,
+    const GLuint* textures,
+    GLenum* layouts);
 typedef void(GL_BINDING_CALL* glRenderbufferStorageEXTProc)(
     GLenum target,
     GLenum internalformat,
@@ -1697,7 +1705,8 @@ typedef void(GL_BINDING_CALL* glTexStorageMemFlags2DANGLEProc)(
     GLuint memory,
     GLuint64 offset,
     GLbitfield createFlags,
-    GLbitfield usageFlags);
+    GLbitfield usageFlags,
+    const void* imageCreateInfoPNext);
 typedef void(GL_BINDING_CALL* glTexSubImage2DProc)(GLenum target,
                                                    GLint level,
                                                    GLint xoffset,
@@ -1966,6 +1975,8 @@ struct ExtensionsGL {
   bool b_GL_ANGLE_semaphore_fuchsia;
   bool b_GL_ANGLE_texture_external_update;
   bool b_GL_ANGLE_translated_shader_source;
+  bool b_GL_ANGLE_vulkan_image;
+  bool b_GL_ANGLE_webgl_compatibility;
   bool b_GL_APPLE_fence;
   bool b_GL_APPLE_sync;
   bool b_GL_APPLE_vertex_array_object;
@@ -2040,6 +2051,7 @@ struct ExtensionsGL {
   bool b_GL_MESA_framebuffer_flip_y;
   bool b_GL_NV_blend_equation_advanced;
   bool b_GL_NV_fence;
+  bool b_GL_NV_framebuffer_blit;
   bool b_GL_NV_framebuffer_mixed_samples;
   bool b_GL_NV_internalformat_sample_query;
   bool b_GL_NV_path_rendering;
@@ -2056,6 +2068,7 @@ struct ExtensionsGL {
 };
 
 struct ProcsGL {
+  glAcquireTexturesANGLEProc glAcquireTexturesANGLEFn;
   glActiveShaderProgramProc glActiveShaderProgramFn;
   glActiveTextureProc glActiveTextureFn;
   glAttachShaderProc glAttachShaderFn;
@@ -2447,6 +2460,7 @@ struct ProcsGL {
   glReadPixelsProc glReadPixelsFn;
   glReadPixelsRobustANGLEProc glReadPixelsRobustANGLEFn;
   glReleaseShaderCompilerProc glReleaseShaderCompilerFn;
+  glReleaseTexturesANGLEProc glReleaseTexturesANGLEFn;
   glRenderbufferStorageEXTProc glRenderbufferStorageEXTFn;
   glRenderbufferStorageMultisampleProc glRenderbufferStorageMultisampleFn;
   glRenderbufferStorageMultisampleAdvancedAMDProc
@@ -2586,6 +2600,9 @@ class GL_EXPORT GLApi {
 
   virtual void SetDisabledExtensions(const std::string& disabled_extensions) {}
 
+  virtual void glAcquireTexturesANGLEFn(GLuint numTextures,
+                                        const GLuint* textures,
+                                        const GLenum* layouts) = 0;
   virtual void glActiveShaderProgramFn(GLuint pipeline, GLuint program) = 0;
   virtual void glActiveTextureFn(GLenum texture) = 0;
   virtual void glAttachShaderFn(GLuint program, GLuint shader) = 0;
@@ -3827,6 +3844,9 @@ class GL_EXPORT GLApi {
                                          GLsizei* rows,
                                          void* pixels) = 0;
   virtual void glReleaseShaderCompilerFn(void) = 0;
+  virtual void glReleaseTexturesANGLEFn(GLuint numTextures,
+                                        const GLuint* textures,
+                                        GLenum* layouts) = 0;
   virtual void glRenderbufferStorageEXTFn(GLenum target,
                                           GLenum internalformat,
                                           GLsizei width,
@@ -4075,15 +4095,17 @@ class GL_EXPORT GLApi {
                                       GLsizei height,
                                       GLuint memory,
                                       GLuint64 offset) = 0;
-  virtual void glTexStorageMemFlags2DANGLEFn(GLenum target,
-                                             GLsizei levels,
-                                             GLenum internalFormat,
-                                             GLsizei width,
-                                             GLsizei height,
-                                             GLuint memory,
-                                             GLuint64 offset,
-                                             GLbitfield createFlags,
-                                             GLbitfield usageFlags) = 0;
+  virtual void glTexStorageMemFlags2DANGLEFn(
+      GLenum target,
+      GLsizei levels,
+      GLenum internalFormat,
+      GLsizei width,
+      GLsizei height,
+      GLuint memory,
+      GLuint64 offset,
+      GLbitfield createFlags,
+      GLbitfield usageFlags,
+      const void* imageCreateInfoPNext) = 0;
   virtual void glTexSubImage2DFn(GLenum target,
                                  GLint level,
                                  GLint xoffset,
@@ -4317,6 +4339,8 @@ class GL_EXPORT GLApi {
 
 }  // namespace gl
 
+#define glAcquireTexturesANGLE \
+  ::gl::g_current_gl_context->glAcquireTexturesANGLEFn
 #define glActiveShaderProgram \
   ::gl::g_current_gl_context->glActiveShaderProgramFn
 #define glActiveTexture ::gl::g_current_gl_context->glActiveTextureFn
@@ -4866,6 +4890,8 @@ class GL_EXPORT GLApi {
   ::gl::g_current_gl_context->glReadPixelsRobustANGLEFn
 #define glReleaseShaderCompiler \
   ::gl::g_current_gl_context->glReleaseShaderCompilerFn
+#define glReleaseTexturesANGLE \
+  ::gl::g_current_gl_context->glReleaseTexturesANGLEFn
 #define glRenderbufferStorageEXT \
   ::gl::g_current_gl_context->glRenderbufferStorageEXTFn
 #define glRenderbufferStorageMultisample \
@@ -5034,4 +5060,4 @@ class GL_EXPORT GLApi {
 #define glWindowRectanglesEXT \
   ::gl::g_current_gl_context->glWindowRectanglesEXTFn
 
-#endif  //  UI_GL_GL_BINDINGS_AUTOGEN_GL_H_
+#endif  // UI_GL_GL_BINDINGS_AUTOGEN_GL_H_

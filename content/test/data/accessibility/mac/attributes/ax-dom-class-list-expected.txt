@@ -1,0 +1,4 @@
+class_list.accessibilityAttributeNames.has(AXDOMClassList)='yes'
+class_list.accessibilityAttributeValue(AXDOMClassList)=['firstclass', 'secondclass']
+empty.accessibilityAttributeNames.has(AXDOMClassList)='yes'
+empty.accessibilityAttributeValue(AXDOMClassList)=[]

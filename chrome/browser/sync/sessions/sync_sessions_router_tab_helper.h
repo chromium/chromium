@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SYNC_SESSIONS_SYNC_SESSIONS_ROUTER_TAB_HELPER_H_
 #define CHROME_BROWSER_SYNC_SESSIONS_SYNC_SESSIONS_ROUTER_TAB_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "components/sessions/core/session_id.h"
@@ -25,13 +26,17 @@ class SyncSessionsWebContentsRouter;
 // these events to sessions sync.
 // A TabHelper is a WebContentsObserver tied to the top level WebContents for a
 // browser tab.
-// https://chromium.googlesource.com/chromium/src/+/master/docs/tab_helpers.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/tab_helpers.md
 class SyncSessionsRouterTabHelper
     : public content::WebContentsUserData<SyncSessionsRouterTabHelper>,
       public content::WebContentsObserver,
       public translate::TranslateDriver::LanguageDetectionObserver,
       public favicon::FaviconDriverObserver {
  public:
+  SyncSessionsRouterTabHelper(const SyncSessionsRouterTabHelper&) = delete;
+  SyncSessionsRouterTabHelper& operator=(const SyncSessionsRouterTabHelper&) =
+      delete;
+
   ~SyncSessionsRouterTabHelper() override;
 
   // WebContentsObserver implementation.
@@ -71,15 +76,13 @@ class SyncSessionsRouterTabHelper
   void NotifyRouter(bool page_load_completed = false);
 
   // |router_| is a KeyedService and is guaranteed to outlive |this|.
-  SyncSessionsWebContentsRouter* router_;
+  raw_ptr<SyncSessionsWebContentsRouter> router_;
 
-  ChromeTranslateClient* chrome_translate_client_;
+  raw_ptr<ChromeTranslateClient> chrome_translate_client_;
 
-  favicon::FaviconDriver* favicon_driver_;
+  raw_ptr<favicon::FaviconDriver> favicon_driver_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SyncSessionsRouterTabHelper);
 };
 
 }  // namespace sync_sessions

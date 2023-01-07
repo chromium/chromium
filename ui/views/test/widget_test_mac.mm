@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/mac/mac_util.h"
 #import "base/mac/scoped_nsobject.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
-#include "base/macros.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
@@ -83,7 +82,7 @@ ui::EventSink* WidgetTest::GetEventSink(Widget* widget) {
 }
 
 // static
-ui::internal::InputMethodDelegate* WidgetTest::GetInputMethodDelegateForWidget(
+ui::ImeKeyEventDispatcher* WidgetTest::GetImeKeyEventDispatcherForWidget(
     Widget* widget) {
   return NativeWidgetMacNSWindowHost::GetFromNativeWindow(
              widget->GetNativeWindow())

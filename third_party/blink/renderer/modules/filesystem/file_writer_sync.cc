@@ -103,7 +103,7 @@ void FileWriterSync::DoTruncate(const KURL& path, int64_t offset) {
   FileSystemDispatcher::From(GetExecutionContext())
       .TruncateSync(
           path, offset,
-          WTF::Bind(&FileWriterSync::DidFinish, WrapWeakPersistent(this)));
+          WTF::BindOnce(&FileWriterSync::DidFinish, WrapWeakPersistent(this)));
 }
 
 void FileWriterSync::DoWrite(const KURL& path,
@@ -116,7 +116,7 @@ void FileWriterSync::DoWrite(const KURL& path,
           path, blob_id, offset,
           WTF::BindRepeating(&FileWriterSync::DidWrite,
                              WrapWeakPersistent(this)),
-          WTF::Bind(&FileWriterSync::DidFinish, WrapWeakPersistent(this)));
+          WTF::BindOnce(&FileWriterSync::DidFinish, WrapWeakPersistent(this)));
 }
 
 void FileWriterSync::DoCancel() {

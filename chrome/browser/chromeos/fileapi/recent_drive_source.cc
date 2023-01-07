@@ -1,27 +1,28 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/fileapi/recent_drive_source.h"
 
+#include <iterator>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/fileapi/recent_file.h"
-#include "chromeos/components/drivefs/drivefs_util.h"
+#include "chromeos/ash/components/drivefs/drivefs_util.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/file_system_operation.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "ui/file_manager/file_types_data.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
@@ -79,6 +80,14 @@ void RecentDriveSource::GetRecentFiles(Params params) {
     case FileType::kVideo:
       query_params->mime_type = kVideoMimeType;
       break;
+    case FileType::kDocument: {
+      std::vector<std::string> doc_mime_types{
+          std::make_move_iterator(file_types_data::kDocumentMIMETypes.begin()),
+          std::make_move_iterator(file_types_data::kDocumentMIMETypes.end()),
+      };
+      query_params->mime_types = std::move(doc_mime_types);
+      break;
+    }
     default:
       // Leave the mime_type null to query all files.
       break;
@@ -112,7 +121,7 @@ void RecentDriveSource::OnComplete() {
 
 void RecentDriveSource::GotSearchResults(
     drive::FileError error,
-    base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> results) {
+    absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> results) {
   search_query_.reset();
   auto* integration_service =
       drive::util::GetIntegrationServiceByProfile(profile_);
@@ -132,8 +141,11 @@ void RecentDriveSource::GotSearchResults(
     }
     files_.emplace_back(
         params_.value().file_system_context()->CreateCrackedFileSystemURL(
-            url::Origin::Create(params_->origin()),
+            blink::StorageKey(url::Origin::Create(params_->origin())),
             storage::kFileSystemTypeExternal, path),
+        // Do not use "modification_time" field here because that will cause
+        // files modified by others recently (e.g. Shared with me) being
+        // treated as recent files.
         result->metadata->last_viewed_by_me_time);
   }
   OnComplete();

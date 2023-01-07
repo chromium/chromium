@@ -55,7 +55,7 @@ void DirectoryReader::readEntries(V8EntriesCallback* entries_callback,
     // Non-null entries_callback_ means multiple readEntries() calls are made
     // concurrently. We don't allow doing it.
     Filesystem()->ReportError(
-        WTF::Bind(
+        WTF::BindOnce(
             [](V8ErrorCallback* error_callback, base::File::Error error) {
               error_callback->InvokeAndReportException(
                   nullptr, file_error::CreateDOMException(error));
@@ -75,23 +75,23 @@ void DirectoryReader::readEntries(V8EntriesCallback* entries_callback,
     is_reading_ = true;
     Filesystem()->ReadDirectory(
         this, full_path_, success_callback_wrapper,
-        WTF::Bind(&DirectoryReader::OnError, WrapPersistentIfNeeded(this)));
+        WTF::BindOnce(&DirectoryReader::OnError, WrapPersistentIfNeeded(this)));
   }
 
   if (error_ != base::File::FILE_OK) {
     Filesystem()->ReportError(
-        WTF::Bind(&DirectoryReader::OnError, WrapPersistentIfNeeded(this)),
+        WTF::BindOnce(&DirectoryReader::OnError, WrapPersistentIfNeeded(this)),
         error_);
     return;
   }
 
-  if (!has_more_entries_ || !entries_.IsEmpty()) {
+  if (!has_more_entries_ || !entries_.empty()) {
     EntryHeapVector* entries =
         MakeGarbageCollected<EntryHeapVector>(std::move(entries_));
     DOMFileSystem::ScheduleCallback(
         Filesystem()->GetExecutionContext(),
-        WTF::Bind(&RunEntriesCallback, WrapPersistent(entries_callback),
-                  WrapPersistent(entries)));
+        WTF::BindOnce(&RunEntriesCallback, WrapPersistent(entries_callback),
+                      WrapPersistent(entries)));
     return;
   }
 

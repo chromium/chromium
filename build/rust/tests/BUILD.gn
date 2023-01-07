@@ -1,0 +1,104 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/rust.gni")
+import("//build/rust/rust_unit_tests_group.gni")
+
+group("tests") {
+  # Build some minimal binaries to exercise the Rust toolchain
+  # only if that toolchain is enabled in gn args.
+  testonly = true
+
+  deps = [ ":deps" ]
+  if (can_build_rust_unit_tests) {
+    deps += [ ":build_rust_tests" ]
+  }
+}
+
+group("deps") {
+  testonly = true
+
+  # These should build with or without Rust, in different modes
+  deps = [
+    "test_mixed_component:test_mixed_component_demo",
+    "test_mixed_executable",
+    "test_mixed_testonly_executable",
+    "test_variable_static_library:test_variable_static_library_demo",
+  ]
+
+  # All the rest require Rust.
+  if (toolchain_has_rust) {
+    deps += [
+      "test_cpp_including_rust",
+      "test_mixed_static_library",
+      "test_rlib_crate:target1",
+      "test_rlib_crate:target2",
+      "test_rust_static_library",
+      "test_serde_json_lenient",
+    ]
+    if (rustc_can_link) {
+      deps += [
+        "bindgen_test",
+        "test_mixed_shared_library",
+        "test_rust_shared_library",
+      ]
+    }
+    if (can_build_rust_unit_tests) {
+      deps += [
+        "bindgen_test:bindgen_test_lib_unittests",
+        "test_cpp_including_rust:test_cpp_including_rust_unittests",
+        "test_mixed_component:test_mixed_component_rs_unittests",
+        "test_mixed_static_library:test_mixed_static_library_rs_unittests",
+        "test_rlib_crate:test_rlib_crate_target1_unittests",
+        "test_rlib_crate:test_rlib_crate_target2_unittests",
+        "test_rust_exe:test_rust_exe_unittests",
+        "test_rust_static_library:test_rust_static_library_unittests",
+        "test_rust_static_library_non_standard_arrangement:foo_tests",
+        "test_rust_unittests",
+        "test_variable_static_library:test_variable_static_library_rs_unittests",
+
+        # TODO(https://crbug.com/1329611): Enable the additional target below
+        # once `rs_bindings_from_cc` is distributed via `gclient sync`.  In the
+        # meantime see the instructions in
+        # `//build/rust/run_rs_bindings_from_cc.py`.
+        #"test_rs_bindings_from_cc:test_rs_bindings_from_cc_unittests",
+      ]
+
+      # TODO(crbug.com/1297592): The bot isolate does not end up including any
+      # .so files so the tests fail:
+      #
+      #   error while loading shared libraries: libtest_mixed_shared_library.so:
+      #   cannot open shared object file: No such file or directory
+      if (false) {
+        deps += [
+          "test_mixed_shared_library:test_mixed_shared_library_rs_unittests",
+          "test_rust_shared_library:test_rust_shared_library_unittests",
+        ]
+      }
+    }
+    if (rustc_can_link) {
+      deps += [
+        "test_bin_crate",
+        "test_rlib_crate:test_rlib_crate_associated_bin",
+        "test_rust_exe",
+        "test_rust_multiple_dep_versions_exe",
+        "test_simple_rust_exe",
+        "//third_party/rust/bindgen/v0_60:bindgen",
+
+        # TODO(https://crbug.com/1329611): Enable the additional target below
+        # once `rs_bindings_from_cc` is distributed via `gclient sync`.  In the
+        # meantime see the instructions in
+        # `//build/rust/run_rs_bindings_from_cc.py`.
+        #"test_rs_bindings_from_cc:test_rs_bindings_from_cc",
+      ]
+    }
+  }
+}
+
+if (can_build_rust_unit_tests) {
+  # A group covering all native Rust unit tests under //build/rust directory.
+  rust_unit_tests_group("build_rust_tests") {
+    deps = [ ":deps" ]
+  }
+}

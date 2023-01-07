@@ -1,10 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ipc/ipc_channel_factory.h"
-#include "base/macros.h"
+
 #include "base/memory/ptr_util.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "ipc/ipc_channel_mojo.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 
@@ -23,8 +25,11 @@ class PlatformChannelFactory : public ChannelFactory {
         ipc_task_runner_(ipc_task_runner),
         quota_checker_(mojo::internal::MessageQuotaChecker::MaybeCreate()) {}
 
+  PlatformChannelFactory(const PlatformChannelFactory&) = delete;
+  PlatformChannelFactory& operator=(const PlatformChannelFactory&) = delete;
+
   std::unique_ptr<Channel> BuildChannel(Listener* listener) override {
-#if defined(OS_NACL_SFI)
+#if BUILDFLAG(IS_NACL)
     return Channel::Create(handle_, mode_, listener);
 #else
     DCHECK(handle_.is_mojo_channel_handle());
@@ -48,8 +53,6 @@ class PlatformChannelFactory : public ChannelFactory {
   Channel::Mode mode_;
   scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner_;
   scoped_refptr<mojo::internal::MessageQuotaChecker> quota_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformChannelFactory);
 };
 
 } // namespace

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_checker.h"
@@ -17,6 +16,7 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
 #include "components/sync/model/model_type_sync_bridge.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 class MetadataChangeList;
@@ -39,7 +39,7 @@ enum class AutofillProfileSyncChangeOrigin;
 // This is achieved by implementing the interface ModelTypeSyncBridge, which
 // ClientTagBasedModelTypeProcessor will use to interact, ultimately, with the
 // sync server. See
-// https://chromium.googlesource.com/chromium/src/+/lkcr/docs/sync/model_api.md#Implementing-ModelTypeSyncBridge
+// https://www.chromium.org/developers/design-documents/sync/model-api/#implementing-modeltypesyncbridge
 // for details.
 class AutofillProfileSyncBridge
     : public base::SupportsUserData::Data,
@@ -50,6 +50,11 @@ class AutofillProfileSyncBridge
       std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor,
       const std::string& app_locale,
       AutofillWebDataBackend* backend);
+
+  AutofillProfileSyncBridge(const AutofillProfileSyncBridge&) = delete;
+  AutofillProfileSyncBridge& operator=(const AutofillProfileSyncBridge&) =
+      delete;
+
   ~AutofillProfileSyncBridge() override;
 
   // Constructor that hides dealing with change_processor and also stores the
@@ -66,10 +71,10 @@ class AutofillProfileSyncBridge
   // syncer::ModelTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
-  base::Optional<syncer::ModelError> MergeSyncData(
+  absl::optional<syncer::ModelError> MergeSyncData(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_data) override;
-  base::Optional<syncer::ModelError> ApplySyncChanges(
+  absl::optional<syncer::ModelError> ApplySyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
@@ -89,7 +94,7 @@ class AutofillProfileSyncBridge
   void ActOnLocalChange(const AutofillProfileChange& change);
 
   // Flushes changes accumulated within |tracker| both to local and to sync.
-  base::Optional<syncer::ModelError> FlushSyncTracker(
+  absl::optional<syncer::ModelError> FlushSyncTracker(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       AutofillProfileSyncDifferenceTracker* tracker);
 
@@ -105,13 +110,11 @@ class AutofillProfileSyncBridge
 
   // AutofillProfileSyncBridge is owned by |web_data_backend_| through
   // SupportsUserData, so it's guaranteed to outlive |this|.
-  AutofillWebDataBackend* const web_data_backend_;
+  const raw_ptr<AutofillWebDataBackend> web_data_backend_;
 
   base::ScopedObservation<AutofillWebDataBackend,
                           AutofillWebDataServiceObserverOnDBSequence>
       scoped_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillProfileSyncBridge);
 };
 
 }  // namespace autofill

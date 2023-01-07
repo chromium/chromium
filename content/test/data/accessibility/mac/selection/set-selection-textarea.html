@@ -1,0 +1,58 @@
+<!--
+@SCRIPT:
+  // Select the 3rd word (AXSelectedTextMarkerRange).
+  text_range:= textarea.AXTextMarkerRangeForUIElement(textarea)
+  marker_0:= text_range.anchor
+  marker_1:= textarea.AXNextWordEndTextMarkerForTextMarker(marker_0)
+  marker_2:= textarea.AXNextWordEndTextMarkerForTextMarker(marker_1)
+  marker_3:= textarea.AXNextWordEndTextMarkerForTextMarker(marker_2)
+  marker_4:= textarea.AXPreviousWordStartTextMarkerForTextMarker(marker_3)
+  target_selected_marker_range:= textarea.AXTextMarkerRangeForUnorderedTextMarkers([marker_3, marker_4])
+  textarea.AXSelectedTextMarkerRange = target_selected_marker_range
+  wait for AXSelectedTextChanged on AXTextArea
+  textarea.AXSelectedText
+
+@SCRIPT:
+  // Select 2nd word on the 2nd line (AXSelectedTextMarkerRange).
+  text_range:= textarea.AXTextMarkerRangeForUIElement(textarea)
+  marker_0:= text_range.anchor
+  marker_1:= textarea.AXNextLineEndTextMarkerForTextMarker(marker_0)
+  marker_2:= textarea.AXNextWordEndTextMarkerForTextMarker(marker_1)
+  marker_3:= textarea.AXNextWordEndTextMarkerForTextMarker(marker_2)
+  marker_4:= textarea.AXPreviousWordStartTextMarkerForTextMarker(marker_3)
+  target_selected_marker_range:= textarea.AXTextMarkerRangeForUnorderedTextMarkers([marker_3, marker_4])
+  textarea.AXSelectedTextMarkerRange = target_selected_marker_range
+  wait for AXSelectedTextChanged on AXTextArea
+  textarea.AXSelectedText
+
+@SCRIPT:
+  // Select text on the 1st line (AXSelectedTextRange).
+  textarea.AXSelectedTextRange = {loc: 10, len: 5}
+  wait for AXSelectedTextChanged on AXTextArea
+  textarea.AXSelectedText
+
+@SCRIPT:
+  // select text on the 2nd line (AXSelectedTextRange).
+  textarea.AXSelectedTextRange = {loc: 20, len: 5}
+  wait for AXSelectedTextChanged on AXTextArea
+  textarea.AXSelectedText
+
+@SCRIPT:
+  // Put cursor after the 2nd word.
+  textarea.AXSelectedTextRange = {loc: 10, len: 0}
+  wait for AXSelectedTextChanged on AXTextArea
+  // Force line break.
+  press Enter
+  // Select text on the 2nd line (fox).
+  textarea.AXSelectedTextRange = {loc: 17, len: 3}
+  wait for AXSelectedTextChanged on AXTextArea
+  textarea.AXSelectedText
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<textarea id="textarea" style="font-family:monospace" rows="5" cols="15">
+The quick brown fox jumps over the lazy dog
+</textarea>
+</body>
+</html>

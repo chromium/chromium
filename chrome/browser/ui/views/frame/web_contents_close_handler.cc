@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,8 +51,8 @@ void WebContentsCloseHandler::CloseAllTabsCanceled() {
     // handler. Often times the tab still ends up closing, but only after we get
     // back a response from the renderer. Assume this is going to happen and
     // keep around the cloned layer for a bit more time.
-    timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(500),
-                 this, &WebContentsCloseHandler::OnStillHaventClosed);
+    timer_.Start(FROM_HERE, base::Milliseconds(500), this,
+                 &WebContentsCloseHandler::OnStillHaventClosed);
   }
 }
 

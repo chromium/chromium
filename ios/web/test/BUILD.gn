@@ -1,8 +1,8 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
@@ -18,7 +18,6 @@ repack("packed_resources") {
     "$root_gen_dir/ios/web/ios_web_resources.pak",
     "$root_gen_dir/ios/web/test/test_resources.pak",
     "$root_gen_dir/ui/resources/webui_generated_resources.pak",
-    "$root_gen_dir/ui/resources/webui_resources.pak",
   ]
   deps = [
     ":resources",
@@ -58,16 +57,21 @@ source_set("test_support") {
     "//components/crash/core/common",
     "//ios/testing:verify_custom_webkit",
     "//ios/web",
+    "//ios/web:threads",
     "//ios/web/common:uikit",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/navigation:core",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
     "//ios/web/public/test/http_server",
     "//ios/web/test/fakes",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
     "//net",
     "//third_party/ocmock",
     "//ui/base",
+    "//ui/display",
   ]
 
   sources = [
@@ -84,6 +88,18 @@ source_set("test_support") {
   ]
 }
 
+source_set("js_test_util_internal") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+
+  deps = [ "//base/test:test_support" ]
+
+  sources = [
+    "js_test_util_internal.h",
+    "js_test_util_internal.mm",
+  ]
+}
+
 source_set("test_constants") {
   testonly = true
   sources = [
@@ -92,26 +108,23 @@ source_set("test_constants") {
   ]
 }
 
-js_compile_bundle("all_frames_web_test_bundle") {
+optimize_js("all_frames_web_test_bundle") {
   testonly = true
-  closure_entry_point = "__crWeb.allFramesWebTestBundle"
 
-  sources = [
-    "resources/all_frames_web_test_bundle.js",
-    "resources/cookie_test.js",
-  ]
+  primary_script = "resources/cookie_test.js"
+  sources = [ "resources/cookie_test.js" ]
 }
 
-js_compile_bundle("java_script_feature_test_inject_once_js") {
+optimize_js("java_script_feature_test_inject_once_js") {
   testonly = true
-  closure_entry_point = "__crWeb.javaScriptFeatureTestInjectOnce"
 
+  primary_script = "resources/java_script_feature_test_inject_once.js"
   sources = [ "resources/java_script_feature_test_inject_once.js" ]
 }
 
-js_compile_bundle("java_script_feature_test_reinject_js") {
+optimize_js("java_script_feature_test_reinject_js") {
   testonly = true
-  closure_entry_point = "__crWeb.javaScriptFeatureTestReinject"
 
+  primary_script = "resources/java_script_feature_test_reinject.js"
   sources = [ "resources/java_script_feature_test_reinject.js" ]
 }

@@ -15,24 +15,25 @@
 #include "../common/context.h"
 #include "../common/platform.h"
 #include "../common/version.h"
-#include "./backward_references.h"
-#include "./backward_references_hq.h"
-#include "./bit_cost.h"
-#include "./brotli_bit_stream.h"
-#include "./compress_fragment.h"
-#include "./compress_fragment_two_pass.h"
-#include "./encoder_dict.h"
-#include "./entropy_encode.h"
-#include "./fast_log.h"
-#include "./hash.h"
-#include "./histogram.h"
-#include "./memory.h"
-#include "./metablock.h"
-#include "./prefix.h"
-#include "./quality.h"
-#include "./ringbuffer.h"
-#include "./utf8_util.h"
-#include "./write_bits.h"
+#include "backward_references.h"
+#include "backward_references_hq.h"
+#include "bit_cost.h"
+#include "brotli_bit_stream.h"
+#include "compress_fragment.h"
+#include "compress_fragment_two_pass.h"
+#include "dictionary_hash.h"
+#include "encoder_dict.h"
+#include "entropy_encode.h"
+#include "fast_log.h"
+#include "hash.h"
+#include "histogram.h"
+#include "memory.h"
+#include "metablock.h"
+#include "prefix.h"
+#include "quality.h"
+#include "ringbuffer.h"
+#include "utf8_util.h"
+#include "write_bits.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {
@@ -95,20 +96,10 @@ typedef struct BrotliEncoderStateStruct {
   int small_table_[1 << 10];  /* 4KiB */
   int* large_table_;          /* Allocated only when needed */
   size_t large_table_size_;
-  /* Command and distance prefix codes (each 64 symbols, stored back-to-back)
-     used for the next block in FAST_ONE_PASS_COMPRESSION_QUALITY. The command
-     prefix code is over a smaller alphabet with the following 64 symbols:
-        0 - 15: insert length code 0, copy length code 0 - 15, same distance
-       16 - 39: insert length code 0, copy length code 0 - 23
-       40 - 63: insert length code 0 - 23, copy length code 0
-     Note that symbols 16 and 40 represent the same code in the full alphabet,
-     but we do not use either of them in FAST_ONE_PASS_COMPRESSION_QUALITY. */
-  uint8_t cmd_depths_[128];
-  uint16_t cmd_bits_[128];
-  /* The compressed form of the command and distance prefix codes for the next
-     block in FAST_ONE_PASS_COMPRESSION_QUALITY. */
-  uint8_t cmd_code_[512];
-  size_t cmd_code_numbits_;
+
+  BrotliOnePassArena* one_pass_arena_;
+  BrotliTwoPassArena* two_pass_arena_;
+
   /* Command and literal buffers for FAST_TWO_PASS_COMPRESSION_QUALITY. */
   uint32_t* command_buf_;
   uint8_t* literal_buf_;
@@ -147,7 +138,7 @@ BROTLI_BOOL BrotliEncoderSetParameter(
     BrotliEncoderState* state, BrotliEncoderParameter p, uint32_t value) {
   /* Changing parameters on the fly is not implemented yet. */
   if (state->is_initialized_) return BROTLI_FALSE;
-  /* TODO: Validate/clamp parameters here. */
+  /* TODO(eustas): Validate/clamp parameters here. */
   switch (p) {
     case BROTLI_PARAM_MODE:
       state->params.mode = (BrotliEncoderMode)value;
@@ -283,11 +274,9 @@ static void EncodeWindowBits(int lgwin, BROTLI_BOOL large_window,
   }
 }
 
+/* TODO(eustas): move to compress_fragment.c? */
 /* Initializes the command and distance prefix codes for the first block. */
-static void InitCommandPrefixCodes(uint8_t cmd_depths[128],
-                                   uint16_t cmd_bits[128],
-                                   uint8_t cmd_code[512],
-                                   size_t* cmd_code_numbits) {
+static void InitCommandPrefixCodes(BrotliOnePassArena* s) {
   static const uint8_t kDefaultCommandDepths[128] = {
     0, 4, 4, 5, 6, 6, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8,
     0, 0, 0, 4, 4, 4, 4, 4, 5, 5, 6, 6, 6, 6, 7, 7,
@@ -320,13 +309,13 @@ static void InitCommandPrefixCodes(uint8_t cmd_depths[128],
     0x46, 0xe1, 0xb0, 0xd0, 0x4e, 0xb2, 0xf7, 0x04, 0x00,
   };
   static const size_t kDefaultCommandCodeNumBits = 448;
-  COPY_ARRAY(cmd_depths, kDefaultCommandDepths);
-  COPY_ARRAY(cmd_bits, kDefaultCommandBits);
+  COPY_ARRAY(s->cmd_depth, kDefaultCommandDepths);
+  COPY_ARRAY(s->cmd_bits, kDefaultCommandBits);
 
   /* Initialize the pre-compressed form of the command and distance prefix
      codes. */
-  COPY_ARRAY(cmd_code, kDefaultCommandCode);
-  *cmd_code_numbits = kDefaultCommandCodeNumBits;
+  COPY_ARRAY(s->cmd_code, kDefaultCommandCode);
+  s->cmd_code_numbits = kDefaultCommandCodeNumBits;
 }
 
 /* Decide about the context map based on the ability of the prediction
@@ -401,7 +390,8 @@ static void ChooseContextMap(int quality,
    first 5 bits of literals. */
 static BROTLI_BOOL ShouldUseComplexStaticContextMap(const uint8_t* input,
     size_t start_pos, size_t length, size_t mask, int quality, size_t size_hint,
-    size_t* num_literal_contexts, const uint32_t** literal_context_map) {
+    size_t* num_literal_contexts, const uint32_t** literal_context_map,
+    uint32_t* arena) {
   static const uint32_t kStaticContextMapComplexUTF8[64] = {
     11, 11, 12, 12, /* 0 special */
     0, 0, 0, 0, /* 4 lf */
@@ -426,16 +416,17 @@ static BROTLI_BOOL ShouldUseComplexStaticContextMap(const uint8_t* input,
     return BROTLI_FALSE;
   } else {
     const size_t end_pos = start_pos + length;
-    /* To make entropy calculations faster and to fit on the stack, we collect
-       histograms over the 5 most significant bits of literals. One histogram
+    /* To make entropy calculations faster, we collect histograms
+       over the 5 most significant bits of literals. One histogram
        without context and 13 additional histograms for each context value. */
-    uint32_t combined_histo[32] = { 0 };
-    uint32_t context_histo[13][32] = { { 0 } };
+    uint32_t* BROTLI_RESTRICT const combined_histo = arena;
+    uint32_t* BROTLI_RESTRICT const context_histo = arena + 32;
     uint32_t total = 0;
     double entropy[3];
     size_t dummy;
     size_t i;
     ContextLut utf8_lut = BROTLI_CONTEXT_LUT(CONTEXT_UTF8);
+    memset(arena, 0, sizeof(arena[0]) * 32 * 14);
     for (; start_pos + 64 <= end_pos; start_pos += 4096) {
       const size_t stride_end_pos = start_pos + 64;
       uint8_t prev2 = input[start_pos & mask];
@@ -449,7 +440,7 @@ static BROTLI_BOOL ShouldUseComplexStaticContextMap(const uint8_t* input,
             BROTLI_CONTEXT(prev1, prev2, utf8_lut)];
         ++total;
         ++combined_histo[literal >> 3];
-        ++context_histo[context][literal >> 3];
+        ++context_histo[(context << 5) + (literal >> 3)];
         prev2 = prev1;
         prev1 = literal;
       }
@@ -457,7 +448,7 @@ static BROTLI_BOOL ShouldUseComplexStaticContextMap(const uint8_t* input,
     entropy[1] = ShannonEntropy(combined_histo, 32, &dummy);
     entropy[2] = 0;
     for (i = 0; i < 13; ++i) {
-      entropy[2] += ShannonEntropy(&context_histo[i][0], 32, &dummy);
+      entropy[2] += ShannonEntropy(context_histo + (i << 5), 32, &dummy);
     }
     entropy[0] = 1.0 / (double)total;
     entropy[1] *= entropy[0];
@@ -481,19 +472,21 @@ static BROTLI_BOOL ShouldUseComplexStaticContextMap(const uint8_t* input,
 
 static void DecideOverLiteralContextModeling(const uint8_t* input,
     size_t start_pos, size_t length, size_t mask, int quality, size_t size_hint,
-    size_t* num_literal_contexts, const uint32_t** literal_context_map) {
+    size_t* num_literal_contexts, const uint32_t** literal_context_map,
+    uint32_t* arena) {
   if (quality < MIN_QUALITY_FOR_CONTEXT_MODELING || length < 64) {
     return;
   } else if (ShouldUseComplexStaticContextMap(
       input, start_pos, length, mask, quality, size_hint,
-      num_literal_contexts, literal_context_map)) {
+      num_literal_contexts, literal_context_map, arena)) {
     /* Context map was already set, nothing else to do. */
   } else {
     /* Gather bi-gram data of the UTF8 byte prefixes. To make the analysis of
        UTF8 data faster we only examine 64 byte long strides at every 4kB
        intervals. */
     const size_t end_pos = start_pos + length;
-    uint32_t bigram_prefix_histo[9] = { 0 };
+    uint32_t* BROTLI_RESTRICT const bigram_prefix_histo = arena;
+    memset(bigram_prefix_histo, 0, sizeof(arena[0]) * 9);
     for (; start_pos + 64 <= end_pos; start_pos += 4096) {
       static const int lut[4] = { 0, 0, 1, 2 };
       const size_t stride_end_pos = start_pos + 64;
@@ -513,7 +506,7 @@ static void DecideOverLiteralContextModeling(const uint8_t* input,
 static BROTLI_BOOL ShouldCompress(
     const uint8_t* data, const size_t mask, const uint64_t last_flush_pos,
     const size_t bytes, const size_t num_literals, const size_t num_commands) {
-  /* TODO: find more precise minimal block overhead. */
+  /* TODO(eustas): find more precise minimal block overhead. */
   if (bytes <= 2) return BROTLI_FALSE;
   if (num_commands < (bytes >> 8) + 2) {
     if ((double)num_literals > 0.99 * (double)bytes) {
@@ -613,10 +606,14 @@ static void WriteMetaBlockInternal(MemoryManager* m,
       size_t num_literal_contexts = 1;
       const uint32_t* literal_context_map = NULL;
       if (!params->disable_literal_context_modeling) {
+        /* TODO(eustas): pull to higher level and reuse. */
+        uint32_t* arena = BROTLI_ALLOC(m, uint32_t, 14 * 32);
+        if (BROTLI_IS_OOM(m) || BROTLI_IS_NULL(arena)) return;
         DecideOverLiteralContextModeling(
             data, wrapped_last_flush_pos, bytes, mask, params->quality,
             params->size_hint, &num_literal_contexts,
-            &literal_context_map);
+            &literal_context_map, arena);
+        BROTLI_FREE(m, arena);
       }
       BrotliBuildMetaBlockGreedy(m, data, wrapped_last_flush_pos, mask,
           prev_byte, prev_byte2, literal_context_lut, num_literal_contexts,
@@ -681,12 +678,13 @@ static void ChooseDistanceParams(BrotliEncoderParams* params) {
     }
   }
 
-  BrotliInitDistanceParams(
-      params, distance_postfix_bits, num_direct_distance_codes);
+  BrotliInitDistanceParams(&params->dist, distance_postfix_bits,
+                           num_direct_distance_codes, params->large_window);
 }
 
 static BROTLI_BOOL EnsureInitialized(BrotliEncoderState* s) {
-  if (BROTLI_IS_OOM(&s->memory_manager_)) return BROTLI_FALSE;
+  MemoryManager* m = &s->memory_manager_;
+  if (BROTLI_IS_OOM(m)) return BROTLI_FALSE;
   if (s->is_initialized_) return BROTLI_TRUE;
 
   s->last_bytes_bits_ = 0;
@@ -728,8 +726,12 @@ static BROTLI_BOOL EnsureInitialized(BrotliEncoderState* s) {
   }
 
   if (s->params.quality == FAST_ONE_PASS_COMPRESSION_QUALITY) {
-    InitCommandPrefixCodes(s->cmd_depths_, s->cmd_bits_,
-                           s->cmd_code_, &s->cmd_code_numbits_);
+    s->one_pass_arena_ = BROTLI_ALLOC(m, BrotliOnePassArena, 1);
+    if (BROTLI_IS_OOM(m)) return BROTLI_FALSE;
+    InitCommandPrefixCodes(s->one_pass_arena_);
+  } else if (s->params.quality == FAST_TWO_PASS_COMPRESSION_QUALITY) {
+    s->two_pass_arena_ = BROTLI_ALLOC(m, BrotliTwoPassArena, 1);
+    if (BROTLI_IS_OOM(m)) return BROTLI_FALSE;
   }
 
   s->is_initialized_ = BROTLI_TRUE;
@@ -745,13 +747,18 @@ static void BrotliEncoderInitParams(BrotliEncoderParams* params) {
   params->stream_offset = 0;
   params->size_hint = 0;
   params->disable_literal_context_modeling = BROTLI_FALSE;
-  BrotliInitEncoderDictionary(&params->dictionary);
+  BrotliInitSharedEncoderDictionary(&params->dictionary);
   params->dist.distance_postfix_bits = 0;
   params->dist.num_direct_distance_codes = 0;
   params->dist.alphabet_size_max =
       BROTLI_DISTANCE_ALPHABET_SIZE(0, 0, BROTLI_MAX_DISTANCE_BITS);
   params->dist.alphabet_size_limit = params->dist.alphabet_size_max;
   params->dist.max_distance = BROTLI_MAX_DISTANCE;
+}
+
+static void BrotliEncoderCleanupParams(MemoryManager* m,
+    BrotliEncoderParams* params) {
+  BrotliCleanupSharedEncoderDictionary(m, &params->dictionary);
 }
 
 static void BrotliEncoderInitState(BrotliEncoderState* s) {
@@ -769,7 +776,8 @@ static void BrotliEncoderInitState(BrotliEncoderState* s) {
   HasherInit(&s->hasher_);
   s->large_table_ = NULL;
   s->large_table_size_ = 0;
-  s->cmd_code_numbits_ = 0;
+  s->one_pass_arena_ = NULL;
+  s->two_pass_arena_ = NULL;
   s->command_buf_ = NULL;
   s->literal_buf_ = NULL;
   s->next_out_ = NULL;
@@ -796,13 +804,9 @@ static void BrotliEncoderInitState(BrotliEncoderState* s) {
 
 BrotliEncoderState* BrotliEncoderCreateInstance(
     brotli_alloc_func alloc_func, brotli_free_func free_func, void* opaque) {
-  BrotliEncoderState* state = 0;
-  if (!alloc_func && !free_func) {
-    state = (BrotliEncoderState*)malloc(sizeof(BrotliEncoderState));
-  } else if (alloc_func && free_func) {
-    state = (BrotliEncoderState*)alloc_func(opaque, sizeof(BrotliEncoderState));
-  }
-  if (state == 0) {
+  BrotliEncoderState* state = (BrotliEncoderState*)BrotliBootstrapAlloc(
+      sizeof(BrotliEncoderState), alloc_func, free_func, opaque);
+  if (state == NULL) {
     /* BROTLI_DUMP(); */
     return 0;
   }
@@ -823,8 +827,11 @@ static void BrotliEncoderCleanupState(BrotliEncoderState* s) {
   RingBufferFree(m, &s->ringbuffer_);
   DestroyHasher(m, &s->hasher_);
   BROTLI_FREE(m, s->large_table_);
+  BROTLI_FREE(m, s->one_pass_arena_);
+  BROTLI_FREE(m, s->two_pass_arena_);
   BROTLI_FREE(m, s->command_buf_);
   BROTLI_FREE(m, s->literal_buf_);
+  BrotliEncoderCleanupParams(m, &s->params);
 }
 
 /* Deinitializes and frees BrotliEncoderState instance. */
@@ -832,11 +839,8 @@ void BrotliEncoderDestroyInstance(BrotliEncoderState* state) {
   if (!state) {
     return;
   } else {
-    MemoryManager* m = &state->memory_manager_;
-    brotli_free_func free_func = m->free_func;
-    void* opaque = m->opaque;
     BrotliEncoderCleanupState(state);
-    free_func(opaque, state);
+    BrotliBootstrapFree(state, &state->memory_manager_);
   }
 }
 
@@ -925,6 +929,8 @@ static void ExtendLastCommand(BrotliEncoderState* s, uint32_t* bytes,
   uint64_t cmd_dist = (uint64_t)s->dist_cache_[0];
   uint32_t distance_code = CommandRestoreDistanceCode(last_command,
                                                       &s->params.dist);
+  const CompoundDictionary* dict = &s->params.dictionary.compound;
+  size_t compound_dictionary_size = dict->total_size;
   if (distance_code < BROTLI_NUM_DISTANCE_SHORT_CODES ||
       distance_code - (BROTLI_NUM_DISTANCE_SHORT_CODES - 1) == cmd_dist) {
     if (cmd_dist <= max_distance) {
@@ -935,6 +941,38 @@ static void ExtendLastCommand(BrotliEncoderState* s, uint32_t* bytes,
         (*wrapped_last_processed_pos)++;
       }
     } else {
+      if ((cmd_dist - max_distance - 1) < compound_dictionary_size &&
+          last_copy_len < cmd_dist - max_distance) {
+        size_t address =
+            compound_dictionary_size - (size_t)(cmd_dist - max_distance) +
+            (size_t)last_copy_len;
+        size_t br_index = 0;
+        size_t br_offset;
+        const uint8_t* chunk;
+        size_t chunk_length;
+        while (address >= dict->chunk_offsets[br_index + 1]) br_index++;
+        br_offset = address - dict->chunk_offsets[br_index];
+        chunk = dict->chunk_source[br_index];
+        chunk_length =
+            dict->chunk_offsets[br_index + 1] - dict->chunk_offsets[br_index];
+        while (*bytes != 0 && data[*wrapped_last_processed_pos & mask] ==
+               chunk[br_offset]) {
+          last_command->copy_len_++;
+          (*bytes)--;
+          (*wrapped_last_processed_pos)++;
+          if (++br_offset == chunk_length) {
+            br_index++;
+            br_offset = 0;
+            if (br_index != dict->num_chunks) {
+              chunk = dict->chunk_source[br_index];
+              chunk_length = dict->chunk_offsets[br_index + 1] -
+                  dict->chunk_offsets[br_index];
+            } else {
+              break;
+            }
+          }
+        }
+      }
     }
     /* The copy length is at most the metablock size, and thus expressible. */
     GetLengthCode(last_command->insert_len_,
@@ -972,6 +1010,7 @@ static BROTLI_BOOL EncodeData(
   data = s->ringbuffer_.buffer_;
   mask = s->ringbuffer_.mask_;
 
+  if (s->params.quality > s->params.dictionary.max_quality) return BROTLI_FALSE;
   /* Adding more blocks after "last" block is forbidden. */
   if (s->is_last_block_emitted_) return BROTLI_FALSE;
   if (is_last) s->is_last_block_emitted_ = BROTLI_TRUE;
@@ -1012,16 +1051,14 @@ static BROTLI_BOOL EncodeData(
     if (BROTLI_IS_OOM(m)) return BROTLI_FALSE;
     if (s->params.quality == FAST_ONE_PASS_COMPRESSION_QUALITY) {
       BrotliCompressFragmentFast(
-          m, &data[wrapped_last_processed_pos & mask],
+          s->one_pass_arena_, &data[wrapped_last_processed_pos & mask],
           bytes, is_last,
           table, table_size,
-          s->cmd_depths_, s->cmd_bits_,
-          &s->cmd_code_numbits_, s->cmd_code_,
           &storage_ix, storage);
       if (BROTLI_IS_OOM(m)) return BROTLI_FALSE;
     } else {
       BrotliCompressFragmentTwoPass(
-          m, &data[wrapped_last_processed_pos & mask],
+          s->two_pass_arena_, &data[wrapped_last_processed_pos & mask],
           bytes, is_last,
           s->command_buf_, s->literal_buf_,
           table, table_size,
@@ -1099,7 +1136,7 @@ static BROTLI_BOOL EncodeData(
     const size_t max_commands = max_length / 8;
     const size_t processed_bytes = (size_t)(s->input_pos_ - s->last_flush_pos_);
     /* If maximal possible additional block doesn't fit metablock, flush now. */
-    /* TODO: Postpone decision until next block arrives? */
+    /* TODO(eustas): Postpone decision until next block arrives? */
     const BROTLI_BOOL next_input_fits_metablock = TO_BROTLI_BOOL(
         processed_bytes + InputBlockSize(s) <= max_length);
     /* If block splitting is not used, then flush as soon as there is some
@@ -1201,11 +1238,11 @@ static size_t WriteMetadataHeader(
   return (storage_ix + 7u) >> 3;
 }
 
-static BROTLI_BOOL BrotliCompressBufferQuality10(
+static BROTLI_NOINLINE BROTLI_BOOL BrotliCompressBufferQuality10(
     int lgwin, size_t input_size, const uint8_t* input_buffer,
     size_t* encoded_size, uint8_t* encoded_buffer) {
-  MemoryManager memory_manager;
-  MemoryManager* m = &memory_manager;
+  MemoryManager* m =
+      (MemoryManager*)BrotliBootstrapAlloc(sizeof(MemoryManager), 0, 0, 0);
 
   const size_t mask = BROTLI_SIZE_MAX >> 1;
   int dist_cache[4] = { 4, 11, 15, 16 };
@@ -1219,8 +1256,6 @@ static BROTLI_BOOL BrotliCompressBufferQuality10(
   const size_t hasher_eff_size = BROTLI_MIN(size_t,
       input_size, BROTLI_MAX_BACKWARD_LIMIT(lgwin) + BROTLI_WINDOW_GAP);
 
-  BrotliEncoderParams params;
-
   const int lgmetablock = BROTLI_MIN(int, 24, lgwin + 1);
   size_t max_block_size;
   const size_t max_metablock_size = (size_t)1 << lgmetablock;
@@ -1230,25 +1265,35 @@ static BROTLI_BOOL BrotliCompressBufferQuality10(
   uint8_t prev_byte = 0;
   uint8_t prev_byte2 = 0;
 
-  Hasher hasher;
-  HasherInit(&hasher);
+  BrotliEncoderParams* params = NULL;
+  Hasher* hasher = NULL;
 
-  BrotliEncoderInitParams(&params);
-  params.quality = 10;
-  params.lgwin = lgwin;
-  if (lgwin > BROTLI_MAX_WINDOW_BITS) {
-    params.large_window = BROTLI_TRUE;
-  }
-  SanitizeParams(&params);
-  params.lgblock = ComputeLgBlock(&params);
-  ChooseDistanceParams(&params);
-  max_block_size = (size_t)1 << params.lgblock;
-
+  if (m == NULL) return BROTLI_FALSE;
   BrotliInitMemoryManager(m, 0, 0, 0);
+  params = BROTLI_ALLOC(m, BrotliEncoderParams, 2);
+  hasher = BROTLI_ALLOC(m, Hasher, 1);
+  if (BROTLI_IS_OOM(m) || BROTLI_IS_NULL(params) || BROTLI_IS_NULL(hasher)) {
+    goto oom;
+  }
+  BrotliEncoderInitParams(params);
+  HasherInit(hasher);
+
+  params->quality = 10;
+  params->lgwin = lgwin;
+  if (lgwin > BROTLI_MAX_WINDOW_BITS) {
+    params->large_window = BROTLI_TRUE;
+  }
+  SanitizeParams(params);
+  params->lgblock = ComputeLgBlock(params);
+  ChooseDistanceParams(params);
+  max_block_size = (size_t)1 << params->lgblock;
+
+  /* Since default static dictionary is used we assume that
+   * params->quality < params->dictionary.max_quality. */
 
   BROTLI_DCHECK(input_size <= mask + 1);
-  EncodeWindowBits(lgwin, params.large_window, &last_bytes, &last_bytes_bits);
-  InitOrStitchToPreviousBlock(m, &hasher, input_buffer, mask, &params,
+  EncodeWindowBits(lgwin, params->large_window, &last_bytes, &last_bytes_bits);
+  InitOrStitchToPreviousBlock(m, hasher, input_buffer, mask, params,
       0, hasher_eff_size, BROTLI_TRUE);
   if (BROTLI_IS_OOM(m)) goto oom;
 
@@ -1267,7 +1312,7 @@ static BROTLI_BOOL BrotliCompressBufferQuality10(
     uint8_t* storage;
     size_t storage_ix;
 
-    ContextType literal_context_mode = ChooseContextMode(&params,
+    ContextType literal_context_mode = ChooseContextMode(params,
         input_buffer, metablock_start, mask, metablock_end - metablock_start);
     ContextLut literal_context_lut = BROTLI_CONTEXT_LUT(literal_context_mode);
 
@@ -1280,10 +1325,10 @@ static BROTLI_BOOL BrotliCompressBufferQuality10(
       size_t new_cmd_alloc_size;
       if (BROTLI_IS_OOM(m) || BROTLI_IS_NULL(nodes)) goto oom;
       BrotliInitZopfliNodes(nodes, block_size + 1);
-      StitchToPreviousBlockH10(&hasher.privat._H10, block_size, block_start,
+      StitchToPreviousBlockH10(&hasher->privat._H10, block_size, block_start,
                                input_buffer, mask);
       path_size = BrotliZopfliComputeShortestPath(m, block_size, block_start,
-          input_buffer, mask, literal_context_lut, &params, dist_cache, &hasher,
+          input_buffer, mask, literal_context_lut, params, dist_cache, hasher,
           nodes);
       if (BROTLI_IS_OOM(m)) goto oom;
       /* We allocate a command buffer in the first iteration of this loop that
@@ -1292,7 +1337,7 @@ static BROTLI_BOOL BrotliCompressBufferQuality10(
          allocation here and not before the loop, because if the input is small,
          this will be allocated after the Zopfli cost model is freed, so this
          will not increase peak memory usage.
-         TODO: If the first allocation is too small, increase command
+         TODO(eustas): If the first allocation is too small, increase command
          buffer size exponentially. */
       new_cmd_alloc_size = BROTLI_MAX(size_t, expected_num_commands,
                                       num_commands + path_size + 1);
@@ -1307,7 +1352,7 @@ static BROTLI_BOOL BrotliCompressBufferQuality10(
         commands = new_commands;
       }
       BrotliZopfliCreateCommands(block_size, block_start, &nodes[0], dist_cache,
-          &last_insert_len, &params, &commands[num_commands], &num_literals);
+          &last_insert_len, params, &commands[num_commands], &num_literals);
       num_commands += path_size;
       block_start += block_size;
       metablock_size += block_size;
@@ -1349,10 +1394,11 @@ static BROTLI_BOOL BrotliCompressBufferQuality10(
                                        &storage_ix, storage);
     } else {
       MetaBlockSplit mb;
-      BrotliEncoderParams block_params = params;
+      BrotliEncoderParams* block_params = params + 1;
+      *block_params = *params;  /* shallow copy */
       InitMetaBlockSplit(&mb);
       BrotliBuildMetaBlock(m, input_buffer, metablock_start, mask,
-                           &block_params,
+                           block_params,
                            prev_byte, prev_byte2,
                            commands, num_commands,
                            literal_context_mode,
@@ -1362,7 +1408,7 @@ static BROTLI_BOOL BrotliCompressBufferQuality10(
         /* The number of distance symbols effectively used for distance
            histograms. It might be less than distance alphabet size
            for "Large Window Brotli" (32-bit). */
-        BrotliOptimizeHistograms(block_params.dist.alphabet_size_limit, &mb);
+        BrotliOptimizeHistograms(block_params->dist.alphabet_size_limit, &mb);
       }
       storage = BROTLI_ALLOC(m, uint8_t, 2 * metablock_size + 503);
       if (BROTLI_IS_OOM(m) || BROTLI_IS_NULL(storage)) goto oom;
@@ -1371,7 +1417,7 @@ static BROTLI_BOOL BrotliCompressBufferQuality10(
       BrotliStoreMetaBlock(m, input_buffer, metablock_start, metablock_size,
                            mask, prev_byte, prev_byte2,
                            is_last,
-                           &block_params,
+                           block_params,
                            literal_context_mode,
                            commands, num_commands,
                            &mb,
@@ -1415,11 +1461,16 @@ static BROTLI_BOOL BrotliCompressBufferQuality10(
   }
 
   *encoded_size = total_out_size;
-  DestroyHasher(m, &hasher);
+  DestroyHasher(m, hasher);
+  BROTLI_FREE(m, hasher);
+  BrotliEncoderCleanupParams(m, params);
+  BROTLI_FREE(m, params);
+  BrotliBootstrapFree(m, m);
   return ok;
 
 oom:
   BrotliWipeOutMemoryManager(m);
+  BrotliBootstrapFree(m, m);
   return BROTLI_FALSE;
 }
 
@@ -1470,8 +1521,9 @@ static size_t MakeUncompressedStream(
 
 BROTLI_BOOL BrotliEncoderCompress(
     int quality, int lgwin, BrotliEncoderMode mode, size_t input_size,
-    const uint8_t* input_buffer, size_t* encoded_size,
-    uint8_t* encoded_buffer) {
+    const uint8_t input_buffer[BROTLI_ARRAY_PARAM(input_size)],
+    size_t* encoded_size,
+    uint8_t encoded_buffer[BROTLI_ARRAY_PARAM(*encoded_size)]) {
   BrotliEncoderState* s;
   size_t out_size = *encoded_size;
   const uint8_t* input_start = input_buffer;
@@ -1488,7 +1540,7 @@ BROTLI_BOOL BrotliEncoderCompress(
     return BROTLI_TRUE;
   }
   if (quality == 10) {
-    /* TODO: Implement this direct path for all quality levels. */
+    /* TODO(eustas): Implement this direct path for all quality levels. */
     const int lg_win = BROTLI_MIN(int, BROTLI_LARGE_MAX_WINDOW_BITS,
                                        BROTLI_MAX(int, 16, lgwin));
     int ok = BrotliCompressBufferQuality10(lg_win, input_size, input_buffer,
@@ -1676,13 +1728,12 @@ static BROTLI_BOOL BrotliEncoderCompressStreamFast(
       if (BROTLI_IS_OOM(m)) return BROTLI_FALSE;
 
       if (s->params.quality == FAST_ONE_PASS_COMPRESSION_QUALITY) {
-        BrotliCompressFragmentFast(m, *next_in, block_size, is_last, table,
-            table_size, s->cmd_depths_, s->cmd_bits_, &s->cmd_code_numbits_,
-            s->cmd_code_, &storage_ix, storage);
+        BrotliCompressFragmentFast(s->one_pass_arena_, *next_in, block_size,
+            is_last, table, table_size, &storage_ix, storage);
         if (BROTLI_IS_OOM(m)) return BROTLI_FALSE;
       } else {
-        BrotliCompressFragmentTwoPass(m, *next_in, block_size, is_last,
-            command_buf, literal_buf, table, table_size,
+        BrotliCompressFragmentTwoPass(s->two_pass_arena_, *next_in, block_size,
+            is_last, command_buf, literal_buf, table, table_size,
             &storage_ix, storage);
         if (BROTLI_IS_OOM(m)) return BROTLI_FALSE;
       }
@@ -1921,6 +1972,271 @@ const uint8_t* BrotliEncoderTakeOutput(BrotliEncoderState* s, size_t* size) {
 uint32_t BrotliEncoderVersion(void) {
   return BROTLI_VERSION;
 }
+
+BrotliEncoderPreparedDictionary* BrotliEncoderPrepareDictionary(
+    BrotliSharedDictionaryType type, size_t size,
+    const uint8_t data[BROTLI_ARRAY_PARAM(size)], int quality,
+    brotli_alloc_func alloc_func, brotli_free_func free_func, void* opaque) {
+  ManagedDictionary* managed_dictionary = NULL;
+  if (type != BROTLI_SHARED_DICTIONARY_RAW &&
+      type != BROTLI_SHARED_DICTIONARY_SERIALIZED) {
+    return NULL;
+  }
+  managed_dictionary =
+      BrotliCreateManagedDictionary(alloc_func, free_func, opaque);
+  if (managed_dictionary == NULL) {
+    return NULL;
+  }
+  if (type == BROTLI_SHARED_DICTIONARY_RAW) {
+    managed_dictionary->dictionary = (uint32_t*)CreatePreparedDictionary(
+        &managed_dictionary->memory_manager_, data, size);
+  } else {
+    SharedEncoderDictionary* dict = (SharedEncoderDictionary*)BrotliAllocate(
+        &managed_dictionary->memory_manager_, sizeof(SharedEncoderDictionary));
+    managed_dictionary->dictionary = (uint32_t*)dict;
+    if (dict != NULL) {
+      BROTLI_BOOL ok = BrotliInitCustomSharedEncoderDictionary(
+          &managed_dictionary->memory_manager_, data, size, quality, dict);
+      if (!ok) {
+        BrotliFree(&managed_dictionary->memory_manager_, dict);
+        managed_dictionary->dictionary = NULL;
+      }
+    }
+  }
+  if (managed_dictionary->dictionary == NULL) {
+    BrotliDestroyManagedDictionary(managed_dictionary);
+    return NULL;
+  }
+  return (BrotliEncoderPreparedDictionary*)managed_dictionary;
+}
+
+void BrotliEncoderDestroyPreparedDictionary(
+    BrotliEncoderPreparedDictionary* dictionary) {
+  ManagedDictionary* dict = (ManagedDictionary*)dictionary;
+  if (!dictionary) return;
+  /* First field of dictionary structs. */
+  /* Only managed dictionaries are eligible for destruction by this method. */
+  if (dict->magic != kManagedDictionaryMagic) {
+    return;
+  }
+  if (dict->dictionary == NULL) {
+    /* This should never ever happen. */
+  } else if (*dict->dictionary == kPreparedDictionaryMagic) {
+    DestroyPreparedDictionary(
+        &dict->memory_manager_, (PreparedDictionary*)dict->dictionary);
+  } else if (*dict->dictionary == kSharedDictionaryMagic) {
+    BrotliCleanupSharedEncoderDictionary(&dict->memory_manager_,
+        (SharedEncoderDictionary*)dict->dictionary);
+    BrotliFree(&dict->memory_manager_, dict->dictionary);
+  } else {
+    /* This should never ever happen. */
+  }
+  dict->dictionary = NULL;
+  BrotliDestroyManagedDictionary(dict);
+}
+
+BROTLI_BOOL BrotliEncoderAttachPreparedDictionary(BrotliEncoderState* state,
+    const BrotliEncoderPreparedDictionary* dictionary) {
+  /* First field of dictionary structs */
+  const BrotliEncoderPreparedDictionary* dict = dictionary;
+  uint32_t magic = *((const uint32_t*)dict);
+  SharedEncoderDictionary* current = NULL;
+  if (magic == kManagedDictionaryMagic) {
+    /* Unwrap managed dictionary. */
+    ManagedDictionary* managed_dictionary = (ManagedDictionary*)dict;
+    magic = *managed_dictionary->dictionary;
+    dict = (BrotliEncoderPreparedDictionary*)managed_dictionary->dictionary;
+  }
+  current = &state->params.dictionary;
+  if (magic == kPreparedDictionaryMagic) {
+    const PreparedDictionary* prepared = (const PreparedDictionary*)dict;
+    if (!AttachPreparedDictionary(&current->compound, prepared)) {
+      return BROTLI_FALSE;
+    }
+  } else if (magic == kSharedDictionaryMagic) {
+    const SharedEncoderDictionary* attached =
+        (const SharedEncoderDictionary*)dict;
+    BROTLI_BOOL was_default = !current->contextual.context_based &&
+        current->contextual.num_dictionaries == 1 &&
+        current->contextual.dict[0]->hash_table_words ==
+        kStaticDictionaryHashWords &&
+        current->contextual.dict[0]->hash_table_lengths ==
+        kStaticDictionaryHashLengths;
+    BROTLI_BOOL new_default = !attached->contextual.context_based &&
+        attached->contextual.num_dictionaries == 1 &&
+        attached->contextual.dict[0]->hash_table_words ==
+        kStaticDictionaryHashWords &&
+        attached->contextual.dict[0]->hash_table_lengths ==
+        kStaticDictionaryHashLengths;
+    size_t i;
+    if (state->is_initialized_) return BROTLI_FALSE;
+    current->max_quality =
+        BROTLI_MIN(int, current->max_quality, attached->max_quality);
+    for (i = 0; i < attached->compound.num_chunks; i++) {
+      if (!AttachPreparedDictionary(&current->compound,
+          attached->compound.chunks[i])) {
+        return BROTLI_FALSE;
+      }
+    }
+    if (!new_default) {
+      if (!was_default) return BROTLI_FALSE;
+      /* Copy by value, but then set num_instances_ to 0 because their memory
+      is managed by attached, not by current */
+      current->contextual = attached->contextual;
+      current->contextual.num_instances_ = 0;
+    }
+  } else {
+    return BROTLI_FALSE;
+  }
+  return BROTLI_TRUE;
+}
+
+size_t BrotliEncoderEstimatePeakMemoryUsage(int quality, int lgwin,
+                                            size_t input_size) {
+  BrotliEncoderParams params;
+  BrotliEncoderInitParams(&params);
+  params.quality = quality;
+  params.lgwin = lgwin;
+  params.size_hint = input_size;
+  SanitizeParams(&params);
+  params.lgblock = ComputeLgBlock(&params);
+  ChooseHasher(&params, &params.hasher);
+  if (params.quality == FAST_ONE_PASS_COMPRESSION_QUALITY ||
+      params.quality == FAST_TWO_PASS_COMPRESSION_QUALITY) {
+    size_t state_size = sizeof(BrotliEncoderState);
+    size_t block_size = BROTLI_MIN(size_t, input_size, (1ul << params.lgwin));
+    size_t hash_table_size =
+        HashTableSize(MaxHashTableSize(params.quality), block_size);
+    size_t hash_size =
+        (hash_table_size < (1u << 10)) ? 0 : sizeof(int) * hash_table_size;
+    size_t cmdbuf_size = params.quality == FAST_TWO_PASS_COMPRESSION_QUALITY ?
+        5 * BROTLI_MIN(size_t, block_size, 1ul << 17) : 0;
+    if (params.quality == FAST_ONE_PASS_COMPRESSION_QUALITY) {
+      state_size += sizeof(BrotliOnePassArena);
+    } else {
+      state_size += sizeof(BrotliTwoPassArena);
+    }
+    return hash_size + cmdbuf_size + state_size;
+  } else {
+    size_t short_ringbuffer_size = (size_t)1 << params.lgblock;
+    int ringbuffer_bits = ComputeRbBits(&params);
+    size_t ringbuffer_size = input_size < short_ringbuffer_size ?
+        input_size : (1u << ringbuffer_bits) + short_ringbuffer_size;
+    size_t hash_size[4] = {0};
+    size_t metablock_size =
+        BROTLI_MIN(size_t, input_size, MaxMetablockSize(&params));
+    size_t inputblock_size =
+        BROTLI_MIN(size_t, input_size, (size_t)1 << params.lgblock);
+    size_t cmdbuf_size = metablock_size * 2 + inputblock_size * 6;
+    size_t outbuf_size = metablock_size * 2 + 503;
+    size_t histogram_size = 0;
+    HasherSize(&params, BROTLI_TRUE, input_size, hash_size);
+    if (params.quality < MIN_QUALITY_FOR_BLOCK_SPLIT) {
+      cmdbuf_size = BROTLI_MIN(size_t, cmdbuf_size,
+          MAX_NUM_DELAYED_SYMBOLS * sizeof(Command) + inputblock_size * 12);
+    }
+    if (params.quality >= MIN_QUALITY_FOR_HQ_BLOCK_SPLITTING) {
+      /* Only a very rough estimation, based on enwik8. */
+      histogram_size = 200 << 20;
+    } else if (params.quality >= MIN_QUALITY_FOR_BLOCK_SPLIT) {
+      size_t literal_histograms =
+          BROTLI_MIN(size_t, metablock_size / 6144, 256);
+      size_t command_histograms =
+          BROTLI_MIN(size_t, metablock_size / 6144, 256);
+      size_t distance_histograms =
+          BROTLI_MIN(size_t, metablock_size / 6144, 256);
+      histogram_size = literal_histograms * sizeof(HistogramLiteral) +
+                       command_histograms * sizeof(HistogramCommand) +
+                       distance_histograms * sizeof(HistogramDistance);
+    }
+    return (ringbuffer_size +
+            hash_size[0] + hash_size[1] + hash_size[2] + hash_size[3] +
+            cmdbuf_size +
+            outbuf_size +
+            histogram_size);
+  }
+}
+size_t BrotliEncoderGetPreparedDictionarySize(
+    const BrotliEncoderPreparedDictionary* prepared_dictionary) {
+  /* First field of dictionary structs */
+  const BrotliEncoderPreparedDictionary* prepared = prepared_dictionary;
+  uint32_t magic = *((const uint32_t*)prepared);
+  size_t overhead = 0;
+  if (magic == kManagedDictionaryMagic) {
+    const ManagedDictionary* managed = (const ManagedDictionary*)prepared;
+    overhead = sizeof(ManagedDictionary);
+    magic = *managed->dictionary;
+    prepared = (const BrotliEncoderPreparedDictionary*)managed->dictionary;
+  }
+
+  if (magic == kPreparedDictionaryMagic) {
+    const PreparedDictionary* dictionary =
+        (const PreparedDictionary*)prepared;
+    /* Keep in sync with step 3 of CreatePreparedDictionary */
+    return sizeof(PreparedDictionary) + dictionary->source_size +
+        (sizeof(uint32_t) << dictionary->slot_bits) +
+        (sizeof(uint16_t) << dictionary->bucket_bits) +
+        (sizeof(uint32_t) * dictionary->source_offset) + overhead;
+  } else if (magic == kSharedDictionaryMagic) {
+    const SharedEncoderDictionary* dictionary =
+        (const SharedEncoderDictionary*)prepared;
+    const CompoundDictionary* compound = &dictionary->compound;
+    const ContextualEncoderDictionary* contextual = &dictionary->contextual;
+    size_t result = sizeof(*dictionary);
+    size_t i;
+    size_t num_instances;
+    const BrotliEncoderDictionary* instances;
+    for (i = 0; i < compound->num_prepared_instances_; i++) {
+      size_t size = BrotliEncoderGetPreparedDictionarySize(
+          (const BrotliEncoderPreparedDictionary*)
+          compound->prepared_instances_[i]);
+      if (!size) return 0;  /* error */
+      result += size;
+    }
+    if (contextual->context_based) {
+      num_instances = contextual->num_instances_;
+      instances = contextual->instances_;
+      result += sizeof(*instances) * num_instances;
+    } else {
+      num_instances = 1;
+      instances = &contextual->instance_;
+    }
+    for (i = 0; i < num_instances; i++) {
+      const BrotliEncoderDictionary* dict = &instances[i];
+      result += dict->trie.pool_capacity * sizeof(BrotliTrieNode);
+      if (dict->hash_table_data_words_) {
+        result += sizeof(kStaticDictionaryHashWords);
+      }
+      if (dict->hash_table_data_lengths_) {
+        result += sizeof(kStaticDictionaryHashLengths);
+      }
+      if (dict->buckets_data_) {
+        result += sizeof(*dict->buckets_data_) * dict->buckets_alloc_size_;
+      }
+      if (dict->dict_words_data_) {
+        result += sizeof(*dict->dict_words) * dict->dict_words_alloc_size_;
+      }
+      if (dict->words_instance_) {
+        result += sizeof(*dict->words_instance_);
+        /* data_size not added here: it is never allocated by the
+           SharedEncoderDictionary, instead it always points to the file
+           already loaded in memory. So if the caller wants to include
+           this memory as well, add the size of the loaded dictionary
+           file to this. */
+      }
+    }
+    return result + overhead;
+  }
+  return 0;  /* error */
+}
+
+#if defined(BROTLI_TEST)
+size_t MakeUncompressedStreamForTest(const uint8_t*, size_t, uint8_t*);
+size_t MakeUncompressedStreamForTest(
+    const uint8_t* input, size_t input_size, uint8_t* output) {
+  return MakeUncompressedStream(input, input_size, output);
+}
+#endif
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }  /* extern "C" */

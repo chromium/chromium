@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,15 @@
 #include "ash/assistant/assistant_notification_controller_impl.h"
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/i18n/message_formatter.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_notification.h"
-#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_notification.h"
+#include "chromeos/ash/services/libassistant/public/cpp/assistant_timer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -32,12 +32,12 @@ namespace ash {
 
 namespace {
 
+using assistant::AssistantNotification;
+using assistant::AssistantNotificationButton;
+using assistant::AssistantNotificationPriority;
+using assistant::AssistantTimer;
+using assistant::AssistantTimerState;
 using assistant::util::AlarmTimerAction;
-using chromeos::assistant::AssistantNotification;
-using chromeos::assistant::AssistantNotificationButton;
-using chromeos::assistant::AssistantNotificationPriority;
-using chromeos::assistant::AssistantTimer;
-using chromeos::assistant::AssistantTimerState;
 
 // Grouping key and ID prefix for timer notifications.
 constexpr char kTimerNotificationGroupingKey[] = "assistant/timer";
@@ -193,13 +193,13 @@ std::vector<AssistantNotificationButton> CreateTimerNotificationButtons(
          /*remove_notification_on_click=*/true});
 
     // "ADD 1 MIN" button.
-    buttons.push_back({l10n_util::GetStringUTF8(
-                           IDS_ASSISTANT_TIMER_NOTIFICATION_ADD_1_MIN_BUTTON),
-                       assistant::util::CreateAlarmTimerDeepLink(
-                           AlarmTimerAction::kAddTimeToTimer, timer.id,
-                           base::TimeDelta::FromMinutes(1))
-                           .value(),
-                       /*remove_notification_on_click=*/false});
+    buttons.push_back(
+        {l10n_util::GetStringUTF8(
+             IDS_ASSISTANT_TIMER_NOTIFICATION_ADD_1_MIN_BUTTON),
+         assistant::util::CreateAlarmTimerDeepLink(
+             AlarmTimerAction::kAddTimeToTimer, timer.id, base::Minutes(1))
+             .value(),
+         /*remove_notification_on_click=*/false});
   } else {
     // "CANCEL" button.
     buttons.push_back({l10n_util::GetStringUTF8(
@@ -223,7 +223,7 @@ AssistantNotificationPriority CreateTimerNotificationPriority(
 
   // If the notification has lived for at least |kPopupThreshold|, drop the
   // priority to |kLow| so that the notification will not pop up to the user.
-  constexpr base::TimeDelta kPopupThreshold = base::TimeDelta::FromSeconds(6);
+  constexpr base::TimeDelta kPopupThreshold = base::Seconds(6);
   const base::TimeDelta lifetime =
       base::Time::Now() - timer.creation_time.value_or(base::Time::Now());
   if (lifetime >= kPopupThreshold)
@@ -294,7 +294,7 @@ AssistantAlarmTimerControllerImpl::~AssistantAlarmTimerControllerImpl() {
 }
 
 void AssistantAlarmTimerControllerImpl::SetAssistant(
-    chromeos::assistant::Assistant* assistant) {
+    assistant::Assistant* assistant) {
   assistant_ = assistant;
 }
 
@@ -307,10 +307,8 @@ void AssistantAlarmTimerControllerImpl::OnTimerStateChanged(
     const std::vector<AssistantTimer>& new_or_updated_timers) {
   // First we remove all old timers that no longer exist.
   for (const auto* old_timer : model_.GetAllTimers()) {
-    if (std::none_of(new_or_updated_timers.begin(), new_or_updated_timers.end(),
-                     [&old_timer](const auto& new_or_updated_timer) {
-                       return old_timer->id == new_or_updated_timer.id;
-                     })) {
+    if (!base::Contains(new_or_updated_timers, old_timer->id,
+                        &AssistantTimer::id)) {
       model_.RemoveTimer(old_timer->id);
     }
   }
@@ -343,18 +341,18 @@ void AssistantAlarmTimerControllerImpl::OnDeepLinkReceived(
   if (type != DeepLinkType::kAlarmTimer)
     return;
 
-  const base::Optional<AlarmTimerAction>& action =
+  const absl::optional<AlarmTimerAction>& action =
       assistant::util::GetDeepLinkParamAsAlarmTimerAction(params);
   if (!action.has_value())
     return;
 
-  const base::Optional<std::string>& alarm_timer_id =
+  const absl::optional<std::string>& alarm_timer_id =
       assistant::util::GetDeepLinkParam(params, DeepLinkParam::kId);
   if (!alarm_timer_id.has_value())
     return;
 
   // Duration is optional. Only used for adding time to timer.
-  const base::Optional<base::TimeDelta>& duration =
+  const absl::optional<base::TimeDelta>& duration =
       assistant::util::GetDeepLinkParamAsTimeDelta(params,
                                                    DeepLinkParam::kDurationMs);
 
@@ -362,10 +360,10 @@ void AssistantAlarmTimerControllerImpl::OnDeepLinkReceived(
 }
 
 void AssistantAlarmTimerControllerImpl::OnAssistantStatusChanged(
-    chromeos::assistant::AssistantStatus status) {
+    assistant::AssistantStatus status) {
   // If LibAssistant is no longer running we need to clear our cache to
   // accurately reflect LibAssistant alarm/timer state.
-  if (status == chromeos::assistant::AssistantStatus::NOT_READY)
+  if (status == assistant::AssistantStatus::NOT_READY)
     model_.RemoveAllTimers();
 }
 
@@ -411,7 +409,7 @@ void AssistantAlarmTimerControllerImpl::OnTimerRemoved(
 void AssistantAlarmTimerControllerImpl::PerformAlarmTimerAction(
     const AlarmTimerAction& action,
     const std::string& alarm_timer_id,
-    const base::Optional<base::TimeDelta>& duration) {
+    const absl::optional<base::TimeDelta>& duration) {
   DCHECK(assistant_);
 
   switch (action) {
@@ -464,8 +462,7 @@ void AssistantAlarmTimerControllerImpl::ScheduleNextTick(
   // when Tick() is called due to the possibility of the |model_| being updated
   // via a call to OnTimerStateChanged(), such as might happen if a timer is
   // created, paused, resumed, or removed by LibAssistant.
-  ticker.Start(FROM_HERE,
-               base::TimeDelta::FromMilliseconds(millis_to_next_full_sec),
+  ticker.Start(FROM_HERE, base::Milliseconds(millis_to_next_full_sec),
                base::BindOnce(&AssistantAlarmTimerControllerImpl::Tick,
                               base::Unretained(this), timer.id));
 }

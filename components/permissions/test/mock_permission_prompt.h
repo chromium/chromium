@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PERMISSIONS_TEST_MOCK_PERMISSION_PROMPT_H_
 #define COMPONENTS_PERMISSIONS_TEST_MOCK_PERMISSION_PROMPT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/permissions/permission_prompt.h"
 
 namespace permissions {
@@ -19,7 +20,7 @@ class MockPermissionPrompt : public PermissionPrompt {
   ~MockPermissionPrompt() override;
 
   // PermissionPrompt:
-  void UpdateAnchor() override;
+  bool UpdateAnchor() override;
   TabSwitchingBehavior GetTabSwitchingBehavior() override;
   PermissionPromptDisposition GetPromptDisposition() const override;
 
@@ -31,8 +32,8 @@ class MockPermissionPrompt : public PermissionPrompt {
   MockPermissionPrompt(MockPermissionPromptFactory* factory,
                        Delegate* delegate);
 
-  MockPermissionPromptFactory* factory_;
-  Delegate* delegate_;
+  raw_ptr<MockPermissionPromptFactory> factory_;
+  raw_ptr<Delegate> delegate_;
 };
 
 }  // namespace permissions

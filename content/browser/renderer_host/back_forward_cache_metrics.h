@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,21 @@
 #define CONTENT_BROWSER_RENDERER_HOST_BACK_FORWARD_CACHE_METRICS_H_
 
 #include <bitset>
-#include <set>
+#include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
-#include "base/strings/string_piece.h"
-#include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-forward.h"
+
+namespace base {
+class TickClock;
+}
 
 namespace url {
 class Origin;
@@ -24,10 +28,11 @@ class Origin;
 
 namespace content {
 class BackForwardCacheCanStoreDocumentResult;
+class BackForwardCacheCanStoreTreeResult;
 class NavigationEntryImpl;
 class NavigationRequest;
 class RenderFrameHostImpl;
-struct LoadCommittedDetails;
+struct BackForwardCacheCanStoreDocumentResultWithTree;
 
 // Helper class for recording metrics around history navigations.
 // Associated with a main frame document and shared between all
@@ -42,7 +47,8 @@ class BackForwardCacheMetrics
   // Please keep in sync with BackForwardCacheNotRestoredReason in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
   enum class NotRestoredReason : uint8_t {
-    kNotMainFrame = 0,
+    kMinValue = 0,
+    kNotPrimaryMainFrame = 0,
     // BackForwardCache is disabled due to low memory device, base::Feature or
     // command line. Note that the more specific NotRestoredReasons
     // kBackForwardCacheDisabledByLowMemory and
@@ -52,6 +58,9 @@ class BackForwardCacheMetrics
     kRelatedActiveContentsExist = 2,
     kHTTPStatusNotOK = 3,
     kSchemeNotHTTPOrHTTPS = 4,
+    // DOMContentLoaded event has not yet fired. This means that deferred
+    // scripts have not run yet and pagehide/pageshow event handlers may not be
+    // installed yet.
     kLoading = 5,
     kWasGrantedMediaAccess = 6,
     kBlocklistedFeatures = 7,
@@ -65,8 +74,8 @@ class BackForwardCacheMetrics
     kRendererProcessKilled = 15,
     kRendererProcessCrashed = 16,
     // 17: Dialogs are no longer a reason to exclude from BackForwardCache
-    kGrantedMediaStreamAccess = 18,
-    kSchedulerTrackedFeatureUsed = 19,
+    // 18: GrantedMediaStreamAccess is no longer blocking.
+    // 19: kSchedulerTrackedFeatureUsed is no longer used.
     kConflictingBrowsingInstance = 20,
     kCacheFlushed = 21,
     kServiceWorkerVersionActivation = 22,
@@ -74,8 +83,8 @@ class BackForwardCacheMetrics
     kUnknown = 24,
     kServiceWorkerPostMessage = 25,
     kEnteredBackForwardCacheBeforeServiceWorkerHostAdded = 26,
-    kRenderFrameHostReused_SameSite = 27,
-    kRenderFrameHostReused_CrossSite = 28,
+    // 27: kRenderFrameHostReused_SameSite was removed.
+    // 28: kRenderFrameHostReused_CrossSite was removed.
     kNotMostRecentNavigationEntry = 29,
     kServiceWorkerClaim = 30,
     kIgnoreEventAndEvict = 31,
@@ -87,13 +96,32 @@ class BackForwardCacheMetrics
     // cases where the embedder disabled it due to, e.g., enterprise policy).
     kBackForwardCacheDisabledByCommandLine = 35,
     // 36: kFrameTreeNodeStateReset was removed.
-    kNetworkRequestDatapipeDrained = 37,
+    // 37: kNetworkRequestDatapipeDrained = 37 was removed and broken into 43
+    // and 44.
     kNetworkRequestRedirected = 38,
     kNetworkRequestTimeout = 39,
     kNetworkExceedsBufferLimit = 40,
     kNavigationCancelledWhileRestoring = 41,
-    kBackForwardCacheDisabledForPrerender = 42,
-    kMaxValue = kBackForwardCacheDisabledForPrerender,
+    // 42: kBackForwardCacheDisabledForPrerender was removed and merged into 0.
+    kUserAgentOverrideDiffers = 43,
+    // 44: kNetworkRequestDatapipeDrainedAsDatapipe was removed now that
+    // ScriptStreamer is supported.
+    kNetworkRequestDatapipeDrainedAsBytesConsumer = 45,
+    kForegroundCacheLimit = 46,
+    kBrowsingInstanceNotSwapped = 47,
+    kBackForwardCacheDisabledForDelegate = 48,
+    // 49: kOptInUnloadHeaderNotPresent was removed as the experiments ended.
+    kUnloadHandlerExistsInMainFrame = 50,
+    kUnloadHandlerExistsInSubFrame = 51,
+    kServiceWorkerUnregistration = 52,
+    kCacheControlNoStore = 53,
+    kCacheControlNoStoreCookieModified = 54,
+    kCacheControlNoStoreHTTPOnlyCookieModified = 55,
+    kNoResponseHead = 56,
+    // 57: kActivationNavigationsDisallowedForBug1234857 was fixed.
+    kErrorDocument = 58,
+    kFencedFramesEmbedder = 59,
+    kMaxValue = kFencedFramesEmbedder,
   };
 
   using NotRestoredReasons =
@@ -134,24 +162,38 @@ class BackForwardCacheMetrics
     kMaxValue = kServedFromBackForwardCache,
   };
 
-  // Creates a potential new metrics object for the navigation.
+  // Gets the metrics object for a committed navigation.
   // Note that this object will not be used if the entry we are navigating to
   // already has the BackForwardCacheMetrics object (which happens for history
-  // navigations).
+  // navigations). We will reuse `previous_entry`'s metrics object if the
+  // navigation is a subframe navigation or if it's same-document with
+  // `previous_entry`'s document.
   //
   // |document_sequence_number| is the sequence number of the document
-  // associated with the document associated with the navigating frame and it is
-  // ignored if the navigating frame is not a main one.
+  // associated with the navigating frame.
   static scoped_refptr<BackForwardCacheMetrics>
-  CreateOrReuseBackForwardCacheMetrics(
-      NavigationEntryImpl* currently_committed_entry,
+  CreateOrReuseBackForwardCacheMetricsForNavigation(
+      NavigationEntryImpl* previous_entry,
       bool is_main_frame_navigation,
-      int64_t document_sequence_number);
+      int64_t committing_document_sequence_number);
+
+  BackForwardCacheMetrics(const BackForwardCacheMetrics&) = delete;
+  BackForwardCacheMetrics& operator=(const BackForwardCacheMetrics&) = delete;
 
   // Records when the page is evicted after the document is restored e.g. when
   // the race condition by JavaScript happens.
   static void RecordEvictedAfterDocumentRestored(
       EvictedAfterDocumentRestoredReason reason);
+
+  // Sets the reason why the browsing instance is swapped/not swapped. Passing
+  // absl::nullopt resets the reason.
+  void SetBrowsingInstanceSwapResult(
+      absl::optional<ShouldSwapBrowsingInstance> reason);
+
+  absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result()
+      const {
+    return browsing_instance_swap_result_;
+  }
 
   // Notifies that the main frame has started a navigation to an entry
   // associated with |this|.
@@ -173,22 +215,36 @@ class BackForwardCacheMetrics
   // Records when another navigation commits away from the most recent entry
   // associated with |this|.  This is the point in time that the previous
   // document could enter the back-forward cache.
-  // |new_main_document| points to the newly committed RFH, which might or might
-  // not be the same as the RFH for the old document.
-  void MainFrameDidNavigateAwayFromDocument(
-      RenderFrameHostImpl* new_main_document,
-      LoadCommittedDetails* details,
-      NavigationRequest* navigation);
+  void MainFrameDidNavigateAwayFromDocument();
 
   // Snapshots the state of the features active on the page before closing it.
   // It should be called at the same time when the document might have been
   // placed in the back-forward cache.
   void RecordFeatureUsage(RenderFrameHostImpl* main_frame);
 
-  // Marks when the page is not cached, or evicted. This information is useful
-  // e.g., to prioritize the tasks to improve cache-hit rate.
-  void MarkNotRestoredWithReason(
-      const BackForwardCacheCanStoreDocumentResult& can_store);
+  // Adds the flattened list of NotRestoredReasons to the existing
+  // |page_store_result_|.
+  // TODO(yuzus): Make this function take
+  // BackForwardCacheCanStoreDocumentResultWithTree.
+  void AddNotRestoredFlattenedReasonsToExistingResult(
+      BackForwardCacheCanStoreDocumentResult& flattened);
+
+  // Sets |can_store| as the final NotRestoredReasons to report. This replaces
+  // the existing |page_store_tree_result_|.
+  void SetNotRestoredReasons(
+      BackForwardCacheCanStoreDocumentResultWithTree& can_store);
+
+  // Populate and return the mojom struct from |page_store_tree_result_|.
+  blink::mojom::BackForwardCacheNotRestoredReasonsPtr
+  GetWebExposedNotRestoredReasons();
+
+  // Record additional reason why navigation was not served from bfcache which
+  // are known only at the commit time, such as BrowsingInstanceNotSwapped,
+  // SessionRestored, Unknown etc. |before_commit| indicates whether this is
+  // called before commit or after commit and will be used for recording the
+  // right values for URL and origin.
+  void UpdateNotRestoredReasonsForNavigation(NavigationRequest* navigation,
+                                             bool before_commit);
 
   // Exported for testing.
   // The DisabledReason's source and id combined to give a unique uint64.
@@ -197,6 +253,22 @@ class BackForwardCacheMetrics
   // Injects a clock for mocking time.
   // Should be called only from the UI thread.
   CONTENT_EXPORT static void OverrideTimeForTesting(base::TickClock* clock);
+
+  class TestObserver {
+   public:
+    virtual ~TestObserver() = default;
+    // Report the tree result of NotRestoredReason to the observer.
+    virtual void NotifyNotRestoredReasons(
+        std::unique_ptr<BackForwardCacheCanStoreTreeResult> tree_result) = 0;
+  };
+
+  void SetObserverForTesting(TestObserver* observer) {
+    test_observer_ = observer;
+  }
+
+  // Returns if |navigation| is cross-document main frame history navigation.
+  static bool IsCrossDocumentMainFrameHistoryNavigation(
+      NavigationRequest* navigation);
 
  private:
   friend class base::RefCounted<BackForwardCacheMetrics>;
@@ -210,64 +282,72 @@ class BackForwardCacheMetrics
   void CollectFeatureUsageFromSubtree(RenderFrameHostImpl* rfh,
                                       const url::Origin& main_frame_origin);
 
-  // Dumps the current recorded information.
+  // Dumps the current recorded information for a history navigation for UMA.
   // |back_forward_cache_allowed| indicates whether back-forward cache is
   // allowed for the URL of |navigation_request|.
-  void RecordMetricsForHistoryNavigationCommit(
-      NavigationRequest* navigation,
-      bool back_forward_cache_allowed) const;
+  void RecordHistoryNavigationUMA(NavigationRequest* navigation,
+                                  bool back_forward_cache_allowed) const;
+  // Records UKM for a history navigation.
+  void RecordHistoryNavigationUKM(NavigationRequest* navigation) const;
 
   // Record metrics for the number of reloads after history navigation. In
   // particular we are interested in number of reloads after a restore from
   // the back-forward cache as a proxy for detecting whether the page was
   // broken or not.
-  void RecordHistogramForReloadsAndHistoryNavigations(
+  void RecordHistogramForReloadsAfterHistoryNavigations(
       bool is_reload,
       bool back_forward_cache_allowed) const;
 
-  // Record additional reason why navigation was not served from bfcache which
-  // are known only at the commit time.
-  void UpdateNotRestoredReasonsForNavigation(NavigationRequest* navigation);
-
-  bool ShouldRecordBrowsingInstanceNotSwappedReason() const;
-
-  void RecordHistoryNavigationUkm(NavigationRequest* navigation);
+  // Whether the last navigation swapped BrowsingInstance or not. Returns true
+  // if the last navigation did swap BrowsingInstance, or if it's unknown
+  // (`browsing_instance_swap_result_` is not set).  Returns false otherwise.
+  bool DidSwapBrowsingInstance() const;
 
   // Main frame document sequence number that identifies all NavigationEntries
   // this metrics object is associated with.
   const int64_t document_sequence_number_;
 
-  // NavigationHandle's ID for the last main frame navigation. This is updated
-  // for a main frame, not-same-document navigation.
+  // NavigationHandle's ID for the last cross-document main frame navigation
+  // that uses this metrics object.
   //
   // Should not be confused with NavigationEntryId.
   int64_t last_committed_cross_document_main_frame_navigation_id_ = -1;
 
-  int64_t last_committed_navigation_entry_id_ = -1;
+  // These values are updated only for cross-document main frame navigations.
+  bool previous_navigation_is_history_ = false;
+  bool previous_navigation_is_served_from_bfcache_ = false;
 
-  uint64_t main_frame_features_ = 0;
+  // ====== Post-navigation reuse boundary ========
+  // The variables above these are kept after we finished
+  // logging the metrics for the last navigation that used this metrics object,
+  // as they are needed for logging metrics for future navigations.
+  // The variables below are reset after logging.
+
+  blink::scheduler::WebSchedulerTrackedFeatures main_frame_features_;
   // We record metrics for same-origin frames and cross-origin frames
   // differently as we might want to apply different policies for them,
   // especially for the things around web platform compatibility (e.g. ignore
   // unload handlers in cross-origin iframes but not in same-origin). The
   // details are still subject to metrics, however. NOTE: This is not related to
   // which process these frames are hosted in.
-  uint64_t same_origin_frames_features_ = 0;
-  uint64_t cross_origin_frames_features_ = 0;
+  blink::scheduler::WebSchedulerTrackedFeatures same_origin_frames_features_;
+  blink::scheduler::WebSchedulerTrackedFeatures cross_origin_frames_features_;
 
-  base::Optional<base::TimeTicks> started_navigation_timestamp_;
-  base::Optional<base::TimeTicks> navigated_away_from_main_document_timestamp_;
+  absl::optional<base::TimeTicks> started_navigation_timestamp_;
+  absl::optional<base::TimeTicks> navigated_away_from_main_document_timestamp_;
+  absl::optional<base::TimeTicks> renderer_killed_timestamp_;
 
+  // TODO: Store BackForwardCacheCanStoreDocumentResultWithTree instead of
+  // storing unique_ptr of BackForwardCacheCanStoreDocumentResult and
+  // BackForwardCacheCanStoreTreeResult respectively.
   std::unique_ptr<BackForwardCacheCanStoreDocumentResult> page_store_result_;
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> page_store_tree_result_;
 
-  // This value is updated only for navigations which are not same-document and
-  // main-frame navigations.
-  bool previous_navigation_is_history_ = false;
-  bool previous_navigation_is_served_from_bfcache_ = false;
+  // The reason why the last attempted navigation in the main frame used or
+  // didn't use a new BrowsingInstance.
+  absl::optional<ShouldSwapBrowsingInstance> browsing_instance_swap_result_;
 
-  base::Optional<base::TimeTicks> renderer_killed_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackForwardCacheMetrics);
+  raw_ptr<TestObserver> test_observer_ = nullptr;
 };
 
 }  // namespace content

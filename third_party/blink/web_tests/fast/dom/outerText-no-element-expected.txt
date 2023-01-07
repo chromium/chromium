@@ -1,6 +1,0 @@
-Expected behavior:
-
-This page will try to set the outerText on an element that is no longer in the DOM tree. You should see a description of an expected error.
-
-this is a big test or something
-Expected error - NoModificationAllowedError: Failed to set the 'outerText' property on 'HTMLElement': The element has no parent.

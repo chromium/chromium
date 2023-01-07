@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
 #include "base/notreached.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -20,15 +19,19 @@
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/strings/grit/ui_strings.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if !defined(OS_WIN) && (defined(USE_AURA) || defined(OS_APPLE))
+#if !BUILDFLAG(IS_WIN) && (defined(USE_AURA) || BUILDFLAG(IS_MAC))
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/ui_base_features.h"
 #endif
 
@@ -78,7 +81,7 @@ struct {
 #endif
 
 const int kModifierMask = EF_SHIFT_DOWN | EF_CONTROL_DOWN | EF_ALT_DOWN |
-                          EF_COMMAND_DOWN | EF_ALTGR_DOWN;
+                          EF_COMMAND_DOWN | EF_FUNCTION_DOWN | EF_ALTGR_DOWN;
 
 const int kInterestingFlagsMask =
     kModifierMask | EF_IS_SYNTHESIZED | EF_IS_REPEAT;
@@ -105,6 +108,20 @@ Accelerator::Accelerator(KeyboardCode key_code,
       time_stamp_(time_stamp),
       interrupted_by_mouse_event_(false) {}
 
+#if BUILDFLAG(IS_CHROMEOS)
+Accelerator::Accelerator(KeyboardCode key_code,
+                         DomCode code,
+                         int modifiers,
+                         KeyState key_state,
+                         base::TimeTicks time_stamp)
+    : key_code_(key_code),
+      code_(code),
+      key_state_(key_state),
+      modifiers_(modifiers & kInterestingFlagsMask),
+      time_stamp_(time_stamp),
+      interrupted_by_mouse_event_(false) {}
+#endif
+
 Accelerator::Accelerator(const KeyEvent& key_event)
     : key_code_(key_event.key_code()),
       key_state_(key_event.type() == ET_KEY_PRESSED ? KeyState::PRESSED
@@ -114,8 +131,15 @@ Accelerator::Accelerator(const KeyEvent& key_event)
       time_stamp_(key_event.time_stamp()),
       interrupted_by_mouse_event_(false),
       source_device_id_(key_event.source_device_id()) {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (features::IsImprovedKeyboardShortcutsEnabled()) {
+    code_ = key_event.code();
+  }
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (features::IsNewShortcutMappingEnabled()) {
+    DCHECK(!features::IsImprovedKeyboardShortcutsEnabled());
     DomKey dom_key = key_event.GetDomKey();
     if (!dom_key.IsCharacter())
       return;
@@ -151,24 +175,28 @@ KeyEvent Accelerator::ToKeyEvent() const {
   return KeyEvent(key_state() == Accelerator::KeyState::PRESSED
                       ? ET_KEY_PRESSED
                       : ET_KEY_RELEASED,
-                  key_code(), modifiers(), time_stamp());
+                  key_code(),
+#if BUILDFLAG(IS_CHROMEOS)
+                  code(),
+#endif
+                  modifiers(), time_stamp());
 }
 
-bool Accelerator::operator <(const Accelerator& rhs) const {
+bool Accelerator::operator<(const Accelerator& rhs) const {
   const int modifiers_with_mask = MaskOutKeyEventFlags(modifiers_);
   const int rhs_modifiers_with_mask = MaskOutKeyEventFlags(rhs.modifiers_);
   return std::tie(key_code_, key_state_, modifiers_with_mask) <
          std::tie(rhs.key_code_, rhs.key_state_, rhs_modifiers_with_mask);
 }
 
-bool Accelerator::operator ==(const Accelerator& rhs) const {
+bool Accelerator::operator==(const Accelerator& rhs) const {
   return (key_code_ == rhs.key_code_) && (key_state_ == rhs.key_state_) &&
          (MaskOutKeyEventFlags(modifiers_) ==
           MaskOutKeyEventFlags(rhs.modifiers_)) &&
          interrupted_by_mouse_event_ == rhs.interrupted_by_mouse_event_;
 }
 
-bool Accelerator::operator !=(const Accelerator& rhs) const {
+bool Accelerator::operator!=(const Accelerator& rhs) const {
   return !(*this == rhs);
 }
 
@@ -192,6 +220,10 @@ bool Accelerator::IsCmdDown() const {
   return (modifiers_ & EF_COMMAND_DOWN) != 0;
 }
 
+bool Accelerator::IsFunctionDown() const {
+  return (modifiers_ & EF_FUNCTION_DOWN) != 0;
+}
+
 bool Accelerator::IsRepeat() const {
   return (modifiers_ & EF_IS_REPEAT) != 0;
 }
@@ -199,14 +231,14 @@ bool Accelerator::IsRepeat() const {
 std::u16string Accelerator::GetShortcutText() const {
   std::u16string shortcut;
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
   shortcut = KeyCodeToMacSymbol();
 #else
   shortcut = KeyCodeToName();
 #endif
 
   if (shortcut.empty()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Our fallback is to try translate the key code to a regular character
     // unless it is one of digits (VK_0 to VK_9). Some keyboard
     // layouts have characters other than digits assigned in
@@ -222,7 +254,7 @@ std::u16string Accelerator::GetShortcutText() const {
     // VKEY_UNKNOWN), |::MapVirtualKeyW| returns 0.
     if (key != 0)
       shortcut += key;
-#elif defined(USE_AURA) || defined(OS_APPLE) || defined(OS_ANDROID)
+#elif defined(USE_AURA) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
     const uint16_t c = DomCodeToUsLayoutCharacter(
         UsLayoutKeyboardCodeToDomCode(key_code_), false);
     if (c != 0)
@@ -231,7 +263,7 @@ std::u16string Accelerator::GetShortcutText() const {
 #endif
   }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
   shortcut = ApplyShortFormModifiers(shortcut);
 #else
   // Checking whether the character used for the accelerator is alphanumeric.
@@ -264,61 +296,66 @@ std::u16string Accelerator::GetShortcutText() const {
   // RTL context because the punctuation no longer appears at the end of the
   // string.
   //
-  // TODO(idana) bug# 1232732: this hack can be avoided if instead of using
-  // views::Menu we use views::MenuItemView because the latter is a View
-  // subclass and therefore it supports marking text as RTL or LTR using
-  // standard Unicode directionality marks.
+  // TODO(crbug.com/1194340): This hack of doing the RTL adjustment here was
+  // intended to be removed when the menu system moved to MenuItemView. That was
+  // crbug.com/2822, closed in 2010. Can we finally remove all of this?
   if (adjust_shortcut_for_rtl) {
-    int key_length = static_cast<int>(shortcut_rtl.length());
-    DCHECK_GT(key_length, 0);
+    DCHECK_GT(shortcut_rtl.length(), 0u);
     shortcut_rtl.append(u"+");
 
-    // Subtracting the size of the shortcut key and 1 for the '+' sign.
-    shortcut_rtl.append(shortcut, 0, shortcut.length() - key_length - 1);
+    shortcut_rtl.append(shortcut, 0, shortcut.length() - shortcut_rtl.length());
     shortcut.swap(shortcut_rtl);
   }
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_MAC)
 
   return shortcut;
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
+// In macOS 10.13, the glyphs used for page up, page down, home, and end were
+// changed from the arrows below to new, skinny arrows. The tricky bit is that
+// the underlying Unicode characters weren't changed, just the font used. Maybe
+// the keyboard font, CTFontCreateUIFontForLanguage, with key
+// kCTFontUIFontMenuItemCmdKey, can be used everywhere this symbol is used. (If
+// so, then the RTL stuff will need to be removed.)
 std::u16string Accelerator::KeyCodeToMacSymbol() const {
   switch (key_code_) {
     case VKEY_CAPITAL:
-      return std::u16string({0x21ea});
+      return u"⇪";  // U+21EA, UPWARDS WHITE ARROW FROM BAR
     case VKEY_RETURN:
-      return std::u16string({0x2324});
+      return u"⌤";  // U+2324, UP ARROWHEAD BETWEEN TWO HORIZONTAL BARS
     case VKEY_BACK:
-      return std::u16string({0x232b});
+      return u"⌫";  // U+232B, ERASE TO THE LEFT
     case VKEY_ESCAPE:
-      return std::u16string({0x238b});
+      return u"⎋";  // U+238B, BROKEN CIRCLE WITH NORTHWEST ARROW
     case VKEY_RIGHT:
-      return std::u16string({0x2192});
+      return u"→";  // U+2192, RIGHTWARDS ARROW
     case VKEY_LEFT:
-      return std::u16string({0x2190});
+      return u"←";  // U+2190, LEFTWARDS ARROW
     case VKEY_UP:
-      return std::u16string({0x2191});
+      return u"↑";  // U+2191, UPWARDS ARROW
     case VKEY_DOWN:
-      return std::u16string({0x2193});
+      return u"↓";  // U+2193, DOWNWARDS ARROW
     case VKEY_PRIOR:
-      return std::u16string({0x21de});
+      return u"⇞";  // U+21DE, UPWARDS ARROW WITH DOUBLE STROKE
     case VKEY_NEXT:
-      return std::u16string({0x21df});
+      return u"⇟";  // U+21DF, DOWNWARDS ARROW WITH DOUBLE STROKE
     case VKEY_HOME:
-      return std::u16string({0x2196});
+      return base::i18n::IsRTL() ? u"↗"   // U+2197, NORTH EAST ARROW
+                                 : u"↖";  // U+2196, NORTH WEST ARROW
     case VKEY_END:
-      return std::u16string({0x2198});
+      return base::i18n::IsRTL() ? u"↙"   // U+2199, SOUTH WEST ARROW
+                                 : u"↘";  // U+2198, SOUTH EAST ARROW
     case VKEY_TAB:
-      return std::u16string({0x21e5});
-    // Mac has a shift-tab icon (0x21e4) but we don't use it.
-    // "Space" and some other keys are written out; fall back to KeyCodeToName()
-    // for those (and any other unhandled keys).
+      return u"⇥";  // U+21E5, RIGHTWARDS ARROW TO BAR
+    // Mac has a shift-tab icon ("⇤", U+21E4, LEFTWARDS ARROW TO BAR) but we
+    // don't use it. "Space" and some other keys are written out; fall back to
+    // KeyCodeToName() for those (and any other unhandled keys).
     default:
       return KeyCodeToName();
   }
 }
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_MAC)
 
 std::u16string Accelerator::KeyCodeToName() const {
   int string_id = 0;
@@ -371,10 +408,13 @@ std::u16string Accelerator::KeyCodeToName() const {
     case VKEY_F1:
       string_id = IDS_APP_F1_KEY;
       break;
+    case VKEY_F6:
+      string_id = IDS_APP_F6_KEY;
+      break;
     case VKEY_F11:
       string_id = IDS_APP_F11_KEY;
       break;
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_MAC)
     // On Mac, commas and periods are used literally in accelerator text.
     case VKEY_OEM_COMMA:
       string_id = IDS_APP_COMMA_KEY;
@@ -402,48 +442,62 @@ std::u16string Accelerator::KeyCodeToName() const {
 }
 
 std::u16string Accelerator::ApplyLongFormModifiers(
-    std::u16string shortcut) const {
+    const std::u16string& shortcut) const {
+  std::u16string result = shortcut;
+
   if (IsShiftDown())
-    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_SHIFT_KEY);
+    result = ApplyModifierToAcceleratorString(result, IDS_APP_SHIFT_KEY);
 
   // Note that we use 'else-if' in order to avoid using Ctrl+Alt as a shortcut.
-  // See http://blogs.msdn.com/oldnewthing/archive/2004/03/29/101121.aspx for
+  // See https://devblogs.microsoft.com/oldnewthing/20040329-00/?p=40003 for
   // more information.
   if (IsCtrlDown())
-    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_CTRL_KEY);
+    result = ApplyModifierToAcceleratorString(result, IDS_APP_CTRL_KEY);
   else if (IsAltDown())
-    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_ALT_KEY);
+    result = ApplyModifierToAcceleratorString(result, IDS_APP_ALT_KEY);
 
   if (IsCmdDown()) {
-#if defined(OS_APPLE)
-    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_COMMAND_KEY);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_SEARCH_KEY);
-#elif defined(OS_WIN)
-    shortcut = ApplyModifierToAcceleratorString(shortcut, IDS_APP_WINDOWS_KEY);
+#if BUILDFLAG(IS_MAC)
+    result = ApplyModifierToAcceleratorString(result, IDS_APP_COMMAND_KEY);
+#elif BUILDFLAG(IS_CHROMEOS)
+    result = ApplyModifierToAcceleratorString(result, IDS_APP_SEARCH_KEY);
+#elif BUILDFLAG(IS_WIN)
+    result = ApplyModifierToAcceleratorString(result, IDS_APP_WINDOWS_KEY);
 #else
     NOTREACHED();
 #endif
   }
 
-  return shortcut;
+  return result;
 }
 
 std::u16string Accelerator::ApplyShortFormModifiers(
-    std::u16string shortcut) const {
-  const char16_t kCommandSymbol[] = {0x2318, 0};
-  const char16_t kCtrlSymbol[] = {0x2303, 0};
-  const char16_t kShiftSymbol[] = {0x21e7, 0};
-  const char16_t kOptionSymbol[] = {0x2325, 0};
-  const char16_t kNoSymbol[] = {0};
+    const std::u16string& shortcut) const {
+  std::u16string result;
+  result.reserve(6);
 
-  std::vector<std::u16string> parts;
-  parts.push_back(std::u16string(IsCtrlDown() ? kCtrlSymbol : kNoSymbol));
-  parts.push_back(std::u16string(IsAltDown() ? kOptionSymbol : kNoSymbol));
-  parts.push_back(std::u16string(IsShiftDown() ? kShiftSymbol : kNoSymbol));
-  parts.push_back(std::u16string(IsCmdDown() ? kCommandSymbol : kNoSymbol));
-  parts.push_back(shortcut);
-  return base::StrCat(parts);
+  if (IsCtrlDown())
+    result.push_back(u'⌃');  // U+2303, UP ARROWHEAD
+  if (IsAltDown())
+    result.push_back(u'⌥');  // U+2325, OPTION KEY
+  if (IsShiftDown())
+    result.push_back(u'⇧');  // U+21E7, UPWARDS WHITE ARROW
+  if (IsCmdDown())
+    result.push_back(u'⌘');  // U+2318, PLACE OF INTEREST SIGN
+  if (IsFunctionDown()) {
+    // There's no Unicode symbol for the function key so fake it with
+    // characters. It's likely a special character in a special Apple
+    // font. Also on newer Macs the function key has a globe symbol, and a
+    // globe appears as the modifier key in the menus. Unfortunately it's not
+    // clear how to determine if a Mac has one of these newer keyboards. See
+    // https://crbug.com/1263737 which tracks finding and displaying these
+    // glyphs.
+    result.append(u"(fn) ");
+  }
+
+  result.append(shortcut);
+
+  return result;
 }
 
 }  // namespace ui

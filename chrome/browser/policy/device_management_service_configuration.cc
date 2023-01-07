@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,9 @@
 #include "chromeos/system/statistics_provider.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(OS_ANDROID))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||           \
+    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+     !BUILDFLAG(IS_ANDROID))
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #endif
@@ -38,18 +39,18 @@ DeviceManagementServiceConfiguration::DeviceManagementServiceConfiguration(
 DeviceManagementServiceConfiguration::~DeviceManagementServiceConfiguration() {
 }
 
-std::string DeviceManagementServiceConfiguration::GetDMServerUrl() {
+std::string DeviceManagementServiceConfiguration::GetDMServerUrl() const {
   return dm_server_url_;
 }
 
-std::string DeviceManagementServiceConfiguration::GetAgentParameter() {
+std::string DeviceManagementServiceConfiguration::GetAgentParameter() const {
   return base::StringPrintf("%s %s(%s)",
                             version_info::GetProductName().c_str(),
                             version_info::GetVersionNumber().c_str(),
                             version_info::GetLastChange().c_str());
 }
 
-std::string DeviceManagementServiceConfiguration::GetPlatformParameter() {
+std::string DeviceManagementServiceConfiguration::GetPlatformParameter() const {
   std::string os_name = base::SysInfo::OperatingSystemName();
   std::string os_hardware = base::SysInfo::OperatingSystemArchitecture();
 
@@ -67,7 +68,7 @@ std::string DeviceManagementServiceConfiguration::GetPlatformParameter() {
 #endif
 
   std::string os_version("-");
-#if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   int32_t os_major_version = 0;
   int32_t os_minor_version = 0;
   int32_t os_bugfix_version = 0;
@@ -85,20 +86,21 @@ std::string DeviceManagementServiceConfiguration::GetPlatformParameter() {
 }
 
 std::string
-DeviceManagementServiceConfiguration::GetRealtimeReportingServerUrl() {
+DeviceManagementServiceConfiguration::GetRealtimeReportingServerUrl() const {
   return realtime_reporting_server_url_;
 }
 
 std::string
-DeviceManagementServiceConfiguration::GetEncryptedReportingServerUrl() {
+DeviceManagementServiceConfiguration::GetEncryptedReportingServerUrl() const {
   return encrypted_reporting_server_url_;
 }
 
 std::string
 DeviceManagementServiceConfiguration::GetReportingConnectorServerUrl(
-    content::BrowserContext* context) {
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(OS_ANDROID))
+    content::BrowserContext* context) const {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||           \
+    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+     !BUILDFLAG(IS_ANDROID))
   auto* service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           context);

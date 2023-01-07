@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -14,9 +14,8 @@
 #include <stdint.h>
 
 #include <memory>
-#include <vector>
+#include <set>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/idempotency.h"
@@ -42,18 +41,28 @@ class SSLInfo;
 
 class NET_EXPORT_PRIVATE HttpStream {
  public:
-  HttpStream() {}
-  virtual ~HttpStream() {}
+  HttpStream() = default;
 
-  // Initialize stream.  Must be called before calling SendRequest().
-  // The consumer should ensure that request_info points to a valid value till
-  // final response headers are received; after that point, the HttpStream
-  // will not access |*request_info| and it may be deleted. If |can_send_early|
-  // is true, this stream may send data early without confirming the handshake
-  // if this is a resumption of a previously established connection.
-  // Returns a net error code, possibly ERR_IO_PENDING.
-  virtual int InitializeStream(const HttpRequestInfo* request_info,
-                               bool can_send_early,
+  HttpStream(const HttpStream&) = delete;
+  HttpStream& operator=(const HttpStream&) = delete;
+
+  virtual ~HttpStream() = default;
+
+  // Registers the HTTP request for the stream.  Must be called before calling
+  // InitializeStream().  Separating the registration of the request from the
+  // initialization of the stream allows the connection callback to run prior
+  // to stream initialization.
+  //
+  // The consumer should ensure that request_info points to a valid non-null
+  // value till final response headers are received; after that point, the
+  // HttpStream will not access |*request_info| and it may be deleted.
+  virtual void RegisterRequest(const HttpRequestInfo* request_info) = 0;
+
+  // Initializes the stream.  Must be called before calling SendRequest().
+  // If |can_send_early| is true, this stream may send data early without
+  // confirming the handshake if this is a resumption of a previously
+  // established connection.  Returns a net error code, possibly ERR_IO_PENDING.
+  virtual int InitializeStream(bool can_send_early,
                                RequestPriority priority,
                                const NetLogWithSource& net_log,
                                CompletionOnceCallback callback) = 0;
@@ -162,9 +171,9 @@ class NET_EXPORT_PRIVATE HttpStream {
   virtual void GetSSLCertRequestInfo(SSLCertRequestInfo* cert_request_info) = 0;
 
   // Gets the remote endpoint of the socket that the HTTP stream is using, if
-  // any. Returns true and fills in |endpoint| if it is available; returns false
-  // and does not modify |endpoint| if it is unavailable.
-  virtual bool GetRemoteEndpoint(IPEndPoint* endpoint) = 0;
+  // any. Returns OK and fills in |endpoint| if it is available; returns an
+  // error and does not modify |endpoint| otherwise.
+  virtual int GetRemoteEndpoint(IPEndPoint* endpoint) = 0;
 
   // In the case of an HTTP error or redirect, flush the response body (usually
   // a simple error or "this page has moved") so that we can re-use the
@@ -185,26 +194,23 @@ class NET_EXPORT_PRIVATE HttpStream {
   // called on the old stream.  The caller should ensure that the response body
   // from the previous request is drained before calling this method.  If the
   // subclass does not support renewing the stream, NULL is returned.
-  virtual HttpStream* RenewStreamForAuth() = 0;
+  virtual std::unique_ptr<HttpStream> RenewStreamForAuth() = 0;
 
   virtual void SetRequestHeadersCallback(RequestHeadersCallback callback) = 0;
 
   // Set the idempotency of the request. No-op by default.
   virtual void SetRequestIdempotency(Idempotency idempotency) {}
 
-  // Retrieves any DNS aliases for the remote endpoint. The alias chain order
-  // is preserved in reverse, from canonical name (i.e. address record name)
-  // through to query name.
-  virtual const std::vector<std::string>& GetDnsAliases() const = 0;
+  // Retrieves any DNS aliases for the remote endpoint. Includes all known
+  // aliases, e.g. from A, AAAA, or HTTPS, not just from the address used for
+  // the connection, in no particular order.
+  virtual const std::set<std::string>& GetDnsAliases() const = 0;
 
   // The value in the ACCEPT_CH frame received during TLS handshake via the
   // ALPS extension, or the empty string if the server did not send one.  Unlike
   // Accept-CH header fields received in HTTP responses, this value is available
   // before any requests are made.
   virtual base::StringPiece GetAcceptChViaAlps() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HttpStream);
 };
 
 }  // namespace net

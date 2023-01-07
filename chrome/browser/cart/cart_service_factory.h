@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,14 @@
 #define CHROME_BROWSER_CART_CART_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 class CartService;
 
 // Factory to create CartService per profile. CartService is not supported on
 // incognito, and the factory will return nullptr for an incognito profile.
-class CartServiceFactory : public BrowserContextKeyedServiceFactory {
+class CartServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Acquire instance of CartServiceFactory.
   static CartServiceFactory* GetInstance();

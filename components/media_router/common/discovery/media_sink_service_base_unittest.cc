@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,13 @@
 using ::testing::_;
 using ::testing::Return;
 
+namespace media_router {
 namespace {
 
-media_router::DialSinkExtraData CreateDialSinkExtraData(
-    const std::string& model_name,
-    const std::string& ip_address,
-    const std::string& app_url) {
-  media_router::DialSinkExtraData dial_extra_data;
+DialSinkExtraData CreateDialSinkExtraData(const std::string& model_name,
+                                          const std::string& ip_address,
+                                          const std::string& app_url) {
+  DialSinkExtraData dial_extra_data;
   EXPECT_TRUE(dial_extra_data.ip_address.AssignFromIPLiteral(ip_address));
   dial_extra_data.model_name = model_name;
   dial_extra_data.app_url = GURL(app_url);
@@ -28,31 +28,31 @@ media_router::DialSinkExtraData CreateDialSinkExtraData(
 }
 
 std::vector<media_router::MediaSinkInternal> CreateDialMediaSinks() {
-  media_router::MediaSink sink1("sink1", "sink_name_1",
-                                media_router::SinkIconType::CAST);
-  media_router::DialSinkExtraData extra_data1 = CreateDialSinkExtraData(
+  MediaSink sink1{CreateCastSink("sink1", "sink_name_1")};
+  DialSinkExtraData extra_data1 = CreateDialSinkExtraData(
       "model_name1", "192.168.1.1", "https://example1.com");
 
-  media_router::MediaSink sink2("sink2", "sink_name_2",
-                                media_router::SinkIconType::CAST);
-  media_router::DialSinkExtraData extra_data2 = CreateDialSinkExtraData(
+  MediaSink sink2{CreateCastSink("sink2", "sink_name_2")};
+  DialSinkExtraData extra_data2 = CreateDialSinkExtraData(
       "model_name2", "192.168.1.2", "https://example2.com");
 
-  std::vector<media_router::MediaSinkInternal> sinks;
-  sinks.push_back(media_router::MediaSinkInternal(sink1, extra_data1));
-  sinks.push_back(media_router::MediaSinkInternal(sink2, extra_data2));
+  std::vector<MediaSinkInternal> sinks;
+  sinks.emplace_back(sink1, extra_data1);
+  sinks.emplace_back(sink2, extra_data2);
   return sinks;
 }
 
 }  // namespace
 
-namespace media_router {
-
 class MediaSinkServiceBaseTest : public ::testing::Test {
  public:
   MediaSinkServiceBaseTest()
       : media_sink_service_(mock_sink_discovered_cb_.Get()) {}
-  ~MediaSinkServiceBaseTest() override {}
+
+  MediaSinkServiceBaseTest(const MediaSinkServiceBaseTest&) = delete;
+  MediaSinkServiceBaseTest& operator=(const MediaSinkServiceBaseTest&) = delete;
+
+  ~MediaSinkServiceBaseTest() override = default;
 
   void PopulateSinks(const std::vector<MediaSinkInternal>& old_sinks,
                      const std::vector<MediaSinkInternal>& new_sinks) {
@@ -77,8 +77,6 @@ class MediaSinkServiceBaseTest : public ::testing::Test {
  protected:
   base::MockCallback<OnSinksDiscoveredCallback> mock_sink_discovered_cb_;
   TestMediaSinkService media_sink_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaSinkServiceBaseTest);
 };
 
 TEST_F(MediaSinkServiceBaseTest, TestOnDiscoveryComplete_SameSink) {
@@ -105,10 +103,10 @@ TEST_F(MediaSinkServiceBaseTest,
 TEST_F(MediaSinkServiceBaseTest, TestOnDiscoveryComplete_OneNewSink) {
   std::vector<MediaSinkInternal> old_sinks = CreateDialMediaSinks();
   std::vector<MediaSinkInternal> new_sinks = CreateDialMediaSinks();
-  MediaSink sink3("sink3", "sink_name_3", SinkIconType::CAST);
+  MediaSink sink3{CreateCastSink("sink3", "sink_name_3")};
   DialSinkExtraData extra_data3 = CreateDialSinkExtraData(
       "model_name3", "192.168.1.3", "https://example3.com");
-  new_sinks.push_back(MediaSinkInternal(sink3, extra_data3));
+  new_sinks.emplace_back(sink3, extra_data3);
   TestOnDiscoveryComplete(old_sinks, new_sinks);
 }
 
@@ -129,17 +127,17 @@ TEST_F(MediaSinkServiceBaseTest, TestOnDiscoveryComplete_UpdatedOneSink) {
 TEST_F(MediaSinkServiceBaseTest, TestOnDiscoveryComplete_Mixed) {
   std::vector<MediaSinkInternal> old_sinks = CreateDialMediaSinks();
 
-  MediaSink sink1("sink1", "sink_name_1", SinkIconType::CAST);
+  MediaSink sink1{CreateCastSink("sink1", "sink_name_1")};
   DialSinkExtraData extra_data2 = CreateDialSinkExtraData(
       "model_name2", "192.168.1.2", "https://example2.com");
 
-  MediaSink sink3("sink3", "sink_name_3", SinkIconType::CAST);
+  MediaSink sink3{CreateCastSink("sink3", "sink_name_3")};
   DialSinkExtraData extra_data3 = CreateDialSinkExtraData(
       "model_name3", "192.168.1.3", "https://example3.com");
 
   std::vector<MediaSinkInternal> new_sinks;
-  new_sinks.push_back(MediaSinkInternal(sink1, extra_data2));
-  new_sinks.push_back(MediaSinkInternal(sink3, extra_data3));
+  new_sinks.emplace_back(sink1, extra_data2);
+  new_sinks.emplace_back(sink3, extra_data3);
 
   TestOnDiscoveryComplete(old_sinks, new_sinks);
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,12 @@
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/encryption_migration_screen_handler.h"
-#include "chromeos/cryptohome/homedir_methods.h"
-#include "chromeos/dbus/cryptohome/account_identifier_operators.h"
+#include "chromeos/ash/components/dbus/cryptohome/account_identifier_operators.h"
+#include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
+#include "chromeos/ash/components/login/auth/public/key.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
-#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
-#include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -29,14 +28,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ash {
+namespace {
+
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::WithArgs;
-
-namespace chromeos {
-namespace {
 
 // Fake WakeLock implementation, required by EncryptionMigrationScreen.
 class FakeWakeLock : public device::mojom::WakeLock {
@@ -63,15 +62,30 @@ class FakeWakeLock : public device::mojom::WakeLock {
   bool has_wakelock_ = false;
 };
 
+class MockEncryptionMigrationScreenView : public EncryptionMigrationScreenView {
+ public:
+  MockEncryptionMigrationScreenView() = default;
+  ~MockEncryptionMigrationScreenView() override = default;
+
+  MOCK_METHOD(void, Show, ());
+  MOCK_METHOD(void,
+              SetBatteryState,
+              (double batteryPercent, bool isEnoughBattery, bool isCharging));
+  MOCK_METHOD(void, SetIsResuming, (bool isResuming));
+  MOCK_METHOD(void, SetUIState, (UIState state));
+  MOCK_METHOD(void,
+              SetSpaceInfoInString,
+              (int64_t availableSpaceSize, int64_t necessarySpaceSize));
+  MOCK_METHOD(void, SetNecessaryBatteryPercent, (double batteryPercent));
+  MOCK_METHOD(void, SetMigrationProgress, (double progress));
+};
+
 // Allows access to testing-only methods of EncryptionMigrationScreen.
 class TestEncryptionMigrationScreen : public EncryptionMigrationScreen {
  public:
-  explicit TestEncryptionMigrationScreen(EncryptionMigrationScreenView* view)
-      : EncryptionMigrationScreen(view) {
-    set_free_disk_space_fetcher_for_testing(base::BindRepeating(
-        &TestEncryptionMigrationScreen::FreeDiskSpaceFetcher,
-        base::Unretained(this)));
-  }
+  explicit TestEncryptionMigrationScreen(
+      base::WeakPtr<MockEncryptionMigrationScreenView> view)
+      : EncryptionMigrationScreen(std::move(view)) {}
 
   // Sets the free disk space seen by EncryptionMigrationScreen.
   void set_free_disk_space(int64_t free_disk_space) {
@@ -93,26 +107,6 @@ class TestEncryptionMigrationScreen : public EncryptionMigrationScreen {
   int64_t free_disk_space_;
 };
 
-class MockEncryptionMigrationScreenView : public EncryptionMigrationScreenView {
- public:
-  MockEncryptionMigrationScreenView() = default;
-  ~MockEncryptionMigrationScreenView() override = default;
-
-  MOCK_METHOD(void, Show, ());
-  MOCK_METHOD(void, Hide, ());
-  MOCK_METHOD(void, SetDelegate, (EncryptionMigrationScreen * delegate));
-  MOCK_METHOD(void,
-              SetBatteryState,
-              (double batteryPercent, bool isEnoughBattery, bool isCharging));
-  MOCK_METHOD(void, SetIsResuming, (bool isResuming));
-  MOCK_METHOD(void, SetUIState, (UIState state));
-  MOCK_METHOD(void,
-              SetSpaceInfoInString,
-              (int64_t availableSpaceSize, int64_t necessarySpaceSize));
-  MOCK_METHOD(void, SetNecessaryBatteryPercent, (double batteryPercent));
-  MOCK_METHOD(void, SetMigrationProgress, (double progress));
-};
-
 class EncryptionMigrationScreenTest : public testing::Test {
  public:
   EncryptionMigrationScreenTest() = default;
@@ -128,9 +122,10 @@ class EncryptionMigrationScreenTest : public testing::Test {
     // Set up fake dbus clients.
     UserDataAuthClient::InitializeFake();
     fake_userdataauth_client_ = FakeUserDataAuthClient::Get();
-    PowerManagerClient::InitializeFake();
+    chromeos::PowerManagerClient::InitializeFake();
 
-    PowerPolicyController::Initialize(PowerManagerClient::Get());
+    chromeos::PowerPolicyController::Initialize(
+        chromeos::PowerManagerClient::Get());
 
     // Build dummy user context.
     user_context_.SetAccountId(account_id_);
@@ -138,7 +133,7 @@ class EncryptionMigrationScreenTest : public testing::Test {
         Key(Key::KeyType::KEY_TYPE_SALTED_SHA256, "salt", "secret"));
 
     encryption_migration_screen_ =
-        std::make_unique<TestEncryptionMigrationScreen>(&mock_view_);
+        std::make_unique<TestEncryptionMigrationScreen>(std::move(mock_view_));
     encryption_migration_screen_->SetSkipMigrationCallback(
         base::BindOnce(&EncryptionMigrationScreenTest::OnContinueLogin,
                        base::Unretained(this)));
@@ -150,8 +145,8 @@ class EncryptionMigrationScreenTest : public testing::Test {
   void TearDown() override {
     encryption_migration_screen_.reset();
 
-    PowerPolicyController::Shutdown();
-    PowerManagerClient::Shutdown();
+    chromeos::PowerPolicyController::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
     UserDataAuthClient::Shutdown();
   }
 
@@ -160,7 +155,7 @@ class EncryptionMigrationScreenTest : public testing::Test {
   std::unique_ptr<TestEncryptionMigrationScreen> encryption_migration_screen_;
 
   // Accessory objects needed by EncryptionMigrationScreen.
-  MockEncryptionMigrationScreenView mock_view_;
+  base::WeakPtr<MockEncryptionMigrationScreenView> mock_view_;
 
   // Must be the first member.
   base::test::TaskEnvironment task_environment_;
@@ -187,5 +182,4 @@ class EncryptionMigrationScreenTest : public testing::Test {
 };
 
 }  // namespace
-
-}  // namespace chromeos
+}  // namespace ash

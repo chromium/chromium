@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS BroadcastChannel messages aren't received from a cross-partition iframe
+PASS BroadcastChannel messages aren't received from a nested iframe with a cross-site ancestor
+PASS BroadcastChannel messages aren't received from a cross-partition dedicated worker
+PASS BroadcastChannel messages aren't received from a cross-partition shared worker
+PASS BroadcastChannel messages aren't received from a cross-partition service worker
+Harness: the test ran to completion.
+

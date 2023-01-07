@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ import org.chromium.base.test.util.Batch;
 public class IntentFilterUnitTest {
     private static final Uri HTTPS_URI = Uri.parse("https://www.example.com/index.html");
     private static final Uri ABOUT_URI = Uri.parse("about:blank");
-    private static final Uri JAVASCRIPT_URI = Uri.parse("javascript:WhyDoWeEvenSupportThis");
+    private static final Uri JAVASCRIPT_URI = Uri.parse("javascript:alert('hello')");
     private static final Uri CONTENT_URI = Uri.parse("content://package/path/id");
     private static final Uri HTML_URI = Uri.parse("file:///path/filename.html");
     private static final Uri MHTML_URI = Uri.parse("file:///path/to/.file/site.mhtml");
@@ -110,28 +110,29 @@ public class IntentFilterUnitTest {
         verifyIntent(true);
     }
 
+    // We don't support javascript URI intents.
     @Test
     @SmallTest
     public void testJavascriptUri() {
         mIntent.setData(JAVASCRIPT_URI);
-        verifyIntent(true);
+        verifyIntent(false);
         mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-        verifyIntent(true);
+        verifyIntent(false);
     }
 
     @Test
     @SmallTest
     public void testJavascriptUriWithMime() {
         mIntent.setDataAndType(JAVASCRIPT_URI, "text/javascript");
-        verifyIntent(false); // Should we support this?
+        verifyIntent(false);
         mIntent.setDataAndType(JAVASCRIPT_URI, "text/html");
-        verifyIntent(true);
+        verifyIntent(false);
         mIntent.setDataAndType(JAVASCRIPT_URI, "text/plain");
-        verifyIntent(true);
+        verifyIntent(false);
         mIntent.setDataAndType(JAVASCRIPT_URI, "application/xhtml+xml");
-        verifyIntent(true);
+        verifyIntent(false);
         mIntent.addCategory(Intent.CATEGORY_BROWSABLE);
-        verifyIntent(true);
+        verifyIntent(false);
     }
 
     @Test

@@ -1,26 +1,26 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
+
+assert(is_chromeos_ash)
 
 common_auto_imports = [
   "third_party/polymer/v1_0/components-chromium/iron-a11y-announcer/iron-a11y-announcer.html|IronA11yAnnouncer",
   "third_party/polymer/v1_0/components-chromium/paper-behaviors/paper-ripple-behavior.html|PaperRippleBehavior",
   "ui/webui/resources/cr_elements/cr_scrollable_behavior.html|CrScrollableBehavior",
   "ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_behavior.html|CrRadioButtonBehavior",
-  "ui/webui/resources/cr_elements/find_shortcut_behavior.html|FindShortcutBehavior",
-  "ui/webui/resources/cr_elements/policy/cr_policy_pref_behavior.html|CrPolicyPrefBehavior",
+  "ash/webui/common/resources/i18n_behavior.html|I18nBehavior",
+  "ash/webui/common/resources/cr_policy_pref_behavior.html|CrPolicyPrefBehavior",
+  "ash/webui/common/resources/web_ui_listener_behavior.html|WebUIListenerBehavior",
   "ui/webui/resources/html/cr/ui/focus_outline_manager.html|FocusOutlineManager",
   "ui/webui/resources/html/cr/ui/focus_row_behavior.html|FocusRowBehavior",
-  "ui/webui/resources/html/cr/ui/focus_without_ink.html|focusWithoutInk",
-  "ui/webui/resources/html/i18n_behavior.html|I18nBehavior",
-  "ui/webui/resources/html/list_property_update_behavior.html|ListPropertyUpdateBehavior",
+  "ui/webui/resources/html/cr/ui/focus_without_ink_js.html|focusWithoutInk",
   "ui/webui/resources/html/load_time_data.html|loadTimeData",
   "ui/webui/resources/html/parse_html_subset.html|parseHtmlSubset",
   "ui/webui/resources/html/polymer.html|Polymer,html",
-  "ui/webui/resources/html/promise_resolver.html|PromiseResolver",
-  "ui/webui/resources/html/web_ui_listener_behavior.html|WebUIListenerBehavior",
 
   # TODO(dpapad): Add more auto-imports here, as needed.
 ]

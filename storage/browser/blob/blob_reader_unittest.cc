@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,11 +17,11 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -37,6 +37,7 @@
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_file_util.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/async_file_test_helper.h"
 #include "storage/browser/test/fake_blob_data_handle.h"
 #include "storage/browser/test/test_file_system_context.h"
@@ -73,17 +74,20 @@ class FakeFileStreamReader : public FileStreamReader {
   explicit FakeFileStreamReader(const std::string& contents)
       : buffer_(base::MakeRefCounted<DrainableIOBuffer>(
             base::MakeRefCounted<net::StringIOBuffer>(
-                std::unique_ptr<std::string>(new std::string(contents))),
+                std::make_unique<std::string>(contents)),
             contents.size())),
         net_error_(net::OK),
         size_(contents.size()) {}
   FakeFileStreamReader(const std::string& contents, uint64_t size)
       : buffer_(base::MakeRefCounted<DrainableIOBuffer>(
             base::MakeRefCounted<net::StringIOBuffer>(
-                std::unique_ptr<std::string>(new std::string(contents))),
+                std::make_unique<std::string>(contents)),
             contents.size())),
         net_error_(net::OK),
         size_(size) {}
+
+  FakeFileStreamReader(const FakeFileStreamReader&) = delete;
+  FakeFileStreamReader& operator=(const FakeFileStreamReader&) = delete;
 
   ~FakeFileStreamReader() override = default;
 
@@ -159,8 +163,6 @@ class FakeFileStreamReader : public FileStreamReader {
   scoped_refptr<base::SingleThreadTaskRunner> async_task_runner_;
   int net_error_;
   uint64_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFileStreamReader);
 };
 
 class MockFileStreamReaderProvider
@@ -204,11 +206,15 @@ class MockFileStreamReaderProvider
 class BlobReaderTest : public ::testing::Test {
  public:
   BlobReaderTest() = default;
+
+  BlobReaderTest(const BlobReaderTest&) = delete;
+  BlobReaderTest& operator=(const BlobReaderTest&) = delete;
+
   ~BlobReaderTest() override = default;
 
   void SetUp() override {
-    file_system_context_ =
-        CreateFileSystemContextForTesting(nullptr, base::FilePath());
+    file_system_context_ = CreateFileSystemContextForTesting(
+        /*quota_manager_proxy=*/nullptr, base::FilePath());
   }
 
   void TearDown() override {
@@ -224,7 +230,7 @@ class BlobReaderTest : public ::testing::Test {
         builder ? context_.AddFinishedBlob(std::move(builder)) : nullptr;
     provider_ = new MockFileStreamReaderProvider();
     reader_.reset(new BlobReader(blob_handle_.get()));
-    reader_->SetFileStreamProviderForTesting(base::WrapUnique(provider_));
+    reader_->SetFileStreamProviderForTesting(base::WrapUnique(provider_.get()));
   }
 
   // Takes ownership of the file reader (the blob reader takes ownership).
@@ -283,12 +289,9 @@ class BlobReaderTest : public ::testing::Test {
 
   BlobStorageContext context_;
   std::unique_ptr<BlobDataHandle> blob_handle_;
-  MockFileStreamReaderProvider* provider_ = nullptr;
+  raw_ptr<MockFileStreamReaderProvider> provider_ = nullptr;
   std::unique_ptr<BlobReader> reader_;
   scoped_refptr<FileSystemContext> file_system_context_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BlobReaderTest);
 };
 
 TEST_F(BlobReaderTest, BasicMemory) {
@@ -356,8 +359,9 @@ TEST_F(BlobReaderTest, BasicFileSystem) {
   const GURL kURL("filesystem:http://example.com/temporary/test_file/here.txt");
   const std::string kData = "FileData!!!";
   const base::Time kTime = base::Time::Now();
-  b->AppendFileSystemFile(file_system_context_->CrackURL(kURL), 0, kData.size(),
-                          kTime, file_system_context_);
+  b->AppendFileSystemFile(
+      file_system_context_->CrackURLInFirstPartyContext(kURL), 0, kData.size(),
+      kTime, file_system_context_);
   this->InitializeReader(std::move(b));
   // Non-async reader.
   ExpectFileSystemCall(kURL, 0, kData.size(), kTime,
@@ -619,8 +623,9 @@ TEST_F(BlobReaderTest, FileSystemAsync) {
   const GURL kURL("filesystem:http://example.com/temporary/test_file/here.txt");
   const std::string kData = "FileData!!!";
   const base::Time kTime = base::Time::Now();
-  b->AppendFileSystemFile(file_system_context_->CrackURL(kURL), 0, kData.size(),
-                          kTime, file_system_context_);
+  b->AppendFileSystemFile(
+      file_system_context_->CrackURLInFirstPartyContext(kURL), 0, kData.size(),
+      kTime, file_system_context_);
   this->InitializeReader(std::move(b));
 
   std::unique_ptr<FakeFileStreamReader> reader(new FakeFileStreamReader(kData));
@@ -801,7 +806,7 @@ TEST_F(BlobReaderTest, FileRange) {
   ExpectLocalFileCall(kPath, kTime, 0, reader.release());
 
   // We create the reader again with the offset after the seek.
-  reader.reset(new FakeFileStreamReader(kRangeData));
+  reader = std::make_unique<FakeFileStreamReader>(kRangeData);
   reader->SetAsyncRunner(base::ThreadTaskRunnerHandle::Get().get());
   ExpectLocalFileCall(kPath, kTime, kOffset, reader.release());
 
@@ -1154,7 +1159,7 @@ TEST_F(BlobReaderTest, HandleBeforeAsyncCancel) {
   EXPECT_EQ(BlobStatus::PENDING_TRANSPORT, can_populate_status);
   provider_ = new MockFileStreamReaderProvider();
   reader_.reset(new BlobReader(blob_handle_.get()));
-  reader_->SetFileStreamProviderForTesting(base::WrapUnique(provider_));
+  reader_->SetFileStreamProviderForTesting(base::WrapUnique(provider_.get()));
   int size_result = -1;
   EXPECT_EQ(
       BlobReader::Status::IO_PENDING,
@@ -1182,7 +1187,7 @@ TEST_F(BlobReaderTest, ReadFromIncompleteBlob) {
   EXPECT_EQ(BlobStatus::PENDING_TRANSPORT, can_populate_status);
   provider_ = new MockFileStreamReaderProvider();
   reader_.reset(new BlobReader(blob_handle_.get()));
-  reader_->SetFileStreamProviderForTesting(base::WrapUnique(provider_));
+  reader_->SetFileStreamProviderForTesting(base::WrapUnique(provider_.get()));
   int size_result = -1;
   EXPECT_EQ(
       BlobReader::Status::IO_PENDING,

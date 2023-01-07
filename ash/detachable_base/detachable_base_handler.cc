@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/detachable_base/detachable_base_handler.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/detachable_base/detachable_base_observer.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/session/user_info.h"
 #include "ash/shell.h"
 #include "base/bind.h"
@@ -51,8 +51,8 @@ DetachableBaseHandler::DetachableBaseHandler(PrefService* local_state)
     : local_state_(local_state),
       hammerd_observation_(this),
       power_manager_observation_(this) {
-  if (chromeos::HammerdClient::Get())  // May be null in tests
-    hammerd_observation_.Observe(chromeos::HammerdClient::Get());
+  if (HammerdClient::Get())  // May be null in tests
+    hammerd_observation_.Observe(HammerdClient::Get());
   chromeos::PowerManagerClient* power_manager_client =
       chromeos::PowerManagerClient::Get();
   power_manager_observation_.Observe(power_manager_client);
@@ -79,8 +79,8 @@ void DetachableBaseHandler::RemoveUserData(const UserInfo& user) {
   last_used_devices_.erase(user.account_id);
 
   if (local_state_) {
-    DictionaryPrefUpdate update(local_state_, prefs::kDetachableBaseDevices);
-    update->RemoveKey(GetKeyForPrefs(user.account_id));
+    ScopedDictPrefUpdate update(local_state_, prefs::kDetachableBaseDevices);
+    update->Remove(GetKeyForPrefs(user.account_id));
   }
 }
 
@@ -127,9 +127,9 @@ bool DetachableBaseHandler::SetPairedBaseAsLastUsedByUser(
   last_used_devices_[user.account_id] = authenticated_base_id_;
 
   if (!user.is_ephemeral) {
-    DictionaryPrefUpdate update(local_state_, prefs::kDetachableBaseDevices);
-    update->SetPath({GetKeyForPrefs(user.account_id), kLastUsedByUserPrefKey},
-                    base::Value(authenticated_base_id_));
+    ScopedDictPrefUpdate update(local_state_, prefs::kDetachableBaseDevices);
+    update->EnsureDict(GetKeyForPrefs(user.account_id))
+        ->Set(kLastUsedByUserPrefKey, authenticated_base_id_);
   }
 
   return true;
@@ -179,7 +179,7 @@ void DetachableBaseHandler::TabletModeEventReceived(
 }
 
 void DetachableBaseHandler::OnGotPowerManagerSwitchStates(
-    base::Optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
+    absl::optional<chromeos::PowerManagerClient::SwitchStates> switch_states) {
   if (!switch_states.has_value() || tablet_mode_.has_value())
     return;
 
@@ -213,14 +213,17 @@ DetachableBaseHandler::GetLastUsedDeviceForUser(const UserInfo& user) const {
   if (user.is_ephemeral)
     return "";
 
-  const base::DictionaryValue* detachable_base_info =
-      local_state_->GetDictionary(prefs::kDetachableBaseDevices);
-  const base::Value* last_used = detachable_base_info->FindPathOfType(
-      {GetKeyForPrefs(user.account_id), kLastUsedByUserPrefKey},
-      base::Value::Type::STRING);
-  if (!last_used)
+  const base::Value::Dict& detachable_base_info =
+      local_state_->GetDict(prefs::kDetachableBaseDevices);
+  const base::Value::Dict* account_info =
+      detachable_base_info.FindDictByDottedPath(
+          GetKeyForPrefs(user.account_id));
+  if (!account_info)
     return "";
-  return last_used->GetString();
+  const std::string* last_used =
+      account_info->FindString(kLastUsedByUserPrefKey);
+
+  return last_used ? *last_used : "";
 }
 
 void DetachableBaseHandler::NotifyPairingStatusChanged() {

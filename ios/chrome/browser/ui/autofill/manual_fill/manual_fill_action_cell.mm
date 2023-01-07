@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,9 +104,7 @@
   AppendHorizontalConstraintsForViews(constraints, @[ self.titleButton ],
                                       self.contentView);
   [NSLayoutConstraint activateConstraints:constraints];
-  if (@available(iOS 13.4, *)) {
-      [self addInteraction:[[ViewPointerInteraction alloc] init]];
-  }
+  [self addInteraction:[[ViewPointerInteraction alloc] init]];
 }
 
 - (void)userDidTapTitleButton:(UIButton*)sender {

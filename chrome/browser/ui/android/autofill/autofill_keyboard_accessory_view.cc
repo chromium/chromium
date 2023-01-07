@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 
 #include "chrome/android/features/keyboard_accessory/jni_headers/AutofillKeyboardAccessoryViewBridge_jni.h"
 #include "chrome/browser/android/resource_mapper.h"
@@ -20,8 +21,10 @@
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "url/android/gurl_android.h"
 
 using base::android::ConvertUTF16ToJavaString;
+using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
@@ -29,7 +32,7 @@ using base::android::ScopedJavaLocalRef;
 namespace autofill {
 
 AutofillKeyboardAccessoryView::AutofillKeyboardAccessoryView(
-    AutofillPopupController* controller)
+    base::WeakPtr<AutofillPopupController> controller)
     : controller_(controller) {
   java_object_.Reset(Java_AutofillKeyboardAccessoryViewBridge_create(
       base::android::AttachCurrentThread()));
@@ -54,11 +57,13 @@ bool AutofillKeyboardAccessoryView::Initialize() {
 }
 
 void AutofillKeyboardAccessoryView::Hide() {
+  TRACE_EVENT0("passwords", "AutofillKeyboardAccessoryView::Hide");
   Java_AutofillKeyboardAccessoryViewBridge_dismiss(
       base::android::AttachCurrentThread(), java_object_);
 }
 
 void AutofillKeyboardAccessoryView::Show() {
+  TRACE_EVENT0("passwords", "AutofillKeyboardAccessoryView::Show");
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> data_array =
       Java_AutofillKeyboardAccessoryViewBridge_createAutofillSuggestionArray(
@@ -72,24 +77,29 @@ void AutofillKeyboardAccessoryView::Show() {
       android_icon_id = ResourceMapper::MapToJavaDrawableId(
           GetIconResourceID(suggestion.icon));
     }
-    // Set the offer title to display as the item tag.
-    std::u16string item_tag = std::u16string();
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableOffersInClankKeyboardAccessory) &&
-        !suggestion.offer_label.empty()) {
-      item_tag = suggestion.offer_label;
-      // If the offer label is not empty then replace the network icon by the
-      // offer tag.
-      android_icon_id =
-          ResourceMapper::MapToJavaDrawableId(GetIconResourceID("offerTag"));
+
+    std::u16string value;
+    std::u16string label;
+    if (controller_->GetSuggestionMinorTextAt(i).empty()) {
+      value = controller_->GetSuggestionMainTextAt(i);
+      std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
+          controller_->GetSuggestionLabelsAt(i);
+      if (!suggestion_labels.empty()) {
+        DCHECK_EQ(suggestion_labels[0].size(), 1U);
+        label = std::move(suggestion_labels[0][0].value);
+      }
+    } else {
+      value = controller_->GetSuggestionMainTextAt(i);
+      label = controller_->GetSuggestionMinorTextAt(i);
     }
+
     Java_AutofillKeyboardAccessoryViewBridge_addToAutofillSuggestionArray(
-        env, data_array, position++,
-        ConvertUTF16ToJavaString(env, controller_->GetSuggestionValueAt(i)),
-        ConvertUTF16ToJavaString(env, controller_->GetSuggestionLabelAt(i)),
-        ConvertUTF16ToJavaString(env, item_tag), android_icon_id,
+        env, data_array, position++, ConvertUTF16ToJavaString(env, value),
+        ConvertUTF16ToJavaString(env, label), android_icon_id,
         suggestion.frontend_id,
-        controller_->GetRemovalConfirmationText(i, nullptr, nullptr));
+        controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
+        ConvertUTF8ToJavaString(env, suggestion.feature_for_iph),
+        url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url));
   }
   Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_, data_array,
                                                 controller_->IsRTL());

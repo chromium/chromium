@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "base/files/file.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "sql/initialization.h"
@@ -117,6 +116,33 @@ base::Time SqliteEpoch() {
   return base::Time::FromJsTime(-kUnixEpochAsJulianDay * kMicroSecondsPerDay);
 }
 
+#if DCHECK_IS_ON()
+// `full_path_cstr` must be a filename argument passed to the VFS from SQLite.
+SandboxedVfsFileType VfsFileTypeFromPath(const char* full_path_cstr) {
+  base::StringPiece full_path(full_path_cstr);
+
+  const char* database_file_cstr = sqlite3_filename_database(full_path_cstr);
+  base::StringPiece database_file(database_file_cstr);
+  if (full_path == database_file)
+    return SandboxedVfsFileType::kDatabase;
+
+  const char* journal_file_cstr = sqlite3_filename_journal(full_path_cstr);
+  base::StringPiece journal_file(journal_file_cstr);
+  if (full_path == journal_file)
+    return SandboxedVfsFileType::kJournal;
+
+  const char* wal_file_cstr = sqlite3_filename_wal(full_path_cstr);
+  base::StringPiece wal_file(wal_file_cstr);
+  if (full_path == wal_file)
+    return SandboxedVfsFileType::kWal;
+
+  NOTREACHED()
+      << "Argument is not a file name buffer passed from SQLite to a VFS: "
+      << full_path;
+  return SandboxedVfsFileType::kDatabase;
+}
+#endif  // DCHECK_IS_ON()
+
 }  // namespace
 
 // static
@@ -150,8 +176,11 @@ int SandboxedVfs::Open(const char* full_path,
     return Open(full_path, result_file, new_flags, granted_flags);
   }
 
-  SandboxedVfsFile::Create(std::move(file), std::move(file_path), this,
-                           result_file);
+  SandboxedVfsFile::Create(std::move(file), std::move(file_path),
+#if DCHECK_IS_ON()
+                           VfsFileTypeFromPath(full_path),
+#endif  // DCHECK_IS_ON()
+                           this, result_file);
   if (granted_flags)
     *granted_flags = requested_flags;
   return SQLITE_OK;
@@ -165,7 +194,7 @@ int SandboxedVfs::Delete(const char* full_path, int sync_dir) {
 
 int SandboxedVfs::Access(const char* full_path, int flags, int& result) {
   DCHECK(full_path);
-  base::Optional<PathAccessInfo> access =
+  absl::optional<PathAccessInfo> access =
       delegate_->GetPathAccess(base::FilePath::FromUTF8Unsafe(full_path));
   if (!access) {
     result = 0;
@@ -216,7 +245,7 @@ int SandboxedVfs::Randomness(int result_size, char* result) {
 
 int SandboxedVfs::Sleep(int microseconds) {
   DCHECK_GE(microseconds, 0);
-  base::PlatformThread::Sleep(base::TimeDelta::FromMicroseconds(microseconds));
+  base::PlatformThread::Sleep(base::Microseconds(microseconds));
   return SQLITE_OK;
 }
 

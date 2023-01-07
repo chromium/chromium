@@ -1,18 +1,23 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget_utils.h"
 
 namespace {
+
+constexpr int kPageActionIconSize = 20;
 
 class TestPageActionIconDelegate : public IconLabelBubbleView::Delegate,
                                    public PageActionIconView::Delegate {
@@ -32,6 +37,7 @@ class TestPageActionIconDelegate : public IconLabelBubbleView::Delegate,
   content::WebContents* GetWebContentsForPageActionIconView() override {
     return nullptr;
   }
+  int GetPageActionIconSize() const override { return kPageActionIconSize; }
   bool ShouldHidePageActionIcons() const override {
     return should_hide_page_action_icons_;
   }
@@ -62,6 +68,8 @@ class TestPageActionIconView : public PageActionIconView {
                            command_id,
                            parent_delegate,
                            delegate,
+                           "TestName",
+                           true,
                            font_list) {
     SetUpForInOutAnimation();
   }
@@ -80,6 +88,29 @@ class TestPageActionIconView : public PageActionIconView {
     return gfx::kNoneIcon;
   }
   void UpdateImpl() override {}
+};
+
+class TestPageActionIconViewWithIconImage : public TestPageActionIconView {
+ public:
+  using TestPageActionIconView::TestPageActionIconView;
+
+  void SetIconImageColorForTesting(SkColor icon_image_color) {
+    icon_image_color_ = icon_image_color;
+  }
+
+  void UpdateIconImageForTesting() { UpdateIconImage(); }
+
+  // TestPageActionIconView:
+  ui::ImageModel GetSizedIconImage(int size) const override {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(size, size);
+    bitmap.eraseColor(icon_image_color_);
+    return ui::ImageModel::FromImageSkia(
+        gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+  }
+
+ private:
+  SkColor icon_image_color_ = gfx::kPlaceholderColor;
 };
 
 }  // namespace
@@ -104,16 +135,17 @@ class PageActionIconViewTest : public ChromeViewsTestBase {
   }
 
   TestPageActionIconView* view() { return view_; }
+  views::Widget* widget() { return widget_.get(); }
   TestPageActionIconDelegate* delegate() { return &delegate_; }
 
  private:
   TestPageActionIconDelegate delegate_;
-  TestPageActionIconView* view_;
+  raw_ptr<TestPageActionIconView> view_;
   std::unique_ptr<views::Widget> widget_;
 };
 
 TEST_F(PageActionIconViewTest, ShouldResetSlideAnimationWhenHideIcons) {
-  view()->AnimateIn(base::nullopt);
+  view()->AnimateIn(absl::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
   EXPECT_TRUE(view()->is_animating_label());
 
@@ -126,7 +158,7 @@ TEST_F(PageActionIconViewTest, ShouldResetSlideAnimationWhenHideIcons) {
 
 TEST_F(PageActionIconViewTest, ShouldNotResetSlideAnimationWhenShowIcons) {
   delegate()->set_should_hide_page_action_icons(true);
-  view()->AnimateIn(base::nullopt);
+  view()->AnimateIn(absl::nullopt);
   EXPECT_TRUE(view()->IsLabelVisible());
   EXPECT_TRUE(view()->is_animating_label());
 
@@ -135,4 +167,30 @@ TEST_F(PageActionIconViewTest, ShouldNotResetSlideAnimationWhenShowIcons) {
   EXPECT_TRUE(view()->is_animating_label());
   EXPECT_TRUE(view()->ShouldShowLabel());
   EXPECT_TRUE(view()->IsLabelVisible());
+}
+
+TEST_F(PageActionIconViewTest, UsesIconImageIfAvailable) {
+  auto delegate = TestPageActionIconDelegate();
+  auto* icon_view = widget()->SetContentsView(
+      std::make_unique<TestPageActionIconViewWithIconImage>(
+          /*command_updater=*/nullptr,
+          /*command_id=*/0, &delegate, &delegate, gfx::FontList()));
+
+  // Get the initial icon view image.
+  auto image_previous = icon_view->GetImage(views::Button::STATE_NORMAL);
+
+  // Update the page action icon view to host a green image. This should
+  // override the initially set image.
+  icon_view->SetIconImageColorForTesting(SK_ColorGREEN);
+  icon_view->UpdateIconImageForTesting();
+  EXPECT_FALSE(image_previous.BackedBySameObjectAs(
+      icon_view->GetImage(views::Button::STATE_NORMAL)));
+
+  // Update the page action icon view to host a red image. This should override
+  // the green image.
+  image_previous = icon_view->GetImage(views::Button::STATE_NORMAL);
+  icon_view->SetIconImageColorForTesting(SK_ColorRED);
+  icon_view->UpdateIconImageForTesting();
+  EXPECT_FALSE(image_previous.BackedBySameObjectAs(
+      icon_view->GetImage(views::Button::STATE_NORMAL)));
 }

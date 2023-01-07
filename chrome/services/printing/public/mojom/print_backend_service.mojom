@@ -1,10 +1,87 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module printing.mojom;
 
+import "mojo/public/mojom/base/shared_memory.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/values.mojom";
 import "printing/backend/mojom/print_backend.mojom";
+import "printing/mojom/print.mojom";
+import "printing/mojom/printing_context.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// The default printer name, or the `ResultCode` if there was an error when
+// trying to retrieve this data.
+union DefaultPrinterNameResult {
+  string default_printer_name;
+  ResultCode result_code;
+};
+
+// The list of installed printers, or the `ResultCode` if there was an error
+// when trying to retrieve this data.
+union PrinterListResult {
+  array<PrinterBasicInfo> printer_list;
+  ResultCode result_code;
+};
+
+// The capabilities and defaults of a printer, or the `ResultCode` if there was
+// an error when trying to retrieve this data.
+union PrinterSemanticCapsAndDefaultsResult {
+  PrinterSemanticCapsAndDefaults printer_caps;
+  ResultCode result_code;
+};
+
+// The set of basic info, paper details, and capabilities/defaults for a
+// printer.
+struct PrinterCapsAndInfo {
+  PrinterBasicInfo printer_info;
+  array<Paper> user_defined_papers;
+  PrinterSemanticCapsAndDefaults printer_caps;
+};
+
+// The set of basic info, paper details, and capabilities/defaults for a
+// printer, or the `ResultCode` if there was an error when trying to retrieve
+// this data.
+union PrinterCapsAndInfoResult {
+  PrinterCapsAndInfo printer_caps_and_info;
+  ResultCode result_code;
+};
+
+// The print settings for a job, or the `ResultCode` if there was an error when
+// trying to update this data.
+union PrintSettingsResult {
+  PrintSettings settings;
+  ResultCode result_code;
+};
+
+// The type of printing interface to target.
+enum PrintTargetType {
+  kDirectToDevice,
+  kSystemDialog,
+  [EnableIf=is_mac]
+  kExternalPreview,
+};
+
+// Hosts the PrintBackendService but does so without sandboxing the service -
+// this is required if print drivers need UI access or cannot otherwise
+// operate in the normal sandbox. There is a 1:1 relationship and `service`
+// should only be bound once.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
+interface UnsandboxedPrintBackendHost {
+  // Binds the underlying implementation.
+  BindBackend(pending_receiver<PrintBackendService> service);
+};
+
+// Hosts the PrintBackendService in a sandbox. There is a 1:1 relationship
+// and `service` should only be bound once.
+[ServiceSandbox=sandbox.mojom.Sandbox.kPrintBackend]
+interface SandboxedPrintBackendHost {
+  // Binds the underlying implementation.
+  BindBackend(pending_receiver<PrintBackendService> service);
+};
 
 // The main interface to Chrome's Print Backend Service, which performs
 // printer queries and commands to operating system printer drivers in an
@@ -14,27 +91,93 @@ interface PrintBackendService {
   // interface to the underlying data source.
   Init(string locale);
 
+  // TODO(crbug.com/1225111)  Message with no arguments and no reply that is
+  // useful to ensure that an idle timeout change takes effect.
+  Poke();
+
   // Enumerates the list of installed local and network printers.
-  // No value provided for `printer_list` if there is a failure.
   EnumeratePrinters()
-    => (array<PrinterBasicInfo>? printer_list);
+    => (PrinterListResult printer_list);
 
   // Gets the default printer name from the data source.
-  // No value for `printer_name` is provided if there is a failure.
   GetDefaultPrinterName()
-    => (string? printer_name);
+    => (DefaultPrinterNameResult printer_name);
 
   // Gets the semantic capabilities and defaults for a specific printer.
-  // No value provided for `printer_caps` if there is a failure.
   GetPrinterSemanticCapsAndDefaults(string printer_name)
-    => (PrinterSemanticCapsAndDefaults? printer_caps);
+    => (PrinterSemanticCapsAndDefaultsResult printer_caps);
 
   // Gets the basic info, paper sizes, and semantic capabilities and defaults
   // for a specific printer.
-  // No value for `printer_info`, `user_defined_papers`, and `printer_caps` if
-  // there is a failure.
   FetchCapabilities(string printer_name)
-    => (PrinterBasicInfo? printer_info,
-        array<Paper>? user_defined_papers,
-        PrinterSemanticCapsAndDefaults? printer_caps);
+    => (PrinterCapsAndInfoResult printer_caps_and_info);
+
+  // Generates a print settings object based upon the default settings for the
+  // default printer.
+  UseDefaultSettings()
+    => (PrintSettingsResult settings);
+
+  // Generates a print settings object from user-selected options via a system
+  // print dialog.  The `parent_window_id` parameter specifies an ID which is
+  // cross-process safe to represent the native window which owns the modal
+  // print dialog used for prompting the user.  Other parameters are the same
+  // as used in `PrintingContext::AskUserForSettings()`.
+  // Currently only supported on Windows:
+  //   - It is impossible for macOS `//ui` code to display a system print
+  //     dialog from a service utility process that is modal to a window in the
+  //     browser process.  Achieving OOP support for a modal macOS system print
+  //     may be possible if all of UI is moved out of the browser process.  See
+  //     https://docs.google.com/document/d/1uAxz9pk3twwkzamchxHTQiImIbKrc0cuKVDpzbn2wsQ
+  //     for discussion on such an effort.
+  //   - TODO(crbug.com/809738):  Determine if Linux Wayland can be made to
+  //     have a system dialog be modal against an application window in the
+  //     browser process.
+  //   - Platforms other than those identified above do not support a system
+  //     print dialog.
+  [EnableIf=is_win]
+  AskUserForSettings(uint32 parent_window_id,
+                     int32 max_pages,
+                     bool has_selection,
+                     bool is_scripted)
+    => (PrintSettingsResult settings);
+
+  // Generates a print settings object based upon the job settings used with
+  // the device settings.  The driver to be used is expected to be identified
+  // in the `job_settings` map by an entry with key
+  // `printing::kSettingDeviceName`.
+  UpdatePrintSettings(mojo_base.mojom.DictionaryValue job_settings)
+    => (PrintSettingsResult settings);
+
+  // Submit the document identified by `document_cookie` to be printed.
+  // Starting the device initialization may be delayed if it needs to wait for
+  // prior print jobs to complete before a connection to the system to become
+  // available.
+  StartPrinting(int32 document_cookie,
+                mojo_base.mojom.String16 document_name,
+                PrintTargetType target_type,
+                PrintSettings settings)
+    => (ResultCode result_code);
+
+  // Render the indicated page as part of print job for `document_cookie`.
+  [EnableIf=is_win]
+  RenderPrintedPage(int32 document_cookie,
+                    uint32 page_index,
+                    MetafileDataType page_data_type,
+                    mojo_base.mojom.ReadOnlySharedMemoryRegion serialized_page,
+                    gfx.mojom.Size page_size,
+                    gfx.mojom.Rect page_content_rect,
+                    float shrink_factor)
+    => (ResultCode result_code);
+
+ // Render the print job document for `document_cookie`.
+  RenderPrintedDocument(
+      int32 document_cookie,
+      MetafileDataType data_type,
+      mojo_base.mojom.ReadOnlySharedMemoryRegion serialized_doc)
+    => (ResultCode result_code);
+
+  // Signals that all data for the document has been provided and final
+  // processing and cleanup for the print job should be performed.
+  DocumentDone(int32 document_cookie)
+    => (ResultCode result_code);
 };

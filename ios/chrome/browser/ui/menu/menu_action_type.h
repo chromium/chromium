@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ enum class MenuActionType {
   OpenInNewIncognitoTab = 1,
   OpenInNewWindow = 2,
   OpenAllInNewTabs = 3,
-  Copy = 4,
+  CopyURL = 4,
   Edit = 5,
   Move = 6,
   Share = 7,
@@ -24,7 +24,31 @@ enum class MenuActionType {
   Unread = 12,
   ViewOffline = 13,
   OpenJavascript = 14,
-  kMaxValue = OpenJavascript
+  AddToReadingList = 15,
+  AddToBookmarks = 16,
+  CloseTab = 17,
+  EditBookmark = 18,
+  SaveImage = 19,
+  OpenImageInCurrentTab = 20,
+  SearchImage = 21,
+  CloseAllTabs = 22,
+  SelectTabs = 23,
+  OpenImageInNewTab = 24,
+  CopyImage = 25,
+  SearchImageWithLens = 26,
+  ShowLinkPreview = 27,
+  HideLinkPreview = 28,
+  OpenNewTab = 29,
+  OpenNewIncognitoTab = 30,
+  CloseCurrentTabs = 31,
+  ShowQRScanner = 32,
+  StartVoiceSearch = 33,
+  StartNewSearch = 34,
+  StartNewIcognitoSearch = 35,
+  SearchCopiedImage = 36,
+  VisitCopiedLink = 37,
+  SearchCopiedText = 38,
+  kMaxValue = SearchCopiedText
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_MENU_ACTION_TYPE_H_

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,9 +28,9 @@ namespace utils = extensions::api_test_utils;
 
 namespace extensions {
 
-ApiUnitTest::ApiUnitTest() {}
+ApiUnitTest::ApiUnitTest() = default;
 
-ApiUnitTest::~ApiUnitTest() {}
+ApiUnitTest::~ApiUnitTest() = default;
 
 void ApiUnitTest::SetUp() {
   ExtensionsTest::SetUp();
@@ -62,7 +62,7 @@ std::unique_ptr<base::Value> ApiUnitTest::RunFunctionAndReturnValue(
     const std::string& args) {
   function->set_extension(extension());
   if (contents_)
-    function->SetRenderFrameHost(contents_->GetMainFrame());
+    function->SetRenderFrameHost(contents_->GetPrimaryMainFrame());
   return std::unique_ptr<base::Value>(utils::RunFunctionAndReturnSingleResult(
       function, args, browser_context()));
 }
@@ -71,37 +71,36 @@ std::unique_ptr<base::DictionaryValue>
 ApiUnitTest::RunFunctionAndReturnDictionary(ExtensionFunction* function,
                                             const std::string& args) {
   base::Value* value = RunFunctionAndReturnValue(function, args).release();
-  base::DictionaryValue* dict = NULL;
+  base::DictionaryValue* dict = nullptr;
 
   if (value && !value->GetAsDictionary(&dict))
     delete value;
 
-  // We expect to either have successfuly retrieved a dictionary from the value,
-  // or the value to have been NULL.
+  // We expect to either have successfully retrieved a dictionary from the
+  // value, or the value to have been NULL.
   EXPECT_TRUE(dict || !value);
   return std::unique_ptr<base::DictionaryValue>(dict);
 }
 
-std::unique_ptr<base::ListValue> ApiUnitTest::RunFunctionAndReturnList(
+std::unique_ptr<base::Value> ApiUnitTest::RunFunctionAndReturnList(
     ExtensionFunction* function,
     const std::string& args) {
   base::Value* value = RunFunctionAndReturnValue(function, args).release();
-  base::ListValue* list = NULL;
 
-  if (value && !value->GetAsList(&list))
+  // We expect to either have successfully gotten a list value, or the value to
+  // have been NULL.
+  EXPECT_TRUE(!value || value->is_list());
+  if (value && !value->is_list())
     delete value;
 
-  // We expect to either have successfuly retrieved a list from the value,
-  // or the value to have been NULL.
-  EXPECT_TRUE(list || !value);
-  return std::unique_ptr<base::ListValue>(list);
+  return std::unique_ptr<base::Value>(value);
 }
 
 std::string ApiUnitTest::RunFunctionAndReturnError(ExtensionFunction* function,
                                                    const std::string& args) {
   function->set_extension(extension());
   if (contents_)
-    function->SetRenderFrameHost(contents_->GetMainFrame());
+    function->SetRenderFrameHost(contents_->GetPrimaryMainFrame());
   return utils::RunFunctionAndReturnError(function, args, browser_context());
 }
 

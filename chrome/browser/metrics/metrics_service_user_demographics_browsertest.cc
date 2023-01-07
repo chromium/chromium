@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@
 #include "chrome/browser/metrics/testing/sync_metrics_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/demographics/demographic_metrics_provider.h"
@@ -47,8 +47,7 @@ class MetricsServiceUserDemographicsBrowserTest
       // Enable UMA and reporting of the synced user's birth year and gender.
       scoped_feature_list_.InitWithFeatures(
           // enabled_features =
-          {internal::kMetricsReportingFeature,
-           DemographicMetricsProvider::kDemographicMetricsReporting},
+          {internal::kMetricsReportingFeature, kDemographicMetricsReporting},
           // disabled_features =
           {});
     } else {
@@ -56,9 +55,14 @@ class MetricsServiceUserDemographicsBrowserTest
           // enabled_features =
           {internal::kMetricsReportingFeature},
           // disabled_features =
-          {DemographicMetricsProvider::kDemographicMetricsReporting});
+          {kDemographicMetricsReporting});
     }
   }
+
+  MetricsServiceUserDemographicsBrowserTest(
+      const MetricsServiceUserDemographicsBrowserTest&) = delete;
+  MetricsServiceUserDemographicsBrowserTest& operator=(
+      const MetricsServiceUserDemographicsBrowserTest&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SyncTest::SetUpCommandLine(command_line);
@@ -89,8 +93,6 @@ class MetricsServiceUserDemographicsBrowserTest
   bool metrics_consent_ = true;
 
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsServiceUserDemographicsBrowserTest);
 };
 
 // TODO(crbug/1016118): Add the remaining test cases.
@@ -116,10 +118,10 @@ IN_PROC_BROWSER_TEST_P(MetricsServiceUserDemographicsBrowserTest,
 
   // TODO(crbug/1076461): Try to replace the below set-up code with functions
   // from SyncTest.
-  Profile* test_profile = ProfileManager::GetActiveUserProfile();
+  Profile* test_profile = ProfileManager::GetLastUsedProfileIfLoaded();
 
   // Enable sync for the test profile.
-  std::unique_ptr<ProfileSyncServiceHarness> harness =
+  std::unique_ptr<SyncServiceImplHarness> harness =
       test::InitializeProfileForSync(test_profile,
                                      GetFakeServer()->AsWeakPtr());
   harness->SetupSync();
@@ -145,12 +147,12 @@ IN_PROC_BROWSER_TEST_P(MetricsServiceUserDemographicsBrowserTest,
     histogram.ExpectTotalCount("UMA.UserDemographics.Status", /*count=*/0);
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Sign out the user to revoke all refresh tokens. This prevents any posted
   // tasks from successfully fetching an access token during the tear-down
   // phase and crashing on a DCHECK. See crbug/1102746 for more details.
   harness->SignOutPrimaryAccount();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

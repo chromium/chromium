@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,8 @@
 #include "media/base/channel_layout.h"
 #include "media/base/container_names.h"
 #include "media/base/content_decryption_module.h"
-#include "media/base/decode_status.h"
 #include "media/base/decoder.h"
+#include "media/base/decoder_status.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/decryptor.h"
 #include "media/base/demuxer_stream.h"
@@ -30,7 +30,6 @@
 #include "media/base/overlay_info.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/sample_format.h"
-#include "media/base/status_codes.h"
 #include "media/base/subsample_entry.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_codecs.h"
@@ -53,7 +52,7 @@
 IPC_ENUM_TRAITS_MAX_VALUE(blink::WebFullscreenVideoStatus,
                           blink::WebFullscreenVideoStatus::kMaxValue)
 
-IPC_ENUM_TRAITS_MAX_VALUE(media::AudioCodec, media::AudioCodec::kAudioCodecMax)
+IPC_ENUM_TRAITS_MAX_VALUE(media::AudioCodec, media::AudioCodec::kMaxValue)
 IPC_ENUM_TRAITS_MAX_VALUE(media::AudioCodecProfile,
                           media::AudioCodecProfile::kMaxValue)
 
@@ -99,7 +98,7 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::EncryptionScheme,
                           media::EncryptionScheme::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::HdcpVersion,
-                          media::HdcpVersion::kHdcpVersionMax)
+                          media::HdcpVersion::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::MediaContentType, media::MediaContentType::Max)
 
@@ -112,12 +111,12 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::MediaStatus::State,
 IPC_ENUM_TRAITS_MAX_VALUE(media::OutputDeviceStatus,
                           media::OUTPUT_DEVICE_STATUS_MAX)
 
-IPC_ENUM_TRAITS_MAX_VALUE(media::PipelineStatus,
-                          media::PipelineStatus::PIPELINE_STATUS_MAX)
+IPC_ENUM_TRAITS_MAX_VALUE(media::PipelineStatusCodes,
+                          media::PipelineStatusCodes::PIPELINE_STATUS_MAX)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::SampleFormat, media::kSampleFormatMax)
 
-IPC_ENUM_TRAITS_MAX_VALUE(media::VideoCodec, media::kVideoCodecMax)
+IPC_ENUM_TRAITS_MAX_VALUE(media::VideoCodec, media::VideoCodec::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::WaitingReason, media::WaitingReason::kMaxValue)
 
@@ -127,9 +126,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::WatchTimeKey,
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(media::VideoCodecProfile,
                               media::VIDEO_CODEC_PROFILE_MIN,
                               media::VIDEO_CODEC_PROFILE_MAX)
-
-IPC_ENUM_TRAITS_MAX_VALUE(media::VideoDecoderImplementation,
-                          media::VideoDecoderImplementation::kMaxValue)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::VideoDecoderType,
                           media::VideoDecoderType::kMaxValue)
@@ -143,8 +139,6 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::VideoRotation, media::VIDEO_ROTATION_MAX)
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::container_names::MediaContainerName,
                           media::container_names::CONTAINER_MAX)
-
-IPC_ENUM_TRAITS_MAX_VALUE(media::StatusCode, media::StatusCode::kMaxValue)
 
 #if BUILDFLAG(ENABLE_MEDIA_DRM_STORAGE)
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(media::MediaDrmKeyType,
@@ -173,6 +167,7 @@ IPC_ENUM_TRAITS_VALIDATE(
 // Struct traits.
 
 IPC_STRUCT_TRAITS_BEGIN(media::CdmConfig)
+  IPC_STRUCT_TRAITS_MEMBER(key_system)
   IPC_STRUCT_TRAITS_MEMBER(allow_distinctive_identifier)
   IPC_STRUCT_TRAITS_MEMBER(allow_persistent_state)
   IPC_STRUCT_TRAITS_MEMBER(use_hw_secure_codecs)
@@ -197,7 +192,7 @@ IPC_STRUCT_TRAITS_BEGIN(media::VideoColorSpace)
   IPC_STRUCT_TRAITS_MEMBER(range)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(gfx::MasteringMetadata)
+IPC_STRUCT_TRAITS_BEGIN(gfx::ColorVolumeMetadata)
   IPC_STRUCT_TRAITS_MEMBER(primary_r)
   IPC_STRUCT_TRAITS_MEMBER(primary_g)
   IPC_STRUCT_TRAITS_MEMBER(primary_b)
@@ -207,7 +202,7 @@ IPC_STRUCT_TRAITS_BEGIN(gfx::MasteringMetadata)
 IPC_STRUCT_TRAITS_END()
 
 IPC_STRUCT_TRAITS_BEGIN(gfx::HDRMetadata)
-  IPC_STRUCT_TRAITS_MEMBER(mastering_metadata)
+  IPC_STRUCT_TRAITS_MEMBER(color_volume_metadata)
   IPC_STRUCT_TRAITS_MEMBER(max_content_light_level)
   IPC_STRUCT_TRAITS_MEMBER(max_frame_average_light_level)
 IPC_STRUCT_TRAITS_END()

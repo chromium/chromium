@@ -96,7 +96,7 @@ TEST(TextCodecUTF8, DecodeOverflow) {
 
   // Prime the partial sequence buffer.
   bool saw_error = false;
-  codec->Decode("\x80", 1, FlushBehavior::kDoNotFlush, false, saw_error);
+  codec->Decode("\xC2", 1, FlushBehavior::kDoNotFlush, false, saw_error);
   EXPECT_FALSE(saw_error);
 
   EXPECT_DEATH(codec->Decode(nullptr, std::numeric_limits<wtf_size_t>::max(),

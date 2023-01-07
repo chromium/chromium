@@ -35,16 +35,11 @@ FormDataElement::FormDataElement() : type_(kData) {}
 FormDataElement::FormDataElement(const Vector<char>& array)
     : type_(kData), data_(array) {}
 
-bool FormDataElement::IsSafeToSendToAnotherThread() const {
-  return filename_.IsSafeToSendToAnotherThread() &&
-         blob_uuid_.IsSafeToSendToAnotherThread();
-}
-
 FormDataElement::FormDataElement(
     const String& filename,
     int64_t file_start,
     int64_t file_length,
-    const base::Optional<base::Time>& expected_file_modification_time)
+    const absl::optional<base::Time>& expected_file_modification_time)
     : type_(kEncodedFile),
       filename_(filename),
       file_start_(file_start),
@@ -116,14 +111,8 @@ scoped_refptr<EncodedFormData> EncodedFormData::Create(const void* data,
 scoped_refptr<EncodedFormData> EncodedFormData::Create(
     base::span<const char> string) {
   scoped_refptr<EncodedFormData> result = Create();
-  result->AppendData(string.data(), string.size());
-  return result;
-}
-
-scoped_refptr<EncodedFormData> EncodedFormData::Create(
-    const Vector<char>& vector) {
-  scoped_refptr<EncodedFormData> result = Create();
-  result->AppendData(vector.data(), vector.size());
+  result->AppendData(string.data(),
+                     base::checked_cast<wtf_size_t>(string.size()));
   return result;
 }
 
@@ -145,13 +134,13 @@ scoped_refptr<EncodedFormData> EncodedFormData::DeepCopy() const {
         form_data->elements_.UncheckedAppend(FormDataElement(e.data_));
         break;
       case FormDataElement::kEncodedFile:
-        form_data->elements_.UncheckedAppend(FormDataElement(
-            e.filename_.IsolatedCopy(), e.file_start_, e.file_length_,
-            e.expected_file_modification_time_));
+        form_data->elements_.UncheckedAppend(
+            FormDataElement(e.filename_, e.file_start_, e.file_length_,
+                            e.expected_file_modification_time_));
         break;
       case FormDataElement::kEncodedBlob:
-        form_data->elements_.UncheckedAppend(FormDataElement(
-            e.blob_uuid_.IsolatedCopy(), e.optional_blob_data_handle_));
+        form_data->elements_.UncheckedAppend(
+            FormDataElement(e.blob_uuid_, e.optional_blob_data_handle_));
         break;
       case FormDataElement::kDataPipe:
         mojo::PendingRemote<network::mojom::blink::DataPipeGetter>
@@ -169,7 +158,7 @@ scoped_refptr<EncodedFormData> EncodedFormData::DeepCopy() const {
 }
 
 void EncodedFormData::AppendData(const void* data, wtf_size_t size) {
-  if (elements_.IsEmpty() || elements_.back().type_ != FormDataElement::kData)
+  if (elements_.empty() || elements_.back().type_ != FormDataElement::kData)
     elements_.push_back(FormDataElement());
   FormDataElement& e = elements_.back();
   wtf_size_t old_size = e.data_.size();
@@ -179,7 +168,7 @@ void EncodedFormData::AppendData(const void* data, wtf_size_t size) {
 
 void EncodedFormData::AppendFile(
     const String& filename,
-    const base::Optional<base::Time>& expected_modification_time) {
+    const absl::optional<base::Time>& expected_modification_time) {
   elements_.push_back(FormDataElement(filename, 0, BlobData::kToEndOfFile,
                                       expected_modification_time));
 }
@@ -188,7 +177,7 @@ void EncodedFormData::AppendFileRange(
     const String& filename,
     int64_t start,
     int64_t length,
-    const base::Optional<base::Time>& expected_modification_time) {
+    const absl::optional<base::Time>& expected_modification_time) {
   elements_.push_back(
       FormDataElement(filename, start, length, expected_modification_time));
 }
@@ -249,13 +238,7 @@ uint64_t EncodedFormData::SizeInBytes() const {
 }
 
 bool EncodedFormData::IsSafeToSendToAnotherThread() const {
-  if (!HasOneRef())
-    return false;
-  for (auto& element : elements_) {
-    if (!element.IsSafeToSendToAnotherThread())
-      return false;
-  }
-  return true;
+  return HasOneRef();
 }
 
 }  // namespace blink

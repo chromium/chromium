@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,14 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/policy/device_local_account.h"
-#include "chrome/browser/chromeos/policy/dm_token_storage.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chromeos/tpm/install_attributes.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
@@ -26,17 +25,20 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
-namespace em = enterprise_management;
+namespace ash {
 namespace {
+
+namespace em = ::enterprise_management;
+
 std::string GetDeviceId() {
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   return connector->GetInstallAttributes()->GetDeviceId();
 }
 
 std::string GetAccountId(std::string user_id) {
   std::vector<policy::DeviceLocalAccount> device_local_accounts =
-      policy::GetDeviceLocalAccounts(chromeos::CrosSettings::Get());
+      policy::GetDeviceLocalAccounts(CrosSettings::Get());
   for (auto account : device_local_accounts) {
     if (account.user_id == user_id) {
       return account.account_id;
@@ -44,9 +46,9 @@ std::string GetAccountId(std::string user_id) {
   }
   return std::string();
 }
+
 }  // namespace
 
-namespace chromeos {
 PublicSamlUrlFetcher::PublicSamlUrlFetcher(AccountId account_id)
     : account_id_(GetAccountId(account_id.GetUserEmail())) {}
 
@@ -65,17 +67,16 @@ void PublicSamlUrlFetcher::Fetch(base::OnceClosure callback) {
   callback_ = std::move(callback);
   policy::DeviceManagementService* service =
       g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
+          ->browser_policy_connector_ash()
           ->device_management_service();
   std::unique_ptr<policy::DMServerJobConfiguration> config = std::make_unique<
       policy::DMServerJobConfiguration>(
       service,
       policy::DeviceManagementService::JobConfiguration::TYPE_REQUEST_SAML_URL,
       GetDeviceId(), /*critical=*/false,
-      policy::DMAuth::FromDMToken(chromeos::DeviceSettingsService::Get()
-                                      ->policy_data()
-                                      ->request_token()),
-      /*oauth_token=*/base::nullopt,
+      policy::DMAuth::FromDMToken(
+          DeviceSettingsService::Get()->policy_data()->request_token()),
+      /*oauth_token=*/absl::nullopt,
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
       base::BindOnce(&PublicSamlUrlFetcher::OnPublicSamlUrlReceived,
@@ -88,22 +89,20 @@ void PublicSamlUrlFetcher::Fetch(base::OnceClosure callback) {
 }
 
 void PublicSamlUrlFetcher::OnPublicSamlUrlReceived(
-    policy::DeviceManagementService::Job* job,
-    policy::DeviceManagementStatus dm_status,
-    int net_error,
-    const enterprise_management::DeviceManagementResponse& response) {
-  VLOG(1) << "Public SAML url response received. DM Status: " << dm_status;
+    policy::DMServerJobResult result) {
+  VLOG(1) << "Public SAML url response received. DM Status: "
+          << result.dm_status;
   fetch_request_job_.reset();
   std::string user_id;
 
-  switch (dm_status) {
+  switch (result.dm_status) {
     case policy::DM_STATUS_SUCCESS: {
-      if (!response.has_public_saml_user_response()) {
+      if (!result.response.has_public_saml_user_response()) {
         LOG(WARNING) << "Invalid public SAML url response.";
         break;
       }
       const em::PublicSamlUserResponse& saml_url_response =
-          response.public_saml_user_response();
+          result.response.public_saml_user_response();
 
       if (!saml_url_response.has_saml_parameters()) {
         LOG(WARNING) << "Invalid public SAML url response.";
@@ -117,11 +116,12 @@ void PublicSamlUrlFetcher::OnPublicSamlUrlReceived(
       break;
     }
     default: {  // All other error cases
-      LOG(ERROR) << "Fetching public SAML url failed. DM Status: " << dm_status;
+      LOG(ERROR) << "Fetching public SAML url failed. DM Status: "
+                 << result.dm_status;
       break;
     }
   }
   std::move(callback_).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

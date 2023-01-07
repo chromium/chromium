@@ -1,0 +1,76 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package content_creation.proto;
+
+// Specifies linear gradient chracteristics such as orientation
+// and color for background.
+message Gradient {
+  int32 orientation = 1;
+  repeated uint32 colors = 2;
+}
+// Specifies background information which can be solid color, a gradient
+// or an image.
+message Background {
+  oneof constructor_options {
+    uint32 color = 1;
+    Gradient gradient = 2;
+    string url = 3;
+  }
+}
+// Specifies text display characteristics.
+message TextStyle {
+  string name = 1;
+  uint32 color = 2;
+  uint32 weight = 3;
+  bool allCaps = 4;
+  int32 alignment = 5;
+  int32 minTextSize = 6;
+  int32 maxTextSize = 7;
+  uint32 highlightColor = 8;
+  int32 highlightStyle = 9;
+}
+// Specifies the appearance of the elements in a note's footer.
+message FooterStyle {
+  uint32 textColor = 1;
+  uint32 logoColor = 2;
+}
+// Specifies day, month, year used for template activation and expiration.
+message Date {
+  int32 month = 1;
+  int32 day = 2;
+  int32 year = 3;
+}
+// Specifies the collection of all templates in order in which they should
+// be displayed.
+message Collection {
+  repeated CollectionItem collectionItems = 1;
+  int32 max_template_number = 2;
+}
+// Specifies activation/expiration and GEO for which the given template should
+// be valid.
+message CollectionItem {
+  NoteTemplate noteTemplate = 1;
+  Date activation = 2;
+  Date expiration = 3;
+  repeated string geo = 4;
+}
+// Specifies all visual characteristics for displaying a note.
+message NoteTemplate {
+  // ID used to identify a given template.
+  int32 Id = 1;
+  // Main background for the Note.
+  Background mainBackground = 2;
+  // background for text area. For example, see "Lovely" template
+  Background contentBackground = 3;
+  // Targets the text that was highlighted
+  TextStyle textStyle = 4;
+  // Used to control the styling of elements in the note’s footer (domain, page
+  // title, Chrome logo).
+  FooterStyle footerStyle = 5;
+}

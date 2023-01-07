@@ -1,18 +1,18 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/base/filename_util.h"
 
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/stl_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "net/base/escape.h"
 #include "net/base/filename_util_internal.h"
 #include "net/base/mime_util.h"
 #include "net/base/net_string_util.h"
@@ -87,9 +87,9 @@ void SanitizeGeneratedFileName(base::FilePath::StringType* filename,
     size_t length = filename->size();
     size_t pos = filename->find_last_not_of(FILE_PATH_LITERAL(" ."));
     filename->resize((pos == std::string::npos) ? 0 : (pos + 1));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::TrimWhitespace(*filename, base::TRIM_TRAILING, filename);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     base::TrimWhitespaceASCII(*filename, base::TRIM_TRAILING, filename);
 #else
 #error Unsupported platform
@@ -126,7 +126,7 @@ std::string GetFileNameFromURL(const GURL& url,
     return std::string();
 
   std::string unescaped_url_filename = base::UnescapeBinaryURLComponent(
-      url.ExtractFileName(), UnescapeRule::NORMAL);
+      url.ExtractFileName(), base::UnescapeRule::NORMAL);
 
   // The URL's path should be escaped UTF-8, but may not be.
   std::string decoded_filename = unescaped_url_filename;
@@ -191,7 +191,7 @@ void EnsureSafeExtension(const std::string& mime_type,
   base::FilePath::StringType extension =
       GetCorrectedExtensionUnsafe(mime_type, ignore_extension, *file_name);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const base::FilePath::CharType kDefaultExtension[] =
       FILE_PATH_LITERAL("download");
 
@@ -206,10 +206,10 @@ void EnsureSafeExtension(const std::string& mime_type,
 }
 
 bool FilePathToString16(const base::FilePath& path, std::u16string* converted) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   converted->assign(path.value().begin(), path.value().end());
   return true;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   std::string component8 = path.AsUTF8Unsafe();
   return !component8.empty() &&
          base::UTF8ToUTF16(component8.c_str(), component8.size(), converted);
@@ -264,11 +264,11 @@ std::u16string GetSuggestedFilenameImpl(
 
   bool replace_trailing = false;
   base::FilePath::StringType result_str, default_name_str;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   replace_trailing = true;
   result_str = base::UTF8ToWide(filename);
   default_name_str = base::UTF8ToWide(default_name);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   result_str = filename;
   default_name_str = default_name;
 #else
@@ -318,9 +318,9 @@ base::FilePath GenerateFileNameImpl(
       default_file_name, should_replace_extension,
       replace_illegal_characters_function);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath generated_name(base::AsWStringPiece(file_name));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   base::FilePath generated_name(
       base::SysWideToNativeMB(base::UTF16ToWide(file_name)));
 #endif

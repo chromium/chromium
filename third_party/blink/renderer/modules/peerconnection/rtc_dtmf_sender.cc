@@ -120,15 +120,15 @@ void RTCDTMFSender::insertDTMF(const String& tones,
   // Spec: a-d should be represented in the tone buffer as A-D
   tone_buffer_ = tones.UpperASCII();
 
-  if (tone_buffer_.IsEmpty()) {
+  if (tone_buffer_.empty()) {
     return;
   }
   if (!playout_task_is_scheduled_) {
     playout_task_is_scheduled_ = true;
     GetExecutionContext()
         ->GetTaskRunner(TaskType::kNetworking)
-        ->PostTask(FROM_HERE, WTF::Bind(&RTCDTMFSender::PlayoutTask,
-                                        WrapPersistent(this)));
+        ->PostTask(FROM_HERE, WTF::BindOnce(&RTCDTMFSender::PlayoutTask,
+                                            WrapPersistent(this)));
   }
 }
 
@@ -136,7 +136,7 @@ void RTCDTMFSender::PlayoutTask() {
   playout_task_is_scheduled_ = false;
   // TODO(crbug.com/891638): Add check on transceiver's "stopped"
   // and "currentDirection" attributes as per spec.
-  if (tone_buffer_.IsEmpty()) {
+  if (tone_buffer_.empty()) {
     Member<Event> event = MakeGarbageCollected<RTCDTMFToneChangeEvent>("");
     DispatchEvent(*event.Release(), "RTCDTMFSender::PlayoutTask #1");
     return;
@@ -158,13 +158,13 @@ void RTCDTMFSender::PlayoutTask() {
 void RTCDTMFSender::DidPlayTone(const String& tone) {
   // We're using the DidPlayTone with an empty buffer to signal the
   // end of the tone.
-  if (tone.IsEmpty()) {
+  if (tone.empty()) {
     GetExecutionContext()
         ->GetTaskRunner(TaskType::kNetworking)
         ->PostDelayedTask(
             FROM_HERE,
-            WTF::Bind(&RTCDTMFSender::PlayoutTask, WrapPersistent(this)),
-            base::TimeDelta::FromMilliseconds(inter_tone_gap_));
+            WTF::BindOnce(&RTCDTMFSender::PlayoutTask, WrapPersistent(this)),
+            base::Milliseconds(inter_tone_gap_));
   }
 }
 

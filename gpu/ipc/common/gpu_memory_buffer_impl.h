@@ -1,14 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_H_
 #define GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_H_
 
-#include <memory>
-
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/gpu_export.h"
@@ -24,13 +21,15 @@ class GPU_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
  public:
   using DestructionCallback = base::OnceCallback<void(const gpu::SyncToken&)>;
 
+  GpuMemoryBufferImpl(const GpuMemoryBufferImpl&) = delete;
+  GpuMemoryBufferImpl& operator=(const GpuMemoryBufferImpl&) = delete;
+
   ~GpuMemoryBufferImpl() override;
 
   // Overridden from gfx::GpuMemoryBuffer:
   gfx::Size GetSize() const override;
   gfx::BufferFormat GetFormat() const override;
   gfx::GpuMemoryBufferId GetId() const override;
-  ClientBuffer AsClientBuffer() override;
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
@@ -59,9 +58,6 @@ class GPU_EXPORT GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
   // Unmap() operations to avoid corrupt mutation across multiple threads.
   base::Lock map_lock_;
   uint32_t map_count_ GUARDED_BY(map_lock_) = 0u;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GpuMemoryBufferImpl);
 };
 
 }  // namespace gpu

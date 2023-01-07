@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "components/crx_file/crx_verifier.h"
@@ -28,6 +27,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/verifier_formats.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -35,34 +35,16 @@ namespace {
 
 using UpdateClientCallback = UpdateDataProvider::UpdateClientCallback;
 
-void InstallUpdateCallback(content::BrowserContext* context,
-                           const std::string& extension_id,
-                           const std::string& public_key,
-                           const base::FilePath& unpacked_dir,
-                           bool install_immediately,
-                           UpdateClientCallback update_client_callback) {
-  // Note that error codes are converted into custom error codes, which are all
-  // based on a constant (see ToInstallerResult). This means that custom codes
-  // from different embedders may collide. However, for any given extension ID,
-  // there should be only one embedder, so this should be OK from Omaha.
-  ExtensionSystem::Get(context)->InstallUpdate(
-      extension_id, public_key, unpacked_dir, install_immediately,
-      base::BindOnce(
-          [](UpdateClientCallback callback,
-             const base::Optional<CrxInstallError>& error) {
-            DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-            update_client::CrxInstaller::Result result(0);
-            if (error.has_value()) {
-              int detail =
-                  error->type() ==
-                          CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE
-                      ? static_cast<int>(error->sandbox_failure_detail())
-                      : static_cast<int>(error->detail());
-              result = update_client::ToInstallerResult(error->type(), detail);
-            }
-            std::move(callback).Run(result);
-          },
-          std::move(update_client_callback)));
+void PostErrorTasks(const base::FilePath& unpacked_dir,
+                    UpdateClientCallback update_client_callback) {
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::GetDeletePathRecursivelyCallback(unpacked_dir));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(update_client_callback),
+                     update_client::CrxInstaller::Result(
+                         update_client::InstallError::GENERIC_ERROR)));
 }
 
 }  // namespace
@@ -76,11 +58,11 @@ void UpdateDataProvider::Shutdown() {
   browser_context_ = nullptr;
 }
 
-std::vector<base::Optional<update_client::CrxComponent>>
+std::vector<absl::optional<update_client::CrxComponent>>
 UpdateDataProvider::GetData(bool install_immediately,
                             const ExtensionUpdateDataMap& update_crx_component,
                             const std::vector<std::string>& ids) {
-  std::vector<base::Optional<update_client::CrxComponent>> data;
+  std::vector<absl::optional<update_client::CrxComponent>> data;
   if (!browser_context_)
     return data;
   const ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
@@ -88,8 +70,8 @@ UpdateDataProvider::GetData(bool install_immediately,
   for (const auto& id : ids) {
     const Extension* extension = registry->GetInstalledExtension(id);
     data.push_back(extension
-                       ? base::make_optional<update_client::CrxComponent>()
-                       : base::nullopt);
+                       ? absl::make_optional<update_client::CrxComponent>()
+                       : absl::nullopt);
     if (!extension)
       continue;
     DCHECK_NE(0u, update_crx_component.count(id));
@@ -151,22 +133,52 @@ void UpdateDataProvider::RunInstallCallback(
           << public_key;
 
   if (!browser_context_) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-        base::BindOnce(base::GetDeletePathRecursivelyCallback(), unpacked_dir));
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(update_client_callback),
-                       update_client::CrxInstaller::Result(
-                           update_client::InstallError::GENERIC_ERROR)));
+    PostErrorTasks(unpacked_dir, std::move(update_client_callback));
     return;
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(InstallUpdateCallback, browser_context_, extension_id,
-                     public_key, unpacked_dir, install_immediately,
-                     std::move(update_client_callback)));
+      base::BindOnce(&UpdateDataProvider::InstallUpdateCallback, this,
+                     extension_id, public_key, unpacked_dir,
+                     install_immediately, std::move(update_client_callback)));
+}
+
+void UpdateDataProvider::InstallUpdateCallback(
+    const std::string& extension_id,
+    const std::string& public_key,
+    const base::FilePath& unpacked_dir,
+    bool install_immediately,
+    UpdateClientCallback update_client_callback) {
+  if (!browser_context_) {
+    PostErrorTasks(unpacked_dir, std::move(update_client_callback));
+    return;
+  }
+
+  // Note that error codes are converted into custom error codes, which are all
+  // based on a constant (see ToInstallerResult). This means that custom codes
+  // from different embedders may collide. However, for any given extension ID,
+  // there should be only one embedder, so this should be OK from Omaha.
+  ExtensionSystem::Get(browser_context_)
+      ->InstallUpdate(
+          extension_id, public_key, unpacked_dir, install_immediately,
+          base::BindOnce(
+              [](UpdateClientCallback callback,
+                 const absl::optional<CrxInstallError>& error) {
+                DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+                update_client::CrxInstaller::Result result(0);
+                if (error.has_value()) {
+                  int detail =
+                      error->type() ==
+                              CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE
+                          ? static_cast<int>(error->sandbox_failure_detail())
+                          : static_cast<int>(error->detail());
+                  result =
+                      update_client::ToInstallerResult(error->type(), detail);
+                }
+                std::move(callback).Run(result);
+              },
+              std::move(update_client_callback)));
 }
 
 }  // namespace extensions

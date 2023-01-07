@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,8 +94,8 @@
     'samples': [1, 2]
   };
   profileAndExpectations.root = profileAndExpectations.head;
-  SDK.ProfileTreeModel.prototype._assignDepthsAndParents.call(profileAndExpectations);
-  SDK.ProfileTreeModel.prototype._calculateTotals(profileAndExpectations.head);
+  SDK.ProfileTreeModel.prototype.assignDepthsAndParents.call(profileAndExpectations);
+  SDK.ProfileTreeModel.prototype.calculateTotals(profileAndExpectations.head);
   function checkExpectations(node) {
     if (Math.abs(node.selfTime - node.expectedSelfTime) > 0.0001) {
       TestRunner.addResult('totalTime: ' + node.totalTime + ', expected:' + node.expectedTotalTime);

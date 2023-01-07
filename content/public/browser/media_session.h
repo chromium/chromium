@@ -1,11 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_PUBLIC_BROWSER_MEDIA_SESSION_H_
 #define CONTENT_PUBLIC_BROWSER_MEDIA_SESSION_H_
 
-#include "base/macros.h"
+#include <string>
+
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
@@ -35,6 +36,13 @@ class MediaSession : public media_session::mojom::MediaSession {
 
   CONTENT_EXPORT static WebContents* GetWebContentsFromRequestId(
       const base::UnguessableToken& request_id);
+
+  // Media item IDs have a shared namespace including both UnguessableTokens and
+  // strings.
+  // TODO(https://crbug.com/1260385): Use UnguessableToken only and remove this
+  // API.
+  CONTENT_EXPORT static WebContents* GetWebContentsFromRequestId(
+      const std::string& request_id);
 
   CONTENT_EXPORT static const base::UnguessableToken&
   GetRequestIdFromWebContents(WebContents* web_contents);

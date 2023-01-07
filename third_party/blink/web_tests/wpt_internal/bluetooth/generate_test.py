@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -25,17 +25,17 @@ def main():
     for generated_test in generate.GetGeneratedTests():
         generated_files.add(generated_test.path)
         try:
-            with open(generated_test.path) as f:
+            with open(generated_test.path, 'rb') as f:
                 data = f.read().decode('utf-8')
                 if data != generated_test.data:
-                    print generated_test.path + ' does not match template.'
-                    print UPDATE_TIP
+                    print(generated_test.path + ' does not match template.')
+                    print(UPDATE_TIP)
                     return -1
-        except IOError, e:
+        except IOError as e:
             if e.errno == 2:
-                print 'Missing generated test:\n{}\nFor template:\n{}'.format(
-                    generated_test.path, generated_test.template)
-                print UPDATE_TIP
+                print('Missing generated test:\n{}\nFor template:\n{}'.format(
+                    generated_test.path, generated_test.template))
+                print(UPDATE_TIP)
                 return -1
 
     # Tests that there are no obsolete generated files.
@@ -46,9 +46,9 @@ def main():
             previous_generated_files.add(os.path.join(root, filename))
 
     if previous_generated_files != generated_files:
-        print 'There are extra generated tests. Please remove them.'
+        print('There are extra generated tests. Please remove them.')
         for test_path in previous_generated_files - generated_files:
-            print test_path
+            print(test_path)
         return -1
 
 

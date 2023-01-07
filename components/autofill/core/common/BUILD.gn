@@ -1,17 +1,18 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 static_library("common") {
   sources = [
+    "aliases.h",
+    "autocomplete_parsing_util.cc",
+    "autocomplete_parsing_util.h",
     "autofill_clock.cc",
     "autofill_clock.h",
     "autofill_constants.cc",
     "autofill_constants.h",
     "autofill_data_validation.cc",
     "autofill_data_validation.h",
-    "autofill_features.cc",
-    "autofill_features.h",
     "autofill_internals/log_message.cc",
     "autofill_internals/log_message.h",
     "autofill_internals/logging_scope.cc",
@@ -22,6 +23,9 @@ static_library("common") {
     "autofill_payments_features.h",
     "autofill_prefs.cc",
     "autofill_prefs.h",
+    "autofill_regex_constants.h",
+    "autofill_regexes.cc",
+    "autofill_regexes.h",
     "autofill_switches.cc",
     "autofill_switches.h",
     "autofill_tick_clock.cc",
@@ -41,9 +45,12 @@ static_library("common") {
     "form_field_data_predictions.h",
     "gaia_id_hash.cc",
     "gaia_id_hash.h",
+    "html_field_types.cc",
+    "html_field_types.h",
     "language_code.h",
     "logging/log_buffer.cc",
     "logging/log_buffer.h",
+    "logging/log_macros.h",
     "password_form_fill_data.cc",
     "password_form_fill_data.h",
     "password_form_generation_data.h",
@@ -57,13 +64,18 @@ static_library("common") {
     "unique_ids.h",
   ]
 
-  deps = [
+  public_deps = [
+    ":features",
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
 
     # Note: Can't use mojom:mojo_types here, as that already depends on :common.
     "//components/autofill/core/common/mojom:mojo_types_shared",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  deps = [
+    "//build:chromeos_buildflags",
     "//components/pref_registry",
     "//components/prefs",
     "//components/variations",
@@ -73,17 +85,30 @@ static_library("common") {
     "//ui/gfx/geometry",
     "//url",
   ]
+}
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
+component("features") {
+  output_name = "autofill_core_common_features"
+  defines = [ "IS_AUTOFILL_IMPL" ]
+  sources = [
+    "autofill_features.cc",
+    "autofill_features.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+  ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "autocomplete_parsing_util_unittest.cc",
     "autofill_internals/log_message_unittest.cc",
     "autofill_internals/logging_scope_unittest.cc",
-    "autofill_l10n_util_unittest.cc",
     "autofill_prefs_unittest.cc",
+    "autofill_regexes_unittest.cc",
     "autofill_util_unittest.cc",
     "dense_set_unittest.cc",
     "field_data_manager_unittest.cc",
@@ -92,6 +117,7 @@ source_set("unit_tests") {
     "gaia_id_hash_unittest.cc",
     "logging/log_buffer_unittest.cc",
     "save_password_progress_logger_unittest.cc",
+    "signatures_unittest.cc",
   ]
 
   deps = [

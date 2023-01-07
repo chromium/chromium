@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,11 @@
 
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 
+#include <memory>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_executor.h"
@@ -15,6 +18,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "ui/gfx/gpu_fence.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace exo {
@@ -27,6 +31,27 @@ void FrameCallback(void* data, wl_callback* callback, uint32_t time) {
   *frame_callback_pending = false;
 }
 
+void BufferReleaseFencedRelease(
+    void* data,
+    struct zwp_linux_buffer_release_v1* buffer_release,
+    int32_t fd) {
+  ClientBase::Buffer* buffer = static_cast<ClientBase::Buffer*>(data);
+  gfx::GpuFenceHandle release_fence;
+  release_fence.owned_fd = base::ScopedFD(fd);
+  gfx::GpuFence(std::move(release_fence)).Wait();
+  buffer->busy = false;
+}
+
+void BufferReleaseImmediateRelease(
+    void* data,
+    struct zwp_linux_buffer_release_v1* buffer_release) {
+  ClientBase::Buffer* buffer = static_cast<ClientBase::Buffer*>(data);
+  buffer->busy = false;
+}
+
+zwp_linux_buffer_release_v1_listener g_linux_buffer_release_listener = {
+    BufferReleaseFencedRelease, BufferReleaseImmediateRelease};
+
 }  // namespace
 
 // This client exercises the zwp_linux_explicit_synchronization_unstable_v1
@@ -36,11 +61,12 @@ class ExplicitSynchronizationClient : public ClientBase {
  public:
   ExplicitSynchronizationClient() = default;
 
+  ExplicitSynchronizationClient(const ExplicitSynchronizationClient&) = delete;
+  ExplicitSynchronizationClient& operator=(
+      const ExplicitSynchronizationClient&) = delete;
+
   // Initialize and run client main loop.
   void Run();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExplicitSynchronizationClient);
 };
 
 void ExplicitSynchronizationClient::Run() {
@@ -68,6 +94,9 @@ void ExplicitSynchronizationClient::Run() {
   std::unique_ptr<wl_callback> frame_callback;
   bool frame_callback_pending = false;
 
+  base::flat_map<Buffer*, std::unique_ptr<zwp_linux_buffer_release_v1>>
+      buffer_releases;
+
   do {
     if (frame_callback_pending)
       continue;
@@ -75,6 +104,8 @@ void ExplicitSynchronizationClient::Run() {
     Buffer* buffer = DequeueBuffer();
     if (!buffer)
       continue;
+
+    buffer_releases.erase(buffer);
 
     /* Oscillate between 0 and kMaxDrawStep */
     draw_step += draw_step_dir;
@@ -84,13 +115,13 @@ void ExplicitSynchronizationClient::Run() {
     SkCanvas* canvas = buffer->sk_surface->getCanvas();
     float draw_step_percent = static_cast<float>(draw_step) / kMaxDrawStep;
     canvas->clear(
-        SkColor4f{0.0, draw_step_percent, 1.0 - draw_step_percent, 1.0}
+        SkColor4f{0.0f, draw_step_percent, 1.0f - draw_step_percent, 1.0f}
             .toSkColor());
 
     // Create an EGLSyncKHR object to signal when rendering is done.
     gr_context_->flushAndSubmit();
-    buffer->egl_sync.reset(new ScopedEglSync(
-        eglCreateSyncKHR(eglGetCurrentDisplay(), egl_sync_type_, nullptr)));
+    buffer->egl_sync = std::make_unique<ScopedEglSync>(
+        eglCreateSyncKHR(eglGetCurrentDisplay(), egl_sync_type_, nullptr));
     DCHECK(buffer->egl_sync->is_valid());
     glFlush();
 
@@ -107,6 +138,14 @@ void ExplicitSynchronizationClient::Run() {
     DCHECK_GE(fence_fd.get(), 0);
     zwp_linux_surface_synchronization_v1_set_acquire_fence(
         surface_synchronization.get(), fence_fd.get());
+
+    // Register a buffer release event listener.
+    buffer_releases[buffer].reset(
+        zwp_linux_surface_synchronization_v1_get_release(
+            surface_synchronization.get()));
+    zwp_linux_buffer_release_v1_add_listener(buffer_releases[buffer].get(),
+                                             &g_linux_buffer_release_listener,
+                                             buffer);
 
     // Set up the frame callback.
     frame_callback_pending = true;
@@ -132,6 +171,11 @@ int main(int argc, char* argv[]) {
     return 1;
 
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
+
+  // Don't add a buffer listener, buffer release events are handled by
+  // the linux-explicit-synchronization protocol.
+  params.use_release_fences = true;
+
   exo::wayland::clients::ExplicitSynchronizationClient client;
   if (!client.Init(params))
     return 1;

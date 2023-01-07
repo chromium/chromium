@@ -1,0 +1,2 @@
+per-file *.fidl=set noparent
+per-file *.fidl=file://build/fuchsia/SECURITY_OWNERS

@@ -1,0 +1,343 @@
+{
+   "!app_id": "eajjdjobhihlgobdfaehiiheinneagde",
+   "!name": "Name1234",
+   "additional_search_terms": [ "Foo_1234_0", "Foo_1234_1", "Foo_1234_2", "Foo_1234_3", "Foo_1234_4" ],
+   "allowed_launch_protocols": [ "web+test_1234_0" ],
+   "always_show_toolbar_in_fullscreen": false,
+   "app_service_icon_url": "chrome://app-icon/eajjdjobhihlgobdfaehiiheinneagde/32",
+   "app_size_in_bytes": "2353265476",
+   "background_color": "rgba(77,188,194,0.9686274509803922)",
+   "capture_links": "kNewClient",
+   "chromeos_data": null,
+   "client_data": {
+      "system_web_app_data": null
+   },
+   "dark_mode_background_color": "none",
+   "dark_mode_theme_color": "none",
+   "data_size_in_bytes": "3216637306",
+   "description": "Description1234",
+   "disallowed_launch_protocols": [ "web+disallowed_1234_0", "web+disallowed_1234_1", "web+disallowed_1234_2", "web+disallowed_1234_3", "web+disallowed_1234_4", "web+disallowed_1234_5" ],
+   "display_mode": "standalone",
+   "display_override": [ "standalone", "fullscreen" ],
+   "downloaded_icon_sizes": {
+      "ANY": [ 256 ],
+      "MASKABLE": [  ],
+      "MONOCHROME": [ 256 ]
+   },
+   "downloaded_shortcuts_menu_icons_sizes": [ {
+      "ANY": [  ],
+      "MASKABLE": [  ],
+      "MONOCHROME": [  ],
+      "index": 0
+   }, {
+      "ANY": [ 36 ],
+      "MASKABLE": [ 184 ],
+      "MONOCHROME": [ 60 ],
+      "index": 1
+   }, {
+      "ANY": [ 136, 6 ],
+      "MASKABLE": [ 98, 254 ],
+      "MONOCHROME": [ 109, 27 ],
+      "index": 2
+   } ],
+   "file_handler_approval_state": "kRequiresPrompt",
+   "file_handler_os_integration_state": "kDisabled",
+   "file_handlers": [ {
+      "accept": [ {
+         "file_extensions": [ ".24621151600a", ".24621151600b" ],
+         "mime_type": "application/24621151600+foo"
+      }, {
+         "file_extensions": [ ".24621151600a", ".24621151600b" ],
+         "mime_type": "application/24621151600+bar"
+      } ],
+      "action": "https://example.com/open-24621151600",
+      "downloaded_icons": [ {
+         "purpose": "kAny",
+         "square_size_px": 16,
+         "url": "https://example.com/image.png"
+      }, {
+         "purpose": "kAny",
+         "square_size_px": 48,
+         "url": "https://example.com/image2.png"
+      } ],
+      "launch_type": "kSingleClient",
+      "name": "24621151600 file"
+   }, {
+      "accept": [ {
+         "file_extensions": [ ".24621151601a", ".24621151601b" ],
+         "mime_type": "application/24621151601+foo"
+      }, {
+         "file_extensions": [ ".24621151601a", ".24621151601b" ],
+         "mime_type": "application/24621151601+bar"
+      } ],
+      "action": "https://example.com/open-24621151601",
+      "downloaded_icons": [ {
+         "purpose": "kAny",
+         "square_size_px": 16,
+         "url": "https://example.com/image.png"
+      }, {
+         "purpose": "kAny",
+         "square_size_px": 48,
+         "url": "https://example.com/image2.png"
+      } ],
+      "launch_type": "kSingleClient",
+      "name": "24621151601 file"
+   }, {
+      "accept": [ {
+         "file_extensions": [ ".24621151602a", ".24621151602b" ],
+         "mime_type": "application/24621151602+foo"
+      }, {
+         "file_extensions": [ ".24621151602a", ".24621151602b" ],
+         "mime_type": "application/24621151602+bar"
+      } ],
+      "action": "https://example.com/open-24621151602",
+      "downloaded_icons": [ {
+         "purpose": "kAny",
+         "square_size_px": 16,
+         "url": "https://example.com/image.png"
+      }, {
+         "purpose": "kAny",
+         "square_size_px": 48,
+         "url": "https://example.com/image2.png"
+      } ],
+      "launch_type": "kSingleClient",
+      "name": "24621151602 file"
+   }, {
+      "accept": [ {
+         "file_extensions": [ ".24621151603a", ".24621151603b" ],
+         "mime_type": "application/24621151603+foo"
+      }, {
+         "file_extensions": [ ".24621151603a", ".24621151603b" ],
+         "mime_type": "application/24621151603+bar"
+      } ],
+      "action": "https://example.com/open-24621151603",
+      "downloaded_icons": [ {
+         "purpose": "kAny",
+         "square_size_px": 16,
+         "url": "https://example.com/image.png"
+      }, {
+         "purpose": "kAny",
+         "square_size_px": 48,
+         "url": "https://example.com/image2.png"
+      } ],
+      "launch_type": "kSingleClient",
+      "name": "24621151603 file"
+   }, {
+      "accept": [ {
+         "file_extensions": [ ".24621151604a", ".24621151604b" ],
+         "mime_type": "application/24621151604+foo"
+      }, {
+         "file_extensions": [ ".24621151604a", ".24621151604b" ],
+         "mime_type": "application/24621151604+bar"
+      } ],
+      "action": "https://example.com/open-24621151604",
+      "downloaded_icons": [ {
+         "purpose": "kAny",
+         "square_size_px": 16,
+         "url": "https://example.com/image.png"
+      }, {
+         "purpose": "kAny",
+         "square_size_px": 48,
+         "url": "https://example.com/image2.png"
+      } ],
+      "launch_type": "kSingleClient",
+      "name": "24621151604 file"
+   } ],
+   "install_source_for_metrics": 5,
+   "install_time": "1970-02-04 02:14:21.221 UTC",
+   "is_from_sync_and_pending_installation": true,
+   "is_generated_icon": false,
+   "is_locally_installed": true,
+   "is_storage_isolated": true,
+   "is_uninstalling": false,
+   "isolation_data": {
+      "content": {
+         "dev_mode_proxy": {
+            "proxy_url": "1234"
+         }
+      }
+   },
+   "last_badging_time": "1970-01-10 21:57:36.131 UTC",
+   "last_launch_time": "1970-02-07 14:20:22.070 UTC",
+   "launch_handler": null,
+   "launch_query_params": null,
+   "lock_screen_start_url": "",
+   "management_type_to_external_configuration_map": {
+      "Default": {
+         "install_urls": [  ],
+         "is_placeholder": true
+      },
+      "SubApp": {
+         "install_urls": [ "https://example.com/installer2_1234/" ],
+         "is_placeholder": true
+      },
+      "WebAppStore": {
+         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ],
+         "is_placeholder": true
+      }
+   },
+   "manifest_icons": [ {
+      "purpose": "kAny",
+      "square_size_px": 256,
+      "url": "https://example.com/icon944292860"
+   }, {
+      "purpose": "kAny",
+      "square_size_px": null,
+      "url": "https://example.com/icon1308772041"
+   }, {
+      "purpose": "kAny",
+      "square_size_px": null,
+      "url": "https://example.com/icon997447169"
+   } ],
+   "manifest_id": null,
+   "manifest_update_time": "1970-02-12 16:20:18.762 UTC",
+   "manifest_url": "https://example.com/manifest1234.json",
+   "note_taking_new_note_url": "",
+   "parent_app_id": "",
+   "protocol_handlers": [ {
+      "protocol": "web+test30229902710",
+      "url": "https://example.com/30229902710"
+   }, {
+      "protocol": "web+test30229902711",
+      "url": "https://example.com/30229902711"
+   }, {
+      "protocol": "web+test30229902712",
+      "url": "https://example.com/30229902712"
+   }, {
+      "protocol": "web+test30229902713",
+      "url": "https://example.com/30229902713"
+   }, {
+      "protocol": "web+test30229902714",
+      "url": "https://example.com/30229902714"
+   } ],
+   "run_on_os_login_mode": "windowed",
+   "run_on_os_login_os_integration_state": "not run",
+   "scope": "https://example.com/scope1234/",
+   "share_target": {
+      "action": "https://example.com/path/target/3588290033",
+      "enctype": "multipart/form-data",
+      "method": "GET",
+      "params": {
+         "files": [ {
+            "accept": [ ".extension0", "type/subtype0" ],
+            "name": "files0"
+         }, {
+            "accept": [ ".extension1", "type/subtype1" ],
+            "name": "files1"
+         }, {
+            "accept": [ ".extension2", "type/subtype2" ],
+            "name": "files2"
+         } ],
+         "text": "text3588290033",
+         "title": "title3588290033",
+         "url": ""
+      }
+   },
+   "shortcuts_menu_item_infos": [ {
+      "icons": {
+         "ANY": [ {
+            "square_size_px": 41,
+            "url": "https://example.com/shortcuts/icon24240987424"
+         }, {
+            "square_size_px": 0,
+            "url": "https://example.com/shortcuts/icon24240987420"
+         } ],
+         "MASKABLE": [ {
+            "square_size_px": 32,
+            "url": "https://example.com/shortcuts/icon24240987423"
+         } ],
+         "MONOCHROME": [ {
+            "square_size_px": 23,
+            "url": "https://example.com/shortcuts/icon24240987422"
+         }, {
+            "square_size_px": 16,
+            "url": "https://example.com/shortcuts/icon24240987421"
+         } ]
+      },
+      "name": "shortcut2424098742",
+      "url": "https://example.com/scope1234/shortcut2424098742"
+   }, {
+      "icons": {
+         "ANY": [ {
+            "square_size_px": 11,
+            "url": "https://example.com/shortcuts/icon24240987411"
+         } ],
+         "MASKABLE": [ {
+            "square_size_px": 21,
+            "url": "https://example.com/shortcuts/icon24240987412"
+         }, {
+            "square_size_px": 7,
+            "url": "https://example.com/shortcuts/icon24240987410"
+         } ],
+         "MONOCHROME": [  ]
+      },
+      "name": "shortcut2424098741",
+      "url": "https://example.com/scope1234/shortcut2424098741"
+   }, {
+      "icons": {
+         "ANY": [ {
+            "square_size_px": 4,
+            "url": "https://example.com/shortcuts/icon24240987400"
+         } ],
+         "MASKABLE": [ {
+            "square_size_px": 34,
+            "url": "https://example.com/shortcuts/icon24240987403"
+         } ],
+         "MONOCHROME": [ {
+            "square_size_px": 44,
+            "url": "https://example.com/shortcuts/icon24240987404"
+         }, {
+            "square_size_px": 25,
+            "url": "https://example.com/shortcuts/icon24240987402"
+         }, {
+            "square_size_px": 10,
+            "url": "https://example.com/shortcuts/icon24240987401"
+         } ]
+      },
+      "name": "shortcut2424098740",
+      "url": "https://example.com/scope1234/shortcut2424098740"
+   } ],
+   "sources": [ "SubApp", "WebAppStore", "Sync", "Default" ],
+   "start_url": "https://example.com/scope1234/start1234",
+   "sync_fallback_data": {
+      "manifest_icons": [ {
+         "purpose": "kAny",
+         "square_size_px": 256,
+         "url": "https://example.com/icon944292860"
+      }, {
+         "purpose": "kAny",
+         "square_size_px": null,
+         "url": "https://example.com/icon1308772041"
+      }, {
+         "purpose": "kAny",
+         "square_size_px": null,
+         "url": "https://example.com/icon997447169"
+      } ],
+      "name": "SyncName1234",
+      "scope": "https://example.com/scope1234/",
+      "theme_color": "rgba(61,127,69,0.8431372549019608)"
+   },
+   "tab_strip": null,
+   "theme_color": "rgba(151,34,83,0.8823529411764706)",
+   "unhashed_app_id": "https://example.com/scope1234/start1234",
+   "url_handlers": [ {
+      "exclude_paths": [  ],
+      "has_origin_wildcard": true,
+      "origin": "https://app-5706029450.com",
+      "paths": [  ]
+   }, {
+      "exclude_paths": [  ],
+      "has_origin_wildcard": true,
+      "origin": "https://app-5706029451.com",
+      "paths": [  ]
+   }, {
+      "exclude_paths": [  ],
+      "has_origin_wildcard": true,
+      "origin": "https://app-5706029452.com",
+      "paths": [  ]
+   } ],
+   "user_display_mode": "standalone",
+   "user_launch_ordinal": "INVALID[]",
+   "user_page_ordinal": "INVALID[]",
+   "window_controls_overlay_enabled": false
+}

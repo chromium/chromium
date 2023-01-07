@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,14 +30,16 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
@@ -46,7 +48,7 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/disk_cache_test_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/logging_win.h"
 #endif
 
@@ -122,7 +124,7 @@ enum Operation { NONE, OPEN, CREATE, READ, WRITE, DOOM };
 // closed or deleted.
 class EntryWrapper {
  public:
-  EntryWrapper() : entry_(nullptr), state_(NONE) {
+  EntryWrapper() {
     buffer_ = base::MakeRefCounted<net::IOBuffer>(kBufferSize);
     memset(buffer_->data(), 'k', kBufferSize);
   }
@@ -141,19 +143,19 @@ class EntryWrapper {
   void OnDeleteDone(int result);
   void DoIdle();
 
-  disk_cache::Entry* entry_;
-  Operation state_;
+  disk_cache::Entry* entry_ = nullptr;
+  Operation state_ = NONE;
   scoped_refptr<net::IOBuffer> buffer_;
 };
 
 // The data that the main thread is working on.
 struct Data {
-  Data() : pendig_operations(0), writes(0), iteration(0), cache(nullptr) {}
+  Data() = default;
 
-  int pendig_operations;  // Counter of simultaneous operations.
-  int writes;             // How many writes since this iteration started.
-  int iteration;          // The iteration (number of crashes).
-  disk_cache::BackendImpl* cache;
+  int pendig_operations = 0;  // Counter of simultaneous operations.
+  int writes = 0;             // How many writes since this iteration started.
+  int iteration = 0;          // The iteration (number of crashes).
+  disk_cache::BackendImpl* cache = nullptr;
   std::string keys[kNumKeys];
   EntryWrapper entries[kNumEntries];
 };
@@ -319,9 +321,9 @@ void StressTheCache(int iteration) {
   g_data->cache->SetFlags(disk_cache::kNoLoadProtection);
 
   net::TestCompletionCallback cb;
-  int rv = g_data->cache->Init(cb.callback());
+  g_data->cache->Init(cb.callback());
 
-  if (cb.GetResult(rv) != net::OK) {
+  if (cb.WaitForResult() != net::OK) {
     printf("Unable to initialize cache.\n");
     return;
   }
@@ -331,8 +333,8 @@ void StressTheCache(int iteration) {
   int seed = static_cast<int>(Time::Now().ToInternalValue());
   srand(seed);
 
-  for (int i = 0; i < kNumKeys; i++)
-    g_data->keys[i] = GenerateStressKey();
+  for (auto& key : g_data->keys)
+    key = GenerateStressKey();
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                 base::BindOnce(&LoopTask));
@@ -362,7 +364,7 @@ void CrashCallback() {
 }
 
 void RunSoon(scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  const base::TimeDelta kTaskDelay = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta kTaskDelay = base::Seconds(10);
   task_runner->PostDelayedTask(FROM_HERE, base::BindOnce(&CrashCallback),
                                kTaskDelay);
 }
@@ -387,7 +389,7 @@ void CrashHandler(const char* file,
 
 // -----------------------------------------------------------------------
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // {B9A153D4-31C3-48e4-9ABF-D54383F14A0D}
 const GUID kStressCacheTraceProviderName = {
     0xb9a153d4, 0x31c3, 0x48e4,
@@ -404,7 +406,7 @@ int main(int argc, const char* argv[]) {
   logging::ScopedLogAssertHandler scoped_assert_handler(
       base::BindRepeating(CrashHandler));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   logging::LogEventProvider::Initialize(kStressCacheTraceProviderName);
 #else
   base::CommandLine::Init(argc, argv);
@@ -415,7 +417,7 @@ int main(int argc, const char* argv[]) {
 #endif
 
   // Some time for the memory manager to flush stuff.
-  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(3));
+  base::PlatformThread::Sleep(base::Seconds(3));
   base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 
   char* end;

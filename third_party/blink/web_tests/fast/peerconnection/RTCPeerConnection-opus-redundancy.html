@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RTCPeerConnection red+opus support</title>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+  </head>
+  <body>
+    <script>
+// These tests are testing the support for audio/red.
+// Not suitable for WPT since this is not mandatory-to-implement.
+promise_test(async t => {
+  const pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  const pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc2.close());
+
+  const stream = await navigator.mediaDevices.getUserMedia({audio:true})
+  t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+
+  const sender = pc1.addTrack(stream.getAudioTracks()[0], stream);
+  const codecs = RTCRtpSender.getCapabilities('audio').codecs;
+  const selectedCodecIndex = codecs.findIndex(c => c.mimeType === 'audio/red' && c.clockRate === 48000);
+  assert_greater_than(selectedCodecIndex, -1);
+  const selectedCodec = codecs[selectedCodecIndex];
+  codecs.splice(selectedCodecIndex, 1);
+  codecs.unshift(selectedCodec);
+  pc1.getTransceivers()[0].setCodecPreferences(codecs);
+  await pc1.setLocalDescription();
+  await pc2.setRemoteDescription(pc1.localDescription);
+  await pc2.setLocalDescription();
+  await pc1.setRemoteDescription(pc2.localDescription);
+
+  const parameters = await sender.getParameters();
+  assert_equals(parameters.codecs[0].mimeType, 'audio/red');
+}, 'setCodecPreferences allows preferring audio/red + opus');
+    </script>
+  </body>
+</html>

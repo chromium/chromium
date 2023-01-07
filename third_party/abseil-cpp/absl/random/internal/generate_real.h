@@ -50,10 +50,10 @@ struct GenerateSignedTag {};
 // inputs, otherwise it never returns 0.
 //
 // When a value in U(0,1) is required, use:
-//   Uniform64ToReal<double, PositiveValueT, true>;
+//   GenerateRealFromBits<double, PositiveValueT, true>;
 //
 // When a value in U(-1,1) is required, use:
-//   Uniform64ToReal<double, SignedValueT, false>;
+//   GenerateRealFromBits<double, SignedValueT, false>;
 //
 //   This generates more distinct values than the mathematical equivalent
 //   `U(0, 1) * 2.0 - 1.0`.
@@ -127,10 +127,8 @@ inline RealType GenerateRealFromBits(uint64_t bits, int exp_bias = 0) {
 
   // Construct the 32-bit or 64-bit IEEE 754 floating-point value from
   // the individual fields: sign, exp, mantissa(bits).
-  uint_type val =
-      (std::is_same<SignedTag, GeneratePositiveTag>::value ? 0u : sign) |
-      (static_cast<uint_type>(exp) << kExp) |
-      (static_cast<uint_type>(bits) & kMask);
+  uint_type val = sign | (static_cast<uint_type>(exp) << kExp) |
+                  (static_cast<uint_type>(bits) & kMask);
 
   // bit_cast to the output-type
   real_type result;

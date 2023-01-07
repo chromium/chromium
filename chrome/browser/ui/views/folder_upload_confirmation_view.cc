@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 FolderUploadConfirmationView::FolderUploadConfirmationView(
     const base::FilePath& path,
@@ -60,7 +60,7 @@ FolderUploadConfirmationView::FolderUploadConfirmationView(
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(std::move(label));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
 }
 
 FolderUploadConfirmationView::~FolderUploadConfirmationView() {

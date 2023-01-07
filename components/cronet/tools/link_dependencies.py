@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -135,7 +135,7 @@ def link(output, inputs):
   _, err = p.communicate()
   for line in err.splitlines():
     if not libtool_re.match(line):
-      print >>sys.stderr, line
+      sys.stderr.write(line)
   if p.returncode != 0:
     message = "subprocess libtool returned {0}".format(p.returncode)
     raise SubprocessError(message)

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -72,7 +72,6 @@ struct NGAnnotationMetrics {
 NGAnnotationMetrics ComputeAnnotationOverflow(
     const NGLogicalLineItems& logical_line,
     const FontHeight& line_box_metrics,
-    LayoutUnit line_over,
     const ComputedStyle& line_style);
 
 }  // namespace blink

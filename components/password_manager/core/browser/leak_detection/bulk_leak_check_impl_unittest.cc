@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
@@ -24,12 +25,16 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::ByMove;
 using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Optional;
 using ::testing::Return;
 
 constexpr char kAccessToken[] = "access_token";
 constexpr char kTestEmail[] = "user@gmail.com";
+constexpr char16_t kTestEmail16[] = u"user@gmail.com";
 constexpr char kTestPassword[] = "password123";
+constexpr char16_t kTestPassword16[] = u"password123";
 constexpr char kUniqueString[] = "unique";
 
 MATCHER_P(CredentialIs, credential, "") {
@@ -51,15 +56,16 @@ MATCHER_P(CustomDataIs, string, "") {
 struct TestLeakDetectionRequest : LeakDetectionRequestInterface {
   // LeakDetectionRequestInterface:
   void LookupSingleLeak(network::mojom::URLLoaderFactory* url_loader_factory,
-                        const std::string& access_token,
+                        const absl::optional<std::string>& access_token,
+                        const absl::optional<std::string>& api_key,
                         LookupSingleLeakPayload payload,
                         LookupSingleLeakCallback callback) override {
-    this->encrypted_payload = std::move(payload.encrypted_payload);
-    this->callback = std::move(callback);
+    encrypted_payload = std::move(payload.encrypted_payload);
+    lookup_callback = std::move(callback);
   }
 
   std::string encrypted_payload;
-  LookupSingleLeakCallback callback;
+  LookupSingleLeakCallback lookup_callback;
 };
 
 // Helper struct for making a fake network request.
@@ -68,9 +74,8 @@ struct PayloadAndCallback {
   LeakDetectionRequestInterface::LookupSingleLeakCallback callback;
 };
 
-LeakCheckCredential TestCredential(base::StringPiece username) {
-  return LeakCheckCredential(base::ASCIIToUTF16(username),
-                             base::ASCIIToUTF16(kTestPassword));
+LeakCheckCredential TestCredential(base::StringPiece16 username) {
+  return LeakCheckCredential(std::u16string(username), kTestPassword16);
 }
 
 class BulkLeakCheckTest : public testing::Test {
@@ -103,7 +108,7 @@ class BulkLeakCheckTest : public testing::Test {
   base::test::TaskEnvironment task_env_;
   signin::IdentityTestEnvironment identity_test_env_;
   ::testing::StrictMock<MockBulkLeakCheckDelegateInterface> delegate_;
-  MockLeakDetectionRequestFactory* request_factory_;
+  raw_ptr<MockLeakDetectionRequestFactory> request_factory_;
   BulkLeakCheckImpl bulk_check_;
 };
 
@@ -123,7 +128,7 @@ PayloadAndCallback BulkLeakCheckTest::ImitateNetworkRequest(
       kAccessToken, base::Time::Max());
 
   return {std::move(raw_request->encrypted_payload),
-          std::move(raw_request->callback)};
+          std::move(raw_request->lookup_callback)};
 }
 
 TEST_F(BulkLeakCheckTest, Create) {
@@ -137,8 +142,8 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsAndDestroyImmediately) {
   EXPECT_CALL(delegate(), OnError).Times(0);
 
   std::vector<LeakCheckCredential> credentials;
-  credentials.push_back(TestCredential("user1"));
-  credentials.push_back(TestCredential("user2"));
+  credentials.push_back(TestCredential(u"user1"));
+  credentials.push_back(TestCredential(u"user2"));
   bulk_check().CheckCredentials(std::move(credentials));
 }
 
@@ -151,7 +156,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsAndDestroyAfterPayload) {
   EXPECT_CALL(delegate(), OnError).Times(0);
 
   std::vector<LeakCheckCredential> credentials;
-  credentials.push_back(TestCredential("user1"));
+  credentials.push_back(TestCredential(u"user1"));
   bulk_check().CheckCredentials(std::move(credentials));
   RunUntilIdle();
 }
@@ -164,7 +169,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsAccessTokenAuthError) {
   EXPECT_CALL(delegate(), OnError(LeakDetectionError::kTokenRequestFailure));
 
   std::vector<LeakCheckCredential> credentials;
-  credentials.push_back(TestCredential("user1"));
+  credentials.push_back(TestCredential(u"user1"));
   bulk_check().CheckCredentials(std::move(credentials));
   identity_test_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError::FromServiceError("error"));
@@ -178,7 +183,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsAccessTokenNetError) {
   EXPECT_CALL(delegate(), OnError(LeakDetectionError::kNetworkError));
 
   std::vector<LeakCheckCredential> credentials;
-  credentials.push_back(TestCredential("user1"));
+  credentials.push_back(TestCredential(u"user1"));
   bulk_check().CheckCredentials(std::move(credentials));
   identity_test_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError::FromConnectionError(net::ERR_TIMED_OUT));
@@ -192,7 +197,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsAccessTokenSignedOut) {
   EXPECT_CALL(delegate(), OnError(LeakDetectionError::kNotSignIn));
 
   std::vector<LeakCheckCredential> credentials;
-  credentials.push_back(TestCredential("user1"));
+  credentials.push_back(TestCredential(u"user1"));
   bulk_check().CheckCredentials(std::move(credentials));
   identity_test_env().WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
@@ -206,13 +211,13 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsAccessDoesNetworkRequest) {
   identity_test_env().SetRefreshTokenForAccount(info.account_id);
 
   std::vector<LeakCheckCredential> credentials;
-  credentials.push_back(TestCredential("USERNAME@gmail.com"));
+  credentials.push_back(TestCredential(u"USERNAME@gmail.com"));
   bulk_check().CheckCredentials(std::move(credentials));
 
   auto network_request = std::make_unique<MockLeakDetectionRequest>();
   EXPECT_CALL(*network_request,
               LookupSingleLeak(
-                  _, kAccessToken,
+                  _, Optional(Eq(kAccessToken)), /*api_key=*/Eq(absl::nullopt),
                   AllOf(Field(&LookupSingleLeakPayload::username_hash_prefix,
                               ElementsAre(0xBD, 0x74, 0xA9, 0x00)),
                         Field(&LookupSingleLeakPayload::encrypted_payload,
@@ -231,8 +236,8 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsMultipleNetworkRequests) {
 
   EXPECT_EQ(0u, bulk_check().GetPendingChecksCount());
   std::vector<LeakCheckCredential> credentials;
-  credentials.push_back(TestCredential("user1"));
-  credentials.push_back(TestCredential("user2"));
+  credentials.push_back(TestCredential(u"user1"));
+  credentials.push_back(TestCredential(u"user2"));
   bulk_check().CheckCredentials(std::move(credentials));
   EXPECT_EQ(2u, bulk_check().GetPendingChecksCount());
   RunUntilIdle();
@@ -240,8 +245,12 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsMultipleNetworkRequests) {
 
   auto network_request1 = std::make_unique<MockLeakDetectionRequest>();
   auto network_request2 = std::make_unique<MockLeakDetectionRequest>();
-  EXPECT_CALL(*network_request1, LookupSingleLeak(_, kAccessToken, _, _));
-  EXPECT_CALL(*network_request2, LookupSingleLeak(_, kAccessToken, _, _));
+  EXPECT_CALL(*network_request1,
+              LookupSingleLeak(_, Optional(Eq(kAccessToken)),
+                               /*api_key=*/Eq(absl::nullopt), _, _));
+  EXPECT_CALL(*network_request2,
+              LookupSingleLeak(_, Optional(Eq(kAccessToken)),
+                               /*api_key=*/Eq(absl::nullopt), _, _));
   EXPECT_CALL(*request_factory(), CreateNetworkRequest)
       .WillOnce(Return(ByMove(std::move(network_request1))))
       .WillOnce(Return(ByMove(std::move(network_request2))));
@@ -256,7 +265,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsDecryptionError) {
   identity_test_env().SetRefreshTokenForAccount(info.account_id);
 
   PayloadAndCallback payload_and_callback =
-      ImitateNetworkRequest(TestCredential(kTestEmail));
+      ImitateNetworkRequest(TestCredential(kTestEmail16));
   ASSERT_TRUE(!payload_and_callback.payload.empty());
 
   auto response = std::make_unique<SingleLookupResponse>();
@@ -272,7 +281,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsDecryptionError) {
 
   EXPECT_CALL(delegate(), OnError(LeakDetectionError::kHashingFailure));
   std::move(payload_and_callback.callback)
-      .Run(std::move(response), base::nullopt);
+      .Run(std::move(response), absl::nullopt);
   RunUntilIdle();
   EXPECT_EQ(0u, bulk_check().GetPendingChecksCount());
 }
@@ -282,7 +291,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsNotLeaked) {
   identity_test_env().SetCookieAccounts({{info.email, info.gaia}});
   identity_test_env().SetRefreshTokenForAccount(info.account_id);
 
-  LeakCheckCredential leaked_credential = TestCredential(kTestEmail);
+  LeakCheckCredential leaked_credential = TestCredential(kTestEmail16);
   leaked_credential.SetUserData(kUniqueString,
                                 std::make_unique<CustomData>("custom"));
   PayloadAndCallback payload_and_callback =
@@ -299,13 +308,13 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsNotLeaked) {
           key_server)));
 
   EXPECT_EQ(1u, bulk_check().GetPendingChecksCount());
-  leaked_credential = TestCredential(kTestEmail);
+  leaked_credential = TestCredential(kTestEmail16);
   EXPECT_CALL(delegate(), OnFinishedCredential(
                               AllOf(CredentialIs(std::cref(leaked_credential)),
                                     CustomDataIs("custom")),
                               IsLeaked(false)));
   std::move(payload_and_callback.callback)
-      .Run(std::move(response), base::nullopt);
+      .Run(std::move(response), absl::nullopt);
   RunUntilIdle();
   EXPECT_EQ(0u, bulk_check().GetPendingChecksCount());
 }
@@ -315,7 +324,7 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsLeaked) {
   identity_test_env().SetCookieAccounts({{info.email, info.gaia}});
   identity_test_env().SetRefreshTokenForAccount(info.account_id);
 
-  LeakCheckCredential leaked_credential = TestCredential("abc");
+  LeakCheckCredential leaked_credential = TestCredential(u"abc");
   leaked_credential.SetUserData(kUniqueString,
                                 std::make_unique<CustomData>("custom"));
   PayloadAndCallback payload_and_callback =
@@ -331,13 +340,13 @@ TEST_F(BulkLeakCheckTest, CheckCredentialsLeaked) {
           *ScryptHashUsernameAndPassword("abc", kTestPassword), key_server)));
 
   EXPECT_EQ(1u, bulk_check().GetPendingChecksCount());
-  leaked_credential = TestCredential("abc");
+  leaked_credential = TestCredential(u"abc");
   EXPECT_CALL(delegate(), OnFinishedCredential(
                               AllOf(CredentialIs(std::cref(leaked_credential)),
                                     CustomDataIs("custom")),
                               IsLeaked(true)));
   std::move(payload_and_callback.callback)
-      .Run(std::move(response), base::nullopt);
+      .Run(std::move(response), absl::nullopt);
   RunUntilIdle();
   EXPECT_EQ(0u, bulk_check().GetPendingChecksCount());
 }

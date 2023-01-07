@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/assist_ranker/base_predictor.h"
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "components/assist_ranker/proto/ranker_example.pb.h"
 #include "components/assist_ranker/proto/ranker_model.pb.h"

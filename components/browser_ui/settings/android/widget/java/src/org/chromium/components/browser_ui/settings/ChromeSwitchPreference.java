@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.ColorRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.PreferenceViewHolder;
 import androidx.preference.SwitchPreferenceCompat;
 
@@ -23,7 +24,7 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
     private View mView;
     /** The color resource ID for tinting of the view's background. */
     @ColorRes
-    private int mBackgroundColorRes;
+    private Integer mBackgroundColorRes;
 
     public ChromeSwitchPreference(Context context) {
         super(context);
@@ -72,13 +73,15 @@ public class ChromeSwitchPreference extends SwitchPreferenceCompat {
      * @param colorRes
      */
     public void setBackgroundColor(@ColorRes int colorRes) {
-        if (mBackgroundColorRes == colorRes) return;
+        if (mBackgroundColorRes != null && mBackgroundColorRes == colorRes) return;
         mBackgroundColorRes = colorRes;
         updateBackground();
     }
 
     private void updateBackground() {
-        if (mView == null) return;
-        mView.setBackgroundColor(mBackgroundColorRes);
+        if (mView == null || mBackgroundColorRes == null) return;
+        mView.setBackgroundColor(
+                AppCompatResources.getColorStateList(getContext(), mBackgroundColorRes)
+                        .getDefaultColor());
     }
 }

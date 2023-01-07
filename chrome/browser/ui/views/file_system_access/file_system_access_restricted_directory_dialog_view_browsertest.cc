@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/file_system_access/file_system_access_restricted_directory_dialog_view.h"
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -12,8 +13,8 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/resource/resource_bundle.h"
 
-using SensitiveDirectoryResult =
-    content::FileSystemAccessPermissionContext::SensitiveDirectoryResult;
+using SensitiveEntryResult =
+    content::FileSystemAccessPermissionContext::SensitiveEntryResult;
 
 class FileSystemAccessRestrictedDirectoryDialogViewTest
     : public DialogBrowserTest {
@@ -23,7 +24,7 @@ class FileSystemAccessRestrictedDirectoryDialogViewTest
     widget_ = FileSystemAccessRestrictedDirectoryDialogView::ShowDialog(
         kTestOrigin, base::FilePath(FILE_PATH_LITERAL("/foo/bar")),
         content::FileSystemAccessPermissionContext::HandleType::kDirectory,
-        base::BindLambdaForTesting([&](SensitiveDirectoryResult result) {
+        base::BindLambdaForTesting([&](SensitiveEntryResult result) {
           callback_called_ = true;
           callback_result_ = result;
         }),
@@ -34,11 +35,10 @@ class FileSystemAccessRestrictedDirectoryDialogViewTest
   const url::Origin kTestOrigin =
       url::Origin::Create(GURL("https://example.com"));
 
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   bool callback_called_ = false;
-  SensitiveDirectoryResult callback_result_ =
-      SensitiveDirectoryResult::kAllowed;
+  SensitiveEntryResult callback_result_ = SensitiveEntryResult::kAllowed;
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessRestrictedDirectoryDialogViewTest,
@@ -46,7 +46,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessRestrictedDirectoryDialogViewTest,
   ShowUi(std::string());
   widget_->widget_delegate()->AsDialogDelegate()->AcceptDialog();
   EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SensitiveDirectoryResult::kTryAgain, callback_result_);
+  EXPECT_EQ(SensitiveEntryResult::kTryAgain, callback_result_);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -55,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessRestrictedDirectoryDialogViewTest,
   ShowUi(std::string());
   widget_->widget_delegate()->AsDialogDelegate()->CancelDialog();
   EXPECT_TRUE(callback_called_);
-  EXPECT_EQ(SensitiveDirectoryResult::kAbort, callback_result_);
+  EXPECT_EQ(SensitiveEntryResult::kAbort, callback_result_);
   base::RunLoop().RunUntilIdle();
 }
 

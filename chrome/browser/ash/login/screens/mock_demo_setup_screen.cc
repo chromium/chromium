@@ -1,13 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/mock_demo_setup_screen.h"
+#include "base/memory/weak_ptr.h"
 
-namespace chromeos {
+namespace ash {
 
 MockDemoSetupScreen::MockDemoSetupScreen(
-    DemoSetupScreenView* view,
+    base::WeakPtr<DemoSetupScreenView> view,
     const ScreenExitCallback& exit_callback)
     : DemoSetupScreen(view, exit_callback) {}
 
@@ -19,14 +20,6 @@ void MockDemoSetupScreen::ExitScreen(Result result) {
 
 MockDemoSetupScreenView::MockDemoSetupScreenView() = default;
 
-MockDemoSetupScreenView::~MockDemoSetupScreenView() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+MockDemoSetupScreenView::~MockDemoSetupScreenView() = default;
 
-void MockDemoSetupScreenView::Bind(DemoSetupScreen* screen) {
-  screen_ = screen;
-  MockBind(screen);
-}
-
-}  // namespace chromeos
+}  // namespace ash

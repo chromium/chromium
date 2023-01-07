@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -34,7 +34,7 @@ source_set("cronet_native_tests") {
     "//base/allocator:buildflags",
     "//base/test:test_support",
     "//components/cronet/native:cronet_native_headers",
-    "//components/cronet/test:test_support",
+    "//components/cronet/testing:test_support",
     "//components/grpc_support:bidirectional_stream_test",
     "//components/grpc_support/test:get_stream_engine_header",
     "//net:test_support",

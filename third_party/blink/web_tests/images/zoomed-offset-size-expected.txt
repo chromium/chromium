@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Image should return a size of 250x166 regardless of zoom level. assert_equals: expected 250 but got 251
-Harness: the test ran to completion.
-

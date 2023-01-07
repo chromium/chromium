@@ -1,0 +1,60 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Data structures related to Cast device certificate revocation infrastructure.
+
+// This proto must be kept in sync with google3.
+
+syntax = "proto2";
+
+package cast_certificate;
+
+option optimize_for = LITE_RUNTIME;
+
+message CrlBundle {
+  // List of supported versions of the same revocation list.
+  repeated Crl crls = 1;
+}
+
+message Crl {
+  // Octet string of serialized TbsCrl protobuf.
+  optional bytes tbs_crl = 1;
+
+  // Binary ASN.1 DER encoding of the signer's certificate.
+  optional bytes signer_cert = 2;
+
+  // Signature calculated over the contents of the tbs_crl field. Signature
+  // algorithm is implied by TbsCrl.version.
+  optional bytes signature = 3;
+}
+
+message TbsCrl {
+  // Version 0 algorithms:
+  //  revoked_public_key_hashes: SHA-256
+  //  SerialNumberRange.issuer_public_key_hash: SHA-256
+  //  Crl.signature: RSA-PKCS1 V1.5 with SHA-256
+  optional uint64 version = 1 [default = 0];
+
+  // Inclusive validity range of the CRL in Unix time.
+  optional uint64 not_before_seconds = 2;
+  optional uint64 not_after_seconds = 3;
+
+  // SPKI hashes of revoked credentials. Hashing algorithm is implied by
+  // TbsCrl.version.
+  repeated bytes revoked_public_key_hashes = 4;
+
+  repeated SerialNumberRange revoked_serial_number_ranges = 5;
+}
+
+message SerialNumberRange {
+  // SPKI hash of the certificate issuer. Hashing algorithm is implied by the
+  // enclosing TbsCrl.version.
+  optional bytes issuer_public_key_hash = 1;
+
+  // Inclusive range of revoked certificate serial numbers. Only certificates
+  // with positive serial numbers that fit within 64 bits can be revoked through
+  // this mechanism.
+  optional uint64 first_serial_number = 2;
+  optional uint64 last_serial_number = 3;
+}

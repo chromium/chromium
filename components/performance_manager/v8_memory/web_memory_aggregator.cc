@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,8 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/stack.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
@@ -68,10 +69,10 @@ class AggregationPointVisitor {
  private:
   struct Enclosing {
     url::Origin origin;
-    mojom::WebMemoryBreakdownEntry* aggregation_point;
+    raw_ptr<mojom::WebMemoryBreakdownEntry> aggregation_point;
   };
   const url::Origin requesting_origin_;
-  const ProcessNode* requesting_process_node_;
+  raw_ptr<const ProcessNode> requesting_process_node_;
   const url::Origin main_origin_;
   mojom::WebMemoryMeasurementPtr aggregation_result_ =
       mojom::WebMemoryMeasurement::New();
@@ -191,6 +192,16 @@ void AddMemoryBytes(mojom::WebMemoryBreakdownEntry* aggregation_point,
   // (https://github.com/WICG/performance-measure-memory/issues/20).
   uint64_t bytes_used = is_same_process ? data->v8_bytes_used() : 0;
   aggregation_point->memory->bytes += bytes_used;
+
+  // Add canvas memory similar to V8 memory above.
+  if (data->canvas_bytes_used()) {
+    uint64_t canvas_bytes_used =
+        is_same_process ? *data->canvas_bytes_used() : 0;
+    if (!aggregation_point->canvas_memory) {
+      aggregation_point->canvas_memory = mojom::WebMemoryUsage::New();
+    }
+    aggregation_point->canvas_memory->bytes += canvas_bytes_used;
+  }
 }
 
 const FrameNode* GetTopFrame(const FrameNode* frame) {
@@ -290,7 +301,7 @@ void AggregationPointVisitor::OnFrameEntered(const FrameNode* frame_node) {
       // Since this node is NOT same-origin to the start node, the start node
       // CANNOT view its current url.
       aggregation_point = WebMemoryAggregator::CreateBreakdownEntry(
-          AttributionScope::kCrossOriginAggregated, base::nullopt,
+          AttributionScope::kCrossOriginAggregated, absl::nullopt,
           aggregation_result_.get());
       // This is cross-origin but not being aggregated into another
       // aggregation point, so its parent or opener must be same-origin to the
@@ -335,18 +346,18 @@ void AggregationPointVisitor::OnWorkerEntered(const WorkerNode* worker_node) {
   url::Origin node_origin = enclosing_.top().origin;
 #if DCHECK_IS_ON()
   auto client_frames = worker_node->GetClientFrames();
-  DCHECK(std::all_of(client_frames.begin(), client_frames.end(),
-                     [node_origin](const FrameNode* client) {
-                       return node_origin.IsSameOriginWith(GetOrigin(client));
-                     }));
+  DCHECK(base::ranges::all_of(
+      client_frames, [node_origin](const FrameNode* client) {
+        return node_origin.IsSameOriginWith(GetOrigin(client));
+      }));
   auto client_workers = worker_node->GetClientWorkers();
-  DCHECK(std::all_of(client_workers.begin(), client_workers.end(),
-                     [node_origin](const WorkerNode* client) {
-                       // TODO(crbug.com/1169178): Remove the is_empty guard
-                       // once worker worker URLs are available.
-                       return client->GetURL().is_empty() ||
-                              node_origin.IsSameOriginWith(GetOrigin(client));
-                     }));
+  DCHECK(base::ranges::all_of(
+      client_workers, [node_origin](const WorkerNode* client) {
+        // TODO(crbug.com/1169178): Remove the is_empty guard
+        // once worker worker URLs are available.
+        return client->GetURL().is_empty() ||
+               node_origin.IsSameOriginWith(GetOrigin(client));
+      }));
 #endif
   NodeAggregationType aggregation_type = GetNodeAggregationType(
       requesting_origin_, enclosing_.top().origin, node_origin);
@@ -420,13 +431,15 @@ namespace {
 //   |browsing_instance_id| in the given |process_node|.
 // - v8_process_memory is the total V8 memory usage of all frames in the given
 //   |process_node|.
-double GetBrowsingInstanceV8BytesFraction(const ProcessNode* process_node,
-                                          int32_t browsing_instance_id) {
+double GetBrowsingInstanceV8BytesFraction(
+    const ProcessNode* process_node,
+    content::BrowsingInstanceId browsing_instance_id) {
   uint64_t bytes_used = 0;
   uint64_t total_bytes_used = 0;
   process_node->VisitFrameNodes(base::BindRepeating(
-      [](base::Optional<int32_t> browsing_instance_id, uint64_t* bytes_used,
-         uint64_t* total_bytes_used, const FrameNode* frame_node) {
+      [](absl::optional<content::BrowsingInstanceId> browsing_instance_id,
+         uint64_t* bytes_used, uint64_t* total_bytes_used,
+         const FrameNode* frame_node) {
         const auto* data =
             V8DetailedMemoryExecutionContextData::ForFrameNode(frame_node);
         if (data) {
@@ -438,7 +451,10 @@ double GetBrowsingInstanceV8BytesFraction(const ProcessNode* process_node,
         return true;
       },
       browsing_instance_id, &bytes_used, &total_bytes_used));
-  return static_cast<double>(bytes_used) / total_bytes_used;
+  DCHECK_LE(bytes_used, total_bytes_used);
+  return total_bytes_used == 0
+             ? 1
+             : static_cast<double>(bytes_used) / total_bytes_used;
 }
 
 }  // anonymous namespace
@@ -450,7 +466,8 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
   std::vector<const FrameNode*> top_frames;
   main_process_node_->VisitFrameNodes(base::BindRepeating(
       [](std::vector<const FrameNode*>* top_frames,
-         int32_t browsing_instance_id, const FrameNode* node) {
+         content::BrowsingInstanceId browsing_instance_id,
+         const FrameNode* node) {
         if (node->GetBrowsingInstanceId() == browsing_instance_id &&
             !node->GetParentFrameNode() && !GetOrigin(node).opaque()) {
           top_frames->push_back(node);
@@ -461,10 +478,10 @@ WebMemoryAggregator::AggregateMeasureMemoryResult() {
 
   CHECK(!top_frames.empty());
   url::Origin main_origin = GetOrigin(top_frames[0]);
-  DCHECK(std::all_of(top_frames.begin(), top_frames.end(),
-                     [&main_origin](const FrameNode* node) {
-                       return GetOrigin(node).IsSameOriginWith(main_origin);
-                     }));
+  DCHECK(
+      base::ranges::all_of(top_frames, [&main_origin](const FrameNode* node) {
+        return GetOrigin(node).IsSameOriginWith(main_origin);
+      }));
 
   AggregationPointVisitor ap_visitor(requesting_origin_,
                                      requesting_process_node_, main_origin);
@@ -537,7 +554,7 @@ bool WebMemoryAggregator::VisitWorker(AggregationPointVisitor* ap_visitor,
 // static
 mojom::WebMemoryBreakdownEntry* WebMemoryAggregator::CreateBreakdownEntry(
     AttributionScope scope,
-    base::Optional<std::string> url,
+    absl::optional<std::string> url,
     mojom::WebMemoryMeasurement* measurement) {
   auto breakdown = mojom::WebMemoryBreakdownEntry::New();
   auto attribution = mojom::WebMemoryAttribution::New();

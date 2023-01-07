@@ -1,0 +1,24 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+component("cdm_factory_daemon") {
+  defines = [ "IS_CDM_FACTORY_DAEMON_IMPL" ]
+
+  deps = [
+    "//base",
+    "//chromeos/dbus/common",
+    "//dbus",
+  ]
+
+  sources = [
+    "cdm_factory_daemon_client.cc",
+    "cdm_factory_daemon_client.h",
+    "fake_cdm_factory_daemon_client.cc",
+    "fake_cdm_factory_daemon_client.h",
+  ]
+}

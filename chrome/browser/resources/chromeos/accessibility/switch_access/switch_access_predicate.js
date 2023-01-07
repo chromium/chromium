@@ -1,6 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+import {AutomationPredicate} from '../common/automation_predicate.js';
+import {RectUtil} from '../common/rect_util.js';
+import {AutomationTreeWalkerRestriction} from '../common/tree_walker.js';
 
 import {SACache} from './cache.js';
 import {SAChildNode, SARootNode} from './nodes/switch_access_node.js';
@@ -99,7 +103,7 @@ export const SwitchAccessPredicate = {
     // child is an interesting subtree.
     if (state[StateType.FOCUSABLE] || role === RoleType.MENU_ITEM) {
       const result = !node.children.some(
-          (child) => SwitchAccessPredicate.isInterestingSubtree(child, cache));
+          child => SwitchAccessPredicate.isInterestingSubtree(child, cache));
       cache.isActionable.set(node, result);
       return result;
     }
@@ -169,9 +173,11 @@ export const SwitchAccessPredicate = {
    * @param {!SACache} cache
    * @return {boolean}
    */
-  isInteresting: (node, scope, cache) =>
-      SwitchAccessPredicate.isActionable(node, cache) ||
-      SwitchAccessPredicate.isGroup(node, scope, cache),
+  isInteresting: (node, scope, cache) => {
+    cache = cache || new SACache();
+    return SwitchAccessPredicate.isActionable(node, cache) ||
+        SwitchAccessPredicate.isGroup(node, scope, cache);
+  },
 
   /**
    * Returns true if the element is visible to the user for any reason.
@@ -179,9 +185,10 @@ export const SwitchAccessPredicate = {
    * @param {AutomationNode} node
    * @return {boolean}
    */
-  isVisible: (node) => !node.state[StateType.OFFSCREEN] && !!node.location &&
+  isVisible: node => Boolean(
+      !node.state[StateType.OFFSCREEN] && node.location &&
       node.location.top >= 0 && node.location.left >= 0 &&
-      !node.state[StateType.INVISIBLE],
+      !node.state[StateType.INVISIBLE]),
 
   /**
    * Returns true if there is an interesting node in the subtree containing
@@ -196,13 +203,13 @@ export const SwitchAccessPredicate = {
    * @return {boolean}
    */
   isInterestingSubtree: (node, cache) => {
+    cache = cache || new SACache();
     if (cache.isInterestingSubtree.has(node)) {
       return cache.isInterestingSubtree.get(node);
     }
     const result = SwitchAccessPredicate.isActionable(node, cache) ||
         node.children.some(
-            (child) =>
-                SwitchAccessPredicate.isInterestingSubtree(child, cache));
+            child => SwitchAccessPredicate.isInterestingSubtree(child, cache));
     cache.isInterestingSubtree.set(node, result);
     return result;
   },
@@ -212,17 +219,18 @@ export const SwitchAccessPredicate = {
    * @param {AutomationNode} node
    * @return {boolean}
    */
-  isTextInput: (node) => !!node && !!node.state[StateType.EDITABLE],
+  isTextInput: node => Boolean(node && node.state[StateType.EDITABLE]),
 
   /**
    * Returns true if |node| should be considered a window.
    * @param {AutomationNode} node
    * @return {boolean}
    */
-  isWindow: (node) => !!node &&
+  isWindow: node => Boolean(
+      node &&
       (node.role === chrome.automation.RoleType.WINDOW ||
-       (node.role === chrome.automation.RoleType.CLIENT && !!node.parent &&
-        node.parent.role === chrome.automation.RoleType.WINDOW)),
+       (node.role === chrome.automation.RoleType.CLIENT && node.parent &&
+        node.parent.role === chrome.automation.RoleType.WINDOW))),
 
   /**
    * Returns a Restrictions object ready to be passed to AutomationTreeWalker.
@@ -230,12 +238,12 @@ export const SwitchAccessPredicate = {
    * @param {!AutomationNode} scope
    * @return {!AutomationTreeWalkerRestriction}
    */
-  restrictions: (scope) => {
+  restrictions: scope => {
     const cache = new SACache();
     return {
       leaf: SwitchAccessPredicate.leaf(scope, cache),
       root: SwitchAccessPredicate.root(scope),
-      visit: SwitchAccessPredicate.visit(scope, cache)
+      visit: SwitchAccessPredicate.visit(scope, cache),
     };
   },
 
@@ -248,7 +256,7 @@ export const SwitchAccessPredicate = {
    * @return {function(!AutomationNode): boolean}
    */
   leaf(scope, cache) {
-    return (node) => !SwitchAccessPredicate.isInterestingSubtree(node, cache) ||
+    return node => !SwitchAccessPredicate.isInterestingSubtree(node, cache) ||
         (scope !== node &&
          SwitchAccessPredicate.isInteresting(node, scope, cache));
   },
@@ -261,7 +269,7 @@ export const SwitchAccessPredicate = {
    * @return {function(!AutomationNode): boolean}
    */
   root(scope) {
-    return (node) => scope === node;
+    return node => scope === node;
   },
 
   /**
@@ -273,7 +281,7 @@ export const SwitchAccessPredicate = {
    * @return {function(!AutomationNode): boolean}
    */
   visit(scope, cache) {
-    return (node) => node.role !== RoleType.DESKTOP &&
+    return node => node.role !== RoleType.DESKTOP &&
         SwitchAccessPredicate.isInteresting(node, scope, cache);
-  }
+  },
 };

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,10 @@
 
 namespace content {
 class WebContents;
+}
+
+namespace subresource_filter {
+class ContentSubresourceFilterThrottleManager;
 }
 
 namespace weblayer {
@@ -49,6 +53,14 @@ class SubresourceFilterBrowserTest : public WebLayerBrowserTest {
   // embedded test server themselves should override this method to return
   // false.
   virtual bool StartEmbeddedTestServerAutomatically();
+
+  // The ContentSubresourceFilterthrottleManager class is per-page, meaning
+  // each Page object will create its own instance. This method returns the
+  // throttle manager associated with the currently primary Page in the
+  // web_contents() (i.e. the one the user is currently seeing and interacting
+  // with, as opposed to a prerendering or BFCached page).
+  subresource_filter::ContentSubresourceFilterThrottleManager*
+  GetPrimaryPageThrottleManager();
 
  private:
   subresource_filter::testing::TestRulesetCreator test_ruleset_creator_;

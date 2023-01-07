@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -17,8 +16,8 @@
 #include "base/time/time.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_enums.h"
+#include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
-#include "components/permissions/prediction_service/prediction_service_common.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
 #include "google/protobuf/message_lite.h"
@@ -28,6 +27,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
 namespace {
@@ -103,8 +103,12 @@ void InitializeProtoHelperObjects() {
       ->set_prompts_count(0);
   kRequestAllCountsZero.mutable_client_features()->set_platform(
       permissions::GetCurrentPlatformProto());
+  kRequestAllCountsZero.mutable_client_features()->set_platform_enum(
+      permissions::GetCurrentPlatformEnumProto());
   kRequestAllCountsZero.mutable_client_features()->set_gesture(
       permissions::ClientFeatures_Gesture_GESTURE);
+  kRequestAllCountsZero.mutable_client_features()->set_gesture_enum(
+      permissions::ClientFeatures_GestureEnum_GESTURE_V2);
   kRequestAllCountsZero.mutable_permission_features()->Clear();
   auto* permission_feature =
       kRequestAllCountsZero.mutable_permission_features()->Add();
@@ -132,8 +136,12 @@ void InitializeProtoHelperObjects() {
       ->set_prompts_count(20);
   kRequestRoundedCounts.mutable_client_features()->set_platform(
       permissions::GetCurrentPlatformProto());
+  kRequestRoundedCounts.mutable_client_features()->set_platform_enum(
+      permissions::GetCurrentPlatformEnumProto());
   kRequestRoundedCounts.mutable_client_features()->set_gesture(
       permissions::ClientFeatures_Gesture_NO_GESTURE);
+  kRequestRoundedCounts.mutable_client_features()->set_gesture_enum(
+      permissions::ClientFeatures_GestureEnum_GESTURE_UNSPECIFIED_V2);
   kRequestRoundedCounts.mutable_permission_features()->Clear();
   permission_feature =
       kRequestRoundedCounts.mutable_permission_features()->Add();
@@ -161,8 +169,12 @@ void InitializeProtoHelperObjects() {
       ->set_prompts_count(20);
   kRequestEqualCountsTotal20.mutable_client_features()->set_platform(
       permissions::GetCurrentPlatformProto());
+  kRequestEqualCountsTotal20.mutable_client_features()->set_platform_enum(
+      permissions::GetCurrentPlatformEnumProto());
   kRequestEqualCountsTotal20.mutable_client_features()->set_gesture(
       permissions::ClientFeatures_Gesture_GESTURE);
+  kRequestEqualCountsTotal20.mutable_client_features()->set_gesture_enum(
+      permissions::ClientFeatures_GestureEnum_GESTURE_V2);
   kRequestEqualCountsTotal20.mutable_permission_features()->Clear();
   permission_feature =
       kRequestEqualCountsTotal20.mutable_permission_features()->Add();
@@ -190,8 +202,12 @@ void InitializeProtoHelperObjects() {
       ->set_prompts_count(20);
   kRequestDifferentCounts.mutable_client_features()->set_platform(
       permissions::GetCurrentPlatformProto());
+  kRequestDifferentCounts.mutable_client_features()->set_platform_enum(
+      permissions::GetCurrentPlatformEnumProto());
   kRequestDifferentCounts.mutable_client_features()->set_gesture(
       permissions::ClientFeatures_Gesture_NO_GESTURE);
+  kRequestDifferentCounts.mutable_client_features()->set_gesture_enum(
+      permissions::ClientFeatures_GestureEnum_GESTURE_UNSPECIFIED_V2);
   kRequestDifferentCounts.mutable_permission_features()->Clear();
   permission_feature =
       kRequestDifferentCounts.mutable_permission_features()->Add();
@@ -243,7 +259,7 @@ class PredictionServiceTest : public testing::Test {
           FROM_HERE,
           base::BindOnce(&PredictionServiceTest::Respond,
                          base::Unretained(this), url, 0, err_code),
-          base::TimeDelta::FromSecondsD(delay_in_seconds));
+          base::Seconds(delay_in_seconds));
       return;
     }
 
@@ -277,11 +293,12 @@ class PredictionServiceTest : public testing::Test {
     EXPECT_EQ(std::string(), access_token);
   }
 
-  void ResponseCallback(base::RunLoop* response_loop,
-                        bool lookup_successful,
-                        bool response_from_cache,
-                        std::unique_ptr<GeneratePredictionsResponse> response) {
-    received_responses_.emplace_back(std::move(response));
+  void ResponseCallback(
+      base::RunLoop* response_loop,
+      bool lookup_successful,
+      bool response_from_cache,
+      const absl::optional<GeneratePredictionsResponse>& response) {
+    received_responses_.emplace_back(response);
     if (response_loop)
       response_loop->Quit();
 
@@ -291,7 +308,7 @@ class PredictionServiceTest : public testing::Test {
 
  protected:
   std::vector<std::unique_ptr<GeneratePredictionsRequest>> received_requests_;
-  std::vector<std::unique_ptr<GeneratePredictionsResponse>> received_responses_;
+  std::vector<absl::optional<GeneratePredictionsResponse>> received_responses_;
   std::unique_ptr<PredictionService> prediction_service_;
 
   // Different paths to simulate different server behaviours.
@@ -349,24 +366,24 @@ TEST_F(PredictionServiceTest, BuiltProtoRequestIsCorrect) {
 TEST_F(PredictionServiceTest, ResponsesAreCorrect) {
   struct {
     GURL url;
-    base::Optional<GeneratePredictionsResponse> expected_response;
+    absl::optional<GeneratePredictionsResponse> expected_response;
     double delay_in_seconds;
     int err_code;
   } kTests[] = {
       // Test different responses.
       {kUrl_Likely,
-       base::Optional<GeneratePredictionsResponse>(kResponseLikely)},
+       absl::optional<GeneratePredictionsResponse>(kResponseLikely)},
       {kUrl_Unlikely,
-       base::Optional<GeneratePredictionsResponse>(kResponseUnlikely)},
+       absl::optional<GeneratePredictionsResponse>(kResponseUnlikely)},
 
       // Test the response's timeout.
       {kUrl_Likely,
-       base::Optional<GeneratePredictionsResponse>(kResponseLikely), 0.5},
-      {kUrl_Likely, base::nullopt, 2},
+       absl::optional<GeneratePredictionsResponse>(kResponseLikely), 0.5},
+      {kUrl_Likely, absl::nullopt, 2},
 
       // Test error code responses.
-      {kUrl_Likely, base::nullopt, 0, net::ERR_SSL_PROTOCOL_ERROR},
-      {kUrl_Likely, base::nullopt, 0, net::ERR_CONNECTION_FAILED},
+      {kUrl_Likely, absl::nullopt, 0, net::ERR_SSL_PROTOCOL_ERROR},
+      {kUrl_Likely, absl::nullopt, 0, net::ERR_CONNECTION_FAILED},
   };
 
   for (const auto& kTest : kTests) {
@@ -393,26 +410,26 @@ TEST_F(PredictionServiceTest, ResponsesAreCorrect) {
 // valid.
 TEST_F(PredictionServiceTest, FeatureParamAndCommandLineCanOverrideDefaultUrl) {
   struct {
-    base::Optional<std::string> command_line_switch_value;
-    base::Optional<std::string> url_override_param_value;
+    absl::optional<std::string> command_line_switch_value;
+    absl::optional<std::string> url_override_param_value;
     GURL expected_request_url;
     permissions::GeneratePredictionsResponse expected_response;
   } kTests[] = {
       // Test without any overrides.
-      {base::nullopt, base::nullopt, GURL(kDefaultPredictionServiceUrl),
+      {absl::nullopt, absl::nullopt, GURL(kDefaultPredictionServiceUrl),
        kResponseLikely},
 
       // Test only the FeatureParam override.
-      {base::nullopt, kUrl_Unlikely.spec(), kUrl_Unlikely, kResponseUnlikely},
-      {base::nullopt, "this is not a url", GURL(kDefaultPredictionServiceUrl),
+      {absl::nullopt, kUrl_Unlikely.spec(), kUrl_Unlikely, kResponseUnlikely},
+      {absl::nullopt, "this is not a url", GURL(kDefaultPredictionServiceUrl),
        kResponseLikely},
-      {base::nullopt, "", GURL(kDefaultPredictionServiceUrl), kResponseLikely},
+      {absl::nullopt, "", GURL(kDefaultPredictionServiceUrl), kResponseLikely},
 
       // Test only the command line override.
-      {kUrl_Unlikely.spec(), base::nullopt, kUrl_Unlikely, kResponseUnlikely},
-      {"this is not a url", base::nullopt, GURL(kDefaultPredictionServiceUrl),
+      {kUrl_Unlikely.spec(), absl::nullopt, kUrl_Unlikely, kResponseUnlikely},
+      {"this is not a url", absl::nullopt, GURL(kDefaultPredictionServiceUrl),
        kResponseLikely},
-      {"", base::nullopt, GURL(kDefaultPredictionServiceUrl), kResponseLikely},
+      {"", absl::nullopt, GURL(kDefaultPredictionServiceUrl), kResponseLikely},
 
       // Command line takes precedence over FeatureParam, if valid.
       {kUrl_Likely.spec(), kUrl_Unlikely.spec(), kUrl_Likely, kResponseLikely},
@@ -497,7 +514,7 @@ TEST_F(PredictionServiceTest, HandleSimultaneousRequests) {
   response_loop.Run();
 
   EXPECT_EQ(2u, received_responses_.size());
-  EXPECT_TRUE(received_responses_[1].get() != nullptr);
+  EXPECT_TRUE(received_responses_[1]);
   EXPECT_EQ(kResponseLikely.SerializeAsString(),
             received_responses_[1]->SerializeAsString());
   EXPECT_EQ(0u, prediction_service_->pending_requests_for_testing().size());
@@ -509,88 +526,6 @@ TEST_F(PredictionServiceTest, InvalidResponse) {
   Respond(GURL(kUrl_Invalid));
   response_loop.Run();
   EXPECT_FALSE(received_responses_[0]);
-}
-
-TEST_F(PredictionServiceTest, TestJsonConversions) {
-  auto round_counts =
-      GeneratePredictionsRequestMessageToJson(kRequestRoundedCounts);
-  auto equal_counts =
-      GeneratePredictionsRequestMessageToJson(kRequestEqualCountsTotal20);
-  auto different_counts =
-      GeneratePredictionsRequestMessageToJson(kRequestDifferentCounts);
-  auto zero_counts =
-      GeneratePredictionsRequestMessageToJson(kRequestAllCountsZero);
-
-  std::string kPlatformName =
-      ClientFeatures_Platform_Name(permissions::GetCurrentPlatformProto());
-
-  std::string expected_round_counts =
-      "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0."
-      "20000000298023224,\"avgDismissRate\":0.20000000298023224,"
-      "\"avgGrantRate\":0.30000001192092896,\"avgIgnoreRate\":0."
-      "20000000298023224,\"promptsCount\":20},\"gesture\":\"NO_GESTURE\","
-      "\"platform\":\"" +
-      kPlatformName +
-      "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
-      "\"permissionStats\":{\"avgDenyRate\":0.20000000298023224,"
-      "\"avgDismissRate\":0.20000000298023224,\"avgGrantRate\":0."
-      "30000001192092896,\"avgIgnoreRate\":0.20000000298023224,"
-      "\"promptsCount\":20}}]}";
-
-  std::string expected_equal_counts =
-      "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0."
-      "30000001192092896,\"avgDismissRate\":0.30000001192092896,"
-      "\"avgGrantRate\":0.30000001192092896,\"avgIgnoreRate\":0."
-      "30000001192092896,\"promptsCount\":20},\"gesture\":\"GESTURE\","
-      "\"platform\":\"" +
-      kPlatformName +
-      "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
-      "\"permissionStats\":{\"avgDenyRate\":0.30000001192092896,"
-      "\"avgDismissRate\":0.30000001192092896,\"avgGrantRate\":0."
-      "30000001192092896,\"avgIgnoreRate\":0.30000001192092896,"
-      "\"promptsCount\":20}}]}";
-
-  std::string expected_different_counts =
-      "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0."
-      "30000001192092896,\"avgDismissRate\":0.30000001192092896,"
-      "\"avgGrantRate\":0.30000001192092896,\"avgIgnoreRate\":0."
-      "30000001192092896,\"promptsCount\":20},\"gesture\":\"NO_GESTURE\","
-      "\"platform\":\"" +
-      kPlatformName +
-      "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
-      "\"permissionStats\":{\"avgDenyRate\":0.0,\"avgDismissRate\":0.0,"
-      "\"avgGrantRate\":0.0,\"avgIgnoreRate\":0.0,\"promptsCount\":0}}]}";
-
-  std::string expected_zero_counts =
-      "{\"clientFeatures\":{\"clientStats\":{\"avgDenyRate\":0.0,"
-      "\"avgDismissRate\":0.0,\"avgGrantRate\":0.0,\"avgIgnoreRate\":0.0,"
-      "\"promptsCount\":0},\"gesture\":\"GESTURE\",\"platform\":\"" +
-      kPlatformName +
-      "\"},\"permissionFeatures\":[{\"notificationPermission\":{},"
-      "\"permissionStats\":{\"avgDenyRate\":0.0,\"avgDismissRate\":0.0,"
-      "\"avgGrantRate\":0.0,\"avgIgnoreRate\":0.0,\"promptsCount\":0}}]}";
-
-  EXPECT_EQ(round_counts, expected_round_counts);
-  EXPECT_EQ(equal_counts, expected_equal_counts);
-  EXPECT_EQ(different_counts, expected_different_counts);
-  EXPECT_EQ(zero_counts, expected_zero_counts);
-
-  EXPECT_EQ(
-      GeneratePredictionsResponseJsonToMessage(
-          "{\"prediction\":[{\"notificationPrediction\":{},\"grantLikelihood\":"
-          "{\"discretizedLikelihood\":\"LIKELY\"}}]}")
-          ->prediction()[0]
-          .grant_likelihood()
-          .discretized_likelihood(),
-      PermissionPrediction_Likelihood_DiscretizedLikelihood_LIKELY);
-  EXPECT_EQ(
-      GeneratePredictionsResponseJsonToMessage(
-          "{\"prediction\":[{\"notificationPrediction\":{},\"grantLikelihood\":"
-          "{\"discretizedLikelihood\":\"UNLIKELY\"}}]}")
-          ->prediction()[0]
-          .grant_likelihood()
-          .discretized_likelihood(),
-      PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY);
 }
 
 TEST_F(PredictionServiceTest, PromptCountsAreBucketed) {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,28 @@
         "type": "object",
         "properties": {
           "tabId": { "type": "integer", "optional": true, "minimum": 0, "description": "The ID of the tab to query state for. If no tab is specified, the non-tab-specific state is returned." }
+        }
+      },
+      {
+        "id": "UserSettings",
+        "type": "object",
+        "properties": {
+          "isOnToolbar": {
+            "type": "boolean",
+            "description": "Whether the extension's action icon is visible on browser windows' top-level toolbar (i.e., whether the extension has been 'pinned' by the user)."
+          }
+        },
+        "description": "The collection of user-specified settings relating to an extension's action."
+      },
+      {
+        "id": "OpenPopupOptions",
+        "type": "object",
+        "properties": {
+          "windowId": {
+            "type": "integer",
+            "description": "The id of the window to open the action popup in. Defaults to the currently-active window if unspecified.",
+            "optional": true
+          }
         }
       }
     ],
@@ -93,16 +115,16 @@
             "description": "Limits the change to when a particular tab is selected. Automatically resets when the tab is closed."
           }
         }
-      }, {
-        "type": "function",
+      }],
+      "returns_async": {
         "name": "callback",
         "optional": true,
         "parameters": []
-      }]
+      }
     }, {
       "name": "setPopup",
       "type": "function",
-      "description": "Sets the html document to be opened as a popup when the user clicks on the action's icon.",
+      "description": "Sets the HTML document to be opened as a popup when the user clicks on the action's icon.",
       "parameters": [{
         "name": "details",
         "type": "object",
@@ -115,7 +137,7 @@
           },
           "popup": {
             "type": "string",
-            "description": "The html file to show in a popup.  If set to the empty string (''), no popup is shown."
+            "description": "The relative path to the HTML file to show in a popup. If set to the empty string (<code>''</code>), no popup is shown."
           }
         }
       }],
@@ -257,6 +279,55 @@
         "name": "callback",
         "parameters": [],
         "optional": true
+      }
+    }, {
+      "name": "isEnabled",
+      "type": "function",
+      "description": "Retrieves the state of whether the extension action is enabled for a tab (or globally if no tab is provided).",
+      "parameters": [
+        {
+          "type": "integer",
+          "optional": true,
+          "name": "tabId",
+          "minimum": 0,
+          "description": "The id of the tab for which you want check enabled status."
+        }
+      ],
+      "returns_async": {
+        "name": "callback",
+        "parameters": [
+          {
+            "name": "isEnabled",
+            "type": "boolean",
+            "description": "True if the extension action is enabled."
+          }
+        ]
+      }
+    }, {
+      "name": "getUserSettings",
+      "type": "function",
+      "description": "Returns the user-specified settings relating to an extension's action.",
+      "parameters": [],
+      "returns_async": {
+        "name": "callback",
+        "parameters": [{
+          "name": "userSettings",
+          "$ref": "UserSettings"
+        }]
+      }
+    }, {
+      "name": "openPopup",
+      "type": "function",
+      "description": "Opens the extension's popup.",
+      "parameters": [{
+        "$ref": "OpenPopupOptions",
+        "name": "options",
+        "optional": true,
+        "description": "Specifies options for opening the popup."
+      }],
+      "returns_async": {
+        "name": "callback",
+        "parameters": []
       }
     }],
     "events": [{

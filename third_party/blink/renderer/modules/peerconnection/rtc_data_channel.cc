@@ -29,12 +29,15 @@
 #include <string>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/web_rtc_cross_thread_copier.h"
@@ -44,8 +47,9 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_std.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
 namespace WTF {
@@ -63,39 +67,60 @@ namespace blink {
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class DataChannelCounters {
-  kCreated,
-  kOpened,
-  kReliable,
-  kOrdered,
-  kNegotiated,
-  kBoundary
+  kCreated = 0,
+  kOpened = 1,
+  kReliable = 2,
+  kOrdered = 3,
+  kNegotiated = 4,
+  kMaxValue = kNegotiated,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DataChannelAggregateType {
+  kUnReliableUnordered = 0,
+  kUnReliableOrdered = 1,
+  kReliableUnordered = 2,
+  kReliableOrdered = 3,
+  kMaxValue = kReliableOrdered,
 };
 
 void IncrementCounter(DataChannelCounters counter) {
-  UMA_HISTOGRAM_ENUMERATION("WebRTC.DataChannelCounters", counter,
-                            DataChannelCounters::kBoundary);
+  base::UmaHistogramEnumeration("WebRTC.DataChannelCounters", counter);
 }
 
 void IncrementCounters(const webrtc::DataChannelInterface& channel) {
+  int aggregate_type = 0;
+
   IncrementCounter(DataChannelCounters::kCreated);
-  if (channel.reliable())
+  if (channel.reliable()) {
     IncrementCounter(DataChannelCounters::kReliable);
-  if (channel.ordered())
+    aggregate_type += 2;
+  }
+  if (channel.ordered()) {
     IncrementCounter(DataChannelCounters::kOrdered);
+    aggregate_type += 1;
+  }
   if (channel.negotiated())
     IncrementCounter(DataChannelCounters::kNegotiated);
 
+  base::UmaHistogramEnumeration(
+      "WebRTC.DataChannelAggregateType",
+      static_cast<DataChannelAggregateType>(aggregate_type));
+
   // Only record max retransmits and max packet life time if set.
   if (channel.maxRetransmitsOpt()) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("WebRTC.DataChannelMaxRetransmits",
-                                *(channel.maxRetransmitsOpt()), 1,
-                                std::numeric_limits<uint16_t>::max(), 50);
+    base::UmaHistogramCustomCounts("WebRTC.DataChannelMaxRetransmits",
+                                   *(channel.maxRetransmitsOpt()), 1,
+                                   std::numeric_limits<uint16_t>::max(), 50);
   }
   if (channel.maxPacketLifeTime()) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("WebRTC.DataChannelMaxPacketLifeTime",
-                                *channel.maxPacketLifeTime(), 1,
-                                std::numeric_limits<uint16_t>::max(), 50);
+    base::UmaHistogramCustomCounts("WebRTC.DataChannelMaxPacketLifeTime",
+                                   *channel.maxPacketLifeTime(), 1,
+                                   std::numeric_limits<uint16_t>::max(), 50);
   }
 }
 
@@ -115,19 +140,69 @@ void RecordMessageSent(const webrtc::DataChannelInterface& channel,
 
   if (channel.reliable()) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("WebRTC.ReliableDataChannelMessageSize",
-                                SafeCast<int>(num_bytes), 1, kMaxBucketSize,
-                                kNumBuckets);
+                                base::checked_cast<int>(num_bytes), 1,
+                                kMaxBucketSize, kNumBuckets);
   } else {
     UMA_HISTOGRAM_CUSTOM_COUNTS("WebRTC.UnreliableDataChannelMessageSize",
-                                SafeCast<int>(num_bytes), 1, kMaxBucketSize,
-                                kNumBuckets);
+                                base::checked_cast<int>(num_bytes), 1,
+                                kMaxBucketSize, kNumBuckets);
   }
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DataChannelSctpErrorCode {
+  kUnspecified = 0,
+  kInvalidStreamIdentifier = 1,
+  kMissingMandatoryParameter = 2,
+  kStaleCookieError = 3,
+  kOutOfResource = 4,
+  kUnresolvableAddress = 5,
+  kUnrecognizedChunkType = 6,
+  kInvalidMandatoryParameter = 7,
+  kUnrecognizedParameters = 8,
+  kNoUserData = 9,
+  kCookieReceivedWhileShuttingDown = 10,
+  kRestartWithNewAddresses = 11,
+  kUserInitiatedAbort = 12,
+  kProtocolViolation = 13,
+  kOther = 14,
+  kMaxValue = kOther,
+};
+
+void IncrementErrorCounter(const webrtc::RTCError& error) {
+  DataChannelSctpErrorCode uma_code;
+  auto code = error.sctp_cause_code();
+  if (!code.has_value()) {
+    uma_code = DataChannelSctpErrorCode::kUnspecified;
+  } else if (*code >= static_cast<int>(DataChannelSctpErrorCode::kOther)) {
+    uma_code = DataChannelSctpErrorCode::kOther;
+  } else {
+    uma_code = static_cast<DataChannelSctpErrorCode>(*code);
+  }
+  base::UmaHistogramEnumeration("WebRTC.DataChannelSctpErrorCode", uma_code);
 }
 
 void SendOnSignalingThread(
     const scoped_refptr<webrtc::DataChannelInterface> channel,
     const webrtc::DataBuffer data_buffer) {
-  channel->Send(data_buffer);
+  // The Javascript API being synchronous, we cannot wait for the call on the
+  // signaling thread to resolve from the JS main thread. So we make sure that
+  // channel->Send() doesn't fail by replicating the checks in the Blink layer.
+  // The possible failures per the spec are:
+  // - Channel not in open state. Although we check the state in each Send()
+  // implementation, it's possible to have a short race between the WebRTC state
+  // and the Chrome state, i.e. sending while a remote close event is pending.
+  // In this case, it's safe to ignore send failures.
+  // - Data longer than the transport maxMessageSize (not yet implemented in
+  // WebRTC or Blink).
+  // - Send Buffers full (buffered amount accounting in Blink layer to check for
+  // it).
+  bool result = channel->Send(data_buffer);
+  if (!result) {
+    // TODO(orphis): Add collect UMA stats about failure.
+    LOG(ERROR) << "Send failed, channel state: " << channel->state();
+  }
 }
 
 }  // namespace
@@ -137,18 +212,14 @@ static void ThrowNotOpenException(ExceptionState* exception_state) {
                                      "RTCDataChannel.readyState is not 'open'");
 }
 
-static void ThrowCouldNotSendDataException(ExceptionState* exception_state) {
-  exception_state->ThrowDOMException(DOMExceptionCode::kNetworkError,
-                                     "Could not send data");
-}
-
 static void ThrowNoBlobSupportException(ExceptionState* exception_state) {
   exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                      "Blob support not implemented yet");
 }
 
-static void ThrowBufferOverflowException(ExceptionState* exception_state) {
-  exception_state->ThrowRangeError("RTCDataChannel buffer overflow");
+static void ThrowSendBufferFullException(ExceptionState* exception_state) {
+  exception_state->ThrowDOMException(DOMExceptionCode::kOperationError,
+                                     "RTCDataChannel send queue is full");
 }
 
 RTCDataChannel::Observer::Observer(
@@ -204,7 +275,7 @@ void RTCDataChannel::Observer::OnBufferedAmountChange(uint64_t sent_data_size) {
       *main_thread_, FROM_HERE,
       CrossThreadBindOnce(&RTCDataChannel::Observer::OnBufferedAmountChangeImpl,
                           scoped_refptr<Observer>(this),
-                          SafeCast<unsigned>(sent_data_size)));
+                          base::checked_cast<unsigned>(sent_data_size)));
 }
 
 void RTCDataChannel::Observer::OnMessage(const webrtc::DataBuffer& buffer) {
@@ -254,7 +325,6 @@ RTCDataChannel::RTCDataChannel(
       buffered_amount_(0U),
       stopped_(false),
       closed_from_owner_(false),
-      is_rtp_data_channel_(peer_connection_handler->enable_rtp_data_channel()),
       observer_(base::MakeRefCounted<Observer>(
           context->GetTaskRunner(TaskType::kNetworking),
           this,
@@ -301,18 +371,18 @@ bool RTCDataChannel::ordered() const {
   return channel()->ordered();
 }
 
-base::Optional<uint16_t> RTCDataChannel::maxPacketLifeTime() const {
+absl::optional<uint16_t> RTCDataChannel::maxPacketLifeTime() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (channel()->maxPacketLifeTime())
     return *channel()->maxPacketLifeTime();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<uint16_t> RTCDataChannel::maxRetransmits() const {
+absl::optional<uint16_t> RTCDataChannel::maxRetransmits() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (channel()->maxRetransmitsOpt())
     return *channel()->maxRetransmitsOpt();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 String RTCDataChannel::protocol() const {
@@ -325,10 +395,10 @@ bool RTCDataChannel::negotiated() const {
   return channel()->negotiated();
 }
 
-base::Optional<uint16_t> RTCDataChannel::id() const {
+absl::optional<uint16_t> RTCDataChannel::id() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (channel()->id() == -1)
-    return base::nullopt;
+    return absl::nullopt;
   return channel()->id();
 }
 
@@ -382,6 +452,24 @@ void RTCDataChannel::setBinaryType(const String& binary_type,
                                       "Unknown binary type : " + binary_type);
 }
 
+bool RTCDataChannel::ValidateSendLength(size_t length,
+                                        ExceptionState& exception_state) {
+  // Send algorithm: https://w3c.github.io/webrtc-pc/#datachannel-send
+
+  // TODO(orphis): Throw TypeError if length > transport.maxMessageSize
+
+  auto updated_buffered_amount =
+      base::CheckedNumeric<unsigned>(buffered_amount_) + length;
+  if (!updated_buffered_amount.IsValid() ||
+      updated_buffered_amount.ValueOrDie() >
+          webrtc::DataChannelInterface::MaxSendQueueSize()) {
+    ThrowSendBufferFullException(&exception_state);
+    return false;
+  }
+
+  return true;
+}
+
 void RTCDataChannel::send(const String& data, ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (state_ != webrtc::DataChannelInterface::kOpen) {
@@ -390,16 +478,13 @@ void RTCDataChannel::send(const String& data, ExceptionState& exception_state) {
   }
 
   webrtc::DataBuffer data_buffer(data.Utf8());
-  if (!(base::CheckedNumeric<unsigned>(buffered_amount_) + data_buffer.size())
-           .IsValid()) {
-    ThrowBufferOverflowException(&exception_state);
+
+  if (!ValidateSendLength(data_buffer.size(), exception_state))
     return;
-  }
+
   buffered_amount_ += data_buffer.size();
   RecordMessageSent(*channel().get(), data_buffer.size());
-  if (!SendDataBuffer(std::move(data_buffer))) {
-    ThrowCouldNotSendDataException(&exception_state);
-  }
+  SendDataBuffer(std::move(data_buffer));
 }
 
 void RTCDataChannel::send(DOMArrayBuffer* data,
@@ -410,36 +495,27 @@ void RTCDataChannel::send(DOMArrayBuffer* data,
   }
 
   size_t data_length = data->ByteLength();
-  if (!data_length)
+
+  if (!ValidateSendLength(data_length, exception_state))
     return;
 
-  if (!(base::CheckedNumeric<unsigned>(buffered_amount_) + data_length)
-           .IsValid()) {
-    ThrowBufferOverflowException(&exception_state);
-    return;
-  }
   buffered_amount_ += data_length;
-  if (!SendRawData(static_cast<const char*>((data->Data())), data_length)) {
-    // TODO(https://crbug.com/937848): Don't throw an exception if data is
-    // queued.
-    ThrowCouldNotSendDataException(&exception_state);
-  }
+  SendRawData(static_cast<const char*>((data->Data())), data_length);
 }
 
 void RTCDataChannel::send(NotShared<DOMArrayBufferView> data,
                           ExceptionState& exception_state) {
-  if (!(base::CheckedNumeric<unsigned>(buffered_amount_) + data->byteLength())
-           .IsValid()) {
-    ThrowBufferOverflowException(&exception_state);
+  if (state_ != webrtc::DataChannelInterface::kOpen) {
+    ThrowNotOpenException(&exception_state);
     return;
   }
+
+  if (!ValidateSendLength(data->byteLength(), exception_state))
+    return;
+
   buffered_amount_ += data->byteLength();
-  if (!SendRawData(static_cast<const char*>(data->BaseAddress()),
-                   data->byteLength())) {
-    // TODO(https://crbug.com/937848): Don't throw an exception if data is
-    // queued.
-    ThrowCouldNotSendDataException(&exception_state);
-  }
+  SendRawData(static_cast<const char*>(data->BaseAddress()),
+              data->byteLength());
 }
 
 void RTCDataChannel::send(Blob* data, ExceptionState& exception_state) {
@@ -493,11 +569,11 @@ bool RTCDataChannel::HasPendingActivity() const {
   switch (state_) {
     case webrtc::DataChannelInterface::kConnecting:
       has_valid_listeners |= HasEventListeners(event_type_names::kOpen);
-      FALLTHROUGH;
+      [[fallthrough]];
     case webrtc::DataChannelInterface::kOpen:
       has_valid_listeners |= HasEventListeners(event_type_names::kMessage) ||
                              HasEventListeners(event_type_names::kClosing);
-      FALLTHROUGH;
+      [[fallthrough]];
     case webrtc::DataChannelInterface::kClosing:
       has_valid_listeners |= HasEventListeners(event_type_names::kError) ||
                              HasEventListeners(event_type_names::kClose);
@@ -560,14 +636,19 @@ void RTCDataChannel::OnStateChange(
         DispatchEvent(*Event::Create(event_type_names::kClosing), "RTCDataChannel::OnStateChange #2");
       }
       break;
-    case webrtc::DataChannelInterface::kClosed:
+    case webrtc::DataChannelInterface::kClosed: {
       feature_handle_for_scheduler_.reset();
-      if (!channel()->error().ok()) {
+      auto error = channel()->error();
+      if (!error.ok()) {
+        LOG(ERROR) << "DataChannel error: \"" << error.message() << "\""
+                   << ", code: " << error.sctp_cause_code().value_or(-1);
+        IncrementErrorCounter(error);
         DispatchEvent(*MakeGarbageCollected<RTCErrorEvent>(
-            event_type_names::kError, channel()->error()), "RTCDataChannel::OnStateChange #3");
+            event_type_names::kError, error), "RTCDataChannel::OnStateChange");
       }
       DispatchEvent(*Event::Create(event_type_names::kClose), "RTCDataChannel::OnStateChange #4");
       break;
+    }
     default:
       break;
   }
@@ -596,14 +677,17 @@ void RTCDataChannel::OnMessage(std::unique_ptr<webrtc::DataBuffer> buffer) {
     }
     if (binary_type_ == kBinaryTypeArrayBuffer) {
       DOMArrayBuffer* dom_buffer = DOMArrayBuffer::Create(
-          buffer->data.cdata(), SafeCast<unsigned>(buffer->data.size()));
+          buffer->data.cdata(),
+          base::checked_cast<unsigned>(buffer->data.size()));
       ScheduleDispatchEvent(MessageEvent::Create(dom_buffer));
       return;
     }
     NOTREACHED();
   } else {
     String text =
-        String::FromUTF8(buffer->data.cdata<char>(), buffer->data.size());
+        buffer->data.size() > 0
+            ? String::FromUTF8(buffer->data.cdata<char>(), buffer->data.size())
+            : g_empty_string;
     if (!text) {
       LOG(ERROR) << "Failed convert received data to UTF16";
       return;
@@ -644,25 +728,20 @@ const scoped_refptr<webrtc::DataChannelInterface>& RTCDataChannel::channel()
   return observer_->channel();
 }
 
-bool RTCDataChannel::SendRawData(const char* data, size_t length) {
+void RTCDataChannel::SendRawData(const char* data, size_t length) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   rtc::CopyOnWriteBuffer buffer(data, length);
   webrtc::DataBuffer data_buffer(buffer, true);
   RecordMessageSent(*channel().get(), data_buffer.size());
-  return SendDataBuffer(std::move(data_buffer));
+  SendDataBuffer(std::move(data_buffer));
 }
 
-bool RTCDataChannel::SendDataBuffer(webrtc::DataBuffer data_buffer) {
-  // RTP data channels return false on failure to send. SCTP data channels
-  // queue the packet on failure and always return true, so Send can be
-  // called asynchronously for them.
-  if (is_rtp_data_channel_) {
-    return channel()->Send(data_buffer);
-  }
+void RTCDataChannel::SendDataBuffer(webrtc::DataBuffer data_buffer) {
+  // SCTP data channels queue the packet on failure and always return true, so
+  // Send can be called asynchronously for them.
   PostCrossThreadTask(*signaling_thread_.get(), FROM_HERE,
                       CrossThreadBindOnce(&SendOnSignalingThread, channel(),
                                           std::move(data_buffer)));
-  return true;
 }
 
 void RTCDataChannel::CreateFeatureHandleForScheduler() {
@@ -678,7 +757,8 @@ void RTCDataChannel::CreateFeatureHandleForScheduler() {
   feature_handle_for_scheduler_ =
       window->GetFrame()->GetFrameScheduler()->RegisterFeature(
           SchedulingPolicy::Feature::kWebRTC,
-          SchedulingPolicy::DisableAggressiveThrottling());
+          {SchedulingPolicy::DisableAggressiveThrottling(),
+           SchedulingPolicy::DisableAlignWakeUps()});
 }
 
 }  // namespace blink

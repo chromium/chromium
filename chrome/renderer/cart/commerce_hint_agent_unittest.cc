@@ -1,13 +1,20 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/renderer/cart/commerce_hint_agent.h"
 
 #include "base/cfi_buildflags.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/commerce/core/commerce_heuristics_data.h"
+#include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "components/commerce/core/commerce_feature_list.h"
+#else
 #include "components/search/ntp_features.h"
+#endif
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -34,6 +41,7 @@ const char* kAddToCart[] = {
   "cnc/checkout/cartItems/addItemToCart", // kohls.com
   "\"event\":\"product_added_to_cart\"", // staples.com
   "checkout/basket/add_and_show", // wayfair.com
+  "isQuickAddToCartButton=true", // costco.com
 };
 
 const char* kNotAddToCart[] = {
@@ -131,6 +139,7 @@ const char* kVisitCart[] = {
     "https://www.dickssportinggoods.com/OrderItemDisplay",
     "https://www.dillards.com/webapp/wcs/stores/servlet/OrderItemDisplay",
     "https://www.dsw.com/en/us/shopping-bag",
+    "https://www.electronicexpress.com/cart",
     "https://www.etsy.com/cart",
     "https://www.etsy.com/cart/",
     "https://www.etsy.com/cart/listing.php",
@@ -147,6 +156,7 @@ const char* kVisitCart[] = {
     "https://www.harborfreight.com/checkout/cart",
     "https://www.hmhco.com/hmhstorefront/cart",
     "https://www.homedepot.com/mycart/home",
+    "https://www.homesquare.com/Checkout/Cart.aspx",
     "https://www.hottopic.com/cart",
     "https://www.hsn.com/checkout/bag",
     "https://www.ikea.com/us/en/shoppingcart/",
@@ -211,11 +221,14 @@ const char* kVisitCart[] = {
     "https://www.wayfair.com/session/public/basket.php",
     "https://www.wayfair.com/v/checkout/basket/add_and_show",
     "https://www.wayfair.com/v/checkout/basket/show",
+    "https://www.webstaurantstore.com/viewcart.cfm",
     "https://www.weightwatchers.com/us/shop/checkout/cart",
     "https://www.westelm.com/shoppingcart/",
     "https://www.wiley.com/en-us/cart",
+    "https://www.wish.com/cart"
     "https://www.williams-sonoma.com/shoppingcart/",
     "https://www.zappos.com/cart",
+    "https://www.zazzle.com/co/cart",
     "https://www.zennioptical.com/shoppingCart",
     "https://www2.hm.com/en_gb/cart",
     "https://www2.hm.com/en_us/cart",
@@ -744,65 +757,383 @@ const char kSkipPattern[] = "(^|\\W)(?i)(skipped|萬國碼)(\\W|$)";
 std::map<std::string, std::string> kSkipParams = {
     {"product-skip-pattern", kSkipPattern}};
 
+std::map<std::string, std::string> kSkipAddToCartRequests = {
+    {"https://www.electronicexpress.com", "https://www.electronicexpress.com"},
+    {"https://www.electronicexpress.com", "https://www.google.com"},
+    {"https://www.costco.com", "https://www.clicktale.net"},
+    {"https://www.hsn.com", "https://www.granify.com"},
+    {"https://www.lululemon.com", "https://www.launchdarkly.com"},
+    {"https://www.qvc.com", "https://www.qvc.com"},
+    {"https://www.qvc.com", "https://www.google.com"},
+};
+
+std::map<std::string, std::string> kNotSkipAddToCartRequests = {
+    {"https://www.costco.com", "https://www.granify.com"},
+    {"https://www.hsn.com", "https://www.launchdarkly.com"},
+    {"https://www.lululemon.com", "https://www.clicktale.net"},
+};
 }  // namespace
 
 using cart::CommerceHintAgent;
 
-TEST(CommerceHintAgentTest, IsAddToCart) {
+class CommerceHintAgentUnitTest : public testing::Test {
+ public:
+  void TearDown() override {
+    // Clear out heuristics data that is set up during testing.
+    commerce_heuristics::CommerceHeuristicsData::GetInstance()
+        .PopulateDataFromComponent(
+            /*hint_json_data=*/"{}", /*global_json_data=*/"{}",
+            /*product_id_json_data=*/"{}", /*cart_extraction_script=*/"");
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+};
+
+TEST_F(CommerceHintAgentUnitTest, IsAddToCart) {
+  // Heuristics from feature param default value.
   for (auto* str : kAddToCart) {
     EXPECT_TRUE(CommerceHintAgent::IsAddToCart(str)) << str;
   }
   for (auto* str : kNotAddToCart) {
     EXPECT_FALSE(CommerceHintAgent::IsAddToCart(str)) << str;
   }
+
+  // Heuristics from component.
+  const std::string& component_pattern = R"###(
+      {
+        "add_to_cart_request_regex": "bar"
+      }
+  )###";
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent("{}", component_pattern, "", ""));
+  EXPECT_TRUE(CommerceHintAgent::IsAddToCart("request_bar"));
+  for (auto* str : kAddToCart) {
+    EXPECT_FALSE(CommerceHintAgent::IsAddToCart(str)) << str;
+  }
+
+  // Feature param has a higher priority.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+#if !BUILDFLAG(IS_ANDROID)
+      ntp_features::kNtpChromeCartModule,
+#else
+      commerce::kCommerceHintAndroid,
+#endif
+      {{"add-to-cart-pattern", "foo"}});
+  EXPECT_FALSE(CommerceHintAgent::IsAddToCart("request_bar"));
 }
 
-TEST(CommerceHintAgentTest, IsVisitCart) {
+TEST_F(CommerceHintAgentUnitTest, IsAddToCart_SkipLengthLimit) {
+  std::string str = "a";
+  for (int i = 0; i < 12; ++i) {
+    str += str;
+  }
+  // This is equal to length limit in CommerceHintAgent.
+  EXPECT_EQ(str.size(), 4096U);
+
+  str += "/add-to-cart";
+  EXPECT_FALSE(CommerceHintAgent::IsAddToCart(str));
+  EXPECT_TRUE(CommerceHintAgent::IsAddToCart(str, true));
+}
+
+TEST_F(CommerceHintAgentUnitTest, IsVisitCart) {
+  // Heuristics from feature param default value.
   for (auto* str : kVisitCart) {
     EXPECT_TRUE(CommerceHintAgent::IsVisitCart(GURL(str))) << str;
   }
   for (auto* str : kNotVisitCart) {
     EXPECT_FALSE(CommerceHintAgent::IsVisitCart(GURL(str))) << str;
   }
+
+  // General heuristics from component.
+  const std::string& component_pattern = R"###(
+      {
+        "cart_page_url_regex": "bar"
+      }
+  )###";
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent("{}", component_pattern, "", ""));
+  EXPECT_TRUE(CommerceHintAgent::IsVisitCart(GURL("https://wwww.foo.com/bar")));
+
+  // Per-domain heuristics from component which has a higher priority than
+  // general heuristics.
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent(R"###(
+      {
+          "foo.com": {
+              "cart_url_regex" : "foo.com/([^/]+/)?trac"
+          }
+      }
+  )###",
+                                             "{}", "", ""));
+  EXPECT_TRUE(
+      CommerceHintAgent::IsVisitCart(GURL("https://wwww.foo.com/test/trac")));
+  EXPECT_FALSE(
+      CommerceHintAgent::IsVisitCart(GURL("https://wwww.foo.com/bar")));
+
+  // Feature param has a higher priority than component.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+#if !BUILDFLAG(IS_ANDROID)
+      ntp_features::kNtpChromeCartModule,
+#else
+      commerce::kCommerceHintAndroid,
+#endif
+      {{"cart-pattern", "baz"}, {"cart-pattern-mapping", R"###(
+      {
+        "foo.com": "foo.com/cart"
+      }
+  )###"}});
+  EXPECT_FALSE(
+      CommerceHintAgent::IsVisitCart(GURL("https://wwww.foo.com/bar")));
+  EXPECT_FALSE(
+      CommerceHintAgent::IsVisitCart(GURL("https://wwww.foo.com/test/trac")));
 }
 
-TEST(CommerceHintAgentTest, IsVisitCheckout) {
+TEST_F(CommerceHintAgentUnitTest, IsVisitCheckout) {
+  // Heuristics from feature param default value.
   for (auto* str : kVisitCheckout) {
     EXPECT_TRUE(CommerceHintAgent::IsVisitCheckout(GURL(str))) << str;
   }
   for (auto* str : kNotVisitCheckout) {
     EXPECT_FALSE(CommerceHintAgent::IsVisitCheckout(GURL(str))) << str;
   }
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Heuristics.CheckoutURLGeneralPatternSource",
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_COMPONENT, 0);
+  EXPECT_GT(histogram_tester_.GetBucketCount(
+                "Commerce.Heuristics.CheckoutURLGeneralPatternSource",
+                CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                    FROM_FEATURE_PARAMETER),
+            0);
+
+  // General heuristics from component.
+  const std::string& component_pattern = R"###(
+      {
+        "checkout_page_url_regex": "bar"
+      }
+  )###";
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent("{}", component_pattern, "", ""));
+  EXPECT_TRUE(
+      CommerceHintAgent::IsVisitCheckout(GURL("https://wwww.foo.com/bar")));
+  histogram_tester_.ExpectBucketCount(
+      "Commerce.Heuristics.CheckoutURLGeneralPatternSource",
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::FROM_COMPONENT, 1);
+  // Per-domain heuristics from component which has a higher priority than
+  // general heuristics.
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent(R"###(
+      {
+          "foo.com": {
+              "checkout_url_regex" : "foo.com/([^/]+/)?tuokcehc"
+          }
+      }
+  )###",
+                                             "{}", "", ""));
+  EXPECT_TRUE(CommerceHintAgent::IsVisitCheckout(
+      GURL("https://wwww.foo.com/test/tuokcehc")));
+  EXPECT_FALSE(
+      CommerceHintAgent::IsVisitCheckout(GURL("https://wwww.foo.com/bar")));
+
+  // Feature param has a higher priority than component.
+  int prev_count = histogram_tester_.GetBucketCount(
+      "Commerce.Heuristics.CheckoutURLGeneralPatternSource",
+      CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+          FROM_FEATURE_PARAMETER);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+#if !BUILDFLAG(IS_ANDROID)
+      ntp_features::kNtpChromeCartModule,
+#else
+      commerce::kCommerceHintAndroid,
+#endif
+      {{"checkout-pattern", "foo"}, {"checkout-pattern-mapping", R"###(
+      {
+        "foo.com": "foo.com/checkout"
+      }
+  )###"}});
+  EXPECT_FALSE(
+      CommerceHintAgent::IsVisitCheckout(GURL("https://wwww.foo.com/bar")));
+  EXPECT_FALSE(CommerceHintAgent::IsVisitCheckout(
+      GURL("https://wwww.foo.com/test/tuokcehc")));
+  EXPECT_EQ(2, histogram_tester_.GetBucketCount(
+                   "Commerce.Heuristics.CheckoutURLGeneralPatternSource",
+                   CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                       FROM_FEATURE_PARAMETER) -
+                   prev_count);
 }
 
-TEST(CommerceHintAgentTest, IsPurchaseByURL) {
+TEST_F(CommerceHintAgentUnitTest, IsPurchaseByURL) {
+  // Heuristics from feature param default value.
   for (auto* str : kPurchaseURL) {
     EXPECT_TRUE(CommerceHintAgent::IsPurchase(GURL(str))) << str;
   }
   for (auto* str : kNotPurchaseURL) {
     EXPECT_FALSE(CommerceHintAgent::IsPurchase(GURL(str))) << str;
   }
-}
 
-TEST(CommerceHintAgentTest, IsPurchaseByForm) {
-  for (auto* str : kPurchaseText) {
-    EXPECT_TRUE(CommerceHintAgent::IsPurchase(str)) << str;
-  }
-  for (auto* str : kNotPurchaseText) {
-    EXPECT_FALSE(CommerceHintAgent::IsPurchase(str)) << str;
-  }
-}
+  // Per-domain heuristics from component has a higher priority than default
+  // value.
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent(R"###(
+      {
+          "foo.com": {
+              "purchase_url_regex" : "foo.com/([^/]+/)?esahcrup"
+          }
+      }
+  )###",
+                                             "{}", "", ""));
+  EXPECT_TRUE(CommerceHintAgent::IsPurchase(
+      GURL("https://wwww.foo.com/test/esahcrup")));
 
-TEST(CommerceHintAgentTest, ShouldSkip) {
+  // Feature param has a higher priority than component.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpChromeCartModule, kSkipParams);
+#if !BUILDFLAG(IS_ANDROID)
+      ntp_features::kNtpChromeCartModule,
+#else
+      commerce::kCommerceHintAndroid,
+#endif
+      {{"purchase-url-pattern-mapping", R"###(
+      {
+        "foo.com": "foo.com/purchase"
+      }
+  )###"}});
+  EXPECT_FALSE(CommerceHintAgent::IsPurchase(
+      GURL("https://wwww.foo.com/test/esahcrup")));
+}
+
+TEST_F(CommerceHintAgentUnitTest, IsPurchaseByForm) {
+  // Heuristics from feature param default value.
+  for (auto* str : kPurchaseText) {
+    EXPECT_TRUE(CommerceHintAgent::IsPurchase(GURL(), str)) << str;
+  }
+  for (auto* str : kNotPurchaseText) {
+    EXPECT_FALSE(CommerceHintAgent::IsPurchase(GURL(), str)) << str;
+  }
+
+  // Heuristics from component.
+  const std::string& component_pattern = R"###(
+      {
+        "purchase_button_text_regex": "bar"
+      }
+  )###";
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent("{}", component_pattern, "", ""));
+  EXPECT_TRUE(CommerceHintAgent::IsPurchase(GURL(), "bar"));
+  for (auto* str : kPurchaseText) {
+    EXPECT_FALSE(CommerceHintAgent::IsPurchase(GURL(), str)) << str;
+  }
+
+  // Feature param has a higher priority.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+#if !BUILDFLAG(IS_ANDROID)
+      ntp_features::kNtpChromeCartModule,
+#else
+      commerce::kCommerceHintAndroid,
+#endif
+      {{"purchase-button-pattern", "foo"}});
+  EXPECT_FALSE(CommerceHintAgent::IsPurchase(GURL(), "bar"));
+}
+
+TEST_F(CommerceHintAgentUnitTest, ShouldSkipFromFeatureParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+#if !BUILDFLAG(IS_ANDROID)
+      ntp_features::kNtpChromeCartModule,
+#else
+      commerce::kCommerceHintAndroid,
+#endif
+      kSkipParams);
 
   for (auto* str : kSkipText) {
     EXPECT_TRUE(CommerceHintAgent::ShouldSkip(str)) << str;
   }
   for (auto* str : kNotSkipText) {
     EXPECT_FALSE(CommerceHintAgent::ShouldSkip(str)) << str;
+  }
+  int match_times = (sizeof(kSkipText) / sizeof(*kSkipText)) +
+                    (sizeof(kNotSkipText) / sizeof(*kNotSkipText));
+  ASSERT_EQ(histogram_tester_.GetBucketCount(
+                "Commerce.Heuristics.SkipProductPatternSource",
+                CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                    FROM_FEATURE_PARAMETER),
+            match_times);
+  ASSERT_EQ(histogram_tester_.GetBucketCount(
+                "Commerce.Heuristics.SkipProductPatternSource",
+                CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                    FROM_COMPONENT),
+            0);
+}
+
+TEST_F(CommerceHintAgentUnitTest, ShouldSkipFromComponent) {
+  const std::string& component_pattern = R"###(
+      {
+        "sensitive_product_regex": "(^|\\W)(?i)(skipped|萬國碼)(\\W|$)"
+      }
+  )###";
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent("{}", component_pattern, "", ""));
+
+  for (auto* str : kSkipText) {
+    EXPECT_TRUE(CommerceHintAgent::ShouldSkip(str)) << str;
+  }
+  for (auto* str : kNotSkipText) {
+    EXPECT_FALSE(CommerceHintAgent::ShouldSkip(str)) << str;
+  }
+  int match_times = (sizeof(kSkipText) / sizeof(*kSkipText)) +
+                    (sizeof(kNotSkipText) / sizeof(*kNotSkipText));
+  ASSERT_EQ(histogram_tester_.GetBucketCount(
+                "Commerce.Heuristics.SkipProductPatternSource",
+                CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                    FROM_FEATURE_PARAMETER),
+            0);
+  ASSERT_EQ(histogram_tester_.GetBucketCount(
+                "Commerce.Heuristics.SkipProductPatternSource",
+                CommerceHeuristicsDataMetricsHelper::HeuristicsSource::
+                    FROM_COMPONENT),
+            match_times);
+}
+
+TEST_F(CommerceHintAgentUnitTest, ShouldSkip_Priority) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+#if !BUILDFLAG(IS_ANDROID)
+      ntp_features::kNtpChromeCartModule,
+#else
+      commerce::kCommerceHintAndroid,
+#endif
+      kSkipParams);
+  // Initiate component skip pattern so that nothing is skipped.
+  const std::string& empty_pattern = R"###(
+      {
+        "sensitive_product_regex": "\\b\\B"
+      }
+  )###";
+  EXPECT_TRUE(commerce_heuristics::CommerceHeuristicsData::GetInstance()
+                  .PopulateDataFromComponent("{}", empty_pattern, "", ""));
+
+  // Honor the skip pattern from feature parameter as it has higher priority.
+  for (auto* str : kSkipText) {
+    EXPECT_TRUE(CommerceHintAgent::ShouldSkip(str)) << str;
+  }
+  for (auto* str : kNotSkipText) {
+    EXPECT_FALSE(CommerceHintAgent::ShouldSkip(str)) << str;
+  }
+}
+
+TEST_F(CommerceHintAgentUnitTest, ShouldSkipAddToCartFromResource) {
+  for (auto const& entry : kSkipAddToCartRequests) {
+    EXPECT_TRUE(CommerceHintAgent::ShouldSkipAddToCartRequest(
+        GURL(entry.first), GURL(entry.second)));
+  }
+
+  for (auto const& entry : kNotSkipAddToCartRequests) {
+    EXPECT_FALSE(CommerceHintAgent::ShouldSkipAddToCartRequest(
+        GURL(entry.first), GURL(entry.second)));
   }
 }
 
@@ -845,10 +1176,10 @@ float BenchmarkIsVisitCheckout(const GURL& url) {
   return elapsed_us;
 }
 
-float BenchmarkIsPurchase(base::StringPiece str) {
+float BenchmarkIsPurchase(const GURL& url, base::StringPiece str) {
   const base::TimeTicks now = base::TimeTicks::Now();
   for (int i = 0; i < kTestIterations; ++i) {
-    CommerceHintAgent::IsPurchase(str);
+    CommerceHintAgent::IsPurchase(url, str);
   }
   const base::TimeTicks end = base::TimeTicks::Now();
   float elapsed_us =
@@ -861,7 +1192,12 @@ float BenchmarkIsPurchase(base::StringPiece str) {
 float BenchmarkShouldSkip(base::StringPiece str) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      ntp_features::kNtpChromeCartModule, kSkipParams);
+#if !BUILDFLAG(IS_ANDROID)
+      ntp_features::kNtpChromeCartModule,
+#else
+      commerce::kCommerceHintAndroid,
+#endif
+      kSkipParams);
 
   const base::TimeTicks now = base::TimeTicks::Now();
   for (int i = 0; i < kTestIterations; ++i) {
@@ -875,6 +1211,19 @@ float BenchmarkShouldSkip(base::StringPiece str) {
   return elapsed_us;
 }
 
+float BenchmarkShouldSkipAddToCart(const GURL& url) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  for (int i = 0; i < kTestIterations; ++i) {
+    CommerceHintAgent::ShouldSkipAddToCartRequest(url, url);
+  }
+  const base::TimeTicks end = base::TimeTicks::Now();
+  float elapsed_us =
+      static_cast<float>((end - now).InMicroseconds()) / kTestIterations;
+  LOG(INFO) << "ShouldSkipAddToCart(" << url.spec().size()
+            << " chars) took: " << elapsed_us << " µs";
+  return elapsed_us;
+}
+
 // TSAN builds are 20~50X slower than Release build.
 #if defined(THREAD_SANITIZER) || defined(ADDRESS_SANITIZER) ||             \
     defined(MEMORY_SANITIZER) || BUILDFLAG(CFI_CAST_CHECK) ||              \
@@ -885,14 +1234,14 @@ float BenchmarkShouldSkip(base::StringPiece str) {
 #define MAYBE_RegexBenchmark RegexBenchmark
 #endif
 
-TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
+TEST_F(CommerceHintAgentUnitTest, MAYBE_RegexBenchmark) {
   std::string str = "abcdefghijklmnop";
   const GURL basic_url = GURL("http://example.com/");
   // Compile regex before benchmark loop.
   CommerceHintAgent::IsAddToCart(str);
   CommerceHintAgent::IsVisitCart(basic_url);
   CommerceHintAgent::IsVisitCheckout(basic_url);
-  CommerceHintAgent::IsPurchase(str);
+  CommerceHintAgent::IsPurchase(basic_url, str);
   for (int length = 16; length <= (1L << 20); length *= 4) {
     const GURL url("http://example.com/" + str);
 
@@ -904,7 +1253,7 @@ TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
 #if !defined(NDEBUG)
     slow_factor *= 4;
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     slow_factor *= 10;
 #endif
 
@@ -920,13 +1269,17 @@ TEST(CommerceHintAgentTest, MAYBE_RegexBenchmark) {
     elapsed_us = BenchmarkIsVisitCheckout(url);
     // Typical value is ~10us.
     // Without capping the length, it would take at least 2000us.
-    EXPECT_LT(elapsed_us, 50.0 * slow_factor);
+    EXPECT_LT(elapsed_us, 100.0 * slow_factor);
 
-    elapsed_us = BenchmarkIsPurchase(str);
+    elapsed_us = BenchmarkIsPurchase(basic_url, str);
     // Typical value is ~0.1us.
-    EXPECT_LT(elapsed_us, 1.0 * slow_factor);
+    EXPECT_LT(elapsed_us, 5.0 * slow_factor);
 
     elapsed_us = BenchmarkShouldSkip(str);
+    // Typical value is ~10us.
+    EXPECT_LT(elapsed_us, 50.0 * slow_factor);
+
+    elapsed_us = BenchmarkShouldSkipAddToCart(url);
     // Typical value is ~10us.
     EXPECT_LT(elapsed_us, 50.0 * slow_factor);
 

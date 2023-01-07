@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,34 +6,16 @@
  * @fileoverview A collection of JavaScript utilities used to simplify working
  * with keyboard events.
  */
+import {KeyCode} from '../../common/key_code.js';
 
+import {KeySequence} from './key_sequence.js';
+import {Msgs} from './msgs.js';
 
-goog.provide('KeyUtil');
-goog.provide('SimpleKeyEvent');
-
-goog.require('Msgs');
-goog.require('ChromeVox');
-goog.require('KeyCode');
-goog.require('KeySequence');
-
-/**
- * @typedef {{ctrlKey: (boolean|undefined),
- *            altKey: (boolean|undefined),
- *            shiftKey: (boolean|undefined),
- *            keyCode: (number|undefined)}}
- */
-let SimpleKeyEvent;
-
-/**
- * Create the namespace
- */
-KeyUtil = class {
-  constructor() {}
-
+export class KeyUtil {
   /**
    * Convert a key event into a Key Sequence representation.
    *
-   * @param {Event|SimpleKeyEvent} keyEvent The keyEvent to convert.
+   * @param {Event} keyEvent The keyEvent to convert.
    * @return {!KeySequence} A key sequence representation of the key event.
    */
   static keyEventToKeySequence(keyEvent) {
@@ -88,11 +70,6 @@ KeyUtil = class {
         keySequence.doubleTap = true;
         util.prevKeySequence = null;
         util.sequencing = false;
-        // Resets the search key state tracked for ChromeOS because in OOBE,
-        // we never get a key up for the key down (keyCode 91).
-        if (keyEvent.keyCode === KeyUtil.getStickyKeyCode()) {
-          ChromeVox.searchKeyHeld = false;
-        }
         return keySequence;
       }
       // The user double tapped the sticky key but didn't do it within the
@@ -167,24 +144,23 @@ KeyUtil = class {
    * @return {Array<number>} Array of key codes.
    */
   static cvoxModKeyCodes() {
-    const modKeyCombo = ChromeVox.modKeyStr.split(/\+/g);
-    const modKeyCodes = modKeyCombo.map(function(keyString) {
-      return KeyUtil.modStringToKeyCode(keyString);
-    });
+    const modKeyCombo = KeySequence.modKeyStr.split(/\+/g);
+    const modKeyCodes =
+        modKeyCombo.map(keyString => KeyUtil.modStringToKeyCode(keyString));
     return modKeyCodes;
   }
 
   /**
    * Checks if the specified key code is a key used for switching into a
    * sequence mode. Sequence switch keys are specified in
-   * KeyUtil.sequenceSwitchKeyCodes
+   * KeySequence.sequenceSwitchKeyCodes
    *
    * @param {!KeySequence} rhKeySeq The key sequence to check.
    * @return {boolean} true if it is a sequence switch keycode, false otherwise.
    */
   static isSequenceSwitchKeyCode(rhKeySeq) {
-    for (let i = 0; i < ChromeVox.sequenceSwitchKeyCodes.length; i++) {
-      const lhKeySeq = ChromeVox.sequenceSwitchKeyCodes[i];
+    for (let i = 0; i < KeySequence.sequenceSwitchKeyCodes.length; i++) {
+      const lhKeySeq = KeySequence.sequenceSwitchKeyCodes[i];
       if (lhKeySeq.equals(rhKeySeq)) {
         return true;
       }
@@ -242,7 +218,7 @@ KeyUtil = class {
         return msg('forward_key');
       case KeyCode.BROWSER_REFRESH:
         return msg('refresh_key');
-      case KeyCode.MEDIA_LAUNCH_APP2:
+      case KeyCode.ZOOM:
         return msg('toggle_full_screen_key');
       case KeyCode.MEDIA_LAUNCH_APP1:
         return msg('window_overview_key');
@@ -340,9 +316,9 @@ KeyUtil = class {
    * @param {boolean=} opt_modifiers Restrict printout to only modifiers.
    *     Defaults
    * to false.
-   * @return {string} Readable string representation of the KeySequence object.
    */
-  static keySequenceToString(keySequence, opt_readableKeyCode, opt_modifiers) {
+  static async keySequenceToString(
+      keySequence, opt_readableKeyCode, opt_modifiers) {
     // TODO(rshearer): Move this method and the getReadableNameForKeyCode and
     // the method to KeySequence after we refactor isModifierActive (when the
     // modifie key becomes customizable and isn't stored as a string). We can't
@@ -398,13 +374,32 @@ KeyUtil = class {
             const keyCode = keySequence.keys[keyPressed][index];
             // We make sure the keyCode isn't for a modifier key. If it is, then
             // we've already added that into the string above.
-            if (!keySequence.isModifierKey(keyCode) && !opt_modifiers) {
-              if (opt_readableKeyCode) {
-                tempStr += KeyUtil.getReadableNameForKeyCode(keyCode);
-              } else {
-                tempStr += KeyUtil.keyCodeToString(keyCode);
-              }
+            if (keySequence.isModifierKey(keyCode) || opt_modifiers) {
+              break;
             }
+
+            if (!opt_readableKeyCode) {
+              tempStr += KeyUtil.keyCodeToString(keyCode);
+              break;
+            }
+
+            // First, try using Chrome OS's localized DOM key string conversion.
+            let domKeyString = await new Promise(
+                resolve =>
+                    chrome.accessibilityPrivate
+                        .getLocalizedDomKeyStringForKeyCode(keyCode, resolve));
+            if (!domKeyString) {
+              tempStr += KeyUtil.getReadableNameForKeyCode(keyCode);
+              break;
+            }
+
+            // Upper case single-lettered key strings for better tts.
+            if (domKeyString.length === 1) {
+              domKeyString = domKeyString.toUpperCase();
+            }
+
+            tempStr += domKeyString;
+            break;
         }
         if (str.indexOf(modifier) === -1) {
           tempStr += modifier + '+';
@@ -453,7 +448,7 @@ KeyUtil = class {
     key.doubleTap = originalState;
     return isSet;
   }
-};
+}
 
 /**
  * The time in ms at which the ChromeVox Sticky Mode key was pressed.

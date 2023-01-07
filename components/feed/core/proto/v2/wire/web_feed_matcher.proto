@@ -1,0 +1,27 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package feedwire.webfeed;
+
+option optimize_for = LITE_RUNTIME;
+
+message WebFeedMatcher {
+  message Criteria {
+    enum CriteriaType {
+      CRITERIA_TYPE_UNSPECIFIED = 0;
+      PAGE_URL_HOST_MATCH = 1;
+      PAGE_URL_HOST_SUFFIX = 2;
+      PAGE_URL_PATH_MATCH = 3;
+      RSS_URL_MATCH = 4;
+    }
+    oneof match {
+      string text = 2;
+      string partial_match_regex = 3;
+    }
+    CriteriaType criteria_type = 1;
+  }
+  repeated Criteria criteria = 1;
+}

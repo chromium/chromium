@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests SourceMap and StyleSheetMapping.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.evaluateInPagePromise(`
       function addStyleSheet()
       {
@@ -38,8 +38,8 @@
   }
 
   function cssUISourceCodeAdded(uiSourceCode) {
-    styleSheetId = cssModel.styleSheetIdsForURL(styleSheetURL)[0];
-    TestRunner.addSniffer(Bindings.CSSWorkspaceBinding.ModelInfo.prototype, '_updateLocations', locationsUpdated, true);
+    styleSheetId = cssModel.getStyleSheetIdsForURL(styleSheetURL)[0];
+    TestRunner.addSniffer(Bindings.CSSWorkspaceBinding.ModelInfo.prototype, 'updateLocations', locationsUpdated, true);
     TestRunner.addResult('Added CSS uiSourceCode: ' + uiSourceCode.url());
     TestRunner.waitForUISourceCode(sourceURL).then(scssUISourceCodeAdded);
   }

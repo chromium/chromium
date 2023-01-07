@@ -1,0 +1,4 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++EditText hint:"Your username should be your email id" viewIdResName:"username" clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300", hint="Your username should be your email id"]
+++View text:"Your username should be your email id" viewIdResName:"username-tip" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="tooltip", roleDescription="tooltip"]
+++EditText hint:"mmddyy" clickable editable focusable inputType:1 textSelectionStart:0 textSelectionEnd:0 actions:[FOCUS, CLICK, AX_FOCUS, PASTE, SET_TEXT, IME_ENTER] bundle:[chromeRole="textField", clickableScore="300", hint="mmddyy"]

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,9 @@
 #include "media/base/video_frame.h"
 #include "media/cast/cast_config.h"
 #include "media/cast/cast_environment.h"
-#include "media/cast/cast_receiver.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/net/udp_transport_impl.h"
+#include "media/cast/test/receiver/cast_receiver.h"
 
 using media::cast::CastTransportStatus;
 using media::cast::UdpTransportImpl;

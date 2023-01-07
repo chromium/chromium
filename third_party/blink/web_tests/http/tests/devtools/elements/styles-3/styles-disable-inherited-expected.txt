@@ -10,7 +10,7 @@ div { (user agent stylesheet)
 
 ======== Inherited from div#container ========
 [expanded] 
-Style Attribute { ()
+style attribute { ()
     font-weight: bold;
 
 After disable:

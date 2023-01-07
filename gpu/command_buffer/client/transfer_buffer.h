@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "gpu/command_buffer/client/ring_buffer.h"
 #include "gpu/command_buffer/common/buffer.h"
@@ -130,7 +130,7 @@ class GPU_EXPORT TransferBuffer : public TransferBufferInterface {
   // previously freed.
   unsigned int GetPreviousRingBufferUsedBytes();
 
-  CommandBufferHelper* helper_;
+  raw_ptr<CommandBufferHelper> helper_;
   std::unique_ptr<RingBuffer> ring_buffer_;
   base::circular_deque<std::unique_ptr<RingBuffer>> previous_ring_buffers_;
 
@@ -165,7 +165,7 @@ class GPU_EXPORT TransferBuffer : public TransferBufferInterface {
   int32_t buffer_id_;
 
   // address of result area
-  void* result_buffer_;
+  raw_ptr<void> result_buffer_;
 
   // offset to result area
   uint32_t result_shm_offset_;
@@ -198,6 +198,9 @@ class GPU_EXPORT ScopedTransferBufferPtr {
         size_(0),
         helper_(helper),
         transfer_buffer_(transfer_buffer) {}
+
+  ScopedTransferBufferPtr(const ScopedTransferBufferPtr&) = delete;
+  ScopedTransferBufferPtr& operator=(const ScopedTransferBufferPtr&) = delete;
 
   ~ScopedTransferBufferPtr() {
     Release();
@@ -240,7 +243,6 @@ class GPU_EXPORT ScopedTransferBufferPtr {
   unsigned int size_;
   CommandBufferHelper* helper_;
   TransferBufferInterface* transfer_buffer_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedTransferBufferPtr);
 };
 
 template <typename T>
@@ -270,6 +272,10 @@ class ScopedResultPtr {
   explicit ScopedResultPtr(TransferBufferInterface* tb)
       : result_(static_cast<T*>(tb->AcquireResultBuffer())),
         transfer_buffer_(tb) {}
+
+  ScopedResultPtr(const ScopedResultPtr&) = delete;
+  ScopedResultPtr& operator=(const ScopedResultPtr&) = delete;
+
   ~ScopedResultPtr() {
     if (transfer_buffer_)
       transfer_buffer_->ReleaseResultBuffer();
@@ -278,7 +284,6 @@ class ScopedResultPtr {
   int offset() const { return transfer_buffer_->GetResultOffset(); }
 
   // Make this a move-only class like unique_ptr.
-  DISALLOW_COPY_AND_ASSIGN(ScopedResultPtr);
   ScopedResultPtr(ScopedResultPtr<T>&& other) { *this = std::move(other); }
   ScopedResultPtr& operator=(ScopedResultPtr<T>&& other) {
     this->result_ = other.result_;
@@ -294,8 +299,8 @@ class ScopedResultPtr {
   explicit operator bool() { return result_; }
 
  private:
-  T* result_;
-  TransferBufferInterface* transfer_buffer_;
+  raw_ptr<T> result_;
+  raw_ptr<TransferBufferInterface> transfer_buffer_;
 };
 
 }  // namespace gpu

@@ -3,7 +3,7 @@
 <button type="button" onclick='window.open("resources/slow-preload-cancel.html");'>Test</button>
 <script>
 if (window.testRunner) {
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
     testRunner.waitUntilDone();
     testRunner.dumpAsText();
 }

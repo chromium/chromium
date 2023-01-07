@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/enterprise/reporting/extension_request/extension_request_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
 
 namespace enterprise_reporting {
-
-class ExtensionRequestObserver;
 
 // Factory class for ExtensionRequestObserver. It creates
 // ExtensionRequestObserver for each Profile or a specific profile.
@@ -30,6 +30,10 @@ class ExtensionRequestObserverFactory : public ProfileManagerObserver,
       const ExtensionRequestObserverFactory&) = delete;
   ~ExtensionRequestObserverFactory() override;
 
+  bool IsReportEnabled();
+  void EnableReport(ExtensionRequestObserver::ReportTrigger trigger);
+  void DisableReport();
+
   // ProfileManagerObserver
   void OnProfileAdded(Profile* profile) override;
   void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
@@ -44,9 +48,10 @@ class ExtensionRequestObserverFactory : public ProfileManagerObserver,
   int GetNumberOfObserversForTesting();
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::map<Profile*, std::unique_ptr<ExtensionRequestObserver>, ProfileCompare>
       observers_;
+  ExtensionRequestObserver::ReportTrigger report_trigger_;
 };
 
 }  // namespace enterprise_reporting

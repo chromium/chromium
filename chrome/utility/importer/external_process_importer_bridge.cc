@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"

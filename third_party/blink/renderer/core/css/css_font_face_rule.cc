@@ -49,10 +49,10 @@ String CSSFontFaceRule::cssText() const {
   result.Append("@font-face { ");
   String descs = font_face_rule_->Properties().AsText();
   result.Append(descs);
-  if (!descs.IsEmpty())
+  if (!descs.empty())
     result.Append(' ');
   result.Append('}');
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 void CSSFontFaceRule::Reattach(StyleRuleBase* rule) {

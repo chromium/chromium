@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define COMPONENTS_GUEST_VIEW_BROWSER_BAD_MESSAGE_H_
 
 namespace content {
-class BrowserMessageFilter;
 class RenderProcessHost;
 }  // namespace content
 
@@ -25,6 +24,7 @@ enum BadMessageReason {
   GVM_EMBEDDER_FORBIDDEN_ACCESS_TO_GUEST = 0,
   GVM_INVALID_GUESTVIEW_TYPE = 1,
   GVMF_UNEXPECTED_MESSAGE_BEFORE_GVM_CREATION = 2,
+  GVM_INVALID_ATTACH = 3,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. GuestViewManager becomes GVM) plus a unique description of
@@ -40,12 +40,6 @@ enum BadMessageReason {
 void ReceivedBadMessage(content::RenderProcessHost* host,
                         BadMessageReason reason);
 void ReceivedBadMessage(int render_process_id, BadMessageReason reason);
-
-// Called when a browser message filter receives a bad IPC message from a
-// renderer process. Logs the event, records a histogram metric for the
-// |reason|, and terminates the process for |filter|.
-void ReceivedBadMessage(content::BrowserMessageFilter* filter,
-                        BadMessageReason reason);
 
 }  // namespace bad_message
 }  // namespace guest_view

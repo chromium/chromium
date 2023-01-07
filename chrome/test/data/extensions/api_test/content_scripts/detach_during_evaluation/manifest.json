@@ -1,0 +1,14 @@
+{
+  "name": "detach during evaluation",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "Tests that content scripts detaching its Window during evaluation shouldn't crash",
+  "content_scripts": [
+    {
+      "matches": ["*://document-end.example.com/extensions/test_file.html"],
+      "all_frames": true,
+      "js": ["detach.js", "detach2.js"],
+      "run_at": "document_end"
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/time/time.h"
-#include "content/common/content_export.h"
 #include "content/common/input/synthetic_gesture_params.h"
 
 namespace blink {
@@ -17,7 +16,7 @@ class WebInputEvent;
 namespace content {
 
 // Interface between the synthetic gesture controller and the RenderWidgetHost.
-class CONTENT_EXPORT SyntheticGestureTarget {
+class SyntheticGestureTarget {
  public:
   SyntheticGestureTarget() {}
   virtual ~SyntheticGestureTarget() {}

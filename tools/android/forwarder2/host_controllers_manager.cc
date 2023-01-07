@@ -1,8 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "tools/android/forwarder2/host_controllers_manager.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/logging.h"
@@ -53,8 +55,8 @@ std::string HostControllersManager::MakeHostControllerMapKey(int adb_port,
 void HostControllersManager::InitOnce() {
   if (thread_.get())
     return;
-  at_exit_manager_.reset(new base::AtExitManager());
-  thread_.reset(new base::Thread("HostControllersManagerThread"));
+  at_exit_manager_ = std::make_unique<base::AtExitManager>();
+  thread_ = std::make_unique<base::Thread>("HostControllersManagerThread");
   thread_->Start();
 }
 

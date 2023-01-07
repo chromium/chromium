@@ -1,0 +1,19 @@
+caption: Enables the floating accessibility menu
+desc: |-
+  In kiosk mode, controls whether the floating accessibility menu is being shown.
+
+        If this policy is set to enabled, the floating accessibility menu will be always shown.
+
+        If this policy is set to disabled or left unset, the floating accessibility menu will never be shown.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- apotapchuk@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:84-
+tags: []
+type: main

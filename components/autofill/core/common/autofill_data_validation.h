@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@ class GURL;
 
 namespace autofill {
 
+struct SelectOption;
 struct FormData;
 struct FormFieldData;
 struct PasswordFormFillData;
@@ -38,6 +39,7 @@ bool IsValidGURL(const GURL& url);
 bool IsValidFormFieldData(const FormFieldData& field);
 bool IsValidFormData(const FormData& form);
 bool IsValidPasswordFormFillData(const PasswordFormFillData& form);
+bool IsValidOptionVector(const std::vector<SelectOption>& v);
 bool IsValidString16Vector(const std::vector<std::u16string>& v);
 bool IsValidFormDataVector(const std::vector<FormData>& v);
 

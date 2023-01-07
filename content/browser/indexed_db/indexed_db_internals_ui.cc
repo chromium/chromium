@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,11 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
-#include "content/grit/dev_ui_content_resources.h"
+#include "content/grit/indexed_db_resources.h"
+#include "content/grit/indexed_db_resources_map.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -32,15 +31,14 @@
 #include "ui/base/text/bytes_formatting.h"
 #include "url/origin.h"
 
-using url::Origin;
-
 namespace content {
 
 IndexedDBInternalsUI::IndexedDBInternalsUI(WebUI* web_ui)
     : WebUIController(web_ui) {
   web_ui->AddMessageHandler(std::make_unique<IndexedDBInternalsHandler>());
-  WebUIDataSource* source =
-      WebUIDataSource::Create(kChromeUIIndexedDBInternalsHost);
+  WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      kChromeUIIndexedDBInternalsHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self' 'unsafe-eval';");
@@ -48,15 +46,9 @@ IndexedDBInternalsUI::IndexedDBInternalsUI(WebUI* web_ui)
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types jstemplate;");
   source->UseStringsJs();
-  source->AddResourcePath("indexeddb_internals.js",
-                          IDR_INDEXED_DB_INTERNALS_JS);
-  source->AddResourcePath("indexeddb_internals.css",
-                          IDR_INDEXED_DB_INTERNALS_CSS);
-  source->SetDefaultResource(IDR_INDEXED_DB_INTERNALS_HTML);
-
-  BrowserContext* browser_context =
-      web_ui->GetWebContents()->GetBrowserContext();
-  WebUIDataSource::Add(browser_context, source);
+  source->AddResourcePaths(
+      base::make_span(kIndexedDbResources, kIndexedDbResourcesSize));
+  source->AddResourcePath("", IDR_INDEXED_DB_INDEXEDDB_INTERNALS_HTML);
 }
 
 IndexedDBInternalsUI::~IndexedDBInternalsUI() = default;
@@ -67,17 +59,16 @@ IndexedDBInternalsHandler::~IndexedDBInternalsHandler() = default;
 
 void IndexedDBInternalsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
-      "getAllOrigins",
-      base::BindRepeating(&IndexedDBInternalsHandler::GetAllOrigins,
+      "getAllBucketsAcrossAllOrigins",
+      base::BindRepeating(&IndexedDBInternalsHandler::GetAllBuckets,
                           base::Unretained(this)));
-
   web_ui()->RegisterMessageCallback(
-      "downloadOriginData",
-      base::BindRepeating(&IndexedDBInternalsHandler::DownloadOriginData,
+      "downloadBucketData",
+      base::BindRepeating(&IndexedDBInternalsHandler::DownloadBucketData,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "forceClose",
-      base::BindRepeating(&IndexedDBInternalsHandler::ForceCloseOrigin,
+      base::BindRepeating(&IndexedDBInternalsHandler::ForceCloseBucket,
                           base::Unretained(this)));
 }
 
@@ -85,40 +76,42 @@ void IndexedDBInternalsHandler::OnJavascriptDisallowed() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-void IndexedDBInternalsHandler::GetAllOrigins(const base::ListValue* args) {
+void IndexedDBInternalsHandler::GetAllBuckets(const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   AllowJavascript();
   BrowserContext* browser_context =
       web_ui()->GetWebContents()->GetBrowserContext();
 
-  BrowserContext::ForEachStoragePartition(
-      browser_context,
-      base::BindRepeating(
-          [](base::WeakPtr<IndexedDBInternalsHandler> handler,
-             StoragePartition* partition) {
-            if (!handler)
-              return;
-            auto& control = partition->GetIndexedDBControl();
-            control.GetAllOriginsDetails(base::BindOnce(
-                [](base::WeakPtr<IndexedDBInternalsHandler> handler,
-                   base::FilePath partition_path, bool incognito,
-                   base::Value info_list) {
-                  if (!handler)
-                    return;
+  browser_context->ForEachStoragePartition(base::BindRepeating(
+      [](base::WeakPtr<IndexedDBInternalsHandler> handler,
+         StoragePartition* partition) {
+        if (!handler)
+          return;
+        auto& control = partition->GetIndexedDBControl();
+        control.GetAllBucketsDetails(base::BindOnce(
+            [](base::WeakPtr<IndexedDBInternalsHandler> handler,
+               base::FilePath partition_path, bool incognito,
+               base::Value::List info_list) {
+              if (!handler)
+                return;
 
-                  handler->OnOriginsReady(
-                      info_list, incognito ? base::FilePath() : partition_path);
-                },
-                handler, partition->GetPath()));
-          },
-          weak_factory_.GetWeakPtr()));
+              handler->OnBucketsReady(
+                  info_list, incognito ? base::FilePath() : partition_path);
+            },
+            handler, partition->GetPath()));
+      },
+      weak_factory_.GetWeakPtr()));
 }
 
-void IndexedDBInternalsHandler::OnOriginsReady(const base::Value& origins,
-                                               const base::FilePath& path) {
+void IndexedDBInternalsHandler::OnBucketsReady(
+    const base::Value::List& storage_keys,
+    const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  FireWebUIListener("origins-ready", origins, base::Value(path.AsUTF8Unsafe()));
+  // TODO(https://crbug.com/1199077): Fix this name as part of storage key
+  // migration.
+  FireWebUIListener("origins-ready", storage_keys,
+                    base::Value(path.AsUTF8Unsafe()));
 }
 
 static void FindControl(const base::FilePath& partition_path,
@@ -131,44 +124,32 @@ static void FindControl(const base::FilePath& partition_path,
   }
 }
 
-bool IndexedDBInternalsHandler::GetOriginData(
-    const base::ListValue* args,
+bool IndexedDBInternalsHandler::GetBucketData(
+    const base::Value::List& args,
     std::string* callback_id,
     base::FilePath* partition_path,
-    Origin* origin,
+    storage::BucketId* bucket_id,
     storage::mojom::IndexedDBControl** control) {
-  std::string callback_string;
-  if (!args->GetString(0, &callback_string)) {
-    return false;
-  }
-  *callback_id = callback_string;
-
-  std::string path_string;
-  if (!args->GetString(1, &path_string))
-    return false;
-  *partition_path = base::FilePath::FromUTF8Unsafe(path_string);
-
-  std::string url_string;
-  if (!args->GetString(2, &url_string))
+  if (args.size() < 3)
     return false;
 
-  *origin = Origin::Create(GURL(url_string));
+  *callback_id = args[0].GetString();
+  *partition_path = base::FilePath::FromUTF8Unsafe(args[1].GetString());
+  *bucket_id = storage::BucketId::FromUnsafeValue(args[2].GetInt());
 
-  return GetOriginControl(*partition_path, *origin, control);
+  return GetBucketControl(*partition_path, control);
 }
 
-bool IndexedDBInternalsHandler::GetOriginControl(
+bool IndexedDBInternalsHandler::GetBucketControl(
     const base::FilePath& path,
-    const Origin& origin,
     storage::mojom::IndexedDBControl** control) {
-  // search the origins to find the right context
+  // search the storage keys to find the right context
   BrowserContext* browser_context =
       web_ui()->GetWebContents()->GetBrowserContext();
 
   StoragePartition* result_partition = nullptr;
   *control = nullptr;
-  BrowserContext::ForEachStoragePartition(
-      browser_context,
+  browser_context->ForEachStoragePartition(
       base::BindRepeating(&FindControl, path, &result_partition, control));
 
   if (!result_partition || !control)
@@ -177,73 +158,77 @@ bool IndexedDBInternalsHandler::GetOriginControl(
   return true;
 }
 
-void IndexedDBInternalsHandler::DownloadOriginData(
-    const base::ListValue* args) {
+void IndexedDBInternalsHandler::DownloadBucketData(
+    const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::string callback_id;
   base::FilePath partition_path;
-  Origin origin;
+  storage::BucketId bucket_id;
   storage::mojom::IndexedDBControl* control;
-  if (!GetOriginData(args, &callback_id, &partition_path, &origin, &control))
+  if (!GetBucketData(args, &callback_id, &partition_path, &bucket_id, &control))
     return;
 
   AllowJavascript();
   DCHECK(control);
   control->ForceClose(
-      origin, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
+      bucket_id, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::BindOnce(
-          [](base::WeakPtr<IndexedDBInternalsHandler> handler, Origin origin,
+          [](base::WeakPtr<IndexedDBInternalsHandler> handler,
+             storage::BucketId bucket_id,
              storage::mojom::IndexedDBControl* control,
              const std::string& callback_id) {
             // Is the connection count always zero after closing,
             // such that this can be simplified?
             control->GetConnectionCount(
-                origin,
+                bucket_id,
                 base::BindOnce(
                     [](base::WeakPtr<IndexedDBInternalsHandler> handler,
-                       Origin origin, storage::mojom::IndexedDBControl* control,
+                       storage::BucketId bucket_id,
+                       storage::mojom::IndexedDBControl* control,
                        const std::string& callback_id,
                        uint64_t connection_count) {
                       if (!handler)
                         return;
 
-                      control->DownloadOriginData(
-                          origin,
+                      control->DownloadBucketData(
+                          bucket_id,
                           base::BindOnce(
                               &IndexedDBInternalsHandler::OnDownloadDataReady,
                               handler, callback_id, connection_count));
                     },
-                    handler, origin, control, callback_id));
+                    handler, bucket_id, control, callback_id));
           },
-          weak_factory_.GetWeakPtr(), origin, control, callback_id));
+          weak_factory_.GetWeakPtr(), bucket_id, control, callback_id));
 }
 
-void IndexedDBInternalsHandler::ForceCloseOrigin(const base::ListValue* args) {
+void IndexedDBInternalsHandler::ForceCloseBucket(
+    const base::Value::List& args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::string callback_id;
   base::FilePath partition_path;
-  Origin origin;
+  storage::BucketId bucket_id;
   storage::mojom::IndexedDBControl* control;
-  if (!GetOriginData(args, &callback_id, &partition_path, &origin, &control))
+  if (!GetBucketData(args, &callback_id, &partition_path, &bucket_id, &control))
     return;
 
   AllowJavascript();
   control->ForceClose(
-      origin, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
+      bucket_id, storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
       base::BindOnce(
-          [](base::WeakPtr<IndexedDBInternalsHandler> handler, Origin origin,
+          [](base::WeakPtr<IndexedDBInternalsHandler> handler,
+             storage::BucketId bucket_id,
              storage::mojom::IndexedDBControl* control,
              const std::string& callback_id) {
             if (!handler)
               return;
             control->GetConnectionCount(
-                origin,
+                bucket_id,
                 base::BindOnce(&IndexedDBInternalsHandler::OnForcedClose,
                                handler, callback_id));
           },
-          weak_factory_.GetWeakPtr(), origin, control, callback_id));
+          weak_factory_.GetWeakPtr(), bucket_id, control, callback_id));
 }
 
 void IndexedDBInternalsHandler::OnForcedClose(const std::string& callback_id,
@@ -304,8 +289,7 @@ void IndexedDBInternalsHandler::OnDownloadDataReady(
       temp_path, callback_id, connection_count));
 
   BrowserContext* context = web_contents->GetBrowserContext();
-  BrowserContext::GetDownloadManager(context)->DownloadUrl(
-      std::move(dl_params));
+  context->GetDownloadManager()->DownloadUrl(std::move(dl_params));
 }
 
 // The entire purpose of this class is to delete the temp file after
@@ -313,6 +297,10 @@ void IndexedDBInternalsHandler::OnDownloadDataReady(
 class FileDeleter : public download::DownloadItem::Observer {
  public:
   explicit FileDeleter(const base::FilePath& temp_dir) : temp_dir_(temp_dir) {}
+
+  FileDeleter(const FileDeleter&) = delete;
+  FileDeleter& operator=(const FileDeleter&) = delete;
+
   ~FileDeleter() override;
 
   void OnDownloadUpdated(download::DownloadItem* download) override;
@@ -322,8 +310,6 @@ class FileDeleter : public download::DownloadItem::Observer {
 
  private:
   const base::FilePath temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileDeleter);
 };
 
 void FileDeleter::OnDownloadUpdated(download::DownloadItem* item) {
@@ -347,8 +333,7 @@ FileDeleter::~FileDeleter() {
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
-      base::BindOnce(base::GetDeletePathRecursivelyCallback(),
-                     std::move(temp_dir_)));
+      base::GetDeletePathRecursivelyCallback(std::move(temp_dir_)));
 }
 
 void IndexedDBInternalsHandler::OnDownloadStarted(

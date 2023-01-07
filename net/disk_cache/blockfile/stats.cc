@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/metrics/sample_vector.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 
@@ -69,7 +68,7 @@ const char* const kCounterNames[] = {
   "Doom recent entries",
   "unused"
 };
-static_assert(base::size(kCounterNames) == disk_cache::Stats::MAX_COUNTER,
+static_assert(std::size(kCounterNames) == disk_cache::Stats::MAX_COUNTER,
               "update the names");
 
 }  // namespace
@@ -140,11 +139,11 @@ void Stats::InitSizeHistogram() {
     return;
 
   first_time = false;
-  for (int i = 0; i < kDataSizesLength; i++) {
+  for (int& data_size : data_sizes_) {
     // This is a good time to fix any inconsistent data. The count should be
     // always positive, but if it's not, reset the value now.
-    if (data_sizes_[i] < 0)
-      data_sizes_[i] = 0;
+    if (data_size < 0)
+      data_size = 0;
   }
 }
 

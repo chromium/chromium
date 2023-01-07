@@ -1,18 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
 
 #include "base/bind.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/locale_settings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/label_button.h"
@@ -20,7 +21,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 const int kBubbleExtraIconSize = 16;
@@ -62,7 +62,6 @@ ToolbarActionsBarBubbleViews::ToolbarActionsBarBubbleViews(
 
   DCHECK(anchor_view);
   set_close_on_deactivate(delegate_->ShouldCloseOnDeactivate());
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::TOOLBAR_ACTIONS_BAR);
 }
 
 ToolbarActionsBarBubbleViews::~ToolbarActionsBarBubbleViews() {}
@@ -82,9 +81,8 @@ ToolbarActionsBarBubbleViews::CreateExtraInfoView() {
   std::unique_ptr<views::ImageView> icon;
   if (extra_view_info->resource) {
     icon = std::make_unique<views::ImageView>();
-    icon->SetImage(gfx::CreateVectorIcon(*extra_view_info->resource,
-                                         kBubbleExtraIconSize,
-                                         gfx::kChromeIconGrey));
+    icon->SetImage(ui::ImageModel::FromVectorIcon(
+        *extra_view_info->resource, ui::kColorIcon, kBubbleExtraIconSize));
   }
 
   std::unique_ptr<views::View> extra_view;
@@ -176,19 +174,19 @@ void ToolbarActionsBarBubbleViews::Init() {
     body_text_->SetMultiLine(true);
     body_text_->SizeToFit(width);
     body_text_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    AddChildView(body_text_);
+    AddChildView(body_text_.get());
   }
 
   if (!item_list.empty()) {
     item_list_ = new views::Label(item_list);
-    item_list_->SetBorder(views::CreateEmptyBorder(
+    item_list_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         0,
         provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL),
-        0, 0));
+        0, 0)));
     item_list_->SetMultiLine(true);
     item_list_->SizeToFit(width);
     item_list_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    AddChildView(item_list_);
+    AddChildView(item_list_.get());
   }
 }
 

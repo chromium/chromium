@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,12 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -38,6 +40,7 @@
 #include "chrome/chrome_cleaner/ipc/sandbox.h"
 #include "chrome/chrome_cleaner/logging/scoped_logging.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"
+#include "chrome/chrome_cleaner/os/file_remover_allowlist.h"
 #include "chrome/chrome_cleaner/os/initializer.h"
 #include "chrome/chrome_cleaner/os/post_reboot_registration.h"
 #include "chrome/chrome_cleaner/os/pre_fetched_paths.h"
@@ -45,7 +48,6 @@
 #include "chrome/chrome_cleaner/os/scoped_disable_wow64_redirection.h"
 #include "chrome/chrome_cleaner/os/system_util_cleaner.h"
 #include "chrome/chrome_cleaner/os/task_scheduler.h"
-#include "chrome/chrome_cleaner/os/whitelisted_directory.h"
 #include "chrome/chrome_cleaner/proto/shared_pup_enums.pb.h"
 #include "chrome/chrome_cleaner/settings/settings_types.h"
 #include "chrome/chrome_cleaner/strings/string_util.h"
@@ -76,8 +78,8 @@ class ChromeCleanerTestSuite : public base::TestSuite {
  protected:
   void Initialize() override {
     base::TestSuite::Initialize();
-    scoped_logging.reset(new chrome_cleaner::ScopedLogging(
-        IsSandboxedProcess() ? chrome_cleaner::kSandboxLogFileSuffix : L""));
+    scoped_logging = std::make_unique<chrome_cleaner::ScopedLogging>(
+        IsSandboxedProcess() ? chrome_cleaner::kSandboxLogFileSuffix : L"");
   }
 
  private:
@@ -99,7 +101,7 @@ bool SetupTestConfigsWithCatalogs(const PUPData::UwSCatalogs& catalogs) {
   PreFetchedPaths::GetInstance()->DisableForTesting();
   base::PathService::DisableCache();
 
-  WhitelistedDirectory::GetInstance()->DisableCache();
+  FileRemoverAllowlist::GetInstance()->DisableCache();
 
   return true;
 }
@@ -121,7 +123,7 @@ int RunChromeCleanerTestSuite(int argc,
   // IS_INTERNAL_CHROME_CLEANER_BUILD is only set on the Chrome Cleaner
   // builders, not the chromium builders, so this will not slow down the
   // general commit queue.
-  constexpr base::TimeDelta kInternalTimeout = base::TimeDelta::FromMinutes(10);
+  constexpr base::TimeDelta kInternalTimeout = base::Minutes(10);
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kTestLauncherTimeout,
       base::NumberToString(kInternalTimeout.InMilliseconds()));
@@ -165,7 +167,7 @@ int RunChromeCleanerTestSuite(int argc,
       argc, argv,
       /*parallel_jobs=*/1U,        // Like LaunchUnitTestsSerially
       /*default_batch_limit=*/10,  // Like LaunchUnitTestsSerially
-      use_job_objects,
+      use_job_objects, base::DoNothing(),
       base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 
   if (!IsSandboxedProcess())
@@ -365,7 +367,7 @@ ScopedTempDirNoWow64::~ScopedTempDirNoWow64() {
   // Since the temp dir was created with Wow64 disabled, it must be deleted
   // with Wow64 disabled.
   ScopedDisableWow64Redirection disable_wow64_redirection;
-  ANALYZER_ALLOW_UNUSED(Delete());
+  std::ignore = Delete();
 
   // The parent's destructor will call Delete again, without disabling Wow64,
   // which could delete a directory with the same name in SysWOW64. So make

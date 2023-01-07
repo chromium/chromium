@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,6 @@ int IsCertErrorFatal(int cert_error) {
     case net::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED:
     case net::ERR_CERT_SYMANTEC_LEGACY:
     case net::ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
-    case net::ERR_SSL_OBSOLETE_VERSION:
       return false;
     case net::ERR_CERT_CONTAINS_ERRORS:
     case net::ERR_CERT_REVOKED:

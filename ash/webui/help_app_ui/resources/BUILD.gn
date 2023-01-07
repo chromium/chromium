@@ -1,0 +1,112 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ash/webui/web_applications/system_apps.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/browser/resources/tools/optimize_webui.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos_ash, "Help App is ash-chrome only")
+
+stage_folder = "$target_gen_dir/stage"
+
+group("closure_compile") {
+  deps = [
+    ":closure_compile_app",
+    ":closure_compile_index",
+  ]
+}
+
+# Move all files into a single folder so optimize_webui can generate a single
+# file bundle. stage_static moves all static files from src/ into stage/ and
+# stage_generated moves generated files from gen/ into stage/.
+copy("stage_static") {
+  sources = [
+    "//ash/webui/system_apps/public/js/sandboxed_load_time_data.js",
+    "browser_proxy.js",
+    "message_types.js",
+    "receiver.js",
+  ]
+  outputs = [ stage_folder + "/{{source_file_part}}" ]
+}
+
+copy("stage_generated") {
+  sources = [
+    "$target_gen_dir/../../../../chromeos/ash/components/local_search_service/public/mojom/index.mojom-lite.js",
+    "$target_gen_dir/../../../../chromeos/ash/components/local_search_service/public/mojom/types.mojom-lite.js",
+    "$target_gen_dir/../../system_apps/public/js/message_pipe.m.js",
+    "$target_gen_dir/../help_app_ui.mojom-lite.js",
+    "$target_gen_dir/../search/search.mojom-lite.js",
+  ]
+  outputs = [ stage_folder + "/{{source_file_part}}" ]
+  deps = [
+    "//ash/webui/help_app_ui:mojo_bindings_js",
+    "//ash/webui/help_app_ui/search:mojo_bindings_js__generator",
+    "//ash/webui/system_apps/public/js:modulize",
+    "//chromeos/ash/components/local_search_service/public/mojom:mojom_js__generator",
+  ]
+}
+
+# Generate a bundle of all the JS needed for chrome://help-app.
+optimize_webui("browser_proxy_rollup") {
+  host = "help-app"
+  js_out_files = [ "browser_proxy.rollup.js" ]
+  js_module_in_files = [ "browser_proxy.js" ]
+  input = rebase_path(stage_folder, root_build_dir)
+  deps = [
+    ":stage_generated",
+    ":stage_static",
+  ]
+}
+
+# Generate a bundle of all the JS needed for chrome-untrusted://help-app.
+optimize_webui("receiver_rollup") {
+  host = "help-app"
+  js_out_files = [ "receiver.rollup.js" ]
+  js_module_in_files = [ "receiver.js" ]
+  input = rebase_path(stage_folder, root_build_dir)
+  deps = [
+    ":stage_generated",
+    ":stage_static",
+  ]
+}
+
+js_type_check("closure_compile_index") {
+  closure_flags = system_app_closure_flags_strict
+  deps = [ ":browser_proxy" ]
+}
+
+js_type_check("closure_compile_app") {
+  closure_flags = system_app_closure_flags_strict
+  deps = [ ":receiver" ]
+}
+
+# We don't use these libraries in our build process but have them so we can
+# retain type checking via the above js_type_check rules.
+js_library("browser_proxy") {
+  externs_list = [
+    # The privileged context can't access the app, but shares struct definitions
+    # passed over postMessage.
+    "help_app.externs.js",
+    "//third_party/closure_compiler/externs/metrics_private.js",
+  ]
+  deps = [
+    ":message_types",
+    "//ash/webui/help_app_ui:mojo_bindings_js_library_for_compile",
+    "//ash/webui/help_app_ui/search:mojo_bindings_js_library_for_compile",
+    "//ash/webui/system_apps/public/js:message_pipe.m",
+    "//chromeos/ash/components/local_search_service/public/mojom:mojom_js_library_for_compile",
+  ]
+}
+
+js_library("message_types") {
+}
+
+js_library("receiver") {
+  externs_list = [ "help_app.externs.js" ]
+  deps = [
+    ":message_types",
+    "//ash/webui/system_apps/public/js:message_pipe.m",
+  ]
+}

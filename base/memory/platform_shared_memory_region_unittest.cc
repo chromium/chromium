@@ -1,8 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/memory/platform_shared_memory_region.h"
+
+#include <tuple>
 
 #include "base/check.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -14,16 +16,16 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
-#include <mach/mach_vm.h>
+#if BUILDFLAG(IS_APPLE)
+#include <mach/vm_map.h>
 #include <sys/mman.h>
-#elif defined(OS_POSIX) && !defined(OS_IOS)
+#elif BUILDFLAG(IS_POSIX)
 #include <sys/mman.h>
 #include "base/debug/proc_maps_linux.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/logging.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/object.h>
 #include <lib/zx/process.h>
 #include "base/fuchsia/fuchsia_logging.h"
@@ -138,7 +140,7 @@ TEST_F(PlatformSharedMemoryRegionTest, InvalidAfterPass) {
   PlatformSharedMemoryRegion region =
       PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
   ASSERT_TRUE(region.IsValid());
-  ignore_result(region.PassPlatformHandle());
+  std::ignore = region.PassPlatformHandle();
   EXPECT_FALSE(region.IsValid());
 }
 
@@ -210,7 +212,7 @@ TEST_F(PlatformSharedMemoryRegionTest, MapAtWithOverflowTest) {
   EXPECT_FALSE(mapping.IsValid());
 }
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
 // Tests that the second handle is closed after a conversion to read-only on
 // POSIX.
 TEST_F(PlatformSharedMemoryRegionTest,
@@ -236,17 +238,21 @@ TEST_F(PlatformSharedMemoryRegionTest, ConvertToUnsafeInvalidatesSecondHandle) {
 #endif
 
 void CheckReadOnlyMapProtection(void* addr) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_APPLE)
   vm_region_basic_info_64 basic_info;
-  mach_vm_size_t dummy_size = 0;
-  void* temp_addr = addr;
-  MachVMRegionResult result = GetBasicInfo(
-      mach_task_self(), &dummy_size,
-      reinterpret_cast<mach_vm_address_t*>(&temp_addr), &basic_info);
-  ASSERT_EQ(result, MachVMRegionResult::Success);
+  vm_size_t dummy_size = 0;
+  mach_msg_type_number_t info_count = VM_REGION_BASIC_INFO_COUNT_64;
+  mach_port_t object_name;
+  kern_return_t kr = vm_region_64(
+      mach_task_self(), reinterpret_cast<vm_address_t*>(&addr), &dummy_size,
+      VM_REGION_BASIC_INFO_64, reinterpret_cast<vm_region_info_t>(&basic_info),
+      &info_count, &object_name);
+  mach_port_deallocate(mach_task_self(), object_name);
+
+  ASSERT_EQ(kr, KERN_SUCCESS);
   EXPECT_EQ(basic_info.protection & VM_PROT_ALL, VM_PROT_READ);
   EXPECT_EQ(basic_info.max_protection & VM_PROT_ALL, VM_PROT_READ);
-#elif defined(OS_POSIX) && !defined(OS_IOS)
+#elif BUILDFLAG(IS_POSIX)
   std::string proc_maps;
   ASSERT_TRUE(base::debug::ReadProcMaps(&proc_maps));
   std::vector<base::debug::MappedMemoryRegion> regions;
@@ -259,7 +265,7 @@ void CheckReadOnlyMapProtection(void* addr) {
   // PROT_READ may imply PROT_EXEC on some architectures, so just check that
   // permissions don't contain PROT_WRITE bit.
   EXPECT_FALSE(it->permissions & base::debug::MappedMemoryRegion::WRITE);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   MEMORY_BASIC_INFORMATION memory_info;
   size_t result = VirtualQueryEx(GetCurrentProcess(), addr, &memory_info,
                                  sizeof(memory_info));
@@ -269,7 +275,7 @@ void CheckReadOnlyMapProtection(void* addr) {
                                  logging::GetLastSystemErrorCode());
   EXPECT_EQ(memory_info.AllocationProtect, static_cast<DWORD>(PAGE_READONLY));
   EXPECT_EQ(memory_info.Protect, static_cast<DWORD>(PAGE_READONLY));
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 // TODO(alexilin): We cannot call zx_object_get_info ZX_INFO_PROCESS_MAPS in
 // this process. Consider to create an auxiliary process that will read the
 // test process maps.
@@ -277,13 +283,13 @@ void CheckReadOnlyMapProtection(void* addr) {
 }
 
 bool TryToRestoreWritablePermissions(void* addr, size_t len) {
-#if defined(OS_POSIX) && !defined(OS_IOS)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
   int result = mprotect(addr, len, PROT_READ | PROT_WRITE);
   return result != -1;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   DWORD old_protection;
   return VirtualProtect(addr, len, PAGE_READWRITE, &old_protection);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   zx_status_t status =
       zx::vmar::root_self()->protect(ZX_VM_PERM_READ | ZX_VM_PERM_WRITE,
                                      reinterpret_cast<uintptr_t>(addr), len);

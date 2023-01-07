@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ import java.io.File;
 /**
  * Contains information about a single download that's in progress.
  */
-public class Download extends IClientDownload.Stub {
+class Download extends IClientDownload.Stub {
     private final IDownload mDownloadImpl;
 
     // Constructor for test mocking.

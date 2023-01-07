@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,36 +8,33 @@
 #include <stddef.h>
 
 #include <memory>
+#include <queue>
 #include <set>
 #include <sstream>
 #include <string>
 #include <tuple>
 #include <vector>
 
-#include "ash/app_list/model/app_list_model.h"
+#include "ash/app_list/app_list_metrics.h"
+#include "ash/app_list/grid_index.h"
+#include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_model_observer.h"
 #include "ash/app_list/paged_view_structure.h"
-#include "ash/app_list/views/app_list_view.h"
+#include "ash/app_list/views/app_list_item_view.h"
 #include "ash/ash_export.h"
-#include "ash/public/cpp/pagination/pagination_model.h"
-#include "ash/public/cpp/pagination/pagination_model_observer.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/build_config.h"
-#include "ui/base/models/list_model_observer.h"
-#include "ui/compositor/layer_animation_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
-#include "ui/gfx/image/image_skia_operations.h"
-#include "ui/views/animation/bounds_animator.h"
+#include "ui/views/animation/animation_abort_handle.h"
 #include "ui/views/animation/bounds_animator_observer.h"
-#include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
+
+namespace views {
+class BoundsAnimator;
+}  // namespace views
 
 namespace ash {
 
@@ -46,69 +43,70 @@ class AppsGridViewTest;
 class AppsGridViewTestApi;
 }  // namespace test
 
+class AppDragIconProxy;
+class AppListA11yAnnouncer;
 class ApplicationDragAndDropHost;
 class AppListConfig;
+class AppListFolderController;
 class AppListItem;
+class AppListItemList;
 class AppListItemView;
+class AppListKeyboardController;
+class AppListModel;
+class AppListViewDelegate;
+class AppsGridContextMenu;
 class AppsGridViewFolderDelegate;
-class ContentsView;
-class PaginationController;
 class PulsingBlockView;
+class AppsGridRowChangeAnimator;
 class GhostImageView;
+class AppsGridViewTest;
+class ScrollableAppsGridViewTest;
+class PagedAppsGridViewTest;
 
-// Represents the index to an item view in the grid.
-struct ASH_EXPORT GridIndex {
-  GridIndex() = default;
-  GridIndex(int page, int slot) : page(page), slot(slot) {}
-
-  bool operator==(const GridIndex& other) const {
-    return page == other.page && slot == other.slot;
-  }
-  bool operator!=(const GridIndex& other) const {
-    return page != other.page || slot != other.slot;
-  }
-  bool operator<(const GridIndex& other) const {
-    return std::tie(page, slot) < std::tie(other.page, other.slot);
-  }
-  std::string ToString() const;
-
-  int page = -1;  // Which page an item view is on.
-  int slot = -1;  // Which slot in the page an item view is in.
-};
-
-// AppsGridView displays a grid for AppListItemList sub model.
+// AppsGridView displays a grid of app icons. It is used for:
+// - The main grid of apps in the launcher
+// - The grid of apps in a folder
 class ASH_EXPORT AppsGridView : public views::View,
+                                public AppListItemView::GridDelegate,
                                 public AppListItemListObserver,
-                                public PaginationModelObserver,
                                 public AppListModelObserver,
-                                public ui::ImplicitAnimationObserver,
                                 public views::BoundsAnimatorObserver {
  public:
+  METADATA_HEADER(AppsGridView);
+
   enum Pointer {
     NONE,
     MOUSE,
     TOUCH,
   };
 
-  AppsGridView(ContentsView* contents_view,
-               AppsGridViewFolderDelegate* folder_delegate);
+  AppsGridView(AppListA11yAnnouncer* a11y_announcer,
+               AppListViewDelegate* app_list_view_delegate,
+               AppsGridViewFolderDelegate* folder_delegate,
+               AppListFolderController* folder_controller,
+               AppListKeyboardController* keyboard_controller);
+  AppsGridView(const AppsGridView&) = delete;
+  AppsGridView& operator=(const AppsGridView&) = delete;
   ~AppsGridView() override;
 
-  // Sets fixed layout parameters. After setting this, CalculateLayout below
-  // is no longer called to dynamically choosing those layout params.
-  void SetLayout(int cols, int rows_per_page);
+  // Sets the `AppListConfig` that should be used to configure app list item
+  // size within the grid. This will cause all items views to be updated to
+  // adhere to new tile and icon dimensions, so it should be used sparingly.
+  void UpdateAppListConfig(const AppListConfig* app_list_config);
 
   int cols() const { return cols_; }
-  int rows_per_page() const { return rows_per_page_; }
 
-  // Returns the size of a tile view including its padding.
-  gfx::Size GetTotalTileSize() const;
+  // Sets padding for apps grid items to use during layout if fixed padding
+  // should be used. Otherwise, for paged apps grid, the padding will be
+  // calculated to evenly space the items within the current apps grid view
+  // bounds.
+  void SetFixedTilePadding(int horizontal_tile_padding,
+                           int vertical_tile_padding);
 
-  // Returns the padding around a tile view.
-  gfx::Insets GetTilePadding() const;
-
-  // Returns the size of the entire tile grid with padding between tiles.
-  gfx::Size GetTileGridSizeWithPadding() const;
+  // Returns the size of a tile view including its padding. For paged apps grid,
+  // padding can be different between tiles on the first page and tiles on other
+  // pages.
+  gfx::Size GetTotalTileSize(int page) const;
 
   // Returns the minimum size of the entire tile grid.
   gfx::Size GetMinimumTileGridSize(int cols, int rows_per_page) const;
@@ -116,8 +114,9 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Returns the maximum size of the entire tile grid.
   gfx::Size GetMaximumTileGridSize(int cols, int rows_per_page) const;
 
-  // Returns the padding between each page of the apps grid.
-  int GetPaddingBetweenPages() const;
+  // Cancels any in progress drag without running icon drop animation. If an
+  // icon drop animation is in progress, it will be canceled, too.
+  void CancelDragWithNoDropAnimation();
 
   // This resets the grid view to a fresh state for showing the app list.
   void ResetForShowApps();
@@ -126,9 +125,6 @@ class ASH_EXPORT AppsGridView : public views::View,
   // used to trap focus within the folder when it is opened.
   void DisableFocusForShowingActiveFolder(bool disabled);
 
-  // Called when tablet mode starts and ends.
-  void OnTabletModeChanged(bool started);
-
   // Sets |model| to use. Note this does not take ownership of |model|.
   void SetModel(AppListModel* model);
 
@@ -136,37 +132,27 @@ class ASH_EXPORT AppsGridView : public views::View,
   // |item_list|.
   void SetItemList(AppListItemList* item_list);
 
-  void SetSelectedView(AppListItemView* view);
-  void ClearSelectedView(AppListItemView* view);
-  void ClearAnySelectedView();
-  bool IsSelectedView(const AppListItemView* view) const;
-  bool has_selected_view() const { return selected_view_ != nullptr; }
-  views::View* GetSelectedView() const;
-
-  void InitiateDrag(AppListItemView* view,
-                    Pointer pointer,
+  // AppListItemView::GridDelegate:
+  bool IsInFolder() const override;
+  void SetSelectedView(AppListItemView* view) override;
+  void ClearSelectedView() override;
+  bool IsSelectedView(const AppListItemView* view) const override;
+  bool InitiateDrag(AppListItemView* view,
                     const gfx::Point& location,
-                    const gfx::Point& root_location);
+                    const gfx::Point& root_location,
+                    base::OnceClosure drag_start_callback,
+                    base::OnceClosure drag_end_callback) override;
+  void StartDragAndDropHostDragAfterLongPress() override;
+  bool UpdateDragFromItem(bool is_touch,
+                          const ui::LocatedEvent& event) override;
+  void EndDrag(bool cancel) override;
+  void OnAppListItemViewActivated(AppListItemView* pressed_item_view,
+                                  const ui::Event& event) override;
 
-  void StartDragAndDropHostDragAfterLongPress(Pointer pointer);
-  void TryStartDragAndDropHostDrag(Pointer pointer,
-                                   const gfx::Point& grid_location);
-
-  // Called from AppListItemView when it receives a drag event. Returns true
-  // if the drag is still happening.
-  bool UpdateDragFromItem(Pointer pointer, const ui::LocatedEvent& event);
-
-  // Called when the user is dragging an app. |point| is in grid view
-  // coordinates.
-  void UpdateDrag(Pointer pointer, const gfx::Point& point);
-  void EndDrag(bool cancel);
+  bool IsDragging() const;
   bool IsDraggedView(const AppListItemView* view) const;
 
-  // Whether |view| IsDraggedView and |view| is not in it's drag start position.
-  bool IsDragViewMoved(const AppListItemView& view) const;
-
   void ClearDragState();
-  void SetDragViewVisible(bool visible);
 
   // Set the drag and drop host for application links.
   void SetDragAndDropHostOfCurrentAppList(
@@ -175,159 +161,188 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Return true if the |bounds_animator_| is animating |view|.
   bool IsAnimatingView(AppListItemView* view);
 
-  bool has_dragged_view() const { return drag_view_ != nullptr; }
-  bool dragging() const { return drag_pointer_ != NONE; }
+  const AppListConfig* app_list_config() const { return app_list_config_; }
+
+  bool has_selected_view() const { return selected_view_ != nullptr; }
+  AppListItemView* selected_view() const { return selected_view_; }
+
   const AppListItemView* drag_view() const { return drag_view_; }
 
-  // Gets the PaginationModel used for the grid view.
-  PaginationModel* pagination_model() { return &pagination_model_; }
+  bool has_dragged_item() const { return drag_item_ != nullptr; }
+  const AppListItem* drag_item() const { return drag_item_; }
 
   // Overridden from views::View:
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnKeyReleased(const ui::KeyEvent& event) override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
-
   bool GetDropFormats(int* formats,
                       std::set<ui::ClipboardFormatType>* format_types) override;
   bool CanDrop(const OSExchangeData& data) override;
   int OnDragUpdated(const ui::DropTargetEvent& event) override;
-  const char* GetClassName() const override;
 
-  // Updates the visibility of app list items according to |app_list_state| and
-  // |is_in_drag|.
-  void UpdateControlVisibility(AppListViewState app_list_state,
-                               bool is_in_drag);
-
-  // Overridden from ui::EventHandler:
-  void OnGestureEvent(ui::GestureEvent* event) override;
-  void OnMouseEvent(ui::MouseEvent* event) override;
+  // Updates the visibility of app list items according to |app_list_state|.
+  void UpdateControlVisibility(AppListViewState app_list_state);
 
   // Returns true if a touch or click lies between two occupied tiles.
   bool EventIsBetweenOccupiedTiles(const ui::LocatedEvent* event);
 
-  // Stops the timer that triggers a page flip during a drag.
-  void StopPageFlipTimer();
-
-  // Returns the ideal bounds of an AppListItemView in AppsGridView coordinates.
-  const gfx::Rect& GetIdealBounds(AppListItemView* view) const;
+  // Returns the item view of the item with the provided item ID.
+  // Returns nullptr if there is no such item.
+  AppListItemView* GetItemViewForItem(const std::string& item_id);
 
   // Returns the item view of the item at |index|, or nullptr if there is no
   // view at |index|.
-  AppListItemView* GetItemViewAt(int index) const;
-
-  // Schedules an animation to show or hide the view.
-  void ScheduleShowHideAnimation(bool show);
+  AppListItemView* GetItemViewAt(size_t index) const;
 
   // Called to initiate drag for reparenting a folder item in root level grid
   // view.
-  // Both |drag_view_rect| and |drag_pint| is in the coordinates of root level
-  // grid view.
+  // `pointer` - The pointer that's used for dragging (mouse or touch).
+  // `drag_point` is in the coordinates of root level grid view.
+  // `cancellation_callback` - the callback that can be invoked from the root
+  // level grid to cancel drag operation in the originating folder grid.
   void InitiateDragFromReparentItemInRootLevelGridView(
+      Pointer pointer,
       AppListItemView* original_drag_view,
-      const gfx::Rect& drag_view_rect,
       const gfx::Point& drag_point,
-      bool has_native_drag);
+      base::OnceClosure cancellation_callback);
 
   // Updates drag in the root level grid view when receiving the drag event
   // dispatched from the hidden grid view for reparenting a folder item.
+  // `pointer` - The pointer that's used for dragging (mouse or touch).
   void UpdateDragFromReparentItem(Pointer pointer,
                                   const gfx::Point& drag_point);
 
   // Dispatches the drag event from hidden grid view to the top level grid view.
+  // `pointer` - The pointer that's used for dragging (mouse or touch).
   void DispatchDragEventForReparent(Pointer pointer,
                                     const gfx::Point& drag_point);
 
   // Handles EndDrag event dispatched from the hidden folder grid view in the
   // root level grid view to end reparenting a folder item.
+  // |original_parent_item_view|: The folder AppListView for the folder from
+  // which drag item is being dragged.
   // |events_forwarded_to_drag_drop_host|: True if the dragged item is dropped
   // to the drag_drop_host, eg. dropped on shelf.
   // |cancel_drag|: True if the drag is ending because it has been canceled.
+  // |drag_icon_proxy|: The app item drag icon proxy that was created by the
+  // folder grid view for the drag. It's passed on the the root apps grid so the
+  // root apps grid can set up the icon drop animation.
   void EndDragFromReparentItemInRootLevel(
+      AppListItemView* original_parent_item_view,
       bool events_forwarded_to_drag_drop_host,
-      bool cancel_drag);
+      bool cancel_drag,
+      std::unique_ptr<AppDragIconProxy> drag_icon_proxy);
 
   // Handles EndDrag event in the hidden folder grid view to end reparenting
   // a folder item.
   void EndDragForReparentInHiddenFolderGridView();
 
-  // Called when the folder item associated with the grid view is removed.
-  // The grid view must be inside a folder view.
-  void OnFolderItemRemoved();
-
-  // Updates the opacity of all the items in the grid during dragging.
-  void UpdateOpacity(bool restore_opacity);
-
-  // Passes scroll information from AppListView to the PaginationController,
-  // returns true if this scroll would change pages.
-  bool HandleScrollFromAppListView(const gfx::Point& location,
-                                   const gfx::Vector2d& offset,
-                                   ui::EventType type);
-
-  // Moves |reparented_item| from its folder to the root AppsGridView in the
+  // Moves |reparented_view| from its folder to the root AppsGridView in the
   // direction of |key_code|.
+  // |original_parent_item_view|: The folder AppListView for the folder from
+  // which drag item is being dragged.
   void HandleKeyboardReparent(AppListItemView* reparented_view,
+                              AppListItemView* original_parent_item_view,
                               ui::KeyboardCode key_code);
-
-  // Returns the first app list item view in the selected page in the folder.
-  AppListItemView* GetCurrentPageFirstItemViewInFolder();
-
-  // Returns the last app list item view in the selected page in the folder.
-  AppListItemView* GetCurrentPageLastItemViewInFolder();
 
   // Updates paged view structure and save it to meta data.
   void UpdatePagedViewStructure();
 
-  // Returns true if tablet mode is active.
+  // Returns true if tablet mode is active. This class does not use
+  // Shell::IsInTabletMode() because it has tests that are not derived from
+  // AshTestBase.
   bool IsTabletMode() const;
 
-  // Should be called by AppListView if the app list config it uses changes.
-  // This will update all app list items (as the icon sizes and bounds might
-  // need updating), so it should be used sparingly.
-  void OnAppListConfigUpdated();
+  // Fades out visible items when reordering happens. Runs `done_callback` when
+  // the fade out animation ends. The callback carries a boolean value that
+  // is true if the animation is aborted. Returns an animation builder and it
+  // can be used to tie other layer animations with scheduled item animaions.
+  using ReorderAnimationCallback = base::RepeatingCallback<void(bool)>;
+  views::AnimationBuilder FadeOutVisibleItemsForReorder(
+      ReorderAnimationCallback done_callback);
 
-  // Returns the expected bounds rect in grid coordinates for the item with the
-  // provided id, if the item is in the first page.
-  // If the item is not in the current page (or cannot be found), this will
-  // return 1x1 rectangle in the apps grid center.
-  gfx::Rect GetExpectedItemBoundsInFirstPage(const std::string& id) const;
+  // Fades in items for reordering. Returns an animation builder and it can be
+  // used to tie other layer animations with scheduled item animaions.
+  views::AnimationBuilder FadeInVisibleItemsForReorder(
+      ReorderAnimationCallback done_callback);
 
-  // Helper for getting current app list config from the parents in the app list
-  // view hierarchy.
-  const AppListConfig& GetAppListConfig() const;
+  // Slides visible items up when the continue section is hidden in tablet mode.
+  // Each row of items has a different vertical offset, creating a "cascade"
+  // effect. `base_offset` is the offset for the first row. Subsequent rows have
+  // a smaller offset.
+  void SlideVisibleItemsForHideContinueSection(int base_offset);
 
-  // Helper functions to start the Apps Grid Cardified state.
-  // The cardified state scales down apps and is shown when the user drags an
-  // app in the AppList.
-  void StartAppsGridCardifiedView();
-  // Ends the Apps Grid Cardified state and sets it to normal.
-  void EndAppsGridCardifiedView();
-  // Animates individual elements of the apps grid to and from cardified state.
-  void AnimateCardifiedState();
-  // Translates the items container view to center the current page in the apps
-  // grid.
-  void RecenterItemsContainer();
-  // Calculates the background bounds for the grid depending on the value of
-  // |cardified_state_|
-  gfx::Rect BackgroundCardBounds(int new_page_index);
-  // Appends a background card to the back of |background_cards_|.
-  void AppendBackgroundCard();
-  // Removes the background card at the end of |background_cards_|.
-  void RemoveBackgroundCard();
-  // Masks the apps grid container to background cards bounds.
-  void MaskContainerToBackgroundBounds();
-  // Removes all background cards from |background_cards_|.
-  void RemoveAllBackgroundCards();
+  // Whether the provided view is hidden to facilitate drag operation (for
+  // example, the drag view for which a drag icon proxy has been created).
+  bool IsViewHiddenForDrag(const views::View* view) const;
+
+  // Whether `view` is the folder view that is animating out and in as part of
+  // folder reorder animation that runs after folder is closed if the folder
+  // position within the grid changed.
+  bool IsViewHiddenForFolderReorder(const views::View* view) const;
+
+  // Returns true if the whole apps grid is animating (for reordering, or hide
+  // continue section). This function is public for testing.
+  bool IsUnderWholeGridAnimation() const;
+
+  // Returns whether `view` is hidden due to drag or folder reorder.
+  bool IsViewExplicitlyHidden(const views::View* view) const;
+
+  // Aborts the active whole-grid animation (for reordering, or hide continue
+  // section), if any.
+  void MaybeAbortWholeGridAnimation();
+
+  // Passes scroll information from a parent view, so that subclasses may scroll
+  // or switch pages.
+  virtual void HandleScrollFromParentView(const gfx::Vector2d& offset,
+                                          ui::EventType type) = 0;
 
   // Return the view model.
   views::ViewModelT<AppListItemView>* view_model() { return &view_model_; }
+  const views::ViewModelT<AppListItemView>* view_model() const {
+    return &view_model_;
+  }
 
-  bool FirePageFlipTimerForTest();
+  // Returns true if any animation is running within the view.
+  bool IsAnimationRunningForTest();
+
+  AppsGridViewFolderDelegate* folder_delegate() const {
+    return folder_delegate_;
+  }
+
+  void set_folder_delegate(AppsGridViewFolderDelegate* folder_delegate) {
+    folder_delegate_ = folder_delegate;
+  }
+
+  const AppListModel* model() const { return model_; }
+
+  GridIndex reorder_placeholder() const { return reorder_placeholder_; }
+
   bool FireFolderItemReparentTimerForTest();
-  bool FireFolderDroppingTimerForTest();
   bool FireDragToShelfTimerForTest();
+
+  // Carries two parameters:
+  // (1) A boolean value that is true if the reorder is aborted.
+  // (2) An enum that specifies the animation stage when the done callback runs.
+  using TestReorderDoneCallbackType =
+      base::RepeatingCallback<void(bool aborted,
+                                   AppListGridAnimationStatus status)>;
+
+  // Adds a callback that runs at the end of the app list reorder.
+  void AddReorderCallbackForTest(TestReorderDoneCallbackType done_callback);
+
+  // Adds a closure that runs at the start of the fade out animation triggered
+  // by reorder.
+  void AddFadeOutAnimationStartClosureForTest(base::OnceClosure start_closure);
+
+  // Adds a closure that runs at the end of the fade out animation triggered
+  // by reorder.
+  void AddFadeOutAnimationDoneClosureForTest(base::OnceClosure done_closure);
+
+  // Returns true if there is any waiting reorder animation test callback.
+  bool HasAnyWaitingReorderDoneCallbackForTest() const;
 
   // For test: Return if the drag and drop handler was set.
   bool has_drag_and_drop_host_for_test() {
@@ -339,31 +354,237 @@ class ASH_EXPORT AppsGridView : public views::View,
     return forward_events_to_drag_and_drop_host_;
   }
 
-  void set_folder_delegate(AppsGridViewFolderDelegate* folder_delegate) {
-    folder_delegate_ = folder_delegate;
-  }
-
-  bool is_in_folder() const { return !!folder_delegate_; }
-
-  AppListItemView* activated_folder_item_view() const {
-    return activated_folder_item_view_;
-  }
-
-  const AppListModel* model() const { return model_; }
-
-  void set_page_flip_delay_for_testing(base::TimeDelta page_flip_delay) {
-    page_flip_delay_ = page_flip_delay;
-  }
-
   views::BoundsAnimator* bounds_animator_for_testing() {
     return bounds_animator_.get();
   }
 
+  base::OneShotTimer* reorder_timer_for_test() { return &reorder_timer_; }
+
+  AppsGridContextMenu* context_menu_for_test() { return context_menu_.get(); }
+
+  void set_enable_item_move_animation_for_test(bool enable) {
+    enable_item_move_animation_ = enable;
+  }
+
+  AppListGridAnimationStatus grid_animation_status_for_test() const {
+    return grid_animation_status_;
+  }
+
+ protected:
+  friend AppsGridViewTest;
+  friend ScrollableAppsGridViewTest;
+
+  struct VisibleItemIndexRange {
+    VisibleItemIndexRange();
+    VisibleItemIndexRange(size_t first_index, size_t last_index);
+    ~VisibleItemIndexRange();
+
+    // The view index of the first visible item on the apps grid.
+    size_t first_index = 0;
+
+    // The view index of the last visible item on the apps grid.
+    size_t last_index = 0;
+  };
+
+  // The duration in ms for most of the apps grid view animations.
+  static constexpr int kDefaultAnimationDuration = 200;
+
+  // Returns the size of a tile view excluding its padding.
+  virtual gfx::Size GetTileViewSize() const = 0;
+
+  // Returns the padding around a tile view.
+  virtual gfx::Insets GetTilePadding(int page) const = 0;
+
+  // Returns the size of the entire tile grid.
+  virtual gfx::Size GetTileGridSize() const = 0;
+
+  // Returns the max number of rows the grid can have on a page.
+  virtual int GetMaxRowsInPage(int page) const = 0;
+
+  // Calculates the offset distance to center the grid in the container.
+  virtual gfx::Vector2d GetGridCenteringOffset(int page) const = 0;
+
+  // Returns number of total pages, or one if the grid does not use pages.
+  virtual int GetTotalPages() const = 0;
+
+  // Returns the current selected page, or zero if the grid does not use pages.
+  virtual int GetSelectedPage() const = 0;
+
+  // Records the different ways to move an app in app list's apps grid for UMA
+  // histograms.
+  virtual void RecordAppMovingTypeMetrics(AppListAppMovingType type) = 0;
+
+  // Starts the "cardified" state if the subclass supports it.
+  virtual void MaybeStartCardifiedView() {}
+
+  // Ends the "cardified" state if the subclass supports it.
+  virtual void MaybeEndCardifiedView() {}
+
+  // Starts a page flip if the subclass supports it.
+  virtual void MaybeStartPageFlip() {}
+
+  // Stops a page flip (by ending its timer) if the subclass supports it.
+  virtual void MaybeStopPageFlip() {}
+
+  // Scrolls the container view up or down if the drag point is in the correct
+  // location. Returns true if auto-scroll was started or an existing
+  // auto-scroll is in-progress. Auto-scroll and page-flip are mutually
+  // exclusive. TODO(tbarzic): Unify the two APIs.
+  virtual bool MaybeAutoScroll() = 0;
+
+  // Stops auto-scroll (by stopping its timer) if the subclass supports it.
+  virtual void StopAutoScroll() = 0;
+
+  // Sets the focus to the correct view when a drag ends. Focus is on the app
+  // list item view during the drag.
+  virtual void SetFocusAfterEndDrag(AppListItem* drag_item) = 0;
+
+  // Calculates the index range of the visible item views.
+  virtual absl::optional<VisibleItemIndexRange> GetVisibleItemIndexRange()
+      const = 0;
+
+  // Disables any change on the apps grid's opacity. Returns an scoped runner
+  // that carries a closure to re-enable opacity updates.
+  [[nodiscard]] virtual base::ScopedClosureRunner LockAppsGridOpacity() = 0;
+
+  // Makes sure that the background cards render behind everything
+  // else in the items container.
+  virtual void StackCardsAtBottom() {}
+
+  // Sets the max number of columns that the grid can have.
+  // For root apps grid view, the grid size depends on the space available to
+  // apps grid view only, and `cols()` will match `max_columns`. I.e. if the
+  // grid doesn't have enough items to fill out all columns, it will leave empty
+  // spaces in the UI.
+  // For folder item grid, the grid size also depends on the number of items in
+  // the grid, so number of actual columns may be smaller than `max_columns`.
+  void SetMaxColumnsInternal(int max_columns);
+
+  // Sets the ideal bounds for view at index `view_inde_in_model` in
+  // `view_model_`. The bounds are set to match the expected tile bounds at
+  // `view_grid_index` in the apps grid.
+  void SetIdealBoundsForViewToGridIndex(size_t view_index_in_model,
+                                        const GridIndex& view_grid_index);
+
+  // Calculates the item views' bounds for both folder and non-folder.
+  void CalculateIdealBounds();
+  void CalculateIdealBoundsForPageStructureWithPartialPages();
+
+  // Gets the bounds of the tile located at |index|, where |index| contains the
+  // page/slot info.
+  gfx::Rect GetExpectedTileBounds(const GridIndex& index) const;
+
+  // Returns the number of app tiles per page. Takes a page number as an
+  // argument as the first page might have less apps shown. Folder grids may
+  // have different numbers of tiles from the main grid.
+  int TilesPerPage(int page) const;
+
+  GridIndex GetIndexOfView(const AppListItemView* view) const;
+  AppListItemView* GetViewAtIndex(const GridIndex& index) const;
+
+  // Returns true if an item view exists in the visual index.
+  bool IsValidIndex(const GridIndex& index) const;
+
+  // Returns the number of existing items in specified page. Returns 0 if |page|
+  // is out of range.
+  int GetNumberOfItemsOnPage(int page) const;
+
+  // Updates |drop_target_| and |drop_target_region_| based on |drag_view_|'s
+  // position.
+  void UpdateDropTargetRegion();
+
+  // Cancels any context menus showing for app items on the current page.
+  void CancelContextMenusOnCurrentPage();
+
+  // views::BoundsAnimatorObserver:
+  void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override;
+  void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
+
+  // Destroys all item view layers if they are not required.
+  void DestroyLayerItemsIfNotNeeded();
+
+  // Whether app list item views require layers - for example during drag, or
+  // folder repositioning animation.
+  bool ItemViewsRequireLayers() const;
+
+  void BeginHideCurrentGhostImageView();
+
+  // Ensures layer for all app items before animations are started.
+  void PrepareItemsForBoundsAnimation();
+
+  bool ignore_layout() const { return ignore_layout_; }
+  views::BoundsAnimator* bounds_animator() { return bounds_animator_.get(); }
+  views::View* items_container() { return items_container_; }
+  views::ViewModelT<PulsingBlockView>& pulsing_blocks_model() {
+    return pulsing_blocks_model_;
+  }
+  const gfx::Point& last_drag_point() const { return last_drag_point_; }
+  void set_last_drag_point(const gfx::Point& p) { last_drag_point_ = p; }
+
+  AppListViewDelegate* app_list_view_delegate() const {
+    return app_list_view_delegate_;
+  }
+  const AppListItemList* item_list() const { return item_list_; }
+
+  // View structure used only for non-folder.
+  PagedViewStructure view_structure_{this};
+
+  // The `AppListItemView` that is being dragged within the apps grid (i.e. the
+  // AppListItemView for `drag_item_`) if the drag item is currently part of the
+  // item list shown in the apps grid. `drag_view_` may be nullptr during item
+  // reparent drag while being handled in the root app list grid (the drag item
+  // will be added to target item list only when the drag ends).
+  // Subclasses need non-const access.
+  AppListItemView* drag_view_ = nullptr;
+
+  // If set, a callback called when the dragged item starts moving during a drag
+  // (i.e. when the drag icon proxy gets created).
+  // Registered in `InitiateDrag()`
+  base::OnceClosure drag_start_callback_;
+
+  // If set, a callback called when an item drag ends, and drag state is
+  // cleared. It may get called before the drag icon proxy drop animation
+  // finishes.
+  // Registered in `InitiateDrag()`.
+  base::OnceClosure drag_end_callback_;
+
+  // If app item drag is in progress, the icon proxy created for the app list
+  // item.
+  std::unique_ptr<AppDragIconProxy> drag_icon_proxy_;
+
+  // If true, Layout() does nothing. See where set for details.
+  bool ignore_layout_ = false;
+
+  // True if the AppList is in cardified state. "Cardified" means showing a
+  // rounded rectangle background "card" behind each page during a drag. The
+  // grid icons are reduced in size in this state.
+  // TODO(crbug.com/1211608): Move cardified state members to PagedAppsGridView.
+  bool cardified_state_ = false;
+
+  bool bounds_animation_for_cardified_state_in_progress_ = false;
+
+  // Tile spacing between the tile views.
+  int horizontal_tile_padding_ = 0;
+  int vertical_tile_padding_ = 0;
+
+  // Whether tile padding within the apps grid is fixed.
+  bool has_fixed_tile_padding_ = false;
+
+  // True if an extra page is opened after the user drags an app to the bottom
+  // of last page with intention to put it in a new page. This is only used for
+  // non-folder.
+  bool extra_page_opened_ = false;
+
+  GhostImageView* current_ghost_view_ = nullptr;
+  GhostImageView* last_ghost_view_ = nullptr;
+
  private:
-  class FadeoutLayerDelegate;
   friend class test::AppsGridViewTestApi;
   friend class test::AppsGridViewTest;
+  friend class PagedAppsGridView;
   friend class PagedViewStructure;
+  friend class AppsGridRowChangeAnimator;
+  friend class PagedAppsGridViewTest;
 
   enum DropTargetRegion {
     NO_TARGET,
@@ -372,65 +593,59 @@ class ASH_EXPORT AppsGridView : public views::View,
     BETWEEN_ITEMS,
   };
 
-  // Returns the number of apps tiles per page. Folder grids may have different
-  // numbers of tiles from the main grid.
-  int TilesPerPage() const;
+  class DragViewHider;
+  class FolderIconItemHider;
 
   // Updates from model.
   void Update();
 
   // Updates page splits for item views.
-  void UpdatePaging();
+  virtual void UpdatePaging() {}
+
+  // On a grid with pages, records the total number of pages, and the number of
+  // pages with empty slots for UMA histograms.
+  virtual void RecordPageMetrics() {}
+
+  // Calculates the offset for |page_of_view| based on current page and
+  // transition target page. Returns an empty vector if the grid does not use
+  // pages.
+  virtual const gfx::Vector2d CalculateTransitionOffset(
+      int page_of_view) const = 0;
+
+  // Calculates the animation delay for the pulsing block animation based on the
+  // position of the block.
+  base::TimeDelta GetPulsingBlockAnimationDelayForIndex(int block_index);
+
+  // Invoked when the animation for swapping a |placeholder| with an |app_view|
+  // is done.
+  void OnSwapAnimationDone(views::View* placeholder, AppListItemView* app_view);
+
+  // Triggers the animation for swapping a pulsing block view with a
+  // corresponding new asset at index on item list. (We use the item_list index
+  // because the view is not added to the `view_model_` yet.)
+  // Only triggers when there are pulsing blocks and the app list model is
+  // syncing.
+  AppListItemView* MaybeSwapPlaceholderAsset(size_t index);
 
   // Updates the number of pulsing block views based on AppListModel status and
   // number of apps.
   void UpdatePulsingBlockViews();
 
-  std::unique_ptr<AppListItemView> CreateViewForItem(AppListItem* item,
-                                                     bool is_in_folder = false);
-
   std::unique_ptr<AppListItemView> CreateViewForItemAtIndex(size_t index);
-
-  // Returns true if the event was handled by the pagination controller.
-  bool HandleScroll(const gfx::Vector2d& offset, ui::EventType type);
 
   // Ensures the view is visible. Note that if there is a running page
   // transition, this does nothing.
-  void EnsureViewVisible(const GridIndex& index);
+  virtual void EnsureViewVisible(const GridIndex& index) = 0;
 
   void SetSelectedItemByIndex(const GridIndex& index);
 
-  GridIndex GetIndexOfView(const AppListItemView* view) const;
-  AppListItemView* GetViewAtIndex(const GridIndex& index) const;
-
-  // Calculates the offset for |page_of_view| based on current page and
-  // transition target page.
-  const gfx::Vector2d CalculateTransitionOffset(int page_of_view) const;
-
-  // Calculates the item views' bounds for folder.
-  void CalculateIdealBoundsForFolder();
-  void AnimateToIdealBounds(AppListItemView* released_drag_view);
-
-  // Invoked when the given |view|'s current bounds and target bounds are on
-  // different rows. To avoid moving diagonally, |view| would be put into a
-  // slot prior |target| and fade in while moving to |target|. In the meanwhile,
-  // a layer copy of |view| would start at |current| and fade out while moving
-  // to succeeding slot of |current|. |animate_current| controls whether to run
-  // fading out animation from |current|. |animate_target| controls whether to
-  // run fading in animation to |target|.
-  void AnimationBetweenRows(AppListItemView* view,
-                            bool animate_current,
-                            const gfx::Rect& current,
-                            bool animate_target,
-                            const gfx::Rect& target);
+  // Calculates ideal bounds for app list item views within the apps grid, and
+  // animates their bounds (using `bounds_animator_`) to their ideal position.
+  void AnimateToIdealBounds();
 
   // Extracts drag location info from |root_location| into |drag_point|.
   void ExtractDragLocation(const gfx::Point& root_location,
                            gfx::Point* drag_point);
-
-  // Updates |drop_target_| and |drop_target_region_|
-  // based on |drag_view_|'s position.
-  void UpdateDropTargetRegion();
 
   bool DropTargetIsValidFolder();
 
@@ -438,87 +653,68 @@ class ASH_EXPORT AppsGridView : public views::View,
   // currently dragged item is released.
   void UpdateDropTargetForReorder(const gfx::Point& point);
 
+  // Called when the user is dragging an app. |point| is in grid view
+  // coordinates.
+  // `pointer` - The pointer that's used for dragging (mouse or touch).
+  void UpdateDrag(Pointer pointer, const gfx::Point& point);
+
   // Returns true if the current drag is occurring within a certain range of the
   // nearest item.
-  bool DragIsCloseToItem();
+  // `point` is the drag location in the apps grid's coordinates.
+  bool DragIsCloseToItem(const gfx::Point& point);
 
+  // Whether the current drag position is over an item.
+  // `point` is the drag location in the apps grid's coordinates.
   bool DragPointIsOverItem(const gfx::Point& point);
+
+  // Initiates drag and drop host drag as needed.
+  // `pointer` - The pointer that's used for dragging.
+  void TryStartDragAndDropHostDrag(Pointer pointer);
 
   // Prepares |drag_and_drop_host_| for dragging. |grid_location| contains
   // the drag point in this grid view's coordinates.
-  void StartDragAndDropHostDrag(const gfx::Point& grid_location);
+  void StartDragAndDropHostDrag();
 
   // Dispatch the drag and drop update event to the dnd host (if needed).
   void DispatchDragEventToDragAndDropHost(
       const gfx::Point& location_in_screen_coordinates);
 
-  // Starts the page flip timer if |drag_point| is in left/right side page flip
-  // zone or is over page switcher.
-  void MaybeStartPageFlipTimer(const gfx::Point& drag_point);
+  // Updates `model_` to move `item` to `target` slot.
+  void MoveItemInModel(AppListItem* item, const GridIndex& target);
 
-  // Invoked when |page_flip_timer_| fires.
-  void OnPageFlipTimer();
+  // Updates `model_` to move `item` into a folder containing item located at
+  // `target` slot. Returns whether the move operation succeeded.
+  // On success, `folder_id` will be set to the ID of the folder to which the
+  // item was moved. This may be a folder that was created by the move, or a
+  // preexisting folder.
+  // `is_new_folder` indicates whether the move created a new folder.
+  bool MoveItemToFolder(AppListItem* item,
+                        const GridIndex& target,
+                        AppListAppMovingType move_type,
+                        std::string* folder_id,
+                        bool* is_new_folder);
 
-  // Updates |model_| to move item represented by |item_view| to |target| slot.
-  // Pushes all items from |item_view|'s GridIndex + 1 to |target| back by 1
-  // GridIndex slot. |clear_overflow| is whether, if |target| is on a full page,
-  // to push the overflow item to the next page.
-  void MoveItemInModel(AppListItemView* item_view,
-                       const GridIndex& target,
-                       bool clear_overflow = true);
+  // Updates data model for re-parenting a folder item to a new position in top
+  // level item list. The view model is will get updated in response to the data
+  // model changes.
+  void ReparentItemForReorder(AppListItem* item, const GridIndex& target);
 
-  // Updates |model_| to move item represented by |item_view| into a folder
-  // containing item located at |target| slot, also update |view_model_| for
-  // the related view changes. Returns the preexisting or created folder as a
-  // result of the move, or nullptr if the move fails.
-  AppListItemView* MoveItemToFolder(AppListItemView* item_view,
-                                    const GridIndex& target);
-
-  // Sets up |item_view| to fade out and delete on animation end.
-  void FadeOutItemViewAndDelete(AppListItemView* item_view);
-
-  // Updates both data model and view_model_ for re-parenting a folder item to a
-  // new position in top level item list.
-  void ReparentItemForReorder(AppListItemView* item_view,
-                              const GridIndex& target);
-
-  // Updates both data model and view_model_ for re-parenting a folder item
-  // to anther folder target. Returns whether the reparent succeeded.
-  bool ReparentItemToAnotherFolder(AppListItemView* item_view,
-                                   const GridIndex& target);
-
-  // If there is only 1 item left in the source folder after reparenting an item
-  // from it, updates both data model and view_model_ for removing last item
-  // from the source folder and removes the source folder.
-  void RemoveLastItemFromReparentItemFolderIfNecessary(
-      const std::string& source_folder_id);
-
-  // Cancels any context menus showing for app items on the current page.
-  void CancelContextMenusOnCurrentPage();
+  // Records the user metrics action for deleting a folder if `folder_id` has
+  // been removed from the data model. Called after an app item move which might
+  // or might not cause a folder to be deleted.
+  void MaybeRecordFolderDeleteUserAction(const std::string& folder_id);
 
   // Removes the AppListItemView at |index| in |view_model_|, removes it from
-  // view structure as well and deletes it. Sanitizes the view structure if
-  // |sanitize| if true. (|sanitize| should be true when moving an item outside
-  // a folder of size 2 while the folder is the only item in its page. The
-  // folder will be destroyed first before adding the remaining item to the
-  // folder's visual index in root grid.)
-  void DeleteItemViewAtIndex(int index, bool sanitize);
+  // view structure as well and deletes it.
+  void DeleteItemViewAtIndex(size_t index);
 
   // Returns true if |point| lies within the bounds of this grid view plus a
   // buffer area surrounding it that can trigger drop target change.
   bool IsPointWithinDragBuffer(const gfx::Point& point) const;
 
-  // Returns true if |point| lies within the bounds of this grid view plus a
-  // buffer area surrounding it that can trigger page flip.
-  bool IsPointWithinPageFlipBuffer(const gfx::Point& point) const;
-
-  // Returns whether |point| is in the bottom drag buffer, and not over the
-  // shelf.
-  bool IsPointWithinBottomDragBuffer(const gfx::Point& point) const;
-
-  // AppListItemView pressed callback binds here:
-  void OnAppListItemViewPressed(AppListItemView* pressed_item_view,
-                                const ui::Event& event);
+  // Schedules a Layout() call. If `previous_grid_size` is different from the
+  // current grid size, calls PreferredSizeChanged().
+  void ScheduleLayout(const gfx::Size& previous_grid_size);
 
   // Overridden from AppListItemListObserver:
   void OnListItemAdded(size_t index, AppListItem* item) override;
@@ -527,52 +723,30 @@ class ASH_EXPORT AppsGridView : public views::View,
                        size_t to_index,
                        AppListItem* item) override;
 
-  // Overridden from PaginationModelObserver:
-  void TotalPagesChanged(int previous_page_count, int new_page_count) override;
-  void SelectedPageChanged(int old_selected, int new_selected) override;
-  void TransitionStarting() override;
-  void TransitionStarted() override;
-  void TransitionChanged() override;
-  void TransitionEnded() override;
-  void ScrollStarted() override;
-  void ScrollEnded() override;
-
   // Overridden from AppListModelObserver:
   void OnAppListModelStatusChanged() override;
 
-  // ui::ImplicitAnimationObserver overrides:
-  void OnImplicitAnimationsCompleted() override;
+  // Animates `drag_icon_proxy_` to drop it into appropriate target bounds in
+  // the apps grid when the item drag ends. Expects `drag_icon_proxy_` to be
+  // set.
+  // `drag_item` - The dragged item.
+  // `target_folder_id` - If the item needs to be dropped into a folder, the
+  // target folder ID.
+  void AnimateDragIconToTargetPosition(AppListItem* drag_item,
+                                       const std::string& target_folder_id);
 
-  // views::BoundsAnimatorObserver:
-  void OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) override;
-  void OnBoundsAnimatorDone(views::BoundsAnimator* animator) override;
-
-  // Call OnBoundsAnimatorDone when all layer animations finish.
-  void MaybeCallOnBoundsAnimatorDone();
-
-  // Hide a given view temporarily without losing (mouse) events and / or
-  // changing the size of it. If |immediate| is set the change will be
-  // immediately applied - otherwise it will change gradually.
-  // If |hide| is set the view will get hidden, otherwise it gets shown.
-  void SetViewHidden(AppListItemView* view, bool hide, bool immediate);
+  // Called when the `drag_icon_proxy_` animation started by
+  // `AnimateDragIconToTargetPosition()` finishes. It resets `drag_icon_proxy_`
+  // and shows the view that was hidden for drag.
+  void OnDragIconDropDone();
 
   // Returns true if the dragged item isn't a folder, the drag is not
   // occurring inside a folder, and |drop_target_| is a valid index.
   bool DraggedItemCanEnterFolder();
 
-  // Returns the size of the entire tile grid.
-  gfx::Size GetTileGridSize() const;
-
   // Returns the slot number which the given |point| falls into or the closest
   // slot if |point| is outside the page's bounds.
   GridIndex GetNearestTileIndexForPoint(const gfx::Point& point) const;
-
-  // Calculates the offset distance to center the grid in the container.
-  gfx::Vector2d GetGridCenteringOffset() const;
-
-  // Gets the bounds of the tile located at |index|, where |index| contains the
-  // page/slot info.
-  gfx::Rect GetExpectedTileBounds(const GridIndex& index) const;
 
   // Gets the item view currently displayed at |slot| on the current page. If
   // there is no item displayed at |slot|, returns nullptr. Note that this finds
@@ -589,13 +763,10 @@ class ASH_EXPORT AppsGridView : public views::View,
   void OnReorderTimer();
 
   // Invoked when |folder_item_reparent_timer_| fires.
-  void OnFolderItemReparentTimer();
-
-  // Invoked when |folder_dropping_timer_| fires to show folder dropping
-  // preview UI.
-  void OnFolderDroppingTimer();
+  void OnFolderItemReparentTimer(Pointer pointer);
 
   // Updates drag state for dragging inside a folder's grid view.
+  // `pointer` - The pointer that's used for dragging (mouse or touch).
   void UpdateDragStateInsideFolder(Pointer pointer,
                                    const gfx::Point& drag_point);
 
@@ -635,105 +806,36 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Update number of columns and rows for apps within a folder.
   void UpdateColsAndRowsForFolder();
 
-  // Convert between the model index and the visual index. The model index
-  // is the index of the item in AppListModel. The visual index is the Index
-  // struct above with page/slot info of where to display the item.
-  GridIndex GetIndexFromModelIndex(int model_index) const;
-  int GetModelIndexFromIndex(const GridIndex& index) const;
-
-  // Returns the last possible visual index to add an item view.
-  GridIndex GetLastTargetIndex() const;
-
-  // Returns the last possible visual index to add an item view in |page|.
-  GridIndex GetLastTargetIndexOfPage(int page) const;
-
-  // Returns the target model index if moving the item view to specified target
-  // visual index.
-  int GetTargetModelIndexForMove(AppListItemView* moved_view,
-                                 const GridIndex& index) const;
-
-  // Returns the target item index if moving the item view to specified target
-  // visual index.
-  size_t GetTargetItemIndexForMove(AppListItemView* moved_view,
-                                   const GridIndex& index) const;
-
-  // Returns true if an item view exists in the visual index.
-  bool IsValidIndex(const GridIndex& index) const;
-
   // Returns true if the visual index is valid position to which an item view
   // can be moved.
   bool IsValidReorderTargetIndex(const GridIndex& index) const;
 
-  // Returns true if the page is the right target to flip to.
-  bool IsValidPageFlipTarget(int page) const;
-
-  // Calculates the item views' bounds for non-folder.
-  void CalculateIdealBounds();
-
   // Returns model index of the item view of the specified item.
-  int GetModelIndexOfItem(const AppListItem* item) const;
+  size_t GetModelIndexOfItem(const AppListItem* item) const;
 
   // Returns the target model index based on item index. (Item index is the
   // index of an item in item list.) This should be used when the item is
   // updated in item list but its item view has not been updated in view model.
-  int GetTargetModelIndexFromItemIndex(size_t item_index);
+  size_t GetTargetModelIndexFromItemIndex(size_t item_index);
 
   // Returns the target GridIndex for a keyboard move.
   GridIndex GetTargetGridIndexForKeyboardMove(ui::KeyboardCode key_code) const;
 
   // Returns the target GridIndex to move an item from a folder to the root
   // AppsGridView.
+  // `folder_index` - the grid index of the folder from which an item is
+  // reparented.
   GridIndex GetTargetGridIndexForKeyboardReparent(
+      const GridIndex& folder_index,
       ui::KeyboardCode key_code) const;
 
   // Swaps |selected_view_| with the item in relative position specified by
   // |key_code|.
   void HandleKeyboardMove(ui::KeyboardCode key_code);
 
-  // Records the total number of pages, and the number of pages with empty slots
-  // for UMA histograms.
-  void RecordPageMetrics();
-
-  // Records the different ways to move an app in app list's apps grid for UMA
-  // histograms.
-  void RecordAppMovingTypeMetrics(AppListAppMovingType type);
-
-  // Update the padding of tile view based on the contents bounds.
-  void UpdateTilePadding();
-
-  // Returns the number of existing items in specified page. Returns 0 if |page|
-  // is out of range.
-  int GetItemsNumOfPage(int page) const;
-
-  // Starts the animation to transition the |drag_item| from |source_bounds| to
-  // the target bounds in the |folder_item_view|. Note that this animation
-  // should run only after |drag_item| is added to the folder.
-  void StartFolderDroppingAnimation(AppListItemView* folder_item_view,
-                                    AppListItem* drag_item,
-                                    const gfx::Rect& source_bounds);
-
   // During an app drag, creates an a11y event to verbalize dropping onto a
   // folder or creating a folder with two apps.
   void MaybeCreateFolderDroppingAccessibilityEvent();
-
-  // Modifies the announcement view to verbalize that the focused view has new
-  // updates, based on the item having a notification badge.
-  void AnnounceItemNotificationBadge(const std::u16string& selected_view_title);
-
-  // Modifies the announcement view to verbalize that the current drag will move
-  // |moving_view_title| and create a folder or move it into an existing folder
-  // with |target_view_title|.
-  void AnnounceFolderDrop(const std::u16string& moving_view_title,
-                          const std::u16string& target_view_title,
-                          bool target_is_folder);
-
-  // Modifies the announcement view to vervalize that the most recent keyboard
-  // foldering action has either moved |moving_view_title| into
-  // |target_view_title| folder or that |moving_view_title| and
-  // |target_view_title| have formed a new folder.
-  void AnnounceKeyboardFoldering(const std::u16string& moving_view_title,
-                                 const std::u16string& target_view_title,
-                                 bool target_is_folder);
 
   // During an app drag, creates an a11y event to verbalize drop target
   // location.
@@ -746,23 +848,63 @@ class ASH_EXPORT AppsGridView : public views::View,
   // |current_ghost_view_| and |last_ghost_view_|.
   void CreateGhostImageView();
 
-  void BeginHideCurrentGhostImageView();
-
   // Invoked when |host_drag_start_timer_| fires.
   void OnHostDragStartTimerFired();
 
-  // Indicates whether the drag event (from the gesture or mouse) should be
-  // handled by AppsGridView.
-  bool ShouldHandleDragEvent(const ui::LocatedEvent& event);
+  // Called at the end of the fade out animation. `callback` comes from the
+  // caller that starts the fade out animation. `aborted` is true when the fade
+  // out animation gets aborted.
+  void OnFadeOutAnimationEnded(ReorderAnimationCallback callback, bool aborted);
 
-  // Create a layer mask for graident alpha when the feature is enabled.
-  void MaybeCreateGradientMask();
+  // Called at the end of the fade out animation. `callback` comes from the
+  // caller that starts the fade in animation. `aborted` is true when the fade
+  // in animation gets aborted.
+  void OnFadeInAnimationEnded(ReorderAnimationCallback callback, bool aborted);
 
-  // Obtains the target page to flip for |drag_point|.
-  int GetPageFlipTargetForDrag(const gfx::Point& drag_point);
+  // Called at the end of the hide continue section animation.
+  void OnHideContinueSectionAnimationEnded();
 
-  // Updates the highlighted background card. Used only for cardified state.
-  void SetHighlightedBackgroundCard(int new_highlighted_page);
+  // Runs the animation callback popped from the test callback queue if the
+  // queue is not empty. The parameters indicate the animation running result
+  // and should be passed to the callback.
+  void MaybeRunNextReorderAnimationCallbackForTest(
+      bool aborted,
+      AppListGridAnimationStatus animation_source);
+
+  // Sets `open_folder_info_` for  a folder that is about to be shown.
+  // `folder_id` is the folder's item ID, `target_folder_position` is the grid
+  // index at which the folder is located (or being created).
+  // `position_to_skip`, if valid, is the grid index of an app list item that is
+  // expected to be removed (for example, the reorder placeholder gets removed
+  // after an app list item drag ends, and should thus be ignored when
+  // calculating the final folder position during drag end). The target folder
+  // position should be adjusted as if the item at this position is gone.
+  void SetOpenFolderInfo(const std::string& folder_id,
+                         const GridIndex& target_folder_position,
+                         const GridIndex& position_to_skip);
+
+  // Requsets a folder view for the provided app list folder item to be shown.
+  // `new_folder` indicates whether the folder is a newly created folder.
+  void ShowFolderForView(AppListItemView* folder_view, bool new_folder);
+
+  // Called when a folder view that was opened from this apps grid hides (and
+  // completes hide animation), either when user closes the folder, or when the
+  // folder gets hidden during reparent drag.
+  // `item_id` is the folder items app list model ID.
+  void FolderHidden(const std::string& item_id);
+
+  // When folder item view position in the grid changes while the folder view
+  // was shown for the item, the folder item view animates out in old location,
+  // and animate in in the new location upon folder view closure. This methods
+  // schedules folder item fade-in animation, and schedule bounds animations for
+  // other item views in the grid.
+  void AnimateFolderItemViewIn();
+
+  // Called when the folder view closes, and optional folder item view "position
+  // change" animation completes.
+  void OnFolderHideAnimationDone();
+
+  class ScopedModelUpdate;
 
   AppListModel* model_ = nullptr;         // Owned by AppListView.
   AppListItemList* item_list_ = nullptr;  // Not owned.
@@ -770,18 +912,30 @@ class ASH_EXPORT AppsGridView : public views::View,
   // This can be nullptr. Only grid views inside folders have a folder delegate.
   AppsGridViewFolderDelegate* folder_delegate_ = nullptr;
 
-  PaginationModel pagination_model_{this};
-  // Must appear after |pagination_model_|.
-  std::unique_ptr<PaginationController> pagination_controller_;
+  // Used to request showing a folder UI for a folder item view.
+  // May be nullptr if the AppsGridView is never expected to request a folder to
+  // be shown. For example, it will be nullptr for folder items grids (which do
+  // not support nested folder items).
+  AppListFolderController* const folder_controller_;
 
-  // Created by AppListMainView, owned by views hierarchy.
-  ContentsView* contents_view_ = nullptr;
+  AppListA11yAnnouncer* const a11y_announcer_;
+  AppListViewDelegate* const app_list_view_delegate_;
+
+  // May be nullptr if this apps grid doesn't have custom focus handling, for
+  // example, a folder apps grid.
+  AppListKeyboardController* const keyboard_controller_;
 
   // Keeps the individual AppListItemView. Owned by views hierarchy.
   views::View* items_container_ = nullptr;
 
+  // The `AppListConfig` currently used for sizing app list item views within
+  // the grid.
+  const AppListConfig* app_list_config_ = nullptr;
+
+  // The max number of columns the grid can have.
+  int max_cols_ = 0;
+
   int cols_ = 0;
-  int rows_per_page_ = 0;
 
   // List of app item views. There is a view per item in |model_|.
   views::ViewModelT<AppListItemView> view_model_;
@@ -791,29 +945,31 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   AppListItemView* selected_view_ = nullptr;
 
-  AppListItemView* drag_view_ = nullptr;
-
-  // Set while apps grid items have layers to handle app list item drag
-  // operation. It's reset when the app list bounds animations requested after
-  // drag state is cleared complete.
-  bool items_need_layer_for_drag_ = false;
+  // Set while the AppsGridView is handling drag operation for an app list item.
+  // It's set to the drag item that is being dragged in the UI. If `drag_view_`
+  // is set, it should have the same value as `drag_view_->item()`.
+  AppListItem* drag_item_ = nullptr;
 
   // The index of the drag_view_ when the drag starts.
   GridIndex drag_view_init_index_;
 
-  // The point where the drag started in AppListItemView coordinates.
-  gfx::Point drag_view_offset_;
-
   // The point where the drag started in GridView coordinates.
   gfx::Point drag_start_grid_view_;
 
-  // The location of |drag_view_| when the drag started.
-  gfx::Point drag_view_start_;
-
-  // Page the drag started on.
-  int drag_start_page_ = -1;
-
   Pointer drag_pointer_ = NONE;
+
+  // Whether the apps grid is currently updating the app list model.
+  bool updating_model_ = false;
+
+  // Object that while in scope hides the drag view from the UI during the drag
+  // operation. Note that this may remain set even after ClearDragState(), while
+  // the drag icon proxy animation is in progress.
+  std::unique_ptr<DragViewHider> drag_view_hider_;
+
+  // Object that while scope keeps an app list item icon hidden from a folder
+  // view icon. Used to hide a drag item icon from a folder icon while the item
+  // is being dropped into the folder.
+  std::unique_ptr<FolderIconItemHider> folder_icon_item_hider_;
 
   // The most recent reorder drop target.
   GridIndex drop_target_;
@@ -830,10 +986,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Timer for re-ordering the |drop_target_region_| and |drag_view_|.
   base::OneShotTimer reorder_timer_;
-
-  // Timer for dropping |drag_view_| into the folder represented by
-  // the |drop_target_|.
-  base::OneShotTimer folder_dropping_timer_;
 
   // Timer for dragging a folder item out of folder container ink bubble.
   base::OneShotTimer folder_item_reparent_timer_;
@@ -852,16 +1004,8 @@ class ASH_EXPORT AppsGridView : public views::View,
   // Last mouse drag location in this view's coordinates.
   gfx::Point last_drag_point_;
 
-  // Timer to auto flip page when dragging an item near the left/right edges.
-  base::OneShotTimer page_flip_timer_;
-
-  // Target page to switch to when |page_flip_timer_| fires.
-  int page_flip_target_ = -1;
-
+  // Used to animate individual icon positions.
   std::unique_ptr<views::BoundsAnimator> bounds_animator_;
-
-  // The most recent activated folder item view.
-  AppListItemView* activated_folder_item_view_ = nullptr;
 
   // Tracks if drag_view_ is dragged out of the folder container bubble
   // when dragging a item inside a folder.
@@ -873,26 +1017,17 @@ class ASH_EXPORT AppsGridView : public views::View,
   // True if the drag_view_ item is a folder item being dragged for reparenting.
   bool dragging_for_reparent_item_ = false;
 
-  std::unique_ptr<FadeoutLayerDelegate> fadeout_layer_delegate_;
+  // The folder that should be opened after drag icon drop animation finishes.
+  // This is set when an item drag ends in a folder creation, in which case the
+  // created folder is expected to open after drag (assuming productivity
+  // launcher feature is enabled).
+  std::string folder_to_open_after_drag_icon_animation_;
 
-  // Delay for when |page_flip_timer_| should fire after user drags an item near
-  // the edge.
-  base::TimeDelta page_flip_delay_;
-
-  // True if it is the end gesture from shelf dragging.
-  bool is_end_gesture_ = false;
-
-  // view structure used only for non-folder.
-  PagedViewStructure view_structure_{this};
-
-  // True if an extra page is opened after the user drags an app to the bottom
-  // of last page with intention to put it in a new page. This is only used for
-  // non-folder.
-  bool extra_page_opened_ = false;
-
-  // Tile spacing between the tile views.
-  int horizontal_tile_padding_ = 0;
-  int vertical_tile_padding_ = 0;
+  // When dragging for reparent in the root view, a callback registered by the
+  // originating, hidden grid that when called will cancel drag operation in the
+  // hidden view. Used in cases the root grid detects that the drag should end,
+  // for example due to app list model changes.
+  base::OnceClosure reparent_drag_cancellation_;
 
   // The drop location of the most recent reorder related accessibility event.
   GridIndex last_reorder_a11y_event_location_;
@@ -903,45 +1038,62 @@ class ASH_EXPORT AppsGridView : public views::View,
   // The location when |current_ghost_view_| was shown.
   GridIndex current_ghost_location_;
 
-  GhostImageView* current_ghost_view_ = nullptr;
-  GhostImageView* last_ghost_view_ = nullptr;
+  struct OpenFolderInfo {
+    std::string item_id;
+    GridIndex grid_index;
+  };
+  // Set when a folder view was opened from the apps grid - it contains the
+  // opened folder ID and original location in the grid. While the folder
+  // remains open, the folder item view position will be forced to the original
+  // grid slot, to prevent folder UI from jumping, or empty slots from appearing
+  // behind a folder when the gird item list changes (e.g. if another item gets
+  // added by sync, or the folder item moves as a result of folder rename).
+  absl::optional<OpenFolderInfo> open_folder_info_;
 
-  // If true, Layout() does nothing. See where set for details.
-  bool ignore_layout_ = false;
+  // Folder item view that is being animated into it's target position. The
+  // animation runs after a folder gets closed if the folder intended position
+  // in the grid changed while the folder was open.
+  absl::optional<views::View*> reordering_folder_view_;
 
-  // True if the AppList is in cardified state.
-  bool cardified_state_ = false;
+  std::unique_ptr<AppsGridContextMenu> context_menu_;
 
-  // Records smoothness of pagination animation.
-  base::Optional<ui::ThroughputTracker> pagination_metrics_tracker_;
+  // The status of any whole-grid animation (reorder, hide continue section).
+  AppListGridAnimationStatus grid_animation_status_ =
+      AppListGridAnimationStatus::kEmpty;
 
-  // Records the presentation time for apps grid dragging.
-  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+  // A handle that aborts the active whole-grid animation.
+  std::unique_ptr<views::AnimationAbortHandle> grid_animation_abort_handle_;
 
-  // Indicates whether the AppsGridView is in mouse drag.
-  bool is_in_mouse_drag_ = false;
+  // If false, the animation to move an app list item when the item's target
+  // position changes is disabled. It is set to be false when we only care about
+  // app list items' final positions instead of animation process.
+  bool enable_item_move_animation_ = true;
 
-  // The initial mouse drag location in root window coordinate. Updates when
-  // drag on AppsGridView starts.
-  gfx::PointF mouse_drag_start_point_;
+  // Tracks the reorder animation triggered by the sort order change.
+  absl::optional<ui::ThroughputTracker> reorder_animation_tracker_;
 
-  // The last mouse drag location in root window coordinate. Different from
-  // |last_drag_point_|, |last_mouse_drag_point_| is the location of the most
-  // recent drag on AppsGridView instead of the app icon.
-  gfx::PointF last_mouse_drag_point_;
+  // A queue of callbacks that run at the end of app list reorder. A reorder
+  // ends if:
+  // (1) Fade out animation is aborted, or
+  // (2) Fade in animation is aborted or ends normally.
+  std::queue<TestReorderDoneCallbackType>
+      reorder_animation_callback_queue_for_test_;
 
-  // The highlighted page during cardified state.
-  int highlighted_page_ = -1;
+  // A closure that runs at the start of the fade out animation.
+  base::OnceClosure fade_out_start_closure_for_test_;
 
-  // Layer array for apps grid background cards. Used to display the background
-  // card during cardified state.
-  std::vector<std::unique_ptr<ui::Layer>> background_cards_;
+  // A closure that runs at the end of the fade out animation.
+  base::OnceClosure fade_out_done_closure_for_test_;
 
-  int bounds_animation_for_cardified_state_in_progress_ = 0;
+  // Used to trigger and manage row change animations.
+  std::unique_ptr<AppsGridRowChangeAnimator> row_change_animator_;
 
-  base::WeakPtrFactory<AppsGridView> weak_ptr_factory_{this};
+  // Tracks the animation smoothness of item reorders during drag. Gets
+  // triggered by AnimateToIdealBounds(), which is mainly caused
+  // by app dragging reorders. This does not track reorders due to sort.
+  absl::optional<ui::ThroughputTracker> item_reorder_animation_tracker_;
 
-  DISALLOW_COPY_AND_ASSIGN(AppsGridView);
+  base::WeakPtrFactory<AppsGridView> weak_factory_{this};
 };
 
 }  // namespace ash

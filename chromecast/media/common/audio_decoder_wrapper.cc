@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,10 +23,19 @@ class RevokedAudioDecoderWrapper : public DestructableAudioDecoder {
  public:
   RevokedAudioDecoderWrapper(RenderingDelay rendering_delay,
                              Statistics statistics,
+                             AudioTrackTimestamp audio_track_timestamp,
+                             int start_threshold_in_frames,
                              bool requires_decryption)
       : rendering_delay_(rendering_delay),
         statistics_(statistics),
+        audio_track_timestamp_(audio_track_timestamp),
+        start_threshold_in_frames_(start_threshold_in_frames),
         requires_decryption_(requires_decryption) {}
+
+  RevokedAudioDecoderWrapper(const RevokedAudioDecoderWrapper&) = delete;
+  RevokedAudioDecoderWrapper& operator=(const RevokedAudioDecoderWrapper&) =
+      delete;
+
   ~RevokedAudioDecoderWrapper() override = default;
 
  private:
@@ -42,14 +51,19 @@ class RevokedAudioDecoderWrapper : public DestructableAudioDecoder {
   void GetStatistics(Statistics* statistics) override {
     *statistics = statistics_;
   }
+  AudioTrackTimestamp GetAudioTrackTimestamp() override {
+    return audio_track_timestamp_;
+  }
+  int GetStartThresholdInFrames() override {
+    return start_threshold_in_frames_;
+  }
   bool RequiresDecryption() override { return requires_decryption_; }
-  void SetObserver(CmaBackend::AudioDecoder::Observer* observer) override {}
 
   const RenderingDelay rendering_delay_;
   const Statistics statistics_;
+  const AudioTrackTimestamp audio_track_timestamp_;
+  const int start_threshold_in_frames_;
   const bool requires_decryption_;
-
-  DISALLOW_COPY_AND_ASSIGN(RevokedAudioDecoderWrapper);
 };
 
 }  // namespace
@@ -140,6 +154,15 @@ void ActiveAudioDecoderWrapper::GetStatistics(Statistics* statistics) {
   decoder_.GetStatistics(statistics);
 }
 
+ActiveAudioDecoderWrapper::AudioTrackTimestamp
+ActiveAudioDecoderWrapper::GetAudioTrackTimestamp() {
+  return decoder_.GetAudioTrackTimestamp();
+}
+
+int ActiveAudioDecoderWrapper::GetStartThresholdInFrames() {
+  return decoder_.GetStartThresholdInFrames();
+}
+
 bool ActiveAudioDecoderWrapper::RequiresDecryption() {
   return (MediaPipelineBackend::AudioDecoder::RequiresDecryption &&
           MediaPipelineBackend::AudioDecoder::RequiresDecryption()) ||
@@ -158,7 +181,8 @@ AudioDecoderWrapper::AudioDecoderWrapper(
 AudioDecoderWrapper::AudioDecoderWrapper(AudioContentType type)
     : decoder_revoked_(true) {
   audio_decoder_ = std::make_unique<RevokedAudioDecoderWrapper>(
-      RenderingDelay(), Statistics(), false);
+      RenderingDelay(), Statistics(), AudioTrackTimestamp(),
+      0 /* start_threshold_in_frames */, false);
 }
 
 AudioDecoderWrapper::~AudioDecoderWrapper() = default;
@@ -176,6 +200,8 @@ void AudioDecoderWrapper::Revoke() {
     audio_decoder_->GetStatistics(&statistics);
     audio_decoder_ = std::make_unique<RevokedAudioDecoderWrapper>(
         audio_decoder_->GetRenderingDelay(), statistics,
+        audio_decoder_->GetAudioTrackTimestamp(),
+        audio_decoder_->GetStartThresholdInFrames(),
         audio_decoder_->RequiresDecryption());
   }
 }
@@ -203,6 +229,15 @@ AudioDecoderWrapper::RenderingDelay AudioDecoderWrapper::GetRenderingDelay() {
 
 void AudioDecoderWrapper::GetStatistics(Statistics* statistics) {
   audio_decoder_->GetStatistics(statistics);
+}
+
+AudioDecoderWrapper::AudioTrackTimestamp
+AudioDecoderWrapper::GetAudioTrackTimestamp() {
+  return audio_decoder_->GetAudioTrackTimestamp();
+}
+
+int AudioDecoderWrapper::GetStartThresholdInFrames() {
+  return audio_decoder_->GetStartThresholdInFrames();
 }
 
 bool AudioDecoderWrapper::RequiresDecryption() {

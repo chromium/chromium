@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<title>Test that we can display a playback speeds list menu and set playback rate from the list.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<!-- Width should be large enough to display playback speed button. -->
+<video controls style="width: 500px"></video>
+<script>
+async_test(function(t) {
+  var video = document.querySelector("video");
+  video.src = '../content/test.ogv';
+
+  enableTestMode(video);
+
+  video.onloadeddata = t.step_func(function() {
+    assert_true(isPlaybackSpeedButtonEnabled(video));
+    assert_equals(video.defaultPlaybackRate, 1);
+    assert_equals(video.playbackRate, 1);
+
+    clickPlaybackSpeedAtPlaybackRate(video, 0.25, t.step_func(function() {
+      assert_equals(video.defaultPlaybackRate, 0.25);
+      assert_equals(video.playbackRate, 0.25);
+
+      clickPlaybackSpeedAtPlaybackRate(video, 0.5, t.step_func(function() {
+        assert_equals(video.defaultPlaybackRate, 0.5);
+        assert_equals(video.playbackRate, 0.5);
+
+        clickPlaybackSpeedAtPlaybackRate(video, 0.75, t.step_func(function() {
+          assert_equals(video.defaultPlaybackRate, 0.75);
+          assert_equals(video.playbackRate, 0.75);
+
+          clickPlaybackSpeedAtPlaybackRate(video, 1, t.step_func(function() {
+            assert_equals(video.defaultPlaybackRate, 1);
+            assert_equals(video.playbackRate, 1);
+
+            clickPlaybackSpeedAtPlaybackRate(video, 1.25, t.step_func(function() {
+              assert_equals(video.defaultPlaybackRate, 1.25);
+              assert_equals(video.playbackRate, 1.25);
+
+              clickPlaybackSpeedAtPlaybackRate(video, 1.5, t.step_func(function() {
+                assert_equals(video.defaultPlaybackRate, 1.5);
+                assert_equals(video.playbackRate, 1.5);
+
+                clickPlaybackSpeedAtPlaybackRate(video, 1.75, t.step_func(function() {
+                  assert_equals(video.defaultPlaybackRate, 1.75);
+                  assert_equals(video.playbackRate, 1.75);
+
+                  clickPlaybackSpeedAtPlaybackRate(video, 2, t.step_func_done(function() {
+                    assert_equals(video.defaultPlaybackRate, 2);
+                    assert_equals(video.playbackRate, 2);
+                  }));
+                }));
+              }));
+            }));
+          }));
+        }));
+      }));
+    }));
+  });
+});
+</script>

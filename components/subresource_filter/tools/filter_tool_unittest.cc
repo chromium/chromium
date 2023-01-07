@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,6 +40,9 @@ class FilterToolTest : public ::testing::Test {
  public:
   FilterToolTest() {}
 
+  FilterToolTest(const FilterToolTest&) = delete;
+  FilterToolTest& operator=(const FilterToolTest&) = delete;
+
  protected:
   void SetUp() override {
     CreateRuleset();
@@ -68,8 +71,6 @@ class FilterToolTest : public ::testing::Test {
   scoped_refptr<const MemoryMappedRuleset> ruleset_;
   std::ostringstream out_stream_;
   std::unique_ptr<FilterTool> filter_tool_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilterToolTest);
 };
 
 TEST_F(FilterToolTest, MatchBlocklist) {

@@ -1,0 +1,7 @@
+<groups>
+  <group name="Group A">
+    <sender name="Widget Component">
+      <annotation unique_id="widget_grabber"/>
+    </sender>
+  </group>
+</groups>

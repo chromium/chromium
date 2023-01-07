@@ -6,24 +6,15 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{දින 1 කට පෙර}one{දින # කට පෙර}other{දින # කට පෙර}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{මිනිත්තු 1කට පෙර}one{මිනිත්තු #කට පෙර}other{මිනිත්තු #කට පෙර}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1m}one{#m}other{#m}}</translation>
-<translation id="1181037720776840403">ඉවත් කරන්න</translation>
-<translation id="1201402288615127009">ඊළඟ</translation>
-<translation id="1218444235442067213"><ph name="APP_NAME" />, Play Store යෙදුම</translation>
 <translation id="1243314992276662751">උඩුගත</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> බෙදා ගත නොහැකි විය</translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1290982764014248209"><ph name="DRAGGED_APP" /> <ph name="FOLDER_NAME" /> ෆෝල්ඩරයට ගෙන යන්න.</translation>
 <translation id="1291104554099683393">පාඨය කුඩා කැබලි ලෙස බෙදා ගැනීමට උත්සාහ කරන්න.</translation>
 <translation id="1293699935367580298">පිට වීම</translation>
-<translation id="1306549533752902673">නිර්දේශිත යෙදුම්</translation>
 <translation id="1368832886055348810">වමේ සිට දකුණට</translation>
 <translation id="1383876407941801731">සොයන්න</translation>
 <translation id="1398853756734560583">විශාල කරන්න</translation>
-<translation id="1414271762428216854"><ph name="APP_NAME" />, ස්ථාපිත යෙදුම</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> බෙදා ගත නොහැක</translation>
-<translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> <ph name="SECOND_ITEM_TITLE" /> සමඟ හුවමාරු කර ගත්තා</translation>
-<translation id="1498028757988366001">ඔබ කලින් මෙය සොයා ඇත. ඔබේ ඉතිහාසයෙන් "<ph name="QUERY" />" මැකීම ඔබේ උපාංග සියල්ලෙහිම ඔබේ ගිණුමෙන් එය ස්ථිරව මකා දමයි.</translation>
-<translation id="1510238584712386396">දියත්කරණය</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{මිනිත්තු 1 ක් සහ }one{මිනිත්තු # ක් සහ }other{මිනිත්තු # ක් සහ }}</translation>
 <translation id="1643823602425662293">දැනුම්දීම</translation>
 <translation id="169515659049020177">SHIFT</translation>
@@ -34,8 +25,6 @@
 <translation id="1803208670097017349">{MONTHS,plural, =1{මාස 1}one{මාස #}other{මාස #}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/s</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{පැය 1 ක් සහ }one{පැය # ක් සහ }other{පැය # ක් සහ }}</translation>
-<translation id="1830308660060964064"><ph name="ITEM_TITLE" /> නො-අමුණා ඇත</translation>
-<translation id="1842960171412779397">තෝරන්න</translation>
 <translation id="1859234291848436338">ලිවීමේ දිශාව</translation>
 <translation id="1860796786778352021">දැන්වීම වසන්න</translation>
 <translation id="186476001994626254">වෙබ් ස්මාර්ට් ඇලවීම් අන්තර්ගතය</translation>
@@ -51,39 +40,35 @@
 <translation id="2168039046890040389">පිටුව ඉහළට</translation>
 <translation id="2190355936436201913">(හිස්)</translation>
 <translation id="2192232475740621500">අඩු ඝනත්වය භාවිතා කරන්න</translation>
-<translation id="219905428774326614">දියත්කරණය, සියලු යෙදුම්</translation>
 <translation id="2267918077332197517">මෙම අඩවියෙන් එන දැනුම් දීම් සියල්ල අවහිර කරන්න</translation>
+<translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">ඔබේ තිරය මත ස්පර්ශ ඉලක්ක තට්ටු කරන්න.</translation>
 <translation id="2295140143284145483">සමීක්ෂණය</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/තත්</translation>
 <translation id="2353636109065292463">ඔබේ අන්තර්ජාල සම්බන්ධතාව පරීක්‍ෂා කිරීම</translation>
 <translation id="2388990488038464401">ඔබේ දුරකථනයෙන් මෙම අංකය අමතන්නේද?</translation>
+<translation id="2435457462613246316">මුරපදය පෙන්වන්න</translation>
 <translation id="24452542372838207">දැනුම්දීම දිග හරින්න</translation>
 <translation id="2445449901874883781">ඉහළ ඝනත්වය භාවිතා කරන්න</translation>
 <translation id="2482878487686419369">දැනුම්දීම්</translation>
 <translation id="2497284189126895209">සියළු ගොනු</translation>
+<translation id="2498950423397131220">පාවෙන</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">ක්‍රමාංකනය සම්පූර්ණයි</translation>
 <translation id="252373100621549798">නොදන්නා තිරය</translation>
 <translation id="2545651323591713692">මඳක් නිද්‍රා කරන්න</translation>
-<translation id="2570734079541893434">සැකසීම් කළමනාකරණය කරන්න</translation>
 <translation id="2573731672208488250">{HOURS,plural, =1{1 පැයකින්}one{පැය #කින්}other{පැය #කින්}}</translation>
 <translation id="2583543531130364912">ඔබේ ස්පර්ශ තිරය ක්‍රමාංකනය කරන්න</translation>
 <translation id="2586657967955657006">පසුරු පුවරුව</translation>
 <translation id="2666092431469916601">ඉහල</translation>
 <translation id="2701330563083355633"><ph name="DEVICE_NAME" /> වෙතින් බෙදා ගන්නා ලදි</translation>
 <translation id="271033894570825754">පුවත්</translation>
-<translation id="2743387203779672305">ක්ලිප්බෝඩ් එකට පිටපත් කරන්න</translation>
-<translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
-<translation id="2803313416453193357">ෆෝල්ඩරය විවෘත කරන්න</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{වසර 1කට පෙර}one{වසර #කට පෙර}other{වසර #කට පෙර}}</translation>
 <translation id="2878511608894704031">සියල්ල මකන්න</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 දිනකින්}one{දින #කින්}other{දින #කින්}}</translation>
-<translation id="2931838996092594335">ක්ලික් කරන්න</translation>
-<translation id="2981684127883932071">යෝජනා දැක්වීම</translation>
+<translation id="2922712708897119705"><ph name="COLUMN_NAME" /> තීරුව අඩු වන අනුපිළිවෙළට සකසන ලදි.</translation>
 <translation id="3036649622769666520">ගොනුව විවෘත කරන්න</translation>
 <translation id="3049748772180311791">මෙබ <ph name="QUANTITY" /></translation>
-<translation id="3068711042108640621">රාක්කය වමට</translation>
 <translation id="3087734570205094154">පතුල</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">ප්‍රතිසාධනය</translation>
@@ -95,8 +80,6 @@
 <translation id="335581015389089642">කථනය</translation>
 <translation id="3389286852084373014">පාඨය විශාල වැඩියි</translation>
 <translation id="3406306243914553062">HTML අන්තර්ගතය</translation>
-<translation id="348799646910989694">රාක්කය ස්වයංක්‍රීයව සැඟවී ඇත</translation>
-<translation id="3554637740840164787"><ph name="ITEM_TITLE" /> අමුණා ඇත</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{දින 1 ක් ඉතිරියි}one{දින # ක් ඉතිරියි}other{දින # ක් ඉතිරියි}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" /> ගොනුව</translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
@@ -108,50 +91,42 @@
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/s</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />. <ph name="TYPE_2" />.</translation>
-<translation id="3842239759367498783">ඔබගේ <ph name="TITLE" /> ජංගම උපාංගයෙන් කියවීම දිගටම පවත්වාගෙන යන්න</translation>
-<translation id="385051799172605136">ආපසු</translation>
 <translation id="3889424535448813030">දකුණු ඊතලය</translation>
 <translation id="3897092660631435901">මෙනුව</translation>
 <translation id="3909791450649380159">ක&amp;පන්න</translation>
+<translation id="3924145049010392604">මෙටා</translation>
 <translation id="3990502903496589789">දකුණු කෙළවර</translation>
+<translation id="3994749195054421561"><ph name="COLUMN_NAME" /> තීරුව වැඩි වන අනුපිළිවෙළට සකසන ලදි.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 නොකියවූ දැනුම්දීමක්}one{නොකියවූ දැනුම්දීම් # ක්}other{නොකියවූ දැනුම්දීම් # ක්}}</translation>
-<translation id="4202807286478387388">පනින්න</translation>
-<translation id="4250229828105606438">තිරරූපය</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{මාස 1කට පෙර}one{මාස #කට පෙර}other{මාස #කට පෙර}}</translation>
 <translation id="4289300219472526559">කතා කිරීම අරඹන්න</translation>
-<translation id="430191667033048642"><ph name="FOLDER_NAME" /> ෆෝල්ඩරයට <ph name="MOVED_APP_NAME" /> ගෙන යැවිණි.</translation>
+<translation id="4289540628985791613">දළ විශ්ලේෂණය</translation>
 <translation id="4306392492252714209">පසුරු පුවරුවෙන් ඉවත් කරන්න.</translation>
-<translation id="4316910396681052118">සියලු යෙදුම්</translation>
+<translation id="4311195029067684288">පූර්ණ</translation>
 <translation id="4491109536499578614">රූපය</translation>
+<translation id="4565377596337484307">මුරපදය සඟවන්න</translation>
 <translation id="4588090240171750605">දකුණට අනුචලනය කරන්න</translation>
-<translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, තරු ඇගයීම <ph name="RATING_SCORE" /></translation>
-<translation id="4648249871170053485"><ph name="APP_NAME" />, යෙදුම් නිර්දේශය</translation>
-<translation id="4690510401873698237">පහළ ඇති රාක්කය</translation>
 <translation id="4724120544754982507">දැනුම්දීම් මධ්‍යස්ථානය, නොකියවූ දැනුම්දීම් <ph name="UNREAD_NOTIFICATION_COUNT" />ක්</translation>
-<translation id="4730374152663651037">නිතරම භාවිතා කළ</translation>
+<translation id="4746179598275229723">දිගුව ඇමිණීම ඉවත් කරන ලදි</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{මාස 1ක් ඉතිරියි}one{මාස #ක් ඉතිරියි}other{මාස #ක් ඉතිරියි}}</translation>
 <translation id="4888938634149558681">ඇමතුම් කරන්න</translation>
+<translation id="4937657825850660613">භාගය</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{තත්පර 1}one{තත්පර #}other{තත්පර #}}</translation>
 <translation id="4971687151119236543">මාධ්‍ය පෙර ගීතය</translation>
+<translation id="4971925105143343452">අර්ධ</translation>
 <translation id="5046499563572181734">මෙහි තට්ටු කරන්න</translation>
 <translation id="5076340679995252485">&amp;අලවන්න</translation>
-<translation id="5198715732953550718">නව ෆෝල්ඩරයක් සෑදීමට <ph name="IN_PLACE_APP" /> සමඟ <ph name="MOVED_APP_NAME" /> සංයුක්ත වේ.</translation>
+<translation id="5123162024343028706">මතුපිට පාවීම</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5266161281976477809">අනාවරණය ත්‍රිකෝණය</translation>
 <translation id="5278860589123563674">යැවීම අසාර්ථකයි</translation>
-<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ඔබගේ අවධානය ඉල්ලයි.</translation>
 <translation id="528468243742722775">අවසන් කරන්න</translation>
 <translation id="5329858601952122676">&amp;මකන්න</translation>
-<translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> ට වඩා <ph name="DRAGGED_APP_NAME" /> , ෆෝල්ඩරය නිර්මාණ කිරීමට මුදා හරියි.</translation>
 <translation id="5463830097259460683">ඉමොජි &amp;&amp; සංකේත</translation>
-<translation id="5476505524087279545">සලකුණු කර නොමැත</translation>
-<translation id="547979256943495781">රාක්කය දකුණට</translation>
 <translation id="5528053674512161860">සංවර්ධක UI මොඩියුලය (dev_ui) ස්ථාපන කර නැති බැවින් පිටුව පූරණ කිරීම අසමත් විය</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> පද්ධතිය</translation>
 <translation id="5583640892426849032">ආපසුයවනය</translation>
 <translation id="5613020302032141669">වම් ඊතලය</translation>
-<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> ඔබගේ අවධානය ඉල්ලයි.</translation>
-<translation id="5675363643668471212">රාක්ක අයිතමය</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{මිනි 1}one{මිනි #}other{මිනි #}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{අද ක්‍රියාත්මකයි}=1{1 දිනකට පෙර ක්‍රියාත්මකයි}one{දින #-කට පෙර ක්‍රියාත්මකයි}other{දින #-කට පෙර ක්‍රියාත්මකයි}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{දින 1 ක් සහ }one{දින # ක් සහ }other{දින # ක් සහ }}</translation>
@@ -162,39 +137,28 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{තත්පර 1 ක් ඉතිරියි}one{තත්පර # ක් ඉතිරියි}other{තත්පර # ක් ඉතිරියි}}</translation>
 <translation id="5941711191222866238">කුඩා කරන්න</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{පැය 1}one{පැය #}other{පැය #}}</translation>
-<translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> න් <ph name="SELECTED_PAGE" /> වැනි පිටුව</translation>
-<translation id="6022924867608035986">සෙවුම් කොටු පෙළ හිස් කරන්න</translation>
+<translation id="6007284015834422026">දිගුව අමුණන ලදි</translation>
 <translation id="6040143037577758943">වසන්න</translation>
-<translation id="6119846243427417423">සක්‍රීය කරන්න</translation>
+<translation id="6117103120090651229">මැද බොත්තම</translation>
 <translation id="6129953537138746214">හිඩස</translation>
-<translation id="6134259848159370930">ඔබේ උපාංගය, යෙදුම්, සැකසීම් සහ වෙබය තුළ සොයන්න.</translation>
 <translation id="6135826906199951471">Del</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/s</translation>
-<translation id="6156262341071374681">සියලු යෙදුම්වලට දිග හරින්න</translation>
-<translation id="6165508094623778733">තව දැන ගන්න</translation>
-<translation id="6166852626429024716">ඔබේ උපාංගය, යෙදුම්, සැකසීම්, වෙබය තුළ සොයන්න...</translation>
+<translation id="6237461503717005873"><ph name="ROW_NAME" /> තෝරා ඇත.</translation>
 <translation id="6264365405983206840">සියල්ල තෝරන්න</translation>
-<translation id="6351032674660237738">යෙදුම් යෝජනා</translation>
 <translation id="6364916375976753737">වමට ස්ක්‍රෝල් කරන්න</translation>
 <translation id="6394627529324717982">කොමාව</translation>
 <translation id="6397363302884558537">කථනය නවතන්න</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{තත්පර 1 කට පෙර}one{තත්පර # කට පෙර}other{තත්පර # කට පෙර}}</translation>
-<translation id="6417265370957905582">Google සහායක</translation>
 <translation id="6430678249303439055">මෙම යෙදුමෙන් එන දැනුම් දීම් සියල්ල අවහිර කරන්න</translation>
 <translation id="6483402905448010557">{SECONDS,plural, =1{තත්පර 1කට පෙර}one{තත්පර #කට පෙර}other{තත්පර #කට පෙර}}</translation>
 <translation id="6503257047630241175">RTF අන්තර්ගතය</translation>
 <translation id="6539092367496845964">යම් දෙයක් වැරදිණි. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="654149438358937226">සියලු දැනුම්දීම් අවහිර කරන්න</translation>
-<translation id="6567071839949112727">මුතුන්මිත්තා ක්ලික් කරන්න</translation>
-<translation id="6578407462441924264">නම් නොකළ</translation>
 <translation id="6612467943526193239">ක්‍රමාංකනයෙන් පිට වීමට Esc ඔබන්න.</translation>
 <translation id="6620110761915583480">ගොනුව සුරකින්න</translation>
 <translation id="6699343763173986273">මාධ්‍යය ඊළඟ ඛණ්ඩය</translation>
-<translation id="6710213216561001401">පෙර</translation>
-<translation id="6786750046913594791">ෆෝල්ඩරය වසන්න</translation>
 <translation id="6808150112686056157">මාධ්‍ය නැවතුම</translation>
 <translation id="6845383723252244143">ෆෝල්ඩරය තෝරන්න</translation>
-<translation id="6845533974506654842">ඔබන්න</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{පැය 1 ක් ඉතිරියි}one{පැය # ක් ඉතිරියි}other{පැය # ක් ඉතිරියි}}</translation>
 <translation id="688711909580084195">නම් නොකළ වෙබ් පිටුව</translation>
 <translation id="6902419395050653510">HTML අන්තර්ගතය.</translation>
@@ -204,25 +168,21 @@
 <translation id="6965382102122355670">හරි</translation>
 <translation id="6974053822202609517">දකුණේ සිට වමට</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7130207228079676353">වැඩියෙන්ම ඉඩ ඇති</translation>
 <translation id="7170202025028120564">එය මීළඟ වරට යළි ඇරඹූ විට ඔබේ යෙදුමේ සංදර්ශක සැකසීම් ක්‍රියාත්මක වෙයි.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{මිනිත්තු 1 ක් ඉතිරියි}one{මිනිත්තු # ක් ඉතිරියි}other{මිනිත්තු # ක් ඉතිරියි}}</translation>
-<translation id="7319740667687257810">දියත්කරණය, අර්ධ දසුන</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{මිනි 1 කට පෙර}one{මිනි # කට පෙර}other{මිනි # කට පෙර}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{මිනිත්තු 1 ක් ඉතිරියි}one{මිනිත්තු # ක් ඉතිරියි}other{මිනිත්තු # ක් ඉතිරියි}}</translation>
-<translation id="7430878839542012341">ඔබේ ඉතිහාසයෙන් මෙම සෙවීම මකන්නද?</translation>
+<translation id="7437971918971306061"><ph name="COLUMN_NAME" /> තීරුව අනුපිළිවෙළට සැකසීම් ඉවත් කරන ලදි.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">ඉමොජි</translation>
 <translation id="7620655452534002301">ඉවත් කරන ලදි.</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
 <translation id="7781829728241885113">ඊයේ</translation>
 <translation id="7814458197256864873">&amp;පිටපත් කරන්න</translation>
-<translation id="7848989271541991537"><ph name="PAGE_NUMBER" /> වෙනි පිටුව, <ph name="ROW_NUMBER" /> වෙනි පේළිය, <ph name="COLUMN_NUMBER" /> වෙනි තීරුව වෙත ගෙන ගියා.</translation>
 <translation id="7879499977785298635">අවහිර නොකරන්න</translation>
 <translation id="7907591526440419938">ගොනුව විවෘත කරන්න</translation>
-<translation id="7952747673138230804">Chrome OS ගවේෂණය කිරීමට නව අන්තර්ගත සඳහා යෝජනා පෙන්වයි. ඔබ භාවිත දත්ත බෙදා ගැනීමට තෝරා ගෙන ඇති නම් පමණක් ගුණත්වය වැඩි දියුණු කිරීමට සංඛ්‍යාලේඛන යවයි. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7969046989155602842">විධානය</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1 ට වැඩි නොකියවූ දැනුම්දීමක්}one{# ට වැඩි නොකියවූ දැනුම්දීම්}other{# ට වැඩි නොකියවූ දැනුම්දීම්}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 විනාඩියකින්}one{විනාඩි #කින්}other{විනාඩි #කින්}}</translation>
@@ -231,45 +191,32 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{පැය 1 කට පෙර}one{පැය # කට පෙර}other{පැය # කට පෙර}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{තත්පර 1 ක් ඉතිරියි}one{තත්පර # ක් ඉතිරියි}other{තත්පර # ක් ඉතිරියි}}</translation>
 <translation id="8134065097954893699">මෙම පිටුව යළි පූරණ කෙරේ</translation>
-<translation id="8152264887680882389"><ph name="TEXT" />, ස්වයං සම්පූර්ණය</translation>
 <translation id="815598010540052116">පහළට ස්ක්‍රෝල්</translation>
 <translation id="8179976553408161302">ඇතුළු කරන්න</translation>
 <translation id="8210608804940886430">පිටුව පහළට</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">ටැබ යතුර</translation>
-<translation id="8247998213073982446"><ph name="APP_NAME" />, යෙදුම</translation>
 <translation id="8259556432390118667">ෂඩ් වර්ණ අගය</translation>
 <translation id="8328145009876646418">වම් කෙළවර</translation>
 <translation id="8331626408530291785">ඉහළට අනුචලනය කරන්න</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{වසර 1}one{වසර #}other{වසර #}}</translation>
-<translation id="838869780401515933">සලකුණු කරන්න</translation>
 <translation id="8393700583063109961">පණිවිඩය යවන්න</translation>
 <translation id="8394908167088220973">මාධ්‍ය වාදනය/අත්හිටීම</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1y}one{#y}other{#y}}</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ගොනුව (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
-<translation id="8649597172973390955">රාක්කය සැම විට පෙන්වනු ලැබේ</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> KB/s</translation>
-<translation id="8685326675965865247">ඔබගේ උපාංගය, යෙදුම්, සැකසීම් සහ වෙබය තුළ සොයන්න. ඔබගේ යෙදුම් සංචලන කිරීමට ඊතල යතුරු භාවිත කරන්න.</translation>
 <translation id="8725488761726303204">තව +<ph name="NUMBER" /></translation>
 <translation id="8730621377337864115">අවසන්</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1h}one{#h}other{#h}}</translation>
 <translation id="8798099450830957504">පෙරනිමි</translation>
-<translation id="8806053966018712535">ෆෝල්ඩරය <ph name="FOLDER_NAME" /></translation>
-<translation id="883911313571074303">රූපය අනුසටහන් කරන්න</translation>
 <translation id="8841375032071747811">ආපසු බොත්තම</translation>
 <translation id="8867568208303837180">යැවේ...</translation>
 <translation id="8876215549894133151">ආකෘතිය</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> KB</translation>
-<translation id="8926951137623668982">රාක්කය සැම විට සඟවා ඇත</translation>
 <translation id="8996630695507351249"><ph name="TARGET_DEVICE_NAME" /> අන්තර්ජාලයට සම්බන්ධ කර තිබීම තහවුරු කර ගන්න.</translation>
-<translation id="9002566407876343676">විවෘත කරන්න</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{තත් 1}one{තත් #}other{තත් #}}</translation>
 <translation id="9059834730836941392">දැනුම්දීම හකුළන්න</translation>
-<translation id="9150735707954472829">ටැබ යතුර</translation>
-<translation id="9161053988251441839">යෝජිත යෙදුම්</translation>
 <translation id="9170848237812810038">&amp;පසුගමනය</translation>
-<translation id="9178475906033259337"><ph name="QUERY" /> සඳහා ප්‍රතිඵල 1ක් දක්වමින්</translation>
 <translation id="932327136139879170">මුල් පිටුව</translation>
 <translation id="944069440740578670">නොකියවූ දැනුම්දීම්</translation>
-<translation id="974545358917229949"><ph name="QUERY" /> සඳහා ප්‍රතිඵල <ph name="RESULT_COUNT" />ක් දක්වමින්</translation>
 </translationbundle>

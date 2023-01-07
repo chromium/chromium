@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview A wrapper for the HTML5 File ProgressEvent objects.
@@ -31,6 +23,7 @@ goog.require('goog.events.Event');
  * @final
  */
 goog.fs.ProgressEvent = function(event, target) {
+  'use strict';
   goog.fs.ProgressEvent.base(this, 'constructor', event.type, target);
 
   /**
@@ -48,6 +41,7 @@ goog.inherits(goog.fs.ProgressEvent, goog.events.Event);
  *     saved is known.
  */
 goog.fs.ProgressEvent.prototype.isLengthComputable = function() {
+  'use strict';
   return this.event_.lengthComputable;
 };
 
@@ -56,6 +50,7 @@ goog.fs.ProgressEvent.prototype.isLengthComputable = function() {
  * @return {number} The number of bytes saved so far.
  */
 goog.fs.ProgressEvent.prototype.getLoaded = function() {
+  'use strict';
   return this.event_.loaded;
 };
 
@@ -64,5 +59,6 @@ goog.fs.ProgressEvent.prototype.getLoaded = function() {
  * @return {number} The total number of bytes in the file being saved.
  */
 goog.fs.ProgressEvent.prototype.getTotal = function() {
+  'use strict';
   return this.event_.total;
 };

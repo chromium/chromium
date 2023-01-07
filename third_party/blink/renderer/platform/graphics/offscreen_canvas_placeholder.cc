@@ -1,14 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/graphics/offscreen_canvas_placeholder.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/resource_id_traits.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -22,13 +23,12 @@ PlaceholderIdMap& placeholderRegistry() {
   return s_placeholderRegistry;
 }
 
-void releaseFrameToDispatcher(
+void ReleaseFrameToDispatcher(
     base::WeakPtr<blink::CanvasResourceDispatcher> dispatcher,
     scoped_refptr<blink::CanvasResource> oldImage,
     viz::ResourceId resourceId) {
-  oldImage = nullptr;  // Needed to unref'ed on the right thread
   if (dispatcher) {
-    dispatcher->ReclaimResource(resourceId);
+    dispatcher->ReclaimResource(resourceId, std::move(oldImage));
   }
 }
 
@@ -42,7 +42,7 @@ void SetSuspendAnimation(
 
 void UpdateDispatcherFilterQuality(
     base::WeakPtr<blink::CanvasResourceDispatcher> dispatcher,
-    SkFilterQuality filter) {
+    cc::PaintFlags::FilterQuality filter) {
   if (dispatcher) {
     dispatcher->SetFilterQuality(filter);
   }
@@ -56,14 +56,53 @@ OffscreenCanvasPlaceholder::~OffscreenCanvasPlaceholder() {
   UnregisterPlaceholderCanvas();
 }
 
+namespace {
+
+// This function gets called when the last outstanding reference to a
+// CanvasResource is released.  This callback is only registered on
+// resources received via SetOffscreenCanvasResource(). When the resource
+// is received, its ref count may be 2 because the CanvasResourceProvider
+// that created it may be holding a cached snapshot that will be released when
+// copy-on-write kicks in. This is okay even if the resource provider is on a
+// different thread because concurrent read access is safe. By the time the
+// next frame is received by OffscreenCanvasPlaceholder, the reference held by
+// CanvasResourceProvider will have been released (otherwise there wouldn't be
+// a new frame). This means that all outstanding references are held on the
+// same thread as the OffscreenCanvasPlaceholder at the time when
+// 'placeholder_frame_' is assigned a new value.  Therefore, when the last
+// reference is released, we need to temporarily keep the object alive and send
+// it back to its thread of origin, where it can be safely destroyed or
+// recycled.
+void FrameLastUnrefCallback(
+    base::WeakPtr<CanvasResourceDispatcher> frame_dispatcher,
+    scoped_refptr<base::SingleThreadTaskRunner> frame_dispatcher_task_runner,
+    viz::ResourceId placeholder_frame_resource_id,
+    scoped_refptr<CanvasResource> placeholder_frame) {
+  DCHECK(placeholder_frame);
+  DCHECK(placeholder_frame->HasOneRef());
+  DCHECK(frame_dispatcher_task_runner);
+  placeholder_frame->Transfer();
+  PostCrossThreadTask(
+      *frame_dispatcher_task_runner, FROM_HERE,
+      CrossThreadBindOnce(ReleaseFrameToDispatcher, frame_dispatcher,
+                          std::move(placeholder_frame),
+                          placeholder_frame_resource_id));
+}
+
+}  // unnamed namespace
+
 void OffscreenCanvasPlaceholder::SetOffscreenCanvasResource(
-    scoped_refptr<CanvasResource> new_frame,
+    scoped_refptr<CanvasResource>&& new_frame,
     viz::ResourceId resource_id) {
   DCHECK(IsOffscreenCanvasRegistered());
   DCHECK(new_frame);
-  ReleaseOffscreenCanvasFrame();
+  // The following implicitly returns placeholder_frame_ to its
+  // CanvasResourceDispatcher, via FrameLastUnrefCallback if it was
+  // the last outstanding reference on this thread.
   placeholder_frame_ = std::move(new_frame);
-  placeholder_frame_resource_id_ = resource_id;
+  placeholder_frame_->SetLastUnrefCallback(
+      base::BindOnce(FrameLastUnrefCallback, frame_dispatcher_,
+                     frame_dispatcher_task_runner_, resource_id));
 
   if (animation_state_ == kShouldSuspendAnimation) {
     bool success = PostSetSuspendAnimationToOffscreenCanvasThread(true);
@@ -86,28 +125,14 @@ void OffscreenCanvasPlaceholder::SetOffscreenCanvasDispatcher(
   // quality before this function. We need to first apply the filter changes to
   // the corresponding offscreen canvas.
   if (filter_quality_) {
-    SkFilterQuality quality = filter_quality_.value();
-    filter_quality_ = base::nullopt;
+    cc::PaintFlags::FilterQuality quality = filter_quality_.value();
+    filter_quality_ = absl::nullopt;
     UpdateOffscreenCanvasFilterQuality(quality);
   }
 }
 
-void OffscreenCanvasPlaceholder::ReleaseOffscreenCanvasFrame() {
-  DCHECK(IsOffscreenCanvasRegistered());
-  if (!placeholder_frame_)
-    return;
-
-  DCHECK(frame_dispatcher_task_runner_);
-  placeholder_frame_->Transfer();
-  PostCrossThreadTask(
-      *frame_dispatcher_task_runner_, FROM_HERE,
-      CrossThreadBindOnce(releaseFrameToDispatcher, frame_dispatcher_,
-                          std::move(placeholder_frame_),
-                          placeholder_frame_resource_id_));
-}
-
 void OffscreenCanvasPlaceholder::UpdateOffscreenCanvasFilterQuality(
-    SkFilterQuality filter_quality) {
+    cc::PaintFlags::FilterQuality filter_quality) {
   DCHECK(IsOffscreenCanvasRegistered());
   if (!frame_dispatcher_task_runner_) {
     filter_quality_ = filter_quality;
@@ -119,7 +144,7 @@ void OffscreenCanvasPlaceholder::UpdateOffscreenCanvasFilterQuality(
 
   filter_quality_ = filter_quality;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      Thread::Current()->GetTaskRunner();
+      Thread::Current()->GetDeprecatedTaskRunner();
   if (task_runner == frame_dispatcher_task_runner_) {
     UpdateDispatcherFilterQuality(frame_dispatcher_, filter_quality);
   } else {

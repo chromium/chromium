@@ -1,0 +1,12 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+  * { height: 739%; }
+  c { text-combine-upright: all; }
+  #sample { writing-mode: vertical-rl; }
+</style>
+<div id="sample"><ruby><input> <c>A<sub></sub>Z</c></ruby></div>
+<script>
+test(() => {}, 'No crash');
+</script>

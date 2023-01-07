@@ -1,0 +1,15 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='%E2%80%A2 Hello<newline>%E2%80%A2 Bye'
+++++++++LIST actions='{DEFAULT}' list_size=2
+++++++++++LIST_ELEMENT actions='{DEFAULT}' list_element_index=1
+++++++++++++LIST_ELEMENT_MARKER label='%E2%80%A2 ' actions='{DEFAULT}'
+++++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++++STATIC_TEXT label='Hello'
+++++++++++++++UNKNOWN label='Hello'
+++++++++++LIST_ELEMENT actions='{DEFAULT}' list_element_index=2
+++++++++++++LIST_ELEMENT_MARKER label='%E2%80%A2 ' actions='{DEFAULT}'
+++++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++++STATIC_TEXT label='Bye'
+++++++++++++++UNKNOWN label='Bye'

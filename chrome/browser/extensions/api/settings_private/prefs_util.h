@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util_enums.h"
@@ -82,6 +82,10 @@ class PrefsUtil {
   // Returns whether |pref_name| corresponds to a pref that is controlled by
   // the primary user, and |profile_| is not the primary profile.
   bool IsPrefPrimaryUserControlled(const std::string& pref_name);
+
+  // Returns whether |pref_name| corresponds to the hotword enabled pref, if the
+  // pref is disabled, and if |profile_| is a child user.
+  bool IsHotwordDisabledForChildUser(const std::string& pref_name);
 #endif
 
   // Returns whether |pref_name| corresponds to a pref that is controlled by
@@ -105,7 +109,7 @@ class PrefsUtil {
   const Extension* GetExtensionControllingPref(
       const api::settings_private::PrefObject& pref_object);
 
-  Profile* profile_;  // weak
+  raw_ptr<Profile> profile_;  // weak
 };
 
 }  // namespace extensions

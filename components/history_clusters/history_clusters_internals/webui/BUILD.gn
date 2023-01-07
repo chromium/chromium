@@ -1,0 +1,32 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+static_library("webui") {
+  sources = [
+    "history_clusters_internals_page_handler_impl.cc",
+    "history_clusters_internals_page_handler_impl.h",
+    "history_clusters_internals_ui.cc",
+    "history_clusters_internals_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+  deps = [
+    "//base",
+    "//components/history/core/browser",
+    "//components/history_clusters/core",
+    "//components/history_clusters/history_clusters_internals/resources:resources",
+    "//components/history_clusters/history_clusters_internals/webui:mojo_bindings",
+    "//third_party/abseil-cpp:absl",
+    "//ui/base",
+    "//ui/webui",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "history_clusters_internals.mojom" ]
+  webui_module_path = "/"
+  public_deps = [ "//mojo/public/mojom/base" ]
+}

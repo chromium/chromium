@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <limits>
+#include <ostream>
 #include <type_traits>
 
 #include "base/check_op.h"
@@ -246,7 +247,7 @@ bool RecordReader::ReadValue(int column_index,
     DCHECK(!header.has_inline_value);
 
     uint8_t* const value_bytes = new uint8_t[size];
-    if (!payload_reader_->ReadPayload(offset, size, value_bytes)) {
+    if (size > 0 && !payload_reader_->ReadPayload(offset, size, value_bytes)) {
       delete[] value_bytes;
       return false;
     }

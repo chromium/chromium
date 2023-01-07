@@ -1,0 +1,216 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package ash.power.ml;
+
+option optimize_for = LITE_RUNTIME;
+
+// This proto will represent one logged event to be used as a training example.
+// It contains both features and labels.
+message UserActivityEvent {
+  message ModelParams {
+    // Event logging will be triggered after inactivity of start_delay_sec.
+    // Value will be in the range of 10sec - 20sec, which may be tuned following
+    // experiments.
+    optional int32 start_delay_sec = 1;
+    // timeout_delay_sec defines extended idle period following screen-off, at
+    // which point we will log event type to be TIMEOUT. Value will be ~10sec or
+    // shorter, which may be tuned following experiments.
+    optional int32 timeout_delay_sec = 2;
+  }
+
+  // Event describes what happens after user is inactive for start_delay_sec. It
+  // will be used as training labels.
+  message Event {
+    // Event type describes whether user reactivates or turns off the system or
+    // remains idle until model times out. This will be used as labels.
+    enum Type {
+      REACTIVATE = 1;
+      OFF = 2;
+      TIMEOUT = 3;
+    }
+    optional Type type = 1;
+
+    // Trigger of the event. They won't be used as labels and will be used for
+    // analysis only.
+    enum Reason {
+      USER_ACTIVITY = 1;
+      VIDEO_ACTIVITY = 2;
+      POWER_CHANGED = 3;
+      LID_CLOSED = 4;
+      SHUTDOWN = 5;
+      SESSION_STOPPED = 6;
+      SCREEN_OFF = 7;
+      SCREEN_LOCK = 8;
+      IDLE_SLEEP = 9;
+      MANUAL_SLEEP = 10;
+    }
+    optional Reason reason = 2;
+
+    // Time taken in seconds from when we start logging the features to the
+    // moment when the event type is known and we finish logging the complete
+    // event.
+    optional int32 log_duration_sec = 3;
+
+    // Whether screen dim/off occurred before final event was logged.
+    // Screen should be on (not dimmed not turned off) when an idle event is
+    // reported because we report idle event after a short period of inactivity,
+    // which isn't long enough for screen to be dimmed. However, in the unlikely
+    // event that screen is dimmed when an idle event is reported,
+    // |screen_dim_occurred| is true only if screen is subsequently turned on
+    // and dimmed again. In other words, if screen remains dimmed,
+    // |screen_dim_occurred| will be false. Similar logic for
+    // |screen_off_occurred|.
+    optional bool screen_dim_occurred = 4;
+    optional bool screen_off_occurred = 5;
+    // Whether screen lock occurred before final event was logged.
+    optional bool screen_lock_occurred = 6;
+  }
+
+  message Features {
+    // Time taken to transition between states.
+    optional int32 on_to_dim_sec = 1;
+    optional int32 dim_to_screen_off_sec = 2;
+
+    // Last activity and last user activity as seconds since midnight in the
+    // local time zone. Last activity may not be user-related, e.g. it may be a
+    // video-playing activity. Below we record both general activity time and
+    // user activity time.
+    optional int32 last_activity_time_sec = 3;
+    optional int32 last_user_activity_time_sec = 4;
+
+    // This must match the week range in base::Time::Exploded.
+    enum DayOfWeek {
+      SUN = 0;
+      MON = 1;
+      TUE = 2;
+      WED = 3;
+      THU = 4;
+      FRI = 5;
+      SAT = 6;
+    }
+    optional DayOfWeek last_activity_day = 5;
+
+    // Time from last mouse/key event to when the logging starts (for training
+    // data generation). This may not be the same as start_delay_sec, depending
+    // on what the last activity is.
+    optional int32 time_since_last_mouse_sec = 6;
+    optional int32 time_since_last_key_sec = 7;
+    optional int32 time_since_last_touch_sec = 21;
+
+    // Duration of activity (user or video) up to last_activity_time_sec. If
+    // activity starts at time t1, then recent_time_active_sec =
+    // |last_activity_time_sec - t1|. We ignore short periods of idle time (i.e.
+    // user is considered active in this idle period), but the short periods
+    // must be shorter than start_delay_sec.
+    // TODO(jiameng): we may consider a different way of measuring continued
+    // activity following experiments.
+    optional int32 recent_time_active_sec = 8;
+
+    // At the moment, we only log events when device is Chromebook, hence we
+    // ignore types such as Chromebase, Chromebit and Chromebox.
+    enum DeviceType {
+      UNKNOWN_DEVICE = 0;
+      CHROMEBOOK = 1;
+    }
+
+    optional DeviceType device_type = 9;
+
+    // Device mode.
+    enum DeviceMode {
+      UNKNOWN_MODE = 0;
+      // Lid is closed.
+      CLOSED_LID = 1;
+      // Lid is open, tablet mode is off or unsupported.
+      CLAMSHELL = 2;
+      // Lid is open, tablet mode is on or no lid at all.
+      TABLET = 3;
+    }
+    optional DeviceMode device_mode = 10;
+
+    optional float battery_percent = 11;
+    optional bool on_battery = 12;
+
+    // Whether user/device is managed.
+    enum ManagementType {
+      UNKNOWN_MANAGEMENT = 0;
+      MANAGED = 1;
+      UNMANAGED = 2;
+    }
+    optional ManagementType user_management = 13;
+    optional ManagementType device_management = 14;
+
+    // Whether network is connected.
+    optional bool is_online = 15;
+
+    // Duration of latest non-stop video playing before the current idle
+    // event. If a video paused/stopped temporarily (i.e. less than
+    // start_delay_sec), we consider it as non-stop.
+    optional int32 video_playing_time_sec = 16;
+    // Duration from the time video ended to the time of idle event.
+    optional int32 time_since_video_ended_sec = 17;
+
+    // Number of key/mouse/touch events in the past hour.
+    optional int32 key_events_in_last_hour = 18;
+    optional int32 mouse_events_in_last_hour = 19;
+    optional int32 touch_events_in_last_hour = 20;
+
+    // Whether screen was dimmed/turned off when an idle event was reported.
+    optional bool screen_dimmed_initially = 22;
+    optional bool screen_off_initially = 23;
+    optional bool screen_locked_initially = 24;
+
+    // Properties associated with the active tab of the visible focused/topmost
+    // browser. Unset if there's no such tab.
+    optional int32 engagement_score = 25;
+    optional bool has_form_entry = 26;
+    optional int64 source_id = 27;
+    // A valid URL could still have empty domain.
+    optional string tab_domain = 28;
+
+    // Number of times user reactivated and thus undimmed the screen before
+    // system was suspended.
+    optional int32 previous_negative_actions_count = 29;
+    // Number of times user remained idle after dim until system was suspended
+    // or closed.
+    optional int32 previous_positive_actions_count = 30;
+  }  // next id = 31
+
+  // All fields except |model_applied| in ModelPrediction are populated by the
+  // model. |model_applied| is populated by the UserActivityManager when
+  // deciding whether to apply the model decision.
+  message ModelPrediction {
+    enum Response {
+      // Dim should go ahead.
+      DIM = 0;
+      // Dim should be deferred.
+      NO_DIM = 1;
+      // Model could fail to make a prediction due to various reasons, e.g. it
+      // could fail to load the preprocessor or process the features for
+      // inference.
+      MODEL_ERROR = 2;
+    }
+
+    // Both |inactivity_score| and |decision_threshold| are in the range of
+    // [0,100]. These values are the quantized versions of actual values used in
+    // making a model prediction, so that they can be logged later. If
+    // |inactivity_score| < |decision_threshold| then dim will be deferred.
+    optional int32 decision_threshold = 1;
+    // How likely user will remain inactive if screen is dimmed.
+    optional int32 inactivity_score = 2;
+    // Whether model decision (regardless if dim is to be deferred) is
+    // taken by powerd. It is false if model response is MODEL_ERROR or if dim
+    // was deferred last time dim imminent occurred.
+    optional bool model_applied = 3;
+    optional Response response = 4;
+  }
+
+  optional ModelParams params = 1;
+  optional Event event = 2;
+  optional Features features = 3;
+  // Unset if model prediction is disabled in an experiment.
+  optional ModelPrediction model_prediction = 4;
+}

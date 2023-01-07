@@ -1,8 +1,15 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//testing/libfuzzer/fuzzer_test.gni")
+
+declare_args() {
+  # Allow individual projects to remove the warning suppression
+  # by overriding this in their .gn file or through custom args.gn
+  # See crbug.com/983223
+  jsoncpp_no_deprecated_declarations = true
+}
 
 config("jsoncpp_config") {
   include_dirs = [ "source/include" ]
@@ -11,7 +18,8 @@ config("jsoncpp_config") {
   # declaration flag.
   # This temporary flag allowing clients to update to the new version, and then
   # update to the new StreamWriter and CharReader classes.
-  if (!is_win || is_clang) {
+  if (jsoncpp_no_deprecated_declarations &&
+      (!is_win || (is_clang && !is_ios))) {
     cflags_cc = [ "-Wno-deprecated-declarations" ]
   }
 }

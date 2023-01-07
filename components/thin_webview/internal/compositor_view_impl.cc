@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "components/thin_webview/internal/jni_headers/CompositorViewImpl_jni.h"
 #include "content/public/browser/android/compositor.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/android/color_helpers.h"
+#include "ui/android/color_utils_android.h"
 #include "ui/android/window_android.h"
 
 using base::android::JavaParamRef;
@@ -56,9 +56,11 @@ CompositorViewImpl::CompositorViewImpl(JNIEnv* env,
       current_surface_format_(kPixelFormatUnknown) {
   compositor_.reset(content::Compositor::Create(this, window_android));
   root_layer_->SetIsDrawable(true);
-  base::Optional<SkColor> background_color =
+  absl::optional<SkColor> background_color =
       ui::JavaColorToOptionalSkColor(java_background_color);
-  root_layer_->SetBackgroundColor(background_color.value());
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  root_layer_->SetBackgroundColor(
+      SkColor4f::FromColor(background_color.value()));
 }
 
 CompositorViewImpl::~CompositorViewImpl() = default;

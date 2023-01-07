@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,14 +57,16 @@ class ServiceImpl : public Service {
  public:
   explicit ServiceImpl(mojo::PendingReceiver<mojom::Service> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  ServiceImpl(const ServiceImpl&) = delete;
+  ServiceImpl& operator=(const ServiceImpl&) = delete;
+
   ~ServiceImpl() override = default;
 
   Connector* connector() { return receiver_.GetConnector(); }
 
  private:
   ServiceReceiver receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceImpl);
 };
 
 void SetFlagAndRunClosure(bool* flag, base::OnceClosure closure) {
@@ -75,7 +77,7 @@ void SetFlagAndRunClosure(bool* flag, base::OnceClosure closure) {
 // Uses BackgroundServiceManager to start the service manager in the background
 // and connects to background_service_manager_test_service, verifying we can
 // send a message to the service.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/589784): This test is disabled, as it fails
 // on the Android GN bot.
 #define MAYBE_Basic DISABLED_Basic

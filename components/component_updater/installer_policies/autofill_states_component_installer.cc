@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/component_updater/installer_policies/autofill_states_component_installer.h"
 
+#include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
-#include "base/task/post_task.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/component_updater/component_updater_service.h"
@@ -52,7 +52,7 @@ AutofillStatesComponentInstallerPolicy::
 
 bool AutofillStatesComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool AutofillStatesComponentInstallerPolicy::RequiresNetworkEncryption() const {
@@ -61,7 +61,7 @@ bool AutofillStatesComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 AutofillStatesComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(update_client::InstallError::NONE);
 }
@@ -71,7 +71,7 @@ void AutofillStatesComponentInstallerPolicy::OnCustomUninstall() {}
 void AutofillStatesComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   DVLOG(1) << "Component ready, version " << version.GetString() << " in "
            << install_dir.value();
 
@@ -82,7 +82,7 @@ void AutofillStatesComponentInstallerPolicy::ComponentReady(
 
 // Called during startup and installation before ComponentReady().
 bool AutofillStatesComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
   // Verify that state files are present.
   return base::ranges::count(

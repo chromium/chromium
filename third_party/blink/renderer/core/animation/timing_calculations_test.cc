@@ -36,72 +36,87 @@
 namespace blink {
 
 TEST(AnimationTimingCalculationsTest, ActiveTime) {
-  Timing timing;
+  Timing::NormalizedTiming normalized_timing;
 
   // calculateActiveTime(
   //     activeDuration, fillMode, localTime, parentPhase, phase, timing)
 
   // Before Phase
-  timing.start_delay = 10;
-  EXPECT_FALSE(CalculateActiveTime(20, Timing::FillMode::FORWARDS, 0,
-                                   Timing::kPhaseBefore, timing));
-  EXPECT_FALSE(CalculateActiveTime(20, Timing::FillMode::NONE, 0,
-                                   Timing::kPhaseBefore, timing));
+  normalized_timing.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(10);
+  normalized_timing.active_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(20);
+  EXPECT_FALSE(CalculateActiveTime(normalized_timing,
+                                   Timing::FillMode::FORWARDS,
+                                   AnimationTimeDelta(), Timing::kPhaseBefore));
+  EXPECT_FALSE(CalculateActiveTime(normalized_timing, Timing::FillMode::NONE,
+                                   AnimationTimeDelta(), Timing::kPhaseBefore));
   EXPECT_EQ(AnimationTimeDelta(),
-            CalculateActiveTime(20, Timing::FillMode::BACKWARDS, 0,
-                                Timing::kPhaseBefore, timing));
+            CalculateActiveTime(normalized_timing, Timing::FillMode::BACKWARDS,
+                                AnimationTimeDelta(), Timing::kPhaseBefore));
   EXPECT_EQ(AnimationTimeDelta(),
-            CalculateActiveTime(20, Timing::FillMode::BOTH, 0,
-                                Timing::kPhaseBefore, timing));
-  timing.start_delay = -10;
-  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(5),
-            CalculateActiveTime(20, Timing::FillMode::BACKWARDS, -5,
-                                Timing::kPhaseBefore, timing));
+            CalculateActiveTime(normalized_timing, Timing::FillMode::BOTH,
+                                AnimationTimeDelta(), Timing::kPhaseBefore));
+  normalized_timing.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(-10);
+  EXPECT_EQ(ANIMATION_TIME_DELTA_FROM_SECONDS(5),
+            CalculateActiveTime(normalized_timing, Timing::FillMode::BACKWARDS,
+                                ANIMATION_TIME_DELTA_FROM_SECONDS(-5),
+                                Timing::kPhaseBefore));
 
   // Active Phase
-  timing.start_delay = 10;
-  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(5),
-            CalculateActiveTime(20, Timing::FillMode::FORWARDS, 15,
-                                Timing::kPhaseActive, timing));
+  normalized_timing.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(10);
+  EXPECT_EQ(ANIMATION_TIME_DELTA_FROM_SECONDS(5),
+            CalculateActiveTime(normalized_timing, Timing::FillMode::FORWARDS,
+                                ANIMATION_TIME_DELTA_FROM_SECONDS(15),
+                                Timing::kPhaseActive));
 
   // After Phase
-  timing.start_delay = 10;
-  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(21),
-            CalculateActiveTime(21, Timing::FillMode::FORWARDS, 45,
-                                Timing::kPhaseAfter, timing));
-  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(21),
-            CalculateActiveTime(21, Timing::FillMode::BOTH, 45,
-                                Timing::kPhaseAfter, timing));
-  EXPECT_FALSE(CalculateActiveTime(21, Timing::FillMode::BACKWARDS, 45,
-                                   Timing::kPhaseAfter, timing));
-  EXPECT_FALSE(CalculateActiveTime(21, Timing::FillMode::NONE, 45,
-                                   Timing::kPhaseAfter, timing));
+  normalized_timing.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(10);
+  normalized_timing.active_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(21);
+  EXPECT_EQ(ANIMATION_TIME_DELTA_FROM_SECONDS(21),
+            CalculateActiveTime(normalized_timing, Timing::FillMode::FORWARDS,
+                                ANIMATION_TIME_DELTA_FROM_SECONDS(45),
+                                Timing::kPhaseAfter));
+  EXPECT_EQ(ANIMATION_TIME_DELTA_FROM_SECONDS(21),
+            CalculateActiveTime(normalized_timing, Timing::FillMode::BOTH,
+                                ANIMATION_TIME_DELTA_FROM_SECONDS(45),
+                                Timing::kPhaseAfter));
+  EXPECT_FALSE(CalculateActiveTime(
+      normalized_timing, Timing::FillMode::BACKWARDS,
+      ANIMATION_TIME_DELTA_FROM_SECONDS(45), Timing::kPhaseAfter));
+  EXPECT_FALSE(CalculateActiveTime(normalized_timing, Timing::FillMode::NONE,
+                                   ANIMATION_TIME_DELTA_FROM_SECONDS(45),
+                                   Timing::kPhaseAfter));
 
   // None
-  EXPECT_FALSE(CalculateActiveTime(32, Timing::FillMode::NONE, base::nullopt,
-                                   Timing::kPhaseNone, timing));
+  normalized_timing.active_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(32);
+  EXPECT_FALSE(CalculateActiveTime(normalized_timing, Timing::FillMode::NONE,
+                                   absl::nullopt, Timing::kPhaseNone));
 }
 
 TEST(AnimationTimingCalculationsTest, OffsetActiveTime) {
   // if the active time is null
-  EXPECT_FALSE(CalculateOffsetActiveTime(4, base::nullopt, 5));
+  EXPECT_FALSE(CalculateOffsetActiveTime(ANIMATION_TIME_DELTA_FROM_SECONDS(4),
+                                         absl::nullopt,
+                                         ANIMATION_TIME_DELTA_FROM_SECONDS(5)));
 
   // normal case
-  EXPECT_EQ(
-      AnimationTimeDelta::FromSecondsD(15),
-      CalculateOffsetActiveTime(40, AnimationTimeDelta::FromSecondsD(10), 5));
+  EXPECT_EQ(ANIMATION_TIME_DELTA_FROM_SECONDS(15),
+            CalculateOffsetActiveTime(ANIMATION_TIME_DELTA_FROM_SECONDS(40),
+                                      ANIMATION_TIME_DELTA_FROM_SECONDS(10),
+                                      ANIMATION_TIME_DELTA_FROM_SECONDS(5)));
 
   // infinite activeTime
-  EXPECT_TRUE(CalculateOffsetActiveTime(std::numeric_limits<double>::infinity(),
-                                        AnimationTimeDelta::Max(), 0)
+  EXPECT_TRUE(CalculateOffsetActiveTime(AnimationTimeDelta::Max(),
+                                        AnimationTimeDelta::Max(),
+                                        AnimationTimeDelta())
                   ->is_max());
 
   // Edge case for active_time being within epsilon of active_duration.
   // https://crbug.com/962138
-  auto active_time = AnimationTimeDelta::FromSecondsD(1.3435713716800004);
-  const double active_duration = 1.3435713716800002;
-  EXPECT_EQ(active_time,
-            CalculateOffsetActiveTime(active_duration, active_time, 0));
+  auto active_time = ANIMATION_TIME_DELTA_FROM_SECONDS(1.3435713716800004);
+  const auto active_duration =
+      ANIMATION_TIME_DELTA_FROM_SECONDS(1.3435713716800002);
+  EXPECT_EQ(active_time, CalculateOffsetActiveTime(active_duration, active_time,
+                                                   AnimationTimeDelta()));
 }
 
 TEST(AnimationTimingCalculationsTest, IterationTime) {
@@ -112,94 +127,110 @@ TEST(AnimationTimingCalculationsTest, IterationTime) {
   //     phase, timing)
 
   // if the scaled active time is null
-  EXPECT_FALSE(CalculateIterationTime(1, 1, base::nullopt, 1,
-                                      Timing::kPhaseActive, timing));
+  EXPECT_FALSE(CalculateIterationTime(
+      ANIMATION_TIME_DELTA_FROM_SECONDS(1),
+      ANIMATION_TIME_DELTA_FROM_SECONDS(1), absl::nullopt,
+      ANIMATION_TIME_DELTA_FROM_SECONDS(1), Timing::kPhaseActive, timing));
 
   // if (complex-conditions)...
-  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(12),
-            CalculateIterationTime(12, 12, AnimationTimeDelta::FromSecondsD(12),
-                                   0, Timing::kPhaseActive, timing));
+  EXPECT_EQ(ANIMATION_TIME_DELTA_FROM_SECONDS(12),
+            CalculateIterationTime(ANIMATION_TIME_DELTA_FROM_SECONDS(12),
+                                   ANIMATION_TIME_DELTA_FROM_SECONDS(12),
+                                   ANIMATION_TIME_DELTA_FROM_SECONDS(12),
+                                   AnimationTimeDelta(), Timing::kPhaseActive,
+                                   timing));
 
   // otherwise
   timing.iteration_count = 10;
-  EXPECT_EQ(
-      AnimationTimeDelta::FromSecondsD(5),
-      CalculateIterationTime(10, 100, AnimationTimeDelta::FromSecondsD(25), 4,
-                             Timing::kPhaseActive, timing));
-  EXPECT_EQ(
-      AnimationTimeDelta::FromSecondsD(7),
-      CalculateIterationTime(11, 110, AnimationTimeDelta::FromSecondsD(29), 1,
-                             Timing::kPhaseActive, timing));
+  EXPECT_EQ(ANIMATION_TIME_DELTA_FROM_SECONDS(5),
+            CalculateIterationTime(ANIMATION_TIME_DELTA_FROM_SECONDS(10),
+                                   ANIMATION_TIME_DELTA_FROM_SECONDS(100),
+                                   ANIMATION_TIME_DELTA_FROM_SECONDS(25),
+                                   ANIMATION_TIME_DELTA_FROM_SECONDS(4),
+                                   Timing::kPhaseActive, timing));
+  EXPECT_EQ(ANIMATION_TIME_DELTA_FROM_SECONDS(7),
+            CalculateIterationTime(ANIMATION_TIME_DELTA_FROM_SECONDS(11),
+                                   ANIMATION_TIME_DELTA_FROM_SECONDS(110),
+                                   ANIMATION_TIME_DELTA_FROM_SECONDS(29),
+                                   ANIMATION_TIME_DELTA_FROM_SECONDS(1),
+                                   Timing::kPhaseActive, timing));
   timing.iteration_start = 1.1;
-  EXPECT_EQ(
-      AnimationTimeDelta::FromSecondsD(8),
-      CalculateIterationTime(12, 120, AnimationTimeDelta::FromSecondsD(20), 7,
-                             Timing::kPhaseActive, timing));
+  EXPECT_EQ(ANIMATION_TIME_DELTA_FROM_SECONDS(8),
+            CalculateIterationTime(ANIMATION_TIME_DELTA_FROM_SECONDS(12),
+                                   ANIMATION_TIME_DELTA_FROM_SECONDS(120),
+                                   ANIMATION_TIME_DELTA_FROM_SECONDS(20),
+                                   ANIMATION_TIME_DELTA_FROM_SECONDS(7),
+                                   Timing::kPhaseActive, timing));
 
   // Edge case for offset_active_time being within epsilon of (active_duration
   // + start_offset). https://crbug.com/962138
   timing.iteration_count = 1;
-  const double offset_active_time = 1.3435713716800004;
-  const double iteration_duration = 1.3435713716800002;
-  const double active_duration = 1.3435713716800002;
+  const AnimationTimeDelta offset_active_time =
+      ANIMATION_TIME_DELTA_FROM_SECONDS(1.3435713716800004);
+  const AnimationTimeDelta iteration_duration =
+      ANIMATION_TIME_DELTA_FROM_SECONDS(1.3435713716800002);
+  const AnimationTimeDelta active_duration =
+      ANIMATION_TIME_DELTA_FROM_SECONDS(1.3435713716800002);
   EXPECT_NEAR(2.22045e-16,
-              CalculateIterationTime(
-                  iteration_duration, active_duration,
-                  AnimationTimeDelta::FromSecondsD(offset_active_time), 0,
-                  Timing::kPhaseActive, timing)
+              CalculateIterationTime(iteration_duration, active_duration,
+                                     offset_active_time, AnimationTimeDelta(),
+                                     Timing::kPhaseActive, timing)
                   ->InSecondsF(),
               std::numeric_limits<float>::epsilon());
 }
 
 TEST(AnimationTimingCalculationsTest, OverallProgress) {
   // If the active time is null.
-  EXPECT_FALSE(CalculateOverallProgress(Timing::kPhaseAfter,
-                                        /*active_time=*/base::nullopt,
-                                        /*iteration_duration=*/1.0,
-                                        /*iteration_count=*/1.0,
-                                        /*iteration_start=*/1.0));
+  EXPECT_FALSE(CalculateOverallProgress(
+      Timing::kPhaseAfter,
+      /*active_time=*/absl::nullopt,
+      /*iteration_duration=*/ANIMATION_TIME_DELTA_FROM_SECONDS(1.0),
+      /*iteration_count=*/1.0,
+      /*iteration_start=*/1.0));
 
   // If iteration duration is zero, calculate progress based on iteration count.
   EXPECT_EQ(3, CalculateOverallProgress(
                    Timing::kPhaseActive,
-                   /*active_time=*/AnimationTimeDelta::FromSecondsD(3.0),
-                   /*iteration_duration=*/0.0,
+                   /*active_time=*/ANIMATION_TIME_DELTA_FROM_SECONDS(3.0),
+                   /*iteration_duration=*/AnimationTimeDelta(),
                    /*iteration_count=*/3.0,
                    /*iteration_start=*/0.0));
   // ...unless in before phase, in which case progress is zero.
   EXPECT_EQ(0, CalculateOverallProgress(
                    Timing::kPhaseBefore,
-                   /*active_time=*/AnimationTimeDelta::FromSecondsD(3.0),
-                   /*iteration_duration=*/0.0,
+                   /*active_time=*/ANIMATION_TIME_DELTA_FROM_SECONDS(3.0),
+                   /*iteration_duration=*/AnimationTimeDelta(),
                    /*iteration_count=*/3.0,
                    /*iteration_start=*/0.0));
   // Edge case for duration being within Epsilon of zero.
   // crbug.com/954558
-  EXPECT_EQ(1, CalculateOverallProgress(
-                   Timing::kPhaseActive,
-                   /*active_time=*/AnimationTimeDelta::FromSecondsD(3.0),
-                   /*iteration_duration=*/1e-18,
-                   /*iteration_count=*/1.0,
-                   /*iteration_start=*/0.0));
+  EXPECT_EQ(1,
+            CalculateOverallProgress(
+                Timing::kPhaseActive,
+                /*active_time=*/ANIMATION_TIME_DELTA_FROM_SECONDS(3.0),
+                /*iteration_duration=*/ANIMATION_TIME_DELTA_FROM_SECONDS(1e-18),
+                /*iteration_count=*/1.0,
+                /*iteration_start=*/0.0));
 
   // Otherwise.
-  EXPECT_EQ(3.0, CalculateOverallProgress(
-                     Timing::kPhaseAfter,
-                     /*active_time=*/AnimationTimeDelta::FromSecondsD(2.5),
-                     /*iteration_duration=*/1.0,
-                     /*iteration_count=*/0.0,
-                     /*iteration_start=*/0.5));
+  EXPECT_EQ(3.0,
+            CalculateOverallProgress(
+                Timing::kPhaseAfter,
+                /*active_time=*/ANIMATION_TIME_DELTA_FROM_SECONDS(2.5),
+                /*iteration_duration=*/ANIMATION_TIME_DELTA_FROM_SECONDS(1.0),
+                /*iteration_count=*/0.0,
+                /*iteration_start=*/0.5));
 }
 
 TEST(AnimationTimingCalculationsTest, CalculateSimpleIterationProgress) {
   // If the overall progress is null.
-  EXPECT_FALSE(
-      CalculateSimpleIterationProgress(Timing::kPhaseAfter,
-                                       /*overall_progress=*/base::nullopt,
-                                       /*iteration_start=*/1.0,
-                                       /*active_time=*/base::nullopt,
-                                       /*active_duration=*/1.0,
-                                       /*iteration_count=*/1.0));
+  EXPECT_FALSE(CalculateSimpleIterationProgress(
+      Timing::kPhaseAfter,
+      /*overall_progress=*/absl::nullopt,
+      /*iteration_start=*/1.0,
+      /*active_time=*/absl::nullopt,
+      /*active_duration=*/ANIMATION_TIME_DELTA_FROM_SECONDS(1.0),
+      /*iteration_count=*/1.0));
 
   // If the overall progress is infinite.
   const double inf = std::numeric_limits<double>::infinity();
@@ -208,7 +239,7 @@ TEST(AnimationTimingCalculationsTest, CalculateSimpleIterationProgress) {
                      /*overall_progress=*/inf,
                      /*iteration_start=*/1.5,
                      /*active_time=*/AnimationTimeDelta(),
-                     /*active_duration=*/0.0,
+                     /*active_duration=*/AnimationTimeDelta(),
                      /*iteration_count=*/inf));
 
   // Precisely on an iteration boundary.
@@ -216,8 +247,8 @@ TEST(AnimationTimingCalculationsTest, CalculateSimpleIterationProgress) {
                      Timing::kPhaseAfter,
                      /*overall_progress=*/3.0,
                      /*iteration_start=*/0.0,
-                     /*active_time=*/AnimationTimeDelta::FromSecondsD(3.0),
-                     /*active_duration=*/3.0,
+                     /*active_time=*/ANIMATION_TIME_DELTA_FROM_SECONDS(3.0),
+                     /*active_duration=*/ANIMATION_TIME_DELTA_FROM_SECONDS(3.0),
                      /*iteration_count=*/3.0));
 
   // Otherwise.
@@ -225,24 +256,24 @@ TEST(AnimationTimingCalculationsTest, CalculateSimpleIterationProgress) {
                      Timing::kPhaseAfter,
                      /*overall_progress=*/2.5,
                      /*iteration_start=*/0.0,
-                     /*active_time=*/AnimationTimeDelta::FromSecondsD(2.5),
-                     /*active_duration=*/0.0,
+                     /*active_time=*/ANIMATION_TIME_DELTA_FROM_SECONDS(2.5),
+                     /*active_duration=*/AnimationTimeDelta(),
                      /*iteration_count=*/0.0));
 }
 
 TEST(AnimationTimingCalculationsTest, CurrentIteration) {
   // If the active time is null.
   EXPECT_FALSE(CalculateCurrentIteration(Timing::kPhaseAfter,
-                                         /*active_time=*/base::nullopt,
+                                         /*active_time=*/absl::nullopt,
                                          /*iteration_count=*/1.0,
-                                         /*overall_progress=*/base::nullopt,
+                                         /*overall_progress=*/absl::nullopt,
                                          /*simple_iteration_progress=*/0));
 
   // If the iteration count is infinite.
   const double inf = std::numeric_limits<double>::infinity();
   EXPECT_EQ(inf, CalculateCurrentIteration(
                      Timing::kPhaseAfter,
-                     /*active_time=*/AnimationTimeDelta::FromSecondsD(1.0),
+                     /*active_time=*/ANIMATION_TIME_DELTA_FROM_SECONDS(1.0),
                      /*iteration_count=*/inf,
                      /*overall_progress=*/inf,
                      /*simple_iteration_progress=*/0.0));
@@ -251,7 +282,7 @@ TEST(AnimationTimingCalculationsTest, CurrentIteration) {
   // iteration boundary.
   EXPECT_EQ(2, CalculateCurrentIteration(
                    Timing::kPhaseAfter,
-                   /*active_time=*/AnimationTimeDelta::FromSecondsD(3.0),
+                   /*active_time=*/ANIMATION_TIME_DELTA_FROM_SECONDS(3.0),
                    /*iteration_count=*/3.0,
                    /*overall_progress=*/3.0,
                    /*simple_iteration_progress=*/1.0));
@@ -267,7 +298,7 @@ TEST(AnimationTimingCalculationsTest, CurrentIteration) {
   // Otherwise.
   EXPECT_EQ(2, CalculateCurrentIteration(
                    Timing::kPhaseAfter,
-                   /*active_time=*/AnimationTimeDelta::FromSecondsD(2.5),
+                   /*active_time=*/ANIMATION_TIME_DELTA_FROM_SECONDS(2.5),
                    /*iteration_count=*/0.0,
                    /*overall_progress=*/2.5,
                    /*simple_iteration_progress=*/0.5));
@@ -300,7 +331,7 @@ TEST(AnimationTimingCalculationsTest, CalculateDirectedProgress) {
   //                           direction);
 
   // if the simple iteration progress is null
-  EXPECT_FALSE(CalculateDirectedProgress(base::nullopt, base::nullopt,
+  EXPECT_FALSE(CalculateDirectedProgress(absl::nullopt, absl::nullopt,
                                          Timing::PlaybackDirection::NORMAL));
 
   // forwards
@@ -349,7 +380,7 @@ TEST(AnimationTimingCalculationsTest, TransformedProgress) {
       StepsTimingFunction::Create(4, StepsTimingFunction::StepPosition::END);
 
   // directed_progress is null.
-  EXPECT_FALSE(CalculateTransformedProgress(Timing::kPhaseActive, base::nullopt,
+  EXPECT_FALSE(CalculateTransformedProgress(Timing::kPhaseActive, absl::nullopt,
                                             true, timing_function));
 
   // At step boundaries.

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,20 @@
 #include <utility>
 #include <vector>
 
+#include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
-#include "ash/app_list/test/app_list_test_view_delegate.h"
-#include "ash/app_list/test/test_search_result.h"
+#include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
 #include "ash/app_list/views/search_result_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/views/test/views_test_base.h"
@@ -31,24 +32,33 @@ namespace test {
 class SearchResultPageViewTest : public views::ViewsTestBase {
  public:
   SearchResultPageViewTest() = default;
+
+  SearchResultPageViewTest(const SearchResultPageViewTest&) = delete;
+  SearchResultPageViewTest& operator=(const SearchResultPageViewTest&) = delete;
+
   ~SearchResultPageViewTest() override = default;
 
   // Overridden from testing::Test:
   void SetUp() override {
+    // Search result page view unittests are not relevant when productivity
+    // launcher is enabled.
+    scoped_feature_list_.InitWithFeatureState(features::kProductivityLauncher,
+                                              false);
     views::ViewsTestBase::SetUp();
 
     // Setting up views.
     delegate_ = std::make_unique<AppListTestViewDelegate>();
     app_list_view_ = new AppListView(delegate_.get());
     app_list_view_->InitView(GetContext());
-    app_list_view_->Show(AppListViewState::kPeeking, false /*is_side_shelf*/);
+    app_list_view_->Show(AppListViewState::kFullscreenAllApps,
+                         false /*is_side_shelf*/);
 
     ContentsView* contents_view =
         app_list_view_->app_list_main_view()->contents_view();
-    view_ = contents_view->search_results_page_view();
-    tile_list_view_ = contents_view->search_results_page_view()
+    view_ = contents_view->search_result_page_view();
+    tile_list_view_ = contents_view->search_result_page_view()
                           ->GetSearchResultTileItemListViewForTest();
-    list_view_ = contents_view->search_results_page_view()
+    list_view_ = contents_view->search_result_page_view()
                      ->GetSearchResultListViewForTest();
   }
   void TearDown() override {
@@ -65,7 +75,7 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
   SearchResultListView* list_view() const { return list_view_; }
 
   SearchModel::SearchResults* GetResults() const {
-    return delegate_->GetSearchModel()->results();
+    return AppListModelProvider::Get()->search_model()->results();
   }
 
  private:
@@ -76,8 +86,7 @@ class SearchResultPageViewTest : public views::ViewsTestBase {
       nullptr;                                 // Owned by views hierarchy.
   SearchResultListView* list_view_ = nullptr;  // Owned by views hierarchy.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchResultPageViewTest);
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SearchResultPageViewTest, ResultsSorted) {

@@ -1,22 +1,26 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_COMMAND_BUFFER_SERVICE_DAWN_PLATFORM_H_
 #define GPU_COMMAND_BUFFER_SERVICE_DAWN_PLATFORM_H_
 
-#include <dawn_platform/DawnPlatform.h>
+#include <memory>
 
-namespace gpu {
-namespace webgpu {
+#include <dawn/platform/DawnPlatform.h>
 
-class DawnPlatform : public dawn_platform::Platform {
+#include "gpu/command_buffer/service/dawn_caching_interface.h"
+
+namespace gpu::webgpu {
+
+class DawnPlatform : public dawn::platform::Platform {
  public:
-  DawnPlatform();
+  explicit DawnPlatform(
+      std::unique_ptr<DawnCachingInterface> dawn_caching_interface = nullptr);
   ~DawnPlatform() override;
 
   const unsigned char* GetTraceCategoryEnabledFlag(
-      dawn_platform::TraceCategory category) override;
+      dawn::platform::TraceCategory category) override;
 
   double MonotonicallyIncreasingTime() override;
 
@@ -30,9 +34,15 @@ class DawnPlatform : public dawn_platform::Platform {
                          const unsigned char* arg_types,
                          const uint64_t* arg_values,
                          unsigned char flags) override;
+
+  dawn::platform::CachingInterface* GetCachingInterface() override;
+
+  std::unique_ptr<dawn::platform::WorkerTaskPool> CreateWorkerTaskPool()
+      override;
+
+  std::unique_ptr<DawnCachingInterface> dawn_caching_interface_ = nullptr;
 };
 
-}  // namespace webgpu
-}  // namespace gpu
+}  // namespace gpu::webgpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_DAWN_PLATFORM_H_

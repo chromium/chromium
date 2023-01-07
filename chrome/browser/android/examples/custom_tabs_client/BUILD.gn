@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,10 +6,17 @@ import("//build/config/android/rules.gni")
 
 android_resources("chrome_tabs_client_example_apk_resources") {
   sources = [
+    "src/res/anim/slide_in_bottom.xml",
     "src/res/anim/slide_in_left.xml",
     "src/res/anim/slide_in_right.xml",
+    "src/res/anim/slide_in_up.xml",
+    "src/res/anim/slide_out_bottom.xml",
     "src/res/anim/slide_out_left.xml",
     "src/res/anim/slide_out_right.xml",
+    "src/res/anim/slide_out_up.xml",
+    "src/res/drawable-hdpi/baseline_check_white.png",
+    "src/res/drawable-hdpi/baseline_close_white.png",
+    "src/res/drawable-hdpi/baseline_send_white.png",
     "src/res/drawable-hdpi/cover.jpg",
     "src/res/drawable-hdpi/ic_arrow_back.png",
     "src/res/drawable-hdpi/ic_launcher.png",
@@ -17,6 +24,9 @@ android_resources("chrome_tabs_client_example_apk_resources") {
     "src/res/drawable-hdpi/ic_play.png",
     "src/res/drawable-hdpi/ic_share.png",
     "src/res/drawable-hdpi/ic_stop.png",
+    "src/res/drawable-mdpi/baseline_check_white.png",
+    "src/res/drawable-mdpi/baseline_close_white.png",
+    "src/res/drawable-mdpi/baseline_send_white.png",
     "src/res/drawable-mdpi/cover.jpg",
     "src/res/drawable-mdpi/ic_arrow_back.png",
     "src/res/drawable-mdpi/ic_launcher.png",
@@ -24,6 +34,9 @@ android_resources("chrome_tabs_client_example_apk_resources") {
     "src/res/drawable-mdpi/ic_play.png",
     "src/res/drawable-mdpi/ic_share.png",
     "src/res/drawable-mdpi/ic_stop.png",
+    "src/res/drawable-xhdpi/baseline_check_white.png",
+    "src/res/drawable-xhdpi/baseline_close_white.png",
+    "src/res/drawable-xhdpi/baseline_send_white.png",
     "src/res/drawable-xhdpi/cover.jpg",
     "src/res/drawable-xhdpi/ic_arrow_back.png",
     "src/res/drawable-xhdpi/ic_launcher.png",
@@ -31,6 +44,9 @@ android_resources("chrome_tabs_client_example_apk_resources") {
     "src/res/drawable-xhdpi/ic_play.png",
     "src/res/drawable-xhdpi/ic_share.png",
     "src/res/drawable-xhdpi/ic_stop.png",
+    "src/res/drawable-xxhdpi/baseline_check_white.png",
+    "src/res/drawable-xxhdpi/baseline_close_white.png",
+    "src/res/drawable-xxhdpi/baseline_send_white.png",
     "src/res/drawable-xxhdpi/cover.jpg",
     "src/res/drawable-xxhdpi/ic_arrow_back.png",
     "src/res/drawable-xxhdpi/ic_launcher.png",
@@ -38,6 +54,9 @@ android_resources("chrome_tabs_client_example_apk_resources") {
     "src/res/drawable-xxhdpi/ic_play.png",
     "src/res/drawable-xxhdpi/ic_share.png",
     "src/res/drawable-xxhdpi/ic_stop.png",
+    "src/res/drawable-xxxhdpi/baseline_check_white.png",
+    "src/res/drawable-xxxhdpi/baseline_close_white.png",
+    "src/res/drawable-xxxhdpi/baseline_send_white.png",
     "src/res/drawable-xxxhdpi/ic_arrow_back.png",
     "src/res/drawable-xxxhdpi/ic_launcher.png",
     "src/res/drawable-xxxhdpi/ic_share.png",
@@ -47,7 +66,7 @@ android_resources("chrome_tabs_client_example_apk_resources") {
     "src/res/values/strings.xml",
   ]
   android_manifest = "src/AndroidManifest.xml"
-  deps = [ "//third_party/android_deps:android_support_v7_appcompat_java" ]
+  deps = [ "//third_party/android_deps:material_design_java" ]
 }
 
 android_apk("custom_tabs_client_example_apk") {
@@ -63,15 +82,15 @@ android_apk("custom_tabs_client_example_apk") {
   ]
 
   android_manifest = "src/AndroidManifest.xml"
-  target_sdk_version = 21
+  target_sdk_version = android_sdk_version
   apk_name = "CustomTabsClientExample"
 
   deps = [
     ":chrome_tabs_client_example_apk_resources",
-    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:com_android_support_support_annotations_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_browser_browser_java",
-    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
   ]
 }

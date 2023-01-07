@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <memory>
 #include <string>
-
-#include "base/macros.h"
 
 namespace extensions {
 
@@ -27,6 +25,9 @@ class SessionId {
   // |session_tag| session.
   SessionId(const std::string& session_tag, int id);
 
+  SessionId(const SessionId&) = delete;
+  SessionId& operator=(const SessionId&) = delete;
+
   // Returns true if the SessionId represents a foreign session.
   bool IsForeign() const;
 
@@ -44,8 +45,6 @@ class SessionId {
 
   // ID corresponding to a window or tab object.
   int id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionId);
 };
 
 }  // namespace extensions

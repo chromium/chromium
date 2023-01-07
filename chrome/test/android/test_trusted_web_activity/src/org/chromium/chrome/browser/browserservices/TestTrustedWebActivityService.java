@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,6 +63,13 @@ public class TestTrustedWebActivityService extends TrustedWebActivityService {
             Notification notification, String channelName) {
         MessengerService.sMessageHandler
                 .recordNotifyNotification(platformTag, platformId, channelName);
+        return true;
+    }
+
+    @Override
+    public boolean onAreNotificationsEnabled(@NonNull String channelName) {
+        // Pretend notifications are enabled, even on Android T where they'll be disabled by
+        // default.
         return true;
     }
 

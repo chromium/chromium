@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,12 @@
 #include "media/audio/audio_manager.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 
 namespace content {
 
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 // Renderer crashes under Android ASAN: https://crbug.com/408496.
 #define MAYBE_WebRtcDataBrowserTest DISABLED_WebRtcDataBrowserTest
 #else
@@ -47,10 +48,6 @@ class MAYBE_WebRtcDataBrowserTest : public WebRtcContentBrowserTestBase {
     MakeTypicalCall(javascript, "/media/peerconnection-call-data.html");
   }
 };
-
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest, CanSetupLegacyCall) {
-  MakeTypicalPeerConnectionCall("callWithLegacySdp();");
-}
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest, CallWithSctpDataOnly) {
   MakeTypicalPeerConnectionCall("callWithSctpDataOnly();");

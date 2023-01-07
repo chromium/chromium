@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,10 +22,9 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -59,9 +58,10 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/compression_utils.h"
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -76,7 +76,7 @@
 
 namespace webrtc_event_logging {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define NumberToStringType base::NumberToWString
 #else
 #define NumberToStringType base::NumberToString
@@ -96,15 +96,15 @@ using Compression = WebRtcEventLogCompression;
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
-auto SaveFilePathTo(base::Optional<base::FilePath>* output) {
+auto SaveFilePathTo(absl::optional<base::FilePath>* output) {
   return [output](PeerConnectionKey ignored_key, base::FilePath file_path,
                   int output_period_ms = 0) { *output = file_path; };
 }
 
-auto SaveKeyAndFilePathTo(base::Optional<PeerConnectionKey>* key_output,
-                          base::Optional<base::FilePath>* file_path_output) {
+auto SaveKeyAndFilePathTo(absl::optional<PeerConnectionKey>* key_output,
+                          absl::optional<base::FilePath>* file_path_output) {
   return [key_output, file_path_output](PeerConnectionKey key,
                                         base::FilePath file_path) {
     *key_output = key;
@@ -156,7 +156,7 @@ bool CreateRemoteBoundLogFile(const base::FilePath& dir,
           .AddExtension(extension);
 
   constexpr int file_flags = base::File::FLAG_CREATE | base::File::FLAG_WRITE |
-                             base::File::FLAG_EXCLUSIVE_WRITE;
+                             base::File::FLAG_WIN_EXCLUSIVE_WRITE;
   file->Initialize(*file_path, file_flags);
   if (!file->IsValid() || !file->created()) {
     return false;
@@ -205,7 +205,7 @@ class NullWebRtcEventLogUploader : public WebRtcEventLogUploader {
   class Factory : public WebRtcEventLogUploader::Factory {
    public:
     Factory(bool cancellation_expected,
-            base::Optional<size_t> expected_instance_count = base::nullopt)
+            absl::optional<size_t> expected_instance_count = absl::nullopt)
         : cancellation_expected_(cancellation_expected),
           expected_instance_count_(expected_instance_count),
           instance_count_(0) {}
@@ -228,7 +228,7 @@ class NullWebRtcEventLogUploader : public WebRtcEventLogUploader {
 
    private:
     const bool cancellation_expected_;
-    const base::Optional<size_t> expected_instance_count_;
+    const absl::optional<size_t> expected_instance_count_;
     size_t instance_count_;
   };
 
@@ -283,6 +283,10 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
     EXPECT_TRUE(profiles_dir_.CreateUniqueTempDir());
   }
 
+  WebRtcEventLogManagerTestBase(const WebRtcEventLogManagerTestBase&) = delete;
+  WebRtcEventLogManagerTestBase& operator=(
+      const WebRtcEventLogManagerTestBase&) = delete;
+
   ~WebRtcEventLogManagerTestBase() override {
     WaitForPendingTasks();
 
@@ -307,13 +311,13 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
     SetLocalLogsObserver(&local_observer_);
     SetRemoteLogsObserver(&remote_observer_);
     LoadMainTestProfile();
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
     policy::BrowserPolicyConnectorBase::SetPolicyProviderForTesting(&provider_);
 #endif
   }
 
   void TearDown() override {
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
     TestingBrowserProcess::GetGlobal()->ShutdownBrowserPolicyConnector();
 #endif
   }
@@ -331,7 +335,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   }
 
   void CreateWebRtcEventLogManager(
-      base::Optional<Compression> remote = base::nullopt) {
+      absl::optional<Compression> remote = absl::nullopt) {
     DCHECK(!event_log_manager_);
 
     event_log_manager_ = WebRtcEventLogManager::CreateSingletonInstance();
@@ -363,7 +367,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
 
   void WaitForReply() {
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop);  // Allow re-blocking.
+    run_loop_ = std::make_unique<base::RunLoop>();  // Allow re-blocking.
   }
 
   void Reply() { run_loop_->QuitWhenIdle(); }
@@ -419,8 +423,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   bool OnPeerConnectionAdded(const PeerConnectionKey& key) {
     bool result;
     event_log_manager_->OnPeerConnectionAdded(
-        content::GlobalFrameRoutingId(key.render_process_id,
-                                      key.render_frame_id),
+        content::GlobalRenderFrameHostId(key.render_process_id,
+                                         key.render_frame_id),
         key.lid, ReplyClosure(&result));
     WaitForReply();
     return result;
@@ -429,8 +433,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   bool OnPeerConnectionRemoved(const PeerConnectionKey& key) {
     bool result;
     event_log_manager_->OnPeerConnectionRemoved(
-        content::GlobalFrameRoutingId(key.render_process_id,
-                                      key.render_frame_id),
+        content::GlobalRenderFrameHostId(key.render_process_id,
+                                         key.render_frame_id),
         key.lid, ReplyClosure(&result));
     WaitForReply();
     return result;
@@ -440,8 +444,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
                                     const std::string& session_id) {
     bool result;
     event_log_manager_->OnPeerConnectionSessionIdSet(
-        content::GlobalFrameRoutingId(key.render_process_id,
-                                      key.render_frame_id),
+        content::GlobalRenderFrameHostId(key.render_process_id,
+                                         key.render_frame_id),
         key.lid, session_id, ReplyClosure(&result));
     WaitForReply();
     return result;
@@ -454,8 +458,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   bool OnPeerConnectionStopped(const PeerConnectionKey& key) {
     bool result;
     event_log_manager_->OnPeerConnectionStopped(
-        content::GlobalFrameRoutingId(key.render_process_id,
-                                      key.render_frame_id),
+        content::GlobalRenderFrameHostId(key.render_process_id,
+                                         key.render_frame_id),
         key.lid, ReplyClosure(&result));
     WaitForReply();
     return result;
@@ -580,8 +584,8 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
                                               const std::string& message) {
     std::pair<bool, bool> result;
     event_log_manager_->OnWebRtcEventLogWrite(
-        content::GlobalFrameRoutingId(key.render_process_id,
-                                      key.render_frame_id),
+        content::GlobalRenderFrameHostId(key.render_process_id,
+                                         key.render_frame_id),
         key.lid, message, ReplyClosure(&result));
     WaitForReply();
     return result;
@@ -634,7 +638,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
       std::string profile_name,
       bool is_managed_profile,
       bool has_device_level_policies,
-      base::Optional<bool> policy_allows_remote_logging) {
+      absl::optional<bool> policy_allows_remote_logging) {
     return CreateBrowserContextWithCustomSupervision(
         profile_name, is_managed_profile, has_device_level_policies,
         false /* is_supervised */, policy_allows_remote_logging);
@@ -645,7 +649,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
       bool is_managed_profile,
       bool has_device_level_policies,
       bool is_supervised,
-      base::Optional<bool> policy_allows_remote_logging) {
+      absl::optional<bool> policy_allows_remote_logging) {
     // If profile name not specified, select a unique name.
     if (profile_name.empty()) {
       static size_t index = 0;
@@ -678,7 +682,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
                                 policy_allows_remote_logging.value());
     }
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
     policy::PolicyMap policy_map;
     if (has_device_level_policies) {
       policy_map.Set("test-policy", policy::POLICY_LEVEL_MANDATORY,
@@ -702,7 +706,9 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
     profile_builder.OverridePolicyConnectorIsManagedForTesting(
         is_managed_profile);
     if (is_supervised) {
-      profile_builder.SetSupervisedUserId("id");
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+      profile_builder.SetIsSupervisedProfile();
+#endif
     }
     std::unique_ptr<TestingProfile> profile = profile_builder.Build();
 
@@ -822,7 +828,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::MockConfigurationPolicyProvider provider_;
 #endif
 
@@ -891,11 +897,9 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
   //    callback on the observer).
   NiceMock<MockWebRtcLocalEventLogsObserver> local_observer_;
   NiceMock<MockWebRtcRemoteEventLogsObserver> remote_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcEventLogManagerTestBase);
 };
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 class WebRtcEventLogManagerTest : public WebRtcEventLogManagerTestBase,
                                   public ::testing::WithParamInterface<bool> {
@@ -947,10 +951,10 @@ class WebRtcEventLogManagerTestCacheClearing
 
   void ClearPendingLogFiles() { pending_logs_.clear(); }
 
-  base::Optional<base::FilePath> CreateRemoteLogFile(
+  absl::optional<base::FilePath> CreateRemoteLogFile(
       const PeerConnectionKey& key,
       bool pending) {
-    base::Optional<base::FilePath> file_path;
+    absl::optional<base::FilePath> file_path;
     ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
         .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
     EXPECT_TRUE(OnPeerConnectionAdded(key));
@@ -963,12 +967,12 @@ class WebRtcEventLogManagerTestCacheClearing
     return file_path;
   }
 
-  base::Optional<base::FilePath> CreateActiveRemoteLogFile(
+  absl::optional<base::FilePath> CreateActiveRemoteLogFile(
       const PeerConnectionKey& key) {
     return CreateRemoteLogFile(key, false);
   }
 
-  base::Optional<base::FilePath> CreatePendingRemoteLogFile(
+  absl::optional<base::FilePath> CreatePendingRemoteLogFile(
       const PeerConnectionKey& key) {
     return CreateRemoteLogFile(key, true);
   }
@@ -983,7 +987,7 @@ class WebRtcEventLogManagerTestCacheClearing
 
   struct BrowserContextAssociatedElements {
     std::vector<std::unique_ptr<MockRenderProcessHost>> rphs;
-    std::vector<base::Optional<base::FilePath>> file_paths;
+    std::vector<absl::optional<base::FilePath>> file_paths;
   };
 
   std::map<const BrowserContext*,
@@ -996,7 +1000,7 @@ class WebRtcEventLogManagerTestCacheClearing
 };
 
 const base::TimeDelta WebRtcEventLogManagerTestCacheClearing::kEpsion =
-    base::TimeDelta::FromHours(1);
+    base::Hours(1);
 
 class WebRtcEventLogManagerTestWithRemoteLoggingDisabled
     : public WebRtcEventLogManagerTestBase,
@@ -1030,7 +1034,7 @@ class WebRtcEventLogManagerTestWithRemoteLoggingDisabled
       std::string profile_name,
       bool is_managed_profile,
       bool has_device_level_policies,
-      base::Optional<bool> policy_allows_remote_logging) override {
+      absl::optional<bool> policy_allows_remote_logging) override {
     DCHECK_EQ(policy_enabled_, policy_allows_remote_logging.value());
     return WebRtcEventLogManagerTestBase::CreateBrowserContext(
         profile_name, is_managed_profile, has_device_level_policies,
@@ -1196,8 +1200,8 @@ class WebRtcEventLogManagerTestCompression
     // Defer until Init(), which will allow the test body more control.
   }
 
-  void Init(base::Optional<WebRtcEventLogCompression> remote_compression =
-                base::Optional<WebRtcEventLogCompression>()) {
+  void Init(absl::optional<WebRtcEventLogCompression> remote_compression =
+                absl::optional<WebRtcEventLogCompression>()) {
     CreateWebRtcEventLogManager(remote_compression);
 
     WebRtcEventLogManagerTestBase::SetUp();
@@ -1223,12 +1227,13 @@ class WebRtcEventLogManagerTestIncognito
   void SetUp() override {
     WebRtcEventLogManagerTestBase::SetUp();
 
-    incognito_profile_ = browser_context_->GetPrimaryOTRProfile();
+    incognito_profile_ =
+        browser_context_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     incognito_rph_ =
         std::make_unique<MockRenderProcessHost>(incognito_profile_);
   }
 
-  Profile* incognito_profile_;
+  raw_ptr<Profile> incognito_profile_;
   std::unique_ptr<MockRenderProcessHost> incognito_rph_;
 };
 
@@ -1263,7 +1268,7 @@ class WebRtcEventLogManagerTestHistory : public WebRtcEventLogManagerTestBase {
     // Way more than is "small", to make sure tests don't become flaky.
     // If the timestamp is ever off, it's likely to be off by more than this,
     // though, or the problem would not truly be severe enough to worry about.
-    const base::TimeDelta small_delta = base::TimeDelta::FromMinutes(15);
+    const base::TimeDelta small_delta = base::Minutes(15);
 
     return (std::max(a, b) - std::min(a, b) <= small_delta);
   }
@@ -1289,7 +1294,7 @@ class PeerConnectionTrackerProxyForTesting
   }
 
  private:
-  WebRtcEventLogManagerTestBase* const test_;
+  const raw_ptr<WebRtcEventLogManagerTestBase> test_;
 };
 
 // The factory for the following fake uploader produces a sequence of
@@ -1340,7 +1345,7 @@ class FileListExpectingWebRtcEventLogUploader : public WebRtcEventLogUploader {
    private:
     std::list<WebRtcLogFileInfo> expected_files_;
     const bool result_;
-    base::RunLoop* const run_loop_;
+    const raw_ptr<base::RunLoop> run_loop_;
   };
 
   // The logic is in the factory; the uploader just reports success so that the
@@ -1571,7 +1576,7 @@ TEST_F(WebRtcEventLogManagerTest,
 
 TEST_F(WebRtcEventLogManagerTest, LocalLogCreatesEmptyFileWhenStarted) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   ON_CALL(local_observer_, OnLocalLogStarted(key, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
@@ -1589,7 +1594,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogCreatesEmptyFileWhenStarted) {
 TEST_F(WebRtcEventLogManagerTest, LocalLogCreateAndWriteToFile) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
 
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   ON_CALL(local_observer_, OnLocalLogStarted(key, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
@@ -1610,7 +1615,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogCreateAndWriteToFile) {
 TEST_F(WebRtcEventLogManagerTest, LocalLogMultipleWritesToSameFile) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
 
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   ON_CALL(local_observer_, OnLocalLogStarted(key, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
@@ -1638,7 +1643,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogMultipleWritesToSameFile) {
 TEST_F(WebRtcEventLogManagerTest, LocalLogFileSizeLimitNotExceeded) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
 
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   ON_CALL(local_observer_, OnLocalLogStarted(key, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
@@ -1665,7 +1670,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogFileSizeLimitNotExceeded) {
 TEST_F(WebRtcEventLogManagerTest, LocalLogSanityOverUnlimitedFileSizes) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
 
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   ON_CALL(local_observer_, OnLocalLogStarted(key, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
@@ -1688,7 +1693,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogSanityOverUnlimitedFileSizes) {
 TEST_F(WebRtcEventLogManagerTest, LocalLogNoWriteAfterLogStopped) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
 
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   ON_CALL(local_observer_, OnLocalLogStarted(key, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
@@ -1719,7 +1724,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogOnlyWritesTheLogsAfterStarted) {
   ASSERT_EQ(OnWebRtcEventLogWrite(key, log1), std::make_pair(false, false));
   ASSERT_TRUE(base::IsDirectoryEmpty(local_logs_base_dir_.GetPath()));
 
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   EXPECT_CALL(local_observer_, OnLocalLogStarted(key, _))
       .Times(1)
       .WillOnce(Invoke(SaveFilePathTo(&file_path)));
@@ -1746,8 +1751,8 @@ TEST_F(WebRtcEventLogManagerTest, LocalLoggingRestartCreatesNewFile) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
 
   const std::vector<std::string> logs = {"<setup>", "<punchline>", "<encore>"};
-  std::vector<base::Optional<PeerConnectionKey>> keys(logs.size());
-  std::vector<base::Optional<base::FilePath>> file_paths(logs.size());
+  std::vector<absl::optional<PeerConnectionKey>> keys(logs.size());
+  std::vector<absl::optional<base::FilePath>> file_paths(logs.size());
 
   ASSERT_TRUE(OnPeerConnectionAdded(key));
 
@@ -1781,7 +1786,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogMultipleActiveFiles) {
     keys.push_back(GetPeerConnectionKey(&rph, kLid));
   }
 
-  std::vector<base::Optional<base::FilePath>> file_paths(keys.size());
+  std::vector<absl::optional<base::FilePath>> file_paths(keys.size());
   for (size_t i = 0; i < keys.size(); ++i) {
     ON_CALL(local_observer_, OnLocalLogStarted(keys[i], _))
         .WillByDefault(Invoke(SaveFilePathTo(&file_paths[i])));
@@ -1887,7 +1892,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogIllegalPath) {
   EXPECT_TRUE(base::IsDirectoryEmpty(local_logs_base_dir_.GetPath()));
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 TEST_F(WebRtcEventLogManagerTest, LocalLogLegalPathWithoutPermissionsSanity) {
   RemoveWritePermissions(local_logs_base_dir_.GetPath());
 
@@ -1914,7 +1919,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogLegalPathWithoutPermissionsSanity) {
   EXPECT_TRUE(DisableLocalLogging());
   EXPECT_TRUE(base::IsDirectoryEmpty(local_logs_base_dir_.GetPath()));
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 TEST_F(WebRtcEventLogManagerTest, LocalLogEmptyStringHandledGracefully) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
@@ -1923,7 +1928,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogEmptyStringHandledGracefully) {
   // encountered, such as closing the file (an actual bug from WebRTC).
   const std::vector<std::string> logs = {"<setup>", "", "<encore>"};
 
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
 
   ON_CALL(local_observer_, OnLocalLogStarted(key, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
@@ -1947,7 +1952,7 @@ TEST_F(WebRtcEventLogManagerTest, LocalLogFilenameMatchesExpectedFormat) {
 
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
 
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   ON_CALL(local_observer_, OnLocalLogStarted(key, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
@@ -1992,8 +1997,8 @@ TEST_F(WebRtcEventLogManagerTest,
 
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
 
-  base::Optional<base::FilePath> file_path_1;
-  base::Optional<base::FilePath> file_path_2;
+  absl::optional<base::FilePath> file_path_1;
+  absl::optional<base::FilePath> file_path_2;
   EXPECT_CALL(local_observer_, OnLocalLogStarted(key, _))
       .WillOnce(Invoke(SaveFilePathTo(&file_path_1)))
       .WillOnce(Invoke(SaveFilePathTo(&file_path_2)));
@@ -2231,7 +2236,7 @@ TEST_F(WebRtcEventLogManagerTest,
        StartRemoteLoggingSavesToFileWithCorrectFileNameFormat) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
 
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
@@ -2258,7 +2263,7 @@ TEST_F(WebRtcEventLogManagerTest,
 }
 
 TEST_F(WebRtcEventLogManagerTest, StartRemoteLoggingCreatesEmptyFile) {
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
   EXPECT_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .Times(1)
@@ -2288,7 +2293,7 @@ TEST_F(WebRtcEventLogManagerTest,
   }
 
   // Prepare to store the logs' paths in distinct memory locations.
-  base::Optional<base::FilePath> file_paths[kLogsNum];
+  absl::optional<base::FilePath> file_paths[kLogsNum];
   for (size_t i = 0; i < kLogsNum; ++i) {
     const auto key = GetPeerConnectionKey(rphs[i].get(), kLid);
     EXPECT_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
@@ -2305,7 +2310,7 @@ TEST_F(WebRtcEventLogManagerTest,
   }
 
   // All log files must be created in their own context's directory.
-  for (size_t i = 0; i < base::size(browser_contexts); ++i) {
+  for (size_t i = 0; i < std::size(browser_contexts); ++i) {
     ASSERT_TRUE(file_paths[i]);
     EXPECT_TRUE(browser_contexts[i]->GetPath().IsParent(*file_paths[i]));
   }
@@ -2330,7 +2335,7 @@ TEST_F(WebRtcEventLogManagerTest,
   OnPeerConnectionSessionIdSet(keys[1], id);
 
   // Make sure the logs get written to separate files.
-  base::Optional<base::FilePath> file_paths[2];
+  absl::optional<base::FilePath> file_paths[2];
   for (size_t i = 0; i < 2; ++i) {
     EXPECT_CALL(remote_observer_, OnRemoteLogStarted(keys[i], _, _))
         .Times(1)
@@ -2347,7 +2352,7 @@ TEST_F(WebRtcEventLogManagerTest,
 
 TEST_F(WebRtcEventLogManagerTest,
        OnWebRtcEventLogWriteWritesToTheRemoteBoundFile) {
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
   EXPECT_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .Times(1)
@@ -2371,12 +2376,12 @@ TEST_F(WebRtcEventLogManagerTest, WriteToBothLocalAndRemoteFiles) {
   ASSERT_TRUE(OnPeerConnectionAdded(key));
   ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
 
-  base::Optional<base::FilePath> local_path;
+  absl::optional<base::FilePath> local_path;
   EXPECT_CALL(local_observer_, OnLocalLogStarted(key, _))
       .Times(1)
       .WillOnce(Invoke(SaveFilePathTo(&local_path)));
 
-  base::Optional<base::FilePath> remote_path;
+  absl::optional<base::FilePath> remote_path;
   EXPECT_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .Times(1)
       .WillOnce(Invoke(SaveFilePathTo(&remote_path)));
@@ -2402,7 +2407,7 @@ TEST_F(WebRtcEventLogManagerTest, WriteToBothLocalAndRemoteFiles) {
 TEST_F(WebRtcEventLogManagerTest, MultipleWritesToSameRemoteBoundLogfile) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
 
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
@@ -2428,7 +2433,7 @@ TEST_F(WebRtcEventLogManagerTest, MultipleWritesToSameRemoteBoundLogfile) {
 TEST_F(WebRtcEventLogManagerTest,
        RemoteLogFileSizeLimitNotExceededSingleWrite) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
@@ -2454,7 +2459,7 @@ TEST_F(WebRtcEventLogManagerTest,
 TEST_F(WebRtcEventLogManagerTest,
        RemoteLogFileSizeLimitNotExceededMultipleWrites) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
@@ -2483,7 +2488,7 @@ TEST_F(WebRtcEventLogManagerTest,
       GetPeerConnectionKey(rph_.get(), 0), GetPeerConnectionKey(rph_.get(), 1),
       GetPeerConnectionKey(rph_.get(), 2)};
 
-  std::vector<base::Optional<base::FilePath>> file_paths(keys.size());
+  std::vector<absl::optional<base::FilePath>> file_paths(keys.size());
   for (size_t i = 0; i < keys.size(); ++i) {
     ON_CALL(remote_observer_, OnRemoteLogStarted(keys[i], _, _))
         .WillByDefault(Invoke(SaveFilePathTo(&file_paths[i])));
@@ -2511,8 +2516,9 @@ TEST_F(WebRtcEventLogManagerTest,
   }
 }
 
+// TODO(crbug.com/1112027): Fix this flaky test.
 TEST_F(WebRtcEventLogManagerTest,
-       LogMultipleActiveRemoteLogsDifferentBrowserContexts) {
+       DISABLED_LogMultipleActiveRemoteLogsDifferentBrowserContexts) {
   constexpr size_t kLogsNum = 3;
   std::unique_ptr<TestingProfile> browser_contexts[kLogsNum];
   std::vector<std::unique_ptr<MockRenderProcessHost>> rphs;
@@ -2527,7 +2533,7 @@ TEST_F(WebRtcEventLogManagerTest,
     keys.push_back(GetPeerConnectionKey(rph.get(), kLid));
   }
 
-  std::vector<base::Optional<base::FilePath>> file_paths(keys.size());
+  std::vector<absl::optional<base::FilePath>> file_paths(keys.size());
   for (size_t i = 0; i < keys.size(); ++i) {
     ON_CALL(remote_observer_, OnRemoteLogStarted(keys[i], _, _))
         .WillByDefault(Invoke(SaveFilePathTo(&file_paths[i])));
@@ -2557,9 +2563,9 @@ TEST_F(WebRtcEventLogManagerTest,
 
 TEST_F(WebRtcEventLogManagerTest, DifferentRemoteLogsMayHaveDifferentMaximums) {
   const std::string logs[2] = {"abra", "cadabra"};
-  std::vector<base::Optional<base::FilePath>> file_paths(base::size(logs));
+  std::vector<absl::optional<base::FilePath>> file_paths(std::size(logs));
   std::vector<PeerConnectionKey> keys;
-  for (size_t i = 0; i < base::size(logs); ++i) {
+  for (size_t i = 0; i < std::size(logs); ++i) {
     keys.push_back(GetPeerConnectionKey(rph_.get(), i));
     ON_CALL(remote_observer_, OnRemoteLogStarted(keys[i], _, _))
         .WillByDefault(Invoke(SaveFilePathTo(&file_paths[i])));
@@ -2586,7 +2592,7 @@ TEST_F(WebRtcEventLogManagerTest, DifferentRemoteLogsMayHaveDifferentMaximums) {
 
 TEST_F(WebRtcEventLogManagerTest, RemoteLogFileClosedWhenCapacityReached) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
@@ -2602,7 +2608,7 @@ TEST_F(WebRtcEventLogManagerTest, RemoteLogFileClosedWhenCapacityReached) {
   EXPECT_EQ(OnWebRtcEventLogWrite(key, log), std::make_pair(false, true));
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // TODO(crbug.com/775415): Add unit tests for lacking read permissions when
 // looking to upload the file.
 TEST_F(WebRtcEventLogManagerTest,
@@ -2668,7 +2674,7 @@ TEST_F(WebRtcEventLogManagerTest, GracefullyHandleFailureToStartRemoteLogFile) {
   EXPECT_EQ(OnWebRtcEventLogWrite(key, "abc"), std::make_pair(false, false));
   EXPECT_TRUE(base::IsDirectoryEmpty(remote_logs_path));
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 TEST_F(WebRtcEventLogManagerTest, RemoteLogLimitActiveLogFiles) {
   for (int i = 0; i < kMaxActiveRemoteLogFiles + 1; ++i) {
@@ -2826,11 +2832,10 @@ TEST_F(WebRtcEventLogManagerTest,
   // This is OK in production, but can confuse the test, which expects a
   // specific order.
   base::Time time =
-      base::Time::Now() -
-      base::TimeDelta::FromSeconds(kMaxPendingRemoteBoundWebRtcEventLogs);
+      base::Time::Now() - base::Seconds(kMaxPendingRemoteBoundWebRtcEventLogs);
 
   for (size_t i = 0; i < kMaxPendingRemoteBoundWebRtcEventLogs; ++i) {
-    time += base::TimeDelta::FromSeconds(1);
+    time += base::Seconds(1);
 
     base::FilePath file_path;
     base::File file;
@@ -2872,21 +2877,20 @@ TEST_F(WebRtcEventLogManagerTest,
 
   base::FilePath::StringPieceType extensions[] = {
       kWebRtcEventLogUncompressedExtension, kWebRtcEventLogGzippedExtension};
-  ASSERT_LE(base::size(extensions), kMaxPendingRemoteBoundWebRtcEventLogs)
+  ASSERT_LE(std::size(extensions), kMaxPendingRemoteBoundWebRtcEventLogs)
       << "Lacking test coverage.";
 
   // Avoid arbitrary ordering due to files being created in the same second.
   // This is OK in production, but can confuse the test, which expects a
   // specific order.
   base::Time time =
-      base::Time::Now() -
-      base::TimeDelta::FromSeconds(kMaxPendingRemoteBoundWebRtcEventLogs);
+      base::Time::Now() - base::Seconds(kMaxPendingRemoteBoundWebRtcEventLogs);
 
   for (size_t i = 0, ext = 0; i < kMaxPendingRemoteBoundWebRtcEventLogs; ++i) {
-    time += base::TimeDelta::FromSeconds(1);
+    time += base::Seconds(1);
 
     const auto& extension = extensions[ext];
-    ext = (ext + 1) % base::size(extensions);
+    ext = (ext + 1) % std::size(extensions);
 
     base::FilePath file_path;
     base::File file;
@@ -2916,7 +2920,7 @@ TEST_P(WebRtcEventLogManagerTest,
   const bool upload_result = GetParam();
 
   const auto key = GetPeerConnectionKey(rph_.get(), 1);
-  base::Optional<base::FilePath> log_file;
+  absl::optional<base::FilePath> log_file;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&log_file)));
   ASSERT_TRUE(OnPeerConnectionAdded(key));
@@ -2946,7 +2950,7 @@ TEST_P(WebRtcEventLogManagerTest, DestroyedRphTriggersLogUpload) {
   const bool upload_result = GetParam();
 
   const auto key = GetPeerConnectionKey(rph_.get(), 1);
-  base::Optional<base::FilePath> log_file;
+  absl::optional<base::FilePath> log_file;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&log_file)));
   ASSERT_TRUE(OnPeerConnectionAdded(key));
@@ -2982,7 +2986,7 @@ TEST_F(WebRtcEventLogManagerTest, UploadOnlyWhenNoActivePeerConnections) {
 
   // The tracked peer connection's log is not uploaded when finished, because
   // another peer connection is still active.
-  base::Optional<base::FilePath> log_file;
+  absl::optional<base::FilePath> log_file;
   ON_CALL(remote_observer_, OnRemoteLogStarted(tracked, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&log_file)));
   ASSERT_TRUE(OnPeerConnectionAdded(tracked));
@@ -3036,7 +3040,7 @@ TEST_F(WebRtcEventLogManagerTest, ExpiredFilesArePrunedRatherThanUploaded) {
   // Set the expired file's last modification time to past max retention.
   const base::Time expired_mod_time = base::Time::Now() -
                                       kRemoteBoundWebRtcEventLogsMaxRetention -
-                                      base::TimeDelta::FromSeconds(1);
+                                      base::Seconds(1);
   ASSERT_TRUE(base::TouchFile(file_paths[kExpired], file_info.last_accessed,
                               expired_mod_time));
 
@@ -3072,7 +3076,7 @@ TEST_F(WebRtcEventLogManagerTest, RemoteLogEmptyStringHandledGracefully) {
   // encountered, such as closing the file (an actual bug from WebRTC).
   const std::vector<std::string> logs = {"<setup>", "", "<encore>"};
 
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
 
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
@@ -3092,7 +3096,7 @@ TEST_F(WebRtcEventLogManagerTest, RemoteLogEmptyStringHandledGracefully) {
       std::accumulate(std::begin(logs), std::end(logs), std::string()));
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 TEST_F(WebRtcEventLogManagerTest,
        UnopenedRemoteLogFilesNotCountedTowardsActiveLogsLimit) {
   std::unique_ptr<TestingProfile> browser_contexts[2];
@@ -3130,7 +3134,7 @@ TEST_F(WebRtcEventLogManagerTest,
     EXPECT_TRUE(StartRemoteLogging(with_permissions_key));
   }
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 TEST_F(WebRtcEventLogManagerTest,
        NoStartWebRtcSendingEventLogsWhenLocalEnabledWithoutPeerConnection) {
@@ -3335,11 +3339,11 @@ TEST_F(WebRtcEventLogManagerTest, SanityOverRecreatingTheSamePeerConnection) {
 TEST_F(WebRtcEventLogManagerTest, LogAllPossibleCharacters) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
 
-  base::Optional<base::FilePath> local_log_file_path;
+  absl::optional<base::FilePath> local_log_file_path;
   ON_CALL(local_observer_, OnLocalLogStarted(key, _))
       .WillByDefault(Invoke(SaveFilePathTo(&local_log_file_path)));
 
-  base::Optional<base::FilePath> remote_log_file_path;
+  absl::optional<base::FilePath> remote_log_file_path;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&remote_log_file_path)));
 
@@ -3398,7 +3402,7 @@ TEST_F(WebRtcEventLogManagerTest,
   SuppressUploading();
 
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
@@ -3581,7 +3585,7 @@ TEST_F(WebRtcEventLogManagerTest,
        StartRemoteLoggingWebAppIdIncorporatedIntoFileName) {
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
 
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&file_path)));
 
@@ -3630,7 +3634,7 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
   ASSERT_TRUE(OnPeerConnectionAdded(key));
   ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   EXPECT_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .Times(1)
       .WillOnce(Invoke(SaveFilePathTo(&file_path)));
@@ -3640,9 +3644,9 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
 
   // Test
   EXPECT_CALL(remote_observer_, OnRemoteLogStopped(key)).Times(1);
-  ClearCacheForBrowserContext(
-      browser_context_.get(), base::Time::Now() - base::TimeDelta::FromHours(1),
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+  ClearCacheForBrowserContext(browser_context_.get(),
+                              base::Time::Now() - base::Hours(1),
+                              base::Time::Now() + base::Hours(1));
   EXPECT_FALSE(base::PathExists(*file_path));
 }
 
@@ -3657,7 +3661,7 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
 
   // Set up and trigger the uploading of a file.
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
-  base::Optional<base::FilePath> file_path = CreatePendingRemoteLogFile(key);
+  absl::optional<base::FilePath> file_path = CreatePendingRemoteLogFile(key);
 
   ASSERT_TRUE(file_path);
   ASSERT_TRUE(base::PathExists(*file_path));
@@ -3678,10 +3682,8 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
   auto& elements = *(pending_logs_[browser_context.get()]);
 
   // Get a range whose intersection with the files' range is empty.
-  const base::Time earliest_mod =
-      pending_earliest_mod_ - base::TimeDelta::FromHours(2);
-  const base::Time latest_mod =
-      pending_earliest_mod_ - base::TimeDelta::FromHours(1);
+  const base::Time earliest_mod = pending_earliest_mod_ - base::Hours(2);
+  const base::Time latest_mod = pending_earliest_mod_ - base::Hours(1);
   ASSERT_LT(latest_mod, pending_latest_mod_);
 
   // Test - ClearCacheForBrowserContext() does not remove files not in range.
@@ -3702,7 +3704,7 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
   ASSERT_TRUE(OnPeerConnectionAdded(key));
   ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
-  base::Optional<base::FilePath> file_path;
+  absl::optional<base::FilePath> file_path;
   EXPECT_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .Times(1)
       .WillOnce(Invoke(SaveFilePathTo(&file_path)));
@@ -3712,9 +3714,9 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
 
   // Test
   EXPECT_CALL(remote_observer_, OnRemoteLogStopped(_)).Times(0);
-  ClearCacheForBrowserContext(
-      browser_context_.get(), base::Time::Now() - base::TimeDelta::FromHours(2),
-      base::Time::Now() - base::TimeDelta::FromHours(1));
+  ClearCacheForBrowserContext(browser_context_.get(),
+                              base::Time::Now() - base::Hours(2),
+                              base::Time::Now() - base::Hours(1));
   EXPECT_TRUE(base::PathExists(*file_path));
 }
 
@@ -3726,7 +3728,7 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
 
   // Set up and trigger the uploading of a file.
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
-  base::Optional<base::FilePath> file_path = CreatePendingRemoteLogFile(key);
+  absl::optional<base::FilePath> file_path = CreatePendingRemoteLogFile(key);
 
   ASSERT_TRUE(file_path);
   ASSERT_TRUE(base::PathExists(*file_path));
@@ -3779,7 +3781,7 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
   auto cleared_rph =
       std::make_unique<MockRenderProcessHost>(cleared_browser_context.get());
   const auto cleared_key = GetPeerConnectionKey(cleared_rph.get(), kLid);
-  base::Optional<base::FilePath> cleared_file_path =
+  absl::optional<base::FilePath> cleared_file_path =
       CreateActiveRemoteLogFile(cleared_key);
 
   // Remote-bound active log file that will *not* be cleared.
@@ -3787,7 +3789,7 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
   auto uncleared_rph =
       std::make_unique<MockRenderProcessHost>(uncleared_browser_context.get());
   const auto uncleared_key = GetPeerConnectionKey(uncleared_rph.get(), kLid);
-  base::Optional<base::FilePath> uncleared_file_path =
+  absl::optional<base::FilePath> uncleared_file_path =
       CreateActiveRemoteLogFile(uncleared_key);
 
   // Test - ClearCacheForBrowserContext() only removes the files which belong
@@ -3812,7 +3814,7 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
 
   // Set up and trigger the uploading of a file.
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
-  base::Optional<base::FilePath> file_path = CreatePendingRemoteLogFile(key);
+  absl::optional<base::FilePath> file_path = CreatePendingRemoteLogFile(key);
 
   ASSERT_TRUE(file_path);
   ASSERT_TRUE(base::PathExists(*file_path));
@@ -3834,7 +3836,7 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
 
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
 
-  base::Optional<base::FilePath> local_log;
+  absl::optional<base::FilePath> local_log;
   ON_CALL(local_observer_, OnLocalLogStarted(key, _))
       .WillByDefault(Invoke(SaveFilePathTo(&local_log)));
   ASSERT_TRUE(EnableLocalLogging());
@@ -3873,7 +3875,7 @@ TEST_F(WebRtcEventLogManagerTestCacheClearing,
   auto other_rph =
       std::make_unique<MockRenderProcessHost>(other_browser_context.get());
   const auto key = GetPeerConnectionKey(other_rph.get(), kLid);
-  base::Optional<base::FilePath> other_file = CreatePendingRemoteLogFile(key);
+  absl::optional<base::FilePath> other_file = CreatePendingRemoteLogFile(key);
   ASSERT_TRUE(other_file);
 
   // Switch the uploader factory to one that will allow us to ensure that the
@@ -3990,7 +3992,7 @@ TEST_F(WebRtcEventLogManagerTestPolicy, NotManagedRejectsRemoteLogging) {
   const bool allow_remote_logging = false;
   auto browser_context = CreateBrowserContext(
       "name", false /* is_managed_profile */,
-      false /* has_device_level_policies */, base::nullopt);
+      false /* has_device_level_policies */, absl::nullopt);
 
   auto rph = std::make_unique<MockRenderProcessHost>(browser_context.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -4033,7 +4035,7 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 
   auto browser_context = CreateBrowserContext(
       "name", true /* is_managed_profile */,
-      false /* has_device_level_policies */, base::nullopt);
+      false /* has_device_level_policies */, absl::nullopt);
 
   auto rph = std::make_unique<MockRenderProcessHost>(browser_context.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -4051,21 +4053,20 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
 // TODO(crbug.com/1035829): Figure out whether this can be resolved by tweaking
 // the test setup or whether the Active Directory services need to be adapted
 // for easy testing.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(WebRtcEventLogManagerTestPolicy,
        ManagedProfileDoesNotAllowRemoteLoggingForSupervisedProfiles) {
   SetUp(true);  // Feature generally enabled (kill-switch not engaged).
 
   const bool allow_remote_logging = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager =
       GetScopedUserManager(user_manager::USER_TYPE_CHILD);
-#endif
 
   auto browser_context = CreateBrowserContextWithCustomSupervision(
       "name", true /* is_managed_profile */,
       false /* has_device_level_policies */, true /* is_supervised */,
-      base::nullopt);
+      absl::nullopt);
 
   auto rph = std::make_unique<MockRenderProcessHost>(browser_context.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -4074,8 +4075,9 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
   EXPECT_EQ(StartRemoteLogging(key), allow_remote_logging);
 }
+#endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(WebRtcEventLogManagerTestPolicy,
        OnlyManagedByPlatformPoliciesDoesNotAllowRemoteLoggingByDefault) {
   SetUp(true);  // Feature generally enabled (kill-switch not engaged).
@@ -4083,7 +4085,7 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   const bool allow_remote_logging = false;
   auto browser_context =
       CreateBrowserContext("name", false /* is_managed_profile */,
-                           true /* has_device_level_policies */, base::nullopt);
+                           true /* has_device_level_policies */, absl::nullopt);
 
   auto rph = std::make_unique<MockRenderProcessHost>(browser_context.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -4100,7 +4102,7 @@ void WebRtcEventLogManagerTestPolicy::TestManagedProfileAfterBeingExplicitlySet(
 
   auto profile = CreateBrowserContext("name", true /* is_managed_profile */,
                                       false /* has_device_level_policies */,
-                                      base::nullopt);
+                                      absl::nullopt);
 
   auto rph = std::make_unique<MockRenderProcessHost>(profile.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
@@ -4235,7 +4237,7 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   profile->GetPrefs()->SetBoolean(prefs::kWebRtcEventLogCollectionAllowed,
                                   allow_remote_logging);
 
-  base::Optional<base::FilePath> log_file;
+  absl::optional<base::FilePath> log_file;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&log_file)));
   ASSERT_TRUE(OnPeerConnectionAdded(key));
@@ -4313,7 +4315,7 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   auto rph = std::make_unique<MockRenderProcessHost>(profile.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
 
-  base::Optional<base::FilePath> log_file;
+  absl::optional<base::FilePath> log_file;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&log_file)));
   ASSERT_TRUE(OnPeerConnectionAdded(key));
@@ -4357,7 +4359,7 @@ TEST_F(WebRtcEventLogManagerTestPolicy,
   auto rph = std::make_unique<MockRenderProcessHost>(profile.get());
   const auto key = GetPeerConnectionKey(rph.get(), kLid);
 
-  base::Optional<base::FilePath> log_file;
+  absl::optional<base::FilePath> log_file;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&log_file)));
   ASSERT_TRUE(OnPeerConnectionAdded(key));
@@ -4480,7 +4482,7 @@ TEST_F(WebRtcEventLogManagerTestUploadSuppressionDisablingFlag,
   ASSERT_TRUE(OnPeerConnectionAdded(key));
   ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
 
-  base::Optional<base::FilePath> log_file;
+  absl::optional<base::FilePath> log_file;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&log_file)));
   ASSERT_TRUE(StartRemoteLogging(key));
@@ -4502,7 +4504,7 @@ TEST_P(WebRtcEventLogManagerTestForNetworkConnectivity,
   SetUpNetworkConnection(get_conn_type_is_sync_, unsupported_type_);
 
   const auto key = GetPeerConnectionKey(rph_.get(), 1);
-  base::Optional<base::FilePath> log_file;
+  absl::optional<base::FilePath> log_file;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&log_file)));
   ASSERT_TRUE(OnPeerConnectionAdded(key));
@@ -4527,7 +4529,7 @@ TEST_P(WebRtcEventLogManagerTestForNetworkConnectivity,
   SetUpNetworkConnection(get_conn_type_is_sync_, supported_type_);
 
   const auto key = GetPeerConnectionKey(rph_.get(), 1);
-  base::Optional<base::FilePath> log_file;
+  absl::optional<base::FilePath> log_file;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&log_file)));
   ASSERT_TRUE(OnPeerConnectionAdded(key));
@@ -4553,7 +4555,7 @@ TEST_P(WebRtcEventLogManagerTestForNetworkConnectivity,
   SetUpNetworkConnection(get_conn_type_is_sync_, unsupported_type_);
 
   const auto key = GetPeerConnectionKey(rph_.get(), 1);
-  base::Optional<base::FilePath> log_file;
+  absl::optional<base::FilePath> log_file;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&log_file)));
   ASSERT_TRUE(OnPeerConnectionAdded(key));
@@ -4652,7 +4654,7 @@ TEST_F(WebRtcEventLogManagerTestUploadDelay, DoNotInitiateUploadBeforeDelay) {
   // constraints, we cannot wait forever.)
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
                             base::WaitableEvent::InitialState::NOT_SIGNALED);
-  event.TimedWait(base::TimeDelta::FromMilliseconds(500));
+  event.TimedWait(base::Milliseconds(500));
 
   WaitForPendingTasks(&run_loop);
 }
@@ -4664,7 +4666,7 @@ TEST_F(WebRtcEventLogManagerTestUploadDelay, InitiateUploadAfterDelay) {
   SetUp(kDefaultUploadDelayMs);
 
   const auto key = GetPeerConnectionKey(rph_.get(), 1);
-  base::Optional<base::FilePath> log_file;
+  absl::optional<base::FilePath> log_file;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&log_file)));
   ASSERT_TRUE(OnPeerConnectionAdded(key));
@@ -4754,7 +4756,7 @@ TEST_F(WebRtcEventLogManagerTestCompression,
   const std::string log = "It's better than bad; it's good.";
 
   const auto key = GetPeerConnectionKey(rph_.get(), kLid);
-  base::Optional<base::FilePath> log_file;
+  absl::optional<base::FilePath> log_file;
   ON_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .WillByDefault(Invoke(SaveFilePathTo(&log_file)));
   ASSERT_TRUE(OnPeerConnectionAdded(key));
@@ -4817,7 +4819,7 @@ TEST_F(WebRtcEventLogManagerTestHistory,
   ASSERT_TRUE(OnPeerConnectionAdded(key));
   ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
 
-  base::Optional<base::FilePath> path;
+  absl::optional<base::FilePath> path;
   EXPECT_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .Times(1)
       .WillOnce(Invoke(SaveFilePathTo(&path)));
@@ -4841,7 +4843,7 @@ TEST_F(WebRtcEventLogManagerTestHistory, CorrectHistoryReturnedForPendingLog) {
   ASSERT_TRUE(OnPeerConnectionAdded(key));
   ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
 
-  base::Optional<base::FilePath> path;
+  absl::optional<base::FilePath> path;
   EXPECT_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .Times(1)
       .WillOnce(Invoke(SaveFilePathTo(&path)));
@@ -4874,7 +4876,7 @@ TEST_F(WebRtcEventLogManagerTestHistory,
   ASSERT_TRUE(OnPeerConnectionAdded(key));
   ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
 
-  base::Optional<base::FilePath> path;
+  absl::optional<base::FilePath> path;
   EXPECT_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .Times(1)
       .WillOnce(Invoke(SaveFilePathTo(&path)));
@@ -4908,7 +4910,7 @@ TEST_F(WebRtcEventLogManagerTestHistory,
   ASSERT_TRUE(OnPeerConnectionAdded(key));
   ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
 
-  base::Optional<base::FilePath> log_path;
+  absl::optional<base::FilePath> log_path;
   EXPECT_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .Times(1)
       .WillOnce(Invoke(SaveFilePathTo(&log_path)));
@@ -4926,7 +4928,7 @@ TEST_F(WebRtcEventLogManagerTestHistory,
 
   // Pretend more time than kRemoteBoundWebRtcEventLogsMaxRetention has passed.
   const base::TimeDelta elapsed_time =
-      kRemoteBoundWebRtcEventLogsMaxRetention + base::TimeDelta::FromHours(1);
+      kRemoteBoundWebRtcEventLogsMaxRetention + base::Hours(1);
   base::File::Info file_info;
   ASSERT_TRUE(base::GetFileInfo(*log_path, &file_info));
 
@@ -4962,7 +4964,7 @@ TEST_F(WebRtcEventLogManagerTestHistory, ClearingCacheRemovesHistoryFiles) {
   ASSERT_TRUE(OnPeerConnectionAdded(key));
   ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
 
-  base::Optional<base::FilePath> log_path;
+  absl::optional<base::FilePath> log_path;
   EXPECT_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .Times(1)
       .WillOnce(Invoke(SaveFilePathTo(&log_path)));
@@ -4980,7 +4982,7 @@ TEST_F(WebRtcEventLogManagerTestHistory, ClearingCacheRemovesHistoryFiles) {
 
   // Pretend more time than kRemoteBoundWebRtcEventLogsMaxRetention has passed.
   const base::TimeDelta elapsed_time =
-      kRemoteBoundWebRtcEventLogsMaxRetention + base::TimeDelta::FromHours(1);
+      kRemoteBoundWebRtcEventLogsMaxRetention + base::Hours(1);
   base::File::Info file_info;
   ASSERT_TRUE(base::GetFileInfo(*log_path, &file_info));
 
@@ -5013,7 +5015,7 @@ TEST_F(WebRtcEventLogManagerTestHistory,
   ASSERT_TRUE(OnPeerConnectionAdded(key));
   ASSERT_TRUE(OnPeerConnectionSessionIdSet(key));
 
-  base::Optional<base::FilePath> log_path;
+  absl::optional<base::FilePath> log_path;
   EXPECT_CALL(remote_observer_, OnRemoteLogStarted(key, _, _))
       .Times(1)
       .WillOnce(Invoke(SaveFilePathTo(&log_path)));
@@ -5033,7 +5035,7 @@ TEST_F(WebRtcEventLogManagerTestHistory,
 // TODO(crbug.com/775415): Add a test for the limit on the number of history
 // files allowed to remain on disk.
 
-#else  // defined(OS_ANDROID)
+#else  // BUILDFLAG(IS_ANDROID)
 
 class WebRtcEventLogManagerTestOnMobileDevices
     : public WebRtcEventLogManagerTestBase {

@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,15 +13,20 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/SadTab.java",
     "java/src/org/chromium/chrome/browser/tab/SadTabView.java",
     "java/src/org/chromium/chrome/browser/tab/Tab.java",
+    "java/src/org/chromium/chrome/browser/tab/TabAssociatedApp.java",
     "java/src/org/chromium/chrome/browser/tab/TabAttributeKeys.java",
     "java/src/org/chromium/chrome/browser/tab/TabAttributes.java",
     "java/src/org/chromium/chrome/browser/tab/TabCreationState.java",
     "java/src/org/chromium/chrome/browser/tab/TabDelegateFactory.java",
     "java/src/org/chromium/chrome/browser/tab/TabHidingType.java",
+    "java/src/org/chromium/chrome/browser/tab/TabIdManager.java",
     "java/src/org/chromium/chrome/browser/tab/TabLifecycle.java",
+    "java/src/org/chromium/chrome/browser/tab/TabObscuringHandler.java",
+    "java/src/org/chromium/chrome/browser/tab/TabObscuringHandlerSupplier.java",
     "java/src/org/chromium/chrome/browser/tab/TabObserver.java",
     "java/src/org/chromium/chrome/browser/tab/TabResolver.java",
     "java/src/org/chromium/chrome/browser/tab/TabState.java",
+    "java/src/org/chromium/chrome/browser/tab/TabStateAttributes.java",
     "java/src/org/chromium/chrome/browser/tab/TabViewManager.java",
     "java/src/org/chromium/chrome/browser/tab/TabViewProvider.java",
     "java/src/org/chromium/chrome/browser/tab/TabWebContentsDelegateAndroid.java",
@@ -29,8 +34,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/TrustedCdn.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsState.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsStateBridge.java",
+    "java/src/org/chromium/chrome/browser/tab/state/CouponPersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/CriticalPersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/CriticalPersistedTabDataObserver.java",
+    "java/src/org/chromium/chrome/browser/tab/state/EmptyByteBufferPersistedTabDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/EncryptedFilePersistedTabDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/FilePersistedTabDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorage.java",
@@ -42,9 +49,15 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabDataConfiguration.java",
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabDataFactory.java",
+    "java/src/org/chromium/chrome/browser/tab/state/PersistedTabDataMapper.java",
+    "java/src/org/chromium/chrome/browser/tab/state/PersistedTabDataResult.java",
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabDataStorageFactory.java",
+    "java/src/org/chromium/chrome/browser/tab/state/PriceDropMetricsLogger.java",
+    "java/src/org/chromium/chrome/browser/tab/state/SerializedCriticalPersistedTabData.java",
+    "java/src/org/chromium/chrome/browser/tab/state/Serializer.java",
     "java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabData.java",
+    "java/src/org/chromium/chrome/browser/tab/state/StorePersistedTabData.java",
   ]
 
   srcjar_deps = [
@@ -56,20 +69,25 @@ android_library("java") {
   ]
 
   deps = [
+    ":critical_persisted_tab_data_flatbuffer_java",
     ":critical_persisted_tab_data_proto_java",
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//chrome/browser/android/crypto:java",
+    "//chrome/browser/commerce/android:java",
     "//chrome/browser/contextmenu:java",
     "//chrome/browser/endpoint_fetcher:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/optimization_guide/android:java",
     "//chrome/browser/page_annotations/android:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/strings:ui_strings_grd",
     "//components/browser_ui/util/android:java",
-    "//components/embedder_support/android:browser_context_java",
+    "//components/commerce/core:proto_java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
@@ -83,10 +101,13 @@ android_library("java") {
     "//components/strings:components_strings_grd",
     "//content/public/android:content_java",
     "//net/android:net_java",
+    "//third_party/android_deps:com_google_flatbuffers_flatbuffers_java_java",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_full_java",
+    "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",
     "//url:origin_java",
   ]
@@ -111,6 +132,7 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab/TrustedCdn.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsStateBridge.java",
+    "java/src/org/chromium/chrome/browser/tab/state/CriticalPersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorage.java",
   ]
 }
@@ -118,24 +140,35 @@ generate_jni("jni_headers") {
 proto_java_library("critical_persisted_tab_data_proto_java") {
   proto_path = "java/src/org/chromium/chrome/browser/tab/state/proto"
   sources = [
-    "$proto_path/critical_persisted_tab_data.proto",
+    "$proto_path/coupon_persisted_tab_data.proto",
     "$proto_path/shopping_persisted_tab_data.proto",
+    "$proto_path/store_persisted_tab_data.proto",
   ]
 }
 
-android_library("junit") {
-  bypass_platform_checks = true
-  testonly = true
-  sources =
-      [ "java/src/org/chromium/chrome/browser/tab/CurrentTabObserverTest.java" ]
+flatbuffer_java_library("critical_persisted_tab_data_flatbuffer_java") {
+  root_dir = "java/src/org/chromium/chrome/browser/tab/state/flatbuffer"
+  sources = [ "$root_dir/critical_persisted_tab_data.fbs" ]
+}
+
+robolectric_library("junit") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/tab/CurrentTabObserverTest.java",
+    "java/src/org/chromium/chrome/browser/tab/TabAssociatedAppTest.java",
+    "java/src/org/chromium/chrome/browser/tab/TabIdManagerTest.java",
+  ]
 
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
+    "//chrome/browser/preferences:java",
+    "//content/public/android:content_full_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }

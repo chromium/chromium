@@ -24,7 +24,7 @@ function isInnermostActiveElement(path) {
   return element === innermostActiveElement();
 }
 
-function shouldNavigateFocus(from, to, direction) {
+function shouldNavigateFocus(from, direction) {
   const fromElement = getNodeInComposedTree(from);
   if (!fromElement)
     return false;
@@ -52,26 +52,26 @@ function navigateFocusBackward() {
 }
 
 function assert_focus_navigation(from, to, direction) {
-  const result = shouldNavigateFocus(from, to, direction);
+  const result = shouldNavigateFocus(from, direction);
   assert_true(result, 'Failed to focus ' + from);
   const message =
-      'Focus should move ' + direction + ' from ' + from + ' to ' + to;
+    'Focus should move ' + direction + ' from ' + from + ' to ' + to;
   var toElement = getNodeInComposedTree(to);
   assert_equals(innermostActiveElement(), toElement, message);
 }
 
 function assert_focus_navigation_forward(elements) {
   assert_true(
-      elements.length >= 2,
-      'length of elements should be greater than or equal to 2.');
+    elements.length >= 2,
+    'length of elements should be greater than or equal to 2.');
   for (var i = 0; i + 1 < elements.length; ++i)
     assert_focus_navigation(elements[i], elements[i + 1], 'forward');
 }
 
 function assert_focus_navigation_backward(elements) {
   assert_true(
-      elements.length >= 2,
-      'length of elements should be greater than or equal to 2.');
+    elements.length >= 2,
+    'length of elements should be greater than or equal to 2.');
   for (var i = 0; i + 1 < elements.length; ++i)
     assert_focus_navigation(elements[i], elements[i + 1], 'backward');
 }

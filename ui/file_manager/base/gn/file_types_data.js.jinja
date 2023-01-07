@@ -1,0 +1,49 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/* This file is generated from:
+{%- for path in source_json_files %}
+ *  {{ path }}
+{%- endfor %}
+ */
+
+{%- raw %}
+/**
+ * @typedef {{
+ *   translationKey: !string,
+ *   type: !string,
+ *   icon: (string|undefined),
+ *   subtype: !string,
+ *   extensions: (!Array<!string>|undefined),
+ *   mime: (string|undefined)
+ * }}
+ */
+export let FileExtensionType;
+{%- endraw %}
+
+/**
+ * Maps a file extension to a FileExtensionType.
+ * Note: If an extension can match multiple types, in this map contains
+ * only the first occurrence.
+ *
+ * @const Map<string, !FileExtensionType>
+ */
+export const EXTENSION_TO_TYPE = new Map([
+{%- for key, value in extension_to_type_map.items() %}
+  ["{{ key }}", {{ value | tojson(2) }}],
+{%- endfor %}
+]);
+
+/**
+ * Maps a MIME type to a FileExtensionType.
+ * Note: If a MIME type can match multiple types, in this map contains
+ * only the first occurrence.
+ *
+ * @const Map<string, !FileExtensionType>
+ */
+export const MIME_TO_TYPE = new Map([
+{%- for key, value in mime_to_type_map.items() %}
+  ["{{ key }}", {{ value | tojson(2) }}],
+{%- endfor %}
+]);

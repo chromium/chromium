@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,22 +9,18 @@ GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
  */
 SelectToSpeakNodeNavigationUtilsUnitTest = class extends SelectToSpeakE2ETest {
   /** @override */
-  setUp() {
-    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
-    (async function() {
-      await importModule(
-          'NodeNavigationUtils', '/select_to_speak/node_navigation_utils.js');
-      await importModule(
-          'ParagraphUtils', '/select_to_speak/paragraph_utils.js');
-      await importModule(
-          ['createMockNode', 'generateTestNodeGroup'],
-          '/select_to_speak/test_node_generator.js');
-      runTest();
-    })();
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'NodeNavigationUtils', '/select_to_speak/node_navigation_utils.js');
+    await importModule('ParagraphUtils', '/select_to_speak/paragraph_utils.js');
+    await importModule(
+        ['createMockNode', 'generateTestNodeGroup'],
+        '/select_to_speak/test_node_generator.js');
   }
 };
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest', 'GetNodesForNextParagraph',
     function() {
       const root = createMockNode({role: 'rootWebArea'});
@@ -75,13 +71,13 @@ SYNC_TEST_F(
       // paragraph 2.
       result = NodeNavigationUtils.getNodesForNextParagraph(
           nodeGroupForParagraph1, constants.Dir.FORWARD,
-          (nodes) => !(nodes.find(
+          nodes => !(nodes.find(
               n => n.parent ===
                   paragraph2) /* filter out nodes belong to paragraph 2 */));
       assertEquals(result.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest', 'GetNextParagraphWithNode',
     function() {
       const root = createMockNode({role: 'rootWebArea'});
@@ -154,7 +150,7 @@ SYNC_TEST_F(
       assertEquals(result.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeContainedWithinRoot', function() {
       const desktop = createMockNode({role: 'desktop'});
@@ -171,7 +167,7 @@ SYNC_TEST_F(
         role: 'staticText',
         parent: paragraph2,
         root: otherRoot,
-        name: 'Line 2'
+        name: 'Line 2',
       });
 
       let result = NodeNavigationUtils.getNextParagraphWithNode_(
@@ -191,7 +187,7 @@ SYNC_TEST_F(
       assertEquals(result.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeThroughIframe', function() {
       const desktop = createMockNode({role: 'desktop'});
@@ -208,13 +204,13 @@ SYNC_TEST_F(
         role: 'paragraph',
         display: 'block',
         parent: iframeRoot,
-        root: iframeRoot
+        root: iframeRoot,
       });
       const text2 = createMockNode({
         role: 'staticText',
         parent: paragraph2,
         root: iframeRoot,
-        name: 'Line 2'
+        name: 'Line 2',
       });
       const paragraph3 = createMockNode(
           {role: 'paragraph', display: 'block', parent: root, root});
@@ -232,7 +228,7 @@ SYNC_TEST_F(
       assertEquals(result[0], text3);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeNonBlockNodes', function() {
       /**
@@ -275,7 +271,7 @@ SYNC_TEST_F(
       assertEquals(result[0], text2);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeNestedBlocks', function() {
       const root = createMockNode({role: 'rootWebArea'});
@@ -289,7 +285,7 @@ SYNC_TEST_F(
         role: 'staticText',
         parent: nestedParagraph,
         root,
-        name: 'Middle text'
+        name: 'Middle text',
       });
       const text3 = createMockNode(
           {role: 'staticText', parent: paragraph1, root, name: 'After text'});
@@ -309,7 +305,7 @@ SYNC_TEST_F(
       assertEquals(result[0], text1);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextParagraphWithNodeAndroid', function() {
       const root = createMockNode({role: 'application'});
@@ -372,7 +368,7 @@ SYNC_TEST_F(
       assertEquals(result.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupEmptyNodeGroup', function() {
       const nodeGroup = {nodes: []};
@@ -382,7 +378,7 @@ SYNC_TEST_F(
       assertEquals(result.offset, -1);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupForward', function() {
       // The nodeGroup has four inline text nodes and one static text node.
@@ -420,7 +416,7 @@ SYNC_TEST_F(
       assertEquals(result.nodes.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupBackward', function() {
       // The nodeGroup has four inline text nodes and one static text node.
@@ -461,7 +457,7 @@ SYNC_TEST_F(
       assertEquals(result.nodes.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupForwardWithEmptyTail', function() {
       // The nodeGroup consists of three inline text nodes: "Hello", "world ",
@@ -487,7 +483,7 @@ SYNC_TEST_F(
       assertEquals(result.nodes[0].name, 'world ');
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupBackwardWithEmptyHeads', function() {
       // The nodeGroup consists of three inline text nodes: " ", " Hello",
@@ -513,7 +509,7 @@ SYNC_TEST_F(
       assertEquals(result.nodes[0].name, ' Hello');
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupForwardFromPartialParagraph',
     function() {
@@ -534,7 +530,7 @@ SYNC_TEST_F(
       assertEquals(result.offset, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNextNodesInParagraphFromNodeGroupBackwardFromPartialParagraph',
     function() {
@@ -556,7 +552,7 @@ SYNC_TEST_F(
       assertEquals(result.offset, 8);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest', 'GetNextNodesInParagraph',
     function() {
       const root = createMockNode({role: 'rootWebArea'});
@@ -602,7 +598,7 @@ SYNC_TEST_F(
       assertEquals(result.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest', 'GetNodesForNextSentence',
     function() {
       const root = createMockNode({role: 'rootWebArea'});
@@ -613,14 +609,14 @@ SYNC_TEST_F(
         parent: paragraph1,
         root,
         name: 'Line 1.',
-        sentenceStarts: [0]
+        sentenceStarts: [0],
       });
       const text2 = createMockNode({
         role: 'staticText',
         parent: paragraph1,
         root,
         name: 'Line 2.',
-        sentenceStarts: [0]
+        sentenceStarts: [0],
       });
       const paragraph2 = createMockNode(
           {role: 'paragraph', display: 'block', parent: root, root});
@@ -629,14 +625,14 @@ SYNC_TEST_F(
         parent: paragraph2,
         root,
         name: 'Line 3.',
-        sentenceStarts: [0]
+        sentenceStarts: [0],
       });
       const text4 = createMockNode({
         role: 'staticText',
         parent: paragraph2,
         root,
         name: 'Line 4.',
-        sentenceStarts: [0]
+        sentenceStarts: [0],
       });
       const nodeGroupForParagraph1 = ParagraphUtils.buildNodeGroup(
           [text1, text2], 0 /* index */, {splitOnLanguage: false});
@@ -648,7 +644,8 @@ SYNC_TEST_F(
       // Second paragraph has another two sentences.
       assertEquals(nodeGroupForParagraph2.text, 'Line 3. Line 4. ');
 
-      let nodes, offset;
+      let nodes;
+      let offset;
       // Navigating forward from the first sentence returns the second sentence.
       ({nodes, offset} = NodeNavigationUtils.getNodesForNextSentence(
            nodeGroupForParagraph1, 0 /* currentCharIndex */,
@@ -692,7 +689,7 @@ SYNC_TEST_F(
       ({nodes, offset} = NodeNavigationUtils.getNodesForNextSentence(
            nodeGroupForParagraph1, 8 /* currentCharIndex */,
            constants.Dir.FORWARD,
-           (nodes) => !(nodes.find(
+           nodes => !(nodes.find(
                n => n.parent ===
                    paragraph2) /* filter out nodes belong to paragraph 2 */)));
       assertEquals(nodes.length, 0);
@@ -741,13 +738,13 @@ SYNC_TEST_F(
       ({nodes, offset} = NodeNavigationUtils.getNodesForNextSentence(
            nodeGroupForParagraph2, 0 /* currentCharIndex */,
            constants.Dir.BACKWARD,
-           (nodes) => !(nodes.find(
+           nodes => !(nodes.find(
                n => n.parent ===
                    paragraph1) /* filter out nodes belong to paragraph 1 */)));
       assertEquals(nodes.length, 0);
     });
 
-SYNC_TEST_F(
+AX_TEST_F(
     'SelectToSpeakNodeNavigationUtilsUnitTest',
     'GetNodesForNextSentenceWithChoppedNodes', function() {
       const root = createMockNode({role: 'rootWebArea'});
@@ -758,35 +755,35 @@ SYNC_TEST_F(
         parent: paragraph1,
         root,
         name: 'Line 1.',
-        sentenceStarts: [0]
+        sentenceStarts: [0],
       });
       const text2 = createMockNode({
         role: 'staticText',
         parent: paragraph1,
         root,
         name: 'This sentence',
-        sentenceStarts: [0]
+        sentenceStarts: [0],
       });
       const text3 = createMockNode({
         role: 'staticText',
         parent: paragraph1,
         root,
         name: 'is chopped. Another',
-        sentenceStarts: [12]
+        sentenceStarts: [12],
       });
       const text4 = createMockNode({
         role: 'staticText',
         parent: paragraph1,
         root,
         name: 'chopped',
-        sentenceStarts: []
+        sentenceStarts: [],
       });
       const text5 = createMockNode({
         role: 'staticText',
         parent: paragraph1,
         root,
         name: 'sentence.',
-        sentenceStarts: []
+        sentenceStarts: [],
       });
       const nodeGroup = ParagraphUtils.buildNodeGroup(
           [text1, text2, text3, text4, text5], 0 /* index */,
@@ -797,7 +794,9 @@ SYNC_TEST_F(
           nodeGroup.text,
           'Line 1. This sentence is chopped. Another chopped sentence. ');
 
-      let nodes, offset, result;
+      let nodes;
+      let offset;
+      let result;
       // Navigating forward from the first word returns the content starting
       // from the second sentence.
       ({nodes, offset} = NodeNavigationUtils.getNodesForNextSentence(

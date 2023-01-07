@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/aura/window.h"
 
@@ -25,21 +27,32 @@ enum InstanceState {
 };
 
 // Instance is used to represent an App Instance, or a running app.
+// `instance_id_` is the unique id for instance. For any two instances, if the
+// instance id is the same, the app id must be the same, well, the window might
+// be different. For example, When a web app opened in tab is pulled to a new
+// Lacros window, the window might be changed. Instance should exist on Ash side
+// only.
 class Instance {
  public:
-  Instance(const std::string& app_id, aura::Window* window);
-  ~Instance();
+  Instance(const std::string& app_id,
+           const base::UnguessableToken& instance_id,
+           aura::Window* window);
 
   Instance(const Instance&) = delete;
   Instance& operator=(const Instance&) = delete;
+  ~Instance();
 
   std::unique_ptr<Instance> Clone();
 
   void SetLaunchId(const std::string& launch_id) { launch_id_ = launch_id; }
   void UpdateState(InstanceState state, const base::Time& last_updated_time);
-  void SetBrowserContext(content::BrowserContext* browser_context);
+  void SetBrowserContext(content::BrowserContext* browser_context) {
+    browser_context_ = browser_context;
+  }
+  void SetWindow(aura::Window* window) { window_ = window; }
 
   const std::string& AppId() const { return app_id_; }
+  const base::UnguessableToken& InstanceId() const { return instance_id_; }
   aura::Window* Window() const { return window_; }
   const std::string& LaunchId() const { return launch_id_; }
   InstanceState State() const { return state_; }
@@ -47,15 +60,18 @@ class Instance {
   content::BrowserContext* BrowserContext() const { return browser_context_; }
 
  private:
-  std::string app_id_;
+  friend class InstanceRegistry;
+  friend class InstanceTest;
 
-  // window_ is owned by ash and will be deleted when the user closes the
-  // window. Instance itself doesn't observe the window. The window's observer
-  // is responsible to delete Instance from InstanceRegistry when the window is
-  // destroyed.
-  aura::Window* window_;
+  const std::string app_id_;
+
+  // The unique id for instance.
+  base::UnguessableToken instance_id_;
+
+  aura::Window* window_ = nullptr;
+
   std::string launch_id_;
-  InstanceState state_;
+  InstanceState state_ = InstanceState::kUnknown;
   base::Time last_updated_time_;
   content::BrowserContext* browser_context_ = nullptr;
 };

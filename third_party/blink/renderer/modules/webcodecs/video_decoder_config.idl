@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,26 +15,21 @@ dictionary VideoDecoderConfig {
   // avcC, vpcC, or etc.
   // TODO(sandersd): Define what happens if the parsed description differs from
   // the metadata below.
-  BufferSource description;
+  AllowSharedBufferSource description;
 
   // Hint about the encoded size of the content.
-  // TODO(sandersd): Draft spec marks these as required.
-  unsigned long codedWidth;
-  unsigned long codedHeight;
+  [EnforceRange] unsigned long codedWidth;
+  [EnforceRange] unsigned long codedHeight;
 
-  // Hint about the visible region of the content.
-  unsigned long cropLeft;
-  unsigned long cropTop;
-  unsigned long cropWidth;
-  unsigned long cropHeight;
+  // Display aspect ratio of the content.
+  [EnforceRange] unsigned long displayAspectWidth;
+  [EnforceRange] unsigned long displayAspectHeight;
 
-  // Hint about the pixel aspect ratio of the content.
-  unsigned long displayWidth;
-  unsigned long displayHeight;
+  // Hint about the color space of the content.
+  VideoColorSpaceInit colorSpace;
 
-  // TODO(sandersd): color space.
-  // TODO(sandersd): Constraints (sequential access) and requirements
-  // (imagebitmap, colorspace conversion).
+  HardwarePreference hardwareAcceleration = "no-preference";
 
-  HardwarePreference hardwareAcceleration = "allow";
+  // Hint that decoders should be configured for latency versus throughput.
+  boolean optimizeForLatency;
 };

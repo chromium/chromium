@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/timing/task_attribution_timing.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -20,10 +19,12 @@ PerformanceLongTaskTiming::PerformanceLongTaskTiming(
     const AtomicString& culprit_type,
     const AtomicString& culprit_src,
     const AtomicString& culprit_id,
-    const AtomicString& culprit_name)
-    : PerformanceEntry(duration, name, start_time) {
+    const AtomicString& culprit_name,
+    const uint32_t navigation_id)
+    : PerformanceEntry(duration, name, start_time, navigation_id) {
   auto* attribution_entry = MakeGarbageCollected<TaskAttributionTiming>(
-      "unknown", culprit_type, culprit_src, culprit_id, culprit_name);
+      "unknown", culprit_type, culprit_src, culprit_id, culprit_name,
+      navigation_id);
   attribution_.push_back(*attribution_entry);
 }
 

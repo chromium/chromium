@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@ NTPTile::~NTPTile() {}
 bool operator==(const NTPTile& a, const NTPTile& b) {
   return (a.title == b.title) && (a.url == b.url) && (a.source == b.source) &&
          (a.title_source == b.title_source) &&
-         (a.allowlist_icon_path == b.allowlist_icon_path) &&
          (a.favicon_url == b.favicon_url) &&
          (a.from_most_visited == b.from_most_visited);
 }

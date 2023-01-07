@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -127,9 +127,9 @@ TEST_F(ApplyBlockElementCommandTest, InsertPlaceHolderAtDisconnectedPosition) {
   auto* command = MakeGarbageCollected<FormatBlockCommand>(GetDocument(),
                                                            html_names::kPreTag);
   // Crash happens here.
-  EXPECT_FALSE(command->Apply());
+  EXPECT_TRUE(command->Apply());
   EXPECT_EQ(
-      "<pre>|<input></pre><input class=\"input\" style=\"position:absolute\">",
+      "<pre>^<input>|</pre><input class=\"input\" style=\"position:absolute\">",
       GetSelectionTextFromBody());
 }
 
@@ -212,6 +212,165 @@ TEST_F(ApplyBlockElementCommandTest, OutdentEmptyBlockquote) {
     command->Apply();
     EXPECT_EQ(expectations[i], GetSelectionTextFromBody());
   }
+}
+
+// This is a regression test for https://crbug.com/1188871
+TEST_F(ApplyBlockElementCommandTest, IndentSVGWithTable) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(SetSelectionTextToBody("<svg><foreignObject>|"
+                                                  "<table>&#x20;</table>&#x20;x"
+                                                  "</foreignObject></svg>"),
+                           SetSelectionOptions());
+  auto* command = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kIndent);
+
+  // Shouldn't crash here.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ(
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">"
+      "<svg><foreignObject><table>| </table></foreignObject></svg>"
+      "</blockquote>"
+      "<svg><foreignObject> x</foreignObject></svg>",
+      GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/673056
+TEST_F(ApplyBlockElementCommandTest, IndentOutdentLinesDoubleBr) {
+  Selection().SetSelection(SetSelectionTextToBody("<div contenteditable>"
+                                                  "|a<br><br>"
+                                                  "b"
+                                                  "</div>"),
+                           SetSelectionOptions());
+
+  auto* indent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kIndent);
+  EXPECT_TRUE(indent->Apply());
+
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">"
+      "|a"
+      "</blockquote>"
+      "<br>"
+      "b"
+      "</div>",
+      GetSelectionTextFromBody());
+
+  auto* outdent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kOutdent);
+
+  // When moving "a" out of the blockquote, the empty line should be preserved.
+  EXPECT_TRUE(outdent->Apply());
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "|a"
+      "<br>"
+      "<br>"
+      "b"
+      "</div>",
+      GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/673056
+TEST_F(ApplyBlockElementCommandTest, IndentOutdentLinesCrash) {
+  Selection().SetSelection(SetSelectionTextToBody("<div contenteditable>"
+                                                  "^a<br>"
+                                                  "b|<br><br>"
+                                                  "c"
+                                                  "</div>"),
+                           SetSelectionOptions());
+
+  auto* indent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kIndent);
+
+  EXPECT_TRUE(indent->Apply());
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">"
+      "^a<br>"
+      "b|"
+      "</blockquote>"
+      "<br>"
+      "c"
+      "</div>",
+      GetSelectionTextFromBody());
+
+  auto* outdent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kOutdent);
+
+  // Shouldn't crash, and the empty line between b and c should be preserved.
+  // TODO(editing-dev): Get rid of the empty blockquote.
+  EXPECT_TRUE(outdent->Apply());
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: "
+      "0px;\"></blockquote>"
+      "^a<br>"
+      "b|<br><br>"
+      "c"
+      "</div>",
+      GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/673056
+TEST_F(ApplyBlockElementCommandTest, IndentOutdentLinesWithJunkCrash) {
+  Selection().SetSelection(SetSelectionTextToBody("<div contenteditable>"
+                                                  "^a<br>"
+                                                  "b|<br>"
+                                                  "<!----><br>"
+                                                  "c"
+                                                  "</div>"),
+                           SetSelectionOptions());
+
+  auto* indent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kIndent);
+
+  EXPECT_TRUE(indent->Apply());
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">"
+      "^a<br>"
+      "b|"
+      "</blockquote>"
+      "<!----><br>"
+      "c"
+      "</div>",
+      GetSelectionTextFromBody());
+
+  auto* outdent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kOutdent);
+
+  // Shouldn't crash.
+  EXPECT_TRUE(outdent->Apply());
+
+  // TODO(editing-dev): The result is wrong. We should preserve the empty line
+  // between b and c, and get rid of the empty blockquote.
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: "
+      "0px;\"></blockquote>"
+      "^a<br>"
+      "b|"
+      "<!----><br>"
+      "c"
+      "</div>",
+      GetSelectionTextFromBody());
+}
+
+// http://crbug.com/1264470
+TEST_F(ApplyBlockElementCommandTest, SplitTextNodeWithJustNewline) {
+  InsertStyleElement("b {-webkit-text-security: square;}");
+  Selection().SetSelection(SetSelectionTextToBody("<pre contenteditable>"
+                                                  "<b>|<p>X</p>\n</b>"
+                                                  "</pre>"),
+                           SetSelectionOptions());
+
+  auto* const format_block = MakeGarbageCollected<FormatBlockCommand>(
+      GetDocument(), html_names::kDivTag);
+
+  ASSERT_TRUE(format_block->Apply());
+  EXPECT_EQ("<pre contenteditable><b><div>|X</div>\n</b></pre>",
+            GetSelectionTextFromBody());
 }
 
 }  // namespace blink

@@ -1,0 +1,8 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^favicon_loader.mm": [
+    "+ios/chrome/browser/ui/util/uikit_ui_util.h",
+    "+ios/chrome/common/ui/favicon/favicon_attributes.h",
+  ],
+}
+

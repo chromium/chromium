@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 // Wrapper to show address cells in a ChromeTableViewController.
 @interface ManualFillAddressItem : TableViewItem
 
-// Inits an address with a |profile| and the |delegate| for user selection.
+// Inits an address with a `profile` and the `delegate` for user selection.
 - (instancetype)initWithAddress:(ManualFillAddress*)address
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
     NS_DESIGNATED_INITIALIZER;
@@ -30,7 +30,7 @@
 // and sendable the data to the delegate.
 @interface ManualFillAddressCell : TableViewCell
 
-// Updates the cell with address and the |delegate| to be notified.
+// Updates the cell with address and the `delegate` to be notified.
 - (void)setUpWithAddress:(ManualFillAddress*)profile
          contentInjector:(id<ManualFillContentInjector>)contentInjector;
 

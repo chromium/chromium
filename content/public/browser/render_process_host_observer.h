@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,6 +39,8 @@ class CONTENT_EXPORT RenderProcessHostObserver : public base::CheckedObserver {
   // active renderer process for the top-level frame; for code that needs to be
   // a WebContentsObserver anyway, consider whether that API might be a better
   // choice.
+  //
+  // This is not called in --single-process mode.
   virtual void RenderProcessExited(RenderProcessHost* host,
                                    const ChildProcessTerminationInfo& info) {}
 

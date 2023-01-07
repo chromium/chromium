@@ -1,0 +1,47 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module sharing.mojom;
+
+import "chromeos/ash/services/nearby/public/mojom/webrtc_signaling_messenger.mojom";
+import "url/mojom/url.mojom";
+import "services/network/public/mojom/mdns_responder.mojom";
+import "services/network/public/mojom/p2p.mojom";
+
+// Represents an ICE server to be used for communication.
+struct IceServer {
+  // URLs of this server.
+  array<url.mojom.Url> urls;
+  // Username for authentication with this server.
+  string? username;
+  // Credential for authentication with this server.
+  string? credential;
+};
+
+// Used to fetch ice servers for WebRtc communication. Implemented in browser
+// process.
+interface IceConfigFetcher {
+  // Returns a list of ice servers for WebRtc communication.
+  GetIceServers() => (array<IceServer> ice_servers);
+};
+
+// Hosted in the browser process to allow the Sharing utility process to create
+// an MdnsResponder on demand.
+interface MdnsResponderFactory {
+  // Creates an MdnsResponder instance.
+  CreateMdnsResponder(
+      pending_receiver<network.mojom.MdnsResponder> responder_receiver);
+};
+
+// Collection of dependencies required by WebRTC medium.
+struct WebRtcDependencies {
+  // Used to allocate p2p sockets via Chromium's network service.
+  pending_remote<network.mojom.P2PSocketManager> socket_manager;
+  // Used to create an mDNS responder interface on demand.
+  pending_remote<MdnsResponderFactory> mdns_responder_factory;
+  // Used to fetch STUN and TURN servers for establishing WebRTC connection.
+  pending_remote<IceConfigFetcher> ice_config_fetcher;
+  // Used to send and receive SDP messages for establishing WebRTC connection.
+  pending_remote<WebRtcSignalingMessenger> messenger;
+};

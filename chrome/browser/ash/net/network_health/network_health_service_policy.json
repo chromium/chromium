@@ -1,0 +1,17 @@
+[
+  {
+    // This is the selinux security context of ash chrome.
+    "identity": "u:r:cros_browser:s0",
+    "own": [
+      "ChromiumNetworkDiagnosticsRoutines",
+      "ChromiumNetworkHealth"
+    ]
+  },
+  {
+    "identity": "u:r:cros_healthd:s0",
+    "request": [
+      "ChromiumNetworkDiagnosticsRoutines",
+      "ChromiumNetworkHealth"
+    ]
+  }
+]

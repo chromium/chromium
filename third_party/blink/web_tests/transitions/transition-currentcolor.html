@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
+<script src="../resources/gesture-util.js"></script>
 <style>
 div {
   border-left-color: currentColor;
@@ -11,17 +12,20 @@ div {
 <div id="target1"></div>
 <div id="target2"></div>
 <script>
-var test1 = async_test("A property set to currentColor shouldn't transition when color changes");
-var test2 = async_test("A property set should transition from currentColor to an explicit color");
-requestAnimationFrame(function() {
-  target1.style.color = "orange";
-  target2.style.borderLeftColor = "orange";
-  requestAnimationFrame(function() {
-    // Only 'color' should transition
-    test1.step(function() { assert_equals(target1.getAnimations().length, 1); });
-    test2.step(function() { assert_equals(target2.getAnimations().length, 1); });
-    test1.done();
-    test2.done();
-  });
-});
+
+window.onload = async () => {
+  promise_test(async t => {
+    await waitForCompositorCommit();
+    target1.style.color = "orange";
+    await raf();
+    assert_equals(target1.getAnimations().length, 1);
+  }, 'A property set to currentColor shouldn\'t transition when color changes');
+
+  promise_test(async t => {
+    await waitForCompositorCommit();
+    target2.style.borderLeftColor = "orange";
+    await raf();
+    assert_equals(target2.getAnimations().length, 1);
+  }, 'A property set should transition from currentColor to an explicit color');
+}
 </script>

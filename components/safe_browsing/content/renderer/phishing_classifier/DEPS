@@ -1,10 +1,6 @@
 include_rules = [
   "+components/paint_preview/common",
-  "+components/safe_browsing/content/renderer",
-  "+components/safe_browsing/core/common",
-  "+components/safe_browsing/core/proto/csd.pb.h",
-  "+components/safe_browsing/core/proto/client_model.pb.h",
-  "+components/safe_browsing/core/features.h",
+  "+components/optimization_guide",
   "+cc/paint",
   "+crypto",
   "+skia/ext",

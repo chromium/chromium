@@ -1,0 +1,33 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/ambient/resources/ambient_animation_static_resources.h"
+
+#include "base/logging.h"
+
+namespace ash {
+
+// This stub source file is only built on platforms that don't support the
+// ambient animation resources. 2 things are required currently for support:
+// 1) An internal chrome-branded checkout.
+// 2) The include_ash_ambient_animation_resources GN flag must be true.
+// Without these, the ambient animation code will still compile due to the
+// dummy definitions in this stub, but any resource loading will immediately
+// fail with a FATAL error.
+
+// static
+std::unique_ptr<AmbientAnimationStaticResources>
+AmbientAnimationStaticResources::Create(AmbientAnimationTheme theme,
+                                        bool serializable) {
+  if (theme == AmbientAnimationTheme::kSlideshow)
+    return nullptr;
+
+  LOG(FATAL) << "Ambient animation resources are not available on this build. "
+                "To enable, an internal chrome-branded checkout is required, "
+                "and the include_ash_ambient_animation_resources GN flag must "
+                "be true.";
+  return nullptr;
+}
+
+}  // namespace ash

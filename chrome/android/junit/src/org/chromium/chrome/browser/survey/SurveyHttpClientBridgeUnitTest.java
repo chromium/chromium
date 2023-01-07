@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.survey;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,6 +20,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.JniMocker;
@@ -31,6 +33,7 @@ import java.util.Map;
 
 /** Unit test for {@link SurveyHttpClientBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@SuppressWarnings("DoNotMock") // Mocks GURL
 public class SurveyHttpClientBridgeUnitTest {
     private static final long FAKE_NATIVE_POINTER = 123456789L;
 
@@ -55,14 +58,19 @@ public class SurveyHttpClientBridgeUnitTest {
 
     @Before
     public void setUp() {
+        ThreadUtils.setThreadAssertsDisabledForTesting(true);
         mMocker.mock(SurveyHttpClientBridgeJni.TEST_HOOKS, mNativeMock);
-
         Mockito.when(mNativeMock.init(HttpClientType.SURVEY, mMockProfile))
                 .thenReturn(FAKE_NATIVE_POINTER);
 
         mSurveyHttpClientBridge = new SurveyHttpClientBridge(HttpClientType.SURVEY, mMockProfile);
 
         Mockito.verify(mNativeMock).init(HttpClientType.SURVEY, mMockProfile);
+    }
+
+    @After
+    public void tearDown() {
+        ThreadUtils.setThreadAssertsDisabledForTesting(false);
     }
 
     @Test

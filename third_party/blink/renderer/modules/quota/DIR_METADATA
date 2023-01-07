@@ -1,4 +1,2 @@
-monorail {
-  component: "Blink>Storage>Quota"
-}
+mixins: "//storage/browser/quota/COMMON_METADATA"
 team_email: "storage-dev@chromium.org"

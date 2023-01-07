@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests that adding an @import with data URI does not lead to stylesheet collection crbug.com/644719\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <!DOCTYPE html>
@@ -19,7 +19,7 @@
 
   function nodeSelected(node) {
     nodeId = node.id;
-    TestRunner.cssModel.matchedStylesPromise(nodeId).then(matchedStylesBefore);
+    TestRunner.cssModel.getMatchedStyles(nodeId).then(matchedStylesBefore);
   }
 
   async function matchedStylesBefore(matchedResult) {

@@ -1,0 +1,67 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(!is_android)
+
+preprocess_folder = "$target_gen_dir/preprocessed"
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = [ "user_education_internals.html" ]
+}
+
+preprocess_if_expr("preprocess_gen") {
+  in_folder = target_gen_dir
+  out_folder = preprocess_folder
+  in_files = [ "user_education_internals.html.ts" ]
+  deps = [ ":html_wrapper_files" ]
+}
+
+preprocess_if_expr("preprocess_src") {
+  out_folder = preprocess_folder
+  in_files = [ "user_education_internals.ts" ]
+}
+
+copy("copy_mojo") {
+  deps = [
+    "//chrome/browser/ui/webui/internals/user_education:mojo_bindings_webui_js",
+  ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/internals/user_education/user_education_internals.mojom-webui.js" ]
+  outputs = [ "$preprocess_folder/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = preprocess_folder
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "user_education_internals.ts",
+    "user_education_internals.html.ts",
+    "user_education_internals.mojom-webui.js",
+  ]
+  deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/help_bubble:build_ts",
+  ]
+  extra_deps = [
+    ":copy_mojo",
+    ":preprocess_gen",
+    ":preprocess_src",
+  ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "user_education_internals"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files = [ "index.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  deps = [ ":build_ts" ]
+  resource_path_prefix = "user-education"
+}

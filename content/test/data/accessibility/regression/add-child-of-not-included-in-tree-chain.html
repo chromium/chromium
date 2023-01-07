@@ -1,0 +1,65 @@
+<!--
+@WAIT-FOR:Done
+@BLINK-ALLOW:htmlTag*
+-->
+<html>
+<body>
+  <!-- This whole subtree is display:none, so all nodes will be
+       ignored, and the default will be for all of them to be
+       not included in the tree unless there's a good reason to
+       include them.
+
+       Adding lang="en" forces a node to be included in the tree
+       without many other side effects, so when you see lang="en"
+       on a node here, that ensures it will be included in the tree.
+       The other nodes will not. -->
+  <div hidden>
+    <h2 lang="en">
+      <div>
+        <here>
+        </here>
+      </div>
+    </h2>
+  </div>
+
+  <div role="group" id="test-status" aria-label="running"></div>
+
+  <script>
+    setTimeout(() => {
+        // After the page finishes loading...
+        //
+        // Add a paragraph child to the node <here> and include it
+        // in the tree (using lang=en). Because <here> and its
+        // parent <div> are both not included in the tree, it
+        // should be added as a child of the heading - but a bug
+        // was preventing this from happening as it should.
+        let here = document.querySelector('here');
+        let child = document.createElement('p');
+        child.setAttribute('lang', 'en');
+        here.appendChild(child);
+
+        // Now add a child of that paragraph and include it in the
+        // tree too.
+        let grandchild = document.createElement('li');
+        grandchild.setAttribute('lang', 'en');
+        child.appendChild(grandchild);
+
+        // Finally, change the role on this grandchild. This is to
+        // check for a totally separate regression where an event
+        // that fires on a node that's not reachable can lead to
+        // an endless loop in SendPendingAccessibilityEvents.
+        grandchild.setAttribute('role', 'button');
+    }, 100);
+
+    // Make the test end after some time has passed, because one
+    // possible regression this can cause is continuously sending
+    // the same event over and over again. The test needs to run
+    // long enough for it to either generate abnormal logspam or
+    // run out of memory or something like that.
+    setTimeout(() => {
+        document.getElementById('test-status').setAttribute('aria-label', 'Done');
+    }, 600);
+
+  </script>
+</body>
+</html>

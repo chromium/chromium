@@ -1,0 +1,25 @@
+caption: Switch the primary mouse button to the right button
+desc: |-
+  Switch the primary mouse button to the right button.
+
+            If this policy is set to enabled, the right button of the mouse will always be the primary key.
+
+            If this policy is set to disabled, the left button of the mouse will always be the primary key.
+
+            If you set this policy, users cannot change or override it.
+
+            If this policy is left unset, the left button of the mouse will be the primary key initially, but can be switched by the user anytime.
+example_value: true
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- amraboelkher@chromium.org
+- emaxx@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:81-
+tags: []
+type: main

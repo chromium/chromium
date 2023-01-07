@@ -1,15 +1,29 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 public_autofill_assistant_java_sources = [
-  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantActionHandler.java",
-  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantDirectAction.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantAccessTokenUtilChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantAddressEditorAutofill.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantAutofillUtilChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantBrowserControlsChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantContactEditorAutofill.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDependenciesChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantDependencyUtilsChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantEditorFactoryChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantFeedbackUtilChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantInfoPageUtilChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantModuleInstallUiProviderChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantPaymentInstrumentEditorAutofill.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantProfileImageUtilChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantSettingsUtilChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantSnackbarFactoryChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantStaticDependenciesChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantTabChangeObserverChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantTabObscuringUtilChrome.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantTabUtilChrome.java",
   "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantDirectActionHandler.java",
   "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantFacade.java",
-  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantMetrics.java",
-  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantModuleEntry.java",
-  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantModuleEntryProvider.java",
-  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantPreferencesUtil.java",
-  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/TriggerContext.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantHistoryDeletionObserver.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTabHelper.java",
 ]

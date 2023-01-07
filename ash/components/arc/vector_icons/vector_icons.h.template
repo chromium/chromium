@@ -1,0 +1,26 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// vector_icons.h.template is used to generate vector_icons.h. Edit the former
+// rather than the latter.
+
+#ifndef ASH_COMPONENTS_ARC_VECTOR_ICONS_VECTOR_ICONS_H_
+#define ASH_COMPONENTS_ARC_VECTOR_ICONS_VECTOR_ICONS_H_
+
+namespace gfx {
+struct VectorIcon;
+}
+
+namespace arc {
+
+#define VECTOR_ICON_TEMPLATE_H(icon_name) \
+extern const gfx::VectorIcon icon_name;
+
+TEMPLATE_PLACEHOLDER
+
+#undef VECTOR_ICON_TEMPLATE_H
+
+}
+
+#endif  // ASH_COMPONENTS_ARC_VECTOR_ICONS_VECTOR_ICONS_H_

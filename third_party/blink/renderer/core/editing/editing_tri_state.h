@@ -32,4 +32,4 @@ enum class EditingTriState { kFalse, kTrue, kMixed };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_EDITING_TRI_STATE_H_

@@ -1,8 +1,9 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//components/safe_browsing/buildflags.gni")
 
 generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingBridge.java" ]
@@ -15,10 +16,21 @@ source_set("android") {
     "//components/password_manager/core/browser/leak_detection",
     "//components/password_manager/core/common",
     "//components/prefs",
-    "//components/safe_browsing/core:file_type_policies",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager",
+
+    # NOTE: This target cannot depend on //chrome/browser as the latter
+    # indirectly depends on it. As a result, we need to add some dependencies
+    # explicitly here to avoid flaky build failures that otherwise can occur.
+    # TODO(crbug.com/1222101): Resolve the circular dependency structure so
+    # that workarounds aren't needed.
+    "//chrome/common",
+    "//content/public/browser",
   ]
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
+  }
 }
 
 android_library("java") {
@@ -34,6 +46,8 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
@@ -73,7 +87,7 @@ android_library("javatests") {
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/settings:test_support_java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/policy/android:policy_java_test_support",

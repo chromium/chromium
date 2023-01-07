@@ -1,0 +1,68 @@
+{
+  include: [
+    "syslog/client.shard.cml",
+  ],
+  // Add capability providers.
+  children: [
+    {
+      name: "build-info-service",
+      url: "fuchsia-pkg://fuchsia.com/build-info-service#meta/build-info.cm",
+    },
+    {
+      name: "intl_property_manager",
+      url: "fuchsia-pkg://fuchsia.com/intl_property_manager#meta/intl_property_manager.cm",
+    },
+  ],
+  offer: [
+    {
+      directory: "build-info",
+      from: "parent",
+      to: "#build-info-service",
+    },
+    {
+      protocol: "fuchsia.logger.LogSink",
+      from: "parent",
+      to: [ "#build-info-service", "#intl_property_manager" ],
+    }
+  ],
+  use: [
+    {
+      directory: "config-data",
+      rights: [ "r*" ],
+      path: "/config/data",
+    },
+    {
+      storage: "cache",
+      path: "/cache",
+    },
+    {
+      storage: "custom_artifacts",
+      rights: [ "rw*" ],
+      path: "/custom_artifacts",
+    },
+    {
+      storage: "data",
+      path: "/data",
+    },
+    {
+      storage: "tmp",
+      path: "/tmp",
+    },
+    {
+      protocol: [ "fuchsia.buildinfo.Provider" ],
+      from: "#build-info-service",
+    },
+    {
+      protocol: [ "fuchsia.intl.PropertyProvider" ],
+      from: "#intl_property_manager",
+    },
+    {
+      protocol: [
+        "fuchsia.hwinfo.Product",
+        "fuchsia.media.ProfileProvider",
+        "fuchsia.process.Launcher",
+        "fuchsia.sys.Loader",
+      ],
+    },
+  ],
+}

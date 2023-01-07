@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include "base/format_macros.h"
 #include "base/json/string_escape.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/process/process_handle.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -20,6 +20,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
 #include "base/trace_event/traced_value.h"
+#include "build/build_config.h"
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
@@ -31,34 +32,36 @@ namespace perfetto {
 namespace legacy {
 
 template <>
-bool ConvertThreadId(const ::base::PlatformThreadId& thread,
-                     uint64_t* track_uuid_out,
-                     int32_t* pid_override_out,
-                     int32_t* tid_override_out) {
-  // Only support threads in the current process.
-  *track_uuid_out = perfetto::ThreadTrack::ForThread(
-                        static_cast<base::PlatformThreadId>(thread))
-                        .uuid;
-  return true;
+perfetto::ThreadTrack ConvertThreadId(const ::base::PlatformThreadId& thread) {
+  return perfetto::ThreadTrack::ForThread(static_cast<int32_t>(thread));
 }
+
+#if BUILDFLAG(IS_WIN)
+template <>
+perfetto::ThreadTrack ConvertThreadId(const int& thread) {
+  return perfetto::ThreadTrack::ForThread(static_cast<int32_t>(thread));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace legacy
 
-template <>
-TraceTimestamp ConvertTimestampToTraceTimeNs(const ::base::TimeTicks& ticks) {
-  return {TrackEvent::GetTraceClockId(), ticks.since_origin().InNanoseconds()};
+TraceTimestamp
+TraceTimestampTraits<::base::TimeTicks>::ConvertTimestampToTraceTimeNs(
+    const ::base::TimeTicks& ticks) {
+  return {TrackEvent::GetTraceClockId(),
+          static_cast<uint64_t>(ticks.since_origin().InNanoseconds())};
 }
 
 namespace internal {
 
 void WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation,
                           ::base::TimeTicks ticks) {
-  annotation->set_uint_value(ticks.since_origin().InMilliseconds());
+  annotation->set_int_value(ticks.since_origin().InMilliseconds());
 }
 
 void WriteDebugAnnotation(protos::pbzero::DebugAnnotation* annotation,
                           ::base::Time time) {
-  annotation->set_uint_value(time.since_origin().InMilliseconds());
+  annotation->set_int_value(time.since_origin().InMilliseconds());
 }
 
 }  // namespace internal
@@ -79,10 +82,9 @@ static_assert(trace_event_internal::kGlobalScope == nullptr,
 
 TraceEvent::TraceEvent() = default;
 
-TraceEvent::TraceEvent(int thread_id,
+TraceEvent::TraceEvent(PlatformThreadId thread_id,
                        TimeTicks timestamp,
                        ThreadTicks thread_timestamp,
-                       ThreadInstructionCount thread_instruction_count,
                        char phase,
                        const unsigned char* category_group_enabled,
                        const char* name,
@@ -93,7 +95,6 @@ TraceEvent::TraceEvent(int thread_id,
                        unsigned int flags)
     : timestamp_(timestamp),
       thread_timestamp_(thread_timestamp),
-      thread_instruction_count_(thread_instruction_count),
       scope_(scope),
       id_(id),
       category_group_enabled_(category_group_enabled),
@@ -114,15 +115,13 @@ void TraceEvent::Reset() {
   // Only reset fields that won't be initialized in Reset(int, ...), or that may
   // hold references to other objects.
   duration_ = TimeDelta::FromInternalValue(-1);
-  thread_instruction_delta_ = ThreadInstructionDelta();
   args_.Reset();
   parameter_copy_storage_.Reset();
 }
 
-void TraceEvent::Reset(int thread_id,
+void TraceEvent::Reset(PlatformThreadId thread_id,
                        TimeTicks timestamp,
                        ThreadTicks thread_timestamp,
-                       ThreadInstructionCount thread_instruction_count,
                        char phase,
                        const unsigned char* category_group_enabled,
                        const char* name,
@@ -141,7 +140,6 @@ void TraceEvent::Reset(int thread_id,
   thread_id_ = thread_id;
   flags_ = flags;
   bind_id_ = bind_id;
-  thread_instruction_count_ = thread_instruction_count;
   phase_ = phase;
 
   InitArgs(args);
@@ -155,8 +153,7 @@ void TraceEvent::InitArgs(TraceArguments* args) {
 }
 
 void TraceEvent::UpdateDuration(const TimeTicks& now,
-                                const ThreadTicks& thread_now,
-                                ThreadInstructionCount thread_instruction_now) {
+                                const ThreadTicks& thread_now) {
   DCHECK_EQ(duration_.ToInternalValue(), -1);
   duration_ = now - timestamp_;
 
@@ -164,11 +161,6 @@ void TraceEvent::UpdateDuration(const TimeTicks& now,
   // initialized when it was recorded.
   if (thread_timestamp_ != ThreadTicks())
     thread_duration_ = thread_now - thread_timestamp_;
-
-  if (!thread_instruction_count_.is_null()) {
-    thread_instruction_delta_ =
-        thread_instruction_now - thread_instruction_count_;
-  }
 }
 
 void TraceEvent::EstimateTraceMemoryOverhead(
@@ -186,12 +178,12 @@ void TraceEvent::AppendAsJSON(
     std::string* out,
     const ArgumentFilterPredicate& argument_filter_predicate) const {
   int64_t time_int64 = timestamp_.ToInternalValue();
-  int process_id;
-  int thread_id;
+  ProcessId process_id;
+  PlatformThreadId thread_id;
   if ((flags_ & TRACE_EVENT_FLAG_HAS_PROCESS_ID) &&
       process_id_ != kNullProcessId) {
     process_id = process_id_;
-    thread_id = -1;
+    thread_id = static_cast<PlatformThreadId>(-1);
   } else {
     process_id = TraceLog::GetInstance()->process_id();
     thread_id = thread_id_;
@@ -201,9 +193,11 @@ void TraceEvent::AppendAsJSON(
 
   // Category group checked at category creation time.
   DCHECK(!strchr(name_, '"'));
-  StringAppendF(out, "{\"pid\":%i,\"tid\":%i,\"ts\":%" PRId64
-                     ",\"ph\":\"%c\",\"cat\":\"%s\",\"name\":",
-                process_id, thread_id, time_int64, phase_, category_group_name);
+  StringAppendF(out,
+                "{\"pid\":%i,\"tid\":%i,\"ts\":%" PRId64
+                ",\"ph\":\"%c\",\"cat\":\"%s\",\"name\":",
+                static_cast<int>(process_id), static_cast<int>(thread_id),
+                time_int64, phase_, category_group_name);
   EscapeJSONString(name_, true, out);
   *out += ",\"args\":";
 
@@ -249,22 +243,12 @@ void TraceEvent::AppendAsJSON(
       if (thread_duration != -1)
         StringAppendF(out, ",\"tdur\":%" PRId64, thread_duration);
     }
-    if (!thread_instruction_count_.is_null()) {
-      int64_t thread_instructions = thread_instruction_delta_.ToInternalValue();
-      StringAppendF(out, ",\"tidelta\":%" PRId64, thread_instructions);
-    }
   }
 
   // Output tts if thread_timestamp is valid.
   if (!thread_timestamp_.is_null()) {
     int64_t thread_time_int64 = thread_timestamp_.ToInternalValue();
     StringAppendF(out, ",\"tts\":%" PRId64, thread_time_int64);
-  }
-
-  // Output ticount if thread_instruction_count is valid.
-  if (!thread_instruction_count_.is_null()) {
-    int64_t thread_instructions = thread_instruction_count_.ToInternalValue();
-    StringAppendF(out, ",\"ticount\":%" PRId64, thread_instructions);
   }
 
   // Output async tts marker field if flag is set.

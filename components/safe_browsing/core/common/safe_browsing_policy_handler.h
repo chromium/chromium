@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SAFE_BROWSING_CORE_COMMON_SAFE_BROWSING_POLICY_HANDLER_H_
 #define COMPONENTS_SAFE_BROWSING_CORE_COMMON_SAFE_BROWSING_POLICY_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 class PrefService;

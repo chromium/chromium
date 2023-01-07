@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -21,6 +20,10 @@ namespace {
 class CastTestWindowDelegate : public aura::test::TestWindowDelegate {
  public:
   CastTestWindowDelegate() : key_code_(ui::VKEY_UNKNOWN) {}
+
+  CastTestWindowDelegate(const CastTestWindowDelegate&) = delete;
+  CastTestWindowDelegate& operator=(const CastTestWindowDelegate&) = delete;
+
   ~CastTestWindowDelegate() override {}
 
   // Overridden from TestWindowDelegate:
@@ -32,25 +35,24 @@ class CastTestWindowDelegate : public aura::test::TestWindowDelegate {
 
  private:
   ui::KeyboardCode key_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastTestWindowDelegate);
 };
 
 class TestWindow {
  public:
   explicit TestWindow(int id) : window_(&delegate_) {
     window_.Init(ui::LAYER_NOT_DRAWN);
-    window_.set_id(id);
+    window_.SetId(id);
     window_.SetBounds(gfx::Rect(0, 0, 1280, 720));
   }
+
+  TestWindow(const TestWindow&) = delete;
+  TestWindow& operator=(const TestWindow&) = delete;
 
   aura::Window* window() { return &window_; }
 
  private:
   CastTestWindowDelegate delegate_;
   aura::Window window_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWindow);
 };
 
 }  // namespace
@@ -66,7 +68,7 @@ TEST_F(CastWindowManagerAuraTest, InitialWindowId) {
 
   // We have chosen WindowId::BOTTOM to match the initial window ID of an Aura
   // window so that z-ordering works correctly.
-  EXPECT_EQ(window.id(), CastWindowManager::WindowId::BOTTOM);
+  EXPECT_EQ(window.GetId(), CastWindowManager::WindowId::BOTTOM);
 }
 
 TEST_F(CastWindowManagerAuraTest, WindowInput) {
@@ -128,8 +130,8 @@ TEST_F(CastWindowManagerAuraTest, WindowInputDisabled) {
 
 void VerifyWindowOrder(aura::Window* root_window) {
   for (size_t i = 0; i < root_window->children().size() - 1; ++i)
-    EXPECT_LE(root_window->children()[i]->id(),
-              root_window->children()[i + 1]->id());
+    EXPECT_LE(root_window->children()[i]->GetId(),
+              root_window->children()[i + 1]->GetId());
 }
 
 TEST_F(CastWindowManagerAuraTest, CheckProperWindowOrdering) {

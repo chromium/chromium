@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
@@ -25,8 +26,9 @@ namespace {
 network::mojom::CookieManager* GetCookieServiceClient() {
   // Since restoring Incognito CCT session from cookies is not supported, it is
   // safe to use the primary OTR profile here.
-  return content::BrowserContext::GetDefaultStoragePartition(
-             ProfileManager::GetPrimaryUserProfile()->GetPrimaryOTRProfile())
+  return ProfileManager::GetPrimaryUserProfile()
+      ->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+      ->GetDefaultStoragePartition()
       ->GetCookieManagerForBrowserProcess();
 }
 
@@ -40,6 +42,9 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
 
   int index = 0;
   for (auto i = cookies.cbegin(); i != cookies.cend(); ++i) {
+    std::string pk;
+    if (!net::CookiePartitionKey::Serialize(i->PartitionKey(), pk))
+      continue;
     ScopedJavaLocalRef<jobject> java_cookie = Java_CookiesFetcher_createCookie(
         env, base::android::ConvertUTF8ToJavaString(env, i->Name()),
         base::android::ConvertUTF8ToJavaString(env, i->Value()),
@@ -48,9 +53,11 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
         i->CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         i->ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         i->LastAccessDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
+        i->LastUpdateDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         i->IsSecure(), i->IsHttpOnly(), static_cast<int>(i->SameSite()),
-        i->Priority(), i->IsSameParty(), static_cast<int>(i->SourceScheme()),
-        i->SourcePort());
+        i->Priority(), i->IsSameParty(),
+        base::android::ConvertUTF8ToJavaString(env, pk),
+        static_cast<int>(i->SourceScheme()), i->SourcePort());
     env->SetObjectArrayElement(joa.obj(), index++, java_cookie.obj());
   }
 
@@ -85,11 +92,13 @@ static void JNI_CookiesFetcher_RestoreCookies(
     jlong creation,
     jlong expiration,
     jlong last_access,
+    jlong last_update,
     jboolean secure,
     jboolean httponly,
     jint same_site,
     jint priority,
     jboolean same_party,
+    const JavaParamRef<jstring>& partition_key,
     jint source_scheme,
     jint source_port) {
   if (!ProfileManager::GetPrimaryUserProfile()->HasPrimaryOTRProfile())
@@ -98,21 +107,32 @@ static void JNI_CookiesFetcher_RestoreCookies(
   std::string domain_str(base::android::ConvertJavaStringToUTF8(env, domain));
   std::string path_str(base::android::ConvertJavaStringToUTF8(env, path));
 
+  absl::optional<net::CookiePartitionKey> pk;
+  if (!net::CookiePartitionKey::Deserialize(
+          base::android::ConvertJavaStringToUTF8(env, partition_key), pk)) {
+    return;
+  }
+
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::FromStorage(
           base::android::ConvertJavaStringToUTF8(env, name),
           base::android::ConvertJavaStringToUTF8(env, value), domain_str,
           path_str,
+          base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(creation)),
           base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMicroseconds(creation)),
+              base::Microseconds(expiration)),
           base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMicroseconds(expiration)),
+              base::Microseconds(last_access)),
           base::Time::FromDeltaSinceWindowsEpoch(
-              base::TimeDelta::FromMicroseconds(last_access)),
+              base::Microseconds(last_update)),
           secure, httponly, static_cast<net::CookieSameSite>(same_site),
-          static_cast<net::CookiePriority>(priority), same_party,
+          static_cast<net::CookiePriority>(priority), same_party, pk,
           static_cast<net::CookieSourceScheme>(source_scheme), source_port);
-  if (!cookie)
+  // FromStorage() uses a less strict version of IsCanonical(), we need to check
+  // the stricter version as well here. This is safe because this function is
+  // only used for incognito cookies which don't survive Chrome updates and
+  // therefore should never be the "older" less strict variety.
+  if (!cookie || !cookie->IsCanonical())
     return;
 
   // Assume HTTPS - since the cookies are being restored from another store,

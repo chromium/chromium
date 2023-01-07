@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,14 +17,14 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
-#include "services/device/geolocation/wifi_data_provider_manager.h"
+#include "services/device/geolocation/wifi_data_provider_handle.h"
 
 namespace device {
 namespace {
@@ -49,6 +49,10 @@ enum { NM_DEVICE_TYPE_WIFI = 2 };
 class NetworkManagerWlanApi : public WifiDataProviderCommon::WlanApiInterface {
  public:
   NetworkManagerWlanApi();
+
+  NetworkManagerWlanApi(const NetworkManagerWlanApi&) = delete;
+  NetworkManagerWlanApi& operator=(const NetworkManagerWlanApi&) = delete;
+
   ~NetworkManagerWlanApi() override;
 
   // Must be called before any other interface method. Will return false if the
@@ -84,9 +88,7 @@ class NetworkManagerWlanApi : public WifiDataProviderCommon::WlanApiInterface {
       const std::string& property_name);
 
   scoped_refptr<dbus::Bus> system_bus_;
-  dbus::ObjectProxy* network_manager_proxy_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkManagerWlanApi);
+  raw_ptr<dbus::ObjectProxy> network_manager_proxy_ = nullptr;
 };
 
 // Convert a wifi frequency to the corresponding channel. Adapted from
@@ -106,6 +108,9 @@ NetworkManagerWlanApi::NetworkManagerWlanApi() {}
 
 NetworkManagerWlanApi::~NetworkManagerWlanApi() {
   // Close the connection.
+  // This is owned by the system bus, so we need to make sure we're clearing
+  // the pointer before its shutdown.
+  network_manager_proxy_ = nullptr;
   system_bus_->ShutdownAndBlock();
 }
 
@@ -230,23 +235,23 @@ bool NetworkManagerWlanApi::GetAccessPointsForAdapter(
 
     AccessPointData access_point_data;
     {
-      std::unique_ptr<dbus::Response> response(
+      std::unique_ptr<dbus::Response> ssid_response(
           GetAccessPointProperty(access_point_proxy, "Ssid"));
-      if (!response)
+      if (!ssid_response)
         continue;
       // The response should contain a variant that contains an array of bytes.
-      dbus::MessageReader reader(response.get());
-      dbus::MessageReader variant_reader(response.get());
-      if (!reader.PopVariant(&variant_reader)) {
+      dbus::MessageReader ssid_reader(ssid_response.get());
+      dbus::MessageReader variant_reader(ssid_response.get());
+      if (!ssid_reader.PopVariant(&variant_reader)) {
         LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << response->ToString();
+                     << ": " << ssid_response->ToString();
         continue;
       }
       const uint8_t* ssid_bytes = nullptr;
       size_t ssid_length = 0;
       if (!variant_reader.PopArrayOfBytes(&ssid_bytes, &ssid_length)) {
         LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << response->ToString();
+                     << ": " << ssid_response->ToString();
         continue;
       }
       std::string ssid(ssid_bytes, ssid_bytes + ssid_length);
@@ -254,15 +259,15 @@ bool NetworkManagerWlanApi::GetAccessPointsForAdapter(
     }
 
     {  // Read the mac address
-      std::unique_ptr<dbus::Response> response(
+      std::unique_ptr<dbus::Response> mac_response(
           GetAccessPointProperty(access_point_proxy, "HwAddress"));
-      if (!response)
+      if (!mac_response)
         continue;
-      dbus::MessageReader reader(response.get());
+      dbus::MessageReader mac_reader(mac_response.get());
       std::string mac;
-      if (!reader.PopVariantOfString(&mac)) {
+      if (!mac_reader.PopVariantOfString(&mac)) {
         LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << response->ToString();
+                     << ": " << mac_response->ToString();
         continue;
       }
 
@@ -278,15 +283,15 @@ bool NetworkManagerWlanApi::GetAccessPointsForAdapter(
     }
 
     {  // Read signal strength.
-      std::unique_ptr<dbus::Response> response(
+      std::unique_ptr<dbus::Response> strength_response(
           GetAccessPointProperty(access_point_proxy, "Strength"));
-      if (!response)
+      if (!strength_response)
         continue;
-      dbus::MessageReader reader(response.get());
+      dbus::MessageReader strength_reader(strength_response.get());
       uint8_t strength = 0;
-      if (!reader.PopVariantOfByte(&strength)) {
+      if (!strength_reader.PopVariantOfByte(&strength)) {
         LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << response->ToString();
+                     << ": " << strength_response->ToString();
         continue;
       }
       // Convert strength as a percentage into dBs.
@@ -294,15 +299,15 @@ bool NetworkManagerWlanApi::GetAccessPointsForAdapter(
     }
 
     {  // Read the channel
-      std::unique_ptr<dbus::Response> response(
+      std::unique_ptr<dbus::Response> frequency_response(
           GetAccessPointProperty(access_point_proxy, "Frequency"));
-      if (!response)
+      if (!frequency_response)
         continue;
-      dbus::MessageReader reader(response.get());
+      dbus::MessageReader frequency_reader(frequency_response.get());
       uint32_t frequency = 0;
-      if (!reader.PopVariantOfUint32(&frequency)) {
+      if (!frequency_reader.PopVariantOfUint32(&frequency)) {
         LOG(WARNING) << "Unexpected response for " << access_point_path.value()
-                     << ": " << response->ToString();
+                     << ": " << frequency_response->ToString();
         continue;
       }
 
@@ -339,7 +344,7 @@ std::unique_ptr<dbus::Response> NetworkManagerWlanApi::GetAccessPointProperty(
 }  // namespace
 
 // static
-WifiDataProvider* WifiDataProviderManager::DefaultFactoryFunction() {
+WifiDataProvider* WifiDataProviderHandle::DefaultFactoryFunction() {
   return new WifiDataProviderLinux();
 }
 

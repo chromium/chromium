@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,6 +52,11 @@ class WebappsIconUtils {
                                                    bool is_icon_maskable,
                                                    const GURL& url,
                                                    bool* is_generated);
+
+  // Generate an adaptive icon for given maskable icon bitmap.
+  static SkBitmap GenerateAdaptiveIconBitmap(const SkBitmap& icon);
+
+  static int GetIdealIconCornerRadiusPxForPromptUI();
 
   static void SetIdealShortcutSizeForTesting(int size);
 };

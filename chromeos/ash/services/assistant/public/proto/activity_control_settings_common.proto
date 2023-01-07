@@ -1,0 +1,56 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash.assistant;
+
+// UI texts for the ClassicActivityControl UI type which follows the "classic"
+// pattern of: title, intro text, one zippy per setting with [name, short
+// summary, consent] and a shared footer. Each text is a SafeHtmlProto that can
+// contain the following HTML tags: [b, i, br, p, a, ul, li].
+message ClassicActivityControlUiTexts {
+  // UI description for the setting section shown on the consent screen.
+  // Always present.
+  message SettingZippy {
+    // Title of the zippy.
+    // Always present.
+    optional string title = 1;
+
+    // A list of paragraphs giving a high-level summary of what this
+    // setting is about.
+    // Always present.
+    repeated string description_paragraph = 2;
+
+    // A list of paragraphs providing additional information and the
+    // main consent language of the setting.
+    // Always present.
+    repeated string additional_info_paragraph = 3;
+
+    // The URI of an icon that should be displayed for the setting.
+    // Always present.
+    optional string icon_uri = 4;
+
+    // Text for button at the end of the last description paragraph that opens
+    // a learn more dialog.
+    optional string learn_more = 5;
+
+    // The setting set the text in this zippy corresponds to. This can be used
+    // by clients for ARI logging.
+    optional SettingSetId setting_set_id = 6;
+  }
+  repeated SettingZippy setting_zippy = 7;
+}
+
+enum SettingSetId {
+  UNKNOWN_SETTING_SET_ID = 0;
+
+  // Web & App Activity.
+  WAA = 5;
+
+  // Device Applications Information.
+  DA = 11;
+}

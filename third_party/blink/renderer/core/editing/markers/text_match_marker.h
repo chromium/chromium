@@ -27,8 +27,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_TEXT_MATCH_MARKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_TEXT_MATCH_MARKER_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker.h"
-#include "third_party/blink/renderer/core/editing/markers/text_marker_base.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -38,7 +38,7 @@ namespace blink {
 // markers. We store whether or not the match is active, a LayoutRect used for
 // rendering the marker, and whether or not the LayoutRect is currently
 // up-to-date.
-class CORE_EXPORT TextMatchMarker final : public TextMarkerBase {
+class CORE_EXPORT TextMatchMarker final : public DocumentMarker {
  private:
   enum class LayoutStatus { kInvalid, kValidNull, kValidNotNull };
 
@@ -46,14 +46,14 @@ class CORE_EXPORT TextMatchMarker final : public TextMarkerBase {
   enum class MatchStatus { kInactive, kActive };
 
   TextMatchMarker(unsigned start_offset, unsigned end_offset, MatchStatus);
+  TextMatchMarker(const TextMatchMarker&) = delete;
+  TextMatchMarker& operator=(const TextMatchMarker&) = delete;
 
   // DocumentMarker implementations
   MarkerType GetType() const final;
 
-  // TextMarkerBase implementations
-  bool IsActiveMatch() const final;
-
   // TextMatchMarker-specific
+  bool IsActiveMatch() const;
   void SetIsActiveMatch(bool active);
 
   bool IsRendered() const;
@@ -69,8 +69,6 @@ class CORE_EXPORT TextMatchMarker final : public TextMarkerBase {
   MatchStatus match_status_;
   LayoutStatus layout_status_ = LayoutStatus::kInvalid;
   PhysicalRect rect_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextMatchMarker);
 };
 
 template <>
@@ -78,11 +76,8 @@ struct DowncastTraits<TextMatchMarker> {
   static bool AllowFrom(const DocumentMarker& marker) {
     return marker.GetType() == DocumentMarker::kTextMatch;
   }
-  static bool AllowFrom(const TextMarkerBase& marker) {
-    return marker.GetType() == DocumentMarker::kTextMatch;
-  }
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_TEXT_MATCH_MARKER_H_

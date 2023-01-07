@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/sequenced_task_runner.h"
+#include "base/memory/memory_pressure_listener.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/paint_preview/public/paint_preview_compositor_client.h"
 
 namespace paint_preview {
@@ -37,6 +38,11 @@ class PaintPreviewCompositorService {
 
   // Sets the disconnect handler for this service.
   virtual void SetDisconnectHandler(base::OnceClosure disconnect_handler) = 0;
+
+  // Called when system is under memory pressure.
+  virtual void OnMemoryPressure(
+      base::MemoryPressureListener::MemoryPressureLevel
+          memory_pressure_level) = 0;
 
   PaintPreviewCompositorService(const PaintPreviewCompositorService&) = delete;
   PaintPreviewCompositorService& operator=(

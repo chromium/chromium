@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,16 @@
 #define CHROME_BROWSER_SESSIONS_APP_SESSION_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/sessions/app_session_service.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
 
 // Singleton that owns all AppSessionServices and associates them with
 // Profiles. Listens for the Profile's destruction notification and cleans up
 // the associated SessionService.
-class AppSessionServiceFactory : public BrowserContextKeyedServiceFactory {
+class AppSessionServiceFactory : public ProfileKeyedServiceFactory {
  public:
-  // Returns whether or not the Browser::Type specified is accepted and
-  // tracked by AppSessionService instances.
-  static bool RelevantToAppSessionService(Browser::Type type);
-
   // Returns the session service for |profile|. This may return NULL. If this
   // profile supports a session service (it isn't incognito), and the session
   // service hasn't yet been created, this forces creation of the session

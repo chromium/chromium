@@ -1,34 +1,29 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef PDF_PAINT_MANAGER_H_
 #define PDF_PAINT_MANAGER_H_
 
-#include <stdint.h>
-
-#include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "pdf/paint_aggregator.h"
-#include "pdf/ppapi_migration/callback.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/size.h"
 
-namespace base {
-class Location;
-}  // namespace base
+class SkImage;
+class SkSurface;
 
 namespace gfx {
 class Point;
 class Rect;
 class Vector2d;
+class Vector2dF;
 }  // namespace gfx
 
 namespace chrome_pdf {
-
-class Graphics;
 
 // Custom PaintManager for the PDF plugin.  This is branched from the Pepper
 // version.  The difference is that this supports progressive rendering of dirty
@@ -41,14 +36,8 @@ class PaintManager {
  public:
   class Client {
    public:
-    // Creates a new, unbound `Graphics` for the paint manager, with the given
-    // |size| and always-opaque rendering.
-    virtual std::unique_ptr<Graphics> CreatePaintGraphics(
-        const gfx::Size& size) = 0;
-
-    // Binds a `Graphics` created by `CreatePaintGraphics()`, returning `true`
-    // if binding was successful.
-    virtual bool BindPaintGraphics(Graphics& graphics) = 0;
+    // Invalidates the entire plugin container, scheduling a repaint.
+    virtual void InvalidatePluginContainer() = 0;
 
     // Paints the given invalid area of the plugin to the given graphics
     // device. Returns true if anything was painted.
@@ -72,19 +61,18 @@ class PaintManager {
                          std::vector<PaintReadyRect>& ready,
                          std::vector<gfx::Rect>& pending) = 0;
 
-    // Schedules work to be executed on a main thread after a specific delay.
-    // The `result` parameter will be passed as the argument to the `callback`.
-    // `result` is needed sometimes to emulate calls of some callbacks, but it's
-    // not always needed. `delay` should be no longer than `INT32_MAX`
-    // milliseconds for the Pepper plugin implementation to prevent integer
-    // overflow.
-    virtual void ScheduleTaskOnMainThread(const base::Location& from_here,
-                                          ResultCallback callback,
-                                          int32_t result,
-                                          base::TimeDelta delay) = 0;
+    // Updates the client with the latest snapshot created by `Flush()`.
+    virtual void UpdateSnapshot(sk_sp<SkImage> snapshot) = 0;
+
+    // Updates the client with the latest output scale.
+    virtual void UpdateScale(float scale) = 0;
+
+    // Updates the client with the latest output layer transform.
+    virtual void UpdateLayerTransform(float scale,
+                                      const gfx::Vector2dF& translate) = 0;
 
    protected:
-    // You shouldn't be doing deleting through this interface.
+    // You shouldn't delete through this interface.
     ~Client() = default;
   };
 
@@ -134,8 +122,8 @@ class PaintManager {
   float GetEffectiveDeviceScale() const;
 
   // Set the transform for the graphics layer.
-  // If |schedule_flush| is true, it ensures a flush will be scheduled for
-  // this change. If |schedule_flush| is false, then the change will not take
+  // If `schedule_flush` is true, it ensures a flush will be scheduled for
+  // this change. If `schedule_flush` is false, then the change will not take
   // effect until another change causes a flush.
   void SetTransform(float scale,
                     const gfx::Point& origin,
@@ -159,17 +147,17 @@ class PaintManager {
   void Flush();
 
   // Callback for asynchronous completion of Flush.
-  void OnFlushComplete(int32_t);
+  void OnFlushComplete();
 
   // Callback for manual scheduling of paints when there is no flush callback
   // pending.
-  void OnManualCallbackComplete(int32_t);
+  void OnManualCallbackComplete();
 
   // Non-owning pointer. See the constructor.
-  Client* const client_;
+  const raw_ptr<Client> client_;
 
-  // This graphics device will be null if no graphics has been set yet.
-  std::unique_ptr<Graphics> graphics_;
+  // Backing Skia surface.
+  sk_sp<SkSurface> surface_;
 
   PaintAggregator aggregator_;
 
@@ -178,11 +166,10 @@ class PaintManager {
   bool flush_pending_ = false;
   bool flush_requested_ = false;
 
-  // When we get a resize, we don't bind right away (see SetSize). The
-  // has_pending_resize_ tells us that we need to do a resize for the next
-  // paint operation. When true, the new size is in pending_size_.
+  // When we get a resize, we don't do so right away (see `SetSize()`). The
+  // `has_pending_resize_` tells us that we need to do a resize for the next
+  // paint operation. When true, the new size is in `pending_size_`.
   bool has_pending_resize_ = false;
-  bool graphics_need_to_be_bound_ = false;
   gfx::Size pending_size_;
   gfx::Size plugin_size_;
   float pending_device_scale_ = 1.0f;

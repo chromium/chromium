@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <algorithm>
 #include <string>
 
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -175,8 +175,8 @@ void TestHelper::SetupTextureInitializationExpectations(
           GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
           GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
         };
-        for (size_t ii = 0; ii < base::size(faces); ++ii) {
-          EXPECT_CALL(*gl, TexImage2D(faces[ii], 0, GL_RGBA, 1, 1, 0, GL_RGBA,
+        for (size_t face = 0; face < std::size(faces); ++face) {
+          EXPECT_CALL(*gl, TexImage2D(faces[face], 0, GL_RGBA, 1, 1, 0, GL_RGBA,
                                       GL_UNSIGNED_BYTE, _))
               .Times(1)
               .RetiresOnSaturation();
@@ -676,6 +676,7 @@ void TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
         .RetiresOnSaturation();
   }
 
+#if !BUILDFLAG(IS_MAC)
   if (gl_info.is_es3 || gl_info.is_desktop_core_profile ||
       gfx::HasExtension(extension_set, "GL_EXT_texture_rg") ||
       (gfx::HasExtension(extension_set, "GL_ARB_texture_rg"))) {
@@ -734,6 +735,7 @@ void TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
         .RetiresOnSaturation();
 #endif
   }
+#endif  // !BUILDFLAG(IS_MAC)
 }
 
 void TestHelper::SetupExpectationsForClearingUniforms(::gl::MockGLInterface* gl,

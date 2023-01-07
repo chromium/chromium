@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,7 @@ TEST_F(InstallableTaskQueueUnitTest, PausingMakesNextTaskAvailable) {
   EXPECT_TRUE(task_queue.HasPaused());
   EXPECT_TRUE(IsEqual(task2, task_queue.Current()));
 
-  task_queue.Reset();
+  task_queue.ResetWithError(InstallableStatusCode::NO_ERROR_DETECTED);
   EXPECT_FALSE(task_queue.HasCurrent());
   EXPECT_FALSE(task_queue.HasPaused());
 }
@@ -86,7 +86,7 @@ TEST_F(InstallableTaskQueueUnitTest, PausedTaskCanBeRetrieved) {
   EXPECT_TRUE(task_queue.HasCurrent());
   EXPECT_TRUE(IsEqual(task1, task_queue.Current()));
 
-  task_queue.Reset();
+  task_queue.ResetWithError(InstallableStatusCode::NO_ERROR_DETECTED);
   EXPECT_FALSE(task_queue.HasCurrent());
   EXPECT_FALSE(task_queue.HasPaused());
 }

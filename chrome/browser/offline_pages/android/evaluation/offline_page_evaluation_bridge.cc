@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "chrome/android/chrome_jni_headers/OfflinePageEvaluationBridge_jni.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/offline_pages/android/background_scheduler_bridge.h"
@@ -132,7 +132,7 @@ void OnGetAllRequestsDone(
 void OnRemoveRequestsDone(const ScopedJavaGlobalRef<jobject>& j_callback_obj,
                           const MultipleItemStatuses& removed_request_results) {
   base::android::RunIntCallbackAndroid(
-      j_callback_obj, static_cast<int>(removed_request_results.size()));
+      j_callback_obj, static_cast<int32_t>(removed_request_results.size()));
 }
 
 std::unique_ptr<KeyedService> GetTestingRequestCoordinator(
@@ -140,7 +140,7 @@ std::unique_ptr<KeyedService> GetTestingRequestCoordinator(
     std::unique_ptr<OfflinerPolicy> policy,
     std::unique_ptr<Offliner> offliner) {
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::CreateSequencedTaskRunner({base::MayBlock()});
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   Profile* profile = Profile::FromBrowserContext(context);
   base::FilePath queue_store_path =
       profile->GetPath().Append(kTestRequestQueueDirname);

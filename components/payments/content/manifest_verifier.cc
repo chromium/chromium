@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,9 +37,9 @@ void EnableMethodManifestUrlForSupportedApps(
     std::map<GURL, std::set<GURL>>* prohibited_payment_methods) {
   for (auto app_id : app_ids) {
     auto* app = (*apps)[app_id].get();
-    app->has_explicitly_verified_methods =
-        base::Contains(supported_origin_strings,
-                       url::Origin::Create(app->scope.GetOrigin()).Serialize());
+    app->has_explicitly_verified_methods = base::Contains(
+        supported_origin_strings,
+        url::Origin::Create(app->scope.DeprecatedGetOriginAsURL()).Serialize());
     if (app->has_explicitly_verified_methods) {
       app->enabled_methods.emplace_back(method_manifest_url.spec());
       prohibited_payment_methods->at(app->scope).erase(method_manifest_url);
@@ -84,16 +84,6 @@ void ManifestVerifier::Verify(
   for (auto& app : apps_) {
     std::vector<std::string> verified_method_names;
     for (const auto& method : app.second->enabled_methods) {
-      // For non-URL payment method names, only names published by W3C should be
-      // supported. Keep this in sync with AndroidPaymentAppFinder.java.
-      if (method == methods::kBasicCard || method == methods::kInterledger ||
-          method == methods::kPayeeCreditTransfer ||
-          method == methods::kPayerCreditTransfer ||
-          method == methods::kTokenizedCard) {
-        verified_method_names.emplace_back(method);
-        continue;
-      }
-
       // GURL constructor may crash with some invalid unicode strings.
       if (!base::IsStringUTF8(method)) {
         log_.Warn("Payment method name \"" + method +
@@ -102,6 +92,7 @@ void ManifestVerifier::Verify(
         continue;
       }
 
+      // Only URL payment method names are supported.
       GURL method_manifest_url = GURL(method);
       if (!UrlUtil::IsValidUrlBasedPaymentMethodIdentifier(
               method_manifest_url)) {
@@ -113,10 +104,7 @@ void ManifestVerifier::Verify(
       }
 
       // Same origin payment methods are always allowed.
-      url::Origin app_origin =
-          url::Origin::Create(app.second->scope.GetOrigin());
-      if (url::Origin::Create(method_manifest_url.GetOrigin())
-              .IsSameOriginWith(app_origin)) {
+      if (url::IsSameOriginWith(app.second->scope, method_manifest_url)) {
         verified_method_names.emplace_back(method);
         app.second->has_explicitly_verified_methods = true;
         continue;
@@ -270,7 +258,7 @@ void ManifestVerifier::RemoveInvalidPaymentApps() {
   for (const auto& it : prohibited_payment_methods_) {
     DCHECK(it.first.is_valid());
     std::string app_scope = it.first.spec();
-    std::string app_origin = it.first.GetOrigin().spec();
+    std::string app_origin = it.first.DeprecatedGetOriginAsURL().spec();
     const std::set<GURL>& methods = it.second;
     for (const GURL& method : methods) {
       DCHECK(method.is_valid());
@@ -278,7 +266,7 @@ void ManifestVerifier::RemoveInvalidPaymentApps() {
                 "\" is not allowed to use payment method \"" + method.spec() +
                 "\", because the payment handler origin \"" + app_origin +
                 "\" is different from the payment method origin \"" +
-                method.GetOrigin().spec() +
+                method.DeprecatedGetOriginAsURL().spec() +
                 "\" and the \"supported_origins\" field in the payment method "
                 "manifest for \"" +
                 method.spec() + "\" is not a list that includes \"" +

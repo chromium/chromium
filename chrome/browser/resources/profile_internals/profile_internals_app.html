@@ -1,0 +1,117 @@
+<style>
+  tr:nth-child(odd) {
+    background: rgb(239, 243, 255);
+  }
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+
+   cr-expand-button {
+     padding-inline-start: 1em;
+   }
+
+   cr-expand-button:hover {
+     filter: contrast(1.1);
+     text-decoration: underline;
+   }
+
+  .unloaded {
+    opacity: 50%;
+  }
+</style>
+<h2>Profiles</h2>
+<template is="dom-repeat" items="[[profilesList_]]">
+  <cr-expand-button expanded="{{item.expanded}}"
+      class$="[[item.className]]"
+      style$="color: [[item.profileState.foregroundColor]];
+              background-color: [[item.profileState.backgroundColor]];">
+    [[item.profileState.localProfileName]]
+  </cr-expand-button>
+  <iron-collapse opened="[[item.expanded]]">
+    <table class="profile">
+      <tr>
+        <td>Profile Path</td>
+        <td>[[item.profileState.profilePath]]</td>
+      </tr>
+      <tr>
+        <td>Local Profile Name</td>
+        <td>[[item.profileState.localProfileName]]</td>
+      </tr>
+      <tr>
+        <td>Signin State</td>
+        <td>[[item.profileState.signinState]]</td>
+      </tr>
+      <tr>
+        <td>Signin Required</td>
+        <td>[[item.profileState.signinRequired]]</td>
+      </tr>
+      <tr>
+        <td>Gaia Name</td>
+        <td>[[item.profileState.gaiaName]]</td>
+      </tr>
+      <tr>
+        <td>Gaia Id</td>
+        <td>[[item.profileState.gaiaId]]</td>
+      </tr>
+      <tr>
+        <td>User Name</td>
+        <td>[[item.profileState.userName]]</td>
+      </tr>
+      <tr>
+        <td>Hosted Domain</td>
+        <td>[[item.profileState.hostedDomain]]</td>
+      </tr>
+      <tr>
+        <td>Supervised</td>
+        <td>[[item.profileState.isSupervised]]</td>
+      </tr>
+      <tr>
+        <td>Omitted</td>
+        <td>[[item.profileState.isOmitted]]</td>
+      </tr>
+      <tr>
+        <td>Ephemeral</td>
+        <td>[[item.profileState.isEphemeral]]</td>
+      </tr>
+      <tr>
+        <td>User Accepted Account Management</td>
+        <td>[[item.profileState.userAcceptedAccountManagement]]</td>
+      </tr>
+      <tr>
+        <td>KeepAlives</td>
+        <td>
+          <table>
+            <template is="dom-repeat" items="[[item.profileState.keepAlives]]">
+              <tr>
+                <td>[[item.origin]]</td>
+                <td>[[item.count]]</td>
+              </tr>
+            </template>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>Signed Accounts</td>
+        <td>
+          <ul>
+            <template is="dom-repeat"
+                      items="[[item.profileState.signedAccounts]]">
+              <li>[[item]]</li>
+            </template>
+          </ul>
+        </td>
+      </tr>
+      <tr>
+        <td>Loaded in Memory</td>
+        <td>[[item.profileState.isLoaded]]</td>
+      </tr>
+      <tr>
+        <td>Has Incognito Profile</td>
+        <td>[[item.profileState.hasOffTheRecord]]</td>
+      </tr>
+    </table>
+  </iron-collapse>
+</template>

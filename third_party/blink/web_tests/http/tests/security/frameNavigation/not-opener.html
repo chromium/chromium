@@ -5,7 +5,7 @@ if (window.testRunner) {
     testRunner.dumpAsText();
     testRunner.setDumpConsoleMessages(false);
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 }
 
 function log(msg) {

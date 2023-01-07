@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -116,6 +116,13 @@ class CONTENT_EXPORT Compositor {
       base::OnceCallback<void(const gfx::PresentationFeedback&)>;
   virtual void RequestPresentationTimeForNextFrame(
       PresentationTimeCallback callback) = 0;
+
+  // Control whether `CompositorClient::DidSwapBuffers` should be called. The
+  // default is false. Note this is asynchronous. Any pending callbacks may
+  // immediately after enabling may still be missed; best way to avoid this is
+  // to call this before calling `SetNeedsComposite` or `SetNeedsRedraw`. Also
+  // there may be trailing calls to `DidSwapBuffers` after unsetting this.
+  virtual void SetDidSwapBuffersCallbackEnabled(bool enable) = 0;
 
  protected:
   Compositor() {}

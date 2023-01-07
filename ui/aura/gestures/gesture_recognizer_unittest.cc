@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/timer.h"
@@ -29,6 +29,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/gesture_detection/gesture_provider.h"
+#include "ui/events/gestures/gesture_recognizer_impl.h"
 #include "ui/events/gestures/gesture_types.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/events_test_utils.h"
@@ -41,8 +42,9 @@ namespace test {
 namespace {
 
 std::string WindowIDAsString(ui::GestureConsumer* consumer) {
-  return consumer ? base::NumberToString(static_cast<Window*>(consumer)->id())
-                  : "?";
+  return consumer
+             ? base::NumberToString(static_cast<Window*>(consumer)->GetId())
+             : "?";
 }
 
 #define EXPECT_0_EVENTS(events) \
@@ -104,6 +106,10 @@ class GestureEventConsumeDelegate : public TestWindowDelegate {
         tap_count_(0),
         flags_(0),
         wait_until_event_(ui::ET_UNKNOWN) {}
+
+  GestureEventConsumeDelegate(const GestureEventConsumeDelegate&) = delete;
+  GestureEventConsumeDelegate& operator=(const GestureEventConsumeDelegate&) =
+      delete;
 
   ~GestureEventConsumeDelegate() override {}
 
@@ -330,8 +336,6 @@ class GestureEventConsumeDelegate : public TestWindowDelegate {
   int flags_;
 
   ui::EventType wait_until_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureEventConsumeDelegate);
 };
 
 class QueueTouchEventDelegate : public GestureEventConsumeDelegate {
@@ -340,6 +344,9 @@ class QueueTouchEventDelegate : public GestureEventConsumeDelegate {
       : window_(nullptr),
         dispatcher_(dispatcher),
         synchronous_ack_for_next_event_(AckState::PENDING) {}
+
+  QueueTouchEventDelegate(const QueueTouchEventDelegate&) = delete;
+  QueueTouchEventDelegate& operator=(const QueueTouchEventDelegate&) = delete;
 
   ~QueueTouchEventDelegate() override {}
 
@@ -392,12 +399,10 @@ class QueueTouchEventDelegate : public GestureEventConsumeDelegate {
         false /* is_source_touch_event_set_blocking */);
   }
 
-  Window* window_;
-  WindowEventDispatcher* dispatcher_;
+  raw_ptr<Window> window_;
+  raw_ptr<WindowEventDispatcher> dispatcher_;
   AckState synchronous_ack_for_next_event_;
   std::list<uint32_t> sent_events_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueueTouchEventDelegate);
 };
 
 // A delegate that ignores gesture events but keeps track of [synthetic] mouse
@@ -412,6 +417,10 @@ class GestureEventSynthDelegate : public TestWindowDelegate {
         mouse_move_(false),
         double_click_(false) {
   }
+
+  GestureEventSynthDelegate(const GestureEventSynthDelegate&) = delete;
+  GestureEventSynthDelegate& operator=(const GestureEventSynthDelegate&) =
+      delete;
 
   void Reset() {
     mouse_enter_ = false;
@@ -460,8 +469,6 @@ class GestureEventSynthDelegate : public TestWindowDelegate {
   bool mouse_release_;
   bool mouse_move_;
   bool double_click_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureEventSynthDelegate);
 };
 
 class TimedEvents {
@@ -471,24 +478,21 @@ class TimedEvents {
  public:
   // Use a non-zero start time to pass DCHECKs which ensure events have had a
   // time assigned.
-  TimedEvents() {
-    tick_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
-  }
+  TimedEvents() { tick_clock_.Advance(base::Milliseconds(1)); }
 
   base::TimeTicks Now() {
     base::TimeTicks t = tick_clock_.NowTicks();
-    tick_clock_.Advance(base::TimeDelta::FromMilliseconds(1));
+    tick_clock_.Advance(base::Milliseconds(1));
     return t;
   }
 
   base::TimeTicks LeapForward(int time_in_millis) {
-    tick_clock_.Advance(base::TimeDelta::FromMilliseconds(time_in_millis));
+    tick_clock_.Advance(base::Milliseconds(time_in_millis));
     return tick_clock_.NowTicks();
   }
 
   base::TimeTicks InFuture(int time_in_millis) {
-    return tick_clock_.NowTicks() +
-        base::TimeDelta::FromMilliseconds(time_in_millis);
+    return tick_clock_.NowTicks() + base::Milliseconds(time_in_millis);
   }
 
   void SendScrollEvents(ui::EventSink* sink,
@@ -511,7 +515,7 @@ class TimedEvents {
           ui::PointerDetails(ui::EventPointerType::kTouch, touch_id));
       ui::EventDispatchDetails details = sink->OnEventFromSource(&move);
       ASSERT_FALSE(details.dispatcher_destroyed);
-      tick_clock_.Advance(base::TimeDelta::FromMilliseconds(time_step_ms));
+      tick_clock_.Advance(base::Milliseconds(time_step_ms));
     }
   }
 
@@ -538,6 +542,9 @@ class TestEventHandler : public ui::EventHandler {
       : touch_released_count_(0),
         touch_pressed_count_(0),
         touch_moved_count_(0) {}
+
+  TestEventHandler(const TestEventHandler&) = delete;
+  TestEventHandler& operator=(const TestEventHandler&) = delete;
 
   ~TestEventHandler() override {}
 
@@ -582,8 +589,6 @@ class TestEventHandler : public ui::EventHandler {
   int touch_pressed_count_;
   int touch_moved_count_;
   std::vector<gfx::PointF> cancelled_touch_points_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventHandler);
 };
 
 // Removes the target window from its parent when it receives a touch-cancel
@@ -591,6 +596,11 @@ class TestEventHandler : public ui::EventHandler {
 class RemoveOnTouchCancelHandler : public TestEventHandler {
  public:
   RemoveOnTouchCancelHandler() {}
+
+  RemoveOnTouchCancelHandler(const RemoveOnTouchCancelHandler&) = delete;
+  RemoveOnTouchCancelHandler& operator=(const RemoveOnTouchCancelHandler&) =
+      delete;
+
   ~RemoveOnTouchCancelHandler() override {}
 
  private:
@@ -602,8 +612,6 @@ class RemoveOnTouchCancelHandler : public TestEventHandler {
       target->parent()->RemoveChild(target);
     }
   }
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveOnTouchCancelHandler);
 };
 
 void DelayByLongPressTimeout() {
@@ -642,19 +650,26 @@ class GestureRecognizerTest : public AuraTestBase {
  public:
   GestureRecognizerTest() {}
 
+  GestureRecognizerTest(const GestureRecognizerTest&) = delete;
+  GestureRecognizerTest& operator=(const GestureRecognizerTest&) = delete;
+
   void SetUp() override {
     AuraTestBase::SetUp();
     ui::GestureConfiguration::GetInstance()->set_show_press_delay_in_ms(2);
-    ui::GestureConfiguration::GetInstance()->set_long_press_time_in_ms(3);
+    ui::GestureConfiguration::GetInstance()->set_short_press_time(
+        base::Milliseconds(3));
+    ui::GestureConfiguration::GetInstance()->set_long_press_time_in_ms(4);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GestureRecognizerTest);
 };
 
 class GestureRecognizerWithSwitchTest : public GestureRecognizerTest {
  public:
   GestureRecognizerWithSwitchTest() {}
+
+  GestureRecognizerWithSwitchTest(const GestureRecognizerWithSwitchTest&) =
+      delete;
+  GestureRecognizerWithSwitchTest& operator=(
+      const GestureRecognizerWithSwitchTest&) = delete;
 
   void SetUp() override {
     GestureRecognizerTest::SetUp();
@@ -662,9 +677,6 @@ class GestureRecognizerWithSwitchTest : public GestureRecognizerTest {
         switches::kCompensateForUnstablePinchZoom);
     ui::GestureConfiguration::GetInstance()->set_min_pinch_update_span_delta(5);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GestureRecognizerWithSwitchTest);
 };
 
 // Verify that we do not crash when removing a window during a cancel touch
@@ -1176,7 +1188,7 @@ TEST_F(GestureRecognizerTest, GestureEventScrollBoundingBox) {
     ui::TouchEvent release(
         ui::ET_TOUCH_RELEASED,
         gfx::Point(kPositionX + kScrollAmount, kPositionY + kScrollAmount),
-        press.time_stamp() + base::TimeDelta::FromMilliseconds(50),
+        press.time_stamp() + base::Milliseconds(50),
         ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
     DispatchEventUsingWindowDispatcher(&release);
     EXPECT_EQ(
@@ -1737,6 +1749,75 @@ TEST_F(GestureRecognizerTest, GestureTapFollowedByScroll) {
   EXPECT_TRUE(delegate->fling());
 }
 
+// Verifies that destroying a gesture provider aura instance before a touch
+// event is ACKed works as expected (see https://crbug.com/1292264).
+TEST_F(GestureRecognizerTest, DestroyGestureProviderAuraBeforeAck) {
+  TimedEvents tes;
+  const int kTouchId = 4;
+  std::unique_ptr<GestureEventConsumeDelegate> delegate(
+      new GestureEventConsumeDelegate());
+  std::unique_ptr<aura::Window> window1(CreateTestWindowWithDelegate(
+      delegate.get(), /*id=*/-2345, /*bounds=*/gfx::Rect(0, 0, 50, 50),
+      /*parent=*/root_window()));
+
+  // Touch press then release on `window1`.
+  constexpr gfx::Point touch_location(/*x=*/10, /*y=*/20);
+  ui::TouchEvent press(
+      ui::ET_TOUCH_PRESSED, touch_location, /*time_stamp=*/tes.Now(),
+      ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
+  delegate->Reset();
+  DispatchEventUsingWindowDispatcher(&press);
+  EXPECT_TRUE(delegate->tap_down());
+  delegate->Reset();
+  ui::TouchEvent release(
+      ui::ET_TOUCH_RELEASED, touch_location,
+      /*time_stamp=*/press.time_stamp() + base::Milliseconds(50),
+      ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
+  DispatchEventUsingWindowDispatcher(&release);
+  EXPECT_FALSE(delegate->tap_down());
+
+  // Verify that the gesture provider for `window1` is created.
+  auto* gesture_recognizer = static_cast<ui::GestureRecognizerImpl*>(
+      aura::Env::GetInstance()->gesture_recognizer());
+  const auto& consumer_provider_mappings =
+      gesture_recognizer->consumer_gesture_provider_;
+  EXPECT_NE(consumer_provider_mappings.cend(),
+            consumer_provider_mappings.find(window1.get()));
+
+  // Create a second window for handling touch events.
+  std::unique_ptr<QueueTouchEventDelegate> delegate2(
+      new QueueTouchEventDelegate(host()->dispatcher()));
+  const int kTouchId2 = 4;
+  std::unique_ptr<aura::Window> window2(CreateTestWindowWithDelegate(
+      delegate2.get(), /*id=*/-1234, /*bounds=*/gfx::Rect(100, 100, 500, 500),
+      root_window()));
+  delegate2->set_window(window2.get());
+
+  // Send a press event on `window2`. Verify that the gesture provider for
+  // `window2` is created.
+  ui::TouchEvent press2(
+      ui::ET_TOUCH_PRESSED, /*location=*/gfx::Point(200, 200),
+      /*time_stamp=*/tes.Now(),
+      ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId2));
+  DispatchEventUsingWindowDispatcher(&press2);
+  EXPECT_NE(consumer_provider_mappings.cend(),
+            consumer_provider_mappings.find(window2.get()));
+
+  // Verify that `press2` is associated with a gesture provider raw pointer.
+  const auto& event_provider_mappings =
+      gesture_recognizer->event_to_gesture_provider_;
+  EXPECT_NE(event_provider_mappings.cend(),
+            event_provider_mappings.find(press2.unique_event_id()));
+
+  // Before ACKing `press2`, replacing the gesture provider of `window2` with a
+  // new value through event transferal.
+  aura::Env::GetInstance()->gesture_recognizer()->TransferEventsTo(
+      window1.get(), window2.get(), ui::TransferTouchesBehavior::kCancel);
+
+  // ACK the press event.
+  delegate2->ReceivedAck();
+}
+
 TEST_F(GestureRecognizerTest, AsynchronousGestureRecognition) {
   std::unique_ptr<QueueTouchEventDelegate> queued_delegate(
       new QueueTouchEventDelegate(host()->dispatcher()));
@@ -1770,7 +1851,7 @@ TEST_F(GestureRecognizerTest, AsynchronousGestureRecognition) {
   queued_delegate->Reset();
   ui::TouchEvent release(
       ui::ET_TOUCH_RELEASED, gfx::Point(101, 201),
-      press.time_stamp() + base::TimeDelta::FromMilliseconds(50),
+      press.time_stamp() + base::Milliseconds(50),
       ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId1));
   DispatchEventUsingWindowDispatcher(&release);
   EXPECT_FALSE(queued_delegate->tap());
@@ -2214,7 +2295,7 @@ TEST_F(GestureRecognizerTest, GestureEventTouchLockSelectsCorrectWindow) {
     delegates[i] = new GestureEventConsumeDelegate();
     windows[i] = CreateTestWindowWithDelegate(
         delegates[i], i, window_bounds[i], root_window());
-    windows[i]->set_id(i);
+    windows[i]->SetId(i);
     ui::TouchEvent press(ui::ET_TOUCH_PRESSED, window_bounds[i].origin(),
                          tes.Now(),
                          ui::PointerDetails(ui::EventPointerType::kTouch, i));
@@ -2498,9 +2579,7 @@ TEST_F(GestureRecognizerTest, GestureEndLocation) {
   const gfx::Point end(150, 150);
   const gfx::Vector2d window_offset =
       window->bounds().origin().OffsetFromOrigin();
-  generator.GestureScrollSequence(begin, end,
-                                  base::TimeDelta::FromMilliseconds(20),
-                                  10);
+  generator.GestureScrollSequence(begin, end, base::Milliseconds(20), 10);
   EXPECT_EQ((begin - window_offset).ToString(),
             delegate.scroll_begin_position().ToString());
   EXPECT_EQ((end - window_offset).ToString(),
@@ -3110,6 +3189,11 @@ TEST_F(GestureRecognizerTest, LongPressTimerStopsOnPreventDefaultedTouchMoves) {
 class ConsumesTouchMovesDelegate : public GestureEventConsumeDelegate {
  public:
   ConsumesTouchMovesDelegate() : consume_touch_move_(true) {}
+
+  ConsumesTouchMovesDelegate(const ConsumesTouchMovesDelegate&) = delete;
+  ConsumesTouchMovesDelegate& operator=(const ConsumesTouchMovesDelegate&) =
+      delete;
+
   ~ConsumesTouchMovesDelegate() override {}
 
   void set_consume_touch_move(bool consume) { consume_touch_move_ = consume; }
@@ -3123,8 +3207,6 @@ class ConsumesTouchMovesDelegate : public GestureEventConsumeDelegate {
   }
 
   bool consume_touch_move_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConsumesTouchMovesDelegate);
 };
 
 // Same as GestureEventScroll, but tests that the behavior is the same
@@ -3447,17 +3529,17 @@ TEST_F(GestureRecognizerTest, GestureEventTripleTap) {
       ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
   DispatchEventUsingWindowDispatcher(&release3);
 
-  // Third, Fourth and Fifth Taps. Taps after the third should have their
+  // Fourth, Fifth, and Sixth Taps. Taps after the third should have their
   // |tap_count| wrap around back to 1.
-  for (int i = 3; i < 5; ++i) {
-    ui::TouchEvent press3(
+  for (int i = 4; i < 6; ++i) {
+    ui::TouchEvent press4(
         ui::ET_TOUCH_PRESSED, gfx::Point(102, 206), tes.LeapForward(200),
         ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
-    DispatchEventUsingWindowDispatcher(&press3);
-    ui::TouchEvent release3(
+    DispatchEventUsingWindowDispatcher(&press4);
+    ui::TouchEvent release4(
         ui::ET_TOUCH_RELEASED, gfx::Point(102, 206), tes.LeapForward(50),
         ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
-    DispatchEventUsingWindowDispatcher(&release3);
+    DispatchEventUsingWindowDispatcher(&release4);
 
     EXPECT_TRUE(delegate->tap());
     EXPECT_TRUE(delegate->tap_down());
@@ -3467,7 +3549,7 @@ TEST_F(GestureRecognizerTest, GestureEventTripleTap) {
     EXPECT_FALSE(delegate->scroll_begin());
     EXPECT_FALSE(delegate->scroll_update());
     EXPECT_FALSE(delegate->scroll_end());
-    EXPECT_EQ(1 + (i % 3), delegate->tap_count());
+    EXPECT_EQ(i % 3, delegate->tap_count());
   }
 }
 
@@ -4251,6 +4333,11 @@ class GestureEventDeleteWindowOnLongPress : public GestureEventConsumeDelegate {
  public:
   GestureEventDeleteWindowOnLongPress() : window_(nullptr) {}
 
+  GestureEventDeleteWindowOnLongPress(
+      const GestureEventDeleteWindowOnLongPress&) = delete;
+  GestureEventDeleteWindowOnLongPress& operator=(
+      const GestureEventDeleteWindowOnLongPress&) = delete;
+
   void set_window(aura::Window** window) { window_ = window; }
 
   void OnGestureEvent(ui::GestureEvent* gesture) override {
@@ -4262,8 +4349,7 @@ class GestureEventDeleteWindowOnLongPress : public GestureEventConsumeDelegate {
   }
 
  private:
-  aura::Window** window_;
-  DISALLOW_COPY_AND_ASSIGN(GestureEventDeleteWindowOnLongPress);
+  raw_ptr<aura::Window*> window_;
 };
 
 // Check that deleting the window in response to a long press gesture doesn't
@@ -4718,6 +4804,43 @@ TEST_F(GestureRecognizerTest, GestureConsumerCleanupBeforeTouchAck) {
   delegate->Reset();
   delegate->ReceivedAck();
   EXPECT_0_EVENTS(delegate->events());
+}
+
+// Verifies that destructing a `GestureRecognizerImpl` instance with gesture
+// providers works as expected (https://crbug.com/1325256).
+TEST_F(GestureRecognizerTest, ResetGestureRecognizerWithGestureProvider) {
+  TimedEvents tes;
+  const int kTouchId = 4;
+  std::unique_ptr<GestureEventConsumeDelegate> delegate(
+      new GestureEventConsumeDelegate());
+  std::unique_ptr<aura::Window> window(CreateTestWindowWithDelegate(
+      delegate.get(), /*id=*/-2345, /*bounds=*/gfx::Rect(0, 0, 50, 50),
+      /*parent=*/root_window()));
+
+  // Touch press then release on `window`.
+  constexpr gfx::Point touch_location(/*x=*/10, /*y=*/20);
+  ui::TouchEvent press(
+      ui::ET_TOUCH_PRESSED, touch_location, /*time_stamp=*/tes.Now(),
+      ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
+  delegate->Reset();
+  DispatchEventUsingWindowDispatcher(&press);
+  EXPECT_TRUE(delegate->tap_down());
+  delegate->Reset();
+  ui::TouchEvent release(
+      ui::ET_TOUCH_RELEASED, touch_location,
+      /*time_stamp=*/press.time_stamp() + base::Milliseconds(50),
+      ui::PointerDetails(ui::EventPointerType::kTouch, kTouchId));
+  DispatchEventUsingWindowDispatcher(&release);
+  EXPECT_FALSE(delegate->tap_down());
+
+  // Check that the gesture recognizer owns one gesture provider.
+  EXPECT_EQ(1u, static_cast<ui::GestureRecognizerImpl*>(
+                    aura::Env::GetInstance()->gesture_recognizer())
+                    ->consumer_gesture_provider_.size());
+
+  // Destroy the current gesture recognizer.
+  aura::Env::GetInstance()->SetGestureRecognizer(
+      std::make_unique<ui::GestureRecognizerImpl>());
 }
 
 }  // namespace test

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p>Text outside the dialog.</p>
+<dialog>
+  <p>Text in the dialog.</p>
+  <iframe srcdoc="
+    <p>Text in normal iframe</p>
+    <iframe srcdoc='<p>Text in nested normal iframe</p>'></iframe>
+  "></iframe>
+</dialog>
+<iframe srcdoc="
+  <p>Text in inert iframe</p>
+  <iframe srcdoc='<p>Text in nested inert iframe</p>'></iframe>
+"></iframe>
+<script>
+document.querySelector('dialog').showModal();
+</script>
+</body>
+</html>

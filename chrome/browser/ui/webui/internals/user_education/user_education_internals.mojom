@@ -1,0 +1,29 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojom.user_education_internals;
+
+struct FeaturePromoDemoPageInfo {
+  string display_title;
+  string display_description;
+};
+
+// Provides access to browser-side user education data for
+// chrome://internals/user-education
+interface UserEducationInternalsPageHandler {
+  // Get the list of all available tutorials. Only needs to be called once
+  // since the browser-side list is static and does not change.
+  GetTutorials() => (array<string> tutorial_ids);
+
+  // Start a tutorial listed in the `GetTutorials` result.
+  StartTutorial(string tutorial_id);
+
+  // Get the list of all available feature promos.
+  GetFeaturePromos() => (array<FeaturePromoDemoPageInfo> feature_promos);
+
+  // Start an feature promo from the list of available feature promos using the
+  // string title the resulting string is an error message or empty string if no
+  // error occurred.
+  ShowFeaturePromo(string title) => (string error_message);
+};

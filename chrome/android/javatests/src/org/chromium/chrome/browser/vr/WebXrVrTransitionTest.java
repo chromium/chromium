@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.uiautomator.UiDevice;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.uiautomator.UiDevice;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,9 +36,9 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
 import org.chromium.chrome.browser.vr.util.NativeUiUtils;
@@ -47,7 +47,7 @@ import org.chromium.chrome.browser.vr.util.VrTestRuleUtils;
 import org.chromium.chrome.browser.vr.util.VrTransitionUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.File;
 import java.util.List;
@@ -169,9 +169,27 @@ public class WebXrVrTransitionTest {
 
     private void presentationPromiseUnresolvedDuringDonImpl(
             String url, WebXrVrTestFramework framework) {
-        framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
-        framework.enterSessionWithUserGestureAndWait();
-        framework.endTest();
+        try {
+            framework.loadFileAndAwaitInitialization(url, PAGE_LOAD_TIMEOUT_S);
+            framework.enterSessionWithUserGestureAndWait();
+            framework.endTest();
+        } finally {
+            // The DON flow still being open at test end can cause issues with Chrome activity
+            // shutdown, which in turn causes the test to fail. So, back out of the flow if
+            // necessary.
+            final UiDevice uiDevice =
+                    UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
+            String currentPackageName = TestThreadUtils.runOnUiThreadBlockingNoException(
+                    () -> { return uiDevice.getCurrentPackageName(); });
+            if (currentPackageName == null || !currentPackageName.equals("com.google.vr.vrcore")) {
+                return;
+            }
+            uiDevice.pressBack();
+            CriteriaHelper.pollUiThread(() -> {
+                String packageName = uiDevice.getCurrentPackageName();
+                return packageName == null || !packageName.equals("com.google.vr.vrcore");
+            });
+        }
     }
 
     /**
@@ -211,9 +229,10 @@ public class WebXrVrTransitionTest {
      */
     @Test
     @MediumTest
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @Restriction(RESTRICTION_TYPE_SVR)
-            public void testControlsVisibleAfterExitingVr_WebXr() throws InterruptedException {
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    @Restriction(RESTRICTION_TYPE_SVR)
+    @DisabledTest(message = "crbug.com/1229236")
+    public void testControlsVisibleAfterExitingVr_WebXr() throws InterruptedException {
         controlsVisibleAfterExitingVrImpl("generic_webxr_page", mWebXrVrTestFramework);
     }
 
@@ -243,10 +262,9 @@ public class WebXrVrTransitionTest {
      */
     @Test
     @MediumTest
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            public void testWindowRafStopsFiringWhilePresenting_WebXr()
-            throws InterruptedException {
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    public void testWindowRafStopsFiringWhilePresenting_WebXr() throws InterruptedException {
         windowRafStopsFiringWhilePresentingImpl(
 
                 "webxr_test_window_raf_stops_firing_during_immersive_session",
@@ -308,10 +326,10 @@ public class WebXrVrTransitionTest {
      */
     @Test
     @MediumTest
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            @DisableFeatures(ChromeFeatureList.SEND_TAB_TO_SELF)
-            public void testNonImmersiveStopsDuringImmersive() {
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    @DisabledTest(message = "https://crbug.com/1229236")
+    public void testNonImmersiveStopsDuringImmersive() {
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(
                 "test_non_immersive_stops_during_immersive", PAGE_LOAD_TIMEOUT_S);
         mWebXrVrTestFramework.executeStepAndWait("stepBeforeImmersive()");
@@ -345,9 +363,11 @@ public class WebXrVrTransitionTest {
      */
     @Test
     @MediumTest
-            @CommandLineFlags.Add({"enable-features=WebXR"})
-            @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-            public void testConsentDialogIsDismissedWhenPageNavigatesAwayInMainFrame() {
+    @CommandLineFlags.Add({"enable-features=WebXR"})
+    // TODO(crbug.com/1250492): Re-enable this test on all activity types once
+    // WAA/CCT versions no longer fail consistently.
+    // @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    public void testConsentDialogIsDismissedWhenPageNavigatesAwayInMainFrame() {
         mWebXrVrTestFramework.setPermissionPromptAction(
                 WebXrVrTestFramework.PERMISSION_PROMPT_ACTION_DO_NOTHING);
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(

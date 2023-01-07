@@ -1,0 +1,192 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of interstitial histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="SecurityInterstitialLookalikeType">
+  <variant name="lookalike." summary=""/>
+</variants>
+
+<histogram name="interstitial.captive_portal"
+    enum="CaptivePortalBlockingPageEvent" expires_after="2023-02-12">
+  <owner>meacer@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <summary>
+    User action when the user is shown a captive portal error page. NOTE: Metric
+    was expired from M85 to M97.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl.cause.nonoverridable" enum="SSLErrorCauses"
+    expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
+  <owner>estark@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    Possible non-attack causes of the non-overridable SSL interstitial. Many
+    errors are not reported in this histogram and new errors may be added over
+    time, therefore one should not look at the breakdown of this histogram (one
+    bucket divided by the sum) because that will be inaccurate. Instead, one
+    should look at each bucket count divided by the count of the ssl errors of
+    that type. E.g. WWW mismatch is recorded only when the ssl error is
+    CERT_COMMON_NAME_INVALID, so one should look at the bucket count of WWW
+    mismatch divided by the bucket count of CERT_COMMON_NAME_INVALID in the
+    histogram interstitial.ssl_error_type.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl.cause.overridable" enum="SSLErrorCauses"
+    expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
+  <owner>estark@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    Possible non-attack causes of the overridable SSL interstitial. Many errors
+    are not reported in this histogram and new errors may be added over time,
+    therefore one should not look at the breakdown of this histogram (one bucket
+    divided by the sum) because that will be inaccurate. Instead, one should
+    look at each bucket count divided by the count of the ssl errors of that
+    type. E.g. WWW mismatch is recorded only when the ssl error is
+    CERT_COMMON_NAME_INVALID, so one should look at the bucket count of WWW
+    mismatch divided by the bucket count of CERT_COMMON_NAME_INVALID in the
+    histogram interstitial.ssl_error_type.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl.did_user_revoke_decisions2"
+    enum="BooleanRevoked" expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
+  <owner>carlosil@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    Specifies when a user enters the page info menu whether or not the user
+    pressed the SSL decisions revoke button. This is logged when the page info
+    UI is closed, only if the button was visible in the page info.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.ssl_error_handler" enum="SSLErrorHandlerEvent"
+    expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
+  <owner>meacer@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <summary>The type of action that the SSL error handler takes.</summary>
+</histogram>
+
+<histogram name="interstitial.ssl_error_type" enum="SSLErrorTypes"
+    expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
+  <owner>estark@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    The type of SSL error that the user encounters. This is recorded for all SSL
+    warnings, regardless of whether they are overridable.
+  </summary>
+</histogram>
+
+<histogram name="interstitial.{SecurityInterstitialLookalikeType}decision"
+    enum="SecurityInterstitialDecision" expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
+  <owner>estark@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    User decision when presented with a security interstitial. As of M44,
+    subresource interstitials were split into their own entries. As of M52,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    are split into their own entries from phishing*. As of M90,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    have been removed because they don't trigger interstitials.
+
+    This metric is used to populate a dashboard on go/crsb-site.
+    {SecurityInterstitialLookalikeType}
+  </summary>
+  <token key="SecurityInterstitialLookalikeType"
+      variants="SecurityInterstitialLookalikeType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="interstitial.{SecurityInterstitialLookalikeType}decision.repeat_visit"
+    enum="SecurityInterstitialDecision" expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
+  <owner>carlosil@chromium.org</owner>
+  <owner>security-enamel@chromium.org</owner>
+  <summary>
+    User decision when presented with a security interstitial, on a site that
+    the user had previously visited. As of M44, subresource interstitials were
+    split into their own entries. As of M52, social_engineering_ads* and
+    social_engineering_landing* interstitial reasons are split into their own
+    entries from phishing*. As of M90, social_engineering_ads* and
+    social_engineering_landing* interstitial reasons have been removed because
+    they don't trigger interstitials. {SecurityInterstitialLookalikeType}
+  </summary>
+  <token key="SecurityInterstitialLookalikeType"
+      variants="SecurityInterstitialLookalikeType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="interstitial.{SecurityInterstitialLookalikeType}interaction"
+    enum="SecurityInterstitialInteraction" expires_after="never">
+<!-- expires-never: Used for long term monitoring of security errors -->
+
+  <owner>estark@chromium.org</owner>
+  <owner>carlosil@chromium.org</owner>
+  <summary>
+    User interactions with a security interstitial. As of M44, subresource
+    interstitials were split into their own entries. As of M52,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    are split into their own entries from phishing*. As of M90,
+    social_engineering_ads* and social_engineering_landing* interstitial reasons
+    have been removed because they don't trigger interstitials.
+    {SecurityInterstitialLookalikeType}
+  </summary>
+  <token key="SecurityInterstitialLookalikeType"
+      variants="SecurityInterstitialLookalikeType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="TypedNavigationUpgradeThrottle.Event"
+    enum="TypedNavigationUpgradeThrottleEvent" expires_after="2023-02-19">
+  <owner>meacer@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
+  <summary>
+    Events for upgrading Default Omnibox Navigations to HTTPS feature. Recorded
+    when a navigation is started by typing a domain name without a scheme and
+    the URL is defaulted to HTTPS instead of HTTP.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

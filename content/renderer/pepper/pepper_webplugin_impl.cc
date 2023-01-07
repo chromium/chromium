@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,9 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/renderer/pepper/message_channel.h"
 #include "content/renderer/pepper/pepper_plugin_instance_impl.h"
@@ -36,7 +35,6 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "third_party/blink/public/web/web_print_params.h"
-#include "third_party/blink/public/web/web_print_preset_options.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "url/gurl.h"
@@ -84,9 +82,8 @@ PepperWebPluginImpl::PepperWebPluginImpl(PluginModule* plugin_module,
   init_data_->url = params.url;
 
   // Set subresource URL for crash reporting.
-  static base::debug::CrashKeyString* subresource_url =
-      base::debug::AllocateCrashKeyString("subresource_url",
-                                          base::debug::CrashKeySize::Size256);
+  static auto* const subresource_url = base::debug::AllocateCrashKeyString(
+      "subresource_url", base::debug::CrashKeySize::Size256);
   base::debug::SetCrashKeyString(subresource_url, init_data_->url.spec());
 }
 
@@ -188,10 +185,6 @@ v8::Local<v8::Object> PepperWebPluginImpl::V8ScriptableObject(
   return result;
 }
 
-bool PepperWebPluginImpl::SupportsKeyboardFocus() const {
-  return instance_ && instance_->SupportsKeyboardFocus();
-}
-
 void PepperWebPluginImpl::Paint(cc::PaintCanvas* canvas,
                                 const gfx::Rect& rect) {
   // Re-entrancy may cause JS to try to execute script on the plugin before it
@@ -215,30 +208,6 @@ void PepperWebPluginImpl::UpdateFocus(bool focused,
   // is fully initialized. See: crbug.com/715747.
   if (instance_) {
     instance_->SetWebKitFocus(focused);
-
-    if (focused && instance_->SupportsKeyboardFocus()) {
-      switch (focus_type) {
-        case blink::mojom::FocusType::kForward:
-        case blink::mojom::FocusType::kBackward: {
-          int modifiers = blink::WebInputEvent::kNoModifiers;
-          if (focus_type == blink::mojom::FocusType::kBackward)
-            modifiers |= blink::WebInputEvent::kShiftKey;
-          // As part of focus management for plugin, blink brings plugin to
-          // focus but does not forward the tab event to plugin. Hence
-          // simulating tab event here to enable seamless tabbing across UI &
-          // plugin.
-          blink::WebKeyboardEvent simulated_event(
-              blink::WebInputEvent::Type::kKeyDown, modifiers,
-              base::TimeTicks());
-          simulated_event.windows_key_code = ui::KeyboardCode::VKEY_TAB;
-          ui::Cursor cursor;
-          instance_->HandleInputEvent(simulated_event, &cursor);
-          break;
-        }
-        default:
-          break;
-      }
-    }
   }
 }
 
@@ -319,108 +288,6 @@ WebString PepperWebPluginImpl::SelectionAsMarkup() const {
   return WebString::FromUTF16(instance_->GetSelectedText(true));
 }
 
-bool PepperWebPluginImpl::CanEditText() const {
-  return instance_ && instance_->CanEditText();
-}
-
-bool PepperWebPluginImpl::HasEditableText() const {
-  return instance_ && instance_->HasEditableText();
-}
-
-bool PepperWebPluginImpl::CanUndo() const {
-  return instance_ && instance_->CanUndo();
-}
-
-bool PepperWebPluginImpl::CanRedo() const {
-  return instance_ && instance_->CanRedo();
-}
-
-bool PepperWebPluginImpl::ExecuteEditCommand(const blink::WebString& name) {
-  DCHECK(name != "Paste");
-  DCHECK(name != "PasteAndMatchStyle");
-  return ExecuteEditCommand(name, WebString());
-}
-
-bool PepperWebPluginImpl::ExecuteEditCommand(const blink::WebString& name,
-                                             const blink::WebString& value) {
-  if (!instance_)
-    return false;
-
-  if (name == "Cut") {
-    if (!HasSelection() || !CanEditText())
-      return false;
-
-    instance_->ReplaceSelection("");
-    return true;
-  }
-
-  if (name == "Paste" || name == "PasteAndMatchStyle") {
-    if (!CanEditText())
-      return false;
-
-    instance_->ReplaceSelection(value.Utf8());
-    return true;
-  }
-
-  if (name == "SelectAll") {
-    if (!CanEditText())
-      return false;
-
-    instance_->SelectAll();
-    return true;
-  }
-
-  if (name == "Undo") {
-    if (!CanUndo())
-      return false;
-
-    instance_->Undo();
-    return true;
-  }
-
-  if (name == "Redo") {
-    if (!CanRedo())
-      return false;
-
-    instance_->Redo();
-    return true;
-  }
-
-  return false;
-}
-
-WebURL PepperWebPluginImpl::LinkAtPosition(const gfx::Point& position) const {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (!instance_)
-    return GURL();
-  return GURL(instance_->GetLinkAtPosition(position));
-}
-
-bool PepperWebPluginImpl::StartFind(const blink::WebString& search_text,
-                                    bool case_sensitive,
-                                    int identifier) {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (!instance_)
-    return false;
-  return instance_->StartFind(search_text.Utf8(), case_sensitive, identifier);
-}
-
-void PepperWebPluginImpl::SelectFindResult(bool forward, int identifier) {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (instance_)
-    instance_->SelectFindResult(forward, identifier);
-}
-
-void PepperWebPluginImpl::StopFind() {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (instance_)
-    instance_->StopFind();
-}
-
 bool PepperWebPluginImpl::SupportsPaginatedPrint() {
   // Re-entrancy may cause JS to try to execute script on the plugin before it
   // is fully initialized. See: crbug.com/715747.
@@ -449,38 +316,6 @@ void PepperWebPluginImpl::PrintEnd() {
   // is fully initialized. See: crbug.com/715747.
   if (instance_)
     instance_->PrintEnd();
-}
-
-bool PepperWebPluginImpl::GetPrintPresetOptionsFromDocument(
-    blink::WebPrintPresetOptions* preset_options) {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (!instance_)
-    return false;
-  return instance_->GetPrintPresetOptionsFromDocument(preset_options);
-}
-
-bool PepperWebPluginImpl::IsPdfPlugin() {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (!instance_)
-    return false;
-  return instance_->IsPdfPlugin();
-}
-
-bool PepperWebPluginImpl::CanRotateView() {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (!instance_)
-    return false;
-  return instance_->CanRotateView();
-}
-
-void PepperWebPluginImpl::RotateView(RotationType type) {
-  // Re-entrancy may cause JS to try to execute script on the plugin before it
-  // is fully initialized. See: crbug.com/715747.
-  if (instance_)
-    instance_->RotateView(type);
 }
 
 bool PepperWebPluginImpl::IsPlaceholder() {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file or at https://opensource.org/licenses/MIT.
 
@@ -50,6 +50,14 @@ TEST(PatternRegexTest, NameWithUnicode) {
 
 TEST(PatternRegexTest, NameWithOptionalModifier) {
   RunRegexTest(":foo?", R"(^([^\/#\?]+?)?[\/#\?]?$)", {"foo"});
+}
+
+TEST(PatternRegexTest, NameWithZeroOrMoreModifier) {
+  RunRegexTest(":foo*", R"(^((?:[^\/#\?]+?)*)[\/#\?]?$)", {"foo"});
+}
+
+TEST(PatternRegexTest, NameWithOneOrMoreModifier) {
+  RunRegexTest(":foo+", R"(^((?:[^\/#\?]+?)+)[\/#\?]?$)", {"foo"});
 }
 
 TEST(PatternRegexTest, NameWithPrefix) {
@@ -219,7 +227,7 @@ TEST(PatternStringTest, Group) {
 }
 
 TEST(PatternStringTest, GroupWithRegexp) {
-  RunPatternStringTest("/foo/{(bar)}", "/foo/(bar)");
+  RunPatternStringTest("/foo/{(bar)}", "/foo/{(bar)}");
 }
 
 TEST(PatternStringTest, GroupWithPrefixAndRegexp) {
@@ -252,6 +260,10 @@ TEST(PatternStringTest, GroupWithPlusModifier) {
 
 TEST(PatternStringTest, NamedGroup) {
   RunPatternStringTest("/foo/:bar", "/foo/:bar");
+}
+
+TEST(PatternStringTest, SegmentWildcardWithoutName) {
+  RunPatternStringTest("/foo/([^\\/#\\?]+?)", "/foo/([^\\/#\\?]+?)");
 }
 
 TEST(PatternStringTest, NamedGroupWithRegexp) {
@@ -316,6 +328,291 @@ TEST(PatternStringTest, RegexpEscapedPatternCharInPrefix) {
 
 TEST(PatternStringTest, RegexpEscapedPatternCharInSuffix) {
   RunPatternStringTest("/foo/{(foo)\\:bar}", "/foo/{(foo)\\:bar}");
+}
+
+TEST(PatternStringTest, RegexpFollowedByWildcard) {
+  RunPatternStringTest("(foo)(.*)", "(foo)(.*)");
+}
+
+TEST(PatternStringTest, RegexpWithOptionalModifierFollowedByWildcard) {
+  RunPatternStringTest("(foo)?(.*)", "(foo)?*");
+}
+
+TEST(PatternStringTest, RegexpWithSuffixModifierFollowedByWildcard) {
+  RunPatternStringTest("{(foo)a}(.*)", "{(foo)a}(.*)");
+}
+
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByWildcard) {
+  RunPatternStringTest("{:foo}(.*)", "{:foo}(.*)");
+}
+
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByRegexp) {
+  RunPatternStringTest("{:foo}(bar)", "{:foo}(bar)");
+}
+
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByWildcardInGrouping) {
+  RunPatternStringTest("{:foo}{(.*)}", "{:foo}(.*)");
+}
+
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByWildcardWithSuffix) {
+  RunPatternStringTest("{:foo}{(.*)bar}", ":foo{*bar}");
+}
+
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByWildcardWithPrefix) {
+  RunPatternStringTest("{:foo}{bar(.*)}", ":foo{bar*}");
+}
+
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByWildcardWithCustomName) {
+  RunPatternStringTest("{:foo}:bar(.*)", ":foo:bar(.*)");
+}
+
+TEST(PatternStringTest,
+     NamedGroupInGroupingWithOptionalModifierFollowedByWildcard) {
+  RunPatternStringTest("{:foo}?(.*)", ":foo?*");
+}
+
+TEST(PatternStringTest, NamedGroupWithEscapedValidNameSuffix) {
+  RunPatternStringTest("{:foo\\bar}", "{:foo\\bar}");
+}
+
+TEST(PatternStringTest, NamedGroupWithEscapedInvalidNameSuffix) {
+  RunPatternStringTest("{:foo\\.bar}", "{:foo.bar}");
+}
+
+TEST(PatternStringTest, NamedGroupInGroupingFollowedByValidNameText) {
+  RunPatternStringTest("{:foo}bar", "{:foo}bar");
+}
+
+TEST(PatternStringTest, NamedGroupFollowedByEscapedValidNameText) {
+  RunPatternStringTest(":foo\\bar", "{:foo}bar");
+}
+
+TEST(PatternStringTest, NamedGroupWithRegexpFollowedByValidNameText) {
+  RunPatternStringTest(":foo(baz)bar", ":foo(baz)bar");
+}
+
+TEST(PatternStringTest, NamedGroupFollowedByEmptyGroupAndWildcard) {
+  RunPatternStringTest(":foo{}(.*)", "{:foo}(.*)");
+}
+
+TEST(PatternStringTest, NamedGroupFollowedByEmptyGroupAndValidNameText) {
+  RunPatternStringTest(":foo{}bar", "{:foo}bar");
+}
+
+TEST(PatternStringTest,
+     NamedGroupFollowedByEmptyGroupWithOptionalModifierAndValidNameText) {
+  RunPatternStringTest(":foo{}?bar", "{:foo}bar");
+}
+
+TEST(PatternStringTest, NamedGroupWithRegexpFollowedByWildcard) {
+  RunPatternStringTest(":foo(bar)(.*)", ":foo(bar)(.*)");
+}
+
+TEST(PatternStringTest, NamedGroupWithRegexpAndValidNameSuffix) {
+  RunPatternStringTest("{:foo(baz)bar}", "{:foo(baz)bar}");
+}
+
+TEST(PatternStringTest, WildcardSlashAndWildcard) {
+  RunPatternStringTest("*/*", "*/*");
+}
+
+TEST(PatternStringTest, WildcardEscapedSlashAndWildcard) {
+  // The backslash in the original input forces the `/` to not be an
+  // implicit prefix for the second `*`.  The generated pattern string
+  // must similarly prevent the implicit prefix from occuring.  This
+  // is done using the `{}` grouping instead, however, as its a bit more
+  // readable than escape backslashes.
+  RunPatternStringTest("*\\/*", "*/{*}");
+}
+
+TEST(PatternStringTest, WildcardSlashAndWildcardInGrouping) {
+  RunPatternStringTest("*/{*}", "*/{*}");
+}
+
+TEST(PatternStringTest, WildcardSlashSlashAndWildcard) {
+  RunPatternStringTest("*//*", "*//*");
+}
+
+TEST(
+    PatternStringTest,
+    WildcardFollowedByEmptyGroupWithZeroOrMoreModifierAndWildcardWithOptionalModifier) {
+  RunPatternStringTest("*{}**?", "*(.*)?");
+}
+
+TEST(PatternStringTest, CaseFromFuzzer) {
+  RunPatternStringTest(".:bax\\a*{}**", "{.:bax}a*(.*)");
+}
+
+struct DirectMatchCase {
+  absl::string_view input;
+  bool expected_match = true;
+  std::vector<std::pair<absl::string_view, absl::optional<absl::string_view>>>
+      expected_groups;
+};
+
+void RunDirectMatchTest(absl::string_view input,
+                        std::vector<DirectMatchCase> case_list) {
+  auto result =
+      Parse(input, PassThrough,
+            {.sensitive = true, .strict = true, .end = true, .start = true});
+  ASSERT_TRUE(result.ok());
+  auto& pattern = result.value();
+  EXPECT_TRUE(pattern.CanDirectMatch());
+  for (const auto& c : case_list) {
+    std::vector<std::pair<absl::string_view, absl::optional<absl::string_view>>>
+        matched_groups;
+    EXPECT_EQ(c.expected_match, pattern.DirectMatch(c.input, &matched_groups));
+    ASSERT_EQ(c.expected_groups.size(), matched_groups.size());
+    for (size_t i = 0; i < matched_groups.size(); ++i) {
+      EXPECT_EQ(c.expected_groups[i], matched_groups[i]);
+    }
+  }
+}
+
+void RunDirectMatchUnsupportedTest(absl::string_view input,
+                                   Options options = {.sensitive = true,
+                                                      .strict = true,
+                                                      .end = true,
+                                                      .start = true}) {
+  auto result = Parse(input, PassThrough, options);
+  ASSERT_TRUE(result.ok());
+  auto& pattern = result.value();
+  EXPECT_FALSE(pattern.CanDirectMatch());
+}
+
+TEST(PatternDirectMatch, FullWildcardSupported) {
+  RunDirectMatchTest("*",
+                     {
+                         {.input = "/foo", .expected_groups = {{"0", "/foo"}}},
+                         {.input = "", .expected_groups = {{"0", ""}}},
+                     });
+}
+
+TEST(PatternDirectMatch, FullWildcardInGroupSupported) {
+  RunDirectMatchTest("{*}",
+                     {
+                         {.input = "/foo", .expected_groups = {{"0", "/foo"}}},
+                         {.input = "", .expected_groups = {{"0", ""}}},
+                     });
+}
+
+TEST(PatternDirectMatch, FullWildcardUsingRegexSupported) {
+  RunDirectMatchTest("(.*)",
+                     {
+                         {.input = "/foo", .expected_groups = {{"0", "/foo"}}},
+                         {.input = "", .expected_groups = {{"0", ""}}},
+                     });
+}
+
+TEST(PatternDirectMatch, FullWildcardAndOptionalModifierSupported) {
+  RunDirectMatchTest("*?",
+                     {
+                         {.input = "/foo", .expected_groups = {{"0", "/foo"}}},
+                         {.input = "", .expected_groups = {{"0", ""}}},
+                     });
+}
+
+TEST(PatternDirectMatch, FullWildcardAndOneOrMoreModifierSupported) {
+  RunDirectMatchTest("*+",
+                     {
+                         {.input = "/foo", .expected_groups = {{"0", "/foo"}}},
+                         {.input = "", .expected_groups = {{"0", ""}}},
+                     });
+}
+
+TEST(PatternDirectMatch, FullWildcardAndZeroOrMoreModifierSupported) {
+  RunDirectMatchTest("**",
+                     {
+                         {.input = "/foo", .expected_groups = {{"0", "/foo"}}},
+                         {.input = "", .expected_groups = {{"0", ""}}},
+                     });
+}
+
+TEST(PatternDirectMatch, FullWildcardWithNameUsingRegexSupported) {
+  RunDirectMatchTest(
+      ":name(.*)", {
+                       {.input = "/foo", .expected_groups = {{"name", "/foo"}}},
+                       {.input = "", .expected_groups = {{"name", ""}}},
+                   });
+}
+
+TEST(PatternDirectMatch, OptionsFalseStartUnsupported) {
+  RunDirectMatchUnsupportedTest(
+      "*", {.sensitive = true, .strict = true, .end = true, .start = false});
+}
+
+TEST(PatternDirectMatch, OptionsFalseEndUnsupported) {
+  RunDirectMatchUnsupportedTest(
+      "*", {.sensitive = true, .strict = true, .end = false, .start = true});
+}
+
+TEST(PatternDirectMatch, OptionsFalseStrictUnsupported) {
+  RunDirectMatchUnsupportedTest(
+      "*", {.sensitive = true, .strict = false, .end = true, .start = true});
+}
+
+TEST(PatternDirectMatch, OptionsFalseSensitiveUnsupported) {
+  RunDirectMatchUnsupportedTest(
+      "*", {.sensitive = false, .strict = true, .end = true, .start = true});
+}
+
+TEST(PatternDirectMatch, FullWildcardWithPrefixUnsupported) {
+  RunDirectMatchUnsupportedTest("/*");
+}
+
+TEST(PatternDirectMatch, FullWildcardInGroupWithPrefixUnsupported) {
+  RunDirectMatchUnsupportedTest("{foo*}");
+}
+
+TEST(PatternDirectMatch, FullWildcardInGroupWithSuffixUnsupported) {
+  RunDirectMatchUnsupportedTest("{*foo}");
+}
+
+TEST(PatternDirectMatch, EmptyPatternSupported) {
+  RunDirectMatchTest("", {
+                             {.input = "", .expected_groups = {}},
+                             {.input = "/", .expected_match = false},
+                         });
+}
+
+TEST(PatternDirectMatch, FixedTextSupported) {
+  RunDirectMatchTest("foo", {
+                                {.input = "foo", .expected_groups = {}},
+                                {.input = "fo", .expected_match = false},
+                                {.input = "foobar", .expected_match = false},
+                            });
+}
+
+TEST(PatternDirectMatch, FixedTextInGroupSupported) {
+  RunDirectMatchTest("{foo}", {
+                                  {.input = "foo", .expected_groups = {}},
+                                  {.input = "fo", .expected_match = false},
+                                  {.input = "foobar", .expected_match = false},
+                              });
+}
+
+TEST(PatternDirectMatch, FixedTextInGroupWithOptionalModifierUnsupported) {
+  RunDirectMatchUnsupportedTest("{foo}?");
+}
+
+TEST(PatternDirectMatch, FixedTextInGroupWithZeroOrMoreModifierUnsupported) {
+  RunDirectMatchUnsupportedTest("{foo}*");
+}
+
+TEST(PatternDirectMatch, FixedTextInGroupWithOneOrMoreModifierUnsupported) {
+  RunDirectMatchUnsupportedTest("{foo}+");
+}
+
+TEST(PatternDirectMatch, FixedTextAndFullWildcardUnsupported) {
+  RunDirectMatchUnsupportedTest("/foo*");
+}
+
+TEST(PatternDirectMatch, NamedGroupUnsupported) {
+  RunDirectMatchUnsupportedTest(":name");
+}
+
+TEST(PatternDirectMatch, RegexUnsupported) {
+  RunDirectMatchUnsupportedTest("(foo)");
 }
 
 }  // namespace liburlpattern

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,7 +65,7 @@ bool ExtensionGarbageCollectorChromeOS::CanGarbageCollectSharedExtensions() {
     if (!active_users[i]->is_profile_created())
       return false;
     Profile* profile =
-        chromeos::ProfileHelper::Get()->GetProfileByUserUnsafe(active_users[i]);
+        ash::ProfileHelper::Get()->GetProfileByUser(active_users[i]);
     ExtensionGarbageCollectorChromeOS* gc =
         ExtensionGarbageCollectorChromeOS::Get(profile);
     if (gc && gc->crx_installs_in_progress_ > 0)

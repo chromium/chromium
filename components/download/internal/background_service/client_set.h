@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "components/download/public/background_service/clients.h"
 
 namespace download {
@@ -19,6 +18,10 @@ namespace download {
 class ClientSet {
  public:
   explicit ClientSet(std::unique_ptr<DownloadClientMap> clients);
+
+  ClientSet(const ClientSet&) = delete;
+  ClientSet& operator=(const ClientSet&) = delete;
+
   virtual ~ClientSet();
 
   std::set<DownloadClient> GetRegisteredClients() const;
@@ -26,8 +29,6 @@ class ClientSet {
 
  private:
   std::unique_ptr<DownloadClientMap> clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientSet);
 };
 
 }  // namespace download

@@ -1,0 +1,4 @@
+tools/traffic_annotation/scripts/test_data/git_list.txt
+tools/traffic_annotation/scripts/test_data/irrelevant_file_name.txt
+tools/traffic_annotation/scripts/test_data/objective_cpp.mm
+tools/traffic_annotation/scripts/test_data/test_sample_annotations.cc

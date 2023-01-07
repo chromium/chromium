@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 namespace domain_reliability {
 namespace {
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 class DomainReliabilityDispatcherTest : public testing::Test {
@@ -27,7 +26,7 @@ TEST_F(DomainReliabilityDispatcherTest, Create) {
 }
 
 TEST_F(DomainReliabilityDispatcherTest, TaskDoesntRunEarly) {
-  TimeDelta delay = TimeDelta::FromSeconds(1);
+  base::TimeDelta delay = base::Seconds(1);
   TestCallback callback;
 
   dispatcher_.ScheduleTask(callback.callback(), 2 * delay, 3 * delay);
@@ -37,7 +36,7 @@ TEST_F(DomainReliabilityDispatcherTest, TaskDoesntRunEarly) {
 }
 
 TEST_F(DomainReliabilityDispatcherTest, TaskRunsWhenEligible) {
-  TimeDelta delay = TimeDelta::FromSeconds(1);
+  base::TimeDelta delay = base::Seconds(1);
   TestCallback callback;
 
   dispatcher_.ScheduleTask(callback.callback(), 2 * delay, 3 * delay);
@@ -49,7 +48,7 @@ TEST_F(DomainReliabilityDispatcherTest, TaskRunsWhenEligible) {
 }
 
 TEST_F(DomainReliabilityDispatcherTest, TaskRunsAtDeadline) {
-  TimeDelta delay = TimeDelta::FromSeconds(1);
+  base::TimeDelta delay = base::Seconds(1);
   TestCallback callback;
 
   dispatcher_.ScheduleTask(callback.callback(), 2 * delay, 3 * delay);

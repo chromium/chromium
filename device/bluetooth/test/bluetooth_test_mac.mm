@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #import <CoreBluetooth/CoreBluetooth.h>
 #include <stdint.h>
+
+#include <memory>
 
 #include "base/bind.h"
 #import "base/mac/foundation_util.h"
@@ -36,13 +38,14 @@ class BluetoothTestMac::ScopedMockCentralManager {
     mock_central_manager_.reset(mock_central_manager);
   }
 
+  ScopedMockCentralManager(const ScopedMockCentralManager&) = delete;
+  ScopedMockCentralManager& operator=(const ScopedMockCentralManager&) = delete;
+
   // Returns MockCentralManager instance.
   MockCentralManager* get() { return mock_central_manager_; }
 
  private:
   scoped_nsobject<MockCentralManager> mock_central_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedMockCentralManager);
 };
 
 namespace {
@@ -59,27 +62,24 @@ scoped_nsobject<NSDictionary> CreateAdvertisementData(
       }]);
 
   if (name) {
-    [advertisement_data setObject:name forKey:CBAdvertisementDataLocalNameKey];
+    advertisement_data[CBAdvertisementDataLocalNameKey] = name;
   }
 
   if (uuids) {
-    [advertisement_data setObject:uuids
-                           forKey:CBAdvertisementDataServiceUUIDsKey];
+    advertisement_data[CBAdvertisementDataServiceUUIDsKey] = uuids;
   }
 
   if (service_data) {
-    [advertisement_data setObject:service_data
-                           forKey:CBAdvertisementDataServiceDataKey];
+    advertisement_data[CBAdvertisementDataServiceDataKey] = service_data;
   }
 
   if (service_data) {
-    [advertisement_data setObject:manufacturer_data
-                           forKey:CBAdvertisementDataManufacturerDataKey];
+    advertisement_data[CBAdvertisementDataManufacturerDataKey] =
+        manufacturer_data;
   }
 
   if (tx_power) {
-    [advertisement_data setObject:tx_power
-                           forKey:CBAdvertisementDataTxPowerLevelKey];
+    advertisement_data[CBAdvertisementDataTxPowerLevelKey] = tx_power;
   }
 
   return scoped_nsobject<NSDictionary>(advertisement_data,
@@ -123,10 +123,10 @@ void BluetoothTestMac::InitWithoutDefaultAdapter() {
   adapter_mac_ = adapter.get();
   adapter_ = std::move(adapter);
 
-  mock_central_manager_.reset(
-      new ScopedMockCentralManager([[MockCentralManager alloc] init]));
+  mock_central_manager_ = std::make_unique<ScopedMockCentralManager>(
+      [[MockCentralManager alloc] init]);
   [mock_central_manager_->get() setBluetoothTestMac:this];
-  [mock_central_manager_->get() setState:CBCentralManagerStateUnsupported];
+  [mock_central_manager_->get() setState:CBManagerStateUnsupported];
   adapter_mac_->SetCentralManagerForTesting((id)mock_central_manager_->get());
 }
 
@@ -137,10 +137,10 @@ void BluetoothTestMac::InitWithFakeAdapter() {
   adapter_mac_ = adapter.get();
   adapter_ = std::move(adapter);
 
-  mock_central_manager_.reset(
-      new ScopedMockCentralManager([[MockCentralManager alloc] init]));
+  mock_central_manager_ = std::make_unique<ScopedMockCentralManager>(
+      [[MockCentralManager alloc] init]);
   mock_central_manager_->get().bluetoothTestMac = this;
-  [mock_central_manager_->get() setState:CBCentralManagerStatePoweredOn];
+  [mock_central_manager_->get() setState:CBManagerStatePoweredOn];
   adapter_mac_->SetCentralManagerForTesting((id)mock_central_manager_->get());
   adapter_mac_->SetPowerStateFunctionForTesting(base::BindRepeating(
       &BluetoothTestMac::SetMockControllerPowerState, base::Unretained(this)));
@@ -153,7 +153,7 @@ void BluetoothTestMac::ResetEventCounts() {
 }
 
 void BluetoothTestMac::SimulateAdapterPoweredOff() {
-  [mock_central_manager_->get() setState:CBCentralManagerStatePoweredOff];
+  [mock_central_manager_->get() setState:CBManagerStatePoweredOff];
 
   for (BluetoothDevice* device : adapter_->GetDevices()) {
     MockCBPeripheral* peripheral_mock = GetMockCBPeripheral(device);
@@ -399,7 +399,7 @@ void BluetoothTestMac::SimulateGattCharacteristicRead(
 
 void BluetoothTestMac::SimulateGattCharacteristicReadError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   MockCBCharacteristic* characteristic_mock =
       GetCBMockCharacteristic(characteristic);
   NSError* error = BluetoothDeviceMac::GetNSErrorFromGattErrorCode(error_code);
@@ -415,7 +415,7 @@ void BluetoothTestMac::SimulateGattCharacteristicWrite(
 
 void BluetoothTestMac::SimulateGattCharacteristicWriteError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   MockCBCharacteristic* characteristic_mock =
       GetCBMockCharacteristic(characteristic);
   NSError* error = BluetoothDeviceMac::GetNSErrorFromGattErrorCode(error_code);
@@ -445,7 +445,7 @@ void BluetoothTestMac::SimulateGattNotifySessionStarted(
 
 void BluetoothTestMac::SimulateGattNotifySessionStartError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   MockCBCharacteristic* characteristic_mock =
       GetCBMockCharacteristic(characteristic);
   NSError* error = BluetoothDeviceMac::GetNSErrorFromGattErrorCode(error_code);
@@ -461,7 +461,7 @@ void BluetoothTestMac::SimulateGattNotifySessionStopped(
 
 void BluetoothTestMac::SimulateGattNotifySessionStopError(
     BluetoothRemoteGattCharacteristic* characteristic,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   MockCBCharacteristic* characteristic_mock =
       GetCBMockCharacteristic(characteristic);
   NSError* error = BluetoothDeviceMac::GetNSErrorFromGattErrorCode(error_code);
@@ -505,7 +505,7 @@ void BluetoothTestMac::SimulateGattDescriptorRead(
 
 void BluetoothTestMac::SimulateGattDescriptorReadError(
     BluetoothRemoteGattDescriptor* descriptor,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   NSError* error = BluetoothDeviceMac::GetNSErrorFromGattErrorCode(error_code);
   [GetCBMockDescriptor(descriptor) simulateReadWithValue:nil error:error];
 }
@@ -517,14 +517,14 @@ void BluetoothTestMac::SimulateGattDescriptorWrite(
 
 void BluetoothTestMac::SimulateGattDescriptorWriteError(
     BluetoothRemoteGattDescriptor* descriptor,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   NSError* error = BluetoothDeviceMac::GetNSErrorFromGattErrorCode(error_code);
   [GetCBMockDescriptor(descriptor) simulateWriteWithError:error];
 }
 
 void BluetoothTestMac::SimulateGattDescriptorUpdateError(
     BluetoothRemoteGattDescriptor* descriptor,
-    BluetoothRemoteGattService::GattErrorCode error_code) {
+    BluetoothGattService::GattErrorCode error_code) {
   NSError* error = BluetoothDeviceMac::GetNSErrorFromGattErrorCode(error_code);
   [GetCBMockDescriptor(descriptor) simulateUpdateWithError:error];
 }
@@ -621,7 +621,7 @@ void BluetoothTestMac::SimulateGattDescriptorReadNSStringMac(
 void BluetoothTestMac::SimulateGattDescriptorReadNSNumberMac(
     BluetoothRemoteGattDescriptor* descriptor,
     short value) {
-  NSNumber* number = [NSNumber numberWithShort:value];
+  NSNumber* number = @(value);
   [GetCBMockDescriptor(descriptor) simulateReadWithValue:number error:nil];
 }
 
@@ -639,9 +639,8 @@ void BluetoothTestMac::SetMockControllerPowerState(int powered) {
             auto* mock_central_manager =
                 base::mac::ObjCCastStrict<MockCentralManager>(
                     adapter_mac->GetCentralManager());
-            [mock_central_manager
-                setState:powered ? CBCentralManagerStatePoweredOn
-                                 : CBCentralManagerStatePoweredOff];
+            [mock_central_manager setState:powered ? CBManagerStatePoweredOn
+                                                   : CBManagerStatePoweredOff];
             [mock_central_manager.delegate
                 centralManagerDidUpdateState:adapter_mac->GetCentralManager()];
             // On real devices, the Bluetooth classic code will call

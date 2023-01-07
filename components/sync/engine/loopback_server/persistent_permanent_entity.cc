@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,9 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/loopback_server.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 using std::string;
 
@@ -22,7 +25,7 @@ static const char kRootParentTag[] = "0";
 
 namespace syncer {
 
-PersistentPermanentEntity::~PersistentPermanentEntity() {}
+PersistentPermanentEntity::~PersistentPermanentEntity() = default;
 
 // static
 std::unique_ptr<LoopbackServerEntity> PersistentPermanentEntity::CreateNew(
@@ -71,7 +74,7 @@ std::unique_ptr<LoopbackServerEntity> PersistentPermanentEntity::CreateTopLevel(
   }
 
   string server_tag = syncer::ModelTypeToRootTag(model_type);
-  string name = syncer::ModelTypeToString(model_type);
+  string name = syncer::ModelTypeToDebugString(model_type);
   string id = LoopbackServerEntity::GetTopLevelId(model_type);
   sync_pb::EntitySpecifics entity_specifics;
   AddDefaultFieldValue(model_type, &entity_specifics);

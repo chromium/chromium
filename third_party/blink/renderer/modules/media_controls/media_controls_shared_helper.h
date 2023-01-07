@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_SHARED_HELPER_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -37,7 +38,7 @@ class MediaControlsSharedHelpers final {
     Member<Element> element_;
   };
 
-  static base::Optional<unsigned> GetCurrentBufferedTimeRange(
+  static absl::optional<unsigned> GetCurrentBufferedTimeRange(
       HTMLMediaElement& media_element);
 
   static String FormatTime(double time);

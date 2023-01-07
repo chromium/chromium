@@ -1,14 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_TASK_COMMON_SCOPED_DEFER_TASK_POSTING_H_
 #define BASE_TASK_COMMON_SCOPED_DEFER_TASK_POSTING_H_
 
+#include <vector>
+
 #include "base/base_export.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 
 namespace base {
 
@@ -31,6 +33,10 @@ class BASE_EXPORT ScopedDeferTaskPosting {
   static bool IsPresent();
 
   ScopedDeferTaskPosting();
+
+  ScopedDeferTaskPosting(const ScopedDeferTaskPosting&) = delete;
+  ScopedDeferTaskPosting& operator=(const ScopedDeferTaskPosting&) = delete;
+
   ~ScopedDeferTaskPosting();
 
  private:
@@ -49,15 +55,18 @@ class BASE_EXPORT ScopedDeferTaskPosting {
                  Location from_here,
                  OnceClosure task,
                  base::TimeDelta delay);
+
+    DeferredTask(const DeferredTask&) = delete;
+    DeferredTask& operator=(const DeferredTask&) = delete;
+
     DeferredTask(DeferredTask&& task);
+
     ~DeferredTask();
 
     scoped_refptr<SequencedTaskRunner> task_runner;
     Location from_here;
     OnceClosure task;
     base::TimeDelta delay;
-
-    DISALLOW_COPY_AND_ASSIGN(DeferredTask);
   };
 
   std::vector<DeferredTask> deferred_tasks_;
@@ -66,8 +75,6 @@ class BASE_EXPORT ScopedDeferTaskPosting {
   // to another task runner), so we want to know whether the scope is top-level
   // or not.
   bool top_level_scope_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDeferTaskPosting);
 };
 
 }  // namespace base

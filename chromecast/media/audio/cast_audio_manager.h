@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "chromecast/common/mojom/service_connector.mojom.h"
+#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/audio/cast_audio_manager_helper.h"
 #include "media/audio/audio_manager_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -50,12 +50,16 @@ class CastAudioManager : public ::media::AudioManagerBase {
   CastAudioManager(
       std::unique_ptr<::media::AudioThread> audio_thread,
       ::media::AudioLogFactory* audio_log_factory,
+      CastAudioManagerHelper::Delegate* delegate,
       base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-      CastAudioManagerHelper::GetSessionIdCallback get_session_id_callback,
       scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector,
+      external_service_support::ExternalConnector* connector,
       bool use_mixer);
+
+  CastAudioManager(const CastAudioManager&) = delete;
+  CastAudioManager& operator=(const CastAudioManager&) = delete;
+
   ~CastAudioManager() override;
 
   // AudioManagerBase implementation.
@@ -104,11 +108,11 @@ class CastAudioManager : public ::media::AudioManagerBase {
   CastAudioManager(
       std::unique_ptr<::media::AudioThread> audio_thread,
       ::media::AudioLogFactory* audio_log_factory,
+      CastAudioManagerHelper::Delegate* delegate,
       base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-      CastAudioManagerHelper::GetSessionIdCallback get_session_id_callback,
       scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector,
+      external_service_support::ExternalConnector* connector,
       bool use_mixer,
       bool force_use_cma_backend_for_output);
 
@@ -133,8 +137,6 @@ class CastAudioManager : public ::media::AudioManagerBase {
   // Weak pointers must be dereferenced on the |browser_task_runner|.
   base::WeakPtr<CastAudioManager> weak_this_;
   base::WeakPtrFactory<CastAudioManager> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastAudioManager);
 };
 
 }  // namespace media

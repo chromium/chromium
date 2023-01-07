@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,12 @@ class ProtocolSerializerJSON final : public ProtocolSerializer {
  public:
   ProtocolSerializerJSON() = default;
 
+  ProtocolSerializerJSON(const ProtocolSerializerJSON&) = delete;
+  ProtocolSerializerJSON& operator=(const ProtocolSerializerJSON&) = delete;
+
   // Overrides for ProtocolSerializer.
   std::string Serialize(
       const protocol_request::Request& request) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProtocolSerializerJSON);
 };
 
 }  // namespace update_client

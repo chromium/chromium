@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,6 @@ import android.content.Context;
 import android.graphics.RectF;
 import android.view.View;
 
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.chrome.browser.compositor.TitleCache;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 
@@ -102,19 +100,9 @@ public interface LayoutManagerHost {
     void setContentOverlayVisibility(boolean show, boolean canBeFocusable);
 
     /**
-     * @return The {@link TitleCache} to use to store title bitmaps.
-     */
-    TitleCache getTitleCache();
-
-    /**
      * @return The manager providing browser control state.
      */
     BrowserControlsManager getBrowserControlsManager();
-
-    /**
-     * @return An {@link ObservableSupplier} supplier for the {@link BrowserControlsManager}.
-     */
-    ObservableSupplier<BrowserControlsManager> getBrowserControlsManagerSupplier();
 
     /**
      * @return The manager in charge of handling fullscreen changes.

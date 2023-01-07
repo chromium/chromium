@@ -1,13 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/host/security_key/security_key_socket.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
 #include "base/timer/timer.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -33,7 +33,7 @@ SecurityKeySocket::SecurityKeySocket(std::unique_ptr<net::StreamSocket> socket,
     : socket_(std::move(socket)),
       read_buffer_(base::MakeRefCounted<net::IOBufferWithSize>(
           kRequestReadBufferLength)) {
-  timer_.reset(new base::OneShotTimer());
+  timer_ = std::make_unique<base::OneShotTimer>();
   timer_->Start(FROM_HERE, timeout, std::move(timeout_callback));
 }
 
@@ -74,7 +74,7 @@ void SecurityKeySocket::SendResponse(const std::string& response_data) {
 void SecurityKeySocket::SendSshError() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  SendResponse(std::string(kSshError, base::size(kSshError)));
+  SendResponse(std::string(kSshError, std::size(kSshError)));
 }
 
 void SecurityKeySocket::StartReadingRequest(

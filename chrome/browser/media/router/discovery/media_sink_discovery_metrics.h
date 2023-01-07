@@ -1,13 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_MEDIA_SINK_DISCOVERY_METRICS_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_MEDIA_SINK_DISCOVERY_METRICS_H_
 
-#include <memory>
-
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 
@@ -57,7 +56,7 @@ class DeviceCountMetrics {
  private:
   base::Time device_count_metrics_record_time_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 };
 
 // Metrics for DIAL device counts.
@@ -85,8 +84,9 @@ class CastDeviceCountMetrics : public DeviceCountMetrics {
     kMdnsDial = 4,  // Device was first discovered via mDNS, then by DIAL.
     kDialMdns = 5,  // Device was first discovered via DIAL, then by mDNS.
     kConnectionRetryOnError = 6,
+    kAccessCode = 7,
 
-    kTotalCount = 7,
+    kTotalCount = 8,
   };
 
   static const char kHistogramCastKnownDeviceCount[];
@@ -104,6 +104,7 @@ class CastAnalytics {
  public:
   static const char kHistogramCastChannelConnectResult[];
   static const char kHistogramCastChannelError[];
+  static const char kHistogramCastDeviceNameLength[];
   static const char kHistogramCastMdnsChannelOpenSuccess[];
   static const char kHistogramCastMdnsChannelOpenFailure[];
 
@@ -112,6 +113,7 @@ class CastAnalytics {
   static void RecordDeviceChannelError(MediaRouterChannelError channel_error);
   static void RecordDeviceChannelOpenDuration(bool success,
                                               const base::TimeDelta& duration);
+  static void RecordDeviceNameLength(size_t length);
 };
 
 // Metrics for wired display (local screen) sink counts.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation.h"
@@ -36,6 +35,10 @@ class ImageWriterUtilityClientTest : public InProcessBrowserTest {
         chrome::mojom::RemovableStorageWriter::kTestDevice);
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
+
+  ImageWriterUtilityClientTest(const ImageWriterUtilityClientTest&) = delete;
+  ImageWriterUtilityClientTest& operator=(const ImageWriterUtilityClientTest&) =
+      delete;
 
   void FillImageFileWithPattern(char pattern) {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -250,8 +253,6 @@ class ImageWriterUtilityClientTest : public InProcessBrowserTest {
   bool cancel_ = false;
   std::string error_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageWriterUtilityClientTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, WriteNoImage) {
@@ -270,13 +271,7 @@ IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, WriteNoDevice) {
   EXPECT_FALSE(error().empty());
 }
 
-// Flaky on Win. http://crbug.com/927218
-#if defined(OS_WIN)
-#define MAYBE_Write DISABLED_Write
-#else
-#define MAYBE_Write Write
-#endif
-IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, MAYBE_Write) {
+IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, Write) {
   FillImageFileWithPattern('i');
   FillDeviceFileWithPattern(0);
 
@@ -286,13 +281,7 @@ IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, MAYBE_Write) {
   EXPECT_TRUE(error().empty());
 }
 
-// Flaky on Win. http://crbug.com/927218
-#if defined(OS_WIN)
-#define MAYBE_WriteVerify DISABLED_WriteVerify
-#else
-#define MAYBE_WriteVerify WriteVerify
-#endif
-IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, MAYBE_WriteVerify) {
+IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, WriteVerify) {
   FillImageFileWithPattern('m');
   FillDeviceFileWithPattern(0);
 
@@ -302,13 +291,7 @@ IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, MAYBE_WriteVerify) {
   EXPECT_TRUE(error().empty());
 }
 
-// Flaky on Win. http://crbug.com/927218
-#if defined(OS_WIN)
-#define MAYBE_WriteCancel DISABLED_WriteCancel
-#else
-#define MAYBE_WriteCancel WriteCancel
-#endif
-IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, MAYBE_WriteCancel) {
+IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, WriteCancel) {
   FillImageFileWithPattern('a');
   FillDeviceFileWithPattern(0);
 
@@ -344,13 +327,7 @@ IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, VerifyFailure) {
   EXPECT_FALSE(error().empty());
 }
 
-// Flaky on Win. http://crbug.com/927218
-#if defined(OS_WIN)
-#define MAYBE_Verify DISABLED_Verify
-#else
-#define MAYBE_Verify Verify
-#endif
-IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, MAYBE_Verify) {
+IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, Verify) {
   FillImageFileWithPattern('e');
   FillDeviceFileWithPattern('e');
 
@@ -360,13 +337,7 @@ IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, MAYBE_Verify) {
   EXPECT_TRUE(error().empty());
 }
 
-// Flaky on Win. http://crbug.com/927218
-#if defined(OS_WIN)
-#define MAYBE_VerifyCancel DISABLED_VerifyCancel
-#else
-#define MAYBE_VerifyCancel VerifyCancel
-#endif
-IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, MAYBE_VerifyCancel) {
+IN_PROC_BROWSER_TEST_F(ImageWriterUtilityClientTest, VerifyCancel) {
   FillImageFileWithPattern('s');
   FillDeviceFileWithPattern('s');
 

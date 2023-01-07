@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,30 +61,38 @@ std::string DisplayConnectionTypeString(DisplayConnectionType type) {
 
 }  // namespace
 
-DisplaySnapshot::DisplaySnapshot(int64_t display_id,
-                                 const gfx::Point& origin,
-                                 const gfx::Size& physical_size,
-                                 DisplayConnectionType type,
-                                 uint64_t base_connector_id,
-                                 const std::vector<uint64_t>& path_topology,
-                                 bool is_aspect_preserving_scaling,
-                                 bool has_overscan,
-                                 PrivacyScreenState privacy_screen_state,
-                                 bool has_color_correction_matrix,
-                                 bool color_correction_in_linear_space,
-                                 const gfx::ColorSpace& color_space,
-                                 uint32_t bits_per_channel,
-                                 std::string display_name,
-                                 const base::FilePath& sys_path,
-                                 DisplayModeList modes,
-                                 PanelOrientation panel_orientation,
-                                 const std::vector<uint8_t>& edid,
-                                 const DisplayMode* current_mode,
-                                 const DisplayMode* native_mode,
-                                 int64_t product_code,
-                                 int32_t year_of_manufacture,
-                                 const gfx::Size& maximum_cursor_size)
+DisplaySnapshot::DisplaySnapshot(
+    int64_t display_id,
+    int64_t port_display_id,
+    int64_t edid_display_id,
+    uint16_t connector_index,
+    const gfx::Point& origin,
+    const gfx::Size& physical_size,
+    DisplayConnectionType type,
+    uint64_t base_connector_id,
+    const std::vector<uint64_t>& path_topology,
+    bool is_aspect_preserving_scaling,
+    bool has_overscan,
+    PrivacyScreenState privacy_screen_state,
+    bool has_color_correction_matrix,
+    bool color_correction_in_linear_space,
+    const gfx::ColorSpace& color_space,
+    uint32_t bits_per_channel,
+    const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata,
+    std::string display_name,
+    const base::FilePath& sys_path,
+    DisplayModeList modes,
+    PanelOrientation panel_orientation,
+    const std::vector<uint8_t>& edid,
+    const DisplayMode* current_mode,
+    const DisplayMode* native_mode,
+    int64_t product_code,
+    int32_t year_of_manufacture,
+    const gfx::Size& maximum_cursor_size)
     : display_id_(display_id),
+      port_display_id_(port_display_id),
+      edid_display_id_(edid_display_id),
+      connector_index_(connector_index),
       origin_(origin),
       physical_size_(physical_size),
       type_(type),
@@ -97,6 +105,7 @@ DisplaySnapshot::DisplaySnapshot(int64_t display_id,
       color_correction_in_linear_space_(color_correction_in_linear_space),
       color_space_(color_space),
       bits_per_channel_(bits_per_channel),
+      hdr_static_metadata_(hdr_static_metadata),
       display_name_(display_name),
       sys_path_(sys_path),
       modes_(std::move(modes)),
@@ -133,12 +142,13 @@ std::unique_ptr<DisplaySnapshot> DisplaySnapshot::Clone() {
   }
 
   return std::make_unique<DisplaySnapshot>(
-      display_id_, origin_, physical_size_, type_, base_connector_id_,
-      path_topology_, is_aspect_preserving_scaling_, has_overscan_,
-      privacy_screen_state_, has_color_correction_matrix_,
-      color_correction_in_linear_space_, color_space_, bits_per_channel_,
-      display_name_, sys_path_, std::move(clone_modes), panel_orientation_,
-      edid_, cloned_current_mode, cloned_native_mode, product_code_,
+      display_id_, port_display_id_, edid_display_id_, connector_index_,
+      origin_, physical_size_, type_, base_connector_id_, path_topology_,
+      is_aspect_preserving_scaling_, has_overscan_, privacy_screen_state_,
+      has_color_correction_matrix_, color_correction_in_linear_space_,
+      color_space_, bits_per_channel_, hdr_static_metadata_, display_name_,
+      sys_path_, std::move(clone_modes), panel_orientation_, edid_,
+      cloned_current_mode, cloned_native_mode, product_code_,
       year_of_manufacture_, maximum_cursor_size_);
 }
 
@@ -156,7 +166,7 @@ std::string DisplaySnapshot::ToString() const {
       " panel_orientation=%d"
       " physical_size=%s, type=%s sharing_base_connector=%s name=\"%s\" "
       "(year:%d) modes=(%s)",
-      display_id_,
+      display_id(),
       current_mode_ ? current_mode_->ToString().c_str() : "nullptr",
       native_mode_ ? native_mode_->ToString().c_str() : "nullptr",
       origin_.ToString().c_str(), panel_orientation_,
@@ -169,6 +179,11 @@ std::string DisplaySnapshot::ToString() const {
 // static
 gfx::BufferFormat DisplaySnapshot::PrimaryFormat() {
   return gfx::BufferFormat::BGRA_8888;
+}
+
+void DisplaySnapshot::AddIndexToDisplayId() {
+  // The EDID-based display ID occupies the first 32 bits of |edid_display_id_|.
+  edid_display_id_ |= static_cast<int64_t>(connector_index_) << 32;
 }
 
 }  // namespace display

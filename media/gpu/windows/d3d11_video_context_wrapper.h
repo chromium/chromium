@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <wrl/client.h>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
 
@@ -18,6 +18,10 @@ namespace media {
 class MEDIA_GPU_EXPORT VideoContextWrapper {
  public:
   VideoContextWrapper() = default;
+
+  VideoContextWrapper(const VideoContextWrapper&) = delete;
+  VideoContextWrapper& operator=(const VideoContextWrapper&) = delete;
+
   virtual ~VideoContextWrapper();
   // D3D11_VIDEO_DECODER_BUFFER_DESC1 and D3D11_VIDEO_DECODER_BUFFER_DESC
   // have radically different sets of member variables, which means that in
@@ -31,11 +35,12 @@ class MEDIA_GPU_EXPORT VideoContextWrapper {
     D3D11_VIDEO_DECODER_BUFFER_TYPE BufferType;
     UINT DataOffset;
     UINT DataSize;
-    void* pIV;
+    raw_ptr<void> pIV;
     UINT IVSize;
 
     // DESC1-specific fields
-    D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK* pSubSampleMappingBlock;
+    raw_ptr<D3D11_VIDEO_DECODER_SUB_SAMPLE_MAPPING_BLOCK>
+        pSubSampleMappingBlock;
     UINT SubSampleMappingCount;
   };
 
@@ -73,8 +78,6 @@ class MEDIA_GPU_EXPORT VideoContextWrapper {
   virtual HRESULT SubmitDecoderBuffers(ID3D11VideoDecoder* video_decoder,
                                        UINT num_buffers,
                                        const VideoBufferWrapper* buffers) = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoContextWrapper);
 };  // VideoContextWrapper
 
 }  // namespace media

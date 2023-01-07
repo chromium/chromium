@@ -33,10 +33,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -82,10 +82,10 @@ bool InvalidationSet::operator==(const InvalidationSet& other) const {
     const auto& other_sibling = To<SiblingInvalidationSet>(other);
     if ((this_sibling.MaxDirectAdjacentSelectors() !=
          other_sibling.MaxDirectAdjacentSelectors()) ||
-        !DataEquivalent(this_sibling.Descendants(),
-                        other_sibling.Descendants()) ||
-        !DataEquivalent(this_sibling.SiblingDescendants(),
-                        other_sibling.SiblingDescendants())) {
+        !base::ValuesEquivalent(this_sibling.Descendants(),
+                                other_sibling.Descendants()) ||
+        !base::ValuesEquivalent(this_sibling.SiblingDescendants(),
+                                other_sibling.SiblingDescendants())) {
       return false;
     }
   }
@@ -303,28 +303,28 @@ StringImpl* InvalidationSet::FindAnyAttribute(Element& element) const {
 void InvalidationSet::AddClass(const AtomicString& class_name) {
   if (WholeSubtreeInvalid())
     return;
-  CHECK(!class_name.IsEmpty());
+  CHECK(!class_name.empty());
   classes_.Add(backing_flags_, class_name);
 }
 
 void InvalidationSet::AddId(const AtomicString& id) {
   if (WholeSubtreeInvalid())
     return;
-  CHECK(!id.IsEmpty());
+  CHECK(!id.empty());
   ids_.Add(backing_flags_, id);
 }
 
 void InvalidationSet::AddTagName(const AtomicString& tag_name) {
   if (WholeSubtreeInvalid())
     return;
-  CHECK(!tag_name.IsEmpty());
+  CHECK(!tag_name.empty());
   tag_names_.Add(backing_flags_, tag_name);
 }
 
 void InvalidationSet::AddAttribute(const AtomicString& attribute) {
   if (WholeSubtreeInvalid())
     return;
-  CHECK(!attribute.IsEmpty());
+  CHECK(!attribute.empty());
   attributes_.Add(backing_flags_, attribute);
 }
 
@@ -368,8 +368,7 @@ InvalidationSet* InvalidationSet::PartInvalidationSet() {
   return singleton_;
 }
 
-void InvalidationSet::WriteIntoTracedValue(
-    perfetto::TracedValue context) const {
+void InvalidationSet::WriteIntoTrace(perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
 
   dict.Add("id", DescendantInvalidationSetToIdString(*this));
@@ -414,14 +413,14 @@ String InvalidationSet::ToString() const {
     std::sort(names.begin(), names.end(), WTF::CodeUnitCompareLessThan);
 
     for (const auto& name : names) {
-      if (!builder.IsEmpty())
+      if (!builder.empty())
         builder.Append(" ");
       builder.Append(prefix);
       builder.Append(name);
       builder.Append(suffix);
     }
 
-    return builder.ToString();
+    return builder.ReleaseString();
   };
 
   StringBuilder features;
@@ -429,15 +428,15 @@ String InvalidationSet::ToString() const {
   if (HasIds())
     features.Append(format_backing(Ids(), "#", ""));
   if (HasClasses()) {
-    features.Append(!features.IsEmpty() ? " " : "");
+    features.Append(!features.empty() ? " " : "");
     features.Append(format_backing(Classes(), ".", ""));
   }
   if (HasTagNames()) {
-    features.Append(!features.IsEmpty() ? " " : "");
+    features.Append(!features.empty() ? " " : "");
     features.Append(format_backing(TagNames(), "", ""));
   }
   if (HasAttributes()) {
-    features.Append(!features.IsEmpty() ? " " : "");
+    features.Append(!features.empty() ? " " : "");
     features.Append(format_backing(Attributes(), "[", "]"));
   }
 
@@ -465,17 +464,17 @@ String InvalidationSet::ToString() const {
 
   StringBuilder main;
   main.Append("{");
-  if (!features.IsEmpty()) {
+  if (!features.empty()) {
     main.Append(" ");
     main.Append(features);
   }
-  if (!metadata.IsEmpty()) {
+  if (!metadata.empty()) {
     main.Append(" ");
     main.Append(metadata);
   }
   main.Append(" }");
 
-  return main.ToString();
+  return main.ReleaseString();
 }
 
 SiblingInvalidationSet::SiblingInvalidationSet(
@@ -495,6 +494,10 @@ DescendantInvalidationSet& SiblingInvalidationSet::EnsureSiblingDescendants() {
 }
 
 DescendantInvalidationSet& SiblingInvalidationSet::EnsureDescendants() {
+  // https://linear.app/replay/issue/RUN-968
+  recordreplay::Assert("[RUN-968] SiblingInvalidationSet::EnsureDescendants %d",
+                       !!descendant_invalidation_set_);
+
   if (!descendant_invalidation_set_)
     descendant_invalidation_set_ = DescendantInvalidationSet::Create();
   return *descendant_invalidation_set_;

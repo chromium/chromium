@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,6 +52,12 @@ class ExtensionMessageBubbleBridgeUnitTest
     : public extensions::ExtensionServiceTestWithInstall {
  public:
   ExtensionMessageBubbleBridgeUnitTest() {}
+
+  ExtensionMessageBubbleBridgeUnitTest(
+      const ExtensionMessageBubbleBridgeUnitTest&) = delete;
+  ExtensionMessageBubbleBridgeUnitTest& operator=(
+      const ExtensionMessageBubbleBridgeUnitTest&) = delete;
+
   ~ExtensionMessageBubbleBridgeUnitTest() override {}
   Browser* browser() { return browser_.get(); }
 
@@ -78,8 +84,6 @@ class ExtensionMessageBubbleBridgeUnitTest
 
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleBridgeUnitTest);
 };
 
 TEST_F(ExtensionMessageBubbleBridgeUnitTest,

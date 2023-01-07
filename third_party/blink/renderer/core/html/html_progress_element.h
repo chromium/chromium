@@ -23,7 +23,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -48,6 +48,8 @@ class CORE_EXPORT HTMLProgressElement final : public HTMLElement {
   double position() const;
 
   bool CanContainRangeEndPoint() const override { return false; }
+
+  bool IsRichlyEditableForAccessibility() const override { return false; }
 
   void Trace(Visitor*) const override;
 

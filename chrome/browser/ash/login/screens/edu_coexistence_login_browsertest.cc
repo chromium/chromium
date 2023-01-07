@@ -1,15 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/edu_coexistence_login_screen.h"
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -19,7 +17,6 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/chromeos/login/user_creation_screen_handler.h"
@@ -27,9 +24,9 @@
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos_onboarding.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 SystemWebDialogDelegate* GetInlineLoginDialog() {
@@ -60,7 +57,7 @@ class EduCoexistenceLoginBrowserTest : public OobeBaseTest {
 
   EduCoexistenceLoginScreen* GetEduCoexistenceLoginScreen();
 
-  const base::Optional<EduCoexistenceLoginScreen::Result>& result() {
+  const absl::optional<EduCoexistenceLoginScreen::Result>& result() {
     return result_;
   }
 
@@ -73,22 +70,18 @@ class EduCoexistenceLoginBrowserTest : public OobeBaseTest {
 
   base::OnceCallback<void()> quit_closure_;
 
-  base::Optional<EduCoexistenceLoginScreen::Result> result_;
+  absl::optional<EduCoexistenceLoginScreen::Result> result_;
 
   EduCoexistenceLoginScreen::ScreenExitCallback original_callback_;
 
-  FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
-
-  base::test::ScopedFeatureList feature_list_;
+  FakeGaiaMixin fake_gaia_{&mixin_host_};
 
   base::HistogramTester histogram_tester_;
 
   LoginManagerMixin login_manager_mixin_{&mixin_host_, {}, &fake_gaia_};
 };
 
-EduCoexistenceLoginBrowserTest::EduCoexistenceLoginBrowserTest() {
-  feature_list_.InitAndEnableFeature(supervised_users::kEduCoexistenceFlowV2);
-}
+EduCoexistenceLoginBrowserTest::EduCoexistenceLoginBrowserTest() {}
 
 void EduCoexistenceLoginBrowserTest::SetUpOnMainThread() {
   EduCoexistenceLoginScreen* screen = GetEduCoexistenceLoginScreen();
@@ -143,8 +136,8 @@ class EduCoexistenceLoginChildBrowserTest
   }
 
   void LoginAsNewChildUser() {
-    WizardController::default_controller()
-        ->get_wizard_context_for_testing()
+    LoginDisplayHost::default_host()
+        ->GetWizardContextForTesting()
         ->sign_in_as_child = true;
     login_manager_mixin().LoginAsNewChildUser();
 
@@ -155,7 +148,7 @@ class EduCoexistenceLoginChildBrowserTest
   }
 
  private:
-  LocalPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
+  EmbeddedPolicyTestServerMixin policy_server_mixin_{&mixin_host_};
   UserPolicyMixin user_policy_mixin_{
       &mixin_host_,
       AccountId::FromUserEmailGaiaId(test::kTestEmail, test::kTestGaiaId),
@@ -165,10 +158,9 @@ class EduCoexistenceLoginChildBrowserTest
 IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginChildBrowserTest, ChildUserLogin) {
   LoginAsNewChildUser();
 
-  WizardController* wizard = WizardController::default_controller();
-
-  EXPECT_EQ(wizard->current_screen()->screen_id(),
-            EduCoexistenceLoginScreen::kScreenId);
+  EXPECT_EQ(
+      WizardController::default_controller()->current_screen()->screen_id(),
+      EduCoexistenceLoginScreen::kScreenId);
 
   EduCoexistenceLoginScreen* screen = GetEduCoexistenceLoginScreen();
 
@@ -180,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginChildBrowserTest, ChildUserLogin) {
   // Expect that the inline login dialog is hidden.
   EXPECT_FALSE(IsInlineLoginDialogShown());
 
-  screen->Show(wizard->get_wizard_context_for_testing());
+  screen->Show(LoginDisplayHost::default_host()->GetWizardContextForTesting());
 
   // Expect that the inline login dialog is shown.
   EXPECT_TRUE(IsInlineLoginDialogShown());
@@ -193,4 +185,4 @@ IN_PROC_BROWSER_TEST_F(EduCoexistenceLoginChildBrowserTest, ChildUserLogin) {
       "OOBE.StepCompletionTimeByExitReason.Edu-coexistence-login.Done", 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

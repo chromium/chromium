@@ -1,16 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_CHANNEL_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_CHANNEL_MAC_H_
 
+#include "base/memory/raw_ptr.h"
+
 #import <IOKit/IOReturn.h>
 #include <stdint.h>
 
 #include <string>
-
-#include "base/macros.h"
 
 @class IOBluetoothDevice;
 
@@ -22,6 +22,10 @@ class BluetoothSocketMac;
 class BluetoothChannelMac {
  public:
   BluetoothChannelMac();
+
+  BluetoothChannelMac(const BluetoothChannelMac&) = delete;
+  BluetoothChannelMac& operator=(const BluetoothChannelMac&) = delete;
+
   virtual ~BluetoothChannelMac();
 
   // Sets the channel's owning socket to |socket|. Should only be called if the
@@ -55,9 +59,7 @@ class BluetoothChannelMac {
 
  private:
   // The socket that owns |this|.
-  BluetoothSocketMac* socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothChannelMac);
+  raw_ptr<BluetoothSocketMac> socket_;
 };
 
 }  // namespace device

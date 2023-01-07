@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,19 @@
 #include <string>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/trees/property_animation_state.h"
-#include "ui/gfx//transform_operations.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/animation/keyframe/target_property.h"
+#include "ui/gfx/geometry/transform_operations.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 
@@ -65,10 +68,15 @@ KeyframeEffect::~KeyframeEffect() {
 void KeyframeEffect::SetNeedsPushProperties() {
   needs_push_properties_ = true;
 
+  // The keyframe effect may have been removed from the main thread while
+  // an event was in flight from the compositor. In this case, we may need
+  // to push the removal to the compositor but do not expect to have a bound
+  // element animations instance.
   // TODO(smcgruer): We only need the below calls when needs_push_properties_
   // goes from false to true - see http://crbug.com/764405
-  DCHECK(element_animations());
-  element_animations()->SetNeedsPushProperties();
+  if (element_animations()) {
+    element_animations_->SetNeedsPushProperties();
+  }
 
   animation_->SetNeedsPushProperties();
 }
@@ -105,9 +113,6 @@ void KeyframeEffect::DetachElement() {
 
 void KeyframeEffect::Tick(base::TimeTicks monotonic_time) {
   DCHECK(has_bound_element_animations());
-  if (!element_animations_->has_element_in_any_list())
-    return;
-
   if (needs_to_start_keyframe_models_)
     StartKeyframeModels(monotonic_time);
 
@@ -123,7 +128,7 @@ void KeyframeEffect::RemoveFromTicking() {
   is_ticking_ = false;
   // Resetting last_tick_time_ here ensures that calling ::UpdateState
   // before ::Animate doesn't start a keyframe model.
-  last_tick_time_ = base::nullopt;
+  last_tick_time_ = absl::nullopt;
   animation_->RemoveFromTicking();
 }
 
@@ -133,7 +138,7 @@ void KeyframeEffect::UpdateState(bool start_ready_keyframe_models,
 
   // Animate hasn't been called, this happens if an element has been added
   // between the Commit and Draw phases.
-  if (last_tick_time_ == base::nullopt)
+  if (last_tick_time_ == absl::nullopt)
     start_ready_keyframe_models = false;
 
   if (start_ready_keyframe_models)
@@ -150,16 +155,12 @@ void KeyframeEffect::UpdateState(bool start_ready_keyframe_models,
       PromoteStartedKeyframeModels(events);
     }
   }
-
-  if (!element_animations()->has_element_in_any_list())
-    RemoveFromTicking();
 }
 
 void KeyframeEffect::UpdateTickingState() {
   if (animation_->has_animation_host()) {
     bool was_ticking = is_ticking_;
-    is_ticking_ = HasNonDeletedKeyframeModel() &&
-                  element_animations_->has_element_in_any_list();
+    is_ticking_ = HasNonDeletedKeyframeModel();
 
     if (is_ticking_ && !was_ticking) {
       animation_->AddToTicking();
@@ -201,24 +202,22 @@ void KeyframeEffect::AddKeyframeModel(
          keyframe_model->TargetProperty() == TargetProperty::SCROLL_OFFSET);
   // This is to make sure that keyframe models in the same group, i.e., start
   // together, don't animate the same property.
-  DCHECK(std::none_of(keyframe_models().begin(), keyframe_models().end(),
-                      [&](const auto& existing_keyframe_model) {
-                        auto* cc_existing_keyframe_model =
-                            KeyframeModel::ToCcKeyframeModel(
-                                existing_keyframe_model.get());
-                        return keyframe_model->TargetProperty() ==
-                                   existing_keyframe_model->TargetProperty() &&
-                               cc_keyframe_model->group() ==
-                                   cc_existing_keyframe_model->group();
-                      }));
+  DCHECK(base::ranges::none_of(
+      keyframe_models(), [&](const auto& existing_keyframe_model) {
+        auto* cc_existing_keyframe_model =
+            KeyframeModel::ToCcKeyframeModel(existing_keyframe_model.get());
+        return keyframe_model->TargetProperty() ==
+                   existing_keyframe_model->TargetProperty() &&
+               cc_keyframe_model->group() ==
+                   cc_existing_keyframe_model->group();
+      }));
 
   if (keyframe_model->TargetProperty() == TargetProperty::SCROLL_OFFSET) {
     // We should never have more than one scroll offset animation queued on the
     // same scrolling element as this would result in multiple automated
     // scrolls.
-    DCHECK(std::none_of(
-        keyframe_models().begin(), keyframe_models().end(),
-        [&](const auto& existing_keyframe_model) {
+    DCHECK(base::ranges::none_of(
+        keyframe_models(), [&](const auto& existing_keyframe_model) {
           auto* cc_existing_keyframe_model =
               KeyframeModel::ToCcKeyframeModel(existing_keyframe_model.get());
           return cc_existing_keyframe_model->TargetProperty() ==
@@ -372,13 +371,8 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
                                     event.monotonic_time);
         keyframe_model->set_received_finished_event(true);
         dispatched = true;
-
-        ElementAnimations* element_animations =
-            animation_->animation_host()
-                ->GetElementAnimationsForElementId(element_id())
-                .get();
-        if (element_animations)
-          element_animations->UpdateClientAnimationState();
+        animation_->animation_host()
+            ->UpdateClientAnimationStateForElementAnimations(element_id());
       }
       break;
 
@@ -407,10 +401,25 @@ bool KeyframeEffect::HasTickingKeyframeModel() const {
   return false;
 }
 
-bool KeyframeEffect::AffectsCustomProperty() const {
-  for (const auto& it : keyframe_models())
-    if (it->TargetProperty() == TargetProperty::CSS_CUSTOM_PROPERTY)
+bool KeyframeEffect::RequiresInvalidation() const {
+  for (const auto& it : keyframe_models()) {
+    if (it->TargetProperty() == TargetProperty::NATIVE_PROPERTY ||
+        it->TargetProperty() == TargetProperty::CSS_CUSTOM_PROPERTY) {
       return true;
+    }
+  }
+  return false;
+}
+
+bool KeyframeEffect::AffectsNativeProperty() const {
+  for (const auto& it : keyframe_models()) {
+    // TODO(crbug.com/1257778): include the SCROLL_OFFSET here so that we won't
+    // create a compositor animation frame sequence tracker when there is a
+    // composited scroll.
+    if (it->TargetProperty() != TargetProperty::CSS_CUSTOM_PROPERTY &&
+        it->TargetProperty() != TargetProperty::NATIVE_PROPERTY)
+      return true;
+  }
   return false;
 }
 
@@ -433,7 +442,8 @@ bool KeyframeEffect::AnimationsPreserveAxisAlignment() const {
   return true;
 }
 
-float KeyframeEffect::MaximumScale(ElementListType list_type) const {
+float KeyframeEffect::MaximumScale(ElementId element_id,
+                                   ElementListType list_type) const {
   float maximum_scale = kInvalidScale;
   for (const auto& keyframe_model : keyframe_models()) {
     if (keyframe_model->is_finished())
@@ -441,6 +451,12 @@ float KeyframeEffect::MaximumScale(ElementListType list_type) const {
 
     auto* cc_keyframe_model =
         KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
+
+    ElementId model_element_id = cc_keyframe_model->element_id();
+    if (!model_element_id)
+      model_element_id = element_id_;
+    if (model_element_id != element_id)
+      continue;
 
     if ((list_type == ElementListType::ACTIVE &&
          !cc_keyframe_model->affects_active_elements()) ||
@@ -585,19 +601,18 @@ void KeyframeEffect::PushNewKeyframeModelsToImplThread(
         !ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
              keyframe_model->curve())
              ->HasSetInitialValue()) {
-      gfx::ScrollOffset current_scroll_offset;
-      if (keyframe_effect_impl->HasElementInActiveList()) {
-        current_scroll_offset =
-            keyframe_effect_impl->ScrollOffsetForAnimation();
-      } else {
-        // The owning layer isn't yet in the active tree, so the main thread
-        // scroll offset will be up to date.
+      absl::optional<gfx::PointF> current_scroll_offset;
+      // If the scroller was already composited, prefer using its current scroll
+      // offset.
+      current_scroll_offset = keyframe_effect_impl->ScrollOffsetForAnimation();
+      // Otherwise, take the scroll offset from the commit with the animation.
+      if (!current_scroll_offset.has_value())
         current_scroll_offset = ScrollOffsetForAnimation();
-      }
+      DCHECK(current_scroll_offset);
       ScrollOffsetAnimationCurve* curve =
           ScrollOffsetAnimationCurve::ToScrollOffsetAnimationCurve(
               keyframe_model->curve());
-      curve->SetInitialValue(current_scroll_offset);
+      curve->SetInitialValue(*current_scroll_offset);
     }
 
     // The new keyframe_model should be set to run as soon as possible.
@@ -934,9 +949,8 @@ void KeyframeEffect::MarkKeyframeModelsForDeletion(
         FindAnimationsWithSameGroupId(keyframe_models(),
                                       cc_keyframe_model->group());
 
-    bool a_keyframe_model_in_same_group_is_not_finished = std::any_of(
-        keyframe_models_in_same_group.cbegin(),
-        keyframe_models_in_same_group.cend(), [&](size_t index) {
+    bool a_keyframe_model_in_same_group_is_not_finished =
+        base::ranges::any_of(keyframe_models_in_same_group, [&](size_t index) {
           auto* keyframe_model =
               KeyframeModel::ToCcKeyframeModel(keyframe_models()[index].get());
           return !keyframe_model->is_finished() ||
@@ -1008,13 +1022,7 @@ void KeyframeEffect::MarkFinishedKeyframeModels(
     element_animations_->UpdateClientAnimationState();
 }
 
-bool KeyframeEffect::HasElementInActiveList() const {
-  DCHECK(has_bound_element_animations());
-  return element_animations_->has_element_in_active_list();
-}
-
-gfx::ScrollOffset KeyframeEffect::ScrollOffsetForAnimation() const {
-  DCHECK(has_bound_element_animations());
+absl::optional<gfx::PointF> KeyframeEffect::ScrollOffsetForAnimation() const {
   return element_animations_->ScrollOffsetForAnimation();
 }
 

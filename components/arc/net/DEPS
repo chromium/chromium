@@ -1,8 +1,0 @@
-include_rules = [
-  "+chromeos/login",
-  "+chromeos/network",
-  "+components/onc",
-  "+components/user_manager",
-  "+third_party/cros_system_api/dbus/service_constants.h",
-  "+third_party/cros_system_api/dbus/shill",
-]

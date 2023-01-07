@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -83,11 +84,11 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
     case kPseudoIdMarker:
       if (Node* next = parent_element->GetPseudoElement(kPseudoIdBefore))
         return next;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPseudoIdBefore:
       if (Node* next = FlatTreeTraversal::FirstChild(*parent_element))
         return next;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPseudoIdNone:
       if (pseudo_id == kPseudoIdNone) {  // Not falling through
         if (Node* next = FlatTreeTraversal::NextSibling(node))
@@ -98,8 +99,39 @@ Node* LayoutTreeBuilderTraversal::NextSibling(const Node& node) {
       }
       if (Node* next = parent_element->GetPseudoElement(kPseudoIdAfter))
         return next;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPseudoIdAfter:
+      return nullptr;
+    case kPseudoIdPageTransition:
+      return nullptr;
+    case kPseudoIdPageTransitionContainer: {
+      auto* pseudo_element = DynamicTo<PseudoElement>(node);
+      DCHECK(pseudo_element);
+
+      // Iterate the list of IDs until we hit the entry for |node's| ID. The
+      // sibling is the next ID in the list which generates a pseudo element.
+      bool found = false;
+      for (const auto& document_transition_tag :
+           parent_element->GetDocument()
+               .GetStyleEngine()
+               .DocumentTransitionTags()) {
+        if (!found) {
+          if (document_transition_tag ==
+              pseudo_element->document_transition_tag())
+            found = true;
+          continue;
+        }
+
+        if (auto* sibling = parent_element->GetPseudoElement(
+                kPseudoIdPageTransitionContainer, document_transition_tag)) {
+          return sibling;
+        }
+      }
+      return nullptr;
+    }
+    case kPseudoIdPageTransitionImageWrapper:
+    case kPseudoIdPageTransitionOutgoingImage:
+    case kPseudoIdPageTransitionIncomingImage:
       return nullptr;
     default:
       NOTREACHED();
@@ -118,7 +150,7 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
     case kPseudoIdAfter:
       if (Node* previous = FlatTreeTraversal::LastChild(*parent_element))
         return previous;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPseudoIdNone:
       if (pseudo_id == kPseudoIdNone) {  // Not falling through
         if (Node* previous = FlatTreeTraversal::PreviousSibling(node))
@@ -129,11 +161,11 @@ Node* LayoutTreeBuilderTraversal::PreviousSibling(const Node& node) {
       }
       if (Node* previous = parent_element->GetPseudoElement(kPseudoIdBefore))
         return previous;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPseudoIdBefore:
       if (Node* previous = parent_element->GetPseudoElement(kPseudoIdMarker))
         return previous;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPseudoIdMarker:
       return nullptr;
     default:

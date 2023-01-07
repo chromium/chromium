@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,32 +6,38 @@
 #define COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/policy/policy_export.h"
 
 namespace policy {
 namespace features {
 
-// Feature that controls whether the browser registers for FCM invalidations for
-// Machine Level Policies. If enabled, |kCBCMServiceAccounts| must also be
-// enabled.
-POLICY_EXPORT extern const base::Feature kCBCMPolicyInvalidations;
+// Enable force installed Chrome apps policy migration.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kDefaultChromeAppsMigration);
 
-// Feature that controls if remote commands are enabled in CBCM. If enabled,
-// the browser will register for remote commands FCM invalidations, and fetch
-// remote commands when fetching policies.
-POLICY_EXPORT extern const base::Feature kCBCMRemoteCommands;
+// Enable reporting Login events to the reporting connector when the Password
+// Manager detects that the user logged in to a web page.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kLoginEventReporting);
 
-// PolicyBlocklistThrottle defers navigations until policies are loaded.
-POLICY_EXPORT extern const base::Feature
-    kPolicyBlocklistThrottleRequiresPoliciesLoaded;
+// Enable reporting password leaks to the reporting connector when the Password
+// Manager's Leak Detector has found some compromised credentials.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kPasswordBreachEventReporting);
 
-// Max time to defer the navigation while waiting for policies to load.
-POLICY_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kPolicyBlocklistThrottlePolicyLoadTimeout;
+// Enable the UserCloudSigninRestrictionPolicyFetcher to get the
+// ManagedAccountsSigninRestriction policy for a dasher account.
+POLICY_EXPORT BASE_DECLARE_FEATURE(
+    kEnableUserCloudSigninRestrictionPolicyFetcher);
 
-// Update browser device identifier during enrollment and fetching policies.
-POLICY_EXPORT extern const base::Feature kUploadBrowserDeviceIdentifier;
+// Enable MetricsReportingEnabled policy to alter MetricsReportingState on
+// Android.
+POLICY_EXPORT BASE_DECLARE_FEATURE(
+    kActivateMetricsReportingEnabledPolicyAndroid);
+
+// Causes the DMToken to be deleted (rather than invalidated) when a browser is
+// deleted from CBCM.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kDmTokenDeletion);
 
 }  // namespace features
 }  // namespace policy

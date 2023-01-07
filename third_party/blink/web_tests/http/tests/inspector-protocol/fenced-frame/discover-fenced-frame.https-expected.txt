@@ -1,0 +1,4 @@
+Tests that a fenced frame creates its own target with 'iframe' type.
+
+SUCCESS: iframe Target count:1
+

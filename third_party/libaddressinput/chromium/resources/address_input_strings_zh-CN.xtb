@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="1340068511406764697">您必须提供邮编（例如：<ph name="EXAMPLE" />）。不知道自己的邮编是多少？请点击<ph name="BEGIN_LINK" />此处<ph name="END_LINK" />查找。</translation>
-<translation id="2053553514270667976">邮编</translation>
+<translation id="2053553514270667976">邮政编码</translation>
 <translation id="2096368010154057602">省</translation>
 <translation id="2577522251608256362">街区</translation>
 <translation id="3050787670591910834">您必须提供邮编（例如：<ph name="EXAMPLE" />）。</translation>

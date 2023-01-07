@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+
+<!-- The empty state will only appear if the recycler view is empty. -->
+<!-- In RecyclerView, it's not allowed to let the top part of itself be unfilled
+     In order to center the TextView/MaterialCardViewNoShadow, we need the
+     FrameLayout to be fullscreen to take up the entirety of the RecyclerView
+-->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/follow_management_empty_state"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/follow_empty_margin"
+        android:layout_gravity="center"
+        style="@style/MaterialCardStyle">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            style="@style/TextAppearance.TextMedium.Secondary"
+            android:padding="@dimen/follow_empty_margin"
+            android:text="@string/follow_manage_following_empty_state" />
+
+    </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+</FrameLayout>

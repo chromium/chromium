@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,12 +42,13 @@ public class LoadProgressMediator {
         mIsStartSurfaceEnabled = isStartSurfaceEnabled;
         mTabObserver = new CurrentTabObserver(tabSupplier, new EmptyTabObserver() {
             @Override
-            public void onDidStartNavigation(Tab tab, NavigationHandle navigation) {
-                if (navigation.isSameDocument() || !navigation.isInMainFrame()) {
+            public void onDidStartNavigationInPrimaryMainFrame(
+                    Tab tab, NavigationHandle navigation) {
+                if (navigation.isSameDocument()) {
                     return;
                 }
 
-                if (NativePage.isNativePageUrl(navigation.getUrl().getSpec(), tab.isIncognito())) {
+                if (NativePage.isNativePageUrl(navigation.getUrl(), tab.isIncognito())) {
                     finishLoadProgress(false);
                     return;
                 }
@@ -55,6 +56,11 @@ public class LoadProgressMediator {
                 mLoadProgressSimulator.cancel();
                 startLoadProgress();
                 updateLoadProgress(tab.getProgress());
+            }
+
+            @Override
+            public void onDidStartNavigationNoop(Tab tab, NavigationHandle navigation) {
+                if (!navigation.isInPrimaryMainFrame()) return;
             }
 
             @Override
@@ -71,8 +77,8 @@ public class LoadProgressMediator {
 
             @Override
             public void onLoadProgressChanged(Tab tab, float progress) {
-                if (UrlUtilities.isNTPUrl(tab.getUrlString())
-                        || NativePage.isNativePageUrl(tab.getUrlString(), tab.isIncognito())) {
+                if (tab.getUrl() == null || UrlUtilities.isNTPUrl(tab.getUrl())
+                        || NativePage.isNativePageUrl(tab.getUrl(), tab.isIncognito())) {
                     return;
                 }
 
@@ -123,7 +129,7 @@ public class LoadProgressMediator {
         }
 
         if (tab.isLoading()) {
-            if (NativePage.isNativePageUrl(tab.getUrlString(), tab.isIncognito())) {
+            if (NativePage.isNativePageUrl(tab.getUrl(), tab.isIncognito())) {
                 finishLoadProgress(false);
             } else {
                 startLoadProgress();

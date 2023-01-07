@@ -1,0 +1,11 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This CSS file is not used in prod! It fixes a console error in the
+ * unbranded Projector app for development purposes, and makes the
+ * warning message in the mock app more noticeable by setting the
+ * color. */
+projector-app {
+  color: red;
+}

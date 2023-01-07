@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,25 +9,30 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/message_loop/message_pump_for_io.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chromecast/media/cma/backend/system_volume_control.h"
 #include "media/audio/alsa/alsa_wrapper.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {
 namespace media {
+class ScopedAlsaMixer;
 
 // SystemVolumeControl implementation for ALSA.
-class AlsaVolumeControl : public SystemVolumeControl,
-                          public base::MessagePumpForIO::FdWatcher {
+class AlsaVolumeControl : public SystemVolumeControl {
  public:
-  explicit AlsaVolumeControl(Delegate* delegate);
+  AlsaVolumeControl(Delegate* delegate,
+                    std::unique_ptr<::media::AlsaWrapper> alsa);
+
+  AlsaVolumeControl(const AlsaVolumeControl&) = delete;
+  AlsaVolumeControl& operator=(const AlsaVolumeControl&) = delete;
+
   ~AlsaVolumeControl() override;
 
   // SystemVolumeControl interface.
   float GetRoundtripVolume(float volume) override;
+  float DbToVolumeLevel(float db_volume) override;
+  float VolumeLevelToDb(float level) override;
   float GetVolume() override;
   void SetVolume(float level) override;
   bool IsMuted() override;
@@ -35,11 +40,7 @@ class AlsaVolumeControl : public SystemVolumeControl,
   void SetPowerSave(bool power_save_on) override;
   void SetLimit(float limit) override;
 
-  void CheckPowerSave();
-
  private:
-  class ScopedAlsaMixer;
-
   static std::string GetVolumeElementName();
   static std::string GetVolumeDeviceName();
   static std::string GetMuteElementName(::media::AlsaWrapper* alsa,
@@ -54,17 +55,13 @@ class AlsaVolumeControl : public SystemVolumeControl,
                                         unsigned int mask);
 
   bool SetElementMuted(ScopedAlsaMixer* mixer, bool muted);
-  // Returns true if all channels are muted, returns base::nullopt if element
+  // Returns true if all channels are muted, returns absl::nullopt if element
   // state is not accessible.
-  base::Optional<bool> IsElementAllMuted(ScopedAlsaMixer* mixer);
-
-  void RefreshMixerFds(ScopedAlsaMixer* mixer);
-
-  // base::MessagePumpForIO::FdWatcher implementation:
-  void OnFileCanReadWithoutBlocking(int fd) override;
-  void OnFileCanWriteWithoutBlocking(int fd) override;
+  absl::optional<bool> IsElementAllMuted(ScopedAlsaMixer* mixer);
 
   void OnVolumeOrMuteChanged();
+
+  void CheckPowerSave();
 
   Delegate* const delegate_;
 
@@ -86,11 +83,6 @@ class AlsaVolumeControl : public SystemVolumeControl,
 
   bool last_power_save_on_ = false;
   base::OneShotTimer power_save_timer_;
-
-  std::vector<std::unique_ptr<base::MessagePumpForIO::FdWatchController>>
-      file_descriptor_watchers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlsaVolumeControl);
 };
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,20 +8,18 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/account_id/account_id.h"
-#include "components/policy/core/common/cloud/policy_builder.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 
-namespace chromeos {
-
-class LocalPolicyTestServerMixin;
+namespace ash {
+class EmbeddedPolicyTestServerMixin;
 
 // Mixin for setting up user policy for a test user.
 // Currently supports setting cached user policy and optionally user policy
-// served by local policy test server..
+// served by local or embedded policy test server..
 // NOTE: This mixin will set up in-memory FakeSessionManagerClient during setup.
 class UserPolicyMixin : public InProcessBrowserTestMixin {
  public:
@@ -29,7 +27,11 @@ class UserPolicyMixin : public InProcessBrowserTestMixin {
                   const AccountId& account_id);
   UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
                   const AccountId& account_id,
-                  LocalPolicyTestServerMixin* policy_server);
+                  EmbeddedPolicyTestServerMixin* policy_server);
+
+  UserPolicyMixin(const UserPolicyMixin&) = delete;
+  UserPolicyMixin& operator=(const UserPolicyMixin&) = delete;
+
   ~UserPolicyMixin() override;
 
   // InProcessBrowserTestMixin:
@@ -67,15 +69,19 @@ class UserPolicyMixin : public InProcessBrowserTestMixin {
   // Policy server that can optionally be passed into UserPolicyMixin. If set
   // user policy changes done by RequestPolicyUpdate() will also be forwarded
   // to the policy server.
-  LocalPolicyTestServerMixin* policy_server_ = nullptr;
+  EmbeddedPolicyTestServerMixin* embedded_policy_server_ = nullptr;
 
   policy::UserPolicyBuilder user_policy_builder_;
 
   base::WeakPtrFactory<UserPolicyMixin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserPolicyMixin);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::UserPolicyMixin;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_TEST_USER_POLICY_MIXIN_H_

@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,17 +11,15 @@ import("//ios/build/config.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
 import("//tools/grit/repack.gni")
 
+assert(ios_deployment_target == "13.0",
+       "search_widget_extension must target iOS 13.0")
+
 assert(
     ios_enable_search_widget_extension,
     "ios_enable_search_widget_extension must be true to depend on //ios/chrome/search_widget_extension")
 
 tweak_info_plist("tweak_info_plist") {
   info_plist = "Info.plist"
-
-  # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-  if (ios_lock_to_version != "") {
-    args = [ "--lock-to-version=$ios_lock_to_version" ]
-  }
 }
 
 compile_entitlements("entitlements") {
@@ -46,12 +44,11 @@ ios_appex_bundle("search_widget_extension") {
   extra_substitutions = [
     "CHROME_CHANNEL_SCHEME=$url_channel_scheme",
     "CHROMIUM_SHORT_NAME=$chromium_short_name",
-    "WIDGET_EXTENSION_BUNDLE_ID=$chromium_bundle_id.TodayExtension",
   ]
 
   entitlements_target = ":entitlements"
   info_plist_target = ":tweak_info_plist"
-  xcode_product_bundle_id = "$chromium_bundle_id.TodayExtension"
+  bundle_identifier = "$chromium_bundle_id.TodayExtension"
 }
 
 source_set("search_widget") {
@@ -73,8 +70,10 @@ source_set("search_widget") {
     "//components/open_from_clipboard:open_from_clipboard_impl",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:command",
+    "//ios/chrome/common/crash_report",
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:image_util",
   ]
 
   frameworks = [
@@ -88,19 +87,9 @@ source_set("search_widget") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "search_widget_view_controller_unittest.mm" ]
-  deps = [
-    ":search_widget",
-    "//testing/gtest",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
 repack_locales("packed_resources") {
-  input_locales = ios_packed_locales
-  output_locales = ios_packed_locales_as_mac_outputs
+  input_locales = platform_pak_locales
+  output_locales = locales_as_apple_outputs
 
   source_patterns = [
     "$root_gen_dir/ios/search_widget_extension/ios_search_widget_extension_strings_",
@@ -118,7 +107,7 @@ generate_localizable_strings("system_strings") {
   _packed_resources_target = ":packed_resources"
   config_file = "search_widget_extension_localize_strings_config.plist"
   datapack_dir = get_label_info(_packed_resources_target, "target_gen_dir")
-  packed_locales = ios_packed_locales_as_mac_outputs
+  packed_locales = locales_as_apple_outputs
   output_filenames = [
     "InfoPlist.strings",
     "Localizable.strings",

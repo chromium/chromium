@@ -4,7 +4,7 @@ layer at (0,0) size 1066x799
   LayoutBlockFlow {HTML} at (0,0) size 1066x799
     LayoutBlockFlow {BODY} at (8,8) size 1050x783
       LayoutText {#text} at (0,0) size 0x0
-layer at (8,8) size 204x204
+layer at (8,8) size 204x204 clip at (10,10) size 200x200
   LayoutIFrame {IFRAME} at (0,0) size 204x204 [border: (2px inset #EEEEEE)]
     layer at (0,0) size 200x200
       LayoutView at (0,0) size 200x200

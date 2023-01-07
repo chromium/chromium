@@ -18,6 +18,12 @@ void aom_extend_frame_borders_c(struct yv12_buffer_config* ybf,
                                 const int num_planes);
 #define aom_extend_frame_borders aom_extend_frame_borders_c
 
+void aom_extend_frame_borders_plane_row_c(const struct yv12_buffer_config* ybf,
+                                          int plane,
+                                          int v_start,
+                                          int v_end);
+#define aom_extend_frame_borders_plane_row aom_extend_frame_borders_plane_row_c
+
 void aom_extend_frame_borders_y_c(struct yv12_buffer_config* ybf);
 #define aom_extend_frame_borders_y aom_extend_frame_borders_y_c
 

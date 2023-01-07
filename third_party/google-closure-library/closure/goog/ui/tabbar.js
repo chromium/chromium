@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Tab bar UI component.
@@ -29,6 +21,10 @@ goog.require('goog.ui.Container.Orientation');
 goog.require('goog.ui.Tab');
 goog.require('goog.ui.TabBarRenderer');
 goog.require('goog.ui.registry');
+goog.requireType('goog.dom.DomHelper');
+goog.requireType('goog.events.Event');
+goog.requireType('goog.ui.Component');
+goog.requireType('goog.ui.Control');
 
 
 
@@ -58,6 +54,7 @@ goog.require('goog.ui.registry');
  * @extends {goog.ui.Container}
  */
 goog.ui.TabBar = function(opt_location, opt_renderer, opt_domHelper) {
+  'use strict';
   this.setLocation(opt_location || goog.ui.TabBar.Location.TOP);
 
   goog.ui.Container.call(
@@ -67,7 +64,6 @@ goog.ui.TabBar = function(opt_location, opt_renderer, opt_domHelper) {
   this.listenToTabEvents_();
 };
 goog.inherits(goog.ui.TabBar, goog.ui.Container);
-goog.tagUnsealableClass(goog.ui.TabBar);
 
 
 /**
@@ -115,6 +111,7 @@ goog.ui.TabBar.prototype.selectedTab_ = null;
  * @override
  */
 goog.ui.TabBar.prototype.enterDocument = function() {
+  'use strict';
   goog.ui.TabBar.superClass_.enterDocument.call(this);
 
   this.listenToTabEvents_();
@@ -123,6 +120,7 @@ goog.ui.TabBar.prototype.enterDocument = function() {
 
 /** @override */
 goog.ui.TabBar.prototype.disposeInternal = function() {
+  'use strict';
   goog.ui.TabBar.superClass_.disposeInternal.call(this);
   this.selectedTab_ = null;
 };
@@ -135,10 +133,11 @@ goog.ui.TabBar.prototype.disposeInternal = function() {
  * @param {string|goog.ui.Component} tab Tab to remove.
  * @param {boolean=} opt_unrender Whether to call `exitDocument` on the
  *     removed tab, and detach its DOM from the document (defaults to false).
- * @return {goog.ui.Control} The removed tab, if any.
+ * @return {?goog.ui.Control} The removed tab, if any.
  * @override
  */
 goog.ui.TabBar.prototype.removeChild = function(tab, opt_unrender) {
+  'use strict';
   // This actually only accepts goog.ui.Controls. There's a TODO
   // on the superclass method to fix this.
   this.deselectIfSelected(/** @type {goog.ui.Control} */ (tab));
@@ -150,6 +149,7 @@ goog.ui.TabBar.prototype.removeChild = function(tab, opt_unrender) {
  * @return {goog.ui.TabBar.Location} Tab bar location relative to tab contents.
  */
 goog.ui.TabBar.prototype.getLocation = function() {
+  'use strict';
   return this.location_;
 };
 
@@ -161,6 +161,7 @@ goog.ui.TabBar.prototype.getLocation = function() {
  * @throws {Error} If the tab bar has already been rendered.
  */
 goog.ui.TabBar.prototype.setLocation = function(location) {
+  'use strict';
   // setOrientation() will take care of throwing an error if already rendered.
   this.setOrientation(goog.ui.TabBar.getOrientationFromLocation(location));
   this.location_ = location;
@@ -172,6 +173,7 @@ goog.ui.TabBar.prototype.setLocation = function(location) {
  *     or just move the highlight.
  */
 goog.ui.TabBar.prototype.isAutoSelectTabs = function() {
+  'use strict';
   return this.autoSelectTabs_;
 };
 
@@ -184,6 +186,7 @@ goog.ui.TabBar.prototype.isAutoSelectTabs = function() {
  *     selected tab, or just move the highlight.
  */
 goog.ui.TabBar.prototype.setAutoSelectTabs = function(enable) {
+  'use strict';
   this.autoSelectTabs_ = enable;
 };
 
@@ -197,6 +200,7 @@ goog.ui.TabBar.prototype.setAutoSelectTabs = function(enable) {
  * @override
  */
 goog.ui.TabBar.prototype.setHighlightedIndexFromKeyEvent = function(index) {
+  'use strict';
   goog.ui.TabBar.superClass_.setHighlightedIndexFromKeyEvent.call(this, index);
   if (this.autoSelectTabs_) {
     // Immediately select the tab.
@@ -209,6 +213,7 @@ goog.ui.TabBar.prototype.setHighlightedIndexFromKeyEvent = function(index) {
  * @return {goog.ui.Control?} The currently selected tab (null if none).
  */
 goog.ui.TabBar.prototype.getSelectedTab = function() {
+  'use strict';
   return this.selectedTab_;
 };
 
@@ -218,6 +223,7 @@ goog.ui.TabBar.prototype.getSelectedTab = function() {
  * @param {goog.ui.Control?} tab Tab to select (null to select none).
  */
 goog.ui.TabBar.prototype.setSelectedTab = function(tab) {
+  'use strict';
   if (tab) {
     // Select the tab and have it dispatch a SELECT event, to be handled in
     // handleTabSelect() below.
@@ -234,6 +240,7 @@ goog.ui.TabBar.prototype.setSelectedTab = function(tab) {
  * @return {number} Index of the currently selected tab (-1 if none).
  */
 goog.ui.TabBar.prototype.getSelectedTabIndex = function() {
+  'use strict';
   return this.indexOfChild(this.getSelectedTab());
 };
 
@@ -243,6 +250,7 @@ goog.ui.TabBar.prototype.getSelectedTabIndex = function() {
  * @param {number} index Index of the tab to select (-1 to select none).
  */
 goog.ui.TabBar.prototype.setSelectedTabIndex = function(index) {
+  'use strict';
   this.setSelectedTab(/** @type {goog.ui.Tab} */ (this.getChildAt(index)));
 };
 
@@ -257,6 +265,7 @@ goog.ui.TabBar.prototype.setSelectedTabIndex = function(index) {
  * @protected
  */
 goog.ui.TabBar.prototype.deselectIfSelected = function(tab) {
+  'use strict';
   if (tab && tab == this.getSelectedTab()) {
     var index = this.indexOfChild(tab);
     // First look for the closest selectable tab before this one.
@@ -289,6 +298,7 @@ goog.ui.TabBar.prototype.deselectIfSelected = function(tab) {
  * @protected
  */
 goog.ui.TabBar.prototype.isSelectableTab = function(tab) {
+  'use strict';
   return tab.isVisible() && tab.isEnabled();
 };
 
@@ -299,6 +309,7 @@ goog.ui.TabBar.prototype.isSelectableTab = function(tab) {
  * @protected
  */
 goog.ui.TabBar.prototype.handleTabSelect = function(e) {
+  'use strict';
   if (this.selectedTab_ && this.selectedTab_ != e.target) {
     // Deselect currently selected tab.
     this.selectedTab_.setSelected(false);
@@ -313,6 +324,7 @@ goog.ui.TabBar.prototype.handleTabSelect = function(e) {
  * @protected
  */
 goog.ui.TabBar.prototype.handleTabUnselect = function(e) {
+  'use strict';
   if (e.target == this.selectedTab_) {
     this.selectedTab_ = null;
   }
@@ -325,6 +337,7 @@ goog.ui.TabBar.prototype.handleTabUnselect = function(e) {
  * @protected
  */
 goog.ui.TabBar.prototype.handleTabDisable = function(e) {
+  'use strict';
   this.deselectIfSelected(/** @type {goog.ui.Tab} */ (e.target));
 };
 
@@ -335,6 +348,7 @@ goog.ui.TabBar.prototype.handleTabDisable = function(e) {
  * @protected
  */
 goog.ui.TabBar.prototype.handleTabHide = function(e) {
+  'use strict';
   this.deselectIfSelected(/** @type {goog.ui.Tab} */ (e.target));
 };
 
@@ -348,6 +362,7 @@ goog.ui.TabBar.prototype.handleTabHide = function(e) {
  * @override
  */
 goog.ui.TabBar.prototype.handleFocus = function(e) {
+  'use strict';
   if (!this.getHighlighted()) {
     this.setHighlighted(
         this.getSelectedTab() ||
@@ -361,6 +376,7 @@ goog.ui.TabBar.prototype.handleFocus = function(e) {
  * @private
  */
 goog.ui.TabBar.prototype.listenToTabEvents_ = function() {
+  'use strict';
   // Listen for SELECT, UNSELECT, DISABLE, and HIDE events dispatched by tabs.
   this.getHandler()
       .listen(this, goog.ui.Component.EventType.SELECT, this.handleTabSelect)
@@ -378,6 +394,7 @@ goog.ui.TabBar.prototype.listenToTabEvents_ = function() {
  * @return {goog.ui.Container.Orientation} Corresponding orientation.
  */
 goog.ui.TabBar.getOrientationFromLocation = function(location) {
+  'use strict';
   return location == goog.ui.TabBar.Location.START ||
           location == goog.ui.TabBar.Location.END ?
       goog.ui.Container.Orientation.VERTICAL :
@@ -387,5 +404,7 @@ goog.ui.TabBar.getOrientationFromLocation = function(location) {
 
 // Register a decorator factory function for goog.ui.TabBars.
 goog.ui.registry.setDecoratorByClassName(
-    goog.ui.TabBarRenderer.CSS_CLASS,
-    function() { return new goog.ui.TabBar(); });
+    goog.ui.TabBarRenderer.CSS_CLASS, function() {
+      'use strict';
+      return new goog.ui.TabBar();
+    });

@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 
 #include "base/no_destructor.h"
+#include "base/ranges/algorithm.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
@@ -13,11 +14,11 @@
 #import <CoreFoundation/CoreFoundation.h>
 #import <QuartzCore/QuartzCore.h>
 
-typedef enum {
+typedef NS_ENUM(unsigned int, CATransactionPhase) {
   kCATransactionPhasePreLayout,
   kCATransactionPhasePreCommit,
   kCATransactionPhasePostCommit,
-} CATransactionPhase;
+};
 
 @interface CATransaction ()
 + (void)addCommitHandler:(void (^)(void))block
@@ -28,7 +29,7 @@ namespace ui {
 
 namespace {
 NSString* kRunLoopMode = @"Chrome CATransactionCoordinator commit handler";
-constexpr auto kPostCommitTimeout = base::TimeDelta::FromMilliseconds(50);
+constexpr auto kPostCommitTimeout = base::Milliseconds(50);
 }  // namespace
 
 CATransactionCoordinator& CATransactionCoordinator::Get() {
@@ -78,7 +79,7 @@ void CATransactionCoordinator::PreCommitHandler() {
       break;  // success
 
     base::TimeDelta time_left = deadline - clock->NowTicks();
-    if (time_left <= base::TimeDelta::FromSeconds(0))
+    if (time_left <= base::Seconds(0))
       break;  // timeout
 
     ui::WindowResizeHelperMac::Get()->WaitForSingleTaskToRun(time_left);
@@ -94,14 +95,13 @@ void CATransactionCoordinator::PostCommitHandler() {
   auto* clock = base::DefaultTickClock::GetInstance();
   const base::TimeTicks deadline = clock->NowTicks() + kPostCommitTimeout;
   while (true) {
-    bool continue_waiting = std::any_of(
-        post_commit_observers_.begin(), post_commit_observers_.end(),
-        std::mem_fn(&PostCommitObserver::ShouldWaitInPostCommit));
+    bool continue_waiting = base::ranges::any_of(
+        post_commit_observers_, &PostCommitObserver::ShouldWaitInPostCommit);
     if (!continue_waiting)
       break;  // success
 
     base::TimeDelta time_left = deadline - clock->NowTicks();
-    if (time_left <= base::TimeDelta::FromSeconds(0))
+    if (time_left <= base::Seconds(0))
       break;  // timeout
 
     ui::WindowResizeHelperMac::Get()->WaitForSingleTaskToRun(time_left);

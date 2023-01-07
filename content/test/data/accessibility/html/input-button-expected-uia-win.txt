@@ -1,3 +1,5 @@
+#<skip -- https://crbug.com/1199033>
 Document
 ++Group IsControlElement=false
 ++++Button Name='Button'
+++++Button Name='Name' FullDescription='Description'

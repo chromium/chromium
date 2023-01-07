@@ -1,19 +1,19 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/public/web_content_area/java_script_dialog_overlay.h"
 
-#include "base/bind.h"
-#include "base/logging.h"
-#include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "base/bind.h"
+#import "base/logging.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/alert_constants.h"
 #import "ios/chrome/browser/overlays/public/web_content_area/alert_overlay.h"
-#import "ios/chrome/browser/ui/dialogs/dialog_constants.h"
 #import "ios/chrome/browser/ui/dialogs/java_script_dialog_blocking_state.h"
 #import "ios/chrome/browser/ui/elements/text_field_configuration.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -28,13 +28,13 @@ namespace {
 // The index of the OK button in the alert button array.
 const size_t kButtonIndexOk = 0;
 
-// Whether a cancel button should be added for an overlay with |type|.
+// Whether a cancel button should be added for an overlay with `type`.
 bool DialogsWithTypeUseCancelButtons(web::JavaScriptDialogType type) {
   return type != web::JAVASCRIPT_DIALOG_TYPE_ALERT;
 }
 
 // Whether the dialog blocking button should be added for an overlay from
-// |source|.
+// `source`.
 bool ShouldAddBlockDialogsButton(web::WebState* web_state) {
   if (!web_state)
     return false;
@@ -43,12 +43,12 @@ bool ShouldAddBlockDialogsButton(web::WebState* web_state) {
   return blocking_state && blocking_state->show_blocking_option();
 }
 
-// The index of the dialog blocking button for a dialog with |type|.
+// The index of the dialog blocking button for a dialog with `type`.
 size_t GetBlockingOptionIndex(web::JavaScriptDialogType type) {
   return DialogsWithTypeUseCancelButtons(type) ? 2 : 1;
 }
 
-// Creates an JavaScript dialog response for a dialog with |type| from a
+// Creates an JavaScript dialog response for a dialog with `type` from a
 // response created with an AlertResponse.
 std::unique_ptr<OverlayResponse> CreateJavaScriptDialogResponse(
     web::JavaScriptDialogType type,
@@ -85,7 +85,7 @@ JavaScriptDialogRequest::JavaScriptDialogRequest(
     NSString* message,
     NSString* default_text_field_value)
     : type_(type),
-      web_state_getter_(web_state->CreateDefaultGetter()),
+      weak_web_state_(web_state->GetWeakPtr()),
       url_(url),
       is_main_frame_(is_main_frame),
       message_(message),
@@ -119,6 +119,7 @@ void JavaScriptDialogRequest::CreateAuxiliaryData(
                    initWithText:default_text_field_value()
                     placeholder:nil
         accessibilityIdentifier:text_field_identifier
+         autocapitalizationType:UITextAutocapitalizationTypeSentences
                 secureTextEntry:NO] ];
   }
 

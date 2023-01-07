@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace chromeos {
+namespace ash {
 
 // Checks if given HWID correct.
 bool IsHWIDCorrect(const std::string& hwid);
@@ -15,6 +15,6 @@ bool IsHWIDCorrect(const std::string& hwid);
 // Checks if current machine has correct HWID.
 bool IsMachineHWIDCorrect();
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_HWID_CHECKER_H_

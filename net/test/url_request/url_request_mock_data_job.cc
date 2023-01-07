@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,18 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/url_util.h"
+#include "net/cert/x509_certificate.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "net/ssl/ssl_private_key.h"
 #include "net/url_request/url_request_filter.h"
 
 namespace net {
@@ -76,6 +77,10 @@ GURL GetMockUrl(const std::string& scheme,
 class MockJobInterceptor : public URLRequestInterceptor {
  public:
   MockJobInterceptor() = default;
+
+  MockJobInterceptor(const MockJobInterceptor&) = delete;
+  MockJobInterceptor& operator=(const MockJobInterceptor&) = delete;
+
   ~MockJobInterceptor() override = default;
 
   // URLRequestInterceptor implementation
@@ -86,9 +91,6 @@ class MockJobInterceptor : public URLRequestInterceptor {
         GetRepeatCountFromRequest(*request),
         GetRequestClientCertificate(*request));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockJobInterceptor);
 };
 
 }  // namespace
@@ -98,7 +100,6 @@ URLRequestMockDataJob::URLRequestMockDataJob(URLRequest* request,
                                              int data_repeat_count,
                                              bool request_client_certificate)
     : URLRequestJob(request),
-      data_offset_(0),
       request_client_certificate_(request_client_certificate) {
   DCHECK_GT(data_repeat_count, 0);
   for (int i = 0; i < data_repeat_count; ++i) {

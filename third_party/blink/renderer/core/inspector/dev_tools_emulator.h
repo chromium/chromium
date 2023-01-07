@@ -1,16 +1,15 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEV_TOOLS_EMULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEV_TOOLS_EMULATOR_H_
 
-#include <memory>
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -20,7 +19,6 @@ class PointF;
 
 namespace blink {
 
-class IntRect;
 class WebViewImpl;
 
 class CORE_EXPORT DevToolsEmulator final
@@ -61,21 +59,16 @@ class CORE_EXPORT DevToolsEmulator final
   void SetScriptExecutionDisabled(bool);
   void SetScrollbarsHidden(bool);
   void SetDocumentCookieDisabled(bool);
+  void SetAutoDarkModeOverride(bool);
+  void ResetAutoDarkModeOverride();
 
   bool HasViewportOverride() const { return !!viewport_override_; }
 
-  // Notify the DevToolsEmulator about a scroll or scale change of the main
-  // frame. Returns an updated emulation transform for a viewport override, and
-  // should only be called when HasViewportOverride() is true.
-  TransformationMatrix MainFrameScrollOrScaleChanged();
-
-  // Rewrites the |visible_rect| to the area of the devtools custom viewport if
-  // it is enabled. Otherwise, leaves |visible_rect| unchanged. Takes as input
-  // the size of the viewport, which gives an upper bound on the size of the
-  // area that is visible. The |viewport_size| is physical pixels if
-  // UseZoomForDSF() is enabled, or DIP otherwise.
-  void OverrideVisibleRect(const IntSize& viewport_size,
-                           IntRect* visible_rect) const;
+  // Notify the DevToolsEmulator about a scroll or scale change of the
+  // outermost main frame. Returns an updated emulation transform for a
+  // viewport override, and should only be called when HasViewportOverride() is
+  // true.
+  TransformationMatrix OutermostMainFrameScrollOrScaleChanged();
 
   // Returns the scale used to convert incoming input events while emulating
   // device metics.
@@ -112,10 +105,10 @@ class CORE_EXPORT DevToolsEmulator final
   DeviceEmulationParams emulation_params_;
 
   struct ViewportOverride {
-    FloatPoint position;
+    gfx::PointF position;
     double scale;
   };
-  base::Optional<ViewportOverride> viewport_override_;
+  absl::optional<ViewportOverride> viewport_override_;
 
   bool is_overlay_scrollbars_enabled_;
   bool is_orientation_event_enabled_;
@@ -148,8 +141,11 @@ class CORE_EXPORT DevToolsEmulator final
 
   bool embedder_cookie_enabled_;
   bool document_cookie_disabled_;
+
+  bool embedder_force_dark_mode_enabled_;
+  bool auto_dark_overriden_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEV_TOOLS_EMULATOR_H_

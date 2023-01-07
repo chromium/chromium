@@ -1,0 +1,35 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos_ash, "SMB Shares is Chrome OS only.")
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":add_smb_share_dialog",
+    ":smb_browser_proxy",
+  ]
+}
+
+js_library("add_smb_share_dialog") {
+  deps = [
+    ":smb_browser_proxy",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources:web_ui_listener_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
+  ]
+}
+
+js_library("smb_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}

@@ -26,7 +26,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -34,6 +35,7 @@ namespace blink {
 
 class Document;
 class Element;
+class MediaQueryEvaluator;
 class RuleFeatureSet;
 class RuleSet;
 class StyleSheetContents;
@@ -43,7 +45,11 @@ class CSSDefaultStyleSheets final
  public:
   CORE_EXPORT static CSSDefaultStyleSheets& Instance();
 
+  // Performs any initialization that should be done on renderer startup.
+  static void Init();
+
   static StyleSheetContents* ParseUASheet(const String&);
+  static const MediaQueryEvaluator& ScreenEval();
 
   CSSDefaultStyleSheets();
   CSSDefaultStyleSheets(const CSSDefaultStyleSheets&) = delete;
@@ -55,10 +61,10 @@ class CSSDefaultStyleSheets final
   void EnsureDefaultStyleSheetForFullscreen();
   bool EnsureDefaultStyleSheetForForcedColors();
 
-  RuleSet* DefaultStyle() { return default_style_.Get(); }
+  RuleSet* DefaultHtmlStyle() { return default_html_style_.Get(); }
   RuleSet* DefaultMathMLStyle() { return default_mathml_style_.Get(); }
   RuleSet* DefaultSVGStyle() { return default_svg_style_.Get(); }
-  RuleSet* DefaultQuirksStyle() { return default_quirks_style_.Get(); }
+  RuleSet* DefaultHtmlQuirksStyle() { return default_html_quirks_style_.Get(); }
   RuleSet* DefaultPrintStyle() { return default_print_style_.Get(); }
   RuleSet* DefaultViewSourceStyle();
   RuleSet* DefaultForcedColorStyle() {
@@ -71,12 +77,12 @@ class CSSDefaultStyleSheets final
     return default_media_controls_style_.Get();
   }
 
-  StyleSheetContents* EnsureMobileViewportStyleSheet();
-  StyleSheetContents* EnsureTelevisionViewportStyleSheet();
-  StyleSheetContents* EnsureXHTMLMobileProfileStyleSheet();
-
   StyleSheetContents* DefaultStyleSheet() { return default_style_sheet_.Get(); }
   StyleSheetContents* QuirksStyleSheet() { return quirks_style_sheet_.Get(); }
+  StyleSheetContents* PopupStyleSheet() { return popup_style_sheet_.Get(); }
+  StyleSheetContents* SelectMenuStyleSheet() {
+    return selectmenu_style_sheet_.Get();
+  }
   StyleSheetContents* SvgStyleSheet() { return svg_style_sheet_.Get(); }
   StyleSheetContents* MathmlStyleSheet() { return mathml_style_sheet_.Get(); }
   StyleSheetContents* MediaControlsStyleSheet() {
@@ -115,10 +121,19 @@ class CSSDefaultStyleSheets final
  private:
   void InitializeDefaultStyles();
 
-  Member<RuleSet> default_style_;
+  enum class NamespaceType {
+    kHTML,
+    kMathML,
+    kSVG,
+    kMediaControls,  // Not exactly a namespace
+  };
+  void AddRulesToDefaultStyleSheets(StyleSheetContents* rules,
+                                    NamespaceType type);
+
+  Member<RuleSet> default_html_style_;
   Member<RuleSet> default_mathml_style_;
   Member<RuleSet> default_svg_style_;
-  Member<RuleSet> default_quirks_style_;
+  Member<RuleSet> default_html_quirks_style_;
   Member<RuleSet> default_print_style_;
   Member<RuleSet> default_view_source_style_;
   Member<RuleSet> default_forced_color_style_;
@@ -126,15 +141,14 @@ class CSSDefaultStyleSheets final
   Member<RuleSet> default_media_controls_style_;
 
   Member<StyleSheetContents> default_style_sheet_;
-  Member<StyleSheetContents> mobile_viewport_style_sheet_;
-  Member<StyleSheetContents> television_viewport_style_sheet_;
-  Member<StyleSheetContents> xhtml_mobile_profile_style_sheet_;
   Member<StyleSheetContents> quirks_style_sheet_;
   Member<StyleSheetContents> svg_style_sheet_;
   Member<StyleSheetContents> mathml_style_sheet_;
   Member<StyleSheetContents> media_controls_style_sheet_;
   Member<StyleSheetContents> text_track_style_sheet_;
   Member<StyleSheetContents> fullscreen_style_sheet_;
+  Member<StyleSheetContents> popup_style_sheet_;
+  Member<StyleSheetContents> selectmenu_style_sheet_;
   Member<StyleSheetContents> webxr_overlay_style_sheet_;
   Member<StyleSheetContents> marker_style_sheet_;
   Member<StyleSheetContents> forced_colors_style_sheet_;

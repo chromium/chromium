@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,18 +45,6 @@ TEST_F(SearchIPCRouterPolicyTest, DoNotProcessFocusOmnibox) {
   // Process message only if the underlying page is an InstantNTP.
   NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));
   EXPECT_FALSE(GetSearchIPCRouterPolicy()->ShouldProcessFocusOmnibox(true));
-}
-
-TEST_F(SearchIPCRouterPolicyTest, DoNotProcessLogEvent) {
-  // Process message only if the underlying page is an InstantNTP.
-  NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));
-  EXPECT_FALSE(GetSearchIPCRouterPolicy()->ShouldProcessLogEvent());
-}
-
-TEST_F(SearchIPCRouterPolicyTest, DoNotProcessPasteIntoOmniboxMsg) {
-  // Process message only if the current tab is an Instant NTP.
-  NavigateAndCommitActiveTab(GURL("chrome-search://foo/bar"));
-  EXPECT_FALSE(GetSearchIPCRouterPolicy()->ShouldProcessPasteIntoOmnibox(true));
 }
 
 TEST_F(SearchIPCRouterPolicyTest, DoNotSendMostVisitedInfo) {

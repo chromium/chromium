@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ struct IcuEnvironment {
 // See more details about the fuzzer extending at
 // https://crrev.com/c/1131185/1/components/password_manager/core/browser/android_affiliation/lookup_affiliation_response_parser_fuzzer.cc#25
 DEFINE_BINARY_PROTO_FUZZER(
-    const affiliation_pb::LookupAffiliationResponse& response) {
+    const affiliation_pb::LookupAffiliationByHashPrefixResponse& response) {
   static IcuEnvironment env;
 
   AffiliationFetcherDelegate::Result result;

@@ -1,0 +1,34 @@
+import("//build/buildflag_header.gni")
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+import("//third_party/libaom/options.gni")
+
+buildflag_header("libaom_buildflags") {
+  header = "libaom_buildflags.h"
+  flags = [ "ENABLE_LIBAOM=$enable_libaom" ]
+}
+
+pkg_config("system_aom") {
+  packages = [ "aom" ]
+}
+
+shim_headers("aom_shim") {
+  root_path = "source/libaom"
+  headers = [
+    "aom/aom.h",
+    "aom/aom_codec.h",
+    "aom/aom_decoder.h",
+    "aom/aom_encoder.h",
+    "aom/aom_external_partition.h",
+    "aom/aom_frame_buffer.h",
+    "aom/aom_image.h",
+    "aom/aom_integer.h",
+    "aom/aomcx.h",
+    "aom/aomdx.h",
+  ]
+}
+
+source_set("libaom") {
+  deps = [ ":aom_shim" ]
+  public_configs = [ ":system_aom" ]
+}

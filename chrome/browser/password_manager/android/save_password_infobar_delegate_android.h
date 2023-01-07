@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/password_manager/android/password_manager_infobar_delegate_android.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
@@ -28,11 +27,15 @@ class WebContents;
 class SavePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
  public:
   // If we won't be showing the one-click signin infobar, creates a save
-  // password infobar and delegate and adds the infobar to the InfoBarService
-  // for |web_contents|.
+  // password infobar and delegate and adds the infobar to the
+  // infobars::ContentInfoBarManager for |web_contents|.
   static void Create(
       content::WebContents* web_contents,
       std::unique_ptr<password_manager::PasswordFormManagerForUI> form_to_save);
+
+  SavePasswordInfoBarDelegate(const SavePasswordInfoBarDelegate&) = delete;
+  SavePasswordInfoBarDelegate& operator=(const SavePasswordInfoBarDelegate&) =
+      delete;
 
   ~SavePasswordInfoBarDelegate() override;
 
@@ -61,8 +64,6 @@ class SavePasswordInfoBarDelegate : public PasswordManagerInfoBarDelegate {
   // Measures the "Save password?" prompt lifetime. Used to report an UMA
   // signal.
   base::ElapsedTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavePasswordInfoBarDelegate);
 };
 
 // Creates the platform-specific SavePassword InfoBar. This function is defined

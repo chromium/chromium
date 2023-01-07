@@ -1,12 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_HOST_DESKTOP_AND_CURSOR_CONDITIONAL_COMPOSER_H_
 #define REMOTING_HOST_DESKTOP_AND_CURSOR_CONDITIONAL_COMPOSER_H_
 
-#include "base/memory/weak_ptr.h"
+#include <memory>
+
+#include "base/callback.h"
+#include "remoting/protocol/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_and_cursor_composer.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/mouse_cursor.h"
 #include "third_party/webrtc/modules/desktop_capture/shared_memory.h"
@@ -14,20 +18,12 @@
 namespace remoting {
 
 // A wrapper for DesktopAndCursorComposer that allows compositing of the cursor
-// to be enabled and disabled, and which exposes a WeakPtr to simplify memory
-// management.
-class DesktopAndCursorConditionalComposer : public webrtc::DesktopCapturer {
+// to be enabled and disabled.
+class DesktopAndCursorConditionalComposer : public DesktopCapturer {
  public:
   explicit DesktopAndCursorConditionalComposer(
-      std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer);
+      std::unique_ptr<DesktopCapturer> desktop_capturer);
   ~DesktopAndCursorConditionalComposer() override;
-
-  base::WeakPtr<DesktopAndCursorConditionalComposer> GetWeakPtr();
-
-  void SetComposeEnabled(bool enabled);
-
-  void SetMouseCursor(webrtc::MouseCursor* mouse_cursor);
-  void SetMouseCursorPosition(const webrtc::DesktopVector& position);
 
   // DesktopCapturer interface.
   void Start(webrtc::DesktopCapturer::Callback* callback) override;
@@ -39,6 +35,14 @@ class DesktopAndCursorConditionalComposer : public webrtc::DesktopCapturer {
   bool SelectSource(SourceId id) override;
   bool FocusOnSelectedSource() override;
   bool IsOccluded(const webrtc::DesktopVector& pos) override;
+  void SetComposeEnabled(bool enabled) override;
+  void SetMouseCursor(
+      std::unique_ptr<webrtc::MouseCursor> mouse_cursor) override;
+  void SetMouseCursorPosition(const webrtc::DesktopVector& position) override;
+#if defined(WEBRTC_USE_GIO)
+  void GetMetadataAsync(base::OnceCallback<void(webrtc::DesktopCaptureMetadata)>
+                            callback) override;
+#endif
 
  private:
   DesktopAndCursorConditionalComposer(
@@ -48,8 +52,11 @@ class DesktopAndCursorConditionalComposer : public webrtc::DesktopCapturer {
 
   std::unique_ptr<webrtc::MouseCursor> mouse_cursor_;
   bool compose_enabled_ = false;
+#if defined(WEBRTC_USE_GIO)
+  // Following pointer is not owned by |this| class.
+  raw_ptr<DesktopCapturer> desktop_capturer_ = nullptr;
+#endif
   std::unique_ptr<webrtc::DesktopAndCursorComposer> capturer_;
-  base::WeakPtrFactory<DesktopAndCursorConditionalComposer> weak_factory_{this};
 };
 
 }  // namespace remoting

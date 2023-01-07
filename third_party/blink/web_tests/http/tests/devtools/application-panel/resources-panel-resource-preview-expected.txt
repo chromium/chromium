@@ -3,6 +3,10 @@ Tests Application Panel preview for resources of different types.
 Initial state:
 Application
   Manifest (selected)
+    Identity
+    Presentation
+    Protocol Handlers
+    Icons
   Service Workers
   Storage
 Storage
@@ -15,9 +19,10 @@ Storage
   Cookies
     http://127.0.0.1:8000
   Trust Tokens
+  Interest Groups
 Cache
   Cache Storage
-  Application Cache
+  Back/forward cache
 Background Services
   Background Fetch
   Background Sync
@@ -25,6 +30,7 @@ Background Services
   Payment Handler
   Periodic Background Sync
   Push Messaging
+  Reporting API
 Frames
   top
     Images
@@ -36,6 +42,10 @@ log: visible view: unknown
 Revealed json-value.js:
 Application
   Manifest
+    Identity
+    Presentation
+    Protocol Handlers
+    Icons
   Service Workers
   Storage
 Storage
@@ -48,9 +58,10 @@ Storage
   Cookies
     http://127.0.0.1:8000
   Trust Tokens
+  Interest Groups
 Cache
   Cache Storage
-  Application Cache
+  Back/forward cache
 Background Services
   Background Fetch
   Background Sync
@@ -58,6 +69,7 @@ Background Services
   Payment Handler
   Periodic Background Sync
   Push Messaging
+  Reporting API
 Frames
   top
     Images
@@ -69,6 +81,10 @@ log: visible view: json
 Revealed image.png:
 Application
   Manifest
+    Identity
+    Presentation
+    Protocol Handlers
+    Icons
   Service Workers
   Storage
 Storage
@@ -81,9 +97,10 @@ Storage
   Cookies
     http://127.0.0.1:8000
   Trust Tokens
+  Interest Groups
 Cache
   Cache Storage
-  Application Cache
+  Back/forward cache
 Background Services
   Background Fetch
   Background Sync
@@ -91,6 +108,7 @@ Background Services
   Payment Handler
   Periodic Background Sync
   Push Messaging
+  Reporting API
 Frames
   top
     Images
@@ -102,6 +120,10 @@ log: visible view: image
 Revealed resources-panel-resource-preview.js:
 Application
   Manifest
+    Identity
+    Presentation
+    Protocol Handlers
+    Icons
   Service Workers
   Storage
 Storage
@@ -114,9 +136,10 @@ Storage
   Cookies
     http://127.0.0.1:8000
   Trust Tokens
+  Interest Groups
 Cache
   Cache Storage
-  Application Cache
+  Back/forward cache
 Background Services
   Background Fetch
   Background Sync
@@ -124,6 +147,7 @@ Background Services
   Payment Handler
   Periodic Background Sync
   Push Messaging
+  Reporting API
 Frames
   top
     Images

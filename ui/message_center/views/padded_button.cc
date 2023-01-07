@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,50 +6,41 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace message_center {
 
 PaddedButton::PaddedButton(PressedCallback callback)
     : views::ImageButton(std::move(callback)) {
-  SetBorder(views::CreateEmptyBorder(gfx::Insets(kControlButtonBorderSize)));
+  SetBorder(views::CreateEmptyBorder(kControlButtonBorderSize));
   SetAnimateOnStateChange(false);
 
-  SetInkDropMode(InkDropMode::ON);
-  SetInkDropVisibleOpacity(0.12f);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(this)->SetVisibleOpacity(0.12f);
   SetHasInkDropActionOnClick(true);
-}
-
-std::unique_ptr<views::InkDrop> PaddedButton::CreateInkDrop() {
-  auto ink_drop = CreateDefaultInkDropImpl();
-  ink_drop->SetShowHighlightOnHover(false);
-  ink_drop->SetShowHighlightOnFocus(false);
-  return std::move(ink_drop);
+  views::InkDrop::UseInkDropForSquareRipple(views::InkDrop::Get(this),
+                                            /*highlight_on_hover=*/false);
 }
 
 void PaddedButton::OnThemeChanged() {
   ImageButton::OnThemeChanged();
-  auto* theme = GetNativeTheme();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  SkColor background_color = theme->GetSystemColor(
-      ui::NativeTheme::kColorId_NotificationButtonBackground);
-  SetBackground(views::CreateSolidBackground(background_color));
-#else
+  const auto* color_provider = GetColorProvider();
   SkColor background_color =
-      theme->GetSystemColor(ui::NativeTheme::kColorId_WindowBackground);
-#endif
-  SetInkDropBaseColor(color_utils::GetColorWithMaxContrast(background_color));
+      color_provider->GetColor(ui::kColorWindowBackground);
+  views::InkDrop::Get(this)->SetBaseColor(
+      color_utils::GetColorWithMaxContrast(background_color));
 }
 
 BEGIN_METADATA(PaddedButton, views::ImageButton)

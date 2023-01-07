@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,6 +14,9 @@ ios_app_bundle("showcase") {
   deps = [
     ":features",
     "//ios/showcase/core:main",
+
+    # Use the chromium implementation of the provider API.
+    "//ios/chrome/browser/providers:chromium_providers",
   ]
   bundle_deps = [ "//ios/showcase/core/resources" ]
   if (ios_enable_credential_provider_extension) {
@@ -25,12 +28,15 @@ ios_app_bundle("showcase") {
 
 group("features") {
   deps = [
+    "//ios/chrome/app:enterprise_app_agent_ui",
     "//ios/showcase/alert",
     "//ios/showcase/badges",
     "//ios/showcase/bubble",
-    "//ios/showcase/content_suggestions",
     "//ios/showcase/credential_provider",
     "//ios/showcase/default_browser",
+    "//ios/showcase/discover_feed_preview",
+    "//ios/showcase/first_run",
+    "//ios/showcase/follow",
     "//ios/showcase/incognito_reauth",
     "//ios/showcase/infobars",
     "//ios/showcase/omnibox_popup",
@@ -39,7 +45,6 @@ group("features") {
     "//ios/showcase/tab_grid",
     "//ios/showcase/text_badge_view",
     "//ios/showcase/uikit_table_view_cell",
-    "//ios/showcase/widget",
   ]
 }
 
@@ -56,6 +61,9 @@ ios_eg2_test_app_host("ios_showcase_eg2tests") {
     "//ios/showcase/core:main_eg2",
     "//ios/showcase/test:eg_app_support+eg2",
     "//ios/testing/earl_grey:eg_app_support+eg2",
+
+    # Use the chromium implementation of the provider API.
+    "//ios/chrome/browser/providers:chromium_providers",
   ]
   bundle_deps = [
     "//ios/chrome/app/resources",
@@ -74,10 +82,10 @@ ios_eg2_test("ios_showcase_eg2tests_module") {
   deps = [
     "//ios/showcase/badges:eg2_tests",
     "//ios/showcase/bubble:eg2_tests",
-    "//ios/showcase/content_suggestions:eg2_tests",
     "//ios/showcase/core:eg2_tests",
     "//ios/showcase/credential_provider:eg2_tests",
     "//ios/showcase/default_browser:eg2_tests",
+    "//ios/showcase/discover_feed_preview:eg2_tests",
     "//ios/showcase/infobars:eg2_tests",
     "//ios/showcase/text_badge_view:eg2_tests",
   ]

@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 
-#include "base/stl_util.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
@@ -36,15 +35,7 @@ static bool IsValueCharacter(UChar c) {
 
 static bool DigestsEqual(const DigestValue& digest1,
                          const DigestValue& digest2) {
-  if (digest1.size() != digest2.size())
-    return false;
-
-  for (wtf_size_t i = 0; i < digest1.size(); i++) {
-    if (digest1[i] != digest2[i])
-      return false;
-  }
-
-  return true;
+  return digest1 == digest2;
 }
 
 void SubresourceIntegrity::ReportInfo::AddUseCount(UseCounterFeature feature) {
@@ -94,7 +85,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
     size_t size,
     const KURL& resource_url,
     ReportInfo& report_info) {
-  if (integrity_metadata.IsEmpty())
+  if (integrity_metadata.empty())
     return true;
 
   IntegrityMetadataSet metadata_set;
@@ -104,6 +95,31 @@ bool SubresourceIntegrity::CheckSubresourceIntegrity(
     return true;
   return CheckSubresourceIntegrityImpl(metadata_set, content, size,
                                        resource_url, report_info);
+}
+
+String IntegrityAlgorithmToString(IntegrityAlgorithm algorithm) {
+  switch (algorithm) {
+    case IntegrityAlgorithm::kSha256:
+      return "SHA-256";
+    case IntegrityAlgorithm::kSha384:
+      return "SHA-384";
+    case IntegrityAlgorithm::kSha512:
+      return "SHA-512";
+  }
+  NOTREACHED();
+}
+
+blink::HashAlgorithm IntegrityAlgorithmToHashAlgorithm(
+    IntegrityAlgorithm algorithm) {
+  switch (algorithm) {
+    case IntegrityAlgorithm::kSha256:
+      return kHashAlgorithmSha256;
+    case IntegrityAlgorithm::kSha384:
+      return kHashAlgorithmSha384;
+    case IntegrityAlgorithm::kSha512:
+      return kHashAlgorithmSha512;
+  }
+  NOTREACHED();
 }
 
 bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
@@ -129,7 +145,8 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
   // If we arrive here, none of the "strongest" constaints have validated
   // the data we received. Report this fact.
   DigestValue digest;
-  if (ComputeDigest(kHashAlgorithmSha256, content, size, digest)) {
+  if (ComputeDigest(IntegrityAlgorithmToHashAlgorithm(max_algorithm), content,
+                    size, digest)) {
     // This message exposes the digest of the resource to the console.
     // Because this is only to the console, that's okay for now, but we
     // need to be very careful not to expose this in exceptions or
@@ -138,7 +155,8 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
     report_info.AddConsoleErrorMessage(
         "Failed to find a valid digest in the 'integrity' attribute for "
         "resource '" +
-        resource_url.ElidedString() + "' with computed SHA-256 integrity '" +
+        resource_url.ElidedString() + "' with computed " +
+        IntegrityAlgorithmToString(max_algorithm) + " integrity '" +
         Base64Encode(digest) + "'. The resource has been blocked.");
   } else {
     report_info.AddConsoleErrorMessage(
@@ -161,8 +179,8 @@ IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
                 "of the integrity algorithms.");
 
   // metadata_set is non-empty, so we are guaranteed to always have a result.
-  // This is effectively an implemenation of std::max_element (C++17).
-  DCHECK(!metadata_set.IsEmpty());
+  // This is effectively an implementation of std::max_element (C++17).
+  DCHECK(!metadata_set.empty());
   auto iter = metadata_set.begin();
   IntegrityAlgorithm max_algorithm = iter->second;
   ++iter;
@@ -176,18 +194,8 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityDigest(
     const IntegrityMetadata& metadata,
     const char* content,
     size_t size) {
-  blink::HashAlgorithm hash_algo = kHashAlgorithmSha256;
-  switch (metadata.Algorithm()) {
-    case IntegrityAlgorithm::kSha256:
-      hash_algo = kHashAlgorithmSha256;
-      break;
-    case IntegrityAlgorithm::kSha384:
-      hash_algo = kHashAlgorithmSha384;
-      break;
-    case IntegrityAlgorithm::kSha512:
-      hash_algo = kHashAlgorithmSha512;
-      break;
-  }
+  blink::HashAlgorithm hash_algo =
+      IntegrityAlgorithmToHashAlgorithm(metadata.Algorithm());
 
   DigestValue digest;
   if (!ComputeDigest(hash_algo, content, size, digest))
@@ -217,7 +225,7 @@ SubresourceIntegrity::ParseAttributeAlgorithm(const UChar*& begin,
   // The last algorithm prefix is the ed25519 signature algorithm, which should
   // only be enabled if kSignatures is requested. We'll implement this by
   // adjusting the last_prefix index into the array.
-  size_t last_prefix = base::size(kPrefixes);
+  size_t last_prefix = std::size(kPrefixes);
   if (features != IntegrityFeatures::kSignatures)
     last_prefix--;
 
@@ -290,7 +298,7 @@ SubresourceIntegrity::ParseIntegrityAttribute(
     ReportInfo* report_info) {
   // We expect a "clean" metadata_set, since metadata_set should only be filled
   // once.
-  DCHECK(metadata_set.IsEmpty());
+  DCHECK(metadata_set.empty());
 
   Vector<UChar> characters;
   attribute.StripWhiteSpace().AppendTo(characters);

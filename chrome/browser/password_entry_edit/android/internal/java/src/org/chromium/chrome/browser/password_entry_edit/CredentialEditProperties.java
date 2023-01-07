@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Properties defined here reflect the visible state of the credential edit UI.
  */
 class CredentialEditProperties {
-    static final PropertyModel.ReadableObjectPropertyKey<UiActionHandler> UI_ACTION_HANDLER =
-            new PropertyModel.ReadableObjectPropertyKey<>("ui action handler");
+    static final PropertyModel.WritableObjectPropertyKey<UiActionHandler> UI_ACTION_HANDLER =
+            new PropertyModel.WritableObjectPropertyKey<>("ui action handler");
     static final PropertyModel.ReadableObjectPropertyKey<String> URL_OR_APP =
             new PropertyModel.ReadableObjectPropertyKey<>("url or app");
     static final PropertyModel.WritableObjectPropertyKey<String> USERNAME =

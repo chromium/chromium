@@ -1,10 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_API_LINE_LAYOUT_BOX_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_API_LINE_LAYOUT_BOX_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box_model.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -78,7 +79,7 @@ class LineLayoutBox : public LineLayoutBoxModel {
 
   void SetSize(const LayoutSize& size) { return ToBox()->SetSize(size); }
 
-  LayoutSize ScrolledContentOffset() const {
+  PhysicalOffset ScrolledContentOffset() const {
     return ToBox()->ScrolledContentOffset();
   }
 

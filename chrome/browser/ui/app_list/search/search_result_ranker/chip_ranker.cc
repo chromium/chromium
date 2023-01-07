@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/ranking/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_search_result_ranker.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/histogram_util.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker.h"
 
 namespace app_list {
@@ -95,13 +95,13 @@ ChipRanker::ChipRanker(Profile* profile) : profile_(profile) {
 
   type_ranker_ = std::make_unique<RecurrenceRanker>(
       "", profile_->GetPath().AppendASCII("suggested_files_ranker.pb"), config,
-      chromeos::ProfileHelper::IsEphemeralUserProfile(profile_));
+      ash::ProfileHelper::IsEphemeralUserProfile(profile_));
 }
 
 ChipRanker::~ChipRanker() = default;
 
-void ChipRanker::Train(const AppLaunchData& app_launch_data) {
-  const auto type = app_launch_data.ranking_item_type;
+void ChipRanker::Train(const LaunchData& launch_data) {
+  const auto type = launch_data.ranking_item_type;
   switch (type) {
     case RankingItemType::kApp:
       type_ranker_->Record(kApp);

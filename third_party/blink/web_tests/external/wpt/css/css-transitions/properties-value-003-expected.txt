@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 192 tests; 86 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 198 tests; 92 PASS, 106 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS border-top-left-radius border-radius(px) / values
 PASS border-top-left-radius border-radius(px) / events
 PASS border-top-left-radius border-radius(px-px) / values
@@ -192,5 +192,11 @@ FAIL position position(relative to absolute) / values assert_not_equals: must no
 FAIL position position(relative to absolute) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "position:2s" but got ""
 FAIL position position(absolute to fixed) / values assert_not_equals: must not be target value after start got disallowed value "fixed"
 FAIL position position(absolute to fixed) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "position:2s" but got ""
+PASS object-view-box object-view-box(inset) / values
+PASS object-view-box object-view-box(inset) / events
+PASS object-view-box object-view-box(rect) / values
+PASS object-view-box object-view-box(rect) / events
+PASS object-view-box object-view-box(xywh) / values
+PASS object-view-box object-view-box(xywh) / events
 Harness: the test ran to completion.
 

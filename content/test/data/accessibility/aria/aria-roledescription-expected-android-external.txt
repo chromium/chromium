@@ -1,0 +1,8 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++Button text:"Native button" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", clickableScore="300", roleDescription="button"]
+++Button text:"ARIA button" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", roleDescription="button"]
+++Button text:"Clicky button" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="button", roleDescription="Clicky"]
+++TextView text:"foo" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++TextView text:"bar" focusable actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++TextView text:"baz" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph", roleDescription="Texty"]
+++View text:"SuperContainer group" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="group", roleDescription="SuperContainer"]

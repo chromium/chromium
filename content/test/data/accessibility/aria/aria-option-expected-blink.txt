@@ -3,7 +3,11 @@ rootWebArea focusable
 ++++genericContainer ignored
 ++++++listBox
 ++++++++listBoxOption focusable name='option 1' selected=false
+++++++++++staticText name='option 1'
+++++++++++++inlineTextBox name='option 1'
 ++++++++listBoxOption focusable name='label 2' selected=false
+++++++++++staticText name='option 2'
+++++++++++++inlineTextBox name='option 2'
 ++++++++listBoxOption focusable name='caterpillar' selected=false
 ++++++++++staticText name='cat'
 ++++++++++++inlineTextBox name='cat'
@@ -12,5 +16,10 @@ rootWebArea focusable
 ++++++++listBoxOption focusable name='catfish' selected=false
 ++++++++++staticText name='cat'
 ++++++++++++inlineTextBox name='cat'
+++++++++++staticText name='fish'
+++++++++++++inlineTextBox name='fish'
+++++++++listBoxOption focusable name='medusa' selected=false
+++++++++++staticText name='jelly'
+++++++++++++inlineTextBox name='jelly'
 ++++++++++staticText name='fish'
 ++++++++++++inlineTextBox name='fish'

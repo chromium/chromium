@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include "base/callback.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/stats/rtc_stats.h"
@@ -113,6 +113,8 @@ class PLATFORM_EXPORT RTCStatsMember {
   Vector<uint64_t> ValueSequenceUint64() const;
   Vector<double> ValueSequenceDouble() const;
   Vector<String> ValueSequenceString() const;
+  HashMap<String, uint64_t> ValueMapStringUint64() const;
+  HashMap<String, double> ValueMapStringDouble() const;
 
  private:
   // Reference to keep the report that owns |member_|'s stats object alive.

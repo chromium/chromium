@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/manifest_constants.h"
-#include "extensions/common/mojom/action_type.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -40,44 +39,50 @@ mojom::InjectionType ProgrammaticScriptInjector::script_type() const {
   return mojom::InjectionType::kProgrammaticScript;
 }
 
-bool ProgrammaticScriptInjector::IsUserGesture() const {
-  return params_->user_gesture;
+blink::mojom::UserActivationOption ProgrammaticScriptInjector::IsUserGesture()
+    const {
+  DCHECK(params_->injection->is_js());
+  return params_->injection->get_js()->user_gesture;
+}
+
+mojom::ExecutionWorld ProgrammaticScriptInjector::GetExecutionWorld() const {
+  DCHECK(params_->injection->is_js());
+  return params_->injection->get_js()->world;
 }
 
 mojom::CSSOrigin ProgrammaticScriptInjector::GetCssOrigin() const {
-  return params_->css_origin;
+  DCHECK(params_->injection->is_css());
+  return params_->injection->get_css()->css_origin;
 }
 
-bool ProgrammaticScriptInjector::IsRemovingCSS() const {
-  return params_->action_type == mojom::ActionType::kRemoveCss;
+mojom::CSSInjection::Operation
+ProgrammaticScriptInjector::GetCSSInjectionOperation() const {
+  DCHECK(params_->injection->is_css());
+  return params_->injection->get_css()->operation;
 }
 
-bool ProgrammaticScriptInjector::IsAddingCSS() const {
-  return params_->action_type == mojom::ActionType::kAddCss;
+blink::mojom::WantResultOption ProgrammaticScriptInjector::ExpectsResults()
+    const {
+  DCHECK(params_->injection->is_js());
+  return params_->injection->get_js()->wants_result;
 }
 
-const base::Optional<std::string>
-ProgrammaticScriptInjector::GetInjectionKey() const {
-  return params_->injection_key;
-}
-
-bool ProgrammaticScriptInjector::ExpectsResults() const {
-  return params_->wants_result;
+blink::mojom::PromiseResultOption
+ProgrammaticScriptInjector::ShouldWaitForPromise() const {
+  DCHECK(params_->injection->is_js());
+  return params_->injection->get_js()->wait_for_promise;
 }
 
 bool ProgrammaticScriptInjector::ShouldInjectJs(
     mojom::RunLocation run_location,
     const std::set<std::string>& executing_scripts) const {
-  return params_->run_at == run_location &&
-         params_->action_type == mojom::ActionType::kAddJavascript;
+  return params_->run_at == run_location && params_->injection->is_js();
 }
 
 bool ProgrammaticScriptInjector::ShouldInjectOrRemoveCss(
     mojom::RunLocation run_location,
     const std::set<std::string>& injected_stylesheets) const {
-  return params_->run_at == run_location &&
-         (params_->action_type == mojom::ActionType::kAddCss ||
-          params_->action_type == mojom::ActionType::kRemoveCss);
+  return params_->run_at == run_location && params_->injection->is_css();
 }
 
 PermissionsData::PageAccess ProgrammaticScriptInjector::CanExecuteOnFrame(
@@ -99,7 +104,7 @@ PermissionsData::PageAccess ProgrammaticScriptInjector::CanExecuteOnFrame(
               ? MatchOriginAsFallbackBehavior::kMatchForAboutSchemeAndClimbTree
               : MatchOriginAsFallbackBehavior::kNever);
   if (params_->is_web_view) {
-    if (frame->Parent()) {
+    if (!frame->IsOutermostMainFrame()) {
       // This is a subframe inside <webview>, so allow it.
       return PermissionsData::PageAccess::kAllowed;
     }
@@ -122,32 +127,46 @@ std::vector<blink::WebScriptSource> ProgrammaticScriptInjector::GetJsSources(
     std::set<std::string>* executing_scripts,
     size_t* num_injected_js_scripts) const {
   DCHECK_EQ(params_->run_at, run_location);
-  DCHECK_EQ(params_->action_type, mojom::ActionType::kAddJavascript);
+  DCHECK(params_->injection->is_js());
 
-  return std::vector<blink::WebScriptSource>(
-      1, blink::WebScriptSource(blink::WebString::FromUTF8(params_->code),
-                                params_->script_url));
+  auto& js_injection = params_->injection->get_js();
+  std::vector<blink::WebScriptSource> sources;
+  sources.reserve(js_injection->sources.size());
+  for (const auto& source : js_injection->sources) {
+    sources.emplace_back(blink::WebString::FromUTF8(source->code),
+                         source->script_url);
+  }
+
+  return sources;
 }
 
-std::vector<blink::WebString> ProgrammaticScriptInjector::GetCssSources(
+std::vector<ScriptInjector::CSSSource>
+ProgrammaticScriptInjector::GetCssSources(
     mojom::RunLocation run_location,
     std::set<std::string>* injected_stylesheets,
     size_t* num_injected_stylesheets) const {
   DCHECK_EQ(params_->run_at, run_location);
-  DCHECK(params_->action_type == mojom::ActionType::kAddCss ||
-         params_->action_type == mojom::ActionType::kRemoveCss);
+  DCHECK(params_->injection->is_css());
 
-  return std::vector<blink::WebString>(
-      1, blink::WebString::FromUTF8(params_->code));
+  auto& css_injection = params_->injection->get_css();
+  std::vector<CSSSource> sources;
+  sources.reserve(css_injection->sources.size());
+  for (const auto& source : css_injection->sources) {
+    blink::WebStyleSheetKey style_sheet_key;
+    if (source->key)
+      style_sheet_key = blink::WebString::FromASCII(*source->key);
+    sources.push_back(
+        CSSSource{blink::WebString::FromUTF8(source->code), style_sheet_key});
+  }
+
+  return sources;
 }
 
 void ProgrammaticScriptInjector::OnInjectionComplete(
-    std::unique_ptr<base::Value> execution_result,
+    absl::optional<base::Value> execution_result,
     mojom::RunLocation run_location) {
   DCHECK(!result_.has_value());
-  if (execution_result) {
-    result_ = base::Value::FromUniquePtrValue(std::move(execution_result));
-  }
+  result_ = std::move(execution_result);
   Finish(std::string());
 }
 
@@ -181,7 +200,7 @@ bool ProgrammaticScriptInjector::CanShowUrlInError() const {
   if (!extension)
     return false;
   return extension->permissions_data()->active_permissions().HasAPIPermission(
-      APIPermission::kTab);
+      mojom::APIPermissionID::kTab);
 }
 
 void ProgrammaticScriptInjector::Finish(const std::string& error) {

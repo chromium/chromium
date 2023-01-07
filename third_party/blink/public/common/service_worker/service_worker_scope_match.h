@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,14 @@
 
 namespace blink {
 
-// Returns true if |scope| matches |url|.
+// Returns true if `scope` or `script_url` contains a disallowed character.
+bool BLINK_COMMON_EXPORT
+ServiceWorkerScopeOrScriptUrlContainsDisallowedCharacter(
+    const GURL& scope,
+    const GURL& script_url,
+    std::string* error_message);
+
+// Returns true if `scope` matches `url`.
 bool BLINK_COMMON_EXPORT ServiceWorkerScopeMatches(const GURL& scope,
                                                    const GURL& url);
 
@@ -25,7 +32,7 @@ class BLINK_COMMON_EXPORT ServiceWorkerLongestScopeMatcher {
   ServiceWorkerLongestScopeMatcher& operator=(
       const ServiceWorkerLongestScopeMatcher&) = delete;
 
-  // Returns true if |scope| matches |url_| longer than |match_|.
+  // Returns true if `scope` matches `url_` longer than `match_`.
   bool MatchLongest(const GURL& scope);
 
  private:

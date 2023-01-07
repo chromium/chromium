@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <map>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 // This class monitors how much delay extensions add to network requests
@@ -19,6 +18,12 @@
 class ExtensionWebRequestTimeTracker {
  public:
   ExtensionWebRequestTimeTracker();
+
+  ExtensionWebRequestTimeTracker(const ExtensionWebRequestTimeTracker&) =
+      delete;
+  ExtensionWebRequestTimeTracker& operator=(
+      const ExtensionWebRequestTimeTracker&) = delete;
+
   ~ExtensionWebRequestTimeTracker();
 
   // Records the time that a request was created.  |has_listener| will be true
@@ -55,10 +60,9 @@ class ExtensionWebRequestTimeTracker {
     bool has_extra_headers_listener = false;
 
     RequestTimeLog();
+    RequestTimeLog(const RequestTimeLog&) = delete;
+    RequestTimeLog& operator=(const RequestTimeLog&) = delete;
     ~RequestTimeLog();
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(RequestTimeLog);
   };
 
   // Records UMA metrics for the given request and its end time.
@@ -67,8 +71,6 @@ class ExtensionWebRequestTimeTracker {
 
   // A map of current request IDs to timing info for each request.
   std::map<int64_t, RequestTimeLog> request_time_logs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionWebRequestTimeTracker);
 };
 
 #endif  // EXTENSIONS_BROWSER_API_WEB_REQUEST_WEB_REQUEST_TIME_TRACKER_H_

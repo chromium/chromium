@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,11 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_set.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "net/android/keystore.h"
 #include "net/base/net_errors.h"
 #include "net/ssl/ssl_platform_key_util.h"
 #include "net/ssl/threaded_ssl_private_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/ecdsa.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
@@ -74,7 +73,7 @@ class SSLPlatformKeyAndroid : public ThreadedSSLPrivateKey::Delegate {
         provider_name_(android::GetPrivateKeyClassName(key)) {
     key_.Reset(key);
 
-    base::Optional<bool> supports_rsa_no_padding;
+    absl::optional<bool> supports_rsa_no_padding;
     for (uint16_t algorithm : SSLPrivateKey::DefaultAlgorithmPreferences(
              EVP_PKEY_id(pubkey_.get()), true /* include PSS */)) {
       const char* java_algorithm = GetJavaAlgorithm(algorithm);
@@ -95,7 +94,10 @@ class SSLPlatformKeyAndroid : public ThreadedSSLPrivateKey::Delegate {
     }
   }
 
-  ~SSLPlatformKeyAndroid() override {}
+  SSLPlatformKeyAndroid(const SSLPlatformKeyAndroid&) = delete;
+  SSLPlatformKeyAndroid& operator=(const SSLPlatformKeyAndroid&) = delete;
+
+  ~SSLPlatformKeyAndroid() override = default;
 
   std::string GetProviderName() override { return provider_name_; }
 
@@ -159,7 +161,7 @@ class SSLPlatformKeyAndroid : public ThreadedSSLPrivateKey::Delegate {
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     }
 
-    base::Optional<std::vector<uint8_t>> padded =
+    absl::optional<std::vector<uint8_t>> padded =
         AddPSSPadding(pubkey_.get(), md, base::make_span(digest, digest_len));
     if (!padded) {
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
@@ -177,8 +179,6 @@ class SSLPlatformKeyAndroid : public ThreadedSSLPrivateKey::Delegate {
   std::string provider_name_;
   std::vector<uint16_t> preferences_;
   base::flat_set<uint16_t> use_pss_fallback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLPlatformKeyAndroid);
 };
 
 }  // namespace

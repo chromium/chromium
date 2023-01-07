@@ -1,15 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_SYNC_SERVICE_H_
 #define COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_SYNC_SERVICE_H_
 
-#include <memory>
-#include <string>
-
-#include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -41,11 +36,8 @@ class DeviceInfoSyncService : public KeyedService {
   // has changed (e.g. SharingInfo), and must be sync-ed to other devices as
   // soon as possible, without waiting for the periodic commits. The device info
   // will be compared to the local copy. If the device info has been actually
-  // changed, then it will be committed and the |callback| will be called when
-  // device info is synced. Otherwise nothing happens and the |callback| will
-  // never be called.
-  virtual void RefreshLocalDeviceInfo(
-      base::OnceClosure callback = base::DoNothing()) = 0;
+  // changed, then it will be committed. Otherwise nothing happens.
+  virtual void RefreshLocalDeviceInfo() = 0;
 };
 
 }  // namespace syncer

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -24,6 +23,7 @@
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
+#include "net/base/io_buffer.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_transaction_factory.h"
@@ -62,8 +62,8 @@ class CacheCounterTest : public PlatformTest {
     current_operation_ = OPERATION_ADD_ENTRY;
     next_step_ = STEP_GET_BACKEND;
 
-    base::PostTask(FROM_HERE, {web::WebThread::IO},
-                   base::BindOnce(&CacheCounterTest::CacheOperationStep,
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&CacheCounterTest::CacheOperationStep,
                                   base::Unretained(this), net::OK));
     WaitForIOThread();
   }
@@ -73,8 +73,8 @@ class CacheCounterTest : public PlatformTest {
     current_operation_ = OPERATION_CLEAR_CACHE;
     next_step_ = STEP_GET_BACKEND;
 
-    base::PostTask(FROM_HERE, {web::WebThread::IO},
-                   base::BindOnce(&CacheCounterTest::CacheOperationStep,
+    web::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&CacheCounterTest::CacheOperationStep,
                                   base::Unretained(this), net::OK));
     WaitForIOThread();
   }
@@ -197,8 +197,8 @@ class CacheCounterTest : public PlatformTest {
           if (current_operation_ == OPERATION_ADD_ENTRY)
             entry_->Close();
 
-          base::PostTask(FROM_HERE, {web::WebThread::UI},
-                         base::BindOnce(&CacheCounterTest::Callback,
+          web::GetUIThreadTaskRunner({})->PostTask(
+              FROM_HERE, base::BindOnce(&CacheCounterTest::Callback,
                                         base::Unretained(this)));
 
           break;

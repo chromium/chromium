@@ -1,0 +1,30 @@
+caption: Block the File Handling API on these web apps
+deprecated: true
+desc: |-
+  Setting the policy lets you list the URL patterns that specify which web apps can't ask users to grant them access to file types.
+
+        Leaving the policy unset means <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME">DefaultFileHandlingGuardSetting</ph> applies for all web apps, if it's set. If not, the user's personal setting applies.
+
+        For URL patterns which match neither <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME">FileHandlingAllowedForUrls</ph> nor <ph name="FILE_HANDLING_BLOCKED_FOR_URLS_POLICY_NAME">FileHandlingBlockedForUrls</ph>, <ph name="DEFAULT_FILE_HANDLING_GUARD_SETTING_POLICY_NAME">DefaultFileHandlingGuardSetting</ph>, or the users' personal settings, will be used, in that order.
+
+        URL patterns must not conflict with <ph name="FILE_HANDLING_ALLOWED_FOR_URLS_POLICY_NAME">FileHandlingAllowedForUrls</ph>. Neither policy takes precedence if a URL matches with both.
+
+        For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE">*</ph> is not an accepted value for this policy.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- estade@chromium.org
+- cmp@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome_os:91-96
+- chrome.*:91-96
+tags: []
+type: list

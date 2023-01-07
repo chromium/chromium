@@ -1,0 +1,2415 @@
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of CrossDevice histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="AndroidSms.EffectivePWAInstallationSuccess"
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>jonmann@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records effective final success/failure when trying to install Android
+    Messages for Web PWA. This is recorded once when any one of the installation
+    attempts succeed or when all attempts fails, irrespective of number of
+    retries.
+  </summary>
+</histogram>
+
+<histogram name="AndroidSms.FcmMessageDispatchFailure"
+    enum="AndroidSmsFcmMessageType" expires_after="2023-02-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records message types for which all retry attempts failed when dispatching
+    to Android Messages for Web Service-Worker. This is recorded when using FCM
+    web push for background notificaitons.
+  </summary>
+</histogram>
+
+<histogram name="AndroidSms.FcmMessageDispatchRetry"
+    enum="AndroidSmsFcmMessageType" expires_after="2023-02-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records message types for which a retry was attempted when dispatching to
+    Android Messages for Web Service-Worker. This is recorded when using FCM web
+    push for background notificaitons.
+  </summary>
+</histogram>
+
+<histogram name="AndroidSms.FcmMessageDispatchSuccess"
+    enum="AndroidSmsFcmMessageType" expires_after="2023-02-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records message types for which dispatching to Android Messages for Web
+    Service-Worker succeeded. This is recorded when using FCM web push for
+    background notificaitons.
+  </summary>
+</histogram>
+
+<histogram name="AndroidSms.MultiDeviceFeatureState"
+    enum="MultiDevice_FeatureState" expires_after="2023-02-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates the feature state of the Messages feature. This metric is emitted
+    to at the creation of the user session (when the user logs in), when any
+    multi-device feature state changes, and every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram name="AndroidSms.NumAttemptsForSuccessfulInstallation"
+    units="attempts" expires_after="2023-02-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>jonmann@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the number of installations attempted for Android Messages for Web
+    PWA before succeeding.
+  </summary>
+</histogram>
+
+<histogram name="AndroidSms.PWAInstallationResult"
+    enum="WebAppInstallResultCode" expires_after="2023-02-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records installation result code for every installation attempt for Android
+    Messages for Web PWA initiated through Multidevice setup or settings. This
+    metric also includes installation result for every failed retry.
+  </summary>
+</histogram>
+
+<histogram name="AndroidSms.PWAUninstallationResult" enum="BooleanSuccess"
+    expires_after="2023-02-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records success/failure for when Android Messages for Web PWA is
+    uninstalled. The PWA is uninstalled when the messages URL changes, resulting
+    in the PWA being uninstalled at the old URL and reinstalled at the new URL.
+  </summary>
+</histogram>
+
+<histogram name="AndroidSms.ServiceWorkerLifetime" units="ms"
+    expires_after="2023-02-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Tracks the duration of time for which the Android Messages for Web Service-
+    Worker is handling background connection.
+  </summary>
+</histogram>
+
+<histogram name="AndroidSms.ServiceWorkerMessageDispatchStatus"
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Tracks dispatch success/failure status of the start streaming message sent
+    to the Android Messages for Web Service-Worker.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.ClientAppMetadata.IsManufacturerEmpty"
+    enum="BooleanEmpty" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates whether or not the device manufacturer name returned in the
+    hardware info is empty. Recored during the construction of a
+    ClientAppMetadata proto.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.ClientAppMetadata.IsModelEmpty" enum="BooleanEmpty"
+    expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates whether or not the device model name returned in the hardware info
+    is empty. Recored during the construction of a ClientAppMetadata proto.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.ClientAppMetadataInstanceIdTokenFetch.Result"
+    enum="InstanceIDResult" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates the result of fetching an InstanceId token during the construction
+    of a ClientAppMetadata proto messages.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.ClientAppMetadataInstanceIdTokenFetch.Retries"
+    units="retries" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Counts the number of times the InstanceId token fetch got retried because it
+    did not match with the expected InstanceId. Logged during the construction
+    of a ClientAppMetadata proto message.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSync.Result" enum="BooleanSuccess"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>Indicates success of performing a DeviceSync.</summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncService.ClientAppMetadataFetch.AsyncTaskResult"
+    enum="CryptAuthAsyncTaskResult" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async ClientAppMetadata retrieval performed during
+    initialization of the DeviceSync service. Recorded when the async callback
+    is invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncService.ClientAppMetadataFetch.ExecutionTime"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async ClientAppMetadata retrieval
+    performed during initialization of the DeviceSync service. Recorded when the
+    async callback is invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncService.GcmRegistration.ExecutionTime"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of GCM registration performed during
+    initialization of the DeviceSync service. Recorded when the async callback
+    is invoked.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncService.GcmRegistration.Success"
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of GCM registration performed during initialization of
+    the DeviceSync service. Recorded when the async callback is invoked.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncService.Initialization.ExecutionTime"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the DeviceSync service initialization.
+    Recorded each time the DeviceSync service starts up, after initialization
+    succeeds.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncSoftwareFeaturesResult"
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates that there was no issue retrieving supported and enabled software
+    features, or that there were enabled features which were not in the
+    supported feature set. See the histogram
+    &quot;CryptAuth.DeviceSyncSoftwareFeaturesResult.Failures&quot; for a
+    breakdown of failures by feature type.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncSoftwareFeaturesResult.Failures"
+    enum="CryptAuthSoftwareFeature" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Breaks down by feature type
+    &quot;CryptAuth.DeviceSyncSoftwareFeaturesResult&quot;'s count of enabled
+    features which were not in the supported feature set.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceActivityGetter.ApiCallResult.GetDevicesActivityStatus"
+    enum="CryptAuthApiCallResult" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async GetDevicesActivityStatus API call to
+    CryptAuth during multi-device setup. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceActivityGetter.ExecutionTime.GetDevicesActivityStatus"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async GetDevicesActivityStatus API call
+    during multi-device setup. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceNotifier.ApiCallResult.NotifyGroupDevices"
+    enum="CryptAuthApiCallResult" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async BatchNotifyGroupDevices API call to
+    CryptAuth. Recorded when the async callback is invoked or when the call
+    times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceNotifier.ExecutionTime.NotifyGroupDevices"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async BatchNotifyGroupDevices API call to
+    CryptAuth. Recorded when the async callback is invoked or when the call
+    times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceSyncer.AsyncTaskResult.DeviceMetadataDecryption"
+    enum="CryptAuthAsyncTaskResult" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async device metadata decryption during the
+    CryptAuth v2 DeviceSync flow. Records a success if the operation did not
+    timeout; a separate metric,
+    CryptAuth.DeviceSyncV2.DeviceSyncer.MetadataDecryptionSuccess, tracks
+    individual encryption failures.Recorded when the async callback is invoked
+    or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceSyncer.AsyncTaskResult.GroupPrivateKeyDecryption"
+    enum="CryptAuthAsyncTaskResult" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async group private key decryption during the
+    CryptAuth v2 DeviceSync flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceSyncer.ExecutionTime.DeviceMetadataDecryption"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async device metadata decryption during
+    the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceSyncer.ExecutionTime.GroupPrivateKeyDecryption"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async group private key decryption during
+    the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceSyncer.IsGroupPrivateKeyConsistent"
+    enum="BooleanConsistent" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the group private key sent by CryptAuth matches the
+    existing group private key when they are expected to agree. Emitted during a
+    CryptAuth v2 DeviceSync if the group private key is not being rotated.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.DeviceSyncer.IsLocalDeviceMetadataConsistent"
+    enum="BooleanConsistent" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the local device metadata agrees with that sent by
+    CryptAuth in the SyncMetadata response. Emitted during the CryptAuth v2
+    DeviceSync flow, after device metadata is decrypted.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.DeviceSyncer.MetadataDecryptionSuccess"
+    enum="BooleanSuccess" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not device metadata sent by CryptAuth in the SyncMetadata
+    response was able to be decrypted. Emitted during the CryptAuth v2
+    DeviceSync flow for each device metadata packet.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.DeviceSyncer.MetadataParsingSuccess"
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not device metadata sent by CryptAuth in the SyncMetadata
+    response was able to be parsed from a decrypted serialized byte string into
+    a proto. Emitted during the CryptAuth v2 DeviceSync flow for each device
+    metadata packet.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.ApiCallResult.GetFeatureStatuses"
+    enum="CryptAuthApiCallResult" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async BatchGetFeatureStatuses API call during the
+    CryptAuth v2 DeviceSync flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.CorrectNumberOfDevicesInResponse"
+    enum="BooleanExpected" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the expected number of devices were sent in the
+    BatchGetFeatureStatuses response. Emitted when a BatchGetFeatureStatuses
+    response is received from the CryptAuth server.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.ExecutionTime.GetFeatureStatuses"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async BatchGetFeatureStatuses API call
+    during the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.IsDuplicateDeviceId"
+    enum="BooleanDuplicate" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not a device ID in the BatchGetFeatureStatuses response
+    has been seen already in the same response. Emitted for each device in the
+    BatchGetFeatureStatuses response. Emitted when a BatchGetFeatureStatuses
+    response is received from the CryptAuth server.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.IsKnownFeatureType"
+    enum="BooleanKnown" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the feature type strings returned in the
+    BatchGetFeatureStatuses response are known feature types. Emitted for each
+    feature type for each device in the BatchGetFeatureStatuses response.
+    Emitted when a BatchGetFeatureStatuses response is received from the
+    CryptAuth server.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.IsUnsupportedFeatureMarkedEnabled"
+    enum="Boolean" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not a feature is marked as enabled even though it is
+    listed as unsupported. This should never happen. Emitted for all feature
+    types, for each device in the BatchGetFeatureStatuses response. Emitted when
+    a BatchGetFeatureStatuses response is received from the CryptAuth server.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusGetter.WasDeviceInResponseRequested"
+    enum="BooleanRequested" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not a device in the BatchGetFeatureStatuses response was
+    included in the BatchGetFeatureStatuses request. Emitted for each device in
+    the BatchGetFeatureStatuses response.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusSetter.ApiCallResult.SetFeatureStatuses"
+    enum="CryptAuthApiCallResult" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async BatchSetFeatureStatuses API call to
+    CryptAuth. Recorded when the async callback is invoked or when the call
+    times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.FeatureStatusSetter.ExecutionTime.SetFeatureStatuses"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async BatchSetFeatureStatuses API call to
+    CryptAuth. Recorded when the async callback is invoked or when the call
+    times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.ApiCallResult.ShareGroupPrivateKey"
+    enum="CryptAuthApiCallResult" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async ShareGroupPrivateKey API call during the
+    CryptAuth v2 DeviceSync flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.AsyncTaskResult.GroupPrivateKeyEncryption"
+    enum="CryptAuthAsyncTaskResult" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async group private key encryption during the
+    CryptAuth v2 DeviceSync flow. Records a success if the operation did not
+    timeout; a separate metric,
+    CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.EncryptionSuccess, tracks
+    individual encryption failures. Recorded when the async callback is invoked
+    or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.EncryptionSuccess"
+    enum="BooleanSuccess" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the group private key was able to be encrypted using
+    a device's encrypting key. Recorded during the ShareGroupPrivateKey phase of
+    the CryptAuth v2 DeviceSync flow. Recorded for each device with whom we
+    intend to share the group private key.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.ExecutionTime.GroupPrivateKeyEncryption"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async group private key encryption during
+    the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.ExecutionTime.ShareGroupPrivateKey"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async ShareGroupPrivateKey API call during
+    the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.GroupPrivateKeySharer.IsEncryptingKeyEmpty"
+    enum="Boolean" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not a device's key used to encrypt the group private key
+    is empty. If the key is empty, the group private key cannot be encrypted and
+    shared with the device. Recorded during the ShareGroupPrivateKey phase of
+    the CryptAuth v2 DeviceSync flow. Recorded for each device with whom we
+    intend to share the group private key.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.InvocationReason"
+    enum="CryptAuthV2InvocationReason" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The clients' reasons for making CryptAuth v2 DeviceSync requests. Recorded
+    when a DeviceSync is requested.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.ApiCallResult.FirstSyncMetadata"
+    enum="CryptAuthApiCallResult" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the first async SyncMetadata API call during the
+    CryptAuth v2 DeviceSync flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.ApiCallResult.SecondSyncMetadata"
+    enum="CryptAuthApiCallResult" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the second async SyncMetadata API call during the
+    CryptAuth v2 DeviceSync flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.AsyncTaskResult.GroupKeyCreation"
+    enum="CryptAuthAsyncTaskResult" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async group key creation during the CryptAuth v2
+    DeviceSync flow. Recorded when the async callback is invoked or when the
+    call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.AsyncTaskResult.LocalDeviceMetadataEncryption"
+    enum="CryptAuthAsyncTaskResult" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async local device metadata encryption during the
+    CryptAuth v2 DeviceSync flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.ExecutionTime.FirstSyncMetadata"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the first async SyncMetadata API call during
+    the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.ExecutionTime.GroupKeyCreation"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async group key creation during the
+    CryptAuth v2 DeviceSync flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.ExecutionTime.LocalDeviceMetadataEncryption"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async local device metadata encryption
+    during the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.ExecutionTime.SecondSyncMetadata"
+    units="ms" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the second async SyncMetadata API call during
+    the CryptAuth v2 DeviceSync flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.MetadataSyncer.IsDeviceMetadataPacketValid"
+    enum="Boolean" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the device metadata packets sent by CryptAuth have
+    all of the necessary fields populated. Emitted for each device metadata
+    packet during the SyncMetadata phase of the CryptAuth v2 DeviceSync flow.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.MetadataSyncer.IsDuplicateDeviceId"
+    enum="Boolean" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the device ID from a device metadata packet sent by
+    CryptAuth in the SyncMetadata response has the same ID as a packet from the
+    same response. Emitted for each device metadata packet during the
+    SyncMetadata phase of the CryptAuth v2 DeviceSync flow.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.NumV1Devices"
+    units="count" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the number of devices returned by a v1 DeviceSync. Only recorded
+    when v1 and v2 DeviceSync are running in parallel. Only recorded if a v1 and
+    v2 DeviceSync has ever previously occurred. Emitted when v1 and v2 devices
+    are merged together, which occurs after either a v1 or v2 DeviceSync.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.NumV2Devices"
+    units="count" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the number of devices returned by a v2 DeviceSync. Only recorded
+    when v1 and v2 DeviceSync are running in parallel. Only recorded if a v1 and
+    v2 DeviceSync has ever previously occurred. Emitted when v1 and v2 devices
+    are merged together, which occurs after either a v1 or v2 DeviceSync.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.PercentageOfV1DevicesReplacedByV2Devices"
+    units="%" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the percentage of devices returned by a v2 DeviceSync that replace
+    their v1 counterparts. This will only occur if the v2 device has a decrypted
+    public key that matches a v1 device. Only recorded when v1 and v2 DeviceSync
+    are running in parallel. Only recorded if a v1 and v2 DeviceSync has ever
+    previously occurred. Emitted when v1 and v2 devices are merged together,
+    which occurs after either a v1 or v2 DeviceSync.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.PercentageOfV2DevicesWithDecryptedPublicKey"
+    units="%" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the percentage of devices returned by a v2 DeviceSync that have a
+    decrypted user public key. Only recorded when v1 and v2 DeviceSync are
+    running in parallel. Only recorded if a v1 and v2 DeviceSync has ever
+    previously occurred. Emitted when v1 and v2 devices are merged together,
+    which occurs after either a v1 or v2 DeviceSync.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.RatioOfV2ToV1Devices"
+    units="%" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the ratio of the number of devices returned by a v2 DeviceSync to
+    the number returned by a v1 DeviceSync. Devices returned by a v2 DeviceSync
+    should be a subset of the devices returned by a v1 DeviceSync, barring any
+    race conditions. This ratio should be greater than or equal to
+    PercentageOfV1DevicesReplacedByV2Devices because a v2 device can only
+    replace its v1 counterpart if it has a decrypted public key. Only recorded
+    when v1 and v2 DeviceSync are running in parallel. Only recorded if a v1 and
+    v2 DeviceSync has ever previously occurred. Emitted when v1 and v2 devices
+    are merged together, which occurs after either a v1 or v2 DeviceSync.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.Result.DidDeviceRegistryChange"
+    enum="BooleanChanged" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates whether or not any device data in the device registry changed as a
+    result of the CryptAuth v2 DeviceSync attempt. Recorded when a DeviceSync
+    attempt finishes.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.Result.ResultCode"
+    enum="CryptAuthV2DeviceSyncResultCode" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The CryptAuth v2 DeviceSync attempt results broken down by result code.
+    Recorded when a DeviceSync attempt finishes.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.DeviceSyncV2.Result.ResultType"
+    enum="CryptAuthV2DeviceSyncResultType" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates whether the CryptAuth v2 DeviceSync attempt succeeded, failed, or
+    finished with non-fatal errors. Recorded when a DeviceSync attempt finishes.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Enrollment.Result" enum="BooleanSuccess"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The top-level result of the CryptAuth device enrollment process.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.ApiCallResult.EnrollKeys"
+    enum="CryptAuthApiCallResult" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async EnrollKeys API call to CryptAuth during the
+    CryptAuth v2 Enrollment flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.ApiCallResult.SyncKeys"
+    enum="CryptAuthApiCallResult" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async SyncKeys API call to CryptAuth during the
+    CryptAuth v2 Enrollment flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.AsyncTaskResult.KeyCreation"
+    enum="CryptAuthAsyncTaskResult" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of the async key creation call during the CryptAuth v2
+    Enrollment flow. Recorded when the async callback is invoked or when the
+    call times out.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.ExecutionTime.EnrollKeys" units="ms"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async EnrollKeys API call to CryptAuth
+    during the CryptAuth v2 Enrollment flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.ExecutionTime.KeyCreation" units="ms"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async key creation call during the
+    CryptAuth v2 Enrollment flow. Recorded when the async callback is invoked or
+    when the call times out.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.ExecutionTime.SyncKeys" units="ms"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the execution time of the async SyncKeys API call to CryptAuth
+    during the CryptAuth v2 Enrollment flow. Recorded when the async callback is
+    invoked or when the call times out.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.InvocationReason"
+    enum="CryptAuthV2InvocationReason" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The clients' reasons for making CryptAuth v2 Enrollment requests. Recorded
+    when an enrollment is requested.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.Result.ResultCode"
+    enum="CryptAuthV2EnrollmentResult" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The CryptAuth v2 Enrollment attempt results broken down by result code.
+    Recorded when an enrollment attempt finishes.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.Result.Success" enum="BooleanSuccess"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The success or failure of CryptAuth v2 Enrollment requests. Recorded when an
+    enrollment attempt finishes.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.EnrollmentV2.UserKeyPairState"
+    enum="CryptAuthV2EnrollmentUserKeyPairState" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The state--at system start time--of persisted user key pairs, generated
+    during CryptAuth v1 and/or v2 Enrollment: whether they exist and if they
+    agree. Recorded on CryptAuth v2 Enrollment manager construction.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Gcm.Message.FeatureType" enum="CryptAuthFeatureType"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the multi-device feature type sent in a GCM message from CryptAuth
+    v2. Emitted when a GCM message with a feature type key/value pair is
+    received from CryptAuth.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Gcm.Message.IsDeviceSyncGroupNameValid"
+    enum="Boolean" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the DeviceSync group name sent in a GCM message from
+    CryptAuth is valid. Currently the only valid group name is
+    &quot;DeviceSync:BetterTogether&quot;. Emitted when a GCM message with a
+    DeviceSync group name key/value pair is received from CryptAuth.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Gcm.Message.IsKnownFeatureType" enum="Boolean"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the multi-device feature type sent in a GCM message
+    from CryptAuth v2 is recognized by the Chrome OS client. Emitted when a GCM
+    message with a feature type key/value pair is received from CryptAuth.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.Gcm.Message.TargetService.AreTickleTypeAndTargetServiceBothSpecified"
+    enum="Boolean" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the CryptAuth TargetService was specified in a GCM
+    message by both the CryptAuth v1 registration tickle type key/value pair as
+    well as the CryptAuth v2 target service key/value pair. Both key/value pairs
+    should not exist in same GCM message. Emitted when a GCM message is received
+    from CryptAuth.
+  </summary>
+</histogram>
+
+<histogram
+    name="CryptAuth.Gcm.Message.TargetService.FromRegistrationTickleType"
+    enum="CryptAuthTargetService" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The CryptAuth TargetService--Enrollment or DeviceSync--indicated by the
+    registration tickle type key/value pair of an incoming GCM message. The
+    registration tickle type is used in GCM messages sent by CryptAuth v1.
+    Emitted when a GCM message from CryptAuth is received.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Gcm.Message.TargetService.FromTargetServiceValue"
+    enum="CryptAuthTargetService" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The CryptAuth TargetService--Enrollment or DeviceSync--indicated by the
+    target service key/value pair of an incoming GCM message. This key/value
+    pair is used in GCM messages sent by CryptAuth v2. Emitted when a GCM
+    message from CryptAuth is received.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Gcm.Registration.AttemptTimeWithRetries" units="ms"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The time it takes the GCM driver to return the result of a GCM registration
+    request made by the CryptAuth GCM manager. CryptAuth registration with GCM
+    is only performed once, if successful, for a given user on a device as the
+    first step in CryptAuth v1 or v2 Enrollment. Recorded when the CryptAuth GCM
+    manager is notified by the GCM driver that the registration attempt
+    finished, successfully or not. The GCM driver might quietly retry failures
+    before notifying the CryptAuth GCM manager. The time recorded here
+    encompasses the possible retry attempts and delays from the GCM driver.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.Gcm.Registration.Result" enum="GCMClientResult"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The result code from a GCM registration request made by the CryptAuth GCM
+    manager. CryptAuth registration with GCM is only performed once, if
+    successful, for a given user on a device as the first step in CryptAuth v1
+    or v2 Enrollment. Recorded when the CryptAuth GCM manager is notified by the
+    GCM driver that the registration attempt finished, successfully or not. The
+    GCM driver might quietly retry failures before notifying the CryptAuth GCM
+    manager. This metric will not include results codes that were quietly
+    retried by the GCM driver.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.GetLocalDeviceMetadata.HasId" enum="BooleanPresent"
+    expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the loaded local-device has a non-trivial identifier.
+    We always expect a non-trivial ID. Emitted every time the DeviceSync client
+    tries to load local device data, typically during initialization, after an
+    Enrollment or after a DeviceSync.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.GetLocalDeviceMetadata.IsReady" enum="BooleanReady"
+    expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the DeviceSync client is fully set up/ready when
+    GetLocalDeviceMetadata() is invoked. We always expect the client to be ready
+    when GetLocalDeviceMetadata() is called. Emitted every time the DeviceSync
+    client tries to load local device data, typically during initialization,
+    after an Enrollment or after a DeviceSync.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.GetLocalDeviceMetadata.Result" enum="BooleanSuccess"
+    expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the local-device-data request to the DeviceSync
+    client was successful. We expect this to always be successful. Emitted every
+    time applications, e.g., Smart Lock, request the local device data.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.InstanceId.DidInstanceIdChange"
+    enum="BooleanChanged" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates whether or not the Instance ID used by the CryptAuth client
+    differs from the previously retrieved ID. Recorded while fetching client app
+    metadata if a previous ID has been set.
+  </summary>
+</histogram>
+
+<histogram name="CryptAuth.InstanceId.DidInstanceIdTokenChange"
+    enum="BooleanChanged" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates whether or not the Instance ID token used by the CryptAuth client
+    differs from the previously retrieved token. Recorded while fetching client
+    app metadata if a previous token has been set.
+  </summary>
+</histogram>
+
+<histogram name="EasyUnlock.AuthEvent.DidUserManuallyUnlockPhone"
+    enum="EasyUnlockDidUserManuallyUnlockPhone" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Upon a successful Smart Lock unlock, records whether the user's phone was
+    locked during any point while the lock screen was up. This can be used to
+    get a sense for whether users are using Smart Lock for Chromebook without
+    something like Smart Lock for Android to keep their phones unlocked.
+  </summary>
+</histogram>
+
+<histogram name="EasyUnlock.AuthEvent.SignIn" enum="EasyUnlockAuthEvent"
+    expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the use of Smart Lock on the sign-in screen: records whether a
+    Smart Lock login succeeded or failed; or if a password fallback was used,
+    the reason why. Recorded upon a login attempt for users who have the Smart
+    Lock feature enabled.
+  </summary>
+</histogram>
+
+<histogram name="EasyUnlock.AuthEvent.SignIn.Duration" units="ms"
+    expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the time elapsed between the user focusing their user pod and
+    signing in using Smart Lock.
+  </summary>
+</histogram>
+
+<histogram name="EasyUnlock.AuthEvent.Unlock" enum="EasyUnlockAuthEvent"
+    expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the use of Smart Lock on the lock screen: records whether a Smart
+    Lock unlock attempt succeeded or failed; or if a password fallback was used,
+    the reason why. Recorded upon an unlock attempt for users who have the Smart
+    Lock feature enabled.
+  </summary>
+</histogram>
+
+<histogram name="EasyUnlock.AuthEvent.Unlock.Duration" units="ms"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the time elapsed between the lock screen being shown and the user
+    unlocking the device using Smart Lock. The lock screen is typically shown
+    when the user opens their Chromebook's lid (or otherwise wakes the
+    computer), but can also be shown when the user manually locks the device.
+  </summary>
+</histogram>
+
+<histogram name="EasyUnlock.AuthProximity.RemoteDeviceModelHash"
+    enum="EasyUnlockDeviceModelHash" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The hash of the phone model used to successfully sign in or unlock using
+    Smart Lock.
+
+    This hash is calculated by taking the first 4 bytes of the MD5 hash of the
+    device model.
+  </summary>
+</histogram>
+
+<histogram name="EasyUnlock.AuthProximity.RollingRssi" units="dBm"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the exponentially weighted rolling average of the received signal
+    strength indicator (RSSI) of the phone when the user successfully unlocks or
+    signs in using Smart Lock.
+
+    The exponentially weighted averaging formula is:
+
+    rollingRssi = (1 - weight) * rollingRssi + weight * currentRssi;
+
+    RSSI readings are inherently noisy, so this averaging gives a smoothed RSSI
+    value to work with as a heuristic for proximity.
+
+    If no RSSI was read, then a sentinel value of 127 will be recorded.
+  </summary>
+</histogram>
+
+<histogram name="EasyUnlock.RemoteLockScreenState"
+    enum="EasyUnlockRemoteLockScreenState" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Whether a lock screen and a trust agent are enabled on the remote device
+    (Android phone) for Easy Unlock. Recorded once per status update message
+    from the remote device. A status update message is expected to be sent once
+    when the secure channel between the local and the remote device is
+    established, and also each time the user-presence status changes on the
+    remote side.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.BluetoothAdvertisementRegistrationResult"
+    enum="InstantTethering_BluetoothAdvertisementResult"
+    expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides a breakdown of how many times each possible Bluetooth advertisement
+    registration result occurs.
+
+    The bucket &quot;Unknown result&quot; indicates that the Bluetooth platform
+    returned an unknown error code; if it has any counts, the client code should
+    be changed to account for the new error code.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.BluetoothAdvertisementUnregistrationResult"
+    enum="InstantTethering_BluetoothAdvertisementResult"
+    expires_after="2021-02-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides a breakdown of how many times each possible Bluetooth advertisement
+    unregistration result occurs.
+
+    The bucket &quot;Unknown result&quot; indicates that the Bluetooth platform
+    returned an unknown error code; if it has any counts, the client code should
+    be changed to account for the new error code.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.BluetoothDiscoverySessionStarted"
+    enum="BooleanSuccess" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides the success rate of starting a Bluetooth discovery session.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.BluetoothDiscoverySessionStopped"
+    enum="BooleanSuccess" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides the success rate of stopping a Bluetooth discovery session.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.ConnectionToHostResult.Failure"
+    enum="InstantTethering_ConnectionToHostResult_Failure"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides a top-level breakdown of the times a connection to a host has
+    failed.
+
+    An &quot;unknown error&quot; is caused by the host returning an
+    &quot;unknown error&quot; response code. Tethering timing out and client
+    connection error are both broken down further in
+    InstantTethering.ConnectionToHostResult.Failure.TetheringTimeout and
+    InstantTethering.ConnectionToHostResult.Failure.ClientConnection,
+    respectively.
+  </summary>
+</histogram>
+
+<histogram
+    name="InstantTethering.ConnectionToHostResult.Failure.ClientConnection"
+    enum="InstantTethering_ConnectionToHostResult_Failure_ClientConnection"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Breaks down the reasons why the client failed to connect to the hotspot, and
+    the number of times they occurred.
+
+    Note that a client connection can be canceled by a user either via pressing
+    the Disconnect button or beginning a connection attempt to another host. The
+    &quot;internal error&quot; case is a general bucket that captures client
+    errors we don't expect to be significant failure causes.
+
+    This histogram breaks down the &quot;client connection error&quot; count of
+    InstantTethering.ConnectionToHostResult.Failure.
+  </summary>
+</histogram>
+
+<histogram
+    name="InstantTethering.ConnectionToHostResult.Failure.TetheringTimeout"
+    enum="InstantTethering_ConnectionToHostResult_Failure_TetheringTimeout"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Captures the number of times of whether or not first-time setup was required
+    when tethering timed out.
+
+    Starting tethering on the host works like so: if first-time setup is
+    required on the host, a first-time setup UI is shown on the host; once the
+    user interacts with it, the provisioning app is called. If first-time setup
+    is not required, then the provisioning app is directly called. To be clear:
+    the provisioning app is always run.
+
+    There are two possible ways for tethering to time out: either the
+    provisioning app flaked (crashed or hung, and never called back to Instant
+    Tethering), or the user never interacted with the first-time setup UI flow
+    (assuming first-time setup was required).
+
+    Because it's very unlikely for the provisioning app to flake, we can read
+    the &quot;was first-time setup&quot; count as almost always indicative of
+    the user not interacting with the first-time setup UI. We expect the
+    &quot;was not first-time setup&quot; count to be low (because, as mentioned,
+    it's very unlikely for the provisioning app to flake).
+
+    This histogram breaks down the &quot;tethering timed out&quot; count of
+    InstantTethering.ConnectionToHostResult.Failure.
+  </summary>
+</histogram>
+
+<histogram
+    name="InstantTethering.ConnectionToHostResult.ProvisioningFailureRate"
+    enum="InstantTethering_ConnectionToHostResult_ProvisioningFailureRate"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides a breakdown of the times a connection to a host was either
+    unsuccessful due to provisioning failure (the carrier disallows tethering)
+    or &quot;other&quot; (this is captured under
+    InstantTethering.ConnectionToHostResult.SuccessRate.Background).
+
+    This metric captures the rough percentage of connections which are
+    unsuccessful due to provisioning failure. It is separate from
+    InstantTethering.ConnectionToHostResult.SuccessRate.Background and the
+    metrics related to it because provisioning failure is neither truly a
+    success nor an error.
+  </summary>
+</histogram>
+
+<histogram
+    name="InstantTethering.ConnectionToHostResult.SuccessRate.Background"
+    enum="InstantTethering_ConnectionToHostResult_SuccessRate"
+    expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Captures the count of successful and failed connection attempts.
+
+    This metric counts the top-level user action from beginning to connect, all
+    the way through success or failure of the connection (excluding any
+    programmatic retries within the connection attempt).
+
+    This metric provides an immediate understanding of the Instant Tethering
+    connection success rate. The counts of failure are broken down in
+    InstantTethering.ConnectionToHostResult.Failure.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.FeatureState"
+    enum="InstantTethering_FeatureState" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Breaks down the state of Instant Tethering during user sessions. All states,
+    except for 'Enabled', indicate that the feature was not active. This
+    histogram is emitted to each time a condition affecting Instant Tethering's
+    state, e.g. the user enabling or disabling the feature, or Bluetooth
+    becoming enabled or disabled.
+
+    Note: The &quot;Screen locked&quot; bucket is obsolete, and should not have
+    any reports.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.HostScanBatchDuration" units="ms"
+    expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of a batch of host scans. A batch is defined as a series of one
+    or host scans separated by no more than one minute.
+
+    For example, if a scan occurs then stops and does not start back up again,
+    the metric logged would be the amount of time taken for that scan. However,
+    if a scan finishes and a new scan starts up again less than a minute after
+    the previous scan finished, the metric logged would be the time difference
+    between the start of the first scan and the finish of the second scan.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.HostScanResult"
+    enum="InstantTethering_HostScanResult" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides a breakdown of the results of each host scan. This metric is
+    recorded after each host scan.
+
+    Comparing the number of times no hosts were found against the other buckets
+    can help determine how often a host scan is useful.
+
+    The sum of the buckets capturing that a notification was shown can be used
+    as a baseline of comparison against
+    InstantTethering.ConnectionToHostResult.ProvisioningFailureRate to roughly
+    measure engagement with the notification.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.HotspotUsageDuration" units="ms"
+    expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time between the start and end of a Tether connection.
+    Timing starts when the device connects to the Wi-Fi hotspot and ends when
+    the device becomes disconnected from the Wi-Fi hotspot.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.KeepAliveTickle.Result" enum="BooleanSuccess"
+    expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Captures the count of successful and failed attempts to send a
+    'KeepAliveTickle' message to the phone.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.MultiDeviceFeatureState"
+    enum="MultiDevice_FeatureState" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates the feature state of the Instant Tethering feature. This metric is
+    emitted to at the creation of the user session (when the user logs in), when
+    any multi-device feature state changes, and every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.NotificationInteractionType"
+    enum="InstantTethering_NotificationInteractionType"
+    expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Counts the number of interactions a user has with each of the Instant
+    Tethering notifications.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.Performance.ConnectTetheringResponseDuration"
+    units="ms" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time between when a client authenticates with a host, and
+    receives a ConnectTetheringResponse.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.Performance.ConnectToHostDuration.Background"
+    units="ms" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time it takes for the client to connect to the host, from
+    the moment the user taps 'Connect', until the client connects to the host's
+    hotspot. This does not include timeouts.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.Performance.ConnectToHotspotDuration"
+    units="ms" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time it takes for the client to connect to the provided
+    hotspot after receiving a ConnectTetheringResponse. This does not include
+    timeouts.
+  </summary>
+</histogram>
+
+<histogram
+    name="InstantTethering.Performance.DisconnectTetheringRequestDuration"
+    units="ms" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time it takes for the client to send off a
+    DisconnectTetheringRequest.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.Performance.KeepAliveTickleResponseDuration"
+    units="ms" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time between when a client authenticates with a host, and
+    receives a KeepAliveTickleResponse.
+  </summary>
+</histogram>
+
+<histogram
+    name="InstantTethering.Performance.TetherAvailabilityResponseDuration"
+    units="ms" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time between when a client authenticates with a host, and
+    receives a TetherAvailabilityResponse.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.SessionCompletionReason"
+    enum="InstantTethering_SessionCompletionReason" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides a breakdown of how each Tether session ended. A session begins when
+    a device is first connected to a host's hotspot, and ends when the device is
+    no longer connected to the hotspot. This metric is recorded at the end of
+    each session.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.UserPreference.OnStartup"
+    enum="BooleanEnabled" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides the count of the number of users who have the Instant Tethering
+    toggle enabled vs. disabled on startup. This metric is logged each time a
+    user logs into a Chromebook.
+  </summary>
+</histogram>
+
+<histogram name="InstantTethering.UserPreference.OnToggle"
+    enum="BooleanEnabled" expires_after="2023-02-01">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides the count of the number of times users have enabled or disabled the
+    user preference for Mobile data. This metric is logged each time the value
+    is toggled.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.BetterTogetherSuite.MultiDeviceFeatureState"
+    enum="MultiDevice_FeatureState" expires_after="2023-04-02">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates the feature state of the Better Together Suite feature. This
+    metric is emitted to at the creation of the user session (when the user logs
+    in), when any multi-device feature state changes, and every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram
+    name="MultiDevice.BetterTogetherSuite.MultiDeviceFeatureState.MojoClient"
+    enum="MultiDevice_FeatureState" expires_after="2023-04-09">
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Indicates the feature state of the Better Together Suite feature. This
+    metric is emitted to at the creation of the user session (when the user logs
+    in) with a 15-second delay to allow for the mojo client to be ready, and
+    when any multi-device feature state changes, and every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.DeviceSyncService.FindEligibleDevices.Result"
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>Result of trying to find eligible devices.</summary>
+</histogram>
+
+<histogram
+    name="MultiDevice.DeviceSyncService.FindEligibleDevices.Result.FailureReason"
+    enum="MultiDevice_DeviceSyncService_DeviceSyncRequestFailureReason"
+    expires_after="2023-02-01">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Breaks down the percentages of reasons when failure occurs on
+    FindEligibleDevices.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.DeviceSyncService.ForceEnrollmentNow.Result"
+    enum="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult"
+    expires_after="2023-02-01">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>Result for when ForceEnrollmentNow is called.</summary>
+</histogram>
+
+<histogram name="MultiDevice.DeviceSyncService.ForceSyncNow.Result"
+    enum="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult"
+    expires_after="2023-04-02">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>Result for when ForceSyncNow is called.</summary>
+</histogram>
+
+<histogram
+    name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Disable.FailedFeature"
+    enum="MultiDevice_DeviceSyncService_Features" expires_after="2023-02-01">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Breaks down which features failed when attempted to disable.
+  </summary>
+</histogram>
+
+<histogram
+    name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Enable.FailedFeature"
+    enum="MultiDevice_DeviceSyncService_Features" expires_after="2023-02-01">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>Breaks down which features failed when attempted to enable.</summary>
+</histogram>
+
+<histogram name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result"
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>Result of enabling and disabling features for devices.</summary>
+</histogram>
+
+<histogram
+    name="MultiDevice.DeviceSyncService.SetSoftwareFeatureState.Result.FailureReason"
+    enum="MultiDevice_DeviceSyncService_DeviceSyncRequestFailureReason"
+    expires_after="2023-02-01">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Breaks down the percentages of reasons when failure occurs on
+    SetSoftwareFeatureState.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.ForgetHostConfirmed"
+    enum="MultiDevice_VerifyAndForgetHostConfirmationState"
+    expires_after="2023-02-01">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Compares when the Forget Host Button is pressed and when setup completes.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.PostOOBESetupFlow.PageShown"
+    enum="MultiDevice_PostOOBESetupFlow_Page" expires_after="2023-04-09">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides a count of how many times each page of the MultiDevice setup flow
+    was reached. This allows analysis of user dropoff between subsequent pages.
+
+    The formula &quot;Success page&quot; / &quot;Start page&quot; provides the
+    overall &quot;success rate&quot; of the MultiDevice setup flow, at a quick
+    glance.
+
+    The sum of each bucket's count is not meaningful.
+  </summary>
+</histogram>
+
+<histogram
+    name="MultiDevice.SecureChannel.BLE.GattConnectionToAuthentication.EffectiveSuccessRateWithRetries"
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    A histogram measuring the success rate of authenticating a BLE channel once
+    a GATT connection has been established. This metric measures the effective
+    rate; i.e., a failure followed by a successful retry is counted as a
+    success.
+  </summary>
+</histogram>
+
+<histogram
+    name="MultiDevice.SecureChannel.BLE.Performance.ConnectionToAuthenticationDuration.Background"
+    units="ms" expires_after="2023-04-09">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    A time histogram measuring the time from the moment a GATT connection is
+    made to the remote device, to the moment that an authenticated channel is
+    established with the remote device.
+
+    In this context, &quot;background&quot; refers to the BLE advertising scheme
+    under which the remote device is persistently advertising &quot;in the
+    background&quot; at low power.
+  </summary>
+</histogram>
+
+<histogram
+    name="MultiDevice.SecureChannel.BLE.Performance.ReceiveAdvertisementToConnectionDuration.Background"
+    units="ms" expires_after="2023-04-09">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    A time histogram measuring the time from the moment a background
+    advertisement is received, to the moment that a GATT connection is made to
+    the remote device.
+
+    In this context, &quot;background&quot; refers to the BLE advertising scheme
+    under which the remote device is persistently advertising &quot;in the
+    background&quot; at low power.
+  </summary>
+</histogram>
+
+<histogram
+    name="MultiDevice.SecureChannel.BLE.Performance.StartScanToAuthenticationDuration.Background"
+    units="ms" expires_after="2023-04-02">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    A time histogram measuring the time it takes to create a secure connection
+    to a remote device, from the moment a SecureChannelService client asks for a
+    new connection (start scanning), to the moment that an authenticated channel
+    is established with the remote device.
+
+    In this context, &quot;background&quot; refers to the BLE advertising scheme
+    under which the remote device is persistently advertising &quot;in the
+    background&quot; at low power.
+  </summary>
+</histogram>
+
+<histogram
+    name="MultiDevice.SecureChannel.BLE.Performance.StartScanToConnectionDuration.Background"
+    units="ms" expires_after="2023-04-09">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    A time histogram measuring the time it from the moment SecureChannelService
+    starts scanning for a background advertisement, to the moment that it
+    establishes a GATT connection to the remote device.
+
+    In this context, &quot;background&quot; refers to the BLE advertising scheme
+    under which the remote device is persistently advertising &quot;in the
+    background&quot; at low power.
+  </summary>
+</histogram>
+
+<histogram
+    name="MultiDevice.SecureChannel.BLE.Performance.StartScanToReceiveAdvertisementDuration.Background"
+    units="ms" expires_after="2023-04-02">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    A time histogram measuring the time it from the moment SecureChannelService
+    starts scanning for a background advertisement, to the moment that it
+    receives an advertisement from the expected remote device.
+
+    In this context, &quot;background&quot; refers to the BLE advertising scheme
+    under which the remote device is persistently advertising &quot;in the
+    background&quot; at low power.
+  </summary>
+</histogram>
+
+<histogram
+    name="MultiDevice.SecureChannel.BLE.ReceiveAdvertisementToAuthentication.EffectiveSuccessRateWithRetries"
+    enum="BooleanSuccess" expires_after="2023-04-02">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    A histogram measuring the success rate of authenticating a BLE channel once
+    an advertisement has been received. This metric measures the effective rate;
+    i.e., a failure followed by a successful retry is counted as a success.
+  </summary>
+</histogram>
+
+<histogram
+    name="MultiDevice.SecureChannel.BLE.ReceiveAdvertisementToGattConnection.EffectiveSuccessRateWithRetries"
+    enum="BooleanSuccess" expires_after="2023-04-09">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    A histogram measuring the success rate of creating a GATT connection once an
+    advertisement has been received. This metric measures the effective rate;
+    i.e., a failure followed by a successful retry is counted as a success.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.SecureChannel.Nearby.ConnectionMedium"
+    enum="SecureChannelNearbyConnectionMedium" expires_after="2023-04-02">
+  <owner>hansenmichael@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the connection medium used by Nearby Connections requested by
+    SecureChannel. These connections are always initiated using Bluetooth, then
+    can upgrade to WebRTC if both the Chrome OS device and the phone are online.
+
+    One value is emitted when a connection is initially established, and another
+    value is emitted when a bandwidth upgrade occurs.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.SecureChannel.Nearby.ConnectionResult"
+    enum="MultiDeviceNearbyConnectionsInitiatorResult"
+    expires_after="2023-04-02">
+  <owner>hansenmichael@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Emits the result of attempting to establish a connection when the Nearby
+    Connections library finishes trying to connect. This measures the success
+    rate of establishing a connection via the Nearby Connections library.
+    Because a Nearby Connection is only attempted upon receiving the phone's
+    advertisement, this metric is only emitted if the phone was discovered.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.SecureChannel.Nearby.DisconnectionReason"
+    enum="MultiDeviceNearbyDisconnectionReason" expires_after="2023-04-09">
+  <owner>hansenmichael@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Tracks reasons why a Nearby Connection established via SecureChannel ends up
+    disconnecting. Includes a &quot;Disconnection requested by client&quot;
+    value emitted during intentional disconnections as well as several error
+    enum values.
+
+    Emitted when a connection fails to become established, or emitted after it
+    is already established when it becomes disconnected.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.SecureChannel.Nearby.EffectiveConnectionResult"
+    enum="BooleanSuccess" expires_after="2023-04-02">
+  <owner>hansenmichael@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the effective success rate for Nearby Connections attempts via
+    SecureChannel. In this context, &quot;effective&quot; means that (1) a
+    failure followed by a successful retry is counted as a success, and (2)
+    repeated failures (e.g., due to users stuck in an unrecoverable state due to
+    Bluetooth issues) are only counted as a single failure.
+
+    Emitted upon each successful connection and one minute after a failed
+    connection with no subsequent successful retries.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.SecureChannel.Nearby.FileAction"
+    enum="MultiDeviceNearbyFileAction" expires_after="2023-04-09">
+  <owner>jasonsun@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the reception of SecureChannel file payload transfers via the
+    Nearby Connections library. Emitted when the Nearby Connections library
+    receives an incoming file transfer.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.SecureChannel.Nearby.FileTransferResult"
+    enum="MultiDeviceNearbyFileTransferResult" expires_after="2023-04-09">
+  <owner>jasonsun@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the completion of SecureChannel file payload transfers via the
+    Nearby Connections library. Emitted when a file tranfer has been completed
+    successfully, with failure, or canceled.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.SecureChannel.Nearby.MessageAction"
+    enum="MultiDeviceNearbyMessageAction" expires_after="2023-04-02">
+  <owner>hansenmichael@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the completion of SecureChannel messages transfers via the Nearby
+    Connections library. Emitted when the Nearby Connections library either
+    sends or receives a message.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.SecureChannel.Nearby.OperationResult.{Function}"
+    enum="NearbyConnectionsStatus" expires_after="2023-01-01">
+  <owner>hansenmichael@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records the result of invoking Nearby Connection's {Function} API function
+    within SecureChannel.
+
+    Emitted when the API call returns.
+  </summary>
+  <token key="Function">
+    <variant name="AcceptConnection"/>
+    <variant name="DisconnectFromEndpoint"/>
+    <variant name="InjectEndpoint"/>
+    <variant name="RegisterPayloadFiles"/>
+    <variant name="RequestConnection"/>
+    <variant name="SendPayload"/>
+    <variant name="StartDiscovery"/>
+    <variant name="StopDiscovery"/>
+  </token>
+</histogram>
+
+<histogram name="MultiDevice.SecureChannel.Nearby.SendMessageResult"
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the success rate of sending a SecureChannel message via the Nearby
+    Connections library. Emitted when the Nearby Connections library sends a
+    message.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.SecureChannel.Nearby.WebRtcUpgradeDuration"
+    units="ms" expires_after="2023-04-09">
+  <owner>hansenmichael@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Measures the amount of time taken between when a connection is accepted over
+    Bluetooth and when the connection upgrades bandwidth to WebRTC. Emitted
+    after this upgrade occurs.
+
+    Note that this histogram is not emitted if an upgrade to WebRTC never occurs
+    during.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.Setup.HasDuplicateEligibleHostDeviceNames"
+    enum="BooleanDuplicate" expires_after="2023-04-09">
+  <owner>hansenmichael@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records whether or not the list of eligible host phones has duplicate
+    devices names. This list is shown to users during multi-device setup, and
+    duplicate device names can cause confusion. Metric emitted when the user
+    starts multi-device setup.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.Setup.HostStatus"
+    enum="MultiDevice_Setup_HostStatus" expires_after="2023-04-02">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Breaks down percentages of host statuses. This metric is emitted to at the
+    creation of the user session (when the user logs in), when host status
+    updates occur, and every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.Setup.HostVerifier.DoesHostHaveCryptoData"
+    enum="Boolean" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Records if a multi-device host device has all of the crypto data necessary
+    for secure communication via Bluetooth. This will be false if v2 DeviceSync
+    data is not yet decrypted, for instance. Emitted when checking if a host is
+    verified. This occurs only if there is an existing host, and the check
+    occurs during start-up, when the host changes, or when new devices are
+    synced from CryptAuth.
+  </summary>
+</histogram>
+
+<histogram name="MultiDevice.VerifyButtonClicked"
+    enum="MultiDevice_VerifyAndForgetHostConfirmationState"
+    expires_after="2023-04-09">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Compares when the Verify Host Button is pressed to when setup completes.
+  </summary>
+</histogram>
+
+<histogram name="MultiDeviceSetup.OOBE.UserChoice"
+    enum="MultiDeviceSetupOOBEUserChoice" expires_after="2023-04-09">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <owner>hsuregan@chromium.org</owner>
+  <summary>
+    Breaks down the percentage of users who either accepted or declined
+    MultiDevice OOBE setup.
+  </summary>
+</histogram>
+
+<histogram name="MultiDeviceSetup_NotificationClicked"
+    enum="MultiDeviceSetupNotification" expires_after="2023-02-01">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Counts the number of each MultiDevice setup notification clicked by a user.
+    This metric should be compared with MultiDeviceSetup_NotificationShown.
+  </summary>
+</histogram>
+
+<histogram name="MultiDeviceSetup_NotificationDismissed"
+    enum="MultiDeviceSetupNotification" expires_after="2023-02-01">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Counts the number of each MultiDevice setup notification dismissed by a
+    user. This metric should be compared with
+    MultiDeviceSetup_NotificationShown.
+  </summary>
+</histogram>
+
+<histogram name="MultiDeviceSetup_NotificationShown"
+    enum="MultiDeviceSetupNotification" expires_after="2023-02-01">
+  <owner>danlee@google.com</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Counts the number of each MultiDevice setup notification shown to a user.
+  </summary>
+</histogram>
+
+<histogram name="ProximityAuth.BleWeaveConnectionResult"
+    enum="ProximityAuth_BleWeaveConnectionResult" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides a breakdown of how often each BLE Weave connection result occurs.
+    Emitted to when a Weave connection attempt finishes.
+  </summary>
+</histogram>
+
+<histogram name="ProximityAuth.BluetoothGattConnectionResult"
+    enum="ProximityAuth_BluetoothGattConnectionResult"
+    expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides a breakdown of how many times each possible Bluetooth GATT
+    connection result occurs. Emitted to when a GATT connection attempt
+    finishes.
+
+    The bucket &quot;Unknown result&quot; indicates that the Bluetooth platform
+    returned an unknown error code; if it has any counts, the client code should
+    be changed to account for the new error code.
+  </summary>
+</histogram>
+
+<histogram name="ProximityAuth.BluetoothGattNotifySessionResult"
+    enum="ProximityAuth_BluetoothGattServiceOperationResult"
+    expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides a breakdown of how many times each possible Bluetooth GATT
+    &quot;notify session&quot; attempt result occurs. Emitted to when a
+    &quot;notify session&quot; attempt attempt finishes.
+
+    The bucket &quot;Unknown result&quot; indicates that the Bluetooth platform
+    returned an unknown error code; if it has any counts, the client code should
+    be changed to account for the new error code.
+  </summary>
+</histogram>
+
+<histogram name="ProximityAuth.BluetoothGattWriteCharacteristicResult"
+    enum="ProximityAuth_BluetoothGattServiceOperationResult"
+    expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Provides a breakdown of how many times each possible Bluetooth GATT
+    &quot;write characteristic&quot; attempt result occurs. Emitted to when a
+    &quot;write characteristic&quot; attempt attempt finishes.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.AuthMethodChoice.SignIn"
+    enum="SmartLockAuthMethodChoice" expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>Records the user's sign in method choice.</summary>
+</histogram>
+
+<histogram name="SmartLock.AuthMethodChoice.SignIn.PasswordState"
+    enum="SmartLockAuthEventPasswordState" expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The state Smart Lock was in when the user chose to use their password to
+    sign into their device.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.AuthMethodChoice.Unlock"
+    enum="SmartLockAuthMethodChoice" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>Records the user's unlock method choice.</summary>
+</histogram>
+
+<histogram name="SmartLock.AuthMethodChoice.Unlock.PasswordState"
+    enum="SmartLockAuthEventPasswordState" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    An enumerated histogram that breaks down what state Smart Lock was in when
+    the user chose to use their password to unlock their device.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.AuthResult" enum="BooleanSuccess"
+    expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Count of successful and failed attempts to unlock or sign in the Chromebook,
+    after the user selects their profile photo.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.AuthResult.SignIn" enum="BooleanSuccess"
+    expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Count of successful and failed attempts to sign in the Chromebook, after the
+    user selects their profile photo.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.AuthResult.SignIn.Failure"
+    enum="SmartLockAuthResultFailureReason" expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Shows why a sign in attempt failed during the authentication phase. Breaks
+    down the failure bucket of SmartLock.AuthResult.SignIn.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.AuthResult.SignIn.Failure.UserControllerAuth"
+    enum="LoginFailureReason" expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    An enumerated histogram that breaks down why the UserController could not
+    decrypt the account.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.AuthResult.Unlock" enum="BooleanSuccess"
+    expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Count of successful and failed attempts to unlock the Chromebook, after the
+    user selects their profile photo.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.AuthResult.Unlock.Failure"
+    enum="SmartLockAuthResultFailureReason" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Shows why an unlock attempt failed during the authentication phase. Breaks
+    down the failure bucket of SmartLock.AuthResult.Unlock.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.EnabledDevicesCount" units="devices"
+    expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    A count of the number of SmartLock devices which the user has enabled to
+    unlock the user's Chromebook, i.e., the device connected to in the SmartLock
+    setup flow. Logged each time the list of eligible devices is updated.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.EnabledState" enum="SmartLockEnabledState"
+    expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The state of the SmartLock feature for the current user, set at login. The
+    value is 'enabled' if the user has successfully enabled SmartLock via setup,
+    disabled if the user has explicitly disabled the feature after it has been
+    enabled, and unset if the feature is passively disabled, i.e., has never
+    been enabled by the user.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.FindAndConnectToHostResult.SignIn"
+    enum="SmartLockFindAndConnectToHostResult" expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The resolution of Smart Lock trying to find the host device during the
+    initial scan window at the signin screen.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.FindAndConnectToHostResult.Unlock"
+    enum="SmartLockFindAndConnectToHostResult" expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The resolution of Smart Lock trying to find the host device during the
+    initial scan window at the lock screen.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.FirstStatusToUser" enum="FirstSmartLockStatus"
+    expires_after="2023-04-09">
+  <owner>cclem@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    The first status visible to the user. Emitted on the lock screen, only for
+    users with Smart Lock enabled, when the first non-trivial Smart Lock state
+    is detected by the Chromebook.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.GetRemoteStatus.SignIn" enum="BooleanSuccess"
+    expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Count of successful and failed attempts to get the 'remote status' of the
+    host device, i.e., determine if the Chromebook can be signed into.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.GetRemoteStatus.SignIn.Failure"
+    enum="SmartLockGetRemoteStatusResultFailureReason"
+    expires_after="2023-02-01">
+  <obsolete>
+    Sign in with Smart Lock deprecated.
+  </obsolete>
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Shows why a sign in attempt failed during the connection phase. Breaks down
+    the failure bucket of SmartLock.ConnectionResult.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.GetRemoteStatus.Unlock" enum="BooleanSuccess"
+    expires_after="2023-04-02">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Count of successful and failed attempts to get the 'remote status' of the
+    host device, i.e., determine if the Chromebook can be unlocked.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.GetRemoteStatus.Unlock.Failure"
+    enum="SmartLockGetRemoteStatusResultFailureReason"
+    expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Shows why an unlock attempt failed during the connection phase. Breaks down
+    the failure bucket of SmartLock.ConnectionResult.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.MultiDeviceFeatureState"
+    enum="MultiDevice_FeatureState" expires_after="2023-04-09">
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates the feature state of the SmartLock feature. This metric is emitted
+    to at the creation of the user session (when the user logs in), when any
+    multi-device feature state changes, and every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram
+    name="SmartLock.Performance.AuthenticationToReceiveFirstRemoteStatusDuration.Unlock"
+    units="ms" expires_after="2023-02-01">
+<!-- Name completed by histogram_suffixes name="SmartLockStatusTypes" -->
+
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time between when Smart Lock successfully establishes a
+    secure channel connection to the host device, and receives the initial
+    remote status from it -- this informs if the device can be unlocked on the
+    first remote status (i.e., if the Smart Lock icon is yellow or green).
+
+    Suffixed by the type of remote status which was the first to be received.
+    View the base histogram to see results for all remote status types
+    aggregated together, and suffixed histograms for the results of just that
+    particular remote status type.
+
+    See SmartLock.GetRemoteStatus.Unlock for the success rate of fetching the
+    remote status from the host.
+  </summary>
+</histogram>
+
+<histogram
+    name="SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration.Unlock"
+    units="ms" expires_after="2023-04-02">
+<!-- Name completed by histogram_suffixes name="SmartLockStatusTypes" -->
+
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time between when the user locks their screen or wakes their
+    device (either opening a clamshell device or waking up a tablet), and when
+    the user is first provided a visible indication of Smart Lock's status after
+    Smart Lock has communicated with the phone.
+
+    Suffixed by the type of status which the user is first presented with. View
+    the base histogram to see results for all status types aggregated together,
+    and suffixed histograms for the results of just that particular remote
+    status type.
+
+    See SmartLock.GetRemoteStatus.Unlock for the success rate of fetching the
+    remote status from the host.
+  </summary>
+</histogram>
+
+<histogram
+    name="SmartLock.Performance.StartScanToReceiveFirstRemoteStatusDuration.Unlock"
+    units="ms" expires_after="2023-04-02">
+<!-- Name completed by histogram_suffixes name="SmartLockStatusTypes" -->
+
+  <owner>hansberry@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    The duration of time between when Smart Lock begins to try to find the host
+    device, and receives the initial remote status from it -- this informs if
+    the device can be unlocked on the first remote status (i.e., if the Smart
+    Lock icon is yellow or green).
+
+    Suffixed by the type of remote status which was the first to be received.
+    View the base histogram to see results for all remote status types
+    aggregated together, and suffixed histograms for the results of just that
+    particular remote status type.
+
+    See
+    MultiDevice.SecureChannel.BLE.Performance.StartScanToAuthenticationDuration.Background
+    and
+    SmartLock.Performance.AuthenticationToReceiveFirstRemoteStatus.Unlock.Duration
+    for breakdowns of this metric.
+
+    See SmartLock.GetRemoteStatus.Unlock for the success rate of fetching the
+    remote status from the host.
+  </summary>
+</histogram>
+
+<histogram name="SmartLock.Toggle" enum="SmartLockToggle"
+    expires_after="2023-04-09">
+  <owner>cclem@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Emitted whenever Smart Lock is enabled/disabled in Settings using any of the
+    three toggles. Indicates which toggle was used and whether Smart Lock was
+    enabled or disabled.
+  </summary>
+</histogram>
+
+<histogram name="WifiSync.MultiDeviceFeatureState"
+    enum="MultiDevice_FeatureState" expires_after="2023-04-09">
+  <owner>jonmann@chromium.org</owner>
+  <owner>better-together-dev@google.com</owner>
+  <summary>
+    Indicates the feature state of the Wifi Sync V2 feature. This metric is
+    emitted to at the creation of the user session (when the user logs in), when
+    any multi-device feature state changes, and every 30 minutes.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

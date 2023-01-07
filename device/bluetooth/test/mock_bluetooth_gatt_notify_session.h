@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "device/bluetooth/bluetooth_gatt_notify_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,6 +23,12 @@ class MockBluetoothGattNotifySession : public BluetoothGattNotifySession {
  public:
   explicit MockBluetoothGattNotifySession(
       base::WeakPtr<BluetoothRemoteGattCharacteristic> characteristic);
+
+  MockBluetoothGattNotifySession(const MockBluetoothGattNotifySession&) =
+      delete;
+  MockBluetoothGattNotifySession& operator=(
+      const MockBluetoothGattNotifySession&) = delete;
+
   ~MockBluetoothGattNotifySession() override;
 
   MOCK_METHOD0(IsActive, bool());
@@ -46,8 +51,6 @@ class MockBluetoothGattNotifySession : public BluetoothGattNotifySession {
                 const std::vector<uint8_t>& value);
 
   base::RepeatingTimer test_notifications_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBluetoothGattNotifySession);
 };
 
 }  // namespace device

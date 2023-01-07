@@ -1,8 +1,8 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("cpp") {
+component("cpp") {
   sources = [
     "audio_system_to_service_adapter.cc",
     "audio_system_to_service_adapter.h",
@@ -20,17 +20,20 @@ source_set("cpp") {
     "sounds/audio_stream_handler.h",
     "sounds/sounds_manager.cc",
     "sounds/sounds_manager.h",
-    "sounds/test_data.cc",
-    "sounds/test_data.h",
   ]
+
+  defines = [ "IS_AUDIO_PUBLIC_CPP_IMPL" ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
     "//base",
     "//media",
+    "//media/mojo/common",
     "//services/audio/public/mojom",
   ]
+
+  output_name = "audio_public_cpp"
 }
 
 source_set("test_support") {
@@ -41,11 +44,14 @@ source_set("test_support") {
     "fake_stream_factory.h",
     "fake_system_info.cc",
     "fake_system_info.h",
+    "sounds/test_data.cc",
+    "sounds/test_data.h",
   ]
 
   deps = [ "//testing/gmock" ]
 
   public_deps = [
+    ":cpp",
     "//base",
     "//media",
     "//services/audio",

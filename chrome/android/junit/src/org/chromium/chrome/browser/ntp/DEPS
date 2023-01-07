@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/segmentation_platform/public/android/java/src/org/chromium/components/segmentation_platform/SegmentSelectionResult.java",
+  "+components/segmentation_platform/public/android/java/src/org/chromium/components/segmentation_platform/SegmentationPlatformService.java",
+]

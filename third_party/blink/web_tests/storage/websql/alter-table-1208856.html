@@ -1,0 +1,28 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>WebSQL: ALTER TABLE breakage in bug 1208856</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+async_test(testCase => {
+  const database = openDatabase(
+      'AlterTableTest', '1.0', 'Database for ALTER TABLE test',
+      1024 * 1024);
+  assert_not_equals(database, null, 'openDatabase should not fail');
+
+  database.transaction(testCase.step_func(transaction => {
+    transaction.executeSql(
+        'DROP TABLE IF EXISTS main;', [], () => {},
+        testCase.unreached_func('DROP TABLE should not fail'));
+    transaction.executeSql(
+        'CREATE TABLE main(id INTEGER PRIMARY KEY);', [], () => {},
+        testCase.unreached_func('CREATE TABLE should not fail'));
+    transaction.executeSql(
+        'ALTER TABLE main ADD name TEXT;', [],
+        testCase.step_func_done(() => {}),
+        testCase.unreached_func('ALTER TABLE should not fail'));
+  }));
+}, `ALTER TABLE should not fail`);
+</script>

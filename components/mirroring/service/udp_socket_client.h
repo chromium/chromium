@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -30,6 +31,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) UdpSocketClient final
                   network::mojom::NetworkContext* context,
                   base::OnceClosure error_callback);
 
+  UdpSocketClient(const UdpSocketClient&) = delete;
+  UdpSocketClient& operator=(const UdpSocketClient&) = delete;
+
   ~UdpSocketClient() override;
 
   // media::cast::PacketTransport implementations.
@@ -41,8 +45,8 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) UdpSocketClient final
 
   // network::mojom::UDPSocketListener implementation.
   void OnReceived(int32_t result,
-                  const base::Optional<net::IPEndPoint>& src_addr,
-                  base::Optional<base::span<const uint8_t>> data) override;
+                  const absl::optional<net::IPEndPoint>& src_addr,
+                  absl::optional<base::span<const uint8_t>> data) override;
 
  private:
   // The callback of network::mojom::UDPSocket::Send(). Further sending is
@@ -53,10 +57,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) UdpSocketClient final
   // allowed to send after the socket is successfully connected to the
   // |remote_endpoint_|.
   void OnSocketConnected(int result,
-                         const base::Optional<net::IPEndPoint>& addr);
+                         const absl::optional<net::IPEndPoint>& addr);
 
   const net::IPEndPoint remote_endpoint_;
-  network::mojom::NetworkContext* const network_context_;
+  const raw_ptr<network::mojom::NetworkContext> network_context_;
   base::OnceClosure error_callback_;
 
   mojo::Receiver<network::mojom::UDPSocketListener> receiver_{this};
@@ -83,8 +87,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) UdpSocketClient final
   int num_packets_pending_receive_;
 
   base::WeakPtrFactory<UdpSocketClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UdpSocketClient);
 };
 
 }  // namespace mirroring

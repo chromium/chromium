@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@
 #include <memory>
 #include <vector>
 
-#include "ash/search_box/search_box_view_delegate.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace aura {
@@ -24,16 +22,21 @@ class TabbedPane;
 class Widget;
 }  // namespace views
 
+namespace ash {
+enum class ShortcutCategory;
+}  // namespace ash
+
 namespace keyboard_shortcut_viewer {
 
 class KeyboardShortcutItemView;
 class KSVSearchBoxView;
-enum class ShortcutCategory;
 
 // The UI container for Ash and Chrome keyboard shortcuts.
-class KeyboardShortcutView : public views::WidgetDelegateView,
-                             public ash::SearchBoxViewDelegate {
+class KeyboardShortcutView : public views::WidgetDelegateView {
  public:
+  KeyboardShortcutView(const KeyboardShortcutView&) = delete;
+  KeyboardShortcutView& operator=(const KeyboardShortcutView&) = delete;
+
   ~KeyboardShortcutView() override;
 
   // Toggle the Keyboard Shortcut Viewer window.
@@ -45,19 +48,15 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
 
   // views::View:
   const char* GetClassName() const override;
-  ax::mojom::Role GetAccessibleWindowRole() override;
   std::u16string GetAccessibleWindowTitle() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
   void Layout() override;
   gfx::Size CalculatePreferredSize() const override;
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
-  // SearchBoxViewDelegate:
-  void QueryChanged(ash::SearchBoxViewBase* sender) override;
-  void AssistantButtonPressed() override {}
-  void BackButtonPressed() override;
-  void ActiveChanged(ash::SearchBoxViewBase* sender) override;
-  void SearchBoxFocusChanged(ash::SearchBoxViewBase* sender) override {}
+  // Handles search box query changes.
+  void QueryChanged(const std::u16string& query);
 
  private:
   friend class KeyboardShortcutViewTest;
@@ -71,10 +70,10 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   // If |initial_category| has value, we will initialize the specified category,
   // otherwise all the categories will be intialized.
   void InitCategoriesTabbedPane(
-      base::Optional<ShortcutCategory> initial_category);
+      absl::optional<ash::ShortcutCategory> initial_category);
 
   // Update views' layout based on search box status.
-  void UpdateViewsLayout(bool is_search_box_active);
+  void UpdateViewsLayout();
 
   // Show search results in |search_results_container_|.
   void ShowSearchResults(const std::u16string& search_query);
@@ -90,15 +89,18 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   const std::vector<KeyboardShortcutItemView*>&
   GetFoundShortcutItemsForTesting() const;
 
+  // Determine correct color based on dark mode flag and preference.
+  void UpdateBackgroundColor();
+  void UpdateActiveAndInactiveFrameColor();
+
   // Owned by views hierarchy.
   // The container for category tabs and lists of KeyboardShortcutItemViews.
   views::TabbedPane* categories_tabbed_pane_ = nullptr;
   // The container for KeyboardShortcutItemViews matching a user's query.
   views::View* search_results_container_ = nullptr;
 
-  // SearchBoxViewBase is a WidgetDelegateView, which owns itself and cannot be
-  // deleted from the views hierarchy automatically.
-  std::unique_ptr<KSVSearchBoxView> search_box_view_;
+  // Owned by views hierarchy.
+  KSVSearchBoxView* search_box_view_ = nullptr;
 
   // Contains all the shortcut item views from all categories. This list is also
   // used for searching. The views are not owned by the Views hierarchy to avoid
@@ -131,8 +133,6 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   bool did_first_paint_ = false;
 
   base::WeakPtrFactory<KeyboardShortcutView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardShortcutView);
 };
 
 }  // namespace keyboard_shortcut_viewer

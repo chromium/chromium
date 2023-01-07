@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,30 @@
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
 
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/hit_test.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/shell_surface_wrapper.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_seat.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/host/zxdg_surface_v6_wrapper_impl.h"
 
 namespace ui {
+
+namespace {
+
+absl::optional<wl::Serial> GetSerialForMoveResize(
+    WaylandConnection* connection) {
+  return connection->serial_tracker().GetSerial({wl::SerialType::kTouchPress,
+                                                 wl::SerialType::kMousePress,
+                                                 wl::SerialType::kKeyPress});
+}
+
+}  // namespace
 
 ZXDGToplevelV6WrapperImpl::ZXDGToplevelV6WrapperImpl(
     std::unique_ptr<ZXDGSurfaceV6WrapperImpl> surface,
@@ -34,9 +49,9 @@ bool ZXDGToplevelV6WrapperImpl::Initialize() {
     return false;
   }
 
-  static const zxdg_toplevel_v6_listener zxdg_toplevel_v6_listener = {
-      &ZXDGToplevelV6WrapperImpl::ConfigureTopLevel,
-      &ZXDGToplevelV6WrapperImpl::CloseTopLevel,
+  static constexpr zxdg_toplevel_v6_listener zxdg_toplevel_v6_listener = {
+      &ConfigureTopLevel,
+      &CloseTopLevel,
   };
 
   if (!zxdg_surface_v6_wrapper_)
@@ -48,11 +63,11 @@ bool ZXDGToplevelV6WrapperImpl::Initialize() {
     LOG(ERROR) << "Failed to create zxdg_toplevel";
     return false;
   }
+  connection_->wayland_window_manager()->NotifyWindowRoleAssigned(
+      wayland_window_);
   zxdg_toplevel_v6_add_listener(zxdg_toplevel_v6_.get(),
                                 &zxdg_toplevel_v6_listener, this);
 
-  wayland_window_->root_surface()->Commit();
-  connection_->ScheduleFlush();
   return true;
 }
 
@@ -83,16 +98,24 @@ void ZXDGToplevelV6WrapperImpl::SetMinimized() {
 
 void ZXDGToplevelV6WrapperImpl::SurfaceMove(WaylandConnection* connection) {
   DCHECK(zxdg_toplevel_v6_);
-  zxdg_toplevel_v6_move(zxdg_toplevel_v6_.get(), connection->seat(),
-                        connection->serial());
+  DCHECK(connection_->seat());
+
+  if (auto serial = GetSerialForMoveResize(connection)) {
+    zxdg_toplevel_v6_move(zxdg_toplevel_v6_.get(),
+                          connection->seat()->wl_object(), serial->value);
+  }
 }
 
 void ZXDGToplevelV6WrapperImpl::SurfaceResize(WaylandConnection* connection,
                                               uint32_t hittest) {
   DCHECK(zxdg_toplevel_v6_);
-  zxdg_toplevel_v6_resize(zxdg_toplevel_v6_.get(), connection->seat(),
-                          connection->serial(),
-                          wl::IdentifyDirection(*connection, hittest));
+  DCHECK(connection_->seat());
+
+  if (auto serial = GetSerialForMoveResize(connection)) {
+    zxdg_toplevel_v6_resize(zxdg_toplevel_v6_.get(),
+                            connection->seat()->wl_object(), serial->value,
+                            wl::IdentifyDirection(*connection, hittest));
+  }
 }
 
 void ZXDGToplevelV6WrapperImpl::SetTitle(const std::u16string& title) {
@@ -127,6 +150,11 @@ void ZXDGToplevelV6WrapperImpl::AckConfigure(uint32_t serial) {
   zxdg_surface_v6_wrapper_->AckConfigure(serial);
 }
 
+bool ZXDGToplevelV6WrapperImpl::IsConfigured() {
+  DCHECK(zxdg_surface_v6_wrapper_);
+  return zxdg_surface_v6_wrapper_->IsConfigured();
+}
+
 // static
 void ZXDGToplevelV6WrapperImpl::ConfigureTopLevel(
     void* data,
@@ -137,15 +165,16 @@ void ZXDGToplevelV6WrapperImpl::ConfigureTopLevel(
   auto* surface = static_cast<ZXDGToplevelV6WrapperImpl*>(data);
   DCHECK(surface);
 
-  bool is_maximized =
-      CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_MAXIMIZED);
-  bool is_fullscreen =
-      CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_FULLSCREEN);
-  bool is_activated =
-      CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_ACTIVATED);
-
   surface->wayland_window_->HandleToplevelConfigure(
-      width, height, is_maximized, is_fullscreen, is_activated);
+      width, height,
+      {
+          .is_maximized =
+              CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_MAXIMIZED),
+          .is_fullscreen =
+              CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_FULLSCREEN),
+          .is_activated =
+              CheckIfWlArrayHasValue(states, ZXDG_TOPLEVEL_V6_STATE_ACTIVATED),
+      });
 }
 
 // static
@@ -162,5 +191,40 @@ ZXDGSurfaceV6WrapperImpl* ZXDGToplevelV6WrapperImpl::zxdg_surface_v6_wrapper()
   DCHECK(zxdg_surface_v6_wrapper_.get());
   return zxdg_surface_v6_wrapper_.get();
 }
+
+void ZXDGToplevelV6WrapperImpl::Lock(WaylandOrientationLockType lock_type) {}
+
+void ZXDGToplevelV6WrapperImpl::Unlock() {}
+
+void ZXDGToplevelV6WrapperImpl::RequestWindowBounds(const gfx::Rect& bounds) {
+  NOTREACHED();
+}
+
+void ZXDGToplevelV6WrapperImpl::SetRestoreInfo(int32_t, int32_t) {}
+
+void ZXDGToplevelV6WrapperImpl::SetRestoreInfoWithWindowIdSource(
+    int32_t,
+    const std::string&) {}
+
+void ZXDGToplevelV6WrapperImpl::SetSystemModal(bool modal) {
+  NOTREACHED();
+}
+
+bool ZXDGToplevelV6WrapperImpl::SupportsScreenCoordinates() const {
+  return false;
+}
+
+void ZXDGToplevelV6WrapperImpl::EnableScreenCoordinates() {}
+
+void ZXDGToplevelV6WrapperImpl::SetFloat() {}
+
+void ZXDGToplevelV6WrapperImpl::UnSetFloat() {}
+
+void ZXDGToplevelV6WrapperImpl::SetZOrder(ZOrderLevel z_order) {}
+bool ZXDGToplevelV6WrapperImpl::SupportsActivation() {
+  return false;
+}
+void ZXDGToplevelV6WrapperImpl::Activate() {}
+void ZXDGToplevelV6WrapperImpl::Deactivate() {}
 
 }  // namespace ui

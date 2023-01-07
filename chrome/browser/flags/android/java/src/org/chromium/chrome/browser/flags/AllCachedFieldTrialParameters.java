@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,8 +43,7 @@ public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
 
     public AllCachedFieldTrialParameters(String featureName) {
         // As this includes all parameters, the parameterName is empty.
-        super(featureName, /* parameterName */ "", FieldTrialParameterType.ALL,
-                /* preferenceKeyOverride */ null);
+        super(featureName, /* parameterName */ "", FieldTrialParameterType.ALL);
     }
 
     /**

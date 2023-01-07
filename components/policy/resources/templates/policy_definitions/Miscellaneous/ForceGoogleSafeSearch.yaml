@@ -1,0 +1,29 @@
+caption: Force Google SafeSearch
+desc: |-
+  Setting the policy to Enabled means SafeSearch in Google Search is always active, and users can't change this setting.
+
+        Setting the policy to Disabled or leaving it unset means SafeSearch in Google Search is not enforced.
+example_value: false
+features:
+  can_be_recommended: false
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Force the use of SafeSearch in Google Search
+  value: true
+- caption: Do not enforce the use of SafeSearch in Google Search
+  value: false
+owners:
+- treib@chromium.org
+- igorcov@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:41-
+- chrome_os:41-
+- android:41-
+tags:
+- filtering
+type: main

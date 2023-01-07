@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/tracing/arc_system_model.h"
 
@@ -31,6 +30,10 @@ class ArcTracingModel {
   using TracingEventPtrs = std::vector<const ArcTracingEvent*>;
 
   ArcTracingModel();
+
+  ArcTracingModel(const ArcTracingModel&) = delete;
+  ArcTracingModel& operator=(const ArcTracingModel&) = delete;
+
   ~ArcTracingModel();
 
   // Limits events by the requested interval. All events outside of this
@@ -66,7 +69,7 @@ class ArcTracingModel {
  private:
   // Processes list of events. Returns true in case all events were processed
   // successfully.
-  bool ProcessEvent(base::ListValue* events);
+  bool ProcessEvent(base::Value::List* events);
 
   // Converts sys traces events to the |base::Dictionary| based format used in
   // Chrome.
@@ -88,8 +91,6 @@ class ArcTracingModel {
 
   uint64_t min_timestamp_ = 0;
   uint64_t max_timestamp_ = std::numeric_limits<uint64_t>::max();
-
-  DISALLOW_COPY_AND_ASSIGN(ArcTracingModel);
 };
 
 }  // namespace arc

@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,6 +16,7 @@ blink_core_sources_accessibility = [
 ]
 
 blink_core_tests_accessibility = [
+  "ax_context_test.cc",
   "blink_ax_event_intent_test.cc",
   "scoped_blink_ax_event_intent_test.cc",
 ]

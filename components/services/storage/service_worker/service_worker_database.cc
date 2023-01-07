@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,14 @@
 #include "base/strings/stringprintf.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/service_worker/service_worker_database.pb.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom-shared.h"
+#include "services/network/public/mojom/cross_origin_opener_policy.mojom-shared.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_ancestor_frame_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_database.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -45,15 +53,32 @@
 //   key: "INITDATA_NEXT_VERSION_ID"
 //   value: <int64_t 'next_available_version_id'>
 //
-//   key: "INITDATA_UNIQUE_ORIGIN:" + <GURL 'origin'>
+//   Note: This has changed from `GURL origin` to StorageKey but the name will
+//   be updated in the future to avoid a migration.
+//   TODO(crbug.com/1199077): Update name during a migration to Version 3.
+//   key: "INITDATA_UNIQUE_ORIGIN:" + <StorageKey 'key'.origin> + "/" + [ "^0" +
+//   <StorageKey `key`.top_level_site> ]
+//   - or -
+//   key: "INITDATA_UNIQUE_ORIGIN:" + <StorageKey 'key'.origin> + "/" + "^1" +
+//   <StorageKey 'nonce'.High64Bits> + "^2" + <StorageKey 'nonce'.Low64Bits>
 //   value: <empty>
 //
 //   key: "PRES:" + <int64_t 'purgeable_resource_id'>
 //   value: <empty>
 //
-//   key: "REG:" + <GURL 'origin'> + '\x00' + <int64_t 'registration_id'>
-//     (ex. "REG:http://example.com\x00123456")
-//   value: <ServiceWorkerRegistrationData serialized as a string>
+//   Note: This has changed from `GURL origin` to StorageKey but the name will
+//   be updated in the future to avoid a migration.
+//   TODO(crbug.com/1199077): Update name during a migration to Version 3.
+//   key: "REG:" + <StorageKey 'key'.origin> + "/" + [ "^0" + <StorageKey
+//   `key`.top_level_site> + "^3" + <StorageKey `key`.ancestor_chain_bit> ] +
+//   '\x00' + <int64_t 'registration_id'>
+//   - or -
+//   key: "REG:" + <StorageKey 'key'.origin> + "/" + "^1" + <StorageKey
+//   'nonce'.High64Bits> + "^2" + <StorageKey 'nonce'.Low64Bits> + '\x00' +
+//   <int64_t 'registration_id'>
+//    (ex. "REG:http://example.com\x00123456")
+//   value: <ServiceWorkerRegistrationData (except for the StorageKey)
+//   serialized as a string>
 //
 //   key: "REG_HAS_USER_DATA:" + <std::string 'user_data_name'> + '\x00'
 //            + <int64_t 'registration_id'>
@@ -73,8 +98,15 @@
 //
 // Version 2
 //
+//   Note: This has changed from `GURL origin` to StorageKey but the name will
+//   be updated in the future to avoid a migration.
+//   TODO(crbug.com/1199077): Update name during a migration to Version 3.
 //   key: "REGID_TO_ORIGIN:" + <int64_t 'registration_id'>
-//   value: <GURL 'origin'>
+//   value: <StorageKey 'key'.origin> + "/" + [ "^0" + <StorageKey
+//   `key`.top_level_site> + "^3" + <StorageKey `key`.ancestor_chain_bit>]
+//   - or -
+//   value: <StorageKey 'key'.origin> + "/" + "^1" + <StorageKey
+//   'nonce'.High64Bits> + "^2" + <StorageKey 'nonce'.Low64Bits>
 //
 //   OBSOLETE: https://crbug.com/539713
 //   key: "INITDATA_DISKCACHE_MIGRATION_NOT_NEEDED"
@@ -91,6 +123,7 @@
 //   OBSOLETE: https://crbug.com/788604
 //   key: "INITDATA_FOREIGN_FETCH_ORIGIN:" + <GURL 'origin'>
 //   value: <empty>
+
 namespace storage {
 
 namespace service_worker_internals {
@@ -144,15 +177,15 @@ bool RemovePrefix(const std::string& str,
   return true;
 }
 
-std::string CreateRegistrationKeyPrefix(const url::Origin& origin) {
+std::string CreateRegistrationKeyPrefix(const blink::StorageKey& key) {
   return base::StringPrintf("%s%s%c", service_worker_internals::kRegKeyPrefix,
-                            origin.GetURL().spec().c_str(),
+                            key.Serialize().c_str(),
                             service_worker_internals::kKeySeparator);
 }
 
 std::string CreateRegistrationKey(int64_t registration_id,
-                                  const url::Origin& origin) {
-  return CreateRegistrationKeyPrefix(origin).append(
+                                  const blink::StorageKey& key) {
+  return CreateRegistrationKeyPrefix(key).append(
       base::NumberToString(registration_id));
 }
 
@@ -167,9 +200,9 @@ std::string CreateResourceRecordKey(int64_t version_id, int64_t resource_id) {
       .append(base::NumberToString(resource_id));
 }
 
-std::string CreateUniqueOriginKey(const GURL& origin) {
+std::string CreateUniqueOriginKey(const blink::StorageKey& key) {
   return base::StringPrintf("%s%s", service_worker_internals::kUniqueOriginKey,
-                            origin.GetOrigin().spec().c_str());
+                            key.Serialize().c_str());
 }
 
 std::string CreateResourceIdKey(const char* key_prefix, int64_t resource_id) {
@@ -201,15 +234,16 @@ std::string CreateHasUserDataKey(int64_t registration_id,
       .append(base::NumberToString(registration_id));
 }
 
-std::string CreateRegistrationIdToOriginKey(int64_t registration_id) {
+std::string CreateRegistrationIdToStorageKey(int64_t registration_id) {
   return base::StringPrintf("%s%s",
                             service_worker_internals::kRegIdToOriginKeyPrefix,
                             base::NumberToString(registration_id).c_str());
 }
 
-void PutUniqueOriginToBatch(const GURL& origin, leveldb::WriteBatch* batch) {
+void PutUniqueOriginToBatch(const blink::StorageKey& key,
+                            leveldb::WriteBatch* batch) {
   // Value should be empty.
-  batch->Put(CreateUniqueOriginKey(origin), "");
+  batch->Put(CreateUniqueOriginKey(key), "");
 }
 
 void PutPurgeableResourceIdToBatch(int64_t resource_id,
@@ -339,10 +373,10 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetNextAvailableIds(
 }
 
 ServiceWorkerDatabase::Status
-ServiceWorkerDatabase::GetOriginsWithRegistrations(
-    std::set<url::Origin>* origins) {
+ServiceWorkerDatabase::GetStorageKeysWithRegistrations(
+    std::set<blink::StorageKey>* keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(origins->empty());
+  DCHECK(keys->empty());
 
   Status status = LazyOpen(false);
   if (IsNewOrNonexistentDatabase(status))
@@ -357,24 +391,27 @@ ServiceWorkerDatabase::GetOriginsWithRegistrations(
          itr->Next()) {
       status = LevelDBStatusToServiceWorkerDBStatus(itr->status());
       if (status != Status::kOk) {
-        origins->clear();
+        keys->clear();
         break;
       }
 
-      std::string origin_str;
+      std::string key_str;
       if (!RemovePrefix(itr->key().ToString(),
-                        service_worker_internals::kUniqueOriginKey,
-                        &origin_str))
+                        service_worker_internals::kUniqueOriginKey, &key_str))
         break;
 
-      GURL origin(origin_str);
-      if (!origin.is_valid()) {
+      if (blink::StorageKey::ShouldSkipKeyDueToPartitioning(key_str))
+        continue;
+
+      absl::optional<blink::StorageKey> key =
+          blink::StorageKey::Deserialize(key_str);
+      if (!key) {
         status = Status::kErrorCorrupted;
-        origins->clear();
+        keys->clear();
         break;
       }
 
-      origins->insert(url::Origin::Create(origin));
+      keys->insert(*key);
     }
   }
 
@@ -382,8 +419,9 @@ ServiceWorkerDatabase::GetOriginsWithRegistrations(
   return status;
 }
 
-ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetRegistrationsForOrigin(
-    const url::Origin& origin,
+ServiceWorkerDatabase::Status
+ServiceWorkerDatabase::GetRegistrationsForStorageKey(
+    const blink::StorageKey& key,
     std::vector<mojom::ServiceWorkerRegistrationDataPtr>* registrations,
     std::vector<std::vector<mojom::ServiceWorkerResourceRecordPtr>>*
         opt_resources_list) {
@@ -396,7 +434,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetRegistrationsForOrigin(
   if (status != Status::kOk)
     return status;
 
-  std::string prefix = CreateRegistrationKeyPrefix(origin);
+  std::string prefix = CreateRegistrationKeyPrefix(key);
 
   // Read all registrations.
   {
@@ -415,7 +453,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetRegistrationsForOrigin(
         break;
 
       mojom::ServiceWorkerRegistrationDataPtr registration;
-      status = ParseRegistrationData(itr->value().ToString(), &registration);
+      status =
+          ParseRegistrationData(itr->value().ToString(), key, &registration);
       if (status != Status::kOk) {
         registrations->clear();
         if (opt_resources_list)
@@ -454,8 +493,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetRegistrationsForOrigin(
   return status;
 }
 
-ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetUsageForOrigin(
-    const url::Origin& origin,
+ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetUsageForStorageKey(
+    const blink::StorageKey& key,
     int64_t& out_usage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -467,7 +506,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetUsageForOrigin(
   if (status != Status::kOk)
     return status;
 
-  std::string prefix = CreateRegistrationKeyPrefix(origin);
+  std::string prefix = CreateRegistrationKeyPrefix(key);
 
   // Read all registrations.
   {
@@ -482,7 +521,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetUsageForOrigin(
         break;
 
       mojom::ServiceWorkerRegistrationDataPtr registration;
-      status = ParseRegistrationData(itr->value().ToString(), &registration);
+      status =
+          ParseRegistrationData(itr->value().ToString(), key, &registration);
       if (status != Status::kOk)
         break;
       out_usage += registration->resources_total_size_bytes;
@@ -528,12 +568,41 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetAllRegistrations(
         break;
       }
 
+      // We need to extract the storage key from the registration key prefix so
+      // that we can pass it into ParseRegistrationData below.
+      //
+      // First remove the prefix and extract the serialized key + separator +
+      // registration ID string. (See ' key: "REG:" ' comment at the top of the
+      // file for more info).
+      std::string prefix_string;
       if (!RemovePrefix(itr->key().ToString(),
-                        service_worker_internals::kRegKeyPrefix, nullptr))
+                        service_worker_internals::kRegKeyPrefix,
+                        &prefix_string))
+        break;
+
+      // Now we need to remove the separator + registration ID from the end of
+      // the string or else the deserialize step will fail.
+      //
+      // Find the where the separator is.
+      size_t separator_pos =
+          prefix_string.find_first_of(service_worker_internals::kKeySeparator);
+      if (separator_pos == std::string::npos)
+        break;
+
+      // Get only the sub-string before the separator.
+      std::string reg_key_string = prefix_string.substr(0, separator_pos);
+
+      if (blink::StorageKey::ShouldSkipKeyDueToPartitioning(reg_key_string))
+        continue;
+
+      absl::optional<blink::StorageKey> key =
+          blink::StorageKey::Deserialize(reg_key_string);
+      if (!key)
         break;
 
       mojom::ServiceWorkerRegistrationDataPtr registration;
-      status = ParseRegistrationData(itr->value().ToString(), &registration);
+      status =
+          ParseRegistrationData(itr->value().ToString(), *key, &registration);
       if (status != Status::kOk) {
         registrations->clear();
         break;
@@ -548,7 +617,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::GetAllRegistrations(
 
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistration(
     int64_t registration_id,
-    const GURL& origin,
+    const blink::StorageKey& key,
     mojom::ServiceWorkerRegistrationDataPtr* registration,
     std::vector<mojom::ServiceWorkerResourceRecordPtr>* resources) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -561,8 +630,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistration(
   if (status != Status::kOk)
     return status;
 
-  status = ReadRegistrationData(registration_id, url::Origin::Create(origin),
-                                registration);
+  status = ReadRegistrationData(registration_id, key, registration);
   if (status != Status::kOk)
     return status;
 
@@ -577,11 +645,11 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistration(
   return Status::kOk;
 }
 
-ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationOrigin(
+ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationStorageKey(
     int64_t registration_id,
-    GURL* origin) {
+    blink::StorageKey* key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(origin);
+  DCHECK(key);
 
   Status status = LazyOpen(true);
   if (IsNewOrNonexistentDatabase(status))
@@ -592,21 +660,26 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationOrigin(
   std::string value;
   status = LevelDBStatusToServiceWorkerDBStatus(
       db_->Get(leveldb::ReadOptions(),
-               CreateRegistrationIdToOriginKey(registration_id), &value));
+               CreateRegistrationIdToStorageKey(registration_id), &value));
   if (status != Status::kOk) {
     HandleReadResult(FROM_HERE,
                      status == Status::kErrorNotFound ? Status::kOk : status);
     return status;
   }
 
-  GURL parsed(value);
-  if (!parsed.is_valid()) {
+  // If storage partitioning is disabled we shouldn't have any handles to
+  // registration IDs associated with partitioned entries.
+  DCHECK(!blink::StorageKey::ShouldSkipKeyDueToPartitioning(value));
+
+  absl::optional<blink::StorageKey> parsed =
+      blink::StorageKey::Deserialize(value);
+  if (!parsed) {
     status = Status::kErrorCorrupted;
     HandleReadResult(FROM_HERE, status);
     return status;
   }
 
-  *origin = parsed;
+  *key = std::move(*parsed);
   HandleReadResult(FROM_HERE, Status::kOk);
   return Status::kOk;
 }
@@ -627,7 +700,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::WriteRegistration(
   BumpNextRegistrationIdIfNeeded(registration.registration_id, &batch);
   BumpNextVersionIdIfNeeded(registration.version_id, &batch);
 
-  PutUniqueOriginToBatch(registration.scope.GetOrigin(), &batch);
+  PutUniqueOriginToBatch(registration.key, &batch);
 
   DCHECK_EQ(AccumulateResourceSizeInBytes(resources),
             registration.resources_total_size_bytes)
@@ -635,8 +708,10 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::WriteRegistration(
       << "sizes of the resources.";
 
   WriteRegistrationDataInBatch(registration, &batch);
-  batch.Put(CreateRegistrationIdToOriginKey(registration.registration_id),
-            registration.scope.GetOrigin().spec());
+  blink::StorageKey key = registration.key;
+
+  batch.Put(CreateRegistrationIdToStorageKey(registration.registration_id),
+            key.Serialize());
 
   // Used for avoiding multiple writes for the same resource id or url.
   std::set<int64_t> pushed_resources;
@@ -663,8 +738,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::WriteRegistration(
 
   // Retrieve a previous version to sweep purgeable resources.
   mojom::ServiceWorkerRegistrationDataPtr old_registration;
-  status = ReadRegistrationData(registration.registration_id,
-                                url::Origin::Create(registration.scope),
+  status = ReadRegistrationData(registration.registration_id, registration.key,
                                 &old_registration);
   if (status != Status::kOk && status != Status::kErrorNotFound)
     return status;
@@ -696,19 +770,18 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::WriteRegistration(
 
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::UpdateVersionToActive(
     int64_t registration_id,
-    const GURL& origin) {
+    const blink::StorageKey& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status status = LazyOpen(false);
   if (IsNewOrNonexistentDatabase(status))
     return Status::kErrorNotFound;
   if (status != Status::kOk)
     return status;
-  if (!origin.is_valid())
+  if (key.origin().opaque())
     return Status::kErrorFailed;
 
   mojom::ServiceWorkerRegistrationDataPtr registration;
-  status = ReadRegistrationData(registration_id, url::Origin::Create(origin),
-                                &registration);
+  status = ReadRegistrationData(registration_id, key, &registration);
   if (status != Status::kOk)
     return status;
 
@@ -721,7 +794,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::UpdateVersionToActive(
 
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::UpdateLastCheckTime(
     int64_t registration_id,
-    const GURL& origin,
+    const blink::StorageKey& key,
     const base::Time& time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status status = LazyOpen(false);
@@ -729,12 +802,11 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::UpdateLastCheckTime(
     return Status::kErrorNotFound;
   if (status != Status::kOk)
     return status;
-  if (!origin.is_valid())
+  if (key.origin().opaque())
     return Status::kErrorFailed;
 
   mojom::ServiceWorkerRegistrationDataPtr registration;
-  status = ReadRegistrationData(registration_id, url::Origin::Create(origin),
-                                &registration);
+  status = ReadRegistrationData(registration_id, key, &registration);
   if (status != Status::kOk)
     return status;
 
@@ -746,21 +818,21 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::UpdateLastCheckTime(
 }
 
 ServiceWorkerDatabase::Status
-ServiceWorkerDatabase::UpdateNavigationPreloadEnabled(int64_t registration_id,
-                                                      const GURL& origin,
-                                                      bool enable) {
+ServiceWorkerDatabase::UpdateNavigationPreloadEnabled(
+    int64_t registration_id,
+    const blink::StorageKey& key,
+    bool enable) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status status = LazyOpen(false);
   if (IsNewOrNonexistentDatabase(status))
     return Status::kErrorNotFound;
   if (status != Status::kOk)
     return status;
-  if (!origin.is_valid())
+  if (key.origin().opaque())
     return Status::kErrorFailed;
 
   mojom::ServiceWorkerRegistrationDataPtr registration;
-  status = ReadRegistrationData(registration_id, url::Origin::Create(origin),
-                                &registration);
+  status = ReadRegistrationData(registration_id, key, &registration);
   if (status != Status::kOk)
     return status;
 
@@ -772,21 +844,21 @@ ServiceWorkerDatabase::UpdateNavigationPreloadEnabled(int64_t registration_id,
 }
 
 ServiceWorkerDatabase::Status
-ServiceWorkerDatabase::UpdateNavigationPreloadHeader(int64_t registration_id,
-                                                     const GURL& origin,
-                                                     const std::string& value) {
+ServiceWorkerDatabase::UpdateNavigationPreloadHeader(
+    int64_t registration_id,
+    const blink::StorageKey& key,
+    const std::string& value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status status = LazyOpen(false);
   if (IsNewOrNonexistentDatabase(status))
     return Status::kErrorNotFound;
   if (status != Status::kOk)
     return status;
-  if (!origin.is_valid())
+  if (key.origin().opaque())
     return Status::kErrorFailed;
 
   mojom::ServiceWorkerRegistrationDataPtr registration;
-  status = ReadRegistrationData(registration_id, url::Origin::Create(origin),
-                                &registration);
+  status = ReadRegistrationData(registration_id, key, &registration);
   if (status != Status::kOk)
     return status;
 
@@ -797,9 +869,34 @@ ServiceWorkerDatabase::UpdateNavigationPreloadHeader(int64_t registration_id,
   return WriteBatch(&batch);
 }
 
+ServiceWorkerDatabase::Status ServiceWorkerDatabase::UpdateFetchHandlerType(
+    int64_t registration_id,
+    const blink::StorageKey& key,
+    const blink::mojom::ServiceWorkerFetchHandlerType type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Status status = LazyOpen(false);
+  if (IsNewOrNonexistentDatabase(status))
+    return Status::kErrorNotFound;
+  if (status != Status::kOk)
+    return status;
+  if (key.origin().opaque())
+    return Status::kErrorFailed;
+
+  mojom::ServiceWorkerRegistrationDataPtr registration;
+  status = ReadRegistrationData(registration_id, key, &registration);
+  if (status != Status::kOk)
+    return status;
+
+  registration->fetch_handler_type = type;
+
+  leveldb::WriteBatch batch;
+  WriteRegistrationDataInBatch(*registration, &batch);
+  return WriteBatch(&batch);
+}
+
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::DeleteRegistration(
     int64_t registration_id,
-    const GURL& origin,
+    const blink::StorageKey& key,
     DeletedVersion* deleted_version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(deleted_version);
@@ -809,29 +906,27 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::DeleteRegistration(
     return Status::kOk;
   if (status != Status::kOk)
     return status;
-  if (!origin.is_valid())
+  if (key.origin().opaque())
     return Status::kErrorFailed;
 
   leveldb::WriteBatch batch;
 
-  // Remove |origin| from unique origins if a registration specified by
-  // |registration_id| is the only one for |origin|.
+  // Remove |key| from unique origins if a registration specified by
+  // |registration_id| is the only one for |key|.
   // TODO(nhiroki): Check the uniqueness by more efficient way.
   std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
-  status = GetRegistrationsForOrigin(url::Origin::Create(origin),
-                                     &registrations, nullptr);
+  status = GetRegistrationsForStorageKey(key, &registrations, nullptr);
   if (status != Status::kOk)
     return status;
 
   if (registrations.size() == 1 &&
       registrations[0]->registration_id == registration_id) {
-    batch.Delete(CreateUniqueOriginKey(origin));
+    batch.Delete(CreateUniqueOriginKey(key));
   }
 
   // Delete a registration specified by |registration_id|.
-  batch.Delete(
-      CreateRegistrationKey(registration_id, url::Origin::Create(origin)));
-  batch.Delete(CreateRegistrationIdToOriginKey(registration_id));
+  batch.Delete(CreateRegistrationKey(registration_id, key));
+  batch.Delete(CreateRegistrationIdToStorageKey(registration_id));
 
   // Delete resource records and user data associated with the registration.
   for (const auto& registration : registrations) {
@@ -985,7 +1080,7 @@ ServiceWorkerDatabase::ReadUserKeysAndDataByKeyPrefix(
 
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::WriteUserData(
     int64_t registration_id,
-    const url::Origin& origin,
+    const blink::StorageKey& key,
     const std::vector<mojom::ServiceWorkerUserDataPtr>& user_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(blink::mojom::kInvalidServiceWorkerRegistrationId, registration_id);
@@ -999,7 +1094,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::WriteUserData(
 
   // There should be the registration specified by |registration_id|.
   mojom::ServiceWorkerRegistrationDataPtr registration;
-  status = ReadRegistrationData(registration_id, origin, &registration);
+  status = ReadRegistrationData(registration_id, key, &registration);
   if (status != Status::kOk)
     return status;
 
@@ -1346,8 +1441,9 @@ ServiceWorkerDatabase::PurgeUncommittedResourceIds(
   return WriteBatch(&batch);
 }
 
-ServiceWorkerDatabase::Status ServiceWorkerDatabase::DeleteAllDataForOrigins(
-    const std::set<GURL>& origins,
+ServiceWorkerDatabase::Status
+ServiceWorkerDatabase::DeleteAllDataForStorageKeys(
+    const std::set<blink::StorageKey>& keys,
     std::vector<int64_t>* newly_purgeable_resources) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Status status = LazyOpen(false);
@@ -1357,24 +1453,22 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::DeleteAllDataForOrigins(
     return status;
   leveldb::WriteBatch batch;
 
-  for (const GURL& origin : origins) {
-    if (!origin.is_valid())
+  for (const blink::StorageKey& key : keys) {
+    if (key.origin().opaque())
       return Status::kErrorFailed;
 
     // Delete from the unique origin list.
-    batch.Delete(CreateUniqueOriginKey(origin));
+    batch.Delete(CreateUniqueOriginKey(key));
 
     std::vector<mojom::ServiceWorkerRegistrationDataPtr> registrations;
-    status = GetRegistrationsForOrigin(url::Origin::Create(origin),
-                                       &registrations, nullptr);
+    status = GetRegistrationsForStorageKey(key, &registrations, nullptr);
     if (status != Status::kOk)
       return status;
 
     // Delete registrations, resource records and user data.
     for (const auto& data : registrations) {
-      batch.Delete(CreateRegistrationKey(data->registration_id,
-                                         url::Origin::Create(origin)));
-      batch.Delete(CreateRegistrationIdToOriginKey(data->registration_id));
+      batch.Delete(CreateRegistrationKey(data->registration_id, key));
+      batch.Delete(CreateRegistrationIdToStorageKey(data->registration_id));
 
       status = DeleteResourceRecords(data->version_id,
                                      newly_purgeable_resources, &batch);
@@ -1507,28 +1601,68 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadNextAvailableId(
 
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadRegistrationData(
     int64_t registration_id,
-    const url::Origin& origin,
+    const blink::StorageKey& key,
     mojom::ServiceWorkerRegistrationDataPtr* registration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(registration);
 
-  const std::string key = CreateRegistrationKey(registration_id, origin);
+  const std::string registration_key =
+      CreateRegistrationKey(registration_id, key);
   std::string value;
   Status status = LevelDBStatusToServiceWorkerDBStatus(
-      db_->Get(leveldb::ReadOptions(), key, &value));
+      db_->Get(leveldb::ReadOptions(), registration_key, &value));
   if (status != Status::kOk) {
     HandleReadResult(FROM_HERE,
                      status == Status::kErrorNotFound ? Status::kOk : status);
     return status;
   }
 
-  status = ParseRegistrationData(value, registration);
+  status = ParseRegistrationData(value, key, registration);
   HandleReadResult(FROM_HERE, status);
   return status;
 }
 
+network::mojom::ReferrerPolicy ConvertReferrerPolicyFromProtocolBufferToMojom(
+    ServiceWorkerRegistrationData::ReferrerPolicyValue value) {
+  switch (value) {
+    case ServiceWorkerRegistrationData::DEFAULT:
+      return network::mojom::ReferrerPolicy::kDefault;
+    case ServiceWorkerRegistrationData::ALWAYS:
+      return network::mojom::ReferrerPolicy::kAlways;
+    case ServiceWorkerRegistrationData::NO_REFERRER_WHEN_DOWNGRADE:
+      return network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade;
+    case ServiceWorkerRegistrationData::NEVER:
+      return network::mojom::ReferrerPolicy::kNever;
+    case ServiceWorkerRegistrationData::ORIGIN:
+      return network::mojom::ReferrerPolicy::kOrigin;
+    case ServiceWorkerRegistrationData::ORIGIN_WHEN_CROSS_ORIGIN:
+      return network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin;
+    case ServiceWorkerRegistrationData::STRICT_ORIGIN_WHEN_CROSS_ORIGIN:
+      return network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin;
+    case ServiceWorkerRegistrationData::SAME_ORIGIN:
+      return network::mojom::ReferrerPolicy::kSameOrigin;
+    case ServiceWorkerRegistrationData::STRICT_ORIGIN:
+      return network::mojom::ReferrerPolicy::kStrictOrigin;
+  }
+}
+
+network::mojom::IPAddressSpace ConvertIPAddressSpaceFromProtocolBufferToMojom(
+    ServiceWorkerRegistrationData::IPAddressSpace value) {
+  switch (value) {
+    case ServiceWorkerRegistrationData::LOCAL:
+      return network::mojom::IPAddressSpace::kLocal;
+    case ServiceWorkerRegistrationData::PRIVATE:
+      return network::mojom::IPAddressSpace::kPrivate;
+    case ServiceWorkerRegistrationData::PUBLIC:
+      return network::mojom::IPAddressSpace::kPublic;
+    case ServiceWorkerRegistrationData::UNKNOWN:
+      return network::mojom::IPAddressSpace::kUnknown;
+  }
+}
+
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
     const std::string& serialized,
+    const blink::StorageKey& key,
     mojom::ServiceWorkerRegistrationDataPtr* out) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(out);
@@ -1539,10 +1673,12 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   GURL scope_url(data.scope_url());
   GURL script_url(data.script_url());
   if (!scope_url.is_valid() || !script_url.is_valid() ||
-      scope_url.GetOrigin() != script_url.GetOrigin()) {
+      scope_url.DeprecatedGetOriginAsURL() !=
+          script_url.DeprecatedGetOriginAsURL() ||
+      key.origin() != url::Origin::Create(scope_url)) {
     DLOG(ERROR) << "Scope URL '" << data.scope_url() << "' and/or script url '"
-                << data.script_url()
-                << "' are invalid or have mismatching origins.";
+                << data.script_url() << "' and/or the storage key's origin '"
+                << key.origin() << "' are invalid or have mismatching origins.";
     return Status::kErrorCorrupted;
   }
 
@@ -1561,11 +1697,41 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   (*out)->registration_id = data.registration_id();
   (*out)->scope = scope_url;
   (*out)->script = script_url;
+  (*out)->key = key;
   (*out)->version_id = data.version_id();
   (*out)->is_active = data.is_active();
-  (*out)->has_fetch_handler = data.has_fetch_handler();
+  // The old protobuf may not have fetch_handler_type.
+  (*out)->fetch_handler_type =
+      (data.has_fetch_handler())
+          ? blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable
+          : blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;
+  if (data.has_fetch_handler_skippable_type()) {
+    if (!data.has_fetch_handler()) {
+      DLOG(ERROR)
+          << "has_fetch_handler must be true if fetch_handler_skippable_type"
+          << " is set.";
+      return Status::kErrorCorrupted;
+    }
+    if (!ServiceWorkerRegistrationData_FetchHandlerSkippableType_IsValid(
+            data.fetch_handler_skippable_type())) {
+      DLOG(ERROR) << "Fetch handler type '"
+                  << data.fetch_handler_skippable_type() << "' is not valid.";
+      return Status::kErrorCorrupted;
+    }
+    switch (data.fetch_handler_skippable_type()) {
+      case ServiceWorkerRegistrationData::NOT_SKIPPABLE:
+        (*out)->fetch_handler_type =
+            blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+        break;
+      case ServiceWorkerRegistrationData::SKIPPABLE_EMPTY_FETCH_HANDLER:
+        (*out)->fetch_handler_type =
+            blink::mojom::ServiceWorkerFetchHandlerType::kEmptyFetchHandler;
+        break;
+        // TODO(crbug.com/1347319): implement other fetch_handler_type.
+    }
+  }
   (*out)->last_update_check = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(data.last_update_check_time()));
+      base::Microseconds(data.last_update_check_time()));
   (*out)->resources_total_size_bytes = data.resources_total_size_bytes();
   if (data.has_origin_trial_tokens()) {
     const ServiceWorkerOriginTrialInfo& info = data.origin_trial_tokens();
@@ -1609,7 +1775,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
 
   if (data.has_script_response_time()) {
     (*out)->script_response_time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(data.script_response_time()));
+        base::Microseconds(data.script_response_time()));
   }
 
   if (data.has_update_via_cache()) {
@@ -1624,11 +1790,36 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   }
 
   if (data.has_cross_origin_embedder_policy_value()) {
-    (*out)->cross_origin_embedder_policy.value =
-        data.cross_origin_embedder_policy_value() ==
-                ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST
-            ? network::mojom::CrossOriginEmbedderPolicyValue::kNone
-            : network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+    if (!(*out)->policy_container_policies) {
+      (*out)->policy_container_policies =
+          blink::mojom::PolicyContainerPolicies::New();
+    }
+    if (!ServiceWorkerRegistrationData::CrossOriginEmbedderPolicyValue_IsValid(
+            data.cross_origin_embedder_policy_value())) {
+      DLOG(ERROR)
+          << "Cross origin embedder policy in policy container policies '"
+          << data.cross_origin_embedder_policy_value() << "' is not valid.";
+      return Status::kErrorCorrupted;
+    }
+    switch (data.cross_origin_embedder_policy_value()) {
+      case ServiceWorkerRegistrationData::REQUIRE_CORP:
+        (*out)->cross_origin_embedder_policy.value =
+            network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+        (*out)->policy_container_policies->cross_origin_embedder_policy =
+            network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+        break;
+      case ServiceWorkerRegistrationData::CREDENTIALLESS:
+        (*out)->cross_origin_embedder_policy.value =
+            network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
+        (*out)->policy_container_policies->cross_origin_embedder_policy =
+            network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
+        break;
+      case ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST:
+        (*out)->cross_origin_embedder_policy.value =
+            network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+        (*out)->policy_container_policies->cross_origin_embedder_policy =
+            network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+    }
   }
 
   if (data.has_cross_origin_embedder_policy_reporting_endpoint()) {
@@ -1637,11 +1828,19 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
   }
 
   if (data.has_cross_origin_embedder_policy_report_only_value()) {
-    (*out)->cross_origin_embedder_policy.report_only_value =
-        data.cross_origin_embedder_policy_report_only_value() ==
-                ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST
-            ? network::mojom::CrossOriginEmbedderPolicyValue::kNone
-            : network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+    switch (data.cross_origin_embedder_policy_report_only_value()) {
+      case ServiceWorkerRegistrationData::REQUIRE_CORP:
+        (*out)->cross_origin_embedder_policy.report_only_value =
+            network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+        break;
+      case ServiceWorkerRegistrationData::CREDENTIALLESS:
+        (*out)->cross_origin_embedder_policy.report_only_value =
+            network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless;
+        break;
+      default:
+        (*out)->cross_origin_embedder_policy.report_only_value =
+            network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+    }
   }
 
   if (data.has_cross_origin_embedder_policy_report_only_reporting_endpoint()) {
@@ -1649,7 +1848,114 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
         data.cross_origin_embedder_policy_report_only_reporting_endpoint();
   }
 
+  if (data.has_ancestor_frame_type()) {
+    if (!ServiceWorkerRegistrationData_AncestorFrameType_IsValid(
+            data.ancestor_frame_type())) {
+      DLOG(ERROR) << "Ancestor frame type '" << data.ancestor_frame_type()
+                  << "' is not valid.";
+      return Status::kErrorCorrupted;
+    }
+    switch (data.ancestor_frame_type()) {
+      case ServiceWorkerRegistrationData::NORMAL_FRAME:
+        (*out)->ancestor_frame_type =
+            blink::mojom::AncestorFrameType::kNormalFrame;
+        break;
+      case ServiceWorkerRegistrationData::FENCED_FRAME:
+        (*out)->ancestor_frame_type =
+            blink::mojom::AncestorFrameType::kFencedFrame;
+        break;
+    }
+  }
+
+  if (data.has_policy_container_policies()) {
+    if (!(*out)->policy_container_policies) {
+      (*out)->policy_container_policies =
+          blink::mojom::PolicyContainerPolicies::New();
+    }
+    auto& policies = data.policy_container_policies();
+    if (policies.has_referrer_policy()) {
+      if (!ServiceWorkerRegistrationData::ReferrerPolicyValue_IsValid(
+              policies.referrer_policy())) {
+        DLOG(ERROR) << "Referrer policy in policy container policies '"
+                    << policies.referrer_policy() << "' is not valid.";
+        return Status::kErrorCorrupted;
+      }
+      (*out)->policy_container_policies->referrer_policy =
+          ConvertReferrerPolicyFromProtocolBufferToMojom(
+              policies.referrer_policy());
+    }
+    if (policies.has_sandbox_flags()) {
+      (*out)->policy_container_policies->sandbox_flags =
+          static_cast<network::mojom::WebSandboxFlags>(
+              policies.sandbox_flags());
+    }
+    if (policies.has_ip_address_space()) {
+      if (!ServiceWorkerRegistrationData_IPAddressSpace_IsValid(
+              policies.ip_address_space())) {
+        DLOG(ERROR) << "IP address space in policy container policies '"
+                    << policies.ip_address_space() << "' is not valid.";
+        return Status::kErrorCorrupted;
+      }
+      (*out)->policy_container_policies->ip_address_space =
+          ConvertIPAddressSpaceFromProtocolBufferToMojom(
+              policies.ip_address_space());
+    }
+  }
+
   return Status::kOk;
+}
+
+ServiceWorkerRegistrationData::CrossOriginEmbedderPolicyValue
+ConvertCrossOriginEmbedderPolicyFromMojomToProtocolBuffer(
+    network::mojom::CrossOriginEmbedderPolicyValue value) {
+  switch (value) {
+    case network::mojom::CrossOriginEmbedderPolicyValue::kNone:
+      return ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST;
+    case network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp:
+      return ServiceWorkerRegistrationData::REQUIRE_CORP;
+    case network::mojom::CrossOriginEmbedderPolicyValue::kCredentialless:
+      return ServiceWorkerRegistrationData::CREDENTIALLESS;
+  }
+}
+
+ServiceWorkerRegistrationData::ReferrerPolicyValue
+ConvertReferrerPolicyFromMojomToProtocolBuffer(
+    network::mojom::ReferrerPolicy value) {
+  switch (value) {
+    case network::mojom::ReferrerPolicy::kDefault:
+      return ServiceWorkerRegistrationData::DEFAULT;
+    case network::mojom::ReferrerPolicy::kAlways:
+      return ServiceWorkerRegistrationData::ALWAYS;
+    case network::mojom::ReferrerPolicy::kNoReferrerWhenDowngrade:
+      return ServiceWorkerRegistrationData::NO_REFERRER_WHEN_DOWNGRADE;
+    case network::mojom::ReferrerPolicy::kNever:
+      return ServiceWorkerRegistrationData::NEVER;
+    case network::mojom::ReferrerPolicy::kOrigin:
+      return ServiceWorkerRegistrationData::ORIGIN;
+    case network::mojom::ReferrerPolicy::kOriginWhenCrossOrigin:
+      return ServiceWorkerRegistrationData::ORIGIN_WHEN_CROSS_ORIGIN;
+    case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
+      return ServiceWorkerRegistrationData::STRICT_ORIGIN_WHEN_CROSS_ORIGIN;
+    case network::mojom::ReferrerPolicy::kSameOrigin:
+      return ServiceWorkerRegistrationData::SAME_ORIGIN;
+    case network::mojom::ReferrerPolicy::kStrictOrigin:
+      return ServiceWorkerRegistrationData::STRICT_ORIGIN;
+  }
+}
+
+ServiceWorkerRegistrationData::IPAddressSpace
+ConvertIPAddressSpaceFromMojomToProtocolBuffer(
+    network::mojom::IPAddressSpace value) {
+  switch (value) {
+    case network::mojom::IPAddressSpace::kLocal:
+      return ServiceWorkerRegistrationData::LOCAL;
+    case network::mojom::IPAddressSpace::kPrivate:
+      return ServiceWorkerRegistrationData::PRIVATE;
+    case network::mojom::IPAddressSpace::kPublic:
+      return ServiceWorkerRegistrationData::PUBLIC;
+    case network::mojom::IPAddressSpace::kUnknown:
+      return ServiceWorkerRegistrationData::UNKNOWN;
+  }
 }
 
 void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
@@ -1667,9 +1973,30 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
   data.set_registration_id(registration.registration_id);
   data.set_scope_url(registration.scope.spec());
   data.set_script_url(registration.script.spec());
+  // Do not store the StorageKey, it's already encoded in the registration key
+  // prefix.
   data.set_version_id(registration.version_id);
   data.set_is_active(registration.is_active);
-  data.set_has_fetch_handler(registration.has_fetch_handler);
+  data.set_has_fetch_handler(
+      registration.fetch_handler_type !=
+      blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler);
+  if (data.has_fetch_handler()) {
+    switch (registration.fetch_handler_type) {
+      case blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable:
+        data.set_fetch_handler_skippable_type(
+            ServiceWorkerRegistrationData::NOT_SKIPPABLE);
+        break;
+      case blink::mojom::ServiceWorkerFetchHandlerType::kEmptyFetchHandler:
+        data.set_fetch_handler_skippable_type(
+            ServiceWorkerRegistrationData::SKIPPABLE_EMPTY_FETCH_HANDLER);
+        break;
+      // TODO(crbug.com/1347319): implement other fetch_handler_type.
+      // TODO(crbug.com/1351246): remove default if possible.
+      default:
+        DCHECK(false) << "Unknown fetch_handler_type is used."
+                      << registration.fetch_handler_type;
+    }
+  }
   data.set_last_update_check_time(
       registration.last_update_check.ToDeltaSinceWindowsEpoch()
           .InMicroseconds());
@@ -1707,19 +2034,16 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
           registration.update_via_cache));
 
   data.set_cross_origin_embedder_policy_value(
-      registration.cross_origin_embedder_policy.value ==
-              network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp
-          ? ServiceWorkerRegistrationData::REQUIRE_CORP
-          : ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST);
+      ConvertCrossOriginEmbedderPolicyFromMojomToProtocolBuffer(
+          registration.cross_origin_embedder_policy.value));
+
   if (registration.cross_origin_embedder_policy.reporting_endpoint) {
     data.set_cross_origin_embedder_policy_reporting_endpoint(
         registration.cross_origin_embedder_policy.reporting_endpoint.value());
   }
   data.set_cross_origin_embedder_policy_report_only_value(
-      registration.cross_origin_embedder_policy.report_only_value ==
-              network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp
-          ? ServiceWorkerRegistrationData::REQUIRE_CORP
-          : ServiceWorkerRegistrationData::NONE_OR_NOT_EXIST);
+      ConvertCrossOriginEmbedderPolicyFromMojomToProtocolBuffer(
+          registration.cross_origin_embedder_policy.report_only_value));
   if (registration.cross_origin_embedder_policy
           .report_only_reporting_endpoint) {
     data.set_cross_origin_embedder_policy_report_only_reporting_endpoint(
@@ -1727,11 +2051,33 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
             .value());
   }
 
+  switch (registration.ancestor_frame_type) {
+    case blink::mojom::AncestorFrameType::kNormalFrame:
+      data.set_ancestor_frame_type(ServiceWorkerRegistrationData::NORMAL_FRAME);
+      break;
+    case blink::mojom::AncestorFrameType::kFencedFrame:
+      data.set_ancestor_frame_type(ServiceWorkerRegistrationData::FENCED_FRAME);
+      break;
+  }
+
+  if (registration.policy_container_policies) {
+    ServiceWorkerRegistrationData::PolicyContainerPolicies* policies =
+        data.mutable_policy_container_policies();
+    policies->set_referrer_policy(
+        ConvertReferrerPolicyFromMojomToProtocolBuffer(
+            registration.policy_container_policies->referrer_policy));
+    policies->set_sandbox_flags(static_cast<int>(
+        registration.policy_container_policies->sandbox_flags));
+    policies->set_ip_address_space(
+        ConvertIPAddressSpaceFromMojomToProtocolBuffer(
+            registration.policy_container_policies->ip_address_space));
+  }
+
   std::string value;
   bool success = data.SerializeToString(&value);
   DCHECK(success);
-  url::Origin origin = url::Origin::Create(registration.scope);
-  batch->Put(CreateRegistrationKey(data.registration_id(), origin), value);
+  blink::StorageKey key = registration.key;
+  batch->Put(CreateRegistrationKey(data.registration_id(), key), value);
 }
 
 ServiceWorkerDatabase::Status ServiceWorkerDatabase::ReadResourceRecords(

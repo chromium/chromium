@@ -86,18 +86,13 @@ PRODUCTS_TO_BROWSER_TAGS = {
 # Android web tests directory, which contains override expectation files
 ANDROID_WEB_TESTS_DIR = os.path.join(get_blink_dir(), 'web_tests', 'android')
 
-PRODUCTS_TO_EXPECTATION_FILE_PATHS = {
-    ANDROID_WEBLAYER: os.path.join(
-        ANDROID_WEB_TESTS_DIR, 'WeblayerWPTExpectations'),
-    ANDROID_WEBVIEW: os.path.join(
-        ANDROID_WEB_TESTS_DIR, 'WebviewWPTExpectations'),
-    CHROME_ANDROID: os.path.join(
-        ANDROID_WEB_TESTS_DIR, 'ChromiumWPTExpectations'),
-}
-
 # Disabled WPT tests on Android
 ANDROID_DISABLED_TESTS = os.path.join(
     ANDROID_WEB_TESTS_DIR, 'AndroidWPTNeverFixTests')
+
+# List of test cases to be run by wptrunner
+WPT_SMOKE_TESTS_FILE = os.path.join(
+    ANDROID_WEB_TESTS_DIR, 'WPTSmokeTestCases')
 
 _friendly_browser_names = {
     'weblayershell': 'weblayer',
@@ -295,19 +290,28 @@ class AndroidPort(base.Port):
     SUPPORTED_VERSIONS = ('android')
 
     FALLBACK_PATHS = {
-        'kitkat':
-        ['android'] + linux.LinuxPort.latest_platform_fallback_path()
+        # Don't use the current android platform specific baselines since
+        # they are no longer maintained.
+        'pie': linux.LinuxPort.latest_platform_fallback_path()
     }
 
     BUILD_REQUIREMENTS_URL = 'https://www.chromium.org/developers/how-tos/android-build-instructions'
 
-    def __init__(self, host, port_name='', apk='', product='', options=None, **kwargs):
+    def __init__(self,
+                 host,
+                 port_name='',
+                 apk='',
+                 product='',
+                 options=None,
+                 prepared_devices=[],
+                 **kwargs):
         super(AndroidPort, self).__init__(
             host, port_name, options=options, **kwargs)
         self._operating_system = 'android'
-        self._version = 'kitkat'
+        self._version = 'pie'
         fs = host.filesystem
         self._local_port = factory.PortFactory(host).get(**kwargs)
+        self._prepared_devices = prepared_devices
         if apk or product:
             self._driver_details = DriverDetails(apk)
             browser_type = fs.splitext(fs.basename(apk))[0].lower()
@@ -346,8 +350,7 @@ class AndroidPort(base.Port):
                 logging.DEBUG if self._debug_logging
                 and self.get_option('debug_rwt_logging') else logging.WARNING)
 
-            prepared_devices = self.get_option('prepared_devices', [])
-            for serial in prepared_devices:
+            for serial in self._prepared_devices:
                 self._devices.set_device_prepared(serial)
 
     def bot_expectations(self):
@@ -539,16 +542,19 @@ class AndroidPort(base.Port):
         # By setting this on the options object, we can propagate the list
         # of prepared devices to the workers (it is read in __init__()).
         if self._devices._prepared_devices:
-            self._options.prepared_devices = self._devices.prepared_devices()
+            self._prepared_devices = self._devices.prepared_devices()
         else:
             # We were called with --no-build, so assume the devices are up to date.
-            self._options.prepared_devices = [
+            self._prepared_devices = [
                 d.get_serial()
                 for d in self._devices.usable_devices(self.host.executive)
             ]
 
+    def child_kwargs(self):
+        return {"prepared_devices": self._prepared_devices}
+
     def num_workers(self, requested_num_workers):
-        return min(len(self._options.prepared_devices), requested_num_workers)
+        return min(len(self._prepared_devices), requested_num_workers)
 
     def check_sys_deps(self):
         # _get_font_files() will throw if any of the required fonts is missing.
@@ -566,6 +572,9 @@ class AndroidPort(base.Port):
         additional_dirs[WEB_TESTS_PATH_PREFIX] = self.web_tests_dir()
         super(AndroidPort, self).start_http_server(additional_dirs,
                                                    number_of_drivers)
+
+    def operating_system(self):
+        return self._operating_system
 
     def create_driver(self, worker_number, no_timeout=False):
         return ChromiumAndroidDriver(

@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,21 +12,22 @@
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/media_request_state.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace apps {
 
 struct AccessingRequest {
-  AccessingRequest(base::Optional<bool> camera,
-                   base::Optional<bool> microphone);
+  AccessingRequest(absl::optional<bool> camera,
+                   absl::optional<bool> microphone);
   AccessingRequest(const AccessingRequest&) = delete;
   AccessingRequest& operator=(const AccessingRequest&) = delete;
   AccessingRequest(AccessingRequest&&);
   AccessingRequest& operator=(AccessingRequest&&);
   ~AccessingRequest();
 
-  base::Optional<bool> camera;
-  base::Optional<bool> microphone;
+  absl::optional<bool> camera;
+  absl::optional<bool> microphone;
 };
 
 // MediaRequests records the media access requests for each app, e.g. accessing
@@ -76,19 +77,19 @@ class MediaRequests {
       const std::map<std::string, std::set<const content::WebContents*>>&
           app_id_to_web_contents);
 
-  base::Optional<bool> MaybeAddRequest(
+  absl::optional<bool> MaybeAddRequest(
       const std::string& app_id,
       const content::WebContents* web_contents,
       std::map<std::string, std::set<const content::WebContents*>>&
           app_id_to_web_contents);
 
-  base::Optional<bool> MaybeRemoveRequest(
+  absl::optional<bool> MaybeRemoveRequest(
       const std::string& app_id,
       const content::WebContents* web_contents,
       std::map<std::string, std::set<const content::WebContents*>>&
           app_id_to_web_contents);
 
-  base::Optional<bool> MaybeRemoveRequest(
+  absl::optional<bool> MaybeRemoveRequest(
       const std::string& app_id,
       std::map<std::string, std::set<const content::WebContents*>>&
           app_id_to_web_contents);

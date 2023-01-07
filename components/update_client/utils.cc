@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,19 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <cmath>
 #include <cstring>
+#include <memory>
+#include <utility>
 
 #include "base/callback.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -92,12 +95,9 @@ bool VerifyFileHash256(const base::FilePath& filepath,
 
 bool IsValidBrand(const std::string& brand) {
   const size_t kMaxBrandSize = 4;
-  if (!brand.empty() && brand.size() != kMaxBrandSize)
-    return false;
-
-  return std::find_if_not(brand.begin(), brand.end(), [](char ch) {
-           return base::IsAsciiAlpha(ch);
-         }) == brand.end();
+  return brand.empty() ||
+         (brand.size() == kMaxBrandSize &&
+          base::ranges::all_of(brand, &base::IsAsciiAlpha<char>));
 }
 
 // Helper function.
@@ -107,20 +107,11 @@ bool IsValidInstallerAttributePart(const std::string& part,
                                    const std::string& special_chars,
                                    size_t min_length,
                                    size_t max_length) {
-  if (part.size() < min_length || part.size() > max_length)
-    return false;
-
-  return std::find_if_not(part.begin(), part.end(), [&special_chars](char ch) {
-           if (base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch))
-             return true;
-
-           for (auto c : special_chars) {
-             if (c == ch)
-               return true;
-           }
-
-           return false;
-         }) == part.end();
+  return part.size() >= min_length && part.size() <= max_length &&
+         base::ranges::all_of(part, [&special_chars](char ch) {
+           return base::IsAsciiAlpha(ch) || base::IsAsciiDigit(ch) ||
+                  base::Contains(special_chars, ch);
+         });
 }
 
 // Returns true if the |name| parameter matches ^[-_a-zA-Z0-9]{1,256}$ .
@@ -154,21 +145,17 @@ CrxInstaller::Result InstallFunctionWrapper(
 // TODO(cpu): add a specific attribute check to a component json that the
 // extension unpacker will reject, so that a component cannot be installed
 // as an extension.
-std::unique_ptr<base::DictionaryValue> ReadManifest(
-    const base::FilePath& unpack_path) {
+base::Value ReadManifest(const base::FilePath& unpack_path) {
   base::FilePath manifest =
       unpack_path.Append(FILE_PATH_LITERAL("manifest.json"));
   if (!base::PathExists(manifest))
-    return std::unique_ptr<base::DictionaryValue>();
+    return base::Value();
   JSONFileValueDeserializer deserializer(manifest);
   std::string error;
   std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
   if (!root)
-    return std::unique_ptr<base::DictionaryValue>();
-  if (!root->is_dict())
-    return std::unique_ptr<base::DictionaryValue>();
-  return std::unique_ptr<base::DictionaryValue>(
-      static_cast<base::DictionaryValue*>(root.release()));
+    return base::Value();
+  return base::Value::FromUniquePtrValue(std::move(root));
 }
 
 }  // namespace update_client

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,11 @@ function getApiPaths() {
     // Get the API properties.
     if (module.properties) {
       Object.getOwnPropertyNames(module.properties).forEach(function(propName) {
-        apiPaths.push(namespace + "." + propName);
+        const fullPath = namespace + '.' + propName;
+        // Skip storage.session, since it's restricted to MV3.
+        if (fullPath != 'storage.session') {
+          apiPaths.push(fullPath);
+        }
       });
     }
   });

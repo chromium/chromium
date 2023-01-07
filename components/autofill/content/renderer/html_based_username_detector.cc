@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,12 @@
 
 #include <algorithm>
 #include <string>
-#include <tuple>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/i18n/case_conversion.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -30,7 +28,8 @@ namespace autofill {
 namespace {
 
 // List of separators that can appear in HTML attribute values.
-constexpr char kDelimiters[] = "$\"\'?%*@!\\/&^#:+~`;,>|<.[](){}-_ 0123456789";
+constexpr char16_t kDelimiters[] =
+    u"$\"\'?%*@!\\/&^#:+~`;,>|<.[](){}-_ 0123456789";
 
 // Minimum length of a word, in order not to be considered short word. Short
 // words will not be searched in attribute values (especially after delimiters
@@ -68,17 +67,6 @@ struct CategoryOfWords {
   const size_t non_latin_dictionary_size;
 };
 
-// Used only inside DCHECK.
-bool AllElementsBelongsToSameForm(
-    const std::vector<WebFormControlElement>& all_control_elements) {
-  return std::adjacent_find(all_control_elements.begin(),
-                            all_control_elements.end(),
-                            [](const WebFormControlElement& a,
-                               const WebFormControlElement& b) {
-                              return a.Form() != b.Form();
-                            }) == all_control_elements.end();
-}
-
 // 1. Removes delimiters from |raw_value| and appends the remainder to
 // |*field_data_value|. A sentinel symbol is added first if |*field_data_value|
 // is not empty.
@@ -89,10 +77,9 @@ void AppendValueAndShortTokens(
     std::u16string* field_data_value,
     base::flat_set<std::u16string>* field_data_short_tokens) {
   const std::u16string lowercase_value = base::i18n::ToLower(raw_value);
-  const std::u16string delimiters = base::ASCIIToUTF16(kDelimiters);
   std::vector<base::StringPiece16> tokens =
-      base::SplitStringPiece(lowercase_value, delimiters, base::TRIM_WHITESPACE,
-                             base::SPLIT_WANT_NONEMPTY);
+      base::SplitStringPiece(lowercase_value, kDelimiters,
+                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   // When computing the developer value, '$' safety guard is being added
   // between field name and id, so that forming of accidental words is
@@ -141,23 +128,22 @@ void InferUsernameFieldData(
 
   for (const blink::WebFormControlElement& control_element :
        all_control_elements) {
-    const blink::WebInputElement* input_element =
-        ToWebInputElement(&control_element);
-    if (!input_element || input_element->IsPasswordFieldForAutofill())
+    const WebInputElement input_element =
+        control_element.DynamicTo<WebInputElement>();
+    if (input_element.IsNull() || input_element.IsPasswordFieldForAutofill())
       continue;
-    const std::u16string element_name =
-        input_element->NameForAutofill().Utf16();
+    const std::u16string element_name = input_element.NameForAutofill().Utf16();
     for (size_t i = next_element_range_begin; i < form_data.fields.size();
          ++i) {
       const FormFieldData& field_data = form_data.fields[i];
-      if (input_element->NameForAutofill().IsEmpty())
+      if (input_element.NameForAutofill().IsEmpty())
         continue;
 
       // Find matching field data and web input element.
       if (field_data.name == element_name) {
         next_element_range_begin = i + 1;
         possible_usernames_data->push_back(
-            ComputeUsernameFieldData(*input_element, field_data));
+            ComputeUsernameFieldData(input_element, field_data));
         break;
       }
     }
@@ -290,22 +276,15 @@ void FindUsernameFieldInternal(
 const std::vector<FieldRendererId>& GetPredictionsFieldBasedOnHtmlAttributes(
     const std::vector<WebFormControlElement>& all_control_elements,
     const FormData& form_data,
-    UsernameDetectorCache* username_detector_cache) {
+    UsernameDetectorCache* username_detector_cache,
+    const WebFormElement& form) {
   // The cache will store the object referenced in the return value, so it must
   // exist. It can be empty.
   DCHECK(username_detector_cache);
 
   DCHECK(!all_control_elements.empty());
 
-  // All elements in |all_control_elements| should have the same |Form()|.
-  DCHECK(AllElementsBelongsToSameForm(all_control_elements));
-  const WebFormElement form = all_control_elements.at(0).Form();
-
-  // True if the cache has no entry for |form|.
-  bool cache_miss = true;
-  // Iterator pointing to the entry for |form| if the entry for |form| is found.
-  UsernameDetectorCache::iterator form_position;
-  std::tie(form_position, cache_miss) = username_detector_cache->emplace(
+  auto [form_position, cache_miss] = username_detector_cache->emplace(
       form_util::GetFormRendererId(form), std::vector<FieldRendererId>());
 
   if (cache_miss) {

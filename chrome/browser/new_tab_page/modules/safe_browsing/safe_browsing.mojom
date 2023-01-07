@@ -1,0 +1,20 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ntp.safe_browsing.mojom;
+
+
+// Browser-side handler for requests from NTP Module UI.
+interface SafeBrowsingHandler {
+  // Should the module be shown to the user.
+  CanShowModule() => (bool show);
+  // Process a click on the module button.
+  ProcessModuleClick();
+  // Dismiss module, which involves not showing the module for
+  // the current security sensitive action anymore, and entering
+  // cooldown.
+  DismissModule();
+  // Restore module, undoing the settings done in DismissModule.
+  RestoreModule();
+};

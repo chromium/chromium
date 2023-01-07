@@ -1,0 +1,28 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=./mwb_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+a,
+cr-button,
+cr-icon-button,
+div {
+  cursor: default;
+}
+
+cr-icon-button {
+  --cr-icon-button-icon-size: var(--mwb-icon-size);
+  --cr-icon-button-size: calc(var(--mwb-icon-size) * 1.5);
+}
+
+cr-icon-button:hover {
+  background-color: var(--mwb-icon-button-hover-background-color);
+}
+
+cr-icon-button:focus {
+  box-shadow: 0 0 0 2px var(--mwb-icon-button-focus-ring-color);
+}

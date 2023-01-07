@@ -1,10 +1,21 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/base/demuxer_stream.h"
 
 namespace media {
+
+std::string GetStreamLivenessName(StreamLiveness liveness) {
+  switch (liveness) {
+    case StreamLiveness::kUnknown:
+      return "unknown";
+    case StreamLiveness::kRecorded:
+      return "recorded";
+    case StreamLiveness::kLive:
+      return "live";
+  }
+}
 
 // static
 const char* DemuxerStream::GetTypeName(Type type) {
@@ -38,8 +49,8 @@ DemuxerStream::~DemuxerStream() = default;
 
 // Most DemuxerStream implementations don't specify liveness. Returns unknown
 // liveness by default.
-DemuxerStream::Liveness DemuxerStream::liveness() const {
-  return DemuxerStream::LIVENESS_UNKNOWN;
+StreamLiveness DemuxerStream::liveness() const {
+  return StreamLiveness::kUnknown;
 }
 
 // Most DemuxerStream implementations don't need to convert bit stream.

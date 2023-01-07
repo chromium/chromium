@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL border-image-slice-interpolation-stability assert_equals: expected "50" but got "75"
-Harness: the test ran to completion.
-

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_frame_request_blocker.h"
@@ -30,7 +29,9 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
   WebURLRequestExtraData(const WebURLRequestExtraData&) = delete;
   WebURLRequestExtraData& operator=(const WebURLRequestExtraData&) = delete;
 
-  void set_is_main_frame(bool is_main_frame) { is_main_frame_ = is_main_frame; }
+  void set_is_outermost_main_frame(bool is_outermost_main_frame) {
+    is_outermost_main_frame_ = is_outermost_main_frame;
+  }
   ui::PageTransition transition_type() const { return transition_type_; }
   void set_transition_type(ui::PageTransition transition_type) {
     transition_type_ = transition_type;
@@ -94,7 +95,7 @@ class BLINK_PLATFORM_EXPORT WebURLRequestExtraData
   virtual ~WebURLRequestExtraData();
 
  private:
-  bool is_main_frame_ = false;
+  bool is_outermost_main_frame_ = false;
   ui::PageTransition transition_type_ = ui::PAGE_TRANSITION_LINK;
   bool is_for_no_state_prefetch_ = false;
   bool originated_from_service_worker_ = false;

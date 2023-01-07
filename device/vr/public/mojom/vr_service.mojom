@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,13 +60,14 @@ enum XRSessionFeature {
 
   DOM_OVERLAY = 6,
   HIT_TEST = 7,
-  LIGHT_ESTIMATION = 8, // Experimental feature.
+  LIGHT_ESTIMATION = 8,
   ANCHORS = 9,
-  CAMERA_ACCESS = 10, // Experimental feature.
-  PLANE_DETECTION = 11, // Experimental feature.
-  DEPTH = 12, // Experimental feature.
-  IMAGE_TRACKING = 13, // Experimental feature.
-  HAND_INPUT = 14, // Experimental feature.
+  CAMERA_ACCESS = 10,
+  PLANE_DETECTION = 11,
+  DEPTH = 12,
+  IMAGE_TRACKING = 13,
+  HAND_INPUT = 14,
+  SECONDARY_VIEWS = 15,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -165,6 +166,9 @@ struct XRSessionOptions {
   // Must be present if either optional or required features contain
   // depth sensing API.
   XRDepthOptions? depth_options;
+
+  // ID of this request, used for tracing.
+  uint64 trace_id;
 };
 
 struct XRDepthConfig {
@@ -182,6 +186,11 @@ struct XRSessionDeviceConfig {
   // The default scale that should be applied to the native framebuffer size
   // unless overridden by the developer.
   float default_framebuffer_scale = 1.0;
+
+  // Information about all the views in the device at the time the session was
+  // created. Views may change on any frame, so the session should inspect
+  // subsequent views in XRFrameData on each frame.
+  array<XRView> views;
 
   // Indicates whether the device supports dynamic viewport scaling via
   // XRView.requestViewportScale which results in UpdateLayerBounds mojo calls.
@@ -209,14 +218,13 @@ struct XRSessionDeviceConfig {
 // information about the device it is connected to, such as focus and blur
 // events, changes to view or stage parameters, or exit present calls initiated
 // by the device.
+// This struct is created in the device process, then manipulated in the browser
+// process before being handed off to the renderer process.
 struct XRSession {
   pending_remote<XRFrameDataProvider> data_provider;
   // TODO(http://crbug.com/842025) Move where the client_receiver gets set to the
   // device process then mark this as non-optional.
   pending_receiver<XRSessionClient>? client_receiver;
-  // TODO(http://crbug.com/842025) Move the information that is sent in display
-  // info to more sensible places so that this doesn't need to be sent here.
-  VRDisplayInfo display_info;
   XRPresentationConnection? submit_frame_sink;
 
   // Represents the set of requested features that are both supported by the
@@ -296,7 +304,7 @@ struct XRHandJointData {
   // Which joint this data is for denoted by the XRHandJoint enum.
   XRHandJoint joint;
   // The transform of pose of this joint in mojo space.
-  gfx.mojom.Transform mojo_from_joint;
+  gfx.mojom.Transform? mojo_from_joint;
   // The radius of the joint in meters.
   float radius;
 };
@@ -423,18 +431,44 @@ struct XRHitResult {
                     // mojo supports optional numeric types.
 };
 
-// Information about the optical properties for an eye in a VRDisplay.
-struct VREyeParameters {
+// Describes the eye that a view is associated with. kNone represents views that
+// are not associated with an eye, such as monoscopic displays or views exposed
+// through secondary views.
+enum XREye {
+  kNone = 0,
+  kLeft = 1,
+  kRight = 2,
+};
+
+// Information about a view for a given XR frame. A frame contains the state of
+// the XR device for a particular timestamp. A view represents the display or
+// a portion of the display, and contains all the information required to render
+// content to the view.
+struct XRView {
+  XREye eye;
   VRFieldOfView field_of_view;
 
-  // Describes the relationship between the head and eye space for this device.
-  // It should always include translation that is based on IPD (interpupillary
-  // distance), and will sometimes include rotation if the device has angled
-  // screens.
-  gfx.mojom.Transform head_from_eye;
+  // The pose transform of this view relative to the device's native origin.
+  // This transformation is equivalent to mojo_from_viewer * viewer_from_view.
+  // OpenXR has an API that directly returns this transformation matrix. ARCore
+  // and GVR only expose the head pose (aka. mojo_from_viewer) and the
+  // head-from-eye pose (viewer_from_view), so this calculation needs to be
+  // done in the XR process before sending to the renderer.
+  // TODO(https://crbug.com/1070380): All of the runtimes currently assume mojo
+  // and local space are equivalent, so this is the same as local_from_view.
+  // Instead, send this in mojo space and send the relevant transforms to other
+  // spaces in XRFrameData so the clients can calculate them as needed.
+  gfx.mojom.Transform mojo_from_view;
 
-  uint32 render_width;
-  uint32 render_height;
+  // A viewport describes the rectangular region that the underlying graphics
+  // API should use to render this view.
+  // See https://immersive-web.github.io/webxr/#xrviewport
+  gfx.mojom.Rect viewport;
+
+  // A first person observer view is a secondary view typically used when
+  // capturing from the camera of an AR device.
+  // https://immersive-web.github.io/webxr-ar-module/#first-person-observer-view
+  bool is_first_person_observer = false;
 };
 
 struct VRStageParameters {
@@ -446,13 +480,6 @@ struct VRStageParameters {
   // no need to transform them by the accompanying standing transform) and
   // in a clockwise winding order.
   array<gfx.mojom.Point3F>? bounds;
-};
-
-struct VRDisplayInfo {
-  // Parameters required to distort a scene for viewing in a VR headset. Only
-  // required for devices which have the can_present capability.
-  VREyeParameters? left_eye;
-  VREyeParameters? right_eye;
 };
 
 // Frame transport method from the Renderer's point of view.
@@ -497,14 +524,31 @@ enum XRReferenceSpaceType {
 // them roughly corresponds to something that either is an XRSpace (for example
 // XRReferenceSpaceType, XRBoundedReferenceSpace) or returns an XRSpace (for
 // example XRAnchor, XRPlane, XRInputSource). Native origin can be identified,
-// depending on its type, by the id of the entity (this is the case for planes,
-// anchors and input sources), or by reference space type.
+// depending on its type, by the id of the entity (this is the case for planes
+// and anchors), index (for tracked images), by reference space type, handedness
+// & joint, or by input source id & input source space type.
 union XRNativeOriginInformation {
-  uint32 input_source_id;
+  XRInputSourceSpaceInfo input_source_space_info;
   uint64 plane_id;
   uint64 anchor_id;
   XRReferenceSpaceType reference_space_type;
   XRHandJointSpaceInfo hand_joint_space_info;
+  uint32 image_index;
+};
+
+// Input sources have 2 kinds of native origins, each of them backs a different
+// type of XRSpace. See https://immersive-web.github.io/webxr/#xrinputsource,
+// specifically `targetRaySpace` & `gripSpace` members.
+enum XRInputSourceSpaceType {
+  kTargetRay = 0,
+  kGrip = 1,
+};
+
+// To uniquely identify a native origin derived from an input source, we need to
+// know the input source's id and the type of the space.
+struct XRInputSourceSpaceInfo {
+  uint32 input_source_id;
+  XRInputSourceSpaceType input_source_space_type;
 };
 
 // Since there is no single way to identify a joint as it may be on the left or
@@ -760,9 +804,10 @@ struct XRTrackedImagesData {
 struct XRFrameData {
   // General XRSession value
 
-  // The pose may be null if the device lost tracking. The XRFrameData can still
-  // have other data, such as pass through camera image.
-  VRPose? pose;
+  // The viewer pose of this frame. The pose may be null if the device lost
+  // tracking. The XRFrameData can still have other data, such as pass through
+  // camera image.
+  VRPose? mojo_from_viewer;
   // Time delta from an unspecified origin.
   mojo_base.mojom.TimeDelta time_delta;
   // The buffer_holder is used for sending imagery data back and forth across
@@ -773,6 +818,7 @@ struct XRFrameData {
   // across the process boundary for immersive-ar sessions. This assumes that
   // there exists a single camera.
   gpu.mojom.MailboxHolder? camera_image_buffer_holder;
+  gfx.mojom.Size? camera_image_size;
 
   // Depth data (if the device supports it and the environment integration is
   // enabled). This assumes that depth information is provided from a single
@@ -797,17 +843,13 @@ struct XRFrameData {
   // imply no mapping.
   int16 frame_id;
 
-  // Eye parameters may be provided per-frame for some runtimes.  If both of
-  // these are null, it indicates that there was no change since the previous
-  // frame.  If either are non-null, it indicates that data has changed. If only
-  // one is null, it indicates that the data has changed and the display is
-  // mono. Some hardware have sliders to adjust the displays for the eyes, so
-  // Oculus, Vive, and Samsung headsets may have differen't eye offsets for each
-  // frame. These need to be synchronized with a frame because the runtimes
-  // distort textures assuming the view matrix they handed out was used for
-  // rendering.
-  VREyeParameters? left_eye;
-  VREyeParameters? right_eye;
+  // Information about all the views in a frame. Views can appear in any order
+  // so it should not be assumed the left eye comes before the right eye. It is
+  // valid for the array to contain multiple views of the same eye. An example
+  // of this scenario are displays that have dominant left/right eyes and inset
+  // left/right eyes. In these scenarios, the dominant views comes before the
+  // inset views in the array.
+  array<XRView> views;
 
   // For immersive sessions only, reports the state of all active input devices
   // at the time of this frame. If a session has indicated that it
@@ -828,7 +870,7 @@ struct XRFrameData {
   // Detected plane information. Only present if plane detection is enabled.
   XRPlaneDetectionData? detected_planes_data;
 
-  // Tracked anchors information.
+  // Tracked anchors information. Only present if anchors are enabled.
   XRAnchorsData? anchors_data;
 
   // Lighting estimation data. Only present if lighting estimation is enabled.
@@ -1130,9 +1172,10 @@ interface XRPresentationProvider {
               mojo_base.mojom.TimeDelta time_waited);
 
   // XRPresentationTransportMethod SUBMIT_AS_TEXTURE_HANDLE
-  // TODO(https://crbug.com/676224): Support preprocessing of mojom files, since
-  // this is Windows only.
-  SubmitFrameWithTextureHandle(int16 frameId, handle<platform> texture);
+  // |texture| should only be used after |sync_token| has passed.
+  [EnableIf=is_win]
+  SubmitFrameWithTextureHandle(int16 frameId, handle<platform> texture,
+                               gpu.mojom.SyncToken sync_token);
 
   // XRPresentationTransportMethod DRAW_INTO_TEXTURE_MAILBOX
   SubmitFrameDrawnIntoTexture(int16 frameId, gpu.mojom.SyncToken sync_token,
@@ -1183,7 +1226,6 @@ enum XRVisibilityState {
 
 // Functions for pushing device information to the sessions.
 interface XRSessionClient {
-  OnChanged(VRDisplayInfo display);
   OnExitPresent();
   // Indicates a change in the visibility of the WebXR content.
   OnVisibilityStateChanged(XRVisibilityState visibility_state);

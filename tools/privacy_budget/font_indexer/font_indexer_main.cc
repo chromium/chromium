@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/task_runner_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
 #include "base/test/test_suite.h"

@@ -1,14 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/sad_tab/sad_tab_coordinator.h"
 
-#include "base/metrics/histogram_macros.h"
-#include "components/ui_metrics/sadtab_metrics_types.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "base/metrics/histogram_macros.h"
+#import "components/ui_metrics/sadtab_metrics_types.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
-#import "ios/chrome/browser/main/browser_observer_bridge.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
@@ -20,6 +19,7 @@
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/web/sad_tab_tab_helper.h"
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
+#import "ios/chrome/browser/web_state_list/web_state_dependency_installer_bridge.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/web/public/web_state.h"
 
@@ -28,15 +28,27 @@
 #endif
 
 @interface SadTabCoordinator () <SadTabViewControllerDelegate,
-                                 BrowserObserving> {
+                                 DependencyInstalling> {
   SadTabViewController* _viewController;
-  // Observe BrowserObserver to stop fullscreen disabling before the
-  // FullscreenController tied to the Browser is destroyed.
-  std::unique_ptr<BrowserObserverBridge> _browserObserver;
+  // Bridge to observe the web state list from Objective-C.
+  std::unique_ptr<WebStateDependencyInstallerBridge> _dependencyInstallerBridge;
 }
 @end
 
 @implementation SadTabCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _dependencyInstallerBridge =
+        std::make_unique<WebStateDependencyInstallerBridge>(
+            self, self.browser->GetWebStateList());
+  }
+  return self;
+}
+
+#pragma mark - ChromeCoordinator
 
 - (void)start {
   if (_viewController)
@@ -51,8 +63,6 @@
                               ui_metrics::SadTabEvent::DISPLAYED,
                               ui_metrics::SadTabEvent::MAX_SAD_TAB_EVENT);
   }
-  _browserObserver = std::make_unique<BrowserObserverBridge>(self);
-  self.browser->AddObserver(_browserObserver.get());
   // Creates a fullscreen disabler.
   [self didStartFullscreenDisablingUI];
 
@@ -77,8 +87,6 @@
   if (!_viewController)
     return;
 
-  self.browser->RemoveObserver(_browserObserver.get());
-  _browserObserver.reset();
   [self didStopFullscreenDisablingUI];
 
   [_viewController willMoveToParentViewController:nil];
@@ -87,16 +95,16 @@
   _viewController = nil;
 }
 
+- (void)disconnect {
+  // Deleting the installer bridge will cause all web states to have
+  // dependencies uninstalled.
+  _dependencyInstallerBridge.reset();
+}
+
 - (void)setOverscrollDelegate:
     (id<OverscrollActionsControllerDelegate>)delegate {
   _viewController.overscrollDelegate = delegate;
   _overscrollDelegate = delegate;
-}
-
-#pragma mark - BrowserObserving
-
-- (void)browserDestroyed:(Browser*)browser {
-  [self stop];
 }
 
 #pragma mark - SadTabViewDelegate
@@ -112,7 +120,11 @@
 
 - (void)sadTabViewController:(SadTabViewController*)sadTabViewController
     showSuggestionsPageWithURL:(const GURL&)URL {
-  OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
+  OpenNewTabCommand* command = [OpenNewTabCommand
+      commandWithURLFromChrome:URL
+                   inIncognito:self.browser->GetBrowserState()
+                                   ->IsOffTheRecord()];
+
   // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
   // clean up.
   [static_cast<id<ApplicationCommands>>(self.browser->GetCommandDispatcher())
@@ -147,6 +159,12 @@
 
 - (void)sadTabTabHelperDidHide:(SadTabTabHelper*)tabHelper {
   [self stop];
+}
+
+#pragma mark - DependencyInstalling
+
+- (void)installDependencyForWebState:(web::WebState*)webState {
+  SadTabTabHelper::FromWebState(webState)->SetDelegate(self);
 }
 
 @end

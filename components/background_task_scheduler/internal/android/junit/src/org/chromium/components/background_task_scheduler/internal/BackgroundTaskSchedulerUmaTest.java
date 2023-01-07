@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,6 +54,10 @@ public class BackgroundTaskSchedulerUmaTest {
     @Test
     @Feature({"BackgroundTaskScheduler"})
     public void testToUmaEnumValueFromTaskId() {
+        // Special case - using Integer.MAX_VALUE as a "not found" task id.
+        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_NOT_FOUND,
+                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(Integer.MAX_VALUE));
+
         assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_TEST,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(TaskIds.TEST));
         assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_OMAHA,
@@ -95,9 +99,9 @@ public class BackgroundTaskSchedulerUmaTest {
                         TaskIds.OFFLINE_PAGES_PREFETCH_NOTIFICATION_JOB_ID));
         assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_WEBAPK_UPDATE,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(TaskIds.WEBAPK_UPDATE_JOB_ID));
-        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_RESUMPTION,
+        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DEPRECATED_DOWNLOAD_RESUMPTION,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
-                        TaskIds.DOWNLOAD_RESUMPTION_JOB_ID));
+                        TaskIds.DEPRECATED_DOWNLOAD_RESUMPTION_JOB_ID));
         assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_FEED_REFRESH,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(TaskIds.FEED_REFRESH_JOB_ID));
         assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COMPONENT_UPDATE,
@@ -125,13 +129,10 @@ public class BackgroundTaskSchedulerUmaTest {
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(TaskIds.QUERY_TILE_JOB_ID));
         assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_FEEDV2_REFRESH,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(TaskIds.FEEDV2_REFRESH_JOB_ID));
-        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_OFFLINE_MEASUREMENTS,
-                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
-                        TaskIds.OFFLINE_MEASUREMENT_JOB_ID));
         assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_WEBVIEW_COMPONENT_UPDATE,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
                         TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID));
-        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 28);
+        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 29);
     }
 
     @Test

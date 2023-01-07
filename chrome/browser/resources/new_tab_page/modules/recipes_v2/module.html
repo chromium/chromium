@@ -1,0 +1,50 @@
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+  }
+
+  #recipes {
+    display: flex;
+  }
+
+  .recipe {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .secondary-info {
+    display: flex;
+    flex-direction: row;
+  }
+</style>
+<ntp-module-header
+    icon-src="modules/recipes_v2/icons/recipes_logo.svg"
+    show-info-button on-info-button-click="onInfoButtonClick_">
+  $i18n{modulesRecipeTasksSentence}
+</ntp-module-header>
+<div id="moduleContent">
+  <div id="recipes">
+    <template is="dom-repeat" id="recipesRepeat" items="[[recipes]]">
+      <a class="recipe">
+        <img is="cr-auto-img" auto-src="[[item.imageUrl.url]]"
+            draggable="false">
+        </img>
+        <div class="name" title="[[item.name]]">[[item.name]]</div>
+        <div class="secondary-info">
+          <div class="site-name">[[item.siteName]]</div>
+          &nbsp•&nbsp
+          <div class="info">[[item.info]]</div>
+        </div>
+      </a>
+    </template>
+  </div>
+</div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog inner-h-t-m-l="[[i18nAdvanced('modulesRecipeInfo')]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>

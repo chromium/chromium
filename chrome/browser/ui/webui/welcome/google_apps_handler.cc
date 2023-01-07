@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -104,13 +103,14 @@ void GoogleAppsHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void GoogleAppsHandler::HandleCacheGoogleAppIcon(const base::ListValue* args) {
-  int appId;
-  args->GetInteger(0, &appId);
+void GoogleAppsHandler::HandleCacheGoogleAppIcon(
+    const base::Value::List& args) {
+  CHECK_GE(args.size(), 1u);
+  int app_id = args[0].GetInt();
 
   const BookmarkItem* selectedApp = nullptr;
   for (const auto& google_app : google_apps_) {
-    if (google_app.id == appId) {
+    if (google_app.id == app_id) {
       selectedApp = &google_app;
       break;
     }
@@ -130,13 +130,12 @@ void GoogleAppsHandler::HandleCacheGoogleAppIcon(const base::ListValue* args) {
           gfx::Size(kGoogleAppIconSize, kGoogleAppIconSize));
 }
 
-void GoogleAppsHandler::HandleGetGoogleAppsList(const base::ListValue* args) {
+void GoogleAppsHandler::HandleGetGoogleAppsList(const base::Value::List& args) {
   AllowJavascript();
-  CHECK_EQ(1U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
   ResolveJavascriptCallback(
-      *callback_id,
+      callback_id,
       BookmarkItemsToListValue(google_apps_.data(), google_apps_.size()));
 }
 

@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/browsing_data/sessions_storage_util.h"
 
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -13,7 +13,7 @@
 // Test fixture for the session storage utility functions.
 using SessionStorageUtilTest = PlatformTest;
 
-// Tests |MarkSessionsForRemoval| adds to the existing list of sessions that are
+// Tests `MarkSessionsForRemoval` adds to the existing list of sessions that are
 // marked for removal.
 TEST_F(SessionStorageUtilTest, MarkSessionRemovalTest) {
   EXPECT_FALSE(sessions_storage_util::GetDiscardedSessions());
@@ -29,7 +29,7 @@ TEST_F(SessionStorageUtilTest, MarkSessionRemovalTest) {
   sessions_storage_util::ResetDiscardedSessions();
 }
 
-// Makes sure that |ResetDiscardedSessions| removes the list of sessions that
+// Makes sure that `ResetDiscardedSessions` removes the list of sessions that
 // are marked for removal.
 TEST_F(SessionStorageUtilTest, ResetDiscardedSessionsTest) {
   EXPECT_FALSE(sessions_storage_util::GetDiscardedSessions());

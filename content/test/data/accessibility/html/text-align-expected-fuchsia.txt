@@ -1,0 +1,36 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Left-aligned text'
+++++++++++UNKNOWN label='Left-aligned text'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Right-aligned text'
+++++++++++UNKNOWN label='Right-aligned text'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Centered text'
+++++++++++UNKNOWN label='Centered text'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Justified text'
+++++++++++UNKNOWN label='Justified text'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Webkit left-aligned text'
+++++++++++UNKNOWN label='Webkit left-aligned text'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Webkit right-aligned text'
+++++++++++UNKNOWN label='Webkit right-aligned text'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Webkit centered text'
+++++++++++UNKNOWN label='Webkit centered text'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Start-aligned text'
+++++++++++UNKNOWN label='Start-aligned text'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='End-aligned text'
+++++++++++UNKNOWN label='End-aligned text'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='No text alignment specified'
+++++++++++UNKNOWN label='No text alignment specified'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Invalid text alignment'
+++++++++++UNKNOWN label='Invalid text alignment'

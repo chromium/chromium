@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <array>
 
 #include "base/metrics/crc32.h"
+#include "base/numerics/safe_conversions.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/hid_writer.h"
@@ -135,7 +136,7 @@ Dualshock4Controller::~Dualshock4Controller() = default;
 bool Dualshock4Controller::IsDualshock4(GamepadId gamepad_id) {
   return gamepad_id == GamepadId::kSonyProduct05c4 ||
          gamepad_id == GamepadId::kSonyProduct09cc ||
-         gamepad_id == GamepadId::kVendor2e95Product7725;
+         gamepad_id == GamepadId::kScufProduct7725;
 }
 
 // static
@@ -201,7 +202,7 @@ bool Dualshock4Controller::ProcessInputReport(uint8_t report_id,
       data->controller_data.button_ps,
       data->controller_data.button_touch,
   };
-  for (size_t i = 0; i < base::size(button_values); ++i) {
+  for (size_t i = 0; i < std::size(button_values); ++i) {
     pad->buttons[i].pressed = button_values[i];
     pad->buttons[i].touched = button_values[i];
     pad->buttons[i].value = button_values[i] ? 1.0 : 0.0;
@@ -210,17 +211,17 @@ bool Dualshock4Controller::ProcessInputReport(uint8_t report_id,
   return true;
 }
 
-void Dualshock4Controller::SetVibration(double strong_magnitude,
-                                        double weak_magnitude) {
+void Dualshock4Controller::SetVibration(
+    mojom::GamepadEffectParametersPtr params) {
   // Genuine DualShock 4 gamepads use an alternate output report when connected
   // over Bluetooth. Always send USB-mode reports to SCUF Vantage gamepads.
   if (bus_type_ == GAMEPAD_BUS_BLUETOOTH &&
-      gamepad_id_ != GamepadId::kVendor2e95Product7725) {
-    SetVibrationBluetooth(strong_magnitude, weak_magnitude);
+      gamepad_id_ != GamepadId::kScufProduct7725) {
+    SetVibrationBluetooth(params->strong_magnitude, params->weak_magnitude);
     return;
   }
 
-  SetVibrationUsb(strong_magnitude, weak_magnitude);
+  SetVibrationUsb(params->strong_magnitude, params->weak_magnitude);
 }
 
 void Dualshock4Controller::SetVibrationUsb(double strong_magnitude,
@@ -233,8 +234,10 @@ void Dualshock4Controller::SetVibrationUsb(double strong_magnitude,
   control_report.fill(0);
   control_report[0] = kReportId05;
   control_report[1] = 0x01;  // motor only, don't update LEDs
-  control_report[4] = uint8_t{weak_magnitude * kRumbleMagnitudeMax};
-  control_report[5] = uint8_t{strong_magnitude * kRumbleMagnitudeMax};
+  control_report[4] =
+      base::ClampRound<uint8_t>(weak_magnitude * kRumbleMagnitudeMax);
+  control_report[5] =
+      base::ClampRound<uint8_t>(strong_magnitude * kRumbleMagnitudeMax);
 
   writer_->WriteOutputReport(control_report);
 }
@@ -252,8 +255,10 @@ void Dualshock4Controller::SetVibrationBluetooth(double strong_magnitude,
   control_report[2] = 0x20;  // unknown
   control_report[3] = 0xf1;  // motor only, don't update LEDs
   control_report[4] = 0x04;  // unknown
-  control_report[6] = uint8_t{weak_magnitude * kRumbleMagnitudeMax};
-  control_report[7] = uint8_t{strong_magnitude * kRumbleMagnitudeMax};
+  control_report[6] =
+      base::ClampRound<uint8_t>(weak_magnitude * kRumbleMagnitudeMax);
+  control_report[7] =
+      base::ClampRound<uint8_t>(strong_magnitude * kRumbleMagnitudeMax);
   control_report[21] = 0x43;  // volume left
   control_report[22] = 0x43;  // volume right
   control_report[24] = 0x4d;  // volume speaker

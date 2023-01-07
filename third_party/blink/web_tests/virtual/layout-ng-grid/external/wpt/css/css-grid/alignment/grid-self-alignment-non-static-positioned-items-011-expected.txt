@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS .grid 1
-PASS .grid 2
-PASS .grid 3
-PASS .grid 4
-Harness: the test ran to completion.
-

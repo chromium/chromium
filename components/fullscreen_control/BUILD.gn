@@ -1,0 +1,46 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("fullscreen_control") {
+  sources = [
+    "fullscreen_control_popup.cc",
+    "fullscreen_control_popup.h",
+    "fullscreen_control_view.cc",
+    "fullscreen_control_view.h",
+    "subtle_notification_view.cc",
+    "subtle_notification_view.h",
+  ]
+  deps = [
+    "//base",
+    "//cc/paint",
+    "//components/strings",
+    "//components/vector_icons",
+    "//skia",
+    "//ui/accessibility:ax_base",
+    "//ui/base",
+    "//ui/compositor",
+    "//ui/gfx:native_widget_types",
+    "//ui/gfx/animation",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "fullscreen_control_popup_unittest.cc",
+    "fullscreen_control_view_unittest.cc",
+  ]
+
+  deps = [
+    ":fullscreen_control",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

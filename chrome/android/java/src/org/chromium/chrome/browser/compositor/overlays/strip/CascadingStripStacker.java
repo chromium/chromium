@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,8 @@ public class CascadingStripStacker extends StripStacker {
     @Override
     public void setTabOffsets(int selectedIndex, StripLayoutTab[] indexOrderedTabs,
             float tabStackWidth, int maxTabsToStack, float tabOverlapWidth, float stripLeftMargin,
-            float stripRightMargin, float stripWidth, boolean inReorderMode) {
+            float stripRightMargin, float stripWidth, boolean inReorderMode, boolean tabClosing,
+            float cachedTabWidth) {
         // 1. Calculate the size of the selected tab.  This is used later to figure out how
         // occluded the tabs are.
         final StripLayoutTab selTab = selectedIndex >= 0 ? indexOrderedTabs[selectedIndex] : null;
@@ -100,17 +101,6 @@ public class CascadingStripStacker extends StripStacker {
     }
 
     @Override
-    public float computeNewTabButtonOffset(StripLayoutTab[] indexOrderedTabs,
-            float tabOverlapWidth, float stripLeftMargin, float stripRightMargin, float stripWidth,
-            float newTabButtonWidth) {
-        return LocalizationUtils.isLayoutRtl()
-                ? computeNewTabButtonOffsetRtl(indexOrderedTabs, tabOverlapWidth, stripLeftMargin,
-                        stripRightMargin, stripWidth, newTabButtonWidth)
-                                : computeNewTabButtonOffsetLtr(indexOrderedTabs, tabOverlapWidth,
-                                        stripLeftMargin, stripRightMargin, stripWidth);
-    }
-
-    @Override
     public void performOcclusionPass(int selectedIndex, StripLayoutTab[] indexOrderedTabs,
             float stripWidth) {
         for (int i = 1; i < indexOrderedTabs.length; i++) {
@@ -137,47 +127,5 @@ public class CascadingStripStacker extends StripStacker {
             // If index 0 is selected, this line is required to set its visibility correctly.
             if (i - 1 == selectedIndex) prevTab.setVisible(true);
         }
-    }
-
-    private float computeNewTabButtonOffsetLtr(StripLayoutTab[] indexOrderedTabs,
-            float tabOverlapWidth, float stripLeftMargin, float stripRightMargin,
-            float stripWidth) {
-        float rightEdge = stripLeftMargin;
-
-        for (int i = 0; i < indexOrderedTabs.length; i++) {
-            StripLayoutTab tab = indexOrderedTabs[i];
-            float layoutWidth = (tab.getWidth() - tabOverlapWidth) * tab.getWidthWeight();
-            rightEdge = Math.max(tab.getDrawX() + layoutWidth, rightEdge);
-        }
-
-        rightEdge = Math.min(rightEdge + tabOverlapWidth, stripWidth - stripRightMargin);
-
-        // Adjust the right edge by the tab overlap width so that the new tab button is nestled
-        // closer to the tab.
-        rightEdge -= tabOverlapWidth / 2;
-
-        // The draw X position for the new tab button is the rightEdge of the tab strip.
-        return rightEdge;
-    }
-
-    private float computeNewTabButtonOffsetRtl(StripLayoutTab[] indexOrderedTabs,
-            float tabOverlapWidth, float stripLeftMargin, float stripRightMargin, float stripWidth,
-            float newTabButtonWidth) {
-        float leftEdge = stripWidth - stripRightMargin;
-
-        for (int i = 0; i < indexOrderedTabs.length; i++) {
-            StripLayoutTab tab = indexOrderedTabs[i];
-            leftEdge = Math.min(tab.getDrawX(), leftEdge);
-        }
-
-        leftEdge = Math.max(leftEdge, stripLeftMargin);
-
-        // Adjust the left edge by the tab overlap width so that the new tab button is nestled
-        // closer to the tab.
-        leftEdge += tabOverlapWidth / 2;
-
-        // The draw X position for the new tab button is the left edge of the tab strip minus
-        // the new tab button width.
-        return leftEdge - newTabButtonWidth;
     }
 }

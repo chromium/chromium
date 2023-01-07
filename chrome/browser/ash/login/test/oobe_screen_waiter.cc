@@ -1,17 +1,18 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 
 #include "base/run_loop.h"
+#include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 
-namespace chromeos {
+namespace ash {
 
 OobeScreenWaiter::OobeScreenWaiter(OobeScreenId target_screen)
     : target_screen_(target_screen) {}
@@ -21,22 +22,25 @@ OobeScreenWaiter::~OobeScreenWaiter() = default;
 void OobeScreenWaiter::Wait() {
   DCHECK_EQ(State::IDLE, state_);
 
-  if ((!check_native_window_visible_ || IsNativeWindowVisible()) &&
-      IsTargetScreenReached()) {
-    state_ = State::DONE;
+  if (CheckIfDone())
     return;
-  }
+
   DCHECK(!run_loop_);
 
-  oobe_ui_observer_.Add(GetOobeUI());
+  state_ = State::WAITING_FOR_SCREEN;
+
+  test::WaitForOobeJSReady();
+
+  if (CheckIfDone())
+    return;
+
+  oobe_ui_observation_.Observe(GetOobeUI());
   if (check_native_window_visible_) {
     aura::Window* native_window =
         LoginDisplayHost::default_host()->GetNativeWindow();
     DCHECK(native_window);
-    native_window_observer_.Add(native_window);
+    native_window_observation_.Observe(native_window);
   }
-
-  state_ = State::WAITING_FOR_SCREEN;
 
   LOG(INFO) << "Actually waiting for screen " << target_screen_.name;
 
@@ -47,9 +51,9 @@ void OobeScreenWaiter::Wait() {
   ASSERT_EQ(State::DONE, state_)
       << " Timed out while waiting for " << target_screen_.name;
 
-  oobe_ui_observer_.RemoveAll();
+  oobe_ui_observation_.Reset();
   if (check_native_window_visible_)
-    native_window_observer_.RemoveAll();
+    native_window_observation_.Reset();
 
   if (assert_last_screen_)
     EXPECT_EQ(target_screen_, GetOobeUI()->current_screen());
@@ -85,7 +89,6 @@ void OobeScreenWaiter::OnCurrentScreenChanged(OobeScreenId current_screen,
 
 void OobeScreenWaiter::OnWindowVisibilityChanged(aura::Window* window,
                                                  bool visible) {
-  DCHECK_NE(state_, State::IDLE);
   DCHECK(check_native_window_visible_);
 
   if (IsNativeWindowVisible() && IsTargetScreenReached())
@@ -93,7 +96,8 @@ void OobeScreenWaiter::OnWindowVisibilityChanged(aura::Window* window,
 }
 
 bool OobeScreenWaiter::IsTargetScreenReached() {
-  return GetOobeUI()->current_screen() == target_screen_;
+  return LoginDisplayHost::default_host()->GetOobeUI() &&
+         GetOobeUI()->current_screen() == target_screen_;
 }
 
 bool OobeScreenWaiter::IsNativeWindowVisible() {
@@ -103,7 +107,7 @@ bool OobeScreenWaiter::IsNativeWindowVisible() {
 }
 
 void OobeScreenWaiter::OnDestroyingOobeUI() {
-  oobe_ui_observer_.RemoveAll();
+  oobe_ui_observation_.Reset();
 
   EXPECT_EQ(State::DONE, state_);
 
@@ -116,6 +120,15 @@ OobeUI* OobeScreenWaiter::GetOobeUI() {
   return oobe_ui;
 }
 
+bool OobeScreenWaiter::CheckIfDone() {
+  if ((!check_native_window_visible_ || IsNativeWindowVisible()) &&
+      IsTargetScreenReached()) {
+    state_ = State::DONE;
+    return true;
+  }
+  return false;
+}
+
 void OobeScreenWaiter::EndWait() {
   if (state_ == State::DONE)
     return;
@@ -124,4 +137,4 @@ void OobeScreenWaiter::EndWait() {
   run_loop_->Quit();
 }
 
-}  // namespace chromeos
+}  // namespace ash

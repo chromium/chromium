@@ -31,6 +31,7 @@ body {
 
 <script type="text/javascript">
 promise_test (async () => {
+  await waitForCompositorCommit();
   assert_greater_than(window.innerWidth - document.body.clientWidth, 5);
   var scrollbarX = document.body.clientWidth + 5;
   var scrollbarY = window.innerHeight / 2;  // Trying to grab the thumb

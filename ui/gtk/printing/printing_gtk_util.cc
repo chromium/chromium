@@ -1,11 +1,8 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/gtk/printing/printing_gtk_util.h"
-
-#include <gtk/gtk.h>
-#include <gtk/gtkunixprint.h>
 
 #include <string>
 
@@ -15,6 +12,7 @@
 #include "printing/units.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gtk/gtk_compat.h"
 
 namespace {
 

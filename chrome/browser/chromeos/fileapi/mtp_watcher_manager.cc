@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ namespace chromeos {
 MTPWatcherManager::MTPWatcherManager(
     DeviceMediaAsyncFileUtil* device_media_async_file_util)
     : device_media_async_file_util_(device_media_async_file_util) {
-  DCHECK(device_media_async_file_util != NULL);
+  DCHECK(device_media_async_file_util != nullptr);
 }
 
 MTPWatcherManager::~MTPWatcherManager() {

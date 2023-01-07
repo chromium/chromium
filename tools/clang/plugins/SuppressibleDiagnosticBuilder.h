@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,15 +29,12 @@ class SuppressibleDiagnosticBuilder : public clang::DiagnosticBuilder {
       // Clear the underlying data, so the base class destructor
       // doesn't try to emit the diagnostic.
 
-      // TODO(crbug.com/1140409) Remove in the next Clang roll.
       Clear();
       // Also clear the current diagnostic being processed by the
       // DiagnosticsEngine, since it won't be emitted.
       diagnostics_->Clear();
     }
   }
-
-  // TODO(crbug.com/1140409) Remove in the next Clang roll.
 
  private:
   clang::DiagnosticsEngine* const diagnostics_;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,7 +94,7 @@ class ASH_EXPORT LoginBaseBubbleView : public views::View,
   void ScheduleAnimation(bool visible);
 
   // Determine the position of the bubble prior to showing.
-  gfx::Point CalculatePosition();
+  virtual gfx::Point CalculatePosition();
 
   views::View* anchor_view_;
 

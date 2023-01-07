@@ -28,6 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_EXPRESSION_H_
 
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {

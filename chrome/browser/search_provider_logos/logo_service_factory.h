@@ -1,13 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class Profile;
 
@@ -16,11 +15,14 @@ class LogoService;
 }  // namespace search_provider_logos
 
 // Singleton that owns all LogoServices and associates them with Profiles.
-class LogoServiceFactory : public BrowserContextKeyedServiceFactory {
+class LogoServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static search_provider_logos::LogoService* GetForProfile(Profile* profile);
 
   static LogoServiceFactory* GetInstance();
+
+  LogoServiceFactory(const LogoServiceFactory&) = delete;
+  LogoServiceFactory& operator=(const LogoServiceFactory&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<LogoServiceFactory>;
@@ -31,8 +33,6 @@ class LogoServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(LogoServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_FACTORY_H_

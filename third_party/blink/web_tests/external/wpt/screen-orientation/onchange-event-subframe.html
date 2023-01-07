@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 
 <iframe
   id="testIframe"
@@ -22,10 +24,8 @@
       return document.documentElement.requestFullscreen();
     });
     let orientations = [
-      "portrait-primary",
-      "portrait-secondary",
-      "landscape-primary",
-      "landscape-secondary",
+      "portrait",
+      "landscape",
     ];
     if (screen.orientation.type.includes("portrait")) {
       orientations = orientations.reverse();
@@ -35,9 +35,8 @@
     for (const orientation of orientations) {
       await screen.orientation.lock(orientation);
       const message = await messageWatcher.wait_for("message");
-      assert_equals(
-        message.data,
-        orientation,
+      assert_true(
+        message.data.startsWith(orientation),
         "subframe receives orientation change event"
       );
     }

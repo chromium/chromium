@@ -1,17 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SVG_OBJECT_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SVG_OBJECT_PAINTER_H_
 
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-struct PaintInfo;
 class AffineTransform;
 class ComputedStyle;
 class GraphicsContext;
@@ -34,10 +33,11 @@ class SVGObjectPainter {
   // object. Returns true if successful, and the caller can continue to paint
   // using |paint_flags|.
   bool PreparePaint(
-      const PaintInfo&,
+      const GraphicsContext& context,
+      bool is_rendering_clip_path_as_mask_image,
       const ComputedStyle&,
       LayoutSVGResourceMode,
-      PaintFlags& paint_flags,
+      cc::PaintFlags& paint_flags,
       const AffineTransform* additional_paint_server_transform = nullptr);
 
   void PaintResourceSubtree(GraphicsContext&);
@@ -46,7 +46,7 @@ class SVGObjectPainter {
   bool ApplyPaintResource(
       const SVGPaint& paint,
       const AffineTransform* additional_paint_server_transform,
-      PaintFlags& flags);
+      cc::PaintFlags& flags);
 
   const LayoutObject& layout_object_;
 };

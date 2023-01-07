@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 
@@ -84,9 +85,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // TODO(devlin): This test name should be more descriptive.
 IN_PROC_BROWSER_TEST_P(TestAPITestWithContextType, ApiTest) {
-  ASSERT_TRUE(RunExtensionTest(
-      {.name = "apitest"},
-      {.load_as_service_worker = GetParam() == ContextType::kServiceWorker}))
+  ASSERT_TRUE(RunExtensionTest("apitest", {}, {.context_type = GetParam()}))
       << message_;
 }
 
@@ -241,6 +240,47 @@ IN_PROC_BROWSER_TEST_F(TestAPITest, AssertPromiseRejects_PromiseIgnored) {
                                              /*manifest_version=*/3));
   EXPECT_FALSE(result_catcher.GetNextResult());
   EXPECT_EQ(kExpectedFailureMessage, result_catcher.message());
+}
+
+// Tests that chrome.test.sendMessage() successfully sends a message to the C++
+// side and can receive a response back using a promise.
+IN_PROC_BROWSER_TEST_F(TestAPITest, SendMessage_WithPromise) {
+  ResultCatcher result_catcher;
+  constexpr char kWorkerJs[] =
+      R"(chrome.test.runTests([
+           async function sendMessageWithPromise() {
+             let response = await chrome.test.sendMessage('ping');
+             chrome.test.assertEq('pong', response);
+             chrome.test.succeed();
+           },
+         ]);)";
+  ExtensionTestMessageListener ping_listener("ping", ReplyBehavior::kWillReply);
+  ASSERT_TRUE(LoadExtensionScriptWithContext(kWorkerJs,
+                                             ContextType::kServiceWorker,
+                                             /*manifest_version=*/3));
+  EXPECT_TRUE(ping_listener.WaitUntilSatisfied());
+  ping_listener.Reply("pong");
+  EXPECT_TRUE(result_catcher.GetNextResult());
+}
+
+// Tests that calling chrome.test.waitForRountTrip() eventually comes back with
+// the same message when using promises. Note: this does not verify that the
+// message actually passes through the renderer process, it just tests the
+// surface level from the Javascript side.
+IN_PROC_BROWSER_TEST_F(TestAPITest, WaitForRoundTrip_WithPromise) {
+  ResultCatcher result_catcher;
+  constexpr char kWorkerJs[] =
+      R"(chrome.test.runTests([
+           async function waitForRoundTripWithPromise() {
+             let response = await chrome.test.waitForRoundTrip('arrivederci');
+             chrome.test.assertEq('arrivederci', response);
+             chrome.test.succeed();
+           },
+         ]);)";
+  ASSERT_TRUE(LoadExtensionScriptWithContext(kWorkerJs,
+                                             ContextType::kServiceWorker,
+                                             /*manifest_version=*/3));
+  EXPECT_TRUE(result_catcher.GetNextResult());
 }
 
 }  // namespace extensions

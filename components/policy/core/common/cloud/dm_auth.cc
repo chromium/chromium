@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,11 +17,6 @@ DMAuth& DMAuth::operator=(DMAuth&& other) = default;
 // static
 DMAuth DMAuth::FromDMToken(const std::string& dm_token) {
   return DMAuth(dm_token, DMAuthTokenType::kDm);
-}
-
-// static
-DMAuth DMAuth::FromGaiaToken(const std::string& gaia_token) {
-  return DMAuth(gaia_token, DMAuthTokenType::kGaia);
 }
 
 // static

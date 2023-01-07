@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,31 +8,35 @@
 #include <cmath>
 #include <utility>
 
-#include "base/allocator/allocator_shim.h"
-#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/shim/allocator_shim.h"
 #include "base/bind.h"
+#include "base/compiler_specific.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/partition_alloc_buildflags.h"
+#include "base/notreached.h"
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
+#include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/threading/thread_local_storage.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"  // no-presubmit-check
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <pthread.h>
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <sys/prctl.h>
 #endif
 
-#if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
     defined(OFFICIAL_BUILD)
 #include "base/trace_event/cfi_backtrace_android.h"  // no-presubmit-check
+#define CFI_BACKTRACE_AVAILABLE 1
+#else
+#define CFI_BACKTRACE_AVAILABLE 0
 #endif
 
 namespace base {
@@ -40,6 +44,8 @@ namespace base {
 constexpr uint32_t kMaxStackEntries = 256;
 
 namespace {
+
+using StackUnwinder = SamplingHeapProfiler::StackUnwinder;
 
 // If a thread name has been set from ThreadIdNameManager, use that. Otherwise,
 // gets the thread name from kernel if available or returns a string with id.
@@ -55,18 +61,19 @@ const char* GetAndLeakThreadName() {
   // 64 on macOS, see PlatformThread::SetName in platform_thread_mac.mm.
   constexpr size_t kBufferLen = 64;
   char name[kBufferLen];
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // If the thread name is not set, try to get it from prctl. Thread name might
   // not be set in cases where the thread started before heap profiling was
   // enabled.
   int err = prctl(PR_GET_NAME, name);
   if (!err)
     return strdup(name);
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   int err = pthread_getname_np(pthread_self(), name, kBufferLen);
   if (err == 0 && *name != '\0')
     return strdup(name);
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
 
   // Use tid if we don't have a thread name.
   snprintf(name, sizeof(name), "Thread %lu",
@@ -81,6 +88,34 @@ const char* UpdateAndGetThreadName(const char* name) {
   if (!thread_name)
     thread_name = GetAndLeakThreadName();
   return thread_name;
+}
+
+// Checks whether unwinding from this function works.
+[[maybe_unused]] StackUnwinder CheckForDefaultUnwindTables() {
+  void* stack[kMaxStackEntries];
+  size_t frame_count = base::debug::CollectStackTrace(const_cast<void**>(stack),
+                                                      kMaxStackEntries);
+  // First frame is the current function and can be found without unwind tables.
+  return frame_count > 1 ? StackUnwinder::kDefault
+                         : StackUnwinder::kUnavailable;
+}
+
+StackUnwinder ChooseStackUnwinder() {
+#if CFI_BACKTRACE_AVAILABLE
+  if (trace_event::CFIBacktraceAndroid::GetInitializedInstance()
+          ->can_unwind_stack_frames()) {
+    return StackUnwinder::kCFIBacktrace;
+  }
+#endif
+#if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+  // Use frame pointers if available, since they can be faster than the default.
+  return StackUnwinder::kFramePointers;
+#elif BUILDFLAG(IS_ANDROID)
+  // Default unwind tables aren't always present on Android.
+  return CheckForDefaultUnwindTables();
+#else
+  return StackUnwinder::kDefault;
+#endif
 }
 
 }  // namespace
@@ -100,18 +135,30 @@ SamplingHeapProfiler::~SamplingHeapProfiler() {
 }
 
 uint32_t SamplingHeapProfiler::Start() {
-#if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
-    defined(OFFICIAL_BUILD)
-  if (!trace_event::CFIBacktraceAndroid::GetInitializedInstance()
-           ->can_unwind_stack_frames()) {
+  const auto unwinder = ChooseStackUnwinder();
+#if BUILDFLAG(IS_ANDROID)
+  // Record which unwinder is in use on Android, since it's hard to keep track
+  // of which methods are available at runtime.
+  base::UmaHistogramEnumeration("HeapProfiling.AndroidStackUnwinder", unwinder);
+#endif
+  if (unwinder == StackUnwinder::kUnavailable) {
     LOG(WARNING) << "Sampling heap profiler: Stack unwinding is not available.";
     return 0;
   }
-#endif
+  unwinder_.store(unwinder);
+
+  auto* poisson_allocation_sampler = PoissonAllocationSampler::Get();
+
+  // Sampling interval is in bytes. Record it in KB since the extra precision
+  // isn't needed for metrics and HeapProfilerController can set the interval to
+  // center around 10M bytes, which would overflow the buckets.
+  base::UmaHistogramCounts10M(
+      "HeapProfiling.SamplingIntervalKB",
+      static_cast<int>(poisson_allocation_sampler->SamplingInterval() / 1024));
 
   AutoLock lock(start_stop_mutex_);
   if (!running_sessions_++)
-    PoissonAllocationSampler::Get()->AddSamplesObserver(this);
+    poisson_allocation_sampler->AddSamplesObserver(this);
   return last_sample_ordinal_;
 }
 
@@ -122,8 +169,8 @@ void SamplingHeapProfiler::Stop() {
     PoissonAllocationSampler::Get()->RemoveSamplesObserver(this);
 }
 
-void SamplingHeapProfiler::SetSamplingInterval(size_t sampling_interval) {
-  PoissonAllocationSampler::Get()->SetSamplingInterval(sampling_interval);
+void SamplingHeapProfiler::SetSamplingInterval(size_t sampling_interval_bytes) {
+  PoissonAllocationSampler::Get()->SetSamplingInterval(sampling_interval_bytes);
 }
 
 void SamplingHeapProfiler::SetRecordThreadNames(bool value) {
@@ -142,27 +189,38 @@ const char* SamplingHeapProfiler::CachedThreadName() {
   return UpdateAndGetThreadName(nullptr);
 }
 
-// static
 void** SamplingHeapProfiler::CaptureStackTrace(void** frames,
                                                size_t max_entries,
                                                size_t* count) {
   // Skip top frames as they correspond to the profiler itself.
   size_t skip_frames = 3;
-#if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
-    defined(OFFICIAL_BUILD)
-  size_t frame_count =
-      base::trace_event::CFIBacktraceAndroid::GetInitializedInstance()->Unwind(
-          const_cast<const void**>(frames), max_entries);
-#elif BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
-  size_t frame_count = base::debug::TraceStackFramePointers(
-      const_cast<const void**>(frames), max_entries, skip_frames);
-  skip_frames = 0;
-#else
-  // Fall-back to capturing the stack with base::debug::CollectStackTrace,
-  // which is likely slower, but more reliable.
-  size_t frame_count =
-      base::debug::CollectStackTrace(const_cast<void**>(frames), max_entries);
+  size_t frame_count = 0;
+  switch (unwinder_) {
+#if CFI_BACKTRACE_AVAILABLE
+    case StackUnwinder::kCFIBacktrace:
+      frame_count =
+          base::trace_event::CFIBacktraceAndroid::GetInitializedInstance()
+              ->Unwind(const_cast<const void**>(frames), max_entries);
+      break;
 #endif
+#if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+    case StackUnwinder::kFramePointers:
+      frame_count = base::debug::TraceStackFramePointers(
+          const_cast<const void**>(frames), max_entries, skip_frames);
+      skip_frames = 0;
+      break;
+#endif
+    case StackUnwinder::kDefault:
+      // Fall-back to capturing the stack with base::debug::CollectStackTrace,
+      // which is likely slower, but more reliable.
+      frame_count = base::debug::CollectStackTrace(frames, max_entries);
+      break;
+    default:
+      // Profiler should not be started if ChooseStackUnwinder() returns
+      // anything else.
+      NOTREACHED();
+      break;
+  }
 
   skip_frames = std::min(skip_frames, frame_count);
   *count = frame_count - skip_frames;
@@ -182,48 +240,18 @@ void SamplingHeapProfiler::SampleAdded(
   DCHECK(PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
   Sample sample(size, total, ++last_sample_ordinal_);
   sample.allocator = type;
-  using CaptureMode = trace_event::AllocationContextTracker::CaptureMode;
-  CaptureMode capture_mode =
-      trace_event::AllocationContextTracker::capture_mode();
-  if (capture_mode == CaptureMode::PSEUDO_STACK ||
-      capture_mode == CaptureMode::MIXED_STACK) {
-    CaptureMixedStack(context, &sample);
-  } else {
-    CaptureNativeStack(context, &sample);
-  }
+  CaptureNativeStack(context, &sample);
   AutoLock lock(mutex_);
+  if (UNLIKELY(PoissonAllocationSampler::AreHookedSamplesMuted() &&
+               type != PoissonAllocationSampler::kManualForTesting)) {
+    // Throw away any non-test samples that were being collected before
+    // ScopedMuteHookedSamplesForTesting was enabled. This is done inside the
+    // lock to catch any samples that were being collected while
+    // ClearSamplesForTesting is running.
+    return;
+  }
   RecordString(sample.context);
   samples_.emplace(address, std::move(sample));
-}
-
-void SamplingHeapProfiler::CaptureMixedStack(const char* context,
-                                             Sample* sample) {
-  auto* tracker =
-      trace_event::AllocationContextTracker::GetInstanceForCurrentThread();
-  if (!tracker)
-    return;
-
-  trace_event::AllocationContext allocation_context;
-  if (!tracker->GetContextSnapshot(&allocation_context))
-    return;
-
-  const base::trace_event::Backtrace& backtrace = allocation_context.backtrace;
-  CHECK_LE(backtrace.frame_count, kMaxStackEntries);
-  std::vector<void*> stack;
-  stack.reserve(backtrace.frame_count);
-
-  AutoLock lock(mutex_);  // Needed for RecordString call.
-  for (int i = base::checked_cast<int>(backtrace.frame_count) - 1; i >= 0;
-       --i) {
-    const base::trace_event::StackFrame& frame = backtrace.frames[i];
-    if (frame.type != base::trace_event::StackFrame::Type::PROGRAM_COUNTER)
-      RecordString(static_cast<const char*>(frame.value));
-    stack.push_back(const_cast<void*>(frame.value));
-  }
-  sample->stack = std::move(stack);
-  if (!context)
-    context = allocation_context.type_name;
-  sample->context = context;
 }
 
 void SamplingHeapProfiler::CaptureNativeStack(const char* context,
@@ -294,6 +322,16 @@ SamplingHeapProfiler* SamplingHeapProfiler::Get() {
 
 void SamplingHeapProfiler::OnThreadNameChanged(const char* name) {
   UpdateAndGetThreadName(name);
+}
+
+void SamplingHeapProfiler::ClearSamplesForTesting() {
+  DCHECK(PoissonAllocationSampler::AreHookedSamplesMuted());
+  base::AutoLock lock(mutex_);
+  samples_.clear();
+  // Since hooked samples are muted, any samples that are waiting to take the
+  // lock in SampleAdded will be discarded. Tests can now call
+  // PoissonAllocationSampler::RecordAlloc with allocator type kManualForTesting
+  // to add samples cleanly.
 }
 
 }  // namespace base

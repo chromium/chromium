@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using blink::IndexedDBDatabaseMetadata;
@@ -16,12 +17,12 @@ namespace content {
 
 MockIndexedDBCallbacks::MockIndexedDBCallbacks()
     : IndexedDBCallbacks(nullptr,
-                         url::Origin(),
+                         storage::BucketLocator(),
                          mojo::NullAssociatedRemote(),
                          base::SequencedTaskRunnerHandle::Get()) {}
 MockIndexedDBCallbacks::MockIndexedDBCallbacks(bool expect_connection)
     : IndexedDBCallbacks(nullptr,
-                         url::Origin(),
+                         storage::BucketLocator(),
                          mojo::NullAssociatedRemote(),
                          base::SequencedTaskRunnerHandle::Get()),
       expect_connection_(expect_connection) {}
@@ -41,6 +42,8 @@ void MockIndexedDBCallbacks::OnSuccess(int64_t result) {}
 void MockIndexedDBCallbacks::OnSuccess(
     std::vector<blink::mojom::IDBNameAndVersionPtr> names_and_versions) {
   info_called_ = true;
+  if (call_on_info_success_)
+    call_on_info_success_.Run();
 }
 
 void MockIndexedDBCallbacks::OnSuccess(
@@ -68,6 +71,9 @@ void MockIndexedDBCallbacks::CallOnUpgradeNeeded(base::OnceClosure closure) {
 }
 void MockIndexedDBCallbacks::CallOnDBSuccess(base::OnceClosure closure) {
   call_on_db_success_ = std::move(closure);
+}
+void MockIndexedDBCallbacks::CallOnInfoSuccess(base::RepeatingClosure closure) {
+  call_on_info_success_ = std::move(closure);
 }
 
 }  // namespace content

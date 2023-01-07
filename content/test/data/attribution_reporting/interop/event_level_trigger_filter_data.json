@@ -1,0 +1,271 @@
+{
+  "description": "First matched event trigger data is attributed",
+  "input": {
+    "sources": [
+      {
+        "timestamp": "1643235573000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "navigation"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://destination.test",
+              "source_event_id": "123",
+              "filter_data": {
+                "product": ["123", "456"],
+                "geo": []
+              }
+            }
+          }
+        }]
+      },
+      {
+        "timestamp": "1643235573000",
+        "registration_request": {
+          "source_origin": "https://source.test",
+          "attribution_src_url": "https://reporter.test/register-source",
+          "source_type": "event"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-source",
+          "response": {
+            "Attribution-Reporting-Register-Source": {
+              "destination": "https://another-destination.test",
+              "source_event_id": "456"
+            }
+          }
+        }]
+      }
+    ],
+    "triggers": [
+      {
+        "timestamp": "1643235574000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1",
+                  "filters": {
+                    "product": [],
+                    "source_type": ["navigation"]
+                  }
+                },
+                {
+                  "trigger_data": "2",
+                  "filters": {
+                    "geo": [],
+                    "source_type": ["event"]
+                  }
+                },
+                {
+                  "trigger_data": "3",
+                  "filters": {
+                    "product": ["123"],
+                    "geo": [],
+                    "source_type": ["navigation"],
+                    "campaign": ["example"]
+                  }
+                },
+                {
+                  "trigger_data": "4",
+                  "filters": {
+                    "product": ["123"],
+                    "geo": [],
+                    "source_type": ["navigation"],
+                    "campaign": ["example"]
+                  }
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        "timestamp": "1643235575000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1",
+                  "not_filters": {
+                    "geo": [],
+                    "source_type": ["event"]
+                  }
+                },
+                {
+                  "trigger_data": "2",
+                  "not_filters": {
+                    "product": [],
+                    "source_type": ["navigation"]
+                  }
+                },
+                {
+                  "trigger_data": "5",
+                  "not_filters": {
+                    "product": [],
+                    "geo": ["US"],
+                    "source_type": ["event"],
+                    "campaign": []
+                  }
+                },
+                {
+                  "trigger_data": "4",
+                  "not_filters": {
+                    "product": [],
+                    "geo": ["US"],
+                    "source_type": ["event"],
+                    "campaign": []
+                  }
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        "timestamp": "1643235576000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "1",
+                  "filters": {
+                    "source_type": ["navigation"]
+                  },
+                  "not_filters": {
+                    "product": ["123"]
+                  }
+                },
+                {
+                  "trigger_data": "2",
+                  "filters": {
+                    "source_type": ["event"]
+                  },
+                  "not_filters": {
+                    "product": ["789"]
+                  }
+                },
+                {
+                  "trigger_data": "6",
+                  "filters": {
+                    "source_type": ["navigation"]
+                  },
+                  "not_filters": {
+                    "product": ["789"]
+                  }
+                },
+                {
+                  "trigger_data": "7",
+                  "filters": {
+                    "source_type": ["navigation"]
+                  },
+                  "not_filters": {
+                    "product": ["789"]
+                  }
+                }
+              ]
+            }
+          }
+        }]
+      },
+      {
+        "timestamp": "1643235577000",
+        "registration_request": {
+          "attribution_src_url": "https://reporter.test/register-trigger",
+          "destination_origin": "https://another-destination.test"
+        },
+        "responses": [{
+          "url": "https://reporter.test/register-trigger",
+          "response": {
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "0",
+                  "filters": {
+                    "source_type": ["navigation"]
+                  }
+                },
+                {
+                  "trigger_data": "1",
+                  "filters": {
+                    "source_type": ["event"]
+                  }
+                }
+              ]
+            }
+          }
+        }]
+      }
+    ]
+  },
+  "output": {
+    "event_level_results": [
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024,
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "3"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "1643408373000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024,
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "5"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "1643408373000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://destination.test",
+          "randomized_trigger_rate": 0.0024,
+          "source_event_id": "123",
+          "source_type": "navigation",
+          "trigger_data": "6"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "1643408373000"
+      },
+      {
+        "payload": {
+          "attribution_destination": "https://another-destination.test",
+          "randomized_trigger_rate": 0.0000025,
+          "source_event_id": "456",
+          "source_type": "event",
+          "trigger_data": "1"
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-event-attribution",
+        "report_time": "1645831173000"
+      }
+    ]
+  }
+}

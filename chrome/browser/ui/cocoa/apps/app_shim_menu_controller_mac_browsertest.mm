@@ -1,6 +1,8 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "base/memory/raw_ptr.h"
 
 #import "chrome/browser/ui/cocoa/apps/app_shim_menu_controller_mac.h"
 
@@ -10,7 +12,6 @@
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
@@ -32,28 +33,30 @@ namespace {
 
 class AppShimMenuControllerBrowserTest
     : public extensions::PlatformAppBrowserTest {
+ public:
+  AppShimMenuControllerBrowserTest(const AppShimMenuControllerBrowserTest&) =
+      delete;
+  AppShimMenuControllerBrowserTest& operator=(
+      const AppShimMenuControllerBrowserTest&) = delete;
+
  protected:
   // The apps that can be installed and launched by SetUpApps().
   enum AvailableApps { PACKAGED_1 = 0x1, PACKAGED_2 = 0x2, HOSTED = 0x4 };
 
-  AppShimMenuControllerBrowserTest()
-      : app_1_(nullptr),
-        app_2_(nullptr),
-        hosted_app_(nullptr),
-        initial_menu_item_count_(0) {}
+  AppShimMenuControllerBrowserTest() = default;
 
   // Start testing apps and wait for them to launch. |flags| is a bitmask of
   // AvailableApps.
   void SetUpApps(int flags) {
 
     if (flags & PACKAGED_1) {
-      ExtensionTestMessageListener listener_1("Launched", false);
+      ExtensionTestMessageListener listener_1("Launched");
       app_1_ = InstallAndLaunchPlatformApp("minimal_id");
       ASSERT_TRUE(listener_1.WaitUntilSatisfied());
     }
 
     if (flags & PACKAGED_2) {
-      ExtensionTestMessageListener listener_2("Launched", false);
+      ExtensionTestMessageListener listener_2("Launched");
       app_2_ = InstallAndLaunchPlatformApp("minimal");
       ASSERT_TRUE(listener_2.WaitUntilSatisfied());
     }
@@ -71,37 +74,45 @@ class AppShimMenuControllerBrowserTest
   }
 
   void CheckHasAppMenus(const extensions::Extension* app) const {
-    const int kExtraTopLevelItems = 4;
     NSArray* item_array = [[NSApp mainMenu] itemArray];
-    ASSERT_EQ(initial_menu_item_count_ + kExtraTopLevelItems,
-              [item_array count]);
-    for (NSUInteger i = 0; i < initial_menu_item_count_; ++i)
-      EXPECT_TRUE([[item_array objectAtIndex:i] isHidden]);
-    NSMenuItem* app_menu = [item_array objectAtIndex:initial_menu_item_count_];
+    ASSERT_EQ(initial_menu_item_count_, [item_array count]);
+
+    // The extra app menus are added from the start when NSApp has an activation
+    // policy.
+    const int kExtraTopLevelItems = 4;
+    for (NSUInteger i = 0; i < initial_menu_item_count_ - kExtraTopLevelItems;
+         ++i) {
+      EXPECT_TRUE([item_array[i] isHidden]);
+    }
+
+    NSMenuItem* app_menu =
+        item_array[initial_menu_item_count_ - kExtraTopLevelItems];
     EXPECT_EQ(app->id(), base::SysNSStringToUTF8([app_menu title]));
     EXPECT_EQ(app->name(),
               base::SysNSStringToUTF8([[app_menu submenu] title]));
-    for (NSUInteger i = initial_menu_item_count_;
-         i < initial_menu_item_count_ + kExtraTopLevelItems;
-         ++i) {
-      NSMenuItem* menu = [item_array objectAtIndex:i];
+    for (NSUInteger i = initial_menu_item_count_ - kExtraTopLevelItems;
+         i < initial_menu_item_count_; ++i) {
+      NSMenuItem* menu = item_array[i];
       EXPECT_GT([[menu submenu] numberOfItems], 0);
       EXPECT_FALSE([menu isHidden]);
     }
   }
 
   void CheckNoAppMenus() const {
+    const int kExtraTopLevelItems = 4;
     NSArray* item_array = [[NSApp mainMenu] itemArray];
-    EXPECT_EQ(initial_menu_item_count_, [item_array count]);
-    for (NSUInteger i = 0; i < initial_menu_item_count_; ++i)
-      EXPECT_FALSE([[item_array objectAtIndex:i] isHidden]);
+    EXPECT_EQ(initial_menu_item_count_ - kExtraTopLevelItems,
+              [item_array count]);
+    for (NSUInteger i = 0; i < initial_menu_item_count_ - kExtraTopLevelItems;
+         ++i) {
+      EXPECT_FALSE([item_array[i] isHidden]);
+    }
   }
 
   void CheckEditMenu(const extensions::Extension* app) const {
     const int edit_menu_index = initial_menu_item_count_ + 2;
 
-    NSMenuItem* edit_menu =
-        [[[NSApp mainMenu] itemArray] objectAtIndex:edit_menu_index];
+    NSMenuItem* edit_menu = [[NSApp mainMenu] itemArray][edit_menu_index];
     NSMenu* edit_submenu = [edit_menu submenu];
     NSMenuItem* paste_match_style_menu_item =
         [edit_submenu itemWithTag:IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE];
@@ -123,13 +134,10 @@ class AppShimMenuControllerBrowserTest
     return window_list.front();
   }
 
-  const extensions::Extension* app_1_;
-  const extensions::Extension* app_2_;
-  const extensions::Extension* hosted_app_;
-  NSUInteger initial_menu_item_count_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppShimMenuControllerBrowserTest);
+  raw_ptr<const extensions::Extension> app_1_ = nullptr;
+  raw_ptr<const extensions::Extension> app_2_ = nullptr;
+  raw_ptr<const extensions::Extension> hosted_app_ = nullptr;
+  NSUInteger initial_menu_item_count_ = 0;
 };
 
 // Test that focusing an app window changes the menu bar.
@@ -181,8 +189,9 @@ IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
 }
 
 // Test that closing windows without main status do not update the menu.
+// Disabled; https://crbug.com/1322740.
 IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
-                       ClosingBackgroundWindowLeavesMenuBar) {
+                       DISABLED_ClosingBackgroundWindowLeavesMenuBar) {
   // Start with app1 active.
   SetUpApps(PACKAGED_1);
   extensions::AppWindow* app_1_app_window = FirstWindowForApp(app_1_);

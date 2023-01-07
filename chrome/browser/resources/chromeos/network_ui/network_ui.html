@@ -7,7 +7,10 @@
     margin-bottom: 10px;
   }
 
-  #global-policy {
+  #global-policy,
+  #tethering-capabilities-div,
+  #tethering-status-div,
+  #tethering-config-div {
     white-space: pre-wrap;
   }
 
@@ -19,6 +22,11 @@
 
   #onc-import-result {
     margin: 10px 0
+  }
+
+  #tethering-config-input {
+    margin-bottom: 0;
+    margin-top: 10px;
   }
 
   iron-pages {
@@ -62,6 +70,31 @@
         $i18n{noCellularErrorText}
       </div>
     </div>
+
+    <div>
+      <h2>$i18n{resetESimCacheLabel}</h2>
+      <cr-button class="action-button" on-click="onResetESimCacheClick_">
+        $i18n{resetESimCacheButtonText}
+      </cr-button>
+    </div>
+
+    <div>
+      <h2>$i18n{disableESimProfilesLabel}</h2>
+      <cr-button class="action-button"
+          on-click="onDisableActiveESimProfileClick_">
+        $i18n{disableActiveESimProfileButtonText}
+      </cr-button>
+    </div>
+
+    <template is="dom-if" if="[[!isGuestModeActive_]]">
+      <div>
+        <h2>$i18n{resetEuiccLabel}</h2>
+        <cr-button class="action-button"
+            on-click="onResetEuiccClick_">
+          $i18n{resetEuiccLabel}
+        </cr-button>
+      </div>
+    </template>
 
     <div>
       <h2>$i18n{addNewWifiLabel}</h2>
@@ -110,5 +143,57 @@
           on-custom-item-selected="onCustomItemSelected_">
       </network-select>
     </div>
+  </div>
+
+  <div class="tabpanel" id="counters">
+    <traffic-counters id="traffic-counters"></traffic-counters>
+  </div>
+
+  <div class="tabpanel" id="metrics">
+    <network-metrics-ui></network-metrics-ui>
+  </div>
+
+  <div class="tabpanel" id="hotspot">
+    <h2>$i18n{tetheringCapabilitiesLabel}</h2>
+    <div id="tethering-capabilities-div"></div>
+    <cr-button class="action-button" on-click="getTetheringCapabilities_">
+      $i18n{refreshTetheringCapabilitiesButtonText}
+    </cr-button>
+
+    <h2>$i18n{tetheringStatusLabel}</h2>
+    <div id="tethering-status-div"></div>
+    <cr-button class="action-button" on-click="getTetheringStatus_">
+      $i18n{refreshTetheringStatusButtonText}
+    </cr-button>
+
+    <h2>$i18n{tetheringConfigLabel}</h2>
+    <div id="tethering-config-div"></div>
+    <cr-button class="action-button" on-click="getTetheringConfig_">
+      $i18n{refreshTetheringConfigButtonText}
+    </cr-button>
+    <cr-input id="tethering-config-input" value="{{tetheringConfigToSet_}}"
+        placeholder="{}" type="text" on-input="validateJSON_"
+        error-message="Please enter valid JSON object"
+        invalid="[[invalidJSON_]]">
+    </cr-input>
+    <cr-button class="action-button" on-click="setTetheringConfig_"
+        disabled="[[invalidJSON_]]">
+      $i18n{setTetheringConfigButtonText}
+    </cr-button>
+    <div id="set-tethering-config-result"></div>
+
+    <h2>$i18n{tetheringReadinessLabel}</h2>
+    <div id="check-tethering-readiness-result">Unknown</div>
+    <cr-button class="action-button" on-click="checkTetheringReadiness_">
+      $i18n{checkTetheringReadinessButtonText}
+    </cr-button>
+
+    <h2>$i18n{setTetheringEnabledLabel}</h2>
+    <cr-toggle id="enable-tethering-toggle"
+          checked="{{isTetheringEnabled_}}"
+          disabled="[[tetheringChangeInProgress_]]"
+          on-change="onTetheringToggleChanged_">
+    </cr-toggle>
+    <div id="set-tethering-enabled-result"></div>
   </div>
 </iron-pages>

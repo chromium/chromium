@@ -1,11 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/user_model.h"
+
+#include "base/containers/flat_map.h"
 #include "base/guid.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill_assistant/browser/mock_user_model_observer.h"
+#include "components/autofill_assistant/browser/user_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
@@ -14,9 +17,9 @@ const char kFakeUrl[] = "https://www.example.com";
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
+using ::testing::IsNull;
 using ::testing::Pair;
 using ::testing::Property;
-using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
 
@@ -30,7 +33,7 @@ class UserModelTest : public testing::Test {
   void TearDown() override { model_.RemoveObserver(&mock_observer_); }
 
   // Provides direct access to the values in the model for testing.
-  const std::map<std::string, ValueProto>& GetValues() const {
+  const base::flat_map<std::string, ValueProto>& GetValues() const {
     return model_.values_;
   }
 
@@ -235,8 +238,8 @@ TEST_F(UserModelTest, SubscriptAccess) {
   EXPECT_EQ(model_.GetValue("value[2]"), SimpleValue(std::string("c")));
   EXPECT_EQ(model_.GetValue("value[001]"), SimpleValue(std::string("b")));
 
-  EXPECT_EQ(model_.GetValue("value[3]"), base::nullopt);
-  EXPECT_EQ(model_.GetValue("value[-1]"), base::nullopt);
+  EXPECT_EQ(model_.GetValue("value[3]"), absl::nullopt);
+  EXPECT_EQ(model_.GetValue("value[-1]"), absl::nullopt);
 
   model_.SetValue("index", SimpleValue(0));
   EXPECT_EQ(model_.GetValue("value[index]"), SimpleValue(std::string("a")));
@@ -245,14 +248,14 @@ TEST_F(UserModelTest, SubscriptAccess) {
   model_.SetValue("index", SimpleValue(2));
   EXPECT_EQ(model_.GetValue("value[index]"), SimpleValue(std::string("c")));
   model_.SetValue("index", SimpleValue(3));
-  EXPECT_EQ(model_.GetValue("value[index]"), base::nullopt);
+  EXPECT_EQ(model_.GetValue("value[index]"), absl::nullopt);
   model_.SetValue("index", SimpleValue(-1));
-  EXPECT_EQ(model_.GetValue("value[index]"), base::nullopt);
+  EXPECT_EQ(model_.GetValue("value[index]"), absl::nullopt);
 
   model_.SetValue("index", SimpleValue(0));
   EXPECT_EQ(model_.GetValue("value[index[0]]"), SimpleValue(std::string("a")));
   model_.SetValue("index", SimpleValue(std::string("not an index")));
-  EXPECT_EQ(model_.GetValue("value[index]"), base::nullopt);
+  EXPECT_EQ(model_.GetValue("value[index]"), absl::nullopt);
 
   ValueProto indices;
   indices.mutable_ints()->add_values(2);
@@ -298,23 +301,28 @@ TEST_F(UserModelTest, IrregularModelIdentifiers) {
   // irregular characters (i.e., outside of \w+).
   EXPECT_EQ(model_.GetValue("normal_identifier[1]"),
             SimpleValue(std::string("b")));
-  EXPECT_EQ(model_.GetValue("ends_in_bracket][1]"), base::nullopt);
-  EXPECT_EQ(model_.GetValue("contains_[brackets][1]"), base::nullopt);
-  EXPECT_EQ(model_.GetValue("[][0]"), base::nullopt);
-  EXPECT_EQ(model_.GetValue("empty_brackets[1]"), base::nullopt);
-  EXPECT_EQ(model_.GetValue("empty_brackets[][1]"), base::nullopt);
+  EXPECT_EQ(model_.GetValue("ends_in_bracket][1]"), absl::nullopt);
+  EXPECT_EQ(model_.GetValue("contains_[brackets][1]"), absl::nullopt);
+  EXPECT_EQ(model_.GetValue("[][0]"), absl::nullopt);
+  EXPECT_EQ(model_.GetValue("empty_brackets[1]"), absl::nullopt);
+  EXPECT_EQ(model_.GetValue("empty_brackets[][1]"), absl::nullopt);
 
   // Subscript access into UTF-8 identifiers is not supported.
-  EXPECT_EQ(model_.GetValue("utf_8_ü万𠜎[1]"), base::nullopt);
+  EXPECT_EQ(model_.GetValue("utf_8_ü万𠜎[1]"), absl::nullopt);
 }
 
 TEST_F(UserModelTest, SetCreditCards) {
   autofill::CreditCard credit_card_a(base::GenerateGUID(), kFakeUrl);
   autofill::test::SetCreditCardInfo(&credit_card_a, "Marion Mitchell",
                                     "4111 1111 1111 1111", "01", "2050", "");
+  AutofillCreditCardProto credit_card_a_proto;
+  credit_card_a_proto.set_guid(credit_card_a.guid());
   autofill::CreditCard credit_card_b(base::GenerateGUID(), kFakeUrl);
   autofill::test::SetCreditCardInfo(&credit_card_b, "John Doe",
                                     "4111 1111 1111 1111", "01", "2050", "");
+  AutofillCreditCardProto credit_card_b_proto;
+  credit_card_b_proto.set_guid(credit_card_b.guid());
+
   auto credit_cards =
       std::make_unique<std::vector<std::unique_ptr<autofill::CreditCard>>>();
   credit_cards->emplace_back(
@@ -322,12 +330,10 @@ TEST_F(UserModelTest, SetCreditCards) {
   credit_cards->emplace_back(
       std::make_unique<autofill::CreditCard>(credit_card_b));
   model_.SetAutofillCreditCards(std::move(credit_cards));
-  EXPECT_THAT(
-      model_.GetCreditCard(credit_card_a.guid())->Compare(credit_card_a),
-      Eq(0));
-  EXPECT_THAT(
-      model_.GetCreditCard(credit_card_b.guid())->Compare(credit_card_b),
-      Eq(0));
+  EXPECT_THAT(model_.GetCreditCard(credit_card_a_proto)->Compare(credit_card_a),
+              Eq(0));
+  EXPECT_THAT(model_.GetCreditCard(credit_card_b_proto)->Compare(credit_card_b),
+              Eq(0));
 }
 
 TEST_F(UserModelTest, SetProfiles) {
@@ -347,8 +353,13 @@ TEST_F(UserModelTest, SetProfiles) {
   profiles->emplace_back(
       std::make_unique<autofill::AutofillProfile>(profile_b));
   model_.SetAutofillProfiles(std::move(profiles));
-  EXPECT_THAT(model_.GetProfile(profile_a.guid())->Compare(profile_a), Eq(0));
-  EXPECT_THAT(model_.GetProfile(profile_b.guid())->Compare(profile_b), Eq(0));
+  AutofillProfileProto profile_a_proto;
+  profile_a_proto.set_guid(profile_a.guid());
+  AutofillProfileProto profile_b_proto;
+  profile_b_proto.set_guid(profile_b.guid());
+
+  EXPECT_THAT(model_.GetProfile(profile_a_proto)->Compare(profile_a), Eq(0));
+  EXPECT_THAT(model_.GetProfile(profile_b_proto)->Compare(profile_b), Eq(0));
 }
 
 TEST_F(UserModelTest, ClientSideOnlyNotifications) {
@@ -364,6 +375,96 @@ TEST_F(UserModelTest, ClientSideOnlyNotifications) {
                   SimpleValue(1, /* is_client_side_only = */ true));
 
   EXPECT_TRUE(GetValues().at("identifier").is_client_side_only());
+}
+
+TEST_F(UserModelTest, SetSelectedAutofillProfile) {
+  autofill::AutofillProfile profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(
+      &profile, "Marion", "Mitchell", "Morrison", "marion@me.xyz", "Fox",
+      "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601", "US", "16505678910");
+
+  UserData user_data;
+  model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(profile),
+      &user_data);
+  EXPECT_THAT(model_.GetSelectedAutofillProfile("contact")->Compare(profile),
+              Eq(0));
+  EXPECT_THAT(user_data.selected_address("contact")->Compare(profile), Eq(0));
+  model_.SetSelectedAutofillProfile("contact", nullptr, &user_data);
+  EXPECT_THAT(model_.GetSelectedAutofillProfile("contact"), IsNull());
+  EXPECT_THAT(user_data.selected_address("contact"), IsNull());
+}
+
+TEST_F(UserModelTest, GetProfileByProfileName) {
+  autofill::AutofillProfile profile(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetProfileInfo(
+      &profile, "Marion", "Mitchell", "Morrison", "marion@me.xyz", "Fox",
+      "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601", "US", "16505678910");
+
+  UserData user_data;
+  model_.SetSelectedAutofillProfile(
+      "contact", std::make_unique<autofill::AutofillProfile>(profile),
+      &user_data);
+  AutofillProfileProto profile_proto;
+  profile_proto.set_selected_profile_name("contact");
+  EXPECT_THAT(model_.GetProfile(profile_proto)->Compare(profile), Eq(0));
+}
+
+TEST_F(UserModelTest, GetSelectedCardWithProto) {
+  autofill::CreditCard credit_card(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetCreditCardInfo(&credit_card, "Marion Mitchell",
+                                    "4111 1111 1111 1111", "01", "2050", "");
+  UserData user_data;
+  model_.SetSelectedCreditCard(
+      std::make_unique<autofill::CreditCard>(credit_card), &user_data);
+  AutofillCreditCardProto credit_card_proto;
+  EXPECT_THAT(model_.GetCreditCard(credit_card_proto), IsNull());
+  credit_card_proto.mutable_selected_credit_card();
+  EXPECT_THAT(model_.GetCreditCard(credit_card_proto)->Compare(credit_card),
+              Eq(0));
+}
+
+TEST_F(UserModelTest, SetSelectedCreditCard) {
+  autofill::CreditCard credit_card(base::GenerateGUID(), kFakeUrl);
+  autofill::test::SetCreditCardInfo(&credit_card, "Marion Mitchell",
+                                    "4111 1111 1111 1111", "01", "2050", "");
+  UserData user_data;
+  model_.SetSelectedCreditCard(
+      std::make_unique<autofill::CreditCard>(credit_card), &user_data);
+  EXPECT_THAT(model_.GetSelectedCreditCard()->Compare(credit_card), Eq(0));
+  EXPECT_THAT(user_data.selected_card()->Compare(credit_card), Eq(0));
+  model_.SetSelectedCreditCard(nullptr, &user_data);
+  EXPECT_THAT(model_.GetSelectedCreditCard(), IsNull());
+  EXPECT_THAT(user_data.selected_card(), IsNull());
+}
+
+TEST_F(UserModelTest, SetSelectedLoginChoiceObject) {
+  LoginChoice login_choice;
+  login_choice.identifier = "guest";
+
+  UserData user_data;
+  model_.SetSelectedLoginChoice(std::make_unique<LoginChoice>(login_choice),
+                                &user_data);
+  EXPECT_THAT(user_data.selected_login_choice()->identifier, "guest");
+
+  model_.SetSelectedLoginChoice(nullptr, &user_data);
+  EXPECT_THAT(user_data.selected_login_choice(), IsNull());
+}
+
+TEST_F(UserModelTest, SetSelectedLoginChoiceIdentifier) {
+  LoginChoice login_choice;
+  login_choice.identifier = "guest";
+  CollectUserDataOptions collect_user_data_options;
+  collect_user_data_options.login_choices.push_back(login_choice);
+
+  UserData user_data;
+  model_.SetSelectedLoginChoiceByIdentifier("guest", collect_user_data_options,
+                                            &user_data);
+  EXPECT_THAT(user_data.selected_login_choice()->identifier, "guest");
+
+  model_.SetSelectedLoginChoiceByIdentifier(
+      "not found", collect_user_data_options, &user_data);
+  EXPECT_THAT(user_data.selected_login_choice(), IsNull());
 }
 
 }  // namespace autofill_assistant

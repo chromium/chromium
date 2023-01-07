@@ -1,8 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <Cocoa/Cocoa.h>
+
+#include <algorithm>
+
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/devtools/protocol/native_input_event_builder.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -15,10 +18,10 @@ namespace protocol {
 // The returned object has a retain count of 1.
 gfx::NativeEvent NativeInputEventBuilder::CreateEvent(
     const NativeWebKeyboardEvent& event) {
-  NSEventType type = NSKeyUp;
+  NSEventType type = NSEventTypeKeyUp;
   if (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown ||
       event.GetType() == blink::WebInputEvent::Type::kKeyDown)
-    type = NSKeyDown;
+    type = NSEventTypeKeyDown;
   const char16_t* textStartAddr = &event.text[0];
   const int textLength =
       std::find(textStartAddr,
@@ -28,10 +31,15 @@ gfx::NativeEvent NativeInputEventBuilder::CreateEvent(
       base::SysUTF16ToNSString(std::u16string(textStartAddr, textLength));
   int modifiers = event.GetModifiers();
   NSUInteger flags =
-      (modifiers & blink::WebInputEvent::kShiftKey ? NSShiftKeyMask : 0) |
-      (modifiers & blink::WebInputEvent::kControlKey ? NSControlKeyMask : 0) |
-      (modifiers & blink::WebInputEvent::kAltKey ? NSAlternateKeyMask : 0) |
-      (modifiers & blink::WebInputEvent::kMetaKey ? NSCommandKeyMask : 0);
+      (modifiers & blink::WebInputEvent::kShiftKey ? NSEventModifierFlagShift
+                                                   : 0) |
+      (modifiers & blink::WebInputEvent::kControlKey
+           ? NSEventModifierFlagControl
+           : 0) |
+      (modifiers & blink::WebInputEvent::kAltKey ? NSEventModifierFlagOption
+                                                 : 0) |
+      (modifiers & blink::WebInputEvent::kMetaKey ? NSEventModifierFlagCommand
+                                                  : 0);
 
   return [[NSEvent keyEventWithType:type
                            location:NSZeroPoint

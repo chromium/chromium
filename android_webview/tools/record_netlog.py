@@ -1,6 +1,6 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Takes a netlog for the WebViews in a given application.
@@ -22,6 +22,7 @@ import time
 sys.path.append(
     os.path.join(
         os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
+# pylint: disable=wrong-import-position,import-error
 import devil_chromium
 from devil.android import device_errors
 from devil.android import flag_changer

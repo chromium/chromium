@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CHROME_UTILITY_SAFE_BROWSING_MAC_DMG_TEST_UTILS_H_
 
 #include <stdint.h>
-
-#include <vector>
 
 #include "base/files/file.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,10 +40,10 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ChipView;
 
 /**
  * View tests for the AllPasswordsBottomSheet ensure that model changes are reflected in the sheet.
@@ -79,12 +79,12 @@ public class AllPasswordsBottomSheetViewTest {
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
-        mModel = AllPasswordsBottomSheetProperties.createDefaultModel(
-                EXAMPLE_ORIGIN, mDismissHandler, mSearchQueryCallback);
-        mBottomSheetController = mActivityTestRule.getActivity()
-                                         .getRootUiCoordinatorForTesting()
-                                         .getBottomSheetController();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel = AllPasswordsBottomSheetProperties.createDefaultModel(
+                    EXAMPLE_ORIGIN, mDismissHandler, mSearchQueryCallback);
+            mBottomSheetController = mActivityTestRule.getActivity()
+                                             .getRootUiCoordinatorForTesting()
+                                             .getBottomSheetController();
             mAllPasswordsBottomSheetView =
                     new AllPasswordsBottomSheetView(getActivity(), mBottomSheetController);
             AllPasswordsBottomSheetCoordinator.setUpModelChangeProcessor(
@@ -108,7 +108,8 @@ public class AllPasswordsBottomSheetViewTest {
 
     @Test
     @MediumTest
-    public void testShowsWarningWithOriginByDefault() {
+    @Features.DisableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testShowsWarningWithOriginByDefaultWithUpmDisabled() {
         TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
         assertThat(mAllPasswordsBottomSheetView.getContentView().isShown(), is(true));
@@ -116,6 +117,18 @@ public class AllPasswordsBottomSheetViewTest {
                 String.format(
                         getString(R.string.all_passwords_bottom_sheet_warning_dialog_message_first),
                         "m.example.com"));
+    }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testShowsWarningWithOriginByDefaultWithUpmEnabled() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
+        assertThat(mAllPasswordsBottomSheetView.getContentView().isShown(), is(true));
+        assertEquals(mAllPasswordsBottomSheetView.getWarningText().toString(),
+                String.format(
+                        getString(R.string.all_passwords_bottom_sheet_subtitle), "m.example.com"));
     }
 
     @Test

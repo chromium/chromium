@@ -1,8 +1,7 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/chromeos/cursor_controller.h"
 
@@ -17,14 +16,16 @@ const gfx::AcceleratedWidget kTestWindow = 1;
 class CursorControllerTest : public testing::Test {
  public:
   CursorControllerTest() {}
+
+  CursorControllerTest(const CursorControllerTest&) = delete;
+  CursorControllerTest& operator=(const CursorControllerTest&) = delete;
+
   ~CursorControllerTest() override {}
 
   void TearDown() override {
     ui::CursorController::GetInstance()->ClearCursorConfigForWindow(
         kTestWindow);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CursorControllerTest);
 };
 
 TEST_F(CursorControllerTest, UnconfiguredIdentity) {

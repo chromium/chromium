@@ -1,52 +1,38 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-window.enablePixelTesting = true;
-</script>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
-<script src="resources/suggestion-picker-common.js"></script>
-</head>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+
 <body style="background-color: #eeffff;">
-<script src="resources/suggestion-picker-common.js"></script>
-<input type=week id=week value="10000-W12" list="suggestions" style="width: 200px;">
+<input type=week value="10000-W12" list="suggestions" style="width: 200px;">
 <datalist id=suggestions>
-    <option>2012-W00</option> <!--invalid-->
-    <option>2012-01-01</option> <!--invalid-->
-    <option>foo</option> <!--invalid-->
-    <option label="This Week">2012-W01</option>
-    <option>2012-W02</option>
-    <option>2012-W03</option>
-    <option>2012-W04</option>
-    <option>2012-W05</option>
-    <option>2012-W06</option>
-    <option>2012-W07</option>
-    <option>2012-W08</option>
-    <option>2012-W09</option>
-    <option>2012-W10</option>
-    <option>2012-W11</option>
-    <option>2012-W12</option>
-    <option>2012-W13</option>
-    <option>2012-W14</option>
-    <option>2012-W15</option>
-    <option>2012-W16</option>
-    <option>2012-W17</option>
-    <option>2012-W18</option>
-    <option>2012-W19</option>
+  <option>2012-W00</option> <!--invalid-->
+  <option>2012-01-01</option> <!--invalid-->
+  <option>foo</option> <!--invalid-->
+  <option label="This Week">2012-W01</option>
+  <option>2012-W02</option>
+  <option>2012-W03</option>
+  <option>2012-W04</option>
+  <option>2012-W05</option>
+  <option>2012-W06</option>
+  <option>2012-W07</option>
+  <option>2012-W08</option>
+  <option>2012-W09</option>
+  <option>2012-W10</option>
+  <option>2012-W11</option>
+  <option>2012-W12</option>
+  <option>2012-W13</option>
+  <option>2012-W14</option>
+  <option>2012-W15</option>
+  <option>2012-W16</option>
+  <option>2012-W17</option>
+  <option>2012-W18</option>
+  <option>2012-W19</option>
 </datalist>
-
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
-
+  
 <script>
-openPickerAppearanceOnly(document.getElementById('week'), finishTest);
-
-function finishTest() {
-    popupWindow.focus();
+  window.onload = openPickerAppearanceOnly(document.querySelector('input'),() => {
+    internals.pagePopupWindow.focus();
     eventSender.keyDown('ArrowDown');
-    finishJSTest();
-}
+  });
 </script>
-</body>
-</html>

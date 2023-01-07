@@ -1,0 +1,4 @@
+Tests DOMSnapshot.getSnapshot reports blended background colors of each node.
+Expected to find 1 blended color. Actual: 1
+The blended color is: rgb(217, 217, 217)
+

@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash.assistant;
+
+// Metadata for the response back to the user.
+message SettingsResponseHeader {
+  enum AcceptRejectLayout {
+    // Unspecified layout for buttons.
+    UNSPECIFIED = 0;
+    // Accept is filled on RHS, Reject is filled on LHS.
+    EQUAL_WEIGHT = 1;
+  }
+  // Controls the way the accept and reject buttons are rendered.
+  optional AcceptRejectLayout footer_button_layout = 2;
+}

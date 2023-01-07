@@ -1,0 +1,47 @@
+{
+  "program": {
+    "binary": "web_engine_exe"
+  },
+  "sandbox": {
+    "features": [
+      "config-data",
+      "deprecated-ambient-replace-as-executable",
+      "root-ssl-certificates",
+      "vulkan"
+    ],
+    "services": [
+      "fuchsia.accessibility.semantics.SemanticsManager",
+      "fuchsia.buildinfo.Provider",
+      "fuchsia.camera3.DeviceWatcher",
+      "fuchsia.device.NameProvider",
+      "fuchsia.fonts.Provider",
+      "fuchsia.hwinfo.Product",
+      "fuchsia.input.virtualkeyboard.ControllerCreator",
+      "fuchsia.intl.PropertyProvider",
+      "fuchsia.kernel.VmexResource",
+      "fuchsia.legacymetrics.MetricsRecorder",
+      "fuchsia.logger.LogSink",
+      "fuchsia.media.Audio",
+      "fuchsia.media.AudioDeviceEnumerator",
+      "fuchsia.media.ProfileProvider",
+      "fuchsia.media.SessionAudioConsumerFactory",
+      "fuchsia.media.drm.PlayReady",
+      "fuchsia.media.drm.Widevine",
+      "fuchsia.mediacodec.CodecFactory",
+      "fuchsia.memorypressure.Provider",
+      "fuchsia.net.interfaces.State",
+      "fuchsia.net.name.Lookup",
+      "fuchsia.posix.socket.Provider",
+      "fuchsia.process.Launcher",
+      "fuchsia.settings.Display",
+      "fuchsia.sysmem.Allocator",
+      "fuchsia.tracing.perfetto.ProducerConnector",
+      "fuchsia.tracing.provider.Registry",
+      "fuchsia.ui.composition.Allocator",
+      "fuchsia.ui.composition.Flatland",
+      "fuchsia.ui.input3.Keyboard",
+      "fuchsia.ui.scenic.Scenic",
+      "fuchsia.vulkan.loader.Loader"
+    ]
+  }
+}

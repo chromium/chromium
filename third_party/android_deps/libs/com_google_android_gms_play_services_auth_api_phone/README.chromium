@@ -1,9 +1,10 @@
 Name: play-services-auth-api-phone
 Short Name: play-services-auth-api-phone
 URL: https://developers.google.com/android/guides/setup
-Version: 17.5.0
+Version: 18.0.1
 License: Android Software Development Kit License
 License File: LICENSE
+CPEPrefix: unknown
 Security Critical: yes
 
 Description:

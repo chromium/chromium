@@ -1,0 +1,12 @@
+Test that clicking an anchor with an insecure attributionsrc triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : http://insecure.com
+            violatingNodeId : <number>
+            violationType : UntrustworthyReportingOrigin
+        }
+    }
+}
+

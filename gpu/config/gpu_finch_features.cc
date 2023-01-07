@@ -1,16 +1,21 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gpu/config/gpu_finch_features.h"
 
 #include "base/command_line.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_switches.h"
+#include "ui/gl/gl_features.h"
+#include "ui/gl/gl_surface_egl.h"
+#include "ui/gl/gl_utils.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_image_reader_compat.h"
 #include "base/android/build_info.h"
+#include "base/android/sys_utils.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
@@ -21,7 +26,7 @@
 namespace features {
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool FieldIsInBlocklist(const char* current_value, std::string blocklist_str) {
   std::vector<std::string> blocklist = base::SplitString(
       blocklist_str, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -48,139 +53,212 @@ bool IsDeviceBlocked(const char* field, const std::string& block_list) {
 
 }  // namespace
 
-#if defined(OS_ANDROID)
-// Used to limit GL version to 2.0 for skia raster on Android.
-const base::Feature kUseGles2ForOopR{"UseGles2ForOopR",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+// Used to limit GL version to 2.0 for skia raster and compositing.
+BASE_FEATURE(kUseGles2ForOopR,
+             "UseGles2ForOopR",
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
+#if BUILDFLAG(IS_ANDROID)
 // Use android SurfaceControl API for managing display compositor's buffer queue
 // and using overlays on Android. Also used by webview to disable surface
 // SurfaceControl.
-const base::Feature kAndroidSurfaceControl{"AndroidSurfaceControl",
-                                           base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAndroidSurfaceControl,
+             "AndroidSurfaceControl",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // https://crbug.com/1176185 List of devices on which SurfaceControl should be
 // disabled.
-const base::FeatureParam<std::string> kAndroidSurfaceControlBlocklist{
-    &kAndroidSurfaceControl, "AndroidSurfaceControlBlocklist", "capri|caprip"};
+const base::FeatureParam<std::string> kAndroidSurfaceControlDeviceBlocklist{
+    &kAndroidSurfaceControl, "AndroidSurfaceControlDeviceBlocklist",
+    "capri|caprip"};
+
+// List of models on which SurfaceControl should be disabled.
+const base::FeatureParam<std::string> kAndroidSurfaceControlModelBlocklist{
+    &kAndroidSurfaceControl, "AndroidSurfaceControlModelBlocklist",
+    "SM-F9*|SM-W202?|SCV44|SCG05|SCG11|SC-55B"};
 
 // Hardware Overlays for WebView.
-const base::Feature kWebViewSurfaceControl{"WebViewSurfaceControl",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kWebViewSurfaceControl,
+             "WebViewSurfaceControl",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use thread-safe media path on WebView.
+BASE_FEATURE(kWebViewThreadSafeMedia,
+             "WebViewThreadSafeMedia",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This is used as default state because it's different for webview and chrome.
+// WebView hardcodes this as enabled in AwMainDelegate.
+BASE_FEATURE(kWebViewThreadSafeMediaDefault,
+             "WebViewThreadSafeMediaDefault",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Use AImageReader for MediaCodec and MediaPlyer on android.
-const base::Feature kAImageReader{"AImageReader",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kAImageReader, "AImageReader", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If webview-draw-functor-uses-vulkan is set, use vulkan for composite and
 // raster.
-const base::Feature kWebViewVulkan{"WebViewVulkan",
-                                   base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Used to enable/disable zero copy video path on webview for MCVD.
-const base::Feature kWebViewZeroCopyVideo{"WebViewZeroCopyVideo",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
-
-// List of devices on which WebViewZeroCopyVideo should be disabled.
-const base::FeatureParam<std::string> kWebViewZeroCopyVideoBlocklist{
-    &kWebViewZeroCopyVideo, "WebViewZeroCopyVideoBlocklist", ""};
+BASE_FEATURE(kWebViewVulkan, "WebViewVulkan", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Used to limit AImageReader max queue size to 1 since many devices especially
 // android Tv devices do not support more than 1 images.
-const base::Feature kLimitAImageReaderMaxSizeToOne{
-    "LimitAImageReaderMaxSizeToOne", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kLimitAImageReaderMaxSizeToOne,
+             "LimitAImageReaderMaxSizeToOne",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // List of devices on which to limit AImageReader max queue size to 1.
 const base::FeatureParam<std::string> kLimitAImageReaderMaxSizeToOneBlocklist{
     &kLimitAImageReaderMaxSizeToOne, "LimitAImageReaderMaxSizeToOneBlocklist",
-    "MIBOX"};
+    "MIBOX|*ODROID*"};
+
+// Increase number of buffers and pipeline depth for high frame rate devices.
+BASE_FEATURE(kIncreaseBufferCountForHighFrameRate,
+             "IncreaseBufferCountForHighFrameRate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string>
+    kDisableIncreaseBufferCountForHighFrameRate{
+        &kIncreaseBufferCountForHighFrameRate,
+        "DisableIncreaseBufferCountForHighFrameRate", ""};
 #endif
 
 // Enable GPU Rasterization by default. This can still be overridden by
 // --enable-gpu-rasterization or --disable-gpu-rasterization.
-// DefaultEnableGpuRasterization has launched on Mac, Windows, ChromeOS, and
-// Android.
-const base::Feature kDefaultEnableGpuRasterization{
-  "DefaultEnableGpuRasterization",
-#if defined(OS_MAC) || defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    defined(OS_ANDROID) || defined(OS_FUCHSIA)
-      base::FEATURE_ENABLED_BY_DEFAULT
+// DefaultEnableGpuRasterization has launched on Mac, Windows, ChromeOS,
+// Android and Linux.
+BASE_FEATURE(kDefaultEnableGpuRasterization,
+             "DefaultEnableGpuRasterization",
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
-
-// Enable out of process rasterization by default.  This can still be overridden
-// by --disable-oop-rasterization.
-const base::Feature kDefaultEnableOopRasterization{
-    "DefaultEnableOopRasterization", base::FEATURE_ENABLED_BY_DEFAULT};
+);
 
 // Enables the use of out of process rasterization for canvas.
-const base::Feature kCanvasOopRasterization{"CanvasOopRasterization",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
-#if defined(OS_WIN)
-// Use a high priority for GPU process on Windows.
-const base::Feature kGpuProcessHighPriorityWin{
-    "GpuProcessHighPriorityWin", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
-// Use ThreadPriority::DISPLAY for GPU main, viz compositor and IO threads.
-const base::Feature kGpuUseDisplayThreadPriority{
-  "GpuUseDisplayThreadPriority",
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
-      base::FEATURE_ENABLED_BY_DEFAULT
+BASE_FEATURE(kCanvasOopRasterization,
+             "CanvasOopRasterization",
+#if BUILDFLAG(IS_FUCHSIA)
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
-#if defined(OS_MAC)
+// Enables the use of MSAA in skia on Ice Lake and later intel architectures.
+BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
+             "EnableMSAAOnNewIntelGPUs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the use of ANGLE validation for non-WebGL contexts.
+BASE_FEATURE(kDefaultEnableANGLEValidation,
+             "DefaultEnableANGLEValidation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables canvas to free its resources by default when it's running in
+// the background.
+BASE_FEATURE(kCanvasContextLostInBackground,
+             "CanvasContextLostInBackground",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_WIN)
+// Use a high priority for GPU process on Windows.
+BASE_FEATURE(kGpuProcessHighPriorityWin,
+             "GpuProcessHighPriorityWin",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Disable overlay promotion for clear video quads when their MPO quad would
+// move.
+BASE_FEATURE(kDisableVideoOverlayIfMoving,
+             "DisableVideoOverlayIfMoving",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+#if BUILDFLAG(IS_MAC)
 // Enable use of Metal for OOP rasterization.
-const base::Feature kMetal{"Metal", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kMetal, "Metal", base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
-
-// Turns on skia deferred display list for out of process raster.
-const base::Feature kOopRasterizationDDL{"OopRasterizationDDL",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Causes us to use the SharedImageManager, removing support for the old
 // mailbox system. Any consumers of the GPU process using the old mailbox
 // system will experience undefined results.
-const base::Feature kSharedImageManager{"SharedImageManager",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSharedImageManager,
+             "SharedImageManager",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the decode acceleration of JPEG images (as opposed to camera
 // captures) in Chrome OS using the VA-API.
 // TODO(andrescj): remove or enable by default in Chrome OS once
 // https://crbug.com/868400 is resolved.
-const base::Feature kVaapiJpegImageDecodeAcceleration{
-    "VaapiJpegImageDecodeAcceleration", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kVaapiJpegImageDecodeAcceleration,
+             "VaapiJpegImageDecodeAcceleration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls the decode acceleration of WebP images in Chrome OS using the
 // VA-API.
 // TODO(gildekel): remove or enable by default in Chrome OS once
 // https://crbug.com/877694 is resolved.
-const base::Feature kVaapiWebPImageDecodeAcceleration{
-    "VaapiWebPImageDecodeAcceleration", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kVaapiWebPImageDecodeAcceleration,
+             "VaapiWebPImageDecodeAcceleration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable Vulkan graphics backend for compositing and rasterization. Defaults to
 // native implementation if --use-vulkan flag is not used. Otherwise
 // --use-vulkan will be followed.
 // Note Android WebView uses kWebViewVulkan instead of this.
-const base::Feature kVulkan {
-  "Vulkan",
-#if defined(OS_ANDROID)
-      base::FEATURE_ENABLED_BY_DEFAULT
+BASE_FEATURE(kVulkan,
+             "Vulkan",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
-#if defined(OS_ANDROID)
+BASE_FEATURE(kEnableDrDc,
+             "EnableDrDc",
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+BASE_FEATURE(kForceGpuMainThreadToNormalPriorityDrDc,
+             "ForceGpuMainThreadToNormalPriorityDrDc",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kEnableDrDcVulkan,
+             "EnableDrDcVulkan",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+// Enable WebGPU on gpu service side only. This is used with origin trial and
+// enabled by default on supported platforms.
+BASE_FEATURE(kWebGPUService,
+             "WebGPUService",
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+#if BUILDFLAG(IS_ANDROID)
+
+const base::FeatureParam<std::string> kVulkanBlockListByHardware{
+    &kVulkan, "BlockListByHardware", "mt*"};
 
 const base::FeatureParam<std::string> kVulkanBlockListByBrand{
-    &kVulkan, "BlockListByBrand", ""};
+    &kVulkan, "BlockListByBrand", "HONOR"};
 
 const base::FeatureParam<std::string> kVulkanBlockListByDevice{
     &kVulkan, "BlockListByDevice", "OP4863|OP4883"};
@@ -195,27 +273,98 @@ const base::FeatureParam<std::string> kVulkanBlockListByModel{
     &kVulkan, "BlockListByModel", ""};
 
 const base::FeatureParam<std::string> kVulkanBlockListByBoard{
-    &kVulkan, "BlockListByBoard", ""};
+    &kVulkan, "BlockListByBoard",
+    "RM67*|RM68*|k68*|mt6*|oppo67*|oppo68*|QM215|rk30sdk"};
 
 const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildFP{
     &kVulkan, "BlockListByAndroidBuildFP", ""};
 
-#endif
+// Blocklists meant for DrDc.
+// crbug.com/1294648
+const base::FeatureParam<std::string> kDrDcBlockListByDevice{
+    &kEnableDrDc, "BlockListByDevice",
+    "LF9810_2GB|amber|chopin|secret|a03|SO-51B|on7xelte|j7xelte|F41B|doha|"
+    "rk322x_box|a20s"};
+
+// crbug.com/1340059, crbug.com/1340064
+const base::FeatureParam<std::string> kDrDcBlockListByModel{
+    &kEnableDrDc, "BlockListByModel",
+    "SM-J400M|SM-J415F|ONEPLUS A3003|OCTAStream*"};
+
+const base::FeatureParam<std::string> kDrDcBlockListByHardware{
+    &kEnableDrDc, "BlockListByHardware", ""};
+
+const base::FeatureParam<std::string> kDrDcBlockListByBrand{
+    &kEnableDrDc, "BlockListByBrand", "HONOR"};
+
+const base::FeatureParam<std::string> kDrDcBlockListByAndroidBuildId{
+    &kEnableDrDc, "BlockListByAndroidBuildId", ""};
+
+const base::FeatureParam<std::string> kDrDcBlockListByManufacturer{
+    &kEnableDrDc, "BlockListByManufacturer", ""};
+
+const base::FeatureParam<std::string> kDrDcBlockListByBoard{
+    &kEnableDrDc, "BlockListByBoard", ""};
+
+const base::FeatureParam<std::string> kDrDcBlockListByAndroidBuildFP{
+    &kEnableDrDc, "BlockListByAndroidBuildFP", ""};
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Enable SkiaRenderer Dawn graphics backend. On Windows this will use D3D12,
 // and on Linux this will use Vulkan.
-const base::Feature kSkiaDawn{"SkiaDawn", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kSkiaDawn, "SkiaDawn", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable GrShaderCache to use with Vulkan backend.
-const base::Feature kEnableGrShaderCacheForVulkan{
-    "EnableGrShaderCacheForVulkan", base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableGrShaderCacheForVulkan,
+             "EnableGrShaderCacheForVulkan",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enable report only mode on the GPU watchdog instead of pausing the watchdog
+// thread during GPU startup.
+BASE_FEATURE(kEnableWatchdogReportOnlyModeOnGpuInit,
+             "EnableWatchdogReportOnlyModeOnGpuInit",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable persistent storage of VkPipelineCache data.
-const base::Feature kEnableVkPipelineCache{"EnableVkPipelineCache",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kEnableVkPipelineCache,
+             "EnableVkPipelineCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable Skia reduceOpsTaskSplitting to reduce render passes.
+BASE_FEATURE(kReduceOpsTaskSplitting,
+             "ReduceOpsTaskSplitting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enabling this will make the GPU decode path use a mock implementation of
+// discardable memory.
+BASE_FEATURE(kNoDiscardableMemoryForGpuDecodePath,
+             "NoDiscardableMemoryForGpuDecodePath",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Use a 100-command limit before forcing context switch per command buffer
+// instead of 20.
+BASE_FEATURE(kIncreasedCmdBufferParseSlice,
+             "IncreasedCmdBufferParseSlice",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Kill switch for forcing restart GPU with context loss.
+// See https://crbug.com/1172229 for detail.
+BASE_FEATURE(kForceRestartGpuKillSwitch,
+             "ForceRestartGpuKillSwitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool UseGles2ForOopR() {
+#if BUILDFLAG(IS_ANDROID)
+  // GLS3 + passthrough decoder break many tests on Android.
+  // TODO(crbug.com/1044287): use GLES3 with passthrough decoder.
+  if (gl::UsePassthroughCommandDecoder(base::CommandLine::ForCurrentProcess()))
+    return true;
+#endif
+  return base::FeatureList::IsEnabled(features::kUseGles2ForOopR);
+}
 
 bool IsUsingVulkan() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Force on if Vulkan feature is enabled from command line.
   base::FeatureList* feature_list = base::FeatureList::GetInstance();
   if (feature_list &&
@@ -242,6 +391,8 @@ bool IsUsingVulkan() {
 
   // Check block list against build info.
   const auto* build_info = base::android::BuildInfo::GetInstance();
+  if (IsDeviceBlocked(build_info->hardware(), kVulkanBlockListByHardware.Get()))
+    return false;
   if (IsDeviceBlocked(build_info->brand(), kVulkanBlockListByBrand.Get()))
     return false;
   if (IsDeviceBlocked(build_info->device(), kVulkanBlockListByDevice.Get()))
@@ -267,8 +418,111 @@ bool IsUsingVulkan() {
 #endif
 }
 
-#if defined(OS_ANDROID)
+bool IsDrDcEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  // Enabled on android P+.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_P) {
+    return false;
+  }
+
+  // DrDc is supported on android MediaPlayer and MCVD path only when
+  // AImageReader is enabled. Also DrDc requires AImageReader max size to be
+  // at least 2 for each gpu thread. Hence DrDc is disabled on devices which has
+  // only 1 image.
+  if (!IsAImageReaderEnabled() || LimitAImageReaderMaxSizeToOne())
+    return false;
+
+  // Check block list against build info.
+  const auto* build_info = base::android::BuildInfo::GetInstance();
+  if (IsDeviceBlocked(build_info->device(), kDrDcBlockListByDevice.Get()))
+    return false;
+  if (IsDeviceBlocked(build_info->model(), kDrDcBlockListByModel.Get()))
+    return false;
+  if (IsDeviceBlocked(build_info->hardware(), kDrDcBlockListByHardware.Get()))
+    return false;
+  if (IsDeviceBlocked(build_info->brand(), kDrDcBlockListByBrand.Get()))
+    return false;
+  if (IsDeviceBlocked(build_info->android_build_id(),
+                      kDrDcBlockListByAndroidBuildId.Get()))
+    return false;
+  if (IsDeviceBlocked(build_info->manufacturer(),
+                      kDrDcBlockListByManufacturer.Get()))
+    return false;
+  if (IsDeviceBlocked(build_info->board(), kDrDcBlockListByBoard.Get()))
+    return false;
+  if (IsDeviceBlocked(build_info->android_build_fp(),
+                      kDrDcBlockListByAndroidBuildFP.Get()))
+    return false;
+
+  if (!base::FeatureList::IsEnabled(kEnableDrDc))
+    return false;
+  return IsUsingVulkan() ? base::FeatureList::IsEnabled(kEnableDrDcVulkan)
+                         : true;
+#else
+  return false;
+#endif
+}
+
+bool IsGpuMainThreadForcedToNormalPriorityDrDc() {
+  // GPU main thread priority is forced to NORMAL only when DrDc is enabled. In
+  // that case DrDc thread continues to use DISPLAY thread priority and hence
+  // have higher thread priority than GPU main.
+  return IsDrDcEnabled() &&
+         base::FeatureList::IsEnabled(kForceGpuMainThreadToNormalPriorityDrDc);
+}
+
+bool IsUsingThreadSafeMediaForWebView() {
+#if BUILDFLAG(IS_ANDROID)
+  // SurfaceTexture can't be thread-safe. Also thread safe media code currently
+  // requires AImageReader max size to be at least 2 since one image could be
+  // accessed by each gpu thread in webview.
+  if (!IsAImageReaderEnabled() || LimitAImageReaderMaxSizeToOne())
+    return false;
+
+  // If the feature is overridden from command line or finch we will use its
+  // value. If not we use kWebViewThreadSafeMediaDefault which is set in
+  // AwMainDelegate for WebView.
+  base::FeatureList* feature_list = base::FeatureList::GetInstance();
+  if (feature_list &&
+      feature_list->IsFeatureOverridden(kWebViewThreadSafeMedia.name))
+    return base::FeatureList::IsEnabled(kWebViewThreadSafeMedia);
+
+  return base::FeatureList::IsEnabled(kWebViewThreadSafeMediaDefault);
+#else
+  return false;
+#endif
+}
+
+// Note that DrDc is also disabled on some of the gpus (crbug.com/1354201).
+// Thread safe media will still be used on those gpus which should be fine for
+// now as the lock shouldn't have much overhead and is limited to only few gpus.
+// This should be fixed/updated later to account for disabled gpus.
+bool NeedThreadSafeAndroidMedia() {
+  return IsDrDcEnabled() || IsUsingThreadSafeMediaForWebView();
+}
+
+bool IsANGLEValidationEnabled() {
+#if BUILDFLAG(IS_ANDROID)
+  // Skia depends GL validation sometime. Without it, crashes happen in ANGLE,
+  // so we have to enable it. See crbug.com/1268568
+  return UsePassthroughCommandDecoder();
+#else
+  return base::FeatureList::IsEnabled(kDefaultEnableANGLEValidation) &&
+         UsePassthroughCommandDecoder();
+#endif
+}
+
+#if BUILDFLAG(IS_ANDROID)
 bool IsAImageReaderEnabled() {
+  // Device Hammer_Energy_2 seems to be very crash with image reader during
+  // gl::GLImageEGL::BindTexImage(). Disable image reader on that device for
+  // now. crbug.com/1323921
+  if (IsDeviceBlocked(base::android::BuildInfo::GetInstance()->device(),
+                      "Hammer_Energy_2")) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(kAImageReader) &&
          base::android::AndroidImageReader::GetInstance().IsSupported();
 }
@@ -276,7 +530,12 @@ bool IsAImageReaderEnabled() {
 bool IsAndroidSurfaceControlEnabled() {
   const auto* build_info = base::android::BuildInfo::GetInstance();
   if (IsDeviceBlocked(build_info->device(),
-                      kAndroidSurfaceControlBlocklist.Get())) {
+                      kAndroidSurfaceControlDeviceBlocklist.Get()) ||
+      (IsDeviceBlocked(build_info->model(),
+                       kAndroidSurfaceControlModelBlocklist.Get()) &&
+       // Power issue due to pre-rotate in the models has been fixed in S_V2.
+       // crbug.com/1328738
+       build_info->sdk_int() <= base::android::SDK_VERSION_S)) {
     return false;
   }
 
@@ -291,10 +550,10 @@ bool IsAndroidSurfaceControlEnabled() {
   if (LimitAImageReaderMaxSizeToOne())
     return false;
 
-  // On WebView we also require zero copy to use SurfaceControl
-  if (IsWebViewZeroCopyVideoEnabled() &&
-      base::FeatureList::IsEnabled(kWebViewSurfaceControl))
-    return true;
+  // On WebView we require thread-safe media to use SurfaceControl
+  if (IsUsingThreadSafeMediaForWebView()) {
+    return base::FeatureList::IsEnabled(kWebViewSurfaceControl);
+  }
 
   return base::FeatureList::IsEnabled(kAndroidSurfaceControl);
 }
@@ -315,17 +574,21 @@ bool LimitAImageReaderMaxSizeToOne() {
                              kLimitAImageReaderMaxSizeToOneBlocklist.Get()));
 }
 
-// Zero copy is disabled if device can not support 3 max images.
-bool IsWebViewZeroCopyVideoEnabled() {
-  const bool limit_max_size_to_one = LimitAImageReaderMaxSizeToOne();
-  if (!IsAImageReaderEnabled() || limit_max_size_to_one)
-    return false;
-
-  if (!base::FeatureList::IsEnabled(kWebViewZeroCopyVideo))
-    return false;
-
-  return !(FieldIsInBlocklist(base::android::BuildInfo::GetInstance()->model(),
-                              kWebViewZeroCopyVideoBlocklist.Get()));
+bool IncreaseBufferCountForHighFrameRate() {
+  // TODO(crbug.com/1211332): We don't have a way to dynamically adjust number
+  // of buffers. So these checks, espeically the RAM one, is to limit the impact
+  // of more buffers to devices that can handle them.
+  // 8GB of ram with large margin for error.
+  constexpr int RAM_8GB_CUTOFF = 7200 * 1024;
+  static bool increase =
+      base::android::BuildInfo::GetInstance()->sdk_int() >=
+          base::android::SdkVersion::SDK_VERSION_R &&
+      IsAndroidSurfaceControlEnabled() && IsAImageReaderEnabled() &&
+      base::android::SysUtils::AmountOfPhysicalMemoryKB() > RAM_8GB_CUTOFF &&
+      base::FeatureList::IsEnabled(kIncreaseBufferCountForHighFrameRate) &&
+      !IsDeviceBlocked(base::android::BuildInfo::GetInstance()->device(),
+                       kDisableIncreaseBufferCountForHighFrameRate.Get());
+  return increase;
 }
 
 #endif

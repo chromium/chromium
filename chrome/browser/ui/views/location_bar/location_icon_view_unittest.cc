@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -51,7 +52,7 @@ class TestLocationIconDelegate : public IconLabelBubbleView::Delegate,
   }
 
  private:
-  LocationBarModel* location_bar_model_;
+  raw_ptr<LocationBarModel> location_bar_model_;
   bool is_editing_or_empty_ = false;
 };
 
@@ -62,6 +63,7 @@ class LocationIconViewTest : public ChromeViewsTestBase {
   // ChromeViewsTestBase:
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+
     gfx::FontList font_list;
 
     widget_ = CreateTestWidget();
@@ -104,7 +106,7 @@ class LocationIconViewTest : public ChromeViewsTestBase {
  private:
   std::unique_ptr<TestLocationBarModel> location_bar_model_;
   std::unique_ptr<TestLocationIconDelegate> delegate_;
-  LocationIconView* view_;
+  raw_ptr<LocationIconView> view_;
   std::unique_ptr<views::Widget> widget_;
 };
 

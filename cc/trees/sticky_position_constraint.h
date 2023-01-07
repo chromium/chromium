@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@ namespace cc {
 struct CC_EXPORT StickyPositionConstraint {
   StickyPositionConstraint();
   StickyPositionConstraint(const StickyPositionConstraint& other);
+  StickyPositionConstraint& operator=(const StickyPositionConstraint& other);
 
   bool is_anchored_left : 1;
   bool is_anchored_right : 1;

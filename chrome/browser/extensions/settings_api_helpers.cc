@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,7 +57,7 @@ const Extension* FindOverridingExtension(
       // Found an extension overriding the current type, check if primary.
       PreferenceAPI* preference_api = PreferenceAPI::Get(browser_context);
       if (preference_api &&  // Expected to be NULL in unit tests.
-          !preference_api->DoesExtensionControlPref((*it)->id(), key, NULL))
+          !preference_api->DoesExtensionControlPref((*it)->id(), key, nullptr))
         continue;  // Not primary.
 
       // Found the primary extension.
@@ -65,7 +65,7 @@ const Extension* FindOverridingExtension(
     }
   }
 
-  return NULL;
+  return nullptr;
 }
 
 }  // namespace
@@ -102,12 +102,12 @@ const Extension* GetExtensionOverridingProxy(
   ExtensionPrefValueMap* extension_prefs_value_map =
       ExtensionPrefValueMapFactory::GetForBrowserContext(browser_context);
   if (!extension_prefs_value_map)
-    return NULL;  // Can be null during testing.
+    return nullptr;  // Can be null during testing.
   std::string extension_id =
       extension_prefs_value_map->GetExtensionControllingPref(
           proxy_config::prefs::kProxy);
   if (extension_id.empty())
-    return NULL;
+    return nullptr;
   return ExtensionRegistry::Get(browser_context)->GetExtensionById(
       extension_id, ExtensionRegistry::ENABLED);
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,19 @@
 #include <set>
 #include <string>
 
+#include "extensions/browser/updater/extension_cache.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_downloader_delegate.h"
+#include "extensions/browser/updater/extension_downloader_types.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace extensions {
+
+// Backoff policy to enforce zero initial delay.
+const extern net::BackoffEntry::Policy kZeroBackoffPolicy;
 
 class MockExtensionDownloaderDelegate
     : public testing::NiceMock<ExtensionDownloaderDelegate> {
@@ -55,7 +60,7 @@ class MockExtensionDownloaderDelegate
                     InstallCallback&));
   MOCK_METHOD0(OnExtensionDownloadRetryForTests, void());
   MOCK_METHOD2(GetPingDataForExtension,
-               bool(const ExtensionId&, ManifestFetchData::PingData*));
+               bool(const ExtensionId&, DownloadPingData*));
   MOCK_METHOD1(GetUpdateUrlData, std::string(const ExtensionId&));
   MOCK_METHOD1(IsExtensionPending, bool(const ExtensionId&));
   MOCK_METHOD2(GetExtensionExistingVersion,
@@ -71,11 +76,43 @@ class MockExtensionDownloaderDelegate
   base::RepeatingClosure quit_closure_;
 };
 
+class MockExtensionCache : public ExtensionCache {
+ public:
+  MockExtensionCache();
+  ~MockExtensionCache() override;
+
+  void Start(base::OnceClosure callback) override;
+  void Shutdown(base::OnceClosure callback) override;
+  MOCK_METHOD1(AllowCaching, void(const ExtensionId&));
+  MOCK_METHOD4(GetExtension,
+               bool(const ExtensionId&,
+                    const std::string& expected_hash,
+                    base::FilePath* path,
+                    std::string* version));
+  MOCK_METHOD5(PutExtension,
+               void(const ExtensionId&,
+                    const std::string& hash,
+                    const base::FilePath& path,
+                    const std::string& version,
+                    PutExtensionCallback callback));
+};
+
 // Creates ExtensionDownloader for tests, with mocked delegate and
 // TestURLLoaderFactory as a URL factory.
 class ExtensionDownloaderTestHelper {
  public:
+  static constexpr DownloadPingData kNeverPingedData =
+      DownloadPingData(ManifestFetchData::kNeverPinged,
+                       ManifestFetchData::kNeverPinged,
+                       true,
+                       0);
+  static constexpr char kEmptyUpdateUrlData[] = "";
+
   ExtensionDownloaderTestHelper();
+
+  ExtensionDownloaderTestHelper(const ExtensionDownloaderTestHelper&) = delete;
+  ExtensionDownloaderTestHelper& operator=(
+      const ExtensionDownloaderTestHelper&) = delete;
 
   ~ExtensionDownloaderTestHelper();
 
@@ -87,6 +124,9 @@ class ExtensionDownloaderTestHelper {
   network::TestURLLoaderFactory& test_url_loader_factory() {
     return test_url_loader_factory_;
   }
+
+  // Adds a fetch request directly to the internal downloader.
+  void StartUpdateCheck(std::unique_ptr<ManifestFetchData> fetch_data);
 
   // Returns a request that URL loader factory has received (or nullptr if it
   // didn't receive enough requests).
@@ -107,9 +147,76 @@ class ExtensionDownloaderTestHelper {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   MockExtensionDownloaderDelegate delegate_;
   ExtensionDownloader downloader_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDownloaderTestHelper);
 };
+
+// Creates a downloader task with most arguments set to default values.
+// Note that as ExtensionDownloaderTask is just a simple struct, callers can
+// configure additional properties if needed.
+ExtensionDownloaderTask CreateDownloaderTask(const ExtensionId& id,
+                                             const GURL& update_url = {});
+
+// Creates extension info and associated task, adds both to `fetch_data`.
+void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
+                                       const ExtensionId& id,
+                                       const std::string& version,
+                                       const GURL& update_url,
+                                       DownloadPingData ping_data);
+
+// Simplified version with fewer arguments.
+void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
+                                       const ExtensionId& id,
+                                       const std::string& version,
+                                       const GURL& update_url);
+
+// Struct for creating app entries in the update manifest XML.
+struct UpdateManifestItem {
+  explicit UpdateManifestItem(ExtensionId id);
+  ~UpdateManifestItem();
+  // We need copy items to be able to use them to initialize e.g. vector of
+  // items via {item1, item2, ...} syntax.
+  UpdateManifestItem(const UpdateManifestItem&);
+  UpdateManifestItem& operator=(const UpdateManifestItem&);
+  UpdateManifestItem(UpdateManifestItem&&);
+  UpdateManifestItem& operator=(UpdateManifestItem&&);
+
+  UpdateManifestItem&& codebase(std::string value) && {
+    updatecheck_params.emplace("codebase", std::move(value));
+    return std::move(*this);
+  }
+  UpdateManifestItem&& hash(std::string value) && {
+    updatecheck_params.emplace("hash", std::move(value));
+    return std::move(*this);
+  }
+  UpdateManifestItem&& hash_sha256(std::string value) && {
+    updatecheck_params.emplace("hash_sha256", std::move(value));
+    return std::move(*this);
+  }
+  UpdateManifestItem&& info(std::string value) && {
+    updatecheck_params.emplace("info", std::move(value));
+    return std::move(*this);
+  }
+  UpdateManifestItem&& prodversionmin(std::string value) && {
+    updatecheck_params.emplace("prodversionmin", std::move(value));
+    return std::move(*this);
+  }
+  UpdateManifestItem&& status(std::string value) && {
+    updatecheck_params.emplace("status", std::move(value));
+    return std::move(*this);
+  }
+  UpdateManifestItem&& version(std::string value) && {
+    updatecheck_params.emplace("version", std::move(value));
+    return std::move(*this);
+  }
+
+  ExtensionId id;
+  std::map<std::string, std::string> updatecheck_params;
+};
+
+// A generic method to create an XML update manifest. For each extension an
+// extension ID should be provided along with parameters of the updatecheck
+// tag.
+std::string CreateUpdateManifest(
+    const std::vector<UpdateManifestItem>& extensions);
 
 }  // namespace extensions
 

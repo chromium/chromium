@@ -1,11 +1,10 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.net;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -16,24 +15,28 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkInfo;
 import android.net.TrafficStats;
+import android.net.TransportInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.ParcelFileDescriptor;
 import android.os.Process;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.CalledByNativeUnchecked;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForN;
 import org.chromium.base.compat.ApiHelperForP;
+import org.chromium.base.compat.ApiHelperForQ;
+import org.chromium.build.annotations.MainDex;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
@@ -148,20 +151,16 @@ class AndroidNetworkLibrary {
 
     /**
      * Returns the MCC+MNC (mobile country code + mobile network code) as
-     * the numeric name of the current registered operator.
+     * the numeric name of the current registered operator. This function
+     * potentially blocks the thread, so use with care.
      */
     @CalledByNative
     private static String getNetworkOperator() {
-        return AndroidTelephonyManagerBridge.getInstance().getNetworkOperator();
-    }
-
-    /**
-     * Returns the MCC+MNC (mobile country code + mobile network code) as
-     * the numeric name of the current SIM operator.
-     */
-    @CalledByNative
-    private static String getSimOperator() {
-        return AndroidTelephonyManagerBridge.getInstance().getSimOperator();
+        TelephonyManager telephonyManager =
+                (TelephonyManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.TELEPHONY_SERVICE);
+        if (telephonyManager == null) return "";
+        return telephonyManager.getNetworkOperator();
     }
 
     /**
@@ -185,7 +184,7 @@ class AndroidNetworkLibrary {
      * status can't be determined. Requires ACCESS_NETWORK_STATE permission. Only available on
      * Android Marshmallow and later versions. Returns false on earlier versions.
      */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     private static boolean getIsCaptivePortal() {
         // NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL is only available on Marshmallow and
@@ -205,6 +204,56 @@ class AndroidNetworkLibrary {
     }
 
     /**
+     * Helper function that gets the WifiInfo of the WiFi network. If we have permission to access
+     * to the WiFi state, then we use either {@link NetworkCapabilities} for Android S+ or {@link
+     * WifiManager} for earlier versions. Otherwise, we try to get the WifiInfo via broadcast (Note
+     * that this approach does not work on Android P and above).
+     */
+    private static WifiInfo getWifiInfo() {
+        if (haveAccessWifiState()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                // On Android S+, need to use NetworkCapabilities to get the WifiInfo.
+                ConnectivityManager connectivityManager =
+                        (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(
+                                Context.CONNECTIVITY_SERVICE);
+                Network[] allNetworks = connectivityManager.getAllNetworks();
+                // TODO(curranmax): This only gets the WifiInfo of the first WiFi network that is
+                // iterated over. On Android S+ there may be up to two WiFi networks.
+                // https://crbug.com/1181393
+                for (Network network : allNetworks) {
+                    NetworkCapabilities networkCapabilities =
+                            connectivityManager.getNetworkCapabilities(network);
+                    if (networkCapabilities != null
+                            && networkCapabilities.hasTransport(
+                                    NetworkCapabilities.TRANSPORT_WIFI)) {
+                        TransportInfo transportInfo =
+                                ApiHelperForQ.getTransportInfo(networkCapabilities);
+                        if (transportInfo != null && transportInfo instanceof WifiInfo) {
+                            return (WifiInfo) transportInfo;
+                        }
+                    }
+                }
+                return null;
+            } else {
+                // Get WifiInfo via WifiManager. This method is deprecated starting with Android S.
+                WifiManager wifiManager =
+                        (WifiManager) ContextUtils.getApplicationContext().getSystemService(
+                                Context.WIFI_SERVICE);
+                return wifiManager.getConnectionInfo();
+            }
+        } else {
+            // If we do not have permission to access the WiFi state, then try to get the WifiInfo
+            // through broadcast. Note that this approach does not work on Android P+.
+            final Intent intent = ContextUtils.getApplicationContext().registerReceiver(
+                    null, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
+            if (intent != null) {
+                return intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
+            }
+            return null;
+        }
+    }
+
+    /**
      * Gets the SSID of the currently associated WiFi access point if there is one, and it is
      * available. SSID may not be available if the app does not have permissions to access it. On
      * Android M+, the app accessing SSID needs to have ACCESS_COARSE_LOCATION or
@@ -213,20 +262,7 @@ class AndroidNetworkLibrary {
      */
     @CalledByNative
     public static String getWifiSSID() {
-        WifiInfo wifiInfo = null;
-        // On Android P and above, the WifiInfo cannot be obtained through broadcast.
-        if (haveAccessWifiState()) {
-            WifiManager wifiManager =
-                    (WifiManager) ContextUtils.getApplicationContext().getSystemService(
-                            Context.WIFI_SERVICE);
-            wifiInfo = wifiManager.getConnectionInfo();
-        } else {
-            final Intent intent = ContextUtils.getApplicationContext().registerReceiver(
-                    null, new IntentFilter(WifiManager.NETWORK_STATE_CHANGED_ACTION));
-            if (intent != null) {
-                wifiInfo = intent.getParcelableExtra(WifiManager.EXTRA_WIFI_INFO);
-            }
-        }
+        WifiInfo wifiInfo = getWifiInfo();
 
         if (wifiInfo != null) {
             final String ssid = wifiInfo.getSSID();
@@ -237,6 +273,18 @@ class AndroidNetworkLibrary {
             }
         }
         return "";
+    }
+
+    // For testing, turn Wifi on/off. Only for testing but we can not append
+    // "ForTest" hooter because jni generator creates code for @CalledByNative
+    // regardless of the hooter but Chromium Binary Size checker warns
+    // "XXXForTest" is included in the production binary.
+    @CalledByNative
+    public static void setWifiEnabled(boolean enabled) {
+        WifiManager wifiManager =
+                (WifiManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.WIFI_SERVICE);
+        wifiManager.setWifiEnabled(enabled);
     }
 
     /**
@@ -260,10 +308,7 @@ class AndroidNetworkLibrary {
         // On Android Q and above, the WifiInfo cannot be obtained through broadcast. See
         // https://crbug.com/1026686.
         if (haveAccessWifiState()) {
-            WifiManager wifiManager =
-                    (WifiManager) ContextUtils.getApplicationContext().getSystemService(
-                            Context.WIFI_SERVICE);
-            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            WifiInfo wifiInfo = getWifiInfo();
             if (wifiInfo == null) {
                 return -1;
             }
@@ -309,7 +354,7 @@ class AndroidNetworkLibrary {
             sInstance = networkSecurityPolicyProxy;
         }
 
-        @TargetApi(Build.VERSION_CODES.N)
+        @RequiresApi(Build.VERSION_CODES.N)
         public boolean isCleartextTrafficPermitted(String host) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                 // No per-host configuration before N.
@@ -318,7 +363,7 @@ class AndroidNetworkLibrary {
             return ApiHelperForN.isCleartextTrafficPermitted(host);
         }
 
-        @TargetApi(Build.VERSION_CODES.M)
+        @RequiresApi(Build.VERSION_CODES.M)
         public boolean isCleartextTrafficPermitted() {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 // Always true before M.
@@ -367,10 +412,36 @@ class AndroidNetworkLibrary {
 
     /**
      * Returns object representing the DNS configuration for the provided
+     * network handle.
+     */
+    @RequiresApi(Build.VERSION_CODES.P)
+    @CalledByNative
+    public static DnsStatus getDnsStatusForNetwork(long networkHandle) {
+        // In case the network handle is invalid don't crash, instead return an empty DnsStatus and
+        // let native code handle that.
+        try {
+            Network network = Network.fromNetworkHandle(networkHandle);
+            return getDnsStatus(network);
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns object representing the DNS configuration for the current
+     * default network.
+     */
+    @RequiresApi(Build.VERSION_CODES.M)
+    @CalledByNative
+    public static DnsStatus getCurrentDnsStatus() {
+        return getDnsStatus(null);
+    }
+
+    /**
+     * Returns object representing the DNS configuration for the provided
      * network. If |network| is null, uses the active network.
      */
-    @TargetApi(Build.VERSION_CODES.M)
-    @CalledByNative
+    @RequiresApi(Build.VERSION_CODES.M)
     public static DnsStatus getDnsStatus(Network network) {
         if (!haveAccessNetworkState()) {
             return null;
@@ -409,7 +480,7 @@ class AndroidNetworkLibrary {
     /**
      * Reports a connectivity issue with the device's current default network.
      */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     private static boolean reportBadDefaultNetwork() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;

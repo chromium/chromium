@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,8 +51,7 @@ struct CheckedAddOp<T,
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
-    // TODO(jschuh) Make this "constexpr if" once we're C++17.
-    if (CheckedAddFastOp<T, U>::is_supported)
+    if constexpr (CheckedAddFastOp<T, U>::is_supported)
       return CheckedAddFastOp<T, U>::Do(x, y, result);
 
     // Double the underlying type up to a full machine word.
@@ -115,8 +114,7 @@ struct CheckedSubOp<T,
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
-    // TODO(jschuh) Make this "constexpr if" once we're C++17.
-    if (CheckedSubFastOp<T, U>::is_supported)
+    if constexpr (CheckedSubFastOp<T, U>::is_supported)
       return CheckedSubFastOp<T, U>::Do(x, y, result);
 
     // Double the underlying type up to a full machine word.
@@ -166,7 +164,7 @@ constexpr bool CheckedMulImpl(T x, T y, T* result) {
   if (uy > UnsignedDst(!std::is_signed<T>::value || is_negative) &&
       ux > (std::numeric_limits<T>::max() + UnsignedDst(is_negative)) / uy)
     return false;
-  *result = is_negative ? 0 - uresult : uresult;
+  *result = static_cast<T>(is_negative ? 0 - uresult : uresult);
   return true;
 }
 
@@ -181,8 +179,7 @@ struct CheckedMulOp<T,
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V>
   static constexpr bool Do(T x, U y, V* result) {
-    // TODO(jschuh) Make this "constexpr if" once we're C++17.
-    if (CheckedMulFastOp<T, U>::is_supported)
+    if constexpr (CheckedMulFastOp<T, U>::is_supported)
       return CheckedMulFastOp<T, U>::Do(x, y, result);
 
     using Promotion = typename FastIntegerArithmeticPromotion<T, U>::type;
@@ -197,7 +194,10 @@ struct CheckedMulOp<T,
     bool is_valid = true;
     if (CheckedMulFastOp<Promotion, Promotion>::is_supported) {
       // The fast op may be available with the promoted type.
-      is_valid = CheckedMulFastOp<Promotion, Promotion>::Do(x, y, &presult);
+      // The casts here are safe because of the "value in range" conditional
+      // above.
+      is_valid = CheckedMulFastOp<Promotion, Promotion>::Do(
+          static_cast<Promotion>(x), static_cast<Promotion>(y), &presult);
     } else if (IsIntegerArithmeticSafe<Promotion, T, U>::value) {
       presult = static_cast<Promotion>(x) * static_cast<Promotion>(y);
     } else {
@@ -334,7 +334,7 @@ struct CheckedRshOp<T,
                                             std::is_integral<U>::value>::type> {
   using result_type = T;
   template <typename V>
-  static bool Do(T x, U shift, V* result) {
+  static constexpr bool Do(T x, U shift, V* result) {
     // Use sign conversion to push negative values out of range.
     if (BASE_NUMERICS_UNLIKELY(as_unsigned(shift) >=
                                IntegerBitsPlusSign<T>::value)) {
@@ -541,7 +541,7 @@ class CheckedNumericState<T, NUMERIC_INTEGER> {
                : 0;
   }
 
-  // is_valid_ precedes value_ because member intializers in the constructors
+  // is_valid_ precedes value_ because member initializers in the constructors
   // are evaluated in field order, and is_valid_ must be read when initializing
   // value_.
   bool is_valid_;
@@ -564,7 +564,7 @@ class CheckedNumericState<T, NUMERIC_FLOATING> {
 
   constexpr bool is_valid() const {
     // Written this way because std::isfinite is not reliably constexpr.
-    return MustTreatAsConstexpr(value_)
+    return IsConstantEvaluated()
                ? value_ <= std::numeric_limits<T>::max() &&
                      value_ >= std::numeric_limits<T>::lowest()
                : std::isfinite(value_);

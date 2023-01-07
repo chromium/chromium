@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/attachment_info.h"
 #include "chrome/browser/nearby_sharing/nearby_connections_manager.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/nearby_sharing/transfer_metadata.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Listens for incoming or outgoing transfer updates from Nearby Connections and
 // forwards the transfer progress to the |update_callback|.
@@ -28,7 +28,7 @@ class PayloadTracker : public NearbyConnectionsManager::PayloadStatusListener {
 
   // NearbyConnectionsManager::PayloadStatusListener:
   void OnStatusUpdate(PayloadTransferUpdatePtr update,
-                      base::Optional<Medium> upgraded_medium) override;
+                      absl::optional<Medium> upgraded_medium) override;
 
  private:
   struct State {
@@ -67,9 +67,10 @@ class PayloadTracker : public NearbyConnectionsManager::PayloadStatusListener {
   // For metrics.
   size_t num_text_attachments_ = 0;
   size_t num_file_attachments_ = 0;
+  size_t num_wifi_credentials_attachments_ = 0;
   uint64_t num_first_update_bytes_ = 0;
-  base::Optional<base::TimeTicks> first_update_timestamp_;
-  base::Optional<Medium> last_upgraded_medium_;
+  absl::optional<base::TimeTicks> first_update_timestamp_;
+  absl::optional<Medium> last_upgraded_medium_;
 };
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_PAYLOAD_TRACKER_H_

@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2018 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 Bundletool is distributed as a versioned jar file. This script abstracts the
 location and version of this jar file, as well as the JVM invokation."""
+
+# Warning: Check if still being run as python2: https://crbug.com/1322618
 
 import logging
 import os
@@ -19,10 +21,7 @@ BUNDLETOOL_DIR = os.path.abspath(os.path.join(
     __file__, '..', '..', '..', '..', 'third_party', 'android_build_tools',
     'bundletool'))
 
-BUNDLETOOL_VERSION = '1.4.0'
-
-BUNDLETOOL_JAR_PATH = os.path.join(
-    BUNDLETOOL_DIR, 'bundletool-all-%s.jar' % BUNDLETOOL_VERSION)
+BUNDLETOOL_JAR_PATH = os.path.join(BUNDLETOOL_DIR, 'bundletool.jar')
 
 
 def RunBundleTool(args, warnings_as_errors=(), print_stdout=False):

@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,4 +12,4 @@
 # //chrome/android/webapk/shell_apk:webapk is changed. This includes
 # Java files, Android resource files and AndroidManifest.xml. Does not affect
 # Chrome.apk
-current_shell_apk_version = 136
+current_shell_apk_version = 156

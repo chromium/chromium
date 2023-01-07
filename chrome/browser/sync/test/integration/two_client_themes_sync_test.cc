@@ -1,9 +1,7 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/themes_helper.h"
@@ -13,7 +11,6 @@ namespace {
 
 using themes_helper::GetCustomTheme;
 using themes_helper::GetThemeID;
-using themes_helper::UseCustomTheme;
 using themes_helper::UseDefaultTheme;
 using themes_helper::UseSystemTheme;
 using themes_helper::UsingCustomTheme;
@@ -24,10 +21,10 @@ class TwoClientThemesSyncTest : public SyncTest {
  public:
   TwoClientThemesSyncTest() : SyncTest(TWO_CLIENT) {}
 
-  ~TwoClientThemesSyncTest() override {}
+  TwoClientThemesSyncTest(const TwoClientThemesSyncTest&) = delete;
+  TwoClientThemesSyncTest& operator=(const TwoClientThemesSyncTest&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientThemesSyncTest);
+  ~TwoClientThemesSyncTest() override = default;
 };
 
 // Starts with default themes, then sets up sync and uses it to set all

@@ -1,0 +1,22 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("chromium_ui_utils") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "chromium_ui_utils.mm" ]
+  deps = [
+    ":chromium_logo_controller",
+    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
+  ]
+  frameworks = [ "CoreGraphics.framework" ]
+}
+
+source_set("chromium_logo_controller") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "chromium_logo_controller.h",
+    "chromium_logo_controller.mm",
+  ]
+  deps = [ "//ios/chrome/browser/ui/ntp:logo" ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,6 +22,7 @@
 #include "content/public/common/process_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -30,6 +30,9 @@ namespace {
 class MockModuleListFilter : public ModuleListFilter {
  public:
   MockModuleListFilter() = default;
+
+  MockModuleListFilter(const MockModuleListFilter&) = delete;
+  MockModuleListFilter& operator=(const MockModuleListFilter&) = delete;
 
   bool IsAllowlisted(base::StringPiece module_basename_hash,
                      base::StringPiece module_code_id_hash) const override {
@@ -44,13 +47,16 @@ class MockModuleListFilter : public ModuleListFilter {
 
  private:
   ~MockModuleListFilter() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(MockModuleListFilter);
 };
 
 class MockInstalledApplications : public InstalledApplications {
  public:
   MockInstalledApplications() = default;
+
+  MockInstalledApplications(const MockInstalledApplications&) = delete;
+  MockInstalledApplications& operator=(const MockInstalledApplications&) =
+      delete;
+
   ~MockInstalledApplications() override = default;
 
   void AddIncompatibleApplication(const base::FilePath& file_path,
@@ -73,8 +79,6 @@ class MockInstalledApplications : public InstalledApplications {
 
  private:
   std::multimap<base::FilePath, ApplicationInfo> applications_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockInstalledApplications);
 };
 
 constexpr wchar_t kCertificatePath[] = L"CertificatePath";
@@ -89,7 +93,7 @@ ModuleInfoData CreateLoadedModuleInfoData() {
   ModuleInfoData module_data;
   module_data.module_properties |= ModuleInfoData::kPropertyLoadedModule;
   module_data.process_types |= ProcessTypeToBit(content::PROCESS_TYPE_BROWSER);
-  module_data.inspection_result = base::make_optional<ModuleInspectionResult>();
+  module_data.inspection_result = absl::make_optional<ModuleInspectionResult>();
   return module_data;
 }
 
@@ -111,6 +115,12 @@ ModuleInfoData CreateSignedLoadedModuleInfoData() {
 
 class IncompatibleApplicationsUpdaterTest : public testing::Test,
                                             public ModuleDatabaseEventSource {
+ public:
+  IncompatibleApplicationsUpdaterTest(
+      const IncompatibleApplicationsUpdaterTest&) = delete;
+  IncompatibleApplicationsUpdaterTest& operator=(
+      const IncompatibleApplicationsUpdaterTest&) = delete;
+
  protected:
   IncompatibleApplicationsUpdaterTest()
       : dll1_(kDllPath1),
@@ -178,8 +188,6 @@ class IncompatibleApplicationsUpdaterTest : public testing::Test,
   CertificateInfo exe_certificate_info_;
   scoped_refptr<MockModuleListFilter> module_list_filter_;
   MockInstalledApplications installed_applications_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncompatibleApplicationsUpdaterTest);
 };
 
 // Tests that when the Local State cache is empty, no incompatible applications
@@ -390,7 +398,7 @@ TEST_F(IncompatibleApplicationsUpdaterTest, IgnoreNotLoadedModules) {
   // Simulate the module loading into the process.
   ModuleInfoKey module_key(dll1_, 0, 0);
   ModuleInfoData module_data;
-  module_data.inspection_result = base::make_optional<ModuleInspectionResult>();
+  module_data.inspection_result = absl::make_optional<ModuleInspectionResult>();
   incompatible_applications_updater->OnNewModuleFound(module_key, module_data);
   incompatible_applications_updater->OnModuleDatabaseIdle();
   RunLoopUntilIdle();

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "media/base/null_video_sink.h"
 #include "media/base/test_helpers.h"
@@ -30,17 +30,21 @@ class NullVideoSinkTest : public testing::Test,
  public:
   NullVideoSinkTest() {
     // Never use null TimeTicks since they have special connotations.
-    tick_clock_.Advance(base::TimeDelta::FromMicroseconds(12345));
+    tick_clock_.Advance(base::Microseconds(12345));
   }
+
+  NullVideoSinkTest(const NullVideoSinkTest&) = delete;
+  NullVideoSinkTest& operator=(const NullVideoSinkTest&) = delete;
+
   ~NullVideoSinkTest() override = default;
 
   std::unique_ptr<NullVideoSink> ConstructSink(bool clockless,
                                                base::TimeDelta interval) {
-    std::unique_ptr<NullVideoSink> new_sink(
-        new NullVideoSink(clockless, interval,
-                          base::BindRepeating(&NullVideoSinkTest::FrameReceived,
-                                              base::Unretained(this)),
-                          task_environment_.GetMainThreadTaskRunner()));
+    auto new_sink = std::make_unique<NullVideoSink>(
+        clockless, interval,
+        base::BindRepeating(&NullVideoSinkTest::FrameReceived,
+                            base::Unretained(this)),
+        task_environment_.GetMainThreadTaskRunner());
     new_sink->set_tick_clock_for_testing(&tick_clock_);
     return new_sink;
   }
@@ -67,12 +71,10 @@ class NullVideoSinkTest : public testing::Test,
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::SimpleTestTickClock tick_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(NullVideoSinkTest);
 };
 
 TEST_F(NullVideoSinkTest, BasicFunctionality) {
-  const base::TimeDelta kInterval = base::TimeDelta::FromMilliseconds(25);
+  const base::TimeDelta kInterval = base::Milliseconds(25);
 
   std::unique_ptr<NullVideoSink> sink = ConstructSink(false, kInterval);
   scoped_refptr<VideoFrame> test_frame = CreateFrame(base::TimeDelta());
@@ -125,7 +127,7 @@ TEST_F(NullVideoSinkTest, BasicFunctionality) {
 
 TEST_F(NullVideoSinkTest, ClocklessFunctionality) {
   // Construct the sink with a huge interval, it should still complete quickly.
-  const base::TimeDelta interval = base::TimeDelta::FromSeconds(10);
+  const base::TimeDelta interval = base::Seconds(10);
   std::unique_ptr<NullVideoSink> sink = ConstructSink(true, interval);
 
   scoped_refptr<VideoFrame> test_frame = CreateFrame(base::TimeDelta());

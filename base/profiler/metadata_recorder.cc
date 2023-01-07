@@ -1,19 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/profiler/metadata_recorder.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
 const size_t MetadataRecorder::MAX_METADATA_COUNT;
 
 MetadataRecorder::Item::Item(uint64_t name_hash,
-                             Optional<int64_t> key,
+                             absl::optional<int64_t> key,
+                             absl::optional<PlatformThreadId> thread_id,
                              int64_t value)
-    : name_hash(name_hash), key(key), value(value) {}
+    : name_hash(name_hash), key(key), thread_id(thread_id), value(value) {}
 
 MetadataRecorder::Item::Item() : name_hash(0), value(0) {}
 
@@ -35,7 +37,8 @@ MetadataRecorder::MetadataRecorder() {
 MetadataRecorder::~MetadataRecorder() = default;
 
 void MetadataRecorder::Set(uint64_t name_hash,
-                           Optional<int64_t> key,
+                           absl::optional<int64_t> key,
+                           absl::optional<PlatformThreadId> thread_id,
                            int64_t value) {
   AutoLock lock(write_lock_);
 
@@ -48,7 +51,8 @@ void MetadataRecorder::Set(uint64_t name_hash,
   size_t item_slots_used = item_slots_used_.load(std::memory_order_relaxed);
   for (size_t i = 0; i < item_slots_used; ++i) {
     auto& item = items_[i];
-    if (item.name_hash == name_hash && item.key == key) {
+    if (item.name_hash == name_hash && item.key == key &&
+        item.thread_id == thread_id) {
       item.value.store(value, std::memory_order_relaxed);
 
       const bool was_active =
@@ -56,17 +60,11 @@ void MetadataRecorder::Set(uint64_t name_hash,
       if (!was_active)
         inactive_item_count_--;
 
-      UMA_HISTOGRAM_COUNTS_10000("StackSamplingProfiler.MetadataSlotsUsed",
-                                 item_slots_used);
-
       return;
     }
   }
 
   item_slots_used = TryReclaimInactiveSlots(item_slots_used);
-
-  UMA_HISTOGRAM_COUNTS_10000("StackSamplingProfiler.MetadataSlotsUsed",
-                             item_slots_used + 1);
 
   if (item_slots_used == items_.size()) {
     // The metadata recorder is full, forcing us to drop this metadata. The
@@ -81,18 +79,22 @@ void MetadataRecorder::Set(uint64_t name_hash,
   auto& item = items_[item_slots_used];
   item.name_hash = name_hash;
   item.key = key;
+  item.thread_id = thread_id;
   item.value.store(value, std::memory_order_relaxed);
   item.is_active.store(true, std::memory_order_release);
   item_slots_used_.fetch_add(1, std::memory_order_release);
 }
 
-void MetadataRecorder::Remove(uint64_t name_hash, Optional<int64_t> key) {
+void MetadataRecorder::Remove(uint64_t name_hash,
+                              absl::optional<int64_t> key,
+                              absl::optional<PlatformThreadId> thread_id) {
   AutoLock lock(write_lock_);
 
   size_t item_slots_used = item_slots_used_.load(std::memory_order_relaxed);
   for (size_t i = 0; i < item_slots_used; ++i) {
     auto& item = items_[i];
-    if (item.name_hash == name_hash && item.key == key) {
+    if (item.name_hash == name_hash && item.key == key &&
+        item.thread_id == thread_id) {
       // A removed item will occupy its slot until that slot is reclaimed.
       const bool was_active =
           item.is_active.exchange(false, std::memory_order_relaxed);
@@ -105,18 +107,21 @@ void MetadataRecorder::Remove(uint64_t name_hash, Optional<int64_t> key) {
 }
 
 MetadataRecorder::MetadataProvider::MetadataProvider(
-    MetadataRecorder* metadata_recorder)
+    MetadataRecorder* metadata_recorder,
+    PlatformThreadId thread_id)
     : metadata_recorder_(metadata_recorder),
+      thread_id_(thread_id),
       auto_lock_(metadata_recorder->read_lock_) {}
 
 MetadataRecorder::MetadataProvider::~MetadataProvider() = default;
 
 size_t MetadataRecorder::MetadataProvider::GetItems(
     ItemArray* const items) const {
-  return metadata_recorder_->GetItems(items);
+  return metadata_recorder_->GetItems(items, thread_id_);
 }
 
-size_t MetadataRecorder::GetItems(ItemArray* const items) const {
+size_t MetadataRecorder::GetItems(ItemArray* const items,
+                                  PlatformThreadId thread_id) const {
   // If a writer adds a new item after this load, it will be ignored.  We do
   // this instead of calling item_slots_used_.load() explicitly in the for loop
   // bounds checking, which would be expensive.
@@ -134,9 +139,11 @@ size_t MetadataRecorder::GetItems(ItemArray* const items) const {
     const auto& item = items_[read_index];
     // Because we wait until |is_active| is set to consider an item active and
     // that field is always set last, we ignore half-created items.
-    if (item.is_active.load(std::memory_order_acquire)) {
-      (*items)[write_index++] = Item{
-          item.name_hash, item.key, item.value.load(std::memory_order_relaxed)};
+    if (item.is_active.load(std::memory_order_acquire) &&
+        (!item.thread_id.has_value() || item.thread_id == thread_id)) {
+      (*items)[write_index++] =
+          Item{item.name_hash, item.key, item.thread_id,
+               item.value.load(std::memory_order_relaxed)};
     }
   }
 

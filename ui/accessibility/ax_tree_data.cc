@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -66,6 +65,12 @@ std::string AXTreeData::ToString() const {
     result += " sel_focus_affinity=";
     result += ui::ToString(sel_focus_affinity);
   }
+  if (!metadata.empty()) {
+    result += "\n<head>\n";
+    for (const auto& str : metadata)
+      result += "  " + str + "\n";
+    result += "</head>\n";
+  }
 
   return result;
 }
@@ -88,6 +93,11 @@ bool operator==(const AXTreeData& lhs, const AXTreeData& rhs) {
 
 bool operator!=(const AXTreeData& lhs, const AXTreeData& rhs) {
   return !(lhs == rhs);
+}
+
+const AXTreeData& AXTreeDataUnknown() {
+  static const AXTreeData ax_tree_data_unknown;
+  return ax_tree_data_unknown;
 }
 
 }  // namespace ui

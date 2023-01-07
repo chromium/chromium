@@ -1,0 +1,24 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/common_export.h"
+
+namespace blink {
+namespace features {
+
+{% for feature in features %}
+{% if feature.base_feature %}
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(k{{feature.base_feature}});
+{% endif %}
+{% endfor %}
+
+}  // namespace features
+}  // namespace blink
+
+#endif  // {{header_guard}}

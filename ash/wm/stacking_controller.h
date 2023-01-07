@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/aura/client/window_parenting_client.h"
 
 namespace ash {
@@ -16,14 +15,15 @@ class ASH_EXPORT StackingController
     : public aura::client::WindowParentingClient {
  public:
   StackingController();
+
+  StackingController(const StackingController&) = delete;
+  StackingController& operator=(const StackingController&) = delete;
+
   ~StackingController() override;
 
   // Overridden from aura::client::WindowParentingClient:
   aura::Window* GetDefaultParent(aura::Window* window,
                                  const gfx::Rect& bounds) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StackingController);
 };
 
 }  // namespace ash

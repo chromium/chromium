@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,8 +63,6 @@ void MessageQueue::GetNextMessage(std::unique_ptr<UserMessageEvent>* message,
                heap_.size() % kHeapShrinkInterval == 0)) {
     heap_.shrink_to_fit();
   }
-
-  next_sequence_num_++;
 }
 
 void MessageQueue::AcceptMessage(std::unique_ptr<UserMessageEvent> message,
@@ -86,6 +84,10 @@ void MessageQueue::TakeAllMessages(
     std::vector<std::unique_ptr<UserMessageEvent>>* messages) {
   *messages = std::move(heap_);
   total_queued_bytes_ = 0;
+}
+
+void MessageQueue::MessageProcessed() {
+  next_sequence_num_++;
 }
 
 }  // namespace ports

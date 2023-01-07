@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 #include "base/files/file_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace tld_cleanup {
+namespace net::tld_cleanup {
 
 std::string SetupData(const std::string& icann_domains,
                       const std::string& private_domains) {
@@ -164,5 +163,4 @@ TEST(TldCleanupUtilTest, WildcardAndExceptionParsedCorrectly) {
   EXPECT_TRUE(baz_bar_iter->second.is_private);
 }
 
-}  // namespace tld_cleanup
-}  // namespace net
+}  // namespace net::tld_cleanup

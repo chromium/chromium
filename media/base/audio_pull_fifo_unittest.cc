@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_pull_fifo.h"
@@ -39,6 +38,10 @@ class AudioPullFifoTest
         last_frame_delay_(-1) {
     EXPECT_EQ(kMaxFramesInFifo, pull_fifo_.SizeInFrames());
   }
+
+  AudioPullFifoTest(const AudioPullFifoTest&) = delete;
+  AudioPullFifoTest& operator=(const AudioPullFifoTest&) = delete;
+
   virtual ~AudioPullFifoTest() = default;
 
   void VerifyValue(const float data[], int size, float start_value) {
@@ -86,8 +89,6 @@ class AudioPullFifoTest
   std::unique_ptr<AudioBus> audio_bus_;
   int fill_value_;
   int last_frame_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPullFifoTest);
 };
 
 TEST_P(AudioPullFifoTest, Consume) {

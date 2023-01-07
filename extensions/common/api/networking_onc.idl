@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 // </p>
 // <p>
 //   Network connection configurations are specified following
-//   <a href="https://chromium.googlesource.com/chromium/src/+/master/components/onc/docs/onc_spec.md">
+//   <a href="https://chromium.googlesource.com/chromium/src/+/main/components/onc/docs/onc_spec.md">
 //   Open Network Configuration (ONC)</a> specification.
 // </p>
 // <p>
@@ -260,6 +260,7 @@ namespace networking.onc {
     DOMString? AnonymousIdentity;
     CertificatePattern? ClientCertPattern;
     DOMString? ClientCertPKCS11Id;
+    DOMString? ClientCertProvisioningProfileId;
     DOMString? ClientCertRef;
     ClientCertificateType ClientCertType;
     DOMString? Identity;

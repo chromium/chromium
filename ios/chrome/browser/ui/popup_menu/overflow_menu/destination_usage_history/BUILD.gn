@@ -1,0 +1,49 @@
+source_set("destination_usage_history") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "destination_usage_history.h",
+    "destination_usage_history.mm",
+  ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu:overflow_menu_constants",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu:overflow_menu_swift",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "destination_usage_history_unittest.mm" ]
+  deps = [
+    ":destination_usage_history",
+    "//base",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu:overflow_menu_constants",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "destination_usage_history_egtest.mm" ]
+  deps = [
+    ":destination_usage_history",
+    "//ios/chrome/browser/prefs:pref_names",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

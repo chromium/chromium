@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_MEMORY_INSTRUMENTATION_MEMORY_INSTRUMENTATION_MOJOM_TRAITS_H_
 
 #include "base/component_export.h"
+#include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -107,14 +108,14 @@ struct COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MOJOM) UnionTraits<
     switch (args.entry_type) {
       case base::trace_event::MemoryAllocatorDump::Entry::EntryType::kUint64:
         return memory_instrumentation::mojom::
-            RawAllocatorDumpEntryValueDataView::Tag::VALUE_UINT64;
+            RawAllocatorDumpEntryValueDataView::Tag::kValueUint64;
       case base::trace_event::MemoryAllocatorDump::Entry::EntryType::kString:
         return memory_instrumentation::mojom::
-            RawAllocatorDumpEntryValueDataView::Tag::VALUE_STRING;
+            RawAllocatorDumpEntryValueDataView::Tag::kValueString;
     }
     NOTREACHED();
     return memory_instrumentation::mojom::RawAllocatorDumpEntryValueDataView::
-        Tag::VALUE_UINT64;
+        Tag::kValueUint64;
   }
 
   static uint64_t value_uint64(

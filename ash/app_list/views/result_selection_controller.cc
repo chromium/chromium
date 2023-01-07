@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/views/search_result_container_view.h"
+#include "base/i18n/rtl.h"
 
 namespace ash {
 
@@ -111,7 +112,7 @@ void ResultSelectionController::ResetSelection(const ui::KeyEvent* key_event,
     return;
 
   if (selected_result_)
-    selected_result_->SetSelected(false, base::nullopt);
+    selected_result_->SetSelected(false, absl::nullopt);
 
   selected_result_ = new_selection;
 
@@ -132,7 +133,7 @@ void ResultSelectionController::ClearSelection() {
   selected_location_details_ = nullptr;
   if (selected_result_) {
     // Reset the state of the previous selected result.
-    selected_result_->SetSelected(false, base::nullopt);
+    selected_result_->SetSelected(false, absl::nullopt);
     selected_result_id_ = std::string();
     selected_result_->set_is_default_result(false);
   }

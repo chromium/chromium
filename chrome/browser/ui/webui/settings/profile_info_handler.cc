@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,18 +97,17 @@ void ProfileInfoHandler::OnProfileAvatarChanged(
   PushProfileInfo();
 }
 
-void ProfileInfoHandler::HandleGetProfileInfo(const base::ListValue* args) {
+void ProfileInfoHandler::HandleGetProfileInfo(const base::Value::List& args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
 
-  ResolveJavascriptCallback(*callback_id, *GetAccountNameAndIcon());
+  ResolveJavascriptCallback(callback_id, GetAccountNameAndIcon());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-void ProfileInfoHandler::HandleGetProfileStats(const base::ListValue* args) {
+void ProfileInfoHandler::HandleGetProfileStats(const base::Value::List& args) {
   AllowJavascript();
 
   ProfileStatisticsFactory::GetForProfile(profile_)->GatherStatistics(
@@ -130,17 +129,16 @@ void ProfileInfoHandler::PushProfileStatsCount(
 #endif
 
 void ProfileInfoHandler::PushProfileInfo() {
-  FireWebUIListener(kProfileInfoChangedEventName, *GetAccountNameAndIcon());
+  FireWebUIListener(kProfileInfoChangedEventName, GetAccountNameAndIcon());
 }
 
-std::unique_ptr<base::DictionaryValue>
-ProfileInfoHandler::GetAccountNameAndIcon() const {
+base::Value::Dict ProfileInfoHandler::GetAccountNameAndIcon() {
   std::string name;
   std::string icon_url;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile_);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile_);
   DCHECK(user);
   name = base::UTF16ToUTF8(user->GetDisplayName());
 
@@ -161,14 +159,14 @@ ProfileInfoHandler::GetAccountNameAndIcon() const {
     // work here, sends less over IPC, and is more stable with returned results.
     int kAvatarIconSize = 40.f * web_ui()->GetDeviceScaleFactor();
     gfx::Image icon = profiles::GetSizedAvatarIcon(
-        entry->GetAvatarIcon(), true, kAvatarIconSize, kAvatarIconSize);
+        entry->GetAvatarIcon(), kAvatarIconSize, kAvatarIconSize);
     icon_url = webui::GetBitmapDataUrl(icon.AsBitmap());
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  auto response = std::make_unique<base::DictionaryValue>();
-  response->SetString("name", name);
-  response->SetString("iconUrl", icon_url);
+  base::Value::Dict response;
+  response.Set("name", name);
+  response.Set("iconUrl", icon_url);
   return response;
 }
 

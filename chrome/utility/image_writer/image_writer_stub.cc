@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,11 @@ void ImageWriter::UnmountVolumes(base::OnceClosure continuation) {
 }
 
 bool ImageWriter::OpenDevice() {
-  device_file_.Initialize(
-      device_path_,
-      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE |
-          base::File::FLAG_EXCLUSIVE_READ | base::File::FLAG_EXCLUSIVE_WRITE);
+  device_file_.Initialize(device_path_,
+                          base::File::FLAG_OPEN | base::File::FLAG_READ |
+                              base::File::FLAG_WRITE |
+                              base::File::FLAG_WIN_EXCLUSIVE_READ |
+                              base::File::FLAG_WIN_EXCLUSIVE_WRITE);
   return device_file_.IsValid();
 }
 

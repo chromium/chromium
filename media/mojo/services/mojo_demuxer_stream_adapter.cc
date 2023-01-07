@@ -1,10 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/mojo/services/mojo_demuxer_stream_adapter.h"
 
 #include <stdint.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -68,16 +70,16 @@ bool MojoDemuxerStreamAdapter::SupportsConfigChanges() {
 void MojoDemuxerStreamAdapter::OnStreamReady(
     Type type,
     mojo::ScopedDataPipeConsumerHandle consumer_handle,
-    const base::Optional<AudioDecoderConfig>& audio_config,
-    const base::Optional<VideoDecoderConfig>& video_config) {
+    const absl::optional<AudioDecoderConfig>& audio_config,
+    const absl::optional<VideoDecoderConfig>& video_config) {
   DVLOG(1) << __func__;
   DCHECK_EQ(UNKNOWN, type_);
   DCHECK(consumer_handle.is_valid());
 
   type_ = type;
 
-  mojo_decoder_buffer_reader_.reset(
-      new MojoDecoderBufferReader(std::move(consumer_handle)));
+  mojo_decoder_buffer_reader_ =
+      std::make_unique<MojoDecoderBufferReader>(std::move(consumer_handle));
 
   UpdateConfig(std::move(audio_config), std::move(video_config));
 
@@ -87,8 +89,8 @@ void MojoDemuxerStreamAdapter::OnStreamReady(
 void MojoDemuxerStreamAdapter::OnBufferReady(
     Status status,
     mojom::DecoderBufferPtr buffer,
-    const base::Optional<AudioDecoderConfig>& audio_config,
-    const base::Optional<VideoDecoderConfig>& video_config) {
+    const absl::optional<AudioDecoderConfig>& audio_config,
+    const absl::optional<VideoDecoderConfig>& video_config) {
   DVLOG(3) << __func__;
   DCHECK(read_cb_);
   DCHECK_NE(type_, UNKNOWN);
@@ -121,8 +123,8 @@ void MojoDemuxerStreamAdapter::OnBufferRead(
 }
 
 void MojoDemuxerStreamAdapter::UpdateConfig(
-    const base::Optional<AudioDecoderConfig>& audio_config,
-    const base::Optional<VideoDecoderConfig>& video_config) {
+    const absl::optional<AudioDecoderConfig>& audio_config,
+    const absl::optional<VideoDecoderConfig>& video_config) {
   DCHECK_NE(type_, UNKNOWN);
 
   switch(type_) {

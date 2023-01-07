@@ -1,11 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.ui.appmenu;
 
-import android.view.MenuItem;
 import android.view.View;
+
+import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Interface to handle clicks and long-clicks on menu items.
@@ -13,14 +14,14 @@ import android.view.View;
 public interface AppMenuClickHandler {
     /**
      * Handles clicks on the AppMenu popup.
-     * @param menuItem The menu item in that was clicked.
+     * @param model The {@link PropertyModel} of the clicked menu item.
      */
-    void onItemClick(MenuItem menuItem);
+    void onItemClick(PropertyModel model);
 
     /**
      * Handles long clicks on image buttons on the AppMenu popup.
-     * @param menuItem The menu item that was long clicked.
+     * @param model The {@link PropertyModel} of the long clicked menu item.
      * @param view The anchor view of the menu item.
      */
-    boolean onItemLongClick(MenuItem menuItem, View view);
+    boolean onItemLongClick(PropertyModel model, View view);
 }

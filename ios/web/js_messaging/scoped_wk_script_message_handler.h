@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,35 +19,30 @@ using ScriptMessageCallback =
 // deconstruction respectively.
 class ScopedWKScriptMessageHandler {
  public:
-  // Registers |script_handler_name| with |user_content_controller|. |callback|
+  // Registers `script_handler_name` with `user_content_controller`. `callback`
   // will be called whenever JavaScript sends a post message to
-  // |script_handler_name| within the page content world.
+  // `script_handler_name` within the page content world.
   // Ex: window.webkit.messageHandlers['script_handler_name'].postMessage(10);
   ScopedWKScriptMessageHandler(WKUserContentController* user_content_controller,
                                NSString* script_handler_name,
                                ScriptMessageCallback callback);
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  // Registers |script_handler_name| with |user_content_controller| within
-  // |content_world|. |callback| will be called whenever JavaScript
-  // sends a post message to |script_handler_name| within |content_world|
+  // Registers `script_handler_name` with `user_content_controller` within
+  // `content_world`. `callback` will be called whenever JavaScript
+  // sends a post message to `script_handler_name` within `content_world`
   // Ex: window.webkit.messageHandlers['script_handler_name'].postMessage(10);
   ScopedWKScriptMessageHandler(WKUserContentController* user_content_controller,
                                NSString* script_handler_name,
                                WKContentWorld* content_world,
-                               ScriptMessageCallback callback)
-      API_AVAILABLE(ios(14.0));
-#endif  // defined(__IPHONE14_0)
+                               ScriptMessageCallback callback);
 
   ~ScopedWKScriptMessageHandler();
 
  private:
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
   // The content world associated with this feature. May be null which
   // represents the main world that the page content itself uses. (May also be
   // [WKContentWorld pageWorld] on iOS 14 and later.)
-  WKContentWorld* content_world_ API_AVAILABLE(ios(14.0)) = nullptr;
-#endif  // defined(__IPHONE14_0)
+  WKContentWorld* content_world_ = nullptr;
 
   __weak WKUserContentController* user_content_controller_;
   NSString* script_handler_name_;

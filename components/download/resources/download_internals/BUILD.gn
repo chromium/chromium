@@ -1,0 +1,58 @@
+# Copyright 2018 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+ts_files = [
+  "download_internals_browser_proxy.ts",
+  "download_internals_visuals.ts",
+  "download_internals.ts",
+]
+
+preprocess_folder = "${target_gen_dir}/preprocessed"
+
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = preprocess_folder
+  in_files = ts_files
+}
+
+ts_library("build_ts") {
+  root_dir = preprocess_folder
+  out_dir = "$target_gen_dir/tsc"
+  in_files = ts_files
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [ ":preprocess" ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "download_internals"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [
+    "download_internals.css",
+    "download_internals.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+}
+
+grit("resources") {
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/download_internals_resources.h",
+    "grit/download_internals_resources_map.cc",
+    "grit/download_internals_resources_map.h",
+    "download_internals_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/components"
+}

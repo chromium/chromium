@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
@@ -117,8 +116,6 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
       FilterGestureEventResult res;
       if (!drop_scroll_events_) {
         SetCursorControlIfNecessary(gesture_event, touch_action);
-        UMA_HISTOGRAM_BOOLEAN("Blink.Input.GestureScrollBeginAsCursorControl",
-                              gesture_event->data.scroll_begin.cursor_control);
         res = FilterGestureEventResult::kFilterGestureEventAllowed;
       } else if (active_touch_action_.has_value()) {
         res = FilterGestureEventResult::kFilterGestureEventFiltered;
@@ -193,7 +190,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
     case WebInputEvent::Type::kGesturePinchBegin:
       drop_pinch_events_ = (touch_action & cc::TouchAction::kPinchZoom) ==
                            cc::TouchAction::kNone;
-      FALLTHROUGH;
+      [[fallthrough]];
     case WebInputEvent::Type::kGesturePinchUpdate:
       gesture_sequence_.append("P");
       if (!drop_pinch_events_)
@@ -431,6 +428,17 @@ bool TouchActionFilter::ShouldSuppressScrolling(
 
   const float absDeltaXHint = fabs(deltaXHint);
   const float absDeltaYHint = fabs(deltaYHint);
+
+  // We need to wait for main-thread touch action to see if touch region is
+  // writable for stylus handwriting, and accumulate scroll events until then.
+  if ((gesture_event.primary_pointer_type ==
+           blink::WebPointerProperties::PointerType::kPen ||
+       gesture_event.primary_pointer_type ==
+           blink::WebPointerProperties::PointerType::kEraser) &&
+      !is_active_touch_action &&
+      (touch_action & cc::TouchAction::kInternalNotWritable) !=
+          cc::TouchAction::kInternalNotWritable)
+    return true;
 
   cc::TouchAction minimal_conforming_touch_action = cc::TouchAction::kNone;
   if (absDeltaXHint > absDeltaYHint) {

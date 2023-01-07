@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,11 +18,16 @@ source_set("android") {
 
 android_library("bookmarks_java") {
   deps = [
-    "//base:base_java",
+    "//base:jni_java",
+    "//components/url_formatter/android:url_formatter_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//url:gurl_java",
   ]
   srcjar_deps = [ ":bookmark_type_javagen" ]
-  sources = [ "java/src/org/chromium/components/bookmarks/BookmarkId.java" ]
+  sources = [
+    "java/src/org/chromium/components/bookmarks/BookmarkId.java",
+    "java/src/org/chromium/components/bookmarks/BookmarkItem.java",
+  ]
 }
 
 generate_jni("bookmarks_jni_headers") {

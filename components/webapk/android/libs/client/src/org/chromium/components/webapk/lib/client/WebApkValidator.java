@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,6 +92,23 @@ public class WebApkValidator {
      */
     public static @Nullable ResolveInfo queryFirstWebApkResolveInfo(Context context, String url) {
         return findFirstWebApkResolveInfo(context, resolveInfosForUrl(context, url));
+    }
+
+    /**
+     * Queries the PackageManager to determine whether one or more WebAPKs can handle the URL.
+     * Ignores whether the user has selected a default handler for the URL and whether the
+     * default handler is a WebAPK.
+     *
+     * @param context The application context.
+     * @param url The url to check.
+     * @param packageName The optional package name.
+     * @return ResolveInfo for one of the WebAPKs which can handle the URL. If there are several
+     * matching ResolveInfos an arbitrary one is returned. Null if there is no matching WebAPK.
+     */
+    public static @Nullable ResolveInfo queryFirstWebApkResolveInfo(
+            Context context, String url, @Nullable String packageName) {
+        return findFirstWebApkResolveInfo(
+                context, resolveInfosForUrlAndOptionalPackage(context, url, packageName));
     }
 
     /**

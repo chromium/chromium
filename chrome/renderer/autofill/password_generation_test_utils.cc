@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/renderer/autofill/password_generation_test_utils.h"
 
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -11,7 +12,6 @@
 #include "components/autofill/core/common/password_form_generation_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "net/base/escape.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -36,8 +36,8 @@ const char* const kEvents[] = {"focus",  "keydown", "input",
 autofill::FieldRendererId GetRendererId(WebDocument document,
                                         const char* input_id) {
   WebElement element = document.GetElementById(WebString::FromUTF8(input_id));
-  auto* input = ToWebInputElement(&element);
-  return autofill::FieldRendererId(input->UniqueRendererFormControlId());
+  blink::WebInputElement input = element.To<blink::WebInputElement>();
+  return autofill::FieldRendererId(input.UniqueRendererFormControlId());
 }
 
 }  // namespace

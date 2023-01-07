@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS e.style['animation-name'] = "12" should not set the property value
-PASS e.style['animation-name'] = "one two" should not set the property value
-PASS e.style['animation-name'] = "one, initial" should not set the property value
-PASS e.style['animation-name'] = "one, inherit" should not set the property value
-PASS e.style['animation-name'] = "one, unset" should not set the property value
-FAIL e.style['animation-name'] = "default, two" should not set the property value assert_equals: expected "" but got "default, two"
-Harness: the test ran to completion.
-

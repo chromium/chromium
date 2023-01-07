@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,11 +24,14 @@ namespace test {
 class ScopedEventTestTickClock {
  public:
   ScopedEventTestTickClock() { ui::SetEventTickClockForTesting(&test_clock_); }
+
+  ScopedEventTestTickClock(const ScopedEventTestTickClock&) = delete;
+  ScopedEventTestTickClock& operator=(const ScopedEventTestTickClock&) = delete;
+
   ~ScopedEventTestTickClock() { ui::SetEventTickClockForTesting(nullptr); }
 
   void SetNowSeconds(int64_t seconds) {
-    test_clock_.SetNowTicks(base::TimeTicks() +
-                            base::TimeDelta::FromSeconds(seconds));
+    test_clock_.SetNowTicks(base::TimeTicks() + base::Seconds(seconds));
   }
 
   void SetNowTicks(base::TimeTicks ticks) { test_clock_.SetNowTicks(ticks); }
@@ -37,8 +40,6 @@ class ScopedEventTestTickClock {
 
  private:
   base::SimpleTestTickClock test_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedEventTestTickClock);
 };
 
 }  // namespace test

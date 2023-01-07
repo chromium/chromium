@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,8 @@
 
 namespace device {
 
-#if (!defined(OS_LINUX) && !defined(OS_CHROMEOS)) || defined(LINUX_WITHOUT_DBUS)
+#if (!BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)) || \
+    defined(LINUX_WITHOUT_DBUS)
 // static
 base::WeakPtr<BluetoothLocalGattCharacteristic>
 BluetoothLocalGattCharacteristic::Create(const BluetoothUUID& uuid,

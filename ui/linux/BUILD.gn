@@ -1,0 +1,72 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/linux/gtk/gtk.gni")
+import("//ui/qt/qt.gni")
+
+assert(is_linux)
+
+component("linux_ui") {
+  defines = [ "IS_LINUX_UI_IMPL" ]
+  public = [
+    "cursor_theme_manager_observer.h",
+    "device_scale_factor_observer.h",
+    "linux_ui.h",
+    "linux_ui_delegate.h",
+    "linux_ui_delegate_stub.h",
+    "linux_ui_getter.h",
+    "nav_button_provider.h",
+    "status_icon_linux.h",
+    "window_button_order_observer.h",
+    "window_frame_provider.h",
+  ]
+  sources = [
+    "linux_ui.cc",
+    "linux_ui_delegate.cc",
+    "linux_ui_delegate_stub.cc",
+    "linux_ui_getter.cc",
+    "status_icon_linux.cc",
+  ]
+  deps = [ "//base" ]
+  public_deps = [ "//printing/buildflags" ]
+}
+
+component("linux_ui_factory") {
+  defines = [ "IS_LINUX_UI_FACTORY_IMPL" ]
+  public = [ "linux_ui_factory.h" ]
+  sources = [ "linux_ui_factory.cc" ]
+
+  public_deps = [
+    ":linux_ui",
+    "//ui/color:color_headers",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/base:buildflags",
+  ]
+  if (use_gtk) {
+    # This is the only component that can interact with gtk.
+    deps += [ "//ui/gtk" ]
+  }
+  if (use_qt) {
+    deps += [ "//ui/qt" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public = [ "fake_linux_ui.h" ]
+  sources = [ "fake_linux_ui.cc" ]
+
+  public_deps = [ ":linux_ui" ]
+  deps = [
+    "//base",
+    "//skia",
+    "//ui/gfx",
+    "//ui/native_theme",
+    "//ui/shell_dialogs",
+  ]
+}

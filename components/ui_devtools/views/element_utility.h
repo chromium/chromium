@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,11 +23,6 @@ namespace ui_devtools {
 // Note that ret may not be empty when it's passed in.
 void AppendLayerPropertiesMatchedStyle(const ui::Layer* layer,
                                        std::vector<UIElement::UIProperty>* ret);
-
-// Takes in color property from DevTools frontend as string in rgba()/rgb(),
-// hex, or hsla()/hsl() format and sets |output| to the SkColor value as a
-// string. Returns true if successful.
-bool ParseColorFromFrontend(const std::string& input, std::string* output);
 
 }  // namespace ui_devtools
 

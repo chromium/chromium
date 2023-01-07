@@ -20,7 +20,6 @@ InspectorFrontendHost.copyText:
         border: 1px solid black;
         font-weight: bold;
       }
-    
 
 <body>​
 InspectorFrontendHost.copyText:

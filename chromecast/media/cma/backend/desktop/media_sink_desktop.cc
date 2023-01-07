@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,7 @@ MediaPipelineBackend::BufferStatus MediaSinkDesktop::PushBuffer(
   //    Those tests are wrong should be fixed.
   // TODO(alokp): Fix these issues when the next version of CMA backend is
   // scheduled to roll out. crbug.com/678394
-  auto timestamp = base::TimeDelta::FromMicroseconds(buffer->timestamp());
+  auto timestamp = base::Microseconds(buffer->timestamp());
   if (timestamp != ::media::kNoTimestamp) {
     last_frame_pts_ = timestamp;
     time_interpolator_.SetUpperBound(last_frame_pts_);

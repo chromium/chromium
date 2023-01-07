@@ -1,60 +1,75 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash || is_win || is_mac)
+
+preprocessed_folder = "$target_gen_dir/preprocessed"
+
+test_files = [
+  "inline_login_test.ts",
+  "inline_login_test_util.ts",
+]
+
+if (is_chromeos_ash) {
+  test_files += [
+    "arc_account_picker_page_test.ts",
+    "inline_login_signin_blocked_by_policy_page_test.ts",
+    "inline_login_welcome_page_test.ts",
+  ]
+}
 
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir"
-  in_files = [ "inline_login_test_util.js" ]
+  in_folder = "."
+  out_folder = preprocessed_folder
+  out_manifest = "$target_gen_dir/preprocessed_manifest.json"
+  in_files = test_files
 }
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://chrome-signin/=../../chrome/browser/resources/inline_login/\"",
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                    "js_module_root=../../chrome/browser/resources/gaia_auth_host/",
-                    "js_module_root=./gen/chrome/browser/resources/gaia_auth_host/",
-                  ]
-  deps = [
-    ":inline_login_test",
-    ":inline_login_test_util",
+ts_library("build_ts") {
+  root_dir = preprocessed_folder
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://chrome-signin/gaia_auth_host/*|" +
+        rebase_path("//chrome/browser/resources/gaia_auth_host/*",
+                    target_gen_dir),
+    "chrome://chrome-signin/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/inline_login/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
   ]
+  if (is_chromeos_ash) {
+    path_mappings += [
+      "chrome://chrome-signin/arc_account_picker/*|" +
+          rebase_path(
+              "//chrome/browser/resources/chromeos/arc_account_picker/*",
+              target_gen_dir),
+      "chrome://webui-test/chromeos/arc_account_picker/*|" +
+          rebase_path("//chrome/test/data/webui/chromeos/arc_account_picker/*",
+                      target_gen_dir),
+    ]
+  }
+
+  in_files = test_files
+  deps = [
+    "..:build_ts",
+    "//chrome/browser/resources/inline_login:build_ts",
+  ]
+  extra_deps = [ ":preprocess" ]
 }
 
-js_library("inline_login_test") {
-  deps = [
-    ":inline_login_test_util",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/inline_login:inline_login_app",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("inline_login_welcome_page_test") {
-  deps = [
-    ":inline_login_test_util",
-    "..:chai_assert",
-    "..:test_util.m",
-    "//chrome/browser/resources/inline_login:inline_login_app",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("inline_login_test_util") {
-  deps = [
-    "..:test_browser_proxy.m",
-    "//chrome/browser/resources/gaia_auth_host:authenticator.m",
-    "//chrome/browser/resources/inline_login:inline_login_browser_proxy",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
+generate_grd("build_grdp") {
+  grd_prefix = "webui_inline_login"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "inline_login"
 }

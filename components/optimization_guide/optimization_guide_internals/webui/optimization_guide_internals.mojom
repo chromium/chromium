@@ -1,0 +1,43 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module optimization_guide_internals.mojom;
+
+import "components/optimization_guide/core/optimization_guide_common.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Information on downloaded models to be displayed on WebUI page, for debugging
+// purposes.
+struct DownloadedModelInfo {
+  // Serialization of OPTIMIZATION_TARGET enum in
+  // //components/optimization_guide/proto/models.proto, e.g.,
+  // "OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD".
+  string optimization_target;
+  // Version of the OPTIMIZATION_TARGET model, reflection of ModelInfo's version
+  // field in //components/optimization_guide/proto/models.proo.
+  int64 version;
+  // TODO(crbug.com/1354861): Convert to mojo_base.mojo.FilePath type.
+  string file_path;
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<Page> page);
+  // The WebUI calls this method when the models page is open, to retrieve
+  // information of downloaded models for debugging purposes.
+  RequestDownloadedModelsInfo() =>
+      (array<DownloadedModelInfo> downloaded_models_info);
+};
+
+// Renderer-side handler for internals WebUI page to process the updates from
+// the OptimizationGuide service.
+interface Page {
+  // Notifies the page of a log event from the OptimizationGuide service.
+  OnLogMessageAdded(mojo_base.mojom.Time event_time,
+                    optimization_guide_common.mojom.LogSource log_source,
+                    string source_file,
+                    int64 source_line,
+                    string message);
+};

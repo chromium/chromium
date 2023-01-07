@@ -1,0 +1,164 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Contains messages and data types used by request, response, and directive
+// messages in the CryptAuth v2 Enrollment protocol.
+syntax = "proto3";
+
+package cryptauthv2;
+
+option optimize_for = LITE_RUNTIME;
+
+// The types of cryptographic keys that are supported.
+enum KeyType {
+  // Default value. Don't use!
+  KEY_TYPE_UNSPECIFIED = 0;
+
+  // 16-byte random byte string
+  RAW128 = 1;
+  // 32-byte random byte string
+  RAW256 = 2;
+  // Curve25519
+  CURVE25519 = 3;
+  // P256
+  P256 = 4;
+
+  // The key will be provided by the application.
+  CUSTOM = 127;
+}
+
+// The generic format for public-key certificates.
+message Certificate {
+  // The identifier bound to the cert, e.g., an email address or phone number.
+  string common_name = 1;
+  // The raw bytes of the public key.
+  bytes public_key = 2;
+  // The UNIX timestamp when the cert will expire.
+  int64 expire_time_millis = 3;
+
+  // A restriction imposed on the applications using this key.
+  // Claims are validated along with the signature, when this key is used.
+  message Claim {
+    // Claim name.
+    string name = 1;
+    // Whether this claim is critical in the certificate. If it is critical,
+    // the client must fail the validation of the certificate if the client does
+    // not recognize the name of the claim.
+    bool critical = 2;
+    // Claim value.
+    bytes value = 3;
+  }
+  // All claims associated with the use of this key.
+  repeated Claim claims = 4;
+
+  // The signature over all of the above.
+  bytes signature = 5;
+}
+
+// Uniquely identifies a server-side policy instance, which is associated with a
+// key or a client. Subset of this policy is communicated to the client and
+// referenced using this message.
+// A set of related policies are identified by a name. Every time the policy
+// changes, it gets a new unique version number to distinguish it from the
+// policy instance it is based on. Together, following fields uniquely identify
+// a policy instance.
+message PolicyReference {
+  // The name of the policy.
+  string name = 1;
+
+  // The version of the policy.
+  int64 version = 2;
+}
+
+// The client-specific metadata contained in SyncKeysRequest.
+//
+// Note: This message is encoded as query parameters for some requests. If any
+// field or subfield of this proto changes, update the files
+// cryptauth_proto_to_query_parameters_util.{h,cc}.
+message ClientMetadata {
+  // The counter for how many times the request has been retried.
+  int64 retry_count = 1;
+
+  // The reason why the request has been invoked.
+  enum InvocationReason {
+    // Unspecified invocation reason.
+    INVOCATION_REASON_UNSPECIFIED = 0;
+
+    // First run of the software package invoking this call.
+    INITIALIZATION = 1;
+    // Ordinary periodic actions (e.g., monthly key rotation).
+    PERIODIC = 2;
+    // Slow-cycle periodic action (e.g., yearly keypair rotation).
+    SLOW_PERIODIC = 3;
+    // Fast-cycle periodic action (e.g., daily sync for Smart Lock users).
+    FAST_PERIODIC = 4;
+
+    // Expired state (e.g., expired credentials, or cached entries) was
+    // detected.
+    EXPIRATION = 5;
+    // An unexpected protocol failure occurred (so attempting to repair state).
+    FAILURE_RECOVERY = 6;
+
+    // A new account has been added to the device.
+    NEW_ACCOUNT = 7;
+    // An existing account on the device has been changed.
+    CHANGED_ACCOUNT = 8;
+
+    // The user toggled the state of a feature (e.g., Smart Lock enabled via
+    // bluetooth).
+    FEATURE_TOGGLED = 9;
+    // A "push" from the server caused this action (e.g., a sync tickle).
+    SERVER_INITIATED = 10;
+
+    // A local address change triggered this (e.g., GCM registration id
+    // changed).
+    ADDRESS_CHANGE = 11;
+    // A software update has triggered this.
+    SOFTWARE_UPDATE = 12;
+
+    // A manual action by the user triggered this (e.g., commands sent via adb).
+    MANUAL = 13;
+
+    // A custom key has been invalidated on the device (e.g. screen lock is
+    // disabled).
+    CUSTOM_KEY_INVALIDATION = 14;
+
+    // Periodic action triggered by auth_proximity
+    PROXIMITY_PERIODIC = 15;
+  }
+  // Reason for invocation.
+  InvocationReason invocation_reason = 2;
+
+  // Whether the platform has hardware supports for certain algorithms.
+  message CryptoHardware {
+    // AES-128
+    bool aes128 = 1;
+    // ASE-256
+    bool aes256 = 2;
+    // Carryless multiplication
+    bool clmul = 3;
+    // Curve25519
+    bool curve25519 = 4;
+    // P256
+    bool p256 = 5;
+  }
+  // Crypto hardware available on the client.
+  CryptoHardware crypto_hardware = 3;
+
+  // If the request is issued as a direct result, or a follow-up for a
+  // notification/tickle, the session_id from that notification.
+  string session_id = 4;
+}
+
+// Identifies Cryptauth services.
+enum TargetService {
+  // Unspecified Cryptauth service.
+  TARGET_SERVICE_UNSPECIFIED = 0;
+
+  // Cryptauth Enrollment.
+  ENROLLMENT = 1;
+
+  // Cryptauth DeviceSync.
+  DEVICE_SYNC = 2;
+}

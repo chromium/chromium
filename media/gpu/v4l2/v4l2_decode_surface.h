@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "media/base/video_color_space.h"
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -36,11 +35,15 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
                     V4L2WritableBufferRef output_buffer,
                     scoped_refptr<VideoFrame> frame);
 
+  V4L2DecodeSurface(const V4L2DecodeSurface&) = delete;
+  V4L2DecodeSurface& operator=(const V4L2DecodeSurface&) = delete;
+
   // Mark the surface as decoded. This will also release all surfaces used for
   // reference, as they are not needed anymore and execute the done callback,
   // if not null.
   void SetDecoded();
   void SetVisibleRect(const gfx::Rect& visible_rect);
+  void SetColorSpace(const VideoColorSpace& color_space);
   // Take references to each reference surface and keep them until the
   // target surface is decoded.
   void SetReferenceSurfaces(
@@ -73,6 +76,7 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   }
   scoped_refptr<VideoFrame> video_frame() const { return video_frame_; }
   gfx::Rect visible_rect() const { return visible_rect_; }
+  const VideoColorSpace& color_space() const { return color_space_; }
 
   std::string ToString() const;
 
@@ -92,6 +96,8 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   const int output_record_;
   // The visible size of the buffer.
   gfx::Rect visible_rect_;
+  // The color space of the buffer.
+  VideoColorSpace color_space_;
 
   // Indicate whether the surface is decoded or not.
   bool decoded_;
@@ -103,10 +109,11 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   // The decoded surfaces of the reference frames, which is kept until the
   // surface has been decoded.
   std::vector<scoped_refptr<V4L2DecodeSurface>> reference_surfaces_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2DecodeSurface);
 };
 
+// ConfigStore is ChromeOS-specific legacy stuff
+// TODO(b/222774780): Remove when all legacy implementations are gone.
+#if BUILDFLAG(IS_CHROMEOS)
 // An implementation of V4L2DecodeSurface that uses the config store to
 // associate controls/buffers to frames.
 class V4L2ConfigStoreDecodeSurface : public V4L2DecodeSurface {
@@ -120,6 +127,10 @@ class V4L2ConfigStoreDecodeSurface : public V4L2DecodeSurface {
         // config store IDs are arbitrarily defined to be buffer ID + 1
         config_store_(this->input_buffer().BufferId() + 1) {}
 
+  V4L2ConfigStoreDecodeSurface(const V4L2ConfigStoreDecodeSurface&) = delete;
+  V4L2ConfigStoreDecodeSurface& operator=(const V4L2ConfigStoreDecodeSurface&) =
+      delete;
+
   void PrepareSetCtrls(struct v4l2_ext_controls* ctrls) const override;
   uint64_t GetReferenceID() const override;
   bool Submit() override;
@@ -129,9 +140,8 @@ class V4L2ConfigStoreDecodeSurface : public V4L2DecodeSurface {
 
   // The configuration store of the input buffer.
   uint32_t config_store_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2ConfigStoreDecodeSurface);
 };
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // An implementation of V4L2DecodeSurface that uses requests to associate
 // controls/buffers to frames
@@ -146,6 +156,9 @@ class V4L2RequestDecodeSurface : public V4L2DecodeSurface {
                           std::move(frame)),
         request_ref_(std::move(request_ref)) {}
 
+  V4L2RequestDecodeSurface(const V4L2RequestDecodeSurface&) = delete;
+  V4L2RequestDecodeSurface& operator=(const V4L2RequestDecodeSurface&) = delete;
+
   void PrepareSetCtrls(struct v4l2_ext_controls* ctrls) const override;
   uint64_t GetReferenceID() const override;
   bool Submit() override;
@@ -155,8 +168,6 @@ class V4L2RequestDecodeSurface : public V4L2DecodeSurface {
 
   // Request reference used for the surface.
   V4L2RequestRef request_ref_;
-
-  DISALLOW_COPY_AND_ASSIGN(V4L2RequestDecodeSurface);
 };
 
 }  // namespace media

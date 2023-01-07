@@ -1,0 +1,39 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
+
+mojom("mojom") {
+  sources = [ "eche_app.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ash.eche_app.mojom.ScreenBacklightState"
+          cpp = "ash::ScreenBacklightState"
+        },
+      ]
+      traits_headers = [ "//ash/webui/eche_app_ui/mojom/types_mojom_traits.h" ]
+      traits_sources = [ "//ash/webui/eche_app_ui/mojom/types_mojom_traits.cc" ]
+    },
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "types_mojom_traits_unittest.cc" ]
+  deps = [
+    ":mojom",
+    "//base",
+    "//base/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/device/public/cpp:test_support",
+    "//testing/gtest",
+  ]
+}

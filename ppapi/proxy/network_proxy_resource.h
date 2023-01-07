@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/thunk/ppb_network_proxy_api.h"
@@ -21,6 +20,10 @@ class PPAPI_PROXY_EXPORT NetworkProxyResource
         public thunk::PPB_NetworkProxy_API {
  public:
   NetworkProxyResource(Connection connection, PP_Instance instance);
+
+  NetworkProxyResource(const NetworkProxyResource&) = delete;
+  NetworkProxyResource& operator=(const NetworkProxyResource&) = delete;
+
   ~NetworkProxyResource() override;
 
  private:
@@ -38,8 +41,6 @@ class PPAPI_PROXY_EXPORT NetworkProxyResource
                                       scoped_refptr<TrackedCallback> callback,
                                       const ResourceMessageReplyParams& params,
                                       const std::string& proxy_string);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkProxyResource);
 };
 
 }  // namespace proxy

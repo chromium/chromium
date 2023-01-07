@@ -1,0 +1,122 @@
+<style include="mwb-element-shared-style cr-shared-style">
+  :host {
+    --power-bookmark-row-image-size: 56px;
+    --power-bookmark-row-height: 68px;
+    display: block;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  :host([compact]) {
+    --power-bookmark-row-image-size: 16px;
+    --power-bookmark-row-height: 32px;
+  }
+
+  :host ::slotted([slot=extra-content-container]) {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+  }
+
+  .bookmark-image {
+    border-radius: 6px;
+    grid-area: image;
+    height: var(--power-bookmark-row-image-size);
+    justify-self: center;
+    width: var(--power-bookmark-row-image-size);
+  }
+
+  .content {
+    color: var(--cr-primary-text-color);
+    justify-self: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  :host(:not([compact])) .content {
+    width: 100%;
+  }
+
+  .icon-folder-open {
+    -webkit-mask-image: var(--cr-icon-image);
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: var(--power-bookmark-row-image-size);
+    background-color: var(--cr-primary-text-color);
+  }
+
+  .row {
+    --power-bookmark-row-image-padding: 32px;
+    align-items: center;
+    appearance: none;
+    background: transparent;
+    border: none;
+    box-sizing: border-box;
+    color: currentColor;
+    display: grid;
+    font-size: var(--mwb-primary-text-font-size);
+    grid-template-areas: 'image content';
+    grid-template-columns: calc(var(--power-bookmark-row-image-size) +
+                                var(--power-bookmark-row-image-padding)) auto;
+    height: var(--power-bookmark-row-height);
+    padding: 0;
+    text-align: start;
+    width: 100%;
+  }
+
+  .row:hover {
+    background-color: var(--mwb-list-item-hover-background-color);
+  }
+
+  .row:focus,
+  .row:focus:hover {
+    background-color: var(--mwb-list-item-selected-background-color);
+    outline: none;
+  }
+
+  .row:focus-visible:focus {
+    outline: none;
+  }
+
+  .row:active {
+    background-color: var(--cr-active-background-color);
+  }
+
+  .description {
+    color: var(--cr-secondary-text-color);
+    font-size: var(--mwb-secondary-text-font-size);
+  }
+
+  .text-container {
+    align-items: flex-start;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    grid-area: content;
+    overflow: hidden;
+  }
+
+  :host([compact]) .text-container {
+    flex-direction: row;
+    gap: 4px;
+  }
+
+  .url-icon {
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: var(--power-bookmark-row-image-size);
+  }
+</style>
+<div id="container" role="treeitem">
+  <button id="rowButton" class="row"
+      title="[[bookmark.title]]"
+      data-bookmark="[[bookmark]]"
+      on-click="onRowClicked_">
+    <div id="bookmarkImage" class="bookmark-image"></div>
+    <div class="text-container">
+      <div class="content">[[bookmark.title]]</div>
+      <div class="content description">[[description]]</div>
+      <slot name="extra-content-container"></slot>
+    </div>
+  </button>
+</div>

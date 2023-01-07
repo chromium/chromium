@@ -29,7 +29,6 @@
     "pointerLock",
     "power",
     "serial",
-    "signedInDevices",
     {"socket": ["tcp-connect", "tcp-listen", "udp-send-to", "udp-bind"]},
     "storage",
     "tts",

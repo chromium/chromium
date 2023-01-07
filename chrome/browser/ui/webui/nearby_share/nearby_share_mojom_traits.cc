@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,21 @@
 #include "chrome/browser/nearby_sharing/attachment.h"
 #include "chrome/browser/nearby_sharing/file_attachment.h"
 #include "chrome/browser/nearby_sharing/text_attachment.h"
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 
 namespace mojo {
 
 // static
-base::UnguessableToken
+const base::UnguessableToken&
 StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget>::id(
     const ShareTarget& share_target) {
   return share_target.id;
 }
 
 // static
-std::string StructTraits<nearby_share::mojom::ShareTargetDataView,
-                         ShareTarget>::name(const ShareTarget& share_target) {
+const std::string&
+StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget>::name(
+    const ShareTarget& share_target) {
   return share_target.device_name;
 }
 
@@ -29,6 +31,16 @@ nearby_share::mojom::ShareTargetType
 StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget>::type(
     const ShareTarget& share_target) {
   return share_target.type;
+}
+
+// static
+mojo::OptionalAsPointer<const GURL>
+StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget>::image_url(
+    const ShareTarget& share_target) {
+  return mojo::MakeOptionalAsPointer(share_target.image_url &&
+                                             share_target.image_url->is_valid()
+                                         ? &share_target.image_url.value()
+                                         : nullptr);
 }
 
 // static
@@ -48,6 +60,8 @@ StructTraits<nearby_share::mojom::ShareTargetDataView,
     attachment = &share_target.file_attachments[0];
   } else if (!share_target.text_attachments.empty()) {
     attachment = &share_target.text_attachments[0];
+  } else if (!share_target.wifi_credentials_attachments.empty()) {
+    attachment = &share_target.wifi_credentials_attachments[0];
   }
 
   // If there are no attachments, return an empty text preview.

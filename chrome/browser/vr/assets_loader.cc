@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/memory/singleton.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -78,10 +78,9 @@ bool AssetsLoader::AssetsSupported() {
 #endif  // BUILDFLAG(USE_VR_ASSETS_COMPONENT)
 }
 
-void AssetsLoader::OnComponentReady(
-    const base::Version& version,
-    const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+void AssetsLoader::OnComponentReady(const base::Version& version,
+                                    const base::FilePath& install_dir,
+                                    base::Value manifest) {
   main_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&AssetsLoader::OnComponentReadyInternal,
@@ -210,10 +209,7 @@ void AssetsLoader::LoadAssetsTask(
 
   auto sounds_iter = sounds.begin();
   while (status == AssetsLoadStatus::kSuccess && sounds_iter != sounds.end()) {
-    const char* min_version;
-    const base::FilePath::CharType* file_name;
-    std::unique_ptr<std::string>* data;
-    std::tie(min_version, file_name, data) = *sounds_iter;
+    auto [min_version, file_name, data] = *sounds_iter;
     if (component_version >= base::Version(min_version)) {
       status = LoadSound(component_install_dir, file_name, data);
     }

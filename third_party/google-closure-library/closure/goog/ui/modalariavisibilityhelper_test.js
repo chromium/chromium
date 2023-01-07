@@ -1,16 +1,8 @@
-// Copyright 2015 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.ui.ModalAriaVisibilityHelperTest');
 goog.setTestOnly();
@@ -31,16 +23,21 @@ function assertUnalteredElements() {
 /**
  * @param {string} id Id of the element.
  * @return {!ModalAriaVisibilityHelper}
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function createHelper(id) {
   return new ModalAriaVisibilityHelper(dom.getElement(id), dom.getDomHelper());
 }
 
+/** @suppress {checkTypes} suppression added to enable type checking */
 function clearAriaState(id) {
   aria.removeState(dom.getElement(id), State.HIDDEN);
 }
 
-/** @param {string} id Id of the element. */
+/**
+ * @param {string} id Id of the element.
+ * @suppress {checkTypes} suppression added to enable type checking
+ */
 function assertEmptyAriaHiddenState(id) {
   const element = dom.getElement(id);
   assertTrue(googString.isEmptyOrWhitespace(
@@ -50,6 +47,7 @@ function assertEmptyAriaHiddenState(id) {
 /**
  * @param {string} id Id of the element.
  * @param {string} expectedState
+ * @suppress {checkTypes} suppression added to enable type checking
  */
 function assertAriaHiddenState(id, expectedState) {
   const element = dom.getElement(id);

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "extensions/common/manifest.h"
@@ -26,6 +24,9 @@ class SyncExtensionHelper {
  public:
   // Singleton implementation.
   static SyncExtensionHelper* GetInstance();
+
+  SyncExtensionHelper(const SyncExtensionHelper&) = delete;
+  SyncExtensionHelper& operator=(const SyncExtensionHelper&) = delete;
 
   // Initializes the profiles in |test| and registers them with
   // internal data structures.
@@ -64,8 +65,8 @@ class SyncExtensionHelper {
 
   // Returns true iff the extension with the given id is pending
   // install in |profile|.
-  bool IsExtensionPendingInstallForSync(
-      Profile* profile, const std::string& id) const;
+  bool IsExtensionPendingInstallForSync(Profile* profile,
+                                        const std::string& id) const;
 
   // Installs all extensions pending sync in |profile|.
   void InstallExtensionsPendingForSync(Profile* profile);
@@ -87,7 +88,7 @@ class SyncExtensionHelper {
 
     ExtensionState();
     ~ExtensionState();
-    bool Equals(const ExtensionState &other) const;
+    bool Equals(const ExtensionState& other) const;
 
     EnabledState enabled_state;
     int disable_reasons;
@@ -116,17 +117,16 @@ class SyncExtensionHelper {
   // Returns an extension for the given name in |profile|.  type and
   // index.  Two extensions with the name but different profiles will
   // have the same id.
-  scoped_refptr<extensions::Extension> GetExtension(
-      Profile* profile, const std::string& name,
-      extensions::Manifest::Type type) WARN_UNUSED_RESULT;
+  [[nodiscard]] scoped_refptr<extensions::Extension> GetExtension(
+      Profile* profile,
+      const std::string& name,
+      extensions::Manifest::Type type);
 
   std::string extension_name_prefix_;
   ProfileExtensionNameMap profile_extensions_;
   StringMap id_to_name_;
   TypeMap id_to_type_;
   bool setup_completed_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncExtensionHelper);
 };
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_EXTENSION_HELPER_H_

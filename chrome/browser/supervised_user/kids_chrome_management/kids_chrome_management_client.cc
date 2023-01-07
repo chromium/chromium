@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,29 +8,32 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/optional.h"
+#include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/child_accounts/kids_management_api.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "components/google/core/common/google_util.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -38,19 +41,13 @@ namespace {
 
 enum class RequestMethod {
   kClassifyUrl,
-  kListFamilyMembers,
-  kRequestRestrictedUrlAccess,
 };
 
 constexpr char kClassifyUrlDataContentType[] =
     "application/x-www-form-urlencoded";
 
 // Constants for ClassifyURL.
-constexpr char kClassifyUrlRequestApiPath[] =
-    "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/people/"
-    "me:classifyUrl";
-constexpr char kClassifyUrlKidPermissionScope[] =
-    "https://www.googleapis.com/auth/kid.permission";
+constexpr char kClassifyUrlRequestApiPath[] = "people/me:classifyUrl";
 constexpr char kClassifyUrlOauthConsumerName[] = "kids_url_classifier";
 constexpr char kClassifyUrlDataFormat[] = "url=%s&region_code=%s";
 constexpr char kClassifyUrlAllowed[] = "allowed";
@@ -64,7 +61,7 @@ constexpr char kClassifyUrlRestricted[] = "restricted";
 std::string GetClassifyURLRequestString(
     kids_chrome_management::ClassifyUrlRequest* request_proto) {
   std::string query =
-      net::EscapeQueryParamValue(request_proto->url(), true /* use_plus */);
+      base::EscapeQueryParamValue(request_proto->url(), true /* use_plus */);
   return base::StringPrintf(kClassifyUrlDataFormat, query.c_str(),
                             request_proto->region_code().c_str());
 }
@@ -73,13 +70,16 @@ std::string GetClassifyURLRequestString(
 // ClassifyUrlResponse proto object.
 std::unique_ptr<kids_chrome_management::ClassifyUrlResponse>
 GetClassifyURLResponseProto(const std::string& response) {
-  base::Optional<base::Value> optional_value = base::JSONReader::Read(response);
-  const base::DictionaryValue* dict = nullptr;
+  absl::optional<base::Value> maybe_value = base::JSONReader::Read(response);
+  const base::Value::Dict* dict = nullptr;
+  if (maybe_value.has_value()) {
+    dict = maybe_value->GetIfDict();
+  }
 
   auto response_proto =
       std::make_unique<kids_chrome_management::ClassifyUrlResponse>();
 
-  if (!optional_value || !optional_value.value().GetAsDictionary(&dict)) {
+  if (!dict) {
     DLOG(WARNING)
         << "GetClassifyURLResponseProto failed to parse response dictionary";
     response_proto->set_display_classification(
@@ -88,9 +88,9 @@ GetClassifyURLResponseProto(const std::string& response) {
     return response_proto;
   }
 
-  const base::Value* classification_value =
-      dict->FindKey("displayClassification");
-  if (!classification_value) {
+  const std::string* maybe_classification_string =
+      dict->FindString("displayClassification");
+  if (!maybe_classification_string) {
     DLOG(WARNING)
         << "GetClassifyURLResponseProto failed to parse displayClassification";
     response_proto->set_display_classification(
@@ -99,7 +99,7 @@ GetClassifyURLResponseProto(const std::string& response) {
     return response_proto;
   }
 
-  const std::string classification_string = classification_value->GetString();
+  const std::string classification_string = *maybe_classification_string;
   if (classification_string == kClassifyUrlAllowed) {
     response_proto->set_display_classification(
         kids_chrome_management::ClassifyUrlResponse::ALLOWED);
@@ -115,6 +115,16 @@ GetClassifyURLResponseProto(const std::string& response) {
   }
 
   return response_proto;
+}
+
+std::unique_ptr<network::ResourceRequest>
+CreateResourceRequestForUrlClassifier() {
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url =
+      kids_management_api::GetURL(kClassifyUrlRequestApiPath);
+  resource_request->method = "POST";
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  return resource_request;
 }
 
 }  // namespace
@@ -154,9 +164,8 @@ struct KidsChromeManagementClient::KidsChromeManagementRequest {
 };
 
 KidsChromeManagementClient::KidsChromeManagementClient(Profile* profile) {
-  url_loader_factory_ =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  url_loader_factory_ = profile->GetDefaultStoragePartition()
+                            ->GetURLLoaderFactoryForBrowserProcess();
 
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
 }
@@ -167,11 +176,6 @@ void KidsChromeManagementClient::ClassifyURL(
     std::unique_ptr<kids_chrome_management::ClassifyUrlRequest> request_proto,
     KidsChromeManagementCallback callback) {
   DVLOG(1) << "Checking URL:  " << request_proto->url();
-
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(kClassifyUrlRequestApiPath);
-  resource_request->method = "POST";
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   const net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -202,8 +206,9 @@ void KidsChromeManagementClient::ClassifyURL(
 
   auto kids_chrome_request = std::make_unique<KidsChromeManagementRequest>(
       std::move(request_proto), std::move(callback),
-      std::move(resource_request), traffic_annotation,
-      kClassifyUrlOauthConsumerName, kClassifyUrlKidPermissionScope,
+      CreateResourceRequestForUrlClassifier(), traffic_annotation,
+      kClassifyUrlOauthConsumerName,
+      GaiaConstants::kClassifyUrlKidPermissionOAuth2Scope,
       RequestMethod::kClassifyUrl);
 
   MakeHTTPRequest(std::move(kids_chrome_request));
@@ -219,6 +224,12 @@ void KidsChromeManagementClient::MakeHTTPRequest(
 void KidsChromeManagementClient::StartFetching(
     KidsChromeRequestList::iterator it) {
   KidsChromeManagementRequest* req = it->get();
+
+  // This is a quick fix for https://crbug.com/1192222. `resource_request` is
+  // moved during creation of SimpleURLLoader. Retrying the request causes
+  // dereferencing nullptr. To avoid that recreate the `resource_request` here.
+  if (!req->resource_request)
+    req->resource_request = CreateResourceRequestForUrlClassifier();
 
   signin::ScopeSet scopes{req->scope};
 
@@ -240,7 +251,7 @@ void KidsChromeManagementClient::OnAccessTokenFetchComplete(
   if (error.state() != GoogleServiceAuthError::NONE) {
     DLOG(WARNING) << "Token error: " << error.ToString();
 
-    std::unique_ptr<google::protobuf::MessageLite> response_proto = nullptr;
+    std::unique_ptr<google::protobuf::MessageLite> response_proto;
     DispatchResult(it, std::move(response_proto),
                    KidsChromeManagementClient::ErrorCode::kTokenError);
     return;
@@ -261,7 +272,7 @@ void KidsChromeManagementClient::OnAccessTokenFetchComplete(
             req->request_proto.get()));
   } else {
     DVLOG(1) << "Could not detect the request proto's class.";
-    std::unique_ptr<google::protobuf::MessageLite> response_proto = nullptr;
+    std::unique_ptr<google::protobuf::MessageLite> response_proto;
     DispatchResult(it, std::move(response_proto),
                    KidsChromeManagementClient::ErrorCode::kServiceError);
     return;
@@ -309,7 +320,7 @@ void KidsChromeManagementClient::OnSimpleLoaderComplete(
     }
   }
 
-  std::unique_ptr<google::protobuf::MessageLite> response_proto = nullptr;
+  std::unique_ptr<google::protobuf::MessageLite> response_proto;
 
   int net_error = simple_url_loader->NetError();
 

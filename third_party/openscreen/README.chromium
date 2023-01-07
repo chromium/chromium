@@ -9,17 +9,23 @@ Security Critical: yes
 License Android Compatible: yes
 
 Description:
-This implements the Open Screen Protocol.  Open Screen Protocol is an open
-source implementation of a network protocol necessary to implement, among other
-things, the Presentation API.  For the working draft spec, see
-https://github.com/webscreens/openscreenprotocol/.
+The Open Screen Library implements the Open Screen Protocol, Multicast DNS and
+DNS-SD, and the Chromecast protocols (discovery, application control, and media
+streaming).
+
+See src/README.md for a more detailed description of the contents.
 
 Update with:
 git log --date=short --no-merges --format='%ad %ae %s' -- third_party/openscreen
 
-2019-10-21 mfoltz@chromium.org Update README.chromium
-2019-10-21 mfoltz@chromium.org Adds a README.md
+2022-07-28 mfoltz@chromium.org Update README.chromium and README.md
+2022-03-29 takumif@chromium.org Remove btolsch@ from Cast / Media Router OWNERS (no longer on the team)
+2021-04-20 btolsch@chromium.org Update openscreen OWNERS
+2020-12-07 ehmaldonado@google.com Add DIR_METADATA files to some directories under //third_party
+2019-10-29 mfoltz@chromium.org [Open Screen] Adds a README.md.
 2019-09-30 efoo@chromium.org Add # COMPONENT: Internals>Cast>Providers as per suggested by mfoltz@
 2019-09-26 efoo@chromium.org Add Component: Blink>PresentationAPI
-
+2019-05-15 derat@chromium.org Revert "Enable openscreen compilation in Chromium"
+2019-05-14 btolsch@chromium.org Enable openscreen compilation in Chromium
+2019-03-06 btolsch@chromium.org Add third_party/openscreen/src to DEPS
 

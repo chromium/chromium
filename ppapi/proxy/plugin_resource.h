@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <map>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_sender.h"
@@ -38,6 +37,10 @@ class PPAPI_PROXY_EXPORT PluginResource : public Resource {
   };
 
   PluginResource(Connection connection, PP_Instance instance);
+
+  PluginResource(const PluginResource&) = delete;
+  PluginResource& operator=(const PluginResource&) = delete;
+
   ~PluginResource() override;
 
   // Returns true if we've previously sent a create message to the browser
@@ -183,8 +186,6 @@ class PPAPI_PROXY_EXPORT PluginResource : public Resource {
   CallbackMap callbacks_;
 
   scoped_refptr<ResourceReplyThreadRegistrar> resource_reply_thread_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginResource);
 };
 
 template <typename ReplyMsgClass, typename CallbackType>

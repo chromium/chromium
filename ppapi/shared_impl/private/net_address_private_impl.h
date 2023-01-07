@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,15 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/macros.h"
-#include "net/base/ip_address.h"
+#include "build/build_config.h"
+#include "components/nacl/common/buildflags.h"
 #include "ppapi/c/pp_stdint.h"
 #include "ppapi/c/ppb_net_address.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
+
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
+#include "net/base/ip_address.h"  //nogncheck
+#endif
 
 struct PP_NetAddress_Private;
 struct sockaddr;
@@ -21,6 +25,11 @@ namespace ppapi {
 
 class PPAPI_SHARED_EXPORT NetAddressPrivateImpl {
  public:
+  NetAddressPrivateImpl() = delete;
+  NetAddressPrivateImpl(const NetAddressPrivateImpl&) = delete;
+  NetAddressPrivateImpl& operator=(const NetAddressPrivateImpl&) = delete;
+
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
   static bool ValidateNetAddress(const PP_NetAddress_Private& addr);
 
   static bool SockaddrToNetAddress(const sockaddr* sa,
@@ -34,6 +43,7 @@ class PPAPI_SHARED_EXPORT NetAddressPrivateImpl {
   static bool NetAddressToIPEndPoint(const PP_NetAddress_Private& net_addr,
                                      net::IPAddressBytes* address,
                                      uint16_t* port);
+#endif
 
   static std::string DescribeNetAddress(const PP_NetAddress_Private& addr,
                                         bool include_port);
@@ -60,9 +70,6 @@ class PPAPI_SHARED_EXPORT NetAddressPrivateImpl {
       PP_NetAddress_IPv6* ipv6_addr);
 
   static const PP_NetAddress_Private kInvalidNetAddress;
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(NetAddressPrivateImpl);
 };
 
 }  // namespace ppapi

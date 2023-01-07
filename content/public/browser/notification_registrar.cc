@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 
 #include <stddef.h>
 
-#include <algorithm>
+#include <ostream>
 
 #include "base/check_op.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "content/browser/notification_service_impl.h"
 
 namespace content {
@@ -17,7 +19,7 @@ namespace content {
 struct NotificationRegistrar::Record {
   bool operator==(const Record& other) const;
 
-  NotificationObserver* observer;
+  raw_ptr<NotificationObserver> observer;
   int type;
   NotificationSource source;
 };
@@ -64,8 +66,7 @@ void NotificationRegistrar::Remove(NotificationObserver* observer,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   Record record = { observer, type, source };
-  RecordVector::iterator found =
-      std::find(registered_.begin(), registered_.end(), record);
+  RecordVector::iterator found = base::ranges::find(registered_, record);
   DCHECK(found != registered_.end());
 
   registered_.erase(found);

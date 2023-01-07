@@ -1,8 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/trust_tokens/in_memory_trust_token_persister.h"
+#include "base/containers/cxx20_erase.h"
+
+#include "base/containers/cxx20_erase_map.h"
 
 namespace network {
 

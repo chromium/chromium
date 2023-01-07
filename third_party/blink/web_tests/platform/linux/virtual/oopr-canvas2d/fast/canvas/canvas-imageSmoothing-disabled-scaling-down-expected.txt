@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test drawImage with imageSmoothingEnabled=false and scaling down the source. assert_array_equals: drawImage() should have the same results with imageSmoothingEnabled = true and false when scaling down. expected property 3 to be 128 but got 127 (expected array object "255,0,0,128,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" got object "255,0,0,127,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0")
+Harness: the test ran to completion.
+

@@ -24,52 +24,51 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FE_CONVOLVE_MATRIX_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_FE_CONVOLVE_MATRIX_H_
 
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d.h"
 
 namespace blink {
-
-enum EdgeModeType {
-  EDGEMODE_UNKNOWN = 0,
-  EDGEMODE_DUPLICATE = 1,
-  EDGEMODE_WRAP = 2,
-  EDGEMODE_NONE = 3
-};
-
 class PLATFORM_EXPORT FEConvolveMatrix final : public FilterEffect {
  public:
+  enum EdgeModeType {
+    EDGEMODE_UNKNOWN = 0,
+    EDGEMODE_DUPLICATE = 1,
+    EDGEMODE_WRAP = 2,
+    EDGEMODE_NONE = 3
+  };
+
   FEConvolveMatrix(Filter*,
-                   const IntSize&,
+                   const gfx::Size&,
                    float,
                    float,
-                   const IntPoint&,
-                   EdgeModeType,
+                   const gfx::Vector2d&,
+                   FEConvolveMatrix::EdgeModeType,
                    bool,
                    const Vector<float>&);
 
   bool SetDivisor(float);
   bool SetBias(float);
-  bool SetTargetOffset(const IntPoint&);
-  bool SetEdgeMode(EdgeModeType);
+  bool SetTargetOffset(const gfx::Vector2d&);
+  bool SetEdgeMode(FEConvolveMatrix::EdgeModeType);
   bool SetPreserveAlpha(bool);
 
   WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
                                           int indention) const override;
 
  private:
-  FloatRect MapEffect(const FloatRect&) const final;
+  gfx::RectF MapEffect(const gfx::RectF&) const final;
 
   sk_sp<PaintFilter> CreateImageFilter() override;
 
   bool ParametersValid() const;
 
-  IntSize kernel_size_;
+  gfx::Size kernel_size_;
   float divisor_;
   float bias_;
-  IntPoint target_offset_;
+  gfx::Vector2d target_offset_;
   EdgeModeType edge_mode_;
   bool preserve_alpha_;
   Vector<float> kernel_matrix_;

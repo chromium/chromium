@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,6 +80,19 @@ BEGIN
       VALUE "FileDescription", "{% trans %}REMOTING_START_HOST_DESCRIPTION{% endtrans %}"
       VALUE "InternalName", "remoting_start_host.exe"
       VALUE "OriginalFilename", "remoting_start_host.exe"
+#elif (REMOTING_HOST_BINARY == BINARY_REMOTE_OPEN_URL){#
+      Some translations have double quotes, which need to be escaped with `""`.
+      #}
+      VALUE "FileDescription", "{{
+          gettext("URL_FORWARDER_DESCRIPTION")|
+            format(gettext("PRODUCT_NAME"))|
+            replace('"', '""') }}"
+      VALUE "InternalName", "remote_open_url.exe"
+      VALUE "OriginalFilename", "remote_open_url.exe"
+#elif (REMOTING_HOST_BINARY == BINARY_REMOTE_WEBAUTHN)
+      VALUE "FileDescription", "{% trans %}REMOTING_REMOTE_WEBAUTHN_DESCRIPTION{% endtrans %}"
+      VALUE "InternalName", "remote_webauthn.exe"
+      VALUE "OriginalFilename", "remote_webauthn.exe"
 #else
 #error REMOTING_HOST_BINARY must be set to one of BINARY_XXX values.
 #endif

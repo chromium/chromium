@@ -1,8 +1,28 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {EntryList, VolumeEntry} from '../../common/js/files_app_entry_types.js';
+import {util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {validateExternalDriveName} from '../js/file_rename.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'files-format-dialog',
 
   behaviors: [I18nBehavior],
@@ -27,7 +47,7 @@ Polymer({
     isErase_: {
       type: Boolean,
       value: false,
-    }
+    },
   },
 
   ready: function() {
@@ -40,14 +60,14 @@ Polymer({
   },
 
   /** @private */
-  format_: async function() {
+  format_: function() {
     try {
-      await util.validateExternalDriveName(
+      validateExternalDriveName(
           this.label_,
           /** @type {!VolumeManagerCommon.FileSystemType} */
           (this.formatType_));
-    } catch (errorMessage) {
-      this.$.label.setAttribute('error-message', errorMessage);
+    } catch (error) {
+      this.$.label.setAttribute('error-message', error.message);
       this.$.label.invalid = true;
       return;
     }

@@ -1,0 +1,30 @@
+caption: Allow remote users to interact with elevated windows in remote assistance
+  sessions
+default: false
+desc: |-
+  Setting the policy to Enabled means the remote assistance host runs in a process with <ph name="UIACCESS_PERMISSION_NAME">uiAccess</ph> permissions. This lets remote users interact with elevated windows on the local user's desktop.
+
+        Setting the policy to Disabled or leaving it unset means the remote assistance host runs in the user's context, and remote users can't interact with elevated windows on the desktop.
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: false
+  platform_only: true
+items:
+- caption: Enable remote user interaction with elevated windows in remote assistance
+    sessions
+  value: true
+- caption: Disable remote user interaction with elevated windows in remote assistance
+    sessions
+  value: false
+owners:
+- file://remoting/OWNERS
+- jamiewalch@chromium.org
+- lambroslambrou@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.win:55-
+tags:
+- system-security
+type: main

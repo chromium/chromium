@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,27 +24,32 @@ void CookieSettingsPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
   const base::Value* third_party_cookie_blocking =
-      policies.GetValue(policy_name());
+      policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
   if (third_party_cookie_blocking) {
     prefs->SetInteger(
         prefs::kCookieControlsMode,
         static_cast<int>(third_party_cookie_blocking->GetBool()
                              ? CookieControlsMode::kBlockThirdParty
                              : CookieControlsMode::kOff));
-    // Copy only the disabled managed state of cookie controls to privacy
-    // sandbox while privacy sandbox is an experiment.
-    if (third_party_cookie_blocking->GetBool()) {
-      prefs->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
-    }
+    // Copy only the managed state of cookie controls to privacy sandbox while
+    // privacy sandbox is an experiment.
+    // TODO(crbug.com/1304044): Create a dedicated policy.
+    prefs->SetBoolean(prefs::kPrivacySandboxApisEnabled,
+                      !third_party_cookie_blocking->GetBool());
+    prefs->SetBoolean(prefs::kPrivacySandboxApisEnabledV2,
+                      !third_party_cookie_blocking->GetBool());
   }
-  // Also check against the default cookie content settings policy and disable
-  // privacy sandbox if it is set to BLOCK.
-  const base::Value* default_cookie_setting =
-      policies.GetValue(policy::key::kDefaultCookiesSetting);
-  if (default_cookie_setting && default_cookie_setting->is_int() &&
+
+  // If there is a Cookie BLOCK default content setting, then Privacy Sandbox
+  // APIs should be disabled, regardless of whether they were enabled along
+  // with third party cookies.
+  const base::Value* default_cookie_setting = policies.GetValue(
+      policy::key::kDefaultCookiesSetting, base::Value::Type::INTEGER);
+  if (default_cookie_setting &&
       static_cast<ContentSetting>(default_cookie_setting->GetInt()) ==
           CONTENT_SETTING_BLOCK) {
     prefs->SetBoolean(prefs::kPrivacySandboxApisEnabled, false);
+    prefs->SetBoolean(prefs::kPrivacySandboxApisEnabledV2, false);
   }
 }
 

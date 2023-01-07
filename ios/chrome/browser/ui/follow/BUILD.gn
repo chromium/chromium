@@ -1,0 +1,75 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("follow") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "followed_web_channel.h",
+    "followed_web_channel.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/net:crurl",
+  ]
+}
+
+source_set("follow_iph") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "follow_iph_coordinator.h",
+    "follow_iph_coordinator.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/discover_feed",
+    "//ios/chrome/browser/discover_feed:discover_feed_factory",
+    "//ios/chrome/browser/follow:tab_helper",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/ntp/metrics",
+  ]
+}
+
+source_set("first_follow") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "first_follow_coordinator.h",
+    "first_follow_coordinator.mm",
+  ]
+  deps = [
+    ":first_follow_ui",
+    ":follow",
+    "//ios/chrome/browser/discover_feed",
+    "//ios/chrome/browser/discover_feed:discover_feed_factory",
+    "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/follow:service",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/ntp/metrics",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+  ]
+}
+
+source_set("first_follow_ui") {
+  sources = [
+    "first_follow_view_controller.h",
+    "first_follow_view_controller.mm",
+  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":follow",
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/icons:symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}

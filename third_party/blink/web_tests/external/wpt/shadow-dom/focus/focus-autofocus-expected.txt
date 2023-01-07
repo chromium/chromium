@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL The second input should be focused since it has autofocus assert_equals: expected Element node <div tabindex="0" autofocus="true"></div> but got Element node <div tabindex="0"></div>
+FAIL Focus should not be delegated to the autofocus element because the inner host doesn't have delegates focus assert_equals: expected Element node <body>
+  <script>
+  function createShadowDOMTree() {
+    ... but got Element node <div id="host"></div>
+FAIL Focus should be delegated to the autofocus element when the inner host has delegates focus assert_equals: expected Element node <div tabindex="0" autofocus="true"></div> but got Element node <div tabindex="0"></div>
+FAIL Focus should not be delegated to the slotted elements assert_equals: expected Element node <div id="host"><div tabindex="0" autofocus="true"></div><... but got Element node <div tabindex="0" autofocus="true"></div>
+FAIL Focus should be delegated to the nested div which has autofocus based on the tree order assert_equals: expected Element node <div tabindex="0" autofocus="true"></div> but got Element node <div tabindex="0"><div tabindex="0"><div tabindex="0" aut...
+Harness: the test ran to completion.
+

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,8 @@ enum class LaunchLocation {
   NET_ERROR_SUGGESTION,
   // From Download shelf.
   DOWNLOAD_SHELF,
+  // From Download interstitial open button.
+  DOWNLOAD_INTERSTITIAL,
 };
 
 }  // namespace offline_items_collection

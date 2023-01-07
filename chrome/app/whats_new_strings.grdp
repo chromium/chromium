@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <message name="IDS_WHATS_NEW_TITLE" desc="Title of the What's New page">
+    What's New
+  </message>
+</grit-part>

@@ -2,6 +2,6 @@ monorail {
   component: "Fuchsia"
 }
 
-team_email: "cr-fuchsia@chromium.org"
+team_email: "fuchsia-dev@chromium.org"
 
 os: FUCHSIA

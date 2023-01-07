@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/thunk/ppb_graphics_2d_api.h"
@@ -26,6 +25,9 @@ class PPAPI_PROXY_EXPORT Graphics2DResource : public PluginResource,
                      PP_Instance instance,
                      const PP_Size& size,
                      PP_Bool is_always_opaque);
+
+  Graphics2DResource(const Graphics2DResource&) = delete;
+  Graphics2DResource& operator=(const Graphics2DResource&) = delete;
 
   ~Graphics2DResource() override;
 
@@ -55,8 +57,6 @@ class PPAPI_PROXY_EXPORT Graphics2DResource : public PluginResource,
   float scale_;
 
   scoped_refptr<TrackedCallback> current_flush_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Graphics2DResource);
 };
 
 }  // namespace proxy

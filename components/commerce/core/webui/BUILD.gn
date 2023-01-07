@@ -1,0 +1,44 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("webui") {
+  sources = [
+    "shopping_list_handler.cc",
+    "shopping_list_handler.h",
+  ]
+
+  deps = [
+    "../:shopping_service",
+    "../mojom:mojo_bindings",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//components/payments/core",
+    "//components/power_bookmarks/core",
+    "//components/prefs",
+    "//components/url_formatter",
+    "//mojo/public/cpp/bindings",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "shopping_list_handler_unittest.cc" ]
+
+  deps = [
+    ":webui",
+    "../mojom:mojo_bindings",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service_test_support",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}

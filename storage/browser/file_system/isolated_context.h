@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,17 +13,19 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
-#include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
 #include "storage/browser/file_system/mount_points.h"
 #include "storage/common/file_system/file_system_types.h"
 
-namespace storage {
-class FileSystemURL;
-}
+class GURL;
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
+
+class FileSystemURL;
 
 // Manages isolated filesystem mount points which have no well-known names
 // and are identified by a string 'filesystem ID', which usually just looks
@@ -84,6 +86,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) IsolatedContext : public MountPoints {
 
   // The instance is lazily created per browser process.
   static IsolatedContext* GetInstance();
+
+  IsolatedContext(const IsolatedContext&) = delete;
+  IsolatedContext& operator=(const IsolatedContext&) = delete;
 
   // Returns true if the given filesystem type is managed by IsolatedContext
   // (i.e. if the given |type| is Isolated or External).
@@ -173,9 +178,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) IsolatedContext : public MountPoints {
                         std::string* cracked_id,
                         base::FilePath* path,
                         FileSystemMountOption* mount_option) const override;
-  FileSystemURL CrackURL(const GURL& url) const override;
+  FileSystemURL CrackURL(const GURL& url,
+                         const blink::StorageKey& storage_key) const override;
   FileSystemURL CreateCrackedFileSystemURL(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemType type,
       const base::FilePath& virtual_path) const override;
 
@@ -209,8 +215,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) IsolatedContext : public MountPoints {
 
   // Reverse map from registered path to IDs.
   std::map<base::FilePath, std::set<std::string>> path_to_id_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(IsolatedContext);
 };
 
 }  // namespace storage

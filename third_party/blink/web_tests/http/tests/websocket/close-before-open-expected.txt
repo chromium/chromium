@@ -1,5 +1,3 @@
-CONSOLE WARNING: line 29: WebSocket connection to 'ws://127.0.0.1:8880/echo' failed: WebSocket is closed before the connection is established.
-CONSOLE WARNING: line 29: WebSocket connection to 'ws://127.0.0.1:8880/close-code-and-reason' failed: WebSocket is closed before the connection is established.
 Test if WebSocket fires close event when WebSocket is opened and close() is called on it before open event is dispatched.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

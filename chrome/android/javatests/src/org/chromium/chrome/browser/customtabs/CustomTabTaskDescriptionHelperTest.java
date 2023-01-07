@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,13 +21,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.webapps.WebappActivity;
@@ -81,7 +80,7 @@ public class CustomTabTaskDescriptionHelperTest {
         final int intentThemeColor = Color.GREEN;
 
         Intent launchIntent = mWebappActivityTestRule.createIntent();
-        launchIntent.putExtra(ShortcutHelper.EXTRA_THEME_COLOR, (long) intentThemeColor);
+        launchIntent.putExtra(WebappConstants.EXTRA_THEME_COLOR, (long) intentThemeColor);
 
         WebappActivity webappActivity = launchWebappOnPageWithRedThemeColor(launchIntent);
         assertEquals(Color.RED, fetchTaskDescriptionColor(webappActivity));
@@ -100,7 +99,7 @@ public class CustomTabTaskDescriptionHelperTest {
                 mTestServer.getURL("/chrome/test/data/android/simple.html");
 
         Intent launchIntent = mWebappActivityTestRule.createIntent();
-        launchIntent.putExtra(ShortcutHelper.EXTRA_THEME_COLOR, (long) intentThemeColor);
+        launchIntent.putExtra(WebappConstants.EXTRA_THEME_COLOR, (long) intentThemeColor);
         WebappActivity webappActivity = launchWebappOnPageWithRedThemeColor(launchIntent);
         assertEquals(Color.RED, fetchTaskDescriptionColor(webappActivity));
 
@@ -127,8 +126,7 @@ public class CustomTabTaskDescriptionHelperTest {
         mWebappActivityTestRule.loadUrl(pageWithoutThemeColorUrl);
         int defaultThemeColor = computeDefaultThemeColor(webappActivity);
         ThemeTestUtils.waitForThemeColor(webappActivity, defaultThemeColor);
-        int defaultTaskDescriptionColor = ApiCompatibilityUtils.getColor(
-                webappActivity.getResources(), R.color.default_primary_color);
+        int defaultTaskDescriptionColor = webappActivity.getColor(R.color.default_primary_color);
         assertEquals(defaultTaskDescriptionColor, fetchTaskDescriptionColor(webappActivity));
     }
 
@@ -146,7 +144,7 @@ public class CustomTabTaskDescriptionHelperTest {
                 mTestServer.getURL("/chrome/test/data/android/simple.html");
 
         Intent launchIntent = mWebappActivityTestRule.createIntent();
-        launchIntent.putExtra(ShortcutHelper.EXTRA_THEME_COLOR, (long) intentThemeColor);
+        launchIntent.putExtra(WebappConstants.EXTRA_THEME_COLOR, (long) intentThemeColor);
         WebappActivity webappActivity = launchWebappOnPageWithRedThemeColor(launchIntent);
         assertEquals(Color.RED, fetchTaskDescriptionColor(webappActivity));
 
@@ -167,8 +165,8 @@ public class CustomTabTaskDescriptionHelperTest {
         final String intentShortName = "Intent Short Name";
 
         Intent launchIntent = mWebappActivityTestRule.createIntent();
-        launchIntent.putExtra(ShortcutHelper.EXTRA_SHORT_NAME, intentShortName);
-        launchIntent.removeExtra(ShortcutHelper.EXTRA_NAME);
+        launchIntent.putExtra(WebappConstants.EXTRA_SHORT_NAME, intentShortName);
+        launchIntent.removeExtra(WebappConstants.EXTRA_NAME);
         WebappActivity webappActivity = launchWebappAndWaitTillPageLoaded(launchIntent, url);
 
         waitForTitle(webappActivity.getActivityTab(), pageTitle);
@@ -186,8 +184,8 @@ public class CustomTabTaskDescriptionHelperTest {
         final String pageTitle = "Activity test page";
 
         Intent launchIntent = mWebappActivityTestRule.createIntent();
-        launchIntent.removeExtra(ShortcutHelper.EXTRA_NAME);
-        launchIntent.removeExtra(ShortcutHelper.EXTRA_SHORT_NAME);
+        launchIntent.removeExtra(WebappConstants.EXTRA_NAME);
+        launchIntent.removeExtra(WebappConstants.EXTRA_SHORT_NAME);
         WebappActivity webappActivity = launchWebappAndWaitTillPageLoaded(launchIntent, url);
 
         waitForTitle(webappActivity.getActivityTab(), pageTitle);
@@ -195,7 +193,7 @@ public class CustomTabTaskDescriptionHelperTest {
     }
 
     private WebappActivity launchWebappAndWaitTillPageLoaded(Intent launchIntent, String url) {
-        launchIntent.putExtra(ShortcutHelper.EXTRA_URL, url);
+        launchIntent.putExtra(WebappConstants.EXTRA_URL, url);
         mWebappActivityTestRule.startWebappActivity(launchIntent);
         return mWebappActivityTestRule.getActivity();
     }

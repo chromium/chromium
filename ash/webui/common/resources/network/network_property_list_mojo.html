@@ -1,0 +1,54 @@
+<style include="cr-shared-style network-shared iron-flex">
+  /* Property lists are embedded; remove the padding. */
+  .property-box {
+    padding: 0;
+    width: var(--cr-property-box-width, inherit);
+  }
+
+  cr-input[readonly] {
+    --cr-input-background-color: transparent;
+  }
+
+  cr-policy-network-indicator-mojo {
+    margin-inline-start: var(--settings-controlled-by-spacing);
+  }
+
+  .secure {
+    -webkit-text-security: disc;
+  }
+</style>
+<template is="dom-repeat" items="[[fields]]"
+    filter="[[computeFilter_(prefix, editFieldTypes, propertyDict)]]">
+  <div class="property-box single-column two-line stretch">
+    <!-- Property label -->
+    <div class="layout horizontal center">
+      <div>[[getPropertyLabel_(item, prefix)]]</div>
+      <template is="dom-if" restamp
+          if="[[isEditType_(item, editFieldTypes)]]">
+        <cr-policy-network-indicator-mojo
+            property="[[getIndicatorProperty_(item, propertyDict)]]">
+        </cr-policy-network-indicator-mojo>
+      </template>
+    </div>
+    <!-- Uneditable property value -->
+    <template is="dom-if" restamp
+        if="[[!showEditable_(item, editFieldTypes, propertyDict)]]">
+      <div class$="[[getPropertyValueCssClasses_(item, prefix, propertyDict)]]">
+        [[getPropertyValue_(item, prefix, propertyDict)]]
+      </div>
+    </template>
+    <!-- Editable property value -->
+    <template is="dom-if" restamp
+        if="[[showEditable_(item, editFieldTypes, propertyDict)]]">
+      <cr-input id="[[item]]"
+          readonly="[[!isEditable_(item, editFieldTypes, propertyDict)]]"
+          value="[[getPropertyValue_(item, prefix, propertyDict)]]"
+          on-change="onValueChange_"
+          type="[[getEditInputType_(item, editFieldTypes)]]"
+          on-focus="onInputFocused_"
+          edited="false"
+          disabled="[[disabled]]">
+      </cr-input>
+    </template>
+  </div>
+</template>

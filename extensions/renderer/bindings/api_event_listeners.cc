@@ -1,15 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/renderer/bindings/api_event_listeners.h"
 
-#include <algorithm>
 #include <memory>
 
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "content/public/renderer/v8_value_converter.h"
-#include "extensions/common/event_filtering_info.h"
 #include "extensions/common/event_matcher.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/listener_tracker.h"
 #include "gin/converter.h"
 
@@ -139,7 +140,7 @@ bool UnfilteredEventListeners::AddListener(v8::Local<v8::Function> listener,
 
 void UnfilteredEventListeners::RemoveListener(v8::Local<v8::Function> listener,
                                               v8::Local<v8::Context> context) {
-  auto iter = std::find(listeners_.begin(), listeners_.end(), listener);
+  auto iter = base::ranges::find(listeners_, listener);
   if (iter == listeners_.end())
     return;
 
@@ -151,8 +152,7 @@ void UnfilteredEventListeners::RemoveListener(v8::Local<v8::Function> listener,
 }
 
 bool UnfilteredEventListeners::HasListener(v8::Local<v8::Function> listener) {
-  return std::find(listeners_.begin(), listeners_.end(), listener) !=
-         listeners_.end();
+  return base::Contains(listeners_, listener);
 }
 
 size_t UnfilteredEventListeners::GetNumListeners() {
@@ -160,7 +160,7 @@ size_t UnfilteredEventListeners::GetNumListeners() {
 }
 
 std::vector<v8::Local<v8::Function>> UnfilteredEventListeners::GetListeners(
-    const EventFilteringInfo* filter,
+    mojom::EventFilteringInfoPtr filter,
     v8::Local<v8::Context> context) {
   std::vector<v8::Local<v8::Function>> listeners;
   listeners.reserve(listeners_.size());
@@ -290,7 +290,7 @@ bool FilteredEventListeners::AddListener(v8::Local<v8::Function> listener,
 
 void FilteredEventListeners::RemoveListener(v8::Local<v8::Function> listener,
                                             v8::Local<v8::Context> context) {
-  auto iter = std::find(listeners_.begin(), listeners_.end(), listener);
+  auto iter = base::ranges::find(listeners_, listener);
   if (iter == listeners_.end())
     return;
 
@@ -301,8 +301,7 @@ void FilteredEventListeners::RemoveListener(v8::Local<v8::Function> listener,
 }
 
 bool FilteredEventListeners::HasListener(v8::Local<v8::Function> listener) {
-  return std::find(listeners_.begin(), listeners_.end(), listener) !=
-         listeners_.end();
+  return base::Contains(listeners_, listener);
 }
 
 size_t FilteredEventListeners::GetNumListeners() {
@@ -310,10 +309,12 @@ size_t FilteredEventListeners::GetNumListeners() {
 }
 
 std::vector<v8::Local<v8::Function>> FilteredEventListeners::GetListeners(
-    const EventFilteringInfo* filter,
+    mojom::EventFilteringInfoPtr filter,
     v8::Local<v8::Context> context) {
   std::set<int> ids = listener_tracker_->GetMatchingFilteredListeners(
-      event_name_, filter ? *filter : EventFilteringInfo(), kIgnoreRoutingId);
+      event_name_,
+      filter ? std::move(filter) : mojom::EventFilteringInfo::New(),
+      kIgnoreRoutingId);
 
   std::vector<v8::Local<v8::Function>> listeners;
   listeners.reserve(ids.size());

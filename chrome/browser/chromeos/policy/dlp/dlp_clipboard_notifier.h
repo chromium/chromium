@@ -1,14 +1,18 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CLIPBOARD_NOTIFIER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_CLIPBOARD_NOTIFIER_H_
 
-#include "base/callback.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_data_transfer_notifier.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/clipboard/clipboard_observer.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/notifier_catalogs.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace content {
 class WebContents;
@@ -53,8 +57,6 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
   // `data_dst` before.
   bool DidUserCancelDst(const ui::DataTransferEndpoint* const data_dst);
 
-  void SetBlinkPasteCallbackForTesting(base::OnceCallback<void(bool)> paste_cb);
-
  protected:
   // Exposed for tests to override.
   void ProceedPressed(const ui::DataTransferEndpoint& data_dst,
@@ -66,15 +68,18 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
   void ResetUserWarnSelection();
 
  private:
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Virtual for tests to override.
   virtual void ShowToast(const std::string& id,
+                         ash::ToastCatalogName catalog_name,
                          const std::u16string& text) const;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // ui::ClipboardObserver
   void OnClipboardDataChanged() override;
 
   // views::WidgetObserver
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   // content::WebContentsObserver:
   void WebContentsDestroyed() override;
@@ -86,9 +91,6 @@ class DlpClipboardNotifier : public DlpDataTransferNotifier,
   // Vector of destinations rejected by the user on warning for copy/paste. It
   // gets reset when the clipboard data changes.
   std::vector<ui::DataTransferEndpoint> cancelled_dsts_;
-
-  // Blink paste callback.
-  base::OnceCallback<void(bool)> blink_paste_cb_;
 };
 
 }  // namespace policy

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-family-prop">
+    <link rel="assert" href="'font-family: initial' uses standard font family from internal settings.">
+    <link rel="match" href="font-family-ref.html"/>
+    <link rel="stylesheet" type="text/css" href="default-body-font-family.css"/>
+    <script>
+      if (window.internals)
+        internals.settings.setStandardFontFamily("Ahem", "Zyyy");
+    </script>
+  </head>
+  <body>
+    <div style="font-size: 25px; line-height: 1; font-family: initial">A</div>
+  </body>
+</html>

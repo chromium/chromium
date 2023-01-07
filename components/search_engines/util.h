@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,34 +33,47 @@ TemplateURL* FindURLByPrepopulateID(
     const TemplateURLService::TemplateURLVector& template_urls,
     int prepopulate_id);
 
-// Modifies |prepopulated_url| so that it contains user-modified fields from
-// |original_turl|. Both URLs must have the same prepopulate_id.
-void MergeIntoPrepopulatedEngineData(const TemplateURL* original_turl,
-                                     TemplateURLData* prepopulated_url);
+typedef enum {
+  kDefault,
+  kOverwriteUserEdits,
+} MergeOptions;
 
-// CreateActionsFromCurrentPrepopulateData() (see below) takes in the current
-// prepopulated URLs as well as the user's current URLs, and returns an instance
-// of the following struct representing the changes necessary to bring the
-// user's URLs in line with the prepopulated URLs.
+// Modifies `url_to_update` so that it contains user-modified fields from
+// `original_turl`. Both URLs must have the same `prepopulate_id` or
+// `starter_pack_id`. If `merge_option` is set to kOverWriteUserEdits,
+// user-modified fields and `safe_for_autoreplace` are not preserved.
+//
+// WARNING: Changing merge_option from the default value will result in loss of
+// user data. It should be set to kDefault unless in very specific circumstances
+// where a reset to defaults is required.
+void MergeIntoEngineData(const TemplateURL* original_turl,
+                         TemplateURLData* url_to_update,
+                         MergeOptions merge_option = MergeOptions::kDefault);
+
+// CreateActionsFromCurrentPrepopulateData() and
+// CreateActionsFromStarterPackData() (see below) takes in the current built-in
+// (prepopulated or starter pack) URLs as well as the user's current URLs, and
+// returns an instance of the following struct representing the changes
+// necessary to bring the user's URLs in line with the built-in URLs.
 //
 // There are three types of changes:
-// (1) Previous prepopulated engines that no longer exist in the current set of
-//     prepopulated engines and thus should be removed from the user's current
+// (1) Previous built-in engines that no longer exist in the current set of
+//     built-in engines and thus should be removed from the user's current
 //     URLs.
-// (2) Previous prepopulated engines whose data has changed.  The existing
+// (2) Previous built-in engines whose data has changed.  The existing
 //     entries for these engines should be updated to reflect the new data,
 //     except for any user-set names and keywords, which can be preserved.
-// (3) New prepopulated engines not in the user's engine list, which should be
+// (3) New built-in engines not in the user's engine list, which should be
 //     added.
 
 // The pair of current search engine and its new value.
 typedef std::pair<TemplateURL*, TemplateURLData> EditedSearchEngine;
 typedef std::vector<EditedSearchEngine> EditedEngines;
 
-struct ActionsFromPrepopulateData {
-  ActionsFromPrepopulateData();
-  ActionsFromPrepopulateData(const ActionsFromPrepopulateData& other);
-  ~ActionsFromPrepopulateData();
+struct ActionsFromCurrentData {
+  ActionsFromCurrentData();
+  ActionsFromCurrentData(const ActionsFromCurrentData& other);
+  ~ActionsFromCurrentData();
 
   TemplateURLService::TemplateURLVector removed_engines;
   EditedEngines edited_engines;
@@ -70,7 +83,7 @@ struct ActionsFromPrepopulateData {
 // MergeEnginesFromPrepopulateData merges search engines from
 // |prepopulated_urls| into |template_urls|. Calls
 // CreateActionsFromCurrentPrepopulateData() to collect actions and then applies
-// them on |tempate_urls|. MergeEnginesFromPrepopulateData is invoked when the
+// them on |template_urls|. MergeEnginesFromPrepopulateData is invoked when the
 // version of the prepopulate data changes. If |removed_keyword_guids| is not
 // nullptr, the Sync GUID of each item removed from the DB will be added to it.
 // Note that this function will take ownership of |prepopulated_urls| and will
@@ -89,10 +102,49 @@ void MergeEnginesFromPrepopulateData(
 // placing the current default provider on the "to be removed" list.
 //
 // NOTE: Takes ownership of, and clears, |prepopulated_urls|.
-ActionsFromPrepopulateData CreateActionsFromCurrentPrepopulateData(
+ActionsFromCurrentData CreateActionsFromCurrentPrepopulateData(
     std::vector<std::unique_ptr<TemplateURLData>>* prepopulated_urls,
     const TemplateURLService::OwnedTemplateURLVector& existing_urls,
     const TemplateURL* default_search_provider);
+
+// MergeEnginesFromStarterPackData merges search engines from the built-in
+// TemplateURLStarterPackData class into `template_urls`. Calls
+// CreateActionsFromCurrentStarterPackData() to collect actions and then applies
+// them on `template_urls`. MergeEgninesFromStarterPackData is invoked when the
+// version of the starter pack data changes. If `removed_keyword_guids` is not
+// nullptr, the Sync GUID of each item removed from the DB will be added to it.
+// `merge_option` specifies whether user-modified fields are preserved when
+// merging.  It should be set to default except for very specific use cases
+// where a reset to defaults is required.
+void MergeEnginesFromStarterPackData(
+    KeywordWebDataService* service,
+    TemplateURLService::OwnedTemplateURLVector* template_urls,
+    TemplateURL* default_search_provider,
+    std::set<std::string>* removed_keyword_guids,
+    MergeOptions merge_option = MergeOptions::kDefault);
+
+// Given the user's current URLs and the current set of Starter Pack URLs,
+// produces the set of actions (see above) required to make the user's URLs
+// reflect the starter pack data.
+// `merge_option` specifies whether user-modified fields are preserved when
+// merging.  It should be set to default except for very specific use cases
+// where a reset to defaults is required.
+//
+// NOTE: Takes ownership of, and clears, |starter_pack_urls|.
+ActionsFromCurrentData CreateActionsFromCurrentStarterPackData(
+    std::vector<std::unique_ptr<TemplateURLData>>* starter_pack_urls,
+    const TemplateURLService::OwnedTemplateURLVector& existing_urls,
+    MergeOptions merge_option = MergeOptions::kDefault);
+
+// Takes in an ActionsFromCurrentData (see above) and applies the actions (add,
+// edit, or remove) to the user's current URLs.  This is called by
+// MergeEnginesFromPrepopulateData() and MergeEnginesFromStarterPackData().
+void ApplyActionsFromCurrentData(
+    ActionsFromCurrentData actions,
+    KeywordWebDataService* service,
+    TemplateURLService::OwnedTemplateURLVector* template_urls,
+    TemplateURL* default_search_provider,
+    std::set<std::string>* removed_keyword_guids);
 
 // Processes the results of KeywordWebDataService::GetKeywords, combining it
 // with prepopulated search providers to result in:
@@ -114,6 +166,7 @@ void GetSearchProvidersUsingKeywordResult(
     TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data,
     int* new_resource_keyword_version,
+    int* new_resource_starter_pack_version,
     std::set<std::string>* removed_keyword_guids);
 
 // Like GetSearchProvidersUsingKeywordResult(), but allows the caller to pass in
@@ -130,6 +183,7 @@ void GetSearchProvidersUsingLoadedEngines(
     TemplateURL* default_search_provider,
     const SearchTermsData& search_terms_data,
     int* resource_keyword_version,
+    int* resource_starter_pack_version,
     std::set<std::string>* removed_keyword_guids);
 
 // Due to a bug, the |input_encodings| field of TemplateURLData could have

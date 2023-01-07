@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/android/render_widget_host_connector.h"
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -17,6 +18,10 @@ class RenderWidgetHostConnector::Observer
       public RenderWidgetHostViewAndroid::DestructionObserver {
  public:
   Observer(WebContents* web_contents, RenderWidgetHostConnector* connector);
+
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
+
   ~Observer() override;
 
   // WebContentsObserver implementation.
@@ -40,12 +45,10 @@ class RenderWidgetHostConnector::Observer
  private:
   void DoDestroy(WebContentsAndroid* web_contents_android);
 
-  RenderWidgetHostConnector* const connector_;
+  const raw_ptr<RenderWidgetHostConnector> connector_;
 
   // Active RenderWidgetHostView connected to this instance.
-  RenderWidgetHostViewAndroid* active_rwhva_;
-
-  DISALLOW_COPY_AND_ASSIGN(Observer);
+  raw_ptr<RenderWidgetHostViewAndroid> active_rwhva_;
 };
 
 RenderWidgetHostConnector::Observer::Observer(

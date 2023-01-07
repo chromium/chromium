@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
 
@@ -20,6 +19,9 @@ class SmbCredentialsDialog : public SystemWebDialogDelegate {
   using RequestCallback = base::OnceCallback<void(bool canceled,
                                                   const std::string& username,
                                                   const std::string& password)>;
+
+  SmbCredentialsDialog(const SmbCredentialsDialog&) = delete;
+  SmbCredentialsDialog& operator=(const SmbCredentialsDialog&) = delete;
 
   // Shows the dialog, and runs |callback| when the user responds with a
   // username/password, or the dialog is closed. If a dialog is currently being
@@ -47,23 +49,30 @@ class SmbCredentialsDialog : public SystemWebDialogDelegate {
   const std::string mount_id_;
   const std::string share_path_;
   RequestCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmbCredentialsDialog);
 };
 
 class SmbCredentialsDialogUI : public ui::WebDialogUI {
  public:
   explicit SmbCredentialsDialogUI(content::WebUI* web_ui);
+
+  SmbCredentialsDialogUI(const SmbCredentialsDialogUI&) = delete;
+  SmbCredentialsDialogUI& operator=(const SmbCredentialsDialogUI&) = delete;
+
   ~SmbCredentialsDialogUI() override;
 
  private:
   void OnUpdateCredentials(const std::string& username,
                            const std::string& password);
-
-  DISALLOW_COPY_AND_ASSIGN(SmbCredentialsDialogUI);
 };
 
 }  // namespace smb_dialog
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace smb_dialog {
+using ::chromeos::smb_dialog::SmbCredentialsDialog;
+}  // namespace smb_dialog
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_SMB_SHARES_SMB_CREDENTIALS_DIALOG_H_

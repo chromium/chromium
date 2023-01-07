@@ -46,11 +46,19 @@
         padding-bottom: var(--card-first-last-item-padding);
       }
 
+      #item-info {
+        align-items: center;
+        display: flex;
+        flex: 1;
+        min-width: 0;
+      }
+
       #title-and-domain {
         align-items: center;
         display: flex;
         flex: 1;
         height: var(--item-height);
+        margin-inline-end: auto;
         overflow: hidden;
         /* Allows the link's focus outline to be shown completely. */
         padding-inline-start: 5px;
@@ -79,8 +87,9 @@
 
       #domain {
         color: var(--cr-secondary-text-color);
-        flex-shrink: 0;
         margin-inline-start: 16px;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       #menu-button {
@@ -114,7 +123,7 @@
 
       @media (prefers-color-scheme: dark) {
         #time-gap-separator {
-          border-color: var(--google-grey-refresh-500);
+          border-color: var(--google-grey-500);
         }
       }
 
@@ -132,6 +141,10 @@
       :host([is-card-end]) #background-clip {
         bottom: 0;
         clip: rect(auto 999px 500px -5px); /* Clip the top edge. */
+      }
+
+      :host([is-card-start]) #background-clip {
+        clip: auto;
       }
 
       #background {
@@ -159,85 +172,93 @@
       :host([is-card-start][is-card-end]) #background {
         border-radius: var(--cr-card-border-radius);
       }
+
+      #options {
+        align-items: center;
+        display: flex;
+      }
     </style>
 
     <div id="main-container">
       <div id="background-clip" aria-hidden="true">
         <div id="background"></div>
       </div>
-      <div id="date-accessed" class="card-title" role="heading" aria-level="2">
-        [[cardTitle_(numberOfItems, item.dateRelativeDay, searchTerm)]]
+      <div id="date-accessed" class="card-title" role="row">
+        <div role="rowheader">
+          <div role="heading" aria-level="2">
+            [[cardTitle_(numberOfItems, searchTerm, item.dateRelativeDay)]]
+          </div>
+        </div>
       </div>
-      <div id="item-container" focus-row-container
-          on-mousedown="onItemMousedown_"
-          on-click="onItemClick_">
-        <div role="gridcell">
-          <cr-checkbox id="checkbox" checked="[[selected]]" unresolved
-              focus-row-control focus-type="cr-checkbox"
-              on-mousedown="onCheckboxClick_" on-keydown="onCheckboxClick_"
-              on-change="onCheckboxChange_" class="no-label"
-              hidden="[[selectionNotAllowed_]]"
-              disabled="[[selectionNotAllowed_]]">
-            [[getEntrySummary_(item)]]
-          </cr-checkbox>
-        </div>
-        <!-- ARIA hidden to avoid redundancy since timestamp is already part of
-             |getEntrySummary_|. -->
-        <span id="time-accessed" aria-hidden="true">
-          [[item.readableTimestamp]]
-        </span>
-        <div id="title-and-domain" role="gridcell">
-          <a href="[[item.url]]" id="link" class="website-link"
-              focus-row-control focus-type="link"
-              title="[[item.title]]" on-click="onLinkClick_"
-              on-contextmenu="onLinkRightClick_"
-              aria-describedby$="[[ariaDescribedByForHeading_]]">
-            <div class="website-icon" id="icon"></div>
-            <history-searched-label class="website-title" title="[[item.title]]"
-                search-term="[[searchTerm]]"></history-searched-label>
-          </a>
-          <span id="domain">[[item.domain]]</span>
-        </div>
-        <div id="star-container">
-          <template is="dom-if" if="[[item.starred]]">
-            <div role="gridcell">
-              <cr-icon-button id="bookmark-star" iron-icon="cr:star"
-                  focus-row-control focus-type="star"
-                  title="$i18n{removeBookmark}"
-                  on-click="onRemoveBookmarkTap_"
+      <div role="row" on-mousedown="onRowMousedown_" on-click="onRowClick_">
+        <div id="item-container" focus-row-container>
+          <div role="gridcell">
+            <cr-checkbox id="checkbox" checked="[[selected]]" unresolved
+                focus-row-control focus-type="cr-checkbox"
+                on-mousedown="onCheckboxClick_" on-keydown="onCheckboxClick_"
+                on-change="onCheckboxChange_" class="no-label"
+                hidden="[[selectionNotAllowed_]]"
+                disabled="[[selectionNotAllowed_]]">
+              [[getEntrySummary_(item)]]
+            </cr-checkbox>
+          </div>
+          <!-- ARIA hidden to avoid redundancy since timestamp is already part of
+              |getEntrySummary_|. -->
+          <span id="time-accessed" aria-hidden="true">
+            [[item.readableTimestamp]]
+          </span>
+          <div role="gridcell" id="item-info">
+            <div id="title-and-domain">
+              <a href="[[item.url]]" id="link" class="website-link"
+                  focus-row-control focus-type="link"
+                  title="[[item.title]]" on-click="onLinkClick_"
+                  on-contextmenu="onLinkRightClick_"
                   aria-describedby$="[[ariaDescribedByForHeading_]]">
-              </cr-icon-button>
+                <div class="website-icon" id="icon"></div>
+                <history-searched-label class="website-title"
+                    title="[[item.title]]"
+                    search-term="[[searchTerm]]"></history-searched-label>
+              </a>
+              <span id="domain">[[item.domain]]</span>
             </div>
-          </template>
+            <template is="dom-if" if="[[item.starred]]">
+              <cr-icon-button id="bookmark-star" iron-icon="cr:star"
+                  on-click="onRemoveBookmarkTap_"
+                  title="$i18n{removeBookmark}"
+                  aria-hidden="true">
+              </cr-icon-button>
+            </template>
+          </div>
+          <div role="gridcell" id="options">
+            <cr-icon-button id="menu-button" iron-icon="cr:more-vert"
+                focus-row-control focus-type="cr-menu-button"
+                title="$i18n{actionMenuDescription}" on-click="onMenuButtonTap_"
+                on-keydown="onMenuButtonKeydown_"
+                aria-haspopup="menu"
+                aria-describedby$="[[ariaDescribedByForHeading_]]">
+            </cr-icon-button>
+          </div>
         </div>
-        <div role="gridcell">
-          <cr-icon-button id="menu-button" iron-icon="cr:more-vert"
-              focus-row-control focus-type="cr-menu-button"
-              title="$i18n{actionMenuDescription}" on-click="onMenuButtonTap_"
-              aria-haspopup="menu"
-              aria-describedby$="[[ariaDescribedByForHeading_]]">
-          </cr-icon-button>
-        </div>
+        <template is="dom-if" if="[[item.debug]]">
+          <div id="debug-container" aria-hidden="true">
+            <div class="debug-info">DEBUG</div>
+            <div class="debug-info"
+                hidden="[[!item.debug.isUrlInLocalDatabase]]">
+              in local data
+            </div>
+            <div class="debug-info" hidden="[[!item.isUrlInRemoteUserData]]">
+              in remote data
+            </div>
+            <div class="debug-info"
+                hidden="[[!item.debug.isUrlInLocalDatabase]]">
+              typed count: [[item.debug.typedCount]]
+            </div>
+            <div class="debug-info"
+                hidden="[[!item.debug.isUrlInLocalDatabase]]">
+              visit count: [[item.debug.visitCount]]
+            </div>
+          </div>
+        </template>
+        <div id="time-gap-separator" hidden="[[!hasTimeGap]]"></div>
       </div>
-      <template is="dom-if" if="[[item.debug]]">
-        <div id="debug-container" aria-hidden="true">
-          <div class="debug-info">DEBUG</div>
-          <div class="debug-info"
-               hidden="[[!item.debug.isUrlInLocalDatabase]]">
-            in local data
-          </div>
-          <div class="debug-info" hidden="[[!item.isUrlInRemoteUserData]]">
-            in remote data
-          </div>
-          <div class="debug-info"
-               hidden="[[!item.debug.isUrlInLocalDatabase]]">
-            typed count: [[item.debug.typedCount]]
-          </div>
-          <div class="debug-info"
-               hidden="[[!item.debug.isUrlInLocalDatabase]]">
-            visit count: [[item.debug.visitCount]]
-          </div>
-        </div>
-      </template>
-      <div id="time-gap-separator" hidden="[[!hasTimeGap]]"></div>
     </div>

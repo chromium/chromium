@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=2">
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+</head>
+<body>
+
+<p id="test-para" style="font-size: 10px">This is a test</p>
+<p id="test-para-scale" style="transform: scale(3); font-size: 10px">This is a test</p>
+
+<script>
+
+function axElementById(id) {
+    return accessibilityController.accessibleElementById(id);
+}
+
+test(function(t) {
+  let paragraph = axElementById('test-para');
+  assert_equals(paragraph.fontSize, 10);
+}, "Font size isn't affected by page zoom");
+
+test(function(t) {
+  let pageZoomFactor = testRunner.setPageZoomFactor(1);
+  let paragraph = axElementById('test-para-scale');
+  assert_equals(paragraph.fontSize, 10);
+}, "Font size isn't affected by scale transforms");
+
+</script>
+</body>

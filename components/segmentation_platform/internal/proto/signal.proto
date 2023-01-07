@@ -1,0 +1,24 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package segmentation_platform.proto;
+
+// Represents the signal data collected during a certain time range.
+message SignalData {
+  // The list of samples during the time range.
+  repeated Sample samples = 1;
+}
+
+// Represents the signal data sample for a single timestamp.
+message Sample {
+  // The value of the histogram sample. Not provided for user actions.
+  optional int32 value = 1;
+
+  // Timestamp relative to the start of the UTC day. This results in a smaller
+  // value which can be efficiently stored in the proto.
+  optional int32 time_sec_delta = 2;
+}

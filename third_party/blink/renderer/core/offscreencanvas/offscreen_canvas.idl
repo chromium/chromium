@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
 
 [
     Exposed=(Window,Worker),
-    Transferable,
-    RuntimeEnabled=SurfaceEmbeddingFeatures
+    Transferable
 ] interface OffscreenCanvas : EventTarget {
     [CallWith=ExecutionContext, MeasureAs=OffscreenCanvas] constructor([EnforceRange] unsigned long width, [EnforceRange] unsigned long height);
     attribute [EnforceRange] unsigned long width;
@@ -15,4 +14,7 @@
 
     [CallWith=ScriptState, HighEntropy, MeasureAs=OffscreenCanvasTransferToImageBitmap, RaisesException] ImageBitmap transferToImageBitmap();
     [CallWith=ScriptState, HighEntropy, MeasureAs=OffscreenCanvasConvertToBlob, RaisesException] Promise<Blob> convertToBlob(optional ImageEncodeOptions options = {});
+
+    attribute EventHandler oncontextlost;
+    attribute EventHandler oncontextrestored;
 };

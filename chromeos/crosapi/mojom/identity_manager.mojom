@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "ui/gfx/image/mojom/image.mojom";
+
+// This API allows lacros-chrome to access properties from the identity manager
+// that lives in ash-chrome, such as account names for accounts that are not yet
+// known to lacros.
+[Stable, Uuid="2737cc5d-f807-4690-aec1-22091ce82565"]
+interface IdentityManager {
+  // Returns the full_name of the account with gaia id `gaia`.
+  GetAccountFullName@0(string gaia) => (string full_name);
+
+  // Returns the account_image of the account with gaia id `gaia`.
+  GetAccountImage@1(string gaia) => (gfx.mojom.ImageSkia? image);
+
+  // Returns the email of the account with gaia id `gaia`.
+  [MinVersion=1]
+  GetAccountEmail@2(string gaia) => (string email);
+};

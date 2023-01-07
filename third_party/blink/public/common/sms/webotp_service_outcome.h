@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,8 @@ enum class WebOTPServiceOutcome {
   kTimeout = 5,
   kUserCancelled = 6,
   kBackendNotAvailable = 7,
-  kMaxValue = kBackendNotAvailable
+  kCrossDeviceFailure = 8,
+  kMaxValue = kCrossDeviceFailure
 };
 
 }  // namespace blink

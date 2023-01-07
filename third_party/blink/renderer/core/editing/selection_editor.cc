@@ -96,8 +96,8 @@ VisibleSelectionInFlatTree SelectionEditor::ComputeVisibleSelectionInFlatTree()
   return cached_visible_selection_in_flat_tree_;
 }
 
-bool SelectionEditor::ComputeAbsoluteBounds(IntRect& anchor,
-                                            IntRect& focus) const {
+bool SelectionEditor::ComputeAbsoluteBounds(gfx::Rect& anchor,
+                                            gfx::Rect& focus) const {
   DCHECK_EQ(GetFrame()->GetDocument(), GetDocument());
   DCHECK_EQ(GetFrame(), GetDocument().GetFrame());
   UpdateCachedAbsoluteBoundsIfNeeded();
@@ -125,8 +125,8 @@ void SelectionEditor::MarkCacheDirty() {
   if (!cached_absolute_bounds_are_dirty_) {
     cached_absolute_bounds_are_dirty_ = true;
     has_selection_bounds_ = false;
-    cached_anchor_bounds_ = IntRect();
-    cached_focus_bounds_ = IntRect();
+    cached_anchor_bounds_ = gfx::Rect();
+    cached_focus_bounds_ = gfx::Rect();
   }
 }
 
@@ -139,7 +139,8 @@ void SelectionEditor::SetSelectionAndEndTyping(
   selection_ = new_selection;
 }
 
-void SelectionEditor::DidChangeChildren(const ContainerNode&) {
+void SelectionEditor::DidChangeChildren(const ContainerNode&,
+                                        const ContainerNode::ChildrenChange&) {
   selection_.ResetDirectionCache();
   MarkCacheDirty();
   DidFinishDOMMutation();
@@ -188,8 +189,8 @@ void SelectionEditor::ContextDestroyed() {
   cached_visible_selection_in_flat_tree_is_dirty_ = true;
   cached_absolute_bounds_are_dirty_ = true;
   has_selection_bounds_ = false;
-  cached_anchor_bounds_ = IntRect();
-  cached_focus_bounds_ = IntRect();
+  cached_anchor_bounds_ = gfx::Rect();
+  cached_focus_bounds_ = gfx::Rect();
 }
 
 static Position ComputePositionForChildrenRemoval(const Position& position,
@@ -452,18 +453,8 @@ void SelectionEditor::UpdateCachedVisibleSelectionInFlatTreeIfNeeded() const {
   style_version_for_flat_tree_ = GetDocument().StyleVersion();
 #endif
   cached_visible_selection_in_flat_tree_is_dirty_ = false;
-  SelectionInFlatTree::Builder builder;
-  const PositionInFlatTree& base = ToPositionInFlatTree(selection_.Base());
-  const PositionInFlatTree& extent = ToPositionInFlatTree(selection_.Extent());
-  if (base.IsNotNull() && extent.IsNotNull())
-    builder.SetBaseAndExtent(base, extent);
-  else if (base.IsNotNull())
-    builder.Collapse(base);
-  else if (extent.IsNotNull())
-    builder.Collapse(extent);
-  builder.SetAffinity(selection_.Affinity());
   cached_visible_selection_in_flat_tree_ =
-      CreateVisibleSelection(builder.Build());
+      CreateVisibleSelection(ConvertToSelectionInFlatTree(selection_));
   if (!cached_visible_selection_in_flat_tree_.IsNone())
     return;
 #if DCHECK_IS_ON()

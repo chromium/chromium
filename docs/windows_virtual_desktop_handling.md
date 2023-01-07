@@ -26,14 +26,14 @@ Windows 10 exposes the COM interface
 [IVirtualDesktopManager](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nn-shobjidl_core-ivirtualdesktopmanager)
 to access the Virtual Desktop functionality. To make sure that opening a URL
 stays on the current virtual desktop,
-[BrowserView::IsOnCurrentWorkspace](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/frame/browser_view.cc?q=%20BrowserView::IsOnCurrentWorkspace)
+[BrowserView::IsOnCurrentWorkspace](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/frame/browser_view.cc?q=%20BrowserView::IsOnCurrentWorkspace)
 uses the IVirtualDesktopManager method
 [IsWindowOnCurrentVirtualDesktop](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ivirtualdesktopmanager-iswindowoncurrentvirtualdesktop).
-[BrowserMatches](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/browser_finder.cc?q=BrowserMatches)
+[BrowserMatches](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/browser_finder.cc?q=BrowserMatches)
 in browser_finder.cc only returns a browser window on the current desktop.
 
 To restore browser windows to the desktop they were last open on,
-[BrowserDesktopWindowTreeHostWin](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/frame/browser_desktop_window_tree_host_win.cc)
+[BrowserDesktopWindowTreeHostWin](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/frame/browser_desktop_window_tree_host_win.cc)
 implements GetWorkspace by using the
 [GetWindowDesktopId](https://docs.microsoft.com/en-us/windows/win32/api/shobjidl_core/nf-shobjidl_core-ivirtualdesktopmanager-getwindowdesktopid) method on
 IVirtualDesktopManager, and restores the workspace using
@@ -44,7 +44,7 @@ The actual implementation is a bit more complicated in order to avoid
 calling COM methods on the UI thread, or destroying COM objects on the UI
 thread, since doing so can cause nested message loops and re-entrant calls,
 leading to blocked UI threads and crashes. The
-[VirtualDesktopHelper](https://source.chromium.org/chromium/chromium/src/+/master:chrome/browser/ui/views/frame/browser_desktop_window_tree_host_win.cc?q=VirtualDesktopHelper&sq=&ss=chromium%2Fchromium%2Fsrc)
+[VirtualDesktopHelper](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/frame/browser_desktop_window_tree_host_win.cc?q=VirtualDesktopHelper&sq=&ss=chromium%2Fchromium%2Fsrc)
 class does the workspace handling for BrowserDesktopWindowTreeHostWin, including
 doing all the COM operations on a separate COM task runner. The GetWorkspace
 method is synchronous so VirtualDesktopHelper has to remember and return the
@@ -60,9 +60,9 @@ that iterates over windows generally needs to be Virtual Desktop-aware.
 For example, the following places in code ignore windows not on the current
 virtual desktop:
 
- * [LocalProcessWindowFinder::GetProcessWindowAtPoint](https://source.chromium.org/chromium/chromium/src/+/master:ui/display/win/local_process_window_finder_win.cc?q=LocalProcessWindowFinder::ShouldStopIterating&ss=chromium%2Fchromium%2Fsrc)
+ * [LocalProcessWindowFinder::GetProcessWindowAtPoint](https://source.chromium.org/chromium/chromium/src/+/main:ui/display/win/local_process_window_finder_win.cc?q=LocalProcessWindowFinder::ShouldStopIterating&ss=chromium%2Fchromium%2Fsrc)
  * third_party/webrtc/modules/desktop_capture/win/window_capture_utils.cc
- * [Native Window occlusion tracker](https://source.chromium.org/chromium/chromium/src/+/master:ui/aura/native_window_occlusion_tracker_win.cc?q=WindowCanOccludeOtherWindowsOnCurrentVirtualDesktop&ss=chromium%2Fchromium%2Fsrc),
+ * [Native Window occlusion tracker](https://source.chromium.org/chromium/chromium/src/+/main:ui/aura/native_window_occlusion_tracker_win.cc?q=WindowCanOccludeOtherWindowsOnCurrentVirtualDesktop&ss=chromium%2Fchromium%2Fsrc),
  when determining if a Chromium window is occluded/covered by other windows.
  Windows not on the current virtual desktop are considered occluded.
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,14 +103,16 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
+#include "base/time/time.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
 #include "media/audio/audio_io.h"
+#include "media/audio/system_glitch_reporter.h"
 #include "media/audio/win/audio_manager_win.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
@@ -121,8 +123,8 @@ class AudioManagerWin;
 class AudioSessionEventListener;
 
 // AudioOutputStream implementation using Windows Core Audio APIs.
-class MEDIA_EXPORT WASAPIAudioOutputStream :
-      public AudioOutputStream,
+class MEDIA_EXPORT WASAPIAudioOutputStream
+    : public AudioOutputStream,
       public base::DelegateSimpleThread::Delegate {
  public:
   // The ctor takes all the usual parameters, plus |manager| which is the
@@ -132,6 +134,9 @@ class MEDIA_EXPORT WASAPIAudioOutputStream :
                           const AudioParameters& params,
                           ERole device_role,
                           AudioManager::LogCallback log_callback);
+
+  WASAPIAudioOutputStream(const WASAPIAudioOutputStream&) = delete;
+  WASAPIAudioOutputStream& operator=(const WASAPIAudioOutputStream&) = delete;
 
   // The dtor is typically called by the AudioManager only and it is usually
   // triggered by calling AudioOutputStream::Close().
@@ -187,7 +192,11 @@ class MEDIA_EXPORT WASAPIAudioOutputStream :
   const base::PlatformThreadId creating_thread_id_;
 
   // Our creator, the audio manager needs to be notified when we close.
-  AudioManagerWin* const manager_;
+  const raw_ptr<AudioManagerWin> manager_;
+
+  // Used to aggregate and report glitch metrics to UMA (periodically) and to
+  // text logs (when a stream ends).
+  SystemGlitchReporter glitch_reporter_;
 
   // Rendering is driven by this thread (which has no message loop).
   // All OnMoreData() callbacks will be called from this thread.
@@ -197,6 +206,9 @@ class MEDIA_EXPORT WASAPIAudioOutputStream :
   // Extended PCM waveform format structure based on WAVEFORMATEXTENSIBLE.
   // Use this for multiple channel and hi-resolution PCM data.
   WAVEFORMATPCMEX format_;
+
+  // AudioParameters from the constructor.
+  const AudioParameters params_;
 
   // Set to true when stream is successfully opened.
   bool opened_;
@@ -239,17 +251,8 @@ class MEDIA_EXPORT WASAPIAudioOutputStream :
   // The performance counter read during the last call to RenderAudioFromSource
   UINT64 last_qpc_position_ = 0;
 
-  // The number of glitches detected while this stream was active.
-  int num_glitches_detected_ = 0;
-
-  // The approximate amount of audio lost due to glitches.
-  base::TimeDelta cumulative_audio_lost_;
-
-  // The largest single glitch recorded.
-  base::TimeDelta largest_glitch_;
-
   // Pointer to the client that will deliver audio samples to be played out.
-  AudioSourceCallback* source_;
+  raw_ptr<AudioSourceCallback> source_;
 
   // Callback to send log messages to registered clients.
   AudioManager::LogCallback log_callback_;
@@ -281,8 +284,6 @@ class MEDIA_EXPORT WASAPIAudioOutputStream :
   // thread, it's possible to end up in a state where that task would execute
   // after destruction of this class -- so use a WeakPtr to cancel safely.
   base::WeakPtrFactory<WASAPIAudioOutputStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WASAPIAudioOutputStream);
 };
 
 }  // namespace media

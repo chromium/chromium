@@ -35,7 +35,6 @@
 // This file defines macros for working with LeakSanitizer, allowing memory
 // and allocations to be registered as exempted from LSan consideration.
 
-#include "base/macros.h"
 #if defined(LEAK_SANITIZER)
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
@@ -47,10 +46,10 @@ namespace WTF {
 class LeakSanitizerDisabler {
  public:
   LeakSanitizerDisabler() { __lsan_disable(); }
+  LeakSanitizerDisabler(const LeakSanitizerDisabler&) = delete;
+  LeakSanitizerDisabler& operator=(const LeakSanitizerDisabler&) = delete;
 
   ~LeakSanitizerDisabler() { __lsan_enable(); }
-
-  DISALLOW_COPY_AND_ASSIGN(LeakSanitizerDisabler);
 };
 
 // WTF_INTERNAL_LEAK_SANITIZER_DISABLED_SCOPE: all allocations made in the

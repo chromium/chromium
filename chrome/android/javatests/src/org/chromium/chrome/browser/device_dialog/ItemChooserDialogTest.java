@@ -1,9 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.device_dialog;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
@@ -36,12 +37,16 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.components.permissions.DeviceItemAdapter;
+import org.chromium.components.permissions.ItemChooserDialog;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
  * Tests for the ItemChooserDialog class.
+ *
+ * TODO(crbug.com/1222669): Componentize this test.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -94,9 +99,9 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
     }
 
     private Drawable getNewTestDrawable() {
-        Drawable drawable =
-                VectorDrawableCompat.create(sActivityTestRule.getActivity().getResources(),
-                        R.drawable.ic_bluetooth_connected, null);
+        final Activity activity = sActivityTestRule.getActivity();
+        Drawable drawable = VectorDrawableCompat.create(
+                activity.getResources(), R.drawable.ic_bluetooth_connected, activity.getTheme());
         // Calling mutate() on a Drawable should typically create a new ConstantState
         // for that Drawable. Ensure the new drawable doesn't share a state with other
         // drwables.
@@ -111,15 +116,14 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
         SpannableString statusIdleNoneFound = new SpannableString("statusIdleNoneFound");
         SpannableString statusIdleSomeFound = new SpannableString("statusIdleSomeFound");
         String positiveButton = new String("positiveButton");
-        final ItemChooserDialog.ItemChooserLabels labels =
+        ItemChooserDialog.ItemChooserLabels labels =
                 new ItemChooserDialog.ItemChooserLabels(title, searching, noneFound, statusActive,
                         statusIdleNoneFound, statusIdleSomeFound, positiveButton);
-        ItemChooserDialog dialog = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            ItemChooserDialog dialog1 = new ItemChooserDialog(
-                    sActivityTestRule.getActivity(), ItemChooserDialogTest.this, labels);
-            return dialog1;
+        Activity activity = sActivityTestRule.getActivity();
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new ItemChooserDialog(
+                    activity, activity.getWindow(), ItemChooserDialogTest.this, labels);
         });
-        return dialog;
     }
 
     private void selectItem(Dialog dialog, int position, String expectedItemId,

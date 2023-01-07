@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <initializer_list>
 #include <string>
 
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 
 class GURL;
 
@@ -25,8 +25,12 @@ struct IconResourceInfo {
 // key.
 void CreateIconInfoForSystemWebApp(
     const GURL& app_url,
-    const std::initializer_list<IconResourceInfo>& icon_infos,
-    WebApplicationInfo& web_app);
+    const std::initializer_list<IconResourceInfo>& manifest_icons,
+    WebAppInstallInfo& web_app);
+
+// Get correct ChromeOS background color based on if dark mode is requested and
+// if kSemanticColorsDebugOverride is enabled.
+SkColor GetDefaultBackgroundColor(const bool use_dark_mode);
 
 }  // namespace web_app
 

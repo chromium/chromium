@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,7 +90,7 @@ class ServiceWorkerContextObserver {
   virtual void OnControlleeNavigationCommitted(
       int64_t version_id,
       const std::string& client_uuid,
-      GlobalFrameRoutingId render_frame_host_id) {}
+      GlobalRenderFrameHostId render_frame_host_id) {}
 
   // Called when an error is reported for the service worker with id
   // |version_id|.

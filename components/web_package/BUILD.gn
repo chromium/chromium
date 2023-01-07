@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,6 +6,20 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 
 static_library("web_package") {
   sources = [
+    "input_reader.cc",
+    "input_reader.h",
+    "shared_file.cc",
+    "shared_file.h",
+    "signed_web_bundles/ed25519_public_key.cc",
+    "signed_web_bundles/ed25519_public_key.h",
+    "signed_web_bundles/integrity_block_parser.cc",
+    "signed_web_bundles/integrity_block_parser.h",
+    "signed_web_bundles/signed_web_bundle_id.cc",
+    "signed_web_bundles/signed_web_bundle_id.h",
+    "signed_web_bundles/signed_web_bundle_utils.cc",
+    "signed_web_bundles/signed_web_bundle_utils.h",
+    "web_bundle_builder.cc",
+    "web_bundle_builder.h",
     "web_bundle_parser.cc",
     "web_bundle_parser.h",
     "web_bundle_parser_factory.cc",
@@ -16,6 +30,7 @@ static_library("web_package") {
 
   deps = [
     "//base",
+    "//components/base32",
     "//components/cbor",
     "//mojo/public/cpp/bindings",
     "//net",
@@ -25,31 +40,22 @@ static_library("web_package") {
   public_deps = [ "//components/web_package/mojom" ]
 }
 
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "test_support/web_bundle_builder.cc",
-    "test_support/web_bundle_builder.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/cbor",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "signed_web_bundles/ed25519_public_key_unittest.cc",
+    "signed_web_bundles/signed_web_bundle_id_unittest.cc",
+    "signed_web_bundles/signed_web_bundle_utils_unittest.cc",
+    "web_bundle_builder_unittest.cc",
     "web_bundle_parser_factory_unittest.cc",
     "web_bundle_parser_unittest.cc",
     "web_bundle_utils_unittest.cc",
   ]
   deps = [
-    ":test_support",
     ":web_package",
     "//base/test:test_support",
     "//components/cbor",
+    "//components/web_package/test_support",
     "//testing/gtest",
   ]
 }

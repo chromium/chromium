@@ -1,0 +1,2 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++SeekBar text:"5" clickable RangeInfo:[current=5.0, min=1.0, max=10.0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS, SET_PROGRESS] bundle:[chromeRole="slider", roleDescription="slider"]

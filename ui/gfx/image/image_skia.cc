@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,23 +6,25 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <memory>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/switches.h"
 
 namespace gfx {
@@ -88,6 +90,9 @@ class ImageSkiaStorage : public base::RefCountedThreadSafe<ImageSkiaStorage> {
                    const gfx::Size& size);
   ImageSkiaStorage(std::unique_ptr<ImageSkiaSource> source, float scale);
 
+  ImageSkiaStorage(const ImageSkiaStorage&) = delete;
+  ImageSkiaStorage& operator=(const ImageSkiaStorage&) = delete;
+
   bool has_source() const { return source_ != nullptr; }
   std::vector<gfx::ImageSkiaRep>& image_reps() { return image_reps_; }
   const gfx::Size& size() const { return size_; }
@@ -150,8 +155,6 @@ class ImageSkiaStorage : public base::RefCountedThreadSafe<ImageSkiaStorage> {
   // This isn't using SEQUENCE_CHECKER() macros because we use the sequence
   // checker outside of DCHECKs to make branching decisions.
   base::SequenceChecker sequence_checker_;  // nocheck
-
-  DISALLOW_COPY_AND_ASSIGN(ImageSkiaStorage);
 };
 
 ImageSkiaStorage::ImageSkiaStorage(std::unique_ptr<ImageSkiaSource> source,
@@ -262,10 +265,7 @@ std::vector<ImageSkiaRep>::const_iterator ImageSkiaStorage::FindRepresentation(
 
     // If the source returned the new image, store it.
     if (!image.is_null() &&
-        std::find_if(image_reps_.begin(), image_reps_.end(),
-                     [&image](const ImageSkiaRep& rep) {
-                       return rep.scale() == image.scale();
-                     }) == image_reps_.end()) {
+        !base::Contains(image_reps_, image.scale(), &ImageSkiaRep::scale)) {
       mutable_this->image_reps_.push_back(image);
     }
 
@@ -527,7 +527,7 @@ const SkBitmap& ImageSkia::GetBitmap() const {
 
   // TODO(oshima): This made a few tests flaky on Windows.
   // Fix the root cause and re-enable this. crbug.com/145623.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   CHECK(CanRead());
 #endif
 

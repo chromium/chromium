@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-
+<!-- Copyright 2019 The Chromium Authors
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file.
  -->
@@ -18,14 +17,12 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
-    <uses-permission android:name="android.permission.READ_SYNC_SETTINGS"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS"/>
 
     <application android:name="ChromeBrowserTestsApplication"
             android:label="ChromeBrowserTests"
@@ -35,6 +32,7 @@
                   android:theme="@style/Theme.Chromium.TabbedMode"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
                   android:hardwareAccelerated="true"
+                  android:exported="true"
                   android:process=":test_process">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -86,22 +84,19 @@
           </intent-filter>
         </activity>
 
-        <activity
-          android:name="org.chromium.chrome.browser.sharing.shared_clipboard.SharedClipboardShareActivity"
-          android:icon="@drawable/ic_devices_48dp"
-          android:label="@string/shared_clipboard_share_activity_title"
-          android:enabled="false"
-          android:excludeFromRecents="true"
-          android:exported="true"
-          android:noHistory="true"
-          android:theme="@style/Theme.Chromium.Activity.TranslucentNoAnimations"
-          android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize" >
-          <intent-filter>
-              <action android:name="android.intent.action.SEND" />
-              <category android:name="android.intent.category.DEFAULT" />
-              <data android:mimeType="text/plain" />
-          </intent-filter>
-        </activity>
+        <receiver android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderSearch"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="org.chromium.chrome.browser.quickactionsearchwidget.QuickActionSearchWidgetProvider$QuickActionSearchWidgetProviderDino"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+        </receiver>
 
         <service android:name="org.chromium.components.background_task_scheduler.BackgroundTaskJobService"
                  android:exported="false"

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ namespace content {
 struct CONTENT_EXPORT NavigationHandleTiming {
   NavigationHandleTiming();
   NavigationHandleTiming(const NavigationHandleTiming& timing);
+  NavigationHandleTiming& operator=(const NavigationHandleTiming& timing);
 
   // The time the first HTTP request was sent. This is filled with
   // net::LoadTimingInfo::send_start during navigation.
@@ -87,11 +88,7 @@ struct CONTENT_EXPORT NavigationHandleTiming {
   // The time the navigation commit message was sent to a renderer process.
   base::TimeTicks navigation_commit_sent_time;
 
-  // The time the headers of the first HTTP response whose status code is
-  // 103 was received for the first/final request. This is filled with
-  // net::LoadTimingInfo::first_early_hints_time during navigation.
-  // These must only be used for 103 Early Hints experiment
-  // (https://crbug.com/1093693).
+  // TODO(crbug.com/1253231): Remove the following timing.
   base::TimeTicks early_hints_for_first_request_time;
   base::TimeTicks early_hints_for_final_request_time;
 };

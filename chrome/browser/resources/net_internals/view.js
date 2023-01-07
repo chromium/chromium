@@ -1,8 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 import {setNodeDisplay, setNodePosition} from './util.js';
 
 /**
@@ -109,7 +109,7 @@ export class DivView extends View {
     // Initialize the default values to those of the DIV.
     this.width_ = this.node_.offsetWidth;
     this.height_ = this.node_.offsetHeight;
-    this.isVisible_ = this.node_.style.display != 'none';
+    this.isVisible_ = this.node_.style.display !== 'none';
   }
 
   setGeometry(left, top, width, height) {

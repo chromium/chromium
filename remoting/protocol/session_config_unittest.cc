@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 void TestGetFinalConfig(std::unique_ptr<SessionConfig> config) {
   std::unique_ptr<CandidateSessionConfig> candidate_config =
@@ -107,5 +106,4 @@ TEST(SessionConfig, IsSupported) {
   EXPECT_TRUE(hybrid_candidate_config->IsSupported(*webrtc_config));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

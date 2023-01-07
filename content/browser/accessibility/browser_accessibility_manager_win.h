@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,14 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/common/content_export.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
 namespace content {
+
 class BrowserAccessibilityWin;
+class WebAXPlatformTreeManagerDelegate;
 
 using UiaRaiseActiveTextPositionChangedEventFunction =
     HRESULT(WINAPI*)(IRawElementProviderSimple*, ITextRangeProvider*);
@@ -27,7 +29,12 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
     : public BrowserAccessibilityManager {
  public:
   BrowserAccessibilityManagerWin(const ui::AXTreeUpdate& initial_tree,
-                                 BrowserAccessibilityDelegate* delegate);
+                                 WebAXPlatformTreeManagerDelegate* delegate);
+
+  BrowserAccessibilityManagerWin(const BrowserAccessibilityManagerWin&) =
+      delete;
+  BrowserAccessibilityManagerWin& operator=(
+      const BrowserAccessibilityManagerWin&) = delete;
 
   ~BrowserAccessibilityManagerWin() override;
 
@@ -42,13 +49,13 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   BrowserAccessibility* GetFocus() const override;
   bool IsIgnoredChangedNode(const BrowserAccessibility* node) const;
   bool CanFireEvents() const override;
-  gfx::Rect GetViewBoundsInScreenCoordinates() const override;
 
-  void FireFocusEvent(BrowserAccessibility* node) override;
+  void FireFocusEvent(ui::AXNode* node) override;
   void FireBlinkEvent(ax::mojom::Event event_type,
-                      BrowserAccessibility* node) override;
+                      BrowserAccessibility* node,
+                      int action_request_id) override;
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
-                          BrowserAccessibility* node) override;
+                          const ui::AXNode* node) override;
 
   void FireWinAccessibilityEvent(LONG win_event, BrowserAccessibility* node);
   void FireUiaAccessibilityEvent(LONG uia_event, BrowserAccessibility* node);
@@ -75,7 +82,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
  protected:
   // AXTreeObserver methods.
   void OnSubtreeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
-  void OnNodeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
   void OnAtomicUpdateFinished(
       ui::AXTree* tree,
       bool root_changed,
@@ -127,12 +133,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   // Give BrowserAccessibilityManager::Create access to our constructor.
   friend class BrowserAccessibilityManager;
 
-  // Keep track of if we got a "load complete" event but were unable to fire
-  // it because of no HWND, because otherwise JAWS can get very confused.
-  // TODO(dmazzoni): a better fix would be to always have an HWND.
-  // http://crbug.com/521877
-  bool load_complete_pending_;
-
   // Since there could be multiple aria property changes on a node and we only
   // want to fire UIA_AriaPropertiesPropertyId once for that node, we use the
   // set here to keep track of the unique nodes that had aria property changes,
@@ -141,7 +141,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
 
   // Since there could be duplicate selection changed events on a node raised
   // from both EventType::DOCUMENT_SELECTION_CHANGED and
-  // EventType::SELECTION_IN_TEXT_FIELD_CHANGED, we keep track of the unique
+  // EventType::TEXT_SELECTION_CHANGED, we keep track of the unique
   // nodes so we only fire the event once for every node.
   std::set<BrowserAccessibility*> selection_changed_nodes_;
 
@@ -161,8 +161,6 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   // the map is cleared in |FinalizeAccessibilityEvents|.
   SelectionEventsMap ia2_selection_events_;
   SelectionEventsMap uia_selection_events_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerWin);
 };
 
 }  // namespace content

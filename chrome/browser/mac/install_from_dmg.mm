@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,12 +25,11 @@
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
+#include "base/mac/mac_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_authorizationref.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -57,19 +56,18 @@
 namespace {
 
 // Given an io_service_t (expected to be of class IOMedia), walks the ancestor
-// chain, returning the closest ancestor that implements class IOHDIXHDDrive,
-// if any. If no such ancestor is found, returns NULL. Following the "copy"
-// rule, the caller assumes ownership of the returned value.
+// chain, returning the closest ancestor that implements the specified class,
+// if any. If no such ancestor is found, returns IO_OBJECT_NULL. Following
+// the "copy" rule, the caller assumes ownership of the returned value.
 //
-// Note that this looks for a class that inherits from IOHDIXHDDrive, but it
-// will not likely find a concrete IOHDIXHDDrive. It will be
+// Note that this looks for the class by conformance, not equality. The reason
+// for that is that for IOHDIXHDDrive the actual classes found will be
 // IOHDIXHDDriveOutKernel for disk images mounted "out-of-kernel" or
-// IOHDIXHDDriveInKernel for disk images mounted "in-kernel." Out-of-kernel is
-// the default as of Mac OS X 10.5. See the documentation for "hdiutil attach
-// -kernel" for more information.
-io_service_t CopyHDIXDriveServiceForMedia(io_service_t media) {
-  const char disk_image_class[] = "IOHDIXHDDrive";
-
+// IOHDIXHDDriveInKernel for disk images mounted "in-kernel." (See the
+// documentation for "hdiutil attach -kernel" for more information on the
+// distinction.)
+io_service_t CopyDiskImageAncestorForMedia(const char* disk_image_class,
+                                           io_service_t media) {
   // This is highly unlikely. media as passed in is expected to be of class
   // IOMedia. Since the media service's entire ancestor chain will be checked,
   // though, check it as well.
@@ -79,12 +77,9 @@ io_service_t CopyHDIXDriveServiceForMedia(io_service_t media) {
   }
 
   io_iterator_t iterator_ref;
-  kern_return_t kr =
-      IORegistryEntryCreateIterator(media,
-                                    kIOServicePlane,
-                                    kIORegistryIterateRecursively |
-                                        kIORegistryIterateParents,
-                                    &iterator_ref);
+  kern_return_t kr = IORegistryEntryCreateIterator(
+      media, kIOServicePlane,
+      kIORegistryIterateRecursively | kIORegistryIterateParents, &iterator_ref);
   if (kr != KERN_SUCCESS) {
     MACH_LOG(ERROR, kr) << "IORegistryEntryCreateIterator";
     return IO_OBJECT_NULL;
@@ -99,8 +94,7 @@ io_service_t CopyHDIXDriveServiceForMedia(io_service_t media) {
   // the image-path property.
   for (base::mac::ScopedIOObject<io_service_t> ancestor(
            IOIteratorNext(iterator));
-       ancestor;
-       ancestor.reset(IOIteratorNext(iterator))) {
+       ancestor; ancestor.reset(IOIteratorNext(iterator))) {
     if (IOObjectConformsTo(ancestor, disk_image_class)) {
       return ancestor.release();
     }
@@ -114,51 +108,106 @@ io_service_t CopyHDIXDriveServiceForMedia(io_service_t media) {
 // that service is on a disk image. If it is, returns true. If image_path is
 // present, it will be set to the pathname of the disk image file, encoded in
 // filesystem encoding.
+//
+// There are two SPI ways to do this: One is in the DiskImages private
+// framework: DIHLCopyImageForVolume(). One is a set of keys in
+// CFURLPriv: _kCFURLVolumeIsDiskImageKey and _kCFURLDiskImageBackingURLKey.
+// However, because downstream users want to use Chromium as a base for code in
+// the MAS, neither are used here. The request for a real API is FB9139935.
 bool MediaResidesOnDiskImage(io_service_t media, std::string* image_path) {
   if (image_path) {
     image_path->clear();
   }
 
-  base::mac::ScopedIOObject<io_service_t> hdix_drive(
-      CopyHDIXDriveServiceForMedia(media));
-  if (!hdix_drive) {
-    return false;
-  }
+  if (base::mac::IsAtLeastOS12()) {
+    // Starting with macOS 12 "Monterey", the IOMedia has an ancestor of
+    // type "AppleDiskImageDevice" that has a property "DiskImageURL" of string
+    // type.
 
-  if (image_path) {
-    base::ScopedCFTypeRef<CFTypeRef> image_path_cftyperef(
-        IORegistryEntryCreateCFProperty(
-            hdix_drive, CFSTR("image-path"), NULL, 0));
-    if (!image_path_cftyperef) {
-      LOG(ERROR) << "IORegistryEntryCreateCFProperty";
-      return true;
-    }
-    if (CFGetTypeID(image_path_cftyperef) != CFDataGetTypeID()) {
-      base::ScopedCFTypeRef<CFStringRef> observed_type_cf(
-          CFCopyTypeIDDescription(CFGetTypeID(image_path_cftyperef)));
-      std::string observed_type;
-      if (observed_type_cf) {
-        observed_type.assign(", observed ");
-        observed_type.append(base::SysCFStringRefToUTF8(observed_type_cf));
+    base::mac::ScopedIOObject<io_service_t> di_device(
+        CopyDiskImageAncestorForMedia("AppleDiskImageDevice", media));
+    if (di_device) {
+      if (image_path) {
+        base::ScopedCFTypeRef<CFTypeRef> disk_image_url_cftyperef(
+            IORegistryEntryCreateCFProperty(di_device, CFSTR("DiskImageURL"),
+                                            nullptr, 0));
+        if (!disk_image_url_cftyperef) {
+          LOG(ERROR)
+              << "IORegistryEntryCreateCFProperty failed for DiskImageURL";
+          return true;
+        }
+
+        CFStringRef disk_image_url_string =
+            base::mac::CFCast<CFStringRef>(disk_image_url_cftyperef.get());
+        if (!disk_image_url_string) {
+          base::ScopedCFTypeRef<CFStringRef> observed_type_cf(
+              CFCopyTypeIDDescription(CFGetTypeID(disk_image_url_cftyperef)));
+          LOG(ERROR) << "DiskImageURL: expected CFString, observed "
+                     << base::SysCFStringRefToUTF8(observed_type_cf);
+          return true;
+        }
+
+        base::ScopedCFTypeRef<CFURLRef> disk_image_url(CFURLCreateWithString(
+            kCFAllocatorDefault, disk_image_url_string, nullptr));
+        if (!disk_image_url) {
+          LOG(ERROR) << "CFURLCreateWithString failed";
+          return true;
+        }
+
+        base::ScopedCFTypeRef<CFStringRef> disk_image_path(
+            CFURLCopyFileSystemPath(disk_image_url, kCFURLPOSIXPathStyle));
+        if (!disk_image_path) {
+          LOG(ERROR) << "CFURLCopyFileSystemPath failed";
+          return true;
+        }
+
+        *image_path = base::SysCFStringRefToUTF8(disk_image_path);
       }
-      LOG(ERROR) << "image-path: expected CFData, observed " << observed_type;
-      return true;
-    }
 
-    CFDataRef image_path_data = static_cast<CFDataRef>(
-        image_path_cftyperef.get());
-    CFIndex length = CFDataGetLength(image_path_data);
-    if (length <= 0) {
-      LOG(ERROR) << "image_path_data is unexpectedly empty";
       return true;
     }
-    char* image_path_c = base::WriteInto(image_path, length + 1);
-    CFDataGetBytes(image_path_data,
-                   CFRangeMake(0, length),
-                   reinterpret_cast<UInt8*>(image_path_c));
+  } else {
+    // From the mists of time through macOS 11 "Big Sur", the IOMedia has an
+    // ancestor of type "IOHDIXHDDrive" that has a property "image-path" of data
+    // type.
+
+    base::mac::ScopedIOObject<io_service_t> hdix_drive(
+        CopyDiskImageAncestorForMedia("IOHDIXHDDrive", media));
+    if (hdix_drive) {
+      if (image_path) {
+        base::ScopedCFTypeRef<CFTypeRef> image_path_cftyperef(
+            IORegistryEntryCreateCFProperty(hdix_drive, CFSTR("image-path"),
+                                            nullptr, 0));
+        if (!image_path_cftyperef) {
+          LOG(ERROR) << "IORegistryEntryCreateCFProperty failed for image-path";
+          return true;
+        }
+
+        CFDataRef image_path_data =
+            base::mac::CFCast<CFDataRef>(image_path_cftyperef.get());
+        if (!image_path_data) {
+          base::ScopedCFTypeRef<CFStringRef> observed_type_cf(
+              CFCopyTypeIDDescription(CFGetTypeID(image_path_cftyperef)));
+          LOG(ERROR) << "image-path: expected CFData, observed "
+                     << base::SysCFStringRefToUTF8(observed_type_cf);
+          return true;
+        }
+
+        CFIndex length = CFDataGetLength(image_path_data);
+        if (length <= 0) {
+          LOG(ERROR) << "image_path_data is unexpectedly empty";
+          return true;
+        }
+        char* image_path_c = base::WriteInto(image_path, length + 1);
+        CFDataGetBytes(image_path_data, CFRangeMake(0, length),
+                       reinterpret_cast<UInt8*>(image_path_c));
+      }
+
+      return true;
+    }
   }
 
-  return true;
+  return false;
 }
 
 // Returns true if |path| is located on a read-only filesystem of a disk
@@ -184,7 +233,7 @@ DiskImageStatus IsPathOnReadOnlyDiskImage(
   }
 
   const char dev_root[] = "/dev/";
-  const int dev_root_length = base::size(dev_root) - 1;
+  const int dev_root_length = std::size(dev_root) - 1;
   if (strncmp(statfs_buf.f_mntfromname, dev_root, dev_root_length) != 0) {
     // Not rooted at dev_root, no BSD name to search on.
     return DiskImageStatusFalse;
@@ -250,7 +299,7 @@ bool ShouldInstallDialog() {
 
   NSAlert* alert = [[[NSAlert alloc] init] autorelease];
 
-  [alert setAlertStyle:NSInformationalAlertStyle];
+  [alert setAlertStyle:NSAlertStyleInformational];
   [alert setMessageText:title];
   [alert setInformativeText:prompt];
   [alert addButtonWithTitle:yes];
@@ -388,7 +437,7 @@ void ShowErrorDialog() {
 
   NSAlert* alert = [[[NSAlert alloc] init] autorelease];
 
-  [alert setAlertStyle:NSWarningAlertStyle];
+  [alert setAlertStyle:NSAlertStyleWarning];
   [alert setMessageText:title];
   [alert setInformativeText:error];
   [alert addButtonWithTitle:ok];
@@ -497,6 +546,11 @@ class ScopedDASessionScheduleWithRunLoop {
     DASessionScheduleWithRunLoop(session_, run_loop_, run_loop_mode_);
   }
 
+  ScopedDASessionScheduleWithRunLoop(
+      const ScopedDASessionScheduleWithRunLoop&) = delete;
+  ScopedDASessionScheduleWithRunLoop& operator=(
+      const ScopedDASessionScheduleWithRunLoop&) = delete;
+
   ~ScopedDASessionScheduleWithRunLoop() {
     DASessionUnscheduleFromRunLoop(session_, run_loop_, run_loop_mode_);
   }
@@ -505,8 +559,6 @@ class ScopedDASessionScheduleWithRunLoop {
   DASessionRef session_;
   CFRunLoopRef run_loop_;
   CFStringRef run_loop_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedDASessionScheduleWithRunLoop);
 };
 
 // A small structure used to ferry data between SynchronousDAOperation and
@@ -519,13 +571,14 @@ struct SynchronousDACallbackData {
         can_log(true) {
   }
 
+  SynchronousDACallbackData(const SynchronousDACallbackData&) = delete;
+  SynchronousDACallbackData& operator=(const SynchronousDACallbackData&) =
+      delete;
+
   base::ScopedCFTypeRef<DADissenterRef> dissenter;
   bool callback_called;
   bool run_loop_running;
   bool can_log;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SynchronousDACallbackData);
 };
 
 // The callback target for SynchronousDAOperation. Set the fields in

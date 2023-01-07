@@ -1,9 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_CONTINUOUS_SEARCH_RENDERER_SEARCH_RESULT_EXTRACTOR_IMPL_H_
 #define COMPONENTS_CONTINUOUS_SEARCH_RENDERER_SEARCH_RESULT_EXTRACTOR_IMPL_H_
+
+#include <vector>
 
 #include "components/continuous_search/common/public/mojom/continuous_search.mojom.h"
 #include "content/public/renderer/render_frame.h"
@@ -26,6 +28,7 @@ class SearchResultExtractorImpl : public content::RenderFrameObserver,
       delete;
 
   void ExtractCurrentSearchResults(
+      const std::vector<mojom::ResultType>& result_types,
       ExtractCurrentSearchResultsCallback callback) override;
 
  private:

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,8 @@
 
 namespace ui {
 
+// When adding a new KeyboardCode, be sure to also update the associated mojom
+// file at ash/public/mojom/accelerator_keys.mojom.
 enum KeyboardCode {
   VKEY_CANCEL = 0x03,
   VKEY_BACK = 0x08,
@@ -221,8 +223,10 @@ enum KeyboardCode {
   VKEY_ASSISTANT = 0x99,
   VKEY_SETTINGS = 0x9A,
   VKEY_PRIVACY_SCREEN_TOGGLE = 0x9B,
+  VKEY_MICROPHONE_MUTE_TOGGLE = 0x9F,
   VKEY_BRIGHTNESS_DOWN = 0xD8,
   VKEY_BRIGHTNESS_UP = 0xD9,
+  VKEY_KBD_BACKLIGHT_TOGGLE = 0xB8,
   VKEY_KBD_BRIGHTNESS_DOWN = 0xDA,
   VKEY_KBD_BRIGHTNESS_UP = 0xE8,
 
@@ -238,6 +242,17 @@ enum KeyboardCode {
   // represent them.
   VKEY_MEDIA_PLAY = 0xE9,
   VKEY_MEDIA_PAUSE = 0xEA,
+
+  // Application keys.
+  VKEY_NEW = 0xEB,
+  VKEY_CLOSE = 0xEC,
+
+  // Emoji Picker.
+  VKEY_EMOJI_PICKER = 0xED,
+  // Start dictation.
+  VKEY_DICTATE = 0xEE,
+  // All applications - this also triggers the launcher in Chrome OS.
+  VKEY_ALL_APPLICATIONS = 0xEF,
 };
 
 }  // namespace ui

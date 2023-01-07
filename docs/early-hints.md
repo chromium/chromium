@@ -2,77 +2,94 @@
 
 Contact: early-hints-experiment@chromium.org
 
-[103 Early Hints](https://httpwg.org/specs/rfc8297.html) is the new HTTP status
-code used for preloading subresources earlier. In general, browsers cannot
-preload subresources until the main response is served, as resources to be
-preloaded are listed on headers or `<meta>` in the main response. Early Hints
-will enable browsers to start preloading before the main response is served.
-In addition, this can be used with other
-[Resource Hints](https://w3c.github.io/resource-hints/) APIs like preconnect.
+As of version 95, Chrome experimentally supports
+[Early Hints](https://datatracker.ietf.org/doc/html/rfc8297).
+Early Hints enable browsers to preload subresources or preconnect to servers
+before the main response is served. See the
+[explainer](https://github.com/bashi/early-hints-explainer/blob/main/explainer.md)
+how it works.
 
-As of version 87, Chrome doesn't support Early Hints yet, but is going to run an
-open experiment to evaluate the effectiveness of Early Hints. This does NOT give
-you the real benefit yet, but will help us and the community to quantify the
-potential benefit of the feature.
+Currently Chrome is running A/B testing in the field to evaluate the performance
+impact of Early Hints. Chrome also provides some ways to opt-in Early Hints for
+web developers who want to try the feature. This document describes the status
+of the current implementation and how to enable Early Hints support.
 
-## How To Contribute to the Measurement
+## What’s supported
 
-Chrome landed code to record the time between when the hints are received to
-when the real navigation responses are received as of version 85, and this will
-help us learn how much benefit this may bring.
+Chrome supports [preload](https://w3c.github.io/preload/) and
+[preconnect](https://w3c.github.io/resource-hints/#dfn-preconnect) in
+Early Hints for top-level frame navigation.
 
-Note that this timing information will be recorded only for the users who
-opted-in to help Chrome gather usage statistics. See the
-[Google Chrome Privacy Whitepaper](https://www.google.com/chrome/privacy/whitepaper.html#usagestats)
-for details.
+## What’s not supported
 
-In order to gather this data, we will need sites to start sending Early Hints
-status code (103), so that Chrome can record the timing information for the
-hints for the navigation.
+To reduce security and privacy implications, the HTML and Fetch living standards
+have some restrictions on when Early Hints can be handled. Chrome ignores Early
+Hints sent in the following situations to comply these specifications.
 
-Note that not all browsers may handle Early Hints status code gracefully. We are
-collaborating with Fastly on the timing to run this measurement, and they
-collect breakage reports here: https://early-hints.fastlylabs.com/.
+* Early Hints sent on subresource requests
+* Early Hints sent on iframe navigation
+* Early Hints sent on HTTP/1.1 or earlier
 
-Once enough data is collected, we plan to publish our conclusions and the
-learnings from the experiments with the aggregated stats publicly. Upon requests
-we may also share the per-site metrics with the sites who have participated.
+Chrome ignores the second and following Early Hints responses. Chrome only
+handles the first Early Hints response so that Chrome doesn't apply inconsistent
+security policies (e.g. Content-Security-Policy).
 
-## Metrics
+Chrome doesn’t handle
+[dns-prefetch](https://w3c.github.io/resource-hints/#dfn-dns-prefetch) and
+[prefetch](https://w3c.github.io/resource-hints/#dfn-prefetch) in Early Hints
+yet. We consider supporting them in the future.
 
-This section is mainly written for Chromium developers.
+## Activation
 
-Chrome will record the following metrics. These intervals indicate how much
-earlier we could start preloading with Early Hints. For example, we could
-calculate the ratio of "the interval between request start and response start"
-to "the interval between request start and Early Hints" to see the ratio of
-speed-up.
+Early Hints can be enabled by a command line flag, or via
+[Origin Trial](https://developer.chrome.com/blog/origin-trials/).
 
-### UMA
+### Using command line flag
 
-These are recorded under PageLoad.Experimental.EarlyHints UMA event.
+Passing the `--enable-features=EarlyHintsPreloadForNavigation` command line flag
+to Chrome enables Early Hints support.
 
-- **FirstRequestStartToEarlyHints**: The interval between when the first HTTP
-  request is sent and when the headers of the Early Hints response is received
-  in reply to the request for the main resource of a main frame navigation.
-- **FinalRequestStartToEarlyHints**: The interval between when the final HTTP
-  request is sent and when the headers of the Early Hints response is received
-  in reply to the request for the main resource of a main frame navigation.
-- **EarlyHintsToFinalResponseStart**: The interval between when the headers of
-  the Early Hints response is received in reply to the final HTTP request and
-  when the headers of the final HTTP response is received for the main resource
-  of a main frame navigation.
+### Using Origin Trial
 
-### UKM
+**Note**: As of version 98 the origin trial has expired. The Chrome networking
+team is preparing to ship the feature and the origin trial may be available
+again in the near future until it's fully shipped.
 
-These are recorded under the NavigationTiming UKM event.
+You can opt any page on your origin into Early Hints by
+[requesting a token for your origin](https://developer.chrome.com/origintrials/#/view_trial/2856408063659737089).
+Include the token in both Early Hints and the final response so that Chrome can
+recognize your pages opted in Early Hints.
 
-- **EarlyHintsForFirstRequest**: The time relative to navigation start that the
-  headers of the Early Hints response are received in reply to the first HTTP
-  request for the main resource of a main frame navigation.
-- **EarlyHintsForFinalRequest**: The time relative to navigation start that the
-  headers of the Early Hints response are received in reply to the final HTTP
-  request for the main resource of a main frame navigation.
-- **FinalResponseStart**: The time relative to navigation start that the headers
-  of the final HTTP response are received for the main resource of a main frame
-  navigation.
+```
+HTTP/1.1 103 Early Hints
+Origin-Trial: **your token**
+Link: </style.css>; rel="preload"; as="style"
+Link: <https://cdn.test>; rel="preconnect"
+
+HTTP/1.1 200 OK
+Origin-Trial: **your token**
+Link: </style.css>; rel="preload"; as="style"
+Link: <https://cdn.test>; rel="preconnect"
+Content-Type: text/html; charset=utf-8
+
+<!DOCTYPE html>
+...
+```
+
+`<meta http-equiv="origin-trial" content="**your token**">` also works for the
+final response but doesn’t work for Early Hints since Early Hints cannot convey
+a response body.
+
+### Checking Early Hints preload is working
+
+If a resource is preloaded by Early Hints, the corresponding
+[PerformanceResourceTiming](https://w3c.github.io/resource-timing/#sec-performanceresourcetiming)
+object reports `initiatorType` is "early-hints".
+```
+performance.getEntriesByName('https://a.test/style.css')[0].initiatorType
+// => 'early-hints'
+```
+
+## Resources
+
+* [Fastly's test page](https://early-hints.fastlylabs.com/)

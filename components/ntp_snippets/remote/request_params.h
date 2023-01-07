@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "components/ntp_snippets/category.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ntp_snippets {
 
@@ -37,7 +37,7 @@ struct RequestParams {
   bool interactive_request = false;
 
   // If set, only return results for this category.
-  base::Optional<Category> exclusive_category;
+  absl::optional<Category> exclusive_category;
 };
 
 // Callbacks for JSON parsing to allow injecting platform-dependent code.

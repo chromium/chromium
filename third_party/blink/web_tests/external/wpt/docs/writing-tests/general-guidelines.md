@@ -74,9 +74,9 @@ Some test types support other formats:
   features])
 - [WebDriver specification tests](wdspec) are expressed as Python files
 
-The best way to determine how to format a new test is to look at how similar
-tests have been formatted. You can also ask for advice in [the project's IRC
-room][IRC].
+The best way to determine how to format a new test is to look at how
+similar tests have been formatted. You can also ask for advice in [the
+project's matrix channel][matrix].
 
 
 ### Character Encoding
@@ -115,7 +115,8 @@ no [parse errors](https://validator.nu).
 
 This is not, however, to discourage testing of edge cases or
 interactions between multiple features; such tests are an essential
-part of ensuring interoperability of the web platform.
+part of ensuring interoperability of the web platform. When possible, use the
+canonical support libraries provided by features; for more information, see the documentation on [testing interactions between features][interacting-features].
 
 Tests should pass when the feature under test exposes the expected behavior,
 and they should fail when the feature under test is not implemented or is
@@ -158,12 +159,12 @@ should be used.
 
 ### Be Self-Contained
 
-Tests must not depend on external network resources, including
-w3c-test.org. When these tests are run on CI systems they are
-typically configured with access to external resources disabled, so
-tests that try to access them will fail. Where tests want to use
-multiple hosts this is possible through a known set of subdomains and
-the [text substitution features of wptserve](server-features).
+Tests must not depend on external network resources. When these tests
+are run on CI systems, they are typically configured with access to
+external resources disabled, so tests that try to access them will
+fail. Where tests want to use multiple hosts, this is possible through
+a known set of subdomains and the [text substitution features of
+wptserve](server-features).
 
 
 ### Be Self-Describing
@@ -216,11 +217,12 @@ for CSS have some additional requirements for:
 [server features]: server-features
 [assumptions]: assumptions
 [ahem]: ahem
-[IRC]: irc://irc.w3.org:6667/testing
+[matrix]: https://app.element.io/#/room/#wpt:matrix.org
 [lint-tool]: lint-tool
 [css-metadata]: css-metadata
 [css-user-styles]: css-user-styles
 [file-name-flags]: file-names
+[interacting-features]: interacting-features
 [mozilla-firefox]: https://mozilla.org/firefox
 [google-chrome]: https://google.com/chrome/browser/desktop/
 [apple-safari]: https://apple.com/safari

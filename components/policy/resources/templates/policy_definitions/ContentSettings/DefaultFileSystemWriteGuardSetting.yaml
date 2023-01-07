@@ -1,0 +1,33 @@
+caption: Control use of the File System API for writing
+default: null
+desc: |-
+  Setting the policy to 3 lets websites ask for write access to files and directories in the host operating system's file system. Setting the policy to 2 denies access.
+
+        Leaving it unset lets websites ask for access, but users can change this setting.
+example_value: 2
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Do not allow any site to request write access to files and directories
+  name: BlockFileSystemWrite
+  value: 2
+- caption: Allow sites to ask the user to grant write access to files and directories
+  name: AskFileSystemWrite
+  value: 3
+owners:
+- mek@chromium.org
+- file://content/browser/file_system_access/OWNERS
+schema:
+  enum:
+  - 2
+  - 3
+  type: integer
+supported_on:
+- chrome_os:86-
+- chrome.*:86-
+tags:
+- website-sharing
+type: int-enum

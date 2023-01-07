@@ -28,7 +28,7 @@ that have been published to the beta track. The Play Store updates users to the
 APK with the highest `versionCode` among eligible tracks.
 
 Google publishes an APK of Android System WebView to the beta track based on the
-[same release cycle](https://chromiumdash.appspot.com/schedule) as Chrome Beta. 
+[same release cycle](https://chromiumdash.appspot.com/schedule) as Chrome Beta.
 
 Similarly, builds of Chrome for "Dev" channel releases include a build of
 WebView which gets published to an alpha track. Only users belonging to specific

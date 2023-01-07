@@ -1,15 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_RENDERER_WEBGRAPHICSCONTEXT3D_PROVIDER_IMPL_H_
 #define CONTENT_RENDERER_WEBGRAPHICSCONTEXT3D_PROVIDER_IMPL_H_
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/gpu/context_provider.h"
-#include "content/common/content_export.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
@@ -29,12 +27,18 @@ class GLHelper;
 
 namespace content {
 
-class CONTENT_EXPORT WebGraphicsContext3DProviderImpl
+class WebGraphicsContext3DProviderImpl
     : public blink::WebGraphicsContext3DProvider,
       public viz::ContextLostObserver {
  public:
   WebGraphicsContext3DProviderImpl(
       scoped_refptr<viz::ContextProviderCommandBuffer> provider);
+
+  WebGraphicsContext3DProviderImpl(const WebGraphicsContext3DProviderImpl&) =
+      delete;
+  WebGraphicsContext3DProviderImpl& operator=(
+      const WebGraphicsContext3DProviderImpl&) = delete;
+
   ~WebGraphicsContext3DProviderImpl() override;
 
   // WebGraphicsContext3DProvider implementation.
@@ -68,8 +72,6 @@ class CONTENT_EXPORT WebGraphicsContext3DProviderImpl
   base::RepeatingClosure context_lost_callback_;
   base::flat_map<SkColorType, std::unique_ptr<cc::ImageDecodeCache>>
       image_decode_cache_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebGraphicsContext3DProviderImpl);
 };
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,43 +49,19 @@ public class CommerceSubscriptionsStorageTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    /**
-     * Helper class for load operations to get load results.
-     */
-    class LoadCallbackHelper extends CallbackHelper {
-        private CommerceSubscription mSingleResult;
-        private List<CommerceSubscription> mResultList;
-
-        void notifyCalled(CommerceSubscription subscription) {
-            mSingleResult = subscription;
-            notifyCalled();
-        }
-
-        void notifyCalled(List<CommerceSubscription> subscriptions) {
-            mResultList = subscriptions;
-            notifyCalled();
-        }
-
-        CommerceSubscription getSingleResult() {
-            return mSingleResult;
-        }
-
-        List<CommerceSubscription> getResultList() {
-            return mResultList;
-        }
-    }
-
     private static final String OFFER_ID_1 = "offer_id_1";
     private static final String OFFER_ID_2 = "offer_id_2";
     private static final String OFFER_ID_3 = "offer_id_3";
-    private static final String KEY_1 = "1_1_offer_id_1";
-    private static final String KEY_2 = "1_1_offer_id_2";
-    private static final String KEY_3 = "1_0_offer_id_3";
+    private static final String PRODUCT_CLUSTER_ID = "product_cluster_id";
+    private static final String KEY_1 = "PRICE_TRACK_OFFER_ID_offer_id_1";
+    private static final String KEY_2 = "PRICE_TRACK_OFFER_ID_offer_id_2";
+    private static final String KEY_3 = "PRICE_TRACK_IDENTIFIER_TYPE_UNSPECIFIED_offer_id_3";
 
     private CommerceSubscriptionsStorage mStorage;
     private CommerceSubscription mSubscription1;
     private CommerceSubscription mSubscription2;
     private CommerceSubscription mSubscription3;
+    private CommerceSubscription mSubscription4;
 
     @Before
     public void setUp() throws Exception {
@@ -104,12 +80,19 @@ public class CommerceSubscriptionsStorageTest {
         mSubscription3 =
                 new CommerceSubscription(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,
                         OFFER_ID_3, CommerceSubscription.SubscriptionManagementType.CHROME_MANAGED,
-                        CommerceSubscription.TrackingIdType.TRACKING_TYPE_UNSPECIFIED);
+                        CommerceSubscription.TrackingIdType.IDENTIFIER_TYPE_UNSPECIFIED);
+        mSubscription4 = new CommerceSubscription(
+                CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK, PRODUCT_CLUSTER_ID,
+                CommerceSubscription.SubscriptionManagementType.USER_MANAGED,
+                CommerceSubscription.TrackingIdType.PRODUCT_CLUSTER_ID);
     }
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mStorage.destroy(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mStorage.deleteAll();
+            mStorage.destroy();
+        });
     }
 
     @SmallTest
@@ -147,14 +130,18 @@ public class CommerceSubscriptionsStorageTest {
         save(mSubscription3);
         loadSingleAndCheckResult(
                 CommerceSubscriptionsStorage.getKey(mSubscription3), mSubscription3);
+        save(mSubscription4);
+        loadSingleAndCheckResult(
+                CommerceSubscriptionsStorage.getKey(mSubscription4), mSubscription4);
         String prefix1 =
                 String.format("%s_%s", CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,
                         CommerceSubscription.TrackingIdType.OFFER_ID);
         loadPrefixAndCheckResult(
                 prefix1, new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2)));
-        String prefix2 = String.valueOf(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK);
+        String prefix2 = CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK;
         loadPrefixAndCheckResult(prefix2,
-                new ArrayList<>(Arrays.asList(mSubscription3, mSubscription1, mSubscription2)));
+                new ArrayList<>(Arrays.asList(
+                        mSubscription3, mSubscription1, mSubscription2, mSubscription4)));
     }
 
     @MediumTest
@@ -215,7 +202,7 @@ public class CommerceSubscriptionsStorageTest {
 
     private void loadSingleAndCheckResult(String key, CommerceSubscription expected)
             throws TimeoutException {
-        LoadCallbackHelper ch = new LoadCallbackHelper();
+        SubscriptionsLoadCallbackHelper ch = new SubscriptionsLoadCallbackHelper();
         int chCount = ch.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(() -> mStorage.load(key, (res) -> ch.notifyCalled(res)));
         ch.waitForCallback(chCount);
@@ -230,7 +217,7 @@ public class CommerceSubscriptionsStorageTest {
 
     private void loadPrefixAndCheckResult(String prefix, List<CommerceSubscription> expected)
             throws TimeoutException {
-        LoadCallbackHelper ch = new LoadCallbackHelper();
+        SubscriptionsLoadCallbackHelper ch = new SubscriptionsLoadCallbackHelper();
         int chCount = ch.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mStorage.loadWithPrefix(prefix, (res) -> ch.notifyCalled(res)));

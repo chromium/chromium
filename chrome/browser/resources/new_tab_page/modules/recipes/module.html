@@ -1,0 +1,208 @@
+<style include="cr-hidden-style">
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+  }
+
+  #moduleContent {
+    box-sizing: border-box;
+    display: block;
+    flex-grow: 1;
+    padding-bottom: 16px;
+    padding-inline-end: 16px;
+    padding-inline-start: 16px;
+    width: 100%;
+  }
+
+  #recipes {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .recipe {
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    outline: none;
+    position: relative;
+    text-decoration: none;
+    width: 165px;
+  }
+
+  :host-context(.focus-outline-visible) .recipe:focus {
+    box-shadow: var(--ntp-focus-shadow);
+  }
+
+  .recipe:not([hidden]) + .recipe {
+    margin-inline-start: 16px;
+  }
+
+  .image-background {
+    /* Mixes to Google Grey 50 underneath .image-container. */
+    background-color: rgb(22, 55, 88);
+    border-radius: 4px;
+    height: 120px;
+    margin-bottom: 8px;
+    width: inherit;
+  }
+
+  .image-container {
+    background-color: white;
+    border-radius: 4px;
+    /* Using box-shadow mimics proper rendering,
+     * so the color of the image-background may not be seen
+     * after rounding edges. */
+    box-shadow: 0 0 0 0.2px white;
+    box-sizing: border-box;
+    height: 100%;
+    opacity: 97%;
+    padding: 10px;
+  }
+
+  .recipe img {
+    border-radius: 4px;
+    height: 136px;
+    margin-bottom: 8px;
+    object-fit: cover;
+    width: inherit;
+  }
+
+  .tag {
+    background: var(--color-new-tab-page-tag-background);
+    border-radius: 4px;
+    box-sizing: border-box;
+    color: var(--color-new-tab-page-primary-foreground);
+    font-size: 11px;
+    margin: 8px;
+    max-width: 149px;
+    overflow: hidden;
+    padding:  8px;
+    position: absolute;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :host-context([dir=rtl]) .tag {
+    right: 0;
+  }
+
+  .price {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-size: 13px;
+    font-weight: bold;
+    height: 14px;
+    line-height: 15px;
+    margin-bottom: 8px;
+  }
+
+  .name {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-size: 12px;
+    line-height: 20px;
+    margin-bottom: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .secondary {
+    color: var(--color-new-tab-page-secondary-foreground);
+    font-size: 11px;
+    height: 13px;
+    text-overflow: ellipsis;
+  }
+
+  #relatedSearches {
+    display: flex;
+    flex-direction: row;
+    margin-top: 16px;
+  }
+
+  .pill {
+    align-items: center;
+    border: solid var(--color-new-tab-page-border) 1px;
+    border-radius: 16px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    flex-shrink: 0;
+    height: 32px;
+    outline: none;
+    text-decoration: none;
+  }
+
+  .pill:hover {
+    background-color: var(--color-new-tab-page-control-background-hovered);
+  }
+
+  .pill:active {
+    background-color: var(--color-new-tab-page-active-background);
+  }
+
+  :host-context(.focus-outline-visible) .pill:focus {
+    box-shadow: var(--ntp-focus-shadow);
+  }
+
+  .pill + .pill {
+    margin-inline-start: 8px;
+  }
+
+  .clock {
+    -webkit-mask-image: url(chrome://resources/images/icon_clock.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(--color-new-tab-page-secondary-foreground);
+    height: 16px;
+    margin-inline-start: 12px;
+    width: 16px;
+  }
+
+  .search-text {
+    color: var(--color-new-tab-page-primary-foreground);
+    font-size: 13px;
+    margin-inline-end: 12px;
+    margin-inline-start: 8px;
+  }
+</style>
+<ntp-module-header
+    dismiss-text="[[i18n('modulesDismissButtonText', dismissName_)]]"
+    disable-text="[[i18n('modulesDisableButtonText', disableName_)]]"
+    show-info-button on-info-button-click="onInfoButtonClick_"
+    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
+    on-disable-button-click="onDisableButtonClick_">
+  [[title_]]
+</ntp-module-header>
+<div id="moduleContent">
+  <div id="recipes">
+    <template is="dom-repeat" id="recipesRepeat" items="[[task.recipes]]"
+        on-dom-change="onDomChange_">
+      <a class="recipe" href="[[item.targetUrl.url]]"
+          on-click="onRecipeClick_" on-auxclick="onRecipeClick_">
+        <img is="cr-auto-img" auto-src="[[item.imageUrl.url]]"
+            draggable="false">
+        </img>
+        <div class="tag" title="[[item.info]]">[[item.info]]</div>
+        <div class="name" title="[[item.name]]">[[item.name]]</div>
+        <div class="secondary">[[item.siteName]]</div>
+      </a>
+    </template>
+  </div>
+  <div hidden$="{{!showRelatedSearches_}}" id="relatedSearches">
+    <template is="dom-repeat" id="relatedSearchesRepeat"
+        items="[[task.relatedSearches]]" on-dom-change="onDomChange_">
+      <a class="pill" href="[[item.targetUrl.url]]" on-click="onPillClick_"
+          on-auxclick="onPillClick_">
+        <div class="clock"></div>
+        <div class="search-text">[[item.text]]</div>
+      </a>
+    </template>
+  </div>
+</div>
+<cr-lazy-render id="infoDialogRender">
+  <template>
+    <ntp-info-dialog inner-h-t-m-l="[[info_]]">
+    </ntp-info-dialog>
+  </template>
+</cr-lazy-render>

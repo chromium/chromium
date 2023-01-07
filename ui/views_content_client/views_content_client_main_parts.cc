@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,16 +17,14 @@
 namespace ui {
 
 ViewsContentClientMainParts::ViewsContentClientMainParts(
-    const content::MainFunctionParams& content_params,
     ViewsContentClient* views_content_client)
-    : views_content_client_(views_content_client) {
-}
+    : views_content_client_(views_content_client) {}
 
 ViewsContentClientMainParts::~ViewsContentClientMainParts() {
 }
 
-#if !defined(OS_APPLE)
-void ViewsContentClientMainParts::PreCreateMainMessageLoop() {}
+#if !BUILDFLAG(IS_APPLE)
+void ViewsContentClientMainParts::PreBrowserMain() {}
 #endif
 
 int ViewsContentClientMainParts::PreMainMessageLoopRun() {

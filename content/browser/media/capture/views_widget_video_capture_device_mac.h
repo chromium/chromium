@@ -1,11 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_MEDIA_CAPTURE_VIEWS_WIDGET_VIDEO_CAPTURE_DEVICE_MAC_H_
 #define CONTENT_BROWSER_MEDIA_CAPTURE_VIEWS_WIDGET_VIDEO_CAPTURE_DEVICE_MAC_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"

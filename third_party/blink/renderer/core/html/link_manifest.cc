@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ LinkManifest::LinkManifest(HTMLLinkElement* owner) : LinkResource(owner) {}
 
 LinkManifest::~LinkManifest() = default;
 
-void LinkManifest::Process() {
+void LinkManifest::Process(LinkLoadParameters::Reason) {
   if (!owner_ || !owner_->GetDocument().GetFrame())
     return;
 
@@ -27,7 +27,7 @@ bool LinkManifest::HasLoaded() const {
 }
 
 void LinkManifest::OwnerRemoved() {
-  Process();
+  Process(LinkLoadParameters::Reason::kDefault);
 }
 
 }  // namespace blink

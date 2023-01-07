@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,17 +11,19 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "build/build_config.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_filter.h"
+#include "components/prefs/pref_name_set.h"
+#include "components/prefs/segregated_pref_store.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 #include "services/preferences/tracked/pref_hash_filter.h"
 #include "services/preferences/tracked/pref_hash_store_impl.h"
-#include "services/preferences/tracked/segregated_pref_store.h"
 #include "services/preferences/tracked/temp_scoped_dir_cleaner.h"
 #include "services/preferences/tracked/tracked_preferences_migration.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
 #include "services/preferences/tracked/registry_hash_store_contents_win.h"
@@ -48,7 +50,7 @@ std::pair<std::unique_ptr<PrefHashStore>, std::unique_ptr<HashStoreContents>>
 GetExternalVerificationPrefHashStorePair(
     const prefs::mojom::TrackedPersistentPrefStoreConfiguration& config,
     scoped_refptr<TempScopedDirCleaner> temp_dir_cleaner) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return std::make_pair(
       std::make_unique<PrefHashStoreImpl>(config.registry_seed,
                                           config.legacy_device_id,
@@ -71,8 +73,8 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
       unprotected_configuration;
   std::vector<prefs::mojom::TrackedPreferenceMetadataPtr>
       protected_configuration;
-  std::set<std::string> protected_pref_names;
-  std::set<std::string> unprotected_pref_names;
+  PrefNameSet protected_pref_names;
+  PrefNameSet unprotected_pref_names;
   for (auto& metadata : config->tracking_configuration) {
     if (metadata->enforcement_level > prefs::mojom::TrackedPreferenceMetadata::
                                           EnforcementLevel::NO_ENFORCEMENT) {
@@ -86,7 +88,7 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
   config->tracking_configuration.clear();
 
   scoped_refptr<TempScopedDirCleaner> temp_scoped_dir_cleaner;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // For tests that create a profile in a ScopedTempDir, share a ref_counted
   // object between the unprotected and protected hash filter's
   // RegistryHashStoreContentsWin which will clear the registry keys when
@@ -103,19 +105,21 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
   mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>
       validation_delegate;
   validation_delegate.Bind(std::move(config->validation_delegate));
+  auto validation_delegate_ref = base::MakeRefCounted<base::RefCountedData<
+      mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>>>(
+      std::move(validation_delegate));
   std::unique_ptr<PrefHashFilter> unprotected_pref_hash_filter(
       new PrefHashFilter(CreatePrefHashStore(*config, false),
                          GetExternalVerificationPrefHashStorePair(
                              *config, temp_scoped_dir_cleaner),
                          unprotected_configuration, mojo::NullRemote(),
-                         validation_delegate.get(),
-                         config->reporting_ids_count));
+                         validation_delegate_ref, config->reporting_ids_count));
   std::unique_ptr<PrefHashFilter> protected_pref_hash_filter(new PrefHashFilter(
       CreatePrefHashStore(*config, true),
       GetExternalVerificationPrefHashStorePair(*config,
                                                temp_scoped_dir_cleaner),
       protected_configuration, std::move(config->reset_on_load_observer),
-      validation_delegate.get(), config->reporting_ids_count));
+      validation_delegate_ref, config->reporting_ids_count));
 
   PrefHashFilter* raw_unprotected_pref_hash_filter =
       unprotected_pref_hash_filter.get();
@@ -142,9 +146,9 @@ PersistentPrefStore* CreateTrackedPersistentPrefStore(
       CreatePrefHashStore(*config, false), CreatePrefHashStore(*config, true),
       raw_unprotected_pref_hash_filter, raw_protected_pref_hash_filter);
 
-  return new SegregatedPrefStore(unprotected_pref_store, protected_pref_store,
-                                 protected_pref_names,
-                                 std::move(validation_delegate));
+  return new SegregatedPrefStore(std::move(unprotected_pref_store),
+                                 std::move(protected_pref_store),
+                                 std::move(protected_pref_names));
 }
 
 void InitializeMasterPrefsTracking(

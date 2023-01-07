@@ -1,9 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_executor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -25,6 +24,9 @@ class ShutdownServiceApp : public Service, public mojom::ShutdownTestService {
     registry_.AddInterface<mojom::ShutdownTestService>(base::BindRepeating(
         &ShutdownServiceApp::Create, base::Unretained(this)));
   }
+
+  ShutdownServiceApp(const ShutdownServiceApp&) = delete;
+  ShutdownServiceApp& operator=(const ShutdownServiceApp&) = delete;
 
   ~ShutdownServiceApp() override = default;
 
@@ -48,8 +50,6 @@ class ShutdownServiceApp : public Service, public mojom::ShutdownTestService {
   ServiceReceiver service_receiver_;
   BinderRegistry registry_;
   mojo::ReceiverSet<mojom::ShutdownTestService> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownServiceApp);
 };
 
 }  // namespace

@@ -1,2 +1,2 @@
-CONSOLE MESSAGE: line 25: scrollY is: 0
+CONSOLE MESSAGE: scrollY is: 0
 

@@ -1,14 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_ASSISTANT_UI_MAIN_STAGE_ASSISTANT_PROGRESS_INDICATOR_H_
 #define ASH_ASSISTANT_UI_MAIN_STAGE_ASSISTANT_PROGRESS_INDICATOR_H_
 
-#include <memory>
-
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -17,6 +14,11 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantProgressIndicator
     : public views::View {
  public:
   AssistantProgressIndicator();
+
+  AssistantProgressIndicator(const AssistantProgressIndicator&) = delete;
+  AssistantProgressIndicator& operator=(const AssistantProgressIndicator&) =
+      delete;
+
   ~AssistantProgressIndicator() override;
 
   // views::View:
@@ -34,8 +36,6 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantProgressIndicator
   // Caches the last call to VisibilityChanged. Because we trigger this event
   // artificially, we want to make sure that we don't over trigger.
   bool is_drawn_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantProgressIndicator);
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/web_encrypted_media_client.h"
@@ -18,7 +17,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -31,10 +29,9 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/encrypted_media_request.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -52,6 +49,12 @@ class MediaKeySystemAccessInitializer final
       const String& key_system,
       const HeapVector<Member<MediaKeySystemConfiguration>>&
           supported_configurations);
+
+  MediaKeySystemAccessInitializer(const MediaKeySystemAccessInitializer&) =
+      delete;
+  MediaKeySystemAccessInitializer& operator=(
+      const MediaKeySystemAccessInitializer&) = delete;
+
   ~MediaKeySystemAccessInitializer() override = default;
 
   // EncryptedMediaRequest implementation.
@@ -59,12 +62,11 @@ class MediaKeySystemAccessInitializer final
       std::unique_ptr<WebContentDecryptionModuleAccess>) override;
   void RequestNotSupported(const WebString& error_message) override;
 
+  void StartRequestAsync();
+
   void Trace(Visitor* visitor) const override {
     MediaKeySystemAccessInitializerBase::Trace(visitor);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaKeySystemAccessInitializer);
 };
 
 MediaKeySystemAccessInitializer::MediaKeySystemAccessInitializer(
@@ -83,8 +85,8 @@ void MediaKeySystemAccessInitializer::RequestSucceeded(
   if (!IsExecutionContextValid())
     return;
 
-  resolver_->Resolve(MakeGarbageCollected<MediaKeySystemAccess>(
-      KeySystem(), std::move(access)));
+  resolver_->Resolve(
+      MakeGarbageCollected<MediaKeySystemAccess>(std::move(access)));
   resolver_.Clear();
 }
 
@@ -98,6 +100,21 @@ void MediaKeySystemAccessInitializer::RequestNotSupported(
   resolver_->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNotSupportedError, error_message));
   resolver_.Clear();
+}
+
+void MediaKeySystemAccessInitializer::StartRequestAsync() {
+  if (!IsExecutionContextValid() || !DomWindow())
+    return;
+
+  // 6. Asynchronously determine support, and if allowed, create and
+  //    initialize the MediaKeySystemAccess object.
+  DCHECK(!DomWindow()->document()->IsPrerendering());
+
+  MediaKeysController* controller =
+      MediaKeysController::From(DomWindow()->GetFrame()->GetPage());
+  WebEncryptedMediaClient* media_client =
+      controller->EncryptedMediaClient(DomWindow());
+  media_client->RequestMediaKeySystemAccess(WebEncryptedMediaRequest(this));
 }
 
 }  // namespace
@@ -130,7 +147,7 @@ ScriptPromise NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
   // When this method is invoked, the user agent must run the following steps:
   // 1. If keySystem is the empty string, return a promise rejected with a
   //    newly created TypeError.
-  if (key_system.IsEmpty()) {
+  if (key_system.empty()) {
     exception_state.ThrowTypeError("The keySystem parameter is empty.");
     return ScriptPromise();
   }
@@ -164,6 +181,14 @@ ScriptPromise NavigatorRequestMediaKeySystemAccess::requestMediaKeySystemAccess(
       MakeGarbageCollected<MediaKeySystemAccessInitializer>(
           script_state, key_system, supported_configurations);
   ScriptPromise promise = initializer->Promise();
+
+  // Defer to determine support until the prerendering page is activated.
+  if (window->document()->IsPrerendering()) {
+    window->document()->AddPostPrerenderingActivationStep(
+        WTF::BindOnce(&MediaKeySystemAccessInitializer::StartRequestAsync,
+                      WrapWeakPersistent(initializer)));
+    return promise;
+  }
 
   // 6. Asynchronously determine support, and if allowed, create and
   //    initialize the MediaKeySystemAccess object.

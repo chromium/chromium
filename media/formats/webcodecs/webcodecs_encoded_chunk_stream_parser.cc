@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,12 +46,12 @@ WebCodecsEncodedChunkStreamParser::~WebCodecsEncodedChunkStreamParser() =
 
 void WebCodecsEncodedChunkStreamParser::Init(
     InitCB init_cb,
-    const NewConfigCB& config_cb,
-    const NewBuffersCB& new_buffers_cb,
+    NewConfigCB config_cb,
+    NewBuffersCB new_buffers_cb,
     bool /* ignore_text_tracks */,
-    const EncryptedMediaInitDataCB& /* ignored */,
-    const NewMediaSegmentCB& new_segment_cb,
-    const EndMediaSegmentCB& end_of_segment_cb,
+    EncryptedMediaInitDataCB /* ignored */,
+    NewMediaSegmentCB new_segment_cb,
+    EndMediaSegmentCB end_of_segment_cb,
     MediaLog* media_log) {
   DCHECK_EQ(state_, kWaitingForInit);
   DCHECK(!init_cb_);
@@ -63,10 +63,10 @@ void WebCodecsEncodedChunkStreamParser::Init(
 
   ChangeState(kWaitingForConfigEmission);
   init_cb_ = std::move(init_cb);
-  config_cb_ = config_cb;
-  new_buffers_cb_ = new_buffers_cb;
-  new_segment_cb_ = new_segment_cb;
-  end_of_segment_cb_ = end_of_segment_cb;
+  config_cb_ = std::move(config_cb);
+  new_buffers_cb_ = std::move(new_buffers_cb);
+  new_segment_cb_ = std::move(new_segment_cb);
+  end_of_segment_cb_ = std::move(end_of_segment_cb);
   media_log_ = media_log;
 }
 
@@ -122,7 +122,7 @@ bool WebCodecsEncodedChunkStreamParser::ProcessChunks(
 
     if (init_cb_) {
       InitParameters params(kInfiniteDuration);
-      params.liveness = DemuxerStream::LIVENESS_UNKNOWN;
+      params.liveness = StreamLiveness::kUnknown;
       if (audio_config_)
         params.detected_audio_track_count = 1;
       if (video_config_)

@@ -48,14 +48,14 @@ specified, if **not overridden** by field trial or command line switches
 default status):
 
 | |No status|`status:"test"`|`status:"experimental"`|`status:"stable"`|
-|-|---------|-----------------|--------------------------|-------------------|
+|---|---------|-----------------|--------------------------|-------------------|
 |`FEATURE_DISABLED_BY_DEFAULT`|Disabled everywhere|Blink feature is enabled for tests, or everywhere with `--enable-blink-test-features` [1]|Blink feature is enabled for tests, or everywhere with `--enable-experimental-web-platform-features` [1]|Blink feature is enabled everywhere [2]|
 |`FEATURE_ENABLED_BY_DEFAULT`|Enabled everywhere|Enabled everywhere|Enabled everywhere|Enabled everywhere|
 
 \[1]: `base::FeatureList::IsEnabled(features::kNewFeatureX)` is still
 false. These combinations are suitable for features there are fully implemented
 at blink side. Otherwise normally the blink feature should not have a status so
-that the Chromium feature can fully controll the feature.
+that the Chromium feature can fully control the feature.
 
 \[2]: This combination is counter-intuitive and should be avoided.
 
@@ -80,11 +80,7 @@ If your Blink feature has a custom enabler function, add a new entry to
 will call `wf::EnableNewFeatureX` to disable it only if that
 `switches::kNewFeatureX` exists on the command line.
 
-### 4) Controlled by parameters from a field trial:
-Add your code to the function
-[SetRuntimeFeaturesFromFieldTrialParams()][SetRuntimeFeaturesFromFieldTrialParams].
-
-### 5) Combination of the previous options or not covered:
+### 4) Combination of the previous options or not covered:
 For example, you Blink feature could be controlled by both a base::Feature and a
 command line switch. In this case, your custom logic should live here in
 [`SetCustomizedRuntimeFeaturesFromCombinedArgs()`][SetCustomizedRuntimeFeaturesFromCombinedArgs].

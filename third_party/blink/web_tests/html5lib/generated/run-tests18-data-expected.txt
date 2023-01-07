@@ -1,5 +1,5 @@
-CONSOLE ERROR: line 1: Uncaught SyntaxError: Unexpected token '<'
-CONSOLE ERROR: line 1: Uncaught SyntaxError: Unexpected token '<'
-CONSOLE ERROR: line 1: Uncaught SyntaxError: Unexpected token '<'
-CONSOLE ERROR: line 1: Uncaught SyntaxError: Unexpected token '<'
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
+CONSOLE ERROR: Uncaught SyntaxError: Unexpected token '<'
 ../resources/tests18.dat: PASS

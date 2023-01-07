@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,15 +18,16 @@ class WebState;
 // Object copying images to the system's pasteboard.
 @interface ImageCopier : NSObject
 
-// Init the ImageCopier with a |baseViewController| used to display alerts.
-- (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
-                                   browser:(Browser*)browser;
+// Init the ImageCopier.
+- (instancetype)initWithBrowser:(Browser*)browser;
 
-// Copies the image at |url|. |web_state| is used for fetching image data by
-// JavaScript. |referrer| is used for download.
+// Copies the image at `url`. `web_state` is used for fetching image data by
+// JavaScript. `referrer` is used for download. `baseViewController` used to
+// display alerts.
 - (void)copyImageAtURL:(const GURL&)url
               referrer:(const web::Referrer&)referrer
-              webState:(web::WebState*)webState;
+              webState:(web::WebState*)webState
+    baseViewController:(UIViewController*)baseViewController;
 
 @end
 

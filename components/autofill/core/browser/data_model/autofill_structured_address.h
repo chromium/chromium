@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/autofill_structured_address_component.h"
-
-using autofill::structured_address::AddressComponent;
 
 namespace autofill {
 namespace structured_address {
@@ -23,13 +21,13 @@ class AddressComponentWithRewriter : public AddressComponent {
 
  protected:
   // Apply a country-specific rewriter to the normalized value.
-  std::u16string ValueForComparison() const override;
+  std::u16string ValueForComparison(
+      const AddressComponent& other) const override;
 
-  // Tries to retrieve the |ADDRESS_HOME_COUNTRY| node from the structure tree
-  // to apply a country-specific rewriter to the normalized value.
-  // If the country value cannot be retrieved or is empty, the method returns
-  // the normalized values without further processing.
-  std::u16string RewriteValue(const std::u16string&) const;
+  // Applies the |country_code| specific rewriter to the normalized value. If
+  // |country_code| is empty, it defaults to US.
+  std::u16string RewriteValue(const std::u16string& value,
+                              const std::u16string& country_code) const;
 };
 
 // The name of the street.
@@ -190,6 +188,10 @@ class State : public AddressComponentWithRewriter {
  public:
   explicit State(AddressComponent* parent);
   ~State() override;
+
+  // For states we use the AlternativeStateNameMap to offer canonicalized state
+  // names.
+  absl::optional<std::u16string> GetCanonicalizedValue() const override;
 };
 
 // Stores the postal code of an address.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "content/public/common/content_features.h"
 #include "storage/browser/blob/blob_registry_impl.h"
 #include "storage/browser/blob/blob_storage_context.h"
-#include "storage/browser/file_system/file_system_context.h"
 
 namespace content {
 
@@ -27,12 +26,10 @@ class BindingDelegate : public storage::BlobRegistryImpl::Delegate {
   bool CanReadFile(const base::FilePath& file) override {
     return security_policy_handle_.CanReadFile(file);
   }
-  bool CanReadFileSystemFile(const storage::FileSystemURL& url) override {
-    return security_policy_handle_.CanReadFileSystemFile(url);
+  bool CanAccessDataForOrigin(const url::Origin& origin) override {
+    return security_policy_handle_.CanAccessDataForOrigin(origin);
   }
-  bool CanCommitURL(const GURL& url) override {
-    return security_policy_handle_.CanCommitURL(url);
-  }
+
  private:
   ChildProcessSecurityPolicyImpl::Handle security_policy_handle_;
 };
@@ -42,14 +39,12 @@ class BindingDelegate : public storage::BlobRegistryImpl::Delegate {
 // static
 scoped_refptr<BlobRegistryWrapper> BlobRegistryWrapper::Create(
     scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    scoped_refptr<BlobRegistryWrapper> registry_for_fallback_url_registry) {
+    base::WeakPtr<storage::BlobUrlRegistry> blob_url_registry) {
   scoped_refptr<BlobRegistryWrapper> result(new BlobRegistryWrapper());
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&BlobRegistryWrapper::InitializeOnIOThread,
                                 result, std::move(blob_storage_context),
-                                std::move(file_system_context),
-                                std::move(registry_for_fallback_url_registry)));
+                                std::move(blob_url_registry)));
   return result;
 }
 
@@ -71,16 +66,11 @@ BlobRegistryWrapper::~BlobRegistryWrapper() {}
 
 void BlobRegistryWrapper::InitializeOnIOThread(
     scoped_refptr<ChromeBlobStorageContext> blob_storage_context,
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    scoped_refptr<BlobRegistryWrapper> registry_for_fallback_url_registry) {
+    base::WeakPtr<storage::BlobUrlRegistry> blob_url_registry) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  url_registry_ = std::make_unique<storage::BlobUrlRegistry>(
-      registry_for_fallback_url_registry
-          ? registry_for_fallback_url_registry->url_registry()->AsWeakPtr()
-          : nullptr);
   blob_registry_ = std::make_unique<storage::BlobRegistryImpl>(
-      blob_storage_context->context()->AsWeakPtr(), url_registry_->AsWeakPtr(),
-      std::move(file_system_context));
+      blob_storage_context->context()->AsWeakPtr(),
+      std::move(blob_url_registry), GetUIThreadTaskRunner({}));
 }
 
 }  // namespace content

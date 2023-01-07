@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
 
@@ -34,6 +33,10 @@ class WebviewInfo : public Extension::ManifestData {
 
   // Define out of line constructor/destructor to please Clang.
   explicit WebviewInfo(const std::string& extension_id);
+
+  WebviewInfo(const WebviewInfo&) = delete;
+  WebviewInfo& operator=(const WebviewInfo&) = delete;
+
   ~WebviewInfo() override;
 
   void AddPartitionItem(std::unique_ptr<PartitionItem> item);
@@ -41,22 +44,22 @@ class WebviewInfo : public Extension::ManifestData {
  private:
   std::string extension_id_;
   std::vector<std::unique_ptr<PartitionItem>> partition_items_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebviewInfo);
 };
 
 // Parses the "webview" manifest key.
 class WebviewHandler : public ManifestHandler {
  public:
   WebviewHandler();
+
+  WebviewHandler(const WebviewHandler&) = delete;
+  WebviewHandler& operator=(const WebviewHandler&) = delete;
+
   ~WebviewHandler() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebviewHandler);
 };
 
 }  // namespace extensions

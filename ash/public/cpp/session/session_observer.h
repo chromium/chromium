@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_PUBLIC_CPP_SESSION_SESSION_OBSERVER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "components/session_manager/session_manager_types.h"
 
@@ -67,12 +66,14 @@ class ASH_PUBLIC_EXPORT SessionObserver : public base::CheckedObserver {
 class ASH_PUBLIC_EXPORT ScopedSessionObserver {
  public:
   explicit ScopedSessionObserver(SessionObserver* observer);
+
+  ScopedSessionObserver(const ScopedSessionObserver&) = delete;
+  ScopedSessionObserver& operator=(const ScopedSessionObserver&) = delete;
+
   virtual ~ScopedSessionObserver();
 
  private:
   SessionObserver* const observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSessionObserver);
 };
 
 }  // namespace ash

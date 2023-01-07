@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -37,6 +38,7 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 // Any VERSION_CODE >= O is fine.
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.O)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class InputMethodManagerWrapperImplTest {
     private static final boolean DEBUG = false;
 

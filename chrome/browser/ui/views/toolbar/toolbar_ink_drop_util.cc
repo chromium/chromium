@@ -1,21 +1,24 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 
+#include "base/bind.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "third_party/skia/include/core/SkPath.h"
-#include "ui/base/theme_provider.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host_view.h"
 #include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/installable_ink_drop_config.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/style/platform_style.h"
@@ -32,13 +35,14 @@ class ToolbarButtonHighlightPathGenerator
     rect.Inset(GetToolbarInkDropInsets(view));
 
     const int radii = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-        views::EMPHASIS_MAXIMUM, rect.size());
+        views::Emphasis::kMaximum, rect.size());
 
     SkPath path;
     path.addRoundRect(gfx::RectToSkRect(rect), radii, radii);
     return path;
   }
 };
+
 }  // namespace
 
 gfx::Insets GetToolbarInkDropInsets(const views::View* host_view) {
@@ -59,40 +63,21 @@ gfx::Insets GetToolbarInkDropInsets(const views::View* host_view) {
   return inkdrop_insets;
 }
 
-std::unique_ptr<views::InkDropHighlight> CreateToolbarInkDropHighlight(
-    const views::InkDropHostView* host_view) {
-  auto highlight = host_view->views::InkDropHostView::CreateInkDropHighlight();
-  highlight->set_visible_opacity(kToolbarInkDropHighlightVisibleOpacity);
-  return highlight;
-}
-
 SkColor GetToolbarInkDropBaseColor(const views::View* host_view) {
-  const auto* theme_provider = host_view->GetThemeProvider();
-  // There may be no theme provider in unit tests.
-  return theme_provider
-             ? theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR_INK_DROP)
-             : gfx::kPlaceholderColor;
-}
-
-views::InstallableInkDropConfig GetToolbarInstallableInkDropConfig(
-    const views::View* host_view) {
-  views::InstallableInkDropConfig config;
-  config.base_color = GetToolbarInkDropBaseColor(host_view);
-  config.ripple_opacity = kToolbarInkDropVisibleOpacity;
-  config.highlight_opacity = kToolbarInkDropHighlightVisibleOpacity;
-  return config;
-}
-
-void InstallToolbarButtonHighlightPathGenerator(views::View* host) {
-  views::HighlightPathGenerator::Install(
-      host, std::make_unique<ToolbarButtonHighlightPathGenerator>());
+  const auto* color_provider = host_view->GetColorProvider();
+  // There may be no color provider in unit tests.
+  return color_provider ? color_provider->GetColor(kColorToolbarInkDrop)
+                        : gfx::kPlaceholderColor;
 }
 
 void ConfigureInkDropForToolbar(views::Button* host) {
   host->SetHasInkDropActionOnClick(true);
-  InstallToolbarButtonHighlightPathGenerator(host);
-  host->SetInkDropMode(views::InkDropHostView::InkDropMode::ON);
-  host->SetInkDropVisibleOpacity(kToolbarInkDropVisibleOpacity);
-  host->SetInkDropHighlightOpacity(kToolbarInkDropHighlightVisibleOpacity);
-  host->SetInkDropBaseColor(GetToolbarInkDropBaseColor(host));
+  views::HighlightPathGenerator::Install(
+      host, std::make_unique<ToolbarButtonHighlightPathGenerator>());
+  views::InkDrop::Get(host)->SetMode(views::InkDropHost::InkDropMode::ON);
+  views::InkDrop::Get(host)->SetVisibleOpacity(kToolbarInkDropVisibleOpacity);
+  views::InkDrop::Get(host)->SetHighlightOpacity(
+      kToolbarInkDropHighlightVisibleOpacity);
+  views::InkDrop::Get(host)->SetBaseColorCallback(
+      base::BindRepeating(&GetToolbarInkDropBaseColor, host));
 }

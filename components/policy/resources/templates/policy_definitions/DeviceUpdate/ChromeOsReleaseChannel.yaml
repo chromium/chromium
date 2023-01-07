@@ -1,0 +1,32 @@
+caption: Release channel
+desc: |-
+  Specifies the release channel that this device should be locked to.
+
+        Setting <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME">ChromeOsReleaseChannel</ph> only has an effect if <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME">ChromeOsReleaseChannelDelegated</ph> is set to False.
+device_only: true
+example_value: stable-channel
+features:
+  dynamic_refresh: true
+items:
+- caption: Stable channel
+  name: StableChannel
+  value: stable-channel
+- caption: Beta channel
+  name: BetaChannel
+  value: beta-channel
+- caption: Dev channel (may be unstable)
+  name: DevChannel
+  value: dev-channel
+owners:
+- file://components/policy/resources/OWNERS
+- pastarmovj@chromium.org
+schema:
+  enum:
+  - stable-channel
+  - beta-channel
+  - dev-channel
+  type: string
+supported_on:
+- chrome_os:11-
+tags: []
+type: string-enum

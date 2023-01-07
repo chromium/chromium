@@ -1,9 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "content/browser/android/synchronous_compositor_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/android/synchronous_compositor.h"
@@ -23,6 +23,12 @@ namespace content {
 class TestSynchronousCompositorClient : public SynchronousCompositorClient {
  public:
   TestSynchronousCompositorClient() = default;
+
+  TestSynchronousCompositorClient(const TestSynchronousCompositorClient&) =
+      delete;
+  TestSynchronousCompositorClient& operator=(
+      const TestSynchronousCompositorClient&) = delete;
+
   ~TestSynchronousCompositorClient() override = default;
 
   // SynchronousCompositorClient overrides.
@@ -38,8 +44,8 @@ class TestSynchronousCompositorClient : public SynchronousCompositorClient {
     compositor_map_.erase(id);
   }
   void UpdateRootLayerState(SynchronousCompositor* compositor,
-                            const gfx::Vector2dF& total_scroll_offset,
-                            const gfx::Vector2dF& max_scroll_offset,
+                            const gfx::PointF& total_scroll_offset,
+                            const gfx::PointF& max_scroll_offset,
                             const gfx::SizeF& scrollable_size,
                             float page_scale_factor,
                             float min_page_scale_factor,
@@ -65,7 +71,6 @@ class TestSynchronousCompositorClient : public SynchronousCompositorClient {
 
  private:
   std::map<viz::FrameSinkId, SynchronousCompositor*> compositor_map_;
-  DISALLOW_COPY_AND_ASSIGN(TestSynchronousCompositorClient);
 };
 
 class SynchronousCompositorBrowserTest : public ContentBrowserTest {
@@ -98,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(SynchronousCompositorBrowserTest,
       static_cast<WebContentsImpl*>(popup->web_contents());
   SynchronousCompositor::SetClientForWebContents(popup_contents,
                                                  &compositor_client_);
-  RenderFrameHostImpl* rfh = popup_contents->GetMainFrame();
+  RenderFrameHostImpl* rfh = popup_contents->GetPrimaryMainFrame();
   RenderViewHostImpl* rvh = rfh->render_view_host();
   viz::FrameSinkId id = rvh->GetWidget()->GetFrameSinkId();
   {

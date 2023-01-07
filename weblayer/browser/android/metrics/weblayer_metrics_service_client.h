@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "components/embedder_support/android/metrics/android_metrics_service_client.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
@@ -33,6 +31,11 @@ class WebLayerMetricsServiceClient
   static WebLayerMetricsServiceClient* GetInstance();
 
   WebLayerMetricsServiceClient();
+
+  WebLayerMetricsServiceClient(const WebLayerMetricsServiceClient&) = delete;
+  WebLayerMetricsServiceClient& operator=(const WebLayerMetricsServiceClient&) =
+      delete;
+
   ~WebLayerMetricsServiceClient() override;
 
   void RegisterExternalExperiments(const std::vector<int>& experiment_ids);
@@ -44,6 +47,7 @@ class WebLayerMetricsServiceClient
   std::string GetUploadSigningKey() override;
 
   // metrics::AndroidMetricsServiceClient:
+  const network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   int GetSampleRatePerMille() const override;
   void OnMetricsStart() override;
   void OnMetricsNotStarted() override;
@@ -70,8 +74,6 @@ class WebLayerMetricsServiceClient
   void OnHasAtLeastOneResumedBrowserStateChanged(bool new_value) override;
 
   std::vector<base::OnceClosure> post_start_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebLayerMetricsServiceClient);
 };
 
 }  // namespace weblayer

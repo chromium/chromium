@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,8 @@ import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.rec
 import org.chromium.android_webview.AwServiceWorkerSettings;
 import org.chromium.support_lib_boundary.ServiceWorkerWebSettingsBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
+
+import java.util.Set;
 
 /**
  * Adapter between AwServiceWorkerSettings and ServiceWorkerWebSettingsBoundaryInterface.
@@ -70,5 +72,17 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
     public boolean getBlockNetworkLoads() {
         recordApiCall(ApiCall.SERVICE_WORKER_SETTINGS_GET_BLOCK_NETWORK_LOADS);
         return mAwServiceWorkerSettings.getBlockNetworkLoads();
+    }
+
+    @Override
+    public void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules) {
+        recordApiCall(ApiCall.SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
+        mAwServiceWorkerSettings.setRequestedWithHeaderOriginAllowList(allowedOriginRules);
+    }
+
+    @Override
+    public Set<String> getRequestedWithHeaderOriginAllowList() {
+        recordApiCall(ApiCall.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
+        return mAwServiceWorkerSettings.getRequestedWithHeaderOriginAllowList();
     }
 }

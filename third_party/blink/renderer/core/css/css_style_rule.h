@@ -22,9 +22,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_STYLE_RULE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_STYLE_RULE_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
 #include "third_party/blink/renderer/core/css/cssom/style_property_map.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -38,7 +39,7 @@ class CORE_EXPORT CSSStyleRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  CSSStyleRule(StyleRule*, CSSStyleSheet*);
+  CSSStyleRule(StyleRule*, CSSStyleSheet*, wtf_size_t position_hint);
   ~CSSStyleRule() override;
 
   String cssText() const override;
@@ -62,6 +63,11 @@ class CORE_EXPORT CSSStyleRule final : public CSSRule {
   Member<StyleRule> style_rule_;
   mutable Member<StyleRuleCSSStyleDeclaration> properties_cssom_wrapper_;
   Member<StylePropertyMap> style_map_;
+
+  // Used to faster localize the rule in the parent style sheet.
+  // May be wrong if indexes have moved around or the rule has been
+  // deleted from the style sheet.
+  wtf_size_t position_hint_;
 };
 
 template <>

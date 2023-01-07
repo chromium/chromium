@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!--
+Check hardware accelerated scalable video coding and decoding after dropping
+some chunks.
+-->
+<html>
+
+<head>
+  <title>SVC encoding test</title>
+  <script src="webcodecs_common.js"></script>
+  <script type="text/javascript">
+    'use strict';
+    const acceleration = 'prefer-hardware';
+    async function main(arg) {
+      const width = 640;
+      const height = 480;
+      const frames_to_encode = 32;
+      let frames_encoded = 0;
+      let frames_decoded = 0;
+      let errors = 0;
+      const base_layer_decimator = ([null, null, 2, 4])[arg.layers];
+      let expected_dot_count = [];
+
+      const encoder_config = {
+        codec: arg.codec,
+        hardwareAcceleration: acceleration,
+        width: width,
+        height: height,
+        bitrate: 2000000,
+        scalabilityMode: "L1T" + arg.layers,
+        latencyMode: "realtime",
+      };
+
+      let support = await VideoEncoder.isConfigSupported(encoder_config);
+      if (!support.supported) {
+        TEST.skip('Unsupported codec: ' + arg.codec);
+        return;
+      }
+
+      let decoder = new VideoDecoder({
+        output(frame) {
+          frames_decoded++;
+          let dots = expected_dot_count.shift();
+          // Check that we have intended number of dots and no more.
+          // Completely black frame shouldn't pass the test.
+          if(!validateBlackDots(frame, dots) ||
+            validateBlackDots(frame, dots + 1)) {
+            TEST.reportFailure(
+                `Unexpected dot count ts:${frame.timestamp} dots:${dots}`);
+          }
+
+          frame.close();
+        },
+        error(e) {
+          errors++;
+          TEST.log(e);
+        }
+      });
+
+      const encoder_init = {
+        output(chunk, metadata) {
+          let config = metadata.decoderConfig;
+          if (config) {
+            decoder.configure(config);
+          }
+
+          frames_encoded++;
+          TEST.assert(metadata.svc != null);
+          TEST.assert(metadata.svc.temporalLayerId < arg.layers,
+                      "too large temporal ID");
+          if (metadata.svc.temporalLayerId == 0) {
+            decoder.decode(chunk);
+          }
+        },
+        error(e) {
+          errors++;
+          TEST.log(e);
+        }
+      };
+
+      let encoder = new VideoEncoder(encoder_init);
+      encoder.configure(encoder_config);
+      let source = new CanvasSource(width, height);
+
+      for (let i = 0; i < frames_to_encode; i++) {
+        let frame = await source.getNextFrame();
+        encoder.encode(frame, { keyFrame: false });
+        if (i % base_layer_decimator == 0)
+          expected_dot_count.push(i);
+        frame.close();
+
+        await waitForNextFrame();
+      }
+      await encoder.flush();
+      await decoder.flush();
+      encoder.close();
+      decoder.close();
+      source.close();
+
+      TEST.assert(
+        frames_encoded == frames_to_encode,
+        'frames_encoded mismatch: ' + frames_encoded);
+
+      let base_layer_frames = frames_encoded / base_layer_decimator;
+      TEST.assert(
+        frames_decoded == base_layer_frames,
+        'frames_decoded mismatch: ' + frames_decoded);
+      TEST.assert(
+        errors == 0, 'Decoding or encoding errors occurred during the test');
+    }
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>

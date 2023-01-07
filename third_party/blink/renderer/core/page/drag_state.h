@@ -26,9 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_DRAG_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_DRAG_STATE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/page/drag_actions.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -38,6 +37,8 @@ class Node;
 class DragState final : public GarbageCollected<DragState> {
  public:
   DragState() = default;
+  DragState(const DragState&) = delete;
+  DragState& operator=(const DragState&) = delete;
 
   // Element that may be a drag source, for the current mouse gesture.
   Member<Node> drag_src_;
@@ -49,9 +50,6 @@ class DragState final : public GarbageCollected<DragState> {
     visitor->Trace(drag_src_);
     visitor->Trace(drag_data_transfer_);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DragState);
 };
 
 }  // namespace blink

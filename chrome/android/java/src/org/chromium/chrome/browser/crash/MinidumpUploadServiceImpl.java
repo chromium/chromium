@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,15 @@ import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ApplicationStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -32,6 +35,7 @@ import org.chromium.components.minidump_uploader.MinidumpUploadCallable;
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable.MinidumpUploadStatus;
 import org.chromium.components.minidump_uploader.MinidumpUploadJobService;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -122,7 +126,7 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
         MinidumpUploadJobService.scheduleUpload(builder);
     }
 
-    private ApplicationStateListener createApplicationStateListener() {
+    private static ApplicationStateListener createApplicationStateListener() {
         return newState -> {
             SharedPreferencesManager.getInstance().writeInt(
                     ChromePreferenceKeys.LAST_SESSION_APPLICATION_STATE, newState);
@@ -141,13 +145,23 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
         int applicationExitState =
                 sharedPrefs.readInt(ChromePreferenceKeys.LAST_SESSION_APPLICATION_STATE);
         String umaSuffix;
-        if (applicationExitState == ApplicationState.HAS_RUNNING_ACTIVITIES
-                || applicationExitState == ApplicationState.HAS_PAUSED_ACTIVITIES) {
-            umaSuffix = "Foreground";
+        if (applicationExitState == ApplicationState.HAS_RUNNING_ACTIVITIES) {
+            umaSuffix = "Foreground2";
         } else {
-            umaSuffix = "Background";
+            umaSuffix = "Background2";
         }
         sharedPrefs.writeInt(ChromePreferenceKeys.LAST_SESSION_BROWSER_PID, Process.myPid());
+        ApplicationStateListener appStateListener = createApplicationStateListener();
+        appStateListener.onApplicationStateChange(ApplicationStatus.getStateForApplication());
+
+        if (ThreadUtils.runningOnUiThread()) {
+            ApplicationStatus.registerApplicationStateListener(appStateListener);
+        } else {
+            PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT, () -> {
+                ApplicationStatus.registerApplicationStateListener(appStateListener);
+            });
+        }
+
         if (previousPid != 0) {
             int reason = ProcessExitReasonFromSystem.getExitReason(previousPid);
             ProcessExitReasonFromSystem.recordAsEnumHistogram(

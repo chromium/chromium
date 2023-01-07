@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,14 @@ function createAdIframe() {
 function createAdIframeWithSrc(src) {
   const frame = document.createElement('iframe');
   frame.src = src;
+  document.body.appendChild(frame);
+  return frame;
+}
+
+function createLazyAdIframeWithSrc(src) {
+  const frame = document.createElement('iframe');
+  frame.src = src;
+  frame.loading = 'lazy';
   document.body.appendChild(frame);
   return frame;
 }

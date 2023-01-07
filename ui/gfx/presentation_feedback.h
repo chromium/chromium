@@ -1,13 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_PRESENTAION_FEEDBACK_H_
-#define UI_GFX_PRESENTAION_FEEDBACK_H_
+#ifndef UI_GFX_PRESENTATION_FEEDBACK_H_
+#define UI_GFX_PRESENTATION_FEEDBACK_H_
 
 #include <stdint.h>
 
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "ui/gfx/ca_layer_result.h"
 
 namespace gfx {
 
@@ -82,6 +84,14 @@ struct PresentationFeedback {
   // next rendering update. On Android this corresponds to the SurfaceFlinger
   // latch time.
   base::TimeTicks latch_timestamp;
+
+  // The time when write operations have completed, corresponding to the time
+  // when rendering on the GPU finished.
+  base::TimeTicks writes_done_timestamp;
+
+#if BUILDFLAG(IS_MAC)
+  gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
+#endif
 };
 
 inline bool operator==(const PresentationFeedback& lhs,
@@ -90,7 +100,11 @@ inline bool operator==(const PresentationFeedback& lhs,
          lhs.flags == rhs.flags &&
          lhs.available_timestamp == rhs.available_timestamp &&
          lhs.ready_timestamp == rhs.ready_timestamp &&
-         lhs.latch_timestamp == rhs.latch_timestamp;
+         lhs.latch_timestamp == rhs.latch_timestamp &&
+#if BUILDFLAG(IS_MAC)
+         lhs.ca_layer_error_code == rhs.ca_layer_error_code &&
+#endif
+         lhs.writes_done_timestamp == rhs.writes_done_timestamp;
 }
 
 inline bool operator!=(const PresentationFeedback& lhs,
@@ -100,4 +114,4 @@ inline bool operator!=(const PresentationFeedback& lhs,
 
 }  // namespace gfx
 
-#endif  // UI_GFX_PRESENTAION_FEEDBACK_H_
+#endif  // UI_GFX_PRESENTATION_FEEDBACK_H_

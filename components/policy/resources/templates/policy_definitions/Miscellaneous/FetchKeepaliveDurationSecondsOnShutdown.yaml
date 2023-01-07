@@ -1,0 +1,26 @@
+caption: Fetch keepalive duration on Shutdown
+default: 0
+desc: |-
+  Controls the duration (in seconds) allowed for keepalive requests on browser shutdown.
+
+        When specified, browser shutdown can be blocked up to the specified seconds,
+        to process keepalive (https://fetch.spec.whatwg.org/#request-keepalive-flag) requests.
+
+        The default value (0) means this feature is disabled.
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome_os
+- fuchsia
+owners:
+- yhirano@chromium.org
+schema:
+  maximum: 5
+  minimum: 0
+  type: integer
+supported_on:
+- chrome.*:90-
+tags: []
+type: int

@@ -1,14 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_CLIENT_UI_RENDERER_PROXY_H_
-#define REMOTING_CLIENT_UI_RENDERER_PROXY_H_
+#ifndef REMOTING_CLIENT_DISPLAY_RENDERER_PROXY_H_
+#define REMOTING_CLIENT_DISPLAY_RENDERER_PROXY_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 
 namespace remoting {
@@ -25,6 +24,10 @@ class RendererProxy {
  public:
   // task_runner: The task runner that |renderer_| should be run on.
   RendererProxy(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  RendererProxy(const RendererProxy&) = delete;
+  RendererProxy& operator=(const RendererProxy&) = delete;
+
   ~RendererProxy();
 
   // Initialize with the renderer to be proxied.
@@ -47,9 +50,7 @@ class RendererProxy {
   std::unique_ptr<remoting::QueuedTaskPoster> ui_task_poster_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RendererProxy);
 };
 
 }  // namespace remoting
-#endif  // REMOTING_CLIENT_UI_RENDERER_PROXY_H_
+#endif  // REMOTING_CLIENT_DISPLAY_RENDERER_PROXY_H_

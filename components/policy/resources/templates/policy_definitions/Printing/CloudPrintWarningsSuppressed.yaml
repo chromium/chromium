@@ -1,0 +1,27 @@
+caption: Suppress <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> deprecation
+  messages
+default: false
+deprecated: true
+desc: |-
+  This policy controls whether <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> deprecation warnings are shown to users in the print preview dialog or settings pages.
+        Setting this policy to True will hide the deprecation warnings.
+        Setting this policy to False or leaving it unset will show the deprecation warnings.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Hide <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> deprecation warnings
+  value: true
+- caption: Show <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph> deprecation warnings
+  value: false
+owners:
+- file://printing/OWNERS
+- rbpotter@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:86-87
+- chrome_os:86-87
+tags: []
+type: main

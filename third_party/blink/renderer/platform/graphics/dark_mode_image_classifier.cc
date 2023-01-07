@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <set>
 
 #include "base/memory/singleton.h"
-#include "base/optional.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/darkmode/darkmode_classifier.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 namespace {
@@ -55,7 +55,7 @@ DarkModeResult DarkModeImageClassifier::Classify(const SkPixmap& pixmap,
   return ClassifyWithFeatures(features_or_null.value());
 }
 
-base::Optional<DarkModeImageClassifier::Features>
+absl::optional<DarkModeImageClassifier::Features>
 DarkModeImageClassifier::GetFeatures(const SkPixmap& pixmap,
                                      const SkIRect& src) const {
   DCHECK(!pixmap.bounds().isEmpty());
@@ -68,7 +68,7 @@ DarkModeImageClassifier::GetFeatures(const SkPixmap& pixmap,
   // loaded and how we can fetch the correct resource. This condition will
   // prevent going further with the rest of the classification logic.
   if (sampled_pixels.size() == 0)
-    return base::nullopt;
+    return absl::nullopt;
 
   return ComputeFeatures(sampled_pixels, transparency_ratio, background_ratio);
 }
@@ -240,9 +240,9 @@ DarkModeResult DarkModeImageClassifier::ClassifyWithFeatures(
     // The neural network expects these features to be in a specific order
     // within float array. Do not change the order here without also changing
     // the neural network code!
-    float feature_list[]{features.is_colorful, features.color_buckets_ratio,
-                         features.transparency_ratio,
-                         features.background_ratio};
+    float feature_list[]{
+        features.is_colorful ? 1.0f : 0.0f, features.color_buckets_ratio,
+        features.transparency_ratio, features.background_ratio};
 
     darkmode_tfnative_model::Inference(feature_list, &nn_out, &nn_temp);
     result = nn_out > 0 ? DarkModeResult::kApplyFilter

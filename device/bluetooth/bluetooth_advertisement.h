@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,16 @@
 #include <stdint.h>
 
 #include <map>
-#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -42,7 +41,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
                                    // through a platform API.
     ERROR_RESET_ADVERTISING,       // Error while resetting advertising.
     ERROR_ADAPTER_POWERED_OFF,     // Error because the adapter is off
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     ERROR_INVALID_ADVERTISEMENT_INTERVAL,  // Advertisement interval specified
                                            // is out of valid range.
 #endif
@@ -68,40 +67,45 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
   class DEVICE_BLUETOOTH_EXPORT Data {
    public:
     explicit Data(AdvertisementType type);
+
+    Data(const Data&) = delete;
+    Data& operator=(const Data&) = delete;
+
     ~Data();
 
     AdvertisementType type() { return type_; }
-    std::unique_ptr<UUIDList> service_uuids() {
-      return std::move(service_uuids_);
+
+    absl::optional<UUIDList> service_uuids() {
+      return pass_value(service_uuids_);
     }
-    std::unique_ptr<ManufacturerData> manufacturer_data() {
-      return std::move(manufacturer_data_);
+    absl::optional<ManufacturerData> manufacturer_data() {
+      return pass_value(manufacturer_data_);
     }
-    std::unique_ptr<UUIDList> solicit_uuids() {
-      return std::move(solicit_uuids_);
+    absl::optional<UUIDList> solicit_uuids() {
+      return pass_value(solicit_uuids_);
     }
-    std::unique_ptr<ServiceData> service_data() {
-      return std::move(service_data_);
+    absl::optional<ServiceData> service_data() {
+      return pass_value(service_data_);
     }
-    std::unique_ptr<ScanResponseData> scan_response_data() {
-      return std::move(scan_response_data_);
+    absl::optional<ScanResponseData> scan_response_data() {
+      return pass_value(scan_response_data_);
     }
 
-    void set_service_uuids(std::unique_ptr<UUIDList> service_uuids) {
+    void set_service_uuids(absl::optional<UUIDList> service_uuids) {
       service_uuids_ = std::move(service_uuids);
     }
     void set_manufacturer_data(
-        std::unique_ptr<ManufacturerData> manufacturer_data) {
+        absl::optional<ManufacturerData> manufacturer_data) {
       manufacturer_data_ = std::move(manufacturer_data);
     }
-    void set_solicit_uuids(std::unique_ptr<UUIDList> solicit_uuids) {
+    void set_solicit_uuids(absl::optional<UUIDList> solicit_uuids) {
       solicit_uuids_ = std::move(solicit_uuids);
     }
-    void set_service_data(std::unique_ptr<ServiceData> service_data) {
+    void set_service_data(absl::optional<ServiceData> service_data) {
       service_data_ = std::move(service_data);
     }
     void set_scan_response_data(
-        std::unique_ptr<ScanResponseData> scan_response_data) {
+        absl::optional<ScanResponseData> scan_response_data) {
       scan_response_data_ = std::move(scan_response_data);
     }
 
@@ -112,15 +116,22 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
    private:
     Data();
 
-    AdvertisementType type_;
-    std::unique_ptr<UUIDList> service_uuids_;
-    std::unique_ptr<ManufacturerData> manufacturer_data_;
-    std::unique_ptr<UUIDList> solicit_uuids_;
-    std::unique_ptr<ServiceData> service_data_;
-    std::unique_ptr<ScanResponseData> scan_response_data_;
-    bool include_tx_power_;
+    // Passes the value along held by |from|, and restore the optional moved
+    // from to nullopt.
+    template <typename T>
+    static absl::optional<T> pass_value(absl::optional<T>& from) {
+      absl::optional<T> value = std::move(from);
+      from = absl::nullopt;
+      return value;
+    }
 
-    DISALLOW_COPY_AND_ASSIGN(Data);
+    AdvertisementType type_;
+    absl::optional<UUIDList> service_uuids_;
+    absl::optional<ManufacturerData> manufacturer_data_;
+    absl::optional<UUIDList> solicit_uuids_;
+    absl::optional<ServiceData> service_data_;
+    absl::optional<ScanResponseData> scan_response_data_;
+    bool include_tx_power_;
   };
 
   // Interface for observing changes to this advertisement.
@@ -132,6 +143,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
     virtual void AdvertisementReleased(
         BluetoothAdvertisement* advertisement) = 0;
   };
+
+  BluetoothAdvertisement(const BluetoothAdvertisement&) = delete;
+  BluetoothAdvertisement& operator=(const BluetoothAdvertisement&) = delete;
 
   // Adds and removes observers for events for this advertisement.
   void AddObserver(BluetoothAdvertisement::Observer* observer);
@@ -156,9 +170,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisement
   // List of observers interested in event notifications from us. Objects in
   // |observers_| are expected to outlive a BluetoothAdvertisement object.
   base::ObserverList<BluetoothAdvertisement::Observer>::Unchecked observers_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdvertisement);
 };
 
 }  // namespace device

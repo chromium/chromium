@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,6 +56,21 @@ public class PasswordManagerHandlerProvider implements PasswordManagerHandler.Pa
         ThreadUtils.assertOnUiThread();
         assert mObservers.isEmpty();
         mTestPasswordManagerHandler = passwordManagerHandler;
+    }
+
+    /**
+     * Resets the testing implementation of PasswordManagerHandler, clears all observers and ensures
+     * that the view is cleaned up properly.
+     */
+    @VisibleForTesting
+    public void resetPasswordManagerHandlerForTest() {
+        ThreadUtils.assertOnUiThread();
+        mObservers.clear();
+        mTestPasswordManagerHandler = null;
+        if (mPasswordUIView != null) {
+            mPasswordUIView.destroy();
+            mPasswordUIView = null;
+        }
     }
 
     /**

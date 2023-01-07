@@ -1,12 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_OES_DRAW_BUFFERS_INDEXED_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_OES_DRAW_BUFFERS_INDEXED_H_
 
-// #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
+#include "third_party/khronos/GLES2/gl2.h"
 
 namespace blink {
 
@@ -42,8 +42,6 @@ class OESDrawBuffersIndexed final : public WebGLExtension {
                      GLboolean g,
                      GLboolean b,
                      GLboolean a);
-
-  GLboolean isEnablediOES(GLenum target, GLuint index);
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
+mixins: "//ui/accessibility/COMMON_METADATA"
 monorail: {
   component: "UI>Accessibility"
 }
-team_email: "chromium-accessibility@chromium.org"

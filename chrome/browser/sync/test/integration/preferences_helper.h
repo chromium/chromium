@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,22 @@
 
 #include <stdint.h>
 
-#include "base/optional.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/sync/base/model_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/prefs/json_pref_store.h"
-#include "components/sync/protocol/sync.pb.h"
-#include "components/sync/test/fake_server/fake_server.h"
+#include "components/sync/protocol/preference_specifics.pb.h"
+#include "components/sync/test/fake_server.h"
 
 class PrefChangeRegistrar;
 class PrefService;
@@ -60,35 +62,50 @@ void ClearPref(int index, const char* pref_name);
 // profile with index |index| to |new_value|.
 void ChangeListPref(int index,
                     const char* pref_name,
-                    const base::ListValue& new_value);
-
-// Reads preferences from a given profile's pref file (after flushing) and loads
-// them into a new created pref store.
-scoped_refptr<PrefStore> BuildPrefStoreFromPrefsFile(Profile* profile);
+                    const base::Value::List& new_value);
 
 // Used to verify that the boolean preference with name |pref_name| has the
 // same value across all profiles.
-bool BooleanPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
+[[nodiscard]] bool BooleanPrefMatches(const char* pref_name);
 
 // Used to verify that the integer preference with name |pref_name| has the
 // same value across all profiles.
-bool IntegerPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
+[[nodiscard]] bool IntegerPrefMatches(const char* pref_name);
 
 // Used to verify that the string preference with name |pref_name| has the
 // same value across all profiles.
-bool StringPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
+[[nodiscard]] bool StringPrefMatches(const char* pref_name);
 
 // Used to verify that the list preference with name |pref_name| has the
 // same value across all profiles.
-bool ListPrefMatches(const char* pref_name) WARN_UNUSED_RESULT;
+[[nodiscard]] bool ListPrefMatches(const char* pref_name);
 
 // Returns a server-side preference in FakeServer for |pref_name| or nullopt if
 // no preference exists.
-base::Optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
+absl::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
+    syncer::ModelType model_type,
     const std::string& pref_name,
     fake_server::FakeServer* fake_server);
 
 }  // namespace preferences_helper
+
+// Checker that blocks until pref has the specified value.
+class BooleanPrefValueChecker : public StatusChangeChecker {
+ public:
+  BooleanPrefValueChecker(PrefService* pref_service,
+                          const char* path,
+                          bool expected_value);
+  ~BooleanPrefValueChecker() override;
+
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  const char* path_;
+  const bool expected_value_;
+
+  const base::raw_ptr<PrefService> pref_service_;
+  PrefChangeRegistrar pref_change_registrar_;
+};
 
 // Abstract checker that takes care of registering for preference changes.
 class PrefMatchChecker : public StatusChangeChecker {
@@ -158,7 +175,8 @@ class ClearedPrefMatchChecker : public PrefMatchChecker {
 class FakeServerPrefMatchesValueChecker
     : public fake_server::FakeServerMatchStatusChecker {
  public:
-  FakeServerPrefMatchesValueChecker(const std::string& pref_name,
+  FakeServerPrefMatchesValueChecker(syncer::ModelType model_type,
+                                    const std::string& pref_name,
                                     const std::string& expected_value);
 
  protected:
@@ -166,6 +184,7 @@ class FakeServerPrefMatchesValueChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
+  const syncer::ModelType model_type_;
   const std::string pref_name_;
   const std::string expected_value_;
 };

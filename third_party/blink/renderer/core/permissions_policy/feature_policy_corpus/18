@@ -1,0 +1,1 @@
+camera 'self' *://example.com/ https://example.net:*/; gyroscope 'src' https://*/ https://foo.*.example.net/ https://*.*.example.net/

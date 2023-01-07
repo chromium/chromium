@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece_forward.h"
 #include "extensions/common/manifest.h"
 
@@ -45,6 +44,10 @@ class CSPParser {
     Directive(base::StringPiece directive_string,
               std::string directive_name,
               std::vector<base::StringPiece> directive_values);
+
+    Directive(const Directive&) = delete;
+    Directive& operator=(const Directive&) = delete;
+
     ~Directive();
     Directive(Directive&&);
     Directive& operator=(Directive&&);
@@ -55,13 +58,15 @@ class CSPParser {
     std::string directive_name;
 
     std::vector<base::StringPiece> directive_values;
-
-    DISALLOW_COPY_AND_ASSIGN(Directive);
   };
 
   using DirectiveList = std::vector<Directive>;
 
   CSPParser(std::string policy);
+
+  CSPParser(const CSPParser&) = delete;
+  CSPParser& operator=(const CSPParser&) = delete;
+
   ~CSPParser();
 
   // It's not safe to move CSPParser since |directives_| refers to memory owned
@@ -82,8 +87,6 @@ class CSPParser {
 
   // This refers to memory owned by |policy_|.
   DirectiveList directives_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSPParser);
 };
 
 // Checks whether the given |policy| meets the minimum security requirements

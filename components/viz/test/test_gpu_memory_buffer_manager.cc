@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -74,11 +75,8 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
     handle.type = gfx::SHARED_MEMORY_BUFFER;
     handle.region = region_.Duplicate();
     handle.offset = base::checked_cast<uint32_t>(offset_);
-    handle.stride = base::checked_cast<int32_t>(stride_);
+    handle.stride = base::checked_cast<uint32_t>(stride_);
     return handle;
-  }
-  ClientBuffer AsClientBuffer() override {
-    return reinterpret_cast<ClientBuffer>(this);
   }
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
@@ -87,7 +85,7 @@ class GpuMemoryBufferImpl : public gfx::GpuMemoryBuffer {
       int importance) const override {}
 
  private:
-  TestGpuMemoryBufferManager* manager_;
+  raw_ptr<TestGpuMemoryBufferManager> manager_;
   gfx::GpuMemoryBufferId id_;
   const gfx::Size size_;
   gfx::BufferFormat format_;
@@ -126,9 +124,6 @@ class GpuMemoryBufferFromClient : public gfx::GpuMemoryBuffer {
   gfx::GpuMemoryBufferHandle CloneHandle() const override {
     return client_buffer_->CloneHandle();
   }
-  ClientBuffer AsClientBuffer() override {
-    return client_buffer_->AsClientBuffer();
-  }
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
@@ -136,9 +131,9 @@ class GpuMemoryBufferFromClient : public gfx::GpuMemoryBuffer {
       int importance) const override {}
 
  private:
-  TestGpuMemoryBufferManager* manager_;
+  raw_ptr<TestGpuMemoryBufferManager> manager_;
   gfx::GpuMemoryBufferId id_;
-  gfx::GpuMemoryBuffer* client_buffer_;
+  raw_ptr<gfx::GpuMemoryBuffer> client_buffer_;
 };
 
 }  // namespace
@@ -177,7 +172,8 @@ TestGpuMemoryBufferManager::CreateGpuMemoryBuffer(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    gpu::SurfaceHandle surface_handle) {
+    gpu::SurfaceHandle surface_handle,
+    base::WaitableEvent* shutdown_event) {
   base::AutoLock hold(lock_);
 
   if (fail_on_create_)

@@ -1,14 +1,11 @@
 rootWebArea
 ++genericContainer ignored
-++++genericContainer ignored
+++++genericContainer
 ++++++group
 ++++++++docEndnotes
-++++++++++presentational ignored
-++++++++++++docEndnote
-++++++++++++++staticText name='Endnote 1'
-++++++++++++++++inlineTextBox name='Endnote 1'
-++++++++++++docEndnote
-++++++++++++++staticText name='Endnote 2'
-++++++++++++++++inlineTextBox name='Endnote 2'
-++++++++button ignored invisible
-++++++++button ignored invisible
+++++++++++docEndnote
+++++++++++++staticText name='Endnote 1'
+++++++++++++++inlineTextBox name='Endnote 1'
+++++++++++docEndnote
+++++++++++++staticText name='Endnote 2'
+++++++++++++++inlineTextBox name='Endnote 2'

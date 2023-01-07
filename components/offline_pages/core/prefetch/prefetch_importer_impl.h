@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/prefetch/prefetch_importer.h"
 
@@ -26,6 +26,10 @@ class PrefetchImporterImpl : public PrefetchImporter {
   PrefetchImporterImpl(PrefetchDispatcher* dispatcher,
                        OfflinePageModel* context,
                        scoped_refptr<base::TaskRunner> background_task_runner);
+
+  PrefetchImporterImpl(const PrefetchImporterImpl&) = delete;
+  PrefetchImporterImpl& operator=(const PrefetchImporterImpl&) = delete;
+
   ~PrefetchImporterImpl() override;
 
   // PrefetchImporter implementation.
@@ -37,12 +41,10 @@ class PrefetchImporterImpl : public PrefetchImporter {
   void OnMoveFileDone(const OfflinePageItem& offline_page, bool success);
   void OnPageAdded(AddPageResult result, int64_t offline_id);
 
-  OfflinePageModel* offline_page_model_;
+  raw_ptr<OfflinePageModel> offline_page_model_;
   scoped_refptr<base::TaskRunner> background_task_runner_;
   std::set<int64_t> outstanding_import_offline_ids_;
   base::WeakPtrFactory<PrefetchImporterImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchImporterImpl);
 };
 
 }  // namespace offline_pages

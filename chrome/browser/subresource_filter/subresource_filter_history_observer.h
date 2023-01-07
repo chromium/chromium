@@ -1,11 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SUBRESOURCE_FILTER_SUBRESOURCE_FILTER_HISTORY_OBSERVER_H_
 #define CHROME_BROWSER_SUBRESOURCE_FILTER_SUBRESOURCE_FILTER_HISTORY_OBSERVER_H_
 
-#include "base/scoped_observer.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
@@ -40,11 +41,12 @@ class SubresourceFilterHistoryObserver
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
 
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_observer_{this};
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_observation_{this};
 
   // Outlives this object.
-  subresource_filter::SubresourceFilterContentSettingsManager*
+  raw_ptr<subresource_filter::SubresourceFilterContentSettingsManager>
       settings_manager_;
 };
 

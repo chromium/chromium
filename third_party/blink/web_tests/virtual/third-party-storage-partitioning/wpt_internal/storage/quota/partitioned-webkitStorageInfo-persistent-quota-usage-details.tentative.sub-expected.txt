@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+PASS Partitioned webkitStorageInfo persistent quota request and usage details test.
+Harness: the test ran to completion.
+

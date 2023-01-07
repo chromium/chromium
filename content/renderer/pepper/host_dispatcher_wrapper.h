@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ class PluginModule;
 
 // This class wraps a dispatcher and has the same lifetime. A dispatcher has
 // the same lifetime as a plugin module, which is longer than any particular
-// RenderView or plugin instance.
+// `blink::WebView` or plugin instance.
 class HostDispatcherWrapper {
  public:
   HostDispatcherWrapper(PluginModule* module,

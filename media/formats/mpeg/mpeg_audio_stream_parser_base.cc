@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/time/time.h"
 #include "media/base/media_log.h"
 #include "media/base/media_tracks.h"
 #include "media/base/media_util.h"
@@ -63,20 +64,20 @@ MPEGAudioStreamParserBase::~MPEGAudioStreamParserBase() = default;
 
 void MPEGAudioStreamParserBase::Init(
     InitCB init_cb,
-    const NewConfigCB& config_cb,
-    const NewBuffersCB& new_buffers_cb,
+    NewConfigCB config_cb,
+    NewBuffersCB new_buffers_cb,
     bool ignore_text_tracks,
-    const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
-    const NewMediaSegmentCB& new_segment_cb,
-    const EndMediaSegmentCB& end_of_segment_cb,
+    EncryptedMediaInitDataCB encrypted_media_init_data_cb,
+    NewMediaSegmentCB new_segment_cb,
+    EndMediaSegmentCB end_of_segment_cb,
     MediaLog* media_log) {
   DVLOG(1) << __func__;
   DCHECK_EQ(state_, UNINITIALIZED);
   init_cb_ = std::move(init_cb);
-  config_cb_ = config_cb;
-  new_buffers_cb_ = new_buffers_cb;
-  new_segment_cb_ = new_segment_cb;
-  end_of_segment_cb_ = end_of_segment_cb;
+  config_cb_ = std::move(config_cb);
+  new_buffers_cb_ = std::move(new_buffers_cb);
+  new_segment_cb_ = std::move(new_segment_cb);
+  end_of_segment_cb_ = std::move(end_of_segment_cb);
   media_log_ = media_log;
 
   ChangeState(INITIALIZED);
@@ -213,14 +214,14 @@ int MPEGAudioStreamParserBase::ParseFrame(const uint8_t* data,
     config_.Initialize(audio_codec_, kSampleFormatF32, channel_layout,
                        sample_rate, extra_data, EncryptionScheme::kUnencrypted,
                        base::TimeDelta(), codec_delay_);
-    if (audio_codec_ == kCodecAAC)
+    if (audio_codec_ == AudioCodec::kAAC)
       config_.disable_discard_decoder_delay();
 
     base::TimeDelta base_timestamp;
     if (timestamp_helper_)
       base_timestamp = timestamp_helper_->GetTimestamp();
 
-    timestamp_helper_.reset(new AudioTimestampHelper(sample_rate));
+    timestamp_helper_ = std::make_unique<AudioTimestampHelper>(sample_rate);
     timestamp_helper_->SetBaseTimestamp(base_timestamp);
 
     std::unique_ptr<MediaTracks> media_tracks(new MediaTracks());

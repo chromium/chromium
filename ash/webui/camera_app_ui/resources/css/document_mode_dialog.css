@@ -1,0 +1,116 @@
+/* Copyright 2021 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body.view-document-mode-dialog #preview-video {
+  filter: brightness(0.6);
+}
+
+#view-document-mode-dialog .dialog-popup {
+  align-items: center;
+  background: var(--grey-900);
+  display: flex;
+  left: 50%;
+  padding: 20px;
+  position: absolute;
+  top: 32px;
+  transform: translateX(-50%);
+}
+
+#icon-scan-area {
+  --scan-corner-border: 3px solid var(--blue-300);
+  --scan-corner-border-radius: 8px;
+  --scan-corner-height: 20%;
+  --scan-corner-width: 20%;
+
+  align-items: center;
+  border-radius: 8px;
+  display: flex;
+  height: 94px;
+  justify-content: center;
+  margin: 16px;
+  position: relative;
+  width: 72px;
+}
+
+.scan-corner {
+  height: var(--scan-corner-height);
+  position: absolute;
+  width: var(--scan-corner-width);
+}
+
+.scan-corner.left {
+  border-left: var(--scan-corner-border); /* csschecker-disable-line left-right */
+  left: 0;
+}
+
+.scan-corner.right {
+  border-right: var(--scan-corner-border); /* csschecker-disable-line left-right */
+  right: 0;
+}
+
+.scan-corner.bottom {
+  border-bottom: var(--scan-corner-border);
+  bottom: 0;
+}
+
+.scan-corner.top {
+  border-top: var(--scan-corner-border);
+  top: 0;
+}
+
+.scan-corner.top.left {
+  border-top-left-radius: var(--scan-corner-border-radius);
+}
+
+.scan-corner.top.right {
+  border-top-right-radius: var(--scan-corner-border-radius);
+}
+
+.scan-corner.bottom.left {
+  border-bottom-left-radius: var(--scan-corner-border-radius);
+}
+
+.scan-corner.bottom.right {
+  border-bottom-right-radius: var(--scan-corner-border-radius);
+}
+
+.scan-line {
+  background: var(--yellow-300);
+  border-radius: var(--border-radius-rounded-with-short-side);
+  height: 2px;
+  left: 50%;
+  position: absolute;
+  top: 25%;
+  transform: translateX(-50%);
+  width: calc(100% + 6px);
+}
+
+#icon-document-area {
+  align-items: center;
+  border: 1px solid var(--blue-300);
+  border-radius: 8px;
+  display: flex;
+  height: 82px;
+  justify-content: center;
+  width: 60px;
+}
+
+#icon-document-g {
+  background: url(/images/document_mode_dialog_icon.svg);
+  height: 27px;
+  width: 28px;
+}
+
+#view-document-mode-dialog .dialog-title {
+  color: var(--grey-200);
+  font: 500 16px/24px var(--default-font-family);
+  text-align: center;
+}
+
+#view-document-mode-dialog .dialog-description {
+  color: var(--grey-500);
+  font: 400 14px/20px Roboto;
+  margin: 20px 0;
+  max-width: 278px;
+}

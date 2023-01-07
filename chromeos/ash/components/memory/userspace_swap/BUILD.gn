@@ -1,0 +1,67 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/test.gni")
+
+assert(is_chromeos_ash, "Non ChromeOS builds must not depend on //chromeos/ash")
+
+mojom("mojom") {
+  sources = [ "userspace_swap.mojom" ]
+
+  cpp_only = true
+  disable_variants = true
+
+  deps = [ "//mojo/public/mojom/base" ]
+}
+
+component("userspace_swap") {
+  defines = [ "IS_USERSPACE_SWAP_IMPL" ]
+  deps = [
+    ":mojom",
+    "//base",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/memory",
+    "//chromeos/dbus/constants",
+    "//components/memory_pressure",
+    "//crypto",
+    "//services/resource_coordinator/public/cpp/memory_instrumentation",
+    "//third_party/zlib/google:compression_utils",
+  ]
+  sources = [
+    "region.cc",
+    "region.h",
+    "swap_storage.cc",
+    "swap_storage.h",
+    "userfaultfd.cc",
+    "userfaultfd.h",
+    "userspace_swap.cc",
+    "userspace_swap.h",
+    "userspace_swap_renderer_initialization_impl.cc",
+    "userspace_swap_renderer_initialization_impl.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":mojom",
+    ":userspace_swap",
+    "//base/allocator:buildflags",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//mojo/core/embedder",
+    "//services/resource_coordinator/public/cpp/memory_instrumentation",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [
+    "region_unittest.cc",
+    "swap_storage_unittest.cc",
+    "userfaultfd_unittest.cc",
+    "userspace_swap_unittest.cc",
+  ]
+}

@@ -1,15 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_DATA_DECODER_PUBLIC_CPP_SAFE_WEB_BUNDLE_PARSER_H_
 #define SERVICES_DATA_DECODER_PUBLIC_CPP_SAFE_WEB_BUNDLE_PARSER_H_
 
-#include <string>
-
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
-#include "base/optional.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -23,6 +20,10 @@ namespace data_decoder {
 class SafeWebBundleParser {
  public:
   SafeWebBundleParser();
+
+  SafeWebBundleParser(const SafeWebBundleParser&) = delete;
+  SafeWebBundleParser& operator=(const SafeWebBundleParser&) = delete;
+
   // Remaining callbacks on flight will be dropped.
   ~SafeWebBundleParser();
 
@@ -34,10 +35,20 @@ class SafeWebBundleParser {
   void OpenDataSource(
       mojo::PendingRemote<web_package::mojom::BundleDataSource> data_source);
 
-  // Parses metadata. See web_package::mojom::WebBundleParser::ParseMetadata for
+  // Parses the integrity block of a signed web bundle. See
+  // web_package::mojom::WebBundleParser::ParseIntegrityBlock for
+  // details. This method fails when it's called before the previous call
+  // finishes.
+  void ParseIntegrityBlock(
+      web_package::mojom::WebBundleParser::ParseIntegrityBlockCallback
+          callback);
+
+  // Parses metadata. If `offset` is >= 0, then parsing of the web bundle starts
+  // at that offset. See web_package::mojom::WebBundleParser::ParseMetadata for
   // details. This method fails when it's called before the previous call
   // finishes.
   void ParseMetadata(
+      int64_t offset,
       web_package::mojom::WebBundleParser::ParseMetadataCallback callback);
 
   // Parses response. See web_package::mojom::WebBundleParser::ParseResponse for
@@ -54,6 +65,9 @@ class SafeWebBundleParser {
  private:
   web_package::mojom::WebBundleParserFactory* GetFactory();
   void OnDisconnect();
+  void OnIntegrityBlockParsed(
+      web_package::mojom::BundleIntegrityBlockPtr integrity_block,
+      web_package::mojom::BundleIntegrityBlockParseErrorPtr error);
   void OnMetadataParsed(web_package::mojom::BundleMetadataPtr metadata,
                         web_package::mojom::BundleMetadataParseErrorPtr error);
   void OnResponseParsed(size_t callback_id,
@@ -63,6 +77,8 @@ class SafeWebBundleParser {
   DataDecoder data_decoder_;
   mojo::Remote<web_package::mojom::WebBundleParserFactory> factory_;
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;
+  web_package::mojom::WebBundleParser::ParseIntegrityBlockCallback
+      integrity_block_callback_;
   web_package::mojom::WebBundleParser::ParseMetadataCallback metadata_callback_;
   base::flat_map<size_t,
                  web_package::mojom::WebBundleParser::ParseResponseCallback>
@@ -70,8 +86,6 @@ class SafeWebBundleParser {
   base::OnceClosure disconnect_callback_;
   size_t response_callback_next_id_ = 0;
   bool disconnected_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeWebBundleParser);
 };
 
 }  // namespace data_decoder

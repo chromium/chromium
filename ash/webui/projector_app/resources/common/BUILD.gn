@@ -1,0 +1,28 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash, "Projector is ChromeOS only")
+
+js_library("message_types") {
+  sources = [ "./message_types.js" ]
+}
+
+js_library("projector_app_externs") {
+  sources = [ "./projector_app.externs.js" ]
+}
+
+generate_grd("build_common_grd") {
+  input_files = [
+    "message_types.js",
+    "projector_app.externs.js",
+  ]
+
+  resource_path_prefix = "common"
+  input_files_base_dir = rebase_path(".", "//")
+  grd_prefix = "ash_projector_common"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}

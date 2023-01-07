@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,8 +46,11 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/checked_math.h"
 #include "base/strings/string_util.h"
+#include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/http/http_util.h"
 
 namespace {
@@ -61,11 +64,12 @@ const char kHttpOnlyTokenName[] = "httponly";
 const char kSameSiteTokenName[] = "samesite";
 const char kPriorityTokenName[] = "priority";
 const char kSamePartyTokenName[] = "sameparty";
+const char kPartitionedTokenName[] = "partitioned";
 
 const char kTerminator[] = "\n\r\0";
 const int kTerminatorLen = sizeof(kTerminator) - 1;
 const char kWhitespace[] = " \t";
-const char kValueSeparator[] = ";";
+const char kValueSeparator = ';';
 const char kTokenSeparator[] = ";=";
 
 // Returns true if |c| occurs in |chars|
@@ -73,6 +77,17 @@ const char kTokenSeparator[] = ";=";
 inline bool CharIsA(const char c, const char* chars) {
   return strchr(chars, c) != nullptr;
 }
+
+// Seek the iterator to the first occurrence of |character|.
+// Returns true if it hits the end, false otherwise.
+inline bool SeekToCharacter(std::string::const_iterator* it,
+                            const std::string::const_iterator& end,
+                            const char character) {
+  for (; *it != end && **it != character; ++(*it)) {
+  }
+  return *it == end;
+}
+
 // Seek the iterator to the first occurrence of a character in |chars|.
 // Returns true if it hit the end, false otherwise.
 inline bool SeekTo(std::string::const_iterator* it,
@@ -105,7 +120,12 @@ inline bool SeekBackPast(std::string::const_iterator* it,
 //                      ; US-ASCII characters excluding CTLs,
 //                      ; whitespace DQUOTE, comma, semicolon,
 //                      ; and backslash
-bool IsValidCookieValue(const std::string& value) {
+// Note: This function is being replaced by
+// ParsedCookie::IsValidCookieValue() but remains here while we test that
+// removing this functionality doesn't break things.
+// TODO(crbug.com/1243852) Remove this when kExtraCookieValidityChecks
+// gets removed (assuming the associated changes cause no issues).
+bool IsValidCookieValueLegacy(const std::string& value) {
   // Number of characters to skip in validation at beginning and end of string.
   size_t skip = 0;
   if (value.size() >= 2 && *value.begin() == '"' && *(value.end() - 1) == '"')
@@ -122,19 +142,52 @@ bool IsValidCookieValue(const std::string& value) {
   return true;
 }
 
+// Returns the string piece within |value| that is a valid cookie value.
+base::StringPiece ValidStringPieceForValue(const std::string& value) {
+  std::string::const_iterator it = value.begin();
+  std::string::const_iterator end =
+      net::ParsedCookie::FindFirstTerminator(value);
+  std::string::const_iterator value_start;
+  std::string::const_iterator value_end;
+
+  net::ParsedCookie::ParseValue(&it, end, &value_start, &value_end);
+
+  return base::MakeStringPiece(value_start, value_end);
+}
+
 }  // namespace
 
 namespace net {
 
-ParsedCookie::ParsedCookie(const std::string& cookie_line) {
-  if (cookie_line.size() > kMaxCookieSize) {
+ParsedCookie::ParsedCookie(const std::string& cookie_line,
+                           CookieInclusionStatus* status_out) {
+  // Put a pointer on the stack so the rest of the function can assign to it if
+  // the default nullptr is passed in.
+  CookieInclusionStatus blank_status;
+  if (status_out == nullptr) {
+    status_out = &blank_status;
+  }
+  *status_out = CookieInclusionStatus();
+
+  if ((!base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) &&
+      cookie_line.size() > kMaxCookieSize) {
     DVLOG(1) << "Not parsing cookie, too large: " << cookie_line.size();
+    status_out->AddExclusionReason(
+        CookieInclusionStatus::EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE);
     return;
   }
 
-  ParseTokenValuePairs(cookie_line);
-  if (!pairs_.empty())
+  ParseTokenValuePairs(cookie_line, *status_out);
+  if (IsValid()) {
     SetupAttributes();
+  } else if (status_out->IsInclude()) {
+    // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
+    status_out->AddExclusionReason(
+        CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+  }
+
+  // Status should indicate exclusion if the resulting ParsedCookie is invalid.
+  DCHECK(IsValid() || !status_out->IsInclude());
 }
 
 ParsedCookie::~ParsedCookie() = default;
@@ -162,30 +215,91 @@ CookiePriority ParsedCookie::Priority() const {
 }
 
 bool ParsedCookie::SetName(const std::string& name) {
-  if (!name.empty() && !HttpUtil::IsToken(name))
-    return false;
+  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+    const std::string& value = pairs_.empty() ? "" : pairs_[0].second;
 
-  // Fail if we'd be creating a cookie with an empty name and value.
-  if (name.empty() && (pairs_.empty() || pairs_[0].second.empty()))
-    return false;
+    // Ensure there are no invalid characters in `name`. This should be done
+    // before calling ParseTokenString because we want terminating characters
+    // ('\r', '\n', and '\0') and '=' in `name` to cause a rejection instead of
+    // truncation.
+    // TODO(crbug.com/1233602) Once we change logic more broadly to reject
+    // cookies containing these characters, we should be able to simplify this
+    // logic since IsValidCookieNameValuePair() also calls IsValidCookieName().
+    // Also, this check will currently fail if `name` has a tab character in the
+    // leading or trailing whitespace, which is inconsistent with what happens
+    // when parsing a cookie line in the constructor (but the old logic for
+    // SetName() behaved this way as well).
+    if (!IsValidCookieName(name)) {
+      return false;
+    }
 
-  if (pairs_.empty())
-    pairs_.push_back(std::make_pair("", ""));
-  pairs_[0].first = name;
+    // Use the same whitespace trimming code as the constructor.
+    const std::string& parsed_name = ParseTokenString(name);
+
+    if (!IsValidCookieNameValuePair(parsed_name, value)) {
+      return false;
+    }
+
+    if (pairs_.empty())
+      pairs_.push_back(std::make_pair("", ""));
+    pairs_[0].first = parsed_name;
+
+  } else {
+    if (!name.empty() && !HttpUtil::IsToken(name))
+      return false;
+
+    // Fail if we'd be creating a cookie with an empty name and value.
+    if (name.empty() && (pairs_.empty() || pairs_[0].second.empty()))
+      return false;
+
+    if (pairs_.empty())
+      pairs_.push_back(std::make_pair("", ""));
+    pairs_[0].first = name;
+  }
   return true;
 }
 
 bool ParsedCookie::SetValue(const std::string& value) {
-  if (!IsValidCookieValue(value))
-    return false;
+  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+    const std::string& name = pairs_.empty() ? "" : pairs_[0].first;
 
-  // Fail if we'd be creating a cookie with an empty name and value.
-  if (value.empty() && (pairs_.empty() || pairs_[0].first.empty()))
-    return false;
+    // Ensure there are no invalid characters in `value`. This should be done
+    // before calling ParseValueString because we want terminating characters
+    // ('\r', '\n', and '\0') in `value` to cause a rejection instead of
+    // truncation.
+    // TODO(crbug.com/1233602) Once we change logic more broadly to reject
+    // cookies containing these characters, we should be able to simplify this
+    // logic since IsValidCookieNameValuePair() also calls IsValidCookieValue().
+    // Also, this check will currently fail if `value` has a tab character in
+    // the leading or trailing whitespace, which is inconsistent with what
+    // happens when parsing a cookie line in the constructor (but the old logic
+    // for SetValue() behaved this way as well).
+    if (!IsValidCookieValue(value)) {
+      return false;
+    }
 
-  if (pairs_.empty())
-    pairs_.push_back(std::make_pair("", ""));
-  pairs_[0].second = value;
+    // Use the same whitespace trimming code as the constructor.
+    const std::string& parsed_value = ParseValueString(value);
+
+    if (!IsValidCookieNameValuePair(name, parsed_value)) {
+      return false;
+    }
+    if (pairs_.empty())
+      pairs_.push_back(std::make_pair("", ""));
+    pairs_[0].second = parsed_value;
+
+  } else {
+    if (!IsValidCookieValueLegacy(value))
+      return false;
+
+    // Fail if we'd be creating a cookie with an empty name and value.
+    if (value.empty() && (pairs_.empty() || pairs_[0].first.empty()))
+      return false;
+
+    if (pairs_.empty())
+      pairs_.push_back(std::make_pair("", ""));
+    pairs_[0].second = value;
+  }
   return true;
 }
 
@@ -225,6 +339,10 @@ bool ParsedCookie::SetIsSameParty(bool is_same_party) {
   return SetBool(&same_party_index_, kSamePartyTokenName, is_same_party);
 }
 
+bool ParsedCookie::SetIsPartitioned(bool is_partitioned) {
+  return SetBool(&partitioned_index_, kPartitionedTokenName, is_partitioned);
+}
+
 std::string ParsedCookie::ToCookieLine() const {
   std::string out;
   for (auto it = pairs_.begin(); it != pairs_.end(); ++it) {
@@ -236,7 +354,8 @@ std::string ParsedCookie::ToCookieLine() const {
     // we need to consider whether the name component is a special token.
     if (it == pairs_.begin() ||
         (it->first != kSecureTokenName && it->first != kHttpOnlyTokenName &&
-         it->first != kSamePartyTokenName)) {
+         it->first != kSamePartyTokenName &&
+         it->first != kPartitionedTokenName)) {
       out.append("=");
       out.append(it->second);
     }
@@ -300,22 +419,24 @@ void ParsedCookie::ParseValue(std::string::const_iterator* it,
                               std::string::const_iterator* value_end) {
   DCHECK(it && value_start && value_end);
 
-  // Seek past any whitespace that might in-between the token and value.
+  // Seek past any whitespace that might be in-between the token and value.
   SeekPast(it, end, kWhitespace);
   // value_start should point at the first character of the value.
   *value_start = *it;
 
   // Just look for ';' to terminate ('=' allowed).
   // We can hit the end, maybe they didn't terminate.
-  SeekTo(it, end, kValueSeparator);
+  SeekToCharacter(it, end, kValueSeparator);
 
-  // Will be pointed at the ; seperator or the end.
+  // Will point at the ; separator or the end.
   *value_end = *it;
 
   // Ignore any unwanted whitespace after the value.
   if (*value_end != *value_start) {  // Could have an empty value
     --(*value_end);
+    // Skip over any whitespace to the first non-whitespace character.
     SeekBackPast(value_end, *value_start, kWhitespace);
+    // Point after it.
     ++(*value_end);
   }
 }
@@ -333,27 +454,135 @@ std::string ParsedCookie::ParseTokenString(const std::string& token) {
 
 // static
 std::string ParsedCookie::ParseValueString(const std::string& value) {
-  std::string::const_iterator it = value.begin();
-  std::string::const_iterator end = FindFirstTerminator(value);
-
-  std::string::const_iterator value_start, value_end;
-  ParseValue(&it, end, &value_start, &value_end);
-  return std::string(value_start, value_end);
+  return std::string(ValidStringPieceForValue(value));
 }
 
 // static
-bool ParsedCookie::IsValidCookieAttributeValue(const std::string& value) {
-  // The greatest common denominator of cookie attribute values is
-  // <any CHAR except CTLs or ";"> according to RFC 6265.
-  for (std::string::const_iterator i = value.begin(); i != value.end(); ++i) {
-    if (HttpUtil::IsControlChar(*i) || *i == ';')
+bool ParsedCookie::ValueMatchesParsedValue(const std::string& value) {
+  // ValidStringPieceForValue() returns a valid substring of |value|.
+  // If |value| can be fully parsed the result will have the same length
+  // as |value|.
+  return ValidStringPieceForValue(value).length() == value.length();
+}
+
+// static
+bool ParsedCookie::IsValidCookieName(const std::string& name) {
+  // IsValidCookieName() returns whether a string matches the following
+  // grammar:
+  //
+  // cookie-name       = *cookie-name-octet
+  // cookie-name-octet = %x20-3A / %x3C / %x3E-7E / %x80-FF
+  //                       ; octets excluding CTLs, ";", and "="
+  //
+  // This can be used to determine whether cookie names and cookie attribute
+  // names contain any invalid characters.
+  //
+  // Note that RFC6265bis section 4.1.1 suggests a stricter grammar for
+  // parsing cookie names, but we choose to allow a wider range of characters
+  // than what's allowed by that grammar (while still conforming to the
+  // requirements of the parsing algorithm defined in section 5.2).
+  //
+  // For reference, see:
+  //  - https://crbug.com/238041
+  for (char i : name) {
+    if (HttpUtil::IsControlChar(i) || i == ';' || i == '=')
       return false;
   }
   return true;
 }
 
+// static
+bool ParsedCookie::IsValidCookieValue(const std::string& value) {
+  // IsValidCookieValue() returns whether a string matches the following
+  // grammar:
+  //
+  // cookie-value       = *cookie-value-octet
+  // cookie-value-octet = %x20-3A / %x3C-7E / %x80-FF
+  //                       ; octets excluding CTLs and ";"
+  //
+  // This can be used to determine whether cookie values contain any invalid
+  // characters.
+  //
+  // Note that RFC6265bis section 4.1.1 suggests a stricter grammar for
+  // parsing cookie values, but we choose to allow a wider range of characters
+  // than what's allowed by that grammar (while still conforming to the
+  // requirements of the parsing algorithm defined in section 5.2).
+  //
+  // For reference, see:
+  //  - https://crbug.com/238041
+  for (char i : value) {
+    if (HttpUtil::IsControlChar(i) || i == ';')
+      return false;
+  }
+  return true;
+}
+
+// static
+bool ParsedCookie::IsValidCookieAttributeValueLegacy(const std::string& value) {
+  // This legacy method only checks the character set, so use
+  // CookieAttributeValueHasValidCharSet()
+  return CookieAttributeValueHasValidCharSet(value);
+}
+
+// static
+bool ParsedCookie::CookieAttributeValueHasValidCharSet(
+    const std::string& value) {
+  // A cookie attribute value has the same character set restrictions as cookie
+  // values, so re-use the validation function for that.
+  return IsValidCookieValue(value);
+}
+
+// static
+bool ParsedCookie::CookieAttributeValueHasValidSize(const std::string& value) {
+  return (value.size() <= kMaxCookieAttributeValueSize);
+}
+
+// static
+bool ParsedCookie::IsValidCookieNameValuePair(
+    const std::string& name,
+    const std::string& value,
+    CookieInclusionStatus* status_out) {
+  // Ignore cookies with neither name nor value.
+  if (name.empty() && value.empty()) {
+    if (status_out != nullptr) {
+      // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
+      status_out->AddExclusionReason(
+          CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+    }
+    // TODO(crbug.com/1228815) Note - if the exclusion reasons change to no
+    // longer be the same, we'll need to not return right away and evaluate all
+    // of the checks.
+    return false;
+  }
+
+  // Enforce a length limit for name + value per RFC6265bis.
+  base::CheckedNumeric<size_t> name_value_pair_size = name.size();
+  name_value_pair_size += value.size();
+  if (!name_value_pair_size.IsValid() ||
+      (name_value_pair_size.ValueOrDie() > kMaxCookieNamePlusValueSize)) {
+    if (status_out != nullptr) {
+      status_out->AddExclusionReason(
+          CookieInclusionStatus::EXCLUDE_NAME_VALUE_PAIR_EXCEEDS_MAX_SIZE);
+    }
+    return false;
+  }
+
+  // Ignore Set-Cookie directives containing control characters. See
+  // http://crbug.com/238041.
+  if (!IsValidCookieName(name) || !IsValidCookieValue(value)) {
+    // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
+    if (status_out != nullptr) {
+      status_out->AddExclusionReason(
+          CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+    }
+    return false;
+  }
+  return true;
+}
+
 // Parse all token/value pairs and populate pairs_.
-void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line) {
+void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
+                                        CookieInclusionStatus& status_out) {
   pairs_.clear();
 
   // Ok, here we go.  We should be expecting to be starting somewhere
@@ -365,9 +594,33 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line) {
   // Then we can log any unexpected terminators.
   std::string::const_iterator end = FindFirstTerminator(cookie_line);
 
+  // For metrics on truncating character presence in the cookie line.
+  if (end < cookie_line.end()) {
+    switch (*end) {
+      case '\0':
+        truncating_char_in_cookie_string_type_ =
+            TruncatingCharacterInCookieStringType::kTruncatingCharNull;
+        break;
+      case '\r':
+        truncating_char_in_cookie_string_type_ =
+            TruncatingCharacterInCookieStringType::kTruncatingCharNewline;
+        break;
+      case '\n':
+        truncating_char_in_cookie_string_type_ =
+            TruncatingCharacterInCookieStringType::kTruncatingCharLineFeed;
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
   // Exit early for an empty cookie string.
-  if (it == end)
+  if (it == end) {
+    // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
+    status_out.AddExclusionReason(
+        CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
     return;
+  }
 
   for (int pair_num = 0; it != end; ++pair_num) {
     TokenValuePair pair;
@@ -412,30 +665,98 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line) {
     // OK, we're finished with a Token/Value.
     pair.second = std::string(value_start, value_end);
 
-    // Ignore cookies with neither name nor value.
-    if (pair_num == 0 && (pair.first.empty() && pair.second.empty())) {
-      pairs_.clear();
-      break;
+    if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+      bool ignore_pair = false;
+      if (pair_num == 0) {
+        if (!IsValidCookieNameValuePair(pair.first, pair.second, &status_out)) {
+          pairs_.clear();
+          break;
+        }
+      } else {
+        // From RFC2109: "Attributes (names) (attr) are case-insensitive."
+        pair.first = base::ToLowerASCII(pair.first);
+
+        // Attribute names have the same character set limitations as cookie
+        // names, but only a handful of values are allowed. We don't check that
+        // this attribute name is one of the allowed ones here, so just re-use
+        // the cookie name check.
+        if (!IsValidCookieName(pair.first)) {
+          // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
+          status_out.AddExclusionReason(
+              CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+          pairs_.clear();
+          break;
+        }
+
+        if (!CookieAttributeValueHasValidCharSet(pair.second)) {
+          // If the attribute value contains invalid characters, the whole
+          // cookie should be ignored.
+          status_out.AddExclusionReason(
+              CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+          pairs_.clear();
+          break;
+        }
+
+        if (!CookieAttributeValueHasValidSize(pair.second)) {
+          // If the attribute value is too large, it should be ignored.
+          ignore_pair = true;
+          status_out.AddWarningReason(
+              CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE);
+        }
+      }
+
+      if (!ignore_pair) {
+        pairs_.push_back(pair);
+      }
+    } else {
+      // Ignore cookies with neither name nor value.
+      if (pair_num == 0 && (pair.first.empty() && pair.second.empty())) {
+        // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
+        status_out.AddExclusionReason(
+            CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+        pairs_.clear();
+        break;
+      }
+
+      // From RFC2109: "Attributes (names) (attr) are case-insensitive."
+      if (pair_num != 0)
+        pair.first = base::ToLowerASCII(pair.first);
+
+      // Ignore Set-Cookie directives containing control characters. See
+      // http://crbug.com/238041.
+      if (!IsValidCookieAttributeValueLegacy(pair.first) ||
+          !IsValidCookieAttributeValueLegacy(pair.second)) {
+        // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
+        status_out.AddExclusionReason(
+            CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+        pairs_.clear();
+        break;
+      }
+
+      pairs_.push_back(pair);
     }
-
-    // From RFC2109: "Attributes (names) (attr) are case-insensitive."
-    if (pair_num != 0)
-      pair.first = base::ToLowerASCII(pair.first);
-
-    // Ignore Set-Cookie directives contaning control characters. See
-    // http://crbug.com/238041.
-    if (!IsValidCookieAttributeValue(pair.first) ||
-        !IsValidCookieAttributeValue(pair.second)) {
-      pairs_.clear();
-      break;
-    }
-
-    pairs_.push_back(pair);
 
     // We've processed a token/value pair, we're either at the end of
     // the string or a ValueSeparator like ';', which we want to skip.
     if (it != end)
       ++it;
+  }
+
+  // For metrics on name/value truncation.
+  //
+  // If we stopped before the (real) end of the string and the leftovers
+  // include something other than terminating characters or whitespace then
+  // this cookie was truncated due to a terminating CTL.
+  //
+  // We only care about the name or value being truncated which means we
+  // only care about the first pair. If the pairs_.size() > 1 then that
+  // means the truncation happened after name/value parsing which we're not
+  // concerned about for metrics.
+  using std::string_literals::operator""s;
+  if (pairs_.size() == 1 &&
+      cookie_line.find_first_not_of("\n\r\0 \t"s, end - start) !=
+          std::string::npos) {
+    truncated_name_or_value_ = true;
   }
 }
 
@@ -444,7 +765,7 @@ void ParsedCookie::SetupAttributes() {
   for (size_t i = 1; i < pairs_.size(); ++i) {
     if (pairs_[i].first == kPathTokenName) {
       path_index_ = i;
-    } else if (pairs_[i].first == kDomainTokenName && pairs_[i].second != "") {
+    } else if (pairs_[i].first == kDomainTokenName) {
       domain_index_ = i;
     } else if (pairs_[i].first == kExpiresTokenName) {
       expires_index_ = i;
@@ -460,6 +781,8 @@ void ParsedCookie::SetupAttributes() {
       priority_index_ = i;
     } else if (pairs_[i].first == kSamePartyTokenName) {
       same_party_index_ = i;
+    } else if (pairs_[i].first == kPartitionedTokenName) {
+      partitioned_index_ = i;
     } else {
       /* some attribute we don't know or don't care about. */
     }
@@ -479,12 +802,26 @@ bool ParsedCookie::SetString(size_t* index,
   // produce a cookie with "path" attribute equal to "baz" (no spaces). We
   // should not produce cookie lines that parse to different key/value pairs!
 
-  // Inputs containing invalid characters should be ignored.
-  if (!IsValidCookieAttributeValue(untrusted_value))
-    return false;
+  // Inputs containing invalid characters or attribute value strings that are
+  // too large should be ignored. Note that we check the attribute value size
+  // after removing leading and trailing whitespace.
+  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+    if (!CookieAttributeValueHasValidCharSet(untrusted_value))
+      return false;
+
+  } else {
+    if (!IsValidCookieAttributeValueLegacy(untrusted_value))
+      return false;
+  }
 
   // Use the same whitespace trimming code as the constructor.
   const std::string parsed_value = ParseValueString(untrusted_value);
+
+  if (base::FeatureList::IsEnabled(features::kExtraCookieValidityChecks)) {
+    if (!CookieAttributeValueHasValidSize(parsed_value))
+      return false;
+  }
+
   if (parsed_value.empty()) {
     ClearAttributePair(*index);
     return true;
@@ -520,14 +857,15 @@ bool ParsedCookie::SetAttributePair(size_t* index,
 
 void ParsedCookie::ClearAttributePair(size_t index) {
   // The first pair (name/value of cookie at pairs_[0]) cannot be cleared.
-  // Cookie attributes that don't have a value at the moment, are represented
-  // with an index being equal to 0.
+  // Cookie attributes that don't have a value at the moment, are
+  // represented with an index being equal to 0.
   if (index == 0)
     return;
 
-  size_t* indexes[] = {&path_index_,      &domain_index_,   &expires_index_,
-                       &maxage_index_,    &secure_index_,   &httponly_index_,
-                       &same_site_index_, &priority_index_, &same_party_index_};
+  size_t* indexes[] = {&path_index_,       &domain_index_,   &expires_index_,
+                       &maxage_index_,     &secure_index_,   &httponly_index_,
+                       &same_site_index_,  &priority_index_, &same_party_index_,
+                       &partitioned_index_};
   for (size_t* attribute_index : indexes) {
     if (*attribute_index == index)
       *attribute_index = 0;

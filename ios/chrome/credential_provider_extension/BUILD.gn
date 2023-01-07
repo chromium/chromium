@@ -1,9 +1,10 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/apple/compile_entitlements.gni")
 import("//build/apple/tweak_info_plist.gni")
+import("//build/buildflag_header.gni")
 import("//build/config/ios/rules.gni")
 import("//build/config/locales.gni")
 import("//ios/build/chrome_build.gni")
@@ -22,17 +23,12 @@ group("resources") {
 
 extension_repack_all_locales("packed_resources") {
   extension = "credential_provider_extension"
-  input_locales = ios_packed_locales
-  output_locales = ios_packed_locales_as_mac_outputs
+  input_locales = platform_pak_locales
+  output_locales = locales_as_apple_outputs
 }
 
 tweak_info_plist("tweak_info_plist") {
   info_plist = "Info.plist"
-
-  # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
-  if (ios_lock_to_version != "") {
-    args = [ "--lock-to-version=$ios_lock_to_version" ]
-  }
 }
 
 compile_entitlements("entitlements") {
@@ -67,6 +63,7 @@ ios_appex_bundle("credential_provider_extension") {
     "//base",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:client",
+    "//ios/chrome/common/crash_report",
     "//ios/chrome/common/credential_provider",
     "//ios/chrome/common/credential_provider:ui",
     "//ios/chrome/common/ui/colors",
@@ -74,6 +71,7 @@ ios_appex_bundle("credential_provider_extension") {
     "//ios/chrome/common/ui/reauthentication",
     "//ios/chrome/credential_provider_extension/resources",
     "//ios/chrome/credential_provider_extension/ui",
+    "//ios/chrome/credential_provider_extension/ui:feature_flags",
   ]
   bundle_deps_filter = [ "//third_party/icu:icudata" ]
 
@@ -88,13 +86,12 @@ ios_appex_bundle("credential_provider_extension") {
   extra_substitutions = [
     "CHROME_CHANNEL_SCHEME=$url_channel_scheme",
     "CHROMIUM_SHORT_NAME=$chromium_short_name",
-    "CREDENTIAL_PROVIDER_EXTENSION_BUNDLE_ID=$chromium_bundle_id.CredentialProviderExtension",
     "CHROMIUM_BUNDLE_ID=$chromium_bundle_id",
   ]
 
   entitlements_target = ":entitlements"
   info_plist_target = ":tweak_info_plist"
-  xcode_product_bundle_id = "$chromium_bundle_id.CredentialProviderExtension"
+  bundle_identifier = "$chromium_bundle_id.CredentialProviderExtension"
 }
 
 generate_localizable_strings("system_strings") {
@@ -105,21 +102,18 @@ generate_localizable_strings("system_strings") {
   _packed_resources_target = ":packed_resources"
   config_file = "credential_provider_extension_localize_strings_config.plist"
   datapack_dir = get_label_info(_packed_resources_target, "target_gen_dir")
-  packed_locales = ios_packed_locales_as_mac_outputs
+  packed_locales = locales_as_apple_outputs
   output_filenames = [ "Localizable.strings" ]
   deps = [ _packed_resources_target ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "metrics_util_unittest.mm",
-    "password_util_unittest.mm",
-  ]
+  sources = [ "metrics_util_unittest.mm" ]
   deps = [
     ":metrics_util",
-    ":password_util",
     "//base",
+    "//base/test:test_support",
     "//ios/chrome/common/app_group",
     "//testing/gtest",
   ]
@@ -140,6 +134,11 @@ source_set("reauthentication_handler") {
   ]
 }
 
+buildflag_header("password_spec_fetcher_buildflags") {
+  header = "password_spec_fetcher_buildflags.h"
+  flags = [ "GOOGLE_API_KEY=@\"$ios_credential_provider_extension_api_key\"" ]
+}
+
 source_set("password_util") {
   sources = [
     "password_util.h",
@@ -150,11 +149,9 @@ source_set("password_util") {
     "//base",
     "//ios/chrome/common/app_group",
     "//ios/chrome/credential_provider_extension:metrics_util",
+    "//ios/components/credential_provider_extension:password_util",
   ]
-  frameworks = [
-    "Security.framework",
-    "Foundation.framework",
-  ]
+  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("metrics_util") {

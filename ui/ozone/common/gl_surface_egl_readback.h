@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_surface_egl.h"
@@ -23,7 +22,10 @@ namespace ui {
 // there is no FBO implementation for Ozone.
 class GLSurfaceEglReadback : public gl::PbufferGLSurfaceEGL {
  public:
-  GLSurfaceEglReadback();
+  explicit GLSurfaceEglReadback(gl::GLDisplayEGL* display);
+
+  GLSurfaceEglReadback(const GLSurfaceEglReadback&) = delete;
+  GLSurfaceEglReadback& operator=(const GLSurfaceEglReadback&) = delete;
 
   // GLSurface implementation.
   bool Resize(const gfx::Size& size,
@@ -31,7 +33,8 @@ class GLSurfaceEglReadback : public gl::PbufferGLSurfaceEGL {
               const gfx::ColorSpace& color_space,
               bool has_alpha) override;
   bool IsOffscreen() override;
-  gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
+  gfx::SwapResult SwapBuffers(PresentationCallback callback,
+                              gl::FrameData data) override;
   gfx::SurfaceOrigin GetOrigin() const override;
 
   // TODO(kylechar): Implement SupportsPostSubBuffer() and PostSubBuffer().
@@ -50,8 +53,6 @@ class GLSurfaceEglReadback : public gl::PbufferGLSurfaceEGL {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   std::unique_ptr<uint8_t[]> pixels_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLSurfaceEglReadback);
 };
 
 }  // namespace ui

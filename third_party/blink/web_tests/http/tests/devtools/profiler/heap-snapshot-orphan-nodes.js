@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@
       return builder.generateSnapshot();
     }
 
-    TestRunner.addSniffer(Profiler.HeapSnapshotView.prototype, '_retrieveStatistics', checkStatistics);
+    TestRunner.addSniffer(Profiler.HeapSnapshotView.prototype, 'retrieveStatistics', checkStatistics);
     HeapProfilerTestRunner.takeAndOpenSnapshot(createHeapSnapshot, step1);
 
     async function checkStatistics(arg, result) {
@@ -63,29 +63,29 @@
     function step2() {
       var row = HeapProfilerTestRunner.findRow('A');
       TestRunner.assertEquals(true, !!row, '"A" row');
-      TestRunner.assertEquals(1, row._count);
-      TestRunner.assertEquals(300, row._retainedSize);
-      TestRunner.assertEquals(300, row._shallowSize);
+      TestRunner.assertEquals(1, row.count);
+      TestRunner.assertEquals(300, row.retainedSize);
+      TestRunner.assertEquals(300, row.shallowSize);
 
 
       row = HeapProfilerTestRunner.findRow('B');
       TestRunner.assertEquals(true, !!row, '"B" row');
-      TestRunner.assertEquals(1, row._count);
-      TestRunner.assertEquals(300, row._retainedSize);
-      TestRunner.assertEquals(300, row._shallowSize);
+      TestRunner.assertEquals(1, row.count);
+      TestRunner.assertEquals(300, row.retainedSize);
+      TestRunner.assertEquals(300, row.shallowSize);
 
       row = HeapProfilerTestRunner.findRow('Orphan');
       TestRunner.assertEquals(true, !!row, '"Orphan" row');
-      TestRunner.assertEquals(1, row._count);
-      TestRunner.assertEquals(4000, row._retainedSize);
-      TestRunner.assertEquals(2000, row._shallowSize);
+      TestRunner.assertEquals(1, row.count);
+      TestRunner.assertEquals(4000, row.retainedSize);
+      TestRunner.assertEquals(2000, row.shallowSize);
 
 
       row = HeapProfilerTestRunner.findRow('OrphanChild');
       TestRunner.assertEquals(true, !!row, '"OrphanChild" row');
-      TestRunner.assertEquals(1, row._count);
-      TestRunner.assertEquals(2000, row._retainedSize);
-      TestRunner.assertEquals(2000, row._shallowSize);
+      TestRunner.assertEquals(1, row.count);
+      TestRunner.assertEquals(2000, row.retainedSize);
+      TestRunner.assertEquals(2000, row.shallowSize);
 
       TestRunner.addResult('SUCCESS: all nodes have expected retained sizes.');
       setTimeout(next, 0);

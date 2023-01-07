@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,9 @@
 #include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
+
+using InsecureCredentialsChanged =
+    base::StrongAlias<class InsecureCredentialsChangedTag, bool>;
 
 class PasswordStoreChange {
  public:
@@ -26,7 +29,9 @@ class PasswordStoreChange {
   PasswordStoreChange(Type type,
                       PasswordForm form,
                       FormPrimaryKey primary_key,
-                      bool password_changed);
+                      bool password_changed,
+                      InsecureCredentialsChanged insecure_changed =
+                          InsecureCredentialsChanged(false));
 
   PasswordStoreChange(const PasswordStoreChange& other);
   PasswordStoreChange(PasswordStoreChange&& other);
@@ -36,8 +41,11 @@ class PasswordStoreChange {
 
   Type type() const { return type_; }
   const PasswordForm& form() const { return form_; }
-  FormPrimaryKey primary_key() const { return FormPrimaryKey(primary_key_); }
+  FormPrimaryKey primary_key() const { return primary_key_; }
   bool password_changed() const { return password_changed_; }
+  InsecureCredentialsChanged insecure_credentials_changed() const {
+    return insecure_credentials_changed_;
+  }
 
   bool operator==(const PasswordStoreChange& other) const;
 
@@ -47,6 +55,8 @@ class PasswordStoreChange {
   // The corresponding primary key in the database for this password.
   FormPrimaryKey primary_key_{-1};
   bool password_changed_ = false;
+  // Whether change affected insecure credentials.
+  InsecureCredentialsChanged insecure_credentials_changed_{false};
 };
 
 typedef std::vector<PasswordStoreChange> PasswordStoreChangeList;

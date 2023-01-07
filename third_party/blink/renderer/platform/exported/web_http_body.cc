@@ -65,13 +65,14 @@ bool WebHTTPBody::ElementAt(size_t index, Element& result) const {
   if (index >= private_->Elements().size())
     return false;
 
-  const FormDataElement& element = private_->Elements()[index];
+  const FormDataElement& element =
+      private_->Elements()[static_cast<wtf_size_t>(index)];
 
   result.data.Reset();
   result.file_path.Reset();
   result.file_start = 0;
   result.file_length = 0;
-  result.modification_time = base::nullopt;
+  result.modification_time = absl::nullopt;
 
   switch (element.type_) {
     case FormDataElement::kData:
@@ -109,18 +110,18 @@ void WebHTTPBody::AppendData(const WebData& data) {
   EnsureMutable();
   // FIXME: FormDataElement::m_data should be a SharedBuffer<char>.  Then we
   // could avoid this buffer copy.
-  data.ForEachSegment(
-      [this](const char* segment, size_t segment_size, size_t segment_offset) {
-        private_->AppendData(segment, segment_size);
-        return true;
-      });
+  data.ForEachSegment([this](const char* segment, size_t segment_size,
+                             size_t segment_offset) {
+    private_->AppendData(segment, base::checked_cast<wtf_size_t>(segment_size));
+    return true;
+  });
 }
 
 void WebHTTPBody::AppendFileRange(
     const WebString& file_path,
     int64_t file_start,
     int64_t file_length,
-    const base::Optional<base::Time>& modification_time) {
+    const absl::optional<base::Time>& modification_time) {
   EnsureMutable();
   private_->AppendFileRange(file_path, file_start, file_length,
                             modification_time);

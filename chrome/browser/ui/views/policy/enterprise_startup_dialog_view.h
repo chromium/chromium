@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/enterprise_startup_dialog.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -32,7 +32,7 @@ class EnterpriseStartupDialogView : public views::DialogDelegateView {
   void DisplayLaunchingInformationWithThrobber(
       const std::u16string& information);
   void DisplayErrorMessage(const std::u16string& error_message,
-                           const base::Optional<std::u16string>& accept_button);
+                           const absl::optional<std::u16string>& accept_button);
   void CloseDialog();
 
   void AddWidgetObserver(views::WidgetObserver* observer);
@@ -54,9 +54,9 @@ class EnterpriseStartupDialogView : public views::DialogDelegateView {
 
   // Remove all existing child views from the dialog, show/hide dialog buttons.
   void ResetDialog(bool show_accept_button);
-  // Append child views to the content area, setup the layout.
-  void SetupLayout(std::unique_ptr<views::View> icon,
-                   std::unique_ptr<views::View> text);
+  // Append child views to the content area.
+  void AddContent(std::unique_ptr<views::View> icon,
+                  std::unique_ptr<views::View> text);
 
   EnterpriseStartupDialog::DialogResultCallback callback_;
   bool can_show_browser_window_ = false;
@@ -78,15 +78,15 @@ class EnterpriseStartupDialogImpl : public EnterpriseStartupDialog,
       const std::u16string& information) override;
   void DisplayErrorMessage(
       const std::u16string& error_message,
-      const base::Optional<std::u16string>& accept_button) override;
+      const absl::optional<std::u16string>& accept_button) override;
   bool IsShowing() override;
 
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   // The dialog_view_ is owned by itself.
-  EnterpriseStartupDialogView* dialog_view_;
+  raw_ptr<EnterpriseStartupDialogView> dialog_view_;
 };
 
 }  // namespace policy

@@ -1,0 +1,30 @@
+caption: Enable Screencast dogfood for Family Link users
+default: false
+desc: |-
+  This policy enables Screencast feature for Family Link users and gives it permission to create and transcribe screen recording and upload to Drive.
+        This policy does not affect other types of users.
+        This policy does not affect <ph name="PROJECTOR_ENABLED_POLICY_NAME">ProjectorEnabled</ph> policy for enterprise users.
+
+        If the policy is enabled, Screencast dogfood will be enabled for Family Link users.
+        If the policy is disabled, Screencast dogfood will be disabled for Family Link users.
+        If the policy is not set, Screencast dogfood will be by default disabled for Family Link users.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable Screencast dogfood for Family Link users
+  value: true
+- caption: Disable Screencast dogfood for Family Link users
+  value: false
+owners:
+- agawronska@google.com
+- llin@google.com
+- cros-projector@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:102-
+tags:
+- google-sharing
+type: main

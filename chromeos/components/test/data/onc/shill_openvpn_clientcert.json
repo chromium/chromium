@@ -1,0 +1,20 @@
+{
+   "GUID": "{84391467-dd8b-4c66-9b52-860583038351}",
+   "Name": "TestOpenVPN",
+   "OpenVPN.ExtraHosts": [
+      "0.0.0.1",
+      "123.com"
+   ],
+   "OpenVPN.Password": "some password",
+   "OpenVPN.Port": "1234",
+   "OpenVPN.Proto": "udp",
+   "OpenVPN.TLSVersionMin": "1.2",
+   "OpenVPN.User": "hans",
+   "OpenVPN.RemoteCertKU":"",
+   "Provider.Host": "terminus.muc",
+   "Provider.Type": "openvpn",
+   "ProxyConfig": "{\"mode\":\"direct\"}",
+   "SaveCredentials": true,
+   "StaticIPConfig": {},
+   "Type": "vpn",
+}

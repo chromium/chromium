@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,13 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_util.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/download/download_prefs.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "base/android/path_utils.h"
 #endif
@@ -28,8 +24,7 @@ namespace {
 
 bool g_access_to_all_files_enabled = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Returns true if |allowlist| contains |path| or a parent of |path|.
 bool IsPathOnAllowlist(const base::FilePath& path,
                        const std::vector<base::FilePath>& allowlist) {
@@ -44,7 +39,7 @@ bool IsPathOnAllowlist(const base::FilePath& path,
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns true if access is allowed for |path| for a user with |profile_path).
 bool IsAccessAllowedChromeOS(const base::FilePath& path,
                              const base::FilePath& profile_path) {
@@ -53,8 +48,7 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
   base::FilePath path_within_gcache_v2;
   if (profile_path.Append("GCache/v2")
           .AppendRelativePath(path, &path_within_gcache_v2)) {
-    std::vector<std::string> components;
-    path_within_gcache_v2.GetComponents(&components);
+    std::vector<std::string> components = path_within_gcache_v2.GetComponents();
     if (components.size() > 1 && components[1] == "Logs") {
       return true;
     }
@@ -65,8 +59,13 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
   static const base::FilePath::CharType* const kLocalAccessAllowList[] = {
       "/home/chronos/user/Downloads",
       "/home/chronos/user/MyFiles",
-      "/home/chronos/user/log",
       "/home/chronos/user/WebRTC Logs",
+      "/home/chronos/user/google-assistant-library/log",
+      "/home/chronos/user/lacros/Crash Reports",
+      "/home/chronos/user/lacros/lacros.log",
+      "/home/chronos/user/lacros/lacros.log.PREVIOUS",
+      "/home/chronos/user/log",
+      "/home/chronos/user/crostini.icons",
       "/media",
       "/opt/oem",
       "/run/arc/sdcard/write/emulated/0",
@@ -81,10 +80,6 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
   if (base::PathService::Get(base::DIR_TEMP, &temp_dir))
     allowlist.push_back(temp_dir);
 
-  // For developers on linux-chromeos, MyFiles dir is at $HOME/Downloads.
-  if (!base::SysInfo::IsRunningOnChromeOS())
-    allowlist.push_back(base::GetHomeDir().Append("Downloads"));
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // The actual location of "/home/chronos/user/Xyz" is the Xyz directory under
   // the profile path ("/home/chronos/user' is a hard link to current primary
@@ -98,10 +93,19 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
     const base::FilePath webrtc_logs = profile_path.AppendASCII("WebRTC Logs");
     allowlist.push_back(webrtc_logs);
   }
+  // For developers using the linux-chromeos emulator, the MyFiles dir is at
+  // $HOME/Downloads. Ensure developers can access it for manual testing.
+  if (!base::SysInfo::IsRunningOnChromeOS()) {
+    base::FilePath downloads_dir;
+    if (base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &downloads_dir))
+      allowlist.push_back(downloads_dir);
+  }
 #else
   // Lacros uses the system-level documents directory and downloads directory
   // under /home/chronos/u-<hash>, which are provided via PathService. Since
   // they are system-level, they are not subdirectories of |profile_path|.
+  // PathService also provides valid paths for developers using the
+  // linux-chromeos emulator.
   base::FilePath documents_dir;
   if (base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &documents_dir))
     allowlist.push_back(documents_dir);
@@ -117,9 +121,9 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
 
   return IsPathOnAllowlist(path, allowlist);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Returns true if access is allowed for |path|.
 bool IsAccessAllowedAndroid(const base::FilePath& path) {
   // Access to files in external storage is allowed.
@@ -154,16 +158,16 @@ bool IsAccessAllowedAndroid(const base::FilePath& path) {
 
   return IsPathOnAllowlist(path, allowlist);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool IsAccessAllowedInternal(const base::FilePath& path,
                              const base::FilePath& profile_path) {
   if (g_access_to_all_files_enabled)
     return true;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   return IsAccessAllowedChromeOS(path, profile_path);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return IsAccessAllowedAndroid(path);
 #else
   return true;
@@ -184,7 +188,7 @@ bool ChromeNetworkDelegate::IsAccessAllowed(
     const base::FilePath& path,
     const base::FilePath& absolute_path,
     const base::FilePath& profile_path) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android's allowlist relies on symbolic links (ex. /sdcard is allowed
   // and commonly a symbolic link), thus do not check absolute paths.
   return IsAccessAllowedInternal(path, profile_path);

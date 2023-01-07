@@ -1,5 +1,5 @@
 include_rules = [
-  "+chromeos/network",
+  "+chromeos/ash/components/network",
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",

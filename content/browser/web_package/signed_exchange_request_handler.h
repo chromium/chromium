@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -44,6 +43,11 @@ class SignedExchangeRequestHandler final : public NavigationLoaderInterceptor {
       URLLoaderThrottlesGetter url_loader_throttles_getter,
       scoped_refptr<SignedExchangePrefetchMetricRecorder> metric_recorder,
       std::string accept_langs);
+
+  SignedExchangeRequestHandler(const SignedExchangeRequestHandler&) = delete;
+  SignedExchangeRequestHandler& operator=(const SignedExchangeRequestHandler&) =
+      delete;
+
   ~SignedExchangeRequestHandler() override;
 
   // NavigationLoaderInterceptor implementation
@@ -83,8 +87,6 @@ class SignedExchangeRequestHandler final : public NavigationLoaderInterceptor {
   const std::string accept_langs_;
 
   base::WeakPtrFactory<SignedExchangeRequestHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeRequestHandler);
 };
 
 }  // namespace content

@@ -1,0 +1,149 @@
+<style>
+  :host {
+    --view-min-size: 620px;
+    color: var(--cr-primary-text-color);
+  }
+
+  cr-view-manager {
+    display: flex;
+    font-size: 100%;
+    margin: 0;
+  }
+
+  [slot='view'] {
+    min-height: var(--view-min-size);
+    min-width: var(--view-min-size);
+  }
+
+  p {
+    margin: 0;
+  }
+
+  h1 {
+    font-size: 3em;
+    line-height: 44px;
+    margin: 24px 0 16px;
+  }
+
+  h3 {
+    color: var(--cr-secondary-text-color);
+    font-size: 1.67em;
+    font-weight: 400;
+    line-height: 24px;
+    margin: 0 0 24px;
+  }
+
+  h6 {
+    font-size: 1.25em;
+    line-height: 32px;
+    margin: 0 0 4px;
+  }
+
+  iron-icon {
+    --iron-icon-fill-color: var(--google-blue-600);
+    --iron-icon-height: 36px;
+    margin-bottom: 16px;
+    --iron-icon-width: 36px;
+  }
+
+  #central-view-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    left: 50%;
+    position: absolute;
+    text-align: center ;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  #chrome-logo-placeholder {
+    height: 90px;
+    width: 90px;
+  }
+
+  .placeholder-color {
+    background-color: blue;
+  }
+
+  #benefit-cards-container {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .benefit-card {
+    align-items: center;
+    background: var(--google-grey-50);
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    height: 172px;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+    width: 236px;
+  }
+
+  #benefit-card-description {
+    color: var(--cr-secondary-text-color);
+    font-size: 1.08em;
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  #button-container {
+    bottom: 24px;
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    position: fixed;
+    right: 24px;
+  }
+
+  #button-container > cr-button {
+    font-size: 1.08em;
+    min-width: 133px;
+  }
+
+  #acceptSignInButton {
+    background-color: var(--cr-checked-color);
+    color: white;
+  }
+
+</style>
+
+<cr-view-manager id="viewManager">
+  <!-- TODO(crbug.com/1347507): On load, transition to "splash" and trigger the
+       animation -->
+  <div id="splash" slot="view">
+    <!-- TODO(crbug.com/1347507): Use <cr_lottie> -->
+    🏐 Faster. Safer. Yours.
+  </div>
+
+  <!-- TODO(crbug.com/1347507): Implement this as an element?-->
+  <div id="signInPromo" slot="view">
+
+    <div id="central-view-container">
+      <div class="placeholder-color" id="chrome-logo-placeholder"></div>
+      <h1>$i18n{pageTitle}</h1>
+      <h3>$i18n{pageSubtitle}</h3>
+      <div id="benefit-cards-container">
+        <template is="dom-repeat" items="[[benefitCards_]]">
+          <div class="benefit-card">
+            <iron-icon icon="[[item.iconName]]"></iron-icon>
+            <h6>[[item.title]]</h6>
+            <p id="benefit-card-description">[[item.description]]</p>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <div id="button-container">
+      <cr-button id="declineSignInButton" on-click="onContinueWithoutAccountClick_">$i18n{declineSignInButtonTitle}</cr-button>
+      <cr-button id="acceptSignInButton" on-click="onContinueWithAccountClick_">$i18n{acceptSignInButtonTitle}
+      </cr-button>
+    </div>
+  </div>
+</cr-view-manager>

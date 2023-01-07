@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/touch_selection/touch_handle.h"
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/motion_event_test_utils.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -60,7 +61,7 @@ class MockTouchHandleDrawable : public TouchHandleDrawable {
   gfx::RectF GetVisibleBounds() const override { return data_->rect; }
 
  private:
-  MockDrawableData* data_;
+  raw_ptr<MockDrawableData> data_;
 };
 
 }  // namespace
@@ -104,7 +105,7 @@ class TouchHandleTest : public testing::Test, public TouchHandleClient {
   }
 
   base::TimeDelta GetMaxTapDuration() const override {
-    return base::TimeDelta::FromMilliseconds(kDefaultTapDurationMs);
+    return base::Milliseconds(kDefaultTapDurationMs);
   }
 
   bool IsAdaptiveHandleOrientationEnabled() const override {
@@ -116,7 +117,7 @@ class TouchHandleTest : public testing::Test, public TouchHandleClient {
     needs_animate_ = false;
     base::TimeTicks now = base::TimeTicks::Now();
     while (handle.Animate(now))
-      now += base::TimeDelta::FromMilliseconds(16);
+      now += base::Milliseconds(16);
   }
 
   bool GetAndResetHandleDragged() {
@@ -296,7 +297,7 @@ TEST_F(TouchHandleTest, PositionNotUpdatedWhileFadingOrInvisible) {
   base::TimeTicks now = base::TimeTicks::Now();
   while (handle.Animate(now)) {
     EXPECT_EQ(old_focus_bottom - koffset_vector, drawable().rect.origin());
-    now += base::TimeDelta::FromMilliseconds(16);
+    now += base::Milliseconds(16);
   }
 
   // Even after the animation terminates, the new position will not be pushed.
@@ -532,7 +533,7 @@ TEST_F(TouchHandleTest, Tap) {
   // Action::CANCEL shouldn't trigger a tap.
   MockMotionEvent event(MockMotionEvent::Action::DOWN, event_time, 0, 0);
   EXPECT_TRUE(handle.WillHandleTouchEvent(event));
-  event_time += base::TimeDelta::FromMilliseconds(50);
+  event_time += base::Milliseconds(50);
   event = MockMotionEvent(MockMotionEvent::Action::CANCEL, event_time, 0, 0);
   EXPECT_TRUE(handle.WillHandleTouchEvent(event));
   EXPECT_FALSE(GetAndResetHandleTapped());

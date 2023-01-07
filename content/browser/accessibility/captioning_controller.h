@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,9 +41,8 @@ class CaptioningController : public WebContentsObserver {
 
  private:
   // WebContentsObserver implementation.
+  void PrimaryPageChanged(Page& page) override;
   void RenderViewReady() override;
-  void RenderViewHostChanged(RenderViewHost* old_host,
-                             RenderViewHost* new_host) override;
   void WebContentsDestroyed() override;
 
   // A weak reference to the Java CaptioningController object.

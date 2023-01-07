@@ -11,7 +11,7 @@ function runTest() {
     }
     return;
   }
-  // This extension is supposed to be disabled via a blacklist entry.
+  // This extension is supposed to be disabled via a blocklist entry.
   if (gl.getExtension('WEBGL_lose_context')) {
     window.domAutomationController.send("FAILED");
   } else {

@@ -1,21 +1,31 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 source_set("infobar_banner") {
   sources = [
+    "add_to_reading_list_infobar_banner_overlay_request_config.h",
+    "add_to_reading_list_infobar_banner_overlay_request_config.mm",
     "confirm_infobar_banner_overlay_request_config.h",
     "confirm_infobar_banner_overlay_request_config.mm",
+    "confirm_infobar_banner_overlay_request_config_storage.h",
+    "confirm_infobar_banner_overlay_request_config_storage.mm",
     "infobar_banner_overlay_responses.cc",
     "infobar_banner_overlay_responses.h",
     "infobar_banner_placeholder_request_config.h",
     "infobar_banner_placeholder_request_config.mm",
+    "permissions_infobar_banner_overlay_request_config.h",
+    "permissions_infobar_banner_overlay_request_config.mm",
     "save_address_profile_infobar_banner_overlay_request_config.h",
     "save_address_profile_infobar_banner_overlay_request_config.mm",
     "save_card_infobar_banner_overlay_request_config.h",
     "save_card_infobar_banner_overlay_request_config.mm",
     "save_password_infobar_banner_overlay.h",
     "save_password_infobar_banner_overlay.mm",
+    "sync_error_infobar_banner_overlay_request_config.h",
+    "sync_error_infobar_banner_overlay_request_config.mm",
+    "tailored_security_service_infobar_banner_overlay_request_config.h",
+    "tailored_security_service_infobar_banner_overlay_request_config.mm",
     "translate_infobar_banner_overlay_request_config.h",
     "translate_infobar_banner_overlay_request_config.mm",
     "update_password_infobar_banner_overlay.h",
@@ -28,16 +38,51 @@ source_set("infobar_banner") {
     "//base",
     "//components/autofill/core/browser",
     "//components/infobars/core",
+    "//components/password_manager/core/common",
     "//components/translate/core/browser",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/overlays:infobar_delegates",
     "//ios/chrome/browser/infobars/overlays:overlay_type",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common",
     "//ios/chrome/browser/overlays/public/common/infobars",
     "//ios/chrome/browser/passwords:infobar_delegates",
+    "//ios/chrome/browser/safe_browsing/tailored_security:infobar_delegates",
     "//ios/chrome/browser/ui/authentication",
-    "//ios/chrome/browser/ui/infobars:infobars_ui",
+    "//ios/chrome/browser/ui/reading_list:infobar",
+    "//ios/chrome/browser/ui/resources:legacy_password_key",
+    "//ios/chrome/browser/ui/resources:password_key",
+    "//ios/chrome/browser/ui/settings/sync/utils",
+    "//ios/chrome/browser/web/",
+    "//ios/web/public/permissions",
     "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "confirm_infobar_banner_overlay_request_config_unittest.mm",
+    "sync_error_infobar_banner_overlay_request_config_unittest.mm",
+  ]
+  deps = [
+    ":infobar_banner",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars/test",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/infobars/test",
+    "//ios/chrome/browser/ui/settings/sync/utils",
+    "//ios/chrome/browser/ui/settings/sync/utils/test",
+    "//ios/chrome/common/ui/colors",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
   ]
 }

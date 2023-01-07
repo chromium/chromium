@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,36 +11,51 @@
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace storage {
 
 const FileSystemTestCaseRecord kRegularFileSystemTestCases[] = {
-    {true, FILE_PATH_LITERAL("dir a"), 0},
-    {true, FILE_PATH_LITERAL("dir a/dir A"), 0},
-    {true, FILE_PATH_LITERAL("dir a/dir d"), 0},
-    {true, FILE_PATH_LITERAL("dir a/dir d/dir e"), 0},
-    {true, FILE_PATH_LITERAL("dir a/dir d/dir e/dir f"), 0},
-    {true, FILE_PATH_LITERAL("dir a/dir d/dir e/dir g"), 0},
-    {true, FILE_PATH_LITERAL("dir a/dir d/dir e/dir h"), 0},
-    {true, FILE_PATH_LITERAL("dir b"), 0},
-    {true, FILE_PATH_LITERAL("dir b/dir a"), 0},
-    {true, FILE_PATH_LITERAL("dir c"), 0},
-    {false, FILE_PATH_LITERAL("file 0"), 38},
-    {false, FILE_PATH_LITERAL("file 2"), 60},
-    {false, FILE_PATH_LITERAL("file 3"), 0},
-    {false, FILE_PATH_LITERAL("dir a/file 0"), 39},
-    {false, FILE_PATH_LITERAL("dir a/dir d/dir e/dir g/file 0"), 40},
-    {false, FILE_PATH_LITERAL("dir a/dir d/dir e/dir g/file 1"), 41},
-    {false, FILE_PATH_LITERAL("dir a/dir d/dir e/dir g/file 2"), 42},
-    {false, FILE_PATH_LITERAL("dir a/dir d/dir e/dir g/file 3"), 50},
+    {true, FILE_PATH_LITERAL("dir a"), 0, TestBlockAction::CHILD_BLOCKED},
+    {true, FILE_PATH_LITERAL("dir a/dir A"), 0, TestBlockAction::ALLOWED},
+    {true, FILE_PATH_LITERAL("dir a/dir d"), 0, TestBlockAction::CHILD_BLOCKED},
+    {true, FILE_PATH_LITERAL("dir a/dir d/dir e"), 0,
+     TestBlockAction::CHILD_BLOCKED},
+    {true, FILE_PATH_LITERAL("dir a/dir d/dir e/dir f"), 0,
+     TestBlockAction::ALLOWED},
+    {true, FILE_PATH_LITERAL("dir a/dir d/dir e/dir g"), 0,
+     TestBlockAction::CHILD_BLOCKED},
+    {true, FILE_PATH_LITERAL("dir a/dir d/dir e/dir h"), 0,
+     TestBlockAction::BLOCKED},
+    {true, FILE_PATH_LITERAL("dir b"), 0, TestBlockAction::BLOCKED},
+    {true, FILE_PATH_LITERAL("dir b/dir a"), 0,
+     TestBlockAction::PARENT_BLOCKED},
+    {true, FILE_PATH_LITERAL("dir c"), 0, TestBlockAction::ALLOWED},
+    {false, FILE_PATH_LITERAL("file 0"), 38, TestBlockAction::ALLOWED},
+    {false, FILE_PATH_LITERAL("file 2"), 60, TestBlockAction::BLOCKED},
+    {false, FILE_PATH_LITERAL("file 3"), 0, TestBlockAction::ALLOWED},
+    {false, FILE_PATH_LITERAL("dir a/file 0"), 39, TestBlockAction::ALLOWED},
+    {false, FILE_PATH_LITERAL("dir a/dir d/dir e/dir g/file 0"), 40,
+     TestBlockAction::ALLOWED},
+    {false, FILE_PATH_LITERAL("dir a/dir d/dir e/dir g/file 1"), 41,
+     TestBlockAction::ALLOWED},
+    {false, FILE_PATH_LITERAL("dir a/dir d/dir e/dir g/file 2"), 42,
+     TestBlockAction::BLOCKED},
+    {false, FILE_PATH_LITERAL("dir a/dir d/dir e/dir g/file 3"), 43,
+     TestBlockAction::ALLOWED},
+    {false, FILE_PATH_LITERAL("dir a/dir d/dir e/dir h/file 0"), 44,
+     TestBlockAction::PARENT_BLOCKED},
+    {false, FILE_PATH_LITERAL("dir a/dir d/dir e/dir h/file 1"), 45,
+     TestBlockAction::PARENT_BLOCKED},
+    {false, FILE_PATH_LITERAL("dir b/file 0"), 46,
+     TestBlockAction::PARENT_BLOCKED},
+    {false, FILE_PATH_LITERAL("dir b/file 1"), 47,
+     TestBlockAction::PARENT_BLOCKED},
 };
 
 const size_t kRegularFileSystemTestCaseSize =
-    base::size(kRegularFileSystemTestCases);
+    std::size(kRegularFileSystemTestCases);
 
 void SetUpOneFileSystemTestCase(const base::FilePath& root_path,
                                 const FileSystemTestCaseRecord& test_case) {
@@ -61,7 +76,7 @@ void SetUpOneFileSystemTestCase(const base::FilePath& root_path,
 }
 
 void SetUpRegularFileSystemTestCases(const base::FilePath& root_path) {
-  for (size_t i = 0; i < base::size(kRegularFileSystemTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kRegularFileSystemTestCases); ++i) {
     SCOPED_TRACE(testing::Message() << "Creating kRegularTestCases " << i);
     SetUpOneFileSystemTestCase(root_path, kRegularFileSystemTestCases[i]);
   }

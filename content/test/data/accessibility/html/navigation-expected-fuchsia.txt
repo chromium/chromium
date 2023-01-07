@@ -1,0 +1,7 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++LINK focusable label='Don't click on me' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='Don't click on me'
+++++++++++++UNKNOWN label='Don't click on me'

@@ -1,0 +1,26 @@
+<style include="multidevice-setup-shared">
+  #page-icon-container {
+    align-items: center;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+  }
+</style>
+<ui-page header-text="[[i18nDynamic(locale, 'setupSucceededPageHeader')]]"
+    icon-name="google-g">
+  <span slot="message" inner-h-t-m-l="[[getMessageHtml_()]]"></span>
+  <div id="page-icon-container" slot="additional-content">
+    <iron-media-query query="(prefers-color-scheme: dark)"
+        query-matches="{{isDarkModeActive_}}">
+    </iron-media-query>
+    <img id="success-img" aria-hidden="true"
+        srcset="[[getImageSrcSet_(isDarkModeActive_)]]">
+  </div>
+</ui-page>

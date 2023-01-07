@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 #include "base/android/reached_addresses_bitset.h"
 #include "base/android/reached_code_profiler.h"
 #include "base/debug/elf_reader.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_piece.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "third_party/perfetto/include/perfetto/tracing/data_source.h"
@@ -35,18 +37,17 @@ ReachedCodeDataSource::~ReachedCodeDataSource() {
   NOTREACHED();
 }
 
-void ReachedCodeDataSource::StartTracing(
+void ReachedCodeDataSource::StartTracingImpl(
     PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
   trace_writer_ =
       producer->CreateTraceWriter(data_source_config.target_buffer());
 }
 
-void ReachedCodeDataSource::StopTracing(
+void ReachedCodeDataSource::StopTracingImpl(
     base::OnceClosure stop_complete_callback) {
   WriteProfileData();
 
-  producer_ = nullptr;
   trace_writer_.reset();
   std::move(stop_complete_callback).Run();
 }
@@ -69,19 +70,17 @@ void ReachedCodeDataSource::WriteProfileData() {
   base::debug::ElfBuildIdBuffer buf;
   size_t size = base::debug::ReadElfBuildId(&__ehdr_start, true, buf);
   if (size > 0) {
-    std::string module_id(buf, size);
-    TracingSamplerProfiler::MangleModuleIDIfNeeded(&module_id);
     auto* str = interned_data->add_build_ids();
     str->set_iid(0);
-    str->set_str(module_id);
+    str->set_str(base::TransformModuleIDToBreakpadFormat({buf, size}));
   }
 
-  base::Optional<base::StringPiece> library_name =
+  absl::optional<base::StringPiece> library_name =
       base::debug::ReadElfLibraryName(&__ehdr_start);
   if (library_name) {
     auto* str = interned_data->add_mapping_paths();
     str->set_iid(0);
-    str->set_str(library_name->as_string());
+    str->set_str(std::string(*library_name));
   }
 
   std::vector<uint32_t> offsets = bitset->GetReachedOffsets();

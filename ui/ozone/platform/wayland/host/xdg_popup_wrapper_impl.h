@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/shell_popup_wrapper.h"
 
 namespace ui {
@@ -20,21 +20,26 @@ class WaylandWindow;
 class XDGPopupWrapperImpl : public ShellPopupWrapper {
  public:
   XDGPopupWrapperImpl(std::unique_ptr<XDGSurfaceWrapperImpl> surface,
-                      WaylandWindow* wayland_window);
+                      WaylandWindow* wayland_window,
+                      WaylandConnection* connection);
+
+  XDGPopupWrapperImpl(const XDGPopupWrapperImpl&) = delete;
+  XDGPopupWrapperImpl& operator=(const XDGPopupWrapperImpl&) = delete;
+
   ~XDGPopupWrapperImpl() override;
 
-  // XDGPopupWrapper:
-  bool Initialize(WaylandConnection* connection,
-                  const gfx::Rect& bounds) override;
+  // ShellPopupWrapper overrides:
+  bool Initialize(const ShellPopupParams& params) override;
   void AckConfigure(uint32_t serial) override;
+  bool IsConfigured() override;
+  bool SetBounds(const gfx::Rect& new_bounds) override;
+  void SetWindowGeometry(const gfx::Rect& bounds) override;
+  void Grab(uint32_t serial) override;
+  bool SupportsDecoration() override;
+  void Decorate() override;
 
  private:
-  bool InitializeStable(WaylandConnection* connection,
-                        const gfx::Rect& bounds,
-                        XDGSurfaceWrapperImpl* parent_xdg_surface_wrapper);
-  struct xdg_positioner* CreatePositioner(WaylandConnection* connection,
-                                          WaylandWindow* parent_window,
-                                          const gfx::Rect& bounds);
+  wl::Object<xdg_positioner> CreatePositioner();
 
   // xdg_popup_listener
   static void Configure(void* data,
@@ -44,11 +49,15 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
                               int32_t width,
                               int32_t height);
   static void PopupDone(void* data, struct xdg_popup* xdg_popup);
+  static void Repositioned(void* data,
+                           struct xdg_popup* xdg_popup,
+                           uint32_t token);
 
   XDGSurfaceWrapperImpl* xdg_surface_wrapper() const;
 
   // Non-owned WaylandWindow that uses this popup.
-  WaylandWindow* const wayland_window_;
+  const raw_ptr<WaylandWindow> wayland_window_;
+  const raw_ptr<WaylandConnection> connection_;
 
   // Ground surface for this popup.
   std::unique_ptr<XDGSurfaceWrapperImpl> xdg_surface_wrapper_;
@@ -56,7 +65,13 @@ class XDGPopupWrapperImpl : public ShellPopupWrapper {
   // XDG Shell Stable object.
   wl::Object<xdg_popup> xdg_popup_;
 
-  DISALLOW_COPY_AND_ASSIGN(XDGPopupWrapperImpl);
+  // Aura shell popup object
+  wl::Object<zaura_popup> aura_popup_;
+
+  // Parameters that help to configure this popup.
+  ShellPopupParams params_;
+
+  uint32_t next_reposition_token_ = 1;
 };
 
 }  // namespace ui

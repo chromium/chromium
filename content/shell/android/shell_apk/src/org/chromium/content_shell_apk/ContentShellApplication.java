@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,6 @@ public class ContentShellApplication extends Application {
         boolean isBrowserProcess = !ContextUtils.getProcessName().contains(":");
         ContextUtils.initApplicationContext(this);
         ResourceBundle.setNoAvailableLocalePaks();
-        LibraryLoader.getInstance().enableJniChecks();
         LibraryLoader.getInstance().setLibraryProcessType(isBrowserProcess
                         ? LibraryProcessType.PROCESS_BROWSER
                         : LibraryProcessType.PROCESS_CHILD);

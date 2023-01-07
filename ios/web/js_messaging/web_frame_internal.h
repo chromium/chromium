@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@ class JavaScriptContentWorld;
 
 class WebFrameInternal {
  public:
-  // Calls the JavaScript function |name| in the frame context in the same
-  // manner as the inherited CallJavaScriptFunction functions. |content_world|
+  // Calls the JavaScript function `name` in the frame context in the same
+  // manner as the inherited CallJavaScriptFunction functions. `content_world`
   // is optional, but if specified, the function will be executed within that
   // world.
   virtual bool CallJavaScriptFunctionInContentWorld(
@@ -28,13 +28,13 @@ class WebFrameInternal {
       JavaScriptContentWorld* content_world) = 0;
 
   // Calls the JavaScript function in the same condition as
-  // |CallJavaScriptFunctionInContentWorld| above. In addition, |callback| will
+  // `CallJavaScriptFunctionInContentWorld` above. In addition, `callback` will
   // be called with the value returned by the JavaScript execution if it
-  // completes before |timeout| is reached. If |timeout| is reached, |callback|
+  // completes before `timeout` is reached. If `timeout` is reached, `callback`
   // is called with a null value.
   // Returns true if function call was requested, false otherwise. Function call
   // may still fail even if this function returns true. Always returns false if
-  // |CanCallJavaScriptFunction| is false.
+  // `CanCallJavaScriptFunction` is false.
   virtual bool CallJavaScriptFunctionInContentWorld(
       const std::string& name,
       const std::vector<base::Value>& parameters,

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,9 +36,11 @@ struct CloneableMessage {
   int64 stack_trace_debugger_id_first;
   int64 stack_trace_debugger_id_second;
   bool stack_trace_should_pause;
-  // If not null, this message is locked to the given agent cluster ID.
+  // The sender's agent cluster ID.
   // See https://html.spec.whatwg.org/multipage/webappapis.html#integration-with-the-javascript-agent-cluster-formalism
-  mojo_base.mojom.UnguessableToken? locked_agent_cluster_id;
+  mojo_base.mojom.UnguessableToken sender_agent_cluster_id;
+  // If true, this message is locked to the sender agent cluster ID.
+  bool locked_to_sender_agent_cluster;
   // Tokens required to clone FileSystemFileHandles and/or
   // FileSystemDirectoryHandles.
   array<pending_remote<FileSystemAccessTransferToken>> file_system_access_tokens;

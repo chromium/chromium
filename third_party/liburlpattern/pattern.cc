@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Copyright 2014 Blake Embrey (hello@blakeembrey.com)
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file or at https://opensource.org/licenses/MIT.
@@ -7,6 +7,7 @@
 
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "third_party/icu/source/common/unicode/utf8.h"
 #include "third_party/liburlpattern/utils.h"
 
 namespace liburlpattern {
@@ -15,28 +16,28 @@ namespace {
 
 void AppendModifier(Modifier modifier, std::string& append_target) {
   switch (modifier) {
-    case Modifier::kNone:
+    case Modifier::kZeroOrMore:
+      append_target += '*';
       break;
     case Modifier::kOptional:
       append_target += '?';
       break;
-    case Modifier::kZeroOrMore:
-      append_target += '*';
-      break;
     case Modifier::kOneOrMore:
       append_target += '+';
+      break;
+    case Modifier::kNone:
       break;
   }
 }
 
 size_t ModifierLength(Modifier modifier) {
   switch (modifier) {
-    case Modifier::kNone:
-      return 0;
-    case Modifier::kOptional:
     case Modifier::kZeroOrMore:
+    case Modifier::kOptional:
     case Modifier::kOneOrMore:
       return 1;
+    case Modifier::kNone:
+      return 0;
   }
 }
 
@@ -73,6 +74,14 @@ Part::Part(PartType t,
     ABSL_ASSERT(value.empty());
 }
 
+bool Part::HasCustomName() const {
+  // Determine if the part name was custom, like `:foo`, or an
+  // automatically assigned numeric value.  Since custom group
+  // names follow javascript identifier rules the first character
+  // cannot be a digit, so that is all we need to check here.
+  return !name.empty() && !std::isdigit(name[0]);
+}
+
 Pattern::Pattern(std::vector<Part> part_list,
                  Options options,
                  std::string segment_wildcard_regex)
@@ -93,8 +102,9 @@ std::string Pattern::GeneratePatternString() const {
   }
   result.reserve(estimated_length);
 
-  for (const Part& part : part_list_) {
-    //
+  for (size_t i = 0; i < part_list_.size(); ++i) {
+    const Part& part = part_list_[i];
+
     if (part.type == PartType::kFixed) {
       // A simple fixed string part.
       if (part.modifier == Modifier::kNone) {
@@ -111,20 +121,54 @@ std::string Pattern::GeneratePatternString() const {
       continue;
     }
 
-    // Determine if the part needs a grouping like `{ ... }`.  This is only
-    // necessary when using a non-automatic prefix or any suffix.
+    bool custom_name = part.HasCustomName();
+
+    // Determine if the part needs a grouping like `{ ... }`.  This is
+    // necessary when the group:
+    //
+    // 1. is using a non-automatic prefix or any suffix.
     bool needs_grouping =
         !part.suffix.empty() ||
         (!part.prefix.empty() &&
          (part.prefix.size() != 1 ||
           options_.prefix_list.find(part.prefix[0]) == std::string::npos));
 
-    // Determine if the part name was custom, like `:foo`, or an
-    // automatically assigned numeric value.  Since custom group
-    // names follow javascript identifier rules the first character
-    // cannot be a digit, so that is all we need to check here.
-    ABSL_ASSERT(!part.name.empty());
-    bool custom_name = !std::isdigit(part.name[0]);
+    // 2. followed by a matching group that may be expressed in a way that can
+    //    be mistakenly interpreted as part of this matching group.  For
+    //    example:
+    //
+    //    a. An `(...)` expression following a `:foo` group.  We want to
+    //       output `{:foo}(...)` and not `:foo(...)`.
+    //    b. A plaint text expression following a `:foo` group where the text
+    //       could be mistakenly interpreted as part of the name.  We want to
+    //       output `{:foo}bar` and not `:foobar`.
+    const Part* next_part =
+        (i + 1) < part_list_.size() ? &part_list_[i + 1] : nullptr;
+    if (!needs_grouping && custom_name &&
+        part.type == PartType::kSegmentWildcard &&
+        part.modifier == Modifier::kNone && next_part &&
+        next_part->prefix.empty() && next_part->suffix.empty()) {
+      if (next_part->type == PartType::kFixed) {
+        UChar32 codepoint = -1;
+        U8_GET(reinterpret_cast<const uint8_t*>(next_part->value.data()), 0, 0,
+               static_cast<int>(next_part->value.size()), codepoint);
+        needs_grouping = IsNameCodepoint(codepoint, /*first_codepoint=*/false);
+      } else {
+        needs_grouping = !next_part->HasCustomName();
+      }
+    }
+
+    // 3. preceded by a fixed text part that ends with an implicit prefix
+    //    character (like `/`).  This occurs when the original pattern used
+    //    an escape or grouping to prevent the implicit prefix; e.g.
+    //    `\\/*` or `/{*}`.  In these cases we use a grouping to prevent the
+    //    implicit prefix in the generated string.
+    const Part* last_part = i > 0 ? &part_list_[i - 1] : nullptr;
+    if (!needs_grouping && part.prefix.empty() && last_part &&
+        last_part->type == PartType::kFixed) {
+      needs_grouping = options_.prefix_list.find(last_part->value.back()) !=
+                       std::string::npos;
+    }
 
     // This is a full featured part.  We must generate a string that looks
     // like:
@@ -157,15 +201,39 @@ std::string Pattern::GeneratePatternString() const {
         result += ")";
       }
     } else if (part.type == PartType::kFullWildcard) {
-      // We can only use the `*` wildcard card if the automatic
-      // numeric name is used for the group.  A custom name
-      // requires the regexp `(.*)` explicitly.
-      if (!custom_name) {
+      // We can only use the `*` wildcard card if we meet a number
+      // of conditions.  We must use an explicit `(.*)` group if:
+      //
+      // 1. A custom name was used; e.g. `:foo(.*)`.
+      // 2. If the preceding group is a matching group without a modifier; e.g.
+      //    `(foo)(.*)`.  In that case we cannot emit the `*` shorthand without
+      //    it being mistakenly interpreted as the modifier for the previous
+      //    group.
+      // 3. The current group is not enclosed in a `{ }` grouping.
+      // 4. The current group does not have an implicit prefix like `/`.
+      if (!custom_name && (!last_part || last_part->type == PartType::kFixed ||
+                           last_part->modifier != Modifier::kNone ||
+                           needs_grouping || !part.prefix.empty())) {
         result += "*";
       } else {
         result += "(";
         result += kFullWildcardRegex;
         result += ")";
+      }
+    }
+
+    // If the matching group is a simple `:foo` custom name with the default
+    // segment wildcard, then we must check for a trailing suffix that could
+    // be interpreted as a trailing part of the name itself.  In these cases
+    // we must escape the beginning of the suffix in order to separate it
+    // from the end of the custom name; e.g. `:foo\\bar` instead of `:foobar`.
+    if (part.type == PartType::kSegmentWildcard && custom_name &&
+        !part.suffix.empty()) {
+      UChar32 codepoint = -1;
+      U8_GET(reinterpret_cast<const uint8_t*>(part.suffix.data()), 0, 0,
+             static_cast<int>(part.suffix.size()), codepoint);
+      if (IsNameCodepoint(codepoint, /*first_codepoint=*/false)) {
+        result += "\\";
       }
     }
 
@@ -239,15 +307,29 @@ std::string Pattern::GenerateRegexString(
     else if (part.type == PartType::kFullWildcard)
       regex_value = kFullWildcardRegex;
 
-    // If there are no prefix or suffix values then we simply wrap the Part
-    // regex value in a capturing group.  Any modifier is simply appended to
-    // the end.  For example:
+    // Handle the case where there is no prefix or suffix value.  This varies a
+    // bit depending on the modifier.
+    //
+    // If there is no modifier or an optional modifier, then we simply wrap the
+    // regex value in a capturing group:
     //
     //  (<regex-value>)<modifier>
     //
+    // If there is a modifier, then we need to use a non-capturing group for the
+    // regex value and an outer capturing group that includes the modifier as
+    // well.  Like:
+    //
+    //  ((?:<regex-value>)<modifier>)
     if (part.prefix.empty() && part.suffix.empty()) {
-      absl::StrAppendFormat(&result, "(%s)", regex_value);
-      AppendModifier(part.modifier, result);
+      if (part.modifier == Modifier::kNone ||
+          part.modifier == Modifier::kOptional) {
+        absl::StrAppendFormat(&result, "(%s)", regex_value);
+        AppendModifier(part.modifier, result);
+      } else {
+        absl::StrAppendFormat(&result, "((?:%s)", regex_value);
+        AppendModifier(part.modifier, result);
+        result += ")";
+      }
       continue;
     }
 
@@ -368,6 +450,40 @@ std::string Pattern::GenerateRegexString(
   return result;
 }
 
+bool Pattern::CanDirectMatch() const {
+  // We currently only support direct matching with the options used by
+  // URLPattern.
+  if (!options_.start || !options_.end || !options_.strict ||
+      !options_.sensitive) {
+    return false;
+  }
+
+  return part_list_.empty() || IsOnlyFullWildcard() || IsOnlyFixedText();
+}
+
+bool Pattern::DirectMatch(
+    absl::string_view input,
+    std::vector<
+        std::pair<absl::string_view, absl::optional<absl::string_view>>>*
+        group_list_out) const {
+  ABSL_ASSERT(CanDirectMatch());
+
+  if (part_list_.empty())
+    return input.empty();
+
+  if (IsOnlyFullWildcard()) {
+    if (group_list_out)
+      group_list_out->emplace_back(part_list_[0].name, input);
+    return true;
+  }
+
+  if (IsOnlyFixedText()) {
+    return part_list_[0].value == input;
+  }
+
+  return false;
+}
+
 size_t Pattern::RegexStringLength() const {
   size_t result = 0;
 
@@ -480,6 +596,29 @@ void Pattern::AppendEndsWith(std::string& append_target) const {
 
 size_t Pattern::EndsWithLength() const {
   return EscapedRegexpStringLength(options_.ends_with) + 4;
+}
+
+bool Pattern::IsOnlyFullWildcard() const {
+  if (part_list_.size() != 1)
+    return false;
+  auto& part = part_list_[0];
+  // The modifier does not matter as an optional or repeated full wildcard
+  // is functionally equivalent.
+  return part.type == PartType::kFullWildcard && part.prefix.empty() &&
+         part.suffix.empty();
+}
+
+bool Pattern::IsOnlyFixedText() const {
+  if (part_list_.size() != 1)
+    return false;
+  auto& part = part_list_[0];
+  bool result =
+      part.type == PartType::kFixed && part.modifier == Modifier::kNone;
+  if (result) {
+    ABSL_ASSERT(part.prefix.empty());
+    ABSL_ASSERT(part.suffix.empty());
+  }
+  return result;
 }
 
 }  // namespace liburlpattern

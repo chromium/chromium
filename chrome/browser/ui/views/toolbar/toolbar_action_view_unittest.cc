@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -28,8 +29,7 @@ namespace {
 class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
  public:
   TestToolbarActionViewDelegate()
-      : shown_in_menu_(false),
-        overflow_reference_view_(std::make_unique<views::MenuButton>()),
+      : overflow_reference_view_(std::make_unique<views::MenuButton>()),
         web_contents_(nullptr) {}
   TestToolbarActionViewDelegate(const TestToolbarActionViewDelegate&) = delete;
   TestToolbarActionViewDelegate& operator=(
@@ -40,8 +40,6 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
   content::WebContents* GetCurrentWebContents() override {
     return web_contents_;
   }
-  bool ShownInsideMenu() const override { return shown_in_menu_; }
-  void OnToolbarActionViewDragDone() override {}
   views::MenuButton* GetOverflowReferenceView() const override {
     return overflow_reference_view_.get();
   }
@@ -57,17 +55,14 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
                            const gfx::Point& press_pt,
                            const gfx::Point& p) override { return false; }
 
-  void set_shown_in_menu(bool shown_in_menu) { shown_in_menu_ = shown_in_menu; }
   void set_web_contents(content::WebContents* web_contents) {
     web_contents_ = web_contents;
   }
 
  private:
-  bool shown_in_menu_;
-
   std::unique_ptr<views::MenuButton> overflow_reference_view_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 class OpenMenuListener : public views::ContextMenuController {
@@ -92,7 +87,7 @@ class OpenMenuListener : public views::ContextMenuController {
   bool opened_menu() const { return opened_menu_; }
 
  private:
-  views::View* view_;
+  raw_ptr<views::View> view_;
 
   bool opened_menu_;
 };
@@ -184,8 +179,8 @@ TEST_F(ToolbarActionViewUnitTest,
 
 // Test the basic ui of a ToolbarActionView and that it responds correctly to
 // a controller's state.
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_WIN)
 // TODO(crbug.com/1042220): Test is flaky on Mac, Linux and Win10.
 #define MAYBE_BasicToolbarActionViewTest DISABLED_BasicToolbarActionViewTest
 #else
@@ -252,16 +247,11 @@ TEST_F(ToolbarActionViewUnitTest, MAYBE_BasicToolbarActionViewTest) {
   view_controller->HidePopup();
   EXPECT_EQ(views::Button::STATE_NORMAL, view->GetState());
 
-  // Ensure that the button's enabled state reflects that of the controller.
-  view_controller->SetEnabled(false);
-  EXPECT_EQ(views::Button::STATE_DISABLED, view->GetState());
-  view_controller->SetEnabled(true);
-  EXPECT_EQ(views::Button::STATE_NORMAL, view->GetState());
-
-  // Ensure that clicking on an otherwise-disabled action optionally opens the
+  // Ensure that clicking on an otherwise-disabled action opens the
   // context menu.
-  view_controller->SetDisabledClickOpensMenu(true);
   view_controller->SetEnabled(false);
+  // Even though the controller is disabled, the button remains enabled
+  // because it will open the context menu.
   EXPECT_EQ(views::Button::STATE_NORMAL, view->GetState());
   int old_execute_action_count = view_controller->execute_action_count();
   {

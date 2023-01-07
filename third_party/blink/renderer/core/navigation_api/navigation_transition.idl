@@ -1,0 +1,9 @@
+[Exposed=Window,
+  RuntimeEnabled=NavigationApi]
+interface NavigationTransition {
+  readonly attribute NavigationNavigationType navigationType;
+  readonly attribute NavigationHistoryEntry from;
+  [CallWith=ScriptState] readonly attribute Promise<void> finished;
+
+  // NavigationResult rollback(optional NavigationOptions options = {});
+};

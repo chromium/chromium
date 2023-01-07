@@ -1,0 +1,62 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <script type="module"
+        src="chrome://resources/cr_elements/cr_shared_vars.css.js">
+    </script>
+    <style>
+      html {
+        height: 100%;
+        width: 100%;
+      }
+
+      body {
+        color: var(--cr-primary-text-color);
+        height: 100%;
+        margin: 0;
+        min-width: 512px;
+        padding: 0;
+        text-align: center;
+        width: 100%;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: var(--md-background-color);
+        }
+      }
+
+      .container {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: center;
+        width: 100%;
+      }
+
+      .spinner {
+        background-image: url(chrome://resources/images/throbber_medium.svg);
+        background-size: 100%;
+        height: 48px;
+        width: 48px;
+      }
+
+      .title {
+        font-style: italic;
+        line-height: 32px;
+        margin-top: 16px;
+      }
+    </style>
+    <title>$i18n{syncLoadingConfirmationTitle}</title>
+  </head>
+  <body>
+    <div class="container">
+      <div class="spinner"></div>
+      <div class="title">$i18n{syncLoadingConfirmationTitle}</div>
+    </div>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,19 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "chrome/test/base/chrome_unit_test_suite.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/features.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/flatbuffer_scorer.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/protobuf_scorer.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/fbs/client_model_generated.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/render_view.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -34,29 +37,115 @@ namespace safe_browsing {
 
 namespace {
 
+std::string GetFlatBufferString() {
+  flatbuffers::FlatBufferBuilder builder(1024);
+  std::vector<flatbuffers::Offset<flat::Hash>> hashes;
+  // Make sure this is sorted.
+  std::vector<std::string> hashes_vector = {"feature1", "feature2", "feature3",
+                                            "token one", "token two"};
+  for (std::string& feature : hashes_vector) {
+    std::vector<uint8_t> hash_data(feature.begin(), feature.end());
+    hashes.push_back(flat::CreateHashDirect(builder, &hash_data));
+  }
+  flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flat::Hash>>>
+      hashes_flat = builder.CreateVector(hashes);
+
+  std::vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>> rules;
+  std::vector<int32_t> rule_feature1 = {};
+  std::vector<int32_t> rule_feature2 = {0};
+  std::vector<int32_t> rule_feature3 = {0, 1};
+  rules.push_back(
+      flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature1, 0.5));
+  rules.push_back(
+      flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature2, 2));
+  rules.push_back(
+      flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature3, 3));
+  flatbuffers::Offset<
+      flatbuffers::Vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>>>
+      rules_flat = builder.CreateVector(rules);
+
+  std::vector<int32_t> page_terms_vector = {3, 4};
+  flatbuffers::Offset<flatbuffers::Vector<int32_t>> page_term_flat =
+      builder.CreateVector(page_terms_vector);
+
+  std::vector<uint32_t> page_words_vector = {1000U, 2000U, 3000U};
+  flatbuffers::Offset<flatbuffers::Vector<uint32_t>> page_word_flat =
+      builder.CreateVector(page_words_vector);
+
+  std::vector<
+      flatbuffers::Offset<safe_browsing::flat::TfLiteModelMetadata_::Threshold>>
+      thresholds_vector = {};
+  flatbuffers::Offset<flat::TfLiteModelMetadata> tflite_metadata_flat =
+      flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector, 0,
+                                            0);
+
+  flat::ClientSideModelBuilder csd_model_builder(builder);
+  csd_model_builder.add_hashes(hashes_flat);
+  csd_model_builder.add_rule(rules_flat);
+  csd_model_builder.add_page_term(page_term_flat);
+  csd_model_builder.add_page_word(page_word_flat);
+  csd_model_builder.add_max_words_per_term(2);
+  csd_model_builder.add_murmur_hash_seed(12345U);
+  csd_model_builder.add_max_shingles_per_page(10);
+  csd_model_builder.add_shingle_size(3);
+  csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
+
+  builder.Finish(csd_model_builder.Finish());
+  return std::string(reinterpret_cast<char*>(builder.GetBufferPointer()),
+                     builder.GetSize());
+}
+
 class MockPhishingClassifier : public PhishingClassifier {
  public:
   explicit MockPhishingClassifier(content::RenderFrame* render_frame)
       : PhishingClassifier(render_frame) {}
 
+  MockPhishingClassifier(const MockPhishingClassifier&) = delete;
+  MockPhishingClassifier& operator=(const MockPhishingClassifier&) = delete;
+
   ~MockPhishingClassifier() override {}
 
   MOCK_METHOD2(BeginClassification, void(const std::u16string*, DoneCallback));
   MOCK_METHOD0(CancelPendingClassification, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPhishingClassifier);
 };
 
 class MockScorer : public Scorer {
  public:
   MockScorer() : Scorer() {}
+
+  MockScorer(const MockScorer&) = delete;
+  MockScorer& operator=(const MockScorer&) = delete;
+
   ~MockScorer() override {}
 
   MOCK_CONST_METHOD1(ComputeScore, double(const FeatureMap&));
+  MOCK_CONST_METHOD3(
+      GetMatchingVisualTargets,
+      void(const SkBitmap& bitmap,
+           std::unique_ptr<ClientPhishingRequest> request,
+           base::OnceCallback<void(std::unique_ptr<ClientPhishingRequest>)>
+               callback));
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockScorer);
+  MOCK_CONST_METHOD2(
+      ApplyVisualTfLiteModel,
+      void(const SkBitmap& bitmap,
+           base::OnceCallback<void(std::vector<double>)> callback));
+  MOCK_CONST_METHOD0(model_version, int());
+  MOCK_CONST_METHOD0(dom_model_version, int());
+  MOCK_CONST_METHOD0(HasVisualTfLiteModel, bool());
+  MOCK_CONST_METHOD0(find_page_word_callback,
+                     base::RepeatingCallback<bool(uint32_t)>());
+  MOCK_CONST_METHOD0(find_page_term_callback,
+                     base::RepeatingCallback<bool(const std::string&)>());
+  MOCK_CONST_METHOD0(max_words_per_term, size_t());
+  MOCK_CONST_METHOD0(murmurhash3_seed, uint32_t());
+  MOCK_CONST_METHOD0(max_shingles_per_page, size_t());
+  MOCK_CONST_METHOD0(shingle_size, size_t());
+  MOCK_CONST_METHOD0(threshold_probability, float());
+  MOCK_CONST_METHOD0(tflite_model_version, int());
+  MOCK_CONST_METHOD0(tflite_thresholds,
+                     const google::protobuf::RepeatedPtrField<
+                         TfLiteModelMetadata::Threshold>&());
 };
 }  // namespace
 
@@ -65,8 +154,10 @@ class PhishingClassifierDelegateTest : public ChromeRenderViewTest {
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
 
-    content::RenderFrame* render_frame = view_->GetMainRenderFrame();
+    content::RenderFrame* render_frame = GetMainRenderFrame();
     classifier_ = new StrictMock<MockPhishingClassifier>(render_frame);
+    render_frame->GetAssociatedInterfaceRegistry()->RemoveInterface(
+        mojom::PhishingDetector::Name_);
     delegate_ = PhishingClassifierDelegate::Create(render_frame, classifier_);
   }
 
@@ -108,8 +199,8 @@ class PhishingClassifierDelegateTest : public ChromeRenderViewTest {
 };
 
 TEST_F(PhishingClassifierDelegateTest, Navigation) {
-  MockScorer scorer;
-  delegate_->SetPhishingScorer(&scorer);
+  auto scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   ASSERT_TRUE(classifier_->is_ready());
 
   // Test an initial load.  We expect classification to happen normally.
@@ -231,7 +322,7 @@ TEST_F(PhishingClassifierDelegateTest, Navigation) {
 
 TEST_F(PhishingClassifierDelegateTest, NoPhishingModel) {
   ASSERT_FALSE(classifier_->is_ready());
-  delegate_->SetPhishingModel("");
+  ScorerStorage::GetInstance()->SetScorer(nullptr);
   // The scorer is nullptr so the classifier should still not be ready.
   ASSERT_FALSE(classifier_->is_ready());
 }
@@ -241,7 +332,47 @@ TEST_F(PhishingClassifierDelegateTest, HasPhishingModel) {
 
   ClientSideModel model;
   model.set_max_words_per_term(1);
-  delegate_->SetPhishingModel(model.SerializeAsString());
+  ScorerStorage::GetInstance()->SetScorer(
+      ProtobufModelScorer::Create(model.SerializeAsString(), base::File()));
+  ASSERT_TRUE(classifier_->is_ready());
+
+  // The delegate will cancel pending classification on destruction.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+}
+
+TEST_F(PhishingClassifierDelegateTest, HasFlatBufferModel) {
+  ASSERT_FALSE(classifier_->is_ready());
+
+  std::string model_str = GetFlatBufferString();
+  base::MappedReadOnlyRegion mapped_region =
+      base::ReadOnlySharedMemoryRegion::Create(model_str.length());
+  memcpy(mapped_region.mapping.memory(), model_str.data(), model_str.length());
+
+  ScorerStorage::GetInstance()->SetScorer(FlatBufferModelScorer::Create(
+      mapped_region.region.Duplicate(), base::File()));
+  ASSERT_TRUE(classifier_->is_ready());
+
+  // The delegate will cancel pending classification on destruction.
+  EXPECT_CALL(*classifier_, CancelPendingClassification());
+}
+
+TEST_F(PhishingClassifierDelegateTest, HasVisualTfLiteModel) {
+  ASSERT_FALSE(classifier_->is_ready());
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath file_path =
+      temp_dir.GetPath().AppendASCII("visual_model.tflite");
+  base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
+                                 base::File::FLAG_READ |
+                                 base::File::FLAG_WRITE);
+  std::string file_contents = "visual model file";
+  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+
+  ClientSideModel model;
+  model.set_max_words_per_term(1);
+  ScorerStorage::GetInstance()->SetScorer(
+      ProtobufModelScorer::Create(model.SerializeAsString(), std::move(file)));
   ASSERT_TRUE(classifier_->is_ready());
 
   // The delegate will cancel pending classification on destruction.
@@ -268,8 +399,8 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer) {
   // Now set a scorer, which should cause a classifier to be created,
   // but no classification will start.
   page_text = u"dummy";
-  MockScorer scorer;
-  delegate_->SetPhishingScorer(&scorer);
+  auto scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   Mock::VerifyAndClearExpectations(classifier_);
 
   // Manually start a classification.
@@ -279,7 +410,8 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer) {
   // If we set a new scorer while a classification is going on the
   // classification should be cancelled.
   EXPECT_CALL(*classifier_, CancelPendingClassification());
-  delegate_->SetPhishingScorer(&scorer);
+  scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   Mock::VerifyAndClearExpectations(classifier_);
 
   // The delegate will cancel pending classification on destruction.
@@ -305,8 +437,8 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref) {
   // Now set a scorer, which should cause a classifier to be created,
   // but no classification will start.
   page_text = u"dummy";
-  MockScorer scorer;
-  delegate_->SetPhishingScorer(&scorer);
+  auto scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   Mock::VerifyAndClearExpectations(classifier_);
 
   // Manually start a classification.
@@ -316,7 +448,8 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref) {
   // If we set a new scorer while a classification is going on the
   // classification should be cancelled.
   EXPECT_CALL(*classifier_, CancelPendingClassification());
-  delegate_->SetPhishingScorer(&scorer);
+  scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   Mock::VerifyAndClearExpectations(classifier_);
 
   // The delegate will cancel pending classification on destruction.
@@ -326,8 +459,8 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref) {
 TEST_F(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
   // Tests the behavior when OnStartPhishingDetection has not yet been called
   // when the page load finishes.
-  MockScorer scorer;
-  delegate_->SetPhishingScorer(&scorer);
+  auto scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   ASSERT_TRUE(classifier_->is_ready());
 
   EXPECT_CALL(*classifier_, CancelPendingClassification());
@@ -400,8 +533,8 @@ TEST_F(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
 
 TEST_F(PhishingClassifierDelegateTest, IgnorePreliminaryCapture) {
   // Tests that preliminary PageCaptured notifications are ignored.
-  MockScorer scorer;
-  delegate_->SetPhishingScorer(&scorer);
+  auto scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   ASSERT_TRUE(classifier_->is_ready());
 
   EXPECT_CALL(*classifier_, CancelPendingClassification());
@@ -430,8 +563,8 @@ TEST_F(PhishingClassifierDelegateTest, IgnorePreliminaryCapture) {
 TEST_F(PhishingClassifierDelegateTest, DuplicatePageCapture) {
   // Tests that a second PageCaptured notification causes classification to
   // be cancelled.
-  MockScorer scorer;
-  delegate_->SetPhishingScorer(&scorer);
+  auto scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   ASSERT_TRUE(classifier_->is_ready());
 
   EXPECT_CALL(*classifier_, CancelPendingClassification());
@@ -461,8 +594,8 @@ TEST_F(PhishingClassifierDelegateTest, DuplicatePageCapture) {
 TEST_F(PhishingClassifierDelegateTest, PhishingDetectionDone) {
   // Tests that a SafeBrowsingHostMsg_PhishingDetectionDone IPC is
   // sent to the browser whenever we finish classification.
-  MockScorer scorer;
-  delegate_->SetPhishingScorer(&scorer);
+  auto scorer = std::make_unique<MockScorer>();
+  ScorerStorage::GetInstance()->SetScorer(std::move(scorer));
   ASSERT_TRUE(classifier_->is_ready());
 
   // Start by loading a page to populate the delegate's state.

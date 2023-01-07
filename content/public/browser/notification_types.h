@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,19 +29,6 @@ enum NotificationType {
 
   // NavigationController ----------------------------------------------------
 
-  // A new pending navigation has been created. Pending entries are created
-  // when the user requests the navigation. We don't know if it will actually
-  // happen until it does (at this point, it will be "committed." Note that
-  // renderer- initiated navigations such as link clicks will never be
-  // pending.
-  //
-  // This notification is called after the pending entry is created, but
-  // before we actually try to navigate. The source will be the
-  // NavigationController that owns the pending entry, and the details
-  // will be a NavigationEntry.
-  // TODO(https://crbug.com/1174759): Remove.
-  NOTIFICATION_NAV_ENTRY_PENDING,
-
   // A new non-pending navigation entry has been created. This will
   // correspond to one NavigationController entry being created (in the case
   // of new navigations) or renavigated to (for back/forward navigations).
@@ -54,9 +41,9 @@ enum NotificationType {
 
   // Other load-related (not from NavigationController) ----------------------
 
-  // Corresponds to ViewHostMsg_DocumentOnLoadCompletedInMainFrame. The source
-  // is the WebContents.
-  // DEPRECATED: Use WebContentsObserver::DocumentOnLoadCompletedInMainFrame()
+  // DEPRECATED: Use
+  // WebContentsObserver::DocumentOnLoadCompletedInPrimaryMainFrame() when this
+  // is fired.
   // TODO(https://crbug.com/1174761): Remove.
   NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
 
@@ -112,18 +99,6 @@ enum NotificationType {
   // Use RenderWidgetHostObserver::RenderWidgetHostVisibilityChanged()
   // TODO(https://crbug.com/1174771): Remove.
   NOTIFICATION_RENDER_WIDGET_VISIBILITY_CHANGED,
-
-  // The focused element inside a page has changed.  The source is the
-  // RenderViewHost. The details is a Details<const bool> that indicates whether
-  // or not an editable node was focused.
-  // TODO(https://crbug.com/1174772): Remove.
-  NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
-
-  // Notification from WebContents that we have received a response from the
-  // renderer in response to a dom automation controller action. The source is
-  // the RenderViewHost, and the details is a string with the response.
-  // TODO(https://crbug.com/1174774): Remove.
-  NOTIFICATION_DOM_OPERATION_RESPONSE,
 
   // Custom notifications used by the embedder should start from here.
   NOTIFICATION_CONTENT_END,

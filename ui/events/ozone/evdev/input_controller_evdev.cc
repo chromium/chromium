@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/stylus_state.h"
 #include "ui/events/ozone/evdev/input_device_factory_evdev_proxy.h"
 #include "ui/events/ozone/evdev/keyboard_evdev.h"
 #include "ui/events/ozone/evdev/mouse_button_map_evdev.h"
@@ -51,6 +52,10 @@ void InputControllerEvdev::set_has_touchpad(bool has_touchpad) {
   has_touchpad_ = has_touchpad;
 }
 
+void InputControllerEvdev::set_has_haptic_touchpad(bool has_haptic_touchpad) {
+  has_haptic_touchpad_ = has_haptic_touchpad;
+}
+
 void InputControllerEvdev::SetInputDevicesEnabled(bool enabled) {
   input_device_settings_.enable_devices = enabled;
   ScheduleUpdateDeviceSettings();
@@ -66,6 +71,10 @@ bool InputControllerEvdev::HasPointingStick() {
 
 bool InputControllerEvdev::HasTouchpad() {
   return has_touchpad_;
+}
+
+bool InputControllerEvdev::HasHapticTouchpad() {
+  return has_haptic_touchpad_;
 }
 
 bool InputControllerEvdev::IsCapsLockEnabled() {
@@ -97,6 +106,18 @@ void InputControllerEvdev::SetAutoRepeatRate(const base::TimeDelta& delay,
 void InputControllerEvdev::GetAutoRepeatRate(base::TimeDelta* delay,
                                              base::TimeDelta* interval) {
   keyboard_->GetAutoRepeatRate(delay, interval);
+}
+
+void InputControllerEvdev::SetKeyboardKeyBitsMapping(
+    base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {
+  keyboard_key_bits_mapping_ = std::move(key_bits_mapping);
+}
+
+std::vector<uint64_t> InputControllerEvdev::GetKeyboardKeyBits(int id) {
+  auto key_bits_mapping_iter = keyboard_key_bits_mapping_.find(id);
+  return key_bits_mapping_iter == keyboard_key_bits_mapping_.end()
+             ? std::vector<uint64_t>()
+             : key_bits_mapping_iter->second;
 }
 
 void InputControllerEvdev::SetCurrentLayoutByName(
@@ -142,6 +163,16 @@ void InputControllerEvdev::SetTouchpadScrollSensitivity(int value) {
   ScheduleUpdateDeviceSettings();
 }
 
+void InputControllerEvdev::SetTouchpadHapticFeedback(bool enabled) {
+  input_device_settings_.touchpad_haptic_feedback_enabled = enabled;
+  ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetTouchpadHapticClickSensitivity(int value) {
+  input_device_settings_.touchpad_haptic_click_sensitivity = value;
+  ScheduleUpdateDeviceSettings();
+}
+
 void InputControllerEvdev::SetTapToClick(bool enabled) {
   input_device_settings_.tap_to_click_enabled = enabled;
   ScheduleUpdateDeviceSettings();
@@ -184,6 +215,18 @@ void InputControllerEvdev::SetPointingStickAcceleration(bool enabled) {
   }
   input_device_settings_.pointing_stick_acceleration_enabled = enabled;
   ScheduleUpdateDeviceSettings();
+}
+
+void InputControllerEvdev::SetGamepadKeyBitsMapping(
+    base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {
+  gamepad_key_bits_mapping_ = std::move(key_bits_mapping);
+}
+
+std::vector<uint64_t> InputControllerEvdev::GetGamepadKeyBits(int id) {
+  auto gamepad_key_bits_iter = gamepad_key_bits_mapping_.find(id);
+  return gamepad_key_bits_iter == gamepad_key_bits_mapping_.end()
+             ? std::vector<uint64_t>()
+             : gamepad_key_bits_iter->second;
 }
 
 void InputControllerEvdev::SetPrimaryButtonRight(bool right) {
@@ -248,6 +291,14 @@ void InputControllerEvdev::SetTapToClickPaused(bool state) {
   ScheduleUpdateDeviceSettings();
 }
 
+void InputControllerEvdev::GetStylusSwitchState(
+    GetStylusSwitchStateReply reply) {
+  if (input_device_factory_)
+    input_device_factory_->GetStylusSwitchState(std::move(reply));
+  else
+    std::move(reply).Run(ui::StylusState::REMOVED);
+}
+
 void InputControllerEvdev::GetTouchDeviceStatus(
     GetTouchDeviceStatusReply reply) {
   if (input_device_factory_)
@@ -305,6 +356,23 @@ void InputControllerEvdev::StopVibration(int id) {
   if (!input_device_factory_)
     return;
   input_device_factory_->StopVibration(id);
+}
+
+void InputControllerEvdev::PlayHapticTouchpadEffect(
+    ui::HapticTouchpadEffect effect,
+    ui::HapticTouchpadEffectStrength strength) {
+  if (!input_device_factory_)
+    return;
+  input_device_factory_->PlayHapticTouchpadEffect(effect, strength);
+}
+
+void InputControllerEvdev::SetHapticTouchpadEffectForNextButtonRelease(
+    ui::HapticTouchpadEffect effect,
+    ui::HapticTouchpadEffectStrength strength) {
+  if (!input_device_factory_)
+    return;
+  input_device_factory_->SetHapticTouchpadEffectForNextButtonRelease(effect,
+                                                                     strength);
 }
 
 }  // namespace ui

@@ -33,10 +33,10 @@ def test_element_not_found(session):
     assert_error(result, "no such element")
 
 
-def test_element_stale(session, inline):
-    session.url = inline("<input id=foo>")
-    element = session.find.css("input", all=False)
-    session.refresh()
+@pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
+def test_stale_element_reference(session, stale_element, as_frame):
+    element = stale_element("<input>", "input", as_frame=as_frame)
+
     result = get_element_attribute(session, element.id, "id")
     assert_error(result, "stale element reference")
 
@@ -108,3 +108,14 @@ def test_global_boolean_attributes(session, inline):
     element = session.find.css("p", all=False)
     result = get_element_attribute(session, element.id, "itemscope")
     assert_success(result, None)
+
+
+@pytest.mark.parametrize("is_relative", [True, False], ids=["relative", "absolute"])
+def test_anchor_href(session, inline, url, is_relative):
+    href = "/foo.html" if is_relative else url("/foo.html")
+
+    session.url = inline("<a href='{}'>foo</a>".format(href))
+    element = session.find.css("a", all=False)
+
+    response = get_element_attribute(session, element.id, "href")
+    assert_success(response, href)

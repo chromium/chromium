@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,9 +7,8 @@ import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
 
-# TODO(crbug.com/1171629): Change this back to is_chromeos.
 # CrOS doesn't install GTK or any gnome packages.
-assert(!is_chromeos_ash)
+assert(!is_chromeos)
 
 # These packages should _only_ be expected when building for a target.
 assert(current_toolchain == default_toolchain)
@@ -24,7 +23,7 @@ pkg_config("atk") {
     "atk-bridge-2.0",
   ]
   atk_lib_dir = exec_script(pkg_config_script,
-                            pkg_config_args + [
+                            common_pkg_config_args + pkg_config_args + [
                                   "--libdir",
                                   "atk",
                                 ],

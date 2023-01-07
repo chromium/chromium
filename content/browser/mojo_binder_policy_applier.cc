@@ -1,48 +1,59 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/mojo_binder_policy_applier.h"
 
+#include "content/public/browser/mojo_binder_policy_map.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace content {
 
 MojoBinderPolicyApplier::MojoBinderPolicyApplier(
     const MojoBinderPolicyMapImpl* policy_map,
-    base::OnceClosure cancel_closure)
-    : policy_map_(*policy_map), cancel_closure_(std::move(cancel_closure)) {}
+    base::OnceCallback<void(const std::string& interface_name)> cancel_callback)
+    : policy_map_(*policy_map), cancel_callback_(std::move(cancel_callback)) {}
 
 MojoBinderPolicyApplier::~MojoBinderPolicyApplier() = default;
 
 // static
 std::unique_ptr<MojoBinderPolicyApplier>
 MojoBinderPolicyApplier::CreateForSameOriginPrerendering(
-    base::OnceClosure cancel_closure) {
+    base::OnceCallback<void(const std::string& interface_name)>
+        cancel_callback) {
   return std::make_unique<MojoBinderPolicyApplier>(
       MojoBinderPolicyMapImpl::GetInstanceForSameOriginPrerendering(),
-      std::move(cancel_closure));
+      std::move(cancel_callback));
 }
 
-void MojoBinderPolicyApplier::ApplyPolicyToBinder(
+void MojoBinderPolicyApplier::ApplyPolicyToNonAssociatedBinder(
     const std::string& interface_name,
     base::OnceClosure binder_callback) {
   if (mode_ == Mode::kGrantAll) {
     std::move(binder_callback).Run();
     return;
   }
-  const MojoBinderPolicy policy = GetMojoBinderPolicy(interface_name);
+  const MojoBinderNonAssociatedPolicy policy =
+      GetNonAssociatedMojoBinderPolicy(interface_name);
 
-  // Running in kPrepareToGrantAll mode means that the page will be activated
-  // soon, so the restrictions should be relaxed.
+  // Run in the kPrepareToGrantAll mode before the renderer sends back a
+  // DidCommitActivation. In this mode, MojoBinderPolicyApplier loosens
+  // policies, but still defers binders to ensure that the renderer does not
+  // receive unexpected messages before CommitActivation arrives.
   if (mode_ == Mode::kPrepareToGrantAll) {
     switch (policy) {
-      case MojoBinderPolicy::kGrant:
+      case MojoBinderNonAssociatedPolicy::kGrant:
+      // Grant these two kinds of interfaces because:
+      // - kCancel and kUnexpected interfaces may have sync methods, so grant
+      // them to avoid deadlocks.
+      // - Renderer might request these interfaces during the prerenderingchange
+      // event, because from the page's point of view it is no longer
+      // prerendering.
+      case MojoBinderNonAssociatedPolicy::kCancel:
+      case MojoBinderNonAssociatedPolicy::kUnexpected:
         std::move(binder_callback).Run();
         break;
-      case MojoBinderPolicy::kCancel:
-      case MojoBinderPolicy::kDefer:
-      case MojoBinderPolicy::kUnexpected:
+      case MojoBinderNonAssociatedPolicy::kDefer:
         deferred_binders_.push_back(std::move(binder_callback));
         break;
     }
@@ -51,22 +62,44 @@ void MojoBinderPolicyApplier::ApplyPolicyToBinder(
 
   DCHECK_EQ(mode_, Mode::kEnforce);
   switch (policy) {
-    case MojoBinderPolicy::kGrant:
+    case MojoBinderNonAssociatedPolicy::kGrant:
       std::move(binder_callback).Run();
       break;
-    case MojoBinderPolicy::kCancel:
-      if (cancel_closure_)
-        std::move(cancel_closure_).Run();
+    case MojoBinderNonAssociatedPolicy::kCancel:
+      if (cancel_callback_) {
+        std::move(cancel_callback_).Run(interface_name);
+      }
       break;
-    case MojoBinderPolicy::kDefer:
+    case MojoBinderNonAssociatedPolicy::kDefer:
       deferred_binders_.push_back(std::move(binder_callback));
       break;
-    case MojoBinderPolicy::kUnexpected:
+    case MojoBinderNonAssociatedPolicy::kUnexpected:
       mojo::ReportBadMessage("MBPA_BAD_INTERFACE: " + interface_name);
-      if (cancel_closure_)
-        std::move(cancel_closure_).Run();
+      if (cancel_callback_) {
+        std::move(cancel_callback_).Run(interface_name);
+      }
       break;
   }
+}
+
+bool MojoBinderPolicyApplier::ApplyPolicyToAssociatedBinder(
+    const std::string& interface_name) {
+  MojoBinderAssociatedPolicy policy = MojoBinderAssociatedPolicy::kCancel;
+  switch (mode_) {
+    // Always allow binders to run.
+    case Mode::kGrantAll:
+    case Mode::kPrepareToGrantAll:
+      return true;
+    case Mode::kEnforce:
+      policy = policy_map_.GetAssociatedMojoBinderPolicy(
+          interface_name, MojoBinderAssociatedPolicy::kCancel);
+      if (policy != MojoBinderAssociatedPolicy::kGrant) {
+        if (cancel_callback_)
+          std::move(cancel_callback_).Run(interface_name);
+        return false;
+      }
+  }
+  return true;
 }
 
 void MojoBinderPolicyApplier::PrepareToGrantAll() {
@@ -76,7 +109,23 @@ void MojoBinderPolicyApplier::PrepareToGrantAll() {
 
 void MojoBinderPolicyApplier::GrantAll() {
   DCHECK_NE(mode_, Mode::kGrantAll);
+
+  // Check that we are in a Mojo message dispatch, since the deferred binders
+  // might call mojo::ReportBadMessage().
+  //
+  // TODO(https://crbug.com/1217977): Give the deferred_binders_ a
+  // BadMessageCallback and forbid them from using mojo::ReportBadMessage()
+  // directly. We are currently in the message stack of one of the PageBroadcast
+  // Mojo callbacks handled by RenderViewHost, so if a binder calls
+  // mojo::ReportBadMessage() it kills possibly the wrong renderer. Even if we
+  // only run the binders associated with the RVH for each message per-RVH,
+  // there are still subtle problems with running all these callbacks at once:
+  // for example, mojo::GetMessageCallback()/mojo::ReportBadMessage() can only
+  // be called once per message dispatch.
+  DCHECK(mojo::IsInMessageDispatch());
+
   mode_ = Mode::kGrantAll;
+
   // It's safe to iterate over `deferred_binders_` because no more callbacks
   // will be added to it once `grant_all_` is true."
   for (auto& deferred_binder : deferred_binders_)
@@ -88,9 +137,11 @@ void MojoBinderPolicyApplier::DropDeferredBinders() {
   deferred_binders_.clear();
 }
 
-MojoBinderPolicy MojoBinderPolicyApplier::GetMojoBinderPolicy(
+MojoBinderNonAssociatedPolicy
+MojoBinderPolicyApplier::GetNonAssociatedMojoBinderPolicy(
     const std::string& interface_name) const {
-  return policy_map_.GetMojoBinderPolicy(interface_name, default_policy_);
+  return policy_map_.GetNonAssociatedMojoBinderPolicy(interface_name,
+                                                      default_policy_);
 }
 
 }  // namespace content

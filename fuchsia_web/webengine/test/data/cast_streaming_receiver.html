@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<body>
+  <video src="data:cast_streaming_receiver">
+
+  <script>
+    var video = document.querySelector('video');
+    video.onerror = function() {
+      document.title = "error";
+    }
+    video.oncanplay = function() {
+      document.title = "canplay";
+    }
+  </script>
+</body>
+</html>

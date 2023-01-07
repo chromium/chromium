@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "components/system_media_controls/system_media_controls_observer.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/media_keys_listener_manager.h"
 #include "ui/base/accelerators/media_keys_listener.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -30,7 +29,7 @@ class SystemMediaControlsNotifier;
 // particular, it owns one of its delegates (ActiveMediaSessionController), and
 // only propagates to the ActiveMediaSessionController if no other delegates are
 // listening to a particular media key.
-class CONTENT_EXPORT MediaKeysListenerManagerImpl
+class MediaKeysListenerManagerImpl
     : public MediaKeysListenerManager,
       public ui::MediaKeysListener::Delegate,
       public system_media_controls::SystemMediaControlsObserver {
@@ -61,6 +60,7 @@ class CONTENT_EXPORT MediaKeysListenerManagerImpl
   void OnPause() override;
   void OnPlayPause() override;
   void OnStop() override;
+  void OnSeek(const base::TimeDelta& time) override;
   void OnSeekTo(const base::TimeDelta& time) override;
 
   // Informs the MediaKeysListener whether or not media is playing.
@@ -80,6 +80,10 @@ class CONTENT_EXPORT MediaKeysListenerManagerImpl
   // as it is treated differently.
   struct ListeningData {
     ListeningData();
+
+    ListeningData(const ListeningData&) = delete;
+    ListeningData& operator=(const ListeningData&) = delete;
+
     ~ListeningData();
 
     // True if the ActiveMediaSessionController is listening for this key.
@@ -87,9 +91,6 @@ class CONTENT_EXPORT MediaKeysListenerManagerImpl
 
     // Contains non-ActiveMediaSessionController listeners.
     base::ObserverList<ui::MediaKeysListener::Delegate> listeners;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ListeningData);
   };
 
   void MaybeSendKeyCode(ui::KeyboardCode key_code);

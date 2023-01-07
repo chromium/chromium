@@ -32,8 +32,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_UTF8_ADAPTOR_H_
 
 #include "base/strings/string_piece.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace WTF {
@@ -45,8 +45,8 @@ class WTF_EXPORT StringUTF8Adaptor final {
   DISALLOW_NEW();
 
  public:
-  StringUTF8Adaptor(const String& string,
-                    UTF8ConversionMode mode = kLenientUTF8Conversion);
+  explicit StringUTF8Adaptor(StringView string,
+                             UTF8ConversionMode mode = kLenientUTF8Conversion);
   ~StringUTF8Adaptor();
 
   const char* data() const { return data_; }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@ import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
+
+import org.chromium.base.TraceEvent;
 
 /**
  * Detects scroll, fling, and scale gestures on calls to {@link #onTouchEvent} and reports back to
@@ -60,6 +62,7 @@ class PlayerFrameGestureDetector
      * @return Whether the event was consumed.
      */
     boolean onTouchEvent(MotionEvent event) {
+        TraceEvent.begin("PlayerFrameGestureDetector.onTouchEvent");
         if (mCanDetectZoom) {
             mScaleGestureDetector.onTouchEvent(event);
         }
@@ -72,7 +75,10 @@ class PlayerFrameGestureDetector
                 mParentGestureDetector.onTouchEvent(event);
             }
         }
-        return mGestureDetector.onTouchEvent(event);
+        boolean ret = mGestureDetector.onTouchEvent(event);
+
+        TraceEvent.end("PlayerFrameGestureDetector.onTouchEvent");
+        return ret;
     }
 
     @Override

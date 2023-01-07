@@ -1,29 +1,33 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/login/localized_values_builder.h"
 #include "content/public/browser/web_ui.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
-BaseWebUIHandler::BaseWebUIHandler(JSCallsContainer* js_calls_container)
-    : js_calls_container_(js_calls_container) {}
+BaseWebUIHandler::BaseWebUIHandler() = default;
 
 BaseWebUIHandler::~BaseWebUIHandler() = default;
 
-void BaseWebUIHandler::InitializeBase() {
-  page_is_ready_ = true;
-  Initialize();
+void BaseWebUIHandler::OnJavascriptAllowed() {
+  auto deferred_calls = std::exchange(deferred_calls_, {});
+  for (auto& call : deferred_calls)
+    std::move(call).Run();
+
+  InitAfterJavascriptAllowed();
 }
 
-void BaseWebUIHandler::GetLocalizedStrings(base::DictionaryValue* dict) {
+void BaseWebUIHandler::GetLocalizedStrings(base::Value::Dict* dict) {
   auto builder = std::make_unique<::login::LocalizedValuesBuilder>(dict);
   DeclareLocalizedValues(builder.get());
   GetAdditionalParameters(dict);
@@ -33,57 +37,27 @@ void BaseWebUIHandler::RegisterMessages() {
   DeclareJSCallbacks();
 }
 
-void BaseWebUIHandler::GetAdditionalParameters(base::DictionaryValue* dict) {}
+void BaseWebUIHandler::GetAdditionalParameters(base::Value::Dict* dict) {}
 
-void BaseWebUIHandler::ShowScreen(OobeScreenId screen) {
-  ShowScreenWithData(screen, nullptr);
+void BaseWebUIHandler::InitAfterJavascriptAllowed() {
+  InitializeDeprecated();
 }
 
-void BaseWebUIHandler::ShowScreenWithData(OobeScreenId screen,
-                                          const base::DictionaryValue* data) {
-  base::DictionaryValue screen_params;
-  screen_params.SetString("id", screen.name);
-  if (data) {
-    screen_params.SetKey("data", data->Clone());
-  }
-  CallJS("cr.ui.Oobe.showScreen", screen_params);
+void BaseWebUIHandler::ShowScreenDeprecated(OobeScreenId screen) {
+  if (!GetOobeUI())
+    return;
+  GetOobeUI()->GetCoreOobeView()->ShowScreenWithData(screen, absl::nullopt);
 }
 
-OobeUI* BaseWebUIHandler::GetOobeUI() const {
+OobeUI* BaseWebUIHandler::GetOobeUI() {
   return static_cast<OobeUI*>(web_ui()->GetController());
 }
 
-OobeScreenId BaseWebUIHandler::GetCurrentScreen() const {
+OobeScreenId BaseWebUIHandler::GetCurrentScreen() {
   OobeUI* oobe_ui = GetOobeUI();
   if (!oobe_ui)
-    return OobeScreen::SCREEN_UNKNOWN;
+    return ash::OOBE_SCREEN_UNKNOWN;
   return oobe_ui->current_screen();
-}
-
-void BaseWebUIHandler::OnJavascriptDisallowed() {
-  javascript_disallowed_ = true;
-}
-
-void BaseWebUIHandler::InsertIntoList(std::vector<base::Value>*) {}
-
-void BaseWebUIHandler::MaybeRecordIncomingEvent(
-    const std::string& function_name,
-    const base::ListValue* args) {
-  if (js_calls_container_->record_all_events_for_test()) {
-    // Do a clone so `args` is still available for the actual handler.
-    std::vector<base::Value> arguments = args->Clone().TakeList();
-    js_calls_container_->events()->emplace_back(
-        JSCallsContainer::Event(JSCallsContainer::Event::Type::kIncoming,
-                                function_name, std::move(arguments)));
-  }
-}
-
-void BaseWebUIHandler::OnRawCallback(
-    const std::string& function_name,
-    const content::WebUI::MessageCallback callback,
-    const base::ListValue* args) {
-  MaybeRecordIncomingEvent(function_name, args);
-  callback.Run(args);
 }
 
 }  // namespace chromeos

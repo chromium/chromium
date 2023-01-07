@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 The Chromium Authors. All rights reserved.
+ * Copyright 2019 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -19,8 +19,8 @@ function install() { // eslint-disable-line no-unused-vars
     .then((registration) => {
       if (registration) {
         output(
-          'serviceWorker.getRegistration()',
-          'The ServiceWorker is already installed.'
+            'serviceWorker.getRegistration()',
+            'The ServiceWorker is already installed.',
         );
         return;
       }
@@ -63,20 +63,19 @@ function install() { // eslint-disable-line no-unused-vars
  *                                   payment sheet.
  */
 function outputChangePaymentMethodReturnValue(request) {
-  request
-    .show()
-    .then((response) => {
-      response.complete('success').then(() => {
-        output(
-          'PaymentRequest.show()',
-          'changePaymentMethod() returned: ' +
-            JSON.stringify(response.details.changePaymentMethodReturned)
-        );
+  request.show()
+      .then((response) => {
+        response.complete('success').then(() => {
+          output(
+              'PaymentRequest.show()',
+              'changePaymentMethod() returned: ' +
+                  JSON.stringify(response.details.changePaymentMethodReturned),
+          );
+        });
+      })
+      .catch((error) => {
+        output('PaymentRequest.show() rejected with', error);
       });
-    })
-    .catch((error) => {
-      output('PaymentRequest.show() rejected with', error);
-    });
 }
 
 /** @return {PaymentRequest} The Payment Request object for testNoHandler(). */
@@ -122,9 +121,9 @@ function initTestThrow() {
   });
   request.addEventListener('paymentmethodchange', (event) => {
     event.updateWith(
-      new Promise(() => {
-        throw new Error('Error for test');
-      })
+        new Promise(() => {
+          throw new Error('Error for test');
+        }),
     );
   });
   return request;

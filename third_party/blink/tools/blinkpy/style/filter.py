@@ -192,7 +192,7 @@ class FilterConfiguration(object):
         if self._path_specific_lower is None:
             self._path_specific_lower = []
             for (sub_paths, path_rules) in self._path_specific:
-                sub_paths = map(str.lower, sub_paths)
+                sub_paths = list(map(str.lower, sub_paths))
                 self._path_specific_lower.append((sub_paths, path_rules))
         return self._path_specific_lower
 

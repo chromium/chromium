@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@ namespace cc {
 
 std::unique_ptr<SnapSelectionStrategy>
 SnapSelectionStrategy::CreateForEndPosition(
-    const gfx::ScrollOffset& current_position,
+    const gfx::PointF& current_position,
     bool scrolled_x,
     bool scrolled_y,
     SnapTargetsPrioritization prioritization) {
@@ -19,8 +19,8 @@ SnapSelectionStrategy::CreateForEndPosition(
 }
 
 std::unique_ptr<SnapSelectionStrategy>
-SnapSelectionStrategy::CreateForDirection(gfx::ScrollOffset current_position,
-                                          gfx::ScrollOffset step,
+SnapSelectionStrategy::CreateForDirection(gfx::PointF current_position,
+                                          gfx::Vector2dF step,
                                           bool use_fractional_offsets,
                                           SnapStopAlwaysFilter filter) {
   return std::make_unique<DirectionStrategy>(current_position, step, filter,
@@ -28,17 +28,15 @@ SnapSelectionStrategy::CreateForDirection(gfx::ScrollOffset current_position,
 }
 
 std::unique_ptr<SnapSelectionStrategy>
-SnapSelectionStrategy::CreateForEndAndDirection(
-    gfx::ScrollOffset current_position,
-    gfx::ScrollOffset displacement,
-    bool use_fractional_offsets) {
+SnapSelectionStrategy::CreateForEndAndDirection(gfx::PointF current_position,
+                                                gfx::Vector2dF displacement,
+                                                bool use_fractional_offsets) {
   return std::make_unique<EndAndDirectionStrategy>(
       current_position, displacement, use_fractional_offsets);
 }
 
 std::unique_ptr<SnapSelectionStrategy>
-SnapSelectionStrategy::CreateForTargetElement(
-    gfx::ScrollOffset current_position) {
+SnapSelectionStrategy::CreateForTargetElement(gfx::PointF current_position) {
   return std::make_unique<EndPositionStrategy>(
       current_position, true /* scrolled_x */, true /* scrolled_y */,
       SnapTargetsPrioritization::kRequire);
@@ -75,11 +73,11 @@ bool EndPositionStrategy::ShouldSnapOnY() const {
   return scrolled_y_;
 }
 
-gfx::ScrollOffset EndPositionStrategy::intended_position() const {
+gfx::PointF EndPositionStrategy::intended_position() const {
   return current_position_;
 }
 
-gfx::ScrollOffset EndPositionStrategy::base_position() const {
+gfx::PointF EndPositionStrategy::base_position() const {
   return current_position_;
 }
 
@@ -98,9 +96,9 @@ bool EndPositionStrategy::ShouldPrioritizeSnapTargets() const {
   return snap_targets_prioritization_ == SnapTargetsPrioritization::kRequire;
 }
 
-const base::Optional<SnapSearchResult>& EndPositionStrategy::PickBestResult(
-    const base::Optional<SnapSearchResult>& closest,
-    const base::Optional<SnapSearchResult>& covering) const {
+const absl::optional<SnapSearchResult>& EndPositionStrategy::PickBestResult(
+    const absl::optional<SnapSearchResult>& closest,
+    const absl::optional<SnapSearchResult>& covering) const {
   return covering.has_value() ? covering : closest;
 }
 
@@ -112,11 +110,11 @@ bool DirectionStrategy::ShouldSnapOnY() const {
   return step_.y() != 0;
 }
 
-gfx::ScrollOffset DirectionStrategy::intended_position() const {
+gfx::PointF DirectionStrategy::intended_position() const {
   return current_position_ + step_;
 }
 
-gfx::ScrollOffset DirectionStrategy::base_position() const {
+gfx::PointF DirectionStrategy::base_position() const {
   return current_position_;
 }
 
@@ -148,9 +146,9 @@ bool DirectionStrategy::IsValidSnapArea(SearchAxis axis,
           area.must_snap);
 }
 
-const base::Optional<SnapSearchResult>& DirectionStrategy::PickBestResult(
-    const base::Optional<SnapSearchResult>& closest,
-    const base::Optional<SnapSearchResult>& covering) const {
+const absl::optional<SnapSearchResult>& DirectionStrategy::PickBestResult(
+    const absl::optional<SnapSearchResult>& closest,
+    const absl::optional<SnapSearchResult>& covering) const {
   // We choose the |closest| result only if the default landing position (using
   // the default step) is not a valid snap position (not making a snap area
   // covering the snapport), or the |closest| is closer than the default landing
@@ -186,11 +184,11 @@ bool EndAndDirectionStrategy::ShouldSnapOnY() const {
   return displacement_.y() != 0;
 }
 
-gfx::ScrollOffset EndAndDirectionStrategy::intended_position() const {
+gfx::PointF EndAndDirectionStrategy::intended_position() const {
   return current_position_ + displacement_;
 }
 
-gfx::ScrollOffset EndAndDirectionStrategy::base_position() const {
+gfx::PointF EndAndDirectionStrategy::base_position() const {
   return current_position_ + displacement_;
 }
 
@@ -219,9 +217,9 @@ bool EndAndDirectionStrategy::ShouldRespectSnapStop() const {
   return true;
 }
 
-const base::Optional<SnapSearchResult>& EndAndDirectionStrategy::PickBestResult(
-    const base::Optional<SnapSearchResult>& closest,
-    const base::Optional<SnapSearchResult>& covering) const {
+const absl::optional<SnapSearchResult>& EndAndDirectionStrategy::PickBestResult(
+    const absl::optional<SnapSearchResult>& closest,
+    const absl::optional<SnapSearchResult>& covering) const {
   return covering.has_value() ? covering : closest;
 }
 

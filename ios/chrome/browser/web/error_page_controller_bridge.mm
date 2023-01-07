@@ -1,14 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/web/error_page_controller_bridge.h"
+#import "ios/chrome/browser/web/error_page_controller_bridge.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/strings/string_number_conversions.h"
-#include "base/values.h"
-#include "ios/web/public/js_messaging/web_frame.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/values.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,37 +38,40 @@ void ErrorPageControllerBridge::StartHandlingJavascriptCommands() {
 }
 
 void ErrorPageControllerBridge::OnErrorPageCommand(
-    const base::DictionaryValue& message,
+    const base::Value& message,
     const GURL& url,
     bool user_is_interacting,
     web::WebFrame* sender_frame) {
-  std::string command;
-  if (!message.GetString("command", &command)) {
+  const std::string* command = message.FindStringKey("command");
+  if (!command) {
     return;
   }
-  if (command == "errorPageController.updateEasterEggHighScore") {
-    std::string high_score_string;
-    if (!message.GetString("highScore", &high_score_string)) {
+  if (*command == "errorPageController.updateEasterEggHighScore") {
+    const std::string* high_score_string = message.FindStringKey("highScore");
+    if (!high_score_string) {
       return;
     }
     int high_score;
-    if (!base::StringToInt(high_score_string, &high_score)) {
+    if (!base::StringToInt(*high_score_string, &high_score)) {
       return;
     }
     [[NSUserDefaults standardUserDefaults] setInteger:high_score
                                                forKey:kEasterEggHighScore];
+    return;
   }
-  if (command == "errorPageController.resetEasterEggHighScore") {
+  if (*command == "errorPageController.resetEasterEggHighScore") {
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:kEasterEggHighScore];
+    return;
   }
-  if (command == "errorPageController.trackEasterEgg") {
+  if (*command == "errorPageController.trackEasterEgg") {
     int high_score = [[NSUserDefaults standardUserDefaults]
         integerForKey:kEasterEggHighScore];
     std::vector<base::Value> parameters;
     parameters.push_back(base::Value(high_score));
     sender_frame->CallJavaScriptFunction(
         "errorPageController.initializeEasterEggHighScore", parameters);
+    return;
   }
 }
 

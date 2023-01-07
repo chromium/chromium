@@ -44,4 +44,4 @@ class CORE_EXPORT HTMLImageLoader final : public ImageLoader {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_IMAGE_LOADER_H_

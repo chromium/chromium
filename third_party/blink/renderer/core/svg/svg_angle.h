@@ -25,7 +25,8 @@
 #include "third_party/blink/renderer/core/svg/properties/svg_property_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/forward.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {

@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,14 +12,12 @@ js_type_check("closure_compile") {
 }
 
 js_library("interstitial_common") {
-  deps = [
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:util",
-    "//ui/webui/resources/js:webui_resource_test",
-  ]
+  deps = [ "//ui/webui/resources/js:load_time_data_deprecated" ]
   if (is_ios) {
     deps += [ "//ui/webui/resources/js/ios:web_ui" ]
   }
+
+  externs_list = [ "//ui/webui/resources/js/dom_automation_controller.js" ]
 }
 
 js_library("interstitial_mobile_nav") {

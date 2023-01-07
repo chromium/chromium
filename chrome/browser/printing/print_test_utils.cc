@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,55 +17,54 @@ namespace printing {
 
 const char kDummyPrinterName[] = "DefaultPrinter";
 
-base::Value GetPrintTicket(PrinterType type) {
-  base::Value ticket(base::Value::Type::DICTIONARY);
+base::Value::Dict GetPrintTicket(mojom::PrinterType type) {
+  DCHECK_NE(type, mojom::PrinterType::kPrivetDeprecated);
+
+  base::Value::Dict ticket;
 
   // Letter
-  base::Value media_size(base::Value::Type::DICTIONARY);
-  media_size.SetBoolKey(kSettingMediaSizeIsDefault, true);
-  media_size.SetIntKey(kSettingMediaSizeWidthMicrons, 215900);
-  media_size.SetIntKey(kSettingMediaSizeHeightMicrons, 279400);
-  ticket.SetKey(kSettingMediaSize, std::move(media_size));
+  base::Value::Dict media_size;
+  media_size.Set(kSettingMediaSizeIsDefault, true);
+  media_size.Set(kSettingMediaSizeWidthMicrons, 215900);
+  media_size.Set(kSettingMediaSizeHeightMicrons, 279400);
+  ticket.Set(kSettingMediaSize, std::move(media_size));
 
-  ticket.SetIntKey(kSettingPreviewPageCount, 1);
-  ticket.SetBoolKey(kSettingLandscape, false);
-  ticket.SetIntKey(kSettingColor, 2);  // color printing
-  ticket.SetBoolKey(kSettingHeaderFooterEnabled, false);
-  ticket.SetIntKey(kSettingMarginsType, 0);  // default margins
-  ticket.SetIntKey(kSettingDuplexMode,
-                   static_cast<int>(mojom::DuplexMode::kLongEdge));
-  ticket.SetIntKey(kSettingCopies, 1);
-  ticket.SetBoolKey(kSettingCollate, true);
-  ticket.SetBoolKey(kSettingShouldPrintBackgrounds, false);
-  ticket.SetBoolKey(kSettingShouldPrintSelectionOnly, false);
-  ticket.SetBoolKey(kSettingPreviewModifiable, true);
-  ticket.SetBoolKey(kSettingPreviewIsPdf, false);
-  ticket.SetIntKey(kSettingPrinterType, static_cast<int>(type));
-  ticket.SetBoolKey(kSettingRasterizePdf, false);
-  ticket.SetIntKey(kSettingScaleFactor, 100);
-  ticket.SetIntKey(kSettingScalingType, FIT_TO_PAGE);
-  ticket.SetIntKey(kSettingPagesPerSheet, 1);
-  ticket.SetIntKey(kSettingDpiHorizontal, kTestPrinterDpi);
-  ticket.SetIntKey(kSettingDpiVertical, kTestPrinterDpi);
-  ticket.SetStringKey(kSettingDeviceName, kDummyPrinterName);
-  ticket.SetIntKey(kSettingPageWidth, 215900);
-  ticket.SetIntKey(kSettingPageHeight, 279400);
-  ticket.SetBoolKey(kSettingShowSystemDialog, false);
+  ticket.Set(kSettingPreviewPageCount, 1);
+  ticket.Set(kSettingLandscape, false);
+  ticket.Set(kSettingColor, 2);  // color printing
+  ticket.Set(kSettingHeaderFooterEnabled, false);
+  ticket.Set(kSettingMarginsType, 0);  // default margins
+  ticket.Set(kSettingDuplexMode,
+             static_cast<int>(mojom::DuplexMode::kLongEdge));
+  ticket.Set(kSettingCopies, 1);
+  ticket.Set(kSettingCollate, true);
+  ticket.Set(kSettingShouldPrintBackgrounds, false);
+  ticket.Set(kSettingShouldPrintSelectionOnly, false);
+  ticket.Set(kSettingPreviewModifiable, true);
+  ticket.Set(kSettingPrinterType, static_cast<int>(type));
+  ticket.Set(kSettingRasterizePdf, false);
+  ticket.Set(kSettingScaleFactor, 100);
+  ticket.Set(kSettingScalingType, FIT_TO_PAGE);
+  ticket.Set(kSettingPagesPerSheet, 1);
+  ticket.Set(kSettingDpiHorizontal, kTestPrinterDpi);
+  ticket.Set(kSettingDpiVertical, kTestPrinterDpi);
+  ticket.Set(kSettingDeviceName, kDummyPrinterName);
+  ticket.Set(kSettingPageWidth, 215900);
+  ticket.Set(kSettingPageHeight, 279400);
+  ticket.Set(kSettingShowSystemDialog, false);
 
-  if (type == PrinterType::kCloud) {
-    ticket.SetStringKey(kSettingCloudPrintId, kDummyPrinterName);
-  } else if (type == PrinterType::kPrivet || type == PrinterType::kExtension) {
-    base::Value capabilities(base::Value::Type::DICTIONARY);
-    capabilities.SetBoolKey("duplex", true);  // non-empty
+  if (type == mojom::PrinterType::kExtension) {
+    base::Value::Dict capabilities;
+    capabilities.Set("duplex", true);  // non-empty
     std::string caps_string;
     base::JSONWriter::Write(capabilities, &caps_string);
-    ticket.SetStringKey(kSettingCapabilities, caps_string);
-    base::Value print_ticket(base::Value::Type::DICTIONARY);
-    print_ticket.SetStringKey("version", "1.0");
-    print_ticket.SetKey("print", base::Value());
+    ticket.Set(kSettingCapabilities, caps_string);
+    base::Value::Dict print_ticket;
+    print_ticket.Set("version", "1.0");
+    print_ticket.Set("print", base::Value());
     std::string ticket_string;
     base::JSONWriter::Write(print_ticket, &ticket_string);
-    ticket.SetStringKey(kSettingTicket, ticket_string);
+    ticket.Set(kSettingTicket, ticket_string);
   }
 
   return ticket;

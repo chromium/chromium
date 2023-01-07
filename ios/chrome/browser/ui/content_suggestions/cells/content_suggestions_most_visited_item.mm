@@ -1,18 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
-#import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestion_identifier.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,34 +18,12 @@
 
 @implementation ContentSuggestionsMostVisitedItem
 
-@synthesize suggestionIdentifier = _suggestionIdentifier;
 @synthesize attributes = _attributes;
 @synthesize title = _title;
 @synthesize URL = _URL;
 @synthesize titleSource = _titleSource;
 @synthesize source = _source;
 @synthesize commandHandler = _commandHandler;
-@synthesize metricsRecorded = _metricsRecorded;
-
-- (instancetype)initWithType:(NSInteger)type {
-  self = [super initWithType:type];
-  if (self) {
-    self.cellClass = [ContentSuggestionsMostVisitedCell class];
-  }
-  return self;
-}
-
-- (void)configureCell:(ContentSuggestionsMostVisitedCell*)cell {
-  [super configureCell:cell];
-  cell.titleLabel.text = self.title;
-  cell.accessibilityLabel = self.title;
-  [cell.faviconView configureWithAttributes:self.attributes];
-  cell.accessibilityCustomActions = [self customActions];
-}
-
-- (CGFloat)cellHeightForWidth:(CGFloat)width {
-  return [ContentSuggestionsMostVisitedCell defaultSize].height;
-}
 
 #pragma mark - AccessibilityCustomAction
 

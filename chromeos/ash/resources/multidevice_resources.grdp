@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Mojo JS files. -->
+  <include name="IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_LITE_JS"
+      file="${mojom_root}/ash/services/device_sync/public/mojom/device_sync.mojom-lite.js"
+      resource_path="mojo/ash/services/device_sync/public/mojom/device_sync.mojom-lite.js"
+      use_base_dir="false"
+      type="BINDATA" />
+  <include name="IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_WEBUI_JS"
+      file="${mojom_root}/mojom-webui/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js"
+      resource_path="mojo/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js"
+      use_base_dir="false"
+      type="BINDATA" />
+  <include name="IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_LITE_JS"
+      file="${mojom_root}/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-lite.js"
+      resource_path="mojo/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-lite.js"
+      use_base_dir="false"
+      type="BINDATA" />
+  <include name="IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_WEBUI_JS"
+      file="${mojom_root}/mojom-webui/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js"
+      resource_path="mojo/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js"
+      use_base_dir="false"
+      type="BINDATA" />
+  <include name="IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_LITE_JS"
+      file="${mojom_root}/chromeos/ash/components/multidevice/mojom/multidevice_types.mojom-lite.js"
+      resource_path="mojo/chromeos/ash/components/multidevice/mojom/multidevice_types.mojom-lite.js"
+      use_base_dir="false"
+      type="BINDATA" />
+  <include name="IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_WEBUI_JS"
+      file="${mojom_root}/mojom-webui/chromeos/ash/components/multidevice/mojom/multidevice_types.mojom-webui.js"
+      resource_path="mojo/chromeos/ash/components/multidevice/mojom/multidevice_types.mojom-webui.js"
+      use_base_dir="false"
+      type="BINDATA" />
+</grit-part>

@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 14: Refused to send form data to 'javascript:alert("FAIL!")' because it violates the following Content Security Policy directive: "form-action 'none'".
+CONSOLE ERROR: Refused to send form data to 'javascript:alert("FAIL!")' because it violates the following Content Security Policy directive: "form-action 'none'".
 
  
 

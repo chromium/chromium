@@ -1,0 +1,11 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[RuntimeEnabled=NavigationId,Exposed=Window]
+interface BackForwardCacheRestoration : PerformanceEntry {
+    readonly attribute DOMHighResTimeStamp pageshowEventStart;
+    readonly attribute DOMHighResTimeStamp pageshowEventEnd;
+
+    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+};

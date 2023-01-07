@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+<p>This document hosts a portal:</p>
+<script>
+
+window.addEventListener('message', (e) => {
+  if (e.data == 'activate') {
+    let portal = document.createElement('portal');
+    portal.src = 'portal_content.html';
+    portal.addEventListener('load', () => {
+      portal.activate().then(
+        () => { e.source.postMessage('activated', e.origin); },
+        (reason) => { e.source.postMessage(reason.message, e.origin); }
+      );
+    });
+    document.body.appendChild(portal);
+  }
+});
+
+</script>
+</body>
+</html>

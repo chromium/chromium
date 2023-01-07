@@ -27,6 +27,8 @@
 #include "third_party/blink/renderer/platform/timer.h"
 
 #include <algorithm>
+#include "base/task/delay_policy.h"
+#include "base/time/tick_clock.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -50,14 +52,19 @@ TimerBase::~TimerBase() {
 
 void TimerBase::Start(base::TimeDelta next_fire_interval,
                       base::TimeDelta repeat_interval,
-                      const base::Location& caller) {
+                      const base::Location& caller,
+                      bool precise) {
 #if DCHECK_IS_ON()
   DCHECK_EQ(thread_, CurrentThread());
 #endif
 
   location_ = caller;
   repeat_interval_ = repeat_interval;
-  SetNextFireTime(TimerCurrentTimeTicks(), next_fire_interval);
+  delay_policy_ = precise ? base::subtle::DelayPolicy::kPrecise
+                          : base::subtle::DelayPolicy::kFlexibleNoSooner;
+  SetNextFireTime(next_fire_interval.is_zero()
+                      ? base::TimeTicks()
+                      : TimerCurrentTimeTicks() + next_fire_interval);
 }
 
 void TimerBase::Stop() {
@@ -66,12 +73,14 @@ void TimerBase::Stop() {
 #endif
 
   repeat_interval_ = base::TimeDelta();
-  next_fire_time_ = base::TimeTicks();
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  next_fire_time_ = base::TimeTicks::Max();
+  delayed_task_handle_.CancelTask();
 }
 
 base::TimeDelta TimerBase::NextFireInterval() const {
   DCHECK(IsActive());
+  if (next_fire_time_.is_null())
+    return base::TimeDelta();
   base::TimeTicks current = TimerCurrentTimeTicks();
   if (next_fire_time_ < current)
     return base::TimeDelta();
@@ -90,40 +99,44 @@ void TimerBase::MoveToNewTaskRunner(
   }
 
   bool active = IsActive();
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  delayed_task_handle_.CancelTask();
   web_task_runner_ = std::move(task_runner);
 
   if (!active)
     return;
 
-  base::TimeTicks now = TimerCurrentTimeTicks();
-  base::TimeTicks next_fire_time = std::max(next_fire_time_, now);
-  next_fire_time_ = base::TimeTicks();
-
-  SetNextFireTime(now, next_fire_time - now);
+  base::TimeTicks next_fire_time =
+      std::exchange(next_fire_time_, base::TimeTicks::Max());
+  SetNextFireTime(next_fire_time);
 }
 
-void TimerBase::SetNextFireTime(base::TimeTicks now, base::TimeDelta delay) {
+void TimerBase::SetTaskRunnerForTesting(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const base::TickClock* tick_clock) {
+  DCHECK(!IsActive());
+  web_task_runner_ = std::move(task_runner);
+  tick_clock_ = tick_clock;
+}
+
+void TimerBase::SetNextFireTime(base::TimeTicks next_fire_time) {
 #if DCHECK_IS_ON()
   DCHECK_EQ(thread_, CurrentThread());
 #endif
-
-  base::TimeTicks new_time = now + delay;
-
-  if (next_fire_time_ != new_time) {
-    next_fire_time_ = new_time;
+  if (next_fire_time_ != next_fire_time) {
+    next_fire_time_ = next_fire_time;
 
     // Cancel any previously posted task.
-    weak_ptr_factory_.InvalidateWeakPtrs();
+    delayed_task_handle_.CancelTask();
 
-    web_task_runner_->PostDelayedTask(
-        location_, BindTimerClosure(weak_ptr_factory_.GetWeakPtr()), delay);
+    delayed_task_handle_ = web_task_runner_->PostCancelableDelayedTaskAt(
+        base::subtle::PostDelayedTaskPassKey(), location_, BindTimerClosure(),
+        next_fire_time_, delay_policy_);
   }
 }
 
 NO_SANITIZE_ADDRESS
 void TimerBase::RunInternal() {
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  DCHECK(!delayed_task_handle_.IsValid());
 
   TRACE_EVENT0("blink", "TimerBase::run");
 #if DCHECK_IS_ON()
@@ -134,28 +147,23 @@ void TimerBase::RunInternal() {
 
   if (!repeat_interval_.is_zero()) {
     base::TimeTicks now = TimerCurrentTimeTicks();
-    // This computation should be drift free, and it will cope if we miss a
-    // beat, which can easily happen if the thread is busy.  It will also cope
-    // if we get called slightly before m_unalignedNextFireTime, which can
-    // happen due to lack of timer precision.
-    base::TimeDelta interval_to_next_fire_time =
-        repeat_interval_ - (now - next_fire_time_) % repeat_interval_;
-    SetNextFireTime(now, interval_to_next_fire_time);
+    // The next tick is `next_fire_time_ + repeat_interval_`, but if late wakeup
+    // happens we could miss ticks. To avoid posting immediate "catch-up" tasks,
+    // the next task targets the tick following a minimum interval of
+    // repeat_interval_ / 20.
+    SetNextFireTime((now + repeat_interval_ / 20)
+                        .SnappedToNextTick(next_fire_time_, repeat_interval_));
   } else {
-    next_fire_time_ = base::TimeTicks();
+    next_fire_time_ = base::TimeTicks::Max();
   }
   Fired();
 }
 
-bool TimerBase::Comparator::operator()(const TimerBase* a,
-                                       const TimerBase* b) const {
-  return a->next_fire_time_ < b->next_fire_time_;
-}
-
 // static
 base::TimeTicks TimerBase::TimerCurrentTimeTicks() const {
-  return base::TimeTicks(
-      ThreadScheduler::Current()->MonotonicallyIncreasingVirtualTime());
+  return tick_clock_
+             ? tick_clock_->NowTicks()
+             : ThreadScheduler::Current()->MonotonicallyIncreasingVirtualTime();
 }
 
 }  // namespace blink

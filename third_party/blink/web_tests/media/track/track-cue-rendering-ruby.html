@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+::cue { font-size: 24px; }
+</style>
+<video src="../content/test.ogv" width="640"></video>
+<script>
+if (window.testRunner)
+  testRunner.waitUntilDone();
+
+let v = document.querySelector('video');
+let track = v.addTextTrack('subtitles', 'label', 'ja');
+track.mode = 'showing';
+track.addCue(new VTTCue(1, 60, '<ruby>渋谷ストリーム<rt>しぶやすとりーむ</rt></ruby>'));
+track.addCue(new VTTCue(1, 60, '<ruby>六本木<rt>ろっぽんぎ</rt></ruby>ヒルズ'));
+let cue3 = new VTTCue(1, 60, '👅<ruby>臥薪嘗胆<rt>がしんしょうたん</rt></ruby>');
+cue3.vertical = 'rl';
+cue3.align = "start";
+cue3.size = 70;
+track.addCue(cue3);
+if (window.testRunner)
+  v.onseeked = () => { testRunner.notifyDone(); };
+v.currentTime = 3;
+</script>

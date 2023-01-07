@@ -1,18 +1,18 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -87,32 +87,19 @@ namespace {
 const double kTolerance = 0.1;  // In CSS pixels.
 
 double GetMainframeWindowBorder(const ToRenderFrameHost& adapter) {
-  double border;
-  const char kGetMainframeBorder[] = "window.domAutomationController.send("
-      "window.outerWidth - window.innerWidth"
-      ");";
-  EXPECT_TRUE(
-      ExecuteScriptAndExtractDouble(adapter, kGetMainframeBorder, &border));
-  return border;
+  return EvalJs(adapter, "window.outerWidth - window.innerWidth")
+      .ExtractDouble();
 }
 
 double GetMainFrameZoomFactor(const ToRenderFrameHost& adapter, double border) {
-  double zoom_factor;
-  EXPECT_TRUE(ExecuteScriptAndExtractDouble(
-      adapter,
-      JsReplace("window.domAutomationController.send("
-                "   (window.outerWidth - $1) / window.innerWidth);",
-                border),
-      &zoom_factor));
-  return zoom_factor;
+  return EvalJs(
+             adapter,
+             JsReplace("(window.outerWidth - $1) / window.innerWidth;", border))
+      .ExtractDouble();
 }
 
 double GetSubframeWidth(const ToRenderFrameHost& adapter) {
-  double width;
-  EXPECT_TRUE(ExecuteScriptAndExtractDouble(
-      adapter, "window.domAutomationController.send(window.innerWidth);",
-      &width));
-  return width;
+  return EvalJs(adapter, "window.innerWidth").ExtractDouble();
 }
 
 // This struct is used to track changes to subframes after a main frame zoom
@@ -137,7 +124,7 @@ struct FrameResizeObserver {
         "document.body.onresize = function(){"
         "  window.domAutomationController.send('%s ' + window.innerWidth);"
         "};";
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         adapter, base::StringPrintf(kOnResizeCallbackSetup, label.c_str())));
   }
 
@@ -151,7 +138,7 @@ struct FrameResizeObserver {
 
   FrameResizeObserver* toThis() {return this;}
 
-  RenderFrameHost* frame_host;
+  raw_ptr<RenderFrameHost> frame_host;
   std::string msg_label;
   bool zoomed_correctly;
   double expected_inner_width;
@@ -170,15 +157,14 @@ struct ResizeObserver {
         "document.body.onresize = function(){"
         "  window.domAutomationController.send('Resized');"
         "};";
-    EXPECT_TRUE(ExecuteScript(
-        adapter, kOnResizeCallbackSetup));
+    EXPECT_TRUE(ExecJs(adapter, kOnResizeCallbackSetup));
   }
 
   bool IsResizeCallback(const std::string& status_msg) {
     return status_msg == "Resized";
   }
 
-  RenderFrameHost* frame_host;
+  raw_ptr<RenderFrameHost> frame_host;
 };
 
 void WaitForResize(DOMMessageQueue& msg_queue, ResizeObserver& observer) {
@@ -227,8 +213,9 @@ IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, DISABLED_ZoomPreservedOnReload) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   double main_frame_window_border = GetMainframeWindowBorder(web_contents());
 
   HostZoomMap* host_zoom_map = HostZoomMap::GetForWebContents(web_contents());
@@ -243,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, DISABLED_ZoomPreservedOnReload) {
   // Set the new zoom, wait for the page to be resized, and sanity-check that
   // the zoom was applied.
   {
-    DOMMessageQueue msg_queue;
+    DOMMessageQueue msg_queue(web_contents());
     ResizeObserver observer(root->current_frame_host());
 
     const double new_zoom_level =
@@ -262,9 +249,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, DISABLED_ZoomPreservedOnReload) {
 
   // Now the actual test: Reload the page and check that the main frame is
   // still properly zoomed.
-  WindowedNotificationObserver load_stop_observer(
-      NOTIFICATION_LOAD_STOP,
-      NotificationService::AllSources());
+  LoadStopObserver load_stop_observer(shell()->web_contents());
   shell()->Reload();
   load_stop_observer.Wait();
 
@@ -286,8 +271,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, DISABLED_SubframesZoomProperly) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* grandchild =
       root->child_at(0)->child_at(0)->current_frame_host();
@@ -306,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, DISABLED_SubframesZoomProperly) {
 
   const double new_zoom_factor = 2.5;
   {
-    DOMMessageQueue msg_queue;
+    DOMMessageQueue msg_queue(web_contents());
 
     std::vector<FrameResizeObserver> frame_observers;
     frame_observers.emplace_back(child, "child",
@@ -340,8 +326,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesDontZoomIndependently) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* grandchild =
       root->child_at(0)->child_at(0)->current_frame_host();
@@ -392,8 +379,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* grandchild =
       root->child_at(0)->child_at(0)->current_frame_host();
@@ -412,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
 
   const double new_default_zoom_factor = 2.0;
   {
-    DOMMessageQueue msg_queue;
+    DOMMessageQueue msg_queue(web_contents());
 
     std::vector<FrameResizeObserver> frame_observers;
     frame_observers.emplace_back(child, "child",
@@ -439,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
 }
 
 // Flaky on mac, https://crbug.com/1055282
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_SiblingFramesZoom DISABLED_SiblingFramesZoom
 #else
 #define MAYBE_SiblingFramesZoom SiblingFramesZoom
@@ -455,8 +443,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, MAYBE_SiblingFramesZoom) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child1 = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* child2 = root->child_at(1)->current_frame_host();
 
@@ -474,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, MAYBE_SiblingFramesZoom) {
 
   const double new_zoom_factor = 2.5;
   {
-    DOMMessageQueue msg_queue;
+    DOMMessageQueue msg_queue(web_contents());
 
     std::vector<FrameResizeObserver> frame_observers;
     frame_observers.emplace_back(child1, "child1",
@@ -508,8 +497,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframeRetainsZoomOnNavigation) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
 
   // The following calls must be made when the page's scale factor = 1.0.
@@ -525,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframeRetainsZoomOnNavigation) {
 
   const double new_zoom_factor = 0.5;
   {
-    DOMMessageQueue msg_queue;
+    DOMMessageQueue msg_queue(web_contents());
 
     std::vector<FrameResizeObserver> frame_observers;
     frame_observers.emplace_back(child, "child",
@@ -627,20 +617,12 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
   // Navigate forward in the same RFH to a site with that host via a
   // renderer-initiated navigation.
   {
-    const char kReplacePortNumber[] =
-        "window.domAutomationController.send(setPortNumber(%d));";
     uint16_t port_number = embedded_test_server()->port();
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), base::StringPrintf(kReplacePortNumber, port_number),
-        &success));
+    EXPECT_EQ(true, EvalJs(shell(), base::StringPrintf("setPortNumber(%d)",
+                                                       port_number)));
     TestNavigationObserver observer(shell()->web_contents());
     GURL url = embedded_test_server()->GetURL("foo.com", "/title2.html");
-    success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), "window.domAutomationController.send(clickCrossSiteLink());",
-        &success));
-    EXPECT_TRUE(success);
+    EXPECT_EQ(true, EvalJs(shell(), "clickCrossSiteLink();"));
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());

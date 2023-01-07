@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,19 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
-#include "third_party/blink/renderer/core/css/parser/media_query_block_watcher.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
 namespace blink {
+
+constexpr char kCSSText[] = R"(
+  .foo {
+    background: url(https://example.com);
+  }
+  /* A comment. */
+  @hello {
+   some: stuff;
+  }
+)";
 
 // This let's us see the line numbers of failing tests
 #define TEST_TOKENS(string, ...)     \
@@ -39,7 +48,7 @@ void CompareTokens(const CSSParserToken& expected,
       break;
     case kNumberToken:
       ASSERT_EQ(expected.GetNumericSign(), actual.GetNumericSign());
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPercentageToken:
       ASSERT_EQ(expected.GetNumericValueType(), actual.GetNumericValueType());
       ASSERT_DOUBLE_EQ(expected.NumericValue(), actual.NumericValue());
@@ -461,58 +470,56 @@ TEST(CSSTokenizerTest, CommentToken) {
   TEST_TOKENS(";/******", Semicolon());
 }
 
-typedef struct {
-  const char* input;
-  const unsigned max_level;
-  const unsigned final_level;
-} BlockTestCase;
+StringView GetLastTokenRange(const CSSTokenizerWrapper& tokenizer) {
+  wtf_size_t start = tokenizer.PreviousOffset();
+  return tokenizer.StringRangeAt(start, tokenizer.Offset() - start);
+}
 
-TEST(CSSTokenizerBlockTest, Basic) {
-  BlockTestCase test_cases[] = {
-      {"(max-width: 800px()), (max-width: 800px)", 2, 0},
-      {"(max-width: 900px(()), (max-width: 900px)", 3, 1},
-      {"(max-width: 600px(())))), (max-width: 600px)", 3, 0},
-      {"(max-width: 500px(((((((((())))), (max-width: 500px)", 11, 6},
-      {"(max-width: 800px[]), (max-width: 800px)", 2, 0},
-      {"(max-width: 900px[[]), (max-width: 900px)", 3, 2},
-      {"(max-width: 600px[[]]]]), (max-width: 600px)", 3, 0},
-      {"(max-width: 500px[[[[[[[[[[]]]]), (max-width: 500px)", 11, 7},
-      {"(max-width: 800px{}), (max-width: 800px)", 2, 0},
-      {"(max-width: 900px{{}), (max-width: 900px)", 3, 2},
-      {"(max-width: 600px{{}}}}), (max-width: 600px)", 3, 0},
-      {"(max-width: 500px{{{{{{{{{{}}}}), (max-width: 500px)", 11, 7},
-      {"[(), (max-width: 400px)", 2, 1},
-      {"[{}, (max-width: 500px)", 2, 1},
-      {"[{]}], (max-width: 900px)", 2, 0},
-      {"[{[]{}{{{}}}}], (max-width: 900px)", 5, 0},
-      {"[{[}], (max-width: 900px)", 3, 2},
-      {"[({)}], (max-width: 900px)", 3, 2},
-      {"[]((), (max-width: 900px)", 2, 1},
-      {"((), (max-width: 900px)", 2, 1},
-      {"(foo(), (max-width: 900px)", 2, 1},
-      {"[](()), (max-width: 900px)", 2, 0},
-      {"all an[isdfs bla())(i())]icalc(i)(()), (max-width: 400px)", 3, 0},
-      {"all an[isdfs bla())(]icalc(i)(()), (max-width: 500px)", 4, 2},
-      {"all an[isdfs bla())(]icalc(i)(())), (max-width: 600px)", 4, 1},
-      {"all an[isdfs bla())(]icalc(i)(()))], (max-width: 800px)", 4, 0},
-      {nullptr, 0, 0}  // Do not remove the terminator line.
-  };
-  for (int i = 0; test_cases[i].input; ++i) {
-    CSSTokenizer tokenizer(test_cases[i].input);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    MediaQueryBlockWatcher block_watcher;
+class CachedCSSTokenizerTest
+    : public testing::Test,
+      public testing::WithParamInterface<bool /* include_comments */> {};
 
-    unsigned max_level = 0;
-    unsigned level = 0;
-    while (!range.AtEnd()) {
-      block_watcher.HandleToken(range.Consume());
-      level = block_watcher.BlockLevel();
-      max_level = std::max(level, max_level);
+TEST_P(CachedCSSTokenizerTest, CachedTokenizer) {
+  // Make sure the cached tokenizer gives the exact same results as
+  // CSSTokenizer.
+  CSSTokenizer uncached_tokenizer(kCSSText);
+  CSSTokenizerWrapper tokenizer1(uncached_tokenizer);
+
+  auto cached_tokenizer = CSSTokenizer::CreateCachedTokenizer(kCSSText);
+  CSSTokenizerWrapper tokenizer2(*cached_tokenizer);
+
+  EXPECT_EQ(tokenizer1.Offset(), tokenizer2.Offset());
+  EXPECT_EQ(tokenizer1.PreviousOffset(), tokenizer2.PreviousOffset());
+
+  // Tokenize the full CSS text with comments and verify the tokens and state.
+  bool last_token_eof = false;
+  while (true) {
+    CSSParserToken token1(kEOFToken);
+    CSSParserToken token2(kEOFToken);
+    if (GetParam()) {
+      token1 = tokenizer1.TokenizeSingleWithComments();
+      token2 = tokenizer2.TokenizeSingleWithComments();
+    } else {
+      token1 = tokenizer1.TokenizeSingle();
+      token2 = tokenizer2.TokenizeSingle();
     }
-    ASSERT_EQ(test_cases[i].max_level, max_level);
-    ASSERT_EQ(test_cases[i].final_level, level);
+    CompareTokens(token1, token2);
+    EXPECT_EQ(tokenizer1.Offset(), tokenizer2.Offset());
+    EXPECT_EQ(tokenizer1.PreviousOffset(), tokenizer2.PreviousOffset());
+    EXPECT_EQ(GetLastTokenRange(tokenizer1), GetLastTokenRange(tokenizer2));
+    if (last_token_eof)
+      break;
+
+    // Perform one more iteration of the loop to make sure behavior is the same
+    // if TokenizeSingle() is called beyond EOF.
+    last_token_eof = token1.GetType() == kEOFToken;
+
+    // CSSTokenizer keeps adding to token count after EOF and CachedCSSTokenizer
+    // doesn't match this behavior.
+    EXPECT_EQ(tokenizer1.TokenCount(), tokenizer2.TokenCount());
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All, CachedCSSTokenizerTest, ::testing::Bool());
 
 }  // namespace blink

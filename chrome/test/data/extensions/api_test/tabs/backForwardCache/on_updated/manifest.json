@@ -1,0 +1,10 @@
+{
+  "name": "bfCacheTabUpdated",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests the tab.onUpdated API events with the back forward cache.",
+  "background": {
+    "page": "background.html"
+  },
+  "permissions": ["tabs"]
+}

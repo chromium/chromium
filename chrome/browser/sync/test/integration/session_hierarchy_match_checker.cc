@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 SessionHierarchyMatchChecker::SessionHierarchyMatchChecker(
     const fake_server::SessionsHierarchy& sessions_hierarchy,
-    syncer::ProfileSyncService* service,
+    syncer::SyncServiceImpl* service,
     fake_server::FakeServer* fake_server)
     : SingleClientStatusChangeChecker(service),
       sessions_hierarchy_(sessions_hierarchy),

@@ -1,0 +1,8 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Static fallback'
+++++++UNKNOWN
+++++++++LINK focusable label='Interactive fallback' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='Interactive fallback'

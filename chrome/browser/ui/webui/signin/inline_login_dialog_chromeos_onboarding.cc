@@ -1,14 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos_onboarding.h"
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/supervised_user/supervised_user_features.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/size.h"
@@ -68,7 +66,6 @@ InlineLoginDialogChromeOSOnboarding* InlineLoginDialogChromeOSOnboarding::Show(
     gfx::NativeWindow window,
     base::OnceCallback<void(void)> dialog_closed_callback) {
   DCHECK(ProfileManager::GetActiveUserProfile()->IsChild());
-  DCHECK(base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2));
 
   base::UmaHistogramEnumeration(
       account_manager::AccountManagerFacade::kAccountAdditionSource,
@@ -82,6 +79,12 @@ InlineLoginDialogChromeOSOnboarding* InlineLoginDialogChromeOSOnboarding::Show(
   dialog->ShowSystemDialog(window);
 
   return dialog;
+}
+
+ui::ModalType InlineLoginDialogChromeOSOnboarding::GetDialogModalType() const {
+  // Override the default system-modal behavior of the dialog so that the
+  // shelf can be accessed during onboarding.
+  return ui::ModalType::MODAL_TYPE_WINDOW;
 }
 
 InlineLoginDialogChromeOSOnboarding::InlineLoginDialogChromeOSOnboarding(

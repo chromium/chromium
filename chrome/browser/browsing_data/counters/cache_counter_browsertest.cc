@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -9,6 +9,8 @@
 // DiskCacheBackendTest.CalculateSizeOfAllEntries in net_unittests.
 
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -80,8 +82,9 @@ class CacheCounterTest : public InProcessBrowserTest {
         network::SimpleURLLoader::Create(std::move(request),
                                          TRAFFIC_ANNOTATION_FOR_TESTS);
     simple_loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile())
+        browser()
+            ->profile()
+            ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess()
             .get(),
         simple_loader_helper.GetCallback());
@@ -91,7 +94,7 @@ class CacheCounterTest : public InProcessBrowserTest {
   void WaitForCountingResult() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   // Callback from the counter.
@@ -136,23 +139,24 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, Empty) {
   // Clear the |profile| to ensure that there was no data added from other
   // processes unrelated to this test.
   base::RunLoop wait_until_empty;
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ClearHttpCache(base::Time(), base::Time::Max(), nullptr,
                        wait_until_empty.QuitClosure());
   wait_until_empty.Run();
 
-  // This test occasionally flakes on Windows, where the cache size
-  // is still seen as non-zero after deletion. However, the exact value
-  // is consistent across all flakes observed within the same day, which
-  // indicates that there is a deterministic process writing into cache but with
-  // indeterministic timing, so as to cause this test to flake.
-  // On Windows, which is the only platform where this is the case, we'll
-  // wait until the value is 0 as opposed to checking it immediately. If this
-  // never happens, the test will fail with a timeout. Note that this only works
-  // if the process that populates the cache runs before our deletion - in that
-  // case the delay ensures that the deletion finishes. If this process happens
-  // after deletion, then this doesn't help and the test will still fail.
+  // This test occasionally flakes, where the cache size is still seen as
+  // non-zero after deletion. However, the exact value is consistent across all
+  // flakes observed within the same day, which indicates that there is a
+  // deterministic process writing into cache but with indeterministic timing,
+  // so as to cause this test to flake.  Wait until the value is 0 as opposed to
+  // checking it immediately. If this never happens, the test will fail with a
+  // timeout. Note that this only works if the process that populates the cache
+  // runs before our deletion - in that case the delay ensures that the deletion
+  // finishes. If this process happens after deletion, then this doesn't help
+  // and the test will still fail.
   while (true) {
     CacheCounter counter(profile);
     counter.Init(profile->GetPrefs(),
@@ -162,13 +166,9 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, Empty) {
     counter.Restart();
     WaitForCountingResult();
 
-#if !defined(OS_WIN)
-    break;
-#else
     if (GetResult() == 0u)
       break;
-    base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
-#endif
+    base::PlatformThread::Sleep(base::Milliseconds(100));
   }
   EXPECT_EQ(0u, GetResult());
 }
@@ -201,7 +201,9 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, AfterDoom) {
                base::BindRepeating(&CacheCounterTest::CountingCallback,
                                    base::Unretained(this)));
 
-  content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+  browser()
+      ->profile()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
       ->ClearHttpCache(
           base::Time(), base::Time::Max(), nullptr,

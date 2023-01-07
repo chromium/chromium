@@ -1,0 +1,77 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("default_model") {
+  sources = [
+    "cross_device_user_segment.cc",
+    "cross_device_user_segment.h",
+    "feed_user_segment.cc",
+    "feed_user_segment.h",
+    "low_user_engagement_model.cc",
+    "low_user_engagement_model.h",
+    "price_tracking_action_model.cc",
+    "price_tracking_action_model.h",
+    "resume_heavy_user_model.cc",
+    "resume_heavy_user_model.h",
+    "search_user_model.cc",
+    "search_user_model.h",
+    "shopping_user_model.cc",
+    "shopping_user_model.h",
+  ]
+  deps = [
+    "//base",
+    "//components/segmentation_platform/internal",
+    "//components/segmentation_platform/internal/proto",
+    "//components/segmentation_platform/public",
+    "//ui/base",
+  ]
+  if (is_android) {
+    sources += [
+      "frequent_feature_user_model.cc",
+      "frequent_feature_user_model.h",
+      "intentional_user_model.cc",
+      "intentional_user_model.h",
+      "power_user_segment.cc",
+      "power_user_segment.h",
+      "query_tiles_model.cc",
+      "query_tiles_model.h",
+    ]
+    deps += [ "//components/query_tiles:public" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  # IMPORTANT NOTE: When adding new tests, also remember to update the list of
+  # tests in //components/segmentation_platform/components_unittests.filter
+  sources = [
+    "cross_device_user_segment_unittest.cc",
+    "feed_user_segment_unittest.cc",
+    "low_user_engagement_model_unittest.cc",
+    "price_tracking_action_model_unittest.cc",
+    "resume_heavy_user_model_unittest.cc",
+    "search_user_model_unittest.cc",
+    "shopping_user_model_unittest.cc",
+  ]
+
+  if (is_android) {
+    sources += [
+      "frequent_feature_user_model_unittest.cc",
+      "intentional_user_model_unittest.cc",
+      "power_user_segment_unittest.cc",
+      "query_tiles_model_unittest.cc",
+    ]
+  }
+
+  deps = [
+    ":default_model",
+    "//base",
+    "//base/test:test_support",
+    "//components/segmentation_platform/internal",
+    "//components/segmentation_platform/internal/proto",
+    "//components/segmentation_platform/public/proto",
+    "//testing/gtest",
+  ]
+}

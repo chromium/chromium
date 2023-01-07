@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <unordered_set>
 
 #include "base/hash/sha1.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "gpu/command_buffer/common/gl2_types.h"
 #include "gpu/gpu_gles2_export.h"
@@ -58,6 +57,10 @@ class GPU_GLES2_EXPORT ProgramCache {
   };
 
   explicit ProgramCache(size_t max_cache_size_bytes);
+
+  ProgramCache(const ProgramCache&) = delete;
+  ProgramCache& operator=(const ProgramCache&) = delete;
+
   virtual ~ProgramCache();
 
   bool HasSuccessfullyCompiledShader(const std::string& shader_signature) const;
@@ -153,8 +156,6 @@ class GPU_GLES2_EXPORT ProgramCache {
   LinkStatusMap link_status_;
   // only cache the hash of successfully compiled shaders
   CachedCompiledShaderSet compiled_shaders_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgramCache);
 };
 
 }  // namespace gles2

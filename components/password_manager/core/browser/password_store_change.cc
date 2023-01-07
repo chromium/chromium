@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,17 @@ PasswordStoreChange::PasswordStoreChange(Type type,
                                          FormPrimaryKey primary_key)
     : type_(type), form_(std::move(form)), primary_key_(primary_key) {}
 
-PasswordStoreChange::PasswordStoreChange(Type type,
-                                         PasswordForm form,
-                                         FormPrimaryKey primary_key,
-                                         bool password_changed)
+PasswordStoreChange::PasswordStoreChange(
+    Type type,
+    PasswordForm form,
+    FormPrimaryKey primary_key,
+    bool password_changed,
+    InsecureCredentialsChanged insecure_changed)
     : type_(type),
       form_(std::move(form)),
       primary_key_(primary_key),
-      password_changed_(password_changed) {}
+      password_changed_(password_changed),
+      insecure_credentials_changed_(insecure_changed) {}
 
 PasswordStoreChange::PasswordStoreChange(const PasswordStoreChange& other) =
     default;
@@ -46,7 +49,8 @@ bool PasswordStoreChange::operator==(const PasswordStoreChange& other) const {
          form().new_password_value == other.form().new_password_value &&
          form().date_last_used == other.form().date_last_used &&
          form().date_created == other.form().date_created &&
-         form().blocked_by_user == other.form().blocked_by_user;
+         form().blocked_by_user == other.form().blocked_by_user &&
+         form().password_issues == other.form().password_issues;
 }
 
 }  // namespace password_manager

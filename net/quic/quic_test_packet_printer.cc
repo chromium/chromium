@@ -1,16 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/quic/quic_test_packet_printer.h"
+#include "base/memory/raw_ptr.h"
 
 #include <ostream>
 
-#include "net/third_party/quiche/src/common/platform/api/quiche_text_utils.h"
-#include "net/third_party/quiche/src/quic/core/crypto/null_decrypter.h"
-#include "net/third_party/quiche/src/quic/core/quic_framer.h"
-#include "net/third_party/quiche/src/quic/core/quic_utils.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
+#include "base/strings/string_number_conversions.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/null_decrypter.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_framer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/quic/platform/api/quic_flags.h"
 
 namespace quic {
 
@@ -72,17 +73,13 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
   bool OnStreamFrame(const QuicStreamFrame& frame) override {
     *output_ << "OnStreamFrame: " << frame;
     *output_ << "         data: { "
-             << absl::BytesToHexString(
-                    absl::string_view(frame.data_buffer, frame.data_length))
-             << " }\n";
+             << base::HexEncode(frame.data_buffer, frame.data_length) << " }\n";
     return true;
   }
   bool OnCryptoFrame(const QuicCryptoFrame& frame) override {
     *output_ << "OnCryptoFrame: " << frame;
     *output_ << "         data: { "
-             << absl::BytesToHexString(
-                    absl::string_view(frame.data_buffer, frame.data_length))
-             << " }\n";
+             << base::HexEncode(frame.data_buffer, frame.data_length) << " }\n";
     return true;
   }
   bool OnAckFrameStart(QuicPacketNumber largest_acked,
@@ -200,7 +197,8 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     return true;
   }
   void OnPacketComplete() override { *output_ << "OnPacketComplete\n"; }
-  bool IsValidStatelessResetToken(QuicUint128 token) const override {
+  bool IsValidStatelessResetToken(
+      const StatelessResetToken& token) const override {
     *output_ << "IsValidStatelessResetToken\n";
     return false;
   }
@@ -210,8 +208,8 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
   }
 
  private:
-  QuicFramer* framer_;  // Unowned.
-  mutable std::ostream* output_;
+  raw_ptr<QuicFramer> framer_;  // Unowned.
+  mutable raw_ptr<std::ostream> output_;
 };
 
 }  // namespace quic

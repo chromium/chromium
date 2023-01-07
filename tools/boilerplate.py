@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2014 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,16 +8,16 @@
 Usage: tools/boilerplate.py path/to/file.{h,cc}
 """
 
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 
 from datetime import date
+import io
 import os
 import os.path
 import sys
 
 LINES = [
-    'Copyright %d The Chromium Authors. All rights reserved.' %
-        date.today().year,
+    f'Copyright {date.today().year} The Chromium Authors',
     'Use of this source code is governed by a BSD-style license that can be',
     'found in the LICENSE file.'
 ]
@@ -37,7 +37,9 @@ EXTENSIONS_TO_COMMENTS = {
     'gn': '#',
     'gni': '#',
     'mojom': '//',
+    'ts': '//',
     'typemap': '#',
+    "swift": "//",
 }
 
 
@@ -134,9 +136,8 @@ def _CreateFile(filename):
   elif filename.endswith('.mm'):
     contents += _ObjCppImplementation(filename)
 
-  fd = open(filename, 'wb')
-  fd.write(contents)
-  fd.close()
+  with io.open(filename, mode='w', newline='\n') as fd:
+    fd.write(contents)
 
 
 def Main():

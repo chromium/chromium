@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,7 @@
 
 namespace net {
 
-BidirectionalStreamRequestInfo::BidirectionalStreamRequestInfo()
-    : allow_early_data_override(false),
-      priority(LOW),
-      end_stream_on_headers(false) {}
+BidirectionalStreamRequestInfo::BidirectionalStreamRequestInfo() = default;
 
 BidirectionalStreamRequestInfo::~BidirectionalStreamRequestInfo() = default;
 

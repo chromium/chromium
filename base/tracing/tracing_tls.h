@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define BASE_TRACING_TRACING_TLS_H_
 
 #include "base/base_export.h"
+#include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_local.h"
 
 namespace base {
@@ -30,7 +32,7 @@ class BASE_EXPORT AutoThreadLocalBoolean {
   AutoThreadLocalBoolean& operator=(const AutoThreadLocalBoolean&) = delete;
 
  private:
-  base::ThreadLocalBoolean* thread_local_boolean_;
+  raw_ptr<base::ThreadLocalBoolean> thread_local_boolean_;
 };
 
 }  // namespace tracing

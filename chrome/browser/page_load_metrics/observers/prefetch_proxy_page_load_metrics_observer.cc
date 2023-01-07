@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,14 @@
 #include "base/metrics/histogram_macros_local.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_url_loader_interceptor.h"
+#include "chrome/browser/preloading/prefetch/prefetch_proxy/prefetch_proxy_url_loader_interceptor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/prefetch_metrics.h"
 #include "content/public/browser/web_contents.h"
-#include "net/cookies/cookie_options.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -34,8 +32,6 @@ namespace {
 //       FLOOR(LN(sample) / LN(kDaysSinceLastVisitBucketSpacing)))
 // )
 const double kDaysSinceLastVisitBucketSpacing = 1.7;
-
-const size_t kUkmCssJsBeforeFcpMax = 10;
 
 bool IsCSSOrJS(const std::string& mime_type) {
   std::string lower_mime_type = base::ToLowerASCII(mime_type);
@@ -57,30 +53,45 @@ PrefetchProxyPageLoadMetricsObserver::OnStart(
     const GURL& currently_committed_url,
     bool started_in_foreground) {
   navigation_start_ = base::Time::Now();
-
-  CheckForCookiesOnURL(navigation_handle->GetWebContents()->GetBrowserContext(),
-                       navigation_handle->GetURL());
   return CONTINUE_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PrefetchProxyPageLoadMetricsObserver::OnFencedFramesStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // All observing events are preprocessed by PageLoadTracker so that the
+  // outermost page's observer instance sees gathered information. So, the
+  // instance for FencedFrames doesn't need to do anything.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+PrefetchProxyPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // Prefetch proxy is used for privacy preserrving prefetch, and the feature
+  // and prerendering are exclusive in speculationrules. So, prerendering
+  // doesn't use the proxy, and this class just stops observing here. It's just
+  // interested in primary main page's performance with the prefetch proxy.
+  return STOP_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrefetchProxyPageLoadMetricsObserver::OnRedirect(
     content::NavigationHandle* navigation_handle) {
-  CheckForCookiesOnURL(navigation_handle->GetWebContents()->GetBrowserContext(),
-                       navigation_handle->GetURL());
   return CONTINUE_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 PrefetchProxyPageLoadMetricsObserver::OnCommit(
-    content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    content::NavigationHandle* navigation_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS())
     return STOP_OBSERVING;
 
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return STOP_OBSERVING;
 
   if (!page_load_metrics::IsNavigationUserInitiated(navigation_handle))
@@ -97,13 +108,12 @@ PrefetchProxyPageLoadMetricsObserver::OnCommit(
 
   PrefetchProxyTabHelper* tab_helper = PrefetchProxyTabHelper::FromWebContents(
       navigation_handle->GetWebContents());
-  if (!tab_helper)
-    return STOP_OBSERVING;
-  after_srp_metrics_ = tab_helper->after_srp_metrics();
+  if (tab_helper)
+    after_srp_metrics_ = tab_helper->after_srp_metrics();
 
-  data_saver_enabled_at_commit_ = data_reduction_proxy::
-      DataReductionProxySettings::IsDataSaverEnabledByUser(
-          profile->IsOffTheRecord(), profile->GetPrefs());
+  serving_page_metrics_ =
+      content::PrefetchServingPageMetrics::GetForNavigationHandle(
+          *navigation_handle);
 
   history::HistoryService* history_service =
       HistoryServiceFactory::GetForProfileIfExists(
@@ -114,8 +124,8 @@ PrefetchProxyPageLoadMetricsObserver::OnCommit(
     return CONTINUE_OBSERVING;
 
   for (const GURL& url : navigation_handle->GetRedirectChain()) {
-    history_service->GetLastVisitToHost(
-        url.GetOrigin(), base::Time() /* before_time */,
+    history_service->GetLastVisitToOrigin(
+        url::Origin::Create(url), base::Time() /* before_time */,
         navigation_start_ /* end_time */,
         base::BindOnce(
             &PrefetchProxyPageLoadMetricsObserver::OnOriginLastVisitResult,
@@ -128,29 +138,32 @@ PrefetchProxyPageLoadMetricsObserver::OnCommit(
 
 void PrefetchProxyPageLoadMetricsObserver::OnDidInternalNavigationAbort(
     content::NavigationHandle* navigation_handle) {
+  serving_page_metrics_ =
+      content::PrefetchServingPageMetrics::GetForNavigationHandle(
+          *navigation_handle);
+
   PrefetchProxyTabHelper* tab_helper = PrefetchProxyTabHelper::FromWebContents(
       navigation_handle->GetWebContents());
-  if (!tab_helper)
-    return;
-
-  std::unique_ptr<PrefetchProxyTabHelper::AfterSRPMetrics> after_srp_metrics =
-      tab_helper->ComputeAfterSRPMetricsBeforeCommit(navigation_handle);
-  if (!after_srp_metrics)
-    return;
-
-  // Metrics should also be recorded when the navigation failed due to an abort
-  // or otherwise. That way, we don't skew the metrics towards only pages that
-  // commit.
-  after_srp_metrics_ = *after_srp_metrics;
+  if (tab_helper) {
+    std::unique_ptr<PrefetchProxyTabHelper::AfterSRPMetrics> after_srp_metrics =
+        tab_helper->ComputeAfterSRPMetricsBeforeCommit(navigation_handle);
+    if (after_srp_metrics) {
+      // Metrics should also be recorded when the navigation failed due to an
+      // abort or otherwise. That way, we don't skew the metrics towards only
+      // pages that commit.
+      after_srp_metrics_ = *after_srp_metrics;
+    }
+  }
 
   RecordAfterSRPEvent();
 }
 
-void PrefetchProxyPageLoadMetricsObserver::OnEventOccurred(
-    page_load_metrics::PageLoadMetricsEvent event) {
-  if (event == page_load_metrics::PageLoadMetricsEvent::PREFETCH_LIKELY) {
-    GetPrefetchMetrics();
-  }
+void PrefetchProxyPageLoadMetricsObserver::OnPrefetchLikely() {
+  GetPrefetchMetrics();
+
+  referring_page_metrics_ =
+      content::PrefetchReferringPageMetrics::GetForCurrentDocument(
+          GetDelegate().GetWebContents()->GetPrimaryMainFrame());
 }
 
 void PrefetchProxyPageLoadMetricsObserver::GetPrefetchMetrics() {
@@ -184,26 +197,6 @@ void PrefetchProxyPageLoadMetricsObserver::OnOriginLastVisitResult(
   }
 }
 
-void PrefetchProxyPageLoadMetricsObserver::CheckForCookiesOnURL(
-    content::BrowserContext* browser_context,
-    const GURL& url) {
-  content::StoragePartition* partition =
-      content::BrowserContext::GetStoragePartitionForUrl(browser_context, url);
-
-  partition->GetCookieManagerForBrowserProcess()->GetCookieList(
-      url, net::CookieOptions::MakeAllInclusive(),
-      base::BindOnce(&PrefetchProxyPageLoadMetricsObserver::OnCookieResult,
-                     weak_factory_.GetWeakPtr(), base::Time::Now()));
-}
-
-void PrefetchProxyPageLoadMetricsObserver::OnCookieResult(
-    base::Time query_start_time,
-    const net::CookieAccessResultList& cookies,
-    const net::CookieAccessResultList& excluded_cookies) {
-  mainframe_had_cookies_ =
-      mainframe_had_cookies_.value_or(false) || !cookies.empty();
-}
-
 void PrefetchProxyPageLoadMetricsObserver::OnResourceDataUseObserved(
     content::RenderFrameHost* rfh,
     const std::vector<page_load_metrics::mojom::ResourceDataUpdatePtr>&
@@ -217,16 +210,6 @@ void PrefetchProxyPageLoadMetricsObserver::OnResourceDataUseObserved(
 
     if (!IsCSSOrJS(resource->mime_type))
       continue;
-
-    if (!resource->completed_before_fcp)
-      continue;
-
-    if (resource->cache_type ==
-        page_load_metrics::mojom::CacheType::kNotCached) {
-      loaded_css_js_from_network_before_fcp_++;
-    } else {
-      loaded_css_js_from_cache_before_fcp_++;
-    }
   }
 }
 
@@ -234,12 +217,6 @@ void PrefetchProxyPageLoadMetricsObserver::RecordMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   task_tracker_.TryCancelAll();
-
-  if (mainframe_had_cookies_.has_value()) {
-    LOCAL_HISTOGRAM_BOOLEAN(
-        "PageLoad.Clients.SubresourceLoading.MainFrameHadCookies",
-        mainframe_had_cookies_.value());
-  }
 
   if (min_days_since_last_visit_to_origin_.has_value()) {
     int days_since_last_visit = min_days_since_last_visit_to_origin_.value();
@@ -254,17 +231,6 @@ void PrefetchProxyPageLoadMetricsObserver::RecordMetrics() {
           days_since_last_visit);
     }
   }
-
-  LOCAL_HISTOGRAM_COUNTS_100(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Cached",
-      loaded_css_js_from_cache_before_fcp_);
-  LOCAL_HISTOGRAM_COUNTS_100(
-      "PageLoad.Clients.SubresourceLoading.LoadedCSSJSBeforeFCP.Noncached",
-      loaded_css_js_from_network_before_fcp_);
-
-  // Only record UKM for Data Saver users.
-  if (!data_saver_enabled_at_commit_)
-    return;
 
   RecordPrefetchProxyEvent();
   RecordAfterSRPEvent();
@@ -286,56 +252,87 @@ void PrefetchProxyPageLoadMetricsObserver::RecordPrefetchProxyEvent() {
       builder.Setdays_since_last_visit_to_origin(ukm_days_since_last_visit);
     }
   }
-  if (mainframe_had_cookies_.has_value()) {
-    int ukm_mainpage_had_cookies = mainframe_had_cookies_.value() ? 1 : 0;
-    builder.Setmainpage_request_had_cookies(ukm_mainpage_had_cookies);
-  }
 
-  int ukm_loaded_css_js_from_cache_before_fcp =
-      std::min(kUkmCssJsBeforeFcpMax, loaded_css_js_from_cache_before_fcp_);
-  builder.Setcount_css_js_loaded_cache_before_fcp(
-      ukm_loaded_css_js_from_cache_before_fcp);
-
-  int ukm_loaded_css_js_from_network_before_fcp =
-      std::min(kUkmCssJsBeforeFcpMax, loaded_css_js_from_network_before_fcp_);
-  builder.Setcount_css_js_loaded_network_before_fcp(
-      ukm_loaded_css_js_from_network_before_fcp);
+  // We should not have metrics from both the chrome/ and content/
+  // implementations of speculation rules prefetch.
+  DCHECK(!(srp_metrics_ && srp_metrics_->predicted_urls_count_ > 0 &&
+           referring_page_metrics_));
 
   if (srp_metrics_ && srp_metrics_->predicted_urls_count_ > 0) {
-    builder.Setordered_eligible_pages_bitmask(
-        srp_metrics_->ordered_eligible_pages_bitmask_);
     builder.Setprefetch_eligible_count(srp_metrics_->prefetch_eligible_count_);
     builder.Setprefetch_attempted_count(
         srp_metrics_->prefetch_attempted_count_);
     builder.Setprefetch_successful_count(
         srp_metrics_->prefetch_successful_count_);
   }
+
+  if (referring_page_metrics_) {
+    builder.Setprefetch_eligible_count(
+        referring_page_metrics_->prefetch_eligible_count);
+    builder.Setprefetch_attempted_count(
+        referring_page_metrics_->prefetch_attempted_count);
+    builder.Setprefetch_successful_count(
+        referring_page_metrics_->prefetch_successful_count);
+  }
+
   builder.Record(ukm::UkmRecorder::Get());
 }
 
 void PrefetchProxyPageLoadMetricsObserver::RecordAfterSRPEvent() {
-  if (!after_srp_metrics_)
+  // We should not have metrics from both the chrome/ and content/
+  // implementations of speculation rules prefetch.
+  DCHECK(!(after_srp_metrics_ && serving_page_metrics_));
+  if (!after_srp_metrics_ && !serving_page_metrics_)
     return;
-
-  const PrefetchProxyTabHelper::AfterSRPMetrics& metrics = *after_srp_metrics_;
 
   ukm::builders::PrefetchProxy_AfterSRPClick builder(
       GetDelegate().GetPageUkmSourceId());
 
-  builder.SetSRPPrefetchEligibleCount(metrics.prefetch_eligible_count_);
+  if (after_srp_metrics_) {
+    const PrefetchProxyTabHelper::AfterSRPMetrics& metrics =
+        *after_srp_metrics_;
 
-  if (metrics.prefetch_status_) {
-    builder.SetSRPClickPrefetchStatus(
-        static_cast<int>(metrics.prefetch_status_.value()));
+    builder.SetSRPPrefetchEligibleCount(metrics.prefetch_eligible_count_);
+
+    if (metrics.prefetch_status_) {
+      builder.SetSRPClickPrefetchStatus(
+          static_cast<int>(metrics.prefetch_status_.value()));
+    }
+
+    if (metrics.clicked_link_srp_position_) {
+      builder.SetClickedLinkSRPPosition(
+          metrics.clicked_link_srp_position_.value());
+    }
+
+    if (metrics.probe_latency_) {
+      builder.SetProbeLatencyMs(
+          metrics.probe_latency_.value().InMilliseconds());
+    }
   }
 
-  if (metrics.clicked_link_srp_position_) {
-    builder.SetClickedLinkSRPPosition(
-        metrics.clicked_link_srp_position_.value());
-  }
+  if (serving_page_metrics_) {
+    if (serving_page_metrics_->prefetch_status) {
+      builder.SetSRPClickPrefetchStatus(
+          serving_page_metrics_->prefetch_status.value());
+    }
 
-  if (metrics.probe_latency_) {
-    builder.SetProbeLatencyMs(metrics.probe_latency_.value().InMilliseconds());
+    if (serving_page_metrics_->required_private_prefetch_proxy) {
+      builder.SetPrivatePrefetch(1);
+    }
+
+    if (serving_page_metrics_->same_tab_as_prefetching_tab) {
+      builder.SetSameTabAsPrefetchingTab(1);
+    }
+
+    if (serving_page_metrics_->prefetch_header_latency) {
+      builder.SetPrefetchHeaderLatencyMs(
+          serving_page_metrics_->prefetch_header_latency->InMilliseconds());
+    }
+
+    if (serving_page_metrics_->probe_latency) {
+      builder.SetProbeLatencyMs(
+          serving_page_metrics_->probe_latency.value().InMilliseconds());
+    }
   }
 
   builder.Record(ukm::UkmRecorder::Get());

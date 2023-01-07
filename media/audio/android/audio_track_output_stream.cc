@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "media/audio/audio_manager_base.h"
 #include "media/base/android/media_jni_headers/AudioTrackOutputStream_jni.h"
@@ -24,9 +24,12 @@ namespace media {
 // Android audio format. For more information, please see:
 // https://developer.android.com/reference/android/media/AudioFormat.html
 enum {
-  kEncodingPcm16bit = 2,  // ENCODING_PCM_16BIT
-  kEncodingAc3 = 5,       // ENCODING_AC3
-  kEncodingEac3 = 6,      // ENCODING_E_AC3
+  kEncodingPcm16bit = 2,   // ENCODING_PCM_16BIT
+  kEncodingAc3 = 5,        // ENCODING_AC3
+  kEncodingEac3 = 6,       // ENCODING_E_AC3
+  kEncodingDts = 7,        // ENCODING_DTS
+  kEncodingDtshd = 8,      // ENCODING_DTS_HD
+  kEncodingIec61937 = 13,  // ENCODING_IEC61937
 };
 
 AudioTrackOutputStream::AudioTrackOutputStream(AudioManagerBase* manager,
@@ -50,12 +53,29 @@ bool AudioTrackOutputStream::Open() {
 
   int format = kEncodingPcm16bit;
   if (params_.IsBitstreamFormat()) {
-    if (params_.format() == AudioParameters::AUDIO_BITSTREAM_AC3) {
-      format = kEncodingAc3;
-    } else if (params_.format() == AudioParameters::AUDIO_BITSTREAM_EAC3) {
-      format = kEncodingEac3;
-    } else {
-      NOTREACHED();
+    switch (params_.format()) {
+      case AudioParameters::AUDIO_BITSTREAM_AC3:
+        format = kEncodingAc3;
+        break;
+      case AudioParameters::AUDIO_BITSTREAM_EAC3:
+        format = kEncodingEac3;
+        break;
+      case AudioParameters::AUDIO_BITSTREAM_DTS:
+        format = kEncodingDts;
+        break;
+      case AudioParameters::AUDIO_BITSTREAM_DTS_HD:
+      case AudioParameters::AUDIO_BITSTREAM_DTS_HD_MA:
+        format = kEncodingDtshd;
+        break;
+      case AudioParameters::AUDIO_BITSTREAM_IEC61937:
+        format = kEncodingIec61937;
+        break;
+      case AudioParameters::AUDIO_BITSTREAM_DTSX_P2:
+      case AudioParameters::AUDIO_FAKE:
+      case AudioParameters::AUDIO_PCM_LINEAR:
+      case AudioParameters::AUDIO_PCM_LOW_LATENCY:
+        NOTREACHED();
+        break;
     }
   }
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,13 @@ class CC_EXPORT ScrollUtils {
   // avoid too large deltas. Inputs and output must be in physical pixels.
   static gfx::Vector2dF ResolveScrollPercentageToPixels(
       const gfx::Vector2dF& scroll_delta,
+      const gfx::SizeF& scroller_size,
+      const gfx::SizeF& viewport_size);
+
+  // Transforms a pixel delta into a percentage. Used for when a test needs to
+  // work with percent based scrolling and non percent based scrolling.
+  static gfx::Vector2dF ResolvePixelScrollToPercentageForTesting(
+      const gfx::Vector2dF& pixel_scroll_delta,
       const gfx::SizeF& scroller_size,
       const gfx::SizeF& viewport_size);
 };

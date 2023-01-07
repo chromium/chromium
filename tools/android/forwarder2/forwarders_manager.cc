@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 #include <stddef.h>
 #include <sys/select.h>
 #include <unistd.h>
+
 #include <algorithm>
+#include <iterator>
 #include <utility>
 
 #include "base/bind.h"
@@ -16,7 +18,6 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 #include "tools/android/forwarder2/forwarder.h"
 #include "tools/android/forwarder2/socket.h"
 
@@ -81,7 +82,7 @@ void ForwardersManager::WaitForEventsOnInternalThread() {
     deletion_notifier_.receiver_fd(),
   };
 
-  for (size_t i = 0; i < base::size(notifier_fds); ++i) {
+  for (size_t i = 0; i < std::size(notifier_fds); ++i) {
     const int notifier_fd = notifier_fds[i];
     DCHECK_GT(notifier_fd, -1);
     FD_SET(notifier_fd, &read_fds);

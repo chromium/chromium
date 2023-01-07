@@ -1,17 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_IPC_COMMON_VULKAN_YCBCR_INFO_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_VULKAN_YCBCR_INFO_MOJOM_TRAITS_H_
 
+#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct StructTraits<gpu::mojom::VulkanYCbCrInfoDataView, gpu::VulkanYCbCrInfo> {
+struct GPU_EXPORT
+    StructTraits<gpu::mojom::VulkanYCbCrInfoDataView, gpu::VulkanYCbCrInfo> {
   static uint32_t image_format(const gpu::VulkanYCbCrInfo& info) {
     return info.image_format;
   }

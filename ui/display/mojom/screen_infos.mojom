@@ -1,0 +1,25 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module display.mojom;
+
+import "ui/display/mojom/screen_info.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Information about a set of screens that are relevant to a particular widget.
+// This includes an id for the screen currently showing the widget.  This
+// structure roughly parallels display.mojom.DisplayList. It may be desirable
+// to deprecate derived counterparts of ui/display types, but doing so is
+// complicated by widespread use and legacy quirks around display::ScreenInfo.
+struct ScreenInfos {
+  // The array of ScreenInfo objects for the set of relevant screens.
+  array<ScreenInfo> screen_infos;
+
+  // The display_id of the current ScreenInfo in `screen_infos`.
+  int64 current_display_id;
+
+  // Cursor size in DIP, obtained from the OS. This value is general
+  // to all displays.
+  gfx.mojom.Size system_cursor_size;
+};

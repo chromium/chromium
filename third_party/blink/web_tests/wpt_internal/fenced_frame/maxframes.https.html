@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<title>Test Maximum Subframes</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
+
+<body>
+<script>
+promise_test(async (t) => {
+  const maxframes_key = token();
+
+  internals.setMaxNumberOfFramesToTen(true);
+
+  for (let i = 0; i < 9; ++i) {
+    attachFencedFrame('resources/dummy.html');
+  }
+  // This frame's creation brings us up to our limit, so it is the last one that
+  // should load properly.
+  const tenth_frame = attachFencedFrame('resources/dummy.html');
+
+  // This frame is past the limit and should not be loaded
+  // If it does load, a DCHECK will catch it and cause the renderer to crash,
+  // failing the test.
+  const eleventh_frame = attachFencedFrame('resources/dummy.html');
+  // After insertion, set the `src` attribute on a frame that cannot load due to
+  // the subframe limit. This should not cause the renderer to crash.
+  eleventh_frame.src = 'resources/dummy.html';
+
+  tenth_frame.remove();
+
+  // Now that we removed the tenth live frame that contributed to the subframe
+  // limit, the page is under the subframe limit and a new fenced frame can be
+  // created.
+  attachFencedFrame(
+      generateURL('resources/maxframes-inner.html', [maxframes_key]));
+  const response = await nextValueFromServer(maxframes_key);
+  assert_equals(response, "page loaded", "The inner frame should be loaded.");
+}, 'Max Subframes Test');
+
+</script>
+</body>
+</html>

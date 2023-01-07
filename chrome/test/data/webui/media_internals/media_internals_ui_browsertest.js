@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,7 @@ TEST_F('MediaInternalsUIBrowserTest', 'Integration', function() {
         generalAudioInformationSet: doNothing,
         redrawVideoCaptureCapabilities: doNothing,
         audioFocusSessionUpdated: doNothing,
+        updateRegisteredCdms: doNothing,
       };
 
       var manager = new Manager(mockClientRenderer);
@@ -56,7 +57,7 @@ TEST_F('MediaInternalsUIBrowserTest', 'Integration', function() {
         ticksMillis: 132,
         renderer: TEST_RENDERER,
         player: TEST_PLAYER,
-        params: {fps: 60, other: 'hi'}
+        params: {fps: 60, other: 'hi'},
       };
 
       window.media.onMediaEvent(event);
@@ -119,7 +120,7 @@ TEST_F('MediaInternalsUIBrowserTest', 'Manager', function() {
     var emptyClientRenderer = {
       playerAdded: doNothing,
       playerRemoved: doNothing,
-      playerUpdated: doNothing
+      playerUpdated: doNothing,
     };
 
     setup(function() {

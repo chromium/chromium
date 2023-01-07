@@ -1,4 +1,4 @@
-// Copyright (c) 2010 The Chromium Authors. All rights reserved.
+// Copyright 2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,16 +69,6 @@ bool PrefChangeRegistrar::IsEmpty() const {
 
 bool PrefChangeRegistrar::IsObserved(const std::string& pref) {
   return observers_.find(pref) != observers_.end();
-}
-
-bool PrefChangeRegistrar::IsManaged() {
-  for (ObserverMap::const_iterator it = observers_.begin();
-       it != observers_.end(); ++it) {
-    const PrefService::Preference* pref = service_->FindPreference(it->first);
-    if (pref && pref->IsManaged())
-      return true;
-  }
-  return false;
 }
 
 void PrefChangeRegistrar::OnPreferenceChanged(PrefService* service,

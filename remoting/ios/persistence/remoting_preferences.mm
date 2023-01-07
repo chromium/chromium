@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,8 @@ RemotingFlag const RemotingFlagUseWebRTC = @"UseWebRTC";
 RemotingFlag const RemotingFlagLastSeenNotificationMessageId =
     @"LastSeenNotificationMessageId";
 RemotingFlag const RemotingFlagNotificationUiState = @"NotificationUiState";
+RemotingFlag const RemotingFlagNotificationShownTimes =
+    @"NotificationShownTimes";
 
 static NSString* KeyWithPrefix(NSString* prefix, NSString* key) {
   return [NSString stringWithFormat:@"%@-%@", prefix, key];

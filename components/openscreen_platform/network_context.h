@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ using NetworkContextGetter =
     base::RepeatingCallback<network::mojom::NetworkContext*()>;
 
 void SetNetworkContextGetter(NetworkContextGetter network_context_getter);
+void ClearNetworkContextGetter();
 bool HasNetworkContextGetter();
 
 // This and all subsequent NetworkContext calls made must obey the thread safety

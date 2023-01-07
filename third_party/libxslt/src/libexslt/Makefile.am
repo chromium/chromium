@@ -2,7 +2,7 @@ AM_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/libxslt -I$(top_srcdir)/libexslt \
 	      -I$(top_builddir) -I$(top_builddir)/libxslt \
 	      -I$(top_builddir)/libexslt
 
-AM_CFLAGS = $(LIBGCRYPT_CFLAGS) $(LIBXML_CFLAGS)
+AM_CFLAGS = $(LIBGCRYPT_CFLAGS) $(LIBXML_CFLAGS) $(LIBXSLT_CFLAGS)
 
 lib_LTLIBRARIES = libexslt.la
 
@@ -27,7 +27,7 @@ libexslt_la_SOURCES =                   \
 	libexslt.h			\
 	dynamic.c
 
-libexslt_la_LIBADD = $(top_builddir)/libxslt/libxslt.la $(LIBXML_LIBS) $(EXTRA_LIBS) $(LIBGCRYPT_LIBS) $(M_LIBS)
+libexslt_la_LIBADD = $(top_builddir)/libxslt/libxslt.la $(LIBXML_LIBS) $(EXTRA_LIBS) $(LIBGCRYPT_LIBS) $(LIBM)
 libexslt_la_LDFLAGS = -version-info $(LIBEXSLT_VERSION_INFO)
 
 man_MANS = libexslt.3

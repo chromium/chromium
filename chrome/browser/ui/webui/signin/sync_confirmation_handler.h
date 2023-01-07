@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,12 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace base {
-class ListValue;
-}
 
 namespace signin {
 class IdentityManager;
@@ -37,6 +34,10 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
       Profile* profile,
       const std::unordered_map<std::string, int>& string_to_grd_id_map,
       Browser* browser = nullptr);
+
+  SyncConfirmationHandler(const SyncConfirmationHandler&) = delete;
+  SyncConfirmationHandler& operator=(const SyncConfirmationHandler&) = delete;
+
   ~SyncConfirmationHandler() override;
 
   // content::WebUIMessageHandler:
@@ -52,28 +53,28 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   // Handles "confirm" message from the page. No arguments.
   // This message is sent when the user confirms that they want complete sign in
   // with default sync settings.
-  virtual void HandleConfirm(const base::ListValue* args);
+  virtual void HandleConfirm(const base::Value::List& args);
 
   // Handles "undo" message from the page. No arguments.
   // This message is sent when the user clicks "undo" on the sync confirmation
   // dialog, which aborts signin and prevents sync from starting.
-  virtual void HandleUndo(const base::ListValue* args);
+  virtual void HandleUndo(const base::Value::List& args);
 
   // Handles "goToSettings" message from the page. No arguments.
   // This message is sent when the user clicks on the "Settings" link in the
   // sync confirmation dialog, which completes sign in but takes the user to the
   // sync settings page for configuration before starting sync.
-  virtual void HandleGoToSettings(const base::ListValue* args);
+  virtual void HandleGoToSettings(const base::Value::List& args);
 
   // Handles the web ui message sent when the html content is done being laid
   // out and it's time to resize the native view hosting it to fit. |args| is
   // a single integer value for the height the native view should resize to.
-  virtual void HandleInitializedWithSize(const base::ListValue* args);
+  virtual void HandleInitializedWithSize(const base::Value::List& args);
 
-  // Handles the "accountImageRequest" message sent after the
-  // "account-image-changed" WebUIListener was added. This method calls
-  // |SetUserImageURL| with the signed-in user's picture url.
-  virtual void HandleAccountImageRequest(const base::ListValue* args);
+  // Handles the "accountInfoRequest" message sent after the
+  // "account-info-changed" WebUIListener was added. This method calls
+  // |SetAccountInfo| with the signed-in user's picture url.
+  virtual void HandleAccountInfoRequest(const base::Value::List& args);
 
   // Records the user's consent to sync. Called from |HandleConfirm| and
   // |HandleGoToSettings|, and expects two parameters to be passed through
@@ -83,10 +84,11 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
   // 2. Strings (name of the string resource of the consent confirmation)
   // This message is sent when the user interacts with the dialog in a positive
   // manner, i.e. clicks on the confirmation button or the settings link.
-  virtual void RecordConsent(const base::ListValue* args);
+  virtual void RecordConsent(const base::Value::List& args);
 
-  // Sets the profile picture shown in the dialog to the image at |url|.
-  virtual void SetUserImageURL(const std::string& url);
+  // Sets the account image shown in the dialog based on |info|, which is
+  // expected to be valid.
+  virtual void SetAccountInfo(const AccountInfo& info);
 
   // Closes the modal signin window and calls
   // LoginUIService::SyncConfirmationUIClosed with |result|. |result| indicates
@@ -95,7 +97,7 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
       LoginUIService::SyncConfirmationUIClosedResult result);
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Records whether the user clicked on Undo, Ok, or Settings.
   bool did_user_explicitly_interact_ = false;
@@ -106,11 +108,9 @@ class SyncConfirmationHandler : public content::WebUIMessageHandler,
 
   // Weak reference to the browser that showed the sync confirmation dialog (if
   // such a dialog exists).
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 
-  signin::IdentityManager* identity_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncConfirmationHandler);
+  raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SYNC_CONFIRMATION_HANDLER_H_

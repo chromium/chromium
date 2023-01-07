@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
@@ -24,8 +25,7 @@ namespace blink {
 
 namespace {
 
-constexpr base::TimeDelta kMaxOffscreenDurationUma =
-    base::TimeDelta::FromHours(1);
+constexpr base::TimeDelta kMaxOffscreenDurationUma = base::Hours(1);
 constexpr int32_t kOffscreenDurationUmaBucketCount = 50;
 
 // Returns a int64_t with the following structure:
@@ -63,8 +63,6 @@ static void RecordAutoplaySourceMetrics(HTMLMediaElement* element,
                                         AutoplaySource source) {
   if (IsA<HTMLVideoElement>(element)) {
     base::UmaHistogramEnumeration("Media.Video.Autoplay", source);
-    if (element->muted())
-      base::UmaHistogramEnumeration("Media.Video.Autoplay.Muted", source);
     return;
   }
   base::UmaHistogramEnumeration("Media.Audio.Autoplay", source);
@@ -115,7 +113,7 @@ void AutoplayUmaHelper::RecordAutoplayUnmuteStatus(
                                 status);
 
   // Record UKM event for unmute muted autoplay.
-  if (element_->GetDocument().IsInMainFrame()) {
+  if (element_->GetDocument().IsInOutermostMainFrame()) {
     int source = static_cast<int>(AutoplaySource::kAttribute);
     if (sources_.size() == kDualSourceSize) {
       source = static_cast<int>(AutoplaySource::kDualSource);
@@ -267,9 +265,8 @@ void AutoplayUmaHelper::MaybeStopRecordingMutedVideoOffscreenDuration() {
 
   UMA_HISTOGRAM_CUSTOM_TIMES(
       "Media.Video.Autoplay.Muted.PlayMethod.OffscreenDuration",
-      muted_video_autoplay_offscreen_duration_,
-      base::TimeDelta::FromMilliseconds(1), kMaxOffscreenDurationUma,
-      kOffscreenDurationUmaBucketCount);
+      muted_video_autoplay_offscreen_duration_, base::Milliseconds(1),
+      kMaxOffscreenDurationUma, kOffscreenDurationUmaBucketCount);
 
   muted_video_offscreen_duration_intersection_observer_->disconnect();
   muted_video_offscreen_duration_intersection_observer_ = nullptr;

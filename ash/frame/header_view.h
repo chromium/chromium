@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
@@ -18,6 +17,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/display/display_observer.h"
 #include "ui/views/view.h"
 
 namespace chromeos {
@@ -46,7 +46,8 @@ class ASH_EXPORT HeaderView
     : public views::View,
       public chromeos::ImmersiveFullscreenControllerDelegate,
       public TabletModeObserver,
-      public aura::WindowObserver {
+      public aura::WindowObserver,
+      public display::DisplayObserver {
  public:
   // |target_widget| is the widget that the caption buttons act on.
   // |target_widget| is not necessarily the same as the widget the header is
@@ -55,9 +56,16 @@ class ASH_EXPORT HeaderView
   // However, clicking a caption button should act on the target widget.
   HeaderView(views::Widget* target_widget,
              views::NonClientFrameView* frame_view);
+
+  HeaderView(const HeaderView&) = delete;
+  HeaderView& operator=(const HeaderView&) = delete;
+
   ~HeaderView() override;
 
   METADATA_HEADER(HeaderView);
+
+  // Initialize the parts with side effects.
+  void Init();
 
   void set_immersive_mode_changed_callback(base::RepeatingClosure callback) {
     immersive_mode_changed_callback_ = std::move(callback);
@@ -102,6 +110,10 @@ class ASH_EXPORT HeaderView
                                intptr_t old) override;
   void OnWindowDestroying(aura::Window* window) override;
 
+  // display::DisplayObserver:
+  void OnDisplayMetricsChanged(const display::Display& display,
+                               uint32_t changed_metrics) override;
+
   chromeos::FrameCaptionButtonContainerView* caption_button_container() {
     return caption_button_container_;
   }
@@ -134,6 +146,7 @@ class ASH_EXPORT HeaderView
   void PaintHeaderContent(gfx::Canvas* canvas);
 
   void UpdateBackButton();
+  void UpdateCenterButton();
   void UpdateCaptionButtonsVisibility();
 
   // The widget that the caption buttons act on.
@@ -180,8 +193,6 @@ class ASH_EXPORT HeaderView
   // Observes property changes to |target_widget_|'s window.
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HeaderView);
 };
 
 }  // namespace ash

@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gpu/ipc/service/image_transport_surface.h"
 
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/ipc/service/image_transport_surface_overlay_mac.h"
 #include "gpu/ipc/service/pass_through_image_transport_surface.h"
@@ -16,6 +15,7 @@ namespace gpu {
 
 // static
 scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
+    gl::GLDisplay* display,
     base::WeakPtr<ImageTransportSurfaceDelegate> delegate,
     SurfaceHandle surface_handle,
     gl::GLSurfaceFormat format) {
@@ -24,15 +24,14 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
   switch (gl::GetGLImplementation()) {
     case gl::kGLImplementationDesktopGL:
     case gl::kGLImplementationDesktopGLCoreProfile:
-    case gl::kGLImplementationAppleGL:
       return base::WrapRefCounted<gl::GLSurface>(
           new ImageTransportSurfaceOverlayMac(delegate));
 #if defined(USE_EGL)
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationEGLANGLE:
-    case gl::kGLImplementationSwiftShaderGL:
       return base::WrapRefCounted<gl::GLSurface>(
-          new ImageTransportSurfaceOverlayMacEGL(delegate));
+          new ImageTransportSurfaceOverlayMacEGL(
+              display->GetAs<gl::GLDisplayEGL>(), delegate));
 #endif
     case gl::kGLImplementationMockGL:
     case gl::kGLImplementationStubGL:

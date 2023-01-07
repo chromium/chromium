@@ -1,11 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
+#include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -35,7 +35,7 @@
 namespace extensions {
 
 namespace {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Prepopulated id hardcoded in test_extension.
 const int kTestExtensionPrepopulatedId = 3;
 // TemplateURLData with search engines settings from test extension manifest.
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OverrideStartupPagesSettings) {
   ASSERT_TRUE(prefs);
   const GURL urls[] = {GURL("http://foo"), GURL("http://bar")};
   SessionStartupPref startup_pref(SessionStartupPref::LAST);
-  startup_pref.urls.assign(urls, urls + base::size(urls));
+  startup_pref.urls.assign(urls, urls + std::size(urls));
   SessionStartupPref::SetStartupPref(prefs, startup_pref);
 
   const extensions::Extension* extension = LoadExtension(
@@ -110,8 +110,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OverrideStartupPagesSettings) {
   UnloadExtension(extension->id());
   startup_pref = SessionStartupPref::GetStartupPref(prefs);
   EXPECT_EQ(SessionStartupPref::LAST, startup_pref.type);
-  EXPECT_EQ(std::vector<GURL>(urls, urls + base::size(urls)),
-            startup_pref.urls);
+  EXPECT_EQ(std::vector<GURL>(urls, urls + std::size(urls)), startup_pref.urls);
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OverrideDSE) {
@@ -236,6 +235,12 @@ class ExtensionsDisabledWithSettingsOverrideAPI : public ExtensionBrowserTest {
       : prompt_for_external_extensions_(
             FeatureSwitch::prompt_for_external_extensions(),
             false) {}
+
+  ExtensionsDisabledWithSettingsOverrideAPI(
+      const ExtensionsDisabledWithSettingsOverrideAPI&) = delete;
+  ExtensionsDisabledWithSettingsOverrideAPI& operator=(
+      const ExtensionsDisabledWithSettingsOverrideAPI&) = delete;
+
   ~ExtensionsDisabledWithSettingsOverrideAPI() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -252,8 +257,6 @@ class ExtensionsDisabledWithSettingsOverrideAPI : public ExtensionBrowserTest {
 
  private:
   FeatureSwitch::ScopedOverride prompt_for_external_extensions_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsDisabledWithSettingsOverrideAPI);
 };
 
 // The following test combo is a regression test for https://crbug.com/828295.

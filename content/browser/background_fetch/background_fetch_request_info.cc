@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -119,7 +119,7 @@ void BackgroundFetchRequestInfo::SetResult(
 
 void BackgroundFetchRequestInfo::SetEmptyResultWithFailureReason(
     BackgroundFetchResult::FailureReason failure_reason) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   result_ = std::make_unique<BackgroundFetchResult>(
       /* response= */ nullptr, base::Time::Now(), failure_reason);
@@ -127,7 +127,7 @@ void BackgroundFetchRequestInfo::SetEmptyResultWithFailureReason(
 
 void BackgroundFetchRequestInfo::PopulateWithResponse(
     std::unique_ptr<BackgroundFetchResponse> response) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(response);
 
   url_chain_ = response->url_chain;

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 
@@ -50,26 +52,28 @@ public class ExploreSitesCategoryCardViewTest {
     // All block listed sites are at beginning of category
     // numMockSites is the total, it should be greater than numBlocklisted
     private ExploreSitesCategory createSyntheticCategory(int numMockSites, int numBlocklisted) {
-        final int id = 1;
-        @ExploreSitesCategory.CategoryType
-        final int type = ExploreSitesCategory.CategoryType.SCIENCE;
-        final String title = "Category Title";
-        final int ntpShownCount = 0;
-        final int interactionCount = 0;
-        ExploreSitesCategory syntheticCategory =
-                new ExploreSitesCategory(id, type, title, ntpShownCount, interactionCount);
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            final int id = 1;
+            @ExploreSitesCategory.CategoryType
+            final int type = ExploreSitesCategory.CategoryType.SCIENCE;
+            final String title = "Category Title";
+            final int ntpShownCount = 0;
+            final int interactionCount = 0;
+            ExploreSitesCategory syntheticCategory =
+                    new ExploreSitesCategory(id, type, title, ntpShownCount, interactionCount);
 
-        for (int i = 0; i < numMockSites; i++) {
-            final int site_id = i;
-            final String site_title = "Site #" + i;
-            final String site_url = "http://example.com/" + i;
-            final boolean isBlocklisted = i < numBlocklisted;
-            ExploreSitesSite mockSite =
-                    new ExploreSitesSite(site_id, site_title, site_url, isBlocklisted);
-            syntheticCategory.addSite(mockSite);
-        }
+            for (int i = 0; i < numMockSites; i++) {
+                final int siteId = i;
+                final String siteTitle = "Site #" + i;
+                final GURL siteUrl = new GURL("http://example.com/" + i);
+                final boolean isBlocklisted = i < numBlocklisted;
+                ExploreSitesSite mockSite =
+                        new ExploreSitesSite(siteId, siteTitle, siteUrl, isBlocklisted);
+                syntheticCategory.addSite(mockSite);
+            }
 
-        return syntheticCategory;
+            return syntheticCategory;
+        });
     }
 
     @Rule

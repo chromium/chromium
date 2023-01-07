@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,11 @@ class CreateMetadataTask : public DatabaseTask {
                      blink::mojom::BackgroundFetchOptionsPtr options,
                      const SkBitmap& icon,
                      bool start_paused,
+                     const net::IsolationInfo& isolation_info,
                      CreateMetadataCallback callback);
+
+  CreateMetadataTask(const CreateMetadataTask&) = delete;
+  CreateMetadataTask& operator=(const CreateMetadataTask&) = delete;
 
   ~CreateMetadataTask() override;
 
@@ -70,6 +74,7 @@ class CreateMetadataTask : public DatabaseTask {
   blink::mojom::BackgroundFetchOptionsPtr options_;
   SkBitmap icon_;
   bool start_paused_;
+  net::IsolationInfo isolation_info_;
   CreateMetadataCallback callback_;
 
   std::unique_ptr<proto::BackgroundFetchMetadata> metadata_proto_;
@@ -78,8 +83,6 @@ class CreateMetadataTask : public DatabaseTask {
 
   base::WeakPtrFactory<CreateMetadataTask> weak_factory_{
       this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(CreateMetadataTask);
 };
 
 }  // namespace background_fetch

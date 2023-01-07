@@ -9,18 +9,31 @@ dictionary NavigatorUABrandVersion {
 };
 
 dictionary UADataValues {
+  sequence<NavigatorUABrandVersion> brands;
+  boolean mobile;
+  DOMString architecture;
+  DOMString bitness;
+  DOMString model;
   DOMString platform;
   DOMString platformVersion;
-  DOMString architecture;
-  DOMString model;
-  DOMString uaFullVersion;
+  DOMString uaFullVersion; // deprecated in favor of fullVersionList
+  boolean wow64;
+  sequence<NavigatorUABrandVersion> fullVersionList;
+};
+
+dictionary UALowEntropyJSON {
+  sequence<NavigatorUABrandVersion> brands;
+  boolean mobile;
+  DOMString platform;
 };
 
 [Exposed=(Window,Worker)]
 interface NavigatorUAData {
   readonly attribute FrozenArray<NavigatorUABrandVersion> brands;
   readonly attribute boolean mobile;
+  readonly attribute DOMString platform;
   Promise<UADataValues> getHighEntropyValues(sequence<DOMString> hints);
+  UALowEntropyJSON toJSON();
 };
 
 interface mixin NavigatorUA {

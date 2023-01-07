@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/host/native_messaging/native_messaging_reader.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -13,22 +14,20 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/threading/platform_thread.h"
 #include "base/win/scoped_handle.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -52,6 +51,10 @@ class NativeMessagingReader::Core {
        scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
        scoped_refptr<base::SequencedTaskRunner> read_task_runner,
        base::WeakPtr<NativeMessagingReader> reader_);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core();
 
   // Reads a message from the Native Messaging client and passes it to
@@ -71,8 +74,6 @@ class NativeMessagingReader::Core {
 
   // Used to DCHECK that the reader code executes on the correct thread.
   scoped_refptr<base::SequencedTaskRunner> read_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 NativeMessagingReader::Core::Core(
@@ -114,7 +115,7 @@ void NativeMessagingReader::Core::ReadMessage() {
 
     std::string message_json(message_length, '\0');
     read_result =
-        read_stream_.ReadAtCurrentPos(base::data(message_json), message_length);
+        read_stream_.ReadAtCurrentPos(std::data(message_json), message_length);
     if (read_result != static_cast<int>(message_length)) {
       LOG(ERROR) << "Failed to read message body, read returned "
                  << read_result;
@@ -150,14 +151,15 @@ NativeMessagingReader::NativeMessagingReader(base::File file)
       base::Thread::Options(base::MessagePumpType::IO, /*size=*/0));
 
   read_task_runner_ = reader_thread_.task_runner();
-  core_.reset(new Core(std::move(file), base::ThreadTaskRunnerHandle::Get(),
-                       read_task_runner_, weak_factory_.GetWeakPtr()));
+  core_ = std::make_unique<Core>(std::move(file),
+                                 base::ThreadTaskRunnerHandle::Get(),
+                                 read_task_runner_, weak_factory_.GetWeakPtr());
 }
 
 NativeMessagingReader::~NativeMessagingReader() {
   read_task_runner_->DeleteSoon(FROM_HERE, core_.release());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The ReadMessage() method uses a blocking read (on all platforms) which
   // cause a deadlock if the owning thread attempts to destroy this object
   // while there is a read operation pending.
@@ -178,7 +180,7 @@ NativeMessagingReader::~NativeMessagingReader() {
       PLOG(ERROR) << "CancelSynchronousIo() failed";
     }
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void NativeMessagingReader::Start(const MessageCallback& message_callback,

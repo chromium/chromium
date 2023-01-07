@@ -1,0 +1,41 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gfx.mojom;
+
+import "mojo/public/mojom/base/wstring.mojom";
+import "skia/public/mojom/skcolorspace_primaries.mojom";
+
+// Subset of information collected from DXGI_OUTPUT_DESC1.
+struct DXGIOutputDesc {
+  mojo_base.mojom.WString device_name;
+
+  // Set to true if the display has HDR currently enabled.
+  bool hdr_enabled;
+
+  // The color volume of the display.
+  skia.mojom.SkColorSpacePrimaries primaries;
+
+  // The minimum luminance, in nits, that the display attached to this output is
+  // capable of rendering.
+  float min_luminance;
+
+  // The maximum luminance, in nits, that the display attached to this output is
+  // capable of rendering; this value is likely only valid for a small area of
+  // the panel.
+  float max_luminance;
+
+  // The maximum luminance, in nits, that the display attached to this output is
+  // capable of rendering; unlike MaxLuminance, this value is valid for a color
+  // that fills the entire area of the panel.
+  float max_full_frame_luminance;
+};
+
+// DXGI information collected in the Gpu process and sent for use in the browser
+// process.
+struct DXGIInfo {
+  // The descriptors of all IDXGIOutputs of each IDXGIAdapters.
+  array<DXGIOutputDesc> output_descs;
+};
+

@@ -36,7 +36,7 @@
         // 1) The navigation is blocked in the current window.
         window.addEventListener('securitypolicyviolation', t.step_func(e => {
           assert_equals(e.effectiveDirective, "form-action");
-          assert_equals(e.blockedURI, "localhost:8000/resources/post-done-to-opener.html");
+          assert_equals(e.blockedURI, "http://127.0.0.1:8000/resources/redirection-response.php?host=localhost:8000&status=302&target=/security/resources/post-done-to-opener.html");
           namedWindow.close();
           t.done();
         }));

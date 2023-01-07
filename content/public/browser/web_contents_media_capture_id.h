@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@
 
 namespace content {
 
+extern const char CONTENT_EXPORT kWebContentsCaptureScheme[];
+
 struct CONTENT_EXPORT WebContentsMediaCaptureId {
  public:
   WebContentsMediaCaptureId() = default;
@@ -21,11 +23,9 @@ struct CONTENT_EXPORT WebContentsMediaCaptureId {
 
   WebContentsMediaCaptureId(int render_process_id,
                             int main_render_frame_id,
-                            bool enable_auto_throttling,
                             bool disable_local_echo)
       : render_process_id(render_process_id),
         main_render_frame_id(main_render_frame_id),
-        enable_auto_throttling(enable_auto_throttling),
         disable_local_echo(disable_local_echo) {}
 
   bool operator<(const WebContentsMediaCaptureId& other) const;
@@ -40,7 +40,6 @@ struct CONTENT_EXPORT WebContentsMediaCaptureId {
   int render_process_id = MSG_ROUTING_NONE;
   int main_render_frame_id = MSG_ROUTING_NONE;
 
-  bool enable_auto_throttling = false;
   bool disable_local_echo = false;
 
   // TODO(qiangchen): Pass structured ID along code paths, instead of doing

@@ -1,0 +1,149 @@
+{
+   "ConnectionState": "Connected",
+   "GUID": "123",
+   "IPConfigs": [ {
+         "Gateway": "2001:db8:85a3::7a2e:370:7331",
+         "IPAddress": "2001:0db8:85a3:0000:0000:8a2e:0370:7334",
+         "NameServers": [  ],
+         "RoutingPrefix": 12,
+         "Type": "IPv6"
+    } ],
+   "SavedIPConfig": {
+      "Gateway": "1.1.1.4",
+      "IPAddress": "124.124.124.124",
+      "NameServers": [ "1.1.1.5", "1.1.1.6" ],
+      "RoutingPrefix": 25,
+      "Type": "IPv4"
+   },
+   "IPAddressConfigType": {
+     "DevicePolicy": "Static",
+     "Effective": "UserPolicy",
+     "UserSetting": "Static"
+   },
+   "NameServersConfigType": {
+      "DeviceEditable": true,
+      "DevicePolicy": "DHCP",
+      "Effective": "UserPolicy",
+      "UserEditable": true,
+      "UserPolicy": "DHCP"
+   },
+   "StaticIPConfig": {
+      "IPAddress": {
+         "DevicePolicy": "127.0.0.1",
+         "Effective": "UserPolicy",
+         "UserPolicy": "127.0.0.1",
+         "UserSetting": "1.2.3.4"
+      },
+      "NameServers": {
+         "Effective": "UserPolicy",
+         "UserPolicy": [  ]
+      },
+      "RoutingPrefix": {
+         "Effective": "UserPolicy",
+         "UserPolicy": 32
+      },
+      "SearchDomains": {
+         "Effective": "UserPolicy",
+         "UserSetting": [ "acme.org" ]
+      },
+      "Type": {
+         "DevicePolicy": "IPv4",
+         "Effective": "UserPolicy",
+         "UserPolicy": "IPv4",
+         "UserSetting": "IPv4"
+      }
+   },
+   "Name": {
+      "Active": "testopenvpn",
+      "DevicePolicy": "testopenvpn",
+      "Effective": "UserPolicy",
+      "UserPolicy": "testopenvpn",
+      "UserSetting": "testopenvpn"
+   },
+   "ProxySettings": {
+      "Type": {
+         "Effective": "UserPolicy",
+         "UserSetting": "Direct"
+      }
+   },
+   "Type": "VPN",
+   "VPN": {
+      "Host": {
+         "DeviceEditable": true,
+         "DevicePolicy": "device policys host",
+         "Effective": "UserSetting",
+         "UserEditable": true,
+         "UserPolicy": "policys host",
+         "UserSetting": "users host"
+      },
+      "IPsec": {
+         "AuthenticationType": {
+            "Effective": "UserPolicy",
+            "UserPolicy": "PSK"
+         },
+         "IKEVersion": {
+            "Effective": "UserPolicy",
+            "UserPolicy": 1
+         },
+         "PSK": {
+          "DevicePolicy": "FAKE_CREDENTIAL_VPaJDV9x",
+          "Effective": "UserPolicy",
+          "UserPolicy": "FAKE_CREDENTIAL_VPaJDV9x"
+         }
+      },
+      "OpenVPN": {
+         "ClientCertPattern": {
+            "EnrollmentURI": {
+               "DeviceEditable": true,
+               "DevicePolicy": [  ],
+               "Effective": "UserPolicy",
+               "UserEditable": true,
+               "UserPolicy": [  ]
+            },
+            "IssuerCARef": {
+               "DeviceEditable": true,
+               "DevicePolicy": [ "openvpn-test-ca" ],
+               "Effective": "UserPolicy",
+               "UserEditable": true,
+               "UserPolicy": [ "openvpn-test-ca" ]
+            }
+         },
+         "ClientCertType": {
+            "DevicePolicy": "Pattern",
+            "Effective": "UserPolicy",
+            "UserPolicy": "Pattern"
+         },
+         "Password": {
+            "DeviceEditable": true,
+            "DevicePolicy": "",
+            "Effective": "UserSetting",
+            "UserEditable": true,
+            "UserPolicy": "",
+            "UserSetting": "users password"
+         },
+         "Port": {
+            "DeviceEditable": true,
+            "DevicePolicy": 0,
+            "Effective": "UserPolicy",
+            "UserPolicy": 1194,
+            "UserSetting": 1195
+         },
+         "ServerCARefs": {
+            "Effective": "UserPolicy",
+            "UserPolicy": ["ref1", "ref2"]
+         },
+         "Username": {
+            "DevicePolicy": "device user",
+            "Effective": "DevicePolicy",
+            "UserEditable": true,
+            "UserPolicy": "policy user"
+         }
+      },
+      "Type": {
+         "DevicePolicy": "OpenVPN",
+         "Effective": "UserPolicy",
+         "UserPolicy": "OpenVPN",
+         "UserSetting": "OpenVPN"
+      }
+   }
+}

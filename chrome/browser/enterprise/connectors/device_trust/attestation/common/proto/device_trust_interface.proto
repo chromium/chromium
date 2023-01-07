@@ -1,0 +1,18 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is a subset copy of
+// third_party/cros_system_api/dbus/attestation/interface.proto
+// third_party/cros_system_api is only for ChromeOS.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package enterprise_connectors;
+
+enum VAType {
+  DEFAULT_VA = 0;
+  TEST_VA = 1;
+}

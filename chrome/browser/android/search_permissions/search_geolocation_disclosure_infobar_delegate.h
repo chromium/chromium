@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -29,6 +29,11 @@ class WebContents;
 class SearchGeolocationDisclosureInfoBarDelegate
     : public infobars::InfoBarDelegate {
  public:
+  SearchGeolocationDisclosureInfoBarDelegate(
+      const SearchGeolocationDisclosureInfoBarDelegate&) = delete;
+  SearchGeolocationDisclosureInfoBarDelegate& operator=(
+      const SearchGeolocationDisclosureInfoBarDelegate&) = delete;
+
   ~SearchGeolocationDisclosureInfoBarDelegate() override;
 
   // Create and show the infobar.
@@ -74,15 +79,13 @@ class SearchGeolocationDisclosureInfoBarDelegate
   GURL search_url_;
 
   // The pref service to record prefs in.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // The result of showing the disclosure.
   DisclosureResult result_;
 
   // The time the infobar was created.
   base::Time creation_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchGeolocationDisclosureInfoBarDelegate);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_SEARCH_PERMISSIONS_SEARCH_GEOLOCATION_DISCLOSURE_INFOBAR_DELEGATE_H_

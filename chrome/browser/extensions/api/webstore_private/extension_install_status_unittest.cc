@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
-#include "base/macros.h"
+#include "base/json/values_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -52,6 +51,10 @@ class ExtensionInstallStatusTest : public BrowserWithTestWindowTest {
  public:
   ExtensionInstallStatusTest() = default;
 
+  ExtensionInstallStatusTest(const ExtensionInstallStatusTest&) = delete;
+  ExtensionInstallStatusTest& operator=(const ExtensionInstallStatusTest&) =
+      delete;
+
   std::string GenerateArgs(const char* id) {
     return base::StringPrintf(R"(["%s"])", id);
   }
@@ -61,7 +64,7 @@ class ExtensionInstallStatusTest : public BrowserWithTestWindowTest {
   }
 
   void SetExtensionSettings(const std::string& settings_string) {
-    base::Optional<base::Value> settings =
+    absl::optional<base::Value> settings =
         base::JSONReader::Read(settings_string);
     ASSERT_TRUE(settings);
     SetPolicy(pref_names::kExtensionManagement,
@@ -80,15 +83,12 @@ class ExtensionInstallStatusTest : public BrowserWithTestWindowTest {
     for (const auto& id : ids) {
       base::Value request_data(base::Value::Type::DICTIONARY);
       request_data.SetKey(extension_misc::kExtensionRequestTimestamp,
-                          ::util::TimeToValue(base::Time::Now()));
+                          ::base::TimeToValue(base::Time::Now()));
       id_values->SetKey(id, std::move(request_data));
     }
     profile()->GetTestingPrefService()->SetUserPref(
         prefs::kCloudExtensionRequestIds, std::move(id_values));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallStatusTest);
 };
 
 TEST_F(ExtensionInstallStatusTest, ExtensionEnabled) {

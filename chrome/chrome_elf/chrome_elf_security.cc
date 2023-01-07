@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,77 @@
 #include <assert.h>
 #include <versionhelpers.h>  // windows.h must be before
 
+#include "base/check.h"
+#include "base/file_version_info.h"
+#include "base/logging.h"
+#include "base/threading/thread_checker.h"
+#include "base/win/current_module.h"
+
 #include "chrome/chrome_elf/chrome_elf_constants.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace elf_security {
+
+namespace {
+
+// Used to turn off validation in tests
+static bool g_validate_not_exe_for_testing = true;
+
+// Used to ensure we are calling a method defined in the correct module.
+// In particular, there are often issues where the exe version is called
+// instead of the dll version.
+void MaybeValidateNotCallingFromExe() {
+  HMODULE module;
+
+  // NULL returns the exe we're running in
+  DCHECK(::GetModuleHandleExW(0, NULL, &module));
+  DCHECK(CURRENT_MODULE() != module);
+}
+
+class ExtensionPointDisableSet {
+ public:
+  ~ExtensionPointDisableSet() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  }
+
+  ExtensionPointDisableSet(const ExtensionPointDisableSet&) = delete;
+  ExtensionPointDisableSet& operator=(const ExtensionPointDisableSet&) = delete;
+
+  static ExtensionPointDisableSet* GetInstance() {
+    static ExtensionPointDisableSet* instance = nullptr;
+    if (!instance) {
+      instance = new ExtensionPointDisableSet();
+    }
+
+    return instance;
+  }
+
+  void SetExtensionPointDisabled(bool set) {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    CHECK(!extension_point_disable_set_.has_value());
+    extension_point_disable_set_ = set;
+  }
+
+  bool GetExtensionPointDisabled() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+    if (extension_point_disable_set_.has_value())
+      return extension_point_disable_set_.value();
+
+    return false;
+  }
+
+ private:
+  ExtensionPointDisableSet() { DETACH_FROM_THREAD(thread_checker_); }
+
+  THREAD_CHECKER(thread_checker_);
+  absl::optional<bool> extension_point_disable_set_
+      GUARDED_BY_CONTEXT(thread_checker_);
+};
+
+}  // namespace
 
 void EarlyBrowserSecurity() {
   typedef decltype(SetProcessMitigationPolicy)* SetProcessMitigationPolicyFunc;
@@ -23,21 +89,23 @@ void EarlyBrowserSecurity() {
   NTSTATUS ret_val = STATUS_SUCCESS;
   HANDLE handle = INVALID_HANDLE_VALUE;
 
-  // Check for kRegistrySecurityFinchPath.  If it exists,
-  // we do NOT disable extension points.  (Emergency off flag.)
-  if (nt::OpenRegKey(nt::HKCU,
-                     install_static::GetRegistryPath()
-                         .append(elf_sec::kRegSecurityFinchKeyName)
-                         .c_str(),
-                     KEY_QUERY_VALUE, &handle, &ret_val)) {
-    nt::CloseRegKey(handle);
+  // Check for kRegBrowserExtensionPointKeyName. We only disable extension
+  // points when this exists, for devices that have been vetted by our
+  // heuristic.
+  if (!nt::OpenRegKey(nt::HKCU,
+                      install_static::GetRegistryPath()
+                          .append(elf_sec::kRegBrowserExtensionPointKeyName)
+                          .c_str(),
+                      KEY_QUERY_VALUE, &handle, &ret_val)) {
+#ifdef _DEBUG
+    // The only failure expected is for the path not existing.
+    if (ret_val != STATUS_OBJECT_NAME_NOT_FOUND)
+      assert(false);
+#endif
     return;
   }
-#ifdef _DEBUG
-  // The only failure expected is for the path not existing.
-  if (ret_val != STATUS_OBJECT_NAME_NOT_FOUND)
-    assert(false);
-#endif
+
+  nt::CloseRegKey(handle);
 
   if (::IsWindows8OrGreater()) {
     SetProcessMitigationPolicyFunc set_process_mitigation_policy =
@@ -50,8 +118,21 @@ void EarlyBrowserSecurity() {
       policy.DisableExtensionPoints = true;
       set_process_mitigation_policy(ProcessExtensionPointDisablePolicy, &policy,
                                     sizeof(policy));
+      ExtensionPointDisableSet::GetInstance()->SetExtensionPointDisabled(true);
     }
   }
   return;
 }
+
+void ValidateExeForTesting(bool on) {
+  g_validate_not_exe_for_testing = on;
+}
+
+bool IsExtensionPointDisableSet() {
+  if (g_validate_not_exe_for_testing)
+    MaybeValidateNotCallingFromExe();
+
+  return ExtensionPointDisableSet::GetInstance()->GetExtensionPointDisabled();
+}
+
 }  // namespace elf_security

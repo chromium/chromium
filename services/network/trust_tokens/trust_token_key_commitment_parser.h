@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,8 @@ extern const char kTrustTokenKeyCommitmentProtocolVersionField[];
 extern const char kTrustTokenKeyCommitmentIDField[];
 // "Batch size" (number of blinded tokens to provide per issuance request):
 extern const char kTrustTokenKeyCommitmentBatchsizeField[];
+// "keys" (dictionary of keys)
+extern const char kTrustTokenKeyCommitmentKeysField[];
 // Each issuance key's expiry timestamp:
 extern const char kTrustTokenKeyCommitmentExpiryField[];
 // Each issuance key's key material:

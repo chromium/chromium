@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ bool CascadeResolver::InCycle() const {
 wtf_size_t CascadeResolver::Find(const CSSProperty& property) const {
   wtf_size_t index = 0;
   for (const CSSProperty* p : stack_) {
-    if (p->GetCSSPropertyName() == property.GetCSSPropertyName())
+    if (p->HasEqualCSSPropertyName(property))
       return index;
     ++index;
   }

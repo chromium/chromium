@@ -36,23 +36,6 @@ Modifications:
 - Renamed __CFAllocator to ChromeCFAllocatorLeopards (from CF-550) and to
   ChromeCFAllocatorLions (from CF-635) to avoid possible name conflicts.
 
-cssmapplePriv.h from:
-http://www.opensource.apple.com/source/libsecurity_cssm/libsecurity_cssm-31536/lib/cssmapplePriv.h
-
-Warning: Technically, this is a private Apple header, and as such provides no
-guarantee for API stability. However, the use of this header is the only way
-to implement OCSP checking per Apple's public documentation on the usage of
-their Trust Policy Module. Further, the use of this private header is the
-recommended approach from Apple for modifying OCSP policies.
-
-See: http://developer.apple.com/documentation/Security/Reference/SecAppleTrustPolicyModuleSpec/Apple_Trust_Policy_Module_Functional_Specification.pdf
-and http://lists.apple.com/archives/apple-cdsa/2008/Aug/msg00008.html
-
-Modifications:
-- Removed unneeded definitions for internal Apple CSP DL enums and structs
-- Added a suppression for the warning "-Wdeprecated-declarations" since CSSM
-  APIs are deprecated since OSX 10.7.
-
 dnsinfo.h from:
 http://www.opensource.apple.com/source/configd/configd-453.19/dnsinfo/dnsinfo.h
 

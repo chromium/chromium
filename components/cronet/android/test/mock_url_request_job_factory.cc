@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "components/cronet/android/cronet_tests_jni_headers/MockUrlRequestJobFactory_jni.h"
 #include "components/cronet/android/test/cronet_test_util.h"
 #include "components/cronet/android/test/url_request_intercepting_job_factory.h"
@@ -39,7 +40,7 @@ class UrlInterceptorJobFactoryHandle {
     DCHECK(
         TestUtil::GetTaskRunner(jcontext_adapter_)->BelongsToCurrentThread());
     TestUtil::GetURLRequestContext(jcontext_adapter_)
-        ->set_job_factory(old_job_factory_);
+        ->SetJobFactoryForTesting(old_job_factory_);  // IN-TEST
   }
 
   void ShutDown() {
@@ -55,9 +56,10 @@ class UrlInterceptorJobFactoryHandle {
         TestUtil::GetURLRequestContext(jcontext_adapter_);
     old_job_factory_ = request_context->job_factory();
     new_job_factory_.reset(new URLRequestInterceptingJobFactory(
-        const_cast<net::URLRequestJobFactory*>(old_job_factory_),
+        const_cast<net::URLRequestJobFactory*>(old_job_factory_.get()),
         net::URLRequestFilter::GetInstance()));
-    request_context->set_job_factory(new_job_factory_.get());
+    request_context->SetJobFactoryForTesting(  // IN-TEST
+        new_job_factory_.get());
   }
 
   void ShutdownOnNetworkThread() { delete this; }
@@ -65,7 +67,7 @@ class UrlInterceptorJobFactoryHandle {
   // The URLRequestContextAdapater this object intercepts from.
   const jlong jcontext_adapter_;
   // URLRequestJobFactory previously used in URLRequestContext.
-  const net::URLRequestJobFactory* old_job_factory_;
+  raw_ptr<const net::URLRequestJobFactory> old_job_factory_;
   // URLRequestJobFactory inserted during tests to intercept URLRequests with
   // libcronet's URLRequestFilter.
   std::unique_ptr<URLRequestInterceptingJobFactory> new_job_factory_;

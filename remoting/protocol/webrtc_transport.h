@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,31 +11,29 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "crypto/hmac.h"
+#include "remoting/base/constants.h"
 #include "remoting/base/session_options.h"
 #include "remoting/protocol/peer_connection_controls.h"
 #include "remoting/protocol/session_options_provider.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/webrtc_data_stream_adapter.h"
-#include "remoting/protocol/webrtc_dummy_video_encoder.h"
 #include "remoting/protocol/webrtc_event_log_data.h"
 #include "remoting/signaling/signal_strategy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
+#include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 
 namespace base {
-
 class Watchdog;
-
 }  // namespace base
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 class TransportContext;
 class MessagePipe;
@@ -74,25 +72,30 @@ class WebrtcTransport : public Transport,
 
     // Called when an incoming media stream is added or removed.
     virtual void OnWebrtcTransportMediaStreamAdded(
-        scoped_refptr<webrtc::MediaStreamInterface> stream) = 0;
+        rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) = 0;
     virtual void OnWebrtcTransportMediaStreamRemoved(
-        scoped_refptr<webrtc::MediaStreamInterface> stream) = 0;
+        rtc::scoped_refptr<webrtc::MediaStreamInterface> stream) = 0;
 
     // Called when the transport route changes (for example, from relayed to
     // direct connection). Also called on initial connection.
     virtual void OnWebrtcTransportRouteChanged(const TransportRoute& route) = 0;
   };
 
-  WebrtcTransport(rtc::Thread* worker_thread,
-                  scoped_refptr<TransportContext> transport_context,
-                  EventHandler* event_handler);
+  // |video_encoder_factory| can be nullptr if the connection is not used for
+  // sending video.
+  WebrtcTransport(
+      rtc::Thread* worker_thread,
+      scoped_refptr<TransportContext> transport_context,
+      std::unique_ptr<webrtc::VideoEncoderFactory> video_encoder_factory,
+      EventHandler* event_handler);
+
+  WebrtcTransport(const WebrtcTransport&) = delete;
+  WebrtcTransport& operator=(const WebrtcTransport&) = delete;
+
   ~WebrtcTransport() override;
 
   webrtc::PeerConnectionInterface* peer_connection();
   webrtc::PeerConnectionFactoryInterface* peer_connection_factory();
-  WebrtcDummyVideoEncoderFactory* video_encoder_factory() {
-    return video_encoder_factory_;
-  }
   WebrtcAudioModule* audio_module();
   WebrtcEventLogData* rtc_event_log() { return &rtc_event_log_; }
 
@@ -110,8 +113,8 @@ class WebrtcTransport : public Transport,
   const SessionOptions& session_options() const override;
 
   // PeerConnectionControls implementations.
-  void SetPreferredBitrates(base::Optional<int> min_bitrate_bps,
-                            base::Optional<int> max_bitrate_bps) override;
+  void SetPreferredBitrates(absl::optional<int> min_bitrate_bps,
+                            absl::optional<int> max_bitrate_bps) override;
   void RequestIceRestart() override;
   void RequestSdpRestart() override;
 
@@ -187,7 +190,7 @@ class WebrtcTransport : public Transport,
 
   // Returns the min (first element) and max (second element) bitrate for this
   // connection, taking into account any relay bitrate cap and client overrides.
-  // The default range is [0, default max bixrate]. Client overrides that go
+  // The default range is [0, default max bitrate]. Client overrides that go
   // beyond this bound or exceed the relay server's max bitrate will be ignored.
   std::tuple<int, int> BitratesForConnection();
 
@@ -196,9 +199,11 @@ class WebrtcTransport : public Transport,
   // changes.
   void SetPeerConnectionBitrates(int min_bitrate_bps, int max_bitrate_bps);
 
-  // Sets bitrates on the (video) sender. Called when the sender is created, but
-  // also called if the relay status changes.
-  void SetSenderBitrates(int min_bitrate_bps, int max_bitrate_bps);
+  // Sets bitrates on the (video) sender. Called when a video sender is created,
+  // but also called if the relay status changes.
+  void SetSenderBitrates(rtc::scoped_refptr<webrtc::RtpSenderInterface> sender,
+                         int min_bitrate_bps,
+                         int max_bitrate_bps);
 
   void RequestRtcStats();
   void RequestNegotiation();
@@ -216,30 +221,22 @@ class WebrtcTransport : public Transport,
       std::unique_ptr<PeerConnectionWrapper> peer_connection_wrapper,
       base::Time start_time);
 
-  // Returns the VideoSender for this connection, or nullptr if it hasn't
-  // been created yet.
-  rtc::scoped_refptr<webrtc::RtpSenderInterface> GetVideoSender();
-
   void StartRtcEventLogging();
   void StopRtcEventLogging();
 
-  base::ThreadChecker thread_checker_;
-
   scoped_refptr<TransportContext> transport_context_;
-  EventHandler* event_handler_ = nullptr;
+  raw_ptr<EventHandler> event_handler_ = nullptr;
   SendTransportInfoCallback send_transport_info_callback_;
 
   crypto::HMAC handshake_hmac_;
 
   std::unique_ptr<PeerConnectionWrapper> peer_connection_wrapper_;
 
-  WebrtcDummyVideoEncoderFactory* video_encoder_factory_;
-
   bool negotiation_pending_ = false;
 
   bool connected_ = false;
 
-  base::Optional<bool> connection_relayed_;
+  absl::optional<bool> connection_relayed_;
 
   std::string transport_protocol_;
 
@@ -255,8 +252,6 @@ class WebrtcTransport : public Transport,
 
   SessionOptions session_options_;
 
-  rtc::scoped_refptr<webrtc::RtpTransceiverInterface> video_transceiver_;
-
   // Track the data channels so we can make sure they are closed before we
   // close the peer connection.  This prevents RTCErrors being thrown on the
   // other side of the WebRTC connection.
@@ -265,18 +260,17 @@ class WebrtcTransport : public Transport,
 
   // Preferred bitrates set by the client. nullopt if the client has not
   // provided any preferred bitrates.
-  base::Optional<int> preferred_min_bitrate_bps_;
-  base::Optional<int> preferred_max_bitrate_bps_;
+  absl::optional<int> preferred_min_bitrate_bps_;
+  absl::optional<int> preferred_max_bitrate_bps_;
 
   // Stores event log data generated by WebRTC for the PeerConnection.
   WebrtcEventLogData rtc_event_log_;
 
-  base::WeakPtrFactory<WebrtcTransport> weak_factory_{this};
+  THREAD_CHECKER(thread_checker_);
 
-  DISALLOW_COPY_AND_ASSIGN(WebrtcTransport);
+  base::WeakPtrFactory<WebrtcTransport> weak_factory_{this};
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_TRANSPORT_H_

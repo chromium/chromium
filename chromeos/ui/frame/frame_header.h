@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,14 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/optional.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
+#include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer_animation_observer.h"
+#include "ui/compositor/layer_observer.h"
 #include "ui/views/window/frame_caption_button.h"
 
 namespace ash {
@@ -35,6 +38,7 @@ class LayerTreeOwner;
 
 namespace views {
 enum class CaptionButtonLayoutSize;
+class NonClientFrameView;
 class View;
 class Widget;
 }  // namespace views
@@ -63,6 +67,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
     // views::Views:
     std::unique_ptr<ui::Layer> RecreateLayer() override;
+    void LayerDestroyed(ui::Layer* layer) override;
 
     // ViewObserver:
     void OnChildViewReordered(views::View* observed_view,
@@ -75,13 +80,22 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
    private:
     void StopAnimation();
 
-    views::View* parent_;
+    raw_ptr<views::View> parent_;
     std::unique_ptr<ui::LayerTreeOwner> layer_owner_;
   };
 
   enum Mode { MODE_ACTIVE, MODE_INACTIVE };
 
   static FrameHeader* Get(views::Widget* widget);
+
+  // Moves the client view in front of the frame animator view. This allows the
+  // frame animator view to still be at the bottom of the z-order while also
+  // keeping the rest of the frame view's children on top of the client view.
+  static views::View::Views GetAdjustedChildrenInZOrder(
+      views::NonClientFrameView* frame_view);
+
+  FrameHeader(const FrameHeader&) = delete;
+  FrameHeader& operator=(const FrameHeader&) = delete;
 
   virtual ~FrameHeader();
 
@@ -97,6 +111,9 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   // Performs layout for the header.
   void LayoutHeader();
+
+  // Invalidate layout for the header.
+  void InvalidateLayout();
 
   // Get the height of the header.
   int GetHeaderHeight() const;
@@ -117,9 +134,13 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   // Called when frame show state is changed.
   void OnShowStateChanged(ui::WindowShowState show_state);
 
+  void OnFloatStateChanged();
+
   void SetLeftHeaderView(views::View* view);
   void SetBackButton(views::FrameCaptionButton* view);
+  void SetCenterButton(chromeos::FrameCenterButton* view);
   views::FrameCaptionButton* GetBackButton() const;
+  chromeos::FrameCenterButton* GetCenterButton() const;
   const chromeos::CaptionButtonModel* GetCaptionButtonModel() const;
 
   // Updates the frame header painting to reflect a change in frame colors.
@@ -180,15 +201,18 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
 
   // The widget that the caption buttons act on. This can be different from
   // |view_|'s widget.
-  views::Widget* target_widget_;
+  raw_ptr<views::Widget> target_widget_;
 
   // The view into which |this| paints.
-  views::View* view_;
-  views::FrameCaptionButton* back_button_ = nullptr;  // May remain nullptr.
-  views::View* left_header_view_ = nullptr;           // May remain nullptr.
-  chromeos::FrameCaptionButtonContainerView* caption_button_container_ =
+  raw_ptr<views::View> view_;
+  raw_ptr<views::FrameCaptionButton> back_button_ =
+      nullptr;                                       // May remain nullptr.
+  raw_ptr<views::View> left_header_view_ = nullptr;  // May remain nullptr.
+  raw_ptr<chromeos::FrameCaptionButtonContainerView> caption_button_container_ =
       nullptr;
-  FrameAnimatorView* frame_animator_ = nullptr;  // owned by view tree.
+  raw_ptr<FrameAnimatorView> frame_animator_ = nullptr;  // owned by view tree.
+  raw_ptr<chromeos::FrameCenterButton> center_button_ =
+      nullptr;  // May remain nullptr.
 
   // The height of the header to paint.
   int painted_height_ = 0;
@@ -200,8 +224,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader {
   Mode mode_ = MODE_INACTIVE;
 
   std::u16string frame_text_override_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameHeader);
 };
 
 }  // namespace chromeos

@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test if fillText can be used with a solid display-p3 color assert_array_equals: expected property 0 to be 255 but got 234 (expected array [255, 0, 0, 255] got [234, 51, 35, 255])
+Harness: the test ran to completion.
+

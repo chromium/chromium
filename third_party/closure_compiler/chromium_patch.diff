@@ -976,3 +976,131 @@ index 41b2f5b485c7..7110aaf8f223 100644
  /**
   * @const
   * @see https://developer.chrome.com/apps/syncFileSystem
+
+diff --git a/third_party/closure_compiler/externs/chrome_extensions.js b/third_party/closure_compiler/externs/chrome_extensions.js
+index bd0fd2e51a3bb..12be61c3f581c 100644
+--- a/third_party/closure_compiler/externs/chrome_extensions.js
++++ b/third_party/closure_compiler/externs/chrome_extensions.js
+@@ -10607,122 +10607,6 @@ chrome.inlineInstallPrivate = {};
+ chrome.inlineInstallPrivate.install = function(id, opt_callback) {};
+ 
+ 
+-/**
+- * @see https://cs.chromium.org/chromium/src/chrome/common/extensions/api/input_method_private.json
+- */
+-chrome.inputMethodPrivate = {};
+-
+-/**
+- * @enum {string}
+- */
+-chrome.inputMethodPrivate.InputModeType = {
+-  NO_KEYBOARD: '',
+-  TEXT: '',
+-  TEL: '',
+-  URL: '',
+-  EMAIL: '',
+-  NUMERIC: '',
+-  DECIMAL: '',
+-  SEARCH: '',
+-};
+-
+-
+-/**
+- * @enum {string}
+- */
+-chrome.inputMethodPrivate.InputContextType = {
+-  TEXT: '',
+-  SEARCH: '',
+-  TEL: '',
+-  URL: '',
+-  EMAIL: '',
+-  NUMBER: '',
+-  PASSWORD: '',
+-};
+-
+-
+-/**
+- * @enum {string}
+- */
+-chrome.inputMethodPrivate.AutoCapitalizeType = {
+-  OFF: '',
+-  CHARACTERS: '',
+-  WORDS: '',
+-  SENTENCES: '',
+-};
+-
+-
+-/**
+- * @enum {string}
+- */
+-chrome.inputMethodPrivate.FocusReason = {
+-  MOUSE: '',
+-  TOUCH: '',
+-  PEN: '',
+-  OTHER: '',
+-};
+-
+-
+-/** @constructor */
+-chrome.inputMethodPrivate.InputContext = function() {};
+-
+-
+-/** @type {number} */
+-chrome.inputMethodPrivate.InputContext.prototype.contextID;
+-
+-/** @type {chrome.inputMethodPrivate.InputModeType} */
+-chrome.inputMethodPrivate.InputContext.prototype.mode;
+-
+-/** @type {chrome.inputMethodPrivate.InputContextType} */
+-chrome.inputMethodPrivate.InputContext.prototype.type;
+-
+-
+-/** @type {boolean} */
+-chrome.inputMethodPrivate.InputContext.prototype.autoCorrect;
+-
+-
+-/** @type {boolean} */
+-chrome.inputMethodPrivate.InputContext.prototype.autoComplete;
+-
+-
+-/** @type {chrome.inputMethodPrivate.AutoCapitalizeType} */
+-chrome.inputMethodPrivate.InputContext.prototype.autoCapitalize;
+-
+-
+-/** @type {boolean} */
+-chrome.inputMethodPrivate.InputContext.prototype.spellCheck;
+-
+-
+-/** @type {boolean} */
+-chrome.inputMethodPrivate.InputContext.prototype.shouldDoLearning;
+-
+-
+-/** @type {chrome.inputMethodPrivate.FocusReason} */
+-chrome.inputMethodPrivate.InputContext.prototype.focusReason;
+-
+-
+-/** @type {boolean} */
+-chrome.inputMethodPrivate.InputContext.prototype.hasBeenPassword;
+-
+-
+-/**
+- * Commits the text currently being composed without moving the selected text
+- * range. This is a no-op if the context is incorrect.
+- * @param {{
+- *  contextID: number
+- * }} parameters Parameters for the finishComposingText API call.
+- * @param {function(): void=} callback Called when the operation completes.
+- */
+-chrome.inputMethodPrivate.finishComposingText = function(
+-    parameters, callback) {};
+-
+-
+-/**
+- * Resets the current engine to its initial state. Fires an OnReset event.
+- */
+-chrome.inputMethodPrivate.reset = function() {};
+-
+-
+ /**
+  * @const
+  * @see https://goo.gl/7dvJFW

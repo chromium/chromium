@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 #include <inttypes.h>
+#include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <sys/socket.h>
@@ -169,7 +170,7 @@ sandbox::SeatbeltExecServer::CreateFromArgumentsResult::
 sandbox::SeatbeltExecServer::CreateFromArgumentsResult
 SeatbeltExecServer::CreateFromArguments(const char* executable_path,
                                         int argc,
-                                        char** argv) {
+                                        const char* const* argv) {
   CreateFromArgumentsResult result;
   int seatbelt_client_fd = -1;
   for (int i = 1; i < argc; ++i) {
@@ -191,7 +192,7 @@ SeatbeltExecServer::CreateFromArguments(const char* executable_path,
     return result;
   }
 
-  char full_exec_path[MAXPATHLEN];
+  char full_exec_path[PATH_MAX];
   if (realpath(executable_path, full_exec_path) == NULL) {
     logging::PError("realpath");
     return result;

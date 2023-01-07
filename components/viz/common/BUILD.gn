@@ -1,14 +1,38 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//components/viz/common/debugger/viz_debugger.gni")
 import("//components/viz/viz.gni")
 import("//gpu/vulkan/features.gni")
 import("//skia/features.gni")
 import("//testing/test.gni")
 
+import("//third_party/inspector_protocol/inspector_protocol.gni")
+
 source_set("resource_format") {
-  sources = [ "resources/resource_format.h" ]
+  sources = [
+    "resources/resource_format.h",
+    "resources/shared_image_format.cc",
+    "resources/shared_image_format.h",
+  ]
+  public_deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+always_enable_blending_for_primary = is_castos || is_cast_android
+assert(enable_cast_overlay_strategy || !always_enable_blending_for_primary)
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "USE_VIZ_DEBUGGER=$use_viz_debugger",
+    "ENABLE_CAST_OVERLAY_STRATEGY=$enable_cast_overlay_strategy",
+    "ALWAYS_ENABLE_BLENDING_FOR_PRIMARY=$always_enable_blending_for_primary",
+  ]
 }
 
 viz_component("resource_format_utils") {
@@ -29,10 +53,11 @@ viz_component("resource_format_utils") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//cc/base:base",
     "//gpu/vulkan:buildflags",
     "//skia",
-    "//third_party/dawn/src/dawn:dawncpp_headers",
+    "//third_party/dawn/include/dawn:cpp_headers",
     "//ui/gfx:buffer_types",
     "//ui/gfx/geometry:geometry",
   ]
@@ -44,7 +69,7 @@ viz_component("resource_format_utils") {
   }
 }
 
-# TODO(sgilhuly): To reduce link times, merge these context provider components
+# TODO(rivr): To reduce link times, merge these context provider components
 # into a single gr_context_provider component.
 if (is_mac) {
   viz_component("metal_context_provider") {
@@ -124,14 +149,14 @@ if (skia_use_dawn) {
 
     public_deps = [
       "//skia",
-      "//third_party/dawn/src/dawn:dawn_headers",
+      "//third_party/dawn/include/dawn:headers",
     ]
 
     deps = [
       "//base",
-      "//third_party/dawn/src/dawn:dawn_proc",
-      "//third_party/dawn/src/dawn:dawncpp",
-      "//third_party/dawn/src/dawn_native",
+      "//third_party/dawn/src/dawn:cpp",
+      "//third_party/dawn/src/dawn:proc",
+      "//third_party/dawn/src/dawn/native",
     ]
   }
 }
@@ -158,6 +183,8 @@ viz_component("common") {
     "frame_sinks/begin_frame_args.h",
     "frame_sinks/begin_frame_source.cc",
     "frame_sinks/begin_frame_source.h",
+    "frame_sinks/blit_request.cc",
+    "frame_sinks/blit_request.h",
     "frame_sinks/copy_output_request.cc",
     "frame_sinks/copy_output_request.h",
     "frame_sinks/copy_output_result.cc",
@@ -168,10 +195,6 @@ viz_component("common") {
     "frame_sinks/delay_based_time_source.h",
     "frame_timing_details.h",
     "frame_timing_details_map.h",
-    "gl_i420_converter.cc",
-    "gl_i420_converter.h",
-    "gl_scaler.cc",
-    "gl_scaler.h",
     "gpu/context_cache_controller.cc",
     "gpu/context_cache_controller.h",
     "gpu/context_lost_observer.h",
@@ -220,12 +243,12 @@ viz_component("common") {
     "quads/render_pass_io.cc",
     "quads/render_pass_io.h",
     "quads/selection.h",
+    "quads/shared_element_draw_quad.cc",
+    "quads/shared_element_draw_quad.h",
     "quads/shared_quad_state.cc",
     "quads/shared_quad_state.h",
     "quads/solid_color_draw_quad.cc",
     "quads/solid_color_draw_quad.h",
-    "quads/stream_video_draw_quad.cc",
-    "quads/stream_video_draw_quad.h",
     "quads/surface_draw_quad.cc",
     "quads/surface_draw_quad.h",
     "quads/texture_draw_quad.cc",
@@ -248,14 +271,15 @@ viz_component("common") {
     "resources/returned_resource.h",
     "resources/shared_bitmap.cc",
     "resources/shared_bitmap.h",
-    "resources/single_release_callback.cc",
-    "resources/single_release_callback.h",
     "resources/transferable_resource.cc",
     "resources/transferable_resource.h",
+    "shared_element_resource_id.cc",
+    "shared_element_resource_id.h",
     "skia_helper.cc",
     "skia_helper.h",
     "surfaces/child_local_surface_id_allocator.cc",
     "surfaces/child_local_surface_id_allocator.h",
+    "surfaces/frame_sink_bundle_id.h",
     "surfaces/frame_sink_id.cc",
     "surfaces/frame_sink_id.h",
     "surfaces/frame_sink_id_allocator.cc",
@@ -264,6 +288,8 @@ viz_component("common") {
     "surfaces/local_surface_id.h",
     "surfaces/parent_local_surface_id_allocator.cc",
     "surfaces/parent_local_surface_id_allocator.h",
+    "surfaces/region_capture_bounds.cc",
+    "surfaces/region_capture_bounds.h",
     "surfaces/scoped_surface_id_allocator.cc",
     "surfaces/scoped_surface_id_allocator.h",
     "surfaces/subtree_capture_id.cc",
@@ -275,10 +301,14 @@ viz_component("common") {
     "surfaces/surface_info.h",
     "surfaces/surface_range.cc",
     "surfaces/surface_range.h",
+    "surfaces/video_capture_target.cc",
+    "surfaces/video_capture_target.h",
     "switches.cc",
     "switches.h",
     "traced_value.cc",
     "traced_value.h",
+    "transition_utils.cc",
+    "transition_utils.h",
     "vertical_scroll_direction.h",
     "viz_common_export.h",
     "viz_utils.cc",
@@ -287,7 +317,6 @@ viz_component("common") {
 
   deps = [
     "//base",
-    "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
 
     # TODO(staraz): cc/base was added because SharedQuadState includes
@@ -308,8 +337,8 @@ viz_component("common") {
     "//third_party/libyuv",
     "//ui/gfx",
     "//ui/gfx:color_space",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
     "//ui/gl",
     "//ui/latency",
   ]
@@ -318,6 +347,10 @@ viz_component("common") {
     sources += [
       "display/use_layered_window.cc",
       "display/use_layered_window.h",
+      "overlay_state/win/overlay_state_aggregator.cc",
+      "overlay_state/win/overlay_state_aggregator.h",
+      "overlay_state/win/overlay_state_service.cc",
+      "overlay_state/win/overlay_state_service.h",
     ]
 
     deps += [ "//ui/base" ]
@@ -331,12 +364,14 @@ viz_component("common") {
   }
 
   public_deps = [
+    ":buildflags",
     ":resource_format_utils",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
     "//mojo/public/cpp/bindings",
     "//skia",
   ]
+
   if (enable_vulkan) {
     public_deps += [ ":vulkan_context_provider" ]
   }
@@ -371,23 +406,11 @@ viz_source_set("unit_tests") {
     "yuv_readback_unittest.cc",
   ]
 
-  if (enable_gl_backend_tests) {
-    sources += [
-      "gl_i420_converter_pixeltest.cc",
-      "gl_i420_converter_unittest.cc",
-      "gl_scaler_overscan_pixeltest.cc",
-      "gl_scaler_pixeltest.cc",
-      "gl_scaler_shader_pixeltest.cc",
-      "gl_scaler_test_util.cc",
-      "gl_scaler_test_util.h",
-      "gl_scaler_unittest.cc",
-    ]
-  }
-
   if (enable_vulkan) {
     sources += [ "gpu/vulkan_in_process_context_provider_unittest.cc" ]
   }
   deps = [
+    ":buildflags",
     ":common",
     "//base/test:test_support",
     "//cc:test_support",
@@ -401,9 +424,18 @@ viz_source_set("unit_tests") {
     "//testing/gtest",
     "//ui/gfx",
     "//ui/gfx:color_space",
+    "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/latency",
   ]
+
+  if (is_win) {
+    sources += [ "overlay_state/win/overlay_state_service_unittest.cc" ]
+    deps += [
+      "//components/viz/test:test_suite",
+      "//media/mojo/mojom",
+    ]
+  }
 }
 
 viz_source_set("perf_tests") {
@@ -422,7 +454,11 @@ viz_source_set("perf_tests") {
 
 if (is_android) {
   android_library("common_java") {
-    deps = [ "//base:base_java" ]
+    deps = [
+      "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
+    ]
     sources = [
       "java/src/org/chromium/components/viz/common/VizSwitches.java",
       "java/src/org/chromium/components/viz/common/display/DeJellyUtils.java",

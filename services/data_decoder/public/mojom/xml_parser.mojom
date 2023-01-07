@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,14 @@ interface XmlParser {
   const string kElementType = "element";
   const string kTextNodeType = "text";
   const string kCDataNodeType = "cdata";
+
+  enum WhitespaceBehavior {
+    // Ignore any whitespace in the parsed XML.
+    kIgnore,
+    // Preserve significant whitespace in the parsed XML. "Significant"
+    // whitespace is determined by libxml.
+    kPreserveSignificant,
+  };
 
   // Parses the input XML and returns a Value with its content. If parsing
   // failed that value is empty and an error is set:
@@ -87,5 +95,6 @@ interface XmlParser {
   // Note that the client library provides convenience methods for accessing
   // data from the returned base::Value dictionary structure (see
   // safe_parser_xml.h).
-  Parse(string xml) => (mojo_base.mojom.Value? result, string? error);
+  Parse(string xml, WhitespaceBehavior whitespace_behavior) =>
+      (mojo_base.mojom.Value? result, string? error);
 };

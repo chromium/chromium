@@ -1,6 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include <memory>
 
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
@@ -13,7 +15,8 @@
 class SessionStartupPrefTest : public testing::Test {
  public:
   void SetUp() override {
-    pref_service_.reset(new sync_preferences::TestingPrefServiceSyncable);
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     SessionStartupPref::RegisterProfilePrefs(registry());
     registry()->RegisterBooleanPref(prefs::kHomePageIsNewTabPage, true);
   }
@@ -27,8 +30,8 @@ class SessionStartupPrefTest : public testing::Test {
 
 TEST_F(SessionStartupPrefTest, URLListIsFixedUp) {
   auto url_pref_list = std::make_unique<base::ListValue>();
-  url_pref_list->Set(0, std::make_unique<base::Value>("google.com"));
-  url_pref_list->Set(1, std::make_unique<base::Value>("chromium.org"));
+  url_pref_list->Append("google.com");
+  url_pref_list->Append("chromium.org");
   pref_service_->SetUserPref(prefs::kURLsToRestoreOnStartup,
                              std::move(url_pref_list));
 
@@ -41,14 +44,14 @@ TEST_F(SessionStartupPrefTest, URLListIsFixedUp) {
 
 TEST_F(SessionStartupPrefTest, URLListManagedOverridesUser) {
   auto url_pref_list1 = std::make_unique<base::ListValue>();
-  url_pref_list1->Set(0, std::make_unique<base::Value>("chromium.org"));
+  url_pref_list1->Append("chromium.org");
   pref_service_->SetUserPref(prefs::kURLsToRestoreOnStartup,
                              std::move(url_pref_list1));
 
   auto url_pref_list2 = std::make_unique<base::ListValue>();
-  url_pref_list2->Set(0, std::make_unique<base::Value>("chromium.org"));
-  url_pref_list2->Set(1, std::make_unique<base::Value>("chromium.org"));
-  url_pref_list2->Set(2, std::make_unique<base::Value>("chromium.org"));
+  url_pref_list2->Append("chromium.org");
+  url_pref_list2->Append("chromium.org");
+  url_pref_list2->Append("chromium.org");
   pref_service_->SetManagedPref(prefs::kURLsToRestoreOnStartup,
                                 std::move(url_pref_list2));
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,25 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/callback.h"
+#include "base/scoped_observation.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 
 // ScreenLockerTester provides a high-level API to test the lock screen.
-class ScreenLockerTester {
+// Must be created after the SessionManager is initialized.
+class ScreenLockerTester : public session_manager::SessionManagerObserver {
  public:
   ScreenLockerTester();
-  ~ScreenLockerTester();
+
+  ScreenLockerTester(const ScreenLockerTester&) = delete;
+  ScreenLockerTester& operator=(const ScreenLockerTester&) = delete;
+
+  ~ScreenLockerTester() override;
 
   // Synchronously lock the device.
   void Lock();
@@ -46,9 +54,23 @@ class ScreenLockerTester {
                            const std::string& password);
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenLockerTester);
+  // session_manager::SessionManagerObserver:
+  void OnSessionStateChanged() override;
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
+
+  base::OnceClosure on_lock_callback_;
+  base::OnceClosure on_unlock_callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::ScreenLockerTester;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_LOCK_SCREEN_LOCKER_TESTER_H_

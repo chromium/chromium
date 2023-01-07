@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/win/windows_version.h"
@@ -36,9 +35,9 @@ void OpenPrintersDialogCallback() {
 
 namespace printing {
 
-void PrinterManagerDialog::ShowPrinterManagerDialog(Profile* profile) {
+void PrinterManagerDialog::ShowPrinterManagerDialog() {
   if (base::win::GetVersion() >= base::win::Version::WIN10_RS1) {
-    platform_util::OpenExternal(profile, GURL("ms-settings:printers"));
+    platform_util::OpenExternal(GURL("ms-settings:printers"));
   } else {
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},

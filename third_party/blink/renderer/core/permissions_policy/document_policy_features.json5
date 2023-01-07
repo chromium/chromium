@@ -134,7 +134,6 @@
       document_policy_name: "js-profiling",
       value_type: "Bool",
       default_value: "false",
-      depends_on: ["ExperimentalJSProfiler"],
     },
     {
       name: "SyncXHR",

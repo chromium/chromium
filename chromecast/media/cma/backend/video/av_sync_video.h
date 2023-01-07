@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/timer/timer.h"
 #include "chromecast/media/cma/backend/av_sync.h"
@@ -23,6 +22,10 @@ class RateAdjuster;
 class AvSyncVideo : public AvSync {
  public:
   explicit AvSyncVideo(MediaPipelineBackendForMixer* const backend);
+
+  AvSyncVideo(const AvSyncVideo&) = delete;
+  AvSyncVideo& operator=(const AvSyncVideo&) = delete;
+
   ~AvSyncVideo() override;
 
   // AvSync implementation:
@@ -69,8 +72,6 @@ class AvSyncVideo : public AvSync {
 
   int64_t last_apts_value_ = INT64_MIN;
   int64_t last_apts_timestamp_ = INT64_MIN;
-
-  DISALLOW_COPY_AND_ASSIGN(AvSyncVideo);
 };
 
 }  // namespace media

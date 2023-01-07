@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,9 +28,7 @@ class FakePluginRegistryImpl : public mojom::blink::PluginRegistry {
   }
 
   // PluginRegistry
-  void GetPlugins(bool refresh,
-                  const scoped_refptr<const SecurityOrigin>& origin,
-                  GetPluginsCallback callback) override {
+  void GetPlugins(bool refresh, GetPluginsCallback callback) override {
     Vector<mojom::blink::PluginInfoPtr> plugins;
     {
       auto mime = mojom::blink::PluginMimeType::New();

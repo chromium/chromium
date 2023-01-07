@@ -1,4 +1,6 @@
 # WebXR Blink Module
+_For a more thorough/high level overview of the entire WebXR stack, please refer to
+[components/webxr](https://source.chromium.org/chromium/chromium/src/+/main:components/webxr/README.md)_
 
 The WebXR API enables Virtual Reality (VR) and Augmented Reality (AR) features on the Web.
 
@@ -15,4 +17,6 @@ WebXR modules:
  - [Anchors](https://immersive-web.github.io/anchors/)
  - [Lighting Estimation](https://immersive-web.github.io/lighting-estimation/)
 
-The Blink interfaces are supported by the backends implemented in chrome/browser/vr/ and device/vr/
+The Blink interfaces are supported by the backends implemented in
+[chrome/browser/vr/](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/vr) and
+[device/vr/](https://source.chromium.org/chromium/chromium/src/+/main:device/vr)

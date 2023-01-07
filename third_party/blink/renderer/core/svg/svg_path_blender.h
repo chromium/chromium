@@ -20,8 +20,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_BLENDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_BLENDER_H_
 
-#include "base/macros.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -35,6 +34,8 @@ class SVGPathBlender final {
   SVGPathBlender(SVGPathByteStreamSource* from_source,
                  SVGPathByteStreamSource* to_source,
                  SVGPathConsumer*);
+  SVGPathBlender(const SVGPathBlender&) = delete;
+  SVGPathBlender& operator=(const SVGPathBlender&) = delete;
 
   bool AddAnimatedPath(unsigned repeat_count);
   bool BlendAnimatedPath(float);
@@ -46,7 +47,6 @@ class SVGPathBlender final {
   SVGPathByteStreamSource* from_source_;
   SVGPathByteStreamSource* to_source_;
   SVGPathConsumer* consumer_;
-  DISALLOW_COPY_AND_ASSIGN(SVGPathBlender);
 };
 
 }  // namespace blink

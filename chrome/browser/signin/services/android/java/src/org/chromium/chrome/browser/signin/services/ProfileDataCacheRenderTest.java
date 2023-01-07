@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@ import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -20,6 +18,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.text.TextUtils;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -33,48 +32,49 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
+import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.ProfileDataSource;
+import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
+import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManagerJni;
-import org.chromium.components.signin.test.util.FakeProfileDataSource;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
- * Tests for ProfileDataCache image scaling. Leverages RenderTest instead of reimplementing
- * bitmap comparison to simplify access to the compared images on buildbots (via result_details).
+ * Tests for {@link ProfileDataCache} image scaling.
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@DisableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
-public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
+public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
     public static final String PROFILE_DATA_BATCH_NAME = "profile_data";
     public static final String ACCOUNT_EMAIL = "test@gmail.com";
+    private static final long NATIVE_IDENTITY_MANAGER = 10002L;
 
     @ClassParameter
     private static final List<ParameterSet> sClassParams =
@@ -89,127 +89,94 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SIGN_IN)
+                    .build();
 
     @Rule
-    public final Features.JUnitProcessor mProcessor = new Features.JUnitProcessor();
-
-    @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(new FakeProfileDataSource());
+    public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
     @Rule
     public final JniMocker mocker = new JniMocker();
 
-    @Mock
-    private Profile mProfileMock;
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock
-    private IdentityServicesProvider mIdentityServicesProviderMock;
+    private AccountTrackerService mAccountTrackerServiceMock;
 
     @Mock
     private IdentityManager.Natives mIdentityManagerNativeMock;
 
-    @Mock
-    private ProfileDataCache.Observer mObserverMock;
-
-    private final IdentityManager mIdentityManager =
-            new IdentityManager(0 /* nativeIdentityManager */, null /* OAuth2TokenService */);
-
-    private final AccountInfo mAccountInfoWithAvatar =
-            new AccountInfo(new CoreAccountId("gaia-id-test"), ACCOUNT_EMAIL, "gaia-id-test",
-                    "full name", "given name", createAvatar());
+    private final AccountInfo mAccountInfoWithAvatar = new AccountInfo(
+            new CoreAccountId("gaia-id-test"), ACCOUNT_EMAIL, "gaia-id-test", "full name",
+            "given name", createAvatar(), new AccountCapabilities(new HashMap<>()));
 
     private FrameLayout mContentView;
     private ImageView mImageView;
 
+    private IdentityManager mIdentityManager;
     private ProfileDataCache mProfileDataCache;
 
     @Before
     public void setUp() {
-        initMocks(this);
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
-        Profile.setLastUsedProfileForTesting(mProfileMock);
-        when(mIdentityServicesProviderMock.getIdentityManager(mProfileMock))
-                .thenReturn(mIdentityManager);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        AccountInfoService.init(mIdentityManager);
+        doAnswer(AdditionalAnswers.answerVoid(Runnable::run))
+                .when(mAccountTrackerServiceMock)
+                .seedAccountsIfNeeded(any(Runnable.class));
+
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mIdentityManager =
+                    IdentityManager.create(NATIVE_IDENTITY_MANAGER, null /* OAuth2TokenService */);
+
+            AccountInfoServiceProvider.init(mIdentityManager, mAccountTrackerServiceMock);
             Activity activity = getActivity();
             mContentView = new FrameLayout(activity);
             mImageView = new ChromeImageView(activity);
             mContentView.addView(mImageView, LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
             activity.setContentView(mContentView);
 
-            mProfileDataCache = new ProfileDataCache(getActivity(), mImageSize,
+            mProfileDataCache = new ProfileDataCache(activity, mImageSize,
                     /*badgeConfig=*/null);
-            // ProfileDataCache only populates the cache when an observer is added.
-            mProfileDataCache.addObserver(accountId -> {});
         });
     }
 
     @After
     public void tearDown() {
-        AccountInfoService.resetForTests();
-        IdentityServicesProvider.setInstanceForTests(null);
-        Profile.setLastUsedProfileForTesting(null);
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    public void testProfileDataWithAvatarFromIdentityManager() throws IOException {
-        when(mIdentityManagerNativeMock
-                        .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                                anyLong(), eq(ACCOUNT_EMAIL)))
-                .thenReturn(mAccountInfoWithAvatar);
-        mAccountManagerTestRule.addAccount(
-                new ProfileDataSource.ProfileData(ACCOUNT_EMAIL, null, "Full Name", "Given Name"));
-        TestThreadUtils.runOnUiThreadBlocking(() -> { checkImageIsScaled(ACCOUNT_EMAIL); });
-        mRenderTestRule.render(mImageView, "profile_data_cache_avatar" + mImageSize);
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    public void testProfileDataUpdatedFromIdentityManagerObserver() throws IOException {
-        mAccountManagerTestRule.addAccount(
-                new ProfileDataSource.ProfileData(ACCOUNT_EMAIL, null, "Full Name", "Given Name"));
-        mIdentityManager.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
-        TestThreadUtils.runOnUiThreadBlocking(() -> { checkImageIsScaled(ACCOUNT_EMAIL); });
-        mRenderTestRule.render(mImageView, "profile_data_cache_avatar" + mImageSize);
+        AccountInfoServiceProvider.resetForTests();
     }
 
     @Test
     @MediumTest
     @Feature("RenderTest")
     public void testProfileDataPopulatedFromIdentityManagerObserver() throws IOException {
-        mIdentityManager.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { checkImageIsScaled(mAccountInfoWithAvatar.getEmail()); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mIdentityManager.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
+            checkImageIsScaled(mAccountInfoWithAvatar.getEmail());
+        });
         mRenderTestRule.render(mImageView, "profile_data_cache_avatar" + mImageSize);
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
     @Feature("RenderTest")
     public void testProfileDataPopulatedWithoutGmsProfileDataSource() throws IOException {
-        when(mIdentityManagerNativeMock
-                        .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                                anyLong(), eq(ACCOUNT_EMAIL)))
+        when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
+                     anyLong(), eq(ACCOUNT_EMAIL)))
                 .thenReturn(mAccountInfoWithAvatar);
-        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL, mAccountInfoWithAvatar.getFullName(),
+                mAccountInfoWithAvatar.getGivenName(), mAccountInfoWithAvatar.getAccountImage());
 
-        mProfileDataCache = new ProfileDataCache(getActivity(), mImageSize, /*badgeConfig=*/null);
-        mProfileDataCache.disableGmsProfileDataSource();
-        // ProfileDataCache only populates the cache when an observer is added.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mProfileDataCache.addObserver(mObserverMock); });
-        // Certain classes like IdentityDiscController can trigger infinite loop if we populate
-        // the cache with an existing observer, details can be found in crbug/1183295.
-        verify(mObserverMock, never()).onProfileDataUpdated(any());
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mProfileDataCache =
+                    new ProfileDataCache(getActivity(), mImageSize, /*badgeConfig=*/null);
+        });
 
+        CriteriaHelper.pollUiThread(() -> {
+            return !TextUtils.isEmpty(
+                    mProfileDataCache.getProfileDataOrDefault(mAccountInfoWithAvatar.getEmail())
+                            .getFullName());
+        });
         final DisplayableProfileData profileData =
                 mProfileDataCache.getProfileDataOrDefault(mAccountInfoWithAvatar.getEmail());
         Assert.assertEquals(mAccountInfoWithAvatar.getFullName(), profileData.getFullName());
@@ -223,13 +190,14 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     @MediumTest
     @Feature("RenderTest")
     public void testNoProfileDataRemovedWithEmptyAccountInfo() throws IOException {
-        mIdentityManager.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
-        final AccountInfo emptyAccountInfo =
-                new AccountInfo(mAccountInfoWithAvatar.getId(), mAccountInfoWithAvatar.getEmail(),
-                        mAccountInfoWithAvatar.getGaiaId(), null, null, null);
-        mIdentityManager.onExtendedAccountInfoUpdated(emptyAccountInfo);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { checkImageIsScaled(mAccountInfoWithAvatar.getEmail()); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mIdentityManager.onExtendedAccountInfoUpdated(mAccountInfoWithAvatar);
+            final AccountInfo emptyAccountInfo = new AccountInfo(mAccountInfoWithAvatar.getId(),
+                    mAccountInfoWithAvatar.getEmail(), mAccountInfoWithAvatar.getGaiaId(), null,
+                    null, null, new AccountCapabilities(new HashMap<>()));
+            mIdentityManager.onExtendedAccountInfoUpdated(emptyAccountInfo);
+            checkImageIsScaled(mAccountInfoWithAvatar.getEmail());
+        });
         mRenderTestRule.render(mImageView, "profile_data_cache_avatar" + mImageSize);
     }
 
@@ -237,8 +205,9 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     @MediumTest
     @Feature("RenderTest")
     public void testPlaceholderIsScaled() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { checkImageIsScaled("no.data.for.this.account@example.com"); });
+        final String email = "no.data.for.this.account@example.com";
+        mAccountManagerTestRule.addAccount(email);
+        TestThreadUtils.runOnUiThreadBlocking(() -> { checkImageIsScaled(email); });
         mRenderTestRule.render(mImageView, "profile_data_cache_placeholder" + mImageSize);
     }
 
@@ -246,9 +215,10 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
     @MediumTest
     @Feature("RenderTest")
     public void testAvatarIsScaled() throws IOException {
-        ProfileDataSource.ProfileData profileData = new ProfileDataSource.ProfileData(
-                ACCOUNT_EMAIL, createAvatar(), "Full Name", "Given Name");
-        mAccountManagerTestRule.addAccount(profileData);
+        when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
+                     anyLong(), eq(ACCOUNT_EMAIL)))
+                .thenReturn(mAccountInfoWithAvatar);
+        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL);
         TestThreadUtils.runOnUiThreadBlocking(() -> { checkImageIsScaled(ACCOUNT_EMAIL); });
         mRenderTestRule.render(mImageView, "profile_data_cache_avatar" + mImageSize);
     }

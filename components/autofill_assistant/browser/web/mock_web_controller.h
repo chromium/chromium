@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,17 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill_assistant/browser/top_padding.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/element_rect_getter.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
+#include "components/autofill_assistant/core/public/autofill_assistant_intent.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace autofill_assistant {
+class ElementFinderResult;
 struct RectF;
 
 class MockWebController : public WebController {
@@ -26,157 +30,143 @@ class MockWebController : public WebController {
 
   MOCK_METHOD1(LoadURL, void(const GURL&));
 
-  void FindElement(const Selector& selector,
-                   bool strict_mode,
-                   ElementFinder::Callback callback) override {
-    OnFindElement(selector, callback);
-  }
-  MOCK_METHOD2(OnFindElement,
+  MOCK_METHOD3(FindElement,
                void(const Selector& selector,
-                    ElementFinder::Callback& callback));
-
-  MOCK_METHOD3(ScrollIntoView,
+                    bool strict,
+                    ElementFinder::Callback callback));
+  MOCK_METHOD4(ScrollToElementPosition,
+               void(std::unique_ptr<ElementFinderResult>,
+                    const TopPadding&,
+                    const ElementFinderResult&,
+                    base::OnceCallback<void(const ClientStatus&)>));
+  MOCK_METHOD5(ScrollIntoView,
+               void(const std::string&,
+                    const std::string&,
+                    const std::string&,
+                    const ElementFinderResult&,
+                    base::OnceCallback<void(const ClientStatus&)>));
+  MOCK_METHOD3(ScrollIntoViewIfNeeded,
                void(bool,
-                    const ElementFinder::Result&,
+                    const ElementFinderResult&,
                     base::OnceCallback<void(const ClientStatus&)>));
   MOCK_METHOD2(CheckOnTop,
-               void(const ElementFinder::Result&,
+               void(const ElementFinderResult&,
                     base::OnceCallback<void(const ClientStatus&)>));
-  MOCK_METHOD5(SelectOption,
+  MOCK_METHOD4(FillAddressForm,
+               void(std::unique_ptr<autofill::AutofillProfile>,
+                    const autofill_assistant::AutofillAssistantIntent intent,
+                    const ElementFinderResult&,
+                    base::OnceCallback<void(const ClientStatus&)>));
+  MOCK_METHOD5(FillCardForm,
+               void(std::unique_ptr<autofill::CreditCard>,
+                    const autofill_assistant::AutofillAssistantIntent intent,
+                    const std::u16string&,
+                    const ElementFinderResult&,
+                    base::OnceCallback<void(const ClientStatus&)>));
+  MOCK_METHOD6(SelectOption,
                void(const std::string& re2,
                     bool case_sensitive,
                     SelectOptionProto::OptionComparisonAttribute
                         option_comparison_attribute,
-                    const ElementFinder::Result& element,
+                    bool strict,
+                    const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
-  MOCK_METHOD2(HighlightElement,
-               void(const ElementFinder::Result&,
-                    base::OnceCallback<void(const ClientStatus&)>));
+  MOCK_METHOD3(CheckSelectedOptionElement,
+               void(const ElementFinderResult& option,
+                    const ElementFinderResult& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
   MOCK_METHOD2(SelectFieldValue,
-               void(const ElementFinder::Result& element,
+               void(const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
   MOCK_METHOD2(FocusField,
-               void(const ElementFinder::Result& element,
+               void(const ElementFinderResult& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
+  MOCK_METHOD3(SendKeyEvent,
+               void(const KeyEvent& key_event,
+                    const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
   MOCK_METHOD4(SendKeyboardInput,
                void(const std::vector<UChar32>& codepoints,
                     int delay_in_millisecond,
-                    const ElementFinder::Result& element,
+                    const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
-  MOCK_METHOD2(GetOuterHtml,
-               void(const ElementFinder::Result& element,
+  MOCK_METHOD4(SendTextInput,
+               void(int key_press_delay_in_millisecond,
+                    const std::string& value,
+                    const ElementFinderResult& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
+  MOCK_METHOD3(GetOuterHtml,
+               void(bool include_all_inner_text,
+                    const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)> callback));
   MOCK_METHOD2(GetElementTag,
-               void(const ElementFinder::Result& element,
+               void(const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)> callback));
   MOCK_METHOD2(
       GetDocumentReadyState,
-      void(const ElementFinder::Result&,
+      void(const ElementFinderResult&,
            base::OnceCallback<void(const ClientStatus&, DocumentReadyState)>));
-  MOCK_METHOD2(
+
+  MOCK_METHOD3(
       GetOuterHtmls,
-      void(const ElementFinder::Result& elements,
+      void(bool include_all_inner_text,
+           const ElementFinderResult& elements,
            base::OnceCallback<void(const ClientStatus&,
                                    const std::vector<std::string>&)> callback));
+
   MOCK_METHOD4(WaitUntilElementIsStable,
                void(int,
-                    base::TimeDelta,
-                    const ElementFinder::Result& element,
+                    base::TimeDelta wait_time,
+                    const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             base::TimeDelta)> callback));
-
-  void ClickOrTapElement(
-      const ElementFinder::Result& element,
-      ClickType click_type,
-      base::OnceCallback<void(const ClientStatus&)> callback) override {
-    // Transforming callback into a references allows using RunOnceCallback on
-    // the argument.
-    OnClickOrTapElement(element, callback);
-  }
-  MOCK_METHOD2(OnClickOrTapElement,
-               void(const ElementFinder::Result&,
-                    base::OnceCallback<void(const ClientStatus&)>& callback));
-
-  void ScrollToElementPosition(
-      std::unique_ptr<ElementFinder::Result> scrollable_element,
-      const ElementFinder::Result& element,
-      const TopPadding& top_padding,
-      base::OnceCallback<void(const ClientStatus&)> callback) override {
-    OnScrollToElementPosition(std::move(scrollable_element), element,
-                              top_padding, callback);
-  }
-  MOCK_METHOD4(OnScrollToElementPosition,
-               void(std::unique_ptr<ElementFinder::Result> scrollable_element,
-                    const ElementFinder::Result& element,
-                    const TopPadding& top_padding,
-                    base::OnceCallback<void(const ClientStatus&)>& callback));
-
+  MOCK_METHOD2(JsClickElement,
+               void(const ElementFinderResult& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
+  MOCK_METHOD3(ClickOrTapElement,
+               void(ClickType click_type,
+                    const ElementFinderResult& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
   MOCK_METHOD2(GetFieldValue,
-               void(const ElementFinder::Result& element,
+               void(const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&,
                                             const std::string&)> callback));
-
   MOCK_METHOD3(
       GetStringAttribute,
       void(const std::vector<std::string>&,
-           const ElementFinder::Result&,
+           const ElementFinderResult&,
            base::OnceCallback<void(const ClientStatus&, const std::string&)>));
   MOCK_METHOD3(SetValueAttribute,
                void(const std::string& value,
-                    const ElementFinder::Result& element,
+                    const ElementFinderResult& element,
                     base::OnceCallback<void(const ClientStatus&)> callback));
   MOCK_METHOD4(SetAttribute,
                void(const std::vector<std::string>&,
                     const std::string&,
-                    const ElementFinder::Result&,
+                    const ElementFinderResult&,
                     base::OnceCallback<void(const ClientStatus&)>));
-
-  void GetVisualViewport(
-      base::OnceCallback<void(const ClientStatus&, const RectF&)> callback)
-      override {
-    OnGetVisualViewport(callback);
-  }
-  MOCK_METHOD1(OnGetVisualViewport,
-               void(base::OnceCallback<void(const ClientStatus&, const RectF&)>&
+  MOCK_METHOD1(GetVisualViewport,
+               void(base::OnceCallback<void(const ClientStatus&, const RectF&)>
                         callback));
-
-  void GetElementRect(
-      const ElementFinder::Result& element,
-      ElementRectGetter::ElementRectCallback callback) override {
-    OnGetElementRect(element, callback);
-  }
-  MOCK_METHOD2(OnGetElementRect,
-               void(const ElementFinder::Result& element,
-                    ElementRectGetter::ElementRectCallback& callback));
-
-  void WaitForWindowHeightChange(
-      base::OnceCallback<void(const ClientStatus&)> callback) {
-    OnWaitForWindowHeightChange(callback);
-  }
-
-  MOCK_METHOD1(OnWaitForWindowHeightChange,
-               void(base::OnceCallback<void(const ClientStatus&)>& callback));
-
-  MOCK_METHOD3(OnWaitForDocumentReadyState,
-               void(const ElementFinder::Result&,
-                    DocumentReadyState,
+  MOCK_METHOD2(GetElementRect,
+               void(const ElementFinderResult& element,
+                    ElementRectGetter::ElementRectCallback callback));
+  MOCK_METHOD3(WaitForDocumentReadyState,
+               void(const ElementFinderResult& optional_frame_element,
+                    DocumentReadyState min_ready_state,
                     base::OnceCallback<void(const ClientStatus&,
                                             DocumentReadyState,
-                                            base::TimeDelta)>&));
+                                            base::TimeDelta)> callback));
+  MOCK_METHOD1(DispatchJsEvent,
+               void(base::OnceCallback<void(const ClientStatus&)> callback));
+  MOCK_METHOD3(ExecuteJS,
+               void(const std::string& snippet,
+                    const ElementFinderResult& element,
+                    base::OnceCallback<void(const ClientStatus&)> callback));
 
-  void WaitForDocumentReadyState(
-      const ElementFinder::Result& optional_frame_element,
-      DocumentReadyState min_ready_state,
-      base::OnceCallback<void(const ClientStatus&,
-                              DocumentReadyState,
-                              base::TimeDelta)> callback) override {
-    OnWaitForDocumentReadyState(optional_frame_element, min_ready_state,
-                                callback);
-  }
-
-  base::WeakPtr<WebController> GetWeakPtr() const override {
+  base::WeakPtr<WebController> GetWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
 

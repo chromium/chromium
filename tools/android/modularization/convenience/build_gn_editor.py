@@ -1,5 +1,5 @@
 # Lint as: python3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 r'''Helper code to handle editing BUILD.gn files.'''
@@ -10,7 +10,7 @@ import difflib
 import pathlib
 import re
 import subprocess
-from typing import List, Optional, Set, Tuple
+from typing import List, Optional, Tuple
 
 
 def _find_block(source: str, start: int, open_delim: str,
@@ -42,11 +42,12 @@ def _find_line_end(source: str, start: int) -> int:
 class BuildFileUpdateError(Exception):
   """Represents an error updating the build file."""
 
-  def __init__(self, message):
+  def __init__(self, message: str):
+    super().__init__()
     self._message = message
 
   def __str__(self):
-    return f'{self._message}'
+    return self._message
 
 
 class VariableContentList(object):
@@ -91,8 +92,8 @@ class VariableContentList(object):
     if not bracketless_content:
       return True
 
-    whitespace = re.compile('^\s+', re.MULTILINE)
-    comma = re.compile(',$', re.MULTILINE)
+    whitespace = re.compile(r'^\s+', re.MULTILINE)
+    comma = re.compile(r',$', re.MULTILINE)
     self._elements = list(
         dict.fromkeys(
             re.sub(comma, '', re.sub(whitespace, '',
@@ -114,7 +115,7 @@ class VariableContentList(object):
 
   def add_list(self, other: VariableContentList) -> None:
     """Appends unique elements to the existing list."""
-    add_elements(other.get_elements())
+    self.add_elements(other.get_elements())
 
   def serialize(self) -> str:
     if not self._elements:
@@ -122,7 +123,7 @@ class VariableContentList(object):
     return '[\n' + ',\n'.join(self._elements) + ',\n]'
 
 
-class TargetVariable(object):
+class TargetVariable:
   """Contains the name of a variable and its contents in a gn target.
 
   Example:
@@ -164,7 +165,7 @@ class TargetVariable(object):
     return f'\n{self._name} = {self._content}\n'
 
 
-class BuildTarget(object):
+class BuildTarget:
   """Contains the target name, type and content of a gn target.
 
   Example:
@@ -195,7 +196,7 @@ class BuildTarget(object):
     return self._target_type
 
   def get_variable(self, variable_name: str) -> Optional[TargetVariable]:
-    pattern = re.compile(f'\s*{variable_name} = ', re.MULTILINE)
+    pattern = re.compile(fr'^\s*{variable_name} = ', re.MULTILINE)
     match = pattern.search(self._content)
     if not match:
       return None
@@ -220,11 +221,11 @@ class BuildTarget(object):
 
   def replace_variable(self, variable: TargetVariable) -> None:
     """Replaces an existing variable and returns True on success."""
-    pattern = re.compile(f'^\s*{variable.get_name()} =', re.MULTILINE)
+    pattern = re.compile(fr'^\s*{variable.get_name()} =', re.MULTILINE)
     match = pattern.search(self._content)
     if not match:
       raise BuildFileUpdateError(
-          f'{self._target_type}\(\"{self._target_name}\"\) variable '
+          f'{self._target_type}("{self._target_name}") variable '
           f'{variable.get_name()} not found. Unable to replace.')
 
     start = match.end()
@@ -235,7 +236,7 @@ class BuildTarget(object):
 
     if end <= match.start():
       raise BuildFileUpdateError(
-          f'{self._target_type}\(\"{self._target_name}\"\) variable '
+          f'{self._target_type}("{self._target_name}") variable '
           f'{variable.get_name()} invalid. Unable to replace.')
 
     self._content = (self._content[:match.start()] + variable.serialize() +
@@ -246,7 +247,7 @@ class BuildTarget(object):
             f'{self._content}\n}}\n')
 
 
-class BuildFile(object):
+class BuildFile:
   """Represents the contents of a BUILD.gn file.
 
   This supports modifying or adding targets to the file at a basic level.
@@ -259,12 +260,12 @@ class BuildFile(object):
 
   def get_target_names_of_type(self, target_type: str) -> List[str]:
     """Lists all targets in the build file of target_type."""
-    pattern = re.compile(f'^\s*{target_type}\(\"(\w+)\"\)', re.MULTILINE)
+    pattern = re.compile(fr'^\s*{target_type}\(\"(\w+)\"\)', re.MULTILINE)
     return pattern.findall(self._content)
 
   def get_target(self, target_type: str,
                  target_name: str) -> Optional[BuildTarget]:
-    pattern = re.compile(f'^\s*{target_type}\(\"{target_name}\"\)',
+    pattern = re.compile(fr'^\s*{target_type}\(\"{target_name}\"\)',
                          re.MULTILINE)
     match = pattern.search(self._content)
     if not match:
@@ -299,18 +300,18 @@ class BuildFile(object):
 
   def replace_target(self, target: BuildTarget) -> None:
     """Replaces an existing target and returns True on success."""
-    pattern = re.compile(f'^\s*{target.get_type()}\(\"{target.get_name()}\"\)',
+    pattern = re.compile(fr'^\s*{target.get_type()}\(\"{target.get_name()}\"\)',
                          re.MULTILINE)
     match = pattern.search(self._content)
     if not match:
       raise BuildFileUpdateError(
-          f'{target.get_type()}\(\"{target.get_name()}\"\) not found. '
+          f'{target.get_type()}("{target.get_name()}") not found. '
           'Unable to replace.')
 
     start, end = _find_block(self._content, match.end(), '{', '}')
     if end <= start:
       raise BuildFileUpdateError(
-          f'{target.get_type()}\(\"{target.get_name()}\"\) invalid. '
+          f'{target.get_type()}("{target.get_name()}") invalid. '
           'Unable to replace.')
 
     self._content = (self._content[:match.start()] + target.serialize() +

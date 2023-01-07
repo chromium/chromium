@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,6 +53,7 @@ import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -143,7 +144,9 @@ public class NotificationPlatformBridgeTest {
                 new PermissionTestRule.PermissionUpdateWaiter(
                         "denied: ", mNotificationTestRule.getActivity());
 
-        mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
+        });
 
         mPermissionTestRule.runDenyTest(updateWaiter, NOTIFICATION_TEST_PAGE,
                 "Notification.requestPermission(addCountAndSendToTest)", 1, false, true);
@@ -181,7 +184,9 @@ public class NotificationPlatformBridgeTest {
                 new PermissionTestRule.PermissionUpdateWaiter(
                         "granted: ", mNotificationTestRule.getActivity());
 
-        mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
+        });
 
         mPermissionTestRule.runAllowTest(updateWaiter, NOTIFICATION_TEST_PAGE,
                 "Notification.requestPermission(addCountAndSendToTest)", 1, false, true);
@@ -251,8 +256,7 @@ public class NotificationPlatformBridgeTest {
         // Validate the notification's behavior. On Android O+ the defaults are ignored as vibrate
         // and silent moved to the notification channel. The silent flag is achieved by using a
         // group alert summary.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && NotificationBuilderBase.shouldUseCompat()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Assert.assertEquals(0, notification.defaults);
             Assert.assertEquals(Notification.GROUP_ALERT_ALL, notification.getGroupAlertBehavior());
         } else {
@@ -447,8 +451,7 @@ public class NotificationPlatformBridgeTest {
 
         // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
         // channel. The silent flag is achieved by using a group alert summary.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && NotificationBuilderBase.shouldUseCompat()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Assert.assertEquals(
                     Notification.GROUP_ALERT_SUMMARY, notification.getGroupAlertBehavior());
         }
@@ -469,8 +472,7 @@ public class NotificationPlatformBridgeTest {
 
         // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
         // channel.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && NotificationBuilderBase.shouldUseCompat()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Assert.assertEquals(0, notification.defaults);
         } else {
             // Vibration should not be in the defaults.
@@ -526,8 +528,7 @@ public class NotificationPlatformBridgeTest {
 
         // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
         // channel.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && NotificationBuilderBase.shouldUseCompat()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Assert.assertEquals(0, notification.defaults);
         } else {
             // Vibration should not be in the defaults, a custom pattern was provided.
@@ -550,6 +551,7 @@ public class NotificationPlatformBridgeTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Notifications"})
+    @SuppressWarnings("UseNetworkAnnotations")
     public void testShowNotificationWithBadge() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
@@ -643,7 +645,8 @@ public class NotificationPlatformBridgeTest {
         RoundedIconGenerator generator =
                 NotificationBuilderBase.createIconGenerator(context.getResources());
 
-        Bitmap generatedIcon = generator.generateIconForUrl(mPermissionTestRule.getOrigin());
+        Bitmap generatedIcon =
+                generator.generateIconForUrl(new GURL(mPermissionTestRule.getOrigin()));
         Assert.assertNotNull(generatedIcon);
         // Starts from Android O MR1, large icon can be downscaled by Android platform code.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {

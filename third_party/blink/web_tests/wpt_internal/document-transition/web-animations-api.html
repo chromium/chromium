@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>Shared transitions: capture opacity elements</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+<link rel="match" href="web-animations-api-ref.html">
+<meta name="fuzzy" content="web-animations-api-ref.html:0-2;0-500">
+
+<script src="/common/reftest-wait.js"></script>
+<style>
+#first {
+  background: blue;
+  width: 100px;
+  height: 100px;
+  contain:  paint;
+}
+#second {
+  background: green;
+  width: 100px;
+  height: 100px;
+  contain: paint;
+}
+
+/* Unset all animations since the test drives it using WA-API */
+html::page-transition-container(*),
+html::page-transition-image-wrapper(*),
+html::page-transition-incoming-image(*),
+html::page-transition-outgoing-image(*) {
+  animation: unset;
+}
+</style>
+<div id=first></div>
+<div id=second></div>
+<script>
+function setAnimation() {
+  document.documentElement.animate({ transform: ['translate(100px)', 'translate(100px)'] }, { duration: 10000, pseudoElement: '::page-transition-container(first)'});
+  document.documentElement.animate({ transform: ['translate(150px)', 'translate(150px)'] }, { duration: 10000, pseudoElement: '::page-transition-container(second)'});
+  requestAnimationFrame(takeScreenshot);
+}
+
+async function runTest() {
+  let t = document.createDocumentTransition();
+  first.style.pageTransitionTag = "first";
+  t.start(() => {
+    first.style.pageTransitionTag = "";
+    second.style.pageTransitionTag = "second";
+    requestAnimationFrame(setAnimation);
+  });
+}
+onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+

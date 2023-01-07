@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,12 @@ bool WebViewPasswordFeatureManager::IsGenerationEnabled() const {
   return true;
 }
 
+bool WebViewPasswordFeatureManager::
+    AreRequirementsForAutomatedPasswordChangeFulfilled() const {
+  // This is only a stub while APC is not implemented on iOS.
+  return false;
+}
+
 bool WebViewPasswordFeatureManager::IsOptedInForAccountStorage() const {
   // Although ios/web_view will only write to the account store, this should
   // still be controlled on a per user basis to ensure that the logged out user
@@ -32,6 +38,11 @@ bool WebViewPasswordFeatureManager::IsOptedInForAccountStorage() const {
 }
 
 bool WebViewPasswordFeatureManager::ShouldShowAccountStorageOptIn() const {
+  return false;
+}
+
+bool WebViewPasswordFeatureManager::
+    ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally() const {
   return false;
 }
 
@@ -63,6 +74,10 @@ void WebViewPasswordFeatureManager::SetDefaultPasswordStore(
   NOTREACHED();
 }
 
+bool WebViewPasswordFeatureManager::IsDefaultPasswordStoreSet() const {
+  return false;
+}
+
 password_manager::metrics_util::PasswordAccountStorageUsageLevel
 WebViewPasswordFeatureManager::ComputePasswordAccountStorageUsageLevel() const {
   // ios/web_view doesn't support either the profile password store or sync, so
@@ -78,6 +93,14 @@ void WebViewPasswordFeatureManager::RecordMoveOfferedToNonOptedInUser() {
 int WebViewPasswordFeatureManager::GetMoveOfferedToNonOptedInUserCount() const {
   NOTREACHED();
   return 0;
+}
+
+bool WebViewPasswordFeatureManager::
+    IsBiometricAuthenticationBeforeFillingEnabled() const {
+  // This feature is related only to MacOS and Windows, this function
+  // shouldn't be called on iOS.
+  NOTREACHED();
+  return false;
 }
 
 }  // namespace ios_web_view

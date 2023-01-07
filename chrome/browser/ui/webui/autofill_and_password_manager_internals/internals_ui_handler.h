@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 class LogRouter;
@@ -64,6 +63,10 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
 
   InternalsUIHandler(std::string call_on_load,
                      GetLogRouterFunction get_log_router_function);
+
+  InternalsUIHandler(const InternalsUIHandler&) = delete;
+  InternalsUIHandler& operator=(const InternalsUIHandler&) = delete;
+
   ~InternalsUIHandler() override;
 
  private:
@@ -75,14 +78,15 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
   void OnJavascriptDisallowed() override;
 
   // LogReceiver implementation.
-  void LogEntry(const base::Value& entry) override;
+  void LogEntry(const base::Value::Dict& entry) override;
 
   void StartSubscription();
   void EndSubscription();
 
   // JavaScript call handler.
-  void OnLoaded(const base::ListValue* args);
-  void OnResetCache(const base::ListValue* args);
+  void OnLoaded(const base::Value::List& args);
+  void OnResetCache(const base::Value::List& args);
+  void OnResetUpmEviction(const base::Value::List& args);
 
   void OnResetCacheDone(const std::string& message);
 
@@ -93,9 +97,7 @@ class InternalsUIHandler : public content::WebUIMessageHandler,
   // Whether |this| is registered as a log receiver with the LogRouter.
   bool registered_with_log_router_ = false;
 
-  base::Optional<AutofillCacheResetter> autofill_cache_resetter_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalsUIHandler);
+  absl::optional<AutofillCacheResetter> autofill_cache_resetter_;
 };
 
 }  // namespace autofill

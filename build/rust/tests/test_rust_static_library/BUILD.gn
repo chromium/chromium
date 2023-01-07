@@ -1,0 +1,11 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/rust_static_library.gni")
+
+rust_static_library("test_rust_static_library") {
+  sources = [ "src/lib.rs" ]
+  cxx_bindings = [ "src/lib.rs" ]
+  build_native_rust_unit_tests = true
+}

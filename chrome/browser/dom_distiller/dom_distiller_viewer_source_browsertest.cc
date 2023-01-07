@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,16 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/chrome_switches.h"
@@ -42,6 +45,7 @@
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -166,7 +170,7 @@ class DomDistillerViewerSourceBrowserTest : public InProcessBrowserTest {
   // Database entries.
   bool expect_distillation_ = false;
   bool expect_distiller_page_ = false;
-  MockDistillerFactory* distiller_factory_ = nullptr;
+  raw_ptr<MockDistillerFactory> distiller_factory_ = nullptr;
 };
 
 // The DomDistillerViewerSource renders untrusted content, so ensure no bindings
@@ -205,15 +209,15 @@ void DomDistillerViewerSourceBrowserTest::ViewSingleDistilledPage(
                               base::Unretained(this)));
 
   // Navigate to a URL which the source should respond to.
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Ensure no bindings for the loaded |url|.
   content::WebContents* contents_after_nav =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(contents_after_nav != NULL);
+  ASSERT_TRUE(contents_after_nav != nullptr);
   EXPECT_EQ(url, contents_after_nav->GetLastCommittedURL());
   content::RenderFrameHost* render_frame_host =
-      contents_after_nav->GetMainFrame();
+      contents_after_nav->GetPrimaryMainFrame();
   EXPECT_EQ(0, render_frame_host->GetEnabledBindings());
   EXPECT_EQ(expected_mime_type, contents_after_nav->GetContentsMimeType());
 }
@@ -302,11 +306,10 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, EarlyTemplateLoad) {
           base::BindRepeating(&DomDistillerViewerSourceBrowserTest::Build,
                               base::Unretained(this)));
 
-  scoped_refptr<content::MessageLoopRunner> distillation_done_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop distillation_done_loop;
 
   FakeDistiller* distiller =
-      new FakeDistiller(false, distillation_done_runner->QuitClosure());
+      new FakeDistiller(false, distillation_done_loop.QuitClosure());
   EXPECT_CALL(*distiller_factory_, CreateDistillerImpl())
       .WillOnce(testing::Return(distiller));
 
@@ -315,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, EarlyTemplateLoad) {
       kDomDistillerScheme, GURL("http://urlthatlooksvalid.com"), "Title"));
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
   Navigate(&params);
-  distillation_done_runner->Run();
+  distillation_done_loop.Run();
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -368,10 +371,9 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest,
   EXPECT_TRUE(content::WaitForLoadStop(contents));
 
   // Execute in isolated world; where all distiller scripts are run.
-  EXPECT_EQ(true, content::EvalJsWithManualReply(
-                      contents, kTestDistillerObject,
-                      content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-                      ISOLATED_WORLD_ID_CHROME_INTERNAL));
+  EXPECT_EQ(true, content::EvalJs(contents, kTestDistillerObject,
+                                  content::EXECUTE_SCRIPT_USE_MANUAL_REPLY,
+                                  ISOLATED_WORLD_ID_CHROME_INTERNAL));
 }
 
 IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest,
@@ -422,11 +424,10 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, MultiPageArticle) {
           base::BindRepeating(&DomDistillerViewerSourceBrowserTest::Build,
                               base::Unretained(this)));
 
-  scoped_refptr<content::MessageLoopRunner> distillation_done_runner =
-      new content::MessageLoopRunner;
+  base::RunLoop distillation_done_loop;
 
   FakeDistiller* distiller =
-      new FakeDistiller(false, distillation_done_runner->QuitClosure());
+      new FakeDistiller(false, distillation_done_loop.QuitClosure());
   EXPECT_CALL(*distiller_factory_, CreateDistillerImpl())
       .WillOnce(testing::Return(distiller));
 
@@ -439,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, MultiPageArticle) {
       kDomDistillerScheme, GURL("http://urlthatlooksvalid.com"), "Title"));
   NavigateParams params(browser(), url, ui::PAGE_TRANSITION_TYPED);
   Navigate(&params);
-  distillation_done_runner->Run();
+  distillation_done_loop.Run();
 
   // Fake a multi-page response from distiller.
 
@@ -576,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, PrefPersist) {
   expect_distillation_ = false;
   expect_distiller_page_ = false;
   const GURL url("chrome-distiller://bad");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(contents));
@@ -609,7 +610,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, PrefPersist) {
 
   // Make sure perf persist across web pages.
   GURL url2("chrome-distiller://bad2");
-  ui_test_utils::NavigateToURL(browser(), url2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url2));
   EXPECT_TRUE(content::WaitForLoadStop(contents));
 
   base::RunLoop().RunUntilIdle();

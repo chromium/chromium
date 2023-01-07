@@ -1,0 +1,244 @@
+<!--
+Copyright 2016 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+
+Offline UI for the AD Domain joining and User authentication.
+
+Example:
+    <offline-ad-login-element show-machine-input> </offline-ad-login-element>
+
+Attributes:
+  'isDomainJoin' - Whether the screen is for domain join. For the join it
+                    contains some specific elements (e.g. machine name input).
+  'realm' - The AD realm the device is managed by.
+  'userRealm' - Autocomplete realm for the user input.
+  'disabled' - Whether the UI disabled. Could be used to disable the UI
+                during blocking IO operations.
+  'adWelcomeMessageKey' - ID of localized welcome message on top of the UI.
+
+Events:
+  'authCompleted' - Fired when user enters login and password. Fires with an
+                    argument |credentials| which contains:
+                    |credentials| = { 'machineName': <machine name input>,
+                                      'distinguished_name': <orgUnitInput>,
+                                      (e.g. "OU=Computers,DC=example,DC=com")
+                                      'encryption_types': Number value of
+                                      chosen encryption types
+                                      'username': <username> (UPN),
+                                      'password': <typed password> }
+  'unlockPasswordEntered' - Fired when user enters password to unlock
+                            configuration. Argument
+                            {'unlock_password': <password>}
+Methods:
+  'focus' - Focuses current input (user input or password input).
+  'setUserMachine' - Accepts arguments |user| and |machineName|. Both are
+                      optional. If user passed, the password input would be
+                      invalidated.
+-->
+<style include="md-select oobe-dialog-host-styles">
+  .select-title {
+    color: var(--cros-menu-label-color);
+    font-size: 13px;
+    line-height: var(--subtitle-line-height);
+    padding-inline-end: 16px;
+  }
+
+  .encryption-subtitle {
+    color: var(--cros-text-color-secondary);
+    padding-bottom: 9px;
+    padding-top: 9px;
+  }
+
+  .encryption-select-row {
+    padding-bottom: 24px;
+  }
+
+  iron-icon[icon='cr:warning'] {
+    color: var(--cros-illustration-color-3);
+    margin-bottom: 0;
+    margin-inline-end: 15px;
+    margin-inline-start: 0;
+    margin-top: 0;
+  }
+
+  .select-divider-line {
+    border-bottom: 1px solid #ebebeb;
+    display: block;
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    position: relative;
+  }
+
+  .top-line {
+    margin-bottom: 8px;
+  }
+
+  .bottom-line {
+    margin-bottom: 26px;
+    margin-top: 8px;
+  }
+
+  .md-select {
+    height: 32px;
+    width: 240px;
+  }
+
+  #moreOptionsDlg {
+    --cr-input-error-display: none;
+  }
+
+  #orgUnitInput {
+    padding-bottom: 28px;
+  }
+</style>
+<oobe-adaptive-dialog id="unlockStep" for-step="unlock" role="dialog"
+    aria-label$="[[i18nDynamic(locale, adWelcomeMessageKey)]]">
+  <iron-icon slot="icon" icon="oobe-32:enterprise"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'adUnlockTitle')]]
+  </h1>
+  <div slot="subtitle">
+    [[i18nDynamic(locale, 'adUnlockSubtitle')]]
+  </div>
+  <div slot="content" id="adUnlock" class="landscape-vertical-centered">
+    <cr-input id="unlockPasswordInput" type="password" slot="inputs"
+        invalid="{{unlockPasswordInvalid}}" class="focus-on-show"
+        label="[[i18nDynamic(locale, 'adUnlockPassword')]]"
+        error-message="[[i18nDynamic(locale, 'adUnlockIncorrectPassword')]]"
+        disabled="[[disabled]]" on-keydown="onKeydownUnlockPassword_"
+        required>
+    </cr-input>
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="skipButton" on-click="onSkipClicked_"
+        text-key="adUnlockPasswordSkip"></oobe-text-button>
+    <oobe-next-button id="unlockButton"
+        on-click="onUnlockPasswordEntered_"></oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>
+<oobe-adaptive-dialog id="credsStep" for-step="creds" role="dialog"
+    aria-label$="[[i18nDynamic(locale, adWelcomeMessageKey)]]">
+  <iron-icon slot="icon" icon="oobe-32:enterprise"
+      hidden="[[!isDomainJoin]]">
+  </iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, adWelcomeMessageKey)]]
+  </h1>
+  <div slot="subtitle" hidden="[[isDomainJoin]]">
+    [[i18nDynamic(locale, 'enterpriseInfoMessage', realm)]]
+  </div>
+  <paper-progress slot="progress" hidden="[[!loading]]" indeterminate>
+  </paper-progress>
+  <div slot="content" class="landscape-vertical-centered"
+      hidden="[[loading]]">
+    <div class="layout vertical" id="joinConfig"
+        hidden="[[!joinConfigVisible_]]">
+      <span class="select-divider-line top-line"></span>
+      <div class="layout horizontal justified">
+        <div class="flex self-center select-title">
+          [[i18nDynamic(locale, 'selectConfiguration')]]
+        </div>
+        <select id="joinConfigSelect" class="md-select">
+        </select>
+      </div>
+      <span class="select-divider-line bottom-line"></span>
+    </div>
+    <div class="layout vertical">
+      <cr-input slot="inputs" id="machineNameInput" required
+          hidden="[[!isDomainJoin]]" value="{{machineName}}"
+          disabled="[[disabled]]" invalid="[[machineNameInvalid]]"
+          pattern="[[machineNameInputPattern_]]"
+          label="[[i18nDynamic(locale, 'oauthEnrollAdMachineNameInput')]]"
+          on-keydown="onKeydownMachineNameInput_" class="focus-on-show"
+          error-message="[[getMachineNameError_(locale, errorState,
+              selectedConfigOption_)]]">
+      </cr-input>
+      <cr-input slot="inputs" id="userInput" required
+          invalid="[[userInvalid]]" domain="[[userRealm]]"
+                                    value="{{userName}}"
+          disabled="[[isInputDisabled_('ad_username',
+                                        selectedConfigOption_, disabled)]]"
+          label="[[i18nDynamic(locale, 'adAuthLoginUsername')]]"
+          on-keydown="onKeydownUserInput_"
+          error-message="[[i18nDynamic(locale, 'adLoginInvalidUsername')]]">
+        <span slot="suffix" id="userRealm"
+            hidden="[[domainHidden(userRealm, userName)]]">
+          [[userRealm]]
+        </span>
+      </cr-input>
+      <cr-input slot="inputs" id="passwordInput" type="password" required
+          invalid="[[authPasswordInvalid]]"
+          disabled="[[isInputDisabled_('ad_password',
+                                        selectedConfigOption_, disabled)]]"
+          value="[[calculateInputValue_('passwordInput', 'ad_password',
+                                        selectedConfigOption_)]]"
+          label="[[i18nDynamic(locale, 'adLoginPassword')]]"
+          on-keydown="onKeydownAuthPasswordInput_"
+          error-message="[[i18nDynamic(locale, 'adLoginInvalidPassword')]]">
+      </cr-input>
+      <div class="flex layout horizontal start-justified">
+        <gaia-button id="moreOptionsBtn" on-click="onMoreOptionsClicked_"
+            hidden="[[!isDomainJoin]]" disabled="[[disabled]]" link>
+          [[i18nDynamic(locale, 'adJoinMoreOptions')]]
+        </gaia-button>
+      </div>
+    </div>
+  </div>
+  <div slot="back-navigation" hidden="[[loading]]">
+    <oobe-back-button id="backToUnlockButton" on-click="onBackToUnlock_"
+        disabled="[[disabled]]" hidden="[[!backToUnlockButtonVisible_]]">
+    </oobe-back-button>
+    <oobe-back-button id="backButton" on-click="onBackButton_"
+        hidden="[[isDomainJoin]]"></oobe-back-button>
+  </div>
+  <div slot="bottom-buttons" hidden="[[loading]]">
+    <oobe-next-button id="nextButton" on-click="onSubmit_"
+        disabled="[[disabled]]"></oobe-next-button>
+  </div>
+</oobe-adaptive-dialog>
+
+<cr-dialog id="moreOptionsDlg" on-close="onMoreOptionsClosed_">
+  <div slot="title">
+    [[i18nDynamic(locale, 'adJoinMoreOptions')]]
+  </div>
+  <div slot="body">
+    <cr-input id="orgUnitInput"
+        disabled="[[isInputDisabled_('computer_ou',
+                                      selectedConfigOption_)]]"
+        label="[[i18nDynamic(locale, 'adJoinOrgUnit')]]"
+        value="[[calculateInputValue_('orgUnitInput', 'computer_ou',
+                                      selectedConfigOption_)]]">
+    </cr-input>
+  </div>
+  <div slot="body">
+    <div class="flex layout center horizontal start-justified
+        encryption-select-row">
+      <div class="self-center select-title">
+        [[i18nDynamic(locale, 'selectEncryption')]]
+      </div>
+      <select id="encryptionList"
+          aria-label$="[[i18nDynamic(locale, 'selectEncryption')]]"
+          class="md-select"
+          disabled="[[isInputDisabled_('encryption_types',
+                                        selectedConfigOption_)]]"
+          value="[[encryptionValue_]]">
+      </select>
+    </div>
+    <div class="flex layout center horizontal start-justified
+        encryption-subtitle">
+      <iron-icon id="encryptionWarningIcon" icon="cr:warning"
+          hidden="[[isEncryptionStrong_(encryptionValue_)]]">
+      </iron-icon>
+      <div id="encryptionSubtitle">
+        [[encryptionSubtitle_(locale, encryptionValue_)]]
+      </div>
+    </div>
+  </div>
+  <div slot="button-container">
+    <oobe-text-button text-key="adJoinCancel"
+        on-click="onMoreOptionsCancelTap_" autofocus></oobe-text-button>
+    <oobe-text-button id="moreOptionsSave" text-key="adJoinSave"
+        on-click="onMoreOptionsConfirmTap_" inverse></oobe-text-button>
+  </div>
+</cr-dialog>

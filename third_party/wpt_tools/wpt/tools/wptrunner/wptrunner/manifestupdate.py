@@ -1,8 +1,10 @@
-from __future__ import print_function
+# mypy: allow-untyped-defs
+
 import os
 from urllib.parse import urljoin, urlsplit
 from collections import namedtuple, defaultdict, deque
 from math import ceil
+from typing import Any, Callable, ClassVar, Dict, List
 
 from .wptmanifest import serialize
 from .wptmanifest.node import (DataNode, ConditionalNode, BinaryExpressionNode,
@@ -59,7 +61,7 @@ def data_cls_getter(output_node, visited_node):
         raise ValueError
 
 
-class UpdateProperties(object):
+class UpdateProperties:
     def __init__(self, manifest, **kwargs):
         self._manifest = manifest
         self._classes = kwargs
@@ -202,7 +204,7 @@ class TestNode(ManifestItem):
         self._from_file = True
         self.new_disabled = False
         self.has_result = False
-        self.modified = False
+        self._modified = False
         self.update_properties = UpdateProperties(
             self,
             expected=ExpectedUpdate,
@@ -239,6 +241,16 @@ class TestNode(ManifestItem):
     def id(self):
         """The id of the test represented by this TestNode"""
         return urljoin(self.parent.url, self.name)
+
+    @property
+    def modified(self):
+        if self._modified:
+            return self._modified
+        return any(child.modified for child in self.children)
+
+    @modified.setter
+    def modified(self, value):
+        self._modified = value
 
     def disabled(self, run_info):
         """Boolean indicating whether this test is disabled when run in an
@@ -319,11 +331,14 @@ def build_unconditional_tree(_, run_info_properties, results):
     return root
 
 
-class PropertyUpdate(object):
-    property_name = None
-    cls_default_value = None
-    value_type = None
-    property_builder = None
+class PropertyUpdate:
+    property_name = None  # type: ClassVar[str]
+    cls_default_value = None  # type: ClassVar[Any]
+    value_type = None  # type: ClassVar[type]
+    # property_builder is a class variable set to either build_conditional_tree
+    # or build_unconditional_tree. TODO: Make this type stricter when those
+    # methods are annotated.
+    property_builder = None  # type: ClassVar[Callable[..., Any]]
 
     def __init__(self, node):
         self.node = node
@@ -514,8 +529,8 @@ class PropertyUpdate(object):
             for item in dependent_props.values():
                 update_properties |= set(item)
             for condition in current_conditions:
-                if ((not condition.variables.issubset(update_properties) and
-                     not run_info_by_condition[condition])):
+                if (not condition.variables.issubset(update_properties) and
+                    not run_info_by_condition[condition]):
                     conditions.append((condition.condition_node,
                                        self.from_ini_value(condition.value)))
 
@@ -613,7 +628,8 @@ class PropertyUpdate(object):
                     except ConditionError:
                         expr = make_expr(prop_set, value)
                         error = ConditionError(expr)
-                    expr = make_expr(prop_set, value)
+                    else:
+                        expr = make_expr(prop_set, value)
                 else:
                     # The root node needs special handling
                     expr = None
@@ -764,7 +780,7 @@ class MinAssertsUpdate(PropertyUpdate):
 
 
 class AppendOnlyListUpdate(PropertyUpdate):
-    cls_default_value = []
+    cls_default_value = []  # type: ClassVar[List[str]]
     property_builder = build_unconditional_tree
 
     def updated_value(self, current, new):
@@ -817,7 +833,7 @@ class LeakObjectUpdate(AppendOnlyListUpdate):
 
 class LeakThresholdUpdate(PropertyUpdate):
     property_name = "leak-threshold"
-    cls_default_value = {}
+    cls_default_value = {}  # type: ClassVar[Dict[str, int]]
     property_builder = build_unconditional_tree
 
     def from_result_value(self, result):
@@ -918,7 +934,7 @@ def make_value_node(value):
     elif hasattr(value, "__iter__"):
         node = ListNode()
         for item in value:
-            node.append(make_node(item))
+            node.append(make_value_node(item))
     else:
         raise ValueError("Don't know how to convert %s into node" % type(value))
     return node
@@ -936,7 +952,7 @@ def get_manifest(metadata_root, test_path, url_base, run_info_properties, update
         with open(manifest_path, "rb") as f:
             rv = compile(f, test_path, url_base,
                          run_info_properties, update_intermittent, remove_intermittent)
-    except IOError:
+    except OSError:
         return None
     return rv
 

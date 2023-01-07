@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,8 +76,8 @@ ScriptPromise PaymentManager::enableDelegations(
 
   manager_->EnableDelegations(
       std::move(mojo_delegations),
-      WTF::Bind(&PaymentManager::OnEnableDelegationsResponse,
-                WrapPersistent(this)));
+      WTF::BindOnce(&PaymentManager::OnEnableDelegationsResponse,
+                    WrapPersistent(this)));
   enable_delegations_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   return enable_delegations_resolver_->Promise();
@@ -103,7 +103,7 @@ PaymentManager::PaymentManager(ServiceWorkerRegistration* registration)
             context->GetTaskRunner(TaskType::kUserInteraction)));
   }
 
-  manager_.set_disconnect_handler(WTF::Bind(
+  manager_.set_disconnect_handler(WTF::BindOnce(
       &PaymentManager::OnServiceConnectionError, WrapWeakPersistent(this)));
   manager_->Init(registration_->GetExecutionContext()->Url(),
                  registration_->scope());

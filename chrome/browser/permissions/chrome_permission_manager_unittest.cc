@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_manager.h"
+#include "components/permissions/permission_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -52,8 +54,8 @@ TEST_F(ChromePermissionManagerTest, GetCanonicalOriginSearch) {
   const GURL google_com("https://www.google.com");
   const GURL google_de("https://www.google.de");
   const GURL other_url("https://other.url");
-  const GURL google_base =
-      GURL(UIThreadSearchTermsData().GoogleBaseURLValue()).GetOrigin();
+  const GURL google_base = GURL(UIThreadSearchTermsData().GoogleBaseURLValue())
+                               .DeprecatedGetOriginAsURL();
   const GURL remote_ntp = GURL(std::string("chrome-search://") +
                                chrome::kChromeSearchRemoteNtpHost);
   const GURL other_chrome_search = GURL("chrome-search://not-local-ntp");
@@ -62,32 +64,32 @@ TEST_F(ChromePermissionManagerTest, GetCanonicalOriginSearch) {
 
   // "Normal" URLs are not affected by GetCanonicalOrigin.
   EXPECT_EQ(google_com,
-            GetPermissionControllerDelegate()->GetCanonicalOrigin(
+            permissions::PermissionUtil::GetCanonicalOrigin(
                 ContentSettingsType::GEOLOCATION, google_com, google_com));
   EXPECT_EQ(google_de,
-            GetPermissionControllerDelegate()->GetCanonicalOrigin(
+            permissions::PermissionUtil::GetCanonicalOrigin(
                 ContentSettingsType::GEOLOCATION, google_de, google_de));
   EXPECT_EQ(other_url,
-            GetPermissionControllerDelegate()->GetCanonicalOrigin(
+            permissions::PermissionUtil::GetCanonicalOrigin(
                 ContentSettingsType::GEOLOCATION, other_url, other_url));
   EXPECT_EQ(google_base,
-            GetPermissionControllerDelegate()->GetCanonicalOrigin(
+            permissions::PermissionUtil::GetCanonicalOrigin(
                 ContentSettingsType::GEOLOCATION, google_base, google_base));
 
   // The WebUI NTP URL gets mapped to the Google base URL.
   EXPECT_EQ(google_base,
-            GetPermissionControllerDelegate()->GetCanonicalOrigin(
+            permissions::PermissionUtil::GetCanonicalOrigin(
                 ContentSettingsType::GEOLOCATION, webui_ntp, top_level_ntp));
 
   // chrome-search://remote-ntp and other URLs are not affected.
   EXPECT_EQ(remote_ntp,
-            GetPermissionControllerDelegate()->GetCanonicalOrigin(
+            permissions::PermissionUtil::GetCanonicalOrigin(
                 ContentSettingsType::GEOLOCATION, remote_ntp, top_level_ntp));
   EXPECT_EQ(google_com,
-            GetPermissionControllerDelegate()->GetCanonicalOrigin(
+            permissions::PermissionUtil::GetCanonicalOrigin(
                 ContentSettingsType::GEOLOCATION, google_com, top_level_ntp));
   EXPECT_EQ(other_chrome_search,
-            GetPermissionControllerDelegate()->GetCanonicalOrigin(
+            permissions::PermissionUtil::GetCanonicalOrigin(
                 ContentSettingsType::GEOLOCATION, other_chrome_search,
                 top_level_ntp));
 }
@@ -95,21 +97,21 @@ TEST_F(ChromePermissionManagerTest, GetCanonicalOriginSearch) {
 TEST_F(ChromePermissionManagerTest, GetCanonicalOriginPermissionDelegation) {
   const GURL requesting_origin("https://www.requesting.com");
   const GURL embedding_origin("https://www.google.de");
+
+  // The embedding origin should be returned except in the case of notifications
+  // and, if they're enabled, extensions.
+  EXPECT_EQ(embedding_origin, permissions::PermissionUtil::GetCanonicalOrigin(
+                                  ContentSettingsType::GEOLOCATION,
+                                  requesting_origin, embedding_origin));
+  EXPECT_EQ(requesting_origin, permissions::PermissionUtil::GetCanonicalOrigin(
+                                   ContentSettingsType::NOTIFICATIONS,
+                                   requesting_origin, embedding_origin));
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   const GURL extensions_requesting_origin(
       "chrome-extension://abcdefghijklmnopqrstuvxyz");
-
-  // The embedding origin should be returned
-  // except in the case of extensions and notifications.
-  EXPECT_EQ(embedding_origin,
-            GetPermissionControllerDelegate()->GetCanonicalOrigin(
-                ContentSettingsType::GEOLOCATION, requesting_origin,
-                embedding_origin));
   EXPECT_EQ(extensions_requesting_origin,
-            GetPermissionControllerDelegate()->GetCanonicalOrigin(
+            permissions::PermissionUtil::GetCanonicalOrigin(
                 ContentSettingsType::GEOLOCATION, extensions_requesting_origin,
                 embedding_origin));
-  EXPECT_EQ(requesting_origin,
-            GetPermissionControllerDelegate()->GetCanonicalOrigin(
-                ContentSettingsType::NOTIFICATIONS, requesting_origin,
-                embedding_origin));
+#endif
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,20 +16,37 @@ namespace enterprise_reporting {
 
 // The browser version that performed the most recent report upload.
 const char kLastUploadVersion[] = "enterprise_reporting.last_upload_version";
+// The list of requests that have been uploaded to the server.
+const char kCloudExtensionRequestUploadedIds[] =
+    "enterprise_reporting.extension_request.pending.ids";
+
+const base::TimeDelta kDefaultReportFrequency = base::Hours(24);
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // This is also registered as a Profile pref which will be removed after
   // the migration.
   registry->RegisterBooleanPref(kCloudReportingEnabled, false);
   registry->RegisterTimePref(kLastUploadTimestamp, base::Time());
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterTimePref(kLastUploadSucceededTimestamp, base::Time());
   registry->RegisterStringPref(kLastUploadVersion, std::string());
-#endif
+  registry->RegisterTimeDeltaPref(kCloudReportingUploadFrequency,
+                                  kDefaultReportFrequency);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(kCloudProfileReportingEnabled, false);
+  registry->RegisterTimePref(kLastUploadTimestamp, base::Time());
+  registry->RegisterTimePref(kLastUploadSucceededTimestamp, base::Time());
+  registry->RegisterStringPref(kLastUploadVersion, std::string());
+  // TODO(crbug.com/1298258): We reuse the report frequency pref for profile
+  // reporting for now. This might need to be changed in the future.
+  registry->RegisterTimeDeltaPref(kCloudReportingUploadFrequency,
+                                  kDefaultReportFrequency);
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kCloudExtensionRequestEnabled, false);
   registry->RegisterDictionaryPref(prefs::kCloudExtensionRequestIds);
+  registry->RegisterDictionaryPref(kCloudExtensionRequestUploadedIds);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace enterprise_reporting

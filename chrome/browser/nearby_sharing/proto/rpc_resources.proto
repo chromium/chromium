@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,6 +56,11 @@ message PublicCertificate {
 
   // The tag for verifying metadata_encryption_key.
   bytes metadata_encryption_key_tag = 9;
+
+  // Indicates if this public certificate corresponds to a device owned by the
+  // current user. This is not set by the clients but is set by the server for
+  // all public certificates (regardless of certificate type).
+  bool for_self_share = 10;
 }
 
 // A member of a contact list. This is not inlined on the recommendation of

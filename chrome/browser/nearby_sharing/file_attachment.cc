@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,12 +37,16 @@ std::string MimeTypeFromPath(const base::FilePath& path) {
 
 }  // namespace
 
-FileAttachment::FileAttachment(base::FilePath file_path)
+FileAttachment::FileAttachment(const base::FilePath& file_path)
+    : FileAttachment(file_path, file_path.BaseName()) {}
+
+FileAttachment::FileAttachment(const base::FilePath& file_path,
+                               const base::FilePath& base_name)
     : Attachment(Attachment::Family::kFile, /*size=*/0),
-      file_name_(file_path.BaseName().AsUTF8Unsafe()),
-      mime_type_(MimeTypeFromPath(file_path)),
+      file_name_(base_name.AsUTF8Unsafe()),
+      mime_type_(MimeTypeFromPath(base_name)),
       type_(FileAttachmentTypeFromMimeType(mime_type_)),
-      file_path_(std::move(file_path)) {}
+      file_path_(file_path) {}
 
 FileAttachment::FileAttachment(int64_t id,
                                int64_t size,

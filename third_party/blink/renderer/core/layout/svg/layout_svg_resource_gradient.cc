@@ -25,6 +25,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
 namespace blink {
@@ -41,6 +42,11 @@ LayoutSVGResourceGradient::LayoutSVGResourceGradient(SVGGradientElement* node)
     : LayoutSVGResourcePaintServer(node),
       should_collect_gradient_attributes_(true),
       gradient_map_(MakeGarbageCollected<GradientMap>()) {}
+
+void LayoutSVGResourceGradient::Trace(Visitor* visitor) const {
+  visitor->Trace(gradient_map_);
+  LayoutSVGResourcePaintServer::Trace(visitor);
+}
 
 void LayoutSVGResourceGradient::RemoveAllClientsFromCache() {
   NOT_DESTROYED();
@@ -61,7 +67,7 @@ bool LayoutSVGResourceGradient::RemoveClientFromCache(
 }
 
 std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
-    const FloatRect& object_bounding_box) {
+    const gfx::RectF& object_bounding_box) {
   NOT_DESTROYED();
   // Create gradient object
   auto gradient_data = std::make_unique<GradientData>();
@@ -83,10 +89,10 @@ std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
     // gradient or a filter) will be ignored.
     if (object_bounding_box.IsEmpty())
       return gradient_data;
-    gradient_data->userspace_transform.Translate(object_bounding_box.X(),
-                                                 object_bounding_box.Y());
+    gradient_data->userspace_transform.Translate(object_bounding_box.x(),
+                                                 object_bounding_box.y());
     gradient_data->userspace_transform.ScaleNonUniform(
-        object_bounding_box.Width(), object_bounding_box.Height());
+        object_bounding_box.width(), object_bounding_box.height());
   }
 
   // Create gradient object
@@ -100,9 +106,10 @@ std::unique_ptr<GradientData> LayoutSVGResourceGradient::BuildGradientData(
 
 bool LayoutSVGResourceGradient::ApplyShader(
     const SVGResourceClient& client,
-    const FloatRect& reference_box,
+    const gfx::RectF& reference_box,
     const AffineTransform* additional_transform,
-    PaintFlags& flags) {
+    const AutoDarkMode& auto_dark_mode,
+    cc::PaintFlags& flags) {
   NOT_DESTROYED();
   ClearInvalidationMask();
 
@@ -117,8 +124,11 @@ bool LayoutSVGResourceGradient::ApplyShader(
   AffineTransform transform = gradient_data->userspace_transform;
   if (additional_transform)
     transform = *additional_transform * transform;
-  gradient_data->gradient->ApplyToFlags(flags,
-                                        AffineTransformToSkMatrix(transform));
+  ImageDrawOptions draw_options;
+  draw_options.apply_dark_mode =
+      auto_dark_mode.enabled && StyleRef().ForceDark();
+  gradient_data->gradient->ApplyToFlags(
+      flags, AffineTransformToSkMatrix(transform), draw_options);
   return true;
 }
 

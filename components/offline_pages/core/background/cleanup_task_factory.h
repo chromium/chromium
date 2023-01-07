@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include <set>
 
+#include "base/memory/raw_ptr.h"
 #include "components/offline_pages/core/background/cleanup_task.h"
 
 namespace offline_pages {
@@ -30,11 +31,11 @@ class CleanupTaskFactory {
 
  private:
   // Unowned pointer to the Policy
-  OfflinerPolicy* policy_;
+  raw_ptr<OfflinerPolicy> policy_;
   // Unowned pointer to the notifier
-  RequestNotifier* notifier_;
+  raw_ptr<RequestNotifier> notifier_;
   // Unowned pointer to the EventLogger
-  RequestCoordinatorEventLogger* event_logger_;
+  raw_ptr<RequestCoordinatorEventLogger> event_logger_;
 };
 
 }  // namespace offline_pages

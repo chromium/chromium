@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,8 @@ class MemoryRegionsMap;
 using CreateMemoryRegionsMapFunction = std::unique_ptr<MemoryRegionsMap> (*)();
 using CreateNativeUnwinderFunction =
     std::unique_ptr<base::Unwinder> (*)(MemoryRegionsMap*, uintptr_t);
+using CreateLibunwindstackUnwinderFunction =
+    std::unique_ptr<base::Unwinder> (*)();
 
 }  // namespace stack_unwinder
 

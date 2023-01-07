@@ -1,4 +1,4 @@
-// Copyright 2015 The Crashpad Authors. All rights reserved.
+// Copyright 2015 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 #include <windows.h>
 
+// Must be after windows.h.
+#include <versionhelpers.h>
+#include <werapi.h>
+
 #include <signal.h>
 #include <stdint.h>
 #include <string.h>
@@ -24,11 +28,11 @@
 
 #include "base/atomicops.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/scoped_generic.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "build/build_config.h"
 #include "util/file/file_io.h"
 #include "util/misc/capture_context.h"
 #include "util/misc/from_pointer_cast.h"
@@ -37,6 +41,7 @@
 #include "util/win/command_line.h"
 #include "util/win/context_wrappers.h"
 #include "util/win/critical_section_with_debug_info.h"
+#include "util/win/exception_codes.h"
 #include "util/win/get_function.h"
 #include "util/win/handle.h"
 #include "util/win/initial_client_data.h"
@@ -61,18 +66,24 @@ HANDLE g_signal_exception = INVALID_HANDLE_VALUE;
 // Where we store the exception information that the crash handler reads.
 ExceptionInformation g_crash_exception_information;
 
-// These handles are never closed. g_signal_non_crash_dump is used to signal to
-// the server to take a dump (not due to an exception), and the server will
-// signal g_non_crash_dump_done when the dump is completed.
-HANDLE g_signal_non_crash_dump = INVALID_HANDLE_VALUE;
-HANDLE g_non_crash_dump_done = INVALID_HANDLE_VALUE;
-
-// Guards multiple simultaneous calls to DumpWithoutCrash(). This is leaked.
+// Guards multiple simultaneous calls to DumpWithoutCrash() in the client.
+// This is leaked.
 base::Lock* g_non_crash_dump_lock;
 
 // Where we store a pointer to the context information when taking a non-crash
 // dump.
 ExceptionInformation g_non_crash_exception_information;
+
+// Context for the out-of-process exception handler module and holds non-crash
+// dump handles. Handles are never closed once created.
+WerRegistration g_wer_registration = {WerRegistration::kWerRegistrationVersion,
+                                      INVALID_HANDLE_VALUE,
+                                      INVALID_HANDLE_VALUE,
+                                      false,
+                                      nullptr,
+                                      {0},
+                                      {0},
+                                      {0}};
 
 enum class StartupState : int {
   kNotReady = 0,  // This must be value 0 because it is the initial value of a
@@ -339,6 +350,11 @@ class ScopedCallSetHandlerStartupState {
  public:
   ScopedCallSetHandlerStartupState() : successful_(false) {}
 
+  ScopedCallSetHandlerStartupState(const ScopedCallSetHandlerStartupState&) =
+      delete;
+  ScopedCallSetHandlerStartupState& operator=(
+      const ScopedCallSetHandlerStartupState&) = delete;
+
   ~ScopedCallSetHandlerStartupState() {
     SetHandlerStartupState(successful_ ? StartupState::kSucceeded
                                        : StartupState::kFailed);
@@ -348,8 +364,6 @@ class ScopedCallSetHandlerStartupState {
 
  private:
   bool successful_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedCallSetHandlerStartupState);
 };
 
 bool StartHandlerProcess(
@@ -399,8 +413,8 @@ bool StartHandlerProcess(
 
   InitialClientData initial_client_data(
       g_signal_exception,
-      g_signal_non_crash_dump,
-      g_non_crash_dump_done,
+      g_wer_registration.dump_without_crashing,
+      g_wer_registration.dump_completed,
       data->ipc_pipe_handle.get(),
       this_process.get(),
       FromPointerCast<WinVMAddress>(&g_crash_exception_information),
@@ -464,8 +478,8 @@ bool StartHandlerProcess(
 
     handle_list.reserve(8);
     handle_list.push_back(g_signal_exception);
-    handle_list.push_back(g_signal_non_crash_dump);
-    handle_list.push_back(g_non_crash_dump_done);
+    handle_list.push_back(g_wer_registration.dump_without_crashing);
+    handle_list.push_back(g_wer_registration.dump_completed);
     handle_list.push_back(data->ipc_pipe_handle.get());
     handle_list.push_back(this_process.get());
     AddHandleToListIfValidAndInheritable(&handle_list,
@@ -622,9 +636,9 @@ bool CrashpadClient::StartHandler(
 
   g_signal_exception =
       CreateEvent(&security_attributes, false /* auto reset */, false, nullptr);
-  g_signal_non_crash_dump =
+  g_wer_registration.dump_without_crashing =
       CreateEvent(&security_attributes, false /* auto reset */, false, nullptr);
-  g_non_crash_dump_done =
+  g_wer_registration.dump_completed =
       CreateEvent(&security_attributes, false /* auto reset */, false, nullptr);
 
   CommonInProcessInitialization();
@@ -676,8 +690,8 @@ bool CrashpadClient::SetHandlerIPCPipe(const std::wstring& ipc_pipe) {
 
   DCHECK(!ipc_pipe_.empty());
   DCHECK_EQ(g_signal_exception, INVALID_HANDLE_VALUE);
-  DCHECK_EQ(g_signal_non_crash_dump, INVALID_HANDLE_VALUE);
-  DCHECK_EQ(g_non_crash_dump_done, INVALID_HANDLE_VALUE);
+  DCHECK_EQ(g_wer_registration.dump_without_crashing, INVALID_HANDLE_VALUE);
+  DCHECK_EQ(g_wer_registration.dump_completed, INVALID_HANDLE_VALUE);
   DCHECK(!g_critical_section_with_debug_info.DebugInfo);
   DCHECK(!g_non_crash_dump_lock);
 
@@ -709,9 +723,9 @@ bool CrashpadClient::SetHandlerIPCPipe(const std::wstring& ipc_pipe) {
   // The server returns these already duplicated to be valid in this process.
   g_signal_exception =
       IntToHandle(response.registration.request_crash_dump_event);
-  g_signal_non_crash_dump =
+  g_wer_registration.dump_without_crashing =
       IntToHandle(response.registration.request_non_crash_dump_event);
-  g_non_crash_dump_done =
+  g_wer_registration.dump_completed =
       IntToHandle(response.registration.non_crash_dump_completed_event);
 
   return true;
@@ -746,10 +760,29 @@ bool CrashpadClient::WaitForHandlerStart(unsigned int timeout_ms) {
   return exit_code == 0;
 }
 
+bool CrashpadClient::RegisterWerModule(const std::wstring& path) {
+  if (g_wer_registration.dump_completed == INVALID_HANDLE_VALUE ||
+      g_wer_registration.dump_without_crashing == INVALID_HANDLE_VALUE) {
+    LOG(ERROR) << "not connected";
+    return false;
+  }
+  // We cannot point (*context).exception_pointers to our pointers yet as it
+  // might get used for other non-crash dumps.
+  g_wer_registration.crashpad_exception_info =
+      &g_non_crash_exception_information;
+  // we can point these as we are the only users.
+  g_wer_registration.pointers.ExceptionRecord = &g_wer_registration.exception;
+  g_wer_registration.pointers.ContextRecord = &g_wer_registration.context;
+
+  HRESULT res =
+      WerRegisterRuntimeExceptionModule(path.c_str(), &g_wer_registration);
+  return res == S_OK;
+}
+
 // static
 void CrashpadClient::DumpWithoutCrash(const CONTEXT& context) {
-  if (g_signal_non_crash_dump == INVALID_HANDLE_VALUE ||
-      g_non_crash_dump_done == INVALID_HANDLE_VALUE) {
+  if (g_wer_registration.dump_without_crashing == INVALID_HANDLE_VALUE ||
+      g_wer_registration.dump_completed == INVALID_HANDLE_VALUE) {
     LOG(ERROR) << "not connected";
     return;
   }
@@ -757,7 +790,7 @@ void CrashpadClient::DumpWithoutCrash(const CONTEXT& context) {
   if (BlockUntilHandlerStartedOrFailed() == StartupState::kFailed) {
     // If we know for certain that the handler has failed to start, then abort
     // here, as we would otherwise wait indefinitely for the
-    // g_non_crash_dump_done event that would never be signalled.
+    // g_wer_registration.dump_completed event that would never be signalled.
     LOG(ERROR) << "crash server failed to launch, no dump captured";
     return;
   }
@@ -795,11 +828,14 @@ void CrashpadClient::DumpWithoutCrash(const CONTEXT& context) {
   g_non_crash_exception_information.exception_pointers =
       FromPointerCast<WinVMAddress>(&exception_pointers);
 
-  bool set_event_result = !!SetEvent(g_signal_non_crash_dump);
+  g_wer_registration.in_dump_without_crashing = true;
+  bool set_event_result = !!SetEvent(g_wer_registration.dump_without_crashing);
   PLOG_IF(ERROR, !set_event_result) << "SetEvent";
 
-  DWORD wfso_result = WaitForSingleObject(g_non_crash_dump_done, INFINITE);
+  DWORD wfso_result =
+      WaitForSingleObject(g_wer_registration.dump_completed, INFINITE);
   PLOG_IF(ERROR, wfso_result != WAIT_OBJECT_0) << "WaitForSingleObject";
+  g_wer_registration.in_dump_without_crashing = false;
 }
 
 // static
@@ -821,10 +857,7 @@ void CrashpadClient::DumpAndCrash(EXCEPTION_POINTERS* exception_pointers) {
 bool CrashpadClient::DumpAndCrashTargetProcess(HANDLE process,
                                                HANDLE blame_thread,
                                                DWORD exception_code) {
-  // Confirm we're on Vista or later.
-  const DWORD version = GetVersion();
-  const DWORD major_version = LOBYTE(LOWORD(version));
-  if (major_version < 6) {
+  if (!IsWindowsVistaOrGreater()) {
     LOG(ERROR) << "unavailable before Vista";
     return false;
   }
@@ -924,7 +957,7 @@ bool CrashpadClient::DumpAndCrashTargetProcess(HANDLE process,
 
     // ecx = kTriggeredExceptionCode for dwExceptionCode.
     data_to_write.push_back(0xb9);
-    AddUint32(&data_to_write, kTriggeredExceptionCode);
+    AddUint32(&data_to_write, ExceptionCodes::kTriggeredExceptionCode);
 
     // jmp to RaiseException() via rax.
     data_to_write.push_back(0x48);  // mov rax, imm.

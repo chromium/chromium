@@ -1,0 +1,6 @@
+over1.AXMathOver.AXChildren.count=1
+over1.AXMathOver.AXChildren[0].AXValue='2'
+over2.AXMathOver=NULL
+underover1.AXMathOver.AXChildren.count=1
+underover1.AXMathOver.AXChildren[0].AXValue='3'
+underover2.AXMathOver=NULL

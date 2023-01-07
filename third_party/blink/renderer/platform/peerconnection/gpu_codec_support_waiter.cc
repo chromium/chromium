@@ -1,11 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/peerconnection/gpu_codec_support_waiter.h"
 
-#include "base/sequenced_task_runner.h"
+#include "base/logging.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "third_party/blink/public/common/features.h"
@@ -31,15 +32,15 @@ class RefCountedWaitableEvent
   ~RefCountedWaitableEvent() = default;
 };
 
-base::Optional<base::TimeDelta> GetCodecSupportWaitTimeoutMs() {
+absl::optional<base::TimeDelta> GetCodecSupportWaitTimeoutMs() {
   if (!base::FeatureList::IsEnabled(features::kRTCGpuCodecSupportWaiter)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
   int timeout_ms = base::GetFieldTrialParamByFeatureAsInt(
       features::kRTCGpuCodecSupportWaiter,
       features::kRTCGpuCodecSupportWaiterTimeoutParam.name,
       features::kRTCGpuCodecSupportWaiterTimeoutParam.default_value);
-  return base::TimeDelta::FromMilliseconds(timeout_ms);
+  return base::Milliseconds(timeout_ms);
 }
 
 void OnCodecSupportKnown(

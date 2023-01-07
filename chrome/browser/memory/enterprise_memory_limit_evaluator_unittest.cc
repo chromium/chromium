@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/util/memory_pressure/multi_source_memory_pressure_monitor.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace memory {
@@ -14,7 +14,7 @@ namespace memory {
 TEST(EnterpriseMemoryLimitEvaluatorTest, OnProcessMemoryMetricsAvailable) {
   base::test::TaskEnvironment task_environment;
 
-  util::MultiSourceMemoryPressureMonitor monitor;
+  memory_pressure::MultiSourceMemoryPressureMonitor monitor;
   monitor.ResetSystemEvaluatorForTesting();
   bool cb_called = false;
   monitor.SetDispatchCallback(base::BindLambdaForTesting(

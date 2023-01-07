@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ class TabListContainerViewBinder {
             }
         } else if (IS_INCOGNITO == propertyKey) {
             view.setBackgroundColor(ChromeColors.getPrimaryBackgroundColor(
-                    view.getResources(), model.get(IS_INCOGNITO)));
+                    view.getContext(), model.get(IS_INCOGNITO)));
         } else if (VISIBILITY_LISTENER == propertyKey) {
             view.setVisibilityListener(model.get(VISIBILITY_LISTENER));
         } else if (INITIAL_SCROLL_INDEX == propertyKey) {

@@ -4,25 +4,42 @@ include_rules = [
   # These are low-level system APIs on ChromeOS that need to be available
   # everywhere.
   "+chromeos/crosapi/cpp/crosapi_constants.h",
-  "+chromeos/lacros/lacros_chrome_service_impl.h",
+  "+chromeos/lacros/lacros_service.h",
+  "+chromeos/lacros/lacros_test_helper.h",
   "+chromeos/startup/startup_switches.h",
 
+  # Tests can use all content/public headers.
   "+content/public",
+
+  # This file does not belong in content/public as it should not be
+  # included directly by embedders of content/.  It must however be
+  # available to code in content/public.
+  "+content/common/content_export.h",
+
+  "+components/breadcrumbs/core",
   "+components/discardable_memory/service",
   "+components/download/public/common",
+  "+components/enterprise/common/download_item_reroute_info.h",
   "+components/leveldb_proto/public",
+  "+components/network_session_configurator/common/network_switches.h",
+  "+components/services/storage/privileged",
   "+components/services/storage/public",
+  "+components/startup_metric_utils/browser",
+  "+components/ukm/test_ukm_recorder.h",
   "+components/viz/client",
   "+components/viz/common",
   "+components/viz/host",
   "+components/viz/test",
   "+device/vr/public/mojom",
   "+services/audio",
+  "+services/cert_verifier",
   "+services/metrics/public/cpp",
   "+services/network",
   "+services/service_manager",
   "+services/tracing/public/cpp",
   "+testing/android/native_test/native_browser_test_support.h",
+  "+ui/base/resource/resource_bundle.h",
+  "+ui/base/resource/resource_bundle_android.h",
   "+ui/ozone/public",
   "+ui/views",
   "+v8/include/v8.h",
@@ -45,5 +62,8 @@ specific_include_rules = {
   # directly.
   "content_browser_test_shell_main_delegate.h": [
     "+content/shell/app/shell_main_delegate.h"
+  ],
+  "browser_test_base.cc": [
+    "+ui/platform_window/fuchsia/initialize_presenter_api_view.h"
   ]
 }

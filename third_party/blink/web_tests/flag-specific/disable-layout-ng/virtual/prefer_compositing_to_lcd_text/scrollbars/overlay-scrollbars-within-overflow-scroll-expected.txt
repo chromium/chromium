@@ -1,40 +1,54 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutBlockFlow DIV id='outer'",
-      "bounds": [402, 302]
+      "position": [1, 1],
+      "bounds": [400, 300],
+      "drawsContent": false
     },
     {
-      "name": "Scrolling Contents Layer",
+      "name": "LayoutBlockFlow DIV id='outer'",
       "position": [1, 1],
-      "bounds": [400, 602],
+      "bounds": [400, 500],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
       "transform": 1
     },
     {
       "name": "LayoutBlockFlow DIV id='inner'",
       "bounds": [102, 102],
+      "contentsOpaqueForText": true,
       "transform": 2
     },
     {
-      "name": "Scrolling Contents Layer",
+      "name": "LayoutBlockFlow DIV id='inner'",
+      "position": [1, 1],
+      "bounds": [100, 100],
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='inner'",
       "position": [1, 1],
       "bounds": [100, 500],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
       "transform": 2
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [94, 1],
       "bounds": [7, 100],
       "transform": 2
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [394, 1],
       "bounds": [7, 300]
     }

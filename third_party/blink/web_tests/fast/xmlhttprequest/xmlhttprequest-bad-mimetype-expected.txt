@@ -1,10 +1,9 @@
-CONSOLE WARNING: line 29: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 This test checks for <rdar://problem/5303567> REGRESSION: XMLHttpRequest.responseXML returns NULL if response MIME type is not XML -- breaks Wikipedia widget
 
 PASS: No exception.
 readyState: 4 (number)
 responseText: <?xml version="1.0" encoding="UTF-8"?>... (string)
 responseXML: [object XMLDocument] (object)
-status: 0 (number)
-statusText:  (string)
+status: 200 (number)
+statusText: OK (string)
 

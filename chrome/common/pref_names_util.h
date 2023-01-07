@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,6 @@
 #define CHROME_COMMON_PREF_NAMES_UTIL_H_
 
 #include <string>
-
-#include "components/prefs/pref_service.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace pref_names_util {
 
@@ -21,9 +18,6 @@ extern const char kWebKitFontPrefPrefix[];
 bool ParseFontNamePrefPath(const std::string& pref_path,
                            std::string* generic_family,
                            std::string* script);
-
-// Constructs the CaptionStyle struct from the caption-related preferences.
-base::Optional<ui::CaptionStyle> GetCaptionStyleFromPrefs(PrefService* prefs);
 
 }  // namespace pref_names_util
 

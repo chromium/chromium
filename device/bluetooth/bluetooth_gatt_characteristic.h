@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -86,6 +85,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristic {
   using ErrorCallback =
       base::OnceCallback<void(BluetoothGattService::GattErrorCode)>;
 
+  BluetoothGattCharacteristic(const BluetoothGattCharacteristic&) = delete;
+  BluetoothGattCharacteristic& operator=(const BluetoothGattCharacteristic&) =
+      delete;
+
   // Identifier used to uniquely identify a GATT characteristic object. This is
   // different from the characteristic UUID: while multiple characteristics with
   // the same UUID can exist on a Bluetooth device, the identifier returned from
@@ -105,9 +108,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattCharacteristic {
  protected:
   BluetoothGattCharacteristic();
   virtual ~BluetoothGattCharacteristic();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattCharacteristic);
 };
 
 }  // namespace device

@@ -1,13 +1,15 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/gcm_driver/crypto/gcm_key_store.h"
 
+#include <memory>
 #include <string>
 
 #include "base/base64url.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/files/scoped_temp_dir.h"
@@ -75,9 +77,9 @@ class GCMKeyStoreTest : public ::testing::Test {
   // Creates the GCM Key Store instance. May be called from within a test's body
   // to re-create the key store, causing the database to re-open.
   void CreateKeyStore() {
-    gcm_key_store_.reset(
-        new GCMKeyStore(scoped_temp_dir_.GetPath(),
-                        task_environment_.GetMainThreadTaskRunner()));
+    gcm_key_store_ = std::make_unique<GCMKeyStore>(
+        scoped_temp_dir_.GetPath(),
+        task_environment_.GetMainThreadTaskRunner());
   }
 
   // Callback to use with GCMKeyStore::{GetKeys, CreateKeys} calls.

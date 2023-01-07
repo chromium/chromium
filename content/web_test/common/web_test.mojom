@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,9 @@ struct WebTestRunTestConfiguration {
 
   // The expected MD5 hash of the pixel results.
   string expected_pixel_hash;
+
+  // Whether the test is supposed to run as a WPT print reftest.
+  bool wpt_print_mode;
 
   // Whether the test is running in protocol mode.
   // See TestInfo::protocol_mode in browser/web_test/test_info_extractor.h.
@@ -103,11 +106,12 @@ interface WebTestRenderFrame {
   DumpFrameLayout() => (string frame_layout_dump);
 
   // Sets the test config for a web test that is being started.  This message
-  // is sent once to each RenderView that hosts parts of the main test window.
-  // The `starting_test` indicates if this is the first call to this IPC method
+  // is sent once to each `blink::WebView` that hosts parts of the main test
+  // window.
+  // `starting_test` indicates if this is the first call to this IPC method
   // for the given test. After the initial call, this may be called for new
-  // RenderViews created to host frames for the main window, either as OOPIFs or
-  // to handle cross-site navigations.
+  // `blink::WebView`s created to host frames for the main window, either as
+  // OOPIFs or to handle cross-site navigations.
   SetTestConfiguration(WebTestRunTestConfiguration config, bool starting_test);
 
   // Notifies a frame that has been navigated away. This is called only on main
@@ -134,24 +138,31 @@ interface WebTestRenderThread {
   // 1) broadcasting change happening in one renderer to all other renderers, or
   // 2) sending accumulated changes to a single new renderer.
   ReplicateWebTestRuntimeFlagsChanges(
-      mojo_base.mojom.DictionaryValue changed_layout_test_runtime_flags);
+      mojo_base.mojom.DictionaryValue
+      changed_layout_test_runtime_flags);
 
   // Called on the renderer process with the main window's local main frame to
   // conclude the test. Used to bounce this request from another renderer.
   TestFinishedFromSecondaryRenderer();
 
-  // Tells the renderer to navigate the main window's main frame to about:blank
-  // and reset all state in preparation for the next test. This happens before
+  // Reset all state in preparation for the next test. This happens before
   // leak detection in order for the test harness to drop anything that tests
   // passed in and which could cause a leak otherwise.
-  ResetRendererAfterWebTest() => ();
+  // The flow is:
+  // - browser process detects test is finished
+  // - browser process initiates navigation to about:blank and waits for the
+  //   document to commit.
+  // - browser process calls ResetRendererAfterWebTest() for the renderer
+  //   process that about:blank committed in.
+  ResetRendererAfterWebTest();
 
   // Processes a work item. This is called for the process with the main
   // window's main frame.
   ProcessWorkItem(WorkItem work_item);
 
   // Syncs the work queue states to the new renderer.
-  ReplicateWorkQueueStates(mojo_base.mojom.DictionaryValue work_queue_states);
+  ReplicateWorkQueueStates(
+      mojo_base.mojom.DictionaryValue work_queue_states);
 };
 
 // Web test messages sent from the renderer process to the browser. This
@@ -315,4 +326,15 @@ interface WebTestControlHost {
   // Notifies the browser that the work queue states changed.
   WorkQueueStatesChanged(
       mojo_base.mojom.DictionaryValue changed_work_queue_states);
+
+  // Set Accept Languages via RendererPreferences on the WebContents.
+  SetAcceptLanguages(string accept_languages);
+
+  // Enable Auto Resize mode. This will cause a layout of the content and
+  // the new size will be determined by the renderer after it dispatches
+  // the resize event.
+  EnableAutoResize(gfx.mojom.Size min_size, gfx.mojom.Size max_size);
+
+  // Disable Auto Resize mode, resizing the contents to `new_size`.
+  DisableAutoResize(gfx.mojom.Size new_size);
 };

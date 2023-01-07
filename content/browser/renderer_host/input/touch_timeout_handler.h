@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/browser/renderer_host/input/timeout_monitor.h"
@@ -55,7 +55,7 @@ class TouchTimeoutHandler {
   base::TimeDelta GetTimeoutDelay() const;
   bool HasTimeoutEvent() const;
 
-  PassthroughTouchEventQueue* touch_queue_;
+  raw_ptr<PassthroughTouchEventQueue> touch_queue_;
 
   // How long to wait on a touch ack before cancelling the touch sequence.
   const base::TimeDelta desktop_timeout_delay_;

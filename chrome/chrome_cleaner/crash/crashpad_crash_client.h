@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/sequence_checker.h"
 #include "chrome/chrome_cleaner/crash/crash_client.h"
@@ -26,6 +25,9 @@ namespace chrome_cleaner {
 // This class manages interaction with the Crashpad reporter.
 class CrashpadCrashClient : public CrashClient {
  public:
+  CrashpadCrashClient(const CrashpadCrashClient&) = delete;
+  CrashpadCrashClient& operator=(const CrashpadCrashClient&) = delete;
+
   ~CrashpadCrashClient() override;
 
   // Initializes the crash database only. Used in the crash reporter, which
@@ -58,8 +60,6 @@ class CrashpadCrashClient : public CrashClient {
 
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<crashpad::CrashReportDatabase> database_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashpadCrashClient);
 };
 
 }  // namespace chrome_cleaner

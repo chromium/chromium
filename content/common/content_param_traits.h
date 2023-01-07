@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,17 +14,18 @@
 #ifndef CONTENT_COMMON_CONTENT_PARAM_TRAITS_H_
 #define CONTENT_COMMON_CONTENT_PARAM_TRAITS_H_
 
-#include "base/memory/ref_counted.h"
-#include "cc/ipc/cc_param_traits_macros.h"
+#include "content/common/content_export.h"
 #include "content/common/content_param_traits_macros.h"
 #include "ipc/ipc_mojo_param_traits.h"
-#include "net/base/hash_value.h"
-#include "ui/accessibility/ax_mode.h"
 
 namespace blink {
-class PolicyValue;
 class MessagePortChannel;
 class MessagePortDescriptor;
+class PolicyValue;
+}  // namespace blink
+
+namespace ui {
+class AXMode;
 }
 
 namespace viz {
@@ -109,16 +110,6 @@ struct CONTENT_EXPORT ParamTraits<viz::SurfaceId> {
 template <>
 struct CONTENT_EXPORT ParamTraits<viz::SurfaceInfo> {
   typedef viz::SurfaceInfo param_type;
-  static void Write(base::Pickle* m, const param_type& p);
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r);
-  static void Log(const param_type& p, std::string* l);
-};
-
-template <>
-struct CONTENT_EXPORT ParamTraits<net::SHA256HashValue> {
-  typedef net::SHA256HashValue param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,

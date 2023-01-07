@@ -15,7 +15,7 @@
         PerfTestRunner.measureTime({
             description: "Measures the performance of a single class selector with inherited property.",
             run: function() {
-                var rule = applyCSSRule(".test { color: red; }");
+                var rule = applyCSSRule(".test { cursor: crosshair; }");
                 forceStyleRecalc(document.body);
                 rule.remove();
                 forceStyleRecalc(document.body);

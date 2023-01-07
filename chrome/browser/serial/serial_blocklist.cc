@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <string>
 #include <tuple>
 
+#include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "services/device/public/mojom/serial.mojom.h"
@@ -58,8 +60,9 @@ constexpr SerialBlocklist::Entry kStaticEntries[] = {
 
 }  // namespace
 
-constexpr base::Feature kWebSerialBlocklist{"WebSerialBlocklist",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kWebSerialBlocklist,
+             "WebSerialBlocklist",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<std::string> kWebSerialBlocklistAdditions{
     &kWebSerialBlocklist, "BlocklistAdditions", /*default_value=*/""};

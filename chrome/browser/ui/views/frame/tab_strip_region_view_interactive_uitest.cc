@@ -1,14 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 
-#include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
@@ -17,9 +16,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/views/layout/flex_layout.h"
 
-class TabStripRegionViewBrowserTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+class TabStripRegionViewBrowserTest : public InProcessBrowserTest {
  public:
   TabStripRegionViewBrowserTest() = default;
   TabStripRegionViewBrowserTest(const TabStripRegionViewBrowserTest&) = delete;
@@ -28,12 +25,17 @@ class TabStripRegionViewBrowserTest
   ~TabStripRegionViewBrowserTest() override = default;
 
   void SetUp() override {
-    // Run the test with both kTabSearchFixedEntrypoint enabled and disabled.
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures({features::kTabSearch}, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures({}, {features::kTabSearch});
-    }
+    // Ensure we run our tests with the tab search button placement configured
+    // for the tab strip region view.
+#if BUILDFLAG(IS_CHROMEOS)
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kChromeOSTabSearchCaptionButton);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kWin10TabSearchCaptionButton);
+#endif
     InProcessBrowserTest::SetUp();
   }
 
@@ -50,7 +52,7 @@ class TabStripRegionViewBrowserTest
   TabStrip* tab_strip() { return browser_view()->tabstrip(); }
 
   TabSearchButton* tab_search_button() {
-    return browser_view()->GetTabSearchButton();
+    return tab_strip_region_view()->tab_search_button();
   }
 
   views::View* new_tab_button() {
@@ -61,7 +63,7 @@ class TabStripRegionViewBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestForwardFocus) {
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestForwardFocus) {
   AppendTab();
   AppendTab();
   Tab* tab_0 = tab_strip()->tab_at(0);
@@ -96,10 +98,8 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestForwardFocus) {
   move_forward_over_tab(tab_2);
   EXPECT_TRUE(new_tab_button()->HasFocus());
 
-  if (base::FeatureList::IsEnabled(features::kTabSearch)) {
-    press_right();
-    EXPECT_TRUE(tab_search_button()->HasFocus());
-  }
+  press_right();
+  EXPECT_TRUE(tab_search_button()->HasFocus());
 
   // Focus should cycle back around to tab_0.
   press_right();
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestForwardFocus) {
   EXPECT_TRUE(tab_strip_region_view()->pane_has_focus());
 }
 
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestReverseFocus) {
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestReverseFocus) {
   AppendTab();
   AppendTab();
   Tab* tab_0 = tab_strip()->tab_at(0);
@@ -134,10 +134,8 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestReverseFocus) {
   EXPECT_TRUE(tab_0->HasFocus());
 
   // Pressing left should immediately cycle back around to the last button.
-  if (base::FeatureList::IsEnabled(features::kTabSearch)) {
-    press_left();
-    EXPECT_TRUE(tab_search_button()->HasFocus());
-  }
+  press_left();
+  EXPECT_TRUE(tab_search_button()->HasFocus());
   press_left();
   EXPECT_TRUE(new_tab_button()->HasFocus());
 
@@ -151,7 +149,7 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestReverseFocus) {
   EXPECT_TRUE(tab_0->HasFocus());
 }
 
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
   AppendTab();
   AppendTab();
   Tab* tab_0 = tab_strip()->tab_at(0);
@@ -167,27 +165,17 @@ IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
 
   EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
       tab_strip_region_view()->end_key()));
-  if (base::FeatureList::IsEnabled(features::kTabSearch)) {
-    EXPECT_TRUE(tab_search_button()->HasFocus());
-  } else {
-    EXPECT_TRUE(new_tab_button()->HasFocus());
-  }
+  EXPECT_TRUE(tab_search_button()->HasFocus());
 
   EXPECT_TRUE(tab_strip_region_view()->AcceleratorPressed(
       tab_strip_region_view()->home_key()));
   EXPECT_TRUE(tab_0->HasFocus());
 }
 
-IN_PROC_BROWSER_TEST_P(TabStripRegionViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest,
                        TestSearchButtonIsEndAligned) {
-  if (base::FeatureList::IsEnabled(features::kTabSearch)) {
-    const int kRightMargin =
-        GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING);
-    EXPECT_EQ(tab_strip_region_view()->GetLocalBounds().right() - kRightMargin,
-              tab_search_button()->bounds().right());
-  }
+  const int kRightMargin =
+      GetLayoutConstant(TABSTRIP_REGION_VIEW_CONTROL_PADDING);
+  EXPECT_EQ(tab_strip_region_view()->GetLocalBounds().right() - kRightMargin,
+            tab_search_button()->bounds().right());
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         TabStripRegionViewBrowserTest,
-                         ::testing::Values(true, false));

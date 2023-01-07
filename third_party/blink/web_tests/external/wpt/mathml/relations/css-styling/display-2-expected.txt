@@ -1,0 +1,20 @@
+This is a testharness.js-based test.
+PASS block display
+PASS block display with contrained width
+PASS list display inside display block
+PASS inline display
+PASS inline-block display
+PASS table display (math)
+PASS table display (mrow)
+PASS inline-table display (math)
+PASS inline-table display (mrow)
+PASS flexbox display (math)
+PASS flexbox display (mrow)
+PASS grid display (math)
+PASS grid display (mrow)
+FAIL ruby display (math) assert_approx_equals: block size expected 78 +/- 1 but got 29
+FAIL ruby display (mrow) assert_approx_equals: block size expected 78 +/- 1 but got 45
+FAIL block display with column width (math) assert_approx_equals: block size expected 78 +/- 1 but got 45
+FAIL block display with column width (mrow) assert_approx_equals: block size expected 78 +/- 1 but got 45
+Harness: the test ran to completion.
+

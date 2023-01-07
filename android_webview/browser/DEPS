@@ -7,7 +7,7 @@ include_rules = [
   "+android_webview/proto",
   "+android_webview/test/android_webview_unittests_jni",
   "+cc",
-  "+components/autofill/android",
+  "+components/android_autofill/browser",
   "+components/autofill/content/browser",
   "+components/autofill/content/common",
   "+components/autofill/core/browser",
@@ -18,15 +18,16 @@ include_rules = [
   "+components/crash/content/browser",
   "+components/crash/core",
   "+components/download/public/common",
-  "+components/embedder_support/android/metrics",
-  "+components/embedder_support/origin_trials",
+  "+components/embedder_support",
   "+components/favicon_base",
   "+components/flags_ui",
   "+components/heap_profiling",
   "+components/keyed_service/core",
   "+components/minidump_uploader",
   "+components/navigation_interception",
+  "+components/optimization_guide/core/bloom_filter.h",
   "+components/page_load_metrics/browser",
+  "+components/permissions",
   "+components/policy/core/browser",
   "+components/policy/core/common",
   "+components/policy/content",
@@ -34,12 +35,19 @@ include_rules = [
   "+components/pref_registry",
   "+components/printing/browser",
   "+components/printing/common",
-  "+components/safe_browsing",
+  "+components/profile_metrics",
+  "+components/safe_browsing/android",
+  "+components/safe_browsing/content/browser",
+  "+components/safe_browsing/core/browser",
+  "+components/safe_browsing/core/common",
   "+components/security_interstitials",
   "+components/services/heap_profiling",
   "+components/spellcheck/browser",
   "+components/spellcheck/common",
+  "+components/strings",
+  "+components/tracing/common",
   "+components/url_formatter",
+  "+components/url_matcher",
   "+components/user_prefs",
   "+components/variations",
   "+components/visitedlink/browser",
@@ -90,7 +98,12 @@ include_rules = [
   "+storage/browser/quota",
   "+storage/common/quota",
 
+  "+third_party/blink/public/common/client_hints/enabled_client_hints.h",
+  "+third_party/blink/public/common/features.h",
   "+third_party/blink/public/common/page_state/page_state.h",
+  "+third_party/blink/public/common/permissions/permission_utils.h",
+  "+third_party/blink/public/common/storage_key/storage_key.h",
+  "+third_party/blink/public/common/user_agent/user_agent_metadata.h",
   "+third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h",
   "+third_party/crashpad/crashpad/client",
   "+third_party/crashpad/crashpad/util",
@@ -105,7 +118,7 @@ include_rules = [
   "!ui/resources/grit/ui_resources.h",
 
   # For using the same legacy IPC channel for mojo.
-  "+third_party/blink/public/common/associated_interfaces/associated_interface_provider.h",
+  "+third_party/blink/public/common/associated_interfaces",
   # Required for AwURLLoaderThrottle.
   "+third_party/blink/public/common/loader/url_loader_throttle.h",
   # For messaging between embedders and Javascript content.
@@ -115,6 +128,7 @@ include_rules = [
   # QuotaStatusCode required by AwQuotaManagerBridge.
   "+third_party/blink/public/mojom/quota",
   "+third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h",
+  "+third_party/blink/public/mojom/mediastream/media_stream.mojom.h",
   # For favicon url
   "+third_party/blink/public/mojom/favicon",
   # For find-in-page
@@ -126,4 +140,6 @@ include_rules = [
   "+third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h",
   # For the content_browser overlay manifest
   "+third_party/blink/public/mojom/input",
+  # For background tracing setup.
+  "+third_party/metrics_proto",
 ]

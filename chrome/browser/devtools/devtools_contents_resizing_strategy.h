@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_DEVTOOLS_DEVTOOLS_CONTENTS_RESIZING_STRATEGY_H_
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_CONTENTS_RESIZING_STRATEGY_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -17,6 +16,11 @@ class DevToolsContentsResizingStrategy {
   DevToolsContentsResizingStrategy();
   explicit DevToolsContentsResizingStrategy(
       const gfx::Rect& bounds);
+
+  DevToolsContentsResizingStrategy(const DevToolsContentsResizingStrategy&) =
+      delete;
+  DevToolsContentsResizingStrategy& operator=(
+      const DevToolsContentsResizingStrategy&) = delete;
 
   void CopyFrom(const DevToolsContentsResizingStrategy& strategy);
   bool Equals(const DevToolsContentsResizingStrategy& strategy);
@@ -30,8 +34,6 @@ class DevToolsContentsResizingStrategy {
 
   // Determines whether inspected contents is visible.
   bool hide_inspected_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsContentsResizingStrategy);
 };
 
 // Applies contents resizing strategy, producing bounds for devtools and

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "ui/wm/core/wm_core_export.h"
+#include "base/component_export.h"
 
 namespace wm {
 
@@ -17,9 +16,13 @@ class TransientWindowController;
 class TransientWindowStackingClient;
 
 // Installs state needed by the window manager.
-class WM_CORE_EXPORT WMState {
+class COMPONENT_EXPORT(UI_WM) WMState {
  public:
   WMState();
+
+  WMState(const WMState&) = delete;
+  WMState& operator=(const WMState&) = delete;
+
   ~WMState();
 
  private:
@@ -27,8 +30,6 @@ class WM_CORE_EXPORT WMState {
   std::unique_ptr<TransientWindowController> transient_window_client_;
   // NOTE: this is really only needed in ash
   std::unique_ptr<CaptureController> capture_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(WMState);
 };
 
 }  // namespace wm

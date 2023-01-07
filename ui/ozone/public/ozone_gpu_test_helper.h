@@ -1,20 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PUBLIC_OZONE_GPU_THREAD_HELPER_H_
-#define UI_OZONE_PUBLIC_OZONE_GPU_THREAD_HELPER_H_
+#ifndef UI_OZONE_PUBLIC_OZONE_GPU_TEST_HELPER_H_
+#define UI_OZONE_PUBLIC_OZONE_GPU_TEST_HELPER_H_
 
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-class Thread;
-}
 
 namespace ui {
 
@@ -27,19 +21,19 @@ class FakeGpuConnection;
 class COMPONENT_EXPORT(OZONE) OzoneGpuTestHelper {
  public:
   OzoneGpuTestHelper();
+
+  OzoneGpuTestHelper(const OzoneGpuTestHelper&) = delete;
+  OzoneGpuTestHelper& operator=(const OzoneGpuTestHelper&) = delete;
+
   virtual ~OzoneGpuTestHelper();
 
   // Binds mojo endpoints on "gpu" and "ui".
-  bool Initialize(
-      const scoped_refptr<base::SingleThreadTaskRunner>& ui_task_runner);
+  bool Initialize();
 
  private:
   std::unique_ptr<FakeGpuConnection> fake_gpu_connection_;
-  std::unique_ptr<base::Thread> io_helper_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(OzoneGpuTestHelper);
 };
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PUBLIC_OZONE_GPU_THREAD_HELPER_H_
+#endif  // UI_OZONE_PUBLIC_OZONE_GPU_TEST_HELPER_H_

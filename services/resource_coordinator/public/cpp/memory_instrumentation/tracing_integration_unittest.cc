@@ -1,15 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/task_environment.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/client_process_impl.h"
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
 #include "base/test/trace_event_analyzer.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -132,7 +133,7 @@ class MockCoordinator : public mojom::Coordinator {
 
  private:
   mojo::ReceiverSet<mojom::Coordinator> receivers_;
-  MemoryTracingIntegrationTest* client_;
+  raw_ptr<MemoryTracingIntegrationTest> client_;
 };
 
 class MemoryTracingIntegrationTest : public testing::Test {
@@ -270,7 +271,7 @@ void MockCoordinator::RequestGlobalMemoryDumpAndAppendToTrace(
     MemoryDumpDeterminism determinism,
     RequestGlobalMemoryDumpAndAppendToTraceCallback callback) {
   client_->RequestChromeDump(dump_type, level_of_detail, determinism);
-  std::move(callback).Run(1, true);
+  std::move(callback).Run(true, true);
 }
 
 // Checks that is the ClientProcessImpl is initialized after tracing already

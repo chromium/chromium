@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -24,6 +24,7 @@ source_set("local_device_data") {
     "//chrome/app:generated_resources_grit",
     "//chrome/browser/nearby_sharing/client",
     "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/nearby_sharing/logging",
     "//chrome/browser/nearby_sharing/proto",
     "//chrome/browser/nearby_sharing/scheduling",
     "//components/prefs",

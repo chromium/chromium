@@ -1,0 +1,187 @@
+<!-- Minified version from
+https://service.moi.gov.tw/ecss/bin/ite007q0.asp?tMode=1 to check that the
+string ".zip" in a label does not get recognized as a zip code. -->
+<html>
+<head>
+
+<title>內政部部長電子信箱</title>
+<meta http-equiv="Content-Type" content="text/html; charset=big5">
+
+</head>
+<body>
+
+<center>
+<hr>
+      <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+                 <tr>
+                  <td><font class="text"><font color=#ff0000>姓名 Name(必填)</font></font></td>      <td><input type="text" name="Imrname" size="12" maxlength="60"></td>
+        </tr>
+
+                <tr>
+                  <td width="50%" height="32" class=text><font color=#ff0000>電子信箱地址E-mail(必填)</font><br>請注意<br><font color="#0d30aa">部分免費e-mail廠商拒收本部e-mail，若您使用免費信箱，您可能無法收到本部通知函！例如：pchome等免費e-mail</font></td>
+                  <td width="50%"><input type="text" name="Inmmail" size="55" maxlength=120></td>
+                </tr>
+
+                <tr>
+                  <td width="50%" height="32" class=text><font color=#ff0000>信件主旨Subject<br>(必填，最長120個字元)</font></td>
+                  <td width="50%"><input type="text" name="Inmsubject" size="55" maxlength=120></td>
+                </tr>
+                <tr>
+                  <td width="50%" class=text><font color=#ff0000>內容Content(必填)</font> <br>請注意<br><font color="#0d30aa">須使用正體中文(BIG-5 或 UTF-8編碼)，勿用簡體字或GB2312編碼，以免來信內容亂碼被誤判為垃圾信。</font></font> </td>
+                  <td width="50%"><TEXTAREA cols=50 name="Inmmain" rows=7></TEXTAREA>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="50%" height="32" class=text>附加檔案Attachment<br><font color="#0d30aa">(檔名請使用英文及數字命名，勿用特殊字元及非英數字母以外字元，檔名勿超過 10 個字元，檔案格式限定為 .doc(x),.xls(x),.txt,.jpg,<BR>.bmp,.gif, .rar,.zip,.pdf,<br />.mp3,.mp4,.avi , 每個檔案最多3MB,如果您附件數量過多或過大,請先壓縮後再傳送)</font></td>
+                   <td width="50%">
+            <input type="text" name="Iattachname1" size="40" value="">
+            <a href="ite001a3.asp?Itype=Mailor&Iattach=1" target="FileUpload" onclick="window.open('ite001a3.asp?Itype=Mailor&Iattach=1', 'FileUpload','toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=no,copyhistory=yes,width=600,height=320')">加入附件</a>
+            <input type="hidden" name="Inmattach1" value="">
+
+            <input type="text" name="Iattachname2" size="40" value="">
+            <a href="ite001a3.asp?Itype=Mailor&Iattach=2" target="FileUpload" onclick="window.open('ite001a3.asp?Itype=Mailor&Iattach=2', 'FileUpload','toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=no,copyhistory=yes,width=600,height=320')">加入附件</a>
+            <input type="hidden" name="Inmattach2" value="">
+
+            <input type="text" name="Iattachname3" size="40" value="">
+            <a href="ite001a3.asp?Itype=Mailor&Iattach=3" target="FileUpload" onclick="window.open('ite001a3.asp?Itype=Mailor&Iattach=3', 'FileUpload','toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=yes,resizable=no,copyhistory=yes,width=600,height=320')">加入附件</a>
+            <input type="hidden" name="Inmattach3" value="">
+                 </td>
+                </tr>
+
+        <tr>
+                  <td width="50%">&nbsp;</td>
+                  <td width="50%" class="text">&nbsp;<a href="ite007q7.asp#Attach">附加檔案使用說明</a><BR><font class="text"><font color=red >( 如因網路或瀏覽器安全性等因素導致您無法順利上傳檔案，請您改以mail方式傳送至本部部長信箱郵件位址 <a href="mailto:service@minister.moi.gov.tw">service@minister.moi.gov.tw</a>，謝謝您！)</font></font></td>
+
+                </tr>
+
+              <tr>
+                  <td><font class="text"><font color=#ff0000>請輸入右方確認碼(必填)</font></font></td>      <td><input type="text" name="check_value" size="12" maxlength="6">
+          <img src="validcode.asp" onclick="this.src='validcode.asp?rnd='+Math.random();" > (點選圖片可更換)
+         </td>
+         </tr>
+
+          <tr>
+                   <td width="50%">&nbsp;</td>
+               <td width="50%"><input type="checkbox" name="Epaper" value="ON">
+                    <font class=text><font color=#ff0000>我要訂閱政策及法令宣導</font></font></td>
+                </tr>
+                        <tr>
+                  <td colspan="2">
+                  <hr>
+                  </td>
+                </tr>
+
+                </table>
+
+非必填欄位<hr>
+  <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+<td><font class=text>地區 Region</font></td><td>
+<select name="ImailorAttr1" size=1 onChange="">
+  <option value="" selected></option>
+  <option value="Other Region">國外</option>
+  <option value="Taipei City">臺北市</option>
+  <option value="New Taipei City">新北市</option>
+  <option value="Chilong City">基隆市</option>
+  <option value="Hsin-Chu City">新竹市</option>
+  <option value="Taichung City">臺中市</option>
+  <option value="Chiayi City">嘉義市</option>
+  <option value="Tainan City">臺南市</option>
+  <option value="Kao-Hsiung City">高雄市</option>
+  <option value="Taoyuan City">桃園市</option>
+  <option value="Hsin-Chu Hsien">新竹縣</option>
+  <option value="Miaoli Hsien">苗栗縣</option>
+  <option value="Nantou Hsien">南投縣</option>
+  <option value="Changhua Hsien">彰化縣</option>
+  <option value="Yunlin Hsien">雲林縣</option>
+  <option value="Chiayi Hsien">嘉義縣</option>
+  <option value="Pintung Hsien">屏東縣</option>
+  <option value="Yilan Hsien">宜蘭縣</option>
+  <option value="Hua-Lien Hsien">花蓮縣</option>
+  <option value="Taitung Hsien">臺東縣</option>
+  <option value="Penghu Hsien">澎湖縣</option>
+  <option value="Chinmem Hsien">金門縣</option>
+  <option value="Lienchiang Hsien">連江縣</option>
+</select><td>
+<td><font class=text>學歷 Level of Education</font></td><td>
+<select name="ImailorAttr2" size=1 onChange="">
+  <option value="" selected></option>
+  <option value="Primary School">小學及以下</option>
+  <option value="Junior High School">國(初)中</option>
+  <option value="High School">高中(職)</option>
+  <option value="College">專科</option>
+  <option value="University">大學</option>
+  <option value="Graduate and above">研究所及以上</option>
+</select><td>
+<td><font class=text>年齡 Age</font></td><td>
+<select name="ImailorAttr3" size=1 onChange="">
+  <option value="" selected></option>
+  <option value="Below 20">未滿20</option>
+  <option value="20~29">20~29</option>
+  <option value="30~39">30~39</option>
+  <option value="40~49">40~49</option>
+  <option value="50~64">50~64</option>
+  <option value="Above 65">65以上</option>
+</select><td>
+<td><font class=text>職業 Occupation</font></td><td>
+<select name="ImailorAttr4" size=1 onChange="">
+  <option value="" selected></option>
+  <option value="Farmer Fishery">農漁業</option>
+  <option value="Industry">工業</option>
+  <option value="Merchant">商業</option>
+  <option value="Service">服務業</option>
+  <option value="Military Government Teacher">軍公教</option>
+  <option value="Student">學生</option>
+  <option value="Housekeeper">家庭管理</option>
+  <option value="Other Occupation">其他行業</option>
+</select><td>
+
+</table>
+                <table width="100%" border="0" cellspacing="0" cellpadding="4" align="center">
+                 <tr>
+
+<input type="hidden" name="Imrpid" value="">   <td width="30"><font class="text">電話 TEL</font></td>
+          <td width="20" colspan=3><input type="text" name="Imrtel" size="12" maxlength="50"></td>
+         </tr>
+                 <tr>
+                  <td width="25%" height="32" class=text>性別 Gender</td>
+                  <td width="75%" colspan=3><input type=radio name="Imrsex" value=1 >男
+                  <input type=radio name="Imrsex" value=0>女</td>
+                 </tr>
+                 <tr>
+                  <td width="25%" height="32" class=text>地址 Address<br></td>
+                  <td width="75%" colspan=3><input type="text" name="Imraddress" size="55"></td>
+                 </tr>
+              </table>
+
+              <center><table>
+              <tr>
+                  <td width="70%" height="45" valign="center" align=center>
+                    <input type=hidden name="ImailorAttrCount" value="4">
+                    <input type=hidden name="issubmit">
+
+                    <input type=submit name="Isubmit" value="完成送出"  onclick="return check();">
+
+                    <input type=reset name="Ireset" value="重新輸入">
+                    <input type='hidden' name='wFunc' Value='Iins'><BR><BR>
+
+                  </td>
+                </tr>
+
+              </table></center>
+              <br>
+            </center>
+            </td>
+            <td rowspan="2" valign="top" align="middle" width="17%"><br>
+              <br>
+            </td>
+          </tr>
+        </table>
+</form>
+        <hr size="1">
+      </td>
+    </tr>
+  </table>
+</div>
+
+</body>
+</html>

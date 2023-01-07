@@ -13,12 +13,11 @@ is active, but resumes afterwards.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       let counter = 0;
 
       function stepBeforeImmersive() {
         onMagicWindowXRFrameCallback = function() {
+          console.log('Got first inline frame');
           // Verify that we call a rAF once, then make sure any subsequent calls
           // are not done while there is an immersive session.
           onMagicWindowXRFrameCallback = function() {
@@ -35,6 +34,7 @@ is active, but resumes afterwards.
         // Let the immersive session run for a bit so the non-immersive rAF
         // can fire if it's going to.
         onImmersiveXRFrameCallback = function() {
+          console.log('Got immersive frame, frame count: ' + counter);
           if (counter < 10) {
             counter++;
             return;

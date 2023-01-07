@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace client_update_protocol {
@@ -30,7 +29,16 @@ namespace client_update_protocol {
 // ValidateResponse().
 class Ecdsa {
  public:
+  Ecdsa() = delete;
+  Ecdsa(const Ecdsa&) = delete;
+  Ecdsa& operator=(const Ecdsa&) = delete;
+
   ~Ecdsa();
+
+  struct RequestParameters {
+    std::string query_cup2key;
+    std::string hash_hex;
+  };
 
   // Initializes this instance of CUP-ECDSA with a versioned public key.
   // |key_version| must be non-negative. |public_key| is expected to be a
@@ -50,6 +58,15 @@ class Ecdsa {
   void SignRequest(const base::StringPiece& request_body,
                    std::string* query_params);
 
+  // Generates freshness/authentication data for an outgoing ping.
+  // |request_body| contains the body of the ping in UTF-8. Returns the
+  // parameters that must be sent to the server for ECDSA authentication.
+  //
+  // This method will store internal state in this instance used by calls to
+  // ValidateResponse(); if you need to have multiple pings in flight,
+  // initialize a separate CUP-ECDSA instance for each one.
+  RequestParameters SignRequest(const base::StringPiece& request_body);
+
   // Validates a response given to a ping previously signed with
   // SignRequest(). |response_body| contains the body of the response in
   // UTF-8. |signature| contains the ECDSA signature and observed request
@@ -60,7 +77,8 @@ class Ecdsa {
                         const base::StringPiece& signature);
 
   // Sets the key and nonce that were used to generate a signature that is baked
-  // into a unit test.
+  // into a unit test. Note this function encodes |nonce| in decimal, while
+  // non-test paths use a base64url-encoded, 256-bit string.
   void OverrideNonceForTesting(int key_version, uint32_t nonce);
 
  private:
@@ -80,8 +98,6 @@ class Ecdsa {
   // The query string containing key version and nonce in UTF-8 form.  This is
   // modified on each call to SignRequest(), and checked by ValidateResponse().
   std::string request_query_cup2key_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(Ecdsa);
 };
 
 }  // namespace client_update_protocol

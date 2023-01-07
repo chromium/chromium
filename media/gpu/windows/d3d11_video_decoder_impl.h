@@ -1,16 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_D3D11_VIDEO_DECODER_IMPL_H_
-#define MEDIA_GPU_D3D11_VIDEO_DECODER_IMPL_H_
+#ifndef MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_IMPL_H_
+#define MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_IMPL_H_
 
 #include <d3d11_1.h>
 #include <wrl/client.h>
 
-#include <list>
 #include <memory>
-#include <string>
 #include <tuple>
 
 #include "base/callback.h"
@@ -43,6 +41,10 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoderImpl {
       std::unique_ptr<MediaLog> media_log,
       base::RepeatingCallback<scoped_refptr<CommandBufferHelper>()>
           get_helper_cb);
+
+  D3D11VideoDecoderImpl(const D3D11VideoDecoderImpl&) = delete;
+  D3D11VideoDecoderImpl& operator=(const D3D11VideoDecoderImpl&) = delete;
+
   virtual ~D3D11VideoDecoderImpl();
 
   using InitCB = base::OnceCallback<void(bool success, ReleaseMailboxCB)>;
@@ -80,10 +82,8 @@ class MEDIA_GPU_EXPORT D3D11VideoDecoderImpl {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<D3D11VideoDecoderImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(D3D11VideoDecoderImpl);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_D3D11_VIDEO_DECODER_IMPL_H_
+#endif  // MEDIA_GPU_WINDOWS_D3D11_VIDEO_DECODER_IMPL_H_

@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,4 +71,4 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothBatteryClient
 
 }  // namespace bluez
 
-#endif  // DEVICE_BLUETOOTH_DBUS_FAKE_BLUETOOTH_DEVICE_CLIENT_H_
+#endif  // DEVICE_BLUETOOTH_DBUS_FAKE_BLUETOOTH_BATTERY_CLIENT_H_

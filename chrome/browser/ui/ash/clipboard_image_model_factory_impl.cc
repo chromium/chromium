@@ -1,16 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/clipboard_image_model_factory_impl.h"
 
+#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile.h"
 
 ClipboardImageModelFactoryImpl::ClipboardImageModelFactoryImpl(
     Profile* primary_profile)
     : primary_profile_(primary_profile),
       idle_timer_(FROM_HERE,
-                  base::TimeDelta::FromMinutes(2),
+                  base::Minutes(2),
                   this,
                   &ClipboardImageModelFactoryImpl::OnRequestIdle) {
   DCHECK(primary_profile_);
@@ -20,9 +21,11 @@ ClipboardImageModelFactoryImpl::~ClipboardImageModelFactoryImpl() = default;
 
 void ClipboardImageModelFactoryImpl::Render(const base::UnguessableToken& id,
                                             const std::string& html_markup,
+                                            const gfx::Size& bounding_box_size,
                                             ImageModelCallback callback) {
   DCHECK(!html_markup.empty());
-  pending_list_.emplace_front(id, html_markup, std::move(callback));
+  pending_list_.emplace_front(id, html_markup, bounding_box_size,
+                              std::move(callback));
   StartNextRequest();
 }
 
@@ -34,11 +37,8 @@ void ClipboardImageModelFactoryImpl::CancelRequest(
     return;
   }
 
-  auto iter =
-      std::find_if(pending_list_.begin(), pending_list_.end(),
-                   [&id](const ClipboardImageModelRequest::Params& params) {
-                     return id == params.id;
-                   });
+  auto iter = base::ranges::find(pending_list_, id,
+                                 &ClipboardImageModelRequest::Params::id);
   if (iter == pending_list_.end())
     return;
 

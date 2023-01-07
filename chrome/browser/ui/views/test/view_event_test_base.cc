@@ -1,8 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -13,22 +14,18 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "mojo/core/embedder/embedder.h"
+#include "ui/display/screen.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/display/screen.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
 
-#if defined(USE_X11)
-#include "ui/views/test/test_desktop_screen_x11.h"
-#endif  // defined(USE_X11)
-
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
 #include "ui/views/test/test_desktop_screen_ozone.h"
-#endif  // (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) &&
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) &&
         // defined(USE_OZONE)
 #endif
 
@@ -50,7 +47,7 @@ class TestView : public views::View {
   }
 
  private:
-  ViewEventTestBase* harness_;
+  raw_ptr<ViewEventTestBase> harness_;
 };
 
 }  // namespace
@@ -83,8 +80,8 @@ class TestBaseWidgetDelegate : public views::WidgetDelegate {
   }
 
  private:
-  ViewEventTestBase* harness_;
-  views::View* contents_ = nullptr;
+  raw_ptr<ViewEventTestBase> harness_;
+  raw_ptr<views::View> contents_ = nullptr;
 };
 
 ViewEventTestBase::ViewEventTestBase() {
@@ -101,18 +98,13 @@ ViewEventTestBase::ViewEventTestBase() {
   // TODO(pkasting): Determine why the TestScreen in AuraTestHelper is
   // insufficient for these tests, then either bolster/replace it or fix the
   // tests.
-  DCHECK(!display::Screen::GetScreen());
-#if defined(USE_X11)
-  if (!features::IsUsingOzonePlatform())
-    views::test::TestDesktopScreenX11::GetInstance();
-#endif  // defined(USE_X11)
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
-  if (!display::Screen::GetScreen())
-    display::Screen::SetScreenInstance(
-        views::test::TestDesktopScreenOzone::GetInstance());
+  DCHECK(!display::Screen::HasScreen());
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_OZONE)
+  if (!display::Screen::HasScreen())
+    screen_ = views::test::TestDesktopScreenOzone::Create();
 #endif
-  if (!display::Screen::GetScreen())
-    screen_.reset(views::CreateDesktopScreen());
+  if (!display::Screen::HasScreen())
+    screen_ = views::CreateDesktopScreen();
 #endif
 }
 
@@ -178,7 +170,7 @@ void ViewEventTestBase::StartMessageLoopAndRunTest() {
 
 scoped_refptr<base::SingleThreadTaskRunner>
 ViewEventTestBase::GetDragTaskRunner() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Drag events must be posted from a background thread, since starting a drag
   // triggers a nested message loop that filters messages other than mouse
   // events, so further tasks on the main message loop will be blocked.

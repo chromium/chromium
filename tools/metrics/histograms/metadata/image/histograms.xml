@@ -1,0 +1,489 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Image histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="ImageAnnotationServiceAnnotationType">
+  <variant name="DescCaption."
+      summary="Caption annotations from the description engine"/>
+  <variant name="DescLabel."
+      summary="Label annotations from the description engine"/>
+  <variant name="DescOcr."
+      summary="OCR (text extraction) annotations from the description engine"/>
+  <variant name="DescUnknown."
+      summary="Annotations of an unknown type from the description engine"/>
+  <variant name="Ocr."
+      summary="OCR (text extraction) annotations from the specialized OCR
+               engine"/>
+</variants>
+
+<variants name="ImageFetcherCacheStrategy">
+  <variant name=".BestEffort" summary="LRU cache strategy."/>
+  <variant name=".HoldUntilExpired"
+      summary="Hold the cache file until expired."/>
+</variants>
+
+<variants name="ImageFetcherClients">
+  <variant name=".AnswerSuggestions"
+      summary="Showing cache patterns only for AnswerSuggestions."/>
+  <variant name=".AssistantDetails"
+      summary="Showing cache patterns only for AssistantDetails."/>
+  <variant name=".AutofillCardArt"
+      summary="Show customized card-art image for credit card suggestions on
+               Android."/>
+  <variant name=".AutofillImageFetcher"
+      summary="Show customized card art image for credit card."/>
+  <variant name=".ContextualSuggestions"
+      summary="Showing cache patterns only for ContextualSuggestions."/>
+  <variant name=".Cryptids" summary="Asset fetcher for cryptid rendering."/>
+  <variant name=".EduAccountLoginProfileImageFetcher"
+      summary="Profile image fetcher for EDU account login flow"/>
+  <variant name=".EntitySuggestions"
+      summary="Showing cache patterns only for EntitySuggestions."/>
+  <variant name=".FedCMAccountChooser"
+      summary="Profile image fetcher for FedCM Account chooser."/>
+  <variant name=".Feed" summary="Showing cache patterns only for Feed."/>
+  <variant name=".Internal"
+      summary="Showing cache patterns only for Internal."/>
+  <variant name=".LightweightReactions"
+      summary="Thumbnails and GIFs fetched for the Lightweight Reactions
+               feature."/>
+  <variant name=".NewTabPageAnimatedLogo"
+      summary="Showing cache patterns only for NewTabPageAnimatedLogo."/>
+  <variant name=".OfflinePages"
+      summary="Showing cache patterns only for OfflinePages."/>
+  <variant name=".PriceDropNotification"
+      summary="Images fetched for the icon of price drop notification."/>
+  <variant name=".QueryTiles" summary="Showing Query tiles images."/>
+  <variant name=".SharePreview" summary="Images fetched for Share previews."/>
+  <variant name=".VideoTutorialsIPH"
+      summary="Showing thumbnails for video tutorials IPH."/>
+  <variant name=".VideoTutorialsList"
+      summary="Showing thumbnails for video tutorials list view."/>
+  <variant name=".WebNotes"
+      summary="Images fetched and used to render Web Notes templates."/>
+</variants>
+
+<histogram name="Image.ResampleMS" units="?" expires_after="M79">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <summary>
+    Time it takes to do high-quality image resampling for images that are
+    resized. Non-resized images and ones our heuristic decides can be done
+    &quot;badly&quot; are not counted.
+  </summary>
+</histogram>
+
+<histogram name="ImageAnnotationService.AccessibilityV1.CacheHit"
+    enum="BooleanCacheHit" expires_after="2022-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each image processed by the image annotation service, records whether or
+    not results for the image already existed in the client-side cache. A hit
+    means that image data was not transmitted to the image annotation server.
+  </summary>
+</histogram>
+
+<histogram name="ImageAnnotationService.AccessibilityV1.ClientResult"
+    enum="ImageAnnotationServiceClientResult" expires_after="2022-10-30">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each request made by a client feature to the image annotation service,
+    reports the final status of the service response.
+  </summary>
+</histogram>
+
+<histogram name="ImageAnnotationService.AccessibilityV1.DescType"
+    enum="ImageAnnotationServiceDescType" expires_after="2022-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each annotation backend run by the image annotation server, records the
+    gRPC status reported.
+  </summary>
+</histogram>
+
+<histogram name="ImageAnnotationService.AccessibilityV1.EncodedJpegSizeKB"
+    units="KB" expires_after="2022-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each image sent from a client feature to the image annotation service,
+    reports the image's final size (in kilobytes) after resizing and reencoding.
+  </summary>
+</histogram>
+
+<histogram name="ImageAnnotationService.AccessibilityV1.EngineKnown"
+    enum="BooleanKnown" expires_after="2022-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each annotation backend run by the image annotation server, records
+    whether or not the backend is recognised by this version of Chrome.
+  </summary>
+</histogram>
+
+<histogram
+    name="ImageAnnotationService.AccessibilityV1.ImageRequestIncludesDesc"
+    enum="BooleanIncluded" expires_after="M105">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each image request sent to the image annotation server, records whether
+    or not the description backend is included among the requested backends.
+
+    The description backend will not be included when the image is known to
+    violate the description model policy (i.e. be too small or have too-high an
+    aspect ratio).
+  </summary>
+</histogram>
+
+<histogram
+    name="ImageAnnotationService.AccessibilityV1.ImageRequestIncludesIcon"
+    enum="BooleanIncluded" expires_after="M105">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each image request sent to the image annotation server, records whether
+    or not the icon backend is included among the requested backends.
+
+    The icon backend will not be included when the image is known to violate the
+    icon model policy (i.e. be too large or have too-high an aspect ratio).
+  </summary>
+</histogram>
+
+<histogram name="ImageAnnotationService.AccessibilityV1.JsonParseSuccess"
+    enum="BooleanSuccess" expires_after="2022-10-31">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each non-empty response sent from the image annotation server, records
+    whether or not JSON data were successfully parsed from the response body.
+  </summary>
+</histogram>
+
+<histogram name="ImageAnnotationService.AccessibilityV1.PixelFetchSuccess"
+    enum="BooleanSuccess" expires_after="2022-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each pixel fetch request sent from the image annotation service to a
+    client feature, records whether or not encoded pixel data were successfully
+    returned to the service.
+  </summary>
+</histogram>
+
+<histogram name="ImageAnnotationService.AccessibilityV1.ServerHttpResponseCode"
+    enum="HttpResponseCode" expires_after="2022-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each HTTP response from the image annotation server, reports the
+    associated HTTP code.
+  </summary>
+</histogram>
+
+<histogram name="ImageAnnotationService.AccessibilityV1.ServerLatencyMs"
+    units="ms" expires_after="2022-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each HTTP response from the image annotation server, reports the time
+    elapsed (in milliseconds) since the corresponding request was sent.
+  </summary>
+</histogram>
+
+<histogram name="ImageAnnotationService.AccessibilityV1.ServerNetError"
+    enum="NetErrorCodes" expires_after="2022-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each HTTP request sent to the image annotation server, reports the net
+    error (or OK status) of the request.
+  </summary>
+</histogram>
+
+<histogram name="ImageAnnotationService.AccessibilityV1.ServerRequestSizeKB"
+    units="KB" expires_after="2022-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each HTTP request sent to the image annotation server, reports the size
+    of the request. Measured in kilobytes, since a request can contain the pixel
+    data of multiple images.
+  </summary>
+</histogram>
+
+<histogram
+    name="ImageAnnotationService.AccessibilityV1.ServerResponseSizeBytes"
+    units="bytes" expires_after="2022-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each HTTP response from the image annotation server, reports the
+    response size in bytes.
+  </summary>
+</histogram>
+
+<histogram name="ImageAnnotationService.AccessibilityV1.SourcePixelCount"
+    units="pixels" expires_after="2022-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each image sent from a client feature to the image annotation service,
+    reports the image's original (i.e. pre-scaling) area in pixels. Images with
+    pixel count above a certain threshold will be resized prior to transmission.
+  </summary>
+</histogram>
+
+<histogram
+    name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Confidence"
+    units="%" expires_after="2022-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each annotation of the given type returned by the image annotation
+    server, records the confidence (as a percentage) produced by the ML model
+    for the annotation. {ImageAnnotationServiceAnnotationType}
+  </summary>
+  <token key="ImageAnnotationServiceAnnotationType"
+      variants="ImageAnnotationServiceAnnotationType"/>
+</histogram>
+
+<histogram
+    name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Empty"
+    enum="BooleanEmpty" expires_after="2022-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each annotation of the given type returned by the image annotation
+    server, records whether or not the text of the annotation was empty. This is
+    sometimes valid, e.g. for text extraction (OCR) on an image that does not
+    contain any text. {ImageAnnotationServiceAnnotationType}
+  </summary>
+  <token key="ImageAnnotationServiceAnnotationType"
+      variants="ImageAnnotationServiceAnnotationType"/>
+</histogram>
+
+<histogram
+    name="ImageAnnotationService.{ImageAnnotationServiceAnnotationType}AccessibilityV1.Status"
+    enum="GoogleRpcCode" expires_after="2022-04-24">
+  <owner>dtseng@chromium.org</owner>
+  <owner>amoylan@chromium.org</owner>
+  <owner>martis@chromium.org</owner>
+  <summary>
+    For each annotation backend run by the image annotation server, records the
+    gRPC status reported. {ImageAnnotationServiceAnnotationType}
+  </summary>
+  <token key="ImageAnnotationServiceAnnotationType"
+      variants="ImageAnnotationServiceAnnotationType"/>
+</histogram>
+
+<histogram name="ImageFetcher.CacheMetadataCount{ImageFetcherCacheStrategy}"
+    units="records" expires_after="2023-06-01">
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <summary>
+    The total number of metadata entries in the image fetcher cache metadata
+    database for a given cache strategy. Recorded during cache eviction process.
+    {ImageFetcherCacheStrategy}
+  </summary>
+  <token key="ImageFetcherCacheStrategy" variants="ImageFetcherCacheStrategy"/>
+</histogram>
+
+<histogram name="ImageFetcher.CacheSize{ImageFetcherCacheStrategy}" units="KB"
+    expires_after="2023-06-01">
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <summary>
+    The total size of the cache for a given cache strategy. Recorded during
+    cache eviction process. {ImageFetcherCacheStrategy}
+  </summary>
+  <token key="ImageFetcherCacheStrategy" variants="ImageFetcherCacheStrategy"/>
+</histogram>
+
+<histogram name="ImageFetcher.Events{ImageFetcherClients}"
+    enum="ImageFetcherEvent" expires_after="2023-06-01">
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <summary>
+    Events that track the lifecycle and performance of the cached_image_fetcher.
+    The events reported include: success/failure conditions, various recoverable
+    errors and a couple of dead-end errors. {ImageFetcherClients}
+  </summary>
+  <token key="ImageFetcherClients" variants="ImageFetcherClients">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="ImageFetcher.ImageLoadFromCacheTimeJava{ImageFetcherClients}"
+    units="ms" expires_after="2023-06-01">
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <summary>
+    The time it takes for cached_image_fetcher to load an image from the cache
+    in Java. {ImageFetcherClients}
+  </summary>
+  <token key="ImageFetcherClients" variants="ImageFetcherClients">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="ImageFetcher.ImageLoadFromCacheTime{ImageFetcherClients}"
+    units="ms" expires_after="2023-06-01">
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <summary>
+    The time it takes for cached_image_fetcher to load an image from the cache
+    in native. {ImageFetcherClients}
+  </summary>
+  <token key="ImageFetcherClients" variants="ImageFetcherClients">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="ImageFetcher.ImageLoadFromNativeTimeJava{ImageFetcherClients}"
+    units="ms" expires_after="2023-06-01">
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <summary>
+    The time it takes for cached_image_fetcher to load an image from native
+    code. Only recorded on successful loads. {ImageFetcherClients}
+  </summary>
+  <token key="ImageFetcherClients" variants="ImageFetcherClients">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="ImageFetcher.ImageLoadFromNetworkAfterCacheHit{ImageFetcherClients}"
+    units="ms" expires_after="2023-06-01">
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <summary>
+    The time it takes for cached_image_fetcher to load an image from the network
+    after a cache hit. {ImageFetcherClients}
+  </summary>
+  <token key="ImageFetcherClients" variants="ImageFetcherClients">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="ImageFetcher.ImageLoadFromNetworkTime{ImageFetcherClients}"
+    units="ms" expires_after="2023-06-01">
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <summary>
+    The time it takes for cached_image_fetcher to load an image from the
+    network. {ImageFetcherClients}
+  </summary>
+  <token key="ImageFetcherClients" variants="ImageFetcherClients">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="ImageFetcher.LoadImageMetadata" units="ms"
+    expires_after="2023-06-01">
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <summary>
+    The time it takes to load an image's metadata from the metadata store.
+  </summary>
+</histogram>
+
+<histogram name="ImageFetcher.RequestStatusCode{ImageFetcherClients}"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-06-01">
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <summary>
+    Android: The integer status code of network requests made by the image data
+    fetcher. This code includes both protocol(1xx-5xx) and non-protocol(-xxx)
+    errors. Recorded when a request completes. {ImageFetcherClients}
+  </summary>
+  <token key="ImageFetcherClients" variants="ImageFetcherClients">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="ImageFetcher.TimeSinceLastCacheLRUEviction" units="ms"
+    expires_after="2023-06-01">
+  <owner>fgorski@chromium.org</owner>
+  <owner>wylieb@chromium.org</owner>
+  <summary>
+    The time since the last LRU eviction from the image cache. Recorded when two
+    LRU evictions occur within closure proximity to one another. Will be used to
+    determine if LRU eviction is happening too frequently.
+  </summary>
+</histogram>
+
+<histogram name="ImageLoader.Client.Cache.HitMiss" enum="BooleanCacheHit"
+    expires_after="2019-01-01">
+  <owner>tapted@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    For each image load request that requested caching, records whether or not
+    it was found in the client-side cache. A hit means the request was not
+    forwarded to the ImageLoader extension.
+  </summary>
+</histogram>
+
+<histogram name="ImageLoader.Client.Cache.Usage" units="%"
+    expires_after="2019-01-01">
+  <owner>tapted@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Returns the percentage of the client-side cache that is used for loading
+    images, before they are sent to the ImageLoader extension. Expressed as a
+    percentage of ImageLoaderClient.CACHE_MEMORY_LIMIT (e.g. 20MB).
+  </summary>
+</histogram>
+
+<histogram name="ImageLoader.Client.Cached" enum="BooleanRequested"
+    expires_after="2019-01-01">
+  <owner>tapted@chromium.org</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    For each image load request records whether or not it requested caching.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

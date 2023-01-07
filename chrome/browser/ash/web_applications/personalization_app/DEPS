@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "personalization_app_wallpaper_provider_impl.cc" : [
+    "+chrome/browser/ui/views/frame/browser_view.h",
+    "+chrome/browser/ui/views/frame/contents_web_view.h",
+  ]
+}

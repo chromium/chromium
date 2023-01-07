@@ -1,0 +1,122 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("android") {
+  sources = [
+    "assistant_bottom_bar_delegate.cc",
+    "assistant_bottom_bar_delegate.h",
+    "assistant_collect_user_data_delegate.cc",
+    "assistant_collect_user_data_delegate.h",
+    "assistant_form_delegate.cc",
+    "assistant_form_delegate.h",
+    "assistant_generic_ui_delegate.cc",
+    "assistant_generic_ui_delegate.h",
+    "assistant_header_delegate.cc",
+    "assistant_header_delegate.h",
+    "assistant_header_model.cc",
+    "assistant_header_model.h",
+    "assistant_overlay_delegate.cc",
+    "assistant_overlay_delegate.h",
+    "assistant_qr_code_camera_scan_model_wrapper.cc",
+    "assistant_qr_code_camera_scan_model_wrapper.h",
+    "assistant_qr_code_image_picker_model_wrapper.cc",
+    "assistant_qr_code_image_picker_model_wrapper.h",
+    "assistant_qr_code_native_delegate.cc",
+    "assistant_qr_code_native_delegate.h",
+    "assistant_ui_action_delegate.cc",
+    "assistant_ui_action_delegate.h",
+    "client_android.cc",
+    "client_android.h",
+    "features_android.cc",
+    "generic_ui_events_android.cc",
+    "generic_ui_events_android.h",
+    "generic_ui_interactions_android.cc",
+    "generic_ui_interactions_android.h",
+    "generic_ui_nested_controller_android.cc",
+    "generic_ui_nested_controller_android.h",
+    "generic_ui_root_controller_android.cc",
+    "generic_ui_root_controller_android.h",
+    "interaction_handler_android.cc",
+    "interaction_handler_android.h",
+    "onboarding_coordinator_bridge.cc",
+    "onboarding_fetcher_factory.cc",
+    "onboarding_fetcher_factory.h",
+    "starter_delegate_android.cc",
+    "starter_delegate_android.h",
+    "trigger_script_bridge_android.cc",
+    "trigger_script_bridge_android.h",
+    "ui_controller_android.cc",
+    "ui_controller_android.h",
+    "ui_controller_android_utils.cc",
+    "ui_controller_android_utils.h",
+    "view_handler_android.cc",
+    "view_handler_android.h",
+  ]
+
+  deps = [
+    ":dependencies_android",
+    "//base",
+    "//components/autofill/android:autofill_core_browser_java_enums",
+    "//components/autofill/core/browser",
+    "//components/autofill_assistant/android:jni_headers",
+    "//components/autofill_assistant/android:jni_headers_public",
+    "//components/autofill_assistant/browser",
+    "//components/autofill_assistant/browser:autofill_assistant_enums_java",
+    "//components/autofill_assistant/browser:proto",
+    "//components/autofill_assistant/browser/public",
+    "//components/autofill_assistant/browser/public:password_change",
+    "//components/autofill_assistant/browser/public:proto",
+    "//components/autofill_assistant/browser/public/assistant_ui/proto:proto",
+    "//components/autofill_assistant/content/browser",
+    "//components/image_fetcher:android",
+    "//components/keyed_service/content",
+    "//components/module_installer/android:native",
+    "//components/password_manager/content/browser",
+    "//components/password_manager/core/browser",
+    "//components/strings:components_strings_grit",
+    "//components/version_info:channel",
+    "//components/version_info/android:channel_getter",
+    "//content/public/browser",
+    "//google_apis",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//skia",
+    "//ui/base",
+    "//url",
+    "//url:gurl_android",
+  ]
+}
+
+static_library("dependencies_android") {
+  sources = [
+    "dependencies_android.cc",
+    "dependencies_android.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill_assistant/android:jni_headers_public_dependencies",
+    "//components/autofill_assistant/browser",
+    "//components/autofill_assistant/content/browser",
+    "//components/password_manager/core/browser",
+    "//components/variations/service",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "assistant_ui_action_delegate_unittest.cc" ]
+  deps = [
+    ":android",
+    "//base",
+    "//base/test:test_support",
+    "//components/autofill_assistant/browser:proto",
+    "//components/autofill_assistant/browser/public:proto",
+    "//components/autofill_assistant/browser/public:public",
+    "//components/autofill_assistant/browser/public/assistant_ui/proto:proto",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

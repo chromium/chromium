@@ -1,0 +1,71 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN focusable label='Unable to play media.'
+++++++++UNKNOWN
+++++++++++UNKNOWN hidden
+++++++++++UNKNOWN
+++++++++++++BUTTON hidden
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN
+++++++++++++++UNKNOWN hidden
+++++++++++++++UNKNOWN
+++++++++++++++++BUTTON label='play'
+++++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='0:00'
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='/ 0:00'
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN
+++++++++++++++++++UNKNOWN
+++++++++++++++++++SLIDER hidden
+++++++++++++++++++BUTTON label='mute'
+++++++++++++++++BUTTON label='enter full screen'
+++++++++++++++++++UNKNOWN
+++++++++++++++++UNKNOWN label='show more media controls' secondary_label='more options'
+++++++++++++++++++UNKNOWN
+++++++++++++++SLIDER label='video time scrubber' secondary_label='total time: 0:00' value='elapsed time: 0:00'
+++++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Play'
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Fullscreen'
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Download'
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Mute'
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Cast'
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Captions'
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Playback speed'
+++++++++++++UNKNOWN hidden
+++++++++++++++BUTTON hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++UNKNOWN hidden
+++++++++++++++++++STATIC_TEXT hidden label='Picture in picture'

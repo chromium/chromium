@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ UnifiedAccessibilityDetailedViewController::
 
 views::View* UnifiedAccessibilityDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new tray::AccessibilityDetailedView(detailed_view_delegate_.get());
+  view_ = new AccessibilityDetailedView(detailed_view_delegate_.get());
   return view_;
 }
 

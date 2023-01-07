@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "url/gurl.h"
 
@@ -42,6 +41,10 @@ class TutorialFetcher {
 
   // Start the fetch to download tutorials.
   virtual void StartFetchForTutorials(FinishedCallback callback) = 0;
+
+  // Called when accept languages are changed.
+  virtual void OnAcceptLanguagesChanged(
+      const std::string& accept_languages) = 0;
 
   virtual ~TutorialFetcher();
 

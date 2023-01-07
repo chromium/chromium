@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include <map>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"
 #include "sandbox/linux/system_headers/linux_signal.h"
 #include "sandbox/sandbox_export.h"
@@ -27,6 +27,11 @@ namespace sandbox {
 //   true. Threads are incompatible with the seccomp sandbox anyway.
 class SANDBOX_EXPORT Trap : public bpf_dsl::TrapRegistry {
  public:
+  // Copying and assigning is unimplemented. It doesn't make sense for a
+  // singleton.
+  Trap(const Trap&) = delete;
+  Trap& operator=(const Trap&) = delete;
+
   uint16_t Add(TrapFnc fnc, const void* aux, bool safe) override;
 
   bool EnableUnsafeTraps() override;
@@ -70,15 +75,15 @@ class SANDBOX_EXPORT Trap : public bpf_dsl::TrapRegistry {
   // events.
   static Trap* global_trap_;
 
-  TrapIds trap_ids_;            // Maps from TrapKeys to numeric ids
-  TrapKey* trap_array_;         // Array of TrapKeys indexed by ids
-  size_t trap_array_size_;      // Currently used size of array
-  size_t trap_array_capacity_;  // Currently allocated capacity of array
-  bool has_unsafe_traps_;       // Whether unsafe traps have been enabled
-
-  // Copying and assigning is unimplemented. It doesn't make sense for a
-  // singleton.
-  DISALLOW_COPY_AND_ASSIGN(Trap);
+  TrapIds trap_ids_;  // Maps from TrapKeys to numeric ids
+  // Array of TrapKeys indexed by ids.
+  //
+  // This is not a raw_ptr as it is an owning pointer anyway, and is meant to be
+  // used between normal code and signal handlers.
+  RAW_PTR_EXCLUSION TrapKey* trap_array_ = nullptr;
+  size_t trap_array_size_ = 0;      // Currently used size of array
+  size_t trap_array_capacity_ = 0;  // Currently allocated capacity of array
+  bool has_unsafe_traps_ = false;   // Whether unsafe traps have been enabled
 };
 
 }  // namespace sandbox

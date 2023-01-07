@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -23,8 +23,10 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
 #include "content/public/test/test_utils.h"
+#include "media/mojo/mojom/speech_recognition.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::DoDefault;
 using ::testing::InvokeWithoutArgs;
@@ -41,10 +43,10 @@ class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
       OnSpeechResult,
       void(const std::u16string& text,
            bool is_final,
-           const base::Optional<SpeechRecognizerDelegate::TranscriptTiming>&
-               timing));
+           const absl::optional<media::SpeechRecognitionResult>& timing));
   MOCK_METHOD1(OnSpeechSoundLevelChanged, void(int16_t));
   MOCK_METHOD1(OnSpeechRecognitionStateChanged, void(SpeechRecognizerStatus));
+  MOCK_METHOD0(OnSpeechRecognitionStopped, void());
 
  private:
   base::WeakPtrFactory<MockSpeechRecognizerDelegate> weak_factory_{this};
@@ -60,12 +62,12 @@ class NetworkSpeechRecognizerBrowserTest : public InProcessBrowserTest {
       const NetworkSpeechRecognizerBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
-    fake_speech_recognition_manager_.reset(
-        new content::FakeSpeechRecognitionManager());
+    fake_speech_recognition_manager_ =
+        std::make_unique<content::FakeSpeechRecognitionManager>();
     fake_speech_recognition_manager_->set_should_send_fake_response(false);
     content::SpeechRecognitionManager::SetManagerForTesting(
         fake_speech_recognition_manager_.get());
-    mock_speech_delegate_.reset(new MockSpeechRecognizerDelegate());
+    mock_speech_delegate_ = std::make_unique<MockSpeechRecognizerDelegate>();
   }
 
   void TearDownOnMainThread() override {
@@ -81,7 +83,9 @@ class NetworkSpeechRecognizerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(NetworkSpeechRecognizerBrowserTest, RecognizeSpeech) {
   NetworkSpeechRecognizer recognizer(
       mock_speech_delegate_->GetWeakPtr(),
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
+      browser()
+          ->profile()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcessIOThread(),
       "en" /* accept_language */, "en" /* locale */);
 
@@ -101,9 +105,9 @@ IN_PROC_BROWSER_TEST_F(NetworkSpeechRecognizerBrowserTest, RecognizeSpeech) {
   EXPECT_CALL(*mock_speech_delegate_,
               OnSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_IN_SPEECH))
       .Times(1);
-  EXPECT_CALL(*mock_speech_delegate_,
-              OnSpeechResult(base::ASCIIToUTF16("Pictures of the moon"), true,
-                             testing::_))
+  EXPECT_CALL(
+      *mock_speech_delegate_,
+      OnSpeechResult(std::u16string(u"Pictures of the moon"), true, testing::_))
       .WillOnce(InvokeWithoutArgs(&first_response_loop, &base::RunLoop::Quit))
       .RetiresOnSaturation();
   fake_speech_recognition_manager_->SendFakeResponse(
@@ -111,11 +115,12 @@ IN_PROC_BROWSER_TEST_F(NetworkSpeechRecognizerBrowserTest, RecognizeSpeech) {
   first_response_loop.Run();
 
   // Try another speech response.
-  fake_speech_recognition_manager_->SetFakeResult("Pictures of mars!");
+  fake_speech_recognition_manager_->SetFakeResult("Pictures of mars!",
+                                                  /*is_final=*/true);
   base::RunLoop second_response_loop;
   EXPECT_CALL(
       *mock_speech_delegate_,
-      OnSpeechResult(base::ASCIIToUTF16("Pictures of mars!"), true, testing::_))
+      OnSpeechResult(std::u16string(u"Pictures of mars!"), true, testing::_))
       .Times(1)
       .RetiresOnSaturation();
   EXPECT_CALL(*mock_speech_delegate_,

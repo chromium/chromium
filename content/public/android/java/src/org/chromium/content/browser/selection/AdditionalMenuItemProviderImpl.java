@@ -1,10 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.content.browser.selection;
 
-import android.annotation.TargetApi;
 import android.app.PendingIntent;
 import android.app.RemoteAction;
 import android.content.Context;
@@ -17,8 +16,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.textclassifier.TextClassification;
 
+import androidx.annotation.RequiresApi;
+
 import org.chromium.base.Log;
-import org.chromium.base.annotations.VerifiesOnP;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,8 +31,7 @@ import java.util.Map;
  * We prevent inlinings since this uses a number of new Android APIs which would create verification
  * errors (on older Android versions) which would require a slow re-verification at runtime.
  */
-@VerifiesOnP
-@TargetApi(Build.VERSION_CODES.P)
+@RequiresApi(Build.VERSION_CODES.P)
 public class AdditionalMenuItemProviderImpl implements AdditionalMenuItemProvider {
     private static final String TAG = "MenuItemProvider";
     // We want the secondary assist actions to come after the default actions but before the text
@@ -105,7 +104,6 @@ public class AdditionalMenuItemProviderImpl implements AdditionalMenuItemProvide
     // Because Icon#loadDrawable() should not be called on UI thread, we pre-load the icons on
     // background thread right after we get the text classification result in
     // SmartSelectionProvider. TextClassification#getActions() is only available on P and above, so
-    // make this method in a @VerifiesOnP class.
     public static List<Drawable> loadIconDrawables(Context context, TextClassification tc) {
         if (context == null || tc == null) return null;
 

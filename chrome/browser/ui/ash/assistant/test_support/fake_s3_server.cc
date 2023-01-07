@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,14 +16,18 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/services/assistant/service.h"
 #include "chromeos/assistant/internal/internal_constants.h"
-#include "chromeos/services/assistant/service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-namespace assistant {
+namespace ash::assistant {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove after internal assistant code is
+// migrated to namespace ash.
+using ::chromeos::assistant::kFakeS3ServerBinary;
+using ::chromeos::assistant::kGenerateTokenInstructions;
 
 // Folder where the S3 communications are stored when running in replay mode.
 constexpr char kTestDataFolder[] = "chromeos/assistant/internal/test_data/";
@@ -51,9 +55,11 @@ std::string GetSanitizedTestName() {
       "%s_%s",
       testing::UnitTest::GetInstance()->current_test_info()->test_suite_name(),
       testing::UnitTest::GetInstance()->current_test_info()->name()));
-  std::string new_test_name;
-  base::ReplaceChars(test_name, "/", "_", &new_test_name);
-  return new_test_name;
+  // The test name has suffix of `/0` or `/1`. Remove it to match the data_file
+  // name.
+  base::ReplaceSubstringsAfterOffset(&test_name, 0, "/0", "");
+  base::ReplaceSubstringsAfterOffset(&test_name, 0, "/1", "");
+  return test_name;
 }
 
 const std::string GetAccessTokenFromEnvironmentOrDie() {
@@ -133,8 +139,7 @@ class PortSelector {
   }
 
   static int GetFileFlags() {
-    return base::File::FLAG_CREATE | base::File::FLAG_EXCLUSIVE_WRITE |
-           base::File::FLAG_WRITE;
+    return base::File::FLAG_CREATE | base::File::FLAG_WRITE;
   }
 
   // File exclusively opened on the file-system, to ensure no other fake S3
@@ -178,8 +183,8 @@ void FakeS3Server::SetAccessTokenForMode(FakeS3Mode mode) {
 
 void FakeS3Server::SetFakeS3ServerURI() {
   // Note this must be stored in a local variable, as
-  // |Service::OverrideS3ServerUriForTesting| does not take ownership of the
-  // |const char *|.
+  // `Service::OverrideS3ServerUriForTesting` does not take ownership of the
+  // `const char *`.
   fake_s3_server_uri_ = "localhost:" + base::NumberToString(port());
   Service::OverrideS3ServerUriForTesting(fake_s3_server_uri_.c_str());
 }
@@ -250,5 +255,4 @@ int FakeS3Server::port() const {
   return port_selector_->port();
 }
 
-}  // namespace assistant
-}  // namespace chromeos
+}  // namespace ash::assistant

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,9 +26,7 @@ class FrameRateEstimatorTest : public testing::TestWithParam<FpsPair> {
   int low_fps() const { return std::get<0>(GetParam()); }
   int high_fps() const { return std::get<1>(GetParam()); }
 
-  base::TimeDelta duration(int fps) {
-    return base::TimeDelta::FromSecondsD(1.0 / fps);
-  }
+  base::TimeDelta duration(int fps) { return base::Seconds(1.0 / fps); }
 
   FrameRateEstimator estimator_;
 };

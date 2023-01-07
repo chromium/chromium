@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
-#include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/capture/video/fake_video_capture_device.h"
 #include "media/capture/video/video_capture_device_info.h"
@@ -39,10 +39,12 @@ static void TranslateDeviceInfos(
     translated_device_info.descriptor = device_info.descriptor;
     for (const auto& format : device_info.supported_formats) {
       media::VideoCaptureFormat translated_format;
-      translated_format.pixel_format =
-          (format.pixel_format == media::PIXEL_FORMAT_Y16)
-              ? media::PIXEL_FORMAT_Y16
-              : media::PIXEL_FORMAT_I420;
+      if (format.pixel_format == media::PIXEL_FORMAT_Y16 ||
+          format.pixel_format == media::PIXEL_FORMAT_NV12) {
+        translated_format.pixel_format = format.pixel_format;
+      } else {
+        translated_format.pixel_format = media::PIXEL_FORMAT_I420;
+      }
       translated_format.frame_size = format.frame_size;
       translated_format.frame_rate = format.frame_rate;
       if (base::Contains(translated_device_info.supported_formats,
@@ -121,7 +123,7 @@ void DeviceFactoryMediaToMojoAdapter::CreateDevice(
     device_entry.receiver->set_disconnect_handler(base::BindOnce(
         &DeviceFactoryMediaToMojoAdapter::OnClientConnectionErrorOrClose,
         base::Unretained(this), device_id));
-    std::move(callback).Run(mojom::DeviceAccessResultCode::SUCCESS);
+    std::move(callback).Run(media::VideoCaptureError::kNone);
     return;
   }
 
@@ -144,7 +146,6 @@ void DeviceFactoryMediaToMojoAdapter::CreateDevice(
 void DeviceFactoryMediaToMojoAdapter::AddSharedMemoryVirtualDevice(
     const media::VideoCaptureDeviceInfo& device_info,
     mojo::PendingRemote<mojom::Producer> producer,
-    bool send_buffer_handles_to_producer_as_raw_file_descriptors,
     mojo::PendingReceiver<mojom::SharedMemoryVirtualDevice>
         virtual_device_receiver) {
   NOTIMPLEMENTED();
@@ -174,21 +175,25 @@ void DeviceFactoryMediaToMojoAdapter::CreateAndAddNewDevice(
     const std::string& device_id,
     mojo::PendingReceiver<mojom::Device> device_receiver,
     CreateDeviceCallback callback) {
-  std::unique_ptr<media::VideoCaptureDevice> media_device =
+  media::VideoCaptureErrorOrDevice device_status =
       capture_system_->CreateDevice(device_id);
-  if (media_device == nullptr) {
-    std::move(callback).Run(
-        mojom::DeviceAccessResultCode::ERROR_DEVICE_NOT_FOUND);
+  if (!device_status.ok()) {
+    std::move(callback).Run(device_status.error());
     return;
   }
 
   // Add entry to active_devices to keep track of it
   ActiveDeviceEntry device_entry;
+  std::unique_ptr<media::VideoCaptureDevice> media_device =
+      device_status.ReleaseDevice();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   device_entry.device = std::make_unique<DeviceMediaToMojoAdapter>(
       std::move(media_device), jpeg_decoder_factory_callback_,
       jpeg_decoder_task_runner_);
+#elif BUILDFLAG(IS_WIN)
+  device_entry.device = std::make_unique<DeviceMediaToMojoAdapter>(
+      std::move(media_device), capture_system_->GetFactory());
 #else
   device_entry.device =
       std::make_unique<DeviceMediaToMojoAdapter>(std::move(media_device));
@@ -200,7 +205,7 @@ void DeviceFactoryMediaToMojoAdapter::CreateAndAddNewDevice(
       base::Unretained(this), device_id));
   active_devices_by_id_[device_id] = std::move(device_entry);
 
-  std::move(callback).Run(mojom::DeviceAccessResultCode::SUCCESS);
+  std::move(callback).Run(media::VideoCaptureError::kNone);
 }
 
 void DeviceFactoryMediaToMojoAdapter::OnClientConnectionErrorOrClose(
@@ -211,5 +216,11 @@ void DeviceFactoryMediaToMojoAdapter::OnClientConnectionErrorOrClose(
   active_devices_by_id_[device_id].device->Stop();
   active_devices_by_id_.erase(device_id);
 }
+
+#if BUILDFLAG(IS_WIN)
+void DeviceFactoryMediaToMojoAdapter::OnGpuInfoUpdate(const CHROME_LUID& luid) {
+  capture_system_->GetFactory()->OnGpuInfoUpdate(luid);
+}
+#endif
 
 }  // namespace video_capture

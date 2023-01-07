@@ -1,0 +1,25 @@
+caption: The list of note-taking apps allowed on the <ph name="PRODUCT_OS_NAME">$2<ex>Google
+  ChromeOS</ex></ph> lock screen
+desc: |-
+  Setting the policy specifies the apps that users can turn on as a note-taking app on the <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> lock screen.
+
+        If the preferred app is on the lock screen, a UI element for launching the preferred note-taking app appears on the screen. When launched, the app can create a window on top of the lock screen and create notes in this context. The app can import created notes to the primary user session, when the session is unlocked. Only <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> note-taking apps are supported on the lock screen.
+
+        Setting the policy means users can turn on an app on the lock screen if the app's extension ID is in the policy list value. So, setting it to an empty list will turn off note-taking on the lock screen. The policy with an app ID doesn't necessarily mean that users can turn the app on as a note-taking app on the lock screen. For example, on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 61, the set of available apps is also restricted by the platform.
+
+        Leaving the policy unset amounts to no restrictions on the set of apps users can enable on the lock screen imposed by the policy.
+example_value:
+- abcdefghabcdefghabcdefghabcdefgh
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- tbarzic@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome_os:86-
+tags: []
+type: list

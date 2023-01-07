@@ -1,40 +1,29 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style>
+  #error-wrap {
+    align-items: center;
+    display: flex;
+  }
 
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="cups_printer_dialog_util.html">
-<link rel="import" href="cups_printer_shared_css.html">
-<link rel="import" href="cups_printers_browser_proxy.html">
+  #error-container {
+    height: 20px;
+    margin-top: 10px;
+  }
 
-<dom-module id="printer-dialog-error">
-  <template>
-    <style>
-      #error-wrap {
-        display: flex;
-      }
+  #error-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-alert);
+  }
 
-      #error-container {
-        height: 20px;
-        margin-top: 10px;
-      }
-
-      #error-icon {
-       --iron-icon-fill-color: var(--google-red-600);
-      }
-
-      #error-message {
-        color: var(--google-red-600);
-        font-size: 10px;
-        margin-inline-start: 5px;
-      }
-    </style>
-    <div id="error-container" hidden="[[!errorText]]">
-      <div id="error-wrap">
-        <iron-icon id="error-icon" icon="cr:warning"></iron-icon>
-        <div id="error-message">
-          [[errorText]]
-        </div>
-      </div>
+  #error-message {
+    color: var(--cros-text-color-alert);
+    font-size: 10px;
+    margin-inline-start: 5px;
+  }
+</style>
+<div id="error-container" hidden="[[!errorText]]">
+  <div id="error-wrap">
+    <iron-icon id="error-icon" icon="cr:warning"></iron-icon>
+    <div id="error-message">
+      [[errorText]]
     </div>
-  </template>
-  <script src="cups_printer_dialog_error.js"></script>
-</dom-module>
+  </div>
+</div>

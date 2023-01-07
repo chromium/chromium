@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,10 +61,25 @@ bool AwSSLHostStateDelegate::DidHostRunInsecureContent(
   return false;
 }
 
-void AwSSLHostStateDelegate::AllowCert(const std::string& host,
-                                       const net::X509Certificate& cert,
-                                       int error,
-                                       content::WebContents* web_contents) {
+void AwSSLHostStateDelegate::AllowHttpForHost(
+    const std::string& host,
+    content::StoragePartition* storage_partition) {
+  // Intentional no-op for Android WebView.
+}
+
+bool AwSSLHostStateDelegate::IsHttpAllowedForHost(
+    const std::string& host,
+    content::StoragePartition* storage_partition) {
+  // Intentional no-op for Android WebView. Return value does not matter as
+  // HTTPS-First Mode is not enabled on WebView.
+  return false;
+}
+
+void AwSSLHostStateDelegate::AllowCert(
+    const std::string& host,
+    const net::X509Certificate& cert,
+    int error,
+    content::StoragePartition* storage_partition) {
   cert_policy_for_host_[host].Allow(cert, error);
 }
 
@@ -90,7 +105,7 @@ SSLHostStateDelegate::CertJudgment AwSSLHostStateDelegate::QueryPolicy(
     const std::string& host,
     const net::X509Certificate& cert,
     int error,
-    content::WebContents* web_contents) {
+    content::StoragePartition* storage_partition) {
   return cert_policy_for_host_[host].Check(cert, error)
              ? SSLHostStateDelegate::ALLOWED
              : SSLHostStateDelegate::DENIED;
@@ -103,7 +118,7 @@ void AwSSLHostStateDelegate::RevokeUserAllowExceptions(
 
 bool AwSSLHostStateDelegate::HasAllowException(
     const std::string& host,
-    content::WebContents* web_contents) {
+    content::StoragePartition* storage_partition) {
   auto policy_iterator = cert_policy_for_host_.find(host);
   return policy_iterator != cert_policy_for_host_.end() &&
          policy_iterator->second.HasAllowException();

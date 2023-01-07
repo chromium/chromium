@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/strings/safe_sprintf.h"
 #include "base/strings/strcat.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/android/usage_stats/website_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
@@ -38,8 +37,7 @@ UsageStatsDatabase::UsageStatsDatabase(Profile* profile)
       suspension_db_initialized_(false),
       token_mapping_db_initialized_(false) {
   ProtoDatabaseProvider* db_provider =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetProtoDatabaseProvider();
+      profile->GetDefaultStoragePartition()->GetProtoDatabaseProvider();
 
   base::FilePath usage_stats_dir = profile->GetPath().Append(kNamespace);
 
@@ -255,8 +253,7 @@ void UsageStatsDatabase::DeleteEventsWithMatchingDomains(
 }
 
 void UsageStatsDatabase::ExpireEvents(base::Time now) {
-  base::Time seven_days_ago =
-      now - base::TimeDelta::FromDays(EXPIRY_THRESHOLD_DAYS);
+  base::Time seven_days_ago = now - base::Days(EXPIRY_THRESHOLD_DAYS);
   DeleteEventsInRange(
       base::Time::FromDoubleT(1), seven_days_ago,
       base::BindOnce(&UsageStatsDatabase::OnWebsiteEventExpiryDone,

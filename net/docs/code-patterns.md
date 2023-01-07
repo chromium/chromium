@@ -237,4 +237,4 @@ For examples of this idiom, see
 * [HttpStreamParser::DoLoop](https://source.chromium.org/chromium/chromium/src/+/HEAD:net/http/http_stream_parser.cc).
 * [HttpNetworkTransaction::DoLoop](https://source.chromium.org/chromium/chromium/src/+/HEAD:net/http/http_network_transaction.cc)
 
-[net_error_list.h]: https://chromium.googlesource.com/chromium/src/+/master/net/base/net_error_list.h#1
+[net_error_list.h]: https://chromium.googlesource.com/chromium/src/+/main/net/base/net_error_list.h#1

@@ -48,6 +48,7 @@ test(_ => {
 
   function addVideos(iframedoc) {
     iframedoc.open();
+    iframedoc.write('<style>body { margin: 0 }</style>');
     iframedoc.write('<video controls width=400></video>');
     iframedoc.write('<video controls width=800></video>');
     iframedoc.write('<video controls width=1200></video>');

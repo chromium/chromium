@@ -1,4 +1,4 @@
-// Copyright (c) 2006-2008 The Chromium Authors. All rights reserved.
+// Copyright 2006-2008 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@ enum {
   PATH_MAC_START = 200,
 
   DIR_APP_DATA,  // ~/Library/Application Support
+                 // Data for specific applications is stored in subdirectories.
 
   PATH_MAC_END
 };

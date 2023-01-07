@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>Stress test length interpolation.</title>
+<body>
+  <marquee id="marquee">
+    <wbr id="wbr"></wbr>
+  </marquee>
+  <output name="answer">Test passes if there is no crash.</output>
+</body>
+<script type="text/javascript">
+  // Test passes if it does not crash (crbug.com/1349686).
+  // Lengths created via layout units are clamped to a maximum value.
+  if (window.testRunner)
+    testRunner.dumpAsText();
+
+  async function rAF() {
+    return new Promise(resolve => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          resolve();
+        });
+      });
+    });
+  }
+
+  window.onload = async function(){
+    const anim = wbr.animate({ right: ['20%', '5e192pt'] },
+                             { duration: 1000 });
+    anim.currentTime = 900;
+    anim.pause();
+    marquee.animate({ zoom: ['68%', '100%'] },
+                    { duration: 1000 }).pause();
+    await rAF();
+  }
+</script>

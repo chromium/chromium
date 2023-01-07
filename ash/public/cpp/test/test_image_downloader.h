@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/image_downloader.h"
+#include "net/http/http_request_headers.h"
 
 namespace ash {
 
@@ -15,10 +16,24 @@ class ASH_PUBLIC_EXPORT TestImageDownloader : public ImageDownloader {
   TestImageDownloader();
   ~TestImageDownloader() override;
 
+  void set_should_fail(bool should_fail) { should_fail_ = should_fail; }
+  const net::HttpRequestHeaders& last_request_headers() const {
+    return last_request_headers_;
+  }
+
   // ImageDownloader:
   void Download(const GURL& url,
                 const net::NetworkTrafficAnnotationTag& annotation_tag,
                 DownloadCallback callback) override;
+  void Download(const GURL& url,
+                const net::NetworkTrafficAnnotationTag& annotation_tag,
+                const net::HttpRequestHeaders& additional_headers,
+                absl::optional<AccountId> credentials_account_id,
+                DownloadCallback callback) override;
+
+ private:
+  bool should_fail_ = false;
+  net::HttpRequestHeaders last_request_headers_;
 };
 
 }  // namespace ash

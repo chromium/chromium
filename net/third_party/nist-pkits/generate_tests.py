@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,7 +22,7 @@ import tempfile
 
 
 def sanitize_name(s):
-  return s.translate(None, ' -')
+  return s.translate(str.maketrans('', '', ' -'))
 
 
 def finalize_test_case(test_case_name, sanitized_test_names, output):
@@ -107,9 +107,9 @@ WRAPPED_TYPED_TEST_P(%(test_case_name)s, %(sanitized_test_name)s) {
 
 
 # Matches a section header, ex: "4.1 Signature Verification"
-SECTION_MATCHER = re.compile('^\s*(\d+\.\d+)\s+(.+)\s*$')
+SECTION_MATCHER = re.compile('^\s*(\d+\.\d+)\s+(.+?)\s*\ufffd?$')
 # Matches a test header, ex: "4.1.1 Valid Signatures Test1"
-TEST_MATCHER = re.compile('^\s*(\d+\.\d+.\d+)\s+(.+)\s*$')
+TEST_MATCHER = re.compile('^\s*(\d+\.\d+.\d+)\s+(.+?)\s*\ufffd?$')
 
 # Matches the various headers in a test specification.
 EXPECTED_HEADER_MATCHER = re.compile('^\s*Expected Result:')
@@ -131,7 +131,7 @@ TEST_RESULT_MATCHER = re.compile(
 
 # Matches a line in the certification path, ex:
 #    "\u2022 Good CA Cert, Good CA CRL"
-PATH_MATCHER = re.compile('^\s*\xe2\x80\xa2\s*(.+)\s*$')
+PATH_MATCHER = re.compile('^\s*\u2022\s*(.+)\s*$')
 # Matches a page number. These may appear in the middle of multi-line fields and
 # thus need to be ignored.
 PAGE_NUMBER_MATCHER = re.compile('^\s*\d+\s*$')
@@ -1174,7 +1174,7 @@ def main():
   subprocess.check_call(['pdftotext', '-layout', '-nopgbrk', '-eol', 'unix',
                          pkits_pdf_path, pkits_txt_file.name])
 
-  test_descriptions = pkits_txt_file.read()
+  test_descriptions = pkits_txt_file.read().decode('utf-8')
 
   # Extract section 4 of the text, which is the part that contains the tests.
   test_descriptions = test_descriptions.split(

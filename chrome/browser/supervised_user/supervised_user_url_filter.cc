@@ -1,42 +1,28 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 
-#include <stddef.h>
-#include <stdint.h>
-
-#include <set>
-#include <unordered_map>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
-#include "base/files/file_path.h"
-#include "base/json/json_file_value_serializer.h"
-#include "base/macros.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/supervised_user/kids_management_url_checker_client.h"
 #include "chrome/browser/supervised_user/supervised_user_denylist.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/common/webui_url_constants.h"
-#include "components/policy/core/browser/url_util.h"
-#include "components/url_formatter/url_formatter.h"
-#include "components/url_matcher/url_matcher.h"
+#include "chrome/common/url_constants.h"
+#include "components/url_matcher/url_util.h"
 #include "components/variations/service/variations_service.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -48,24 +34,11 @@
 #include "extensions/common/extension_urls.h"
 #endif
 
-using content::BrowserThread;
 using net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES;
 using net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES;
 using net::registry_controlled_domains::GetCanonicalHostRegistryLength;
-using policy::url_util::CreateConditionSet;
-using policy::url_util::FilterToComponents;
-using url_matcher::URLMatcher;
-using url_matcher::URLMatcherConditionSet;
-
-using HostnameHash = SupervisedUserSiteList::HostnameHash;
 
 namespace {
-
-struct HashHostnameHash {
-  size_t operator()(const HostnameHash& value) const {
-    return value.hash();
-  }
-};
 
 SupervisedUserURLFilter::FilteringBehavior
 GetBehaviorFromSafeSearchClassification(
@@ -82,154 +55,146 @@ GetBehaviorFromSafeSearchClassification(
 
 bool IsSameDomain(const GURL& url1, const GURL& url2) {
   return net::registry_controlled_domains::SameDomainOrHost(
-      url1, url2,
-      net::registry_controlled_domains::PrivateRegistryFilter::
-          EXCLUDE_PRIVATE_REGISTRIES);
+      url1, url2, EXCLUDE_PRIVATE_REGISTRIES);
 }
+
+bool SetFilteringBehaviorResult(
+    SupervisedUserURLFilter::FilteringBehavior behavior,
+    SupervisedUserURLFilter::FilteringBehavior* result) {
+  if (*result == behavior)
+    return false;
+
+  // First time to find a match in allow/block list
+  if (*result == SupervisedUserURLFilter::FilteringBehavior::INVALID) {
+    *result = behavior;
+    return false;
+  }
+
+  // Another match is found and doesn't have the same behavior. Block is
+  // the preferred behvior, override the result only if the match is block.
+  if (behavior == SupervisedUserURLFilter::FilteringBehavior::BLOCK)
+    *result = behavior;
+
+  return true;
+}
+
+bool IsNonStandardUrlScheme(const GURL& effective_url) {
+  // URLs with a non-standard scheme (e.g. chrome://) are always allowed.
+  return !effective_url.SchemeIsHTTPOrHTTPS() &&
+         !effective_url.SchemeIsWSOrWSS() &&
+         !effective_url.SchemeIs(url::kFtpScheme);
+}
+
+bool IsAlwaysAllowedHost(const GURL& effective_url) {
+  // Allow navigations to allowed origins.
+  constexpr auto kAllowedHosts = base::MakeFixedFlatSet<base::StringPiece>(
+      {"accounts.google.com", "families.google.com", "familylink.google.com",
+       "myaccount.google.com", "policies.google.com", "support.google.com"});
+
+  return base::Contains(kAllowedHosts, effective_url.host_piece());
+}
+
+bool IsAlwaysAllowedUrlPrefix(const GURL& effective_url) {
+  // A list of allowed URL prefixes.
+  //
+  // Consider using url_matcher::CreateURLPrefixCondition (initialized once at
+  // startup) for performance if the set of allowed URL prefixes grows large.
+  static const char* const kAllowedUrlPrefixes[] = {
+      // The Chrome sync dashboard is linked to from within Chrome settings.
+      // Allow both the initial URL that is loaded, and the URL to which it
+      // redirects.
+      chrome::kSyncGoogleDashboardURL, "https://chrome.google.com/sync"};
+
+  for (const char* allowedUrlPrefix : kAllowedUrlPrefixes) {
+    if (base::StartsWith(effective_url.spec(), allowedUrlPrefix))
+      return true;
+  }
+  return false;
+}
+
+bool IsPlayStoreTermsOfServiceUrl(const GURL& effective_url) {
+  // Play Store terms of service path:
+  static const char* kPlayStoreHost = "play.google.com";
+  static const char* kPlayTermsPath = "/about/play-terms";
+  // Check Play Store terms of service.
+  // path_piece is checked separately from the host to match international pages
+  // like https://play.google.com/intl/pt-BR_pt/about/play-terms/.
+  return effective_url.SchemeIs(url::kHttpsScheme) &&
+         effective_url.host_piece() == kPlayStoreHost &&
+         (effective_url.path_piece().find(kPlayTermsPath) !=
+          base::StringPiece::npos);
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+bool IsCrxWebstoreOrDownloadUrl(const GURL& effective_url) {
+  static const char* const kCrxDownloadUrls[] = {
+      "https://clients2.googleusercontent.com/crx/blobs/",
+      "https://chrome.google.com/webstore/download/"};
+
+  // Chrome Webstore.
+  if (extension_urls::GetWebstoreLaunchURL().host() ==
+      url_matcher::util::Normalize(effective_url).host()) {
+    return true;
+  }
+
+  // Allow webstore crx downloads. This applies to both extension installation
+  // and updates.
+  if (extension_urls::GetWebstoreUpdateUrl() ==
+      url_matcher::util::Normalize(effective_url)) {
+    return true;
+  }
+
+  // The actual CRX files are downloaded from other URLs. Allow them too.
+  // These URLs have https scheme.
+  if (!effective_url.SchemeIs(url::kHttpsScheme))
+    return false;
+
+  for (const char* crx_download_url_str : kCrxDownloadUrls) {
+    GURL crx_download_url(crx_download_url_str);
+    if (crx_download_url.host_piece() == effective_url.host_piece() &&
+        base::StartsWith(effective_url.path_piece(),
+                         crx_download_url.path_piece(),
+                         base::CompareCase::SENSITIVE)) {
+      return true;
+    }
+  }
+  return false;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
-struct SupervisedUserURLFilter::Contents {
-  URLMatcher url_matcher;
-  std::unordered_multimap<HostnameHash,
-                          scoped_refptr<SupervisedUserSiteList>,
-                          HashHostnameHash>
-      hostname_hashes;
-  // This only tracks pattern lists.
-  std::map<URLMatcherConditionSet::ID, scoped_refptr<SupervisedUserSiteList>>
-      site_lists_by_matcher_id;
-};
-
 namespace {
 
-// URL schemes not in this list (e.g., file:// and chrome://) will always be
-// allowed.
-const char* const kFilteredSchemes[] = {"http", "https", "ftp", "ws", "wss"};
+// UMA histogram FamilyUser.ManagedSiteList.Conflict
+// Reports conflict when the user tries to access a url that has a match in
+// both of the allow list and the block list.
+const char kManagedSiteListConflictHistogramName[] =
+    "FamilyUser.ManagedSiteList.Conflict";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-const char* const kCrxDownloadUrls[] = {
-    "https://clients2.googleusercontent.com/crx/blobs/",
-    "https://chrome.google.com/webstore/download/"};
-#endif
+// UMA histogram FamilyUser.WebFilterType
+// Reports WebFilterType which indicates web filter behaviour are used for
+// current Family Link user.
+constexpr char kWebFilterTypeHistogramName[] = "FamilyUser.WebFilterType";
 
-// Allowed origins:
-const char kFamiliesSecureUrl[] = "https://families.google.com/";
-const char kFamiliesUrl[] = "http://families.google.com/";
+// UMA histogram FamilyUser.ManualSiteListType
+// Reports ManualSiteListType which indicates approved list and blocked list
+// usage for current Family Link user.
+constexpr char kManagedSiteListHistogramName[] = "FamilyUser.ManagedSiteList";
 
-// Play Store terms of service path:
-const char kPlayStoreHost[] = "play.google.com";
-const char kPlayTermsPath[] = "/about/play-terms";
+// UMA histogram FamilyUser.ManagedSiteListCount.Approved
+// Reports the number of approved urls and domains for current Family Link user.
+constexpr char kApprovedSitesCountHistogramName[] =
+    "FamilyUser.ManagedSiteListCount.Approved";
 
-// accounts.google.com used for login:
-const char kAccountsGoogleUrl[] = "https://accounts.google.com";
-
-// This class encapsulates all the state that is required during construction of
-// a new SupervisedUserURLFilter::Contents.
-class FilterBuilder {
- public:
-  FilterBuilder();
-  ~FilterBuilder();
-
-  // Adds a single URL pattern and returns the id of its matcher.
-  URLMatcherConditionSet::ID AddPattern(const std::string& pattern);
-
-  // Adds all the sites in |site_list|, with URL patterns and hostname hashes.
-  void AddSiteList(const scoped_refptr<SupervisedUserSiteList>& site_list);
-
-  // Finalizes construction of the SupervisedUserURLFilter::Contents and returns
-  // them. This method should be called before this object is destroyed.
-  std::unique_ptr<SupervisedUserURLFilter::Contents> Build();
-
- private:
-  std::unique_ptr<SupervisedUserURLFilter::Contents> contents_;
-  URLMatcherConditionSet::Vector all_conditions_;
-  URLMatcherConditionSet::ID matcher_id_;
-  std::map<URLMatcherConditionSet::ID, scoped_refptr<SupervisedUserSiteList>>
-      site_lists_by_matcher_id_;
-};
-
-FilterBuilder::FilterBuilder()
-    : contents_(new SupervisedUserURLFilter::Contents()),
-      matcher_id_(0) {}
-
-FilterBuilder::~FilterBuilder() {
-  DCHECK(!contents_.get());
-}
-
-URLMatcherConditionSet::ID FilterBuilder::AddPattern(
-    const std::string& pattern) {
-  std::string scheme;
-  std::string host;
-  uint16_t port = 0;
-  std::string path;
-  std::string query;
-  bool match_subdomains = true;
-  if (!FilterToComponents(pattern, &scheme, &host, &match_subdomains, &port,
-                          &path, &query)) {
-    LOG(ERROR) << "Invalid pattern " << pattern;
-    return -1;
-  }
-
-  scoped_refptr<URLMatcherConditionSet> condition_set =
-      CreateConditionSet(&contents_->url_matcher, ++matcher_id_, scheme, host,
-                         match_subdomains, port, path, query, true);
-  all_conditions_.push_back(std::move(condition_set));
-  return matcher_id_;
-}
-
-void FilterBuilder::AddSiteList(
-    const scoped_refptr<SupervisedUserSiteList>& site_list) {
-  for (const std::string& pattern : site_list->patterns()) {
-    URLMatcherConditionSet::ID id = AddPattern(pattern);
-    if (id >= 0) {
-      site_lists_by_matcher_id_[id] = site_list;
-    }
-  }
-
-  for (const HostnameHash& hash : site_list->hostname_hashes())
-    contents_->hostname_hashes.insert(std::make_pair(hash, site_list));
-}
-
-std::unique_ptr<SupervisedUserURLFilter::Contents> FilterBuilder::Build() {
-  contents_->url_matcher.AddConditionSets(all_conditions_);
-  contents_->site_lists_by_matcher_id.insert(site_lists_by_matcher_id_.begin(),
-                                             site_lists_by_matcher_id_.end());
-  return std::move(contents_);
-}
-
-std::unique_ptr<SupervisedUserURLFilter::Contents>
-CreateAllowlistFromPatternsForTesting(
-    const std::vector<std::string>& patterns) {
-  FilterBuilder builder;
-  for (const std::string& pattern : patterns)
-    builder.AddPattern(pattern);
-
-  return builder.Build();
-}
-
-std::unique_ptr<SupervisedUserURLFilter::Contents>
-CreateAllowlistsFromSiteListsForTesting(
-    const std::vector<scoped_refptr<SupervisedUserSiteList>>& site_lists) {
-  FilterBuilder builder;
-  for (const scoped_refptr<SupervisedUserSiteList>& site_list : site_lists)
-    builder.AddSiteList(site_list);
-  return builder.Build();
-}
-
-std::unique_ptr<SupervisedUserURLFilter::Contents> LoadAllowlistsAsyncThread(
-    const std::vector<scoped_refptr<SupervisedUserSiteList>>& site_lists) {
-  FilterBuilder builder;
-  for (const scoped_refptr<SupervisedUserSiteList>& site_list : site_lists)
-    builder.AddSiteList(site_list);
-
-  return builder.Build();
-}
-
+// UMA histogram FamilyUser.ManagedSiteListCount.Blocked
+// Reports the number of blocked urls and domains for current Family Link user.
+constexpr char kBlockedSitesCountHistogramName[] =
+    "FamilyUser.ManagedSiteListCount.Blocked";
 }  // namespace
 
 SupervisedUserURLFilter::SupervisedUserURLFilter()
     : default_behavior_(ALLOW),
-      contents_(new Contents()),
       denylist_(nullptr),
       blocking_task_runner_(base::ThreadPool::CreateTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
@@ -240,6 +205,34 @@ SupervisedUserURLFilter::~SupervisedUserURLFilter() {
 }
 
 // static
+const char* SupervisedUserURLFilter::GetWebFilterTypeHistogramNameForTest() {
+  return kWebFilterTypeHistogramName;
+}
+
+// static
+const char* SupervisedUserURLFilter::GetManagedSiteListHistogramNameForTest() {
+  return kManagedSiteListHistogramName;
+}
+
+// static
+const char*
+SupervisedUserURLFilter::GetApprovedSitesCountHistogramNameForTest() {
+  return kApprovedSitesCountHistogramName;
+}
+
+// static
+const char*
+SupervisedUserURLFilter::GetBlockedSitesCountHistogramNameForTest() {
+  return kBlockedSitesCountHistogramName;
+}
+
+// static
+const char*
+SupervisedUserURLFilter::GetManagedSiteListConflictHistogramNameForTest() {
+  return kManagedSiteListConflictHistogramName;
+}
+
+// static
 bool SupervisedUserURLFilter::ShouldSkipParentManualAllowlistFiltering(
     content::WebContents* contents) {
   // Note that |contents| can be an inner WebContents. Get the outer most
@@ -247,45 +240,48 @@ bool SupervisedUserURLFilter::ShouldSkipParentManualAllowlistFiltering(
   content::WebContents* outer_most_content =
       contents->GetOutermostWebContents();
 
-  return outer_most_content->GetURL() ==
+  return outer_most_content->GetLastCommittedURL() ==
          GURL(SupervisedUserService::GetEduCoexistenceLoginUrl());
 }
 
 // static
 SupervisedUserURLFilter::FilteringBehavior
 SupervisedUserURLFilter::BehaviorFromInt(int behavior_value) {
-  DCHECK_GE(behavior_value, ALLOW);
-  DCHECK_LE(behavior_value, BLOCK);
+  DCHECK(behavior_value == ALLOW || behavior_value == BLOCK)
+      << "SupervisedUserURLFilter value not supported: " << behavior_value;
   return static_cast<FilteringBehavior>(behavior_value);
-}
-
-// static
-bool SupervisedUserURLFilter::HasFilteredScheme(const GURL& url) {
-  for (const char* scheme : kFilteredSchemes) {
-    if (url.scheme() == scheme)
-      return true;
-  }
-  return false;
 }
 
 // static
 bool SupervisedUserURLFilter::HostMatchesPattern(
     const std::string& canonical_host,
     const std::string& pattern) {
-  // If |canonical_host| starts with |www.| but |pattern| starts with neither
-  // |www.| nor |*.| then trim |www.| part of canonical host.
-  bool is_host_www =
-      base::StartsWith(canonical_host, "www.", base::CompareCase::SENSITIVE);
-  bool patern_accepts =
-      base::StartsWith(pattern, "www.", base::CompareCase::SENSITIVE) ||
-      base::StartsWith(pattern, "*.", base::CompareCase::SENSITIVE);
-
+  std::string trimmed_pattern = pattern;
   std::string trimmed_host = canonical_host;
-  if (is_host_www && !patern_accepts) {
-    trimmed_host = url_formatter::StripWWW(canonical_host);
+
+  // If pattern starts with https:// or http:// trim it.
+  if (base::StartsWith(pattern, "https://", base::CompareCase::SENSITIVE)) {
+    trimmed_pattern = trimmed_pattern.substr(8);
+  } else if (base::StartsWith(pattern, "http://",
+                              base::CompareCase::SENSITIVE)) {
+    trimmed_pattern = trimmed_pattern.substr(7);
   }
 
-  std::string trimmed_pattern = pattern;
+  bool host_starts_with_www =
+      base::StartsWith(canonical_host, "www.", base::CompareCase::SENSITIVE);
+  bool pattern_starts_with_www =
+      base::StartsWith(trimmed_pattern, "www.", base::CompareCase::SENSITIVE);
+
+  // Trim the initial "www." if it appears on either the host or the pattern,
+  // but not if it appears on both.
+  if (host_starts_with_www != pattern_starts_with_www) {
+    if (host_starts_with_www) {
+      trimmed_host = trimmed_host.substr(4);
+    } else if (pattern_starts_with_www) {
+      trimmed_pattern = trimmed_pattern.substr(4);
+    }
+  }
+
   if (base::EndsWith(pattern, ".*", base::CompareCase::SENSITIVE)) {
     size_t registry_length = GetCanonicalHostRegistryLength(
         trimmed_host, EXCLUDE_UNKNOWN_REGISTRIES, EXCLUDE_PRIVATE_REGISTRIES);
@@ -326,6 +322,20 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(const GURL& url) const {
   return GetFilteringBehaviorForURL(url, false, &reason);
 }
 
+bool SupervisedUserURLFilter::IsExemptedFromGuardianApproval(
+    const GURL& effective_url) const {
+  bool exempted_from_guardian_approval =
+      IsNonStandardUrlScheme(effective_url) ||
+      IsAlwaysAllowedHost(effective_url) ||
+      IsAlwaysAllowedUrlPrefix(effective_url) ||
+      IsPlayStoreTermsOfServiceUrl(effective_url);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  exempted_from_guardian_approval |= IsCrxWebstoreOrDownloadUrl(effective_url);
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  return exempted_from_guardian_approval;
+}
+
 bool SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
     const GURL& url, FilteringBehavior* behavior) const {
   supervised_user_error_page::FilteringBehaviorReason reason;
@@ -340,55 +350,14 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
     supervised_user_error_page::FilteringBehaviorReason* reason) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  GURL effective_url = policy::url_util::GetEmbeddedURL(url);
+  GURL effective_url = url_matcher::util::GetEmbeddedURL(url);
   if (!effective_url.is_valid())
     effective_url = url;
 
   *reason = supervised_user_error_page::MANUAL;
 
-  // URLs with a non-standard scheme (e.g. chrome://) are always allowed.
-  if (!HasFilteredScheme(effective_url))
+  if (IsExemptedFromGuardianApproval(effective_url))
     return ALLOW;
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Allow webstore crx downloads. This applies to both extension installation
-  // and updates.
-  if (extension_urls::GetWebstoreUpdateUrl() ==
-      policy::url_util::Normalize(effective_url)) {
-    return ALLOW;
-  }
-
-  // The actual CRX files are downloaded from other URLs. Allow them too.
-  for (const char* crx_download_url_str : kCrxDownloadUrls) {
-    GURL crx_download_url(crx_download_url_str);
-    if (effective_url.SchemeIs(url::kHttpsScheme) &&
-        crx_download_url.host_piece() == effective_url.host_piece() &&
-        base::StartsWith(effective_url.path_piece(),
-                         crx_download_url.path_piece(),
-                         base::CompareCase::SENSITIVE)) {
-      return ALLOW;
-    }
-  }
-#endif
-
-  // Allow navigations to allowed origins (currently families.google.com and
-  // accounts.google.com).
-  static const base::NoDestructor<base::flat_set<GURL>> kAllowedOrigins(
-      base::flat_set<GURL>({GURL(kFamiliesUrl).GetOrigin(),
-                            GURL(kFamiliesSecureUrl).GetOrigin(),
-                            GURL(kAccountsGoogleUrl).GetOrigin()}));
-  if (base::Contains(*kAllowedOrigins, effective_url.GetOrigin()))
-    return ALLOW;
-
-  // Check Play Store terms of service.
-  // path_piece is checked separetly from the host to match international pages
-  // like https://play.google.com/intl/pt-BR_pt/about/play-terms/.
-  if (effective_url.SchemeIs(url::kHttpsScheme) &&
-      effective_url.host_piece() == kPlayStoreHost &&
-      effective_url.path_piece().find(kPlayTermsPath) !=
-          base::StringPiece::npos) {
-    return ALLOW;
-  }
 
   // Check manual denylists and allowlists.
   FilteringBehavior manual_result =
@@ -396,36 +365,12 @@ SupervisedUserURLFilter::GetFilteringBehaviorForURL(
   if (manual_result != INVALID)
     return manual_result;
 
-  // Check the list of URL patterns.
-  std::set<URLMatcherConditionSet::ID> matching_ids =
-      contents_->url_matcher.MatchURL(effective_url);
-
-  if (!matching_ids.empty()) {
-    *reason = supervised_user_error_page::ALLOWLIST;
-    return ALLOW;
-  }
-
-  // Check the list of hostname hashes.
-  if (contents_->hostname_hashes.count(HostnameHash(effective_url.host()))) {
-    *reason = supervised_user_error_page::ALLOWLIST;
-    return ALLOW;
-  }
-
   // Check the static denylist, unless the default is to block anyway.
   if (!manual_only && default_behavior_ != BLOCK && denylist_ &&
       denylist_->HasURL(effective_url)) {
     *reason = supervised_user_error_page::DENYLIST;
     return BLOCK;
   }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // The user requested the Chrome Webstore, and it
-  // hasn't specifically been blocked above, so allow.
-  if (policy::url_util::Normalize(effective_url).host() ==
-      extension_urls::GetWebstoreLaunchURL().host()) {
-    return ALLOW;
-  }
-#endif
 
   // Fall back to the default behavior.
   *reason = supervised_user_error_page::DEFAULT;
@@ -441,33 +386,34 @@ SupervisedUserURLFilter::FilteringBehavior
 SupervisedUserURLFilter::GetManualFilteringBehaviorForURL(
     const GURL& url) const {
   FilteringBehavior result = INVALID;
+  bool conflict = false;
 
   // Check manual overrides for the exact URL.
-  auto url_it = url_map_.find(policy::url_util::Normalize(url));
+  auto url_it = url_map_.find(url_matcher::util::Normalize(url));
   if (url_it != url_map_.end()) {
-    if (!url_it->second)
-      return BLOCK;
-    result = ALLOW;
+    conflict =
+        SetFilteringBehaviorResult(url_it->second ? ALLOW : BLOCK, &result);
   }
 
   // Check manual overrides for the hostname.
   const std::string host = url.host();
   auto host_it = host_map_.find(host);
   if (host_it != host_map_.end()) {
-    if (!host_it->second)
-      return BLOCK;
-    result = ALLOW;
+    conflict |=
+        SetFilteringBehaviorResult(host_it->second ? ALLOW : BLOCK, &result);
   }
 
   // Look for patterns matching the hostname, with a value that is different
   // from the default (a value of true in the map meaning allowed).
   for (const auto& host_entry : host_map_) {
     if (HostMatchesPattern(host, host_entry.first)) {
-      if (!host_entry.second)
-        return BLOCK;
-      result = ALLOW;
+      conflict |= SetFilteringBehaviorResult(host_entry.second ? ALLOW : BLOCK,
+                                             &result);
     }
   }
+
+  if (result != INVALID)
+    UMA_HISTOGRAM_BOOLEAN(kManagedSiteListConflictHistogramName, conflict);
 
   return result;
 }
@@ -534,29 +480,6 @@ bool SupervisedUserURLFilter::GetFilteringBehaviorForSubFrameURLWithAsyncChecks(
   return RunAsyncChecker(url, std::move(callback));
 }
 
-std::map<std::string, std::u16string>
-SupervisedUserURLFilter::GetMatchingAllowlistTitles(const GURL& url) const {
-  std::map<std::string, std::u16string> allowlists;
-
-  std::set<URLMatcherConditionSet::ID> matching_ids =
-      contents_->url_matcher.MatchURL(url);
-
-  for (const auto& matching_id : matching_ids) {
-    const scoped_refptr<SupervisedUserSiteList>& site_list =
-        contents_->site_lists_by_matcher_id[matching_id];
-    allowlists[site_list->id()] = site_list->title();
-  }
-
-  // Add the site lists that match the URL hostname hash to the map of
-  // allowlists (IDs -> titles).
-  const auto& range =
-      contents_->hostname_hashes.equal_range(HostnameHash(url.host()));
-  for (auto it = range.first; it != range.second; ++it)
-    allowlists[it->second->id()] = it->second->title();
-
-  return allowlists;
-}
-
 void SupervisedUserURLFilter::SetDefaultFilteringBehavior(
     FilteringBehavior behavior) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -568,17 +491,6 @@ SupervisedUserURLFilter::GetDefaultFilteringBehavior() const {
   return default_behavior_;
 }
 
-void SupervisedUserURLFilter::LoadAllowlists(
-    const std::vector<scoped_refptr<SupervisedUserSiteList>>& site_lists) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&LoadAllowlistsAsyncThread, site_lists),
-      base::BindOnce(&SupervisedUserURLFilter::SetContents,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
 void SupervisedUserURLFilter::SetDenylist(
     const SupervisedUserDenylist* denylist) {
   denylist_ = denylist;
@@ -586,28 +498,6 @@ void SupervisedUserURLFilter::SetDenylist(
 
 bool SupervisedUserURLFilter::HasDenylist() const {
   return !!denylist_;
-}
-
-void SupervisedUserURLFilter::SetFromPatternsForTesting(
-    const std::vector<std::string>& patterns) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&CreateAllowlistFromPatternsForTesting, patterns),
-      base::BindOnce(&SupervisedUserURLFilter::SetContents,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void SupervisedUserURLFilter::SetFromSiteListsForTesting(
-    const std::vector<scoped_refptr<SupervisedUserSiteList>>& site_lists) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&CreateAllowlistsFromSiteListsForTesting, site_lists),
-      base::BindOnce(&SupervisedUserURLFilter::SetContents,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SupervisedUserURLFilter::SetManualHosts(
@@ -648,7 +538,6 @@ bool SupervisedUserURLFilter::HasAsyncURLChecker() const {
 
 void SupervisedUserURLFilter::Clear() {
   default_behavior_ = ALLOW;
-  SetContents(std::make_unique<Contents>());
   url_map_.clear();
   host_map_.clear();
   denylist_ = nullptr;
@@ -668,7 +557,6 @@ void SupervisedUserURLFilter::SetBlockingTaskRunnerForTesting(
   blocking_task_runner_ = task_runner;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 SupervisedUserURLFilter::WebFilterType
 SupervisedUserURLFilter::GetWebFilterType() const {
   // If the default filtering behavior is not block, it means the web filter
@@ -681,43 +569,64 @@ SupervisedUserURLFilter::GetWebFilterType() const {
                             : WebFilterType::kAllowAllSites;
 }
 
-SupervisedUserURLFilter::ManagedSiteList
-SupervisedUserURLFilter ::GetManagedSiteList() const {
+void SupervisedUserURLFilter::ReportWebFilterTypeMetrics() const {
+  if (!is_filter_initialized_)
+    return;
+
+  base::UmaHistogramEnumeration(kWebFilterTypeHistogramName,
+                                GetWebFilterType());
+}
+
+void SupervisedUserURLFilter::ReportManagedSiteListMetrics() const {
+  if (!is_filter_initialized_)
+    return;
+
   if (url_map_.empty() && host_map_.empty()) {
-    return ManagedSiteList::kEmpty;
+    base::UmaHistogramEnumeration(kManagedSiteListHistogramName,
+                                  ManagedSiteList::kEmpty);
+    base::UmaHistogramCounts1000(kApprovedSitesCountHistogramName, 0);
+    base::UmaHistogramCounts1000(kBlockedSitesCountHistogramName, 0);
+    return;
   }
 
-  bool approved_list = false;
-  bool blocked_list = false;
+  ManagedSiteList managed_site_list = ManagedSiteList::kMaxValue;
+  int approved_count = 0;
+  int blocked_count = 0;
   for (const auto& it : url_map_) {
-    if (approved_list && blocked_list)
-      break;
     if (it.second) {
-      approved_list = true;
+      approved_count++;
     } else {
-      blocked_list = true;
+      blocked_count++;
     }
   }
 
   for (const auto& it : host_map_) {
-    if (approved_list && blocked_list)
-      break;
     if (it.second) {
-      approved_list = true;
+      approved_count++;
     } else {
-      blocked_list = true;
+      blocked_count++;
     }
   }
 
-  if (approved_list && blocked_list) {
-    return ManagedSiteList::kBoth;
-  } else if (approved_list) {
-    return ManagedSiteList::kApprovedListOnly;
+  if (approved_count > 0 && blocked_count > 0) {
+    managed_site_list = ManagedSiteList::kBoth;
+  } else if (approved_count > 0) {
+    managed_site_list = ManagedSiteList::kApprovedListOnly;
   } else {
-    return ManagedSiteList::kBlockedListOnly;
+    managed_site_list = ManagedSiteList::kBlockedListOnly;
   }
+
+  base::UmaHistogramCounts1000(kApprovedSitesCountHistogramName,
+                               approved_count);
+  base::UmaHistogramCounts1000(kBlockedSitesCountHistogramName, blocked_count);
+
+  base::UmaHistogramEnumeration(kManagedSiteListHistogramName,
+                                managed_site_list);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+void SupervisedUserURLFilter::SetFilterInitialized(bool is_filter_initialized) {
+  is_filter_initialized_ = is_filter_initialized;
+}
 
 bool SupervisedUserURLFilter::RunAsyncChecker(
     const GURL& url,
@@ -731,16 +640,9 @@ bool SupervisedUserURLFilter::RunAsyncChecker(
   }
 
   return async_url_checker_->CheckURL(
-      policy::url_util::Normalize(url),
+      url_matcher::util::Normalize(url),
       base::BindOnce(&SupervisedUserURLFilter::CheckCallback,
                      base::Unretained(this), std::move(callback)));
-}
-
-void SupervisedUserURLFilter::SetContents(std::unique_ptr<Contents> contents) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  contents_ = std::move(contents);
-  for (Observer& observer : observers_)
-    observer.OnSiteListUpdated();
 }
 
 void SupervisedUserURLFilter::CheckCallback(

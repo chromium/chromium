@@ -1,0 +1,29 @@
+
+<style include="oobe-dialog-host-styles">
+  #appName {
+    color: #404040;
+    font-size: 22px;
+  }
+</style>
+<oobe-adaptive-dialog id="autolaunch" role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'autolaunchTitle')]]">
+  <iron-icon slot="icon" icon="oobe-32:alert"></iron-icon>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'demoSetupProgressScreenTitle')]]
+  </h1>
+  <p slot="subtitle">
+    [[i18nDynamic(locale, 'autolaunchWarning')]]
+  </p>
+  <div id="footer" slot="content">
+    <img id="appIcon" src="[[appIconUrl_]]" alt="">
+    <div id="appName">[[appName_]]</div>
+  </div>
+  <div slot="bottom-buttons" class="layout horizontal end-justified">
+    <oobe-text-button id="cancelButton" on-click="onCancel_"
+        text-key="autolaunchCancelButton" class="focus-on-show">
+    </oobe-text-button>
+    <oobe-text-button id="confirmButton" on-click="onConfirm_"
+        text-key="autolaunchConfirmButton" inverse>
+    </oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>

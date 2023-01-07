@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@ TEST(UnwinderArm64Test, UnwindValidStack) {
   UnwinderArm64 unwinder;
   unwinder.Initialize(&module_cache);
   std::vector<base::Frame> stack;
-  EXPECT_EQ(base::UnwindResult::COMPLETED,
+  EXPECT_EQ(base::UnwindResult::kCompleted,
             unwinder.TryUnwind(&register_context, stack_top, &stack));
 
   ASSERT_EQ(kMaxFrameCount, stack.size());
@@ -73,7 +73,7 @@ TEST(UnwinderArm64Test, UnwindInvalidFirstFrame) {
   UnwinderArm64 unwinder;
   unwinder.Initialize(&module_cache);
   std::vector<base::Frame> stack;
-  EXPECT_EQ(base::UnwindResult::COMPLETED,
+  EXPECT_EQ(base::UnwindResult::kCompleted,
             unwinder.TryUnwind(&register_context, stack_top, &stack));
 
   // One extra frame is added when scanning starts.
@@ -104,7 +104,7 @@ TEST(UnwinderArm64Test, UnwindInvalidFp) {
   UnwinderArm64 unwinder;
   unwinder.Initialize(&module_cache);
   std::vector<base::Frame> stack;
-  EXPECT_EQ(base::UnwindResult::COMPLETED,
+  EXPECT_EQ(base::UnwindResult::kCompleted,
             unwinder.TryUnwind(&register_context, stack_top, &stack));
 
   // One extra frame is added when scanning starts.

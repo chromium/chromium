@@ -1,13 +1,15 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/chromedriver/keycode_text_conversion.h"
 
-#include <VersionHelpers.h>
+// windows.h must be included before versionhelpers.h
+#include <windows.h>
+
 #include <stdlib.h>
 #include <string.h>
-#include <windows.h>
+#include <versionhelpers.h>
 
 #include <memory>
 

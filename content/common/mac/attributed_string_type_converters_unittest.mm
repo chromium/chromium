@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -134,4 +134,26 @@ TEST_F(AttributedStringConverterTest, OutOfRange) {
   attrs = [ns_attributed_string attributesAtIndex:5 effectiveRange:&range];
   EXPECT_FALSE([attrs objectForKey:NSFontAttributeName]);
   EXPECT_EQ(0U, [attrs count]);
+}
+
+TEST_F(AttributedStringConverterTest, SystemFontSubstitution) {
+  // Ask for a specialization of the system font that the OS will refuse to
+  // instantiate via the normal font APIs.
+  std::u16string font_name = u".SFNS-Regular_wdth_opsz200000_GRAD_wght2BC0000";
+  ui::mojom::AttributedStringPtr attributed_string =
+      ui::mojom::AttributedString::New();
+  attributed_string->string = u"Hello";
+  attributed_string->attributes.push_back(
+      ui::mojom::FontAttribute::New(font_name, 12, gfx::Range(0, 5)));
+
+  NSAttributedString* ns_attributed_string =
+      attributed_string.To<NSAttributedString*>();
+  EXPECT_TRUE(ns_attributed_string);
+
+  NSRange range;
+  NSDictionary* attrs = [ns_attributed_string attributesAtIndex:0
+                                                 effectiveRange:&range];
+  EXPECT_NSEQ([NSFont systemFontOfSize:12],
+              [attrs objectForKey:NSFontAttributeName]);
+  EXPECT_TRUE(NSEqualRanges(range, NSMakeRange(0, 5)));
 }

@@ -37,6 +37,7 @@
 
 #include <map>
 #include <string>
+
 #include <google/protobuf/compiler/cpp/cpp_field.h>
 
 namespace google {
@@ -47,19 +48,21 @@ namespace cpp {
 class EnumFieldGenerator : public FieldGenerator {
  public:
   EnumFieldGenerator(const FieldDescriptor* descriptor, const Options& options);
-  ~EnumFieldGenerator();
+  ~EnumFieldGenerator() override;
 
   // implements FieldGenerator ---------------------------------------
-  void GeneratePrivateMembers(io::Printer* printer) const;
-  void GenerateAccessorDeclarations(io::Printer* printer) const;
-  void GenerateInlineAccessorDefinitions(io::Printer* printer) const;
-  void GenerateClearingCode(io::Printer* printer) const;
-  void GenerateMergingCode(io::Printer* printer) const;
-  void GenerateSwappingCode(io::Printer* printer) const;
-  void GenerateConstructorCode(io::Printer* printer) const;
-  void GenerateCopyConstructorCode(io::Printer* printer) const;
-  void GenerateSerializeWithCachedSizesToArray(io::Printer* printer) const;
-  void GenerateByteSize(io::Printer* printer) const;
+  void GeneratePrivateMembers(io::Printer* printer) const override;
+  void GenerateAccessorDeclarations(io::Printer* printer) const override;
+  void GenerateInlineAccessorDefinitions(io::Printer* printer) const override;
+  void GenerateClearingCode(io::Printer* printer) const override;
+  void GenerateMergingCode(io::Printer* printer) const override;
+  void GenerateSwappingCode(io::Printer* printer) const override;
+  void GenerateConstructorCode(io::Printer* printer) const override;
+  void GenerateCopyConstructorCode(io::Printer* printer) const override;
+  void GenerateSerializeWithCachedSizesToArray(
+      io::Printer* printer) const override;
+  void GenerateByteSize(io::Printer* printer) const override;
+  void GenerateConstinitInitializer(io::Printer* printer) const override;
 
  private:
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(EnumFieldGenerator);
@@ -69,13 +72,13 @@ class EnumOneofFieldGenerator : public EnumFieldGenerator {
  public:
   EnumOneofFieldGenerator(const FieldDescriptor* descriptor,
                           const Options& options);
-  ~EnumOneofFieldGenerator();
+  ~EnumOneofFieldGenerator() override;
 
   // implements FieldGenerator ---------------------------------------
-  void GenerateInlineAccessorDefinitions(io::Printer* printer) const;
-  void GenerateClearingCode(io::Printer* printer) const;
-  void GenerateSwappingCode(io::Printer* printer) const;
-  void GenerateConstructorCode(io::Printer* printer) const;
+  void GenerateInlineAccessorDefinitions(io::Printer* printer) const override;
+  void GenerateClearingCode(io::Printer* printer) const override;
+  void GenerateSwappingCode(io::Printer* printer) const override;
+  void GenerateConstructorCode(io::Printer* printer) const override;
 
  private:
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(EnumOneofFieldGenerator);
@@ -85,21 +88,21 @@ class RepeatedEnumFieldGenerator : public FieldGenerator {
  public:
   RepeatedEnumFieldGenerator(const FieldDescriptor* descriptor,
                              const Options& options);
-  ~RepeatedEnumFieldGenerator();
+  ~RepeatedEnumFieldGenerator() override;
 
   // implements FieldGenerator ---------------------------------------
-  void GeneratePrivateMembers(io::Printer* printer) const;
-  void GenerateAccessorDeclarations(io::Printer* printer) const;
-  void GenerateInlineAccessorDefinitions(io::Printer* printer) const;
-  void GenerateClearingCode(io::Printer* printer) const;
-  void GenerateMergingCode(io::Printer* printer) const;
-  void GenerateSwappingCode(io::Printer* printer) const;
-  void GenerateConstructorCode(io::Printer* printer) const;
-  void GenerateCopyConstructorCode(io::Printer* printer) const {}
-  void GenerateMergeFromCodedStream(io::Printer* printer) const;
-  void GenerateMergeFromCodedStreamWithPacking(io::Printer* printer) const;
-  void GenerateSerializeWithCachedSizesToArray(io::Printer* printer) const;
-  void GenerateByteSize(io::Printer* printer) const;
+  void GeneratePrivateMembers(io::Printer* printer) const override;
+  void GenerateAccessorDeclarations(io::Printer* printer) const override;
+  void GenerateInlineAccessorDefinitions(io::Printer* printer) const override;
+  void GenerateClearingCode(io::Printer* printer) const override;
+  void GenerateMergingCode(io::Printer* printer) const override;
+  void GenerateSwappingCode(io::Printer* printer) const override;
+  void GenerateConstructorCode(io::Printer* printer) const override;
+  void GenerateCopyConstructorCode(io::Printer* printer) const override {}
+  void GenerateSerializeWithCachedSizesToArray(
+      io::Printer* printer) const override;
+  void GenerateByteSize(io::Printer* printer) const override;
+  void GenerateConstinitInitializer(io::Printer* printer) const override;
 
  private:
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(RepeatedEnumFieldGenerator);

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,10 @@
 #include "content/common/child_process_host_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/common/content_features.h"
+#include "gpu/config/gpu_info.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -28,12 +30,11 @@
 #include "content/public/browser/chromeos/delegate_to_browser_gpu_service_accelerator_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/common/trace_event_common.h"
-#include "content/public/common/content_features.h"
 #endif
 
 namespace {
@@ -46,7 +47,7 @@ CreateAcceleratorFactory() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 static const int kMaxRetriesForGetDeviceInfos = 1;
 #endif
 
@@ -65,6 +66,9 @@ class ServiceVideoCaptureProvider::ServiceProcessObserver
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     ServiceProcessHost::AddObserver(this);
   }
+
+  ServiceProcessObserver(const ServiceProcessObserver&) = delete;
+  ServiceProcessObserver& operator=(const ServiceProcessObserver&) = delete;
 
   ~ServiceProcessObserver() override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -92,8 +96,6 @@ class ServiceVideoCaptureProvider::ServiceProcessObserver
   const scoped_refptr<base::TaskRunner> io_task_runner_;
   const base::RepeatingClosure start_callback_;
   const base::RepeatingClosure stop_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceProcessObserver);
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -128,11 +130,19 @@ ServiceVideoCaptureProvider::ServiceVideoCaptureProvider(
         base::BindOnce(&ServiceVideoCaptureProvider::OnServiceStarted,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
+  // Must register at the IO thread so that callbacks would be also
+  // triggered on the IO thread.
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ServiceVideoCaptureProvider::RegisterWithGpuDataManager,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 ServiceVideoCaptureProvider::~ServiceVideoCaptureProvider() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   OnServiceConnectionClosed(ReasonForDisconnect::kShutdown);
+  content::GpuDataManager::GetInstance()->RemoveObserver(this);
 }
 
 void ServiceVideoCaptureProvider::GetDeviceInfosAsync(
@@ -168,7 +178,7 @@ void ServiceVideoCaptureProvider::OnServiceStarted() {
 }
 
 void ServiceVideoCaptureProvider::OnServiceStopped() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   if (stashed_result_callback_for_retry_) {
     TRACE_EVENT_INSTANT0(
@@ -188,6 +198,11 @@ void ServiceVideoCaptureProvider::OnLauncherConnectingToSourceProvider(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   launcher_has_connected_to_source_provider_ = true;
   *out_provider = LazyConnectToService();
+}
+
+void ServiceVideoCaptureProvider::RegisterWithGpuDataManager() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  content::GpuDataManager::GetInstance()->AddObserver(this);
 }
 
 scoped_refptr<RefCountedVideoSourceProvider>
@@ -227,6 +242,12 @@ ServiceVideoCaptureProvider::LazyConnectToService() {
   GetVideoCaptureService().InjectGpuDependencies(
       std::move(accelerator_factory));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_WIN)
+  // Pass active gpu info.
+  GetVideoCaptureService().OnGpuInfoUpdate(
+      content::GpuDataManager::GetInstance()->GetGPUInfo().active_gpu().luid);
+#endif
 
   mojo::Remote<video_capture::mojom::VideoSourceProvider> source_provider;
   GetVideoCaptureService().ConnectToVideoSourceProvider(
@@ -269,7 +290,7 @@ void ServiceVideoCaptureProvider::OnDeviceInfosReceived(
     int retry_count,
     const std::vector<media::VideoCaptureDeviceInfo>& infos) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::string model = base::mac::GetModelIdentifier();
   if (base::FeatureList::IsEnabled(
           features::kRetryGetVideoCaptureDeviceInfos) &&
@@ -310,7 +331,8 @@ void ServiceVideoCaptureProvider::OnDeviceInfosRequestDropped(
     scoped_refptr<RefCountedVideoSourceProvider> service_connection,
     GetDeviceInfosCallback result_callback,
     int retry_count) {
-#if defined(OS_MAC)
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+#if BUILDFLAG(IS_MAC)
   std::string model = base::mac::GetModelIdentifier();
   if (base::FeatureList::IsEnabled(
           features::kRetryGetVideoCaptureDeviceInfos) &&
@@ -368,6 +390,18 @@ void ServiceVideoCaptureProvider::OnServiceConnectionClosed(
       break;
   }
   time_of_last_uninitialize_ = base::TimeTicks::Now();
+}
+
+void ServiceVideoCaptureProvider::OnGpuInfoUpdate() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  if (!weak_service_connection_) {
+    // Only need to notify the service if it's already running.
+    return;
+  }
+#if BUILDFLAG(IS_WIN)
+  GetVideoCaptureService().OnGpuInfoUpdate(
+      content::GpuDataManager::GetInstance()->GetGPUInfo().active_gpu().luid);
+#endif
 }
 
 }  // namespace content

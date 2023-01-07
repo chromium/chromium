@@ -1,2 +1,17 @@
-# //chrome/browser/chromeos is moving to this directory, so share OWNERS.
-file://chrome/browser/chromeos/OWNERS
+achuith@chromium.org
+afakhry@chromium.org
+alemate@chromium.org
+hidehiko@chromium.org
+jamescook@chromium.org
+khorimoto@chromium.org
+oshima@chromium.org
+xiyuan@chromium.org
+
+# This is for the common case of adding or renaming files. If you're doing
+# structural changes, use usual OWNERS rules.
+per-file BUILD.gn=*
+
+per-file *active_directory*=file://chrome/browser/ash/authpolicy/OWNERS
+per-file note_taking*=glenrob@chromium.org
+per-file note_taking*=ericwilligers@chromium.org
+per-file camera_presence_notifier*=file://ash/webui/camera_app_ui/OWNERS

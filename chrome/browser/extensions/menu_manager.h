@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,8 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -146,16 +145,14 @@ class MenuItem {
       value_ |= context;
     }
 
-    std::unique_ptr<base::Value> ToValue() const {
-      return std::unique_ptr<base::Value>(
-          new base::Value(static_cast<int>(value_)));
+    base::Value ToValue() const {
+      return base::Value(static_cast<int>(value_));
     }
 
     bool Populate(const base::Value& value) {
-      int int_value;
-      if (!value.GetAsInteger(&int_value) || int_value < 0)
+      if (!value.is_int() || value.GetInt() < 0)
         return false;
-      value_ = int_value;
+      value_ = value.GetInt();
       return true;
     }
 
@@ -170,6 +167,10 @@ class MenuItem {
            bool enabled,
            Type type,
            const ContextList& contexts);
+
+  MenuItem(const MenuItem&) = delete;
+  MenuItem& operator=(const MenuItem&) = delete;
+
   virtual ~MenuItem();
 
   // Simple accessor methods.
@@ -215,18 +216,19 @@ class MenuItem {
   bool SetChecked(bool checked);
 
   // Converts to Value for serialization to preferences.
-  std::unique_ptr<base::DictionaryValue> ToValue() const;
+  base::Value::Dict ToValue() const;
 
   // Returns a new MenuItem created from |value|, or NULL if there is
   // an error.
   static std::unique_ptr<MenuItem> Populate(const std::string& extension_id,
-                                            const base::DictionaryValue& value,
+                                            const base::Value::Dict& value,
                                             std::string* error);
 
   // Sets any document and target URL patterns from |properties|.
-  bool PopulateURLPatterns(std::vector<std::string>* document_url_patterns,
-                           std::vector<std::string>* target_url_patterns,
-                           std::string* error);
+  bool PopulateURLPatterns(
+      const std::vector<std::string>* document_url_patterns,
+      const std::vector<std::string>* target_url_patterns,
+      std::string* error);
 
  protected:
   friend class MenuManager;
@@ -280,8 +282,6 @@ class MenuItem {
 
   // Any children this item may have.
   OwnedList children_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuItem);
 };
 
 // This class keeps track of menu items added by extensions.
@@ -301,6 +301,10 @@ class MenuManager : public ProfileObserver,
   };
 
   MenuManager(content::BrowserContext* context, StateStore* store_);
+
+  MenuManager(const MenuManager&) = delete;
+  MenuManager& operator=(const MenuManager&) = delete;
+
   ~MenuManager() override;
 
   // Convenience function to get the MenuManager for a browser context.
@@ -383,7 +387,7 @@ class MenuManager : public ProfileObserver,
   // Reads menu items for the extension from the state storage. Any invalid
   // items are ignored.
   void ReadFromStorage(const std::string& extension_id,
-                       std::unique_ptr<base::Value> value);
+                       absl::optional<base::Value> value);
 
   // Removes all "incognito" "split" mode context items.
   void RemoveAllIncognitoContextItems();
@@ -425,14 +429,12 @@ class MenuManager : public ProfileObserver,
 
   ExtensionIconManager icon_manager_;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Owned by ExtensionSystem.
-  StateStore* store_;
+  raw_ptr<StateStore> store_;
 
   base::ObserverList<TestObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MenuManager);
 };
 
 }  // namespace extensions

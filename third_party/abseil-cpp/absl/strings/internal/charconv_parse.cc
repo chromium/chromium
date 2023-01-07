@@ -52,7 +52,7 @@ static_assert(std::numeric_limits<double>::digits == 53, "IEEE double fact");
 
 // The lowest valued 19-digit decimal mantissa we can read still contains
 // sufficient information to reconstruct a binary mantissa.
-static_assert(1000000000000000000u > (uint64_t(1) << (53 + 3)), "(b) above");
+static_assert(1000000000000000000u > (uint64_t{1} << (53 + 3)), "(b) above");
 
 // ParseFloat<16> will read the first 15 significant digits of the mantissa.
 //
@@ -190,11 +190,11 @@ bool IsDigit<16>(char ch) {
 
 template <>
 unsigned ToDigit<10>(char ch) {
-  return ch - '0';
+  return static_cast<unsigned>(ch - '0');
 }
 template <>
 unsigned ToDigit<16>(char ch) {
-  return kAsciiToInt[static_cast<unsigned char>(ch)];
+  return static_cast<unsigned>(kAsciiToInt[static_cast<unsigned char>(ch)]);
 }
 
 template <>

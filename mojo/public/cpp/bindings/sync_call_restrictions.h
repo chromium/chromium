@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_SYNC_CALL_RESTRICTIONS_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 
 #if (!defined(NDEBUG) || defined(DCHECK_ALWAYS_ON))
 #define ENABLE_SYNC_CALL_RESTRICTIONS 1
@@ -20,21 +20,32 @@ class CastCdmOriginProvider;
 }  // namespace chromecast
 
 namespace content {
-class DesktopCapturerLacros;
 class AndroidOverlaySyncHelper;
+class DesktopCapturerLacros;
+class StreamTextureFactory;
+#if BUILDFLAG(IS_WIN)
+class DCOMPTextureFactory;
+#endif
 }  // namespace content
 
 namespace crosapi {
 class ScopedAllowSyncCall;
 }  // namespace crosapi
 
+namespace gpu {
+class CommandBufferProxyImpl;
+class GpuChannelHost;
+}  // namespace gpu
+
 namespace ui {
 class Compositor;
 }  // namespace ui
 
 namespace viz {
+class GpuHostImpl;
 class HostFrameSinkManager;
-}
+class HostGpuMemoryBufferManager;
+}  // namespace viz
 
 namespace mojo {
 class ScopedAllowSyncCallForTesting;
@@ -55,6 +66,10 @@ class ScopedAllowSyncCallForTesting;
 // the current sequence during its lifetime.
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
  public:
+  SyncCallRestrictions() = delete;
+  SyncCallRestrictions(const SyncCallRestrictions&) = delete;
+  SyncCallRestrictions& operator=(const SyncCallRestrictions&) = delete;
+
 #if ENABLE_SYNC_CALL_RESTRICTIONS
   // Checks whether the current sequence is allowed to make sync calls, and
   // causes a DCHECK if not.
@@ -81,9 +96,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   friend class content::DesktopCapturerLacros;
   friend class crosapi::ScopedAllowSyncCall;
   friend class mojo::ScopedAllowSyncCallForTesting;
+  friend class viz::GpuHostImpl;
   // For destroying the GL context/surface that draw to a platform window before
   // the platform window is destroyed.
   friend class viz::HostFrameSinkManager;
+  friend class viz::HostGpuMemoryBufferManager;
   // For preventing frame swaps of wrong size during resize on Windows.
   // (https://crbug.com/811945)
   friend class ui::Compositor;
@@ -95,6 +112,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   // Android requires synchronous processing when overlay surfaces are
   // destroyed, else behavior is undefined.
   friend class content::AndroidOverlaySyncHelper;
+  // GPU client code uses a few sync IPCs, grandfathered in from legacy IPC.
+  friend class gpu::GpuChannelHost;
+  friend class gpu::CommandBufferProxyImpl;
+  friend class content::StreamTextureFactory;
+#if BUILDFLAG(IS_WIN)
+  friend class content::DCOMPTextureFactory;
+#endif
   // END ALLOWED USAGE.
 
 #if ENABLE_SYNC_CALL_RESTRICTIONS
@@ -113,28 +137,31 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   class ScopedAllowSyncCall {
    public:
     ScopedAllowSyncCall() { IncreaseScopedAllowCount(); }
+
+    ScopedAllowSyncCall(const ScopedAllowSyncCall&) = delete;
+    ScopedAllowSyncCall& operator=(const ScopedAllowSyncCall&) = delete;
+
     ~ScopedAllowSyncCall() { DecreaseScopedAllowCount(); }
 
    private:
 #if ENABLE_SYNC_CALL_RESTRICTIONS
     base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait_;
 #endif
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedAllowSyncCall);
   };
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SyncCallRestrictions);
 };
 
 class ScopedAllowSyncCallForTesting {
  public:
   ScopedAllowSyncCallForTesting() {}
+
+  ScopedAllowSyncCallForTesting(const ScopedAllowSyncCallForTesting&) = delete;
+  ScopedAllowSyncCallForTesting& operator=(
+      const ScopedAllowSyncCallForTesting&) = delete;
+
   ~ScopedAllowSyncCallForTesting() {}
 
  private:
   SyncCallRestrictions::ScopedAllowSyncCall scoped_allow_sync_call_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAllowSyncCallForTesting);
 };
 
 }  // namespace mojo

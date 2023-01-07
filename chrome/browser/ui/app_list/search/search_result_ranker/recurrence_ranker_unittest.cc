@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -203,6 +203,19 @@ TEST_F(RecurrenceRankerTest, RankTopN) {
   EXPECT_THAT(ranker->RankTopN(2),
               ElementsAre(Pair("A", FloatEq(4.0f)), Pair("B", FloatEq(3.0f))));
   EXPECT_THAT(ranker->RankTopN(100),
+              ElementsAre(Pair("A", FloatEq(4.0f)), Pair("B", FloatEq(3.0f)),
+                          Pair("C", FloatEq(2.0f)), Pair("D", FloatEq(1.0f))));
+}
+
+TEST_F(RecurrenceRankerTest, RankSorted) {
+  auto ranker = MakeSimpleRanker();
+
+  const std::vector<std::string> targets = {"B", "A", "A", "B", "C",
+                                            "B", "D", "C", "A", "A"};
+  for (auto target : targets)
+    ranker->Record(target);
+
+  EXPECT_THAT(ranker->RankSorted(),
               ElementsAre(Pair("A", FloatEq(4.0f)), Pair("B", FloatEq(3.0f)),
                           Pair("C", FloatEq(2.0f)), Pair("D", FloatEq(1.0f))));
 }

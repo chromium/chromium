@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL Document scrolling commands scroll visual viewport assert_equals: expected 1700 but got 1400
-FAIL Page scrolling commands scroll visual viewport assert_equals: expected 1700 but got 1400
-FAIL Line scrolling commands scroll visual viewport assert_equals: expected 1700 but got 1400
-Harness: the test ran to completion.
-

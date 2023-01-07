@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,15 +14,7 @@ namespace device {
 GvrDeviceProvider::GvrDeviceProvider() = default;
 GvrDeviceProvider::~GvrDeviceProvider() = default;
 
-void GvrDeviceProvider::Initialize(
-    base::RepeatingCallback<void(mojom::XRDeviceId,
-                                 mojom::VRDisplayInfoPtr,
-                                 mojom::XRDeviceDataPtr,
-                                 mojo::PendingRemote<mojom::XRRuntime>)>
-        add_device_callback,
-    base::RepeatingCallback<void(mojom::XRDeviceId)> remove_device_callback,
-    base::OnceClosure initialization_complete,
-    XrFrameSinkClientFactory xr_frame_sink_client_factory) {
+void GvrDeviceProvider::Initialize(VRDeviceProviderClient* client) {
   // We only expose GvrDevice if
   //  - we could potentially install VRServices to support presentation, and
   //  - this build is a bundle and, thus, supports installing the VR module.
@@ -30,12 +22,11 @@ void GvrDeviceProvider::Initialize(
     vr_device_ = base::WrapUnique(new GvrDevice());
   }
   if (vr_device_) {
-    add_device_callback.Run(vr_device_->GetId(), vr_device_->GetVRDisplayInfo(),
-                            vr_device_->GetDeviceData(),
-                            vr_device_->BindXRRuntime());
+    client->AddRuntime(vr_device_->GetId(), vr_device_->GetDeviceData(),
+                       vr_device_->BindXRRuntime());
   }
   initialized_ = true;
-  std::move(initialization_complete).Run();
+  client->OnProviderInitialized();
 }
 
 bool GvrDeviceProvider::Initialized() {

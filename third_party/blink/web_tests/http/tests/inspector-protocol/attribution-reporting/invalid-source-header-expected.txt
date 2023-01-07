@@ -1,0 +1,12 @@
+Test that an attributionsrc response with an invalid Attribution-Reporting-Register-Source header triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : !
+            request : <object>
+            violationType : InvalidHeader
+        }
+    }
+}
+

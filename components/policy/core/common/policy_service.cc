@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,13 +30,14 @@ void PolicyChangeRegistrar::OnPolicyUpdated(const PolicyNamespace& ns,
                                             const PolicyMap& current) {
   if (ns != ns_)
     return;
-  for (auto it = callback_map_.begin(); it != callback_map_.end(); ++it) {
-    const base::Value* prev = previous.GetValue(it->first);
-    const base::Value* cur = current.GetValue(it->first);
+  for (auto it : callback_map_) {
+    // It's safe to use `GetValueUnsafe()` as multiple policy types are handled.
+    const base::Value* prev = previous.GetValueUnsafe(it.first);
+    const base::Value* cur = current.GetValueUnsafe(it.first);
 
     // Check if the values pointed to by |prev| and |cur| are different.
     if ((!prev ^ !cur) || (prev && cur && *prev != *cur))
-      it->second.Run(prev, cur);
+      it.second.Run(prev, cur);
   }
 }
 

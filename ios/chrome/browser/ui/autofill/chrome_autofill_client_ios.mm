@@ -1,59 +1,64 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/bind.h"
-#include "base/check.h"
-#include "base/feature_list.h"
-#include "base/memory/ptr_util.h"
-#include "base/notreached.h"
-#include "base/stl_util.h"
-#include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_save_address_profile_delegate_ios.h"
-#include "components/autofill/core/browser/form_data_importer.h"
-#include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/browser/payments/autofill_credit_card_filling_infobar_delegate_mobile.h"
-#include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
-#include "components/autofill/core/browser/payments/payments_client.h"
-#include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_prefs.h"
-#include "components/autofill/ios/browser/autofill_util.h"
-#include "components/infobars/core/infobar.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/security_state/ios/security_state_utils.h"
-#include "components/sync/driver/sync_service.h"
-#include "components/translate/core/browser/translate_manager.h"
-#include "components/ukm/ios/ukm_url_recorder.h"
-#include "components/variations/service/variations_service.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/autofill/address_normalizer_factory.h"
-#include "ios/chrome/browser/autofill/autocomplete_history_manager_factory.h"
+#import "base/bind.h"
+#import "base/callback.h"
+#import "base/check.h"
+#import "base/memory/ptr_util.h"
+#import "base/notreached.h"
+#import "base/strings/string_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/autofill/core/browser/autofill_save_update_address_profile_delegate_ios.h"
+#import "components/autofill/core/browser/form_data_importer.h"
+#import "components/autofill/core/browser/logging/log_manager.h"
+#import "components/autofill/core/browser/payments/autofill_credit_card_filling_infobar_delegate_mobile.h"
+#import "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
+#import "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
+#import "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
+#import "components/autofill/core/browser/payments/payments_client.h"
+#import "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
+#import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_util.h"
+#import "components/infobars/core/infobar.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/password_manager/core/browser/password_generation_frame_helper.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
+#import "components/password_manager/ios/ios_password_manager_driver.h"
+#import "components/password_manager/ios/ios_password_manager_driver_factory.h"
+#import "components/security_state/ios/security_state_utils.h"
+#import "components/sync/driver/sync_service.h"
+#import "components/translate/core/browser/translate_manager.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
+#import "components/variations/service/variations_service.h"
+#import "ios/chrome/browser/application_context/application_context.h"
+#import "ios/chrome/browser/autofill/address_normalizer_factory.h"
+#import "ios/chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #import "ios/chrome/browser/autofill/autofill_log_router_factory.h"
-#include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
-#include "ios/chrome/browser/autofill/strike_database_factory.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
-#include "ios/chrome/browser/infobars/infobar_utils.h"
-#include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
-#include "ios/chrome/browser/translate/chrome_ios_translate_client.h"
-#include "ios/chrome/browser/ui/autofill/card_expiration_date_fix_flow_view_bridge.h"
-#include "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
-#include "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
-#include "ios/chrome/browser/ui/autofill/save_card_infobar_controller.h"
-#import "ios/chrome/browser/ui/infobars/coordinators/infobar_save_card_coordinator.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
-#include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
-#include "ios/chrome/common/channel_info.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/strike_database_factory.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/passwords/password_tab_helper.h"
+#import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/ui/autofill/card_expiration_date_fix_flow_view_bridge.h"
+#import "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
+#import "ios/chrome/browser/ui/autofill/create_card_unmask_prompt_view_bridge.h"
+#import "ios/chrome/browser/webdata_services/web_data_service_factory.h"
+#import "ios/chrome/common/channel_info.h"
+#import "ios/public/provider/chrome/browser/risk_data/risk_data_api.h"
 #import "ios/web/public/web_state.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -66,16 +71,8 @@ namespace {
 // Creates and returns an infobar for saving credit cards.
 std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
     std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate) {
-  InfobarSaveCardCoordinator* coordinator = [[InfobarSaveCardCoordinator alloc]
-      initWithInfoBarDelegate:delegate.get()];
-  return std::make_unique<InfoBarIOS>(coordinator, std::move(delegate));
-}
-
-CardUnmaskPromptView* CreateCardUnmaskPromptViewBridge(
-    CardUnmaskPromptControllerImpl* unmask_controller,
-    UIViewController* base_view_controller) {
-  return new CardUnmaskPromptViewBridge(unmask_controller,
-                                        base_view_controller);
+  return std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSaveCard,
+                                      std::move(delegate));
 }
 
 }  // namespace
@@ -87,8 +84,7 @@ ChromeAutofillClientIOS::ChromeAutofillClientIOS(
     id<AutofillClientIOSBridge> bridge,
     password_manager::PasswordManager* password_manager)
     : pref_service_(browser_state->GetPrefs()),
-      sync_service_(
-          ProfileSyncServiceFactory::GetForBrowserState(browser_state)),
+      sync_service_(SyncServiceFactory::GetForBrowserState(browser_state)),
       personal_data_manager_(PersonalDataManagerFactory::GetForBrowserState(
           browser_state->GetOriginalChromeBrowserState())),
       autocomplete_history_manager_(
@@ -141,8 +137,20 @@ ChromeAutofillClientIOS::GetAutocompleteHistoryManager() {
   return autocomplete_history_manager_;
 }
 
+CreditCardCVCAuthenticator* ChromeAutofillClientIOS::GetCVCAuthenticator() {
+  if (!cvc_authenticator_)
+    cvc_authenticator_ = std::make_unique<CreditCardCVCAuthenticator>(this);
+  return cvc_authenticator_.get();
+}
+
+CreditCardOtpAuthenticator* ChromeAutofillClientIOS::GetOtpAuthenticator() {
+  if (!otp_authenticator_)
+    otp_authenticator_ = std::make_unique<CreditCardOtpAuthenticator>(this);
+  return otp_authenticator_.get();
+}
+
 PrefService* ChromeAutofillClientIOS::GetPrefs() {
-  return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+  return const_cast<PrefService*>(std::as_const(*this).GetPrefs());
 }
 
 const PrefService* ChromeAutofillClientIOS::GetPrefs() const {
@@ -182,8 +190,14 @@ AddressNormalizer* ChromeAutofillClientIOS::GetAddressNormalizer() {
   return AddressNormalizerFactory::GetInstance();
 }
 
-const GURL& ChromeAutofillClientIOS::GetLastCommittedURL() const {
+const GURL& ChromeAutofillClientIOS::GetLastCommittedPrimaryMainFrameURL()
+    const {
   return web_state_->GetLastCommittedURL();
+}
+
+url::Origin ChromeAutofillClientIOS::GetLastCommittedPrimaryMainFrameOrigin()
+    const {
+  return url::Origin::Create(GetLastCommittedPrimaryMainFrameURL());
 }
 
 security_state::SecurityLevel
@@ -231,7 +245,7 @@ void ChromeAutofillClientIOS::ShowUnmaskPrompt(
     UnmaskCardReason reason,
     base::WeakPtr<CardUnmaskDelegate> delegate) {
   unmask_controller_.ShowPrompt(
-      base::BindOnce(&CreateCardUnmaskPromptViewBridge,
+      base::BindOnce(&autofill::CreateCardUnmaskPromptViewBridge,
                      base::Unretained(&unmask_controller_),
                      base::Unretained(base_view_controller_)),
       card, reason, delegate);
@@ -251,18 +265,16 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardLocally(
       std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
           /*upload=*/false, options, card, LegalMessageLines(),
           /*upload_save_card_callback=*/UploadSaveCardPromptCallback(),
-          /*local_save_card_callback=*/std::move(callback), GetPrefs())));
+          /*local_save_card_callback=*/std::move(callback), AccountInfo())));
 }
 
 void ChromeAutofillClientIOS::ConfirmAccountNameFixFlow(
     base::OnceCallback<void(const std::u16string&)> callback) {
-  base::Optional<AccountInfo> primary_account_info =
-      identity_manager_->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identity_manager_->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSync));
-  std::u16string account_name =
-      primary_account_info ? base::UTF8ToUTF16(primary_account_info->full_name)
-                           : std::u16string();
+  std::u16string account_name = base::UTF8ToUTF16(
+      identity_manager_
+          ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSync))
+          .full_name);
 
   card_name_fix_flow_controller_.Show(
       // CardNameFixFlowViewBridge manages its own lifetime, so
@@ -291,15 +303,13 @@ void ChromeAutofillClientIOS::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
   DCHECK(options.show_prompt);
 
-  auto save_card_info_bar_delegate_mobile =
+  AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
       std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
           /*upload=*/true, options, card, legal_message_lines,
           /*upload_save_card_callback=*/std::move(callback),
-          /*local_save_card_callback=*/LocalSaveCardPromptCallback(),
-          GetPrefs());
-
-  infobar_manager_->AddInfoBar(CreateSaveCardInfoBarMobile(
-      std::move(save_card_info_bar_delegate_mobile)));
+          LocalSaveCardPromptCallback(), account_info)));
 }
 
 void ChromeAutofillClientIOS::CreditCardUploadCompleted(bool card_saved) {
@@ -321,14 +331,20 @@ void ChromeAutofillClientIOS::ConfirmCreditCardFillAssist(
 
 void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     const AutofillProfile& profile,
+    const AutofillProfile* original_profile,
+    SaveAddressProfilePromptOptions options,
     AddressProfileSavePromptCallback callback) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kAutofillAddressProfileSavePrompt));
-  auto delegate = std::make_unique<AutofillSaveAddressProfileDelegateIOS>(
-      profile, std::move(callback));
-  infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
-      InfobarType::kInfobarTypeSaveAutofillAddressProfile,
-      std::move(delegate)));
+    // TODO(crbug.com/1167062): Respect SaveAddressProfilePromptOptions.
+    auto delegate =
+        std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
+            profile, original_profile,
+            GetApplicationContext()->GetApplicationLocale(),
+            std::move(callback));
+    infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
+        InfobarType::kInfobarTypeSaveAutofillAddressProfile,
+        std::move(delegate)));
 }
 
 bool ChromeAutofillClientIOS::HasCreditCardScanFeature() {
@@ -336,6 +352,49 @@ bool ChromeAutofillClientIOS::HasCreditCardScanFeature() {
 }
 
 void ChromeAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
+  NOTREACHED();
+}
+
+bool ChromeAutofillClientIOS::IsFastCheckoutSupported() {
+  return false;
+}
+
+bool ChromeAutofillClientIOS::IsFastCheckoutTriggerForm(
+    const FormData& form,
+    const FormFieldData& field) {
+  return false;
+}
+
+bool ChromeAutofillClientIOS::FastCheckoutScriptSupportsConsentlessExecution(
+    const url::Origin& origin) {
+  return false;
+}
+
+bool ChromeAutofillClientIOS::FastCheckoutClientSupportsConsentlessExecution() {
+  return false;
+}
+
+bool ChromeAutofillClientIOS::ShowFastCheckout(
+    base::WeakPtr<FastCheckoutDelegate> delegate) {
+  NOTREACHED();
+  return false;
+}
+
+void ChromeAutofillClientIOS::HideFastCheckout() {
+  NOTREACHED();
+}
+
+bool ChromeAutofillClientIOS::IsTouchToFillCreditCardSupported() {
+  return false;
+}
+
+bool ChromeAutofillClientIOS::ShowTouchToFillCreditCard(
+    base::WeakPtr<TouchToFillDelegate> delegate) {
+  NOTREACHED();
+  return false;
+}
+
+void ChromeAutofillClientIOS::HideTouchToFillCreditCard() {
   NOTREACHED();
 }
 
@@ -381,10 +440,24 @@ bool ChromeAutofillClientIOS::IsAutocompleteEnabled() {
   return prefs::IsAutocompleteEnabled(GetPrefs());
 }
 
+bool ChromeAutofillClientIOS::IsPasswordManagerEnabled() {
+  return GetPrefs()->GetBoolean(
+      password_manager::prefs::kCredentialsEnableService);
+}
+
 void ChromeAutofillClientIOS::PropagateAutofillPredictions(
-    content::RenderFrameHost* rfh,
+    AutofillDriver* driver,
     const std::vector<FormStructure*>& forms) {
-  password_manager_->ProcessAutofillPredictions(/*driver=*/nullptr, forms);
+  web::WebFrame* frame = (static_cast<AutofillDriverIOS*>(driver))->web_frame();
+  if (!frame) {
+    return;
+  }
+  // If the frame exists, then the driver will exist/be created.
+  IOSPasswordManagerDriver* password_manager_driver =
+      IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(web_state_,
+                                                               frame);
+
+  password_manager_->ProcessAutofillPredictions(password_manager_driver, forms);
 }
 
 void ChromeAutofillClientIOS::DidFillOrPreviewField(
@@ -407,9 +480,17 @@ void ChromeAutofillClientIOS::ExecuteCommand(int id) {
   NOTIMPLEMENTED();
 }
 
+void ChromeAutofillClientIOS::OpenPromoCodeOfferDetailsURL(const GURL& url) {
+  web_state_->OpenURL(web::WebState::OpenURLParams(
+      url, web::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+      /*is_renderer_initiated=*/false));
+}
+
 void ChromeAutofillClientIOS::LoadRiskData(
     base::OnceCallback<void(const std::string&)> callback) {
-  std::move(callback).Run(ios::GetChromeBrowserProvider()->GetRiskData());
+  std::move(callback).Run(
+      base::SysNSStringToUTF8(ios::provider::GetRiskData()));
 }
 
 LogManager* ChromeAutofillClientIOS::GetLogManager() const {

@@ -64,10 +64,21 @@ DateTimeFieldsState::DateTimeFieldsState()
       week_of_year_(kEmptyValue),
       ampm_(kAMPMValueEmpty) {}
 
-unsigned DateTimeFieldsState::Hour23() const {
+unsigned DateTimeFieldsState::Hour24() const {
   if (!HasHour() || !HasAMPM())
     return kEmptyValue;
   return (hour_ % 12) + (ampm_ == kAMPMValuePM ? 12 : 0);
+}
+
+void DateTimeFieldsState::SetHour24(unsigned hour24) {
+  DCHECK_LT(hour24, 24u);
+  if (hour24 >= 12) {
+    ampm_ = kAMPMValuePM;
+    hour_ = hour24 - 12;
+  } else {
+    ampm_ = kAMPMValueAM;
+    hour_ = hour24;
+  }
 }
 
 DateTimeFieldsState DateTimeFieldsState::RestoreFormControlState(

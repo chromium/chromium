@@ -1,0 +1,549 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * Known file extension and mime type mapping.
+ *
+ * 1. Fields "type/translationKey/subtype/extensions" are mandatory, "mime/icon"
+ *    are optional, if "mime" is missing, we won't generate a mapping for that
+ *    type in backend.
+ * 2. The extensions must be an array where each extension starts with a dot.
+ * 3. One extension can be mapped to multiple mime types, this is mainly used
+ *    for scenarios when two mime types are equivalent. E.g. "video/ogg" and
+ *    "application/ogg", so when we use mime type to find the corresponding
+ *    extensions, both mime types can return the correct extensions.
+ * 4. The "subtype" field represents the subtype of archive, image, audio or
+ *    video file type.
+ * 5. Order matters! If one extension includes another extension, the longer
+ *    extension should come first in the array. E.g. ".gz" and ".tar.gz", the
+ *    definition of ".tar.gz" should come first because we use extension to find
+ *    the corresponding mime type, ".tar.gz" should match the more specific one.
+ *
+ * Note: the above rules are being validated in PRESUBMIT.py, remember to update
+ * the validation logic there if any of the rules above change.
+ */
+[
+  // Images
+  {
+    "type": "image",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "JPEG",
+    "extensions": [".jpeg", ".jpg", ".jfif", ".pjpeg", ".pjp"],
+    "mime": "image/jpeg"
+  },
+  {
+    "type": "image",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "BMP",
+    "extensions": [".bmp"],
+    "mime": "image/bmp"
+  },
+  {
+    "type": "image",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "GIF",
+    "extensions": [".gif"],
+    "mime": "image/gif"
+  },
+  {
+    "type": "image",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "ICO",
+    "extensions": [".ico"],
+    "mime": "image/x-icon"
+  },
+  {
+    "type": "image",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "PNG",
+    "extensions": [".png"],
+    "mime": "image/png"
+  },
+  {
+    "type": "image",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "WebP",
+    "extensions": [".webp"],
+    "mime": "image/webp"
+  },
+  {
+    "type": "image",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "TIFF",
+    "extensions": [".tif", ".tiff"],
+    "mime": "image/tiff"
+  },
+  {
+    "type": "image",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "SVG",
+    "extensions": [".svg", ".svgz"],
+    "mime": "image/svg+xml"
+  },
+  {
+    "type": "image",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "AVIF",
+    "extensions": [".avif"],
+    "mime": "image/avif"
+  },
+  {
+    "type": "image",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "JXL",
+    "extensions": [".jxl"],
+    "mime": "image/jxl"
+  },
+  {
+    "type": "image",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "XBM",
+    "extensions": [".xbm"],
+    "mime": "image/x-xbitmap"
+  },
+
+  // Raw
+  {
+    "type": "raw",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "ARW",
+    "extensions": [".arw"],
+    "icon": "image",
+    "mime": "image/x-sony-arw"
+  },
+  {
+    "type": "raw",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "CR2",
+    "extensions": [".cr2"],
+    "icon": "image",
+    "mime": "image/x-canon-cr2"
+  },
+  {
+    "type": "raw",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "DNG",
+    "extensions": [".dng"],
+    "icon": "image",
+    "mime": "image/x-adobe-dng"
+  },
+  {
+    "type": "raw",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "NEF",
+    "extensions": [".nef"],
+    "icon": "image",
+    "mime": "image/x-nikon-nef"
+  },
+  {
+    "type": "raw",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "NRW",
+    "extensions": [".nrw"],
+    "icon": "image",
+    "mime": "image/x-nikon-nrw"
+  },
+  {
+    "type": "raw",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "ORF",
+    "extensions": [".orf"],
+    "icon": "image",
+    "mime": "image/x-olympus-orf"
+  },
+  {
+    "type": "raw",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "RAF",
+    "extensions": [".raf"],
+    "icon": "image",
+    "mime": "image/x-fuji-raf"
+  },
+  {
+    "type": "raw",
+    "translationKey": "IMAGE_FILE_TYPE",
+    "subtype": "RW2",
+    "extensions": [".rw2"],
+    "icon": "image",
+    "mime": "image/x-panasonic-rw2"
+  },
+
+  // Video
+  {
+    "type": "video",
+    "translationKey": "VIDEO_FILE_TYPE",
+    "subtype": "3GP",
+    "extensions": [".3gp", ".3gpp"],
+    "mime": "video/3gpp"
+  },
+  {
+    "type": "video",
+    "translationKey": "VIDEO_FILE_TYPE",
+    "subtype": "AVI",
+    "extensions": [".avi"],
+    "mime": "video/x-msvideo"
+  },
+  {
+    "type": "video",
+    "translationKey": "VIDEO_FILE_TYPE",
+    "subtype": "QuickTime",
+    "extensions": [".mov"],
+    "mime": "video/quicktime"
+  },
+  {
+    "type": "video",
+    "translationKey": "VIDEO_FILE_TYPE",
+    "subtype": "MKV",
+    "extensions": [".mkv"],
+    "mime": "video/x-matroska"
+  },
+  {
+    "type": "video",
+    "translationKey": "VIDEO_FILE_TYPE",
+    "subtype": "MPEG",
+    "extensions": [".mp4", ".m4v", ".mpg4", ".mpeg4"],
+    "mime": "video/mp4"
+  },
+  {
+    "type": "video",
+    "translationKey": "VIDEO_FILE_TYPE",
+    "subtype": "MPEG",
+    "extensions": [".mpg", ".mpeg"],
+    "mime": "video/mpeg"
+  },
+  {
+    "type": "video",
+    "translationKey": "VIDEO_FILE_TYPE",
+    "subtype": "OGG",
+    "extensions": [".ogm", ".ogv", ".ogx"],
+    "mime": "video/ogg"
+  },
+  {
+    "type": "video",
+    "translationKey": "VIDEO_FILE_TYPE",
+    "subtype": "OGG",
+    "extensions": [".ogm", ".ogv", ".ogx"],
+    "mime": "application/ogg"
+  },
+  {
+    "type": "video",
+    "translationKey": "VIDEO_FILE_TYPE",
+    "subtype": "WebM",
+    "extensions": [".webm"],
+    "mime": "video/webm"
+  },
+
+  // Audio
+  {
+    "type": "audio",
+    "translationKey": "AUDIO_FILE_TYPE",
+    "subtype": "AMR",
+    "extensions": [".amr"],
+    "mime": "audio/amr"
+  },
+  {
+    "type": "audio",
+    "translationKey": "AUDIO_FILE_TYPE",
+    "subtype": "FLAC",
+    "extensions": [".flac"],
+    "mime": "audio/flac"
+  },
+  {
+    "type": "audio",
+    "translationKey": "AUDIO_FILE_TYPE",
+    "subtype": "MP3",
+    "extensions": [".mp3"],
+    "mime": "audio/mpeg"
+  },
+  {
+    "type": "audio",
+    "translationKey": "AUDIO_FILE_TYPE",
+    "subtype": "MPEG",
+    "extensions": [".m4a"],
+    "mime": "audio/mp4a-latm"
+  },
+  {
+    "type": "audio",
+    "translationKey": "AUDIO_FILE_TYPE",
+    "subtype": "OGG",
+    "extensions": [".oga", ".ogg", ".opus"],
+    "mime": "audio/ogg"
+  },
+  {
+    "type": "audio",
+    "translationKey": "AUDIO_FILE_TYPE",
+    "subtype": "WAV",
+    "extensions": [".wav"],
+    "mime": "audio/x-wav"
+  },
+  {
+    "type": "audio",
+    "translationKey": "AUDIO_FILE_TYPE",
+    "subtype": "WEBA",
+    "extensions": [".weba"],
+    "mime": "audio/webm"
+  },
+
+  // Text
+  {
+    "type": "text",
+    "translationKey": "PLAIN_TEXT_FILE_TYPE",
+    "subtype": "TXT",
+    "extensions": [".txt", ".text"],
+    "mime": "text/plain"
+  },
+  {
+    "type": "text",
+    "translationKey": "CSV_TEXT_FILE_TYPE",
+    "subtype": "CSV",
+    "extensions": [".csv"],
+    "mime": "text/csv"
+  },
+
+  // Archive
+  {
+    "type": "archive",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "ZIP",
+    "extensions": [".zip"],
+    "mime": "application/zip"
+  },
+  {
+    "type": "archive",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "RAR",
+    "extensions": [".rar"],
+    "mime": "application/x-rar-compressed"
+  },
+  {
+    "type": "archive",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "ISO",
+    "extensions": [".iso"],
+    "mime": "application/x-iso9660-image"
+  },
+  {
+    "type": "archive",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "7-Zip",
+    "extensions": [".7z"],
+    "mime": "application/x-7z-compressed"
+  },
+  {
+    "type": "archive",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "CRX",
+    "extensions": [".crx"],
+    "mime": "application/x-chrome-extension"
+  },
+  {
+    "type": "archive",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "TAR",
+    "extensions": [".tar"],
+    "mime": "application/x-tar"
+  },
+  {
+    "type": "archive",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "BZIP2",
+    "extensions": [".bz2", ".bz", ".tbz", ".tbz2", ".tz2", ".tb2"],
+    "mime": "application/x-bzip2"
+  },
+  {
+    "type": "archive",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "GZIP",
+    "extensions": [".gz", ".tgz"],
+    "mime": "application/x-gzip"
+  },
+  {
+    "type": "archive",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "LZIP",
+    "extensions": [".lz"],
+    "mime": "application/x-lzip"
+  },
+  {
+    "type": "archive",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "LZOP",
+    "extensions": [".lzo"],
+    "mime": "application/x-lzop"
+  },
+  {
+    "type": "archive",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "LZMA",
+    "extensions": [".lzma", ".tlzma", ".tlz"],
+    "mime": "application/x-lzma"
+  },
+  {
+    "type": "archive",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "XZ",
+    "extensions": [".xz", ".txz"],
+    "mime": "application/x-xz"
+  },
+  {
+    "type": "archive",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "Z",
+    "extensions": [".z", ".taz", ".tz"],
+    "mime": "application/x-compress"
+  },
+  {
+    "type": "archive",
+    "translationKey": "ARCHIVE_FILE_TYPE",
+    "subtype": "Zstandard",
+    "extensions": [".zst", ".tzst"],
+    "mime": "application/zstd"
+  },
+
+  // Hosted docs
+  {
+    "type": "hosted",
+    "icon": "gdoc",
+    "translationKey": "GDOC_DOCUMENT_FILE_TYPE",
+    "subtype": "doc",
+    "extensions": [".gdoc"],
+    "mime": "application/vnd.google-apps.document"
+  },
+  {
+    "type": "hosted",
+    "icon": "gsheet",
+    "translationKey": "GSHEET_DOCUMENT_FILE_TYPE",
+    "subtype": "sheet",
+    "extensions": [".gsheet"],
+    "mime": "application/vnd.google-apps.spreadsheet"
+  },
+  {
+    "type": "hosted",
+    "icon": "gslides",
+    "translationKey": "GSLIDES_DOCUMENT_FILE_TYPE",
+    "subtype": "slides",
+    "extensions": [".gslides"],
+    "mime": "application/vnd.google-apps.presentation"
+  },
+  {
+    "type": "hosted",
+    "icon": "gdraw",
+    "translationKey": "GDRAW_DOCUMENT_FILE_TYPE",
+    "subtype": "draw",
+    "extensions": [".gdraw"],
+    "mime": "application/vnd.google-apps.drawing"
+  },
+  {
+    "type": "hosted",
+    "icon": "gtable",
+    "translationKey": "GTABLE_DOCUMENT_FILE_TYPE",
+    "subtype": "table",
+    "extensions": [".gtable"],
+    "mime": "application/vnd.google-apps.fusiontable"
+  },
+  {
+    "type": "hosted",
+    "icon": "glink",
+    "translationKey": "GLINK_DOCUMENT_FILE_TYPE",
+    "subtype": "glink",
+    "extensions": [".glink"],
+    "mime": "application/vnd.google-apps.shortcut"
+  },
+  {
+    "type": "hosted",
+    "icon": "gform",
+    "translationKey": "GFORM_DOCUMENT_FILE_TYPE",
+    "subtype": "form",
+    "extensions": [".gform"],
+    "mime": "application/vnd.google-apps.form"
+  },
+  {
+    "type": "hosted",
+    "icon": "gmap",
+    "translationKey": "GMAP_DOCUMENT_FILE_TYPE",
+    "subtype": "map",
+    "extensions": [".gmap"],
+    "mime": "application/vnd.google-apps.map"
+  },
+  {
+    "type": "hosted",
+    "icon": "gsite",
+    "translationKey": "GSITE_DOCUMENT_FILE_TYPE",
+    "subtype": "site",
+    "extensions": [".gsite"],
+    "mime": "application/vnd.google-apps.site"
+  },
+
+  // Others
+  {
+    "type": "document",
+    "icon": "pdf",
+    "translationKey": "PDF_DOCUMENT_FILE_TYPE",
+    "subtype": "PDF",
+    "extensions": [".pdf"],
+    "mime": "application/pdf"
+  },
+  {
+    "type": "document",
+    "translationKey": "HTML_DOCUMENT_FILE_TYPE",
+    "subtype": "HTML",
+    "extensions": [".htm", ".html", ".mht", ".mhtml", ".shtml", ".xht", ".xhtml"],
+    "mime": "text/html"
+  },
+  {
+    "type": "document",
+    "icon": "word",
+    "translationKey": "WORD_DOCUMENT_FILE_TYPE",
+    "subtype": "Word",
+    "extensions": [".doc"],
+    "mime": "application/msword"
+  },
+  {
+    "type": "document",
+    "icon": "word",
+    "translationKey": "WORD_DOCUMENT_FILE_TYPE",
+    "subtype": "Word",
+    "extensions": [".docx"],
+    "mime": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  },
+  {
+    "type": "document",
+    "icon": "ppt",
+    "translationKey": "POWERPOINT_PRESENTATION_FILE_TYPE",
+    "subtype": "PPT",
+    "extensions": [".ppt"],
+    "mime": "application/vnd.ms-powerpoint"
+  },
+  {
+    "type": "document",
+    "icon": "ppt",
+    "translationKey": "POWERPOINT_PRESENTATION_FILE_TYPE",
+    "subtype": "PPT",
+    "extensions": [".pptx"],
+    "mime": "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+  },
+  {
+    "type": "document",
+    "icon": "excel",
+    "translationKey": "EXCEL_FILE_TYPE",
+    "subtype": "Excel",
+    "extensions": [".xls"],
+    "mime": "application/vnd.ms-excel"
+  },
+  {
+    "type": "document",
+    "icon": "excel",
+    "translationKey": "EXCEL_FILE_TYPE",
+    "subtype": "Excel",
+    "extensions": [".xlsx"],
+    "mime": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  },
+  {
+    "type": "archive",
+    "icon": "tini",
+    "translationKey": "TINI_FILE_TYPE",
+    "subtype": "TGZ",
+    "extensions": [".tini"]
+  }
+]

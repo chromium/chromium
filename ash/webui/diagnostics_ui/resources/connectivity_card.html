@@ -1,0 +1,37 @@
+<style include="diagnostics-shared">
+  #cardTitle {
+    align-items: center;
+    display: flex;
+  }
+
+  #icon {
+    padding-inline-end: 12px;
+  }
+</style>
+<diagnostics-card is-networking-card="true">
+  <div id="cardTitle" slot="title" tabindex="0">
+    <diagnostics-network-icon id="icon" network="[[network]]">
+    </diagnostics-network-icon>
+    <span id="titleText">
+      [[getNetworkCardTitle_(networkType_, networkState_)]]
+    </span>
+  </div>
+  <template is="dom-if" if="[[macAddress_]]">
+    <div id="macAddressChip" slot="chip" class="diagnostics-chip"
+        tabindex="0">
+      [[getMacAddress_(macAddress_)]]
+    </div>
+  </template>
+  <hr slot="body" hidden$="[[!hasRoutines_(routineGroups_)]]" />
+  <network-info network="[[network]]" slot="body"></network-info>
+  <routine-section slot="left-panel" routines="[[routineGroups_]]"
+      test-suite-status="{{testSuiteStatus}}"
+      routine-runtime="{{getEstimateRuntimeInMinutes_(routineGroups_)}}"
+      is-active="[[isActive]]"
+      hide-routine-status
+      opened>
+  </routine-section>
+  <ip-config-info-drawer id="ipConfigInfoDrawer" network="[[network]]"
+      slot="routines">
+  </ip-config-info-drawer>
+</diagnostics-card>

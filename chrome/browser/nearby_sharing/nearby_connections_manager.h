@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,11 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/optional.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/nearby_connection.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A wrapper around the Nearby Connections mojo API.
 class NearbyConnectionsManager {
@@ -60,13 +61,18 @@ class NearbyConnectionsManager {
     using PayloadTransferUpdatePtr =
         location::nearby::connections::mojom::PayloadTransferUpdatePtr;
 
-    virtual ~PayloadStatusListener() = default;
+    PayloadStatusListener();
+    virtual ~PayloadStatusListener();
+
+    base::WeakPtr<PayloadStatusListener> GetWeakPtr();
 
     // Note: |upgraded_medium| is passed in for use in metrics, and it is
-    // base::nullopt if the bandwidth has not upgraded yet or if the upgrade
+    // absl::nullopt if the bandwidth has not upgraded yet or if the upgrade
     // status is not known.
     virtual void OnStatusUpdate(PayloadTransferUpdatePtr update,
-                                base::Optional<Medium> upgraded_medium) = 0;
+                                absl::optional<Medium> upgraded_medium) = 0;
+
+    base::WeakPtrFactory<PayloadStatusListener> weak_ptr_factory_{this};
   };
 
   // Converts the status to a logging-friendly string.
@@ -88,7 +94,7 @@ class NearbyConnectionsManager {
                                 ConnectionsCallback callback) = 0;
 
   // Stops advertising through Nearby Connections.
-  virtual void StopAdvertising() = 0;
+  virtual void StopAdvertising(ConnectionsCallback callback) = 0;
 
   // Starts discovery through Nearby Connections. Caller is expected to ensure
   // |listener| remains valid until StopDiscovery is called.
@@ -103,26 +109,22 @@ class NearbyConnectionsManager {
   virtual void Connect(
       std::vector<uint8_t> endpoint_info,
       const std::string& endpoint_id,
-      base::Optional<std::vector<uint8_t>> bluetooth_mac_address,
+      absl::optional<std::vector<uint8_t>> bluetooth_mac_address,
       DataUsage data_usage,
       NearbyConnectionCallback callback) = 0;
 
   // Disconnects from remote |endpoint_id| through Nearby Connections.
   virtual void Disconnect(const std::string& endpoint_id) = 0;
 
-  // Sends |payload| through Nearby Connections. Caller is expected to ensure
-  // |listener| remains valid until kSuccess/kFailure/kCancelled is invoked with
-  // OnStatusUpdate.
+  // Sends |payload| through Nearby Connections.
   virtual void Send(const std::string& endpoint_id,
                     PayloadPtr payload,
-                    PayloadStatusListener* listener) = 0;
+                    base::WeakPtr<PayloadStatusListener> listener) = 0;
 
-  // Register a |listener| with |payload_id|. Caller is expected to ensure
-  // |listener| remains valid until kSuccess/kFailure/kCancelled is invoked with
-  // OnStatusUpdate.
+  // Register a |listener| with |payload_id|.
   virtual void RegisterPayloadStatusListener(
       int64_t payload_id,
-      PayloadStatusListener* listener) = 0;
+      base::WeakPtr<PayloadStatusListener> listener) = 0;
 
   // Register a |file_path| for receiving incoming payload with |payload_id|.
   virtual void RegisterPayloadPath(int64_t payload_id,
@@ -139,7 +141,7 @@ class NearbyConnectionsManager {
   virtual void ClearIncomingPayloads() = 0;
 
   // Gets the raw authentication token for the |endpoint_id|.
-  virtual base::Optional<std::vector<uint8_t>> GetRawAuthenticationToken(
+  virtual absl::optional<std::vector<uint8_t>> GetRawAuthenticationToken(
       const std::string& endpoint_id) = 0;
 
   // Initiates bandwidth upgrade for |endpoint_id|.

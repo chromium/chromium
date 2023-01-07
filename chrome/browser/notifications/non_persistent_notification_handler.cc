@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,20 @@
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_permission_context.h"
+#include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/notification_event_dispatcher.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "ui/base/page_transition_types.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 NonPersistentNotificationHandler::NonPersistentNotificationHandler() = default;
 NonPersistentNotificationHandler::~NonPersistentNotificationHandler() = default;
@@ -47,8 +49,8 @@ void NonPersistentNotificationHandler::OnClick(
     Profile* profile,
     const GURL& origin,
     const std::string& notification_id,
-    const base::Optional<int>& action_index,
-    const base::Optional<std::u16string>& reply,
+    const absl::optional<int>& action_index,
+    const absl::optional<std::u16string>& reply,
     base::OnceClosure completed_closure) {
   // Non persistent notifications don't allow buttons or replies.
   // https://notifications.spec.whatwg.org/#create-a-notification
@@ -62,6 +64,15 @@ void NonPersistentNotificationHandler::OnClick(
               &NonPersistentNotificationHandler::DidDispatchClickEvent,
               weak_ptr_factory_.GetWeakPtr(), profile, origin, notification_id,
               std::move(completed_closure)));
+
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kNotificationInteractionHistory)) {
+    auto* service =
+        NotificationsEngagementServiceFactory::GetForProfile(profile);
+    // This service might be missing for incognito profiles and in tests.
+    if (service)
+      service->RecordNotificationInteraction(origin);
+  }
 }
 
 void NonPersistentNotificationHandler::DidDispatchClickEvent(
@@ -70,7 +81,7 @@ void NonPersistentNotificationHandler::DidDispatchClickEvent(
     const std::string& notification_id,
     base::OnceClosure completed_closure,
     bool success) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Non-persistent notifications are able to outlive the document that created
   // them. In such cases the JavaScript event handler might not be available
   // when the notification is interacted with. Launch a new tab for the
@@ -87,7 +98,7 @@ void NonPersistentNotificationHandler::DidDispatchClickEvent(
     PlatformNotificationServiceFactory::GetForProfile(profile)
         ->CloseNotification(notification_id);
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   std::move(completed_closure).Run();
 }

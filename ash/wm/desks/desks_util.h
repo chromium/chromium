@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,6 +24,11 @@ class Compositor;
 namespace ash {
 
 namespace desks_util {
+
+// Note: the max number of desks depends on a runtime flag and the function
+// `GetMaxNumberOfDesks` below will return that value. The value returned from
+// that function will not be more than this constant.
+constexpr size_t kDesksUpperLimit = 16;
 
 ASH_EXPORT size_t GetMaxNumberOfDesks();
 
@@ -62,6 +67,9 @@ ui::Compositor* GetSelectedCompositorForPerformanceMetrics();
 
 // Check if a desk is being dragged.
 ASH_EXPORT bool IsDraggingAnyDesk();
+
+// Returns whether a |window| is visible on all workspaces.
+ASH_EXPORT bool IsWindowVisibleOnAllWorkspaces(const aura::Window* window);
 
 // Move an item at |old_index| to |new_index|.
 template <typename T>

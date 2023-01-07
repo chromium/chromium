@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL TextTrackCue.endTime, script-created cue Failed to set the 'endTime' property on 'TextTrackCue': The provided double value is non-finite.
+PASS TextTrackCue.endTime, parsed cue
+Harness: the test ran to completion.
+

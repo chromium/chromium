@@ -1,13 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_CAPTIVE_PORTAL_CORE_CAPTIVE_PORTAL_METRICS_H_
 #define COMPONENTS_CAPTIVE_PORTAL_CORE_CAPTIVE_PORTAL_METRICS_H_
 
-#include "base/macros.h"
 #include "components/captive_portal/core/captive_portal_export.h"
-#include "components/captive_portal/core/captive_portal_types.h"
 
 namespace captive_portal {
 
@@ -22,14 +20,13 @@ class CAPTIVE_PORTAL_EXPORT CaptivePortalMetrics {
     CAPTIVE_PORTAL_BLOCKING_PAGE_EVENT_COUNT
   };
 
-  static void LogCaptivePortalProbeReason(
-      CaptivePortalProbeReason probe_reason);
+  CaptivePortalMetrics() = delete;
+  CaptivePortalMetrics(const CaptivePortalMetrics&) = delete;
+  CaptivePortalMetrics& operator=(const CaptivePortalMetrics&) = delete;
 
   // Logs a user action when the user is shown a captive portal error page.
   static void LogCaptivePortalBlockingPageEvent(
       CaptivePortalBlockingPageEvent event);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(CaptivePortalMetrics);
 };
 
 }  // namespace captive_portal

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,16 +11,17 @@
 
 #include "base/check_op.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/browser/renderer_host/input/timeout_monitor.h"
 #include "content/common/input/web_touch_event_traits.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -40,7 +41,7 @@ const float kSlopLengthDips = 10;
 const float kHalfSlopLengthDips = kSlopLengthDips / 2;
 
 base::TimeDelta DefaultTouchTimeoutDelay() {
-  return base::TimeDelta::FromMilliseconds(1);
+  return base::Milliseconds(1);
 }
 }  // namespace
 
@@ -172,12 +173,12 @@ class PassthroughTouchEventQueueTest : public testing::Test,
   }
 
   void SetFollowupEvent(const WebTouchEvent& event) {
-    followup_touch_event_.reset(new WebTouchEvent(event));
+    followup_touch_event_ = std::make_unique<WebTouchEvent>(event);
   }
 
   void SetSyncAckResult(blink::mojom::InputEventResultState sync_ack_result) {
-    sync_ack_result_.reset(
-        new blink::mojom::InputEventResultState(sync_ack_result));
+    sync_ack_result_ =
+        std::make_unique<blink::mojom::InputEventResultState>(sync_ack_result);
   }
 
   void PressTouchPoint(float x, float y) {
@@ -254,7 +255,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
 
   void AdvanceTouchTime(double seconds) {
     touch_event_.SetTimeStamp(touch_event_.TimeStamp() +
-                              base::TimeDelta::FromSecondsD(seconds));
+                              base::Seconds(seconds));
   }
 
   size_t GetAndResetAckedEventCount() {
@@ -326,11 +327,11 @@ class PassthroughTouchEventQueueTest : public testing::Test,
   }
 
   void ResetQueueWithConfig(const PassthroughTouchEventQueue::Config& config) {
-    queue_.reset(new PassthroughTouchEventQueue(this, config));
+    queue_ = std::make_unique<PassthroughTouchEventQueue>(this, config);
     queue_->OnHasTouchEventHandlers(true);
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<PassthroughTouchEventQueue> queue_;
   size_t acked_event_count_;
   WebTouchEvent last_acked_event_;

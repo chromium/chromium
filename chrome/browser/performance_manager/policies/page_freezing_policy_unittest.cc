@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 
 #include <memory>
 
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/performance_manager/decorators/page_live_state_decorator_delegate_impl.h"
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
 #include "components/performance_manager/decorators/freezing_vote_decorator.h"
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"
@@ -17,6 +18,7 @@
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 namespace policies {
@@ -73,8 +75,9 @@ class PageFreezingPolicyTest : public GraphTestHarness {
   PageFreezingPolicyTest& operator=(const PageFreezingPolicyTest&) = delete;
 
   void OnGraphCreated(GraphImpl* graph) override {
-    // The freezing logic relies on the existance of the page live state data.
-    graph->PassToGraph(std::make_unique<PageLiveStateDecorator>());
+    // The freezing logic relies on the existence of the page live state data.
+    graph->PassToGraph(std::make_unique<PageLiveStateDecorator>(
+        PageLiveStateDelegateImpl::Create()));
     graph->PassToGraph(std::make_unique<FreezingVoteDecorator>());
     // Create the policy and pass it to the graph.
     auto policy = std::make_unique<policies::PageFreezingPolicy>();
@@ -92,7 +95,7 @@ class PageFreezingPolicyTest : public GraphTestHarness {
   performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
       page_node_;
 
-  PageFreezingPolicy* policy_;
+  raw_ptr<PageFreezingPolicy> policy_;
 };
 
 TEST_F(PageFreezingPolicyTest, AudiblePageGetsCannotFreezeVote) {
@@ -213,7 +216,7 @@ TEST_F(PageFreezingPolicyTest, FreezingVotes) {
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
 
   EXPECT_CALL(*page_freezer_raw, UnfreezePageNodeImpl(page_node()));
-  page_node()->set_freezing_vote(base::nullopt);
+  page_node()->set_freezing_vote(absl::nullopt);
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
 
   // Sending a kCannotFreezeVote shouldn't unfreeze the page as it's already
@@ -222,7 +225,7 @@ TEST_F(PageFreezingPolicyTest, FreezingVotes) {
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
 
   // Same for removing a kCannotFreezeVote.
-  page_node()->set_freezing_vote(base::nullopt);
+  page_node()->set_freezing_vote(absl::nullopt);
   ::testing::Mock::VerifyAndClearExpectations(page_freezer_raw);
 }
 

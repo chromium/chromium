@@ -1,0 +1,254 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.toolbar.optional_button;
+
+import android.content.res.ColorStateList;
+import android.content.res.Resources;
+import android.graphics.Rect;
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.Callback;
+import org.chromium.base.supplier.BooleanSupplier;
+import org.chromium.chrome.browser.toolbar.ButtonData;
+import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.widget.highlight.PulseDrawable.Bounds;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
+import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.ViewRectProvider;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+/**
+ * The coordinator for a button that may appear on the toolbar whose icon and click handler can be
+ * updated with animations.
+ */
+public class OptionalButtonCoordinator {
+    private final OptionalButtonMediator mMediator;
+    private final OptionalButtonView mView;
+    private final UserEducationHelper mUserEducationHelper;
+    private final Tracker mFeatureEngagementTracker;
+    private Callback<Integer> mTransitionFinishedCallback;
+    private IPHCommandBuilder mIphCommandBuilder;
+
+    @IntDef({TransitionType.SWAPPING, TransitionType.SHOWING, TransitionType.HIDING,
+            TransitionType.EXPANDING_ACTION_CHIP, TransitionType.COLLAPSING_ACTION_CHIP})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TransitionType {
+        int SWAPPING = 0;
+        int SHOWING = 1;
+        int HIDING = 2;
+        int EXPANDING_ACTION_CHIP = 3;
+        int COLLAPSING_ACTION_CHIP = 4;
+    }
+
+    /**
+     * Creates a new instance of OptionalButtonCoordinator
+     * @param view An instance of OptionalButtonView to bind to.
+     * @param userEducationHelper Used to display highlight the button with IPH if needed.
+     * @param transitionRoot ViewGroup that contains all the views that will be affected by our
+     *         transitions.
+     * @param isAnimationAllowedPredicate A BooleanProvider that is called before all transitions to
+     *         determine if said transition should be animated or not.
+     */
+    public OptionalButtonCoordinator(View view, UserEducationHelper userEducationHelper,
+            ViewGroup transitionRoot, BooleanSupplier isAnimationAllowedPredicate,
+            Tracker featureEngagementTracker) {
+        mUserEducationHelper = userEducationHelper;
+        PropertyModel model =
+                new PropertyModel.Builder(OptionalButtonProperties.ALL_KEYS)
+                        .with(OptionalButtonProperties.TRANSITION_FINISHED_CALLBACK,
+                                this::onTransitionFinishedCallback)
+                        .with(OptionalButtonProperties.TRANSITION_ROOT, transitionRoot)
+                        .with(OptionalButtonProperties.IS_ANIMATION_ALLOWED_PREDICATE,
+                                isAnimationAllowedPredicate)
+                        .build();
+
+        assert view instanceof OptionalButtonView;
+
+        mView = (OptionalButtonView) view;
+
+        PropertyModelChangeProcessor.create(model, mView, OptionalButtonViewBinder::bind);
+
+        mMediator = new OptionalButtonMediator(model);
+        mFeatureEngagementTracker = featureEngagementTracker;
+    }
+
+    public void setPaddingStart(int paddingStart) {
+        mMediator.setPaddingStart(paddingStart);
+    }
+
+    public void setOnBeforeHideTransitionCallback(Runnable onBeforeHideTransitionCallback) {
+        mMediator.setOnBeforeHideTransitionCallback(onBeforeHideTransitionCallback);
+    }
+
+    /**
+     * Sets a callback that's invoked when any transition starts.
+     * @param transitionStartedCallback A callback with an integer argument, this argument a value
+     *         from {@link TransitionType}.
+     */
+    public void setTransitionStartedCallback(Callback<Integer> transitionStartedCallback) {
+        mMediator.setTransitionStartedCallback(transitionStartedCallback);
+    }
+
+    /**
+     * Sets a callback that's invoked when any transition is finished.
+     * @param transitionFinishedCallback A callback with an integer argument, this argument a value
+     *         from {@link TransitionType}.
+     */
+    public void setTransitionFinishedCallback(Callback<Integer> transitionFinishedCallback) {
+        mTransitionFinishedCallback = transitionFinishedCallback;
+    }
+
+    /**
+     * Updates the button to replace the current action with a new one. If animations are allowed
+     * (according to the BooleanSupplier set with setIsAnimationAllowedPredicate) then this update
+     * will be animated. Otherwise it'll instantly switch to the new icon.
+     * @param buttonData
+     */
+    public void updateButton(ButtonData buttonData) {
+        if (buttonData != null && buttonData.getButtonSpec() != null
+                && buttonData.getButtonSpec().getIPHCommandBuilder() != null) {
+            mIphCommandBuilder = buttonData.getButtonSpec().getIPHCommandBuilder();
+            setViewSpecificIphProperties(mIphCommandBuilder);
+        } else {
+            mIphCommandBuilder = null;
+        }
+
+        if (buttonData != null
+                && buttonData.getButtonSpec().getButtonVariant()
+                        == AdaptiveToolbarButtonVariant.PRICE_TRACKING
+                && buttonData.getButtonSpec().getActionChipLabelResId() != Resources.ID_NULL) {
+            if (!mFeatureEngagementTracker.isInitialized()
+                    || !mFeatureEngagementTracker.shouldTriggerHelpUI(
+                            FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP)) {
+                ((ButtonDataImpl) buttonData).updateActionChipResourceId(Resources.ID_NULL);
+            }
+        }
+
+        mMediator.updateButton(buttonData);
+    }
+
+    /**
+     * Updates the button to hide it. If animations are allowed (according to the BooleanSupplier
+     * set with setIsAnimationAllowedPredicate) then this update will be animated. Otherwise it'll
+     * hide instantly.
+     */
+    public void hideButton() {
+        mIphCommandBuilder = null;
+
+        mMediator.updateButton(null);
+    }
+
+    /**
+     * If there's any transition animation it gets canceled and we fast forward to the next visual
+     * state. The TransitionFinished callback is invoked.
+     */
+    public void cancelTransition() {
+        mMediator.cancelTransition();
+    }
+
+    /**
+     * Updates the foreground color on the icons and label to match the current theme/website color.
+     * @param colorStateList
+     */
+    public void setIconForegroundColor(ColorStateList colorStateList) {
+        mMediator.setIconForegroundColor(colorStateList);
+    }
+
+    /**
+     * Updates the color filter of the background to match the current address bar background color.
+     * This color is only used when showing a contextual action button (when {@link
+     * #updateButton(ButtonData)} is called with a {@link
+     * org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec} where {@code isDynamicAction()} is
+     * true).
+     * @param backgroundColor
+     */
+    public void setBackgroundColorFilter(int backgroundColor) {
+        mMediator.setBackgroundColorFilter(backgroundColor);
+    }
+
+    public int getViewVisibility() {
+        return mView.getVisibility();
+    }
+
+    /**
+     * Gets the current width of the container view, used by ToolbarPhone for laying out other
+     * views.
+     */
+    public int getViewWidth() {
+        return mView.getWidth();
+    }
+
+    /**
+     * Gets the container for the button, meant to be used by ToolbarPhone for drawing this view
+     * into a texture.
+     */
+    public View getViewForDrawing() {
+        return mView;
+    }
+
+    /** Gets the underlying ButtonView. */
+    @VisibleForTesting
+    public View getButtonViewForTesting() {
+        return mView.getButtonView();
+    }
+
+    private void onTransitionFinishedCallback(@TransitionType int transitionType) {
+        if (mTransitionFinishedCallback != null) {
+            mTransitionFinishedCallback.onResult(transitionType);
+        }
+
+        if (transitionType == TransitionType.EXPANDING_ACTION_CHIP) {
+            // Record an event in feature engagement to limit the amount of times we show the action
+            // chip.
+            mFeatureEngagementTracker.addOnInitializedCallback(isReady -> {
+                if (!isReady) return;
+                mFeatureEngagementTracker.dismissed(
+                        FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_ACTION_CHIP);
+            });
+        }
+
+        if (mIphCommandBuilder != null) {
+            mUserEducationHelper.requestShowIPH(mIphCommandBuilder.build());
+            mIphCommandBuilder = null;
+        }
+    }
+
+    private void setViewSpecificIphProperties(IPHCommandBuilder iphCommandBuilder) {
+        HighlightParams highlightParams = new HighlightParams(HighlightShape.CIRCLE);
+        highlightParams.setCircleRadius(new Bounds() {
+            @Override
+            public float getMaxRadiusPx(Rect bounds) {
+                return mView.getResources().getDisplayMetrics().density * 20;
+            }
+
+            @Override
+            public float getMinRadiusPx(Rect bounds) {
+                return mView.getResources().getDisplayMetrics().density * 20;
+            }
+        });
+
+        ViewRectProvider viewRectProvider = new ViewRectProvider(mView);
+        viewRectProvider.setIncludePadding(false);
+
+        highlightParams.setBoundsRespectPadding(false);
+        iphCommandBuilder.setAnchorView(
+                mView.getButtonView() == null ? mView : mView.getButtonView());
+        iphCommandBuilder.setViewRectProvider(viewRectProvider);
+        iphCommandBuilder.setHighlightParams(highlightParams);
+    }
+}

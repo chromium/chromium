@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -118,6 +118,10 @@ TEST(SafeSearchUtilTest, AddGoogleSafeSearchParams) {
   CheckAddedParameters("http://google.com/?q=%26%26%26&" + kSsuiParameter +
                            "&" + kSafeParameter + "&param=%26%26%26",
                        "q=%26%26%26&param=%26%26%26&" + kBothParameters);
+
+  // Test with image search
+  CheckAddedParameters("http://google.com/imgres?imgurl=https://image",
+                       "imgurl=https://image&" + kBothParameters);
 }
 
 TEST(SafeSearchUtilTest, SetYoutubeHeader) {

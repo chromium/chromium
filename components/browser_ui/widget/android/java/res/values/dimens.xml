@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Miscellaneous -->
@@ -9,6 +11,9 @@
     <dimen name="card_padding">16dp</dimen>
     <dimen name="clear_text_button_end_padding">10dp</dimen>
     <dimen name="default_rounded_corner_radius">8dp</dimen>
+    <dimen name="card_rounded_corner_radius">16dp</dimen>
+    <dimen name="dialog_corner_radius">24dp</dimen>
+    <dimen name="sheet_background_elev">@dimen/default_elevation_0</dimen>
 
     <!-- DualControlLayout -->
     <dimen name="dual_control_margin_between_items">8dp</dimen>
@@ -26,6 +31,7 @@
     <!-- RadioButtonWithDescription -->
     <dimen name="radio_button_with_description_lateral_padding">16dp</dimen>
     <dimen name="radio_button_with_description_vertical_padding">10dp</dimen>
+    <dimen name="radio_button_with_description_icon_size">24dp</dimen>
 
     <!-- RadioButtonWithDescriptionAndAuxButton -->
     <dimen name="radio_button_with_description_and_aux_button_spacing">10dp</dimen>
@@ -50,6 +56,12 @@
     <dimen name="list_item_start_icon_width">36dp</dimen>
     <dimen name="list_item_end_icon_width">56dp</dimen>
 
+    <!-- Modern List Item V2 dimensions -->
+    <dimen name="list_item_v2_margin">6dp</dimen>
+    <dimen name="list_item_v2_start_icon_width">96dp</dimen>
+    <dimen name="list_item_v2_start_icon_width_compact">70dp</dimen>
+    <dimen name="list_item_v2_start_icon_corner_radius">16dp</dimen>
+
     <!-- SelectableListLayout dimensions -->
     <dimen name="selectable_list_action_bar_end_padding">6dp</dimen>
     <dimen name="toolbar_wide_display_start_offset">13dp</dimen>
@@ -61,9 +73,14 @@
 
     <!-- Modern toolbar dimensions -->
     <dimen name="modern_toolbar_background_size">40dp</dimen>
+    <dimen name="modern_toolbar_tablet_background_size">48dp</dimen>
     <!-- Sometimes the modern toolbar is shown at 48dp so a corner radius of
          24dp is needed to completely round the corners. -->
     <dimen name="modern_toolbar_background_corner_radius">24dp</dimen>
+    <!-- The offset is required for the background drawable used by the
+         location bar on tablets. -->
+    <dimen name="modern_toolbar_background_vertical_offset">4dp</dimen>
+    <dimen name="toolbar_text_box_elevation">@dimen/default_elevation_2</dimen>
 
     <!-- Promo cards dimensions -->
     <dimen name="promo_image_size">24dp</dimen>
@@ -88,6 +105,8 @@
     <dimen name="text_bubble_arrow_width">20dp</dimen>
     <dimen name="text_bubble_arrow_height">10dp</dimen>
     <dimen name="iph_pulse_baseline_radius">16dp</dimen>
+    <dimen name="text_bubble_with_snooze_padding_horizontal">24dp</dimen>
+    <dimen name="text_bubble_with_snooze_padding_end">4dp</dimen>
 
     <!-- Default list dimensions -->
     <dimen name="default_list_row_padding">16dp</dimen>
@@ -123,19 +142,61 @@
     <dimen name="tile_view_offline_badge_margin_top_modern_condensed">6dp</dimen>
     <dimen name="tile_view_offline_badge_margin_end_modern_condensed">7dp</dimen>
     <dimen name="tile_view_padding">4dp</dimen>
+    <dimen name="tile_view_padding_edge_portrait">12dp</dimen>
+    <dimen name="tile_view_padding_landscape">16dp</dimen>
     <dimen name="tile_view_title_margin_top_modern">61dp</dimen>
 
+    <!-- Chips default measures -->
+    <item name="chip_outline_alpha" format="float" type="dimen">0.8</item>
+    <item name="chip_outline_disabled_alpha" format="float" type="dimen">0.12</item>
+    <item name="chip_outline_focused_alpha" format="float" type="dimen">1</item>
+
+    <item name="chip_state_layer_hover_alpha_light" format="float" type="dimen">0.08</item>
+    <item name="chip_state_layer_hover_alpha_dark" format="float" type="dimen">0.16</item>
+    <item name="chip_state_layer_hover_alpha" format="float" type="dimen">@dimen/chip_state_layer_hover_alpha_light</item>
+    <item name="chip_state_layer_focused_alpha_light" format="float" type="dimen">0.12</item>
+    <item name="chip_state_layer_focused_alpha_dark" format="float" type="dimen">0.24</item>
+    <item name="chip_state_layer_focused_alpha" format="float" type="dimen">@dimen/chip_state_layer_focused_alpha_light</item>
+    <item name="chip_state_layer_pressed_alpha_light" format="float" type="dimen">0.12</item>
+    <item name="chip_state_layer_pressed_alpha_dark" format="float" type="dimen">0.20</item>
+    <item name="chip_state_layer_pressed_alpha" format="float" type="dimen">@dimen/chip_state_layer_pressed_alpha_light</item>
+    <item name="chip_state_layer_selected_hover_alpha" format="float" type="dimen">0.08</item>
+    <item name="chip_state_layer_selected_focused_alpha" format="float" type="dimen">0.12</item>
+    <item name="chip_state_layer_selected_pressed_alpha" format="float" type="dimen">0.12</item>
+
+    <dimen name="chip_solid_border_width">0dp</dimen>
+    <dimen name="chip_border_width">1dp</dimen>
+    <dimen name="chip_corner_radius">8dp</dimen>
+    <dimen name="chip_default_height">32dp</dimen>
+    <dimen name="chip_end_padding">16dp</dimen>
+    <dimen name="chip_reduced_end_padding">12dp</dimen>
+    <dimen name="chip_element_leading_padding">8dp</dimen>
+    <dimen name="chip_element_extended_leading_padding">16dp</dimen>
+    <dimen name="chip_bg_vertical_inset">8dp</dimen>
+    <dimen name="chip_icon_size">20dp</dimen>
+    <dimen name="chip_loading_view_size">12dp</dimen>
+    <dimen name="chip_end_icon_margin_start">8dp</dimen>
+    <dimen name="chip_end_icon_extended_margin_start">16dp</dimen>
+    <dimen name="chip_end_padding_with_end_icon">6dp</dimen>
+    <dimen name="chip_extended_end_padding_with_end_icon">16dp</dimen>
+    <dimen name="chip_text_multiline_vertical_padding">12dp</dimen>
+    <dimen name="chip_text_reduced_leading_padding">4dp</dimen>
+    <!-- ( listPreferredItemHeightSmall(40dp) - text size(12sp) - top and bottom padding(8dp) ) / 2 -->
+    <dimen name="menu_chip_vertical_inset">10dp</dimen>
+
     <!-- Chips layout dimensions -->
-    <dimen name="chip_list_inter_chip_padding">2.5dp</dimen>
-    <dimen name="chip_list_side_padding">-16dp</dimen>
+    <dimen name="chip_list_chip_spacing">2.5dp</dimen>
+    <dimen name="chip_list_side_padding">16dp</dimen>
 
     <!-- Misc. app menu dimens -->
-    <!-- ?attr/menuCornerSize doesn't work on Lollipop. So, we use a default dimen here and
-         reference the ?attr/ one in v23/dimens.xml. See https://crbug.com/1187338. -->
-    <dimen name="app_menu_corner_size">@dimen/popup_bg_corner_radius</dimen>
+    <dimen name="app_menu_corner_size">8dp</dimen>
     <dimen name="app_menu_shadow_length">@dimen/default_shadow_length_elev_2</dimen>
     <dimen name="app_menu_elevation">@dimen/default_elevation_2</dimen>
 
-    <!-- Misc refactor dimensions -->
-    <dimen name="refactor_menu_rounded_corner_radius">28dp</dimen>
+    <!-- Surface color elevations -->
+    <dimen name="menu_bg_color_elev">@dimen/default_elevation_0</dimen>
+    <dimen name="dialog_elevation">@dimen/default_elevation_0</dimen>
+
+    <!-- Vertical divider dimens -->
+    <dimen name="horizontal_divider_vertical_margin">8dp</dimen>
 </resources>

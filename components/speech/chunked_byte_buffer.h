@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace speech {
@@ -30,6 +28,10 @@ namespace speech {
 class ChunkedByteBuffer {
  public:
   ChunkedByteBuffer();
+
+  ChunkedByteBuffer(const ChunkedByteBuffer&) = delete;
+  ChunkedByteBuffer& operator=(const ChunkedByteBuffer&) = delete;
+
   ~ChunkedByteBuffer();
 
   // Appends |length| bytes starting from |start| to the buffer.
@@ -54,21 +56,20 @@ class ChunkedByteBuffer {
  private:
   struct Chunk {
     Chunk();
+
+    Chunk(const Chunk&) = delete;
+    Chunk& operator=(const Chunk&) = delete;
+
     ~Chunk();
 
     std::vector<uint8_t> header;
     std::unique_ptr<std::vector<uint8_t>> content;
     size_t ExpectedContentLength() const;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Chunk);
   };
 
   std::vector<std::unique_ptr<Chunk>> chunks_;
   std::unique_ptr<Chunk> partial_chunk_;
   size_t total_bytes_stored_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChunkedByteBuffer);
 };
 
 }  // namespace speech

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
@@ -29,6 +30,10 @@ class ActiveTabTracker : public TabStripModelObserver {
 
   ActiveTabTracker(const base::TickClock* clock,
                    ActiveTabClosedCallback callback);
+
+  ActiveTabTracker(const ActiveTabTracker&) = delete;
+  ActiveTabTracker& operator=(const ActiveTabTracker&) = delete;
+
   ~ActiveTabTracker() override;
 
   // Observes |tab_strip_model|. Its last activation time is set to the current
@@ -46,13 +51,11 @@ class ActiveTabTracker : public TabStripModelObserver {
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
-  const base::TickClock* const clock_;
+  const raw_ptr<const base::TickClock> clock_;
   const ActiveTabClosedCallback active_tab_closed_callback_;
   // Map containing the latest time the active tab changed for each tab strip
   // model. Also serves as the list of all registered |TabStripModel|s.
   std::unordered_map<TabStripModel*, base::TimeTicks> active_tab_changed_times_;
-
-  DISALLOW_COPY_AND_ASSIGN(ActiveTabTracker);
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_ACTIVE_TAB_TRACKER_H_

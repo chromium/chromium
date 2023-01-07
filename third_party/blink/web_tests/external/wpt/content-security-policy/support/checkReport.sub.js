@@ -68,15 +68,17 @@
       if (data.error) {
         assert_equals("false", reportExists, data.error);
       } else {
-        // With the 'report-uri' directive, the report is contained in
-        // `data["csp-report"]`. With the 'report-to' directive, the report is
-        // contained in `data[0]["body"]`.
-        const reportBody = data[0] ? data[0]["body"] : data["csp-report"];
-
         if (reportExists === "false") {
-          assert_equals(reportBody, undefined,
+          assert_equals(data.length, 0,
                         "CSP report sent, but not expecting one.");
         } else {
+          // With the 'report-uri' directive, the report is contained in
+          // `data[0]["csp-report"]`. With the 'report-to' directive, the report
+          // is contained in `data[0]["body"]`.
+          const reportBody = data[0]["body"]
+                ? data[0]["body"]
+                : data[0]["csp-report"];
+
           assert_true(reportBody !== undefined,
                       "No CSP report sent, but expecting one.");
           // Firefox expands 'self' or origins in a policy to the actual origin value
@@ -124,7 +126,7 @@
       reportCountReport.onload = reportCountTest.step_func(function () {
         var data = JSON.parse(reportCountReport.responseText);
 
-        assert_equals(data.report_count, reportCount, "Report count was not what was expected.");
+        assert_equals(data.report_count, +reportCount, "Report count was not what was expected.");
 
         reportCountTest.done();
       });

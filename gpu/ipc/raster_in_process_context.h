@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
-#include "gpu/ipc/command_buffer_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
+#include "gpu/command_buffer/client/raster_implementation.h"
+#include "gpu/command_buffer/service/command_buffer_task_executor.h"
 #include "gpu/ipc/in_process_command_buffer.h"
 
 namespace gpu {
@@ -22,37 +22,30 @@ class TransferBuffer;
 struct GpuFeatureInfo;
 struct SharedMemoryLimits;
 
-namespace raster {
-class RasterInterface;
-class RasterImplementation;
-}  // namespace raster
-
 // Runs client and server side command buffer code in process. Only supports
 // RasterInterface.
 class RasterInProcessContext {
  public:
   RasterInProcessContext();
+
+  RasterInProcessContext(const RasterInProcessContext&) = delete;
+  RasterInProcessContext& operator=(const RasterInProcessContext&) = delete;
+
   ~RasterInProcessContext();
 
-  // |attrib_list| must be null or a NONE-terminated list of attribute/value
-  // pairs. |gpu_channel_manager| should be non-null when used in the GPU
-  // process.
-  ContextResult Initialize(
-      CommandBufferTaskExecutor* task_executor,
-      const ContextCreationAttribs& attribs,
-      const SharedMemoryLimits& memory_limits,
-      GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      ImageFactory* image_factory,
-      GpuChannelManagerDelegate* gpu_channel_manager_delegate,
-      gpu::raster::GrShaderCache* gr_shader_cache,
-      GpuProcessActivityFlags* activity_flags);
+  ContextResult Initialize(CommandBufferTaskExecutor* task_executor,
+                           const ContextCreationAttribs& attribs,
+                           const SharedMemoryLimits& memory_limits,
+                           ImageFactory* image_factory,
+                           gpu::raster::GrShaderCache* gr_shader_cache,
+                           GpuProcessActivityFlags* activity_flags);
 
   const Capabilities& GetCapabilities() const;
   const GpuFeatureInfo& GetGpuFeatureInfo() const;
 
   // Allows direct access to the RasterImplementation so a
   // RasterInProcessContext can be used without making it current.
-  gpu::raster::RasterInterface* GetImplementation();
+  gpu::raster::RasterImplementation* GetImplementation();
 
   ContextSupport* GetContextSupport();
 
@@ -72,8 +65,6 @@ class RasterInProcessContext {
   std::unique_ptr<TransferBuffer> transfer_buffer_;
   std::unique_ptr<raster::RasterImplementation> raster_implementation_;
   std::unique_ptr<InProcessCommandBuffer> command_buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RasterInProcessContext);
 };
 
 }  // namespace gpu

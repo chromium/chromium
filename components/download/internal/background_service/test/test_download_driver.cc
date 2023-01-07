@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -108,10 +108,10 @@ void TestDownloadDriver::Resume(const std::string& guid) {
   it->second.paused = false;
 }
 
-base::Optional<DriverEntry> TestDownloadDriver::Find(const std::string& guid) {
+absl::optional<DriverEntry> TestDownloadDriver::Find(const std::string& guid) {
   auto it = entries_.find(guid);
   if (it == entries_.end())
-    return base::nullopt;
+    return absl::nullopt;
   return it->second;
 }
 

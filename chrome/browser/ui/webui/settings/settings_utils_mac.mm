@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,9 +35,9 @@ void ValidateFontFamily(PrefService* prefs, const char* family_pref_name) {
 namespace settings_utils {
 
 void ShowNetworkProxySettings(content::WebContents* web_contents) {
-  NSArray* itemsToOpen = [NSArray
-      arrayWithObject:[NSURL fileURLWithPath:@"/System/Library/PreferencePanes/"
-                                             @"Network.prefPane"]];
+  NSArray* itemsToOpen =
+      @[ [NSURL fileURLWithPath:@"/System/Library/PreferencePanes/"
+                                @"Network.prefPane"] ];
 
   const char* proxyPrefCommand = "Proxies";
   base::mac::ScopedAEDesc<> openParams;
@@ -66,6 +66,7 @@ void ValidateSavedFonts(PrefService* prefs) {
   ValidateFontFamily(prefs, prefs::kWebKitSerifFontFamily);
   ValidateFontFamily(prefs, prefs::kWebKitSansSerifFontFamily);
   ValidateFontFamily(prefs, prefs::kWebKitFixedFontFamily);
+  ValidateFontFamily(prefs, prefs::kWebKitMathFontFamily);
 }
 
 }  // namespace settings_utils

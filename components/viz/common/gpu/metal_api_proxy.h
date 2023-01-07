@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 
 #include <memory>
 #include <string>
+
+#include "base/memory/raw_ptr.h"
 
 #import <Metal/Metal.h>
 
@@ -38,7 +40,7 @@ class MTLLibraryCache;
 
   // Weak pointer to the progress reporter used to avoid watchdog timeouts.
   // This must be re-set to nullptr when it is no longer known to be valid.
-  gl::ProgressReporter* _progressReporter;
+  raw_ptr<gl::ProgressReporter> _progressReporter;
 
   std::unique_ptr<MTLLibraryCache> _libraryCache;
 }

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "components/policy/policy_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -33,6 +33,8 @@ namespace android {
 class POLICY_EXPORT PolicyConverter {
  public:
   explicit PolicyConverter(const Schema* policy_schema);
+  PolicyConverter(const PolicyConverter&) = delete;
+  PolicyConverter& operator=(const PolicyConverter&) = delete;
   ~PolicyConverter();
 
   // Returns a policy bundle containing all policies collected since the last
@@ -66,7 +68,7 @@ class POLICY_EXPORT PolicyConverter {
   // additional restrictions, or the schema for value's items or properties in
   // the case of a list or dictionary value.
   // Public for testing.
-  static base::Optional<base::Value> ConvertValueToSchema(base::Value value,
+  static absl::optional<base::Value> ConvertValueToSchema(base::Value value,
                                                           const Schema& schema);
 
   // Public for testing.
@@ -74,16 +76,17 @@ class POLICY_EXPORT PolicyConverter {
       JNIEnv* env,
       const base::android::JavaRef<jobjectArray>& array);
 
+  // Exposes `SetPolicyValue` for testing purposes.
+  void SetPolicyValueForTesting(const std::string& key, base::Value raw_value);
+
  private:
-  const Schema* const policy_schema_;
+  const raw_ptr<const Schema> policy_schema_;
 
   std::unique_ptr<PolicyBundle> policy_bundle_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 
   void SetPolicyValue(const std::string& key, base::Value raw_value);
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyConverter);
 };
 
 }  // namespace android

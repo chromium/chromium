@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,27 +16,25 @@ namespace apps {
 
 AudioFocusWebContentsObserver::AudioFocusWebContentsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<AudioFocusWebContentsObserver>(
+          *web_contents) {}
 
 AudioFocusWebContentsObserver::~AudioFocusWebContentsObserver() = default;
 
-void AudioFocusWebContentsObserver::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
-      !navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument() || navigation_handle->IsErrorPage()) {
+void AudioFocusWebContentsObserver::PrimaryPageChanged(content::Page& page) {
+  content::RenderFrameHost& render_frame_host = page.GetMainDocument();
+  if (render_frame_host.IsErrorDocument())
     return;
-  }
 
   if (!audio_focus_group_id_.is_empty())
     return;
 
-  content::BrowserContext* context =
-      navigation_handle->GetWebContents()->GetBrowserContext();
+  content::BrowserContext* context = render_frame_host.GetBrowserContext();
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(context)
           ->enabled_extensions()
-          .GetExtensionOrAppByURL(navigation_handle->GetURL());
+          .GetExtensionOrAppByURL(render_frame_host.GetLastCommittedURL());
 
   if (!extension || !extension->is_platform_app())
     return;
@@ -67,6 +65,6 @@ void AudioFocusWebContentsObserver::DidFinishNavigation(
       ->SetAudioFocusGroupId(audio_focus_group_id_);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AudioFocusWebContentsObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AudioFocusWebContentsObserver);
 
 }  // namespace apps

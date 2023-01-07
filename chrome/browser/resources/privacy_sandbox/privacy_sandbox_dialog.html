@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="light dark">
+  <meta name="viewport" content="width=device-width initial-scale=1.0,
+      user-scalable=no">
+  <title>$i18n{privacySandboxTitle}</title>
+  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: var(--md-background-color);
+      }
+    }
+  </style>
+  <script type="module" src="privacy_sandbox_dialog_app.js"></script>
+</head>
+<body>
+  <privacy-sandbox-dialog-app></privacy-sandbox-dialog-app>
+</body>
+</html>

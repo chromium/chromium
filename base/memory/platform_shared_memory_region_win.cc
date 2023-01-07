@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,16 +41,6 @@ typedef ULONG(__stdcall* NtQuerySectionType)(
     PVOID SectionInformation,
     ULONG SectionInformationLength,
     PULONG ResultLength);
-
-// Returns the length of the memory section starting at the supplied address.
-size_t GetMemorySectionSize(void* address) {
-  MEMORY_BASIC_INFORMATION memory_info;
-  if (!::VirtualQuery(address, &memory_info, sizeof(memory_info)))
-    return 0;
-  return memory_info.RegionSize -
-         (static_cast<char*>(address) -
-          static_cast<char*>(memory_info.AllocationBase));
-}
 
 // Checks if the section object is safe to map. At the moment this just means
 // it's not an image section.
@@ -114,7 +104,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
     Mode mode,
     size_t size,
     const UnguessableToken& guid) {
-  if (!handle.IsValid())
+  if (!handle.is_valid())
     return {};
 
   if (size == 0)
@@ -123,21 +113,21 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
   if (size > static_cast<size_t>(std::numeric_limits<int>::max()))
     return {};
 
-  if (!IsSectionSafeToMap(handle.Get()))
+  if (!IsSectionSafeToMap(handle.get()))
     return {};
 
   CHECK(
-      CheckPlatformHandlePermissionsCorrespondToMode(handle.Get(), mode, size));
+      CheckPlatformHandlePermissionsCorrespondToMode(handle.get(), mode, size));
 
   return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
 }
 
 HANDLE PlatformSharedMemoryRegion::GetPlatformHandle() const {
-  return handle_.Get();
+  return handle_.get();
 }
 
 bool PlatformSharedMemoryRegion::IsValid() const {
-  return handle_.IsValid();
+  return handle_.is_valid();
 }
 
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
@@ -150,7 +140,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
   HANDLE duped_handle;
   ProcessHandle process = GetCurrentProcess();
   BOOL success =
-      ::DuplicateHandle(process, handle_.Get(), process, &duped_handle, 0,
+      ::DuplicateHandle(process, handle_.get(), process, &duped_handle, 0,
                         FALSE, DUPLICATE_SAME_ACCESS);
   if (!success)
     return {};
@@ -166,12 +156,12 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to read-only";
 
-  win::ScopedHandle handle_copy(handle_.Take());
+  win::ScopedHandle handle_copy(handle_.release());
 
   HANDLE duped_handle;
   ProcessHandle process = GetCurrentProcess();
   BOOL success =
-      ::DuplicateHandle(process, handle_copy.Get(), process, &duped_handle,
+      ::DuplicateHandle(process, handle_copy.get(), process, &duped_handle,
                         FILE_MAP_READ | SECTION_QUERY, FALSE, 0);
   if (!success)
     return false;
@@ -189,30 +179,6 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
       << "Only writable shared memory region can be converted to unsafe";
 
   mode_ = Mode::kUnsafe;
-  return true;
-}
-
-bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
-                                               size_t size,
-                                               void** memory,
-                                               size_t* mapped_size) const {
-  bool write_allowed = mode_ != Mode::kReadOnly;
-  // Try to map the shared memory. On the first failure, release any reserved
-  // address space for a single entry.
-  for (int i = 0; i < 2; ++i) {
-    *memory = MapViewOfFile(
-        handle_.Get(), FILE_MAP_READ | (write_allowed ? FILE_MAP_WRITE : 0),
-        static_cast<uint64_t>(offset) >> 32, static_cast<DWORD>(offset), size);
-    if (*memory)
-      break;
-    ReleaseReservation();
-  }
-  if (!*memory) {
-    DPLOG(ERROR) << "Failed executing MapViewOfFile";
-    return false;
-  }
-
-  *mapped_size = GetMemorySectionSize(*memory);
   return true;
 }
 
@@ -284,7 +250,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 
 // static
 bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
-    PlatformHandle handle,
+    PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
   // Call ::DuplicateHandle() with FILE_MAP_WRITE as a desired access to check

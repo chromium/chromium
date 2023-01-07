@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,8 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -96,9 +98,9 @@ void WindowMiniView::UpdatePreviewRoundedCorners(bool show) {
 
   ui::Layer* layer = preview_view()->layer();
   DCHECK(layer);
-  const float scale = layer->transform().Scale2d().x();
-  const float rounding =
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_LOW);
+  const float scale = layer->transform().To2dScale().x();
+  const float rounding = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kLow);
   const gfx::RoundedCornersF radii(show ? rounding / scale : 0.0f);
   layer->SetRoundedCornerRadius(radii);
   layer->SetIsFastRoundedCorner(true);
@@ -118,11 +120,6 @@ gfx::Rect WindowMiniView::GetHeaderBounds() const {
 gfx::Size WindowMiniView::GetPreviewViewSize() const {
   DCHECK(preview_view_);
   return preview_view_->GetPreferredSize();
-}
-
-gfx::ImageSkia WindowMiniView::ModifyIcon(gfx::ImageSkia* image) const {
-  return gfx::ImageSkiaOperations::CreateResizedImage(
-      *image, skia::ImageOperations::RESIZE_BEST, kIconSize);
 }
 
 WindowMiniView::WindowMiniView(aura::Window* source_window)
@@ -156,6 +153,7 @@ WindowMiniView::WindowMiniView(aura::Window* source_window)
 }
 
 void WindowMiniView::UpdateIconView() {
+  DCHECK(source_window_);
   aura::Window* transient_root = wm::GetTransientRoot(source_window_);
   // Prefer kAppIconKey over kWindowIconKey as the app icon is typically larger.
   gfx::ImageSkia* icon = transient_root->GetProperty(aura::client::kAppIconKey);
@@ -169,12 +167,13 @@ void WindowMiniView::UpdateIconView() {
         header_view_->AddChildViewAt(std::make_unique<views::ImageView>(), 0);
   }
 
-  icon_view_->SetImage(ModifyIcon(icon));
+  icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
+      *icon, skia::ImageOperations::RESIZE_BEST, kIconSize));
 }
 
 gfx::Rect WindowMiniView::GetContentAreaBounds() const {
   gfx::Rect bounds(GetContentsBounds());
-  bounds.Inset(0, kHeaderHeightDp, 0, 0);
+  bounds.Inset(gfx::Insets::TLBR(kHeaderHeightDp, 0, 0, 0));
   return bounds;
 }
 
@@ -193,6 +192,13 @@ void WindowMiniView::Layout() {
 }
 
 void WindowMiniView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  // This may be called after `OnWindowDestroying`. `this` should be destroyed
+  // shortly by the owner (OverviewItem/WindowCycleView) but there may be a
+  // small window where `source_window_` is null. Speculative fix for
+  // https://crbug.com/1274775.
+  if (!source_window_)
+    return;
+
   node_data->role = ax::mojom::Role::kWindow;
   node_data->SetName(wm::GetTransientRoot(source_window_)->GetTitle());
 }
@@ -226,5 +232,8 @@ void WindowMiniView::OnWindowDestroying(aura::Window* window) {
 void WindowMiniView::OnWindowTitleChanged(aura::Window* window) {
   title_label_->SetText(GetWindowTitle(window));
 }
+
+BEGIN_METADATA(WindowMiniView, views::View)
+END_METADATA
 
 }  // namespace ash

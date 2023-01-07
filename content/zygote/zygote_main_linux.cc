@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
@@ -108,7 +109,7 @@ static bool EnterSuidSandbox(sandbox::SetuidSandboxClient* setuid_sandbox,
   if (!setuid_sandbox->IsSuidSandboxUpToDate()) {
     LOG(WARNING) << "You are using a wrong version of the setuid binary!\n"
                     "Please read "
-                    "https://chromium.googlesource.com/chromium/src/+/master/"
+                    "https://chromium.googlesource.com/chromium/src/+/main/"
                     "docs/linux/suid_sandbox_development.md."
                     "\n\n";
   }

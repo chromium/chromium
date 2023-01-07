@@ -40,6 +40,11 @@ LayoutFlowThread::LayoutFlowThread(bool needs_paint_layer)
       page_logical_size_changed_(false),
       needs_paint_layer_(needs_paint_layer) {}
 
+void LayoutFlowThread::Trace(Visitor* visitor) const {
+  visitor->Trace(multi_column_set_list_);
+  LayoutBlockFlow::Trace(visitor);
+}
+
 LayoutFlowThread* LayoutFlowThread::LocateFlowThreadContainingBlockOf(
     const LayoutObject& descendant,
     AncestorSearchConstraint constraint) {
@@ -127,7 +132,7 @@ bool LayoutFlowThread::MapToVisualRectInAncestorSpaceInternal(
   transform_state.Flatten();
   LayoutRect rect(transform_state.LastPlanarQuad().BoundingBox());
   rect = FragmentsBoundingBox(rect);
-  transform_state.SetQuad(FloatQuad(FloatRect(rect)));
+  transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
   return LayoutBlockFlow::MapToVisualRectInAncestorSpaceInternal(
       ancestor, transform_state, visual_rect_flags);
 }
@@ -166,7 +171,7 @@ void LayoutFlowThread::ComputeLogicalHeight(
 }
 
 void LayoutFlowThread::AbsoluteQuadsForDescendant(const LayoutBox& descendant,
-                                                  Vector<FloatQuad>& quads,
+                                                  Vector<gfx::QuadF>& quads,
                                                   MapCoordinatesFlags mode) {
   NOT_DESTROYED();
   LayoutPoint offset_from_flow_thread;
@@ -196,11 +201,12 @@ void LayoutFlowThread::AbsoluteQuadsForDescendant(const LayoutBox& descendant,
 
 void LayoutFlowThread::AddOutlineRects(
     Vector<PhysicalRect>& rects,
+    OutlineInfo* info,
     const PhysicalOffset& additional_offset,
     NGOutlineType include_block_overflows) const {
   NOT_DESTROYED();
   Vector<PhysicalRect> rects_in_flowthread;
-  LayoutBlockFlow::AddOutlineRects(rects_in_flowthread, additional_offset,
+  LayoutBlockFlow::AddOutlineRects(rects_in_flowthread, info, additional_offset,
                                    include_block_overflows);
   // Convert the rectangles from the flow thread coordinate space to the visual
   // space. The approach here is very simplistic; just calculate a bounding box
@@ -218,12 +224,12 @@ void LayoutFlowThread::AddOutlineRects(
 bool LayoutFlowThread::NodeAtPoint(HitTestResult& result,
                                    const HitTestLocation& hit_test_location,
                                    const PhysicalOffset& accumulated_offset,
-                                   HitTestAction hit_test_action) {
+                                   HitTestPhase phase) {
   NOT_DESTROYED();
-  if (hit_test_action == kHitTestBlockBackground)
+  if (phase == HitTestPhase::kSelfBlockBackground)
     return false;
   return LayoutBlockFlow::NodeAtPoint(result, hit_test_location,
-                                      accumulated_offset, hit_test_action);
+                                      accumulated_offset, phase);
 }
 
 LayoutUnit LayoutFlowThread::PageLogicalHeightForOffset(
@@ -258,7 +264,7 @@ void LayoutFlowThread::GenerateColumnSetIntervalTree() {
   // manually managing the tree nodes lifecycle.
   multi_column_set_interval_tree_.Clear();
   multi_column_set_interval_tree_.InitIfNeeded();
-  for (auto* column_set : multi_column_set_list_)
+  for (const auto& column_set : multi_column_set_list_)
     multi_column_set_interval_tree_.Add(
         MultiColumnSetIntervalTree::CreateInterval(
             column_set->LogicalTopInFlowThread(),
@@ -283,7 +289,7 @@ LayoutRect LayoutFlowThread::FragmentsBoundingBox(
   DCHECK(!column_sets_invalidated_);
 
   LayoutRect result;
-  for (auto* column_set : multi_column_set_list_)
+  for (const auto& column_set : multi_column_set_list_)
     result.Unite(column_set->FragmentsBoundingBox(layer_bounding_box));
 
   return result;
@@ -316,6 +322,10 @@ void LayoutFlowThread::MultiColumnSetSearchAdapter::CollectIfNeeded(
     return;
   if (interval.Low() <= offset_ && interval.High() > offset_)
     result_ = interval.Data();
+}
+
+void MultiColumnLayoutState::Trace(Visitor* visitor) const {
+  visitor->Trace(column_set_);
 }
 
 }  // namespace blink

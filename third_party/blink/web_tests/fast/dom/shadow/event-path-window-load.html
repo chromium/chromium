@@ -6,11 +6,11 @@ setup({ explicit_done: true });
 
 var img = document.getElementById("img");
 window.onload = function (e) {
-    var path = e.path;
+    var path = e.composedPath();
     test(function () {
         assert_equals(path.length, 1, 'path.length');
         assert_equals(path[0], window, 'path[0] should be window');
-    }, "event.path for window.onload");
+    }, "event.composedPath() for window.onload");
     done();
 };
 </script>

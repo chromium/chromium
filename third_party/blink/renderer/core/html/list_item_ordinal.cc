@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/list_item_ordinal.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
@@ -132,7 +133,7 @@ ListItemOrdinal::NodeAndOrdinal ListItemOrdinal::NextOrdinalItem(
                           : NextListItem(list, item);
 }
 
-base::Optional<int> ListItemOrdinal::ExplicitValue() const {
+absl::optional<int> ListItemOrdinal::ExplicitValue() const {
   if (!HasExplicitValue())
     return {};
   return value_;
@@ -259,7 +260,7 @@ void ListItemOrdinal::InvalidateAllItemsForOrderedList(
 void ListItemOrdinal::ItemUpdated(const LayoutObject* layout_list_item,
                                   UpdateType type) {
   const Node* item_node = layout_list_item->GetNode();
-  if (item_node->GetDocument().IsSlotAssignmentOrLegacyDistributionDirty())
+  if (item_node->GetDocument().IsSlotAssignmentDirty())
     return;
   if (item_node->GetDocument().IsFlatTreeTraversalForbidden())
     return;

@@ -1,13 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_SIGNIN_AUTH_ERROR_OBSERVER_H_
 #define CHROME_BROWSER_ASH_LOGIN_SIGNIN_AUTH_ERROR_OBSERVER_H_
 
-#include <string>
-
-#include "base/macros.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/sync/driver/sync_service_observer.h"
@@ -15,7 +12,7 @@
 class GoogleServiceAuthError;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // This class is responsible for detecting authentication problems reported
 // by sync service and SigninErrorController on a user profile.
@@ -28,6 +25,10 @@ class AuthErrorObserver : public KeyedService,
   static bool ShouldObserve(Profile* profile);
 
   explicit AuthErrorObserver(Profile* profile);
+
+  AuthErrorObserver(const AuthErrorObserver&) = delete;
+  AuthErrorObserver& operator=(const AuthErrorObserver&) = delete;
+
   ~AuthErrorObserver() override;
 
   // Starts to observe SyncService and SigninErrorController.
@@ -52,10 +53,8 @@ class AuthErrorObserver : public KeyedService,
   void HandleAuthError(const GoogleServiceAuthError& auth_error);
 
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthErrorObserver);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SIGNIN_AUTH_ERROR_OBSERVER_H_

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,22 +13,23 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
-#include "pdf/document_loader.h"
 #include "pdf/document_metadata.h"
+#include "pdf/loader/document_loader.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "pdf/pdfium/pdfium_print.h"
 #include "pdf/pdfium/pdfium_range.h"
-#include "ppapi/c/private/ppp_pdf.h"
-#include "ppapi/cpp/dev/buffer_dev.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
 #include "third_party/pdfium/public/fpdf_progressive.h"
@@ -39,14 +40,17 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 
+namespace blink {
+class WebKeyboardEvent;
+class WebMouseEvent;
+class WebTouchEvent;
+}  // namespace blink
+
 namespace chrome_pdf {
 
 enum class AccessibilityScrollAlignment;
-class KeyboardInputEvent;
-class MouseInputEvent;
 class PDFiumDocument;
 class PDFiumPermissions;
-class TouchInputEvent;
 struct AccessibilityActionData;
 struct AccessibilityTextRunInfo;
 struct PageCharacterIndex;
@@ -66,7 +70,7 @@ class PDFiumEngine : public PDFEngine,
   // Exposed for testing.
   enum class FocusElementType { kNone, kDocument, kPage };
 
-  // NOTE: |script_option| is ignored when PDF_ENABLE_V8 is not defined.
+  // NOTE: `script_option` is ignored when PDF_ENABLE_V8 is not defined.
   PDFiumEngine(PDFEngine::Client* client,
                PDFiumFormFiller::ScriptOption script_option);
   PDFiumEngine(const PDFiumEngine&) = delete;
@@ -77,8 +81,15 @@ class PDFiumEngine : public PDFEngine,
   // HandleDocumentLoad().
   void SetDocumentLoaderForTesting(std::unique_ptr<DocumentLoader> loader);
 
+  // Returns the FontMappingMode set during PDFium SDK initialization.
+  static FontMappingMode GetFontMappingMode();
+
+  // Starts loading the document from `loader`. Follow-up requests (such as for
+  // partial loading) will use `original_url`.
+  bool HandleDocumentLoad(std::unique_ptr<UrlLoader> loader,
+                          const std::string& original_url);
+
   // PDFEngine:
-  bool New(const char* url, const char* headers) override;
   void PageOffsetUpdated(const gfx::Vector2d& page_offset) override;
   void PluginSizeUpdated(const gfx::Size& size) override;
   void ScrolledToXPosition(int position) override;
@@ -89,15 +100,11 @@ class PDFiumEngine : public PDFEngine,
              std::vector<gfx::Rect>& ready,
              std::vector<gfx::Rect>& pending) override;
   void PostPaint() override;
-  bool HandleDocumentLoad(std::unique_ptr<UrlLoader> loader) override;
-  bool HandleEvent(const InputEvent& event) override;
-  uint32_t QuerySupportedPrintOutputFormats() override;
+  bool HandleInputEvent(const blink::WebInputEvent& event) override;
   void PrintBegin() override;
-  pp::Resource PrintPages(
-      const PP_PrintPageNumberRange_Dev* page_ranges,
-      uint32_t page_range_count,
-      const PP_PrintSettings_Dev& print_settings,
-      const PP_PdfPrintSettings_Dev& pdf_print_settings) override;
+  std::vector<uint8_t> PrintPages(
+      const std::vector<int>& page_numbers,
+      const blink::WebPrintParams& print_params) override;
   void PrintEnd() override;
   void StartFind(const std::string& text, bool case_sensitive) override;
   bool SelectFindResult(bool forward) override;
@@ -107,16 +114,16 @@ class PDFiumEngine : public PDFEngine,
   void RotateCounterclockwise() override;
   bool IsReadOnly() const override;
   void SetReadOnly(bool enable) override;
-  void SetTwoUpView(bool enable) override;
+  void SetDocumentLayout(DocumentLayout::PageSpread page_spread) override;
   void DisplayAnnotations(bool display) override;
   gfx::Size ApplyDocumentLayout(
       const DocumentLayout::Options& options) override;
   std::string GetSelectedText() override;
-  bool CanEditText() override;
-  bool HasEditableText() override;
+  bool CanEditText() const override;
+  bool HasEditableText() const override;
   void ReplaceSelection(const std::string& text) override;
-  bool CanUndo() override;
-  bool CanRedo() override;
+  bool CanUndo() const override;
+  bool CanRedo() const override;
   void Undo() override;
   void Redo() override;
   void HandleAccessibilityAction(
@@ -129,19 +136,18 @@ class PDFiumEngine : public PDFEngine,
   std::vector<uint8_t> GetAttachmentData(size_t index) override;
   const DocumentMetadata& GetDocumentMetadata() const override;
   int GetNumberOfPages() const override;
-  base::Value GetBookmarks() override;
-  base::Optional<PDFEngine::NamedDestination> GetNamedDestination(
+  base::Value::List GetBookmarks() override;
+  absl::optional<PDFEngine::NamedDestination> GetNamedDestination(
       const std::string& destination) override;
   int GetMostVisiblePage() override;
   gfx::Rect GetPageBoundsRect(int index) override;
   gfx::Rect GetPageContentsRect(int index) override;
   gfx::Rect GetPageScreenRect(int page_index) const override;
-  int GetVerticalScrollbarYPosition() override;
   void SetGrayscale(bool grayscale) override;
   int GetCharCount(int page_index) override;
   gfx::RectF GetCharBounds(int page_index, int char_index) override;
   uint32_t GetCharUnicode(int page_index, int char_index) override;
-  base::Optional<AccessibilityTextRunInfo> GetTextRunInfo(
+  absl::optional<AccessibilityTextRunInfo> GetTextRunInfo(
       int page_index,
       int start_char_index) override;
   std::vector<AccessibilityLinkInfo> GetLinkInfo(
@@ -158,8 +164,8 @@ class PDFiumEngine : public PDFEngine,
       uint32_t text_run_count) override;
   bool GetPrintScaling() override;
   int GetCopiesToPrint() override;
-  int GetDuplexType() override;
-  base::Optional<gfx::Size> GetUniformPageSizePoints() override;
+  printing::mojom::DuplexMode GetDuplexMode() override;
+  absl::optional<gfx::Size> GetUniformPageSizePoints() override;
   void AppendBlankPages(size_t num_pages) override;
   void AppendPage(PDFEngine* engine, int index) override;
   std::vector<uint8_t> GetSaveData() override;
@@ -173,7 +179,7 @@ class PDFiumEngine : public PDFEngine,
                     uint32_t* selection_end_char_index) override;
   void KillFormFocus() override;
   void UpdateFocus(bool has_focus) override;
-  PP_PrivateAccessibilityFocusInfo GetFocusInfo() override;
+  AccessibilityFocusInfo GetFocusInfo() override;
   uint32_t GetLoadedByteSize() override;
   bool ReadLoadedBytes(uint32_t length, void* buffer) override;
   void RequestThumbnail(int page_index,
@@ -181,7 +187,6 @@ class PDFiumEngine : public PDFEngine,
                         SendThumbnailCallback send_callback) override;
 
   // DocumentLoader::Client:
-  pp::Instance* GetPluginInstance() override;
   std::unique_ptr<URLLoaderWrapper> CreateURLLoader() override;
   void OnPendingRequestComplete() override;
   void OnNewDataReceived() override;
@@ -197,6 +202,10 @@ class PDFiumEngine : public PDFEngine,
   FPDF_AVAIL fpdf_availability() const;
   FPDF_DOCUMENT doc() const;
   FPDF_FORMHANDLE form() const;
+
+  // Returns the PDFiumPage pointer of a given index. Returns nullptr if `index`
+  // is out of range.
+  PDFiumPage* GetPage(size_t index);
 
   bool IsValidLink(const std::string& url);
 
@@ -215,11 +224,11 @@ class PDFiumEngine : public PDFEngine,
     // coordinates.
     std::vector<gfx::Rect> GetVisibleSelections() const;
 
-    // Invalidates |selection|, but with |selection| slightly expanded to
+    // Invalidates `selection`, but with `selection` slightly expanded to
     // compensate for any rounding errors.
     void Invalidate(const gfx::Rect& selection);
 
-    PDFiumEngine* const engine_;
+    const raw_ptr<PDFiumEngine> engine_;
     // The origin at the time this object was constructed.
     const gfx::Point previous_origin_;
     // Screen rectangles that were selected on construction.
@@ -252,14 +261,20 @@ class PDFiumEngine : public PDFEngine,
   friend class PDFiumTestBase;
   friend class SelectionChangeInvalidator;
 
+  gfx::Size plugin_size() const {
+    // TODO(crbug.com/1237952): Just use .value() after fixing call sites.
+    DCHECK(plugin_size_.has_value());
+    return plugin_size_.value_or(gfx::Size());
+  }
+
   // We finished getting the pdf file, so load it. This will complete
   // asynchronously (due to password fetching) and may be run multiple times.
   void LoadDocument();
 
   // Try loading the document. Returns true if the document is successfully
   // loaded or is already loaded otherwise it will return false. If there is a
-  // password, then |password| is non-empty. If the document could not be loaded
-  // and needs a password, |needs_password| will be set to true.
+  // password, then `password` is non-empty. If the document could not be loaded
+  // and needs a password, `needs_password` will be set to true.
   bool TryLoadingDoc(const std::string& password, bool* needs_password);
 
   // Asks the user for the document password and then continue loading the
@@ -270,13 +285,13 @@ class PDFiumEngine : public PDFEngine,
   void OnGetPasswordComplete(const std::string& password);
 
   // Continues loading the document when the password has been retrieved, or if
-  // there is no password. If there is no password, then |password| is empty.
+  // there is no password. If there is no password, then `password` is empty.
   void ContinueLoadingDocument(const std::string& password);
 
   // Finishes loading the document. Recalculate the document size if there were
   // pages that were not previously available.
   // Also notifies the client that the document has been loaded.
-  // This should only be called after |doc_| has been loaded and the document is
+  // This should only be called after `doc_` has been loaded and the document is
   // fully downloaded.
   // If this has been run once, it will not notify the client again.
   void FinishLoadingDocument();
@@ -288,10 +303,10 @@ class PDFiumEngine : public PDFEngine,
   void RefreshCurrentDocumentLayout();
 
   // Proposes the next document layout using the current pages and
-  // |desired_layout_options_|.
+  // `desired_layout_options_`.
   void ProposeNextDocumentLayout();
 
-  // Updates |layout| using the current page sizes.
+  // Updates `layout` using the current page sizes.
   void UpdateDocumentLayout(DocumentLayout* layout);
 
   // Loads information about the pages in the document, calculating and
@@ -339,23 +354,23 @@ class PDFiumEngine : public PDFEngine,
 
   // Helper function for getting the inset sizes for the current layout. If
   // two-up view is enabled, the configuration of inset sizes depends on
-  // the position of the page, specified by |page_index| and |num_of_pages|.
+  // the position of the page, specified by `page_index` and `num_of_pages`.
   draw_utils::PageInsetSizes GetInsetSizes(
       const DocumentLayout::Options& layout_options,
       size_t page_index,
       size_t num_of_pages) const;
 
-  // If two-up view is disabled, enlarges |page_size| with inset sizes for
+  // If two-up view is disabled, enlarges `page_size` with inset sizes for
   // single-view. If two-up view is enabled, calls GetInsetSizes() with
-  // |page_index| and |num_of_pages|, and uses the returned inset sizes to
-  // enlarge |page_size|.
+  // `page_index` and `num_of_pages`, and uses the returned inset sizes to
+  // enlarge `page_size`.
   void EnlargePage(const DocumentLayout::Options& layout_options,
                    size_t page_index,
                    size_t num_of_pages,
                    gfx::Size* page_size) const;
 
-  // Similar to EnlargePage(), but insets a |rect|. Also multiplies the inset
-  // sizes by |multiplier|, using the ceiling of the result.
+  // Similar to EnlargePage(), but insets a `rect`. Also multiplies the inset
+  // sizes by `multiplier`, using the ceiling of the result.
   void InsetPage(const DocumentLayout::Options& layout_options,
                  size_t page_index,
                  size_t num_of_pages,
@@ -363,9 +378,9 @@ class PDFiumEngine : public PDFEngine,
                  gfx::Rect& rect) const;
 
   // If two-up view is enabled, returns the index of the page beside
-  // |page_index| page. Returns base::nullopt if there is no adjacent page or
+  // `page_index` page. Returns absl::nullopt if there is no adjacent page or
   // if two-up view is disabled.
-  base::Optional<size_t> GetAdjacentPageIndexForTwoUpView(
+  absl::optional<size_t> GetAdjacentPageIndexForTwoUpView(
       size_t page_index,
       size_t num_of_pages) const;
 
@@ -376,9 +391,9 @@ class PDFiumEngine : public PDFEngine,
   void UpdateTickMarks();
 
   // Called to continue searching so we don't block the main thread.
-  void ContinueFind(int32_t result);
+  void ContinueFind(bool case_sensitive);
 
-  // Inserts a find result into |find_results_|, which is sorted.
+  // Inserts a find result into `find_results_`, which is sorted.
   void AddFindResult(const PDFiumRange& result);
 
   // Search a page using PDFium's methods.  Doesn't work with unicode.  This
@@ -397,13 +412,13 @@ class PDFiumEngine : public PDFEngine,
                       int current_page);
 
   // Input event handlers.
-  bool OnMouseDown(const MouseInputEvent& event);
-  bool OnMouseUp(const MouseInputEvent& event);
-  bool OnMouseMove(const MouseInputEvent& event);
-  void OnMouseEnter(const MouseInputEvent& event);
-  bool OnKeyDown(const KeyboardInputEvent& event);
-  bool OnKeyUp(const KeyboardInputEvent& event);
-  bool OnChar(const KeyboardInputEvent& event);
+  bool OnMouseDown(const blink::WebMouseEvent& event);
+  bool OnMouseUp(const blink::WebMouseEvent& event);
+  bool OnMouseMove(const blink::WebMouseEvent& event);
+  void OnMouseEnter(const blink::WebMouseEvent& event);
+  bool OnKeyDown(const blink::WebKeyboardEvent& event);
+  bool OnKeyUp(const blink::WebKeyboardEvent& event);
+  bool OnChar(const blink::WebKeyboardEvent& event);
 
   // Decide what cursor should be displayed.
   ui::mojom::CursorType DetermineCursorType(PDFiumPage::Area area,
@@ -411,25 +426,19 @@ class PDFiumEngine : public PDFEngine,
 
   bool ExtendSelection(int page_index, int char_index);
 
-  pp::Buffer_Dev PrintPagesAsRasterPdf(
-      const PP_PrintPageNumberRange_Dev* page_ranges,
-      uint32_t page_range_count,
-      const PP_PrintSettings_Dev& print_settings,
-      const PP_PdfPrintSettings_Dev& pdf_print_settings);
+  std::vector<uint8_t> PrintPagesAsRasterPdf(
+      const std::vector<int>& page_numbers,
+      const blink::WebPrintParams& print_params);
 
-  pp::Buffer_Dev PrintPagesAsPdf(
-      const PP_PrintPageNumberRange_Dev* page_ranges,
-      uint32_t page_range_count,
-      const PP_PrintSettings_Dev& print_settings,
-      const PP_PdfPrintSettings_Dev& pdf_print_settings);
+  std::vector<uint8_t> PrintPagesAsPdf(
+      const std::vector<int>& page_numbers,
+      const blink::WebPrintParams& print_params);
 
-  pp::Buffer_Dev ConvertPdfToBufferDev(const std::vector<uint8_t>& pdf_data);
-
-  // Checks if |page| has selected text in a form element. If so, sets that as
+  // Checks if `page` has selected text in a form element. If so, sets that as
   // the plugin's text selection.
   void SetFormSelectedText(FPDF_FORMHANDLE form_handle, FPDF_PAGE page);
 
-  // Given |point|, returns which page and character location it's closest to,
+  // Given `point`, returns which page and character location it's closest to,
   // as well as extra information about objects at that point.
   PDFiumPage::Area GetCharIndex(const gfx::Point& point,
                                 int* page_index,
@@ -439,9 +448,9 @@ class PDFiumEngine : public PDFEngine,
 
   void OnSingleClick(int page_index, int char_index);
   void OnMultipleClick(int click_count, int page_index, int char_index);
-  bool OnLeftMouseDown(const MouseInputEvent& event);
-  bool OnMiddleMouseDown(const MouseInputEvent& event);
-  bool OnRightMouseDown(const MouseInputEvent& event);
+  bool OnLeftMouseDown(const blink::WebMouseEvent& event);
+  bool OnMiddleMouseDown(const blink::WebMouseEvent& event);
+  bool OnRightMouseDown(const blink::WebMouseEvent& event);
 
   // Starts a progressive paint operation given a rectangle in screen
   // coordinates. Returns the index in progressive_rects_.
@@ -482,6 +491,7 @@ class PDFiumEngine : public PDFEngine,
 
   // Creates a FPDF_BITMAP from a rectangle in screen coordinates.
   ScopedFPDFBitmap CreateBitmap(const gfx::Rect& rect,
+                                bool has_alpha,
                                 SkBitmap& image_data) const;
 
   // Given a rectangle in screen coordinates, returns the coordinates in the
@@ -499,13 +509,13 @@ class PDFiumEngine : public PDFEngine,
   // Returns the currently visible rectangle in document coordinates.
   gfx::Rect GetVisibleRect() const;
 
-  // Given |rect| in document coordinates, returns the rectangle in screen
+  // Given `rect` in document coordinates, returns the rectangle in screen
   // coordinates. (i.e. 0,0 is top left corner of plugin area)
   gfx::Rect GetScreenRect(const gfx::Rect& rect) const;
 
-  // Given an image |buffer| with |stride|, highlights |rect|.
-  // |highlighted_rects| contains the already highlighted rectangles and will be
-  // updated to include |rect| if |rect| has not already been highlighted.
+  // Given an image `buffer` with `stride`, highlights `rect`.
+  // `highlighted_rects` contains the already highlighted rectangles and will be
+  // updated to include `rect` if `rect` has not already been highlighted.
   void Highlight(void* buffer,
                  int stride,
                  const gfx::Rect& rect,
@@ -515,7 +525,7 @@ class PDFiumEngine : public PDFEngine,
                  std::vector<gfx::Rect>& highlighted_rects) const;
 
   // Helper function to convert a device to page coordinates.  If the page is
-  // not yet loaded, |page_x| and |page_y| will be set to 0.
+  // not yet loaded, `page_x` and `page_y` will be set to 0.
   void DeviceToPage(int page_index,
                     const gfx::Point& device_point,
                     double* page_x,
@@ -547,14 +557,13 @@ class PDFiumEngine : public PDFEngine,
   // within form text fields.
   void SetSelecting(bool selecting);
 
-  // Sets whether or not focus is in form text field or form combobox text
-  // field.
-  void SetInFormTextArea(bool in_form_text_area);
+  // Sets the type of field that has focus.
+  void SetFieldFocus(PDFEngine::FocusFieldType type);
 
   // Sets whether or not left mouse button is currently being held down.
   void SetMouseLeftButtonDown(bool is_mouse_left_button_down);
 
-  // Given an annotation which is a form of |form_type| which is known to be a
+  // Given an annotation which is a form of `form_type` which is known to be a
   // form text area, check if it is an editable form text area.
   bool IsAnnotationAnEditableFormTextArea(FPDF_ANNOTATION annot,
                                           int form_type) const;
@@ -562,22 +571,23 @@ class PDFiumEngine : public PDFEngine,
   bool PageIndexInBounds(int index) const;
   bool IsPageCharacterIndexInBounds(const PageCharacterIndex& index) const;
 
-  void ScheduleTouchTimer(const TouchInputEvent& event);
+  void ScheduleTouchTimer(const blink::WebTouchEvent& event);
   void KillTouchTimer();
-  void HandleLongPress(const TouchInputEvent& event);
+  void HandleLongPress(const blink::WebTouchEvent& event);
 
-  // Returns a base::Value (representing a bookmark), which in turn contains
-  // child base::Value dictionaries (representing the child bookmarks).
-  // If nullptr is passed in as the bookmark then we traverse from the "root".
-  // Note that the "root" bookmark contains no useful information.
-  base::Value TraverseBookmarks(FPDF_BOOKMARK bookmark, unsigned int depth);
+  // Returns a dictionary representing a bookmark, which in turn contains child
+  // dictionaries representing the child bookmarks. If `bookmark` is null, then
+  // this method traverses from the root of the bookmarks tree. Note that the
+  // root bookmark contains no useful information.
+  base::Value::Dict TraverseBookmarks(FPDF_BOOKMARK bookmark,
+                                      unsigned int depth);
 
   void ScrollBasedOnScrollAlignment(
       const gfx::Rect& scroll_rect,
       const AccessibilityScrollAlignment& horizontal_scroll_alignment,
       const AccessibilityScrollAlignment& vertical_scroll_alignment);
 
-  // Scrolls top left of a rect in page |target_rect| to |global_point|.
+  // Scrolls top left of a rect in page `target_rect` to `global_point`.
   // Global point is point relative to viewport in screen.
   void ScrollToGlobalPoint(const gfx::Rect& target_rect,
                            const gfx::Point& global_point);
@@ -586,7 +596,7 @@ class PDFiumEngine : public PDFEngine,
   void EnteredEditMode();
 
   // Navigates to a link destination depending on the type of destination.
-  // Returns false if |area| is not a link.
+  // Returns false if `area` is not a link.
   bool NavigateToLinkDestination(PDFiumPage::Area area,
                                  const PDFiumPage::LinkTarget& target,
                                  WindowOpenDisposition disposition);
@@ -595,27 +605,27 @@ class PDFiumEngine : public PDFEngine,
   static FPDF_BOOL Pause_NeedToPauseNow(IFSDK_PAUSE* param);
 
   // Used for text selection. Given the start and end of selection, sets the
-  // text range in |selection_|.
+  // text range in `selection_`.
   void SetSelection(const PageCharacterIndex& selection_start_index,
                     const PageCharacterIndex& selection_end_index);
 
   // Scroll the current focused annotation into view if not already in view.
   void ScrollFocusedAnnotationIntoView();
 
-  // Given |annot|, scroll the |annot| into view if not already in view.
+  // Given `annot`, scroll the `annot` into view if not already in view.
   void ScrollAnnotationIntoView(FPDF_ANNOTATION annot, int page_index);
 
   void OnFocusedAnnotationUpdated(FPDF_ANNOTATION annot, int page_index);
 
   // Read the attachments' information inside the PDF document, and set
-  // |doc_attachment_info_list_|. To be called after the document is loaded.
+  // `doc_attachment_info_list_`. To be called after the document is loaded.
   void LoadDocumentAttachmentInfoList();
 
-  // Fetches and populates the fields of |doc_metadata_|. To be called after the
+  // Fetches and populates the fields of `doc_metadata_`. To be called after the
   // document is loaded.
   void LoadDocumentMetadata();
 
-  // Retrieves the value of |field| in the document information dictionary.
+  // Retrieves the value of `field` in the document information dictionary.
   // Trims whitespace characters from the retrieved value.
   std::string GetTrimmedMetadataByField(FPDF_BYTESTRING field) const;
 
@@ -624,21 +634,25 @@ class PDFiumEngine : public PDFEngine,
 
   // This is a layer between OnKeyDown() and actual tab handling to facilitate
   // testing.
-  bool HandleTabEvent(uint32_t modifiers);
+  bool HandleTabEvent(int modifiers);
 
   // Helper functions to handle tab events.
-  bool HandleTabEventWithModifiers(uint32_t modifiers);
-  bool HandleTabForward(uint32_t modifiers);
-  bool HandleTabBackward(uint32_t modifiers);
+  bool HandleTabEventWithModifiers(int modifiers);
+  bool HandleTabForward(int modifiers);
+  bool HandleTabBackward(int modifiers);
 
-  // Updates the currently focused object stored in |focus_item_type_|. Notifies
-  // |client_| about document focus change, if any.
-  void UpdateFocusItemType(FocusElementType focus_item_type);
+  // Updates the currently focused object stored in `focus_element_type_`.
+  // Notifies `client_` about document focus change, if any.
+  void UpdateFocusElementType(FocusElementType focus_element_type);
 
   void UpdateLinkUnderCursor(const std::string& target_url);
   void SetLinkUnderCursorForAnnotation(FPDF_ANNOTATION annot, int page_index);
 
-  PDFEngine::Client* const client_;
+  // Checks whether a given `page_index` exists in `pending_thumbnails_`. If so,
+  // requests the thumbnail for that page.
+  void MaybeRequestPendingThumbnail(int page_index);
+
+  const raw_ptr<PDFEngine::Client> client_;
 
   // The current document layout.
   DocumentLayout layout_;
@@ -651,13 +665,13 @@ class PDFiumEngine : public PDFEngine,
   // The offset of the page into the viewport.
   gfx::Vector2d page_offset_;
   // The plugin size in screen coordinates.
-  gfx::Size plugin_size_;
+  absl::optional<gfx::Size> plugin_size_;
   double current_zoom_ = 1.0;
+  // The caret position and bound in plugin viewport coordinates.
+  gfx::Rect caret_rect_;
 
   std::unique_ptr<DocumentLoader> doc_loader_;  // Main document's loader.
   bool doc_loader_set_for_testing_ = false;
-  std::string url_;
-  std::string headers_;
 
   // Set to true if the user is being prompted for their password. Will be set
   // to false after the user finishes getting their password.
@@ -669,6 +683,7 @@ class PDFiumEngine : public PDFEngine,
   PDFiumFormFiller form_filler_;
 
   std::unique_ptr<PDFiumDocument> document_;
+  bool document_pending_ = false;
   bool document_loaded_ = false;
 
   // The page(s) of the document.
@@ -698,13 +713,6 @@ class PDFiumEngine : public PDFEngine,
   // Text selection within form text fields and form combobox text fields.
   std::string selected_form_text_;
 
-  // True if focus is in form text field or form combobox text field.
-  bool in_form_text_area_ = false;
-
-  // True if the form text area currently in focus is not read only, and is a
-  // form text field or user-editable form combobox text field.
-  bool editable_form_text_area_ = false;
-
   // True if left mouse button is currently being held down.
   bool mouse_left_button_down_ = false;
 
@@ -726,9 +734,9 @@ class PDFiumEngine : public PDFEngine,
   int last_page_to_search_ = -1;
   int last_character_index_to_search_ = -1;  // -1 if search until end of page.
   // Which result the user has currently selected. (0-based)
-  base::Optional<size_t> current_find_index_;
+  absl::optional<size_t> current_find_index_;
   // Where to resume searching. (0-based)
-  base::Optional<size_t> resume_find_index_;
+  absl::optional<size_t> resume_find_index_;
 
   std::unique_ptr<PDFiumPermissions> permissions_;
 
@@ -743,11 +751,18 @@ class PDFiumEngine : public PDFEngine,
   // Set to true when updating plugin focus.
   bool updating_focus_ = false;
 
-  // The focus item type for the currently focused object.
-  FocusElementType focus_item_type_ = FocusElementType::kNone;
+  // True if `focus_field_type_` is currently set to `FocusFieldType::kText` and
+  // the focused form text area is not read-only.
+  bool editable_form_text_area_ = false;
 
-  // Stores the last focused object's focus item type before PDF loses focus.
-  FocusElementType last_focused_item_type_ = FocusElementType::kNone;
+  // The type of the currently focused form field.
+  FocusFieldType focus_field_type_ = FocusFieldType::kNoFocus;
+
+  // The focus element type for the currently focused object.
+  FocusElementType focus_element_type_ = FocusElementType::kNone;
+
+  // Stores the last focused object's focus element type before PDF loses focus.
+  FocusElementType last_focused_element_type_ = FocusElementType::kNone;
 
   // Stores the last focused annotation's index before PDF loses focus.
   int last_focused_annot_index_ = -1;
@@ -762,7 +777,7 @@ class PDFiumEngine : public PDFEngine,
 
   // Holds the page index requested by PDFium while the scroll operation
   // is being handled (asynchronously).
-  base::Optional<int> in_flight_visible_page_;
+  absl::optional<int> in_flight_visible_page_;
 
   // Set to true after FORM_DoDocumentJSAction/FORM_DoDocumentOpenAction have
   // been called. Only after that can we call FORM_DoPageAAction.
@@ -777,9 +792,6 @@ class PDFiumEngine : public PDFEngine,
 
   // Whether to render PDF annotations.
   bool render_annots_ = true;
-
-  // The link currently under the cursor.
-  std::string link_under_cursor_;
 
   // Pending progressive paints.
   class ProgressivePaint {
@@ -818,6 +830,20 @@ class PDFiumEngine : public PDFEngine,
   // Shadow matrix for generating the page shadow bitmap.
   std::unique_ptr<draw_utils::ShadowMatrix> page_shadow_;
 
+  // Pending thumbnail requests.
+  struct PendingThumbnail {
+    PendingThumbnail();
+    PendingThumbnail(PendingThumbnail&& that);
+    PendingThumbnail& operator=(PendingThumbnail&& that);
+    ~PendingThumbnail();
+
+    float device_pixel_ratio = 1.0f;
+    SendThumbnailCallback send_callback;
+  };
+
+  // Map of page indices to pending thumbnail requests.
+  base::flat_map<int, PendingThumbnail> pending_thumbnails_;
+
   // A list of information of document attachments.
   std::vector<DocumentAttachmentInfo> doc_attachment_info_list_;
 
@@ -847,7 +873,7 @@ class PDFiumEngine : public PDFEngine,
 
   // Weak pointers from this factory are used to bind the ContinueFind()
   // function. This allows those weak pointers to be invalidated during
-  // StopFind(), and keeps the invalidation separated from |weak_factory_|.
+  // StopFind(), and keeps the invalidation separated from `weak_factory_`.
   base::WeakPtrFactory<PDFiumEngine> find_weak_factory_{this};
 };
 

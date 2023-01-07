@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -108,9 +108,9 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
   // views::View:
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    layer()->SetColor(DeprecatedGetShieldLayerColor(
-        AshColorProvider::ShieldLayerType::kShield40,
-        kPowerButtonMenuFullscreenShieldColor));
+    layer()->SetColor(
+        DeprecatedGetBaseLayerColor(AshColorProvider::BaseLayerType::kOpaque,
+                                    kPowerButtonMenuFullscreenShieldColor));
   }
 
   // A callback for when the animation that shows the power menu has finished.
@@ -118,6 +118,7 @@ class PowerButtonMenuScreenView::PowerButtonMenuBackgroundView
 };
 
 PowerButtonMenuScreenView::PowerButtonMenuScreenView(
+    ShutdownReason shutdown_reason,
     PowerButtonPosition power_button_position,
     double power_button_offset_percentage,
     base::RepeatingClosure show_animation_done)
@@ -126,17 +127,14 @@ PowerButtonMenuScreenView::PowerButtonMenuScreenView(
   power_button_screen_background_shield_ =
       new PowerButtonMenuBackgroundView(show_animation_done);
   AddChildView(power_button_screen_background_shield_);
-  power_button_menu_view_ = new PowerButtonMenuView(power_button_position_);
+  power_button_menu_view_ =
+      new PowerButtonMenuView(shutdown_reason, power_button_position_);
   AddChildView(power_button_menu_view_);
-
-  display::Screen::GetScreen()->AddObserver(this);
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }
 
-PowerButtonMenuScreenView::~PowerButtonMenuScreenView() {
-  display::Screen::GetScreen()->RemoveObserver(this);
-}
+PowerButtonMenuScreenView::~PowerButtonMenuScreenView() = default;
 
 void PowerButtonMenuScreenView::ScheduleShowHideAnimation(bool show) {
   power_button_screen_background_shield_->ScheduleShowHideAnimation(show);
@@ -236,7 +234,7 @@ void PowerButtonMenuScreenView::UpdateMenuBoundsOrigins() {
 
   // The screen orientation when the power button is at the
   // left/right/top/bottom of the screen after rotation.
-  OrientationLockType left_screen_orientation, right_screen_orientation,
+  chromeos::OrientationType left_screen_orientation, right_screen_orientation,
       top_screen_orientation, bottom_screen_orientation;
   const gfx::Size landscape_size = GetPrimaryDisplayLandscapeSize();
   int display_width = landscape_size.width();
@@ -270,28 +268,29 @@ void PowerButtonMenuScreenView::UpdateMenuBoundsOrigins() {
 
   switch (power_button_position_) {
     case PowerButtonPosition::LEFT:
-      left_screen_orientation = OrientationLockType::kLandscapePrimary;
-      right_screen_orientation = OrientationLockType::kLandscapeSecondary;
-      top_screen_orientation = OrientationLockType::kPortraitPrimary;
-      bottom_screen_orientation = OrientationLockType::kPortraitSecondary;
+      left_screen_orientation = chromeos::OrientationType::kLandscapePrimary;
+      right_screen_orientation = chromeos::OrientationType::kLandscapeSecondary;
+      top_screen_orientation = chromeos::OrientationType::kPortraitPrimary;
+      bottom_screen_orientation = chromeos::OrientationType::kPortraitSecondary;
       break;
     case PowerButtonPosition::RIGHT:
-      left_screen_orientation = OrientationLockType::kLandscapeSecondary;
-      right_screen_orientation = OrientationLockType::kLandscapePrimary;
-      top_screen_orientation = OrientationLockType::kPortraitSecondary;
-      bottom_screen_orientation = OrientationLockType::kPortraitPrimary;
+      left_screen_orientation = chromeos::OrientationType::kLandscapeSecondary;
+      right_screen_orientation = chromeos::OrientationType::kLandscapePrimary;
+      top_screen_orientation = chromeos::OrientationType::kPortraitSecondary;
+      bottom_screen_orientation = chromeos::OrientationType::kPortraitPrimary;
       break;
     case PowerButtonPosition::TOP:
-      left_screen_orientation = OrientationLockType::kPortraitSecondary;
-      right_screen_orientation = OrientationLockType::kPortraitPrimary;
-      top_screen_orientation = OrientationLockType::kLandscapePrimary;
-      bottom_screen_orientation = OrientationLockType::kLandscapeSecondary;
+      left_screen_orientation = chromeos::OrientationType::kPortraitSecondary;
+      right_screen_orientation = chromeos::OrientationType::kPortraitPrimary;
+      top_screen_orientation = chromeos::OrientationType::kLandscapePrimary;
+      bottom_screen_orientation =
+          chromeos::OrientationType::kLandscapeSecondary;
       break;
     case PowerButtonPosition::BOTTOM:
-      left_screen_orientation = OrientationLockType::kPortraitPrimary;
-      right_screen_orientation = OrientationLockType::kPortraitSecondary;
-      top_screen_orientation = OrientationLockType::kLandscapeSecondary;
-      bottom_screen_orientation = OrientationLockType::kLandscapePrimary;
+      left_screen_orientation = chromeos::OrientationType::kPortraitPrimary;
+      right_screen_orientation = chromeos::OrientationType::kPortraitSecondary;
+      top_screen_orientation = chromeos::OrientationType::kLandscapeSecondary;
+      bottom_screen_orientation = chromeos::OrientationType::kLandscapePrimary;
       break;
     default:
       NOTREACHED();

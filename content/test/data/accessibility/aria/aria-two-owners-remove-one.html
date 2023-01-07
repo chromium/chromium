@@ -1,0 +1,45 @@
+<!--
+@WAIT-FOR:done
+-->
+
+<div id="root">
+  <div id="ownerParent"></div>
+  <div id="ownedLayer">
+    <button id="btn1" role="button" aria-label="1" aria-disabled="false">1</button>
+  </div>
+</div>
+
+
+<q></q>
+<style>
+.no_quote q::before { content: no-close-quote; }
+</style>
+<script>
+  function addOwnersStep() {
+    let ownerElement = document.createElement('article');
+    ownerElement.setAttribute("id", "owner1");
+    ownerElement.setAttribute("aria-label", "owner1");
+    ownerElement.setAttribute("role", "region");
+    ownerElement.setAttribute("aria-owns", "ownedLayer");
+    ownerParent.appendChild(ownerElement);
+
+    let ownerElement2 = document.createElement('article');
+    ownerElement2.setAttribute("id", "owner2");
+    ownerElement2.setAttribute("aria-label", "owner2");
+    ownerElement2.setAttribute("role", "region");
+    ownerElement2.setAttribute("aria-owns", "ownedLayer");
+    ownerParent.appendChild(ownerElement2);
+
+    setTimeout(removeOwnerStep, 100);
+  }
+  function removeOwnerStep() {
+    let owner = document.getElementById("owner1");
+    owner.remove();
+    setTimeout(() => {
+      document.title = 'done';
+    }, 100)
+  }
+  window.addEventListener("load", () => {
+    setTimeout(addOwnersStep, 100);
+  });
+</script>

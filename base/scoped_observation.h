@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,40 +7,56 @@
 
 #include <stddef.h>
 
+#include "base/check.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 
-// ScopedObservation is used to keep track of singular observation, e.g.
-// where an observer observes a single source only.
+// `ScopedObservation` is used to keep track of a singular observation, i.e.,
+// where an observer observes a single source only. Use
+// `base::ScopedMultiSourceObservation` for objects that observe multiple
+// sources.
 //
-// Use base::ScopedMultiSourceObservation for objects that observe multiple
-// sources. This class and base::ScopedMultiSourceObservation replace
-// ScopedObserver.
+// When a `ScopedObservation` is destroyed, it unregisters the observer from the
+// observable if it was currently observing something. Otherwise it does
+// nothing.
 //
-// When ScopedObservation is destroyed, it removes the registered observation,
-// if any. Basic example (as a member variable):
+// Using a `ScopedObservation` instead of manually observing and unobserving has
+// the following benefits:
+// - The observer cannot accidentally forget to stop observing when it is
+//   destroyed.
+// - By calling `Reset`, an ongoing observation can be stopped before the
+//   `ScopedObservation` is destroyed. If nothing was currently observed, then
+//   calling `Reset` does nothing. This can be useful for when the observable is
+//   destroyed before the observer is destroyed, because it prevents the
+//   observer from accidentally unregistering itself from the destroyed
+//   observable a second time when it itself is destroyed. Without
+//   `ScopedObservation`, one might need to keep track of whether one has
+//   already stopped observing in a separate boolean.
 //
-//   class MyFooObserver : public FooObserver {
-//     ...
+// Basic example (as a member variable):
+//
+//   class MyObserver : public Observable::Observer {
+//    public:
+//     MyObserver(Observable* observable) {
+//       observation_.Observe(observable);
+//     }
+//     // Note how there is no need to stop observing in the destructor.
 //    private:
-//     ScopedObservation<Foo, FooObserver> foo_observation_{this};
+//     ScopedObservation<Observable, Observable::Observer> observation_{this};
 //   };
-//
-//   MyFooObserver::MyFooObserver(Foo* foo) {
-//     foo_observation_.Observe(foo);
-//   }
 //
 // For cases with methods not named AddObserver/RemoveObserver:
 //
-//   class MyFooStateObserver : public FooStateObserver {
+//   class MyStateObserver : public Observable::StateObserver {
 //     ...
 //    private:
-//     ScopedObservation<Foo,
-//                       FooStateObserver,
-//                       &Foo::AddStateObserver,
-//                       &Foo::RemoveStateObserver>
-//       foo_observation_{this};
+//     ScopedObservation<Observable,
+//                       Observable::StateObserver,
+//                       &Observable::AddStateObserver,
+//                       &Observable::RemoveStateObserver>
+//       observation_{this};
 //   };
 template <class Source,
           class Observer,
@@ -60,14 +76,14 @@ class ScopedObservation {
     //     has been fully retired.
     CHECK_EQ(source_, nullptr);
     source_ = source;
-    (source_->*AddObsFn)(observer_);
+    (source_.get()->*AddObsFn)(observer_);
   }
 
   // Remove the object passed to the constructor as an observer from |source_|
   // if currently observing. Does nothing otherwise.
   void Reset() {
     if (source_) {
-      (source_->*RemoveObsFn)(observer_);
+      (source_.get()->*RemoveObsFn)(observer_);
       source_ = nullptr;
     }
   }
@@ -82,10 +98,10 @@ class ScopedObservation {
   }
 
  private:
-  Observer* const observer_;
+  const raw_ptr<Observer> observer_;
 
   // The observed source, if any.
-  Source* source_ = nullptr;
+  raw_ptr<Source> source_ = nullptr;
 };
 
 }  // namespace base

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -31,6 +30,9 @@ class COMPONENT_EXPORT(DBUS_POWER) NativeTimer {
  public:
   explicit NativeTimer(const std::string& tag);
 
+  NativeTimer(const NativeTimer&) = delete;
+  NativeTimer& operator=(const NativeTimer&) = delete;
+
   ~NativeTimer();
 
   // Starts a timer to expire at |absolute_expiration_time|. Runs
@@ -43,12 +45,15 @@ class COMPONENT_EXPORT(DBUS_POWER) NativeTimer {
              base::OnceClosure timer_expiration_callback,
              OnStartNativeTimerCallback result_callback);
 
+  // Simulates timer creation failure in tests
+  static void SimulateTimerCreationFailureForTesting();
+
  private:
   struct StartTimerParams;
 
   // D-Bus callback for a create timer D-Bus call.
   void OnCreateTimer(base::ScopedFD expiration_fd,
-                     base::Optional<std::vector<int32_t>> timer_ids);
+                     absl::optional<std::vector<int32_t>> timer_ids);
 
   // D-Bus callback for a start timer D-Bus call.
   void OnStartTimer(base::OnceClosure timer_expiration_callback,
@@ -90,11 +95,12 @@ class COMPONENT_EXPORT(DBUS_POWER) NativeTimer {
   std::unique_ptr<base::FileDescriptorWatcher::Controller>
       expiration_fd_watcher_;
 
+  // Indicating if the timer creation should fail. Only set by tests.
+  static bool simulate_timer_creation_failure_for_testing_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<NativeTimer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeTimer);
 };
 
 }  // namespace chromeos

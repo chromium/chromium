@@ -1,0 +1,7 @@
+file://chromeos/dbus/OWNERS
+
+per-file org.chromium.*.conf=set noparent
+per-file org.chromium.*.conf=file://chromeos/SECURITY_OWNERS
+
+per-file *cryptohome_key_delegate*=emaxx@chromium.org
+per-file *encrypted_reporting*=file://components/reporting/OWNERS

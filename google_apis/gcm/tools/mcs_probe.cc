@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -10,12 +10,14 @@
 #include <cstddef>
 #include <cstdio>
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/at_exit.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
@@ -30,6 +32,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "google_apis/gcm/base/fake_encryptor.h"
@@ -60,8 +63,9 @@
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "url/scheme_host_port.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -168,11 +172,12 @@ class MCSProbeAuthPreferences : public net::HttpAuthPreferences {
 
   bool NegotiateDisableCnameLookup() const override { return false; }
   bool NegotiateEnablePort() const override { return false; }
-  bool CanUseDefaultCredentials(const GURL& auth_origin) const override {
+  bool CanUseDefaultCredentials(
+      const url::SchemeHostPort& auth_scheme_host_port) const override {
     return false;
   }
   net::HttpAuth::DelegationType GetDelegationType(
-      const GURL& auth_origin) const override {
+      const url::SchemeHostPort& auth_scheme_host_port) const override {
     return net::HttpAuth::DelegationType::kNone;
   }
 };
@@ -349,9 +354,10 @@ void MCSProbe::InitializeNetworkState() {
   builder.set_net_log(net_log_);
   builder.set_host_resolver(
       net::HostResolver::CreateStandaloneResolver(net_log_));
-  builder.SetHttpAuthHandlerFactory(net::HttpAuthHandlerRegistryFactory::Create(
-      &http_auth_preferences_,
-      std::vector<std::string>{net::kBasicAuthScheme}));
+  http_auth_preferences_.set_allowed_schemes(
+      std::set<std::string>{net::kBasicAuthScheme});
+  builder.SetHttpAuthHandlerFactory(
+      net::HttpAuthHandlerRegistryFactory::Create(&http_auth_preferences_));
   builder.set_proxy_resolution_service(
       net::ConfiguredProxyResolutionService::CreateDirect());
 

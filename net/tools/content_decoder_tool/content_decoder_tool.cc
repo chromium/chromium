@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "net/base/completion_once_callback.h"
@@ -31,6 +32,10 @@ class StdinSourceStream : public SourceStream {
  public:
   explicit StdinSourceStream(std::istream* input_stream)
       : SourceStream(SourceStream::TYPE_NONE), input_stream_(input_stream) {}
+
+  StdinSourceStream(const StdinSourceStream&) = delete;
+  StdinSourceStream& operator=(const StdinSourceStream&) = delete;
+
   ~StdinSourceStream() override = default;
 
   // SourceStream implementation.
@@ -53,8 +58,6 @@ class StdinSourceStream : public SourceStream {
 
  private:
   std::istream* input_stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(StdinSourceStream);
 };
 
 }  // namespace
@@ -65,18 +68,15 @@ bool ContentDecoderToolProcessInput(std::vector<std::string> content_encodings,
                                     std::ostream* output_stream) {
   std::unique_ptr<SourceStream> upstream(
       std::make_unique<StdinSourceStream>(input_stream));
-  for (std::vector<std::string>::const_reverse_iterator riter =
-           content_encodings.rbegin();
-       riter != content_encodings.rend(); ++riter) {
-    std::string content_encoding = *riter;
-    std::unique_ptr<SourceStream> downstream = nullptr;
-    if (base::LowerCaseEqualsASCII(content_encoding, kBrotli)) {
+  for (const auto& content_encoding : base::Reversed(content_encodings)) {
+    std::unique_ptr<SourceStream> downstream;
+    if (base::EqualsCaseInsensitiveASCII(content_encoding, kBrotli)) {
       downstream = CreateBrotliSourceStream(std::move(upstream));
-    } else if (base::LowerCaseEqualsASCII(content_encoding, kDeflate)) {
+    } else if (base::EqualsCaseInsensitiveASCII(content_encoding, kDeflate)) {
       downstream = GzipSourceStream::Create(std::move(upstream),
                                             SourceStream::TYPE_DEFLATE);
-    } else if (base::LowerCaseEqualsASCII(content_encoding, kGZip) ||
-               base::LowerCaseEqualsASCII(content_encoding, kXGZip)) {
+    } else if (base::EqualsCaseInsensitiveASCII(content_encoding, kGZip) ||
+               base::EqualsCaseInsensitiveASCII(content_encoding, kXGZip)) {
       downstream = GzipSourceStream::Create(std::move(upstream),
                                             SourceStream::TYPE_GZIP);
     } else {

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -15,13 +15,13 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "media/base/media_export.h"
 #include "media/base/ranges.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
+#include "media/base/video_types.h"
 #include "media/video/h264_bit_reader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Rect;
@@ -52,9 +52,9 @@ struct MEDIA_EXPORT H264NALU {
     kEOStream = 11,
     kFiller = 12,
     kSPSExt = 13,
-    kReserved14 = 14,
-    kReserved15 = 15,
-    kReserved16 = 16,
+    kPrefix = 14,
+    kSubsetSPS = 15,
+    kDPS = 16,
     kReserved17 = 17,
     kReserved18 = 18,
     kCodedSliceAux = 19,
@@ -214,11 +214,12 @@ struct MEDIA_EXPORT H264SPS {
                                              bool* constraint_set3_flag);
 
   // Helpers to compute frequently-used values. These methods return
-  // base::nullopt if they encounter integer overflow. They do not verify that
+  // absl::nullopt if they encounter integer overflow. They do not verify that
   // the results are in-spec for the given profile or level.
-  base::Optional<gfx::Size> GetCodedSize() const;
-  base::Optional<gfx::Rect> GetVisibleRect() const;
+  absl::optional<gfx::Size> GetCodedSize() const;
+  absl::optional<gfx::Rect> GetVisibleRect() const;
   VideoColorSpace GetColorSpace() const;
+  VideoChromaSampling GetChromaSampling() const;
 
   // Helper to compute indicated level from parsed SPS data. The value of
   // indicated level would be included in H264LevelIDC enum representing the
@@ -437,6 +438,10 @@ class MEDIA_EXPORT H264Parser {
                          std::vector<H264NALU>* nalus);
 
   H264Parser();
+
+  H264Parser(const H264Parser&) = delete;
+  H264Parser& operator=(const H264Parser&) = delete;
+
   ~H264Parser();
 
   void Reset();
@@ -565,8 +570,6 @@ class MEDIA_EXPORT H264Parser {
   // This contains the range of the previous NALU found in
   // AdvanceToNextNalu(). Holds exactly one range.
   Ranges<const uint8_t*> previous_nalu_range_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264Parser);
 };
 
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 namespace cc {
 
 bool CalculateClearForOpaqueRasterRects(const gfx::Vector2dF& translation,
-                                        const gfx::SizeF& scale,
+                                        const gfx::Vector2dF& scale,
                                         const gfx::Size& content_size,
                                         const gfx::Rect& canvas_bitmap_rect,
                                         const gfx::Rect& canvas_playback_rect,
@@ -30,8 +30,8 @@ bool CalculateClearForOpaqueRasterRects(const gfx::Vector2dF& translation,
   bool top_opaque = translation.y() == 0.0f;
   // If there is scale, the right and/or bottom texels are not guaranteed to be
   // fully opaque.
-  bool right_opaque = scale.width() == 1.0f;
-  bool bottom_opaque = scale.height() == 1.0f;
+  bool right_opaque = scale.x() == 1.0f;
+  bool bottom_opaque = scale.y() == 1.0f;
   if (left_opaque && top_opaque && right_opaque && bottom_opaque)
     return false;
 
@@ -42,9 +42,11 @@ bool CalculateClearForOpaqueRasterRects(const gfx::Vector2dF& translation,
   // If not fully covered, one texel inside the content rect may not be opaque
   // (because of blending during raster) and, for scale, one texel outside
   // (because of bilinear filtering during draw) may not be opaque.
-  outer_rect.Inset(0, 0, right_opaque ? 0 : -1, bottom_opaque ? 0 : -1);
-  inner_rect.Inset(left_opaque ? 0 : 1, top_opaque ? 0 : 1,
-                   right_opaque ? 0 : 1, bottom_opaque ? 0 : 1);
+  outer_rect.Inset(
+      gfx::Insets::TLBR(0, 0, bottom_opaque ? 0 : -1, right_opaque ? 0 : -1));
+  inner_rect.Inset(gfx::Insets::TLBR(top_opaque ? 0 : 1, left_opaque ? 0 : 1,
+                                     bottom_opaque ? 0 : 1,
+                                     right_opaque ? 0 : 1));
 
   // If the playback rect is touching either edge of the content rect, extend it
   // by one to include the extra texel outside that was added to outer_rect
@@ -56,17 +58,19 @@ bool CalculateClearForOpaqueRasterRects(const gfx::Vector2dF& translation,
   bool touches_bottom_edge =
       !bottom_opaque && content_size.height() == canvas_playback_rect.bottom();
   gfx::Rect adjusted_playback_rect = canvas_playback_rect;
-  adjusted_playback_rect.Inset(
-      touches_left_edge ? -1 : 0, touches_top_edge ? -1 : 0,
-      touches_right_edge ? -1 : 0, touches_bottom_edge ? -1 : 0);
+  adjusted_playback_rect.Inset(gfx::Insets::TLBR(
+      touches_top_edge ? -1 : 0, touches_left_edge ? -1 : 0,
+      touches_bottom_edge ? -1 : 0, touches_right_edge ? -1 : 0));
 
   // No need to clear if the playback area is fully covered by the opaque
   // content.
   if (inner_rect.Contains(adjusted_playback_rect))
     return false;
 
+  if (!outer_rect.Intersects(adjusted_playback_rect))
+    return false;
+
   outer_rect.Intersect(adjusted_playback_rect);
-  DCHECK(!outer_rect.IsEmpty());
   inner_rect.Intersect(adjusted_playback_rect);
   // inner_rect can be empty if the content is very small.
 

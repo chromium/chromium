@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,20 @@
 
 #include <string>
 
+#include "base/values.h"
+
 class Profile;
-namespace base {
-class DictionaryValue;
-}
 
 namespace extension_settings_helper {
 
 // Calls Set() with |settings| for |profile| and the extension with ID |id|.
-void SetExtensionSettings(
-    Profile* profile,
-    const std::string& id,
-    const base::DictionaryValue& settings);
+void SetExtensionSettings(Profile* profile,
+                          const std::string& id,
+                          const base::Value::Dict& settings);
 
 // Calls Set() with |settings| for all profiles the extension with ID |id|.
-void SetExtensionSettingsForAllProfiles(
-    const std::string& id, const base::DictionaryValue& settings);
+void SetExtensionSettingsForAllProfiles(const std::string& id,
+                                        const base::Value::Dict& settings);
 
 // Returns whether the extension settings are the same across all profiles.
 bool AllExtensionSettingsSameAsVerifier();

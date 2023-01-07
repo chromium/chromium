@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,10 @@
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 // Not defined on AIX by default.
-#if defined(OS_AIX)
+#if BUILDFLAG(IS_AIX)
 #define NAME_MAX 255
 #endif
 
@@ -211,10 +212,10 @@ TimeDelta GetUserCpuTimeSinceBoot() {
   if (!StringToUint64(cpu[0], &user) || !StringToUint64(cpu[1], &nice))
     return TimeDelta();
 
-  return ClockTicksToTimeDelta(user + nice);
+  return ClockTicksToTimeDelta(checked_cast<int64_t>(user + nice));
 }
 
-TimeDelta ClockTicksToTimeDelta(int clock_ticks) {
+TimeDelta ClockTicksToTimeDelta(int64_t clock_ticks) {
   // This queries the /proc-specific scaling factor which is
   // conceptually the system hertz.  To dump this value on another
   // system, try
@@ -223,10 +224,9 @@ TimeDelta ClockTicksToTimeDelta(int clock_ticks) {
   //   0000040          17         100           3   134512692
   // which means the answer is 100.
   // It may be the case that this value is always 100.
-  static const int kHertz = sysconf(_SC_CLK_TCK);
+  static const long kHertz = sysconf(_SC_CLK_TCK);
 
-  return TimeDelta::FromMicroseconds(
-      Time::kMicrosecondsPerSecond * clock_ticks / kHertz);
+  return Microseconds(Time::kMicrosecondsPerSecond * clock_ticks / kHertz);
 }
 
 }  // namespace internal

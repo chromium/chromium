@@ -1,18 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/main/browser_util.h"
 
-#include <memory>
+#import <memory>
 
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
-#include "ios/chrome/browser/main/test_browser.h"
+#import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -56,24 +55,21 @@ class BrowserUtilTest : public PlatformTest {
     AppendNewWebState(incognito_browser_.get());
   }
 
-  // Appends a new web state in the web state list of |browser|.
+  // Appends a new web state in the web state list of `browser`.
   web::FakeWebState* AppendNewWebState(Browser* browser) {
     auto fake_web_state = std::make_unique<web::FakeWebState>();
     web::FakeWebState* inserted_web_state = fake_web_state.get();
-    TabIdTabHelper::CreateForWebState(inserted_web_state);
-    NSString* tab_id =
-        TabIdTabHelper::FromWebState(inserted_web_state)->tab_id();
-    SnapshotTabHelper::CreateForWebState(inserted_web_state, tab_id);
+    SnapshotTabHelper::CreateForWebState(inserted_web_state);
     browser->GetWebStateList()->InsertWebState(
         WebStateList::kInvalidIndex, std::move(fake_web_state),
         WebStateList::INSERT_ACTIVATE, WebStateOpener());
     return inserted_web_state;
   }
 
-  // Returns the tab ID for the web state at |index| in |browser|.
+  // Returns the tab ID for the web state at `index` in `browser`.
   NSString* GetTabIDForWebStateAt(int index, Browser* browser) {
     web::WebState* web_state = browser->GetWebStateList()->GetWebStateAt(index);
-    return TabIdTabHelper::FromWebState(web_state)->tab_id();
+    return web_state->GetStableIdentifier();
   }
 
   web::WebTaskEnvironment task_environment_;

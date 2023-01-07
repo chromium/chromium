@@ -1,29 +1,25 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/app/application_delegate/mock_metrickit_metric_payload.h"
+#import "ios/chrome/app/application_delegate/mock_metrickit_metric_payload.h"
 
 #import <Foundation/Foundation.h>
 #import <MetricKit/MetricKit.h>
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/version_info/version_info.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/version_info/version_info.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "third_party/ocmock/gtest_support.h"
+#import "third_party/ocmock/gtest_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-id MockMXMetadata() API_AVAILABLE(ios(13.0)) {
-  // TODO(crbug.com/1140474): See related bug for why |bundleVersion| comes from
-  // mainBundle instead of from version_info::GetVersionNumber(). Remove once
-  // iOS 14.2 reaches mass adoption.
-  NSString* bundleVersion =
-      [[NSBundle mainBundle] infoDictionary][(NSString*)kCFBundleVersionKey];
+id MockMXMetadata() {
   id metadata = OCMClassMock([MXMetaData class]);
-  OCMStub([metadata applicationBuildVersion]).andReturn(bundleVersion);
+  OCMStub([metadata applicationBuildVersion])
+      .andReturn(base::SysUTF8ToNSString(version_info::GetVersionNumber()));
   return metadata;
 }
 
@@ -36,7 +32,7 @@ id MockNSMeasurement(double value) {
   return mock_measurement;
 }
 
-id MockMXMemoryMetric(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
+id MockMXMemoryMetric(NSDictionary* dictionary) {
   id memory_metric = OCMClassMock([MXMemoryMetric class]);
   NSNumber* suspended_memory =
       [dictionary objectForKey:@"averageSuspendedMemory"];
@@ -61,7 +57,7 @@ id MockMXMemoryMetric(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
   return memory_metric;
 }
 
-id MockMXAppRunTimeMetric(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
+id MockMXAppRunTimeMetric(NSDictionary* dictionary) {
   id app_run_time = OCMClassMock([MXAppRunTimeMetric class]);
   NSNumber* cumulative_foreground =
       [dictionary objectForKey:@"cumulativeForegroundTime"];
@@ -85,8 +81,7 @@ id MockMXAppRunTimeMetric(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
   return app_run_time;
 }
 
-id MockMXHistogram(NSDictionary* dictionary, int delta)
-    API_AVAILABLE(ios(13.0)) {
+id MockMXHistogram(NSDictionary* dictionary, int delta) {
   id histogram = OCMClassMock([MXHistogram class]);
   OCMStub([histogram totalBucketCount]).andReturn(dictionary.count);
   NSMutableArray* buckets = [[NSMutableArray alloc] init];
@@ -104,7 +99,7 @@ id MockMXHistogram(NSDictionary* dictionary, int delta)
   return histogram;
 }
 
-id MockMXAppLaunchMetric(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
+id MockMXAppLaunchMetric(NSDictionary* dictionary) {
   id app_launch = OCMClassMock([MXAppLaunchMetric class]);
   NSDictionary* first_draw =
       [dictionary objectForKey:@"histogrammedTimeToFirstDrawKey"];
@@ -125,8 +120,7 @@ id MockMXAppLaunchMetric(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
   return app_launch;
 }
 
-id MockMXAppResponsivenessMetric(NSDictionary* dictionary)
-    API_AVAILABLE(ios(13.0)) {
+id MockMXAppResponsivenessMetric(NSDictionary* dictionary) {
   id responsiveness = OCMClassMock([MXAppResponsivenessMetric class]);
   NSDictionary* hang_time =
       [dictionary objectForKey:@"histogrammedAppHangTime"];
@@ -138,7 +132,6 @@ id MockMXAppResponsivenessMetric(NSDictionary* dictionary)
   return responsiveness;
 }
 
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
 id MockMXAppExitMetric(NSDictionary* dictionary) API_AVAILABLE(ios(14.0)) {
   id app_exit_metric = OCMClassMock([MXAppExitMetric class]);
   id foreground = OCMClassMock([MXForegroundExitData class]);
@@ -200,9 +193,8 @@ id MockMXAppExitMetric(NSDictionary* dictionary) API_AVAILABLE(ios(14.0)) {
 
   return app_exit_metric;
 }
-#endif
 
-id MockMetricPayload(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
+id MockMetricPayload(NSDictionary* dictionary) {
   id mock_report = OCMClassMock([MXMetricPayload class]);
   NSDictionary* application_time_metrics_dict =
       [dictionary objectForKey:@"applicationTimeMetrics"];
@@ -232,16 +224,12 @@ id MockMetricPayload(NSDictionary* dictionary) API_AVAILABLE(ios(13.0)) {
     OCMStub([mock_report applicationResponsivenessMetrics])
         .andReturn(responsiveness_metrics);
   }
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  if (@available(iOS 14, *)) {
-    NSDictionary* exit_metrics_dict =
-        [dictionary objectForKey:@"applicationExitMetrics"];
-    if (exit_metrics_dict) {
-      id exit_metrics = MockMXAppExitMetric(exit_metrics_dict);
-      OCMStub([mock_report applicationExitMetrics]).andReturn(exit_metrics);
-    }
+  NSDictionary* exit_metrics_dict =
+      [dictionary objectForKey:@"applicationExitMetrics"];
+  if (exit_metrics_dict) {
+    id exit_metrics = MockMXAppExitMetric(exit_metrics_dict);
+    OCMStub([mock_report applicationExitMetrics]).andReturn(exit_metrics);
   }
-#endif
 
   OCMStub([mock_report metaData]).andReturn(MockMXMetadata());
   return mock_report;

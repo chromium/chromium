@@ -1,0 +1,4 @@
+Verify that Trusted Types policy violation issue is generated.
+
+Issue id on issue matches id on exception: true
+

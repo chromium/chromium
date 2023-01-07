@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,9 @@
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
+#include "ash/controls/contextual_tooltip.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/shelf/contextual_tooltip.h"
 #include "ash/shelf/hotseat_transition_animator.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
@@ -20,7 +20,6 @@
 #include "ash/shelf/shelf_layout_manager_observer.h"
 #include "ash/shelf/shelf_observer.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -30,7 +29,6 @@ class DragHandle;
 class FocusCycler;
 class HotseatWidget;
 class LoginShelfView;
-class LoginShelfGestureController;
 class Shelf;
 class ShelfLayoutManager;
 class ShelfNavigationWidget;
@@ -47,6 +45,10 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
                                public views::Widget {
  public:
   explicit ShelfWidget(Shelf* shelf);
+
+  ShelfWidget(const ShelfWidget&) = delete;
+  ShelfWidget& operator=(const ShelfWidget&) = delete;
+
   ~ShelfWidget() override;
 
   // Sets the initial session state and show the UI. Not part of the constructor
@@ -58,12 +60,7 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   // Clean up prior to deletion.
   void Shutdown();
 
-  void OnTabletModeChanged();
-
   ShelfBackgroundType GetBackgroundType() const;
-
-  // Gets the alpha value of |background_type|.
-  int GetBackgroundAlphaValue(ShelfBackgroundType background_type) const;
 
   const Shelf* shelf() const { return shelf_; }
   void RegisterHotseatWidget(HotseatWidget* hotseat_widget);
@@ -80,7 +77,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   }
   void PostCreateShelf();
 
-  bool IsShowingAppList() const;
   bool IsShowingMenu() const;
 
   // Sets the focus cycler. Also adds the shelf to the cycle.
@@ -99,7 +95,9 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   ApplicationDragAndDropHost* GetDragAndDropHostForAppList();
 
   // Fetch the LoginShelfView instance.
-  LoginShelfView* login_shelf_view() { return login_shelf_view_; }
+  // TODO(https://crbug.com/1343114): remove this method after the login shelf
+  // is moved to its own widget.
+  LoginShelfView* GetLoginShelfView();
 
   void set_default_last_focusable_child(bool default_last_focusable_child);
 
@@ -149,15 +147,6 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   base::ScopedClosureRunner ForceShowHotseatInTabletMode();
   bool IsHotseatForcedShowInTabletMode() const;
 
-  // Creates a login shelf gesture controller (which enabled login shelf gesture
-  // detection). See ash/public/cpp/login_screen.h for more info.
-  bool SetLoginShelfSwipeHandler(const std::u16string& nudge_text,
-                                 const base::RepeatingClosure& fling_callback,
-                                 base::OnceClosure exit_callback);
-
-  // Resets a previously create login shelf gesture controller, if any.
-  void ClearLoginShelfSwipeHandler();
-
   // Gets the layer used to draw the shelf background.
   ui::Layer* GetOpaqueBackground();
 
@@ -181,22 +170,15 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   // Sets opacity of login shelf buttons to be consistent with shelf icons.
   void SetLoginShelfButtonOpacity(float target_opacity);
 
-  // Handles shelf widget gesture events for login shelf, if login shelf view is
-  // visible. Returns whether the gesture was handled (the gesture will not be
-  // handled if the login shelf view is hidden).
-  bool HandleLoginShelfGestureEvent(const ui::GestureEvent& event_in_screen);
-
   // Internal implementation detail. Do not expose outside of tests.
+  ui::Layer* GetDelegateViewOpaqueBackgroundLayerForTesting();
+
   ShelfView* shelf_view_for_testing() const {
     return hotseat_widget()->GetShelfView();
   }
 
   ShelfBackgroundAnimator* background_animator_for_testing() {
     return &background_animator_;
-  }
-
-  LoginShelfGestureController* login_shelf_gesture_controller_for_testing() {
-    return login_shelf_gesture_controller_.get();
   }
 
   HotseatTransitionAnimator* hotseat_transition_animator() {
@@ -223,6 +205,9 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   gfx::Rect target_bounds_;
   ShelfBackgroundAnimator background_animator_;
 
+  // Set only during initialization.
+  std::unique_ptr<ShelfLayoutManager> shelf_layout_manager_owned_;
+
   // Owned by the shelf container's window.
   ShelfLayoutManager* shelf_layout_manager_;
 
@@ -241,17 +226,11 @@ class ASH_EXPORT ShelfWidget : public SessionObserver,
   // Owned by the views hierarchy.
   LoginShelfView* login_shelf_view_;
 
-  // Used to handle gestures on login shelf - created only if
-  // SetLoginShelfSwipeHandler() gets called.
-  std::unique_ptr<LoginShelfGestureController> login_shelf_gesture_controller_;
-
   ScopedSessionObserver scoped_session_observer_;
 
   size_t force_show_hotseat_count_ = 0;
 
   base::WeakPtrFactory<ShelfWidget> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfWidget);
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -181,15 +179,14 @@ ShortcutsDatabase::Shortcut ShortcutsDatabaseTest::ShortcutFromTestInfo(
           info.document_type, ASCIIToUTF16(info.contents), info.contents_class,
           ASCIIToUTF16(info.description), info.description_class,
           info.transition, info.type, ASCIIToUTF16(info.keyword)),
-      base::Time::Now() - base::TimeDelta::FromDays(info.days_from_now),
-      info.number_of_hits);
+      base::Time::Now() - base::Days(info.days_from_now), info.number_of_hits);
 }
 
 void ShortcutsDatabaseTest::AddAll() {
   ClearDB();
-  for (size_t i = 0; i < base::size(shortcut_test_db); ++i)
+  for (size_t i = 0; i < std::size(shortcut_test_db); ++i)
     db_->AddShortcut(ShortcutFromTestInfo(shortcut_test_db[i]));
-  EXPECT_EQ(base::size(shortcut_test_db), CountRecords());
+  EXPECT_EQ(std::size(shortcut_test_db), CountRecords());
 }
 
 // Actual tests ---------------------------------------------------------------
@@ -225,7 +222,7 @@ TEST_F(ShortcutsDatabaseTest, DeleteShortcutsWithIds) {
   shortcut_ids.push_back(shortcut_test_db[0].guid);
   shortcut_ids.push_back(shortcut_test_db[2].guid);
   EXPECT_TRUE(db_->DeleteShortcutsWithIDs(shortcut_ids));
-  EXPECT_EQ(base::size(shortcut_test_db) - 2, CountRecords());
+  EXPECT_EQ(std::size(shortcut_test_db) - 2, CountRecords());
 
   ShortcutsDatabase::GuidToShortcutMap shortcuts;
   db_->LoadShortcuts(&shortcuts);
@@ -244,7 +241,7 @@ TEST_F(ShortcutsDatabaseTest, DeleteShortcutsWithURL) {
   AddAll();
 
   EXPECT_TRUE(db_->DeleteShortcutsWithURL("http://slashdot.org/"));
-  EXPECT_EQ(base::size(shortcut_test_db) - 2, CountRecords());
+  EXPECT_EQ(std::size(shortcut_test_db) - 2, CountRecords());
 
   ShortcutsDatabase::GuidToShortcutMap shortcuts;
   db_->LoadShortcuts(&shortcuts);
@@ -263,7 +260,7 @@ TEST_F(ShortcutsDatabaseTest, DeleteAllShortcuts) {
   AddAll();
   ShortcutsDatabase::GuidToShortcutMap shortcuts;
   db_->LoadShortcuts(&shortcuts);
-  EXPECT_EQ(base::size(shortcut_test_db), shortcuts.size());
+  EXPECT_EQ(std::size(shortcut_test_db), shortcuts.size());
   EXPECT_TRUE(db_->DeleteAllShortcuts());
   db_->LoadShortcuts(&shortcuts);
   EXPECT_EQ(0U, shortcuts.size());

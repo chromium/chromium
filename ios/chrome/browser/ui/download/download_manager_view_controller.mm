@@ -1,26 +1,25 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
 
-#import <MaterialComponents/MaterialPalettes.h>
-#import <MaterialComponents/MaterialTypography.h>
-
-#include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/download/download_manager_metric_names.h"
-#include "ios/chrome/browser/ui/download/download_manager_animation_constants.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/download/download_manager_metric_names.h"
+#import "ios/chrome/browser/ui/download/download_manager_animation_constants.h"
 #import "ios/chrome/browser/ui/download/download_manager_state_view.h"
+#import "ios/chrome/browser/ui/download/legacy_download_manager_state_view.h"
 #import "ios/chrome/browser/ui/download/radial_progress_view.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/icons/download_icon.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/images/branded_image_provider.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,11 +43,12 @@ NSString* GetSizeString(long long size_in_bytes) {
       stringFromByteCount:size_in_bytes
                countStyle:NSByteCountFormatterCountStyleFile];
 }
+
 }  // namespace
 
 @interface DownloadManagerViewController () {
   UIButton* _closeButton;
-  DownloadManagerStateView* _stateIcon;
+  LegacyDownloadManagerStateView* _legacyStateIcon;
   UILabel* _statusLabel;
   UIButton* _actionButton;
   UIButton* _installDriveButton;
@@ -64,13 +64,17 @@ NSString* GetSizeString(long long size_in_bytes) {
   BOOL _installDriveButtonVisible;
   BOOL _addedConstraints;  // YES if NSLayoutConstraits were added.
 }
+
+// UIView that contains the state symbol displayed.
+@property(nonatomic, strong) DownloadManagerStateView* stateSymbol;
+
 // Background is a resizable image with edge shadows.
 @property(nonatomic, readonly) UIImageView* background;
 
 // Download Manager UI has 2 rows. First row is always visible and contains
 // essential download controls: close button, action button and status label.
 // Second row is hidden by default and constains Install Google Drive button.
-// The second row is visible if |_installDriveButtonVisible| is set to YES.
+// The second row is visible if `_installDriveButtonVisible` is set to YES.
 // Each row is a UIView with controls as subviews, which allows to:
 //   - vertically align all controls in the row
 //   - hide all controls in a row altogether
@@ -139,7 +143,11 @@ NSString* GetSizeString(long long size_in_bytes) {
   [self.view addSubview:self.downloadControlsRow];
   [self.view addSubview:self.installDriveControlsRow];
   [self.downloadControlsRow addSubview:self.closeButton];
-  [self.downloadControlsRow addSubview:self.stateIcon];
+  if (UseSymbols()) {
+    [self.downloadControlsRow addSubview:self.stateSymbol];
+  } else {
+    [self.downloadControlsRow addSubview:self.legacyStateIcon];
+  }
   [self.downloadControlsRow addSubview:self.statusLabel];
   [self.downloadControlsRow addSubview:self.progressView];
   [self.downloadControlsRow addSubview:self.actionButton];
@@ -228,11 +236,12 @@ NSString* GetSizeString(long long size_in_bytes) {
                        constant:-4],
   ]];
 
-  // status icon constraints.
-  DownloadManagerStateView* stateIcon = self.stateIcon;
+  // state symbol constraints.
+  UIView* stateSymbol = UseSymbols() ? self.stateSymbol : self.legacyStateIcon;
   [NSLayoutConstraint activateConstraints:@[
-    [stateIcon.centerYAnchor constraintEqualToAnchor:downloadRow.centerYAnchor],
-    [stateIcon.leadingAnchor
+    [stateSymbol.centerYAnchor
+        constraintEqualToAnchor:downloadRow.centerYAnchor],
+    [stateSymbol.leadingAnchor
         constraintEqualToAnchor:downloadRow.layoutMarginsGuide.leadingAnchor
                        constant:3],
   ]];
@@ -241,11 +250,12 @@ NSString* GetSizeString(long long size_in_bytes) {
   RadialProgressView* progressView = self.progressView;
   [NSLayoutConstraint activateConstraints:@[
     [progressView.leadingAnchor
-        constraintEqualToAnchor:stateIcon.leadingAnchor],
+        constraintEqualToAnchor:stateSymbol.leadingAnchor],
     [progressView.trailingAnchor
-        constraintEqualToAnchor:stateIcon.trailingAnchor],
-    [progressView.topAnchor constraintEqualToAnchor:stateIcon.topAnchor],
-    [progressView.bottomAnchor constraintEqualToAnchor:stateIcon.bottomAnchor],
+        constraintEqualToAnchor:stateSymbol.trailingAnchor],
+    [progressView.topAnchor constraintEqualToAnchor:stateSymbol.topAnchor],
+    [progressView.bottomAnchor
+        constraintEqualToAnchor:stateSymbol.bottomAnchor],
   ]];
 
   // status label constraints.
@@ -254,8 +264,9 @@ NSString* GetSizeString(long long size_in_bytes) {
   [NSLayoutConstraint activateConstraints:@[
     [statusLabel.centerYAnchor
         constraintEqualToAnchor:downloadRow.centerYAnchor],
-    [statusLabel.leadingAnchor constraintEqualToAnchor:stateIcon.trailingAnchor
-                                              constant:11],
+    [statusLabel.leadingAnchor
+        constraintEqualToAnchor:stateSymbol.trailingAnchor
+                       constant:11],
   ]];
   [self updateStatusLabelTrailingConstraint];
 
@@ -282,7 +293,7 @@ NSString* GetSizeString(long long size_in_bytes) {
     [installDriveIcon.centerYAnchor
         constraintEqualToAnchor:installDriveRow.centerYAnchor],
     [installDriveIcon.centerXAnchor
-        constraintEqualToAnchor:stateIcon.centerXAnchor],
+        constraintEqualToAnchor:stateSymbol.centerXAnchor],
   ]];
 
   // install google drive label constraints.
@@ -356,7 +367,8 @@ NSString* GetSizeString(long long size_in_bytes) {
 - (void)setState:(DownloadManagerState)state {
   if (_state != state) {
     _state = state;
-    [self updateStateIcon];
+
+    UseSymbols() ? [self updateStateSymbol] : [self updatelegacyStateIcon];
     [self updateStatusLabel];
     [self updateActionButton];
     [self updateProgressView];
@@ -414,8 +426,12 @@ NSString* GetSizeString(long long size_in_bytes) {
     _closeButton.exclusiveTouch = YES;
     _closeButton.accessibilityLabel = l10n_util::GetNSString(IDS_CLOSE);
 
-    UIImage* image = [[UIImage imageNamed:@"download_close"]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage* image =
+        UseSymbols()
+            ? DefaultSymbolTemplateWithPointSize(
+                  kXMarkSymbol, kSymbolDownloadInfobarPointSize)
+            : [[UIImage imageNamed:@"download_close"]
+                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     [_closeButton setImage:image forState:UIControlStateNormal];
     _closeButton.tintColor = [UIColor colorNamed:kToolbarButtonColor];
 
@@ -423,29 +439,42 @@ NSString* GetSizeString(long long size_in_bytes) {
                      action:@selector(didTapCloseButton)
            forControlEvents:UIControlEventTouchUpInside];
 
-    if (@available(iOS 13.4, *)) {
-        _closeButton.pointerInteractionEnabled = YES;
-    }
+    _closeButton.pointerInteractionEnabled = YES;
   }
   return _closeButton;
 }
 
-- (DownloadManagerStateView*)stateIcon {
-  if (!_stateIcon) {
-    _stateIcon = [[DownloadManagerStateView alloc] initWithFrame:CGRectZero];
-    _stateIcon.translatesAutoresizingMaskIntoConstraints = NO;
-    _stateIcon.downloadColor = [UIColor colorNamed:kBlueColor];
-    _stateIcon.documentColor = [UIColor colorNamed:kGrey400Color];
-    [self updateStateIcon];
+- (LegacyDownloadManagerStateView*)legacyStateIcon {
+  if (!_legacyStateIcon) {
+    _legacyStateIcon =
+        [[LegacyDownloadManagerStateView alloc] initWithFrame:CGRectZero];
+    _legacyStateIcon.translatesAutoresizingMaskIntoConstraints = NO;
+    _legacyStateIcon.downloadColor = [UIColor colorNamed:kBlueColor];
+    _legacyStateIcon.documentColor = [UIColor colorNamed:kGrey400Color];
+    [self updatelegacyStateIcon];
   }
-  return _stateIcon;
+  return _legacyStateIcon;
+}
+
+- (DownloadManagerStateView*)stateSymbol {
+  if (!_stateSymbol) {
+    _stateSymbol = [[DownloadManagerStateView alloc] init];
+    _stateSymbol.translatesAutoresizingMaskIntoConstraints = NO;
+    _stateSymbol.contentMode = UIViewContentModeCenter;
+
+    [self updateStateSymbol];
+  }
+  return _stateSymbol;
 }
 
 - (UILabel*)statusLabel {
   if (!_statusLabel) {
     _statusLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _statusLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _statusLabel.font = [MDCTypography body1Font];
+    const CGFloat kBody1FontSize = 14.0;
+    const UIFontWeight kBody1FontWeight = UIFontWeightRegular;
+    _statusLabel.font = [UIFont systemFontOfSize:kBody1FontSize
+                                          weight:kBody1FontWeight];
     _statusLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
     [_statusLabel
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
@@ -461,7 +490,10 @@ NSString* GetSizeString(long long size_in_bytes) {
     _actionButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _actionButton.translatesAutoresizingMaskIntoConstraints = NO;
     _actionButton.exclusiveTouch = YES;
-    _actionButton.titleLabel.font = [MDCTypography buttonFont];
+    const CGFloat kButtonFontSize = 14.0;
+    const UIFontWeight kButtonFontWeight = UIFontWeightMedium;
+    _actionButton.titleLabel.font = [UIFont systemFontOfSize:kButtonFontSize
+                                                      weight:kButtonFontWeight];
     [_actionButton setTitleColor:[UIColor colorNamed:kBlueColor]
                         forState:UIControlStateNormal];
 
@@ -469,9 +501,7 @@ NSString* GetSizeString(long long size_in_bytes) {
                       action:@selector(didTapActionButton)
             forControlEvents:UIControlEventTouchUpInside];
 
-    if (@available(iOS 13.4, *)) {
-        _actionButton.pointerInteractionEnabled = YES;
-    }
+    _actionButton.pointerInteractionEnabled = YES;
 
     [self updateActionButton];
   }
@@ -483,7 +513,10 @@ NSString* GetSizeString(long long size_in_bytes) {
     _installDriveButton = [UIButton buttonWithType:UIButtonTypeCustom];
     _installDriveButton.translatesAutoresizingMaskIntoConstraints = NO;
     _installDriveButton.exclusiveTouch = YES;
-    _installDriveButton.titleLabel.font = [MDCTypography buttonFont];
+    const CGFloat kButtonFontSize = 14.0;
+    const UIFontWeight kButtonFontWeight = UIFontWeightMedium;
+    _installDriveButton.titleLabel.font =
+        [UIFont systemFontOfSize:kButtonFontSize weight:kButtonFontWeight];
     [_installDriveButton setTitleColor:[UIColor colorNamed:kBlueColor]
                               forState:UIControlStateNormal];
 
@@ -494,9 +527,7 @@ NSString* GetSizeString(long long size_in_bytes) {
         setTitle:l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_INSTALL)
         forState:UIControlStateNormal];
 
-    if (@available(iOS 13.4, *)) {
-        _installDriveButton.pointerInteractionEnabled = YES;
-    }
+    _installDriveButton.pointerInteractionEnabled = YES;
   }
   return _installDriveButton;
 }
@@ -505,9 +536,8 @@ NSString* GetSizeString(long long size_in_bytes) {
   if (!_installDriveIcon) {
     _installDriveIcon = [[UIImageView alloc] initWithFrame:CGRectZero];
     _installDriveIcon.translatesAutoresizingMaskIntoConstraints = NO;
-    _installDriveIcon.image = ios::GetChromeBrowserProvider()
-                                  ->GetBrandedImageProvider()
-                                  ->GetDownloadGoogleDriveImage();
+    _installDriveIcon.image = ios::provider::GetBrandedImage(
+        ios::provider::BrandedImage::kDownloadGoogleDrive);
   }
   return _installDriveIcon;
 }
@@ -516,7 +546,10 @@ NSString* GetSizeString(long long size_in_bytes) {
   if (!_installDriveLabel) {
     _installDriveLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _installDriveLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _installDriveLabel.font = [MDCTypography body1Font];
+    const CGFloat kBody1FontSize = 14.0;
+    const UIFontWeight kBody1FontWeight = UIFontWeightRegular;
+    _installDriveLabel.font = [UIFont systemFontOfSize:kBody1FontSize
+                                                weight:kBody1FontWeight];
     _installDriveLabel.text =
         l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_GOOGLE_DRIVE);
     [_installDriveLabel sizeToFit];
@@ -582,6 +615,9 @@ NSString* GetSizeString(long long size_in_bytes) {
       }
       break;
     }
+    case kDownloadManagerStateFailedNotResumable:
+      // The button should not be visible
+      break;
   }
 }
 
@@ -600,7 +636,7 @@ NSString* GetSizeString(long long size_in_bytes) {
 
 // Updates and activates self.bottomMarginGuideTopConstraint.
 // self.bottomMarginGuideTopConstraint constraints kBottomMarginGuide's
-// topAnchor to installDriveControlsRow's bottom if |_installDriveButtonVisible|
+// topAnchor to installDriveControlsRow's bottom if `_installDriveButtonVisible`
 // is set to YES, otherwise self.view.bottomAnchor is constrained to
 // downloadControlsRow's bottom. This resizes self.view to show or hide
 // installDriveControlsRow view.
@@ -627,13 +663,7 @@ NSString* GetSizeString(long long size_in_bytes) {
           ? @"background_regular"
           : @"background_compact";
 
-  UIImage* image = [UIImage imageNamed:imageName
-                              inBundle:nil
-         compatibleWithTraitCollection:traitCollection];
-  UIEdgeInsets insets = UIEdgeInsetsMake(
-      kTopShadowHeight, kLeftRightShadowHeight, 0, kLeftRightShadowHeight);
-
-  self.background.image = [image resizableImageWithCapInsets:insets];
+  self.background.image = [UIImage imageNamed:imageName];
 }
 
 // Updates and activates constraints which depend on ui size class.
@@ -681,11 +711,16 @@ NSString* GetSizeString(long long size_in_bytes) {
 }
 
 // Updates state icon depending.
-- (void)updateStateIcon {
-  [self.stateIcon setState:_state animated:YES];
+- (void)updatelegacyStateIcon {
+  [self.legacyStateIcon setState:_state animated:YES];
 }
 
-// Updates status label text depending on |state|.
+// Updates state symbol depending on the current download state.
+- (void)updateStateSymbol {
+  [self.stateSymbol setState:_state];
+}
+
+// Updates status label text depending on `state`.
 - (void)updateStatusLabel {
   NSString* statusText = nil;
   switch (_state) {
@@ -718,12 +753,16 @@ NSString* GetSizeString(long long size_in_bytes) {
       statusText =
           l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_COULDNT_DOWNLOAD);
       break;
+    case kDownloadManagerStateFailedNotResumable:
+      statusText =
+          l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_CANNOT_BE_RETRIED);
+      break;
   }
 
   self.statusLabel.text = statusText;
 }
 
-// Updates title and hidden state for action button depending on |state|.
+// Updates title and hidden state for action button depending on `state`.
 - (void)updateActionButton {
   NSString* title = nil;
   switch (_state) {
@@ -738,10 +777,14 @@ NSString* GetSizeString(long long size_in_bytes) {
     case kDownloadManagerStateFailed:
       title = l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_TRY_AGAIN);
       break;
+    case kDownloadManagerStateFailedNotResumable:
+      break;
   }
 
   [self.actionButton setTitle:title forState:UIControlStateNormal];
-  self.actionButton.hidden = _state == kDownloadManagerStateInProgress;
+  self.actionButton.hidden =
+      (_state == kDownloadManagerStateInProgress ||
+       _state == kDownloadManagerStateFailedNotResumable);
 }
 
 - (void)updateProgressView {

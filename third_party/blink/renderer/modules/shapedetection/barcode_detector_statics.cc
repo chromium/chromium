@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -53,8 +53,8 @@ ScriptPromise BarcodeDetectorStatics::EnumerateSupportedFormats(
   get_supported_format_requests_.insert(resolver);
   EnsureServiceConnection();
   service_->EnumerateSupportedFormats(
-      WTF::Bind(&BarcodeDetectorStatics::OnEnumerateSupportedFormats,
-                WrapPersistent(this), WrapPersistent(resolver)));
+      WTF::BindOnce(&BarcodeDetectorStatics::OnEnumerateSupportedFormats,
+                    WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -74,7 +74,7 @@ void BarcodeDetectorStatics::EnsureServiceConnection() {
   auto task_runner = context->GetTaskRunner(TaskType::kMiscPlatformAPI);
   context->GetBrowserInterfaceBroker().GetInterface(
       service_.BindNewPipeAndPassReceiver(task_runner));
-  service_.set_disconnect_handler(WTF::Bind(
+  service_.set_disconnect_handler(WTF::BindOnce(
       &BarcodeDetectorStatics::OnConnectionError, WrapWeakPersistent(this)));
 }
 
@@ -88,7 +88,7 @@ void BarcodeDetectorStatics::OnEnumerateSupportedFormats(
   results.ReserveInitialCapacity(results.size());
   for (const auto& format : formats)
     results.push_back(BarcodeDetector::BarcodeFormatToString(format));
-  if (IdentifiabilityStudySettings::Get()->IsWebFeatureAllowed(
+  if (IdentifiabilityStudySettings::Get()->ShouldSampleWebFeature(
           WebFeature::kBarcodeDetector_GetSupportedFormats)) {
     IdentifiableTokenBuilder builder;
     for (const auto& format_string : results)
@@ -96,7 +96,7 @@ void BarcodeDetectorStatics::OnEnumerateSupportedFormats(
 
     ExecutionContext* context = GetSupplementable();
     IdentifiabilityMetricBuilder(context->UkmSourceID())
-        .SetWebfeature(WebFeature::kBarcodeDetector_GetSupportedFormats,
+        .AddWebFeature(WebFeature::kBarcodeDetector_GetSupportedFormats,
                        builder.GetToken())
         .Record(context->UkmRecorder());
   }

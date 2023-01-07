@@ -1,28 +1,18 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/display/display_list.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/observer_list.h"
 #include "ui/display/display_observer.h"
 
 namespace display {
 
-DisplayListObserverLock::~DisplayListObserverLock() {
-  display_list_->DecrementObserverSuspendLockCount();
-}
+DisplayList::DisplayList() = default;
 
-DisplayListObserverLock::DisplayListObserverLock(DisplayList* display_list)
-    : display_list_(display_list) {
-  display_list_->IncrementObserverSuspendLockCount();
-}
-
-DisplayList::DisplayList() {}
-
-DisplayList::~DisplayList() {
-  DCHECK_EQ(0, observer_suspend_lock_count_);
-}
+DisplayList::~DisplayList() = default;
 
 void DisplayList::AddObserver(DisplayObserver* observer) {
   observers_.AddObserver(observer);
@@ -34,22 +24,12 @@ void DisplayList::RemoveObserver(DisplayObserver* observer) {
 
 DisplayList::Displays::const_iterator DisplayList::FindDisplayById(
     int64_t id) const {
-  for (auto iter = displays_.begin(); iter != displays_.end(); ++iter) {
-    if (iter->id() == id)
-      return iter;
-  }
-  return displays_.end();
+  return base::ranges::find(displays_, id, &Display::id);
 }
 
 DisplayList::Displays::const_iterator DisplayList::GetPrimaryDisplayIterator()
     const {
-  return primary_display_index_ == -1
-             ? displays_.end()
-             : displays_.begin() + primary_display_index_;
-}
-
-std::unique_ptr<DisplayListObserverLock> DisplayList::SuspendObserverUpdates() {
-  return base::WrapUnique(new DisplayListObserverLock(this));
+  return base::ranges::find(displays_, primary_id_, &Display::id);
 }
 
 void DisplayList::AddOrUpdateDisplay(const Display& display, Type type) {
@@ -57,10 +37,12 @@ void DisplayList::AddOrUpdateDisplay(const Display& display, Type type) {
     AddDisplay(display, type);
   else
     UpdateDisplay(display, type);
+  DCHECK(IsValid());
 }
 
 uint32_t DisplayList::UpdateDisplay(const Display& display) {
-  return UpdateDisplay(display, GetTypeByDisplayId(display.id()));
+  return UpdateDisplay(
+      display, display.id() == primary_id_ ? Type::PRIMARY : Type::NOT_PRIMARY);
 }
 
 uint32_t DisplayList::UpdateDisplay(const Display& display, Type type) {
@@ -69,10 +51,15 @@ uint32_t DisplayList::UpdateDisplay(const Display& display, Type type) {
 
   Display* local_display = &(*iter);
   uint32_t changed_values = 0;
-  if (type == Type::PRIMARY &&
-      static_cast<int>(iter - displays_.begin()) !=
-          static_cast<int>(GetPrimaryDisplayIterator() - displays_.begin())) {
-    primary_display_index_ = static_cast<int>(iter - displays_.begin());
+
+  // For now, unsetting the primary does nothing. Setting a new primary is the
+  // only way to modify it, so that there is always exactly one primary.
+  // TODO(enne): it would be nice to enforce setting the new primary first
+  // before unsetting the old one but Wayland handles primary setting based on
+  // messages from Wayland itself which may be delivered in any order.
+  // See: WaylandScreenTest.MultipleOutputsAddedAndRemoved
+  if (type == Type::PRIMARY && local_display->id() != primary_id_) {
+    primary_id_ = local_display->id();
     // ash::DisplayManager only notifies for the Display gaining primary, not
     // the one losing it.
     changed_values |= DisplayObserver::DISPLAY_METRIC_PRIMARY;
@@ -105,71 +92,82 @@ uint32_t DisplayList::UpdateDisplay(const Display& display, Type type) {
     local_display->set_color_depth(display.color_depth());
     changed_values |= DisplayObserver::DISPLAY_METRIC_COLOR_SPACE;
   }
+  if (local_display->label() != display.label()) {
+    local_display->set_label(display.label());
+    changed_values |= DisplayObserver::DISPLAY_METRIC_LABEL;
+  }
   if (local_display->GetSizeInPixel() != display.GetSizeInPixel()) {
     local_display->set_size_in_pixels(display.GetSizeInPixel());
   }
-  if (should_notify_observers()) {
-    for (DisplayObserver& observer : observers_)
-      observer.OnDisplayMetricsChanged(*local_display, changed_values);
-  }
+  for (DisplayObserver& observer : observers_)
+    observer.OnDisplayMetricsChanged(*local_display, changed_values);
+  DCHECK(IsValid());
   return changed_values;
 }
 
 void DisplayList::AddDisplay(const Display& display, Type type) {
-  DCHECK(displays_.end() == FindDisplayByIdInternal(display.id()));
+  DCHECK(displays_.end() == FindDisplayById(display.id()));
+  DCHECK_NE(display.id(), kInvalidDisplayId);
+  // The first display must be primary.
+  DCHECK(type == Type::PRIMARY || !displays_.empty());
   displays_.push_back(display);
   if (type == Type::PRIMARY)
-    primary_display_index_ = static_cast<int>(displays_.size()) - 1;
-  if (should_notify_observers()) {
-    for (DisplayObserver& observer : observers_)
-      observer.OnDisplayAdded(display);
-  }
+    primary_id_ = display.id();
+  for (DisplayObserver& observer : observers_)
+    observer.OnDisplayAdded(display);
+  DCHECK(IsValid());
 }
 
 void DisplayList::RemoveDisplay(int64_t id) {
   auto iter = FindDisplayByIdInternal(id);
   DCHECK(displays_.end() != iter);
-  if (primary_display_index_ == static_cast<int>(iter - displays_.begin())) {
+  if (id == primary_id_) {
     // The primary display can only be removed if it is the last display.
     // Users must choose a new primary before removing an old primary display.
     DCHECK_EQ(1u, displays_.size());
-    primary_display_index_ = -1;
-  } else if (primary_display_index_ >
-             static_cast<int>(iter - displays_.begin())) {
-    primary_display_index_--;
+    primary_id_ = kInvalidDisplayId;
   }
   const Display display = *iter;
   displays_.erase(iter);
-  if (should_notify_observers()) {
-    for (DisplayObserver& observer : observers_)
-      observer.OnDisplayRemoved(display);
+  for (DisplayObserver& observer : observers_) {
+    observer.OnDisplayRemoved(display);
+    observer.OnDidRemoveDisplays();
   }
+  DCHECK(IsValid());
 }
 
-void DisplayList::IncrementObserverSuspendLockCount() {
-  observer_suspend_lock_count_++;
-}
+bool DisplayList::IsValid() const {
+  // The primary id must be invalid when `displays_` is empty.
+  if (displays_.empty())
+    return primary_id_ == kInvalidDisplayId;
 
-void DisplayList::DecrementObserverSuspendLockCount() {
-  DCHECK_GT(observer_suspend_lock_count_, 0);
-  observer_suspend_lock_count_--;
-}
+  // The primary id must exist if there is at least one display.
+  if (primary_id_ == kInvalidDisplayId)
+    return false;
 
-DisplayList::Type DisplayList::GetTypeByDisplayId(int64_t display_id) const {
-  if (primary_display_index_ == -1)
-    return Type::NOT_PRIMARY;
-  return (displays_[primary_display_index_].id() == display_id
-              ? Type::PRIMARY
-              : Type::NOT_PRIMARY);
+  // Ensure ids are unique and valid. 96% of clients have a display count <= 3,
+  // 98% <= 4, with a max count of 16 seen on Windows. With these low counts we
+  // can use a brute force search.
+  for (auto outer = displays_.begin(); outer != displays_.end(); ++outer) {
+    if (outer->id() == kInvalidDisplayId)
+      return false;
+    for (auto inner = outer + 1; inner != displays_.end(); ++inner) {
+      if (inner->id() == outer->id()) {
+        return false;
+      }
+    }
+  }
+
+  // The primary id must correspond to a `displays_` entry.
+  if (GetPrimaryDisplayIterator() == displays_.end())
+    return false;
+
+  return true;
 }
 
 DisplayList::Displays::iterator DisplayList::FindDisplayByIdInternal(
     int64_t id) {
-  for (auto iter = displays_.begin(); iter != displays_.end(); ++iter) {
-    if (iter->id() == id)
-      return iter;
-  }
-  return displays_.end();
+  return base::ranges::find(displays_, id, &Display::id);
 }
 
 }  // namespace display

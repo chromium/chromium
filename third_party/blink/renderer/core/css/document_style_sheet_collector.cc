@@ -37,11 +37,9 @@ namespace blink {
 
 DocumentStyleSheetCollector::DocumentStyleSheetCollector(
     StyleSheetCollection* collection,
-    HeapVector<Member<StyleSheet>>* sheets_for_list,
-    HeapHashSet<Member<Document>>* visited_documents)
+    HeapVector<Member<StyleSheet>>* sheets_for_list)
     : collection_(collection),
-      style_sheets_for_style_sheet_list_(sheets_for_list),
-      visited_documents_(visited_documents) {}
+      style_sheets_for_style_sheet_list_(sheets_for_list) {}
 
 void DocumentStyleSheetCollector::AppendActiveStyleSheet(
     const ActiveStyleSheet& sheet) {
@@ -59,13 +57,11 @@ void DocumentStyleSheetCollector::AppendSheetForList(StyleSheet* sheet) {
 
 ActiveDocumentStyleSheetCollector::ActiveDocumentStyleSheetCollector(
     StyleSheetCollection& collection)
-    : DocumentStyleSheetCollector(&collection, nullptr, &visited_documents_) {}
+    : DocumentStyleSheetCollector(&collection, nullptr) {}
 
 ImportedDocumentStyleSheetCollector::ImportedDocumentStyleSheetCollector(
     DocumentStyleSheetCollector& collector,
     HeapVector<Member<StyleSheet>>& sheet_for_list)
-    : DocumentStyleSheetCollector(collector.collection_,
-                                  &sheet_for_list,
-                                  collector.visited_documents_) {}
+    : DocumentStyleSheetCollector(collector.collection_, &sheet_for_list) {}
 
 }  // namespace blink

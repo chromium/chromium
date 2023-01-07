@@ -1,31 +1,21 @@
-#!/usr/bin/env vpython
-# Copyright 2015 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """Runs isolate bundled Telemetry unittests.
 
-This script attempts to emulate the contract of gtest-style tests
-invoked via recipes. The main contract is that the caller passes the
-argument:
+If optional argument --isolated-script-test-output=[FILENAME] is passed
+to the script, json is written to that file in the format detailed in
+//docs/testing/json-test-results-format.md.
 
-  --isolated-script-test-output=[FILENAME]
-
-json is written to that file in the format produced by
-common.parse_common_test_results.
-
-Optional argument:
-
-  --isolated-script-test-filter=[TEST_NAMES]
-
-is a double-colon-separated ("::") list of test names, to run just that subset
-of tests. This list is parsed by this harness and remapped to multiple arguments
-passed to the target script.
+If optional argument --isolated-script-test-filter=[TEST_NAMES] is passed to
+the script, it should be a  double-colon-separated ("::") list of test names,
+to run just that subset of tests.
 
 This script is intended to be the base command invoked by the isolate,
 followed by a subsequent Python script. It could be generalized to
 invoke an arbitrary executable.
-
 """
 
 import argparse
@@ -33,7 +23,10 @@ import json
 import os
 import sys
 
-import common
+# Add src/testing/ into sys.path for importing common without pylint errors.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from scripts import common
 
 
 class TelemetryUnittestAdapter(common.BaseIsolatedScriptArgsAdapter):

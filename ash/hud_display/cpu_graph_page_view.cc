@@ -1,17 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/hud_display/cpu_graph_page_view.h"
 
-#include <algorithm>
 #include <numeric>
 
 #include "ash/hud_display/hud_constants.h"
+#include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace ash {
 namespace hud_display {
@@ -23,22 +24,22 @@ BEGIN_METADATA(CpuGraphPageView, GraphPageViewBase)
 END_METADATA
 
 CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
-    : cpu_other_(kDefaultGraphWidth,
+    : cpu_other_(kHUDGraphWidth,
                  Graph::Baseline::BASELINE_BOTTOM,
                  Graph::Fill::SOLID,
                  Graph::Style::LINES,
                  SkColorSetA(SK_ColorMAGENTA, kHUDAlpha)),
-      cpu_system_(kDefaultGraphWidth,
+      cpu_system_(kHUDGraphWidth,
                   Graph::Baseline::BASELINE_BOTTOM,
                   Graph::Fill::SOLID,
                   Graph::Style::LINES,
                   SkColorSetA(SK_ColorRED, kHUDAlpha)),
-      cpu_user_(kDefaultGraphWidth,
+      cpu_user_(kHUDGraphWidth,
                 Graph::Baseline::BASELINE_BOTTOM,
                 Graph::Fill::SOLID,
                 Graph::Style::LINES,
                 SkColorSetA(SK_ColorBLUE, kHUDAlpha)),
-      cpu_idle_(kDefaultGraphWidth,
+      cpu_idle_(kHUDGraphWidth,
                 Graph::Baseline::BASELINE_BOTTOM,
                 Graph::Fill::SOLID,
                 Graph::Style::LINES,
@@ -48,9 +49,9 @@ CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
   constexpr float vertical_ticks_interval = (10 / 100.0);
   // -XX seconds on the left, 100% top, 0 seconds on the right, 0% on the
   // bottom. Seconds and Gigabytes are dimensions. Number of data points is
-  // cpu_other_.GetDataBufferSize(), horizontal grid ticks are drawn every 10
+  // cpu_other_.GetDataBufferSize(), horizontal tick marks are drawn every 10
   // seconds.
-  CreateGrid(
+  CreateReferenceLines(
       /*left=*/static_cast<int>(-data_width * refresh_interval.InSecondsF()),
       /*top=*/100, /*right=*/0, /*bottom=*/0,
       /*x_unit=*/u"s",
@@ -60,25 +61,21 @@ CpuGraphPageView::CpuGraphPageView(const base::TimeDelta refresh_interval)
       vertical_ticks_interval);
 
   Legend::Formatter formatter = base::BindRepeating([](float value) {
-    return base::ASCIIToUTF16(base::StringPrintf(
-        "%d %%", std::min(100, std::max(0, (int)(value * 100)))));
+    return base::ASCIIToUTF16(
+        base::StringPrintf("%d %%", base::clamp((int)(value * 100), 0, 100)));
   });
 
   const std::vector<Legend::Entry> legend(
       {{cpu_idle_, u"Idle", u"Total amount of CPU time spent\nin idle mode.",
         formatter},
        {cpu_user_, u"User",
-        base::ASCIIToUTF16(
-            "Total amount of CPU time spent\n running user processes."),
-        formatter},
+        u"Total amount of CPU time spent\n running user processes.", formatter},
        {cpu_system_, u"System",
-        base::ASCIIToUTF16(
-            "Total amount of CPU time spent\nrunning system processes."),
+        u"Total amount of CPU time spent\nrunning system processes.",
         formatter},
        {cpu_other_, u"Other",
-        base::ASCIIToUTF16(
-            "Total amount of CPU time spent\nrunning other tasks.\nThis "
-            "includes IO wait, IRQ, guest OS, etc."),
+        u"Total amount of CPU time spent\nrunning other tasks.\nThis includes "
+        u"IO wait, IRQ, guest OS, etc.",
         formatter}});
   CreateLegend(legend);
 }
@@ -92,8 +89,8 @@ void CpuGraphPageView::OnPaint(gfx::Canvas* canvas) {
 
   // Layout graphs.
   gfx::Rect rect = GetContentsBounds();
-  // Adjust to grid width.
-  rect.Inset(kGridLineWidth, kGridLineWidth);
+  // Adjust bounds to not overlap with bordering reference lines.
+  rect.Inset(kHUDGraphReferenceLineWidth);
   cpu_other_.Layout(rect, nullptr /* base*/);
   cpu_system_.Layout(rect, &cpu_other_);
   cpu_user_.Layout(rect, &cpu_system_);

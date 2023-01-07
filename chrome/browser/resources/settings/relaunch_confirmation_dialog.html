@@ -1,0 +1,12 @@
+<cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
+  <div slot="title">$i18n{relaunchConfirmationDialogTitle}</div>
+  <div slot="body">[[relaunchConfirmationDialogDesc]]</div>
+  <div slot="button-container">
+    <cr-button id="cancel" class="cancel-button" on-click="onDialogCancel_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button id="confirm" class="action-button" on-click="onDialogConfirm_">
+      $i18n{restart}
+    </cr-button>
+  </div>
+</cr-dialog>

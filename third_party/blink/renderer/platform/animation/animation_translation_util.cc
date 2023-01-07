@@ -24,7 +24,6 @@
 
 #include "third_party/blink/renderer/platform/animation/animation_translation_util.h"
 
-#include "third_party/blink/renderer/platform/animation/compositor_transform_operations.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
@@ -36,13 +35,15 @@
 #include "third_party/blink/renderer/platform/transforms/transform_operations.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/transforms/translate_transform_operation.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace blink {
 
-void ToCompositorTransformOperations(
+void ToGfxTransformOperations(
     const TransformOperations& transform_operations,
-    CompositorTransformOperations* out_transform_operations,
-    const FloatSize& box_size) {
+    gfx::TransformOperations* out_transform_operations,
+    const gfx::SizeF& box_size) {
   // We need to do a deep copy the transformOperations may contain ref pointers
   // to TransformOperation objects.
   for (const auto& operation : transform_operations.Operations()) {
@@ -54,8 +55,9 @@ void ToCompositorTransformOperations(
       case TransformOperation::kScale: {
         auto* transform =
             static_cast<const ScaleTransformOperation*>(operation.get());
-        out_transform_operations->AppendScale(transform->X(), transform->Y(),
-                                              transform->Z());
+        out_transform_operations->AppendScale(SkDoubleToScalar(transform->X()),
+                                              SkDoubleToScalar(transform->Y()),
+                                              SkDoubleToScalar(transform->Z()));
         break;
       }
       case TransformOperation::kTranslateX:
@@ -65,69 +67,78 @@ void ToCompositorTransformOperations(
       case TransformOperation::kTranslate: {
         auto* transform =
             static_cast<const TranslateTransformOperation*>(operation.get());
-        if (!RuntimeEnabledFeatures::CompositeRelativeKeyframesEnabled())
-          DCHECK(transform->X().IsFixed() && transform->Y().IsFixed());
         out_transform_operations->AppendTranslate(
-            transform->X(box_size), transform->Y(box_size), transform->Z());
+            SkDoubleToScalar(transform->X(box_size)),
+            SkDoubleToScalar(transform->Y(box_size)),
+            SkDoubleToScalar(transform->Z()));
         break;
       }
       case TransformOperation::kRotateX:
       case TransformOperation::kRotateY:
+      case TransformOperation::kRotateZ:
       case TransformOperation::kRotate3D:
       case TransformOperation::kRotate: {
         auto* transform =
             static_cast<const RotateTransformOperation*>(operation.get());
         out_transform_operations->AppendRotate(
-            transform->X(), transform->Y(), transform->Z(), transform->Angle());
+            SkDoubleToScalar(transform->X()), SkDoubleToScalar(transform->Y()),
+            SkDoubleToScalar(transform->Z()),
+            SkDoubleToScalar(transform->Angle()));
         break;
       }
       case TransformOperation::kSkewX: {
         auto* transform =
             static_cast<const SkewTransformOperation*>(operation.get());
-        out_transform_operations->AppendSkewX(transform->AngleX());
+        out_transform_operations->AppendSkewX(
+            SkDoubleToScalar(transform->AngleX()));
         break;
       }
       case TransformOperation::kSkewY: {
         auto* transform =
             static_cast<const SkewTransformOperation*>(operation.get());
-        out_transform_operations->AppendSkewY(transform->AngleY());
+        out_transform_operations->AppendSkewY(
+            SkDoubleToScalar(transform->AngleY()));
         break;
       }
       case TransformOperation::kSkew: {
         auto* transform =
             static_cast<const SkewTransformOperation*>(operation.get());
-        out_transform_operations->AppendSkew(transform->AngleX(),
-                                             transform->AngleY());
+        out_transform_operations->AppendSkew(
+            SkDoubleToScalar(transform->AngleX()),
+            SkDoubleToScalar(transform->AngleY()));
         break;
       }
       case TransformOperation::kMatrix: {
         auto* transform =
             static_cast<const MatrixTransformOperation*>(operation.get());
-        TransformationMatrix m = transform->Matrix();
         out_transform_operations->AppendMatrix(
-            TransformationMatrix::ToSkMatrix44(m));
+            transform->Matrix().ToTransform());
         break;
       }
       case TransformOperation::kMatrix3D: {
         auto* transform =
             static_cast<const Matrix3DTransformOperation*>(operation.get());
-        TransformationMatrix m = transform->Matrix();
         out_transform_operations->AppendMatrix(
-            TransformationMatrix::ToSkMatrix44(m));
+            transform->Matrix().ToTransform());
         break;
       }
       case TransformOperation::kPerspective: {
         auto* transform =
             static_cast<const PerspectiveTransformOperation*>(operation.get());
-        out_transform_operations->AppendPerspective(transform->Perspective());
+        absl::optional<double> depth = transform->Perspective();
+        if (depth) {
+          out_transform_operations->AppendPerspective(
+              SkDoubleToScalar(std::max(*depth, 1.0)));
+        } else {
+          out_transform_operations->AppendPerspective(absl::nullopt);
+        }
         break;
       }
       case TransformOperation::kRotateAroundOrigin:
       case TransformOperation::kInterpolated: {
         TransformationMatrix m;
         operation->Apply(m, box_size);
-        out_transform_operations->AppendMatrix(
-            TransformationMatrix::ToSkMatrix44(m));
+        out_transform_operations->AppendMatrix(m.ToTransform());
         break;
       }
       default:

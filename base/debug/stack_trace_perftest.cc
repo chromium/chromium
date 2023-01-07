@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ namespace debug {
 
 // Change kTimeLimit to something higher if you need more time to capture a
 // trace.
-constexpr base::TimeDelta kTimeLimit = base::TimeDelta::FromSeconds(3);
+constexpr base::TimeDelta kTimeLimit = base::Seconds(3);
 constexpr int kWarmupRuns = 100;
 constexpr int kTimeCheckInterval = 1000;
 constexpr char kMetricStackTraceDuration[] = ".duration_per_run";

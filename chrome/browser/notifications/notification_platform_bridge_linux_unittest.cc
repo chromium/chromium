@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_test_util.h"
+#include "chrome/common/notifications/notification_operation.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
 #include "content/public/test/test_utils.h"
@@ -50,7 +51,7 @@ class NotificationBuilder {
                       id,
                       std::u16string(),
                       std::u16string(),
-                      gfx::Image(),
+                      ui::ImageModel(),
                       std::u16string(),
                       GURL(),
                       message_center::NotifierId(GURL()),
@@ -148,38 +149,39 @@ struct TestParams {
         expect_shutdown(true),
         connect_signals(true) {}
 
-  TestParams& SetNameHasOwner(bool name_has_owner) {
-    this->name_has_owner = name_has_owner;
+  TestParams& SetNameHasOwner(bool new_name_has_owner) {
+    this->name_has_owner = new_name_has_owner;
     return *this;
   }
 
-  TestParams& SetCapabilities(const std::vector<std::string>& capabilities) {
-    this->capabilities = capabilities;
+  TestParams& SetCapabilities(
+      const std::vector<std::string>& new_capabilities) {
+    this->capabilities = new_capabilities;
     return *this;
   }
 
-  TestParams& SetServerName(const std::string& server_name) {
-    this->server_name = server_name;
+  TestParams& SetServerName(const std::string& new_server_name) {
+    this->server_name = new_server_name;
     return *this;
   }
 
-  TestParams& SetServerVersion(const std::string& server_version) {
-    this->server_version = server_version;
+  TestParams& SetServerVersion(const std::string& new_server_version) {
+    this->server_version = new_server_version;
     return *this;
   }
 
-  TestParams& SetExpectInitSuccess(bool expect_init_success) {
-    this->expect_init_success = expect_init_success;
+  TestParams& SetExpectInitSuccess(bool new_expect_init_success) {
+    this->expect_init_success = new_expect_init_success;
     return *this;
   }
 
-  TestParams& SetExpectShutdown(bool expect_shutdown) {
-    this->expect_shutdown = expect_shutdown;
+  TestParams& SetExpectShutdown(bool new_expect_shutdown) {
+    this->expect_shutdown = new_expect_shutdown;
     return *this;
   }
 
-  TestParams& SetConnectSignals(bool connect_signals) {
-    this->connect_signals = connect_signals;
+  TestParams& SetConnectSignals(bool new_connect_signals) {
+    this->connect_signals = new_connect_signals;
     return *this;
   }
 
@@ -347,13 +349,13 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
     BrowserWithTestWindowTest::TearDown();
   }
 
-  void HandleOperation(NotificationCommon::Operation operation,
+  void HandleOperation(NotificationOperation operation,
                        NotificationHandler::Type notification_type,
                        const GURL& origin,
                        const std::string& notification_id,
-                       const base::Optional<int>& action_index,
-                       const base::Optional<std::u16string>& reply,
-                       const base::Optional<bool>& by_user) {
+                       const absl::optional<int>& action_index,
+                       const absl::optional<std::u16string>& reply,
+                       const absl::optional<bool>& by_user) {
     last_operation_ = operation;
     last_action_index_ = action_index;
     last_reply_ = reply;
@@ -451,9 +453,9 @@ class NotificationPlatformBridgeLinuxTest : public BrowserWithTestWindowTest {
   std::unique_ptr<NotificationPlatformBridgeLinux> notification_bridge_linux_;
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;
 
-  base::Optional<NotificationCommon::Operation> last_operation_;
-  base::Optional<int> last_action_index_;
-  base::Optional<std::u16string> last_reply_;
+  absl::optional<NotificationOperation> last_operation_;
+  absl::optional<int> last_action_index_;
+  absl::optional<std::u16string> last_reply_;
 
  private:
   void DoInvokeAction(uint32_t dbus_id, const std::string& action) {
@@ -867,7 +869,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, DefaultButtonForwards) {
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(NotificationCommon::OPERATION_CLICK, last_operation_);
+  EXPECT_EQ(NotificationOperation::kClick, last_operation_);
   EXPECT_EQ(false, last_action_index_.has_value());
 }
 
@@ -888,7 +890,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, SettingsButtonForwards) {
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(NotificationCommon::OPERATION_SETTINGS, last_operation_);
+  EXPECT_EQ(NotificationOperation::kSettings, last_operation_);
 }
 
 TEST_F(NotificationPlatformBridgeLinuxTest, ActionButtonForwards) {
@@ -910,7 +912,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, ActionButtonForwards) {
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(NotificationCommon::OPERATION_CLICK, last_operation_);
+  EXPECT_EQ(NotificationOperation::kClick, last_operation_);
   EXPECT_EQ(1, last_action_index_);
 }
 
@@ -935,7 +937,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, CloseButtonForwards) {
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(NotificationCommon::OPERATION_CLOSE, last_operation_);
+  EXPECT_EQ(NotificationOperation::kClose, last_operation_);
 }
 
 TEST_F(NotificationPlatformBridgeLinuxTest, NotificationRepliedForwards) {
@@ -957,7 +959,7 @@ TEST_F(NotificationPlatformBridgeLinuxTest, NotificationRepliedForwards) {
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(NotificationCommon::OPERATION_CLICK, last_operation_);
+  EXPECT_EQ(NotificationOperation::kClick, last_operation_);
   EXPECT_EQ(false, last_action_index_.has_value());
   EXPECT_EQ(u"Hello", last_reply_);
 }

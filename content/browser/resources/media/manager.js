@@ -1,8 +1,8 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.m.js';
+import {$} from 'chrome://resources/js/util.js';
 import {PlayerInfo} from './player_info.js';
 import {objectForEach} from './util.js';
 
@@ -23,7 +23,6 @@ export class Manager {
     var copyAllPlayerButton = $('copy-all-player-button');
     var copyAllAudioButton = $('copy-all-audio-button');
     var hidePlayersButton = $('hide-players-button');
-    var devtoolsNoticeWindow = $('devtools-notice-window');
 
     // In tests we may not have these buttons.
     if (copyAllPlayerButton) {
@@ -42,9 +41,6 @@ export class Manager {
     if (hidePlayersButton) {
       hidePlayersButton.onclick = this.hidePlayers_.bind(this);
     }
-    if (devtoolsNoticeWindow) {
-      devtoolsNoticeWindow.onclick = this.hideNoticeWindow_;
-    }
   }
 
   /**
@@ -53,6 +49,14 @@ export class Manager {
    */
   updateAudioFocusSessions(sessions) {
     this.clientRenderer_.audioFocusSessionUpdated(sessions);
+  }
+
+  /**
+   * Updates the registered CDM list.
+   * @param cdms A list of registered Content Decryption Modules.
+   */
+  updateRegisteredCdms(cdms) {
+    this.clientRenderer_.updateRegisteredCdms(cdms);
   }
 
   /**
@@ -128,10 +132,6 @@ export class Manager {
     objectForEach(this.players_, function(playerInfo, id) {
       this.removePlayer(id);
     }, this);
-  }
-
-  hideNoticeWindow_() {
-    this.style.display = 'none';
   }
 
   updatePlayerInfoNoRecord(id, timestamp, key, value) {

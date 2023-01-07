@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -28,14 +27,10 @@ class POLICY_EXPORT UserCloudPolicyStoreBase : public CloudPolicyStore {
  public:
   UserCloudPolicyStoreBase(
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
-      PolicyScope policy_scope,
-      PolicySource policy_source);
+      PolicyScope policy_scope);
+  UserCloudPolicyStoreBase(const UserCloudPolicyStoreBase&) = delete;
+  UserCloudPolicyStoreBase& operator=(const UserCloudPolicyStoreBase&) = delete;
   ~UserCloudPolicyStoreBase() override;
-
-  PolicySource source() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return policy_source_;
-  }
 
  protected:
   // Creates a validator configured to validate a user policy. The caller owns
@@ -44,9 +39,11 @@ class POLICY_EXPORT UserCloudPolicyStoreBase : public CloudPolicyStore {
       std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
       CloudPolicyValidatorBase::ValidateTimestampOption option);
 
-  // Sets |policy_data| and |payload| as the active policy, and sets
-  // |policy_signature_public_key| as the active public key.
+  // Sets |policy_fetch_response|, |policy_data| and |payload| as the active
+  // policy, and sets |policy_signature_public_key| as the active public key.
   void InstallPolicy(
+      std::unique_ptr<enterprise_management::PolicyFetchResponse>
+          policy_fetch_response,
       std::unique_ptr<enterprise_management::PolicyData> policy_data,
       std::unique_ptr<enterprise_management::CloudPolicySettings> payload,
       const std::string& policy_signature_public_key);
@@ -59,9 +56,6 @@ class POLICY_EXPORT UserCloudPolicyStoreBase : public CloudPolicyStore {
   // Task runner for background file operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   PolicyScope policy_scope_;
-  PolicySource policy_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStoreBase);
 };
 
 }  // namespace policy

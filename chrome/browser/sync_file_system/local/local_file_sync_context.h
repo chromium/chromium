@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,11 @@
 #include "base/containers/circular_deque.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/sync_file_system/local/local_file_sync_status.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
@@ -78,6 +79,9 @@ class LocalFileSyncContext
                        leveldb::Env* env_override,
                        base::SingleThreadTaskRunner* ui_task_runner,
                        base::SingleThreadTaskRunner* io_task_runner);
+
+  LocalFileSyncContext(const LocalFileSyncContext&) = delete;
+  LocalFileSyncContext& operator=(const LocalFileSyncContext&) = delete;
 
   // Initializes |file_system_context| for syncable file operations
   // and registers the it into the internal map.
@@ -325,7 +329,7 @@ class LocalFileSyncContext
       base::File::Error error);
 
   const base::FilePath local_base_path_;
-  leveldb::Env* env_override_;
+  raw_ptr<leveldb::Env> env_override_;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
@@ -369,8 +373,6 @@ class LocalFileSyncContext
       origin_change_observers_;
 
   int mock_notify_changes_duration_in_sec_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileSyncContext);
 };
 
 }  // namespace sync_file_system

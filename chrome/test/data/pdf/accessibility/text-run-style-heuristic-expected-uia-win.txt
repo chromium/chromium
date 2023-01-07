@@ -1,5 +1,4 @@
-Pane
-++Document Name='PDF document containing 1 page'
-++++Group Name='Page 1'
-++++++Group IsControlElement=false
-++++++++Text Name='Hello world! One word equals to one text run.'
+Document Name='PDF document containing 1 page'
+++Group Name='Page 1'
+++++Group IsControlElement=false
+++++++Text Name='Hello world! One word equals to one text run.'

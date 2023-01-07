@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/svg/svg_angle_tear_off.h"
 
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

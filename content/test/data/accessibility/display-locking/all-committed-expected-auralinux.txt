@@ -8,7 +8,6 @@
 ++++++[static] name='nested activatable locked element will be in AX tree but without layout'
 ++[static] name='normal text 1'
 ++[section]
-++++[static] name='nested non-viewport-activatable locked element will not be in AX tree'
 ++[static] name='normal text 2'
 ++[section]
 ++++[static] name='nested non-activatable locked element will not be in AX tree'

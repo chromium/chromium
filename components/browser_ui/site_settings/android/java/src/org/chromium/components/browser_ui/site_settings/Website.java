@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,10 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.StorageInfoClearedCallback;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.url.GURL;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,7 +26,7 @@ import java.util.Map;
 /**
  * Website is a class for storing information about a website and its associated permissions.
  */
-public final class Website implements Serializable {
+public final class Website implements WebsiteEntry {
     private final WebsiteAddress mOrigin;
     private final WebsiteAddress mEmbedder;
 
@@ -40,12 +41,28 @@ public final class Website implements Serializable {
     private Map<Integer, PermissionInfo> mPermissionInfos = new HashMap<>();
 
     private LocalStorageInfo mLocalStorageInfo;
+    private FPSCookieInfo mFPSCookieInfo;
+    private CookiesInfo mCookiesInfo;
     private final List<StorageInfo> mStorageInfo = new ArrayList<>();
 
     // The collection of chooser-based permissions (e.g. USB device access) granted to this site.
     // Each entry declares its own ContentSettingsType and so depending on how this object was
     // built this list could contain multiple types of objects.
     private final List<ChosenObjectInfo> mObjectInfo = new ArrayList<ChosenObjectInfo>();
+
+    private static final String SCHEME_SUFFIX = "://";
+
+    /**
+     * Removes the scheme in a given URL, if present.
+     *
+     * Examples:
+     * - "google.com" -> "google.com"
+     * - "https://google.com" -> "google.com"
+     */
+    public static String omitProtocolIfPresent(String url) {
+        if (url.indexOf(SCHEME_SUFFIX) == -1) return url;
+        return UrlFormatter.formatUrlForDisplayOmitScheme(url);
+    }
 
     public Website(WebsiteAddress origin, WebsiteAddress embedder) {
         mOrigin = origin;
@@ -193,7 +210,8 @@ public final class Website implements Serializable {
             // permission.
             if (exception == null) {
                 exception = new ContentSettingException(ContentSettingsType.ADS,
-                        getAddress().getOrigin(), ContentSettingValues.BLOCK, "");
+                        getAddress().getOrigin(), ContentSettingValues.BLOCK, "",
+                        /*isEmbargoed=*/false);
                 setContentSettingException(type, exception);
             }
         } else if (type == ContentSettingsType.JAVASCRIPT) {
@@ -201,8 +219,8 @@ public final class Website implements Serializable {
             // because we show the javascript permission in Site Settings if javascript
             // is blocked by default.
             if (exception == null) {
-                exception = new ContentSettingException(
-                        ContentSettingsType.JAVASCRIPT, getAddress().getHost(), value, "");
+                exception = new ContentSettingException(ContentSettingsType.JAVASCRIPT,
+                        getAddress().getHost(), value, "", /*isEmbargoed=*/false);
                 setContentSettingException(type, exception);
             }
             // It's possible for either action to be emitted. This code path is hit
@@ -216,8 +234,8 @@ public final class Website implements Serializable {
             // It is possible to set the permission without having an existing exception,
             // because we always show the sound permission in Site Settings.
             if (exception == null) {
-                exception = new ContentSettingException(
-                        ContentSettingsType.SOUND, getAddress().getHost(), value, "");
+                exception = new ContentSettingException(ContentSettingsType.SOUND,
+                        getAddress().getHost(), value, "", /*isEmbargoed=*/false);
                 setContentSettingException(type, exception);
             }
             if (value == ContentSettingValues.BLOCK) {
@@ -234,6 +252,18 @@ public final class Website implements Serializable {
         }
     }
 
+    /**
+     * Returns whether either the permission or the content setting for the associated {@link type}
+     * is embargoed.
+     */
+    public boolean isEmbargoed(@ContentSettingsType int type) {
+        PermissionInfo permissionInfo = getPermissionInfo(type);
+        if (permissionInfo != null && permissionInfo.isEmbargoed()) return true;
+
+        ContentSettingException exception = getContentSettingException(type);
+        return (exception != null && exception.isEmbargoed());
+    }
+
     public void setLocalStorageInfo(LocalStorageInfo info) {
         mLocalStorageInfo = info;
     }
@@ -242,12 +272,28 @@ public final class Website implements Serializable {
         return mLocalStorageInfo;
     }
 
+    public FPSCookieInfo getFPSCookieInfo() {
+        return mFPSCookieInfo;
+    }
+
+    public void setFPSCookieInfo(FPSCookieInfo fpsCookieInfo) {
+        mFPSCookieInfo = fpsCookieInfo;
+    }
+
     public void addStorageInfo(StorageInfo info) {
         mStorageInfo.add(info);
     }
 
     public List<StorageInfo> getStorageInfo() {
         return new ArrayList<StorageInfo>(mStorageInfo);
+    }
+
+    public void setCookiesInfo(CookiesInfo info) {
+        mCookiesInfo = info;
+    }
+
+    public CookiesInfo getCookiesInfo() {
+        return mCookiesInfo;
     }
 
     public void clearAllStoredData(
@@ -275,13 +321,6 @@ public final class Website implements Serializable {
         public void onStoredDataCleared();
     }
 
-    public long getTotalUsage() {
-        long usage = 0;
-        if (mLocalStorageInfo != null) usage += mLocalStorageInfo.getSize();
-        for (StorageInfo info : mStorageInfo) usage += info.getSize();
-        return usage;
-    }
-
     /**
      * Add information about an object the user has granted permission for this site to access.
      */
@@ -294,5 +333,35 @@ public final class Website implements Serializable {
      */
     public List<ChosenObjectInfo> getChosenObjectInfo() {
         return new ArrayList<ChosenObjectInfo>(mObjectInfo);
+    }
+
+    // WebsiteEntry implementation.
+    @Override
+    public String getTitleForPreferenceRow() {
+        return omitProtocolIfPresent(getTitle());
+    }
+
+    @Override
+    public GURL getFaviconUrl() {
+        return new GURL(getAddress().getOrigin());
+    }
+
+    @Override
+    public long getTotalUsage() {
+        long usage = 0;
+        if (mLocalStorageInfo != null) usage += mLocalStorageInfo.getSize();
+        for (StorageInfo info : mStorageInfo) usage += info.getSize();
+        return usage;
+    }
+
+    @Override
+    public int getNumberOfCookies() {
+        if (mCookiesInfo == null) return 0;
+        return mCookiesInfo.getCount();
+    }
+
+    @Override
+    public boolean matches(String search) {
+        return getTitle().contains(search);
     }
 }

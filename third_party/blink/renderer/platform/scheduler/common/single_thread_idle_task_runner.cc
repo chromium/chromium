@@ -1,24 +1,25 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/common/single_thread_idle_task_runner.h"
 
 #include "base/location.h"
-#include "base/record_replay.h"
-#include "base/single_thread_task_runner.h"
-#include "base/trace_event/blame_context.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 namespace scheduler {
 
 SingleThreadIdleTaskRunner::SingleThreadIdleTaskRunner(
     scoped_refptr<base::SingleThreadTaskRunner> idle_priority_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> control_task_runner,
     Delegate* delegate)
-    : idle_priority_task_runner_(idle_priority_task_runner),
-      delegate_(delegate),
-      blame_context_(nullptr) {
+    : idle_priority_task_runner_(std::move(idle_priority_task_runner)),
+      control_task_runner_(std::move(control_task_runner)),
+      delegate_(delegate) {
   weak_scheduler_ptr_ = weak_factory_.GetWeakPtr();
 }
 
@@ -39,14 +40,31 @@ void SingleThreadIdleTaskRunner::PostIdleTask(const base::Location& from_here,
       from_here, base::BindOnce(&SingleThreadIdleTaskRunner::RunTask,
                                 weak_scheduler_ptr_, std::move(idle_task)));
 }
-
 void SingleThreadIdleTaskRunner::PostDelayedIdleTask(
     const base::Location& from_here,
     const base::TimeDelta delay,
     IdleTask idle_task) {
-  base::TimeTicks first_run_time = delegate_->NowTicks() + delay;
+  base::TimeTicks delayed_run_time = delegate_->NowTicks() + delay;
+  if (RunsTasksInCurrentSequence()) {
+    PostDelayedIdleTaskOnAssociatedThread(from_here, delayed_run_time,
+                                          std::move(idle_task));
+  } else {
+    control_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &SingleThreadIdleTaskRunner::PostDelayedIdleTaskOnAssociatedThread,
+            weak_scheduler_ptr_, from_here, delayed_run_time,
+            std::move(idle_task)));
+  }
+}
+
+void SingleThreadIdleTaskRunner::PostDelayedIdleTaskOnAssociatedThread(
+    const base::Location& from_here,
+    const base::TimeTicks delayed_run_time,
+    IdleTask idle_task) {
+  DCHECK(RunsTasksInCurrentSequence());
   delayed_idle_tasks_.emplace(
-      first_run_time,
+      delayed_run_time,
       std::make_pair(
           from_here,
           base::BindOnce(&SingleThreadIdleTaskRunner::RunTask,
@@ -81,19 +99,10 @@ void SingleThreadIdleTaskRunner::RunTask(IdleTask idle_task) {
   TRACE_EVENT1("renderer.scheduler", "SingleThreadIdleTaskRunner::RunTask",
                "allotted_time_ms",
                (deadline - base::TimeTicks::Now()).InMillisecondsF());
-  if (blame_context_)
-    blame_context_->Enter();
   std::move(idle_task).Run(deadline);
-  if (blame_context_)
-    blame_context_->Leave();
 
   if (!recordreplay::AreEventsDisallowed())
     delegate_->DidProcessIdleTask();
-}
-
-void SingleThreadIdleTaskRunner::SetBlameContext(
-    base::trace_event::BlameContext* blame_context) {
-  blame_context_ = blame_context;
 }
 
 }  // namespace scheduler

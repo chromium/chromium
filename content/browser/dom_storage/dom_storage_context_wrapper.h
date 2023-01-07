@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,11 @@
 #include <map>
 #include <string>
 
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
@@ -26,15 +25,21 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/quota/storage_policy_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 class SpecialStoragePolicy;
 namespace mojom {
 class Partition;
-}
-}
+}  // namespace mojom
+}  // namespace storage
 
 namespace content {
 
@@ -66,7 +71,12 @@ class CONTENT_EXPORT DOMStorageContextWrapper
       StoragePartitionImpl* partition,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
 
+  DOMStorageContextWrapper() = delete;
+
   explicit DOMStorageContextWrapper(StoragePartitionImpl* partition);
+
+  DOMStorageContextWrapper(const DOMStorageContextWrapper&) = delete;
+  DOMStorageContextWrapper& operator=(const DOMStorageContextWrapper&) = delete;
 
   storage::mojom::SessionStorageControl* GetSessionStorageControl();
   storage::mojom::LocalStorageControl* GetLocalStorageControl();
@@ -74,7 +84,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   // DOMStorageContext implementation.
   void GetLocalStorageUsage(GetLocalStorageUsageCallback callback) override;
   void GetSessionStorageUsage(GetSessionStorageUsageCallback callback) override;
-  void DeleteLocalStorage(const url::Origin& origin,
+  void DeleteLocalStorage(const blink::StorageKey& storage_key,
                           base::OnceClosure callback) override;
   void PerformLocalStorageCleanup(base::OnceClosure callback) override;
   void DeleteSessionStorage(const SessionStorageUsageInfo& usage_info,
@@ -96,18 +106,22 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   void Flush();
 
   void OpenLocalStorage(
-      const url::Origin& origin,
-      mojo::PendingReceiver<blink::mojom::StorageArea> receiver);
+      const blink::StorageKey& storage_key,
+      absl::optional<blink::LocalFrameToken> local_frame_token,
+      mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
+      ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
+      mojo::ReportBadMessageCallback bad_message_callback);
   void BindNamespace(
       const std::string& namespace_id,
       mojo::ReportBadMessageCallback bad_message_callback,
       mojo::PendingReceiver<blink::mojom::SessionStorageNamespace> receiver);
   void BindStorageArea(
-      ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
+      absl::optional<blink::LocalFrameToken> local_frame_token,
       const std::string& namespace_id,
-      mojo::ReportBadMessageCallback bad_message_callback,
-      mojo::PendingReceiver<blink::mojom::StorageArea> receiver);
+      mojo::PendingReceiver<blink::mojom::StorageArea> receiver,
+      ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
+      mojo::ReportBadMessageCallback bad_message_callback);
 
   // Pushes information about known Session Storage namespaces down to the
   // Storage Service instance after a crash. This in turn allows renderer
@@ -144,6 +158,17 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   void ApplyPolicyUpdates(
       std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates);
 
+  enum class StorageType {
+    kLocalStorage,
+    kSessionStorage,
+  };
+  bool IsRequestValid(
+      const StorageType type,
+      const blink::StorageKey& storage_key,
+      absl::optional<blink::LocalFrameToken> local_frame_token,
+      ChildProcessSecurityPolicyImpl::Handle security_policy_handle,
+      mojo::ReportBadMessageCallback bad_message_callback);
+
   // Since the tab restore code keeps a reference to the session namespaces
   // of recently closed tabs (see sessions::ContentPlatformSpecificTabData and
   // sessions::TabRestoreService), a SessionStorageNamespaceImpl can outlive the
@@ -161,7 +186,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   // Unowned reference to our owning partition. This is always valid until it's
   // reset to null if/when the partition is destroyed. May also be null in
   // tests.
-  StoragePartitionImpl* partition_;
+  raw_ptr<StoragePartitionImpl> partition_;
 
   // To receive memory pressure signals.
   std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
@@ -171,9 +196,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   mojo::Remote<storage::mojom::SessionStorageControl> session_storage_control_;
   mojo::Remote<storage::mojom::LocalStorageControl> local_storage_control_;
 
-  base::Optional<storage::StoragePolicyObserver> storage_policy_observer_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DOMStorageContextWrapper);
+  absl::optional<storage::StoragePolicyObserver> storage_policy_observer_;
 };
 
 }  // namespace content

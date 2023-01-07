@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -30,7 +30,7 @@
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // The modulus length for RSA keys used by easy sign-in.
@@ -50,16 +50,8 @@ void RunCallbackOnTaskRunner(
 void GetSystemSlotOnIOThread(
     const scoped_refptr<base::SingleThreadTaskRunner>& response_task_runner,
     base::OnceCallback<void(crypto::ScopedPK11Slot)> callback) {
-  // This callback will only be executed once but must be marked repeating
-  // because it could be discarded by GetSystemNSSKeySlot() and invoked here
-  // instead.
-  auto callback_on_origin_thread = base::BindRepeating(
-      &RunCallbackOnTaskRunner, response_task_runner, base::Passed(&callback));
-
-  crypto::ScopedPK11Slot system_slot =
-      crypto::GetSystemNSSKeySlot(callback_on_origin_thread);
-  if (system_slot)
-    callback_on_origin_thread.Run(std::move(system_slot));
+  crypto::GetSystemNSSKeySlot(base::BindOnce(
+      &RunCallbackOnTaskRunner, response_task_runner, std::move(callback)));
 }
 
 // Relays `EnsureUserTpmInitializedOnIOThread` callback to
@@ -126,7 +118,7 @@ void SignDataOnWorkerThread(
     return;
   }
 
-  crypto::ScopedSECItem sign_result(SECITEM_AllocItem(NULL, NULL, 0));
+  crypto::ScopedSECItem sign_result(SECITEM_AllocItem(nullptr, nullptr, 0));
   if (SEC_SignData(sign_result.get(),
                    reinterpret_cast<const unsigned char*>(data.data()),
                    data.size(), private_key.get(),
@@ -205,8 +197,8 @@ void EasyUnlockTpmKeyManager::ResetLocalStateForUser(
   if (!local_state)
     return;
 
-  DictionaryPrefUpdate update(local_state, prefs::kEasyUnlockLocalStateTpmKeys);
-  update->RemoveKey(account_id.GetUserEmail());
+  ScopedDictPrefUpdate update(local_state, prefs::kEasyUnlockLocalStateTpmKeys);
+  update->Remove(account_id.GetUserEmail());
 }
 
 EasyUnlockTpmKeyManager::EasyUnlockTpmKeyManager(
@@ -262,7 +254,7 @@ bool EasyUnlockTpmKeyManager::StartGetSystemSlotTimeoutMs(size_t timeout_ms) {
       base::BindOnce(&EasyUnlockTpmKeyManager::OnTpmKeyCreated,
                      get_tpm_slot_weak_ptr_factory_.GetWeakPtr(),
                      std::string()),
-      base::TimeDelta::FromMilliseconds(timeout_ms));
+      base::Milliseconds(timeout_ms));
   return true;
 }
 
@@ -270,13 +262,11 @@ std::string EasyUnlockTpmKeyManager::GetPublicTpmKey(
     const AccountId& account_id) {
   if (!local_state_)
     return std::string();
-  const base::DictionaryValue* dict =
-      local_state_->GetDictionary(prefs::kEasyUnlockLocalStateTpmKeys);
-  std::string key;
-  if (dict)
-    dict->GetStringWithoutPathExpansion(account_id.GetUserEmail(), &key);
+  const base::Value::Dict& dict =
+      local_state_->GetDict(prefs::kEasyUnlockLocalStateTpmKeys);
+  const std::string* key = dict.FindString(account_id.GetUserEmail());
   std::string decoded;
-  base::Base64Decode(key, &decoded);
+  base::Base64Decode(key ? *key : std::string(), &decoded);
   return decoded;
 }
 
@@ -312,9 +302,9 @@ void EasyUnlockTpmKeyManager::SetKeyInLocalState(const AccountId& account_id,
 
   std::string encoded;
   base::Base64Encode(value, &encoded);
-  DictionaryPrefUpdate update(local_state_,
+  ScopedDictPrefUpdate update(local_state_,
                               prefs::kEasyUnlockLocalStateTpmKeys);
-  update->SetKey(account_id.GetUserEmail(), base::Value(encoded));
+  update->Set(account_id.GetUserEmail(), encoded);
 }
 
 void EasyUnlockTpmKeyManager::OnUserTPMInitialized(
@@ -334,7 +324,12 @@ void EasyUnlockTpmKeyManager::OnUserTPMInitialized(
 void EasyUnlockTpmKeyManager::CreateKeyInSystemSlot(
     const std::string& public_key,
     crypto::ScopedPK11Slot system_slot) {
-  CHECK(system_slot);
+  if (!system_slot) {
+    // Emulate timeout, system slot will never be loaded.
+    OnTpmKeyCreated(std::string());
+    return;
+  }
+
   create_tpm_key_state_ = CREATE_TPM_KEY_GOT_SYSTEM_SLOT;
 
   // If there are any delayed tasks posted using `StartGetSystemSlotTimeoutMs`,
@@ -358,7 +353,11 @@ void EasyUnlockTpmKeyManager::SignDataWithSystemSlot(
     const std::string& data,
     base::OnceCallback<void(const std::string& data)> callback,
     crypto::ScopedPK11Slot system_slot) {
-  CHECK(system_slot);
+  if (!system_slot) {
+    // Emulate timeout, system slot will never be loaded.
+    OnTpmKeyCreated(std::string());
+    return;
+  }
 
   // This task interacts with the TPM, hence MayBlock().
   base::ThreadPool::PostTask(
@@ -402,4 +401,4 @@ void EasyUnlockTpmKeyManager::OnDataSigned(
   std::move(callback).Run(signature);
 }
 
-}  // namespace chromeos
+}  // namespace ash

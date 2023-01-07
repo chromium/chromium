@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,14 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
@@ -52,7 +54,8 @@ class CC_EXPORT PictureLayerImpl
 
   // LayerImpl overrides.
   const char* LayerTypeAsString() const override;
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
   void PushPropertiesTo(LayerImpl* layer) override;
   void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
@@ -65,7 +68,7 @@ class CC_EXPORT PictureLayerImpl
   void ReleaseTileResources() override;
   void RecreateTileResources() override;
   Region GetInvalidationRegionForDebugging() override;
-  gfx::Rect GetEnclosingRectInTargetSpace() const override;
+  gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;
   gfx::ContentColorUsage GetContentColorUsage() const override;
 
   // PictureLayerTilingClient overrides.
@@ -78,6 +81,8 @@ class CC_EXPORT PictureLayerImpl
   bool RequiresHighResToDraw() const override;
   const PaintWorkletRecordMap& GetPaintWorkletRecords() const override;
   bool IsDirectlyCompositedImage() const override;
+  bool ScrollInteractionInProgress() const override;
+  bool CurrentScrollCheckerboardsDueToNoRecording() const override;
 
   // ImageAnimationController::AnimationDriver overrides.
   bool ShouldAnimate(PaintImage::Id paint_image_id) const override;
@@ -104,7 +109,10 @@ class CC_EXPORT PictureLayerImpl
 
   void SetNearestNeighbor(bool nearest_neighbor);
 
-  void SetDirectlyCompositedImageSize(base::Optional<gfx::Size>);
+  void SetDirectlyCompositedImageDefaultRasterScale(
+      const gfx::Vector2dF& scale);
+  // TODO(crbug.com/1196414): Support 2D scales in directly composited images.
+  void SetDirectlyCompositedImageDefaultRasterScale(float scale);
 
   size_t GPUMemoryUsageInBytes() const override;
 
@@ -164,7 +172,8 @@ class CC_EXPORT PictureLayerImpl
   void InvalidatePaintWorklets(const PaintWorkletInput::PropertyKey& key);
 
   void SetContentsScaleForTesting(float scale) {
-    ideal_contents_scale_ = raster_contents_scale_ = scale;
+    ideal_contents_scale_ = raster_contents_scale_ =
+        gfx::Vector2dF(scale, scale);
   }
 
   void AddLastAppendQuadsTilingForTesting(PictureLayerTiling* tiling) {
@@ -172,17 +181,19 @@ class CC_EXPORT PictureLayerImpl
   }
 
  protected:
+  friend class RasterizeAndRecordBenchmarkImpl;
+
   PictureLayerImpl(LayerTreeImpl* tree_impl, int id);
   PictureLayerTiling* AddTiling(const gfx::AxisTransform2d& contents_transform);
   void RemoveAllTilings();
-  bool CanRecreateHighResTilingForLCDTextAndRasterTranslation(
+  bool CanRecreateHighResTilingForLCDTextAndRasterTransform(
       const PictureLayerTiling& high_res) const;
   void UpdateTilingsForRasterScaleAndTranslation(bool adjusted_raster_scale);
   void AddLowResolutionTilingIfNeeded();
   bool ShouldAdjustRasterScale() const;
   void RecalculateRasterScales();
   void AdjustRasterScaleForTransformAnimation(
-      float preserved_raster_contents_scale);
+      const gfx::Vector2dF& preserved_raster_contents_scale);
   float MinimumRasterContentsScaleForWillChangeTransform() const;
   // Returns false if raster translation is not applicable.
   bool CalculateRasterTranslation(gfx::Vector2dF& raster_translation) const;
@@ -194,12 +205,6 @@ class CC_EXPORT PictureLayerImpl
   PictureLayerImpl* GetRecycledTwinLayer() const;
   bool ShouldDirectlyCompositeImage(float raster_scale) const;
 
-  // Returns the default raster scale used for current layer bounds and directly
-  // composited image size. To avoid re-raster on scale changes, this may be
-  // different than the used raster scale, see: |RecalculateRasterScales()| and
-  // |CalculateDirectlyCompositedImageRasterScale()|.
-  float GetDefaultDirectlyCompositedImageRasterScale() const;
-
   // Returns the raster scale that should be used for a directly composited
   // image. This takes into account the ideal contents scale to ensure we don't
   // use too much memory for layers that are small due to contents scale
@@ -209,7 +214,7 @@ class CC_EXPORT PictureLayerImpl
 
   void SanityCheckTilingState() const;
 
-  void GetDebugBorderProperties(SkColor* color, float* width) const override;
+  void GetDebugBorderProperties(SkColor4f* color, float* width) const override;
   void GetAllPrioritizedTilesForTracing(
       std::vector<PrioritizedTile>* prioritized_tiles) const override;
   void AsValueInto(base::trace_event::TracedValue* dict) const override;
@@ -231,12 +236,11 @@ class CC_EXPORT PictureLayerImpl
       bool raster_translation_aligns_pixels) const;
   void UpdateCanUseLCDText(bool raster_translation_aligns_pixels);
 
-  // TODO(crbug.com/1114504): For now this checks the immediate transform node
-  // only. The callers may actually want to know if this layer or ancestor has
-  // will change transform.
-  bool HasWillChangeTransformHint() const;
+  // Whether the transform node for this layer, or any ancestor transform
+  // node, has a will-change hint for one of the transform properties.
+  bool AffectedByWillChangeTransformHint() const;
 
-  PictureLayerImpl* twin_layer_ = nullptr;
+  raw_ptr<PictureLayerImpl> twin_layer_ = nullptr;
 
   std::unique_ptr<PictureLayerTilingSet> tilings_ =
       CreatePictureLayerTilingSet();
@@ -250,18 +254,31 @@ class CC_EXPORT PictureLayerImpl
   // Device scale is from screen dpi, and it comes from device scale facter.
   float ideal_device_scale_ = 0.f;
   // Source scale comes from javascript css scale.
-  float ideal_source_scale_ = 0.f;
+  gfx::Vector2dF ideal_source_scale_;
   // Contents scale = device scale * page scale * source scale.
-  float ideal_contents_scale_ = 0.f;
+  gfx::Vector2dF ideal_contents_scale_;
 
   // Raster scales are set from ideal scales. They are scales we choose to
   // raster at. They may not match the ideal scales at times to avoid raster for
   // performance reasons.
   float raster_page_scale_ = 0.f;
   float raster_device_scale_ = 0.f;
-  float raster_source_scale_ = 0.f;
-  float raster_contents_scale_ = 0.f;
+  gfx::Vector2dF raster_source_scale_;
+  gfx::Vector2dF raster_contents_scale_;
   float low_res_raster_contents_scale_ = 0.f;
+
+  float ideal_source_scale_key() const {
+    return std::max(ideal_source_scale_.x(), ideal_source_scale_.y());
+  }
+  float ideal_contents_scale_key() const {
+    return std::max(ideal_contents_scale_.x(), ideal_contents_scale_.y());
+  }
+  float raster_source_scale_key() const {
+    return std::max(raster_source_scale_.x(), raster_source_scale_.y());
+  }
+  float raster_contents_scale_key() const {
+    return std::max(raster_contents_scale_.x(), raster_contents_scale_.y());
+  }
 
   bool is_backdrop_filter_mask_ : 1;
 
@@ -270,19 +287,25 @@ class CC_EXPORT PictureLayerImpl
 
   bool nearest_neighbor_ : 1;
 
+  // This is set by UpdateRasterSource() on change of raster source size. It's
+  // used to recalculate raster scale for will-chagne:transform. It's reset to
+  // false after raster scale update.
+  bool raster_source_size_changed_ : 1;
+
+  bool directly_composited_image_default_raster_scale_changed_ : 1;
+
   LCDTextDisallowedReason lcd_text_disallowed_reason_ =
       LCDTextDisallowedReason::kNone;
 
-  // The intrinsic size of the directly composited image. A directly composited
-  // image is an image which is the only thing drawn into a layer. In these
-  // cases we attempt to raster the image at its intrinsic size.
-  base::Optional<gfx::Size> directly_composited_image_size_;
-
-  // The default raster source scale for a directly composited image, the last
-  // time raster scales were calculated. This will be the same as
-  // |raster_source_scale_| if no adjustments were made in
+  // If this scale is not zero, it indicates that this layer is a directly
+  // composited image layer (i.e. the only thing drawn into this layer is an
+  // image). The rasterized pixels will be the same as the image's original
+  // pixels if this scale is used as the raster scale.
+  // To avoid re-raster on scale changes, this may be different than the used
+  // raster scale, see: |RecalculateRasterScales()| and
   // |CalculateDirectlyCompositedImageRasterScale()|.
-  float directly_composited_image_initial_raster_scale_ = 0.f;
+  // TODO(crbug.com/1196414): Support 2D scales in directly composited images.
+  float directly_composited_image_default_raster_scale_ = 0;
 
   // Use this instead of |visible_layer_rect()| for tiling calculations. This
   // takes external viewport and transform for tile priority into account.

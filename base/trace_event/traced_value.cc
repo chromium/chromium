@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,8 @@
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
+#include "base/pickle.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_impl.h"
@@ -151,7 +153,7 @@ class PickleWriter final : public TracedValue::Writer {
 
     BeginDictionary(name);
     pickle_.WriteBytes(pickle_writer->pickle_.payload(),
-                       static_cast<int>(pickle_writer->pickle_.payload_size()));
+                       pickle_writer->pickle_.payload_size());
     EndDictionary();
   }
 
@@ -161,7 +163,7 @@ class PickleWriter final : public TracedValue::Writer {
 
     BeginDictionaryWithCopiedName(name);
     pickle_.WriteBytes(pickle_writer->pickle_.payload(),
-                       static_cast<int>(pickle_writer->pickle_.payload_size()));
+                       pickle_writer->pickle_.payload_size());
     EndDictionary();
   }
 

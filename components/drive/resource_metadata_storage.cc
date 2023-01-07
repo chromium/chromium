@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/drive/drive.pb.h"
 #include "components/drive/drive_api_util.h"
@@ -100,7 +99,7 @@ bool IsChildEntryKey(const leveldb::Slice& key) {
 bool IsCacheEntryKey(const leveldb::Slice& key) {
   // A cache entry key should end with |kDBKeyDelimeter + kCacheEntryKeySuffix|.
   const leveldb::Slice expected_suffix(kCacheEntryKeySuffix,
-                                       base::size(kCacheEntryKeySuffix) - 1);
+                                       std::size(kCacheEntryKeySuffix) - 1);
   if (key.size() < 1 + expected_suffix.size() ||
       key[key.size() - expected_suffix.size() - 1] != kDBKeyDelimeter)
     return false;
@@ -114,7 +113,7 @@ bool IsCacheEntryKey(const leveldb::Slice& key) {
 std::string GetIdFromCacheEntryKey(const leveldb::Slice& key) {
   DCHECK(IsCacheEntryKey(key));
   // Drop the suffix |kDBKeyDelimeter + kCacheEntryKeySuffix| from the key.
-  const size_t kSuffixLength = base::size(kCacheEntryKeySuffix) - 1;
+  const size_t kSuffixLength = std::size(kCacheEntryKeySuffix) - 1;
   const int id_length = key.size() - 1 - kSuffixLength;
   return std::string(key.data(), id_length);
 }
@@ -134,7 +133,7 @@ bool IsIdEntryKey(const leveldb::Slice& key) {
   // A resource-ID-to-local-ID entry key should start with
   // |kDBKeyDelimeter + kIdEntryKeyPrefix + kDBKeyDelimeter|.
   const leveldb::Slice expected_prefix(kIdEntryKeyPrefix,
-                                       base::size(kIdEntryKeyPrefix) - 1);
+                                       std::size(kIdEntryKeyPrefix) - 1);
   if (key.size() < 2 + expected_prefix.size())
     return false;
   const leveldb::Slice key_substring(key.data() + 1, expected_prefix.size());
@@ -148,7 +147,7 @@ std::string GetResourceIdFromIdEntryKey(const leveldb::Slice& key) {
   DCHECK(IsIdEntryKey(key));
   // Drop the prefix |kDBKeyDelimeter + kIdEntryKeyPrefix + kDBKeyDelimeter|
   // from the key.
-  const size_t kPrefixLength = base::size(kIdEntryKeyPrefix) - 1;
+  const size_t kPrefixLength = std::size(kIdEntryKeyPrefix) - 1;
   const int offset = kPrefixLength + 2;
   return std::string(key.data() + offset, key.size() - offset);
 }
@@ -1206,8 +1205,9 @@ bool ResourceMetadataStorage::CheckValidity() {
     // If the parent is referenced, then confirm that it exists and check the
     // parent-child relationships.
     if (!entry.parent_local_id().empty()) {
-      const auto mapping_it = resource_entries.find(entry.parent_local_id());
-      if (mapping_it == resource_entries.end()) {
+      const auto parent_mapping_it =
+          resource_entries.find(entry.parent_local_id());
+      if (parent_mapping_it == resource_entries.end()) {
         DLOG(ERROR) << "Parent entry not found.";
         RecordCheckValidityFailure(CHECK_VALIDITY_FAILURE_INVALID_PARENT_ID);
         return false;

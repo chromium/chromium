@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -59,6 +58,10 @@ class BufferFeeder : public MediaPipelineBackend::Decoder::Delegate {
                base::OnceClosure eos_cb,
                double* rate_change_sequence,
                int num_rate_changes);
+
+  BufferFeeder(const BufferFeeder&) = delete;
+  BufferFeeder& operator=(const BufferFeeder&) = delete;
+
   ~BufferFeeder() override {}
 
   void Initialize();
@@ -120,8 +123,6 @@ class BufferFeeder : public MediaPipelineBackend::Decoder::Delegate {
   scoped_refptr<DecoderBufferBase> pending_buffer_;
   base::ThreadChecker thread_checker_;
   int current_rate_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferFeeder);
 };
 
 double kTestRateSequence1[] = {0.5, 0.7, 0.99, 1.0, 1.01, 1.3, 2.0};
@@ -136,6 +137,10 @@ using TestParams = std::tuple<int /* sample rate */, double* /* sequence */>;
 class MultizoneBackendTest : public testing::TestWithParam<TestParams> {
  public:
   MultizoneBackendTest();
+
+  MultizoneBackendTest(const MultizoneBackendTest&) = delete;
+  MultizoneBackendTest& operator=(const MultizoneBackendTest&) = delete;
+
   ~MultizoneBackendTest() override;
 
   void SetUp() override {
@@ -164,8 +169,6 @@ class MultizoneBackendTest : public testing::TestWithParam<TestParams> {
   base::test::TaskEnvironment task_environment_;
   std::vector<std::unique_ptr<BufferFeeder>> effects_feeders_;
   std::unique_ptr<BufferFeeder> audio_feeder_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultizoneBackendTest);
 };
 
 namespace {
@@ -267,8 +270,7 @@ void BufferFeeder::FeedBuffer() {
         new ::media::DecoderBuffer(size_bytes));
     memset(silence_buffer->writable_data(), 0, silence_buffer->data_size());
     pending_buffer_ = new media::DecoderBufferAdapter(silence_buffer);
-    pending_buffer_->set_timestamp(
-        base::TimeDelta::FromMicroseconds(pushed_us_));
+    pending_buffer_->set_timestamp(base::Microseconds(pushed_us_));
   }
   BufferStatus status = decoder_->PushBuffer(pending_buffer_.get());
   ASSERT_NE(status, MediaPipelineBackend::kBufferFailed);
@@ -389,7 +391,7 @@ TEST_P(MultizoneBackendTest, RateChanges) {
   const TestParams& params = GetParam();
   int sample_rate = testing::get<0>(params);
   double* sequence = testing::get<1>(params);
-  Initialize(sample_rate, sequence, base::size(kTestRateSequence1));
+  Initialize(sample_rate, sequence, std::size(kTestRateSequence1));
   AddEffectsStreams();
   Start();
 }

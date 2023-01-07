@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/optional.h"
 #include "base/threading/thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.grpc.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/cast_core/public/src/proto/runtime/cast_audio_channel_service.grpc.pb.h"
 
 namespace chromecast {
 namespace media {
@@ -49,7 +49,7 @@ class PushBufferQueueTests : public testing::Test {
   void ReadData(const std::string& name,
                 const PushBufferQueue::PushBufferRequest& target_buffer) {
     ASSERT_TRUE(queue_.HasBufferedData()) << name;
-    base::Optional<PushBufferRequest> get = queue_.GetBufferedData();
+    absl::optional<PushBufferRequest> get = queue_.GetBufferedData();
     ASSERT_TRUE(get.has_value()) << name;
     CheckEqual("first", get.value(), target_buffer);
   }
@@ -62,8 +62,9 @@ class PushBufferQueueTests : public testing::Test {
   static PushBufferRequest CreateAudioBufferRequest(int64_t pts_micros,
                                                     bool end_of_stream,
                                                     TData... data) {
-    return CreateAudioBufferRequest(pts_micros, end_of_stream,
-                                    std::vector<uint8_t>{uint8_t{data}...});
+    return CreateAudioBufferRequest(
+        pts_micros, end_of_stream,
+        std::vector<uint8_t>{static_cast<uint8_t>(data)...});
   }
 
   static PushBufferRequest CreateAudioBufferRequest(
@@ -136,7 +137,7 @@ class PushBufferQueueTests : public testing::Test {
     return queue_.PushBufferImpl(request);
   }
 
-  base::Optional<PushBufferQueue::PushBufferRequest> StartGetBufferedData() {
+  absl::optional<PushBufferQueue::PushBufferRequest> StartGetBufferedData() {
     return queue_.GetBufferedDataImpl();
   }
 
@@ -219,7 +220,9 @@ TEST_F(PushBufferQueueTests, TestWrapAround) {
     ASSERT_EQ(serialized_str.size(), size_t{6}) << name;
 
     ASSERT_TRUE(queue_.HasBufferedData()) << name;
-    ASSERT_TRUE(queue_.PushBuffer(buffer)) << name;
+    ASSERT_EQ(queue_.PushBuffer(buffer),
+              CmaBackend::BufferStatus::kBufferSuccess)
+        << name;
 
     ReadData(name, old_buffer);
   }
@@ -234,11 +237,14 @@ TEST_F(PushBufferQueueTests, TestWriteEntireBuffer) {
     std::string serialized_str;
     buffer.SerializeToString(&serialized_str);
     ASSERT_EQ(serialized_str.size(), size_t{7});
-    ASSERT_TRUE(queue_.PushBuffer(buffer)) << GetIterationName(i);
+    ASSERT_EQ(queue_.PushBuffer(buffer),
+              CmaBackend::BufferStatus::kBufferSuccess)
+        << GetIterationName(i);
   }
 
   auto failing_buffer = CreateAudioBufferRequest(0, false);
-  EXPECT_FALSE(queue_.PushBuffer(failing_buffer));
+  EXPECT_EQ(queue_.PushBuffer(failing_buffer),
+            CmaBackend::BufferStatus::kBufferFailed);
 
   for (size_t i = 0; i < (PushBufferQueue::kBufferSizeBytes >> 3); i++) {
     auto buffer = CreateAudioBufferRequest(0, false, 0, 1, 2);
@@ -264,7 +270,7 @@ TEST_F(PushBufferQueueTests, TestReadingFromPartialWrite) {
   UpdateBufferWriteStreamPositions();
 
   ASSERT_TRUE(queue_.HasBufferedData());
-  base::Optional<PushBufferRequest> pulled_buffer = queue_.GetBufferedData();
+  absl::optional<PushBufferRequest> pulled_buffer = queue_.GetBufferedData();
   EXPECT_FALSE(pulled_buffer.has_value());
   EXPECT_TRUE(queue_.HasBufferedData());
 

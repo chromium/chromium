@@ -48,7 +48,7 @@ binding provided by Selenium.
 ```python
 $ cd ~/chromium/src/chrome/test/chromedriver
 $ export PYTHONPATH=$PWD:$PWD/server:$PWD/client
-$ python
+$ python3
 >>> import server
 >>> import chromedriver
 >>> cd_server = server.Server('../../../out/Default/chromedriver')
@@ -76,7 +76,7 @@ is essentially synchronous JSON commands over HTTP. WebDriver clients are
 available in many languages, and many are available from the open source
 [Selenium WebDriver project](https://www.selenium.dev/).
 ChromeDriver uses the webserver from
-[net/server](https://source.chromium.org/chromium/chromium/src/+/master:net/server/).
+[net/server](https://source.chromium.org/chromium/chromium/src/+/main:net/server/).
 
 Additional information is available on the following pages:
 * [Threading](docs/threading.md): ChromeDriver threading model.

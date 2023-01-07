@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,10 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
-#include "base/test/test_mock_time_task_runner.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "net/base/upload_progress.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,6 +28,10 @@ class TestingUploadProgressTracker : public UploadProgressTracker {
                               std::move(task_runner)),
         current_time_(base::TimeTicks::Now()) {}
 
+  TestingUploadProgressTracker(const TestingUploadProgressTracker&) = delete;
+  TestingUploadProgressTracker& operator=(const TestingUploadProgressTracker&) =
+      delete;
+
   void set_upload_progress(const net::UploadProgress& upload_progress) {
     upload_progress_ = upload_progress;
   }
@@ -46,8 +49,6 @@ class TestingUploadProgressTracker : public UploadProgressTracker {
 
   base::TimeTicks current_time_;
   net::UploadProgress upload_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingUploadProgressTracker);
 };
 
 }  // namespace
@@ -55,13 +56,17 @@ class TestingUploadProgressTracker : public UploadProgressTracker {
 class UploadProgressTrackerTest : public ::testing::Test {
  public:
   UploadProgressTrackerTest()
-      : task_runner_handle_(mock_task_runner_),
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         upload_progress_tracker_(
             FROM_HERE,
             base::BindRepeating(
                 &UploadProgressTrackerTest::OnUploadProgressReported,
                 base::Unretained(this)),
-            mock_task_runner_) {}
+            task_environment_.GetMainThreadTaskRunner()) {}
+
+  UploadProgressTrackerTest(const UploadProgressTrackerTest&) = delete;
+  UploadProgressTrackerTest& operator=(const UploadProgressTrackerTest&) =
+      delete;
 
  private:
   void OnUploadProgressReported(const net::UploadProgress& progress) {
@@ -75,15 +80,9 @@ class UploadProgressTrackerTest : public ::testing::Test {
   int64_t reported_position_ = 0;
   int64_t reported_total_size_ = 0;
 
-  // Mocks the current thread's task runner which will also be used as the
-  // UploadProgressTracker's task runner.
-  scoped_refptr<base::TestMockTimeTaskRunner> mock_task_runner_ =
-      new base::TestMockTimeTaskRunner;
-  base::ThreadTaskRunnerHandle task_runner_handle_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   TestingUploadProgressTracker upload_progress_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(UploadProgressTrackerTest);
 };
 
 TEST_F(UploadProgressTrackerTest, NoACK) {
@@ -91,7 +90,7 @@ TEST_F(UploadProgressTrackerTest, NoACK) {
 
   // The first timer task calls ReportUploadProgress.
   EXPECT_EQ(0, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(1, report_count_);
   EXPECT_EQ(500, reported_position_);
@@ -101,7 +100,7 @@ TEST_F(UploadProgressTrackerTest, NoACK) {
 
   // The second timer task does nothing, since the first report didn't send the
   // ACK.
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(1, report_count_);
 }
@@ -111,7 +110,7 @@ TEST_F(UploadProgressTrackerTest, NoUpload) {
 
   // UploadProgressTracker does nothing on the empty upload content.
   EXPECT_EQ(0, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(0, report_count_);
 }
@@ -121,7 +120,7 @@ TEST_F(UploadProgressTrackerTest, NoProgress) {
 
   // The first timer task calls ReportUploadProgress.
   EXPECT_EQ(0, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(1, report_count_);
   EXPECT_EQ(500, reported_position_);
@@ -132,7 +131,7 @@ TEST_F(UploadProgressTrackerTest, NoProgress) {
   // The second time doesn't call ReportUploadProgress since there's no
   // progress.
   EXPECT_EQ(1, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(1, report_count_);
 }
@@ -142,7 +141,7 @@ TEST_F(UploadProgressTrackerTest, Finished) {
 
   // The first timer task calls ReportUploadProgress.
   EXPECT_EQ(0, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(1, report_count_);
   EXPECT_EQ(999, reported_position_);
@@ -154,7 +153,7 @@ TEST_F(UploadProgressTrackerTest, Finished) {
   // The second timer task calls ReportUploadProgress for reporting the
   // completion.
   EXPECT_EQ(1, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(2, report_count_);
   EXPECT_EQ(1000, reported_position_);
@@ -166,7 +165,7 @@ TEST_F(UploadProgressTrackerTest, Progress) {
 
   // The first timer task calls ReportUploadProgress.
   EXPECT_EQ(0, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(1, report_count_);
   EXPECT_EQ(500, reported_position_);
@@ -178,7 +177,7 @@ TEST_F(UploadProgressTrackerTest, Progress) {
   // The second timer task calls ReportUploadProgress since the progress is
   // big enough to report.
   EXPECT_EQ(1, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(2, report_count_);
   EXPECT_EQ(750, reported_position_);
@@ -190,7 +189,7 @@ TEST_F(UploadProgressTrackerTest, TimePassed) {
 
   // The first timer task calls ReportUploadProgress.
   EXPECT_EQ(0, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(1, report_count_);
   EXPECT_EQ(500, reported_position_);
@@ -202,17 +201,17 @@ TEST_F(UploadProgressTrackerTest, TimePassed) {
   // The second timer task doesn't call ReportUploadProgress since the progress
   // is too small to report it.
   EXPECT_EQ(1, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(1, report_count_);
 
   upload_progress_tracker_.set_current_time(base::TimeTicks::Now() +
-                                            base::TimeDelta::FromSeconds(5));
+                                            base::Seconds(5));
 
   // The third timer task calls ReportUploadProgress since it's been long time
   // from the last report.
   EXPECT_EQ(1, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(2, report_count_);
   EXPECT_EQ(501, reported_position_);
@@ -224,7 +223,7 @@ TEST_F(UploadProgressTrackerTest, Rewound) {
 
   // The first timer task calls ReportUploadProgress.
   EXPECT_EQ(0, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(1, report_count_);
   EXPECT_EQ(500, reported_position_);
@@ -236,17 +235,17 @@ TEST_F(UploadProgressTrackerTest, Rewound) {
   // The second timer task doesn't call ReportUploadProgress since the progress
   // was rewound.
   EXPECT_EQ(1, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(1, report_count_);
 
   upload_progress_tracker_.set_current_time(base::TimeTicks::Now() +
-                                            base::TimeDelta::FromSeconds(5));
+                                            base::Seconds(5));
 
   // Even after a good amount of time passed, the rewound progress should not be
   // reported.
   EXPECT_EQ(1, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(1, report_count_);
 }
@@ -256,7 +255,7 @@ TEST_F(UploadProgressTrackerTest, Completed) {
 
   // The first timer task calls ReportUploadProgress.
   EXPECT_EQ(0, report_count_);
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(1, report_count_);
   EXPECT_EQ(500, reported_position_);
@@ -270,10 +269,10 @@ TEST_F(UploadProgressTrackerTest, Completed) {
   EXPECT_EQ(1000, reported_position_);
   EXPECT_EQ(1000, reported_total_size_);
 
-  mock_task_runner_->FastForwardBy(
+  task_environment_.FastForwardBy(
       UploadProgressTracker::GetUploadProgressIntervalForTesting());
   EXPECT_EQ(2, report_count_);
-  EXPECT_FALSE(mock_task_runner_->HasPendingTask());
+  EXPECT_TRUE(task_environment_.MainThreadIsIdle());
 }
 
 }  // namespace network

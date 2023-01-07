@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ const mojom::blink::DevToolsSessionState* InspectorSessionState::ReattachState()
 
 void InspectorSessionState::EnqueueUpdate(const WTF::String& key,
                                           const WebVector<uint8_t>* value) {
-  base::Optional<WTF::Vector<uint8_t>> updated_value;
+  absl::optional<WTF::Vector<uint8_t>> updated_value;
   if (value) {
     WTF::Vector<uint8_t> payload;
     payload.AppendRange(value->begin(), value->end());

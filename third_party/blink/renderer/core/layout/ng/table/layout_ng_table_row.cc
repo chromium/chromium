@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row.h"
 
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/layout/layout_object_factory.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
@@ -99,9 +100,7 @@ void LayoutNGTableRow::StyleDidChange(StyleDifference diff,
   if (LayoutNGTable* table = Table()) {
     if ((old_style && !old_style->BorderVisuallyEqual(StyleRef())) ||
         (old_style && old_style->GetWritingDirection() !=
-                          StyleRef().GetWritingDirection()) ||
-        (diff.TextDecorationOrColorChanged() &&
-         StyleRef().HasBorderColorReferencingCurrentColor())) {
+                          StyleRef().GetWritingDirection())) {
       table->GridBordersChanged();
     }
   }
@@ -119,22 +118,14 @@ LayoutBlock* LayoutNGTableRow::StickyContainer() const {
   return Table();
 }
 
-// This is necessary because TableRow paints beyond border box if it contains
-// rowspanned cells.
+#if DCHECK_IS_ON()
 void LayoutNGTableRow::AddVisualOverflowFromBlockChildren() {
   NOT_DESTROYED();
-  LayoutBlock::AddVisualOverflowFromBlockChildren();
-  for (LayoutBox* child = FirstChildBox(); child;
-       child = child->NextSiblingBox()) {
-    DCHECK(child->IsTableCell());
-    // Cells that do not span rows do not contribute to excess overflow.
-    if (To<LayoutNGTableCell>(child)->ComputedRowSpan() == 1)
-      continue;
-    LayoutRect child_visual_overflow_rect =
-        child->VisualOverflowRectForPropagation();
-    AddSelfVisualOverflow(child_visual_overflow_rect);
-  }
+  // This is computed in |NGPhysicalBoxFragment::ComputeSelfInkOverflow| and
+  // that we should not reach here.
+  NOTREACHED();
 }
+#endif
 
 PositionWithAffinity LayoutNGTableRow::PositionForPoint(
     const PhysicalOffset& offset) const {

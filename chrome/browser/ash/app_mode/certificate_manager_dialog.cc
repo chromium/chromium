@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,12 +26,9 @@ const int kDefaultHeight = 480;
 
 namespace ash {
 
-CertificateManagerDialog::CertificateManagerDialog(
-    Profile* profile,
-    LoginWebDialog::Delegate* delegate,
-    gfx::NativeWindow window)
+CertificateManagerDialog::CertificateManagerDialog(Profile* profile,
+                                                   gfx::NativeWindow window)
     : LoginWebDialog(profile,
-                     delegate,
                      window,
                      std::u16string(),
                      GURL(chrome::kChromeUICertificateManagerDialogURL)) {}

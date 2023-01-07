@@ -1,7 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "components/component_updater/android/component_loader_policy.h"
 
 #include <fcntl.h>
@@ -9,7 +10,6 @@
 #include <stdint.h>
 
 #include <iterator>
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -24,8 +24,11 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -41,6 +44,9 @@ constexpr uint8_t kSha256Hash[] = {
     0x94, 0x16, 0x0b, 0x6d, 0x41, 0x75, 0xe9, 0xec, 0x8e, 0xd5, 0xfa,
     0x54, 0xb0, 0xd2, 0xdd, 0xa5, 0x6e, 0x05, 0x6b, 0xe8, 0x73, 0x47,
     0xf6, 0xc4, 0x11, 0x9f, 0xbc, 0xb3, 0x09, 0xb3, 0x5b, 0x40};
+
+constexpr char kMockComponentHistogramName[] =
+    "ComponentUpdater.AndroidComponentLoader.LoadStatus.MockComponent";
 
 void GetPkHash(std::vector<uint8_t>* hash) {
   hash->assign(std::begin(kSha256Hash), std::end(kSha256Hash));
@@ -58,21 +64,18 @@ std::vector<int> OpenFileFds(const base::FilePath& base,
 
 using OnLoadedTestCallBack =
     base::OnceCallback<void(const base::Version&,
-                            const base::flat_map<std::string, int>&,
+                            base::flat_map<std::string, base::ScopedFD>&,
                             std::unique_ptr<base::DictionaryValue>)>;
+using OnFailedTestCallBack = base::OnceCallback<void(ComponentLoadResult)>;
 
 class MockLoaderPolicy : public ComponentLoaderPolicy {
  public:
   explicit MockLoaderPolicy(OnLoadedTestCallBack on_loaded,
-                            base::OnceClosure on_failed)
+                            OnFailedTestCallBack on_failed)
       : on_loaded_(std::move(on_loaded)), on_failed_(std::move(on_failed)) {}
 
   MockLoaderPolicy()
-      : on_loaded_(
-            base::DoNothing::Once<const base::Version&,
-                                  const base::flat_map<std::string, int>&,
-                                  std::unique_ptr<base::DictionaryValue>>()),
-        on_failed_(base::DoNothing::Once()) {}
+      : on_loaded_(base::DoNothing()), on_failed_(base::DoNothing()) {}
 
   ~MockLoaderPolicy() override = default;
 
@@ -81,23 +84,27 @@ class MockLoaderPolicy : public ComponentLoaderPolicy {
 
   void ComponentLoaded(
       const base::Version& version,
-      const base::flat_map<std::string, int>& fd_map,
+      base::flat_map<std::string, base::ScopedFD>& fd_map,
       std::unique_ptr<base::DictionaryValue> manifest) override {
     std::move(on_loaded_).Run(version, fd_map, std::move(manifest));
   }
 
-  void ComponentLoadFailed() override { std::move(on_failed_).Run(); }
+  void ComponentLoadFailed(ComponentLoadResult error) override {
+    std::move(on_failed_).Run(error);
+  }
 
   void GetHash(std::vector<uint8_t>* hash) const override { GetPkHash(hash); }
 
+  std::string GetMetricsSuffix() const override { return "MockComponent"; }
+
  private:
   OnLoadedTestCallBack on_loaded_;
-  base::OnceClosure on_failed_;
+  OnFailedTestCallBack on_failed_;
 };
 
 void VerifyComponentLoaded(base::OnceClosure on_done,
                            const base::Version& version,
-                           const base::flat_map<std::string, int>& fd_map,
+                           base::flat_map<std::string, base::ScopedFD>& fd_map,
                            std::unique_ptr<base::DictionaryValue> manifest) {
   EXPECT_EQ(version.GetString(), "123.456.789");
   EXPECT_EQ(fd_map.size(), 2u);
@@ -135,8 +142,9 @@ class AndroidComponentLoaderPolicyTest : public testing::Test {
     return OpenFileFds(temp_dir_.GetPath(), files_);
   }
 
-  JNIEnv* env_ = nullptr;
+  raw_ptr<JNIEnv> env_ = nullptr;
   std::vector<std::string> files_;
+  base::HistogramTester histogram_tester_;
 
  private:
   base::ScopedTempDir temp_dir_;
@@ -154,12 +162,16 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestValidManifest) {
   auto* android_policy =
       new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>(
           base::BindOnce(&VerifyComponentLoaded, run_loop.QuitClosure()),
-          base::BindOnce([]() { FAIL(); })));
+          base::BindOnce([](ComponentLoadResult) { FAIL(); })));
 
   android_policy->ComponentLoaded(
       env_, base::android::ToJavaArrayOfStrings(env_, files_),
       base::android::ToJavaIntArray(env_, GetFileFds()));
   run_loop.Run();
+
+  histogram_tester_.ExpectBucketCount(kMockComponentHistogramName,
+                                      ComponentLoadResult::kComponentLoaded, 1);
+  histogram_tester_.ExpectTotalCount(kMockComponentHistogramName, 1);
 }
 
 TEST_F(AndroidComponentLoaderPolicyTest, TestMissingManifest) {
@@ -172,14 +184,21 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestMissingManifest) {
       new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>(
           base::BindOnce(
               [](const base::Version& version,
-                 const base::flat_map<std::string, int>& fd_map,
+                 base::flat_map<std::string, base::ScopedFD>& fd_map,
                  std::unique_ptr<base::DictionaryValue> manifest) { FAIL(); }),
-          run_loop.QuitClosure()));
+          base::BindLambdaForTesting([&](ComponentLoadResult error) {
+            ASSERT_EQ(error, ComponentLoadResult::kMissingManifest);
+            run_loop.Quit();
+          })));
 
   android_policy->ComponentLoaded(
       env_, base::android::ToJavaArrayOfStrings(env_, files_),
       base::android::ToJavaIntArray(env_, GetFileFds()));
   run_loop.Run();
+
+  histogram_tester_.ExpectBucketCount(kMockComponentHistogramName,
+                                      ComponentLoadResult::kMissingManifest, 1);
+  histogram_tester_.ExpectTotalCount(kMockComponentHistogramName, 1);
 }
 
 TEST_F(AndroidComponentLoaderPolicyTest, TestInvalidVersion) {
@@ -194,14 +213,21 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestInvalidVersion) {
       new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>(
           base::BindOnce(
               [](const base::Version& version,
-                 const base::flat_map<std::string, int>& fd_map,
+                 base::flat_map<std::string, base::ScopedFD>& fd_map,
                  std::unique_ptr<base::DictionaryValue> manifest) { FAIL(); }),
-          run_loop.QuitClosure()));
+          base::BindLambdaForTesting([&](ComponentLoadResult error) {
+            ASSERT_EQ(error, ComponentLoadResult::kInvalidVersion);
+            run_loop.Quit();
+          })));
 
   android_policy->ComponentLoaded(
       env_, base::android::ToJavaArrayOfStrings(env_, files_),
       base::android::ToJavaIntArray(env_, GetFileFds()));
   run_loop.Run();
+
+  histogram_tester_.ExpectBucketCount(kMockComponentHistogramName,
+                                      ComponentLoadResult::kInvalidVersion, 1);
+  histogram_tester_.ExpectTotalCount(kMockComponentHistogramName, 1);
 }
 
 TEST_F(AndroidComponentLoaderPolicyTest, TestInvalidManifest) {
@@ -215,14 +241,21 @@ TEST_F(AndroidComponentLoaderPolicyTest, TestInvalidManifest) {
       new AndroidComponentLoaderPolicy(std::make_unique<MockLoaderPolicy>(
           base::BindOnce(
               [](const base::Version& version,
-                 const base::flat_map<std::string, int>& fd_map,
+                 base::flat_map<std::string, base::ScopedFD>& fd_map,
                  std::unique_ptr<base::DictionaryValue> manifest) { FAIL(); }),
-          run_loop.QuitClosure()));
+          base::BindLambdaForTesting([&](ComponentLoadResult error) {
+            ASSERT_EQ(error, ComponentLoadResult::kMalformedManifest);
+            run_loop.Quit();
+          })));
 
   android_policy->ComponentLoaded(
       env_, base::android::ToJavaArrayOfStrings(env_, files_),
       base::android::ToJavaIntArray(env_, GetFileFds()));
   run_loop.Run();
+
+  histogram_tester_.ExpectBucketCount(
+      kMockComponentHistogramName, ComponentLoadResult::kMalformedManifest, 1);
+  histogram_tester_.ExpectTotalCount(kMockComponentHistogramName, 1);
 }
 
 TEST_F(AndroidComponentLoaderPolicyTest, TestGetComponentId) {

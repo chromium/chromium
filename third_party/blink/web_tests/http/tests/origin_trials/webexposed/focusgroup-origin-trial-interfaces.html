@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 Focusgroup --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial" content="A9qE0/WDJK/8n0FKJZvc5rYfEUgPo1QIwgYqS15yAumsMKa7ZnoBImBR/5R+EXbWwxVEjGUHx/8nUoBesQDIcwcAAABSeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRm9jdXNncm91cCIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==" />
+<title>Focusgroup - interfaces exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+test(t => {
+  // We don't test if it works with the MathMLElement because this element is
+  // hidden behind the MathMLCore feature flag and it fails when running the
+  // origin-trials-runtimeflags-disabled virtual test suite.
+  OriginTrialsHelper.check_properties_exist(this,
+      {
+        'HTMLElement': ['focusgroup'],
+        'SVGElement': ['focusgroup'],
+      },
+  );
+}, "focusgroup related interfaces in Origin-Trial enabled document.");
+</script>
+

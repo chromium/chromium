@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,18 @@
 
 namespace WTF {
 namespace internal {
+
+template <typename T>
+struct IsCrossThreadOnceFunctionImpl : std::false_type {};
+
+template <typename R, typename... Args>
+struct IsCrossThreadOnceFunctionImpl<CrossThreadOnceFunction<R(Args...)>>
+    : std::true_type {};
+
+template <typename T>
+using IsCrossThreadOnceFunction =
+    IsCrossThreadOnceFunctionImpl<std::decay_t<T>>;
+
 struct SequenceBoundBindTraits {
   template <typename Signature>
   using CrossThreadTask = WTF::CrossThreadOnceFunction<Signature>;
@@ -23,7 +35,7 @@ struct SequenceBoundBindTraits {
   }
 
   template <typename T>
-  static inline auto Unretained(T* ptr) {
+  static inline auto Unretained(T ptr) {
     return CrossThreadUnretained(ptr);
   }
 
@@ -51,10 +63,16 @@ struct SequenceBoundBindTraits {
       const base::Location& location,
       CrossThreadOnceFunction<TaskReturnType()>&& task,
       CrossThreadOnceFunction<void(ReplyArgType)>&& reply) {
-    return task_runner.PostTaskAndReplyWithResult(location, std::move(task),
-                                                  std::move(reply));
+    return task_runner.PostTaskAndReplyWithResult(
+        location, ConvertToBaseOnceCallback(std::move(task)),
+        ConvertToBaseOnceCallback(std::move(reply)));
   }
+
+  template <template <typename> class CallbackType>
+  using EnableIfIsCrossThreadTask =
+      std::enable_if_t<IsCrossThreadOnceFunction<CallbackType<void()>>::value>;
 };
+
 }  // namespace internal
 
 template <typename T>
@@ -62,4 +80,5 @@ using SequenceBound =
     base::SequenceBound<T, WTF::internal::SequenceBoundBindTraits>;
 
 }  // namespace WTF
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SEQUENCE_BOUND_H_

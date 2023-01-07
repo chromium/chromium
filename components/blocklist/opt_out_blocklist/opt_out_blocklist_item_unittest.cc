@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -21,10 +21,9 @@ namespace blocklist {
 TEST_F(OptOutBlocklistItemTest, BlockListState) {
   const int history = 4;
   const int threshold = 2;
-  const base::TimeDelta max_blocklist_duration =
-      base::TimeDelta::FromSeconds(30);
+  const base::TimeDelta max_blocklist_duration = base::Seconds(30);
   const base::Time now = base::Time::UnixEpoch();
-  const base::TimeDelta delay_between_entries = base::TimeDelta::FromSeconds(1);
+  const base::TimeDelta delay_between_entries = base::Seconds(1);
   const base::Time later =
       now + max_blocklist_duration + (delay_between_entries * 3);
 

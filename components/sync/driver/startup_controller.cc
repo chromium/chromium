@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,13 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/features.h"
 
 namespace syncer {
 
@@ -22,69 +23,36 @@ namespace {
 
 // The amount of time we'll wait to initialize sync if no data type requests
 // immediately initialization.
-constexpr base::TimeDelta kDefaultDeferredInitDelay =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kDefaultDeferredInitDelay = base::Seconds(10);
 
 base::TimeDelta GetDeferredInitDelay() {
   const base::CommandLine* cmdline = base::CommandLine::ForCurrentProcess();
-  if (cmdline->HasSwitch(switches::kSyncDeferredStartupTimeoutSeconds)) {
+  if (cmdline->HasSwitch(kSyncDeferredStartupTimeoutSeconds)) {
     int timeout = 0;
-    if (base::StringToInt(cmdline->GetSwitchValueASCII(
-                              switches::kSyncDeferredStartupTimeoutSeconds),
-                          &timeout)) {
+    if (base::StringToInt(
+            cmdline->GetSwitchValueASCII(kSyncDeferredStartupTimeoutSeconds),
+            &timeout)) {
       DCHECK_GE(timeout, 0);
       DVLOG(2) << "Sync StartupController overriding startup timeout to "
                << timeout << " seconds.";
-      return base::TimeDelta::FromSeconds(timeout);
+      return base::Seconds(timeout);
     }
   }
   return kDefaultDeferredInitDelay;
 }
-
-bool IsDeferredStartupEnabled() {
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kSyncDisableDeferredStartup);
-}
-
-// Enum for UMA defining different events that cause us to exit the "deferred"
-// state of initialization and invoke start_engine.
-enum DeferredInitTrigger {
-  // We have received a signal from a SyncableService requesting that sync
-  // starts as soon as possible.
-  TRIGGER_DATA_TYPE_REQUEST,
-  // No data type requested sync to start and our fallback timer expired.
-  TRIGGER_FALLBACK_TIMER,
-  MAX_TRIGGER_VALUE
-};
 
 }  // namespace
 
 StartupController::StartupController(
     base::RepeatingCallback<ModelTypeSet()> get_preferred_data_types,
     base::RepeatingCallback<bool()> should_start,
-    base::RepeatingClosure start_engine,
-    policy::PolicyService* policy_service)
+    base::RepeatingClosure start_engine)
     : get_preferred_data_types_callback_(std::move(get_preferred_data_types)),
       should_start_callback_(std::move(should_start)),
       start_engine_callback_(std::move(start_engine)),
-      bypass_deferred_startup_(false),
-      policy_service_(policy_service) {
-  if (policy_service_ && policy_service_->IsFirstPolicyLoadComplete(
-                             policy::PolicyDomain::POLICY_DOMAIN_CHROME)) {
-    // Policies are already loaded; no need to track the policy service.
-    policy_service_ = nullptr;
-  } else if (policy_service_) {
-    policy_service_->AddObserver(policy::PolicyDomain::POLICY_DOMAIN_CHROME,
-                                 this);
-  }
-}
+      bypass_deferred_startup_(false) {}
 
-StartupController::~StartupController() {
-  if (policy_service_) {
-    policy_service_->RemoveObserver(policy::PolicyDomain::POLICY_DOMAIN_CHROME,
-                                    this);
-  }
-}
+StartupController::~StartupController() = default;
 
 void StartupController::Reset() {
   bypass_deferred_startup_ = false;
@@ -100,7 +68,7 @@ void StartupController::StartUp(StartUpDeferredOption deferred_option) {
     start_up_time_ = base::Time::Now();
   }
 
-  if (deferred_option == STARTUP_DEFERRED && IsDeferredStartupEnabled() &&
+  if (deferred_option == STARTUP_DEFERRED &&
       get_preferred_data_types_callback_.Run().Has(SESSIONS)) {
     if (first_start) {
       base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
@@ -119,23 +87,15 @@ void StartupController::StartUp(StartUpDeferredOption deferred_option) {
 }
 
 void StartupController::TryStart(bool force_immediate) {
-  // Try starting up the sync engine if all policies are ready, otherwise wait
-  // at most |switches::kSyncPolicyLoadTimeout|.
-  if (!ArePoliciesReady()) {
-    if (waiting_for_policies_start_time_.is_null()) {
-      waiting_for_policies_start_time_ = base::Time::Now();
-      wait_for_policy_timer_.Start(
-          FROM_HERE, switches::kSyncPolicyLoadTimeout.Get(),
-          base::BindOnce(&StartupController::OnFirstPoliciesLoadedTimeout,
-                         base::Unretained(this)));
-    }
-    // If the Service had to start immediately, bypass the deferred startup when
-    // we receive the policies.
-    if (force_immediate)
-      bypass_deferred_startup_ = true;
-    return;
-  }
+  // Post a task instead of running the startup checks directly, to guarantee
+  // that |start_engine_callback_| is never called synchronously from
+  // TryStart().
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&StartupController::TryStartImpl,
+                                weak_factory_.GetWeakPtr(), force_immediate));
+}
 
+void StartupController::TryStartImpl(bool force_immediate) {
   if (!should_start_callback_.Run()) {
     return;
   }
@@ -145,30 +105,25 @@ void StartupController::TryStart(bool force_immediate) {
   // - a datatype has requested an immediate start of sync, or
   // - sync needs to start up the engine immediately to provide control state
   //   and encryption information to the UI.
-  // Do not start up the sync engine if setup has not completed and isn't
-  // in progress, unless told to otherwise.
   StartUp((force_immediate || bypass_deferred_startup_) ? STARTUP_IMMEDIATE
                                                         : STARTUP_DEFERRED);
 }
 
-void StartupController::RecordTimeDeferred() {
+void StartupController::RecordTimeDeferred(DeferredInitTrigger trigger) {
   DCHECK(!start_up_time_.is_null());
   base::TimeDelta time_deferred = base::Time::Now() - start_up_time_;
-  UMA_HISTOGRAM_CUSTOM_TIMES("Sync.Startup.TimeDeferred2", time_deferred,
-                             base::TimeDelta::FromSeconds(0),
-                             base::TimeDelta::FromMinutes(2), 60);
+  base::UmaHistogramCustomTimes("Sync.Startup.TimeDeferred2", time_deferred,
+                                base::Seconds(0), base::Minutes(2), 60);
+  base::UmaHistogramEnumeration("Sync.Startup.DeferredInitTrigger", trigger);
 }
 
 void StartupController::OnFallbackStartupTimerExpired() {
-  DCHECK(IsDeferredStartupEnabled());
-
-  if (!start_engine_time_.is_null())
+  if (!start_engine_time_.is_null()) {
     return;
+  }
 
   DVLOG(2) << "Sync deferred init fallback timer expired, starting engine.";
-  RecordTimeDeferred();
-  UMA_HISTOGRAM_ENUMERATION("Sync.Startup.DeferredInitTrigger",
-                            TRIGGER_FALLBACK_TIMER, MAX_TRIGGER_VALUE);
+  RecordTimeDeferred(DeferredInitTrigger::kFallbackTimer);
   // Once the deferred init timer has expired, don't defer startup again (until
   // Reset() or browser restart), even if this startup attempt doesn't succeed.
   bypass_deferred_startup_ = true;
@@ -176,73 +131,24 @@ void StartupController::OnFallbackStartupTimerExpired() {
 }
 
 StartupController::State StartupController::GetState() const {
-  if (!start_engine_time_.is_null())
+  if (!start_engine_time_.is_null()) {
     return State::STARTED;
-  if (!ArePoliciesReady() && !waiting_for_policies_start_time_.is_null())
+  }
+  if (!start_up_time_.is_null()) {
     return State::STARTING_DEFERRED;
-  if (!start_up_time_.is_null())
-    return State::STARTING_DEFERRED;
+  }
   return State::NOT_STARTED;
 }
 
-void StartupController::OnFirstPoliciesLoaded(policy::PolicyDomain domain) {
-  DCHECK_EQ(domain, policy::PolicyDomain::POLICY_DOMAIN_CHROME);
-
-  // Cancel the timeout timer.
-  wait_for_policy_timer_.AbandonAndStop();
-  OnFirstPoliciesLoadedImpl(/*timeout=*/false);
-}
-
-void StartupController::OnFirstPoliciesLoadedTimeout() {
-  OnFirstPoliciesLoadedImpl(/*timeout=*/true);
-}
-
-bool StartupController::ArePoliciesReady() const {
-  // |policy_service_| is non-null iff we're waiting for policies to load.
-  return policy_service_ == nullptr;
-}
-
-void StartupController::TriggerPolicyWaitTimeoutForTest() {
-  OnFirstPoliciesLoadedTimeout();
-}
-
-void StartupController::OnFirstPoliciesLoadedImpl(bool timeout) {
-  policy_service_->RemoveObserver(policy::PolicyDomain::POLICY_DOMAIN_CHROME,
-                                  this);
-  policy_service_ = nullptr;
-  base::UmaHistogramBoolean("Sync.Startup.PolicyLoadTimeout2", timeout);
-  base::UmaHistogramTimes(
-      "Sync.Startup.PolicyLoadStartupDelay",
-      waiting_for_policies_start_time_.is_null()
-          ? base::TimeDelta()
-          : base::Time::Now() - waiting_for_policies_start_time_);
-
-  // Only try to start the engine if we explicitly tried to start but had to
-  // wait for policies to be loaded.
-  if (!waiting_for_policies_start_time_.is_null())
-    TryStart(/*force_immediate=*/false);
-}
-
 void StartupController::OnDataTypeRequestsSyncStartup(ModelType type) {
-  if (!IsDeferredStartupEnabled()) {
-    DVLOG(2) << "Ignoring data type request for sync startup: "
-             << ModelTypeToString(type);
+  if (!start_engine_time_.is_null()) {
     return;
   }
 
-  if (!start_engine_time_.is_null())
-    return;
-
-  DVLOG(2) << "Data type requesting sync startup: " << ModelTypeToString(type);
-  // Measure the time spent waiting for init and the type that triggered it.
-  // We could measure the time spent deferred on a per-datatype basis, but
-  // for now this is probably sufficient.
-  UMA_HISTOGRAM_ENUMERATION("Sync.Startup.TypeTriggeringInit",
-                            ModelTypeHistogramValue(type));
+  DVLOG(2) << "Data type requesting sync startup: "
+           << ModelTypeToDebugString(type);
   if (!start_up_time_.is_null()) {
-    RecordTimeDeferred();
-    UMA_HISTOGRAM_ENUMERATION("Sync.Startup.DeferredInitTrigger",
-                              TRIGGER_DATA_TYPE_REQUEST, MAX_TRIGGER_VALUE);
+    RecordTimeDeferred(DeferredInitTrigger::kDataTypeRequest);
   }
   bypass_deferred_startup_ = true;
   TryStart(/*force_immediate=*/false);

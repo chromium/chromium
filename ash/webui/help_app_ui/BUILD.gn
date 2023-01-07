@@ -1,0 +1,217 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ash/webui/help_app_ui/help_app_ui.gni")
+import("//ash/webui/web_applications/system_apps.gni")
+import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/test/base/js2gtest.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos_ash, "Help App is ash-chrome only")
+
+static_library("help_app_ui") {
+  sources = [
+    "help_app_kids_magazine_untrusted_ui.cc",
+    "help_app_kids_magazine_untrusted_ui.h",
+    "help_app_manager.cc",
+    "help_app_manager.h",
+    "help_app_manager_factory.cc",
+    "help_app_manager_factory.h",
+    "help_app_page_handler.cc",
+    "help_app_page_handler.h",
+    "help_app_ui.cc",
+    "help_app_ui.h",
+    "help_app_ui_delegate.h",
+    "help_app_untrusted_ui.cc",
+    "help_app_untrusted_ui.h",
+    "search/search_handler.cc",
+    "search/search_handler.h",
+    "search/search_metadata.cc",
+    "search/search_metadata.h",
+    "search/search_tag_registry.cc",
+    "search/search_tag_registry.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+
+  deps = [
+    ":mojo_bindings",
+    ":mojo_bindings_js",
+    "//ash/constants",
+    "//ash/webui/help_app_ui/search:mojo_bindings",
+    "//ash/webui/help_app_ui/search:mojo_bindings_js",
+    "//ash/webui/resources:help_app_bundle_resources",
+    "//ash/webui/resources:help_app_kids_magazine_bundle_resources",
+    "//ash/webui/resources:help_app_resources",
+    "//ash/webui/web_applications",
+    "//chromeos/ash/components/local_search_service/public/cpp",
+    "//chromeos/ash/components/local_search_service/public/mojom",
+    "//chromeos/ash/components/local_search_service/public/mojom:mojom_js",
+    "//chromeos/constants",
+    "//chromeos/strings",
+    "//chromeos/system",
+    "//components/keyed_service/content:content",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//ui/resources:webui_generated_resources_grd_grit",
+    "//ui/webui",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "help_app_ui.mojom" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "search/search_handler_unittest.cc",
+    "search/search_tag_registry_unittest.cc",
+  ]
+
+  deps = [
+    ":help_app_ui",
+    "//ash/webui/help_app_ui/search:mojo_bindings",
+    "//base/test:test_support",
+    "//chromeos/ash/components/local_search_service/public/mojom",
+    "//mojo/public/cpp/bindings:bindings",
+    "//testing/gtest",
+  ]
+}
+
+group("closure_compile") {
+  testonly = true
+  deps = [
+    ":closure_compile_browsertests",
+    ":closure_compile_test_lib",
+    "resources:closure_compile",
+    "resources/mock:closure_compile",
+  ]
+}
+
+js2gtest("browser_tests_js") {
+  test_type = "mojo_lite_webui"
+
+  sources = [ "test/help_app_ui_gtest_browsertest.js" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":browser_test_support",
+    "//ash/constants",
+    "//chromeos/constants",
+  ]
+}
+
+source_set("browser_test_support") {
+  testonly = true
+  sources = [
+    "test/help_app_ui_browsertest.cc",
+    "test/help_app_ui_browsertest.h",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":help_app_ui",
+    "//ash/webui/web_applications/test:test_support",
+    "//chrome/test:test_support_ui",
+  ]
+
+  data = [
+    "test/driver.js",
+    "test/driver_api.js",
+    "test/guest_query_receiver.js",
+    "test/help_app_ui_browsertest.js",
+    "test/help_app_guest_ui_browsertest.js",
+  ]
+}
+
+js_type_check("closure_compile_test_lib") {
+  testonly = true
+  closure_flags = system_app_closure_flags_strict
+  deps = [
+    ":test_driver_api_js",
+    ":test_driver_js",
+    ":test_guest_query_receiver_js",
+  ]
+}
+
+# Use relaxed flags for the browsertest files themselves. This removes null
+# checks and "could not determine type" errors which don't add a lot of value.
+js_type_check("closure_compile_browsertests") {
+  testonly = true
+  closure_flags = system_app_closure_flags
+  deps = [
+    ":test_help_app_guest_ui_browsertest_js",
+    ":test_help_app_ui_browsertest_js",
+    ":test_help_app_ui_gtest_browsertest_js",
+  ]
+}
+
+js_library("test_driver_api_js") {
+  testonly = true
+  sources = [ "test/driver_api.js" ]
+}
+
+js_library("test_guest_query_receiver_js") {
+  testonly = true
+  sources = [ "test/guest_query_receiver.js" ]
+  deps = [
+    ":test_driver_api_js",
+    "//ash/webui/help_app_ui/resources:receiver",
+    "//ash/webui/system_apps/public/js:message_pipe",
+  ]
+}
+
+js_library("test_driver_js") {
+  testonly = true
+  sources = [ "test/driver.js" ]
+  externs_list = [ "//third_party/chaijs/externs/chai-3.5.js" ]
+  deps = [
+    ":test_driver_api_js",
+    "//ash/webui/help_app_ui/resources:browser_proxy",
+    "//ash/webui/system_apps/public/js:message_pipe",
+  ]
+}
+
+js_library("test_help_app_ui_gtest_browsertest_js") {
+  testonly = true
+  sources = [ "test/help_app_ui_gtest_browsertest.js" ]
+  externs_list = [ "//ash/webui/web_applications/js2gtest_support.externs.js" ]
+  deps = [ ":test_help_app_ui_browsertest_js" ]
+}
+
+js_library("test_help_app_ui_browsertest_js") {
+  testonly = true
+  sources = [ "test/help_app_ui_browsertest.js" ]
+  deps = [
+    ":test_driver_js",
+    "//ash/webui/help_app_ui/resources:browser_proxy",
+    "//ash/webui/system_apps/public/js:message_pipe",
+  ]
+}
+
+js_library("test_help_app_guest_ui_browsertest_js") {
+  testonly = true
+  sources = [ "test/help_app_guest_ui_browsertest.js" ]
+  externs_list = [ "//ash/webui/web_applications/js2gtest_support.externs.js" ]
+  deps = [
+    ":test_driver_js",
+    "//ash/webui/help_app_ui/resources:receiver",
+    "//ash/webui/system_apps/public/js:message_pipe",
+  ]
+}
+
+# Used to turn off tests that only work with our CIPD package.
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [ "ENABLE_CROS_HELP_APP=$enable_cros_help_app" ]
+}

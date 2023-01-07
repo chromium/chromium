@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,9 @@
 
 #include <stdint.h>
 
-#include <string>
-
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_switches.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/cdm_helpers.h"
@@ -72,6 +69,9 @@ class CdmWrapper {
                             GetCdmHostFunc get_cdm_host_func,
                             void* user_data);
 
+  CdmWrapper(const CdmWrapper&) = delete;
+  CdmWrapper& operator=(const CdmWrapper&) = delete;
+
   virtual ~CdmWrapper() {}
 
   // Returns the version of the CDM interface that the created CDM uses.
@@ -92,9 +92,9 @@ class CdmWrapper {
   // Returns whether GetStatusForPolicy() is supported. If true, the CDM should
   // resolve or reject the promise. If false, the caller will reject the
   // promise.
-  virtual bool GetStatusForPolicy(uint32_t promise_id,
-                                  cdm::HdcpVersion min_hdcp_version)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool GetStatusForPolicy(
+      uint32_t promise_id,
+      cdm::HdcpVersion min_hdcp_version) = 0;
 
   virtual void CreateSessionAndGenerateRequest(uint32_t promise_id,
                                                cdm::SessionType session_type,
@@ -143,9 +143,6 @@ class CdmWrapper {
 
  protected:
   CdmWrapper() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CdmWrapper);
 };
 
 // Template class that does the CdmWrapper -> CdmInterface conversion. Default
@@ -173,6 +170,9 @@ class CdmWrapperImpl : public CdmWrapper {
     return new CdmWrapperImpl<CdmInterfaceVersion>(
         static_cast<CdmInterface*>(cdm_instance));
   }
+
+  CdmWrapperImpl(const CdmWrapperImpl&) = delete;
+  CdmWrapperImpl& operator=(const CdmWrapperImpl&) = delete;
 
   ~CdmWrapperImpl() override { cdm_->Destroy(); }
 
@@ -294,9 +294,7 @@ class CdmWrapperImpl : public CdmWrapper {
  private:
   CdmWrapperImpl(CdmInterface* cdm) : cdm_(cdm) { DCHECK(cdm_); }
 
-  CdmInterface* cdm_;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmWrapperImpl);
+  raw_ptr<CdmInterface> cdm_;
 };
 
 // Specialization for cdm::ContentDecryptionModule_10 methods.

@@ -1,0 +1,27 @@
+diff --git a/components-chromium/iron-overlay-behavior/iron-overlay-backdrop.js b/components-chromium/iron-overlay-behavior/iron-overlay-backdrop.js
+index fca79f0d2cd25..d32f1cc38325f 100644
+--- a/components-chromium/iron-overlay-behavior/iron-overlay-backdrop.js
++++ b/components-chromium/iron-overlay-behavior/iron-overlay-backdrop.js
+@@ -26,8 +26,6 @@ Custom property | Description | Default
+ -------------------------------------------|------------------------|---------
+ `--iron-overlay-backdrop-background-color` | Backdrop background color | #000
+ `--iron-overlay-backdrop-opacity`          | Backdrop opacity | 0.6
+-`--iron-overlay-backdrop`                  | Mixin applied to `iron-overlay-backdrop`.                      | {}
+-`--iron-overlay-backdrop-opened`           | Mixin applied to `iron-overlay-backdrop` when it is displayed | {}
+ */
+ Polymer({
+   _template: html`
+@@ -42,13 +40,11 @@ Polymer({
+         opacity: 0;
+         transition: opacity 0.2s;
+         pointer-events: none;
+-        @apply --iron-overlay-backdrop;
+       }
+ 
+       :host(.opened) {
+         opacity: var(--iron-overlay-backdrop-opacity, 0.6);
+         pointer-events: auto;
+-        @apply --iron-overlay-backdrop-opened;
+       }
+     </style>
+ 

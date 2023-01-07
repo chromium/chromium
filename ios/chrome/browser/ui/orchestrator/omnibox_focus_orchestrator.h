@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@
 @property(nonatomic, weak) id<EditViewAnimatee> editViewAnimatee;
 
 // Updates the UI elements orchestrated by this object to reflect the
-// |omniboxFocused| state, and the |toolbarExpanded| state, |animated| or not.
+// `omniboxFocused` state, and the `toolbarExpanded` state, `animated` or not.
 - (void)transitionToStateOmniboxFocused:(BOOL)omniboxFocused
                         toolbarExpanded:(BOOL)toolbarExpanded
                                animated:(BOOL)animated;

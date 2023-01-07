@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,10 @@
 #include <stdint.h>
 #include <memory>
 #include <string>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/offline_pages/core/model/model_task_test_base.h"
@@ -20,6 +18,7 @@
 #include "components/offline_pages/core/offline_page_types.h"
 #include "components/offline_pages/core/offline_store_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace offline_pages {
@@ -38,15 +37,6 @@ const std::string kTestDigest("TesTIngDigEst==");
 const std::string kTestAttribution = "attribution";
 const std::string kTestSnippet = "snippet";
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL TestUrl1() {
-  return GURL("http://example.com");
-}
-GURL TestUrl2() {
-  return GURL("http://other.page.com");
-}
-
 }  // namespace
 
 class AddPageTaskTest : public ModelTaskTestBase {
@@ -58,12 +48,12 @@ class AddPageTaskTest : public ModelTaskTestBase {
   void AddPage(const OfflinePageItem& page);
   bool CheckPageStored(const OfflinePageItem& page);
 
-  const base::Optional<AddPageResult>& last_add_page_result() {
+  const absl::optional<AddPageResult>& last_add_page_result() {
     return last_add_page_result_;
   }
 
  private:
-  base::Optional<AddPageResult> last_add_page_result_;
+  absl::optional<AddPageResult> last_add_page_result_;
 };
 
 void AddPageTaskTest::ResetResults() {
@@ -100,11 +90,12 @@ TEST_F(AddPageTaskTest, AddPage) {
 }
 
 TEST_F(AddPageTaskTest, AddPageWithAllFieldsSet) {
-  OfflinePageItem page(TestUrl1(), kTestOfflineId1, kTestClientId1,
-                       kTestFilePath, kTestFileSize, base::Time::Now());
+  OfflinePageItem page(GURL("http://example.com"), kTestOfflineId1,
+                       kTestClientId1, kTestFilePath, kTestFileSize,
+                       base::Time::Now());
   page.request_origin = kTestOrigin;
   page.title = kTestTitle;
-  page.original_url_if_different = TestUrl2();
+  page.original_url_if_different = GURL("http://other.page.com");
   page.system_download_id = kTestDownloadId;
   page.file_missing_time = base::Time::Now();
   page.digest = kTestDigest;

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,8 +54,8 @@ namespace processes {
     long naclDebugPort;
     // Array of TaskInfos representing the tasks running on this process.
     TaskInfo[] tasks;
-    // The most recent measurement of the process’s CPU usage, expressed as the
-    // percentage of a single CPU core used in total, by all of the process’s
+    // The most recent measurement of the process's CPU usage, expressed as the
+    // percentage of a single CPU core used in total, by all of the process's
     // threads. This gives a value from zero to CpuInfo.numOfProcessors*100,
     // which can exceed 100% in multi-threaded processes.
     // Only available when receiving the object as part of a callback from
@@ -77,7 +77,7 @@ namespace processes {
     // bytes. Only available when receiving the object as part of a callback
     // from onUpdated or onUpdatedWithMemory.
     double? jsMemoryUsed;
-    // The most recent measurement of the process’s SQLite memory usage, in
+    // The most recent measurement of the process's SQLite memory usage, in
     // bytes. Only available when receiving the object as part of a callback
     // from onUpdated or onUpdatedWithMemory.
     double? sqliteMemory;
@@ -115,13 +115,16 @@ namespace processes {
     // Returns the ID of the renderer process for the specified tab.
     // |tabId|: The ID of the tab for which the renderer process ID is to be
     // returned.
-    static void getProcessIdForTab(long tabId,
-                                   GetProcessIdForTabCallback callback);
+    [supportsPromises] static void getProcessIdForTab(
+        long tabId,
+        GetProcessIdForTabCallback callback);
 
     // Terminates the specified renderer process. Equivalent to visiting
     // about:crash, but without changing the tab's URL.
     // |processId|: The ID of the process to be terminated.
-    static void terminate(long processId, optional TerminateCallback callback);
+    [supportsPromises] static void terminate(
+        long processId,
+        optional TerminateCallback callback);
 
     // Retrieves the process information for each process ID specified.
     // |processIds|: The list of process IDs or single process ID for which
@@ -130,9 +133,10 @@ namespace processes {
     // |includeMemory|: True if detailed memory usage is required. Note,
     // collecting memory usage information incurs extra CPU usage and should
     // only be queried for when needed.
-    static void getProcessInfo((long or long[]) processIds,
-                               boolean includeMemory,
-                               GetProcessInfoCallback callback);
+    [supportsPromises] static void getProcessInfo(
+        (long or long[]) processIds,
+        boolean includeMemory,
+        GetProcessInfoCallback callback);
   };
 
   interface Events {

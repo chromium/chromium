@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,34 +7,40 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/updater/browser_updater_client.h"
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 
-@interface CRUUpdateClientOnDemandImpl : NSObject <CRUUpdateChecking>
+@interface CRUUpdateClientOnDemandImpl : NSObject <CRUUpdateServicing>
+- (instancetype)initWithScope:(updater::UpdaterScope)scope;
 @end
 
 class BrowserUpdaterClientMac : public BrowserUpdaterClient {
  public:
-  BrowserUpdaterClientMac();
+  explicit BrowserUpdaterClientMac(updater::UpdaterScope scope);
   explicit BrowserUpdaterClientMac(
       base::scoped_nsobject<CRUUpdateClientOnDemandImpl> client);
 
  private:
+  friend class UpdateClientMacTest;
+
   ~BrowserUpdaterClientMac() override;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   // BrowserUpdaterClient.
-  void BeginRegister(const std::string& brand_code,
-                     const std::string& tag,
-                     const std::string& version,
+  void BeginRegister(const std::string& version,
                      updater::UpdateService::Callback callback) override;
+  void BeginRunPeriodicTasks(base::OnceClosure callback) override;
   void BeginUpdateCheck(
       updater::UpdateService::StateChangeCallback state_change,
       updater::UpdateService::Callback callback) override;
+  void BeginGetUpdaterVersion(
+      base::OnceCallback<void(const std::string&)> callback) override;
 
   base::scoped_nsobject<CRUUpdateClientOnDemandImpl> client_;
 };

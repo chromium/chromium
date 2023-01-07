@@ -1,12 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/xr/xr_webgl_binding.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
+#include "third_party/blink/renderer/modules/xr/xr_camera.h"
 #include "third_party/blink/renderer/modules/xr/xr_cube_map.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
 #include "third_party/blink/renderer/modules/xr/xr_light_probe.h"
@@ -15,14 +17,13 @@
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
 #include "third_party/blink/renderer/modules/xr/xr_viewer_pose.h"
 #include "third_party/blink/renderer/modules/xr/xr_webgl_layer.h"
-#include "third_party/blink/renderer/modules/xr/xr_webgl_rendering_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 
 namespace blink {
 
 XRWebGLBinding* XRWebGLBinding::Create(XRSession* session,
-                                       const XRWebGLRenderingContext& context,
+                                       const V8XRWebGLRenderingContext* context,
                                        ExceptionState& exception_state) {
   if (session->ended()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -57,7 +58,7 @@ XRWebGLBinding* XRWebGLBinding::Create(XRSession* session,
   }
 
   return MakeGarbageCollected<XRWebGLBinding>(
-      session, webgl_context, context.IsWebGL2RenderingContext());
+      session, webgl_context, context->IsWebGL2RenderingContext());
 }
 
 XRWebGLBinding::XRWebGLBinding(XRSession* session,
@@ -146,38 +147,66 @@ WebGLTexture* XRWebGLBinding::getReflectionCubeMap(
   return texture;
 }
 
-WebGLTexture* XRWebGLBinding::getCameraImage(XRFrame* frame, XRView* view) {
-  // Verify that frame is currently active.
+WebGLTexture* XRWebGLBinding::getCameraImage(XRCamera* camera,
+                                             ExceptionState& exception_state) {
+  DVLOG(3) << __func__;
+
+  XRFrame* frame = camera->Frame();
+  DCHECK(frame);
+
+  XRSession* session = frame->session();
+  DCHECK(session);
+
+  if (!session->IsFeatureEnabled(
+          device::mojom::XRSessionFeature::CAMERA_ACCESS)) {
+    DVLOG(2) << __func__ << ": raw camera access is not enabled on a session";
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        XRSession::kRawCameraAccessFeatureNotSupported);
+    return nullptr;
+  }
+
   if (!frame->IsActive()) {
+    DVLOG(2) << __func__ << ": frame is not active";
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      XRFrame::kInactiveFrame);
     return nullptr;
   }
 
-  if (frame != view->frame()) {
+  if (!frame->IsAnimationFrame()) {
+    DVLOG(2) << __func__ << ": frame is not animating";
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      XRFrame::kNonAnimationFrame);
     return nullptr;
   }
 
-  XRWebGLLayer* base_layer = view->session()->renderState()->baseLayer();
+  if (session_ != session) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Camera comes from a different session than this binding");
+    return nullptr;
+  }
+
+  XRWebGLLayer* base_layer = session->renderState()->baseLayer();
   DCHECK(base_layer);
 
-  base::Optional<gpu::MailboxHolder> camera_image_mailbox_holder =
-      base_layer->CameraImageMailboxHolder();
-
-  if (!camera_image_mailbox_holder) {
-    return nullptr;
-  }
-
-  GLuint texture_id = base_layer->CameraImageTextureId();
-
-  // This resource is owned by the renderer, and is freed OnFrameEnd();
-  WebGLUnownedTexture* texture = MakeGarbageCollected<WebGLUnownedTexture>(
-      webgl_context_, texture_id, GL_TEXTURE_2D);
-  return texture;
+  // This resource is owned by the XRWebGLLayer, and is freed in OnFrameEnd();
+  return base_layer->GetCameraTexture();
 }
 
 XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(
     XRView* view,
     ExceptionState& exception_state) {
   DVLOG(1) << __func__;
+
+  XRFrame* frame = view->frame();
+
+  if (session_ != frame->session()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "View comes from a different session than this binding");
+    return nullptr;
+  }
 
   if (!session_->IsFeatureEnabled(device::mojom::XRSessionFeature::DEPTH)) {
     DVLOG(2) << __func__ << ": depth sensing is not enabled on a session";
@@ -186,8 +215,6 @@ XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(
         XRSession::kDepthSensingFeatureNotSupported);
     return nullptr;
   }
-
-  XRFrame* frame = view->frame();
 
   if (!frame->IsActive()) {
     DVLOG(2) << __func__ << ": frame is not active";

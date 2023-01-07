@@ -1,27 +1,24 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SYNC_ENGINE_DEBUG_INFO_EVENT_LISTENER_H_
 #define COMPONENTS_SYNC_ENGINE_DEBUG_INFO_EVENT_LISTENER_H_
 
-#include <string>
-#include <vector>
-
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/cycle/debug_info_getter.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
-#include "components/sync/engine/data_type_debug_info_listener.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_manager.h"
-#include "components/sync/js/js_backend.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/client_debug_info.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+
+namespace sync_pb {
+class EncryptedData;
+}
 
 namespace syncer {
 
@@ -35,22 +32,24 @@ const unsigned int kMaxEntries = GetNumModelTypes() + 10;
 // This class is not thread safe and should only be accessed on the sync thread.
 class DebugInfoEventListener : public SyncManager::Observer,
                                public SyncEncryptionHandler::Observer,
-                               public DebugInfoGetter,
-                               public DataTypeDebugInfoListener {
+                               public DebugInfoGetter {
  public:
   DebugInfoEventListener();
+
+  DebugInfoEventListener(const DebugInfoEventListener&) = delete;
+  DebugInfoEventListener& operator=(const DebugInfoEventListener&) = delete;
+
   ~DebugInfoEventListener() override;
+
+  void InitializationComplete();
 
   // SyncManager::Observer implementation.
   void OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) override;
-  void OnInitializationComplete(
-      const WeakHandle<JsBackend>& js_backend,
-      const WeakHandle<DataTypeDebugInfoListener>& debug_listener,
-      bool success) override;
   void OnConnectionStatusChange(ConnectionStatus connection_status) override;
   void OnActionableError(const SyncProtocolError& sync_error) override;
   void OnMigrationRequested(ModelTypeSet types) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
+  void OnSyncStatusChanged(const SyncStatus& status) override;
 
   // SyncEncryptionHandler::Observer implementation.
   void OnPassphraseRequired(
@@ -59,8 +58,6 @@ class DebugInfoEventListener : public SyncManager::Observer,
   void OnPassphraseAccepted() override;
   void OnTrustedVaultKeyRequired() override;
   void OnTrustedVaultKeyAccepted() override;
-  void OnBootstrapTokenUpdated(const std::string& bootstrap_token,
-                               BootstrapTokenType type) override;
   void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                bool encrypt_everything) override;
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
@@ -76,14 +73,6 @@ class DebugInfoEventListener : public SyncManager::Observer,
 
   // DebugInfoGetter implementation.
   void ClearDebugInfo() override;
-
-  // DataTypeDebugInfoListener implementation.
-  void OnDataTypeConfigureComplete(
-      const std::vector<DataTypeConfigurationStats>& configuration_stats)
-      override;
-
-  // Returns a weak pointer to this object.
-  base::WeakPtr<DataTypeDebugInfoListener> GetWeakPtr();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DebugInfoEventListenerTest, VerifyEventsAdded);
@@ -109,10 +98,6 @@ class DebugInfoEventListener : public SyncManager::Observer,
   bool cryptographer_can_encrypt_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<DebugInfoEventListener> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DebugInfoEventListener);
 };
 
 }  // namespace syncer

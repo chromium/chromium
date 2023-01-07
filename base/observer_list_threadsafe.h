@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,21 @@
 
 #include <unordered_map>
 #include <utility>
-#include <vector>
 
 #include "base/base_export.h"
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/check_op.h"
-#include "base/debug/dump_without_crashing.h"
+#include "base/containers/contains.h"
 #include "base/deterministic_containers.h"
+#include "base/dcheck_is_on.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_local.h"
 #include "build/build_config.h"
@@ -46,7 +47,11 @@
 //   The drawback of the threadsafe observer list is that notifications are not
 //   as real-time as the non-threadsafe version of this class. Notifications
 //   will always be done via PostTask() to another sequence, whereas with the
-//   non-thread-safe observer_list, notifications happen synchronously.
+//   non-thread-safe ObserverList, notifications happen synchronously.
+//
+//   Note: this class previously supported synchronous notifications for
+//   same-sequence observers, but it was error-prone and removed in
+//   crbug.com/1193750, think twice before re-considering this paradigm.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -78,7 +83,7 @@ class BASE_EXPORT ObserverListThreadSafeBase
     NotificationDataBase(void* observer_list_in, const Location& from_here_in)
         : observer_list(observer_list_in), from_here(from_here_in) {}
 
-    void* observer_list;
+    raw_ptr<void> observer_list;
     Location from_here;
   };
 
@@ -96,6 +101,15 @@ class BASE_EXPORT ObserverListThreadSafeBase
 template <class ObserverType>
 class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
  public:
+  enum class AddObserverResult {
+    kBecameNonEmpty,
+    kWasAlreadyNonEmpty,
+  };
+  enum class RemoveObserverResult {
+    kWasOrBecameEmpty,
+    kRemainsNonEmpty,
+  };
+
   ObserverListThreadSafe() : lock_("ObserverListThreadSafe.lock_") {}
   explicit ObserverListThreadSafe(ObserverListPolicy policy)
       : policy_(policy), lock_("ObserverListThreadSafe.lock_") {}
@@ -103,7 +117,7 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
   ObserverListThreadSafe& operator=(const ObserverListThreadSafe&) = delete;
 
   // Adds |observer| to the list. |observer| must not already be in the list.
-  void AddObserver(ObserverType* observer) {
+  AddObserverResult AddObserver(ObserverType* observer) {
     DCHECK(SequencedTaskRunnerHandle::IsSet())
         << "An observer can only be registered when SequencedTaskRunnerHandle "
            "is set. If this is in a unit test, you're likely merely missing a "
@@ -113,6 +127,8 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
            "base::SingleThreadTaskRunner.";
 
     AutoLock auto_lock(lock_);
+
+    bool was_empty = observers_.empty();
 
     // Add |observer| to the list of observers.
     DCHECK(!Contains(observers_, observer));
@@ -134,24 +150,20 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
       const NotificationDataBase* current_notification =
           tls_current_notification_.Get().Get();
       if (current_notification && current_notification->observer_list == this) {
-        // TODO(http://crbug.com/1192296): This code is temporary added to
-        // ensure that TLS code is not used by any observer. Remove this code
-        // after the experiment.
-        if (!dump_already_reported_) {
-          debug::DumpWithoutCrashing();
-          dump_already_reported_ = true;
-        }
         const NotificationData* notification_data =
             static_cast<const NotificationData*>(current_notification);
         task_runner->PostTask(
             current_notification->from_here,
             BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper, this,
-                     observer,
+                     UnsafeDanglingUntriaged(observer),
                      NotificationData(this, observer_id,
                                       current_notification->from_here,
                                       notification_data->method)));
       }
     }
+
+    return was_empty ? AddObserverResult::kBecameNonEmpty
+                     : AddObserverResult::kWasAlreadyNonEmpty;
   }
 
   // Remove an observer from the list if it is in the list.
@@ -159,9 +171,11 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
   // If a notification was sent to the observer but hasn't started to run yet,
   // it will be aborted. If a notification has started to run, removing the
   // observer won't stop it.
-  void RemoveObserver(ObserverType* observer) {
+  RemoveObserverResult RemoveObserver(ObserverType* observer) {
     AutoLock auto_lock(lock_);
     observers_.erase(observer);
+    return observers_.empty() ? RemoveObserverResult::kWasOrBecameEmpty
+                              : RemoveObserverResult::kRemainsNonEmpty;
   }
 
   // Verifies that the list is currently empty (i.e. there are no observers).
@@ -187,52 +201,9 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
       observer.second.task_runner->PostTask(
           from_here,
           BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper, this,
-                   observer.first,
+                   base::UnsafeDanglingUntriaged(observer.first),
                    NotificationData(this, observer.second.observer_id,
                                     from_here, method)));
-    }
-  }
-
-  // Like Notify() but attempts to synchronously invoke callbacks if they are
-  // associated with this thread.
-  template <typename Method, typename... Params>
-  void NotifySynchronously(const Location& from_here,
-                           Method m,
-                           Params&&... params) {
-    RepeatingCallback<void(ObserverType*)> method =
-        BindRepeating(&Dispatcher<ObserverType, Method>::Run, m,
-                      std::forward<Params>(params)...);
-
-    // The observers may make reentrant calls (which can be a problem due to the
-    // lock), so we extract a list to call synchronously.
-    struct PendingNotificationData {
-      ObserverType* observer;
-      size_t observer_id;
-    };
-    std::vector<PendingNotificationData> current_sequence_observers;
-
-    {
-      AutoLock lock(lock_);
-      current_sequence_observers.reserve(observers_.size());
-      for (const auto& observer : observers_) {
-        if (observer.second.task_runner->RunsTasksInCurrentSequence()) {
-          current_sequence_observers.emplace_back(PendingNotificationData{
-              observer.first, observer.second.observer_id});
-        } else {
-          observer.second.task_runner->PostTask(
-              from_here,
-              BindOnce(&ObserverListThreadSafe<ObserverType>::NotifyWrapper,
-                       this, observer.first,
-                       NotificationData(this, observer.second.observer_id,
-                                        from_here, method)));
-        }
-      }
-    }
-
-    for (const auto& pending_notification : current_sequence_observers) {
-      NotifyWrapper(pending_notification.observer,
-                    NotificationData(this, pending_notification.observer_id,
-                                     from_here, method));
     }
   }
 
@@ -292,7 +263,6 @@ class ObserverListThreadSafe : public internal::ObserverListThreadSafeBase {
 
   mutable Lock lock_;
 
-  bool dump_already_reported_ GUARDED_BY(lock_) = false;
   size_t observer_id_counter_ GUARDED_BY(lock_) = 0;
 
   struct ObserverTaskRunnerInfo {

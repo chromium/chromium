@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ TEST(PlatformSensorProviderTestWinrt, SensorCreationReturnCheck) {
       std::move(mock_sensor_reader_factory));
 
   // CreateSensor is async so use a RunLoop to wait for completion.
-  base::Optional<base::RunLoop> run_loop;
+  absl::optional<base::RunLoop> run_loop;
   bool expect_sensor_valid = false;
 
   base::RepeatingCallback<void(scoped_refptr<PlatformSensor> sensor)>

@@ -1,6 +1,6 @@
 # ContentCapture
 
-[Rendered](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/content_capture/README.md)
+[Rendered](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/content_capture/README.md)
 
 This directory contains ContentCapture which is for capturing on-screen text
 content and streaming it to a client.

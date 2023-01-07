@@ -1,44 +1,44 @@
-UNKNOWN_TYPE | f1 | MATHCOUNTS Foundation Online Donation Form |  | f1_1-default
-NAME_FIRST | dnrfirst | Name * |  | f1_1-default
-NAME_LAST | dnrlast | Name * |  | f1_1-default
-COMPANY_NAME | company | Company |  | f1_1-default
-ADDRESS_HOME_LINE1 | dadd1 | Address 1 * |  | f1_1-default
-ADDRESS_HOME_LINE2 | dadd2 | Address 2 |  | f1_1-default
-ADDRESS_HOME_CITY | dcity | City / State / Zip * |  | f1_1-default
-ADDRESS_HOME_STATE | dstate | Name * | AL | f1_1-default
-ADDRESS_HOME_ZIP | dzip | Name * |  | f1_1-default
-ADDRESS_HOME_COUNTRY | CC_COUNTRY | Country | United States | f1_1-default
-PHONE_HOME_WHOLE_NUMBER | dphone | Telephone |  | f1_1-default
-EMAIL_ADDRESS | demail | Email * |  | f1_1-default
-UNKNOWN_TYPE | amt | $ |  | f1_1-default
-UNKNOWN_TYPE | tributeSelect | My donation is In Honor or In Memory of someone special | on | f1_1-default
-UNKNOWN_TYPE | DonationType | This is a one time donation | OneTime | f1_1-default
-UNKNOWN_TYPE | DonationType | I would like to make this a recurring donation deducted | Recurs | f1_1-default
-UNKNOWN_TYPE | ccrecurring | I would like to make this a recurring donation deducted | Monthly | f1_1-default
-UNKNOWN_TYPE | remLen | ( You may enter up to 500 characters. ) | 500 | f1_1-default
-UNKNOWN_TYPE | Comments | ( You may enter up to 500 characters. ) |  | f1_1-default
-UNKNOWN_TYPE | tribute | In Honor Of | IHO | f1_1-default
-UNKNOWN_TYPE | tribute | In Memory Of | IMO | f1_1-default
-NAME_FULL | Tribute_Name | Name: |  | f1_1-default
-UNKNOWN_TYPE | Tribute_occasion | Occasion: |  | f1_1-default
-UNKNOWN_TYPE | Tribute_Disclosure | I wish to remain anonymous | on | f1_1-default
-UNKNOWN_TYPE | Tribute_Notification | Please send a notification of my gift to the following address: | on | f1_1-default
-UNKNOWN_TYPE | Tribute_IncludeAmount | Include the amount | 1 | f1_1-default
-UNKNOWN_TYPE | Tribute_IncludeAmount | Do not include the amount | 0 | f1_1-default
-NAME_FULL | Tribute_NotifyName | Name: |  | f1_1-default
-EMAIL_ADDRESS | Tribute_Email | Email: |  | Tribute_Email_2-default
-ADDRESS_HOME_LINE1 | Tribute_NotifyAddr | Street: |  | Tribute_Email_2-default
-ADDRESS_HOME_CITY | Tribute_NotifyCity | City / St. / Zip: |  | Tribute_Email_2-default
-ADDRESS_HOME_STATE | Tribute_NotifyState | City / St. / Zip: |  | Tribute_Email_2-default
-ADDRESS_HOME_ZIP | Tribute_NotifyZip | City / St. / Zip: |  | Tribute_Email_2-default
-CREDIT_CARD_TYPE | cctype | Credit Card Type * | Visa | credit-card-cc
-CREDIT_CARD_NUMBER | ccard | Credit Card Number * |  | credit-card-cc
-CREDIT_CARD_VERIFICATION_CODE | csc | CSC Number * What Is This? |  | credit-card-cc
-CREDIT_CARD_EXP_MONTH | ExpMon | Month | 1 | credit-card-cc
-CREDIT_CARD_EXP_4_DIGIT_YEAR | ExpYear | Year | 11 | credit-card-cc
-UNKNOWN_TYPE | SameAddress | Same As Contact Address | checkbox | f1_1-default
-ADDRESS_HOME_LINE1 | CC_Addr | Address 1 * |  | CC_Addr_4-default
-ADDRESS_HOME_LINE2 | CC_Addr2 | Address 2 |  | CC_Addr_4-default
-ADDRESS_HOME_CITY | CC_City | City / State / Zip * |  | CC_Addr_4-default
-ADDRESS_HOME_STATE | CC_State | Credit Card Information |  | CC_Addr_4-default
-ADDRESS_HOME_ZIP | CC_Zip | Credit Card Information |  | CC_Addr_4-default
+UNKNOWN_TYPE | f1 | MATHCOUNTS Foundation Online Donation Form |  | f1_1
+NAME_FIRST | dnrfirst | Name * |  | f1_1
+NAME_LAST | dnrlast | Name * |  | f1_1
+COMPANY_NAME | company | Company |  | f1_1
+ADDRESS_HOME_LINE1 | dadd1 | Address 1 * |  | f1_1
+ADDRESS_HOME_LINE2 | dadd2 | Address 2 |  | f1_1
+ADDRESS_HOME_CITY | dcity | City / State / Zip * |  | f1_1
+ADDRESS_HOME_STATE | dstate | Name * | AL | f1_1
+ADDRESS_HOME_ZIP | dzip | Name * |  | f1_1
+ADDRESS_HOME_COUNTRY | CC_COUNTRY | Country | United States | f1_1
+PHONE_HOME_WHOLE_NUMBER | dphone | Telephone |  | f1_1
+EMAIL_ADDRESS | demail | Email * |  | f1_1
+UNKNOWN_TYPE | amt | $ |  | f1_1
+UNKNOWN_TYPE | tributeSelect | My donation is In Honor or In Memory of someone special | on | f1_1
+UNKNOWN_TYPE | DonationType | This is a one time donation | OneTime | f1_1
+UNKNOWN_TYPE | DonationType | I would like to make this a recurring donation deducted | Recurs | f1_1
+UNKNOWN_TYPE | ccrecurring | I would like to make this a recurring donation deducted | Monthly | f1_1
+UNKNOWN_TYPE | remLen | ( You may enter up to 500 characters. ) | 500 | f1_1
+UNKNOWN_TYPE | Comments | ( You may enter up to 500 characters. ) |  | f1_1
+UNKNOWN_TYPE | tribute | In Honor Of | IHO | f1_1
+UNKNOWN_TYPE | tribute | In Memory Of | IMO | f1_1
+NAME_FULL | Tribute_Name | Name: |  | f1_1
+UNKNOWN_TYPE | Tribute_occasion | Occasion: |  | f1_1
+UNKNOWN_TYPE | Tribute_Disclosure | I wish to remain anonymous | on | f1_1
+UNKNOWN_TYPE | Tribute_Notification | Please send a notification of my gift to the following address: | on | f1_1
+UNKNOWN_TYPE | Tribute_IncludeAmount | Include the amount | 1 | f1_1
+UNKNOWN_TYPE | Tribute_IncludeAmount | Do not include the amount | 0 | f1_1
+NAME_FULL | Tribute_NotifyName | Name: |  | f1_1
+EMAIL_ADDRESS | Tribute_Email | Email: |  | Tribute_Email_2
+ADDRESS_HOME_LINE1 | Tribute_NotifyAddr | Street: |  | Tribute_Email_2
+ADDRESS_HOME_CITY | Tribute_NotifyCity | City / St. / Zip: |  | Tribute_Email_2
+ADDRESS_HOME_STATE | Tribute_NotifyState | City / St. / Zip: |  | Tribute_Email_2
+ADDRESS_HOME_ZIP | Tribute_NotifyZip | City / St. / Zip: |  | Tribute_Email_2
+CREDIT_CARD_TYPE | cctype | Credit Card Type * | Visa | cctype_3
+CREDIT_CARD_NUMBER | ccard | Credit Card Number * |  | cctype_3
+CREDIT_CARD_VERIFICATION_CODE | csc | CSC Number * What Is This? |  | cctype_3
+CREDIT_CARD_EXP_MONTH | ExpMon | Month | 1 | cctype_3
+CREDIT_CARD_EXP_4_DIGIT_YEAR | ExpYear | Year | 11 | cctype_3
+UNKNOWN_TYPE | SameAddress | Same As Contact Address | checkbox | f1_1
+ADDRESS_HOME_LINE1 | CC_Addr | Address 1 * |  | CC_Addr_4
+ADDRESS_HOME_LINE2 | CC_Addr2 | Address 2 |  | CC_Addr_4
+ADDRESS_HOME_CITY | CC_City | City / State / Zip * |  | CC_Addr_4
+ADDRESS_HOME_STATE | CC_State | Credit Card Information |  | CC_Addr_4
+ADDRESS_HOME_ZIP | CC_Zip | Credit Card Information |  | CC_Addr_4

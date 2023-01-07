@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,8 @@ namespace net {
 // Host resolution error info.
 struct NET_EXPORT ResolveErrorInfo {
   ResolveErrorInfo();
-  ResolveErrorInfo(int resolve_error, bool is_secure_network_error = false);
+  explicit ResolveErrorInfo(int resolve_error,
+                            bool is_secure_network_error = false);
   ResolveErrorInfo(const ResolveErrorInfo& resolve_error_info);
   ResolveErrorInfo(ResolveErrorInfo&& other);
 

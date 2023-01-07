@@ -1,11 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_HIGHLIGHT_OBSERVER_H_
 #define UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_HIGHLIGHT_OBSERVER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_highlight_observer.h"
@@ -23,6 +23,11 @@ class TestInkDropHighlightObserver : public InkDropHighlightObserver,
                                          InkDropHighlight::AnimationType> {
  public:
   TestInkDropHighlightObserver();
+
+  TestInkDropHighlightObserver(const TestInkDropHighlightObserver&) = delete;
+  TestInkDropHighlightObserver& operator=(const TestInkDropHighlightObserver&) =
+      delete;
+
   ~TestInkDropHighlightObserver() override = default;
 
   void set_ink_drop_highlight(InkDropHighlight* ink_drop_highlight) {
@@ -41,9 +46,7 @@ class TestInkDropHighlightObserver : public InkDropHighlightObserver,
       TestInkDropAnimationObserverHelper<InkDropHighlight::AnimationType>;
 
   // An InkDropHighlight to spy info from when notifications are handled.
-  InkDropHighlight* ink_drop_highlight_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInkDropHighlightObserver);
+  raw_ptr<InkDropHighlight> ink_drop_highlight_ = nullptr;
 };
 
 }  // namespace test

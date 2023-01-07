@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "sandbox/win/src/job.h"
 
 #include "base/win/scoped_process_information.h"
+#include "sandbox/win/src/security_level.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sandbox {
@@ -18,7 +19,7 @@ TEST(JobTest, TestCreation) {
     // Create the job.
     Job job;
     ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-              job.Init(JOB_LOCKDOWN, L"my_test_job_name", 0, 0));
+              job.Init(JobLevel::kLockdown, L"my_test_job_name", 0, 0));
 
     // check if the job exists.
     HANDLE job_handle =
@@ -35,59 +36,26 @@ TEST(JobTest, TestCreation) {
   ASSERT_EQ(static_cast<DWORD>(ERROR_FILE_NOT_FOUND), ::GetLastError());
 }
 
-// Tests the method "Take".
-TEST(JobTest, Take) {
-  base::win::ScopedHandle job_handle;
-  // Scope the creation of Job.
-  {
-    // Create the job.
-    Job job;
-    ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-              job.Init(JOB_LOCKDOWN, L"my_test_job_name", 0, 0));
-
-    job_handle = job.Take();
-    ASSERT_TRUE(job_handle.IsValid());
-  }
-
-  // Check to be sure that the job is still alive even after the object is gone
-  // out of scope.
-  HANDLE job_handle_dup =
-      ::OpenJobObjectW(GENERIC_ALL, false, L"my_test_job_name");
-  ASSERT_TRUE(job_handle_dup);
-
-  // Remove all references.
-  if (job_handle_dup)
-    ::CloseHandle(job_handle_dup);
-
-  job_handle.Close();
-
-  // Check if the jbo is really dead.
-  job_handle_dup = ::OpenJobObjectW(GENERIC_ALL, false, L"my_test_job_name");
-  ASSERT_TRUE(!job_handle_dup);
-  ASSERT_EQ(static_cast<DWORD>(ERROR_FILE_NOT_FOUND), ::GetLastError());
-}
-
 // Tests the ui exceptions
 TEST(JobTest, TestExceptions) {
-  base::win::ScopedHandle job_handle;
+  HANDLE job_handle;
   // Scope the creation of Job.
   {
     // Create the job.
     Job job;
     ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-              job.Init(JOB_LOCKDOWN, L"my_test_job_name",
+              job.Init(JobLevel::kLockdown, L"my_test_job_name",
                        JOB_OBJECT_UILIMIT_READCLIPBOARD, 0));
 
-    job_handle = job.Take();
-    ASSERT_TRUE(job_handle.IsValid());
+    job_handle = job.GetHandle();
+    ASSERT_TRUE(job_handle != INVALID_HANDLE_VALUE);
 
     JOBOBJECT_BASIC_UI_RESTRICTIONS jbur = {0};
     DWORD size = sizeof(jbur);
     ASSERT_TRUE(::QueryInformationJobObject(
-        job_handle.Get(), JobObjectBasicUIRestrictions, &jbur, size, &size));
+        job_handle, JobObjectBasicUIRestrictions, &jbur, size, &size));
 
     ASSERT_EQ(0u, jbur.UIRestrictionsClass & JOB_OBJECT_UILIMIT_READCLIPBOARD);
-    job_handle.Close();
   }
 
   // Scope the creation of Job.
@@ -95,15 +63,15 @@ TEST(JobTest, TestExceptions) {
     // Create the job.
     Job job;
     ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-              job.Init(JOB_LOCKDOWN, L"my_test_job_name", 0, 0));
+              job.Init(JobLevel::kLockdown, L"my_test_job_name", 0, 0));
 
-    job_handle = job.Take();
-    ASSERT_TRUE(job_handle.IsValid());
+    job_handle = job.GetHandle();
+    ASSERT_TRUE(job_handle != INVALID_HANDLE_VALUE);
 
     JOBOBJECT_BASIC_UI_RESTRICTIONS jbur = {0};
     DWORD size = sizeof(jbur);
     ASSERT_TRUE(::QueryInformationJobObject(
-        job_handle.Get(), JobObjectBasicUIRestrictions, &jbur, size, &size));
+        job_handle, JobObjectBasicUIRestrictions, &jbur, size, &size));
 
     ASSERT_EQ(static_cast<DWORD>(JOB_OBJECT_UILIMIT_READCLIPBOARD),
               jbur.UIRestrictionsClass & JOB_OBJECT_UILIMIT_READCLIPBOARD);
@@ -115,9 +83,9 @@ TEST(JobTest, DoubleInit) {
   // Create the job.
   Job job;
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job.Init(JOB_LOCKDOWN, L"my_test_job_name", 0, 0));
+            job.Init(JobLevel::kLockdown, L"my_test_job_name", 0, 0));
   ASSERT_EQ(static_cast<DWORD>(ERROR_ALREADY_INITIALIZED),
-            job.Init(JOB_LOCKDOWN, L"test", 0, 0));
+            job.Init(JobLevel::kLockdown, L"test", 0, 0));
 }
 
 // Tests the error case when we use a method and the object is not yet
@@ -127,39 +95,34 @@ TEST(JobTest, NoInit) {
   ASSERT_EQ(static_cast<DWORD>(ERROR_NO_DATA),
             job.UserHandleGrantAccess(nullptr));
   ASSERT_EQ(static_cast<DWORD>(ERROR_NO_DATA), job.AssignProcessToJob(nullptr));
-  ASSERT_FALSE(job.Take().IsValid());
+  ASSERT_FALSE(job.GetHandle() == INVALID_HANDLE_VALUE);
 }
 
-// Tests the initialization of the job with different security level.
+// Tests the initialization of the job with different security levels.
 TEST(JobTest, SecurityLevel) {
-  Job job1;
+  Job job_lockdown;
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job1.Init(JOB_LOCKDOWN, L"job1", 0, 0));
+            job_lockdown.Init(JobLevel::kLockdown, L"job_lockdown", 0, 0));
 
-  Job job2;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job2.Init(JOB_RESTRICTED, L"job2", 0, 0));
+  Job job_limited_user;
+  ASSERT_EQ(
+      static_cast<DWORD>(ERROR_SUCCESS),
+      job_limited_user.Init(JobLevel::kLimitedUser, L"job_limited_user", 0, 0));
 
-  Job job3;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job3.Init(JOB_LIMITED_USER, L"job3", 0, 0));
+  Job job_interactive;
+  ASSERT_EQ(
+      static_cast<DWORD>(ERROR_SUCCESS),
+      job_interactive.Init(JobLevel::kInteractive, L"job_interactive", 0, 0));
 
-  Job job4;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job4.Init(JOB_INTERACTIVE, L"job4", 0, 0));
+  Job job_unprotected;
+  ASSERT_EQ(
+      static_cast<DWORD>(ERROR_SUCCESS),
+      job_unprotected.Init(JobLevel::kUnprotected, L"job_unprotected", 0, 0));
 
-  Job job5;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job5.Init(JOB_UNPROTECTED, L"job5", 0, 0));
-
-  // JOB_NONE means we run without a job object so Init should fail.
-  Job job6;
+  // JobLevel::kNone means we run without a job object so Init should fail.
+  Job job_none;
   ASSERT_EQ(static_cast<DWORD>(ERROR_BAD_ARGUMENTS),
-            job6.Init(JOB_NONE, L"job6", 0, 0));
-
-  Job job7;
-  ASSERT_EQ(static_cast<DWORD>(ERROR_BAD_ARGUMENTS),
-            job7.Init(static_cast<JobLevel>(JOB_NONE + 1), L"job7", 0, 0));
+            job_none.Init(JobLevel::kNone, L"job_none", 0, 0));
 }
 
 // Tests the method "AssignProcessToJob".
@@ -167,7 +130,7 @@ TEST(JobTest, ProcessInJob) {
   // Create the job.
   Job job;
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
-            job.Init(JOB_UNPROTECTED, L"job_test_process", 0, 0));
+            job.Init(JobLevel::kUnprotected, L"job_test_process", 0, 0));
 
   wchar_t notepad[] = L"notepad";
   STARTUPINFO si = {sizeof(si)};
@@ -179,13 +142,13 @@ TEST(JobTest, ProcessInJob) {
             job.AssignProcessToJob(pi.process_handle()));
 
   // Get the job handle.
-  base::win::ScopedHandle job_handle = job.Take();
+  HANDLE job_handle = job.GetHandle();
 
   // Check if the process is in the job.
   JOBOBJECT_BASIC_PROCESS_ID_LIST jbpidl = {0};
   DWORD size = sizeof(jbpidl);
   EXPECT_TRUE(::QueryInformationJobObject(
-      job_handle.Get(), JobObjectBasicProcessIdList, &jbpidl, size, &size));
+      job_handle, JobObjectBasicProcessIdList, &jbpidl, size, &size));
 
   EXPECT_EQ(1u, jbpidl.NumberOfAssignedProcesses);
   EXPECT_EQ(1u, jbpidl.NumberOfProcessIdsInList);

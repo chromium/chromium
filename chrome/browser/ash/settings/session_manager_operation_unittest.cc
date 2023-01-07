@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,19 +12,20 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
+#include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
-#include "components/policy/core/common/cloud/policy_builder.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -37,8 +38,8 @@
 
 namespace em = enterprise_management;
 
-using testing::Mock;
 using testing::_;
+using testing::Mock;
 
 namespace ash {
 namespace {
@@ -77,12 +78,16 @@ class SessionManagerOperationTest : public testing::Test {
         owner_key_util_);
   }
 
+  SessionManagerOperationTest(const SessionManagerOperationTest&) = delete;
+  SessionManagerOperationTest& operator=(const SessionManagerOperationTest&) =
+      delete;
+
   void SetUp() override {
     policy_.payload().mutable_user_allowlist()->add_user_allowlist(
-        "fake-whitelist");
+        "fake-allowlist");
     policy_.Build();
 
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
     service_ =
         OwnerSettingsServiceAshFactory::GetForBrowserContext(profile_.get());
   }
@@ -101,7 +106,7 @@ class SessionManagerOperationTest : public testing::Test {
 
   void CheckPublicKeyLoaded(SessionManagerOperation* op) {
     ASSERT_TRUE(op->public_key().get());
-    ASSERT_TRUE(op->public_key()->is_loaded());
+    ASSERT_FALSE(op->public_key()->is_empty());
     std::vector<uint8_t> public_key;
     ASSERT_TRUE(policy_.GetSigningKey()->ExportPublicKey(&public_key));
     EXPECT_EQ(public_key, op->public_key()->data());
@@ -121,9 +126,6 @@ class SessionManagerOperationTest : public testing::Test {
   OwnerSettingsServiceAsh* service_;
 
   bool validated_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionManagerOperationTest);
 };
 
 TEST_F(SessionManagerOperationTest, LoadNoPolicyNoKey) {
@@ -133,9 +135,8 @@ TEST_F(SessionManagerOperationTest, LoadNoPolicyNoKey) {
       base::BindOnce(&SessionManagerOperationTest::OnOperationCompleted,
                      base::Unretained(this)));
 
-  EXPECT_CALL(*this,
-              OnOperationCompleted(
-                  &op, DeviceSettingsService::STORE_KEY_UNAVAILABLE));
+  EXPECT_CALL(*this, OnOperationCompleted(
+                         &op, DeviceSettingsService::STORE_KEY_UNAVAILABLE));
   op.Start(&session_manager_client_, owner_key_util_, nullptr);
   content::RunAllTasksUntilIdle();
   Mock::VerifyAndClearExpectations(this);
@@ -143,7 +144,7 @@ TEST_F(SessionManagerOperationTest, LoadNoPolicyNoKey) {
   EXPECT_FALSE(op.policy_data().get());
   EXPECT_FALSE(op.device_settings().get());
   ASSERT_TRUE(op.public_key().get());
-  EXPECT_FALSE(op.public_key()->is_loaded());
+  EXPECT_TRUE(op.public_key()->is_empty());
 }
 
 TEST_F(SessionManagerOperationTest, LoadOwnerKey) {
@@ -154,9 +155,8 @@ TEST_F(SessionManagerOperationTest, LoadOwnerKey) {
       base::BindOnce(&SessionManagerOperationTest::OnOperationCompleted,
                      base::Unretained(this)));
 
-  EXPECT_CALL(*this,
-              OnOperationCompleted(
-                  &op, DeviceSettingsService::STORE_NO_POLICY));
+  EXPECT_CALL(
+      *this, OnOperationCompleted(&op, DeviceSettingsService::STORE_NO_POLICY));
   op.Start(&session_manager_client_, owner_key_util_, nullptr);
   content::RunAllTasksUntilIdle();
   Mock::VerifyAndClearExpectations(this);
@@ -197,8 +197,7 @@ TEST_F(SessionManagerOperationTest, LoadImmediately) {
                      base::Unretained(this)));
 
   EXPECT_CALL(*this,
-              OnOperationCompleted(
-                  &op, DeviceSettingsService::STORE_SUCCESS));
+              OnOperationCompleted(&op, DeviceSettingsService::STORE_SUCCESS));
   op.Start(&session_manager_client_, owner_key_util_, nullptr);
   content::RunAllTasksUntilIdle();
   Mock::VerifyAndClearExpectations(this);
@@ -212,7 +211,7 @@ TEST_F(SessionManagerOperationTest, LoadImmediately) {
 }
 
 TEST_F(SessionManagerOperationTest, RestartLoad) {
-  owner_key_util_->SetPrivateKey(policy_.GetSigningKey());
+  owner_key_util_->ImportPrivateKeyAndSetPublicKey(policy_.GetSigningKey());
   session_manager_client_.set_device_policy(policy_.GetBlob());
   LoadSettingsOperation op(
       false /* force_key_load */, true /* cloud_validations */,
@@ -234,7 +233,7 @@ TEST_F(SessionManagerOperationTest, RestartLoad) {
         // Verify the public_key() is properly set, but the callback is
         // not yet called.
         EXPECT_TRUE(op->public_key().get());
-        EXPECT_TRUE(op->public_key()->is_loaded());
+        EXPECT_FALSE(op->public_key()->is_empty());
         Mock::VerifyAndClearExpectations(test);
 
         // Now install a different key and policy.
@@ -243,7 +242,8 @@ TEST_F(SessionManagerOperationTest, RestartLoad) {
         policy->payload().mutable_metrics_enabled()->set_metrics_enabled(true);
         policy->Build();
         session_manager_client->set_device_policy(policy->GetBlob());
-        owner_key_util->SetPrivateKey(policy->GetSigningKey());
+        owner_key_util->ImportPrivateKeyAndSetPublicKey(
+            policy->GetSigningKey());
 
         // And restart the operation.
         EXPECT_CALL(*test, OnOperationCompleted(
@@ -277,8 +277,7 @@ TEST_F(SessionManagerOperationTest, StoreSettings) {
       policy_.GetCopy());
 
   EXPECT_CALL(*this,
-              OnOperationCompleted(
-                  &op, DeviceSettingsService::STORE_SUCCESS));
+              OnOperationCompleted(&op, DeviceSettingsService::STORE_SUCCESS));
   op.Start(&session_manager_client_, owner_key_util_, nullptr);
   content::RunAllTasksUntilIdle();
   Mock::VerifyAndClearExpectations(this);

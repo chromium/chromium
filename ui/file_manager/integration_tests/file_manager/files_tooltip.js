@@ -1,317 +1,389 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, wait} from '../test_util.js';
+import {testcase} from '../testcase.js';
 
-(() => {
-  const tooltipQueryHidden = 'files-tooltip:not([visible])';
-  const tooltipQueryVisible = 'files-tooltip[visible=true]';
-  const searchButton = '#search-button[has-tooltip]';
-  const viewButton = '#view-button[has-tooltip]';
-  const readonlyIndicator =
-      '#read-only-indicator[has-tooltip][show-card-tooltip]';
-  const fileList = '#file-list';
-  const cancelButton = '#cancel-selection-button[has-tooltip]';
-  const deleteButton = '#delete-button[has-tooltip]';
+import {remoteCall, setupAndWaitUntilReady} from './background.js';
 
-  const tooltipShowTimeout = 500;  // ms
+const tooltipQuery = 'files-tooltip';
+const tooltipQueryHidden = 'files-tooltip:not([visible])';
+const tooltipQueryVisible = 'files-tooltip[visible=true]';
+const searchButton = '#search-button[has-tooltip]';
+const viewButton = '#view-button[has-tooltip]';
+const readonlyIndicator =
+    '#read-only-indicator[has-tooltip][show-card-tooltip]';
+const fileList = '#file-list';
+const cancelButton = '#cancel-selection-button[has-tooltip]';
+const deleteButton = '#delete-button[has-tooltip]';
 
-  /**
-   * $i18n{} labels used when template replacement is disabled.
-   *
-   * @const {!Object<string, string>}
-   */
-  const i18nLabelReplacements = {
-    'SEARCH_TEXT_LABEL': 'Search',
-    'READONLY_INDICATOR_TOOLTIP':
-        'The contents of this folder are read-only. ' +
-        'Some activities are not supported.',
-    'CANCEL_SELECTION_BUTTON_LABEL': 'Cancel selection',
-  };
+const tooltipShowTimeout = 500;  // ms
 
-  /**
-   * Returns $i18n{} label if devtools code coverage is enabled, otherwise the
-   * replaced contents.
-   *
-   * @param {string} key $i18n{} key of replacement text
-   * @return {!Promise<string>}
-   */
-  async function getExpectedLabelText(key) {
-    const isDevtoolsCoverageActive =
-        await sendTestMessage({name: 'isDevtoolsCoverageActive'});
+/**
+ * $i18n{} labels used when template replacement is disabled.
+ *
+ * @const {!Object<string, string>}
+ */
+const i18nLabelReplacements = {
+  'SEARCH_TEXT_LABEL': 'Search',
+  'READONLY_INDICATOR_TOOLTIP': 'The contents of this folder are read-only. ' +
+      'Some activities are not supported.',
+  'CANCEL_SELECTION_BUTTON_LABEL': 'Cancel selection',
+  'CHANGE_TO_THUMBNAILVIEW_BUTTON_LABEL': 'Switch to thumbnail view',
+  'CHANGE_TO_LISTVIEW_BUTTON_LABEL': 'Switch to list view',
+};
 
-    if (isDevtoolsCoverageActive === 'true') {
-      return '$i18n{' + key + '}';
+/**
+ * Returns $i18n{} label if devtools code coverage is enabled, otherwise the
+ * replaced contents.
+ *
+ * @param {string} key $i18n{} key of replacement text
+ * @return {!Promise<string>}
+ */
+async function getExpectedLabelText(key) {
+  const isDevtoolsCoverageActive =
+      await sendTestMessage({name: 'isDevtoolsCoverageActive'});
+
+  if (isDevtoolsCoverageActive === 'true') {
+    return '$i18n{' + key + '}';
+  }
+
+  // Verify |key| has a $i18n{} replacement in |i18nLabelReplacements|.
+  const label = i18nLabelReplacements[key];
+  chrome.test.assertEq('string', typeof label, 'Missing: ' + key);
+
+  return label;
+}
+
+/**
+ * Waits until the element by |id| is the document.activeElement.
+ *
+ * @param {string} appId The Files app windowId.
+ * @param {string} id The element id.
+ * @return {!Promise}
+ */
+function getActiveElementById(appId, id) {
+  const caller = getCaller();
+  return repeatUntil(async () => {
+    const element =
+        await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
+    if (!element || element.attributes['id'] !== id) {
+      return pending(caller, 'Waiting for active element by id #%s.', id);
     }
+  });
+}
 
-    // Verify |key| has a $i18n{} replacement in |i18nLabelReplacements|.
-    const label = i18nLabelReplacements[key];
-    chrome.test.assertEq('string', typeof label, 'Missing: ' + key);
+/**
+ * Tests that tooltip is displayed when focusing an element with tooltip.
+ */
+testcase.filesTooltipFocus = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
-    return label;
-  }
+  // Check: initially the tooltip should be hidden.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
 
-  /**
-   * Waits until the element by |id| is the document.activeElement.
-   *
-   * @param {string} appId The Files app windowId.
-   * @param {string} id The element id.
-   * @return {!Promise}
-   */
-  function getActiveElementById(appId, id) {
-    const caller = getCaller();
-    return repeatUntil(async () => {
-      const element =
-          await remoteCall.callRemoteTestUtil('getActiveElement', appId, []);
-      if (!element || element.attributes['id'] !== id) {
-        return pending(caller, 'Waiting for active element by id #%s.', id);
-      }
-    });
-  }
+  // Focus a button with a tooltip: the search button.
+  await remoteCall.focus(appId, [searchButton]);
+  await getActiveElementById(appId, 'search-button');
 
-  /**
-   * Tests that tooltip is displayed when focusing an element with tooltip.
-   */
-  testcase.filesTooltipFocus = async () => {
-    const appId = await setupAndWaitUntilReady(
-        RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  // Check: the search button tooltip should be visible.
+  let expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
+  let label =
+      await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
+  chrome.test.assertEq(expectedLabelText, label.text);
 
-    // Check: initially the tooltip should be hidden.
-    await remoteCall.waitForElement(appId, tooltipQueryHidden);
+  // Focus an element that has no tooltip: the file-list.
+  await remoteCall.focus(appId, [fileList]);
+  await getActiveElementById(appId, 'file-list');
 
-    // Focus a button with a tooltip: the search button.
-    chrome.test.assertTrue(
-        await remoteCall.callRemoteTestUtil('focus', appId, [searchButton]));
-    await getActiveElementById(appId, 'search-button');
+  // Check: the tooltip should hide.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
 
-    // Check: the search button tooltip should be visible.
-    let expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
-    let label =
-        await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
-    chrome.test.assertEq(expectedLabelText, label.text);
+  // Select all the files to enable the cancel selection button.
+  const ctrlA = ['#file-list', 'a', true, false, false];
+  await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, ctrlA);
 
-    // Focus an element that has no tooltip: the file-list.
-    chrome.test.assertTrue(
-        await remoteCall.callRemoteTestUtil('focus', appId, [fileList]));
-    await getActiveElementById(appId, 'file-list');
+  // Focus the cancel selection button.
+  await remoteCall.focus(appId, [cancelButton]);
+  await getActiveElementById(appId, 'cancel-selection-button');
 
-    // Check: the tooltip should hide.
-    await remoteCall.waitForElement(appId, tooltipQueryHidden);
+  // Check: the cancel selection button tooltip should be visible.
+  expectedLabelText =
+      await getExpectedLabelText('CANCEL_SELECTION_BUTTON_LABEL');
+  label =
+      await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
+  chrome.test.assertEq(expectedLabelText, label.text);
+};
 
-    // Select all the files to enable the cancel selection button.
-    const ctrlA = ['#file-list', 'a', true, false, false];
-    await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, ctrlA);
+/**
+ * Tests that tooltip is displayed when focusing an element with tooltip.
+ */
+testcase.filesTooltipLabelChange = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
-    // Focus the cancel selection button.
-    chrome.test.assertTrue(
-        await remoteCall.callRemoteTestUtil('focus', appId, [cancelButton]));
-    await getActiveElementById(appId, 'cancel-selection-button');
+  // Check: initially the tooltip should be hidden.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
 
-    // Check: the cancel selection button tooltip should be visible.
-    expectedLabelText =
-        await getExpectedLabelText('CANCEL_SELECTION_BUTTON_LABEL');
-    label =
-        await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
-    chrome.test.assertEq(expectedLabelText, label.text);
-  };
+  // Focus a button with a tooltip: the view button.
+  await remoteCall.focus(appId, [viewButton]);
+  await getActiveElementById(appId, 'view-button');
 
-  /**
-   * Tests that tooltips display when hovering an element that has a tooltip.
-   */
-  testcase.filesTooltipMouseOver = async () => {
-    const appId = await setupAndWaitUntilReady(
-        RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  // Check: the view button tooltip should be visible.
+  let expectedLabelText =
+      await getExpectedLabelText('CHANGE_TO_THUMBNAILVIEW_BUTTON_LABEL');
+  let label =
+      await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
+  chrome.test.assertEq(expectedLabelText, label.text);
 
-    // Check: initially the tooltip should be hidden.
-    await remoteCall.waitForElement(appId, tooltipQueryHidden);
+  // Click the view button to update its label.
+  await remoteCall.waitAndClickElement(appId, [viewButton]);
 
-    // Mouse hover over a button that has a tooltip: the search button.
-    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-        'fakeMouseOver', appId, [searchButton]));
+  // Check: the view button should still be focused.
+  await getActiveElementById(appId, 'view-button');
 
-    // Check: the search button tooltip should be visible.
-    const expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
-    const firstElement =
-        await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
-    chrome.test.assertEq(expectedLabelText, firstElement.text);
+  // Check: the tooltip text should be updated.
+  expectedLabelText =
+      await getExpectedLabelText('CHANGE_TO_LISTVIEW_BUTTON_LABEL');
+  label =
+      await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
+  chrome.test.assertEq(expectedLabelText, label.text);
+};
 
-    // Move the mouse away from the search button.
-    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-        'fakeMouseOut', appId, [searchButton]));
+/**
+ * Tests that tooltips display when hovering an element that has a tooltip.
+ */
+testcase.filesTooltipMouseOver = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
-    // Check: the tooltip should hide.
-    await remoteCall.waitForElement(appId, tooltipQueryHidden);
+  // Check: initially the tooltip should be hidden.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
 
-    // Move the mouse over the search button again.
-    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-        'fakeMouseOver', appId, [searchButton]));
+  // Mouse hover over a button that has a tooltip: the search button.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOver', appId, [searchButton]));
 
-    // Check: the search button tooltip should be visible.
-    const lastElement =
-        await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
-    chrome.test.assertEq(expectedLabelText, lastElement.text);
-  };
+  // Check: the search button tooltip should be visible.
+  const expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
+  const firstElement =
+      await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
+  chrome.test.assertEq(expectedLabelText, firstElement.text);
 
-  /**
-   * Tests that tooltip is hidden when clicking on body (or anything else).
-   */
-  testcase.filesTooltipClickHides = async () => {
-    const appId = await setupAndWaitUntilReady(
-        RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  // Move the mouse away from the search button.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOut', appId, [searchButton]));
 
-    // Check: initially the tooltip should be hidden.
-    await remoteCall.waitForElement(appId, tooltipQueryHidden);
+  // Check: the tooltip should hide.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
 
-    // Hover over a button that has a tooltip: the search button.
-    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-        'fakeMouseOver', appId, [searchButton]));
+  // Move the mouse over the search button again.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOver', appId, [searchButton]));
 
-    // Check: the search button tooltip should be visible.
-    const expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
-    const label =
-        await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
-    chrome.test.assertEq(expectedLabelText, label.text);
+  // Check: the search button tooltip should be visible.
+  const lastElement =
+      await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
+  chrome.test.assertEq(expectedLabelText, lastElement.text);
+};
 
-    // Click the body element.
-    chrome.test.assertTrue(
-        await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, ['body']));
+/**
+ * Tests that tooltips stay open when hovering over the tooltip.
+ */
+testcase.filesTooltipMouseOverStaysOpen = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
-    // Check: the tooltip should hide.
-    await remoteCall.waitForElement(appId, tooltipQueryHidden);
-  };
+  // Check: initially the tooltip should be hidden.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
 
-  /**
-   * Tests that card tooltip is hidden when clicking on body (or anything else).
-   */
-  testcase.filesCardTooltipClickHides = async () => {
-    const appId = await setupAndWaitUntilReady(
-        RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  // Mouse hover over a button that has a tooltip: the search button.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOver', appId, [searchButton]));
 
-    // Click the 'Android files' volume tab in the directory tree.
-    await remoteCall.simulateUiClick(
-        appId, ['[volume-type-for-testing=android_files]']);
+  // Check: the search button tooltip should be visible.
+  const expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
+  const firstElement =
+      await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
+  chrome.test.assertEq(expectedLabelText, firstElement.text);
 
-    // Wait for the read-only bubble to appear in the files app tool bar.
-    const readonlyBubbleShown = '#read-only-indicator:not([hidden])';
-    await remoteCall.waitForElement(appId, readonlyBubbleShown);
+  // Move the mouse away from the search button, but on the tooltip.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOut', appId, [searchButton]));
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOver', appId, [tooltipQuery]));
 
-    // Check: initially, no tooltip should be visible.
-    await remoteCall.waitForElement(appId, tooltipQueryHidden);
+  // Check: the tooltip should still be visible.
+  await remoteCall.waitForElement(appId, tooltipQueryVisible);
 
-    // Hover the mouse over the read-only bubble.
-    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-        'fakeMouseOver', appId, [readonlyIndicator]));
+  // Move the mouse away from the tooltip.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOut', appId, [tooltipQuery]));
 
-    // Check: the read-only bubble card tooltip should be visible.
-    const expectedLabelText =
-        await getExpectedLabelText('READONLY_INDICATOR_TOOLTIP');
-    const tooltip = await remoteCall.waitForElement(appId, tooltipQueryVisible);
-    const label =
-        await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
-    chrome.test.assertEq(expectedLabelText, label.text);
-    chrome.test.assertEq('card-tooltip', tooltip.attributes['class']);
-    chrome.test.assertEq('card-label', label.attributes['class']);
+  // Check: the tooltip should hide.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
+};
 
-    // Click the body element.
-    chrome.test.assertTrue(
-        await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, ['body']));
+/**
+ * Tests that tooltip is hidden when clicking on body (or anything else).
+ */
+testcase.filesTooltipClickHides = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
-    // Check: the tooltip should hide.
-    await remoteCall.waitForElement(appId, tooltipQueryHidden);
-  };
+  // Check: initially the tooltip should be hidden.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
 
-  /**
-   * Tests that the tooltip should hide when the window resizes.
-   */
-  testcase.filesTooltipHidesOnWindowResize = async () => {
-    const appId = await setupAndWaitUntilReady(
-        RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  // Hover over a button that has a tooltip: the search button.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOver', appId, [searchButton]));
 
-    // Check: initially the tooltip should be hidden.
-    await remoteCall.waitForElement(appId, tooltipQueryHidden);
+  // Check: the search button tooltip should be visible.
+  const expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
+  const label =
+      await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
+  chrome.test.assertEq(expectedLabelText, label.text);
 
-    // Focus a button with tooltip: the search button.
-    chrome.test.assertTrue(
-        await remoteCall.callRemoteTestUtil('focus', appId, [searchButton]));
-    await getActiveElementById(appId, 'search-button');
+  // Click the body element.
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, ['body']));
 
-    // Check: the search button tooltip should be visible.
-    const expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
-    const label =
-        await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
-    chrome.test.assertEq(expectedLabelText, label.text);
+  // Check: the tooltip should hide.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
+};
 
-    // Resize the window.
-    await remoteCall.callRemoteTestUtil('resizeWindow', appId, [1200, 1200]);
+/**
+ * Tests that card tooltip is hidden when clicking on body (or anything else).
+ */
+testcase.filesCardTooltipClickHides = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
-    // Check: the tooltip should hide.
-    await remoteCall.waitForElement(appId, tooltipQueryHidden);
-  };
+  // Click the 'Android files' volume tab in the directory tree.
+  await remoteCall.simulateUiClick(
+      appId, ['[volume-type-for-testing=android_files]']);
 
-  /**
-   * Tests that the tooltip is hidden after the delete confirm dialog closes.
-   */
-  testcase.filesTooltipHidesOnDeleteDialogClosed = async () => {
-    const appId = await setupAndWaitUntilReady(
-        RootPath.DRIVE, [], [ENTRIES.beautiful, ENTRIES.photos]);
+  // Wait for the read-only bubble to appear in the files app tool bar.
+  const readonlyBubbleShown = '#read-only-indicator:not([hidden])';
+  await remoteCall.waitForElement(appId, readonlyBubbleShown);
 
-    const fileListItemQuery = '#file-list li[file-name="Beautiful Song.ogg"]';
+  // Check: initially, no tooltip should be visible.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
 
-    // Check: initially the tooltip should be hidden.
-    await remoteCall.waitForElement(appId, tooltipQueryHidden);
+  // Hover the mouse over the read-only bubble.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOver', appId, [readonlyIndicator]));
 
-    // Select file.
-    await remoteCall.waitAndClickElement(appId, fileListItemQuery);
+  // Check: the read-only bubble card tooltip should be visible.
+  const expectedLabelText =
+      await getExpectedLabelText('READONLY_INDICATOR_TOOLTIP');
+  const tooltip = await remoteCall.waitForElement(appId, tooltipQueryVisible);
+  const label =
+      await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
+  chrome.test.assertEq(expectedLabelText, label.text);
+  chrome.test.assertEq('card-tooltip', tooltip.attributes['class']);
+  chrome.test.assertEq('card-label', label.attributes['class']);
 
-    // Mouse over the delete button and leave time for tooltip to show.
-    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-        'fakeMouseOver', appId, [deleteButton]));
-    await wait(tooltipShowTimeout);
+  // Click the body element.
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('fakeMouseClick', appId, ['body']));
 
-    // Click the toolbar delete button.
-    await remoteCall.waitAndClickElement(appId, deleteButton);
+  // Check: the tooltip should hide.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
+};
 
-    // Check: the delete confirm dialog should appear.
-    await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
+/**
+ * Tests that the tooltip should hide when the window resizes.
+ */
+testcase.filesTooltipHidesOnWindowResize = async () => {
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
 
-    // Click the delete confirm dialog 'Cancel' button.
-    const dialogCancelButton =
-        await remoteCall.waitAndClickElement(appId, '.cr-dialog-cancel:focus');
-    chrome.test.assertEq('Cancel', dialogCancelButton.text);
+  // Check: initially the tooltip should be hidden.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
 
-    // Leave time for tooltip to show.
-    await wait(tooltipShowTimeout);
+  // Focus a button with tooltip: the search button.
+  await remoteCall.focus(appId, [searchButton]);
+  await getActiveElementById(appId, 'search-button');
 
-    // Check: the tooltip should be hidden.
-    await remoteCall.waitForElement(appId, tooltipQueryHidden);
+  // Check: the search button tooltip should be visible.
+  const expectedLabelText = await getExpectedLabelText('SEARCH_TEXT_LABEL');
+  const label =
+      await remoteCall.waitForElement(appId, [tooltipQueryVisible, '#label']);
+  chrome.test.assertEq(expectedLabelText, label.text);
 
-    // Select file.
-    await remoteCall.waitAndClickElement(appId, fileListItemQuery);
+  // Resize the window.
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('resizeWindow', appId, [1200, 1200]));
 
-    // Mouse over the delete button and leave time for tooltip to show.
-    chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-        'fakeMouseOver', appId, [deleteButton]));
-    await wait(tooltipShowTimeout);
+  // Check: the tooltip should hide.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
+};
 
-    // Click the toolbar delete button.
-    await remoteCall.waitAndClickElement(appId, deleteButton);
+/**
+ * Tests that the tooltip is hidden after the delete confirm dialog closes.
+ */
+testcase.filesTooltipHidesOnDeleteDialogClosed = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DRIVE, [], [ENTRIES.beautiful, ENTRIES.photos]);
 
-    // Check: the delete confirm dialog should appear.
-    await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
+  const fileListItemQuery = '#file-list li[file-name="Beautiful Song.ogg"]';
 
-    // Click the delete confirm dialog 'Delete' button.
-    const dialogDeleteButton =
-        await remoteCall.waitAndClickElement(appId, '.cr-dialog-ok');
-    chrome.test.assertEq('Delete', dialogDeleteButton.text);
+  // Check: initially the tooltip should be hidden.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
 
-    // Check: the delete confirm dialog should close.
-    await remoteCall.waitForElementLost(appId, '.cr-dialog-container.shown');
+  // Select file.
+  await remoteCall.waitAndClickElement(appId, fileListItemQuery);
 
-    // Leave time for tooltip to show.
-    await wait(tooltipShowTimeout);
+  // Mouse over the delete button and leave time for tooltip to show.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOver', appId, [deleteButton]));
+  await wait(tooltipShowTimeout);
 
-    // Check: the tooltip should be hidden.
-    await remoteCall.waitForElement(appId, tooltipQueryHidden);
-  };
-})();
+  // Click the toolbar delete button.
+  await remoteCall.waitAndClickElement(appId, deleteButton);
+
+  // Check: the delete confirm dialog should appear.
+  await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
+
+  // Click the delete confirm dialog 'Cancel' button.
+  const dialogCancelButton =
+      await remoteCall.waitAndClickElement(appId, '.cr-dialog-cancel:focus');
+  chrome.test.assertEq('Cancel', dialogCancelButton.text);
+
+  // Leave time for tooltip to show.
+  await wait(tooltipShowTimeout);
+
+  // Check: the tooltip should be hidden.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
+
+  // Select file.
+  await remoteCall.waitAndClickElement(appId, fileListItemQuery);
+
+  // Mouse over the delete button and leave time for tooltip to show.
+  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
+      'fakeMouseOver', appId, [deleteButton]));
+  await wait(tooltipShowTimeout);
+
+  // Click the toolbar delete button.
+  await remoteCall.waitAndClickElement(appId, deleteButton);
+
+  // Check: the delete confirm dialog should appear.
+  await remoteCall.waitForElement(appId, '.cr-dialog-container.shown');
+
+  // Click the delete confirm dialog 'Delete' button.
+  const dialogDeleteButton =
+      await remoteCall.waitAndClickElement(appId, '.cr-dialog-ok');
+  chrome.test.assertEq('Delete', dialogDeleteButton.text);
+
+  // Check: the delete confirm dialog should close.
+  await remoteCall.waitForElementLost(appId, '.cr-dialog-container.shown');
+
+  // Leave time for tooltip to show.
+  await wait(tooltipShowTimeout);
+
+  // Check: the tooltip should be hidden.
+  await remoteCall.waitForElement(appId, tooltipQueryHidden);
+};

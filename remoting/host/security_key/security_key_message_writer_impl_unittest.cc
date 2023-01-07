@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,9 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "remoting/host/security_key/security_key_message.h"
 #include "remoting/host/setup/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,6 +28,12 @@ namespace remoting {
 class SecurityKeyMessageWriterImplTest : public testing::Test {
  public:
   SecurityKeyMessageWriterImplTest();
+
+  SecurityKeyMessageWriterImplTest(const SecurityKeyMessageWriterImplTest&) =
+      delete;
+  SecurityKeyMessageWriterImplTest& operator=(
+      const SecurityKeyMessageWriterImplTest&) = delete;
+
   ~SecurityKeyMessageWriterImplTest() override;
 
   // Run on a separate thread, this method reads the message written to the
@@ -54,9 +58,6 @@ class SecurityKeyMessageWriterImplTest : public testing::Test {
 
   // Stores the result of the last read operation.
   std::string message_result_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyMessageWriterImplTest);
 };
 
 SecurityKeyMessageWriterImplTest::SecurityKeyMessageWriterImplTest() = default;
@@ -66,16 +67,16 @@ SecurityKeyMessageWriterImplTest::~SecurityKeyMessageWriterImplTest() = default;
 std::string SecurityKeyMessageWriterImplTest::ReadMessage(
     int payload_length_bytes) {
   std::string message_header(SecurityKeyMessage::kHeaderSizeBytes, '\0');
-  read_file_.ReadAtCurrentPos(base::data(message_header),
+  read_file_.ReadAtCurrentPos(std::data(message_header),
                               SecurityKeyMessage::kHeaderSizeBytes);
 
   std::string message_type(SecurityKeyMessage::kMessageTypeSizeBytes, '\0');
-  read_file_.ReadAtCurrentPos(base::data(message_type),
+  read_file_.ReadAtCurrentPos(std::data(message_type),
                               SecurityKeyMessage::kMessageTypeSizeBytes);
 
   std::string message_data(payload_length_bytes, '\0');
   if (payload_length_bytes) {
-    read_file_.ReadAtCurrentPos(base::data(message_data), payload_length_bytes);
+    read_file_.ReadAtCurrentPos(std::data(message_data), payload_length_bytes);
   }
 
   return message_header + message_type + message_data;
@@ -90,7 +91,8 @@ void SecurityKeyMessageWriterImplTest::OnReadComplete(
 
 void SecurityKeyMessageWriterImplTest::SetUp() {
   ASSERT_TRUE(MakePipe(&read_file_, &write_file_));
-  writer_.reset(new SecurityKeyMessageWriterImpl(std::move(write_file_)));
+  writer_ =
+      std::make_unique<SecurityKeyMessageWriterImpl>(std::move(write_file_));
 }
 
 void SecurityKeyMessageWriterImplTest::WriteMessageToOutput(
@@ -100,7 +102,7 @@ void SecurityKeyMessageWriterImplTest::WriteMessageToOutput(
 
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  reader_thread.StartWithOptions(options);
+  reader_thread.StartWithOptions(std::move(options));
 
   // Used to block until the read complete callback is triggered.
   base::test::SingleThreadTaskEnvironment task_environment(
@@ -174,7 +176,7 @@ TEST_F(SecurityKeyMessageWriterImplTest, WriteMultipleMessages) {
     // Retrieve and verify the message type.
     std::string message_type(length, '\0');
     int bytes_read =
-        read_file_.ReadAtCurrentPos(base::data(message_type), length);
+        read_file_.ReadAtCurrentPos(std::data(message_type), length);
     ASSERT_EQ(length, bytes_read);
 
     SecurityKeyMessageType type =

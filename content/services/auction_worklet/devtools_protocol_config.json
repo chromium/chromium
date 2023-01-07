@@ -1,0 +1,27 @@
+{
+    "use_snake_file_names": true,
+    "use_title_case_methods": true,
+
+    "protocol": {
+        "package": "content/services/auction_worklet/protocol",
+        "output": "protocol",
+        "namespace": ["auction_worklet", "protocol"],
+        "options": [
+            {
+                "domain": "EventBreakpoints",
+                "include": ["setInstrumentationBreakpoint", "removeInstrumentationBreakpoint"],
+                "include_events": []
+            }
+        ]
+    },
+
+    "lib": {
+        "package": "content/services/auction_worklet/protocol",
+        "output": "protocol",
+        "protocol_traits": "third_party/inspector_protocol/crdtp/chromium/protocol_traits.h"
+    },
+
+    "crdtp": {
+        "namespace": "crdtp"
+    }
+}

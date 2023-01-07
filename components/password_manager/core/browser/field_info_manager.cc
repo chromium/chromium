@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,19 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/password_manager/core/browser/field_info_store.h"
 #include "components/password_manager/core/browser/field_info_table.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 
 namespace password_manager {
 
 FieldInfoManagerImpl::FieldInfoManagerImpl(
-    scoped_refptr<password_manager::PasswordStore> store)
+    scoped_refptr<password_manager::PasswordStoreInterface> store)
     : store_(store) {
-  store_->GetAllFieldInfo(this);
+  FieldInfoStore* info_store = store_->GetFieldInfoStore();
+  if (info_store) {
+    info_store->GetAllFieldInfo(weak_ptr_factory_.GetWeakPtr());
+  }
 }
 
 FieldInfoManagerImpl::~FieldInfoManagerImpl() = default;
@@ -24,13 +28,16 @@ void FieldInfoManagerImpl::AddFieldType(
     autofill::FormSignature form_signature,
     autofill::FieldSignature field_signature,
     autofill::ServerFieldType field_type) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // TODO(https://crbug.com/1051914): Enable on Android after making local
   // heuristics reliable.
   field_types_[std::make_pair(form_signature, field_signature)] = field_type;
-  store_->AddFieldInfo(
-      {form_signature, field_signature, field_type, base::Time::Now()});
-#endif  // !defined(OS_ANDROID)
+  FieldInfoStore* info_store = store_->GetFieldInfoStore();
+  if (info_store) {
+    info_store->AddFieldInfo(
+        {form_signature, field_signature, field_type, base::Time::Now()});
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 autofill::ServerFieldType FieldInfoManagerImpl::GetFieldType(
@@ -47,8 +54,6 @@ void FieldInfoManagerImpl::OnGetPasswordStoreResults(
 
 void FieldInfoManagerImpl::OnGetAllFieldInfo(
     std::vector<FieldInfo> field_infos) {
-  base::UmaHistogramCounts100("PasswordManager.FieldInfoTableRows",
-                              field_infos.size());
   for (const auto& field : field_infos) {
     field_types_[std::make_pair(field.form_signature, field.field_signature)] =
         field.field_type;

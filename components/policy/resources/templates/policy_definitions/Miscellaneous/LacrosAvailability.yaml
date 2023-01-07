@@ -1,0 +1,53 @@
+caption: Make the <ph name="LACROS_NAME">Lacros</ph> browser available
+default: user_choice
+default_for_enterprise_users: lacros_disallowed
+desc: |-
+  This setting provides several availability options for the <ph name="LACROS_NAME">Lacros</ph> browser.
+
+        If the policy is set to <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE">user_choice</ph>, the user can enable <ph name="LACROS_NAME">Lacros</ph> and make it primary.
+
+        If the policy is set to <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE">lacros_disallowed</ph>, the user cannot use <ph name="LACROS_NAME">Lacros</ph>.
+
+        If the policy is set to <ph name="LACROS_AVAILABILITY_SIDE_BY_SIDE_VALUE">side_by_side</ph>, <ph name="LACROS_NAME">Lacros</ph> is enabled but is not the primary browser.
+
+        If the policy is set to <ph name="LACROS_AVAILABILITY_LACROS_PRIMARY_VALUE">lacros_primary</ph>, <ph name="LACROS_NAME">Lacros</ph> is enabled and is the primary browser.
+
+        If the policy is unset, the default is <ph name="LACROS_AVAILABILITY_LACROS_DISALLOWED_VALUE">lacros_disallowed</ph> for enterprise-managed users and <ph name="LACROS_AVAILABILITY_USER_CHOICE_VALUE">user_choice</ph> for non-managed users.
+
+        In the future it will be possible to make <ph name="LACROS_NAME">Lacros</ph> the only available browser in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> with <ph name="LACROS_AVAILABILITY_LACROS_ONLY_VALUE">lacros_only</ph> value.
+example_value: lacros_primary
+features:
+  dynamic_refresh: false
+  per_profile: false
+items:
+- caption: Allow users to enable <ph name="LACROS_NAME">Lacros</ph> and make it the
+    primary browser
+  name: user_choice
+  value: user_choice
+- caption: Prevent users from using <ph name="LACROS_NAME">Lacros</ph>
+  name: lacros_disallowed
+  value: lacros_disallowed
+- caption: Enable <ph name="LACROS_NAME">Lacros</ph>
+  name: side_by_side
+  value: side_by_side
+- caption: Enable <ph name="LACROS_NAME">Lacros</ph> and make it the primary browser
+  name: lacros_primary
+  value: lacros_primary
+- caption: Make <ph name="LACROS_NAME">Lacros</ph> the only available browser (not
+    implemented yet)
+  name: lacros_only
+  value: lacros_only
+owners:
+- asumaneev@google.com
+schema:
+  enum:
+  - user_choice
+  - lacros_disallowed
+  - side_by_side
+  - lacros_primary
+  - lacros_only
+  type: string
+supported_on:
+- chrome_os:92-
+tags: []
+type: string-enum

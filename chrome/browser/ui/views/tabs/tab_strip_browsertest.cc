@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,14 @@
 
 #include <vector>
 
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "content/public/test/browser_test.h"
@@ -37,11 +38,12 @@ class TabStripBrowsertest : public InProcessBrowserTest {
   void AppendTab() { chrome::AddTabAt(browser(), GURL(), -1, true); }
 
   tab_groups::TabGroupId AddTabToNewGroup(int tab_index) {
-    tab_strip_model()->AddToNewGroup({tab_index});
-    return tab_strip_model()->GetTabGroupForTab(tab_index).value();
+    return tab_strip_model()->AddToNewGroup({tab_index});
   }
 
   void AddTabToExistingGroup(int tab_index, tab_groups::TabGroupId group) {
+    ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
     tab_strip_model()->AddToExistingGroup({tab_index}, group);
   }
 
@@ -63,6 +65,8 @@ class TabStripBrowsertest : public InProcessBrowserTest {
 
 // Regression test for crbug.com/983961.
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabAndDeleteGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -97,6 +101,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabPrevious_Success) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabPrevious_AddsToGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -116,21 +122,22 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
   tab_groups::TabGroupId group = AddTabToNewGroup(0);
   AddTabToExistingGroup(1, group);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  tab_strip()->ToggleTabGroupCollapsedState(group);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group));
 
   const auto expected = GetWebContentsesInOrder({2, 0, 1});
   tab_strip()->ShiftTabPrevious(tab_strip()->tab_at(2));
   EXPECT_EQ(expected, GetWebContentses());
-  EXPECT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group));
-  EXPECT_EQ(tab_strip()->tab_at(0)->group(), base::nullopt);
+  EXPECT_TRUE(tab_strip()->IsGroupCollapsed(group));
+  EXPECT_EQ(tab_strip()->tab_at(0)->group(), absl::nullopt);
   EXPECT_EQ(tab_strip()->tab_at(1)->group().value(), group);
   EXPECT_EQ(tab_strip()->tab_at(2)->group().value(), group);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftTabPrevious_BetweenTwoCollapsedGroups_Success) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
   AppendTab();
   AppendTab();
   AppendTab();
@@ -138,29 +145,31 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
   tab_groups::TabGroupId group1 = AddTabToNewGroup(0);
   AddTabToExistingGroup(1, group1);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group1));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group1);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group1));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group1));
+  tab_strip()->ToggleTabGroupCollapsedState(group1);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group1));
 
   tab_groups::TabGroupId group2 = AddTabToNewGroup(2);
   AddTabToExistingGroup(3, group2);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group2));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group2);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group2));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group2));
+  tab_strip()->ToggleTabGroupCollapsedState(group2);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group2));
 
   const auto expected = GetWebContentsesInOrder({0, 1, 4, 2, 3});
   tab_strip()->ShiftTabPrevious(tab_strip()->tab_at(4));
   EXPECT_EQ(expected, GetWebContentses());
-  EXPECT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group1));
-  EXPECT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group2));
+  EXPECT_TRUE(tab_strip()->IsGroupCollapsed(group1));
+  EXPECT_TRUE(tab_strip()->IsGroupCollapsed(group2));
   EXPECT_EQ(tab_strip()->tab_at(0)->group().value(), group1);
   EXPECT_EQ(tab_strip()->tab_at(1)->group().value(), group1);
-  EXPECT_EQ(tab_strip()->tab_at(2)->group(), base::nullopt);
+  EXPECT_EQ(tab_strip()->tab_at(2)->group(), absl::nullopt);
   EXPECT_EQ(tab_strip()->tab_at(3)->group().value(), group2);
   EXPECT_EQ(tab_strip()->tab_at(4)->group().value(), group2);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabPrevious_RemovesFromGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -170,11 +179,13 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabPrevious_RemovesFromGroup) {
   const auto expected = GetWebContentsesInOrder({0, 1, 2});
   tab_strip()->ShiftTabPrevious(tab_strip()->tab_at(1));
   EXPECT_EQ(expected, GetWebContentses());
-  EXPECT_EQ(tab_strip()->tab_at(1)->group(), base::nullopt);
+  EXPECT_EQ(tab_strip()->tab_at(1)->group(), absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftTabPrevious_ShiftsBetweenGroups) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -186,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
   const auto expected = GetWebContentsesInOrder({0, 1, 2});
   tab_strip()->ShiftTabPrevious(tab_strip()->tab_at(1));
   EXPECT_EQ(expected, GetWebContentses());
-  EXPECT_EQ(tab_strip()->tab_at(1)->group(), base::nullopt);
+  EXPECT_EQ(tab_strip()->tab_at(1)->group(), absl::nullopt);
   tab_strip()->ShiftTabPrevious(tab_strip()->tab_at(1));
   EXPECT_EQ(expected, GetWebContentses());
   EXPECT_EQ(tab_strip()->tab_at(1)->group().value(), group);
@@ -224,6 +235,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabNext_Success) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabNext_AddsToGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -238,26 +251,30 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabNext_AddsToGroup) {
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftTabNext_PastCollapsedGroup_Success) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
   tab_groups::TabGroupId group = AddTabToNewGroup(1);
   AddTabToExistingGroup(2, group);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  tab_strip()->ToggleTabGroupCollapsedState(group);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group));
 
   const auto expected = GetWebContentsesInOrder({1, 2, 0});
   tab_strip()->ShiftTabNext(tab_strip()->tab_at(0));
   EXPECT_EQ(expected, GetWebContentses());
-  EXPECT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group));
+  EXPECT_TRUE(tab_strip()->IsGroupCollapsed(group));
   EXPECT_EQ(tab_strip()->tab_at(0)->group().value(), group);
   EXPECT_EQ(tab_strip()->tab_at(1)->group().value(), group);
-  EXPECT_EQ(tab_strip()->tab_at(2)->group(), base::nullopt);
+  EXPECT_EQ(tab_strip()->tab_at(2)->group(), absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftTabNext_BetweenTwoCollapsedGroups_Success) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
   AppendTab();
@@ -265,29 +282,31 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
   tab_groups::TabGroupId group1 = AddTabToNewGroup(1);
   AddTabToExistingGroup(2, group1);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group1));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group1);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group1));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group1));
+  tab_strip()->ToggleTabGroupCollapsedState(group1);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group1));
 
   tab_groups::TabGroupId group2 = AddTabToNewGroup(3);
   AddTabToExistingGroup(4, group2);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group2));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group2);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group2));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group2));
+  tab_strip()->ToggleTabGroupCollapsedState(group2);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group2));
 
   const auto expected = GetWebContentsesInOrder({1, 2, 0, 3, 4});
   tab_strip()->ShiftTabNext(tab_strip()->tab_at(0));
   EXPECT_EQ(expected, GetWebContentses());
-  EXPECT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group1));
-  EXPECT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group2));
+  EXPECT_TRUE(tab_strip()->IsGroupCollapsed(group1));
+  EXPECT_TRUE(tab_strip()->IsGroupCollapsed(group2));
   EXPECT_EQ(tab_strip()->tab_at(0)->group().value(), group1);
   EXPECT_EQ(tab_strip()->tab_at(1)->group().value(), group1);
-  EXPECT_EQ(tab_strip()->tab_at(2)->group(), base::nullopt);
+  EXPECT_EQ(tab_strip()->tab_at(2)->group(), absl::nullopt);
   EXPECT_EQ(tab_strip()->tab_at(3)->group().value(), group2);
   EXPECT_EQ(tab_strip()->tab_at(4)->group().value(), group2);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabNext_RemovesFromGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -297,10 +316,12 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabNext_RemovesFromGroup) {
   const auto expected = GetWebContentsesInOrder({0, 1, 2});
   tab_strip()->ShiftTabNext(tab_strip()->tab_at(1));
   EXPECT_EQ(expected, GetWebContentses());
-  EXPECT_EQ(tab_strip()->tab_at(1)->group(), base::nullopt);
+  EXPECT_EQ(tab_strip()->tab_at(1)->group(), absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabNext_ShiftsBetweenGroups) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -312,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftTabNext_ShiftsBetweenGroups) {
   const auto expected = GetWebContentsesInOrder({0, 1, 2});
   tab_strip()->ShiftTabNext(tab_strip()->tab_at(0));
   EXPECT_EQ(expected, GetWebContentses());
-  EXPECT_EQ(tab_strip()->tab_at(0)->group(), base::nullopt);
+  EXPECT_EQ(tab_strip()->tab_at(0)->group(), absl::nullopt);
   tab_strip()->ShiftTabNext(tab_strip()->tab_at(0));
   EXPECT_EQ(expected, GetWebContentses());
   EXPECT_EQ(tab_strip()->tab_at(0)->group().value(), group);
@@ -362,16 +383,20 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabFirst_PinnedTabs_Success) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabFirst_DoesNotAddToGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
   AddTabToNewGroup(0);
 
   tab_strip()->MoveTabFirst(tab_strip()->tab_at(1));
-  EXPECT_EQ(tab_strip()->tab_at(0)->group(), base::nullopt);
+  EXPECT_EQ(tab_strip()->tab_at(0)->group(), absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabFirst_RemovesFromGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -379,10 +404,10 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabFirst_RemovesFromGroup) {
   AddTabToNewGroup(1);
 
   tab_strip()->MoveTabFirst(tab_strip()->tab_at(0));
-  EXPECT_EQ(tab_strip()->tab_at(0)->group(), base::nullopt);
+  EXPECT_EQ(tab_strip()->tab_at(0)->group(), absl::nullopt);
 
   tab_strip()->MoveTabFirst(tab_strip()->tab_at(1));
-  EXPECT_EQ(tab_strip()->tab_at(0)->group(), base::nullopt);
+  EXPECT_EQ(tab_strip()->tab_at(0)->group(), absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabFirst_NoPinnedTabs_Failure) {
@@ -457,16 +482,20 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabLast_AllPinnedTabs_Success) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabLast_DoesNotAddToGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
   AddTabToNewGroup(2);
 
   tab_strip()->MoveTabLast(tab_strip()->tab_at(1));
-  EXPECT_EQ(tab_strip()->tab_at(2)->group(), base::nullopt);
+  EXPECT_EQ(tab_strip()->tab_at(2)->group(), absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabLast_RemovesFromGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -474,10 +503,10 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabLast_RemovesFromGroup) {
   AddTabToNewGroup(2);
 
   tab_strip()->MoveTabLast(tab_strip()->tab_at(2));
-  EXPECT_EQ(tab_strip()->tab_at(2)->group(), base::nullopt);
+  EXPECT_EQ(tab_strip()->tab_at(2)->group(), absl::nullopt);
 
   tab_strip()->MoveTabLast(tab_strip()->tab_at(1));
-  EXPECT_EQ(tab_strip()->tab_at(2)->group(), base::nullopt);
+  EXPECT_EQ(tab_strip()->tab_at(2)->group(), absl::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabLast_NoPinnedTabs_Failure) {
@@ -516,6 +545,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, MoveTabLast_AllPinnedTabs_Failure) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupLeft_Success) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -528,6 +559,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupLeft_Success) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupLeft_OtherGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
   AppendTab();
@@ -545,6 +578,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupLeft_OtherGroup) {
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftGroupLeft_Failure_EdgeOfTabstrip) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -558,6 +593,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupLeft_Failure_Pinned) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
   tab_strip_model()->SetTabPinned(0, true);
@@ -572,6 +609,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupLeft_Failure_Pinned) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupRight_Success) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
@@ -584,6 +623,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupRight_Success) {
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupRight_OtherGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
   AppendTab();
@@ -601,6 +642,7 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftGroupRight_OtherGroup) {
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftGroupRight_Failure_EdgeOfTabstrip) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
   AppendTab();
   AppendTab();
 
@@ -614,14 +656,16 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftCollapsedGroupLeft_Success) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
   tab_groups::TabGroupId group = AddTabToNewGroup(1);
   AddTabToExistingGroup(2, group);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  tab_strip()->ToggleTabGroupCollapsedState(group);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group));
 
   const auto expected = GetWebContentsesInOrder({1, 2, 0});
   tab_strip()->ShiftGroupLeft(group);
@@ -630,6 +674,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftCollapsedGroupLeft_Success) {
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftCollapsedGroupLeft_OtherCollapsedGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
   AppendTab();
@@ -637,15 +683,15 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
   tab_groups::TabGroupId group1 = AddTabToNewGroup(2);
   AddTabToExistingGroup(3, group1);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group1));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group1);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group1));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group1));
+  tab_strip()->ToggleTabGroupCollapsedState(group1);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group1));
 
   tab_groups::TabGroupId group2 = AddTabToNewGroup(0);
   AddTabToExistingGroup(1, group2);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group2));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group2);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group2));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group2));
+  tab_strip()->ToggleTabGroupCollapsedState(group2);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group2));
 
   const auto expected = GetWebContentsesInOrder({2, 3, 0, 1, 4});
   tab_strip()->ShiftGroupLeft(group1);
@@ -654,14 +700,16 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftCollapsedGroupLeft_Failure_EdgeOfTabstrip) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
   tab_groups::TabGroupId group = AddTabToNewGroup(0);
   AddTabToExistingGroup(1, group);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  tab_strip()->ToggleTabGroupCollapsedState(group);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group));
 
   const auto contentses = GetWebContentses();
   tab_strip()->ShiftGroupLeft(group);
@@ -672,15 +720,17 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftCollapsedGroupLeft_Failure_Pinned) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
   tab_strip_model()->SetTabPinned(0, true);
 
   tab_groups::TabGroupId group = AddTabToNewGroup(1);
   AddTabToExistingGroup(2, group);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  tab_strip()->ToggleTabGroupCollapsedState(group);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group));
 
   const auto contentses = GetWebContentses();
   tab_strip()->ShiftGroupLeft(group);
@@ -690,14 +740,16 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftCollapsedGroupRight_Success) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
   tab_groups::TabGroupId group = AddTabToNewGroup(0);
   AddTabToExistingGroup(1, group);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  tab_strip()->ToggleTabGroupCollapsedState(group);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group));
 
   const auto expected = GetWebContentsesInOrder({2, 0, 1});
   tab_strip()->ShiftGroupRight(group);
@@ -706,6 +758,8 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, ShiftCollapsedGroupRight_Success) {
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftCollapsedGroupRight_OtherCollapsedGroup) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
   AppendTab();
@@ -713,15 +767,15 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
   tab_groups::TabGroupId group1 = AddTabToNewGroup(0);
   AddTabToExistingGroup(1, group1);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group1));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group1);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group1));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group1));
+  tab_strip()->ToggleTabGroupCollapsedState(group1);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group1));
 
   tab_groups::TabGroupId group2 = AddTabToNewGroup(2);
   AddTabToExistingGroup(3, group2);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group2));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group2);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group2));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group2));
+  tab_strip()->ToggleTabGroupCollapsedState(group2);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group2));
 
   const auto expected = GetWebContentsesInOrder({2, 3, 0, 1, 4});
   tab_strip()->ShiftGroupRight(group1);
@@ -730,14 +784,16 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        ShiftCollapsedGroupRight_Failure_EdgeOfTabstrip) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
   AppendTab();
 
   tab_groups::TabGroupId group = AddTabToNewGroup(1);
   AddTabToExistingGroup(2, group);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group));
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  tab_strip()->ToggleTabGroupCollapsedState(group);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group));
 
   const auto contentses = GetWebContentses();
   tab_strip()->ShiftGroupRight(group);
@@ -747,16 +803,18 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
                        CollapseGroup_WithActiveTabInGroup_SelectsNext) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
 
   tab_groups::TabGroupId group = AddTabToNewGroup(0);
   tab_strip()->SelectTab(tab_strip()->tab_at(0), GetDummyEvent());
-  ASSERT_EQ(0, tab_strip()->controller()->GetActiveIndex());
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group);
+  ASSERT_EQ(0, tab_strip()->GetActiveIndex());
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  tab_strip()->ToggleTabGroupCollapsedState(group);
 
-  EXPECT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group));
-  EXPECT_EQ(1, tab_strip()->controller()->GetActiveIndex());
+  EXPECT_TRUE(tab_strip()->IsGroupCollapsed(group));
+  EXPECT_EQ(1, tab_strip()->GetActiveIndex());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
@@ -765,27 +823,29 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
 
   tab_groups::TabGroupId group = AddTabToNewGroup(1);
   tab_strip()->SelectTab(tab_strip()->tab_at(1), GetDummyEvent());
-  ASSERT_EQ(1, tab_strip()->controller()->GetActiveIndex());
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group);
+  ASSERT_EQ(1, tab_strip()->GetActiveIndex());
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  tab_strip()->ToggleTabGroupCollapsedState(group);
 
-  EXPECT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group));
-  EXPECT_EQ(0, tab_strip()->controller()->GetActiveIndex());
+  EXPECT_TRUE(tab_strip()->IsGroupCollapsed(group));
+  EXPECT_EQ(0, tab_strip()->GetActiveIndex());
 }
 
 IN_PROC_BROWSER_TEST_F(
     TabStripBrowsertest,
     CollapseGroup_WithActiveTabOutsideGroup_DoesNotChangeActiveTab) {
+  ASSERT_TRUE(tab_strip_model()->SupportsTabGroups());
+
   AppendTab();
 
   tab_groups::TabGroupId group = AddTabToNewGroup(0);
   tab_strip()->SelectTab(tab_strip()->tab_at(1), GetDummyEvent());
-  ASSERT_EQ(1, tab_strip()->controller()->GetActiveIndex());
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group);
+  ASSERT_EQ(1, tab_strip()->GetActiveIndex());
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  tab_strip()->ToggleTabGroupCollapsedState(group);
 
-  EXPECT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group));
-  EXPECT_EQ(1, tab_strip()->controller()->GetActiveIndex());
+  EXPECT_TRUE(tab_strip()->IsGroupCollapsed(group));
+  EXPECT_EQ(1, tab_strip()->GetActiveIndex());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, CollapseGroup_Fails) {
@@ -793,10 +853,10 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, CollapseGroup_Fails) {
 
   tab_groups::TabGroupId group = AddTabToNewGroup(0);
   tab_strip_model()->AddToExistingGroup({1}, group);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group);
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  tab_strip()->ToggleTabGroupCollapsedState(group);
 
-  EXPECT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
+  EXPECT_FALSE(tab_strip()->IsGroupCollapsed(group));
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
@@ -804,11 +864,52 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
   AppendTab();
 
   tab_groups::TabGroupId group = AddTabToNewGroup(0);
-  ASSERT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
-  tab_strip()->controller()->ToggleTabGroupCollapsedState(group);
-  ASSERT_TRUE(tab_strip()->controller()->IsGroupCollapsed(group));
-  ASSERT_EQ(1, tab_strip()->controller()->GetActiveIndex());
+  ASSERT_FALSE(tab_strip()->IsGroupCollapsed(group));
+  tab_strip()->ToggleTabGroupCollapsedState(group);
+  ASSERT_TRUE(tab_strip()->IsGroupCollapsed(group));
+  ASSERT_EQ(1, tab_strip()->GetActiveIndex());
 
   tab_strip()->SelectTab(tab_strip()->tab_at(0), GetDummyEvent());
-  EXPECT_FALSE(tab_strip()->controller()->IsGroupCollapsed(group));
+  EXPECT_FALSE(tab_strip()->IsGroupCollapsed(group));
+}
+
+// Tests IDC_SELECT_TAB_0, IDC_SELECT_NEXT_TAB, IDC_SELECT_PREVIOUS_TAB and
+// IDC_SELECT_LAST_TAB. The tab navigation accelerators should ignore tabs in
+// collapsed groups.
+IN_PROC_BROWSER_TEST_F(TabStripBrowsertest, TabGroupTabNavigationAccelerators) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
+  // Create five tabs.
+  for (int i = 0; i < 4; i++)
+    AppendTab();
+
+  ASSERT_EQ(5, tab_strip_model()->count());
+
+  // Add the first, second, and last tab into their own collapsed groups.
+  tab_groups::TabGroupId group1 = tab_strip_model()->AddToNewGroup({0});
+  tab_groups::TabGroupId group2 = tab_strip_model()->AddToNewGroup({1});
+  tab_groups::TabGroupId group3 = tab_strip_model()->AddToNewGroup({4});
+  tab_strip()->ToggleTabGroupCollapsedState(group1);
+  tab_strip()->ToggleTabGroupCollapsedState(group2);
+  tab_strip()->ToggleTabGroupCollapsedState(group3);
+
+  // Select the fourth tab.
+  tab_strip_model()->ActivateTabAt(3);
+
+  CommandUpdater* updater = browser()->command_controller();
+
+  // Navigate to the first tab using an accelerator.
+  updater->ExecuteCommand(IDC_SELECT_TAB_0);
+  ASSERT_EQ(2, tab_strip_model()->active_index());
+
+  // Navigate back to the first tab using the previous accelerators.
+  updater->ExecuteCommand(IDC_SELECT_PREVIOUS_TAB);
+  ASSERT_EQ(3, tab_strip_model()->active_index());
+
+  // Navigate to the second tab using the next accelerators.
+  updater->ExecuteCommand(IDC_SELECT_NEXT_TAB);
+  ASSERT_EQ(2, tab_strip_model()->active_index());
+
+  // Navigate to the last tab using the select last accelerator.
+  updater->ExecuteCommand(IDC_SELECT_LAST_TAB);
+  ASSERT_EQ(3, tab_strip_model()->active_index());
 }

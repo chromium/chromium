@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/platform_thread.h"
@@ -34,6 +34,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptorServiceProviderImpl
       const std::string& uuid,
       const std::vector<std::string>& flags,
       const dbus::ObjectPath& characteristic_path);
+
+  BluetoothGattDescriptorServiceProviderImpl(
+      const BluetoothGattDescriptorServiceProviderImpl&) = delete;
+  BluetoothGattDescriptorServiceProviderImpl& operator=(
+      const BluetoothGattDescriptorServiceProviderImpl&) = delete;
+
   ~BluetoothGattDescriptorServiceProviderImpl() override;
 
   // BluetoothGattDescriptorServiceProvider override.
@@ -78,19 +84,21 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptorServiceProviderImpl
 
   // Called by the Delegate in response to a method to call to read the value
   // of this descriptor.
-  void OnReadValue(dbus::MethodCall* method_call,
-                   dbus::ExportedObject::ResponseSender response_sender,
-                   const std::vector<uint8_t>& value);
+  void OnReadValue(
+      dbus::MethodCall* method_call,
+      dbus::ExportedObject::ResponseSender response_sender,
+      absl::optional<device::BluetoothGattService::GattErrorCode> error_code,
+      const std::vector<uint8_t>& value);
 
   // Called by the Delegate in response to a method to call to write the value
   // of this descriptor.
   void OnWriteValue(dbus::MethodCall* method_call,
                     dbus::ExportedObject::ResponseSender response_sender);
 
-  // Called by the Delegate in response to a failed method call to get or set
+  // Called by the Delegate in response to a failed method call to set
   // the descriptor value.
-  void OnFailure(dbus::MethodCall* method_call,
-                 dbus::ExportedObject::ResponseSender response_sender);
+  void OnWriteFailure(dbus::MethodCall* method_call,
+                      dbus::ExportedObject::ResponseSender response_sender);
 
   const dbus::ObjectPath& object_path() const override;
 
@@ -105,7 +113,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptorServiceProviderImpl
 
   // D-Bus bus object is exported on, not owned by this object and must
   // outlive it.
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus> bus_;
 
   // Incoming methods to get and set the "Value" property are passed on to the
   // delegate and callbacks passed to generate a reply. |delegate_| is generally
@@ -129,8 +137,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDescriptorServiceProviderImpl
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothGattDescriptorServiceProviderImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattDescriptorServiceProviderImpl);
 };
 
 }  // namespace bluez

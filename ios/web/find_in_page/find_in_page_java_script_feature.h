@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,14 @@
 #include "base/no_destructor.h"
 #include "base/values.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web {
 
 class WebFrame;
 
 namespace find_in_page {
-// Value returned when a |Search| or |Pump| call times out.
+// Value returned when a `Search` or `Pump` call times out.
 extern const int kFindInPagePending;
 }  // namespace find_in_page
 
@@ -27,21 +28,21 @@ class FindInPageJavaScriptFeature : public JavaScriptFeature {
   // needed.
   static FindInPageJavaScriptFeature* GetInstance();
 
-  // Searches for string |query| in |frame|. |callback| returns the number of
-  // search results found or |kFindInPagePending| if a call to |Pump| is
+  // Searches for string `query` in `frame`. `callback` returns the number of
+  // search results found or `kFindInPagePending` if a call to `Pump` is
   // necessary before match count is available.
   bool Search(WebFrame* frame,
               const std::string& query,
-              base::OnceCallback<void(base::Optional<int>)> callback);
+              base::OnceCallback<void(absl::optional<int>)> callback);
 
-  // Continues an ongoing search started with |Search| which hasn't yet
-  // completed. |callback| returns the number of search results found or
-  // |kFindInPagePending| if more calls to |Pump| are necessary before match
+  // Continues an ongoing search started with `Search` which hasn't yet
+  // completed. `callback` returns the number of search results found or
+  // `kFindInPagePending` if more calls to `Pump` are necessary before match
   // count is available.
   void Pump(WebFrame* frame,
-            base::OnceCallback<void(base::Optional<int>)> callback);
+            base::OnceCallback<void(absl::optional<int>)> callback);
 
-  // Selects the given match at |index| in |frame|. |callback| is called with
+  // Selects the given match at `index` in `frame`. `callback` is called with
   // the dictionary value results from the selection.
   void SelectMatch(WebFrame* frame,
                    int index,
@@ -54,10 +55,10 @@ class FindInPageJavaScriptFeature : public JavaScriptFeature {
  private:
   friend class base::NoDestructor<FindInPageJavaScriptFeature>;
 
-  // Processes the JavaScript |result| to extract the match count and send it
-  // to |callback|.
+  // Processes the JavaScript `result` to extract the match count and send it
+  // to `callback`.
   void ProcessSearchResult(
-      base::OnceCallback<void(const base::Optional<int>)> callback,
+      base::OnceCallback<void(const absl::optional<int>)> callback,
       const base::Value* result);
 
   FindInPageJavaScriptFeature();

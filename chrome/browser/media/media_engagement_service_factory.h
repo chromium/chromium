@@ -1,21 +1,24 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class MediaEngagementService;
 class Profile;
 
-class MediaEngagementServiceFactory : public BrowserContextKeyedServiceFactory {
+class MediaEngagementServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static MediaEngagementService* GetForProfile(Profile* profile);
   static MediaEngagementServiceFactory* GetInstance();
+
+  MediaEngagementServiceFactory(const MediaEngagementServiceFactory&) = delete;
+  MediaEngagementServiceFactory& operator=(
+      const MediaEngagementServiceFactory&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<MediaEngagementServiceFactory>;
@@ -26,10 +29,6 @@ class MediaEngagementServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory methods:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_MEDIA_ENGAGEMENT_SERVICE_FACTORY_H_

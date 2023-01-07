@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ MediaHistoryWebUIBrowserTest.prototype = {
 };
 
 // https://crbug.com/1045500: Flaky on Windows.
-GEN('#if defined(OS_WIN)');
+GEN('#if BUILDFLAG(IS_WIN)');
 GEN('#define MAYBE_All DISABLED_All');
 GEN('#else');
 GEN('#define MAYBE_All All');
@@ -46,19 +46,18 @@ MediaHistoryStatsWebUIBrowserTest.prototype = {
   browsePreload: 'chrome://media-history#tab-stats',
 };
 
-TEST_F('MediaHistoryStatsWebUIBrowserTest', 'MAYBE_All', function() {
+TEST_F('MediaHistoryStatsWebUIBrowserTest', 'MAYBE_All', async function() {
+  await import('chrome://webui-test/mojo_webui_test_support.js');
   suiteSetup(function() {
     return whenPageIsPopulatedForTest();
   });
 
   test('check stats table is loaded', () => {
-    let statsRows =
+    const statsRows =
         Array.from(document.getElementById('stats-table-body').children);
 
     assertDeepEquals(
         [
-          ['mediaFeed', '0'],
-          ['mediaFeedItem', '0'],
           ['mediaImage', '0'],
           ['meta', '3'],
           ['origin', '0'],
@@ -86,19 +85,22 @@ MediaHistoryOriginsWebUIBrowserTest.prototype = {
   browsePreload: 'chrome://media-history#tab-origins',
 };
 
-TEST_F('MediaHistoryOriginsWebUIBrowserTest', 'MAYBE_All', function() {
+TEST_F('MediaHistoryOriginsWebUIBrowserTest', 'MAYBE_All', async function() {
+  await import('chrome://webui-test/mojo_webui_test_support.js');
   suiteSetup(function() {
     return whenPageIsPopulatedForTest();
   });
 
   test('check data table is loaded', () => {
-    let dataHeaderRows =
+    const dataHeaderRows =
         Array.from(document.querySelector('#origins-table thead tr').children);
 
     assertDeepEquals(
         [
-          'Origin', 'Last Updated', 'Audio + Video Watchtime (secs, cached)',
-          'Audio + Video Watchtime (secs, actual)'
+          'Origin',
+          'Last Updated',
+          'Audio + Video Watchtime (secs, cached)',
+          'Audio + Video Watchtime (secs, actual)',
         ],
         dataHeaderRows.map(x => x.textContent.trim()));
   });
@@ -119,13 +121,14 @@ MediaHistoryPlaybacksWebUIBrowserTest.prototype = {
   browsePreload: 'chrome://media-history#tab-playbacks',
 };
 
-TEST_F('MediaHistoryPlaybacksWebUIBrowserTest', 'MAYBE_All', function() {
+TEST_F('MediaHistoryPlaybacksWebUIBrowserTest', 'MAYBE_All', async function() {
+  await import('chrome://webui-test/mojo_webui_test_support.js');
   suiteSetup(function() {
     return whenPageIsPopulatedForTest();
   });
 
   test('check data table is loaded', () => {
-    let dataHeaderRows = Array.from(
+    const dataHeaderRows = Array.from(
         document.querySelector('#playbacks-table thead tr').children);
 
     assertDeepEquals(
@@ -149,19 +152,27 @@ MediaHistorySessionsWebUIBrowserTest.prototype = {
   browsePreload: 'chrome://media-history#tab-sessions',
 };
 
-TEST_F('MediaHistorySessionsWebUIBrowserTest', 'MAYBE_All', function() {
+TEST_F('MediaHistorySessionsWebUIBrowserTest', 'MAYBE_All', async function() {
+  await import('chrome://webui-test/mojo_webui_test_support.js');
   suiteSetup(function() {
     return whenPageIsPopulatedForTest();
   });
 
   test('check data table is loaded', () => {
-    let dataHeaderRows =
+    const dataHeaderRows =
         Array.from(document.querySelector('#sessions-table thead tr').children);
 
     assertDeepEquals(
         [
-          'URL', 'Last Updated', 'Position (secs)', 'Duration (secs)', 'Title',
-          'Artist', 'Album', 'Source Title', 'Artwork'
+          'URL',
+          'Last Updated',
+          'Position (secs)',
+          'Duration (secs)',
+          'Title',
+          'Artist',
+          'Album',
+          'Source Title',
+          'Artwork',
         ],
         dataHeaderRows.map(x => x.textContent.trim()));
   });

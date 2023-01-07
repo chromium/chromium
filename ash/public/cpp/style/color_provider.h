@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,6 @@
 
 namespace ash {
 
-class ColorModeObserver;
-
 // An interface implemented by Ash that provides colors for the system UI.
 class ASH_PUBLIC_EXPORT ColorProvider {
  public:
@@ -24,14 +22,15 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kShield60,
     kShield80,
     kShield90,
+    kShield95,
   };
 
   // Blur sigma for system UI layers.
-  enum class LayerBlurSigma {
-    kBlurDefault = 30,  // Default blur sigma is 30.
-    kBlurSigma20 = 20,
-    kBlurSigma10 = 10,
-  };
+  static constexpr float kBackgroundBlurSigma = 30.f;
+
+  // The default blur quality for background blur. Using a value less than 1
+  // improves performance.
+  static constexpr float kBackgroundBlurQuality = 0.33f;
 
   // Types of Base layer.
   enum class BaseLayerType {
@@ -40,7 +39,9 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kTransparent40,
     kTransparent60,
     kTransparent80,
+    kInvertedTransparent80,
     kTransparent90,
+    kTransparent95,
 
     // Base layer is opaque.
     kOpaque,
@@ -56,17 +57,27 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kControlBackgroundColorPositive,
     kFocusAuraColor,
     kFocusRingColor,
+    kHighlightColor1,
+    kHighlightColor2,
+    kHighlightColor3,
+    kBorderColor1,
+    kBorderColor2,
+    kBorderColor3,
   };
 
   enum class ContentLayerType {
-    kLoginScrollBarColor,
+    kScrollBarColor,
     kSeparatorColor,
 
     kTextColorPrimary,
+    // Inverted `kTextColorPrimary` on current color mode.
+    kInvertedTextColorPrimary,
     kTextColorSecondary,
     kTextColorAlert,
     kTextColorWarning,
     kTextColorPositive,
+    kTextColorURL,
+    kTextColorSuggestion,
 
     kIconColorPrimary,
     kIconColorSecondary,
@@ -82,6 +93,8 @@ class ASH_PUBLIC_EXPORT ColorProvider {
 
     // The default color for button labels.
     kButtonLabelColor,
+    // Inverted `kButtonLabelColor` on current color mode.
+    kInvertedButtonLabelColor,
     kButtonLabelColorPrimary,
 
     // Color for blue button labels, e.g, 'Retry' button of the system toast.
@@ -123,44 +136,37 @@ class ASH_PUBLIC_EXPORT ColorProvider {
 
     // Color for the media controls.
     kProgressBarColorForeground,
-    kProgressBarColorBackground
-  };
+    kProgressBarColorBackground,
 
-  // Attributes of ripple, includes the base color, opacity of inkdrop and
-  // highlight.
-  struct RippleAttributes {
-    RippleAttributes(SkColor color,
-                     float opacity_of_inkdrop,
-                     float opacity_of_highlight)
-        : base_color(color),
-          inkdrop_opacity(opacity_of_inkdrop),
-          highlight_opacity(opacity_of_highlight) {}
-    const SkColor base_color;
-    const float inkdrop_opacity;
-    const float highlight_opacity;
+    // Color used to highlight a hovered view.
+    kHighlightColorHover,
+
+    // Color for the background of battery system info view.
+    kBatterySystemInfoBackgroundColor,
+
+    // Color for the battery icon in the system info view.
+    kBatterySystemInfoIconColor,
+
+    // Color of the capture region in the capture session.
+    kCaptureRegionColor,
   };
 
   static ColorProvider* Get();
 
-  virtual SkColor GetShieldLayerColor(ShieldLayerType type) const = 0;
+  // Gets the color of |type| of the corresponding layer based on the current
+  // color mode.
   virtual SkColor GetBaseLayerColor(BaseLayerType type) const = 0;
   virtual SkColor GetControlsLayerColor(ControlsLayerType type) const = 0;
   virtual SkColor GetContentLayerColor(ContentLayerType type) const = 0;
 
-  // Gets the attributes of ripple on |bg_color|. |bg_color| is the background
-  // color of the UI element that wants to show inkdrop. Applies the color from
-  // GetBackgroundColor if |bg_color| is not given. This means the background
-  // color of the UI element is from Shiled or Base layer. See
-  // GetShieldLayerColor and GetBaseLayerColor.
-  virtual RippleAttributes GetRippleAttributes(
-      SkColor bg_color = gfx::kPlaceholderColor) const = 0;
-
-  virtual void AddObserver(ColorModeObserver* observer) = 0;
-  virtual void RemoveObserver(ColorModeObserver* observer) = 0;
-
-  // True if pref |kDarkModeEnabled| is true, which means the current color mode
-  // is dark.
-  virtual bool IsDarkModeEnabled() const = 0;
+  // Gets the ink drop base color and opacity. Since the inkdrop ripple and
+  // highlight have the same opacity, we are keeping only one opacity here. The
+  // base color will be gotten based on current color mode, which will be WHITE
+  // in dark mode and BLACK in light mode. Please provide `background_color` if
+  // different base color needed on current color mode. See more details of
+  // IsDarkModeEnabled for current color mode.
+  virtual std::pair<SkColor, float> GetInkDropBaseColorAndOpacity(
+      SkColor background_color = gfx::kPlaceholderColor) const = 0;
 
  protected:
   ColorProvider();

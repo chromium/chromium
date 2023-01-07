@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,8 +28,8 @@ SyntheticGesture::Result SyntheticPointerAction::ForwardInputEvents(
       gesture_source_type_ = target->GetDefaultSyntheticGestureSourceType();
 
     if (!synthetic_pointer_driver_) {
-      owned_synthetic_pointer_driver_ =
-          SyntheticPointerDriver::Create(gesture_source_type_);
+      owned_synthetic_pointer_driver_ = SyntheticPointerDriver::Create(
+          gesture_source_type_, params_.from_devtools_debugger);
       synthetic_pointer_driver_ = owned_synthetic_pointer_driver_.get();
     }
 
@@ -81,13 +81,16 @@ SyntheticPointerAction::ForwardTouchOrMouseInputEvents(
         synthetic_pointer_driver_->Press(
             param.position().x(), param.position().y(), param.pointer_id(),
             param.button(), param.key_modifiers(), param.width(),
-            param.height(), param.rotation_angle(), param.force(), timestamp);
+            param.height(), param.rotation_angle(), param.force(),
+            param.tangential_pressure(), param.tilt_x(), param.tilt_y(),
+            timestamp);
         break;
       case SyntheticPointerActionParams::PointerActionType::MOVE:
         synthetic_pointer_driver_->Move(
             param.position().x(), param.position().y(), param.pointer_id(),
             param.key_modifiers(), param.width(), param.height(),
-            param.rotation_angle(), param.force());
+            param.rotation_angle(), param.force(), param.tangential_pressure(),
+            param.tilt_x(), param.tilt_y(), param.button());
         break;
       case SyntheticPointerActionParams::PointerActionType::RELEASE:
         synthetic_pointer_driver_->Release(param.pointer_id(), param.button(),

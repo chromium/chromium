@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,13 @@ XRSpace* XRLightProbe::probeSpace() const {
   return probe_space_;
 }
 
-base::Optional<TransformationMatrix> XRLightProbe::MojoFromObject() const {
+device::mojom::blink::XRNativeOriginInformationPtr XRLightProbe::NativeOrigin()
+    const {
+  return device::mojom::blink::XRNativeOriginInformation::NewReferenceSpaceType(
+      device::mojom::XRReferenceSpaceType::kLocal);
+}
+
+absl::optional<TransformationMatrix> XRLightProbe::MojoFromObject() const {
   // For the moment we're making an assumption that the lighting estimations
   // are always generated from the local space origin. This is the case for
   // ARCore, but will need to be made more flexible as other runtimes or methods

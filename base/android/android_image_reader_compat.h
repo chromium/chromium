@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/android/android_image_reader_abi.h"
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 
 namespace base {
@@ -21,6 +20,9 @@ class BASE_EXPORT AndroidImageReader {
  public:
   // Thread safe GetInstance.
   static AndroidImageReader& GetInstance();
+
+  AndroidImageReader(const AndroidImageReader&) = delete;
+  AndroidImageReader& operator=(const AndroidImageReader&) = delete;
 
   // Check if the image reader usage is supported. This function returns TRUE
   // if android version is >=OREO, image reader support is not disabled and all
@@ -79,8 +81,6 @@ class BASE_EXPORT AndroidImageReader {
   pAImageReader_acquireLatestImageAsync AImageReader_acquireLatestImageAsync_;
   pAImageReader_acquireNextImageAsync AImageReader_acquireNextImageAsync_;
   pANativeWindow_toSurface ANativeWindow_toSurface_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidImageReader);
 };
 
 }  // namespace android

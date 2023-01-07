@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/stl_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
@@ -62,8 +61,7 @@ std::unique_ptr<network::SimpleURLLoader> MakeLoader(
 
   auto simple_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), network_traffic_annotation);
-  simple_loader->SetTimeoutDuration(
-      base::TimeDelta::FromSeconds(kTimeoutDurationSeconds));
+  simple_loader->SetTimeoutDuration(base::Seconds(kTimeoutDurationSeconds));
 
   if (!request_body.empty()) {
     DCHECK(!content_type.empty());
@@ -76,9 +74,9 @@ std::unique_ptr<network::SimpleURLLoader> MakeLoader(
 }  // namespace
 
 SurveyHttpClient::SurveyHttpClient(
-    const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
+    HttpClientType http_client_type,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : network_traffic_annotation_(network_traffic_annotation),
+    : http_client_type_(http_client_type),
       loader_factory_(url_loader_factory) {}
 
 SurveyHttpClient::~SurveyHttpClient() {
@@ -96,7 +94,7 @@ void SurveyHttpClient::Send(const GURL& gurl,
   std::unique_ptr<network::SimpleURLLoader> simple_loader =
       MakeLoader(std::move(gurl), request_type, std::move(request_body),
                  std::move(header_keys), std::move(header_values),
-                 network_traffic_annotation_);
+                 GetTrafficAnnotation(http_client_type_));
 
   // TODO(https://crbug.com/1178921): Use flag to control the max size limit.
   simple_loader->DownloadToString(
@@ -120,6 +118,7 @@ void SurveyHttpClient::OnSimpleLoaderComplete(
   auto* response_info = simple_loader->ResponseInfo();
   if (response_info && response_info->headers) {
     response_code = response_info->headers->response_code();
+    RecordHttpResponseCodeHistogram(http_client_type_, response_code);
 
     size_t iter = 0;
     std::string name, value;

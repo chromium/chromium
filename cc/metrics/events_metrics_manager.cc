@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
 
 namespace cc {
 
@@ -18,10 +18,16 @@ class EventsMetricsManager::ScopedMonitorImpl
  public:
   ScopedMonitorImpl(EventsMetricsManager* manager, DoneCallback done_callback)
       : manager_(manager), done_callback_(std::move(done_callback)) {
-    DCHECK_NE(manager, nullptr);
+    DCHECK(manager_);
   }
 
   ~ScopedMonitorImpl() override {
+    if (manager_)
+      End();
+  }
+
+  void End() {
+    DCHECK(manager_);
     std::unique_ptr<EventMetrics> metrics;
     if (!done_callback_.is_null()) {
       const bool handled = save_metrics_;
@@ -31,20 +37,29 @@ class EventsMetricsManager::ScopedMonitorImpl
       DCHECK(handled || !metrics);
     }
     manager_->OnScopedMonitorEnded(std::move(metrics));
+    manager_ = nullptr;
   }
 
-  void set_save_metrics() { save_metrics_ = true; }
+  // Overridden from EventsMetricsManager::ScopedMonitor.
+  void SetSaveMetrics() override { save_metrics_ = true; }
 
  private:
-  EventsMetricsManager* const manager_;
+  raw_ptr<EventsMetricsManager> manager_;
   DoneCallback done_callback_;
   bool save_metrics_ = false;
 };
 
+EventsMetricsManager::ScopedMonitor::ScopedMonitor() = default;
 EventsMetricsManager::ScopedMonitor::~ScopedMonitor() = default;
 
 EventsMetricsManager::EventsMetricsManager() = default;
-EventsMetricsManager::~EventsMetricsManager() = default;
+
+EventsMetricsManager::~EventsMetricsManager() {
+  // If `EventsMetricsManager` is shut down while events are active, end active
+  // scoped monitors immediately.
+  while (!active_scoped_monitors_.empty())
+    active_scoped_monitors_.back()->End();
+}
 
 std::unique_ptr<EventsMetricsManager::ScopedMonitor>
 EventsMetricsManager::GetScopedMonitor(
@@ -60,7 +75,7 @@ void EventsMetricsManager::SaveActiveEventMetrics() {
     // Here we just set the flag to save the active metrics. The actual saving
     // happens when the scoped monitor is destroyed to give clients opportunity
     // to use/update the metrics object until the end of their processing.
-    active_scoped_monitors_.back()->set_save_metrics();
+    active_scoped_monitors_.back()->SetSaveMetrics();
   }
 }
 

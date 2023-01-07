@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,12 +25,12 @@ using SHA256HashValue = std::array<uint8_t, kSha256HashBytes>;
 std::vector<uint8_t> GenerateData(size_t size) {
   std::random_device device;
   std::mt19937 rng(device());
-  std::uniform_int_distribution<uint8_t> dist{};
+  std::uniform_int_distribution<uint32_t> dist{};
 
   std::vector<uint8_t> result;
   result.reserve(size);
   for (size_t i = 0; i < size; ++i) {
-    result.push_back(dist(rng));
+    result.push_back(static_cast<uint8_t>(dist(rng)));
   }
 
   return result;

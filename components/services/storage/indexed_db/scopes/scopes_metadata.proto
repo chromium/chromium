@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 syntax = "proto3";
@@ -17,11 +17,11 @@ message LevelDBScopesMetadata {
 }
 
 message LevelDBScopesScopeMetadata {
-  message LevelDBScopesLock {
+  message LevelDBPartitionedLock {
     int64 level = 1;
     LevelDBScopesKeyRange range = 2;
   }
-  repeated LevelDBScopesLock locks = 1;
+  repeated LevelDBPartitionedLock locks = 1;
 
   // If this is true, don't execute cleanup tasks when cleaning up this scope.
   bool ignore_cleanup_tasks = 2;

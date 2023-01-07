@@ -98,10 +98,13 @@
       // Call is up, now mute the remote track and check we stop playing out
       // audio (after a small delay, we don't expect it to happen instantly).
       enableRemoteAudio(gSecondConnection, false);
-      return ensureSilence(gSecondConnection)
-          .then(reportTestSuccess);
-    })
-    .catch(failTest);
+
+      setTimeout( function() {
+       ensureSilence(gSecondConnection)
+          .then(reportTestSuccess)
+          .catch(failTest);
+      }, 250 );
+    }).catch(failTest);
   }
 
   function callAndEnsureLocalAudioTrackMutingWorks(constraints) {
@@ -109,10 +112,13 @@
       // Call is up, now mute the local track of the sending side and ensure
       // the receiving side stops receiving audio.
       enableLocalAudio(gFirstConnection, false);
-      return ensureSilence(gSecondConnection)
-          .then(reportTestSuccess);
-    })
-    .catch(failTest);
+
+      setTimeout( function() {
+       ensureSilence(gSecondConnection)
+          .then(reportTestSuccess)
+          .catch(failTest);
+      }, 250 );
+    }).catch(failTest);
   }
 
   function callAndEnsureAudioTrackUnmutingWorks(constraints) {

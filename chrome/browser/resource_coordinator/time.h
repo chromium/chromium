@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TIME_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TIME_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -25,10 +24,12 @@ const base::TickClock* GetTickClock();
 class ScopedSetTickClockForTesting {
  public:
   explicit ScopedSetTickClockForTesting(const base::TickClock* tick_clock);
-  ~ScopedSetTickClockForTesting();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetTickClockForTesting);
+  ScopedSetTickClockForTesting(const ScopedSetTickClockForTesting&) = delete;
+  ScopedSetTickClockForTesting& operator=(const ScopedSetTickClockForTesting&) =
+      delete;
+
+  ~ScopedSetTickClockForTesting();
 };
 
 }  // namespace resource_coordinator

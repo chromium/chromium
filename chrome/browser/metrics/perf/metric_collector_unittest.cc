@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -74,12 +72,27 @@ std::string SerializeStringFieldWithTag(int field, const std::string& value) {
   return result;
 }
 
+// Creates a serialized uint64 with a field tag number.
+std::string SerializeUint64FieldWithTag(int field, const uint64_t& value) {
+  std::string result;
+  google::protobuf::io::StringOutputStream string_stream(&result);
+  google::protobuf::io::CodedOutputStream output(&string_stream);
+
+  using google::protobuf::internal::WireFormatLite;
+  WireFormatLite::WriteTag(field, WireFormatLite::WIRETYPE_VARINT, &output);
+  output.WriteVarint64(value);
+  return result;
+}
+
 // Allows access to some private methods for testing.
 class TestMetricCollector : public MetricCollector {
  public:
   TestMetricCollector() : TestMetricCollector(CollectionParams()) {}
   explicit TestMetricCollector(const CollectionParams& collection_params)
       : MetricCollector("Test", collection_params) {}
+
+  TestMetricCollector(const TestMetricCollector&) = delete;
+  TestMetricCollector& operator=(const TestMetricCollector&) = delete;
 
   const char* ToolName() const override { return "Test"; }
   base::WeakPtr<MetricCollector> GetWeakPtr() override {
@@ -109,13 +122,10 @@ class TestMetricCollector : public MetricCollector {
 
  private:
   base::WeakPtrFactory<TestMetricCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestMetricCollector);
 };
 
-const base::TimeDelta kPeriodicCollectionInterval =
-    base::TimeDelta::FromHours(1);
-const base::TimeDelta kMaxCollectionDelay = base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kPeriodicCollectionInterval = base::Hours(1);
+const base::TimeDelta kMaxCollectionDelay = base::Seconds(1);
 
 }  // namespace
 
@@ -124,6 +134,9 @@ class MetricCollectorTest : public testing::Test {
   MetricCollectorTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         perf_data_proto_(GetExamplePerfDataProto()) {}
+
+  MetricCollectorTest(const MetricCollectorTest&) = delete;
+  MetricCollectorTest& operator=(const MetricCollectorTest&) = delete;
 
   void SaveProfile(std::unique_ptr<SampledProfile> sampled_profile) {
     cached_profile_data_.resize(cached_profile_data_.size() + 1);
@@ -166,8 +179,6 @@ class MetricCollectorTest : public testing::Test {
 
   // Store sample perf data protobuf for testing.
   PerfDataProto perf_data_proto_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricCollectorTest);
 };
 
 TEST_F(MetricCollectorTest, CheckSetup) {
@@ -279,6 +290,25 @@ TEST_F(MetricCollectorTest, PerfDataProto_UnknownFieldsDiscarded) {
   *metadata->mutable_perf_command_line_whole()->mutable_unknown_fields() =
       SerializeStringFieldWithTag(1, "perf record -a -- sleep 1");
 
+  // PerfEventType
+  PerfDataProto_PerfEventType* event_type = perf_data_proto_.add_event_types();
+  event_type->set_id(4);
+  event_type->set_name_md5_prefix(0xac96823403192d1f);
+  *event_type->mutable_unknown_fields() =
+      SerializeStringFieldWithTag(2, "cycles");
+
+  // PMUMappingsMetadata
+  PerfDataProto_PerfPMUMappingsMetadata* pmu_mapping =
+      perf_data_proto_.add_pmu_mappings();
+  pmu_mapping->set_type(5);
+  pmu_mapping->set_name_md5_prefix(0xd36231bfe8094177);
+  *pmu_mapping->mutable_unknown_fields() =
+      SerializeStringFieldWithTag(2, "breakpoint");
+
+  // Unknown fields at the root level
+  *perf_data_proto_.mutable_unknown_fields() =
+      SerializeUint64FieldWithTag(5, 0x123456789);
+
   // Serialize to string and make sure it can be deserialized.
   std::string perf_data_string = perf_data_proto_.SerializeAsString();
   PerfDataProto temp_proto;
@@ -336,6 +366,25 @@ TEST_F(MetricCollectorTest, PerfDataProto_UnknownFieldsDiscarded) {
             stored_metadata.perf_command_line_whole().value_md5_prefix());
   EXPECT_EQ(0U,
             stored_metadata.perf_command_line_whole().unknown_fields().size());
+
+  // PerfEventType
+  ASSERT_EQ(1, stored_proto.event_types_size());
+  const PerfDataProto_PerfEventType& stored_event_type =
+      stored_proto.event_types(0);
+  EXPECT_EQ(4U, stored_event_type.id());
+  EXPECT_EQ(0xac96823403192d1f, stored_event_type.name_md5_prefix());
+  EXPECT_EQ(0U, stored_event_type.unknown_fields().size());
+
+  // PMUMappingsMetadata
+  ASSERT_EQ(1, stored_proto.pmu_mappings_size());
+  const PerfDataProto_PerfPMUMappingsMetadata& stored_pmu_mapping =
+      stored_proto.pmu_mappings(0);
+  EXPECT_EQ(5U, stored_pmu_mapping.type());
+  EXPECT_EQ(0xd36231bfe8094177, stored_pmu_mapping.name_md5_prefix());
+  EXPECT_EQ(0U, stored_pmu_mapping.unknown_fields().size());
+
+  // No unknown fields in PerfDataProto
+  EXPECT_EQ(0U, stored_proto.unknown_fields().size());
 }
 
 // Change |sampled_profile| between calls to SaveSerializedPerfProto().
@@ -418,7 +467,7 @@ TEST_F(MetricCollectorTest, StopTimer) {
 }
 
 TEST_F(MetricCollectorTest, ScheduleSuspendDoneCollection) {
-  const auto kSuspendDuration = base::TimeDelta::FromMinutes(3);
+  const auto kSuspendDuration = base::Minutes(3);
 
   metric_collector_->ScheduleSuspendDoneCollection(kSuspendDuration);
 
@@ -559,8 +608,7 @@ TEST_F(MetricCollectorTest, ZeroSamplingFactorDisablesTrigger) {
 
   // Calling ScheduleSuspendDoneCollection or ScheduleSessionRestoreCollection
   // should not start the timer that triggers collection.
-  metric_collector_->ScheduleSuspendDoneCollection(
-      base::TimeDelta::FromMinutes(10));
+  metric_collector_->ScheduleSuspendDoneCollection(base::Minutes(10));
   EXPECT_FALSE(metric_collector_->IsRunning());
 
   metric_collector_->ScheduleSessionRestoreCollection(100);
@@ -570,7 +618,7 @@ TEST_F(MetricCollectorTest, ZeroSamplingFactorDisablesTrigger) {
 TEST_F(MetricCollectorTest, ZeroPeriodicIntervalDisablesCollection) {
   // Define params with zero periodic interval.
   CollectionParams test_params;
-  test_params.periodic_interval = base::TimeDelta::FromMilliseconds(0);
+  test_params.periodic_interval = base::Milliseconds(0);
 
   metric_collector_ = std::make_unique<TestMetricCollector>(test_params);
   metric_collector_->Init();
@@ -581,7 +629,7 @@ TEST_F(MetricCollectorTest, ZeroPeriodicIntervalDisablesCollection) {
 
   // Advance the clock by 10 hours. We should have no profile and timer is not
   // running.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(10));
+  task_environment_.FastForwardBy(base::Hours(10));
 
   EXPECT_FALSE(metric_collector_->IsRunning())
       << "Sanity: timer should not be running.";

@@ -1,12 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 
-#include "base/logging.h"
-#include "base/values.h"
-#include "ios/components/security_interstitials/ios_security_interstitial_page.h"
+#import "base/logging.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/values.h"
+#import "ios/components/security_interstitials/ios_security_interstitial_page.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -58,19 +59,35 @@ IOSSecurityInterstitialPage* IOSBlockingPageTabHelper::GetCurrentBlockingPage()
 }
 
 void IOSBlockingPageTabHelper::OnBlockingPageCommand(
-    const base::DictionaryValue& message,
+    const base::Value& message,
     const GURL& url,
     bool user_is_interacting,
     web::WebFrame* sender_frame) {
-  std::string command;
-  if (!message.GetString("command", &command)) {
-    DLOG(WARNING) << "JS message parameter not found: command";
-  } else {
-    if (blocking_page_for_currently_committed_navigation_) {
-      blocking_page_for_currently_committed_navigation_->HandleScriptCommand(
-          message, url, user_is_interacting, sender_frame);
-    }
-  }
+  if (!blocking_page_for_currently_committed_navigation_)
+    return;
+
+  const std::string* command = message.FindStringKey("command");
+  if (!command)
+    return;
+
+  // Remove the command prefix since it is ignored when converting the value
+  // to a SecurityInterstitialCommand.
+  const std::size_t pos = command->find('.');
+  if (pos == std::string::npos || pos + 1 == command->size())
+    return;
+
+  // Use a string piece to avoid creating a copy of the suffix (as calling
+  // std::string::substr would do). This is safe as `*command` is owned by
+  // the base::Value which stay in scope for the whole method.
+  const base::StringPiece suffix = base::StringPiece(*command).substr(pos + 1);
+
+  int command_id;
+  if (!base::StringToInt(suffix, &command_id))
+    return;
+
+  blocking_page_for_currently_committed_navigation_->HandleCommand(
+      static_cast<SecurityInterstitialCommand>(command_id), url,
+      user_is_interacting, sender_frame);
 }
 
 void IOSBlockingPageTabHelper::UpdateForFinishedNavigation(
@@ -91,7 +108,7 @@ IOSBlockingPageTabHelper::CommittedNavigationIDListener::
                                   IOSBlockingPageTabHelper* tab_helper)
     : tab_helper_(tab_helper) {
   DCHECK(tab_helper_);
-  scoped_observer_.Add(web_state);
+  scoped_observation_.Observe(web_state);
 }
 
 IOSBlockingPageTabHelper::CommittedNavigationIDListener::
@@ -113,7 +130,8 @@ void IOSBlockingPageTabHelper::CommittedNavigationIDListener::
 
 void IOSBlockingPageTabHelper::CommittedNavigationIDListener::WebStateDestroyed(
     web::WebState* web_state) {
-  scoped_observer_.Remove(web_state);
+  DCHECK(scoped_observation_.IsObservingSource(web_state));
+  scoped_observation_.Reset();
 }
 
 }  // namespace security_interstitials

@@ -1,24 +1,22 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_LINK_HEADER_FOOTER_ITEM_H_
 #define IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_LINK_HEADER_FOOTER_ITEM_H_
 
-#include <vector>
-
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_header_footer_item.h"
-#import "url/gurl.h"
 
+@class CrURL;
 @class TableViewLinkHeaderFooterView;
 
 @protocol TableViewLinkHeaderFooterItemDelegate<NSObject>
 
-// Notifies the delegate that the link corresponding to |URL| was tapped in
-// |view|.
-- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)URL;
+// Notifies the delegate that the link corresponding to `URL` was tapped in
+// `view`.
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL;
 
 @end
 
@@ -29,7 +27,7 @@
 // The list of URLs used to open when a text with a link attribute is tapped.
 // Asserts that the number of urls given corresponds to the link attributes in
 // the text.
-@property(nonatomic, assign) const std::vector<GURL>& urls;
+@property(nonatomic, strong) NSArray<CrURL*>* urls;
 
 // The main text string.
 @property(nonatomic, copy) NSString* text;
@@ -46,9 +44,9 @@
 @property(nonatomic, weak) id<TableViewLinkHeaderFooterItemDelegate> delegate;
 
 // The URLs to open when text with a link attribute is tapped.
-@property(nonatomic, assign) const std::vector<GURL>& urls;
+@property(nonatomic, strong) NSArray<CrURL*>* urls;
 
-// Sets the |text| displayed by this cell. If the |text| contains a link, the
+// Sets the `text` displayed by this cell. If the `text` contains a link, the
 // link is appropriately colored.
 - (void)setText:(NSString*)text;
 

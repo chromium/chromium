@@ -12,7 +12,7 @@ const target = document.getElementById("target");
 if (window.testRunner) {
   testRunner.dumpAsText();
   testRunner.waitUntilDone();
-  target.onload = () => testRunner.notifyDone();
+  target.onerror = () => testRunner.notifyDone();
 }
 // Ensure to install an onload handler before setting data to avoid
 // cases where the event is fired before the handler is in place.

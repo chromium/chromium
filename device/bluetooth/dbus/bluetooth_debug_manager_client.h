@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/values.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/dbus/bluez_dbus_client.h"
@@ -22,6 +20,10 @@ namespace bluez {
 class DEVICE_BLUETOOTH_EXPORT BluetoothDebugManagerClient
     : public BluezDBusClient {
  public:
+  BluetoothDebugManagerClient(const BluetoothDebugManagerClient&) = delete;
+  BluetoothDebugManagerClient& operator=(const BluetoothDebugManagerClient&) =
+      delete;
+
   ~BluetoothDebugManagerClient() override;
 
   // The ErrorCallback is used by debug manager methods to indicate failure.
@@ -31,11 +33,24 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDebugManagerClient
                                   const std::string& error_message)>
       ErrorCallback;
 
+  // Invoke D-Bus API to update bluetooth devcoredump state.
+  virtual void SetDevCoredump(const bool enable,
+                              base::OnceClosure callback,
+                              ErrorCallback error_callback) = 0;
+
+  // Invoke D-Bus API to enable or disable LL privacy.
+  virtual void SetLLPrivacy(const bool enable,
+                            base::OnceClosure callback,
+                            ErrorCallback error_callback) = 0;
+
+  // Invoke D-Bus API to enable or disable the Bluetooth Quality Report.
+  virtual void SetBluetoothQualityReport(const bool enable,
+                                         base::OnceClosure callback,
+                                         ErrorCallback error_callback) = 0;
+
   // Invoke D-Bus API to set the levels of logging verbosity for each of
   // the bluetooth daemons and kernel.
-  virtual void SetLogLevels(const uint8_t dispatcher_level,
-                            const uint8_t newblue_level,
-                            const uint8_t bluez_level,
+  virtual void SetLogLevels(const uint8_t bluez_level,
                             const uint8_t kernel_level,
                             base::OnceClosure callback,
                             ErrorCallback error_callback) = 0;
@@ -50,9 +65,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDebugManagerClient
 
  protected:
   BluetoothDebugManagerClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDebugManagerClient);
 };
 
 }  // namespace bluez

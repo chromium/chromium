@@ -67,7 +67,7 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
   // Returns |false| if the command failed.  e.g. It's aborted.
   bool Apply();
   bool IsFirstCommand(EditCommand* command) {
-    return !commands_.IsEmpty() && commands_.front() == command;
+    return !commands_.empty() && commands_.front() == command;
   }
   UndoStep* GetUndoStep() { return undo_step_.Get(); }
   UndoStep* EnsureUndoStep();

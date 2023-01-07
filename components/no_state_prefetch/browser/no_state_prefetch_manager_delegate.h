@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,11 +36,6 @@ class NoStatePrefetchManagerDelegate {
 
   // Check whether the user has enabled predictive loading of web pages.
   virtual bool IsNetworkPredictionPreferenceEnabled();
-
-  // Check whether predictive loading of web pages is disabled due to network.
-  // TODO(crbug.com/1121970): Remove this condition once we're no longer running
-  // the experiment "PredictivePrefetchingAllowedOnAllConnectionTypes".
-  virtual bool IsPredictionDisabledDueToNetwork(Origin origin);
 
   // Gets the reason why predictive loading of web pages was disabld.
   virtual std::string GetReasonForDisablingPrediction();

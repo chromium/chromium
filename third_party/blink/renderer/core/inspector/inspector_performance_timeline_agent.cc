@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -41,11 +42,11 @@ BuildEventDetails(const LargestContentfulPaint& lcp,
                     .setLoadTime(ToProtocolTime(timeOrigin, lcp.loadTime()))
                     .setSize(lcp.size())
                     .build();
-  if (!lcp.id().IsEmpty())
+  if (!lcp.id().empty())
     result->setElementId(lcp.id());
   if (Element* element = lcp.element())
     result->setNodeId(IdentifiersFactory::IntIdForNode(element));
-  if (!lcp.url().IsEmpty())
+  if (!lcp.url().empty())
     result->setUrl(lcp.url());
   return result;
 }

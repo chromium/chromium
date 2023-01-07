@@ -1,24 +1,26 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ssl/ios_ssl_error_handler.h"
+#import "ios/chrome/browser/ssl/ios_ssl_error_handler.h"
 
-#include "base/bind.h"
-#include "base/run_loop.h"
+#import "base/bind.h"
+#import "base/run_loop.h"
 #import "base/test/ios/wait_util.h"
-#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#import "ios/chrome/browser/ssl/captive_portal_detector_tab_helper.h"
-#import "ios/chrome/browser/ssl/captive_portal_detector_tab_helper_delegate.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
-#include "ios/web/public/security/web_interstitial.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
-#include "net/http/http_status_code.h"
-#include "net/ssl/ssl_info.h"
-#include "net/test/cert_test_util.h"
-#include "net/test/test_data_directory.h"
-#include "services/network/test/test_url_loader_factory.h"
+#import "net/http/http_status_code.h"
+#import "net/ssl/ssl_info.h"
+#import "net/test/cert_test_util.h"
+#import "net/test/test_data_directory.h"
+#import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#import "services/network/test/test_url_loader_factory.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -33,139 +35,93 @@ const char kTestCertFileName[] = "ok_cert.pem";
 const char kTestHostName[] = "https://chromium.test/";
 }  // namespace
 
-// Test fixture for IOSSSLErrorHandler class.
-class IOSSSLErrorHandlerTest : public web::WebTestWithWebState {
+// Test fixture for IOSSSLErrorHander when used with a WebState that hasn't
+// been inserted into a WebStateList and hence doesn't have the usual set of
+// tab helpers.
+class IOSSSLErrorHandlerWithoutTabHelpersTest : public PlatformTest {
  protected:
-  IOSSSLErrorHandlerTest()
-      : browser_state_(builder_.Build()),
+  IOSSSLErrorHandlerWithoutTabHelpersTest()
+      : task_environment_(web::WebTaskEnvironment::Options::IO_MAINLOOP),
         cert_(net::ImportCertFromFile(net::GetTestCertsDirectory(),
                                       kTestCertFileName)) {}
 
-  // web::WebTestWithWebState overrides:
-  void SetUp() override {
-    web::WebTestWithWebState::SetUp();
+  // Returns certificate.
+  scoped_refptr<net::X509Certificate> cert() { return cert_; }
 
+  // PlatformTest overrides:
+  void SetUp() override {
+    PlatformTest::SetUp();
+
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web_state_->SetBrowserState(browser_state_.get());
+
+    browser_state_->SetSharedURLLoaderFactory(
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            &test_loader_factory_));
     test_loader_factory_.AddResponse("http://www.gstatic.com/generate_204", "",
                                      net::HTTP_NO_CONTENT);
+  }
 
-    id captive_portal_detector_tab_helper_delegate = [OCMockObject
-        mockForProtocol:@protocol(CaptivePortalDetectorTabHelperDelegate)];
+  web::WebState* web_state() const { return web_state_.get(); }
+
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::FakeWebState> web_state_ =
+      std::make_unique<web::FakeWebState>();
+
+ private:
+  network::TestURLLoaderFactory test_loader_factory_;
+  scoped_refptr<net::X509Certificate> cert_;
+};
+
+// Tests that error handling is short-circuited when the associated WebState
+// isn't in a WebStateList.
+TEST_F(IOSSSLErrorHandlerWithoutTabHelpersTest, HandleError) {
+  net::SSLInfo ssl_info;
+  ssl_info.cert = cert();
+  GURL url(kTestHostName);
+  __block bool blocking_page_callback_called = false;
+  base::OnceCallback<void(NSString*)> blocking_page_callback =
+      base::BindOnce(^(NSString* blocking_page) {
+        blocking_page_callback_called = true;
+      });
+  IOSSSLErrorHandler::HandleSSLError(
+      web_state(), net::ERR_CERT_AUTHORITY_INVALID, ssl_info, url, true, 0,
+      std::move(blocking_page_callback));
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return blocking_page_callback_called;
+      }));
+}
+
+// Test fixture for IOSSSLErrorHandler class.
+class IOSSSLErrorHandlerTest : public IOSSSLErrorHandlerWithoutTabHelpersTest {
+ protected:
+  IOSSSLErrorHandlerTest() {}
+
+  // IOSSSLErrorHandlerWithoutTabHelpersTest overrides:
+  void SetUp() override {
+    IOSSSLErrorHandlerWithoutTabHelpersTest::SetUp();
 
     security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
         web_state());
 
-    // Use a testing URLLoaderFactory so that these tests don't attempt to make
-    // network requests.
-    CaptivePortalDetectorTabHelper::CreateForWebState(
-        web_state(), captive_portal_detector_tab_helper_delegate,
-        &test_loader_factory_);
-    ASSERT_TRUE(cert_);
-    ASSERT_FALSE(web_state()->IsShowingWebInterstitial());
+    CaptivePortalTabHelper::CreateForWebState(web_state());
+    ASSERT_TRUE(cert());
 
+    std::unique_ptr<web::FakeNavigationManager> fake_navigation_manager =
+        std::make_unique<web::FakeNavigationManager>();
     // Transient item can only be added for pending non-app-specific loads.
-    AddPendingItem(GURL(kTestHostName),
-                   ui::PageTransition::PAGE_TRANSITION_TYPED);
+    fake_navigation_manager->AddItem(GURL(kTestHostName),
+                                     ui::PageTransition::PAGE_TRANSITION_TYPED);
+    web_state_->SetNavigationManager(std::move(fake_navigation_manager));
   }
-  web::BrowserState* GetBrowserState() override { return browser_state_.get(); }
-
-  // Waits for and returns true if an interstitial is displayed. Returns false
-  // otherwise.
-  WARN_UNUSED_RESULT bool WaitForInterstitialDisplayed() {
-    // Required in order for CaptivePortalDetector to receive simulated network
-    // response from |test_loader_factory_|.
-    base::RunLoop().RunUntilIdle();
-
-    // Wait for the interstitial to be displayed.
-    return WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
-      return web_state()->IsShowingWebInterstitial();
-    });
-  }
-
-  // Returns certificate for testing.
-  scoped_refptr<net::X509Certificate> cert() { return cert_; }
-
- private:
-  network::TestURLLoaderFactory test_loader_factory_;
-  TestChromeBrowserState::Builder builder_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
-  scoped_refptr<net::X509Certificate> cert_;
 };
 
-// Tests non-overridable error handling.
-TEST_F(IOSSSLErrorHandlerTest, NonOverridable) {
-  net::SSLInfo ssl_info;
-  ssl_info.cert = cert();
-  GURL url(kTestHostName);
-  __block bool do_not_proceed_callback_called = false;
-  base::OnceCallback<void(NSString*)> null_callback;
-  IOSSSLErrorHandler::HandleSSLError(
-      web_state(), net::ERR_CERT_AUTHORITY_INVALID, ssl_info, url, false, 0,
-      base::BindRepeating(^(bool proceed) {
-        EXPECT_FALSE(proceed);
-        do_not_proceed_callback_called = true;
-      }),
-      std::move(null_callback));
-
-  EXPECT_TRUE(WaitForInterstitialDisplayed());
-  web::WebInterstitial* interstitial = web_state()->GetWebInterstitial();
-  EXPECT_TRUE(interstitial);
-
-  // Make sure callback is called on dismissal.
-  interstitial->DontProceed();
-  EXPECT_TRUE(do_not_proceed_callback_called);
-}
-
-// Tests proceed with overridable error.
-// Flaky: http://crbug.com/660343.
-TEST_F(IOSSSLErrorHandlerTest, DISABLED_OverridableProceed) {
-  net::SSLInfo ssl_info;
-  ssl_info.cert = cert();
-  GURL url(kTestHostName);
-  __block bool proceed_callback_called = false;
-  base::OnceCallback<void(NSString*)> null_callback;
-  IOSSSLErrorHandler::HandleSSLError(
-      web_state(), net::ERR_CERT_AUTHORITY_INVALID, ssl_info, url, true, 0,
-      base::BindRepeating(^(bool proceed) {
-        EXPECT_TRUE(proceed);
-        proceed_callback_called = true;
-      }),
-      std::move(null_callback));
-
-  EXPECT_TRUE(WaitForInterstitialDisplayed());
-  web::WebInterstitial* interstitial = web_state()->GetWebInterstitial();
-  EXPECT_TRUE(interstitial);
-
-  // Make sure callback is called on dismissal.
-  interstitial->Proceed();
-  EXPECT_TRUE(proceed_callback_called);
-}
-
-// Tests do not proceed with overridable error.
-TEST_F(IOSSSLErrorHandlerTest, OverridableDontProceed) {
-  net::SSLInfo ssl_info;
-  ssl_info.cert = cert();
-  GURL url(kTestHostName);
-  __block bool do_not_proceed_callback_called = false;
-  base::OnceCallback<void(NSString*)> null_callback;
-  IOSSSLErrorHandler::HandleSSLError(
-      web_state(), net::ERR_CERT_AUTHORITY_INVALID, ssl_info, url, true, 0,
-      base::BindRepeating(^(bool proceed) {
-        EXPECT_FALSE(proceed);
-        do_not_proceed_callback_called = true;
-      }),
-      std::move(null_callback));
-
-  EXPECT_TRUE(WaitForInterstitialDisplayed());
-  web::WebInterstitial* interstitial = web_state()->GetWebInterstitial();
-  EXPECT_TRUE(interstitial);
-
-  // Make sure callback is called on dismissal.
-  interstitial->DontProceed();
-  EXPECT_TRUE(do_not_proceed_callback_called);
-}
-
 // Tests that error HTML is returned instead of calling the usual show
-// interstitial logic when passed a non-null |blocking_page_callback|.
+// interstitial logic when passed a non-null `blocking_page_callback`.
 TEST_F(IOSSSLErrorHandlerTest, CommittedInterstitialErrorHtml) {
   net::SSLInfo ssl_info;
   ssl_info.cert = cert();
@@ -179,50 +135,11 @@ TEST_F(IOSSSLErrorHandlerTest, CommittedInterstitialErrorHtml) {
       });
   IOSSSLErrorHandler::HandleSSLError(
       web_state(), net::ERR_CERT_AUTHORITY_INVALID, ssl_info, url, true, 0,
-      std::move(null_callback), std::move(blocking_page_callback));
-  EXPECT_FALSE(WaitForInterstitialDisplayed());
-  EXPECT_TRUE(blocking_page_callback_called);
-}
+      std::move(blocking_page_callback));
 
-// Test fixture for IOSSSLErrorHander when used with a WebState that hasn't
-// been inserted into a WebStateList and hence doesn't have the usual set of
-// tab helpers.
-class IOSSSLErrorHandlerWithoutTabHelpersTest
-    : public web::WebTestWithWebState {
- protected:
-  IOSSSLErrorHandlerWithoutTabHelpersTest()
-      : cert_(net::ImportCertFromFile(net::GetTestCertsDirectory(),
-                                      kTestCertFileName)) {}
-
-  // Returns certificate.
-  scoped_refptr<net::X509Certificate> cert() { return cert_; }
-
- private:
-  scoped_refptr<net::X509Certificate> cert_;
-};
-
-// Tests that error handling is short-circuited when the associated WebState
-// isn't in a WebStateList.
-TEST_F(IOSSSLErrorHandlerWithoutTabHelpersTest, HandleError) {
-  net::SSLInfo ssl_info;
-  ssl_info.cert = cert();
-  GURL url(kTestHostName);
-  __block bool proceed_callback_called = false;
-  __block bool should_proceed = false;
-  __block bool blocking_page_callback_called = false;
-  base::OnceCallback<void(bool)> proceed_callback =
-      base::BindOnce(^(bool proceed) {
-        proceed_callback_called = true;
-        should_proceed = proceed;
-      });
-  base::OnceCallback<void(NSString*)> blocking_page_callback =
-      base::BindOnce(^(NSString* blocking_page) {
-        blocking_page_callback_called = true;
-      });
-  IOSSSLErrorHandler::HandleSSLError(
-      web_state(), net::ERR_CERT_AUTHORITY_INVALID, ssl_info, url, true, 0,
-      std::move(proceed_callback), std::move(blocking_page_callback));
-  EXPECT_TRUE(proceed_callback_called);
-  EXPECT_FALSE(should_proceed);
-  EXPECT_FALSE(blocking_page_callback_called);
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return blocking_page_callback_called;
+      }));
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,4 +21,4 @@ CreateDevToolsNetworkTransactionFactory(net::HttpNetworkSession* session);
 
 }  // namespace content
 
-#endif  // CCONTENT_PUBLIC_BROWSER_DEVTOOLS_NETWORK_TRANSACTION_FACTORY_H_
+#endif  // CONTENT_PUBLIC_BROWSER_DEVTOOLS_NETWORK_TRANSACTION_FACTORY_H_

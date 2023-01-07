@@ -1,7 +1,8 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/node/node.gni")
 
 template("ts_library") {
@@ -12,48 +13,97 @@ template("ts_library") {
                            [
                              "deps",
                              "extra_deps",
-                             "sources",
-                             "definitions",
+                             "in_files",
+                             "tsconfig_base",
+                             "manifest_excludes",
+                             "testonly",
+                             "visibility",
                            ])
 
     inputs = [ "//tools/typescript/tsconfig_base.json" ]
-    outputs = [
-      "$target_gen_dir/tsconfig.json",
-      "$target_gen_dir/tsconfig.manifest",
-      "$target_gen_dir/tsconfig.tsbuildinfo",
-    ]
-    foreach(_source, sources) {
-      _filename =
-          get_path_info(_source, "dir") + "/" + get_path_info(_source, "name")
-      outputs += [
-        "$target_gen_dir/$_filename.js",
-        "$target_gen_dir/$_filename.d.ts",
-      ]
-    }
+    outputs = [ "$target_gen_dir/tsconfig_$target_name.json" ]
+
+    assert(defined(in_files) || defined(invoker.definitions))
 
     root_dir = "."
     if (defined(invoker.root_dir)) {
       root_dir = invoker.root_dir
     }
 
-    args = [
-             "--root_dir",
-             rebase_path(root_dir, root_build_dir),
-             "--gen_dir",
-             rebase_path(target_gen_dir, root_build_dir),
-             "--sources",
-           ] + sources
+    out_dir = target_gen_dir
+    if (defined(invoker.out_dir)) {
+      out_dir = invoker.out_dir
+    }
 
-    if (defined(definitions)) {
+    composite = false
+    if (defined(invoker.composite)) {
+      composite = invoker.composite
+    }
+
+    if (defined(in_files)) {
+      outputs += [ "$target_gen_dir/$target_name.manifest" ]
+      foreach(_source, in_files) {
+        inputs += [ "$root_dir/$_source" ]
+        _dirname =
+            rebase_path(get_path_info(_source, "gen_dir"), target_gen_dir)
+        _filename = get_path_info(_source, "name")
+        outputs += [ "$out_dir/$_dirname/$_filename.js" ]
+
+        if (composite) {
+          outputs += [ "$out_dir/$_dirname/$_filename.d.ts" ]
+        }
+      }
+    }
+
+    args = [
+      "--root_dir",
+      rebase_path(root_dir, root_build_dir),
+      "--gen_dir",
+      rebase_path(target_gen_dir, root_build_dir),
+      "--out_dir",
+      rebase_path(out_dir, root_build_dir),
+      "--output_suffix",
+      target_name,
+    ]
+
+    if (defined(in_files)) {
+      args += [ "--in_files" ] + in_files
+    }
+
+    if (defined(manifest_excludes)) {
+      assert(defined(in_files))
+      args += [ "--manifest_excludes" ] + manifest_excludes
+    }
+
+    if (defined(invoker.definitions)) {
+      inputs += invoker.definitions
+      definitions = []
+      foreach(_definition, invoker.definitions) {
+        definitions += [ rebase_path(_definition, target_gen_dir) ]
+      }
       args += [ "--definitions" ] + definitions
     }
 
     if (defined(deps)) {
       args += [ "--deps" ]
+
       foreach(dep, deps) {
-        args +=
-            [ rebase_path(get_label_info(dep, "dir"), ".") + "/tsconfig.json" ]
+        name = get_label_info(dep, "name")
+        args += [ rebase_path(get_label_info(dep, "dir"), ".") +
+                  "/tsconfig_$name.json" ]
       }
+    }
+
+    if (defined(tsconfig_base)) {
+      inputs += [ tsconfig_base ]
+      args += [
+        "--tsconfig_base",
+        rebase_path(tsconfig_base, target_gen_dir),
+      ]
+    }
+
+    if (composite) {
+      args += [ "--composite" ]
     }
 
     if (defined(extra_deps)) {
@@ -63,9 +113,40 @@ template("ts_library") {
       deps += extra_deps
     }
 
-    path_mappings =
-        [ "chrome://resources/*|" +
-          rebase_path("$root_gen_dir/ui/webui/resources/*", target_gen_dir) ]
+    path_mappings = [
+      "chrome://resources/*|" +
+          rebase_path("$root_gen_dir/ui/webui/resources/preprocessed/*",
+                      target_gen_dir),
+      "//resources/*|" +
+          rebase_path("$root_gen_dir/ui/webui/resources/preprocessed/*",
+                      target_gen_dir),
+      "chrome://resources/polymer/v3_0/*|" +
+          rebase_path("//third_party/polymer/v3_0/components-chromium/*",
+                      target_gen_dir),
+      "//resources/polymer/v3_0/*|" +
+          rebase_path("//third_party/polymer/v3_0/components-chromium/*",
+                      target_gen_dir),
+      "chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js|" + rebase_path(
+              "//third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts",
+              target_gen_dir),
+      "//resources/polymer/v3_0/polymer/polymer_bundled.min.js|" + rebase_path(
+              "//third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts",
+              target_gen_dir),
+      "/tools/typescript/definitions/*|" +
+          rebase_path("//tools/typescript/definitions/*", target_gen_dir),
+    ]
+
+    if (is_chromeos_ash) {
+      path_mappings += [
+        "chrome://resources/ash/common/*|" + rebase_path(
+                "$root_gen_dir/ash/webui/common/resources/preprocessed/*",
+                target_gen_dir),
+        "//resources/ash/common/*|" + rebase_path(
+                "$root_gen_dir/ash/webui/common/resources/preprocessed/*",
+                target_gen_dir),
+      ]
+    }
+
     args += [ "--path_mappings" ] + path_mappings
     if (defined(invoker.path_mappings)) {
       args += invoker.path_mappings

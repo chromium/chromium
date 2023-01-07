@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,7 +36,7 @@ class MediaRedirectTest : public MediaBrowserTest {
     http_test_server->StartAcceptingConnections();
 
     // Run the normal media playback test.
-    EXPECT_EQ(media::kEnded, RunTest(player_url, media::kEnded));
+    EXPECT_EQ(media::kEndedTitle, RunTest(player_url, media::kEndedTitle));
   }
 
   std::unique_ptr<net::test_server::HttpResponse> RedirectResponseHandler(
@@ -44,7 +44,7 @@ class MediaRedirectTest : public MediaBrowserTest {
       const net::test_server::HttpRequest& request) {
     if (!base::StartsWith(request.relative_url, "/" + kHiddenPath,
                           base::CompareCase::SENSITIVE)) {
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
 
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(MediaRedirectTest, CanPlayHiddenWebm) {
   RunRedirectTest("bear.webm");
 }
 
-#if defined(OS_ANDROID) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 // Flaky, see http://crbug.com/624005
 IN_PROC_BROWSER_TEST_F(MediaRedirectTest, DISABLED_CanPlayHiddenHls) {
   RunRedirectTest("bear.m3u8");

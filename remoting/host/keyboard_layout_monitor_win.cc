@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,8 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_local.h"
 #include "base/timer/timer.h"
@@ -34,8 +31,7 @@ namespace remoting {
 
 namespace {
 
-constexpr base::TimeDelta POLL_INTERVAL =
-    base::TimeDelta::FromMilliseconds(1000);
+constexpr base::TimeDelta POLL_INTERVAL = base::Milliseconds(1000);
 // If second is equivalent to first (generates the same functions/characters at
 // all shift levels), second will be removed from the map.
 constexpr std::pair<ui::DomCode, ui::DomCode> POSSIBLE_EQUIVALENTS[] = {
@@ -257,7 +253,7 @@ void KeyboardLayoutMonitorWin::QueryLayoutOnInputThread(
       // scancode into whatever format ToUnicodeEx expects, passing 0 seems to
       // work just fine.
       int size = ToUnicodeEx(translated_key, 0, key_state, char_buffer,
-                             base::size(char_buffer), 0, layout);
+                             std::size(char_buffer), 0, layout);
       if (size < 0) {
         // We don't handle dead keys specially for the layout, but we do
         // need to clear them from the system keyboard state.
@@ -385,7 +381,7 @@ void ClearDeadKeys(HKL layout) {
   WCHAR char_buffer[16];
   ToUnicodeEx(VK_SPACE,
               ui::KeycodeConverter::DomCodeToNativeKeycode(ui::DomCode::SPACE),
-              key_state, char_buffer, base::size(char_buffer), 0, layout);
+              key_state, char_buffer, std::size(char_buffer), 0, layout);
 }
 
 bool IsNumpadKey(ui::DomCode code) {

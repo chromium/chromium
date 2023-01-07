@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,5 +23,6 @@ typedef (double or CSSNumericValue) CSSNumberish;
   CSSNumericType type();
 
   // Putting Exposed=Window in the next line makes |parse| not exposed to PaintWorklet.
-  [RaisesException, NewObject, Exposed=Window] static CSSNumericValue parse(CSSOMString cssText);
+  [RaisesException, NewObject, Exposed=Window, CallWith=ExecutionContext]
+  static CSSNumericValue parse(CSSOMString cssText);
 };

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,13 @@ static const CGFloat kLabelViewsPaddingTrailing = 10;
 
   _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  _titleLabel.font = [MDCTypography boldFontFromFont:MDCTypography.subheadFont];
+  UIFont* subheadFont = MDCTypography.subheadFont;
+  UIFontDescriptor* subheadFontDescriptor = [subheadFont.fontDescriptor
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  subheadFontDescriptor = subheadFontDescriptor ?: subheadFont.fontDescriptor;
+  UIFont* boldSubheadFont = [UIFont fontWithDescriptor:subheadFontDescriptor
+                                                  size:subheadFont.pointSize];
+  _titleLabel.font = boldSubheadFont;
   _titleLabel.textColor = RemotingTheme.menuTextColor;
   _titleLabel.numberOfLines = 1;
   [self addSubview:_titleLabel];

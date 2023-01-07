@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<!--Test page for a web site with manifest but without service worker. -->
+<head>
+  <title>Site No Service Worker</title>
+  <link rel="icon" href="basic-48.png">
+  <script src="/webapps_integration/test_utils.js"></script>
+  <script>
+    // If a "manifest=/path/to/manifest.json" query argument is provided to
+    // the URL accessing this page, that path is injected as the manifest tag.
+    addManifestLinkTag("manifest_no_service_worker.json");
+  </script>
+</head>
+  <h1>Site No Service Worker</h1>
+</body>
+</html>

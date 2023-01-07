@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 
 class PrefRegistrySimple;
@@ -31,10 +32,20 @@ class UserImageSyncObserver;
 // There is an instance of this class for each user in the system.
 class UserImageManager {
  public:
+  // The name of the histogram that records when a user changes a device image.
+  inline static constexpr char kUserImageChangedHistogramName[] =
+      "UserImage.Changed2";
+
+  // Converts `image_index` to UMA histogram value.
+  static int ImageIndexToHistogramIndex(int image_index);
+
+  // See histogram values in default_user_images.cc
+  static void RecordUserImageChanged(int histogram_value);
+
   // Registers user image manager preferences.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  explicit UserImageManager(const std::string& user_id);
+  explicit UserImageManager(const AccountId& account_id);
   virtual ~UserImageManager();
 
   // Loads user image data from Local State.
@@ -86,6 +97,10 @@ class UserImageManager {
   // Also cancels any profile image download in progress.
   virtual void Shutdown() = 0;
 
+  // Returns true if the user image for the user is managed by
+  // policy and the user is not allowed to change it.
+  virtual bool IsUserImageManaged() const = 0;
+
   // Invoked when an external data reference is set for the user.
   virtual void OnExternalDataSet(const std::string& policy) = 0;
 
@@ -101,11 +116,9 @@ class UserImageManager {
                                      std::unique_ptr<std::string> data) = 0;
 
  protected:
-  const std::string& user_id() const { return user_id_; }
-
   // ID of user which images are managed by current instance of
   // UserImageManager.
-  const std::string user_id_;
+  const AccountId account_id_;
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/win/core_winrt_util.h"
 
 namespace ABI {
@@ -61,8 +62,7 @@ class ShowShareUIForWindowOperation {
   void Run(DataRequestedCallback data_requested_callback);
 
  private:
-  static constexpr base::TimeDelta kMaxExecutionTime =
-      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kMaxExecutionTime = base::Seconds(30);
 
   void Cancel();
   void OnDataRequested(

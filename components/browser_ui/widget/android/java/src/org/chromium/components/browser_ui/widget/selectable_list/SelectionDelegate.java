@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@ package org.chromium.components.browser_ui.widget.selectable_list;
 import org.chromium.base.ObserverList;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,7 +36,7 @@ public class SelectionDelegate<E> {
         void onSelectionStateChange(List<E> selectedItems);
     }
 
-    private Set<E> mSelectedItems = new HashSet<>();
+    private Set<E> mSelectedItems = new LinkedHashSet<>();
     private ObserverList<SelectionObserver<E>> mObservers = new ObserverList<>();
 
     /**

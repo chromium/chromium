@@ -1,0 +1,49 @@
+arc_support: When multiple users are logged in, only the primary user can use Android
+  apps.
+caption: Control the user behavior in a multiprofile session
+default_for_enterprise_users: primary-only
+desc: |-
+  Control the user behavior in a multiprofile session on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> devices.
+
+        If this policy is set to 'MultiProfileUserBehaviorUnrestricted', the user can be either primary or secondary user in a multiprofile session.
+
+        If this policy is set to 'MultiProfileUserBehaviorMustBePrimary', the user can only be the primary user in a multiprofile session.
+
+        If this policy is set to 'MultiProfileUserBehaviorNotAllowed', the user cannot be part of a multiprofile session.
+
+        If you set this setting, users cannot change or override it.
+
+        If the setting is changed while the user is signed into a multiprofile session, all users in the session will be checked against their corresponding settings. The session will be closed if any one of the users is no longer allowed to be in the session.
+
+        If the policy is left not set, the default value 'MultiProfileUserBehaviorMustBePrimary' applies for enterprise-managed users and 'MultiProfileUserBehaviorUnrestricted' will be used for non-managed users.
+example_value: unrestricted
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow enterprise user to be both primary and secondary  (Default behavior
+    for non-managed users)
+  name: MultiProfileUserBehaviorUnrestricted
+  value: unrestricted
+- caption: Allow enterprise user to be primary multiprofile user only (Default behavior
+    for enterprise-managed users)
+  name: MultiProfileUserBehaviorMustBePrimary
+  value: primary-only
+- caption: Do not allow enterprise user to be part of multiprofile (primary or secondary)
+  name: MultiProfileUserBehaviorNotAllowed
+  value: not-allowed
+owners:
+- xiyuan@chromium.org
+- sinhak@chromium.org
+- rsorokin@chromium.org
+- cros-oac@google.com
+schema:
+  enum:
+  - unrestricted
+  - primary-only
+  - not-allowed
+  type: string
+supported_on:
+- chrome_os:31-
+tags: []
+type: string-enum

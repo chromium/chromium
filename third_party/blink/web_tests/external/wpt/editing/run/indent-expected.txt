@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1301 tests; 1175 PASS, 126 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1321 tests; 1195 PASS, 126 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["indent",""]] "foo[]bar<p>extra": execCommand("indent", false, "") return value
 PASS [["indent",""]] "foo[]bar<p>extra" checks for modifications to non-editable content
 FAIL [["indent",""]] "foo[]bar<p>extra" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<blockquote>foobar</blockquote><p>extra</p>" but got "<blockquote style=\"margin:0 0 0 40px; border:none; padding:0px\">foobar</blockquote><p>extra</p>"
@@ -1301,5 +1301,25 @@ PASS [["indent",""]] "<ul><li>a<br>{<br>}</li><li>b</li></ul>" queryCommandValue
 PASS [["indent",""]] "<ul><li>a<br>{<br>}</li><li>b</li></ul>" queryCommandIndeterm("indent") after
 PASS [["indent",""]] "<ul><li>a<br>{<br>}</li><li>b</li></ul>" queryCommandState("indent") after
 PASS [["indent",""]] "<ul><li>a<br>{<br>}</li><li>b</li></ul>" queryCommandValue("indent") after
+PASS [["stylewithcss","true"],["indent",""]] "<p>[abc]</p>": execCommand("stylewithcss", false, "true") return value
+PASS [["stylewithcss","true"],["indent",""]] "<p>[abc]</p>": execCommand("indent", false, "") return value
+PASS [["stylewithcss","true"],["indent",""]] "<p>[abc]</p>" checks for modifications to non-editable content
+PASS [["stylewithcss","true"],["indent",""]] "<p>[abc]</p>" compare innerHTML
+PASS [["stylewithcss","true"],["indent",""]] "<p>[abc]</p>" queryCommandIndeterm("indent") before
+PASS [["stylewithcss","true"],["indent",""]] "<p>[abc]</p>" queryCommandState("indent") before
+PASS [["stylewithcss","true"],["indent",""]] "<p>[abc]</p>" queryCommandValue("indent") before
+PASS [["stylewithcss","true"],["indent",""]] "<p>[abc]</p>" queryCommandIndeterm("indent") after
+PASS [["stylewithcss","true"],["indent",""]] "<p>[abc]</p>" queryCommandState("indent") after
+PASS [["stylewithcss","true"],["indent",""]] "<p>[abc]</p>" queryCommandValue("indent") after
+PASS [["stylewithcss","true"],["indent",""]] "<div contenteditable=false><div contenteditable>[abc]</div></div>": execCommand("stylewithcss", false, "true") return value
+PASS [["stylewithcss","true"],["indent",""]] "<div contenteditable=false><div contenteditable>[abc]</div></div>": execCommand("indent", false, "") return value
+PASS [["stylewithcss","true"],["indent",""]] "<div contenteditable=false><div contenteditable>[abc]</div></div>" checks for modifications to non-editable content
+PASS [["stylewithcss","true"],["indent",""]] "<div contenteditable=false><div contenteditable>[abc]</div></div>" compare innerHTML
+PASS [["stylewithcss","true"],["indent",""]] "<div contenteditable=false><div contenteditable>[abc]</div></div>" queryCommandIndeterm("indent") before
+PASS [["stylewithcss","true"],["indent",""]] "<div contenteditable=false><div contenteditable>[abc]</div></div>" queryCommandState("indent") before
+PASS [["stylewithcss","true"],["indent",""]] "<div contenteditable=false><div contenteditable>[abc]</div></div>" queryCommandValue("indent") before
+PASS [["stylewithcss","true"],["indent",""]] "<div contenteditable=false><div contenteditable>[abc]</div></div>" queryCommandIndeterm("indent") after
+PASS [["stylewithcss","true"],["indent",""]] "<div contenteditable=false><div contenteditable>[abc]</div></div>" queryCommandState("indent") after
+PASS [["stylewithcss","true"],["indent",""]] "<div contenteditable=false><div contenteditable>[abc]</div></div>" queryCommandValue("indent") after
 Harness: the test ran to completion.
 

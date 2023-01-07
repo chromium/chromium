@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+      <message name="IDS_CLOSE_TUTORIAL" desc="Accessible name used by a screen reader for the tutorial bubble close button." is_accessibility_with_no_ui="true">
+        Close tutorial
+      </message>
+      <message name="IDS_CLOSE_PROMO" desc="Accessible name used by a screen reader for the in-product-help bubble close button." is_accessibility_with_no_ui="true">
+        Close help bubble
+      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_PROMO_DISMISS_BUTTON" desc="Text shown on the button for the user to acknowledge that they understand the message">
+          Got It
+        </message>
+        <message name="IDS_PROMO_SNOOZE_BUTTON" desc="Text shown on the button to snooze a promotional UI, which indicates that users want to see this promotion at a later time">
+          Remind Me Later
+        </message>
+        <message name="IDS_PROMO_SHOW_TUTORIAL_BUTTON" desc="Text shown on a promo bubble button for the user to initiate a tutorial after being asked if they want to learn more.">
+          Show Me How
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_PROMO_DISMISS_BUTTON" desc="Text shown on the button for the user to acknowledge that they understand the message">
+          Got it
+        </message>
+        <message name="IDS_PROMO_SNOOZE_BUTTON" desc="Text shown on the button to snooze a promotional UI, which indicates that users want to see this promotion at a later time">
+          Remind me later
+        </message>
+        <message name="IDS_PROMO_SHOW_TUTORIAL_BUTTON" desc="Text shown on a promo bubble button for the user to initiate a tutorial after being asked if they want to learn more.">
+          Show me how
+        </message>
+      </if>
+      <!-- Strings associated with help bubbles, IPH, and other promos. -->
+      <message name="IDS_TUTORIAL_RESTART_TUTORIAL" desc="The text shown on the button for restarting a tutorial">
+        Restart tutorial
+      </message>
+      <message name="IDS_TUTORIAL_CLOSE_TUTORIAL" desc="The text shown on the button for closing a tutorial">
+        Close
+      </message>
+
+</grit-part>

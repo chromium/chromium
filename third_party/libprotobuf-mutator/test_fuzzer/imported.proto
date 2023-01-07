@@ -1,0 +1,17 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Ensure imported files are handled properly. This file is imported by
+// test_fuzzer_input.proto and imports imported_publicly publicly.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+package lpm_test_fuzzer;
+
+// Test public imported files are handled properly.
+import public "imported_publicly.proto";
+
+message Imported {
+  required ImportedPublicly imported_publicly = 1;
+}

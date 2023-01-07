@@ -29,7 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_CONTEXT_STATE_SAVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GRAPHICS_CONTEXT_STATE_SAVER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -46,6 +45,10 @@ class PLATFORM_EXPORT GraphicsContextStateSaver final {
     if (save_and_restore_)
       context_.Save();
   }
+
+  GraphicsContextStateSaver(const GraphicsContextStateSaver&) = delete;
+  GraphicsContextStateSaver& operator=(const GraphicsContextStateSaver&) =
+      delete;
 
   ~GraphicsContextStateSaver() {
     if (save_and_restore_)
@@ -76,8 +79,6 @@ class PLATFORM_EXPORT GraphicsContextStateSaver final {
  private:
   GraphicsContext& context_;
   bool save_and_restore_;
-
-  DISALLOW_COPY_AND_ASSIGN(GraphicsContextStateSaver);
 };
 
 }  // namespace blink

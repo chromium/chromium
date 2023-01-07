@@ -1,11 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
+<translation id="1220509181886849806">सेव किया गया पासवर्ड इस्तेमाल करें?</translation>
 <translation id="1717486229951421299">टच करके भरी जाने वाली क्रेडेंशियल की सूची आधी स्क्रीन में खुली हुई है.</translation>
 <translation id="207576718733492531">टच करके भरी जाने वाली क्रेडेंशियल की सूची बंद है.</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2410754283952462441">कोई खाता चुनें</translation>
 <translation id="3399357656427473483">टच करके भरी जाने वाली क्रेडेंशियल की सूची.</translation>
+<translation id="3653689374478248324">आपको <ph name="SITE_NAME" /> में साइन इन किया जाएगा</translation>
+<translation id="3950820424414687140">साइन इन करें</translation>
+<translation id="4598345735110653698">पासवर्ड मैनेज करें</translation>
+<translation id="4907224763885298217">अपने स्क्रीन लॉक का इस्तेमाल करें</translation>
 <translation id="5441504010984421144">टच करके भरी जाने वाली क्रेडेंशियल की सूची पूरी स्क्रीन में खुली हुई है.</translation>
 <translation id="5624120631404540903">पासवर्ड प्रबंधित करें</translation>
 <translation id="804577341878669140">खाते के साथ जारी रखें</translation>

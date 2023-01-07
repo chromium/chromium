@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_VIZ_PRIVILEGED_CPP_CONTEXT_LOST_REASON_TRAITS_H_
 #define SERVICES_VIZ_PRIVILEGED_CPP_CONTEXT_LOST_REASON_TRAITS_H_
 
+#include "base/notreached.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "services/viz/privileged/mojom/gl/context_lost_reason.mojom-shared.h"
 

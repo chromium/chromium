@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,14 +17,14 @@ export const TutorialBehavior = {
     curriculum: {
       type: String,
       value: Curriculum.NONE,
-      observer: 'updateIncludedLessons_'
+      observer: 'updateIncludedLessons_',
     },
 
     /** @type {InteractionMedium} */
     medium: {
       type: String,
-      value: InteractionMedium.KEYBOARD,
-      observer: 'updateIncludedLessons_'
+      value: InteractionMedium.NONE,
+      observer: 'updateIncludedLessons_',
     },
 
     /**
@@ -55,7 +55,7 @@ export const TutorialBehavior = {
     activeLessonId: {
       type: Number,
       value: NO_ACTIVE_LESSON,
-      observer: 'onActiveLessonIdChanged_'
+      observer: 'onActiveLessonIdChanged_',
     },
 
     /** @type {Screen} */
@@ -91,7 +91,8 @@ export const TutorialBehavior = {
    * needs to be performed when the tutorial is shown.
    */
   show() {
-    if (this.curriculum === Curriculum.QUICK_ORIENTATION) {
+    if (this.curriculum === Curriculum.QUICK_ORIENTATION ||
+        this.curriculum === Curriculum.TOUCH_ORIENTATION) {
       // If opening the tutorial from the OOBE, automatically show the first
       // lesson.
       this.updateIncludedLessons_();
@@ -152,7 +153,7 @@ export const TutorialBehavior = {
       ret.push({
         title: this.lessonData[i].title,
         curriculums: this.lessonData[i].curriculums,
-        lessonId: i
+        lessonId: i,
       });
     }
     return ret;
@@ -268,5 +269,5 @@ export const TutorialBehavior = {
   onActiveLessonIdChanged_() {},
 
   /** @private */
-  onTutorialVisibilityChanged_() {}
+  onTutorialVisibilityChanged_() {},
 };

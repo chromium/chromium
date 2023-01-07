@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,8 +88,12 @@ class AbstractLineBox {
                            : AbstractLineBox();
     }
     NGInlineCursor previous_line = cursor_;
-    previous_line.MoveToPreviousLine();
-    return previous_line ? AbstractLineBox(previous_line) : AbstractLineBox();
+    do {
+      previous_line.MoveToPreviousIncludingFragmentainer();
+    } while (previous_line && !previous_line.Current().IsLineBox());
+    if (!previous_line || previous_line.Current()->IsBlockInInline())
+      return AbstractLineBox();
+    return AbstractLineBox(previous_line);
   }
 
   AbstractLineBox NextLine() const {
@@ -99,8 +103,12 @@ class AbstractLineBox {
       return next_root ? AbstractLineBox(*next_root) : AbstractLineBox();
     }
     NGInlineCursor next_line = cursor_;
-    next_line.MoveToNextLine();
-    return next_line ? AbstractLineBox(next_line) : AbstractLineBox();
+    do {
+      next_line.MoveToNextIncludingFragmentainer();
+    } while (next_line && !next_line.Current().IsLineBox());
+    if (!next_line || next_line.Current()->IsBlockInInline())
+      return AbstractLineBox();
+    return AbstractLineBox(next_line);
   }
 
   PhysicalOffset AbsoluteLineDirectionPointToLocalPointInBlock(
@@ -110,10 +118,8 @@ class AbstractLineBox {
     // TODO(yosin): Is kIgnoreTransforms correct here?
     PhysicalOffset absolute_block_point = containing_block.LocalToAbsolutePoint(
         PhysicalOffset(), kIgnoreTransforms);
-    if (containing_block.IsScrollContainer()) {
-      absolute_block_point -=
-          PhysicalOffset(containing_block.ScrolledContentOffset());
-    }
+    if (containing_block.IsScrollContainer())
+      absolute_block_point -= containing_block.ScrolledContentOffset();
 
     if (containing_block.IsHorizontalWritingMode()) {
       return PhysicalOffset(line_direction_point - absolute_block_point.left,
@@ -188,7 +194,7 @@ class AbstractLineBox {
     const LayoutObject* const layout_object =
         cursor.Current().GetLayoutObject();
     return layout_object && layout_object->GetNode() &&
-           HasEditableStyle(*layout_object->GetNode());
+           blink::IsEditable(*layout_object->GetNode());
   }
 
   static PositionInFlatTreeWithAffinity PositionForPoint(
@@ -335,10 +341,10 @@ Node* NextAtomicLeafNode(const Node& start) {
 }
 
 Node* PreviousLeafWithSameEditability(const Node& node) {
-  const bool editable = HasEditableStyle(node);
+  const bool editable = IsEditable(node);
   for (Node* runner = PreviousAtomicLeafNode(node); runner;
        runner = PreviousAtomicLeafNode(*runner)) {
-    if (editable == HasEditableStyle(*runner))
+    if (editable == IsEditable(*runner))
       return runner;
   }
   return nullptr;
@@ -350,7 +356,7 @@ Node* NextLeafWithGivenEditability(Node* node, bool editable) {
 
   for (Node* runner = NextAtomicLeafNode(*node); runner;
        runner = NextAtomicLeafNode(*runner)) {
-    if (editable == HasEditableStyle(*runner))
+    if (editable == IsEditable(*runner))
       return runner;
   }
   return nullptr;
@@ -404,7 +410,7 @@ PositionInFlatTree NextRootInlineBoxCandidatePosition(
   // TODO(xiaochengh): We probably also need to pass in the starting editability
   // to |PreviousLeafWithSameEditability|.
   const bool is_editable =
-      HasEditableStyle(*position.GetPosition().ComputeContainerNode());
+      IsEditable(*position.GetPosition().ComputeContainerNode());
   Node* next_node = NextLeafWithGivenEditability(node, is_editable);
   while (next_node && InSameLine(*next_node, position)) {
     next_node = NextLeafWithGivenEditability(next_node, is_editable);
@@ -484,7 +490,7 @@ PositionInFlatTreeWithAffinity SelectionModifier::PreviousLinePosition(
   // Could not find a previous line. This means we must already be on the first
   // line. Move to the start of the content in this block, which effectively
   // moves us to the start of the line we're on.
-  Element* root_element = HasEditableStyle(*node)
+  Element* root_element = IsEditable(*node)
                               ? RootEditableElement(*node)
                               : node->GetDocument().documentElement();
   if (!root_element)
@@ -556,7 +562,7 @@ PositionInFlatTreeWithAffinity SelectionModifier::NextLinePosition(
   // Could not find a next line. This means we must already be on the last line.
   // Move to the end of the content in this block, which effectively moves us
   // to the end of the line we're on.
-  Element* root_element = HasEditableStyle(*node)
+  Element* root_element = IsEditable(*node)
                               ? RootEditableElement(*node)
                               : node->GetDocument().documentElement();
   if (!root_element)

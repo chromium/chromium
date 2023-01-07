@@ -8,16 +8,15 @@
 <div id="parent"></div>
 
 <script>
-const hostChildren = 100;
-
-let host;
+const hostChildren = 500;
+const host = createHostTreeWithDeepComponentChild(hostChildren);
+document.querySelector('#parent').appendChild(host);
+for (let i = 0; i < hostChildren; ++i) {
+  host.children[i].id = i;
+}
 
 PerfTestRunner.measureTime({
-  description: `Measure distribution for a disconnected and a reconnected tree`,
-  setup: () => {
-    host = createHostTreeWithDeepComponentChild(hostChildren);
-    document.querySelector('#parent').appendChild(host);
-  },
+  description: `Ensure slot assignment doesn't run for a disconnected and reconnected tree`,
   run: () => {
     for (let i = 0; i < hostChildren; ++i) {
       const firstChild = host.firstChild;
@@ -26,10 +25,8 @@ PerfTestRunner.measureTime({
       host.appendChild(firstChild);
       firstChild.shadowRoot.querySelector('slot').assignedNodes();
     }
+    PerfTestRunner.assert_true(host.firstChild.id === "0", 'The test loop should end as it started');
   },
-  teardown: () => {
-    host.remove();
-  }
 });
 </script>
 </body>

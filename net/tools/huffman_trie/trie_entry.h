@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,7 @@
 #include <string>
 #include <vector>
 
-namespace net {
-
-namespace huffman_trie {
+namespace net::huffman_trie {
 
 class TrieBitBuffer;
 
@@ -42,8 +40,6 @@ struct ReversedEntry {
 
 using ReversedEntries = std::vector<std::unique_ptr<ReversedEntry>>;
 
-}  // namespace huffman_trie
-
-}  // namespace net
+}  // namespace net::huffman_trie
 
 #endif  // NET_TOOLS_HUFFMAN_TRIE_TRIE_ENTRY_H_

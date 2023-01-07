@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 class GURL;
@@ -29,6 +28,10 @@ class UrlListManager {
   };
 
   UrlListManager();
+
+  UrlListManager(const UrlListManager&) = delete;
+  UrlListManager& operator=(const UrlListManager&) = delete;
+
   ~UrlListManager();
 
   void AddObserver(Observer* observer);
@@ -38,8 +41,6 @@ class UrlListManager {
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(UrlListManager);
 };
 
 }  // namespace blocked_content

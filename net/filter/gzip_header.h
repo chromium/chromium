@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,9 @@
 #ifndef NET_FILTER_GZIP_HEADER_H_
 #define NET_FILTER_GZIP_HEADER_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -31,6 +31,10 @@ class NET_EXPORT GZipHeader {
   };
 
   GZipHeader();
+
+  GZipHeader(const GZipHeader&) = delete;
+  GZipHeader& operator=(const GZipHeader&) = delete;
+
   ~GZipHeader();
 
   // Wipe the slate clean and start from scratch.
@@ -43,9 +47,8 @@ class NET_EXPORT GZipHeader {
   // gzip header, return INVALID_HEADER. When we've seen a complete
   // gzip header, return COMPLETE_HEADER and set the pointer pointed
   // to by header_end to the first byte beyond the gzip header.
-  Status ReadMore(const char* inbuf,
-                  int inbuf_len,
-                  const char** header_end);
+  Status ReadMore(const char* inbuf, size_t inbuf_len, const char** header_end);
+
  private:
   enum {                       // flags (see RFC)
     FLAG_FTEXT        = 0x01,  // bit 0 set: file probably ascii text
@@ -88,8 +91,6 @@ class NET_EXPORT GZipHeader {
   int    state_;  // our current State in the parsing FSM: an int so we can ++
   uint8_t flags_;  // the flags byte of the header ("FLG" in the RFC)
   uint16_t extra_length_;  // how much of the "extra field" we have yet to read
-
-  DISALLOW_COPY_AND_ASSIGN(GZipHeader);
 };
 
 }  // namespace net

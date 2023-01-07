@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "net/proxy_resolution/proxy_bypass_rules.h"
 
 ProxyBrowserTest::ProxyBrowserTest()
     : proxy_server_(net::SpawnedTestServer::TYPE_BASIC_AUTH_PROXY,

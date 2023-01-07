@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,11 +17,16 @@ namespace ui {
 ui::Accelerator GetAcceleratorFromNativeWebKeyboardEvent(
     const content::NativeWebKeyboardEvent& event) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (::features::IsNewShortcutMappingEnabled()) {
+  if (::features::IsNewShortcutMappingEnabled() ||
+      ::features::IsImprovedKeyboardShortcutsEnabled()) {
     // TODO: This must be the same as below and it's simpler.
     // Cleanup if this change sticks.
     auto* os_event = static_cast<ui::KeyEvent*>(event.os_event);
-    return ui::Accelerator(*os_event);
+
+    // If there is no |os_event| fall through to the default code path.
+    // This can occur when keys are injected from dev tools.
+    if (os_event)
+      return ui::Accelerator(*os_event);
   }
 #endif
   Accelerator::KeyState key_state =

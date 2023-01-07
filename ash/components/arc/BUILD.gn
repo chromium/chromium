@@ -1,0 +1,497 @@
+# Copyright 2015 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("arc") {
+  sources = [
+    "appfuse/arc_appfuse_bridge.cc",
+    "appfuse/arc_appfuse_bridge.h",
+    "audio/arc_audio_bridge.cc",
+    "audio/arc_audio_bridge.h",
+    "bluetooth/bluetooth_type_converters.cc",
+    "bluetooth/bluetooth_type_converters.h",
+    "camera/arc_camera_bridge.cc",
+    "camera/arc_camera_bridge.h",
+    "clipboard/arc_clipboard_bridge.cc",
+    "clipboard/arc_clipboard_bridge.h",
+    "compat_mode/arc_resize_lock_manager.cc",
+    "compat_mode/arc_resize_lock_manager.h",
+    "compat_mode/arc_resize_lock_pref_delegate.h",
+    "compat_mode/arc_splash_screen_dialog_view.cc",
+    "compat_mode/arc_splash_screen_dialog_view.h",
+    "compat_mode/arc_window_property_util.cc",
+    "compat_mode/arc_window_property_util.h",
+    "compat_mode/compat_mode_button.cc",
+    "compat_mode/compat_mode_button.h",
+    "compat_mode/compat_mode_button_controller.cc",
+    "compat_mode/compat_mode_button_controller.h",
+    "compat_mode/metrics.cc",
+    "compat_mode/metrics.h",
+    "compat_mode/overlay_dialog.cc",
+    "compat_mode/overlay_dialog.h",
+    "compat_mode/resize_confirmation_dialog_view.cc",
+    "compat_mode/resize_confirmation_dialog_view.h",
+    "compat_mode/resize_toggle_menu.cc",
+    "compat_mode/resize_toggle_menu.h",
+    "compat_mode/resize_util.cc",
+    "compat_mode/resize_util.h",
+    "compat_mode/style/arc_color_provider.cc",
+    "compat_mode/style/arc_color_provider.h",
+    "compat_mode/touch_mode_mouse_rewriter.cc",
+    "compat_mode/touch_mode_mouse_rewriter.h",
+    "crash_collector/arc_crash_collector_bridge.cc",
+    "crash_collector/arc_crash_collector_bridge.h",
+    "disk_quota/arc_disk_quota_bridge.cc",
+    "disk_quota/arc_disk_quota_bridge.h",
+    "ime/arc_ime_bridge.h",
+    "ime/arc_ime_bridge_impl.cc",
+    "ime/arc_ime_bridge_impl.h",
+    "ime/arc_ime_service.cc",
+    "ime/arc_ime_service.h",
+    "ime/arc_ime_util.cc",
+    "ime/arc_ime_util.h",
+    "ime/key_event_result_receiver.cc",
+    "ime/key_event_result_receiver.h",
+    "keyboard_shortcut/arc_keyboard_shortcut_bridge.cc",
+    "keyboard_shortcut/arc_keyboard_shortcut_bridge.h",
+    "lock_screen/arc_lock_screen_bridge.cc",
+    "lock_screen/arc_lock_screen_bridge.h",
+    "memory/arc_memory_bridge.cc",
+    "memory/arc_memory_bridge.h",
+    "memory_pressure/arc_memory_pressure_bridge.cc",
+    "memory_pressure/arc_memory_pressure_bridge.h",
+    "metrics/arc_metrics_anr.cc",
+    "metrics/arc_metrics_anr.h",
+    "metrics/arc_metrics_service.cc",
+    "metrics/arc_metrics_service.h",
+    "metrics/stability_metrics_manager.cc",
+    "metrics/stability_metrics_manager.h",
+    "midis/arc_midis_bridge.cc",
+    "midis/arc_midis_bridge.h",
+    "net/always_on_vpn_manager.cc",
+    "net/always_on_vpn_manager.h",
+    "net/arc_net_host_impl.cc",
+    "net/arc_net_host_impl.h",
+    "net/cert_manager.h",
+    "obb_mounter/arc_obb_mounter_bridge.cc",
+    "obb_mounter/arc_obb_mounter_bridge.h",
+    "pay/arc_digital_goods_bridge.cc",
+    "pay/arc_digital_goods_bridge.h",
+    "pay/arc_payment_app_bridge.cc",
+    "pay/arc_payment_app_bridge.h",
+    "power/arc_power_bridge.cc",
+    "power/arc_power_bridge.h",
+    "property/arc_property_bridge.cc",
+    "property/arc_property_bridge.h",
+    "rotation_lock/arc_rotation_lock_bridge.cc",
+    "rotation_lock/arc_rotation_lock_bridge.h",
+    "sensor/arc_iio_sensor_bridge.cc",
+    "sensor/arc_iio_sensor_bridge.h",
+    "sensor/arc_sensor_bridge.cc",
+    "sensor/arc_sensor_bridge.h",
+    "storage_manager/arc_storage_manager.cc",
+    "storage_manager/arc_storage_manager.h",
+    "system_ui/arc_system_ui_bridge.cc",
+    "system_ui/arc_system_ui_bridge.h",
+    "timer/arc_timer_bridge.cc",
+    "timer/arc_timer_bridge.h",
+    "usb/usb_host_bridge.cc",
+    "usb/usb_host_bridge.h",
+    "usb/usb_host_ui_delegate.h",
+    "volume_mounter/arc_volume_mounter_bridge.cc",
+    "volume_mounter/arc_volume_mounter_bridge.h",
+    "wake_lock/arc_wake_lock_bridge.cc",
+    "wake_lock/arc_wake_lock_bridge.h",
+  ]
+
+  public_deps = [
+    ":arc_base",
+    ":arc_metrics_constants",
+    ":prefs",
+    "//chromeos/ash/components/cryptohome",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc/vector_icons",
+    "//ash/keyboard/ui",
+    "//ash/public/cpp",
+    "//ash/public/cpp/external_arc:external_arc",
+    "//ash/style",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/arc",
+    "//chromeos/ash/components/dbus/arc:arc_proto",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
+    "//chromeos/ash/components/dbus/cryptohome",
+    "//chromeos/ash/components/dbus/patchpanel",
+    "//chromeos/ash/components/dbus/patchpanel:patchpanel_proto",
+    "//chromeos/ash/components/dbus/resourced",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/dbus/spaced:spaced",
+    "//chromeos/ash/components/dbus/upstart:upstart",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/network",
+    "//chromeos/components/disks:prefs",
+    "//chromeos/components/sensors:sensors",
+    "//chromeos/dbus/permission_broker",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/login/login_state",
+    "//chromeos/ui/frame",
+    "//components/device_event_log",
+    "//components/exo",
+    "//components/guest_os",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/session_manager/core",
+
+    # TODO(b/208907272): Move (maybe split) components_strings to ash.
+    "//components/strings:components_strings_grit",
+    "//components/user_prefs",
+    "//content/public/browser",
+    "//media/capture:capture_lib",
+    "//third_party/re2",
+    "//ui/base/ime/ash",
+    "//ui/chromeos/strings",
+    "//ui/chromeos/styles:cros_styles_views",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/display/manager",
+    "//ui/display/util",
+    "//ui/events/ozone",
+    "//ui/wm/public",
+  ]
+
+  # Enable VLOG(1).
+  defines = [ "ENABLED_VLOG_LEVEL=1" ]
+}
+
+static_library("prefs") {
+  sources = [
+    "arc_export.h",
+    "arc_prefs.cc",
+    "arc_prefs.h",
+  ]
+
+  defines = [ "ARC_IMPLEMENTATION" ]
+
+  deps = [
+    "//ash/components/arc/session:arc_base_enums",
+    "//build:chromeos_buildflags",
+    "//components/guest_os:prefs",
+    "//components/prefs",
+  ]
+}
+
+source_set("arc_features") {
+  sources = [
+    "arc_features.cc",
+    "arc_features.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+static_library("arc_base_utils") {
+  sources = [
+    "arc_util.cc",
+    "arc_util.h",
+  ]
+
+  public_deps = [ ":arc_features" ]
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
+    "//chromeos/ash/components/dbus/debug_daemon",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/upstart:upstart",
+    "//components/exo",
+    "//ui/aura",
+  ]
+}
+
+static_library("arc_base") {
+  # TODO(hidehiko): Revisit here and move back some files to "arc"
+  # on completion to move ArcSession task to ArcSessionManager.
+  sources = [
+    "arc_browser_context_keyed_service_factory_base.h",
+    "arc_features_parser.cc",
+    "arc_features_parser.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/account_id",
+    "//components/keyed_service/content",
+  ]
+
+  public_deps = [
+    ":arc_base_utils",
+    "//ash/components/arc/mojom",
+    "//ash/components/arc/session",
+    "//ash/components/arc/session:arc_base_enums",
+    "//ash/components/arc/session:connection_holder",
+    "//dbus",
+  ]
+}
+
+static_library("compat_mode_test_support") {
+  testonly = true
+  sources = [
+    "compat_mode/test/compat_mode_test_base.cc",
+    "compat_mode/test/compat_mode_test_base.h",
+  ]
+
+  deps = [
+    ":arc",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//ui/aura",
+    "//ui/display:test_support",
+    "//ui/events:test_support",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}
+
+static_library("notification_test_support") {
+  testonly = true
+  sources = [
+    "test/connection_holder_util.h",
+    "test/fake_notifications_instance.cc",
+    "test/fake_notifications_instance.h",
+  ]
+
+  public_deps = [
+    "//ash/components/arc/mojom:notifications",
+    "//ash/components/arc/session:connection_holder",
+  ]
+}
+
+static_library("arc_test_support") {
+  testonly = true
+  sources = [
+    "test/arc_payment_app_bridge_test_support.cc",
+    "test/arc_payment_app_bridge_test_support.h",
+    "test/arc_util_test_support.cc",
+    "test/arc_util_test_support.h",
+    "test/fake_accessibility_helper_instance.cc",
+    "test/fake_accessibility_helper_instance.h",
+    "test/fake_adbd_monitor_instance.cc",
+    "test/fake_adbd_monitor_instance.h",
+    "test/fake_app_host.cc",
+    "test/fake_app_host.h",
+    "test/fake_app_instance.cc",
+    "test/fake_app_instance.h",
+    "test/fake_apps_tracker.cc",
+    "test/fake_apps_tracker.h",
+    "test/fake_arc_bridge_host.cc",
+    "test/fake_arc_bridge_host.h",
+    "test/fake_arc_session.cc",
+    "test/fake_arc_session.h",
+    "test/fake_backup_settings_instance.cc",
+    "test/fake_backup_settings_instance.h",
+    "test/fake_bluetooth_instance.cc",
+    "test/fake_bluetooth_instance.h",
+    "test/fake_clipboard_instance.cc",
+    "test/fake_clipboard_instance.h",
+    "test/fake_file_system_instance.cc",
+    "test/fake_file_system_instance.h",
+    "test/fake_iio_sensor_instance.cc",
+    "test/fake_iio_sensor_instance.h",
+    "test/fake_lock_screen_instance.cc",
+    "test/fake_lock_screen_instance.h",
+    "test/fake_memory_instance.cc",
+    "test/fake_memory_instance.h",
+    "test/fake_nearby_share_instance.cc",
+    "test/fake_nearby_share_instance.h",
+    "test/fake_net_instance.cc",
+    "test/fake_net_instance.h",
+    "test/fake_pip_instance.cc",
+    "test/fake_pip_instance.h",
+    "test/fake_policy_instance.cc",
+    "test/fake_policy_instance.h",
+    "test/fake_power_instance.cc",
+    "test/fake_power_instance.h",
+    "test/fake_privacy_items_instance.cc",
+    "test/fake_privacy_items_instance.h",
+    "test/fake_process_instance.cc",
+    "test/fake_process_instance.h",
+    "test/fake_sharesheet_instance.cc",
+    "test/fake_sharesheet_instance.h",
+    "test/fake_snapshot_reboot_notification.cc",
+    "test/fake_snapshot_reboot_notification.h",
+    "test/fake_storage_manager_instance.cc",
+    "test/fake_storage_manager_instance.h",
+    "test/fake_system_ui_instance.cc",
+    "test/fake_system_ui_instance.h",
+    "test/fake_timer_instance.cc",
+    "test/fake_timer_instance.h",
+    "test/fake_tracing_instance.cc",
+    "test/fake_tracing_instance.h",
+    "test/fake_wake_lock_instance.cc",
+    "test/fake_wake_lock_instance.h",
+    "test/fake_wallpaper_instance.cc",
+    "test/fake_wallpaper_instance.h",
+    "test/fake_webapk_instance.cc",
+    "test/fake_webapk_instance.h",
+    "test/test_browser_context.cc",
+    "test/test_browser_context.h",
+  ]
+
+  data = [
+    "//ash/components/arc/test/data/icons/",
+    "//ash/components/arc/test/data/mem_profile/",
+  ]
+
+  public_deps = [
+    ":notification_test_support",
+    "//ash/components/arc:compat_mode_test_support",
+    "//components/arc:arc",
+  ]
+
+  deps = [
+    ":arc",
+    "//ash/components/arc/enterprise",
+    "//ash/constants",
+    "//base",
+    "//components/keyed_service/content",
+    "//components/prefs:test_support",
+    "//components/user_prefs",
+    "//content/test:test_support",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+  ]
+}
+
+source_set("arc_metrics_constants") {
+  sources = [ "metrics/arc_metrics_constants.h" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "appfuse/arc_appfuse_bridge_unittest.cc",
+    "arc_features_parser_unittest.cc",
+    "arc_util_unittest.cc",
+    "audio/arc_audio_bridge_unittest.cc",
+    "bluetooth/bluetooth_mojom_traits_unittest.cc",
+    "bluetooth/bluetooth_type_converters_unittest.cc",
+    "camera/arc_camera_bridge_unittest.cc",
+    "clipboard/arc_clipboard_bridge_unittest.cc",
+    "compat_mode/arc_resize_lock_manager_unittest.cc",
+    "compat_mode/arc_splash_screen_dialog_view_unittest.cc",
+    "compat_mode/compat_mode_button_controller_unittest.cc",
+    "compat_mode/compat_mode_button_unittest.cc",
+    "compat_mode/overlay_dialog_unittest.cc",
+    "compat_mode/resize_confirmation_dialog_view_unittest.cc",
+    "compat_mode/resize_toggle_menu_unittest.cc",
+    "compat_mode/resize_util_unittest.cc",
+    "compat_mode/touch_mode_mouse_rewriter_unittest.cc",
+    "crash_collector/arc_crash_collector_bridge_unittest.cc",
+    "enterprise/arc_data_remove_requested_pref_handler_unittest.cc",
+    "enterprise/arc_data_snapshotd_bridge_unittest.cc",
+    "enterprise/arc_data_snapshotd_manager_unittest.cc",
+    "enterprise/snapshot_hours_policy_service_unittest.cc",
+    "enterprise/snapshot_reboot_controller_unittest.cc",
+    "enterprise/snapshot_session_controller_unittest.cc",
+    "ime/arc_ime_service_unittest.cc",
+    "ime/key_event_result_receiver_unittest.cc",
+    "lock_screen/arc_lock_screen_bridge_unittest.cc",
+    "media_session/arc_media_session_bridge_unittest.cc",
+    "memory/arc_memory_bridge_unittest.cc",
+    "memory_pressure/arc_memory_pressure_bridge_unittest.cc",
+    "metrics/arc_metrics_anr_unittest.cc",
+    "metrics/arc_metrics_service_unittest.cc",
+    "metrics/stability_metrics_manager_unittest.cc",
+    "midis/arc_midis_bridge_unittest.cc",
+    "net/always_on_vpn_manager_unittest.cc",
+    "net/arc_net_host_impl_unittest.cc",
+    "pay/arc_payment_app_bridge_unittest.cc",
+    "power/arc_power_bridge_unittest.cc",
+    "property/arc_property_bridge_unittest.cc",
+    "rotation_lock/arc_rotation_lock_bridge_unittest.cc",
+    "sensor/arc_iio_sensor_bridge_unittest.cc",
+    "storage_manager/arc_storage_manager_unittest.cc",
+    "system_ui/arc_system_ui_bridge_unittest.cc",
+    "timer/arc_timer_bridge_unittest.cc",
+    "usb/usb_host_bridge_unittest.cc",
+    "video_accelerator/arc_video_accelerator_util_unittest.cc",
+    "volume_mounter/arc_volume_mounter_bridge_unittest.cc",
+    "wake_lock/arc_wake_lock_bridge_unittest.cc",
+  ]
+
+  # TODO(b/129295708): Clean up unused deps. Update users of this target.
+  deps = [
+    ":arc",
+    "//ash/components/arc:arc_test_support",
+    "//ash/components/arc/enterprise",
+    "//ash/components/arc/media_session",
+    "//ash/components/arc/video_accelerator:common",
+    "//ash/constants",
+    "//ash/keyboard/ui",
+    "//ash/public/cpp",
+    "//ash/public/cpp/external_arc:external_arc",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/dbus/arc",
+    "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/patchpanel",
+    "//chromeos/ash/components/dbus/patchpanel:patchpanel_proto",
+    "//chromeos/ash/components/dbus/resourced",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/session_manager:login_manager_proto",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/policy",
+    "//chromeos/dbus/permission_broker",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/dbus/tpm_manager:tpm_manager",
+    "//chromeos/ui/frame",
+    "//components/account_id",
+    "//components/exo",
+    "//components/exo:test_support",
+    "//components/keyed_service/content",
+    "//components/prefs:test_support",
+    "//components/session_manager/core:core",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//device/bluetooth",
+    "//mojo/public/cpp/system:system",
+    "//services/device/public/cpp:test_support",
+    "//services/device/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/aura",
+    "//ui/aura:test_support",
+    "//ui/base:test_support",
+    "//ui/base/clipboard",
+    "//ui/base/ime",
+    "//ui/events",
+    "//ui/events:dom_keycode_converter",
+    "//ui/events:test_support",
+    "//ui/ozone",
+    "//ui/views:test_support",
+    "//url:url",
+  ]
+}

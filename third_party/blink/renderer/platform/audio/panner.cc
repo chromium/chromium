@@ -29,6 +29,8 @@
 #include "third_party/blink/renderer/platform/audio/panner.h"
 
 #include <memory>
+
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/audio/equal_power_panner.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_panner.h"
 

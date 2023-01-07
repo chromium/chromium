@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,12 +21,13 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ObserverList;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -93,7 +94,6 @@ public class BrowserControlsManager
     private int mRendererTopControlsMinHeightOffset;
     private int mRendererBottomControlsMinHeightOffset;
     private float mControlOffsetRatio;
-    private boolean mOffsetsChanged;
     private ActivityTabTabObserver mActiveTabObserver;
 
     private final ObserverList<BrowserControlsStateProvider.Observer> mControlsObservers =
@@ -128,12 +128,19 @@ public class BrowserControlsManager
                     || mControlContainer.getView().getVisibility() == visibility) {
                 return;
             }
-            // requestLayout is required to trigger a new gatherTransparentRegion(), which
-            // only occurs together with a layout and let's SurfaceFlinger trim overlays.
-            // This may be almost equivalent to using View.GONE, but we still use View.INVISIBLE
-            // since drawing caches etc. won't be destroyed, and the layout may be less expensive.
-            mControlContainer.getView().setVisibility(visibility);
-            mControlContainer.getView().requestLayout();
+            try (TraceEvent e = TraceEvent.scoped(
+                         "BrowserControlsManager.onAndroidVisibilityChanged")) {
+                // requestLayout is required to trigger a new gatherTransparentRegion(), which
+                // only occurs together with a layout and let's SurfaceFlinger trim overlays.
+                // This may be almost equivalent to using View.GONE, but we still use View.INVISIBLE
+                // since drawing caches etc. won't be destroyed, and the layout may be less
+                // expensive.
+                mControlContainer.getView().setVisibility(visibility);
+                mControlContainer.getView().requestLayout();
+                for (BrowserControlsStateProvider.Observer observer : mControlsObservers) {
+                    observer.onAndroidVisibilityChanged(visibility);
+                }
+            }
         }
     };
 
@@ -226,7 +233,7 @@ public class BrowserControlsManager
 
         switch (mControlsPosition) {
             case ControlsPosition.TOP:
-                assert resControlContainerHeight != ChromeActivity.NO_CONTROL_CONTAINER;
+                assert resControlContainerHeight != ActivityUtils.NO_RESOURCE_ID;
                 mTopControlContainerHeight =
                         mActivity.getResources().getDimensionPixelSize(resControlContainerHeight);
                 break;
@@ -312,11 +319,13 @@ public class BrowserControlsManager
                 && mBottomControlsMinHeight == bottomControlsMinHeight) {
             return;
         }
-        mBottomControlContainerHeight = bottomControlsHeight;
-        mBottomControlsMinHeight = bottomControlsMinHeight;
-        for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
-            obs.onBottomControlsHeightChanged(
-                    mBottomControlContainerHeight, mBottomControlsMinHeight);
+        try (TraceEvent e = TraceEvent.scoped("BrowserControlsManager.setBottomControlsHeight")) {
+            mBottomControlContainerHeight = bottomControlsHeight;
+            mBottomControlsMinHeight = bottomControlsMinHeight;
+            for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
+                obs.onBottomControlsHeightChanged(
+                        mBottomControlContainerHeight, mBottomControlsMinHeight);
+            }
         }
     }
 
@@ -326,22 +335,23 @@ public class BrowserControlsManager
                 && mTopControlsMinHeight == topControlsMinHeight) {
             return;
         }
+        try (TraceEvent e = TraceEvent.scoped("BrowserControlsManager.setTopControlsHeight")) {
+            final int oldTopHeight = mTopControlContainerHeight;
+            final int oldTopMinHeight = mTopControlsMinHeight;
+            mTopControlContainerHeight = topControlsHeight;
+            mTopControlsMinHeight = topControlsMinHeight;
 
-        final int oldTopHeight = mTopControlContainerHeight;
-        final int oldTopMinHeight = mTopControlsMinHeight;
-        mTopControlContainerHeight = topControlsHeight;
-        mTopControlsMinHeight = topControlsMinHeight;
-
-        if (!canAnimateNativeBrowserControls()) {
-            if (shouldAnimateBrowserControlsHeightChanges()) {
-                runBrowserDrivenTopControlsHeightChangeAnimation(oldTopHeight, oldTopMinHeight);
-            } else {
-                showAndroidControls(false);
+            if (!canAnimateNativeBrowserControls()) {
+                if (shouldAnimateBrowserControlsHeightChanges()) {
+                    runBrowserDrivenTopControlsHeightChangeAnimation(oldTopHeight, oldTopMinHeight);
+                } else {
+                    showAndroidControls(false);
+                }
             }
-        }
 
-        for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
-            obs.onTopControlsHeightChanged(mTopControlContainerHeight, mTopControlsMinHeight);
+            for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
+                obs.onTopControlsHeightChanged(mTopControlContainerHeight, mTopControlsMinHeight);
+            }
         }
     }
 
@@ -561,18 +571,21 @@ public class BrowserControlsManager
     }
 
     private void notifyControlOffsetChanged() {
-        scheduleVisibilityUpdate();
-        if (shouldShowAndroidControls()) {
-            mControlContainer.getView().setTranslationY(getTopControlOffset());
-        }
+        try (TraceEvent e =
+                        TraceEvent.scoped("BrowserControlsManager.notifyControlOffsetChanged")) {
+            scheduleVisibilityUpdate();
+            if (shouldShowAndroidControls()) {
+                mControlContainer.getView().setTranslationY(getTopControlOffset());
+            }
 
-        // Whether we need the compositor to draw again to update our animation.
-        // Should be |false| when the browser controls are only moved through the page
-        // scrolling.
-        boolean needsAnimate = shouldShowAndroidControls();
-        for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
-            obs.onControlsOffsetChanged(getTopControlOffset(), getTopControlsMinHeightOffset(),
-                    getBottomControlOffset(), getBottomControlsMinHeightOffset(), needsAnimate);
+            // Whether we need the compositor to draw again to update our animation.
+            // Should be |false| when the browser controls are only moved through the page
+            // scrolling.
+            boolean needsAnimate = shouldShowAndroidControls();
+            for (BrowserControlsStateProvider.Observer obs : mControlsObservers) {
+                obs.onControlsOffsetChanged(getTopControlOffset(), getTopControlsMinHeightOffset(),
+                        getBottomControlOffset(), getBottomControlsMinHeightOffset(), needsAnimate);
+            }
         }
     }
 
@@ -611,10 +624,8 @@ public class BrowserControlsManager
         }
     }
 
-    /**
-     * Restores the controls positions to the cached positions of the active Tab.
-     */
-    private void restoreControlsPositions() {
+    @Override
+    public void restoreControlsPositions() {
         resetControlsOffsetOverridden();
 
         // Make sure the dominant control offsets have been set.

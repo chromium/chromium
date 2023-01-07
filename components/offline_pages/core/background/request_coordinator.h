@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
@@ -129,6 +129,9 @@ class RequestCoordinator : public KeyedService,
                      std::unique_ptr<Scheduler> scheduler,
                      network::NetworkQualityTracker* network_quality_tracker,
                      std::unique_ptr<ActiveTabInfo> active_tab_info);
+
+  RequestCoordinator(const RequestCoordinator&) = delete;
+  RequestCoordinator& operator=(const RequestCoordinator&) = delete;
 
   ~RequestCoordinator() override;
 
@@ -467,7 +470,7 @@ class RequestCoordinator : public KeyedService,
   std::unique_ptr<Scheduler> scheduler_;
   // Unowned pointer. Guaranteed to be non-null during the lifetime of |this|.
   // Must be accessed only on the UI thread.
-  network::NetworkQualityTracker* network_quality_tracker_;
+  raw_ptr<network::NetworkQualityTracker> network_quality_tracker_;
   net::EffectiveConnectionType network_quality_at_request_start_;
   // Holds an ID of the currently active request.
   int64_t active_request_id_;
@@ -505,8 +508,6 @@ class RequestCoordinator : public KeyedService,
   std::unique_ptr<ActiveTabInfo> active_tab_info_;
   // Allows us to pass a weak pointer to callbacks.
   base::WeakPtrFactory<RequestCoordinator> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RequestCoordinator);
 };
 
 }  // namespace offline_pages

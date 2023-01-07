@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,19 +16,17 @@ namespace media {
 class MockSharedImageVideoProvider : public SharedImageVideoProvider {
  public:
   MockSharedImageVideoProvider();
-  ~MockSharedImageVideoProvider();
+  ~MockSharedImageVideoProvider() override;
 
-  void Initialize(GpuInitCB gpu_init_cb) {
+  void Initialize(GpuInitCB gpu_init_cb) override {
     Initialize_(gpu_init_cb);
     gpu_init_cb_ = std::move(gpu_init_cb);
   }
 
   MOCK_METHOD1(Initialize_, void(GpuInitCB& gpu_init_cb));
 
-  void RequestImage(ImageReadyCB cb,
-                    const ImageSpec& spec,
-                    scoped_refptr<gpu::TextureOwner> texture_owner) override {
-    requests_.emplace_back(std::move(cb), spec, std::move(texture_owner));
+  void RequestImage(ImageReadyCB cb, const ImageSpec& spec) override {
+    requests_.emplace_back(std::move(cb), spec);
 
     MockRequestImage();
   }
@@ -59,13 +57,10 @@ class MockSharedImageVideoProvider : public SharedImageVideoProvider {
 
   // Most recent arguments to RequestImage.
   struct RequestImageArgs {
-    RequestImageArgs(ImageReadyCB cb,
-                     ImageSpec spec,
-                     scoped_refptr<gpu::TextureOwner> texture_owner);
+    RequestImageArgs(ImageReadyCB cb, ImageSpec spec);
     ~RequestImageArgs();
     ImageReadyCB cb_;
     ImageSpec spec_;
-    scoped_refptr<gpu::TextureOwner> texture_owner_;
   };
 
   std::list<RequestImageArgs> requests_;

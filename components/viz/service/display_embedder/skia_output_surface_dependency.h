@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,12 @@
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_SKIA_OUTPUT_SURFACE_DEPENDENCY_H_
 
 #include <memory>
-#include <vector>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/viz_service_export.h"
@@ -31,7 +30,6 @@ class GLSurface;
 
 namespace gpu {
 
-class DisplayContext;
 class GpuDriverBugWorkarounds;
 class ImageFactory;
 class ImageTransportSurfaceDelegate;
@@ -91,22 +89,23 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
       gl::GLSurfaceFormat format) = 0;
   // Hold a ref of the given surface until the returned closure is fired.
   virtual base::ScopedClosureRunner CacheGLSurface(gl::GLSurface* surface) = 0;
-  virtual void PostTaskToClientThread(base::OnceClosure closure) = 0;
   virtual void ScheduleGrContextCleanup() = 0;
+
+  void PostTaskToClientThread(base::OnceClosure closure) {
+    GetClientTaskRunner()->PostTask(FROM_HERE, std::move(closure));
+  }
+  virtual scoped_refptr<base::TaskRunner> GetClientTaskRunner() = 0;
 
   // This function schedules delayed task to be run on GPUThread. It can be
   // called only from GPU Thread.
   virtual void ScheduleDelayedGPUTaskFromGPUThread(base::OnceClosure task) = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   virtual void DidCreateAcceleratedSurfaceChildWindow(
       gpu::SurfaceHandle parent_window,
       gpu::SurfaceHandle child_window) = 0;
 #endif
 
-  virtual void RegisterDisplayContext(gpu::DisplayContext* display_context) = 0;
-  virtual void UnregisterDisplayContext(
-      gpu::DisplayContext* display_context) = 0;
   virtual void DidLoseContext(gpu::error::ContextLostReason reason,
                               const GURL& active_url) = 0;
 

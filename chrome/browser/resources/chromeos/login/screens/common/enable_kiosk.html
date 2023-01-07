@@ -1,0 +1,35 @@
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="oobe-dialog-host-styles"></style>
+
+<oobe-adaptive-dialog id="dialog" role="dialog"
+    aria-label$="[[i18nDynamic(locale, 'kioskEnableWarningText')]]"
+    footer-shrinkable>
+  <h1 slot="title">
+    [[i18nDynamic(locale, 'kioskEnableWarningText')]]
+  </h1>
+  <span slot="subtitle" hidden="[[!eq_(state_, 'confirm')]]">
+    [[i18nDynamic(locale,'kioskEnableWarningDetails')]]
+  </span>
+  <span slot="subtitle" hidden="[[!eq_(state_, 'success')]]">
+    [[i18nDynamic(locale,'kioskEnableSuccessMsg')]]
+  </span>
+  <span slot="subtitle" hidden="[[!eq_(state_, 'error')]]">
+    [[i18nDynamic(locale,'kioskEnableErrorMsg')]]
+  </span>
+  <div slot="content" class="flex layout center-justified vertical">
+    <img src="chrome://theme/IDR_RESET_WARNING" class="oobe-illustration">
+  </div>
+  <div slot="bottom-buttons">
+    <oobe-text-button id="enable" hidden="[[!eq_(state_, 'confirm')]]"
+        inverse on-click="onEnableButton_" text-key="kioskEnableButton">
+    </oobe-text-button>
+    <oobe-text-button id="close" class="focus-on-show" inverse
+        text-key="[[primaryButtonTextKey_(state_)]]"
+        on-click="closeDialog_"></oobe-text-button>
+  </div>
+</oobe-adaptive-dialog>

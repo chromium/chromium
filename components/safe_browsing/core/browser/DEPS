@@ -1,8 +1,8 @@
 include_rules = [
   "+components/history/core/browser",
-  "+components/safe_browsing/core/proto/csd.pb.h",
+  "+components/content_settings/core",
   "+components/sessions/core/session_id.h",
-  "+content/public/browser",
+  "+components/version_info",
   "+ipc/ipc_message.h",
   "+net/cookies",
   "+net/extras",
@@ -13,9 +13,3 @@ include_rules = [
   "+services/network/public",
   "+services/service_manager/public/cpp",
 ]
-
-specific_include_rules = {
-  ".*test\.cc": [
-    "+content/public/test/browser_task_environment.h",
-  ],
-}

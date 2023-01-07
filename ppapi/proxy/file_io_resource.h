@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/private/pp_file_handle.h"
 #include "ppapi/proxy/connection.h"
@@ -33,6 +32,10 @@ class PPAPI_PROXY_EXPORT FileIOResource
       public thunk::PPB_FileIO_API {
  public:
   FileIOResource(Connection connection, PP_Instance instance);
+
+  FileIOResource(const FileIOResource&) = delete;
+  FileIOResource& operator=(const FileIOResource&) = delete;
+
   ~FileIOResource() override;
 
   // Resource overrides.
@@ -227,8 +230,6 @@ class PPAPI_PROXY_EXPORT FileIOResource
   int64_t append_mode_write_amount_;
   bool check_quota_;
   bool called_close_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileIOResource);
 };
 
 }  // namespace proxy

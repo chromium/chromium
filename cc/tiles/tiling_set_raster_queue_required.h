@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_TILES_TILING_SET_RASTER_QUEUE_REQUIRED_H_
 #define CC_TILES_TILING_SET_RASTER_QUEUE_REQUIRED_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/raster_tile_priority_queue.h"
@@ -42,8 +43,11 @@ class CC_EXPORT TilingSetRasterQueueRequired {
     TilingIterator& operator++();
 
    private:
-    PictureLayerTiling* tiling_;
-    TilingData* tiling_data_;
+    // `tiling_` and `tiling_data_` are not a raw_ptr<...> for performance
+    // reasons (based on analysis of sampling profiler data and
+    // tab_search:top100:2020).
+    RAW_PTR_EXCLUSION PictureLayerTiling* tiling_;
+    RAW_PTR_EXCLUSION TilingData* tiling_data_;
 
     PrioritizedTile current_tile_;
     TilingData::Iterator visible_iterator_;

@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
 
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -62,7 +62,7 @@ class ChromeBroadcastObserverBridgeTest : public PlatformTest {
   __strong ChromeBroadcastOberverBridge* bridge_ = nil;
 };
 
-// Tests that |-broadcastContentScrollOffset:| is correctly forwarded to the
+// Tests that `-broadcastContentScrollOffset:` is correctly forwarded to the
 // observer.
 TEST_F(ChromeBroadcastObserverBridgeTest, ContentOffset) {
   ASSERT_EQ(observer().scroll_offset(), 0.0);
@@ -71,7 +71,7 @@ TEST_F(ChromeBroadcastObserverBridgeTest, ContentOffset) {
   EXPECT_EQ(observer().scroll_offset(), kOffset);
 }
 
-// Tests that |-broadcastScrollViewIsScrolling:| is correctly forwarded to the
+// Tests that `-broadcastScrollViewIsScrolling:` is correctly forwarded to the
 // observer.
 TEST_F(ChromeBroadcastObserverBridgeTest, ScrollViewIsScrolling) {
   ASSERT_FALSE(observer().scroll_view_scrolling());
@@ -79,7 +79,7 @@ TEST_F(ChromeBroadcastObserverBridgeTest, ScrollViewIsScrolling) {
   EXPECT_TRUE(observer().scroll_view_scrolling());
 }
 
-// Tests that |-broadcastScrollViewIsDragging:| is correctly forwarded to the
+// Tests that `-broadcastScrollViewIsDragging:` is correctly forwarded to the
 // observer.
 TEST_F(ChromeBroadcastObserverBridgeTest, ScrollViewIsDragging) {
   ASSERT_FALSE(observer().scroll_view_dragging());
@@ -87,7 +87,7 @@ TEST_F(ChromeBroadcastObserverBridgeTest, ScrollViewIsDragging) {
   EXPECT_TRUE(observer().scroll_view_dragging());
 }
 
-// Tests that |-broadcastToolbarHeight:| is correctly forwarded to the
+// Tests that `-broadcastToolbarHeight:` is correctly forwarded to the
 // observer.
 TEST_F(ChromeBroadcastObserverBridgeTest, ToolbarHeight) {
   ASSERT_EQ(observer().collapsed_height(), 0.0);

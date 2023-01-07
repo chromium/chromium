@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,9 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
-#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
+#include "net/base/net_export.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 
 namespace net {
 
@@ -21,7 +19,7 @@ namespace net {
 // This information may be stored on disk so does not include keys or other
 // sensitive information. Primarily it's intended for caching the QUIC server's
 // crypto config.
-class QUIC_EXPORT_PRIVATE QuicServerInfo {
+class NET_EXPORT_PRIVATE QuicServerInfo {
  public:
   // Enum to track failure reasons to read/load/write of QuicServerInfo to
   // and from disk cache.
@@ -42,6 +40,10 @@ class QUIC_EXPORT_PRIVATE QuicServerInfo {
   };
 
   explicit QuicServerInfo(const quic::QuicServerId& server_id);
+
+  QuicServerInfo(const QuicServerInfo&) = delete;
+  QuicServerInfo& operator=(const QuicServerInfo&) = delete;
+
   virtual ~QuicServerInfo();
 
   // Fetches the server config from the backing store, and returns true
@@ -51,11 +53,12 @@ class QUIC_EXPORT_PRIVATE QuicServerInfo {
   // Persist allows for the server information to be updated for future uses.
   virtual void Persist() = 0;
 
-  // Returns the size of dynamically allocated memory in bytes.
-  virtual size_t EstimateMemoryUsage() const = 0;
-
   struct State {
     State();
+
+    State(const State&) = delete;
+    State& operator=(const State&) = delete;
+
     ~State();
 
     void Clear();
@@ -68,9 +71,6 @@ class QUIC_EXPORT_PRIVATE QuicServerInfo {
     std::vector<std::string> certs;    // A list of certificates in leaf-first
                                        // order.
     std::string server_config_sig;     // A signature of |server_config_|.
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(State);
   };
 
   // Once the data is ready, it can be read using the following members. These
@@ -97,8 +97,6 @@ class QUIC_EXPORT_PRIVATE QuicServerInfo {
 
   // SerializeInner is a helper function for Serialize.
   std::string SerializeInner() const;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicServerInfo);
 };
 
 }  // namespace net

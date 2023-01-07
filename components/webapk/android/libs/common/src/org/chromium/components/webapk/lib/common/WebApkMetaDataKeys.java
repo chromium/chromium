@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,8 @@ public final class WebApkMetaDataKeys {
     public static final String ICON_URLS_AND_ICON_MURMUR2_HASHES =
             "org.chromium.webapk.shell_apk.iconUrlsAndIconMurmur2Hashes";
     public static final String WEB_MANIFEST_URL = "org.chromium.webapk.shell_apk.webManifestUrl";
+    public static final String WEB_MANIFEST_ID = "org.chromium.webapk.shell_apk.webManifestId";
+    public static final String APP_KEY = "org.chromium.webapk.shell_apk.appKey";
     public static final String DISTRIBUTOR = "org.chromium.webapk.shell_apk.distributor";
     public static final String SHARE_ACTION = "org.chromium.webapk.shell_apk.shareAction";
     public static final String SHARE_METHOD = "org.chromium.webapk.shell_apk.shareMethod";

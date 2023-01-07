@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -475,28 +475,28 @@ class WebTestBluetoothAdapterProvider {
   //   - ErrorsDevice
   //      - ErrorsService errorUUID(0xA0)
   //          - ErrorCharacteristic(
-  //              BluetoothRemoteGattService::GATT_ERROR_UNKNOWN)
+  //              BluetoothGattService::GattErrorCode::kUnknown)
   //              errorUUID(0xA1)
   //          - ErrorCharacteristic(
-  //              BluetoothRemoteGattService::GATT_ERROR_FAILED)
+  //              BluetoothGattService::GattErrorCode::kFailed)
   //              errorUUID(0xA2)
   //          - ErrorCharacteristic(
-  //              BluetoothRemoteGattService::GATT_ERROR_IN_PROGRESS)
+  //              BluetoothGattService::GattErrorCode::kInProgress)
   //              errorUUID(0xA3)
   //          - ErrorCharacteristic(
-  //              BluetoothRemoteGattService::GATT_ERROR_INVALID_LENGTH)
+  //              BluetoothGattService::GattErrorCode::kInvalidLength)
   //              errorUUID(0xA4)
   //          - ErrorCharacteristic(
-  //              BluetoothRemoteGattService::GATT_ERROR_NOT_PERMITTED)
+  //              BluetoothGattService::GattErrorCode::kNotPermitted)
   //              errorUUID(0xA5)
   //          - ErrorCharacteristic(
-  //              BluetoothRemoteGattService::GATT_ERROR_NOT_AUTHORIZED)
+  //              BluetoothGattService::GattErrorCode::kNotAuthorized)
   //              errorUUID(0xA6)
   //          - ErrorCharacteristic(
-  //              BluetoothRemoteGattService::GATT_ERROR_NOT_PAIRED)
+  //              BluetoothGattService::GattErrorCode::kNotPaired)
   //              errorUUID(0xA7)
   //          - ErrorCharacteristic(
-  //              BluetoothRemoteGattService::GATT_ERROR_NOT_SUPPORTED)
+  //              BluetoothGattService::GattErrorCode::kNotSupported)
   //              errorUUID(0xA8)
   //      - Request Disconnection Service: - Characteristics as described in
   //          GetDisconnectingService
@@ -555,6 +555,9 @@ class WebTestBluetoothAdapterProvider {
   //   - Generic Access (0x1800)
   //   - Glucose UUID (0x1808)
   //   - Tx Power (0x1804)
+  // Manufacturer Data added:
+  //   - 0x0001 : { 1, 2 }
+  //   - 0x0002 : { 3, 4 }
   // Services added:
   // None.
   static std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>
@@ -765,7 +768,7 @@ class WebTestBluetoothAdapterProvider {
       testing::NiceMock<device::MockBluetoothGattCharacteristic>>
   GetErrorCharacteristic(
       device::MockBluetoothGattService* service,
-      device::BluetoothRemoteGattService::GattErrorCode error_code);
+      device::BluetoothGattService::GattErrorCode error_code);
 
   // Notify Sessions
 

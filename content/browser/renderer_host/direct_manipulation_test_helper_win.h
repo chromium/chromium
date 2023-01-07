@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,6 @@
 #include <windows.h>
 #include <wrl.h>
 #include <array>
-
-#include "base/macros.h"
 
 namespace content {
 class PrecisionTouchpadBrowserTest;
@@ -34,6 +32,10 @@ class MockDirectManipulationContent
               IDirectManipulationContent>> {
  public:
   MockDirectManipulationContent();
+
+  MockDirectManipulationContent(const MockDirectManipulationContent&) = delete;
+  MockDirectManipulationContent& operator=(
+      const MockDirectManipulationContent&) = delete;
 
   // IDirectManipulationContent:
   ~MockDirectManipulationContent() override;
@@ -76,8 +78,6 @@ class MockDirectManipulationContent
   // (3,1) - x offset
   // (3,2) - y offset.
   std::array<float, kTransformMatrixSize> transforms_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDirectManipulationContent);
 };
 
 }  // namespace content

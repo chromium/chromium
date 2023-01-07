@@ -1,10 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/invalidation/public/identity_provider.h"
 
 #include "base/i18n/time_formatting.h"
+#include "base/observer_list.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace invalidation {
 
@@ -50,22 +52,23 @@ void IdentityProvider::FireOnActiveAccountLogout() {
 }
 
 void IdentityProvider::RequestDetailedStatus(
-    base::RepeatingCallback<void(const base::DictionaryValue&)> return_callback)
-    const {
+    base::RepeatingCallback<void(base::Value::Dict)> return_callback) const {
   return_callback.Run(diagnostic_info_.CollectDebugData());
 }
 
 IdentityProvider::Diagnostics::Diagnostics() = default;
 
-base::DictionaryValue IdentityProvider::Diagnostics::CollectDebugData() const {
-  base::DictionaryValue status;
+base::Value::Dict IdentityProvider::Diagnostics::CollectDebugData() const {
+  base::Value::Dict status;
 
-  status.SetInteger("IdentityProvider.token-removal-for-not-active-account",
-                    token_removal_for_not_active_account_count);
-  status.SetInteger("IdentityProvider.token-update-for-not-active-account",
-                    token_update_for_not_active_account_count);
-  status.SetString("IdentityProvider.account-token-updated",
-                   base::TimeFormatShortDateAndTime(account_token_updated));
+  status.SetByDottedPath(
+      "IdentityProvider.token-removal-for-not-active-account",
+      token_removal_for_not_active_account_count);
+  status.SetByDottedPath("IdentityProvider.token-update-for-not-active-account",
+                         token_update_for_not_active_account_count);
+  status.SetByDottedPath(
+      "IdentityProvider.account-token-updated",
+      base::TimeFormatShortDateAndTime(account_token_updated));
   return status;
 }
 

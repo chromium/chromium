@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = ResizeObserver loop limit exceeded
+PASS 320x50
+PASS 728x90
+PASS 970x90
+PASS 320x100
+PASS 160x600
+PASS 300x250
+PASS 970x250
+PASS 336x280
+PASS 320x48
+PASS 300x600
+PASS 300x1050
+PASS 970.1x250
+PASS 970x250.1
+PASS 971x250
+PASS 970x251
+PASS 0x100
+PASS 100x0
+PASS MAXxMAX
+PASS INFINITYxINFINITY
+Harness: the test ran to completion.
+

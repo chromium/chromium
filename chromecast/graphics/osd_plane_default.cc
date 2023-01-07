@@ -1,10 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/osd_plane.h"
 #include "chromecast/public/osd_plane_shlib.h"
@@ -17,6 +16,9 @@ namespace {
 class OsdSurfaceDefault : public OsdSurface {
  public:
   OsdSurfaceDefault(const Size& size) : size_(size) {}
+
+  OsdSurfaceDefault(const OsdSurfaceDefault&) = delete;
+  OsdSurfaceDefault& operator=(const OsdSurfaceDefault&) = delete;
 
   // OsdSurface implementation:
   void Blit(OsdSurface* src_surface,
@@ -35,14 +37,15 @@ class OsdSurfaceDefault : public OsdSurface {
 
  private:
   const Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(OsdSurfaceDefault);
 };
 
 // Default no-op OsdPlane implementation
 class OsdPlaneDefault : public OsdPlane {
  public:
   OsdPlaneDefault() : size_(0, 0) {}
+
+  OsdPlaneDefault(const OsdPlaneDefault&) = delete;
+  OsdPlaneDefault& operator=(const OsdPlaneDefault&) = delete;
 
   // OsdPlane implementation:
   OsdSurface* CreateSurface(const Size& size) override {
@@ -64,8 +67,6 @@ class OsdPlaneDefault : public OsdPlane {
  private:
   std::unique_ptr<OsdSurface> back_buffer_;
   Size size_;
-
-  DISALLOW_COPY_AND_ASSIGN(OsdPlaneDefault);
 };
 
 }  // namespace

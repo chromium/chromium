@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -317,7 +318,7 @@ class ChildProcessSecurityPolicy {
   // by the source of how they were added and/or by BrowserContext.
   //
   // If |source| is provided, only origins that were added with the same source
-  // will be returned; if |source| is base::nullopt, origins from all sources
+  // will be returned; if |source| is absl::nullopt, origins from all sources
   // will be returned.
   //
   // If |browser_context| is null, only globally applicable origins will be
@@ -325,8 +326,15 @@ class ChildProcessSecurityPolicy {
   // within that particular BrowserContext will be returned (note that this
   // includes both matching per-profile isolated origins as well as globally
   // applicable origins which apply to |browser_context| by definition).
+  //
+  // Origins returned by this function only include origins that would apply to
+  // any future BrowsingInstance (browsing context group).  Origins that were
+  // isolated only in specific BrowsingInstances are not included.  (In
+  // particular, this excludes BrowsingInstance-specific isolated origins for
+  // Origin-Agent-Cluster as well as COOP documents loaded without user
+  // activation.)
   virtual std::vector<url::Origin> GetIsolatedOrigins(
-      base::Optional<IsolatedOriginSource> source = base::nullopt,
+      absl::optional<IsolatedOriginSource> source = absl::nullopt,
       BrowserContext* browser_context = nullptr) = 0;
 
   // Returns whether the site of |origin| is isolated and was added by the

@@ -91,8 +91,10 @@ Please create a saved query in Monorail for `component:Blink>WebGL` and select
 
 This is intended to be a lightweight rotation that shouldn't take too much of
 the triager's time. For this reason it's scheduled independently of other shifts
-like [pixel wrangling](pixel_wrangling.md), and may overlap. If any conflicts do
+like [pixel wrangling], and may overlap. If any conflicts do
 arise, please reach out or swap shifts.
+
+[pixel wrangling]: http://go/gpu-pixel-wrangler
 
 The rotation is [managed
 here](https://rotations.corp.google.com/rotation/6257611988008960) via the

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/viz_compositor_thread_runner_webview.h"
-#include "android_webview/browser/scoped_add_feature_flags.h"
 #include "android_webview/browser/tracing/aw_trace_event_args_allowlist.h"
 #include "android_webview/common/aw_descriptors.h"
 #include "android_webview/common/aw_features.h"
@@ -29,38 +28,47 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
-#include "base/cpu_affinity_posix.h"
 #include "base/i18n/icu_util.h"
 #include "base/i18n/rtl.h"
 #include "base/posix/global_descriptors.h"
+#include "base/scoped_add_feature_flags.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/embedder_support/switches.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
 #include "components/metrics/unsent_log_store_metrics.h"
-#include "components/power_scheduler/power_scheduler.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "components/translate/core/common/translate_util.h"
+#include "components/variations/variations_ids_provider.h"
 #include "components/version_info/android/channel_getter.h"
 #include "components/viz/common/features.h"
+#include "content/public/app/initialize_mojo_core.h"
 #include "content/public/browser/android/media_url_interceptor_register.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_descriptor_keys.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/main_function_params.h"
+#include "device/base/features.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/v8_initializer.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/config/gpu_finch_features.h"
-#include "gpu/ipc/gl_in_process_context.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
+#include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -80,7 +88,7 @@ AwMainDelegate::AwMainDelegate() = default;
 
 AwMainDelegate::~AwMainDelegate() = default;
 
-bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
+absl::optional<int> AwMainDelegate::BasicStartupComplete() {
   TRACE_EVENT0("startup", "AwMainDelegate::BasicStartupComplete");
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
 
@@ -132,11 +140,6 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
   // metadata and controls.
   cl->AppendSwitch(switches::kDisableMediaSessionAPI);
 
-  // WebView does not support origin trials and so needs to force appcache
-  // to be enabled during the removal origin trial, until it is finally
-  // removed entirely.  See: http://crbug.com/582750
-  cl->AppendSwitch(switches::kAppCacheForceEnabled);
-
   // We have crash dumps to diagnose regressions in remote font analysis or cc
   // serialization errors but most of their utility is in identifying URLs where
   // the regression occurs. This info is not available for webview so there
@@ -148,6 +151,10 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
   // with the changed API contracts around new navigation types and changes to
   // the document lifecycle.
   cl->AppendSwitch(switches::kDisableBackForwardCache);
+
+  // Deemed that performance benefit is not worth the stability cost.
+  // See crbug.com/1309151.
+  cl->AppendSwitch(switches::kDisableGpuShaderDiskCache);
 
   if (cl->GetSwitchValueASCII(switches::kProcessType).empty()) {
     // Browser process (no type specified).
@@ -165,11 +172,10 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
       cl->AppendSwitch(switches::kWebViewDrawFunctorUsesVulkan);
 
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
-    gin::V8Initializer::V8SnapshotFileType file_type =
-        gin::V8Initializer::V8SnapshotFileType::kWithAdditionalContext;
+    const gin::V8SnapshotFileType file_type =
+        gin::V8SnapshotFileType::kWithAdditionalContext;
 #else
-    gin::V8Initializer::V8SnapshotFileType file_type =
-        gin::V8Initializer::V8SnapshotFileType::kDefault;
+    const gin::V8SnapshotFileType file_type = gin::V8SnapshotFileType::kDefault;
 #endif
     base::android::RegisterApkAssetWithFileDescriptorStore(
         content::kV8Snapshot32DataDescriptor,
@@ -177,19 +183,37 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     base::android::RegisterApkAssetWithFileDescriptorStore(
         content::kV8Snapshot64DataDescriptor,
         gin::V8Initializer::GetSnapshotFilePath(false, file_type));
+
+    {
+      // Disable origin trial features on WebView unless the flag was explicitly
+      // specified via command-line.
+      std::string disabled_origin_trials_switch_value = cl->GetSwitchValueASCII(
+          embedder_support::kOriginTrialDisabledFeatures);
+      base::flat_set<std::string> disabled_origin_trials(
+          base::SplitString(disabled_origin_trials_switch_value, "|",
+                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
+
+      // Disable origin trials for the FedCM API on WebView because the FedCM
+      // API is not implemented on WebView. The inserted feature string should
+      // match a name in
+      // third_party/blink/renderer/platform/runtime_enabled_features.json5.
+      // Currently, there is no method to obtain these strings directly so it is
+      // hard coded.
+      disabled_origin_trials.insert("FedCM");
+
+      cl->AppendSwitchASCII(
+          embedder_support::kOriginTrialDisabledFeatures,
+          base::JoinString(std::move(disabled_origin_trials).extract(), "|"));
+    }
   }
 
   if (cl->HasSwitch(switches::kWebViewSandboxedRenderer)) {
-    content::RenderProcessHost::SetMaxRendererProcessCount(1u);
     cl->AppendSwitch(switches::kInProcessGPU);
   }
 
   {
-    ScopedAddFeatureFlags features(cl);
+    base::ScopedAddFeatureFlags features(cl);
 
-#if BUILDFLAG(ENABLE_SPELLCHECK)
-    features.EnableIfNotSet(spellcheck::kAndroidSpellCheckerNonLowEnd);
-#endif  // ENABLE_SPELLCHECK
     if (base::android::BuildInfo::GetInstance()->sdk_int() >=
         base::android::SDK_VERSION_OREO) {
       features.EnableIfNotSet(autofill::features::kAutofillExtractAllDatalists);
@@ -207,25 +231,26 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
       features.DisableIfNotSet(::features::kDefaultANGLEVulkan);
     }
 
+    if (cl->HasSwitch(switches::kWebViewMPArchFencedFrames)) {
+      features.EnableIfNotSetWithParameter(blink::features::kFencedFrames,
+                                           "implementation_type", "mparch");
+      features.EnableIfNotSet(blink::features::kSharedStorageAPI);
+      features.EnableIfNotSet(::features::kPrivacySandboxAdsAPIsOverride);
+    }
+
+    if (cl->HasSwitch(switches::kWebViewShadowDOMFencedFrames)) {
+      features.EnableIfNotSetWithParameter(blink::features::kFencedFrames,
+                                           "implementation_type", "shadow_dom");
+      features.EnableIfNotSet(blink::features::kSharedStorageAPI);
+      features.EnableIfNotSet(::features::kPrivacySandboxAdsAPIsOverride);
+    }
+
     // WebView uses kWebViewVulkan to control vulkan. Pre-emptively disable
     // kVulkan in case it becomes enabled by default.
     features.DisableIfNotSet(::features::kVulkan);
 
     features.DisableIfNotSet(::features::kWebPayments);
     features.DisableIfNotSet(::features::kServiceWorkerPaymentApps);
-
-    // WebView does not and should not support WebAuthN.
-    features.DisableIfNotSet(::features::kWebAuth);
-
-    // Enable VizForWebView by default.
-    features.EnableIfNotSet(::features::kVizForWebViewDefault);
-
-    // WebView doesn't support surface embedding without viz.The media code
-    // checks for both media::kDisableSurfaceLayerForVideo and VizForWebView to
-    // decide if it can embed, so we always enable kDisableSurfaceLayerForVideo
-    // here.
-    // https://crbug.com/853832
-    features.EnableIfNotSet(media::kDisableSurfaceLayerForVideo);
 
     // WebView does not support overlay fullscreen yet for video overlays.
     features.DisableIfNotSet(media::kOverlayFullscreenVideo);
@@ -239,7 +264,7 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
 
     features.DisableIfNotSet(::features::kBackgroundFetch);
 
-    // SurfaceControl is not supported on webview.
+    // SurfaceControl is controlled by kWebViewSurfaceControl flag.
     features.DisableIfNotSet(::features::kAndroidSurfaceControl);
 
     // TODO(https://crbug.com/963653): WebOTP is not yet supported on
@@ -251,7 +276,11 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
 
     features.DisableIfNotSet(::features::kWebXrArModule);
 
-    features.DisableIfNotSet(::features::kWebXrHitTest);
+    features.DisableIfNotSet(device::features::kWebXrHitTest);
+
+    // TODO(https://crbug.com/1312827): Digital Goods API is not yet supported
+    // on WebView.
+    features.DisableIfNotSet(::features::kDigitalGoodsApi);
 
     features.DisableIfNotSet(::features::kDynamicColorGamut);
 
@@ -264,22 +293,54 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
 
     features.DisableIfNotSet(::features::kInstalledApp);
 
-    features.EnableIfNotSet(
-        metrics::UnsentLogStoreMetrics::kRecordLastUnsentLogMetadataMetrics);
+    features.EnableIfNotSet(metrics::kRecordLastUnsentLogMetadataMetrics);
 
     features.DisableIfNotSet(::features::kPeriodicBackgroundSync);
 
     // TODO(crbug.com/921655): Add support for User Agent Client hints on
     // WebView.
-    features.DisableIfNotSet(::features::kUserAgentClientHint);
+    features.DisableIfNotSet(blink::features::kUserAgentClientHint);
+
+    // Disable Reducing User Agent minor version on WebView.
+    features.DisableIfNotSet(blink::features::kReduceUserAgentMinorVersion);
+
+    // Disabled until viz scheduling can be improved.
+    features.DisableIfNotSet(::features::kUseSurfaceLayerForVideoDefault);
+
+    // Enabled by default for webview.
+    features.EnableIfNotSet(::features::kWebViewThreadSafeMediaDefault);
+
+    // Disable dr-dc on webview.
+    features.DisableIfNotSet(::features::kEnableDrDc);
+
+    // TODO(crbug.com/1100993): Web Bluetooth is not yet supported on WebView.
+    features.DisableIfNotSet(::features::kWebBluetooth);
+
+    // TODO(crbug.com/933055): WebUSB is not yet supported on WebView.
+    features.DisableIfNotSet(::features::kWebUsb);
+
+    // Disable TFLite based language detection on webview until webview supports
+    // ML model delivery via Optimization Guide component.
+    // TODO(crbug.com/1292622): Enable the feature on Webview.
+    features.DisableIfNotSet(::translate::kTFLiteLanguageDetectionEnabled);
+
+    // Disable key pinning enforcement on webview.
+    features.DisableIfNotSet(net::features::kStaticKeyPinningEnforcement);
+
+    // Have the network service in the browser process even if we have separate
+    // renderer processes. See also: switches::kInProcessGPU above.
+    features.EnableIfNotSet(::features::kNetworkServiceInProcess);
+
+    // Disable Event.path on Canary and Dev to help the deprecation and removal.
+    // See crbug.com/1277431 for more details.
+    if (version_info::android::GetChannel() < version_info::Channel::BETA)
+      features.DisableIfNotSet(blink::features::kEventPath);
+
+    // FedCM is not yet supported on WebView.
+    features.DisableIfNotSet(::features::kFedCm);
   }
 
   android_webview::RegisterPathProvider();
-
-  safe_browsing_api_handler_.reset(
-      new safe_browsing::SafeBrowsingApiHandlerBridge());
-  safe_browsing::SafeBrowsingApiHandler::SetInstance(
-      safe_browsing_api_handler_.get());
 
   // Used only if the argument filter is enabled in tracing config,
   // as is the case by default in aw_tracing_controller.cc
@@ -287,6 +348,7 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
       base::BindRepeating(&IsTraceEventArgsAllowlisted));
   base::trace_event::TraceLog::GetInstance()->SetMetadataFilterPredicate(
       base::BindRepeating(&IsTraceMetadataAllowlisted));
+  base::trace_event::TraceLog::GetInstance()->SetRecordHostAppPackageName(true);
 
   // The TLS slot used by the memlog allocator shim needs to be initialized
   // early to ensure that it gets assigned a low slot number. If it gets
@@ -296,7 +358,7 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
   // partially-initialized, which the TLS object is supposed to protect again.
   heap_profiling::InitTLSSlot();
 
-  return false;
+  return absl::nullopt;
 }
 
 void AwMainDelegate::PreSandboxStartup() {
@@ -340,20 +402,18 @@ void AwMainDelegate::PreSandboxStartup() {
   sdk_int_key.Set(base::NumberToString(android_build_info->sdk_int()));
 }
 
-int AwMainDelegate::RunProcess(
+absl::variant<int, content::MainFunctionParams> AwMainDelegate::RunProcess(
     const std::string& process_type,
-    const content::MainFunctionParams& main_function_params) {
+    content::MainFunctionParams main_function_params) {
   // Defer to the default main method outside the browser process.
   if (!process_type.empty())
-    return -1;
+    return std::move(main_function_params);
 
   browser_runner_ = content::BrowserMainRunner::Create();
-  int exit_code = browser_runner_->Initialize(main_function_params);
+  int exit_code = browser_runner_->Initialize(std::move(main_function_params));
   // We do not expect Initialize() to ever fail in AndroidWebView. On success
   // it returns a negative value but we do not want to use that on Android.
   DCHECK_LT(exit_code, 0);
-  // Return 0 so that we do NOT trigger the default behavior. On Android, the
-  // UI message loop is managed by the Java application.
   return 0;
 }
 
@@ -363,42 +423,39 @@ void AwMainDelegate::ProcessExiting(const std::string& process_type) {
   logging::CloseLogFile();
 }
 
-bool AwMainDelegate::ShouldCreateFeatureList() {
-  // TODO(https://crbug.com/887468): Move the creation of FeatureList from
-  // AwBrowserMainParts::PreCreateThreads() to
+bool AwMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
+  // In the browser process the FeatureList is created in
   // AwMainDelegate::PostEarlyInitialization().
-  return false;
+  return absl::holds_alternative<InvokedInChildProcess>(invoked_in);
 }
 
-// This function is called only on the browser process.
-void AwMainDelegate::PostEarlyInitialization(bool is_running_tests) {
-  InitIcuAndResourceBundleBrowserSide();
-  aw_feature_list_creator_->CreateFeatureListAndFieldTrials();
-  PostFieldTrialInitialization();
+bool AwMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
+  return ShouldCreateFeatureList(invoked_in);
 }
 
-void AwMainDelegate::PostFieldTrialInitialization() {
-  version_info::Channel channel = version_info::android::GetChannel();
-  bool is_canary_dev = (channel == version_info::Channel::CANARY ||
-                        channel == version_info::Channel::DEV);
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  std::string process_type =
-      command_line.GetSwitchValueASCII(switches::kProcessType);
-  bool is_browser_process = process_type.empty();
+variations::VariationsIdsProvider*
+AwMainDelegate::CreateVariationsIdsProvider() {
+  return variations::VariationsIdsProvider::Create(
+      variations::VariationsIdsProvider::Mode::kDontSendSignedInVariations);
+}
 
-  ALLOW_UNUSED_LOCAL(is_canary_dev);
-  ALLOW_UNUSED_LOCAL(is_browser_process);
-
-  // Enable LITTLE-cores only mode if the feature is enabled, but only for child
-  // processes, as the browser process is shared with the hosting app.
-  if (!is_browser_process &&
-      base::FeatureList::IsEnabled(
-          android_webview::features::
-              kWebViewCpuAffinityRestrictToLittleCores)) {
-    power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
-        power_scheduler::SchedulingPolicy::kLittleCoresOnly);
+absl::optional<int> AwMainDelegate::PostEarlyInitialization(
+    InvokedIn invoked_in) {
+  const bool is_browser_process =
+      absl::holds_alternative<InvokedInBrowserProcess>(invoked_in);
+  if (is_browser_process) {
+    InitIcuAndResourceBundleBrowserSide();
+    aw_feature_list_creator_->CreateFeatureListAndFieldTrials();
+    content::InitializeMojoCore();
   }
+
+  version_info::Channel channel = version_info::android::GetChannel();
+  [[maybe_unused]] const bool is_canary_dev =
+      (channel == version_info::Channel::CANARY ||
+       channel == version_info::Channel::DEV);
+  [[maybe_unused]] const std::string process_type =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kProcessType);
 
 #if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)
   gwp_asan::EnableForMalloc(is_canary_dev || is_browser_process,
@@ -409,6 +466,7 @@ void AwMainDelegate::PostFieldTrialInitialization() {
   gwp_asan::EnableForPartitionAlloc(is_canary_dev || is_browser_process,
                                     process_type.c_str());
 #endif
+  return absl::nullopt;
 }
 
 content::ContentClient* AwMainDelegate::CreateContentClient() {
@@ -418,8 +476,8 @@ content::ContentClient* AwMainDelegate::CreateContentClient() {
 content::ContentBrowserClient* AwMainDelegate::CreateContentBrowserClient() {
   DCHECK(!aw_feature_list_creator_);
   aw_feature_list_creator_ = std::make_unique<AwFeatureListCreator>();
-  content_browser_client_.reset(
-      new AwContentBrowserClient(aw_feature_list_creator_.get()));
+  content_browser_client_ =
+      std::make_unique<AwContentBrowserClient>(aw_feature_list_creator_.get());
   return content_browser_client_.get();
 }
 
@@ -434,10 +492,13 @@ gpu::SharedImageManager* GetSharedImageManager() {
   return GpuServiceWebView::GetInstance()->shared_image_manager();
 }
 
+gpu::Scheduler* GetScheduler() {
+  DCHECK(GpuServiceWebView::GetInstance());
+  return GpuServiceWebView::GetInstance()->scheduler();
+}
+
 viz::VizCompositorThreadRunner* GetVizCompositorThreadRunner() {
-  return ::features::IsUsingVizForWebView()
-             ? VizCompositorThreadRunnerWebView::GetInstance()
-             : nullptr;
+  return VizCompositorThreadRunnerWebView::GetInstance();
 }
 
 }  // namespace
@@ -446,12 +507,13 @@ content::ContentGpuClient* AwMainDelegate::CreateContentGpuClient() {
   content_gpu_client_ = std::make_unique<AwContentGpuClient>(
       base::BindRepeating(&GetSyncPointManager),
       base::BindRepeating(&GetSharedImageManager),
+      base::BindRepeating(&GetScheduler),
       base::BindRepeating(&GetVizCompositorThreadRunner));
   return content_gpu_client_.get();
 }
 
 content::ContentRendererClient* AwMainDelegate::CreateContentRendererClient() {
-  content_renderer_client_.reset(new AwContentRendererClient());
+  content_renderer_client_ = std::make_unique<AwContentRendererClient>();
   return content_renderer_client_.get();
 }
 

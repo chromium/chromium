@@ -1,0 +1,111 @@
+<style include="settings-shared">
+  #container {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    gap: 100px;
+    justify-content: center;
+    margin: 40px 0;
+  }
+
+  .image-wrapper {
+    height: 60px;
+    margin-bottom: 16px;
+    width: 60px;
+  }
+
+  .image-wrapper img {
+    border: 1px solid var(--cros-color-primary-dark);
+    border-radius: 50%;
+    height: 100%;
+    width: 100%;
+  }
+
+  .battery-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    height: 124px;
+    justify-content: center;
+  }
+
+  bluetooth-battery-icon-percentage {
+    margin-bottom: 8px;
+  }
+
+  #notConnectedLabel {
+    color: gray;
+  }
+</style>
+<div id="container">
+  <template is="dom-if" restamp
+      if="[[shouldShowBatteryTypeInfo_(device, BatteryType.LEFT_BUD)]]">
+    <div id="leftBudContainer" class="battery-container">
+      <div class="image-wrapper">
+        <img src="[[getImageSrc_(device, BatteryType.LEFT_BUD)]]"
+            alt="Left bud device image">
+      </div>
+      <span id="leftBudLabel">
+        [[getBatteryTypeString_(device, BatteryType.LEFT_BUD)]]
+      </span>
+      <bluetooth-battery-icon-percentage
+        device="[[device]]"
+        battery-type="[[BatteryType.LEFT_BUD]]">
+      </bluetooth-battery-icon-percentage>
+    </div>
+  </template>
+  <template is="dom-if" restamp
+      if="[[shouldShowBatteryTypeInfo_(device, BatteryType.CASE)]]">
+    <div id="caseContainer" class="battery-container">
+      <div class="image-wrapper">
+        <img src="[[getImageSrc_(device, BatteryType.CASE)]]"
+            alt="Case device image">
+      </div>
+      <span id="caseLabel">
+        [[getBatteryTypeString_(device, BatteryType.CASE)]]
+      </span>
+      <bluetooth-battery-icon-percentage
+        device="[[device]]"
+        battery-type="[[BatteryType.CASE]]">
+      </bluetooth-battery-icon-percentage>
+    </div>
+  </template>
+  <template is="dom-if" restamp
+      if="[[shouldShowBatteryTypeInfo_(device, BatteryType.RIGHT_BUD)]]">
+    <div id="rightBudContainer" class="battery-container">
+      <div class="image-wrapper">
+        <img src="[[getImageSrc_(device, BatteryType.RIGHT_BUD)]]"
+            alt="Right bud device image">
+      </div>
+      <span id="rightBudLabel">
+        [[getBatteryTypeString_(device, BatteryType.RIGHT_BUD)]]
+      </span>
+      <bluetooth-battery-icon-percentage
+        device="[[device]]"
+        battery-type="[[BatteryType.RIGHT_BUD]]">
+      </bluetooth-battery-icon-percentage>
+    </div>
+  </template>
+  <template is="dom-if" restamp
+      if="[[shouldShowDefaultInfo_(device)]]">
+    <div id="defaultContainer" class="battery-container">
+      <div class="image-wrapper">
+        <img src="[[getImageSrc_(device, BatteryType.DEFAULT)]]"
+            alt="Default device image">
+      </div>
+      <template is="dom-if" restamp
+        if="[[isDeviceNotConnected_(device)]]">
+        <span id="notConnectedLabel">
+          $i18n{bluetoothDeviceDetailDisconnected}
+        </span>
+      </template>
+      <template is="dom-if" restamp
+        if="[[!isDeviceNotConnected_(device)]]">
+        <bluetooth-battery-icon-percentage
+          device="[[device]]"
+          battery-type="[[BatteryType.DEFAULT]]">
+        </bluetooth-battery-icon-percentage>
+      </template>
+    </div>
+  </template>
+</div>

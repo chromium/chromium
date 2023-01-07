@@ -1,23 +1,18 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.net;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.compat.ApiHelperForM;
 
 import java.util.ArrayList;
 
@@ -43,10 +38,11 @@ public class NetworkChangeNotifier {
 
     private final ArrayList<Long> mNativeChangeNotifiers;
     private final ObserverList<ConnectionTypeObserver> mConnectionTypeObservers;
-    private final ConnectivityManager mConnectivityManager;
     private NetworkChangeNotifierAutoDetect mAutoDetector;
     // Last value broadcast via ConnectionTypeChange signal.
     private int mCurrentConnectionType = ConnectionType.CONNECTION_UNKNOWN;
+    // Last value broadcast via ConnectionCostChange signal.
+    private int mCurrentConnectionCost = ConnectionCost.UNKNOWN;
 
     @SuppressLint("StaticFieldLeak")
     private static NetworkChangeNotifier sInstance;
@@ -55,9 +51,6 @@ public class NetworkChangeNotifier {
     protected NetworkChangeNotifier() {
         mNativeChangeNotifiers = new ArrayList<Long>();
         mConnectionTypeObservers = new ObserverList<ConnectionTypeObserver>();
-        mConnectivityManager =
-                (ConnectivityManager) ContextUtils.getApplicationContext().getSystemService(
-                        Context.CONNECTIVITY_SERVICE);
     }
 
     /**
@@ -90,6 +83,11 @@ public class NetworkChangeNotifier {
         return mAutoDetector == null
                 ? ConnectionSubtype.SUBTYPE_UNKNOWN
                 : mAutoDetector.getCurrentNetworkState().getConnectionSubtype();
+    }
+
+    @CalledByNative
+    public int getCurrentConnectionCost() {
+        return mCurrentConnectionCost;
     }
 
     /**
@@ -153,10 +151,12 @@ public class NetworkChangeNotifier {
      * Note that passing true here requires the embedding app have the platform ACCESS_NETWORK_STATE
      * permission. Also note that in this case the auto detection is enabled based on the status of
      * the application (@see ApplicationStatus).
+     * Declare @CalledByNative only for testing.
      *
      * @param shouldAutoDetect true if the NetworkChangeNotifier should listen for system changes in
      *    network connectivity.
      */
+    @CalledByNative
     public static void setAutoDetectConnectivityState(boolean shouldAutoDetect) {
         getInstance().setAutoDetectConnectivityStateInternal(
                 shouldAutoDetect, new RegistrationPolicyApplicationStatus());
@@ -201,6 +201,10 @@ public class NetworkChangeNotifier {
                                 updateCurrentConnectionType(newConnectionType);
                             }
                             @Override
+                            public void onConnectionCostChanged(int newConnectionCost) {
+                                notifyObserversOfConnectionCostChange(newConnectionCost);
+                            }
+                            @Override
                             public void onConnectionSubtypeChanged(int newConnectionSubtype) {
                                 notifyObserversOfConnectionSubtypeChange(newConnectionSubtype);
                             }
@@ -225,6 +229,7 @@ public class NetworkChangeNotifier {
                 final NetworkChangeNotifierAutoDetect.NetworkState networkState =
                         mAutoDetector.getCurrentNetworkState();
                 updateCurrentConnectionType(networkState.getConnectionType());
+                updateCurrentConnectionCost(networkState.getConnectionCost());
                 notifyObserversOfConnectionSubtypeChange(networkState.getConnectionSubtype());
             }
         } else {
@@ -291,6 +296,14 @@ public class NetworkChangeNotifier {
         getInstance().notifyObserversOfConnectionTypeChange(connectionType, netId);
     }
 
+    // For testing, pretend the connection cost has changed.
+    @CalledByNative
+    @VisibleForTesting
+    public static void fakeConnectionCostChanged(int connectionCost) {
+        setAutoDetectConnectivityState(false);
+        getInstance().notifyObserversOfConnectionCostChange(connectionCost);
+    }
+
     // For testing, pretend the connection subtype has changed.
     @CalledByNative
     public static void fakeConnectionSubtypeChanged(int connectionSubtype) {
@@ -317,6 +330,21 @@ public class NetworkChangeNotifier {
         }
         for (ConnectionTypeObserver observer : mConnectionTypeObservers) {
             observer.onConnectionTypeChanged(newConnectionType);
+        }
+    }
+
+    private void updateCurrentConnectionCost(int newConnectionCost) {
+        mCurrentConnectionCost = newConnectionCost;
+        notifyObserversOfConnectionCostChange(newConnectionCost);
+    }
+
+    /**
+     * Alerts all observers of a connection cost change.
+     */
+    void notifyObserversOfConnectionCostChange(int newConnectionCost) {
+        for (Long nativeChangeNotifier : mNativeChangeNotifiers) {
+            NetworkChangeNotifierJni.get().notifyConnectionCostChanged(
+                    nativeChangeNotifier, NetworkChangeNotifier.this, newConnectionCost);
         }
     }
 
@@ -395,29 +423,6 @@ public class NetworkChangeNotifier {
         mConnectionTypeObservers.removeObserver(observer);
     }
 
-    /**
-     * Is the process bound to a network?
-     */
-    private boolean isProcessBoundToNetworkInternal() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            return false;
-        } else if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            @SuppressWarnings("deprecation")
-            boolean returnValue = ConnectivityManager.getProcessDefaultNetwork() != null;
-            return returnValue;
-        } else {
-            return ApiHelperForM.getBoundNetworkForProcess(mConnectivityManager) != null;
-        }
-    }
-
-    /**
-     * Is the process bound to a network?
-     */
-    @CalledByNative
-    public static boolean isProcessBoundToNetwork() {
-        return getInstance().isProcessBoundToNetworkInternal();
-    }
-
     // For testing only.
     public static NetworkChangeNotifierAutoDetect getAutoDetectorForTest() {
         return getInstance().mAutoDetector;
@@ -436,6 +441,10 @@ public class NetworkChangeNotifier {
         @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
         void notifyConnectionTypeChanged(long nativePtr, NetworkChangeNotifier caller,
                 int newConnectionType, long defaultNetId);
+
+        @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
+        void notifyConnectionCostChanged(
+                long nativePtr, NetworkChangeNotifier caller, int newConnectionCost);
 
         @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
         void notifyMaxBandwidthChanged(long nativePtr, NetworkChangeNotifier caller, int subType);

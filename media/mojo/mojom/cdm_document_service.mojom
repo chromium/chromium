@@ -1,0 +1,80 @@
+// Copyright 2015 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "media/mojo/mojom/media_types.mojom";
+
+// Contains data linked to an origin that the CDM stores in the browser
+// process.
+[EnableIf=is_win]
+struct MediaFoundationCdmData {
+  // The origin ID of the document associated with the CDM. The origin ID
+  // is used in place of the origin when hiding the concrete origin is needed.
+  // The origin ID is also user resettable by clearing the browsing data.
+  mojo_base.mojom.UnguessableToken origin_id;
+
+  // The token is set by the CDM. The token is then saved in the Pref Service so
+  // that it can be reused by the CDM for that same origin in the future.
+  array<uint8>? client_token;
+
+  // The path where the MediaFoundation CDM should store its data. The path is
+  // specific to the current chrome user and the device's architecture.
+  mojo_base.mojom.FilePath cdm_store_path_root;
+};
+
+// The service itself is associated with a RenderFrameHost in the browser
+// process and will be called by a client living in the utility process hosting
+// the CDM.
+interface CdmDocumentService {
+  // Allows authorized services to verify that the underlying platform is
+  // trusted. An example of a trusted platform is a Chrome OS device in
+  // verified boot mode. This can be used for protected content playback.
+  //
+  // Input parameters:
+  // - |service_id|: the service ID for the |challenge|.
+  // - |challenge|: the challenge data.
+  //
+  // Output parameters:
+  // - |success|: whether the platform is successfully verified. If true/false
+  //              the following 3 parameters should be non-empty/empty.
+  // - |signed_data|: the data signed by the platform.
+  // - |signed_data_signature|: the signature of the signed data block.
+  // - |platform_key_certificate|: the device specific certificate for the
+  //                               requested service.
+  ChallengePlatform(string service_id, string challenge) =>
+      (bool success,
+       string signed_data,
+       string signed_data_signature,
+       string platform_key_certificate);
+
+  // Requests a particular version of the device's Storage Id (or latest
+  // available version if 0 is specified). This returns the requested
+  // |storage_id|, which may be empty if it is not supported by the platform.
+  GetStorageId(uint32 version) => (uint32 version, array<uint8> storage_id);
+
+  // Returns true if Verified Access is enabled in settings, false otherwise.
+  [EnableIf=is_chromeos]
+  IsVerifiedAccessEnabled() => (bool enabled);
+
+  // Gets the Media FoundationCDM data for the origin associated with the CDM.
+  // - `media_foundation_cdm_data`: The CDM data for the origin associated with
+  //                                the CDM.
+  [EnableIf=is_win]
+  GetMediaFoundationCdmData() => (MediaFoundationCdmData cdm_data);
+
+  // Sets the client token for the origin associated with the CDM. The token is
+  // set by the CDM. The token is then saved in the Pref Service so that it can
+  // be reused by the CDM for that same origin in the future.
+  [EnableIf=is_win]
+  SetCdmClientToken(array<uint8> client_token);
+
+  // Reports a CDM event, which can facilitate metrics reporting or fallback
+  // logic.  For error events, the `hresult` provides more details about the
+  // error.
+  [EnableIf=is_win]
+  OnCdmEvent(CdmEvent event, uint32 hresult);
+};

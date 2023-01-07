@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,19 +9,20 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_file_system_instance.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/file_system_watcher/arc_file_system_watcher_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_file_system_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

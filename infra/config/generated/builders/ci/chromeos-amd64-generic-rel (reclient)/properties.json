@@ -1,0 +1,18 @@
+{
+  "$build/reclient": {
+    "instance": "rbe-chromium-trusted",
+    "metrics_project": "chromium-reclient-metrics",
+    "rewrapper_env": {
+      "RBE_cache_silo": "chromeos-amd64-generic-rel (reclient)"
+    }
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium.fyi",
+  "recipe": "chromium"
+}

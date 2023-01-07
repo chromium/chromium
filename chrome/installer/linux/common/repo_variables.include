@@ -1,0 +1,3 @@
+# sources.list setting for @@PACKAGE@@ updates.
+REPOCONFIG="@@REPOCONFIG@@"
+REPOCONFIGREGEX="@@REPOCONFIGREGEX@@"

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,18 +31,18 @@ struct TestResults {
 };
 
 LocalTimeTicks GetLocalTimeTicks(int64_t value) {
-  return LocalTimeTicks::FromTimeTicks(
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(value));
+  return LocalTimeTicks::FromTimeTicks(base::TimeTicks() +
+                                       base::Microseconds(value));
 }
 
 RemoteTimeTicks GetRemoteTimeTicks(int64_t value) {
-  return RemoteTimeTicks::FromTimeTicks(
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(value));
+  return RemoteTimeTicks::FromTimeTicks(base::TimeTicks() +
+                                        base::Microseconds(value));
 }
 
 // Returns a fake TimeTicks based on the given microsecond offset.
 base::TimeTicks TicksFromMicroseconds(int64_t micros) {
-  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(micros);
+  return base::TimeTicks() + base::Microseconds(micros);
 }
 
 TestResults RunTest(const TestParams& params) {

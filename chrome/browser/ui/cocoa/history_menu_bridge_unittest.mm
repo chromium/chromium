@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,16 +15,20 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -37,11 +41,61 @@ class MockTRS : public sessions::TabRestoreServiceImpl {
  public:
   MockTRS(Profile* profile)
       : sessions::TabRestoreServiceImpl(
-            base::WrapUnique(new ChromeTabRestoreServiceClient(profile)),
+            std::make_unique<ChromeTabRestoreServiceClient>(profile),
             profile->GetPrefs(),
             nullptr) {}
   MOCK_CONST_METHOD0(entries, const sessions::TabRestoreService::Entries&());
 };
+
+MockTRS::Tab* CreateSessionTab(SessionID::id_type id,
+                               const std::string& url,
+                               const std::string& title) {
+  auto* tab = new MockTRS::Tab;
+  tab->id = SessionID::FromSerializedValue(id);
+  tab->current_navigation_index = 0;
+  tab->navigations.push_back(
+      sessions::ContentTestHelper::CreateNavigation(url, title));
+  return tab;
+}
+
+MockTRS::Entries CreateSessionEntries(
+    std::initializer_list<MockTRS::Entry*> entries) {
+  MockTRS::Entries ret;
+  for (auto* entry : entries)
+    ret.emplace_back(entry);
+  return ret;
+}
+
+MockTRS::Window* CreateSessionWindow(
+    SessionID::id_type id,
+    std::initializer_list<MockTRS::Tab*> tabs) {
+  auto* window = new MockTRS::Window;
+  window->id = SessionID::FromSerializedValue(id);
+  window->tabs.reserve(tabs.size());
+  for (auto* tab : tabs)
+    window->tabs.emplace_back(std::move(tab));
+  return window;
+}
+
+MockTRS::Group* CreateSessionGroup(SessionID::id_type id,
+                                   tab_groups::TabGroupVisualData visual_data,
+                                   std::initializer_list<MockTRS::Tab*> tabs) {
+  auto* group = new MockTRS::Group;
+  group->id = SessionID::FromSerializedValue(id);
+  group->visual_data = visual_data;
+  group->tabs.reserve(tabs.size());
+  for (auto* tab : tabs)
+    group->tabs.emplace_back(std::move(tab));
+  return group;
+}
+
+std::unique_ptr<HistoryMenuBridge::HistoryItem> CreateItem(
+    const std::u16string& title) {
+  auto item = std::make_unique<HistoryMenuBridge::HistoryItem>();
+  item->title = title;
+  item->url = GURL(title);
+  return item;
+}
 
 class MockBridge : public HistoryMenuBridge {
  public:
@@ -57,12 +111,24 @@ class MockBridge : public HistoryMenuBridge {
 
 class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
  public:
+  bool ShouldMenuItemBeVisible(NSMenuItem* item) {
+    return bridge_->ShouldMenuItemBeVisible(item);
+  }
+
+ protected:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+    appController_.reset([[AppController alloc] init]);
+    [appController_ setLastProfileForTesting:profile()];
+    previousApplicationDelegate_ = [NSApp delegate];
+    [NSApp setDelegate:appController_];
+
     bridge_ = std::make_unique<MockBridge>(profile());
   }
 
   void TearDown() override {
+    [NSApp setDelegate:previousApplicationDelegate_];
+    appController_.reset();
     bridge_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
@@ -104,44 +170,6 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
     return item;
   }
 
-  std::unique_ptr<HistoryMenuBridge::HistoryItem> CreateItem(
-      const std::u16string& title) {
-    auto item = std::make_unique<HistoryMenuBridge::HistoryItem>();
-    item->title = title;
-    item->url = GURL(title);
-    return item;
-  }
-
-  MockTRS::Entries CreateSessionEntries(
-      std::initializer_list<MockTRS::Entry*> entries) {
-    MockTRS::Entries ret;
-    for (auto* entry : entries)
-      ret.emplace_back(entry);
-    return ret;
-  }
-
-  MockTRS::Tab* CreateSessionTab(SessionID::id_type id,
-                                 const std::string& url,
-                                 const std::string& title) {
-    auto* tab = new MockTRS::Tab;
-    tab->id = SessionID::FromSerializedValue(id);
-    tab->current_navigation_index = 0;
-    tab->navigations.push_back(
-        sessions::ContentTestHelper::CreateNavigation(url, title));
-    return tab;
-  }
-
-  MockTRS::Window* CreateSessionWindow(
-      SessionID::id_type id,
-      std::initializer_list<MockTRS::Tab*> tabs) {
-    auto* window = new MockTRS::Window;
-    window->id = SessionID::FromSerializedValue(id);
-    window->tabs.reserve(tabs.size());
-    for (auto* tab : tabs)
-      window->tabs.emplace_back(std::move(tab));
-    return window;
-  }
-
   void GetFaviconForHistoryItem(HistoryMenuBridge::HistoryItem* item) {
     bridge_->GetFaviconForHistoryItem(item);
   }
@@ -160,9 +188,63 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
     return bridge_->menu_item_map_;
   }
 
+ private:
   CocoaTestHelper cocoa_test_helper_;
+
+ protected:
   std::unique_ptr<MockBridge> bridge_;
+
+ private:
+  base::scoped_nsobject<AppController> appController_;
+  id<NSApplicationDelegate> previousApplicationDelegate_;
 };
+
+class HistoryMenuBridgeLifetimeTest : public testing::Test {
+ public:
+  NSMenu* HistoryMenu(HistoryMenuBridge* bridge) {
+    return bridge->HistoryMenu();
+  }
+
+  const std::map<NSMenuItem*, std::unique_ptr<HistoryMenuBridge::HistoryItem>>&
+  menu_item_map(HistoryMenuBridge* bridge) {
+    return bridge->menu_item_map_;
+  }
+
+  void AddItemToBridgeMenu(HistoryMenuBridge* bridge,
+                           std::unique_ptr<HistoryMenuBridge::HistoryItem> item,
+                           NSMenu* menu,
+                           NSInteger tag,
+                           NSInteger index) {
+    bridge->AddItemToMenu(std::move(item), menu, tag, index);
+  }
+};
+
+void CheckMenuItemVisibility(HistoryMenuBridgeTest* test, bool is_incognito) {
+  // Make sure the items belong to both original and incognito mode are visible.
+  NSInteger always_visible_items[] = {IDC_HOME, IDC_BACK, IDC_FORWARD};
+  for (size_t i = 0; i < std::size(always_visible_items); i++) {
+    // Create a fake item with tag.
+    base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc] init]);
+    item.get().tag = always_visible_items[i];
+    EXPECT_TRUE(test->ShouldMenuItemBeVisible(item));
+  }
+
+  // Check visibilty of items belong to regular mode. They should be visible for
+  // regular mode, not for incognito mode.
+  NSInteger regular_visible_items[] = {
+      HistoryMenuBridge::kRecentlyClosedSeparator,
+      HistoryMenuBridge::kRecentlyClosedTitle,
+      HistoryMenuBridge::kVisitedSeparator,
+      HistoryMenuBridge::kVisitedTitle,
+      HistoryMenuBridge::kShowFullSeparator,
+      IDC_SHOW_HISTORY};
+  for (size_t i = 0; i < std::size(regular_visible_items); i++) {
+    // Create a fake item with tag.
+    base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc] init]);
+    item.get().tag = regular_visible_items[i];
+    EXPECT_EQ(!is_incognito, test->ShouldMenuItemBeVisible(item));
+  }
+}
 
 // Edge case test for clearing until the end of a menu.
 TEST_F(HistoryMenuBridgeTest, ClearHistoryMenuUntilEnd) {
@@ -220,10 +302,10 @@ TEST_F(HistoryMenuBridgeTest, AddItemToMenu) {
 
   const std::u16string short_url = u"http://foo/";
   const std::u16string long_url =
-      base::ASCIIToUTF16("http://super-duper-long-url--."
-                         "that.cannot.possibly.fit.even-in-80-columns"
-                         "or.be.reasonably-displayed-in-a-menu"
-                         "without.looking-ridiculous.com/");  // 140 chars total
+      u"http://super-duper-long-url--."
+      u"that.cannot.possibly.fit.even-in-80-columns"
+      u"or.be.reasonably-displayed-in-a-menu"
+      u"without.looking-ridiculous.com/";  // 140 chars total
 
   AddItemToBridgeMenu(CreateItem(short_url), menu, 100, 0);
   AddItemToBridgeMenu(CreateItem(long_url), menu, 101, 1);
@@ -321,10 +403,12 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsAndWindows) {
   EXPECT_TRUE(hist2);
   EXPECT_EQ(30, hist2->session_id.id());
   EXPECT_EQ(2U, hist2->tabs.size());
-  // Do not test menu item title because it is localized.
+  // Do not test full menu item title because it is localized. Just verify that
+  // it contains the right number of tabs.
+  EXPECT_TRUE([[item2 title] containsString:@"2"]);
   NSMenu* submenu1 = [item2 submenu];
   EXPECT_EQ(4U, [[submenu1 itemArray] count]);
-  // Do not test Restore All Tabs because it is localiced.
+  // Do not test Restore All Tabs because it is localized.
   EXPECT_TRUE([[submenu1 itemAtIndex:1] isSeparatorItem]);
   EXPECT_NSEQ(@"foo", [[submenu1 itemAtIndex:2] title]);
   EXPECT_NSEQ(@"bar", [[submenu1 itemAtIndex:3] title]);
@@ -342,10 +426,12 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsAndWindows) {
   EXPECT_TRUE(hist4);
   EXPECT_EQ(50, hist4->session_id.id());
   EXPECT_EQ(3U, hist4->tabs.size());
-  // Do not test menu item title because it is localized.
+  // Do not test full menu item title because it is localized. Just verify that
+  // it contains the right number of tabs.
+  EXPECT_TRUE([[item4 title] containsString:@"3"]);
   NSMenu* submenu2 = [item4 submenu];
   EXPECT_EQ(5U, [[submenu2 itemArray] count]);
-  // Do not test Restore All Tabs because it is localiced.
+  // Do not test Restore All Tabs because it is localized.
   EXPECT_TRUE([[submenu2 itemAtIndex:1] isSeparatorItem]);
   EXPECT_NSEQ(@"magic", [[submenu2 itemAtIndex:2] title]);
   EXPECT_NSEQ(@"goats", [[submenu2 itemAtIndex:3] title]);
@@ -360,6 +446,78 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsAndWindows) {
   ClearMenuSection(menu, HistoryMenuBridge::kRecentlyClosed);
   EXPECT_EQ(0u, menu_item_map().size());
   EXPECT_EQ(0u, [[menu itemArray] count]);
+}
+
+// Test that the menu is created for a set of groups.
+TEST_F(HistoryMenuBridgeTest, RecentlyClosedGroups) {
+  tab_groups::TabGroupVisualData visual_data1(
+      std::u16string(), tab_groups::TabGroupColorId::kGrey);
+  tab_groups::TabGroupVisualData visual_data2(
+      u"title", tab_groups::TabGroupColorId::kBlue);
+
+  std::unique_ptr<MockTRS> trs(new MockTRS(profile()));
+  auto entries{CreateSessionEntries({
+      CreateSessionGroup(30, visual_data1,
+                         {
+                             CreateSessionTab(31, "http://foo.com", "foo"),
+                             CreateSessionTab(32, "http://bar.com", "bar"),
+                         }),
+      CreateSessionGroup(
+          50, visual_data2,
+          {
+              CreateSessionTab(51, "http://magic.com", "magic"),
+              CreateSessionTab(52, "http://goats.com", "goats"),
+              CreateSessionTab(53, "http://teleporter.com", "teleporter"),
+          }),
+  })};
+
+  using ::testing::ReturnRef;
+  EXPECT_CALL(*trs.get(), entries()).WillOnce(ReturnRef(entries));
+
+  bridge_->TabRestoreServiceChanged(trs.get());
+
+  NSMenu* menu = bridge_->HistoryMenu();
+  ASSERT_EQ(2U, [[menu itemArray] count]);
+
+  NSMenuItem* item1 = [menu itemAtIndex:0];
+  MockBridge::HistoryItem* hist1 = bridge_->HistoryItemForMenuItem(item1);
+  EXPECT_TRUE(hist1);
+  EXPECT_EQ(30, hist1->session_id.id());
+  EXPECT_EQ(2U, hist1->tabs.size());
+  // Do not test full menu item title because it is localized. Just verify that
+  // it contains the right number of tabs and no title.
+  EXPECT_TRUE([[item1 title] containsString:@"2"]);
+  EXPECT_FALSE([[item1 title] containsString:@"title"]);
+
+  NSMenu* submenu1 = [item1 submenu];
+  EXPECT_EQ(4U, [[submenu1 itemArray] count]);
+  // Do not test Restore All Tabs because it is localized.
+  EXPECT_TRUE([[submenu1 itemAtIndex:1] isSeparatorItem]);
+  EXPECT_NSEQ(@"foo", [[submenu1 itemAtIndex:2] title]);
+  EXPECT_NSEQ(@"bar", [[submenu1 itemAtIndex:3] title]);
+  EXPECT_EQ(31, hist1->tabs[0]->session_id.id());
+  EXPECT_EQ(32, hist1->tabs[1]->session_id.id());
+
+  NSMenuItem* item2 = [menu itemAtIndex:1];
+  MockBridge::HistoryItem* hist2 = bridge_->HistoryItemForMenuItem(item2);
+  EXPECT_TRUE(hist2);
+  EXPECT_EQ(50, hist2->session_id.id());
+  EXPECT_EQ(3U, hist2->tabs.size());
+  // Do not test full menu item title because it is localized. Just verify that
+  // it contains the right number of tabs and title.
+  EXPECT_TRUE([[item2 title] containsString:@"3"]);
+  EXPECT_TRUE([[item2 title] containsString:@"title"]);
+
+  NSMenu* submenu2 = [item2 submenu];
+  EXPECT_EQ(5U, [[submenu2 itemArray] count]);
+  // Do not test Restore All Tabs because it is localized.
+  EXPECT_TRUE([[submenu2 itemAtIndex:1] isSeparatorItem]);
+  EXPECT_NSEQ(@"magic", [[submenu2 itemAtIndex:2] title]);
+  EXPECT_NSEQ(@"goats", [[submenu2 itemAtIndex:3] title]);
+  EXPECT_NSEQ(@"teleporter", [[submenu2 itemAtIndex:4] title]);
+  EXPECT_EQ(51, hist2->tabs[0]->session_id.id());
+  EXPECT_EQ(52, hist2->tabs[1]->session_id.id());
+  EXPECT_EQ(53, hist2->tabs[2]->session_id.id());
 }
 
 // Tests that we properly request an icon from the FaviconService.
@@ -403,6 +561,124 @@ TEST_F(HistoryMenuBridgeTest, GotFaviconData) {
   EXPECT_FALSE(item.icon_requested);
   EXPECT_TRUE(item.icon.get());
   EXPECT_TRUE([item.menu_item image]);
+}
+
+TEST_F(HistoryMenuBridgeTest, MenuItemVisibilityForRegularMode) {
+  CheckMenuItemVisibility(this, false);
+}
+
+TEST_F(HistoryMenuBridgeTest, MenuItemVisibilityForIncognitoMode) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kUpdateHistoryEntryPointsInIncognito);
+  bridge_ = std::make_unique<MockBridge>(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  CheckMenuItemVisibility(this, true);
+}
+
+// Does a full setup and tear down of the bridge.
+TEST_F(HistoryMenuBridgeLifetimeTest, ShutdownAfterProfile) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(
+      TabRestoreServiceFactory::GetInstance(),
+      TabRestoreServiceFactory::GetDefaultFactory());
+  profile_builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                                    HistoryServiceFactory::GetDefaultFactory());
+  std::unique_ptr<TestingProfile> profile = profile_builder.Build();
+
+  auto bridge = std::make_unique<HistoryMenuBridge>(profile.get());
+  profile.reset();
+  // Should not crash.
+  bridge.reset();
+}
+
+// Does a full setup and tear down of the bridge.
+TEST_F(HistoryMenuBridgeLifetimeTest, ShutdownBeforeProfile) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(
+      TabRestoreServiceFactory::GetInstance(),
+      TabRestoreServiceFactory::GetDefaultFactory());
+  profile_builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                                    HistoryServiceFactory::GetDefaultFactory());
+  std::unique_ptr<TestingProfile> profile = profile_builder.Build();
+
+  auto bridge = std::make_unique<HistoryMenuBridge>(profile.get());
+  bridge.reset();
+}
+
+// Initializes the menu, then destroys the Profile but keeps the
+// HistoryMenuBridge around.
+TEST_F(HistoryMenuBridgeLifetimeTest, StillValidAfterProfileShutdown) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(FaviconServiceFactory::GetInstance(),
+                                    FaviconServiceFactory::GetDefaultFactory());
+  profile_builder.AddTestingFactory(
+      TabRestoreServiceFactory::GetInstance(),
+      TabRestoreServiceFactory::GetDefaultFactory());
+  profile_builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                                    HistoryServiceFactory::GetDefaultFactory());
+  std::unique_ptr<TestingProfile> profile = profile_builder.Build();
+  base::FilePath profile_dir = profile->GetPath();
+  base::scoped_nsobject<AppController> appController(
+      [[AppController alloc] init]);
+  [NSApp setDelegate:appController];
+
+  auto bridge = std::make_unique<MockBridge>(profile.get());
+  std::unique_ptr<MockTRS> trs(new MockTRS(profile.get()));
+  auto entries{CreateSessionEntries({
+      CreateSessionTab(24, "http://google.com", "Google"),
+      CreateSessionTab(42, "http://apple.com", "Apple"),
+  })};
+
+  using ::testing::ReturnRef;
+  EXPECT_CALL(*trs.get(), entries()).WillOnce(ReturnRef(entries));
+
+  bridge->TabRestoreServiceChanged(trs.get());
+
+  NSMenu* menu = HistoryMenu(bridge.get());
+  AddItemToBridgeMenu(bridge.get(), CreateItem(u"http://example.com/"), menu,
+                      100, 2);
+  AddItemToBridgeMenu(bridge.get(), CreateItem(u"http://example.org/"), menu,
+                      101, 3);
+
+  // Destroy the Profile.
+  bridge->OnProfileWillBeDestroyed();
+  trs.reset();
+  profile.reset();
+  ASSERT_EQ(nullptr, bridge->profile());
+  EXPECT_EQ(profile_dir, bridge->profile_dir());
+
+  // The menu should still contain items after Profile destruction.
+  ASSERT_EQ(4u, [[menu itemArray] count]);
+
+  NSMenuItem* item1 = [menu itemAtIndex:0];
+  MockBridge::HistoryItem* hist1 = bridge->HistoryItemForMenuItem(item1);
+  EXPECT_TRUE(hist1);
+  EXPECT_EQ(24, hist1->session_id.id());
+  EXPECT_NSEQ(@"Google", [item1 title]);
+
+  NSMenuItem* item2 = [menu itemAtIndex:1];
+  MockBridge::HistoryItem* hist2 = bridge->HistoryItemForMenuItem(item2);
+  EXPECT_TRUE(hist2);
+  EXPECT_EQ(42, hist2->session_id.id());
+  EXPECT_NSEQ(@"Apple", [item2 title]);
+
+  NSMenuItem* item3 = [menu itemAtIndex:2];
+  MockBridge::HistoryItem* hist3 = bridge->HistoryItemForMenuItem(item2);
+  EXPECT_TRUE(hist3);
+  EXPECT_NSEQ(@"http://example.com/", [item3 title]);
+
+  NSMenuItem* item4 = [menu itemAtIndex:3];
+  MockBridge::HistoryItem* hist4 = bridge->HistoryItemForMenuItem(item2);
+  EXPECT_TRUE(hist4);
+  EXPECT_NSEQ(@"http://example.org/", [item4 title]);
+
+  EXPECT_EQ(4u, menu_item_map(bridge.get()).size());
+
+  bridge.reset();
+  [NSApp setDelegate:nil];
 }
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "build/chromeos_buildflags.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -60,7 +61,7 @@ Notification::Notification(NotificationType type,
                            const std::string& id,
                            const std::u16string& title,
                            const std::u16string& message,
-                           const gfx::Image& icon,
+                           const ui::ImageModel& icon,
                            const std::u16string& display_source,
                            const GURL& origin_url,
                            const NotifierId& notifier_id,
@@ -98,12 +99,14 @@ Notification::~Notification() = default;
 // static
 std::unique_ptr<Notification> Notification::DeepCopy(
     const Notification& notification,
+    const ui::ColorProvider* color_provider,
     bool include_body_image,
     bool include_small_image,
     bool include_icon_images) {
   std::unique_ptr<Notification> notification_copy =
       std::make_unique<Notification>(notification);
-  notification_copy->set_icon(DuplicateImage(notification_copy->icon()));
+  notification_copy->set_icon(ui::ImageModel::FromImageSkia(
+      notification_copy->icon().Rasterize(color_provider)));
   notification_copy->set_image(include_body_image
                                    ? DuplicateImage(notification_copy->image())
                                    : gfx::Image());
@@ -127,6 +130,26 @@ void Notification::SetButtonIcon(size_t index, const gfx::Image& icon) {
 void Notification::SetSystemPriority() {
   optional_fields_.priority = SYSTEM_PRIORITY;
   optional_fields_.never_timeout = true;
+}
+
+void Notification::SetGroupChild() {
+  group_child_ = true;
+  group_parent_ = false;
+}
+
+void Notification::SetGroupParent() {
+  group_child_ = false;
+  group_parent_ = true;
+}
+
+void Notification::ClearGroupChild() {
+  DCHECK(!group_parent_);
+  group_child_ = false;
+}
+
+void Notification::ClearGroupParent() {
+  DCHECK(!group_child_);
+  group_parent_ = false;
 }
 
 bool Notification::UseOriginAsContextMessage() const {

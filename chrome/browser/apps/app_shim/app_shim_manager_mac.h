@@ -1,9 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_APPS_APP_SHIM_APP_SHIM_MANAGER_MAC_H_
 #define CHROME_BROWSER_APPS_APP_SHIM_APP_SHIM_MANAGER_MAC_H_
+
+#include <Security/Security.h>
 
 #include <map>
 #include <memory>
@@ -13,15 +15,18 @@
 
 #include "apps/app_lifetime_monitor.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/mac/scoped_cftyperef.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 
 class Profile;
 class ProfileManager;
@@ -43,7 +48,8 @@ class AppShimManager : public AppShimHostBootstrap::Client,
                        public AppLifetimeMonitor::Observer,
                        public BrowserListObserver,
                        public AvatarMenuObserver,
-                       public ProfileManagerObserver {
+                       public ProfileManagerObserver,
+                       public ProfileObserver {
  public:
   class Delegate {
    public:
@@ -92,6 +98,8 @@ class AppShimManager : public AppShimHostBootstrap::Client,
     virtual void LaunchApp(Profile* profile,
                            const web_app::AppId& app_id,
                            const std::vector<base::FilePath>& files,
+                           const std::vector<GURL>& urls,
+                           const GURL& override_url,
                            chrome::mojom::AppShimLoginItemRestoreState
                                login_item_restore_state) = 0;
 
@@ -106,6 +114,10 @@ class AppShimManager : public AppShimHostBootstrap::Client,
     // Return true if any app windows are open. This is eventually invoked
     // by MaybeTerminate. It does not apply to bookmark apps.
     virtual bool HasNonBookmarkAppWindowsOpen() = 0;
+
+    virtual std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
+    GetAppShortcutsMenuItemInfos(Profile* profile,
+                                 const web_app::AppId& app_id) = 0;
   };
 
   // Helper function to get the instance on the browser process. This will be
@@ -135,6 +147,11 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   // Return true if any non-bookmark app windows open.
   bool HasNonBookmarkAppWindowsOpen();
 
+  // Called when the launch of the app was cancelled by the user. For example,
+  // if the user clicks cancel during a protocol launch.
+  void OnAppLaunchCancelled(content::BrowserContext* context,
+                            const std::string& app_id);
+
   // AppShimHostBootstrap::Client:
   void OnShimProcessConnected(
       std::unique_ptr<AppShimHostBootstrap> bootstrap) override;
@@ -152,7 +169,10 @@ class AppShimManager : public AppShimHostBootstrap::Client,
                          const std::vector<base::FilePath>& files) override;
   void OnShimSelectedProfile(AppShimHost* host,
                              const base::FilePath& profile_path) override;
-
+  void OnShimOpenedUrls(AppShimHost* host,
+                        const std::vector<GURL>& urls) override;
+  void OnShimOpenAppWithOverrideUrl(AppShimHost* host,
+                                    const GURL& override_url) override;
   // AppLifetimeMonitor::Observer overrides:
   void OnAppStart(content::BrowserContext* context,
                   const std::string& app_id) override;
@@ -167,13 +187,19 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   void OnProfileAdded(Profile* profile) override;
   void OnProfileMarkedForPermanentDeletion(Profile* profile) override;
 
-  // BrowserListObserver overrides;
+  // BrowserListObserver overrides:
   void OnBrowserAdded(Browser* browser) override;
   void OnBrowserRemoved(Browser* browser) override;
   void OnBrowserSetLastActive(Browser* browser) override;
 
+  // ProfileObserver overrides:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   // AvatarMenuObserver:
   void OnAvatarMenuChanged(AvatarMenu* menu) override;
+
+  static base::ScopedCFTypeRef<SecRequirementRef>
+      BuildAppShimRequirementFromFrameworkRequirementString(CFStringRef);
 
  protected:
   typedef std::set<Browser*> BrowserSet;
@@ -249,40 +275,48 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   //   LoadProfileAndApp), if needed.
   // - Launch the app, if appropriate.
   // The "if appropriate" above is defined as:
-  // - If |launch_files| is non-empty, then will always launch the app
-  //   - If |profile_path| is non-empty, then use that profile.
+  // - If `params.files` is non-empty, then will always launch the app
+  //   - If `profile_path` is non-empty, then use that profile.
   //   - In the most recently used profile, otherwise
-  // - If |launch_files| is empty, then launch the app only if:
-  //   - If |profile_path| is non-empty, then launch if the app is not running
+  // - If `params.files` is empty, then launch the app only if:
+  //   - If `profile_path` is non-empty, then launch if the app is not running
   //     in that profile.
   //   - Otherwise, launch the app only if it is not running any profile.
   using LoadAndLaunchAppCallback =
       base::OnceCallback<void(ProfileState* profile_state,
                               chrome::mojom::AppShimLaunchResult result)>;
-  void LoadAndLaunchApp(
-      const web_app::AppId& app_id,
-      const base::FilePath& profile_path,
-      const std::vector<base::FilePath>& launch_files,
-      chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
-      LoadAndLaunchAppCallback launch_callback);
+  struct LoadAndLaunchAppParams {
+    LoadAndLaunchAppParams();
+    ~LoadAndLaunchAppParams();
+    LoadAndLaunchAppParams(const LoadAndLaunchAppParams&);
+    LoadAndLaunchAppParams& operator=(const LoadAndLaunchAppParams&);
+
+    // Return true if `files` or `urls` is non-empty. If so, then this launch
+    // will open exactly one window.
+    bool HasFilesOrURLs() const;
+
+    web_app::AppId app_id;
+    std::vector<base::FilePath> files;
+    std::vector<GURL> urls;
+    GURL override_url;
+    chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state =
+        chrome::mojom::AppShimLoginItemRestoreState::kNone;
+  };
+  void LoadAndLaunchApp(const base::FilePath& profile_path,
+                        const LoadAndLaunchAppParams& params,
+                        LoadAndLaunchAppCallback launch_callback);
   bool LoadAndLaunchApp_TryExistingProfileStates(
-      const web_app::AppId& app_id,
       const base::FilePath& profile_path,
-      const std::vector<base::FilePath>& launch_files,
-      chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
+      const LoadAndLaunchAppParams& params,
       LoadAndLaunchAppCallback* launch_callback);
   void LoadAndLaunchApp_OnProfilesAndAppReady(
-      const web_app::AppId& app_id,
-      const std::vector<base::FilePath>& launch_files,
-      chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
       const std::vector<base::FilePath>& profile_paths_to_launch,
+      const LoadAndLaunchAppParams& params,
       LoadAndLaunchAppCallback launch_callback);
   void LoadAndLaunchApp_LaunchIfAppropriate(
       Profile* profile,
       ProfileState* profile_state,
-      const web_app::AppId& app_id,
-      const std::vector<base::FilePath>& launch_files,
-      chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state);
+      const LoadAndLaunchAppParams& params);
 
   // The final step of both paths for OnShimProcessConnected. This will connect
   // |bootstrap| to |profile_state|'s AppShimHost, if possible. The value of
@@ -313,6 +347,9 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   // Update the profiles menu for the specified host.
   void UpdateAppProfileMenu(AppState* app_state);
 
+  // Update the application dock menu for the specified host.
+  void UpdateApplicationDockMenu(Profile* profile, ProfileState* profile_state);
+
   std::unique_ptr<Delegate> delegate_;
 
   // Retrieve the ProfileState for a given (Profile, AppId) pair. If one
@@ -321,13 +358,16 @@ class AppShimManager : public AppShimHostBootstrap::Client,
                                         const web_app::AppId& app_id);
 
   // Weak, reset during OnBeginTearDown.
-  ProfileManager* profile_manager_ = nullptr;
+  raw_ptr<ProfileManager> profile_manager_ = nullptr;
 
   // Map from extension id to the state for that app.
   std::map<std::string, std::unique_ptr<AppState>> apps_;
 
   // The avatar menu instance used by all app shims.
   std::unique_ptr<AvatarMenu> avatar_menu_;
+
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      profile_observation_{this};
 
   base::WeakPtrFactory<AppShimManager> weak_factory_;
 };

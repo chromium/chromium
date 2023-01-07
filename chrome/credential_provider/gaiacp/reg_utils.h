@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -208,6 +208,12 @@ HRESULT GetSidFromKey(const wchar_t* key,
                       const std::wstring& value,
                       wchar_t* sid,
                       ULONG length);
+
+// Returns the SID corresponding to given domain user from the user properties.
+HRESULT GetSidFromDomainAccountInfo(const std::wstring& domain,
+                                    const std::wstring& username,
+                                    wchar_t* sid,
+                                    ULONG length);
 
 // Gets the gaia id associated with the given SID.  If none exists, returns
 // HRESULT_FROM_WIN32(ERROR_NONE_MAPPED).

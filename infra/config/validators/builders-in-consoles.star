@@ -1,11 +1,11 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 def _validate_builders_in_console(ctx):
     builders = {}
 
-    for console in ctx.output["luci-milo.cfg"].consoles:
+    for console in ctx.output["luci/luci-milo.cfg"].consoles:
         for builder in console.builders:
             _, long_bucket, builder_name = builder.name.split("/")
             _, _, bucket = long_bucket.split(".", 2)
@@ -13,7 +13,7 @@ def _validate_builders_in_console(ctx):
 
     builders_without_console = []
 
-    for bucket in ctx.output["cr-buildbucket.cfg"].buckets:
+    for bucket in ctx.output["luci/cr-buildbucket.cfg"].buckets:
         bucket_builders = builders.get(bucket.name, {})
         for builder in bucket.swarming.builders:
             if builder.name not in bucket_builders:

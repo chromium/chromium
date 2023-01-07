@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Runs Android's lint tool."""
@@ -8,14 +8,11 @@
 from __future__ import print_function
 
 import argparse
-import functools
 import logging
 import os
-import re
 import shutil
 import sys
 import time
-import traceback
 from xml.dom import minidom
 from xml.etree import ElementTree
 
@@ -23,7 +20,7 @@ from util import build_utils
 from util import manifest_utils
 from util import server_utils
 
-_LINT_MD_URL = 'https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.md'  # pylint: disable=line-too-long
+_LINT_MD_URL = 'https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md'  # pylint: disable=line-too-long
 
 # These checks are not useful for chromium.
 _DISABLED_ALWAYS = [
@@ -33,10 +30,11 @@ _DISABLED_ALWAYS = [
     "InlinedApi",  # Constants are copied so they are always available.
     "LintBaseline",  # Don't warn about using baseline.xml files.
     "MissingApplicationIcon",  # False positive for non-production targets.
+    "ObsoleteLintCustomCheck",  # We have no control over custom lint checks.
     "SwitchIntDef",  # Many C++ enums are not used at all in java.
+    "Typos",  # Strings are committed in English first and later translated.
     "UniqueConstants",  # Chromium enums allow aliases.
     "UnusedAttribute",  # Chromium apks have various minSdkVersion values.
-    "ObsoleteLintCustomCheck",  # We have no control over custom lint checks.
 ]
 
 # These checks are not useful for test targets and adds an unnecessary burden
@@ -80,7 +78,8 @@ def _GenerateProjectFile(android_manifest,
                          resource_sources=None,
                          custom_lint_jars=None,
                          custom_annotation_zips=None,
-                         android_sdk_version=None):
+                         android_sdk_version=None,
+                         baseline_path=None):
   project = ElementTree.Element('project')
   root = ElementTree.SubElement(project, 'root')
   # Run lint from output directory: crbug.com/1115594
@@ -88,6 +87,9 @@ def _GenerateProjectFile(android_manifest,
   sdk = ElementTree.SubElement(project, 'sdk')
   # Lint requires that the sdk path be an absolute path.
   sdk.set('dir', os.path.abspath(android_sdk_root))
+  if baseline_path is not None:
+    baseline = ElementTree.SubElement(project, 'baseline')
+    baseline.set('file', baseline_path)
   cache = ElementTree.SubElement(project, 'cache')
   cache.set('dir', cache_dir)
   main_module = ElementTree.SubElement(project, 'module')
@@ -163,12 +165,6 @@ def _GenerateAndroidManifest(original_manifest_path, extra_manifest_paths,
     for node in extra_app_node:
       app_node.append(node)
 
-  if app_node.find(
-      '{%s}allowBackup' % manifest_utils.ANDROID_NAMESPACE) is None:
-    # Assume no backup is intended, appeases AllowBackup lint check and keeping
-    # it working for manifests that do define android:allowBackup.
-    app_node.set('{%s}allowBackup' % manifest_utils.ANDROID_NAMESPACE, 'false')
-
   uses_sdk = manifest.find('./uses-sdk')
   if uses_sdk is None:
     uses_sdk = ElementTree.Element('uses-sdk')
@@ -191,7 +187,9 @@ def _WriteXmlFile(root, path):
             root, encoding='utf-8')).toprettyxml(indent='  ').encode('utf-8'))
 
 
-def _RunLint(lint_binary_path,
+def _RunLint(create_cache,
+             custom_lint_jar_path,
+             lint_jar_path,
              backported_methods_path,
              config_path,
              manifest_path,
@@ -212,14 +210,46 @@ def _RunLint(lint_binary_path,
              warnings_as_errors=False):
   logging.info('Lint starting')
 
-  cmd = [
-      lint_binary_path,
+  if create_cache:
+    # Occasionally lint may crash due to re-using intermediate files from older
+    # lint runs. See https://crbug.com/1258178 for context.
+    logging.info('Clearing cache dir %s before creating cache.', cache_dir)
+    shutil.rmtree(cache_dir, ignore_errors=True)
+    os.makedirs(cache_dir)
+
+  if baseline and not os.path.exists(baseline):
+    # Generating new baselines is only done locally, and requires more memory to
+    # avoid OOMs.
+    creating_baseline = True
+    lint_xmx = '4G'
+  else:
+    creating_baseline = False
+    lint_xmx = '2G'
+
+  # All paths in lint are based off of relative paths from root with root as the
+  # prefix. Path variable substitution is based off of prefix matching so custom
+  # path variables need to match exactly in order to show up in baseline files.
+  # e.g. lint_path=path/to/output/dir/../../file/in/src
+  root_path = os.getcwd()  # This is usually the output directory.
+  pathvar_src = os.path.join(
+      root_path, os.path.relpath(build_utils.DIR_SOURCE_ROOT, start=root_path))
+
+  cmd = build_utils.JavaCmd(xmx=lint_xmx) + [
+      '-cp',
+      '{}:{}'.format(lint_jar_path, custom_lint_jar_path),
+      'org.chromium.build.CustomLint',
+      '--sdk-home',
+      android_sdk_root,
+      '--jdk-home',
+      build_utils.JAVA_HOME,
+      '--path-variables',
+      f'SRC={pathvar_src}',
       '--quiet',  # Silences lint's "." progress updates.
+      '--stacktrace',  # Prints full stacktraces for internal lint errors.
       '--disable',
       ','.join(_DISABLED_ALWAYS),
   ]
-  if baseline:
-    cmd.extend(['--baseline', baseline])
+
   if testonly_target:
     cmd.extend(['--disable', ','.join(_DISABLED_FOR_TESTS)])
 
@@ -295,26 +325,11 @@ def _RunLint(lint_binary_path,
                                            classpath, srcjar_sources,
                                            resource_sources, custom_lint_jars,
                                            custom_annotation_zips,
-                                           android_sdk_version)
+                                           android_sdk_version, baseline)
 
   project_xml_path = os.path.join(lint_gen_dir, 'project.xml')
   _WriteXmlFile(project_file_root, project_xml_path)
   cmd += ['--project', project_xml_path]
-
-  logging.info('Preparing environment variables')
-  env = os.environ.copy()
-  # It is important that lint uses the checked-in JDK11 as it is almost 50%
-  # faster than JDK8.
-  env['JAVA_HOME'] = build_utils.JAVA_HOME
-  # This is necessary so that lint errors print stack traces in stdout.
-  env['LINT_PRINT_STACKTRACE'] = 'true'
-  if baseline and not os.path.exists(baseline):
-    # Generating new baselines is only done locally, and requires more memory to
-    # avoid OOMs.
-    env['LINT_OPTS'] = '-Xmx4g'
-  else:
-    # The default set in the wrapper script is 1g, but it seems not enough :(
-    env['LINT_OPTS'] = '-Xmx2g'
 
   # This filter is necessary for JDK11.
   stderr_filter = build_utils.FilterReflectiveAccessJavaWarnings
@@ -323,14 +338,21 @@ def _RunLint(lint_binary_path,
   start = time.time()
   logging.debug('Lint command %s', ' '.join(cmd))
   failed = True
+
+  if creating_baseline and not warnings_as_errors:
+    # Allow error code 6 when creating a baseline: ERRNO_CREATED_BASELINE
+    fail_func = lambda returncode, _: returncode not in (0, 6)
+  else:
+    fail_func = lambda returncode, _: returncode != 0
+
   try:
     failed = bool(
         build_utils.CheckOutput(cmd,
-                                env=env,
                                 print_stdout=True,
                                 stdout_filter=stdout_filter,
                                 stderr_filter=stderr_filter,
-                                fail_on_output=warnings_as_errors))
+                                fail_on_output=warnings_as_errors,
+                                fail_func=fail_func))
   finally:
     # When not treating warnings as errors, display the extra footer.
     is_debug = os.environ.get('LINT_DEBUG', '0') != '0'
@@ -361,9 +383,15 @@ def _ParseArgs(argv):
   parser.add_argument('--skip-build-server',
                       action='store_true',
                       help='Avoid using the build server.')
-  parser.add_argument('--lint-binary-path',
+  parser.add_argument('--use-build-server',
+                      action='store_true',
+                      help='Always use the build server.')
+  parser.add_argument('--lint-jar-path',
                       required=True,
-                      help='Path to lint executable.')
+                      help='Path to the lint jar.')
+  parser.add_argument('--custom-lint-jar-path',
+                      required=True,
+                      help='Path to our custom lint jar.')
   parser.add_argument('--backported-methods',
                       help='Path to backported methods file created by R8.')
   parser.add_argument('--cache-dir',
@@ -429,6 +457,13 @@ def _ParseArgs(argv):
   args.extra_manifest_paths = build_utils.ParseGnList(args.extra_manifest_paths)
   args.resource_zips = build_utils.ParseGnList(args.resource_zips)
   args.classpath = build_utils.ParseGnList(args.classpath)
+
+  if args.baseline:
+    assert os.path.basename(args.baseline) == 'lint-baseline.xml', (
+        'The baseline file needs to be named "lint-baseline.xml" in order for '
+        'the autoroller to find and update it whenever lint is rolled to a new '
+        'version.')
+
   return args
 
 
@@ -441,8 +476,10 @@ def main():
   # Avoid parallelizing cache creation since lint runs without the cache defeat
   # the purpose of creating the cache in the first place.
   if (not args.create_cache and not args.skip_build_server
-      and server_utils.MaybeRunCommand(
-          name=args.target_name, argv=sys.argv, stamp_file=args.stamp)):
+      and server_utils.MaybeRunCommand(name=args.target_name,
+                                       argv=sys.argv,
+                                       stamp_file=args.stamp,
+                                       force=args.use_build_server)):
     return
 
   sources = []
@@ -459,7 +496,9 @@ def main():
                            ])
   depfile_deps = [p for p in possible_depfile_deps if p]
 
-  _RunLint(args.lint_binary_path,
+  _RunLint(args.create_cache,
+           args.custom_lint_jar_path,
+           args.lint_jar_path,
            args.backported_methods,
            args.config_path,
            args.manifest_path,

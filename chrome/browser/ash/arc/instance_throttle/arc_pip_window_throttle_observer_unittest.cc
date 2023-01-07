@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 
 #include <map>
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/exo/wm_helper.h"
@@ -56,17 +55,17 @@ class ArcPipWindowThrottleObserverTest : public testing::Test {
 
   void SetUp() override {
     // Set up PipContainer
-    pip_container_ = aura::test::CreateTestWindowWithDelegate(
+    pip_container_.reset(aura::test::CreateTestWindowWithDelegate(
         &dummy_delegate_, ash::kShellWindowId_PipContainer, gfx::Rect(),
-        nullptr);
+        nullptr));
     wm_helper_ = std::make_unique<FakeWMHelper>();
     wm_helper()->SetPrimaryDisplayContainer(ash::kShellWindowId_PipContainer,
-                                            pip_container_);
+                                            pip_container_.get());
     // Set up PIP windows
-    arc_window_ = aura::test::CreateTestWindowWithDelegate(
-        &dummy_delegate_, 1, gfx::Rect(), nullptr);
-    chrome_window_ = aura::test::CreateTestWindowWithDelegate(
-        &dummy_delegate_, 2, gfx::Rect(), nullptr);
+    arc_window_.reset(aura::test::CreateTestWindowWithDelegate(
+        &dummy_delegate_, 1, gfx::Rect(), nullptr));
+    chrome_window_.reset(aura::test::CreateTestWindowWithDelegate(
+        &dummy_delegate_, 2, gfx::Rect(), nullptr));
     arc_window_->SetProperty(aura::client::kAppType,
                              static_cast<int>(ash::AppType::ARC_APP));
     chrome_window_->SetProperty(aura::client::kAppType,
@@ -80,20 +79,20 @@ class ArcPipWindowThrottleObserverTest : public testing::Test {
 
   FakeWMHelper* wm_helper() { return wm_helper_.get(); }
 
-  aura::Window* pip_container() { return pip_container_; }
+  aura::Window* pip_container() { return pip_container_.get(); }
 
-  aura::Window* arc_window() { return arc_window_; }
+  aura::Window* arc_window() { return arc_window_.get(); }
 
-  aura::Window* chrome_window() { return chrome_window_; }
+  aura::Window* chrome_window() { return chrome_window_.get(); }
 
  public:
   content::BrowserTaskEnvironment task_environment_;
   ArcPipWindowThrottleObserver pip_observer_;
   std::unique_ptr<FakeWMHelper> wm_helper_;
   aura::test::TestWindowDelegate dummy_delegate_;
-  aura::Window* pip_container_;
-  aura::Window* arc_window_;
-  aura::Window* chrome_window_;
+  std::unique_ptr<aura::Window> pip_container_;
+  std::unique_ptr<aura::Window> arc_window_;
+  std::unique_ptr<aura::Window> chrome_window_;
 };
 
 TEST_F(ArcPipWindowThrottleObserverTest, TestConstructDestruct) {}

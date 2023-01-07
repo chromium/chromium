@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,11 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/device_operation.h"
 #include "device/fido/fido_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -34,6 +33,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) U2fSignOperation
   U2fSignOperation(FidoDevice* device,
                    const CtapGetAssertionRequest& request,
                    DeviceResponseCallback callback);
+
+  U2fSignOperation(const U2fSignOperation&) = delete;
+  U2fSignOperation& operator=(const U2fSignOperation&) = delete;
+
   ~U2fSignOperation() override;
 
   // DeviceOperation:
@@ -44,11 +47,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) U2fSignOperation
   void WinkAndTrySign();
   void TrySign();
   void OnSignResponseReceived(
-      base::Optional<std::vector<uint8_t>> device_response);
+      absl::optional<std::vector<uint8_t>> device_response);
   void WinkAndTryFakeEnrollment();
   void TryFakeEnrollment();
   void OnEnrollmentResponseReceived(
-      base::Optional<std::vector<uint8_t>> device_response);
+      absl::optional<std::vector<uint8_t>> device_response);
   const std::vector<uint8_t>& key_handle() const;
 
   size_t current_key_handle_index_ = 0;
@@ -57,8 +60,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) U2fSignOperation
   ApplicationParameterType app_param_type_ = ApplicationParameterType::kPrimary;
   bool canceled_ = false;
   base::WeakPtrFactory<U2fSignOperation> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(U2fSignOperation);
 };
 
 }  // namespace device

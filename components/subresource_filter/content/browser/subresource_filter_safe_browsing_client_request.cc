@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_client.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
@@ -48,7 +48,6 @@ void SubresourceFilterSafeBrowsingClientRequest::Start(const GURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   // Just return SAFE if the database is not supported.
   bool synchronous_finish =
-      !database_manager_->IsSupported() ||
       database_manager_->CheckUrlForSubresourceFilter(url, this);
   if (synchronous_finish) {
     request_completed_ = true;

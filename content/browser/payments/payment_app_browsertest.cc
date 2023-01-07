@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/storage_partition_impl.h"
@@ -20,6 +21,7 @@
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
@@ -72,6 +74,10 @@ void InvokePaymentAppCallback(base::OnceClosure done_callback,
 class PaymentAppBrowserTest : public ContentBrowserTest {
  public:
   PaymentAppBrowserTest() {}
+
+  PaymentAppBrowserTest(const PaymentAppBrowserTest&) = delete;
+  PaymentAppBrowserTest& operator=(const PaymentAppBrowserTest&) = delete;
+
   ~PaymentAppBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -80,8 +86,8 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    https_server_.reset(
-        new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory(GetTestDataFilePath());
     ASSERT_TRUE(https_server_->Start());
     ASSERT_TRUE(NavigateToURL(
@@ -90,21 +96,16 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::SetUpOnMainThread();
   }
 
-  bool RunScript(const std::string& script, std::string* result) {
-    return content::ExecuteScriptAndExtractString(shell()->web_contents(),
-                                                  script, result);
+  std::string RunScript(const std::string& script) {
+    return EvalJs(shell()->web_contents(), script,
+                  EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractString();
   }
 
-  std::string PopConsoleString() {
-    std::string script_result;
-    EXPECT_TRUE(RunScript("resultQueue.pop()", &script_result));
-    return script_result;
-  }
+  std::string PopConsoleString() { return RunScript("resultQueue.pop()"); }
 
   void RegisterPaymentApp() {
-    std::string script_result;
-    ASSERT_TRUE(RunScript("registerPaymentApp()", &script_result));
-    ASSERT_EQ("registered", script_result);
+    ASSERT_EQ("registered", RunScript("registerPaymentApp()"));
   }
 
   url::Origin GetTestServerOrigin() {
@@ -186,12 +187,14 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
     // for service workers, for all origins, for an unbounded time range.
     base::RunLoop run_loop;
 
-    static_cast<StoragePartitionImpl*>(
-        content::BrowserContext::GetDefaultStoragePartition(
-            shell()->web_contents()->GetBrowserContext()))
+    static_cast<StoragePartitionImpl*>(shell()
+                                           ->web_contents()
+                                           ->GetBrowserContext()
+                                           ->GetDefaultStoragePartition())
         ->ClearData(StoragePartition::REMOVE_DATA_MASK_SERVICE_WORKERS,
-                    StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-                    base::Time(), base::Time::Max(), run_loop.QuitClosure());
+                    StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL,
+                    blink::StorageKey(), base::Time(), base::Time::Max(),
+                    run_loop.QuitClosure());
 
     run_loop.Run();
   }
@@ -253,8 +256,6 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppBrowserTest);
 };
 
 // TODO(crbug.com/869790) Flakes on linux-chromeos-dbg

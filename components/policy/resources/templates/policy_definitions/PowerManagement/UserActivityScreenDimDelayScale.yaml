@@ -1,0 +1,21 @@
+caption: Percentage by which to scale the screen dim delay if the user becomes active
+  after dimming
+desc: |-
+  If <ph name="POWER_SMART_DIM_ENABLED_POLICY_NAME">PowerSmartDimEnabled</ph> is Disabled, then setting <ph name="USER_ACTIVITY_SCREEN_DIM_DELAY_SCALE_POLICY_NAME">UserActivityScreenDimDelayScale</ph> specifies the percent that the screen dim delay scales when there's user activity while the screen dims or soon after the screen turns off. When the dim delay scales, the screen off, screen lock and idle delays adjust to maintain the same distances from the screen dim delay as originally set.
+
+        Leaving the policy unset puts a default scale factor in use.
+
+        Note: The scale factor must be 100% or more.
+example_value: 200
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- reinauer@google.com
+- chromeos-power@google.com
+schema:
+  type: integer
+supported_on:
+- chrome_os:29-
+tags: []
+type: int

@@ -1,16 +1,16 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/ios/wait_util.h"
+#import "base/test/ios/wait_util.h"
 
-#include "base/bind.h"
+#import "base/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/js_messaging/java_script_feature_manager.h"
-#include "ios/web/public/js_messaging/java_script_feature_util.h"
-#include "ios/web/public/js_messaging/script_message.h"
+#import "ios/web/public/js_messaging/java_script_feature_util.h"
+#import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
@@ -282,7 +282,7 @@ TEST_F(JavaScriptFeatureAnyContentWorldTest, ReinjectionBehaviorIsolatedWorld) {
 }
 
 // Sets up a FakeJavaScriptFeature in an isolated world using
-// |ContentWorld::kIsolatedWorldOnly|.
+// `ContentWorld::kIsolatedWorldOnly`.
 class JavaScriptFeatureIsolatedWorldTest : public WebTestWithWebState {
  protected:
   JavaScriptFeatureIsolatedWorldTest()
@@ -306,12 +306,6 @@ class JavaScriptFeatureIsolatedWorldTest : public WebTestWithWebState {
 // configured in an isolated world only.
 TEST_F(JavaScriptFeatureIsolatedWorldTest,
        JavaScriptFeatureExecuteJavaScriptInIsolatedWorldOnly) {
-  // Using ContentWorld::kIsolatedWorldOnly on older versions of iOS will
-  // trigger a DCHECK, so return early.
-  if (!base::ios::IsRunningOnIOS14OrLater()) {
-    return;
-  }
-
   LoadHtml(kPageHTML);
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
   ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents2"));

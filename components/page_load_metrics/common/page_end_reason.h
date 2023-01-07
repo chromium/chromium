@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,9 @@ namespace page_load_metrics {
 // page load finishes (or reaches some point like first paint), then we consider
 // the load to be aborted.
 //
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused. For any additions, also update the
-// corresponding PageEndReason enum in enums.xml.
+// These values are persisted to logs and the history DB. Entries should not be
+// renumbered and numeric values should never be reused. For any additions, also
+// update the corresponding PageEndReason enum in enums.xml.
 enum PageEndReason {
   // Page lifetime has not yet ended (page is still active). Pages that
   // become hidden are logged in END_HIDDEN, so we expect low numbers in this

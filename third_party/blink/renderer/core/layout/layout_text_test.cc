@@ -1,21 +1,27 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/selection_sample.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
+
+using testing::ElementsAre;
 
 namespace {
 
@@ -69,7 +75,8 @@ class LayoutTextTest : public RenderingTest {
 
   std::string GetSnapCode(const LayoutText& layout_text,
                           const std::string& caret_text) {
-    return GetSnapCode(layout_text, caret_text.find('|'));
+    return GetSnapCode(layout_text,
+                       static_cast<unsigned>(caret_text.find('|')));
   }
 
   std::string GetSnapCode(const char* id, const std::string& caret_text) {
@@ -213,6 +220,65 @@ TEST_F(LayoutTextTest, ContainsOnlyWhitespaceOrNbsp) {
   EXPECT_EQ(OnlyWhitespaceOrNbsp::kNo,
             GetBasicText()->ContainsOnlyWhitespaceOrNbsp());
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(LayoutTextTest, PrewarmFamily) {
+  test::ScopedTestFontPrewarmer prewarmer;
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #container { font-family: testfont; }
+    </style>
+    <div id="container">text</div>
+  )HTML");
+  EXPECT_THAT(prewarmer.PrewarmedFamilyNames(), ElementsAre("testfont"));
+  LayoutObject* container = GetLayoutObjectByElementId("container");
+  EXPECT_TRUE(container->StyleRef()
+                  .GetFont()
+                  .GetFontDescription()
+                  .Family()
+                  .IsPrewarmed());
+}
+
+// Test `@font-face` fonts are NOT prewarmed.
+TEST_F(LayoutTextTest, PrewarmFontFace) {
+  test::ScopedTestFontPrewarmer prewarmer;
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    @font-face {
+      font-family: testfont;
+      src: local(Arial);
+    }
+    #container { font-family: testfont; }
+    </style>
+    <div id="container">text</div>
+  )HTML");
+  EXPECT_THAT(prewarmer.PrewarmedFamilyNames(), ElementsAre());
+  LayoutObject* container = GetLayoutObjectByElementId("container");
+  EXPECT_FALSE(container->StyleRef()
+                   .GetFont()
+                   .GetFontDescription()
+                   .Family()
+                   .IsPrewarmed());
+}
+
+TEST_F(LayoutTextTest, PrewarmGenericFamily) {
+  test::ScopedTestFontPrewarmer prewarmer;
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #container { font-family: serif; }
+    </style>
+    <div id="container">text</div>
+  )HTML");
+  // No prewarms because |GenericFontFamilySettings| is empty.
+  EXPECT_THAT(prewarmer.PrewarmedFamilyNames(), ElementsAre());
+  LayoutObject* container = GetLayoutObjectByElementId("container");
+  EXPECT_TRUE(container->StyleRef()
+                  .GetFont()
+                  .GetFontDescription()
+                  .Family()
+                  .IsPrewarmed());
+}
+#endif
 
 struct NGOffsetMappingTestData {
   const char* text;
@@ -980,10 +1046,11 @@ TEST_P(ParameterizedLayoutTextTest, AbsoluteQuads) {
     <div>012<span id=target>345 67</span></div>
   )HTML");
   LayoutText* layout_text = GetLayoutTextById("target");
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   layout_text->AbsoluteQuads(quads);
-  EXPECT_THAT(quads, testing::ElementsAre(FloatRect(30, 0, 30, 10),
-                                          FloatRect(0, 10, 20, 10)));
+  EXPECT_THAT(quads,
+              testing::ElementsAre(gfx::QuadF(gfx::RectF(30, 0, 30, 10)),
+                                   gfx::QuadF(gfx::RectF(0, 10, 20, 10))));
 }
 
 TEST_P(ParameterizedLayoutTextTest, AbsoluteQuadsVRL) {
@@ -1001,10 +1068,11 @@ TEST_P(ParameterizedLayoutTextTest, AbsoluteQuadsVRL) {
     <div>012<span id=target>345 67</span></div>
   )HTML");
   LayoutText* layout_text = GetLayoutTextById("target");
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   layout_text->AbsoluteQuads(quads);
-  EXPECT_THAT(quads, testing::ElementsAre(FloatRect(90, 30, 10, 30),
-                                          FloatRect(80, 0, 10, 20)));
+  EXPECT_THAT(quads,
+              testing::ElementsAre(gfx::QuadF(gfx::RectF(90, 30, 10, 30)),
+                                   gfx::QuadF(gfx::RectF(80, 0, 10, 20))));
 }
 
 TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBox) {
@@ -1049,6 +1117,40 @@ TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBox) {
   EXPECT_EQ(PhysicalRect(28, 25, 39, 13),
             To<LayoutText>(two.firstChild()->GetLayoutObject())
                 ->PhysicalLinesBoundingBox());
+}
+
+TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBoxTextCombine) {
+  ScopedLayoutNGForTest enable_layout_ng(true);
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 100px/130px Ahem; }"
+      "c { text-combine-upright: all; }"
+      "div { writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<div>a<c id=target>01234</c>b</div>");
+  const auto& target = *GetElementById("target");
+  const auto& text_a = *To<Text>(target.previousSibling())->GetLayoutObject();
+  const auto& text_01234 = *To<Text>(target.firstChild())->GetLayoutObject();
+  const auto& text_b = *To<Text>(target.nextSibling())->GetLayoutObject();
+
+  //   LayoutNGBlockFlow {HTML} at (0,0) size 800x600
+  //     LayoutNGBlockFlow {BODY} at (8,8) size 784x584
+  //       LayoutNGBlockFlow {DIV} at (0,0) size 130x300
+  //         LayoutText {#text} at (15,0) size 100x100
+  //           text run at (15,0) width 100: "a"
+  //         LayoutInline {C} at (15,100) size 100x100
+  //           LayoutNGTextCombine (anonymous) at (15,100) size 100x100
+  //             LayoutText {#text} at (-5,0) size 110x100
+  //               text run at (0,0) width 500: "01234"
+  //         LayoutText {#text} at (15,200) size 100x100
+  //           text run at (15,200) width 100: "b"
+  //
+
+  EXPECT_EQ(PhysicalRect(15, 0, 100, 100), text_a.PhysicalLinesBoundingBox());
+  // Note: Width 110 comes from |100px * kTextCombineMargin| in
+  // |LayoutNGTextCombine::DesiredWidth()|.
+  EXPECT_EQ(PhysicalRect(-5, 0, 110, 100),
+            text_01234.PhysicalLinesBoundingBox());
+  EXPECT_EQ(PhysicalRect(15, 200, 100, 100), text_b.PhysicalLinesBoundingBox());
 }
 
 TEST_P(ParameterizedLayoutTextTest, PhysicalLinesBoundingBoxVerticalRL) {
@@ -1331,6 +1433,20 @@ TEST_P(ParameterizedLayoutTextTest, PositionForPointAtLeading) {
             text->PositionForPoint({10, 50}).GetPosition());
   EXPECT_EQ(Position(text->GetNode(), 7),
             text->PositionForPoint({10, 55}).GetPosition());
+}
+
+// https://crbug.com/2654312
+TEST_P(ParameterizedLayoutTextTest, FloatFirstLetterPlainText) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    div::first-letter { float: left; }
+    </style>
+    <div id="target">Foo</div>
+  )HTML");
+
+  LayoutText* text =
+      To<LayoutText>(GetElementById("target")->firstChild()->GetLayoutObject());
+  EXPECT_EQ("Foo", text->PlainText());
 }
 
 }  // namespace blink

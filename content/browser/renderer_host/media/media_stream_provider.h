@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,8 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_MEDIA_MEDIA_STREAM_PROVIDER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_MEDIA_STREAM_PROVIDER_H_
 
-#include <list>
-#include <string>
-
 #include "base/memory/ref_counted.h"
 #include "base/unguessable_token.h"
-#include "content/common/content_export.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace content {
@@ -33,7 +29,7 @@ enum MediaStreamProviderError {
 };
 
 // Callback class used by MediaStreamProvider.
-class CONTENT_EXPORT MediaStreamProviderListener {
+class MediaStreamProviderListener {
  public:
   // Called by a MediaStreamProvider when a stream has been opened.
   virtual void Opened(blink::mojom::MediaStreamType stream_type,
@@ -53,7 +49,7 @@ class CONTENT_EXPORT MediaStreamProviderListener {
 };
 
 // Implemented by a manager class providing captured media.
-class CONTENT_EXPORT MediaStreamProvider
+class MediaStreamProvider
     : public base::RefCountedThreadSafe<MediaStreamProvider> {
  public:
   // Registers a listener.

@@ -1,25 +1,24 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GPU_GLES2_CONFORM_TEST_CONTEXT_H_
-#define GPU_GLES2_CONFORM_TEST_CONTEXT_H_
+#ifndef GPU_GLES2_CONFORM_SUPPORT_EGL_CONTEXT_H_
+#define GPU_GLES2_CONFORM_SUPPORT_EGL_CONTEXT_H_
 
 #include <memory>
 
 #include <EGL/egl.h>
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/gpu_control.h"
 #include "gpu/command_buffer/service/command_buffer_direct.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
-#include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager_impl.h"
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
-#include "gpu/command_buffer/service/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gfx/native_widget_types.h"
@@ -46,6 +45,10 @@ class Context : public base::RefCountedThreadSafe<Context>,
                 public gpu::GpuControl {
  public:
   Context(Display* display, const Config* config);
+
+  Context(const Context&) = delete;
+  Context& operator=(const Context&) = delete;
+
   bool is_current_in_some_thread() const { return is_current_in_some_thread_; }
   void set_is_current_in_some_thread(bool flag) {
     is_current_in_some_thread_ = flag;
@@ -63,10 +66,6 @@ class Context : public base::RefCountedThreadSafe<Context>,
   // GpuControl implementation.
   void SetGpuControlClient(gpu::GpuControlClient*) override;
   const gpu::Capabilities& GetCapabilities() const override;
-  int32_t CreateImage(ClientBuffer buffer,
-                      size_t width,
-                      size_t height) override;
-  void DestroyImage(int32_t id) override;
   void SignalQuery(uint32_t query, base::OnceClosure callback) override;
   void CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) override;
   void GetGpuFence(uint32_t gpu_fence_id,
@@ -83,7 +82,6 @@ class Context : public base::RefCountedThreadSafe<Context>,
                        base::OnceClosure callback) override;
   void WaitSyncToken(const gpu::SyncToken& sync_token) override;
   bool CanWaitUnverifiedSyncToken(const gpu::SyncToken& sync_token) override;
-  void SetDisplayTransform(gfx::OverlayTransform transform) override;
 
   // Called by ThreadState to set the needed global variables when this context
   // is current.
@@ -108,8 +106,8 @@ class Context : public base::RefCountedThreadSafe<Context>,
 
   static gpu::GpuFeatureInfo platform_gpu_feature_info_;
 
-  Display* display_;
-  const Config* config_;
+  raw_ptr<Display> display_;
+  raw_ptr<const Config> config_;
   bool is_current_in_some_thread_;
   bool is_destroyed_;
   const gpu::GpuDriverBugWorkarounds gpu_driver_bug_workarounds_;
@@ -118,7 +116,6 @@ class Context : public base::RefCountedThreadSafe<Context>,
 
   gpu::gles2::MailboxManagerImpl mailbox_manager_;
   gpu::gles2::TraceOutputter outputter_;
-  gpu::gles2::ImageManager image_manager_;
   gpu::ServiceDiscardableManager discardable_manager_;
   gpu::PassthroughDiscardableManager passthrough_discardable_manager_;
   gpu::SharedImageManager shared_image_manager_;
@@ -132,11 +129,9 @@ class Context : public base::RefCountedThreadSafe<Context>,
   std::unique_ptr<gpu::gles2::GLES2Interface> client_gl_context_;
 
   gpu::Capabilities capabilities_;
-
-  DISALLOW_COPY_AND_ASSIGN(Context);
 };
 
 }  // namespace egl
 }  // namespace gles2_conform_support
 
-#endif  // GPU_GLES2_CONFORM_TEST_CONTEXT_H_
+#endif  // GPU_GLES2_CONFORM_SUPPORT_EGL_CONTEXT_H_

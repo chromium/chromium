@@ -1,0 +1,9 @@
+Name: Android Rust toolchain
+URL: https://android.googlesource.com/platform/prebuilts/rust.git
+Version: 1.56.1
+License: Apache License, Version 2 and the MIT License
+License File: linux-x86/1.56.1/share/doc/rust/LICENSE-APACHE, linux-x86/1.56.1/share/doc/rust/LICENSE-MIT
+Security Critical: yes
+CPEPrefix: cpe:/a:rust-lang:rust:1.56.1
+Description:
+This is the Rust toolchain produced by the Android team.

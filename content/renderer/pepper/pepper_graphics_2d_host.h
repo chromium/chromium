@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,10 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
+#include "components/viz/common/resources/release_callback.h"
 #include "content/common/content_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -34,7 +33,6 @@ class Rect;
 
 namespace viz {
 class RasterContextProvider;
-class SingleReleaseCallback;
 struct TransferableResource;
 }
 
@@ -55,6 +53,9 @@ class CONTENT_EXPORT PepperGraphics2DHost
       const PP_Size& size,
       PP_Bool is_always_opaque,
       scoped_refptr<PPB_ImageData_Impl> backing_store);
+
+  PepperGraphics2DHost(const PepperGraphics2DHost&) = delete;
+  PepperGraphics2DHost& operator=(const PepperGraphics2DHost&) = delete;
 
   ~PepperGraphics2DHost() override;
 
@@ -78,7 +79,7 @@ class CONTENT_EXPORT PepperGraphics2DHost
   bool PrepareTransferableResource(
       cc::SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* transferable_resource,
-      std::unique_ptr<viz::SingleReleaseCallback>* release_callback);
+      viz::ReleaseCallback* release_callback);
   void AttachedToNewLayer();
 
   // Notifications about the view's progress painting.  See PluginInstance.
@@ -258,7 +259,6 @@ class CONTENT_EXPORT PepperGraphics2DHost
   const bool enable_gpu_memory_buffer_;
 
   friend class PepperGraphics2DHostTest;
-  DISALLOW_COPY_AND_ASSIGN(PepperGraphics2DHost);
 };
 
 }  // namespace content

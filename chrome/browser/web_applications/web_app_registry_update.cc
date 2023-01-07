@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,8 +73,11 @@ std::unique_ptr<RegistryUpdateData> WebAppRegistryUpdate::TakeUpdateData() {
 ScopedRegistryUpdate::ScopedRegistryUpdate(WebAppSyncBridge* sync_bridge)
     : update_(sync_bridge->BeginUpdate()), sync_bridge_(sync_bridge) {}
 
+ScopedRegistryUpdate::ScopedRegistryUpdate(ScopedRegistryUpdate&&) = default;
+
 ScopedRegistryUpdate::~ScopedRegistryUpdate() {
-  sync_bridge_->CommitUpdate(std::move(update_), base::DoNothing());
+  if (update_)
+    sync_bridge_->CommitUpdate(std::move(update_), base::DoNothing());
 }
 
 }  // namespace web_app

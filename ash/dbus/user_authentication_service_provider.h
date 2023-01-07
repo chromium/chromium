@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define ASH_DBUS_USER_AUTHENTICATION_SERVICE_PROVIDER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/services/cros_dbus_service.h"
+#include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
 namespace dbus {
@@ -18,7 +18,7 @@ namespace ash {
 // This class exports a D-Bus method that platform daemons call to request Ash
 // to start in-session user authentication flow.
 class UserAuthenticationServiceProvider
-    : public chromeos::CrosDBusService::ServiceProviderInterface {
+    : public CrosDBusService::ServiceProviderInterface {
  public:
   UserAuthenticationServiceProvider();
   UserAuthenticationServiceProvider(const UserAuthenticationServiceProvider&) =
@@ -37,7 +37,8 @@ class UserAuthenticationServiceProvider
                   const std::string& method_name,
                   bool success);
 
-  // Called on UI thread in response to D-Bus requests.
+  // Called on UI thread in response to D-Bus requests. This expects the
+  // request_id field to be a string.
   void ShowAuthDialog(dbus::MethodCall* method_call,
                       dbus::ExportedObject::ResponseSender response_sender);
 

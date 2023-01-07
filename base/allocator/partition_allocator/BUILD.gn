@@ -1,0 +1,459 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//base/allocator/partition_allocator/partition_alloc.gni")
+import("//build/buildflag_header.gni")
+import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/dcheck_always_on.gni")
+import("//build/config/logging.gni")
+
+# Add partition_alloc.gni and import it for partition_alloc configs.
+
+config("partition_alloc_implementation") {
+  # See also: `partition_alloc_base/component_export.h`
+  defines = [ "IS_PARTITION_ALLOC_IMPL" ]
+}
+
+config("memory_tagging") {
+  if (current_cpu == "arm64" && is_clang &&
+      (is_linux || is_chromeos || is_android || is_fuchsia)) {
+    # base/ has access to the MTE intrinsics because it needs to use them,
+    # but they're not backwards compatible. Use base::CPU::has_mte()
+    # beforehand to confirm or use indirect functions (ifuncs) to select
+    # an MTE-specific implementation at dynamic link-time.
+    cflags = [
+      "-Xclang",
+      "-target-feature",
+      "-Xclang",
+      "+mte",
+    ]
+  }
+}
+
+if (is_fuchsia) {
+  config("fuchsia_sync_lib") {
+    libs = [
+      "sync",  # Used by spinning_mutex.h.
+    ]
+  }
+}
+
+component("partition_alloc") {
+  sources = [
+    "address_pool_manager.cc",
+    "address_pool_manager.h",
+    "address_pool_manager_bitmap.cc",
+    "address_pool_manager_bitmap.h",
+    "address_pool_manager_types.h",
+    "address_space_randomization.cc",
+    "address_space_randomization.h",
+    "address_space_stats.h",
+    "allocation_guard.cc",
+    "allocation_guard.h",
+    "dangling_raw_ptr_checks.cc",
+    "dangling_raw_ptr_checks.h",
+    "freeslot_bitmap.h",
+    "freeslot_bitmap_constants.h",
+    "gwp_asan_support.cc",
+    "gwp_asan_support.h",
+    "memory_reclaimer.cc",
+    "memory_reclaimer.h",
+    "oom.cc",
+    "oom.h",
+    "oom_callback.cc",
+    "oom_callback.h",
+    "page_allocator.cc",
+    "page_allocator.h",
+    "page_allocator_constants.h",
+    "page_allocator_internal.h",
+    "partition_address_space.cc",
+    "partition_address_space.h",
+    "partition_alloc-inl.h",
+    "partition_alloc.cc",
+    "partition_alloc.h",
+    "partition_alloc_base/atomic_ref_count.h",
+    "partition_alloc_base/bit_cast.h",
+    "partition_alloc_base/bits.h",
+    "partition_alloc_base/check.cc",
+    "partition_alloc_base/check.h",
+    "partition_alloc_base/compiler_specific.h",
+    "partition_alloc_base/component_export.h",
+    "partition_alloc_base/cpu.cc",
+    "partition_alloc_base/cpu.h",
+    "partition_alloc_base/cxx17_backports.h",
+    "partition_alloc_base/debug/alias.cc",
+    "partition_alloc_base/debug/alias.h",
+    "partition_alloc_base/gtest_prod_util.h",
+    "partition_alloc_base/immediate_crash.h",
+    "partition_alloc_base/logging.cc",
+    "partition_alloc_base/logging.h",
+    "partition_alloc_base/memory/ref_counted.cc",
+    "partition_alloc_base/memory/ref_counted.h",
+    "partition_alloc_base/memory/scoped_policy.h",
+    "partition_alloc_base/memory/scoped_refptr.h",
+    "partition_alloc_base/migration_adapter.h",
+    "partition_alloc_base/no_destructor.h",
+    "partition_alloc_base/numerics/checked_math.h",
+    "partition_alloc_base/numerics/checked_math_impl.h",
+    "partition_alloc_base/numerics/clamped_math.h",
+    "partition_alloc_base/numerics/clamped_math_impl.h",
+    "partition_alloc_base/numerics/math_constants.h",
+    "partition_alloc_base/numerics/ostream_operators.h",
+    "partition_alloc_base/numerics/ranges.h",
+    "partition_alloc_base/numerics/safe_conversions.h",
+    "partition_alloc_base/numerics/safe_conversions_arm_impl.h",
+    "partition_alloc_base/numerics/safe_conversions_impl.h",
+    "partition_alloc_base/numerics/safe_math.h",
+    "partition_alloc_base/numerics/safe_math_arm_impl.h",
+    "partition_alloc_base/numerics/safe_math_clang_gcc_impl.h",
+    "partition_alloc_base/numerics/safe_math_shared_impl.h",
+    "partition_alloc_base/posix/eintr_wrapper.h",
+    "partition_alloc_base/rand_util.cc",
+    "partition_alloc_base/rand_util.h",
+    "partition_alloc_base/scoped_clear_last_error.h",
+    "partition_alloc_base/strings/stringprintf.cc",
+    "partition_alloc_base/strings/stringprintf.h",
+    "partition_alloc_base/system/sys_info.h",
+    "partition_alloc_base/thread_annotations.h",
+    "partition_alloc_base/threading/platform_thread.cc",
+    "partition_alloc_base/threading/platform_thread.h",
+    "partition_alloc_base/threading/platform_thread_ref.h",
+    "partition_alloc_base/time/time.cc",
+    "partition_alloc_base/time/time.h",
+    "partition_alloc_base/time/time_override.cc",
+    "partition_alloc_base/time/time_override.h",
+    "partition_alloc_base/types/strong_alias.h",
+    "partition_alloc_base/win/windows_types.h",
+    "partition_alloc_check.h",
+    "partition_alloc_config.h",
+    "partition_alloc_constants.h",
+    "partition_alloc_forward.h",
+    "partition_alloc_hooks.cc",
+    "partition_alloc_hooks.h",
+    "partition_alloc_notreached.h",
+    "partition_bucket.cc",
+    "partition_bucket.h",
+    "partition_bucket_lookup.h",
+    "partition_cookie.h",
+    "partition_direct_map_extent.h",
+    "partition_freelist_entry.h",
+    "partition_lock.h",
+    "partition_oom.cc",
+    "partition_oom.h",
+    "partition_page.cc",
+    "partition_page.h",
+    "partition_ref_count.h",
+    "partition_root.cc",
+    "partition_root.h",
+    "partition_stats.cc",
+    "partition_stats.h",
+    "partition_tag.h",
+    "partition_tag_bitmap.h",
+    "partition_tag_types.h",
+    "partition_tls.h",
+    "random.cc",
+    "random.h",
+    "reservation_offset_table.cc",
+    "reservation_offset_table.h",
+    "reverse_bytes.h",
+    "spinning_mutex.cc",
+    "spinning_mutex.h",
+    "tagging.cc",
+    "tagging.h",
+    "thread_cache.cc",
+    "thread_cache.h",
+    "yield_processor.h",
+  ]
+
+  # Add *Scan sources if building inside Chromium. Currently,
+  # we see no need to add a more dedicated buildflag for this, as
+  # we don't anticipate Chromium-external usage of *Scan.
+  if (build_with_chromium) {
+    sources += [
+      "starscan/logging.h",
+      "starscan/metadata_allocator.cc",
+      "starscan/metadata_allocator.h",
+      "starscan/pcscan.cc",
+      "starscan/pcscan.h",
+      "starscan/pcscan_internal.cc",
+      "starscan/pcscan_internal.h",
+      "starscan/pcscan_scheduling.cc",
+      "starscan/pcscan_scheduling.h",
+      "starscan/raceful_worklist.h",
+      "starscan/scan_loop.h",
+      "starscan/snapshot.cc",
+      "starscan/snapshot.h",
+      "starscan/stack/stack.cc",
+      "starscan/stack/stack.h",
+      "starscan/starscan_fwd.h",
+      "starscan/state_bitmap.h",
+      "starscan/stats_collector.cc",
+      "starscan/stats_collector.h",
+      "starscan/stats_reporter.h",
+      "starscan/write_protector.cc",
+      "starscan/write_protector.h",
+    ]
+  }
+
+  defines = []
+  if (is_win) {
+    sources += [
+      "page_allocator_internals_win.h",
+      "partition_alloc_base/rand_util_win.cc",
+      "partition_alloc_base/scoped_clear_last_error_win.cc",
+      "partition_alloc_base/threading/platform_thread_win.cc",
+      "partition_alloc_base/time/time_win.cc",
+      "partition_tls_win.cc",
+    ]
+  } else if (is_posix) {
+    sources += [
+      "page_allocator_internals_posix.cc",
+      "page_allocator_internals_posix.h",
+      "partition_alloc_base/files/file_util.h",
+      "partition_alloc_base/files/file_util_posix.cc",
+      "partition_alloc_base/posix/safe_strerror.cc",
+      "partition_alloc_base/posix/safe_strerror.h",
+      "partition_alloc_base/rand_util_posix.cc",
+      "partition_alloc_base/threading/platform_thread_internal_posix.h",
+      "partition_alloc_base/threading/platform_thread_posix.cc",
+      "partition_alloc_base/time/time_conversion_posix.cc",
+    ]
+
+    if (is_android || is_chromeos_ash) {
+      sources += [ "partition_alloc_base/time/time_android.cc" ]
+    }
+    if (is_apple) {
+      sources += [ "partition_alloc_base/time/time_mac.mm" ]
+    } else {
+      sources += [ "partition_alloc_base/time/time_now_posix.cc" ]
+    }
+  } else if (is_fuchsia) {
+    sources += [
+      "page_allocator_internals_fuchsia.h",
+      "partition_alloc_base/fuchsia/fuchsia_logging.cc",
+      "partition_alloc_base/fuchsia/fuchsia_logging.h",
+      "partition_alloc_base/posix/safe_strerror.cc",
+      "partition_alloc_base/posix/safe_strerror.h",
+      "partition_alloc_base/rand_util_fuchsia.cc",
+      "partition_alloc_base/threading/platform_thread_internal_posix.h",
+      "partition_alloc_base/threading/platform_thread_posix.cc",
+      "partition_alloc_base/time/time_conversion_posix.cc",
+      "partition_alloc_base/time/time_fuchsia.cc",
+    ]
+  }
+  if (is_android) {
+    # Only android build requires native_library, and native_library depends
+    # on file_path. So file_path is added if is_android = true.
+    sources += [
+      "partition_alloc_base/files/file_path.cc",
+      "partition_alloc_base/files/file_path.h",
+      "partition_alloc_base/native_library.cc",
+      "partition_alloc_base/native_library.h",
+      "partition_alloc_base/native_library_posix.cc",
+    ]
+  }
+  if (is_apple) {
+    # Apple-specific utilities
+    sources += [
+      "partition_alloc_base/mac/foundation_util.h",
+      "partition_alloc_base/mac/foundation_util.mm",
+      "partition_alloc_base/mac/scoped_cftyperef.h",
+      "partition_alloc_base/mac/scoped_typeref.h",
+    ]
+    if (is_ios) {
+      sources += [
+        "partition_alloc_base/ios/ios_util.h",
+        "partition_alloc_base/ios/ios_util.mm",
+        "partition_alloc_base/system/sys_info_ios.mm",
+      ]
+    }
+    if (is_mac) {
+      sources += [
+        "partition_alloc_base/mac/mac_util.h",
+        "partition_alloc_base/mac/mac_util.mm",
+        "partition_alloc_base/system/sys_info_mac.mm",
+      ]
+    }
+  }
+  if (build_with_chromium) {
+    if (current_cpu == "x64") {
+      defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+      sources += [ "starscan/stack/asm/x64/push_registers_asm.cc" ]
+    } else if (current_cpu == "x86") {
+      defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+      sources += [ "starscan/stack/asm/x86/push_registers_asm.cc" ]
+    } else if (current_cpu == "arm") {
+      defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+      sources += [ "starscan/stack/asm/arm/push_registers_asm.cc" ]
+    } else if (current_cpu == "arm64") {
+      defines += [ "PA_PCSCAN_STACK_SUPPORTED" ]
+      sources += [ "starscan/stack/asm/arm64/push_registers_asm.cc" ]
+    } else {
+      # To support a trampoline for another arch, please refer to v8/src/heap/base.
+    }
+  }
+  public_deps = [
+    ":chromecast_buildflags",
+    ":chromeos_buildflags",
+    ":debugging_buildflags",
+    ":logging_buildflags",
+    ":partition_alloc_buildflags",
+  ]
+
+  configs += [
+    ":partition_alloc_implementation",
+    ":memory_tagging",
+  ]
+  deps = []
+  public_configs = []
+  if (is_android) {
+    # tagging.cc requires __arm_mte_set_* functions.
+    deps += [ "//third_party/android_ndk:cpu_features" ]
+  }
+  if (is_fuchsia) {
+    public_deps += [
+      "//third_party/fuchsia-sdk/sdk/pkg/fit",
+      "//third_party/fuchsia-sdk/sdk/pkg/sync",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
+    ]
+
+    # Needed for users of spinning_mutex.h, which for performance reasons,
+    # contains inlined calls to `libsync` inside the header file.
+    # It appends an entry to the "libs" section of the dependent target.
+    public_configs += [ ":fuchsia_sync_lib" ]
+  }
+
+  frameworks = []
+  if (is_mac) {
+    # SecTaskGetCodeSignStatus needs:
+    frameworks += [ "Security.framework" ]
+  }
+
+  if (is_apple) {
+    frameworks += [
+      "CoreFoundation.framework",
+      "Foundation.framework",
+    ]
+  }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  # Partition alloc is relatively hot (>1% of cycles for users of CrOS). Use speed-focused
+  # optimizations for it.
+  if (!is_debug) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_speed" ]
+  }
+}
+
+buildflag_header("partition_alloc_buildflags") {
+  header = "partition_alloc_buildflags.h"
+
+  # BackupRefPtr(BRP) build flags.
+  _enable_backup_ref_ptr_support = enable_backup_ref_ptr_support && !is_nacl
+  _put_ref_count_in_previous_slot =
+      put_ref_count_in_previous_slot && _enable_backup_ref_ptr_support
+  _enable_backup_ref_ptr_slow_checks =
+      enable_backup_ref_ptr_slow_checks && _enable_backup_ref_ptr_support
+  _enable_dangling_raw_ptr_checks =
+      enable_dangling_raw_ptr_checks && _enable_backup_ref_ptr_support
+
+  # MTECheckedPtr is exclusive against BRP (asserted at declaration).
+  # MTECheckedPtr requires 64-bit pointers (not available in NaCl).
+  _enable_mte_checked_ptr_support = enable_mte_checked_ptr_support && !is_nacl
+
+  _record_alloc_info = false
+
+  _enable_gwp_asan_support = _enable_backup_ref_ptr_support
+
+  # Shadow metadata only supports Linux now.
+  _enable_shadow_metadata_for_64_bits_pointers =
+      enable_shadow_metadata && is_linux
+
+  # The only BRP mode that GWP-ASan supports is the "previous slot" mode.
+  # This is because it requires out-of-line ref count storage for system
+  # page aligned allocations.
+  assert(_put_ref_count_in_previous_slot || !_enable_gwp_asan_support,
+         "It's unsafe to use BRP in a mode that doesn't support GWP-ASan")
+
+  # TODO(crbug.com/1151236): Need to refactor the following buildflags.
+  # The buildflags (except RECORD_ALLOC_INFO) are used by both chrome and
+  # partition alloc. For partition alloc,
+  # gen/base/allocator/partition_allocator/partition_alloc_buildflags.h
+  # defines and partition alloc includes the header file. For chrome,
+  # gen/base/allocator/buildflags.h defines and chrome includes.
+  flags = [
+    "ENABLE_PARTITION_ALLOC_AS_MALLOC_SUPPORT=$enable_partition_alloc_as_malloc_support",
+
+    "ENABLE_BACKUP_REF_PTR_SUPPORT=$_enable_backup_ref_ptr_support",
+    "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
+    "ENABLE_DANGLING_RAW_PTR_CHECKS=$_enable_dangling_raw_ptr_checks",
+    "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
+    "ENABLE_GWP_ASAN_SUPPORT=$_enable_gwp_asan_support",
+
+    "ENABLE_MTE_CHECKED_PTR_SUPPORT=$_enable_mte_checked_ptr_support",
+
+    "RECORD_ALLOC_INFO=$_record_alloc_info",
+    "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
+    "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$_enable_shadow_metadata_for_64_bits_pointers",
+
+    # *Scan is currently only used by Chromium.
+    "STARSCAN=$build_with_chromium",
+
+    # We can only use `//base/tracing` when building in Chromium.
+    "PA_USE_BASE_TRACING=$build_with_chromium",
+
+    "ENABLE_PKEYS=$enable_pkeys",
+  ]
+}
+
+buildflag_header("chromecast_buildflags") {
+  header = "chromecast_buildflags.h"
+
+  flags = [
+    "PA_IS_CAST_ANDROID=$is_cast_android",
+    "PA_IS_CASTOS=$is_castos",
+  ]
+}
+
+buildflag_header("chromeos_buildflags") {
+  header = "chromeos_buildflags.h"
+
+  flags = [ "PA_IS_CHROMEOS_ASH=$is_chromeos_ash" ]
+}
+
+buildflag_header("logging_buildflags") {
+  header = "logging_buildflags.h"
+
+  flags = [ "PA_ENABLE_LOG_ERROR_NOT_REACHED=$enable_log_error_not_reached" ]
+}
+
+buildflag_header("debugging_buildflags") {
+  header = "debugging_buildflags.h"
+  header_dir = rebase_path(".", "//") + "/partition_alloc_base/debug"
+
+  # Duplicates the setup Chromium uses to define `DCHECK_IS_ON()`,
+  # but avails it as a buildflag.
+  _dcheck_is_on = is_debug || dcheck_always_on
+
+  flags = [
+    "PA_DCHECK_IS_ON=$_dcheck_is_on",
+    "PA_EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
+    "PA_DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
+  ]
+}
+
+group("buildflags") {
+  public_deps = [
+    ":chromecast_buildflags",
+    ":chromeos_buildflags",
+    ":debugging_buildflags",
+    ":logging_buildflags",
+    ":partition_alloc_buildflags",
+  ]
+}
+# TODO(crbug.com/1151236): After making partition_alloc a standalone library,
+# move test code here. i.e. test("partition_alloc_tests") { ... } and
+# test("partition_alloc_perftests").

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,13 +16,12 @@ PaintPreviewTabServiceFileMixin::~PaintPreviewTabServiceFileMixin() = default;
 
 void PaintPreviewTabServiceFileMixin::GetCapturedPaintPreviewProto(
     const DirectoryKey& key,
-    base::Optional<base::TimeDelta> expiry_horizon,
+    absl::optional<base::TimeDelta> expiry_horizon,
     OnReadProtoCallback on_read_proto_callback) {
   PaintPreviewFileMixin::GetCapturedPaintPreviewProto(
       key,
-      expiry_horizon.has_value()
-          ? expiry_horizon.value()
-          : base::TimeDelta::FromHours(kExpiryHorizonHrs),
+      expiry_horizon.has_value() ? expiry_horizon.value()
+                                 : base::Hours(kExpiryHorizonHrs),
       std::move(on_read_proto_callback));
 }
 

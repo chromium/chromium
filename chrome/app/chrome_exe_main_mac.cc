@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,14 +18,16 @@
 #include <unistd.h>
 
 #include <memory>
+#include <string>
 
-#include "base/optional.h"
-#include "base/check.h"
+#include "base/allocator/early_zone_registration_mac.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/common/chrome_version.h"
 
 #if defined(HELPER_EXECUTABLE)
 #include "sandbox/mac/seatbelt_exec.h"  // nogncheck
-#endif  // defined(HELPER_EXECUTABLE)
+#endif
 
 extern "C" {
 // abort_report_np() records the message in a special section that both the
@@ -39,11 +41,100 @@ namespace {
 
 typedef int (*ChromeMainPtr)(int, char**);
 
+#if !defined(HELPER_EXECUTABLE) && defined(OFFICIAL_BUILD) && \
+    BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(ARCH_CPU_X86_64)
+// This is for https://crbug.com/1300598, and more generally,
+// https://crbug.com/1297588 (and all of the associated bugs). It's horrible!
+//
+// When the main executable is updated on disk while the application is running,
+// and the offset of the Mach-O image at the main executable's path changes from
+// the offset that was determined when the executable was loaded, SecCode ceases
+// to be able to work with the executable. This may be triggered when the
+// product is updated on disk but the application has not yet relaunched. This
+// affects SecCodeCopySelf and SecCodeCopyGuestWithAttributes. Bugs are evident
+// even when validation (SecCodeCheckValidity) is not attempted.
+//
+// Practically, this is only a concern for fat (universal) files, because the
+// offset of a Mach-O image in a thin (single-architecture) file is always 0.
+// The branded product always ships a fat executable, and because some uses of
+// SecCode are in OS code beyond Chrome's control, an effort is made to freeze
+// the geometry of the branded (BUILDFLAG(GOOGLE_CHROME_BRANDING))
+// for-public-release (defined(OFFICIAL_BUILD)) main executable.
+//
+// The fat file is produced by installer/mac/universalizer.py. The x86_64 slice
+// always precedes the arm64 slice: lipo, as used by universalizer.py, always
+// places the arm64 slice last. See Xcode 12.0
+// https://github.com/apple-oss-distributions/cctools/blob/cctools-973.0.1/misc/lipo.c#L2672
+// cmp_qsort, used by create_fat at #L962. universalizer.py ensures that the
+// first slice in the file is located at a constant offset (16kB since
+// 98.0.4758.80), but if the first slice's size changes, it can affect the
+// offset of the second slice, the arm64 one, triggering SecCode-related bugs
+// for arm64 users across updates.
+//
+// As quite a hack of a workaround, the offset of the arm64 slice within the fat
+// main executable is influenced to land at the desired location by introducing
+// padding to the x86_64 slice that precedes it. The arm64 slice needs to remain
+// at offset 304kB (since 98.0.4758.80). The signed x86_64 slice has size 287296
+// bytes in 98.0.4758.80, but has shrunk since then, and before the introduction
+// of any padding, would now be 216784 bytes long. To make up the 70512-byte
+// difference, 68kB (69632 bytes) of padding is added to the x86_64 slice to
+// ensure that its size is stable, causing the arm64 slice to land where it
+// needs to be when universalized. This padding needs to be added to the thin
+// form of the x86_64 image before being fed to universalizer.py. Why 69632
+// bytes and not 70512? To keep it an even multiple of linker pages (not machine
+// pages: linker pages are 4kB for lld targeting x86_64 and 16kB for ld64
+// targeting x86_64, but Chrome uses lld). In any case, I'll make up almost all
+// of the 880-byte difference with one more weird trick below.
+//
+// There are several terrible ways to insert this padding into the x86_64 image.
+// Best would be something that considers the size of the x86_64 image without
+// padding, and inserts the precise amount required. It may be possible to do
+// this after linking, but the options that have been attempted so far were not
+// successful. So this quick and very dirty 68kB buffer is added to increase the
+// size of __TEXT,__const in a way that no tool could possibly see as suspicious
+// after link time. The variable is marked with the "used" attribute to prevent
+// the compiler from issuing warnings about the referenced variable, to prevent
+// the compiler from removing it under optimization, and to set the
+// S_ATTR_NO_DEAD_STRIP section attribute to prevent the linker from removing it
+// under -dead_strip. Note that the standardized [[maybe_unused]] attribute only
+// suppresses the warning, but does not prevent the compiler or linker from
+// removing it.
+//
+// The introduction of this fixed 68kB of padding causes the unsigned linker
+// output to grow by 68kB precisely, but the signed output will grow by slightly
+// more. This is because the code signature's code directory contains SHA-1 and
+// SHA-256 hashes of each 4kB code signing page (note, not machine pages or
+// linker pages) in the image, adding 20 and 32 bytes each (macOS 12.0.1
+// https://github.com/apple-oss-distributions/Security/blob/main/OSX/libsecurity_codesigning/lib/signer.cpp#L298
+// Security::CodeSigning::SecCodeSigner::Signer::prepare). For the 68kB
+// addition, the code signature grows by (68 / 4) * (20 + 32) = 884 bytes, thus
+// the total size of the linker output grows by 68kB + 884 = 70516 bytes. It is
+// not possible to control this any more granularly: if the buffer were sized at
+// 68kB - 884 = 68748 bytes, it would either cause no change in the space
+// allocated to the __TEXT segment (due to padding for alignment) or would cause
+// the segment to shrink by a linker page (note, not a code signing or machine
+// page) which would which would cause the linker output to shrink by the same
+// amount and would be absolutely undesirable. Luckily, the net growth of 70516
+// bytes is almost at the target of 70512 on the nose. In any event, having the
+// signed x86_64 slice sized at 287300 bytes instead of 287296 should not be a
+// problem. Subtle differences in characteristics including the code signature
+// itself can easily produce differences of that magnitude. It's necessary for
+// the size to wind up in the range (278528, 294912], and as long as that's met,
+// the 16kB alignment for the arm64 slice that follows it in the fat file will
+// cause it to appear at the desired 304kB.
+//
+// If the main executable has a significant change in size, this will need to be
+// revised. Hopefully a more elegant solution will become apparent before that's
+// required.
+__attribute__((used)) const char kGrossPaddingForCrbug1300598[68 * 1024] = {};
+#endif
+
 [[noreturn]] void FatalError(const char* format, ...) {
   va_list valist;
   va_start(valist, format);
   char message[4096];
   if (vsnprintf(message, sizeof(message), format, valist) >= 0) {
+    fputs(message, stderr);
     abort_report_np("%s", message);
   }
   va_end(valist);
@@ -52,110 +143,12 @@ typedef int (*ChromeMainPtr)(int, char**);
 
 }  // namespace
 
-static void (*gRecordReplayAttach)(const char* dispatchAddress, const char* buildId);
-static void (*gRecordReplaySetApiKey)(const char* apiKey);
-static void (*gRecordReplayRecordCommandLineArguments)(int*, char***);
-
-template <typename Src, typename Dst>
-static inline void CastPointer(const Src src, Dst* dst) {
-  static_assert(sizeof(Src) == sizeof(uintptr_t), "bad size");
-  static_assert(sizeof(Dst) == sizeof(uintptr_t), "bad size");
-  memcpy((void*)dst, (const void*)&src, sizeof(uintptr_t));
-}
-
-template <typename T>
-static void RecordReplayLoadSymbol(void* handle, const char* name, T& function) {
-  void* sym = dlsym(handle, name);
-  if (!sym) {
-    fprintf(stderr, "Could not find %s in Record Replay driver.\n", name);
-    return;
-  }
-
-  CastPointer(sym, &function);
-}
-
-#include "../../base/record_replay_build_id.cc"
-
-static void RecordReplayAttach(int* pargc, char*** pargv) {
-  const char* driver = getenv("RECORD_REPLAY_DRIVER");
-  if (!driver) {
-    // When not configured to record/replay, don't change anything.
-    return;
-  }
-
-  // Figure out what type of process this is.
-  char* type = nullptr;
-  for (int i = 0; i < *pargc; i++) {
-    if (!strncmp((*pargv)[i], "--type=", 7)) {
-      type = (*pargv)[i] + 7;
-      break;
-    }
-  }
-  if (type) {
-    // Only renderer processes are recorded/replayed.
-    if (strcmp(type, "renderer")) {
-      return;
-    }
-  } else {
-    // If there is no type, this is the main process. Add a couple command line
-    // arguments which are required to record/replay.
-    char** nargv = new char*[*pargc + 3];
-    memcpy(nargv, *pargv, *pargc * sizeof(char*));
-    *pargv = nargv;
-
-    // Recording processes currently need the sandbox disabled in order to
-    // write out recording IDs to the specified path name.
-    (*pargv)[*pargc] = strdup("--no-sandbox");
-
-    // Recording/replaying currently requires software rendering.
-    (*pargv)[*pargc + 1] = strdup("--disable-gpu");
-
-    (*pargv)[*pargc + 2] = nullptr;
-    *pargc += 2;
-    return;
-  }
-
-  const char* dispatchAddress = getenv("RECORD_REPLAY_SERVER");
-  if (!dispatchAddress) {
-    fprintf(stderr, "RECORD_REPLAY_SERVER not set.\n");
-    return;
-  }
-
-  base::Optional<std::string> apiKey;
-  const char* val = getenv("RECORD_REPLAY_API_KEY");
-  if (val) {
-    apiKey.emplace(val);
-    // Unsetting the env var will make the variable unavailable via
-    // getenv and such, and also mutates the 'environ' global, so
-    // by the time gRecordReplayAttach runs, it will have no idea that
-    // this value existed and won't capture it in the recording itself,
-    // which is ideal for security.
-    CHECK(!unsetenv("RECORD_REPLAY_API_KEY"));
-  }
-
-  void* handle = dlopen(driver, RTLD_LAZY);
-  if (!handle) {
-    fprintf(stderr, "Loading Record Replay driver failed.\n");
-    return;
-  }
-
-  RecordReplayLoadSymbol(handle, "RecordReplayAttach", gRecordReplayAttach);
-  RecordReplayLoadSymbol(handle, "RecordReplaySetApiKey", gRecordReplaySetApiKey);
-  RecordReplayLoadSymbol(handle, "RecordReplayRecordCommandLineArguments",
-                         gRecordReplayRecordCommandLineArguments);
-
-  if (gRecordReplaySetApiKey && apiKey) {
-    gRecordReplaySetApiKey(apiKey->c_str());
-  }
-
-  if (gRecordReplayAttach) {
-    gRecordReplayAttach(dispatchAddress, recordreplay::gBuildId);
-    gRecordReplayRecordCommandLineArguments(pargc, pargv);
-  }
-}
+#include "./record_replay_main.cc"
 
 __attribute__((visibility("default"))) int main(int argc, char* argv[]) {
-  RecordReplayAttach(&argc, &argv);
+  RecordReplayAttach(&argc, const_cast<const char***>(&argv));
+
+  partition_alloc::EarlyMallocZoneRegistration();
 
   uint32_t exec_path_size = 0;
   int rv = _NSGetExecutablePath(NULL, &exec_path_size);

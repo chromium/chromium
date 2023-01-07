@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from page_sets.rendering import rendering_story
@@ -147,6 +147,13 @@ class MainAnimationsHalfPresented(ThroughputMetricStory):
          'main-animations-half-presented.html')
 
 
+class NoUpdateCompositorAnimationWithJankyMainAnimation(ThroughputMetricStory):
+  BASE_NAME = 'no_update_compositor_animation_with_janky_main_animation'
+  SUPPORTED_PLATFORMS = platforms.ALL_PLATFORMS
+  URL = ('file://../../../../chrome/test/data/perf/throughput_test_cases/'
+         'mixed-jank.html')
+
+
 class ThroughputScrolling(ThroughputMetricStory):
   ABSTRACT_STORY = True
   URL = ('file://../../../../chrome/test/data/perf/throughput_test_cases/'
@@ -180,3 +187,10 @@ class ThroughputScrollingPassiveHandler(ThroughputScrolling):
 class ThroughputScrollingActiveHandler(ThroughputScrolling):
   BASE_NAME = 'throughput_scrolling_active_handler'
   SELECTOR = '#handler_active'
+
+
+class PaintWorkletAnimation(ThroughputMetricStory):
+  BASE_NAME = 'paint_worklet'
+  SUPPORTED_PLATFORMS = platforms.ALL_PLATFORMS
+  URL = ('file://../../../../chrome/test/data/perf/throughput_test_cases/'
+         'paint-worklet.html')

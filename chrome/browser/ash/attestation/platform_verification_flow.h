@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,18 +10,12 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-// TODO(https://crbug.com/1164001): forward declare AttestatoinFlow
-// after //chromeos/attestation is moved to ash.
-#include "chromeos/attestation/attestation_flow.h"
-// TODO(https://crbug.com/1164001): forward declare AttestatoinClient
-// before ChromeOS source migration.
-#include "chromeos/dbus/attestation/attestation_client.h"
-#include "chromeos/dbus/attestation/interface.pb.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
+#include "components/account_id/account_id.h"
 #include "url/gurl.h"
 
 class AccountId;
@@ -35,8 +29,12 @@ class User;
 }  // namespace user_manager
 
 namespace ash {
+
+class AttestationClient;
+
 namespace attestation {
 
+class AttestationFlow;
 class PlatformVerificationFlowTest;
 
 // This class allows platform verification for the content protection use case.
@@ -56,7 +54,8 @@ class PlatformVerificationFlowTest;
 // attestation flow is aborted at any stage, it will need to start over.  If we
 // use weak pointers, the attestation flow will stop when the next callback is
 // run.  So we need the instance to stay alive until the platform key is fully
-// certified so the next time ChallegePlatformKey() is invoked it will be quick.
+// certified so the next time ChallengePlatformKey() is invoked it will be
+// quick.
 class PlatformVerificationFlow
     : public base::RefCountedThreadSafe<PlatformVerificationFlow> {
  public:
@@ -67,7 +66,6 @@ class PlatformVerificationFlow
     PLATFORM_NOT_VERIFIED,  // The platform cannot be verified.  For example:
                             // - It is not a Chrome device.
                             // - It is not running a verified OS image.
-    USER_REJECTED,          // The user explicitly rejected the operation.
     POLICY_REJECTED,        // The operation is not allowed by policy/settings.
     TIMEOUT,                // The operation timed out.
     RESULT_MAX
@@ -89,22 +87,10 @@ class PlatformVerificationFlow
    public:
     virtual ~Delegate() {}
 
-    // Gets the URL associated with the given |web_contents|.
-    virtual const GURL& GetURL(content::WebContents* web_contents) = 0;
-
-    // Gets the user associated with the given |web_contents|.  NULL may be
-    // returned.
-    virtual const user_manager::User* GetUser(
-        content::WebContents* web_contents) = 0;
-
-    // Checks whether attestation is permitted by user.
-    virtual bool IsPermittedByUser(content::WebContents* web_contents) = 0;
-
     // Returns true iff the device is in a mode that supports platform
-    // verification. For example, platform verification is not supported in
-    // guest or incognito mode. It is also not supported in dev mode unless
-    // overridden by a flag.
-    virtual bool IsInSupportedMode(content::WebContents* web_contents) = 0;
+    // verification. For example, platform verification is not supported in dev
+    // mode unless overridden by a flag.
+    virtual bool IsInSupportedMode() = 0;
   };
 
   // This callback will be called when a challenge operation completes.  If
@@ -131,6 +117,9 @@ class PlatformVerificationFlow
                            AttestationClient* attestation_client,
                            Delegate* delegate);
 
+  PlatformVerificationFlow(const PlatformVerificationFlow&) = delete;
+  PlatformVerificationFlow& operator=(const PlatformVerificationFlow&) = delete;
+
   // Invokes an asynchronous operation to challenge a platform key.  Any user
   // interaction will be associated with |web_contents|.  The |service_id| is an
   // arbitrary value but it should uniquely identify the origin of the request
@@ -146,9 +135,20 @@ class PlatformVerificationFlow
                             const std::string& challenge,
                             ChallengeCallback callback);
 
+  // Identical to ChallengePlatformKey above except the User has been extracted
+  // from the input |web_contents|. The former is needed since non-Ash callsites
+  // of this class cannot directly reference User*.
+  void ChallengePlatformKey(const user_manager::User* user,
+                            const std::string& service_id,
+                            const std::string& challenge,
+                            ChallengeCallback callback);
+
   void set_timeout_delay(const base::TimeDelta& timeout_delay) {
     timeout_delay_ = timeout_delay;
   }
+
+  // Public for tests.
+  static bool IsAttestationAllowedByPolicy();
 
  private:
   friend class base::RefCountedThreadSafe<PlatformVerificationFlow>;
@@ -157,14 +157,14 @@ class PlatformVerificationFlow
   // Holds the arguments of a ChallengePlatformKey call.  This is convenient for
   // use with base::Bind so we don't get too many arguments.
   struct ChallengeContext {
-    ChallengeContext(content::WebContents* web_contents,
+    ChallengeContext(const AccountId& account_id,
                      const std::string& service_id,
                      const std::string& challenge,
                      ChallengeCallback callback);
     ChallengeContext(ChallengeContext&& other);
     ~ChallengeContext();
 
-    content::WebContents* web_contents;
+    AccountId account_id;
     std::string service_id;
     std::string challenge;
     ChallengeCallback callback;
@@ -179,13 +179,11 @@ class PlatformVerificationFlow
       const ::attestation::GetEnrollmentPreparationsReply& reply);
 
   // Initiates the flow to get a platform key certificate.  The arguments to
-  // ChallengePlatformKey are in |context|.  |account_id| identifies the user
-  // for which to get a certificate.  If |force_new_key| is true then any
+  // ChallengePlatformKey are in |context|.  If |force_new_key| is true then any
   // existing key for the same user and service will be ignored and a new key
   // will be generated and certified.
   void GetCertificate(
       scoped_refptr<base::RefCountedData<ChallengeContext>> context,
-      const AccountId& account_id,
       bool force_new_key);
 
   // A callback called when an attestation certificate request operation
@@ -224,9 +222,6 @@ class PlatformVerificationFlow
                         bool is_expiring_soon,
                         const ::attestation::SignSimpleChallengeReply& reply);
 
-  // Checks whether attestation for content protection is allowed by policy.
-  bool IsAttestationAllowedByPolicy();
-
   // Checks if |certificate_chain| is a PEM certificate chain that contains a
   // certificate this is expired or expiring soon. Returns the expiry status.
   ExpiryStatus CheckExpiry(const std::string& certificate_chain);
@@ -244,8 +239,6 @@ class PlatformVerificationFlow
   std::unique_ptr<Delegate> default_delegate_;
   base::TimeDelta timeout_delay_;
   std::set<std::string> renewals_in_progress_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformVerificationFlow);
 };
 
 }  // namespace attestation

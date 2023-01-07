@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,6 @@ namespace video_tutorials {
 // Default URL string for GetVideoTutorials RPC.
 extern const char kDefaultGetTutorialsPath[];
 
-// Default base URL string.
-extern const char kDefaultBaseURL[];
-
 // Finch parameter key for base server URL to retrieve the tutorials.
 extern const char kBaseURLKey[];
 
@@ -35,7 +32,7 @@ extern const char kFetchFrequencyKey[];
 class Config {
  public:
   // Get video tutorials metadata server URL.
-  static GURL GetTutorialsServerURL();
+  static GURL GetTutorialsServerURL(const std::string& default_server_url);
 
   // Get the default locale before users choice.
   static std::string GetDefaultPreferredLocale();

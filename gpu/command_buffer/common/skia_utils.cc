@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -25,11 +26,14 @@ class SkiaGpuTraceMemoryDump : public SkTraceMemoryDump {
   // This should never outlive the provided ProcessMemoryDump, as it should
   // always be scoped to a single OnMemoryDump funciton call.
   SkiaGpuTraceMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
-                         base::Optional<uint64_t> share_group_tracing_guid)
+                         absl::optional<uint64_t> share_group_tracing_guid)
       : pmd_(pmd),
         share_group_tracing_guid_(share_group_tracing_guid),
         tracing_process_id_(base::trace_event::MemoryDumpManager::GetInstance()
                                 ->GetTracingProcessId()) {}
+
+  SkiaGpuTraceMemoryDump(const SkiaGpuTraceMemoryDump&) = delete;
+  SkiaGpuTraceMemoryDump& operator=(const SkiaGpuTraceMemoryDump&) = delete;
 
   ~SkiaGpuTraceMemoryDump() override = default;
 
@@ -126,18 +130,16 @@ class SkiaGpuTraceMemoryDump : public SkTraceMemoryDump {
     return dump;
   }
 
-  base::trace_event::ProcessMemoryDump* pmd_;
-  base::Optional<uint64_t> share_group_tracing_guid_;
+  raw_ptr<base::trace_event::ProcessMemoryDump> pmd_;
+  absl::optional<uint64_t> share_group_tracing_guid_;
   uint64_t tracing_process_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaGpuTraceMemoryDump);
 };
 
 }  // namespace
 
 void DumpGrMemoryStatistics(const GrDirectContext* context,
                             base::trace_event::ProcessMemoryDump* pmd,
-                            base::Optional<uint64_t> tracing_guid) {
+                            absl::optional<uint64_t> tracing_guid) {
   SkiaGpuTraceMemoryDump trace_memory_dump(pmd, tracing_guid);
   context->dumpMemoryStatistics(&trace_memory_dump);
 }

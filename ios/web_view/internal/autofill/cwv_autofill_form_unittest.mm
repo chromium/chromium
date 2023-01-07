@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,8 +32,9 @@ TEST_F(CWVAutofillFormTest, Initialization) {
   base::PathService::Get(base::DIR_MODULE, &pak_path);
   pak_path = pak_path.AppendASCII("web_view_resources.pak");
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-      pak_path, ui::SCALE_FACTOR_NONE);
+      pak_path, ui::kScaleFactorNone);
 
+  autofill::test::AutofillEnvironment autofill_environment_;
   autofill::FormData form_data;
   autofill::test::CreateTestAddressFormData(&form_data);
   std::unique_ptr<autofill::FormStructure> form_structure =

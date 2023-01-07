@@ -1,0 +1,19 @@
+caption: Enable showing the welcome page on the first browser launch following OS
+  upgrade
+deprecated: true
+desc: |-
+  If this policy is set to true or not configured, the browser will re-show the welcome page on the first launch following an OS upgrade.
+
+        If this policy is set to false, the browser will not re-show the welcome page on the first launch following an OS upgrade.
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: false
+owners:
+- grt@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.win:45-62
+tags: []
+type: main

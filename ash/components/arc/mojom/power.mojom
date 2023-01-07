@@ -1,0 +1,118 @@
+// Copyright 2015 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 9
+
+module arc.mojom;
+
+import "ash/components/arc/mojom/anr.mojom";
+
+// Enumerates the modes of CPU restrictions.
+// This enum should be synced with CpuRestrictionState in
+// src/third_party/cros_system_api/dbus/vm_concierge/concierge_service.proto
+[Extensible]
+enum CpuRestrictionState {
+  // The CPU usage is relaxed.
+  CPU_RESTRICTION_FOREGROUND = 0,
+  // The CPU usage is tightly restricted.
+  CPU_RESTRICTION_BACKGROUND = 1,
+};
+
+// Enumerates the types of wake lock the ARC instance can request from the
+// host.
+[Extensible]
+enum DisplayWakeLockType {
+  // Does not allow the screen to dim, turn off, or lock; prevents
+  // idle suspend.
+  BRIGHT = 0,
+
+  // Allows dimming the screen, but prevents it from turning off or locking.
+  // Also prevents idle suspend.
+  DIM = 1
+};
+
+// Enumerates the types of wakefullness modes.
+// Must match to PowerManager.WAKEFULNESS_* constants.
+[Extensible]
+enum WakefulnessMode {
+  // Device mode is unknown.
+  UNKNOWN = -1,
+
+  // The device is asleep.  It can only be awoken.
+  // The device typically passes through the dozing state first.
+  ASLEEP = 0,
+
+  // The device is fully awake.  It can be put to sleep.
+  // When the user activity timeout expires, the device may start dreaming
+  // or go to sleep.
+  AWAKE,
+
+  // The device is dreaming.  It can be awoken which ends the dream.
+  DREAMING,
+
+  // The device is dozing.  It is almost asleep but is allowing a special
+  // low-power "doze" dream to run which keeps the display on but lets the
+  //  application processor be suspended.  It can be awoken which ends the
+  // dream.The device fully goes to sleep if the dream cannot be started or
+  // ends on its own.
+  DOZING
+};
+
+// Next method ID: 8
+interface PowerHost {
+  // Acquire and release wake locks on the host side.
+  OnAcquireDisplayWakeLock@0(DisplayWakeLockType type);
+  OnReleaseDisplayWakeLock@1(DisplayWakeLockType type);
+
+  // Notifies wakefulness mode is changed.
+  [MinVersion=6] OnWakefulnessChanged@5(WakefulnessMode mode);
+
+  // Checks if there is a display on.
+  [MinVersion=1] IsDisplayOn@2() => (bool is_on);
+
+  // Request that the screen brightness be changed to |percent|.
+  // |percent| is of the range [0, 100]
+  [MinVersion=3] OnScreenBrightnessUpdateRequest@3(double percent);
+
+  // Notifies that the system is in pre-ANR mode. This means real ANR crash may
+  // happen soon.
+  [MinVersion=8] OnPreAnr@6(AnrType type);
+
+  // Notifies that ANR recovery failed and ANR crash has happened.
+  [MinVersion=8] OnAnrRecoveryFailed@7(AnrType type);
+};
+
+// Deprecated method IDs: 0
+// Next method ID: 9
+interface PowerInstance {
+  // Establishes full-duplex communication with the host.
+  [MinVersion=4] Init@5(pending_remote<PowerHost> host_remote) => ();
+
+  // Alerts the instance to a change in interactive state.
+  [MinVersion=1] SetInteractive@1(bool enabled);
+
+  // Called when the system is about to suspend. The callback will be invoked
+  // when pre-suspend work is complete.
+  [MinVersion=2] Suspend@2() => ();
+
+  // Called when the system has just resumed.
+  [MinVersion=2] Resume@3();
+
+  // Update Android brightness settings.
+  // |percent| is of the range [0, 100]
+  [MinVersion=3] UpdateScreenBrightnessSettings@4(double percent);
+
+  // Called when the power supply information is updated.
+  // TODO(b/136427446): Rearchitect ARC power info management with more
+  // explicit data / event passing.
+  [MinVersion=5] PowerSupplyInfoChanged@6();
+
+  // Requests current wakefulness mode.
+  [MinVersion=6] GetWakefulnessMode@7() => (WakefulnessMode mode);
+
+  // Notifies that CPU restriction was changed. This message is sent from
+  // Chrome in response to ARC CPU group is changed event. The destination
+  // is ARC handler that resides in Android system server process.
+  [MinVersion=7] OnCpuRestrictionChanged@8(CpuRestrictionState state);
+};

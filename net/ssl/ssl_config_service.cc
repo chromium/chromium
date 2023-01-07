@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/observer_list.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 
 namespace net {
@@ -16,12 +17,12 @@ namespace {
 // same.
 bool SSLContextConfigsAreEqual(const net::SSLContextConfig& config1,
                                const net::SSLContextConfig& config2) {
-  return std::tie(config1.version_min, config1.version_min_warn,
-                  config1.version_max, config1.disabled_cipher_suites,
-                  config1.cecpq2_enabled) ==
-         std::tie(config2.version_min, config2.version_min_warn,
-                  config2.version_max, config2.disabled_cipher_suites,
-                  config2.cecpq2_enabled);
+  return std::tie(config1.version_min, config1.version_max,
+                  config1.disabled_cipher_suites, config1.cecpq2_enabled,
+                  config1.ech_enabled) ==
+         std::tie(config2.version_min, config2.version_max,
+                  config2.disabled_cipher_suites, config2.cecpq2_enabled,
+                  config2.ech_enabled);
 }
 
 }  // namespace

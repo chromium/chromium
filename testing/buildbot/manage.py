@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2015 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,6 +15,7 @@ import collections
 import glob
 import json
 import os
+import six
 import subprocess
 import sys
 
@@ -140,9 +141,9 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
     'password_check_junit_tests',
     'password_manager_junit_tests',
     'services_junit_tests',
-    'shipped_binaries',
     'system_webview_apk',
     'touch_to_fill_junit_tests',
+    'traffic_annotation_auditor_dependencies',
     'ui_junit_tests',
     'vr_common_perftests',
     'vr_perf_tests',
@@ -158,6 +159,7 @@ SKIP_GN_ISOLATE_MAP_TARGETS = {
     'audio_decoder_unittests',
     'common_audio_unittests',
     'common_video_unittests',
+    'dcsctp_unittests',
     'libjingle_peerconnection_android_unittest',
     'modules_tests',
     'modules_unittests',
@@ -253,9 +255,10 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
   try:
     config = json.loads(content)
   except ValueError as e:
-    raise Error('Exception raised while checking %s: %s' % (filepath, e))
+    six.raise_from(
+        Error('Exception raised while checking %s: %s' % (filepath, e)), e)
 
-  for builder, data in sorted(config.iteritems()):
+  for builder, data in sorted(config.items()):
     if builder in SKIP:
       # Oddities.
       continue
@@ -273,7 +276,7 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
           test not in SKIP_GN_ISOLATE_MAP_TARGETS):
         raise Error('%s: %s / %s is not listed in gn_isolate_map.pyl' %
                     (filename, builder, test))
-      elif test in ninja_targets:
+      if test in ninja_targets:
         ninja_targets_seen.add(test)
 
     for target in data.get('additional_compile_targets', []):
@@ -281,7 +284,7 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
           target not in SKIP_GN_ISOLATE_MAP_TARGETS):
         raise Error('%s: %s / %s is not listed in gn_isolate_map.pyl' %
                     (filename, builder, target))
-      elif target in ninja_targets:
+      if target in ninja_targets:
         ninja_targets_seen.add(target)
 
     gtest_tests = data.get('gtest_tests', [])
@@ -299,7 +302,7 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
           test not in SKIP_GN_ISOLATE_MAP_TARGETS):
         raise Error('%s: %s / %s is not listed in gn_isolate_map.pyl.' %
                     (filename, builder, test))
-      elif test in ninja_targets:
+      if test in ninja_targets:
         ninja_targets_seen.add(test)
 
       name = d.get('name', d['test'])
@@ -320,7 +323,7 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
           name not in SKIP_GN_ISOLATE_MAP_TARGETS):
         raise Error('%s: %s / %s is not listed in gn_isolate_map.pyl.' %
                     (filename, builder, name))
-      elif name in ninja_targets:
+      if name in ninja_targets:
         ninja_targets_seen.add(name)
 
     for d in data.get('instrumentation_tests', []):
@@ -329,7 +332,7 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
           name not in SKIP_GN_ISOLATE_MAP_TARGETS):
         raise Error('%s: %s / %s is not listed in gn_isolate_map.pyl.' %
                     (filename, builder, name))
-      elif name in ninja_targets:
+      if name in ninja_targets:
         ninja_targets_seen.add(name)
 
     # The trick here is that process_builder_remaining() is called before
@@ -363,9 +366,9 @@ def print_convert(test_name, tests_location):
   print('')
   print('%d configs already ran on Swarming' % data['count_run_on_swarming'])
   print('%d used to run locally and were converted:' % data['count_run_local'])
-  for master, builders in sorted(data['local_configs'].iteritems()):
+  for builder_group, builders in sorted(data['local_configs'].items()):
     for builder in builders:
-      print('- %s: %s' % (master, builder))
+      print('- %s: %s' % (builder_group, builder))
   print('')
   print('Ran:')
   print('  ./manage.py --convert %s' % test_name)
@@ -382,7 +385,7 @@ def print_remaining(test_name, tests_location):
     if test_name not in tests_location:
       raise Error('Unknown test %s' % test_name)
     for config, builders in sorted(
-        tests_location[test_name]['local_configs'].iteritems()):
+        tests_location[test_name]['local_configs'].items()):
       print('%s:' % config)
       for builder in sorted(builders):
         print('  %s' % builder)
@@ -395,7 +398,7 @@ def print_remaining(test_name, tests_location):
         colorama.Fore.MAGENTA))
   total_local = 0
   total_swarming = 0
-  for name, location in sorted(tests_location.iteritems()):
+  for name, location in sorted(tests_location.items()):
     if not location['count_run_on_swarming']:
       c = colorama.Fore.RED
     elif location['count_run_local']:
@@ -414,10 +417,12 @@ def print_remaining(test_name, tests_location):
   total = total_local + total_swarming
   p_local = 100. * total_local / total
   p_swarming = 100. * total_swarming / total
+  # pylint: disable=bad-string-format-type
   print('%s%-*s %4d (%4.1f%%)   %4d (%4.1f%%)' %
       (colorama.Fore.WHITE, l, 'Total:', total_local, p_local,
         total_swarming, p_swarming))
   print('%-*s                %4d' % (l, 'Total executions:', total))
+  #pylint: enable=bad-string-format-type
 
 
 def main():

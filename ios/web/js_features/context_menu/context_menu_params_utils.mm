@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,88 +6,27 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/strings/sys_string_conversions.h"
-#include "base/values.h"
-#include "components/url_formatter/url_formatter.h"
-#include "ios/web/common/referrer_util.h"
-#include "ios/web/js_features/context_menu/context_menu_constants.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
+#import "ios/web/common/referrer_util.h"
+#import "ios/web/js_features/context_menu/context_menu_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-typedef std::pair<NSString*, web::ContextMenuTitleOrigin> TitleAndOrigin;
-
-TitleAndOrigin GetContextMenuTitleAndOrigin(base::Value* element) {
-  NSString* title = nil;
-  web::ContextMenuTitleOrigin origin = web::ContextMenuTitleOrigin::kUnknown;
-
-  std::string* href = element->FindStringKey(web::kContextMenuElementHyperlink);
-  if (href) {
-    GURL link_url = GURL(*href);
-    origin = web::ContextMenuTitleOrigin::kURL;
-    if (link_url.SchemeIs(url::kJavaScriptScheme)) {
-      title = @"JavaScript";
-    } else {
-      std::u16string URLText = url_formatter::FormatUrl(link_url);
-      title = base::SysUTF16ToNSString(URLText);
-    }
-  }
-
-  std::string* src = element->FindStringKey(web::kContextMenuElementSource);
-  if (!title && src) {
-    title = base::SysUTF8ToNSString(*src);
-    origin = web::ContextMenuTitleOrigin::kURL;
-  }
-
-  if ([title hasPrefix:base::SysUTF8ToNSString(url::kDataScheme)]) {
-    title = nil;
-    origin = web::ContextMenuTitleOrigin::kURL;
-  }
-
-  std::string* title_attribute =
-      element->FindStringKey(web::kContextMenuElementTitle);
-  if (title_attribute) {
-    title = base::SysUTF8ToNSString(*title_attribute);
-    origin = web::ContextMenuTitleOrigin::kImageTitle;
-  }
-
-  // Prepend the alt text attribute if element is an image without a link.
-  std::string* alt_text = element->FindStringKey(web::kContextMenuElementAlt);
-  if (alt_text && src && !href) {
-    title = [NSString stringWithFormat:@"%s – %@", alt_text->c_str(), title];
-    // If there was a title attribute, then the title origin is still "image
-    // title", even though the alt text was prepended. Otherwise, set the title
-    // origin to be "alt text".
-    if (!title_attribute) {
-      origin = web::ContextMenuTitleOrigin::kImageAltText;
-    }
-  }
-
-  return TitleAndOrigin(title, origin);
-}
-
-}  // namespace
-
 namespace web {
-
-bool CanShowContextMenuForParams(const ContextMenuParams& params) {
-  if (params.link_url.is_valid()) {
-    return true;
-  }
-  if (params.src_url.is_valid()) {
-    return true;
-  }
-  return false;
-}
 
 ContextMenuParams ContextMenuParamsFromElementDictionary(base::Value* element) {
   ContextMenuParams params;
   if (!element || !element->is_dict()) {
-    // Invalid |element|.
+    // Invalid `element`.
     return params;
+  }
+
+  std::string* tag_name = element->FindStringKey(kContextMenuElementTagName);
+  if (tag_name) {
+    params.tag_name = base::SysUTF8ToNSString(*tag_name);
   }
 
   std::string* href = element->FindStringKey(kContextMenuElementHyperlink);
@@ -109,12 +48,37 @@ ContextMenuParams ContextMenuParamsFromElementDictionary(base::Value* element) {
   std::string* inner_text =
       element->FindStringKey(kContextMenuElementInnerText);
   if (inner_text && !inner_text->empty()) {
-    params.link_text = base::SysUTF8ToNSString(*inner_text);
+    params.text = base::SysUTF8ToNSString(*inner_text);
   }
 
-  TitleAndOrigin title_and_origin = GetContextMenuTitleAndOrigin(element);
-  params.menu_title = title_and_origin.first;
-  params.menu_title_origin = title_and_origin.second;
+  std::string* title_attribute =
+      element->FindStringKey(web::kContextMenuElementTitle);
+  if (title_attribute) {
+    params.title_attribute = base::SysUTF8ToNSString(*title_attribute);
+  }
+
+  std::string* alt_text = element->FindStringKey(web::kContextMenuElementAlt);
+  if (alt_text) {
+    params.alt_text = base::SysUTF8ToNSString(*alt_text);
+  }
+
+  absl::optional<double> text_offset =
+      element->FindDoubleKey(web::kContextMenuElementTextOffset);
+  if (text_offset.has_value()) {
+    params.text_offset = *text_offset;
+  }
+
+  std::string* surrounding_text =
+      element->FindStringKey(kContextMenuElementSurroundingText);
+  if (surrounding_text && !surrounding_text->empty()) {
+    params.surrounding_text = base::SysUTF8ToNSString(*surrounding_text);
+  }
+
+  absl::optional<double> surrounding_text_offset =
+      element->FindDoubleKey(web::kContextMenuElementSurroundingTextOffset);
+  if (surrounding_text_offset.has_value()) {
+    params.surrounding_text_offset = *surrounding_text_offset;
+  }
 
   return params;
 }

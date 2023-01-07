@@ -1,0 +1,23 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN focusable actions='{DEFAULT}'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN label='Enabled'
+++++++++++++++STATIC_TEXT label='Enabled'
+++++++++++++++++UNKNOWN label='Enabled'
+++++++++++++UNKNOWN hidden
+++++++++++++++UNKNOWN focusable label='One' actions='{DEFAULT}'
+++++++++++++++UNKNOWN focusable label='Two' actions='{DEFAULT}'
+++++++++++++++UNKNOWN focusable label='Three' actions='{DEFAULT}'
+++++++++++++++UNKNOWN focusable label='Four' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN label='Disabled'
+++++++++++++++STATIC_TEXT label='Disabled'
+++++++++++++++++UNKNOWN label='Disabled'
+++++++++++++UNKNOWN hidden
+++++++++++++++UNKNOWN label='One' actions='{DEFAULT}'
+++++++++++++++UNKNOWN label='Two' actions='{DEFAULT}'
+++++++++++++++UNKNOWN label='Three' actions='{DEFAULT}'
+++++++++++++++UNKNOWN label='Four' actions='{DEFAULT}'

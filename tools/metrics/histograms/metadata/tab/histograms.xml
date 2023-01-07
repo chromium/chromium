@@ -1,0 +1,3086 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Tab histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="BatteryState">
+  <variant name="" summary="On battery or plugged-in"/>
+  <variant name=".OnBattery"/>
+  <variant name=".PluggedIn"/>
+</variants>
+
+<variants name="RecentlyClosedType">
+  <variant name="Bulk" summary="RecentlyClosedBulkEvent"/>
+  <variant name="Group" summary="RecentlyClosedGroup"/>
+  <variant name="Tab" summary="RecentlyClosedTab"/>
+</variants>
+
+<variants name="TabActiveState">
+  <variant name="Active" summary="active"/>
+  <variant name="Inactive" summary="inactive"/>
+</variants>
+
+<variants name="TabCreatedReason">
+  <variant name=".FromExternalApp"
+      summary="This bucket is for any tabs that are created because of custom
+               tabs or intends from other apps. This includes tab creation
+               via intent from other app, creation via homescreen link,
+               creation via custom tab."/>
+  <variant name=".FromManuallyCreated"
+      summary="This bucket is for any tabs that are created manually. This
+               includes new tab creation from toolbar menu, creation from
+               long press open, creation at tab switcher, creation from
+               launcher shortcut menu by long press the Chrome icon."/>
+  <variant name=".FromOthers" summary="This is the default bucket."/>
+  <variant name=".FromTargetBlank"
+      summary="This bucket is for any tabs that were created from a target
+               blank link. e.g. tehchmeme.com will create tabs this way."/>
+</variants>
+
+<variants name="TabDiscardReason">
+  <variant name=".External"
+      summary="from outside of TabManager (e.g. by an extension)"/>
+  <variant name=".Urgent"
+      summary="urgently by TabManager when the system is in a critical
+               condition"/>
+</variants>
+
+<variants name="Tabs_SwitchLatency">
+  <variant name="_Actual"
+      summary="The time it takes to show a real live frame from the renderer
+               on the screen after the user selects a tab. This doesn not
+               include fake snapshots or other tricks, but the actual time to
+               get real interactable content displayed."/>
+  <variant name="_Perceived"
+      summary="The time it takes to show something on the screen after the
+               user selects a tab. This might be a fake snapshot or it might
+               just be the time it takes to show the real content if no
+               snapshot was available."/>
+</variants>
+
+<variants name="Tabs_TabUsageIntervalLength">
+  <variant name="_30" summary="30 seconds"/>
+  <variant name="_60" summary="1 minute"/>
+  <variant name="_600" summary="10 minutes"/>
+  <variant name="_3600" summary="1 hour"/>
+  <variant name="_18000" summary="5 hours"/>
+  <variant name="_43200" summary="12 hours"/>
+</variants>
+
+<histogram name="Discarding.DailyDiscards{TabDiscardReason}" units="tabs"
+    expires_after="2023-02-22">
+  <owner>vovoy@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    The number of tabs discards since last emit. The emit interval is at least
+    24 hours, see metrics::DailyEvent for more details. The discards are
+    requested {TabDiscardReason}.
+  </summary>
+  <token key="TabDiscardReason" variants="TabDiscardReason"/>
+</histogram>
+
+<histogram name="Discarding.DailyReloads{TabDiscardReason}" units="tabs"
+    expires_after="2023-02-22">
+  <owner>vovoy@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    The number of tabs reloads since last emit. The emit interval is at least 24
+    hours, see metrics::DailyEvent for more details. The discards corresponding
+    to the reloads are requested {TabDiscardReason}.
+  </summary>
+  <token key="TabDiscardReason" variants="TabDiscardReason"/>
+</histogram>
+
+<histogram name="Discarding.DiscardCandidatesCount" units="tabs"
+    expires_after="2022-12-18">
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The number of tabs discard candidates. This is recorded each time Chrome
+    needs to urgently discard a tab.
+  </summary>
+</histogram>
+
+<histogram name="Discarding.DiscardsPer10Minutes" units="tabs"
+    expires_after="M85">
+  <obsolete>
+    Removed 11/2020. Not actively used because reported values are 0 most of the
+    time. It would be more useful to report number of discards per day.
+  </obsolete>
+<!-- Name completed by histogram_suffixes name="DiscardReason" -->
+
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    Number of tabs discarded in each interval of 10 minutes, per discard reason.
+  </summary>
+</histogram>
+
+<histogram name="Discarding.LargestTabFootprint" units="MiB"
+    expires_after="2021-02-28">
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The largest tab's resident set among all the urgent discarding candidates.
+  </summary>
+</histogram>
+
+<histogram name="Discarding.OldestTabFootprint" units="MiB"
+    expires_after="2021-02-28">
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>The resident set of the oldest urgent discarding candidate.</summary>
+</histogram>
+
+<histogram name="Discarding.OnCriticalPressure.TotalRSS_Mb" units="MB"
+    expires_after="2021-01-31">
+  <obsolete>
+    Removed 03/2021, replaced by Discarding.OnCriticalPressure.TotalRSS_Mb2. The
+    new histogram is now guaranteed to be recorded before discarding any tab.
+  </obsolete>
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    An estimate of the total resident set of Chrome when receiving a critical
+    memory pressure event, in megabytes. Note that the estimate is based on the
+    most recent data collected by Performance Manager, which are refreshed at a
+    low frequency (up to 2 minutes).
+  </summary>
+</histogram>
+
+<histogram name="Discarding.OnCriticalPressure.TotalRSS_Mb2" units="MB"
+    expires_after="2021-10-30">
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    An estimate of the total resident set of Chrome when receiving a critical
+    memory pressure event, in megabytes. Note that the estimate is based on the
+    most recent data collected by Performance Manager, which are refreshed at a
+    low frequency (up to 2 minutes).
+  </summary>
+</histogram>
+
+<histogram name="Discarding.OnCriticalPressure.TotalRSS_PercentOfRAM" units="%"
+    expires_after="2021-08-09">
+  <obsolete>
+    Removed 03/2021, replaced by
+    Discarding.OnCriticalPressure.TotalRSS_PercentOfRAM2. The new histogram is
+    now guaranteed to be recorded before discarding any tab.
+  </obsolete>
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    An estimate of the total resident set of Chrome when receiving a critical
+    memory pressure event, in percentage of the total amount of RAM. Note that
+    the estimate is based on the most recent data collected by Performance
+    Manager, which are refreshed at a low frequency (up to 2 minutes).
+  </summary>
+</histogram>
+
+<histogram name="Discarding.OnCriticalPressure.TotalRSS_PercentOfRAM2"
+    units="%" expires_after="2021-10-30">
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    An estimate of the total resident set of Chrome when receiving a critical
+    memory pressure event, in percentage of the total amount of RAM. Note that
+    the estimate is based on the most recent data collected by Performance
+    Manager, which are refreshed at a low frequency (up to 2 minutes).
+  </summary>
+</histogram>
+
+<histogram name="Discarding.OnlineOnReload" enum="Boolean" expires_after="M85">
+  <obsolete>
+    Removed 11/2020.
+  </obsolete>
+<!-- Name completed by histogram_suffixes name="DiscardReason" -->
+
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    Whether the machine was online when a discarded tab was reloaded.
+  </summary>
+</histogram>
+
+<histogram name="Discarding.ReloadsPer10Minutes" units="tabs"
+    expires_after="M85">
+  <obsolete>
+    Removed 11/2020. Not actively used because reported values are 0 most of the
+    time. It would be more useful to report number of reloads per day.
+  </obsolete>
+<!-- Name completed by histogram_suffixes name="DiscardReason" -->
+
+  <owner>fdoray@chromium.org</owner>
+  <summary>
+    Number of discarded tabs reloaded in each interval of 10 minutes, grouped by
+    their discard reason.
+  </summary>
+</histogram>
+
+<histogram
+    name="Discarding.WinOSPressureSignals.AvailableMemoryMbOnLowMemoryNotification"
+    units="MB" expires_after="2021-05-02">
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The amount of physical memory available when receiving a low memory
+    notification, in megabytes. Windows 8.1+ only.
+  </summary>
+</histogram>
+
+<histogram name="Discarding.WinOSPressureSignals.LowMemorySessionLength"
+    units="ms" expires_after="2021-05-02">
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The time it takes to receive a high memory notification from the OS after
+    receiving a low memory notification. Windows 8.1+ only.
+  </summary>
+</histogram>
+
+<histogram
+    name="Discarding.WinOSPressureSignals.PressureLevelOnLowMemoryNotification"
+    enum="MemoryPressureLevel" expires_after="2021-05-02">
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The memory pressure level when receiving a low memory notification from the
+    OS. Windows 8.1+ only.
+  </summary>
+</histogram>
+
+<histogram name="Tab.AgeUponRestoreFromColdStart" units="minutes"
+    expires_after="M88">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    [Android] Age (time since the last display in previous sessions) of a tab
+    being restored due to the first tab switch after the browser cold start,
+    recorded upon such restore. When the browser is started from cold, this
+    metric is not recorded for the foreground, automatically restored tab, so
+    that the metric tracks only the restores triggered by direct user decision
+    to switch tabs.
+  </summary>
+</histogram>
+
+<histogram name="Tab.AndroidCrashUpload{AndroidCrashUploadTypes}"
+    enum="BooleanSuccess" expires_after="M85">
+  <owner>wnwen@chromium.org</owner>
+  <summary>
+    [Android] Count of upload success/failures by crash type.
+    {AndroidCrashUploadTypes}
+  </summary>
+  <token key="AndroidCrashUploadTypes">
+    <variant name="_Browser" summary="Measures browser crash uploads."/>
+    <variant name="_GPU" summary="Measures GPU crash uploads."/>
+    <variant name="_Other" summary="Measures other crash uploads."/>
+    <variant name="_Renderer" summary="Measures renderer crash uploads."/>
+  </token>
+</histogram>
+
+<histogram name="Tab.BackgroundLoadStatus" enum="TabBackgroundLoadStatus"
+    expires_after="M77">
+  <owner>ppi@chromium.org</owner>
+  <summary>
+    Mobile-specific metric: when a tab that was opened in background (via
+    &quot;Open link in new tab&quot;) is switched to, we record whether the
+    eagerly loaded tab was still memory resident, or we lost the loaded page due
+    to memory pressure.
+  </summary>
+</histogram>
+
+<histogram name="Tab.CloseAllTabsDialog.ClosedAllTabs" enum="Boolean"
+    expires_after="2022-09-11">
+  <obsolete>
+    Removed 4/2022. Replaced with a metric split by incognito and non-incognito
+    usage of the modal dialog as experiments showed possible differences between
+    the groups. The sum of the new .Incognito and .NonIncognito values should be
+    equivalent to what this value reported.
+  </obsolete>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    Records whether the &quot;Close all tabs&quot; action was taken when the
+    close all tabs confirmation dialog was shown through App Menu &gt; Close all
+    tabs. This is only recorded for Android.
+  </summary>
+</histogram>
+
+<histogram name="Tab.CloseAllTabsDialog.ClosedAllTabs.{CloseType}"
+    enum="Boolean" expires_after="2023-03-11">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    Records whether the &quot;Close all tabs&quot; action was taken when the
+    close all tabs confirmation dialog was shown through App Menu &gt; Close all
+    tabs. This is only recorded for Android for {CloseType} close all tabs menu
+    actions.
+  </summary>
+  <token key="CloseType">
+    <variant name="Incognito"/>
+    <variant name="NonIncognito"/>
+  </token>
+</histogram>
+
+<histogram name="Tab.Count.Guest" units="units" expires_after="2023-02-26">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Number of open tabs in each guest window. Recorded once a new tab in a guest
+    window is opened and adds one to the bucket of number of tabs in that
+    particular window (it does not count the total number of tabs in all open
+    guest windows). Please note that this metric double counts the lower
+    numbers, meaning that if user opens three tabs (without closing any in
+    between), then buckets 1, 2, and 3 will all be incremented in turn. The
+    metric also overcounts the tabs that are moved from one window to another as
+    they are recorded both when they are created in the first window and when
+    they are added to the second window.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Count.Incognito" units="units" expires_after="2023-02-19">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <summary>
+    Number of open tabs in each incognito window. Recorded once a new tab is
+    opened in an incognito window and adds one to the bucket of number of tabs
+    in that particular window (it does not count the total number of tabs in all
+    open incognito windows). Please note that this metric double counts the
+    lower numbers, meaning that if user opens three tabs (without closing any in
+    between), then buckets 1, 2, and 3 will all be incremented in turn. The
+    metric also overcounts the tabs that are moved from one window to another as
+    they are recorded both when they are created in the first window and when
+    they are added to the second window.
+  </summary>
+</histogram>
+
+<histogram name="Tab.ExternalApplicationOpened" enum="ExternalLauncherOption"
+    expires_after="2022-08-21">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    [iOS] Used on External App launcher Prompt to determine if the user clicked
+    open or cancel.
+  </summary>
+</histogram>
+
+<histogram name="Tab.NewTab" enum="NewTabType" expires_after="2023-02-12">
+  <owner>tbergquist@chromium.org</owner>
+  <owner>bsep@chromium.org</owner>
+  <summary>
+    Recorded when a new tab is opened. Tracks the method in which the tab was
+    opened. Does not apply to opening existing links or searches in a new tab,
+    only to brand new empty tabs. Note: Currently the &quot;Regular menu
+    option&quot; includes some programmatic actions in addition to user actions.
+  </summary>
+</histogram>
+
+<histogram name="Tab.NewTabOnload{TabNewTabOnload}" units="ms"
+    expires_after="2021-03-07">
+  <owner>carlosk@chromium.org</owner>
+  <owner>harringtond@chromium.org</owner>
+  <summary>
+    The time for the new tab page to load. Only recorded on Android. Recorded
+    only once per tab, i.e. excluding back/forward navigations.
+    {TabNewTabOnload}
+  </summary>
+  <token key="TabNewTabOnload">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Tab.PageLoadInPortrait" enum="DeviceOrientation"
+    expires_after="M85">
+  <owner>marq@chromium.org</owner>
+  <summary>[iOS] The orientation of the device. Recorded on page load.</summary>
+</histogram>
+
+<histogram name="Tab.PageLoadsSinceLastSwitchToEvictedTab" units="units"
+    expires_after="M77">
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    [Android] The number of page loads since the last switch to an evicted tab
+    on Android. This was sampled each time an evicted tab was reloaded.
+  </summary>
+</histogram>
+
+<histogram name="Tab.PerceivedRestoreTime" units="ms"
+    expires_after="2023-02-26">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    [Android] User-perceived load time for a successful tab restore, measured
+    from the first time the user sees the tab being restored until the load
+    completes.
+
+    Warning this historgram was expired between M89 and 2022-08-24.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Preview.MemoryUsage.CompressedData.PerThumbnailKiB"
+    units="KB" expires_after="2023-02-19">
+  <owner>dfried@chromium.org</owner>
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    Memory used by compressed thumbnails. Recorded once per thumbnail every 5
+    minutes.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Preview.MemoryUsage.CompressedData.TotalKiB" units="KB"
+    expires_after="2023-03-26">
+  <owner>dfried@chromium.org</owner>
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    Memory used by compressed thumbnails. Recorded once every 5 minutes at the
+    same time as Tab.Preview.MemoryUsage.CompressedData.PerThumbnailKiB. Each
+    sample is the sum of the corresponding samples in PerThumbnailKiB.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Preview.TimeToFirstUsableFrameAfterStartCapture"
+    units="ms" expires_after="2023-04-02">
+  <owner>dfried@chromium.org</owner>
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    When generating a preview for a background tab, this measures the time
+    between requesting a video capture and receiving the first usable frame.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Preview.TimeToNotifyObserversAfterCaptureReceived"
+    units="microseconds" expires_after="2022-11-27">
+  <owner>dfried@chromium.org</owner>
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    When generating a preview, a tab's contents are captured as an uncompressed
+    image, compressed in the background, then sent to subscribers on the main
+    thread. This roughly measures the time between the capture completing and
+    the compressed image being available on the main thread.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Preview.TimeToStoreAfterFrameReceived"
+    units="microseconds" expires_after="2022-11-27">
+  <owner>dfried@chromium.org</owner>
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    When generating a preview for a background tab, this measures the time
+    between receiving a frame and storing it as the current thumbnail.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Preview.TimeToStoreAfterTabSwitch" units="ms"
+    expires_after="2023-02-12">
+  <owner>dfried@chromium.org</owner>
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    On tab switch, the visible content area is captured and stored as a
+    thumbnail. This measures the time between requesting the capture and storing
+    it as the current thumbnail.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Preview.VideoCaptureDuration" units="ms"
+    expires_after="2022-11-27">
+  <owner>dfried@chromium.org</owner>
+  <owner>collinbaker@chromium.org</owner>
+  <summary>
+    Measures the total time spent in video capture mode when generating a
+    preview for a background tab. This is emitted at the end of each capture
+    session.
+  </summary>
+</histogram>
+
+<histogram name="Tab.PullDownGesture" enum="PullDownGestureAction"
+    expires_after="2020-01-15">
+  <owner>gambard@chromium.org</owner>
+  <owner>kkhorimoto@chromium.org</owner>
+  <summary>
+    Record the action executed when the user performs a pull down gesture. This
+    feature is currently iOS only.
+
+    A pull down gesture is an action completed when the user scrolls past the
+    edge of the web page and continues scrolling in the same direction revealing
+    a specific UI on the header with multiple actions icons. The user can then
+    choose an action by scrolling left or right and lift the finger or cancel by
+    scrolling back up. This is currently an iOS specific feature.
+  </summary>
+</histogram>
+
+<histogram name="Tab.RendererTermination.AliveRenderersCount" units="renderers"
+    expires_after="2023-02-26">
+  <owner>ajuma@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    [iOS] A count of the number of alive renderers in the current window when a
+    renderer termination occurs. Expired for M78-94.
+  </summary>
+</histogram>
+
+<histogram name="Tab.RendererTermination.RecentlyAliveRenderersCount"
+    units="renderers" expires_after="M106">
+  <owner>pkl@chromium.org</owner>
+  <summary>
+    [iOS] The number of renderers which are either currently alive or recently
+    terminated in the current window at the time of a renderer termination.
+  </summary>
+</histogram>
+
+<histogram name="Tab.RendererTermination.RecentlyReceivedMemoryWarning"
+    enum="BooleanWarningReceived" expires_after="M77">
+  <owner>pkl@chromium.org</owner>
+  <summary>
+    [iOS] Records whether a memory warning had recently been received before a
+    renderer termination.
+  </summary>
+</histogram>
+
+<histogram name="Tab.RendererTermination.TotalTabCount" units="tabs"
+    expires_after="2023-02-26">
+  <owner>ajuma@chromium.org</owner>
+  <owner>thegreenfrog@chromium.org</owner>
+  <summary>
+    [iOS] The number of tabs of the current window at the time of a renderer
+    termination.
+  </summary>
+</histogram>
+
+<histogram name="Tab.RestoreResult" enum="TabRestoreResult" expires_after="M88">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    [Android and iOS] When the browser restores a tab, whether the load was
+    successful. Loads can fail for instance when there is no connectivity.
+  </summary>
+</histogram>
+
+<histogram name="Tab.RestoreTime" units="ms" expires_after="M88">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>[Android and iOS] Load time for a successful tab restore.</summary>
+</histogram>
+
+<histogram name="Tab.RestoreUserPersistence" enum="TabRestoreUserAction"
+    expires_after="M85">
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    [Android] When the browser restores a tab, whether the user waits for
+    completion of the load or if the user gives up by switching to another tab
+    or leaving Chrome.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Screenshot.Action" enum="TabScreenshotAction"
+    expires_after="2023-03-19">
+  <owner>skare@chromium.org</owner>
+  <summary>
+    Records actions taken after one or more screenshots of a page were taken.
+    This will not be recorded if Chromium is killed before leaving the page. If
+    several types of action (IPH and Sharing) occur, only the last is recorded.
+    We think that both IPH and Sharing happening at the same time is rare, so we
+    do not expect to lose much data this way.
+  </summary>
+</histogram>
+
+<histogram name="Tab.Screenshot.ScreenshotsPerPage" units="screenshots"
+    expires_after="2022-12-18">
+  <owner>skare@chromium.org</owner>
+  <summary>
+    Records the number of screenshots taken of a specific page. It is recorded
+    when the user navigates away from this page or the tab is destroyed. This
+    will not be recorded if Chromium is killed before leaving the page.
+  </summary>
+</histogram>
+
+<histogram name="Tab.StateAtRendererTermination" enum="TabForegroundState"
+    expires_after="2023-02-26">
+  <owner>gambard@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    The state (foreground/background) of a tab when its renderer is terminated.
+  </summary>
+</histogram>
+
+<histogram name="Tab.StatusWhenSwitchedBackToForeground" enum="TabStatus"
+    expires_after="2023-02-26">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>marq@chromium.org</owner>
+  <summary>
+    [Android and iOS] The status of a tab collected each time the user switches
+    to it on mobile. That does not include tabs being created at the time the
+    user switches to them, such as NTP or tabs opened to handle intents.
+
+    Warning this historgram was expired between M86 and 2022-08-24.
+  </summary>
+</histogram>
+
+<histogram name="Tab.SwitchedToForegroundAge" units="ms" expires_after="M85">
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    [Android] Age (in ms) when the tab was switched to foreground.
+  </summary>
+</histogram>
+
+<histogram name="Tab.TabUnder.ClickThroughPosition" enum="ListItemPosition"
+    expires_after="M85">
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    The position of the URL in the framebust UI list (desktop only) when it is
+    clicked. Note that this UI surface is shared with the framebusting
+    intervention, so elements in the list could come from either features. This
+    metric will only be logged when a URL from the tab under intervention is
+    clicked.
+  </summary>
+</histogram>
+
+<histogram name="Tab.TabUnder.PopupToTabUnderTime" units="ms"
+    expires_after="M85">
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Measures the time from when a tab opens a popup to when it performs a
+    tab-under (i.e. navigates cross origin, in the background without a user
+    gesture).
+  </summary>
+</histogram>
+
+<histogram name="Tab.TabUnder.VisibleTime" units="ms" expires_after="M77">
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Measures the total time a tab is visible after it navigates itself
+    cross-origin in the background, without a user gesture. The tab must have
+    opened a popup since the last user gesture in the tab. Measured at
+    WebContents destruction. The total visible time for the tab is the sum of
+    this metric and Tab.TabUnder.VisibleTimeBefore.
+  </summary>
+</histogram>
+
+<histogram name="Tab.TabUnder.VisibleTimeBefore" units="ms" expires_after="M85">
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Measures the total time a tab is visible before it navigates itself
+    cross-origin in the background, without a user gesture. The tab must have
+    opened a popup since the last user gesture in the tab. Measured at
+    WebContents destruction. The total visible time for the tab is the sum of
+    this metric and Tab.TabUnder.VisibleTime.
+  </summary>
+</histogram>
+
+<histogram name="Tab.TabUnderAction{OffTheRecordType}" enum="TabUnderAction"
+    expires_after="M85">
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Various actions related to the tab under intervention, logged during main
+    frame navigation. {OffTheRecordType}
+  </summary>
+  <token key="OffTheRecordType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Tab.TotalTabCount.BeforeLeavingApp" units="tabs"
+    expires_after="M85">
+  <owner>tedchoc@chromium.org</owner>
+  <owner>clank-team@google.com</owner>
+  <summary>
+    [Android] The total count of tabs which were kept while Chrome process is in
+    the foreground. This is recorded only for Android right before Chrome
+    process goes into the background.
+  </summary>
+</histogram>
+
+<histogram name="Tab.VisibleTime" units="ms" expires_after="M77">
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Measures the total time a tab is visible. Measured at the WebContents layer
+    so this metric does not attempt to account for things like session restore.
+    Logged at WebContents destruction.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.CollapsedGroupCountPerLoad" units="groups"
+    expires_after="2023-02-12">
+  <owner>connily@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The number of tabs groups that are collapsed in all browsers (counting
+    app-mode windows) when a load completes.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.CollapsedTabCount" units="tabs"
+    expires_after="2021-09-12">
+  <owner>connily@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The number of tabs in a collapsed tab group in all browsers, reported every
+    5 minutes. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.NonZeroUserGroupCountPerLoad" units="groups"
+    expires_after="2021-09-12">
+  <owner>connily@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The number of (non-zero) tabs groups open in all browsers (counting app-mode
+    windows) when a load completes.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.SessionsPerGroup" units="sessions"
+    expires_after="2023-02-12">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    This histogram records the number of sessions of a selected tab group
+    whenever Chrome comes to the foreground, or switch tab in the tab switcher.
+    This number is accumulated until that group id is outdated, meaning all the
+    tabs with that group id has been closed.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.TimeSpentCollapsed2" units="seconds"
+    expires_after="2021-09-12">
+  <owner>connily@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The time a tab group spends in the collapsed state before the group is
+    either expanded or closed.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.TimeSpentExpanded2" units="seconds"
+    expires_after="2021-09-12">
+  <owner>connily@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The time a tab group spends in the expanded state before the group is either
+    collapsed or closed.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.UserCustomizedGroupCountPerLoad" units="groups"
+    expires_after="2023-02-26">
+  <owner>connily@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The number of tabs groups with a user-set name or color open in all browsers
+    (counting app-mode windows) when a load completes.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.UserGroupCount" units="groups"
+    expires_after="2023-03-05">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    This histogram records the number of tab groups whenever Chrome comes to the
+    foreground.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.UserGroupCountPerLoad" units="groups"
+    expires_after="2023-02-12">
+  <owner>connily@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The number of tabs groups open in all browsers (counting app-mode windows)
+    when a load completes.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.UserNamedGroupCount" units="groups"
+    expires_after="2023-03-05">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    This histogram records the number of tab groups that have customized group
+    name whenever Chrome comes to the foreground.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.UserPinnedTabCountPerLoad" units="tabs"
+    expires_after="2023-09-05">
+  <owner>dpenning@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The number of pinned tabs in the tabstrip in all browser windows, when a
+    page load completes.
+  </summary>
+</histogram>
+
+<histogram name="TabHoverCards.LastTabHoverCardPreviewTime{TabCountMetrics}"
+    units="ms" expires_after="2023-01-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    This histogram records the time the user sees a full hover card with preview
+    image on tab they then go on to select. The time is counted from the time
+    the hover card is fully opaque and has landed on the target tab and a valid
+    preview image for the tab is visible, and may be zero if the user clicks
+    before the preview appears. This metric is not recorded if previews are
+    disabled. {TabCountMetrics}
+  </summary>
+  <token key="TabCountMetrics">
+    <variant name=""/>
+    <variant name=".ByTabCount.0To2Tabs"
+        summary="Recorded with between 0 and 3 tabs open in the browser."/>
+    <variant name=".ByTabCount.3To4Tabs"
+        summary="Recorded with between 3 and 4 tabs open in the browser."/>
+    <variant name=".ByTabCount.5To7Tabs"
+        summary="Recorded with between 5 and 7 tabs open in the browser."/>
+    <variant name=".ByTabCount.8To19Tabs"
+        summary="Recorded with between 8 and 19 tabs open in the browser."/>
+    <variant name=".ByTabCount.20To39Tabs"
+        summary="Recorded with between 20 and 39 tabs open in the browser."/>
+    <variant name=".ByTabCount.40OrMoreTabs"
+        summary="Recorded with 40 or more tabs open in the browser."/>
+  </token>
+</histogram>
+
+<histogram name="TabHoverCards.LastTabHoverCardViewedTime{TabCountMetrics}"
+    units="ms" expires_after="2023-01-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    This histogram records the time the user sees a full hover card on tab they
+    then go on to select. The time is counted from the time the hover card is
+    fully opaque and has landed on the target tab, and may be zero if the user
+    clicks before the card is visible. {TabCountMetrics}
+  </summary>
+  <token key="TabCountMetrics">
+    <variant name=""/>
+    <variant name=".ByTabCount.0To2Tabs"
+        summary="Recorded with between 0 and 3 tabs open in the browser."/>
+    <variant name=".ByTabCount.3To4Tabs"
+        summary="Recorded with between 3 and 4 tabs open in the browser."/>
+    <variant name=".ByTabCount.5To7Tabs"
+        summary="Recorded with between 5 and 7 tabs open in the browser."/>
+    <variant name=".ByTabCount.8To19Tabs"
+        summary="Recorded with between 8 and 19 tabs open in the browser."/>
+    <variant name=".ByTabCount.20To39Tabs"
+        summary="Recorded with between 20 and 39 tabs open in the browser."/>
+    <variant name=".ByTabCount.40OrMoreTabs"
+        summary="Recorded with 40 or more tabs open in the browser."/>
+  </token>
+</histogram>
+
+<histogram name="TabHoverCards.TabHoverCardPreviewTime{TabCountMetrics}"
+    units="ms" expires_after="2023-01-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    This histogram records the time the user sees a full hover card with preview
+    image on any tab. The time is counted from the time the hover card is fully
+    opaque and has landed on the target tab and a valid preview image for the
+    tab is visible. This metric is not recorded if previews are disabled, or if
+    an image is never displayed for the tab. {TabCountMetrics}
+  </summary>
+  <token key="TabCountMetrics">
+    <variant name=""/>
+    <variant name=".ByTabCount.0To2Tabs"
+        summary="Recorded with between 0 and 3 tabs open in the browser."/>
+    <variant name=".ByTabCount.3To4Tabs"
+        summary="Recorded with between 3 and 4 tabs open in the browser."/>
+    <variant name=".ByTabCount.5To7Tabs"
+        summary="Recorded with between 5 and 7 tabs open in the browser."/>
+    <variant name=".ByTabCount.8To19Tabs"
+        summary="Recorded with between 8 and 19 tabs open in the browser."/>
+    <variant name=".ByTabCount.20To39Tabs"
+        summary="Recorded with between 20 and 39 tabs open in the browser."/>
+    <variant name=".ByTabCount.40OrMoreTabs"
+        summary="Recorded with 40 or more tabs open in the browser."/>
+  </token>
+</histogram>
+
+<histogram
+    name="TabHoverCards.TabHoverCardsSeenBeforeTabSelection{TabCountMetrics}"
+    units="hover cards" expires_after="2023-01-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    This histogram records the number of tab hover cards seen between the last
+    active tab change and a tab change by mouse click. {TabCountMetrics}
+  </summary>
+  <token key="TabCountMetrics">
+    <variant name=""/>
+    <variant name=".ByTabCount.0To2Tabs"
+        summary="Recorded with between 0 and 3 tabs open in the browser."/>
+    <variant name=".ByTabCount.3To4Tabs"
+        summary="Recorded with between 3 and 4 tabs open in the browser."/>
+    <variant name=".ByTabCount.5To7Tabs"
+        summary="Recorded with between 5 and 7 tabs open in the browser."/>
+    <variant name=".ByTabCount.8To19Tabs"
+        summary="Recorded with between 8 and 19 tabs open in the browser."/>
+    <variant name=".ByTabCount.20To39Tabs"
+        summary="Recorded with between 20 and 39 tabs open in the browser."/>
+    <variant name=".ByTabCount.40OrMoreTabs"
+        summary="Recorded with 40 or more tabs open in the browser."/>
+  </token>
+</histogram>
+
+<histogram name="TabHoverCards.TabHoverCardViewedTime{TabCountMetrics}"
+    units="ms" expires_after="2023-01-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    This histogram records the time the user sees a full hover card on any tab.
+    The time is counted from the time the hover card is fully opaque and has
+    landed on the tab. This metric is not recorded if the card never actually
+    lands on the tab. {TabCountMetrics}
+  </summary>
+  <token key="TabCountMetrics">
+    <variant name=""/>
+    <variant name=".ByTabCount.0To2Tabs"
+        summary="Recorded with between 0 and 3 tabs open in the browser."/>
+    <variant name=".ByTabCount.3To4Tabs"
+        summary="Recorded with between 3 and 4 tabs open in the browser."/>
+    <variant name=".ByTabCount.5To7Tabs"
+        summary="Recorded with between 5 and 7 tabs open in the browser."/>
+    <variant name=".ByTabCount.8To19Tabs"
+        summary="Recorded with between 8 and 19 tabs open in the browser."/>
+    <variant name=".ByTabCount.20To39Tabs"
+        summary="Recorded with between 20 and 39 tabs open in the browser."/>
+    <variant name=".ByTabCount.40OrMoreTabs"
+        summary="Recorded with 40 or more tabs open in the browser."/>
+  </token>
+</histogram>
+
+<histogram
+    name="TabHoverCards.TabPreviewsSeenBeforeTabSelection{TabCountMetrics}"
+    units="previews" expires_after="2023-01-01">
+  <owner>dfried@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    This histogram records the number of tab hover card previews seen between
+    the last active tab change and a tab change by mouse click.
+    {TabCountMetrics}
+  </summary>
+  <token key="TabCountMetrics">
+    <variant name=""/>
+    <variant name=".ByTabCount.0To2Tabs"
+        summary="Recorded with between 0 and 3 tabs open in the browser."/>
+    <variant name=".ByTabCount.3To4Tabs"
+        summary="Recorded with between 3 and 4 tabs open in the browser."/>
+    <variant name=".ByTabCount.5To7Tabs"
+        summary="Recorded with between 5 and 7 tabs open in the browser."/>
+    <variant name=".ByTabCount.8To19Tabs"
+        summary="Recorded with between 8 and 19 tabs open in the browser."/>
+    <variant name=".ByTabCount.20To39Tabs"
+        summary="Recorded with between 20 and 39 tabs open in the browser."/>
+    <variant name=".ByTabCount.40OrMoreTabs"
+        summary="Recorded with 40 or more tabs open in the browser."/>
+  </token>
+</histogram>
+
+<histogram name="TabHoverCards.TimeSinceLastVisible" units="ms"
+    expires_after="2023-01-01">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    This histogram records the time between when a hover card was last hidden to
+    when it is shown again. Since users can easily hover out of the tab strip we
+    want to reshow the tab hover card with no delay if we think they
+    unintentionally exited the tab strip. If the user reenters the tab strip
+    within X ms we want to reshow the hover card immediately. This histogram
+    will help to better refine that number.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.BackgroundTabOpening.SwitchToTab"
+    enum="TabLoadingState" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The loading state of a tab at the time the user switches to it during a
+    background tab opening session (the duration of time from when the browser
+    starts to open background tabs until the time the browser has finished
+    loading those tabs or otherwise decided to stop loading them). The metric is
+    only recorded when a tab is switched to from another tab within the same
+    tabstrip. As a result, the case when switching between different windows is
+    not included, either between two tabs in different browser windows, or when
+    switching to a different application and switching back to the browser. The
+    metric is not recorded when the session overlaps with session restore.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.BackgroundTabOpening.TabCount" units="tabs"
+    expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The max number of background tabs pending or loading when opening background
+    tabs. This is recorded at the end of the background tab opening session (the
+    duration of time from when the browser starts to open background tabs until
+    the time the browser has finished loading those tabs or otherwise decided to
+    stop loading them). The metric is not recorded when the session overlaps
+    with session restore.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.BackgroundTabOpening.TabLoadAutoStartedCount"
+    units="tabs" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The number of background tabs whose loading was triggered by TabManager
+    automatically when opening background tabs. This is recorded at the end of
+    the background tab opening session (the duration of time from when the
+    browser starts to open background tabs until the time the browser has
+    finished loading those tabs or otherwise decided to stop loading them). The
+    metric is not recorded when the session overlaps with session restore.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.BackgroundTabOpening.TabLoadTimeout"
+    enum="BooleanTimedOut" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    Whether the tab load is timed out during background tab opening session (the
+    duration of time from when the browser starts to open background tabs until
+    the time the browser has finished loading those tabs or otherwise decided to
+    stop loading them). The metric is not recorded when the session overlaps
+    with session restore.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.BackgroundTabOpening.TabLoadUserInitiatedCount"
+    units="tabs" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The number of background tabs whose loading was triggered by user action
+    when opening background tabs. For example, when the user selects a
+    background tab and brings it to foreground, that tab will start to load
+    immediately if not already loading. This is recorded at the end of the
+    background tab opening session (the duration of time from when the browser
+    starts to open background tabs until the time the browser has finished
+    loading those tabs or otherwise decided to stop loading them). The metric is
+    not recorded when the session overlaps with session restore.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.BackgroundTabOpening.TabPausedCount" units="tabs"
+    expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The max number of background tabs paused to load due to memory pressure when
+    opening background tabs. This is recorded at the end of the background tab
+    opening session during a background tab opening session (the duration of
+    time from when the browser starts to open background tabs until the time the
+    browser has finished loading those tabs or otherwise decided to stop loading
+    them). The metric is not recorded when the session overlaps with session
+    restore.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.Discarding.DiscardCount" units="Discards"
+    expires_after="2023-02-26">
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Cumulative number of tabs discarded due to low memory conditions, recorded
+    once per tab discard event. For example, a user who had 3 tabs discarded
+    records a count in the 1 bin, 2 bin and 3 bin. Thus each bin N is the number
+    of sessions where users experienced N or more tab discard events.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.Discarding.DiscardedTabCouldFastShutdown"
+    enum="BooleanTabDiscardFastShutdown" expires_after="M77">
+  <owner>oysteine@chromium.org</owner>
+  <summary>
+    Recorded for each discarding, indicates whether the discarded tab succeeded
+    in doing a render process fast shutdown or not.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.Discarding.DiscardedTabCouldUnsafeFastShutdown"
+    enum="BooleanTabDiscardFastShutdown" expires_after="M77">
+  <owner>oysteine@chromium.org</owner>
+  <summary>
+    Recorded for each discarding, allowing us to know whether the discarded tab
+    succeeded an unsafe process shutdown (not invoking unload handlers).
+  </summary>
+</histogram>
+
+<histogram name="TabManager.Discarding.DiscardedTabHasBeforeUnloadHandler"
+    enum="Boolean" expires_after="M77">
+  <owner>georgesak@chromium.org</owner>
+  <summary>
+    Recorded for each discarding, allowing us to know whether the discarded tab
+    had a before unload handler or not.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.Discarding.DiscardToReloadTime" units="ms"
+    expires_after="2023-03-19">
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Elapsed time between a tab getting discarded to eventually being reloaded by
+    the user.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.Discarding.InactiveToReloadTime" units="ms"
+    expires_after="M112">
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Elapsed time between the time a tab switched from being active to inactive
+    (that eventually gets discarded) until it gets reloaded.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.Discarding.ReloadCount" units="Reloads"
+    expires_after="2023-02-26">
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Cumulative number of discarded tabs that have been reloaded by the user,
+    recorded once per tab discard event. For example, a user who had 3 tabs
+    reloaded records a count in the 1 bin, 2 bin and 3 bin. Thus each bin N is
+    the number of sessions where users experienced N or more tab reload events.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.Discarding.ReloadToCloseTime" units="ms"
+    expires_after="M112">
+  <owner>chrisha@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Elapsed time between the last time a discarded tab was reloaded and the time
+    it gets closed.
+  </summary>
+</histogram>
+
+<histogram
+    name="TabManager.Experimental.BackgroundTabOpening.CompressedPagesPerSecond"
+    units="pages/s" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The number of pages compressed per second when opening background tabs. This
+    is recorded at the end of the background tab opening session as an average
+    over the entire period (the duration of time from when the browser starts to
+    open background tabs until the time the browser has finished loading those
+    tabs or otherwise decided to stop loading them). The metric is not recorded
+    when the session overlaps with session restore. Only recorded on macOS.
+    Warning: This metric is a ratio and the session interval differs for each
+    session. It is hard to tell if it is average rate for each second in the
+    interval or it has a huge spike.
+  </summary>
+</histogram>
+
+<histogram
+    name="TabManager.Experimental.BackgroundTabOpening.DecompressedPagesPerSecond"
+    units="pages/s" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The number of pages decompressed per second when opening background tabs.
+    This is recorded at the end of the background tab opening session as an
+    average over the entire period (the duration of time from when the browser
+    starts to open background tabs until the time the browser has finished
+    loading those tabs or otherwise decided to stop loading them). The metric is
+    not recorded when the session overlaps with session restore. Only recorded
+    on macOS. Warning: This metric is a ratio and the session interval differs
+    for each session. It is hard to tell if it is average rate for each second
+    in the interval or it has a huge spike.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.Experimental.BackgroundTabOpening.SwapInPerSecond"
+    units="swaps/s" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The number of swap-ins per second when opening background tabs. This is
+    recorded at the end of the background tab opening session as an average over
+    the entire period (the duration of time from when the browser starts to open
+    background tabs until the time the browser has finished loading those tabs
+    or otherwise decided to stop loading them). The metric is not recorded when
+    the session overlaps with session restore. Warning: This metric is a ratio
+    and the session interval differs for each session. It is hard to tell if it
+    is average rate for each second in the interval or it has a huge spike.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.Experimental.BackgroundTabOpening.SwapOutPerSecond"
+    units="swaps/s" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The number of swap-outs per second when opening background tabs. This is
+    recorded at the end of the background tab opening session as an average over
+    the entire period (the duration of time from when the browser starts to open
+    background tabs until the time the browser has finished loading those tabs
+    or otherwise decided to stop loading them). The metric is not recorded when
+    the session overlaps with session restore. Warning: This metric is a ratio
+    and the session interval differs for each session. It is hard to tell if it
+    is average rate for each second in the interval or it has a huge spike.
+  </summary>
+</histogram>
+
+<histogram
+    name="TabManager.Experimental.BackgroundTabOpening.TabSwitchLoadTime.UntilTabIsLoaded"
+    units="ms" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The tab load time of a tab that is switched to during a background tab
+    opening session (the duration of time from when the browser starts to open
+    background tabs until the time the browser has finished loading those tabs
+    or otherwise decided to stop loading them). Tab load time is defined as the
+    time between when the user switches to a backround tab, and the time when
+    that tab finishes loading in the foreground. If the user switches away
+    before the tab finishes loading, a metric will not be recorded unless the
+    user switches back, in which case the tab load time is measured from that
+    point in time. The metric is only recorded when a tab is switched to from
+    another tab within the same tabstrip. As a result, the initial forground tab
+    is not included in this metric since it was not switched to from another
+    tab. The metric is not recorded when the session overlaps with session
+    restore.
+  </summary>
+</histogram>
+
+<histogram
+    name="TabManager.Experimental.SessionRestore.CompressedPagesPerSecond"
+    units="pages/s" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The number of pages compressed per second during session restore. Recorded
+    at the end of session restore as an average over the entire period, defined
+    as the period of time when session restore is actively loading tabs, which
+    ends when either all tabs have been loaded and their pages rendered, or tab
+    loading needs to be deferred in cases where the system is under memory
+    pressure. The metric is not recorded when the session overlaps with
+    background tab opening session. Only recorded on macOS. Warning: This metric
+    is a ratio and the session interval differs for each session. It is hard to
+    tell if it is average rate for each second in the interval or it has a huge
+    spike.
+  </summary>
+</histogram>
+
+<histogram
+    name="TabManager.Experimental.SessionRestore.DecompressedPagesPerSecond"
+    units="pages/s" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The number of pages decompressed per second during session restore. Recorded
+    at the end of session restore as an average over the entire period, defined
+    as the period of time when session restore is actively loading tabs, which
+    ends when either all tabs have been loaded and their pages rendered, or tab
+    loading needs to be deferred in cases where the system is under memory
+    pressure. The metric is not recorded when the session overlaps with
+    background tab opening session. Only recorded on macOS. Warning: This metric
+    is a ratio and the session interval differs for each session. It is hard to
+    tell if it is average rate for each second in the interval or it has a huge
+    spike.
+  </summary>
+</histogram>
+
+<histogram
+    name="TabManager.Experimental.SessionRestore.ForegroundTab.FirstContentfulPaint"
+    units="ms" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    Elapsed time between the start of the loading and the first contentful paint
+    of foreground tabs when the browser loads tabs in session restore.
+  </summary>
+</histogram>
+
+<histogram
+    name="TabManager.Experimental.SessionRestore.ForegroundTab.FirstMeaningfulPaint"
+    units="ms" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    Elapsed time between the start of the loading and the first meaningful paint
+    of foreground tabs when the browser loads tabs in session restore.
+  </summary>
+</histogram>
+
+<histogram
+    name="TabManager.Experimental.SessionRestore.ForegroundTab.FirstPaint"
+    units="ms" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    Elapsed time between the start of the loading and the first paint of
+    foreground tabs when the browser loads tabs in session restore.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.Experimental.SessionRestore.SwapInPerSecond"
+    units="swaps/s" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The number of swap-ins per second during session restore. Recorded at the
+    end of session restore as an average over the entire period, defined as the
+    period of time when session restore is actively loading tabs, which ends
+    when either all tabs have been loaded and their pages rendered, or tab
+    loading needs to be deferred in cases where the system is under memory
+    pressure. The metric is not recorded when the session overlaps with
+    background tab opening session. Warning: This metric is a ratio and the
+    session interval differs for each session. It is hard to tell if it is
+    average rate for each second in the interval or it has a huge spike.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.Experimental.SessionRestore.SwapOutPerSecond"
+    units="swaps/s" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The number of swap-outs per second during session restore. Recorded at the
+    end of session restore as an average over the entire period, defined as the
+    period of time when session restore is actively loading tabs, which ends
+    when either all tabs have been loaded and their pages rendered, or tab
+    loading needs to be deferred in cases where the system is under memory
+    pressure. The metric is not recorded when the session overlaps with
+    background tab opening session. Warning: This metric is a ratio and the
+    session interval differs for each session. It is hard to tell if it is
+    average rate for each second in the interval or it has a huge spike.
+  </summary>
+</histogram>
+
+<histogram
+    name="TabManager.Experimental.SessionRestore.TabSwitchLoadTime.UntilTabIsLoaded"
+    units="ms" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The tab load time of a tab that is switched to during a session restore. Tab
+    load time is defined as the time between when the user switches to a
+    backround tab, and the time when that tab finishes loading in the
+    foreground. If the user switches away before the tab finishes loading, a
+    metric will not be recorded unless the user switches back, in which case the
+    tab load time is measured from that point in time. The metric is only
+    recorded when a tab is switched to from another tab within the same
+    tabstrip. As a result, the initial forground tab is not included in this
+    metric since it was not switched to from another tab. The metric is only
+    recorded when session restore is actively loading tabs, which ends when
+    either all tabs have been loaded and their pages rendered, or tab loading
+    needs to be deferred in cases where the system is under memory pressure. The
+    metric is not recorded when the session overlaps with background tab opening
+    session.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.Heuristics.FromBackgroundedToFirstFaviconUpdated"
+    units="ms" expires_after="M85">
+  <owner>chrisha@chromium.org</owner>
+  <owner>lpy@chromium.org</owner>
+  <summary>
+    Measures the time duration from when the tab is backgrounded to when its
+    favicon is updated. The first-time set of favicon will be ignored; this
+    metric will only be recorded after 5 minutes from main frame navigation
+    committed and when the tab is in the background.
+  </summary>
+</histogram>
+
+<histogram
+    name="TabManager.Heuristics.FromBackgroundedToFirstNonPersistentNotificationCreated"
+    units="ms" expires_after="M78">
+  <owner>chrisha@chromium.org</owner>
+  <owner>lpy@chromium.org</owner>
+  <summary>
+    Measures the time duration from when the tab is backgrounded to when a
+    non-persistent notification is created. Only recorded when the tab is in the
+    background.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.Heuristics.FromBackgroundedToFirstTitleUpdated"
+    units="ms" expires_after="M77">
+  <owner>chrisha@chromium.org</owner>
+  <owner>lpy@chromium.org</owner>
+  <summary>
+    Measures the time duration from when the tab is backgrounded to when its
+    title is updated. The first-time set of title will be ignored; this metric
+    will only be recorded after 5 minutes from main frame navigation committed
+    and when the tab is in the background.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.SessionOverlap.BackgroundTabOpening"
+    enum="BooleanOverlap" expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    Whether background tab opening session is overlapped with other types of
+    session, e.g., session restore. Background tab opening session is the
+    duration of time from when the browser starts to open background tabs until
+    the time the browser has finished loading those tabs or otherwise decided to
+    stop loading them. This metric helps to understand how often background tab
+    opening has overlap with other sessions.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.SessionOverlap.SessionRestore"
+    enum="BooleanOverlap" expires_after="M77">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    Whether session restore is overlapped with other types of session, e.g.,
+    background tab opening. Session restore is the duration from the time when
+    the browser starts to restore tabs until the time when the browser has
+    finished loading those tabs or when the browser stops loading tabs due to
+    memory pressure. This metric helps to understand how often session restore
+    has overlap with other sessions.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.SessionRestore.SwitchToTab" enum="TabLoadingState"
+    expires_after="M79">
+  <owner>chrisha@chromium.org</owner>
+  <summary>
+    The loading state of a tab at the time the user switched to it during a
+    session restore. The metric is only recorded when a tab is switched to from
+    another tab within the same tabstrip. As a result, there are two cases where
+    tabs are not included. The first case is when the initial forground tab is
+    shown, since it was not switched to from another tab. The second case is
+    when switching between different windows, either between two tabs in
+    different browser windows, or when switching to a different application and
+    switching back to the browser. The metric is only recorded when session
+    restore is actively loading tabs, which ends when either all tabs have been
+    loaded and their pages rendered, or tab loading needs to be deferred in
+    cases where the system is under memory pressure. The metric is not recorded
+    when the session overlaps with background tab opening session.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.TabRanker.Result" enum="TabManagerTabRankerResult"
+    expires_after="M85">
+  <owner>michaelpg@chromium.org</owner>
+  <owner>charleszhao@chromium.org</owner>
+  <summary>
+    Logged when calculating a tab reactivation score for a background tab. Any
+    value other than &quot;none&quot; may indicate a bug in the inference code,
+    a problem with the preprocessor configuration shipped with the model, or a
+    bug in the code that populates the RankerExample for a tab.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.TimeSinceGroupClosedUntilRestored" units="ms"
+    expires_after="2022-01-10">
+  <owner>connily@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Duration between restoring a whole group (multiple tabs) when &quot;Reopen
+    Closed Group&quot; button was clicked or any of Ctrl+Shift+T (on
+    Linux/Windows/Chrome OS) and Command+Shift+T (on Mac) were pressed and the
+    closing of the same group. Recorded when the user manually restores a group.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.TimeSinceTabClosedUntilRestored" units="ms"
+    expires_after="2022-01-16">
+  <owner>aebacanu@chromium.org</owner>
+  <owner>carlscab@chromium.org</owner>
+  <owner>sreejakshetty@chromium.org</owner>
+  <summary>
+    Duration between restoring a tab when &quot;Reopen Closed Tab&quot; button
+    was clicked or any of Ctrl+Shift+T (on Linux/Windows/Chrome OS) and
+    Command+Shift+T (on Mac) were pressed and the closing of the same tab.
+    Recorded when the user manually restores a tab.
+  </summary>
+</histogram>
+
+<histogram name="TabManager.TimeSinceWindowClosedUntilRestored" units="ms"
+    expires_after="2021-07-13">
+  <owner>aebacanu@chromium.org</owner>
+  <owner>carlscab@chromium.org</owner>
+  <owner>sreejakshetty@chromium.org</owner>
+  <summary>
+    Duration between restoring a whole window (multiple tabs) when &quot;Reopen
+    Closed Window&quot; button was clicked or any of Ctrl+Shift+T (on
+    Linux/Windows/Chrome OS) and Command+Shift+T (on Mac) were pressed and the
+    closing of the same window. Recorded when the user manually restores a
+    window.
+  </summary>
+</histogram>
+
+<histogram name="TabRestore.error_move_session_at_path_to_backup"
+    enum="FoundationFileSystemError" expires_after="M77">
+  <owner>sky@chromium.org</owner>
+  <summary>
+    Error code returned by [moveItemAtPath:toPath:error:] when moving previous
+    session file to backup file before restoring. 0 in case of success.
+  </summary>
+</histogram>
+
+<histogram name="TabRestore.error_remove_backup_at_path"
+    enum="FoundationFileSystemError" expires_after="M77">
+  <owner>sky@chromium.org</owner>
+  <summary>
+    Error code returned by [removeItemAtPath:error:] when removing previous
+    session backup file. 0 in case of success.
+  </summary>
+</histogram>
+
+<histogram name="TabRestore.error_remove_session_at_path"
+    enum="FoundationFileSystemError" expires_after="M77">
+  <owner>sky@chromium.org</owner>
+  <summary>
+    Error code returned by [removeItemAtPath:error:] when removing previous
+    session file. 0 in case of success.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.CountAtResume" units="tabs" expires_after="2022-11-02">
+  <owner>marq@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <summary>
+    [iOS] The number of tabs open when the app comes out of the background.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.CountAtStartup" units="tabs" expires_after="2023-03-05">
+  <owner>marq@chromium.org</owner>
+  <summary>[Android and iOS] The number of tabs open at cold launch.</summary>
+</histogram>
+
+<histogram name="Tabs.DesktopTabOffsetFromLeftOfSwitch" units="units"
+    expires_after="2021-06-30">
+  <owner>connily@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The tab index from the beginning of the tab strip when switching into a tab.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.DesktopTabOffsetFromRightOfSwitch" units="units"
+    expires_after="2021-06-30">
+  <owner>connily@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The tab index from the end of the tab strip when switching into a tab.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.DesktopTabOffsetOfSwitch" units="units"
+    expires_after="2021-06-30">
+  <owner>connily@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The offset between the tab currently selected tab and the newly selected
+    tab.
+
+    If the user switches to a tab to the left of their currently selected tab,
+    we log a positive offset value indicating how many tabs to the left they
+    moved. If the user switches to a tab to the right of their currently
+    selected tab, we log a negative offset value.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.FirstSwitchedToForegroundCreationRank" units="units"
+    expires_after="M77">
+  <owner>pkotwicz@chromium.org</owner>
+  <summary>
+    Records the &quot;Tab Creation Rank&quot; for the first background tab which
+    was switched to the foreground. The &quot;Tab Creation Rank&quot; is
+    relative to other background tabs which were opened from the same URL via
+    the context menu. The oldest background tab has a rank of zero.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.FirstSwitchedToForegroundCreationReverseRank"
+    units="units" expires_after="M77">
+  <owner>pkotwicz@chromium.org</owner>
+  <summary>
+    Records the &quot;Reverse Tab Creation Rank&quot; for the first background
+    background tab which was switched to the foreground. The &quot;Reverse Tab
+    Creation Rank&quot; is relative to other background tabs which were opened
+    from the same URL via the context menu. The newest background tab has a
+    &quot;Reverse Tab Creation Rank&quot; of zero.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.ForegroundTabAgeAtStartup" units="minutes"
+    expires_after="M88">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>yusufo@chromium.org</owner>
+  <summary>
+    [Android] Age (time since the last display in previous sessions) of the
+    foreground tab being restored on the browser cold start.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.IndependentTabCountInSwitcher" units="tabs"
+    expires_after="2020-07-31">
+  <owner>mattsimmons@chromium.org</owner>
+  <owner>memex-team@google.com</owner>
+  <summary>
+    The number of entries/cards shown in the grid tab switcher.
+
+    When the user is shown the grid tab switcher, logs the number of entries
+    (tabs or tab groups) open in the grid tab switcher.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.LiveNTPCountAtResume" units="tabs"
+    expires_after="2023-02-26">
+  <owner>thegreenfrog@chromium.org</owner>
+  <owner>bling-team@google.com</owner>
+  <summary>
+    [iOS] The number of live allocated regular (not incognito) NTP tabs when the
+    app comes out of a background state. A live NTP is one whose UI classes are
+    initialized. Prior to M99 this incorrectly counted whichever interface
+    (regular or incognito) was selected.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.MaxTabsInADay{BatteryState}" units="tabs"
+    expires_after="never">
+<!-- expires-never: https://crbug.com/966137 -->
+
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The maximum number of tabs that Chrome displays at the same time over the
+    course of a day. Desktop only.
+
+    NOTE: This metric is asynchronous, the value reported on a given day
+    represents the previous day's observations (which can be from a different
+    build).
+  </summary>
+  <token key="BatteryState" variants="BatteryState"/>
+</histogram>
+
+<histogram name="Tabs.MaxTabsPerWindowInADay{BatteryState}" units="tabs"
+    expires_after="never">
+<!-- expires-never: https://crbug.com/966137 -->
+
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The maximum number of tabs per window that Chrome displays over the course
+    of a day. Desktop Only.
+
+    NOTE: This metric is asynchronous, the value reported on a given day
+    represents the previous day's observations (which can be from a different
+    build).
+  </summary>
+  <token key="BatteryState" variants="BatteryState"/>
+</histogram>
+
+<histogram name="Tabs.MaxWindowsInADay{BatteryState}" units="tabs"
+    expires_after="never">
+<!-- expires-never: https://crbug.com/966137 -->
+
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The maximum number of windows existing at the same time over the course of a
+    day. Desktop only.
+
+    NOTE: This metric is asynchronous, the value reported on a given day
+    represents the previous day's observations (which can be from a different
+    build).
+  </summary>
+  <token key="BatteryState" variants="BatteryState"/>
+</histogram>
+
+<histogram name="Tabs.NTPCountAtResume" units="tabs" expires_after="2023-02-26">
+  <owner>gogerald@chromium.org</owner>
+  <owner>nasims@google.com</owner>
+  <summary>
+    [iOS] The number of NTP tabs open when the app comes out of the background.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.NTPCountAtStartup" units="tabs"
+    expires_after="2023-02-26">
+  <owner>gogerald@chromium.org</owner>
+  <owner>nasims@google.com</owner>
+  <summary>[iOS] The number of NTP tabs open at cold launch.</summary>
+</histogram>
+
+<histogram name="Tabs.NumberOfTabsOnResume{BatteryState}" units="tabs"
+    expires_after="never">
+<!-- expires-never: https://crbug.com/966137 -->
+
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The number of tabs total at resume from sleep/hibernate. This is being
+    logged on all desktop platforms.
+  </summary>
+  <token key="BatteryState" variants="BatteryState"/>
+</histogram>
+
+<histogram name="Tabs.PersistedTabData.Critical.Map.Success"
+    enum="BooleanSuccess" expires_after="2023-02-08">
+  <owner>davidjm@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    CriticalPersistedTabData persists core Tab metadata (tab id, web contents
+    etc.) across restarts. This metric records if the Tab metadata is
+    successfully mapped from raw storage into an object which can be consumed in
+    Tab restoration.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.PersistedTabData.Deserialize.Critical"
+    enum="BooleanSuccess" expires_after="2023-06-19">
+<!-- P2 project which hasn't launched yet -->
+
+  <owner>yusufo@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    CriticalPersistedTabData stores data pertinent to the running of the app
+    such as tab id, parent id, web contents. This data is serialized and stored
+    across restarts. This records if the deserialization succeeds or fails.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.PersistedTabData.Serialize.Critical"
+    enum="BooleanSuccess" expires_after="2023-01-23">
+  <owner>yusufo@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    CriticalPersistedTabData stores data pertinent to the running of the app
+    such as tab id, parent id, web contents. This data is serialized and stored
+    across restarts. This records if the serialization succeeds or fails.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.PersistedTabData.Storage.Delete.File"
+    enum="BooleanSuccess" expires_after="2023-06-20">
+  <owner>yusufo@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    FilePersistedTabData storage stores serialized PersistedTabData (metadata
+    persisted across restarts) in a file. This metric records if a delete was
+    successful or unsuccessful.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.PersistedTabData.Storage.Exists.File"
+    enum="BooleanSuccess" expires_after="2023-06-19">
+  <owner>yusufo@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    FilePersistedTabData storage stores serialized PersistedTabData (metadata
+    persisted across restarts) in a file. This metric records if a delete
+    operation was found to have the file not existing.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.PersistedTabData.Storage.LevelDB.OrphanedDataCount"
+    units="keys" expires_after="2023-06-27">
+  <owner>davidjm@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Records the number of keys that were identified to be orphaned in the
+    LevelDB database for PersistedTabData. PersistedTabData stores Tab data to
+    be persisted across restarts. When a Tab is closed, the data is removed,
+    however, it is possible for data to become orphaned if the app crashes after
+    a Tab is closed and before the cleanup is complete. This metric is recorded
+    in the first callback, OnPerformMaintenance, whereby orphaned keys are
+    identified and before they are deleted.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.PersistedTabData.Storage.LoadAndMapTime.File" units="ms"
+    expires_after="2023-02-07">
+  <owner>davidjm@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    PersistedTabData stores Tab related data across restarts in a number of
+    storage options. This metric stores the time to load Tab data from file
+    storage and map it into an object available for consumption on Tab
+    restoration. The only client currently using File storage is
+    CriticalPersistedTabData which persists core Tab metadata (tab id, web
+    contents etc.) across restarts.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.PersistedTabData.Storage.LoadTime.File" units="ms"
+    expires_after="2023-03-07">
+  <owner>yusufo@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    FilePersistedTabData storage stores serialized PersistedTabData (metadata
+    persisted across restarts) in a file. This metric records how long it took
+    to load the file in the event the file exists. .
+  </summary>
+</histogram>
+
+<histogram name="Tabs.PersistedTabData.Storage.MapTime.File" units="ms"
+    expires_after="2023-02-07">
+  <owner>davidjm@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    PersistedTabData stores Tab related data across restarts in a number of
+    storage options. This metric stores the time to map data acquired from raw
+    file storage into an object which can be consumed on Tab restoration. The
+    only client currently using File storage is CriticalPersistedTabData which
+    persists core Tab metadata (tab id, web contents etc.) across restarts.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.PersistedTabData.Storage.Restore.File"
+    enum="BooleanSuccess" expires_after="2022-11-21">
+  <owner>yusufo@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    FilePersistedTabData storage stores serialized PersistedTabData (metadata
+    persisted across restarts) in a file. This metric records if a restore was
+    successful or unsuccessful.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.PersistedTabData.Storage.Save.File" enum="BooleanSuccess"
+    expires_after="2023-01-23">
+  <owner>yusufo@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    FilePersistedTabData storage stores serialized PersistedTabData (metadata
+    persisted across restarts) in a file. This metric records if a save was
+    successful or unsuccessful.
+  </summary>
+</histogram>
+
+<histogram
+    name="Tabs.PersistedTabData.Storage.Save.File.FirstStorageRequestType"
+    enum="FileStorageRequestType" expires_after="2023-02-12">
+  <owner>yusufo@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    First storage request type in FilePersistedTabData. It would be expected
+    that the first storage request will be a restore (as restoring the active
+    tab) is pivotal for startup performance.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.PersistedTabData.Storage.SaveTime.File" units="ms"
+    expires_after="2023-05-22">
+  <owner>yusufo@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    FilePersistedTabData storage stores serialized PersistedTabData (metadata
+    persisted across restarts) in a file. This metric records how long it took
+    to save the file in the event of a successful save.
+  </summary>
+</histogram>
+
+<histogram
+    name="Tabs.RecentlyClosed.EntriesRestoredInPage.{RecentlyClosedType}"
+    units="entries restored" expires_after="2023-02-05">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The number of distinct entries from TabRestoreService of
+    {RecentlyClosedType} type that were restored in one Recent Tabs page session
+    on Android. This is recorded when destroying the Recent Tabs page if any
+    entires of {RecentlyClosedType} type were shown.
+  </summary>
+  <token key="RecentlyClosedType" variants="RecentlyClosedType"/>
+</histogram>
+
+<histogram name="Tabs.RecentlyClosed.EntriesShownInPage.{RecentlyClosedType}"
+    units="entries shown" expires_after="2023-02-05">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The number of distinct entries from TabRestoreService of
+    {RecentlyClosedType} type shown in one Recent Tabs page session on Android.
+    This is recorded when destroying the Recent Tabs page.
+  </summary>
+  <token key="RecentlyClosedType" variants="RecentlyClosedType"/>
+</histogram>
+
+<histogram name="Tabs.RecentlyClosed.HistoricalSaverCloseType"
+    enum="HistoricalSaverCloseType" expires_after="2023-04-09">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    Recorded once for each tab closure event processed by HistoricalTabSaverImpl
+    on Android. Enum categories correspond to the the type of closure that was
+    saved to the native TabRestoreService. Tab for single tab, Group for a
+    single tab group and Bulk for a combination of tabs and groups or more than
+    one of either.
+  </summary>
+</histogram>
+
+<histogram
+    name="Tabs.RecentlyClosed.PercentOfEntriesRestoredInPage.{RecentlyClosedType}"
+    units="percentage restored" expires_after="2023-02-05">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The percentage of entries from TabRestoreService of {RecentlyClosedType}
+    type that were restored relative to the number shown in one Recent Tabs page
+    session on Android. This is recorded when destroying the Recent Tabs page if
+    any entires of {RecentlyClosedType} type were shown.
+  </summary>
+  <token key="RecentlyClosedType" variants="RecentlyClosedType"/>
+</histogram>
+
+<histogram name="Tabs.SadTab.Feedback.Event" enum="SadTabEvent"
+    expires_after="2023-03-05">
+  <owner>sonnyrao@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
+  <summary>
+    Counts of events from the style of sad tab which has a feedback button as
+    its primary action. Currently, events include being displayed (actually
+    visible in a window), and the actions a user can take on the page.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.SadTab.Reload.Event" enum="SadTabEvent"
+    expires_after="2023-02-26">
+  <owner>sonnyrao@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
+  <summary>
+    Counts of events from the style of sad tab which has a reload button as its
+    primary action. Compare to Tabs.SadTab.Feedback.Event.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.SadTab.ReloadCount" units="tabs"
+    expires_after="2021-06-01">
+  <owner>sonnyrao@chromium.org</owner>
+  <owner>jamescook@chromium.org</owner>
+  <summary>
+    The number of times a tab was reloaded because it was killed (usually by the
+    kernel OOM killer) and the user clicked on it later, recorded once per
+    reload event. For example, a user who clicks on 3 discarded tabs will record
+    a count in the 1 bin, 2 bin, and 3 bin. Thus each bin N is the number of
+    sessions where users experienced N or more reload events. Compare to
+    Tabs.Discard.DiscardCount.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.SavedTabLoadTime.{SavedTabMethod}.{SavedTabLoadResult}"
+    units="ms" expires_after="2023-05-30">
+  <owner>davidjm@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>yusufo@chromium.org</owner>
+  <summary>
+    Records load time of a Tab using {SavedTabMethod} storage and whether the
+    {SavedTabLoadResult}
+  </summary>
+  <token key="SavedTabMethod">
+    <variant name="CriticalPersistedTabData"
+        summary="CriticalPersistedTabData"/>
+    <variant name="TabState" summary="TabState"/>
+  </token>
+  <token key="SavedTabLoadResult">
+    <variant name="Exists" summary="Tab storage file was found."/>
+    <variant name="Null" summary="Tab storage file was not found."/>
+  </token>
+</histogram>
+
+<histogram name="Tabs.ScrubbedInInterval.KeyPress" units="tabs"
+    expires_after="2023-03-05">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    This histogram records the number of tabs that are 'scrubbed' by key press
+    during a given interval of time (i.e. ctrl+tab navigation). For this metric,
+    a tab is considered 'scrubbed' if it was active for less than or equal to a
+    given amount of time.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.ScrubbedInInterval.MousePress" units="tabs"
+    expires_after="2023-03-05">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    This histogram records the number of tabs that are 'scrubbed' by mouse press
+    during a given interval of time. For this metric, a tab is considered
+    'scrubbed' if it was active for less than or equal to a given amount of
+    time.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.ScrubDistance" units="tabs" expires_after="2023-02-26">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The distance a user multi-finger scrubbed to change tabs. Always positive
+    (ignores left / right).
+  </summary>
+</histogram>
+
+<histogram name="Tabs.ScrubDuration" units="ms" expires_after="2023-04-18">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The duration a user spent doing multi-finger scrubbing to change tabs before
+    a different tab than the currently active one was actually activated.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.ShoppingPersistedTabData.FoundBuyableProductAnnotation"
+    enum="FoundBuyableProductAnnotation" expires_after="2022-04-10">
+  <owner>yusufo@chromium.org</owner>
+  <owner>ayman@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    Records if we find a BuyableProductAnnotation in the response from our
+    endpoint which provides page annotations to enrich the user experience. The
+    endpoint is called for every Tab when we enter the Tab grid switcher and is
+    cached with a time to live of 1 hour.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Startup.TabCount.{TabType}" units="count"
+    expires_after="2023-03-20">
+  <owner>davidjm@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>Records the number of {TabType} Tabs loaded on startup.</summary>
+  <token key="TabType">
+    <variant name="Incognito" summary="Incognito"/>
+    <variant name="Regular" summary="Regular"/>
+  </token>
+</histogram>
+
+<histogram name="Tabs.StateTransfer.NumberOfOtherTabsActivatedBeforeMadeActive"
+    units="tabs" expires_after="M77">
+  <owner>kouhei@chromium.org</owner>
+  <owner>tzik@chromium.org</owner>
+  <summary>
+    Recorded once per tab activation. The number of tabs that were activated
+    while the tab was inactive.
+
+    This metric is to be removed after M46 hits stable. We don't expect this
+    metric to change over release, so we will remove this once we have the
+    numbers from stable.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.StateTransfer.TabDistanceInactiveToActive" units="tabs"
+    expires_after="M85">
+  <owner>kouhei@chromium.org</owner>
+  <owner>tzik@chromium.org</owner>
+  <summary>
+    Number of tabs between the previously active tab and the new active tab.
+
+    This metric is to be removed after M46 hits stable. We don't expect this
+    metric to change over release, so we will remove this once we have the
+    numbers from stable.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.StateTransfer.Target" enum="TabStripState"
+    expires_after="M85">
+  <owner>kouhei@chromium.org</owner>
+  <owner>tzik@chromium.org</owner>
+  <summary>
+    The state to which a tab transitioned. Recorded when a tab transitions from
+    the state in the histogram name to a new state.
+
+    kouhei@ and tzik@ will remove some variation of these once M46 hits stable.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Suggestions.NumSuggestionsChanged{TabSuggestionType}"
+    units="count" expires_after="2022-10-17">
+  <owner>yusufo@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <owner>meiliang@chromium.org</owner>
+  <summary>
+    The user is presented with recommendations on which Tabs they could take the
+    suggested action. The user has the option to: 1) Remove a Tab from the
+    recommendation 2) Add a Tab which wasn't in the recommendation to the
+    recommendation.
+
+    This metric records the sum of the number of times the user does 1) or 2)
+    and is a measure of how useful the recommendation is. This metric is
+    recorded after the user accepts a recommendation - potentially with edits by
+    performing 1) or 2).
+
+    Note: Adding and removing the same Tab, or vice versa, would be counted as
+    0. {TabSuggestionType}
+  </summary>
+  <token key="TabSuggestionType">
+    <variant name=".ClosingSuggestion"
+        summary="This bukect is for the closing suggestion. It suggests users
+                 to close the recommended tabs."/>
+    <variant name=".GroupingSuggestion"
+        summary="This bukect is for the grouping suggestion. It suggests
+                 users to group the recommended tabs."/>
+  </token>
+</histogram>
+
+<histogram name="Tabs.SwitchFromCloseLatency{Tabs_SwitchLatency}" units="ms"
+    expires_after="M88">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>yusufo@chromium.org</owner>
+  <summary>
+    [Android] Time between the event that closes a tab and the start of
+    rendering. {Tabs_SwitchLatency}
+  </summary>
+  <token key="Tabs_SwitchLatency" variants="Tabs_SwitchLatency">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Tabs.SwitchFromExitLatency{Tabs_SwitchLatency}" units="ms"
+    expires_after="M88">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>yusufo@chromium.org</owner>
+  <summary>
+    [Android] Time between the event that exits an app and the start of
+    rendering. {Tabs_SwitchLatency}
+  </summary>
+  <token key="Tabs_SwitchLatency" variants="Tabs_SwitchLatency">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Tabs.SwitchFromNewLatency{Tabs_SwitchLatency}" units="ms"
+    expires_after="M88">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>yusufo@chromium.org</owner>
+  <summary>
+    [Android] Time between the event that creates a tab and the start of
+    rendering. {Tabs_SwitchLatency}
+  </summary>
+  <token key="Tabs_SwitchLatency" variants="Tabs_SwitchLatency">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Tabs.SwitchFromUserLatency{Tabs_SwitchLatency}" units="ms"
+    expires_after="M88">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>yusufo@chromium.org</owner>
+  <summary>
+    [Android] Time between the event that selects a tab and the start of
+    rendering. {Tabs_SwitchLatency}
+  </summary>
+  <token key="Tabs_SwitchLatency" variants="Tabs_SwitchLatency">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Tabs.TabCountActiveWindow" units="tabs" expires_after="never">
+<!-- expires-never: usage drives tab optimization and analysis. -->
+
+  <owner>markchang@google.com</owner>
+  <summary>
+    The number of tabs open in the active window when a load completes.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabCountInGroupPerLoad" units="tabs"
+    expires_after="2023-02-12">
+  <owner>connily@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The number of tabs in the current active group when a load completes.
+    Records 0 if the active tab is not in a group.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabCountInSwitcher" units="tabs"
+    expires_after="2020-07-31">
+  <owner>mattsimmons@chromium.org</owner>
+  <owner>memex-team@google.com</owner>
+  <summary>
+    The number of tabs open when the grid tab switcher is shown.
+
+    When the user is shown the tab switcher, logs the total number of individual
+    open tabs. Android only.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabCountOnStartScreenShown" units="tabs"
+    expires_after="2020-07-31">
+  <owner>mattsimmons@chromium.org</owner>
+  <owner>memex-team@google.com</owner>
+  <summary>
+    The number of tabs open when the user is returned to the tab switcher on
+    start.
+
+    When the user is returned to the tab switcher on starting Chrome due to
+    inactivity, logs the overall number of tabs open. Android only.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabCountPerDomainPerLoad.{TotalTabCountBucket}"
+    units="tabs" expires_after="2021-06-30">
+  <owner>connily@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The number of tabs across all browsers (counting app-mode windows) with the
+    same host piece when a load completes. {TotalTabCountBucket} is inclusive
+    and describes the total number of tabs when logging.
+  </summary>
+  <token key="TotalTabCountBucket">
+    <variant name="0to5" summary=""/>
+    <variant name="6to10" summary=""/>
+    <variant name="10to15" summary=""/>
+    <variant name="16to20" summary=""/>
+    <variant name="21to30" summary=""/>
+    <variant name="31to40" summary=""/>
+    <variant name="41to60" summary=""/>
+    <variant name="61to80" summary=""/>
+    <variant name="81to100" summary=""/>
+    <variant name="101to150" summary=""/>
+    <variant name="151to200" summary=""/>
+    <variant name="201to300" summary=""/>
+    <variant name="301to400" summary=""/>
+    <variant name="401to500" summary=""/>
+    <variant name="500+" summary=""/>
+  </token>
+</histogram>
+
+<histogram name="Tabs.TabCountPerLoad" units="tabs" expires_after="2023-02-19">
+  <owner>mpearson@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <owner>sbirch@google.com</owner>
+  <summary>
+    The number of tabs open in all browsers (counting app-mode windows) when a
+    load completes.
+
+    This is basically the average number of tabs over time.
+
+    See also MPArch.RPHCountPerLoad for the number of processes used by these
+    tabs.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabCountPerWindow" units="tabs"
+    expires_after="2023-02-19">
+  <owner>mpearson@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The number of tabs open per window (counting app-mode windows) when a load
+    completes.
+
+    This value will be recorded multiple times per load if more than one window
+    is open.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabCount{BatteryState}" units="tabs"
+    expires_after="never">
+<!-- expires-never: https://crbug.com/966137 -->
+
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Counts the number of tabs across all windows, reported every 5 minutes.
+    Desktop only.
+  </summary>
+  <token key="BatteryState" variants="BatteryState"/>
+</histogram>
+
+<histogram name="Tabs.TabOffsetOfSwitch{TabOffsetOfSwitchComponentList}"
+    units="units" expires_after="M85">
+  <owner>yusufo@chromium.org</owner>
+  <summary>
+    How many tabs a user moved forward or backward in the Android tab switcher.
+    {TabOffsetOfSwitchComponentList}
+
+    Logged by the Android tab switcher when a user switches tabs (other than by
+    opening a new tab). If the user switches to an earlier tab in the stack, we
+    log a positive offset value indicating how many tabs back they moved. If the
+    user switches to a later tab, we log a negative offset value. If the user
+    stays on the same tab, we log 0. If the user switches to a tab in a
+    different stack (i.e. they switch from normal to incognito or vice-versa),
+    we don't log a value.
+  </summary>
+  <token key="TabOffsetOfSwitchComponentList">
+    <variant name=".GridTabSwitcher" summary="Tab switcher in grid layout"/>
+    <variant name=".TabStrip" summary="The TabStrip componets"/>
+  </token>
+</histogram>
+
+<histogram name="Tabs.TabRestoreMethod" enum="TabRestoreMethod"
+    expires_after="2023-02-19">
+  <owner>davidjm@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <summary>
+    CriticalPersistedTabData is a schema based Tab restoration system which
+    persists Tab metadata such as web contents and time last accessed across
+    restarts. CriticalPersistedTabData will replace legacy hand-written
+    TabState.
+
+    This metric records how many Tabs are restored using
+    CriticalPersistedTabData, TabState, are re-created, skipped or failed to be
+    restored. As we migrate from TabState to CriticalPersistedTabData it is
+    imperative we can compare the success rate of each system vs. how many Tabs
+    are re-created or failed to be restored. This metric is emitted once for
+    each Tab restoration on startup.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.CloseAction" enum="TabSearchCloseActions"
+    expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI is shown in a bubble anchored to an
+    element of the UI in the browser window.
+
+    The bubble is dismissed when it loses focus or the escape key is pressed.
+    This metric tracks if the UI bubble was dismissed as a result of an action
+    taken from within the UI (such as switching to an open tab) or dismissed
+    without direct interaction with the Tab Search UI.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.Mojo.SwitchToTab" units="ms"
+    expires_after="2023-02-26">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    The time taken to switch tab. This is measured as the time from when the
+    user clicks a tab in Tab Search to when the browser finishes switching tab.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.Mojo.SwitchToTab.IsOverlap" enum="Boolean"
+    expires_after="2023-02-26">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records whether there's a pending Tabs.TabSearch.Mojo.SwitchToTab
+    measurement when a new measurement is requested.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.Mojo.TabUpdated" units="ms"
+    expires_after="2023-02-26">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    The time taken for Tab Search to update its tab list when the browser's tab
+    strip model changes. This is measured as the time from when the browser
+    emits a notification to when the WebUI updates its state.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.Mojo.TabUpdated.IsOverlap" enum="Boolean"
+    expires_after="2023-02-26">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Records whether there's a pending Tabs.TabSearch.Mojo.TabUpdated measurement
+    when a new measurement is requested.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.NumTabsClosedPerInstance" units="tabs"
+    expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search their browsers
+    for their desired tabs and close any currently open tabs. This records the
+    number of tabs closed from a single instance of the UI (the number of tabs
+    closed from within Tab Search in the time between when the UI is open and
+    when it is closed).
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.NumTabsOnOpen" units="tabs"
+    expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search their browsers
+    for their desired tabs. It can be opened and closed. This records the number
+    of tabs there are in the payload Tab Search is sent when it is first opened.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.NumWindowsOnOpen" units="windows"
+    expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search their browsers
+    for their desired tabs. It can be opened and closed. This records the number
+    of windows there are in the payload Tab Search is sent when it is first
+    opened.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.OpenAction" enum="TabSearchOpenActions"
+    expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI is shown in a bubble anchored to an
+    element of the UI in the browser window.
+
+    The bubble can be invoked via a number of different means including mouse
+    click, keyboard navigation, keyboard shortcut or touch gesture. This metric
+    tracks the kind of action the user took to invoke the Tab Search bubble UI.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.PageHandlerConstructionDelay" units="ms"
+    expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI is shown in a bubble anchored to an
+    element of the UI in the browser window.
+
+    When the WebUIController is first created it waits for the WebUI code in the
+    renderer process to request the creation of the TabSearchPageHandler. This
+    metric tracks the time between when the WebUIController was constructed to
+    when the TabSearchPageHandler begins construction. This metric is emitted
+    right before the TabSearchPageHandler's constructor is called.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.RecentlyClosedSectionToggleAction"
+    enum="TabSearchRecentlyClosedToggleActions" expires_after="2023-02-26">
+  <owner>romanarora@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI displays both open and recently closed
+    tabs under different list sections. The recently closed section can be
+    expanded or collapsed by the user by clicking a button.
+
+    This metric tracks the recently closed section being expandeded or collapsed
+    via the toggle button.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.RecentlyClosedSectionToggleStateOnOpen"
+    enum="TabSearchRecentlyClosedToggleActions" expires_after="2023-02-26">
+  <owner>romanarora@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI displays both open and recently closed
+    tabs under different list sections. The recently closed section can be
+    expanded or collapsed by the user by clicking a button.
+
+    This metric tracks if the recently closed section is in an expanded or
+    collapsed state at the time of opening the Tab Search dialog.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.IndexOf{Action}In{State}List"
+    units="tabs" expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search their browsers
+    for their desired tabs and close any currently open tabs.
+
+    This records the index at which a {Action} has been performed on a tab in
+    Tab Search's tab list in a {State} state.
+  </summary>
+  <token key="Action">
+    <variant name="CloseTab"/>
+    <variant name="OpenRecentlyClosedEntry"/>
+    <variant name="SwitchTab"/>
+  </token>
+  <token key="State">
+    <variant name="Filtered" summary="Filtered by user search query."/>
+    <variant name="Unfiltered" summary="Unfiltered by user search query."/>
+  </token>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.LoadCompletedTime" units="ms"
+    expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    The amount of time between the render frame host StartProvisionalLoad event
+    and the render frame DocumentOnLoadCompleted event for the Tab Search WebUI
+    page.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.LoadDocumentTime" units="ms"
+    expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    The amount of time between the render frame host StartProvisionalLoad and
+    DidFinishDocumentLoad events for the Tab Search WebUI page.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.RecentlyClosed{Item}OpenAction"
+    enum="TabSearchRecentlyClosedItemOpenAction" expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>chrome-cros@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search their browsers
+    for their desired tabs or recently closed tabs and tab groups. This records
+    whether the user used Tab Search to open a recently closed {Item} from a
+    filtered search results list or the default unfiltered list.
+  </summary>
+  <token key="Item">
+    <variant name="Group"/>
+    <variant name="Tab"/>
+  </token>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.SearchAlgorithmDuration" units="ms"
+    expires_after="2023-02-26">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>chrome-cros@chromium.org</owner>
+  <summary>
+    The time taken to run the search algorithm. The algorithm takes an
+    unfiltered list of items and user search query as inputs, then generate a
+    list of filtered items as output. Recorded after the measurement ends.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.TabListDataReceived" units="ms"
+    expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <summary>
+    The time taken for the WebUI in the renderer to receive the full list of
+    tabs for the current user profile. This is measured as the time from when
+    the data was first requested by the WebUI to when the data was received by
+    the WebUI.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.TabListDataReceived2" units="ms"
+    expires_after="2023-02-26">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>kerenzhu@chromium.org</owner>
+  <summary>
+    The time taken for the WebUI in the renderer to receive the full list of
+    tabs for the current user profile. This is measured as the time from when
+    the data was first requested by the WebUI to when the data was received by
+    the WebUI.
+
+    This metric is recorded by MetricsReporter.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.TabListDataReceived2.IsOverlap"
+    enum="Boolean" expires_after="2023-02-26">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>kerenzhu@chromium.org</owner>
+  <summary>
+    Records whether there's a pending Tabs.TabSearch.WebUI.TabListDataReceived2
+    measurement when a new measurement is requested.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.TabSwitchAction"
+    enum="TabSearchTabSwitchAction" expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search their browsers
+    for and switch to their desired tabs. This records whether the user used Tab
+    Search to switch to a tab from a filtered search results list or the default
+    unfiltered list.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WebUI.TimeTo{Action}In{State}List" units="ms"
+    expires_after="2023-02-26">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>chrome-cros@chromium.org</owner>
+  <summary>
+    The time taken between the tab search bubble is open and user switches to a
+    tab or opens a recently closed tab, with or without search query. Recorded
+    after the measurement ends.
+  </summary>
+  <token key="Action">
+    <variant name="OpenRecentlyClosedEntry"/>
+    <variant name="SwitchTab"/>
+  </token>
+  <token key="State">
+    <variant name="Filtered" summary="Filtered by user search query."/>
+    <variant name="Unfiltered" summary="Unfiltered by user search query."/>
+  </token>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WindowDisplayedDuration3" units="ms"
+    expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search their browsers
+    for their desired tabs. It can be opened and closed. This records the amount
+    of time between when a Tab Search bubble is opened and when it is closed. It
+    does so by recording the difference in time between when the the hosting
+    WebUIBubbleDialogView's Widget is first created and when the widget is
+    destroyed.
+
+    The Tab Search UI is a bubble anchored to an element within a browser window
+    and is closed if the user switches to a tab, presses the escape key or
+    performs an action to return focus to the hosting window. The Tab Search UI
+    bubble will also close if the hosting browser window is closed or crashes.
+
+    Users may leave the bubble open for long periods of time without directly
+    interacting with the UI which could result in a long tail of displayed
+    durations.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WindowTimeToShowCachedWebView" units="ms"
+    expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI is shown in a bubble anchored to an
+    element of the UI in the browser window.
+
+    This tracks the time between when the Tab Search WebUI bubble widget is
+    first created and when it is first shown to users. This metric is only
+    logged if a previously cached WebView is used for the construction of the
+    bubble widget. This metric is emitted when the bubble window is first
+    revealed.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabSearch.WindowTimeToShowUncachedWebView" units="ms"
+    expires_after="2023-02-26">
+  <owner>tluk@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <owner>yuhengh@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search for and switch to
+    their desired tabs. The Tab Search UI is shown in a bubble anchored to an
+    element of the UI in the browser window.
+
+    This tracks the time between when the Tab Search WebUI bubble widget is
+    first created and when it is first shown to users. This metric is only
+    logged if a new WebView was created for the construction of the bubble
+    widget. This metric is emitted when the bubble window is first revealed.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabsStatsDailyEventInterval"
+    enum="DailyEventIntervalType" expires_after="M77">
+  <owner>sebmarchand@chromium.org</owner>
+  <summary>
+    Counts how often tab stats daily interval events were fired.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabState.LoadTime" units="ms" expires_after="2023-03-19">
+  <owner>yusufo@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    Time taken to load a TabState file in the event that it exists.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TabState.SaveTime" units="ms" expires_after="2023-02-10">
+  <owner>yusufo@chromium.org</owner>
+  <owner>nyquist@chromium.org</owner>
+  <owner>dtrainor@chromium.org</owner>
+  <owner>davidjm@chromium.org</owner>
+  <summary>
+    Time taken to save a TabState file in the event of a successful save.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Tasks.AverageTabGroupSize" units="tabs"
+    expires_after="M85">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    The average tab group size, average number of tabs in a group, on a cold
+    start after all tabs are restored.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Tasks.DuplicatedTab.DuplicatedTabCount" units="tabs"
+    expires_after="2020-06-01">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    During tab restoration, a tab is considered as a duplicated tab when it has
+    an identical url with another restored tab.
+
+    This histogram records the number of duplicated tabs on a cold start after
+    all tabs are restored. The possible range for this number is from 0 to total
+    number of restored tabs minus 1. In other words, this number is equals to
+    total number of restored tabs minus the number of unique URLs.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Tasks.DuplicatedTab.DuplicatedTabRatio" units="%"
+    expires_after="2020-06-01">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    During tab restoration, a tab is considered as a duplicated tab when it has
+    an identical url with another restored tab.
+
+    This histogram records the ratio of duplicated tabs to the total number of
+    tabs on a cold start after all tabs are restored. This ratio will never
+    reach 100%, since the highest possible number of duplicated tabs is total
+    number of restored tabs minus 1.
+  </summary>
+</histogram>
+
+<histogram
+    name="Tabs.Tasks.HubAndSpokeNavigationUsage{HubAndSpokeNavigationUsageType}"
+    units="spokes" expires_after="2020-06-01">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    The cumulative number of &quot;spokes&quot; from any &quot;hub&quot; page in
+    every tab. A &quot;hub&quot; is any page that the user navigates away from,
+    and a &quot;spoke&quot; is a page that's navigated to. The
+    &quot;spokes&quot; count is incremented and recorded each time the user
+    navigates back to a &quot;hub&quot; page via navigation back button and then
+    navigates to a new &quot;spoke&quot;. {HubAndSpokeNavigationUsageType}
+  </summary>
+  <token key="HubAndSpokeNavigationUsageType">
+    <variant name=""/>
+    <variant name=".FromDefaultSearchEngine"
+        summary="User navigates to a new page from default search engine
+                 result page"/>
+    <variant name=".FromFormSubmit"
+        summary="User navigates to a new page from a form submit page"/>
+    <variant name=".FromOther"
+        summary="User navigates to a new page from a page other than a
+                 default search engine result page or a form submit page"/>
+  </token>
+</histogram>
+
+<histogram name="Tabs.Tasks.TabCreated.Count{TabCreatedReason}" units="tabs"
+    expires_after="2020-06-30">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <owner>zea@chromium.org</owner>
+  <summary>
+    This recorded value is the number of currently open tabs that were created
+    from a given source. This is recorded when entering the tab switcher mode.
+    {TabCreatedReason}
+  </summary>
+  <token key="TabCreatedReason" variants="TabCreatedReason"/>
+</histogram>
+
+<histogram name="Tabs.Tasks.TabCreated.Percent{TabCreatedReason}" units="%"
+    expires_after="2020-06-30">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <owner>zea@chromium.org</owner>
+  <summary>
+    The recorded value is the percentage of the number of currently open tabs
+    that are created from a given source, relative to the total number of
+    currently open tabs. This is recorded when entering the tab switcher mode.
+    {TabCreatedReason}
+  </summary>
+  <token key="TabCreatedReason" variants="TabCreatedReason"/>
+</histogram>
+
+<histogram name="Tabs.Tasks.TabGroupCount" units="groups" expires_after="M85">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    The number of tab groups on a cold start after all tabs are restored.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Tasks.TabGroupDensity" units="%" expires_after="M85">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    The tab group density, the ratio of the number of tab groups to the total
+    number of tabs, on a cold start after all tabs are restored.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Tasks.TabsInGroupCount" units="tabs" expires_after="M85">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    The number of tabs is belonging to a tab group on a cold start after all
+    tabs are restored.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.Tasks.TabsInGroupRatio" units="%" expires_after="M85">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    The ratio of all tabs in tab groups to the total number of tabs on a cold
+    start after all tabs are restored.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TimeSinceLastView.OnTabClobber" units="seconds"
+    expires_after="M82">
+  <owner>mattsimmons@chromium.org</owner>
+  <owner>memex-team@google.com</owner>
+  <summary>
+    When a tab is revisited and subsequently the omnibox is focused within a
+    certain threshold of time, this reports the amount of time in seconds that
+    has passed since the last user engagement with the tab. Currently
+    Android-only.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TimeSinceLastView.OnTabClose" units="seconds"
+    expires_after="M82">
+  <owner>mattsimmons@chromium.org</owner>
+  <owner>memex-team@google.com</owner>
+  <summary>
+    When a tab is closed, this reports the amount of time in seconds that has
+    passed since the last user engagement with the tab. Currently Android-only.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.TimeSinceLastView.OnTabView" units="seconds"
+    expires_after="M82">
+  <owner>mattsimmons@chromium.org</owner>
+  <owner>memex-team@google.com</owner>
+  <summary>
+    When a tab is revisited, this reports the amount of time in seconds that has
+    passed since the last user engagement with the tab. Currently Android-only.
+  </summary>
+</histogram>
+
+<histogram
+    name="Tabs.UnusedAndClosedInInterval.Count{Tabs_TabUsageIntervalLength}"
+    units="tabs" expires_after="M95">
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The number of tabs that haven't been interacted with, visible or audible
+    over a given interval time, but which no longer exist at all at the end of
+    this interval. {Tabs_TabUsageIntervalLength}
+  </summary>
+  <token key="Tabs_TabUsageIntervalLength"
+      variants="Tabs_TabUsageIntervalLength"/>
+</histogram>
+
+<histogram name="Tabs.UnusedInInterval.Count{Tabs_TabUsageIntervalLength}"
+    units="tabs" expires_after="M95">
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The number of tabs that haven't been interacted with, visible or audible or
+    visible during a given interval of time and still exist at the end of this
+    interval. {Tabs_TabUsageIntervalLength}
+  </summary>
+  <token key="Tabs_TabUsageIntervalLength"
+      variants="Tabs_TabUsageIntervalLength"/>
+</histogram>
+
+<histogram
+    name="Tabs.UsedAndClosedInInterval.Count{Tabs_TabUsageIntervalLength}"
+    units="tabs" expires_after="M95">
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The number of tabs that have been interacted with, visible or audible over a
+    given interval of time, but which no longer exist at all at the end of this
+    interval. {Tabs_TabUsageIntervalLength}
+  </summary>
+  <token key="Tabs_TabUsageIntervalLength"
+      variants="Tabs_TabUsageIntervalLength"/>
+</histogram>
+
+<histogram name="Tabs.UsedInInterval.Count{Tabs_TabUsageIntervalLength}"
+    units="tabs" expires_after="M95">
+  <owner>chrisha@chromium.org</owner>
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    The number of tabs that have been interacted with, visible or audible during
+    a given interval of time, includes tabs that don't exist at the end of this
+    interval. {Tabs_TabUsageIntervalLength}
+  </summary>
+  <token key="Tabs_TabUsageIntervalLength"
+      variants="Tabs_TabUsageIntervalLength"/>
+</histogram>
+
+<histogram name="Tabs.WindowCount{BatteryState}" units="windows"
+    expires_after="never">
+<!-- expires-never: https://crbug.com/966137 -->
+
+  <owner>fdoray@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Counts the number of Chrome windows, reported every 5 minutes. Desktop only.
+  </summary>
+  <token key="BatteryState" variants="BatteryState"/>
+</histogram>
+
+<histogram name="Tabs.WindowWidth" units="DIPs" expires_after="2023-02-26">
+  <owner>collinbaker@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The width of each open browser window, in DIPs, reported every 5 minutes.
+    Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Tabs.{TabActiveState}TabWidth" units="px"
+    expires_after="2023-01-01">
+  <owner>dpenning@chromium.org</owner>
+  <owner>tbergquist@chromium.org</owner>
+  <summary>
+    [Desktop] The size in pixels of the {TabActiveState} tab logged when a tab
+    is added. Used to collect size data for scrolling tabs.
+  </summary>
+  <token key="TabActiveState" variants="TabActiveState"/>
+</histogram>
+
+<histogram name="TabStrip.ReasonToShow" enum="TabStripReasonToShow"
+    expires_after="2021-02-01">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    When conditional tab strip shows, records which kind of intentional
+    tab-related action triggered it.
+  </summary>
+</histogram>
+
+<histogram name="TabStrip.Tab.{Framework}.ActivationAction"
+    enum="TabActivationTypes" expires_after="2022-10-16">
+  <owner>yuhengh@chromium.org</owner>
+  <owner>tluk@chromium.org</owner>
+  <owner>romanarora@chromium.org</owner>
+  <summary>
+    Tab activation triggered by click or touch on a tab. This is used to measure
+    tab activation count of tab strip vs WebUI tab strip.
+  </summary>
+  <token key="Framework">
+    <variant name="Views"/>
+    <variant name="WebUI"/>
+  </token>
+</histogram>
+
+<histogram name="TabStrip.TabCountOnPageLoad" units="tabs"
+    expires_after="2023-02-19">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    This histogram records the number of tabs within the group during page load.
+
+    If the loading happens in a tab that does not belong to a group, we log 0.
+    Else, we log a positive number &gt;= 2.
+  </summary>
+</histogram>
+
+<histogram name="TabStrip.TimeToCreateNewTabFromPress" units="ms"
+    expires_after="2023-02-12">
+  <owner>robliao@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The amount of time from receiving a new tab button pressed to creating the
+    elements necessary to represent a new tab.
+  </summary>
+</histogram>
+
+<histogram name="TabStrip.TimeToSwitch" units="ms" expires_after="2023-02-12">
+  <owner>connily@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The amount of time from cursor entering the tabstrip to first click on a tab
+    to switch.
+
+    This will exclude some kinds of switching (hotkeys, between windows) where
+    it would be difficult to define a start time. Entering the tabstrip is an
+    approximation which will vary between users, but should still be useful for
+    A/B comparison.
+  </summary>
+</histogram>
+
+<histogram name="TabStrip.UserStatus" enum="TabStripUserStatus"
+    expires_after="2022-04-17">
+  <owner>yusufo@chromium.org</owner>
+  <owner>wychen@chromium.org</owner>
+  <summary>
+    A tab strip session starts when the last time Chrome comes to the foreground
+    was more than an hour ago. At the beginning of a tab strip session, records
+    the user status of conditional tab strip feature in the last tab strip
+    session.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

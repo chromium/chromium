@@ -1,0 +1,8 @@
+Tests requests queueing time consistency beetween the Network and Tracing domains.
+Recording started
+Tracing complete
+Queueing times for URL http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol/resources/empty.js match: true
+Queueing times for URL http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol/resources/square.png match: true
+Queueing times for URL http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol/resources/style.css match: true
+Queueing times for URL http://127.0.0.1:8000/inspector-protocol/resources/basic.html match: true
+

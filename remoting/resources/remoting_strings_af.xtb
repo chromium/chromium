@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">'n Onverwagse fout het voorgekom. Meld asseblief hierdie probleem by die ontwikkelaars aan.</translation>
 <translation id="1697532407822776718">Als is nou reg!</translation>
 <translation id="1742469581923031760">Koppel tans …</translation>
+<translation id="177040763384871009">Jy moet die stelsel se webblaaier na "<ph name="URL_FORWARDER_NAME" />" verander om toe te laat dat skakels wat op die afstandbeheerder geklik word in die kliënt se blaaier oopmaak.</translation>
 <translation id="177096447311351977">Kanaal-IP vir kliënt: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' gasheer_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' kanaal='<ph name="CHANNEL_TYPE" />' verbinding='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Vee uit</translation>
 <translation id="2009755455353575666">Kon nie koppel nie</translation>
@@ -24,7 +25,7 @@ Om hierdie toestemming te verleen, moet jy "<ph name="BUTTON_NAME" />" hieronder
 As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en dit dan weer merk.</translation>
 <translation id="225614027745146050">Welkom</translation>
 <translation id="2320166752086256636">Versteek sleutelbord</translation>
-<translation id="2333212046079545895">Kopierieg 2021 Google LLC. Alle regte voorbehou.</translation>
+<translation id="2329392777730037872">Kon nie <ph name="URL" /> op die kliënt se toestel oopmaak nie.</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2366718077645204424">Kan nie die gasheer bereik nie. Dit is waarskynlik weens die opstelling van die netwerk wat jy gebruik.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Is <ph name="RELATIVE_TIMESTAMP" /> laas aanlyn gesien.</translation>
@@ -35,6 +36,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="2599300881200251572">Hierdie diens maak inkomende verbindings van Chrome-afstandwerkskermkliënte af moontlik.</translation>
 <translation id="2647232381348739934">Chromoting-diens</translation>
 <translation id="2676780859508944670">Werk tans …</translation>
+<translation id="2692522824157224199">Kopierieg 2022 Google LLC. Alle regte voorbehou.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Kon nie staaf nie. Probeer weer aanmeld.</translation>
 <translation id="2803375539583399270">Voer PIN in</translation>
@@ -55,6 +57,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="369442766917958684">Vanlyn.</translation>
 <translation id="3695446226812920698">Vind uit hoe</translation>
 <translation id="3776024066357219166">Jou Chrome-afstandwerkskermsessie is verby.</translation>
+<translation id="3858860766373142691">Naam</translation>
 <translation id="3897092660631435901">Kieslys</translation>
 <translation id="3905196214175737742">Ongeldige gasheereienaardomein.</translation>
 <translation id="3931191050278863510">Gasheer gestop.</translation>
@@ -67,14 +70,16 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="4176825807642096119">Toegangkode</translation>
 <translation id="4227991223508142681">Gasheeropstellingnutsding</translation>
 <translation id="4240294130679914010">Chromoting-gasheerdeïnstalleerder</translation>
+<translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> se URL-aanstuurder</translation>
 <translation id="4277736576214464567">Die toegangkode is ongeldig. Probeer asseblief weer.</translation>
 <translation id="4281844954008187215">Diensbepalings</translation>
+<translation id="4372650392690220936">Kopiereg 2022 Die Chromium-outeurs. Alle regte voorbehou.</translation>
 <translation id="4405930547258349619">Kernbiblioteek</translation>
 <translation id="443560535555262820">Maak Toeganklikheid-voorkeure oop</translation>
 <translation id="4450893287417543264">Moenie weer wys nie</translation>
-<translation id="4512952200932940229">Kopiereg 2021 Die Chromium-outeurs. Alle regte voorbehou.</translation>
 <translation id="4513946894732546136">Terugvoer</translation>
 <translation id="4563926062592110512">Kliënt het ontkoppel: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> is nie reg opgestel nie. Kies asseblief 'n ander webblaaier en aktiveer dan weer URL-aanstuur.</translation>
 <translation id="4635770493235256822">Afstandtoestelle</translation>
 <translation id="4660011489602794167">Wys sleutelbord</translation>
 <translation id="4703799847237267011">Jou Chromoting-sessie het geëindig.</translation>
@@ -87,6 +92,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="4867841927763172006">Stuur PrtScn</translation>
 <translation id="4974476491460646149">Verbinding is gesluit vir <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Jy moet jou rekenaar eers vir afstandtoegang opstel</translation>
+<translation id="4987330545941822761">Chrome-afstandskerm kan nie die blaaier bepaal om URL'e plaaslik oop te maak nie. Kies dit asseblief uit die lys hieronder.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (vanlyn)</translation>
 <translation id="507204348399810022">Is jy seker jy wil afgeleë verbindings met <ph name="HOSTNAME" /> deaktiveer?</translation>
 <translation id="5170982930780719864">Ongeldige gasheer-ID.</translation>
@@ -94,7 +100,6 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="5222676887888702881">Meld af</translation>
 <translation id="5234764350956374838">Verwerp</translation>
 <translation id="5308380583665731573">Koppel</translation>
-<translation id="5327248766486351172">Naam</translation>
 <translation id="533625276787323658">Daar is niks om aan te koppel nie</translation>
 <translation id="5397086374758643919">Chrome-afstandwerkskerm se gasheer-deïnstalleerder</translation>
 <translation id="5419418238395129586">Laas aanlyn: <ph name="DATE" /></translation>
@@ -105,6 +110,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="5750083143895808682">Aangemeld as <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Herkoppel</translation>
 <translation id="5810269635982033450">Skerm werk soos 'n stuurpaneel</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> het toegang versoek om jou skerm te sien en jou sleutelbord en muis te beheer. Druk ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />'' as jy nie hierdie versoek verwag nie. Anders kan jy ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />'' kies om die verbinding toe te laat wanneer jy gereed is.</translation>
 <translation id="5823658491130719298">Maak Chrome oop op die rekenaar waartoe jy afstandtoegang wil kry en besoek <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Vertoonopsies</translation>
 <translation id="6033507038939587647">Sleutelbordopsies</translation>
@@ -121,6 +127,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="6612717000975622067">Stuur Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Deel</translation>
 <translation id="677755392401385740">Gasheer begin vir gebruiker: <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Helperprogram om 'n URL op die <ph name="PRODUCT_NAME" />-kliënt oop te maak</translation>
 <translation id="6939719207673461467">Wys/versteek sleutelbord.</translation>
 <translation id="6963936880795878952">Verbindings met die afgeleë rekenaar word tydelik geblokkeer omdat iemand met 'n ongeldige PIN daaraan probeer koppel het. Probeer asseblief later weer.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -133,10 +140,12 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 <translation id="7144878232160441200">Probeer weer</translation>
 <translation id="7312846573060934304">Gasheer is vanlyn.</translation>
 <translation id="7319983568955948908">Hou op deel</translation>
+<translation id="7359298090707901886">Die gekose blaaier kan nie gebruik word om URL'e op die plaaslike masjien oop te maak nie.</translation>
 <translation id="7401733114166276557">Chrome-afstandwerkskerm</translation>
 <translation id="7434397035092923453">Toegang geweier vir kliënt: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Kliënt gekoppel: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Verander rekening</translation>
+<translation id="7535110896613603182">Maak verstekprograminstellings oop</translation>
 <translation id="7628469622942688817">Onthou my PIN op hierdie toestel.</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
@@ -161,6 +170,7 @@ As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en d
 Klik "<ph name="BUTTON_NAME" />" hieronder om hierdie toestemming te verleen. Merk die blokkie langs "<ph name="SERVICE_SCRIPT_NAME" />" in die "Toeganklikheid"-voorkeurepaneel wat sal oopmaak.
 
 As "<ph name="SERVICE_SCRIPT_NAME" />" reeds gemerk is, moet jy dit ontmerk en dit dan weer merk.</translation>
+<translation id="8305209735512572429">Afstandproses vir webstawing</translation>
 <translation id="8383794970363966105">Om Chromoting te gebruik, moet jy 'n Google-rekening by jou toestel voeg.</translation>
 <translation id="8386846956409881180">Gasheer is met ongeldige OAuth-eiebewyse opgestel.</translation>
 <translation id="8397385476380433240">Gee toestemming aan <ph name="PRODUCT_NAME" /></translation>

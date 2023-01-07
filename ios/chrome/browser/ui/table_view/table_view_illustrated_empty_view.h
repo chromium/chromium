@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 @interface TableViewIllustratedEmptyView
     : UIView <ChromeEmptyTableViewBackground>
 
-// Designated initializer for a view that displays a large |image|, a |title|
-// and a |subtitle|.
+// Designated initializer for a view that displays a large `image`, a `title`
+// and a `subtitle`.
 - (instancetype)initWithFrame:(CGRect)frame
                         image:(UIImage*)image
                         title:(NSString*)title

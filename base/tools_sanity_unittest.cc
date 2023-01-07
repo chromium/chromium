@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -13,11 +13,18 @@
 #include "base/debug/asan_invalid_access.h"
 #include "base/debug/profiler.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sanitizer_buildflags.h"
 #include "base/third_party/dynamic_annotations/dynamic_annotations.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
 
 namespace base {
 
@@ -38,7 +45,7 @@ const base::subtle::Atomic32 kMagicValue = 42;
 #define HARMFUL_ACCESS_IS_NOOP
 #endif
 
-void DoReadUninitializedValue(char *ptr) {
+void DoReadUninitializedValue(volatile char *ptr) {
   // Comparison with 64 is to prevent clang from optimizing away the
   // jump -- valgrind only catches jumps and conditional moves, but clang uses
   // the borrow flag if the condition is just `*ptr == '\0'`.  We no longer
@@ -50,7 +57,7 @@ void DoReadUninitializedValue(char *ptr) {
   }
 }
 
-void ReadUninitializedValue(char *ptr) {
+void ReadUninitializedValue(volatile char *ptr) {
 #if defined(MEMORY_SANITIZER)
   EXPECT_DEATH(DoReadUninitializedValue(ptr),
                "use-of-uninitialized-value");
@@ -82,17 +89,47 @@ void WriteValueOutOfArrayBoundsRight(char *ptr, size_t size) {
 void MakeSomeErrors(char *ptr, size_t size) {
   ReadUninitializedValue(ptr);
 
-  HARMFUL_ACCESS(ReadValueOutOfArrayBoundsLeft(ptr),
-                 "2 bytes to the left");
-  HARMFUL_ACCESS(ReadValueOutOfArrayBoundsRight(ptr, size),
-                 "1 bytes to the right");
-  HARMFUL_ACCESS(WriteValueOutOfArrayBoundsLeft(ptr),
-                 "1 bytes to the left");
-  HARMFUL_ACCESS(WriteValueOutOfArrayBoundsRight(ptr, size),
-                 "0 bytes to the right");
+  HARMFUL_ACCESS(ReadValueOutOfArrayBoundsLeft(ptr), "2 bytes before");
+  HARMFUL_ACCESS(ReadValueOutOfArrayBoundsRight(ptr, size), "1 bytes after");
+  HARMFUL_ACCESS(WriteValueOutOfArrayBoundsLeft(ptr), "1 bytes before");
+  HARMFUL_ACCESS(WriteValueOutOfArrayBoundsRight(ptr, size), "0 bytes after");
 }
 
 }  // namespace
+
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) ||  \
+    defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
+    defined(UNDEFINED_SANITIZER)
+// build/sanitizers/sanitizer_options.cc defines symbols like
+// __asan_default_options which the sanitizer runtime calls if they exist
+// in the executable. If they don't, the sanitizer runtime silently uses an
+// internal default value instead. The build puts the symbol
+// _sanitizer_options_link_helper (which the sanitizer runtime doesn't know
+// about, it's a chrome thing) in that file and then tells the linker that
+// that symbol must exist. This causes sanitizer_options.cc to be part of
+// our binaries, which in turn makes sure our __asan_default_options are used.
+// We had problems with __asan_default_options not being used, so this test
+// verifies that _sanitizer_options_link_helper actually makes it into our
+// binaries.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+// TODO(https://crbug.com/1322143): Sanitizer options are currently broken
+// on Android.
+// TODO(https://crbug.com/1321584): __asan_default_options should be used
+// on Windows too, but currently isn't.
+#define MAYBE_LinksSanitizerOptions DISABLED_LinksSanitizerOptions
+#else
+#define MAYBE_LinksSanitizerOptions LinksSanitizerOptions
+#endif
+TEST(ToolsSanityTest, MAYBE_LinksSanitizerOptions) {
+  constexpr char kSym[] = "_sanitizer_options_link_helper";
+#if BUILDFLAG(IS_WIN)
+  auto sym = GetProcAddress(GetModuleHandle(nullptr), kSym);
+#else
+  void* sym = dlsym(RTLD_DEFAULT, kSym);
+#endif
+  EXPECT_TRUE(sym != nullptr);
+}
+#endif  // sanitizers
 
 // A memory leak detector should report an error in this test.
 TEST(ToolsSanityTest, MemoryLeak) {
@@ -100,21 +137,6 @@ TEST(ToolsSanityTest, MemoryLeak) {
   int* volatile leak = new int[256];  // Leak some memory intentionally.
   leak[4] = 1;  // Make sure the allocated memory is used.
 }
-
-// The following tests pass with Clang r170392, but not r172454, which
-// makes AddressSanitizer detect errors in them. We disable these tests under
-// AddressSanitizer until we fully switch to Clang r172454. After that the
-// tests should be put back under the (defined(OS_IOS) || defined(OS_WIN))
-// clause above.
-// See also http://crbug.com/172614.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_SingleElementDeletedWithBraces \
-    DISABLED_SingleElementDeletedWithBraces
-#define MAYBE_ArrayDeletedWithoutBraces DISABLED_ArrayDeletedWithoutBraces
-#else
-#define MAYBE_ArrayDeletedWithoutBraces ArrayDeletedWithoutBraces
-#define MAYBE_SingleElementDeletedWithBraces SingleElementDeletedWithBraces
-#endif  // defined(ADDRESS_SANITIZER)
 
 TEST(ToolsSanityTest, AccessesToNewMemory) {
   char* foo = new char[16];
@@ -148,6 +170,19 @@ TEST(ToolsSanityTest, AccessesToStack) {
 
 #if defined(ADDRESS_SANITIZER)
 
+// alloc_dealloc_mismatch defaults to
+// !SANITIZER_MAC && !SANITIZER_WINDOWS && !SANITIZER_ANDROID,
+// in the sanitizer runtime upstream.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_SingleElementDeletedWithBraces \
+    DISABLED_SingleElementDeletedWithBraces
+#define MAYBE_ArrayDeletedWithoutBraces DISABLED_ArrayDeletedWithoutBraces
+#else
+#define MAYBE_ArrayDeletedWithoutBraces ArrayDeletedWithoutBraces
+#define MAYBE_SingleElementDeletedWithBraces SingleElementDeletedWithBraces
+#endif  // defined(ADDRESS_SANITIZER)
+
 static int* allocateArray() {
   // Clang warns about the mismatched new[]/delete if they occur in the same
   // function.
@@ -158,11 +193,12 @@ static int* allocateArray() {
 TEST(ToolsSanityTest, MAYBE_ArrayDeletedWithoutBraces) {
   // Without the |volatile|, clang optimizes away the next two lines.
   int* volatile foo = allocateArray();
-  delete foo;
+  HARMFUL_ACCESS(delete foo, "alloc-dealloc-mismatch");
+  // Under ASan the crash happens in the process spawned by HARMFUL_ACCESS,
+  // need to free the memory in the parent.
+  delete [] foo;
 }
-#endif
 
-#if defined(ADDRESS_SANITIZER)
 static int* allocateScalar() {
   // Clang warns about the mismatched new/delete[] if they occur in the same
   // function.
@@ -174,7 +210,10 @@ TEST(ToolsSanityTest, MAYBE_SingleElementDeletedWithBraces) {
   // Without the |volatile|, clang optimizes away the next two lines.
   int* volatile foo = allocateScalar();
   (void) foo;
-  delete [] foo;
+  HARMFUL_ACCESS(delete [] foo, "alloc-dealloc-mismatch");
+  // Under ASan the crash happens in the process spawned by HARMFUL_ACCESS,
+  // need to free the memory in the parent.
+  delete foo;
 }
 #endif
 
@@ -211,18 +250,18 @@ TEST(ToolsSanityTest, DISABLED_AddressSanitizerGlobalOOBCrashTest) {
 
 #ifndef HARMFUL_ACCESS_IS_NOOP
 TEST(ToolsSanityTest, AsanHeapOverflow) {
-  HARMFUL_ACCESS(debug::AsanHeapOverflow() ,"to the right");
+  HARMFUL_ACCESS(debug::AsanHeapOverflow(), "after");
 }
 
 TEST(ToolsSanityTest, AsanHeapUnderflow) {
-  HARMFUL_ACCESS(debug::AsanHeapUnderflow(), "to the left");
+  HARMFUL_ACCESS(debug::AsanHeapUnderflow(), "before");
 }
 
 TEST(ToolsSanityTest, AsanHeapUseAfterFree) {
   HARMFUL_ACCESS(debug::AsanHeapUseAfterFree(), "heap-use-after-free");
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // The ASAN runtime doesn't detect heap corruption, this needs fixing before
 // ASAN builds can ship to the wild. See https://crbug.com/818747.
 TEST(ToolsSanityTest, DISABLED_AsanCorruptHeapBlock) {
@@ -234,7 +273,7 @@ TEST(ToolsSanityTest, DISABLED_AsanCorruptHeap) {
   // particular string to look for in the stack trace.
   EXPECT_DEATH(debug::AsanCorruptHeap(), "");
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // !HARMFUL_ACCESS_IS_NOOP
 
 namespace {
@@ -251,10 +290,10 @@ class TOOLS_SANITY_TEST_CONCURRENT_THREAD : public PlatformThread::Delegate {
     // Sleep for a few milliseconds so the two threads are more likely to live
     // simultaneously. Otherwise we may miss the report due to mutex
     // lock/unlock's inside thread creation code in pure-happens-before mode...
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
+    PlatformThread::Sleep(Milliseconds(100));
   }
  private:
-  bool *value_;
+  raw_ptr<bool> value_;
 };
 
 class ReleaseStoreThread : public PlatformThread::Delegate {
@@ -267,10 +306,10 @@ class ReleaseStoreThread : public PlatformThread::Delegate {
     // Sleep for a few milliseconds so the two threads are more likely to live
     // simultaneously. Otherwise we may miss the report due to mutex
     // lock/unlock's inside thread creation code in pure-happens-before mode...
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
+    PlatformThread::Sleep(Milliseconds(100));
   }
  private:
-  base::subtle::Atomic32 *value_;
+  raw_ptr<base::subtle::Atomic32> value_;
 };
 
 class AcquireLoadThread : public PlatformThread::Delegate {
@@ -279,11 +318,11 @@ class AcquireLoadThread : public PlatformThread::Delegate {
   ~AcquireLoadThread() override = default;
   void ThreadMain() override {
     // Wait for the other thread to make Release_Store
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
+    PlatformThread::Sleep(Milliseconds(100));
     base::subtle::Acquire_Load(value_);
   }
  private:
-  base::subtle::Atomic32 *value_;
+  raw_ptr<base::subtle::Atomic32> value_;
 };
 
 void RunInParallel(PlatformThread::Delegate *d1, PlatformThread::Delegate *d2) {
@@ -334,9 +373,9 @@ TEST(ToolsSanityTest, AtomicsAreIgnored) {
 }
 
 #if BUILDFLAG(CFI_ENFORCEMENT_TRAP)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define CFI_ERROR_MSG "EXCEPTION_ILLEGAL_INSTRUCTION"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 // TODO(pcc): Produce proper stack dumps on Android and test for the correct
 // si_code here.
 #define CFI_ERROR_MSG "^$"
@@ -414,10 +453,6 @@ TEST(ToolsSanityTest, BadUnrelatedCast) {
 #endif  // CFI_ERROR_MSG
 
 #undef CFI_ERROR_MSG
-#undef MAYBE_AccessesToNewMemory
-#undef MAYBE_AccessesToMallocMemory
-#undef MAYBE_ArrayDeletedWithoutBraces
-#undef MAYBE_SingleElementDeletedWithBraces
 #undef HARMFUL_ACCESS
 #undef HARMFUL_ACCESS_IS_NOOP
 

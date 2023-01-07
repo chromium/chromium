@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "media/cdm/api/content_decryption_module.h"
 
 namespace media {
@@ -29,6 +29,10 @@ class CdmFileAdapter : public cdm::FileIOClient {
   using WriteCB = base::OnceCallback<void(bool success)>;
 
   explicit CdmFileAdapter(CdmHostProxy* cdm_host_proxy);
+
+  CdmFileAdapter(const CdmFileAdapter&) = delete;
+  CdmFileAdapter& operator=(const CdmFileAdapter&) = delete;
+
   ~CdmFileAdapter() override;
 
   // Open the file with |name|. |open_cb| will be called when the file is
@@ -58,9 +62,7 @@ class CdmFileAdapter : public cdm::FileIOClient {
   FileOpenedCB open_cb_;
   ReadCB read_cb_;
   WriteCB write_cb_;
-  cdm::FileIO* file_io_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmFileAdapter);
+  raw_ptr<cdm::FileIO> file_io_ = nullptr;
 };
 
 }  // namespace media

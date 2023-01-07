@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -26,6 +25,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -51,6 +51,9 @@ class MojoCdm final : public ContentDecryptionModule,
           const SessionClosedCB& session_closed_cb,
           const SessionKeysChangeCB& session_keys_change_cb,
           const SessionExpirationUpdateCB& session_expiration_update_cb);
+
+  MojoCdm(const MojoCdm&) = delete;
+  MojoCdm& operator=(const MojoCdm&) = delete;
 
   // ContentDecryptionModule implementation.
   void SetServerCertificate(const std::vector<uint8_t>& certificate,
@@ -78,10 +81,10 @@ class MojoCdm final : public ContentDecryptionModule,
   // All GetDecryptor() calls must be made on the same thread.
   std::unique_ptr<CallbackRegistration> RegisterEventCB(EventCB event_cb) final;
   Decryptor* GetDecryptor() final;
-  base::Optional<base::UnguessableToken> GetCdmId() const final;
-#if defined(OS_WIN)
+  absl::optional<base::UnguessableToken> GetCdmId() const final;
+#if BUILDFLAG(IS_WIN)
   bool RequiresMediaFoundationRenderer() final;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
  private:
   ~MojoCdm() final;
@@ -93,7 +96,8 @@ class MojoCdm final : public ContentDecryptionModule,
   void OnSessionMessage(const std::string& session_id,
                         MessageType message_type,
                         const std::vector<uint8_t>& message) final;
-  void OnSessionClosed(const std::string& session_id) final;
+  void OnSessionClosed(const std::string& session_id,
+                       CdmSessionClosedReason reason) final;
   void OnSessionKeysChange(
       const std::string& session_id,
       bool has_additional_usable_key,
@@ -124,7 +128,7 @@ class MojoCdm final : public ContentDecryptionModule,
 
   // CDM ID of the remote CDM. Set after initialization is completed. Must not
   // be invalid if initialization succeeded.
-  base::Optional<base::UnguessableToken> cdm_id_ GUARDED_BY(lock_);
+  absl::optional<base::UnguessableToken> cdm_id_ GUARDED_BY(lock_);
 
   // The mojo::PendingRemote<mojom::Decryptor> exposed by the remote CDM. Set
   // after initialization is completed and cleared after |decryptor_| is
@@ -139,9 +143,9 @@ class MojoCdm final : public ContentDecryptionModule,
   scoped_refptr<base::SingleThreadTaskRunner> decryptor_task_runner_
       GUARDED_BY(lock_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool requires_media_foundation_renderer_ GUARDED_BY(lock_) = false;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Callbacks for firing session events.
   SessionMessageCB session_message_cb_;
@@ -159,8 +163,6 @@ class MojoCdm final : public ContentDecryptionModule,
 
   // This must be the last member.
   base::WeakPtrFactory<MojoCdm> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MojoCdm);
 };
 
 }  // namespace media

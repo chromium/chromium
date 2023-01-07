@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
 namespace ui {
@@ -76,6 +75,10 @@ class COMPONENT_EXPORT(EVDEV) GesturePropertyProvider {
   typedef int DeviceId;
 
   GesturePropertyProvider();
+
+  GesturePropertyProvider(const GesturePropertyProvider&) = delete;
+  GesturePropertyProvider& operator=(const GesturePropertyProvider&) = delete;
+
   ~GesturePropertyProvider();
 
   // Get a list of device ids that matches a device type. Return true if the
@@ -147,6 +150,9 @@ class COMPONENT_EXPORT(EVDEV) GesturePropertyProvider {
       const std::string& match_type,
       const std::string& arg);
 
+  // Load the DMI product name from sysfs. Returns true if successful.
+  bool LoadDmiProductName();
+
   // Create a property that comes from the conf files.
   std::unique_ptr<GesturesProp> CreateDefaultProperty(const std::string& name,
                                                       const std::string& value);
@@ -168,7 +174,10 @@ class COMPONENT_EXPORT(EVDEV) GesturePropertyProvider {
   // GesturesProps and ConfigurationSections in it.
   std::vector<std::unique_ptr<internal::ConfigurationSection>> configurations_;
 
-  DISALLOW_COPY_AND_ASSIGN(GesturePropertyProvider);
+  // The system's DMI product name.
+  std::string dmi_product_name_;
+  // Whether dmi_product_name_ has been loaded successfully yet.
+  bool dmi_product_name_loaded_ = false;
 };
 
 // Wrapper of GesturesProp related functions. We group them together so that we
@@ -266,7 +275,7 @@ class GesturesPropFunctionsWrapper {
 
 extern const GesturesPropProvider kGesturePropProvider;
 
-}  // namspace ui
+}  // namespace ui
 
 // GesturesProp logging function.
 std::ostream& operator<<(std::ostream& os, const GesturesProp& prop);
@@ -283,6 +292,10 @@ struct GesturesProp {
   GesturesProp(const std::string& name,
                const PropertyType type,
                const size_t count);
+
+  GesturesProp(const GesturesProp&) = delete;
+  GesturesProp& operator=(const GesturesProp&) = delete;
+
   virtual ~GesturesProp() {}
 
   // Variant-ish interfaces for accessing the property value. Each type of
@@ -333,8 +346,6 @@ struct GesturesProp {
   GesturesPropGetHandler get_ = nullptr;
   GesturesPropSetHandler set_ = nullptr;
   void* handler_data_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(GesturesProp);
 };
 
 #endif  // UI_EVENTS_OZONE_EVDEV_LIBGESTURES_GLUE_GESTURE_PROPERTY_PROVIDER_H_

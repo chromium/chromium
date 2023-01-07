@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,7 +98,7 @@ TEST_F(HTMLCanvasElementModuleTest, TransferControlToOffscreen) {
 // information sent to the CompositorFrameSink.
 TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   // TODO(crbug.com/922218): enable desynchronized on Mac.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // This test relies on GpuMemoryBuffers being supported and enabled for low
   // latency canvas.  The latter is true only on ChromeOS in production.
   ScopedTestingPlatformSupport<LowLatencyTestPlatform> platform;
@@ -106,9 +106,14 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   feature_list.InitAndEnableFeature(features::kLowLatencyCanvas2dImageChromium);
 
   auto context_provider = viz::TestContextProvider::Create();
+#if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
+  constexpr auto buffer_format = gfx::BufferFormat::BGRA_8888;
+#elif SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
+  constexpr auto buffer_format = gfx::BufferFormat::RGBA_8888;
+#endif
+
   context_provider->UnboundTestContextGL()
-      ->set_supports_gpu_memory_buffer_format(
-          CanvasColorParams().GetAsResourceParams().GetBufferFormat(), true);
+      ->set_supports_gpu_memory_buffer_format(buffer_format, true);
   InitializeSharedGpuContext(context_provider.get());
 
   // To intercept SubmitCompositorFrame/SubmitCompositorFrameSync messages sent

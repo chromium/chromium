@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -28,10 +27,11 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
@@ -44,12 +44,12 @@ namespace {
 // triggered animation observer is drawn. Wait 50ms in attempt to let its draw
 // and swap finish.
 constexpr base::TimeDelta kOcclusionPauseDurationForStart =
-    base::TimeDelta::FromMilliseconds(50);
+    base::Milliseconds(50);
 
 // Wait longer when exiting overview mode in case when a user may re-enter
 // overview mode immediately, contents are ready.
 constexpr base::TimeDelta kOcclusionPauseDurationForEnd =
-    base::TimeDelta::FromMilliseconds(500);
+    base::Milliseconds(500);
 
 bool IsSplitViewDividerDraggedOrAnimated() {
   SplitViewController* split_view_controller =
@@ -117,7 +117,8 @@ OverviewController::~OverviewController() {
   }
 }
 
-bool OverviewController::StartOverview(OverviewEnterExitType type) {
+bool OverviewController::StartOverview(OverviewStartAction action,
+                                       OverviewEnterExitType type) {
   // No need to start overview if overview is currently active.
   if (InOverviewSession())
     return true;
@@ -126,10 +127,12 @@ bool OverviewController::StartOverview(OverviewEnterExitType type) {
     return false;
 
   ToggleOverview(type);
+  RecordOverviewStartAction(action);
   return true;
 }
 
-bool OverviewController::EndOverview(OverviewEnterExitType type) {
+bool OverviewController::EndOverview(OverviewEndAction action,
+                                     OverviewEnterExitType type) {
   // No need to end overview if overview is already ended.
   if (!InOverviewSession())
     return true;
@@ -138,6 +141,12 @@ bool OverviewController::EndOverview(OverviewEnterExitType type) {
     return false;
 
   ToggleOverview(type);
+  RecordOverviewEndAction(action);
+
+  // If there is an undo toast active and the toast was created when ChromeVox
+  // was enabled, then we need to close the toast when overview closes.
+  DesksController::Get()->MaybeDismissPersistentDeskRemovalToast();
+
   return true;
 }
 
@@ -198,8 +207,9 @@ void OverviewController::AddExitAnimationObserver(
     std::unique_ptr<DelayedAnimationObserver> animation_observer) {
   // No delayed animations should be created when overview mode is set to exit
   // immediately.
-  DCHECK_NE(overview_session_->enter_exit_overview_type(),
-            OverviewEnterExitType::kImmediateExit);
+  DCHECK(IsCompletingShutdownAnimations() ||
+         overview_session_->enter_exit_overview_type() !=
+             OverviewEnterExitType::kImmediateExit);
 
   animation_observer->SetOwner(this);
   delayed_animations_.push_back(std::move(animation_observer));
@@ -353,13 +363,11 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       observer.OnOverviewModeEnded();
     if (!should_end_immediately && delayed_animations_.empty())
       OnEndingAnimationComplete(/*canceled=*/false);
-    Shell::Get()->frame_throttling_controller()->EndThrottling();
   } else {
     DCHECK(CanEnterOverview());
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("ui", "OverviewController::EnterOverview",
                                       this);
-    auto* active_window = window_util::GetActiveWindow();
-    if (active_window) {
+    if (auto* active_window = window_util::GetActiveWindow(); active_window) {
       auto* active_widget =
           views::Widget::GetWidgetForNativeView(active_window);
       if (active_widget)
@@ -382,9 +390,9 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     const SplitViewController::State split_view_state =
         SplitViewController::Get(Shell::GetPrimaryRootWindow())->state();
     // Prevent overview from stealing focus if |split_view_state| is
-    // |SplitViewController::State::kLeftSnapped| or
-    // |SplitViewController::State::kRightSnapped|. Here are all the cases where
-    // |split_view_state| will now have one of those two values:
+    // |SplitViewController::State::kPrimarySnapped| or
+    // |SplitViewController::State::kSecondarySnapped|. Here are all the cases
+    // where |split_view_state| will now have one of those two values:
     // 1. The active window is maximized in tablet mode. The user presses Alt+[.
     // 2. The active window is maximized in tablet mode. The user presses Alt+].
     // 3. The active window is snapped on the right in tablet split view.
@@ -401,13 +409,13 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
     // |SplitViewController::OnOverviewModeStarting|, because in case of
     // |SplitViewController::State::kBothSnapped|, that function will insert one
     // of the two snapped windows to overview.
-    if (split_view_state == SplitViewController::State::kLeftSnapped ||
-        split_view_state == SplitViewController::State::kRightSnapped) {
+    if (split_view_state == SplitViewController::State::kPrimarySnapped ||
+        split_view_state == SplitViewController::State::kSecondarySnapped) {
       should_focus_overview_ = false;
     } else {
       // Avoid stealing activation from a dragged active window.
-      aura::Window* active_window = window_util::GetActiveWindow();
-      if (active_window && WindowState::Get(active_window)->is_dragged()) {
+      if (auto* active_window = window_util::GetActiveWindow();
+          active_window && WindowState::Get(active_window)->is_dragged()) {
         DCHECK(window_util::ShouldExcludeForOverview(active_window));
         should_focus_overview_ = false;
       }
@@ -447,7 +455,7 @@ void OverviewController::ToggleOverview(OverviewEnterExitType type) {
       OnStartingAnimationComplete(/*canceled=*/false);
 
     if (!last_overview_session_time_.is_null()) {
-      UMA_HISTOGRAM_LONG_TIMES("Ash.WindowSelector.TimeBetweenUse",
+      UMA_HISTOGRAM_LONG_TIMES("Ash.Overview.TimeBetweenUse",
                                base::Time::Now() - last_overview_session_time_);
     }
   }
@@ -545,6 +553,9 @@ void OverviewController::OnEndingAnimationComplete(bool canceled) {
     overview_wallpaper_controller_->Unblur();
     paint_as_active_lock_.reset();
   }
+
+  // Ends the manual frame throttling at the end of overview exit.
+  Shell::Get()->frame_throttling_controller()->EndThrottling();
 
   TRACE_EVENT_NESTABLE_ASYNC_END1("ui", "OverviewController::ExitOverview",
                                   this, "canceled", canceled);

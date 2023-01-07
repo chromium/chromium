@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,12 @@
 
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_serialized_navigation_builder.h"
+#include "components/sessions/core/session_types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/browser_context.h"
@@ -22,11 +24,16 @@ AndroidLiveTabContext::AndroidLiveTabContext(TabModel* tab_model)
     : tab_model_(tab_model) {}
 
 // Called in tab restore service, but expected to do nothing on Android.
-void AndroidLiveTabContext::ShowBrowserWindow() {
-}
+void AndroidLiveTabContext::ShowBrowserWindow() {}
 
 SessionID AndroidLiveTabContext::GetSessionID() const {
   return tab_model_->GetSessionId();
+}
+
+sessions::SessionWindow::WindowType AndroidLiveTabContext::GetWindowType()
+    const {
+  // Not applicable to android.
+  return sessions::SessionWindow::TYPE_NORMAL;
 }
 
 int AndroidLiveTabContext::GetTabCount() const {
@@ -63,15 +70,20 @@ sessions::LiveTab* AndroidLiveTabContext::GetActiveLiveTab() const {
   return sessions::ContentLiveTab::GetForWebContents(web_contents);
 }
 
-bool AndroidLiveTabContext::IsTabPinned(int index) const {
-  // Not applicable to android.
-  return false;
+std::map<std::string, std::string> AndroidLiveTabContext::GetExtraDataForTab(
+    int index) const {
+  return std::map<std::string, std::string>();
 }
 
-base::Optional<tab_groups::TabGroupId> AndroidLiveTabContext::GetTabGroupForTab(
+std::map<std::string, std::string>
+AndroidLiveTabContext::GetExtraDataForWindow() const {
+  return std::map<std::string, std::string>();
+}
+
+absl::optional<tab_groups::TabGroupId> AndroidLiveTabContext::GetTabGroupForTab(
     int index) const {
   // Not applicable to android.
-  return base::Optional<tab_groups::TabGroupId>();
+  return absl::optional<tab_groups::TabGroupId>();
 }
 
 const tab_groups::TabGroupVisualData*
@@ -81,6 +93,11 @@ AndroidLiveTabContext::GetVisualDataForGroup(
   // be called.
   NOTREACHED();
   return nullptr;
+}
+
+bool AndroidLiveTabContext::IsTabPinned(int index) const {
+  // Not applicable to android.
+  return false;
 }
 
 void AndroidLiveTabContext::SetVisualDataForGroup(
@@ -114,23 +131,29 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
     int tab_index,
     int selected_navigation,
     const std::string& extension_app_id,
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     const tab_groups::TabGroupVisualData& group_visual_data,
     bool select,
     bool pin,
     const sessions::PlatformSpecificTabData* tab_platform_data,
     const sessions::SerializedUserAgentOverride& user_agent_override,
+    const std::map<std::string, std::string>& extra_data,
     const SessionID* tab_id) {
   Profile* profile = tab_model_->GetProfile();
 
   // Prepare navigation history.
   std::vector<std::unique_ptr<content::NavigationEntry>> nav_entries =
-        sessions::ContentSerializedNavigationBuilder::ToNavigationEntries(
-            navigations, profile);
+      sessions::ContentSerializedNavigationBuilder::ToNavigationEntries(
+          navigations, profile);
 
-  // Restore web contents with navigation history.
+  // Restore web contents with navigation history. This is used for background
+  // restore so start without a renderer.
+  auto params = content::WebContents::CreateParams(profile);
+  params.desired_renderer_state =
+      content::WebContents::CreateParams::kNoRendererProcess;
+  params.initially_hidden = true;
   std::unique_ptr<content::WebContents> web_contents =
-      content::WebContents::Create(content::WebContents::CreateParams(profile));
+      content::WebContents::Create(params);
   content::WebContents* raw_web_contents = web_contents.get();
   web_contents->GetController().Restore(
       selected_navigation, content::RestoreType::kRestored, &nav_entries);
@@ -138,20 +161,32 @@ sessions::LiveTab* AndroidLiveTabContext::AddRestoredTab(
   // Create new tab. Ownership is passed into java, which in turn creates a new
   // TabAndroid instance to own the WebContents.
   tab_model_->CreateTab(nullptr, web_contents.release());
-  raw_web_contents->GetController().LoadIfNecessary();
+  // Don't load the tab yet. This prevents a renderer from starting which keeps
+  // the tab restore lightweight as the tab is opened in the background only.
+  // The tab will be in a "renderer was lost" state. This is recovered from when
+  // the tab is made active.
   return sessions::ContentLiveTab::GetForWebContents(raw_web_contents);
 }
 
-// Currently does nothing.
 sessions::LiveTab* AndroidLiveTabContext::ReplaceRestoredTab(
     const std::vector<sessions::SerializedNavigationEntry>& navigations,
-    base::Optional<tab_groups::TabGroupId> group,
+    absl::optional<tab_groups::TabGroupId> group,
     int selected_navigation,
     const std::string& extension_app_id,
     const sessions::PlatformSpecificTabData* tab_platform_data,
-    const sessions::SerializedUserAgentOverride& user_agent_override) {
-  NOTIMPLEMENTED();
-  return nullptr;
+    const sessions::SerializedUserAgentOverride& user_agent_override,
+    const std::map<std::string, std::string>& extra_data) {
+  // Prepare navigation history.
+  sessions::SessionTab session_tab;
+  session_tab.current_navigation_index = selected_navigation;
+  session_tab.navigations = navigations;
+
+  // This is called only on replacement of the current tab.
+  content::WebContents* web_contents = tab_model_->GetActiveWebContents();
+  web_contents = SessionRestore::RestoreForeignSessionTab(
+      web_contents, session_tab, WindowOpenDisposition::CURRENT_TAB);
+  web_contents->GetController().LoadIfNecessary();
+  return sessions::ContentLiveTab::GetForWebContents(web_contents);
 }
 
 // Currently does nothing.

@@ -1,22 +1,23 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/fetch/multipart_parser.h"
 
+#include <string.h>
+
+#include <algorithm>
+
+#include "base/numerics/safe_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-
-#include <string.h>
-#include <algorithm>
 
 namespace blink {
 
 namespace {
 
 String toString(const Vector<char>& data) {
-  if (data.IsEmpty())
+  if (data.empty())
     return String("");
   return String(data.data(), data.size());
 }
@@ -38,7 +39,7 @@ class MockMultipartParserClient final
     parts_.push_back(header_fields);
   }
   void PartDataInMultipartReceived(const char* bytes, size_t size) override {
-    parts_.back().data.Append(bytes, SafeCast<wtf_size_t>(size));
+    parts_.back().data.Append(bytes, base::checked_cast<wtf_size_t>(size));
   }
   void PartDataInMultipartFullyReceived() override {
     parts_.back().data_fully_received = true;

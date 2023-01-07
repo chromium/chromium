@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,10 @@
 
 #include <jni.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "net/nqe/effective_connection_type.h"
 
 namespace network {
 class NetworkQualityTracker;
@@ -22,11 +24,24 @@ class AndroidPageLoadMetricsObserver
  public:
   AndroidPageLoadMetricsObserver();
 
+  AndroidPageLoadMetricsObserver(const AndroidPageLoadMetricsObserver&) =
+      delete;
+  AndroidPageLoadMetricsObserver& operator=(
+      const AndroidPageLoadMetricsObserver&) = delete;
+
   // page_load_metrics::PageLoadMetricsObserver:
-  // PageLoadMetricsObserver lifecycle callbacks
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                         const GURL& currently_committed_url,
                         bool started_in_foreground) override;
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
+
+  // PageLoadMetricsObserver lifecycle callbacks
+  void DidActivatePrerenderedPage(
+      content::NavigationHandle* navigation_handle) override;
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy OnHidden(
@@ -51,7 +66,9 @@ class AndroidPageLoadMetricsObserver
       network::NetworkQualityTracker* network_quality_tracker)
       : network_quality_tracker_(network_quality_tracker) {}
 
-  virtual void ReportNewNavigation();
+  virtual void ReportNewNavigation(int64_t navigation_id);
+  virtual void ReportActivation(int64_t activating_navigation_id,
+                                base::TimeTicks activation_start_tick);
 
   virtual void ReportBufferedMetrics(
       const page_load_metrics::mojom::PageLoadTiming& timing);
@@ -61,14 +78,16 @@ class AndroidPageLoadMetricsObserver
       int64_t http_rtt_ms,
       int64_t transport_rtt_ms);
 
-  virtual void ReportFirstContentfulPaint(int64_t navigation_start_tick,
-                                          int64_t first_contentful_paint_ms);
+  virtual void ReportFirstContentfulPaint(
+      base::TimeTicks navigation_start_tick,
+      base::TimeDelta first_contentful_paint);
 
-  virtual void ReportFirstMeaningfulPaint(int64_t navigation_start_tick,
-                                          int64_t first_meaningful_paint_ms);
+  virtual void ReportFirstMeaningfulPaint(
+      base::TimeTicks navigation_start_tick,
+      base::TimeDelta first_meaningful_paint);
 
-  virtual void ReportLoadEventStart(int64_t navigation_start_tick,
-                                    int64_t load_event_start_ms);
+  virtual void ReportLoadEventStart(base::TimeTicks navigation_start_tick,
+                                    base::TimeDelta load_event_start);
 
   virtual void ReportLoadedMainResource(int64_t dns_start_ms,
                                         int64_t dns_end_ms,
@@ -78,16 +97,16 @@ class AndroidPageLoadMetricsObserver
                                         int64_t send_start_ms,
                                         int64_t send_end_ms);
 
-  virtual void ReportFirstInputDelay(int64_t first_input_delay_ms);
+  virtual void ReportFirstInputDelay(base::TimeDelta first_input_delay);
 
  private:
+  bool IsPrerendering();
+
   bool did_dispatch_on_main_resource_ = false;
   bool reported_buffered_metrics_ = false;
   int64_t navigation_id_ = -1;
 
-  network::NetworkQualityTracker* network_quality_tracker_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidPageLoadMetricsObserver);
+  raw_ptr<network::NetworkQualityTracker> network_quality_tracker_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_ANDROID_PAGE_LOAD_METRICS_OBSERVER_H_

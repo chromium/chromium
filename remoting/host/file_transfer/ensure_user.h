@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ namespace remoting {
 // user is on the log-in screen, an error of type NOT_LOGGED_IN will be
 // returned. If something else goes wrong, the error type will be
 // UNEXPECTED_ERROR.
-protocol::FileTransferResult<Monostate> EnsureUserContext();
+protocol::FileTransferResult<absl::monostate> EnsureUserContext();
 
 }  // namespace remoting
 

@@ -1,25 +1,25 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/json/json_string_value_serializer.h"
-#include "base/strings/string_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/enterprise/browser/enterprise_switches.h"
+#import "base/json/json_string_value_serializer.h"
+#import "base/strings/string_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/enterprise/browser/enterprise_switches.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
-#include "components/policy/policy_constants.h"
-#include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/chrome_switches.h"
+#import "components/policy/policy_constants.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
-#include "ios/chrome/browser/pref_names.h"
-#include "ios/chrome/test/earl_grey/chrome_earl_grey.h"
-#include "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/testing/earl_grey/app_launch_configuration.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,21 +38,11 @@ std::unique_ptr<base::Value> GetPlatformPolicy(const std::string& key) {
 }
 
 // Returns an AppLaunchConfiguration containing the given policy data.
-// |policy_data| must be in XML format. |policy_data| is passed to the
-// application regardless of whether |disable_policy| is true or false..
+// `policy_data` must be in XML format. `policy_data` is passed to the
+// application regardless of whether `disable_policy` is true or false..
 AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
-                                                      bool disable_policy,
                                                       bool enable_cbcm) {
   AppLaunchConfiguration config;
-
-  if (disable_policy) {
-    config.additional_args.push_back(std::string("--") +
-                                     switches::kDisableEnterprisePolicy);
-  } else {
-    config.additional_args.push_back(std::string("--") +
-                                     switches::kEnableEnterprisePolicy);
-  }
-
   if (enable_cbcm) {
     config.additional_args.push_back(
         std::string("--") + switches::kEnableChromeBrowserCloudManagement);
@@ -97,7 +87,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
                            "    <key>SearchSuggestEnabled</key>"
                            "    <false/>"
                            "</dict>";
-  return GenerateAppLaunchConfiguration(policyData, /*disable_policy=*/false,
+  return GenerateAppLaunchConfiguration(policyData,
                                         /*enable_cbcm*/ false);
 }
 
@@ -122,7 +112,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
 // set.
 - (void)testPolicyNotSet {
   std::unique_ptr<base::Value> blocklistValue =
-      GetPlatformPolicy(policy::key::kURLBlacklist);
+      GetPlatformPolicy(policy::key::kURLBlocklist);
   GREYAssertTrue(blocklistValue && blocklistValue->is_none(),
                  @"blocklistValue was unexpectedly present");
 }
@@ -140,45 +130,6 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
 
 @end
 
-// Test case that uses the production platform policy provider and explicitly
-// disables policy.
-@interface PolicyDisabledTestCase : ChromeTestCase
-@end
-
-@implementation PolicyDisabledTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  std::string policyData = "<dict>"
-                           "    <key>EnableExperimentalPolicies</key>"
-                           "    <array>"
-                           "      <string>DefaultSearchProviderName</string>"
-                           "    </array>"
-                           "    <key>DefaultSearchProviderName</key>"
-                           "    <string>Test</string>"
-                           "</dict>";
-  return GenerateAppLaunchConfiguration(policyData, /*disable_policy=*/true,
-                                        /*enable_cbcm*/ false);
-}
-
-// Tests that about:policy is not available when policy is disabled. Also serves
-// as a test that the browser does not crash on startup with policy disabled.
-- (void)testAboutPolicyNotAvailable {
-  [ChromeEarlGrey loadURL:GURL("chrome://policy")];
-  [ChromeEarlGrey
-      waitForWebStateContainingText:l10n_util::GetStringUTF8(
-                                        IDS_ERRORPAGES_HEADING_NOT_AVAILABLE)];
-}
-
-// Tests that policies are not loaded when policy is disabled.
-- (void)testPoliciesAreNotLoaded {
-  std::unique_ptr<base::Value> searchValue =
-      GetPlatformPolicy(policy::key::kDefaultSearchProviderName);
-  GREYAssertTrue(searchValue && searchValue->is_none(),
-                 @"searchValue was unexpectedly set");
-}
-
-@end
-
 // Test case that enables CBCM.
 @interface CBCMEnabledTestCase : ChromeTestCase
 @end
@@ -190,7 +141,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
                            "    <key>SearchSuggestEnabled</key>"
                            "    <false/>"
                            "</dict>";
-  return GenerateAppLaunchConfiguration(policyData, /*disable_policy=*/false,
+  return GenerateAppLaunchConfiguration(policyData,
                                         /*enable_cbcm=*/true);
 }
 
@@ -204,7 +155,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
   GREYAssertFalse(suggestValue->GetBool(),
                   @"suggestValue had an unexpected value");
 
-  [ChromeEarlGrey loadURL:GURL("chrome://policy")];
+  [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyURL)];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_POLICY_SHOW_UNSET)];
 }
@@ -222,7 +173,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
                            "    <key>SearchSuggestEnabled</key>"
                            "    <false/>"
                            "</dict>";
-  return GenerateAppLaunchConfiguration(policyData, /*disable_policy=*/false,
+  return GenerateAppLaunchConfiguration(policyData,
                                         /*enable_cbcm=*/false);
 }
 
@@ -236,7 +187,7 @@ AppLaunchConfiguration GenerateAppLaunchConfiguration(std::string policy_data,
   GREYAssertFalse(suggestValue->GetBool(),
                   @"suggestValue had an unexpected value");
 
-  [ChromeEarlGrey loadURL:GURL("chrome://policy")];
+  [ChromeEarlGrey loadURL:GURL(kChromeUIPolicyURL)];
   [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
                                                     IDS_POLICY_SHOW_UNSET)];
 }

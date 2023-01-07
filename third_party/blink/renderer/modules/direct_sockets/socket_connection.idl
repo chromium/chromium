@@ -1,0 +1,14 @@
+dictionary SocketOpenInfo {
+  ReadableStream readable;
+  WritableStream writable;
+
+  DOMString remoteAddress;
+  unsigned short remotePort;
+
+  DOMString localAddress;
+  unsigned short localPort;
+};
+
+dictionary TCPSocketOpenInfo : SocketOpenInfo {};
+
+dictionary UDPSocketOpenInfo : SocketOpenInfo {};

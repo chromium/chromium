@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "ui/ozone/public/hardware_capabilities.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
 namespace ui {
@@ -26,6 +27,18 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlayCandidatesOzone {
   // the implementation must also snap |display_rect| to integer coordinates
   // if necessary.
   virtual void CheckOverlaySupport(OverlaySurfaceCandidateList* surfaces);
+
+  // Register `receive_callback` to be called with the latest
+  // HardwareCapbalitites, whenever displays are configured.
+  // `receive_callback` may be called once after OverlayCandidatesOzone is
+  // destroyed if there is an in-flight callback, so it should be bound with a
+  // WeakPtr.
+  virtual void ObserveHardwareCapabilities(
+      ui::HardwareCapabilitiesCallback receive_callback);
+
+  // This should be invoked during overlay processing to indicate if there are
+  // any candidates for this processor that have an overlay requirement.
+  virtual void RegisterOverlayRequirement(bool requires_overlay) {}
 
   virtual ~OverlayCandidatesOzone();
 };

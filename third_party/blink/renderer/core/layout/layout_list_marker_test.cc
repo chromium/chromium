@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -20,8 +19,6 @@ class LayoutListMarkerTest : public RenderingTest,
 
 // https://crbug.com/1167174
 TEST_F(LayoutListMarkerTest, ListStyleTypeNoneTextAlternative) {
-  ScopedCSSAtRuleCounterStyleForTest scope(true);
-
   SetBodyInnerHTML(R"HTML(
     <style>
       li {

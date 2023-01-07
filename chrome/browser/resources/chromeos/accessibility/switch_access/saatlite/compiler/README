@@ -1,0 +1,10 @@
+# Instructions to Rebuild the Parser
+
+After making changes to the parser.jison or lexer.jisonlex files, follow the
+below instructions to rebuild the parser.js module.
+
+1. Install node (`apt install nodejs`)
+2. Install npm (`apt install npm`)
+3. Install npx (`npm install npx`)
+4. (Optional) Ensure the old parser is removed (`make clean`)
+5. Build the parser (`make parser`)

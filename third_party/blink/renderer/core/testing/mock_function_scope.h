@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,14 +28,13 @@ class MockFunctionScope {
   v8::Local<v8::Function> ExpectNoCall();
 
  private:
-  class MockFunction : public ScriptFunction {
+  class MockFunction : public ScriptFunction::Callable {
    public:
-    explicit MockFunction(ScriptState*);
+    MockFunction();
     // TODO(http://crbug.com/1159794): add other convenience methods that allow
     // the test case to capture non-String values.
     MockFunction(ScriptState*, String* captor);
-    v8::Local<v8::Function> Bind();
-    MOCK_METHOD1(Call, ScriptValue(ScriptValue));
+    MOCK_METHOD2(Call, ScriptValue(ScriptState*, ScriptValue));
   };
 
   ScriptState* script_state_;

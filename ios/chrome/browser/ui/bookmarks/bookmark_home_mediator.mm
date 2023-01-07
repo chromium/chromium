@@ -1,38 +1,40 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_mediator.h"
 
-#include "base/check.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
-#include "components/bookmarks/browser/titled_url_match.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
-#include "components/bookmarks/managed/managed_bookmark_service.h"
+#import "base/check.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_utils.h"
+#import "components/bookmarks/browser/titled_url_match.h"
+#import "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/bookmarks/managed/managed_bookmark_service.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
+#import "components/prefs/pref_change_registrar.h"
+#import "components/prefs/pref_service.h"
+#import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/bookmarks/managed_bookmark_service_factory.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
+#import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_consumer.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_home_shared_state.h"
-#include "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_promo_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_home_node_item.h"
 #import "ios/chrome/browser/ui/bookmarks/synced_bookmarks_bridge.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
-#include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/signin/signin_presenter.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -73,6 +75,9 @@ const int kMaxBookmarksSearchResults = 50;
 // controller.
 @property(nonatomic, strong) BookmarkPromoController* bookmarkPromoController;
 
+// Sync service.
+@property(nonatomic, assign) syncer::SyncService* syncService;
+
 @end
 
 @implementation BookmarkHomeMediator
@@ -109,17 +114,22 @@ const int kMaxBookmarksSearchResults = 50;
   _prefChangeRegistrar->Init(self.browserState->GetPrefs());
   _prefObserverBridge.reset(new PrefObserverBridge(self));
 
-    _prefObserverBridge->ObserveChangesForPreference(
-        bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
+  _prefObserverBridge->ObserveChangesForPreference(
+      bookmarks::prefs::kEditBookmarksEnabled, _prefChangeRegistrar.get());
 
-    _prefObserverBridge->ObserveChangesForPreference(
-        bookmarks::prefs::kManagedBookmarks, _prefChangeRegistrar.get());
+  _prefObserverBridge->ObserveChangesForPreference(
+      bookmarks::prefs::kManagedBookmarks, _prefChangeRegistrar.get());
+
+  _syncService = SyncServiceFactory::GetForBrowserState(self.browserState);
 
   [self computePromoTableViewData];
   [self computeBookmarkTableViewData];
 }
 
 - (void)disconnect {
+  [_bookmarkPromoController shutdown];
+  _bookmarkPromoController = nil;
+
   _modelBridge = nullptr;
   _syncedBookmarksObserver = nullptr;
   self.browserState = nullptr;
@@ -176,8 +186,7 @@ const int kMaxBookmarksSearchResults = 50;
 // root.
 - (void)generateTableViewDataForRootNode {
   // If all the permanent nodes are empty, do not create items for any of them.
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates) &&
-      ![self hasBookmarksOrFolders]) {
+  if (![self hasBookmarksOrFolders]) {
     return;
   }
 
@@ -257,7 +266,7 @@ const int kMaxBookmarksSearchResults = 50;
     TableViewTextItem* item =
         [[TableViewTextItem alloc] initWithType:BookmarkHomeItemTypeMessage];
     item.textAlignment = NSTextAlignmentLeft;
-    item.textColor = UIColor.cr_labelColor;
+    item.textColor = [UIColor colorNamed:kTextPrimaryColor];
     item.text = noResults;
     [self.sharedState.tableViewModel
                         addItem:item
@@ -278,8 +287,7 @@ const int kMaxBookmarksSearchResults = 50;
         _syncedBookmarksObserver->IsPerformingInitialSync()) {
       [self.consumer
           updateTableViewBackgroundStyle:BookmarkHomeBackgroundStyleLoading];
-    } else if (base::FeatureList::IsEnabled(kIllustratedEmptyStates) &&
-               ![self hasBookmarksOrFolders]) {
+    } else if (![self hasBookmarksOrFolders]) {
       [self.consumer
           updateTableViewBackgroundStyle:BookmarkHomeBackgroundStyleEmpty];
     } else {
@@ -307,7 +315,8 @@ const int kMaxBookmarksSearchResults = 50;
   BOOL promoVisible = ((self.sharedState.tableViewDisplayedRootNode ==
                         self.sharedState.bookmarkModel->root_node()) &&
                        self.bookmarkPromoController.shouldShowSigninPromo &&
-                       !self.sharedState.currentlyShowingSearchResults);
+                       !self.sharedState.currentlyShowingSearchResults) &&
+                      !self.isSyncDisabledByAdministrator;
 
   if (promoVisible == self.sharedState.promoVisible) {
     return;
@@ -351,9 +360,7 @@ const int kMaxBookmarksSearchResults = 50;
   [self.sharedState.tableView reloadData];
   // Update the TabelView background to make sure the new state of the promo
   // does not affect the background.
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates)) {
-    [self updateTableViewBackground];
-  }
+  [self updateTableViewBackground];
 }
 
 #pragma mark - BookmarkModelBridgeObserver Callbacks
@@ -405,7 +412,7 @@ const int kMaxBookmarksSearchResults = 50;
   }
 }
 
-// |node| was deleted from |folder|.
+// `node` was deleted from `folder`.
 - (void)bookmarkNodeDeleted:(const BookmarkNode*)node
                  fromFolder:(const BookmarkNode*)folder {
   if (self.sharedState.currentlyShowingSearchResults) {
@@ -495,7 +502,8 @@ const int kMaxBookmarksSearchResults = 50;
   // Permanent nodes ("Bookmarks Bar", "Other Bookmarks") at the root node might
   // be added after syncing.  So we need to refresh here.
   if (self.sharedState.tableViewDisplayedRootNode ==
-      self.sharedState.bookmarkModel->root_node()) {
+          self.sharedState.bookmarkModel->root_node() ||
+      self.isSyncDisabledByAdministrator) {
     [self.consumer refreshContents];
     return;
   }
@@ -516,9 +524,8 @@ const int kMaxBookmarksSearchResults = 50;
 #pragma mark - Private Helpers
 
 - (BOOL)hasBookmarksOrFolders {
-  if (base::FeatureList::IsEnabled(kIllustratedEmptyStates) &&
-      self.sharedState.tableViewDisplayedRootNode ==
-          self.sharedState.bookmarkModel->root_node()) {
+  if (self.sharedState.tableViewDisplayedRootNode ==
+      self.sharedState.bookmarkModel->root_node()) {
     // The root node always has its permanent nodes. If all the permanent nodes
     // are empty, we treat it as if the root itself is empty.
     const auto& childrenOfRootNode =
@@ -534,7 +541,7 @@ const int kMaxBookmarksSearchResults = 50;
          !self.sharedState.tableViewDisplayedRootNode->children().empty();
 }
 
-// Delete all items for the given |sectionIdentifier| section, or create it
+// Delete all items for the given `sectionIdentifier` section, or create it
 // if it doesn't exist, hence ensuring the section exists and is empty.
 - (void)deleteAllItemsOrAddSectionWithIdentifier:(NSInteger)sectionIdentifier {
   if ([self.sharedState.tableViewModel
@@ -547,4 +554,14 @@ const int kMaxBookmarksSearchResults = 50;
   }
 }
 
+// Returns YES if the user cannot turn on sync for enterprise policy reasons.
+- (BOOL)isSyncDisabledByAdministrator {
+  DCHECK(self.syncService);
+  bool syncDisabledPolicy = self.syncService->GetDisableReasons().Has(
+      syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY);
+  PrefService* prefService = self.browserState->GetPrefs();
+  bool syncTypesDisabledPolicy =
+      IsManagedSyncDataType(prefService, SyncSetupService::kSyncBookmarks);
+  return syncDisabledPolicy || syncTypesDisabledPolicy;
+}
 @end

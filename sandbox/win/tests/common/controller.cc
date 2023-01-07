@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <string>
 
+#include "base/check.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/process/process.h"
@@ -13,15 +15,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
-#include "sandbox/win/src/app_container_profile.h"
+#include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/sandbox_factory.h"
 
 namespace {
-
-static const int kDefaultTimeout = 60000;
 
 bool IsProcessRunning(HANDLE process) {
   DWORD exit_code = 0;
@@ -71,10 +73,9 @@ std::wstring MakePathToSysWow64(const wchar_t* name, bool is_obj_man_path) {
 }
 
 std::wstring MakePathToSys(const wchar_t* name, bool is_obj_man_path) {
-  return (base::win::OSInfo::GetInstance()->wow64_status() ==
-      base::win::OSInfo::WOW64_ENABLED) ?
-      MakePathToSysWow64(name, is_obj_man_path) :
-      MakePathToSys32(name, is_obj_man_path);
+  return (base::win::OSInfo::GetInstance()->IsWowX86OnAMD64())
+             ? MakePathToSysWow64(name, is_obj_man_path)
+             : MakePathToSys32(name, is_obj_man_path);
 }
 
 BrokerServices* GetBroker() {
@@ -105,7 +106,7 @@ TestRunner::TestRunner(JobLevel job_level,
       target_process_id_(0) {
   broker_ = nullptr;
   policy_.reset();
-  timeout_ = kDefaultTimeout;
+  timeout_ = TestTimeouts::test_launcher_timeout();
   state_ = AFTER_REVERT;
   is_async_= false;
   kill_on_destruction_ = true;
@@ -119,14 +120,20 @@ TestRunner::TestRunner(JobLevel job_level,
   if (!policy_)
     return;
 
-  policy_->SetJobLevel(job_level, 0);
-  policy_->SetTokenLevel(startup_token, main_token);
+  auto result = policy_->GetConfig()->SetJobLevel(job_level, 0);
+  if (result != SBOX_ALL_OK)
+    return;
+  result = policy_->GetConfig()->SetTokenLevel(startup_token, main_token);
+  if (result != SBOX_ALL_OK)
+    return;
 
   is_init_ = true;
 }
 
 TestRunner::TestRunner()
-    : TestRunner(JOB_LOCKDOWN, USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN) {}
+    : TestRunner(JobLevel::kLockdown,
+                 USER_RESTRICTED_SAME_ACCESS,
+                 USER_LOCKDOWN) {}
 
 TargetPolicy* TestRunner::GetPolicy() {
   return policy_.get();
@@ -137,17 +144,20 @@ TestRunner::~TestRunner() {
     ::TerminateProcess(target_process_.Get(), 0);
 }
 
-bool TestRunner::AddRule(TargetPolicy::SubSystem subsystem,
-                         TargetPolicy::Semantics semantics,
+bool TestRunner::AddRule(SubSystem subsystem,
+                         Semantics semantics,
                          const wchar_t* pattern) {
   if (!is_init_)
     return false;
 
-  return (SBOX_ALL_OK == policy_->AddRule(subsystem, semantics, pattern));
+  if (policy_->GetConfig()->IsConfigured())
+    return false;
+
+  return (SBOX_ALL_OK ==
+          policy_->GetConfig()->AddRule(subsystem, semantics, pattern));
 }
 
-bool TestRunner::AddRuleSys32(TargetPolicy::Semantics semantics,
-                              const wchar_t* pattern) {
+bool TestRunner::AddRuleSys32(Semantics semantics, const wchar_t* pattern) {
   if (!is_init_)
     return false;
 
@@ -155,31 +165,28 @@ bool TestRunner::AddRuleSys32(TargetPolicy::Semantics semantics,
   if (win32_path.empty())
     return false;
 
-  if (!AddRule(TargetPolicy::SUBSYS_FILES, semantics, win32_path.c_str()))
+  if (!AddRule(SubSystem::kFiles, semantics, win32_path.c_str()))
     return false;
 
-  if (base::win::OSInfo::GetInstance()->wow64_status() !=
-      base::win::OSInfo::WOW64_ENABLED)
+  if (!base::win::OSInfo::GetInstance()->IsWowX86OnAMD64())
     return true;
 
   win32_path = MakePathToSysWow64(pattern, false);
   if (win32_path.empty())
     return false;
 
-  return AddRule(TargetPolicy::SUBSYS_FILES, semantics, win32_path.c_str());
+  return AddRule(SubSystem::kFiles, semantics, win32_path.c_str());
 }
 
-bool TestRunner::AddFsRule(TargetPolicy::Semantics semantics,
-                           const wchar_t* pattern) {
+bool TestRunner::AddFsRule(Semantics semantics, const wchar_t* pattern) {
   if (!is_init_)
     return false;
 
-  return AddRule(TargetPolicy::SUBSYS_FILES, semantics, pattern);
+  return AddRule(SubSystem::kFiles, semantics, pattern);
 }
 
 int TestRunner::RunTest(const wchar_t* command) {
-  if (MAX_STATE > 10)
-    return SBOX_TEST_INVALID_PARAMETER;
+  DCHECK_LE(MAX_STATE, 10);
 
   wchar_t state_number[2];
   state_number[0] = static_cast<wchar_t>(L'0' + state_);
@@ -203,15 +210,18 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
     target_process_id_ = 0;
   }
 
-  if (disable_csrss_)
-    policy_->SetDisconnectCsrss();
+  ResultCode result = SBOX_ALL_OK;
+  if (disable_csrss_) {
+    result = policy_->GetConfig()->SetDisconnectCsrss();
+    if (result != SBOX_ALL_OK)
+      return SBOX_TEST_FAILED_SETUP;
+  }
 
   // Get the path to the sandboxed process.
   wchar_t prog_name[MAX_PATH];
   GetModuleFileNameW(NULL, prog_name, MAX_PATH);
 
   // Launch the sandboxed process.
-  ResultCode result = SBOX_ALL_OK;
   ResultCode warning_result = SBOX_ALL_OK;
   DWORD last_error = ERROR_SUCCESS;
   PROCESS_INFORMATION target = {0};
@@ -229,14 +239,22 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
       return SBOX_ERROR_GENERIC;
     }
   } else {
-    result = broker_->SpawnTarget(prog_name, arguments.c_str(), policy_,
-                                  &warning_result, &last_error, &target);
+    result =
+        broker_->SpawnTarget(prog_name, arguments.c_str(), std::move(policy_),
+                             &warning_result, &last_error, &target);
   }
-  if (release_policy_in_run_)
-    policy_ = nullptr;
 
   if (SBOX_ALL_OK != result)
     return SBOX_TEST_FAILED_TO_RUN_TEST;
+
+  FILETIME creation_time, exit_time, kernel_time, user_time;
+  // Can never fail. If it does, then something really bad has happened.
+  CHECK(::GetProcessTimes(target.hProcess, &creation_time, &exit_time,
+                          &kernel_time, &user_time));
+
+  // Execution times should be zero. If not, something has changed in Windows.
+  CHECK_EQ(0, base::TimeDelta::FromFileTime(user_time).InMicroseconds());
+  CHECK_EQ(0, base::TimeDelta::FromFileTime(kernel_time).InMicroseconds());
 
   ::ResumeThread(target.hThread);
 
@@ -250,10 +268,10 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
 
   if (::IsDebuggerPresent()) {
     // Don't kill the target process on a time-out while we are debugging.
-    timeout_ = INFINITE;
+    timeout_ = base::TimeDelta::Max();
   }
 
-  if (WAIT_TIMEOUT == ::WaitForSingleObject(target.hProcess, timeout_)) {
+  if (WAIT_TIMEOUT == ::WaitForSingleObject(target.hProcess, timeout_ms())) {
     ::TerminateProcess(target.hProcess, static_cast<UINT>(SBOX_TEST_TIMED_OUT));
     ::CloseHandle(target.hProcess);
     ::CloseHandle(target.hThread);
@@ -274,7 +292,24 @@ int TestRunner::InternalRunTest(const wchar_t* command) {
 }
 
 void TestRunner::SetTimeout(DWORD timeout_ms) {
-  timeout_ = timeout_ms;
+  SetTimeout(timeout_ms == INFINITE ? base::TimeDelta::Max()
+                                    : base::Milliseconds(timeout_ms));
+}
+
+void TestRunner::SetTimeout(base::TimeDelta timeout) {
+  // We do not take -ve timeouts.
+  DCHECK(timeout >= base::TimeDelta());
+  // We need millisecond DWORDS but also cannot take exactly INFINITE,
+  // for that should supply ::Max().
+  DCHECK(timeout.is_inf() || timeout < base::Milliseconds(UINT_MAX));
+  timeout_ = timeout;
+}
+
+DWORD TestRunner::timeout_ms() {
+  if (timeout_.is_inf())
+    return INFINITE;
+  else
+    return static_cast<DWORD>(timeout_.InMilliseconds());
 }
 
 void TestRunner::SetTestState(SboxTestsState desired_state) {

@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "minidump/minidump_stream_writer.h"
 #include "minidump/minidump_writable.h"
 #include "snapshot/memory_snapshot.h"
@@ -37,6 +36,11 @@ class SnapshotMinidumpMemoryWriter : public internal::MinidumpWritable,
                                      public MemorySnapshot::Delegate {
  public:
   explicit SnapshotMinidumpMemoryWriter(const MemorySnapshot* memory_snapshot);
+
+  SnapshotMinidumpMemoryWriter(const SnapshotMinidumpMemoryWriter&) = delete;
+  SnapshotMinidumpMemoryWriter& operator=(const SnapshotMinidumpMemoryWriter&) =
+      delete;
+
   ~SnapshotMinidumpMemoryWriter() override;
 
   //! \brief Returns a MINIDUMP_MEMORY_DESCRIPTOR referencing the data that this
@@ -111,8 +115,6 @@ class SnapshotMinidumpMemoryWriter : public internal::MinidumpWritable,
   std::vector<MINIDUMP_MEMORY_DESCRIPTOR*> registered_memory_descriptors_;
   const MemorySnapshot* memory_snapshot_;
   FileWriterInterface* file_writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SnapshotMinidumpMemoryWriter);
 };
 
 //! \brief The writer for a MINIDUMP_MEMORY_LIST stream in a minidump file,
@@ -120,6 +122,10 @@ class SnapshotMinidumpMemoryWriter : public internal::MinidumpWritable,
 class MinidumpMemoryListWriter final : public internal::MinidumpStreamWriter {
  public:
   MinidumpMemoryListWriter();
+
+  MinidumpMemoryListWriter(const MinidumpMemoryListWriter&) = delete;
+  MinidumpMemoryListWriter& operator=(const MinidumpMemoryListWriter&) = delete;
+
   ~MinidumpMemoryListWriter() override;
 
   //! \brief Adds a concrete initialized SnapshotMinidumpMemoryWriter for each
@@ -197,8 +203,6 @@ class MinidumpMemoryListWriter final : public internal::MinidumpStreamWriter {
       snapshots_created_during_merge_;
   std::vector<SnapshotMinidumpMemoryWriter*> all_memory_writers_;  // weak
   MINIDUMP_MEMORY_LIST memory_list_base_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpMemoryListWriter);
 };
 
 }  // namespace crashpad

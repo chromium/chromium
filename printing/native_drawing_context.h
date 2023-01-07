@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,17 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
-#include <windows.h>
-#elif defined(OS_MAC)
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_types.h"
+#elif BUILDFLAG(IS_MAC)
 typedef struct CGContext* CGContextRef;
 #endif
 
 namespace printing {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef HDC NativeDrawingContext;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 typedef CGContextRef NativeDrawingContext;
 #else
 typedef void* NativeDrawingContext;

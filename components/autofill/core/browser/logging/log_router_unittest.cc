@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/logging/log_router.h"
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/logging/log_receiver.h"
 #include "components/autofill/core/browser/logging/stub_log_manager.h"
@@ -23,20 +22,20 @@ class MockLogReceiver : public LogReceiver {
  public:
   MockLogReceiver() = default;
 
-  MOCK_METHOD1(LogEntry, void(const base::Value&));
+  MockLogReceiver(const MockLogReceiver&) = delete;
+  MockLogReceiver& operator=(const MockLogReceiver&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockLogReceiver);
+  MOCK_METHOD(void, LogEntry, (const base::Value::Dict&), (override));
 };
 
 class MockLogManager : public StubLogManager {
  public:
   MockLogManager() = default;
 
-  MOCK_METHOD1(OnLogRouterAvailabilityChanged, void(bool));
+  MockLogManager(const MockLogManager&) = delete;
+  MockLogManager& operator=(const MockLogManager&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockLogManager);
+  MOCK_METHOD(void, OnLogRouterAvailabilityChanged, (bool), (override));
 };
 
 }  // namespace
@@ -48,57 +47,23 @@ class LogRouterTest : public testing::Test {
   testing::StrictMock<MockLogManager> manager_;
 };
 
-TEST_F(LogRouterTest, ProcessLog_NoReceiver) {
-  LogRouter router;
-  EXPECT_EQ(std::vector<base::Value>(), router.RegisterReceiver(&receiver_));
-  base::Value log_entry = LogRouter::CreateEntryForText(kTestText);
-  EXPECT_CALL(receiver_, LogEntry(testing::Eq(testing::ByRef(log_entry))))
-      .Times(1);
-  router.ProcessLog(kTestText);
-  router.UnregisterReceiver(&receiver_);
-  // Without receivers, accumulated logs should not have been kept. That means
-  // that on the registration of the first receiver, none are returned.
-  EXPECT_EQ(std::vector<base::Value>(), router.RegisterReceiver(&receiver_));
-  router.UnregisterReceiver(&receiver_);
-}
-
 TEST_F(LogRouterTest, ProcessLog_OneReceiver) {
   LogRouter router;
-  EXPECT_EQ(std::vector<base::Value>(), router.RegisterReceiver(&receiver_));
-  // Check that logs generated after activation are passed.
-  base::Value log_entry = LogRouter::CreateEntryForText(kTestText);
+  router.RegisterReceiver(&receiver_);
+  base::Value::Dict log_entry = LogRouter::CreateEntryForText(kTestText);
   EXPECT_CALL(receiver_, LogEntry(testing::Eq(testing::ByRef(log_entry))))
       .Times(1);
   router.ProcessLog(kTestText);
   router.UnregisterReceiver(&receiver_);
-}
-
-TEST_F(LogRouterTest, ProcessLog_TwoReceiversAccumulatedLogsPassed) {
-  LogRouter router;
-  EXPECT_EQ(std::vector<base::Value>(), router.RegisterReceiver(&receiver_));
-
-  // Log something with only the first receiver, to accumulate some logs.
-  base::Value log_entry = LogRouter::CreateEntryForText(kTestText);
-  EXPECT_CALL(receiver_, LogEntry(testing::Eq(testing::ByRef(log_entry))))
-      .Times(1);
-  EXPECT_CALL(receiver2_, LogEntry(testing::Eq(testing::ByRef(log_entry))))
-      .Times(0);
-  router.ProcessLog(kTestText);
-  // Accumulated logs get passed on registration.
-  std::vector<base::Value> expected_logs;
-  expected_logs.emplace_back(log_entry.Clone());
-  EXPECT_EQ(expected_logs, router.RegisterReceiver(&receiver2_));
-  router.UnregisterReceiver(&receiver_);
-  router.UnregisterReceiver(&receiver2_);
 }
 
 TEST_F(LogRouterTest, ProcessLog_TwoReceiversBothUpdated) {
   LogRouter router;
-  EXPECT_EQ(std::vector<base::Value>(), router.RegisterReceiver(&receiver_));
-  EXPECT_EQ(std::vector<base::Value>(), router.RegisterReceiver(&receiver2_));
+  router.RegisterReceiver(&receiver_);
+  router.RegisterReceiver(&receiver2_);
 
   // Check that both receivers get log updates.
-  base::Value log_entry = LogRouter::CreateEntryForText(kTestText);
+  base::Value::Dict log_entry = LogRouter::CreateEntryForText(kTestText);
   EXPECT_CALL(receiver_, LogEntry(testing::Eq(testing::ByRef(log_entry))))
       .Times(1);
   EXPECT_CALL(receiver2_, LogEntry(testing::Eq(testing::ByRef(log_entry))))
@@ -110,13 +75,13 @@ TEST_F(LogRouterTest, ProcessLog_TwoReceiversBothUpdated) {
 
 TEST_F(LogRouterTest, ProcessLog_TwoReceiversNoUpdateAfterUnregistering) {
   LogRouter router;
-  EXPECT_EQ(std::vector<base::Value>(), router.RegisterReceiver(&receiver_));
-  EXPECT_EQ(std::vector<base::Value>(), router.RegisterReceiver(&receiver2_));
+  router.RegisterReceiver(&receiver_);
+  router.RegisterReceiver(&receiver2_);
 
   // Check that no logs are passed to an unregistered receiver.
   router.UnregisterReceiver(&receiver_);
   EXPECT_CALL(receiver_, LogEntry(_)).Times(0);
-  base::Value log_entry = LogRouter::CreateEntryForText(kTestText);
+  base::Value::Dict log_entry = LogRouter::CreateEntryForText(kTestText);
   EXPECT_CALL(receiver2_, LogEntry(testing::Eq(testing::ByRef(log_entry))))
       .Times(1);
   router.ProcessLog(kTestText);
@@ -132,7 +97,7 @@ TEST_F(LogRouterTest, RegisterManager_NoReceivers) {
 TEST_F(LogRouterTest, RegisterManager_OneReceiverBeforeManager) {
   LogRouter router;
   // First register a receiver.
-  EXPECT_EQ(std::vector<base::Value>(), router.RegisterReceiver(&receiver_));
+  router.RegisterReceiver(&receiver_);
   // The manager should be told the LogRouter has some receivers.
   EXPECT_TRUE(router.RegisterManager(&manager_));
   // Now unregister the receiver. The manager should be told the LogRouter has
@@ -149,7 +114,7 @@ TEST_F(LogRouterTest, RegisterManager_OneManagerBeforeReceiver) {
   EXPECT_FALSE(router.RegisterManager(&manager_));
   // Now register the receiver. The manager should be notified.
   EXPECT_CALL(manager_, OnLogRouterAvailabilityChanged(true));
-  EXPECT_EQ(std::vector<base::Value>(), router.RegisterReceiver(&receiver_));
+  router.RegisterReceiver(&receiver_);
   // Now unregister the manager.
   router.UnregisterManager(&manager_);
   // Now unregister the receiver. The manager should not hear about it.
@@ -164,10 +129,10 @@ TEST_F(LogRouterTest, RegisterManager_OneManagerTwoReceivers) {
   EXPECT_FALSE(router.RegisterManager(&manager_));
   // Now register the 1st receiver. The manager should be notified.
   EXPECT_CALL(manager_, OnLogRouterAvailabilityChanged(true));
-  EXPECT_EQ(std::vector<base::Value>(), router.RegisterReceiver(&receiver_));
+  router.RegisterReceiver(&receiver_);
   // Now register the 2nd receiver. The manager should not be notified.
   EXPECT_CALL(manager_, OnLogRouterAvailabilityChanged(true)).Times(0);
-  EXPECT_EQ(std::vector<base::Value>(), router.RegisterReceiver(&receiver2_));
+  router.RegisterReceiver(&receiver2_);
   // Now unregister the 1st receiver. The manager should not hear about it.
   EXPECT_CALL(manager_, OnLogRouterAvailabilityChanged(false)).Times(0);
   router.UnregisterReceiver(&receiver_);

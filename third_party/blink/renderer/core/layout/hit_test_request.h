@@ -23,8 +23,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_HIT_TEST_REQUEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_HIT_TEST_REQUEST_H_
 
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -45,16 +46,15 @@ class HitTestRequest {
     kAllowChildFrameContent = 1 << 8,
     kChildFrameHitTest = 1 << 9,
     kIgnorePointerEventsNone = 1 << 10,
-    kRetargetForInert = 1 << 11,
     // Collect a list of nodes instead of just one.
     // (This is for elementsFromPoint and rect-based tests).
-    kListBased = 1 << 12,
+    kListBased = 1 << 11,
     // When using list-based testing, this flag causes us to continue hit
     // testing after a hit has been found.
-    kPenetratingList = 1 << 13,
-    kAvoidCache = 1 << 14,
-    kIgnoreZeroOpacityObjects = 1 << 15,
-    kHitTestVisualOverflow = 1 << 16,
+    kPenetratingList = 1 << 12,
+    kAvoidCache = 1 << 13,
+    kIgnoreZeroOpacityObjects = 1 << 14,
+    kHitTestVisualOverflow = 1 << 15,
   };
 
   typedef unsigned HitTestRequestType;
@@ -79,10 +79,14 @@ class HitTestRequest {
   bool IsChildFrameHitTest() const {
     return request_type_ & kChildFrameHitTest;
   }
+  // Returns true if this request is used for occlusion.
+  // See |LayoutObject::HitTestForOcclusion()|
+  bool IsHitTestVisualOverflow() const {
+    return request_type_ & kHitTestVisualOverflow;
+  }
   bool IgnorePointerEventsNone() const {
     return request_type_ & kIgnorePointerEventsNone;
   }
-  bool RetargetForInert() const { return request_type_ & kRetargetForInert; }
   bool ListBased() const { return request_type_ & kListBased; }
   bool PenetratingList() const { return request_type_ & kPenetratingList; }
   bool AvoidCache() const { return request_type_ & kAvoidCache; }
@@ -105,10 +109,12 @@ class HitTestRequest {
            stop_node_ == value.stop_node_;
   }
 
+  void Trace(Visitor*) const;
+
  private:
   HitTestRequestType request_type_;
   // If non-null, do not hit test the children of this object.
-  const LayoutObject* stop_node_;
+  Member<const LayoutObject> stop_node_;
 };
 
 }  // namespace blink

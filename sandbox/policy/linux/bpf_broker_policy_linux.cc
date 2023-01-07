@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,11 @@ ResultExpr BrokerProcessPolicy::EvaluateSyscall(int sysno) const {
 #endif
 #if defined(__NR_faccessat)
     case __NR_faccessat:
+#endif
+#if defined(__NR_faccessat2)
+    case __NR_faccessat2:
+#endif
+#if defined(__NR_faccessat) || defined(__NR_faccessat2)
       if (allowed_command_set_.test(syscall_broker::COMMAND_ACCESS))
         return Allow();
       break;
@@ -93,8 +98,8 @@ ResultExpr BrokerProcessPolicy::EvaluateSyscall(int sysno) const {
         return Allow();
       break;
 #endif
-#if defined(__NR_fstatat)
-    case __NR_fstatat:
+#if defined(__NR_fstatat64)
+    case __NR_fstatat64:
       if (allowed_command_set_.test(syscall_broker::COMMAND_STAT))
         return Allow();
       break;

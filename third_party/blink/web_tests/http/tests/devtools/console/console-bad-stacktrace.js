@@ -1,15 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult('Tests that console messages with invalid stacktraces will still be rendered, crbug.com/826210\n');
 
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   var consoleView = Console.ConsoleView.instance();
-  consoleView._setImmediatelyFilterMessagesForTest();
+  consoleView.setImmediatelyFilterMessagesForTest();
 
   // Add invalid message.
   var badStackTrace = {
@@ -24,10 +24,12 @@
     ]
   };
   var badStackTraceMessage = new SDK.ConsoleMessage(
-      TestRunner.runtimeModel, SDK.ConsoleMessage.MessageSource.ConsoleAPI,
-      SDK.ConsoleMessage.MessageLevel.Error, "This should be visible",
-      SDK.ConsoleMessage.MessageType.Error, null, undefined, undefined,
-      undefined, badStackTrace);
+      TestRunner.runtimeModel,
+      SDK.ConsoleMessage.FrontendMessageSource.ConsoleAPI,
+      Protocol.Log.LogEntryLevel.Error, 'This should be visible', {
+        type: Protocol.Runtime.ConsoleAPICalledEventType.Error,
+        stackTrace: badStackTrace,
+      });
   SDK.consoleModel.addMessage(badStackTraceMessage);
 
   await ConsoleTestRunner.dumpConsoleMessages();

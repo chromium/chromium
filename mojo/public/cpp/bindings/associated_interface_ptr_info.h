@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <utility>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 
 namespace mojo {
@@ -25,25 +24,24 @@ namespace mojo {
 template <typename Interface>
 class AssociatedInterfacePtrInfo {
  public:
-  AssociatedInterfacePtrInfo() : version_(0u) {}
-  AssociatedInterfacePtrInfo(std::nullptr_t) : version_(0u) {}
-
   AssociatedInterfacePtrInfo(AssociatedInterfacePtrInfo&& other)
-      : handle_(std::move(other.handle_)), version_(other.version_) {
-    other.version_ = 0u;
-  }
+      : handle_(std::move(other.handle_)),
+        version_(std::exchange(other.version_, 0u)) {}
 
   AssociatedInterfacePtrInfo(ScopedInterfaceEndpointHandle handle,
                              uint32_t version)
       : handle_(std::move(handle)), version_(version) {}
+
+  AssociatedInterfacePtrInfo(const AssociatedInterfacePtrInfo&) = delete;
+  AssociatedInterfacePtrInfo& operator=(const AssociatedInterfacePtrInfo&) =
+      delete;
 
   ~AssociatedInterfacePtrInfo() {}
 
   AssociatedInterfacePtrInfo& operator=(AssociatedInterfacePtrInfo&& other) {
     if (this != &other) {
       handle_ = std::move(other.handle_);
-      version_ = other.version_;
-      other.version_ = 0u;
+      version_ = std::exchange(other.version_, 0u);
     }
 
     return *this;
@@ -51,33 +49,12 @@ class AssociatedInterfacePtrInfo {
 
   bool is_valid() const { return handle_.is_valid(); }
 
-  explicit operator bool() const { return handle_.is_valid(); }
-
-  ScopedInterfaceEndpointHandle PassHandle() {
-    return std::move(handle_);
-  }
-  const ScopedInterfaceEndpointHandle& handle() const { return handle_; }
-  void set_handle(ScopedInterfaceEndpointHandle handle) {
-    handle_ = std::move(handle);
-  }
-
+  ScopedInterfaceEndpointHandle PassHandle() { return std::move(handle_); }
   uint32_t version() const { return version_; }
-  void set_version(uint32_t version) { version_ = version; }
-
-  bool Equals(const AssociatedInterfacePtrInfo& other) const {
-    if (this == &other)
-      return true;
-
-    // Now that the two refer to different objects, they are equivalent if
-    // and only if they are both invalid.
-    return !is_valid() && !other.is_valid();
-  }
 
  private:
   ScopedInterfaceEndpointHandle handle_;
   uint32_t version_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssociatedInterfacePtrInfo);
 };
 
 }  // namespace mojo

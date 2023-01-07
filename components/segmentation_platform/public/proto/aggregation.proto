@@ -1,0 +1,89 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package segmentation_platform.proto;
+
+// Describes how a feature will be aggregated inside a timed bucket for
+// forming the input tensor to the model. |bucket_count| here refers to the
+// field Feature.bucket_count. Buckets are listed in reverse order, so the
+// first entry in the result will be the most recent.
+enum Aggregation {
+  UNKNOWN = 0;
+
+  // TENSOR RESULT: Data type: int, Length: 1
+  // The number of events.
+  COUNT = 1;
+
+  // TENSOR RESULT: Data type: int, Length: 1
+  // If a COUNT aggregation yields 0, then False, else True.
+  COUNT_BOOLEAN = 2;
+
+  // TENSOR RESULT: Data type: int, Length: |bucket_count|
+  // Each entry is the count of times the event happened within each bucket.
+  BUCKETED_COUNT = 3;
+
+  // TENSOR RESULT: Data type: bool, Length: |bucket_count|
+  // Each entry is True if BUCKETED_COUNT for that bucket would yield > 0, else
+  // False.
+  BUCKETED_COUNT_BOOLEAN = 4;
+
+  // TENSOR RESULT: Data type: int, Length: 1
+  // The count of BUCKETED_COUNT_BOOLEAN True values over the same
+  // |bucket_count|.
+  BUCKETED_COUNT_BOOLEAN_TRUE_COUNT = 5;
+
+  // TENSOR RESULT: Data type: int, Length: |bucket_count|
+  // First value is the count for the current bucket.
+  // Second value is the count for the current + previous bucket.
+  // Third value is the count for the current + previous + before previous
+  // bucket, etc. The last value is the same value as a COUNT aggregation
+  // for the same |bucket_count|.
+  BUCKETED_CUMULATIVE_COUNT = 6;
+
+  // TENSOR RESULT: Data type: int, Length: 1
+  // Value for each User Action is 1.
+  // Sum of all values from now back to |bucket_count| number of buckets.
+  SUM = 7;
+
+  // TENSOR RESULT: Data type: bool, Length: 1
+  // If a SUM aggregation yields 0, then False, else True.
+  SUM_BOOLEAN = 8;
+
+  // TENSOR RESULT: Data type: int, Length: |bucket_count|
+  // Value for each User Action is 1.
+  // Each entry is the sum for that event within each bucket.
+  BUCKETED_SUM = 9;
+
+  // TENSOR RESULT: Data type: int, Length: |bucket_count|
+  // Value for each User Action is 1.
+  // Each entry is True if BUCKETED_SUM for that bucket would yield > 0, else
+  // False.
+  BUCKETED_SUM_BOOLEAN = 10;
+
+  // TENSOR RESULT: Data type: int, Length: 1
+  // The count of BUCKETED_SUM_BOOLEAN True values over the same |bucket_count|.
+  BUCKETED_SUM_BOOLEAN_TRUE_COUNT = 11;
+
+  // TENSOR RESULT: Data type: int, Length: |bucket_count|
+  // Value for each User Action is 1.
+  // First value is the sum for the current bucket.
+  // Second value is the sum for the current + previous bucket.
+  // Third value is the sum for the current + previous + before previous bucket,
+  // etc. The last value is the same value as a SUM aggregation for the same
+  // |bucket_count|.
+  BUCKETED_CUMULATIVE_SUM = 12;
+
+  // TENSOR RESULT: Data type: int, Length: 1
+  // The latest entry recorded for a feature. If no data is available,
+  // |default_value| will be returned instead. If you need an additional feature
+  // to tell if a value exists in the database or not, then consider using
+  // COUNT_BOOLEAN in addition.
+  // Warning: this will only consider the latest among the samples within the
+  // specified time range. This also may not have the most updated value since
+  // the histograms are stored to database asynchronously.
+  LATEST_OR_DEFAULT = 13;
+}

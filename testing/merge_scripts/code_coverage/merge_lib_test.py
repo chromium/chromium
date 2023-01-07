@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,9 +15,11 @@ import merge_lib as merger
 
 class MergeLibTest(unittest.TestCase):
 
+  # pylint: disable=super-with-arguments
   def __init__(self, *args, **kwargs):
     super(MergeLibTest, self).__init__(*args, **kwargs)
     self.maxDiff = None
+  # pylint: enable=super-with-arguments
 
   @mock.patch.object(subprocess, 'check_output')
   def test_validate_and_convert_profraw(self, mock_cmd):

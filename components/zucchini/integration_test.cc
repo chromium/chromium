@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/optional.h"
 #include "base/path_service.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/patch_reader.h"
 #include "components/zucchini/patch_writer.h"
 #include "components/zucchini/zucchini.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -59,7 +59,7 @@ void TestGenApply(const std::string& old_filename,
   patch_writer.SerializeInto({patch_buffer.data(), patch_buffer.size()});
 
   // Read back generated patch.
-  base::Optional<EnsemblePatchReader> patch_reader =
+  absl::optional<EnsemblePatchReader> patch_reader =
       EnsemblePatchReader::Create({patch_buffer.data(), patch_buffer.size()});
   ASSERT_TRUE(patch_reader.has_value());
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece_forward.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/common/content_export.h"
@@ -43,6 +42,10 @@ class CONTENT_EXPORT SignedExchangeCertificateChain {
         scoped_refptr<net::X509Certificate> certificate);
 
     explicit IgnoreErrorsSPKIList(const base::CommandLine& command_line);
+
+    IgnoreErrorsSPKIList(const IgnoreErrorsSPKIList&) = delete;
+    IgnoreErrorsSPKIList& operator=(const IgnoreErrorsSPKIList&) = delete;
+
     ~IgnoreErrorsSPKIList();
 
     // Used for tests to override the instance. Returns the old instance, which
@@ -62,7 +65,6 @@ class CONTENT_EXPORT SignedExchangeCertificateChain {
         scoped_refptr<net::X509Certificate> certificate);
 
     network::SPKIHashSet hash_set_;
-    DISALLOW_COPY_AND_ASSIGN(IgnoreErrorsSPKIList);
   };
 
   static std::unique_ptr<SignedExchangeCertificateChain> Parse(

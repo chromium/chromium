@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,25 @@
 
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/settings/device_settings_cache.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "components/user_manager/scoped_user_manager.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
-class FakeUserManagerWithLocalState : public chromeos::FakeChromeUserManager {
+class FakeUserManagerWithLocalState : public FakeChromeUserManager {
  public:
   explicit FakeUserManagerWithLocalState(MockUserManager* mock_user_manager)
       : mock_user_manager_(mock_user_manager),
         test_local_state_(std::make_unique<TestingPrefServiceSimple>()) {
     RegisterPrefs(test_local_state_->registry());
+    device_settings_cache::RegisterPrefs(test_local_state_->registry());
+    TestingBrowserProcess::GetGlobal()->SetLocalState(test_local_state_.get());
+  }
+
+  ~FakeUserManagerWithLocalState() override {
+    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   PrefService* GetLocalState() const override {
@@ -35,15 +42,15 @@ class FakeUserManagerWithLocalState : public chromeos::FakeChromeUserManager {
 }  // namespace
 
 ExistingUserControllerBaseTest::ExistingUserControllerBaseTest()
-    : mock_user_manager_(new MockUserManager()) {
-  scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::make_unique<FakeUserManagerWithLocalState>(mock_user_manager_));
-}
+    : mock_user_manager_(std::make_unique<MockUserManager>()),
+      scoped_user_manager_(std::make_unique<user_manager::ScopedUserManager>(
+          std::make_unique<FakeUserManagerWithLocalState>(
+              mock_user_manager_.get()))) {}
 
 ExistingUserControllerBaseTest::~ExistingUserControllerBaseTest() = default;
 
 MockUserManager* ExistingUserControllerBaseTest::mock_user_manager() {
-  return mock_user_manager_;
+  return mock_user_manager_.get();
 }
 
-}  // namespace chromeos
+}  // namespace ash

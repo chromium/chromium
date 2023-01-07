@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/containers/flat_map.h"
 #include "base/json/json_reader.h"
 #include "base/memory/weak_ptr.h"
-#include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
@@ -177,23 +176,19 @@ void ArcForceInstalledAppsObserver::OnPolicyUpdated(
   if (ns.domain != policy::POLICY_DOMAIN_CHROME)
     return;
   const base::Value* const arc_policy =
-      current.GetValue(policy::key::kArcPolicy);
+      current.GetValue(policy::key::kArcPolicy, base::Value::Type::STRING);
   tracking_packages_.clear();
 
   // Track packages only if ArcPolicy is set.
-  if (arc_policy && arc_policy->is_string()) {
+  if (arc_policy) {
     // Get the required packages from ArcPolicy.
     auto required_packages =
         arc::policy_util::GetRequestedPackagesFromArcPolicy(
             arc_policy->GetString());
-    std::vector<std::pair<std::string, bool>> required_packages_vector;
     // Mark all required packages not yet installed in |tracking_packages_|.
-    std::transform(
-        required_packages.begin(), required_packages.end(),
-        std::back_inserter(required_packages_vector),
+    tracking_packages_ = base::MakeFlatMap<std::string, bool>(
+        required_packages, {},
         [](const std::string& v) { return std::make_pair(v, false); });
-    tracking_packages_ =
-        base::flat_map<std::string, bool>(std::move(required_packages_vector));
   }
   UpdateInstalledPackages();
 }
@@ -253,13 +248,29 @@ void PolicyComplianceObserver::OnComplianceReportReceived(
     return;
   }
 
-  std::set<std::string> pending_app_installs;
+  bool is_android_id_reset = true;
   for (const auto& detail : details->GetList()) {
     const base::Value* const reason =
         detail.FindKeyOfType("nonComplianceReason", base::Value::Type::INTEGER);
-    // Not compliant with ARC policy.
-    if (reason)
+    const std::string* const settingName = detail.FindStringKey("settingName");
+    if (!reason || !settingName)
+      continue;
+    // Not compliant with ARC applications policy.
+    if (*settingName == ArcPolicyBridge::kApplications)
       return;
+    // android_id is expected to be reset, but still not reset by clouddpc.
+    if (*settingName == ArcPolicyBridge::kResetAndroidIdEnabled) {
+      is_android_id_reset = false;
+      continue;
+    }
+  }
+  // If compliant with ARC applications policy, android ID is expected to be
+  // reset shortly.
+  // Force a compliance report.
+  if (!is_android_id_reset) {
+    arc_policy_bridge_->OnPolicyUpdated(
+        policy::PolicyNamespace(), policy::PolicyMap(), policy::PolicyMap());
+    return;
   }
   if (!finish_callback_.is_null())
     std::move(finish_callback_).Run();
@@ -267,7 +278,7 @@ void PolicyComplianceObserver::OnComplianceReportReceived(
 
 void PolicyComplianceObserver::ProcessInitialComplianceReport(
     std::string last_report) {
-  base::Optional<base::Value> last_report_value =
+  absl::optional<base::Value> last_report_value =
       base::JSONReader::Read(last_report);
   if (!last_report_value.has_value())
     return;

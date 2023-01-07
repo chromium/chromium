@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,15 @@
 // The icon displayed by this InfobarBanner.
 - (void)setIconImage:(UIImage*)iconImage;
 
+// The tint color of the icon image.
+- (void)setIconImageTintColor:(UIColor*)iconImageTintColor;
+
 // YES if the icon image should have a default tint applied to its background.
 - (void)setUseIconBackgroundTint:(BOOL)useIconBackgroundTint;
+
+// The background color of the icon, only applied when
+// [setUseIconBackgroundTint:YES] is called.
+- (void)setIconBackgroundColor:(UIColor*)iconBackgroundColor;
 
 // YES if the banner should be able to present a Modal. Changing this property
 // will immediately update the Banner UI that is related to triggering modal
@@ -32,6 +39,10 @@
 
 // The subtitle displayed by this InfobarBanner.
 - (void)setSubtitleText:(NSString*)subtitleText;
+
+// If YES, restricts the number of lines in subtitle to 1.
+- (void)setRestrictSubtitleTextToSingleLine:
+    (BOOL)restrictSubtitleTextToSingleLine;
 
 @end
 

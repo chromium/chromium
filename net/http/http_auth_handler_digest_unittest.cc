@@ -1,24 +1,26 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/http/http_auth_handler_digest.h"
+
 #include <string>
 
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/net_errors.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
-#include "net/http/http_auth_handler_digest.h"
 #include "net/http/http_request_info.h"
 #include "net/log/net_log_with_source.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 using net::test::IsOk;
 
@@ -53,21 +55,21 @@ bool RespondToChallenge(HttpAuth::Target target,
   EXPECT_FALSE(challenge.empty());
 
   token->clear();
-  std::unique_ptr<HttpAuthHandlerDigest::Factory> factory(
-      new HttpAuthHandlerDigest::Factory());
-  HttpAuthHandlerDigest::NonceGenerator* nonce_generator =
-      new HttpAuthHandlerDigest::FixedNonceGenerator("client_nonce");
-  factory->set_nonce_generator(nonce_generator);
+  auto factory = std::make_unique<HttpAuthHandlerDigest::Factory>();
+  auto nonce_generator =
+      std::make_unique<HttpAuthHandlerDigest::FixedNonceGenerator>(
+          "client_nonce");
+  factory->set_nonce_generator(std::move(nonce_generator));
   auto host_resolver = std::make_unique<MockHostResolver>();
   std::unique_ptr<HttpAuthHandler> handler;
 
   // Create a handler for a particular challenge.
   SSLInfo null_ssl_info;
-  GURL url_origin(target == HttpAuth::AUTH_SERVER ? request_url : proxy_name);
+  url::SchemeHostPort scheme_host_port(
+      target == HttpAuth::AUTH_SERVER ? GURL(request_url) : GURL(proxy_name));
   int rv_create = factory->CreateAuthHandlerFromString(
-      challenge, target, null_ssl_info, NetworkIsolationKey(),
-      url_origin.GetOrigin(), NetLogWithSource(), host_resolver.get(),
-      &handler);
+      challenge, target, null_ssl_info, NetworkAnonymizationKey(),
+      scheme_host_port, NetLogWithSource(), host_resolver.get(), &handler);
   if (rv_create != OK || handler.get() == nullptr) {
     ADD_FAILURE() << "Unable to create auth handler.";
     return false;
@@ -78,7 +80,7 @@ bool RespondToChallenge(HttpAuth::Target target,
   // completes synchronously. That's why this test can get away with a
   // TestCompletionCallback without an IO thread.
   TestCompletionCallback callback;
-  std::unique_ptr<HttpRequestInfo> request(new HttpRequestInfo());
+  auto request = std::make_unique<HttpRequestInfo>();
   request->url = GURL(request_url);
   AuthCredentials credentials(u"foo", u"bar");
   int rv_generate = handler->GenerateAuthToken(
@@ -359,18 +361,17 @@ TEST(HttpAuthHandlerDigestTest, ParseChallenge) {
     },
   };
 
-  GURL origin("http://www.example.com");
-  std::unique_ptr<HttpAuthHandlerDigest::Factory> factory(
-      new HttpAuthHandlerDigest::Factory());
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
+  auto factory = std::make_unique<HttpAuthHandlerDigest::Factory>();
+  for (const auto& test : tests) {
     SSLInfo null_ssl_info;
     auto host_resolver = std::make_unique<MockHostResolver>();
     std::unique_ptr<HttpAuthHandler> handler;
     int rv = factory->CreateAuthHandlerFromString(
-        tests[i].challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
-        NetworkIsolationKey(), origin, NetLogWithSource(), host_resolver.get(),
-        &handler);
-    if (tests[i].parsed_success) {
+        test.challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
+        NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
+        host_resolver.get(), &handler);
+    if (test.parsed_success) {
       EXPECT_THAT(rv, IsOk());
     } else {
       EXPECT_NE(OK, rv);
@@ -380,13 +381,13 @@ TEST(HttpAuthHandlerDigestTest, ParseChallenge) {
     ASSERT_TRUE(handler.get() != nullptr);
     HttpAuthHandlerDigest* digest =
         static_cast<HttpAuthHandlerDigest*>(handler.get());
-    EXPECT_STREQ(tests[i].parsed_realm, digest->realm_.c_str());
-    EXPECT_STREQ(tests[i].parsed_nonce, digest->nonce_.c_str());
-    EXPECT_STREQ(tests[i].parsed_domain, digest->domain_.c_str());
-    EXPECT_STREQ(tests[i].parsed_opaque, digest->opaque_.c_str());
-    EXPECT_EQ(tests[i].parsed_stale, digest->stale_);
-    EXPECT_EQ(tests[i].parsed_algorithm, digest->algorithm_);
-    EXPECT_EQ(tests[i].parsed_qop, digest->qop_);
+    EXPECT_STREQ(test.parsed_realm, digest->realm_.c_str());
+    EXPECT_STREQ(test.parsed_nonce, digest->nonce_.c_str());
+    EXPECT_STREQ(test.parsed_domain, digest->domain_.c_str());
+    EXPECT_STREQ(test.parsed_opaque, digest->opaque_.c_str());
+    EXPECT_EQ(test.parsed_stale, digest->stale_);
+    EXPECT_EQ(test.parsed_algorithm, digest->algorithm_);
+    EXPECT_EQ(test.parsed_qop, digest->qop_);
     EXPECT_TRUE(handler->encrypts_identity());
     EXPECT_FALSE(handler->is_connection_based());
     EXPECT_TRUE(handler->NeedsIdentity());
@@ -525,48 +526,43 @@ TEST(HttpAuthHandlerDigestTest, AssembleCredentials) {
       "qop=auth, nc=00000001, cnonce=\"15c07961ed8575c4\""
     }
   };
-  GURL origin("http://www.example.com");
-  std::unique_ptr<HttpAuthHandlerDigest::Factory> factory(
-      new HttpAuthHandlerDigest::Factory());
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
+  auto factory = std::make_unique<HttpAuthHandlerDigest::Factory>();
+  for (const auto& test : tests) {
     SSLInfo null_ssl_info;
     auto host_resolver = std::make_unique<MockHostResolver>();
     std::unique_ptr<HttpAuthHandler> handler;
     int rv = factory->CreateAuthHandlerFromString(
-        tests[i].challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
-        NetworkIsolationKey(), origin, NetLogWithSource(), host_resolver.get(),
-        &handler);
+        test.challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
+        NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
+        host_resolver.get(), &handler);
     EXPECT_THAT(rv, IsOk());
     ASSERT_TRUE(handler != nullptr);
 
     HttpAuthHandlerDigest* digest =
         static_cast<HttpAuthHandlerDigest*>(handler.get());
-    std::string creds =
-        digest->AssembleCredentials(tests[i].req_method,
-                                    tests[i].req_path,
-                                    AuthCredentials(
-                                        base::ASCIIToUTF16(tests[i].username),
-                                        base::ASCIIToUTF16(tests[i].password)),
-                                    tests[i].cnonce,
-                                    tests[i].nonce_count);
+    std::string creds = digest->AssembleCredentials(
+        test.req_method, test.req_path,
+        AuthCredentials(base::ASCIIToUTF16(test.username),
+                        base::ASCIIToUTF16(test.password)),
+        test.cnonce, test.nonce_count);
 
-    EXPECT_STREQ(tests[i].expected_creds, creds.c_str());
+    EXPECT_STREQ(test.expected_creds, creds.c_str());
   }
 }
 
 TEST(HttpAuthHandlerDigest, HandleAnotherChallenge) {
-  std::unique_ptr<HttpAuthHandlerDigest::Factory> factory(
-      new HttpAuthHandlerDigest::Factory());
+  auto factory = std::make_unique<HttpAuthHandlerDigest::Factory>();
   auto host_resolver = std::make_unique<MockHostResolver>();
   std::unique_ptr<HttpAuthHandler> handler;
   std::string default_challenge =
       "Digest realm=\"Oblivion\", nonce=\"nonce-value\"";
-  GURL origin("intranet.google.com");
+  url::SchemeHostPort scheme_host_port(GURL("http://intranet.google.com"));
   SSLInfo null_ssl_info;
   int rv = factory->CreateAuthHandlerFromString(
       default_challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
-      NetworkIsolationKey(), origin, NetLogWithSource(), host_resolver.get(),
-      &handler);
+      NetworkAnonymizationKey(), scheme_host_port, NetLogWithSource(),
+      host_resolver.get(), &handler);
   EXPECT_THAT(rv, IsOk());
   ASSERT_TRUE(handler.get() != nullptr);
   HttpAuthChallengeTokenizer tok_default(default_challenge.begin(),

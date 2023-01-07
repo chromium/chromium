@@ -1,0 +1,28 @@
+caption: Enable the use of relay servers by the remote access host
+desc: |-
+  If <ph name="REMOTE_ACCESS_HOST_FIREWALL_TRAVERSAL_POLICY_NAME">RemoteAccessHostFirewallTraversal</ph> is set to Enabled, setting <ph name="REMOTE_ACCESS_HOST_ALLOW_RELAYED_CONNECTION_POLICY_NAME">RemoteAccessHostAllowRelayedConnection</ph> to Enabled or leaving it unset allows the use of remote clients to use relay servers to connect to this machine when a direct connection is not available, for example, because of firewall restrictions.
+
+        Setting the policy to Disabled doesn't turn remote access off, but only allows connections from the same network (not NAT traversal or relay).
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+  platform_only: true
+future_on:
+- fuchsia
+items:
+- caption: Enable the use of relay servers by the remote access host
+  value: true
+- caption: Disable the use of relay servers by the remote access host
+  value: false
+owners:
+- file://remoting/OWNERS
+- jamiewalch@chromium.org
+- garykac@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:36-
+- chrome_os:86-
+tags: []
+type: main

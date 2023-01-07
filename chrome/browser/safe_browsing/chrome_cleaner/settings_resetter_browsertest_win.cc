@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
 #include "chrome/browser/safe_browsing/settings_reset_prompt/settings_reset_prompt_test_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -33,30 +35,11 @@ namespace {
 using ::testing::_;
 using ::testing::StrictMock;
 
-// Callback for CreateProfile() that assigns |profile| to |*out_profile|
-// if the profile creation is successful.
-void CreateProfileCallback(Profile** out_profile,
-                           base::OnceClosure closure,
-                           Profile* profile,
-                           Profile::CreateStatus status) {
-  DCHECK(out_profile);
-  if (status == Profile::CREATE_STATUS_INITIALIZED)
-    *out_profile = profile;
-  std::move(closure).Run();
-}
-
 // Creates a new profile from the UI thread.
 Profile* CreateProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile = nullptr;
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      profile_manager->GenerateNextProfileDirectoryPath(),
-      base::BindRepeating(&CreateProfileCallback, &profile,
-                          run_loop.QuitClosure()),
-      std::u16string(), std::string());
-  run_loop.Run();
-  return profile;
+  return profiles::testing::CreateProfileSync(
+      profile_manager, profile_manager->GenerateNextProfileDirectoryPath());
 }
 
 // Returns true if |profile| is tagged for settings reset.
@@ -96,6 +79,11 @@ class SettingsResetterTestDelegate
  public:
   explicit SettingsResetterTestDelegate(int* num_resets)
       : num_resets_(num_resets) {}
+
+  SettingsResetterTestDelegate(const SettingsResetterTestDelegate&) = delete;
+  SettingsResetterTestDelegate& operator=(const SettingsResetterTestDelegate&) =
+      delete;
+
   ~SettingsResetterTestDelegate() override = default;
 
   void FetchDefaultSettings(
@@ -114,9 +102,7 @@ class SettingsResetterTestDelegate
   }
 
  private:
-  int* num_resets_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingsResetterTestDelegate);
+  raw_ptr<int> num_resets_;
 };
 
 // Indicates the possible values to be written to the registry for cleanup

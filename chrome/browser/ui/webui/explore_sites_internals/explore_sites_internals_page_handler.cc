@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals_page_handler.h"
@@ -28,8 +28,6 @@ std::string GetChromeFlagsSetupString() {
   switch (GetExploreSitesVariation()) {
     case ExploreSitesVariation::ENABLED:
       return "Enabled";
-    case ExploreSitesVariation::EXPERIMENT:
-      return "Experiment";
     case ExploreSitesVariation::DISABLED:
       return "Disabled";
   }

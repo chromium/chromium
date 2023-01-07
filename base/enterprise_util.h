@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,29 @@
 
 namespace base {
 
-// Returns true if an outside entity manages the current machine. This includes
-// but is not limited to the presence of user accounts from a centralized
-// directory or the presence of dynamically updatable machine policies from an
-// outside administrator.
-BASE_EXPORT bool IsMachineExternallyManaged();
+// Returns true if an outside entity manages the current machine. To be
+// "managed" means that an entity such as a company or school is applying
+// policies to this device. This is primarily checking the device for MDM
+// management.
+// Not all managed devices are enterprise devices, as BYOD (bring your own
+// device) is becoming more common in connection with workplace joining of
+// personal computers.
+BASE_EXPORT bool IsManagedDevice();
 
-#if defined(OS_APPLE)
+// Returns true if the device should be considered an enterprise device. To be
+// an enterprise device means that the enterprise actually owns or has complete
+// control over a device. This is primarily checking if the device is joined to
+// a domain.
+// Not all enterprise devices are managed devices because not all enterprises
+// actually apply policies to all devices.
+BASE_EXPORT bool IsEnterpriseDevice();
+
+// Returns true if the device is either managed or enterprise. In general, it is
+// recommended to use the PlatformManagementService to obtain this information,
+// if possible.
+BASE_EXPORT bool IsManagedOrEnterpriseDevice();
+
+#if BUILDFLAG(IS_APPLE)
 
 // Returns true if the device is being managed by an MDM system. Uses an old API
 // not intended for the purpose.
@@ -55,7 +71,7 @@ struct DeviceUserDomainJoinState {
 };
 BASE_EXPORT DeviceUserDomainJoinState AreDeviceAndUserJoinedToDomain();
 
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 }  // namespace base
 

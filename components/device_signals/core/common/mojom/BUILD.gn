@@ -1,0 +1,71 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "system_signals.mojom" ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "device_signals.mojom.PresenceValue"
+          cpp = "::device_signals::PresenceValue"
+        },
+        {
+          mojom = "device_signals.mojom.ExecutableMetadata"
+          cpp = "::device_signals::ExecutableMetadata"
+        },
+        {
+          mojom = "device_signals.mojom.FileSystemItem"
+          cpp = "::device_signals::FileSystemItem"
+        },
+        {
+          mojom = "device_signals.mojom.FileSystemItemRequest"
+          cpp = "::device_signals::GetFileSystemInfoOptions"
+        },
+      ]
+      traits_headers = [ "system_signals_mojom_traits_common.h" ]
+      traits_sources = [ "system_signals_mojom_traits_common.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//components/device_signals/core/common",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+  ]
+
+  if (is_win) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "device_signals.mojom.AntiVirusProductState"
+            cpp = "::device_signals::AvProductState"
+          },
+          {
+            mojom = "device_signals.mojom.AntiVirusSignal"
+            cpp = "::device_signals::AvProduct"
+          },
+          {
+            mojom = "device_signals.mojom.HotfixSignal"
+            cpp = "::device_signals::InstalledHotfix"
+          },
+        ]
+        traits_headers = [ "system_signals_mojom_traits_win.h" ]
+        traits_sources = [ "system_signals_mojom_traits_win.cc" ]
+        traits_public_deps = [
+          "//base",
+          "//components/device_signals/core/common/win",
+        ]
+      },
+    ]
+  }
+}

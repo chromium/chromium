@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_app.h"
@@ -22,7 +21,7 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
-#include "ui/views/controls/styled_label.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class SharingDialog;
@@ -54,7 +53,16 @@ class SharingUiController {
   virtual sync_pb::SharingSpecificFields::EnabledFeatures GetRequiredFeature()
       const = 0;
   virtual const gfx::VectorIcon& GetVectorIcon() const = 0;
+  // If true, shows a loading icon on omnibox when sending out the message.
+  virtual bool ShouldShowLoadingIcon() const;
   virtual std::u16string GetTextForTooltipAndAccessibleName() const = 0;
+
+  // If false, any UI associated will be excluded from the accessibility tree,
+  // making it completely undiscoverable and unusable to (at least) screen
+  // reader users. If you override this function, please seek the review of
+  // an accessibility OWNER and clearly document the use case in your code.
+  virtual bool HasAccessibleUi() const;
+
   // Get the name of the feature to be used as a prefix for the metric name.
   virtual SharingFeatureName GetFeatureMetricsPrefix() const = 0;
   // Describes the content type of shared data.
@@ -73,7 +81,7 @@ class SharingUiController {
 
   // Gets the current list of apps and devices and shows a new dialog.
   void UpdateAndShowDialog(
-      const base::Optional<url::Origin>& initiating_origin);
+      const absl::optional<url::Origin>& initiating_origin);
 
   // Gets the current list of devices that support the required feature.
   std::vector<std::unique_ptr<syncer::DeviceInfo>> GetDevices() const;
@@ -105,13 +113,14 @@ class SharingUiController {
   // response or when cancelling the request by calling the returned callback.
   base::OnceClosure SendMessageToDevice(
       const syncer::DeviceInfo& device,
-      base::Optional<base::TimeDelta> response_timeout,
+      absl::optional<base::TimeDelta> response_timeout,
       chrome_browser_sharing::SharingMessage sharing_message,
-      base::Optional<SharingMessageSender::ResponseCallback> callback);
+      absl::optional<SharingMessageSender::ResponseCallback> callback);
 
- private:
   // Updates the omnibox icon if available.
   void UpdateIcon();
+
+ private:
   // Closes the current dialog if there is one.
   void CloseDialog();
   // Shows a new SharingDialog and closes the old one.
@@ -124,17 +133,17 @@ class SharingUiController {
   // response via |custom_callback|.
   void OnResponse(
       int dialog_id,
-      base::Optional<SharingMessageSender::ResponseCallback> custom_callback,
+      absl::optional<SharingMessageSender::ResponseCallback> custom_callback,
       SharingSendMessageResult result,
       std::unique_ptr<chrome_browser_sharing::ResponseMessage> response);
 
   void OnAppsReceived(int dialog_id,
-                      const base::Optional<url::Origin>& initiating_origin,
+                      const absl::optional<url::Origin>& initiating_origin,
                       std::vector<SharingApp> apps);
 
-  SharingDialog* dialog_ = nullptr;
-  content::WebContents* web_contents_ = nullptr;
-  SharingService* sharing_service_ = nullptr;
+  raw_ptr<SharingDialog> dialog_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
+  raw_ptr<SharingService> sharing_service_ = nullptr;
 
   bool is_loading_ = false;
   SharingSendMessageResult send_result_ = SharingSendMessageResult::kSuccessful;

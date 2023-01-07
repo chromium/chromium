@@ -1,9 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/base/ui_base_types.h"
@@ -46,7 +47,7 @@ class TestScrollBarController : public views::ScrollBarController {
 
   // We save the last values in order to assert the correctness of the scroll
   // operation.
-  views::ScrollBar* last_source;
+  raw_ptr<views::ScrollBar> last_source;
   bool last_is_positive;
   bool last_is_page;
   int last_position;
@@ -103,7 +104,7 @@ class ScrollBarViewsTest : public ViewsTestBase {
   UniqueWidgetPtr widget_;
 
   // This is the Views scrollbar.
-  ScrollBar* scrollbar_ = nullptr;
+  raw_ptr<ScrollBar> scrollbar_ = nullptr;
 
   // Keep track of the size of the track. This is how we can tell when we
   // scroll to the middle.
@@ -164,14 +165,14 @@ TEST_F(ScrollBarViewsTest, ScrollBarFitsToBottom) {
   // Scroll to the midpoint of the document.
   scrollbar_->Update(100, 1999, 950);
   EXPECT_EQ((scrollbar_->GetTrackBounds().width() -
-             scrollbar_->GetThumbSizeForTesting()) /
+             scrollbar_->GetThumbLengthForTesting()) /
                 2,
             scrollbar_->GetPosition());
 
   // Scroll to the end of the document.
   scrollbar_->Update(100, 1999, 1899);
   EXPECT_EQ(scrollbar_->GetTrackBounds().width() -
-                scrollbar_->GetThumbSizeForTesting(),
+                scrollbar_->GetThumbLengthForTesting(),
             scrollbar_->GetPosition());
 }
 
@@ -190,7 +191,7 @@ TEST_F(ScrollBarViewsTest, ThumbFullLengthOfTrack) {
   // Shrink content so that it fits within the viewport.
   scrollbar_->Update(100, 10, 0);
   EXPECT_EQ(scrollbar_->GetTrackBounds().width(),
-            scrollbar_->GetThumbSizeForTesting());
+            scrollbar_->GetThumbLengthForTesting());
   // Emulate a click on the full size scroll bar.
   scrollbar_->ScrollToThumbPosition(0, false);
   EXPECT_EQ(0, scrollbar_->GetPosition());
@@ -201,7 +202,7 @@ TEST_F(ScrollBarViewsTest, ThumbFullLengthOfTrack) {
   // Expand content so that it fits *exactly* within the viewport.
   scrollbar_->Update(100, 100, 0);
   EXPECT_EQ(scrollbar_->GetTrackBounds().width(),
-            scrollbar_->GetThumbSizeForTesting());
+            scrollbar_->GetThumbLengthForTesting());
   // Emulate a click on the full size scroll bar.
   scrollbar_->ScrollToThumbPosition(0, false);
   EXPECT_EQ(0, scrollbar_->GetPosition());
@@ -210,17 +211,18 @@ TEST_F(ScrollBarViewsTest, ThumbFullLengthOfTrack) {
   EXPECT_EQ(0, scrollbar_->GetPosition());
 }
 
+#if !BUILDFLAG(IS_MAC)
 TEST_F(ScrollBarViewsTest, RightClickOpensMenu) {
   EXPECT_EQ(nullptr, scrollbar_->menu_model_);
   EXPECT_EQ(nullptr, scrollbar_->menu_runner_);
   scrollbar_->set_context_menu_controller(scrollbar_);
+  // Disabled on Mac because Mac's native menu is synchronous.
   scrollbar_->ShowContextMenu(scrollbar_->GetBoundsInScreen().CenterPoint(),
                               ui::MENU_SOURCE_MOUSE);
   EXPECT_NE(nullptr, scrollbar_->menu_model_);
   EXPECT_NE(nullptr, scrollbar_->menu_runner_);
 }
 
-#if !defined(OS_APPLE)
 TEST_F(ScrollBarViewsTest, TestPageScrollingByPress) {
   ui::test::EventGenerator generator(GetRootWindow(widget_.get()));
   EXPECT_EQ(0, scrollbar_->GetPosition());
@@ -237,8 +239,33 @@ TEST_F(ScrollBarViewsTest, DragThumbScrollsContent) {
   EXPECT_EQ(0, scrollbar_->GetPosition());
   generator.MoveMouseTo(
       scrollbar_->GetThumb()->GetBoundsInScreen().CenterPoint());
-  generator.DragMouseBy(15, 0);
+  generator.PressLeftButton();
+  generator.MoveMouseBy(15, 0);
   EXPECT_GE(scrollbar_->GetPosition(), 10);
+
+  // Dragging the mouse somewhat outside the thumb maintains scroll.
+  generator.MoveMouseBy(0, 100);
+  EXPECT_GE(scrollbar_->GetPosition(), 10);
+
+  // Dragging the mouse far outside the thumb snaps back to the initial
+  // scroll position.
+  generator.MoveMouseBy(0, 100);
+  EXPECT_EQ(0, scrollbar_->GetPosition());
+}
+
+TEST_F(ScrollBarViewsTest, DragThumbScrollsContentWhenSnapBackDisabled) {
+  scrollbar_->GetThumb()->SetSnapBackOnDragOutside(false);
+  ui::test::EventGenerator generator(GetRootWindow(widget_.get()));
+  EXPECT_EQ(0, scrollbar_->GetPosition());
+  generator.MoveMouseTo(
+      scrollbar_->GetThumb()->GetBoundsInScreen().CenterPoint());
+  generator.PressLeftButton();
+  generator.MoveMouseBy(10, 0);
+  EXPECT_GT(scrollbar_->GetPosition(), 0);
+  // Move the mouse far down, outside the thumb.
+  generator.MoveMouseBy(0, 200);
+  // Position does not snap back to zero.
+  EXPECT_GT(scrollbar_->GetPosition(), 0);
 }
 
 TEST_F(ScrollBarViewsTest, FlingGestureScrollsView) {

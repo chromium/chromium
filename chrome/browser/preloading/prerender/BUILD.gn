@@ -1,0 +1,34 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [
+    "omnibox_prerender_browsertest.cc",
+    "prerender_browsertest.cc",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+  ]
+
+  data = [ "//chrome/test/data/" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "prerender_manager_unittest.cc" ]
+
+  deps = [
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+}

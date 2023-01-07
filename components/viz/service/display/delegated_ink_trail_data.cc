@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,29 +7,51 @@
 #include <string>
 
 #include "base/metrics/histogram_functions.h"
-#include "base/optional.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/features.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/prediction/kalman_predictor.h"
+#include "ui/base/prediction/least_squares_predictor.h"
+#include "ui/base/prediction/linear_predictor.h"
+#include "ui/base/prediction/linear_resampling.h"
 #include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/delegated_ink_point.h"
 
 namespace viz {
 
 DelegatedInkTrailData::DelegatedInkTrailData() {
-  unsigned int predictor_options =
-      ui::KalmanPredictor::PredictionOptions::kHeuristicsEnabled |
-      ui::KalmanPredictor::PredictionOptions::kDirectionCutOffEnabled;
+  std::string predictor = features::InkPredictor();
   std::string full_name = "Renderer.DelegatedInkTrail.PredictionExperiment";
   for (int i = 0; i < kNumberOfPredictionConfigs; ++i) {
     prediction_handlers_[i].metrics_handler =
         std::make_unique<ui::PredictionMetricsHandler>(
-            (full_name + base::NumberToString(i)).c_str());
-    prediction_handlers_[i].predictor =
-        std::make_unique<ui::KalmanPredictor>(predictor_options);
+            base::StrCat({full_name, base::NumberToString(i)}));
+    prediction_handlers_[i].predictor = CreatePredictor(predictor);
   }
+  should_draw_predicted_ink_points_ = features::ShouldDrawPredictedInkPoints();
+}
+
+std::unique_ptr<ui::InputPredictor> DelegatedInkTrailData::CreatePredictor(
+    std::string predictor) {
+  if (predictor == features::kPredictorLinearResampling) {
+    return std::make_unique<ui::LinearResampling>();
+  } else if (predictor == features::kPredictorLinear1) {
+    return std::make_unique<ui::LinearPredictor>(
+        ui::LinearPredictor::EquationOrder::kFirstOrder);
+  } else if (predictor == features::kPredictorLinear2) {
+    return std::make_unique<ui::LinearPredictor>(
+        ui::LinearPredictor::EquationOrder::kSecondOrder);
+  } else if (predictor == features::kPredictorLsq) {
+    return std::make_unique<ui::LeastSquaresPredictor>();
+  }
+
+  // if `kPredictorKalman` or default, create Kalman predictor
+  unsigned int predictor_options =
+      ui::KalmanPredictor::PredictionOptions::kHeuristicsEnabled |
+      ui::KalmanPredictor::PredictionOptions::kDirectionCutOffEnabled;
+  return std::make_unique<ui::KalmanPredictor>(predictor_options);
 }
 
 DelegatedInkTrailData::~DelegatedInkTrailData() = default;
@@ -49,7 +71,7 @@ void DelegatedInkTrailData::AddPoint(const gfx::DelegatedInkPoint& point) {
   // Fail-safe to prevent storing excessive points if they are being sent but
   // never filtered and used, like if the renderer has stalled during a long
   // running script.
-  if (points_.size() == kMaximumDelegatedInkPointsStored)
+  if (points_.size() == gfx::kMaximumNumberOfDelegatedInkPoints)
     points_.erase(points_.begin());
 
   points_.insert({point.timestamp(), point.point()});
@@ -58,16 +80,11 @@ void DelegatedInkTrailData::AddPoint(const gfx::DelegatedInkPoint& point) {
 void DelegatedInkTrailData::PredictPoints(
     std::vector<gfx::DelegatedInkPoint>* ink_points_to_draw,
     gfx::DelegatedInkMetadata* metadata) {
-  TRACE_EVENT0("viz", "DelegatedInkTrailData::PredictPoints");
+  TRACE_EVENT0("delegated_ink_trails", "DelegatedInkTrailData::PredictPoints");
   // Base name used for the histograms that measure the latency improvement from
   // the prediction done for different experiments.
   static const char* histogram_base_name =
       "Renderer.DelegatedInkTrail.LatencyImprovementWithPrediction.Experiment";
-
-  // Used to know if the user enabled prediction, and if so, which prediction
-  // config they opted into.
-  base::Optional<int> should_draw_predicted_ink_points =
-      features::ShouldDrawPredictedInkPoints();
 
   for (int experiment = 0; experiment < kNumberOfPredictionConfigs;
        ++experiment) {
@@ -84,9 +101,8 @@ void DelegatedInkTrailData::PredictPoints(
            ++i) {
         base::TimeTicks timestamp =
             ink_points_to_draw->back().timestamp() +
-            base::TimeDelta::FromMilliseconds(
-                kPredictionConfigs[experiment]
-                    .milliseconds_into_future_per_point);
+            base::Milliseconds(kPredictionConfigs[experiment]
+                                   .milliseconds_into_future_per_point);
         std::unique_ptr<ui::InputPredictor::InputData> predicted_point =
             handler.predictor->GeneratePrediction(timestamp);
         if (predicted_point) {
@@ -95,8 +111,8 @@ void DelegatedInkTrailData::PredictPoints(
               metadata->frame_time());
           latency_improvement_with_prediction =
               predicted_point->time_stamp - metadata->timestamp();
-          if (should_draw_predicted_ink_points.has_value() &&
-              experiment == should_draw_predicted_ink_points.value()) {
+          if (should_draw_predicted_ink_points_.has_value() &&
+              experiment == should_draw_predicted_ink_points_.value()) {
             ink_points_to_draw->push_back(gfx::DelegatedInkPoint(
                 predicted_point->pos, predicted_point->time_stamp,
                 pointer_id_));
@@ -106,12 +122,7 @@ void DelegatedInkTrailData::PredictPoints(
           // produce a prediction if the predicted point would go in to the
           // opposite direction of most recently stored points. If this happens,
           // don't continue trying to generate more predicted points.
-          handler.metrics_handler->EvaluatePrediction();
-          base::UmaHistogramTimes(
-              base::StrCat(
-                  {histogram_base_name, base::NumberToString(experiment)}),
-              latency_improvement_with_prediction);
-          continue;
+          break;
         }
       }
     }
@@ -135,7 +146,8 @@ bool DelegatedInkTrailData::ContainsMatchingPoint(
   if (point == points_.end())
     return false;
 
-  return point->second == metadata->point();
+  return gfx::DelegatedInkPoint(point->second, point->first)
+      .MatchesDelegatedInkMetadata(metadata);
 }
 
 void DelegatedInkTrailData::ErasePointsOlderThanMetadata(

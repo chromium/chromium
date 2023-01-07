@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ScrollView
+    xmlns:a="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    a:layout_width="match_parent"
+    a:layout_height="match_parent"
+    a:fillViewport="true"
+    a:scrollbars="none">
+
+  <LinearLayout
+      a:layout_width="match_parent"
+      a:layout_height="wrap_content"
+      a:orientation="vertical">
+
+    <TextView
+        a:layout_width="match_parent"
+        a:layout_height="wrap_content"
+        a:layout_marginTop="104dp"
+        a:layout_marginLeft="24dp"
+        a:layout_marginRight="24dp"
+        a:gravity="center_horizontal"
+        a:text="@string/cablev2_qr_title"
+        a:textSize="24sp" />
+
+    <!-- This is a semantically-meaningless picture of a phone and BLE icon that
+    screen readers can ignore. Thus contentDescription is null.
+
+    The visual center of this image isn't the pixel-center, and thus a left margin
+    is used to tweak the horizontal centering. The tooling thinks that's an RTL
+    issue, but RTL mode doesn't reflect images so the padding still needs to
+    be on the left. tools:ignore is used to skip this warning. -->
+    <ImageView
+        a:layout_width="match_parent"
+        a:layout_height="212dp"
+        a:layout_marginTop="52dp"
+        a:layout_marginLeft="40dp"
+        a:layout_marginBottom="35dp"
+        a:contentDescription="@null"
+        a:gravity="center_horizontal"
+        a:src="@drawable/cable_qr_code"
+        tools:ignore="RtlHardcoded"/>
+
+    <TextView
+        a:layout_width="wrap_content"
+        a:layout_height="wrap_content"
+        style="@style/TextAppearance.TextMedium.Primary"
+        a:layout_marginTop="52dp"
+        a:layout_marginLeft="24dp"
+        a:layout_marginRight="24dp"
+        a:layout_gravity="center_horizontal"
+        a:padding="0px"
+        a:text="@string/cablev2_qr_body_phone"
+        a:textSize="14sp" />
+
+    <LinearLayout
+        a:layout_width="match_parent"
+        a:layout_height="wrap_content"
+        a:orientation="horizontal"
+        a:gravity="center_vertical"
+        a:padding="24dp">
+
+      <CheckBox
+          a:id="@+id/qr_link"
+          a:checked="true"
+          a:contentDescription="@string/cablev2_qr_remember"
+          a:layout_width="wrap_content"
+          a:layout_height="wrap_content" />
+
+      <TextView
+          a:layout_width="wrap_content"
+          a:layout_height="wrap_content"
+          a:importantForAccessibility="no"
+          style="@style/TextAppearance.TextMedium.Primary"
+          a:text="@string/cablev2_qr_remember" />
+    </LinearLayout>
+
+    <!-- This consumes all extra vertical space and so bottom-aligns everything
+         that follows. -->
+    <View
+      a:layout_width="0dp"
+      a:layout_height="0dp"
+      a:layout_weight="1"
+      a:visibility="invisible"/>
+
+    <LinearLayout
+        a:layout_width="match_parent"
+        a:layout_height="wrap_content"
+        a:orientation="horizontal"
+        a:gravity="end"
+        a:paddingLeft="24dp"
+        a:paddingRight="24dp"
+        a:paddingBottom="16dp">
+
+      <org.chromium.ui.widget.ButtonCompat
+          a:id="@+id/qr_reject"
+          style="@style/TextButton"
+          a:paddingEnd="36dp"
+          a:layout_width="wrap_content"
+          a:layout_height="wrap_content"
+          a:text="@string/cablev2_qr_dont_allow" />
+
+      <org.chromium.ui.widget.ButtonCompat
+          a:id="@+id/qr_connect"
+          style="@style/FilledButton.Flat"
+          a:layout_width="wrap_content"
+          a:layout_height="wrap_content"
+          a:text="@string/cablev2_qr_allow" />
+    </LinearLayout>
+  </LinearLayout>
+</ScrollView>

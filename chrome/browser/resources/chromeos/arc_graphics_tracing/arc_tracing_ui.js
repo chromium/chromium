@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,19 @@ var unusedColor = '#ff0000';
 
 // Supported zooms, mcs per pixel
 var zooms = [
-  2.5, 5.0, 10.0, 25.0, 50.0, 100.0, 250.0, 500.0, 1000.0, 2500.0, 5000.0,
-  10000.0, 25000.0
+  2.5,
+  5.0,
+  10.0,
+  25.0,
+  50.0,
+  100.0,
+  250.0,
+  500.0,
+  1000.0,
+  2500.0,
+  5000.0,
+  10000.0,
+  25000.0,
 ];
 
 // Active zoom level, as index in |zooms|. By default 100 mcs per pixel.
@@ -88,7 +99,7 @@ var eventAttributes = {
     color: '#ff0000',
     name: 'Android composition jank',
     width: 1.0,
-    radius: 4.0
+    radius: 4.0,
   },
   // kVsyncTimestamp
   406: {color: '#ff3300', name: 'vsync', width: 0.5},
@@ -108,7 +119,7 @@ var eventAttributes = {
     color: '#ff0000',
     name: 'Chrome composition jank',
     width: 1.0,
-    radius: 4.0
+    radius: 4.0,
   },
 
   // kCustomEvent
@@ -185,7 +196,7 @@ var valueAttributes = {
     minRange: 512.0,
     name: 'used mb',
     scale: 1.0 / 1024.0,
-    width: 1.0
+    width: 1.0,
   },
   // kSwapRead.
   2: {
@@ -193,7 +204,7 @@ var valueAttributes = {
     minRange: 32.0,
     name: 'swap read sectors',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
   // kSwapWrite.
   3: {
@@ -201,7 +212,7 @@ var valueAttributes = {
     minRange: 32.0,
     name: 'swap write sectors',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
   // kGemObjects.
   5: {
@@ -209,7 +220,7 @@ var valueAttributes = {
     minRange: 1000,
     name: 'geom. objects',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
   // kGemSize.
   6: {
@@ -217,7 +228,7 @@ var valueAttributes = {
     minRange: 256.0,
     name: 'geom. size mb',
     scale: 1.0 / 1024.0,
-    width: 1.0
+    width: 1.0,
   },
   // kGpuFrequency.
   7: {
@@ -225,7 +236,7 @@ var valueAttributes = {
     minRange: 300.0,
     name: 'GPU frequency mhz',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
   // kCpuTemperature.
   8: {
@@ -233,7 +244,7 @@ var valueAttributes = {
     minRange: 20.0,
     name: 'CPU celsius.',
     scale: 1.0 / 1000.0,
-    width: 1.0
+    width: 1.0,
   },
   // kCpuFrequency.
   9: {
@@ -241,7 +252,7 @@ var valueAttributes = {
     minRange: 300.0,
     name: 'CPU Mhz.',
     scale: 1.0 / 1000.0,
-    width: 1.0
+    width: 1.0,
   },
   // kCpuPower.
   10: {
@@ -249,7 +260,7 @@ var valueAttributes = {
     minRange: 0.0,
     name: 'CPU milli-watts.',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
   // kGpuPower.
   11: {
@@ -257,7 +268,7 @@ var valueAttributes = {
     minRange: 0.0,
     name: 'GPU milli-watts.',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
   // kMemoryPower.
   12: {
@@ -265,7 +276,7 @@ var valueAttributes = {
     minRange: 0.0,
     name: 'Memory milli-watts.',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
   // kPackagePowerConstraint.
   13: {
@@ -273,7 +284,7 @@ var valueAttributes = {
     minRange: 0.0,
     name: 'CPU package constraint milli-watts.',
     scale: 1.0,
-    width: 1.0
+    width: 1.0,
   },
 };
 
@@ -449,19 +460,23 @@ class SVG {
 
   // Creates text element in the |svg| with provided attributes.
   static addText(svg, x, y, fontSize, textContent, anchor, transform) {
-    var text = document.createElementNS(svgNS, 'text');
-    text.setAttributeNS(null, 'x', x);
-    text.setAttributeNS(null, 'y', y);
-    text.setAttributeNS(null, 'fill', 'black');
-    text.setAttributeNS(null, 'font-size', fontSize);
-    if (anchor) {
-      text.setAttributeNS(null, 'text-anchor', anchor);
+    const lines = textContent.split('\n');
+    for (var i = 0; i < lines.length; ++i) {
+      var text = document.createElementNS(svgNS, 'text');
+      text.setAttributeNS(null, 'x', x);
+      text.setAttributeNS(null, 'y', y);
+      text.setAttributeNS(null, 'fill', 'black');
+      text.setAttributeNS(null, 'font-size', fontSize);
+      if (anchor) {
+        text.setAttributeNS(null, 'text-anchor', anchor);
+      }
+      if (transform) {
+        text.setAttributeNS(null, 'transform', transform);
+      }
+      text.appendChild(document.createTextNode(lines[i]));
+      svg.appendChild(text);
+      y += fontSize;
     }
-    if (transform) {
-      text.setAttributeNS(null, 'transform', transform);
-    }
-    text.appendChild(document.createTextNode(textContent));
-    svg.appendChild(text);
     return text;
   }
 }
@@ -471,7 +486,7 @@ class SVG {
  * content.
  */
 class EventBandTitle {
-  constructor(parent, title, className, opt_iconContent) {
+  constructor(parent, anchor, title, className, opt_iconContent) {
     this.div = document.createElement('div');
     this.div.classList.add(className);
     if (opt_iconContent) {
@@ -485,7 +500,11 @@ class EventBandTitle {
     this.controlledItems = [];
     this.div.onclick = this.onClick_.bind(this);
     this.parent = parent;
-    this.parent.appendChild(this.div);
+    if (anchor && anchor.nextSibling) {
+      this.parent.insertBefore(this.div, anchor.nextSibling);
+    } else {
+      this.parent.appendChild(this.div);
+    }
   }
 
   /**
@@ -525,6 +544,7 @@ class EventBands {
     this.bands = [];
     this.charts = [];
     this.globalEvents = [];
+    this.tooltips = [];
     this.vsyncEvents = null;
     this.resolution = resolution;
     this.minTimestamp = minTimestamp;
@@ -542,8 +562,9 @@ class EventBands {
     this.svg.classList.add(className);
 
     this.setTooltip_();
+    this.title = title;
     title.addContolledItems(this.svg);
-    title.parent.appendChild(this.svg);
+    title.parent.insertBefore(this.svg, title.div.nextSibling);
 
     // Set of constants, used for rendering content.
     this.fontSize = 12;
@@ -634,7 +655,7 @@ class EventBands {
     this.bands.push({
       band: eventBand,
       top: this.nextYOffset,
-      bottom: this.nextYOffset + height
+      bottom: this.nextYOffset + height,
     });
 
     this.updateHeight(height, padding);
@@ -664,7 +685,7 @@ class EventBands {
     this.charts.push({
       sourcesWithBounds: [],
       top: this.nextYOffset,
-      bottom: this.nextYOffset + height
+      bottom: this.nextYOffset + height,
     });
 
     this.updateHeight(height, padding);
@@ -783,11 +804,89 @@ class EventBands {
         minValue: minValue,
         maxValue: maxValue,
         source: source,
-        smooth: smooth
+        smooth: smooth,
       });
 
       SVG.addPolyline(this.svg, points, attributes.color, attributes.width);
     }
+  }
+
+  /**
+   * This adds text to chart.
+   *
+   * @param {string} text to display.
+   * @param {number} x horizontal position in the chart.
+   * @param {number} y vertical position the chart.
+   * @param {string} anchor align of the text relative to x.
+   */
+  addChartText(text, x, y, anchor) {
+    SVG.addText(this.svg, x, y, this.fontSize, text, anchor);
+  }
+
+  /**
+   * This adds bar as rectangle to the chart.
+   *
+   * @param {number} x horizontal position in the chart.
+   * @param {number} y vertical position in the chart.
+   * @param {number} width horizontal dimension of the bar.
+   * @param {number} height vertical dimension of the bar.
+   * @param {string} color of the bar.
+   */
+  addChartBar(x, y, width, height, color) {
+    SVG.addRect(this.svg, x, y, width, height, color, 1.0 /* opacity */);
+  }
+
+  /**
+   * This adds popup tooltip for the fixed area in the chart.
+   *
+   * @param {number} x horizontal position of the tooltip area in the chart.
+   * @param {number} y vertical position of the tooltip area in the chart.
+   * @param {number} width of the tooltip area.
+   * @param {number} height of the tooltip area.
+   * @param {string} tooltip text to display.
+   * @param {number} tooltipWidth of the tooltip window.
+   * @param {number} tooltipHeight of the tooltip window.
+   */
+  addChartTooltip(x, y, width, height, tooltip, tooltipWidth, tooltipHeight) {
+    this.tooltips.push({
+      left: x,
+      top: y,
+      right: x + width - 1,
+      bottom: y + height - 1,
+      tooltip: tooltip,
+      tooltipWidth: tooltipWidth,
+      tooltipHeight: tooltipHeight,
+    });
+  }
+
+  /**
+   * This adds HTML input element to the title of the section.
+   *
+   * @param {string} type specifies input type, like radio.
+   * @param {string} text label for the input.
+   * @param {boolean} checked if radio should be initially checked.
+   * @param {function} handler callback for input change.
+   */
+  createTitleInput(type, text, checked, handler) {
+    const input = document.createElement('input');
+    input.onclick = handler;
+    input.setAttribute('type', type);
+    if (type == 'button') {
+      input.setAttribute('value', text);
+    }
+    if (checked) {
+      input.checked = true;
+    }
+    this.title.addContolledItems(input);
+    this.title.div.appendChild(input);
+    if (type == 'button') {
+      return;
+    }
+    const label = document.createElement('label');
+    label.onclick = handler;
+    label.appendChild(document.createTextNode(text));
+    this.title.addContolledItems(label);
+    this.title.div.appendChild(label);
   }
 
   /**
@@ -952,20 +1051,31 @@ class EventBands {
     var eventX = event.offsetX - paddingLeft;
     var eventY = event.offsetY - paddingTop;
 
-    if (eventX < this.bandOffsetX) {
-      this.tooltip.classList.remove('active');
-      return;
-    }
-
     var svg = document.createElementNS(svgNS, 'svg');
     svg.setAttributeNS(
         'http://www.w3.org/2000/xmlns/', 'xmlns:xlink',
         'http://www.w3.org/1999/xlink');
     this.tooltip.appendChild(svg);
 
+    for (const areaTooltip of this.tooltips) {
+      if (areaTooltip.left <= eventX && areaTooltip.top <= eventY &&
+          areaTooltip.right >= eventX && areaTooltip.bottom >= eventY) {
+        SVG.addText(
+            svg, this.horizontalGap, this.verticalGap + this.fontSize,
+            this.fontSize, areaTooltip.tooltip);
+        this.showTooltipForEvent_(
+            event, svg, areaTooltip.tooltipHeight, areaTooltip.tooltipWidth);
+        return;
+      }
+    }
+
+    if (eventX < this.bandOffsetX) {
+      this.tooltip.classList.remove('active');
+      return;
+    }
+
     var eventTimestamp = this.offsetToTime(eventX - this.bandOffsetX);
 
-    var updated = false;
     var width = 220;
     var yOffset = this.verticalGap;
 
@@ -1421,7 +1531,8 @@ class CpuDetailedInfoView extends DetailedInfoView {
         Object.keys(eventsPerTid).length +
         ' active processes/threads. Total cpu usage: ' + totalUsage.toFixed(2) +
         '%.';
-    var title = new EventBandTitle(this.overlay, cpuInfo, 'arc-cpu-view-title');
+    var title = new EventBandTitle(
+        this.overlay, undefined, cpuInfo, 'arc-cpu-view-title');
     var bands = new EventBands(
         title, 'arc-events-cpu-detailed-band',
         overviewBand.resolution / zoomFactor, minTimestamp, maxTimestamp);
@@ -1489,8 +1600,9 @@ class CpuDetailedInfoView extends DetailedInfoView {
     // Add center and boundary lines.
     var kTimeMark = 10000;
     var timeEvents = [
-      [kTimeMark, minTimestamp], [kTimeMark, eventTimestamp],
-      [kTimeMark, maxTimestamp - 1]
+      [kTimeMark, minTimestamp],
+      [kTimeMark, eventTimestamp],
+      [kTimeMark, maxTimestamp - 1],
     ];
     bands.addGlobal(new Events(timeEvents, kTimeMark, kTimeMark));
 
@@ -1757,10 +1869,14 @@ class Events {
  * @param {number} height of the chart in pixels.
  * @param {number} gridLinesCount number of extra intermediate grid lines, 0 i
  *                 not required.
+ * @param {HTMLElement} anchor insert point. View will be added after this.
+ *                             may be optional.
+ *
  */
 function createChart(
-    parent, title, resolution, duration, height, gridLinesCount) {
-  var titleBands = new EventBandTitle(parent, title, 'arc-events-band-title');
+    parent, title, resolution, duration, height, gridLinesCount, anchor) {
+  var titleBands =
+      new EventBandTitle(parent, anchor, title, 'arc-events-band-title');
   var bands =
       new EventBands(titleBands, 'arc-events-band', resolution, 0, duration);
   bands.setWidth(bands.timestampToOffset(duration));

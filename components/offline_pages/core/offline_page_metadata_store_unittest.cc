@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -491,7 +491,7 @@ bool InsertVisualsVersion3(sql::Database* db,
       db->GetCachedStatement(SQL_FROM_HERE, kInsertVisualsSql));
   statement.BindInt64(0, visuals.offline_id);
   statement.BindInt64(1, store_utils::ToDatabaseTime(visuals.expiration));
-  statement.BindBlob(2, visuals.thumbnail.data(), visuals.thumbnail.size());
+  statement.BindBlob(2, visuals.thumbnail);
   return statement.Run();
 }
 

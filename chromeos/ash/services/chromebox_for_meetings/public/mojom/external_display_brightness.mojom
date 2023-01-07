@@ -1,0 +1,27 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 1
+
+module chromeos.cfm.mojom;
+
+// Interface for controlling external displays with ambient light sensors.
+interface ExternalDisplayBrightness {
+
+  // Enables/disables ALS-based brightness control on all external displays with
+  // ambient light sensors.
+  SetExternalDisplayALSBrightness@0(bool enabled);
+
+  // Gets whether or not the ALS-based brightness control feature is enabled.
+  GetExternalDisplayALSBrightness@1() => (bool enabled);
+
+  // Sets the brightness of all external displays with ambient light sensors to
+  // |percent|. This method does nothing if ALS-based brightness control is
+  // enabled.
+  SetExternalDisplayBrightnessPercent@2(double percent);
+
+  // Gets the brightness of all external displays with ambient light sensors.
+  // This method returns -1.0 if ALS-based brightness control is enabled.
+  GetExternalDisplayBrightnessPercent@3() => (double percent);
+};

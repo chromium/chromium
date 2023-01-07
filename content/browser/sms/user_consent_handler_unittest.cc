@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/sms/test/mock_sms_web_contents_delegate.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/navigation_simulator.h"
@@ -67,7 +68,6 @@ class PromptBasedUserConsentHandlerTest : public RenderViewHostTestHarness {
   void DismissPrompt() {
     if (dismiss_callback_.is_null()) {
       FAIL() << "SmsInfobar not available";
-      return;
     }
     std::move(dismiss_callback_).Run();
     confirm_callback_.Reset();
@@ -83,12 +83,13 @@ TEST_F(PromptBasedUserConsentHandlerTest, PromptsUser) {
   NavigateAndCommit(GURL(kTestUrl));
 
   const url::Origin& origin =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   base::RunLoop loop;
 
   ExpectCreateSmsPrompt(main_rfh(), OriginList{origin}, "12345");
   CompletionCallback callback;
-  PromptBasedUserConsentHandler consent_handler{main_rfh(), OriginList{origin}};
+  PromptBasedUserConsentHandler consent_handler{*main_rfh(),
+                                                OriginList{origin}};
   consent_handler.RequestUserConsent("12345", std::move(callback));
 }
 
@@ -96,10 +97,11 @@ TEST_F(PromptBasedUserConsentHandlerTest, ConfirmInvokedCallback) {
   NavigateAndCommit(GURL(kTestUrl));
 
   const url::Origin& origin =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   ExpectCreateSmsPrompt(main_rfh(), OriginList{origin}, "12345");
-  PromptBasedUserConsentHandler consent_handler{main_rfh(), OriginList{origin}};
+  PromptBasedUserConsentHandler consent_handler{*main_rfh(),
+                                                OriginList{origin}};
   EXPECT_FALSE(consent_handler.is_active());
   bool succeed;
   auto callback = base::BindLambdaForTesting([&](UserConsentResult result) {
@@ -116,10 +118,11 @@ TEST_F(PromptBasedUserConsentHandlerTest, CancelingInvokedCallback) {
   NavigateAndCommit(GURL(kTestUrl));
 
   const url::Origin& origin =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   ExpectCreateSmsPrompt(main_rfh(), OriginList{origin}, "12345");
-  PromptBasedUserConsentHandler consent_handler{main_rfh(), OriginList{origin}};
+  PromptBasedUserConsentHandler consent_handler{*main_rfh(),
+                                                OriginList{origin}};
   EXPECT_FALSE(consent_handler.is_active());
   bool cancelled;
   auto callback = base::BindLambdaForTesting([&](UserConsentResult result) {
@@ -136,7 +139,7 @@ TEST_F(PromptBasedUserConsentHandlerTest, CancelsWhenNoDelegate) {
   NavigateAndCommit(GURL(kTestUrl));
 
   const url::Origin& origin =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents());
@@ -144,10 +147,46 @@ TEST_F(PromptBasedUserConsentHandlerTest, CancelsWhenNoDelegate) {
 
   ExpectNoSmsPrompt();
 
-  PromptBasedUserConsentHandler consent_handler{main_rfh(), OriginList{origin}};
+  PromptBasedUserConsentHandler consent_handler{*main_rfh(),
+                                                OriginList{origin}};
   bool cancelled;
   auto callback = base::BindLambdaForTesting([&](UserConsentResult result) {
     cancelled = (result == UserConsentResult::kNoDelegate);
+  });
+  consent_handler.RequestUserConsent("12345", std::move(callback));
+  EXPECT_TRUE(cancelled);
+}
+
+class PromptBasedUserConsentHandlerAlwaysAllowedTest
+    : public PromptBasedUserConsentHandlerTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache, {}}},
+        // Allow BackForwardCache for all devices regardless of their
+        // memory.
+        {features::kBackForwardCacheMemoryControls});
+    PromptBasedUserConsentHandlerTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PromptBasedUserConsentHandlerAlwaysAllowedTest, CancelsWhenInactiveRFH) {
+  NavigateAndCommit(GURL(kTestUrl));
+  RenderFrameHost& old_main_frame_host = *main_rfh();
+  const url::Origin& origin = old_main_frame_host.GetLastCommittedOrigin();
+
+  ExpectNoSmsPrompt();
+
+  NavigateAndCommit(GURL("https://testing.test2"));
+
+  PromptBasedUserConsentHandler consent_handler{old_main_frame_host,
+                                                OriginList{origin}};
+  bool cancelled;
+  auto callback = base::BindLambdaForTesting([&](UserConsentResult result) {
+    cancelled = (result == UserConsentResult::kInactiveRenderFrameHost);
   });
   consent_handler.RequestUserConsent("12345", std::move(callback));
   EXPECT_TRUE(cancelled);

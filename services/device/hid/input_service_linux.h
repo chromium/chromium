@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -29,6 +28,10 @@ class InputServiceLinux : public mojom::InputDeviceManager {
   using DeviceMap = std::map<std::string, mojom::InputDeviceInfoPtr>;
 
   InputServiceLinux();
+
+  InputServiceLinux(const InputServiceLinux&) = delete;
+  InputServiceLinux& operator=(const InputServiceLinux&) = delete;
+
   ~InputServiceLinux() override;
 
   // Binds the |receiver| to an InputServiceLinux instance.
@@ -69,8 +72,6 @@ class InputServiceLinux : public mojom::InputDeviceManager {
   base::ThreadChecker thread_checker_;
   mojo::ReceiverSet<mojom::InputDeviceManager> receivers_;
   mojo::AssociatedRemoteSet<mojom::InputDeviceManagerClient> clients_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputServiceLinux);
 };
 
 }  // namespace device

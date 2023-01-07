@@ -29,10 +29,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_BUS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_BUS_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/audio/audio_channel.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -71,6 +69,9 @@ class PLATFORM_EXPORT AudioBus : public ThreadSafeRefCounted<AudioBus> {
   static scoped_refptr<AudioBus> Create(unsigned number_of_channels,
                                         uint32_t length,
                                         bool allocate = true);
+
+  AudioBus(const AudioBus&) = delete;
+  AudioBus& operator=(const AudioBus&) = delete;
 
   // Tells the given channel to use an externally allocated buffer.
   void SetChannelMemory(unsigned channel_index,
@@ -179,8 +180,6 @@ class PLATFORM_EXPORT AudioBus : public ThreadSafeRefCounted<AudioBus> {
   Vector<AudioChannel, 2> channels_;
   int layout_;
   float sample_rate_;  // 0.0 if unknown or N/A
-
-  DISALLOW_COPY_AND_ASSIGN(AudioBus);
 };
 
 }  // namespace blink

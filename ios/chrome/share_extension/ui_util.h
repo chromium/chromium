@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,7 @@ namespace ui_util {
 // Standard animation timing for the extension.
 extern const CGFloat kAnimationDuration;
 
-// Returns the closest pixel-aligned value less than |value|, taking the scale
-// factor into account. At a scale of 1, equivalent to floor().
-CGFloat AlignValueToPixel(CGFloat value);
-
-// Creates constraints so that |filler| fills entirely |container| and make them
+// Creates constraints so that `filler` fills entirely `container` and make them
 // active.
 void ConstrainAllSidesOfViewToView(UIView* container, UIView* filler);
 

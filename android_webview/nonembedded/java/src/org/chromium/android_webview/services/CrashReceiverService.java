@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import org.chromium.android_webview.common.crash.CrashInfo;
 import org.chromium.android_webview.common.crash.CrashUploadUtil;
 import org.chromium.android_webview.common.crash.SystemWideCrashDirectories;
 import org.chromium.android_webview.common.services.ICrashReceiverService;
+import org.chromium.android_webview.services.ServicesStatsHelper.NonembeddedService;
 import org.chromium.base.Log;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 
@@ -25,6 +26,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.concurrent.GuardedBy;
+
 /**
  * Service that is responsible for receiving crash dumps from an application, for upload.
  */
@@ -32,6 +35,8 @@ public class CrashReceiverService extends Service {
     private static final String TAG = "CrashReceiverService";
 
     private final Object mCopyingLock = new Object();
+
+    @GuardedBy("mCopyingLock")
     private boolean mIsCopying;
 
     private final ICrashReceiverService.Stub mBinder = new ICrashReceiverService.Stub() {
@@ -182,6 +187,11 @@ public class CrashReceiverService extends Service {
                 }
             }
         }
+    }
+
+    @Override
+    public void onCreate() {
+        ServicesStatsHelper.recordServiceLaunch(NonembeddedService.CRASH_RECEIVER_SERVICE);
     }
 
     @Override

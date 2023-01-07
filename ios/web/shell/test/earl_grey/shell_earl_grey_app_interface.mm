@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/testing/earl_grey/earl_grey_app.h"
 #import "ios/testing/nserror_util.h"
-#include "ios/web/public/browser_state.h"
+#import "ios/web/public/browser_state.h"
 #import "ios/web/public/test/earl_grey/js_test_util.h"
 #import "ios/web/public/test/navigation_test_util.h"
 #import "ios/web/public/test/web_view_content_test_util.h"

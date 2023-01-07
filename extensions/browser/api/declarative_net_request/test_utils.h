@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,19 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_manager.h"
 #include "extensions/browser/warning_service.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -58,14 +60,16 @@ std::ostream& operator<<(std::ostream& output, RequestAction::Type type);
 std::ostream& operator<<(std::ostream& output, const RequestAction& action);
 std::ostream& operator<<(std::ostream& output, const ParseResult& result);
 std::ostream& operator<<(std::ostream& output,
-                         const base::Optional<RequestAction>& action);
+                         const absl::optional<RequestAction>& action);
 std::ostream& operator<<(std::ostream& output, LoadRulesetResult result);
 std::ostream& operator<<(std::ostream& output, const RulesCountPair& count);
 
 // Returns true if the given extension's indexed static rulesets are all valid.
 // Should be called on a sequence where file IO is allowed.
-bool AreAllIndexedStaticRulesetsValid(const Extension& extension,
-                                      content::BrowserContext* browser_context);
+bool AreAllIndexedStaticRulesetsValid(
+    const Extension& extension,
+    content::BrowserContext* browser_context,
+    FileBackedRulesetSource::RulesetFilter ruleset_filter);
 
 // Helper to create a verified ruleset matcher. Populates |matcher| and
 // |expected_checksum|. Returns true on success.
@@ -83,7 +87,7 @@ FileBackedRulesetSource CreateTemporarySource(
 api::declarative_net_request::ModifyHeaderInfo CreateModifyHeaderInfo(
     api::declarative_net_request::HeaderOperation operation,
     std::string header,
-    base::Optional<std::string> value);
+    absl::optional<std::string> value);
 
 bool EqualsForTesting(
     const api::declarative_net_request::ModifyHeaderInfo& lhs,
@@ -114,9 +118,9 @@ class RulesetManagerObserver : public RulesetManager::TestObserver {
   void OnEvaluateRequest(const WebRequestInfo& request,
                          bool is_incognito_context) override;
 
-  RulesetManager* const manager_;
+  const raw_ptr<RulesetManager> manager_;
   size_t current_count_ = 0;
-  base::Optional<size_t> expected_count_;
+  absl::optional<size_t> expected_count_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::vector<GURL> observed_requests_;
   SEQUENCE_CHECKER(sequence_checker_);

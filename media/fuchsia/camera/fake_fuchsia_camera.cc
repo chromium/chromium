@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -284,37 +285,63 @@ void FakeCameraStream::SetBufferCollection(
     buffer_collection_.Unbind();
   }
 
-  // Use a SyncPtr to be able to wait for Sync() synchronously.
-  fuchsia::sysmem::BufferCollectionTokenSyncPtr token;
-  token.Bind(std::move(token_handle));
+  new_buffer_collection_token_.Bind(std::move(token_handle));
+  new_buffer_collection_token_.set_error_handler(
+      fit::bind_member(this, &FakeCameraStream::OnBufferCollectionError));
 
   // Duplicate the token to access from the stream.
-  fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken> local_token;
-  zx_status_t status =
-      token->Duplicate(/*rights_attenuation_mask=*/0, local_token.NewRequest());
-  EXPECT_EQ(status, ZX_OK);
+  fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
+      token_for_client;
+  new_buffer_collection_token_->Duplicate(ZX_RIGHT_SAME_RIGHTS,
+                                          token_for_client.NewRequest());
 
   fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken> failed_token;
   if (first_buffer_collection_fail_mode_ == SysmemFailMode::kFailSync) {
-    // Create an additional token that's dropped before this method returns.
-    // This will cause sysmem to fail the collection, so the future attempt to
-    // Sync() the collection from the production code will fail as well.
-    zx_status_t status = token->Duplicate(/*rights_attenuation_mask=*/0,
-                                          failed_token.NewRequest());
-    EXPECT_EQ(status, ZX_OK);
+    // Create an additional token that's dropped in OnBufferCollectionSyncDone()
+    // before buffers are allocated. This will cause sysmem to fail the
+    // collection, so the future attempt to Sync() the collection from the
+    // production code will fail as well.
+    new_buffer_collection_token_->Duplicate(
+        /*rights_attenuation_mask=*/0, failed_token.NewRequest());
   }
 
-  status = token->Sync();
-  EXPECT_EQ(status, ZX_OK);
+  new_buffer_collection_token_->Sync(
+      [this, token_for_client = std::move(token_for_client),
+       failed_token = std::move(failed_token)]() mutable {
+        OnBufferCollectionSyncDone(std::move(token_for_client),
+                                   std::move(failed_token));
+      });
+}
 
+void FakeCameraStream::WatchBufferCollection(
+    WatchBufferCollectionCallback callback) {
+  EXPECT_FALSE(watch_buffer_collection_callback_);
+  watch_buffer_collection_callback_ = std::move(callback);
+  SendBufferCollection();
+}
+
+void FakeCameraStream::GetNextFrame(GetNextFrameCallback callback) {
+  EXPECT_FALSE(get_next_frame_callback_);
+  get_next_frame_callback_ = std::move(callback);
+  SendNextFrame();
+}
+
+void FakeCameraStream::NotImplemented_(const std::string& name) {
+  ADD_FAILURE() << "NotImplemented_: " << name;
+}
+
+void FakeCameraStream::OnBufferCollectionSyncDone(
+    fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
+        token_for_client,
+    fidl::InterfaceHandle<fuchsia::sysmem::BufferCollectionToken>
+        failed_token) {
   // Return the token back to the client.
-  new_buffer_collection_token_ = token.Unbind();
+  new_buffer_collection_token_for_client_ = std::move(token_for_client);
   SendBufferCollection();
 
   // Initialize the new collection using |local_token|.
-  sysmem_allocator_->BindSharedCollection(std::move(local_token),
-                                          buffer_collection_.NewRequest());
-  EXPECT_EQ(status, ZX_OK);
+  sysmem_allocator_->BindSharedCollection(
+      std::move(new_buffer_collection_token_), buffer_collection_.NewRequest());
 
   buffer_collection_.set_error_handler(
       fit::bind_member(this, &FakeCameraStream::OnBufferCollectionError));
@@ -350,23 +377,6 @@ void FakeCameraStream::SetBufferCollection(
                                      std::move(constraints));
   buffer_collection_->WaitForBuffersAllocated(
       fit::bind_member(this, &FakeCameraStream::OnBufferCollectionAllocated));
-}
-
-void FakeCameraStream::WatchBufferCollection(
-    WatchBufferCollectionCallback callback) {
-  EXPECT_FALSE(watch_buffer_collection_callback_);
-  watch_buffer_collection_callback_ = std::move(callback);
-  SendBufferCollection();
-}
-
-void FakeCameraStream::GetNextFrame(GetNextFrameCallback callback) {
-  EXPECT_FALSE(get_next_frame_callback_);
-  get_next_frame_callback_ = std::move(callback);
-  SendNextFrame();
-}
-
-void FakeCameraStream::NotImplemented_(const std::string& name) {
-  ADD_FAILURE() << "NotImplemented_: " << name;
 }
 
 void FakeCameraStream::OnBufferCollectionError(zx_status_t status) {
@@ -437,12 +447,14 @@ void FakeCameraStream::SendOrientation() {
 }
 
 void FakeCameraStream::SendBufferCollection() {
-  if (!watch_buffer_collection_callback_ || !new_buffer_collection_token_)
+  if (!watch_buffer_collection_callback_ ||
+      !new_buffer_collection_token_for_client_) {
     return;
+  }
   watch_buffer_collection_callback_(
-      std::move(new_buffer_collection_token_.value()));
+      std::move(new_buffer_collection_token_for_client_.value()));
   watch_buffer_collection_callback_ = {};
-  new_buffer_collection_token_.reset();
+  new_buffer_collection_token_for_client_.reset();
 }
 
 void FakeCameraStream::SendNextFrame() {
@@ -522,19 +534,22 @@ void FakeCameraDevice::NotImplemented_(const std::string& name) {
 
 FakeCameraDeviceWatcher::FakeCameraDeviceWatcher(
     sys::OutgoingDirectory* outgoing_directory) {
-  outgoing_directory->AddPublicService<fuchsia::camera3::DeviceWatcher>(
-      [this](fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request) {
-        auto client = std::make_unique<Client>(this);
+  zx_status_t status =
+      outgoing_directory->AddPublicService<fuchsia::camera3::DeviceWatcher>(
+          [this](
+              fidl::InterfaceRequest<fuchsia::camera3::DeviceWatcher> request) {
+            auto client = std::make_unique<Client>(this);
 
-        // Queue events for all existing devices.
-        for (auto& device : devices_) {
-          fuchsia::camera3::WatchDevicesEvent event;
-          event.set_added(device.first);
-          client->QueueEvent(std::move(event));
-        }
+            // Queue events for all existing devices.
+            for (auto& device : devices_) {
+              fuchsia::camera3::WatchDevicesEvent event;
+              event.set_added(device.first);
+              client->QueueEvent(std::move(event));
+            }
 
-        bindings_.AddBinding(std::move(client), std::move(request));
-      });
+            bindings_.AddBinding(std::move(client), std::move(request));
+          });
+  ZX_CHECK(status == ZX_OK, status) << "AddPublicService failed";
 
   devices_.insert(
       std::make_pair(next_device_id_++, std::make_unique<FakeCameraDevice>()));

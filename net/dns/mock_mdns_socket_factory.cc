@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
 #include "net/dns/public/util.h"
@@ -32,15 +32,7 @@ int MockMDnsDatagramServerSocket::SendTo(IOBuffer* buf,
                                          const IPEndPoint& address,
                                          CompletionOnceCallback callback) {
   return SendToInternal(std::string(buf->data(), buf_len), address.ToString(),
-                        base::AdaptCallbackForRepeating(std::move(callback)));
-}
-
-int MockMDnsDatagramServerSocket::RecvFrom(IOBuffer* buffer,
-                                           int size,
-                                           IPEndPoint* address,
-                                           CompletionOnceCallback callback) {
-  return RecvFromInternal(buffer, size, address,
-                          base::AdaptCallbackForRepeating(std::move(callback)));
+                        std::move(callback));
 }
 
 int MockMDnsDatagramServerSocket::GetLocalAddress(IPEndPoint* address) const {
@@ -57,7 +49,7 @@ int MockMDnsDatagramServerSocket::HandleRecvNow(
     IOBuffer* buffer,
     int size,
     IPEndPoint* address,
-    CompletionRepeatingCallback callback) {
+    CompletionOnceCallback callback) {
   int size_returned =
       std::min(response_packet_.size(), static_cast<size_t>(size));
   memcpy(buffer->data(), response_packet_.data(), size_returned);
@@ -68,10 +60,10 @@ int MockMDnsDatagramServerSocket::HandleRecvLater(
     IOBuffer* buffer,
     int size,
     IPEndPoint* address,
-    CompletionRepeatingCallback callback) {
-  int rv = HandleRecvNow(buffer, size, address, callback);
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                base::BindOnce(callback, rv));
+    CompletionOnceCallback callback) {
+  int rv = HandleRecvNow(buffer, size, address, base::DoNothing());
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), rv));
   return ERR_IO_PENDING;
 }
 
@@ -88,15 +80,16 @@ void MockMDnsSocketFactory::CreateSockets(
 void MockMDnsSocketFactory::CreateSocket(
     AddressFamily address_family,
     std::vector<std::unique_ptr<DatagramServerSocket>>* sockets) {
-  std::unique_ptr<testing::NiceMock<MockMDnsDatagramServerSocket>> new_socket(
-      new testing::NiceMock<MockMDnsDatagramServerSocket>(address_family));
+  auto new_socket =
+      std::make_unique<testing::NiceMock<MockMDnsDatagramServerSocket>>(
+          address_family);
 
   ON_CALL(*new_socket, SendToInternal(_, _, _))
       .WillByDefault(Invoke(
           this,
           &MockMDnsSocketFactory::SendToInternal));
 
-  ON_CALL(*new_socket, RecvFromInternal(_, _, _, _))
+  ON_CALL(*new_socket, RecvFrom(_, _, _, _))
       .WillByDefault(Invoke(this, &MockMDnsSocketFactory::RecvFromInternal));
 
   sockets->push_back(std::move(new_socket));
@@ -111,14 +104,13 @@ void MockMDnsSocketFactory::SimulateReceive(const uint8_t* packet, int size) {
   std::move(recv_callback_).Run(size);
 }
 
-int MockMDnsSocketFactory::RecvFromInternal(
-    IOBuffer* buffer,
-    int size,
-    IPEndPoint* address,
-    CompletionRepeatingCallback callback) {
+int MockMDnsSocketFactory::RecvFromInternal(IOBuffer* buffer,
+                                            int size,
+                                            IPEndPoint* address,
+                                            CompletionOnceCallback callback) {
   recv_buffer_ = buffer;
   recv_buffer_size_ = size;
-  recv_callback_ = callback;
+  recv_callback_ = std::move(callback);
   return ERR_IO_PENDING;
 }
 

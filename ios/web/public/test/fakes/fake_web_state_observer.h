@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,59 +22,59 @@ class FakeWebStateObserver : public WebStateObserver {
 
   WebState* web_state() { return web_state_; }
 
-  // Arguments passed to |WasShown|.
+  // Arguments passed to `WasShown`.
   web::TestWasShownInfo* was_shown_info() { return was_shown_info_.get(); }
-  // Arguments passed to |WasHidden|.
+  // Arguments passed to `WasHidden`.
   web::TestWasHiddenInfo* was_hidden_info() { return was_hidden_info_.get(); }
-  // Arguments passed to |DidStartNavigation|.
+  // Arguments passed to `DidStartNavigation`.
   web::TestDidStartNavigationInfo* did_start_navigation_info() {
     return did_start_navigation_info_.get();
   }
-  // Arguments passed to |DidFinishNavigation|.
+  // Arguments passed to `DidFinishNavigation`.
   web::TestDidFinishNavigationInfo* did_finish_navigation_info() {
     return did_finish_navigation_info_.get();
   }
-  // Arguments passed to |PageLoaded|.
+  // Arguments passed to `PageLoaded`.
   web::TestLoadPageInfo* load_page_info() { return load_page_info_.get(); }
-  // Arguments passed to |LoadProgressChanged|.
+  // Arguments passed to `LoadProgressChanged`.
   web::TestChangeLoadingProgressInfo* change_loading_progress_info() {
     return change_loading_progress_info_.get();
   }
-  // Arguments passed to |TitleWasSet|.
+  // Arguments passed to `TitleWasSet`.
   web::TestTitleWasSetInfo* title_was_set_info() {
     return title_was_set_info_.get();
   }
-  // Arguments passed to |DidChangeVisibleSecurityState|.
+  // Arguments passed to `DidChangeVisibleSecurityState`.
   web::TestDidChangeVisibleSecurityStateInfo*
   did_change_visible_security_state_info() {
     return did_change_visible_security_state_info_.get();
   }
-  // Arguments passed to |FaviconUrlUpdated|.
+  // Arguments passed to `FaviconUrlUpdated`.
   web::TestUpdateFaviconUrlCandidatesInfo*
   update_favicon_url_candidates_info() {
     return update_favicon_url_candidates_info_.get();
   }
-  // Arguments passed to |WebFrameDidBecomeAvailable|.
+  // Arguments passed to `WebFrameDidBecomeAvailable`.
   web::TestWebFrameAvailabilityInfo* web_frame_available_info() {
     return web_frame_available_info_.get();
   }
-  // Arguments passed to |WebFrameWillBecomeUnavailable|.
+  // Arguments passed to `WebFrameWillBecomeUnavailable`.
   web::TestWebFrameAvailabilityInfo* web_frame_unavailable_info() {
     return web_frame_unavailable_info_.get();
   }
-  // Arguments passed to |RenderProcessGone|.
+  // Arguments passed to `RenderProcessGone`.
   web::TestRenderProcessGoneInfo* render_process_gone_info() {
     return render_process_gone_info_.get();
   }
-  // Arguments passed to |WebStateDestroyed|.
+  // Arguments passed to `WebStateDestroyed`.
   web::TestWebStateDestroyedInfo* web_state_destroyed_info() {
     return web_state_destroyed_info_.get();
   }
-  // Arguments passed to |DidStartLoading|.
+  // Arguments passed to `DidStartLoading`.
   web::TestStopLoadingInfo* stop_loading_info() {
     return stop_loading_info_.get();
   }
-  // Arguments passed to |DidStopLoading|.
+  // Arguments passed to `DidStopLoading`.
   web::TestStartLoadingInfo* start_loading_info() {
     return start_loading_info_.get();
   }

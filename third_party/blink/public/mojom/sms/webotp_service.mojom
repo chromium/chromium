@@ -1,10 +1,8 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module blink.mojom;
-
-import "mojo/public/mojom/base/time.mojom";
 
 // Implementation of the proposed "Web OTP API".
 //
@@ -18,9 +16,8 @@ enum SmsStatus {
   kBackendNotAvailable // request cancelled since OTP backend was not available
 };
 
-// This interface is created per storage partition but its execution is context
-// associated: there is an origin associated with a request that is multiplexed
-// through one instance on a storage partition.
+// This interface is created per-document. The renderer process sends messages
+// to the browser process over this interface.
 interface WebOTPService {
   // Retrieves the next SMS message that arrives on the phone that is addressed
   // to the caller's origin.

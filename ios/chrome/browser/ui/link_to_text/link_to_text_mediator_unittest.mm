@@ -1,8 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_mediator.h"
+#import "base/time/time.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,6 +21,7 @@
 #import "components/ukm/test_ukm_recorder.h"
 #import "ios/chrome/browser/link_to_text/link_generation_outcome.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_constants.h"
+#import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_payload.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_tab_helper.h"
 #import "ios/chrome/browser/ui/link_to_text/link_to_text_consumer.h"
@@ -49,7 +51,6 @@ namespace {
 const CGFloat kCaretWidth = 4.0;
 const CGFloat kFakeLeftInset = 50;
 const CGFloat kFakeTopInset = 100;
-const char kJavaScriptFunctionName[] = "linkToText.getLinkToText";
 const char kTestQuote[] = "some selected text on a page";
 const char kTestHighlightURL[] =
     "https://www.chromium.org/#:~:text=selected%20text";
@@ -63,6 +64,29 @@ class FakeWebStateListDelegate : public WebStateListDelegate {
   void WillAddWebState(web::WebState* web_state) override {}
   void WebStateDetached(web::WebState* web_state) override {}
 };
+
+// Fake version of JS Feature which directly invokes the passed callback using
+// the provided latency and response values, without actually invoking JS (or
+// a mocked replacement).
+class FakeJSFeature : public LinkToTextJavaScriptFeature {
+ public:
+  void GetLinkToText(
+      web::WebState* web_state,
+      base::OnceCallback<void(LinkToTextResponse*)> callback) override {
+    std::move(callback).Run([LinkToTextResponse
+        linkToTextResponseWithValue:response_
+                           webState:web_state
+                            latency:latency_]);
+  }
+
+  void set_latency(base::TimeDelta latency) { latency_ = latency; }
+  void set_response(base::Value* response) { response_ = response; }
+
+ private:
+  base::TimeDelta latency_;
+  base::Value* response_;
+};
+
 }  // namespace
 
 class LinkToTextMediatorTest : public PlatformTest {
@@ -107,6 +131,8 @@ class LinkToTextMediatorTest : public PlatformTest {
     web_state_->OnNavigationFinished(&context);
 
     LinkToTextTabHelper::CreateForWebState(web_state_);
+    LinkToTextTabHelper::FromWebState(web_state_)
+        ->SetJSFeatureForTesting(&fake_js_feature_);
 
     mediator_ =
         [[LinkToTextMediator alloc] initWithWebStateList:&web_state_list_
@@ -114,7 +140,7 @@ class LinkToTextMediatorTest : public PlatformTest {
   }
 
   void SetLinkToTextResponse(base::Value* value, CGFloat zoom_scale) {
-    main_frame_->AddJsResultForFunctionCall(value, kJavaScriptFunctionName);
+    fake_js_feature_.set_response(value);
 
     fake_scroll_view_.contentInset =
         UIEdgeInsetsMake(kFakeTopInset, kFakeLeftInset, 0, 0);
@@ -191,28 +217,15 @@ class LinkToTextMediatorTest : public PlatformTest {
   UIView* fake_view_;
   LinkToTextMediator* mediator_;
   UIScrollView* fake_scroll_view_;
+  FakeJSFeature fake_js_feature_;
   id mocked_consumer_;
 };
-
-// Tests that the mediator should offer link to text to HTML pages that can
-// call JavaScript functions.
-TEST_F(LinkToTextMediatorTest, ShouldOfferLinkToText) {
-  // In the single-threaded test environment, the JS callback can't fire until
-  // after the dispatched timeout, so this returns false. However, JS execution
-  // is the last step, so we can verify that the right method was invoked, and
-  // infer from this that all the other browser-side checks passed as well.
-  [mediator_ shouldOfferLinkToText];
-  EXPECT_EQ(main_frame_->GetLastJavaScriptCall(),
-            "__gCrWeb.linkToText.checkPreconditions();");
-}
 
 // Tests that the mediator should not offer link to text to pages that are not
 // HTML.
 TEST_F(LinkToTextMediatorTest, ShouldNotOfferLinkToTextNotHTML) {
   web_state_->SetContentIsHTML(false);
   EXPECT_FALSE([mediator_ shouldOfferLinkToText]);
-  // JavaScript shouldn't be invoked for non-HTML pages.
-  EXPECT_EQ(main_frame_->GetLastJavaScriptCall(), "");
 }
 
 // Tests that the mediator should not offer link to text when, for some reason,
@@ -221,7 +234,6 @@ TEST_F(LinkToTextMediatorTest,
        ShouldNotOfferLinkToTextCannotExecuteJavaScript) {
   main_frame_->set_can_call_function(false);
   EXPECT_FALSE([mediator_ shouldOfferLinkToText]);
-  EXPECT_EQ(main_frame_->GetLastJavaScriptCall(), "");
 }
 
 // Tests that the shareHighlight command is triggered with the right parameters
@@ -488,13 +500,9 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationSuccessButNoPayload) {
 TEST_F(LinkToTextMediatorTest, LinkGenerationTimeout) {
   base::HistogramTester histogram_tester;
 
-  // Set-up with any response, which doesn't matter since the mocked WebFrame
-  // will simply invoke the callback with nullptr (due to a timeout).
-  std::unique_ptr<base::Value> success_response =
-      CreateErrorResponse(LinkGenerationOutcome::kSuccess);
-  SetLinkToTextResponse(success_response.get(), /*zoom=*/1.0);
-
-  main_frame_->set_force_timeout(true);
+  SetLinkToTextResponse(nullptr, /*zoom=*/0);
+  fake_js_feature_.set_latency(link_to_text::kLinkGenerationTimeout +
+                               base::Milliseconds(10));
 
   __block BOOL callback_invoked = NO;
   [[[mocked_consumer_ expect] andDo:^(NSInvocation*) {
@@ -502,10 +510,6 @@ TEST_F(LinkToTextMediatorTest, LinkGenerationTimeout) {
   }] linkGenerationFailed];
 
   [mediator_ handleLinkToTextSelection];
-
-  // Advance time to skip waiting for the timeout.
-  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(
-      link_to_text::kLinkGenerationTimeoutInMs + 10));
 
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^BOOL {
     base::RunLoop().RunUntilIdle();

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@ package org.chromium.webview_shell;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.UiModeManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -39,6 +39,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.PermissionRequest;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -47,14 +48,20 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.webkit.TracingConfig;
 import androidx.webkit.TracingController;
 import androidx.webkit.WebSettingsCompat;
 import androidx.webkit.WebViewClientCompat;
+import androidx.webkit.WebViewCompat;
 import androidx.webkit.WebViewFeature;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
@@ -82,11 +89,14 @@ import java.util.regex.Pattern;
 public class WebViewBrowserActivity extends AppCompatActivity {
     private static final String TAG = "WebViewShell";
 
-    // Our imaginary Android permission to associate with the WebKit geo permission
+    // Our imaginary Android permission to associate with the WebKit geo permission.
     private static final String RESOURCE_GEO = "RESOURCE_GEO";
-    // Our imaginary WebKit permission to request when loading a file:// URL
+    // Our imaginary WebKit permission to request when loading a file:// URL.
     private static final String RESOURCE_FILE_URL = "RESOURCE_FILE_URL";
-    // WebKit permissions with no corresponding Android permission can always be granted
+    // Our imaginary WebKit permissions to request when loading a file:// URL on T+.
+    private static final String RESOURCE_IMAGES_URL = "RESOURCE_IMAGES_URL";
+    private static final String RESOURCE_VIDEO_URL = "RESOURCE_VIDEO_URL";
+    // WebKit permissions with no corresponding Android permission can always be granted.
     private static final String NO_ANDROID_PERMISSION = "NO_ANDROID_PERMISSION";
 
     // TODO(timav): Remove these variables after http://crbug.com/626202 is fixed.
@@ -101,6 +111,10 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         sPermissions = new HashMap<String, String>();
         sPermissions.put(RESOURCE_GEO, Manifest.permission.ACCESS_FINE_LOCATION);
         sPermissions.put(RESOURCE_FILE_URL, Manifest.permission.READ_EXTERNAL_STORAGE);
+        if (BuildInfo.isAtLeastT()) {
+            sPermissions.put(RESOURCE_IMAGES_URL, Manifest.permission.READ_MEDIA_IMAGES);
+            sPermissions.put(RESOURCE_VIDEO_URL, Manifest.permission.READ_MEDIA_VIDEO);
+        }
         sPermissions.put(PermissionRequest.RESOURCE_AUDIO_CAPTURE,
                 Manifest.permission.RECORD_AUDIO);
         sPermissions.put(PermissionRequest.RESOURCE_MIDI_SYSEX, NO_ANDROID_PERMISSION);
@@ -109,14 +123,12 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                 Manifest.permission.CAMERA);
     }
 
-    private static final Pattern WEBVIEW_VERSION_PATTERN =
-            Pattern.compile("(Chrome/)([\\d\\.]+)\\s");
-
     private EditText mUrlBar;
     private WebView mWebView;
     private View mFullscreenView;
     private String mWebViewVersion;
     private boolean mEnableTracing;
+    private boolean mIsStoppingTracing;
 
     // Each time we make a request, store it here with an int key. onRequestPermissionsResult will
     // look up the request in order to grant the approprate permissions.
@@ -126,6 +138,14 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     // Permit any number of slashes, since chromium seems to canonicalize bad values.
     private static final Pattern FILE_ANDROID_ASSET_PATTERN =
             Pattern.compile("^file:///android_(asset|res)/.*");
+
+    private ActivityResultLauncher<Void> mFileContents;
+    private ValueCallback<Uri[]> mFilePathCallback;
+    private MultiFileSelector mMultiFileSelector;
+
+    public void setFilePathCallback(ValueCallback<Uri[]> inCallback) {
+        mFilePathCallback = inCallback;
+    };
 
     // Work around our wonky API by wrapping a geo permission prompt inside a regular
     // PermissionRequest.
@@ -179,13 +199,24 @@ public class WebViewBrowserActivity extends AppCompatActivity {
 
         @Override
         public String[] getResources() {
-            return new String[] { WebViewBrowserActivity.RESOURCE_FILE_URL };
+            if (BuildInfo.isAtLeastT()) {
+                return new String[] {WebViewBrowserActivity.RESOURCE_IMAGES_URL,
+                        WebViewBrowserActivity.RESOURCE_VIDEO_URL};
+            } else {
+                return new String[] {WebViewBrowserActivity.RESOURCE_FILE_URL};
+            }
         }
 
         @Override
         public void grant(String[] resources) {
-            assert resources.length == 1;
-            assert WebViewBrowserActivity.RESOURCE_FILE_URL.equals(resources[0]);
+            if (BuildInfo.isAtLeastT()) {
+                assert resources.length == 2;
+                assert WebViewBrowserActivity.RESOURCE_IMAGES_URL.equals(resources[0])
+                        && WebViewBrowserActivity.RESOURCE_VIDEO_URL.equals(resources[1]);
+            } else {
+                assert resources.length == 1;
+                assert WebViewBrowserActivity.RESOURCE_FILE_URL.equals(resources[0]);
+            }
             // Try again now that we have read access.
             WebViewBrowserActivity.this.mWebView.loadUrl(mOrigin);
         }
@@ -196,7 +227,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         }
     }
 
-    private static class TracingLogger extends FileOutputStream {
+    private class TracingLogger extends FileOutputStream {
         private long mByteCount;
         private long mChunkCount;
         private final Activity mActivity;
@@ -217,6 +248,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         public void close() throws IOException {
             super.close();
             showDialog(mByteCount);
+            mIsStoppingTracing = false;
         }
 
         private void showDialog(long nbBytes) {
@@ -274,6 +306,8 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         } else if (manufacturer.equals("lge")) {
             // https://crbug.com/1090841#c33
             threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
+            // https://crbug.com/1198139
+            threadPolicyBuilder = threadPolicyBuilder.permitDiskWrites();
         } else if (manufacturer.equals("oneplus")) {
             // https://crbug.com/1090841#c37
             threadPolicyBuilder = threadPolicyBuilder.permitDiskReads();
@@ -287,13 +321,18 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         // * detectCleartextNetwork() to permit testing http:// URLs
         // * detectFileUriExposure() to permit testing file:// URLs
         // * detectLeakedClosableObjects() because of drag and drop (https://crbug.com/1090841#c40)
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-                .detectActivityLeaks()
-                .detectLeakedRegistrationObjects()
-                .detectLeakedSqlLiteObjects()
-                .penaltyLog()
-                .penaltyDeath()
-                .build());
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // WebViewBrowserActivity will have two instances when switching night mode back and
+            // forth for the 3rd times. Don't know the reason, this probably needs the investigation
+            // to rule out WebView holding the instance. (crbug.com/1348615)
+            builder = builder.detectActivityLeaks();
+        }
+        StrictMode.setVmPolicy(builder.detectLeakedRegistrationObjects()
+                                       .detectLeakedSqlLiteObjects()
+                                       .penaltyLog()
+                                       .penaltyDeath()
+                                       .build());
     }
 
     @Override
@@ -343,6 +382,24 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         setUrlBarText(url);
         setUrlFail(false);
         loadUrlFromUrlBar(mUrlBar);
+
+        mMultiFileSelector = new MultiFileSelector();
+        mFileContents =
+                registerForActivityResult(mMultiFileSelector, new ActivityResultCallback<Uri[]>() {
+                    @Override
+                    public void onActivityResult(Uri[] result) {
+                        mFilePathCallback.onReceiveValue(result);
+                    }
+                });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ViewGroup viewGroup = (ViewGroup) (mWebView.getParent());
+        viewGroup.removeView(mWebView);
+        mWebView.destroy();
+        mWebView = null;
     }
 
     @Override
@@ -385,13 +442,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             // turn them on for consistency with normal browsers.
             CookieManager.getInstance().setAcceptThirdPartyCookies(webview, true);
         }
-
-        Matcher matcher = WEBVIEW_VERSION_PATTERN.matcher(settings.getUserAgentString());
-        if (matcher.find()) {
-            mWebViewVersion = matcher.group(2);
-        } else {
-            mWebViewVersion = "-";
-        }
+        mWebViewVersion = WebViewCompat.getCurrentWebViewPackage(this).versionName;
         getSupportActionBar().setTitle(getResources().getString(R.string.title_activity_browser));
         getSupportActionBar().setSubtitle(mWebViewVersion);
 
@@ -475,6 +526,15 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                 ((ViewGroup) mFullscreenView.getParent()).removeView(mFullscreenView);
                 mFullscreenView = null;
             }
+
+            @Override
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback,
+                    WebChromeClient.FileChooserParams fileChooserParams) {
+                setFilePathCallback(filePathCallback);
+                mMultiFileSelector.setFileChooserParams(fileChooserParams);
+                mFileContents.launch(null);
+                return true;
+            }
         });
 
         mWebView = webview;
@@ -485,7 +545,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
 
     // WebKit permissions which can be granted because either they have no associated Android
     // permission or the associated Android permission has been granted
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private boolean canGrant(String webkitPermission) {
         String androidPermission = sPermissions.get(webkitPermission);
         if (androidPermission.equals(NO_ANDROID_PERMISSION)) {
@@ -575,20 +635,33 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         if (!WebViewFeature.isFeatureSupported(WebViewFeature.TRACING_CONTROLLER_BASIC_USAGE)) {
             menu.findItem(R.id.menu_enable_tracing).setEnabled(false);
         }
-        if (!WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)
+                || BuildInfo.targetsAtLeastT()) {
             menu.findItem(R.id.menu_force_dark_off).setEnabled(false);
             menu.findItem(R.id.menu_force_dark_auto).setEnabled(false);
             menu.findItem(R.id.menu_force_dark_on).setEnabled(false);
         }
-        return true;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            menu.findItem(R.id.menu_night_mode_on).setEnabled(false);
+        }
+        if (!BuildInfo.targetsAtLeastT()
+                || !WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+            menu.findItem(R.id.menu_algorithmic_darkening_on).setEnabled(false);
+        }
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.TRACING_CONTROLLER_BASIC_USAGE)) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.TRACING_CONTROLLER_BASIC_USAGE)
+                && !mIsStoppingTracing) {
+            menu.findItem(R.id.menu_enable_tracing).setEnabled(true);
             menu.findItem(R.id.menu_enable_tracing).setChecked(mEnableTracing);
+        } else {
+            menu.findItem(R.id.menu_enable_tracing).setEnabled(false);
         }
-        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)) {
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.FORCE_DARK)
+                && !BuildInfo.targetsAtLeastT()) {
             int forceDarkState = WebSettingsCompat.getForceDark(mWebView.getSettings());
             switch (forceDarkState) {
                 case WebSettingsCompat.FORCE_DARK_OFF:
@@ -601,6 +674,25 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                     menu.findItem(R.id.menu_force_dark_on).setChecked(true);
                     break;
             }
+        }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            boolean checked =
+                    AppCompatDelegate.MODE_NIGHT_YES == AppCompatDelegate.getDefaultNightMode();
+            int defaultNightMode = AppCompatDelegate.getDefaultNightMode();
+            if (defaultNightMode == AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM
+                    || defaultNightMode == AppCompatDelegate.MODE_NIGHT_UNSPECIFIED) {
+                UiModeManager uiModeManager =
+                        (UiModeManager) this.getApplicationContext().getSystemService(
+                                UI_MODE_SERVICE);
+                checked = UiModeManager.MODE_NIGHT_YES == uiModeManager.getNightMode();
+            }
+            menu.findItem(R.id.menu_night_mode_on).setChecked(checked);
+        }
+        if (BuildInfo.targetsAtLeastT()
+                && WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+            menu.findItem(R.id.menu_algorithmic_darkening_on)
+                    .setChecked(WebSettingsCompat.isAlgorithmicDarkeningAllowed(
+                            mWebView.getSettings()));
         }
         return true;
     }
@@ -641,6 +733,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                     try {
                         tracingController.stop(new TracingLogger(outFileName, this),
                                 Executors.newSingleThreadExecutor());
+                        mIsStoppingTracing = true;
                     } catch (FileNotFoundException e) {
                         throw new RuntimeException(e);
                     }
@@ -661,6 +754,17 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             WebSettingsCompat.setForceDark(mWebView.getSettings(), WebSettingsCompat.FORCE_DARK_ON);
             item.setChecked(true);
             return true;
+        } else if (itemId == R.id.menu_night_mode_on) {
+            AppCompatDelegate.setDefaultNightMode(item.isChecked()
+                            ? AppCompatDelegate.MODE_NIGHT_NO
+                            : AppCompatDelegate.MODE_NIGHT_YES);
+            return true;
+        } else if (itemId == R.id.menu_algorithmic_darkening_on) {
+            if (WebViewFeature.isFeatureSupported(WebViewFeature.ALGORITHMIC_DARKENING)) {
+                WebSettingsCompat.setAlgorithmicDarkeningAllowed(mWebView.getSettings(),
+                        !WebSettingsCompat.isAlgorithmicDarkeningAllowed(mWebView.getSettings()));
+            }
+            return true;
         } else if (itemId == R.id.start_animation_activity) {
             startActivity(new Intent(this, WebViewAnimationTestActivity.class));
             return true;
@@ -677,6 +781,13 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         } else if (itemId == R.id.menu_devui) {
             launchWebViewDevUI();
             return true;
+        } else if (itemId == R.id.menu_hide) {
+            if (mWebView.getVisibility() == View.VISIBLE) {
+                mWebView.setVisibility(View.INVISIBLE);
+            } else {
+                mWebView.setVisibility(View.VISIBLE);
+            }
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -685,25 +796,25 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     // but we still use it because we support api level 19 and up.
     @SuppressWarnings("deprecation")
     private void initializeSettings(WebSettings settings) {
-        File appcache = null;
         File geolocation = null;
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
-            appcache = getDir("appcache", 0);
             geolocation = getDir("geolocation", 0);
         }
 
         settings.setJavaScriptEnabled(true);
 
         // configure local storage apis and their database paths.
-        settings.setAppCachePath(appcache.getPath());
         settings.setGeolocationDatabasePath(geolocation.getPath());
 
-        settings.setAppCacheEnabled(true);
         settings.setGeolocationEnabled(true);
         settings.setDatabaseEnabled(true);
         settings.setDomStorageEnabled(true);
+        settings.setAllowFileAccess(true);
+        settings.setAllowContentAccess(true);
 
         // Default layout behavior for chrome on android.
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);
         settings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
@@ -732,7 +843,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     }
 
     private void launchWebViewDevUI() {
-        PackageInfo currentWebViewPackage = WebViewPackageHelper.getCurrentWebViewPackage(this);
+        PackageInfo currentWebViewPackage = WebViewCompat.getCurrentWebViewPackage(this);
         if (currentWebViewPackage == null) {
             Log.e(TAG, "Couldn't find current WebView package");
             Toast.makeText(this, "WebView package isn't found", Toast.LENGTH_LONG).show();
@@ -744,8 +855,7 @@ public class WebViewBrowserActivity extends AppCompatActivity {
 
         // Check if the intent is resolved, i.e current WebView package has a developer UI that
         // responds to "com.android.webview.SHOW_DEV_UI" action.
-        List<ResolveInfo> intentResolveInfo = getPackageManager().queryIntentActivities(intent, 0);
-        if (intentResolveInfo.size() > 0) {
+        if (PackageManagerUtils.canResolveActivity(intent)) {
             startActivity(intent);
         } else {
             Log.e(TAG,
@@ -764,12 +874,20 @@ public class WebViewBrowserActivity extends AppCompatActivity {
     }
 
     private void loadUrl(String url) {
-        // Request read access if necessary
+        // Request read access if necessary.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && "file".equals(Uri.parse(url).getScheme())
-                && PackageManager.PERMISSION_DENIED
-                        == checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            requestPermissionsForPage(new FilePermissionRequest(url));
+                && "file".equals(Uri.parse(url).getScheme())) {
+            if (BuildInfo.isAtLeastT()) {
+                if (PackageManager.PERMISSION_DENIED
+                                == checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES)
+                        && PackageManager.PERMISSION_DENIED
+                                == checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO)) {
+                    requestPermissionsForPage(new FilePermissionRequest(url));
+                }
+            } else if (PackageManager.PERMISSION_DENIED
+                    == checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                requestPermissionsForPage(new FilePermissionRequest(url));
+            }
         }
 
         // If it is file:// and we don't have permission, they'll get the "Webpage not available"

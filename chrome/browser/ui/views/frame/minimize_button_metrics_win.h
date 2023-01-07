@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
-
 // Class that implements obtaining the X coordinate of the native minimize
 // button for the native frame on Windows.
 // This is a separate class because obtaining it is somewhat tricky and this
@@ -16,6 +14,10 @@
 class MinimizeButtonMetrics {
  public:
   MinimizeButtonMetrics();
+
+  MinimizeButtonMetrics(const MinimizeButtonMetrics&) = delete;
+  MinimizeButtonMetrics& operator=(const MinimizeButtonMetrics&) = delete;
+
   ~MinimizeButtonMetrics();
 
   void Init(HWND hwnd);
@@ -57,8 +59,6 @@ class MinimizeButtonMetrics {
 
   // Has OnHWNDActivated() been invoked?
   bool was_activated_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinimizeButtonMetrics);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_MINIMIZE_BUTTON_METRICS_WIN_H_

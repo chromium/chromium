@@ -1,0 +1,46 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package sharing.mojom;
+
+option optimize_for = LITE_RUNTIME;
+
+// An identical copy of this proto is maintained in the server code base.
+message ShareTarget {
+  string nickname = 1;  // share target nickname , eg "reddit"
+  string url =
+      2;  // string share API, e.g.
+          // 'http://reddit.com/submit?url=%(escaped_url)s&title=%(escaped_title)s'
+  string icon = 3;     // target icon as an base64 png at 1x resolution
+  string icon_2x = 4;  // target icon at 2x resolution.
+  string icon_3x = 5;  // target icon at 3x resolution.
+}
+
+message ShareTargets {
+  repeated ShareTarget targets = 1;  // Share targets for the above locale
+}
+
+message MapLocaleTargets {
+  map<string, ShareTargets> map_target_locale_map = 1;
+  uint32 version_id = 2;
+}
+
+// Intermediary types to store targets per locale for build time.
+
+message TmpShareTargetMap {
+  map<string, ShareTarget> all_targets = 1;
+}
+
+message ShareTargetLocalesForParsing {
+  repeated string targets = 1;
+  repeated string locale_keys = 2;
+}
+
+message TargetLocalesForParsing {
+  repeated ShareTarget targets = 1;
+  repeated ShareTargetLocalesForParsing locale_mapping = 2;
+  uint32 version_id = 3;
+}

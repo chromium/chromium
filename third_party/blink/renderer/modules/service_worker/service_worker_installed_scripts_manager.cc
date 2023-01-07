@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,27 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_checker.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_embedded_worker.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_thread.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -47,7 +52,7 @@ class Receiver {
                  mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                  std::move(task_runner)),
         remaining_bytes_(total_bytes) {
-    data_.ReserveInitialCapacity(SafeCast<wtf_size_t>(total_bytes));
+    data_.ReserveInitialCapacity(base::checked_cast<wtf_size_t>(total_bytes));
   }
 
   void Start(base::OnceClosure callback) {
@@ -199,9 +204,9 @@ class Internal : public mojom::blink::ServiceWorkerInstalledScriptsManager {
     auto receivers = std::make_unique<BundledReceivers>(
         std::move(script_info->meta_data), script_info->meta_data_size,
         std::move(script_info->body), script_info->body_size, task_runner_);
-    receivers->Start(WTF::Bind(&Internal::OnScriptReceived,
-                               weak_factory_.GetWeakPtr(),
-                               std::move(script_info)));
+    receivers->Start(WTF::BindOnce(&Internal::OnScriptReceived,
+                                   weak_factory_.GetWeakPtr(),
+                                   std::move(script_info)));
     DCHECK(!running_receivers_.Contains(script_url));
     running_receivers_.insert(script_url, std::move(receivers));
   }
@@ -269,7 +274,7 @@ ServiceWorkerInstalledScriptsManager::ServiceWorkerInstalledScriptsManager(
   // worker thread later, so they should keep isolated from the current thread.
   for (const WebURL& url :
        installed_scripts_manager_params->installed_scripts_urls) {
-    installed_urls_.insert(KURL(url).Copy());
+    installed_urls_.insert(KURL(url));
   }
 
   PostCrossThreadTask(
@@ -304,7 +309,7 @@ ServiceWorkerInstalledScriptsManager::GetScriptData(const KURL& script_url) {
   std::unique_ptr<TextResourceDecoder> decoder =
       std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
           TextResourceDecoderOptions::kPlainTextContent,
-          raw_script_data->Encoding().IsEmpty()
+          raw_script_data->Encoding().empty()
               ? UTF8Encoding()
               : WTF::TextEncoding(raw_script_data->Encoding())));
 

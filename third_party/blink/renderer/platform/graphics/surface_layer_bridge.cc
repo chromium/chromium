@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,8 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "media/base/media_switches.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -34,14 +31,14 @@ SurfaceLayerBridge::SurfaceLayerBridge(
       frame_sink_id_(Platform::Current()->GenerateFrameSinkId()),
       contains_video_(contains_video),
       parent_frame_sink_id_(parent_frame_sink_id) {
-  mojo::Remote<mojom::blink::EmbeddedFrameSinkProvider> provider;
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-      provider.BindNewPipeAndPassReceiver());
+      embedded_frame_sink_provider_.BindNewPipeAndPassReceiver());
   // TODO(xlai): Ensure OffscreenCanvas commit() is still functional when a
   // frame-less HTML canvas's document is reparenting under another frame.
   // See crbug.com/683172.
-  provider->RegisterEmbeddedFrameSink(parent_frame_sink_id_, frame_sink_id_,
-                                      receiver_.BindNewPipeAndPassRemote());
+  embedded_frame_sink_provider_->RegisterEmbeddedFrameSink(
+      parent_frame_sink_id_, frame_sink_id_,
+      receiver_.BindNewPipeAndPassRemote());
 }
 
 SurfaceLayerBridge::~SurfaceLayerBridge() = default;
@@ -50,7 +47,7 @@ void SurfaceLayerBridge::CreateSolidColorLayer() {
   // TODO(lethalantidote): Remove this logic. It should be covered by setting
   // the layer's opacity to false.
   solid_color_layer_ = cc::SolidColorLayer::Create();
-  solid_color_layer_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  solid_color_layer_->SetBackgroundColor(SkColors::kTransparent);
   if (observer_)
     observer_->RegisterContentsLayer(solid_color_layer_.get());
 }
@@ -91,6 +88,11 @@ void SurfaceLayerBridge::EmbedSurface(const viz::SurfaceId& surface_id) {
 
 void SurfaceLayerBridge::BindSurfaceEmbedder(
     mojo::PendingReceiver<mojom::blink::SurfaceEmbedder> receiver) {
+  if (surface_embedder_receiver_.is_bound()) {
+    // After recovering from a GPU context loss we have to re-bind to a new
+    // surface embedder.
+    std::ignore = surface_embedder_receiver_.Unbind();
+  }
   surface_embedder_receiver_.Bind(std::move(receiver));
 }
 
@@ -142,6 +144,14 @@ void SurfaceLayerBridge::CreateSurfaceLayer() {
   // We ignore our opacity until we are sure that we have something to show,
   // as indicated by getting an OnFirstSurfaceActivation call.
   surface_layer_->SetContentsOpaque(false);
+}
+
+void SurfaceLayerBridge::RegisterFrameSinkHierarchy() {
+  embedded_frame_sink_provider_->RegisterFrameSinkHierarchy(frame_sink_id_);
+}
+
+void SurfaceLayerBridge::UnregisterFrameSinkHierarchy() {
+  embedded_frame_sink_provider_->UnregisterFrameSinkHierarchy(frame_sink_id_);
 }
 
 }  // namespace blink

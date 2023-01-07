@@ -2,6 +2,6 @@ This tests that on a zoomed page, click to scale up / down works fine. This test
 
 Size at zoomed in level : 77 x 100
 Size at zoomed level after scale up click 1 : 500 x 644
-Size at zoomed out level after click 2 (Image restored): 77 x 101
+Size at zoomed out level after click 2 (Image restored): 77 x 100
 Size at zoomed level after scale up click 3 : 500 x 644
 

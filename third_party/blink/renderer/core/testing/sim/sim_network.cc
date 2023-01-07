@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,7 +99,7 @@ void SimNetwork::AddRequest(SimRequestBase& request) {
   response.SetMimeType(request.mime_type_);
   response.AddHttpHeaderField("Content-Type", request.mime_type_);
 
-  if (request.redirect_url_.IsEmpty()) {
+  if (request.redirect_url_.empty()) {
     response.SetHttpStatusCode(request.response_http_status_);
   } else {
     response.SetHttpStatusCode(302);
@@ -136,6 +136,7 @@ bool SimNetwork::FillNavigationParamsResponse(WebNavigationParams* params) {
   request->UsedForNavigation(body_loader.get());
   params->body_loader = std::move(body_loader);
   params->referrer = request->referrer_;
+  params->requestor_origin = request->requestor_origin_;
   return true;
 }
 

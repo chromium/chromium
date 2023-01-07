@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/media/base/cast_decoder_buffer_impl.h"
+#include "chromecast/media/cma/backend/proxy/audio_channel_push_buffer_handler.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h"
 #include "chromecast/media/cma/backend/proxy/cma_proxy_handler.h"
 #include "chromecast/public/media/decoder_config.h"
@@ -27,7 +28,7 @@ ACTION_P(CompareTimestampInfos, buffer_id, timestamp) {
   EXPECT_EQ(result.buffer_id(), buffer_id);
   const int64_t micros =
       result.system_timestamp().seconds() * base::Time::kMicrosecondsPerSecond +
-      result.system_timestamp().nanos() /
+      result.system_timestamp().nanoseconds() /
           base::Time::kNanosecondsPerMicrosecond;
   EXPECT_EQ(micros, timestamp);
 }
@@ -63,6 +64,14 @@ class MockDecoderChannel : public CastRuntimeAudioChannelBroker {
                void(CastRuntimeAudioChannelBroker::TimestampInfo));
 };
 
+class MockPushBufferHandler : public AudioChannelPushBufferHandler::Client {
+ public:
+  ~MockPushBufferHandler() override = default;
+
+  MOCK_METHOD1(OnAudioChannelPushBufferComplete,
+               void(CmaBackend::BufferStatus));
+};
+
 }  // namespace
 
 class ProxyCallTranslatorTest : public testing::Test {
@@ -75,6 +84,7 @@ class ProxyCallTranslatorTest : public testing::Test {
         decoder_channel_(decoder_channel_not_owned_.get()),
         translator_(&chromecast_task_runner_,
                     &translator_client_,
+                    &push_buffer_handler_,
                     std::move(decoder_channel_not_owned_)),
         translator_as_handler_(
             static_cast<CastRuntimeAudioChannelBroker::Handler*>(
@@ -89,6 +99,7 @@ class ProxyCallTranslatorTest : public testing::Test {
   std::unique_ptr<testing::StrictMock<MockDecoderChannel>>
       decoder_channel_not_owned_;
   testing::StrictMock<MockDecoderChannel>* decoder_channel_;
+  testing::StrictMock<MockPushBufferHandler> push_buffer_handler_;
 
   ProxyCallTranslator translator_;
   CastRuntimeAudioChannelBroker::Handler* translator_as_handler_;
@@ -193,10 +204,11 @@ TEST_F(ProxyCallTranslatorTest, TestExternalPushBuffer) {
   buffer->writable_data()[0] = 1;
   buffer->writable_data()[1] = 2;
   buffer->writable_data()[2] = 3;
-  EXPECT_TRUE(translator_.PushBuffer(buffer, 1));
+  EXPECT_EQ(translator_.PushBuffer(buffer, 1),
+            CmaBackend::BufferStatus::kBufferSuccess);
 
-  EXPECT_TRUE(
-      translator_.PushBuffer(CastDecoderBufferImpl::CreateEOSBuffer(), 2));
+  EXPECT_EQ(translator_.PushBuffer(CastDecoderBufferImpl::CreateEOSBuffer(), 2),
+            CmaBackend::BufferStatus::kBufferSuccess);
 
   ASSERT_TRUE(translator_as_handler_->HasBufferedData());
   auto result = translator_as_handler_->GetBufferedData();

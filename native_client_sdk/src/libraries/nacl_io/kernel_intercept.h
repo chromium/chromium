@@ -1,4 +1,4 @@
-/* Copyright (c) 2012 The Chromium Authors. All rights reserved.
+/* Copyright 2012 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -195,4 +195,4 @@ int ki_socketpair(int domain, int type, int protocl, int* sv);
 
 EXTERN_C_END
 
-#endif  /* LIBRARIES_NACL_IO_KERNEL_INTERCEPT_H_ */
+#endif  // LIBRARIES_NACL_IO_KERNEL_INTERCEPT_H_

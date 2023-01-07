@@ -1,0 +1,4 @@
+Tests that reading quota an opaque origin throws an error
+
+Throws an expected error: about:blank is not a valid URL
+

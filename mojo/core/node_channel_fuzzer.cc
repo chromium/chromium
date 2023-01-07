@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "mojo/core/test/mock_node_channel_delegate.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -62,7 +62,7 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
       Channel::HandlePolicy::kRejectHandles,
       environment->main_thread_task_executor.task_runner(), base::DoNothing());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, it's important that the receiver behaves like a broker process
   // receiving messages from a non-broker process. This is because that case can
   // safely handle invalid HANDLE attachments without crashing. The same is not
@@ -86,7 +86,7 @@ extern "C" int LLVMFuzzerTestOneInput(const unsigned char* data, size_t size) {
       Channel::HandlePolicy::kRejectHandles,
       environment->main_thread_task_executor.task_runner());
   sender->Start();
-  auto message = std::make_unique<Channel::Message>(size, 0 /* num_handles */);
+  auto message = Channel::Message::CreateMessage(size, 0 /* num_handles */);
   std::copy(data, data + size,
             static_cast<unsigned char*>(message->mutable_payload()));
   sender->Write(std::move(message));

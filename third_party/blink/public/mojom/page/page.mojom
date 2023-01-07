@@ -1,10 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "skia/public/mojom/skcolor.mojom";
+import "third_party/blink/public/mojom/frame/frame_replication_state.mojom";
+import "third_party/blink/public/mojom/frame/remote_frame.mojom";
+import "third_party/blink/public/mojom/navigation/was_activated_option.mojom";
 import "third_party/blink/public/mojom/page/page_visibility_state.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
 
@@ -31,7 +37,7 @@ struct PageLifecycleState {
   // back-forward cache. This is set to false shortly before the page is
   // taken out of the cache to make sure that evict requests from the renderer
   // do not race with the restoration flow on the browser. For example, if set
-  // to true the renderer must not evict the page if javascript is executed.
+  // to false the renderer must not evict the page if javascript is executed.
   bool eviction_enabled;
 };
 
@@ -49,6 +55,19 @@ struct PageRestoreParams {
   int32 current_history_list_length;
 };
 
+// Parameters to send with ActivatePrerenderedPage calls when we're activating a
+// prerendered page.
+struct PrerenderPageActivationParams {
+  // Tells the renderer whether this prerender activation comes with a sticky
+  // user activation.
+  blink.mojom.WasActivatedOption was_user_activated;
+
+  // Timestamp of the start of the activation navigation for use in
+  // PerformanceNavigationTiming. It is 0 if this blink::WebViewImpl does not
+  // host the main frame, to avoid sending the data cross-origin.
+  mojo_base.mojom.TimeTicks activation_start;
+};
+
 // Used for broadcast messages from browser to renderer for messages that need
 // to go to all blink::WebViewImpls for a given content::WebContents. There may
 // be multiple blink::WebViewImpls when there are out-of-process iframes.
@@ -60,6 +79,17 @@ interface PageBroadcast {
 
   // Notifies the renderer when audio is started or stopped.
   AudioStateChanged(bool is_audio_playing);
+
+  // Notifies the renderer when a prerendered page is activated. The renderer
+  // is expected to update `document.prerendering` and dispatch the
+  // prerenderingchange event on relevant documents.
+  //
+  // The renderer calls the callback once all documents in the
+  // blink::WebViewImpl finished activating.
+  //
+  // TODO(falken): Move this to SetPageLifecycleState.
+  ActivatePrerenderedPage(
+      PrerenderPageActivationParams prerender_page_activation_params) => ();
 
   // Notifies renderers when a portal web contents is activated or if a
   // web contents is adopted as a portal.
@@ -73,4 +103,32 @@ interface PageBroadcast {
 
   // Set history offset and length.
   SetHistoryOffsetAndLength(int32 offset, int32 length);
+
+  // Sent to whole page, but should only be used by the main frame.
+  SetPageBaseBackgroundColor(skia.mojom.SkColor? color);
+
+  // Tells the renderer to create a new RemoteFrame main frame. See
+  // blink.mojom.RemoteFrame.CreateRemoteChild for creating child frames
+  // of RemoteFrames.
+  //
+  // `token`: The frame token. Used to map between RemoteFrame and
+  //    RenderFrameProxyHost.
+  // `opener_frame_token`: Frame token that identifies the opener frame if one
+  //    exists, or absl::nullopt otherwise.
+  // `devtools_frame_token`: Used for devtools instrumentation and
+  //    trace-ability. The token is shared across all frames (local or remotes)
+  //    representing the same logical frame tree node, and is used by Blink and
+  //    content to tag calls and requests for instrumentation purposes,
+  //    allowing them to be attributed to a context frame.
+  //
+  //    Must not be used to look up a RenderFrameHostImpl or
+  //    RenderFrameProxyHost in the browser process, as the token is shared,
+  //    making the mapping ambiguous and non-authoritative.
+  CreateRemoteMainFrame(
+    RemoteFrameToken token,
+    FrameToken? opener_frame_token,
+    FrameReplicationState replication_state,
+    mojo_base.mojom.UnguessableToken devtools_frame_token,
+    RemoteFrameInterfacesFromBrowser remote_frame_interfaces,
+    RemoteMainFrameInterfaces remote_main_frame_interfaces);
 };

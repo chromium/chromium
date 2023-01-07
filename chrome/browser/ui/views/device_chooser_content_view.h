@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/chooser_controller/chooser_controller.h"
+#include "base/memory/raw_ptr.h"
+#include "components/permissions/chooser_controller.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/table_model.h"
 #include "ui/gfx/range/range.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -27,12 +28,12 @@ class Throbber;
 // Used for WebUSB/WebBluetooth device selection for Chrome and extensions.
 class DeviceChooserContentView : public views::View,
                                  public ui::TableModel,
-                                 public ChooserController::View {
+                                 public permissions::ChooserController::View {
  public:
   METADATA_HEADER(DeviceChooserContentView);
   DeviceChooserContentView(
       views::TableViewObserver* table_view_observer,
-      std::unique_ptr<ChooserController> chooser_controller);
+      std::unique_ptr<permissions::ChooserController> chooser_controller);
   DeviceChooserContentView(const DeviceChooserContentView&) = delete;
   DeviceChooserContentView& operator=(const DeviceChooserContentView&) = delete;
   ~DeviceChooserContentView() override;
@@ -41,12 +42,12 @@ class DeviceChooserContentView : public views::View,
   gfx::Size GetMinimumSize() const override;
 
   // ui::TableModel:
-  int RowCount() override;
-  std::u16string GetText(int row, int column_id) override;
+  size_t RowCount() override;
+  std::u16string GetText(size_t row, int column_id) override;
   void SetObserver(ui::TableModelObserver* observer) override;
-  gfx::ImageSkia GetIcon(int row) override;
+  ui::ImageModel GetIcon(size_t row) override;
 
-  // ChooserController::View:
+  // permissions::ChooserController::View:
   void OnOptionsInitialized() override;
   void OnOptionAdded(size_t index) override;
   void OnOptionRemoved(size_t index) override;
@@ -80,7 +81,7 @@ class DeviceChooserContentView : public views::View,
  private:
   friend class DeviceChooserContentViewTest;
 
-  std::unique_ptr<ChooserController> chooser_controller_;
+  std::unique_ptr<permissions::ChooserController> chooser_controller_;
 
   // Boolean reflecting the status of the device adapter. For example if the
   // user has bluetooth turned on or off on their device. This is used to
@@ -94,15 +95,15 @@ class DeviceChooserContentView : public views::View,
   // to get the devices working in the browser.
   bool adapter_authorized_ = true;
 
-  views::ScrollView* table_parent_ = nullptr;
-  views::Checkbox* select_all_view_ = nullptr;
-  views::TableView* table_view_ = nullptr;
-  views::View* no_options_view_ = nullptr;
-  views::View* adapter_off_view_ = nullptr;
-  views::LabelButton* re_scan_button_ = nullptr;
-  views::Throbber* throbber_ = nullptr;
-  views::Label* throbber_label_ = nullptr;
-  views::View* adapter_unauthorized_view_ = nullptr;
+  raw_ptr<views::ScrollView> table_parent_ = nullptr;
+  raw_ptr<views::Checkbox> select_all_view_ = nullptr;
+  raw_ptr<views::TableView> table_view_ = nullptr;
+  raw_ptr<views::View> no_options_view_ = nullptr;
+  raw_ptr<views::View> adapter_off_view_ = nullptr;
+  raw_ptr<views::LabelButton> re_scan_button_ = nullptr;
+  raw_ptr<views::Throbber> throbber_ = nullptr;
+  raw_ptr<views::Label> throbber_label_ = nullptr;
+  raw_ptr<views::View> adapter_unauthorized_view_ = nullptr;
 
   bool is_initialized_ = false;
   base::CallbackListSubscription select_all_subscription_;

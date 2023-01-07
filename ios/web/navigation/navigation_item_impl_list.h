@@ -1,9 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_WEB_NAVIGATION_NAVIGATION_ITEM_IMPL_LIST_H_
 #define IOS_WEB_NAVIGATION_NAVIGATION_ITEM_IMPL_LIST_H_
+
+#include <memory>
 
 #import "ios/web/public/deprecated/navigation_item_list.h"
 
@@ -18,13 +20,13 @@ typedef std::vector<NavigationItemImpl*> NavigationItemImplList;
 typedef std::vector<std::unique_ptr<NavigationItemImpl>>
     ScopedNavigationItemImplList;
 
-// Creates a ScopedNavigationItemImplList from |scoped_item_list|.  Ownership
-// of the NavigationItems in |scoped_item_list| is transferred to the returned
+// Creates a ScopedNavigationItemImplList from `scoped_item_list`.  Ownership
+// of the NavigationItems in `scoped_item_list` is transferred to the returned
 // value.
 ScopedNavigationItemImplList CreateScopedNavigationItemImplList(
     ScopedNavigationItemList scoped_item_list);
 
-// Creates a NavigationItemList from |scoped_item_list|.
+// Creates a NavigationItemList from `scoped_item_list`.
 NavigationItemList CreateNavigationItemList(
     const ScopedNavigationItemImplList& scoped_item_list);
 

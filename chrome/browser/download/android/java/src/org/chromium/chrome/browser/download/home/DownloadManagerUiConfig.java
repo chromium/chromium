@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 /** Provides the configuration params required by the download home UI. */
 public class DownloadManagerUiConfig {
-    /** Whether or not the UI should include off the record items. */
-    public final boolean isOffTheRecord;
-
     /** If not null, which off the record items to show in the UI. */
     public final OTRProfileID otrProfileID;
 
@@ -27,15 +24,6 @@ public class DownloadManagerUiConfig {
 
     /** Whether showing full width images should be supported. */
     public final boolean supportFullWidthImages;
-
-    /** Whether or not to use the legacy download path or use the new OfflineContentProvider. */
-    public final boolean useNewDownloadPath;
-
-    /**
-     * Whether or not to use the legacy download thumbnail path or use the new
-     * OfflineContentProvider.
-     */
-    public final boolean useNewDownloadPathThumbnails;
 
     /**
      * The in-memory thumbnail size in bytes.
@@ -65,13 +53,10 @@ public class DownloadManagerUiConfig {
 
     /** Constructor. */
     private DownloadManagerUiConfig(Builder builder) {
-        isOffTheRecord = builder.mIsOffTheRecord;
         otrProfileID = builder.mOtrProfileID;
         isSeparateActivity = builder.mIsSeparateActivity;
         useGenericViewTypes = builder.mUseGenericViewTypes;
         supportFullWidthImages = builder.mSupportFullWidthImages;
-        useNewDownloadPath = builder.mUseNewDownloadPath;
-        useNewDownloadPathThumbnails = builder.mUseNewDownloadPathThumbnails;
         inMemoryThumbnailCacheSizeBytes = builder.mInMemoryThumbnailCacheSizeBytes;
         maxThumbnailScaleFactor = builder.mMaxThumbnailScaleFactor;
         justNowThresholdSeconds = builder.mJustNowThresholdSeconds;
@@ -89,13 +74,10 @@ public class DownloadManagerUiConfig {
 
         private static final float MAX_THUMBNAIL_SCALE_FACTOR = 1.5f; /* hdpi scale factor. */
 
-        private boolean mIsOffTheRecord;
         private OTRProfileID mOtrProfileID;
         private boolean mIsSeparateActivity;
         private boolean mUseGenericViewTypes;
         private boolean mSupportFullWidthImages;
-        private boolean mUseNewDownloadPath;
-        private boolean mUseNewDownloadPathThumbnails;
         private int mInMemoryThumbnailCacheSizeBytes = IN_MEMORY_THUMBNAIL_CACHE_SIZE_BYTES;
         private float mMaxThumbnailScaleFactor = MAX_THUMBNAIL_SCALE_FACTOR;
         private long mJustNowThresholdSeconds = JUST_NOW_THRESHOLD_SECONDS;
@@ -107,11 +89,6 @@ public class DownloadManagerUiConfig {
             mSupportFullWidthImages = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                     ContextUtils.getApplicationContext());
             mUseGenericViewTypes = SysUtils.isLowEndDevice();
-        }
-
-        public Builder setIsOffTheRecord(boolean isOffTheRecord) {
-            mIsOffTheRecord = isOffTheRecord;
-            return this;
         }
 
         public Builder setOTRProfileID(OTRProfileID otrProfileID) {
@@ -131,16 +108,6 @@ public class DownloadManagerUiConfig {
 
         public Builder setSupportFullWidthImages(boolean supportFullWidthImages) {
             mSupportFullWidthImages = supportFullWidthImages;
-            return this;
-        }
-
-        public Builder setUseNewDownloadPath(boolean useNewDownloadPath) {
-            mUseNewDownloadPath = useNewDownloadPath;
-            return this;
-        }
-
-        public Builder setUseNewDownloadPathThumbnails(boolean useNewDownloadPathThumbnails) {
-            mUseNewDownloadPathThumbnails = useNewDownloadPathThumbnails;
             return this;
         }
 

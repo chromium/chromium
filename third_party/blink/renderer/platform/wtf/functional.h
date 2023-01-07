@@ -27,12 +27,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_FUNCTIONAL_H_
 
 #include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
@@ -42,17 +44,17 @@ namespace WTF {
 // arguments together into a function object that can be stored, copied and
 // invoked, similar to boost::bind and std::bind in C++11.
 
-// To create a same-thread callback, use WTF::Bind() or WTF::BindRepeating().
-// Use the former to create a callback that's called only once, and use the
-// latter for a callback that may be called multiple times.
+// To create a same-thread callback, use WTF::BindOnce() or
+// WTF::BindRepeating(). Use the former to create a callback that's called only
+// once, and use the latter for a callback that may be called multiple times.
 //
-// WTF::Bind() and WTF::BindRepeating() returns base::OnceCallback and
+// WTF::BindOnce() and WTF::BindRepeating() returns base::OnceCallback and
 // base::RepeatingCallback respectively. See //docs/callback.md for how to use
 // those types.
 
 // Thread Safety:
 //
-// WTF::Bind(), WTF::BindRepeating and base::{Once,Repeating}Callback should
+// WTF::BindOnce(), WTF::BindRepeating and base::{Once,Repeating}Callback should
 // be used for same-thread closures only, i.e. the closures must be created,
 // executed and destructed on the same thread.
 //
@@ -60,7 +62,7 @@ namespace WTF {
 // is called or destructed on a (potentially) different thread from the current
 // thread. See cross_thread_functional.h for more details.
 
-// WTF::Bind() / WTF::BindRepeating() and move semantics
+// WTF::BindOnce() / WTF::BindRepeating() and move semantics
 // =====================================================
 //
 // For unbound parameters, there are two ways to pass movable arguments:
@@ -69,12 +71,13 @@ namespace WTF {
 //
 //            void YourFunction(Argument&& argument) { ... }
 //            base::OnceCallback<void(Argument&&)> functor =
-//                Bind(&YourFunction);
+//                BindOnce(&YourFunction);
 //
 //     2) Pass by value.
 //
 //            void YourFunction(Argument argument) { ... }
-//            base::OnceCallback<void(Argument)> functor = Bind(&YourFunction);
+//            base::OnceCallback<void(Argument)> functor =
+//            BindOnce(&YourFunction);
 //
 // Note that with the latter there will be *two* move constructions happening,
 // because there needs to be at least one intermediary function call taking an
@@ -143,10 +146,24 @@ UnretainedWrapper<T> Unretained(T* value) {
 }
 
 template <typename T>
+UnretainedWrapper<T> Unretained(const raw_ptr<T>& value) {
+  static_assert(!WTF::IsGarbageCollectedType<T>::value,
+                "WTF::Unretained() + GCed type is forbidden");
+  return UnretainedWrapper<T>(value.get());
+}
+
+template <typename T>
 CrossThreadUnretainedWrapper<T> CrossThreadUnretained(T* value) {
   static_assert(!WTF::IsGarbageCollectedType<T>::value,
                 "CrossThreadUnretained() + GCed type is forbidden");
   return CrossThreadUnretainedWrapper<T>(value);
+}
+
+template <typename T>
+CrossThreadUnretainedWrapper<T> CrossThreadUnretained(const raw_ptr<T>& value) {
+  static_assert(!WTF::IsGarbageCollectedType<T>::value,
+                "CrossThreadUnretained() + GCed type is forbidden");
+  return CrossThreadUnretainedWrapper<T>(value.get());
 }
 
 namespace internal {
@@ -196,6 +213,9 @@ class ThreadCheckingCallbackWrapper<CallbackType, R(Args...)> {
  public:
   explicit ThreadCheckingCallbackWrapper(CallbackType callback)
       : callback_(std::move(callback)) {}
+  ThreadCheckingCallbackWrapper(const ThreadCheckingCallbackWrapper&) = delete;
+  ThreadCheckingCallbackWrapper& operator=(
+      const ThreadCheckingCallbackWrapper&) = delete;
 
   ~ThreadCheckingCallbackWrapper() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -223,8 +243,6 @@ class ThreadCheckingCallbackWrapper<CallbackType, R(Args...)> {
 
   SEQUENCE_CHECKER(sequence_checker_);
   CallbackType callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadCheckingCallbackWrapper);
 };
 
 }  // namespace WTF
@@ -335,15 +353,16 @@ class CrossThreadOnceFunction<R(Args...)> {
   base::OnceCallback<R(Args...)> callback_;
 };
 
-// Note: now there is WTF::Bind()and WTF::BindRepeating(). See the comment block
-// above for the correct usage of those.
+// Note: now there is WTF::BindOnce()and WTF::BindRepeating(). See the comment
+// block above for the correct usage of those.
 template <
     typename FunctionType,
     typename... BoundParameters,
     typename UnboundRunType =
         base::internal::MakeUnboundRunType<FunctionType, BoundParameters...>>
-base::OnceCallback<UnboundRunType> Bind(FunctionType&& function,
-                                        BoundParameters&&... bound_parameters) {
+base::OnceCallback<UnboundRunType> BindOnce(
+    FunctionType&& function,
+    BoundParameters&&... bound_parameters) {
   static_assert(internal::CheckGCedTypeRestrictions<
                     std::index_sequence_for<BoundParameters...>,
                     std::decay_t<BoundParameters>...>::ok,
@@ -388,6 +407,36 @@ using CrossThreadRepeatingClosure = CrossThreadFunction<void()>;
 using CrossThreadClosure = CrossThreadFunction<void()>;
 
 using CrossThreadOnceClosure = CrossThreadOnceFunction<void()>;
+
+template <typename T>
+struct CrossThreadCopier<RetainedRefWrapper<T>> {
+  STATIC_ONLY(CrossThreadCopier);
+  static_assert(IsSubclassOfTemplate<T, base::RefCountedThreadSafe>::value,
+                "scoped_refptr<T> can be passed across threads only if T is "
+                "ThreadSafeRefCounted or base::RefCountedThreadSafe.");
+  using Type = RetainedRefWrapper<T>;
+  static Type Copy(Type pointer) { return pointer; }
+};
+
+template <typename T>
+struct CrossThreadCopier<CrossThreadUnretainedWrapper<T>>
+    : public CrossThreadCopierPassThrough<CrossThreadUnretainedWrapper<T>> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
+template <typename Signature>
+struct CrossThreadCopier<CrossThreadFunction<Signature>> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = CrossThreadFunction<Signature>;
+  static Type Copy(Type&& value) { return std::move(value); }
+};
+
+template <typename Signature>
+struct CrossThreadCopier<CrossThreadOnceFunction<Signature>> {
+  STATIC_ONLY(CrossThreadCopier);
+  using Type = CrossThreadOnceFunction<Signature>;
+  static Type Copy(Type&& value) { return std::move(value); }
+};
 
 }  // namespace WTF
 

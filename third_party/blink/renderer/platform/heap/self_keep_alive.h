@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 
 namespace blink {
 
@@ -18,10 +18,9 @@ namespace blink {
 //
 //  class Opener : public GarbageCollected<Opener> {
 //   public:
-//    Opener() : keep_alive_(PERSISTENT_FROM_HERE) {}
 //    ...
 //    void Open() {
-//      // Retain a self-reference while in an Open()ed state:
+//      // Retain a self-reference while in an opened state:
 //      keep_alive_ = this;
 //      ....
 //    }
@@ -39,22 +38,22 @@ namespace blink {
 //
 // The responsibility to call Clear() in a timely fashion resides with the
 // implementation of the object.
-//
-//
 template <typename Self>
 class SelfKeepAlive final {
   DISALLOW_NEW();
 
  public:
-  explicit SelfKeepAlive(const PersistentLocation& location)
-      : keep_alive_(location) {}
-  SelfKeepAlive(const PersistentLocation& location, Self* self)
-      : keep_alive_(location) {
-    Assign(self);
-  }
+  explicit SelfKeepAlive(
+      const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE)
+      : keep_alive_(loc) {}
+  explicit SelfKeepAlive(
+      Self* self,
+      const PersistentLocation& loc = PERSISTENT_LOCATION_FROM_HERE)
+      : keep_alive_(self, loc) {}
 
   SelfKeepAlive& operator=(Self* self) {
-    Assign(self);
+    DCHECK(!keep_alive_ || keep_alive_.Get() == self);
+    keep_alive_ = self;
     return *this;
   }
 
@@ -63,12 +62,7 @@ class SelfKeepAlive final {
   explicit operator bool() const { return keep_alive_; }
 
  private:
-  void Assign(Self* self) {
-    DCHECK(!keep_alive_ || keep_alive_.Get() == self);
-    keep_alive_ = self;
-  }
-
-  GC_PLUGIN_IGNORE("420515")
+  GC_PLUGIN_IGNORE("Allowed to temporarily introduce non reclaimable memory.")
   Persistent<Self> keep_alive_;
 };
 

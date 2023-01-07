@@ -1,143 +1,345 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1018219910092211213">Չհաջողվեց փոխակերպել DNS-ը</translation>
 <translation id="1018656279737460067">Չեղյալ են հայտարարվել</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> հոսք, <ph name="CPU_MAX_CLOCK_SPEED" /> ԳՀց)</translation>
+<translation id="1047773237499189053">Հասանելի է նոր գործառույթ։ Ավելին իմանալու համար օգտագործեք վեր սլաքը։</translation>
 <translation id="1059913517121127803">Չհաջողվեց սկսել սկանավորումը</translation>
+<translation id="1062407476771304334">Փոխարինել</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Հայտնաբերվել է հրապատ</translation>
 <translation id="1075811647922107217">Էջի չափսը</translation>
+<translation id="1094693127011229778">IP հասցեն անհասանելի է</translation>
+<translation id="1113892970288677790">Ընտրեք առաջարկվող պատկերներ</translation>
+<translation id="1119447706177454957">Ներքին սխալ</translation>
 <translation id="1124772482545689468">Օգտատեր</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
+<translation id="1145018782460575098">Բացված է արտաքին սարքերի համար ներկառուցված ծրագրաշարի թարմացման պատուհանը։ Հասանելի է <ph name="NUM_UPDATES" /> թարմացում։</translation>
+<translation id="1145516343487477149">Գտեք օգնության հոդվածներ և Chromebook-ի վերաբերյալ հաճախ տրվող հարցերի պատասխաններ</translation>
 <translation id="1175697296044146566">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" /> տիրույթի կողմից։</translation>
+<translation id="1175951029573070619">Միջին (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1181037720776840403">Ջնջել</translation>
 <translation id="1195447618553298278">Անհայտ սխալ:</translation>
+<translation id="1196959502276349371">Տարբերակ <ph name="VERSION" /></translation>
+<translation id="1199355487114804640">Նվագարկում/դադար</translation>
+<translation id="1201402288615127009">Հաջորդը</translation>
 <translation id="1204296502688602597">DNS-ի հապաղում</translation>
+<translation id="1207734034680156868">Առաջարկները հիմնված են նկարագրության վրա</translation>
 <translation id="123124571410524056">Հնարավոր է, որ ցանցային պորտալ կա</translation>
 <translation id="1238612778414822719">HTTPS-ի հապաղում</translation>
+<translation id="1264369926465113395">Դիտեք Chromebook-ի նոր թվային ամսագիրը ստեղծագործողների համար</translation>
 <translation id="1270369111467284986">Հնարավոր մուտքի էջ</translation>
 <translation id="1290331692326790741">Թույլ ազդանշան</translation>
+<translation id="1301069673413256657">GSM</translation>
+<translation id="1308754910631152188">Թարմացում (<ph name="PERCENTAGE_VALUE" />%-ը կատարված է)</translation>
+<translation id="1310380015393971138">Հասանելի <ph name="NETWORK_NAME" /> ցանց չկա</translation>
+<translation id="131421566576084655">Վերջին զրոյացման ամսաթվի մասին տեղեկությունները հասանելի չեն</translation>
 <translation id="1314565355471455267">Android VPN</translation>
 <translation id="131461803491198646">Տնային ցանց, առանց ռոումինգի</translation>
 <translation id="1327977588028644528">Անցուղի</translation>
+<translation id="1328223165223065150">Պաստառի գույն</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Տեղավորել սկանավորվող հատվածում</translation>
+<translation id="1367951781824006909">Ընտրել ֆայլ</translation>
 <translation id="1387854245479784695">Սա բոլոր միջուկների միավորումն է</translation>
+<translation id="1394661041439318933">Պատյանի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="1397738625398125236">Անցախուցը պատասխանում է փինգ հարցմանը</translation>
 <translation id="1398634363027580500">HTTPS-ի շատ բարձր հապաղում</translation>
+<translation id="1407069428457324124">Մուգ թեմա</translation>
 <translation id="1413240736185167732">Չհաջողվեց տպել – Զտիչը չաշխատեց</translation>
 <translation id="1416836038590872660">EAP-MD5</translation>
+<translation id="142228117786570094">Ես ունեմ բանալիների զույգ</translation>
+<translation id="1423591390236870726"><ph name="KEY_NAME" /> ստեղնը չի սեղմվել</translation>
+<translation id="1435763214710588005">Ամեն ամիս, նշված օրը տվյալների օգտագործման մասին տեղեկություններն ավտոմատ զրոյացվում են</translation>
+<translation id="1442433966118452622">Պատկերի աղբյուրը</translation>
+<translation id="1451536289672181509">Սարքը ստեղնաշար է։</translation>
+<translation id="1459693405370120464">Եղանակ</translation>
 <translation id="1468664791493211953">Առաջարկներ</translation>
 <translation id="1476467821656042872">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինս կարող է տեսնել ձեր գործողությունները։</translation>
 <translation id="1478594628797167447">Սկաներ</translation>
+<translation id="1483493594462132177">Ուղարկել</translation>
+<translation id="1491076385728777984"><ph name="DEVICE_NAME" /> սարքի ներկառուցված ծրագրաշարը թարմացվում է</translation>
 <translation id="1499900233129743732">Այս օգտատերը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինս նաև կարող է հեռակա կառավարել կարգավորումներն ու վերահսկել օգտատիրոջ գործողությունները։</translation>
 <translation id="150962533380566081">Անվավեր PUK:</translation>
 <translation id="1510238584712386396">Գործարկիչ</translation>
+<translation id="1526389707933164996">Էրանապահի համար շարժանկար</translation>
+<translation id="152892567002884378">Բարձրացնել ձայնը</translation>
+<translation id="1555130319947370107">Կապույտ</translation>
+<translation id="155865706765934889">Հպահարթակ</translation>
+<translation id="1561927818299383735">ֆոնային լուսավորության գույնը</translation>
+<translation id="1565038567006703504">Չհաջողվեց թարմացնել <ph name="DEVICE_NAME" /> սարքը</translation>
+<translation id="1567064801249837505">Ալբոմներ</translation>
+<translation id="1572585716423026576">Օգտագործել որպես պաստառ</translation>
+<translation id="1578784163189013834">Ընտրել էկրանապահի ֆոն</translation>
+<translation id="1615335640928990664">Տվյալների օգտագործում <ph name="FRIENDLY_DATE" />-ից ի վեր</translation>
 <translation id="1621067168122174824">Փորձարկել լիցքավորումը</translation>
+<translation id="1639239467298939599">Բեռնում</translation>
 <translation id="1641857168437328880">Փաստաթղթերի մատակարար (միակողմանի)</translation>
+<translation id="1643449475550628585">Փոխել պաստառն ամեն օր</translation>
 <translation id="1644574205037202324">Պատմություն</translation>
 <translation id="1662989795263954667">Դադարեցվել է – Թանաք չկա</translation>
+<translation id="1664796644829245314">Նախադիտում (<ph name="PREVIEW_OBJECT" />)</translation>
+<translation id="1668469839109562275">Ներկառուցված VPN</translation>
+<translation id="1672499492233627739">Վեբ տեսախցիկի տեսահոսք</translation>
+<translation id="1676557873873341166">Տեսագրում</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS լուծիչը առկա է</translation>
+<translation id="1715359911173058521">Չհաջողվեց կապ հաստատել սկաների հետ։ Ստուգեք ցանցային կամ USB կապը և նորից փորձեք։</translation>
 <translation id="1717874160321062422">Կառավարում են՝ <ph name="FIRST_MANAGER" /> և <ph name="SECOND_MANAGER" /></translation>
+<translation id="1726100011689679555">Անունների սերվերներ</translation>
+<translation id="1731082422893354635">Bluetooth հպահարթակ</translation>
+<translation id="1745577949879301685">Չհաջողվեց բեռնել պատկերները։ Ստուգեք ձեր կապը կամ նորից փորձեք բեռնել պատկերները։</translation>
+<translation id="1751249301761991853">Անձնական կարգավորումներ</translation>
+<translation id="1753496554272155572">Փակել պաստառի նախադիտումը</translation>
+<translation id="1755556344721611131">«Դիագնոստիկա» հավելված</translation>
+<translation id="175763766237925754">Լավ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="1758018619400202187">EAP-TLS</translation>
+<translation id="1759842336958782510">Chrome</translation>
+<translation id="1768959921651994223">Իսկորոշման տեսակը</translation>
+<translation id="1782199038061388045">թարգմանություն</translation>
 <translation id="1792647875738159689">Սկանավորումը չեղարկվում է</translation>
+<translation id="1801418420130173017">Անջատել մուգ թեման</translation>
+<translation id="1807246157184219062">Բաց</translation>
+<translation id="1827738518074806965">Ցուցասրահ</translation>
 <translation id="1851218745569890714">Տեսակոնֆերանս</translation>
+<translation id="1852934301711881861">Տեղադրել ChromeOS Flex-ը</translation>
+<translation id="1856388568474281774">Ներքև սլաք</translation>
+<translation id="1858620243986915808">Կցել սքրինշոթ</translation>
+<translation id="1871569928317311284">Անջատել մուգ թեման</translation>
+<translation id="1874612839560830905">MTU</translation>
+<translation id="188114911237521550">Անջատել մուգ ռեժիմը</translation>
+<translation id="1881188606372070653">Իրավական հիմքերով բովանդակության փոփոխություն պահանջելու համար անցեք <ph name="BEGIN_LINK1" />Իրավական հարցերով օգնության էջ<ph name="END_LINK1" />։ Հաշվի և համակարգի որոշ տվյալներ կարող են ուղարկվել Google-ին։ Ձեր տրամադրած տեղեկությունները կօգտագործվեն տեխնիկական խնդիրները լուծելու և մեր ծառայությունների որակը բարելավելու նպատակով՝ մեր <ph name="BEGIN_LINK2" />Գաղտնիության քաղաքականության<ph name="END_LINK2" /> և <ph name="BEGIN_LINK3" />Օգտագործման պայմանների<ph name="END_LINK3" /> համաձայն։</translation>
 <translation id="1887850431809612466">Սարքի տարբերակը</translation>
+<translation id="1904932688895783618">Ահա մի քանի այլ օգտակար ռեսուրսներ՝</translation>
 <translation id="1905710495812624430">Փորձերի առավելագույն թույլատրելի քանակը սպառվել է:</translation>
 <translation id="1908234395526491708">Ձախողված UDP հարցումներ</translation>
-<translation id="1930797645656624981">Chrome OS-ում ներածման եղանակի ծառայություն</translation>
 <translation id="1947737735496445907">Տպված է</translation>
+<translation id="1951012854035635156">Օգնական</translation>
+<translation id="1977994649430373166">Google պրոֆիլի լուսանկար</translation>
 <translation id="1979103255016296513">Գաղտնաբառի փոփոխման ժամկետն անցել է</translation>
 <translation id="1999615961760456652">Մուտքի էջ</translation>
+<translation id="200669432486043882">Փոխարինել ֆայլը</translation>
+<translation id="2006864819935886708">Կապ</translation>
 <translation id="2008685064673031089">Prime որոնում</translation>
+<translation id="2011174342667534258">SDK-ի տարբերակը՝</translation>
+<translation id="2016697457005847575">Փորձել վերացնել անսարքությունները</translation>
+<translation id="202500043506723828">EID</translation>
+<translation id="2047316797244836561">Միացեք որևէ ցանցի և վերաբեռնեք էջը՝ էկրանապահը դիտելու համար։</translation>
 <translation id="2080070583977670716">Այլ կարգավորումներ</translation>
+<translation id="2085089206770112532">Էկրանի պայծառության նվազեցում</translation>
+<translation id="2105810540595158374">Սարքը խաղային վահանակ է։</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, տարբերակ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> ԳԲ-ից հասանելի է <ph name="AVAILABLE_MEMORY" /> ԳԲ</translation>
+<translation id="2138109643290557664">Տատանումներ</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
+<translation id="2152882202543497059"><ph name="NUMBER" /> լուսանկար</translation>
 <translation id="2157959690810728433">ՀԵՐԹԱԳՐՎԱԾ Է</translation>
+<translation id="2158971754079422508"><ph name="DESC_TEXT" />՝ նորից փորձել</translation>
 <translation id="2161394479394250669">Չեղարկել տպման առաջադրանքը</translation>
+<translation id="2163937499206714165">Միացնել մուգ ռեժիմը</translation>
+<translation id="2180197493692062006">Սխալ առաջացավ։ Փորձեք նորից բացել հավելվածը։</translation>
+<translation id="2182088270354640012">Շնորհակալություն կարծիք հայտնելու համար։ Ձեր կարծիքն օգնում է բարելավել Chrome OS-ը և հաշվի կառնվի Chrome OS-ի թիմի կողմից։ Ուղարկված հաղորդումների մեծ քանակի պատճառով դուք ուղղակի պատասխան չեք ստանա։</translation>
+<translation id="2209788852729124853">Զրոյացնել թրաֆիկի հաշվիչները</translation>
+<translation id="2212733584906323460">Անվանել լուծաչափը</translation>
 <translation id="2217935453350629363">Ընթացիկ արագությունը</translation>
 <translation id="2224337661447660594">Ինտերնետ կապ չկա</translation>
+<translation id="222447520299472966">Անհրաժեշտ է ընտրել ցուցասրահի առնվազն մեկ ալբոմ</translation>
+<translation id="2230005943220647148">Ցելսիուս</translation>
 <translation id="2230051135190148440">CHAP</translation>
+<translation id="2236746079896696523">Ստեղնաշարի հետնալույսի փոխանջատիչ</translation>
+<translation id="2240366984605217732">Դասավորության փոխանջատիչ</translation>
 <translation id="225692081236532131">Ակտիվացման կարգավիճակը</translation>
+<translation id="2271469253353559191">Մուգ ռեժիմի ժամանակացույց</translation>
+<translation id="2276999893457278469">Հիմնական տեղեկատվական բովանդակություն</translation>
+<translation id="2287186687001756809">Ոչ մի պատկեր չկա։ Լուսանկարներ ավելացնելու համար անցեք <ph name="LINK" />։</translation>
+<translation id="2307344026739914387">Օգտագործել ընթացիկ բանալիների զույգը</translation>
+<translation id="2320295602967756579">Միացնել բաց թեման</translation>
+<translation id="2323506179655536734">ԲԱՑ ԹՈՂՆՎԵՑ</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2338501278241028356">Մոտակա սարքերը գտնելու համար միացրեք Bluetooth-ը</translation>
+<translation id="2346474577291266260">Գերազանց (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2364498172489649528">Անցել է ստուգում</translation>
+<translation id="2380886658946992094">Legal</translation>
 <translation id="2391082728065870591">Ուղարկել կարծիքների վերաբերյալ հաշվետվություն</translation>
+<translation id="2407209115954268704">SIM քարտի կողպման կարգավիճակը</translation>
+<translation id="2414886740292270097">Մուգ</translation>
 <translation id="2418150275289244458">Բացել կարգավորումներում</translation>
+<translation id="2421798028054665193">Պատկեր <ph name="CURRENT_PAGE" />՝ <ph name="TOTAL_PAGES" />-ից</translation>
 <translation id="2446553403094072641">Լողացող կետի ճշգրտությունը</translation>
 <translation id="2448312741937722512">Տեսակ</translation>
 <translation id="2461822463642141190">Ընթացիկ</translation>
+<translation id="248546197012830854">Սարքը միացած չէ ինտերնետին։ Միացեք Wi-Fi ցանցին՝ տեղեկատվական բովանդակություն տեսնելու համար։</translation>
+<translation id="2491955442992294626">Ստեղները չեն փորձարկվում, երբ օգտագործում եք մեկ այլ պատուհան։</translation>
+<translation id="2493126929778606526">Ավտոմատ ընտրված լավագույն լուսանկարները</translation>
 <translation id="249323605434939166"><ph name="QUERY_TEXT" /> · <ph name="SOURCE_LANGUAGE_NAME" /></translation>
+<translation id="2505327257735685095">Թարմացնել ընթացիկ պաստառը</translation>
+<translation id="2513396635448525189">Մուտքի պատկեր</translation>
 <translation id="2517472476991765520">Որոնել</translation>
+<translation id="2526590354069164005">Աշխատասեղան</translation>
+<translation id="253029298928638905">Վերագործարկում…</translation>
+<translation id="2533048460510040082">Առաջարկվող տեղեկատվական բովանդակություն</translation>
+<translation id="2536159006530886390">Չհաջողվեց միանալ ինտերնետին։</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
-<translation id="2585245331261708204">Ինչ է փոխվել Chrome OS-ում</translation>
+<translation id="2584559707064218956">Ցանցը կարգավորելու համար անցեք Կարգավորումներ</translation>
+<translation id="2597774443162333062">Վրիպազերծման համար ֆայլերը կուղարկվեն Google-ին</translation>
+<translation id="2619761439309613843">Ամենօրյա թարմացում</translation>
 <translation id="2620436844016719705">Համակարգ</translation>
+<translation id="2638662041295312666">Մուտքի պատկեր</translation>
+<translation id="2640549051766135490">Ընտրվել է «<ph name="TITLE" />» (<ph name="DESC" />) ալբոմը</translation>
+<translation id="2712812801627182647">TLS իսկորոշման բանալի</translation>
+<translation id="2713444072780614174">Սպիտակ</translation>
+<translation id="2717139507051041123">Միացնել մուգ գույների ռեժիմը</translation>
 <translation id="2740531572673183784">Եղավ</translation>
 <translation id="2751739896257479635">EAP նույնականացման փուլ 2</translation>
+<translation id="2783010256799387990">ԱՆՑԱԾ Է</translation>
 <translation id="2789486458103222910">Եղավ</translation>
 <translation id="2805756323405976993">Հավելվածներ</translation>
-<translation id="2862104018715411648">Փաստաթուղթը դրեք սկաների վրա և սեղմեք Սկանավորել</translation>
+<translation id="28232023175184696">Չհաջողվեց միանալ ինտերնետին։ Սեղմեք՝ նորից փորձելու համար:</translation>
+<translation id="2859243502336719778">Կարևոր թարմացում</translation>
+<translation id="2860473693272905224">Մյուս էջը դրեք սկաների վրա</translation>
 <translation id="2872961005593481000">Անջատել</translation>
+<translation id="2874939134665556319">Նախորդը</translation>
 <translation id="2878387241690264070">Լիցքաթափվել է <ph name="RATE" /> <ph name="NUM_SECONDS" /> վայրկյանում։</translation>
+<translation id="2926057806159140518">Մուտքագրեք ձեր անունը և գաղտնաբառը կամ սկանավորեք QR կոդը</translation>
 <translation id="3008341117444806826">ԹԱՐՄԱՑՆԵԼ</translation>
 <translation id="3009958530611748826">Ընտրեք պանակ, որում պետք է պահել</translation>
+<translation id="3017079585324758401">Ֆոն</translation>
+<translation id="3027578600144895987">Փակել տեսախցիկը</translation>
+<translation id="3031560714565892478">Սարքը տեսախցիկ է։</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> մԱ</translation>
+<translation id="3056720590588772262">Վերջնակետ</translation>
 <translation id="3069085583900247081">Փորձարկումը ձախողվեց</translation>
 <translation id="3083667275341675831">Կապի դիագնոստիկա</translation>
+<translation id="3084958266922136097">Անջատել էկրանապահը</translation>
 <translation id="3091839911843451378">Չհաջողվեց տպել – Տպիչի աշխատանքը դադարեցվել է</translation>
 <translation id="3102119246920354026">Հիշապահեստ</translation>
 <translation id="3122464029669770682">CPU</translation>
+<translation id="3124039320086536031">Սարքը միացված է։</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Հեռացնե՞լ էջը}=1{Հեռացնե՞լ էջ {PAGE_NUMBER}-ը}one{Հեռացնե՞լ էջ {PAGE_NUMBER}-ը}other{Հեռացնե՞լ էջ {PAGE_NUMBER}-ը}}</translation>
 <translation id="315116470104423982">Բջջային կապի տվյալներ</translation>
+<translation id="3156846309055100599">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը...</translation>
 <translation id="315738237743207937">Հայտնաբերվել է մուտքի էջ</translation>
+<translation id="3170673040743561620">Փաստաթուղթը դրեք սկաների վրա</translation>
 <translation id="3188257591659621405">Իմ ֆայլերը</translation>
+<translation id="319101249942218879">Ավատարի պատկերը փոխվել է</translation>
+<translation id="3192947282887913208">Աուդիո ֆայլեր</translation>
 <translation id="3199982728237701504">Փաստաթղթերի մատակարար (երկկողմանի)</translation>
 <translation id="3226405216343213872">Սկաներների որոնում</translation>
 <translation id="3246869037381808805">Տպման առաջադրանքները, որոնք 1 օրից հին են, կհեռացվեն</translation>
 <translation id="3268178239013324452">Չհաջողվեց տպել – Կափարիչը բաց է</translation>
+<translation id="3275729367986477355">Ավատարի պատկեր</translation>
+<translation id="3283504360622356314">{0,plural, =1{Փոփոխել ֆայլը}one{Փոփոխել ֆայլերը}other{Փոփոխել ֆայլերը}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> ԳՀց</translation>
+<translation id="3291996639387199448">Բանալու ուղղություն</translation>
+<translation id="3294437725009624529">Հյուր</translation>
 <translation id="3310640316857623290">DNS-ի հապաղումը մեծ առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="3328783797891415197">Փորձարկում</translation>
+<translation id="3340011300870565703">Աջ ականջակալի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="3368922792935385530">Միացված է</translation>
 <translation id="3369013195428705271">Մաքրե՞լ ամբողջ տպման պատմությունը: Ընթացիկ տպման աշխատանքները չեն ջնջվի։</translation>
+<translation id="3404249063913988450">Միացնել էկրանապահը</translation>
+<translation id="3413935475507503304">Թարմացումը շարունակելու համար սեղմեք «Առաջ»։</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">Անվտանգություն</translation>
 <translation id="3456078764689556234">Տպված էջ՝ <ph name="PRINTED_PAGES" />/<ph name="TOTAL_PAGES" />։</translation>
 <translation id="345898999683440380">Սկանավորվում է էջ <ph name="PAGE_NUM" />-ը։ Կատարված է <ph name="PERCENTAGE_VALUE" />%-ը։</translation>
 <translation id="3459509316159669723">Տպում</translation>
+<translation id="346539236881580388">Նորից լուսանկարել</translation>
+<translation id="3484914941826596830">Քանի դեռ ներկառուցված ծրագիրը թարմացվում է, մի՛ անջատեք ձեր համակարգիչը կամ այս արտաքին սարքը համակարգչից։ Դուք կարող եք փոքրացնել այս պատուհանը։ Այս թարմացումը կարող է մի քանի րոպե տևել, և այդ ընթացքում արտաքին սարքը հնարավոր է, որ չաշխատի։</translation>
+<translation id="3486220673238053218">սահմանում</translation>
 <translation id="3488065109653206955">Մասամբ ակտիվացված</translation>
+<translation id="3510890413042482857">Ուղարկել <ph name="BEGIN_LINK1" />արդյունավետության հետագծման տվյալները<ph name="END_LINK1" /></translation>
+<translation id="3517001332549868749">ChromeOS-ի թարմացում</translation>
 <translation id="3527036260304016759">Չհաջողվեց տպել – Անհայտ սխալ</translation>
 <translation id="3532980081107202182">Մնացել է մոտ <ph name="MIN_REMAINING" /> րոպե</translation>
+<translation id="3557205324756024651">Տեղային իսկորոշում (պարտադիր չէ)</translation>
+<translation id="3565064564551103223">Թույլատրված IP-ներ</translation>
+<translation id="3569407787324516067">Էկրանապահ</translation>
+<translation id="3577473026931028326">Սխալ առաջացավ։ Նորից փորձեք։</translation>
 <translation id="357889014807611375">սահմանափակ Wi-Fi</translation>
+<translation id="3583278742022654445">Ազդանշանը թույլ է։ Փորձեք սարքը մոտեցնել Wi-Fi ազդանշանի աղբյուրին։</translation>
 <translation id="3595596368722241419">Մարտկոցը լրիվ լիցքավորված է</translation>
+<translation id="3600339377155080675">Էկրանի հայելապատճենում</translation>
+<translation id="3603829704940252505">Ավատար</translation>
+<translation id="3604713164406837697">Փոխել պաստառը</translation>
 <translation id="360565022852130722">Wi-Fi ցանցը պաշտպանված է WEP 802.1x թույլ հաղորդակարգով</translation>
+<translation id="3606583719724308068">Բարձր հապաղում HTTPS կայքերի համար</translation>
+<translation id="361575905210396100">Շնորհակալություն կարծիք հայտնելու համար</translation>
+<translation id="3621202678540785336">Ներածում</translation>
+<translation id="3632579075709132555">Գաղտնիության էկրանի փոխանջատիչ</translation>
+<translation id="3651050199673793219">Ընտրել ջերմաստիճանի միավոր</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> փորձարկում</translation>
+<translation id="370665806235115550">Բեռնում…</translation>
+<translation id="3708186454126126312">Նախկինում միացված սարքեր</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> կարծիք)</translation>
 <translation id="3748026146096797577">Միացված չէ</translation>
 <translation id="3749289110408117711">Ֆայլի անունը</translation>
+<translation id="3771294271822695279">Տեսաֆայլեր</translation>
+<translation id="3784455785234192852">Կողպել</translation>
 <translation id="38114475217616659">Մաքրել ամբողջ պատմությունը</translation>
 <translation id="3820172043799983114">PIN-ը սխալ է</translation>
+<translation id="3824259034819781947">Կցել ֆայլեր</translation>
 <translation id="3838338534323494292">Նոր գաղտնաբառը</translation>
+<translation id="385051799172605136">Հետ</translation>
+<translation id="3858860766373142691">Անուն</translation>
+<translation id="3862598938296403232">Նկարագրությունը պարտադիր է</translation>
 <translation id="3865414814144988605">Լուծաչափ</translation>
+<translation id="3866249974567520381">Նկարագրություն</translation>
 <translation id="387301095347517405">Քանի անգամ է ձեր մարտկոցն ամբողջությամբ լիցքավորվել</translation>
+<translation id="3885327323343477505">Փոխել էկրանապահը</translation>
+<translation id="3923184630988645767">Թրաֆիկի օգտագործում</translation>
+<translation id="3932043219784172185">Միացած սարքեր չկան</translation>
 <translation id="3941014780699102620">Չհաջողվեց ճանաչել խնամորդը</translation>
 <translation id="3942420633017001071">Դիագնոստիկա</translation>
+<translation id="3954678691475912818">Սարքի տեսակը հայտնի չէ։</translation>
+<translation id="3966286471246132217">Ավելի ճշգրիտ արդյունքներ ստանալու համար փակեք բոլոր հավելվածները, մինչև որ փորձարկումը չավարտվի։</translation>
 <translation id="3967822245660637423">Ներբեռնումն ավարտվեց</translation>
+<translation id="3969602104473960991">ChromeOS-ի գաղտնաբառը փոխվել է</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
 <translation id="39823212440917567">Տպման առաջադրանքները, որոնք <ph name="NUMBER_OF_DAYS" /> օրից հին են, կհեռացվեն</translation>
+<translation id="3993704782688964914">Ձեր <ph name="DEVICE_NAME" /> սարքն այժմ թարմացված է</translation>
 <translation id="4003384961948020559">Չհաջողվեց տպել – Ելքը լցված է</translation>
 <translation id="4034824040120875894">Տպիչ</translation>
+<translation id="4044093238444069296">Չհաջողվեց կապ հաստատել անցախուցի հետ</translation>
+<translation id="4046123991198612571">Հաջորդը</translation>
+<translation id="404928562651467259">ԶԳՈՒՇԱՑՈՒՄ</translation>
+<translation id="4093865285251893588">Պրոֆիլի պատկեր</translation>
+<translation id="409427325554347132">Պահել թեստի մանրամասները</translation>
+<translation id="4110686435123617899">Ընտրեք ալբոմը՝ «<ph name="TITLE" />» (<ph name="DESC" />)</translation>
+<translation id="4111761024568264522">USB հպահարթակ</translation>
+<translation id="4117637339509843559">Մուգ ռեժիմ</translation>
 <translation id="4131410914670010031">Սև ու սպիտակ</translation>
 <translation id="4145784616224233563">HTTP հրապատ</translation>
+<translation id="4147897805161313378">Google Լուսանկարներ</translation>
 <translation id="4155551848414053977">Համոզվեք, որ սկաներն աշխատում է և հասանելի է ցանցի կամ ուղիղ կապի միջոցով</translation>
+<translation id="4159784952369912983">Մանուշակագույն</translation>
+<translation id="4170180284036919717">Լուսանկարել</translation>
 <translation id="4170700058716978431">ՁԱԽՈՂՎԵՑ</translation>
 <translation id="4176463684765177261">Անջատված է</translation>
+<translation id="4176659219503619100">Կառավարման վահանակ</translation>
+<translation id="420283545744377356">Անջատել էկրանապահը</translation>
+<translation id="4213104098953699324">USB ստեղնաշար</translation>
 <translation id="4227825898293920515">Գաղտնաբառի գործողության ժամկետը <ph name="TIME" />ից կսպառվի</translation>
 <translation id="4238516577297848345">Տպելու ընթացիկ առաջադրանքներ չկան</translation>
+<translation id="4239069858505860023">GPRS</translation>
+<translation id="4244962993387259361">Հիշողության ստուգումը գործարկելու համար ձեզ անհրաժեշտ է նվազագույնը 500 ՄԲ ազատ տարածք։ Տարածք ազատելու համար անցեք Կարգավորումներ &gt; Հիշողության կառավարում։</translation>
+<translation id="4250229828105606438">Սքրինշոթ</translation>
+<translation id="4258281355379922695">HTTP-ի հապաղում</translation>
+<translation id="4271957103967917607">Լիաէկրան ռեժիմ</translation>
+<translation id="4289540628985791613">Համատեսք</translation>
+<translation id="4289849978083912975">Պատկերահանդես</translation>
 <translation id="4297501883039923494">Դադարեցվել է – Անհայտ սխալ</translation>
+<translation id="4300073214558989"><ph name="IMAGE_COUNT" /> պատկեր</translation>
+<translation id="4333390807948134856"><ph name="KEY_NAME" /> ստեղնը սեղմված է</translation>
 <translation id="4378373042927530923">Չի գործարկվել</translation>
+<translation id="4378551569595875038">Միացում…</translation>
 <translation id="4382484599443659549">PDF</translation>
+<translation id="439429847087949098"><ph name="DEVICE_NAME" /> սարքը վերագործարկվում է</translation>
+<translation id="4415951057168511744">Ընթացիկ ավատարը</translation>
 <translation id="4425149324548788773">Իմ դրայվը</translation>
+<translation id="4428374560396076622"><ph name="NETWORK_NAME" />-ն անջատված է</translation>
 <translation id="4429881212383817840">Kerberos տոմսի գործողության ժամկետը շուտով կսպառվի</translation>
 <translation id="4431821876790500265">Դիտել հաշվետվությունը</translation>
 <translation id="445059817448385655">Հին գաղտնաբառը</translation>
@@ -145,88 +347,172 @@
 <translation id="4454245904991689773">Պահել</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Չհաջողվեց փինգ ուղարկել չկանխադրված ցանցի անցախուցին</translation>
+<translation id="4503223151711056411">Ձախ սլաք</translation>
 <translation id="4511264077854731334">Պորտալ</translation>
+<translation id="4521826082652183069">Համընկնում սուբյեկտի այլընտրանքային անվան հետ</translation>
+<translation id="4536864596629708641">IP-ի կազմաձևում</translation>
+<translation id="4546131424594385779">Ստեղծել կրկնվող տեսանյութ</translation>
 <translation id="4548483925627140043">Ազդանշան չի գտնվել</translation>
+<translation id="4556753742174065117">Ներկառուցված ծրագրաշարը թարմացման կարիք չունի</translation>
 <translation id="455835558791489930">Մարտկոց՝ <ph name="CHARGE_VALUE" />mAh</translation>
+<translation id="4561801978359312462">SIM քարտն ապակողպված է</translation>
 <translation id="4562494484721939086">Ցանցը չի գտնվել</translation>
 <translation id="458794348635939462">Չհաջողվեց կապ հաստատել բոլոր խնամորդների հետ</translation>
-<translation id="4593212453765072419">Պահանջվում է միջնորդ սերվերի նույնականացում</translation>
+<translation id="4593212453765072419">Պահանջվում է պրոքսի սերվերի նույնականացում</translation>
+<translation id="4609350030397390689">Ստեղնաշարի պայծառության նվազեցում</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />։ Հպեք Enter՝ տպումը չեղարկելու համար։</translation>
+<translation id="463791356324567266">Սկանավորումը չեղարկվում է...</translation>
 <translation id="4646949265910132906">Ապահով Wi-Fi կապ</translation>
-<translation id="4652335678334611408">Պահել աշխատաշրջանի տվյալները</translation>
+<translation id="4650608062294027130">Աջ Shift</translation>
+<translation id="4654549501020883054">Փոխել ամեն օր</translation>
 <translation id="4665014895760275686">Արտադրող</translation>
 <translation id="467510802200863975">Գաղտնաբառերը չեն համընկնում</translation>
 <translation id="467715984478005772">Հնարավոր է, որ հրապատ կա</translation>
 <translation id="4691278870498629773">Դադարեցվել է – Դարակը բացակայում է</translation>
 <translation id="469379815867856270">Ազդանշանի հզորությունը</translation>
-<translation id="4707579418881001319">L2TP/IPsec + օգտատիրոջ վկայագիր</translation>
 <translation id="4731797938093519117">Ծնողի մուտք</translation>
+<translation id="473775607612524610">Թարմացնել</translation>
+<translation id="4744944742468440486">Տեղեկություններ ձեր ընտրության վերաբերյալ</translation>
 <translation id="4773299976671772492">Դադարեցված է</translation>
+<translation id="4782311465517282004">Ստացեք սահմանումներ, թարգմանություններ կամ չափման միավորների փոխարկումներ՝ տեքստի վրա մկնիկի աջ կոճակը սեղմելով կամ տեքստին հպել և պահելով։</translation>
+<translation id="4791000909649665275"><ph name="NUMBER" /> լուսանկար</translation>
+<translation id="4793710386569335688">Եթե օգնություն է անհրաժեշտ, անցեք <ph name="BEGIN_LINK" />Օգնության կենտրոն<ph name="END_LINK" />։</translation>
+<translation id="4793756956024303490">Սեղմման ալգորիթմ</translation>
+<translation id="4794140124556169553">CPU-ի թեստի գործարկումը կարող է ազդել ձեր համակարգի աշխատանքի վրա</translation>
+<translation id="4800589996161293643">Chromebook համայնք</translation>
 <translation id="4808449224298348341">Տպման առաջադրանքը չեղարկվեց՝ <ph name="DOCUMENT_TITLE" /></translation>
+<translation id="4809927044794281115">Բաց թեմա</translation>
+<translation id="4813136279048157860">Իմ պատկերները</translation>
 <translation id="4813345808229079766">Միացում</translation>
 <translation id="4832079907277790330">Ընտրել պանակ «Ֆայլեր» հավելվածում…</translation>
 <translation id="4835901797422965222">Ակտիվ ցանցեր չկան</translation>
+<translation id="4839698083503556542">Ստեցծեք ձեր ֆիլմը</translation>
+<translation id="484462545196658690">Ավտոմատ</translation>
+<translation id="4847902821209177679">Ընտրված է «<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />» տարբերակը։ Սեղմեք Enter՝ <ph name="TOPIC_SOURCE" />ի ալբոմներ ընտրելու համար։</translation>
+<translation id="484790837831576105">DNS-ի լուծաչափ (Android)</translation>
 <translation id="4848429997038228357">ՓՈՐՁԱՐԿՎՈՒՄ Է</translation>
 <translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}one{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}other{<ph name="ERROR_MESSAGE" /> Մնացած փորձերի քանակը՝ {0}}}</translation>
+<translation id="4873827928179867585">Իսկորոշման ալգորիթմ</translation>
 <translation id="4880328057631981605">Մուտքի կետի անունը</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Հնարավորինս արագ փոխեք գաղտնաբառը</translation>
 <translation id="4891842000192098784">Ծանրաբեռնվածություն</translation>
+<translation id="4897058166682006107">Ձախ ականջակալի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
+<translation id="4905998861748258752">Միացրեք գործառույթը՝ էկրանապահի պարամետրեր ընտրելու համար</translation>
 <translation id="4917385247580444890">Ուժեղ</translation>
 <translation id="4917889632206600977">Դադարեցվել է – Թուղթ չկա</translation>
+<translation id="491791267030419270">Կարծիք գրելու խորհուրդներ</translation>
 <translation id="4921665434385737356">Լիցքավորվել է <ph name="RATE" />-ով՝ <ph name="NUM_SECONDS" /> վայրկյանում։</translation>
+<translation id="4930320165497208503">Միացում կարգավորելու կամ ստեղծելու համար անցեք <ph name="BEGIN_LINK" />Կարգավորումներ<ph name="END_LINK" />։</translation>
 <translation id="4932733599132424254">Ամսաթիվ</translation>
+<translation id="4950314376641394653"><ph name="DEVICE_NAME" /> սարքի ներկառուցված ծրագիրը թարմացվել է <ph name="VERSION" /> տարբերակով</translation>
 <translation id="498186245079027698">Ստուգեք սկաները և նորից փորձեք։ Համոզվեք, որ սկանավորված ֆայլերը պահելու համար բավարար տարածք կա։</translation>
 <translation id="4985509611418653372">Գործարկել</translation>
 <translation id="4987769320337599931">Հրապատ</translation>
 <translation id="4999333166442584738">Թաքցնել հաշվետվությունը</translation>
 <translation id="500920857929044050">Դադարեցնել փորձարկումը</translation>
 <translation id="5017508259293544172">LEAP</translation>
+<translation id="5019310272469539976">Ցուցադրում է լուսանկարներ, ժամը, եղանակը և նորություններ, երբ ձեր սարքն անգործուն ռեժիմում է։</translation>
+<translation id="5039804452771397117">Թույլ տալ</translation>
+<translation id="5049856988445523908">SIM քարտը կողպված է (<ph name="LOCK_TYPE" />)</translation>
 <translation id="5050042263972837708">Խմբի անունը</translation>
+<translation id="5051044138948155788">Սա միակ էջն է։ Դուք կվերահղվեք սկանավորման մեկնարկի էջ։</translation>
 <translation id="5088172560898466307">Սերվերի խնամորդի անուն</translation>
 <translation id="5089810972385038852">Նահանգ</translation>
+<translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5142961317498132443">Նույնականացում</translation>
 <translation id="5154917547274118687">Հիշողություն</translation>
+<translation id="5160857336552977725">Մուտք գործեք ձեր <ph name="DEVICE_TYPE" /></translation>
+<translation id="5166918508782100047">Արագ պատասխանների կարգավորումներ</translation>
 <translation id="5168185087976003268">Մարտկոցի կարգավիճակը</translation>
+<translation id="5170568018924773124">Ցույց տալ պանակում</translation>
+<translation id="5190187232518914472">Վերապրեք լավագույն պահերը։ Ալբոմ ավելացնելու կամ առկա ալբոմներում փոփոխություններ անելու համար անցեք <ph name="LINK_BEGIN" />Google Լուսանկարներ<ph name="LINK_END" />։</translation>
 <translation id="5212543919916444558">Չհաջողվեց գտնել քարտեր էկրանին:
 Փորձեք օգտագործել խոսափողը` առաջադրանքներ տալու համար:</translation>
+<translation id="5212593641110061691">Tabloid</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
+<translation id="522307662484862935">Չներառել էլ․ հասցե</translation>
+<translation id="5227902338748591677">Մուգ թեմայի ժամանակացույց</translation>
+<translation id="5234764350956374838">Փակել</translation>
 <translation id="5252456968953390977">Ռոումինգ</translation>
+<translation id="5257811368506016604">Միացնել բաց գույների ռեժիմը</translation>
 <translation id="5264277876637023664">Փորձարկել CPU-ն</translation>
 <translation id="5267975978099728568"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="ERROR_STATUS" /></translation>
 <translation id="5275828089655680674">Նորից գործարկել ծրագրերը</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
+<translation id="5286263799730375393">ֆոնի լուսավորության գույնը</translation>
 <translation id="5294769550414936029">տարբերակ <ph name="MILESTONE_VERSION" /></translation>
+<translation id="5300814202279832142">Պատուհանը տեղափոխել աշխատասեղան</translation>
+<translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">Ինքնություն</translation>
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5318334351163689047">Ձախողված TCP հարցումներ</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Հնարավորինս արագ փոխեք գաղտնաբառը</translation>
 <translation id="5333530671332546086">Ցանցային պորտալի անհայտ վիճակ</translation>
+<translation id="5346687412805619883">Լոկալ ցանց</translation>
+<translation id="5358174242040570474">Սխալ առաջացավ։ Նորից ընտրեք պաստառ կամ հավելվածը փակեք ու նորից բացեք։</translation>
 <translation id="5372659122375744710">Wi-Fi ցանցն անվտանգ չէ</translation>
+<translation id="5376354385557966694">Ավտոմատ բաց ռեժիմ</translation>
+<translation id="5389159777326897627">Պաստառ և ոճ</translation>
+<translation id="5389224261615877010">Ծիածան</translation>
+<translation id="5400907029458559844">Սարքը միանում է։</translation>
 <translation id="5401938042319910061">Գործարկել բոլոր հերթականությունները</translation>
 <translation id="5423849171846380976">Ակտիվացված է</translation>
 <translation id="5430931332414098647">Անկթարթային մուտքի կետ</translation>
 <translation id="5431318178759467895">Գունավոր</translation>
-<translation id="5431825016875453137">OpenVPN / L2TP</translation>
 <translation id="5457599981699367932">Մտնել հյուրի ռեժիմ</translation>
 <translation id="54609108002486618">Կառավարվող</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Մնացած փորձերի քանակը՝ {0}}one{Մնացած փորձերի քանակը՝ {0}}other{Մնացած փորձերի քանակը՝ {0}}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />՝ <ph name="PROBLEMS" /></translation>
+<translation id="5499114900554609492">Չհաջողվեց ավարտել սկանավորումը</translation>
+<translation id="5499762266711462226">Ստեղնաշարի գույնը կախված է պաստառից</translation>
+<translation id="5502931783115429516">Android-ը չի աշխատում</translation>
+<translation id="5519195206574732858">LTE</translation>
 <translation id="554517032089923082">GTC</translation>
+<translation id="5578477003638479617">UMTS</translation>
+<translation id="5578519639599103840">Նորից սկանավորել</translation>
+<translation id="5583640892426849032">Backspace</translation>
+<translation id="5600027863942488546"><ph name="KEY_NAME" /> ստեղնը փորձարկվել է</translation>
+<translation id="5620281292257375798">Միայն ներքին օգտագործման համար</translation>
+<translation id="5649768706273821470">Լսել</translation>
+<translation id="5655283760733841251">Ստեղնաշարի պայծառության ավելացում</translation>
+<translation id="5659593005791499971">Էլփոստ</translation>
 <translation id="5669267381087807207">Ակտիվացում</translation>
 <translation id="5670702108860320605">BSSID</translation>
 <translation id="5691511426247308406">Ընտանիք</translation>
+<translation id="5695599963893094957">Ձեր ստեղնաշարին սեղմեք ցանկացած ստեղն։ Միաժամանակ կարող եք սեղմել 4 ստեղն։</translation>
+<translation id="5701381305118179107">Կենտրոնաբերել</translation>
+<translation id="5707900041990977207"><ph name="CURRENT_PAGE" />/<ph name="TOTAL_PAGES" /></translation>
+<translation id="5733298426544876109">Թարմացնել <ph name="DEVICE_NAME" /> սարքը</translation>
 <translation id="5760715441271661976">Պորտալի վիճակը</translation>
-<translation id="5797428682393400134">ՀԱՋՈՂՎԵՑ</translation>
+<translation id="576835345334454681">Էկրանի պայծառության ավելացում</translation>
+<translation id="57838592816432529">Անջատել ձայնը</translation>
+<translation id="5784136236926853061">HTTP-ի բարձր հապաղում</translation>
 <translation id="5832805196449965646">Ավելացնել անձ</translation>
 <translation id="583281660410589416">Անհայտ</translation>
+<translation id="5843706793424741864">Ֆարենհայտ</translation>
 <translation id="5849570051105887917">Տան ծառայությունների մատակարարի կոդը</translation>
+<translation id="5859603669299126575">Ցուցասրահի ալբոմ</translation>
+<translation id="5860033963881614850">Անջատ.</translation>
+<translation id="5860491529813859533">Միացնել</translation>
 <translation id="5866840822086176774">Շատ ուժեղ</translation>
+<translation id="588258955323874662">Լիաէկրան</translation>
 <translation id="5895138241574237353">Վերագործարկել</translation>
+<translation id="5901630391730855834">Դեղին</translation>
+<translation id="5903200662178656908">Սարքը ստեղնաշարի և մկնիկի համադրություն է։</translation>
+<translation id="5907649332524363701">ստեղների գույնը</translation>
 <translation id="5916084858004523819">Արգելված է</translation>
+<translation id="5916664084637901428">Միացնել</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Ձեր ֆայլը սկանավորվեց և պահվեց <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> պանակում։}one{Ձեր ֆայլերը սկանավորվեցին և պահվեցին <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> պանակում։}other{Ձեր ֆայլերը սկանավորվեցին և պահվեցին <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> պանակում։}}</translation>
 <translation id="5931523347251946569">Ֆայլը չի գտնվել</translation>
+<translation id="5939518447894949180">Վերակայել</translation>
+<translation id="594552776027197022">Ստեղծել պատահական բանալիների զույգ</translation>
+<translation id="5972388717451707488">UpdateEngine</translation>
+<translation id="5984145644188835034">Կանխադրված պաստառ</translation>
+<translation id="6017514345406065928">Կանաչ</translation>
+<translation id="6034694447310538551">Միացնել տեղեկությունների ամենամսյա ավտոմատ զրոյացումը</translation>
+<translation id="6037291330010597344">Սկաների փաստաթղթերի մատակարարը դատարկ է։ Ավելացրեք փաստաթղթեր և նորից փորձեք։</translation>
 <translation id="6040143037577758943">Փակել</translation>
 <translation id="6040852767465482106">Նույնականացման անանուն տվյալներ</translation>
 <translation id="604124094241169006">Ավտոմատ</translation>
@@ -234,146 +520,328 @@
 <translation id="6050189528197190982">Գորշասանդղակ</translation>
 <translation id="6058625436358447366">Ավարտելու համար մուտքագրեք ձեր հին և նոր գաղտնաբառերը</translation>
 <translation id="6061772781719867950">Անհաջող HTTP հարցումներ</translation>
+<translation id="6075872808778243331">HTTP-ի հապաղում (Android)</translation>
 <translation id="6104112872696127344">Սկանավորումը չեղարկվել է</translation>
 <translation id="6106186594183574873">Ավարտելու համար մուտքագրեք ձեր հին գաղտնաբառը</translation>
 <translation id="6108689792487843350">Անցախուցն անհասանելի է</translation>
+<translation id="6112878310391905610">Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
+<translation id="6113701710518389813">Վերև սլաք</translation>
+<translation id="6117895505466548728"><ph name="TITLE" /> ու ևս <ph name="NUMBER" /> ալբոմ</translation>
 <translation id="6122191549521593678">Առցանց</translation>
+<translation id="6122277663991249694">ChromeOS-ում ներածման եղանակի ծառայություն</translation>
 <translation id="6137767437444130246">Օգտատիրոջ հավաստագիր</translation>
 <translation id="6146993107019042706">Ավարտելու համար մուտքագրեք ձեր նոր գաղտնաբառը</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
+<translation id="6184793017104303157">B4</translation>
 <translation id="6189418609903030344">Օգտագործման ընթացքում մարտկոցի հզորությունը նվազում է</translation>
 <translation id="6191293864534840972">Սխալ DNS սերվերներ</translation>
+<translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Հասանելի սկաներներ չկան</translation>
 <translation id="6232017090690406397">Մարտկոց</translation>
+<translation id="6235460611964961764">Տվյալների օգտագործման մասին տեղեկությունների զրոյացումը կատարել ձեռքով</translation>
+<translation id="6243280677745499710">Այժմ տեղադրված է</translation>
+<translation id="6275224645089671689">Աջ սլաք</translation>
+<translation id="6278428485366576908">Թեմա</translation>
+<translation id="6280912520669706465">ARC</translation>
+<translation id="6284632978374966585">Միացնել մուգ թեման</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> թեստը չեղարկվել է</translation>
+<translation id="631063167932043783">«Հնարավորություններ» հավելված</translation>
+<translation id="6319207335391420837"><ph name="DEVICE_NAME" /> սարքի ներկառուցված ծրագրի թարմացում</translation>
+<translation id="6321407676395378991">Միացնել էկրանապահը</translation>
 <translation id="6325525973963619867">Սխալ առաջացավ</translation>
+<translation id="6331191339300272798">Ավտոմատ մուգ թեմա</translation>
+<translation id="6340526405444716530">Անհատականացում</translation>
+<translation id="6348738456043757611">Օգտանուն և գաղտնաբառ</translation>
+<translation id="6359706544163531585">Անջատել բաց թեման</translation>
 <translation id="636850387210749493">Ձեռնարկության գրանցում</translation>
+<translation id="6379086450106841622">հպէկրան</translation>
+<translation id="6381741036071372448">Փորձարկեք ձեր ստեղնաշարը</translation>
+<translation id="6388847657025262518">Սկաների փաստաթղթերի մատակարարը լռվել է։ Ստուգեք մատակարարը և նորից փորձեք։</translation>
+<translation id="6394634179843537518">Ավելացնել ֆայլ</translation>
+<translation id="6410257289063177456">Պատկերների ֆայլեր</translation>
 <translation id="641081527798843608">Թեմաների համընկնում</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6439505561246192797">Թույլ (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="6447630859861661624">Անցնել հաշվի կարգավորումներ</translation>
 <translation id="6456394469623773452">Լավ</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Նորից սկանավորե՞լ էջը}=1{Նորից սկանավորե՞լ էջ {PAGE_NUMBER}-ը}one{Նորից սկանավորե՞լ էջ {PAGE_NUMBER}-ը}other{Նորից սկանավորե՞լ էջ {PAGE_NUMBER}-ը}}</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6480327114083866287">Ադմինիստրատոր՝ <ph name="MANAGER" /></translation>
 <translation id="649050271426829538">Դադարեցվել է – Թղթի խցանում</translation>
+<translation id="6494974875566443634">Անհատականացում</translation>
+<translation id="6500818810472529210">Դիտեք արդյունքները Google Որոնում ծառայությունում</translation>
+<translation id="650266656685499220">Ալբոմներ ստեղծելու համար անցեք Google Լուսանկարներ</translation>
 <translation id="6516990319416533844">Մարտկոցի լիցքավորման արագությունը ստուգելու համար թողեք, որ մարտկոցը մի փոքր լիցքաթափվի</translation>
 <translation id="6517239166834772319">Հնարավորություններ</translation>
 <translation id="6527081081771465939">Wi-Fi-ի անվտանգության անհայտ հաղորդակարգ</translation>
+<translation id="6535178685492749208">Դուք անցանց ռեժիմում եք։ Կարծիքը կուղարկվի ավելի ուշ։</translation>
 <translation id="65587193855025101">Պլանշետային</translation>
 <translation id="6564646048574748301">Չհաջողվեց տպել – Տպիչն անհասանելի է</translation>
+<translation id="6566314079205407217">Սկանավորել մի քանի էջ</translation>
+<translation id="6574762126505704998">Լցում</translation>
+<translation id="6575134580692778371">Կազմաձևված չէ</translation>
+<translation id="6579509898032828423">Օգտագործել այս լուսանկարը</translation>
+<translation id="6596816719288285829">IP հասցե</translation>
 <translation id="6618744767048954150">Ստուգումն ընթացքում է</translation>
 <translation id="6620487321149975369">Տպելու առաջադրանքները կցուցադրվեն պատմության մեջ, եթե դրանք ձեռքով չեն հեռացվել</translation>
+<translation id="6624819909909965616">Հնարավոր չէ վերբեռնել 10 ՄԲ-ից մեծ ֆայլ։</translation>
 <translation id="6643016212128521049">Մաքրել</translation>
+<translation id="6647510110698214773">Գաղտնագրման ալգորիթմ</translation>
+<translation id="6650062777702288430">Կանայի և տառաթվային նիշերի միջև անցում</translation>
 <translation id="6657585470893396449">Գաղտնաբառ</translation>
+<translation id="6659594942844771486">Ներդիր</translation>
+<translation id="6692996468359469499">Ստացեք տեղեկություններ էկրանի տարրերի վերաբերյալ</translation>
 <translation id="6704062477274546131">DNS-ի լուծաչափ</translation>
+<translation id="6723839937902243910">Սնուցում</translation>
+<translation id="6723847290197874913">Ստեղնաշարի հետնալույս</translation>
+<translation id="672609503628871915">Իմանալ՝ ինչ նոր բան կա</translation>
 <translation id="6747215703636344499">Դադարեցվել է – Ելքային դարակը լցված է</translation>
+<translation id="6749473226660745022">Լուսանկարներ</translation>
+<translation id="6753452347192452143">Սարքը համակարգիչ է։</translation>
 <translation id="6756731097889387912">Չհաջողվեց չեղարկել սկանավորումը</translation>
+<translation id="6760706756348334449">Իջեցնել ձայնը</translation>
 <translation id="6766275201586212568">DNS-ի անհաջող լուծումներ</translation>
 <translation id="6768237774506518020">DNS-ի լուծման խափանումների բարձր մակարդակ</translation>
+<translation id="6791471867139427246">ստեղնաշարի լուսավորության գույնը</translation>
+<translation id="680983167891198932">Բանալի</translation>
+<translation id="6816797338148849397">Ձեր ընտրության վերաբերյալ հասանելի են տեղեկություններ։ Դրանք բացելու համար օգտագործեք վեր սլաքը։</translation>
 <translation id="6853312040151791195">Լիցքաթափման արագությունը</translation>
-<translation id="6898743098396957679">Չհաջողվեց ավարտել սկանավորումը</translation>
+<translation id="6889786074662672253">Վերագործարկման ժամանակ մի՛ անջատեք ձեր համակարգիչը կամ այս արտաքին սարքը համակարգչից։ Դուք կարող եք փոքրացնել այս պատուհանը։ Վերագործարկումը կարող է մի քանի րոպե տևել, և այդ ընթացքում արտաքին սարքը հնարավոր է, որ չաշխատի։</translation>
+<translation id="6905724422583748843">Վերադառնալ <ph name="PAGE_NAME" /></translation>
+<translation id="6910312834584889076">Սկաների կափարիչը բաց է։ Փակեք այն և նորից փորձեք։</translation>
 <translation id="6911383237894364323">Չհաջողվեց միանալ մեդիա սերվերներին</translation>
+<translation id="6943893908656559156">Հեռակա իսկորոշում (պարտադիր չէ)</translation>
 <translation id="6957231940976260713">Ծառայության անվանումը</translation>
+<translation id="6961170852793647506">Սկսելու համար փաստաթուղթը դրեք սկաների վրա</translation>
+<translation id="6965382102122355670">Եղավ</translation>
 <translation id="6977381486153291903">Ներկառուցված ծրագրակազմի տարբերակը</translation>
+<translation id="7005833343836210400">Սարքը միացած չէ ինտերնետին</translation>
 <translation id="7028979494427204405">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինիս տեսանելի են օգտատիրոջ բոլոր գործողությունները, այդ թվում՝ այցելած կայքերը, գաղտնաբառերը և նամակները:</translation>
 <translation id="7040230719604914234">Օպերատոր</translation>
+<translation id="7041549558901442110">Սարքը միացված չէ։</translation>
+<translation id="7058278511608979688">Ավարտել և պահել</translation>
 <translation id="7059230779847288458">Լիցքավորում, մնացել է <ph name="TIME_VALUE" /></translation>
+<translation id="7068619307603204412">Նախապատրաստեք սարքը</translation>
 <translation id="708426984172631313">ԴԱԴԱՐԵՑՎԱԾ Է</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="710028965487274708">Սխալ – չհաջողվեց թույլատրել</translation>
+<translation id="7103252855940681301">Սարք <ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />։</translation>
+<translation id="7134436342991564651">{0,plural, =1{Անվանումների սերվեր}one{Անվանումների սերվեր}other{Անվանումների սերվերներ}}</translation>
 <translation id="7143207342074048698">Միացում</translation>
 <translation id="7144878232160441200">Նորից փորձել</translation>
 <translation id="714876143603641390">LAN-ի կապ</translation>
+<translation id="7154020516215182599">Կիսվեք ձեր կարծիքով կամ նկարագրեք խնդիրը։ Հնարավորության դեպքում ավելացրեք քայլեր՝ խնդիրը վերարտադրելու համար։</translation>
+<translation id="7155171745945906037">Առկա լուսանկար խցիկից կամ ֆայլից</translation>
 <translation id="7162487448488904999">Ցուցասրահ</translation>
+<translation id="7170236477717446850">Պրոֆիլի նկար</translation>
+<translation id="7172721935181587524">1 պատկեր</translation>
 <translation id="7177485034254901881">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից։ Ադմինիստրատորները կարող են հեռակա փոխել սարքի կարգավորումները։</translation>
+<translation id="7180611975245234373">Թարմացնել</translation>
+<translation id="7212734716605298123">Ներկառուցված ծրագրաշարի թարմացումներ արտաքին սարքերի համար</translation>
 <translation id="7216409898977639127">Բջջային օպերատոր</translation>
+<translation id="725133483556299729">Ընտրել էլ․ հասցե</translation>
+<translation id="7271040990581020067">Սկաներն այս պահին օգտագործվում է։ Փորձեք ավելի ուշ։</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7281657306185710294">Զեփյուռ</translation>
+<translation id="7287310195820267359">Պաստառների հավաքածուներ</translation>
+<translation id="7297226631177386107">Չհաջողվեց միանալ HTTPS կայքերին հրապատի միջոցով։</translation>
+<translation id="7302860742311162920">ICCID</translation>
+<translation id="7305884605064981971">EDGE</translation>
+<translation id="7308203371573257315">Հարցրեք փորձագետներին Chromebook-ի օգնության ֆորումում</translation>
+<translation id="7311368985037279727">ստեղնաշարի գույնը</translation>
+<translation id="7319430975418800333">A3</translation>
+<translation id="7343581795491695942"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" />։ Արդյունքը Google Որոնման մեջ տեսնելու համար սեղմեք «Որոնում» + բացատ։</translation>
 <translation id="7343649194310845056">Ցանցային սարքեր</translation>
 <translation id="7359657277149375382">Ֆայլի տեսակ</translation>
+<translation id="73631062356239394">Ուղարկել դիագնոստիկ տվյալներ</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7397270852490618635">Անջատել բաց թեման</translation>
+<translation id="741244894080940828">փոխարկում</translation>
+<translation id="7415801143053185905">HTTP-ի շատ բարձր հապաղում</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7435977162516949853">{NUMBER_OF_PAGES,plural, =1{Սկանավորումն ավարտվել է։ Սկանավորվել է 1 էջ։}one{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}other{Սկանավորումն ավարտվել է։ Սկանավորվել է {NUMBER_OF_PAGES} էջ։}}</translation>
 <translation id="7469648432129124067">Հայտնաբերվել է ցանցային պորտալ</translation>
+<translation id="7481312909269577407">Forward</translation>
 <translation id="7487067081878637334">Տեխնոլոգիա</translation>
 <translation id="7490813197707563893">MAC հասցե</translation>
 <translation id="7497215489070763236">Սերվերի CA հավաստագիր</translation>
 <translation id="7502658306369382406">IPv6 հասցե</translation>
+<translation id="7515998400212163428">Android</translation>
+<translation id="7535791657097741517">Միացնել բաց թեման</translation>
 <translation id="7550715992156305117">Դիագնոստիկայի ծրագրեր</translation>
+<translation id="7551123448725492271">Սարքն աուդիո սարք է։</translation>
 <translation id="7561454561030345039">Այս գործողությունը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7570674786725311828">USB հպէկրան</translation>
 <translation id="7595982850646262331">Մնացել է <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Մանրամասն Օգնության կենտրոնի մասին</translation>
+<translation id="763165478673169849">Վերջին զրոյացման ժամանակը</translation>
 <translation id="7648838807254605802">HTTPS-ի բարձր հապաղում</translation>
+<translation id="7656388927906093505">Սարքը մկնիկ է։</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>
+<translation id="7665800271478495366">Փոխել ավատարը</translation>
 <translation id="7690294790491645610">Հաստատեք նոր գաղտնաբառը</translation>
 <translation id="7701040980221191251">Չկա</translation>
 <translation id="7705524343798198388">VPN</translation>
 <translation id="773153675489693198">Շրջափուլերի թիվը</translation>
+<translation id="7747039790905080783">Ընդհանուր բանալի</translation>
+<translation id="7762130827864645708">Ձեր գաղտնաբառը հաջողությամբ փոխվեց։ Այս պահից սկսած օգտագործեք նոր գաղտնաբառը։</translation>
+<translation id="7762839321248874531">Ուղարկել <ph name="BEGIN_LINK1" />համակարգի և հավելվածի մասին տեղեկություններ<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />ցուցանիշներ<ph name="END_LINK2" /></translation>
+<translation id="7763470514545477072">Համընկնում տիրույթի վերջածանցի հետ</translation>
 <translation id="7769672763586021400">Մոդելի ID-ն</translation>
+<translation id="7784116172884276937">DNS սերվերներ կարգավորված չեն</translation>
+<translation id="779591286616261875">Ուղարկել նոր հաղորդում</translation>
+<translation id="7799817062559422778">Բաց ռեժիմ</translation>
+<translation id="780301667611848630">Ոչ</translation>
 <translation id="7805768142964895445">Կարգավիճակ</translation>
 <translation id="7819857487979277519">PSK (WPA կամ RSN)</translation>
+<translation id="7841134249932030522">Միացնել մուգ ռեժիմը</translation>
+<translation id="7846634333498149051">Ստեղնաշար</translation>
+<translation id="7856267634822906833">Bluetooth հպէկրան</translation>
+<translation id="7869143217755017858">Անջատել մուգ ռեժիմը</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Մատակարարի տեսակը</translation>
+<translation id="7882501334836096755">Բաց բանալի</translation>
+<translation id="7890841768028788197">Ներքին հպէկրան</translation>
 <translation id="7936303884198020182">DNS սերվերներ չեն գտնվել</translation>
+<translation id="7942349550061667556">Կարմիր</translation>
+<translation id="7943235353293548836">Keep-alive միացումների ստատիկ ինտերվալ</translation>
+<translation id="7955587717700691983">Bluetooth ստեղնաշար</translation>
 <translation id="7960831585769876809">Ջերմաստիճան</translation>
+<translation id="7977800524392185497"><ph name="NETWORK_NAME" /> ցանցի միանալու համար անցեք Կարգավորումներ</translation>
+<translation id="7978412674231730200">Մասնավոր բանալի</translation>
 <translation id="7994702968232966508">EAP եղանակ</translation>
 <translation id="802154636333426148">Ներբեռնումը ձախողվեց</translation>
+<translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="80398733265834479">Միացնել գույների ինքնակարգավորման ռեժիմը</translation>
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>
+<translation id="8045012663542226664">Խոսափողն անջատված է</translation>
 <translation id="8075838845814659848">Մարտկոցի լիցքը</translation>
+<translation id="8082366717211101304">Չհաջողվեց փոխակերպել DNS-ը Android հավելվածներից</translation>
 <translation id="808894953321890993">Փոխել գաղտնաբառը</translation>
+<translation id="8094062939584182041">Թույլ տվեք Google-ին տեղեկացնել ձեզ էլփոստով այս խնդրի մասին</translation>
+<translation id="8104083085214006426">Դուք օգտագործում եք բաց և ոչ անվտանգ ցանց</translation>
+<translation id="811820734797650957">Անցախուցը պատասխանում է փինգ հարցմանը (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8132480444149501833">Հայցել թրաֆիկի հաշվիչներ</translation>
+<translation id="8138405288920084977">LTEAdvanced</translation>
+<translation id="8143951647992294073">Ընտրել «<ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />» տարբերակը</translation>
+<translation id="8179976553408161302">Enter</translation>
 <translation id="8206859287963243715">Բջջային</translation>
 <translation id="8208861521865154048">Բոնուսներ</translation>
+<translation id="8226628635270268143">Ընտրեք ձեր սիրած լուսանկարներն ու ալբոմները</translation>
+<translation id="8227119283605456246">Կցել ֆայլ</translation>
 <translation id="8230672074305416752">Չհաջողվեց փինգ ուղարկել կանխադրված ցանցի անցախուցին</translation>
 <translation id="8246209727385807362">Անհայտ օպերատոր</translation>
+<translation id="827422111966801947">Ինդիգո</translation>
+<translation id="8286154143153872371">Միացեք որևէ ցանցի և վերաբեռնեք էջը՝ պաստառը դիտելու համար։</translation>
 <translation id="8291967909914612644">Տան ծառայությունների մատակարարի երկիրը</translation>
 <translation id="8294431847097064396">Աղբյուր</translation>
 <translation id="8297006494302853456">Թույլ</translation>
 <translation id="8302368968391049045">HTTPS հրապատ</translation>
+<translation id="8318753676953949627">Պատկերներ չկան</translation>
+<translation id="8336739000755212683">Փոխել հաշվի պատկերը սարքում</translation>
 <translation id="8347227221149377169">Տպելու առաջադրանքներ</translation>
 <translation id="8352772353338965963">Ավելացնել հաշիվ բազմակի մուտքի համակարգում: Բոլոր մուտք գործած հաշիվները մատչելի են առանց գաղտնաբառի մուտքագրման, ուստի այս գործառույթը պետք է միայն օգտագործվի վստահելի հաշիվների հետ:</translation>
 <translation id="8364946094152050673">DNS սերվերները դատարկ են</translation>
 <translation id="8372477600026034341">Լրացուցիչ հանգույցներ</translation>
 <translation id="8395584934117017006">Այս <ph name="DEVICE_TYPE" /> սարքը կառավարվում է կազմակերպության կողմից</translation>
 <translation id="8398927464629426868">Սարքի ընթացիկ լիցքավորման կամ լիցքաթափման արագությունը</translation>
+<translation id="8420955526972171689">Գործարկեք թեստեր և սարքակազմի հետ կապված խնդիրների վերացման գործընթացներ</translation>
+<translation id="8422748173858722634">IMEI</translation>
+<translation id="8428073762635678092">Ներքին ստեղնաշար</translation>
+<translation id="8431300646573772016">Ինչն է ChromeOS-ում նոր</translation>
+<translation id="843568408673868420">Ինտերնետ կապ</translation>
+<translation id="844521431886043384">DNS-ը կարգավորված չէ</translation>
+<translation id="8456761643544401578">Ավոտմատ մուգ ռեժիմ</translation>
 <translation id="8461329675984532579">Տան ծառայությունների մատակարարի անունը</translation>
 <translation id="8475690821716466388">Wi-Fi ցանցը պաշտպանված է WEP PSK թույլ հաղորդակարգով</translation>
 <translation id="8477551185774834963">DNS-ի հապաղումը փոքր առավելություն ունի թույլատրելի սահմանափակման նկատմամբ</translation>
 <translation id="8483248364096924578">IP հասցե</translation>
+<translation id="8491311378305535241">Չհաջողվեց միանալ HTTP կայքերին Android-ի համար հավելվածներից հրապատի միջոցով։</translation>
+<translation id="8498220429738806196">Թրաֆիկի հաշվիչներ</translation>
 <translation id="8503813439785031346">Օգտանուն</translation>
 <translation id="8503836310948963452">Սպասեք ևս մի քանի րոպե…</translation>
+<translation id="8528615187455571738">CrosVm</translation>
+<translation id="8575298406870537639">Ձեր օպերատորի ցանցին միանալու համար կարող է պահանջվել, որ միացնեք այս կարգավորումը։ Մանրամասների համար դիմեք ձեր օպերատորին։</translation>
 <translation id="8576249514688522074">Սկզբնավորված չէ</translation>
 <translation id="8620617069779373398">Ռոումինգի կարգավիճակը</translation>
+<translation id="8655295600908251630">Վարկած</translation>
+<translation id="8655828773034788261">Կիսվել URL-ով՝</translation>
+<translation id="8660881923941176839">ֆունտ</translation>
 <translation id="8675354002693747642">Ընդհանուր բանալի</translation>
+<translation id="8677859815076891398">Ալբոմներ չկան: Ստեղծեք ալբոմ <ph name="LINK_BEGIN" />Google Լուսանկարներում<ph name="LINK_END" />։</translation>
+<translation id="8709616837707653427"><ph name="DESC_TEXT" /> Այս գործառույթը կառավարելու համար օգտագործեք ձախ կամ աջ սլաքները։</translation>
+<translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="871560550817059752">Չհաջողվեց տպել – Թանաքը սպառվել է</translation>
 <translation id="8723108084122415655">Չկանխադրված ցանցը հապաղման սահմանափակման նկատմամբ առավելություն ունի</translation>
+<translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8726019395068607495">Դադարեցվել է – Դռնակը բաց է</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>
 <translation id="8747900814994928677">Հաստատեք փոփոխությունը</translation>
+<translation id="8764414543112028321">WireGuard</translation>
+<translation id="87646919272181953">Google Լուսանկարների ալբոմ</translation>
 <translation id="877985182522063539">A4</translation>
+<translation id="879568662008399081">Այս ցանցը կարող է մուտքի էջ ունենալ</translation>
 <translation id="8798099450830957504">Կանխադրված</translation>
 <translation id="8798441408945964110">Մատակարարի անունը</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Պաստառ</translation>
+<translation id="8834539327799336565">Միացված է</translation>
 <translation id="8845001906332463065">Օգնություն</translation>
+<translation id="8855781559874488009">Չհաջողվեց միանալ HTTP կայքերին հրապատի միջոցով</translation>
+<translation id="885701979325669005">Պահոց</translation>
+<translation id="8863170912498892583">Միացնել մուգ թեման</translation>
+<translation id="8863888432376731307">Ստացեք «<ph name="QUERY" />» բառի <ph name="INTENT" />ը և ավելին</translation>
+<translation id="8864415976656252616">Առաջարկվող բովանդակություն չկա։ Դիտեք հիմնական տեղեկատվական բովանդակությունը։</translation>
+<translation id="8868741746785112895">GUID</translation>
+<translation id="8876270629542503161">Սարքը պլանշետ է։</translation>
 <translation id="8881098542468797602">Փորձարկումը հաջողվեց</translation>
 <translation id="8898840733695078011">Ազդանշանի հզորությունը</translation>
 <translation id="8910721771319628100">Կանխադրված ցանցը հապաղման սահմանափակման նկատմամբ առավելություն ունի</translation>
+<translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>
 <translation id="8919837981463578619">Չհաջողվեց տպել – Դարակը բացակայում է</translation>
+<translation id="8923267550422472772">Ամսվա օրը, երբ տեղեկությունները պետք է զրոյացվեն</translation>
 <translation id="8928727111548978589">Չհաջողվեց տպել – Թուղթը սպառվել է</translation>
+<translation id="8930521118335213258">Նմանակ</translation>
 <translation id="8930622219860340959">Անլար</translation>
+<translation id="8936793075252196307">Սպասառուի IP հասցե</translation>
+<translation id="8945750210906526975">Ներքին հպահարթակ</translation>
+<translation id="894617464444543719">Սարքը հեռախոս է։</translation>
 <translation id="8968751544471797276">Լիցքավորման արագությունը</translation>
 <translation id="8970109610781093811">Կրկնել</translation>
+<translation id="8983038754672563810">HSPA</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Սկանավորել}=1{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}one{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}other{Սկանավորել էջ {NUMBER_OF_PAGES}-ը}}</translation>
+<translation id="8997710128084572139">Սարքի մարտկոցի լիցքի մակարդակը՝ <ph name="BATTERY_PERCENTAGE" />%։</translation>
 <translation id="9003704114456258138">Հաճախականություն</translation>
+<translation id="9025198690966128418">Օգտագործել որպես անձնական սարք</translation>
+<translation id="9028832514430399253">Էկրանապահի տարբերակներն ընտրելու համար միացրեք փոխանջատիչը</translation>
 <translation id="9039663905644212491">PEAP</translation>
+<translation id="9062831201344759865">DNS-ի փոխակերպումն ունի բարձր հապաղում</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
+<translation id="9082718469794970195">Օգտագործել այս տեսանյութը</translation>
+<translation id="9087578468327036362">Հաղորդել այս հարցման մասին</translation>
 <translation id="9088306295921699330">Օգտագործված տարածքը</translation>
+<translation id="9092255287806472980">Ձեր կարծիքն օգնում է բարելավել Chrome OS-ը և հաշվի կառնվի մեր թիմի կողմից։ Հաղորդումների մեծ քանակի պատճառով մենք չենք կարողանա պատասխան ուղարկել։</translation>
+<translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">Թարմացրեք <ph name="PRINCIPAL_NAME" /> հաշվի տոմսը</translation>
 <translation id="9106415115617144481">Սկանավորվում է էջ <ph name="PAGE_NUMBER" />-ը</translation>
 <translation id="9111102763498581341">Ապակողպել</translation>
+<translation id="9122602430962285795">Նորից միանալու համար անցեք Կարգավորումներ</translation>
+<translation id="9126720536733509015">Պահեք մի քանի էջ մեկ PDF ֆայլում</translation>
 <translation id="9137526406337347448">Google-ի ծառայություններ</translation>
+<translation id="9138630967333032450">Ձախ Shift</translation>
 <translation id="9149391708638971077">Փորձարկել հիշողությունը</translation>
 <translation id="9173638680043580060">Մնացել է մեկ րոպեից քիչ</translation>
-<translation id="9190063653747922532">L2TP/IPsec + հանրային բանալի</translation>
+<translation id="917720651393141712">Ստուգում</translation>
+<translation id="9188992814426075118">Ստեղնաշարը կարող է ավտոմատ կերպով հարմարեցվել պաստառին</translation>
+<translation id="9204237731135241582">Չհաջողվեց կապ հաստատել անցախուցի հետ Android հավելվածներից</translation>
+<translation id="9211490828691860325">Բոլոր աշխատասեղանները</translation>
+<translation id="932327136139879170">Գլխավոր էջ</translation>
 <translation id="939519157834106403">SSID</translation>
+<translation id="945522503751344254">Կարծիք հայտնել</translation>
 <translation id="952992212772159698">Ակտիվացված չէ</translation>
 <translation id="960719561871045870">Օպերատորի կոդը</translation>
 <translation id="982713511914535780">Փորձարկել լիցքաթափումը</translation>

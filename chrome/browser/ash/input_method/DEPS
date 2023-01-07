@@ -1,0 +1,51 @@
+include_rules = [
+  "-chrome",
+  "+chrome/browser",
+  "+chrome/common",
+  "+chrome/grit",
+  "-content",
+]
+
+specific_include_rules = {
+  # The configuration layer.
+  "(input_method_delegate_impl|input_method_persistence|browser_state_monitor)"
+  "\.(h|cc)": [
+    "+chrome/common",
+    "+chrome/browser",
+    "+chrome/test",
+    "+content/public",
+  ],
+
+  # TODO(erikwright): Bring this list to zero.
+  # Do not add to the list of temporarily-allowed dependencies below,
+  # and please do not introduce more #includes of these files.
+  "input_method_manager_impl\.cc": [
+    # TODO(erikwright): Much/all of language_preferences can/should be decoupled
+    # from chrome/browser.
+    "!chrome/browser/ash/language_preferences.h",
+  ],
+
+  # For testing.
+  ".*(_browsertest|_browsertests|_unittest|_test_helper)\.(h|cc)": [
+    "+chrome/common",
+    "+chrome/browser",
+    "+chrome/test",
+    "+content/public",
+    "+mojo/core/embedder/embedder.h",
+  ],
+  "xkeyboard_unittest\.cc": [
+    "!content/public/test/test_browser_thread.h",
+  ],
+
+  # TODO: This should not be an allowed dep; see
+  # http://crbug.com/1148093 and
+  # http://b/173144152.
+  "tts_handler\.h": [
+    "!content/public/browser/tts_controller.h",
+  ],
+
+  # TODO: input method owners should audit this block.
+  "(input|ime).*\.(h|cc)": [
+    "+content/public/browser",
+  ],
+}

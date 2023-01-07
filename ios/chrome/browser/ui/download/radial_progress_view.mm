@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#include "base/mac/foundation_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_dynamic_colors.h"
+#import "base/mac/foundation_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,7 +44,7 @@
   if (newSuperview && !self.progressLayer.superlayer) {
     self.trackLayer.fillColor = UIColor.clearColor.CGColor;
     UIColor* resolvedColor = [self.trackTintColor
-        cr_resolvedColorWithTraitCollection:self.traitCollection];
+        resolvedColorWithTraitCollection:self.traitCollection];
     self.trackLayer.strokeColor = resolvedColor.CGColor;
     self.trackLayer.lineWidth = self.lineWidth;
 
@@ -57,14 +56,12 @@
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 13, *)) {
-    BOOL differentColorAppearance = [self.traitCollection
-        hasDifferentColorAppearanceComparedToTraitCollection:
-            previousTraitCollection];
-    if (differentColorAppearance) {
-      self.trackLayer.strokeColor = self.trackTintColor.CGColor;
-      self.progressLayer.strokeColor = self.progressTintColor.CGColor;
-    }
+  BOOL differentColorAppearance = [self.traitCollection
+      hasDifferentColorAppearanceComparedToTraitCollection:
+          previousTraitCollection];
+  if (differentColorAppearance) {
+    self.trackLayer.strokeColor = self.trackTintColor.CGColor;
+    self.progressLayer.strokeColor = self.progressTintColor.CGColor;
   }
 }
 
@@ -113,7 +110,7 @@
     _progressLayer = [CAShapeLayer layer];
     _progressLayer.fillColor = UIColor.clearColor.CGColor;
     UIColor* resolvedColor = [self.progressTintColor
-        cr_resolvedColorWithTraitCollection:self.traitCollection];
+        resolvedColorWithTraitCollection:self.traitCollection];
     _progressLayer.strokeColor = resolvedColor.CGColor;
     _progressLayer.lineWidth = self.lineWidth;
   }

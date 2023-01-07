@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -57,10 +57,5 @@ if (enable_java_templates) {
   android_test_jar_with_manifest("android_test_runner_java") {
     library_name = "runner"
     jar_name = "android.test.runner.jar"
-  }
-
-  android_library("android_support_chromium_java") {
-    testonly = true
-    sources = [ "//third_party/android_sdk/public/extras/chromium/support/src/org/chromium/android/support/PackageManagerWrapper.java" ]
   }
 }

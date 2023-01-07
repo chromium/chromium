@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,11 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -22,14 +23,15 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/dropdown_bar_host.h"
 #include "chrome/browser/ui/views/dropdown_bar_host_delegate.h"
-#include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
-#include "chrome/browser/ui/views/location_bar/permission_chip.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "chrome/browser/ui/views/permissions/chip_controller.h"
+#include "components/accuracy_tips/accuracy_service.h"
+#include "components/permissions/permission_prompt.h"
 #include "components/security_state/core/security_state.h"
-#include "services/device/public/cpp/geolocation/geolocation_system_permission_mac.h"
+#include "services/device/public/cpp/geolocation/geolocation_manager.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/font.h"
@@ -38,15 +40,15 @@
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/drag_controller.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 class CommandUpdater;
 class ContentSettingBubbleModelDelegate;
 class GURL;
-class KeywordHintView;
+class IntentChipButton;
 class LocationIconView;
 enum class OmniboxPart;
 class OmniboxPopupView;
+class OmniboxViewViews;
 class PageActionIconController;
 class PageActionIconContainerView;
 class Profile;
@@ -76,8 +78,8 @@ class LocationBarView : public LocationBar,
                         public LocationIconView::Delegate,
                         public ContentSettingImageView::Delegate,
                         public PageActionIconView::Delegate,
-                        public device::GeolocationSystemPermissionManager::
-                            GeolocationPermissionObserver {
+                        public device::GeolocationManager::PermissionObserver,
+                        public accuracy_tips::AccuracyService::Observer {
  public:
   METADATA_HEADER(LocationBarView);
 
@@ -116,13 +118,6 @@ class LocationBarView : public LocationBar,
   // be called when the receiving instance is attached to a view container.
   bool IsInitialized() const;
 
-  // Helper to get the color for |part| using the current ThemeProvider.
-  SkColor GetColor(OmniboxPart part) const;
-
-  // Returns the location bar border color blended with the toolbar color.
-  // It's guaranteed to be opaque.
-  SkColor GetOpaqueBorderColor() const;
-
   // Returns a background that paints an (optionally stroked) rounded rect with
   // the given color.
   std::unique_ptr<views::Background> CreateRoundRectBackground(
@@ -145,8 +140,15 @@ class LocationBarView : public LocationBar,
   // Shows |text| as an inline autocompletion.  This is useful for IMEs, where
   // we can't show the autocompletion inside the actual OmniboxView.  See
   // comments on |ime_inline_autocomplete_view_|.
+  void SetImePrefixAutocompletion(const std::u16string& text);
+  std::u16string GetImePrefixAutocompletion() const;
   void SetImeInlineAutocompletion(const std::u16string& text);
   std::u16string GetImeInlineAutocompletion() const;
+
+  // Sets the additional omnibox text. E.g. the title corresponding to the URL
+  // displayed in the OmniboxView.
+  void SetOmniboxAdditionalText(const std::u16string& text);
+  std::u16string GetOmniboxAdditionalText() const;
 
   // Select all of the text. Needed when the user tabs through controls
   // in the toolbar in full keyboard accessibility mode.
@@ -160,11 +162,6 @@ class LocationBarView : public LocationBar,
 
   OmniboxViewViews* omnibox_view() { return omnibox_view_; }
 
-  // Sets the additional omnibox text. E.g. the title corresponding to the URL
-  // displayed in the OmniboxView.
-  void SetOmniboxAdditionalText(const std::u16string& text);
-  std::u16string GetOmniboxAdditionalText() const;
-
   // Updates the controller, and, if |contents| is non-null, restores saved
   // state that the tab holds.
   void Update(content::WebContents* contents);
@@ -176,7 +173,13 @@ class LocationBarView : public LocationBar,
   // accessibility.
   bool ActivateFirstInactiveBubbleForAccessibility();
 
-  PermissionChip* permission_chip() { return permission_chip_; }
+  // Adds chip into the LocationBarView in the first position.
+  void CreateChip();
+
+  // Controls the chip in the LocationBarView
+  ChipController* chip_controller() { return chip_controller_.get(); }
+
+  IntentChipButton* intent_chip() { return intent_chip_; }
 
   // LocationBar:
   void FocusLocation(bool is_user_initiated) override;
@@ -207,9 +210,13 @@ class LocationBarView : public LocationBar,
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
 
-  // GeolocationSystemPermissionManager::GeolocationPermissionObserver
-  void OnSystemPermissionUpdate(
+  // GeolocationManager::PermissionObserver:
+  void OnSystemPermissionUpdated(
       device::LocationSystemPermissionStatus new_status) override;
+
+  // accuracy_tips::AccuracyService::Observer:
+  void OnAccuracyTipShown() override;
+  void OnAccuracyTipClosed() override;
 
   static bool IsVirtualKeyboardVisible(views::Widget* widget);
 
@@ -238,6 +245,19 @@ class LocationBarView : public LocationBar,
       security_state::SecurityLevel security_level) const override;
   ui::ImageModel GetLocationIcon(LocationIconView::Delegate::IconFetchedCallback
                                      on_icon_fetched) const override;
+  std::vector<ContentSettingImageView*>& GetContentSettingViewsForTest() {
+    return content_setting_views_;
+  }
+
+  void RecordPageInfoMetrics();
+
+  void ResetConfirmationChipShownTime() {
+    confirmation_chip_collapsed_time_ = base::TimeTicks::Now();
+  }
+
+  void SetConfirmationChipShownTimeForTesting(base::TimeTicks time) {
+    confirmation_chip_collapsed_time_ = time;
+  }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SecurityIndicatorTest, CheckIndicatorText);
@@ -247,12 +267,11 @@ class LocationBarView : public LocationBar,
                            IMEInlineAutocompletePosition);
   using ContentSettingViews = std::vector<ContentSettingImageView*>;
 
-#if defined(OS_MAC)
-  // Manage a subscription to GeolocationSystemPermissionManager, which may
+#if BUILDFLAG(IS_MAC)
+  // Manage a subscription to GeolocationManager, which may
   // outlive this object.
-  base::ScopedObservation<
-      device::GeolocationSystemPermissionManager,
-      device::GeolocationSystemPermissionManager::GeolocationPermissionObserver>
+  base::ScopedObservation<device::GeolocationManager,
+                          device::GeolocationManager::PermissionObserver>
       geolocation_permission_observation_{this};
 #endif
 
@@ -261,9 +280,6 @@ class LocationBarView : public LocationBar,
 
   // Returns the amount of space required to the right of the omnibox text.
   int GetMinimumTrailingWidth() const;
-
-  // The border color, drawn on top of the toolbar.
-  SkColor GetBorderColor() const;
 
   // The LocationBarView bounds, without the ends which have a border radius.
   // E.g., if the LocationBarView was 50dip long, and the border radius was 2,
@@ -291,11 +307,14 @@ class LocationBarView : public LocationBar,
   // Gets the OmniboxPopupView associated with the model in |omnibox_view_|.
   OmniboxPopupView* GetOmniboxPopupView();
 
-  void KeywordHintViewPressed(const ui::Event& event);
-
   // Called when the page info bubble is closed.
   void OnPageInfoBubbleClosed(views::Widget::ClosedReason closed_reason,
                               bool reload_prompt);
+
+  // Helper to set the texts of labels adjacent to the omnibox:
+  // `ime_prefix_autocomplete_view_`, `ime_inline_autocomplete_view_`, and
+  // `omnibox_additional_text_view_`.
+  void SetOmniboxAdjacentText(views::Label* label, const std::u16string& text);
 
   // LocationBar:
   GURL GetDestinationURL() const override;
@@ -349,6 +368,7 @@ class LocationBarView : public LocationBar,
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
+  void OnChildViewRemoved(View* observed_view, View* child) override;
 
   // ChromeOmniboxEditController:
   void OnChanged() override;
@@ -359,6 +379,10 @@ class LocationBarView : public LocationBar,
   void FocusAndSelectAll() override;
 
   void OnTouchUiChanged();
+
+  // Determines whether the location icon should be overridden while a chip is
+  // being displayed
+  bool ShouldChipOverrideLocationIcon();
 
   // Called with an async fetched for the keyword view.
   void OnKeywordFaviconFetched(const gfx::Image& icon);
@@ -372,7 +396,7 @@ class LocationBarView : public LocationBar,
 
   // Updates the visibility of the permission chip when omnibox is in the edit
   // mode.
-  void UpdatePermissionChipVisibility();
+  void UpdateChipVisibility();
 
   // Adjusts |event|'s location to be relative to |omnibox_view_|'s origin; used
   // for directing LocationBarView events to the |omnibox_view_|.
@@ -382,38 +406,40 @@ class LocationBarView : public LocationBar,
   bool GetPopupMode() const;
 
   // The Browser this LocationBarView is in.  Note that at least
-  // chromeos::SimpleWebViewDialog uses a LocationBarView outside any browser
+  // ash::SimpleWebViewDialog uses a LocationBarView outside any browser
   // window, so this may be NULL.
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
   // May be nullptr in tests.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // The omnibox view where the user types and the current page URL is displayed
   // when user input is not in progress.
-  OmniboxViewViews* omnibox_view_ = nullptr;
+  raw_ptr<OmniboxViewViews> omnibox_view_ = nullptr;
 
   // Our delegate.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
-  // A view that contains a chip button that shows a permission request.
-  PermissionChip* permission_chip_ = nullptr;
+  // A controller for a view that contains a chip button which is used for
+  // permission information and requests.
+  std::unique_ptr<ChipController> chip_controller_ = nullptr;
 
   // An icon to the left of the edit field: the HTTPS lock, blank page icon,
   // search icon, EV HTTPS bubble, etc.
-  LocationIconView* location_icon_view_ = nullptr;
+  raw_ptr<LocationIconView> location_icon_view_ = nullptr;
 
-  // A view to show inline autocompletion when an IME is active.  In this case,
+  // Views to show inline autocompletion when an IME is active.  In this case,
   // we shouldn't change the text or selection inside the OmniboxView itself,
   // since this will conflict with the IME's control over the text.  So instead
   // we show any autocompletion in a separate field after the OmniboxView.
-  views::Label* ime_inline_autocomplete_view_ = nullptr;
+  raw_ptr<views::Label> ime_prefix_autocomplete_view_ = nullptr;
+  raw_ptr<views::Label> ime_inline_autocomplete_view_ = nullptr;
 
   // The complementary omnibox label displaying the selected suggestion's title
   // or URL when the omnibox view is displaying the other and when user input is
   // in progress. Will remain a nullptr if the rich autocompletion
   // feature flag is disabled.
-  views::Label* omnibox_additional_text_view_ = nullptr;
+  raw_ptr<views::Label> omnibox_additional_text_view_ = nullptr;
 
   // The following views are used to provide hints and remind the user as to
   // what is going in the edit. They are all added a children of the
@@ -422,23 +448,22 @@ class LocationBarView : public LocationBar,
   // These autocollapse when the edit needs the room.
 
   // Shown if the user has selected a keyword.
-  SelectedKeywordView* selected_keyword_view_ = nullptr;
+  raw_ptr<SelectedKeywordView> selected_keyword_view_ = nullptr;
 
-  // Shown if the selected url has a corresponding keyword.
-  KeywordHintView* keyword_hint_view_ = nullptr;
+  raw_ptr<IntentChipButton> intent_chip_ = nullptr;
 
   // The content setting views.
   ContentSettingViews content_setting_views_;
 
   // The controller for page action icons.
-  PageActionIconController* page_action_icon_controller_ = nullptr;
+  raw_ptr<PageActionIconController> page_action_icon_controller_ = nullptr;
 
   // The container for page action icons.
-  PageActionIconContainerView* page_action_icon_container_ = nullptr;
+  raw_ptr<PageActionIconContainerView> page_action_icon_container_ = nullptr;
 
   // An [x] that appears in touch mode (when the OSK is visible) and allows the
   // user to clear all text.
-  views::ImageButton* clear_all_button_ = nullptr;
+  raw_ptr<views::ImageButton> clear_all_button_ = nullptr;
 
   // Animation to change whole location bar background color on hover.
   gfx::SlideAnimation hover_animation_{this};
@@ -447,15 +472,19 @@ class LocationBarView : public LocationBar,
   // bar is read-only.
   const bool is_popup_mode_;
 
-  // The focus ring, if one is in use.
-  views::FocusRing* focus_ring_ = nullptr;
-
   bool is_initialized_ = false;
+
+  // Used for metrics collection.
+  base::TimeTicks confirmation_chip_collapsed_time_ = base::TimeTicks();
 
   base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&LocationBarView::OnTouchUiChanged,
                               base::Unretained(this)));
+
+  base::ScopedObservation<accuracy_tips::AccuracyService,
+                          accuracy_tips::AccuracyService::Observer>
+      accuracy_service_observation_{this};
 
   base::WeakPtrFactory<LocationBarView> weak_factory_{this};
 };

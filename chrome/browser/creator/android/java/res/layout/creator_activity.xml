@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2022 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layoutDirection="locale" >
+  <com.google.android.material.appbar.MaterialToolbar
+      android:id="@+id/action_bar"
+      android:layout_width="match_parent"
+      android:layout_height="?attr/actionBarSize"
+      style="@style/CreatorActivityNoActionBar"
+      app:title="@string/cormorant_creator_activity" />
+  <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="16dp"
+      android:layout_marginEnd="16dp"
+      android:layout_gravity="center_vertical"
+      android:background="@drawable/profile_background" >
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_weight="1"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="16dp" >
+      <TextView
+          android:id="@+id/creator_name"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textAppearance="@style/TextAppearance.Headline.Primary" />
+      <TextView
+          android:id="@+id/creator_url"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
+    </LinearLayout>
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/follow_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:paddingHorizontal="60dp"
+        style="@style/FilledButton"
+        android:text="@string/menu_follow" />
+  </LinearLayout>
+</LinearLayout>

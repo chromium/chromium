@@ -26,12 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_CONTEXT_GROUP_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_CONTEXT_GROUP_H_
 
-#include "base/macros.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 
 namespace blink {
 
@@ -39,6 +36,11 @@ class WebGLContextGroup final : public GarbageCollected<WebGLContextGroup>,
                                 public NameClient {
  public:
   WebGLContextGroup();
+
+  WebGLContextGroup(const WebGLContextGroup&) = delete;
+  WebGLContextGroup& operator=(const WebGLContextGroup&) = delete;
+
+  ~WebGLContextGroup() final = default;
 
   void AddContext(WebGLRenderingContextBase*);
 
@@ -71,8 +73,6 @@ class WebGLContextGroup final : public GarbageCollected<WebGLContextGroup>,
   uint32_t number_of_context_losses_;
 
   HeapHashSet<Member<WebGLRenderingContextBase>> contexts_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebGLContextGroup);
 };
 
 }  // namespace blink

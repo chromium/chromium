@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
-#include "chromeos/login/auth/extended_authenticator.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/auth_status_consumer.h"
+#include "chromeos/ash/components/login/auth/extended_authenticator.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace aura {
 class Window;
@@ -22,7 +23,7 @@ class AccountId;
 
 // Handles method calls sent from Ash to ChromeOS.
 class InSessionAuthDialogClient : public ash::InSessionAuthDialogClient,
-                                  public chromeos::AuthStatusConsumer {
+                                  public ash::AuthStatusConsumer {
  public:
   using AuthenticateCallback = base::OnceCallback<void(bool)>;
 
@@ -53,12 +54,12 @@ class InSessionAuthDialogClient : public ash::InSessionAuthDialogClient,
   aura::Window* OpenInSessionAuthHelpPage() const override;
 
   // AuthStatusConsumer:
-  void OnAuthFailure(const chromeos::AuthFailure& error) override;
-  void OnAuthSuccess(const chromeos::UserContext& user_context) override;
+  void OnAuthFailure(const ash::AuthFailure& error) override;
+  void OnAuthSuccess(const ash::UserContext& user_context) override;
 
   // For testing:
   void SetExtendedAuthenticator(
-      scoped_refptr<chromeos::ExtendedAuthenticator> extended_authenticator) {
+      scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator) {
     extended_authenticator_ = std::move(extended_authenticator);
   }
 
@@ -76,24 +77,24 @@ class InSessionAuthDialogClient : public ash::InSessionAuthDialogClient,
 
   // Returns a pointer to the ExtendedAuthenticator instance if there is one.
   // Otherwise creates one.
-  chromeos::ExtendedAuthenticator* GetExtendedAuthenticator();
+  ash::ExtendedAuthenticator* GetExtendedAuthenticator();
 
-  void AuthenticateWithPassword(const chromeos::UserContext& user_context);
+  void AuthenticateWithPassword(const ash::UserContext& user_context);
 
-  void OnPinAttemptDone(const chromeos::UserContext& user_context,
-                        bool success);
+  void OnPinAttemptDone(std::unique_ptr<ash::UserContext> user_context,
+                        absl::optional<ash::AuthenticationError> error);
 
-  void OnPasswordAuthSuccess(const chromeos::UserContext& user_context);
+  void OnPasswordAuthSuccess(const ash::UserContext& user_context);
 
   void OnFingerprintAuthDone(
       base::OnceCallback<void(bool, ash::FingerprintState)> callback,
-      cryptohome::CryptohomeErrorCode error);
+      user_data_auth::CryptohomeErrorCode error);
 
   // Used to authenticate the user to unlock supervised users.
-  scoped_refptr<chromeos::ExtendedAuthenticator> extended_authenticator_;
+  scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator_;
 
   // State associated with a pending authentication attempt.
-  base::Optional<AuthState> pending_auth_state_;
+  absl::optional<AuthState> pending_auth_state_;
 
   base::WeakPtrFactory<InSessionAuthDialogClient> weak_factory_{this};
 };

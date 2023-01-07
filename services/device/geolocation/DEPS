@@ -1,10 +1,13 @@
 include_rules = [
   "+chromeos",
+  "+chromeos/crosapi",
+  "+chromeos/lacros",
   "+components/location",
   "+dbus",
   "+net/base",
   "+net/traffic_annotation",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+services/device/public/cpp/device_features.h",
   "+services/network/test",
   "+third_party/cros_system_api/dbus",

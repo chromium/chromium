@@ -1,0 +1,47 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is generated from:
+{%- for path in in_files %}
+//   {{path}}
+{%-  endfor %}
+
+#include "{{header_file}}"
+
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_mixer.h"
+#include "ui/color/color_recipe.h"
+
+namespace {{namespace_name}} {
+
+{% for set_name, set_colors in color_mappings.items() %}
+void Add{{set_name}}ColorsToMixer(ui::ColorMixer& mixer, bool dark_mode) {
+{%- for obj in set_colors %}
+{%-   if obj.mode_values[Modes.DARK] %}
+  if (dark_mode) {
+    mixer[{{obj.name | to_color_id_name}}] = {{obj.mode_values[Modes.DARK] | color_mixer_color(Modes.DARK)}};
+  } else {
+    mixer[{{obj.name | to_color_id_name}}] = {{obj.mode_values[Modes.LIGHT] | color_mixer_color(Modes.LIGHT)}};
+  }
+{%-    else %}
+  mixer[{{obj.name | to_color_id_name}}] = {{obj.mode_values[Modes.LIGHT] | color_mixer_color(Modes.LIGHT)}};
+{%-    endif %}
+{%-  endfor %}
+}
+
+{% endfor %}
+
+
+std::string ColorIdName(ui::ColorId id) {
+  switch(id) {
+{%- for name in colors.keys() %}
+    case {{name | to_color_id_name}}:
+      return "{{name | to_css_var_name}}";
+{%-  endfor %}
+  }
+  NOTREACHED();
+  return "";
+}
+
+}  // namespace {{namespace_name}}

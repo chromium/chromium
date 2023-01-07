@@ -1,13 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/content_security_policy/csp_source_list.h"
 
+#include "base/check_op.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/content_security_policy/csp_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 
 namespace network {
 
@@ -18,9 +21,11 @@ namespace {
 bool AllowFromSources(const GURL& url,
                       const std::vector<mojom::CSPSourcePtr>& sources,
                       const mojom::CSPSource& self_source,
-                      bool has_followed_redirect) {
+                      bool has_followed_redirect,
+                      bool is_opaque_fenced_frame) {
   for (const auto& source : sources) {
-    if (CheckCSPSource(*source, url, self_source, has_followed_redirect))
+    if (CheckCSPSource(*source, url, self_source, has_followed_redirect,
+                       is_opaque_fenced_frame))
       return true;
   }
   return false;
@@ -42,13 +47,15 @@ void IntersectHashes(base::flat_set<mojom::CSPHashSourcePtr>& a,
 bool IsScriptDirective(CSPDirectiveName directive) {
   return directive == CSPDirectiveName::ScriptSrc ||
          directive == CSPDirectiveName::ScriptSrcAttr ||
-         directive == CSPDirectiveName::ScriptSrcElem;
+         directive == CSPDirectiveName::ScriptSrcElem ||
+         directive == CSPDirectiveName::DefaultSrc;
 }
 
 bool IsStyleDirective(CSPDirectiveName directive) {
   return directive == CSPDirectiveName::StyleSrc ||
          directive == CSPDirectiveName::StyleSrcAttr ||
-         directive == CSPDirectiveName::StyleSrcElem;
+         directive == CSPDirectiveName::StyleSrcElem ||
+         directive == CSPDirectiveName::DefaultSrc;
 }
 
 bool AllowAllInline(CSPDirectiveName directive,
@@ -185,21 +192,33 @@ bool UrlSourceListSubsumes(
 
 }  // namespace
 
-bool CheckCSPSourceList(const mojom::CSPSourceList& source_list,
+bool CheckCSPSourceList(mojom::CSPDirectiveName directive_name,
+                        const mojom::CSPSourceList& source_list,
                         const GURL& url,
                         const mojom::CSPSource& self_source,
                         bool has_followed_redirect,
-                        bool is_response_check) {
+                        bool is_response_check,
+                        bool is_opaque_fenced_frame) {
+  if (is_opaque_fenced_frame)
+    DCHECK_EQ(directive_name, mojom::CSPDirectiveName::FencedFrameSrc);
+
   // If the source list allows all redirects, the decision can't be made until
   // the response is received.
-  if (source_list.allow_response_redirects && !is_response_check)
+  if (directive_name == mojom::CSPDirectiveName::NavigateTo &&
+      source_list.allow_response_redirects && !is_response_check) {
     return true;
+  }
 
   // Wildcards match network schemes ('http', 'https', 'ftp', 'ws', 'wss'), and
   // the scheme of the protected resource:
   // https://w3c.github.io/webappsec-csp/#match-url-to-source-expression. Other
   // schemes, including custom schemes, must be explicitly listed in a source
   // list.
+  // Note: Opaque fenced frames only allow https urls, therefore it's fine to
+  // allow '*'.
+  // TODO(crbug.com/1243568): Update the return condition below if opaque
+  // fenced frames can map to non-https potentially trustworthy urls to avoid
+  // privacy leak.
   if (source_list.allow_star) {
     if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS() ||
         url.SchemeIs("ftp")) {
@@ -210,12 +229,13 @@ bool CheckCSPSourceList(const mojom::CSPSourceList& source_list,
   }
 
   if (source_list.allow_self &&
-      CheckCSPSource(self_source, url, self_source, has_followed_redirect)) {
+      CheckCSPSource(self_source, url, self_source, has_followed_redirect,
+                     is_opaque_fenced_frame)) {
     return true;
   }
 
   return AllowFromSources(url, source_list.sources, self_source,
-                          has_followed_redirect);
+                          has_followed_redirect, is_opaque_fenced_frame);
 }
 
 bool CSPSourceListSubsumes(
@@ -229,7 +249,6 @@ bool CSPSourceListSubsumes(
   auto it = source_list_b.begin();
   bool allow_inline_b = (*it)->allow_inline;
   bool allow_eval_b = (*it)->allow_eval;
-  bool allow_wasm_eval_b = (*it)->allow_wasm_eval;
   bool allow_dynamic_b = (*it)->allow_dynamic;
   bool allow_unsafe_hashes_b = (*it)->allow_unsafe_hashes;
   bool is_hash_or_nonce_present_b =
@@ -246,7 +265,6 @@ bool CSPSourceListSubsumes(
     // 'strict-dynamic' is specified.
     allow_inline_b = allow_inline_b && (*it)->allow_inline;
     allow_eval_b = allow_eval_b && (*it)->allow_eval;
-    allow_wasm_eval_b = allow_wasm_eval_b && (*it)->allow_wasm_eval;
     allow_dynamic_b = allow_dynamic_b && (*it)->allow_dynamic;
     allow_unsafe_hashes_b = allow_unsafe_hashes_b && (*it)->allow_unsafe_hashes;
     is_hash_or_nonce_present_b =
@@ -278,8 +296,6 @@ bool CSPSourceListSubsumes(
 
   if (IsScriptDirective(directive) || IsStyleDirective(directive)) {
     if (!source_list_a.allow_eval && allow_eval_b)
-      return false;
-    if (!source_list_a.allow_wasm_eval && allow_wasm_eval_b)
       return false;
     if (!source_list_a.allow_unsafe_hashes && allow_unsafe_hashes_b)
       return false;

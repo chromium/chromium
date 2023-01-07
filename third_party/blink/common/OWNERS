@@ -1,13 +1,11 @@
 dcheng@chromium.org
 dgozman@chromium.org
 dtapuska@chromium.org
-falken@chromium.org
 haraken@chromium.org
 jam@chromium.org
 jbroman@chromium.org
 kinuko@chromium.org
 pfeldman@chromium.org
-tkent@chromium.org
 
 # Any core owner can approve blink finch flags.
 per-file features.cc=file://third_party/blink/renderer/core/OWNERS

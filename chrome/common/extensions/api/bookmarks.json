@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -405,7 +405,7 @@
       {
         "name": "import",
         "type": "function",
-        "description": "Imports bookmarks from a chrome html bookmark file",
+        "description": "Imports bookmarks from a Chrome html bookmark file",
         "nodoc": "true",
         "parameters": [],
         "returns_async": {
@@ -417,7 +417,7 @@
       {
         "name": "export",
         "type": "function",
-        "description": "Exports bookmarks to a chrome html bookmark file",
+        "description": "Exports bookmarks to a Chrome html bookmark file",
         "nodoc": "true",
         "parameters": [],
         "returns_async": {

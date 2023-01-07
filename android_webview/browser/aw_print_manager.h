@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/printing/browser/print_manager.h"
 #include "components/printing/common/print.mojom-forward.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -18,7 +17,15 @@ namespace android_webview {
 class AwPrintManager : public printing::PrintManager,
     public content::WebContentsUserData<AwPrintManager> {
  public:
+  AwPrintManager(const AwPrintManager&) = delete;
+  AwPrintManager& operator=(const AwPrintManager&) = delete;
+
   ~AwPrintManager() override;
+
+  static void BindPrintManagerHost(
+      mojo::PendingAssociatedReceiver<printing::mojom::PrintManagerHost>
+          receiver,
+      content::RenderFrameHost* rfh);
 
   // printing::PrintManager:
   void PdfWritingDone(int page_count) override;
@@ -54,8 +61,6 @@ class AwPrintManager : public printing::PrintManager,
   int fd_ = -1;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(AwPrintManager);
 };
 
 }  // namespace android_webview

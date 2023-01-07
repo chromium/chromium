@@ -1,0 +1,28 @@
+caption: Enable Screencast
+default: true
+desc: |-
+  This policy gives Screencast permission to create and transcribe screen recording and upload to Drive for enterprise users.
+        This policy does not affect Family Link users.
+        This policy does not affect <ph name="PROJECTOR_DOGFOOD_FOR_FAMILY_LINK_ENABLED_POLICY_NAME">ProjectorDogfoodForFamilyLinkEnabled</ph> policy for Family Link users.
+
+        If the policy is unset or enabled, Screencast will be enabled.
+        If the policy is disabled, Screencast will be disabled.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable Screencast
+  value: true
+- caption: Disable Screencast
+  value: false
+owners:
+- llin@google.com
+- cros-projector@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:99-
+tags:
+- google-sharing
+type: main

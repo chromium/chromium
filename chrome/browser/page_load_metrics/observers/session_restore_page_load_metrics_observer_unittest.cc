@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -34,6 +33,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -42,6 +42,11 @@ using WebContents = content::WebContents;
 class SessionRestorePageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  public:
+  SessionRestorePageLoadMetricsObserverTest(
+      const SessionRestorePageLoadMetricsObserverTest&) = delete;
+  SessionRestorePageLoadMetricsObserverTest& operator=(
+      const SessionRestorePageLoadMetricsObserverTest&) = delete;
+
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(
         std::make_unique<SessionRestorePageLoadMetricsObserver>());
@@ -77,12 +82,11 @@ class SessionRestorePageLoadMetricsObserverTest
   void PopulateFirstPaintTimings() {
     page_load_metrics::InitPageLoadTimingForTest(&timing_);
     timing_.navigation_start = base::Time::FromDoubleT(1);
-    timing_.parse_timing->parse_start = base::TimeDelta::FromMilliseconds(10);
+    timing_.parse_timing->parse_start = base::Milliseconds(10);
 
     // Should be large enough (e.g., >20 ms) for some tests to be able to hide
     // foreground tabs before the first pains.
-    timing_.paint_timing->first_meaningful_paint =
-        base::TimeDelta::FromSeconds(1);
+    timing_.paint_timing->first_meaningful_paint = base::Seconds(1);
     PopulateRequiredTimingFields(&timing_);
   }
 
@@ -124,7 +128,7 @@ class SessionRestorePageLoadMetricsObserverTest
     std::vector<std::unique_ptr<content::NavigationEntry>> entries;
     std::unique_ptr<content::NavigationEntry> entry(
         content::NavigationController::CreateNavigationEntry(
-            GetTestURL(), content::Referrer(), base::nullopt,
+            GetTestURL(), content::Referrer(), absl::nullopt,
             ui::PAGE_TRANSITION_RELOAD, false, std::string(), browser_context(),
             nullptr /* blob_url_loader_factory */));
     entries.emplace_back(std::move(entry));
@@ -155,8 +159,6 @@ class SessionRestorePageLoadMetricsObserverTest
       WebContents*,
       std::unique_ptr<page_load_metrics::PageLoadMetricsObserverTester>>
       testers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionRestorePageLoadMetricsObserverTest);
 };
 
 TEST_F(SessionRestorePageLoadMetricsObserverTest, NoMetrics) {
@@ -169,7 +171,7 @@ TEST_F(SessionRestorePageLoadMetricsObserverTest, NoMetrics) {
 TEST_F(SessionRestorePageLoadMetricsObserverTest,
        FirstPaintsOutOfSessionRestore) {
   content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GetTestURL(), web_contents()->GetMainFrame());
+      GetTestURL(), web_contents()->GetPrimaryMainFrame());
   ASSERT_NO_FATAL_FAILURE(SimulateTimingUpdateForTab(web_contents()));
   ExpectFirstPaintMetricsTotalCount(0);
   auto entries =

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,19 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_selector.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 class SelectorFilterParentScopeTest : public testing::Test {
  protected:
   void SetUp() override {
-    dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+    dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+    GetDocument().SetCompatibilityMode(Document::kNoQuirksMode);
   }
 
   Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
@@ -27,8 +30,11 @@ class SelectorFilterParentScopeTest : public testing::Test {
 };
 
 TEST_F(SelectorFilterParentScopeTest, ParentScope) {
+  Arena arena;
   GetDocument().body()->setAttribute(html_names::kClassAttr, "match");
   GetDocument().documentElement()->SetIdAttribute("myId");
+  auto* div = GetDocument().CreateRawElement(html_names::kDivTag);
+  GetDocument().body()->appendChild(div);
   SelectorFilter& filter = GetDocument().GetStyleResolver().GetSelectorFilter();
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
 
@@ -37,19 +43,26 @@ TEST_F(SelectorFilterParentScopeTest, ParentScope) {
   {
     SelectorFilterParentScope body_scope(*GetDocument().body());
     SelectorFilterParentScope::EnsureParentStackIsPushed();
+    {
+      SelectorFilterParentScope div_scope(*div);
+      SelectorFilterParentScope::EnsureParentStackIsPushed();
 
-    CSSSelectorList selectors = CSSParser::ParseSelector(
-        MakeGarbageCollected<CSSParserContext>(
-            kHTMLStandardMode, SecureContextMode::kInsecureContext),
-        nullptr, "html, body, .match, #myId");
+      CSSSelectorVector selector_vector = CSSParser::ParseSelector(
+          MakeGarbageCollected<CSSParserContext>(
+              kHTMLStandardMode, SecureContextMode::kInsecureContext),
+          nullptr, "html *, body *, .match *, #myId *", arena);
+      CSSSelectorList selectors =
+          CSSSelectorList::AdoptSelectorVector(selector_vector);
 
-    for (const CSSSelector* selector = selectors.First(); selector;
-         selector = CSSSelectorList::Next(*selector)) {
-      unsigned selector_hashes[max_identifier_hashes];
-      filter.CollectIdentifierHashes(*selector, selector_hashes,
-                                     max_identifier_hashes);
-      EXPECT_FALSE(
-          filter.FastRejectSelector<max_identifier_hashes>(selector_hashes));
+      for (const CSSSelector* selector = selectors.First(); selector;
+           selector = CSSSelectorList::Next(*selector)) {
+        unsigned selector_hashes[max_identifier_hashes];
+        filter.CollectIdentifierHashes(*selector, selector_hashes,
+                                       max_identifier_hashes);
+        EXPECT_NE(selector_hashes[0], 0u);
+        EXPECT_FALSE(
+            filter.FastRejectSelector<max_identifier_hashes>(selector_hashes));
+      }
     }
   }
 }
@@ -66,16 +79,20 @@ TEST_F(SelectorFilterParentScopeTest, RootScope) {
   SelectorFilterRootScope span_scope(GetDocument().getElementById("y"));
   SelectorFilterParentScope::EnsureParentStackIsPushed();
 
-  CSSSelectorList selectors = CSSParser::ParseSelector(
+  Arena arena;
+  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           kHTMLStandardMode, SecureContextMode::kInsecureContext),
-      nullptr, "html, body, div, span, .x, #y");
+      nullptr, "html *, body *, div *, span *, .x *, #y *", arena);
+  CSSSelectorList selectors =
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
 
   for (const CSSSelector* selector = selectors.First(); selector;
        selector = CSSSelectorList::Next(*selector)) {
     unsigned selector_hashes[max_identifier_hashes];
     filter.CollectIdentifierHashes(*selector, selector_hashes,
                                    max_identifier_hashes);
+    EXPECT_NE(selector_hashes[0], 0u);
     EXPECT_FALSE(
         filter.FastRejectSelector<max_identifier_hashes>(selector_hashes));
   }
@@ -96,6 +113,45 @@ TEST_F(SelectorFilterParentScopeTest, ReentrantSVGImageLoading) {
   // SelectorFilterParentScope with a SelectorFilterRootScope, this update may
   // cause DCHECKs to fail.
   GetDocument().UpdateStyleAndLayoutTree();
+}
+
+TEST_F(SelectorFilterParentScopeTest, AttributeFilter) {
+  GetDocument().body()->setInnerHTML(
+      R"HTML(<div ATTR><svg VIewBox></svg></div>)HTML");
+  auto* outer = To<Element>(GetDocument().body()->firstChild());
+  auto* svg = To<Element>(outer->firstChild());
+  auto* inner = GetDocument().CreateRawElement(html_names::kDivTag);
+  svg->appendChild(inner);
+
+  ASSERT_TRUE(outer->hasAttributes());
+  EXPECT_EQ("attr", outer->Attributes()[0].GetName().LocalName());
+
+  ASSERT_TRUE(svg->hasAttributes());
+  EXPECT_EQ("viewBox", svg->Attributes()[0].GetName().LocalName());
+
+  SelectorFilter& filter = GetDocument().GetStyleResolver().GetSelectorFilter();
+  GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
+
+  SelectorFilterRootScope span_scope(inner);
+  SelectorFilterParentScope::EnsureParentStackIsPushed();
+
+  Arena arena;
+  CSSSelectorVector selector_vector = CSSParser::ParseSelector(
+      MakeGarbageCollected<CSSParserContext>(
+          kHTMLStandardMode, SecureContextMode::kInsecureContext),
+      nullptr, "[Attr] *, [attr] *, [viewbox] *, [VIEWBOX] *", arena);
+  CSSSelectorList selectors =
+      CSSSelectorList::AdoptSelectorVector(selector_vector);
+
+  for (const CSSSelector* selector = selectors.First(); selector;
+       selector = CSSSelectorList::Next(*selector)) {
+    unsigned selector_hashes[max_identifier_hashes];
+    filter.CollectIdentifierHashes(*selector, selector_hashes,
+                                   max_identifier_hashes);
+    EXPECT_NE(selector_hashes[0], 0u);
+    EXPECT_FALSE(
+        filter.FastRejectSelector<max_identifier_hashes>(selector_hashes));
+  }
 }
 
 }  // namespace blink

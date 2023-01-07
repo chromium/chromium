@@ -7,8 +7,8 @@ browser-functionality into a separate binary. This introduces the following
 terminology and rules:
   * ash-chrome: The new name of the legacy "chrome" binary. It contains system
     UI and the current/legacy web browser. Code that is only used by ash-chrome
-    should eventually be moved to //ash, have an _ash suffix in the filename, or
-    have a (grand-)parent directory named /ash/.
+    should eventually be moved to //chromeos/ash, have an _ash suffix in
+    the filename, or have a (grand-)parent directory named /ash/.
   * lacros-chrome: The name of the new, standalone web-browser binary. Code that
     is only used by lacros-chrome should have a _lacros suffix in the filename,
     or have a (grand-)parent directory named /lacros/.
@@ -31,16 +31,14 @@ components.
 
 For example, //chromeos/dbus contains wrappers around the D-Bus interfaces to
 system daemons like the network configuration manager (shill). Most other
-directories contain low-level utility code. For example, //chromeos/disks has
-utilities for mounting and unmounting disk volumes.
+directories contain low-level utility code.
 
 There are two exceptions:
 
 - //chromeos/services contains mojo services that were not considered
-  sufficiently general to live in top-level //services. For example
-  //chromeos/services/secure_channel bootstraps a secure communications channel
-  to an Android phone over Bluetooth, enabling multi-device features like
-  instant tethering.
+  sufficiently general to live in top-level //services and that, at the same
+  time, are shared between ash-chrome and lacros-chrome. In case of an
+  ash-chrome only mojo service, please use //chromeos/ash/services instead.
 
 - //chromeos/components contains C++ components that were not considered
   sufficiently general to live in top-level //components.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
@@ -35,6 +34,10 @@ class TransactionalLevelDBTransaction;
 class CONTENT_EXPORT IndexedDBMetadataCoding {
  public:
   IndexedDBMetadataCoding();
+
+  IndexedDBMetadataCoding(const IndexedDBMetadataCoding&) = delete;
+  IndexedDBMetadataCoding& operator=(const IndexedDBMetadataCoding&) = delete;
+
   virtual ~IndexedDBMetadataCoding();
 
   // Reads the list of database names for the given origin.
@@ -77,11 +80,11 @@ class CONTENT_EXPORT IndexedDBMetadataCoding {
       blink::IndexedDBDatabaseMetadata* metadata);
 
   // Changes the database version to |version|.
-  virtual leveldb::Status SetDatabaseVersion(
+  [[nodiscard]] virtual leveldb::Status SetDatabaseVersion(
       TransactionalLevelDBTransaction* transaction,
       int64_t row_id,
       int64_t version,
-      blink::IndexedDBDatabaseMetadata* metadata) WARN_UNUSED_RESULT;
+      blink::IndexedDBDatabaseMetadata* metadata);
 
   // Reads only the database id, if found.
   virtual leveldb::Status FindDatabaseId(TransactionalLevelDBDatabase* db,
@@ -142,9 +145,6 @@ class CONTENT_EXPORT IndexedDBMetadataCoding {
       std::u16string new_name,
       std::u16string* old_name,
       blink::IndexedDBIndexMetadata* metadata);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IndexedDBMetadataCoding);
 };
 
 }  // namespace content

@@ -1,13 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/account_manager/account_manager_factory.h"
-#include "ash/constants/ash_pref_names.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/account_manager_facade_factory.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
@@ -18,8 +16,13 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
+#include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
-#include "components/signin/public/identity_manager/consent_level.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "components/account_manager_core/pref_names.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,6 +37,12 @@ constexpr char kFakeSecondaryGaiaId[] = "fake-secondary-gaia-id";
 class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
  public:
   AccountManagerPolicyControllerTest() = default;
+
+  AccountManagerPolicyControllerTest(
+      const AccountManagerPolicyControllerTest&) = delete;
+  AccountManagerPolicyControllerTest& operator=(
+      const AccountManagerPolicyControllerTest&) = delete;
+
   ~AccountManagerPolicyControllerTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -56,8 +65,8 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
     auto* identity_test_env =
         identity_test_environment_adaptor_->identity_test_env();
     const AccountInfo primary_account_info =
-        identity_test_env->MakeUnconsentedPrimaryAccountAvailable(
-            kFakePrimaryUsername);
+        identity_test_env->MakePrimaryAccountAvailable(
+            kFakePrimaryUsername, signin::ConsentLevel::kSignin);
     auto user_manager = std::make_unique<FakeChromeUserManager>();
     primary_account_id_ = AccountId::FromUserEmailGaiaId(
         primary_account_info.email, primary_account_info.gaia);
@@ -71,21 +80,27 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
     account_manager_->UpsertAccount(
         ::account_manager::AccountKey{primary_account_info.gaia,
                                       account_manager::AccountType::kGaia},
-        primary_account_info.email, AccountManager::kInvalidToken);
+        primary_account_info.email,
+        account_manager::AccountManager::kInvalidToken);
     account_manager_->UpsertAccount(
         ::account_manager::AccountKey{kFakeSecondaryGaiaId,
                                       account_manager::AccountType::kGaia},
-        kFakeSecondaryUsername, AccountManager::kInvalidToken);
+        kFakeSecondaryUsername, account_manager::AccountManager::kInvalidToken);
 
     AccountManagerPolicyControllerFactory::GetForBrowserContext(profile());
   }
 
   void TearDownOnMainThread() override {
-    ProfileHelper::Get()->RemoveUserFromListForTesting(primary_account_id_);
+    GetFakeUserManager()->RemoveUserFromList(primary_account_id_);
     identity_test_environment_adaptor_.reset();
     profile_.reset();
     base::RunLoop().RunUntilIdle();
     scoped_user_manager_.reset();
+  }
+
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
   }
 
   std::vector<::account_manager::Account> GetAccountManagerAccounts() {
@@ -114,7 +129,7 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
  private:
   base::ScopedTempDir temp_dir_;
   // Non-owning pointer.
-  AccountManager* account_manager_ = nullptr;
+  account_manager::AccountManager* account_manager_ = nullptr;
   // Non-owning pointer.
   account_manager::AccountManagerFacade* account_manager_facade_ = nullptr;
   std::unique_ptr<Profile> profile_;
@@ -122,7 +137,6 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
       identity_test_environment_adaptor_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   AccountId primary_account_id_;
-  DISALLOW_COPY_AND_ASSIGN(AccountManagerPolicyControllerTest);
 };
 
 IN_PROC_BROWSER_TEST_F(AccountManagerPolicyControllerTest,
@@ -137,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(AccountManagerPolicyControllerTest,
   // Use default policy value for |kSecondaryGoogleAccountSigninAllowed|
   // (|true|).
   profile()->GetPrefs()->SetBoolean(
-      chromeos::prefs::kSecondaryGoogleAccountSigninAllowed, true);
+      ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed, true);
   ChildAccountTypeChangedUserData::GetForProfile(profile())->SetValue(false);
 
   base::RunLoop().RunUntilIdle();
@@ -157,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Disallow secondary account sign-ins.
   profile()->GetPrefs()->SetBoolean(
-      chromeos::prefs::kSecondaryGoogleAccountSigninAllowed, false);
+      ::account_manager::prefs::kSecondaryGoogleAccountSigninAllowed, false);
 
   base::RunLoop().RunUntilIdle();
 
@@ -175,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(
                 ->GetUserByProfile(profile())
                 ->GetAccountId()
                 .GetGaiaId(),
-            accounts[0].key.id);
+            accounts[0].key.id());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -208,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(
                 ->GetUserByProfile(profile())
                 ->GetAccountId()
                 .GetGaiaId(),
-            accounts[0].key.id);
+            accounts[0].key.id());
 }
 
 }  // namespace ash

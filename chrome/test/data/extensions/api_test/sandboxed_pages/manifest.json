@@ -1,8 +1,0 @@
-{
-  "name": "Extension with sandboxed pages",
-  "manifest_version": 2,
-  "version": "0.1",
-  "sandbox": {
-    "pages": ["sandboxed.html"]
-  }
-}

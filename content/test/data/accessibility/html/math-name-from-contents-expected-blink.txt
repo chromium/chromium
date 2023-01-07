@@ -1,28 +1,28 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++radioButton name='Both%C2%A01 + 4%C2%A0and%C2%A02 + 3' checkedState=false
+++++++radioButton name='Both%C2%A0%C2%A0and%C2%A0' checkedState=false
 ++++++++staticText name='Both%C2%A0'
 ++++++++++inlineTextBox name='Both%C2%A0'
-++++++++math name='1 + 4'
-++++++++++genericContainer
+++++++++math
+++++++++++mathMLNumber
 ++++++++++++staticText name='1'
 ++++++++++++++inlineTextBox name='1'
-++++++++++genericContainer
+++++++++++mathMLOperator
 ++++++++++++staticText name='+'
 ++++++++++++++inlineTextBox name='+'
-++++++++++genericContainer
+++++++++++mathMLNumber
 ++++++++++++staticText name='4'
 ++++++++++++++inlineTextBox name='4'
 ++++++++staticText name='%C2%A0and%C2%A0'
 ++++++++++inlineTextBox name='%C2%A0and%C2%A0'
-++++++++math name='2 + 3'
-++++++++++genericContainer
+++++++++mathMLMath
+++++++++++mathMLNumber
 ++++++++++++staticText name='2'
 ++++++++++++++inlineTextBox name='2'
-++++++++++genericContainer
+++++++++++mathMLOperator
 ++++++++++++staticText name='+'
 ++++++++++++++inlineTextBox name='+'
-++++++++++genericContainer
+++++++++++mathMLNumber
 ++++++++++++staticText name='3'
 ++++++++++++++inlineTextBox name='3'

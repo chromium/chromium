@@ -1,0 +1,53 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Event phase for a single swipe gesture.
+enum SideSwipeEvent {
+  BEGIN = 0,     // Swipe has started
+  CONTINUE = 1,  // Swipe is in progress
+  END = 2        // Swipe is finished
+};
+
+// Screen location for a side swipe gesture.
+enum SideSwipeOrigin {
+  TOP = 0,
+  BOTTOM = 1,
+  LEFT = 2,
+  RIGHT = 3
+};
+
+// Renderer-side client for receiving settings events. This is currently used to
+// send side-swipe events.
+//
+// Security: This is hosted by the render process. This is only enabled for the
+// built-in settings UI for smart display devices.
+interface SettingsClient {
+  // Propagates an in-progress gesture event to the renderer.
+  HandleSideSwipe(SideSwipeEvent event,
+                  SideSwipeOrigin origin,
+                  gfx.mojom.Point touch_location);
+
+  // Sends a platform info JSON string to the renderer. This information is
+  // intended to be rendered by the settings UI widget (e.g. device volume bar,
+  // device name, platform version info).
+  SendPlatformInfo(string platform_info_json);
+};
+
+// Interface implemented on platform to host the settings view. This is
+// currently used by render process to request settings visibility.
+//
+// Security: This interface is hosted by the Cast Service process. This is only
+// used by the built-in settings UI to receive platform information so it can be
+// displayed to a user.
+interface SettingsPlatform {
+  // Register a SettingsClient so that it can receive platform information.
+  Connect(pending_remote<SettingsClient> client);
+
+  // Make the settings UI visible.
+  RequestVisible(bool visible);
+};

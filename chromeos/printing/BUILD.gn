@@ -1,0 +1,99 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+if (is_chromeos_ash) {
+  # Used to build and run fuzzer in ash-only code.
+  import("//testing/libfuzzer/fuzzer_test.gni")
+}
+
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
+
+component("printing") {
+  output_name = "chromeos_printing"  # Avoid conflict with //printing
+  defines = [ "IS_CHROMEOS_PRINTING_IMPL" ]
+
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//chromeos/crosapi/mojom",
+    "//services/network/public/cpp:cpp",
+  ]
+
+  sources = [
+    "cups_printer_status.cc",
+    "cups_printer_status.h",
+    "epson_driver_matching.cc",
+    "epson_driver_matching.h",
+    "ppd_cache.cc",
+    "ppd_cache.h",
+    "ppd_line_reader.cc",
+    "ppd_line_reader.h",
+    "ppd_metadata_manager.cc",
+    "ppd_metadata_manager.h",
+    "ppd_metadata_parser.cc",
+    "ppd_metadata_parser.h",
+    "ppd_provider.cc",
+    "ppd_provider.h",
+    "ppd_provider.h",
+    "printer_config_cache.cc",
+    "printer_config_cache.h",
+    "printer_configuration.cc",
+    "printer_configuration.h",
+    "printer_translator.cc",
+    "printer_translator.h",
+    "uri.cc",
+    "uri.h",
+    "uri_impl.cc",
+    "uri_impl.h",
+    "usb_printer_id.cc",
+    "usb_printer_id.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":printing",
+    "//base/test:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [
+    "cups_printer_status_unittest.cc",
+    "epson_driver_matching_unittest.cc",
+    "fake_printer_config_cache.cc",
+    "fake_printer_config_cache.h",
+    "ppd_cache_unittest.cc",
+    "ppd_line_reader_unittest.cc",
+    "ppd_metadata_manager_unittest.cc",
+    "ppd_metadata_matchers.h",
+    "ppd_metadata_parser_unittest.cc",
+    "ppd_provider_unittest.cc",
+    "printer_config_cache_unittest.cc",
+    "printer_configuration_unittest.cc",
+    "printer_translator_unittest.cc",
+    "uri_unittest.cc",
+    "uri_unittest.h",
+    "uri_unittest_consistency.cc",
+    "usb_printer_id_unittest.cc",
+  ]
+}
+
+if (is_chromeos_ash) {
+  fuzzer_test("ppd_line_reader_fuzzer") {
+    sources = [ "ppd_line_reader_fuzzer.cc" ]
+    deps = [ ":printing" ]
+  }
+
+  fuzzer_test("uri_fuzzer") {
+    sources = [ "uri_fuzzer.cc" ]
+    seed_corpus = "uri_fuzzer_seed_corpus"
+    deps = [ ":printing" ]
+  }
+}

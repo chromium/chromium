@@ -1,0 +1,32 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "services/network/public/mojom/ip_address.mojom";
+
+[Stable]
+struct NetworkDetails {
+  string mac_address@0;
+  network.mojom.IPAddress? ipv4_address@1;
+  network.mojom.IPAddress? ipv6_address@2;
+};
+
+[Stable]
+union GetNetworkDetailsResult {
+  // Implies failure.
+  string error_message;
+
+  // Implies success.
+  NetworkDetails network_details;
+};
+
+// This API provides Lacros with access to networking attributes. These methods
+// will all return an error if the user is not affiliated with the device, which
+// is an enterprise policy concept.
+[Stable, Uuid="1000f6ee-b7d0-4a09-8452-f3418b5e6826"]
+interface NetworkingAttributes {
+  // Fetches the network's addresses.
+  GetNetworkDetails@0() => (GetNetworkDetailsResult result);
+};

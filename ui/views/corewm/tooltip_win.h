@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,21 +11,21 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/win/scoped_gdi_object.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/corewm/tooltip.h"
 
-namespace views {
-namespace corewm {
+namespace views::corewm {
 
 // Implementation of Tooltip that uses the native win32 control for showing the
 // tooltip.
 class VIEWS_EXPORT TooltipWin : public Tooltip {
  public:
   explicit TooltipWin(HWND parent);
+
+  TooltipWin(const TooltipWin&) = delete;
+  TooltipWin& operator=(const TooltipWin&) = delete;
+
   ~TooltipWin() override;
 
   // HandleNotify() is forwarded from DesktopWindowTreeHostWin to keep the
@@ -47,7 +47,8 @@ class VIEWS_EXPORT TooltipWin : public Tooltip {
   int GetMaxWidth(const gfx::Point& location) const override;
   void Update(aura::Window* window,
               const std::u16string& tooltip_text,
-              const TooltipPosition& position) override;
+              const gfx::Point& position,
+              const TooltipTrigger trigger) override;
   void Show() override;
   void Hide() override;
   bool IsVisible() override;
@@ -69,17 +70,16 @@ class VIEWS_EXPORT TooltipWin : public Tooltip {
   bool showing_;
 
   // In order to position the tooltip we need to know the size. The size is only
-  // available from TTN_SHOW, so we have to cache it.
-  TooltipPosition position_;
+  // available from TTN_SHOW, so we have to cache `anchor_point_` and `trigger_`
+  // which are required to calculate its position.
+  gfx::Point anchor_point_;
+  TooltipTrigger trigger_ = TooltipTrigger::kCursor;
 
   // What the scale was the last time we overrode the font, to see if we can
   // re-use our previous override.
   float override_scale_ = 0.0f;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipWin);
 };
 
-}  // namespace corewm
-}  // namespace views
+}  // namespace views::corewm
 
 #endif  // UI_VIEWS_COREWM_TOOLTIP_WIN_H_

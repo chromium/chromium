@@ -1,0 +1,20 @@
+select {
+    display: block;
+    overflow-y: auto;
+    border-radius: 0px;
+    outline: none;
+}
+
+select hr {
+    border-style: none;
+    border-bottom: 1px solid black;
+    margin: 0 0.5em;
+}
+
+option, optgroup {
+    padding-inline-end: 2px;
+}
+
+.wrap option {
+    white-space: pre-wrap;
+}

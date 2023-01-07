@@ -1,0 +1,1 @@
+Tests that renderer survives emulation of a very large viewport.

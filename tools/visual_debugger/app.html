@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+ Copyright 2022 The Chromium Authors
+ Use of this source code is governed by a BSD-style license that can be
+ found in the LICENSE file.
+  -->
+
+<head>
+  <style>
+    #scrubberframe::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background-color: grey;
+    }
+
+    #scrubberframe::slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background-color: grey;
+    }
+
+    #scrubberframe {
+      margin-top: 10px;
+      flex-grow: 1;
+      appearance: none;
+      background-color: #f0f0f0;
+      width: 100%;
+    }
+
+    #scrubberdraw::-webkit-slider-thumb {
+      appearance: none;
+      width: 15px;
+      height: 20px;
+      background-color: grey;
+    }
+
+    #scrubberdraw::slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background-color: grey;
+    }
+
+    #scrubberdraw {
+      margin-top: 10px;
+      flex-grow: 1;
+      appearance: none;
+      background-color: #f0f0f0;
+      width: 100%;
+    }
+
+    #url {
+      font-family: monospace;
+      font-size: smaller;
+    }
+
+    #controls {}
+
+    #controls>#buttons {
+      display: flex;
+    }
+
+    #log {
+      min-height: 100px;
+      max-height: 100%;
+      font-family: monospace;
+      overflow: auto;
+    }
+
+    #connectionPanel,
+    #saveload {
+      display: inline-block;
+    }
+
+    #connectionPanel,
+    #saveload,
+    #topPanel {
+      padding-bottom: 10px;
+    }
+
+    #topPanel {
+      display: flex;
+    }
+
+    #settings {
+      display: flex;
+      flex-direction: column;
+      font-size: small;
+    }
+
+    .panelSection {
+      margin-right: 20px;
+    }
+
+    .panelSection:last-child {
+      margin-right: 0px;
+      flex-grow: 1;
+    }
+
+    #connection-status {
+      color: limegreen;
+      font-size: large;
+      padding-right: 5px;
+    }
+
+    #connection-status.disconnected {
+      color: orange;
+    }
+  </style>
+  <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+  <link rel='stylesheet' href='style.css'>
+  <script src='filter.js'></script>
+  <script src='filter-ui.js'></script>
+  <script src='frame.js'></script>
+  <script src='connection.js'></script>
+  <script src='thread.js'></script>
+  <script src='thread-ui.js'></script>
+</head>
+
+<div id='connectionPanel'>
+  <div class='sectionTitle'>
+    <font class='disconnected' id='connection-status'>&#9679;</font>Connection
+  </div>
+  <div class='section'>
+    <div title="Expert usage only. Autoconnect should provide the dev tools websocket through /json/version discovery.">
+      <input id='url' name='url' size=60 type="text"
+        placeholder='WebSocket URL or leave empty for autoconnect...'></input>
+    </div>
+    <button class="mdc-button mdc-button--outline" id='connect'>
+      <div class="mdc-button__ripple"></div>
+      <span class="mdc-button__label">Connect</span>
+    </button>
+    <button class="mdc-button mdc-button--outline" id='disconnect' disabled=true>
+      <div class="mdc-button__ripple"></div>
+      <span class="mdc-button__label">Disconnect</span>
+    </button>
+    <input type="checkbox" id="autoconnect" name="autoconnect" checked="true">
+    <label for="autoconnect" style="font-size:small; font:Roboto" > Autoconnect</label><br>
+  </div>
+</div>
+
+<div id='saveload'>
+  <div class='sectionTitle'>Save/Load ...</div>
+  <div class='section'>
+    <button id='demo' class="mdc-button mdc-button--outline">
+      <div class="mdc-button__ripple"></div>
+      <span class="mdc-button__label">Load demo data</span>
+    </button>
+    <button id='savedata' class="mdc-button mdc-button--outline"
+      title="Serializes current session stream to json file.">
+      <div class="mdc-button__ripple"></div>
+      <span class="mdc-button__label">Save to disk</span>
+    </button>
+    <button id='loaddata' class="mdc-button mdc-button--outline"
+      title="Deserializes json file of previous session and imports these frames into the App.">
+      <div class="mdc-button__ripple"></div>
+      <span class="mdc-button__label">Load from disk</span>
+    </button>
+  </div>
+</div>
+
+<div id='logsPanel'>
+  <div class='panelSection'>
+    <div class='sectionTitle'>
+      Logs
+      <!--input size=40 placeholder='Comma separated filter ...'>(TODO)</input-->
+    </div>
+    <div class='section'>
+      <div id='log'></div>
+    </div>
+  </div>
+</div>
+
+<div class='panelSection'>
+  <div class='sectionTitle'
+    title="Filter debug data stream. Filter operations occur in a left to right order with first match being applied.">
+    <i class="material-icons-outlined">filter_list</i> Filters
+  </div>
+  <div class='section'>
+    <div id='filters' class="mdc-chip-set mdc-chip-set--filter" role="grid"
+      title="Filter debug data stream. Filter operations occur in a left to right order with first match being applied.">
+    </div>
+    <button class="mdc-button mdc-button--outline" id='createfilter'>
+      <div class="mdc-button__ripple"></div>
+      <span class="mdc-button__label"><i class="material-icons-outlined">add_box</i> Add new filter</span>
+    </button>
+  </div>
+</div>
+
+<div class='panelSection'>
+  <div class='sectionTitle'>
+    <i class="material-symbols-outlined">
+      airwave
+    </i>
+    Threads
+  </div>
+
+  <div id='threads' class='section'></div>
+</div>
+
+<div class='panelSection'>
+  <div class='sectionTitle'>Viewer Controls</div>
+  <div class='section' id='controls'>
+    <div id='buttons'>
+      <button class="mdc-button mdc-button--outline" id='prev'>
+        <span class="mdc-button__label"><i class="material-icons-outlined">skip_previous</i> Previous frame</span>
+      </button>
+      <button class="mdc-button mdc-button--outline" id='play'>
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label"><i class="material-icons-outlined">play_circle_outline</i> Play</span>
+      </button>
+      <button class="mdc-button mdc-button--outline" id='pause'>
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label"><i class="material-icons-outlined">pause_circle_outline</i> Pause</span>
+      </button>
+      <button class="mdc-button mdc-button--outline" id='next'>
+        <span class="mdc-button__label">Next frame <i class="material-icons-outlined">skip_next</i></span>
+      </button>
+      <button class="mdc-button mdc-button--raised" style="visibility:hidden" id='live'>
+        <div class="mdc-button__ripple"></div>
+        <span class="mdc-button__label">Live <i class="material-icons-outlined">fast_forward</i></span>
+      </button>
+
+    </div>
+    <div class='panelSection'>
+      <div class='sectionTitle'>Frame Selection</div>
+      <input type='range' min='0' max='0' value='0' id='scrubberframe'></input>
+    </div>
+    <div class='panelSection'>
+      <div class='sectionTitle'>Draw Selection</div>
+      <input type='range' min='0' max='0' value='0' id='scrubberdraw'></input>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div class='sectionTitle'>
+    Viewer
+  </div>
+  <div style='float: right' class='sectionTitle'>
+    Scale
+    <select id="viewerscale">
+      <option>100%</option>
+      <option>50%</option>
+      <option>200%</option>
+      <option disabled>Free Camera</option>
+    </select>
+  </div>
+
+  <div style='float: right' class='sectionTitle'>
+  Orientation
+    <select id="viewerorientation">
+      <option class="default-orientation">0 deg clockwise</option>
+      <option class="default-orientation">90 deg clockwise</option>
+      <option class="default-orientation">180 deg clockwise</option>
+      <option class="default-orientation">270 deg clockwise</option>
+      <option class="default-orientation">Horizontal Flip</option>
+      <option class="default-orientation">Vertical Flip</option>
+    </select>
+  </div>
+
+  <div class='section'>
+    <!--We need to fix viewer size to avoid scroll position change when 
+      multiple displays are present. crbug.com/1358526-->
+    <div style="height:4000px;  border: 1px dotted gray;">
+        <canvas id='canvas' style="top :0px"></canvas>
+    </div>
+  </div>
+
+  <div class='modalContainer'></div>
+</div>
+
+<div id='importtracing'>
+  <div class='sectionTitle'>Tracing (Prototype)...</div>
+  <div class='section'>
+    <button id='importtracebutton' class="mdc-button mdc-button--outline"
+      title="Import tracing data (json) into visual debugger app.">
+      <div class="mdc-button__ripple"></div>
+      <span class="mdc-button__label">Import Trace</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  function processIncomingFrame(json) {
+    if (!json) return;
+
+    new DrawFrame(json);
+    Player.instance.onNewFrame();
+  }
+
+  async function testAnimate() {
+    const f = await fetch('demo.json');
+    const text = await f.text();
+    const json = JSON.parse(text);
+    for (const frame of json) {
+      processIncomingFrame(frame);
+    }
+  }
+
+  async function saveDemoDataToDisk() {
+    const text = JSON.stringify(DrawFrame.frameBuffer.instances.map(d => d.toJSON()));
+    const blob = new Blob([text], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.download = 'cvd-stream.json';
+    link.href = window.URL.createObjectURL(blob);
+    link.click();
+  }
+
+  window.onload = function () {
+
+    Connection.initialize();
+
+    const addFilterButton = document.querySelector('#createfilter');
+    addFilterButton.addEventListener('click', () => {
+      showCreateFilterPopup(addFilterButton);
+    });
+
+    const container = document.querySelector('.modalContainer');
+    container.addEventListener('click', (event) => {
+      if (event.target == container)
+        hideModal();
+    });
+
+    const demo = document.querySelector('#demo');
+    demo.addEventListener('click', testAnimate);
+
+    const savedata = document.querySelector('#savedata');
+    savedata.addEventListener('click', saveDemoDataToDisk);
+
+    const loaddata = document.querySelector('#loaddata');
+    loaddata.addEventListener('click', () => {
+      const f = document.createElement('input');
+      f.type = 'file';
+      f.addEventListener('change', () => {
+        const file = new FileReader(f.files[0]);
+        file.addEventListener('load', () => {
+          const json = JSON.parse(file.result);
+          for (const frame of json) {
+            processIncomingFrame(frame);
+          }
+        });
+        file.readAsText(f.files[0]);
+      });
+      f.click();
+    });
+
+    const importtracedata = document.querySelector('#importtracebutton');
+    importtracedata.addEventListener('click', () => {
+      const f = document.createElement('input');
+      f.type = 'file';
+      f.addEventListener('change', () => {
+        const file = new FileReader(f.files[0]);
+        file.addEventListener('load', () => {
+          const json = JSON.parse(file.result);
+          const traceEvents = json.traceEvents;
+
+          let src_frame = {
+            "drawcalls": [], "frame": "80631", "logs": [], "new_sources": [{ "anno": "frame.root.display_rect", "file": "x", "func": "x", "index": 0, "line": 0 }], "text": [], "time": "0",
+            "version": 1, "windowx": 2400, "windowy": 1600
+          };
+          processIncomingFrame(src_frame);
+          curr_frame = "0";
+          curr_draws = [];
+          for (const event of traceEvents) {
+            if (event.name == "VisualDebuggerSync") {
+              single_frame = { "drawcalls": [], "frame": "80631", "logs": [], "new_sources": [], "text": [], "time": "0", "version": 1, "windowx": 2400, "windowy": 1600 };
+              single_frame.drawcalls = curr_draws;
+              curr_frame = event.args.last_presented_trace_id;
+              single_frame.frame = curr_frame;
+              processIncomingFrame(single_frame);
+              curr_draws = []
+            }
+            if (event.name == "VizTestRootRect") {
+              let single_call = { "drawindex": curr_draws.length, "option": { "alpha": 0, "color": "#ff0000" }, "pos": [832, 670], "size": [112, 112], "source_index": 0 };
+              single_call.pos[0] = parseInt(event.args.args.pos_x);
+              single_call.pos[1] = parseInt(event.args.args.pos_y);
+              single_call.size[0] = parseInt(event.args.args.size_x);
+              single_call.size[1] = parseInt(event.args.args.size_y);
+              curr_draws.push(single_call);
+            }
+          }
+        });
+        file.readAsText(f.files[0]);
+      });
+      f.click();
+    });
+
+    setUpPlayer();
+    restoreFilters();
+  }
+
+  function setUpPlayer() {
+    // First, set up the viewer.
+    const canvas = document.querySelector('#canvas');
+    const logContainer = document.querySelector('#log');
+    const viewer = new Viewer(canvas, logContainer);
+    // Now create the player for the viewer.
+    const player = new Player(viewer, (frame) => {
+      // TODO: This feels like a hack. Find a cleaner way to update the scrubbers?
+      const scrubberFrame = document.querySelector('#scrubberframe');
+      scrubberFrame.value = player.currentFrameIndex;
+
+      const scrubberDraw = document.querySelector('#scrubberdraw');
+      scrubberDraw.max = frame.submissionCount() - 1;
+      scrubberDraw.value = frame.submissionFreezeIndex();
+    });
+
+    document.querySelector('#pause').addEventListener('click', () => {
+      player.pause();
+      pause.setAttribute('style', 'background:#000000;color:white');
+      live.setAttribute('style', 'visibility:visible');
+    });
+
+    document.querySelector('#play').addEventListener('click', () => {
+      player.play();
+      pause.removeAttribute('style');
+    });
+
+    document.querySelector('#prev').addEventListener('click', () => {
+      player.rewind();
+    });
+
+    document.querySelector('#next').addEventListener('click', () => {
+      player.forward();
+    });
+
+    document.querySelector('#live').addEventListener('click', () => {
+      player.freezeFrame(DrawFrame.frameBuffer.numFrames - 1);
+      player.play();
+      has_disconnected = false;
+      live.setAttribute('style', 'visibility:hidden');
+      pause.removeAttribute('style');
+    });
+
+    const scrubberFrame = document.querySelector('#scrubberframe');
+    scrubberFrame.addEventListener('input', () => {
+      player.freezeFrame(scrubberFrame.value);
+      pause.setAttribute('style', 'background:#000000;color:white');
+      live.setAttribute('style', 'visibility:visible');
+    });
+
+    const scrubberDraw = document.querySelector('#scrubberdraw');
+    scrubberDraw.addEventListener('input', () => {
+      player.freezeFrame(scrubberFrame.value, scrubberDraw.value);
+    });
+
+    let currentMouseX = 0;
+    let currentMouseY = 0;
+    let zoom = 100;
+    const viewerScale = document.querySelector("#viewerscale");
+    viewerScale.addEventListener('input', () => {
+      if (viewerScale.value != "Free Camera") {
+        player.setViewerScale(viewerScale.value);
+        zoom = parseInt(viewerScale.value);
+      }
+      else {
+        player.setViewerScale(zoom);
+        canvas.addEventListener('mouseenter', () => {
+          canvas.addEventListener('mousemove', function (event) {
+            currentMouseX = Math.round(event.offsetX);
+            currentMouseY = Math.round(event.offsetY);
+          });
+        });
+        canvas.addEventListener('wheel', function(e) {
+          e.preventDefault();
+          var delta = e.deltaY;
+          
+          viewer.zoomToMouse(currentMouseX, currentMouseY, delta);
+
+        }, {passive:false});
+      }
+    });
+
+    const viewerOrientation = document.querySelector("#viewerorientation");
+    viewerOrientation.addEventListener('input', () => {
+      player.setViewerOrientation(viewerOrientation.value);
+    });
+    viewerOrientation.addEventListener('change', () => {
+      // change dropdown style when rotation occurs
+      if (viewerOrientation.value !== "0 deg clockwise") {
+        document.getElementById("viewerorientation").className = "selected-orientation";
+      }
+      else {
+        document.getElementById("viewerorientation").className = "default-orientation";
+      }
+    });
+  }
+
+
+  function showModal(element) {
+    const container = document.querySelector('.modalContainer');
+    container.appendChild(element);
+    container.style.display = 'block';
+    element.focus();
+  }
+
+  function hideModal() {
+    const container = document.querySelector('.modalContainer');
+    container.style.display = 'none';
+    container.textContent = '';
+  }
+
+</script>
+
+</html>

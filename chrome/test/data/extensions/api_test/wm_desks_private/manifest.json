@@ -1,0 +1,10 @@
+{
+  "name": "chrome.wmDesksPrivate API Test Extension",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmUBTa6E9f8/tS5CzakhK5+KeLZRB3/h/Z+A9/tyWzHiePRWdVLbBohtGVMBGzIzJ1UTyabc2HJ2MZtf1RCsVLcCsFROi+jxCWypHsjSRzoS3/PooI3ZsQFJQRVCzwJUtSgupzXxExl84/mchzwMEkkPn/XeaqiVJjV0UeAwaCXPX1S3bAaI+QyyKs5wHyB0NCALuth+p5yxvRJ93tavHIDDKbqX0F+aJt3NvkyUgRGPAydYxsPYaMpOYD6nz1Iwq5vhGIyhXX8Q5OI2qryMVTEW0673AeIA1dIOPl6Ce/g1Qk/peXuPvnenlgd8VQEn76ScRtgQh2v7KFfnsrOjt/QIDAQAB",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["wmDesksPrivate"]
+}

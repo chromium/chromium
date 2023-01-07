@@ -31,10 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_LINK_LOADER_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_LINK_LOADER_CLIENT_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -50,11 +50,8 @@ class CORE_EXPORT LinkLoaderClient : public GarbageCollectedMixin {
   // There is no notification for cancellation.
 
   virtual bool IsLinkCreatedByParser() = 0;
-
-  virtual scoped_refptr<base::SingleThreadTaskRunner>
-  GetLoadingTaskRunner() = 0;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_LINK_LOADER_CLIENT_H_

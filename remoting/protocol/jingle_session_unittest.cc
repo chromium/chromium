@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,9 +31,9 @@
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/signaling/fake_signal_strategy.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/libjingle_xmpp/xmpp/constants.h"
 
 using testing::_;
 using testing::AtLeast;
@@ -48,8 +48,7 @@ using testing::SaveArg;
 using testing::SetArgPointee;
 using testing::WithArg;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 namespace {
 
@@ -148,7 +147,7 @@ class FakePlugin : public SessionPlugin {
 std::unique_ptr<jingle_xmpp::XmlElement> CreateTransportInfo(const std::string& id) {
   std::unique_ptr<jingle_xmpp::XmlElement> result(
       jingle_xmpp::XmlElement::ForStr("<transport xmlns='google:remoting:ice'/>"));
-  result->AddAttr(jingle_xmpp::QN_ID, id);
+  result->AddAttr(kQNameId, id);
   return result;
 }
 
@@ -196,7 +195,8 @@ class JingleSessionTest : public testing::Test {
     FakeSignalStrategy::Connect(host_signal_strategy_.get(),
                                 client_signal_strategy_.get());
 
-    host_server_.reset(new JingleSessionManager(host_signal_strategy_.get()));
+    host_server_ =
+        std::make_unique<JingleSessionManager>(host_signal_strategy_.get());
     host_server_->AcceptIncoming(
         base::BindRepeating(&MockSessionManagerListener::OnIncomingSession,
                             base::Unretained(&host_server_listener_)));
@@ -205,8 +205,8 @@ class JingleSessionTest : public testing::Test {
         new FakeHostAuthenticatorFactory(messages_till_start, auth_config));
     host_server_->set_authenticator_factory(std::move(factory));
 
-    client_server_.reset(
-        new JingleSessionManager(client_signal_strategy_.get()));
+    client_server_ =
+        std::make_unique<JingleSessionManager>(client_signal_strategy_.get());
   }
 
   void CreateSessionManagers(FakeAuthenticator::Config auth_config) {
@@ -410,8 +410,8 @@ TEST_F(JingleSessionTest, ConnectWithOutOfOrderIqs) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(client_transport_.received_messages().size(), 2U);
-  EXPECT_EQ("1", client_transport_.received_messages()[0]->Attr(jingle_xmpp::QN_ID));
-  EXPECT_EQ("2", client_transport_.received_messages()[1]->Attr(jingle_xmpp::QN_ID));
+  EXPECT_EQ("1", client_transport_.received_messages()[0]->Attr(kQNameId));
+  EXPECT_EQ("2", client_transport_.received_messages()[1]->Attr(kQNameId));
 }
 
 // Verify that out-of-order messages are handled correctly when the session is
@@ -432,7 +432,7 @@ TEST_F(JingleSessionTest, ConnectWithOutOfOrderIqsDestroyOnFirstMessage) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_EQ(client_transport_.received_messages().size(), 1U);
-  EXPECT_EQ("1", client_transport_.received_messages()[0]->Attr(jingle_xmpp::QN_ID));
+  EXPECT_EQ("1", client_transport_.received_messages()[0]->Attr(kQNameId));
 }
 
 // Verify that connection is terminated when single-step auth fails.
@@ -590,7 +590,7 @@ TEST_F(JingleSessionTest, TransportInfoDuringAuthentication) {
   // Verify that transport-info that the first transport-info message was
   // received.
   ASSERT_EQ(client_transport_.received_messages().size(), 1U);
-  EXPECT_EQ("1", client_transport_.received_messages()[0]->Attr(jingle_xmpp::QN_ID));
+  EXPECT_EQ("1", client_transport_.received_messages()[0]->Attr(kQNameId));
 }
 
 TEST_F(JingleSessionTest, TestSessionPlugin) {
@@ -636,5 +636,4 @@ TEST_F(JingleSessionTest, ImmediatelyCloseSessionAfterConnect) {
   ASSERT_EQ(1U, host_signal_strategy_->received_messages().size());
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

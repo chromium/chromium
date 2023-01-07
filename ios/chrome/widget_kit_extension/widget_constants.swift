@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,5 +20,14 @@ struct WidgetConstants {
   }
   struct DinoGameWidget {
     static let url = URL(string: "chromewidgetkit://dino-game-widget/game")!
+  }
+  struct LockscreenLauncherWidget {
+    static let searchUrl =
+      URL(string: "chromewidgetkit://lockscreen-launcher-widget/search")!
+    static let incognitoUrl =
+      URL(string: "chromewidgetkit://lockscreen-launcher-widget/incognito")!
+    static let voiceSearchUrl =
+      URL(string: "chromewidgetkit://lockscreen-launcher-widget/voicesearch")!
+    static let gameUrl = URL(string: "chromewidgetkit://lockscreen-launcher-widget/game")!
   }
 }

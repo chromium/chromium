@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -61,8 +60,10 @@ class X509Certificate;
 namespace chromecast {
 class CastService;
 class CastSystemMemoryPressureEvaluatorAdjuster;
+class CastWebService;
 class CastWindowManager;
 class CastFeatureListCreator;
+class DisplaySettingsManager;
 class GeneralAudienceBrowsingService;
 class MemoryPressureControllerImpl;
 class ServiceConnector;
@@ -96,6 +97,9 @@ class CastContentBrowserClient
   // preflight checks.
   static std::vector<std::string> GetCorsExemptHeadersList();
 
+  CastContentBrowserClient(const CastContentBrowserClient&) = delete;
+  CastContentBrowserClient& operator=(const CastContentBrowserClient&) = delete;
+
   ~CastContentBrowserClient() override;
 
   // Creates a ServiceConnector for routing Cast-related service interface
@@ -110,11 +114,15 @@ class CastContentBrowserClient
           cast_system_memory_pressure_evaluator_adjuster,
       PrefService* pref_service,
       media::VideoPlaneController* video_plane_controller,
-      CastWindowManager* window_manager);
+      CastWindowManager* window_manager,
+      CastWebService* web_service,
+      DisplaySettingsManager* display_settings_manager);
 
   virtual media::VideoModeSwitcher* GetVideoModeSwitcher();
 
   virtual void InitializeURLLoaderThrottleDelegate();
+
+  virtual void SetPersistentCookieAccessSettings(PrefService* pref_service);
 
   // Returns the task runner that must be used for media IO.
   scoped_refptr<base::SingleThreadTaskRunner> GetMediaTaskRunner();
@@ -136,13 +144,13 @@ class CastContentBrowserClient
   bool OverridesAudioManager() override;
   media::MediaCapsImpl* media_caps();
 
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
   // Create a BluetoothAdapter for WebBluetooth support.
   // TODO(slan): This further couples the browser to the Cast service. Remove
   // this once the dedicated Bluetooth service has been implemented.
   // (b/76155468)
   virtual scoped_refptr<device::BluetoothAdapterCast> CreateBluetoothAdapter();
-#endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
   // chromecast::metrics::CastMetricsServiceDelegate implementation:
   void SetMetricsClientId(const std::string& client_id) override;
@@ -159,14 +167,14 @@ class CastContentBrowserClient
   virtual void RunServiceInstance(
       const service_manager::Identity& identity,
       mojo::PendingReceiver<service_manager::mojom::Service>* receiver);
-  virtual base::Optional<service_manager::Manifest> GetServiceManifestOverlay(
+  virtual absl::optional<service_manager::Manifest> GetServiceManifestOverlay(
       base::StringPiece service_name);
   std::vector<service_manager::Manifest> GetExtraServiceManifests();
   std::vector<std::string> GetStartupServices();
 
   // content::ContentBrowserClient implementation:
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
-      const content::MainFunctionParams& parameters) override;
+      bool is_integration_test) override;
   void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
   bool IsHandledURL(const GURL& url) override;
   void SiteInstanceGotProcess(content::SiteInstance* site_instance) override;
@@ -184,7 +192,7 @@ class CastContentBrowserClient
       int cert_error,
       const net::SSLInfo& ssl_info,
       const GURL& request_url,
-      bool is_main_frame_request,
+      bool is_primary_main_frame_request,
       bool strict_enforcement,
       base::OnceCallback<void(content::CertificateRequestResultType)> callback)
       override;
@@ -226,7 +234,8 @@ class CastContentBrowserClient
       content::PosixFileDescriptorInfo* mappings) override;
   void GetAdditionalWebUISchemes(
       std::vector<std::string>* additional_schemes) override;
-  content::DevToolsManagerDelegate* GetDevToolsManagerDelegate() override;
+  std::unique_ptr<content::DevToolsManagerDelegate>
+  CreateDevToolsManagerDelegate() override;
   std::unique_ptr<content::NavigationUIData> GetNavigationUIData(
       content::NavigationHandle* navigation_handle) override;
   bool ShouldEnableStrictSiteIsolation() override;
@@ -239,6 +248,7 @@ class CastContentBrowserClient
   void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
       int render_frame_id,
+      const absl::optional<url::Origin>& request_initiator_origin,
       NonNetworkURLLoaderFactoryMap* factories) override;
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
@@ -252,12 +262,18 @@ class CastContentBrowserClient
   std::string GetUserAgent() override;
   bool DoesSiteRequireDedicatedProcess(content::BrowserContext* browser_context,
                                        const GURL& effective_site_url) override;
-  // New Mojo bindings should be added to
-  // cast_content_browser_client_receiver_bindings.cc, so that they go through
-  // security review.
-  void BindHostReceiverForRenderer(
-      content::RenderProcessHost* render_process_host,
-      mojo::GenericPendingReceiver receiver) override;
+  bool IsWebUIAllowedToMakeNetworkRequests(const url::Origin& origin) override;
+  bool ShouldAllowInsecurePrivateNetworkRequests(
+      content::BrowserContext* browser_context,
+      const url::Origin& origin) override;
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottles(
+      const network::ResourceRequest& request,
+      content::BrowserContext* browser_context,
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      content::NavigationUIData* navigation_ui_data,
+      int frame_tree_node_id) override;
+
   CastFeatureListCreator* GetCastFeatureListCreator() {
     return cast_feature_list_creator_;
   }
@@ -279,12 +295,20 @@ class CastContentBrowserClient
   explicit CastContentBrowserClient(
       CastFeatureListCreator* cast_feature_list_creator);
 
+  CastBrowserMainParts* browser_main_parts() {
+    return cast_browser_main_parts_;
+  }
+
   void BindMediaRenderer(
       mojo::PendingReceiver<::media::mojom::Renderer> receiver);
 
   void GetApplicationMediaInfo(std::string* application_session_id,
                                bool* mixer_audio_enabled,
                                content::RenderFrameHost* render_frame_host);
+
+  // Returns whether buffering should be used for the CMA Pipeline created for
+  // this runtime instance. May be called from any thread.
+  virtual bool IsBufferingEnabled();
 
  private:
   // Create device cert/key
@@ -307,11 +331,11 @@ class CastContentBrowserClient
                               scoped_refptr<net::SSLPrivateKey>)>
           continue_callback);
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   // Returns the crash signal FD corresponding to the current process type.
   int GetCrashSignalFD(const base::CommandLine& command_line);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Creates a CrashHandlerHost instance for the given process type.
   breakpad::CrashHandlerHostLinux* CreateCrashHandlerHost(
       const std::string& process_type);
@@ -322,8 +346,8 @@ class CastContentBrowserClient
   // Notify renderers of memory pressure (Android renderers register directly
   // with OS for this).
   std::unique_ptr<MemoryPressureControllerImpl> memory_pressure_controller_;
-#endif  // !defined(OS_ANDROID)
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   // CMA thread used by AudioManager, MojoRenderer, and MediaPipelineBackend.
   std::unique_ptr<base::Thread> media_thread_;
@@ -353,8 +377,6 @@ class CastContentBrowserClient
       general_audience_browsing_service_;
 
   CastFeatureListCreator* cast_feature_list_creator_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastContentBrowserClient);
 };
 
 }  // namespace shell

@@ -1,13 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromecast/media/cma/test/frame_generator_for_test.h"
 
 #include <stdint.h>
+
 #include <utility>
 
-#include "base/stl_util.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "media/base/decoder_buffer.h"
@@ -99,8 +99,8 @@ scoped_refptr<DecoderBufferBase> FrameGeneratorForTest::Generate() {
 
     std::unique_ptr<::media::DecryptConfig> decrypt_config =
         ::media::DecryptConfig::CreateCencConfig(
-            std::string(key_id, base::size(key_id)),
-            std::string(iv, base::size(iv)), subsamples);
+            std::string(key_id, std::size(key_id)),
+            std::string(iv, std::size(iv)), subsamples);
     buffer->set_decrypt_config(std::move(decrypt_config));
   }
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
 
 namespace media_history {
@@ -26,9 +25,10 @@ MediaHistoryKeyedServiceFactory::GetInstance() {
 }
 
 MediaHistoryKeyedServiceFactory::MediaHistoryKeyedServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "MediaHistoryKeyedService",
-          BrowserContextDependencyManager::GetInstance()) {
+          // Enable incognito profiles.
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(HistoryServiceFactory::GetInstance());
 }
 
@@ -42,13 +42,6 @@ bool MediaHistoryKeyedServiceFactory::ServiceIsCreatedWithBrowserContext()
 KeyedService* MediaHistoryKeyedServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new MediaHistoryKeyedService(Profile::FromBrowserContext(context));
-}
-
-content::BrowserContext*
-MediaHistoryKeyedServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Enable incognito profiles.
-  return context;
 }
 
 }  // namespace media_history

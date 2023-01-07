@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import android.net.Uri;
 import androidx.fragment.app.FragmentManager;
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.CookieChangeCause;
 import org.chromium.weblayer.CookieChangedCallback;
@@ -23,6 +25,7 @@ import org.chromium.weblayer.CookieManager;
 import org.chromium.weblayer.Profile;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -32,6 +35,7 @@ import java.util.concurrent.TimeoutException;
 public class CookieManagerTest {
     private CookieManager mCookieManager;
     private Uri mBaseUri;
+    private Uri mBaseUriWithPath;
 
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =
@@ -43,6 +47,7 @@ public class CookieManagerTest {
         mCookieManager = TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> { return activity.getBrowser().getProfile().getCookieManager(); });
         mBaseUri = Uri.parse(mActivityTestRule.getTestServer().getURL("/"));
+        mBaseUriWithPath = Uri.parse(mActivityTestRule.getTestServer().getURL("/path"));
     }
 
     @Test
@@ -106,6 +111,52 @@ public class CookieManagerTest {
 
     @Test
     @SmallTest
+    @MinWebLayerVersion(101)
+    public void testGetResponseCookiesSimple() throws Exception {
+        Assert.assertTrue(getResponseCookies().isEmpty());
+        Assert.assertTrue(setCookie("foo="));
+        Assert.assertThat(getResponseCookies(),
+                Matchers.containsInAnyOrder("foo=; path=/; domain=127.0.0.1; priority=medium"));
+        Assert.assertTrue(setCookie("foo=bar"));
+        Assert.assertThat(getResponseCookies(),
+                Matchers.containsInAnyOrder("foo=bar; path=/; domain=127.0.0.1; priority=medium"));
+
+        Assert.assertTrue(setCookie("baz=blah"));
+        Assert.assertThat(getResponseCookies(),
+                Matchers.containsInAnyOrder("foo=bar; path=/; domain=127.0.0.1; priority=medium",
+                        "baz=blah; path=/; domain=127.0.0.1; priority=medium"));
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(101)
+    public void testGetResponseCookiesAllAttributes() throws Exception {
+        Assert.assertTrue(getResponseCookies().isEmpty());
+
+        // Setting a cookie with all attributes should return the same cookie.
+        String cookieStart = "foo=bar; path=/; domain=127.0.0.1; expires=";
+        String cookieExpires = "Thu, 15 Jul 2032 00:00:01 GMT";
+        String cookieEnd = "; secure; httponly; samesite=lax; priority=high; sameparty";
+        Assert.assertTrue(setCookie(cookieStart + cookieExpires + cookieEnd));
+        List<String> cookiesSet = getResponseCookies();
+        Assert.assertEquals(cookiesSet.size(), 1);
+        // Expiration is clamped to 400 days, so for now we just test that some date was sent back.
+        Assert.assertTrue(cookiesSet.get(0).matches(cookieStart + "[A-Za-z0-9 ,:]*" + cookieEnd));
+    }
+
+    @Test
+    @SmallTest
+    @MinWebLayerVersion(101)
+    public void testGetResponseCookiesWithPath() throws Exception {
+        Assert.assertTrue(setCookie(mBaseUriWithPath, "foo=bar; path=/path"));
+        Assert.assertThat(getResponseCookies(mBaseUriWithPath),
+                Matchers.containsInAnyOrder(
+                        "foo=bar; path=/path; domain=127.0.0.1; priority=medium"));
+    }
+
+    @Test
+    @SmallTest
+    @DisabledTest(message = "Flaky - https://crbug.com/1133891")
     public void testCookieChanged() throws Exception {
         CookieChangedCallbackHelper helper = new CookieChangedCallbackHelper();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -163,12 +214,24 @@ public class CookieManagerTest {
         });
     }
 
+    private boolean setCookie(Uri uri, String value) throws Exception {
+        return mActivityTestRule.setCookie(mCookieManager, uri, value);
+    }
+
     private boolean setCookie(String value) throws Exception {
-        return mActivityTestRule.setCookie(mCookieManager, mBaseUri, value);
+        return setCookie(mBaseUri, value);
     }
 
     private String getCookie() throws Exception {
         return mActivityTestRule.getCookie(mCookieManager, mBaseUri);
+    }
+
+    private List<String> getResponseCookies(Uri uri) throws Exception {
+        return mActivityTestRule.getResponseCookies(mCookieManager, uri);
+    }
+
+    private List<String> getResponseCookies() throws Exception {
+        return getResponseCookies(mBaseUri);
     }
 
     private static class CookieChangedCallbackHelper extends CookieChangedCallback {

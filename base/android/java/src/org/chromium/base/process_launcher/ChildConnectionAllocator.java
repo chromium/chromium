@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,9 @@ public abstract class ChildConnectionAllocator {
     private static final long FREE_CONNECTION_DELAY_MILLIS = 1;
 
     // Max number of connections allocated for variable allocator.
-    private static final int MAX_VARIABLE_ALLOCATED = 100;
+    // Android allocates 100 UIDs for a zygote, but unbinding and killing a service is not
+    // synchronous. So leave 2 to leave some time for ActivityManager to respond.
+    private static final int MAX_VARIABLE_ALLOCATED = 98;
 
     // Runnable which will be called when allocator wants to allocate a new connection, but does
     // not have any more free slots. May be null.
@@ -347,7 +349,7 @@ public abstract class ChildConnectionAllocator {
         /* package */ ChildProcessConnection doAllocate(Context context, Bundle serviceBundle,
                 ChildProcessConnection.ServiceCallback serviceCallback) {
             if (mFreeConnectionIndices.isEmpty()) {
-                Log.d(TAG, "Ran out of services to allocate.");
+                Log.w(TAG, "Ran out of services to allocate.");
                 return null;
             }
             int slot = mFreeConnectionIndices.remove(0);
@@ -448,7 +450,7 @@ public abstract class ChildConnectionAllocator {
 
         private ChildProcessConnection allocate(Context context, Bundle serviceBundle) {
             if (mAllocatedConnections.size() >= mMaxAllocated) {
-                Log.d(TAG, "Ran out of UIDs to allocate.");
+                Log.w(TAG, "Ran out of UIDs to allocate.");
                 return null;
             }
             ComponentName serviceName = new ComponentName(mPackageName, mServiceClassName);

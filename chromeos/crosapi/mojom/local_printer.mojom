@@ -1,0 +1,342 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "printing/backend/mojom/print_backend.mojom";
+import "printing/mojom/print.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+
+// This structure holds basic information about a printer.
+// It corresponds to the LocalDestinationInfo object in
+// chrome/browser/resources/print_preview/data/local_parsers.js.
+[Stable]
+struct LocalDestinationInfo {
+  // Printer id.
+  string id@0;
+  // Printer display name.
+  string name@1;
+  // Printer description.
+  string description@2;
+  // Whether or not the printer is configured through a policy.
+  // Corresponds to the cupsEnterprisePrinter field of the js
+  // LocalDestinationInfo object.
+  bool configured_via_policy@3;
+  // The GURL class cannot be used as it does not support the ipp/ipps scheme.
+  [MinVersion=3] string? uri@4;
+};
+
+// A container for the results of a printer status query. A printer status
+// query can return multiple errors so PrinterStatus contains multiple
+// StatusReasons. This struct corresponds to the PrinterStatus object in
+// chrome/browser/resources/print_preview/data/printer_status_cros.js.
+[Stable]
+struct PrinterStatus {
+  // Printer id.
+  string printer_id@0;
+  // Timestamp is set when the Status object is created.
+  mojo_base.mojom.Time timestamp@1;
+  // Status reasons lists warnings and errors encountered by the
+  // printer such as low on ink or out of paper.
+  array<StatusReason> status_reasons@2;
+};
+
+// StatusReason is a combination of a reason, which describes the state of a
+// printer, and a severity, which is the level of seriousness of that state.
+// The Reason and Severity enum types are also used by the CupsPrinterStatus
+// object in chromeos/printing/cups_printer_status.h.
+[Stable]
+struct StatusReason {
+  // Reason describes the state of the printer.
+  // It is used by the CupsPrinterStatus class
+  // (chromeos/printing/cups_printer_status.h).
+  Reason reason@0;
+  // Severity is the level of seriousness of a printer state.
+  // It is also used by the CupsPrinterStatus class.
+  Severity severity@1;
+  // See chrome/browser/chromeos/printing/cups_printer_status_creator.cc
+  // for information about the mapping (many to one) of
+  // printing::PrinterStatus::PrinterReason::Reason (UMA histogram) values
+  // which correspond to IPP printer-state-reasons (rfc2911#section-4.4.12)
+  // to the Reason enum below. kNoError is a reserved value that is unused
+  // by the PrinterStatus object.
+  [Stable, Extensible]
+  enum Reason {
+    [Default] kUnknownReason,
+    kDeviceError,
+    kDoorOpen,
+    kLowOnInk,
+    kLowOnPaper,
+    kNoError, // reserved
+    kOutOfInk,
+    kOutOfPaper,
+    kOutputAreaAlmostFull,
+    kOutputFull,
+    kPaperJam,
+    kPaused,
+    kPrinterQueueFull,
+    kPrinterUnreachable,
+    kStopped,
+    kTrayMissing,
+  };
+  [Stable, Extensible]
+  enum Severity {
+    [Default] kUnknownSeverity,
+    kReport,
+    kWarning,
+    kError,
+  };
+};
+
+// This structure is a subset of the PrintJobInfo message in
+// chrome/browser/chromeos/printing/history/print_job_info.proto.
+[Stable]
+struct PrintJob {
+  // Printer id.
+  string device_name@0;
+  // The title of the document which was printed.
+  string title@1;
+  // Print job ID (used to check job status in CUPS).
+  uint32 job_id@2;
+  // The number of pages in the document.
+  uint32 page_count@3;
+  // Source showing which component initiated the print job.
+  Source source@4;
+  // ID of source. Should be empty if source is PRINT_PREVIEW or ARC.
+  string source_id@5;
+  // Converted to a print_job_info.proto ColorMode enum via
+  // printing::IsColorModelSelected().
+  printing.mojom.ColorModel color_mode@6;
+  // The requested duplex mode.
+  DuplexMode duplex_mode@7;
+  // Size in microns of the media used for printing.
+  gfx.mojom.Size media_size@8;
+  // Vendor-provided ID, e.g. "iso_a3_297x420mm" or "na_index-3x5_3x5in".
+  // Possible values are values of "media" IPP attribute and can be found on
+  // https://www.iana.org/assignments/ipp-registrations/ipp-registrations.xhtml.
+  string media_vendor_id@9;
+  // The requested number of copies.
+  uint32 copies@10;
+  // A subset of DuplexMode in printing/mojom/print.mojom.
+  // kUnknownDuplexMode has been removed to match the proto version
+  // in chrome/browser/chromeos/printing/history/print_job_info.proto.
+  [Stable, Extensible]
+  enum DuplexMode {
+    [Default] kSimplex,
+    kLongEdge,
+    kShortEdge,
+  };
+  // Used in chrome/browser/printing/print_job.h.
+  // TODO(b/184986771): Rename to kUnknown, kPrintPreview, etc.
+  [Stable, Extensible]
+  enum Source {
+    [Default] UNKNOWN = -1,
+    PRINT_PREVIEW,
+    ARC,
+    EXTENSION,
+    PRINT_PREVIEW_INCOGNITO,
+  };
+};
+
+// This structure corresponds to the chromeos::PrintServersConfig struct
+// in chrome/browser/chromeos/printing/print_servers_manager.h.
+[Stable]
+struct PrintServersConfig {
+  ServerPrintersFetchingMode fetching_mode@0;
+  array<PrintServer> print_servers@1;
+  // Used in chrome/browser/chromeos/printing/print_servers_policy_provider.h.
+  [Stable, Extensible]
+  enum ServerPrintersFetchingMode {
+    // Use the first 16 print servers.
+    [Default] kStandard,
+    // Use print servers selected via ChoosePrintServers().
+    kSingleServerOnly,
+  };
+};
+
+[Stable]
+struct PrintServer {
+  string id@0;
+  url.mojom.Url url@1;
+  string name@2;
+};
+
+[Stable]
+struct CapabilitiesResponse {
+  // Basic information about the printer.
+  LocalDestinationInfo basic_info@0;
+  // Whether or not the protocol is secure (e.g. ipps).
+  bool has_secure_protocol@1;
+  // Printer capabilities and defaults corresponding to the
+  // PrinterSemanticCapsAndDefaults class in printing/backend/print_backend.h.
+  printing.mojom.PrinterSemanticCapsAndDefaults? capabilities@2;
+  // The fields below are no longer used.
+  // Bitmask of allowed color modes corresponding to the ColorModeRestriction
+  // enum in printing/backend/printing_restrictions.h.
+  uint32 allowed_color_modes_deprecated@3;
+  // Bitmask of allowed duplex modes.
+  uint32 allowed_duplex_modes_deprecated@4;
+  uint32 allowed_pin_modes_deprecated_version_0@5;
+  [MinVersion=1] printing.mojom.PinModeRestriction allowed_pin_modes_deprecated_version_1@9;
+  printing.mojom.ColorModeRestriction default_color_mode_deprecated@6;
+  printing.mojom.DuplexModeRestriction default_duplex_mode_deprecated@7;
+  printing.mojom.PinModeRestriction default_pin_mode_deprecated@8;
+};
+
+// Global print policies that are not printer specific.
+[Stable]
+struct Policies {
+  // The allowed value for the 'Headers and footers' checkbox, in Print Preview.
+  OptionalBool print_header_footer_allowed@0;
+  // The default value for the 'Headers and footers' checkbox, in Print Preview.
+  OptionalBool print_header_footer_default@1;
+  // A pref holding the allowed background graphics printing modes.
+  BackgroundGraphicsModeRestriction allowed_background_graphics_modes@2;
+  // A pref holding the default background graphics mode.
+  BackgroundGraphicsModeRestriction background_graphics_default@3;
+  // A pref holding the default paper size.
+  gfx.mojom.Size? paper_size_default@4;
+  // Indicates how many sheets is allowed to use for a single print job.
+  uint32 max_sheets_allowed@5;
+  bool max_sheets_allowed_has_value@6;
+  // Bitmask of allowed color modes corresponding to the ColorModeRestriction
+  // enum in printing/backend/printing_restrictions.h.
+  [MinVersion=1] uint32 allowed_color_modes@7;
+  // Bitmask of allowed duplex modes.
+  [MinVersion=1] uint32 allowed_duplex_modes@8;
+  [MinVersion=1] printing.mojom.PinModeRestriction allowed_pin_modes@9;
+  [MinVersion=1] printing.mojom.ColorModeRestriction default_color_mode@10;
+  [MinVersion=1] printing.mojom.DuplexModeRestriction default_duplex_mode@11;
+  [MinVersion=1] printing.mojom.PinModeRestriction default_pin_mode@12;
+  [MinVersion=2] OptionalBool default_print_pdf_as_image@13;
+  // Allowed background graphics modes.
+  // This is used in pref file and should never change.
+  // Corresponds to enum class BackgroundGraphicsModeRestriction in
+  // printing/backend/printing_restrictions.h.
+  [Stable, Extensible]
+  enum BackgroundGraphicsModeRestriction {
+    [Default] kUnset = 0,
+    kEnabled = 1,
+    kDisabled = 2,
+  };
+  [Stable]
+  enum OptionalBool {
+    kUnset,
+    kFalse,
+    kTrue,
+  };
+};
+
+// This interface is used to notify Lacros about print server events.
+[Stable, Uuid="39885b28-cbc6-4878-834f-b0902d8e6fbf"]
+interface PrintServerObserver {
+  // Runs when the print server configuration is updated, e.g.
+  // a new print server is added or discovered.
+  OnPrintServersChanged@0(PrintServersConfig config);
+
+  // Runs when printers have been fetched from a print server.
+  // Lacros calls LocalPrinter::GetPrinters to update the printer list
+  // each time this notification is received.
+  OnServerPrintersChanged@1();
+};
+
+// Corresponds to functions in CupsPrintJobManager::Observer
+// (chrome/browser/chromeos/printing/cups_print_job_manager.h).
+[Stable, Extensible]
+enum PrintJobStatus {
+  [Default] kUnknown, // reserved
+  kCreated,
+  kStarted,
+  kUpdated,
+  kSuspended,
+  kResumed,
+  kDone,
+  kError,
+  kCancelled,
+};
+
+// This interface is used to notify Lacros about print job events.
+[Stable, Uuid="a372ba50-7409-4c16-86b9-47a1725947d0"]
+interface PrintJobObserver {
+  // Runs when the status of a print job changes.
+  OnPrintJobUpdate@0(string printer_id, uint32 job_id, PrintJobStatus status);
+};
+
+// Used to specify which source(s) to observe print jobs from.
+[Stable, Extensible]
+enum PrintJobSource {
+ [Default] kAny, // reserved
+ kExtension,
+};
+
+// This interface is used to query information about local printers
+// associated with the current Ash profile that can be used for
+// printing from Lacros.
+[Stable, Uuid="81aea7f5-a52b-4f88-8037-951f3c174f1e"]
+interface LocalPrinter {
+  // Gets a list of printers. An empty array is returned on error.
+  GetPrinters@0() => (array<LocalDestinationInfo> printers);
+
+  // Gets capabilities for a printer as a CapabilitiesResponse object.
+  // See chrome/browser/resources/print_preview/native_layer.js for a
+  // detailed description of the CapabilitiesResponse object as well as
+  // chrome/browser/resources/print_preview/data/ for descriptions of
+  // the various sub-objects (such as the Cloud Device Description object).
+  // The capabilities field (CapabilitiesResponse.capabilities) is null on
+  // error. If the printer does not exist, null is returned.
+  GetCapability@1(string printer_id) => (CapabilitiesResponse? capabilities);
+
+  // Gets the PPD license url for a printer.
+  // An empty url is returned if no such url exists.
+  GetEulaUrl@2(string printer_id) => (url.mojom.Url url);
+
+  // Gets the current status of a printer.
+  // Note: this method queries the printer directly instead of via CUPS.
+  // It may take several seconds for the printer to respond.
+  GetStatus@3(string printer_id) => (PrinterStatus status);
+
+  // Opens a system print settings window.
+  ShowSystemPrintSettings@4() => ();
+
+  // Adds a new print job to the ash print job manager.
+  CreatePrintJob@5(PrintJob job) => ();
+
+  // Cancels a print job. Forwards to CancelPrintJob() in
+  // ash/webui/print_management/mojom/printing_manager.mojom.
+  [MinVersion=3]
+  CancelPrintJob@12(string printer_id, uint32 job_id) => (bool attempted);
+
+  // Gets print server information.
+  GetPrintServersConfig@6() => (PrintServersConfig config);
+
+  // Selects print servers to query printers from.
+  // Invalid print server IDs are ignored.
+  // This function does nothing if the print server scaling feature
+  // is disabled or the fetching mode is not kSingleServerOnly.
+  ChoosePrintServers@7(array<string> print_server_ids) => ();
+
+  // Adds a print server observer.
+  AddPrintServerObserver@8(pending_remote<PrintServerObserver> observer) => ();
+
+  // Gets print policies.
+  GetPolicies@9() => (Policies policies);
+
+  // Checks if |kPrintingSendUsernameAndFilenameEnabled| is enabled for the
+  // current Ash profile. Returns the profile's corresponding username if pref
+  // enabled.
+  [MinVersion=1]
+  GetUsernamePerPolicy@10() => (string? username);
+
+  // Gets list of printers types included in the deny list policy.
+  [MinVersion=2]
+  GetPrinterTypeDenyList@11() => (array<printing.mojom.PrinterType> deny_list);
+
+  // Adds a print job observer for print jobs from source `source`.
+  [MinVersion=3]
+  AddPrintJobObserver@13(
+    pending_remote<PrintJobObserver> observer,
+    PrintJobSource source) => ();
+};

@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.storage.EncryptedStorageTest');
 goog.setTestOnly();
@@ -30,10 +22,12 @@ function getEncryptedWrapper(storage, key) {
   return JSON.parse(storage.mechanism.get(storage.hashKeyWithSecret_(key)));
 }
 
+/** @suppress {visibility} suppression added to enable type checking */
 function getEncryptedData(storage, key) {
   return getEncryptedWrapper(storage, key)[RichStorage.DATA_KEY];
 }
 
+/** @suppress {visibility} suppression added to enable type checking */
 function decryptWrapper(storage, key, wrapper) {
   return JSON.parse(storage.decryptValue_(
       wrapper[EncryptedStorage.SALT_KEY], key, wrapper[RichStorage.DATA_KEY]));
@@ -67,6 +61,7 @@ testSuite({
     collectableStorageTester.runBasicTests(mechanism, clock, storage);
   },
 
+  /** @suppress {visibility} suppression added to enable type checking */
   testEncryption() {
     const mechanism = new FakeMechanism();
     const clock = new MockClock(true);
@@ -106,6 +101,7 @@ testSuite({
     });
 
     // If the value is overwritten, it can't be decrypted.
+    /** @suppress {visibility} suppression added to enable type checking */
     encryptedWrapper[RichStorage.DATA_KEY] = 'kaboom';
     mechanism.set(
         storage.hashKeyWithSecret_('first'),

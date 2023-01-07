@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,8 +31,15 @@ static NativeLibraryObjCStatus GetObjCStatusForImage(
   //
   // In 64-bit images, ObjC can be recognized in __DATA,__objc_imageinfo.
   const section_64* section = getsectbynamefromheader_64(
+      reinterpret_cast<const struct mach_header_64*>(info.dli_fbase), SEG_DATA,
+      "__objc_imageinfo");
+  if (section)
+    return OBJC_PRESENT;
+  // ....except when "SharedRegionEncodingV2" is on, it's in
+  // __DATA_CONST,__objc_image_info (see https://crbug.com/1220459#c16)
+  section = getsectbynamefromheader_64(
       reinterpret_cast<const struct mach_header_64*>(info.dli_fbase),
-      SEG_DATA, "__objc_imageinfo");
+      "__DATA_CONST", "__objc_imageinfo");
   return section ? OBJC_PRESENT : OBJC_NOT_PRESENT;
 }
 
@@ -58,10 +65,8 @@ NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
     return native_lib;
   }
   ScopedCFTypeRef<CFURLRef> url(CFURLCreateFromFileSystemRepresentation(
-      kCFAllocatorDefault,
-      (const UInt8*)library_path.value().c_str(),
-      library_path.value().length(),
-      true));
+      kCFAllocatorDefault, (const UInt8*)library_path.value().c_str(),
+      checked_cast<CFIndex>(library_path.value().length()), true));
   if (!url)
     return nullptr;
   CFBundleRef bundle = CFBundleCreate(kCFAllocatorDefault, url.get());

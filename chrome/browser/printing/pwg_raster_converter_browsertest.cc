@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ namespace {
 
 // Note that for some reason the generated PWG varies depending on the
 // platform (32 or 64 bits) on Linux.
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ARCH_CPU_32_BITS)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ARCH_CPU_32_BITS)
 constexpr char kPdfToPwgRasterColorTestFile[] = "pdf_to_pwg_raster_test_32.pwg";
 constexpr char kPdfToPwgRasterMonoTestFile[] =
     "pdf_to_pwg_raster_mono_test_32.pwg";

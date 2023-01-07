@@ -1,5 +1,0 @@
-CONSOLE WARNING: line 9: The disableRemotePlayback attribute should be used in order to disable the default Cast integration instead of using -internal-media-controls-overlay-cast-button selector. See https://www.chromestatus.com/feature/5714245488476160 for more details.
-This is a testharness.js-based test.
-PASS Test that -internal-media-controls-* deprecated selectors throw a warning
-Harness: the test ran to completion.
-

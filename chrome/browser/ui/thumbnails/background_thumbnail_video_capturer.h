@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/thumbnails/background_thumbnail_capturer.h"
@@ -40,15 +41,17 @@ class BackgroundThumbnailVideoCapturer
  private:
   // viz::mojom::FrameSinkVideoConsumer:
   void OnFrameCaptured(
-      base::ReadOnlySharedMemoryRegion data,
+      ::media::mojom::VideoBufferHandlePtr data,
       ::media::mojom::VideoFrameInfoPtr info,
       const gfx::Rect& content_rect,
       mojo::PendingRemote<::viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
           callbacks) override;
+  void OnNewCropVersion(uint32_t crop_version) override;
+  void OnFrameWithEmptyRegionCapture() override;
   void OnStopped() override;
   void OnLog(const std::string& /*message*/) override;
 
-  content::WebContents* const contents_;
+  const raw_ptr<content::WebContents> contents_;
   GotFrameCallback got_frame_callback_;
 
   ThumbnailCaptureInfo capture_info_;

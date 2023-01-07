@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<title>WebBundle subresource loading for static elements with a base element</title>
+<link
+  rel="help"
+  href="https://github.com/WICG/webpackage/blob/main/explainers/subresource-loading.md"
+/>
+<body>
+  <script type="webbundle">
+    {
+      "source": "webbundle.php",
+      "resources": ["uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720",
+                    "uuid-in-package:429fcc4e-0696-4bad-b099-ee9175f023ae"]
+    }
+  </script>
+  <script src="uuid-in-package:020111b3-437a-4c5c-ae07-adb6bbffb720"></script>
+
+</body>

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,29 +17,28 @@ namespace WTF {
 // a callback that is run or destroyed on a different thread.
 //
 // Unlike `base::RepeatingCallback`, a repeatable cross-thread function is *not*
-// copyable. This is intentional: a number of objects in Blink (notably
-// `String`) are thread-hostile: allowing a cross-thread function to be copied
+// copyable. This is intentional: a number of objects in Blink are
+// thread-hostile: allowing a cross-thread function to be copied
 // means it would be easy to end up in situations where multiple threads might
-// unsafely reference the same `String` object.
+// unsafely reference the same object.
 //
 // TODO(crbug.com/963574): Deprecate `CrossThreadBindRepeating()`.
 //
 // Example:
 // // Given the prototype:
-// // void MyFunction(const String&, int);
-// String str = "Hello world!";
+// // void MyFunction(const ThreadUnsafeObject&, int);
+// ThreadUnsafeObject obj;
 // CrossThreadFunction<void(int)> f =
-//     CrossThreadBindOnce(&MyFunction, str);
-// std::move(f).Run(42);  // Calls MyFunction(<deep copy of `str`>, 42);
+//     CrossThreadBindOnce(&MyFunction, obj);
+// std::move(f).Run(42);  // Calls MyFunction(<deep copy of `obj`>, 42);
 //
 // Arguments bound to a `CrossThreadFunction` are copied with
-// `CrossThreadCopier`. In the case of `String`, the argument is a deep copy of
-// `str` that is created by `String::IsolatedCopy()`.
+// `CrossThreadCopier`.
 //
 // Important!
-// `CrossThreadBindOnce(str)` is similar to `BindOnce(str.IsolatedCopy())`, but
-// historically, the latter was unsafe since it was possible to end up with
-// situations where a thread-hostile `String` would be referenced on multiple
+// `CrossThreadBindOnce(obj)` is similar to `BindOnce(<deep copy of `obj`>)`,
+// but historically, the latter was unsafe since it was possible to end up with
+// situations where a thread-hostile object would be referenced on multiple
 // threads, leading to crashes. See https://crbug.com/390851 for more details.
 //
 // In contrast, `CrossThreadBindOnce()` and `CrossThreadBindRepeating()` are

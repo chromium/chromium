@@ -1,0 +1,10 @@
+Tests that permission policy for fenced frame can be retrieved correctly
+{
+    allowed : false
+    feature : geolocation
+    locator : {
+        blockReason : InFencedFrameTree
+        frameId : <string>
+    }
+}
+

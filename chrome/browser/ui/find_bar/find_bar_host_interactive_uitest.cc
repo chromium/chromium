@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
@@ -37,7 +38,7 @@ class FindInPageInteractiveTest : public InProcessBrowserTest {
                       bool forward,
                       bool case_sensitive,
                       int* ordinal) {
-    std::u16string search_str16(ASCIIToUTF16(search_str));
+    std::u16string search_str16(base::ASCIIToUTF16(search_str));
     Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
     browser->GetFindBarController()->find_bar()->SetFindTextAndSelectedRange(
         search_str16, gfx::Range());
@@ -48,11 +49,8 @@ class FindInPageInteractiveTest : public InProcessBrowserTest {
 
 }  // namespace
 
-// Specifying a prototype so that we can add the WARN_UNUSED_RESULT attribute.
-bool FocusedOnPage(WebContents* web_contents, std::string* result)
-    WARN_UNUSED_RESULT;
-
-bool FocusedOnPage(WebContents* web_contents, std::string* result) {
+[[nodiscard]] bool FocusedOnPage(WebContents* web_contents,
+                                 std::string* result) {
   return content::ExecuteScriptAndExtractString(
       web_contents,
       "window.domAutomationController.send(getFocusedElement());",
@@ -71,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageInteractiveTest, FindInPageEndState) {
 
   // First we navigate to our special focus tracking page.
   GURL url = embedded_test_server()->GetURL(kEndState);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

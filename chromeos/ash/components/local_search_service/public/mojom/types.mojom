@@ -1,0 +1,73 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.local_search_service.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+
+struct Content {
+  // An identifier for the content in Data.
+  string id;
+  mojo_base.mojom.String16 content;
+  double weight = 1.0;
+};
+
+struct Data {
+  // Identifier of the data item, should be unique across the registry. Clients
+  // will decide what ids to use, they could be paths, urls or any opaque
+  // string identifiers.
+  // Ideally IDs should persist across sessions, but this is not strictly
+  // required now because data is not persisted across sessions.
+  string id;
+
+  // Data item will be matched between its search tags and query term.
+  array<Content> contents;
+
+  // If unset, we will use system configured locale.
+  string locale;
+};
+
+struct SearchParams {
+  double relevance_threshold = 0.32;
+  double prefix_threshold = 0.6;
+  double fuzzy_threshold = 0.6;
+};
+
+struct Position {
+  string content_id;
+  uint32 start;
+  uint32 length;
+};
+
+// Result is one item that matches a given query. It contains the id of the
+// item and its matching score.
+struct Result {
+  // Id of the data.
+  string id;
+  // Relevance score.
+  // Currently only linear map is implemented with fuzzy matching and score
+  // will always be in [0,1]. In the future, when an inverted index is
+  // implemented, the score will not be in this range any more. Client will be
+  // able to select a search backend to use (linear map vs inverted index) and
+  // hence client will be able to expect the range of the scores.
+  double score;
+   // Position of the matching text.
+   // We currently use linear map, which will return one matching content,
+   // hence the vector has only one element. When we have inverted index, we
+   // will have multiple matching contents.
+  array<Position> positions;
+};
+
+// Status of the search attempt.
+// More will be added later.
+enum ResponseStatus {
+  kUnknownError,
+  // Search operation is successful. But there could be no item and result list
+  // is empty.
+  kSuccess,
+  // Query is empty.
+  kEmptyQuery,
+  // Index is empty (i.e. no data).
+  kEmptyIndex
+};

@@ -1,0 +1,349 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Renderer4 histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Renderer4.Browser.RasterTaskSchedulingDelayNoAtRasterDecodes"
+    units="microseconds" expires_after="2022-09-30">
+  <owner>andrescj@chromium.org</owner>
+  <owner>chromeos-gfx@google.com</owner>
+  <summary>
+    The wall time elapsed between creating a raster task in the client and being
+    ready to issue raster work to the driver in the GPU process. This includes
+    time decoding and uploading images. Note that this does not count raster
+    tasks that depend on at-raster image decodes. Since this metric is only
+    reported for Chrome OS clients, it has data only from high-resolution
+    clocks.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.Browser.RasterTaskTotalDuration"
+    units="microseconds" expires_after="2023-03-05">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>chrome-gpu@google.com</owner>
+  <summary>
+    Time spent completing all work for a compositor rasterization task. This
+    includes the time in the renderer process for sending GL or paint commands
+    to the GPU process and the time for flushing these commands to the driver.
+
+    WARNING: This metric is only reported for clients with high resolution
+    clocks, which means this will be biased to a portion of the population on
+    windows.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.CompositorTouchScrollUpdateThread"
+    enum="ScrollThread" expires_after="M97">
+  <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Whether the scroll from touch is executed on main thread. Recorded once for
+    each scroll. Contains incomplete data from M85 to M89 inclusively.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.CompositorWheelScrollUpdateThread"
+    enum="ScrollThread" expires_after="M97">
+  <owner>flackr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Whether the scroll from mouse wheel is executed on main thread. Recorded
+    once for each scroll. Contains incomplete data from M85 to M89 inclusively.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.GpuImageDecodeState" enum="GpuImageUsageState"
+    expires_after="2023-03-05">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
+  <summary>
+    Gpu image decode usage statistics. Images are decoded and locked prior to
+    upload; this indicates how that decode is used during tile management.
+    Warning: this histogram was expired from 2021-08-09 to 2022-05-20; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.GpuImageDecodeState.CachePeakUsagePercent"
+    units="units" expires_after="2023-03-05">
+  <owner>sashamcintosh@chromium.org</owner>
+  <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
+  <summary>
+    The current number of bytes locked by the GpuImageDecodeCache compared to
+    the maximum allowed number of bytes to lock. This value is recorded every
+    time the tile manager assigns GPU memory to tiles. Warning: this histogram
+    was expired from 2021-08-09 to 2022-05-20; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.GpuImageDecodeState.FirstLockWasted"
+    enum="BooleanWasted" expires_after="2023-03-05">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
+  <summary>
+    Indication whether the first lock of an image decode was wasted (image was
+    not used). Images are decoded and locked prior to raster; this indicates
+    whether the decode was used or not during the first lock. Warning: this
+    histogram was expired from 2021-06-06 to 2022-05-20; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.GpuImageUploadState" enum="GpuImageUsageState"
+    expires_after="2023-03-05">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
+  <summary>
+    Gpu image upload usage statistics. Images are uploaded and locked prior to
+    use; this indicates how that upload is used during tile management. Warning:
+    this histogram was expired from 2021-06-06 to 2022-05-20; data may be
+    missing.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.GpuImageUploadState.FirstLockWasted"
+    enum="BooleanWasted" expires_after="2022-12-31">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
+  <summary>
+    Indication whether the first lock of an image upload was wasted (image was
+    not used). Images are uploaded and locked prior to raster; this indicates
+    whether the upload was used or not during the first lock. Warning: this
+    histogram was expired from M77 to 2022-05-20; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.GpuRasterizationEnabled" enum="BooleanEnabled"
+    expires_after="2023-02-26">
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Whether gpu rasterization is enabled (checked once after the page is painted
+    for the first time).
+  </summary>
+</histogram>
+
+<histogram base="true" name="Renderer4.ImageDecodeTaskDurationUs"
+    units="microseconds" expires_after="2023-02-19">
+<!-- Name completed by histogram_suffixes name="DecodedImageType" -->
+
+<!-- Name completed by histogram_suffixes name="OutOfRaster" -->
+
+<!-- Name completed by histogram_suffixes name="RasterTaskType" -->
+
+  <owner>cblume@chromium.org</owner>
+  <owner>vmpstr@chromium.org</owner>
+  <owner>sashamcintosh@chromium.org</owner>
+  <summary>
+    This metric records the duration of an image decode for the raster path in
+    the compositor. It is recorded every time we decode an image. It is suffixed
+    by the type of rasterization we're in (either Gpu or Software). The
+    rasterization suffix is optionally prefixed by the image type (WebP, Jpeg,
+    etc.) or OutOfRaster.
+
+    Warning: Before version M78 this metric may include reports from clients
+    with low-resolution clocks (i.e. on Windows, ref.
+    |TimeTicks::IsHighResolution()|). Such reports will cause this metric to
+    have an abnormal distribution.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Renderer4.ImageUploadTaskDurationUs"
+    units="microseconds" expires_after="2021-08-09">
+<!-- Name completed by histogram_suffixes name="DecodedImageType" -->
+
+  <owner>sashamcintosh@chromium.org</owner>
+  <owner>chromeos-gfx@google.com</owner>
+  <summary>
+    This metric records the duration of an image upload for the raster path in
+    the compositor. It is recorded every time we upload an image. The metric is
+    optionally suffixed by the image type (WebP, Jpeg, etc.) or OutOfRaster.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.InvalidationRegionApproximateRectCount"
+    units="rects" expires_after="M85">
+  <owner>wiltzius@chromium.org</owner>
+  <summary>
+    Number of rects inside of a PictureLayer's invalidation region per commit.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.MainThreadGestureScrollReason2"
+    enum="MainThreadScrollingReason2" expires_after="2023-03-26">
+  <owner>flackr@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Ideally we'd always scroll on the impl thread, but there are a variety of
+    situations where we need to scroll on main. We should try to drive these
+    down. For every gesture, we record whether the scroll occurred on the impl
+    thread (&quot;Not scrolling on main (no reason)&quot;), or the main thread
+    (&quot;Scrolling on main (any reason)&quot;) along with the reasons. There
+    can be multiple main-thread reasons for each scroll, so the percentage of a
+    reason shown in the UMA page is not the percentage of gesture scrolls with
+    the reason in all gesture scrolls. The actual percentage of gesture scrolls
+    with a reason would be count(the reason) / (count(&quot;Not scrolling on
+    main (no reason)&quot; + count(&quot;Scrolling on main (any reason)&quot;)).
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.MainThreadWheelScrollReason2"
+    enum="MainThreadScrollingReason2" expires_after="2022-12-11">
+  <owner>flackr@chromium.org</owner>
+  <owner>pdr@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Ideally we'd always scroll on the impl thread, but there are a variety of
+    situations where we need to scroll on main. We should try to drive these
+    down. For every wheel tick, we record whether the scroll occurred on the
+    impl thread (&quot;Not scrolling on main (no reason)&quot;), or the main
+    thread (&quot;Scrolling on main (any reason)&quot;) along with the reasons.
+    There can be multiple main-thread reasons for each wheel tick, so the
+    percentage of a reason shown in the UMA page is not the percentage of wheel
+    scrolls with the reason in all wheel scrolls. The actual percentage of wheel
+    scrolls with a reason would be count(the reason) / (count(&quot;Not
+    scrolling on main (no reason)&quot; + count(&quot;Scrolling on main (any
+    reason)&quot;)).
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.MomentumScrollJankPercentage" units="%"
+    expires_after="M85">
+  <owner>ericrk@chromium.org</owner>
+  <summary>
+    The percentage of input events which are janks (not processed in the
+    expected frame) during each momentum scroll gesture. Computed by tracking
+    the number of extra coalesced momentum scroll events during a gesture. Extra
+    coalesced event indicates that the events were not handled in the target
+    frame. Logged once after a scroll with momentum events completes.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.pixelCountCulled_Draw" units="NormalizedPixels"
+    expires_after="M85">
+  <owner>wiltzius@chromium.org</owner>
+  <summary>
+    Number of pixels that culling prevented being drawn to the screen, recorded
+    as 10 times the percentage of the viewport that these pixels cover. This is
+    collected once per frame while it is being drawn to the screen in the
+    compositor.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.Renderer.RasterTaskSchedulingDelayNoAtRasterDecodes"
+    units="microseconds" expires_after="2022-09-30">
+  <owner>andrescj@chromium.org</owner>
+  <owner>chromeos-gfx@google.com</owner>
+  <summary>
+    The wall time elapsed between creating a raster task in the client and being
+    ready to issue raster work to the driver in the GPU process. This includes
+    time decoding and uploading images. Note that this does not count raster
+    tasks that depend on at-raster image decodes. Since this metric is only
+    reported for Chrome OS clients, it has data only from high-resolution
+    clocks.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.Renderer.RasterTaskTotalDuration"
+    units="microseconds" expires_after="2023-02-19">
+  <owner>khushalsagar@chromium.org</owner>
+  <owner>chrome-gpu@google.com</owner>
+  <summary>
+    Time spent completing all work for a compositor rasterization task. This
+    includes the time in the renderer process for sending GL or paint commands
+    to the GPU process and the time for flushing these commands to the driver.
+
+    WARNING: This metric is only reported for clients with high resolution
+    clocks, which means this will be biased to a portion of the population on
+    windows.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.renderPassCount" units="units" expires_after="M85">
+  <owner>enne@chromium.org</owner>
+  <owner>chrishtr@chromium.org</owner>
+  <summary>
+    The number of render passes (or render targets) in the renderer's frame. If
+    the value is more than one, then an intermediate rendering target must be
+    used during the rendering of the frame for each render pass greater than
+    one.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.ScrollingThread" enum="ScrollingThreadStatus"
+    expires_after="2023-02-26">
+<!-- Name completed by histogram_suffixes name="ScrollSourceDevice" -->
+
+  <owner>bokan@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    For each scroll gesture (i.e. at GestureScrollBegin), records whether the
+    scroll is: handled unblocked on the compositor thread, handled on the
+    compositor thread but blocked on main thread event listeners, or being
+    handled on the main thread. Broken down by scroll device.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.SoftwareImageDecodeState"
+    enum="SoftwareImageDecodeState" expires_after="2022-12-31">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
+  <summary>
+    Software image decode usage statistics. Images are decoded and locked prior
+    to raster; this indicates how that decode is used during tile management.
+    Warning: this histogram was expired from 2021-06-08 to 2022-05-20; data may
+    be missing.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.SoftwareImageDecodeState.FirstLockWasted"
+    enum="BooleanWasted" expires_after="2022-12-31">
+  <owner>vmpstr@chromium.org</owner>
+  <owner>thiabaud@google.com</owner>
+  <summary>
+    Indication whether the first lock of an image decode was wasted (image was
+    not used). Images are decoded and locked prior to raster; this indicates
+    whether the decode was used or not during the first lock. Warning: this
+    histogram was expired from 2021-06-08 to 2022-05-20; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="Renderer4.TextureCopyLatency" units="microseconds"
+    expires_after="M85">
+  <owner>reveman@chromium.org</owner>
+  <summary>
+    Time between the issue of a texture copy operation and detecting that it has
+    completed as measured by the GPU process.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

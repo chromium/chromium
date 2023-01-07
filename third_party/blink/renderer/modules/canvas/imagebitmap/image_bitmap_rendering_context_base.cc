@@ -1,12 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_rendering_context_base.h"
 
-#include "third_party/blink/renderer/bindings/modules/v8/html_canvas_element_or_offscreen_canvas.h"
-#include "third_party/blink/renderer/bindings/modules/v8/rendering_context.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/image_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -20,33 +21,43 @@ namespace blink {
 ImageBitmapRenderingContextBase::ImageBitmapRenderingContextBase(
     CanvasRenderingContextHost* host,
     const CanvasContextCreationAttributesCore& attrs)
-    : CanvasRenderingContext(host, attrs),
+    : CanvasRenderingContext(host, attrs, CanvasRenderingAPI::kBitmaprenderer),
       image_layer_bridge_(MakeGarbageCollected<ImageLayerBridge>(
           attrs.alpha ? kNonOpaque : kOpaque)) {}
 
 ImageBitmapRenderingContextBase::~ImageBitmapRenderingContextBase() = default;
 
-void ImageBitmapRenderingContextBase::getHTMLOrOffscreenCanvas(
-    HTMLCanvasElementOrOffscreenCanvas& result) const {
+V8UnionHTMLCanvasElementOrOffscreenCanvas*
+ImageBitmapRenderingContextBase::getHTMLOrOffscreenCanvas() const {
   if (Host()->IsOffscreenCanvas()) {
-    result.SetOffscreenCanvas(static_cast<OffscreenCanvas*>(Host()));
-  } else {
-    result.SetHTMLCanvasElement(static_cast<HTMLCanvasElement*>(Host()));
+    return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
+        static_cast<OffscreenCanvas*>(Host()));
   }
+  return MakeGarbageCollected<V8UnionHTMLCanvasElementOrOffscreenCanvas>(
+      static_cast<HTMLCanvasElement*>(Host()));
 }
 
 void ImageBitmapRenderingContextBase::Stop() {
   image_layer_bridge_->Dispose();
 }
 
+void ImageBitmapRenderingContextBase::Dispose() {
+  Stop();
+  CanvasRenderingContext::Dispose();
+}
+
 void ImageBitmapRenderingContextBase::ResetInternalBitmapToBlackTransparent(
     int width,
     int height) {
   SkBitmap black_bitmap;
-  black_bitmap.allocN32Pixels(width, height);
-  black_bitmap.eraseARGB(0, 0, 0, 0);
-  image_layer_bridge_->SetImage(UnacceleratedStaticBitmapImage::Create(
-      SkImage::MakeFromBitmap(black_bitmap)));
+  if (black_bitmap.tryAllocN32Pixels(width, height)) {
+    black_bitmap.eraseARGB(0, 0, 0, 0);
+    auto image = SkImage::MakeFromBitmap(black_bitmap);
+    if (image) {
+      image_layer_bridge_->SetImage(
+          UnacceleratedStaticBitmapImage::Create(image));
+    }
+  }
 }
 
 void ImageBitmapRenderingContextBase::SetImage(ImageBitmap* image_bitmap) {
@@ -59,7 +70,7 @@ void ImageBitmapRenderingContextBase::SetImage(ImageBitmap* image_bitmap) {
   else
     ResetInternalBitmapToBlackTransparent(Host()->width(), Host()->height());
 
-  DidDraw();
+  DidDraw(CanvasPerformanceMonitor::DrawType::kOther);
 
   if (image_bitmap)
     image_bitmap->close();
@@ -81,8 +92,8 @@ ImageBitmapRenderingContextBase::GetImageAndResetInternal() {
   return copy_image;
 }
 
-void ImageBitmapRenderingContextBase::SetUV(const FloatPoint& left_top,
-                                            const FloatPoint& right_bottom) {
+void ImageBitmapRenderingContextBase::SetUV(const gfx::PointF& left_top,
+                                            const gfx::PointF& right_bottom) {
   image_layer_bridge_->SetUV(left_top, right_bottom);
 }
 
@@ -117,6 +128,9 @@ bool ImageBitmapRenderingContextBase::PushFrame() {
     return false;
 
   scoped_refptr<StaticBitmapImage> image = image_layer_bridge_->GetImage();
+  if (!image) {
+    return false;
+  }
   cc::PaintFlags paint_flags;
   paint_flags.setBlendMode(SkBlendMode::kSrc);
   Host()->ResourceProvider()->Canvas()->drawImage(
@@ -126,8 +140,8 @@ bool ImageBitmapRenderingContextBase::PushFrame() {
       Host()->ResourceProvider()->ProduceCanvasResource();
   Host()->PushFrame(
       std::move(resource),
-      SkIRect::MakeWH(image_layer_bridge_->GetImage()->Size().Width(),
-                      image_layer_bridge_->GetImage()->Size().Height()));
+      SkIRect::MakeWH(image_layer_bridge_->GetImage()->Size().width(),
+                      image_layer_bridge_->GetImage()->Size().height()));
   return true;
 }
 

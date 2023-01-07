@@ -1,0 +1,260 @@
+From df59645271533c13d899c77d5e80858b715612a5 Mon Sep 17 00:00:00 2001
+From: Olabode Anise <anise@chromium.org>
+Date: Thu, 1 Jul 2021 17:54:48 +0000
+Subject: [PATCH] removing usage of protobuf_full features and excel4
+ references
+
+---
+ third_party/maldoca/src/maldoca/base/endian.h                | 1 -
+ third_party/maldoca/src/maldoca/base/file.cc                 | 4 ++--
+ third_party/maldoca/src/maldoca/base/file.h                  | 2 +-
+ third_party/maldoca/src/maldoca/base/parse_text_proto.h      | 5 +++++
+ third_party/maldoca/src/maldoca/ole/ole_to_proto.cc          | 2 ++
+ third_party/maldoca/src/maldoca/ole/oss_utils.cc             | 4 ++++
+ third_party/maldoca/src/maldoca/ole/oss_utils.h              | 3 ++-
+ third_party/maldoca/src/maldoca/ole/proto/office.proto       | 3 +--
+ third_party/maldoca/src/maldoca/ole/proto/ole.proto          | 3 +--
+ .../src/maldoca/service/common/processing_pipeline.cc        | 3 ++-
+ .../tensorflow_protos/tensorflow/core/example/example.proto  | 1 +
+ .../tensorflow_protos/tensorflow/core/example/feature.proto  | 1 +
+ 12 files changed, 22 insertions(+), 10 deletions(-)
+
+diff --git a/third_party/maldoca/src/maldoca/base/endian.h b/third_party/maldoca/src/maldoca/base/endian.h
+index 70e4d10adcc0..ee4ff91b817d 100644
+--- a/third_party/maldoca/src/maldoca/base/endian.h
++++ b/third_party/maldoca/src/maldoca/base/endian.h
+@@ -11,7 +11,6 @@
+ // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+-
+ #ifndef MALDOCA_BASE_ENDIAN_H_
+ #define MALDOCA_BASE_ENDIAN_H_
+ 
+diff --git a/third_party/maldoca/src/maldoca/base/file.cc b/third_party/maldoca/src/maldoca/base/file.cc
+index 21d5568b7384..c52ede0e0da0 100644
+--- a/third_party/maldoca/src/maldoca/base/file.cc
++++ b/third_party/maldoca/src/maldoca/base/file.cc
+@@ -37,8 +37,8 @@
+ #include "absl/strings/strip.h"
+ #include "absl/time/clock.h"
+ #include "absl/time/time.h"
+-#include "google/protobuf/text_format.h"
+ #ifndef MALDOCA_CHROME
++#include "google/protobuf/text_format.h"
+ #include "maldoca/base/ret_check.h"
+ #include "maldoca/base/status_macros.h"
+ #include "re2/re2.h"
+@@ -287,7 +287,6 @@ std::string CreateTempFileAndCloseOrDie(absl::string_view directory,
+   CHECK(SetContents(file_name, contents).ok());
+   return file_name;
+ }
+-#endif  // MALDOCA_CHROME
+ 
+ absl::Status GetTextProto(absl::string_view filename, Message* proto) {
+   auto status_or = file::GetContents(filename);
+@@ -301,5 +300,6 @@ absl::Status GetTextProto(absl::string_view filename, Message* proto) {
+         absl::StrCat("Failed parse proto from file ", filename));
+   }
+ }
++#endif  // MALDOCA_CHROME
+ }  // namespace file
+ }  // namespace maldoca
+diff --git a/third_party/maldoca/src/maldoca/base/file.h b/third_party/maldoca/src/maldoca/base/file.h
+index 330bbe856bbe..b9ad9635d04b 100644
+--- a/third_party/maldoca/src/maldoca/base/file.h
++++ b/third_party/maldoca/src/maldoca/base/file.h
+@@ -28,9 +28,9 @@
+ #include "absl/strings/str_cat.h"
+ #include "absl/strings/str_join.h"
+ #include "absl/strings/string_view.h"
++#include "base/files/file_path.h"
+ #include "google/protobuf/message.h"
+ #include "maldoca/base/statusor.h"
+-#include "mini_chromium/base/files/file_path.h"
+ #if defined(_WIN32)
+ #include "maldoca/base/utf8/unicodetext.h"
+ #endif  // _WIN32
+diff --git a/third_party/maldoca/src/maldoca/base/parse_text_proto.h b/third_party/maldoca/src/maldoca/base/parse_text_proto.h
+index 71b4e4e3f730..f38a26bce8a2 100644
+--- a/third_party/maldoca/src/maldoca/base/parse_text_proto.h
++++ b/third_party/maldoca/src/maldoca/base/parse_text_proto.h
+@@ -17,11 +17,15 @@
+ 
+ #include <string>
+ 
++#ifndef MALDOCA_CHROME
+ #include "google/protobuf/text_format.h"
++#endif  // MALDOCA_CHROME
++
+ #include "maldoca/base/logging.h"
+ 
+ namespace maldoca {
+ 
++#ifndef MALDOCA_CHROME
+ template <typename T>
+ T ParseTextOrDie(const std::string& asciipb) {
+   T result;
+@@ -30,5 +34,6 @@ T ParseTextOrDie(const std::string& asciipb) {
+ }
+ 
+ }  // namespace maldoca
++#endif  // MALDOCA_CHROME
+ 
+ #endif  // MALDOCA_BASE_PARSE_TEXT_PROTO_H_
+diff --git a/third_party/maldoca/src/maldoca/ole/ole_to_proto.cc b/third_party/maldoca/src/maldoca/ole/ole_to_proto.cc
+index adf77700d3a3..f1961a93b4ed 100644
+--- a/third_party/maldoca/src/maldoca/ole/ole_to_proto.cc
++++ b/third_party/maldoca/src/maldoca/ole/ole_to_proto.cc
+@@ -429,8 +429,10 @@ StatusOr<office::ParserOutput> GetParserOutputProto(
+   auto *script_features = parser_output.mutable_script_features();
+   *script_features->add_scripts()->mutable_vba_code() =
+       std::move(*ole_file.mutable_vba_code());
++#ifndef MALDOCA_CHROME
+   *script_features->add_scripts()->mutable_excel4_macros() =
+       std::move(*ole_file.mutable_excel4_macros());
++#endif  // MALDOCA_CHROME
+ 
+   return parser_output;
+ }
+diff --git a/third_party/maldoca/src/maldoca/ole/oss_utils.cc b/third_party/maldoca/src/maldoca/ole/oss_utils.cc
+index faf7992bb707..c53ea7521e9d 100644
+--- a/third_party/maldoca/src/maldoca/ole/oss_utils.cc
++++ b/third_party/maldoca/src/maldoca/ole/oss_utils.cc
+@@ -24,7 +24,9 @@
+ #include "absl/flags/flag.h"
+ #include "absl/strings/str_cat.h"
+ #include "absl/strings/str_format.h"
++#ifndef MALDOCA_CHROME
+ #include "google/protobuf/text_format.h"
++#endif  // MALDOCA_CHROME
+ #include "libxml/SAX2.h"
+ #include "libxml/parserInternals.h"
+ 
+@@ -510,6 +512,7 @@ bool ReadFileToString(absl::string_view filename, std::string* content,
+   return true;
+ }
+ 
++#ifndef MALDOCA_CHROME
+ void StringErrorCollector::AddError(int line,
+                                     ::google::protobuf::io::ColumnNumber column,
+                                     const std::string& message) {
+@@ -545,5 +548,6 @@ bool ParseProtoFromText(std::string text,
+   return ParseProtoFromText(text, default_max_proto_recursion, message,
+                             nullptr);
+ }
++#endif  // MALDOCA_CHROME
+ }  // namespace utils
+ }  // namespace maldoca
+diff --git a/third_party/maldoca/src/maldoca/ole/oss_utils.h b/third_party/maldoca/src/maldoca/ole/oss_utils.h
+index 42bcca4dcb44..422903beaa4a 100644
+--- a/third_party/maldoca/src/maldoca/ole/oss_utils.h
++++ b/third_party/maldoca/src/maldoca/ole/oss_utils.h
+@@ -35,7 +35,6 @@
+ 
+ namespace maldoca {
+ namespace utils {
+-
+ // Custom libXML deleters so that we can wrap xml object or z_stream object
+ // pointers to std::unique_ptr.
+ struct XmlCharDeleter {
+@@ -136,6 +135,7 @@ int Log2Ceiling(uint32_t n);
+ bool ReadFileToString(absl::string_view filename, std::string* content,
+                       bool log_error);
+ 
++#ifndef MALDOCA_CHROME
+ // Simple collector just concat error into a string
+ class StringErrorCollector : public ::google::protobuf::io::ErrorCollector {
+  public:
+@@ -170,6 +170,7 @@ bool ParseProtoFromText(std::string text, int32_t max_recursion,
+                         ::google::protobuf::io::ErrorCollector* error);
+ // Use default max_recursion and no error collector.
+ bool ParseProtoFromText(std::string text, ::google::protobuf::Message* message);
++#endif  // MALDOCA_CHROME
+ }  // namespace utils
+ }  // namespace maldoca
+ 
+diff --git a/third_party/maldoca/src/maldoca/ole/proto/office.proto b/third_party/maldoca/src/maldoca/ole/proto/office.proto
+index 2e0b6f6f6f9a..37b6ff06c82c 100644
+--- a/third_party/maldoca/src/maldoca/ole/proto/office.proto
++++ b/third_party/maldoca/src/maldoca/ole/proto/office.proto
+@@ -20,7 +20,6 @@ package maldoca.office;
+ 
+ option optimize_for = LITE_RUNTIME;
+ 
+-import "maldoca/ole/proto/excel4_extraction.proto";
+ import "maldoca/ole/proto/ole.proto";
+ import "maldoca/ole/proto/ooxml.proto";
+ import "maldoca/ole/proto/vba_extraction.proto";
+@@ -95,7 +94,7 @@ message EmbeddedFileFeatures {
+ message Script {
+   optional string filename = 1;
+   optional maldoca.VBACodeChunks vba_code = 2;
+-  optional maldoca.Excel4Macros excel4_macros = 3;
++  reserved 3;
+ }
+ 
+ message ScriptFeatures {
+diff --git a/third_party/maldoca/src/maldoca/ole/proto/ole.proto b/third_party/maldoca/src/maldoca/ole/proto/ole.proto
+index fc6ce727eecb..67f601377e52 100644
+--- a/third_party/maldoca/src/maldoca/ole/proto/ole.proto
++++ b/third_party/maldoca/src/maldoca/ole/proto/ole.proto
+@@ -20,7 +20,6 @@ package maldoca.ole;
+ 
+ option optimize_for = LITE_RUNTIME;
+ 
+-import "maldoca/ole/proto/excel4_extraction.proto";
+ import "maldoca/ole/proto/vba_extraction.proto";
+ 
+ message Guid {
+@@ -181,7 +180,7 @@ message OleFile {
+   optional CompObj comp_obj = 7;
+   repeated OleDirectoryEntry ole_dirs = 8;
+   optional OleNativeEmbedded olenative_embedded = 9;
+-  optional maldoca.Excel4Macros excel4_macros = 10;
++  reserved 10;
+ 
+   // Increment CURRENT_VERSION on each code change.
+   enum Version {
+diff --git a/third_party/maldoca/src/maldoca/service/common/processing_pipeline.cc b/third_party/maldoca/src/maldoca/service/common/processing_pipeline.cc
+index b195a3a1582c..98b62179500d 100644
+--- a/third_party/maldoca/src/maldoca/service/common/processing_pipeline.cc
++++ b/third_party/maldoca/src/maldoca/service/common/processing_pipeline.cc
+@@ -16,8 +16,9 @@
+ #include "maldoca/service/common/processing_pipeline.h"
+ 
+ #include <algorithm>
+-
++#ifndef MALDOCA_CHROME
+ #include "google/protobuf/text_format.h"
++#endif  // MALODCA_CHOMRe
+ #include "maldoca/base/file.h"
+ #include "maldoca/base/logging.h"
+ #include "maldoca/base/status_macros.h"
+diff --git a/third_party/maldoca/src/third_party/tensorflow_protos/tensorflow/core/example/example.proto b/third_party/maldoca/src/third_party/tensorflow_protos/tensorflow/core/example/example.proto
+index 32a1d0b4468d..63a549ed3c0e 100644
+--- a/third_party/maldoca/src/third_party/tensorflow_protos/tensorflow/core/example/example.proto
++++ b/third_party/maldoca/src/third_party/tensorflow_protos/tensorflow/core/example/example.proto
+@@ -6,6 +6,7 @@ package tensorflow;
+ 
+ import "tensorflow/core/example/feature.proto";
+ 
++option optimize_for = LITE_RUNTIME;
+ option cc_enable_arenas = true;
+ option java_outer_classname = "ExampleProtos";
+ option java_multiple_files = true;
+diff --git a/third_party/maldoca/src/third_party/tensorflow_protos/tensorflow/core/example/feature.proto b/third_party/maldoca/src/third_party/tensorflow_protos/tensorflow/core/example/feature.proto
+index a9496fbdadf8..d8d92bda32ea 100644
+--- a/third_party/maldoca/src/third_party/tensorflow_protos/tensorflow/core/example/feature.proto
++++ b/third_party/maldoca/src/third_party/tensorflow_protos/tensorflow/core/example/feature.proto
+@@ -57,6 +57,7 @@ syntax = "proto3";
+ 
+ package tensorflow;
+ 
++option optimize_for = LITE_RUNTIME;
+ option cc_enable_arenas = true;
+ option java_outer_classname = "FeatureProtos";
+ option java_multiple_files = true;
+-- 
+2.32.0.93.g670b81a890-goog
+

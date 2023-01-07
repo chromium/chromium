@@ -1,19 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jamescook): Why does this test run on all Aura platforms, instead of
-// only Chrome OS or Ash?
-#if defined(USE_AURA)
-
 #include "components/sessions/core/tab_restore_service.h"
 
+#include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -24,11 +21,10 @@ class TabRestoreServiceImplBrowserTest : public InProcessBrowserTest {
  public:
   TabRestoreServiceImplBrowserTest()
       : test_system_web_app_installation_(
-            web_app::TestSystemWebAppInstallation::
-                SetUpTabbedMultiWindowApp()) {}
+            ash::TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp()) {}
 
  protected:
-  std::unique_ptr<web_app::TestSystemWebAppInstallation>
+  std::unique_ptr<ash::TestSystemWebAppInstallation>
       test_system_web_app_installation_;
 };
 
@@ -64,11 +60,11 @@ IN_PROC_BROWSER_TEST_F(TabRestoreServiceImplBrowserTest,
   Browser* app_browser = web_app::LaunchWebAppBrowser(
       browser()->profile(), test_system_web_app_installation_->GetAppId());
   GURL app_url = test_system_web_app_installation_->GetAppUrl();
-  ui_test_utils::NavigateToURL(app_browser, app_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, app_url));
 
   // Create second tab and close it, TAB entry should be created.
   chrome::NewTab(app_browser);
-  ui_test_utils::NavigateToURL(app_browser, app_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, app_url));
   chrome::CloseTab(app_browser);
   ASSERT_EQ(1U, trs->entries().size());
   const sessions::TabRestoreService::Entry* tab_entry =
@@ -85,5 +81,3 @@ IN_PROC_BROWSER_TEST_F(TabRestoreServiceImplBrowserTest,
   EXPECT_EQ(app_browser->app_name(), restored_window->app_name);
   EXPECT_EQ(1U, restored_window->tabs.size());
 }
-
-#endif  // defined(USE_AURA)

@@ -4,18 +4,18 @@ rootWebArea
 ++++++genericContainer invalidState=true
 ++++++++staticText name='invalid=true'
 ++++++++++inlineTextBox name='invalid=true'
-++++++textField value='An error via invalid=spelling'
+++++++textField multiline value='An error via invalid=spelling'
 ++++++++staticText name='An '
 ++++++++++inlineTextBox name='An '
-++++++++genericContainer ariaInvalidValue='spelling' invalidState=other
+++++++++genericContainer
 ++++++++++staticText name='error' markerTypes=1 markerStarts=0 markerEnds=5
 ++++++++++++inlineTextBox name='error' markerTypes=1 markerStarts=0 markerEnds=5
 ++++++++staticText name=' via invalid=spelling'
 ++++++++++inlineTextBox name=' via invalid=spelling'
-++++++textField value='An error via invalid=grammar'
+++++++textField multiline value='An error via invalid=grammar'
 ++++++++staticText name='An '
 ++++++++++inlineTextBox name='An '
-++++++++genericContainer ariaInvalidValue='grammar' invalidState=other
+++++++++genericContainer
 ++++++++++staticText name='error' markerTypes=2 markerStarts=0 markerEnds=5
 ++++++++++++inlineTextBox name='error' markerTypes=2 markerStarts=0 markerEnds=5
 ++++++++staticText name=' via invalid=grammar'
@@ -29,10 +29,10 @@ rootWebArea
 ++++++genericContainer
 ++++++++staticText name='invalid=<default>'
 ++++++++++inlineTextBox name='invalid=<default>'
-++++++genericContainer ariaInvalidValue='unknown' invalidState=other
+++++++genericContainer invalidState=true
 ++++++++staticText name='invalid=unknown'
 ++++++++++inlineTextBox name='invalid=unknown'
-++++++form
+++++++section
 ++++++++textField value='1234' invalidState=true
 ++++++++++genericContainer
 ++++++++++++staticText name='1234'

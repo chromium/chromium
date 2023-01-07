@@ -1,3 +1,0 @@
-monorail: {
-  component: "Blink>WebRTC>Network"
-}

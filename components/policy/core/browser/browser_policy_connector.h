@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/policy_export.h"
@@ -32,6 +31,8 @@ class PolicyStatisticsCollector;
 // subclasses.
 class POLICY_EXPORT BrowserPolicyConnector : public BrowserPolicyConnectorBase {
  public:
+  BrowserPolicyConnector(const BrowserPolicyConnector&) = delete;
+  BrowserPolicyConnector& operator=(const BrowserPolicyConnector&) = delete;
   ~BrowserPolicyConnector() override;
 
   // Finalizes the initialization of the connector. This call can be skipped on
@@ -41,7 +42,7 @@ class POLICY_EXPORT BrowserPolicyConnector : public BrowserPolicyConnectorBase {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) = 0;
 
   // Checks whether this device is under any kind of enterprise management.
-  virtual bool IsEnterpriseManaged() const = 0;
+  virtual bool IsDeviceEnterpriseManaged() const = 0;
 
   // Checks whether there are any machine-level policies configured.
   virtual bool HasMachineLevelPolicies() = 0;
@@ -97,11 +98,14 @@ class POLICY_EXPORT BrowserPolicyConnector : public BrowserPolicyConnectorBase {
   bool ProviderHasPolicies(const ConfigurationPolicyProvider* provider) const;
 
  private:
+  // Helper function to read URL overriding flags. If `flag` isn't set or if the
+  // Chrome channel doesn't allowing overriding, `default_value` is returned
+  // instead.
+  std::string GetUrlOverride(const char* flag, const char* default_value) const;
+
   std::unique_ptr<PolicyStatisticsCollector> policy_statistics_collector_;
 
   std::unique_ptr<DeviceManagementService> device_management_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPolicyConnector);
 };
 
 }  // namespace policy

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,10 +97,13 @@ HRESULT FontFallback::MapCharacters(IDWriteTextAnalysisSource* source,
 
   locale = locale ? locale : L"";
 
+  size_t mapped_length_size_t = *mapped_length;
   if (GetCachedFont(text_chunk, base_family_name, locale, base_weight,
-                    base_style, base_stretch, mapped_font, mapped_length)) {
+                    base_style, base_stretch, mapped_font,
+                    &mapped_length_size_t)) {
     DCHECK(*mapped_font);
-    DCHECK_GT(*mapped_length, 0u);
+    DCHECK_GT(mapped_length_size_t, 0u);
+    *mapped_length = base::checked_cast<UINT32>(mapped_length_size_t);
     LogFallbackResult(SUCCESS_CACHE);
     return S_OK;
   }
@@ -172,7 +175,8 @@ bool FontFallback::GetCachedFont(const std::u16string& text,
                                  DWRITE_FONT_STYLE base_style,
                                  DWRITE_FONT_STRETCH base_stretch,
                                  IDWriteFont** font,
-                                 uint32_t* mapped_length) {
+                                 size_t* mapped_length) {
+  base::AutoLock guard(lock_);
   std::map<std::wstring, std::list<mswr::ComPtr<IDWriteFontFamily>>>::iterator
       it = fallback_family_cache_.find(MakeCacheKey(base_family_name, locale));
   if (it == fallback_family_cache_.end())
@@ -196,11 +200,11 @@ bool FontFallback::GetCachedFont(const std::u16string& text,
     // different from |mapped_length| because ReadUnicodeCharacter can advance
     // |character_index| even if the character cannot be mapped (invalid
     // surrogate pair or font does not contain a matching glyph).
-    int32_t character_index = 0;
-    uint32_t length = 0;  // How much of the text can actually be mapped.
-    while (static_cast<uint32_t>(character_index) < text.length()) {
+    size_t character_index = 0;
+    size_t length = 0;  // How much of the text can actually be mapped.
+    while (character_index < text.length()) {
       BOOL exists = false;
-      uint32_t character = 0;
+      base_icu::UChar32 character = 0;
       if (!base::ReadUnicodeCharacter(text.c_str(), text.length(),
                                       &character_index, &character))
         break;
@@ -227,6 +231,7 @@ void FontFallback::AddCachedFamily(
     Microsoft::WRL::ComPtr<IDWriteFontFamily> family,
     const wchar_t* base_family_name,
     const wchar_t* locale) {
+  base::AutoLock guard(lock_);
   // Note: If the requested locale does not disambiguate Han ideographs, caching
   // by locale may prime the cache with one CJK font for the first request,
   // which may be unsuitable for the next request. For example: While specifying

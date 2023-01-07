@@ -1,0 +1,85 @@
+[package]
+authors = [
+  "Jyun-Yan You <jyyou.tw@gmail.com>",
+  "Emilio Cobos Álvarez <emilio@crisal.io>",
+  "Nick Fitzgerald <fitzgen@gmail.com>",
+  "The Servo project developers",
+]
+description = "Automatically generates Rust FFI bindings to C and C++ libraries."
+keywords = ["bindings", "ffi", "code-generation"]
+categories = ["external-ffi-bindings", "development-tools::ffi"]
+license = "BSD-3-Clause"
+name = "bindgen"
+readme = "README.md"
+repository = "https://github.com/rust-lang/rust-bindgen"
+documentation = "https://docs.rs/bindgen"
+homepage = "https://rust-lang.github.io/rust-bindgen/"
+version = "0.60.1"
+edition = "2018"
+build = "build.rs"
+
+include = [
+  "LICENSE",
+  "README.md",
+  "Cargo.toml",
+  "build.rs",
+  "src/*.rs",
+  "src/**/*.rs",
+]
+
+[badges]
+travis-ci = { repository = "rust-lang/rust-bindgen" }
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "bindgen"
+path = "src/main.rs"
+doc = false
+required-features = ["clap"]
+
+[dev-dependencies]
+diff = "0.1"
+clap = "3"
+shlex = "1"
+tempfile = "3"
+
+[dependencies]
+bitflags = "1.0.3"
+cexpr = "0.6"
+# This kinda sucks: https://github.com/rust-lang/cargo/issues/1982
+clap = { version = "3", optional = true }
+clang-sys = { version = "1", features = ["clang_6_0"] }
+lazycell = "1"
+lazy_static = "1"
+peeking_take_while = "0.1.2"
+quote = { version = "1", default-features = false }
+regex = { version = "1.0", default-features = false , features = [ "std", "unicode"]}
+which = { version = "4.2.1", optional = true, default-features = false }
+shlex = "1"
+rustc-hash = "1.0.1"
+proc-macro2 = { version = "1", default-features = false }
+
+[dependencies.env_logger]
+optional = true
+version = "0.9.0"
+
+[dependencies.log]
+optional = true
+version = "0.4"
+
+[features]
+default = ["logging", "clap", "runtime", "which-rustfmt"]
+logging = ["env_logger", "log"]
+static = ["clang-sys/static"]
+runtime = ["clang-sys/runtime"]
+# Dynamically discover a `rustfmt` binary using the `which` crate
+which-rustfmt = ["which"]
+
+# These features only exist for CI testing -- don't use them if you're not hacking
+# on bindgen!
+testing_only_docs = []
+testing_only_extra_assertions = []
+testing_only_libclang_9 = []
+testing_only_libclang_5 = []

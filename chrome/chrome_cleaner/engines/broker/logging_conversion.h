@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CHROME_CHROME_CLEANER_ENGINES_BROKER_LOGGING_CONVERSION_H_
 
 #include <stdint.h>
-
-#include <vector>
 
 #include "chrome/chrome_cleaner/constants/uws_id.h"
 #include "components/chrome_cleaner/public/constants/result_codes.h"

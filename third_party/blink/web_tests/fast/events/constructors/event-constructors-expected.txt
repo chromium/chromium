@@ -20,7 +20,7 @@ PASS (new Event('eventType', null)).bubbles is false
 PASS (new Event('eventType', null)).cancelable is false
 PASS (new Event('eventType', undefined)).bubbles is false
 PASS (new Event('eventType', undefined)).cancelable is false
-PASS new Event('eventType', 0) threw exception TypeError: Failed to construct 'Event': cannot convert to dictionary..
+PASS new Event('eventType', 0) threw exception TypeError: Failed to construct 'Event': The provided value is not of type 'EventInit'..
 PASS (new Event('eventType', window)).bubbles is false
 PASS (new Event('eventType', window)).cancelable is false
 PASS (new Event('eventType', window)).bubbles is true

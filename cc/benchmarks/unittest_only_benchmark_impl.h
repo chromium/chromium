@@ -1,16 +1,15 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_BENCHMARKS_UNITTEST_ONLY_BENCHMARK_IMPL_H_
 #define CC_BENCHMARKS_UNITTEST_ONLY_BENCHMARK_IMPL_H_
 
-#include "base/memory/weak_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/benchmarks/micro_benchmark_impl.h"
 
 namespace base {
 class SingleThreadTaskRunner;
-class Value;
 }
 
 namespace cc {
@@ -20,7 +19,6 @@ class CC_EXPORT UnittestOnlyBenchmarkImpl : public MicroBenchmarkImpl {
  public:
   UnittestOnlyBenchmarkImpl(
       scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner,
-      base::Value* settings,
       DoneCallback callback);
   ~UnittestOnlyBenchmarkImpl() override;
 

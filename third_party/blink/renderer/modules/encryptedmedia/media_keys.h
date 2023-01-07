@@ -35,7 +35,10 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -61,7 +64,8 @@ class MediaKeys : public ScriptWrappable,
   MediaKeys(
       ExecutionContext*,
       const WebVector<WebEncryptedMediaSessionType>& supported_session_types,
-      std::unique_ptr<WebContentDecryptionModule>);
+      std::unique_ptr<WebContentDecryptionModule>,
+      const MediaKeysConfig&);
   ~MediaKeys() override;
 
   MediaKeySession* createSession(ScriptState*,
@@ -117,6 +121,7 @@ class MediaKeys : public ScriptWrappable,
 
   const WebVector<WebEncryptedMediaSessionType> supported_session_types_;
   std::unique_ptr<WebContentDecryptionModule> cdm_;
+  const MediaKeysConfig config_;
 
   // Keep track of the HTMLMediaElement that references this object. Keeping
   // a WeakMember so that HTMLMediaElement's lifetime isn't dependent on

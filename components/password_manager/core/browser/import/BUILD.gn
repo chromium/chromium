@@ -1,0 +1,95 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+}
+
+if (!is_ios) {
+  source_set("importer") {
+    sources = [
+      "password_importer.cc",
+      "password_importer.h",
+    ]
+    public_deps = [
+      ":csv",
+      "//base",
+      "//components/password_manager/core/browser:password_form",
+    ]
+
+    deps = [
+      "//components/password_manager/core/browser",
+      "//components/password_manager/core/browser:import_results",
+      "//components/password_manager/services/csv_password:service",
+      "//components/sync/base:base",
+    ]
+  }
+
+  source_set("importer_unit_tests") {
+    testonly = true
+    sources = [ "password_importer_unittest.cc" ]
+    deps = [
+      ":importer",
+      "//base/test:test_support",
+      "//components/password_manager/core/browser:import_results",
+      "//components/password_manager/core/browser:test_support",
+      "//mojo/public/cpp/bindings:bindings",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}
+
+source_set("csv") {
+  sources = [
+    "csv_field_parser.cc",
+    "csv_field_parser.h",
+    "csv_password.cc",
+    "csv_password.h",
+    "csv_password_iterator.cc",
+    "csv_password_iterator.h",
+    "csv_password_sequence.cc",
+    "csv_password_sequence.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/password_manager/core/browser:password_form",
+  ]
+
+  deps = [
+    "//components/password_manager/core/browser:affiliation",
+    "//components/password_manager/core/browser/form_parsing",
+    "//url",
+  ]
+}
+
+source_set("csv_unit_tests") {
+  testonly = true
+  sources = [
+    "csv_field_parser_unittest.cc",
+    "csv_password_iterator_unittest.cc",
+    "csv_password_sequence_unittest.cc",
+    "csv_password_unittest.cc",
+  ]
+  deps = [
+    ":csv",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+fuzzer_test("csv_reader_fuzzer") {
+  sources = [ "password_csv_reader_fuzzer.cc" ]
+  deps = [
+    ":csv",
+    "//base:i18n",
+    "//components/autofill/core/common:common",
+  ]
+  seed_corpus = "password_csv_reader_corpus"
+  dict = "password_csv_reader_fuzzer.dict"
+}

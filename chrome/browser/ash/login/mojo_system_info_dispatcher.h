@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,16 @@
 
 #include "chrome/browser/ash/login/version_info_updater.h"
 
-namespace chromeos {
+namespace ash {
 
 // Fetches system information and sends it over the login_screen mojo.
 class MojoSystemInfoDispatcher : public VersionInfoUpdater::Delegate {
  public:
   MojoSystemInfoDispatcher();
+
+  MojoSystemInfoDispatcher(const MojoSystemInfoDispatcher&) = delete;
+  MojoSystemInfoDispatcher& operator=(const MojoSystemInfoDispatcher&) = delete;
+
   ~MojoSystemInfoDispatcher() override;
 
   // Request the system info.
@@ -39,10 +43,8 @@ class MojoSystemInfoDispatcher : public VersionInfoUpdater::Delegate {
   std::string enterprise_info_;
   std::string bluetooth_name_;
   bool adb_sideloading_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoSystemInfoDispatcher);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_MOJO_SYSTEM_INFO_DISPATCHER_H_

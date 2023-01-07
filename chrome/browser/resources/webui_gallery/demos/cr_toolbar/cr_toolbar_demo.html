@@ -1,0 +1,51 @@
+<link rel="stylesheet" href="../demo.css">
+<style>
+  .content {
+    padding: 16px;
+  }
+
+  cr-input {
+    --cr-input-error-display: none;
+  }
+</style>
+<cr-toolbar
+    page-name="[[pageName_]]"
+    search-prompt="[[searchPrompt_]]"
+    clear-label="[[clearLabel_]]"
+    menu-label="[[menuLabel_]]"
+    narrow="{{narrow_}}"
+    narrow-threshold="[[narrowThreshold_]]"
+    always-show-logo="[[alwaysShowLogo_]]"
+    show-menu="[[showMenu_]]"
+    show-search="[[showSearch_]]"
+    on-cr-toolbar-menu-tap="onMenuTap_"
+    on-search-changed="onSearchChanged_">
+  <div hidden$="[[!showSlottedContent_]]">
+    Slotted right-hand content
+  </div>
+</cr-toolbar>
+
+<div class="content">
+  <h1>cr-toolbar</h1>
+  <div class="demos">
+    <cr-input label="Page name" value="{{pageName_}}"></cr-input>
+    <cr-input label="Search prompt" value="{{searchPrompt_}}"></cr-input>
+    <cr-input label="Clear label" value="{{clearLabel_}}"></cr-input>
+    <cr-input label="Menu label" value="{{menuLabel_}}"></cr-input>
+    <cr-input label="Max window width for narrow mode"
+        value="{{narrowThreshold_}}"></cr-input>
+    <cr-checkbox checked="{{alwaysShowLogo_}}">Always show logo</cr-checkbox>
+    <cr-checkbox checked="{{showMenu_}}">Show menu button</cr-checkbox>
+    <cr-checkbox checked="{{showSearch_}}">Show search input</cr-checkbox>
+    <cr-checkbox checked="{{showSlottedContent_}}">
+      Show right-hand content
+    </cr-checkbox>
+  </div>
+
+  <div class="log">
+    <div>Is narrow? [[narrow_]]</div>
+    <template is="dom-repeat" items="[[log_]]">
+      <div>[[item]]</div>
+    </template>
+  </div>
+</div>

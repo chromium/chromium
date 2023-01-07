@@ -1,5 +1,5 @@
 /*
- * Copyright 2016 The Chromium Authors. All rights reserved.
+ * Copyright 2016 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
@@ -10,12 +10,23 @@
  * Launches the PaymentRequest UI that does not require a shipping address.
  */
 function buy() { // eslint-disable-line no-unused-vars
+  buyWithMethods([
+    {
+      supportedMethods: 'basic-card',
+      data: {supportedNetworks: ['visa', 'mastercard']},
+    },
+  ]);
+}
+
+/**
+ * Launches the PaymentRequest UI that does not require a shipping address.
+ * @param {String} methodData - An array of payment method objects.
+ * @return {string} - The error message, if any.
+ */
+async function buyWithMethods(methodData) {
   try {
-    new PaymentRequest(
-        [{
-          supportedMethods: 'basic-card',
-          data: {supportedNetworks: ['visa', 'mastercard']},
-        }],
+    await new PaymentRequest(
+      methodData,
         {
           total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
           displayItems: [
@@ -36,11 +47,8 @@ function buy() { // eslint-disable-line no-unused-vars
               .catch(function(error) {
                 print(error);
               });
-        })
-        .catch(function(error) {
-          print(error);
         });
   } catch (error) {
-    print(error.message);
+    return error.message;
   }
 }

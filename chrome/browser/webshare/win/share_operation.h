@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef CHROME_BROWSER_WEBSHARE_WIN_SHARE_OPERATION_H_
@@ -10,7 +10,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/win/core_winrt_util.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 #include "url/gurl.h"
 
@@ -40,11 +39,15 @@ class Vector;
 }  // namespace win
 }  // namespace base
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace webshare {
 
 class ShowShareUIForWindowOperation;
 
-class ShareOperation final : content::WebContentsObserver {
+class ShareOperation final {
  public:
   static void SetMaxFileBytesForTesting(uint64_t max_file_bytes);
 
@@ -59,7 +62,7 @@ class ShareOperation final : content::WebContentsObserver {
                  content::WebContents* web_contents);
   ShareOperation(const ShareOperation&) = delete;
   ShareOperation& operator=(const ShareOperation&) = delete;
-  ~ShareOperation() final;
+  ~ShareOperation();
 
   base::WeakPtr<ShareOperation> AsWeakPtr();
 
@@ -82,11 +85,13 @@ class ShareOperation final : content::WebContentsObserver {
       Microsoft::WRL::ComPtr<ABI::Windows::Storage::IStorageFile> storage_file);
   void Complete(const blink::mojom::ShareError share_error);
 
+  const base::WeakPtr<content::WebContents> web_contents_;
   const std::string title_;
   const std::string text_;
   const GURL url_;
   const std::vector<blink::mojom::SharedFilePtr> files_;
 
+  std::vector<Microsoft::WRL::ComPtr<IUnknown>> async_operations_;
   blink::mojom::ShareService::ShareCallback callback_;
   Microsoft::WRL::ComPtr<
       ABI::Windows::ApplicationModel::DataTransfer::IDataPackage>

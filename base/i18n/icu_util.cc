@@ -1,13 +1,18 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/i18n/icu_util.h"
 
-#if defined(OS_WIN)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
+#include <string.h>
+
+#include <memory>
 #include <string>
 
 #include "base/debug/alias.h"
@@ -21,42 +26,40 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "third_party/icu/source/common/unicode/putil.h"
 #include "third_party/icu/source/common/unicode/udata.h"
 #include "third_party/icu/source/common/unicode/utrace.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
 #include "base/android/timezone_utils.h"
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/ios/ios_util.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/foundation_util.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/intl_profile_watcher.h"
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #include "third_party/icu/source/common/unicode/unistr.h"
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA) || \
-    ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && !BUILDFLAG(IS_CHROMECAST))
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS))
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #endif
 
-namespace base {
-namespace i18n {
+namespace base::i18n {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 namespace {
 
 #if DCHECK_IS_ON()
@@ -74,20 +77,19 @@ int g_debug_icu_last_error;
 int g_debug_icu_load;
 int g_debug_icu_pf_error_details;
 int g_debug_icu_pf_last_error;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 wchar_t g_debug_icu_pf_filename[_MAX_PATH];
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 // Use an unversioned file name to simplify a icu version update down the road.
 // No need to change the filename in multiple places (gyp files, windows
 // build pkg configurations, etc). 'l' stands for Little Endian.
 // This variable is exported through the header file.
 const char kIcuDataFileName[] = "icudtl.dat";
-const char kIcuExtraDataFileName[] = "icudtl_extra.dat";
 
 // Time zone data loading.
 // For now, only Fuchsia has a meaningful use case for this feature, so it is
 // only implemented for OS_FUCHSIA.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // The environment variable used to point the ICU data loader to the directory
 // containing time zone data. This is available from ICU version 54. The env
 // variable approach is antiquated by today's standards (2019), but is the
@@ -96,145 +98,144 @@ const char kIcuExtraDataFileName[] = "icudtl_extra.dat";
 // See for details: http://userguide.icu-project.org/datetime/timezone
 const char kIcuTimeZoneEnvVariable[] = "ICU_TIMEZONE_FILES_DIR";
 
-// We assume that Fuchsia will provide time zone data at this path for Chromium
-// to load, and that the path will be timely updated when Fuchsia needs to
-// uprev the ICU version it is using. There are unit tests that will fail at
-// Fuchsia roll time in case either Chromium or Fuchsia get upgraded to
-// mutually incompatible ICU versions. That should be enough to alert the
-// developers of the need to keep ICU library versions in ICU and Fuchsia in
-// reasonable sync.
-const char kIcuTimeZoneDataDir[] = "/config/data/tzdata/icu/44/le";
-#endif  // defined(OS_FUCHSIA)
+// Up-to-date time zone data is expected to be provided by the system as a
+// directory offered to Chromium components at /config/tzdata.  Chromium
+// components should "use" the `tzdata` directory capability, specifying the
+// "/config/tzdata" path.  The capability's "availability" should be set to
+// "required" or "optional" as appropriate - if no data is provided then ICU
+// initialization will (in future silently) fall-back to the (potentially stale)
+// timezone data included in the package.
+//
+// TimeZoneDataTest.* tests verify that external timezone data is correctly
+// loaded from the system, to alert developers if the platform and Chromium
+// versions are no longer compatible versions.
+const char kIcuTimeZoneDataDir[] = "/config/tzdata/icu/44/le";
 
-#if defined(OS_ANDROID)
-const char kAssetsPathPrefix[] = "assets/";
-#endif  // defined(OS_ANDROID)
+// Path used to receive tzdata via the legacy config-data mechanism.
+const char kLegacyIcuTimeZoneDataDir[] = "/config/data/tzdata/icu/44/le";
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
+#if BUILDFLAG(IS_ANDROID)
+const char kAndroidAssetsIcuDataFileName[] = "assets/icudtl.dat";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // File handle intentionally never closed. Not using File here because its
 // Windows implementation guards against two instances owning the same
 // PlatformFile (which we allow since we know it is never freed).
 PlatformFile g_icudtl_pf = kInvalidPlatformFile;
-MemoryMappedFile* g_icudtl_mapped_file = nullptr;
+IcuDataFile* g_icudtl_mapped_file = nullptr;
 MemoryMappedFile::Region g_icudtl_region;
-PlatformFile g_icudtl_extra_pf = kInvalidPlatformFile;
-MemoryMappedFile* g_icudtl_extra_mapped_file = nullptr;
-MemoryMappedFile::Region g_icudtl_extra_region;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // The directory from which the ICU data loader will be configured to load time
 // zone data. It is only changed by SetIcuTimeZoneDataDirForTesting().
 const char* g_icu_time_zone_data_dir = kIcuTimeZoneDataDir;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
-struct PfRegion {
- public:
-  PlatformFile pf;
-  MemoryMappedFile::Region region;
-};
-
-std::unique_ptr<PfRegion> OpenIcuDataFile(const std::string& filename,
-                                          const std::string& split_name) {
-  auto result = std::make_unique<PfRegion>();
-#if defined(OS_ANDROID)
-  result->pf = android::OpenApkAsset(kAssetsPathPrefix + filename, split_name,
-                                     &result->region);
-  if (result->pf != -1) {
-    return result;
+void LazyInitIcuDataFile() {
+  if (g_icudtl_pf != kInvalidPlatformFile) {
+    return;
   }
-#endif  // defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  int fd =
+      android::OpenApkAsset(kAndroidAssetsIcuDataFileName, &g_icudtl_region);
+  g_icudtl_pf = fd;
+  if (fd != -1) {
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   // For unit tests, data file is located on disk, so try there as a fallback.
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   FilePath data_path;
   if (!PathService::Get(DIR_ASSETS, &data_path)) {
-    LOG(ERROR) << "Can't find " << filename;
-    return nullptr;
+    LOG(ERROR) << "Can't find " << kIcuDataFileName;
+    return;
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(brucedawson): http://crbug.com/445616
   wchar_t tmp_buffer[_MAX_PATH] = {0};
   wcscpy_s(tmp_buffer, data_path.value().c_str());
   debug::Alias(tmp_buffer);
 #endif
-  data_path = data_path.AppendASCII(filename);
+  data_path = data_path.AppendASCII(kIcuDataFileName);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(brucedawson): http://crbug.com/445616
   wchar_t tmp_buffer2[_MAX_PATH] = {0};
   wcscpy_s(tmp_buffer2, data_path.value().c_str());
   debug::Alias(tmp_buffer2);
 #endif
 
-#else  // !defined(OS_APPLE)
+#else  // !BUILDFLAG(IS_APPLE)
   // Assume it is in the framework bundle's Resources directory.
-  ScopedCFTypeRef<CFStringRef> data_file_name(SysUTF8ToCFStringRef(filename));
+  ScopedCFTypeRef<CFStringRef> data_file_name(
+      SysUTF8ToCFStringRef(kIcuDataFileName));
   FilePath data_path = mac::PathForFrameworkBundleResource(data_file_name);
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   FilePath override_data_path = ios::FilePathOfEmbeddedICU();
   if (!override_data_path.empty()) {
     data_path = override_data_path;
   }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
   if (data_path.empty()) {
-    LOG(ERROR) << filename << " not found in bundle";
-    return nullptr;
+    LOG(ERROR) << kIcuDataFileName << " not found in bundle";
+    return;
   }
-#endif  // !defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_APPLE)
   File file(data_path, File::FLAG_OPEN | File::FLAG_READ);
   if (file.IsValid()) {
     // TODO(brucedawson): http://crbug.com/445616.
     g_debug_icu_pf_last_error = 0;
     g_debug_icu_pf_error_details = 0;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     g_debug_icu_pf_filename[0] = 0;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
-    result->pf = file.TakePlatformFile();
-    result->region = MemoryMappedFile::Region::kWholeFile;
+    g_icudtl_pf = file.TakePlatformFile();
+    g_icudtl_region = MemoryMappedFile::Region::kWholeFile;
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   else {
     // TODO(brucedawson): http://crbug.com/445616.
     g_debug_icu_pf_last_error = ::GetLastError();
     g_debug_icu_pf_error_details = file.error_details();
     wcscpy_s(g_debug_icu_pf_filename, data_path.value().c_str());
   }
-#endif  // OS_WIN
-
-  return result;
-}
-
-void LazyOpenIcuDataFile() {
-  if (g_icudtl_pf != kInvalidPlatformFile) {
-    return;
-  }
-  auto pf_region = OpenIcuDataFile(kIcuDataFileName, std::string());
-  if (!pf_region) {
-    return;
-  }
-  g_icudtl_pf = pf_region->pf;
-  g_icudtl_region = pf_region->region;
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 // Configures ICU to load external time zone data, if appropriate.
 void InitializeExternalTimeZoneData() {
-#if defined(OS_FUCHSIA)
-  if (!base::DirectoryExists(base::FilePath(g_icu_time_zone_data_dir))) {
-    // TODO(https://crbug.com/1061262): Make this FATAL unless expected.
-    PLOG(WARNING) << "Could not open: '" << g_icu_time_zone_data_dir
-                  << "'. Using built-in timezone database";
-    return;
-  }
-
+#if BUILDFLAG(IS_FUCHSIA)
   // Set the environment variable to override the location used by ICU.
   // Loading can still fail if the directory is empty or its data is invalid.
   std::unique_ptr<base::Environment> env = base::Environment::Create();
-  env->SetVar(kIcuTimeZoneEnvVariable, g_icu_time_zone_data_dir);
-#endif  // defined(OS_FUCHSIA)
+
+  // If the ICU tzdata path exists then do not fall-back to config-data.
+  // TODO(crbug.com/1360077): Remove fall-back once all components are migrated.
+  if (base::PathExists(base::FilePath(g_icu_time_zone_data_dir))) {
+    // If the tzdata directory does not exist then silently fallback to
+    // using the inbuilt (possibly stale) timezone data.
+    if (base::DirectoryExists(base::FilePath(g_icu_time_zone_data_dir))) {
+      env->SetVar(kIcuTimeZoneEnvVariable, g_icu_time_zone_data_dir);
+    }
+
+  } else if (g_icu_time_zone_data_dir == kIcuTimeZoneDataDir &&
+             base::DirectoryExists(
+                 base::FilePath((kLegacyIcuTimeZoneDataDir)))) {
+    // Only fall-back to attempting to load from the legacy config-data path
+    // if `g_icu_time_zone_data_dir` has not been changed by a test.
+    env->SetVar(kIcuTimeZoneEnvVariable, kLegacyIcuTimeZoneDataDir);
+  } else {
+    PLOG(WARNING) << "Could not locate tzdata in config-data. "
+                  << "Using built-in timezone database";
+  }
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 int LoadIcuData(PlatformFile data_fd,
                 const MemoryMappedFile::Region& data_region,
-                std::unique_ptr<MemoryMappedFile>* out_mapped_data_file,
+                std::unique_ptr<IcuDataFile>* out_mapped_data_file,
                 UErrorCode* out_error_code) {
   InitializeExternalTimeZoneData();
 
@@ -243,7 +244,7 @@ int LoadIcuData(PlatformFile data_fd,
     return 1;  // To debug http://crbug.com/445616.
   }
 
-  out_mapped_data_file->reset(new MemoryMappedFile());
+  *out_mapped_data_file = std::make_unique<IcuDataFile>();
   if (!(*out_mapped_data_file)->Initialize(File(data_fd), data_region)) {
     LOG(ERROR) << "Couldn't mmap icu data file";
     return 2;  // To debug http://crbug.com/445616.
@@ -270,7 +271,7 @@ bool InitializeICUWithFileDescriptorInternal(
     return true;
   }
 
-  std::unique_ptr<MemoryMappedFile> mapped_file;
+  std::unique_ptr<IcuDataFile> mapped_file;
   UErrorCode err;
   g_debug_icu_load = LoadIcuData(data_fd, data_region, &mapped_file, &err);
   if (g_debug_icu_load == 1 || g_debug_icu_load == 2) {
@@ -292,11 +293,11 @@ bool InitializeICUFromDataFile() {
   // it is needed.  This can fail if the process is sandboxed at that time.
   // Instead, we map the file in and hand off the data so the sandbox won't
   // cause any problems.
-  LazyOpenIcuDataFile();
+  LazyInitIcuDataFile();
   bool result =
       InitializeICUWithFileDescriptorInternal(g_icudtl_pf, g_icudtl_region);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   int debug_icu_load = g_debug_icu_load;
   debug::Alias(&debug_icu_load);
   int debug_icu_last_error = g_debug_icu_last_error;
@@ -309,7 +310,7 @@ bool InitializeICUFromDataFile() {
   wcscpy_s(debug_icu_pf_filename, g_debug_icu_pf_filename);
   debug::Alias(&debug_icu_pf_filename);
   CHECK(result);  // TODO(brucedawson): http://crbug.com/445616
-#endif            // defined(OS_WIN)
+#endif            // BUILDFLAG(IS_WIN)
 
   return result;
 }
@@ -319,7 +320,7 @@ bool InitializeICUFromDataFile() {
 // On some platforms, the time zone must be explicitly initialized zone rather
 // than relying on ICU's internal initialization.
 void InitializeIcuTimeZone() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, we can't leave it up to ICU to set the default time zone
   // because ICU's time zone detection does not work in many time zones (e.g.
   // Australia/Sydney, Asia/Seoul, Europe/Paris ). Use JNI to detect the host
@@ -329,7 +330,7 @@ void InitializeIcuTimeZone() {
   std::u16string zone_id = android::GetDefaultTimeZoneId();
   icu::TimeZone::adoptDefault(icu::TimeZone::createTimeZone(
       icu::UnicodeString(false, zone_id.data(), zone_id.length())));
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // The platform-specific mechanisms used by ICU's detectHostTimeZone() to
   // determine the default time zone will not work on Fuchsia. Therefore,
   // proactively set the default system.
@@ -342,12 +343,12 @@ void InitializeIcuTimeZone() {
       FuchsiaIntlProfileWatcher::GetPrimaryTimeZoneIdForIcuInitialization();
   icu::TimeZone::adoptDefault(
       icu::TimeZone::createTimeZone(icu::UnicodeString::fromUTF8(zone_id)));
-#elif (defined(OS_LINUX) || defined(OS_CHROMEOS)) && !BUILDFLAG(IS_CHROMECAST)
+#elif BUILDFLAG(IS_CHROMEOS) || (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS))
   // To respond to the time zone change properly, the default time zone
   // cache in ICU has to be populated on starting up.
   // See TimeZoneMonitorLinux::NotifyClientsFromImpl().
   std::unique_ptr<icu::TimeZone> zone(icu::TimeZone::createDefault());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 const char kICUDataFile[] = "ICU.DataFile";
@@ -424,26 +425,29 @@ static void U_CALLCONV TraceICUData(const void* context,
     }
     case UTRACE_UBRK_CREATE_LINE: {
       const char* lb_type = va_arg(args, const char*);
+      auto lb_type_len = strlen(lb_type);
       va_end(args);
       ICUCreateInstance value;
-      switch (lb_type[0]) {
-        case '\0':
-          value = ICUCreateInstance::kLineBreakIterator;
-          break;
-        case 'l':
-          DCHECK(strcmp(lb_type, "loose") == 0);
-          value = ICUCreateInstance::kLineBreakIteratorTypeLoose;
-          break;
-        case 'n':
-          DCHECK(strcmp(lb_type, "normal") == 0);
-          value = ICUCreateInstance::kLineBreakIteratorTypeNormal;
-          break;
-        case 's':
-          DCHECK(strcmp(lb_type, "strict") == 0);
-          value = ICUCreateInstance::kLineBreakIteratorTypeStrict;
-          break;
-        default:
-          return;
+      if (lb_type_len < 6) {
+        DCHECK(strcmp(lb_type, "line") == 0);
+        value = ICUCreateInstance::kLineBreakIterator;
+      } else {
+        switch (lb_type[5]) {
+          case 'l':
+            DCHECK(strcmp(lb_type, "line_loose") == 0);
+            value = ICUCreateInstance::kLineBreakIteratorTypeLoose;
+            break;
+          case 'n':
+            DCHECK(strcmp(lb_type, "line_normal") == 0);
+            value = ICUCreateInstance::kLineBreakIteratorTypeNormal;
+            break;
+          case 's':
+            DCHECK(strcmp(lb_type, "line_strict") == 0);
+            value = ICUCreateInstance::kLineBreakIteratorTypeStrict;
+            break;
+          default:
+            return;
+        }
       }
       base::UmaHistogramEnumeration(kICUCreateInstance, value);
       return;
@@ -500,23 +504,6 @@ bool DoCommonInitialization() {
 }  // namespace
 
 #if (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE)
-bool InitializeExtraICUWithFileDescriptor(
-    PlatformFile data_fd,
-    const MemoryMappedFile::Region& data_region) {
-  if (g_icudtl_pf != kInvalidPlatformFile) {
-    // Must call InitializeExtraICUWithFileDescriptor() before
-    // InitializeICUWithFileDescriptor().
-    return false;
-  }
-  std::unique_ptr<MemoryMappedFile> mapped_file;
-  UErrorCode err;
-  if (LoadIcuData(data_fd, data_region, &mapped_file, &err) != 0) {
-    return false;
-  }
-  g_icudtl_extra_mapped_file = mapped_file.release();
-  return true;
-}
-
 bool InitializeICUWithFileDescriptor(
     PlatformFile data_fd,
     const MemoryMappedFile::Region& data_region) {
@@ -536,51 +523,20 @@ PlatformFile GetIcuDataFileHandle(MemoryMappedFile::Region* out_region) {
   return g_icudtl_pf;
 }
 
-PlatformFile GetIcuExtraDataFileHandle(MemoryMappedFile::Region* out_region) {
-  if (g_icudtl_extra_pf == kInvalidPlatformFile) {
-    return kInvalidPlatformFile;
-  }
-  *out_region = g_icudtl_extra_region;
-  return g_icudtl_extra_pf;
-}
-
-bool InitializeExtraICU(const std::string& split_name) {
-  if (g_icudtl_pf != kInvalidPlatformFile) {
-    // Must call InitializeExtraICU() before InitializeICU().
-    return false;
-  }
-  auto pf_region = OpenIcuDataFile(kIcuExtraDataFileName, split_name);
-  if (!pf_region) {
-    return false;
-  }
-  g_icudtl_extra_pf = pf_region->pf;
-  g_icudtl_extra_region = pf_region->region;
-  std::unique_ptr<MemoryMappedFile> mapped_file;
-  UErrorCode err;
-  if (LoadIcuData(g_icudtl_extra_pf, g_icudtl_extra_region, &mapped_file,
-                  &err) != 0) {
-    return false;
-  }
-  g_icudtl_extra_mapped_file = mapped_file.release();
-  return true;
-}
-
 void ResetGlobalsForTesting() {
   g_icudtl_pf = kInvalidPlatformFile;
   g_icudtl_mapped_file = nullptr;
-  g_icudtl_extra_pf = kInvalidPlatformFile;
-  g_icudtl_extra_mapped_file = nullptr;
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   g_icu_time_zone_data_dir = kIcuTimeZoneDataDir;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // |dir| must remain valid until ResetGlobalsForTesting() is called.
 void SetIcuTimeZoneDataDirForTesting(const char* dir) {
   g_icu_time_zone_data_dir = dir;
 }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 #endif  // (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE)
 
 bool InitializeICU() {
@@ -607,7 +563,6 @@ void AllowMultipleInitializeCallsForTesting() {
 #endif
 }
 
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
-}  // namespace i18n
-}  // namespace base
+}  // namespace base::i18n

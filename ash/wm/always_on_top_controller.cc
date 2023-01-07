@@ -1,10 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/always_on_top_controller.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/desks/desks_controller.h"
@@ -26,8 +25,9 @@ AlwaysOnTopController::AlwaysOnTopController(
   DCHECK(!desks_util::IsDeskContainer(always_on_top_container_));
   DCHECK(!desks_util::IsDeskContainer(pip_container_));
   always_on_top_container_->SetLayoutManager(
-      new WorkspaceLayoutManager(always_on_top_container_));
-  pip_container_->SetLayoutManager(new WorkspaceLayoutManager(pip_container_));
+      std::make_unique<WorkspaceLayoutManager>(always_on_top_container_));
+  pip_container_->SetLayoutManager(
+      std::make_unique<WorkspaceLayoutManager>(pip_container_));
   // Container should be empty.
   DCHECK(always_on_top_container_->children().empty());
   DCHECK(pip_container_->children().empty());
@@ -61,10 +61,9 @@ aura::Window* AlwaysOnTopController::GetContainer(aura::Window* window) const {
     // TODO(afakhry): Do we need to worry about the context of |window| here? Or
     // is it safe to assume that |window| should always be parented to the
     // active desks' container.
-    int window_workspace =
+    const int window_workspace =
         window->GetProperty(aura::client::kWindowWorkspaceKey);
-    if ((features::IsBentoEnabled() || features::IsFullRestoreEnabled()) &&
-        window_workspace != aura::client::kUnassignedWorkspace) {
+    if (window_workspace != aura::client::kWindowWorkspaceUnassignedWorkspace) {
       auto* desk_container =
           DesksController::Get()->GetDeskContainer(root, window_workspace);
       if (desk_container)
@@ -85,7 +84,7 @@ void AlwaysOnTopController::ClearLayoutManagers() {
 
 void AlwaysOnTopController::SetLayoutManagerForTest(
     std::unique_ptr<WorkspaceLayoutManager> layout_manager) {
-  always_on_top_container_->SetLayoutManager(layout_manager.release());
+  always_on_top_container_->SetLayoutManager(std::move(layout_manager));
 }
 
 void AlwaysOnTopController::AddWindow(aura::Window* window) {
@@ -99,8 +98,8 @@ void AlwaysOnTopController::RemoveWindow(aura::Window* window) {
 }
 
 void AlwaysOnTopController::ReparentWindow(aura::Window* window) {
-  DCHECK(window->type() == aura::client::WINDOW_TYPE_NORMAL ||
-         window->type() == aura::client::WINDOW_TYPE_POPUP);
+  DCHECK(window->GetType() == aura::client::WINDOW_TYPE_NORMAL ||
+         window->GetType() == aura::client::WINDOW_TYPE_POPUP);
   aura::Window* container = GetContainer(window);
   if (window->parent() != container &&
       !window->GetProperty(kDisallowReparentKey))

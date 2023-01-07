@@ -2,7 +2,7 @@ scroll me
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -10,14 +10,15 @@ scroll me
     {
       "name": "LayoutBlockFlow DIV id='composited'",
       "bounds": [20, 20],
+      "contentsOpaqueForText": true,
       "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='overlay')",
-      "position": [2, 0],
+      "name": "LayoutBlockFlow (positioned) DIV id='overlay'",
+      "position": [10, 8],
       "bounds": [400, 204],
-      "transform": 1
+      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

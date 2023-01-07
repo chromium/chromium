@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,12 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/display/manager/content_protection_key_manager.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager_export.h"
 
@@ -70,13 +71,17 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
 
   ContentProtectionManager(DisplayLayoutManager*,
                            ConfigurationDisabledCallback);
+
+  ContentProtectionManager(const ContentProtectionManager&) = delete;
+  ContentProtectionManager& operator=(const ContentProtectionManager&) = delete;
+
   ~ContentProtectionManager() override;
 
   void set_native_display_delegate(NativeDisplayDelegate* delegate) {
     native_display_delegate_ = delegate;
   }
 
-  using ClientId = base::Optional<uint64_t>;
+  using ClientId = absl::optional<uint64_t>;
 
   // On display reconfiguration, pending requests are cancelled, i.e. clients
   // receive failure callbacks, and are responsible for renewing requests. If a
@@ -106,6 +111,11 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
                               int64_t display_id,
                               uint32_t protection_mask,
                               ApplyContentProtectionCallback callback);
+
+  void SetProvisionedKeyRequest(
+      ContentProtectionKeyManager::ProvisionedKeyRequest request) {
+    hdcp_key_manager_.set_provisioned_key_request(request);
+  }
 
  private:
   friend class test::ContentProtectionManagerTest;
@@ -144,7 +154,7 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
   void OnDisplayModeChangeFailed(const DisplayConfigurator::DisplayStateList&,
                                  MultipleDisplayState) override;
 
-  bool ShouldPollDisplaySecurity() const;
+  bool HasExternalDisplaysWithContentProtection() const;
 
   // Toggles timer for periodic security queries given latest client requests.
   void ToggleDisplaySecurityPolling();
@@ -160,8 +170,12 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
                                 uint32_t connection_mask,
                                 uint32_t protection_mask);
 
-  DisplayLayoutManager* const layout_manager_;                // Not owned.
-  NativeDisplayDelegate* native_display_delegate_ = nullptr;  // Not owned.
+  void QueueContentProtectionTask(ApplyContentProtectionCallback callback,
+                                  ClientId client_id);
+
+  const raw_ptr<DisplayLayoutManager> layout_manager_;  // Not owned.
+  raw_ptr<NativeDisplayDelegate> native_display_delegate_ =
+      nullptr;  // Not owned.
 
   const ConfigurationDisabledCallback config_disabled_callback_;
 
@@ -178,9 +192,9 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
   // Used for periodic queries to notify observers of display security changes.
   base::RepeatingTimer security_timer_;
 
-  base::WeakPtrFactory<ContentProtectionManager> weak_ptr_factory_{this};
+  ContentProtectionKeyManager hdcp_key_manager_;
 
-  DISALLOW_COPY_AND_ASSIGN(ContentProtectionManager);
+  base::WeakPtrFactory<ContentProtectionManager> weak_ptr_factory_{this};
 };
 
 }  // namespace display

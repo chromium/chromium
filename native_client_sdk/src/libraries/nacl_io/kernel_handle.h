@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,10 @@ class KernelHandle : public sdk_util::RefObject {
  public:
   KernelHandle();
   KernelHandle(const ScopedFilesystem& fs, const ScopedNode& node);
+
+  KernelHandle(const KernelHandle&) = delete;
+  KernelHandle& operator=(const KernelHandle&) = delete;
+
   ~KernelHandle();
 
   Error Init(int open_flags);
@@ -91,7 +95,6 @@ class KernelHandle : public sdk_util::RefObject {
   HandleAttr handle_attr_;
 
   friend class KernelProxy;
-  DISALLOW_COPY_AND_ASSIGN(KernelHandle);
 };
 
 typedef sdk_util::ScopedRef<KernelHandle> ScopedKernelHandle;

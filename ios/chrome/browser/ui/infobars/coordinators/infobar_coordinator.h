@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,12 @@
 
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
-#import "ios/chrome/browser/ui/infobars/infobar_ui_delegate.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_delegate.h"
 
 class ChromeBrowserState;
 
 @protocol ApplicationCommands;
 @protocol InfobarBadgeUIDelegate;
-@protocol InfobarContainer;
 @protocol InfobarBannerContained;
 
 @class InfobarBannerTransitionDriver;
@@ -35,13 +33,12 @@ class WebState;
 enum class InfobarBannerPresentationState;
 
 // Must be subclassed. Defines common behavior for all Infobars.
-@interface InfobarCoordinator : ChromeCoordinator <InfobarUIDelegate,
-                                                   InfobarBannerDelegate,
-                                                   InfobarModalDelegate>
+@interface InfobarCoordinator
+    : ChromeCoordinator <InfobarBannerDelegate, InfobarModalDelegate>
 
-// Designated Initializer. |infoBarDelegate| is used to configure the Infobar
-// and subsequently perform related actions. |badgeSupport| should be YES if the
-// Infobar will add a Badge and support a Modal. |infobarType| is the unique
+// Designated Initializer. `infoBarDelegate` is used to configure the Infobar
+// and subsequently perform related actions. `badgeSupport` should be YES if the
+// Infobar will add a Badge and support a Modal. `infobarType` is the unique
 // identifier for each Infobar, there can't be more than one infobar with the
 // same type added to the InfobarManager.
 - (instancetype)initWithInfoBarDelegate:
@@ -58,20 +55,23 @@ enum class InfobarBannerPresentationState;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
-// Present the InfobarBanner using |self.baseViewController|.
+// Present the InfobarBanner using `self.baseViewController`.
 - (void)presentInfobarBannerAnimated:(BOOL)animated
                           completion:(ProceduralBlock)completion;
 
-// Present the InfobarModal using |self.baseViewController|.
+// Present the InfobarModal using `self.baseViewController`.
 - (void)presentInfobarModal;
 
 // Dismisses the InfobarBanner immediately, if none is being presented
-// |completion| will still run.
+// `completion` will still run.
 - (void)dismissInfobarBannerAnimated:(BOOL)animated
                           completion:(void (^)())completion;
 
 // Stops this Coordinator.
 - (void)stop NS_REQUIRES_SUPER;
+
+// The InfobarType for this Infobar.
+@property(nonatomic, assign) InfobarType infobarType;
 
 // YES if the Coordinator has been started.
 @property(nonatomic, assign) BOOL started;
@@ -103,9 +103,6 @@ enum class InfobarBannerPresentationState;
 // The commands handler for this Coordinator.
 @property(nonatomic, weak) id<ApplicationCommands> handler;
 
-// The InfobarContainer for this InfobarCoordinator.
-@property(nonatomic, weak) id<InfobarContainer> infobarContainer;
-
 // The InfobarBanner presentation state.
 @property(nonatomic, assign) InfobarBannerPresentationState infobarBannerState;
 
@@ -118,6 +115,10 @@ enum class InfobarBannerPresentationState;
 // auto-dismiss and/or jumping the queue and being the next banner to present,
 // etc.
 @property(nonatomic, assign) BOOL highPriorityPresentation;
+
+// If YES, then InfobarCoordinator will handle dismissing any infobar shown.
+// If NO, then the coordinator should handle dismissal itself. Defaults to YES.
+@property(nonatomic, assign) BOOL shouldUseDefaultDismissal;
 
 @end
 

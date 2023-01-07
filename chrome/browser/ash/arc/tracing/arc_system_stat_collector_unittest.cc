@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 #include <unistd.h>
 
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
+#include "base/json/json_reader.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,6 +62,25 @@ TEST_F(ArcSystemStatCollectorTest, Parse) {
                             ArcSystemStatCollector::kOneValueColumns,
                             &cpu_temp));
   EXPECT_EQ(52000, cpu_temp);
+}
+
+TEST_F(ArcSystemStatCollectorTest, Serialize) {
+  base::FilePath base_path;
+  base::PathService::Get(chrome::DIR_TEST_DATA, &base_path);
+  const base::FilePath path =
+      base_path.Append("arc_graphics_tracing").Append("system_stat_collector");
+  std::string json_content;
+  ASSERT_TRUE(base::ReadFileToString(path, &json_content));
+  ArcSystemStatCollector collector;
+  ASSERT_TRUE(collector.LoadFromJson(json_content));
+  const std::string json_content_restored = collector.SerializeToJson();
+  ASSERT_TRUE(!json_content_restored.empty());
+  absl::optional<base::Value> root = base::JSONReader::Read(json_content);
+  ASSERT_TRUE(root);
+  absl::optional<base::Value> root_restored =
+      base::JSONReader::Read(json_content_restored);
+  ASSERT_TRUE(root_restored);
+  EXPECT_EQ(*root, *root_restored);
 }
 
 }  // namespace arc

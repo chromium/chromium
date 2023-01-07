@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,7 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/utility/importer/importer.h"
 #include "components/favicon_base/favicon_usage_data.h"
 
@@ -20,6 +18,9 @@ struct ImportedBookmarkEntry;
 class EdgeImporter : public Importer {
  public:
   EdgeImporter();
+
+  EdgeImporter(const EdgeImporter&) = delete;
+  EdgeImporter& operator=(const EdgeImporter&) = delete;
 
   // Importer:
   void StartImport(const importer::SourceProfile& source_profile,
@@ -38,8 +39,6 @@ class EdgeImporter : public Importer {
   // Edge does not have source path. It's used in unit tests only for providing
   // a fake source for the spartan database location.
   base::FilePath source_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(EdgeImporter);
 };
 
 #endif  // CHROME_UTILITY_IMPORTER_EDGE_IMPORTER_WIN_H_

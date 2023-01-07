@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_ENCODING_REGISTRY_H_
 
 #include <memory>
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"

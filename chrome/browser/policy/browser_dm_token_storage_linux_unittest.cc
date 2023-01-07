@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,10 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/test/scoped_path_override.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/test/browser_task_environment.h"
@@ -59,8 +58,8 @@ TEST_F(BrowserDMTokenStorageLinuxTest, InitEnrollmentToken) {
   base::ScopedTempDir fake_policy_dir;
 
   ASSERT_TRUE(fake_policy_dir.CreateUniqueTempDir());
-  path_override.reset(new base::ScopedPathOverride(chrome::DIR_POLICY_FILES,
-                                                   fake_policy_dir.GetPath()));
+  path_override = std::make_unique<base::ScopedPathOverride>(
+      chrome::DIR_POLICY_FILES, fake_policy_dir.GetPath());
 
   base::FilePath dir_policy_files_path;
   ASSERT_TRUE(
@@ -82,8 +81,8 @@ TEST_F(BrowserDMTokenStorageLinuxTest, InitDMToken) {
   base::ScopedTempDir fake_user_data_dir;
 
   ASSERT_TRUE(fake_user_data_dir.CreateUniqueTempDir());
-  path_override.reset(new base::ScopedPathOverride(
-      chrome::DIR_USER_DATA, fake_user_data_dir.GetPath()));
+  path_override = std::make_unique<base::ScopedPathOverride>(
+      chrome::DIR_USER_DATA, fake_user_data_dir.GetPath());
 
   base::FilePath dir_user_data_path;
   ASSERT_TRUE(
@@ -105,8 +104,8 @@ TEST_F(BrowserDMTokenStorageLinuxTest, InitDMTokenWithoutDirectory) {
   base::ScopedTempDir fake_user_data_dir;
 
   ASSERT_TRUE(fake_user_data_dir.CreateUniqueTempDir());
-  path_override.reset(new base::ScopedPathOverride(
-      chrome::DIR_USER_DATA, fake_user_data_dir.GetPath()));
+  path_override = std::make_unique<base::ScopedPathOverride>(
+      chrome::DIR_USER_DATA, fake_user_data_dir.GetPath());
 
   base::FilePath dm_token_dir_path =
       fake_user_data_dir.GetPath().Append(kDmTokenBaseDir);
@@ -122,7 +121,7 @@ class TestStoreDMTokenDelegate {
   TestStoreDMTokenDelegate() : called_(false), success_(false) {}
   ~TestStoreDMTokenDelegate() {}
 
-  void OnDMTokenStored(bool success) {
+  void OnDMTokenUpdated(bool success) {
     run_loop_.Quit();
     called_ = true;
     success_ = success;
@@ -150,13 +149,13 @@ TEST_F(BrowserDMTokenStorageLinuxTest, SaveDMToken) {
   base::ScopedTempDir fake_user_data_dir;
 
   ASSERT_TRUE(fake_user_data_dir.CreateUniqueTempDir());
-  path_override.reset(new base::ScopedPathOverride(
-      chrome::DIR_USER_DATA, fake_user_data_dir.GetPath()));
+  path_override = std::make_unique<base::ScopedPathOverride>(
+      chrome::DIR_USER_DATA, fake_user_data_dir.GetPath());
 
   MockBrowserDMTokenStorageLinux storage_delegate;
   auto task = storage_delegate.SaveDMTokenTask(kDMToken,
                                                storage_delegate.InitClientId());
-  auto reply = base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenStored,
+  auto reply = base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenUpdated,
                               base::Unretained(&callback_delegate));
   base::PostTaskAndReplyWithResult(
       storage_delegate.SaveDMTokenTaskRunner().get(), FROM_HERE,
@@ -176,6 +175,79 @@ TEST_F(BrowserDMTokenStorageLinuxTest, SaveDMToken) {
   std::string dm_token;
   ASSERT_TRUE(base::ReadFileToString(dm_token_file_path, &dm_token));
   EXPECT_EQ(kDMToken, dm_token);
+}
+
+TEST_F(BrowserDMTokenStorageLinuxTest, DeleteDMToken) {
+  std::unique_ptr<base::ScopedPathOverride> path_override;
+  base::ScopedTempDir fake_user_data_dir;
+
+  ASSERT_TRUE(fake_user_data_dir.CreateUniqueTempDir());
+  path_override = std::make_unique<base::ScopedPathOverride>(
+      chrome::DIR_USER_DATA, fake_user_data_dir.GetPath());
+
+  // Creating the DMToken file.
+  base::FilePath dir_user_data_path;
+  ASSERT_TRUE(
+      base::PathService::Get(chrome::DIR_USER_DATA, &dir_user_data_path));
+  base::FilePath dm_token_dir_path = dir_user_data_path.Append(kDmTokenBaseDir);
+  ASSERT_TRUE(base::CreateDirectory(dm_token_dir_path));
+
+  base::FilePath dm_token_file_path =
+      dm_token_dir_path.Append(kExpectedClientId);
+  ASSERT_TRUE(base::WriteFile(base::FilePath(dm_token_file_path), kDMToken));
+  ASSERT_TRUE(base::PathExists(dm_token_file_path));
+
+  // Deleting the saved DMToken.
+  MockBrowserDMTokenStorageLinux storage_delegate;
+  TestStoreDMTokenDelegate delete_callback_delegate;
+  auto delete_task =
+      storage_delegate.DeleteDMTokenTask(storage_delegate.InitClientId());
+  auto delete_reply =
+      base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenUpdated,
+                     base::Unretained(&delete_callback_delegate));
+  base::PostTaskAndReplyWithResult(
+      storage_delegate.SaveDMTokenTaskRunner().get(), FROM_HERE,
+      std::move(delete_task), std::move(delete_reply));
+
+  delete_callback_delegate.Wait();
+  ASSERT_TRUE(delete_callback_delegate.WasCalled());
+  ASSERT_TRUE(delete_callback_delegate.success());
+
+  ASSERT_FALSE(base::PathExists(dm_token_file_path));
+}
+
+TEST_F(BrowserDMTokenStorageLinuxTest, DeleteEmptyDMToken) {
+  std::unique_ptr<base::ScopedPathOverride> path_override;
+  base::ScopedTempDir fake_user_data_dir;
+
+  ASSERT_TRUE(fake_user_data_dir.CreateUniqueTempDir());
+  path_override = std::make_unique<base::ScopedPathOverride>(
+      chrome::DIR_USER_DATA, fake_user_data_dir.GetPath());
+
+  base::FilePath dir_user_data_path;
+  ASSERT_TRUE(
+      base::PathService::Get(chrome::DIR_USER_DATA, &dir_user_data_path));
+  base::FilePath dm_token_dir_path = dir_user_data_path.Append(kDmTokenBaseDir);
+  base::FilePath dm_token_file_path =
+      dm_token_dir_path.Append(kExpectedClientId);
+  ASSERT_FALSE(base::PathExists(dm_token_file_path));
+
+  MockBrowserDMTokenStorageLinux storage_delegate;
+  TestStoreDMTokenDelegate callback_delegate;
+  auto delete_task =
+      storage_delegate.DeleteDMTokenTask(storage_delegate.InitClientId());
+  auto delete_reply =
+      base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenUpdated,
+                     base::Unretained(&callback_delegate));
+  base::PostTaskAndReplyWithResult(
+      storage_delegate.SaveDMTokenTaskRunner().get(), FROM_HERE,
+      std::move(delete_task), std::move(delete_reply));
+
+  callback_delegate.Wait();
+  ASSERT_TRUE(callback_delegate.WasCalled());
+  ASSERT_TRUE(callback_delegate.success());
+
+  ASSERT_FALSE(base::PathExists(dm_token_file_path));
 }
 
 }  // namespace policy

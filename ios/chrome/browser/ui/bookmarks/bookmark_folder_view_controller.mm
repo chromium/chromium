@@ -1,28 +1,27 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_view_controller.h"
 
-#include <memory>
-#include <vector>
+#import <memory>
+#import <vector>
 
-#include "base/check.h"
-#include "base/notreached.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/bookmarks/browser/bookmark_model.h"
+#import "base/check.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
-#import "ios/chrome/browser/ui/material_components/utils.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -84,7 +83,7 @@ using bookmarks::BookmarkNode;
 // The browser for this ViewController.
 @property(nonatomic, readonly) Browser* browser;
 
-// Reloads the model and the updates |self.tableView| to reflect any model
+// Reloads the model and the updates `self.tableView` to reflect any model
 // changes.
 - (void)reloadModel;
 
@@ -123,9 +122,7 @@ using bookmarks::BookmarkNode;
   DCHECK(browser);
   DCHECK(selectedFolder == NULL || selectedFolder->is_folder());
 
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? ChromeTableViewStyle()
-                               : UITableViewStylePlain;
+  UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
     _browser = browser;
@@ -224,7 +221,7 @@ using bookmarks::BookmarkNode;
     UIView* separator = [[UIView alloc] initWithFrame:separatorFrame];
     separator.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin |
                                  UIViewAutoresizingFlexibleWidth;
-    separator.backgroundColor = UIColor.cr_opaqueSeparatorColor;
+    separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
     [headerView addSubview:separator];
   }
   return headerView;
@@ -243,15 +240,16 @@ using bookmarks::BookmarkNode;
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
-  switch ([self.tableViewModel sectionIdentifierForSection:indexPath.section]) {
+  switch ([self.tableViewModel
+      sectionIdentifierForSectionIndex:indexPath.section]) {
     case SectionIdentifierAddFolder:
       [self pushFolderAddViewController];
       break;
 
     case SectionIdentifierBookmarkFolders: {
       int folderIndex = indexPath.row;
-      // If |shouldShowDefaultSection| is YES, the first cell on this section
-      // should call |pushFolderAddViewController|.
+      // If `shouldShowDefaultSection` is YES, the first cell on this section
+      // should call `pushFolderAddViewController`.
       if ([self shouldShowDefaultSection]) {
         NSInteger itemType =
             [self.tableViewModel itemTypeForIndexPath:indexPath];
@@ -259,8 +257,8 @@ using bookmarks::BookmarkNode;
           [self pushFolderAddViewController];
           return;
         }
-        // If |shouldShowDefaultSection| is YES we need to offset by 1 to get
-        // the right BookmarkNode from |self.folders|.
+        // If `shouldShowDefaultSection` is YES we need to offset by 1 to get
+        // the right BookmarkNode from `self.folders`.
         folderIndex--;
       }
       const BookmarkNode* folder = self.folders[folderIndex];
@@ -444,6 +442,7 @@ using bookmarks::BookmarkNode;
                             parentFolder:self.selectedFolder
                                  browser:self.browser];
   folderCreator.delegate = self;
+  folderCreator.snackbarCommandsHandler = self.snackbarCommandsHandler;
   [self.navigationController pushViewController:folderCreator animated:YES];
   self.folderAddController = folderCreator;
 }

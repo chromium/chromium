@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -41,6 +40,9 @@ class WebBundleHandle {
   static std::unique_ptr<WebBundleHandle> MaybeCreateForNavigationInfo(
       std::unique_ptr<WebBundleNavigationInfo> navigation_info,
       int frame_tree_node_id);
+
+  WebBundleHandle(const WebBundleHandle&) = delete;
+  WebBundleHandle& operator=(const WebBundleHandle&) = delete;
 
   ~WebBundleHandle();
 
@@ -91,8 +93,6 @@ class WebBundleHandle {
   std::unique_ptr<WebBundleURLLoaderFactory> url_loader_factory_;
 
   base::WeakPtrFactory<WebBundleHandle> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebBundleHandle);
 };
 
 }  // namespace content

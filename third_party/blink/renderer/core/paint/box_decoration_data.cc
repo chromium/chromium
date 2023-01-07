@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,8 @@ bool BoxDecorationData::BorderObscuresBackgroundEdge() const {
 }
 
 BackgroundBleedAvoidance BoxDecorationData::ComputeBleedAvoidance() const {
-  if (!should_paint_background_ || is_painting_scrolling_background_ ||
+  if (!should_paint_background_ ||
+      paint_info_.IsPaintingBackgroundInContentsSpace() ||
       layout_box_.IsDocumentElement())
     return kBackgroundBleedNone;
 

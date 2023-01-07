@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -38,14 +37,16 @@ class UPowerProperties : public dbus::PropertySet {
  public:
   UPowerProperties(dbus::ObjectProxy* object_proxy,
                    const PropertyChangedCallback callback);
+
+  UPowerProperties(const UPowerProperties&) = delete;
+  UPowerProperties& operator=(const UPowerProperties&) = delete;
+
   ~UPowerProperties() override;
 
   base::Version daemon_version();
 
  private:
   dbus::Property<std::string> daemon_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(UPowerProperties);
 };
 
 UPowerProperties::UPowerProperties(dbus::ObjectProxy* object_proxy,
@@ -68,6 +69,10 @@ class UPowerObject {
 
   UPowerObject(dbus::Bus* dbus,
                const PropertyChangedCallback property_changed_callback);
+
+  UPowerObject(const UPowerObject&) = delete;
+  UPowerObject& operator=(const UPowerObject&) = delete;
+
   ~UPowerObject();
 
   std::vector<dbus::ObjectPath> EnumerateDevices();
@@ -77,11 +82,9 @@ class UPowerObject {
   UPowerProperties* properties() { return properties_.get(); }
 
  private:
-  dbus::Bus* dbus_;           // Owned by the BatteryStatusNotificationThread.
-  dbus::ObjectProxy* proxy_;  // Owned by the dbus.
+  raw_ptr<dbus::Bus> dbus_;  // Owned by the BatteryStatusNotificationThread.
+  raw_ptr<dbus::ObjectProxy> proxy_;  // Owned by the dbus.
   std::unique_ptr<UPowerProperties> properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(UPowerObject);
 };
 
 UPowerObject::UPowerObject(
@@ -131,15 +134,14 @@ dbus::ObjectPath UPowerObject::GetDisplayDevice() {
   return display_device_path;
 }
 
-void UpdateNumberBatteriesHistogram(int count) {
-  UMA_HISTOGRAM_CUSTOM_COUNTS("BatteryStatus.NumberBatteriesLinux", count, 1, 5,
-                              6);
-}
-
 class BatteryProperties : public dbus::PropertySet {
  public:
   BatteryProperties(dbus::ObjectProxy* object_proxy,
                     const PropertyChangedCallback callback);
+
+  BatteryProperties(const BatteryProperties&) = delete;
+  BatteryProperties& operator=(const BatteryProperties&) = delete;
+
   ~BatteryProperties() override;
 
   void ConnectSignals() override;
@@ -161,8 +163,6 @@ class BatteryProperties : public dbus::PropertySet {
   dbus::Property<int64_t> time_to_empty_;
   dbus::Property<int64_t> time_to_full_;
   dbus::Property<uint32_t> type_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryProperties);
 };
 
 BatteryProperties::BatteryProperties(dbus::ObjectProxy* object_proxy,
@@ -235,6 +235,10 @@ class BatteryObject {
   BatteryObject(dbus::Bus* dbus,
                 const dbus::ObjectPath& device_path,
                 const PropertyChangedCallback& property_changed_callback);
+
+  BatteryObject(const BatteryObject&) = delete;
+  BatteryObject& operator=(const BatteryObject&) = delete;
+
   ~BatteryObject();
 
   bool IsValid() const;
@@ -243,11 +247,9 @@ class BatteryObject {
   BatteryProperties* properties() { return properties_.get(); }
 
  private:
-  dbus::Bus* dbus_;           // Owned by the BatteryStatusNotificationThread,
-  dbus::ObjectProxy* proxy_;  // Owned by the dbus.
+  raw_ptr<dbus::Bus> dbus_;  // Owned by the BatteryStatusNotificationThread,
+  raw_ptr<dbus::ObjectProxy> proxy_;  // Owned by the dbus.
   std::unique_ptr<BatteryProperties> properties_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryObject);
 };
 
 BatteryObject::BatteryObject(
@@ -321,6 +323,11 @@ class BatteryStatusManagerLinux::BatteryStatusNotificationThread
   explicit BatteryStatusNotificationThread(
       const BatteryStatusService::BatteryUpdateCallback& callback)
       : base::Thread(kBatteryNotifierThreadName), callback_(callback) {}
+
+  BatteryStatusNotificationThread(const BatteryStatusNotificationThread&) =
+      delete;
+  BatteryStatusNotificationThread& operator=(
+      const BatteryStatusNotificationThread&) = delete;
 
   ~BatteryStatusNotificationThread() override {
     // Make sure to shutdown the dbus connection if it is still open in the very
@@ -427,7 +434,6 @@ class BatteryStatusManagerLinux::BatteryStatusNotificationThread
     }
 
     if (!battery_) {
-      int num_batteries = 0;
       for (const auto& device_path : upower_->EnumerateDevices()) {
         auto battery = UseCurrentOrCreateBattery(device_path);
         if (!battery->IsValid())
@@ -442,10 +448,7 @@ class BatteryStatusManagerLinux::BatteryStatusNotificationThread
         } else {
           battery_ = std::move(battery);
         }
-        num_batteries++;
       }
-
-      UpdateNumberBatteriesHistogram(num_batteries);
     }
 
     if (!battery_) {
@@ -572,8 +575,6 @@ class BatteryStatusManagerLinux::BatteryStatusNotificationThread
   std::unique_ptr<UPowerObject> upower_;
   std::unique_ptr<BatteryObject> battery_;
   bool notifying_battery_status_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusNotificationThread);
 };
 
 BatteryStatusManagerLinux::BatteryStatusManagerLinux(
@@ -606,10 +607,10 @@ bool BatteryStatusManagerLinux::StartNotifierThreadIfNecessary() {
   if (notifier_thread_)
     return true;
 
-  base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
   auto notifier_thread =
       std::make_unique<BatteryStatusNotificationThread>(callback_);
-  if (!notifier_thread->StartWithOptions(thread_options)) {
+  if (!notifier_thread->StartWithOptions(
+          base::Thread::Options(base::MessagePumpType::IO, 0))) {
     LOG(ERROR) << "Could not start the " << kBatteryNotifierThreadName
                << " thread";
     return false;

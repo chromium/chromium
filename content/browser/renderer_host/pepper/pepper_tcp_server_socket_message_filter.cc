@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/network/firewall_hole.h"
+#include "chromeos/ash/components/network/firewall_hole.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using ppapi::NetAddressPrivateImpl;
@@ -140,7 +140,7 @@ int32_t PepperTCPServerSocketMessageFilter::OnMsgListen(
 
   SocketPermissionRequest request =
       pepper_socket_utils::CreateSocketPermissionRequest(
-          content::SocketPermissionRequest::TCP_LISTEN, addr);
+          SocketPermissionRequest::TCP_LISTEN, addr);
   if (!pepper_socket_utils::CanUseSocketAPIs(external_plugin_,
                                              private_api_,
                                              &request,
@@ -180,7 +180,7 @@ int32_t PepperTCPServerSocketMessageFilter::OnMsgListen(
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&PepperTCPServerSocketMessageFilter::OnListenCompleted,
                          weak_ptr_factory_.GetWeakPtr(), reply_context),
-          net::ERR_FAILED, base::nullopt /* local_addr_out */));
+          net::ERR_FAILED, absl::nullopt /* local_addr_out */));
 
   return PP_OK_COMPLETIONPENDING;
 }
@@ -206,7 +206,7 @@ int32_t PepperTCPServerSocketMessageFilter::OnMsgAccept(
           base::BindOnce(&PepperTCPServerSocketMessageFilter::OnAcceptCompleted,
                          base::Unretained(this), reply_context,
                          std::move(socket_observer_receiver)),
-          net::ERR_FAILED, base::nullopt /* remote_addr */, mojo::NullRemote(),
+          net::ERR_FAILED, absl::nullopt /* remote_addr */, mojo::NullRemote(),
           mojo::ScopedDataPipeConsumerHandle(),
           mojo::ScopedDataPipeProducerHandle()));
   return PP_OK_COMPLETIONPENDING;
@@ -224,7 +224,7 @@ int32_t PepperTCPServerSocketMessageFilter::OnMsgStopListening(
 void PepperTCPServerSocketMessageFilter::OnListenCompleted(
     const ppapi::host::ReplyMessageContext& context,
     int net_result,
-    const base::Optional<net::IPEndPoint>& local_addr) {
+    const absl::optional<net::IPEndPoint>& local_addr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Exit early if this is called during Close().
@@ -275,7 +275,7 @@ void PepperTCPServerSocketMessageFilter::OpenFirewallHole(
 
 void PepperTCPServerSocketMessageFilter::OnFirewallHoleOpened(
     const ppapi::host::ReplyMessageContext& context,
-    std::unique_ptr<chromeos::FirewallHole> hole) {
+    std::unique_ptr<ash::FirewallHole> hole) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   LOG_IF(WARNING, !hole.get()) << "Firewall hole could not be opened.";
@@ -291,7 +291,7 @@ void PepperTCPServerSocketMessageFilter::OnAcceptCompleted(
     mojo::PendingReceiver<network::mojom::SocketObserver>
         socket_observer_receiver,
     int net_result,
-    const base::Optional<net::IPEndPoint>& remote_addr,
+    const absl::optional<net::IPEndPoint>& remote_addr,
     mojo::PendingRemote<network::mojom::TCPConnectedSocket> connected_socket,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
@@ -329,16 +329,16 @@ void PepperTCPServerSocketMessageFilter::OnAcceptCompleted(
     return;
   }
 
-  GetIOThreadTaskRunner({})->PostTask(
+  GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &PepperTCPServerSocketMessageFilter::OnAcceptCompletedOnIOThread,
+          &PepperTCPServerSocketMessageFilter::OnAcceptCompletedOnUIThread,
           this, context, std::move(connected_socket),
           std::move(socket_observer_receiver), std::move(receive_stream),
           std::move(send_stream), bound_addr_, pp_remote_addr));
 }
 
-void PepperTCPServerSocketMessageFilter::OnAcceptCompletedOnIOThread(
+void PepperTCPServerSocketMessageFilter::OnAcceptCompletedOnUIThread(
     const ppapi::host::ReplyMessageContext& context,
     mojo::PendingRemote<network::mojom::TCPConnectedSocket> connected_socket,
     mojo::PendingReceiver<network::mojom::SocketObserver>
@@ -347,7 +347,7 @@ void PepperTCPServerSocketMessageFilter::OnAcceptCompletedOnIOThread(
     mojo::ScopedDataPipeProducerHandle send_stream,
     PP_NetAddress_Private pp_local_addr,
     PP_NetAddress_Private pp_remote_addr) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!host_->IsValidInstance(instance_)) {
     // The instance has been removed while Accept was in progress. This object

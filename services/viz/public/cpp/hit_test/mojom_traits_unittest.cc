@@ -1,6 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include <cstring>
 
 #include "components/viz/common/hit_test/aggregated_hit_test_region.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
@@ -33,12 +35,12 @@ TEST(StructTraitsTest, AggregatedHitTestRegion) {
   EXPECT_EQ(input.flags, output.flags);
   EXPECT_EQ(input.async_hit_test_reasons, output.async_hit_test_reasons);
   EXPECT_EQ(input.rect, output.rect);
-  EXPECT_EQ(input.transform(), output.transform());
+  EXPECT_EQ(input.transform, output.transform);
   EXPECT_EQ(input.child_count, output.child_count);
 }
 
 TEST(StructTraitsTest, HitTestRegionList) {
-  base::Optional<HitTestRegionList> input(base::in_place);
+  absl::optional<HitTestRegionList> input(absl::in_place);
   input->flags = HitTestRegionFlags::kHitTestAsk;
   input->async_hit_test_reasons = AsyncHitTestReasons::kOverlappedRegion;
   input->bounds = gfx::Rect(1, 2, 3, 4);
@@ -52,7 +54,7 @@ TEST(StructTraitsTest, HitTestRegionList) {
   input_region1.transform.Scale(1.2f, 1.3f);
   input->regions.push_back(input_region1);
 
-  base::Optional<HitTestRegionList> output;
+  absl::optional<HitTestRegionList> output;
   mojo::test::SerializeAndDeserialize<mojom::HitTestRegionList>(input, output);
   EXPECT_TRUE(output);
   EXPECT_EQ(input->flags, output->flags);
@@ -66,6 +68,17 @@ TEST(StructTraitsTest, HitTestRegionList) {
   EXPECT_EQ(input->regions[0].frame_sink_id, output->regions[0].frame_sink_id);
   EXPECT_EQ(input->regions[0].rect, output->regions[0].rect);
   EXPECT_EQ(input->regions[0].transform, output->regions[0].transform);
+}
+
+// Ensures gfx::Transform doesn't mutate itself when its const methods are
+// called, to ensure it won't change in the read-only shared memory segment.
+TEST(StructTraitsTest, TransformImmutable) {
+  auto t1 = gfx::Transform::RowMajor(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13,
+                                     14, 15, 16);
+  gfx::Transform t2;
+  std::memcpy(&t2, &t1, sizeof(t1));
+  EXPECT_FALSE(t2.IsIdentity());
+  EXPECT_EQ(0, std::memcmp(&t1, &t2, sizeof(t1)));
 }
 
 }  // namespace viz

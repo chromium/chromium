@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -145,7 +145,9 @@ class LayerTreeHostDamageTestSetViewportRectAndScale
   FakeContentLayerClient client_;
 };
 
-SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostDamageTestSetViewportRectAndScale);
+// Test is flaky: https://crbug.com/1306984
+// SINGLE_AND_MULTI_THREAD_TEST_F(
+// LayerTreeHostDamageTestSetViewportRectAndScale);
 
 class LayerTreeHostDamageTestNoDamageDoesNotSwap
     : public LayerTreeHostDamageTest {
@@ -337,8 +339,11 @@ class LayerTreeHostScrollbarDamageTest : public LayerTreeHostDamageTest {
     content_layer_ = FakePictureLayer::Create(&client_);
     content_layer_->SetElementId(
         LayerIdToElementIdForTesting(content_layer_->id()));
-    content_layer_->SetScrollable(root_layer->bounds());
-    content_layer_->SetScrollOffset(gfx::ScrollOffset(10, 20));
+
+    // The size of the container in which scrolling contents are visible need
+    // to be smaller than the bounds of the layer itself.
+    content_layer_->SetScrollable(gfx::Size(80, 180));
+    content_layer_->SetScrollOffset(gfx::PointF(10, 20));
     content_layer_->SetBounds(gfx::Size(100, 200));
     content_layer_->SetIsDrawable(true);
     root_layer->AddChild(content_layer_);

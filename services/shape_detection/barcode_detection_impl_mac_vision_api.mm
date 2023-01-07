@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,11 +17,7 @@ class VisionAPI : public VisionAPIInterface {
   ~VisionAPI() override = default;
 
   NSArray<VNBarcodeSymbology>* GetSupportedSymbologies() const override {
-    if (@available(macOS 10.13, *)) {
-      return [VNDetectBarcodesRequest supportedSymbologies];
-    }
-
-    return @[];
+    return [VNDetectBarcodesRequest supportedSymbologies];
   }
 };
 

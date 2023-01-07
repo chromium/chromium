@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,15 @@
 
 #include <memory>
 
-#include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "remoting/host/desktop_display_info.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
+#include "remoting/protocol/desktop_capturer.h"
+
+#if defined(WEBRTC_USE_GIO)
+#include "base/callback.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_metadata.h"
+#endif
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -24,22 +27,21 @@ class DesktopCaptureOptions;
 
 namespace remoting {
 
-class ClientSessionControl;
-
 // DesktopCapturerProxy is responsible for calling webrtc::DesktopCapturer on
 // the capturer thread and then returning results to the caller's thread.
-// GetSourceList() and SelectSource() functions are not implemented by this
-// class, they always return false.
-class DesktopCapturerProxy : public webrtc::DesktopCapturer {
+// GetSourceList() is not implemented by this class, it always returns false.
+class DesktopCapturerProxy : public DesktopCapturer {
  public:
   explicit DesktopCapturerProxy(
-      scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
-      base::WeakPtr<ClientSessionControl> client_session_control);
+      scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner);
+
+  DesktopCapturerProxy(const DesktopCapturerProxy&) = delete;
+  DesktopCapturerProxy& operator=(const DesktopCapturerProxy&) = delete;
+
   ~DesktopCapturerProxy() override;
 
   // CreateCapturer() should be used if the capturer needs to be created on the
-  // capturer thread. Alternatively the capturer can be passed to
-  // set_capturer().
+  // capturer thread. Otherwise, the capturer can be passed to set_capturer().
   void CreateCapturer(const webrtc::DesktopCaptureOptions& options);
   void set_capturer(std::unique_ptr<webrtc::DesktopCapturer> capturer);
 
@@ -50,6 +52,10 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
   void CaptureFrame() override;
   bool GetSourceList(SourceList* sources) override;
   bool SelectSource(SourceId id) override;
+#if defined(WEBRTC_USE_GIO)
+  void GetMetadataAsync(base::OnceCallback<void(webrtc::DesktopCaptureMetadata)>
+                            callback) override;
+#endif
 
  private:
   class Core;
@@ -57,23 +63,22 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
   void OnFrameCaptured(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame);
 
-  base::ThreadChecker thread_checker_;
+#if defined(WEBRTC_USE_GIO)
+  void OnMetadata(webrtc::DesktopCaptureMetadata metadata);
+#endif
 
   std::unique_ptr<Core> core_;
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
-  webrtc::DesktopCapturer::Callback* callback_;
 
-  // Used to disconnect the client session.
-  // Note: This cannot be used on Windows because the ClientSession is not in
-  // the same process as the DesktopCapturerProxy.
-  base::WeakPtr<ClientSessionControl> client_session_control_;
+  raw_ptr<webrtc::DesktopCapturer::Callback> callback_ = nullptr;
 
-  // Contains the most recently gathered info about the desktop displays.
-  std::unique_ptr<DesktopDisplayInfo> desktop_display_info_;
+#if defined(WEBRTC_USE_GIO)
+  base::OnceCallback<void(webrtc::DesktopCaptureMetadata)> metadata_callback_;
+#endif
+
+  THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<DesktopCapturerProxy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopCapturerProxy);
 };
 
 }  // namespace remoting

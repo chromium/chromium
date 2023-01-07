@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,20 +13,22 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/values_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "base/util/values/values_util.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/filename_generation/filename_generation.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -35,6 +37,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/file_handlers/app_file_handler_util.h"
+#include "extensions/browser/api/file_system/consent_provider.h"
 #include "extensions/browser/api/file_system/file_system_delegate.h"
 #include "extensions/browser/api/file_system/saved_file_entry.h"
 #include "extensions/browser/api/file_system/saved_files_service_interface.h"
@@ -54,18 +57,19 @@
 #include "storage/browser/file_system/isolated_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/origin.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <CoreFoundation/CoreFoundation.h>
 #include "base/mac/foundation_util.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/file_handlers/non_native_file_system_delegate.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using storage::IsolatedContext;
 
@@ -87,10 +91,10 @@ const char kRetainEntryError[] = "Could not retain file entry.";
 const char kRetainEntryIncognitoError[] =
     "Could not retain file entry in incognito mode";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kNotSupportedOnNonKioskSessionError[] =
     "Operation only supported for kiosk apps running in a kiosk session.";
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -101,10 +105,19 @@ namespace {
 
 bool g_skip_picker_for_test = false;
 bool g_use_suggested_path_for_test = false;
-base::FilePath* g_path_to_be_picked_for_test;
-std::vector<base::FilePath>* g_paths_to_be_picked_for_test;
+const base::FilePath* g_path_to_be_picked_for_test = nullptr;
+const std::vector<base::FilePath>* g_paths_to_be_picked_for_test = nullptr;
 bool g_skip_directory_confirmation_for_test = false;
 bool g_allow_directory_access_for_test = false;
+
+void ResetTestValuesToDefaults() {
+  g_skip_picker_for_test = false;
+  g_use_suggested_path_for_test = false;
+  g_path_to_be_picked_for_test = nullptr;
+  g_paths_to_be_picked_for_test = nullptr;
+  g_skip_directory_confirmation_for_test = false;
+  g_allow_directory_access_for_test = false;
+}
 
 // Expand the mime-types and extensions provided in an AcceptOption, returning
 // them within the passed extension vector. Returns false if no valid types
@@ -116,13 +129,11 @@ bool GetFileTypesFromAcceptOption(
   std::set<base::FilePath::StringType> extension_set;
   int description_id = 0;
 
-  if (accept_option.mime_types.get()) {
-    std::vector<std::string>* list = accept_option.mime_types.get();
+  if (accept_option.mime_types) {
     bool valid_type = false;
-    for (std::vector<std::string>::const_iterator iter = list->begin();
-         iter != list->end(); ++iter) {
+    for (const auto& item : *accept_option.mime_types) {
       std::vector<base::FilePath::StringType> inner;
-      std::string accept_type = base::ToLowerASCII(*iter);
+      std::string accept_type = base::ToLowerASCII(item);
       net::GetExtensionsForMimeType(accept_type, &inner);
       if (inner.empty())
         continue;
@@ -142,15 +153,12 @@ bool GetFileTypesFromAcceptOption(
     }
   }
 
-  if (accept_option.extensions.get()) {
-    std::vector<std::string>* list = accept_option.extensions.get();
-    for (std::vector<std::string>::const_iterator iter = list->begin();
-         iter != list->end(); ++iter) {
-      std::string extension = base::ToLowerASCII(*iter);
-#if defined(OS_WIN)
-      extension_set.insert(base::UTF8ToWide(*iter));
+  if (accept_option.extensions) {
+    for (const auto& item : *accept_option.extensions) {
+#if BUILDFLAG(IS_WIN)
+      extension_set.insert(base::UTF8ToWide(item));
 #else
-      extension_set.insert(*iter);
+      extension_set.insert(item);
 #endif
     }
   }
@@ -159,7 +167,7 @@ bool GetFileTypesFromAcceptOption(
   if (extensions->empty())
     return false;
 
-  if (accept_option.description.get())
+  if (accept_option.description)
     *description = base::UTF8ToUTF16(*accept_option.description);
   else if (description_id)
     *description = l10n_util::GetStringUTF16(description_id);
@@ -173,8 +181,10 @@ const char kLastChooseEntryDirectory[] = "last_choose_file_directory";
 
 const int kGraylistedPaths[] = {
     base::DIR_HOME,
-#if defined(OS_WIN)
-    base::DIR_PROGRAM_FILES, base::DIR_PROGRAM_FILESX86, base::DIR_WINDOWS,
+#if BUILDFLAG(IS_WIN)
+    base::DIR_PROGRAM_FILES,
+    base::DIR_PROGRAM_FILESX86,
+    base::DIR_WINDOWS,
 #endif
 };
 
@@ -187,7 +197,7 @@ void PassFileInfoToUIThread(FileInfoOptCallback callback,
                             const base::File::Info& info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   std::unique_ptr<base::File::Info> file_info(
-      result == base::File::FILE_OK ? new base::File::Info(info) : NULL);
+      result == base::File::FILE_OK ? new base::File::Info(info) : nullptr);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(file_info)));
 }
@@ -197,6 +207,9 @@ void PassFileInfoToUIThread(FileInfoOptCallback callback,
 content::WebContents* GetWebContentsForRenderFrameHost(
     content::BrowserContext* browser_context,
     content::RenderFrameHost* render_frame_host) {
+  if (!render_frame_host)
+    return nullptr;
+
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   // Check if there is an app window associated with the web contents; if not,
@@ -205,6 +218,44 @@ content::WebContents* GetWebContentsForRenderFrameHost(
                  ->GetAppWindowForWebContents(web_contents)
              ? web_contents
              : nullptr;
+}
+
+// Creates a unique filename by appending a uniquifier if needed. Returns the
+// generated file path on success, or an empty path on failure.
+base::FilePath GenerateUniqueSavePath(const base::FilePath& path) {
+  int limit = base::GetMaximumPathComponentLength(path.DirName());
+  if (limit < 0)
+    return base::FilePath();
+
+  for (int i = 0; i <= base::kMaxUniqueFiles + 1; ++i) {
+    base::FilePath unique_path;
+    if (i == 0) {
+      // Try the original path.
+      unique_path = path;
+    } else if (i <= base::kMaxUniqueFiles) {
+      // Try a number suffix, like base::GetUniquePath().
+      std::string suffix = base::StringPrintf(" (%d)", i);
+      unique_path = path.InsertBeforeExtensionASCII(suffix);
+    } else {
+      // Try a timestamp suffix.
+      // Generate an ISO8601 compliant local timestamp suffix that avoids
+      // reserved characters that are forbidden on some OSes like Windows.
+      base::Time::Exploded exploded;
+      base::Time::Now().LocalExplode(&exploded);
+      std::string suffix = base::StringPrintf(
+          " - %04d-%02d-%02dT%02d%02d%02d.%03d", exploded.year, exploded.month,
+          exploded.day_of_month, exploded.hour, exploded.minute,
+          exploded.second, exploded.millisecond);
+      unique_path = path.InsertBeforeExtensionASCII(suffix);
+    }
+    if (!filename_generation::TruncateFilename(&unique_path, limit))
+      return base::FilePath();
+
+    if (!base::PathExists(unique_path))
+      return unique_path;
+  }
+
+  return base::FilePath();
 }
 
 }  // namespace
@@ -227,16 +278,20 @@ void SetLastChooseEntryDirectory(ExtensionPrefs* prefs,
                                  const base::FilePath& path) {
   prefs->UpdateExtensionPref(
       extension_id, kLastChooseEntryDirectory,
-      base::Value::ToUniquePtrValue(::util::FilePathToValue(path)));
+      base::Value::ToUniquePtrValue(::base::FilePathToValue(path)));
 }
 
 }  // namespace file_system_api
 
+FileSystemGetDisplayPathFunction::~FileSystemGetDisplayPathFunction() = default;
+
 ExtensionFunction::ResponseAction FileSystemGetDisplayPathFunction::Run() {
-  std::string filesystem_name;
-  std::string filesystem_path;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &filesystem_name));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &filesystem_path));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
+
+  const std::string& filesystem_name = args()[0].GetString();
+  const std::string& filesystem_path = args()[1].GetString();
 
   base::FilePath file_path;
   std::string error;
@@ -250,8 +305,9 @@ ExtensionFunction::ResponseAction FileSystemGetDisplayPathFunction::Run() {
   return RespondNow(OneArgument(base::Value(file_path.AsUTF8Unsafe())));
 }
 
-FileSystemEntryFunction::FileSystemEntryFunction()
-    : multiple_(false), is_directory_(false) {}
+FileSystemEntryFunction::FileSystemEntryFunction() = default;
+
+FileSystemEntryFunction::~FileSystemEntryFunction() = default;
 
 void FileSystemEntryFunction::PrepareFilesForWritableApp(
     const std::vector<base::FilePath>& paths) {
@@ -286,7 +342,7 @@ void FileSystemEntryFunction::RegisterFileSystemsAndSendResponse(
 std::unique_ptr<base::DictionaryValue> FileSystemEntryFunction::CreateResult() {
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
   result->Set("entries", std::make_unique<base::ListValue>());
-  result->SetBoolean("multiple", multiple_);
+  result->SetBoolKey("multiple", multiple_);
   return result;
 }
 
@@ -299,15 +355,16 @@ void FileSystemEntryFunction::AddEntryToResult(const base::FilePath& path,
   bool success = result->GetList("entries", &entries);
   DCHECK(success);
 
-  std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue());
-  entry->SetString("fileSystemId", file_entry.filesystem_id);
-  entry->SetString("baseName", file_entry.registered_name);
-  if (id_override.empty())
-    entry->SetString("id", file_entry.id);
-  else
-    entry->SetString("id", id_override);
-  entry->SetBoolean("isDirectory", is_directory_);
-  entries->Append(std::move(entry));
+  base::Value::Dict entry;
+  entry.Set("fileSystemId", file_entry.filesystem_id);
+  entry.Set("baseName", file_entry.registered_name);
+  if (id_override.empty()) {
+    entry.Set("id", file_entry.id);
+  } else {
+    entry.Set("id", id_override);
+  }
+  entry.Set("isDirectory", is_directory_);
+  entries->Append(base::Value(std::move(entry)));
 }
 
 void FileSystemEntryFunction::HandleWritableFileError(
@@ -317,11 +374,16 @@ void FileSystemEntryFunction::HandleWritableFileError(
       kWritableFileErrorFormat, error_path.BaseName().AsUTF8Unsafe().c_str())));
 }
 
+FileSystemGetWritableEntryFunction::~FileSystemGetWritableEntryFunction() =
+    default;
+
 ExtensionFunction::ResponseAction FileSystemGetWritableEntryFunction::Run() {
-  std::string filesystem_name;
-  std::string filesystem_path;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &filesystem_name));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &filesystem_path));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
+
+  const std::string& filesystem_name = args()[0].GetString();
+  const std::string& filesystem_path = args()[1].GetString();
 
   if (!app_file_handler_util::HasFileSystemWritePermission(extension_.get())) {
     return RespondNow(Error(kRequiresFileSystemWriteError));
@@ -347,7 +409,7 @@ ExtensionFunction::ResponseAction FileSystemGetWritableEntryFunction::Run() {
 void FileSystemGetWritableEntryFunction::CheckPermissionAndSendResponse() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_directory_ && !extension_->permissions_data()->HasAPIPermission(
-                           APIPermission::kFileSystemDirectory)) {
+                           mojom::APIPermissionID::kFileSystemDirectory)) {
     Respond(Error(kRequiresFileSystemDirectoryError));
     return;
   }
@@ -362,11 +424,14 @@ void FileSystemGetWritableEntryFunction::SetIsDirectoryAsync() {
   }
 }
 
+FileSystemIsWritableEntryFunction::~FileSystemIsWritableEntryFunction() =
+    default;
+
 ExtensionFunction::ResponseAction FileSystemIsWritableEntryFunction::Run() {
-  std::string filesystem_name;
-  std::string filesystem_path;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &filesystem_name));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &filesystem_path));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+
+  const std::string& filesystem_name = args()[0].GetString();
 
   std::string filesystem_id;
   if (!storage::CrackIsolatedFileSystemName(filesystem_name, &filesystem_id))
@@ -382,13 +447,14 @@ ExtensionFunction::ResponseAction FileSystemIsWritableEntryFunction::Run() {
 
 void FileSystemChooseEntryFunction::ShowPicker(
     const ui::SelectFileDialog::FileTypeInfo& file_type_info,
-    ui::SelectFileDialog::Type picker_type) {
+    ui::SelectFileDialog::Type picker_type,
+    const base::FilePath& initial_path) {
   // TODO(michaelpg): Use the FileSystemDelegate to override functionality for
   // tests instead of using global variables.
   if (g_skip_picker_for_test) {
     std::vector<base::FilePath> test_paths;
     if (g_use_suggested_path_for_test)
-      test_paths.push_back(initial_path_);
+      test_paths.push_back(initial_path);
     else if (g_path_to_be_picked_for_test)
       test_paths.push_back(*g_path_to_be_picked_for_test);
     else if (g_paths_to_be_picked_for_test)
@@ -413,7 +479,7 @@ void FileSystemChooseEntryFunction::ShowPicker(
   // sending of the function response) until the user has selected a file or
   // cancelled the picker.
   if (!delegate->ShowSelectFileDialog(
-          this, picker_type, initial_path_, &file_type_info,
+          this, picker_type, initial_path, &file_type_info,
           base::BindOnce(&FileSystemChooseEntryFunction::FilesSelected, this),
           base::BindOnce(&FileSystemChooseEntryFunction::FileSelectionCanceled,
                          this))) {
@@ -421,59 +487,57 @@ void FileSystemChooseEntryFunction::ShowPicker(
   }
 }
 
-// static
-void FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest(
-    base::FilePath* path) {
-  g_skip_picker_for_test = true;
-  g_use_suggested_path_for_test = false;
-  g_path_to_be_picked_for_test = path;
-  g_paths_to_be_picked_for_test = NULL;
+FileSystemChooseEntryFunction::SkipPickerBaseForTest*
+    FileSystemChooseEntryFunction::SkipPickerBaseForTest::g_picker = nullptr;
+
+FileSystemChooseEntryFunction::SkipPickerBaseForTest::SkipPickerBaseForTest() {
+  CHECK(!g_picker);
+  g_picker = this;
 }
 
-// static
-void FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathsForTest(
-    std::vector<base::FilePath>* paths) {
-  g_skip_picker_for_test = true;
-  g_use_suggested_path_for_test = false;
-  g_paths_to_be_picked_for_test = paths;
+FileSystemChooseEntryFunction::SkipPickerBaseForTest::~SkipPickerBaseForTest() {
+  DCHECK_EQ(this, g_picker);
+  ResetTestValuesToDefaults();
+  g_picker = nullptr;
 }
 
-// static
-void FileSystemChooseEntryFunction::SkipPickerAndSelectSuggestedPathForTest() {
+FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest::
+    SkipPickerAndAlwaysSelectPathForTest(const base::FilePath& path,
+                                         bool skip_dir_confirmation,
+                                         bool allow_directory_access)
+    : path_(path) {
+  g_skip_picker_for_test = true;
+  g_path_to_be_picked_for_test = &path_;
+  g_skip_directory_confirmation_for_test = skip_dir_confirmation;
+  g_allow_directory_access_for_test = allow_directory_access;
+}
+
+FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathForTest::
+    ~SkipPickerAndAlwaysSelectPathForTest() = default;
+
+FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathsForTest::
+    SkipPickerAndAlwaysSelectPathsForTest(
+        const std::vector<base::FilePath>& paths)
+    : paths_(paths) {
+  g_skip_picker_for_test = true;
+  g_paths_to_be_picked_for_test = &paths_;
+}
+
+FileSystemChooseEntryFunction::SkipPickerAndAlwaysSelectPathsForTest::
+    ~SkipPickerAndAlwaysSelectPathsForTest() = default;
+
+FileSystemChooseEntryFunction::SkipPickerAndSelectSuggestedPathForTest::
+    SkipPickerAndSelectSuggestedPathForTest() {
   g_skip_picker_for_test = true;
   g_use_suggested_path_for_test = true;
-  g_path_to_be_picked_for_test = NULL;
-  g_paths_to_be_picked_for_test = NULL;
 }
 
-// static
-void FileSystemChooseEntryFunction::SkipPickerAndAlwaysCancelForTest() {
+FileSystemChooseEntryFunction::SkipPickerAndAlwaysCancelForTest::
+    ~SkipPickerAndAlwaysCancelForTest() = default;
+
+FileSystemChooseEntryFunction::SkipPickerAndAlwaysCancelForTest::
+    SkipPickerAndAlwaysCancelForTest() {
   g_skip_picker_for_test = true;
-  g_use_suggested_path_for_test = false;
-  g_path_to_be_picked_for_test = NULL;
-  g_paths_to_be_picked_for_test = NULL;
-}
-
-// static
-void FileSystemChooseEntryFunction::StopSkippingPickerForTest() {
-  g_skip_picker_for_test = false;
-}
-
-// static
-void FileSystemChooseEntryFunction::SkipDirectoryConfirmationForTest() {
-  g_skip_directory_confirmation_for_test = true;
-  g_allow_directory_access_for_test = true;
-}
-
-// static
-void FileSystemChooseEntryFunction::AutoCancelDirectoryConfirmationForTest() {
-  g_skip_directory_confirmation_for_test = true;
-  g_allow_directory_access_for_test = false;
-}
-
-// static
-void FileSystemChooseEntryFunction::StopSkippingDirectoryConfirmationForTest() {
-  g_skip_directory_confirmation_for_test = false;
 }
 
 // static
@@ -508,15 +572,6 @@ void FileSystemChooseEntryFunction::FilesSelected(
   }
 
   if (is_directory_) {
-    // Get the WebContents for the app window to be the parent window of the
-    // confirmation dialog if necessary.
-    content::WebContents* const web_contents = GetWebContentsForRenderFrameHost(
-        browser_context(), render_frame_host());
-    if (!web_contents) {
-      Respond(Error(kInvalidCallingPage));
-      return;
-    }
-
     DCHECK_EQ(paths.size(), 1u);
     bool non_native_path = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -530,7 +585,7 @@ void FileSystemChooseEntryFunction::FilesSelected(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
             &FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync, this,
-            non_native_path, paths, web_contents));
+            non_native_path, paths));
     return;
   }
 
@@ -543,8 +598,7 @@ void FileSystemChooseEntryFunction::FileSelectionCanceled() {
 
 void FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync(
     bool non_native_path,
-    const std::vector<base::FilePath>& paths,
-    content::WebContents* web_contents) {
+    const std::vector<base::FilePath>& paths) {
   const base::FilePath check_path =
       non_native_path ? paths[0] : base::MakeAbsoluteFilePath(paths[0]);
   if (check_path.empty()) {
@@ -555,7 +609,7 @@ void FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync(
     return;
   }
 
-  for (size_t i = 0; i < base::size(kGraylistedPaths); i++) {
+  for (size_t i = 0; i < std::size(kGraylistedPaths); i++) {
     base::FilePath graylisted_path;
     if (!base::PathService::Get(kGraylistedPaths[i], &graylisted_path))
       continue;
@@ -576,7 +630,7 @@ void FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync(
         FROM_HERE,
         base::BindOnce(
             &FileSystemChooseEntryFunction::ConfirmSensitiveDirectoryAccess,
-            this, paths, web_contents));
+            this, paths));
     return;
   }
 
@@ -587,8 +641,7 @@ void FileSystemChooseEntryFunction::ConfirmDirectoryAccessAsync(
 }
 
 void FileSystemChooseEntryFunction::ConfirmSensitiveDirectoryAccess(
-    const std::vector<base::FilePath>& paths,
-    content::WebContents* web_contents) {
+    const std::vector<base::FilePath>& paths) {
   if (ExtensionsBrowserClient::Get()->IsShuttingDown()) {
     FileSelectionCanceled();
     return;
@@ -598,6 +651,13 @@ void FileSystemChooseEntryFunction::ConfirmSensitiveDirectoryAccess(
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
   if (!delegate) {
     Respond(Error(kNotSupportedOnCurrentPlatformError));
+    return;
+  }
+
+  content::WebContents* const web_contents =
+      GetWebContentsForRenderFrameHost(browser_context(), render_frame_host());
+  if (!web_contents) {
+    Respond(Error(kInvalidCallingPage));
     return;
   }
 
@@ -624,11 +684,9 @@ void FileSystemChooseEntryFunction::OnDirectoryAccessConfirmed(
 void FileSystemChooseEntryFunction::BuildFileTypeInfo(
     ui::SelectFileDialog::FileTypeInfo* file_type_info,
     const base::FilePath::StringType& suggested_extension,
-    const AcceptOptions* accepts,
-    const bool* accepts_all_types) {
-  file_type_info->include_all_files = true;
-  if (accepts_all_types)
-    file_type_info->include_all_files = *accepts_all_types;
+    const absl::optional<AcceptOptions>& accepts,
+    const absl::optional<bool>& accepts_all_types) {
+  file_type_info->include_all_files = accepts_all_types.value_or(true);
 
   bool need_suggestion =
       !file_type_info->include_all_files && !suggested_extension.empty();
@@ -659,11 +717,13 @@ void FileSystemChooseEntryFunction::BuildFileTypeInfo(
 }
 
 void FileSystemChooseEntryFunction::BuildSuggestion(
-    const std::string* opt_name,
+    const absl::optional<std::string>& opt_name,
     base::FilePath* suggested_name,
     base::FilePath::StringType* suggested_extension) {
   if (opt_name) {
-    *suggested_name = base::FilePath::FromUTF8Unsafe(*opt_name);
+    std::string name;
+    base::ReplaceChars(*opt_name, "%", "_", &name);
+    *suggested_name = base::FilePath::FromUTF8Unsafe(name);
 
     // Don't allow any path components; shorten to the base name. This should
     // result in a relative path, but in some cases may not. Clear the
@@ -678,31 +738,44 @@ void FileSystemChooseEntryFunction::BuildSuggestion(
   }
 }
 
-void FileSystemChooseEntryFunction::SetInitialPathAndShowPicker(
+void FileSystemChooseEntryFunction::CalculateInitialPathAndShowPicker(
     const base::FilePath& previous_path,
     const base::FilePath& suggested_name,
     const ui::SelectFileDialog::FileTypeInfo& file_type_info,
     ui::SelectFileDialog::Type picker_type,
     bool is_previous_path_directory) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  base::FilePath initial_path;
   if (is_previous_path_directory) {
-    initial_path_ = previous_path.Append(suggested_name);
+    initial_path = previous_path.Append(suggested_name);
   } else {
     FileSystemDelegate* delegate =
         ExtensionsAPIClient::Get()->GetFileSystemDelegate();
     DCHECK(delegate);
     const base::FilePath default_directory = delegate->GetDefaultDirectory();
     if (!default_directory.empty())
-      initial_path_ = default_directory.Append(suggested_name);
+      initial_path = default_directory.Append(suggested_name);
     else
-      initial_path_ = suggested_name;
+      initial_path = suggested_name;
   }
-  ShowPicker(file_type_info, picker_type);
+  ShowPicker(file_type_info, picker_type, initial_path);
 }
+
+void FileSystemChooseEntryFunction::MaybeUseManagedSavePath(
+    base::OnceClosure fallback_file_picker_callback,
+    const base::FilePath& path) {
+  if (path.empty())
+    std::move(fallback_file_picker_callback).Run();
+  else
+    FilesSelected({path});
+}
+
+FileSystemChooseEntryFunction::~FileSystemChooseEntryFunction() = default;
 
 ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
   std::unique_ptr<ChooseEntry::Params> params(
-      ChooseEntry::Params::Create(*args_));
+      ChooseEntry::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   base::FilePath suggested_name;
@@ -710,17 +783,17 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
   ui::SelectFileDialog::Type picker_type =
       ui::SelectFileDialog::SELECT_OPEN_FILE;
 
-  file_system::ChooseEntryOptions* options = params->options.get();
-  if (options) {
-    multiple_ = options->accepts_multiple && *options->accepts_multiple;
+  if (params->options) {
+    const file_system::ChooseEntryOptions& options = *params->options;
+    multiple_ = options.accepts_multiple && *options.accepts_multiple;
     if (multiple_)
       picker_type = ui::SelectFileDialog::SELECT_OPEN_MULTI_FILE;
 
-    if (options->type == file_system::CHOOSE_ENTRY_TYPE_OPENWRITABLEFILE &&
+    if (options.type == file_system::CHOOSE_ENTRY_TYPE_OPENWRITABLEFILE &&
         !app_file_handler_util::HasFileSystemWritePermission(
             extension_.get())) {
       return RespondNow(Error(kRequiresFileSystemWriteError));
-    } else if (options->type == file_system::CHOOSE_ENTRY_TYPE_SAVEFILE) {
+    } else if (options.type == file_system::CHOOSE_ENTRY_TYPE_SAVEFILE) {
       if (!app_file_handler_util::HasFileSystemWritePermission(
               extension_.get())) {
         return RespondNow(Error(kRequiresFileSystemWriteError));
@@ -729,10 +802,10 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
         return RespondNow(Error(kMultipleUnsupportedError));
       }
       picker_type = ui::SelectFileDialog::SELECT_SAVEAS_FILE;
-    } else if (options->type == file_system::CHOOSE_ENTRY_TYPE_OPENDIRECTORY) {
+    } else if (options.type == file_system::CHOOSE_ENTRY_TYPE_OPENDIRECTORY) {
       is_directory_ = true;
       if (!extension_->permissions_data()->HasAPIPermission(
-              APIPermission::kFileSystemDirectory)) {
+              mojom::APIPermissionID::kFileSystemDirectory)) {
         return RespondNow(Error(kRequiresFileSystemDirectoryError));
       }
       if (multiple_) {
@@ -742,14 +815,39 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
     }
 
     base::FilePath::StringType suggested_extension;
-    BuildSuggestion(options->suggested_name.get(), &suggested_name,
+    BuildSuggestion(options.suggested_name, &suggested_name,
                     &suggested_extension);
 
-    BuildFileTypeInfo(&file_type_info, suggested_extension,
-                      options->accepts.get(), options->accepts_all_types.get());
+    BuildFileTypeInfo(&file_type_info, suggested_extension, options.accepts,
+                      options.accepts_all_types);
   }
 
   file_type_info.allowed_paths = ui::SelectFileDialog::FileTypeInfo::ANY_PATH;
+
+  if (picker_type == ui::SelectFileDialog::SELECT_SAVEAS_FILE &&
+      !suggested_name.empty()) {
+    FileSystemDelegate* delegate =
+        ExtensionsAPIClient::Get()->GetFileSystemDelegate();
+    base::FilePath managed_saveas_dir =
+        delegate->GetManagedSaveAsDirectory(browser_context(), *extension());
+    if (!managed_saveas_dir.empty()) {
+      base::OnceClosure file_picker_callback = base::BindOnce(
+          &FileSystemChooseEntryFunction::CalculateInitialPathAndShowPicker,
+          this,
+          /*previous_path=*/base::FilePath(), suggested_name, file_type_info,
+          picker_type,
+          /*is_previous_path_directory=*/false);
+
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+          base::BindOnce(&GenerateUniqueSavePath,
+                         managed_saveas_dir.Append(suggested_name)),
+          base::BindOnce(
+              &FileSystemChooseEntryFunction::MaybeUseManagedSavePath, this,
+              std::move(file_picker_callback)));
+      return RespondLater();
+    }
+  }
 
   base::FilePath previous_path;
   if (extension_->is_extension()) {
@@ -761,13 +859,13 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
   }
 
   if (previous_path.empty()) {
-    SetInitialPathAndShowPicker(previous_path, suggested_name, file_type_info,
-                                picker_type, false);
+    CalculateInitialPathAndShowPicker(previous_path, suggested_name,
+                                      file_type_info, picker_type, false);
     return RespondLater();
   }
 
   base::OnceCallback<void(bool)> set_initial_path_callback = base::BindOnce(
-      &FileSystemChooseEntryFunction::SetInitialPathAndShowPicker, this,
+      &FileSystemChooseEntryFunction::CalculateInitialPathAndShowPicker, this,
       previous_path, suggested_name, file_type_info, picker_type);
 
 // Check whether the |previous_path| is a non-native directory.
@@ -789,9 +887,13 @@ ExtensionFunction::ResponseAction FileSystemChooseEntryFunction::Run() {
   return RespondLater();
 }
 
+FileSystemRetainEntryFunction::~FileSystemRetainEntryFunction() = default;
+
 ExtensionFunction::ResponseAction FileSystemRetainEntryFunction::Run() {
-  std::string entry_id;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &entry_id));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+
+  std::string entry_id = args()[0].GetString();
 
   FileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
@@ -808,11 +910,13 @@ ExtensionFunction::ResponseAction FileSystemRetainEntryFunction::Run() {
 
   // Add the file to the retain list if it is not already on there.
   if (!saved_files_service->IsRegistered(extension_->id(), entry_id)) {
-    std::string filesystem_name;
-    std::string filesystem_path;
+    EXTENSION_FUNCTION_VALIDATE(args().size() >= 3);
+    EXTENSION_FUNCTION_VALIDATE(args()[1].is_string());
+    EXTENSION_FUNCTION_VALIDATE(args()[2].is_string());
+    std::string filesystem_name = args()[1].GetString();
+    std::string filesystem_path = args()[2].GetString();
+
     base::FilePath path;
-    EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &filesystem_name));
-    EXTENSION_FUNCTION_VALIDATE(args_->GetString(2, &filesystem_path));
     std::string error;
     if (!app_file_handler_util::ValidateFileEntryAndGetPath(
             filesystem_name, filesystem_path, source_process_id(), &path,
@@ -824,26 +928,27 @@ ExtensionFunction::ResponseAction FileSystemRetainEntryFunction::Run() {
     if (!storage::CrackIsolatedFileSystemName(filesystem_name, &filesystem_id))
       return RespondNow(Error(kRetainEntryError));
 
-    storage::FileSystemContext* const context =
+    storage::FileSystemContext* const file_system_context =
         util::GetStoragePartitionForExtensionId(extension_id(),
                                                 browser_context())
             ->GetFileSystemContext();
 
-    const storage::FileSystemURL url = context->CreateCrackedFileSystemURL(
-        url::Origin::Create(extension()->url()),
-        storage::kFileSystemTypeIsolated,
-        storage::IsolatedContext::GetInstance()
-            ->CreateVirtualRootPath(filesystem_id)
-            .Append(base::FilePath::FromUTF8Unsafe(filesystem_path)));
+    const storage::FileSystemURL url =
+        file_system_context->CreateCrackedFileSystemURL(
+            blink::StorageKey(extension()->origin()),
+            storage::kFileSystemTypeIsolated,
+            storage::IsolatedContext::GetInstance()
+                ->CreateVirtualRootPath(filesystem_id)
+                .Append(base::FilePath::FromUTF8Unsafe(filesystem_path)));
 
     // It is safe to use base::Unretained() for operation_runner(), since it
-    // is owned by |context| which will delete it on the IO thread.
+    // is owned by |file_system_context| which will delete it on the IO thread.
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
             base::IgnoreResult(
                 &storage::FileSystemOperationRunner::GetMetadata),
-            base::Unretained(context->operation_runner()), url,
+            base::Unretained(file_system_context->operation_runner()), url,
             storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
             base::BindOnce(
                 &PassFileInfoToUIThread,
@@ -878,9 +983,12 @@ void FileSystemRetainEntryFunction::RetainFileEntry(
   Respond(NoArguments());
 }
 
+FileSystemIsRestorableFunction::~FileSystemIsRestorableFunction() = default;
+
 ExtensionFunction::ResponseAction FileSystemIsRestorableFunction::Run() {
-  std::string entry_id;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &entry_id));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  const std::string& entry_id = args()[0].GetString();
 
   FileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
@@ -894,11 +1002,15 @@ ExtensionFunction::ResponseAction FileSystemIsRestorableFunction::Run() {
       saved_files_service->IsRegistered(extension_->id(), entry_id))));
 }
 
+FileSystemRestoreEntryFunction::~FileSystemRestoreEntryFunction() = default;
+
 ExtensionFunction::ResponseAction FileSystemRestoreEntryFunction::Run() {
-  std::string entry_id;
-  bool needs_new_entry;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &entry_id));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(1, &needs_new_entry));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 2);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  EXTENSION_FUNCTION_VALIDATE(args()[1].is_bool());
+  const std::string& entry_id = args()[0].GetString();
+  bool needs_new_entry = args()[1].GetBool();
+
   FileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
   DCHECK(delegate);
@@ -926,45 +1038,35 @@ ExtensionFunction::ResponseAction FileSystemRestoreEntryFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
-  using file_system::RequestFileSystem::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
-  EXTENSION_FUNCTION_VALIDATE(params);
+#if BUILDFLAG(IS_CHROMEOS)
+/******** FileSystemRequestFileSystemFunction ********/
 
-  NOTIMPLEMENTED();
-  return RespondNow(Error(kNotSupportedOnCurrentPlatformError));
-}
+FileSystemRequestFileSystemFunction::FileSystemRequestFileSystemFunction() =
+    default;
 
-ExtensionFunction::ResponseAction FileSystemGetVolumeListFunction::Run() {
-  NOTIMPLEMENTED();
-  return RespondNow(Error(kNotSupportedOnCurrentPlatformError));
-}
-#else
-
-FileSystemRequestFileSystemFunction::FileSystemRequestFileSystemFunction() {}
-
-FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() {}
+FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() =
+    default;
 
 ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
   using file_system::RequestFileSystem::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
+
+  consent_provider_ =
+      ExtensionsAPIClient::Get()->CreateConsentProvider(browser_context());
 
   FileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
   DCHECK(delegate);
   // Only kiosk apps in kiosk sessions can use this API.
-  // Additionally it is enabled for whitelisted component extensions and apps.
-  if (delegate->GetGrantVolumesMode(browser_context(), render_frame_host(),
-                                    *extension()) ==
-      FileSystemDelegate::kGrantNone) {
+  // Additionally it is enabled for allowlisted component extensions and apps.
+  if (!consent_provider_->IsGrantable(*extension())) {
     return RespondNow(Error(kNotSupportedOnNonKioskSessionError));
   }
 
   delegate->RequestFileSystem(
-      browser_context(), this, *extension(), params->options.volume_id,
-      params->options.writable.get() && *params->options.writable.get(),
+      browser_context(), this, consent_provider_.get(), *extension(),
+      params->options.volume_id, params->options.writable.value_or(false),
       base::BindOnce(&FileSystemRequestFileSystemFunction::OnGotFileSystem,
                      this),
       base::BindOnce(&FileSystemRequestFileSystemFunction::OnError, this));
@@ -976,8 +1078,8 @@ void FileSystemRequestFileSystemFunction::OnGotFileSystem(
     const std::string& id,
     const std::string& path) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("file_system_id", id);
-  dict->SetString("file_system_path", path);
+  dict->SetStringKey("file_system_id", id);
+  dict->SetStringKey("file_system_path", path);
   Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 }
 
@@ -985,24 +1087,27 @@ void FileSystemRequestFileSystemFunction::OnError(const std::string& error) {
   Respond(Error(error));
 }
 
-FileSystemGetVolumeListFunction::FileSystemGetVolumeListFunction() {}
+/******** FileSystemGetVolumeListFunction ********/
 
-FileSystemGetVolumeListFunction::~FileSystemGetVolumeListFunction() {}
+FileSystemGetVolumeListFunction::FileSystemGetVolumeListFunction() = default;
+
+FileSystemGetVolumeListFunction::~FileSystemGetVolumeListFunction() = default;
 
 ExtensionFunction::ResponseAction FileSystemGetVolumeListFunction::Run() {
+  consent_provider_ =
+      ExtensionsAPIClient::Get()->CreateConsentProvider(browser_context());
+
   FileSystemDelegate* delegate =
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
   DCHECK(delegate);
   // Only kiosk apps in kiosk sessions can use this API.
-  // Additionally it is enabled for whitelisted component extensions and apps.
-  if (delegate->GetGrantVolumesMode(browser_context(), render_frame_host(),
-                                    *extension()) ==
-      FileSystemDelegate::kGrantNone) {
+  // Additionally it is enabled for allowlisted component extensions and apps.
+  if (!consent_provider_->IsGrantable(*extension())) {
     return RespondNow(Error(kNotSupportedOnNonKioskSessionError));
   }
 
   delegate->GetVolumeList(
-      browser_context(), *extension(),
+      browser_context(),
       base::BindOnce(&FileSystemGetVolumeListFunction::OnGotVolumeList, this),
       base::BindOnce(&FileSystemGetVolumeListFunction::OnError, this));
 
@@ -1017,6 +1122,29 @@ void FileSystemGetVolumeListFunction::OnGotVolumeList(
 void FileSystemGetVolumeListFunction::OnError(const std::string& error) {
   Respond(Error(error));
 }
-#endif
+#else   // BUILDFLAG(IS_CHROMEOS)
+/******** FileSystemRequestFileSystemFunction ********/
+
+FileSystemRequestFileSystemFunction::~FileSystemRequestFileSystemFunction() =
+    default;
+
+ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
+  using file_system::RequestFileSystem::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  NOTIMPLEMENTED();
+  return RespondNow(Error(kNotSupportedOnCurrentPlatformError));
+}
+
+/******** FileSystemGetVolumeListFunction ********/
+
+FileSystemGetVolumeListFunction::~FileSystemGetVolumeListFunction() = default;
+
+ExtensionFunction::ResponseAction FileSystemGetVolumeListFunction::Run() {
+  NOTIMPLEMENTED();
+  return RespondNow(Error(kNotSupportedOnCurrentPlatformError));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

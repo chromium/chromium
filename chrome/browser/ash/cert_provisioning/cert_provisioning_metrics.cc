@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,20 +55,17 @@ void RecordEvent(CertScope scope, CertProvisioningEvent event) {
 
 void RecordKeypairGenerationTime(CertScope scope, base::TimeDelta sample) {
   base::UmaHistogramCustomTimes(kKeypairGenerationTime[ToIdx(scope)], sample,
-                                base::TimeDelta::FromMilliseconds(1),
-                                base::TimeDelta::FromMinutes(2), 25);
+                                base::Milliseconds(1), base::Minutes(2), 25);
 }
 
 void RecordVerifiedAccessTime(CertScope scope, base::TimeDelta sample) {
   base::UmaHistogramCustomTimes(kVaTime[ToIdx(scope)], sample,
-                                base::TimeDelta::FromMilliseconds(1),
-                                base::TimeDelta::FromMinutes(2), 25);
+                                base::Milliseconds(1), base::Minutes(2), 25);
 }
 
 void RecordCsrSignTime(CertScope scope, base::TimeDelta sample) {
   base::UmaHistogramCustomTimes(kSignCsrTime[ToIdx(scope)], sample,
-                                base::TimeDelta::FromMilliseconds(1),
-                                base::TimeDelta::FromMinutes(2), 25);
+                                base::Milliseconds(1), base::Minutes(2), 25);
 }
 
 }  // namespace cert_provisioning

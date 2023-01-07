@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,23 +20,23 @@ class PasswordInfobarModalInteractionHandler
       password_modal::PasswordAction action_type);
   ~PasswordInfobarModalInteractionHandler() override;
 
-  // Instructs the handler to update the credentials with |username| and
-  // |password| for interaction with |infobar|'s modal UI.
+  // Instructs the handler to update the credentials with `username` and
+  // `password` for interaction with `infobar`'s modal UI.
   // TODO(crbug.com/1040653): This function is only virtual so it can be mocked
   // for testing purposes.  It should become non-virtual once the password
   // infobar delegate is refactored for testability.
   virtual void UpdateCredentials(InfoBarIOS* infobar,
                                  NSString* username,
                                  NSString* password);
-  // Instructs the handler that the user has used |infobar|'s modal UI to
+  // Instructs the handler that the user has used `infobar`'s modal UI to
   // request that credentials are never saved for the current site.
   // TODO(crbug.com/1040653): This function is only virtual so it can be mocked
   // for testing purposes.  It should become non-virtual once the password
   // infobar delegate is refactored for testability.
   virtual void NeverSaveCredentials(InfoBarIOS* infobar);
   // Instructs the handler that the user has requested the passwords settings
-  // page through |infobar|'s modal UI.  The settings will be presented after
-  // the dismissal of |infobar|'s modal UI.
+  // page through `infobar`'s modal UI.  The settings will be presented after
+  // the dismissal of `infobar`'s modal UI.
   // TODO(crbug.com/1040653): This function is only virtual so it can be mocked
   // for testing purposes.  It should become non-virtual once the password
   // infobar delegate is refactored for testability.
@@ -59,7 +59,7 @@ class PasswordInfobarModalInteractionHandler
   std::unique_ptr<InfobarModalOverlayRequestCallbackInstaller>
   CreateModalInstaller() override;
 
-  // Returns the password delegate from |infobar|.
+  // Returns the password delegate from `infobar`.
   IOSChromeSavePasswordInfoBarDelegate* GetDelegate(InfoBarIOS* infobar);
 
   // The Browser passed on initialization.

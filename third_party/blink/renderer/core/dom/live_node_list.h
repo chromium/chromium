@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/core/dom/node_list.h"
 #include "third_party/blink/renderer/core/html/collection_items_cache.h"
 #include "third_party/blink/renderer/core/html/collection_type.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

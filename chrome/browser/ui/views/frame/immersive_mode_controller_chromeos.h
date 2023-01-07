@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
@@ -25,6 +25,12 @@ class ImmersiveModeControllerChromeos
       public aura::WindowObserver {
  public:
   ImmersiveModeControllerChromeos();
+
+  ImmersiveModeControllerChromeos(const ImmersiveModeControllerChromeos&) =
+      delete;
+  ImmersiveModeControllerChromeos& operator=(
+      const ImmersiveModeControllerChromeos&) = delete;
+
   ~ImmersiveModeControllerChromeos() override;
 
   chromeos::ImmersiveFullscreenController* controller() { return &controller_; }
@@ -37,8 +43,8 @@ class ImmersiveModeControllerChromeos
   bool IsRevealed() const override;
   int GetTopContainerVerticalOffset(
       const gfx::Size& top_container_size) const override;
-  ImmersiveRevealedLock* GetRevealedLock(AnimateReveal animate_reveal) override
-      WARN_UNUSED_RESULT;
+  std::unique_ptr<ImmersiveRevealedLock> GetRevealedLock(
+      AnimateReveal animate_reveal) override;
   void OnFindBarVisibleBoundsChanged(
       const gfx::Rect& new_visible_bounds_in_screen) override;
   bool ShouldStayImmersiveAfterExitingFullscreen() override;
@@ -67,7 +73,7 @@ class ImmersiveModeControllerChromeos
 
   chromeos::ImmersiveFullscreenController controller_;
 
-  BrowserView* browser_view_ = nullptr;
+  raw_ptr<BrowserView> browser_view_ = nullptr;
 
   // The current visible bounds of the find bar, in screen coordinates. This is
   // an empty rect if the find bar is not visible.
@@ -82,8 +88,6 @@ class ImmersiveModeControllerChromeos
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImmersiveModeControllerChromeos);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_IMMERSIVE_MODE_CONTROLLER_CHROMEOS_H_

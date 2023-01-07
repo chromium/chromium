@@ -1,0 +1,184 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ash/webui/web_applications/system_apps.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/browser/resources/tools/optimize_webui.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos_ash)
+
+stage_folder = "$target_gen_dir/stage"
+
+# Move files to the stage folder to combine all resources in the same folder for
+# JS bundling with rollup.
+# This is for files direct from the src/:  input_folder="./".
+copy("stage_static") {
+  sources = [
+    "../../../../../ui/file_manager/image_loader/piex_loader.js",
+    "//ash/webui/system_apps/public/js/sandboxed_load_time_data.js",
+    "app_context_test_support.js",
+    "error_reporter.js",
+    "launch.js",
+    "message_types.js",
+    "mojo_api_bootstrap.js",
+    "piex_module.js",
+    "piex_module_loader.js",
+    "receiver.js",
+  ]
+  outputs = [ stage_folder + "/{{source_file_part}}" ]
+}
+
+# This is for files that are generated in "gen/".
+copy("stage_generated") {
+  sources = [
+    "$root_gen_dir/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
+    "$root_gen_dir/third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-lite.js",
+    "$target_gen_dir/../../../system_apps/public/js/message_pipe.m.js",
+    "$target_gen_dir/../../media_app_ui.mojom-lite.js",
+  ]
+
+  outputs = [ stage_folder + "/{{source_file_part}}" ]
+
+  deps = [
+    "//ash/webui/media_app_ui:mojo_bindings_js",
+    "//ash/webui/system_apps/public/js:modulize",
+    "//third_party/blink/public/mojom:mojom_platform_js",
+  ]
+}
+
+optimize_webui("launch_rollup") {
+  host = "media-app"
+  js_out_files = [ "launch.rollup.js" ]
+  js_module_in_files = [ "launch.js" ]
+  input = rebase_path(stage_folder, root_build_dir)
+  deps = [
+    ":stage_generated",
+    ":stage_static",
+  ]
+}
+
+optimize_webui("receiver_rollup") {
+  host = "media-app"
+  js_out_files = [ "receiver.rollup.js" ]
+  js_module_in_files = [ "receiver.js" ]
+  input = rebase_path(stage_folder, root_build_dir)
+  deps = [
+    ":stage_generated",
+    ":stage_static",
+  ]
+}
+
+optimize_webui("piex_rollup") {
+  host = "media-app"
+  js_out_files = [ "piex_module.rollup.js" ]
+  js_module_in_files = [ "piex_module.js" ]
+  input = rebase_path(stage_folder, root_build_dir)
+  deps = [
+    ":stage_generated",
+    ":stage_static",
+  ]
+}
+
+# Build rules below here are just used for typechecking and don't influence what
+# is shipped to resources.pak.
+
+media_closure_flags = system_app_closure_flags_strict + [
+                        "hide_warnings_for=ash/webui/media_app_ui/media_app_ui.mojom-lite-for-compile.js",
+
+                        # For all js module in source tree.
+                        "js_module_root=" + rebase_path(".", root_build_dir),
+
+                        # For all dynamic generated js module.
+                        "js_module_root=" +
+                            rebase_path(target_gen_dir, root_build_dir),
+                      ]
+
+group("closure_compile") {
+  deps = [
+    ":closure_compile_app",
+    ":closure_compile_index",
+    ":closure_compile_piex_module",
+  ]
+}
+
+js_type_check("closure_compile_index") {
+  closure_flags = media_closure_flags
+  deps = [ ":launch" ]
+}
+
+js_type_check("closure_compile_app") {
+  closure_flags = media_closure_flags
+  deps = [ ":receiver" ]
+}
+
+js_type_check("closure_compile_piex_module") {
+  closure_flags = media_closure_flags
+  deps = [ ":piex_module" ]
+}
+
+js_library("app_context_test_support") {
+}
+
+js_library("launch") {
+  externs_list = [
+    "//ash/webui/web_applications/externs/file_handling.externs.js",
+    "//ash/webui/web_applications/externs/file_system_access.externs.js",
+    "dom_draft.externs.js",
+
+    # The privileged context can't access the app, but shares struct definitions
+    # passed over postMessage.
+    "media_app.externs.js",
+  ]
+  deps = [
+    ":app_context_test_support",
+    ":error_reporter",
+    ":message_types",
+    ":mojo_api_bootstrap",
+    "//ash/webui/system_apps/public/js:message_pipe.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+}
+
+js_library("message_types") {
+}
+
+js_library("error_reporter") {
+  externs_list = [ "$externs_path/crash_report_private.js" ]
+}
+
+js_library("piex_module_loader") {
+}
+
+js_library("piex_module") {
+  deps = [ "//ui/file_manager/image_loader:piex_loader" ]
+}
+
+js_library("receiver") {
+  externs_list = [ "media_app.externs.js" ]
+  deps = [
+    ":app_context_test_support",
+    ":message_types",
+    ":piex_module_loader",
+    "//ash/webui/system_apps/public/js:message_pipe.m",
+    "//ash/webui/system_apps/public/js:sandboxed_load_time_data",
+  ]
+}
+
+js_library("mojo_api_bootstrap") {
+  sources = [
+    "$root_gen_dir/third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-lite-for-compile.js",
+    "$target_gen_dir/../../media_app_ui.mojom-lite-for-compile.js",
+  ]
+
+  deps = [ "//mojo/public/mojom/base:base_js_library_for_compile" ]
+
+  extra_deps = [
+    # We can't depend on the `_js_library_for_compile` target for the following
+    # without needing to depend on many unrelated closure definitions under the
+    # `//third_party/blink/public/mojom:mojom_platform` target.
+    "//ash/webui/media_app_ui:mojo_bindings_js",
+    "//third_party/blink/public/mojom:mojom_platform_js",
+  ]
+}

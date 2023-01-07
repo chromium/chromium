@@ -1,13 +1,18 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_HELPER_H_
 #define IOS_CHROME_BROWSER_CRASH_REPORT_CRASH_HELPER_H_
 
-#include <string>
+#include "base/feature_list.h"
+#include "base/time/time.h"
 
 namespace crash_helper {
+
+// Kill switch guarding a workaround for too many calls to SetUploadConsent
+// see crbug.com/1361334 for details.
+BASE_DECLARE_FEATURE(kLimitSetUploadConsentCalls);
 
 // Sync the kCrashpadIOS feature to kCrashpadStartOnNextRun NSUserDefault.
 void SyncCrashpadEnabledOnNextRun();
@@ -19,19 +24,15 @@ void Start();
 // Enables/Disables crash handling.
 void SetEnabled(bool enabled);
 
-// Enable/Disable uploading crash reports.
-void SetUploadingEnabled(bool enabled);
+// Process and begin uploading pending crash reports if application is active.
+// If application state is inactive or backgrounded, this is a no-op. Can be
+// called multiple times, but will only take effect the first time (when app
+// state is active) for Crashpad. For Breakpad, this can be called to start
+// uploads and restart uploads after -PauseBreakpadUploads() is called.
+void UploadCrashReports();
 
-// Sets the user preferences related to Breakpad and cache them to be used on
-// next startup to check if safe mode must be started.
-void SetUserEnabledUploading(bool enabled);
-
-// Returns true if uploading crash reports is enabled in the settings.
-bool UserEnabledUploading();
-
-// For breakpad, if |after_upgrade| is true, delete all pending reports.  For
-// crashpad, regardless of |after_upgrade|, process pending intermediate dumps.
-void CleanupCrashReports(bool after_upgrade);
+// For breakpad, it is necessary to pause uploads when entering the background.
+void PauseBreakpadUploads();
 
 // Process any pending crashpad reports, and mark them as
 // 'uploaded_in_recovery_mode'.
@@ -42,7 +43,7 @@ void ProcessIntermediateReportsForSafeMode();
 int GetPendingCrashReportCount();
 
 // Gets the number of pending crash reports on a background thread and invokes
-// |callback| with the result when complete.
+// `callback` with the result when complete.
 void GetPendingCrashReportCount(void (^callback)(int));
 
 // Check if there is currently a crash report to upload. This function will wait
@@ -59,6 +60,9 @@ void StartUploadingReportsInRecoveryMode();
 
 // Resets the Breakpad configuration from the main bundle.
 void RestoreDefaultConfiguration();
+
+// Deletes any reports that were recorded or uploaded within the time range.
+void ClearReportsBetween(base::Time delete_begin, base::Time delete_end);
 
 }  // namespace crash_helper
 

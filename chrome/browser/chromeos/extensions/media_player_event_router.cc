@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,8 @@ void BroadcastEvent(content::BrowserContext* context,
                     events::HistogramValue histogram_value,
                     const std::string& event_name) {
   if (context && EventRouter::Get(context)) {
-    std::unique_ptr<base::ListValue> args(new base::ListValue());
     std::unique_ptr<Event> event(
-        new Event(histogram_value, event_name, std::move(args)));
+        new Event(histogram_value, event_name, base::Value::List()));
     EventRouter::Get(context)->BroadcastEvent(std::move(event));
   }
 }

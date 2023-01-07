@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,10 +38,6 @@ bool MoveCache(const base::FilePath& from_path, const base::FilePath& to_path) {
 #else
   return base::Move(from_path, to_path);
 #endif
-}
-
-bool DeleteCacheFile(const base::FilePath& name) {
-  return base::DeleteFile(name);
 }
 
 }  // namespace disk_cache

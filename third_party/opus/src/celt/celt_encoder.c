@@ -1719,8 +1719,11 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm, 
       compute_mdcts(mode, 0, in, freq, C, CC, LM, st->upsample, st->arch);
       compute_band_energies(mode, freq, bandE, effEnd, C, LM, st->arch);
       amp2Log2(mode, effEnd, end, bandE, bandLogE2, C);
-      for (i=0;i<C*nbEBands;i++)
-         bandLogE2[i] += HALF16(SHL16(LM, DB_SHIFT));
+      for (c=0;c<C;c++)
+      {
+         for (i=0;i<end;i++)
+            bandLogE2[nbEBands*c+i] += HALF16(SHL16(LM, DB_SHIFT));
+      }
    }
 
    compute_mdcts(mode, shortBlocks, in, freq, C, CC, LM, st->upsample, st->arch);
@@ -1856,8 +1859,11 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm, 
          compute_band_energies(mode, freq, bandE, effEnd, C, LM, st->arch);
          amp2Log2(mode, effEnd, end, bandE, bandLogE, C);
          /* Compensate for the scaling of short vs long mdcts */
-         for (i=0;i<C*nbEBands;i++)
-            bandLogE2[i] += HALF16(SHL16(LM, DB_SHIFT));
+         for (c=0;c<C;c++)
+         {
+            for (i=0;i<end;i++)
+               bandLogE2[nbEBands*c+i] += HALF16(SHL16(LM, DB_SHIFT));
+         }
          tf_estimate = QCONST16(.2f,14);
       }
    }

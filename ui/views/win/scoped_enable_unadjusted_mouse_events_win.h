@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/scoped_enable_unadjusted_mouse_events.h"
 
 namespace views {
@@ -21,6 +21,12 @@ class ScopedEnableUnadjustedMouseEventsWin
     : public aura::ScopedEnableUnadjustedMouseEvents {
  public:
   explicit ScopedEnableUnadjustedMouseEventsWin(HWNDMessageHandler* owner);
+
+  ScopedEnableUnadjustedMouseEventsWin(
+      const ScopedEnableUnadjustedMouseEventsWin&) = delete;
+  ScopedEnableUnadjustedMouseEventsWin& operator=(
+      const ScopedEnableUnadjustedMouseEventsWin&) = delete;
+
   ~ScopedEnableUnadjustedMouseEventsWin() override;
 
   // Register to receive raw mouse input. If success, creates a new
@@ -28,9 +34,7 @@ class ScopedEnableUnadjustedMouseEventsWin
   static std::unique_ptr<ScopedEnableUnadjustedMouseEventsWin> StartMonitor(
       HWNDMessageHandler* owner);
 
-  HWNDMessageHandler* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedEnableUnadjustedMouseEventsWin);
+  raw_ptr<HWNDMessageHandler> owner_;
 };
 }  // namespace views
 

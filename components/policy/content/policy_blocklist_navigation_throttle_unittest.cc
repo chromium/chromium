@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #include <string>
 #include <utility>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/content/policy_blocklist_navigation_throttle.h"
@@ -14,10 +13,7 @@
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/policy/core/browser/url_blocklist_policy_handler.h"
-#include "components/policy/core/common/features.h"
-#include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_pref_names.h"
-#include "components/policy/core/common/policy_service_impl.h"
 #include "components/safe_search_api/stub_url_checker.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -142,11 +138,6 @@ class PolicyBlocklistNavigationThrottleTest
 
     user_prefs::UserPrefs::Set(browser_context(), &pref_service_);
     policy::URLBlocklistManager::RegisterProfilePrefs(pref_service_.registry());
-
-    auto policy_service = std::make_unique<policy::MockPolicyService>();
-    ON_CALL(*policy_service, IsFirstPolicyLoadComplete(testing::_))
-        .WillByDefault(testing::Return(true));
-    SetPolicyService(std::move(policy_service));
   }
 
  protected:
@@ -154,7 +145,7 @@ class PolicyBlocklistNavigationThrottleTest
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
     auto throttle = std::make_unique<PolicyBlocklistNavigationThrottle>(
-        navigation_handle, browser_context(), policy_service_.get());
+        navigation_handle, browser_context());
 
     navigation_handle->RegisterThrottleForTesting(std::move(throttle));
   }
@@ -182,52 +173,8 @@ class PolicyBlocklistNavigationThrottleTest
                                  std::move(value));
   }
 
-  void SetPolicyService(std::unique_ptr<policy::PolicyService> policy_service) {
-    policy_service_ = std::move(policy_service);
-  }
-
   sync_preferences::TestingPrefServiceSyncable pref_service_;
-  std::unique_ptr<policy::PolicyService> policy_service_;
 };
-
-TEST_F(PolicyBlocklistNavigationThrottleTest, ThrottledPoliciesEmptyBlocklist) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      policy::features::kPolicyBlocklistThrottleRequiresPoliciesLoaded);
-  auto policy_service =
-      policy::PolicyServiceImpl::CreateWithThrottledInitialization(
-          policy::PolicyServiceImpl::Providers());
-  auto* policy_service_ptr = policy_service.get();
-  SetPolicyService(std::move(policy_service));
-
-  auto navigation_simulator = StartNavigation(GURL("http://www.example.com/"));
-  ASSERT_TRUE(navigation_simulator->IsDeferred());
-
-  policy_service_ptr->UnthrottleInitialization();
-  ASSERT_FALSE(navigation_simulator->IsDeferred());
-  EXPECT_EQ(content::NavigationThrottle::PROCEED,
-            navigation_simulator->GetLastThrottleCheckResult());
-}
-
-TEST_F(PolicyBlocklistNavigationThrottleTest, ThrottledPoliciesBlocklist) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      policy::features::kPolicyBlocklistThrottleRequiresPoliciesLoaded);
-  auto policy_service =
-      policy::PolicyServiceImpl::CreateWithThrottledInitialization(
-          policy::PolicyServiceImpl::Providers());
-  auto* policy_service_ptr = policy_service.get();
-  SetPolicyService(std::move(policy_service));
-
-  auto navigation_simulator = StartNavigation(GURL("http://www.example.com/"));
-  ASSERT_TRUE(navigation_simulator->IsDeferred());
-
-  SetBlocklistUrlPattern("example.com");
-  policy_service_ptr->UnthrottleInitialization();
-  ASSERT_FALSE(navigation_simulator->IsDeferred());
-  EXPECT_EQ(content::NavigationThrottle::BLOCK_REQUEST,
-            navigation_simulator->GetLastThrottleCheckResult());
-}
 
 TEST_F(PolicyBlocklistNavigationThrottleTest, Blocklist) {
   SetBlocklistUrlPattern("example.com");
@@ -334,7 +281,7 @@ TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_PolicyChange) {
   }
 }
 
-TEST_F(PolicyBlocklistNavigationThrottleTest, DISABLED_SafeSites_Failure) {
+TEST_F(PolicyBlocklistNavigationThrottleTest, SafeSites_Failure) {
   SetSafeSitesFilterBehavior(SafeSitesFilterBehavior::kSafeSitesFilterEnabled);
   stub_url_checker_.SetUpFailedResponse();
 

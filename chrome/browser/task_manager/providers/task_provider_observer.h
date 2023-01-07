@@ -1,11 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_OBSERVER_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_TASK_PROVIDER_OBSERVER_H_
 
-#include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/providers/task.h"
 
 namespace task_manager {
@@ -13,8 +13,10 @@ namespace task_manager {
 // Defines an interface for observing tasks addition / removal.
 class TaskProviderObserver {
  public:
-  TaskProviderObserver() {}
-  virtual ~TaskProviderObserver() {}
+  TaskProviderObserver() = default;
+  TaskProviderObserver(const TaskProviderObserver&) = delete;
+  TaskProviderObserver& operator=(const TaskProviderObserver&) = delete;
+  virtual ~TaskProviderObserver() = default;
 
   // This notifies of the event that a new |task| has been created.
   virtual void TaskAdded(Task* task) = 0;
@@ -28,8 +30,15 @@ class TaskProviderObserver {
   // is only for tasks representing renderer processes.
   virtual void TaskUnresponsive(Task* task) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskProviderObserver);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // This notifies of the event that the TaskIdsList maintained by
+  // GetTaskIdsList() should be invalidated.
+  // Note: Lacros tasks are sorted by lacros task manager and sent to ash in
+  // the sorted order each time lacros task data is pulled to ash. Ash task
+  // manager needs to be notified to invalidate its sorted task id list if
+  // lacros tasks changes the sorting order.
+  virtual void TaskIdsListToBeInvalidated() {}
+#endif
 };
 
 }  // namespace task_manager

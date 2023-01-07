@@ -92,7 +92,7 @@ container{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutGrid",
+    "layoutObjectName": "LayoutNGGrid",
     "isLocked": true,
     "showAccessibilityInfo": true
   }
@@ -189,7 +189,7 @@ child{
     "isKeyboardFocusable": false,
     "accessibleName": "",
     "accessibleRole": "generic",
-    "layoutObjectName": "LayoutGrid",
+    "layoutObjectName": "LayoutNGGrid",
     "isLockedAncestor": true,
     "showAccessibilityInfo": true
   }

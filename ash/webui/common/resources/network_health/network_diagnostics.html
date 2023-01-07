@@ -1,0 +1,27 @@
+<routine-group name="[[i18n('NetworkDiagnosticsConnectionGroup')]]"
+    routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.CONNECTION)]]">
+</routine-group>
+<routine-group name="[[i18n('NetworkDiagnosticsWifiGroup')]]"
+    routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.WIFI)]]">
+</routine-group>
+<routine-group name="[[i18n('NetworkDiagnosticsCaptivePortal')]]"
+    routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.PORTAL)]]">
+</routine-group>
+<routine-group name="[[i18n('NetworkDiagnosticsGatewayGroup')]]"
+    routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.GATEWAY)]]">
+</routine-group>
+<routine-group name="[[i18n('NetworkDiagnosticsFirewallGroup')]]"
+    routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.FIREWALL)]]">
+</routine-group>
+<routine-group name="[[i18n('NetworkDiagnosticsDnsGroup')]]"
+    routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.DNS)]]">
+</routine-group>
+<routine-group name="[[i18n('NetworkDiagnosticsGoogleServicesGroup')]]"
+    routines=
+        "[[getRoutineGroup_(routines_.*, RoutineGroup_.GOOGLE_SERVICES)]]">
+</routine-group>
+<template is="dom-if" if="[[areArcNetworkingRoutinesEnabled_]]" restamp>
+    <routine-group  name="[[i18n('NetworkDiagnosticsArcGroup')]]"
+        routines="[[getRoutineGroup_(routines_.*, RoutineGroup_.ARC)]]">
+    </routine-group>
+</template>

@@ -23,7 +23,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
 
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -32,7 +31,7 @@
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/core/svg/svg_transform_distance.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
@@ -59,11 +58,11 @@ static_assert(static_cast<int>(SVGTransformType::kSkewx) == 5,
               "index of SVGTransformType::kSkewx has changed");
 static_assert(static_cast<int>(SVGTransformType::kSkewy) == 6,
               "index of SVGTransformType::kSkewy has changed");
-static_assert(base::size(kRequiredValuesForType) - 1 ==
+static_assert(std::size(kRequiredValuesForType) - 1 ==
                   static_cast<int>(SVGTransformType::kSkewy),
               "the number of transform types have changed");
-static_assert(base::size(kRequiredValuesForType) ==
-                  base::size(kOptionalValuesForType),
+static_assert(std::size(kRequiredValuesForType) ==
+                  std::size(kOptionalValuesForType),
               "the arrays should have the same number of elements");
 
 const unsigned kMaxTransformArguments = 6;
@@ -79,7 +78,7 @@ SVGParseStatus ParseTransformArgumentsForType(SVGTransformType type,
   const size_t optional = kOptionalValuesForType[static_cast<int>(type)];
   const size_t required_with_optional = required + optional;
   DCHECK_LE(required_with_optional, kMaxTransformArguments);
-  DCHECK(arguments.IsEmpty());
+  DCHECK(arguments.empty());
 
   bool trailing_delimiter = false;
 
@@ -157,7 +156,7 @@ SVGTransformList::SVGTransformList() = default;
 
 SVGTransformList::SVGTransformList(SVGTransformType transform_type,
                                    const String& value) {
-  if (value.IsEmpty())
+  if (value.empty())
     return;
   TransformArguments arguments;
   bool success =
@@ -213,12 +212,12 @@ CSSValue* CreateTransformCSSValue(const SVGTransform& transform) {
     case CSSValueID::kRotate: {
       transform_value->Append(*CSSNumericLiteralValue::Create(
           transform.Angle(), CSSPrimitiveValue::UnitType::kDegrees));
-      FloatPoint rotation_origin = transform.RotationCenter();
-      if (!ToFloatSize(rotation_origin).IsZero()) {
+      gfx::PointF rotation_origin = transform.RotationCenter();
+      if (!rotation_origin.IsOrigin()) {
         transform_value->Append(*CSSNumericLiteralValue::Create(
-            rotation_origin.X(), CSSPrimitiveValue::UnitType::kUserUnits));
+            rotation_origin.x(), CSSPrimitiveValue::UnitType::kUserUnits));
         transform_value->Append(*CSSNumericLiteralValue::Create(
-            rotation_origin.Y(), CSSPrimitiveValue::UnitType::kUserUnits));
+            rotation_origin.y(), CSSPrimitiveValue::UnitType::kUserUnits));
       }
       break;
     }
@@ -364,7 +363,7 @@ bool SVGTransformList::Parse(const LChar*& ptr, const LChar* end) {
 }
 
 SVGTransformType ParseTransformType(const String& string) {
-  if (string.IsEmpty())
+  if (string.empty())
     return SVGTransformType::kUnknown;
   return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
     return ParseAndSkipTransformType(chars, chars + length);
@@ -372,7 +371,7 @@ SVGTransformType ParseTransformType(const String& string) {
 }
 
 SVGParsingError SVGTransformList::SetValueAsString(const String& value) {
-  if (value.IsEmpty()) {
+  if (value.empty()) {
     Clear();
     return SVGParseStatus::kNoError;
   }

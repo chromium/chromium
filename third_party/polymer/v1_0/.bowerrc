@@ -1,6 +1,0 @@
-{
-  "directory:" : "components",
-  "ignoredDependencies": [
-     "webcomponentsjs"
-  ]
-}

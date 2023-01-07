@@ -1,4 +1,1 @@
-monorail {
-  component: "UI>Browser>ContentSuggestions>Feed"
-}
-team_email: "feed@chromium.org"
+mixins: "//components/feed/COMMON_METADATA"

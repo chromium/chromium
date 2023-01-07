@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,13 +24,20 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kFidoControlPointLengthUUID[];
 COMPONENT_EXPORT(DEVICE_FIDO) extern const char kFidoServiceRevisionUUID[];
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const char kFidoServiceRevisionBitfieldUUID[];
-// TODO(hongjunchoi): Add URL to the specification once CaBLE protocol is
-// standardized.
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCableAdvertisementUUID16[];
-COMPONENT_EXPORT(DEVICE_FIDO) extern const char kCableAdvertisementUUID128[];
-// kCableAdvertisementUUID is the binary form of
-// |kCableAdvertisementUUID128|, the UUID allocated for caBLE adverts.
-COMPONENT_EXPORT(DEVICE_FIDO) extern const uint8_t kCableAdvertisementUUID[16];
+
+// kGoogleCableUUID128 is a 16-bit UUID assigned to Google that we use for
+// caBLE.
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kGoogleCableUUID128[];
+// kGoogleCableUUID16 is the 16-bit version of |kGoogleCableUUID128|.
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kGoogleCableUUID16[];
+// kGoogleCableUUID is the binary form of
+// |kGoogleCableUUID128|, the UUID allocated to Google for caBLE adverts.
+COMPONENT_EXPORT(DEVICE_FIDO) extern const uint8_t kGoogleCableUUID[16];
+
+// kFIDOCableUUID128 is a 16-bit UUID assigned to FIDO that is used for
+// caBLEv2. (For now, caBLEv2 devices can also use |kGoogleCableUUID|.)
+COMPONENT_EXPORT(DEVICE_FIDO) extern const char kFIDOCableUUID128[];
+COMPONENT_EXPORT(DEVICE_FIDO) extern const uint8_t kFIDOCableUUID[16];
 
 }  // namespace device
 

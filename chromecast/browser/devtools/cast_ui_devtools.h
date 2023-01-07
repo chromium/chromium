@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CHROMECAST_BROWSER_DEVTOOLS_CAST_UI_DEVTOOLS_H_
 
 #include <memory>
-
-#include "base/macros.h"
 
 namespace network {
 namespace mojom {
@@ -28,6 +26,10 @@ namespace shell {
 class CastUIDevTools {
  public:
   explicit CastUIDevTools(network::mojom::NetworkContext* network_context);
+
+  CastUIDevTools(const CastUIDevTools&) = delete;
+  CastUIDevTools& operator=(const CastUIDevTools&) = delete;
+
   ~CastUIDevTools();
 
  private:
@@ -35,8 +37,6 @@ class CastUIDevTools {
       network::mojom::NetworkContext* network_context) const;
 
   std::unique_ptr<ui_devtools::UiDevToolsServer> devtools_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastUIDevTools);
 };
 
 }  // namespace shell

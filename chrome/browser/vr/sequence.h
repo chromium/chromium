@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_VR_SEQUENCE_H_
 
 #include <list>
+
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/time/time.h"
 
 namespace vr {
 
@@ -16,6 +18,10 @@ namespace vr {
 class Sequence {
  public:
   Sequence();
+
+  Sequence(const Sequence&) = delete;
+  Sequence& operator=(const Sequence&) = delete;
+
   ~Sequence();
 
   void Tick(base::TimeTicks now);
@@ -36,8 +42,6 @@ class Sequence {
   std::list<SequencedTask> tasks_;
   base::TimeTicks start_time_;
   bool started_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(Sequence);
 };
 
 }  // namespace vr

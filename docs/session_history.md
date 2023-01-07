@@ -114,12 +114,5 @@ NavigationEntries rather than persisting and restoring.
    subframe navigations do not, and renderer-initiated main frame navigations
    may clear an existing browser-initiated pending NavigationEntry (using
    PendingEntryRef) without replacing it with a new one.
- * Some main frame documents may not have a corresponding NavigationEntry
-   even after commit (e.g., the initial empty document, per
-   [issue 524208](https://crbug.com/524208)).
  * Some subframe documents may not have a corresponding FrameNavigationEntry
    after commit (e.g., see [issue 608402](https://crbug.com/608402)).
- * FrameNavigationEntries should be shared between NavigationEntries when they
-   do not change (e.g., to support history.replaceState after subframe
-   navigations), but this is not yet supported.
-   See [issue 373041](https://crbug.com/373041).

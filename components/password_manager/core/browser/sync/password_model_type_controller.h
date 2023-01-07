@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/password_account_storage_settings_watcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -24,7 +23,7 @@ class SyncService;
 
 namespace password_manager {
 
-class PasswordStore;
+class PasswordStoreInterface;
 
 // A class that manages the startup and shutdown of password sync.
 class PasswordModelTypeController : public syncer::ModelTypeController,
@@ -36,11 +35,15 @@ class PasswordModelTypeController : public syncer::ModelTypeController,
           delegate_for_full_sync_mode,
       std::unique_ptr<syncer::ModelTypeControllerDelegate>
           delegate_for_transport_mode,
-      scoped_refptr<PasswordStore> account_password_store_for_cleanup,
+      scoped_refptr<PasswordStoreInterface> account_password_store_for_cleanup,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
-      syncer::SyncService* sync_service,
-      const base::RepeatingClosure& state_changed_callback);
+      syncer::SyncService* sync_service);
+
+  PasswordModelTypeController(const PasswordModelTypeController&) = delete;
+  PasswordModelTypeController& operator=(const PasswordModelTypeController&) =
+      delete;
+
   ~PasswordModelTypeController() override;
 
   // DataTypeController overrides.
@@ -66,12 +69,11 @@ class PasswordModelTypeController : public syncer::ModelTypeController,
   void OnOptInStateMaybeChanged();
 
   void MaybeClearStore(
-      scoped_refptr<PasswordStore> account_password_store_for_cleanup);
+      scoped_refptr<PasswordStoreInterface> account_password_store_for_cleanup);
 
-  PrefService* const pref_service_;
-  signin::IdentityManager* const identity_manager_;
-  syncer::SyncService* const sync_service_;
-  const base::RepeatingClosure state_changed_callback_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<syncer::SyncService> sync_service_;
 
   PasswordAccountStorageSettingsWatcher account_storage_settings_watcher_;
 
@@ -79,8 +81,6 @@ class PasswordModelTypeController : public syncer::ModelTypeController,
   syncer::SyncMode sync_mode_ = syncer::SyncMode::kFull;
 
   base::WeakPtrFactory<PasswordModelTypeController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordModelTypeController);
 };
 
 }  // namespace password_manager

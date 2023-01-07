@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,7 @@ const ContentVerifierIOData::ExtensionData* ContentVerifierIOData::GetData(
   if (found != data_map_.end())
     return found->second.get();
   else
-    return NULL;
+    return nullptr;
 }
 
 }  // namespace extensions

@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_TESTS_VALIDATION_TESTS_COMMANDS_H__
-#define SANDBOX_TESTS_VALIDATION_TESTS_COMMANDS_H__
+#ifndef SANDBOX_WIN_TESTS_VALIDATION_TESTS_COMMANDS_H_
+#define SANDBOX_WIN_TESTS_VALIDATION_TESTS_COMMANDS_H_
 
 #include <windows.h>
 
@@ -45,4 +45,4 @@ int TestEnumAlternateWinsta();
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_TESTS_VALIDATION_TESTS_COMMANDS_H__
+#endif  // SANDBOX_WIN_TESTS_VALIDATION_TESTS_COMMANDS_H_

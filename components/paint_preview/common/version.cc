@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,6 @@
 
 namespace paint_preview {
 
-const uint32_t kPaintPreviewVersion = 1;
+const uint32_t kPaintPreviewVersion = 2;
 
 }  // namespace paint_preview

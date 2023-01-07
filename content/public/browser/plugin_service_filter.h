@@ -1,23 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_PUBLIC_BROWSER_PLUGIN_SERVICE_FILTER_H_
 #define CONTENT_PUBLIC_BROWSER_PLUGIN_SERVICE_FILTER_H_
 
-#include <string>
-
-class GURL;
-
 namespace base {
 class FilePath;
 }
 
-namespace url {
-class Origin;
-}
-
 namespace content {
+class BrowserContext;
 struct WebPluginInfo;
 
 // Callback class to let the client filter the list of all installed plugins
@@ -25,17 +18,14 @@ struct WebPluginInfo;
 // This class is called on the UI thread.
 class PluginServiceFilter {
  public:
-  virtual ~PluginServiceFilter() {}
+  virtual ~PluginServiceFilter() = default;
 
-  // Whether |plugin| is available. The client can return false to hide the
-  // plugin, or return true and optionally change the passed in plugin.
-  virtual bool IsPluginAvailable(int render_process_id,
-                                 int render_frame_id,
-                                 const GURL& url,
-                                 const url::Origin& main_frame_origin,
-                                 WebPluginInfo* plugin) = 0;
+  // Whether `plugin` is available. The client can return false to hide the
+  // plugin. The result may be cached, and should be consistent between calls.
+  virtual bool IsPluginAvailable(content::BrowserContext* browser_context,
+                                 const WebPluginInfo& plugin) = 0;
 
-  // Whether the renderer has permission to load available |plugin|.
+  // Whether the renderer has permission to load available `plugin`.
   virtual bool CanLoadPlugin(int render_process_id,
                              const base::FilePath& path) = 0;
 };

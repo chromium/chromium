@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/test/background_page_watcher.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 
 namespace extensions {
@@ -24,7 +24,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, SharedWorker) {
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
                        SharedWorker_ControlledByServiceWorker) {
   // Load the extension. It will register a service worker.
-  ExtensionTestMessageListener listener("READY", false);
+  ExtensionTestMessageListener listener("READY");
   listener.set_failure_message("FAIL");
   const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("shared_worker/service_worker_controlled"));
@@ -36,17 +36,18 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
 
   // Close the background page and start it again, so it is controlled
   // by the service worker.
-  ExtensionTestMessageListener listener2("CONTROLLED", false);
+  ExtensionTestMessageListener listener2("CONTROLLED");
   listener2.set_failure_message("FAIL");
   background_page->Close();
-  BackgroundPageWatcher(process_manager, extension).WaitForClose();
+  ExtensionBackgroundPageWaiter(profile(), *extension)
+      .WaitForBackgroundClosed();
   background_page = nullptr;
   process_manager->WakeEventPage(extension->id(), base::DoNothing());
-  BackgroundPageWatcher(process_manager, extension).WaitForOpen();
+  ExtensionBackgroundPageWaiter(profile(), *extension).WaitForBackgroundOpen();
   EXPECT_TRUE(listener2.WaitUntilSatisfied());
 
   // The background page should conduct the tests.
-  ExtensionTestMessageListener listener3("PASS", false);
+  ExtensionTestMessageListener listener3("PASS");
   listener3.set_failure_message("FAIL");
   EXPECT_TRUE(listener3.WaitUntilSatisfied());
 }

@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
@@ -84,13 +85,14 @@ static bool ParseFontSize(const CharacterType* characters,
 
   // Step 8
   int value = CharactersToInt(digits_start, position - digits_start,
-                              WTF::NumberParsingOptions::kNone, nullptr);
+                              WTF::NumberParsingOptions(), nullptr);
 
   // Step 9
-  if (mode == kRelativePlus)
-    value += 3;
-  else if (mode == kRelativeMinus)
-    value = 3 - value;
+  if (mode == kRelativePlus) {
+    value = base::CheckAdd(value, 3).ValueOrDefault(value);
+  } else if (mode == kRelativeMinus) {
+    value = base::CheckSub(3, value).ValueOrDefault(value);
+  }
 
   // Step 10
   if (value > 7)
@@ -105,7 +107,7 @@ static bool ParseFontSize(const CharacterType* characters,
 }
 
 static bool ParseFontSize(const String& input, int& size) {
-  if (input.IsEmpty())
+  if (input.empty())
     return false;
 
   if (input.Is8Bit())
@@ -184,7 +186,7 @@ void HTMLFontElement::CollectStyleForPresentationAttribute(
     }
   } else if (name == html_names::kColorAttr) {
     AddHTMLColorToStyle(style, CSSPropertyID::kColor, value);
-  } else if (name == html_names::kFaceAttr && !value.IsEmpty()) {
+  } else if (name == html_names::kFaceAttr && !value.empty()) {
     if (const CSSValueList* font_face_value = CreateFontFaceValueWithPool(
             value, GetExecutionContext()->GetSecureContextMode())) {
       style->SetProperty(CSSPropertyValue(

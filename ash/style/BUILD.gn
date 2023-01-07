@@ -1,0 +1,16 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("style") {
+  sources = [ "ash_color_id.h" ]
+
+  public_deps = [
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/color:color_headers",
+  ]
+}

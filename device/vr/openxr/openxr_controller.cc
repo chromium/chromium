@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,11 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "device/gamepad/public/cpp/gamepads.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/util/xr_standard_gamepad_builder.h"
 #include "ui/gfx/geometry/quaternion.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace device {
 
@@ -186,11 +185,11 @@ XrResult OpenXrController::Initialize(
       XR_TYPE_ACTION_SET_CREATE_INFO};
 
   errno_t error = strcpy_s(action_set_create_info.actionSetName,
-                           base::size(action_set_create_info.actionSetName),
+                           std::size(action_set_create_info.actionSetName),
                            action_set_name.c_str());
   DCHECK(!error);
   error = strcpy_s(action_set_create_info.localizedActionSetName,
-                   base::size(action_set_create_info.localizedActionSetName),
+                   std::size(action_set_create_info.localizedActionSetName),
                    action_set_name.c_str());
   DCHECK(!error);
 
@@ -214,6 +213,7 @@ XrResult OpenXrController::InitializeControllerActions() {
   RETURN_IF_XR_FAILED(CreateActionsForButton(OpenXrButtonType::kButton1));
   RETURN_IF_XR_FAILED(CreateActionsForButton(OpenXrButtonType::kButton2));
   RETURN_IF_XR_FAILED(CreateActionsForButton(OpenXrButtonType::kGrasp));
+  RETURN_IF_XR_FAILED(CreateActionsForButton(OpenXrButtonType::kShoulder));
 
   const std::string type_string = GetStringFromType(type_);
   const std::string name_prefix = type_string + "_controller_";
@@ -236,22 +236,37 @@ XrResult OpenXrController::InitializeControllerActions() {
   return XR_SUCCESS;
 }
 
+XrResult OpenXrController::SuggestBindingsForButtonMaps(
+    std::map<XrPath, std::vector<XrActionSuggestedBinding>>* bindings,
+    const std::vector<OpenXrButtonPathMap>& button_maps,
+    XrPath interaction_profile_path,
+    const std::string& binding_prefix) const {
+  for (const auto& cur_button_map : button_maps) {
+    OpenXrButtonType button_type = cur_button_map.type;
+
+    for (const auto& cur_action_map : cur_button_map.action_maps) {
+      RETURN_IF_XR_FAILED(SuggestActionBinding(
+          bindings, interaction_profile_path,
+          button_action_map_.at(button_type).at(cur_action_map.type),
+          binding_prefix + cur_action_map.path));
+    }
+  }
+
+  return XR_SUCCESS;
+}
+
 XrResult OpenXrController::SuggestBindings(
     std::map<XrPath, std::vector<XrActionSuggestedBinding>>* bindings) const {
   const std::string binding_prefix = GetTopLevelUserPath(type_);
 
-  for (auto interaction_profile : kOpenXrControllerInteractionProfiles) {
+  for (const auto& interaction_profile :
+       GetOpenXrControllerInteractionProfiles()) {
     // If the interaction profile is defined by an extension, check it here,
     // otherwise continue
-    const bool extension_required =
-        interaction_profile.required_extension != nullptr;
-    if (extension_required) {
-      const bool extension_enabled =
-          extension_helper_->ExtensionEnumeration()->ExtensionSupported(
-              interaction_profile.required_extension);
-      if (!extension_enabled) {
-        continue;
-      }
+    if (!interaction_profile.required_extension.empty() &&
+        !extension_helper_->ExtensionEnumeration()->ExtensionSupported(
+            interaction_profile.required_extension.c_str())) {
+      continue;
     }
 
     XrPath interaction_profile_path =
@@ -263,42 +278,27 @@ XrResult OpenXrController::SuggestBindings(
         bindings, interaction_profile_path, pointer_pose_action_,
         binding_prefix + "/input/aim/pose"));
 
-    const OpenXrButtonPathMap* button_maps;
-    size_t button_map_size;
+    RETURN_IF_XR_FAILED(SuggestBindingsForButtonMaps(
+        bindings, interaction_profile.common_button_maps,
+        interaction_profile_path, binding_prefix));
+
     switch (type_) {
       case OpenXrHandednessType::kLeft:
-        button_maps = interaction_profile.left_button_maps;
-        button_map_size = interaction_profile.left_button_map_size;
+        RETURN_IF_XR_FAILED(SuggestBindingsForButtonMaps(
+            bindings, interaction_profile.left_button_maps,
+            interaction_profile_path, binding_prefix));
         break;
       case OpenXrHandednessType::kRight:
-        button_maps = interaction_profile.right_button_maps;
-        button_map_size = interaction_profile.right_button_map_size;
+        RETURN_IF_XR_FAILED(SuggestBindingsForButtonMaps(
+            bindings, interaction_profile.right_button_maps,
+            interaction_profile_path, binding_prefix));
         break;
       case OpenXrHandednessType::kCount:
         NOTREACHED() << "Controller can only be left or right";
         return XR_ERROR_VALIDATION_FAILURE;
     }
 
-    for (size_t button_map_index = 0; button_map_index < button_map_size;
-         button_map_index++) {
-      const OpenXrButtonPathMap& cur_button_map = button_maps[button_map_index];
-      OpenXrButtonType button_type = cur_button_map.type;
-      for (size_t action_map_index = 0;
-           action_map_index < cur_button_map.action_map_size;
-           action_map_index++) {
-        const OpenXrButtonActionPathMap& cur_action_map =
-            cur_button_map.action_maps[action_map_index];
-        RETURN_IF_XR_FAILED(SuggestActionBinding(
-            bindings, interaction_profile_path,
-            button_action_map_.at(button_type).at(cur_action_map.type),
-            binding_prefix + cur_action_map.path));
-      }
-    }
-
-    for (size_t axis_map_index = 0;
-         axis_map_index < interaction_profile.axis_map_size; axis_map_index++) {
-      const OpenXrAxisPathMap& cur_axis_map =
-          interaction_profile.axis_maps[axis_map_index];
+    for (const auto& cur_axis_map : interaction_profile.axis_maps) {
       RETURN_IF_XR_FAILED(
           SuggestActionBinding(bindings, interaction_profile_path,
                                axis_action_map_.at(cur_axis_map.type),
@@ -369,7 +369,7 @@ mojom::XRInputSourceDescriptionPtr OpenXrController::GetDescription(
   return description_.Clone();
 }
 
-base::Optional<GamepadButton> OpenXrController::GetButton(
+absl::optional<GamepadButton> OpenXrController::GetButton(
     OpenXrButtonType type) const {
   GamepadButton ret;
   // Button should at least have one of the three actions;
@@ -408,7 +408,7 @@ base::Optional<GamepadButton> OpenXrController::GetButton(
   }
 
   if (!has_value) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return ret;
@@ -504,7 +504,7 @@ mojom::XRHandTrackingDataPtr OpenXrController::GetHandTrackingData(
   return hand_tracking_data;
 }
 
-base::Optional<gfx::Transform> OpenXrController::GetMojoFromGripTransform(
+absl::optional<gfx::Transform> OpenXrController::GetMojoFromGripTransform(
     XrTime predicted_display_time,
     XrSpace local_space,
     bool* emulated_position) const {
@@ -512,14 +512,14 @@ base::Optional<gfx::Transform> OpenXrController::GetMojoFromGripTransform(
                                 local_space, emulated_position);
 }
 
-base::Optional<gfx::Transform> OpenXrController::GetPointerFromGripTransform(
+absl::optional<gfx::Transform> OpenXrController::GetPointerFromGripTransform(
     XrTime predicted_display_time) const {
   bool emulated_position;
   return GetTransformFromSpaces(predicted_display_time, pointer_pose_space_,
                                 grip_pose_space_, &emulated_position);
 }
 
-base::Optional<gfx::Transform> OpenXrController::GetTransformFromSpaces(
+absl::optional<gfx::Transform> OpenXrController::GetTransformFromSpaces(
     XrTime predicted_display_time,
     XrSpace target,
     XrSpace origin,
@@ -536,7 +536,7 @@ base::Optional<gfx::Transform> OpenXrController::GetTransformFromSpaces(
           xrLocateSpace(target, origin, predicted_display_time, &location)) ||
       !(location.locationFlags & XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT) ||
       !(location.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   *emulated_position = true;
@@ -592,6 +592,9 @@ XrResult OpenXrController::CreateActionsForButton(
     case OpenXrButtonType::kGrasp:
       name_prefix += "grasp_";
       break;
+    case OpenXrButtonType::kShoulder:
+      name_prefix += "shoulder_";
+      break;
   }
 
   std::unordered_map<OpenXrButtonActionType, XrAction>& cur_button =
@@ -618,10 +621,10 @@ XrResult OpenXrController::CreateAction(XrActionType type,
 
   errno_t error =
       strcpy_s(action_create_info.actionName,
-               base::size(action_create_info.actionName), action_name.data());
+               std::size(action_create_info.actionName), action_name.data());
   DCHECK(error == 0);
   error = strcpy_s(action_create_info.localizedActionName,
-                   base::size(action_create_info.localizedActionName),
+                   std::size(action_create_info.localizedActionName),
                    action_name.data());
   DCHECK(error == 0);
   return xrCreateAction(action_set_, &action_create_info, action);

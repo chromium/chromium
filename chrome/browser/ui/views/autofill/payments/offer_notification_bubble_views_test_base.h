@@ -1,17 +1,31 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_VIEWS_TEST_BASE_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_VIEWS_TEST_BASE_H_
 
+#include <list>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
+
+class CouponService;
 
 namespace autofill {
 
@@ -25,12 +39,31 @@ class OfferNotificationBubbleViewsTestBase
     : public InProcessBrowserTest,
       public OfferNotificationBubbleControllerImpl::ObserverForTest {
  public:
+  class TestAutofillManager : public BrowserAutofillManager {
+   public:
+    TestAutofillManager(ContentAutofillDriver* driver, AutofillClient* client)
+        : BrowserAutofillManager(driver,
+                                 client,
+                                 "en-US",
+                                 EnableDownloadManager(false)) {}
+
+    testing::AssertionResult WaitForFormsSeen(int min_num_awaited_calls) {
+      return forms_seen_waiter_.Wait(min_num_awaited_calls);
+    }
+
+   private:
+    TestAutofillManagerWaiter forms_seen_waiter_{
+        *this,
+        {&AutofillManager::Observer::OnAfterFormsSeen}};
+  };
+
   // Various events that can be waited on by the DialogEventWaiter.
   enum class DialogEvent : int {
     BUBBLE_SHOWN,
   };
 
-  OfferNotificationBubbleViewsTestBase();
+  explicit OfferNotificationBubbleViewsTestBase(
+      bool promo_code_flag_enabled = true);
   ~OfferNotificationBubbleViewsTestBase() override;
   OfferNotificationBubbleViewsTestBase(
       const OfferNotificationBubbleViewsTestBase&) = delete;
@@ -43,12 +76,36 @@ class OfferNotificationBubbleViewsTestBase
   // OfferNotificationBubbleControllerImpl::ObserverForTest:
   void OnBubbleShown() override;
 
-  std::unique_ptr<AutofillOfferData> CreateOfferDataWithDomains(
+  // Also creates a credit card for the offer.
+  std::unique_ptr<AutofillOfferData> CreateCardLinkedOfferDataWithDomains(
       const std::vector<GURL>& domains);
 
-  void SetUpOfferDataWithDomains(const std::vector<GURL>& domains);
+  std::unique_ptr<AutofillOfferData> CreateGPayPromoCodeOfferDataWithDomains(
+      const std::vector<GURL>& domains);
+
+  std::unique_ptr<AutofillOfferData> CreateFreeListingCouponDataWithDomains(
+      const std::vector<GURL>& domains);
+
+  void DeleteFreeListingCouponForUrl(const GURL& url);
+
+  void SetUpOfferDataWithDomains(AutofillOfferData::OfferType offer_type,
+                                 const std::vector<GURL>& domains);
+
+  // Also creates a credit card for the offer.
+  void SetUpCardLinkedOfferDataWithDomains(const std::vector<GURL>& domains);
+
+  void SetUpFreeListingCouponOfferDataWithDomains(
+      const std::vector<GURL>& domains);
+
+  void SetUpGPayPromoCodeOfferDataWithDomains(const std::vector<GURL>& domains);
+
+  void SetUpFreeListingCouponOfferDataForCouponService(
+      std::unique_ptr<AutofillOfferData> offer);
+
+  TestAutofillManager* GetAutofillManager();
 
   void NavigateTo(const std::string& file_path);
+  void NavigateToAndWaitForForm(const std::string& file_path);
 
   OfferNotificationBubbleViews* GetOfferNotificationBubbleViews();
 
@@ -58,16 +115,44 @@ class OfferNotificationBubbleViewsTestBase
 
   content::WebContents* GetActiveWebContents();
 
-  void AddEventObserverToController();
+  void AddEventObserverToController(
+      OfferNotificationBubbleControllerImpl* controller);
 
   void ResetEventWaiterForSequence(std::list<DialogEvent> event_sequence);
+
+  void UpdateFreeListingCouponDisplayTime(
+      std::unique_ptr<AutofillOfferData> offer);
+
+  AutofillOfferManager* GetOfferManager();
 
   void WaitForObservedEvent() { event_waiter_->Wait(); }
 
   PersonalDataManager* personal_data() { return personal_data_; }
 
+ protected:
+  // Returns the string used for the default test promo code data, so that it
+  // can be expected on UI elements if desired.
+  std::string GetDefaultTestPromoCode() const;
+
+  // Returns the value prop string used for the default test GPay promo code,
+  // so that it can be expected on UI elements if desired.
+  std::string GetDefaultTestValuePropText() const;
+
+  // Returns the see details string used for the default test GPay promo code.
+  std::string GetDefaultTestSeeDetailsText() const;
+
+  // Returns the user instructions string used for the default GPay promo code
+  // data.
+  std::string GetDefaultTestUsageInstructionsText() const;
+
+  // Returns the offer details url string used for the default GPay promo code.
+  std::string GetDefaultTestDetailsUrlString() const;
+
  private:
-  PersonalDataManager* personal_data_;
+  std::unique_ptr<TestAutofillManagerInjector<TestAutofillManager>>
+      autofill_manager_injector_;
+  raw_ptr<PersonalDataManager> personal_data_;
+  raw_ptr<CouponService> coupon_service_;
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

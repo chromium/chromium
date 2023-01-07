@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <map>
 #include <memory>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/win/scoped_hdc.h"
 
 namespace {
@@ -46,9 +47,9 @@ PixelData GetBitmapData(HBITMAP handle, const BITMAPINFO& info, HDC hdc) {
   data = std::make_unique<uint32_t[]>(info.bmiHeader.biSizeImage /
                                       sizeof(uint32_t));
 
-  int result =
-      GetDIBits(hdc, handle, 0, info.bmiHeader.biHeight, data.get(),
-                reinterpret_cast<BITMAPINFO*>(header.get()), DIB_RGB_COLORS);
+  int result = GetDIBits(
+      hdc, handle, 0, static_cast<UINT>(info.bmiHeader.biHeight), data.get(),
+      reinterpret_cast<BITMAPINFO*>(header.get()), DIB_RGB_COLORS);
 
   if (result == 0)
     data.reset();
@@ -70,10 +71,10 @@ bool IsRowTransparent(const PixelData& data,
   return true;
 }
 
-// Gets the vertical offset between specified cursor's hotpoint and it's bottom.
+// Gets the vertical offset between specified cursor's hotpoint and its bottom.
 //
 // Gets the cursor image data and extract cursor's visible height.
-// Based on that get's what should be the vertical offset between cursor's
+// Based on that gets what should be the vertical offset between cursor's
 // hot point and the tooltip.
 int CalculateCursorHeight(HCURSOR cursor_handle) {
   base::win::ScopedGetDC hdc(nullptr);
@@ -90,16 +91,15 @@ int CalculateCursorHeight(HCURSOR cursor_handle) {
   // Rows are padded to full DWORDs. OR with this mask will set them to 1
   // to simplify matching with |transparent_mask|.
   uint32_t last_byte_mask = 0xFFFFFFFF;
+  const auto width = static_cast<uint32_t>(bitmap_info.bmiHeader.biWidth);
   const unsigned char bits_to_shift =
-      sizeof(last_byte_mask) * 8 -
-      (bitmap_info.bmiHeader.biWidth % kBitsPeruint32);
+      sizeof(last_byte_mask) * 8 - (width % kBitsPeruint32);
   if (bits_to_shift != kBitsPeruint32)
     last_byte_mask = (last_byte_mask << bits_to_shift);
   else
     last_byte_mask = 0;
 
-  const uint32_t row_size =
-      (bitmap_info.bmiHeader.biWidth + kBitsPeruint32 - 1) / kBitsPeruint32;
+  const uint32_t row_size = (width + kBitsPeruint32 - 1) / kBitsPeruint32;
   PixelData data(GetBitmapData(icon.hbmMask, bitmap_info, hdc));
   if (data == nullptr)
     return kDefaultHeight;
@@ -111,10 +111,9 @@ int CalculateCursorHeight(HCURSOR cursor_handle) {
   // of each other (xor mask and and mask).
   const bool has_xor_mask =
       bitmap_info.bmiHeader.biHeight == 2 * bitmap_info.bmiHeader.biWidth;
-  const int cursor_height =
-      has_xor_mask ? static_cast<int>(bitmap_info.bmiHeader.biHeight / 2)
-                   : static_cast<int>(bitmap_info.bmiHeader.biHeight);
-  int xor_offset;
+  const auto height = static_cast<uint32_t>(bitmap_info.bmiHeader.biHeight);
+  const uint32_t cursor_height = has_xor_mask ? height / 2 : height;
+  uint32_t xor_offset;
   if (has_xor_mask) {
     for (xor_offset = 0; xor_offset < cursor_height; ++xor_offset) {
       const uint32_t row_start = row_size * xor_offset;
@@ -129,10 +128,10 @@ int CalculateCursorHeight(HCURSOR cursor_handle) {
     xor_offset = cursor_height;
   }
 
-  int and_offset;
+  uint32_t and_offset;
 
-  for (and_offset = has_xor_mask ? cursor_height : 0;
-       and_offset < bitmap_info.bmiHeader.biHeight; ++and_offset) {
+  for (and_offset = has_xor_mask ? cursor_height : 0; and_offset < height;
+       ++and_offset) {
     if (!IsRowTransparent(data, row_size, last_byte_mask, and_offset)) {
       break;
     }
@@ -140,12 +139,15 @@ int CalculateCursorHeight(HCURSOR cursor_handle) {
   if (has_xor_mask) {
     and_offset -= cursor_height;
   }
-  const int offset = std::min(xor_offset, and_offset);
+  const uint32_t offset = std::min(xor_offset, and_offset);
 
   DeleteObject(icon.hbmColor);
   DeleteObject(icon.hbmMask);
 
-  return cursor_height - offset - icon.yHotspot + 1;
+  // Apparently it's possible for the calculation here to underflow, and thus
+  // result in a negative value, maybe if the hotspot is below any visible
+  // portion of the cursor.  Not sure if this case should return 0 instead.
+  return static_cast<int>(cursor_height - offset - icon.yHotspot + 1);
 }
 
 }  // namespace

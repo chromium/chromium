@@ -1,4 +1,4 @@
-/* Copyright 2013 The Chromium Authors. All rights reserved.
+/* Copyright 2013 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -35,20 +35,28 @@
   background: rgb(239, 243, 255);
 }
 
-#typeInfo .error {
+#typeInfo .severity_error {
  background: rgb(255, 204, 204);
 }
 
-#typeInfo .warning {
+#typeInfo .severity_warning {
  background: rgb(255, 255, 204);
 }
 
-#typeInfo .disabled {
+#typeInfo .severity_info {
  background: rgb(224, 224, 224);
+}
+
+#typeInfo .transitioning {
+ background: rgb(160, 200, 160);
 }
 
 #typeInfo .ok {
  background: rgb(204, 255, 204);
+}
+
+#typeInfo .message {
+  word-break: break-all;
 }
 
 @-webkit-keyframes highlight1 {

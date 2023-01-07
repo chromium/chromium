@@ -1,25 +1,26 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 
 #include <map>
+#include <memory>
 
-#include "base/bind.h"
-#include "chrome/browser/ash/app_mode/app_session.h"
+#include "chrome/browser/ash/app_mode/app_session_ash.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
-#include "chrome/browser/chromeos/policy/device_local_account.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chromeos/settings/cros_settings_names.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "url/gurl.h"
 
 namespace ash {
 
 namespace {
-// This class is owned by ChromeBrowserMainPartsChromeos.
+// This class is owned by `ChromeBrowserMainPartsAsh`.
 static WebKioskAppManager* g_web_kiosk_app_manager = nullptr;
 }  // namespace
 
@@ -40,6 +41,14 @@ bool WebKioskAppManager::IsInitialized() {
 WebKioskAppManager* WebKioskAppManager::Get() {
   CHECK(g_web_kiosk_app_manager);
   return g_web_kiosk_app_manager;
+}
+
+// static
+KioskAppManagerBase::App WebKioskAppManager::CreateAppByData(
+    const WebKioskAppData& data) {
+  auto app = KioskAppManagerBase::App(data);
+  app.url = data.install_url();
+  return app;
 }
 
 WebKioskAppManager::WebKioskAppManager()
@@ -84,10 +93,23 @@ const WebKioskAppData* WebKioskAppManager::GetAppByAccountId(
 
 void WebKioskAppManager::UpdateAppByAccountId(
     const AccountId& account_id,
-    std::unique_ptr<WebApplicationInfo> app_info) {
+    const WebAppInstallInfo& app_info) {
   for (auto& web_app : apps_) {
     if (web_app->account_id() == account_id) {
-      web_app->UpdateFromWebAppInfo(std::move(app_info));
+      web_app->UpdateFromWebAppInfo(app_info);
+      return;
+    }
+  }
+  NOTREACHED();
+}
+
+void WebKioskAppManager::UpdateAppByAccountId(const AccountId& account_id,
+                                              const std::string& title,
+                                              const GURL& start_url,
+                                              const IconBitmaps& icon_bitmaps) {
+  for (auto& web_app : apps_) {
+    if (web_app->account_id() == account_id) {
+      web_app->UpdateAppInfo(title, start_url, icon_bitmaps);
       return;
     }
   }
@@ -96,18 +118,23 @@ void WebKioskAppManager::UpdateAppByAccountId(
 
 void WebKioskAppManager::AddAppForTesting(const AccountId& account_id,
                                           const GURL& install_url) {
-  const std::string app_id = web_app::GenerateAppIdFromURL(install_url);
+  const std::string app_id =
+      web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, install_url);
   apps_.push_back(std::make_unique<WebKioskAppData>(
       this, app_id, account_id, install_url, /*title*/ std::string(),
       /*icon_url*/ GURL()));
   NotifyKioskAppsChanged();
 }
 
-void WebKioskAppManager::InitSession(Browser* browser) {
+void WebKioskAppManager::InitSession(Browser* browser, Profile* profile) {
   LOG_IF(FATAL, app_session_) << "Kiosk session is already initialized.";
 
-  app_session_ = std::make_unique<AppSession>();
-  app_session_->InitForWebKiosk(browser);
+  app_session_ = std::make_unique<AppSessionAsh>();
+  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession())
+    app_session_->InitForWebKioskWithLacros(profile);
+  else
+    app_session_->InitForWebKiosk(browser);
+
   NotifySessionInitialized();
 }
 
@@ -144,7 +171,8 @@ void WebKioskAppManager::UpdateAppsFromPolicy() {
     std::string title = account.web_kiosk_app_info.title();
     GURL icon_url = GURL(account.web_kiosk_app_info.icon_url());
 
-    std::string app_id = web_app::GenerateAppIdFromURL(url);
+    std::string app_id =
+        web_app::GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
     auto old_it = old_apps.find(app_id);
     if (old_it != old_apps.end()) {
@@ -165,6 +193,12 @@ void WebKioskAppManager::UpdateAppsFromPolicy() {
     old_apps_to_remove.emplace_back(entry.second.get());
   ClearRemovedApps(old_apps_to_remove);
   NotifyKioskAppsChanged();
+}
+
+void WebKioskAppManager::StartObservingAppUpdate(Profile* profile,
+                                                 const AccountId& account_id) {
+  app_update_observer_ =
+      std::make_unique<WebKioskAppUpdateObserver>(profile, account_id);
 }
 
 }  // namespace ash

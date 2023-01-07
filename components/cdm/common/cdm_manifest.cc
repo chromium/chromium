@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,8 @@
 #include "media/base/content_decryption_module.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/video_codecs.h"
+#include "media/cdm/cdm_capability.h"
+#include "media/cdm/supported_audio_codecs.h"
 #include "media/cdm/supported_cdm_versions.h"
 #include "media/media_buildflags.h"
 
@@ -118,79 +120,6 @@ bool CheckForCompatibleVersion(const base::Value& manifest,
   return false;
 }
 
-// Returns true and updates |video_codecs| if the appropriate manifest entry is
-// valid. Returns false and does not modify |video_codecs| if the manifest entry
-// is incorrectly formatted.
-bool GetCodecs(const base::Value& manifest,
-               std::vector<media::VideoCodec>* video_codecs) {
-  DCHECK(manifest.is_dict());
-  DCHECK(video_codecs);
-
-  const base::Value* value = manifest.FindKey(kCdmCodecsListName);
-  if (!value) {
-    DLOG(WARNING) << "CDM manifest is missing codecs.";
-    return true;
-  }
-
-  if (!value->is_string()) {
-    DLOG(ERROR) << "CDM manifest entry " << kCdmCodecsListName
-                << " is not a string.";
-    return false;
-  }
-
-  const std::string& codecs = value->GetString();
-  if (codecs.empty()) {
-    DLOG(WARNING) << "CDM manifest has empty codecs list.";
-    return true;
-  }
-
-  std::vector<media::VideoCodec> result;
-  const std::vector<base::StringPiece> supported_codecs =
-      base::SplitStringPiece(codecs, kCdmValueDelimiter, base::TRIM_WHITESPACE,
-                             base::SPLIT_WANT_NONEMPTY);
-
-  for (const auto& codec : supported_codecs) {
-    if (codec == kCdmSupportedCodecVp8) {
-      result.push_back(media::VideoCodec::kCodecVP8);
-    } else if (codec == kCdmSupportedCodecVp9) {
-      result.push_back(media::VideoCodec::kCodecVP9);
-    } else if (codec == kCdmSupportedCodecAv1) {
-      result.push_back(media::VideoCodec::kCodecAV1);
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-    } else if (codec == kCdmSupportedCodecAvc1) {
-      result.push_back(media::VideoCodec::kCodecH264);
-#endif
-    }
-  }
-
-  video_codecs->swap(result);
-  return true;
-}
-
-// Returns true and updates |session_types| if the appropriate manifest entry is
-// valid. Returns false if the manifest entry is incorrectly formatted.
-bool GetSessionTypes(const base::Value& manifest,
-                     base::flat_set<media::CdmSessionType>* session_types) {
-  DCHECK(manifest.is_dict());
-  DCHECK(session_types);
-
-  bool is_persistent_license_supported = false;
-  const base::Value* value = manifest.FindKey(kCdmPersistentLicenseSupportName);
-  if (value) {
-    if (!value->is_bool())
-      return false;
-    is_persistent_license_supported = value->GetBool();
-  }
-
-  // Temporary session is always supported.
-  session_types->insert(media::CdmSessionType::kTemporary);
-
-  if (is_persistent_license_supported)
-    session_types->insert(media::CdmSessionType::kPersistentLicense);
-
-  return true;
-}
-
 // Returns true and updates |encryption_schemes| if the appropriate manifest
 // entry is valid. Returns false and does not modify |encryption_schemes| if the
 // manifest entry is incorrectly formatted. It is assumed that all CDMs support
@@ -246,6 +175,103 @@ bool GetEncryptionSchemes(
   return true;
 }
 
+// Returns true and updates |audio_codecs| with the full set of audio
+// codecs that support decryption.
+bool GetAudioCodecs(const base::Value& manifest,
+                    base::flat_set<media::AudioCodec>* audio_codecs) {
+  DCHECK(manifest.is_dict());
+  DCHECK(audio_codecs);
+
+  // Note that desktop CDMs only support decryption of audio content,
+  // no decoding. Manifest does not contain any audio codecs, so return
+  // the standard set of audio codecs supported only if there is at least
+  // one encryption scheme specified.
+  base::flat_set<media::EncryptionScheme> encryption_schemes;
+  if (!GetEncryptionSchemes(manifest, &encryption_schemes)) {
+    return false;
+  }
+
+  DCHECK(!encryption_schemes.empty());
+  *audio_codecs = media::GetCdmSupportedAudioCodecs();
+  return true;
+}
+
+// Returns true and updates |video_codecs| if the appropriate manifest entry is
+// valid. Returns false and does not modify |video_codecs| if the manifest entry
+// is incorrectly formatted.
+bool GetVideoCodecs(const base::Value& manifest,
+                    media::CdmCapability::VideoCodecMap* video_codecs) {
+  DCHECK(manifest.is_dict());
+  DCHECK(video_codecs);
+
+  const base::Value* value = manifest.FindKey(kCdmCodecsListName);
+  if (!value) {
+    DLOG(WARNING) << "CDM manifest is missing codecs.";
+    return true;
+  }
+
+  if (!value->is_string()) {
+    DLOG(ERROR) << "CDM manifest entry " << kCdmCodecsListName
+                << " is not a string.";
+    return false;
+  }
+
+  const std::string& codecs = value->GetString();
+  if (codecs.empty()) {
+    DLOG(WARNING) << "CDM manifest has empty codecs list.";
+    return true;
+  }
+
+  const std::vector<base::StringPiece> supported_codecs =
+      base::SplitStringPiece(codecs, kCdmValueDelimiter, base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+
+  // As the manifest string does not include profiles, specify {} to indicate
+  // that all relevant profiles should be considered supported.
+  media::CdmCapability::VideoCodecMap result;
+  const media::VideoCodecInfo kAllProfiles;
+  for (const auto& codec : supported_codecs) {
+    if (codec == kCdmSupportedCodecVp8) {
+      result.emplace(media::VideoCodec::kVP8, kAllProfiles);
+    } else if (codec == kCdmSupportedCodecVp9) {
+      result.emplace(media::VideoCodec::kVP9, kAllProfiles);
+    } else if (codec == kCdmSupportedCodecAv1) {
+      result.emplace(media::VideoCodec::kAV1, kAllProfiles);
+#if BUILDFLAG(USE_PROPRIETARY_CODECS)
+    } else if (codec == kCdmSupportedCodecAvc1) {
+      result.emplace(media::VideoCodec::kH264, kAllProfiles);
+#endif
+    }
+  }
+
+  video_codecs->swap(result);
+  return true;
+}
+
+// Returns true and updates |session_types| if the appropriate manifest entry is
+// valid. Returns false if the manifest entry is incorrectly formatted.
+bool GetSessionTypes(const base::Value& manifest,
+                     base::flat_set<media::CdmSessionType>* session_types) {
+  DCHECK(manifest.is_dict());
+  DCHECK(session_types);
+
+  bool is_persistent_license_supported = false;
+  const base::Value* value = manifest.FindKey(kCdmPersistentLicenseSupportName);
+  if (value) {
+    if (!value->is_bool())
+      return false;
+    is_persistent_license_supported = value->GetBool();
+  }
+
+  // Temporary session is always supported.
+  session_types->insert(media::CdmSessionType::kTemporary);
+
+  if (is_persistent_license_supported)
+    session_types->insert(media::CdmSessionType::kPersistentLicense);
+
+  return true;
+}
+
 bool GetVersion(const base::Value& manifest, base::Version* version) {
   DCHECK(manifest.is_dict());
   auto* version_string = manifest.FindStringKey(kCdmVersion);
@@ -278,17 +304,18 @@ bool IsCdmManifestCompatibleWithChrome(const base::Value& manifest) {
 }
 
 bool ParseCdmManifest(const base::Value& manifest,
-                      content::CdmCapability* capability) {
+                      media::CdmCapability* capability) {
   DCHECK(manifest.is_dict());
 
-  return GetCodecs(manifest, &capability->video_codecs) &&
+  return GetAudioCodecs(manifest, &capability->audio_codecs) &&
+         GetVideoCodecs(manifest, &capability->video_codecs) &&
          GetEncryptionSchemes(manifest, &capability->encryption_schemes) &&
          GetSessionTypes(manifest, &capability->session_types);
 }
 
 bool ParseCdmManifestFromPath(const base::FilePath& manifest_path,
                               base::Version* version,
-                              content::CdmCapability* capability) {
+                              media::CdmCapability* capability) {
   JSONFileValueDeserializer deserializer(manifest_path);
   int error_code;
   std::string error_message;

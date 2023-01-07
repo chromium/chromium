@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <NotificationActivationCallback.h>
 #include <wrl/implements.h>
-
-#include "base/macros.h"
 
 namespace notification_helper {
 
@@ -22,6 +20,9 @@ class NotificationActivator
  public:
   NotificationActivator() = default;
 
+  NotificationActivator(const NotificationActivator&) = delete;
+  NotificationActivator& operator=(const NotificationActivator&) = delete;
+
   // Called when a user interacts with a toast in the Windows action center.
   // For the meaning of the input parameters, see
   // https://msdn.microsoft.com/library/windows/desktop/mt643712.aspx
@@ -32,9 +33,6 @@ class NotificationActivator
 
  protected:
   ~NotificationActivator() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NotificationActivator);
 };
 
 }  // namespace notification_helper

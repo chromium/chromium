@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,11 @@
 #include <ostream>
 
 #include "base/location.h"
-#include "base/optional.h"
 #include "remoting/base/result.h"
 #include "remoting/proto/file_transfer.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 template <typename SuccessType>
 using FileTransferResult = Result<SuccessType, FileTransfer_Error>;
@@ -22,11 +21,10 @@ using FileTransferResult = Result<SuccessType, FileTransfer_Error>;
 FileTransfer_Error MakeFileTransferError(
     base::Location location,
     FileTransfer_Error_Type type,
-    base::Optional<std::int32_t> api_error_code = base::nullopt);
+    absl::optional<std::int32_t> api_error_code = absl::nullopt);
 
 std::ostream& operator<<(std::ostream& stream, const FileTransfer_Error& error);
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_FILE_TRANSFER_HELPERS_H_

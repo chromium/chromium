@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 
 namespace base {
 namespace trace_event {
@@ -80,7 +81,7 @@ void MemoryDumpScheduler::StartInternal(MemoryDumpScheduler::Config config) {
   SequencedTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       BindOnce(&MemoryDumpScheduler::Tick, Unretained(this), ++generation_),
-      TimeDelta::FromMilliseconds(200));
+      Milliseconds(200));
 }
 
 void MemoryDumpScheduler::StopInternal() {
@@ -106,7 +107,7 @@ void MemoryDumpScheduler::Tick(uint32_t expected_generation) {
       FROM_HERE,
       BindOnce(&MemoryDumpScheduler::Tick, Unretained(this),
                expected_generation),
-      TimeDelta::FromMilliseconds(period_ms_));
+      Milliseconds(period_ms_));
 }
 
 MemoryDumpScheduler::Config::Config() = default;

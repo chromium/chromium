@@ -12,8 +12,6 @@ Tests that AR hit test results are available in rAF as soon as hit test source i
     <script>var shouldAutoCreateNonImmersiveSession = false;</script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       const TestState = Object.freeze({
         "Initial":  0,
         "RequestHitTestSource": 1,
@@ -44,6 +42,7 @@ Tests that AR hit test results are available in rAF as soon as hit test source i
         let retries_left = 30 * 5;
 
         onARFrameCallback = (session, frame) => {
+          console.log('Got AR frame, test state: ' + testState);
           switch(testState) {
 
             case TestState.Initial: {
@@ -58,10 +57,12 @@ Tests that AR hit test results are available in rAF as soon as hit test source i
             }
             case TestState.RequestHitTestSource: {
               // Try to create a hit test source from within a frame.
+              console.log('Requesting hit test source');
               sessionInfo.currentSession.requestHitTestSource({
                 space: referenceSpace,
                 offsetRay: new XRRay()
               }).then((hts) => {
+                console.log('Got hit test source');
                 hitTestSource = hts;
                 testState = TestState.HitTestSourceAvailable;
               }).catch((err) => {

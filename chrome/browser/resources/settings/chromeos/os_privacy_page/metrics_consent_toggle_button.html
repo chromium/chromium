@@ -1,0 +1,15 @@
+<style include="cr-actionable-row-style settings-shared">
+    #settingsToggle {
+      width: 100%;
+    }
+</style>
+
+<settings-toggle-button
+    id="settingsToggle"
+    pref="[[metricsConsentPref_]]"
+    label="$i18n{enableLogging}"
+    sub-label="$i18n{enableLoggingDesc}"
+    disabled$="[[!isMetricsConsentConfigurable_]]"
+    on-settings-boolean-control-change="onMetricsConsentChange_"
+    no-set-pref>
+</settings-toggle-button>

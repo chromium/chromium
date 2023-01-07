@@ -18,7 +18,7 @@ function test() {
     try {
         var xhr = new XMLHttpRequest();
         xhr.open("GET", "../cookies/resources/setCookies.cgi", false);
-        xhr.setRequestHeader("SET-COOKIE", "hello=world;path=/");
+        xhr.setRequestHeader("X-SET-COOKIE", "hello=world;path=/");
         xhr.send(null);
         if (xhr.status != 200) {
             document.getElementsByTagName("body")[0].appendChild(document.createTextNode("FAILED: cookie not set"));

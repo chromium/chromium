@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2021 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
 <LinearLayout
@@ -13,15 +14,22 @@
     android:orientation="vertical"
     android:layoutDirection="locale">
 
-  <!-- Header: we want back_arrow.icon, "Manage", then info.icon (png?) -->
-  <!-- TODO(petewil): Add string resource for "manage". -->
-  <!-- TODO(petewil): Make the arrow into a clicable button. -->
-  <TextView
-      android:id="@+id/feed_management_page_title"
+  <com.google.android.material.appbar.AppBarLayout
+      android:id="@+id/app_bar_layout"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      app:drawableStartCompat="@drawable/ic_arrow_back_24dp" />
+      android:fitsSystemWindows="true"
+      app:liftOnScroll="true">
 
+      <com.google.android.material.appbar.MaterialToolbar
+          android:id="@+id/action_bar"
+          android:layout_width="match_parent"
+          android:layout_height="?attr/actionBarSize"
+          style="@style/ManagementActivityNoActionBar"
+          app:title="@string/ntp_manage_feed" />
+  </com.google.android.material.appbar.AppBarLayout>
+
+  <!-- This list gets the management options. -->
   <ListView
       android:id="@+id/feed_management_menu"
       android:layout_width="match_parent"

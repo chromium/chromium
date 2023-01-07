@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,10 @@ class FakeRankerModelLoader : public RankerModelLoader {
   FakeRankerModelLoader(ValidateModelCallback validate_model_cb,
                         OnModelAvailableCallback on_model_available_cb,
                         std::unique_ptr<RankerModel> ranker_model);
+
+  FakeRankerModelLoader(const FakeRankerModelLoader&) = delete;
+  FakeRankerModelLoader& operator=(const FakeRankerModelLoader&) = delete;
+
   ~FakeRankerModelLoader() override;
 
   void NotifyOfRankerActivity() override;
@@ -28,7 +32,6 @@ class FakeRankerModelLoader : public RankerModelLoader {
   std::unique_ptr<RankerModel> ranker_model_;
   const ValidateModelCallback validate_model_cb_;
   const OnModelAvailableCallback on_model_available_cb_;
-  DISALLOW_COPY_AND_ASSIGN(FakeRankerModelLoader);
 };
 
 }  // namespace testing

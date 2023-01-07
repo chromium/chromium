@@ -1,11 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_CAPTIVE_PORTAL_CONTENT_CAPTIVE_PORTAL_LOGIN_DETECTOR_H_
 #define COMPONENTS_CAPTIVE_PORTAL_CONTENT_CAPTIVE_PORTAL_LOGIN_DETECTOR_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/captive_portal/content/captive_portal_service.h"
 
 namespace captive_portal {
@@ -23,6 +23,10 @@ class CaptivePortalLoginDetector {
   explicit CaptivePortalLoginDetector(
       CaptivePortalService* captive_portal_service);
 
+  CaptivePortalLoginDetector(const CaptivePortalLoginDetector&) = delete;
+  CaptivePortalLoginDetector& operator=(const CaptivePortalLoginDetector&) =
+      delete;
+
   ~CaptivePortalLoginDetector();
 
   void OnStoppedLoading();
@@ -33,7 +37,7 @@ class CaptivePortalLoginDetector {
   void SetIsLoginTab();
 
  private:
-  CaptivePortalService* captive_portal_service_;
+  raw_ptr<CaptivePortalService> captive_portal_service_;
 
   // True if this is a login tab.  Set manually, automatically cleared once
   // login is detected.
@@ -42,8 +46,6 @@ class CaptivePortalLoginDetector {
   // Page is on its first load since being tagged as a login tab.  Used to
   // prevent a second captive portal check on the first load of the login page.
   bool first_login_tab_load_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptivePortalLoginDetector);
 };
 
 }  // namespace captive_portal

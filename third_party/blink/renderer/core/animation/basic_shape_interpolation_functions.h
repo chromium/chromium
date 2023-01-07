@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "third_party/blink/renderer/core/animation/interpolation_value.h"
+#include "third_party/blink/renderer/core/core_export.h"
 
 namespace blink {
 
@@ -17,14 +18,16 @@ class CSSToLengthConversionData;
 namespace basic_shape_interpolation_functions {
 
 InterpolationValue MaybeConvertCSSValue(const CSSValue&);
-InterpolationValue MaybeConvertBasicShape(const BasicShape*, double zoom);
+CORE_EXPORT InterpolationValue MaybeConvertBasicShape(const BasicShape*,
+                                                      double zoom);
 std::unique_ptr<InterpolableValue> CreateNeutralValue(
     const NonInterpolableValue&);
-bool ShapesAreCompatible(const NonInterpolableValue&,
-                         const NonInterpolableValue&);
-scoped_refptr<BasicShape> CreateBasicShape(const InterpolableValue&,
-                                           const NonInterpolableValue&,
-                                           const CSSToLengthConversionData&);
+CORE_EXPORT bool ShapesAreCompatible(const NonInterpolableValue&,
+                                     const NonInterpolableValue&);
+CORE_EXPORT scoped_refptr<BasicShape> CreateBasicShape(
+    const InterpolableValue&,
+    const NonInterpolableValue&,
+    const CSSToLengthConversionData&);
 
 }  // namespace basic_shape_interpolation_functions
 

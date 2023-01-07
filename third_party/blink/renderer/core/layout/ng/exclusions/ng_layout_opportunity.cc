@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,9 +54,9 @@ LineSegment ExcludedSegment(const NGExclusion& exclusion,
   segment.logical_right += margin_delta;
 
   // Clamp the segment offsets to the size of the exclusion.
-  segment.logical_left = clampTo<LayoutUnit>(segment.logical_left, LayoutUnit(),
+  segment.logical_left = ClampTo<LayoutUnit>(segment.logical_left, LayoutUnit(),
                                              exclusion.rect.InlineSize());
-  segment.logical_right = clampTo<LayoutUnit>(
+  segment.logical_right = ClampTo<LayoutUnit>(
       segment.logical_right, LayoutUnit(), exclusion.rect.InlineSize());
 
   // Make the segment offsets relative to the BFC coordinate space.
@@ -100,7 +100,7 @@ LayoutUnit NGLayoutOpportunity::ComputeLineLeftOffset(
     const NGConstraintSpace& space,
     LayoutUnit line_block_size,
     LayoutUnit block_delta) const {
-  if (!shape_exclusions || shape_exclusions->line_left_shapes.IsEmpty())
+  if (!shape_exclusions || shape_exclusions->line_left_shapes.empty())
     return rect.LineStartOffset();
 
   LayoutUnit bfc_block_offset = rect.BlockStartOffset() + block_delta;
@@ -132,7 +132,7 @@ LayoutUnit NGLayoutOpportunity::ComputeLineRightOffset(
     const NGConstraintSpace& space,
     LayoutUnit line_block_size,
     LayoutUnit block_delta) const {
-  if (!shape_exclusions || shape_exclusions->line_right_shapes.IsEmpty())
+  if (!shape_exclusions || shape_exclusions->line_right_shapes.empty())
     return rect.LineEndOffset();
 
   LayoutUnit bfc_block_offset = rect.BlockStartOffset() + block_delta;

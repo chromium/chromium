@@ -1,0 +1,4 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++ListView CollectionInfo:[rows=1, cols=0] actions:[AX_FOCUS] bundle:[chromeRole="descriptionList"]
+++++View text:"Coffee" CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="descriptionListTerm"]
+++++View text:"Black hot drink" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="descriptionListDetail", roleDescription="definition"]

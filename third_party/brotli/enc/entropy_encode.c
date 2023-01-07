@@ -6,7 +6,7 @@
 
 /* Entropy encoding (Huffman) utilities. */
 
-#include "./entropy_encode.h"
+#include "entropy_encode.h"
 
 #include <string.h>  /* memset */
 

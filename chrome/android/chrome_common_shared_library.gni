@@ -1,18 +1,25 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//base/android/linker/config.gni")
 import("//build/config/android/config.gni")
+import("//build/config/android/create_unwind_table.gni")
+import("//build/config/android/extract_unwind_tables.gni")
 import("//build/config/android/linker_version_script.gni")
+import("//build/config/chrome_build.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/partitioned_shared_library.gni")
 import("//chrome/android/modules/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
-# TODO(cjgrant): Remove these variables once downstream stops using them.
-bundle_library_suffix = ""
-apk_pak_asset_type = "_apk"
+declare_args() {
+  # Compile libmonochrome.so with RELR relocations, which are smaller and more
+  # efficient, but supported only on API 28+.
+  # This is not permanently enabled for Trichrome because it shares its native
+  # library with Monochrome.
+  use_relr_relocations = is_high_end_android
+}
 
 # This template contains all common configuration for native shared libraries,
 # including libchrome, monochrome, standalone webview (also called monochrome),
@@ -30,6 +37,7 @@ apk_pak_asset_type = "_apk"
 #      native_deps. See //chrome/android/modules/chrome_feature_modules.gni for
 #      the descriptor format.
 template("chrome_common_shared_library") {
+  forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   _is_monochrome = defined(invoker.is_monochrome) && invoker.is_monochrome
   _is_webview = defined(invoker.is_webview) && invoker.is_webview
   _export_java_symbols = _is_monochrome || _is_webview
@@ -75,13 +83,19 @@ template("chrome_common_shared_library") {
   }
 
   target(_target_type, target_name) {
-    forward_variables_from(invoker, "*")
+    forward_variables_from(
+        invoker,
+        "*",
+        TESTONLY_AND_VISIBILITY + [ "define_unwind_table_target" ])
 
     if (!_is_webview) {
       deps += [ "//chrome:chrome_android_core" ]
     }
 
-    if (!(defined(invoker.testonly) && invoker.testonly)) {
+    # Warn if linking code which could implicitly disable BTI on Arm systems
+    configs += [ "//build/config/android:lld_branch_target_hardening" ]
+
+    if (!(defined(testonly) && testonly)) {
       configs -= [ "//build/config/compiler:thinlto_optimize_default" ]
       configs += [ "//build/config/compiler:thinlto_optimize_max" ]
     }
@@ -112,9 +126,14 @@ template("chrome_common_shared_library") {
         sources += [ "../browser/android/vr/register_jni_monochrome.cc" ]
       } else {
         sources += [ "../browser/android/vr/register_jni.cc" ]
-        deps += [
-          "//chrome/browser/android/vr:jni_registration($default_toolchain)",
-        ]
+        if (defined(testonly) && testonly) {
+          defines = [ "JNI_REGISTRATION_FOR_TESTING" ]
+          deps += [ "//chrome/browser/android/vr:jni_registration_for_testing($default_toolchain)" ]
+        } else {
+          deps += [
+            "//chrome/browser/android/vr:jni_registration($default_toolchain)",
+          ]
+        }
       }
     }
 
@@ -135,8 +154,10 @@ template("chrome_common_shared_library") {
     }
 
     # Compress relocations if needed.
-    if ((_is_monochrome || _is_webview || chromium_linker_supported) &&
-        use_lld) {
+    if (use_relr_relocations) {
+      configs += [ "//build/config/android:lld_relr_relocations" ]
+    } else if ((_is_monochrome || _is_webview || chromium_linker_supported) &&
+               use_lld) {
       configs += [ "//build/config/android:lld_pack_relocations" ]
     }
 
@@ -163,9 +184,25 @@ template("chrome_common_shared_library") {
     foreach(_module_desc, _module_descs) {
       if (defined(_module_desc.native_deps)) {
         group("${target_name}_${_module_desc.name}") {
-          forward_variables_from(invoker, [ "testonly" ])
           deps = _module_desc.native_deps
         }
+      }
+    }
+  }
+
+  if (defined(invoker.define_unwind_table_target) &&
+      invoker.define_unwind_table_target) {
+    _library_target = ":$target_name"
+
+    # TODO(crbug.com/1315603): Remove generation of v1 unwind asset when
+    # `CFIBacktraceAndroid` is replaced with `ChromeUnwinderAndroidV2`.
+    unwind_table_v1("${target_name}_unwind_table_v1") {
+      library_target = _library_target
+    }
+
+    if (use_android_unwinder_v2) {
+      unwind_table_v2("${target_name}_unwind_table_v2") {
+        library_target = _library_target
       }
     }
   }

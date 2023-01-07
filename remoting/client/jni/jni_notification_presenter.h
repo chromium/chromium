@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <jni.h>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "remoting/client/notification/notification_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 
@@ -20,6 +20,10 @@ class JniNotificationPresenter final {
  public:
   explicit JniNotificationPresenter(
       const JavaObjectWeakGlobalRef& java_presenter);
+
+  JniNotificationPresenter(const JniNotificationPresenter&) = delete;
+  JniNotificationPresenter& operator=(const JniNotificationPresenter&) = delete;
+
   ~JniNotificationPresenter();
 
   void FetchNotification(JNIEnv* env,
@@ -27,13 +31,11 @@ class JniNotificationPresenter final {
   void Destroy(JNIEnv* env);
 
  private:
-  void OnNotificationFetched(base::Optional<NotificationMessage> notification);
+  void OnNotificationFetched(absl::optional<NotificationMessage> notification);
 
   JavaObjectWeakGlobalRef java_presenter_;
   NotificationClient notification_client_;
   scoped_refptr<base::SequencedTaskRunner> sequence_;
-
-  DISALLOW_COPY_AND_ASSIGN(JniNotificationPresenter);
 };
 
 }  // namespace remoting

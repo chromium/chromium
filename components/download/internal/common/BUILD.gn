@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -72,6 +72,7 @@ source_set("internal") {
     "//base",
     "//components/download/database",
     "//components/download/public/common:interfaces",
+    "//components/enterprise/common:download_item_reroute_info",
     "//components/filename_generation",
     "//components/leveldb_proto",
     "//components/safe_browsing:buildflags",
@@ -86,11 +87,7 @@ source_set("internal") {
 
   # TODO(crbug/1056278): Enable this on Fuchsia
   if (safe_browsing_mode > 0 && !is_fuchsia) {
-    deps += [ "//components/safe_browsing/core:file_type_policies" ]
-  }
-
-  if (is_win) {
-    deps += [ "//components/services/quarantine/public/cpp:features" ]
+    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
   }
 
   if (is_android) {
@@ -120,6 +117,8 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
+      "//base:jni_java",
+      "//build/android:build_java",
       "//third_party/android_provider:android_provider_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
@@ -158,6 +157,7 @@ source_set("unit_tests") {
     "download_path_reservation_tracker_unittest.cc",
     "download_stats_unittest.cc",
     "download_ukm_helper_unittest.cc",
+    "download_utils_unittest.cc",
     "parallel_download_job_unittest.cc",
     "parallel_download_utils_unittest.cc",
     "rate_estimator_unittest.cc",
@@ -170,11 +170,13 @@ source_set("unit_tests") {
     "//build:chromeos_buildflags",
     "//components/download/database",
     "//components/download/public/common:test_support",
+    "//components/enterprise/common:download_item_reroute_info",
     "//components/leveldb_proto",
     "//components/leveldb_proto:test_support",
     "//components/ukm:test_support",
     "//crypto",
     "//net",
+    "//net/traffic_annotation:test_support",
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",

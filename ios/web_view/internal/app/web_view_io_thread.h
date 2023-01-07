@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,15 +22,16 @@ namespace ios_web_view {
 class WebViewIOThread : public io_thread::IOSIOThread {
  public:
   WebViewIOThread(PrefService* local_state, net::NetLog* net_log);
+
+  WebViewIOThread(const WebViewIOThread&) = delete;
+  WebViewIOThread& operator=(const WebViewIOThread&) = delete;
+
   ~WebViewIOThread() override;
 
  protected:
   // io_thread::IOSIOThread overrides
   std::unique_ptr<net::NetworkDelegate> CreateSystemNetworkDelegate() override;
   std::string GetChannelString() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebViewIOThread);
 };
 
 }  // namespace ios_web_view

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.app.tab_activity_glue;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +32,11 @@ public class TabReparentingController {
         TabModelSelector getTabModelSelector();
 
         /** @return Whether the given Url is an NTP url, exists solely to support unit testing. */
-        boolean isNTPUrl(String url);
+        boolean isNTPUrl(GURL url);
     }
+
+    private static final String TAG =
+            "org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController";
 
     private final Delegate mDelegate;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
@@ -69,24 +74,39 @@ public class TabReparentingController {
 
         // Save all the tabs in memory to be retrieved after restart.
         mDelegate.getTabModelSelector().enterReparentingMode();
+        int tabsAwaitingReparenting = 0;
+        int tabsStillLoading = 0;
         for (int i = 0; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
             if (tab.isLoading()) {
                 tab.stopLoading();
                 tab.getWebContents().getNavigationController().setNeedsReload();
+                tabsStillLoading++;
             }
 
-            // The current tab has already been detached/stored and is waiting for andorid to
+            // The current tab has already been detached/stored and is waiting for android to
             // recreate the activity.
-            if (mAsyncTabParamsManager.hasParamsForTabId(tab.getId())) continue;
+            if (mAsyncTabParamsManager.hasParamsForTabId(tab.getId())) {
+                tabsAwaitingReparenting++;
+                continue;
+            }
             // Intentionally skip new tab pages and allow them to reload and restore scroll
             // state themselves.
-            if (mDelegate.isNTPUrl(tab.getUrlString())) continue;
+            if (mDelegate.isNTPUrl(tab.getUrl())) continue;
 
             TabReparentingParams params = new TabReparentingParams(tab, null);
             mAsyncTabParamsManager.add(tab.getId(), params);
             ReparentingTask.from(tab).detach();
+
+            tabsAwaitingReparenting++;
         }
+
+        // TODO(https://crbug.com/1252526): Remove logging once root cause of bug is identified &
+        //  fixed.
+        Log.i(TAG,
+                "#prepareTabsForReparenting, num tabs awaiting reparenting: "
+                        + tabsAwaitingReparenting
+                        + ", num tabs still loading: " + tabsStillLoading);
     }
 
     protected static void populateComprehensiveTabsFromModel(TabModel model, List<Tab> outputTabs) {

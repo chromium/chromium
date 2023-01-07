@@ -1,4 +1,3 @@
-CONSOLE ERROR: line 14: WebSocket connection to 'ws://127.0.0.1:8880/compressed-control-frame' failed: One or more reserved bits are on: reserved1 = 1, reserved2 = 0, reserved3 = 0
 Test whether a compressed control frame is rejected
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

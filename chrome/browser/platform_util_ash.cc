@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,15 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "chrome/browser/chromeos/file_manager/open_util.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_external_protocol_handler.h"
+#include "chrome/browser/ash/file_manager/open_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/platform_util_internal.h"
+#include "chrome/browser/ui/ash/window_pin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
-#include "chromeos/ui/base/window_pin_type.h"
-#include "chromeos/ui/base/window_properties.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -113,8 +112,7 @@ bool IsBrowserLockedFullscreen(const Browser* browser) {
   // |window| can be nullptr inside of unit tests.
   if (!window)
     return false;
-  return window->GetProperty(chromeos::kWindowPinTypeKey) ==
-         chromeos::WindowPinType::kTrustedPinned;
+  return GetWindowPinType(window) == chromeos::WindowPinType::kTrustedPinned;
 }
 
 }  // namespace platform_util

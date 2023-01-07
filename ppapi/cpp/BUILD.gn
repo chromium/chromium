@@ -1,10 +1,14 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+import("//ppapi/buildflags/buildflags.gni")
 
 if (is_nacl) {
   import("//build/config/nacl/config.gni")
 }
+
+assert(enable_ppapi)
 
 if (is_nacl && is_nacl_glibc) {
   cpp_target_type = "shared_library"
@@ -203,10 +207,6 @@ source_set("objects") {
     "private/ext_crx_file_system_private.h",
     "private/file_io_private.cc",
     "private/file_io_private.h",
-    "private/find_private.cc",
-    "private/find_private.h",
-    "private/flash_font_file.cc",
-    "private/flash_font_file.h",
     "private/host_resolver_private.cc",
     "private/host_resolver_private.h",
     "private/instance_private.cc",
@@ -217,8 +217,6 @@ source_set("objects") {
     "private/net_address_private.h",
     "private/pass_file_handle.cc",
     "private/pass_file_handle.h",
-    "private/pdf.cc",
-    "private/pdf.h",
     "private/tcp_server_socket_private.cc",
     "private/tcp_server_socket_private.h",
     "private/tcp_socket_private.cc",

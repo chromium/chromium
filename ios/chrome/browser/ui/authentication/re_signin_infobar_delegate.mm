@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,22 +6,23 @@
 
 #import <UIKit/UIKit.h>
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/logging.h"
-#include "components/infobars/core/infobar_manager.h"
-#include "components/signin/public/base/signin_metrics.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/logging.h"
+#import "components/infobars/core/infobar_manager.h"
+#import "components/signin/public/base/signin_metrics.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
-#include "ios/chrome/browser/signin/authentication_service.h"
-#include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/infobar_utils.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/signin_presenter.h"
 #import "ios/chrome/browser/ui/commands/show_signin_command.h"
-#include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/signin/signin_presenter.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -54,7 +55,7 @@ std::unique_ptr<infobars::InfoBar> ReSignInInfoBarDelegate::CreateInfoBar(
       ReSignInInfoBarDelegate::CreateInfoBarDelegate(browser_state, presenter);
   if (!delegate)
     return nullptr;
-  return infobar_manager->CreateConfirmInfoBar(std::move(delegate));
+  return CreateConfirmInfoBar(std::move(delegate));
 }
 
 // static
@@ -69,11 +70,21 @@ ReSignInInfoBarDelegate::CreateInfoBarDelegate(
   // Returns null if user does not need to be prompted to sign in again.
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
-  if (!authService->ShouldPromptForSignIn())
+  // Don't show the notification if sign-in is not supported.
+  switch (authService->GetServiceStatus()) {
+    case AuthenticationService::ServiceStatus::SigninForcedByPolicy:
+    case AuthenticationService::ServiceStatus::SigninAllowed:
+      break;
+    case AuthenticationService::ServiceStatus::SigninDisabledByUser:
+    case AuthenticationService::ServiceStatus::SigninDisabledByPolicy:
+    case AuthenticationService::ServiceStatus::SigninDisabledByInternal:
+      return nullptr;
+  }
+  if (!authService->ShouldReauthPromptForSignInAndSync())
     return nullptr;
   // Returns null if user has already signed in via some other path.
-  if (authService->IsAuthenticated()) {
-    authService->ResetPromptForSignIn();
+  if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    authService->ResetReauthPromptForSignInAndSync();
     return nullptr;
   }
   signin_metrics::RecordSigninImpressionUserActionForAccessPoint(
@@ -114,28 +125,27 @@ std::u16string ReSignInInfoBarDelegate::GetButtonLabel(
       IDS_IOS_SYNC_INFOBAR_SIGN_IN_SETTINGS_BUTTON_MOBILE);
 }
 
-gfx::Image ReSignInInfoBarDelegate::GetIcon() const {
-  return icon_;
+ui::ImageModel ReSignInInfoBarDelegate::GetIcon() const {
+  return ui::ImageModel::FromImage(icon_);
 }
 
 bool ReSignInInfoBarDelegate::Accept() {
   signin_metrics::RecordSigninUserActionForAccessPoint(
-      signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR,
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO);
+      signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
-      initWithOperation:AUTHENTICATION_OPERATION_REAUTHENTICATE
+      initWithOperation:AuthenticationOperationReauthenticate
             accessPoint:signin_metrics::AccessPoint::
                             ACCESS_POINT_RESIGNIN_INFOBAR];
   [presenter_ showSignin:command];
 
   // Stop displaying the infobar once user interacted with it.
   AuthenticationServiceFactory::GetForBrowserState(browser_state_)
-      ->ResetPromptForSignIn();
+      ->ResetReauthPromptForSignInAndSync();
   return true;
 }
 
 void ReSignInInfoBarDelegate::InfoBarDismissed() {
   // Stop displaying the infobar once user interacted with it.
   AuthenticationServiceFactory::GetForBrowserState(browser_state_)
-      ->ResetPromptForSignIn();
+      ->ResetReauthPromptForSignInAndSync();
 }

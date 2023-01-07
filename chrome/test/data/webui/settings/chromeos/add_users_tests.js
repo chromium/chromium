@@ -1,13 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import 'chrome://os-settings/chromeos/os_settings.js';
 
-// #import {FakeUsersPrivate} from './fake_users_private.m.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// clang-format on
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
+import {FakeUsersPrivate} from './fake_users_private.js';
 
 suite('AddPersonDialog', function() {
   let dialog = null;
@@ -16,7 +15,7 @@ suite('AddPersonDialog', function() {
     PolymerTest.clearBody();
 
     dialog = document.createElement('settings-users-add-user-dialog');
-    dialog.usersPrivate_ = new settings.FakeUsersPrivate();
+    dialog.usersPrivate_ = new FakeUsersPrivate();
 
     document.body.appendChild(dialog);
 
@@ -33,10 +32,10 @@ suite('AddPersonDialog', function() {
    * Test that the dialog reacts to valid and invalid input correctly.
    */
   test('Add user', function() {
-    const userInputBox = dialog.$$('#addUserInput');
+    const userInputBox = dialog.shadowRoot.querySelector('#addUserInput');
     assertTrue(!!userInputBox);
 
-    const addButton = dialog.$$('.action-button');
+    const addButton = dialog.shadowRoot.querySelector('.action-button');
     assertTrue(!!addButton);
     assertTrue(addButton.disabled);
     assertTrue(!userInputBox.invalid);
@@ -58,8 +57,8 @@ suite('AddPersonDialog', function() {
   });
 
   test('Add duplicate user', function() {
-    const userInputBox = dialog.$$('#addUserInput');
-    const addButton = dialog.$$('.action-button');
+    const userInputBox = dialog.shadowRoot.querySelector('#addUserInput');
+    const addButton = dialog.shadowRoot.querySelector('.action-button');
     const duplicateUserEmail = 'duplicateUser@google.com';
 
     // Add user for the first time.
@@ -79,8 +78,8 @@ suite('AddPersonDialog', function() {
   });
 
   test('Add new user', function() {
-    const userInputBox = dialog.$$('#addUserInput');
-    const addButton = dialog.$$('.action-button');
+    const userInputBox = dialog.shadowRoot.querySelector('#addUserInput');
+    const addButton = dialog.shadowRoot.querySelector('.action-button');
     const newUserEmail = 'newUser@google.com';
 
     userInputBox.value = newUserEmail;
@@ -91,8 +90,8 @@ suite('AddPersonDialog', function() {
   });
 
   test('Add two new users', function() {
-    const userInputBox = dialog.$$('#addUserInput');
-    const addButton = dialog.$$('.action-button');
+    const userInputBox = dialog.shadowRoot.querySelector('#addUserInput');
+    const addButton = dialog.shadowRoot.querySelector('.action-button');
     const firstUserEmail = 'firstUser@google.com';
     const secondUserEmail = 'secondUser@google.com';
 

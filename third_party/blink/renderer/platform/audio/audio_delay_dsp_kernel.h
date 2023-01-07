@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/audio_dsp_kernel.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 

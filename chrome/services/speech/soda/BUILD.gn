@@ -1,9 +1,11 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//build/config/chromeos/ui_mode.gni")
-import("//chrome/services/speech/buildflags.gni")
+import("//components/soda/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
+
+assert(!is_android)
 
 proto_library("soda_api_proto") {
   sources = [ "proto/soda_api.proto" ]
@@ -14,11 +16,13 @@ source_set("soda") {
     "soda_async_impl.h",
     "soda_client.cc",
     "soda_client.h",
+    "soda_test_paths.h",
   ]
 
   deps = [
     ":soda_api_proto",
     "//base",
+    "//media/mojo/mojom",
   ]
 
   if (is_chromeos_ash) {
@@ -40,7 +44,15 @@ source_set("unit_tests") {
   if (enable_soda) {
     sources = [ "soda_client_unittest.cc" ]
 
-    data_deps = [ "//third_party/soda:soda_resources" ]
+    if (is_mac) {
+      data_deps = [ "//third_party/soda-mac64:soda_resources" ]
+    } else if (is_win && target_cpu == "x86") {
+      data_deps = [ "//third_party/soda-win32:soda_resources" ]
+    } else if (is_win && target_cpu == "x64") {
+      data_deps = [ "//third_party/soda-win64:soda_resources" ]
+    } else {
+      data_deps = [ "//third_party/soda:soda_resources" ]
+    }
 
     deps = [
       ":soda",

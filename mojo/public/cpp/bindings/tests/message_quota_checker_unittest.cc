@@ -1,17 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
 
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/public/c/system/quota.h"
 #include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace test {
@@ -40,7 +41,7 @@ class MessageQuotaCheckerTest : public testing::Test {
   }
 
   static void RecordDumpAttempt(size_t total_quota_used,
-                                base::Optional<size_t> message_pipe_quota_used,
+                                absl::optional<size_t> message_pipe_quota_used,
                                 int64_t seconds_since_construction,
                                 double average_write_rate,
                                 uint64_t messages_enqueued,
@@ -62,7 +63,7 @@ class MessageQuotaCheckerTest : public testing::Test {
 
   size_t num_dumps_ = false;
   size_t last_dump_total_quota_used_ = 0u;
-  base::Optional<size_t> last_dump_message_pipe_quota_used_;
+  absl::optional<size_t> last_dump_message_pipe_quota_used_;
   int64_t last_seconds_since_construction_ = 0;
   double last_average_write_rate_ = 0.0;
   uint64_t last_messages_enqueued_ = 0u;
@@ -81,6 +82,10 @@ const MessageQuotaCheckerTest::Configuration
 MessageQuotaCheckerTest* MessageQuotaCheckerTest::instance_ = nullptr;
 
 TEST_F(MessageQuotaCheckerTest, ReadsConfigurationFromFeatures) {
+  if (mojo::core::IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
+  }
+
   base::FieldTrialParams params;
   params["SampleRate"] = "19";
   // Quota value parameter below the minimum the checker will allow.
@@ -103,6 +108,10 @@ TEST_F(MessageQuotaCheckerTest, ReadsConfigurationFromFeatures) {
 }
 
 TEST_F(MessageQuotaCheckerTest, DisabledByDefault) {
+  if (mojo::core::IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
+  }
+
   const MessageQuotaChecker::Configuration config =
       MessageQuotaChecker::GetConfigurationForTesting();
   EXPECT_FALSE(config.is_enabled);
@@ -115,6 +124,10 @@ TEST_F(MessageQuotaCheckerTest, DisabledByDefault) {
 }
 
 TEST_F(MessageQuotaCheckerTest, CreatesWhenEnabled) {
+  if (mojo::core::IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
+  }
+
   // Run a bunch of iterations, as this function returns an instance randomly.
   for (size_t i = 0; i < 1000; ++i)
     EXPECT_NE(nullptr,
@@ -122,6 +135,10 @@ TEST_F(MessageQuotaCheckerTest, CreatesWhenEnabled) {
 }
 
 TEST_F(MessageQuotaCheckerTest, CountsRight) {
+  if (mojo::core::IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
+  }
+
   scoped_refptr<MessageQuotaChecker> checker =
       MessageQuotaChecker::MaybeCreateForTesting(enabled_config_);
 
@@ -140,6 +157,10 @@ TEST_F(MessageQuotaCheckerTest, CountsRight) {
 }
 
 TEST_F(MessageQuotaCheckerTest, CountsMessagePipeAlso) {
+  if (mojo::core::IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
+  }
+
   MessagePipe pipe;
   scoped_refptr<MessageQuotaChecker> checker =
       MessageQuotaChecker::MaybeCreateForTesting(enabled_config_);
@@ -183,6 +204,10 @@ TEST_F(MessageQuotaCheckerTest, CountsMessagePipeAlso) {
 }
 
 TEST_F(MessageQuotaCheckerTest, DumpsCoreOnOverrun) {
+  if (mojo::core::IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
+  }
+
   // Make sure to start the test on an even sampling interval to get consistent
   // average computations below.
   base::TimeTicks t0 = MessageQuotaChecker::DecayingRateAverage::
@@ -250,6 +275,10 @@ TEST_F(MessageQuotaCheckerTest, DumpsCoreOnOverrun) {
 }
 
 TEST_F(MessageQuotaCheckerTest, DecayingRateAverage) {
+  if (mojo::core::IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "Mojo quota APIs are not supported by MojoIpcz.";
+  }
+
   // Make sure to start the test on an even sampling interval to get consistent
   // average computations below.
   base::TimeTicks t0 = MessageQuotaChecker::DecayingRateAverage::

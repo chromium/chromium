@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -179,7 +179,7 @@ TEST(HTMLSrcsetParserTest, Basic) {
   }
 }
 
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 // https://crbug.com/1189511
 #define MAYBE_SaveDataEnabledBasic DISABLED_SaveDataEnabledBasic
 #else

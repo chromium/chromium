@@ -13,8 +13,6 @@
 ../../../../pyjson5/src/json5/version.py
 ../../build/scripts/blinkbuild/__init__.py
 ../../build/scripts/blinkbuild/name_style_converter.py
-blink_idl_lexer.py
-blink_idl_parser.py
 collect_idl_files.py
 utilities.py
 web_idl/__init__.py
@@ -44,10 +42,10 @@ web_idl/ir_map.py
 web_idl/literal_constant.py
 web_idl/make_copy.py
 web_idl/namespace.py
+web_idl/observable_array.py
 web_idl/operation.py
 web_idl/reference.py
 web_idl/runtime_enabled_features.py
 web_idl/typedef.py
 web_idl/union.py
 web_idl/user_defined_type.py
-web_idl/validator.py

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 @interface PasswordBreachAppInterface : NSObject
 
 // Shows Password Breach with a default type of leak and URL.
-// |checkButtonPresent| indicates that password was reused and user has option
+// `checkButtonPresent` indicates that password was reused and user has option
 // to check all passwords.
 + (void)showPasswordBreachWithCheckButton:(BOOL)checkButtonPresent;
 

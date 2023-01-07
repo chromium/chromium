@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+
+<p>go to chrome://settings/addresses to set up autofill</p>
+<p>autofill is not supported in file:// urls</p>
+
+<form>
+  <div>
+    <label for=input1>name</label>
+    <span id=input1>
+      <template shadowroot=open>
+        <span>
+          <template shadowroot=open>
+            <input>
+          </template>
+        </span>
+      </template>
+    </span>
+  </div>
+  <div>
+    <label for=input2>address</label>
+    <span id=input2>
+      <template shadowroot=open>
+        <input>
+      </template>
+    </span>
+  </div>
+  <div>
+    <label for=input3>city</label>
+    <span id=input3>
+      <template shadowroot=open>
+        <input id=shadowinput name=shadowname>
+      </template>
+    </span>
+  </div>
+  <div>
+    <label for=input4>state</label>
+    <span id=input4>
+      <template shadowroot=open>
+        <select>
+          <option value=WA>WA</option>
+          <option value=CA>CA</option>
+          <option value=TX>TX</option>
+        </select>
+      </template>
+    </span>
+  </div>
+  <div>
+    <label for=input5>zip</label>
+    <span id=input5>
+      <template shadowroot=open>
+        <input id=shadowinput>
+      </template>
+    </span>
+  </div>
+</form>
+
+<script>
+function getNameElement() {
+  return input1.shadowRoot.querySelector('span').shadowRoot.querySelector('input');
+}
+
+function getName() {
+  return getNameElement().value;
+}
+
+function getAddress() {
+  return input2.shadowRoot.querySelector('input').value;
+}
+
+function getCity() {
+  return input3.shadowRoot.querySelector('input').value;
+}
+
+function getState() {
+  return input4.shadowRoot.querySelector('select').value;
+}
+
+function getZip() {
+  return input5.shadowRoot.querySelector('input').value;
+}
+</script>

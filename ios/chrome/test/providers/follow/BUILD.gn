@@ -1,0 +1,13 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("follow") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "test_follow.mm" ]
+  deps = [
+    "//base",
+    "//ios/public/provider/chrome/browser/follow:follow_api",
+  ]
+}

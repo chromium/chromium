@@ -1,0 +1,5 @@
+monorail {
+  component: "UI>Browser>Language"
+}
+
+team_email: "language@chromium.org"

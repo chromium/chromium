@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/shell_observer.h"
-#include "base/macros.h"
 #include "ui/aura/layout_manager.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/rect.h"
@@ -35,6 +34,12 @@ class ASH_EXPORT AccessibilityPanelLayoutManager
   static constexpr int kDefaultPanelHeight = 35;
 
   AccessibilityPanelLayoutManager();
+
+  AccessibilityPanelLayoutManager(const AccessibilityPanelLayoutManager&) =
+      delete;
+  AccessibilityPanelLayoutManager& operator=(
+      const AccessibilityPanelLayoutManager&) = delete;
+
   ~AccessibilityPanelLayoutManager() override;
 
   // Controls the panel's visibility and location.
@@ -81,13 +86,13 @@ class ASH_EXPORT AccessibilityPanelLayoutManager
   // Window bounds when not in fullscreen
   gfx::Rect panel_bounds_ = gfx::Rect(0, 0, 0, 0);
 
+  display::ScopedDisplayObserver display_observer_{this};
+
   // Determines whether panel is hidden when browser is in fullscreen.
   bool always_visible_ = false;
 
   // Determines how the panel_bounds_ are used when displaying the panel.
   AccessibilityPanelState panel_state_ = AccessibilityPanelState::BOUNDED;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityPanelLayoutManager);
 };
 
 }  // namespace ash

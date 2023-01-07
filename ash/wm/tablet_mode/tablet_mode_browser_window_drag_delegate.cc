@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,11 +14,10 @@
 #include "ash/wm/window_util.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/display/screen.h"
-#include "ui/gfx/color_analysis.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -50,19 +49,24 @@ class SourceWindowAnimationObserver : public ui::ImplicitAnimationObserver,
     dragged_window_->AddObserver(this);
   }
 
+  SourceWindowAnimationObserver(const SourceWindowAnimationObserver&) = delete;
+  SourceWindowAnimationObserver& operator=(
+      const SourceWindowAnimationObserver&) = delete;
+
   ~SourceWindowAnimationObserver() override { StopObserving(); }
 
   // ui::ImplicitAnimationObserver:
   void OnLayerAnimationStarted(ui::LayerAnimationSequence* sequence) override {
     DCHECK(dragged_window_ && source_window_);
-    dragged_window_->SetProperty(ash::kCanAttachToAnotherWindowKey, false);
+    dragged_window_->SetProperty(chromeos::kCanAttachToAnotherWindowKey, false);
   }
 
   void OnImplicitAnimationsCompleted() override {
     DCHECK(dragged_window_ && source_window_);
     // When arriving here, we know the source window bounds change animation
-    // just ended. Only clear the property ash::kCanAttachToAnotherWindowKey if
-    // the source window bounds restores to its maximized window size.
+    // just ended. Only clear the property
+    // chromeos::kCanAttachToAnotherWindowKey if the source window bounds
+    // restores to its maximized window size.
     gfx::Rect work_area_bounds = display::Screen::GetScreen()
                                      ->GetDisplayNearestWindow(source_window_)
                                      .work_area();
@@ -87,15 +91,13 @@ class SourceWindowAnimationObserver : public ui::ImplicitAnimationObserver,
 
     if (dragged_window_) {
       dragged_window_->RemoveObserver(this);
-      dragged_window_->ClearProperty(ash::kCanAttachToAnotherWindowKey);
+      dragged_window_->ClearProperty(chromeos::kCanAttachToAnotherWindowKey);
       dragged_window_ = nullptr;
     }
   }
 
   aura::Window* source_window_;
   aura::Window* dragged_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(SourceWindowAnimationObserver);
 };
 
 }  // namespace
@@ -178,7 +180,7 @@ void TabletModeBrowserWindowDragDelegate::UpdateSourceWindow(
     SplitViewController::SnapPosition snap_position =
         GetSnapPosition(location_in_screen);
 
-    if (snap_position == SplitViewController::NONE) {
+    if (snap_position == SplitViewController::SnapPosition::kNone) {
       // Scale down the source window if the event location passes the vertical
       // |kIndicatorThresholdRatio| threshold.
       expected_bounds.ClampToCenteredSize(
@@ -187,9 +189,9 @@ void TabletModeBrowserWindowDragDelegate::UpdateSourceWindow(
     } else {
       // Put the source window on the other side of the split screen.
       expected_bounds = split_view_controller_->GetSnappedWindowBoundsInScreen(
-          snap_position == SplitViewController::LEFT
-              ? SplitViewController::RIGHT
-              : SplitViewController::LEFT,
+          snap_position == SplitViewController::SnapPosition::kPrimary
+              ? SplitViewController::SnapPosition::kSecondary
+              : SplitViewController::SnapPosition::kPrimary,
           source_window);
     }
   }
@@ -240,7 +242,7 @@ void TabletModeBrowserWindowDragDelegate::MergeBackToSourceWindowIfApplicable(
   // If splitscreen is not active, do not merge back if the dragged window is
   // in the drag-to-snap preview area.
   if (!split_view_controller_->InSplitViewMode() &&
-      desired_snap_position != SplitViewController::NONE) {
+      desired_snap_position != SplitViewController::SnapPosition::kNone) {
     return;
   }
 
@@ -255,15 +257,16 @@ void TabletModeBrowserWindowDragDelegate::MergeBackToSourceWindowIfApplicable(
             ? drag_position < split_view_controller_->divider_position()
             : drag_position > split_view_controller_->divider_position();
     aura::Window* window_on_opposite_side =
-        is_dragging_on_left ? split_view_controller_->right_window()
-                            : split_view_controller_->left_window();
+        is_dragging_on_left ? split_view_controller_->secondary_window()
+                            : split_view_controller_->primary_window();
     if (source_window == window_on_opposite_side)
       return;
   }
 
   // Arriving here we know the dragged window should merge back into its source
   // window.
-  source_window->SetProperty(kIsDeferredTabDraggingTargetWindowKey, true);
+  source_window->SetProperty(chromeos::kIsDeferredTabDraggingTargetWindowKey,
+                             true);
 }
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,10 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "dbus/bus.h"
@@ -105,7 +104,7 @@ void BluetoothSocketBlueZ::Connect(const BluetoothDeviceBlueZ* device,
   device_address_ = device->GetAddress();
   device_path_ = device->object_path();
   uuid_ = uuid;
-  options_.reset(new bluez::BluetoothProfileManagerClient::Options());
+  options_ = std::make_unique<bluez::BluetoothProfileManagerClient::Options>();
   if (security_level == SECURITY_LEVEL_LOW)
     options_->require_authentication = std::make_unique<bool>(false);
 
@@ -134,18 +133,18 @@ void BluetoothSocketBlueZ::Listen(
   adapter_->AddObserver(this);
 
   uuid_ = uuid;
-  options_.reset(new bluez::BluetoothProfileManagerClient::Options());
+  options_ = std::make_unique<bluez::BluetoothProfileManagerClient::Options>();
   if (service_options.name)
-    options_->name.reset(new std::string(*service_options.name));
+    options_->name = std::make_unique<std::string>(*service_options.name);
 
   switch (socket_type) {
     case kRfcomm:
-      options_->channel.reset(
-          new uint16_t(service_options.channel ? *service_options.channel : 0));
+      options_->channel = std::make_unique<uint16_t>(
+          service_options.channel ? *service_options.channel : 0);
       break;
     case kL2cap:
-      options_->psm.reset(
-          new uint16_t(service_options.psm ? *service_options.psm : 0));
+      options_->psm = std::make_unique<uint16_t>(
+          service_options.psm ? *service_options.psm : 0);
       break;
     default:
       NOTREACHED();

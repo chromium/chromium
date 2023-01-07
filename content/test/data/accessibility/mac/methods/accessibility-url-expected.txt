@@ -1,0 +1,3 @@
+iframe.AXChildren[0].accessibilityURL='data:text/html,'
+a.accessibilityURL='https://example.com/'
+not_applicable.accessibilityURL=NULL

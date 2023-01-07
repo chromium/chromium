@@ -1,72 +1,23 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
+import {OsSyncBrowserProxyImpl, SyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {SyncBrowserProxyImpl, OsSyncBrowserProxyImpl} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.m.js';
-// #import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-// clang-format on
+import {assertFalse, assertTrue} from '../../chai_assert.js';
 
-function getPrefs() {
+import {TestSyncBrowserProxy} from './test_os_sync_browser_proxy.js';
+
+// Prefs used by settings-multidevice-wifi-sync-item.
+function getOsPrefs() {
   return {
-    wifiConfigurationsRegistered: true,
-    wifiConfigurationsSynced: true,
+    osWifiConfigurationsRegistered: true,
+    osWifiConfigurationsSynced: true,
   };
 }
-
-suite('Multidevice_WifiSyncItem_SplitSettingsDisabled', function() {
-  let wifiSyncItem;
-
-  setup(function() {
-    const browserProxy = new TestSyncBrowserProxy();
-    settings.SyncBrowserProxyImpl.instance_ = browserProxy;
-
-    PolymerTest.clearBody();
-    loadTimeData.overrideValues({
-      splitSettingsSyncEnabled: false,
-    });
-
-    wifiSyncItem =
-        document.createElement('settings-multidevice-wifi-sync-item');
-    document.body.appendChild(wifiSyncItem);
-    Polymer.dom.flush();
-  });
-
-  teardown(function() {
-    wifiSyncItem.remove();
-  });
-
-  test('Chrome Sync off', async () => {
-    const prefs = getPrefs();
-    prefs.wifiConfigurationsSynced = false;
-    cr.webUIListenerCallback('sync-prefs-changed', prefs);
-    Polymer.dom.flush();
-
-    assertTrue(
-        !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
-
-    const toggle = wifiSyncItem.$$('cr-toggle');
-    assertTrue(!!toggle);
-    assertTrue(toggle.disabled);
-    assertFalse(toggle.checked);
-  });
-
-  test('Chrome Sync on', async () => {
-    const prefs = getPrefs();
-    prefs.wifiConfigurationsSynced = true;
-    cr.webUIListenerCallback('sync-prefs-changed', prefs);
-    Polymer.dom.flush();
-
-    assertFalse(
-        !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
-  });
-});
 
 class TestOsSyncBrowserProxy extends TestBrowserProxy {
   constructor() {
@@ -81,50 +32,47 @@ class TestOsSyncBrowserProxy extends TestBrowserProxy {
   }
 }
 
-suite('Multidevice_WifiSyncItem_SplitSettingsEnabled', function() {
+suite('Multidevice_WifiSyncItem_CategorizationEnabled', function() {
   let wifiSyncItem;
 
   setup(function() {
     const browserProxy = new TestOsSyncBrowserProxy();
-    settings.OsSyncBrowserProxyImpl.instance_ = browserProxy;
+    OsSyncBrowserProxyImpl.setInstanceForTesting(browserProxy);
 
     PolymerTest.clearBody();
-    loadTimeData.overrideValues({
-      splitSettingsSyncEnabled: true,
-    });
 
     wifiSyncItem =
         document.createElement('settings-multidevice-wifi-sync-item');
     document.body.appendChild(wifiSyncItem);
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
     wifiSyncItem.remove();
   });
 
-  test('Chrome Sync off', async () => {
-    const prefs = getPrefs();
-    prefs.wifiConfigurationsSynced = false;
-    cr.webUIListenerCallback('os-sync-prefs-changed', false, prefs);
-    Polymer.dom.flush();
+  test('Wifi Sync off', async () => {
+    const prefs = getOsPrefs();
+    prefs.osWifiConfigurationsSynced = false;
+    webUIListenerCallback('os-sync-prefs-changed', prefs);
+    flush();
 
-    assertTrue(
-        !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
+    assertTrue(!!wifiSyncItem.shadowRoot.querySelector(
+        'settings-multidevice-wifi-sync-disabled-link'));
 
-    const toggle = wifiSyncItem.$$('cr-toggle');
+    const toggle = wifiSyncItem.shadowRoot.querySelector('cr-toggle');
     assertTrue(!!toggle);
     assertTrue(toggle.disabled);
     assertFalse(toggle.checked);
   });
 
-  test('Chrome Sync on', async () => {
-    const prefs = getPrefs();
-    prefs.wifiConfigurationsSynced = true;
-    cr.webUIListenerCallback('os-sync-prefs-changed', true, prefs);
-    Polymer.dom.flush();
+  test('Wifi Sync on', async () => {
+    const prefs = getOsPrefs();
+    prefs.osWifiConfigurationsSynced = true;
+    webUIListenerCallback('os-sync-prefs-changed', prefs);
+    flush();
 
-    assertFalse(
-        !!wifiSyncItem.$$('settings-multidevice-wifi-sync-disabled-link'));
+    assertFalse(!!wifiSyncItem.shadowRoot.querySelector(
+        'settings-multidevice-wifi-sync-disabled-link'));
   });
 });

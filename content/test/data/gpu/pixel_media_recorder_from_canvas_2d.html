@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<meta name="viewport" content="initial-scale=1">
+<script src="pixel_video_from_canvas.js"></script>
+<script>
+
+async function main() {
+  const canvas = document.getElementById('cnv');
+  const video = document.getElementById('result');
+  const ctx = canvas.getContext('2d');
+  fourColorsFrame(ctx);
+  video.width = canvas.width;
+  video.height = canvas.height;
+  let capturing = false;
+
+  const stream = canvas.captureStream(60);
+  const recorder = new MediaRecorder(stream);
+
+  let time_base = 0;
+  let data_chunks = [];
+  const video_duration_ms = 300;
+
+  const test_video_output = (e) => {
+    if (checkFourColorsFrame(video)) {
+      logOutput('Test completed');
+      sendResult('SUCCESS');
+    } else {
+      logOutput('Test failed');
+      sendResult('FAILED');
+    }
+  }
+
+  recorder.error = (e) => {
+    capturing = false;
+    logOutput('Test failed with an error');
+    logOutput(e);
+    sendResult('FAILED');
+  }
+
+  recorder.ondataavailable = (e) => {
+    data_chunks.push(e.data);
+    if (time_base == 0) {
+      time_base = e.timecode;
+    } else if ((e.timecode - time_base > video_duration_ms) && capturing) {
+      capturing = false;
+      recorder.stop();
+    }
+  }
+
+  recorder.onstop = (e) => {
+    const blob = new Blob(data_chunks, { 'type': 'video/webm' });
+    const videoURL = URL.createObjectURL(blob);
+    video.src = videoURL;
+    video.onended = test_video_output;
+    video.play();
+  }
+
+  capturing = true;
+  recorder.start(video_duration_ms);
+  while(capturing) {
+    await waitForNextFrame();
+    fourColorsFrame(ctx);
+  }
+}
+</script>
+<body onload="main()">
+<canvas id='cnv' width='128' height='128'></canvas>
+<video id='result' muted></video>
+</body>

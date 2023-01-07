@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/wm/drag_details.h"
 #include "ash/wm/window_state.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/wm/public/window_move_client.h"
 
@@ -28,6 +26,7 @@ class GestureEvent;
 }
 
 namespace ash {
+class PresentationTimeRecorder;
 
 // WindowResizer is used by ToplevelWindowEventFilter to handle dragging, moving
 // or resizing a window. All coordinates passed to this are in the parent
@@ -45,6 +44,10 @@ class ASH_EXPORT WindowResizer {
   static const int kBoundsChangeDirection_Vertical;
 
   explicit WindowResizer(WindowState* window_state);
+
+  WindowResizer(const WindowResizer&) = delete;
+  WindowResizer& operator=(const WindowResizer&) = delete;
+
   virtual ~WindowResizer();
 
   // Returns a bitmask of the kBoundsChange_ values.
@@ -81,11 +84,12 @@ class ASH_EXPORT WindowResizer {
  protected:
   gfx::Rect CalculateBoundsForDrag(const gfx::PointF& location);
 
-  static bool IsBottomEdge(int component);
-
   // Call during an active resize to change the bounds of the window. This
   // should not be called as the result of a revert.
   void SetBoundsDuringResize(const gfx::Rect& bounds);
+
+  void SetPresentationTimeRecorder(
+      std::unique_ptr<PresentationTimeRecorder> recorder);
 
   // WindowState of the drag target.
   WindowState* window_state_;
@@ -118,8 +122,6 @@ class ASH_EXPORT WindowResizer {
   std::unique_ptr<PresentationTimeRecorder> recorder_;
 
   base::WeakPtrFactory<WindowResizer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WindowResizer);
 };
 
 // Creates a WindowResizer for |window|. Returns a unique_ptr with null if

@@ -10,19 +10,31 @@ async_test(t => {
   var v = document.getElementById('enabled-controls');
 
   v.addEventListener('canplaythrough', t.step_func(e => {
-    assert_true(isFullscreenButtonEnabled(v));
     assert_true(isDownloadsButtonEnabled(v));
+    assert_true(isFullscreenButtonEnabled(v));
+    assert_true(isPlaybackSpeedButtonEnabled(v));
 
     v.controlsList.add('nodownload');
 
     runAfterLayoutAndPaint(t.step_func(() => {
-      assert_true(isFullscreenButtonEnabled(v));
       assert_false(isDownloadsButtonEnabled(v));
+      assert_true(isFullscreenButtonEnabled(v));
+      assert_true(isPlaybackSpeedButtonEnabled(v));
+
       v.controlsList.add('nofullscreen');
 
-      runAfterLayoutAndPaint(t.step_func_done(() => {
-        assert_false(isFullscreenButtonEnabled(v));
+      runAfterLayoutAndPaint(t.step_func(() => {
         assert_false(isDownloadsButtonEnabled(v));
+        assert_false(isFullscreenButtonEnabled(v));
+        assert_true(isPlaybackSpeedButtonEnabled(v));
+
+        v.controlsList.add('noplaybackrate');
+
+        runAfterLayoutAndPaint(t.step_func_done(() => {
+          assert_false(isDownloadsButtonEnabled(v));
+          assert_false(isFullscreenButtonEnabled(v));
+          assert_false(isPlaybackSpeedButtonEnabled(v));
+        }));
       }));
     }));
   }));

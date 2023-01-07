@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,8 +74,7 @@ class FakeSSLBlockingPage
 
   // SecurityInterstitialPage:
   void OnInterstitialClosing() override {}
-  void PopulateInterstitialStrings(
-      base::DictionaryValue* load_time_data) override {
+  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override {
     ssl_error_ui_.PopulateStringsForHTML(load_time_data);
   }
 
@@ -133,6 +132,11 @@ class TestSSLErrorNavigationThrottle : public SSLErrorNavigationThrottle {
         on_cancel_deferred_navigation_(
             std::move(on_cancel_deferred_navigation)) {}
 
+  TestSSLErrorNavigationThrottle(const TestSSLErrorNavigationThrottle&) =
+      delete;
+  TestSSLErrorNavigationThrottle& operator=(
+      const TestSSLErrorNavigationThrottle&) = delete;
+
   // NavigationThrottle:
   void CancelDeferredNavigation(
       content::NavigationThrottle::ThrottleCheckResult result) override {
@@ -142,8 +146,6 @@ class TestSSLErrorNavigationThrottle : public SSLErrorNavigationThrottle {
  private:
   base::OnceCallback<void(content::NavigationThrottle::ThrottleCheckResult)>
       on_cancel_deferred_navigation_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSSLErrorNavigationThrottle);
 };
 
 class SSLErrorNavigationThrottleTest
@@ -151,6 +153,12 @@ class SSLErrorNavigationThrottleTest
       public testing::WithParamInterface<bool> {
  public:
   SSLErrorNavigationThrottleTest() {}
+
+  SSLErrorNavigationThrottleTest(const SSLErrorNavigationThrottleTest&) =
+      delete;
+  SSLErrorNavigationThrottleTest& operator=(
+      const SSLErrorNavigationThrottleTest&) = delete;
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     handle_ = std::make_unique<content::MockNavigationHandle>(web_contents());
@@ -173,9 +181,6 @@ class SSLErrorNavigationThrottleTest
   std::unique_ptr<TestSSLErrorNavigationThrottle> throttle_;
   content::NavigationThrottle::ThrottleCheckResult deferred_result_ =
       content::NavigationThrottle::DEFER;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SSLErrorNavigationThrottleTest);
 };
 
 // Tests that the throttle ignores a request with a non SSL related network

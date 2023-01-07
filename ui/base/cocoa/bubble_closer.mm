@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,8 +43,8 @@ BubbleCloser::BubbleCloser(NSWindow* window,
     return event;
   };
   event_tap_ =
-      [NSEvent addLocalMonitorForEventsMatchingMask:NSLeftMouseDownMask |
-                                                    NSRightMouseDownMask
+      [NSEvent addLocalMonitorForEventsMatchingMask:NSEventMaskLeftMouseDown |
+                                                    NSEventMaskRightMouseDown
                                             handler:block];
 }
 

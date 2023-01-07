@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">停用所有图片动画。</translation>
 <translation id="1703735871906654364">光标浏览模式</translation>
 <translation id="1791496371305830581">允许显示所有动画图片。</translation>
+<translation id="1974060860693918893">高级</translation>
 <translation id="1996252509865389616">启用？</translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="2179565792157161713">在新标签页中打开详细说明</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">颜色增强工具</translation>
 <translation id="633394792577263429">按住 &lt;span class='key'&gt;Control&lt;/span&gt; 键可逐字移动。</translation>
 <translation id="6550675742724504774">选项</translation>
+<translation id="6699630355767768222">第 3 步：替换颜色轴以进行校正。</translation>
 <translation id="6838518108677880446">设置：</translation>
 <translation id="690628312087070417">当光标跳转较长距离时：</translation>
 <translation id="6965382102122355670">确定</translation>
@@ -64,5 +66,6 @@
 <translation id="8321034316479930120">动画政策</translation>
 <translation id="8480209185614411573">高对比度模式</translation>
 <translation id="8609925175482059018">按 &lt;span class='key'&gt;F7&lt;/span&gt; 可启用光标浏览模式。再按一次可将其停用。</translation>
+<translation id="8798099450830957504">默认</translation>
 <translation id="894241283505723656">在上下文菜单中显示详细说明选项</translation>
 </translationbundle>

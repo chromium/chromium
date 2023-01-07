@@ -1,276 +1,158 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
-import("../../../nearby_share/shared/nearby_shared.gni")
+import("//tools/polymer/html_to_js.gni")
 import("../os_settings.gni")
 
-js_type_check("closure_compile_module") {
+js_type_check("closure_compile") {
   is_polymer3 = true
 
   # TODO(crbug.com/1121865): browser_resolver_prefix_replacements allows path
   # from ../../shared/* to resolve to ../../../nearby_share/shared/* for closure
   # purposes.
-  closure_flags = os_settings_closure_flags + [
-                    "js_module_root=../../chrome/browser/resources/nearby_share",
-                    "js_module_root=./gen/chrome/browser/resources/nearby_share",
-                    "browser_resolver_prefix_replacements=\"../../shared/=../../../nearby_share/shared/\"",
-                  ]
+  closure_flags = os_settings_closure_flags
   deps = [
-    ":nearby_share_confirm_page.m",
-    ":nearby_share_contact_visibility_dialog.m",
-    ":nearby_share_data_usage_dialog.m",
-    ":nearby_share_device_name_dialog.m",
-    ":nearby_share_high_visibility_page.m",
-    ":nearby_share_receive_dialog.m",
-    ":nearby_share_receive_manager.m",
-    ":nearby_share_subpage.m",
+    ":nearby_share_confirm_page",
+    ":nearby_share_contact_visibility_dialog",
+    ":nearby_share_data_usage_dialog",
+    ":nearby_share_device_name_dialog",
+    ":nearby_share_high_visibility_page",
+    ":nearby_share_receive_dialog",
+    ":nearby_share_receive_manager",
+    ":nearby_share_subpage",
   ]
 }
 
-js_library("nearby_share_confirm_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_confirm_page.m.js" ]
+js_library("nearby_share_confirm_page") {
   deps = [
-    "//chrome/browser/resources/nearby_share/shared:nearby_device.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_page_template.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_preview.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_progress.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chrome/browser/resources/nearby_share/shared:nearby_device",
+    "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
+    "//chrome/browser/resources/nearby_share/shared:nearby_preview",
+    "//chrome/browser/resources/nearby_share/shared:nearby_progress",
   ]
-  extra_deps = [ ":nearby_share_confirm_page_module" ]
 }
 
-js_library("nearby_share_contact_visibility_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_contact_visibility_dialog.m.js" ]
+js_library("nearby_share_contact_visibility_dialog") {
   deps = [
-    "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//chrome/browser/resources/nearby_share/shared:nearby_contact_visibility",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
   ]
-  extra_deps = [ ":nearby_share_contact_visibility_dialog_module" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
-js_library("nearby_share_data_usage_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_data_usage_dialog.m.js" ]
+js_library("nearby_share_data_usage_dialog") {
   deps = [
-    ":types.m",
-    "../../prefs:prefs",
-    "../../prefs:prefs_behavior",
-    "../../prefs:prefs_types",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
-    "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    ":types",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
   ]
-  extra_deps = [ ":nearby_share_data_usage_dialog_module" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_radio_button/cr_radio_button_externs.js",
+  ]
 }
 
-js_library("nearby_share_device_name_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_device_name_dialog.m.js" ]
+js_library("nearby_share_device_name_dialog") {
   deps = [
-    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
   ]
-  extra_deps = [ ":nearby_share_device_name_dialog_module" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
+  ]
 }
 
-js_library("nearby_share_high_visibility_page.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_high_visibility_page.m.js" ]
+js_library("nearby_share_high_visibility_page") {
   deps = [
-    "../localized_link:localized_link.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_page_template.m",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chrome/browser/resources/nearby_share/shared:nearby_page_template",
   ]
-  extra_deps = [ ":nearby_share_high_visibility_page_module" ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]
 }
 
-js_library("nearby_share_receive_dialog.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_receive_dialog.m.js" ]
+js_library("nearby_share_receive_dialog") {
   deps = [
-    ":nearby_share_confirm_page.m",
-    ":nearby_share_high_visibility_page.m",
-    ":nearby_share_receive_manager.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page.m",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    ":nearby_share_confirm_page",
+    ":nearby_share_high_visibility_page",
+    ":nearby_share_receive_manager",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_one_page",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
+    "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
-  extra_deps = [ ":nearby_share_receive_dialog_module" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_view_manager/cr_view_manager_externs.js",
+  ]
 }
 
-js_library("nearby_share_receive_manager.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_receive_manager.m.js" ]
+js_library("nearby_share_receive_manager") {
   deps = [
-    ":nearby_share_confirm_page.m",
-    ":nearby_share_high_visibility_page.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
+    ":nearby_share_confirm_page",
+    ":nearby_share_high_visibility_page",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
     "//chrome/browser/ui/webui/nearby_share:mojom_js_library_for_compile",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
   ]
-  extra_deps = [ ":modulize" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+  ]
 }
 
-js_library("nearby_share_subpage.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_share_subpage.m.js" ]
+js_library("nearby_share_subpage") {
   deps = [
-    ":nearby_account_manager_browser_proxy.m",
-    ":nearby_share_contact_visibility_dialog.m",
-    ":nearby_share_data_usage_dialog.m",
-    ":nearby_share_device_name_dialog.m",
-    ":nearby_share_receive_dialog.m",
-    ":nearby_share_receive_manager.m",
-    ":types.m",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    ":nearby_account_manager_browser_proxy",
+    ":nearby_share_contact_visibility_dialog",
+    ":nearby_share_data_usage_dialog",
+    ":nearby_share_device_name_dialog",
+    ":nearby_share_receive_dialog",
+    ":nearby_share_receive_manager",
+    ":types",
+    "..:deep_linking_behavior",
+    "..:os_route",
+    "..:prefs_behavior",
+    "..:route_observer_behavior",
     "../..:router",
-    "../../prefs:prefs",
-    "../../prefs:prefs_behavior",
-    "../../prefs:prefs_types",
-    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior.m",
-    "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page.m",
-    "//ui/webui/resources/cr_elements/cr_link_row:cr_link_row",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_one_page",
+    "//chrome/browser/resources/nearby_share/shared:nearby_onboarding_page",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
+    "//chrome/browser/resources/nearby_share/shared:nearby_visibility_page",
     "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-  extra_deps = [ ":nearby_share_subpage_module" ]
-}
-
-js_library("nearby_account_manager_browser_proxy.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/nearby_account_manager_browser_proxy.m.js" ]
-  extra_deps = [ ":modulize" ]
-}
-
-js_library("types.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/nearby_share_page/types.m.js" ]
-  extra_deps = [ ":modulize" ]
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "nearby_account_manager_browser_proxy.js",
-    "nearby_share_receive_manager.js",
-    "types.js",
-  ]
-  namespace_rewrites = os_settings_namespace_rewrites
-}
-
-group("polymer3_elements") {
-  public_deps = [
-    ":modulize",
-    ":nearby_share_confirm_page_module",
-    ":nearby_share_contact_visibility_dialog_module",
-    ":nearby_share_data_usage_dialog_module",
-    ":nearby_share_device_name_dialog_module",
-    ":nearby_share_high_visibility_page_module",
-    ":nearby_share_receive_dialog_module",
-    ":nearby_share_subpage_module",
-    "../../controls:web_components",
-    "//chrome/browser/ui/webui/nearby_share:mojom_js",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
-nearby_shared_auto_imports_closure_fix = [
-  # TODO(crbug.com/1121865): polymer.py normalizes the relative paths to shared
-  # nearby resources like ../../shared/* against
-  # c/b/r/settings/chromeos/nearby_share_page
-  # generating paths with the prefix c/b/r/settings/shared/*. It uses the
-  # normalized path to look up relative references for auto import. In order to
-  # get the auto import to match, we need to use this path prefix even though it
-  # does not exist on disk there. The actual resources are in
-  # c/b/r/nearby_share/shared and are re-hosted in the chrome://os-settings
-  # webui at the chrome://os-settings/shared/* prefix.
-  "chrome/browser/resources/settings/shared/nearby_contact_manager.html|getContactManager",
-  "chrome/browser/resources/settings/shared/nearby_share_settings.html|getNearbyShareSettings",
-  "chrome/browser/resources/settings/shared/nearby_share_settings_behavior.html|NearbyShareSettingsBehavior,NearbySettings",
-]
-
-polymer_modulizer("nearby_share_confirm_page") {
-  js_file = "nearby_share_confirm_page.js"
-  html_file = "nearby_share_confirm_page.html"
-  html_type = "dom-module"
-  namespace_rewrites = os_settings_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
+js_library("nearby_account_manager_browser_proxy") {
 }
 
-polymer_modulizer("nearby_share_contact_visibility_dialog") {
-  js_file = "nearby_share_contact_visibility_dialog.js"
-  html_file = "nearby_share_contact_visibility_dialog.html"
-  html_type = "dom-module"
-  namespace_rewrites =
-      os_settings_namespace_rewrites + nearby_shared_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
-  auto_imports =
-      os_settings_auto_imports + nearby_shared_auto_imports_closure_fix
+js_library("types") {
 }
 
-polymer_modulizer("nearby_share_data_usage_dialog") {
-  js_file = "nearby_share_data_usage_dialog.js"
-  html_file = "nearby_share_data_usage_dialog.html"
-  html_type = "dom-module"
-  namespace_rewrites = os_settings_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("nearby_share_device_name_dialog") {
-  js_file = "nearby_share_device_name_dialog.js"
-  html_file = "nearby_share_device_name_dialog.html"
-  html_type = "dom-module"
-  namespace_rewrites =
-      os_settings_namespace_rewrites + nearby_shared_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
-  auto_imports =
-      os_settings_auto_imports + nearby_shared_auto_imports_closure_fix
-}
-
-polymer_modulizer("nearby_share_high_visibility_page") {
-  js_file = "nearby_share_high_visibility_page.js"
-  html_file = "nearby_share_high_visibility_page.html"
-  html_type = "dom-module"
-  namespace_rewrites = os_settings_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
-  auto_imports = os_settings_auto_imports
-}
-
-polymer_modulizer("nearby_share_receive_dialog") {
-  js_file = "nearby_share_receive_dialog.js"
-  html_file = "nearby_share_receive_dialog.html"
-  html_type = "dom-module"
-  migrated_imports = os_settings_migrated_imports
-  namespace_rewrites =
-      os_settings_namespace_rewrites + nearby_shared_namespace_rewrites
-  auto_imports =
-      os_settings_auto_imports + nearby_shared_auto_imports_closure_fix
-}
-
-polymer_modulizer("nearby_share_subpage") {
-  js_file = "nearby_share_subpage.js"
-  html_file = "nearby_share_subpage.html"
-  html_type = "dom-module"
-  namespace_rewrites =
-      os_settings_namespace_rewrites + nearby_shared_namespace_rewrites
-  migrated_imports = os_settings_migrated_imports
-  auto_imports =
-      os_settings_auto_imports + nearby_shared_auto_imports_closure_fix +
-      [ "chrome/browser/resources/settings/chromeos/os_route.html|routes" ]
+html_to_js("web_components") {
+  js_files = [
+    "nearby_share_confirm_page.js",
+    "nearby_share_contact_visibility_dialog.js",
+    "nearby_share_data_usage_dialog.js",
+    "nearby_share_device_name_dialog.js",
+    "nearby_share_high_visibility_page.js",
+    "nearby_share_receive_dialog.js",
+    "nearby_share_subpage.js",
+  ]
 }

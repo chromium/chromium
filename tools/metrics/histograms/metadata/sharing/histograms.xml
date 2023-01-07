@@ -1,0 +1,680 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Sharing histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Sharing.AnyShareStarted" enum="ShareSourceAndroid"
+    expires_after="never">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>sophey@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    The UI surface that started any share attempt. Android only.
+
+    This is a vital metric for the sharing team; please do not remove it or
+    change its behavior without consulting the metric owners.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.AnyShareStartedDesktop" enum="ShareSourceDesktop"
+    expires_after="never">
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    The UI surface that started any share attempt. Desktop only.
+
+    This is a vital metric for the sharing team; please do not remove it or
+    change its behavior without consulting the metric owners.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ClickToCallDevicesToShow" units="devices"
+    expires_after="2022-10-23">
+<!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
+
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The number of available devices that are about to be shown in a UI for
+    picking a device to start a phone call on. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ClickToCallDialerPresent" enum="BooleanPresent"
+    expires_after="2023-02-12">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    Logged when we try to fire a dial intent in click to call. Distinguishes
+    between if the user has an app that can handle dial intent or not. Android
+    only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ClickToCallDialogShown" enum="SharingDialogType"
+    expires_after="2021-10-25">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    Logged whenever a dialog is shown for the Click to Call feature. Desktop
+    only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ClickToCallPhoneNumberValid" enum="BooleanValid"
+    expires_after="M98">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Records if a received phone number is valid. Invalid numbers might suggest
+    that the remote device tried to send malicious data. Logged when handling a
+    Click to Call message on Android received from a Chrome desktop instance.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ClickToCallSelectedAppIndex" units="index"
+    expires_after="2023-03-05">
+<!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
+
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The index of the app selected by the user for Click to Call. Zero based.
+    Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ClickToCallSelectedDeviceIndex" units="index"
+    expires_after="2023-03-05">
+<!-- Name completed by histogram_suffixes name="SharingClickToCallUi" -->
+
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The index of the device selected by the user for Click to Call. Zero based.
+    Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.DefaultSharesheetAndroid.Opened" enum="ShareOrigin"
+    expires_after="2023-02-26">
+  <owner>sophey@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the origin of the share that opened the default sharesheet. Recorded
+    when the sharesheeet is opened.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.DesktopScreenshot.Action"
+    enum="SharingDesktopScreenshotAction" expires_after="2023-02-26">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Logged when actions are taken in the sharing desktop screenshot image
+    editing feature.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.DeviceRegistrationResult"
+    enum="SharingDeviceRegistrationResult" expires_after="M97">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Result of Sharing device registration. Logged after Sharing registration is
+    attempted.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.DeviceUnregistrationResult"
+    enum="SharingDeviceRegistrationResult" expires_after="M97">
+  <owner>knollr@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    Result of Sharing device un-registration. Logged after Sharing
+    un-registration is attempted.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.LongScreenshots.BitmapGenerationStatus"
+    enum="SharingLongScreenshotsEvent" expires_after="M110">
+  <owner>skare@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Counts of Bitmap Generator statuses when capturing long screenshots.
+    Recorded when a new bitmap is requested from the paint_preview engine, for
+    example when scrolling down the page for the first time.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.LongScreenshots.BitmapSelectedHeight" units="pixels"
+    expires_after="M110">
+  <owner>skare@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Height of the long screenshot output from the region-selection dialog.
+    Recorded on region selection dialog confirmation.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.LongScreenshots.Event"
+    enum="SharingLongScreenshotsEvent" expires_after="M110">
+  <owner>skare@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Counts of events in the long screenshot capture process. Events are recorded
+    for events such as opening/confirming the dialog, or on corner cases such as
+    memory pressure while the dialog is open.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.MessageAckTime" units="ms" expires_after="2022-06-26">
+<!-- Name completed by histogram_suffixes name="SharingChannelType",
+     name="SharingDevicePlatform" and name="SharingMessage" -->
+
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    The time from sending a FCM message from the Sharing service until an ack
+    message is received for it.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.MessageHandlerTime" units="ms" expires_after="M97">
+<!-- Name completed by histogram_suffix name="SharingMessage" -->
+
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    The time from receiving a SharingMessage in SharingFCMHandler until an ack
+    is sent back. Recorded when SendAckMessage callback is run in
+    SharingMessageHandler.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.MessageReceivedType" enum="SharingMessageType"
+    expires_after="2023-03-19">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <summary>
+    The type of SharingMessage (aka the PayloadCase). This is logged when a
+    message is received through FCM by the handler in the Sharing service. All
+    platforms.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.RemoteCopyDecodeImageTime" units="ms"
+    expires_after="M97">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>The time to decode an image for Remote Copy. Desktop only.</summary>
+</histogram>
+
+<histogram name="Sharing.RemoteCopyHandleMessageResult"
+    enum="SharingRemoteCopyHandleMessageResult" expires_after="M97">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    The result of handling a Remote Copy message. Logged once per message, when
+    the handler for the Remote Copy FCM message is finished handling it. Desktop
+    only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.RemoteCopyLoadImageStatusCode"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M97">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    Result code from loading an image for Remote Copy. Logs net::Error if it's
+    not net::OK. Logs net::OK if response header is not present. Otherwise, logs
+    HTTP status code. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.RemoteCopyLoadImageTime" units="ms"
+    expires_after="M97">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>The time to load an image for Remote Copy. Desktop only.</summary>
+</histogram>
+
+<histogram name="Sharing.RemoteCopyReceivedImageSizeAfterDecode" units="bytes"
+    expires_after="M97">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    The size of the image loaded from the image URL specified in a Remote Copy
+    message received from FCM, after decoding. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.RemoteCopyReceivedImageSizeBeforeDecode" units="bytes"
+    expires_after="M97">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    The size of the image loaded from the image URL specified in a Remote Copy
+    message received from FCM, before decoding. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.RemoteCopyReceivedTextSize" units="bytes"
+    expires_after="2022-05-01">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    The size of the text in a Remote Copy message received from FCM. Desktop
+    only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.RemoteCopyWriteImageDetectionTime" units="ms"
+    expires_after="M97">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    The time to detect a clipboard image write for Remote Copy. Logged after
+    writing the image. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.RemoteCopyWriteImageTime" units="ms"
+    expires_after="M97">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    The time to write an image to the clipboard for Remote Copy. Logged after
+    writing the image. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.RemoteCopyWriteTextDetectionTime" units="ms"
+    expires_after="2022-05-01">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    The time to detect a clipboard text write for Remote Copy. Logged after
+    writing the text. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.RemoteCopyWriteTextTime" units="ms"
+    expires_after="M97">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    The time to write text to the clipboard for Remote Copy. Logged after
+    writing the text. Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.Screenshot.Action" enum="SharingScreenshotAction"
+    expires_after="2023-02-12">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Logged when actions are taken in the sharing screenshot image editing
+    feature.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ScreenshotFallback.Action"
+    enum="SharingScreenshotFallbackAction" expires_after="2022-12-25">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Logged when actions are taken in the sharing screenshot fallback feature.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ScreenshotsAndroid.IsEditorDismissedOnStart"
+    enum="Boolean" expires_after="2022-09-11">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>Whether the editor was dismissed during editor recreation.</summary>
+</histogram>
+
+<histogram name="Sharing.ScrollCapture.BitmapGeneratorStatus"
+    enum="SharingScrollCaptureBitmapGenerationStatus"
+    expires_after="2023-02-26">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>src/components/paint_preview/OWNERS</owner>
+  <summary>
+    Records the status of the Bitmap Generator when capturing scroll capture
+    long screenshot. Recorded after the page capture request is sent to the
+    paint_preview capture service and compositor, when the service is no longer
+    busy. This metric is only emitted on Android S+.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ScrollCapture.SuccessfulCaptureDuration" units="ms"
+    expires_after="2023-02-26">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>src/components/paint_preview/OWNERS</owner>
+  <summary>
+    Records the total time spent capturing a long screenshot of a page using
+    scroll capture. It is recorded when a scroll capture request successfully
+    finishes. This metric is only emitted on Android S+.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SendAckMessageResult" enum="SharingSendMessageResult"
+    expires_after="2022-10-09">
+<!-- Name completed by histogram_suffixes name="SharingChannelType",
+     name="SharingDevicePlatform" and name="SharingMessage" -->
+
+  <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    Result of sending an ack for a SharingMessage by the Sharing service. Logged
+    in the callback for sending the message to FCM. All platforms.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SendMessageResult" enum="SharingSendMessageResult"
+    expires_after="2023-02-12">
+<!-- Name completed by histogram_suffixes SharingChannelType,
+    SharingDevicePlatform, SharingMessage, and SharingPulseInterval. -->
+
+  <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    Result of sending a SharingMessage by the Sharing service. Logged after the
+    send message callback is run. Not logged for sending ack messages. All
+    platforms.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SendTabToSelf.NotificationStatus"
+    enum="SendTabToSelfNotificationStatus" expires_after="2023-02-26">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Status of STTS notifications. Recorded whenever a target device is chosen, a
+    recieved notification is shown, or an action is taken on the notification.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharedClipboardDevicesToShow" units="devices"
+    expires_after="M88">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    The number of available devices that are about to be shown in a UI for
+    picking a device to share the clipboard with. On desktop, it gets recorded
+    when the user right clicks on selected text. On Android, it gest recorded
+    when the user does long press, share and &quot;Send text to Your
+    Devices&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharedClipboardDialogShown" enum="SharingDialogType"
+    expires_after="M88">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    Logged whenever a dialog is shown for the Shared Clipboard feature.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharedClipboardSelectedDeviceIndex" units="index"
+    expires_after="M88">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    The index of the device selected by the user for Shared Clipboard gets
+    recorded when the user chooses the destination device for sharing text. Zero
+    based.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharedClipboardSelectedTextSize" units="characters"
+    expires_after="M88">
+  <owner>mvanouwerkerk@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    The size of the selected text in Shared Clipboard gets recorded when the
+    user shares selected text.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ShareTargetUpdate.DynamicUpdateResult"
+    enum="ShareTargetUpdateResult" expires_after="2022-09-11">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    The result of reading/parsing/accepting a new proto for the third party
+    Share Targets.
+
+    This is for the file types loaded from the component-update system. This
+    includes both those loaded from disk shortly after startup, and those
+    received over the network when the component version changes.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ShareTargetUpdate.ResourceBundleResult"
+    enum="ShareTargetUpdateResult" expires_after="2022-09-11">
+  <owner>jeffreycohen@chromium.org</owner>
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    The result of reading/parsing/accepting a new proto for the third party
+    Share Targets.
+
+    This is for the file types loaded from the resource bundle packaged with
+    Chrome, which is always loaded at startup.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharingHubAndroid.CloseReason"
+    enum="BottomSheet.StateChangeReason" expires_after="2023-01-15">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    The reason why the Clank sharing hub was closed, logged when the bottom
+    sheet transitions into the HIDDEN state. Android-only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharingHubAndroid.Opened" enum="ShareOrigin"
+    expires_after="2023-02-26">
+  <owner>sophey@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the origin of the share that opened the sharing hub. Recorded when
+    the sharing hub is opened.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharingHubAndroid.ThirdPartyAppUsage"
+    enum="SharingHubBottomRowIndex" expires_after="2022-11-27">
+  <owner>sophey@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the index of the third party app selected from the bottom row of the
+    sharing hub.
+  </summary>
+</histogram>
+
+<histogram
+    name="Sharing.SharingHubAndroid.TimeToSaveScreenshotImageBeforeShare"
+    units="ms" expires_after="M110">
+  <owner>skare@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the amount of time taken to save the output bitmap from the image
+    editor to temporary storage and generate a URI. Recorded when the followup
+    share actions panel is displayed.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharingHubAndroid.TimeToShare" units="ms"
+    expires_after="2023-02-26">
+  <owner>sophey@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the amount of time taken for the user to select a share target after
+    initiating a share.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharingHubAndroid.TimeToShowShareSheet" units="ms"
+    expires_after="2022-12-25">
+  <owner>sophey@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the amount of time taken for the custom share sheet to open after a
+    share was initiated.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharingHubAndroid.{DetailedContentType}.{ShareStatus}"
+    enum="LinkToggleState" expires_after="M110">
+  <owner>sophey@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records what the link toggle state is when a share of a
+    {DetailedContentType} is {ShareStatus}.
+  </summary>
+  <token key="DetailedContentType">
+    <variant name="Gif"/>
+    <variant name="HighlightedText"/>
+    <variant name="Image"/>
+    <variant name="LightweightReaction"/>
+    <variant name="NotSpecified"/>
+    <variant name="Screenshot"/>
+    <variant name="Webnotes"/>
+  </token>
+  <token key="ShareStatus">
+    <variant name="Completed"/>
+    <variant name="InProgress"/>
+  </token>
+</histogram>
+
+<histogram name="Sharing.SharingHubDesktop.CrOSSharesheetResult"
+    enum="SharingHubSharesheetResult" expires_after="2023-02-12">
+  <owner>kristipark@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records whether the user selects a share target after opening the Chrome OS
+    sharesheet.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharingHubDesktop.TimeToFetchFaviconPreviewImage"
+    units="ms" expires_after="2023-01-12">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the elapsed time (in milliseconds) between the sharing hub becoming
+    visible on screen and the favicon image (if there is one) replacing the
+    default image. Only logged for cases where the favicon is both present and
+    is delivered to the sharing hub asynchronously, so this metric tracks how
+    slow async favicon fetching is.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharingHubDesktop.TimeToFetchHQPreviewImage"
+    units="ms" expires_after="2023-01-12">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the elapsed time (in milliseconds) between the sharing hub becoming
+    visible on screen and the high-quality image (if there is one) replacing the
+    default image. Only logged for cases where such a replacement eventually
+    happens - pages with no high-quality image do not produce an entry. This
+    metric essentially tracks how slow asynchronous HQ image fetching is.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SharingHubDesktop.TimeToShow" units="ms"
+    expires_after="2023-02-26">
+  <owner>ellyjones@chromium.org</owner>
+  <owner>src/chrome/browser/share/OWNERS</owner>
+  <summary>
+    Records the elapsed time (in milliseconds) between the user gesture that
+    should summon the sharing hub and the sharing hub actually becoming visible
+    on screen.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SmsFetcherAvailableDeviceCount" units="devices"
+    expires_after="2023-02-26">
+  <owner>yigu@chromium.org</owner>
+  <owner>src/content/browser/sms/OWNERS</owner>
+  <summary>
+    The number of available devices when making a request on desktop which is
+    triggered by calling the WebOTP API. This is logged once per API call.
+    Desktop only.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SmsFetcherClientNameIsEmpty" enum="BooleanEmpty"
+    expires_after="2022-12-25">
+  <owner>yigu@chromium.org</owner>
+  <owner>src/content/browser/sms/OWNERS</owner>
+  <summary>
+    Records whether the remote client name is empty. This could happen on early
+    version of Chrome. This is logged once per notification when asking for user
+    permission to submit the one-time-passwords on the remote device.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SmsFetcherScreenOnAndUnlocked" enum="Boolean"
+    expires_after="2023-02-26">
+  <owner>yigu@chromium.org</owner>
+  <owner>src/content/browser/sms/OWNERS</owner>
+  <summary>
+    Records whether the phone is on and unlocked when we show the notification
+    to users. False if either the phone is locked or the phone does not have a
+    screen lock but the screen is off. This is logged once per notification.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SmsFetcherTapWithChromeDestroyed" enum="Boolean"
+    expires_after="2023-02-26">
+  <owner>yigu@chromium.org</owner>
+  <owner>src/content/browser/sms/OWNERS</owner>
+  <summary>
+    Records whether a user taps/dismisses the notification after Chrome is
+    destroyed. This could happen if the user manually swipes away Chrome from
+    the task switcher or the OS decides to destroy Chrome due to lack of memory
+    etc. This is logged once per user action on the notification.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.WebRtc.IceConfigFetched" units="ice_servers"
+    expires_after="2022-04-03">
+  <owner>peter@chromium.org</owner>
+  <owner>knollr@chromium.org</owner>
+  <summary>
+    Number of ice servers fetched by network traversal API call. Logged after
+    receiving response of API call.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -1,0 +1,392 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module auction_worklet.mojom;
+
+import "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/url_loader_factory.mojom";
+import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
+import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+struct PreviousWin {
+  // Approximate time a particular group won an auction.
+  //
+  // TODO(mmenke): Provide this as an integer time since an auction was won, in
+  // seconds, to reduce time resolution of cross-site information provided to an
+  // untrusted service.
+  //
+  // TODO(https://crbug.com/1207135): Decide what to do when wins are
+  // "in the future" due to clock changes.
+  mojo_base.mojom.Time time;
+
+  // The ad object returned by that group's bidding function with the winning
+  // bid.
+  string ad_json;
+};
+
+
+// Degree to which k-anonymity is enforced.
+enum KAnonymityBidMode {
+  kNone,   // k-anonymity is ignored.
+  kSimulate,  // No enforcement, but result of enforcement is simulated
+  kEnforce  // Enforced.
+};
+
+// Subset of blink.mojom.InterestGroup that is used by GenerateBid() and can
+// vary between InterestGroups that can use the same BidderWorklet (so it's
+// "not shared" between InterestGroups that share the same BidderWorklet).
+// See AuctionWorkletService::LoadBidderWorklet for parameters that must be the
+// same between InterestGroups.
+//
+// See blink.mojom.InterestGroup for documentation on individual fields.
+//
+// This doesn't include `priority` or `priority_signals_overrides` as they can
+// be modified by worklets, so could potentially have cross-origin information.
+struct BidderWorkletNonSharedParams {
+  string name;
+
+  bool enable_bidding_signals_prioritization;
+  map<string, double>? priority_vector;
+
+  blink.mojom.InterestGroup.ExecutionMode execution_mode;
+
+  url.mojom.Url? daily_update_url;
+  array<string>? trusted_bidding_signals_keys;
+  string? user_bidding_signals;
+  array<blink.mojom.InterestGroupAd>? ads;
+  array<blink.mojom.InterestGroupAd>? ad_components;
+
+  // ads_kanon[url] is true iff `url` is sufficiently k-anonymous to be used
+  // as an ad or an ad component.
+  map<url.mojom.Url, bool> ads_kanon;
+};
+
+// Browser signals passed to the BidderWorklet's generateBid() method that are
+// stored on disk and updated by the browser, as opposed to coming from the
+// frame running the auction, or from the definition of the InterestGroup taking
+// part in an auction.
+struct BiddingBrowserSignals {
+  // How many times this interest group has been joined in the period history
+  // is maintained.
+  int32 join_count;
+
+  // How many times this interest group has made bids in auctions.
+  int32 bid_count;
+
+  // Previous times the group won auctions.
+  array<PreviousWin> prev_wins;
+};
+
+// The results of running a FLEDGE generateBid() script.
+struct BidderWorkletBid {
+  // JSON string to be passed to the scoring function.
+  string ad;
+
+  // Offered bid value. Always greater than 0.
+  double bid;
+
+  // Render URL of the bid.
+  url.mojom.Url render_url;
+
+  // Ad components associated with bid, if any. These allow a single ad to be
+  // composed of multiple smaller ads. The `render_url` is the main URL, and
+  // is responsible for laying out these ads URLs in its subframes.
+  //
+  // May only contain URLs matching the `render_url`s of the `ad_components`
+  // of the InterestGroup that made this bid. May have at most 20 URLs. Must
+  // be null if the InterestGroup making this bid has a null `ad_components`
+  // field.
+  array<url.mojom.Url>? ad_components;
+
+  // How long it took to run the generateBid() script.
+  mojo_base.mojom.TimeDelta bid_duration;
+};
+
+// An optional double value. GenerateBid() returns them as values its
+// `update_priority_signals_overrides` map. Since Mojo doesn't support optional
+// primitive types, this struct is needed to handle passing them. Don't need to
+// have a `has_value` field, since this struct itself can be made optional.
+struct PrioritySignalsDouble {
+  double value;
+};
+
+// Single use client for each GenerateBid() call. Allows deferring generating
+// bids until after a bidder's interest groups have all received priority
+// vectors, which allows for cancelling generate bid calls from lower priority
+// bidders based on data fetched from the trusted bidding signals URL.
+//
+// Needs a full callback interface because Mojo callbacks aren't otherwise
+// cancellable, and one GenerateBid call invokes two callbacks.
+interface GenerateBidClient {
+  // Invoked once the trusted bidding signals have been successfully fetched,
+  // or have failed to be fetched. Will be called even when the trusted bidding
+  // signals url is null, to allow simpler mixing of GenerateBid() calls with
+  // and without them. This allows the caller in the browser process to abort
+  // bid generation in the case that the interest group's new priority
+  // calculated using `priority_vector` results in filtering out the bid.
+  // It's called in the case of no priority vector because even when there's
+  // no change in priority, filtering out due to priority depends on the
+  // priorities of other interest groups owned by the same bidder, so the
+  // browser process needs to know if there's no priority vector before it
+  // can apply priority-based filtering.
+  //
+  // OnGenerateBidComplete() will only be invoked after the
+  // OnBiddingSignalsReceived() callback has been invoked, except on fatal
+  // errors, like failing to fetch the Javascript needed to run a worklet. If
+  // a fatal error occurs before OnBiddingSignalsReceived() has been invoked,
+  // the pipe will be closed without invoking it.
+  //
+  // Arguments:
+  //  `priority_vector` The priorityVector for the interest group received as
+  //   part of the trusted bidding signals, or an empty list, if no signals
+  //   were received, or the signals had not priorityVector for the interest
+  //   group that is generating a bid.
+  OnBiddingSignalsReceived(map<string, double> priority_vector) => ();
+
+  // Invoked once GenerateBid completes, either having successfully generated a
+  // bid, or having failed to generate one for any reason.
+  //
+  // Arguments:
+  //
+  // `bid` If the worklet is successfully loaded and chooses to bid in the
+  //  auction, contains information about the bid. Null otherwise.
+  //
+  // `alternate_bid` If k-anonymity is enforced, and `alternate_bid` is
+  //  non-null, it contains a non-k-anon-bid that would have won without the
+  //  enforcement.
+  //
+  //  If k-anonymity is simulated, if `alternate_bid` is non-null it contains
+  //  a k-anon bid that would have been the winner rather than (non-kanon) `bid`
+  //  had enforcement actually been happening.
+  //
+  //  If k-anonymity is off, this is always null.
+  //
+  // `bidding_signals_data_version` The value of the Data-Version header served
+  //  with the trusted bidding signals.
+  //
+  // `has_bidding_signals_data_version` True to indicate Data-Version header
+  //  was present in the HTTP response for the trusted bidding signals.
+  //  TODO(https://crbug.com/657632): Update when optional integers supported.
+  //
+  // `debug_loss_report_url` The URL to request if the auction runs to
+  //  completion and this bid does not win. All bidders are allowed to send loss
+  //  report, including those who does not bid. This field has the debug prefix
+  //  because it's part of an interim reporting API that will be replaced with
+  //  standardized reporting APIs once available. It must be a valid HTTPS URL.
+  //
+  // `debug_win_report_url` The URL to request if the auction runs to completion
+  //  and this bid wins. This field has the debug prefix because it's part of an
+  //  interim reporting API that will be replaced with standardized reporting
+  //  APIs once available. It must be a valid HTTPS URL.
+  //
+  // `set_priority` The value of the updated priority for this interest group.
+  //  This priority should be applied to the interest group after the auction.
+  //  The priority is not changed if null.
+  //  TODO(https://crbug.com/657632): Update to use `double?` type if/when
+  //  optional integer support is added to Mojo.
+  //
+  // `update_priority_signals_overrides` A map of new values to be written to
+  //  the interest group's priorityOverrides map. Null values mean to delete the
+  //  corresponding value, if present. Values with keys not in the map are
+  //  preserved.
+  //  TODO(https://crbug.com/657632): Update to use `double?` type if/when
+  //  optional integer support is added to Mojo.
+  //
+  // `pa_requests` The various requests made to the Private Aggregation API.
+  //
+  // `errors` The various error messages to be used for debugging. These are too
+  //  sensitive for the renderer to see. There may be errors even when a bid
+  //  is offered, and there may be no errors when there's no bid. Includes
+  //  errors from failing to load the worklet script.
+  OnGenerateBidComplete(
+      BidderWorkletBid? bid,
+      BidderWorkletBid? alternate_bid,
+      uint32 bidding_signals_data_version,
+      bool has_bidding_signals_data_version,
+      url.mojom.Url? debug_loss_report_url,
+      url.mojom.Url? debug_win_report_url,
+      double set_priority,
+      bool has_set_priority,
+      map<string, PrioritySignalsDouble?> update_priority_signals_overrides,
+      array<PrivateAggregationRequest> pa_requests,
+      array<string> errors);
+};
+
+// Manages the auction workflow for one loaded FLEDGE bidder worklet.
+// See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+//
+// Auctions involve running Javascript from multiple origins, so they
+// cannot be run within a single process. This API allows the browser
+// process to load Javascript FLEDGE worklets in other processes and
+// manage their lifetimes.
+//
+// The BidderWorklet is functionally stateless, so methods are idempotent
+// and can be called multiple times, in any order, for multiple auctions
+// using the same worklet. There is no need to wait for one callback to be
+// invoked before calling another method. There is no guarantee methods will
+// complete in the order they are invoked.
+interface BidderWorklet {
+  // Loads the same-origin realtime bidding signals URL (if necessary), and
+  // invokes the worklet's generateBid() method, returning the generated bid
+  // and associated data. Waits for the worklet script to be loaded first, if
+  // needed.
+  //
+  // Arguments:
+  // `bidder_worklet_non_shared_params` values that can vary in the
+  //  InterestGroup definitions of the InterestGroups that can share this
+  //  BidderWorklet.
+  //
+  // `kanon_mode` determines whether to use k-anonymity to potentially re-run
+  //  the bidding function with only ads that are k-anonymous and produce an
+  //  alternative bid. See GenerateBidClient.OnGenerateBidComplete for more
+  //  details.
+  //
+  // `interest_group_join_origin` is the origin from which the interest group
+  //  was joined; can affect context reuse in certain execution modes.
+  //
+  // `auction_signals_json` The JSON representation of the auction signals for
+  //  the auction, specified by the publisher page and provided to bidder
+  //  worklets competing in an auction.
+  //
+  // `per_buyer_signals_json` The JSON representation of the auction signals
+  //  for the specific owner of this interest group, specified by the
+  //  publisher page and provided to all interest groups with the same owner
+  //  as the one specified `interest_group`.
+  //
+  // `per_buyer_timeout` Restrict the runtime of particular buyer's bidding
+  //  scripts. Any timeout higher than 500 ms will be clamped to 500 ms before
+  //  passing in as `per_buyer_timeout`. Null if not provided by the publisher
+  //  page. Null will be passed to the worklet in that case.
+  //
+  // `browser_signal_seller_origin` The origin of the seller script running
+  //  the auction. Typically a valid, non-opaque HTTPS origin.
+  //
+  // `browser_signal_top_level_seller_origin` The top-level seller origin,
+  //  if this worklet is running as part of a component (nested) Auction.
+  //  Null, otherwise.
+  //
+  // `bidding_browser_signals` See BiddingBrowserSignals.
+  //
+  // `auction_start_time` The time the auction started, used to ensure the
+  //  last win times provided to all worklets are relative to the same time.
+  //
+  // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
+  //  to use with tracing calls.
+  //
+  // `generate_bid_client` Client that receives callbacks as GenerateBid()
+  //  progresses. Associated to retain priority ordering of calls.
+  GenerateBid(
+      BidderWorkletNonSharedParams bidder_worklet_non_shared_params,
+      KAnonymityBidMode kanon_mode,
+      url.mojom.Origin interest_group_join_origin,
+      string? auction_signals_json,
+      string? per_buyer_signals_json,
+      mojo_base.mojom.TimeDelta? per_buyer_timeout,
+      url.mojom.Origin browser_signal_seller_origin,
+      url.mojom.Origin? browser_signal_top_level_seller_origin,
+      BiddingBrowserSignals bidding_browser_signals,
+      mojo_base.mojom.Time auction_start_time,
+      uint64 trace_id,
+      pending_associated_remote<GenerateBidClient> generate_bid_client);
+
+  // Sends pending bidding signals URL requests, if any. Unlike with
+  // SellerWorklets, this must be called for BidderWorklets that need to send
+  // requests for realtime bidding signals URL. The difference is because each
+  // auction makes all GenerateBid() calls to a single BidderWorklet at once
+  // one after another, so they know at what point they have made their last
+  // GenerateBid() invocation, and only one signals request will need to be
+  // made.
+  SendPendingSignalsRequests();
+
+  // Calls the worklet's reportWin() method. Waits for the worklet script to
+  // be loaded first, if needed.
+  //
+  // Arguments:
+  // `interest_group_name` Name of the winning interest group that ReportWin()
+  //  is being invoked on behalf of.
+  //
+  // `auction_signals_json` The JSON representation of the auction signals for
+  //  the auction, if specified by the publisher page and provided to bidder
+  //  worklets competing in an auction. Null if not provided by the publisher
+  //  page. Null will be passed to the worklet in that case.
+  //
+  // `per_buyer_signals_json` The JSON representation of the auction signals
+  //  for the specific owner of this interest group, specified by the
+  //  publisher page and provided to all interest groups with the same owner
+  //  as the one specified `interest_group`. Null if not provided by the
+  //  publisher page. Null will be passed to the worklet in that case.
+  //
+  // `seller_signals_json` is a JSON representation of the object returned by
+  //  the seller worklet's ReportResult method.
+  //
+  // `browser_signal_render_url` is the `render_url` returned by the
+  //  BidderWorklet's generateBid() method, invoked as part of BidderWorklet
+  //  creation.
+  //
+  // `browser_signal_bid` The numeric value of the winning bid.
+  //
+  // `browser_signal_highest_scoring_other_bid` The numeric value of the bid
+  //  that got the second highest score.
+  //
+  // `browser_signal_made_highest_scoring_other_bid` True only if owner of
+  //  the interest group that ReportWin() is being invoked on behalf of made
+  //  all the second-highest scoring bids in the auction.
+  //
+  // `browser_signal_seller_origin` The origin of the seller script running
+  //  the auction. Typically a valid, non-opaque HTTPS origin.
+  //
+  // `browser_signals_top_level_seller_origin` The top-level seller origin,
+  //  if this worklet is running as part of a component (nested) Auction.
+  //  Null, otherwise.
+  //
+  // `bidding_signals_data_version` The value of the Data-Version header served
+  //  with the trusted bidding signals.
+  //
+  // `has_bidding_signals_data_version` True to indicate Data-Version header
+  //  was present in the HTTP response for the trusted bidding signals.
+  //  TODO(https://crbug.com/657632): Update when optional integers supported.
+  //
+  // `trace_id` ID of a nestable asynchronous trace event of category `fledge`
+  //  to use with tracing calls.
+  //
+  // Returns:
+  // `report_url` is the URL to request to report the result of the auction
+  //  to the bidder. It will be null if no reports are requested, or the
+  //  report script fails to run.
+  //
+  // `ad_beacon_map` The map of ad reporting events to URLs for fenced frame
+  //  reporting.
+  //
+  // `pa_requests` The various requests made to the Private Aggregation API.
+  //
+  // `errors` is an array of any errors that occurred while attempting
+  //  to run the worklet's reportWin() method. These are too sensitive for
+  //  the renderer to see. There may be errors even when a `report_url` is
+  //  provided, and there may be no errors when there's no `report_url`.
+  //  Includes errors from failing to load the worklet script.
+  ReportWin(string interest_group_name,
+            string? auction_signals_json,
+            string? per_buyer_signals_json,
+            string seller_signals_json,
+            url.mojom.Url browser_signal_render_url,
+            double browser_signal_bid,
+            double browser_signal_highest_scoring_other_bid,
+            bool browser_signal_made_highest_scoring_other_bid,
+            url.mojom.Origin browser_signal_seller_origin,
+            url.mojom.Origin? browser_signal_top_level_seller_origin,
+            uint32 bidding_signals_data_version,
+            bool has_bidding_signals_data_version,
+            uint64 trace_id) => (
+                url.mojom.Url? report_url,
+                map<string, url.mojom.Url> ad_beacon_map,
+                array<PrivateAggregationRequest> pa_requests,
+                array<string> errors);
+
+  // Establishes a debugger connection to the worklet.
+  ConnectDevToolsAgent(
+      pending_associated_receiver<blink.mojom.DevToolsAgent> agent);
+};

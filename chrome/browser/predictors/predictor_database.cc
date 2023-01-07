@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_table.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
@@ -38,6 +37,11 @@ namespace predictors {
 // for all methods performing database access.
 class PredictorDatabaseInternal
     : public base::RefCountedThreadSafe<PredictorDatabaseInternal> {
+ public:
+  PredictorDatabaseInternal(const PredictorDatabaseInternal&) = delete;
+  PredictorDatabaseInternal& operator=(const PredictorDatabaseInternal&) =
+      delete;
+
  private:
   friend class base::RefCountedThreadSafe<PredictorDatabaseInternal>;
   friend class PredictorDatabase;
@@ -65,24 +69,26 @@ class PredictorDatabaseInternal
   // to using a WeakPtr instead.
   scoped_refptr<AutocompleteActionPredictorTable> autocomplete_table_;
   scoped_refptr<ResourcePrefetchPredictorTables> resource_prefetch_tables_;
-
-  DISALLOW_COPY_AND_ASSIGN(PredictorDatabaseInternal);
 };
 
 PredictorDatabaseInternal::PredictorDatabaseInternal(
     Profile* profile,
     scoped_refptr<base::SequencedTaskRunner> db_task_runner)
     : db_path_(profile->GetPath().Append(kPredictorDatabaseName)),
-      db_(std::make_unique<sql::Database>()),
+      db_(std::make_unique<sql::Database>(sql::DatabaseOptions{
+          .exclusive_locking = true,
+          .page_size = 4096,
+          .cache_size = 500,
+          // TODO(pwnall): Add a meta table and remove this option.
+          .mmap_alt_status_discouraged = true,
+          .enable_views_discouraged = true,  // Required by mmap_alt_status.
+      })),
       db_task_runner_(db_task_runner),
       autocomplete_table_(
           new AutocompleteActionPredictorTable(db_task_runner_)),
       resource_prefetch_tables_(
           new ResourcePrefetchPredictorTables(db_task_runner_)) {
   db_->set_histogram_tag("Predictor");
-
-  // This db does not use [meta] table, store mmap status data elsewhere.
-  db_->set_mmap_alt_status();
 
   is_loading_predictor_enabled_ = IsLoadingPredictorEnabled(profile);
 }
@@ -110,10 +116,6 @@ void PredictorDatabaseInternal::Initialize() {
 
   autocomplete_table_->Initialize(db_.get());
   resource_prefetch_tables_->Initialize(db_.get());
-
-  // The logged_in_predictor table is obsolete as of Chrome 44.
-  // TODO(davidben): Remove this after April 16, 2016.
-  ignore_result(db_->Execute("DROP TABLE IF EXISTS logged_in_predictor"));
 
   LogDatabaseStats();
 }

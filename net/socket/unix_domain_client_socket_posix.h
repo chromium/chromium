@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"
@@ -21,7 +20,6 @@
 namespace net {
 
 class SocketPosix;
-struct SockaddrStorage;
 
 // A client socket that uses unix domain socket as the transport layer.
 class NET_EXPORT UnixDomainClientSocket : public StreamSocket {
@@ -34,13 +32,10 @@ class NET_EXPORT UnixDomainClientSocket : public StreamSocket {
   // UnixDomainServerSocket uses this after it accepts a connection.
   explicit UnixDomainClientSocket(std::unique_ptr<SocketPosix> socket);
 
-  ~UnixDomainClientSocket() override;
+  UnixDomainClientSocket(const UnixDomainClientSocket&) = delete;
+  UnixDomainClientSocket& operator=(const UnixDomainClientSocket&) = delete;
 
-  // Fills |address| with |socket_path| and its length. For Android or Linux
-  // platform, this supports abstract namespaces.
-  static bool FillAddress(const std::string& socket_path,
-                          bool use_abstract_namespace,
-                          SockaddrStorage* address);
+  ~UnixDomainClientSocket() override;
 
   // StreamSocket implementation.
   int Connect(CompletionOnceCallback callback) override;
@@ -54,9 +49,6 @@ class NET_EXPORT UnixDomainClientSocket : public StreamSocket {
   bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override {}
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
   int64_t GetTotalReceivedBytes() const override;
   void ApplySocketTag(const SocketTag& tag) override;
 
@@ -83,8 +75,6 @@ class NET_EXPORT UnixDomainClientSocket : public StreamSocket {
   // This net log is just to comply StreamSocket::NetLog(). It throws away
   // everything.
   NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnixDomainClientSocket);
 };
 
 }  // namespace net

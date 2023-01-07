@@ -1,14 +1,15 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_FROM_GWS_PAGE_LOAD_METRICS_OBSERVER_H_
 #define CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_FROM_GWS_PAGE_LOAD_METRICS_OBSERVER_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/time/time.h"
+#include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace internal {
@@ -37,6 +38,14 @@ extern const char kHistogramFromGWSForegroundDuration[];
 extern const char kHistogramFromGWSForegroundDurationAfterPaint[];
 extern const char kHistogramFromGWSForegroundDurationNoCommit[];
 extern const char kHistogramFromGWSCumulativeLayoutShiftMainFrame[];
+extern const char kHistogramFromGWSMaxCumulativeShiftScoreSessionWindow[];
+
+extern const char kHistogramFromGWSFromSidePanelFirstInputDelay[];
+extern const char
+    kHistogramFromGWSFromSidePanelMaxCumulativeShiftScoreSessionWindow[];
+extern const char kHistogramFromGWSFromSidePanelFirstContentfulPaint[];
+extern const char kHistogramFromGWSFromSidePanelFirstImagePaint[];
+extern const char kHistogramFromGWSFromSidePanelLargestContentfulPaint[];
 
 }  // namespace internal
 
@@ -50,10 +59,20 @@ extern const char kHistogramFromGWSCumulativeLayoutShiftMainFrame[];
 class FromGWSPageLoadMetricsLogger {
  public:
   FromGWSPageLoadMetricsLogger();
+
+  FromGWSPageLoadMetricsLogger(const FromGWSPageLoadMetricsLogger&) = delete;
+  FromGWSPageLoadMetricsLogger& operator=(const FromGWSPageLoadMetricsLogger&) =
+      delete;
+
   ~FromGWSPageLoadMetricsLogger();
 
   void SetPreviouslyCommittedUrl(const GURL& url);
   void SetProvisionalUrl(const GURL& url);
+
+  // Configures the logger with relevant side panel state so that logs are
+  // emitted correctly.
+  void SetNavigationStateForSidePanel(const GURL& initiating_side_panel_url,
+                                      bool navigation_initiated_via_link);
 
   void set_navigation_initiated_via_link(bool navigation_initiated_via_link) {
     navigation_initiated_via_link_ = navigation_initiated_via_link;
@@ -109,11 +128,14 @@ class FromGWSPageLoadMetricsLogger {
       const page_load_metrics::mojom::PageLoadTiming& timing,
       const page_load_metrics::PageLoadMetricsObserverDelegate& delegate);
 
+  bool IsSidePanelInitiatedNavigation() const;
+  bool ShouldLogSidePanelMetrics() const;
+
   // The methods below are public only for testing.
   bool ShouldLogFailedProvisionalLoadMetrics();
   bool ShouldLogPostCommitMetrics(const GURL& url);
   bool ShouldLogForegroundEventAfterCommit(
-      const base::Optional<base::TimeDelta>& event,
+      const absl::optional<base::TimeDelta>& event,
       const page_load_metrics::PageLoadMetricsObserverDelegate& delegate);
 
  private:
@@ -121,6 +143,8 @@ class FromGWSPageLoadMetricsLogger {
       const page_load_metrics::PageLoadMetricsObserverDelegate& delegate);
 
   bool previously_committed_url_is_search_results_ = false;
+  google_util::GoogleSearchMode navigation_initiated_search_mode_ =
+      google_util::GoogleSearchMode::kUnspecified;
   bool previously_committed_url_is_search_redirector_ = false;
   bool navigation_initiated_via_link_ = false;
   bool provisional_url_has_search_hostname_ = false;
@@ -128,12 +152,15 @@ class FromGWSPageLoadMetricsLogger {
   // The state of if first paint is triggered.
   bool first_paint_triggered_ = false;
 
+  // The committed URL in the side panel that initiated this navigation. (i.e.
+  // first entry in the current redirection chain). This is only set if this
+  // navigation was initiated from the side panel
+  absl::optional<GURL> initiating_side_panel_url_;
+
   base::TimeTicks navigation_start_;
 
   // The time of first user interaction after paint from navigation start.
-  base::Optional<base::TimeDelta> first_user_interaction_after_paint_;
-
-  DISALLOW_COPY_AND_ASSIGN(FromGWSPageLoadMetricsLogger);
+  absl::optional<base::TimeDelta> first_user_interaction_after_paint_;
 };
 
 class FromGWSPageLoadMetricsObserver
@@ -141,12 +168,21 @@ class FromGWSPageLoadMetricsObserver
  public:
   FromGWSPageLoadMetricsObserver();
 
+  FromGWSPageLoadMetricsObserver(const FromGWSPageLoadMetricsObserver&) =
+      delete;
+  FromGWSPageLoadMetricsObserver& operator=(
+      const FromGWSPageLoadMetricsObserver&) = delete;
+
   // page_load_metrics::PageLoadMetricsObserver implementation:
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
                          const GURL& currently_committed_url,
                          bool started_in_foreground) override;
-  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle,
-                         ukm::SourceId source_id) override;
+  ObservePolicy OnFencedFramesStart(
+      content::NavigationHandle* navigation_handle,
+      const GURL& currently_committed_url) override;
+  ObservePolicy OnPrerenderStart(content::NavigationHandle* navigation_handle,
+                                 const GURL& currently_committed_url) override;
+  ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
 
   ObservePolicy FlushMetricsOnAppEnterBackground(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
@@ -178,10 +214,12 @@ class FromGWSPageLoadMetricsObserver
       const blink::WebInputEvent& event,
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
+  void SetNavigationStateForSidePanelForTesting(
+      const GURL& initiating_side_panel_url,
+      bool navigation_initiated_via_link);
+
  private:
   FromGWSPageLoadMetricsLogger logger_;
-
-  DISALLOW_COPY_AND_ASSIGN(FromGWSPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_FROM_GWS_PAGE_LOAD_METRICS_OBSERVER_H_

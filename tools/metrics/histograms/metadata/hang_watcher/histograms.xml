@@ -1,0 +1,90 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of HangWatcher histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="ProcessAndThreadType">
+  <variant name="BrowserProcess.IOThread"
+      summary="the Browser process IO-Thread"/>
+  <variant name="BrowserProcess.ThreadPool"
+      summary="a WorkerPool Thread the Browser process"/>
+  <variant name="BrowserProcess.UIThread"
+      summary="the Browser process UI-Thread"/>
+  <variant name="RendererProcess.IOThread"
+      summary="the IO-Thread of a Renderer process"/>
+  <variant name="RendererProcess.MainThread"
+      summary="the Main Thread of a Renderer process"/>
+  <variant name="UtilityProcess.IOThread"
+      summary="the IO-Thread of a Utility process"/>
+  <variant name="UtilityProcess.MainThread"
+      summary="the Main Thread of a Utility process"/>
+</variants>
+
+<variants name="ProcessType">
+  <variant name="BrowserProcess"/>
+  <variant name="RendererProcess"/>
+</variants>
+
+<histogram name="HangWatcher.IsThreadHung.{ProcessAndThreadType}"
+    enum="BooleanHung" expires_after="never">
+<!-- expires-never: Staple top-level metric for chrome-catan@. -->
+
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Every 10 seconds, a boolean is recorded to this histogram to indicate
+    whether {ProcessAndThreadType} was hung. The thread is hung if the current
+    work unit started running more than 10 seconds ago and this was not labeled
+    as &quot;working as intended&quot; by InvalidateActiveExpectations() (Prior
+    to 2021-07-09 with IgnoreHangsInScope). Recording is skipped if the hang
+    watcher detects an irregular heartbeat (e.g. when the machine sleeps).
+
+    Warning: Starting with 104.0.5112.79 hang counts have gone way up on macOS
+    which is due to additional coverage added and not necessarily to
+    regressions. See: crrev.com/c/3035824
+  </summary>
+  <token key="ProcessAndThreadType" variants="ProcessAndThreadType"/>
+</histogram>
+
+<histogram name="HangWatcher.SleepDrift.{ProcessType}" units="ms"
+    expires_after="2021-10-23">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    HangWatcher is a class that periodically checks on watched threads to see if
+    they are making progress or if they are hung. This metric is recorded when
+    the HangWatcher resumes from sleeping for its next watch time. The value is
+    the time difference between when the HangWatcher woke up and the planned
+    wake-up time. Not waking up in time is a bad state. It could be caused by an
+    overloaded machine or another problem like system sleep. Knowing whether the
+    HangWatcher wakes up in a timely manner in the average case can help analyse
+    trial results and is interesting to track over time. An increasing value for
+    this histogram could hint at a larger problem and would prevent
+    missinterpreting a reduced inflow of hang reports as a improvement when it
+    is in fact caused by hindered capabilities.
+  </summary>
+  <token key="ProcessType" variants="ProcessType"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

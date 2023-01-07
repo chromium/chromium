@@ -45,7 +45,7 @@ void FileEntry::createWriter(V8FileWriterCallback* success_callback,
                              V8ErrorCallback* error_callback) {
   auto success_callback_wrapper =
       success_callback
-          ? WTF::Bind(
+          ? WTF::BindOnce(
                 [](V8FileWriterCallback* persistent_callback,
                    FileWriterBase* file_writer) {
                   // The call sites must pass a FileWriter in |file_writer|.

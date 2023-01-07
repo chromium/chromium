@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@ import android.view.Window;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /**
@@ -29,15 +29,16 @@ public class TabbedSystemUiCoordinator {
      *
      * @param window The {@link Window} associated with the containing activity.
      * @param tabModelSelector The {@link TabModelSelector} for the containing activity.
-     * @param overviewModeBehaviorSupplier An {@link ObservableSupplier} for the
-     *         {@link OverviewModeBehavior} associated with the containing activity.
+     * @param layoutManagerSupplier {@link LayoutManager} associated with the containing activity.
+     * @param mFullscreenManager The {@link FullscreenManager} used for containing activity
      */
     public TabbedSystemUiCoordinator(Window window, TabModelSelector tabModelSelector,
-            @Nullable OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier) {
+            @Nullable ObservableSupplier<LayoutManager> layoutManagerSupplier,
+            FullscreenManager mFullscreenManager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
-            assert overviewModeBehaviorSupplier != null;
+            assert layoutManagerSupplier != null;
             mNavigationBarColorController = new TabbedNavigationBarColorController(
-                    window, tabModelSelector, overviewModeBehaviorSupplier);
+                    window, tabModelSelector, layoutManagerSupplier, mFullscreenManager);
         }
     }
 

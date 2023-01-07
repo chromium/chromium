@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,16 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "chrome/browser/webshare/safe_browsing_request.h"
+#include "content/public/browser/document_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/webshare/chromeos/sharesheet_client.h"
 #endif
 
@@ -24,23 +27,26 @@ namespace content {
 class RenderFrameHost;
 }
 
+enum class WebShareMethod { kShare = 0, kMaxValue = kShare };
+
+// UMA metric name for Web Share API count.
+constexpr const char* kWebShareApiCountMetric = "WebShare.ApiCount";
+
 constexpr size_t kMaxSharedFileCount = 10;
 constexpr uint64_t kMaxSharedFileBytes = 50 * 1024 * 1024;
 
-class ShareServiceImpl : public blink::mojom::ShareService,
-                         public content::WebContentsObserver {
+class ShareServiceImpl
+    : public content::DocumentService<blink::mojom::ShareService> {
  public:
-  explicit ShareServiceImpl(content::RenderFrameHost& render_frame_host);
   ShareServiceImpl(const ShareServiceImpl&) = delete;
   ShareServiceImpl& operator=(const ShareServiceImpl&) = delete;
-  ~ShareServiceImpl() override;
 
   static void Create(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::ShareService> receiver);
 
-  static bool IsDangerousFilename(base::StringPiece);
-  static bool IsDangerousMimeType(base::StringPiece);
+  static bool IsDangerousFilename(const base::FilePath& path);
+  static bool IsDangerousMimeType(base::StringPiece content_type);
 
   // blink::mojom::ShareService:
   void Share(const std::string& title,
@@ -49,14 +55,26 @@ class ShareServiceImpl : public blink::mojom::ShareService,
              std::vector<blink::mojom::SharedFilePtr> files,
              ShareCallback callback) override;
 
-  // content::WebContentsObserver:
-  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void OnSafeBrowsingResultReceived(
+      const std::string& title,
+      const std::string& text,
+      const GURL& share_url,
+      std::vector<blink::mojom::SharedFilePtr> files,
+      ShareCallback callback,
+      bool is_safe);
+
+  ShareServiceImpl(content::RenderFrameHost& render_frame_host,
+                   mojo::PendingReceiver<blink::mojom::ShareService> receiver);
+  ~ShareServiceImpl() override;
+
+  absl::optional<SafeBrowsingRequest> safe_browsing_request_;
+
+#if BUILDFLAG(IS_CHROMEOS)
   webshare::SharesheetClient sharesheet_client_;
 #endif
-  content::RenderFrameHost* render_frame_host_;
+
+  base::WeakPtrFactory<ShareServiceImpl> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_WEBSHARE_SHARE_SERVICE_IMPL_H_

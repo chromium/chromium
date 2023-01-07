@@ -1,0 +1,84 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+source_set("onc") {
+  # Due to circular dependency, others should depend on via
+  # chromeos/ash/components/network.
+  visibility = [
+    "//chromeos/ash/components/network",
+    "//chromeos/ash/components/network/proxy",
+  ]
+
+  configs += [ "//chromeos/ash/components/network:network_config" ]
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//chromeos/components/onc",
+    "//components/account_id",
+    "//components/certificate_matching",
+    "//components/device_event_log",
+    "//components/onc",
+    "//components/prefs",
+    "//components/proxy_config",
+    "//components/url_formatter",
+    "//components/user_manager",
+    "//net",
+  ]
+  sources = [
+    "network_onc_utils.cc",
+    "network_onc_utils.h",
+    "onc_certificate_importer.h",
+    "onc_certificate_importer_impl.cc",
+    "onc_certificate_importer_impl.h",
+    "onc_certificate_pattern.cc",
+    "onc_certificate_pattern.h",
+    "onc_merger.cc",
+    "onc_merger.h",
+    "onc_normalizer.cc",
+    "onc_normalizer.h",
+    "onc_translation_tables.cc",
+    "onc_translation_tables.h",
+    "onc_translator.h",
+    "onc_translator_onc_to_shill.cc",
+    "onc_translator_shill_to_onc.cc",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    "//base/test:test_support",
+    "//chromeos:test_utils",
+    "//chromeos/ash/components/network",
+    "//chromeos/components/onc",
+    "//chromeos/components/onc:test_support",
+    "//components/onc",
+    "//crypto:test_support",
+    "//net:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [
+    "network_onc_utils_unittest.cc",
+    "onc_certificate_importer_impl_unittest.cc",
+    "onc_certificate_pattern_unittest.cc",
+    "onc_merger_unittest.cc",
+    "onc_normalizer_unittest.cc",
+    "onc_translator_unittest.cc",
+  ]
+}
+
+fuzzer_test("onc_normalizer_fuzzer") {
+  sources = [ "onc_normalizer_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/network",
+    "//chromeos/components/onc",
+  ]
+}

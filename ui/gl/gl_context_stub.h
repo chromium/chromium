@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_GL_GL_CONTEXT_STUB_H_
 #define UI_GL_GL_CONTEXT_STUB_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_export.h"
@@ -19,6 +18,9 @@ class GL_EXPORT GLContextStub : public GLContextReal {
  public:
   GLContextStub();
   explicit GLContextStub(GLShareGroup* share_group);
+
+  GLContextStub(const GLContextStub&) = delete;
+  GLContextStub& operator=(const GLContextStub&) = delete;
 
   // Implement GLContext.
   bool Initialize(GLSurface* compatible_surface,
@@ -36,7 +38,7 @@ class GL_EXPORT GLContextStub : public GLContextReal {
   void SetGLVersionString(const char* version_str);
   bool HasRobustness();
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   void FlushForDriverCrashWorkaround() override;
 #endif
 
@@ -49,8 +51,6 @@ class GL_EXPORT GLContextStub : public GLContextReal {
   bool use_stub_api_;
   std::string version_str_;
   unsigned int graphics_reset_status_ = 0;  // GL_NO_ERROR
-
-  DISALLOW_COPY_AND_ASSIGN(GLContextStub);
 };
 
 }  // namespace gl

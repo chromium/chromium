@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ DecodedImageTracker::~DecodedImageTracker() {
 
 void DecodedImageTracker::QueueImageDecode(
     const PaintImage& image,
-    const gfx::ColorSpace& target_color_space,
+    const TargetColorParams& target_color_params,
     base::OnceCallback<void(bool)> callback) {
   size_t frame_index = PaintImage::kDefaultFrameIndex;
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
@@ -48,8 +48,9 @@ void DecodedImageTracker::QueueImageDecode(
   // Queue the decode in the image controller, but switch out the callback for
   // our own.
   auto image_bounds = SkIRect::MakeWH(image.width(), image.height());
-  DrawImage draw_image(image, false, image_bounds, kNone_SkFilterQuality,
-                       SkMatrix::I(), frame_index, target_color_space);
+  DrawImage draw_image(image, false, image_bounds,
+                       PaintFlags::FilterQuality::kNone, SkM44(), frame_index,
+                       target_color_params);
   image_controller_->QueueImageDecode(
       draw_image, base::BindOnce(&DecodedImageTracker::ImageDecodeFinished,
                                  base::Unretained(this), std::move(callback),
@@ -95,7 +96,7 @@ void DecodedImageTracker::OnTimeoutImages() {
     return;
 
   auto now = tick_clock_->NowTicks();
-  auto timeout = base::TimeDelta::FromMilliseconds(kTimeoutDurationMs);
+  auto timeout = base::Milliseconds(kTimeoutDurationMs);
   for (auto it = locked_images_.begin(); it != locked_images_.end();) {
     auto& image = it->second;
     if (now - image->lock_time() < timeout) {
@@ -119,7 +120,7 @@ void DecodedImageTracker::EnqueueTimeout() {
       FROM_HERE,
       base::BindOnce(&DecodedImageTracker::OnTimeoutImages,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kTimeoutDurationMs));
+      base::Milliseconds(kTimeoutDurationMs));
 }
 
 }  // namespace cc

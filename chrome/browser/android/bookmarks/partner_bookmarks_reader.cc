@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/logging.h"
+#include "base/synchronization/waitable_event.h"
 #include "chrome/android/chrome_jni_headers/PartnerBookmarksReader_jni.h"
 #include "chrome/browser/android/bookmarks/partner_bookmarks_shim.h"
 #include "chrome/browser/browser_process.h"

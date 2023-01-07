@@ -1,0 +1,65 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/url.mojom";
+
+// Used with AdRequestConfig.
+struct AdProperties {
+  string width;
+  string height;
+  string slot;
+  string lang;
+  string ad_type;
+  double bid_floor;
+};
+
+// Used with AdRequestConfig => AdTargeting.
+struct AdGeolocation {
+  double latitude;
+  double longitude;
+};
+
+// Used with AdRequestConfig.
+struct AdTargeting {
+  // Contextual interests from the current page to include with the request.
+  array<string>? interests;
+  AdGeolocation? geolocation;
+};
+
+// Used with AdRequestConfig.
+enum AdSignals {
+  kCourseGeolocation = 0,
+  kCourseUserAgent = 1,
+  kTargeting = 2,
+  kUserAdInterests = 3,
+};
+
+// Configuration to pass to CreateAdRequest().
+//
+// All URLs and origins must use https.
+//
+// https://github.com/WICG/privacy-preserving-ads/blob/main/Parakeet.md#potential-api-shape
+struct AdRequestConfig {
+  // URL of the ad tech server PARAKEET will contact with anonymized ad request
+  // data.
+  url.mojom.Url ad_request_url;
+
+  // All the properties of the ads needed for placements on this page.
+  array<AdProperties> ad_properties;
+
+  // Ad publisher specific data
+  string? publisher_code;
+
+  // Targeting information from contextual signals on the current page.
+  AdTargeting? targeting;
+
+  // Collection of AdSignals that should be used for this request.
+  array<AdSignals>? anonymized_proxied_signals;
+
+  // Fallback creative URL to use in even of missing or unavailable PARKEET
+  // service.
+  url.mojom.Url? fallback_source;
+};

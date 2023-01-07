@@ -1,11 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
-#include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
@@ -13,16 +13,23 @@ namespace blink {
 
 FontHeight NGBoxFragment::BaselineMetrics(const NGLineBoxStrut& margins,
                                           FontBaseline baseline_type) const {
-  DCHECK(physical_fragment_.IsAtomicInline() ||
-         physical_fragment_.IsListMarker());
-
   // For checkbox and radio controls, we always use the border edge instead of
   // the margin edge.
-  if (physical_fragment_.Style().IsCheckboxOrRadioPart()) {
+  if (physical_fragment_.Style().IsCheckboxOrRadioPart())
     return FontHeight(margins.line_over + BlockSize(), margins.line_under);
+
+  auto baseline = PhysicalBoxFragment().UseLastBaselineForInlineBaseline()
+                      ? LastBaseline()
+                      : FirstBaseline();
+
+  // Some blocks force the baseline to be the block-end margin edge.
+  if (PhysicalBoxFragment().UseBlockEndMarginEdgeForInlineBaseline()) {
+    baseline = BlockSize() + (writing_direction_.IsFlippedLines()
+                                  ? margins.line_over
+                                  : margins.line_under);
   }
 
-  if (const base::Optional<LayoutUnit> baseline = Baseline()) {
+  if (baseline) {
     FontHeight metrics = writing_direction_.IsFlippedLines()
                              ? FontHeight(BlockSize() - *baseline, *baseline)
                              : FontHeight(*baseline, BlockSize() - *baseline);
@@ -44,6 +51,13 @@ FontHeight NGBoxFragment::BaselineMetrics(const NGLineBoxStrut& margins,
   if (baseline_type == kAlphabeticBaseline)
     return FontHeight(block_size, LayoutUnit());
   return FontHeight(block_size - block_size / 2, block_size / 2);
+}
+
+bool NGBoxFragment::HasBlockLayoutOverflow() const {
+  WritingModeConverter converter(writing_direction_, physical_fragment_.Size());
+  LogicalRect overflow =
+      converter.ToLogical(PhysicalBoxFragment().LayoutOverflow());
+  return overflow.BlockEndOffset() > BlockSize();
 }
 
 }  // namespace blink

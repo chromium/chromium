@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/download/internal/background_service/download_driver.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -19,6 +19,10 @@ namespace test {
 class TestDownloadDriver : public DownloadDriver {
  public:
   TestDownloadDriver();
+
+  TestDownloadDriver(const TestDownloadDriver&) = delete;
+  TestDownloadDriver& operator=(const TestDownloadDriver&) = delete;
+
   ~TestDownloadDriver() override;
 
   // Marks download driver as ready, used to test logic that depends on
@@ -47,21 +51,19 @@ class TestDownloadDriver : public DownloadDriver {
   void Remove(const std::string& guid, bool remove_file) override;
   void Pause(const std::string& guid) override;
   void Resume(const std::string& guid) override;
-  base::Optional<DriverEntry> Find(const std::string& guid) override;
+  absl::optional<DriverEntry> Find(const std::string& guid) override;
   std::set<std::string> GetActiveDownloads() override;
   size_t EstimateMemoryUsage() const override;
 
  private:
   bool is_ready_;
-  DownloadDriver::Client* client_;
+  raw_ptr<DownloadDriver::Client> client_;
 
   // Map of guid --> DriverEntry.
   std::map<std::string, DriverEntry> entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestDownloadDriver);
 };
 
 }  // namespace test
 }  // namespace download
 
-#endif  // COMPONENTS_DOWNLOAD_CONTENT_BACKGROUND_SERVICE_TEST_TEST_DOWNLOAD_DRIVER_H_
+#endif  // COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_TEST_TEST_DOWNLOAD_DRIVER_H_

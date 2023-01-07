@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ AndroidPaymentApp::AndroidPaymentApp(
     const std::string& payment_request_id,
     std::unique_ptr<AndroidAppDescription> description,
     base::WeakPtr<AndroidAppCommunication> communication,
-    content::GlobalFrameRoutingId frame_routing_id)
+    content::GlobalRenderFrameHostId frame_routing_id)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::NATIVE_MOBILE_APP),
       stringified_method_data_(std::move(stringified_method_data)),
       top_level_origin_(top_level_origin),
@@ -32,7 +32,9 @@ AndroidPaymentApp::AndroidPaymentApp(
       payment_request_id_(payment_request_id),
       description_(std::move(description)),
       communication_(communication),
-      frame_routing_id_(frame_routing_id) {
+      frame_routing_id_(frame_routing_id),
+      payment_app_token_(base::UnguessableToken::Create()),
+      payment_app_open_(false) {
   DCHECK(!payment_method_names.empty());
   DCHECK_EQ(payment_method_names.size(), stringified_method_data_->size());
   DCHECK_EQ(*payment_method_names.begin(),
@@ -45,7 +47,11 @@ AndroidPaymentApp::AndroidPaymentApp(
   app_method_names_ = payment_method_names;
 }
 
-AndroidPaymentApp::~AndroidPaymentApp() = default;
+AndroidPaymentApp::~AndroidPaymentApp() {
+  if (payment_app_open_) {
+    AbortPaymentApp(base::DoNothing());
+  }
+}
 
 void AndroidPaymentApp::InvokePaymentApp(base::WeakPtr<Delegate> delegate) {
   // Browser is closing, so no need to invoke a callback.
@@ -54,27 +60,24 @@ void AndroidPaymentApp::InvokePaymentApp(base::WeakPtr<Delegate> delegate) {
 
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(frame_routing_id_);
-  if (!rfh || !rfh->IsCurrent())
+  if (!rfh || !rfh->IsActive())
     return;
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents)
     return;
 
+  payment_app_open_ = true;
   communication_->InvokePaymentApp(
       description_->package, description_->activities.front()->name,
       *stringified_method_data_, top_level_origin_, payment_request_origin_,
-      payment_request_id_, web_contents,
+      payment_request_id_, payment_app_token_, web_contents,
       base::BindOnce(&AndroidPaymentApp::OnPaymentAppResponse,
                      weak_ptr_factory_.GetWeakPtr(), delegate));
 }
 
 bool AndroidPaymentApp::IsCompleteForPayment() const {
   return true;
-}
-
-uint32_t AndroidPaymentApp::GetCompletenessScore() const {
-  return 0;
 }
 
 bool AndroidPaymentApp::CanPreselect() const {
@@ -114,10 +117,7 @@ const SkBitmap* AndroidPaymentApp::icon_bitmap() const {
   return nullptr;
 }
 
-bool AndroidPaymentApp::IsValidForModifier(
-    const std::string& method,
-    bool supported_networks_specified,
-    const std::set<std::string>& supported_networks) const {
+bool AndroidPaymentApp::IsValidForModifier(const std::string& method) const {
   bool is_valid = false;
   IsValidForPaymentMethodIdentifier(method, &is_valid);
   return is_valid;
@@ -155,6 +155,19 @@ void AndroidPaymentApp::UpdateWith(
 
 void AndroidPaymentApp::OnPaymentDetailsNotUpdated() {}
 
+void AndroidPaymentApp::AbortPaymentApp(
+    base::OnceCallback<void(bool)> abort_callback) {
+  // Browser is closing or no payment app active, so no need to invoke a
+  // callback.
+  if (!communication_ || !payment_app_open_)
+    return;
+
+  payment_app_open_ = false;
+
+  communication_->AbortPaymentApp(payment_app_token_,
+                                  std::move(abort_callback));
+}
+
 bool AndroidPaymentApp::IsPreferred() const {
   // This class used only on Chrome OS, where the only Android payment app
   // available is the trusted web application (TWA) that launched this instance
@@ -170,10 +183,11 @@ bool AndroidPaymentApp::IsPreferred() const {
 
 void AndroidPaymentApp::OnPaymentAppResponse(
     base::WeakPtr<Delegate> delegate,
-    const base::Optional<std::string>& error_message,
+    const absl::optional<std::string>& error_message,
     bool is_activity_result_ok,
     const std::string& payment_method_identifier,
     const std::string& stringified_details) {
+  payment_app_open_ = false;
   if (!delegate)
     return;
 

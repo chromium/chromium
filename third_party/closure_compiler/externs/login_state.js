@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,12 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.loginState.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
-/** @fileoverview Externs generated from namespace: loginState */
+/**
+ * @fileoverview Externs generated from namespace: loginState
+ * @externs
+ */
 
 /** @const */
 chrome.loginState = {};
@@ -33,6 +36,7 @@ chrome.loginState.SessionState = {
   IN_LOGIN_SCREEN: 'IN_LOGIN_SCREEN',
   IN_SESSION: 'IN_SESSION',
   IN_LOCK_SCREEN: 'IN_LOCK_SCREEN',
+  IN_RMA_SCREEN: 'IN_RMA_SCREEN',
 };
 
 /**

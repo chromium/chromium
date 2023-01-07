@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/gpu_timing.h"
 #include "ui/gl/init/gl_factory.h"
@@ -151,7 +152,7 @@ bool CompareBufferToRGBABuffer(GLenum format,
         case GL_LUMINANCE:  // (L_t, L_t, L_t, 1)
           expected[1] = pixels[pixels_index];
           expected[2] = pixels[pixels_index];
-          FALLTHROUGH;
+          [[fallthrough]];
         case GL_RED:  // (R_t, 0, 0, 1)
           expected[0] = pixels[pixels_index];
           expected[3] = 255;
@@ -179,7 +180,8 @@ class TextureUploadPerfTest : public testing::Test {
   // Overridden from testing::Test
   void SetUp() override {
     // Initialize an offscreen surface and a gl context.
-    surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+    surface_ = gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
+                                                  gfx::Size());
     gl_context_ =
         gl::init::CreateGLContext(nullptr,  // share_group
                                   surface_.get(), gl::GLContextAttribs());

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,12 +16,11 @@
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_authorizationref.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/threading/hang_watcher.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 AuthorizationRef GetAuthorizationRightsWithPrompt(
     AuthorizationRights* rights,
@@ -36,6 +35,14 @@ AuthorizationRef GetAuthorizationRightsWithPrompt(
     OSSTATUS_LOG(ERROR, status) << "AuthorizationCreate";
     return NULL;
   }
+
+  // Never consider the current WatchHangsInScope as hung. There was most likely
+  // one created in ThreadControllerWithMessagePumpImpl::DoWork(). The current
+  // hang watching deadline is not valid since the user can take unbounded time
+  // to answer the password prompt. HangWatching will resume when the next task
+  // or event is pumped in MessagePumpCFRunLoop so there is not need to
+  // reactivate it. You can see the function comments for more details.
+  base::HangWatcher::InvalidateActiveExpectations();
 
   AuthorizationFlags flags = kAuthorizationFlagDefaults |
                              kAuthorizationFlagInteractionAllowed |
@@ -62,7 +69,7 @@ AuthorizationRef GetAuthorizationRightsWithPrompt(
     {kAuthorizationEnvironmentPrompt, prompt_length, (void*)prompt_c, 0}
   };
 
-  AuthorizationEnvironment environment = {base::size(environment_items),
+  AuthorizationEnvironment environment = {std::size(environment_items),
                                           environment_items};
 
   status = AuthorizationCopyRights(authorization,
@@ -87,7 +94,7 @@ AuthorizationRef AuthorizationCreateToRunAsRoot(CFStringRef prompt) {
   AuthorizationItem right_items[] = {
     {kAuthorizationRightExecute, 0, NULL, 0}
   };
-  AuthorizationRights rights = {base::size(right_items), right_items};
+  AuthorizationRights rights = {std::size(right_items), right_items};
 
   return GetAuthorizationRightsWithPrompt(&rights, prompt, 0);
 }
@@ -197,5 +204,4 @@ OSStatus ExecuteWithPrivilegesAndWait(AuthorizationRef authorization,
   return status;
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

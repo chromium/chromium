@@ -1,0 +1,102 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/buildflags.gni")
+
+assert(is_chromeos_ash)
+
+source_set("system_web_apps") {
+  sources = [
+    "chrome_system_web_app_ui_config.cc",
+    "system_web_app_background_task.cc",
+    "system_web_app_background_task.h",
+    "system_web_app_manager.cc",
+    "system_web_app_manager.h",
+    "system_web_app_manager_factory.cc",
+    "system_web_app_manager_factory.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//ash/webui/camera_app_ui",
+    "//ash/webui/connectivity_diagnostics",
+    "//ash/webui/eche_app_ui",
+    "//ash/webui/face_ml_app_ui",
+    "//ash/webui/file_manager:file_manager_ui",
+    "//ash/webui/firmware_update_ui",
+    "//ash/webui/help_app_ui",
+    "//ash/webui/media_app_ui",
+    "//ash/webui/os_feedback_ui",
+    "//ash/webui/personalization_app",
+    "//ash/webui/shimless_rma",
+    "//ash/webui/shortcut_customization_ui",
+    "//ash/webui/system_apps/public:system_web_app_config",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//components/keyed_service/content",
+    "//components/pref_registry:pref_registry",
+    "//components/webapps/browser",
+    "//content/public/browser",
+    "//ui/base/idle",
+  ]
+
+  if (!is_official_build) {
+    deps += [ "//ash/webui/sample_system_web_app_ui" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "system_web_app_manager_unittest.cc" ]
+
+  deps = [
+    ":system_web_apps",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/ash/system_web_apps/test_support",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support",
+    "//components/webapps/browser:constants",
+    "//content/test:test_support",
+    "//ui/base/idle",
+    "//ui/base/idle:test_support",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "system_web_app_manager_browsertest.cc" ]
+
+  deps = [
+    ":system_web_apps",
+    "//base",
+    "//chrome/app:command_ids",
+    "//chrome/browser/ash/system_web_apps/test_support",
+    "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/ash/system_web_apps/types",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/web_applications:web_applications_test_support",
+    "//chrome/test:test_support",
+    "//components/services/app_service/public/cpp:app_update",
+    "//components/services/app_service/public/cpp:intents",
+    "//extensions/browser:test_support",
+    "//ui/base/idle:test_support",
+    "//url",
+  ]
+}

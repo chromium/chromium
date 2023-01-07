@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
+#include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
-#include "components/safe_browsing/core/features.h"
-#include "components/safe_browsing/core/triggers/trigger_manager.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/settings_page_helper.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
@@ -28,6 +27,7 @@
 #include "components/security_interstitials/core/safe_browsing_quiet_error_ui.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
@@ -56,8 +56,6 @@ AwSafeBrowsingBlockingPage::AwSafeBrowsingBlockingPage(
                        display_options),
       threat_details_in_progress_(false),
       resource_request_(std::move(resource_request)) {
-  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.Interstitial.Type", errorUiType,
-                            ErrorUiType::COUNT);
   if (errorUiType == ErrorUiType::QUIET_SMALL ||
       errorUiType == ErrorUiType::QUIET_GIANT) {
     set_sb_error_ui(std::make_unique<SafeBrowsingQuietErrorUI>(
@@ -72,7 +70,7 @@ AwSafeBrowsingBlockingPage::AwSafeBrowsingBlockingPage(
     AwBrowserContext* aw_browser_context =
         AwBrowserContext::FromWebContents(web_contents);
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-        content::BrowserContext::GetDefaultStoragePartition(aw_browser_context)
+        aw_browser_context->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess();
     // TODO(timvolodine): create a proper history service; currently the
     // HistoryServiceFactory lives in the chrome/ layer and relies on Profile
@@ -84,6 +82,7 @@ AwSafeBrowsingBlockingPage::AwSafeBrowsingBlockingPage(
                 safe_browsing::TriggerType::SECURITY_INTERSTITIAL, web_contents,
                 unsafe_resources[0], url_loader_factory,
                 /*history_service*/ nullptr,
+                /*referrer_chain_provider*/ nullptr,
                 sb_error_ui()->get_error_display_options());
   }
 }
@@ -94,11 +93,6 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
     const GURL& main_frame_url,
     const UnsafeResource& unsafe_resource,
     std::unique_ptr<AwWebResourceRequest> resource_request) {
-  // Log the resource type that triggers the safe browsing blocking page.
-  UMA_HISTOGRAM_ENUMERATION(
-      "SafeBrowsing.BlockingPage.ResourceType",
-      safe_browsing::GetResourceTypeFromRequestDestination(
-          unsafe_resource.request_destination));
   // Log the request destination that triggers the safe browsing blocking page.
   UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
                             unsafe_resource.request_destination);
@@ -144,6 +138,19 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
 }
 
 AwSafeBrowsingBlockingPage::~AwSafeBrowsingBlockingPage() {}
+
+void AwSafeBrowsingBlockingPage::CreatedPostCommitErrorPageNavigation(
+    content::NavigationHandle* error_page_navigation_handle) {
+  DCHECK(!resource_request_);
+  resource_request_ = std::make_unique<AwWebResourceRequest>(
+      error_page_navigation_handle->GetURL().spec(),
+      error_page_navigation_handle->IsPost() ? "POST" : "GET",
+      error_page_navigation_handle->IsInPrimaryMainFrame(),
+      error_page_navigation_handle->HasUserGesture(),
+      error_page_navigation_handle->GetRequestHeaders());
+  resource_request_->is_renderer_initiated =
+      error_page_navigation_handle->IsRendererInitiated();
+}
 
 void AwSafeBrowsingBlockingPage::FinishThreatDetails(
     const base::TimeDelta& delay,

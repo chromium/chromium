@@ -1,0 +1,227 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("cpuinfo_include") {
+  include_dirs = [
+    "src/include",
+    "src/src",
+    "src/deps/clog/include",
+  ]
+}
+
+config("cpuinfo_config") {
+  cflags = [
+    # For chipset.c and utils.h.
+    "-Wno-implicit-function-declaration",
+
+    # For clog.c.
+    "-Wno-unused-result",
+
+    # A lot of locations.
+    "-Wno-unused-function",
+  ]
+
+  defines = [
+    "_GNU_SOURCE=1",  # Required for CPU_SETSIZE to be available.
+    "CPUINFO_INTERNAL=",
+    "CPUINFO_PRIVATE=",
+  ]
+}
+
+source_set("cpuinfo") {
+  public = [ "src/include/cpuinfo.h" ]
+
+  sources = [
+    "src/deps/clog/src/clog.c",
+    "src/include/cpuinfo.h",
+    "src/src/api.c",
+    "src/src/cache.c",
+    "src/src/init.c",
+  ]
+
+  deps = [
+    ":cpu_and_os_specific",
+    ":cpu_specific",
+    ":os_specific",
+  ]
+
+  configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/sanitizers:default_sanitizer_flags",
+  ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":cpuinfo_config",
+  ]
+
+  public_configs = [ ":cpuinfo_include" ]
+}
+
+source_set("os_specific") {
+  if (is_chromeos || is_linux || is_android) {
+    sources = [
+      "src/src/linux/cpulist.c",
+      "src/src/linux/multiline.c",
+      "src/src/linux/processors.c",
+      "src/src/linux/smallfile.c",
+    ]
+  }
+
+  if (is_mac || is_ios) {
+    sources = [ "src/src/mach/topology.c" ]
+  }
+
+  configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/sanitizers:default_sanitizer_flags",
+  ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":cpuinfo_include",
+    ":cpuinfo_config",
+  ]
+}
+
+source_set("cpu_specific") {
+  if (current_cpu == "x86" || current_cpu == "x64") {
+    sources = [
+      "src/src/x86/info.c",
+      "src/src/x86/init.c",
+      "src/src/x86/isa.c",
+      "src/src/x86/name.c",
+      "src/src/x86/topology.c",
+      "src/src/x86/uarch.c",
+      "src/src/x86/vendor.c",
+    ]
+  }
+
+  if (current_cpu == "arm" || current_cpu == "arm64") {
+    sources = [
+      "src/src/arm/cache.c",
+      "src/src/arm/uarch.c",
+    ]
+  }
+
+  # Because "init.c" is reused again, but only has sources in the corresponding
+  # build config.
+  deps = [ ":x86_cache" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":cpuinfo_config",
+    ":cpuinfo_include",
+  ]
+}
+
+source_set("x86_cache") {
+  if (current_cpu == "x86" || current_cpu == "x64") {
+    sources = [
+      "src/src/x86/cache/descriptor.c",
+      "src/src/x86/cache/deterministic.c",
+      "src/src/x86/cache/init.c",
+    ]
+  }
+
+  configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/sanitizers:default_sanitizer_flags",
+  ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":cpuinfo_include",
+    ":cpuinfo_config",
+  ]
+}
+
+source_set("cpu_and_os_specific") {
+  if ((is_linux || is_chromeos) &&
+      (current_cpu == "x86" || current_cpu == "x64")) {
+    sources = [
+      "src/src/x86/linux/cpuinfo.c",
+      "src/src/x86/linux/init.c",
+    ]
+  }
+
+  if ((is_linux || is_chromeos) && current_cpu == "arm") {
+    sources = [
+      "src/src/arm/linux/aarch32-isa.c",
+      "src/src/arm/linux/api.h",
+      "src/src/arm/linux/chipset.c",
+      "src/src/arm/linux/clusters.c",
+      "src/src/arm/linux/cpuinfo.c",
+      "src/src/arm/linux/hwcap.c",
+      "src/src/arm/linux/init.c",
+      "src/src/arm/linux/midr.c",
+    ]
+  }
+
+  if ((is_linux || is_chromeos) && current_cpu == "arm64") {
+    sources = [
+      "src/src/arm/linux/aarch64-isa.c",
+      "src/src/arm/linux/api.h",
+      "src/src/arm/linux/chipset.c",
+      "src/src/arm/linux/clusters.c",
+      "src/src/arm/linux/cpuinfo.c",
+      "src/src/arm/linux/hwcap.c",
+      "src/src/arm/linux/init.c",
+      "src/src/arm/linux/midr.c",
+    ]
+  }
+
+  if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {
+    sources = [
+      "src/src/arm/android/properties.c",
+      "src/src/arm/linux/api.h",
+      "src/src/arm/linux/chipset.c",
+      "src/src/arm/linux/clusters.c",
+      "src/src/arm/linux/cpuinfo.c",
+      "src/src/arm/linux/hwcap.c",
+      "src/src/arm/linux/init.c",
+      "src/src/arm/linux/midr.c",
+    ]
+
+    if (current_cpu == "arm64") {
+      sources += [ "src/src/arm/linux/aarch64-isa.c" ]
+    } else {
+      sources += [ "src/src/arm/linux/aarch32-isa.c" ]
+    }
+  }
+
+  if (is_android && (current_cpu == "x86" || current_cpu == "x64")) {
+    sources = [
+      "src/src/x86/linux/cpuinfo.c",
+      "src/src/x86/linux/init.c",
+    ]
+  }
+
+  if (is_win && (current_cpu == "x86" || current_cpu == "x64")) {
+    sources = [ "src/src/x86/windows/init.c" ]
+  }
+
+  if (is_win && current_cpu == "arm64") {
+    sources = [
+      "src/src/arm/windows/init-by-logical-sys-info.c",
+      "src/src/arm/windows/init.c",
+    ]
+  }
+
+  if ((is_mac || is_ios) && (current_cpu == "x86" || current_cpu == "x64")) {
+    sources = [ "src/src/x86/mach/init.c" ]
+  }
+
+  if ((is_mac || is_ios) && (current_cpu == "arm" || current_cpu == "arm64")) {
+    sources = [ "src/src/arm/mach/init.c" ]
+  }
+
+  configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/sanitizers:default_sanitizer_flags",
+  ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":cpuinfo_include",
+    ":cpuinfo_config",
+  ]
+}

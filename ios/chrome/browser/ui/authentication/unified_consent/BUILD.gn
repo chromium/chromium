@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,9 +16,12 @@ source_set("unified_consent") {
     ":unified_consent_ui",
     "//base",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/public/provider/chrome/browser/signin",
   ]
@@ -33,6 +36,7 @@ source_set("unified_consent_ui") {
   ]
   deps = [
     "resources:identity_picker_view_arrow_down",
+    "resources:identity_picker_view_arrow_right",
     "resources:unified_consent_header",
     "//base",
     "//components/google/core/common",
@@ -42,9 +46,9 @@ source_set("unified_consent_ui") {
     "//ios/chrome/browser/ui/authentication:authentication_constants",
     "//ios/chrome/browser/ui/authentication/unified_consent/identity_chooser:identity_chooser_ui",
     "//ios/chrome/browser/ui/authentication/views",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common",
+    "//ios/chrome/browser/url:constants",
+    "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
@@ -59,4 +63,33 @@ source_set("constants") {
     "unified_consent_constants.mm",
   ]
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "unified_consent_mediator_unittest.mm",
+    "unified_consent_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":unified_consent",
+    ":unified_consent_ui",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/public/provider/chrome/browser/signin:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
 }

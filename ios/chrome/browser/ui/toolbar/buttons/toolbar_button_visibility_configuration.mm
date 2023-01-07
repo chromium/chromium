@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,15 +86,6 @@
     case PRIMARY:
       return ToolbarComponentVisibilityAlways &
              ~ToolbarComponentVisibilitySplit;
-    case SECONDARY:
-      return ToolbarComponentVisibilityNone;
-  }
-}
-
-- (ToolbarComponentVisibility)bookmarkButtonVisibility {
-  switch (self.type) {
-    case PRIMARY:
-      return ToolbarComponentVisibilityRegularWidthRegularHeight;
     case SECONDARY:
       return ToolbarComponentVisibilityNone;
   }

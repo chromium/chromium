@@ -1,0 +1,801 @@
+/*
+ * Copyright (C) 2012 Google Inc. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *     * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ *     * Redistributions in binary form must reproduce the above
+ * copyright notice, this list of conditions and the following disclaimer
+ * in the documentation and/or other materials provided with the
+ * distribution.
+ *     * Neither the name of Google Inc. nor the names of its
+ * contributors may be used to endorse or promote products derived from
+ * this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+body {
+    user-select: none;
+    background-color: white;
+    font: -webkit-control;
+    font-size: 12px;
+}
+
+.rtl {
+    direction: rtl;
+}
+
+.scroll-view {
+    overflow: hidden;
+    width: 0;
+    height: 0;
+}
+
+.list-cell {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+}
+
+.list-cell.hidden {
+    display: none;
+}
+
+.week-number-cell,
+.day-cell {
+    position: static;
+    text-align: center;
+    box-sizing: border-box;
+    display: inline-block;
+    cursor: default;
+    padding: 1px;
+    transition: color 0s;
+}
+
+.week-number-cell {
+    box-sizing: border-box;
+    color: black;
+    padding-right: 0;
+    box-shadow: 1px 0 0 #bfbfbf;
+    margin-right: 1px;
+    border: 1px solid transparent !important;
+}
+
+.day-cell {
+    background-color: #ffffff;
+    border: 1px solid transparent !important;
+    border-radius: 2px;
+    color: #767676;
+    padding: 1px !important;
+}
+
+.day-cell.current-month {
+  color: #101010;
+}
+
+.day-cell.highlighted.today,
+.day-cell.today {
+    border: 1px solid #bfbfbf;
+    padding: 0;
+}
+
+.day-cell.today,
+.month-button.today {
+  border-color: #767676 !important;
+}
+
+.week-number-cell.highlighted,
+.day-cell.highlighted {
+    background-color: #e5ecf8;
+}
+
+.week-number-cell.highlighted.disabled,
+.day-cell.highlighted.disabled {
+    border: 1px solid #e5ecf8;
+    padding: 0;
+}
+
+.day-cell.selected,
+.month-button.selected,
+.week-number-cell.selected {
+  background-color: #0075FF;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+
+
+.week-number-cell.disabled,
+.day-cell.disabled {
+    pointer-events: none;
+}
+
+.month-button[aria-disabled="true"] {
+  color: GrayText;
+  pointer-events: none;
+}
+
+.day-cell.disabled,
+.day-cell.disabled.today,
+.month-button[aria-disabled="true"],
+.week-number-cell.disabled {
+  background-color: #FFFFFF;
+  color: rgba(16, 16, 16, 0.3);
+}
+
+.calendar-table-view {
+    border: 0;
+    outline: none;
+}
+
+.week-number-label,
+.week-day-label {
+    text-align: center;
+    display: inline-block;
+    line-height: 23px;
+    padding-top: 1px;
+    box-sizing: padding-box;
+}
+
+.week-day-label {
+  line-height: 28px;
+}
+
+.week-number-label {
+    box-sizing: border-box;
+    border-right: 1px solid #bfbfbf;
+}
+
+.calendar-table-header-view {
+    background-color: #ffffff;
+    border: 0;
+    height: 29px;
+}
+
+.calendar-picker {
+    border: 1px solid #bfbfbf;
+    border-radius: 2px;
+    position: absolute;
+    padding: 10px;
+    background-color: white;
+    overflow: hidden;
+    cursor: default;
+}
+
+.calendar-header-view {
+    margin-bottom: 10px;
+    display: flex;
+    flex-flow: row;
+}
+
+.calendar-title {
+    align-self: flex-start;
+    flex: 1;
+    text-align: left;
+}
+
+.rtl .calendar-title {
+    text-align: right;
+}
+
+.month-popup-button {
+  font-size: 12px;
+  display: inline-block;
+  cursor: default;
+  height: 24px !important;
+  border: 0 !important;
+  font-weight: bold;
+  padding: 0;
+}
+
+.month-popup-button,
+.month-popup-button:hover,
+.month-popup-button:disabled {
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: black;
+}
+
+.month-popup-button:disabled {
+    opacity: 0.7;
+    background-color: #FFFFFF;
+    color: rgba(16, 16, 16, 0.3);
+}
+
+.month-popup-button:disabled polygon {
+  fill: rgba(16, 16, 16, 0.3) !important;
+}
+
+.month-button:hover {
+  background-color: rgba(0, 117, 255, 0.3);
+  border: 1px solid black !important;
+}
+
+.month-popup-button:focus {
+  outline: auto 1px -webkit-focus-ring-color !important;
+}
+
+.month-popup-button .disclosure-triangle {
+    margin: 0;
+    margin-inline-start: 4px;
+    margin-inline-end: 1px;
+}
+
+.month-popup-button .disclosure-triangle svg {
+    padding-bottom: 2px;
+}
+
+.calendar-navigation-button {
+    align-self: center;
+    width: 28px;
+    height: 24px;
+    min-width: 0 !important;
+    padding: 0;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-inline-start: 4px !important;
+    background-color: #ffffff;
+    border: 1px solid transparent;
+    color: #101010;
+    text-align: center;
+}
+
+.calendar-navigation-button svg {
+  padding-top: 4px;
+}
+
+.calendar-navigation-button:hover {
+  background-color: rgba(0, 117, 255, 0.3);
+  border: 1px solid black !important;
+}
+
+.calendar-navigation-button:disabled {
+  background-color: #FFFFFF;
+}
+
+.calendar-navigation-button:disabled path {
+  fill: rgba(16, 16, 16, 0.3);
+}
+
+.year-list-view {
+    border: 0;
+    background-color: white;
+    position: absolute;
+}
+
+.year-list-cell {
+    box-sizing: border-box;
+    border: 0;
+    background-color: white;
+    overflow: hidden;
+}
+
+.year-list-cell .label {
+    height: 24px;
+    line-height: 24px;
+    padding-inline-start: 8px;
+    border-bottom: 1px solid #CECECE;
+    background-color: #EFEFEF;
+    margin-bottom: 1px;
+}
+
+.year-list-cell .month-chooser {
+    padding: 0;
+}
+
+.month-buttons-row {
+    display: flex;
+}
+
+.month-button {
+    flex: 1;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 !important;
+    margin: 0 !important;
+    background-image: none !important;
+    background-color: #ffffff;
+    box-shadow: none !important;
+    text-align: center;
+    border: 1px solid transparent !important;
+    border-radius: 2px;
+    color: #101010;
+}
+
+.month-button.highlighted {
+    background-color: #e5ecf8;
+}
+
+.scrubby-scroll-bar {
+    width: 14px;
+    height: 60px;
+    background-color: white;
+    border: 0;
+    position: absolute;
+    top: 0;
+}
+
+.scrubby-scroll-thumb {
+    width: 4px;
+    margin: 2px;
+    height: 30px;
+    background-color: #d8d8d8;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.month-popup-view {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+.year-list-view .scrubby-scroll-bar {
+    right: 0;
+}
+
+.rtl .year-list-view .scrubby-scroll-bar {
+    left: 0;
+    right: auto;
+    border-left-width: 0;
+    border-right: 1px solid #bfbfbf;
+}
+
+.year-month-button {
+    width: 24px;
+    height: 24px;
+    min-width: 0;
+    padding: 0;
+}
+
+.month-popup-button:focus,
+.year-list-view:focus,
+.calendar-table-view:focus {
+    transition: border-color 200ms;
+    /* We use border color because it follows the border radius (unlike outline).
+    * This is particularly noticeable on mac. */
+    border-color: rgb(77, 144, 254) !important;
+    outline: none;
+}
+
+.preparing button:focus,
+.preparing .year-list-view:focus,
+.preparing .calendar-table-view:focus {
+    transition: none;
+}
+
+/*
+* Highlight-when-hovered for day cells except if this is a week picker
+*/
+:not(.week-picker) > .calendar-table-view > .scroll-view > .scroll-view-content
+    > .calendar-row-cell > .day-cell:not(.selected):hover {
+  background-color: rgba(0, 117, 255, 0.3);
+  border: 1px solid black !important;
+}
+
+/*
+* Highlight-when-hovered for the week picker:
+* 1.  Highlight the week number cell for the hovered week.
+* 2.  If the first date column is Monday, highlight all cells in the row
+*     because the week picker considers Monday to be the first day
+*     of the week regardless of locale.
+* 3a. If the first date column is Sunday, highlight all cells in the hovered
+*     row except for Sunday, because Sunday belongs to the previous week.
+* 3b. If the first date column is Sunday, highlight Sunday of the row after
+*     the hovered row, because that Sunday belongs to the hovered week.
+*/
+.calendar-row-cell:hover .week-number-cell:not(.selected):not(.disabled),
+.week-picker .calendar-row-cell:not(.week-starts-on-sunday):hover
+    .day-cell:not(.selected):not(.disabled),
+.week-picker .calendar-row-cell.week-starts-on-sunday:hover
+    .day-cell:not(.selected):not(.disabled):not(:nth-child(2)),
+.week-picker .calendar-row-cell.week-starts-on-sunday:hover + .calendar-row-cell
+    .day-cell:not(.selected):not(.disabled):nth-child(2) {
+  background-color: rgba(0, 117, 255, 0.3);
+  border: 1px solid black !important;
+}
+
+.calendar-table-view:focus .day-cell.selected,
+.year-list-view:focus .month-button.selected,
+.calendar-table-view:focus .week-number-cell.selected {
+  outline: solid 2px -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+.clear-button, .today-button {
+  align-self: center;
+  background-color: #ffffff;
+  border: 1px solid transparent;
+  bottom: 12px;
+  color: #0078D4;
+  font-size: 12px;
+  height: 20px;
+  padding: 4px 0 4px 0;
+  position: absolute;
+  text-align: center;
+  width: auto;
+}
+
+.clear-button {
+  left: 20px;
+  margin-inline-end: 4px !important;
+}
+
+.today-button {
+  right: 20px;
+}
+
+.clear-button:hover,
+.today-button:hover {
+  background-color: rgba(0, 117, 255, 0.3);
+  border: 1px solid black !important;
+}
+
+.today-button:disabled {
+  background-color: #FFFFFF;
+  color: rgba(16, 16, 16, 0.3);
+}
+
+.datetimelocal-picker .calendar-picker {
+  border: 0;
+  border-right: 1px solid #CECECE;
+}
+
+.datetimelocal-picker .time-picker {
+  border: 0;
+  height: 254px;
+  position: absolute;
+  right: 3px;
+  top: 12px;
+}
+
+/* These forced colors mode styles override the default styling for elements
+ * when forced colors mode is enabled.
+ */
+@media (forced-colors: active) {
+  .calendar-navigation-button {
+    background-color: Window;
+    color: WindowText;
+    forced-color-adjust: none;
+  }
+
+  .calendar-navigation-button:hover {
+    background-color: Window;
+    border-color: Highlight;
+  }
+
+  .calendar-navigation-button:disabled {
+    background-color: Window;
+    border-color: transparent;
+  }
+
+  .calendar-navigation-button path {
+    fill: WindowText;
+  }
+
+  .calendar-navigation-button:disabled path {
+    fill: GrayText;
+  }
+
+  .month-popup-button,
+  .month-popup-button:hover,
+  .month-popup-button:disabled {
+    background-color: Canvas;
+    color: CanvasText;
+    forced-color-adjust: none;
+    opacity: 1.0;
+  }
+
+  .month-popup-button:disabled {
+    color: GrayText !important;
+  }
+
+  .month-popup-button polygon {
+    fill: WindowText !important;
+  }
+
+  .month-popup-button:disabled polygon {
+    fill: GrayText !important;
+  }
+
+  .week-number-cell  {
+    background-color: Window;
+    color: WindowText;
+    forced-color-adjust: none;
+  }
+
+  .day-cell {
+    background-color: Window;
+    color: GrayText;
+    forced-color-adjust: none;
+  }
+
+  .month-button {
+    background-color: Window;
+    color: WindowText;
+    forced-color-adjust: none;
+  }
+
+  .day-cell.current-month {
+    color: WindowText;
+  }
+
+  /*
+  * Highlight-when-hovered for cells in the month picker menu and standalone
+  * month control
+  */
+  .month-button:not(.selected):hover {
+    background-color: Window !important;
+    border-color: Highlight !important;
+  }
+
+  /*
+  * Highlight-when-hovered for day cells except if this is a week picker
+  */
+  :not(.week-picker) > .calendar-table-view > .scroll-view > .scroll-view-content
+      > .calendar-row-cell > .day-cell:not(.selected):hover {
+    background-color: Window !important;
+    border-color: Highlight !important;
+  }
+
+
+  /*
+  * Highlight-when-hovered for the week picker:
+  * 1.  Highlight the week number cell for the hovered week.
+  * 2.  If the first date column is Monday, highlight all cells in the row
+  *     because the week picker considers Monday to be the first day
+  *     of the week regardless of locale.
+  * 3a. If the first date column is Sunday, highlight all cells in the hovered
+  *     row except for Sunday, because Sunday belongs to the previous week.
+  * 3b. If the first date column is Sunday, highlight Sunday of the row after
+  *     the hovered row, because that Sunday belongs to the hovered week.
+  */
+  .calendar-row-cell:hover .week-number-cell:not(.selected):not(.disabled),
+  .week-picker .calendar-row-cell:not(.week-starts-on-sunday):hover
+      .day-cell:not(.selected):not(.disabled),
+  .week-picker .calendar-row-cell.week-starts-on-sunday:hover
+      .day-cell:not(.selected):not(.disabled):not(:nth-child(2)),
+  .week-picker .calendar-row-cell.week-starts-on-sunday:hover + .calendar-row-cell
+      .day-cell:not(.selected):not(.disabled):nth-child(2) {
+    border-color: Highlight !important;
+    background-color: Window !important;
+  }
+
+  .day-cell.selected,
+  .month-button.selected,
+  .week-number-cell.selected {
+    background-color: Highlight;
+    color: Window;
+  }
+
+  .calendar-table-view:focus .day-cell.selected,
+  .year-list-view:focus .month-button.selected,
+  .calendar-table-view:focus .week-number-cell.selected {
+    outline: none;
+  }
+
+  .day-cell.today,
+  .month-button.today {
+    border-color: WindowText !important;
+  }
+
+  .day-cell.disabled,
+  .day-cell.disabled.today,
+  .month-button[aria-disabled="true"],
+  .week-number-cell.disabled {
+    background-color: Window;
+    border: 0 !important;
+    color: GrayText;
+  }
+
+  .clear-button,
+  .today-button {
+    background-color: Window;
+    color: LinkText;
+    forced-color-adjust: none;
+  }
+
+  .clear-button:hover,
+  .today-button:hover {
+    background-color: Window;
+    border-color: Highlight;
+  }
+
+  .today-button:disabled {
+    background-color: Window;
+    border-color: transparent;
+    color: GrayText;
+    forced-color-adjust: none;
+  }
+
+  .scrubby-scroll-thumb {
+    background-color: WindowText;
+    forced-color-adjust: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .calendar-picker {
+    background-color: #3B3B3B;
+    color:#ffffff;
+    border: 1px solid #858585;
+  }
+
+  .disclosure-triangle polygon,
+  .month-popup-button .disclosure-triangle polygon {
+    fill: #FFFFFF !important;
+  }
+
+  .calendar-table-header-view {
+    background-color: #3B3B3B;
+  }
+
+  .calendar-navigation-button {
+    background-color: #3B3B3B;
+    color: #ffffff;
+  }
+
+  .calendar-navigation-button:hover {
+    background-color: #545454;
+    border: 1px solid white !important;
+  }
+
+  .calendar-navigation-button:disabled {
+    background-color: #3B3B3B;
+  }
+
+  .month-popup-button:disabled {
+    background-color: #3B3B3B;
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .week-number-cell,
+  .day-cell {
+    background-color: #3B3B3B;
+    color: #FFFFFF;
+  }
+
+  .day-cell.current-month {
+    color: #ffffff;
+  }
+
+  .month-button:hover {
+    background-color: #D1E6FF;
+    color: #3B3B3B;
+    border: 1px solid white !important;
+  }
+
+  :not(.week-picker) > .calendar-table-view > .scroll-view > .scroll-view-content
+      > .calendar-row-cell > .day-cell:not(.selected):hover {
+    background-color: #D1E6FF;
+    color: #3B3B3B;
+    border: 1px solid white !important;
+  }
+
+  /*
+  * Highlight-when-hovered for the week picker:
+  * 1.  Highlight the week number cell for the hovered week.
+  * 2.  If the first date column is Monday, highlight all cells in the row
+  *     because the week picker considers Monday to be the first day
+  *     of the week regardless of locale.
+  * 3a. If the first date column is Sunday, highlight all cells in the hovered
+  *     row except for Sunday, because Sunday belongs to the previous week.
+  * 3b. If the first date column is Sunday, highlight Sunday of the row after
+  *     the hovered row, because that Sunday belongs to the hovered week.
+  */
+  .calendar-row-cell:hover .week-number-cell:not(.selected):not(.disabled),
+  .week-picker .calendar-row-cell:not(.week-starts-on-sunday):hover
+      .day-cell:not(.selected):not(.disabled),
+  .week-picker .calendar-row-cell.week-starts-on-sunday:hover
+      .day-cell:not(.selected):not(.disabled):not(:nth-child(2)),
+  .week-picker .calendar-row-cell.week-starts-on-sunday:hover + .calendar-row-cell
+      .day-cell:not(.selected):not(.disabled):nth-child(2) {
+    background-color: #D1E6FF;
+    color: #3B3B3B;
+    border: 1px solid white !important;
+  }
+
+  .calendar-table-view:focus .day-cell.selected,
+  .year-list-view:focus .month-button.selected,
+  .calendar-table-view:focus .week-number-cell.selected {
+    outline: solid 1px #FFFFFF;
+    outline-offset: -1px;
+  }
+
+  .day-cell.selected,
+  .month-button.selected,
+  .week-number-cell.selected {
+    background-color: #99C8FF;
+    color: #3B3B3B;
+    border-color: #FFFFFF;
+  }
+
+  .day-cell.disabled,
+  .day-cell.disabled.today,
+  .month-button[aria-disabled="true"],
+  .week-number-cell.disabled {
+    background-color: #3B3B3B;
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .clear-button,
+  .today-button {
+    background-color: #3B3B3B;
+    color: #99C8FF;
+  }
+
+  .clear-button:hover,
+  .today-button:hover {
+    color: #D1E6FF;
+    background-color: #545454;
+    border: 1px solid white !important;
+  }
+
+  .today-button:disabled {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  .year-list-cell .label {
+    background-color: #3B3B3B;
+    color: #ffffff;
+  }
+
+  body {
+    background-color: #3B3B3B;
+  }
+
+  .month-popup-button,
+  .month-popup-button:hover,
+  .month-popup-button:disabled {
+      color: #ffffff;
+  }
+
+  .scrubby-scroll-bar {
+    background-color: #3B3B3B;
+    border-left: 1px solid #3B3B3B;
+  }
+
+  .scrubby-scroll-thumb {
+    background-color: #d8d8d8;
+  }
+
+  .calendar-navigation-button path {
+    fill: #ffffff;
+  }
+
+  .month-popup-button polygon {
+    fill: #ffffff;
+  }
+
+  .month-popup-button:disabled polygon {
+    fill: #ffffff;
+  }
+
+  .year-list-cell .month-chooser {
+    background-color: #3B3B3B;
+  }
+
+  .month-button {
+    background-color: #3B3B3B;
+    color: #ffffff;
+  }
+}

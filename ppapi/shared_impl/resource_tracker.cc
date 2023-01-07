@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ppapi/shared_impl/resource_tracker.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
@@ -19,7 +21,7 @@ namespace ppapi {
 ResourceTracker::ResourceTracker(ThreadMode thread_mode)
     : last_resource_value_(0) {
   if (thread_mode == SINGLE_THREADED)
-    thread_checker_.reset(new base::ThreadChecker);
+    thread_checker_ = std::make_unique<base::ThreadChecker>();
 }
 
 ResourceTracker::~ResourceTracker() {}

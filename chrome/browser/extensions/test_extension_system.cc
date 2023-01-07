@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/in_process_unzipper.h"
+#include "components/value_store/test_value_store_factory.h"
+#include "components/value_store/testing_value_store.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -29,13 +31,12 @@
 #include "extensions/browser/info_map.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/quota_service.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/user_script_manager.h"
-#include "extensions/browser/value_store/test_value_store_factory.h"
-#include "extensions/browser/value_store/testing_value_store.h"
 #include "services/data_decoder/data_decoder_service.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -45,17 +46,19 @@ namespace extensions {
 
 TestExtensionSystem::TestExtensionSystem(Profile* profile)
     : profile_(profile),
-      store_factory_(new TestValueStoreFactory()),
+      store_factory_(new value_store::TestValueStoreFactory()),
       state_store_(new StateStore(profile_,
                                   store_factory_,
-                                  ValueStoreFrontend::BackendType::RULES,
+                                  StateStore::BackendType::RULES,
                                   false)),
       info_map_(new InfoMap()),
       quota_service_(new QuotaService()),
       app_sorting_(new ChromeAppSorting(profile_)) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!user_manager::UserManager::IsInitialized())
-    test_user_manager_ = std::make_unique<ash::ScopedTestUserManager>();
+  if (!user_manager::UserManager::IsInitialized()) {
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::make_unique<user_manager::FakeUserManager>());
+  }
 #endif
 }
 
@@ -72,15 +75,14 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
     const base::FilePath& install_directory,
     bool autoupdate_enabled,
     bool extensions_enabled) {
-  management_policy_.reset(new ManagementPolicy());
+  management_policy_ = std::make_unique<ManagementPolicy>();
   management_policy_->RegisterProviders(
       ExtensionManagementFactory::GetForBrowserContext(profile_)
           ->GetProviders());
-  runtime_data_.reset(new RuntimeData(ExtensionRegistry::Get(profile_)));
-  extension_service_.reset(new ExtensionService(
+  extension_service_ = std::make_unique<ExtensionService>(
       profile_, command_line, install_directory, ExtensionPrefs::Get(profile_),
       Blocklist::Get(profile_), autoupdate_enabled, extensions_enabled,
-      &ready_));
+      &ready_);
 
   unzip::SetUnzipperLaunchOverrideForTesting(
       base::BindRepeating(&unzip::LaunchInProcessUnzipper));
@@ -97,10 +99,6 @@ void TestExtensionSystem::CreateUserScriptManager() {
 
 ExtensionService* TestExtensionSystem::extension_service() {
   return extension_service_.get();
-}
-
-RuntimeData* TestExtensionSystem::runtime_data() {
-  return runtime_data_.get();
 }
 
 ManagementPolicy* TestExtensionSystem::management_policy() {
@@ -127,7 +125,12 @@ StateStore* TestExtensionSystem::rules_store() {
   return state_store_.get();
 }
 
-scoped_refptr<ValueStoreFactory> TestExtensionSystem::store_factory() {
+StateStore* TestExtensionSystem::dynamic_user_scripts_store() {
+  return state_store_.get();
+}
+
+scoped_refptr<value_store::ValueStoreFactory>
+TestExtensionSystem::store_factory() {
   return store_factory_;
 }
 
@@ -150,7 +153,7 @@ bool TestExtensionSystem::is_ready() const {
 }
 
 ContentVerifier* TestExtensionSystem::content_verifier() {
-  return NULL;
+  return nullptr;
 }
 
 std::unique_ptr<ExtensionSet> TestExtensionSystem::GetDependentExtensions(
@@ -179,10 +182,11 @@ bool TestExtensionSystem::FinishDelayedInstallationIfReady(
   return false;
 }
 
-TestingValueStore* TestExtensionSystem::value_store() {
+value_store::TestingValueStore* TestExtensionSystem::value_store() {
   // These tests use TestingValueStore in a way that ensures it only ever mints
   // instances of TestingValueStore.
-  return static_cast<TestingValueStore*>(store_factory_->LastCreatedStore());
+  return static_cast<value_store::TestingValueStore*>(
+      store_factory_->LastCreatedStore());
 }
 
 // static
@@ -193,7 +197,7 @@ std::unique_ptr<KeyedService> TestExtensionSystem::Build(
 }
 
 void TestExtensionSystem::RecreateAppSorting() {
-  app_sorting_.reset(new ChromeAppSorting(profile_));
+  app_sorting_ = std::make_unique<ChromeAppSorting>(profile_);
 }
 
 }  // namespace extensions

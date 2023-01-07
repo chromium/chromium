@@ -1,20 +1,20 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SQL_META_TABLE_H_
 #define SQL_META_TABLE_H_
 
-#include <stdint.h>
+#include <cstdint>
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece_forward.h"
 
 namespace sql {
 
 class Database;
-class Statement;
 
 // Creates and manages a table to store generic metadata. The features provided
 // are:
@@ -25,11 +25,15 @@ class Statement;
 class COMPONENT_EXPORT(SQL) MetaTable {
  public:
   MetaTable();
+  MetaTable(const MetaTable&) = delete;
+  MetaTable& operator=(const MetaTable&) = delete;
+  MetaTable(MetaTable&&) = delete;
+  MetaTable& operator=(MetaTable&&) = delete;
   ~MetaTable();
 
-  // Values for Get/SetMmapStatus(). |kMmapFailure| indicates that there was at
+  // Values for Get/SetMmapStatus(). `kMmapFailure` indicates that there was at
   // some point a read error and the database should not be memory-mapped, while
-  // |kMmapSuccess| indicates that the entire file was read at some point and
+  // `kMmapSuccess` indicates that the entire file was read at some point and
   // can be memory-mapped without constraint.
   static constexpr int64_t kMmapFailure = -2;
   static constexpr int64_t kMmapSuccess = -1;
@@ -37,32 +41,42 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   // Returns true if the 'meta' table exists.
   static bool DoesTableExist(Database* db);
 
-  // If the current version of the database is less than or equal to
-  // |deprecated_version|, raze the database. Must be called outside of a
-  // transaction.
-  // TODO(shess): At this time the database is razed IFF meta exists and
-  // contains a version row with value <= deprecated_version. It may make sense
-  // to also raze if meta exists but has no version row, or if meta doesn't
-  // exist. In those cases if the database is not already empty, it probably
-  // resulted from a broken initialization.
-  // TODO(shess): Folding this into Init() would allow enforcing
-  // |deprecated_version|<|version|. But Init() is often called in a
-  // transaction.
-  static void RazeIfDeprecated(Database* db, int deprecated_version);
+  // Deletes the 'meta' table if it exists, returning false if an internal error
+  // occurred during the deletion and true otherwise (no matter whether the
+  // table existed).
+  static bool DeleteTableForTesting(Database* db);
+
+  // If the current version of the database is less than
+  // `lowest_supported_version`, or the current version is less than the
+  // database's least compatible version, razes the database. To only enforce
+  // the latter, pass `kNoLowestSupportedVersion` for
+  // `lowest_supported_version`.
+  //
+  // TODO(crbug.com/1228463): At this time the database is razed IFF meta exists
+  // and contains a version row with the value not satisfying the constraints.
+  // It may make sense to also raze if meta exists but has no version row, or if
+  // meta doesn't exist. In those cases if the database is not already empty, it
+  // probably resulted from a broken initialization.
+  // TODO(crbug.com/1228463): Folding this into Init() would allow enforcing
+  // the version constraint, but Init() is often called in a transaction.
+  static constexpr int kNoLowestSupportedVersion = 0;
+  static void RazeIfIncompatible(Database* db,
+                                 int lowest_supported_version,
+                                 int current_version);
 
   // Used to tuck some data into the meta table about mmap status. The value
   // represents how much data in bytes has successfully been read from the
-  // database, or |kMmapFailure| or |kMmapSuccess|.
+  // database, or `kMmapFailure` or `kMmapSuccess`.
   static bool GetMmapStatus(Database* db, int64_t* status);
   static bool SetMmapStatus(Database* db, int64_t status);
 
-  // Initializes the MetaTableHelper, providing the |Database| pointer and
+  // Initializes the MetaTableHelper, providing the `Database` pointer and
   // creating the meta table if necessary. Must be called before any other
   // non-static methods. For new tables, it will initialize the version number
-  // to |version| and the compatible version number to |compatible_version|.
+  // to `version` and the compatible version number to `compatible_version`.
   // Versions must be greater than 0 to distinguish missing versions (see
   // GetVersionNumber()). If there was no meta table (proxy for a fresh
-  // database), mmap status is set to |kMmapSuccess|.
+  // database), mmap status is set to `kMmapSuccess`.
   bool Init(Database* db, int version, int compatible_version);
 
   // Resets this MetaTable object, making another call to Init() possible.
@@ -96,28 +110,20 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   int GetCompatibleVersionNumber();
 
   // Set the given arbitrary key with the given data. Returns true on success.
-  bool SetValue(const char* key, const std::string& value);
-  bool SetValue(const char* key, int value);
-  bool SetValue(const char* key, int64_t value);
+  bool SetValue(base::StringPiece key, const std::string& value);
+  bool SetValue(base::StringPiece key, int64_t value);
 
   // Retrieves the value associated with the given key. This will use sqlite's
   // type conversion rules. It will return true on success.
-  bool GetValue(const char* key, std::string* value);
-  bool GetValue(const char* key, int* value);
-  bool GetValue(const char* key, int64_t* value);
+  bool GetValue(base::StringPiece key, std::string* value);
+  bool GetValue(base::StringPiece key, int* value);
+  bool GetValue(base::StringPiece key, int64_t* value);
 
   // Deletes the key from the table.
-  bool DeleteKey(const char* key);
+  bool DeleteKey(base::StringPiece key);
 
  private:
-  // Conveniences to prepare the two types of statements used by
-  // MetaTableHelper.
-  void PrepareSetStatement(Statement* statement, const char* key);
-  bool PrepareGetStatement(Statement* statement, const char* key);
-
-  Database* db_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MetaTable);
+  raw_ptr<Database> db_ = nullptr;
 };
 
 }  // namespace sql

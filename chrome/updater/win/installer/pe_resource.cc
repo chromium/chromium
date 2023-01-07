@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,8 +46,8 @@ bool PEResource::WriteToDisk(const wchar_t* full_path) {
     const size_t write_amount =
         std::min(kMaxWriteAmount, resource_size - total_written);
     DWORD written = 0;
-    if (!::WriteFile(out_file, data + total_written, DWORD{write_amount},
-                     &written, nullptr)) {
+    if (!::WriteFile(out_file, data + total_written,
+                     static_cast<DWORD>(write_amount), &written, nullptr)) {
       ::CloseHandle(out_file);
       return false;
     }

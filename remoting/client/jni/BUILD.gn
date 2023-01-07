@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -52,10 +52,7 @@ shared_library("remoting_client_jni") {
     "EGL",
   ]
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
-  configs += [
-    "//build/config/android:hide_all_but_jni",
-    "//remoting/build/config:enable_webrtc_remoting_client",
-  ]
+  configs += [ "//build/config/android:hide_all_but_jni" ]
   assert_no_deps = [ "//third_party/ffmpeg:*" ]
 }
 

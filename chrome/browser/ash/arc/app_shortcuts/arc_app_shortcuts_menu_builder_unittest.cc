@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/arc/icon_decode_request.h"
+#include "chrome/browser/chromeos/arc/icon_decode_request.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -34,6 +33,12 @@ constexpr int kLaunchAppShortcutLast = 199;
 class ArcAppShortcutsMenuBuilderTest : public testing::Test {
  public:
   ArcAppShortcutsMenuBuilderTest() = default;
+
+  ArcAppShortcutsMenuBuilderTest(const ArcAppShortcutsMenuBuilderTest&) =
+      delete;
+  ArcAppShortcutsMenuBuilderTest& operator=(
+      const ArcAppShortcutsMenuBuilderTest&) = delete;
+
   ~ArcAppShortcutsMenuBuilderTest() override = default;
 
   void SetUp() override {
@@ -54,8 +59,6 @@ class ArcAppShortcutsMenuBuilderTest : public testing::Test {
   ArcAppTest arc_app_test_;
 
   content::BrowserTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppShortcutsMenuBuilderTest);
 };
 
 TEST_F(ArcAppShortcutsMenuBuilderTest, Basic) {
@@ -78,12 +81,12 @@ TEST_F(ArcAppShortcutsMenuBuilderTest, Basic) {
   run_loop.Run();
 
   DCHECK(menu);
-  int i = 0;
+  size_t i = 0;
   EXPECT_EQ(first_item_label, menu->GetLabelAt(i++));
   EXPECT_EQ(ui::DOUBLE_SEPARATOR, menu->GetSeparatorTypeAt(i++));
   // There is a separator between each app shortcut.
-  for (int shortcut_index = 0; i < menu->GetItemCount(); ++i) {
-    EXPECT_EQ(base::StringPrintf("ShortLabel %d", shortcut_index++),
+  for (size_t shortcut_index = 0; i < menu->GetItemCount(); ++i) {
+    EXPECT_EQ("ShortLabel " + base::NumberToString(shortcut_index++),
               base::UTF16ToUTF8(menu->GetLabelAt(i++)));
     if (i < menu->GetItemCount())
       EXPECT_EQ(ui::PADDED_SEPARATOR, menu->GetSeparatorTypeAt(i));

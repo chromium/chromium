@@ -5,7 +5,6 @@
 <translation id="104962181688258143">Файлдар колдонмосун ачуу</translation>
 <translation id="1122869341872663659"><ph name="QUERY" /> сурамы боюнча <ph name="N" /> издөө жыйынтыгы көрсөтүлүүдө</translation>
 <translation id="1195667586424773550">Шилтемени өтмөктүн дарек тилкесине сүйрөңүз</translation>
-<translation id="1204450209689312104">Жаңы терезени жашыруун режимде ачуу</translation>
 <translation id="1251638888133819822">Толук экран лупасын күйгүзүү же өчүрүү</translation>
 <translation id="1290373024480130896"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="MODIFIER3" /><ph name="SEPARATOR3" /><ph name="KEY" /></translation>
 <translation id="1293699935367580298">Esc</translation>
@@ -15,8 +14,10 @@
 <translation id="1477442857810932985">Саптын аягына өтүү</translation>
 <translation id="1499072997694708844">Ачык терезелерди жабуу же учурдагы баракты жүктөөнү токтотуу</translation>
 <translation id="1510238584712386396">Жүргүзгүч</translation>
+<translation id="1516966594427080024">Жаңы терезени жашыруун режимде ачуу</translation>
 <translation id="152892567002884378">Катуулатуу</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, андан кийин <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Иш такталарга (1–8) өтүү</translation>
 <translation id="1652741121070700329">Мурунку сөздүн башына жылуу</translation>
 <translation id="1679841710523778799">Жарыктыгын көбөйтүү</translation>
 <translation id="168356808214100546"><ph name="ALT" /> баскычын коё бербей басып, ачкыңыз келген терезе ачылганча <ph name="TAB" /> дегенди таптап, анан коё бериңиз.</translation>
@@ -52,7 +53,6 @@
 <translation id="2530339807289914946">Веб-баракчаны ылдый сыдыруу</translation>
 <translation id="2530896289327917474">Caret серептөөсүн күйгүзүү же өчүрүү</translation>
 <translation id="2574014812750545982">Барактын масштабын баштапкы абалга келтирүү</translation>
-<translation id="2596078834055697711">Терезенин скриншотун тартып алуу</translation>
 <translation id="2685170433750953446"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, андан кийин <ph name="TAB" /> же <ph name="RIGHT" /></translation>
 <translation id="2750942583782703988">Учурдагы баракты кайра жүктөө</translation>
 <translation id="2764005613199379871">Курсорду Издөөнүн дарек тилкесине коюу</translation>
@@ -67,12 +67,14 @@
 <translation id="3020183492814296499">Кыска жолдор</translation>
 <translation id="3084301071537457911">Текчедеги кийинки элементти бөлүп көрсөтүү</translation>
 <translation id="309173601632226815">Текчедеги жүргүзгүч баскычын бөлүп көрсөтүү</translation>
-<translation id="3105917916468784889">Скриншот тартып алуу</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3140353188828248647">Дарек тилкесин мээлөө</translation>
 <translation id="3256109297135787951">Текчедеги нерсени бөлүп көрсөтүүнү алып салуу</translation>
 <translation id="3288816184963444640">Учурдагы терезени жабуу</translation>
+<translation id="3322797428033495633">Сүрөттөгү сүрөт терезесине өтүү</translation>
+<translation id="3350805006883559974">Жигердүү терезени жогору жылдыруу</translation>
 <translation id="3407560819924487926">Маселелерди башкаргычты иштетүү</translation>
+<translation id="3417835166382867856">Өтмөктөрдү издөө</translation>
 <translation id="3422679037938588196">Издөөңүзгө дал келген жыйынтыктардын мурунку сабына өтүү</translation>
 <translation id="353037708190149633">Учурдагы терезедеги бардык ачык баракчаларды кыстармалар түрүндө жаңы папкага сактоо</translation>
 <translation id="355103131818127604">Шилтемени фондогу жаңы өтмөктө ачуу</translation>
@@ -91,6 +93,7 @@
 <translation id="3949671998904569433">үтүр</translation>
 <translation id="3976863468609830880">Текчедеги акыркы сүрөтчөнү чыкылдатуу</translation>
 <translation id="3994783594793697310">Дисплейдин масштабын баштапкы абалга келтирүү</translation>
+<translation id="4026837045671473537">Түстөрдү инверсиялоо режимин күйгүзүү</translation>
 <translation id="4026843240379844265">Активдүү терезени экрандардын ортосунда жылдыруу</translation>
 <translation id="4035482366624727273">Баракчанын баарын тандоо</translation>
 <translation id="4060703249685950734">Жабылган акыркы өтмөктү же терезени ачуу</translation>
@@ -108,7 +111,6 @@
 <translation id="4556221320735744018">Тез баскыч жардамчысын көрүү</translation>
 <translation id="4609344656788228519"><ph name="CTRL1" /><ph name="SEPARATOR1" /><ph name="BACK1" /> же <ph name="CTRL2" /><ph name="SEPARATOR2" /><ph name="SHIFT" /><ph name="SEPARATOR3" /><ph name="BACK2" /></translation>
 <translation id="4628718545549558538">Статус аймагын ачуу (профилиңиздин сүрөтү көрүнгөн жерде)</translation>
-<translation id="4642092649622328492">Экрандын бир бөлүгүн тартып алуу</translation>
 <translation id="4698850295812410683">Стилус куралдарын көрсөтүү</translation>
 <translation id="4801989101741319327">Кийинки сөздүн аягына жылуу</translation>
 <translation id="4866066940972151697">Оң жактагы иш тактаны иштетүү</translation>
@@ -124,11 +126,13 @@
 <translation id="526651782186312376">Текстти саптын башына чейин тандоо</translation>
 <translation id="5316716239522500219">Мониторлорду чагылыштыруу</translation>
 <translation id="539072479502328326">Жалгаштырылган лупаны күйгүзүү же өчүрүү</translation>
+<translation id="5466615362193675484">Кулпулоо режиминин өлчөмүн өзгөртүү үчүн менюну өчүрүү/күйгүзүү</translation>
 <translation id="5541719484267030947">Өтмөктү сүйрөгөндө, <ph name="ESC" /> баскычын басып туруңуз</translation>
 <translation id="5554139136362089836">Учурдагы барактан издөө</translation>
 <translation id="5563050856984839829"><ph name="CTRL" />+<ph name="SEPARATOR" />+<ph name="SHIFT" /> баскычтарын басып, шилтемени чыкылдатыңыз</translation>
 <translation id="561814908794220892">Веб-баракчаны жаңы өтмөктөн ачуу</translation>
 <translation id="5620219513321115856">Жигердүү терезени оң жактагы иш тактага жылдыруу</translation>
+<translation id="5699366815052349604">Жигердүү терезени бардык иш такталарга дайындоо</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> же <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Шилтемени өтмөктө ачуу</translation>
 <translation id="5757474750054631686">Күңүрт баскычтоп (артынан жарык берилген баскычтар үчүн гана)</translation>
@@ -138,7 +142,6 @@
 <translation id="5921745308587794300">Терезени буруу</translation>
 <translation id="5926306472221400972">Толук экрандын скриншотун тартып алуу</translation>
 <translation id="6022924867608035986">Издөө кутучасындагы текстти тазалоо</translation>
-<translation id="6045998054441862242">Жогорку контраст режимин күйгүзүү</translation>
 <translation id="6052614013050385269">Шилтемени чычкандын оң баскычы менен чыкылдатуу</translation>
 <translation id="6129953537138746214">Боштук</translation>
 <translation id="6143669479988153888">Баракты чоңойтуу</translation>
@@ -147,6 +150,7 @@
 <translation id="6276708887952587684">Барактын булагын көрсөтүү</translation>
 <translation id="6321940490215594447">Таржымал барагын ачуу</translation>
 <translation id="6340769215862220182">Дисплейдин масштабын чоңойтуу</translation>
+<translation id="634687982629734605">Фокусту төмөнкүлөрдүн ортосунда которуштуруу: Статус аймагы (профилиңиздин сүрөтү көрүнгөн жерде), Жүргүзгүчтүн дарек тилкеси, Кыстармалар тилкеси (эгер көрсөтүлсө), Жүктөлүп алынгандар тилкесин ачкан веб-баракча (эгер көрсөтүлсө). Эгер фокусталуучу диалог көрсөтүлгөн болсо, фокусту ошол жерге жылдырыңыз.</translation>
 <translation id="6359811074279051077"><ph name="MODIFIER" /><ph name="SEPARATOR" /><ph name="KEY" /></translation>
 <translation id="6395172954772765143">Текстти саптын аягына чейин тандоо</translation>
 <translation id="6425378783626925378">Текчедеги 1-8 сүрөтчөлөрүн чыкылдатуу</translation>
@@ -154,6 +158,7 @@
 <translation id="6445033640292336367">Өтмөктү баштапкы абалына кайтаруу</translation>
 <translation id="6474744297082284761">Масштабын кичирейтүү (жалгаштырылган ЖЕ толук экран режиминдеги лупалар иштетилгенде)</translation>
 <translation id="649811797655257835">Файлды тандап, <ph name="SPACE" /> баскычын басыңыз</translation>
+<translation id="6515089016094047210">Жылнаама виджетин ачуу же жабуу.</translation>
 <translation id="6551886416582667425">Жарым-жартылай скриншот тартуу/жаздыруу</translation>
 <translation id="6556040137485212400">Эң узак убакытка колдонулбай калган терезени ачуу</translation>
 <translation id="666343722268997814">Бөлүнүп көрсөтүлгөн элементтин менюсун чычкандын оң баскычы менен ачуу</translation>
@@ -190,7 +195,6 @@
 <translation id="8026334261755873520">Серептөө дайындарын тазалап салуу</translation>
 <translation id="8130528849632411619">Документтин башына өтүү</translation>
 <translation id="8147954207400281792"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="K" /> же <ph name="E" /></translation>
-<translation id="8232835244134740473">Фокусту төмөнкүлөрдүн ортосунда которуштуруу: Статус аймагы (профилиңиздин сүрөтү көрүнгөн жерде), Жүргүзгүчтүн дарек тилкеси, Кыстармалар тилкеси (эгер көрсөтүлсө), Жүктөлүп алынгандар тилкесин ачкан веб-баракча (эгер көрсөтүлсө).</translation>
 <translation id="8234414138295101081">Экранды 90 градуска буруу</translation>
 <translation id="8241665785394195545">оң бурч кашаасы</translation>
 <translation id="8264941229485248811">Иштеп чыгуучунун куралдарын текшерүүчүнү көрсөтүү же жашыруу</translation>
@@ -198,16 +202,17 @@
 <translation id="8388247778047144397">Шилтемени өтмөк тасмасындагы бош жерге сүйрөңүз</translation>
 <translation id="8389638407792712197">Жаңы терезе ачуу</translation>
 <translation id="8429696719963529183">F баскычтарын колдонуу (F1'ден F12'ге чейин)</translation>
-<translation id="8537650670971624753">Издөө режиминен чыгуу</translation>
 <translation id="85690795166292698">Шилтемени жаңы өтмөктө ачуу</translation>
 <translation id="8609384513243082612">Жаңы өтмөк ачуу</translation>
 <translation id="8644639153978066712">Жашырылган файлдарды Файлдар колдонмосунда көрсөтүү</translation>
 <translation id="8717459106217102612">Мурунку сөздү же тамганы тандоо</translation>
 <translation id="8727232706774971183">Эскертмелерди көрүү</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1—8</translation>
 <translation id="8855885154700222542">Толук экран режиминин ачкычы</translation>
 <translation id="8881584919399569791">Жигердүү терезени сол жактагы иш тактага жылдыруу</translation>
 <translation id="88986195241502842">Ылдый барактоо</translation>
 <translation id="8924883688469390268">Мурунку колдонуучуга которулуу</translation>
+<translation id="8941626538514548667">Серепчидеги веб мазмунга өтүү</translation>
 <translation id="8977648847395357314">Дарек тилкесиндеги мазмунду тандоо</translation>
 <translation id="8982190978301344584">Жеткиликтүү IME'лердин тизмесин чагылдыруучу менюну көрсөтүү</translation>
 <translation id="8990356943438003669"><ph name="ALT" /><ph name="SEPARATOR" /> 1ден 8ге чейин</translation>

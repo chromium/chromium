@@ -1,12 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_COMMON_PAGE_LOAD_TIMING_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_COMMON_PAGE_LOAD_TIMING_H_
 
-#include "base/optional.h"
-#include "base/time/time.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 

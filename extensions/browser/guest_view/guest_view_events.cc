@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <map>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_constants.h"
 #include "extensions/browser/guest_view/web_view/web_view_constants.h"
@@ -85,6 +84,9 @@ class EventMap {
     }
   }
 
+  EventMap(const EventMap&) = delete;
+  EventMap& operator=(const EventMap&) = delete;
+
   events::HistogramValue Get(const std::string& event_name) {
     auto value = values_.find(event_name);
     return value != values_.end() ? value->second : events::UNKNOWN;
@@ -92,8 +94,6 @@ class EventMap {
 
  private:
   std::map<std::string, events::HistogramValue> values_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventMap);
 };
 
 base::LazyInstance<EventMap>::DestructorAtExit g_event_map =

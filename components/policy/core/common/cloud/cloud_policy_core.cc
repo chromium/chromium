@@ -1,14 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/observer_list.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
@@ -20,11 +22,12 @@
 
 namespace policy {
 
-CloudPolicyCore::Observer::~Observer() {}
+CloudPolicyCore::Observer::~Observer() = default;
 
 void CloudPolicyCore::Observer::OnRemoteCommandsServiceStarted(
-    CloudPolicyCore* core) {
-}
+    CloudPolicyCore* core) {}
+
+void CloudPolicyCore::Observer::OnCoreDestruction(CloudPolicyCore* core) {}
 
 CloudPolicyCore::CloudPolicyCore(
     const std::string& policy_type,
@@ -39,14 +42,18 @@ CloudPolicyCore::CloudPolicyCore(
       network_connection_tracker_getter_(
           std::move(network_connection_tracker_getter)) {}
 
-CloudPolicyCore::~CloudPolicyCore() {}
+CloudPolicyCore::~CloudPolicyCore() {
+  Disconnect();
+  for (auto& observer : observers_)
+    observer.OnCoreDestruction(this);
+}
 
 void CloudPolicyCore::Connect(std::unique_ptr<CloudPolicyClient> client) {
   CHECK(!client_);
   CHECK(client);
   client_ = std::move(client);
-  service_.reset(new CloudPolicyService(policy_type_, settings_entity_id_,
-                                        client_.get(), store_));
+  service_ = std::make_unique<CloudPolicyService>(
+      policy_type_, settings_entity_id_, client_.get(), store_);
   for (auto& observer : observers_)
     observer.OnCoreConnected(this);
 }
@@ -97,7 +104,7 @@ void CloudPolicyCore::StartRefreshScheduler() {
 void CloudPolicyCore::TrackRefreshDelayPref(
     PrefService* pref_service,
     const std::string& refresh_pref_name) {
-  refresh_delay_.reset(new IntegerPrefMember());
+  refresh_delay_ = std::make_unique<IntegerPrefMember>();
   refresh_delay_->Init(
       refresh_pref_name, pref_service,
       base::BindRepeating(&CloudPolicyCore::UpdateRefreshDelayFromPref,

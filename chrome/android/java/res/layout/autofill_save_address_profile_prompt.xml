@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+  <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:focusable="true"
+      android:focusableInTouchMode="true"
+      android:importantForAccessibility="no">
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/edit_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="8dp"
+        android:padding="12dp"
+        android:background="?attr/selectableItemBackground"
+        android:contentDescription="@string/autofill_save_address_prompt_edit_button_tooltip"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/edit_icon"
+        app:tint="@color/default_icon_color_tint_list"
+        tools:src="@drawable/edit_icon" />
+
+    <LinearLayout
+        android:id="@+id/address_data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toStartOf="@id/edit_button"
+        android:paddingTop="@dimen/dialog_padding_top"
+        android:paddingStart="@dimen/dialog_padding_sides"
+        android:orientation="vertical"
+        tools:ignore="RtlSymmetry">
+
+      <org.chromium.ui.widget.TextViewWithLeading
+          android:id="@+id/address"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom="12dp"
+          android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
+          app:leading="@dimen/text_size_large_leading"
+          tools:text="Alex Park\n345 High Street\nSan Francisco, CA, 94105\nUnited States" />
+
+      <TextView
+          android:id="@+id/email"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
+          tools:text="alex.park@gmail.com" />
+
+      <TextView
+          android:id="@+id/phone"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
+          tools:text="+1 858 230 4000" />
+
+    </LinearLayout>
+
+    <!-- TODO(crbug.com/1167061): Use localized strings. -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/nickname_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="21dp"
+        android:layout_marginEnd="21dp"
+        android:layout_below="@id/address_data"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
+        android:hint="Add a label"
+        app:placeholderText="Home, Work, etc."
+        app:placeholderTextAppearance="@style/TextAppearance.TextMedium.Secondary"
+        tools:ignore="HardcodedText">
+
+      <com.google.android.material.textfield.TextInputEditText
+          android:id="@+id/nickname_input"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:imeOptions="flagNoExtractUi"
+          android:minHeight="48dp"
+          android:singleLine="true"
+          android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
+    </com.google.android.material.textfield.TextInputLayout>
+  </RelativeLayout>
+</ScrollView>

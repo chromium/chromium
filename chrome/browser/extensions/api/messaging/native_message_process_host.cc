@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -64,7 +65,7 @@ NativeMessageProcessHost::NativeMessageProcessHost(
       native_host_name_(native_host_name),
       launcher_(std::move(launcher)),
       closed_(false),
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
       read_file_(-1),
 #endif
       read_pending_(false),
@@ -81,7 +82,7 @@ NativeMessageProcessHost::~NativeMessageProcessHost() {
 // Kill the host process if necessary to make sure we don't leave zombies.
 // TODO(https://crbug.com/806451): On OSX EnsureProcessTerminated() may
 // block, so we have to post a task on the blocking pool.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::BindOnce(&base::EnsureProcessTerminated, std::move(process_)));
@@ -157,7 +158,7 @@ void NativeMessageProcessHost::OnHostProcessLaunched(
   }
 
   process_ = std::move(process);
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // |read_stream_| will take ownership of |read_file|, so note the underlying
   // file descript for use with FileDescriptorWatcher.
   read_file_ = read_file.GetPlatformFile();
@@ -168,8 +169,10 @@ void NativeMessageProcessHost::OnHostProcessLaunched(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
 
-  read_stream_.reset(new net::FileStream(std::move(read_file), task_runner));
-  write_stream_.reset(new net::FileStream(std::move(write_file), task_runner));
+  read_stream_ =
+      std::make_unique<net::FileStream>(std::move(read_file), task_runner);
+  write_stream_ =
+      std::make_unique<net::FileStream>(std::move(write_file), task_runner);
 
   WaitRead();
   DoWrite();
@@ -228,15 +231,15 @@ void NativeMessageProcessHost::WaitRead() {
   // wait for the file to become readable before calling DoRead(). Otherwise it
   // would always be consuming one thread in the thread pool. On Windows
   // FileStream uses overlapped IO, so that optimization isn't necessary there.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   if (!read_controller_) {
     read_controller_ = base::FileDescriptorWatcher::WatchReadable(
         read_file_, base::BindRepeating(&NativeMessageProcessHost::DoRead,
                                         base::Unretained(this)));
   }
-#else  // defined(OS_POSIX)
+#else   // BUILDFLAG(IS_POSIX)
   DoRead();
-#endif  // defined(!OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 }
 
 void NativeMessageProcessHost::DoRead() {
@@ -365,7 +368,7 @@ void NativeMessageProcessHost::Close(const std::string& error_message) {
 
   if (!closed_) {
     closed_ = true;
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     read_controller_.reset();
 #endif
     read_stream_.reset();

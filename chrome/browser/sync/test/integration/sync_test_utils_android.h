@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,10 +28,6 @@ void SetUpAuthForTesting();
 // for an example:
 // chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc.
 void TearDownAuthForTesting();
-
-// Sets up AndroidSyncSettings with a mock SyncContentResolver and with
-// Android's master sync setting enabled.
-void SetUpAndroidSyncSettingsForTesting();
 
 }  // namespace sync_test_utils_android
 

@@ -1,16 +1,13 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_THREADPOOL_H_
-#define SANDBOX_SRC_THREADPOOL_H_
+#ifndef SANDBOX_WIN_SRC_THREADPOOL_H_
+#define SANDBOX_WIN_SRC_THREADPOOL_H_
 
-#include <stddef.h>
-
-#include <algorithm>
 #include <list>
-#include "base/macros.h"
-#include "sandbox/win/src/crosscall_server.h"
+#include "base/synchronization/lock.h"
+#include "base/win/windows_types.h"
 
 namespace sandbox {
 // This function signature is required as the callback when an IPC call fires.
@@ -45,6 +42,10 @@ typedef void(__stdcall* CrossCallIPCCallback)(void* context,
 class ThreadPool {
  public:
   ThreadPool();
+
+  ThreadPool(const ThreadPool&) = delete;
+  ThreadPool& operator=(const ThreadPool&) = delete;
+
   ~ThreadPool();
   // Registers a waitable object with the thread provider.
   // client: A number to associate with all the RegisterWait calls, typically
@@ -77,11 +78,9 @@ class ThreadPool {
   typedef std::list<PoolObject> PoolObjects;
   PoolObjects pool_objects_;
   // This lock protects the list of pool wait objects.
-  CRITICAL_SECTION lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadPool);
+  base::Lock lock_;
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_THREADPOOL_H_
+#endif  // SANDBOX_WIN_SRC_THREADPOOL_H_

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,12 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/tools/transport_security_state_generator/cert_util.h"
 #include "net/tools/transport_security_state_generator/pinset.h"
 #include "net/tools/transport_security_state_generator/spki_hash.h"
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 // Contains SPKIHashes and their names. The names are used to reference
 // the hashes from Pinset's.
@@ -27,6 +24,10 @@ using PinsetMap = std::map<std::string, std::unique_ptr<Pinset>>;
 class Pinsets {
  public:
   Pinsets();
+
+  Pinsets(const Pinsets&) = delete;
+  Pinsets& operator=(const Pinsets&) = delete;
+
   ~Pinsets();
 
   void RegisterSPKIHash(base::StringPiece name, const SPKIHash& hash);
@@ -44,12 +45,8 @@ class Pinsets {
 
   // Contains all pinsets in the input JSON file.
   PinsetMap pinsets_;
-
-  DISALLOW_COPY_AND_ASSIGN(Pinsets);
 };
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state
 
 #endif  // NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_PINSETS_H_

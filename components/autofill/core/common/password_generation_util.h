@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -112,10 +112,11 @@ struct PasswordGenerationUIData {
   PasswordGenerationUIData(const gfx::RectF& bounds,
                            int max_length,
                            const std::u16string& generation_element,
+                           const std::u16string& user_typed_password,
                            FieldRendererId generation_element_id,
                            bool is_generation_element_password_type,
                            base::i18n::TextDirection text_direction,
-                           const autofill::FormData& form_data);
+                           const FormData& form_data);
   PasswordGenerationUIData();
   PasswordGenerationUIData(const PasswordGenerationUIData& rhs);
   PasswordGenerationUIData(PasswordGenerationUIData&& rhs);
@@ -134,6 +135,9 @@ struct PasswordGenerationUIData {
   // Name of the password field to which the generation popup is attached.
   std::u16string generation_element;
 
+  // The password typed by the user.
+  std::u16string user_typed_password;
+
   // Renderer ID of the generation element.
   FieldRendererId generation_element_id;
 
@@ -144,7 +148,7 @@ struct PasswordGenerationUIData {
   base::i18n::TextDirection text_direction;
 
   // The form associated with the password field.
-  autofill::FormData form_data;
+  FormData form_data;
 };
 
 void LogPasswordGenerationEvent(PasswordGenerationEvent event);

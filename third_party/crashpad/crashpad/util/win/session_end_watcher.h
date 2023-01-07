@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
 #include "util/thread/thread.h"
 #include "util/win/scoped_handle.h"
 
@@ -35,6 +34,9 @@ namespace crashpad {
 class SessionEndWatcher : public Thread {
  public:
   SessionEndWatcher();
+
+  SessionEndWatcher(const SessionEndWatcher&) = delete;
+  SessionEndWatcher& operator=(const SessionEndWatcher&) = delete;
 
   //! \note The destructor waits for the thread that runs the message loop to
   //!     terminate.
@@ -70,8 +72,6 @@ class SessionEndWatcher : public Thread {
   HWND window_;  // Conceptually strong, but ownership managed in ThreadMain()
   ScopedKernelHANDLE started_;
   ScopedKernelHANDLE stopped_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionEndWatcher);
 };
 
 }  // namespace crashpad

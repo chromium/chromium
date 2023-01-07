@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 
 namespace {
 
-const char kRegistryChromePolicyKey[] = "SOFTWARE\\Policies\\Chromium";
+const char16_t kRegistryChromePolicyKey[] = u"SOFTWARE\\Policies\\Chromium";
 
 }  // namespace
 
@@ -24,7 +24,7 @@ namespace preg_parser {
 
 // Disable logging.
 struct Environment {
-  Environment() : root(base::ASCIIToUTF16(kRegistryChromePolicyKey)) {
+  Environment() : root(kRegistryChromePolicyKey) {
     logging::SetMinLogLevel(logging::LOG_FATAL);
   }
 

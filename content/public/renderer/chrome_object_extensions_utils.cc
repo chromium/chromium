@@ -1,11 +1,12 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/public/renderer/chrome_object_extensions_utils.h"
 
 #include "gin/converter.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-object.h"
 
 namespace content {
 

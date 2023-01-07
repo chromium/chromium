@@ -1,10 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/activity_services/activities/copy_activity.h"
 
 #import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
+#import "ios/chrome/browser/ui/icons/action_icon.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -22,7 +24,7 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 
 @interface CopyActivity ()
 
-@property(nonatomic, strong) ShareToData* data;
+@property(nonatomic, strong) NSArray<ShareToData*>* dataItems;
 
 @end
 
@@ -30,11 +32,12 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 
 #pragma mark - Public
 
-- (instancetype)initWithData:(ShareToData*)data {
-  DCHECK(data);
+- (instancetype)initWithDataItems:(NSArray<ShareToData*>*)dataItems {
+  DCHECK(dataItems);
+  DCHECK(dataItems.count);
   self = [super init];
   if (self) {
-    _data = data;
+    _dataItems = dataItems;
   }
   return self;
 }
@@ -50,11 +53,15 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 }
 
 - (UIImage*)activityImage {
+  if (UseSymbols()) {
+    return DefaultSymbolWithPointSize(kCopyActionSymbol,
+                                      kSymbolActionPointSize);
+  }
   return [UIImage imageNamed:@"activity_services_copy"];
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {
-  return !!self.data;
+  return !!self.dataItems && self.dataItems.count;
 }
 
 - (void)prepareWithActivityItems:(NSArray*)activityItems {
@@ -65,12 +72,17 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 }
 
 - (void)performActivity {
-  if (self.data.additionalText) {
-    StoreInPasteboard(self.data.additionalText, self.data.shareURL);
-  } else {
-    StoreURLInPasteboard(self.data.shareURL);
-  }
   [self activityDidFinish:YES];
+  if (self.dataItems.count == 1 && self.dataItems.firstObject.additionalText) {
+    StoreInPasteboard(self.dataItems.firstObject.additionalText,
+                      self.dataItems.firstObject.shareURL);
+  } else {
+    std::vector<const GURL> urls;
+    for (ShareToData* shareToData in self.dataItems) {
+      urls.push_back(shareToData.shareURL);
+    }
+    StoreURLsInPasteboard(urls);
+  }
 }
 
 @end

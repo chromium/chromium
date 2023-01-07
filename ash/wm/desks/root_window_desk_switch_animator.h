@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -220,6 +220,7 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
     return ending_desk_screenshot_taken_;
   }
   bool animation_finished() const { return animation_finished_; }
+  bool reached_edge() const { return reached_edge_; }
 
   // Begins phase (1) of the animation by taking a screenshot of the starting
   // desk content. Delegate::OnStartingDeskScreenshotTaken() will be called once
@@ -249,9 +250,9 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // units and then used to shift the animation layer. If the animation layer is
   // near its boundaries, this will return an index for the desk we should take
   // a screenshot for. If we are not near the boundaries, or if there is no next
-  // adjacent desk in the direction we are heading, return base::nullopt. The
+  // adjacent desk in the direction we are heading, return absl::nullopt. The
   // delegate is responsible for requesting the screenshot.
-  base::Optional<int> UpdateSwipeAnimation(float scroll_delta_x);
+  absl::optional<int> UpdateSwipeAnimation(float scroll_delta_x);
 
   // Maybe called after UpdateSwipeAnimation() if we need a new screenshot.
   // Updates |ending_desk_index_| and resets some other internal state related
@@ -362,13 +363,19 @@ class ASH_EXPORT RootWindowDeskSwitchAnimator
   // True when phase (3) finishes.
   bool animation_finished_ = false;
 
+  // True if during a continuous swipe, the user went all the way left or right
+  // and swiping in that direction will no longer update the UI.
+  bool reached_edge_ = false;
+
   // True while setting a new transform for chaining. If a animation is active,
   // calling SetTransform will trigger OnImplicitAnimationsCompleted. In these
   // cases we do not want to notify our delegate that the animation is finished.
   bool setting_new_transform_ = false;
 
-  // Callback that is run after the ending screenshot is taken for testing
-  // purposes.
+  // Callbacks that are run after the screenshots are taken for testing
+  // purposes. Waiting for the ending screenshots means you will implicitly wait
+  // for the starting screenshots too.
+  base::OnceClosure on_starting_screenshot_taken_callback_for_testing_;
   base::OnceClosure on_ending_screenshot_taken_callback_for_testing_;
 
   base::WeakPtrFactory<RootWindowDeskSwitchAnimator> weak_ptr_factory_{this};

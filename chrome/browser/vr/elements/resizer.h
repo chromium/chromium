@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 
 #include <sstream>
 
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/vr_ui_export.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace vr {
 
@@ -19,6 +18,10 @@ namespace vr {
 class VR_UI_EXPORT Resizer : public UiElement {
  public:
   Resizer();
+
+  Resizer(const Resizer&) = delete;
+  Resizer& operator=(const Resizer&) = delete;
+
   ~Resizer() override;
 
   void set_touch_position(const gfx::PointF& position) {
@@ -53,8 +56,6 @@ class VR_UI_EXPORT Resizer : public UiElement {
 
   gfx::PointF touchpad_position_;
   gfx::PointF initial_touchpad_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(Resizer);
 };
 
 }  // namespace vr

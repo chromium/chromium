@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 #include "third_party/blink/renderer/core/dom/mutation_observer_registration.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 namespace blink {
 
@@ -56,7 +57,7 @@ TEST(MutationObserverTest, DisconnectCrash) {
   // The following GC will collect |head|, but won't collect a
   // MutationObserverRegistration for |head|.
   ThreadState::Current()->CollectAllGarbageForTesting(
-      BlinkGC::kNoHeapPointersOnStack);
+      ThreadState::StackState::kNoHeapPointers);
   observer->disconnect();
   // The test passes if disconnect() didn't crash.  crbug.com/657613.
 }

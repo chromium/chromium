@@ -29,11 +29,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_H_
 
-#include <memory>
-#include <utility>
-
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -41,42 +41,49 @@
 
 namespace blink {
 class MediaQueryExp;
+class MediaQueryExpNode;
 
 using ExpressionHeapVector = Vector<MediaQueryExp>;
 
-class CORE_EXPORT MediaQuery {
-  USING_FAST_MALLOC(MediaQuery);
-
+class CORE_EXPORT MediaQuery : public GarbageCollected<MediaQuery> {
  public:
-  enum RestrictorType { kOnly, kNot, kNone };
+  enum class RestrictorType : uint8_t { kOnly, kNot, kNone };
 
-  static std::unique_ptr<MediaQuery> CreateNotAll();
+  static MediaQuery* CreateNotAll();
 
-  MediaQuery(RestrictorType, String media_type, ExpressionHeapVector);
+  MediaQuery(RestrictorType, String media_type, const MediaQueryExpNode*);
   MediaQuery(const MediaQuery&);
   ~MediaQuery();
+  void Trace(Visitor*) const;
 
-  RestrictorType Restrictor() const { return restrictor_; }
-  const ExpressionHeapVector& Expressions() const { return expressions_; }
-  const String& MediaType() const { return media_type_; }
+  bool HasUnknown() const { return has_unknown_; }
+  RestrictorType Restrictor() const;
+  const MediaQueryExpNode* ExpNode() const;
+  const String& MediaType() const;
   bool operator==(const MediaQuery& other) const;
   String CssText() const;
 
-  std::unique_ptr<MediaQuery> Copy() const {
-    return std::make_unique<MediaQuery>(*this);
-  }
-
  private:
   MediaQuery& operator=(const MediaQuery&) = delete;
+  bool BehaveAsNotAll() const;
+
+  String media_type_;
+  String serialization_cache_;
+  Member<const MediaQueryExpNode> exp_node_;
 
   RestrictorType restrictor_;
-  String media_type_;
-  ExpressionHeapVector expressions_;
-  String serialization_cache_;
+  // Set if |exp_node_| contains any MediaQueryUnknownExpNode instances.
+  //
+  // If the runtime flag CSSMediaQueries4 is *not* enabled, this will cause the
+  // MediaQuery to appear as a "not all".
+  //
+  // Knowing whether or not something is unknown is useful for use-counting and
+  // testing purposes.
+  bool has_unknown_;
 
   String Serialize() const;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_H_

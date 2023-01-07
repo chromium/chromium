@@ -1,22 +1,26 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "sandbox/win/src/win_utils.h"
 
+#include <windows.h>
+
 #include <psapi.h>
 #include <stddef.h>
 #include <stdint.h>
 
+#include <limits>
 #include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/numerics/safe_math.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/win/pe_image.h"
+#include "base/win/scoped_handle.h"
+#include "base/win/win_util.h"
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
@@ -26,7 +30,7 @@ namespace {
 const size_t kDriveLetterLen = 3;
 
 constexpr wchar_t kNTDotPrefix[] = L"\\\\.\\";
-const size_t kNTDotPrefixLen = base::size(kNTDotPrefix) - 1;
+const size_t kNTDotPrefixLen = std::size(kNTDotPrefix) - 1;
 
 // Holds the information about a known registry key.
 struct KnownReservedKey {
@@ -103,7 +107,7 @@ bool IsDevicePath(const std::wstring& path, std::wstring* trimmed_path) {
 // "\Device\HarddiskVolumeX" in |path|.
 size_t PassHarddiskVolume(const std::wstring& path) {
   static constexpr wchar_t pattern[] = L"\\Device\\HarddiskVolume";
-  const size_t patternLen = base::size(pattern) - 1;
+  const size_t patternLen = std::size(pattern) - 1;
 
   // First, check for |pattern|.
   if ((path.size() < patternLen) || (!EqualPath(path, pattern, patternLen)))
@@ -145,6 +149,21 @@ void RemoveImpliedDevice(std::wstring* path) {
     *path = path->substr(kNTDotPrefixLen);
 }
 
+bool QueryObjectInformation(HANDLE handle,
+                            OBJECT_INFORMATION_CLASS info_class,
+                            std::vector<char>& buffer) {
+  NtQueryObjectFunction NtQueryObject = sandbox::GetNtExports()->QueryObject;
+  ULONG size = static_cast<ULONG>(buffer.size());
+  __try {
+    return NT_SUCCESS(
+        NtQueryObject(handle, info_class, buffer.data(), size, &size));
+  } __except (GetExceptionCode() == STATUS_INVALID_HANDLE
+                  ? EXCEPTION_EXECUTE_HANDLER
+                  : EXCEPTION_CONTINUE_SEARCH) {
+    return false;
+  }
+}
+
 }  // namespace
 
 namespace sandbox {
@@ -156,23 +175,14 @@ bool IsPipe(const std::wstring& path) {
     start = sandbox::kNTPrefixLen;
 
   const wchar_t kPipe[] = L"pipe\\";
-  if (path.size() < start + base::size(kPipe) - 1)
+  if (path.size() < start + std::size(kPipe) - 1)
     return false;
 
-  return EqualPath(path, start, kPipe, base::size(kPipe) - 1);
-}
-
-HKEY GetReservedKeyFromName(const std::wstring& name) {
-  for (size_t i = 0; i < base::size(kKnownKey); ++i) {
-    if (name == kKnownKey[i].name)
-      return kKnownKey[i].key;
-  }
-
-  return nullptr;
+  return EqualPath(path, start, kPipe, std::size(kPipe) - 1);
 }
 
 bool ResolveRegistryName(std::wstring name, std::wstring* resolved_name) {
-  for (size_t i = 0; i < base::size(kKnownKey); ++i) {
+  for (size_t i = 0; i < std::size(kKnownKey); ++i) {
     if (name.find(kKnownKey[i].name) == 0) {
       HKEY key;
       DWORD disposition;
@@ -409,44 +419,39 @@ bool ConvertToLongPath(std::wstring* native_path,
 }
 
 bool GetPathFromHandle(HANDLE handle, std::wstring* path) {
-  NtQueryObjectFunction NtQueryObject = nullptr;
-  ResolveNTFunctionPtr("NtQueryObject", &NtQueryObject);
-
-  OBJECT_NAME_INFORMATION initial_buffer;
-  OBJECT_NAME_INFORMATION* name = &initial_buffer;
-  ULONG size = sizeof(initial_buffer);
-  // Query the name information a first time to get the size of the name.
-  // Windows XP requires that the size of the buffer passed in here be != 0.
-  NTSTATUS status =
-      NtQueryObject(handle, ObjectNameInformation, name, size, &size);
-
-  std::unique_ptr<BYTE[]> name_ptr;
-  if (size) {
-    name_ptr.reset(new BYTE[size]);
-    name = reinterpret_cast<OBJECT_NAME_INFORMATION*>(name_ptr.get());
-
-    // Query the name information a second time to get the name of the
-    // object referenced by the handle.
-    status = NtQueryObject(handle, ObjectNameInformation, name, size, &size);
-  }
-
-  if (STATUS_SUCCESS != status)
+  using LengthType = decltype(OBJECT_NAME_INFORMATION::ObjectName.Length);
+  std::vector<char> buffer(sizeof(OBJECT_NAME_INFORMATION) +
+                           std::numeric_limits<LengthType>::max());
+  if (!QueryObjectInformation(handle, ObjectNameInformation, buffer))
     return false;
-
+  OBJECT_NAME_INFORMATION* name =
+      reinterpret_cast<OBJECT_NAME_INFORMATION*>(buffer.data());
   path->assign(name->ObjectName.Buffer,
                name->ObjectName.Length / sizeof(name->ObjectName.Buffer[0]));
   return true;
 }
 
 bool GetNtPathFromWin32Path(const std::wstring& path, std::wstring* nt_path) {
-  HANDLE file = ::CreateFileW(
+  base::win::ScopedHandle file(::CreateFileW(
       path.c_str(), 0, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-      nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr);
-  if (file == INVALID_HANDLE_VALUE)
+      nullptr, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS, nullptr));
+  if (!file.IsValid())
     return false;
-  bool rv = GetPathFromHandle(file, nt_path);
-  ::CloseHandle(file);
-  return rv;
+  return GetPathFromHandle(file.Get(), nt_path);
+}
+
+bool GetTypeNameFromHandle(HANDLE handle, std::wstring* type_name) {
+  // No typename is currently longer than 32 characters on Windows 11, so use an
+  // upper bound of 128 characters.
+  std::vector<char> buffer(sizeof(OBJECT_TYPE_INFORMATION) +
+                           128 * sizeof(WCHAR));
+  if (!QueryObjectInformation(handle, ObjectTypeInformation, buffer))
+    return false;
+  OBJECT_TYPE_INFORMATION* name =
+      reinterpret_cast<OBJECT_TYPE_INFORMATION*>(buffer.data());
+  type_name->assign(name->Name.Buffer,
+                    name->Name.Length / sizeof(name->Name.Buffer[0]));
+  return true;
 }
 
 bool WriteProtectedChildMemory(HANDLE child_process,
@@ -502,20 +507,14 @@ bool CopyToChildMemory(HANDLE child,
 }
 
 DWORD GetLastErrorFromNtStatus(NTSTATUS status) {
-  RtlNtStatusToDosErrorFunction NtStatusToDosError = nullptr;
-  ResolveNTFunctionPtr("RtlNtStatusToDosError", &NtStatusToDosError);
-  return NtStatusToDosError(status);
+  return GetNtExports()->RtlNtStatusToDosError(status);
 }
 
 // This function uses the undocumented PEB ImageBaseAddress field to extract
 // the base address of the new process.
 void* GetProcessBaseAddress(HANDLE process) {
-  NtQueryInformationProcessFunction query_information_process = nullptr;
-  ResolveNTFunctionPtr("NtQueryInformationProcess", &query_information_process);
-  if (!query_information_process)
-    return nullptr;
   PROCESS_BASIC_INFORMATION process_basic_info = {};
-  NTSTATUS status = query_information_process(
+  NTSTATUS status = GetNtExports()->QueryInformationProcess(
       process, ProcessBasicInformation, &process_basic_info,
       sizeof(process_basic_info), nullptr);
   if (STATUS_SUCCESS != status)
@@ -543,24 +542,65 @@ void* GetProcessBaseAddress(HANDLE process) {
   return base_address;
 }
 
-DWORD GetTokenInformation(HANDLE token,
-                          TOKEN_INFORMATION_CLASS info_class,
-                          std::unique_ptr<BYTE[]>* buffer) {
-  // Get the required buffer size.
-  DWORD size = 0;
-  ::GetTokenInformation(token, info_class, nullptr, 0, &size);
-  if (!size) {
-    return ::GetLastError();
-  }
+absl::optional<ProcessHandleMap> GetCurrentProcessHandles() {
+  DWORD handle_count;
+  if (!::GetProcessHandleCount(::GetCurrentProcess(), &handle_count))
+    return absl::nullopt;
 
-  auto temp_buffer = std::make_unique<BYTE[]>(size);
-  if (!::GetTokenInformation(token, info_class, temp_buffer.get(), size,
-                             &size)) {
-    return ::GetLastError();
-  }
+  // The system call will return only handles up to the buffer size so add a
+  // margin of error of an additional 1000 handles.
+  std::vector<char> buffer((handle_count + 1000) * sizeof(uint32_t));
+  DWORD return_length;
+  NTSTATUS status = GetNtExports()->QueryInformationProcess(
+      ::GetCurrentProcess(), ProcessHandleTable, buffer.data(),
+      static_cast<ULONG>(buffer.size()), &return_length);
 
-  *buffer = std::move(temp_buffer);
-  return ERROR_SUCCESS;
+  if (!NT_SUCCESS(status)) {
+    ::SetLastError(GetLastErrorFromNtStatus(status));
+    return absl::nullopt;
+  }
+  DCHECK(buffer.size() >= return_length);
+  DCHECK((buffer.size() % sizeof(uint32_t)) == 0);
+  ProcessHandleMap handle_map;
+  const uint32_t* handle_values = reinterpret_cast<uint32_t*>(buffer.data());
+  size_t count = return_length / sizeof(uint32_t);
+  for (size_t index = 0; index < count; ++index) {
+    HANDLE handle = base::win::Uint32ToHandle(handle_values[index]);
+    std::wstring type_name;
+    if (GetTypeNameFromHandle(handle, &type_name))
+      handle_map[type_name].push_back(handle);
+  }
+  return handle_map;
+}
+
+absl::optional<ProcessHandleMap> GetCurrentProcessHandlesWin7() {
+  DWORD handle_count = UINT_MAX;
+  const int kInvalidHandleThreshold = 100;
+  const size_t kHandleOffset = 4;  // Handles are always a multiple of 4.
+
+  if (!::GetProcessHandleCount(::GetCurrentProcess(), &handle_count))
+    return absl::nullopt;
+  ProcessHandleMap handle_map;
+
+  uint32_t handle_value = 0;
+  int invalid_count = 0;
+
+  // Keep incrementing until we hit the number of handles reported by
+  // GetProcessHandleCount(). If we hit a very long sequence of invalid
+  // handles we assume that we've run past the end of the table.
+  while (handle_count && invalid_count < kInvalidHandleThreshold) {
+    handle_value += kHandleOffset;
+    HANDLE handle = base::win::Uint32ToHandle(handle_value);
+    std::wstring type_name;
+    if (!GetTypeNameFromHandle(handle, &type_name)) {
+      ++invalid_count;
+      continue;
+    }
+
+    --handle_count;
+    handle_map[type_name].push_back(handle);
+  }
+  return handle_map;
 }
 
 }  // namespace sandbox

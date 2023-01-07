@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,10 @@ enum class DomCode;
 // including unit tests. But Mac uses a different set of virtual keycodes.
 // This function converts a windows virtual keycode into Mac's virtual key code
 // and corresponding unicode character. |flags| is the Cocoa modifiers mask
-// such as NSControlKeyMask, NSShiftKeyMask, etc.
+// such as NSEventModifierFlagControl, NSEventModifierFlagShift, etc.
 // When success, the corresponding Mac's virtual key code will be returned.
 // |keyboard_character| is the corresponding keyboard character, suitable for
-// use in -[NSEvent characters]. If NSShiftKeyMask appears in |flags|,
+// use in -[NSEvent characters]. If NSEventModifierFlagShift appears in |flags|,
 // |us_keyboard_shifted_character| is |keyboard_character| with a shift modifier
 // applied using a US keyboard layout (otherwise unmodified).
 // |us_keyboard_shifted_character| is suitable for -[NSEvent

@@ -1,0 +1,26 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+_proto_files = [
+  "groups.proto",
+  "types.proto",
+]
+
+proto_library("omnibox_proto") {
+  sources = _proto_files
+  proto_in_dir = "//"
+}
+
+if (is_android) {
+  proto_java_library("omnibox_proto_java") {
+    proto_path = "//"
+    sources = _proto_files
+  }
+}

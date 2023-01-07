@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<div style="content-visibility:hidden">
+  <div id=cvhidden>hello</div>
+</div>
+<div style="content-visibility:hidden">
+  <div id=cvhidden2>hello</div>
+</div>
+<div style="height:10000px"></div>
+<div style="content-visibility:auto">
+  <div id=cvauto>hello</div>
+</div>
+<div style="content-visibility:auto">
+  <div id=cvauto2>hello</div>
+</div>
+<div style="content-visibility:auto">
+  <div style="content-visibility:hidden">
+    <div id=cvnested>hello</div>
+  </div>
+</div>
+
+<script>
+  testRunner.dumpAsText();
+  testRunner.setDumpConsoleMessages(true);
+
+  console.log('forcing layout on c-v:hidden should make a console warning.');
+  cvhidden.getBoundingClientRect();
+
+  console.log('forcing layout on c-v:auto should NOT make a console warning.');
+  cvauto.getBoundingClientRect();
+
+  console.log('calling isVisible should NOT make a console warning.');
+  cvhidden.checkVisibility({});
+
+  console.log('forcing layout via range APIs on c-v:hidden should make a console warning.');
+  const range = new Range();
+  range.selectNode(cvhidden2);
+  range.getBoundingClientRect();
+
+  console.log('forcing layout via range APIs on c-v:auto should NOT make a console warning.');
+  const range2 = new Range();
+  range2.selectNode(cvauto2);
+  range2.getBoundingClientRect();
+
+  console.log('forcing layout on c-v:hidden inside c-v:auto should make a console warning.');
+  cvnested.getBoundingClientRect();
+</script>

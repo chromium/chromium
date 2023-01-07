@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -38,13 +38,12 @@ static_library("client") {
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//remoting/build/config:version",
-    "//remoting/build/config:enable_webrtc_remoting_client",
   ]
 
   public_deps = [ "//remoting/base" ]
 
   deps = [
-    "//jingle:webrtc_glue",
+    "//components/webrtc:thread_wrapper",
     "//mojo/core/embedder",
     "//remoting/base:authorization",
     "//remoting/client/audio",
@@ -66,7 +65,7 @@ static_library("client") {
 
   libs = []
 
-  if (!is_chromeos_ash && !is_chromeos_lacros) {
+  if (!is_chromeos) {
     # GestureInterpreter depends on //remoting/client/display, which currently
     # doesn't build on CrOS. crbug.com/869578
     sources += [
@@ -93,10 +92,7 @@ source_set("unit_tests") {
     "software_video_renderer_unittest.cc",
   ]
 
-  configs += [
-    "//remoting/build/config:version",
-    "//remoting/build/config:enable_webrtc_remoting_client",
-  ]
+  configs += [ "//remoting/build/config:version" ]
 
   deps = [
     ":client",

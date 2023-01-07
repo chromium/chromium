@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
 
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
 #include "test/scoped_temp_dir.h"

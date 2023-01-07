@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/client/host_experiment_sender.h"
@@ -53,6 +53,9 @@ class ChromotingClient : public SignalStrategy::Listener,
                    protocol::VideoRenderer* video_renderer,
                    base::WeakPtr<protocol::AudioStub> audio_stream_consumer);
 
+  ChromotingClient(const ChromotingClient&) = delete;
+  ChromotingClient& operator=(const ChromotingClient&) = delete;
+
   ~ChromotingClient() override;
 
   void set_protocol_config(
@@ -92,7 +95,6 @@ class ChromotingClient : public SignalStrategy::Listener,
   void DeliverHostMessage(const protocol::ExtensionMessage& message) override;
   void SetVideoLayout(const protocol::VideoLayout& layout) override;
   void SetTransportInfo(const protocol::TransportInfo& transport_info) override;
-  void OpenUrl(const protocol::OpenUrlRequest& open_url_request) override;
 
   // ClipboardStub implementation for receiving clipboard data from host.
   void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
@@ -128,10 +130,10 @@ class ChromotingClient : public SignalStrategy::Listener,
   std::unique_ptr<protocol::CandidateSessionConfig> protocol_config_;
 
   // The following are not owned by this class.
-  ClientUserInterface* user_interface_ = nullptr;
-  protocol::VideoRenderer* video_renderer_ = nullptr;
+  raw_ptr<ClientUserInterface> user_interface_ = nullptr;
+  raw_ptr<protocol::VideoRenderer> video_renderer_ = nullptr;
   base::WeakPtr<protocol::AudioStub> audio_stream_consumer_;
-  SignalStrategy* signal_strategy_ = nullptr;
+  raw_ptr<SignalStrategy> signal_strategy_ = nullptr;
 
   std::string host_jid_;
   protocol::ClientAuthenticationConfig client_auth_config_;
@@ -151,8 +153,6 @@ class ChromotingClient : public SignalStrategy::Listener,
   bool host_capabilities_received_ = false;
 
   std::unique_ptr<HostExperimentSender> host_experiment_sender_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromotingClient);
 };
 
 }  // namespace remoting

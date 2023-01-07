@@ -1,0 +1,28 @@
+language: rust
+rust: 'nightly'
+sudo: false
+script:
+  - cargo build --verbose --features bench
+  - cargo test --verbose --features bench
+  - cargo bench --verbose --features bench
+  - cargo clean
+  - cargo build --verbose
+  - cargo test --verbose
+# next line is an ugly hack to fix an annoying bug where rustdoc tries to use the rustc_private unicode_width crate
+# (there is probably a better fix than this)
+  - rm $(find /home/travis/.rustup -type f -name 'libunicode_width*')
+  - rustdoc --test README.md -L target/debug -L target/debug/deps
+  - cargo doc
+after_success: |
+  [ $TRAVIS_BRANCH = master ] &&
+  [ $TRAVIS_PULL_REQUEST = false ] &&
+  echo '<meta http-equiv=refresh content=0;url=unicode_width/index.html>' > target/doc/index.html &&
+  pip install ghp-import --user $USER &&
+  $HOME/.local/bin/ghp-import -n target/doc &&
+  git push -qf https://${TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
+env:
+  global:
+    secure: vHL3zrN8AF+H79jrB8OfzuPqsUHevo6ECzwqXPj2dMSqcSXEeCY/ENAfiyFg+oW8yEVP8X2BS1a/C9yvVQRLqLbm1HbZ/5vUpoggT9S0IhKqZMyAcLYXfIEUDMDQuaSdFndDaHvq8275ScgX1LRv1kcPjQoZHuaXWMH8y/Suvyo=
+notifications:
+  email:
+    on_success: never

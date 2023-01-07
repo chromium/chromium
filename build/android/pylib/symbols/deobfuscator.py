@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,13 +13,13 @@ from devil.utils import reraiser_thread
 from pylib import constants
 
 
-_MINIUMUM_TIMEOUT = 3.0
-_PER_LINE_TIMEOUT = .002  # Should be able to process 500 lines per second.
-_PROCESS_START_TIMEOUT = 10.0
-_MAX_RESTARTS = 10  # Should be plenty unless tool is crashing on start-up.
+_MINIUMUM_TIMEOUT = 10.0
+_PER_LINE_TIMEOUT = .005  # Should be able to process 200 lines per second.
+_PROCESS_START_TIMEOUT = 20.0
+_MAX_RESTARTS = 4  # Should be plenty unless tool is crashing on start-up.
 
 
-class Deobfuscator(object):
+class Deobfuscator:
   def __init__(self, mapping_path):
     script_path = os.path.join(constants.DIR_SOURCE_ROOT, 'build', 'android',
                                'stacktrace', 'java_deobfuscate.py')
@@ -33,9 +33,12 @@ class Deobfuscator(object):
     self._proc = None
     # Start process eagerly to hide start-up latency.
     self._proc_start_time = time.time()
-    self._proc = subprocess.Popen(
-        cmd, bufsize=1, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-        close_fds=True)
+    self._proc = subprocess.Popen(cmd,
+                                  bufsize=1,
+                                  stdin=subprocess.PIPE,
+                                  stdout=subprocess.PIPE,
+                                  universal_newlines=True,
+                                  close_fds=True)
 
   def IsClosed(self):
     return self._closed_called or self._proc.returncode is not None
@@ -107,7 +110,18 @@ class Deobfuscator(object):
               'deobfuscator: Close() called by another thread during join().')
           return lines
         if reader_thread.is_alive():
-          logging.error('deobfuscator: Timed out.')
+          logging.error('deobfuscator: Timed out after %f seconds with input:',
+                        timeout)
+          # We are seeing timeouts but don't know why. Hopefully seeing the
+          # lines that cause timeouts can make it obvious what the deobfuscator
+          # is struggling with.
+          for l in lines:
+            logging.error(l)
+          logging.error('deobfuscator: End of timed out input.')
+          logging.error('deobfuscator: Timed out output was:')
+          for l in out_lines:
+            logging.error(l)
+          logging.error('deobfuscator: End of timed out output.')
           self.Close()
           return lines
         return out_lines
@@ -133,13 +147,13 @@ class Deobfuscator(object):
       self.Close()
 
 
-class DeobfuscatorPool(object):
+class DeobfuscatorPool:
   # As of Sep 2017, each instance requires about 500MB of RAM, as measured by:
   # /usr/bin/time -v build/android/stacktrace/java_deobfuscate.py \
   #     out/Release/apks/ChromePublic.apk.mapping
   def __init__(self, mapping_path, pool_size=4):
     self._mapping_path = mapping_path
-    self._pool = [Deobfuscator(mapping_path) for _ in xrange(pool_size)]
+    self._pool = [Deobfuscator(mapping_path) for _ in range(pool_size)]
     # Allow only one thread to select from the pool at a time.
     self._lock = threading.Lock()
     self._num_restarts = 0

@@ -1,0 +1,179 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.mojom;
+
+import "chromecast/bindings/public/mojom/api_bindings.mojom";
+import "chromecast/mojo/mojom/remote_interfaces.mojom";
+import "components/url_rewrite/mojom/url_request_rewrite.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "url/mojom/url.mojom";
+
+// Page state for the main frame.
+enum PageState {
+  IDLE,       // Main frame has not started yet.
+  LOADING,    // Main frame is loading resources.
+  LOADED,     // Main frame is loaded, but sub-frames may still be loading.
+  CLOSED,     // Page is closed and should be cleaned up.
+  DESTROYED,  // The WebContents is destroyed and can no longer be used.
+  ERROR,      // Main frame is in an error state.
+};
+
+// Observer interface for CastWebContents.
+interface CastWebContentsObserver {
+  // Advertises page state for the CastWebContents.
+  PageStateChanged(PageState state);
+
+  // Called when the page has stopped. e.g.: A 404 occurred when loading the
+  // page or if the render process for the main frame crashes. |error_code|
+  // will return a net::Error describing the failure, or net::OK if the page
+  // closed intentionally.
+  //
+  // After this method, the page state will be one of the following:
+  // CLOSED: Page was closed as expected and the WebContents exists. The page
+  //     should generally not be reloaded, since the page closure was
+  //     triggered intentionally.
+  // ERROR: Page is in an error state. It should be reloaded or deleted.
+  // DESTROYED: Page was closed due to deletion of WebContents. The
+  //     CastWebContents instance is no longer usable and should be deleted.
+  PageStopped(PageState state, int32 error_code);
+
+  // A new RenderFrame was created for the WebContents. |settings_manager| is
+  // provided by the frame.
+  RenderFrameCreated(
+      int32 render_process_id,
+      int32 render_frame_id);
+
+  // A navigation has finished in the WebContents' main frame.
+  MainFrameFinishedNavigation();
+
+  // Forwarded from WebContentsObserver.
+  UpdateTitle(string title);
+
+  // Forwarded from WebContentsObserver.
+  UpdateFaviconURL(url.mojom.Url url);
+
+  // Forwarded from WebContentsObserver.
+  DidFirstVisuallyNonEmptyPaint();
+
+  // Notifies that a resource for the main frame failed to load.
+  ResourceLoadFailed();
+
+  // Propagates the process information via observer, in particular to
+  // the underlying OnRendererProcessStarted() method.
+  OnRenderProcessReady(int32 pid);
+
+  // Notify media playback state changes for the underlying WebContents. Media
+  // events in sub-frames will also generate this notification event.
+  MediaPlaybackChanged(bool media_playing);
+
+  // Notify that a new WebContents was created in a child frame. This only
+  // happens for pages that embed a <webview> (such as certain WebUI pages).
+  InnerContentsCreated(pending_remote<CastWebContents> web_contents);
+};
+
+// Wraps a content::WebContents hosted in the Cast Web Service. The lifetime
+// of the WebContents is constrained by the lifetime of the mojo::Remote on the
+// client side.
+interface CastWebContents {
+  // ===========================================================================
+  // Initialization and Setup
+  // ===========================================================================
+
+  // Associates transparent app properties to a given session ID. This data is
+  // used elsewhere in the browser to gate output stream selection. We expose
+  // this API on CastWebContents for the sake of convenience.
+  SetAppProperties(string app_id,
+                   string session_id,
+                   bool is_audio_app,
+                   url.mojom.Url app_web_url,
+                   bool enforce_feature_permissions,
+                   array<int32> feature_permissions,
+                   array<string> additional_feature_permission_origins);
+
+  // Specify if the app session is for a multizone group. |session_id| should
+  // match the one which is set in SetAppProperties() above.
+  SetGroupInfo(string session_id, bool is_multizone_launch);
+
+  // Dictionary of renderer feature configurations.
+  AddRendererFeatures(mojo_base.mojom.Value features);
+
+  // These interfaces will be exposed to RenderFrames. The interfaces are only
+  // used as backends for built-in Cast V8 bindings. Sensitive APIs should
+  // *never* be exposed through |remote_interfaces|.
+  SetInterfacesForRenderer(pending_remote<RemoteInterfaces> remote_interfaces);
+
+  // Sets URL rewrite rules for modifying navigation requests.
+  // Note: this must be called before LoadUrl in order for the rules to take
+  // effect on the requests.
+  SetUrlRewriteRules(url_rewrite.mojom.UrlRequestRewriteRules rules);
+
+  // ===========================================================================
+  // Page Lifetime
+  // ===========================================================================
+
+  // Navigates the underlying WebContents to |url|. Delegate will be notified of
+  // page progression events via OnPageStateChanged().
+  LoadUrl(url.mojom.Url url);
+
+  // Initiate closure of the page. This invokes the appropriate unload handlers.
+  // Eventually the delegate will be notified with OnPageStopped().
+  ClosePage();
+
+  // ===========================================================================
+  // Visibility
+  // ===========================================================================
+
+  // Specify if the WebContents should be treated as visible. This triggers a
+  // document "visibilitychange" change event, and will paint the WebContents
+  // quad if |visible| is true (otherwise it will be blank). Note that this does
+  // *not* guarantee the page is visible on the screen, as that depends on if
+  // the WebContents quad is present in the screen layout and isn't obscured by
+  // another window.
+  SetWebVisibilityAndPaint(bool visible);
+
+  // ===========================================================================
+  // Media Management
+  // ===========================================================================
+
+  // Block/unblock media from loading in all RenderFrames for the WebContents.
+  BlockMediaLoading(bool blocked);
+
+  // Block/unblock media from starting in all RenderFrames for the WebContents.
+  // As opposed to |BlockMediaLoading|,  |BlockMediaStarting| allows media to
+  // load while in blocking state.
+  BlockMediaStarting(bool blocked);
+
+  // Allow the page to play media while in a hidden background state.
+  EnableBackgroundVideoPlayback(bool enabled);
+
+  // ===========================================================================
+  // Page Communication
+  // ===========================================================================
+
+  // Connects and fetches JS API bindings from |api_bindings_remote|.
+  // This method will fetch bindings scripts from |api_bindings_remote|
+  // immediately after the invocation, all of the bindings should be
+  // initialized before this point.
+  ConnectToBindingsService(
+      pending_remote<chromecast.mojom.ApiBindings> api_bindings_remote);
+
+  // ===========================================================================
+  // Utility Methods
+  // ===========================================================================
+
+  // Add an observer. The observer can remove itself by unbinding the receiver.
+  AddObserver(pending_remote<CastWebContentsObserver> observer);
+
+  // Enable or disable devtools remote debugging for this WebContents and any
+  // inner WebContents that are spawned from it.
+  SetEnabledForRemoteDebugging(bool enabled);
+
+  // ===========================================================================
+  // Getters
+  // ===========================================================================
+
+  // PID for main frame render process.
+  GetMainFramePid() => (int32 pid);
+};

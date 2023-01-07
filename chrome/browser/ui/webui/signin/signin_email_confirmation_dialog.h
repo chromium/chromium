@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
@@ -23,7 +23,7 @@ class WebContents;
 class WebUIMessageHandler;
 }
 
-// A tab-modal dialog to ask the user to confirm his email before signing in.
+// A tab-modal dialog to ask the user to confirm their email before signing in.
 class SigninEmailConfirmationDialog : public ui::WebDialogDelegate,
                                       public SigninViewControllerDelegate {
  public:
@@ -51,6 +51,10 @@ class SigninEmailConfirmationDialog : public ui::WebDialogDelegate,
       const std::string& last_email,
       const std::string& email,
       Callback callback);
+
+  SigninEmailConfirmationDialog(const SigninEmailConfirmationDialog&) = delete;
+  SigninEmailConfirmationDialog& operator=(
+      const SigninEmailConfirmationDialog&) = delete;
 
   ~SigninEmailConfirmationDialog() override;
 
@@ -97,8 +101,8 @@ class SigninEmailConfirmationDialog : public ui::WebDialogDelegate,
   content::WebContents* GetDialogWebContents() const;
 
   // Web contents from which the "Learn more" link should be opened.
-  content::WebContents* const web_contents_;
-  Profile* const profile_;
+  const raw_ptr<content::WebContents> web_contents_;
+  const raw_ptr<Profile> profile_;
 
   const std::string last_email_;
   const std::string new_email_;
@@ -106,8 +110,6 @@ class SigninEmailConfirmationDialog : public ui::WebDialogDelegate,
 
   // Observer for lifecycle events of the web contents of the dialog.
   std::unique_ptr<DialogWebContentsObserver> dialog_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninEmailConfirmationDialog);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_EMAIL_CONFIRMATION_DIALOG_H_

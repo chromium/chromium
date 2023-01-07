@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>Check that setting the page size for printing works.</title>
+<link rel="match" href="printing-set-size-ref.html">
+<script>
+    if (window.testRunner) {
+        testRunner.setPrinting();
+        testRunner.setPrintingSize(432, 288);
+    }
+</script>
+<style>
+    body {
+        margin: 0pt;
+    }
+    div {
+        width: 432pt;
+        height: 288pt;
+        background-color: green;
+        -webkit-print-color-adjust: exact;
+    }
+</style>
+<div></div>

@@ -1,0 +1,34 @@
+import("//third_party/closure_compiler/compile_js.gni")
+
+declare_args() {
+  # Whether to enable additional linting of closure type annotations.
+  # Lint checks are not well documented, but pick up some useful stuff.
+  enable_system_app_lint_checks = false
+}
+
+system_app_closure_flags =
+    default_closure_args + [
+      "jscomp_error=strictCheckTypes",
+      "language_in=ECMASCRIPT_2018",
+
+      # TODO(crbug/1048973): Remove these when the mojo bindings
+      # js is updated to pass a closure compile check.
+      "hide_warnings_for=mojo/public/js/",
+
+      # load_time_data.m.js dereferences nulls.
+      "hide_warnings_for=load_time_data.m.js",
+    ]
+
+if (enable_system_app_lint_checks) {
+  system_app_closure_flags += [
+    "jscomp_error=lintChecks",
+    "hide_warnings_for=mojo/public/interfaces/bindings",
+  ]
+}
+
+system_app_closure_flags_strict =
+    system_app_closure_flags + [
+      "conformance_configs " +
+          rebase_path("closure_conformance_checks.txt", root_build_dir),
+      "jscomp_error=conformanceViolations",
+    ]

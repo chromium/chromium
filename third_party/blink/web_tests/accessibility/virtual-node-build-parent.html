@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="main">main
+  <div role="checkbox" id="checkbox">checkbox</div>
+</div>
+
+<script>
+test(function() {
+    var main = document.getElementById("main");
+    var checkbox = document.getElementById("checkbox");
+
+    var button_accNode = new AccessibleNode();
+    button_accNode.role = "button";
+
+    main.accessibleNode.appendChild(button_accNode);
+
+    var axMain = accessibilityController.accessibleElementById("main");
+    assert_equals(axMain.childAtIndex(0).role, 'AXRole: AXStaticText');
+    assert_equals(axMain.childAtIndex(1).role, 'AXRole: AXCheckBox');
+    var axButton = axMain.childAtIndex(2);
+    assert_equals(axButton.role, 'AXRole: AXButton');
+
+    // Remove checkbox will cause ChildrenChanged called on axMain, which will
+    // recompute all of its children in the AXObjectCache.
+    checkbox.remove();
+    assert_equals(axMain.childAtIndex(0).role, 'AXRole: AXStaticText');
+
+    // Try to fetch axButton, since its detached from its parent axMain, we need
+    // to recompute its parent. Make sure no DCHECK or crash occurs.
+    assert_equals(axMain.childAtIndex(1).role, 'AXRole: AXButton');
+});
+</script>
+
+</body>
+</html>

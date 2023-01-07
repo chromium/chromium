@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,8 @@ message Tracking {
     UNKNOWN_TYPE = -1;
 
     INTENT = 0;
-    INLINE = 1;
+    // Inline updates are deprecated.
+    // INLINE = 1;
   }
   // The type of update that was started.
   optional Type type = 3 [default = UNKNOWN_TYPE];

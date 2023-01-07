@@ -40,10 +40,10 @@ public Run\*() methods that merely forward to the private member).
 
 ### base::test::SingleThreadTaskEnvironment
 
-Your component uses `base::ThreadTaskRunnerHandle::Get()` or
-`base::SequencedTaskRunnerHandle::Get()` to post tasks to the thread it was
-created on? You'll need at least a `base::test::SingleThreadTaskEnvironment` in
-order for these APIs to be functional and `base::RunLoop` to run the posted
+Your component uses `base::SingleThreadTaskRunner::GetCurrentDefault()` or
+`base::SequencedTaskRunner::GetCurrentDefault()` to post tasks to the thread it
+was created on? You'll need at least a `base::test::SingleThreadTaskEnvironment`
+in order for these APIs to be functional and `base::RunLoop` to run the posted
 tasks.
 
 Typically this will look something like this:
@@ -52,7 +52,7 @@ foo.h
 ```c++
 class Foo {
  public:
-  Foo() : owning_sequence_(base::SequencedTaskRunnerHandle::Get()) {}
+  Foo() : owning_sequence_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   DoSomethingAndReply(base::OnceClosure on_done) {
     DCHECK(owning_sequence_->RunsTasksInCurrentSequence());
@@ -95,7 +95,7 @@ readability term like "const", it documents that ThreadPool isn't used when it's
 not but you shouldn't be afraid to lift it.
 
 Task runners are still obtained by the product code through
-[base/task/post_task.h] without necessitating a test-only task runner injection
+[base/task/thread_pool.h] without necessitating a test-only task runner injection
 seam :).
 
 Typical use case:
@@ -214,7 +214,7 @@ foo_storage.h
 class FooStorage {
  public:
   static constexpr base::TimeDelta::kFlushInterval =
-      base::TimeDelta::FromSeconds(30);
+      base::Seconds(30);
 
   // Sets |key| to |value|. Flushed to disk on the next flush interval.
   void Set(base::StringPiece key, base::StringPiece value);
@@ -461,7 +461,7 @@ individual tests provide additional traits.
 [Threading and Tasks FAQ]: threading_and_tasks_faq.md
 [`ValidTraits`]: https://cs.chromium.org/chromium/src/base/test/task_environment.h?type=cs&q=ValidTraits&sq=package:chromium&g=0
 [task_environment.h]: https://cs.chromium.org/chromium/src/base/test/task_environment.h
-[base/task/post_task.h]: https://cs.chromium.org/chromium/src/base/task/post_task.h
+[base/task/thread_pool.h]: https://cs.chromium.org/chromium/src/base/task/thread_pool.h
 [ViewsTestBase]: https://cs.chromium.org/chromium/src/ui/views/test/views_test_base.h
 [base/traits_bag.h]: https://cs.chromium.org/chromium/src/base/traits_bag.h
 [content/public/test/browser_test_utils.h]: https://cs.chromium.org/chromium/src/content/public/test/browser_test_utils.h

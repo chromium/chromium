@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "components/payments/content/android_app_communication.h"
 #include "components/payments/content/android_app_communication_test_support.h"
 #include "components/payments/core/android_app_description.h"
@@ -22,6 +23,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace payments {
@@ -52,7 +54,7 @@ class AndroidPaymentAppTest : public testing::Test,
         GURL("https://top-level-origin.com"),
         GURL("https://payment-request-origin.com"), "payment-request-id",
         std::move(description), communication,
-        web_contents->GetMainFrame()->GetGlobalFrameRoutingId());
+        web_contents->GetPrimaryMainFrame()->GetGlobalId());
   }
 
   AndroidPaymentAppTest()
@@ -80,7 +82,7 @@ class AndroidPaymentAppTest : public testing::Test,
 
   std::unique_ptr<AndroidAppCommunicationTestSupport> support_;
   content::TestWebContentsFactory web_contents_factory_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<AndroidAppCommunicationTestSupport::ScopedInitialization>
       scoped_initialization_;
   base::WeakPtr<AndroidAppCommunication> communication_;
@@ -169,6 +171,59 @@ TEST_F(AndroidPaymentAppTest, OnInstrumentDetailsReady) {
     EXPECT_TRUE(method_name_.empty());
     EXPECT_TRUE(stringified_details_.empty());
   }
+}
+
+TEST_F(AndroidPaymentAppTest, AbortWithPaymentAppOpen) {
+  communication_ =
+      AndroidAppCommunication::GetForBrowserContext(support_->context());
+  communication_->SetForTesting();
+  scoped_initialization_ = support_->CreateScopedInitialization();
+
+  support_->ExpectInvokeAndAbortPaymentApp();
+
+  auto app = CreateAndroidPaymentApp(communication_, web_contents_);
+  app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
+
+  bool aborted = false;
+  app->AbortPaymentApp(base::BindLambdaForTesting(
+      [&aborted](bool abort_success) { aborted = abort_success; }));
+
+  if (support_->AreAndroidAppsSupportedOnThisPlatform()) {
+    EXPECT_EQ("Payment was aborted.", error_message_);
+    EXPECT_TRUE(aborted);
+  } else {
+    EXPECT_EQ("Unable to invoke Android apps.", error_message_);
+  }
+}
+
+TEST_F(AndroidPaymentAppTest, AbortWhenAppDestroyed) {
+  communication_ =
+      AndroidAppCommunication::GetForBrowserContext(support_->context());
+  communication_->SetForTesting();
+  scoped_initialization_ = support_->CreateScopedInitialization();
+
+  support_->ExpectInvokeAndAbortPaymentApp();
+
+  auto app = CreateAndroidPaymentApp(communication_, web_contents_);
+  app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
+  // Payment app will be aborted when |app| is destroyed.
+}
+
+TEST_F(AndroidPaymentAppTest, NoAbortWhenDestroyedWithCompletedFlow) {
+  communication_ =
+      AndroidAppCommunication::GetForBrowserContext(support_->context());
+  communication_->SetForTesting();
+  scoped_initialization_ = support_->CreateScopedInitialization();
+
+  support_->ExpectInvokePaymentAppAndRespond(
+      /*is_activity_result_ok=*/false,
+      /*payment_method_identifier=*/methods::kGooglePlayBilling,
+      /*stringified_details=*/"{}");
+  support_->ExpectNoAbortPaymentApp();
+
+  auto app = CreateAndroidPaymentApp(communication_, web_contents_);
+  app->InvokePaymentApp(/*delegate=*/weak_ptr_factory_.GetWeakPtr());
+  // Payment app will not be aborted when |app| is destroyed.
 }
 
 }  // namespace

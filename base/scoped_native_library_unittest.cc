@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #endif
@@ -17,7 +17,7 @@ namespace base {
 // Tests whether or not a function pointer retrieved via ScopedNativeLibrary
 // is available only in a scope.
 TEST(ScopedNativeLibrary, Basic) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Get the pointer to DirectDrawCreate() from "ddraw.dll" and verify it
   // is valid only in this scope.
   // FreeLibrary() doesn't actually unload a DLL until its reference count

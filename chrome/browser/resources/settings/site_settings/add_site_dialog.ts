@@ -1,0 +1,157 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview
+ * 'add-site-dialog' provides a dialog to add exceptions for a given Content
+ * Settings category.
+ */
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import '../settings_shared.css.js';
+
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
+
+import {getTemplate} from './add_site_dialog.html.js';
+import {ContentSetting, ContentSettingsTypes, SITE_EXCEPTION_WILDCARD} from './constants.js';
+import {SiteSettingsMixin, SiteSettingsMixinInterface} from './site_settings_mixin.js';
+
+export interface AddSiteDialogElement {
+  $: {
+    add: CrButtonElement,
+    dialog: CrDialogElement,
+    incognito: CrCheckboxElement,
+    site: CrInputElement,
+    thirdParties: CrCheckboxElement,
+  };
+}
+
+const AddSiteDialogElementBase = SiteSettingsMixin(PolymerElement) as unknown as
+    {new (): PolymerElement & SiteSettingsMixinInterface};
+
+export class AddSiteDialogElement extends AddSiteDialogElementBase {
+  static get is() {
+    return 'add-site-dialog';
+  }
+
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      /**
+       * Whether this is about an Allow, Block, SessionOnly, or other.
+       */
+      contentSetting: String,
+
+      hasIncognito: {
+        type: Boolean,
+        observer: 'hasIncognitoChanged_',
+      },
+
+      /**
+       * The site to add an exception for.
+       */
+      site_: String,
+
+      /**
+       * The error message to display when the pattern is invalid.
+       */
+      errorMessage_: String,
+    };
+  }
+
+  contentSetting: ContentSetting;
+  hasIncognito: boolean;
+  private site_: string;
+  private errorMessage_: string;
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    assert(this.category);
+    assert(this.contentSetting);
+    assert(typeof this.hasIncognito !== 'undefined');
+
+    this.$.dialog.showModal();
+  }
+
+  /**
+   * Validates that the pattern entered is valid.
+   */
+  private validate_() {
+    // If input is empty, disable the action button, but don't show the red
+    // invalid message.
+    if (this.$.site.value.trim() === '') {
+      this.$.site.invalid = false;
+      this.$.add.disabled = true;
+      return;
+    }
+
+    this.browserProxy.isPatternValidForType(this.site_, this.category)
+        .then(({isValid, reason}) => {
+          this.$.site.invalid = !isValid;
+          this.$.add.disabled = !isValid;
+          this.errorMessage_ = reason || '';
+        });
+  }
+
+  private onCancelTap_() {
+    this.$.dialog.cancel();
+  }
+
+  /**
+   * The tap handler for the Add [Site] button (adds the pattern and closes
+   * the dialog).
+   */
+  private onSubmit_() {
+    assert(!this.$.add.disabled);
+    let primaryPattern = this.site_;
+    let secondaryPattern = SITE_EXCEPTION_WILDCARD;
+
+    if (this.$.thirdParties.checked) {
+      primaryPattern = SITE_EXCEPTION_WILDCARD;
+      secondaryPattern = this.site_;
+    }
+
+    this.browserProxy.setCategoryPermissionForPattern(
+        primaryPattern, secondaryPattern, this.category, this.contentSetting,
+        this.$.incognito.checked);
+
+    this.$.dialog.close();
+  }
+
+  private showIncognitoSessionOnly_() {
+    return this.hasIncognito && !loadTimeData.getBoolean('isGuest') &&
+        this.contentSetting !== ContentSetting.SESSION_ONLY;
+  }
+
+  private hasIncognitoChanged_() {
+    if (!this.hasIncognito) {
+      this.$.incognito.checked = false;
+    }
+  }
+
+  private shouldHideThirdPartyCookieCheckbox_(): boolean {
+    return this.category !== ContentSettingsTypes.COOKIES;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'add-site-dialog': AddSiteDialogElement;
+  }
+}
+
+customElements.define(AddSiteDialogElement.is, AddSiteDialogElement);

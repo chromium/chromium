@@ -1,0 +1,103 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import '../widgets/xf_breadcrumb.js';
+
+import {metrics} from '../common/js/metrics.js';
+import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
+import {PathComponent, PropStatus, State} from '../externs/ts/state.js';
+import {changeDirectory} from '../state/actions.js';
+import {FileKey} from '../state/file_key.js';
+import {getStore, Store} from '../state/store.js';
+import {BREADCRUMB_CLICKED, BreadcrumbClickedEvent} from '../widgets/xf_breadcrumb.js';
+
+/**
+ * The controller of breadcrumb. The Breadcrumb element only renders a given
+ * path. This controller component is responsible for constructing the path
+ * and passing it to the Breadcrumb element.
+ */
+export class BreadcrumbContainer {
+  private store_: Store;
+  private currentFileKey_: FileKey|null;
+  private container_: HTMLElement;
+  private pathKeys_: FileKey[];
+
+  constructor(container: HTMLElement) {
+    this.container_ = container;
+    this.store_ = getStore();
+    this.store_.subscribe(this);
+    this.currentFileKey_ = null;
+    this.pathKeys_ = [];
+  }
+
+  onStateChanged(state: State) {
+    const {currentDirectory, search} = state;
+    let key = currentDirectory && currentDirectory.key;
+    if (!key || !currentDirectory) {
+      this.hide_();
+      return;
+    }
+
+    // If the current location is somewhere in Drive, all files in Drive can
+    // be listed as search results regardless of current location.
+    // In this case, showing current location is confusing, so use the Drive
+    // root "My Drive" as the current location.
+    if (search && search.query && search.status === PropStatus.SUCCESS) {
+      const entry = state.allEntries[currentDirectory.key];
+      if (entry && entry.volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
+        const root = currentDirectory.pathComponents[0];
+        if (root) {
+          key = root.key;
+          this.show_(root.key!, [root]);
+          return;
+        }
+      }
+    }
+
+    if (currentDirectory.status == PropStatus.SUCCESS &&
+        this.currentFileKey_ !== key) {
+      this.show_(
+          state.currentDirectory?.key || '',
+          state.currentDirectory?.pathComponents || []);
+    }
+  }
+
+  private hide_() {
+    const breadcrumb = document.querySelector('xf-breadcrumb');
+    if (breadcrumb) {
+      breadcrumb.hidden = true;
+    }
+  }
+
+  private show_(key: FileKey, pathComponents: PathComponent[]) {
+    let breadcrumb = document.querySelector('xf-breadcrumb');
+    if (!breadcrumb) {
+      breadcrumb = document.createElement('xf-breadcrumb');
+      breadcrumb.id = 'breadcrumbs';
+      breadcrumb.addEventListener(
+          BREADCRUMB_CLICKED, this.breadcrumbClick_.bind(this));
+      this.container_.appendChild(breadcrumb);
+    }
+
+    const path = pathComponents.map(p => p.label).join('/');
+    breadcrumb!.path = path;
+    this.currentFileKey_ = key;
+    this.pathKeys_ = pathComponents.map(p => p.key);
+  }
+
+  private breadcrumbClick_(event: BreadcrumbClickedEvent) {
+    const index = Number(event.detail.partIndex);
+    if (isNaN(index) || index < 0) {
+      return;
+    }
+    // The leaf path isn't clickable.
+    if (index >= this.pathKeys_.length - 1) {
+      return;
+    }
+
+    const fileKey = this.pathKeys_[index];
+    this.store_.dispatch(changeDirectory({toKey: fileKey as FileKey}));
+    metrics.recordUserAction('ClickBreadcrumbs');
+  }
+}

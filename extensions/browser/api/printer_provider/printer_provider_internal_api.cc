@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/observer_list.h"
+#include "base/types/optional_util.h"
 #include "base/values.h"
 #include "content/public/browser/blob_handle.h"
 #include "content/public/browser/browser_context.h"
@@ -24,7 +26,6 @@
 #include "extensions/browser/api/printer_provider/printer_provider_api.h"
 #include "extensions/browser/api/printer_provider/printer_provider_api_factory.h"
 #include "extensions/browser/api/printer_provider/printer_provider_print_job.h"
-#include "extensions/browser/blob_holder.h"
 #include "extensions/common/api/printer_provider.h"
 #include "extensions/common/api/printer_provider_internal.h"
 
@@ -72,9 +73,9 @@ void PrinterProviderInternalAPI::NotifyGetPrintersResult(
 void PrinterProviderInternalAPI::NotifyGetCapabilityResult(
     const Extension* extension,
     int request_id,
-    const base::DictionaryValue& capability) {
+    const base::Value::Dict& capability) {
   for (auto& observer : observers_)
-    observer.OnGetCapabilityResult(extension, request_id, capability);
+    observer.OnGetCapabilityResult(extension, request_id, capability.Clone());
 }
 
 void PrinterProviderInternalAPI::NotifyPrintResult(
@@ -102,7 +103,7 @@ PrinterProviderInternalReportPrintResultFunction::
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrintResultFunction::Run() {
   std::unique_ptr<internal_api::ReportPrintResult::Params> params(
-      internal_api::ReportPrintResult::Params::Create(*args_));
+      internal_api::ReportPrintResult::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   PrinterProviderInternalAPI::GetFactoryInstance()
@@ -120,7 +121,7 @@ PrinterProviderInternalReportPrinterCapabilityFunction::
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrinterCapabilityFunction::Run() {
   std::unique_ptr<internal_api::ReportPrinterCapability::Params> params(
-      internal_api::ReportPrinterCapability::Params::Create(*args_));
+      internal_api::ReportPrinterCapability::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   if (params->capability) {
@@ -132,7 +133,7 @@ PrinterProviderInternalReportPrinterCapabilityFunction::Run() {
     PrinterProviderInternalAPI::GetFactoryInstance()
         ->Get(browser_context())
         ->NotifyGetCapabilityResult(extension(), params->request_id,
-                                    base::DictionaryValue());
+                                    base::Value::Dict());
   }
   return RespondNow(NoArguments());
 }
@@ -146,10 +147,9 @@ PrinterProviderInternalReportPrintersFunction::
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportPrintersFunction::Run() {
   std::unique_ptr<internal_api::ReportPrinters::Params> params(
-      internal_api::ReportPrinters::Params::Create(*args_));
+      internal_api::ReportPrinters::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  base::ListValue printers;
   if (params->printers) {
     PrinterProviderInternalAPI::GetFactoryInstance()
         ->Get(browser_context())
@@ -174,7 +174,7 @@ PrinterProviderInternalGetPrintDataFunction::
 ExtensionFunction::ResponseAction
 PrinterProviderInternalGetPrintDataFunction::Run() {
   std::unique_ptr<internal_api::GetPrintData::Params> params(
-      internal_api::GetPrintData::Params::Create(*args_));
+      internal_api::GetPrintData::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   const PrinterProviderPrintJob* job =
@@ -189,20 +189,16 @@ PrinterProviderInternalGetPrintDataFunction::Run() {
 
   // |job->document_bytes| are passed to the callback to make sure the ref
   // counted memory does not go away before the memory backed blob is created.
-  content::BrowserContext::CreateMemoryBackedBlob(
-      browser_context(),
+  browser_context()->CreateMemoryBackedBlob(
       base::make_span(job->document_bytes->front(),
                       job->document_bytes->size()),
-      "",
+      job->content_type,
       base::BindOnce(&PrinterProviderInternalGetPrintDataFunction::OnBlob, this,
-                     job->content_type, job->document_bytes->size(),
                      job->document_bytes));
   return RespondLater();
 }
 
 void PrinterProviderInternalGetPrintDataFunction::OnBlob(
-    const std::string& type,
-    int size,
     const scoped_refptr<base::RefCountedMemory>& data,
     std::unique_ptr<content::BlobHandle> blob) {
   if (!blob) {
@@ -210,21 +206,11 @@ void PrinterProviderInternalGetPrintDataFunction::OnBlob(
     return;
   }
 
-  internal_api::BlobInfo info;
-  info.blob_uuid = blob->GetUUID();
-  info.type = type;
-  info.size = size;
+  std::vector<blink::mojom::SerializedBlobPtr> blobs;
+  blobs.push_back(blob->Serialize());
 
-  std::vector<std::string> uuids;
-  uuids.push_back(blob->GetUUID());
-
-  extensions::BlobHolder* holder =
-      extensions::BlobHolder::FromRenderProcessHost(
-          render_frame_host()->GetProcess());
-  holder->HoldBlobReference(std::move(blob));
-
-  SetTransferredBlobUUIDs(uuids);
-  Respond(ArgumentList(internal_api::GetPrintData::Results::Create(info)));
+  SetTransferredBlobs(std::move(blobs));
+  Respond(NoArguments());
 }
 
 PrinterProviderInternalReportUsbPrinterInfoFunction::
@@ -236,13 +222,14 @@ PrinterProviderInternalReportUsbPrinterInfoFunction::
 ExtensionFunction::ResponseAction
 PrinterProviderInternalReportUsbPrinterInfoFunction::Run() {
   std::unique_ptr<internal_api::ReportUsbPrinterInfo::Params> params(
-      internal_api::ReportUsbPrinterInfo::Params::Create(*args_));
+      internal_api::ReportUsbPrinterInfo::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   PrinterProviderInternalAPI::GetFactoryInstance()
       ->Get(browser_context())
-      ->NotifyGetUsbPrinterInfoResult(extension(), params->request_id,
-                                      params->printer_info.get());
+      ->NotifyGetUsbPrinterInfoResult(
+          extension(), params->request_id,
+          base::OptionalToPtr(params->printer_info));
   return RespondNow(NoArguments());
 }
 

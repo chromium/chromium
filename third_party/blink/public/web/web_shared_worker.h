@@ -37,10 +37,10 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom-shared.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/worker/shared_worker_host.mojom-shared.h"
 #include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom-shared.h"
@@ -48,10 +48,12 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
+#include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 
 namespace blink {
 
+class MessagePortDescriptor;
 class WebString;
 class WebSharedWorkerClient;
 class WebURL;
@@ -74,12 +76,13 @@ class BLINK_EXPORT WebSharedWorker {
       network::mojom::CredentialsMode,
       const WebString& name,
       WebSecurityOrigin constructor_origin,
+      bool is_constructor_secure_context,
       const WebString& user_agent,
+      const WebString& full_user_agent,
+      const WebString& reduced_user_agent,
       const UserAgentMetadata& ua_metadata,
       const WebVector<WebContentSecurityPolicy>& content_security_policies,
-      network::mojom::IPAddressSpace,
       const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
-      const base::UnguessableToken& appcache_host_id,
       const base::UnguessableToken& devtools_worker_token,
       CrossVariantMojoRemote<mojom::WorkerContentSettingsProxyInterfaceBase>
           content_settings,
@@ -88,6 +91,7 @@ class BLINK_EXPORT WebSharedWorker {
       bool pause_worker_context_on_start,
       std::unique_ptr<blink::WorkerMainScriptLoadParameters>
           worker_main_script_load_params,
+      std::unique_ptr<blink::WebPolicyContainer> policy_container,
       scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
       CrossVariantMojoRemote<mojom::SharedWorkerHostInterfaceBase>,
       WebSharedWorkerClient*,
@@ -104,4 +108,4 @@ class BLINK_EXPORT WebSharedWorker {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SHARED_WORKER_H_

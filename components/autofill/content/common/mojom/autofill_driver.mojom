@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ interface AutofillDriver {
 
   // Notification that forms have been seen that are candidates for
   // filling/submitting by the AutofillManager.
-  FormsSeen(array<FormData> forms);
+  FormsSeen(array<FormData> updated_forms, array<FormRendererId> removed_forms);
 
   // Notification that a form has been submitted. The |known_success| indicates
   // whether the submission succeeded or not. Currently, we assume submission
@@ -51,12 +51,16 @@ interface AutofillDriver {
   SelectFieldOptionsDidChange(FormData form);
 
   // Queries the browser for Autofill suggestions for a form input field.
-  // |id| is the request ID which is used to map responses correctly.
-  QueryFormFieldAutofill(int32 id,
-                         FormData form,
-                         FormFieldData field,
-                         gfx.mojom.RectF bounding_box,
-                         bool autoselect_first_suggestion);
+  // For autofill this means asking the user which values to fill.
+  // |query_id| is the request ID which is used to map responses correctly.
+  // |form_element_was_clicked| indicates the user tapped an input element. When
+  // this happens, surfaces like Touch To Fill and Fast Checkout might be shown.
+  AskForValuesToFill(FormData form,
+                     FormFieldData field,
+                     gfx.mojom.RectF bounding_box,
+                     int32 query_id,
+                     bool autoselect_first_suggestion,
+                     FormElementWasClicked form_element_was_clicked);
 
   // Instructs the browser to hide the Autofill popup if it is open.
   HidePopup();
@@ -81,6 +85,15 @@ interface AutofillDriver {
 
   // Sent when a text field is done editing.
   DidEndTextFieldEditing();
+
+  // Sent when |field| was in autofilled state but JavaScript modified the
+  // value. Note that from a renderer's perspective, modifying the value with
+  // JavaScript leads to a state where the field is not considered autofilled
+  // anymore. So this notification won't be sent again until the field gets
+  // autofilled again.
+  JavaScriptChangedAutofilledValue(FormData form,
+                     FormFieldData field,
+                     mojo_base.mojom.String16 old_value);
 };
 
 // There is one instance of this interface per web contents in the browser
@@ -92,10 +105,8 @@ interface PasswordManagerDriver {
   PasswordFormsParsed(array<FormData> forms_data);
 
   // Notification that initial layout has occurred and the following password
-  // forms are visible on the page (e.g. not set to display:none.), and whether
-  // all frames in the page have been rendered.
-  PasswordFormsRendered(array<FormData> visible_forms_data,
-                        bool did_stop_loading);
+  // forms are visible on the page (e.g. not set to display:none.).
+  PasswordFormsRendered(array<FormData> visible_forms_data);
 
   // Notification that this password form was submitted by the user.
   PasswordFormSubmitted(FormData form_data);
@@ -127,6 +138,7 @@ interface PasswordManagerDriver {
   // Notification that the user (not JavaScript) modified the value of a
   // non-password field with |renderer_id|, and |value| is the current value.
   UserModifiedNonPasswordField(FieldRendererId renderer_id,
+                               mojo_base.mojom.String16 field_name,
                                mojo_base.mojom.String16 value);
 
   // Instructs the browser to show a popup with password suggestions. The popup
@@ -135,8 +147,10 @@ interface PasswordManagerDriver {
                           mojo_base.mojom.String16 typed_username,
                           int32 options, gfx.mojom.RectF bounds);
 
-  // Instructs the browser to show the Touch To Fill UI.
-  ShowTouchToFill();
+  // Instructs the browser to show the Touch To Fill UI and whether the form is
+  // ready for submission after filling.
+  [EnableIf=is_android]
+  ShowTouchToFill(SubmissionReadinessState submission_readiness);
 
   // Checks the safe browsing reputation of the website where the focused
   // username/password field is on.

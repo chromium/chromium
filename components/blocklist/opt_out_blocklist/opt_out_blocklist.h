@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,8 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist_data.h"
@@ -42,6 +41,10 @@ class OptOutBlocklist {
   OptOutBlocklist(std::unique_ptr<OptOutStore> opt_out_store,
                   base::Clock* clock,
                   OptOutBlocklistDelegate* blocklist_delegate);
+
+  OptOutBlocklist(const OptOutBlocklist&) = delete;
+  OptOutBlocklist& operator=(const OptOutBlocklist&) = delete;
+
   virtual ~OptOutBlocklist();
 
   // Creates the BlocklistData that backs the blocklist.
@@ -165,17 +168,15 @@ class OptOutBlocklist {
   // completed.
   base::queue<base::OnceClosure> pending_callbacks_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // The delegate listening to this blocklist. |blocklist_delegate_| lifetime is
   // guaranteed to outlive |this|.
-  OptOutBlocklistDelegate* blocklist_delegate_;
+  raw_ptr<OptOutBlocklistDelegate> blocklist_delegate_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<OptOutBlocklist> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(OptOutBlocklist);
 };
 
 }  // namespace blocklist

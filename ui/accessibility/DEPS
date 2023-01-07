@@ -1,7 +1,9 @@
 include_rules = [
+  "+ash/constants",
   "+mojo/public",
   "+third_party/cld_3",
   "+third_party/iaccessible2",
+  "+third_party/isimpledom",
   "+third_party/skia",
   "+services/service_manager/public/cpp",
   "+ui/aura",
@@ -10,7 +12,7 @@ include_rules = [
   "+ui/base/win",
   "+ui/gfx",
   "+ui/display",
-  "+ui/strings/grit/ui_strings.h",
+  "+ui/strings/grit/ax_strings.h",
 
   # Don't allow dependencies from ui/accessibility on
   # ui/accessibility/platform.
@@ -41,5 +43,8 @@ specific_include_rules = {
   # better to keep this test next to the code it tests.
   "ax_range_unittest.cc": [
     "+ui/accessibility/platform",
+  ],
+  "ax_tree.cc": [
+    "+components/crash/core/common/crash_key.h",
   ],
 }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,14 @@ import android.graphics.RectF;
 import android.text.TextPaint;
 import android.text.TextUtils;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.url.GURL;
 import org.chromium.url.URI;
 
 import java.util.Locale;
@@ -40,8 +42,7 @@ public class RoundedIconGenerator {
     private final Paint mBackgroundPaint;
     private final TextPaint mTextPaint;
 
-    private final float mTextHeight;
-    private final float mTextYOffset;
+    private final float mTextBaselineY;
 
     /**
      * Constructs the generator and initializes the common members based on the display density.
@@ -85,16 +86,21 @@ public class RoundedIconGenerator {
         mTextPaint.setColor(Color.WHITE);
         mTextPaint.setFakeBoldText(true);
         mTextPaint.setTextSize(textSizePx);
+        mTextPaint.setTextAlign(Paint.Align.CENTER);
 
         FontMetrics textFontMetrics = mTextPaint.getFontMetrics();
-        mTextHeight = (float) Math.ceil(textFontMetrics.bottom - textFontMetrics.top);
-        mTextYOffset = -textFontMetrics.top;
+        // Font's top is above the baseline, so top is negative.
+        final float fontMaxHeight = textFontMetrics.bottom - textFontMetrics.top;
+
+        // Y value that centers the tallest bounding box vertically.
+        final float textTop = Math.max((mIconHeightPx - fontMaxHeight) / 2f, 0f);
+        mTextBaselineY = textTop - textFontMetrics.top;
     }
 
     /**
      * Sets the background color to use when generating icons.
      */
-    public void setBackgroundColor(int color) {
+    public void setBackgroundColor(@ColorInt int color) {
         mBackgroundPaint.setColor(color);
     }
 
@@ -112,14 +118,22 @@ public class RoundedIconGenerator {
 
         int length = Math.min(1, text.length());
         String displayText = text.substring(0, length).toUpperCase(Locale.getDefault());
-        float textWidth = mTextPaint.measureText(displayText);
-
-        canvas.drawText(displayText, (mIconWidthPx - textWidth) / 2f,
-                Math.round(
-                        (Math.max(mIconHeightPx, mTextHeight) - mTextHeight) / 2.0f + mTextYOffset),
-                mTextPaint);
+        // Using Align.CENTER, so X is in the middle of the icon.
+        canvas.drawText(displayText, mIconWidthPx / 2f, mTextBaselineY, mTextPaint);
 
         return icon;
+    }
+
+    /** {@link #generateIconForUrl(GURL, boolean)} */
+    @Nullable
+    @Deprecated // TODO(https://crbug.com/783819): Use GURL-variant or #generateIconForText
+    public Bitmap generateIconForUrl(String url, boolean includePrivateRegistries) {
+        if (TextUtils.isEmpty(url)) return null;
+
+        String text = getIconTextForUrl(url, includePrivateRegistries);
+        if (TextUtils.isEmpty(text)) return null;
+
+        return generateIconForText(text);
     }
 
     /**
@@ -130,13 +144,16 @@ public class RoundedIconGenerator {
      * @return The generated icon, or NULL if |url| is empty or the domain cannot be resolved.
      */
     @Nullable
-    public Bitmap generateIconForUrl(String url, boolean includePrivateRegistries) {
-        if (TextUtils.isEmpty(url)) return null;
+    public Bitmap generateIconForUrl(GURL url, boolean includePrivateRegistries) {
+        if (url == null) return null;
+        return generateIconForUrl(url.getSpec(), includePrivateRegistries);
+    }
 
-        String text = getIconTextForUrl(url, includePrivateRegistries);
-        if (TextUtils.isEmpty(text)) return null;
-
-        return generateIconForText(text);
+    /** {@link #generateIconForUrl(GURL)} */
+    @Nullable
+    @Deprecated // TODO(https://crbug.com/783819): Use GURL-variant or #generateIconForText
+    public Bitmap generateIconForUrl(String url) {
+        return generateIconForUrl(url, false);
     }
 
     /**
@@ -151,8 +168,8 @@ public class RoundedIconGenerator {
      * @return The generated icon, or NULL if |url| is empty or the domain cannot be resolved.
      */
     @Nullable
-    public Bitmap generateIconForUrl(String url) {
-        return generateIconForUrl(url, false);
+    public Bitmap generateIconForUrl(GURL url) {
+        return generateIconForUrl(url.getSpec(), false);
     }
 
     /**

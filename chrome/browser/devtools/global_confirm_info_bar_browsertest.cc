@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
@@ -22,6 +21,11 @@ namespace {
 class TestConfirmInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   TestConfirmInfoBarDelegate() = default;
+
+  TestConfirmInfoBarDelegate(const TestConfirmInfoBarDelegate&) = delete;
+  TestConfirmInfoBarDelegate& operator=(const TestConfirmInfoBarDelegate&) =
+      delete;
+
   ~TestConfirmInfoBarDelegate() override = default;
 
   InfoBarIdentifier GetIdentifier() const override { return TEST_INFOBAR; }
@@ -29,29 +33,29 @@ class TestConfirmInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetMessageText() const override {
     return u"GlobalConfirmInfoBar browser tests delegate.";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestConfirmInfoBarDelegate);
 };
 
 class GlobalConfirmInfoBarTest : public InProcessBrowserTest {
  public:
   GlobalConfirmInfoBarTest() = default;
+
+  GlobalConfirmInfoBarTest(const GlobalConfirmInfoBarTest&) = delete;
+  GlobalConfirmInfoBarTest& operator=(const GlobalConfirmInfoBarTest&) = delete;
+
   ~GlobalConfirmInfoBarTest() override = default;
 
  protected:
-  InfoBarService* GetInfoBarServiceFromTabIndex(int tab_index) {
-    return InfoBarService::FromWebContents(
+  infobars::ContentInfoBarManager* GetInfoBarManagerFromTabIndex(
+      int tab_index) {
+    return infobars::ContentInfoBarManager::FromWebContents(
         browser()->tab_strip_model()->GetWebContentsAt(tab_index));
   }
 
   // Adds an additional tab.
   void AddTab() {
-    AddTabAtIndex(0, GURL("chrome://blank/"), ui::PAGE_TRANSITION_LINK);
+    ASSERT_FALSE(
+        AddTabAtIndex(0, GURL("chrome://blank/"), ui::PAGE_TRANSITION_LINK));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GlobalConfirmInfoBarTest);
 };
 
 }  // namespace
@@ -64,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest, UserInteraction) {
 
   // Make sure each tab has no info bars.
   for (int i = 0; i < tab_strip_model->count(); i++)
-    EXPECT_EQ(0u, GetInfoBarServiceFromTabIndex(i)->infobar_count());
+    EXPECT_EQ(0u, GetInfoBarManagerFromTabIndex(i)->infobar_count());
 
   auto delegate = std::make_unique<TestConfirmInfoBarDelegate>();
   TestConfirmInfoBarDelegate* delegate_ptr = delegate.get();
@@ -73,16 +77,17 @@ IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest, UserInteraction) {
 
   // Verify that the info bar is shown on each tab.
   for (int i = 0; i < tab_strip_model->count(); i++) {
-    InfoBarService* infobar_service = GetInfoBarServiceFromTabIndex(i);
-    ASSERT_EQ(1u, infobar_service->infobar_count());
-    EXPECT_TRUE(infobar_service->infobar_at(0)->delegate()->EqualsDelegate(
+    infobars::ContentInfoBarManager* infobar_manager =
+        GetInfoBarManagerFromTabIndex(i);
+    ASSERT_EQ(1u, infobar_manager->infobar_count());
+    EXPECT_TRUE(infobar_manager->infobar_at(0)->delegate()->EqualsDelegate(
         delegate_ptr));
   }
 
   // Close the GlobalConfirmInfoBar by simulating an interaction with the info
   // bar on one of the tabs. In this case, the first tab is picked.
   infobars::InfoBar* first_tab_infobar =
-      GetInfoBarServiceFromTabIndex(0)->infobar_at(0);
+      GetInfoBarManagerFromTabIndex(0)->infobar_at(0);
   EXPECT_TRUE(
       first_tab_infobar->delegate()->AsConfirmInfoBarDelegate()->Accept());
 
@@ -92,16 +97,17 @@ IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest, UserInteraction) {
   first_tab_infobar->RemoveSelf();
 
   for (int i = 0; i < tab_strip_model->count(); i++)
-    EXPECT_EQ(0u, GetInfoBarServiceFromTabIndex(i)->infobar_count());
+    EXPECT_EQ(0u, GetInfoBarManagerFromTabIndex(i)->infobar_count());
 }
 
 IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest, CreateAndCloseInfobar) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   ASSERT_EQ(1, tab_strip_model->count());
-  InfoBarService* infobar_service = GetInfoBarServiceFromTabIndex(0);
+  infobars::ContentInfoBarManager* infobar_manager =
+      GetInfoBarManagerFromTabIndex(0);
 
   // Make sure the tab has no info bar.
-  EXPECT_EQ(0u, infobar_service->infobar_count());
+  EXPECT_EQ(0u, infobar_manager->infobar_count());
 
   auto delegate = std::make_unique<TestConfirmInfoBarDelegate>();
   TestConfirmInfoBarDelegate* delegate_ptr = delegate.get();
@@ -110,11 +116,11 @@ IN_PROC_BROWSER_TEST_F(GlobalConfirmInfoBarTest, CreateAndCloseInfobar) {
       GlobalConfirmInfoBar::Show(std::move(delegate));
 
   // Verify that the info bar is shown.
-  ASSERT_EQ(1u, infobar_service->infobar_count());
+  ASSERT_EQ(1u, infobar_manager->infobar_count());
   EXPECT_TRUE(
-      infobar_service->infobar_at(0)->delegate()->EqualsDelegate(delegate_ptr));
+      infobar_manager->infobar_at(0)->delegate()->EqualsDelegate(delegate_ptr));
 
   // Close the infobar and make sure that the tab has no info bar.
   infobar->Close();
-  EXPECT_EQ(0u, infobar_service->infobar_count());
+  EXPECT_EQ(0u, infobar_manager->infobar_count());
 }

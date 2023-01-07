@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include <vector>
-#include "base/feature_list.h"
+#import "base/test/scoped_feature_list.h"
 #include "components/variations/variations_associated_data.h"
 
 // Enum of relaunch manners. Useful combinations of whether force a relaunch,
@@ -31,9 +31,9 @@ typedef NS_ENUM(NSInteger, RelaunchPolicy) {
 // Configuration for launching the app in EGTests.
 struct AppLaunchConfiguration {
   // Enabled features.
-  std::vector<base::Feature> features_enabled;
+  std::vector<base::test::FeatureRef> features_enabled;
   // Disabled features.
-  std::vector<base::Feature> features_disabled;
+  std::vector<base::test::FeatureRef> features_disabled;
   // Enabled variations.
   std::vector<variations::VariationID> variations_enabled;
   // Enabled trigger variations.

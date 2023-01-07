@@ -1,31 +1,21 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-
-source_set("feature_flags") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  deps = [ "//base" ]
-}
 
 source_set("breadcrumbs") {
   deps = [
     "//base",
     "//components/breadcrumbs/core",
     "//components/infobars/core",
-    "//components/keyed_service/core",
     "//components/keyed_service/ios",
-    "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web_state_list",
     "//ios/net",
     "//ios/web/public",
@@ -35,18 +25,10 @@ source_set("breadcrumbs") {
   sources = [
     "breadcrumb_manager_browser_agent.h",
     "breadcrumb_manager_browser_agent.mm",
-    "breadcrumb_manager_keyed_service.cc",
-    "breadcrumb_manager_keyed_service.h",
     "breadcrumb_manager_keyed_service_factory.cc",
     "breadcrumb_manager_keyed_service_factory.h",
-    "breadcrumb_manager_observer_bridge.h",
-    "breadcrumb_manager_observer_bridge.mm",
     "breadcrumb_manager_tab_helper.h",
     "breadcrumb_manager_tab_helper.mm",
-    "breadcrumb_persistent_storage_manager.h",
-    "breadcrumb_persistent_storage_manager.mm",
-    "breadcrumb_persistent_storage_util.cc",
-    "breadcrumb_persistent_storage_util.h",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -62,11 +44,11 @@ source_set("application_breadcrumbs_logger") {
 
   deps = [
     ":breadcrumbs",
-    ":generate_not_user_triggered_actions",
     "//base",
     "//components/breadcrumbs/core",
     "//ios/chrome/browser/crash_report:crash_report_internal",
     "//ios/chrome/browser/crash_report/breadcrumbs",
+    "//ios/chrome/browser/metrics:accessor",
   ]
 }
 
@@ -76,10 +58,8 @@ source_set("unit_tests") {
   deps = [
     ":application_breadcrumbs_logger",
     ":breadcrumbs",
-    ":generate_not_user_triggered_actions",
     "//base/test:test_support",
     "//components/breadcrumbs/core",
-    "//ios/chrome/browser:chrome_url_constants",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/download",
@@ -91,7 +71,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/infobars/test",
-    "//ios/chrome/browser/web:test_support",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/test:test_support",
@@ -103,26 +83,7 @@ source_set("unit_tests") {
 
   sources = [
     "application_breadcrumbs_logger_unittest.mm",
-    "application_breadcrumbs_not_user_action_unittest.mm",
     "breadcrumb_manager_browser_agent_unittest.mm",
-    "breadcrumb_manager_keyed_service_unittest.mm",
-    "breadcrumb_manager_observer_bridge_unittest.mm",
-    "breadcrumb_manager_observer_unittest.mm",
     "breadcrumb_manager_tab_helper_unittest.mm",
-    "breadcrumb_manager_unittest.mm",
-    "breadcrumb_persistent_storage_manager_unittest.mm",
-    "breadcrumb_persistent_storage_util_unittest.mm",
-  ]
-}
-
-action("generate_not_user_triggered_actions") {
-  script = "generate_not_user_triggered_actions.py"
-  sources = [ "//tools/metrics/actions/actions.xml" ]
-  outputs = [ "$target_gen_dir/application_breadcrumbs_not_user_action.inc" ]
-  args = [
-    "--actions",
-    rebase_path(sources[0], root_build_dir),
-    "--output",
-    rebase_path(outputs[0], root_build_dir),
   ]
 }

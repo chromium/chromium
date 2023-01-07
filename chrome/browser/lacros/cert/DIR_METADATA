@@ -1,0 +1,9 @@
+monorail {
+  component: "OS>Software>Enterprise>Certificates"
+}
+
+buganizer {
+  component_id: 1000044  # ChromeOS > Software > Commercial (Enterprise) > Commercial Networking
+}
+
+team_email: "chromeos-commercial-networking@google.com"

@@ -9,27 +9,27 @@
   <link rel="stylesheet" href="controlled_indicator.css">
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="progressbar.css">
-  <link rel="stylesheet" href="../login/components/oobe_flex_layout.css">
-  <custom-style>
-    <style include="cr-hidden-style"></style>
-  </custom-style>
-  <script src="chrome://resources/js/load_time_data.js"></script>
-  <script src="chrome://resources/js/assert.js"></script>
-  <script src="chrome://resources/js/util.js"></script>
-  <script src="chrome://resources/js/i18n_template_no_process.js"></script>
-  <script src="chrome://resources/js/cr.js"></script>
-  <script src="chrome://resources/js/event_tracker.js"></script>
-  <script src="chrome://resources/js/cr/ui.js"></script>
+  <!-- TODO(crbug.com/1248474) - Remove during clean up -->
+  <link rel="stylesheet" href="layout_style.css">
+  <script src="chrome://resources/js/load_time_data_deprecated.js"></script>
+  <script src="chrome://resources/js/util_deprecated.js"></script>
+  <script src="i18n_template_no_process.js"></script>
+  <script src="chrome://resources/ash/common/cr.js"></script>
+  <script src="event_tracker.js"></script>
+  <script src="ui.js"></script>
   <script src="bubble.js"></script>
   <script src="bubble_button.js"></script>
   <script src="overlay.js"></script>
-  <script src="chrome://resources/js/cr/ui/focus_manager.js"></script>
+  <script src="focus_manager.js"></script>
   <script type="module" src="main.js"></script>
   <script src="arc_optin_focus_manager.js"></script>
   <script src="controlled_indicator.js"></script>
   <script src="progressbar.js"></script>
 </head>
 <body>
+  <custom-style>
+    <style include="cr-hidden-style"></style>
+  </custom-style>
   <div id="terms" class="section">
     <div class="header">
       <img class="icon-header" src="icon/playstore.svg" aria-hidden="true">
@@ -86,7 +86,7 @@
               </cr-checkbox>
             </label>
           </div>
-          <div id="pai-service-descirption">
+          <div id="pai-service-description">
             <label class="layout horizontal section-checkbox-container">
                 <p class="content-text"
                     i18n-values=".innerHTML:textPaiService"></p>
@@ -101,7 +101,7 @@
           </div>
         </div>
       </div>
-      <div class="layout horizontal center end-justified section-buttons">
+      <div class="layout horizontal center end-justified section-buttons section-buttons-box-shadow">
         <div class="flex"></div>
         <cr-button id="button-cancel">
           <div class="container flex" i18n-content="buttonCancel"></div>
@@ -165,9 +165,13 @@
           aria-hidden="true">
       </div>
       <div class="layout horizontal center end-justified section-buttons">
-        <div class="flex"></div>
         <cr-button id="button-send-feedback">
           <div class="container flex" i18n-content="buttonSendFeedback"></div>
+        </cr-button>
+        <div id="div-error-separating-buttons" class="flex"></div>
+        <cr-button id="button-run-network-tests">
+          <div class="container flex" i18n-content="buttonRunNetworkTests">
+          </div>
         </cr-button>
         <cr-button class="action-button" id="button-retry">
           <div class="container flex" i18n-content="buttonRetry"></div>

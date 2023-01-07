@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,10 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/values.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/usb/usb_device_manager.h"
 #include "extensions/browser/extension_function.h"
@@ -35,8 +37,10 @@ class UsbExtensionFunction : public ExtensionFunction {
 
   UsbDeviceManager* usb_device_manager();
 
+  bool IsUsbDeviceAllowedByPolicy(int vendor_id, int product_id);
+
  private:
-  UsbDeviceManager* usb_device_manager_ = nullptr;
+  raw_ptr<UsbDeviceManager> usb_device_manager_ = nullptr;
 };
 
 class UsbPermissionCheckingFunction : public UsbExtensionFunction {
@@ -48,7 +52,7 @@ class UsbPermissionCheckingFunction : public UsbExtensionFunction {
   void RecordDeviceLastUsed();
 
  private:
-  DevicePermissionsManager* device_permissions_manager_;
+  raw_ptr<DevicePermissionsManager> device_permissions_manager_;
   scoped_refptr<DevicePermissionEntry> permission_entry_;
 };
 
@@ -74,7 +78,7 @@ class UsbTransferFunction : public UsbConnectionFunction {
   void OnCompleted(device::mojom::UsbTransferStatus status,
                    std::unique_ptr<base::DictionaryValue> transfer_info);
   void OnTransferInCompleted(device::mojom::UsbTransferStatus status,
-                             const std::vector<uint8_t>& data);
+                             base::span<const uint8_t> data);
   void OnTransferOutCompleted(device::mojom::UsbTransferStatus status);
   void OnDisconnect();
 };
@@ -95,6 +99,9 @@ class UsbFindDevicesFunction : public UsbExtensionFunction {
 
   UsbFindDevicesFunction();
 
+  UsbFindDevicesFunction(const UsbFindDevicesFunction&) = delete;
+  UsbFindDevicesFunction& operator=(const UsbFindDevicesFunction&) = delete;
+
  private:
   ~UsbFindDevicesFunction() override;
 
@@ -111,10 +118,8 @@ class UsbFindDevicesFunction : public UsbExtensionFunction {
 
   uint16_t vendor_id_;
   uint16_t product_id_;
-  std::unique_ptr<base::ListValue> result_;
+  base::Value::List result_;
   base::RepeatingClosure barrier_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbFindDevicesFunction);
 };
 
 class UsbGetDevicesFunction : public UsbPermissionCheckingFunction {
@@ -122,6 +127,9 @@ class UsbGetDevicesFunction : public UsbPermissionCheckingFunction {
   DECLARE_EXTENSION_FUNCTION("usb.getDevices", USB_GETDEVICES)
 
   UsbGetDevicesFunction();
+
+  UsbGetDevicesFunction(const UsbGetDevicesFunction&) = delete;
+  UsbGetDevicesFunction& operator=(const UsbGetDevicesFunction&) = delete;
 
  private:
   ~UsbGetDevicesFunction() override;
@@ -133,8 +141,6 @@ class UsbGetDevicesFunction : public UsbPermissionCheckingFunction {
       std::vector<device::mojom::UsbDeviceInfoPtr> devices);
 
   std::vector<device::mojom::UsbDeviceFilterPtr> filters_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbGetDevicesFunction);
 };
 
 class UsbGetUserSelectedDevicesFunction : public UsbExtensionFunction {
@@ -143,6 +149,11 @@ class UsbGetUserSelectedDevicesFunction : public UsbExtensionFunction {
                              USB_GETUSERSELECTEDDEVICES)
 
   UsbGetUserSelectedDevicesFunction();
+
+  UsbGetUserSelectedDevicesFunction(const UsbGetUserSelectedDevicesFunction&) =
+      delete;
+  UsbGetUserSelectedDevicesFunction& operator=(
+      const UsbGetUserSelectedDevicesFunction&) = delete;
 
  private:
   ~UsbGetUserSelectedDevicesFunction() override;
@@ -153,8 +164,6 @@ class UsbGetUserSelectedDevicesFunction : public UsbExtensionFunction {
   void OnDevicesChosen(std::vector<device::mojom::UsbDeviceInfoPtr> devices);
 
   std::unique_ptr<DevicePermissionsPrompt> prompt_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbGetUserSelectedDevicesFunction);
 };
 
 class UsbGetConfigurationsFunction : public UsbPermissionCheckingFunction {
@@ -163,13 +172,15 @@ class UsbGetConfigurationsFunction : public UsbPermissionCheckingFunction {
 
   UsbGetConfigurationsFunction();
 
+  UsbGetConfigurationsFunction(const UsbGetConfigurationsFunction&) = delete;
+  UsbGetConfigurationsFunction& operator=(const UsbGetConfigurationsFunction&) =
+      delete;
+
  private:
   ~UsbGetConfigurationsFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbGetConfigurationsFunction);
 };
 
 class UsbRequestAccessFunction : public ExtensionFunction {
@@ -178,13 +189,14 @@ class UsbRequestAccessFunction : public ExtensionFunction {
 
   UsbRequestAccessFunction();
 
+  UsbRequestAccessFunction(const UsbRequestAccessFunction&) = delete;
+  UsbRequestAccessFunction& operator=(const UsbRequestAccessFunction&) = delete;
+
  private:
   ~UsbRequestAccessFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbRequestAccessFunction);
 };
 
 class UsbOpenDeviceFunction : public UsbPermissionCheckingFunction {
@@ -192,6 +204,9 @@ class UsbOpenDeviceFunction : public UsbPermissionCheckingFunction {
   DECLARE_EXTENSION_FUNCTION("usb.openDevice", USB_OPENDEVICE)
 
   UsbOpenDeviceFunction();
+
+  UsbOpenDeviceFunction(const UsbOpenDeviceFunction&) = delete;
+  UsbOpenDeviceFunction& operator=(const UsbOpenDeviceFunction&) = delete;
 
  private:
   ~UsbOpenDeviceFunction() override;
@@ -203,8 +218,6 @@ class UsbOpenDeviceFunction : public UsbPermissionCheckingFunction {
                       mojo::Remote<device::mojom::UsbDevice> device,
                       device::mojom::UsbOpenDeviceError error);
   void OnDisconnect();
-
-  DISALLOW_COPY_AND_ASSIGN(UsbOpenDeviceFunction);
 };
 
 class UsbSetConfigurationFunction : public UsbConnectionFunction {
@@ -213,6 +226,10 @@ class UsbSetConfigurationFunction : public UsbConnectionFunction {
 
   UsbSetConfigurationFunction();
 
+  UsbSetConfigurationFunction(const UsbSetConfigurationFunction&) = delete;
+  UsbSetConfigurationFunction& operator=(const UsbSetConfigurationFunction&) =
+      delete;
+
  private:
   ~UsbSetConfigurationFunction() override;
 
@@ -220,8 +237,6 @@ class UsbSetConfigurationFunction : public UsbConnectionFunction {
   ResponseAction Run() override;
 
   void OnComplete(const std::string& guid, uint8_t config_value, bool success);
-
-  DISALLOW_COPY_AND_ASSIGN(UsbSetConfigurationFunction);
 };
 
 class UsbGetConfigurationFunction : public UsbConnectionFunction {
@@ -230,13 +245,15 @@ class UsbGetConfigurationFunction : public UsbConnectionFunction {
 
   UsbGetConfigurationFunction();
 
+  UsbGetConfigurationFunction(const UsbGetConfigurationFunction&) = delete;
+  UsbGetConfigurationFunction& operator=(const UsbGetConfigurationFunction&) =
+      delete;
+
  private:
   ~UsbGetConfigurationFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbGetConfigurationFunction);
 };
 
 class UsbListInterfacesFunction : public UsbConnectionFunction {
@@ -245,13 +262,15 @@ class UsbListInterfacesFunction : public UsbConnectionFunction {
 
   UsbListInterfacesFunction();
 
+  UsbListInterfacesFunction(const UsbListInterfacesFunction&) = delete;
+  UsbListInterfacesFunction& operator=(const UsbListInterfacesFunction&) =
+      delete;
+
  private:
   ~UsbListInterfacesFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbListInterfacesFunction);
 };
 
 class UsbCloseDeviceFunction : public UsbConnectionFunction {
@@ -260,13 +279,14 @@ class UsbCloseDeviceFunction : public UsbConnectionFunction {
 
   UsbCloseDeviceFunction();
 
+  UsbCloseDeviceFunction(const UsbCloseDeviceFunction&) = delete;
+  UsbCloseDeviceFunction& operator=(const UsbCloseDeviceFunction&) = delete;
+
  private:
   ~UsbCloseDeviceFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbCloseDeviceFunction);
 };
 
 class UsbClaimInterfaceFunction : public UsbConnectionFunction {
@@ -275,6 +295,10 @@ class UsbClaimInterfaceFunction : public UsbConnectionFunction {
 
   UsbClaimInterfaceFunction();
 
+  UsbClaimInterfaceFunction(const UsbClaimInterfaceFunction&) = delete;
+  UsbClaimInterfaceFunction& operator=(const UsbClaimInterfaceFunction&) =
+      delete;
+
  private:
   ~UsbClaimInterfaceFunction() override;
 
@@ -282,8 +306,6 @@ class UsbClaimInterfaceFunction : public UsbConnectionFunction {
   ResponseAction Run() override;
 
   void OnComplete(device::mojom::UsbClaimInterfaceResult result);
-
-  DISALLOW_COPY_AND_ASSIGN(UsbClaimInterfaceFunction);
 };
 
 class UsbReleaseInterfaceFunction : public UsbConnectionFunction {
@@ -292,6 +314,10 @@ class UsbReleaseInterfaceFunction : public UsbConnectionFunction {
 
   UsbReleaseInterfaceFunction();
 
+  UsbReleaseInterfaceFunction(const UsbReleaseInterfaceFunction&) = delete;
+  UsbReleaseInterfaceFunction& operator=(const UsbReleaseInterfaceFunction&) =
+      delete;
+
  private:
   ~UsbReleaseInterfaceFunction() override;
 
@@ -299,8 +325,6 @@ class UsbReleaseInterfaceFunction : public UsbConnectionFunction {
   ResponseAction Run() override;
 
   void OnComplete(bool success);
-
-  DISALLOW_COPY_AND_ASSIGN(UsbReleaseInterfaceFunction);
 };
 
 class UsbSetInterfaceAlternateSettingFunction : public UsbConnectionFunction {
@@ -310,6 +334,11 @@ class UsbSetInterfaceAlternateSettingFunction : public UsbConnectionFunction {
 
   UsbSetInterfaceAlternateSettingFunction();
 
+  UsbSetInterfaceAlternateSettingFunction(
+      const UsbSetInterfaceAlternateSettingFunction&) = delete;
+  UsbSetInterfaceAlternateSettingFunction& operator=(
+      const UsbSetInterfaceAlternateSettingFunction&) = delete;
+
  private:
   ~UsbSetInterfaceAlternateSettingFunction() override;
 
@@ -317,8 +346,6 @@ class UsbSetInterfaceAlternateSettingFunction : public UsbConnectionFunction {
   ResponseAction Run() override;
 
   void OnComplete(bool success);
-
-  DISALLOW_COPY_AND_ASSIGN(UsbSetInterfaceAlternateSettingFunction);
 };
 
 class UsbControlTransferFunction : public UsbTransferFunction {
@@ -327,13 +354,15 @@ class UsbControlTransferFunction : public UsbTransferFunction {
 
   UsbControlTransferFunction();
 
+  UsbControlTransferFunction(const UsbControlTransferFunction&) = delete;
+  UsbControlTransferFunction& operator=(const UsbControlTransferFunction&) =
+      delete;
+
  private:
   ~UsbControlTransferFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbControlTransferFunction);
 };
 
 class UsbBulkTransferFunction : public UsbGenericTransferFunction {
@@ -342,13 +371,14 @@ class UsbBulkTransferFunction : public UsbGenericTransferFunction {
 
   UsbBulkTransferFunction();
 
+  UsbBulkTransferFunction(const UsbBulkTransferFunction&) = delete;
+  UsbBulkTransferFunction& operator=(const UsbBulkTransferFunction&) = delete;
+
  private:
   ~UsbBulkTransferFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbBulkTransferFunction);
 };
 
 class UsbInterruptTransferFunction : public UsbGenericTransferFunction {
@@ -357,13 +387,15 @@ class UsbInterruptTransferFunction : public UsbGenericTransferFunction {
 
   UsbInterruptTransferFunction();
 
+  UsbInterruptTransferFunction(const UsbInterruptTransferFunction&) = delete;
+  UsbInterruptTransferFunction& operator=(const UsbInterruptTransferFunction&) =
+      delete;
+
  private:
   ~UsbInterruptTransferFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbInterruptTransferFunction);
 };
 
 class UsbIsochronousTransferFunction : public UsbTransferFunction {
@@ -372,6 +404,11 @@ class UsbIsochronousTransferFunction : public UsbTransferFunction {
 
   UsbIsochronousTransferFunction();
 
+  UsbIsochronousTransferFunction(const UsbIsochronousTransferFunction&) =
+      delete;
+  UsbIsochronousTransferFunction& operator=(
+      const UsbIsochronousTransferFunction&) = delete;
+
  private:
   ~UsbIsochronousTransferFunction() override;
 
@@ -379,12 +416,10 @@ class UsbIsochronousTransferFunction : public UsbTransferFunction {
   ResponseAction Run() override;
 
   void OnTransferInCompleted(
-      const std::vector<uint8_t>& data,
+      base::span<const uint8_t> data,
       std::vector<device::mojom::UsbIsochronousPacketPtr> packets);
   void OnTransferOutCompleted(
       std::vector<device::mojom::UsbIsochronousPacketPtr> packets);
-
-  DISALLOW_COPY_AND_ASSIGN(UsbIsochronousTransferFunction);
 };
 
 class UsbResetDeviceFunction : public UsbConnectionFunction {
@@ -392,6 +427,9 @@ class UsbResetDeviceFunction : public UsbConnectionFunction {
   DECLARE_EXTENSION_FUNCTION("usb.resetDevice", USB_RESETDEVICE)
 
   UsbResetDeviceFunction();
+
+  UsbResetDeviceFunction(const UsbResetDeviceFunction&) = delete;
+  UsbResetDeviceFunction& operator=(const UsbResetDeviceFunction&) = delete;
 
  private:
   ~UsbResetDeviceFunction() override;
@@ -402,8 +440,6 @@ class UsbResetDeviceFunction : public UsbConnectionFunction {
   void OnComplete(bool success);
 
   std::unique_ptr<api::usb::ResetDevice::Params> parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbResetDeviceFunction);
 };
 }  // namespace extensions
 

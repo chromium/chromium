@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,16 +6,19 @@
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_PUBLIC_REPORT_CLIENT_H_
 
 #include <memory>
+#include <queue>
 #include <utility>
 
+#include "base/callback.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
-#include "components/reporting//proto/record.pb.h"
+#include "chrome/browser/policy/messaging_layer/upload/upload_provider.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/client/report_queue_provider.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/storage/storage_module.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
-#include "components/reporting/util/shared_queue.h"
 #include "components/reporting/util/statusor.h"
 
 namespace reporting {
@@ -26,82 +29,10 @@ namespace reporting {
 
 class ReportingClient : public ReportQueueProvider {
  public:
-  using CreateReportQueueResponse = StatusOr<std::unique_ptr<ReportQueue>>;
-
-  using CreateReportQueueCallback =
-      base::OnceCallback<void(CreateReportQueueResponse)>;
-
-  using GetCloudPolicyClientCallback = base::OnceCallback<void(
-      base::OnceCallback<void(StatusOr<policy::CloudPolicyClient*>)>)>;
-
-  class ClientInitializingContext
-      : public ReportQueueProvider::InitializingContext {
-   public:
-    ClientInitializingContext(
-        GetCloudPolicyClientCallback get_client_cb,
-        UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
-        UpdateConfigurationCallback update_config_cb,
-        InitCompleteCallback init_complete_cb,
-        ReportingClient* client,
-        scoped_refptr<InitializationStateTracker> init_state_tracker);
-
-   private:
-    // Destructor only called from Complete().
-    // The class runs a series of callbacks each of which may invoke
-    // either the next callback or Complete(). Thus eventually Complete()
-    // is always called and InitializingContext instance is self-destruct.
-    ~ClientInitializingContext() override;
-
-    // Begins the process of configuring the ReportingClient.
-    void OnStart() override;
-
-    // Finally updates client with the elements of the configuration into the
-    // ReportingClient, if the configuration process succeeded.
-    void OnCompleted() override;
-
-    // Called back after CloudPolicyClient configuration succeeded.
-    void OnCloudPolicyClientConfigured(
-        StatusOr<policy::CloudPolicyClient*> client_result);
-
-    // Instantiates a StorageModuleInterface for ReportingClient to refer to.
-    void ConfigureStorageModule();
-    void OnStorageModuleConfigured(
-        StatusOr<scoped_refptr<StorageModuleInterface>> storage_result);
-
-    // Calls back upon creation of upload client.
-    void OnUploadClientCreated(
-        StatusOr<std::unique_ptr<UploadClient>> upload_client_result);
-
-    GetCloudPolicyClientCallback get_client_cb_;
-    UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
-
-    policy::CloudPolicyClient* cloud_policy_client_ = nullptr;
-    std::unique_ptr<UploadClient> upload_client_;
-    scoped_refptr<StorageModuleInterface> storage_;
-    ReportingClient* const client_;
-  };
-
-  ReportQueueProvider::InitializingContext* InstantiateInitializingContext(
-      InitializingContext::UpdateConfigurationCallback update_config_cb,
-      InitCompleteCallback init_complete_cb,
-      scoped_refptr<InitializationStateTracker> init_state_tracker) override;
-
-  StatusOr<std::unique_ptr<ReportQueue>> CreateNewQueue(
-      std::unique_ptr<ReportQueueConfiguration> config) override;
-
-  // RAII class for testing ReportingClient - substitutes a cloud policy client
-  // builder to return given client and resets it when destructed.
-  class TestEnvironment {
-   public:
-    explicit TestEnvironment(policy::CloudPolicyClient* client);
-    TestEnvironment(const TestEnvironment& other) = delete;
-    TestEnvironment& operator=(const TestEnvironment& other) = delete;
-    ~TestEnvironment();
-
-   private:
-    ReportingClient::GetCloudPolicyClientCallback
-        saved_build_cloud_policy_client_cb_;
-  };
+  // RAII class for testing ReportingClient - substitutes reporting files
+  // location, signature verification public key and a cloud policy client
+  // builder to return given client. Resets client when destructed.
+  class TestEnvironment;
 
   ~ReportingClient() override;
   ReportingClient(const ReportingClient& other) = delete;
@@ -109,7 +40,7 @@ class ReportingClient : public ReportQueueProvider {
 
  private:
   class Uploader;
-  friend class TestEnvironment;
+
   friend class ReportQueueProvider;
   friend struct base::DefaultSingletonTraits<ReportingClient>;
 
@@ -122,22 +53,41 @@ class ReportingClient : public ReportQueueProvider {
   // class.
   static ReportingClient* GetInstance();
 
-  void OnInitState(bool reporting_client_configured);
-  void OnInitializationComplete(Status init_status);
+  // Configures the report queue config with an appropriate DM token after its
+  // retrieval for downstream processing, and triggers the corresponding
+  // completion callback with the updated config.
+  void ConfigureReportQueue(
+      std::unique_ptr<ReportQueueConfiguration> report_queue_config,
+      ReportQueueProvider::ReportQueueConfiguredCallback completion_cb)
+      override;
 
-  // TODO(b/183666933) Priority is used only for testing, remove it if possible.
+  //
+  // Everything below is used in Local storage case only.
+  //
+
+  static void CreateLocalStorageModule(
+      const base::FilePath& local_reporting_path,
+      base::StringPiece verification_key,
+      CompressionInformation::CompressionAlgorithm compression_algorithm,
+      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
+      base::OnceCallback<void(StatusOr<scoped_refptr<StorageModuleInterface>>)>
+          cb);
+
+  static StorageModule* GetLocalStorageModule();
+
   static void AsyncStartUploader(
-      Priority priority,
-      bool need_encryption_key,
+      UploaderInterface::UploadReason reason,
       UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
 
-  GetCloudPolicyClientCallback build_cloud_policy_client_cb_;
+  void DeliverAsyncStartUploader(
+      UploaderInterface::UploadReason reason,
+      UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
 
-  // TODO(chromium:1078512) Passing around a raw pointer is unsafe. Wrap
-  // CloudPolicyClient and guard access.
-  policy::CloudPolicyClient* cloud_policy_client_ = nullptr;
-  std::unique_ptr<UploadClient> upload_client_;
-  scoped_refptr<StorageModuleInterface> storage_;
+  // Returns upload provider for the client in case of local storage.
+  std::unique_ptr<EncryptedReportingUploadProvider> CreateLocalUploadProvider();
+
+  // Upload provider (if enabled).
+  std::unique_ptr<EncryptedReportingUploadProvider> upload_provider_;
 };
 }  // namespace reporting
 

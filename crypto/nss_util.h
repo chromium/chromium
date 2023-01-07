@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
-#include <string>
-#include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
+#include "components/nacl/common/buildflags.h"
 #include "crypto/crypto_export.h"
 
 namespace base {
@@ -36,34 +36,42 @@ CRYPTO_EXPORT void EnsureNSSInit();
 // A sample version string is "3.12.3".
 bool CheckNSSVersion(const char* version);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Indicates that NSS should use the Chaps library so that we
-// can access the TPM through NSS.  InitializeTPMTokenAndSystemSlot and
-// InitializeTPMForChromeOSUser must still be called to load the slots.
-CRYPTO_EXPORT void EnableTPMTokenForNSS();
+#if BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
 
-// Returns true if EnableTPMTokenForNSS has been called.
-CRYPTO_EXPORT bool IsTPMTokenEnabledForNSS();
-
-// Returns true if the TPM is owned and PKCS#11 initialized with the
-// user and security officer PINs, and has been enabled in NSS by
-// calling EnableTPMForNSS, and Chaps has been successfully
-// loaded into NSS.
-// If |callback| is non-null and the function returns false, the |callback| will
-// be run once the TPM is ready. |callback| will never be run if the function
-// returns true.
-CRYPTO_EXPORT bool IsTPMTokenReady(base::OnceClosure callback)
-    WARN_UNUSED_RESULT;
+// Returns true once the TPM is owned and PKCS#11 initialized with the
+// user and security officer PINs, and Chaps has been successfully loaded into
+// NSS. Returns false if the TPM will never be loaded.
+CRYPTO_EXPORT void IsTPMTokenEnabled(base::OnceCallback<void(bool)> callback);
 
 // Initialize the TPM token and system slot. The |callback| will run on the same
 // thread with true if the token and slot were successfully loaded or were
-// already initialized. |callback| will be passed false if loading failed.  Once
-// called, InitializeTPMTokenAndSystemSlot must not be called again until the
-// |callback| has been run.
+// already initialized. |callback| will be passed false if loading failed.
+// Should be called only once.
 CRYPTO_EXPORT void InitializeTPMTokenAndSystemSlot(
     int system_slot_id,
     base::OnceCallback<void(bool)> callback);
-#endif
+
+// Notifies clients that the TPM has finished initialization (i.e. notify
+// the callbacks of `IsTPMTokenEnabled()` or `GetSystemNSSKeySlot()`).
+// If `InitializeTPMTokenAndSystemSlot()` has been called before this method,
+// this signals that the TPM is enabled, and should use the slot configured by
+// those methods. If neither of those methods have been called, this signals
+// that no TPM system slot will be available.
+CRYPTO_EXPORT void FinishInitializingTPMTokenAndSystemSlot();
+
+// TODO(crbug.com/1163303) Remove when the bug is fixed.
+// Can be used to collect additional information when public slot fails to open.
+// Mainly checks the access permissions on the files and tries to read them.
+// Crashes Chrome because it will crash anyway when it tries to instantiate
+// NSSCertDatabase with a nullptr public slot, crashing early can provide better
+// logs/stacktraces for diagnosing.
+// Takes `nss_path` where NSS is supposed to be (or created). Will attempt
+// creating the path if it doesn't exist (to check that it can be done).
+// Theoretically the path should already exist because it's created when Chrome
+// tries to open the public slot.
+CRYPTO_EXPORT void DiagnosePublicSlotAndCrash(const base::FilePath& nss_path);
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
 
 // Convert a NSS PRTime value into a base::Time object.
 // We use a int64_t instead of PRTime here to avoid depending on NSPR headers.

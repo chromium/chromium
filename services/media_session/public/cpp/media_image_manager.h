@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "services/media_session/public/cpp/media_image.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Size;
@@ -55,11 +54,14 @@ class COMPONENT_EXPORT(MEDIA_SESSION_CPP) MediaImageManager {
   // |ideal_size| is the ideal size of the images to select in px.
   MediaImageManager(int min_size, int ideal_size);
 
+  MediaImageManager(const MediaImageManager&) = delete;
+  MediaImageManager& operator=(const MediaImageManager&) = delete;
+
   ~MediaImageManager();
 
   // Select the best image from the |images|. If an image could not be selected
   // then will return null.
-  base::Optional<MediaImage> SelectImage(const std::vector<MediaImage>& images);
+  absl::optional<MediaImage> SelectImage(const std::vector<MediaImage>& images);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaImageManagerTest,
@@ -68,14 +70,12 @@ class COMPONENT_EXPORT(MEDIA_SESSION_CPP) MediaImageManager {
 
   double GetImageScore(const MediaImage& image) const;
 
-  static base::Optional<double> GetImageExtensionScore(const GURL& url);
+  static absl::optional<double> GetImageExtensionScore(const GURL& url);
 
-  static base::Optional<double> GetImageTypeScore(const std::u16string& type);
+  static absl::optional<double> GetImageTypeScore(const std::u16string& type);
 
   const int min_size_;
   const int ideal_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaImageManager);
 };
 
 }  // namespace media_session

@@ -25,7 +25,12 @@ quad_list: [
       height: 400
     }
     solid_color_quad: {
-      color: 0xffffffff
+      color: {
+        r: 1
+        g: 1
+        b: 1
+        a: 1
+      }
       force_anti_aliasing_off: false
     }
     sqs: {

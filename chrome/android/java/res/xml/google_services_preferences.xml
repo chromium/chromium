@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <!-- Note: If a synced pref is added/removed from this file, the method
      |GetSyncedServicePrefNames| in
@@ -25,11 +27,6 @@
         android:summary="@string/autocomplete_searches_and_urls_summary"
         android:persistent="false"/>
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-        android:key="navigation_error"
-        android:title="@string/navigation_error_suggestions_title"
-        android:summary="@string/navigation_error_suggestions_summary"
-        android:persistent="false"/>
-    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="usage_and_crash_reports"
         android:title="@string/usage_and_crash_reports_title"
         android:summary="@string/usage_and_crash_reports_summary"
@@ -44,6 +41,17 @@
         android:title="@string/prefs_autofill_assistant_title"
         android:summary="@string/prefs_autofill_assistant_get_help_summary"
         android:persistent="false"/>
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="price_tracking_annotations"
+        android:title="@string/track_prices_on_tabs"
+        android:summary="@string/track_prices_on_tabs_description"
+        android:persistent="false"/>
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="price_notifications_section"
+        android:title="@string/price_notifications_settings_title"
+        android:summary="@string/price_notifications_settings_description"
+        android:fragment="org.chromium.chrome.browser.commerce.PriceNotificationPreferenceFragment"
+        app:isPreferenceVisible="false"/>
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="autofill_assistant_subsection"
         android:title="@string/prefs_autofill_assistant_title"

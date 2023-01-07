@@ -1,8 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <tuple>
 #include <utility>
 
@@ -10,34 +11,28 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "content/common/frame_messages.h"
-#include "content/common/navigation_params_mojom_traits.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/content_renderer_client.h"
-#include "content/public/renderer/document_state.h"
 #include "content/public/test/frame_load_waiter.h"
 #include "content/public/test/local_frame_host_interceptor.h"
 #include "content/public/test/policy_container_utils.h"
 #include "content/public/test/render_view_test.h"
 #include "content/public/test/test_utils.h"
 #include "content/renderer/agent_scheduling_group.h"
+#include "content/renderer/document_state.h"
 #include "content/renderer/mojo/blink_interface_registry_impl.h"
 #include "content/renderer/navigation_state.h"
 #include "content/renderer/render_frame_impl.h"
-#include "content/renderer/render_frame_proxy.h"
-#include "content/renderer/render_view_impl.h"
-#include "content/test/fake_compositor_dependencies.h"
 #include "content/test/frame_host_test_interface.mojom.h"
 #include "content/test/test_render_frame.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -46,14 +41,16 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
+#include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
-#include "third_party/blink/public/common/widget/screen_infos.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom.h"
-#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom-blink.h"
-#include "third_party/blink/public/mojom/page/record_content_to_visible_time_request.mojom.h"
+#include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
+#include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -62,6 +59,8 @@
 #include "third_party/blink/public/web/web_history_item.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "ui/display/screen_info.h"
+#include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/native_theme/native_theme_features.h"
 
@@ -73,7 +72,6 @@ namespace {
 
 constexpr int32_t kSubframeRouteId = 20;
 constexpr int32_t kSubframeWidgetRouteId = 21;
-constexpr int32_t kFrameProxyRouteId = 22;
 
 const char kParentFrameHTML[] = "Parent frame <iframe name='frame'></iframe>";
 
@@ -111,7 +109,7 @@ class RenderFrameImplTest : public RenderViewTest {
     widget_params->routing_id = kSubframeWidgetRouteId;
     widget_params->visual_properties.new_size = gfx::Size(100, 100);
     widget_params->visual_properties.screen_infos =
-        blink::ScreenInfos(blink::ScreenInfo());
+        display::ScreenInfos(display::ScreenInfo());
 
     widget_remote_.reset();
     mojo::PendingAssociatedReceiver<blink::mojom::Widget>
@@ -130,20 +128,47 @@ class RenderFrameImplTest : public RenderViewTest {
     frame_replication_state->name = "frame";
     frame_replication_state->unique_name = "frame-uniqueName";
 
+    auto remote_frame_interfaces =
+        blink::mojom::RemoteFrameInterfacesFromBrowser::New();
+    mojo::AssociatedRemote<blink::mojom::RemoteFrame> frame;
+    remote_frame_interfaces->frame_receiver =
+        frame.BindNewEndpointAndPassDedicatedReceiver();
+
+    mojo::AssociatedRemote<blink::mojom::RemoteFrameHost> frame_host;
+    std::ignore = frame_host.BindNewEndpointAndPassDedicatedReceiver();
+    remote_frame_interfaces->frame_host = frame_host.Unbind();
+
+    auto remote_main_frame_interfaces =
+        blink::mojom::RemoteMainFrameInterfaces::New();
+    mojo::AssociatedRemote<blink::mojom::RemoteMainFrame> main_frame;
+    remote_main_frame_interfaces->main_frame =
+        main_frame.BindNewEndpointAndPassDedicatedReceiver();
+
+    mojo::AssociatedRemote<blink::mojom::RemoteMainFrameHost> main_frame_host;
+    std::ignore = main_frame_host.BindNewEndpointAndPassDedicatedReceiver();
+    remote_main_frame_interfaces->main_frame_host = main_frame_host.Unbind();
+
+    blink::RemoteFrameToken remote_child_token = blink::RemoteFrameToken();
     RenderFrameImpl::FromWebFrame(
-        view_->GetMainRenderFrame()->GetWebFrame()->FirstChild())
-        ->Unload(kFrameProxyRouteId, false, frame_replication_state->Clone(),
-                 blink::RemoteFrameToken());
+        GetMainRenderFrame()->GetWebFrame()->FirstChild())
+        ->Unload(false, frame_replication_state->Clone(), remote_child_token,
+                 std::move(remote_frame_interfaces),
+                 std::move(remote_main_frame_interfaces));
     MockPolicyContainerHost mock_policy_container_host;
     RenderFrameImpl::CreateFrame(
         *agent_scheduling_group_, blink::LocalFrameToken(), kSubframeRouteId,
         TestRenderFrame::CreateStubFrameReceiver(),
         TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote(),
-        MSG_ROUTING_NONE, base::nullopt, kFrameProxyRouteId, MSG_ROUTING_NONE,
-        base::UnguessableToken::Create(), std::move(frame_replication_state),
-        &compositor_deps_, std::move(widget_params),
+        TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote(),
+        /*previous_frame_token=*/absl::nullopt,
+        /*opener_frame_token=*/absl::nullopt,
+        /*parent_frame_token=*/remote_child_token,
+        /*previous_sibling_frame_token=*/absl::nullopt,
+        base::UnguessableToken::Create(),
+        blink::mojom::TreeScopeType::kDocument,
+        std::move(frame_replication_state), std::move(widget_params),
         blink::mojom::FrameOwnerProperties::New(),
-        /*has_committed_real_load=*/true,
+        /*has_committed_real_load=*/true, blink::DocumentToken(),
         blink::mojom::PolicyContainer::New(
             blink::mojom::PolicyContainerPolicies::New(),
             mock_policy_container_host
@@ -164,7 +189,7 @@ class RenderFrameImplTest : public RenderViewTest {
   }
 
   TestRenderFrame* GetMainRenderFrame() {
-    return static_cast<TestRenderFrame*>(view_->GetMainRenderFrame());
+    return static_cast<TestRenderFrame*>(RenderViewTest::GetMainRenderFrame());
   }
 
   TestRenderFrame* frame() { return frame_; }
@@ -182,12 +207,11 @@ class RenderFrameImplTest : public RenderViewTest {
   }
 
   static int32_t AutoplayFlagsForFrame(TestRenderFrame* frame) {
-    return frame->render_view()->GetWebView()->AutoplayFlagsForTest();
+    return frame->GetWebView()->AutoplayFlagsForTest();
   }
 
  private:
   TestRenderFrame* frame_;
-  FakeCompositorDependencies compositor_deps_;
   mojo::AssociatedRemote<blink::mojom::Widget> widget_remote_;
 };
 
@@ -208,22 +232,27 @@ class RenderFrameTestObserver : public RenderFrameObserver {
       const gfx::Rect& intersection_rect) override {
     last_intersection_rect_ = intersection_rect;
   }
+  void OnMainFrameViewportRectangleChanged(
+      const gfx::Rect& viewport_rect) override {
+    last_viewport_rect_ = viewport_rect;
+  }
 
-  bool visible() { return visible_; }
-  gfx::Rect last_intersection_rect() { return last_intersection_rect_; }
+  bool visible() const { return visible_; }
+  gfx::Rect last_intersection_rect() const { return last_intersection_rect_; }
+  gfx::Rect last_viewport_rect() const { return last_viewport_rect_; }
 
  private:
   bool visible_;
   gfx::Rect last_intersection_rect_;
+  gfx::Rect last_viewport_rect_;
 };
 
-// Verify that a frame with a RenderFrameProxy as a parent has its own
+// Verify that a frame with a WebRemoteFrame as a parent has its own
 // RenderWidget.
 TEST_F(RenderFrameImplTest, SubframeWidget) {
   EXPECT_TRUE(frame_widget());
 
-  RenderFrameImpl* main_frame =
-      static_cast<RenderViewImpl*>(view_)->GetMainRenderFrame();
+  RenderFrameImpl* main_frame = GetMainRenderFrame();
   blink::WebFrameWidget* main_frame_widget =
       main_frame->GetLocalRootWebFrameWidget();
   EXPECT_NE(frame_widget(), main_frame_widget);
@@ -235,7 +264,7 @@ TEST_F(RenderFrameImplTest, FrameResize) {
   // Make an update where the widget's size and the visible_viewport_size
   // are not the same.
   blink::VisualProperties visual_properties;
-  visual_properties.screen_infos = blink::ScreenInfos(blink::ScreenInfo());
+  visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
   gfx::Size widget_size(400, 200);
   gfx::Size visible_size(350, 170);
   visual_properties.new_size = widget_size;
@@ -250,9 +279,8 @@ TEST_F(RenderFrameImplTest, FrameResize) {
   main_frame_widget->ApplyVisualProperties(visual_properties);
   // The main frame widget's size is the "widget size", not the visible viewport
   // size, which is given to blink separately.
-  EXPECT_EQ(gfx::Size(view_->GetWebView()->MainFrameWidget()->Size()),
-            widget_size);
-  EXPECT_EQ(gfx::SizeF(view_->GetWebView()->VisualViewportSize()),
+  EXPECT_EQ(gfx::Size(web_view_->MainFrameWidget()->Size()), widget_size);
+  EXPECT_EQ(gfx::SizeF(web_view_->VisualViewportSize()),
             gfx::SizeF(visible_size));
   // The main frame doesn't change other local roots directly.
   EXPECT_NE(gfx::Size(frame_widget()->Size()), visible_size);
@@ -270,7 +298,7 @@ TEST_F(RenderFrameImplTest, FrameWasShown) {
   RenderFrameTestObserver observer(frame());
 
   widget_remote()->WasShown(
-      {} /* record_tab_switch_time_request */, false /* was_evicted=*/,
+      /* was_evicted=*/false,
       blink::mojom::RecordContentToVisibleTimeRequestPtr());
   base::RunLoop().RunUntilIdle();
 
@@ -285,8 +313,9 @@ class DownloadURLMockLocalFrameHost : public LocalFrameHostInterceptor {
       blink::AssociatedInterfaceProvider* provider)
       : LocalFrameHostInterceptor(provider) {}
 
-  MOCK_METHOD2(RunModalAlertDialog,
+  MOCK_METHOD3(RunModalAlertDialog,
                void(const std::u16string& alert_message,
+                    bool disable_third_party_subframe_suppresion,
                     RunModalAlertDialogCallback callback));
   MOCK_METHOD1(DownloadURL, void(blink::mojom::DownloadURLParamsPtr params));
 };
@@ -450,6 +479,20 @@ TEST_F(RenderFrameImplTest, MainFrameIntersectionRecorded) {
   EXPECT_EQ(observer.last_intersection_rect(), mainframe_intersection);
 }
 
+TEST_F(RenderFrameImplTest, MainFrameViewportRectRecorded) {
+  RenderFrameTestObserver observer(GetMainRenderFrame());
+  gfx::Rect mainframe_viewport(0, 0, 200, 140);
+  GetMainRenderFrame()->OnMainFrameViewportRectangleChanged(mainframe_viewport);
+  EXPECT_EQ(observer.last_viewport_rect(), mainframe_viewport);
+
+  // After a navigation, the notification of `mainframe_viewport` should be
+  // propagated to `RenderFrameTestObserver` again for the new document.
+  LoadHTML(kParentFrameHTML);
+  RenderFrameTestObserver observer2(GetMainRenderFrame());
+  GetMainRenderFrame()->OnMainFrameViewportRectangleChanged(mainframe_viewport);
+  EXPECT_EQ(observer2.last_viewport_rect(), mainframe_viewport);
+}
+
 // Used to annotate the source of an interface request.
 struct SourceAnnotation {
   // The URL of the active document in the frame, at the time the interface was
@@ -510,6 +553,11 @@ class TestSimpleBrowserInterfaceBrokerImpl
         interface_name_(interface_name),
         binder_callback_(binder_callback) {}
 
+  TestSimpleBrowserInterfaceBrokerImpl(
+      const TestSimpleBrowserInterfaceBrokerImpl&) = delete;
+  TestSimpleBrowserInterfaceBrokerImpl& operator=(
+      const TestSimpleBrowserInterfaceBrokerImpl&) = delete;
+
   void BindAndFlush(
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver) {
     ASSERT_FALSE(receiver_.is_bound());
@@ -528,13 +576,16 @@ class TestSimpleBrowserInterfaceBrokerImpl
 
   std::string interface_name_;
   BinderCallback binder_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSimpleBrowserInterfaceBrokerImpl);
 };
 
 class FrameHostTestInterfaceImpl : public mojom::FrameHostTestInterface {
  public:
   FrameHostTestInterfaceImpl() = default;
+
+  FrameHostTestInterfaceImpl(const FrameHostTestInterfaceImpl&) = delete;
+  FrameHostTestInterfaceImpl& operator=(const FrameHostTestInterfaceImpl&) =
+      delete;
+
   ~FrameHostTestInterfaceImpl() override {}
 
   void BindAndFlush(
@@ -543,7 +594,7 @@ class FrameHostTestInterfaceImpl : public mojom::FrameHostTestInterface {
     receiver_.WaitForIncomingCall();
   }
 
-  const base::Optional<SourceAnnotation>& ping_source() const {
+  const absl::optional<SourceAnnotation>& ping_source() const {
     return ping_source_;
   }
 
@@ -554,9 +605,7 @@ class FrameHostTestInterfaceImpl : public mojom::FrameHostTestInterface {
 
  private:
   mojo::Receiver<mojom::FrameHostTestInterface> receiver_{this};
-  base::Optional<SourceAnnotation> ping_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameHostTestInterfaceImpl);
+  absl::optional<SourceAnnotation> ping_source_;
 };
 
 // RenderFrameObserver that issues FrameHostTestInterface interface requests
@@ -566,6 +615,11 @@ class FrameHostTestInterfaceRequestIssuer : public RenderFrameObserver {
  public:
   explicit FrameHostTestInterfaceRequestIssuer(RenderFrame* render_frame)
       : RenderFrameObserver(render_frame) {}
+
+  FrameHostTestInterfaceRequestIssuer(
+      const FrameHostTestInterfaceRequestIssuer&) = delete;
+  FrameHostTestInterfaceRequestIssuer& operator=(
+      const FrameHostTestInterfaceRequestIssuer&) = delete;
 
   void RequestTestInterfaceOnFrameEvent(const std::string& event) {
     mojo::Remote<mojom::FrameHostTestInterface> remote;
@@ -600,8 +654,6 @@ class FrameHostTestInterfaceRequestIssuer : public RenderFrameObserver {
   void DidFinishSameDocumentNavigation() override {
     RequestTestInterfaceOnFrameEvent(kFrameEventDidCommitSameDocumentLoad);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FrameHostTestInterfaceRequestIssuer);
 };
 
 // RenderFrameObserver that can be used to wait for the next commit in a frame.
@@ -609,6 +661,9 @@ class FrameCommitWaiter : public RenderFrameObserver {
  public:
   explicit FrameCommitWaiter(RenderFrame* render_frame)
       : RenderFrameObserver(render_frame) {}
+
+  FrameCommitWaiter(const FrameCommitWaiter&) = delete;
+  FrameCommitWaiter& operator=(const FrameCommitWaiter&) = delete;
 
   void Wait() {
     if (did_commit_)
@@ -627,8 +682,6 @@ class FrameCommitWaiter : public RenderFrameObserver {
 
   base::RunLoop run_loop_;
   bool did_commit_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameCommitWaiter);
 };
 
 // Testing ContentRendererClient implementation that fires the |callback|
@@ -638,6 +691,12 @@ class FrameCreationObservingRendererClient : public ContentRendererClient {
   using FrameCreatedCallback = base::RepeatingCallback<void(TestRenderFrame*)>;
 
   FrameCreationObservingRendererClient() {}
+
+  FrameCreationObservingRendererClient(
+      const FrameCreationObservingRendererClient&) = delete;
+  FrameCreationObservingRendererClient& operator=(
+      const FrameCreationObservingRendererClient&) = delete;
+
   ~FrameCreationObservingRendererClient() override {}
 
   void set_callback(FrameCreatedCallback callback) {
@@ -655,8 +714,6 @@ class FrameCreationObservingRendererClient : public ContentRendererClient {
 
  private:
   FrameCreatedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameCreationObservingRendererClient);
 };
 
 // Expects observing the creation of a new frame, and creates an instance of
@@ -666,14 +723,19 @@ class ScopedNewFrameInterfaceProviderExerciser {
  public:
   explicit ScopedNewFrameInterfaceProviderExerciser(
       FrameCreationObservingRendererClient* frame_creation_observer,
-      const base::Optional<std::string>& html_override_for_first_load =
-          base::nullopt)
+      const absl::optional<std::string>& html_override_for_first_load =
+          absl::nullopt)
       : frame_creation_observer_(frame_creation_observer),
         html_override_for_first_load_(html_override_for_first_load) {
     frame_creation_observer_->set_callback(base::BindRepeating(
         &ScopedNewFrameInterfaceProviderExerciser::OnFrameCreated,
         base::Unretained(this)));
   }
+
+  ScopedNewFrameInterfaceProviderExerciser(
+      const ScopedNewFrameInterfaceProviderExerciser&) = delete;
+  ScopedNewFrameInterfaceProviderExerciser& operator=(
+      const ScopedNewFrameInterfaceProviderExerciser&) = delete;
 
   ~ScopedNewFrameInterfaceProviderExerciser() {
     frame_creation_observer_->reset_callback();
@@ -728,18 +790,16 @@ class ScopedNewFrameInterfaceProviderExerciser {
 
   FrameCreationObservingRendererClient* frame_creation_observer_;
   TestRenderFrame* frame_ = nullptr;
-  base::Optional<std::string> html_override_for_first_load_;
+  absl::optional<std::string> html_override_for_first_load_;
   GURL first_committed_url_;
 
-  base::Optional<FrameCommitWaiter> frame_commit_waiter_;
-  base::Optional<FrameHostTestInterfaceRequestIssuer> test_request_issuer_;
+  absl::optional<FrameCommitWaiter> frame_commit_waiter_;
+  absl::optional<FrameHostTestInterfaceRequestIssuer> test_request_issuer_;
 
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker_receiver_for_initial_empty_document_;
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
       browser_interface_broker_receiver_for_first_document_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedNewFrameInterfaceProviderExerciser);
 };
 
 // Extracts all interface receivers for FrameHostTestInterface pending on the
@@ -780,6 +840,12 @@ class RenderFrameRemoteInterfacesTest : public RenderViewTest {
     blink::WebRuntimeFeatures::EnableFeatureFromString(
         "AllowContentInitiatedDataUrlNavigations", true);
   }
+
+  RenderFrameRemoteInterfacesTest(const RenderFrameRemoteInterfacesTest&) =
+      delete;
+  RenderFrameRemoteInterfacesTest& operator=(
+      const RenderFrameRemoteInterfacesTest&) = delete;
+
   ~RenderFrameRemoteInterfacesTest() override {
     blink::WebRuntimeFeatures::EnableFeatureFromString(
         "AllowContentInitiatedDataUrlNavigations", false);
@@ -806,7 +872,7 @@ class RenderFrameRemoteInterfacesTest : public RenderViewTest {
   }
 
   TestRenderFrame* GetMainRenderFrame() {
-    return static_cast<TestRenderFrame*>(view_->GetMainRenderFrame());
+    return static_cast<TestRenderFrame*>(RenderViewTest::GetMainRenderFrame());
   }
 
   ContentRendererClient* CreateContentRendererClient() override {
@@ -818,8 +884,6 @@ class RenderFrameRemoteInterfacesTest : public RenderViewTest {
   // Owned by RenderViewTest.
   FrameCreationObservingRendererClient* frame_creation_observer_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameRemoteInterfacesTest);
 };
 
 // Expect that |remote_interfaces_| is bound before the first committed load in
@@ -1013,13 +1077,13 @@ TEST_F(RenderFrameRemoteInterfacesTest, ReusedOnSameDocumentNavigation) {
 TEST_F(RenderFrameImplTest, LastCommittedUrlForUKM) {
   // Test the case where we have a data url with a base_url.
   GURL data_url = GURL("data:text/html,");
-  auto common_params = CreateCommonNavigationParams();
+  auto common_params = blink::CreateCommonNavigationParams();
   common_params->url = data_url;
-  common_params->navigation_type = mojom::NavigationType::DIFFERENT_DOCUMENT;
+  common_params->navigation_type =
+      blink::mojom::NavigationType::DIFFERENT_DOCUMENT;
   common_params->transition = ui::PAGE_TRANSITION_TYPED;
   common_params->base_url_for_data_url = GURL("about:blank");
-  common_params->history_url_for_data_url = GURL("about:blank");
-  auto commit_params = CreateCommitNavigationParams();
+  auto commit_params = blink::CreateCommitNavigationParams();
   auto waiter = std::make_unique<FrameLoadWaiter>(GetMainRenderFrame());
   GetMainRenderFrame()->Navigate(std::move(common_params),
                                  std::move(commit_params));
@@ -1042,6 +1106,16 @@ TEST_F(RenderFrameImplTest, LastCommittedUrlForUKM) {
   LoadHTMLWithUrlOverride("Test", "http://example.com");
   waiter->Wait();
   EXPECT_EQ(GURL(GetMainRenderFrame()->LastCommittedUrlForUKM()), override_url);
+}
+
+// Verify that a frame with a pending update is cancelled when a forced update
+// is sent.
+TEST_F(RenderFrameImplTest, SendUpdateCancelsPending) {
+  RenderFrameImpl* main_frame = GetMainRenderFrame();
+  main_frame->StartDelayedSyncTimer();
+  EXPECT_TRUE(main_frame->delayed_state_sync_timer_.IsRunning());
+  main_frame->SendUpdateState();
+  EXPECT_FALSE(main_frame->delayed_state_sync_timer_.IsRunning());
 }
 
 }  // namespace content

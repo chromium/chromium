@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ ShellNaClBrowserDelegate::~ShellNaClBrowserDelegate() {
 }
 
 void ShellNaClBrowserDelegate::ShowMissingArchInfobar(int render_process_id,
-                                                      int render_view_id) {
+                                                      int render_frame_id) {
   // app_shell does not have infobars.
   LOG(ERROR) << "Missing architecture for pid " << render_process_id;
 }
@@ -52,9 +52,9 @@ bool ShellNaClBrowserDelegate::DialogsAreSuppressed() {
 
 bool ShellNaClBrowserDelegate::GetCacheDirectory(base::FilePath* cache_dir) {
   // Just use the general cache directory, not a subdirectory like Chrome does.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   return base::PathService::Get(base::DIR_CACHE, cache_dir);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // TODO(yoz): Find an appropriate persistent directory to use here.
   return base::PathService::Get(base::DIR_TEMP, cache_dir);
 #endif
@@ -152,12 +152,6 @@ ShellNaClBrowserDelegate::GetMapUrlToLocalFilePathCallback(
         return true;
       },
       base::Owned(std::move(extensions)));
-}
-
-bool ShellNaClBrowserDelegate::IsNonSfiModeAllowed(
-    const base::FilePath& profile_directory,
-    const GURL& manifest_url) {
-  return false;
 }
 
 }  // namespace extensions

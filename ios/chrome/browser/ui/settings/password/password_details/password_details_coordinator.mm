@@ -1,38 +1,38 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator.h"
 
-#include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/password_manager/core/browser/password_form.h"
-#include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/password_manager/core/browser/password_manager_metrics_util.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_handler.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller.h"
-#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 @interface PasswordDetailsCoordinator () <PasswordDetailsHandler> {
-  password_manager::PasswordForm _password;
+  password_manager::CredentialUIEntry _credential;
 
   // Manager responsible for password check feature.
   IOSChromePasswordCheckManager* _manager;
@@ -48,14 +48,15 @@
 // passwords.
 @property(nonatomic, weak) ReauthenticationModule* reauthenticationModule;
 
+// Denotes the type of the credential passed to this coordinator. Could be
+// blocked, federated, new or regular.
+@property(nonatomic, assign) CredentialType credentialType;
+
 // Modal alert for interactions with password.
 @property(nonatomic, strong) AlertCoordinator* alertCoordinator;
 
 // The action sheet coordinator, if one is currently being shown.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
-
-// Dispatcher.
-@property(nonatomic, weak) id<ApplicationCommands, BrowserCommands> dispatcher;
 
 @end
 
@@ -67,8 +68,9 @@
     initWithBaseNavigationController:
         (UINavigationController*)navigationController
                              browser:(Browser*)browser
-                            password:
-                                (const password_manager::PasswordForm&)password
+                          credential:
+                              (const password_manager::CredentialUIEntry&)
+                                  credential
                         reauthModule:(ReauthenticationModule*)reauthModule
                 passwordCheckManager:(IOSChromePasswordCheckManager*)manager {
   self = [super initWithBaseViewController:navigationController
@@ -78,25 +80,33 @@
     DCHECK(manager);
 
     _baseNavigationController = navigationController;
-    _password = password;
+    _credential = credential;
     _manager = manager;
     _reauthenticationModule = reauthModule;
-    _dispatcher = static_cast<id<BrowserCommands, ApplicationCommands>>(
-        browser->GetCommandDispatcher());
+    _credentialType = credential.blocked_by_user ? CredentialTypeBlocked
+                                                 : CredentialTypeRegular;
+    if (_credentialType == CredentialTypeRegular &&
+        !credential.federation_origin.opaque()) {
+      _credentialType = CredentialTypeFederation;
+    }
   }
   return self;
 }
 
 - (void)start {
   self.viewController = [[PasswordDetailsTableViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
+      initWithCredentialType:_credentialType
+            syncingUserEmail:nil];
 
-  self.mediator = [[PasswordDetailsMediator alloc] initWithPassword:_password
+  self.mediator = [[PasswordDetailsMediator alloc] initWithPassword:_credential
                                                passwordCheckManager:_manager];
   self.mediator.consumer = self.viewController;
   self.viewController.handler = self;
   self.viewController.delegate = self.mediator;
-  self.viewController.commandsHandler = self.dispatcher;
+  self.viewController.applicationCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  self.viewController.snackbarCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
   self.viewController.reauthModule = self.reauthenticationModule;
 
   [self.baseNavigationController pushViewController:self.viewController
@@ -138,7 +148,12 @@
       addItemWithTitle:l10n_util::GetNSString(
                            IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_LEARN_HOW)
                 action:^{
-                  [weakSelf.dispatcher closeSettingsUIAndOpenURL:command];
+                  id<ApplicationCommands> applicationCommandsHandler =
+                      HandlerForProtocol(
+                          weakSelf.browser->GetCommandDispatcher(),
+                          ApplicationCommands);
+                  [applicationCommandsHandler
+                      closeSettingsUIAndOpenURL:command];
                 }
                  style:UIAlertActionStyleDefault];
 
@@ -161,8 +176,7 @@
                          browser:self.browser
                            title:nil
                          message:message
-                   barButtonItem:self.viewController.navigationItem
-                                     .rightBarButtonItem];
+                   barButtonItem:self.viewController.deleteButton];
 
   __weak __typeof(self) weakSelf = self;
 
@@ -210,12 +224,16 @@
   [self.actionSheetCoordinator start];
 }
 
+- (void)showPasswordDetailsInEditModeWithoutAuthentication {
+  [self.viewController showEditViewWithoutAuthentication];
+}
+
 #pragma mark - Private
 
 // Notifies delegate about password deletion and records metric if needed.
 - (void)passwordDeletionConfirmedForCompromised:(BOOL)compromised {
   [self.delegate passwordDetailsCoordinator:self
-                             deletePassword:self.mediator.password];
+                           deleteCredential:self.mediator.credential];
   if (compromised) {
     base::UmaHistogramEnumeration(
         "PasswordManager.BulkCheck.UserAction",

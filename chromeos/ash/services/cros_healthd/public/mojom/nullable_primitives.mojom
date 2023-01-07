@@ -1,0 +1,56 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file contains Mojo structs representing nullable primitives - since Mojo
+// doesn't support these natively, when we want a primitive parameter or return
+// value to be optional, we need to wrap it in a nullable struct.
+// TODO(crbug/657632): Remove this file if Mojo adds support for nullable
+// primitives.
+
+// NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
+// in src/plaform2/diagnostics/mojom/public/nullable_primitives.mojom.
+
+module ash.cros_healthd.mojom;
+
+// Optional uint8 field.
+[Stable]
+struct NullableUint8 {
+  // The value of the uint8.
+  uint8 value;
+};
+
+// Optional int16 field.
+[Stable]
+struct NullableInt16 {
+  // The value of the int16.
+  int16 value;
+};
+
+// Optional uint16 field.
+[Stable]
+struct NullableUint16 {
+  // The value of the uint16.
+  uint16 value;
+};
+
+// Optional uint32 field.
+[Stable]
+struct NullableUint32 {
+  // The value of the uint32.
+  uint32 value;
+};
+
+// Optional uint64 field.
+[Stable]
+struct NullableUint64 {
+  // The value of the uint64.
+  uint64 value;
+};
+
+// Optional double field.
+[Stable]
+struct NullableDouble {
+  // The value of the double.
+  double value;
+};

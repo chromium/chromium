@@ -7,11 +7,19 @@ function done() {
   if (window.testRunner)
     testRunner.notifyDone();
 }
+
+addEventListener('message', (msg) => {
+  if (msg.data === 'done')
+    done();
+});
+
 window.func = function () {
   alert("FAIL: Wrong function.");
   done();
 };
+
 document.foo = "FAIL: Wrong wrappers.";
+
 if (window.testRunner) {
   testRunner.dumpAsText();
   testRunner.waitUntilDone();
@@ -20,7 +28,7 @@ if (window.testRunner) {
     "document.foo = 'PASS';\n" +
     "window.func = function () {\n" +
     "  alert(document.foo);\n" +
-    "  window.location = 'javascript:done()';\n" +
+    "  window.postMessage('done', '*');\n" +
     "};\n" +
     "window.setTimeout(func, 0);");
 }

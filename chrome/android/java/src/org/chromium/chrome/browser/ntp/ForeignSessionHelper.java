@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,10 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -80,12 +82,12 @@ public class ForeignSessionHelper {
      * Represents synced foreign tab.
      */
     static class ForeignSessionTab {
-        public final String url;
+        public final GURL url;
         public final String title;
         public final long timestamp;
         public final int id;
 
-        private ForeignSessionTab(String url, String title, long timestamp, int id) {
+        private ForeignSessionTab(GURL url, String title, long timestamp, int id) {
             this.url = url;
             this.title = title;
             this.timestamp = timestamp;
@@ -112,7 +114,7 @@ public class ForeignSessionHelper {
 
     @CalledByNative
     private static void pushTab(
-            ForeignSessionWindow window, String url, String title, long timestamp, int sessionId) {
+            ForeignSessionWindow window, GURL url, String title, long timestamp, int sessionId) {
         ForeignSessionTab tab = new ForeignSessionTab(url, title, timestamp, sessionId);
         window.tabs.add(tab);
     }
@@ -158,18 +160,18 @@ public class ForeignSessionHelper {
     }
 
     /**
-     * @return The list of synced foreign sessions. {@code null} iff it fails to get them for some
-     *         reason.
+     * @return The list of synced foreign sessions. If it fails to get them for some reason will
+     * return an empty list.
      */
     List<ForeignSession> getForeignSessions() {
         if (!isTabSyncEnabled()) {
-            return null;
+            return Collections.emptyList();
         }
         List<ForeignSession> result = new ArrayList<ForeignSession>();
         boolean received = ForeignSessionHelperJni.get().getForeignSessions(
                 mNativeForeignSessionHelper, result);
         if (!received) {
-            result = null;
+            result = Collections.emptyList();
         }
 
         return result;

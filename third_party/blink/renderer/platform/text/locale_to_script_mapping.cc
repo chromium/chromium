@@ -445,7 +445,7 @@ UScriptCode LocaleToScriptCodeForFontSelection(const String& locale) {
   String canonical_locale = locale;
   canonical_locale.Replace('_', '-');
 
-  while (!canonical_locale.IsEmpty()) {
+  while (!canonical_locale.empty()) {
     for (const auto& kv : kLocaleScriptList) {
       if (EqualIgnoringASCIICase(canonical_locale, kv.subtag))
         return kv.script;

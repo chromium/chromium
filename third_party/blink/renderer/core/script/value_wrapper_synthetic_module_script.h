@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ class CORE_EXPORT ValueWrapperSyntheticModuleScript final
                                     const TextPosition& start_position);
 
   // <specdef
-  // href="https://heycam.github.io/webidl/#synthetic-module-record">
+  // href="https://webidl.spec.whatwg.org/#synthetic-module-record">
   // An abstract operation that will be performed upon evaluation of the module,
   // taking the Synthetic Module Record as its sole argument. These will usually
   // set up the exported values, by using SetSyntheticModuleExport. They must

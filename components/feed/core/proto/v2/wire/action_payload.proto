@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,5 +9,5 @@ package feedwire;
 option optimize_for = LITE_RUNTIME;
 
 message ActionPayload {
-  optional bytes action_payload_data = 257605906;
+  repeated bytes batched_action_payload_data = 370974597;
 }

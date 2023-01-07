@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+<script src="../../fast/forms/resources/picker-common.js"></script>
+
+<style>
+  .black-on-white { color: black; background-color: white; }
+  .light-scheme { color-scheme: light; }
+  .dark-scheme { color-scheme: dark; }
+  .light-only-scheme { color-scheme: only light; }
+</style>
+
+<select style="background-color:white">
+  <option></option>
+  <option>OPTION1</option>
+  <option class="black-on-white light-scheme">OPTION2</option>
+  <option class="black-on-white dark-scheme">OPTION3</option>
+  <option class="black-on-white light-only-scheme">OPTION4</option>
+</select>
+
+<script>
+  window.onload = openPickerAppearanceOnly(document.querySelector('select'));
+</script>

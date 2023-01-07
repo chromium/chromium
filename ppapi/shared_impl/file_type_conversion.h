@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ PPAPI_SHARED_EXPORT int FileErrorToPepperError(base::File::Error error_code);
 // Returns |true| if okay.
 PPAPI_SHARED_EXPORT bool PepperFileOpenFlagsToPlatformFileFlags(
     int32_t pp_open_flags,
-    int* flags_out);
+    uint32_t* flags_out);
 
 PPAPI_SHARED_EXPORT void FileInfoToPepperFileInfo(const base::File::Info& info,
                                                   PP_FileSystemType fs_type,

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,16 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/threading/sequence_bound.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -32,12 +30,11 @@ TEST(SiteDataCacheFactoryTest, EndToEnd) {
   content::TestBrowserContext browser_context;
   cache_factory.AsyncCall(&SiteDataCacheFactory::OnBrowserContextCreated)
       .WithArgs(browser_context.UniqueId(), browser_context.GetPath(),
-                base::nullopt);
+                absl::nullopt);
 
   {
     base::RunLoop run_loop;
     cache_factory.PostTaskWithThisObject(
-        FROM_HERE,
         base::BindOnce(
             [](const std::string& browser_context_id,
                base::OnceClosure quit_closure, SiteDataCacheFactory* factory) {
@@ -57,7 +54,6 @@ TEST(SiteDataCacheFactoryTest, EndToEnd) {
   {
     base::RunLoop run_loop;
     cache_factory.PostTaskWithThisObject(
-        FROM_HERE,
         base::BindOnce(
             [](const std::string& browser_context_id,
                base::OnceClosure quit_closure, SiteDataCacheFactory* factory) {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,11 @@
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/viz_service_export.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "components/viz/service/display/ca_layer_overlay.h"
 #endif
 
@@ -32,9 +32,9 @@ namespace viz {
 // destroyed on the gpu thread.
 class VIZ_SERVICE_EXPORT OverlayProcessorOnGpu {
  public:
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   using CandidateList = CALayerOverlayList;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   using CandidateList = DCLayerOverlayList;
 #else
   // Default.
@@ -44,13 +44,17 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOnGpu {
   explicit OverlayProcessorOnGpu(
       gpu::DisplayCompositorMemoryAndTaskControllerOnGpu*
           display_controller_on_gpu);
+
+  OverlayProcessorOnGpu(const OverlayProcessorOnGpu&) = delete;
+  OverlayProcessorOnGpu& operator=(const OverlayProcessorOnGpu&) = delete;
+
   ~OverlayProcessorOnGpu();
 
   // This function takes the overlay candidates, and schedule them for
   // presentation later.
   void ScheduleOverlays(CandidateList&& overlay_candidates);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void NotifyOverlayPromotions(
       base::flat_set<gpu::Mailbox> promotion_denied,
       base::flat_map<gpu::Mailbox, gfx::Rect> possible_promotions);
@@ -63,8 +67,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOnGpu {
   std::unique_ptr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(OverlayProcessorOnGpu);
 };
 
 }  // namespace viz

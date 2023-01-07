@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,14 +13,13 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/native_library.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
 #include "base/win/windows_version.h"
+#include "remoting/host/base/host_exit_codes.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/evaluate_capability.h"
-#include "remoting/host/host_exit_codes.h"
-#include "remoting/host/switches.h"
 
 namespace remoting {
 

@@ -1,11 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_COMMON_MAC_ATTRIBUTED_STRING_TYPE_CONVERTERS_H_
 #define CONTENT_COMMON_MAC_ATTRIBUTED_STRING_TYPE_CONVERTERS_H_
-
-#include <string>
 
 #include "content/common/content_export.h"
 #include "ui/base/mojom/attributed_string.mojom.h"

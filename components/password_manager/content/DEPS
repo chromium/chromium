@@ -3,7 +3,7 @@ include_rules = [
   "+content/public/common",
   "+mojo/public",
   # Allow inclusion of WebKit API files.
-  "+third_party/blink/public/mojom/credentialmanager",
+  "+third_party/blink/public/mojom/credentialmanagement",
   "+third_party/blink/public/web",
 ]
 

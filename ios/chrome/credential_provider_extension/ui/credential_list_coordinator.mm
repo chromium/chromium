@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,29 +7,29 @@
 #import <AuthenticationServices/AuthenticationServices.h>
 #import <UIKit/UIKit.h>
 
-#include "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
-#import "ios/chrome/credential_provider_extension/ui/consent_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_details_consumer.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_details_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_mediator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_ui_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_view_controller.h"
 #import "ios/chrome/credential_provider_extension/ui/empty_credentials_view_controller.h"
+#import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
+#import "ios/chrome/credential_provider_extension/ui/new_password_coordinator.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 @interface CredentialListCoordinator () <ConfirmationAlertActionHandler,
-                                         ConsentCoordinatorDelegate,
                                          CredentialListUIHandler,
                                          CredentialDetailsConsumerDelegate>
 
-// Base view controller from where |viewController| is presented.
+// Base view controller from where `viewController` is presented.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
 // The view controller of this coordinator.
@@ -48,11 +48,10 @@
 @property(nonatomic, strong)
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers;
 
-// Consent coordinator that shows a view requesting device auth in order to
-// enable the extension.
-@property(nonatomic, strong) ConsentCoordinator* consentCoordinator;
+// Coordinator that shows a view for the user to create a new password.
+@property(nonatomic, strong) NewPasswordCoordinator* createPasswordCoordinator;
 
-// Interface for |reauthenticationModule|, handling mostly the case when no
+// Interface for `reauthenticationModule`, handling mostly the case when no
 // hardware for authentication is available.
 @property(nonatomic, weak) ReauthenticationHandler* reauthenticationHandler;
 
@@ -96,21 +95,7 @@
   [self.baseViewController presentViewController:self.viewController
                                         animated:NO
                                       completion:nil];
-
-  NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
-  BOOL isConsentGiven =
-      [user_defaults boolForKey:kUserDefaultsCredentialProviderConsentVerified];
-  if (!isConsentGiven) {
-    self.consentCoordinator = [[ConsentCoordinator alloc]
-           initWithBaseViewController:self.viewController
-                              context:self.context
-              reauthenticationHandler:self.reauthenticationHandler
-        isInitialConfigurationRequest:NO];
-    self.consentCoordinator.delegate = self;
-    [self.consentCoordinator start];
-  } else {
-    [self.mediator fetchCredentials];
-  }
+  [self.mediator fetchCredentials];
 }
 
 - (void)stop {
@@ -119,14 +104,6 @@
                          completion:nil];
   self.viewController = nil;
   self.mediator = nil;
-}
-
-#pragma mark - ConsentCoordinatorDelegate
-
-- (void)consentCoordinatorDidAcceptConsent:
-    (ConsentCoordinator*)consentCoordinator {
-  [consentCoordinator stop];
-  [self.mediator fetchCredentials];
 }
 
 #pragma mark - CredentialListUIHandler
@@ -166,6 +143,15 @@
   [self.viewController pushViewController:detailsViewController animated:YES];
 }
 
+- (void)showCreateNewPasswordUI {
+  self.createPasswordCoordinator = [[NewPasswordCoordinator alloc]
+      initWithBaseViewController:self.viewController
+                         context:self.context
+              serviceIdentifiers:self.serviceIdentifiers
+             existingCredentials:self.credentialStore];
+  [self.createPasswordCoordinator start];
+}
+
 #pragma mark - CredentialDetailsConsumerDelegate
 
 - (void)navigationCancelButtonWasPressed:(UIButton*)button {
@@ -201,14 +187,6 @@
 }
 
 - (void)confirmationAlertPrimaryAction {
-  // No-op.
-}
-
-- (void)confirmationAlertSecondaryAction {
-  // No-op.
-}
-
-- (void)confirmationAlertLearnMoreAction {
   // No-op.
 }
 

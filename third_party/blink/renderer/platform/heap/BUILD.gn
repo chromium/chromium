@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,52 +8,20 @@ import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/platform/platform.gni")
+import("//v8/gni/v8.gni")
 
 buildflag_header("blink_heap_buildflags") {
   header = "heap_buildflags.h"
   header_dir = "third_party/blink/renderer/platform/heap"
 
-  flags = [
-    "BLINK_HEAP_VERIFICATION=$enable_blink_heap_verification",
-    "BLINK_HEAP_YOUNG_GENERATION=$enable_blink_heap_young_generation",
-  ]
-}
-
-source_set("heap_unsanitized") {
-  if (is_asan) {
-    configs -= [ "//build/config/sanitizers:default_sanitizer_flags" ]
-  }
-  configs +=
-      [ "//third_party/blink/renderer/platform:blink_platform_implementation" ]
-
-  # std::atomic<>:: functions must be inlined.
-  configs -= [ "//build/config/compiler:default_optimization" ]
-  configs += [ "//build/config/compiler:optimize_max" ]
-  if (using_mismatched_sample_profile) {
-    configs -= [ "//build/config/compiler:afdo_optimize_size" ]
-  }
-
-  if (!enable_blink_heap_use_v8_oilpan) {
-    sources = [
-      "impl/unsanitized_atomic.cc",
-      "impl/unsanitized_atomic.h",
-    ]
-  } else {
-    sources = []
-  }
-
-  deps = [
-    "//base",
-    "//third_party/blink/renderer/platform/wtf",
-  ]
-  public_deps = [ "//third_party/blink/renderer/platform:platform_export" ]
+  flags = [ "VERBOSE_PERSISTENT=$cppgc_enable_object_names" ]
 }
 
 blink_platform_sources("heap") {
-  configs += [ "//build/config/compiler:noshadowing" ]
-
   sources = [
+    "blink_gc_memory_dump_provider.cc",
     "blink_gc_memory_dump_provider.h",
+    "collection_support/clear_collection_scope.h",
     "collection_support/heap_deque.h",
     "collection_support/heap_hash_counted_set.h",
     "collection_support/heap_hash_map.h",
@@ -61,131 +29,47 @@ blink_platform_sources("heap") {
     "collection_support/heap_hash_table_backing.h",
     "collection_support/heap_linked_hash_set.h",
     "collection_support/heap_linked_stack.h",
-    "collection_support/heap_list_hash_set.h",
     "collection_support/heap_vector.h",
     "collection_support/heap_vector_backing.h",
+    "cross_thread_handle.h",
+    "cross_thread_handle_internal.h",
+    "cross_thread_persistent.h",
+    "custom_spaces.cc",
     "custom_spaces.h",
     "disallow_new_wrapper.h",
+    "forward.h",
     "garbage_collected.h",
     "gc_task_runner.h",
-    "handle.h",
-    "heap.h",
-    "heap_allocator.h",
     "heap_allocator_impl.h",
-    "heap_stats_collector.h",
     "heap_traits.h",
     "member.h",
     "persistent.h",
+    "prefinalizer.h",
+    "process_heap.cc",
     "process_heap.h",
     "self_keep_alive.h",
+    "thread_local.h",
+    "thread_state.cc",
     "thread_state.h",
     "thread_state_scopes.h",
+    "thread_state_storage.cc",
+    "thread_state_storage.h",
     "trace_traits.h",
-    "unified_heap_controller.h",
-    "unified_heap_marking_visitor.h",
     "visitor.h",
+    "write_barrier.h",
   ]
 
   deps = [
     ":blink_heap_buildflags",
     "//base",
+    "//gin:gin",
     "//third_party/blink/renderer/platform:make_platform_generated",
-    "//third_party/blink/renderer/platform/heap:heap_unsanitized",
-    "//third_party/blink/renderer/platform/heap/asm",
-    "//third_party/blink/renderer/platform/wtf:buildflags",
     "//third_party/icu",
+
+    # Dependency on V8 which transitively depends on cppgc but exposes
+    # JS-related C++ heap through V8's Isolate.
     "//v8",
   ]
-
-  if (enable_blink_heap_use_v8_oilpan) {
-    sources += [
-      "v8_wrapper/blink_gc.h",
-      "v8_wrapper/blink_gc_memory_dump_provider.cc",
-      "v8_wrapper/blink_gc_memory_dump_provider.h",
-      "v8_wrapper/collection_support/heap_hash_table_backing.h",
-      "v8_wrapper/collection_support/heap_vector_backing.h",
-      "v8_wrapper/custom_spaces.cc",
-      "v8_wrapper/custom_spaces.h",
-      "v8_wrapper/garbage_collected.h",
-      "v8_wrapper/heap.h",
-      "v8_wrapper/heap_allocator_impl.h",
-      "v8_wrapper/heap_stats_collector.h",
-      "v8_wrapper/heap_traits.h",
-      "v8_wrapper/member.h",
-      "v8_wrapper/persistent.h",
-      "v8_wrapper/process_heap.h",
-      "v8_wrapper/thread_state.cc",
-      "v8_wrapper/thread_state.h",
-      "v8_wrapper/thread_state_scopes.h",
-      "v8_wrapper/trace_traits.h",
-      "v8_wrapper/unified_heap_controller.h",
-      "v8_wrapper/unified_heap_marking_visitor.h",
-      "v8_wrapper/visitor.h",
-    ]
-
-    deps += [
-      "//gin:gin",
-
-      # Dependency on V8 which transitively depends on cppgc but exposes
-      # JS-related C++ heap through V8's Isolate.
-      "//v8",
-    ]
-  } else {
-    sources += [
-      "impl/atomic_entry_flag.h",
-      "impl/blink_gc.cc",
-      "impl/blink_gc.h",
-      "impl/blink_gc_memory_dump_provider.cc",
-      "impl/blink_gc_memory_dump_provider.h",
-      "impl/collection_support/heap_hash_table_backing.h",
-      "impl/collection_support/heap_vector_backing.h",
-      "impl/finalizer_traits.h",
-      "impl/garbage_collected.h",
-      "impl/gc_info.cc",
-      "impl/gc_info.h",
-      "impl/heap.cc",
-      "impl/heap.h",
-      "impl/heap_allocator_impl.cc",
-      "impl/heap_allocator_impl.h",
-      "impl/heap_compact.cc",
-      "impl/heap_compact.h",
-      "impl/heap_page.cc",
-      "impl/heap_page.h",
-      "impl/heap_stats_collector.cc",
-      "impl/heap_stats_collector.h",
-      "impl/marking_scheduling_oracle.cc",
-      "impl/marking_scheduling_oracle.h",
-      "impl/marking_verifier.cc",
-      "impl/marking_verifier.h",
-      "impl/marking_visitor.cc",
-      "impl/marking_visitor.h",
-      "impl/member.h",
-      "impl/name_traits.h",
-      "impl/page_bloom_filter.h",
-      "impl/page_memory.cc",
-      "impl/page_memory.h",
-      "impl/page_pool.cc",
-      "impl/page_pool.h",
-      "impl/persistent.h",
-      "impl/persistent_node.cc",
-      "impl/persistent_node.h",
-      "impl/process_heap.cc",
-      "impl/process_heap.h",
-      "impl/thread_state.cc",
-      "impl/thread_state.h",
-      "impl/thread_state_scopes.h",
-      "impl/thread_state_statistics.cc",
-      "impl/thread_state_statistics.h",
-      "impl/threading_traits.h",
-      "impl/trace_traits.h",
-      "impl/unified_heap_controller.cc",
-      "impl/unified_heap_controller.h",
-      "impl/unified_heap_marking_visitor.cc",
-      "impl/unified_heap_marking_visitor.h",
-      "impl/visitor.h",
-      "impl/worklist.h",
-    ]
-  }
 
   if (!is_debug && !optimize_for_size) {
     configs -= [ "//build/config/compiler:default_optimization" ]
@@ -208,17 +92,10 @@ source_set("test_support") {
   sources = [
     "heap_test_objects.cc",
     "heap_test_objects.h",
+    "heap_test_platform.h",
+    "heap_test_utilities.cc",
     "heap_test_utilities.h",
   ]
-
-  if (enable_blink_heap_use_v8_oilpan) {
-    sources += [ "v8_wrapper/heap_test_utilities.h" ]
-  } else {
-    sources += [
-      "impl/heap_test_utilities.cc",
-      "impl/heap_test_utilities.h",
-    ]
-  }
 
   deps = [
     ":blink_heap_buildflags",
@@ -226,68 +103,57 @@ source_set("test_support") {
     "//third_party/blink/public/mojom:mojom_platform_blink_headers",
     "//third_party/blink/renderer/platform:bindings_buildflags",
     "//third_party/blink/renderer/platform:platform",
-    "//third_party/blink/renderer/platform/wtf:buildflags",
   ]
 
-  if (enable_blink_heap_use_v8_oilpan) {
-    deps += [ "//v8:v8_for_testing" ]
-  }
+  # TODO(v8:11952): Switch to `//v8:v8_for_testing` as target once it properly
+  # depends on v8 without duplicating the whole library which causes ODR
+  # violations when `//v8:v8` is also pulled in otherwise.
+  deps += [ "//v8:v8" ]
 
   public_deps = [ "//base/test:test_support" ]
 }
 
 test("blink_heap_unittests") {
   deps = [ ":blink_heap_unittests_sources" ]
+
   if (is_android) {
     deps += [
-      "//base:base_java",
       "//content/shell/android:content_shell_assets",
       "//net/android:net_java",
       "//ui/android:ui_full_java",
     ]
+  }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/test_fonts.shard.test-cml",
+      "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
+    ]
+
+    # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
+    # permissions.
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
   }
 }
 
 source_set("blink_heap_unittests_sources") {
   testonly = true
 
-  sources = [ "../testing/run_all_tests.cc" ]
+  sources = [
+    "../testing/run_all_tests.cc",
+    "test/blink_gc_memory_dump_provider_test.cc",
+    "test/concurrent_marking_test.cc",
+    "test/cross_thread_handle_test.cc",
+    "test/heap_compact_test.cc",
+    "test/heap_linked_stack_test.cc",
+    "test/heap_test.cc",
+    "test/heap_traits_test.cc",
+    "test/incremental_marking_test.cc",
+    "test/persistent_test.cc",
+    "test/weakness_marking_test.cc",
+  ]
 
-  # TODO(1056170): Remove branch after implementing
-  # v8_wrapper/heap_test_utilities.* as tests should work for both
-  # implementations.
-  if (!enable_blink_heap_use_v8_oilpan) {
-    sources += [
-      "test/blink_gc_memory_dump_provider_test.cc",
-      "test/concurrent_marking_test.cc",
-      "test/heap_compact_test.cc",
-      "test/heap_linked_stack_test.cc",
-      "test/heap_test.cc",
-      "test/heap_traits_test.cc",
-      "test/incremental_marking_test.cc",
-      "test/persistent_test.cc",
-      "test/weakness_marking_test.cc",
-      "test/write_barrier_perftest.cc",
-    ]
-  }
-
-  if (!enable_blink_heap_use_v8_oilpan) {
-    sources += [
-      "impl/test/card_table_test.cc",
-      "impl/test/gc_info_test.cc",
-      "impl/test/heap_stats_collector_test.cc",
-      "impl/test/heap_thread_test.cc",
-      "impl/test/incremental_marking_internals_test.cc",
-      "impl/test/marking_scheduling_oracle_test.cc",
-      "impl/test/marking_verifier_test.cc",
-      "impl/test/name_trait_test.cc",
-      "impl/test/object_start_bitmap_test.cc",
-      "impl/test/thread_state_scheduling_test.cc",
-      "impl/test/worklist_test.cc",
-    ]
-  }
-
-  if (enable_blink_heap_young_generation) {
+  if (cppgc_enable_young_generation) {
     sources += [ "test/minor_gc_test.cc" ]
   }
 
@@ -301,8 +167,8 @@ source_set("blink_heap_unittests_sources") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//gin:gin",
     "//mojo/core/embedder:embedder",
-    "//skia:test_fonts",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/renderer/platform:test_support",
@@ -310,7 +176,56 @@ source_set("blink_heap_unittests_sources") {
   ]
 
   if (is_fuchsia) {
-    # Needed for ../testing/run_all_tests.cc.
+    deps += [ "//skia:test_fonts_cfv2" ]
+  } else {
     deps += [ "//skia:test_fonts" ]
   }
+}
+
+test("blink_heap_perftests") {
+  configs += [ "//build/config/compiler:thinlto_optimize_max" ]
+
+  deps = [ ":blink_heap_perftests_sources" ]
+
+  if (is_android) {
+    deps += [
+      "//content/shell/android:content_shell_assets",
+      "//net/android:net_java",
+      "//ui/android:ui_full_java",
+    ]
+  }
+
+  if (is_fuchsia) {
+    # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
+    # permissions.
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml" ]
+    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
+  }
+}
+
+source_set("blink_heap_perftests_sources") {
+  testonly = true
+
+  sources = [
+    "../testing/blink_perf_test_suite.cc",
+    "../testing/blink_perf_test_suite.h",
+    "../testing/run_all_perf_tests.cc",
+    "test/allocation_perftest.cc",
+    "test/write_barrier_perftest.cc",
+  ]
+
+  configs += [
+    "//third_party/blink/renderer/platform/wtf:wtf_config",
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+  ]
+
+  deps = [
+    "//gin:gin",
+    "//testing/gtest",
+    "//testing/perf",
+    "//third_party/blink/renderer/platform:test_support",
+    "//third_party/blink/renderer/platform/wtf",
+  ]
 }

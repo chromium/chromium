@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;
@@ -19,6 +18,10 @@ class Window;
 
 namespace display {
 class DisplayManager;
+}
+
+namespace ui {
+class Accelerator;
 }
 
 namespace ash {
@@ -36,6 +39,10 @@ class WorkspaceController;
 class ASH_EXPORT ShellTestApi {
  public:
   ShellTestApi();
+
+  ShellTestApi(const ShellTestApi&) = delete;
+  ShellTestApi& operator=(const ShellTestApi&) = delete;
+
   ~ShellTestApi();
 
   // TabletModeController usually takes a screenshot before animating from
@@ -126,10 +133,15 @@ class ASH_EXPORT ShellTestApi {
   // shown.
   bool IsContextMenuShown() const;
 
+  // Sends accelerator directly to AcceleratorController.
+  bool IsActionForAcceleratorEnabled(const ui::Accelerator& accelerator) const;
+  bool PressAccelerator(const ui::Accelerator& accelerator);
+
+  // Returns true when Ash HUD is shown.
+  bool IsHUDShown();
+
  private:
   Shell* shell_;  // not owned
-
-  DISALLOW_COPY_AND_ASSIGN(ShellTestApi);
 };
 
 }  // namespace ash

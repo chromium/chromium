@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,27 +10,27 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_handle.h"
@@ -41,7 +41,9 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/transport_security_state.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/switches.h"
 
 namespace {
@@ -56,6 +58,11 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
  public:
   explicit CustomManagePasswordsUIController(
       content::WebContents* web_contents);
+
+  CustomManagePasswordsUIController(const CustomManagePasswordsUIController&) =
+      delete;
+  CustomManagePasswordsUIController& operator=(
+      const CustomManagePasswordsUIController&) = delete;
 
   void WaitForState(password_manager::ui::State target_state);
 
@@ -110,18 +117,16 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
   void QuitRunLoop();
 
   // The loop to be stopped when the target state or fallback is observed.
-  base::RunLoop* run_loop_;
+  raw_ptr<base::RunLoop> run_loop_;
 
   // The state CustomManagePasswordsUIController is currently waiting for.
-  base::Optional<password_manager::ui::State> target_state_;
+  absl::optional<password_manager::ui::State> target_state_;
 
   // True iff showing fallback is waited.
   bool wait_for_fallback_;
 
   // True iff a prompt was automatically shown.
   bool was_prompt_automatically_shown_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomManagePasswordsUIController);
 };
 
 CustomManagePasswordsUIController::CustomManagePasswordsUIController(
@@ -288,35 +293,6 @@ enum ReturnCodes {  // Possible results of the JavaScript code.
 
 }  // namespace
 
-NavigationObserver::NavigationObserver(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
-NavigationObserver::~NavigationObserver() = default;
-
-void NavigationObserver::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted())
-    return;
-
-  if (quit_on_entry_committed_)
-    run_loop_.Quit();
-}
-
-void NavigationObserver::DidFinishLoad(
-    content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
-  render_frame_host_ = render_frame_host;
-  if (!wait_for_path_.empty()) {
-    if (validated_url.path() == wait_for_path_)
-      run_loop_.Quit();
-  } else if (!render_frame_host->GetParent()) {
-    run_loop_.Quit();
-  }
-}
-
-void NavigationObserver::Wait() {
-  run_loop_.Run();
-}
-
 BubbleObserver::BubbleObserver(content::WebContents* web_contents)
     : passwords_ui_controller_(
           ManagePasswordsUIController::FromWebContents(web_contents)) {}
@@ -420,6 +396,11 @@ void PasswordStoreResultsObserver::OnGetPasswordStoreResults(
   run_loop_.Quit();
 }
 
+base::WeakPtr<password_manager::PasswordStoreConsumer>
+PasswordStoreResultsObserver::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 std::vector<std::unique_ptr<password_manager::PasswordForm>>
 PasswordStoreResultsObserver::WaitForResults() {
   run_loop_.Run();
@@ -497,7 +478,7 @@ void PasswordManagerBrowserTestBase::GetNewTab(
                                                 true);
   if (preexisting_tab) {
     browser->tab_strip_model()->CloseWebContentsAt(0,
-                                                   TabStripModel::CLOSE_NONE);
+                                                   TabCloseTypes::CLOSE_NONE);
   }
   ASSERT_EQ(controller,
             ManagePasswordsUIController::FromWebContents(*web_contents));
@@ -507,21 +488,21 @@ void PasswordManagerBrowserTestBase::GetNewTab(
 
 // static
 void PasswordManagerBrowserTestBase::WaitForPasswordStore(Browser* browser) {
-  scoped_refptr<password_manager::PasswordStore> profile_password_store =
-      PasswordStoreFactory::GetForProfile(browser->profile(),
-                                          ServiceAccessType::IMPLICIT_ACCESS);
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      profile_password_store = PasswordStoreFactory::GetForProfile(
+          browser->profile(), ServiceAccessType::IMPLICIT_ACCESS);
   PasswordStoreResultsObserver profile_syncer;
   profile_password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
-      &profile_syncer);
+      profile_syncer.GetWeakPtr());
   profile_syncer.WaitForResults();
 
-  scoped_refptr<password_manager::PasswordStore> account_password_store =
-      AccountPasswordStoreFactory::GetForProfile(
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      account_password_store = AccountPasswordStoreFactory::GetForProfile(
           browser->profile(), ServiceAccessType::IMPLICIT_ACCESS);
   if (account_password_store) {
     PasswordStoreResultsObserver account_syncer;
     account_password_store->GetAllLoginsWithAffiliationAndBrandingInformation(
-        &account_syncer);
+        account_syncer.GetWeakPtr());
     account_syncer.WaitForResults();
   }
 }
@@ -532,15 +513,15 @@ content::WebContents* PasswordManagerBrowserTestBase::WebContents() const {
 
 content::RenderFrameHost* PasswordManagerBrowserTestBase::RenderFrameHost()
     const {
-  return WebContents()->GetMainFrame();
+  return WebContents()->GetPrimaryMainFrame();
 }
 
 void PasswordManagerBrowserTestBase::NavigateToFile(const std::string& path) {
   ASSERT_EQ(web_contents_,
             browser()->tab_strip_model()->GetActiveWebContents());
-  NavigationObserver observer(WebContents());
+  PasswordsNavigationObserver observer(WebContents());
   GURL url = embedded_test_server()->GetURL(path);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   observer.Wait();
 }
 
@@ -600,10 +581,10 @@ void PasswordManagerBrowserTestBase::WaitForElementValue(
           RETURN_CODE_OK, iframe_id.c_str(), iframe_id.c_str(),
           element_id.c_str(), element_id.c_str(), RETURN_CODE_NO_ELEMENT,
           RETURN_CODE_OK, RETURN_CODE_WRONG_VALUE);
-  int return_value = RETURN_CODE_INVALID;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-      RenderFrameHost(), script, &return_value));
-  EXPECT_EQ(RETURN_CODE_OK, return_value)
+  EXPECT_EQ(RETURN_CODE_OK,
+            content::EvalJs(RenderFrameHost(), script,
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE |
+                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY))
       << "element_id = " << element_id
       << ", expected_value = " << expected_value;
 }
@@ -656,10 +637,10 @@ void PasswordManagerBrowserTestBase::WaitForJsElementValue(
           "}",
           RETURN_CODE_OK, element_selector.c_str(), RETURN_CODE_NO_ELEMENT,
           RETURN_CODE_OK, RETURN_CODE_WRONG_VALUE);
-  int return_value = RETURN_CODE_INVALID;
-  ASSERT_TRUE(content::ExecuteScriptWithoutUserGestureAndExtractInt(
-      RenderFrameHost(), script, &return_value));
-  EXPECT_EQ(RETURN_CODE_OK, return_value)
+  EXPECT_EQ(RETURN_CODE_OK,
+            content::EvalJs(RenderFrameHost(), script,
+                            content::EXECUTE_SCRIPT_NO_USER_GESTURE |
+                                content::EXECUTE_SCRIPT_USE_MANUAL_REPLY))
       << "element_selector = " << element_selector
       << ", expected_value = " << expected_value;
 }
@@ -703,7 +684,7 @@ void PasswordManagerBrowserTestBase::SetUpInProcessBrowserTestFixture() {
                 // Set up a TestSyncService which will happily return
                 // "everything is active" so that password generation is
                 // considered enabled.
-                ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+                SyncServiceFactory::GetInstance()->SetTestingFactory(
                     context, base::BindRepeating(&BuildTestSyncService));
 
                 PasswordStoreFactory::GetInstance()->SetTestingFactory(
@@ -737,9 +718,8 @@ void PasswordManagerBrowserTestBase::SetUpInProcessBrowserTestFixture() {
 
 void PasswordManagerBrowserTestBase::AddHSTSHost(const std::string& host) {
   network::mojom::NetworkContext* network_context =
-      content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
-          ->GetNetworkContext();
-  base::Time expiry = base::Time::Now() + base::TimeDelta::FromDays(1000);
+      browser()->profile()->GetDefaultStoragePartition()->GetNetworkContext();
+  base::Time expiry = base::Time::Now() + base::Days(1000);
   bool include_subdomains = false;
   base::RunLoop run_loop;
   network_context->AddHSTS(host, expiry, include_subdomains,

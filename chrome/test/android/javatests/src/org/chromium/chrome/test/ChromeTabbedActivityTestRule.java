@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.omnibox.UrlBar;
@@ -112,6 +113,23 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
     public void startMainActivityFromIntent(Intent intent, String url) {
         prepareUrlIntent(intent, url);
         startActivityCompletely(intent);
+        if (!getActivity().isInOverviewMode()) {
+            waitForFirstFrame();
+        }
+    }
+
+    @Override
+    public void waitForActivityCompletelyLoaded() {
+        CriteriaHelper.pollUiThread(()
+                                            -> getActivity().getActivityTab() != null
+                        || getActivity().isInOverviewMode(),
+                "Tab never selected/initialized and no overview page is showing.");
+
+        if (!getActivity().isInOverviewMode()) {
+            super.waitForActivityCompletelyLoaded();
+        } else {
+            Assert.assertTrue(waitForDeferredStartup());
+        }
     }
 
     /**
@@ -135,7 +153,7 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
                 selectedCallback.notifyCalled();
             }
         };
-        incognitoTabModel.addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> incognitoTabModel.addObserver(observer));
 
         MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(),
                 getActivity(), R.id.new_incognito_tab_menu_id);
@@ -150,7 +168,7 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
         } catch (TimeoutException ex) {
             Assert.fail("Never received tab selected event");
         }
-        incognitoTabModel.removeObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> incognitoTabModel.removeObserver(observer));
 
         Tab tab = getActivity().getActivityTab();
 

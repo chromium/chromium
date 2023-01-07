@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define UI_EVENTS_EVENT_DISPATCHER_H_
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_handler.h"
@@ -28,6 +28,10 @@ struct EventDispatchDetails {
 class EVENTS_EXPORT EventDispatcherDelegate {
  public:
   EventDispatcherDelegate();
+
+  EventDispatcherDelegate(const EventDispatcherDelegate&) = delete;
+  EventDispatcherDelegate& operator=(const EventDispatcherDelegate&) = delete;
+
   virtual ~EventDispatcherDelegate();
 
   // Returns whether an event can still be dispatched to a target. (e.g. during
@@ -42,37 +46,39 @@ class EVENTS_EXPORT EventDispatcherDelegate {
   // Dispatches |event| to |target|. This calls |PreDispatchEvent()| before
   // dispatching the event, and |PostDispatchEvent()| after the event has been
   // dispatched.
-  EventDispatchDetails DispatchEvent(EventTarget* target, Event* event)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] EventDispatchDetails DispatchEvent(EventTarget* target,
+                                                   Event* event);
 
  protected:
   // This is called once a target has been determined for an event, right before
   // the event is dispatched to the target. This function may modify |event| to
   // prepare it for dispatch (e.g. update event flags, location etc.).
-  virtual EventDispatchDetails PreDispatchEvent(
+  [[nodiscard]] virtual EventDispatchDetails PreDispatchEvent(
       EventTarget* target,
-      Event* event) WARN_UNUSED_RESULT;
+      Event* event);
 
   // This is called right after the event dispatch is completed.
   // |target| is NULL if the target was deleted during dispatch.
-  virtual EventDispatchDetails PostDispatchEvent(
+  [[nodiscard]] virtual EventDispatchDetails PostDispatchEvent(
       EventTarget* target,
-      const Event& event) WARN_UNUSED_RESULT;
+      const Event& event);
 
  private:
   // Dispatches the event to the target.
-  EventDispatchDetails DispatchEventToTarget(EventTarget* target,
-                                             Event* event) WARN_UNUSED_RESULT;
+  [[nodiscard]] EventDispatchDetails DispatchEventToTarget(EventTarget* target,
+                                                           Event* event);
 
-  EventDispatcher* dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventDispatcherDelegate);
+  raw_ptr<EventDispatcher> dispatcher_;
 };
 
 // Dispatches events to appropriate targets.
 class EVENTS_EXPORT EventDispatcher {
  public:
   explicit EventDispatcher(EventDispatcherDelegate* delegate);
+
+  EventDispatcher(const EventDispatcher&) = delete;
+  EventDispatcher& operator=(const EventDispatcher&) = delete;
+
   virtual ~EventDispatcher();
 
   void ProcessEvent(EventTarget* target, Event* event);
@@ -93,13 +99,11 @@ class EVENTS_EXPORT EventDispatcher {
   // dispatching the event to the event handler.
   void DispatchEvent(EventHandler* handler, Event* event);
 
-  EventDispatcherDelegate* delegate_;
+  raw_ptr<EventDispatcherDelegate> delegate_;
 
   Event* current_event_ = nullptr;
 
   EventHandlerList handler_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventDispatcher);
 };
 
 }  // namespace ui

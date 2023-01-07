@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/chromeos/extensions/install_limiter_factory.h"
 #include "content/public/browser/notification_details.h"
@@ -122,10 +121,8 @@ void InstallLimiter::AddWithSize(const scoped_refptr<CrxInstaller>& installer,
   // big app is the first one in the list.
   if (running_installers_.empty() && !wait_timer_.IsRunning()) {
     const int kMaxWaitTimeInMs = 5000;  // 5 seconds.
-    wait_timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kMaxWaitTimeInMs),
-        this, &InstallLimiter::CheckAndRunDeferrredInstalls);
+    wait_timer_.Start(FROM_HERE, base::Milliseconds(kMaxWaitTimeInMs), this,
+                      &InstallLimiter::CheckAndRunDeferrredInstalls);
   }
 }
 

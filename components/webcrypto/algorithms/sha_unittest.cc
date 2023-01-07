@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/values.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
@@ -22,13 +21,13 @@ namespace {
 class WebCryptoShaTest : public WebCryptoTestBase {};
 
 TEST_F(WebCryptoShaTest, DigestSampleSets) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("sha.json", &tests));
+  base::Value::List tests = ReadJsonTestFileAsList("sha.json");
 
-  for (size_t test_index = 0; test_index < tests.GetSize(); ++test_index) {
-    SCOPED_TRACE(test_index);
-    base::DictionaryValue* test;
-    ASSERT_TRUE(tests.GetDictionary(test_index, &test));
+  for (const auto& test_value : tests) {
+    SCOPED_TRACE(&test_value - &tests[0]);
+    ASSERT_TRUE(test_value.is_dict());
+    const base::DictionaryValue* test =
+        &base::Value::AsDictionaryValue(test_value);
 
     blink::WebCryptoAlgorithm test_algorithm =
         GetDigestAlgorithm(test, "algorithm");
@@ -36,8 +35,7 @@ TEST_F(WebCryptoShaTest, DigestSampleSets) {
     std::vector<uint8_t> test_output = GetBytesFromHexString(test, "output");
 
     std::vector<uint8_t> output;
-    ASSERT_EQ(Status::Success(),
-              Digest(test_algorithm, CryptoData(test_input), &output));
+    ASSERT_EQ(Status::Success(), Digest(test_algorithm, test_input, &output));
     EXPECT_BYTES_EQ(test_output, output);
   }
 }

@@ -1,10 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/background_sync/periodic_background_sync_service_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/background_sync/background_sync_service_impl_test_harness.h"
+#include "content/public/test/mock_render_process_host.h"
 
 namespace content {
 
@@ -20,13 +22,18 @@ class PeriodicBackgroundSyncServiceImplTest
 
  protected:
   void CreatePeriodicBackgroundSyncServiceImpl() {
+    render_process_host_ =
+        std::make_unique<MockRenderProcessHost>(browser_context());
+
     // Create a dummy mojo channel so that the PeriodicBackgroundSyncServiceImpl
     // can be instantiated.
     mojo::PendingReceiver<blink::mojom::PeriodicBackgroundSyncService>
         receiver = periodic_sync_service_remote_.BindNewPipeAndPassReceiver();
     // Create a new PeriodicBackgroundSyncServiceImpl bound to the dummy
     // channel.
-    background_sync_context_->CreatePeriodicSyncService(std::move(receiver));
+    background_sync_context_->CreatePeriodicSyncService(
+        url::Origin::Create(GURL(kServiceWorkerOrigin)),
+        render_process_host_.get(), std::move(receiver));
     base::RunLoop().RunUntilIdle();
 
     // Since |background_sync_context_| is deleted after
@@ -62,11 +69,12 @@ class PeriodicBackgroundSyncServiceImplTest
     base::RunLoop().RunUntilIdle();
   }
 
+  std::unique_ptr<MockRenderProcessHost> render_process_host_;
   mojo::Remote<blink::mojom::PeriodicBackgroundSyncService>
       periodic_sync_service_remote_;
 
   // Owned by |background_sync_context_|
-  PeriodicBackgroundSyncServiceImpl* periodic_sync_service_impl_;
+  raw_ptr<PeriodicBackgroundSyncServiceImpl> periodic_sync_service_impl_;
 };
 
 // Tests
@@ -93,7 +101,7 @@ TEST_F(PeriodicBackgroundSyncServiceImplTest, RegisterWithInvalidMinInterval) {
   auto to_register = default_sync_registration_.Clone();
   to_register->min_interval = -1;
 
-  FakeMojoMessageDispatchContext fake_dispatch_context;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
   RegisterPeriodicSync(
       std::move(to_register),
       base::BindOnce(&ErrorAndRegistrationCallback, &called, &error, &reg));

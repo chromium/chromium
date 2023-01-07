@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/viz/service/display/bsp_tree.h"
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/containers/circular_deque.h"

@@ -1,15 +1,22 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map.h"
 
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map_factory.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
+#include "chrome/browser/ash/arc/fileapi/arc_media_view_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/arc_service_manager.h"
 #include "content/public/browser/browser_thread.h"
+
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 using content::BrowserThread;
 
@@ -21,16 +28,18 @@ struct DocumentsProviderSpec {
   const char* authority;
   const char* root_document_id;
   const char* root_id;
-  bool read_only;
 };
 
 // List of documents providers for media views.
 constexpr DocumentsProviderSpec kDocumentsProviderAllowlist[] = {
-    {"com.android.providers.media.documents", "images_root", "images_root",
-     true},
-    {"com.android.providers.media.documents", "videos_root", "videos_root",
-     true},
-    {"com.android.providers.media.documents", "audio_root", "audio_root", true},
+    {kMediaDocumentsProviderAuthority, kImagesRootDocumentId,
+     kImagesRootDocumentId},
+    {kMediaDocumentsProviderAuthority, kVideosRootDocumentId,
+     kVideosRootDocumentId},
+    {kMediaDocumentsProviderAuthority, kAudioRootDocumentId,
+     kAudioRootDocumentId},
+    {kMediaDocumentsProviderAuthority, kDocumentsRootDocumentId,
+     kDocumentsRootDocumentId},
 };
 
 }  // namespace
@@ -47,6 +56,13 @@ ArcDocumentsProviderRootMap::GetForArcBrowserContext() {
   return GetForBrowserContext(ArcServiceManager::Get()->browser_context());
 }
 
+// static
+// TODO(crbug.com/1327496): can be removed once this flag is on by default.
+bool ArcDocumentsProviderRootMap::IsDocumentProviderRootReadOnly() {
+  // All roots are read-only unless this flag is on.
+  return !base::FeatureList::IsEnabled(chromeos::features::kFiltersInRecentsV2);
+}
+
 ArcDocumentsProviderRootMap::ArcDocumentsProviderRootMap(Profile* profile)
     : runner_(ArcFileSystemOperationRunner::GetForBrowserContext(profile)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -54,9 +70,10 @@ ArcDocumentsProviderRootMap::ArcDocumentsProviderRootMap(Profile* profile)
   // in ArcDocumentsProviderRootMapFactory.
   DCHECK(runner_);
 
+  const bool read_only = IsDocumentProviderRootReadOnly();
   for (const auto& spec : kDocumentsProviderAllowlist) {
-    RegisterRoot(spec.authority, spec.root_document_id, spec.root_id,
-                 spec.read_only, {});
+    RegisterRoot(spec.authority, spec.root_document_id, spec.root_id, read_only,
+                 {});
   }
 }
 
@@ -106,7 +123,7 @@ void ArcDocumentsProviderRootMap::RegisterRoot(
   Key key(authority, root_document_id);
   if (map_.find(key) != map_.end()) {
     VLOG(1) << "Trying to register (" << authority << ", " << root_document_id
-            << ") which is already regisered.";
+            << ") which is already registered.";
     return;
   }
   map_.emplace(key, std::make_unique<ArcDocumentsProviderRoot>(

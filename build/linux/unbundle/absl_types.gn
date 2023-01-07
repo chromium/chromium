@@ -1,0 +1,97 @@
+import("//build/config/linux/pkg_config.gni")
+import("//build/shim_headers.gni")
+
+pkg_config("system_absl_any") {
+  packages = [ "absl_any" ]
+}
+
+pkg_config("system_absl_bad_any_cast") {
+  packages = [ "absl_bad_any_cast" ]
+}
+
+pkg_config("system_absl_bad_optional_access") {
+  packages = [ "absl_bad_optional_access" ]
+}
+
+pkg_config("system_absl_optional") {
+  packages = [ "absl_optional" ]
+}
+
+pkg_config("system_absl_span") {
+  packages = [ "absl_span" ]
+}
+
+pkg_config("system_absl_variant") {
+  packages = [ "absl_variant" ]
+}
+
+shim_headers("any_shim") {
+  root_path = "."
+  prefix = "absl/types/"
+  headers = [ "any.h" ]
+}
+
+source_set("any") {
+  deps = [ ":any_shim" ]
+  public_configs = [ ":system_absl_any" ]
+}
+
+shim_headers("bad_any_cast_shim") {
+  root_path = "."
+  prefix = "absl/types/"
+  headers = [ "bad_any_cast.h" ]
+}
+
+source_set("bad_any_cast") {
+  deps = [ ":bad_any_cast_shim" ]
+  public_configs = [ ":system_absl_bad_any_cast" ]
+}
+
+shim_headers("bad_optional_access_shim") {
+  root_path = "."
+  prefix = "absl/types/"
+  headers = [ "bad_optional_access.h" ]
+}
+
+source_set("bad_optional_access") {
+  deps = [ ":bad_optional_access_shim" ]
+  public_configs = [ ":system_absl_bad_optional_access" ]
+}
+
+shim_headers("optional_shim") {
+  root_path = "."
+  prefix = "absl/types/"
+  headers = [ "optional.h" ]
+}
+
+source_set("optional") {
+  deps = [ ":optional_shim" ]
+  public_configs = [ ":system_absl_optional" ]
+}
+
+shim_headers("span_shim") {
+  root_path = "."
+  prefix = "absl/types/"
+  headers = [ "span.h" ]
+}
+
+source_set("span") {
+  deps = [ ":span_shim" ]
+  public_configs = [ ":system_absl_span" ]
+}
+
+shim_headers("variant_shim") {
+  root_path = "."
+  prefix = "absl/types/"
+  headers = [ "variant.h" ]
+}
+
+source_set("variant") {
+  deps = [ ":variant_shim" ]
+  public_configs = [ ":system_absl_variant" ]
+}
+
+source_set("optional_test") {
+}
+source_set("variant_test") {
+}

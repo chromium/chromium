@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,29 +11,25 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "components/services/filesystem/public/mojom/directory.mojom.h"
 #include "components/services/filesystem/shared_temp_dir.h"
 
 namespace filesystem {
-
-class LockTable;
 
 class DirectoryImpl : public mojom::Directory {
  public:
   // Set |temp_dir| only if there's a temporary directory that should be deleted
   // when this object is destroyed.
   DirectoryImpl(base::FilePath directory_path,
-                scoped_refptr<SharedTempDir> temp_dir,
-                scoped_refptr<LockTable> lock_table);
+                scoped_refptr<SharedTempDir> temp_dir);
+
+  DirectoryImpl(const DirectoryImpl&) = delete;
+  DirectoryImpl& operator=(const DirectoryImpl&) = delete;
+
   ~DirectoryImpl() override;
 
   // |Directory| implementation:
   void Read(ReadCallback callback) override;
-  void OpenFile(const std::string& path,
-                mojo::PendingReceiver<mojom::File> receiver,
-                uint32_t open_flags,
-                OpenFileCallback callback) override;
   void OpenFileHandle(const std::string& path,
                       uint32_t open_flags,
                       OpenFileHandleCallback callback) override;
@@ -70,9 +66,6 @@ class DirectoryImpl : public mojom::Directory {
 
   base::FilePath directory_path_;
   scoped_refptr<SharedTempDir> temp_dir_;
-  scoped_refptr<LockTable> lock_table_;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectoryImpl);
 };
 
 }  // namespace filesystem

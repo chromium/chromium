@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Client hints loaded on cross-origin iframe request with feature policy. promise_test: Unhandled rejection with value: "FAIL sec-ch-ua-platform True None"
+FAIL Client hints loaded on same-origin iframe request with feature policy. promise_test: Unhandled rejection with value: "FAIL sec-ch-ua True None"
+FAIL Client hints loaded on cross-origin iframe request with feature policy after attempting to set independently. promise_test: Unhandled rejection with value: "FAIL sec-ch-ua-platform True None"
+Harness: the test ran to completion.
+

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,8 +19,6 @@ buildflag_header("buildflags") {
 }
 
 blink_core_sources("animation") {
-  configs += [ "//build/config/compiler:noshadowing" ]
-
   sources = [
     "animatable.cc",
     "animatable.h",
@@ -70,6 +68,8 @@ blink_core_sources("animation") {
     "css/css_transition.h",
     "css/css_transition_data.cc",
     "css/css_transition_data.h",
+    "css/css_view_timeline.cc",
+    "css/css_view_timeline.h",
     "css_angle_interpolation_type.cc",
     "css_angle_interpolation_type.h",
     "css_aspect_ratio_interpolation_type.cc",
@@ -98,6 +98,8 @@ blink_core_sources("animation") {
     "css_font_variation_settings_interpolation_type.h",
     "css_font_weight_interpolation_type.cc",
     "css_font_weight_interpolation_type.h",
+    "css_grid_template_property_interpolation_type.cc",
+    "css_grid_template_property_interpolation_type.h",
     "css_image_interpolation_type.cc",
     "css_image_interpolation_type.h",
     "css_image_list_interpolation_type.cc",
@@ -110,6 +112,8 @@ blink_core_sources("animation") {
     "css_interpolation_type.h",
     "css_interpolation_types_map.cc",
     "css_interpolation_types_map.h",
+    "css_intrinsic_length_interpolation_type.cc",
+    "css_intrinsic_length_interpolation_type.h",
     "css_length_interpolation_type.cc",
     "css_length_interpolation_type.h",
     "css_length_list_interpolation_type.cc",
@@ -174,6 +178,14 @@ blink_core_sources("animation") {
     "interpolable_aspect_ratio.h",
     "interpolable_filter.cc",
     "interpolable_filter.h",
+    "interpolable_grid_length.cc",
+    "interpolable_grid_length.h",
+    "interpolable_grid_track_list.cc",
+    "interpolable_grid_track_list.h",
+    "interpolable_grid_track_repeater.cc",
+    "interpolable_grid_track_repeater.h",
+    "interpolable_grid_track_size.cc",
+    "interpolable_grid_track_size.h",
     "interpolable_length.cc",
     "interpolable_length.h",
     "interpolable_shadow.cc",
@@ -220,8 +232,6 @@ blink_core_sources("animation") {
     "sampled_effect.h",
     "scroll_timeline.cc",
     "scroll_timeline.h",
-    "scroll_timeline_offset.cc",
-    "scroll_timeline_offset.h",
     "scroll_timeline_util.cc",
     "scroll_timeline_util.h",
     "side_index.h",
@@ -277,6 +287,8 @@ blink_core_sources("animation") {
     "underlying_value.h",
     "underlying_value_owner.cc",
     "underlying_value_owner.h",
+    "view_timeline.cc",
+    "view_timeline.h",
     "worklet_animation_base.h",
     "worklet_animation_controller.cc",
     "worklet_animation_controller.h",

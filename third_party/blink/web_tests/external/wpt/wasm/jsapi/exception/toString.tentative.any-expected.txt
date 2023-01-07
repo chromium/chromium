@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL Object.prototype.toString on an Exception WebAssembly.Tag is not a constructor
+FAIL @@toStringTag exists on the prototype with the appropriate descriptor assert_own_property: expected property symbol "Symbol(Symbol.toStringTag)" missing
+Harness: the test ran to completion.
+

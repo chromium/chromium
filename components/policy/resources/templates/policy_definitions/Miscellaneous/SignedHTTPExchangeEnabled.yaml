@@ -1,0 +1,28 @@
+caption: Enable Signed HTTP Exchange (SXG) support
+default: true
+desc: |-
+  Setting the policy to True or leaving it unset means <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will accept web contents served as Signed HTTP Exchanges.
+
+        Setting the policy to False prevents Signed HTTP Exchanges from loading.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Accept web contents served as Signed HTTP Exchanges
+  value: true
+- caption: Prevent Signed HTTP Exchanges from loading
+  value: false
+owners:
+- file://content/browser/web_package/OWNERS
+- ksakamoto@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:75-
+- chrome_os:75-
+tags:
+- filtering
+type: main

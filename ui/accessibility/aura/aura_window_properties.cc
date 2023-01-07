@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,5 +17,7 @@ DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kChildAXTreeID, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(ax::mojom::Role,
                              kAXRoleOverride,
                              ax::mojom::Role::kNone)
+
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAXConsiderInvisibleAndIgnoreChildren, false)
 
 }  // namespace ui

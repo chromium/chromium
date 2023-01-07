@@ -1,14 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/reading_list/favicon_web_state_dispatcher_impl.h"
+#import "ios/chrome/browser/reading_list/favicon_web_state_dispatcher_impl.h"
 
-#include "components/favicon/core/favicon_service.h"
-#include "components/favicon/ios/web_favicon_driver.h"
-#include "components/keyed_service/core/service_access_type.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/favicon/favicon_service_factory.h"
+#import "components/favicon/core/favicon_service.h"
+#import "components/favicon/ios/web_favicon_driver.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/favicon/favicon_service_factory.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

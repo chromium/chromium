@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,18 +15,14 @@ namespace ash {
 class ASH_EXPORT LoginButton : public views::ImageButton {
  public:
   explicit LoginButton(PressedCallback callback);
-  ~LoginButton() override;
 
-  // views::InkDropHost:
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
+  LoginButton(const LoginButton&) = delete;
+  LoginButton& operator=(const LoginButton&) = delete;
+
+  ~LoginButton() override;
 
  protected:
   virtual int GetInkDropRadius() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginButton);
 };
 
 }  // namespace ash

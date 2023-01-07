@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <tuple>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "net/base/network_isolation_key.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/cors/preflight_result.h"
@@ -19,6 +18,10 @@
 #include "url/origin.h"
 
 class GURL;
+
+namespace net {
+class NetLogWithSource;
+}  // namespace net
 
 namespace network {
 
@@ -31,13 +34,18 @@ namespace cors {
 class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
  public:
   PreflightCache();
+
+  PreflightCache(const PreflightCache&) = delete;
+  PreflightCache& operator=(const PreflightCache&) = delete;
+
   ~PreflightCache();
 
-  // Appends new |preflight_result| entry to the cache for a specified |origin|
-  // and |url|.
+  // Appends new `preflight_result` entry to the cache for a specified `origin`
+  // and `url`.
   void AppendEntry(const url::Origin& origin,
                    const GURL& url,
                    const net::NetworkIsolationKey& network_isolation_key,
+                   mojom::IPAddressSpace target_ip_address_space,
                    std::unique_ptr<PreflightResult> preflight_result);
 
   // Consults with cached results, and decides if we can skip CORS-preflight or
@@ -46,15 +54,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
       const url::Origin& origin,
       const GURL& url,
       const net::NetworkIsolationKey& network_isolation_key,
+      mojom::IPAddressSpace target_ip_address_space,
       mojom::CredentialsMode credentials_mode,
       const std::string& method,
       const net::HttpRequestHeaders& headers,
-      bool is_revalidating);
+      bool is_revalidating,
+      const net::NetLogWithSource& net_log);
 
   // Counts cached entries for testing.
   size_t CountEntriesForTesting() const;
 
-  // Purges one cache entry if number of entries is larger than |max_entries|
+  // Purges one cache entry if number of entries is larger than `max_entries`
   // for testing.
   void MayPurgeForTesting(size_t max_entries, size_t purge_unit);
 
@@ -65,11 +75,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightCache final {
   // url string, and NetworkIsolationKey to find a cached entry.
   std::map<std::tuple<url::Origin /* origin */,
                       std::string /* url */,
-                      net::NetworkIsolationKey /* NIK */>,
+                      net::NetworkIsolationKey /* NIK */,
+                      mojom::IPAddressSpace /* target_ip_address_space */>,
            std::unique_ptr<PreflightResult>>
       cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreflightCache);
 };
 
 }  // namespace cors

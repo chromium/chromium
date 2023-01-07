@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2009 The Chromium Authors. All rights reserved.
+# Copyright 2009 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,6 +12,8 @@ action="$1"
 if [ "$action" != "purge" ] ; then
   exit 0
 fi
+
+@@include@@../common/variables.include
 
 @@include@@../common/apt.include
 
@@ -31,3 +33,4 @@ if [ -s "$DEFAULTS_FILE" ]; then
 fi
 # Remove any Google repository added by the package.
 clean_sources_lists
+uninstall_key

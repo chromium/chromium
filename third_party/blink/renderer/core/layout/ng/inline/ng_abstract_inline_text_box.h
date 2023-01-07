@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_ABSTRACT_INLINE_TEXT_BOX_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_ABSTRACT_INLINE_TEXT_BOX_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/line/abstract_inline_text_box.h"
 
 namespace blink {
@@ -25,9 +26,7 @@ class CORE_EXPORT NGAbstractInlineTextBox final : public AbstractInlineTextBox {
   friend class LayoutText;
 
  public:
-  NGAbstractInlineTextBox(LineLayoutText line_layout_item,
-                          const NGFragmentItem& fragment);
-
+  explicit NGAbstractInlineTextBox(const NGInlineCursor& cursor);
   ~NGAbstractInlineTextBox() final;
 
  private:
@@ -52,6 +51,9 @@ class CORE_EXPORT NGAbstractInlineTextBox final : public AbstractInlineTextBox {
   bool NeedsTrailingSpace() const final;
 
   const NGFragmentItem* fragment_item_;
+  // |root_box_fragment_| owns |fragment_item_|. Persistent is used here to keep
+  // |NGAbstractInlineTextBoxCache| off-heap.
+  Persistent<const NGPhysicalBoxFragment> root_box_fragment_;
 };
 
 }  // namespace blink

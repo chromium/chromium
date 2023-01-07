@@ -1,3 +1,6 @@
 *.class
 *.dex
-dexdump.txt
+*.jar
+*.txt
+*.mapping
+desugar_jdk_libs.pgcfg

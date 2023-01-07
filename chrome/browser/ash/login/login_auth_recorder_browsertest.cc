@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 constexpr char kAuthMethodUsageAsTabletHistogramName[] =
@@ -27,6 +27,10 @@ constexpr char kAuthMethodSwitchHistogramName[] =
 class LoginAuthRecorderTest : public InProcessBrowserTest {
  public:
   LoginAuthRecorderTest() = default;
+
+  LoginAuthRecorderTest(const LoginAuthRecorderTest&) = delete;
+  LoginAuthRecorderTest& operator=(const LoginAuthRecorderTest&) = delete;
+
   ~LoginAuthRecorderTest() override = default;
 
  protected:
@@ -37,11 +41,11 @@ class LoginAuthRecorderTest : public InProcessBrowserTest {
   }
 
   void EnableTabletMode(bool enable) {
-    ash::ShellTestApi().SetTabletModeEnabledForTest(enable);
+    ShellTestApi().SetTabletModeEnabledForTest(enable);
   }
 
   LoginAuthRecorder* metrics_recorder() {
-    return LoginScreenClient::Get()->auth_recorder();
+    return LoginScreenClientImpl::Get()->auth_recorder();
   }
 
   void SetAuthMethod(LoginAuthRecorder::AuthMethod auth_method) {
@@ -63,9 +67,6 @@ class LoginAuthRecorderTest : public InProcessBrowserTest {
 
   // Used to verify recorded data.
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginAuthRecorderTest);
 };
 
 // Verifies that auth method usage is recorded correctly.
@@ -181,4 +182,4 @@ IN_PROC_BROWSER_TEST_F(LoginAuthRecorderTest, AuthMethodSwitch) {
                     LoginAuthRecorder::AuthMethodSwitchType::kPinToPassword, 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

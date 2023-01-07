@@ -1,0 +1,13 @@
+{
+  metadata: {
+    namespace: "pointer_type_names",
+    export: "CORE_EXPORT",
+  },
+
+  data: [
+    "mouse",
+    "pen",
+    "touch",
+  ],
+}
+

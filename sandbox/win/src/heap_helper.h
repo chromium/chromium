@@ -1,13 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SANDBOX_WIN_SRC_HEAP_HELPER_H_
 #define SANDBOX_WIN_SRC_HEAP_HELPER_H_
 
-#include <windows.h>
-
-#include "base/win/windows_version.h"
+#include "base/win/windows_types.h"
 
 namespace sandbox {
 // These helper functions are not expected to be used generally, but are exposed

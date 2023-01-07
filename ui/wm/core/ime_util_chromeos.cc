@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ void MoveWindowToEnsureCaretNotInRect(aura::Window* window,
 
   // Set restore bounds and move the window.
   window->SetProperty(kVirtualKeyboardRestoreBoundsKey,
-                      new gfx::Rect(original_window_bounds));
+                      std::make_unique<gfx::Rect>(original_window_bounds));
 
   gfx::Rect new_bounds_in_screen = original_window_bounds;
   new_bounds_in_screen.set_y(top_y);

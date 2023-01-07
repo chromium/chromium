@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/common/scoped_timers.h"
@@ -88,7 +88,7 @@ AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
     InitializationParams params,
     base::OnceCallback<void(mojom::ActivationState)> activation_state_callback)
     : task_runner_(ruleset_handle->task_runner()),
-      core_(new Core(), base::OnTaskRunnerDeleter(task_runner_)) {
+      core_(new Core(), base::OnTaskRunnerDeleter(task_runner_.get())) {
   DCHECK_NE(mojom::ActivationLevel::kDisabled,
             params.parent_activation_state.activation_level);
 
@@ -110,7 +110,7 @@ AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
     const url::Origin& inherited_document_origin,
     const mojom::ActivationState& activation_state)
     : task_runner_(ruleset_handle->task_runner()),
-      core_(new Core(), base::OnTaskRunnerDeleter(task_runner_)) {
+      core_(new Core(), base::OnTaskRunnerDeleter(task_runner_.get())) {
   DCHECK_NE(mojom::ActivationLevel::kDisabled,
             activation_state.activation_level);
 
@@ -128,7 +128,7 @@ AsyncDocumentSubresourceFilter::AsyncDocumentSubresourceFilter(
 }
 
 AsyncDocumentSubresourceFilter::~AsyncDocumentSubresourceFilter() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void AsyncDocumentSubresourceFilter::OnActivateStateCalculated(
@@ -141,7 +141,7 @@ void AsyncDocumentSubresourceFilter::OnActivateStateCalculated(
 void AsyncDocumentSubresourceFilter::GetLoadPolicyForSubdocument(
     const GURL& subdocument_url,
     LoadPolicyCallback result_callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(pkalinnikov): Think about avoiding copy of |subdocument_url| if it is
   // too big and won't be allowed anyway (e.g., it's a data: URI).
@@ -165,7 +165,7 @@ void AsyncDocumentSubresourceFilter::GetLoadPolicyForSubdocument(
 void AsyncDocumentSubresourceFilter::GetLoadPolicyForSubdocumentURLs(
     const std::vector<GURL>& urls,
     MultiLoadPolicyCallback result_callback) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(pkalinnikov): Think about avoiding copying of |urls| if they are
   // too big and won't be allowed anyway (e.g. data: URI).
@@ -213,11 +213,11 @@ const mojom::ActivationState& AsyncDocumentSubresourceFilter::activation_state()
 // AsyncDocumentSubresourceFilter::Core ----------------------------------------
 
 AsyncDocumentSubresourceFilter::Core::Core() {
-  sequence_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 AsyncDocumentSubresourceFilter::Core::~Core() {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 std::vector<LoadPolicy> AsyncDocumentSubresourceFilter::Core::GetLoadPolicies(
@@ -242,7 +242,7 @@ void AsyncDocumentSubresourceFilter::Core::SetActivationState(
 mojom::ActivationState AsyncDocumentSubresourceFilter::Core::Initialize(
     InitializationParams params,
     VerifiedRuleset* verified_ruleset) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(verified_ruleset);
 
   if (!verified_ruleset->Get())
@@ -264,7 +264,7 @@ void AsyncDocumentSubresourceFilter::Core::InitializeWithActivation(
     mojom::ActivationState activation_state,
     const url::Origin& inherited_document_origin,
     VerifiedRuleset* verified_ruleset) {
-  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(verified_ruleset);
 
   // Avoids a crash in the rare case that the ruleset's status has changed to

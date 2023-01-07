@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ namespace device {
 WinWebAuthnApiAuthenticatorDiscovery::WinWebAuthnApiAuthenticatorDiscovery(
     HWND parent_window,
     WinWebAuthnApi* api)
-    : FidoDiscoveryBase(FidoTransportProtocol::kUsbHumanInterfaceDevice),
+    : FidoDiscoveryBase(FidoTransportProtocol::kInternal),
       parent_window_(parent_window),
       api_(api) {}
 

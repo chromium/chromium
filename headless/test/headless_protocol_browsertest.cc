@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/base_paths.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -94,22 +95,25 @@ void HeadlessProtocolBrowserTest::BindingCreated(
 void HeadlessProtocolBrowserTest::OnBindingCalled(
     const runtime::BindingCalledParams& params) {
   std::string json_message = params.GetPayload();
-  std::unique_ptr<base::Value> message =
-      base::JSONReader::ReadDeprecated(json_message);
-  const base::DictionaryValue* message_dict;
-  const base::DictionaryValue* params_dict;
-  std::string method;
-  int id;
-  if (!message || !message->GetAsDictionary(&message_dict) ||
-      !message_dict->GetString("method", &method) ||
-      !message_dict->GetDictionary("params", &params_dict) ||
-      !message_dict->GetInteger("id", &id)) {
+  absl::optional<base::Value> message = base::JSONReader::Read(json_message);
+
+  if (!message || !message->is_dict()) {
     LOG(ERROR) << "Poorly formed message " << json_message;
     FinishTest();
     return;
   }
 
-  if (method != "DONE") {
+  const base::Value::Dict& message_dict = message->GetDict();
+
+  const std::string* method = message_dict.FindString("method");
+  if (!method || !message_dict.FindDict("params") ||
+      !message_dict.FindInt("id")) {
+    LOG(ERROR) << "Poorly formed message " << json_message;
+    FinishTest();
+    return;
+  }
+
+  if (*method != "DONE") {
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             kDumpDevToolsProtocol)) {
       LOG(INFO) << "FromJS: " << json_message;
@@ -119,8 +123,9 @@ void HeadlessProtocolBrowserTest::OnBindingCalled(
     return;
   }
 
-  std::string test_result;
-  message_dict->GetString("result", &test_result);
+  const std::string* maybe_test_result = message_dict.FindString("result");
+  const std::string test_result =
+      maybe_test_result ? *maybe_test_result : std::string();
   static const base::FilePath kTestsDirectory(
       FILE_PATH_LITERAL("headless/test/data/protocol"));
 
@@ -177,7 +182,7 @@ void HeadlessProtocolBrowserTest::FinishTest() {
 }
 
 // TODO(crbug.com/1086872): The whole test suite is flaky on Mac ASAN.
-#if (defined(OS_MAC) && defined(ADDRESS_SANITIZER))
+#if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER))
 #define HEADLESS_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)                        \
   IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTest, DISABLED_##TEST_NAME) { \
     test_folder_ = "/protocol/";                                              \
@@ -199,8 +204,8 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeInterrupt,
                        "emulation/virtual-time-interrupt.js")
 
 // Flaky on Linux, Mac & Win. TODO(crbug.com/930717): Re-enable.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_VirtualTimeCrossProcessNavigation \
   DISABLED_VirtualTimeCrossProcessNavigation
 #else
@@ -223,7 +228,8 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeSessionStorage,
 HEADLESS_PROTOCOL_TEST(VirtualTimeStarvation,
                        "emulation/virtual-time-starvation.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeVideo, "emulation/virtual-time-video.js")
-HEADLESS_PROTOCOL_TEST(VirtualTimeErrorLoop,
+// Flaky on all platforms. https://crbug.com/1295644
+HEADLESS_PROTOCOL_TEST(DISABLED_VirtualTimeErrorLoop,
                        "emulation/virtual-time-error-loop.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeFetchStream,
                        "emulation/virtual-time-fetch-stream.js")
@@ -233,7 +239,14 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeHistoryNavigation,
                        "emulation/virtual-time-history-navigation.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeHistoryNavigationSameDoc,
                        "emulation/virtual-time-history-navigation-same-doc.js")
-HEADLESS_PROTOCOL_TEST(VirtualTimeFetchKeepalive,
+
+// Flaky on Mac. TODO(crbug.com/1164173): Re-enable.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_VirtualTimeFetchKeepalive DISABLED_VirtualTimeFetchKeepalive
+#else
+#define MAYBE_VirtualTimeFetchKeepalive VirtualTimeFetchKeepalive
+#endif
+HEADLESS_PROTOCOL_TEST(MAYBE_VirtualTimeFetchKeepalive,
                        "emulation/virtual-time-fetch-keepalive.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeDisposeWhileRunning,
                        "emulation/virtual-time-dispose-while-running.js")
@@ -243,7 +256,7 @@ HEADLESS_PROTOCOL_TEST(VirtualTimePausesDocumentLoading,
 HEADLESS_PROTOCOL_TEST(PageBeforeUnload, "page/page-before-unload.js")
 
 // http://crbug.com/633321
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_VirtualTimeTimerOrder DISABLED_VirtualTimeTimerOrder
 #define MAYBE_VirtualTimeTimerSuspend DISABLED_VirtualTimeTimerSuspend
 #else
@@ -257,6 +270,18 @@ HEADLESS_PROTOCOL_TEST(MAYBE_VirtualTimeTimerSuspend,
 #undef MAYBE_VirtualTimeTimerOrder
 #undef MAYBE_VirtualTimeTimerSuspend
 
+HEADLESS_PROTOCOL_TEST(Geolocation, "emulation/geolocation-crash.js")
+
+HEADLESS_PROTOCOL_TEST(DragStarted, "input/dragIntercepted.js")
+
+// https://crbug.com/1204620
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_InputClipboardOps DISABLED_InputClipboardOps
+#else
+#define MAYBE_InputClipboardOps InputClipboardOps
+#endif
+HEADLESS_PROTOCOL_TEST(MAYBE_InputClipboardOps, "input/input-clipboard-ops.js")
+
 HEADLESS_PROTOCOL_TEST(HeadlessSessionBasicsTest,
                        "sessions/headless-session-basics.js")
 
@@ -265,6 +290,15 @@ HEADLESS_PROTOCOL_TEST(HeadlessSessionCreateContextDisposeOnDetach,
 
 HEADLESS_PROTOCOL_TEST(BrowserSetInitialProxyConfig,
                        "sanity/browser-set-initial-proxy-config.js")
+
+HEADLESS_PROTOCOL_TEST(BrowserUniversalNetworkAccess,
+                       "sanity/universal-network-access.js")
+
+HEADLESS_PROTOCOL_TEST(ShowDirectoryPickerNoCrash,
+                       "sanity/show-directory-picker-no-crash.js")
+
+HEADLESS_PROTOCOL_TEST(ShowFilePickerInterception,
+                       "sanity/show-file-picker-interception.js")
 
 class HeadlessProtocolBrowserTestWithProxy
     : public HeadlessProtocolBrowserTest {

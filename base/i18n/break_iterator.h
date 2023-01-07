@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/i18n/base_i18n_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 
 // The BreakIterator class iterates through the words, word breaks, and
@@ -102,6 +102,10 @@ class BASE_I18N_EXPORT BreakIterator {
   // "(const std::u16string& str, const std::u16string& locale)". We should do
   // something better.
   BreakIterator(const StringPiece16& str, const std::u16string& rules);
+
+  BreakIterator(const BreakIterator&) = delete;
+  BreakIterator& operator=(const BreakIterator&) = delete;
+
   ~BreakIterator();
 
   // Init() must be called before any of the iterators are valid.
@@ -173,7 +177,7 @@ class BASE_I18N_EXPORT BreakIterator {
   // This is actually an ICU UBreakiterator* type, which turns out to be
   // a typedef for a void* in the ICU headers. Using void* directly prevents
   // callers from needing access to the ICU public headers directory.
-  void* iter_;
+  raw_ptr<void> iter_;
 
   // The string we're iterating over. Can be changed with SetText(...)
   StringPiece16 string_;
@@ -186,8 +190,6 @@ class BASE_I18N_EXPORT BreakIterator {
 
   // Previous and current iterator positions.
   size_t prev_, pos_;
-
-  DISALLOW_COPY_AND_ASSIGN(BreakIterator);
 };
 
 }  // namespace i18n

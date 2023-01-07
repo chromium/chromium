@@ -1,0 +1,18 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/address_family.mojom";
+import "services/network/public/mojom/transferable_socket.mojom";
+
+// Interface to broker socket creation in the browser.
+// Used on Windows and Android as a sandboxed network service
+// cannot directly create sockets.
+interface SocketBroker {
+  // Creates an unconnected TCP socket. Returns the
+  // SocketDescriptor and the net::Error.
+  CreateTcpSocket(AddressFamily address_family)
+      => (TransferableSocket created_socket, int32 rv);
+};

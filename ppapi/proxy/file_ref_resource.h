@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/c/pp_time.h"
@@ -31,6 +30,9 @@ class PPAPI_PROXY_EXPORT FileRefResource
   static PP_Resource CreateFileRef(Connection connection,
                                    PP_Instance instance,
                                    const FileRefCreateInfo& info);
+
+  FileRefResource(const FileRefResource&) = delete;
+  FileRefResource& operator=(const FileRefResource&) = delete;
 
   ~FileRefResource() override;
 
@@ -93,8 +95,6 @@ class PPAPI_PROXY_EXPORT FileRefResource
   scoped_refptr<StringVar> name_var_;
   scoped_refptr<StringVar> path_var_;
   scoped_refptr<StringVar> absolute_path_var_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileRefResource);
 };
 
 }  // namespace proxy

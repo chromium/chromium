@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -311,7 +311,7 @@ class Pincher {
     const clientMid = this.touchClientMid_(e);
     return {
       x: clientMid.x - e.touches[0].clientX + e.touches[0].pageX,
-      y: clientMid.y - e.touches[0].clientY + e.touches[0].pageY
+      y: clientMid.y - e.touches[0].clientY + e.touches[0].pageY,
     };
   }
 
@@ -414,7 +414,7 @@ class Pincher {
       scale: this.scale,
       clampedScale: this.clampedScale,
       shiftX: this.shiftX,
-      shiftY: this.shiftY
+      shiftY: this.shiftY,
     };
   }
 
@@ -433,9 +433,9 @@ class Pincher {
 // eslint-disable-next-line no-var
 var pincher, fontSizeSlider;
 if (navigator.userAgent.toLowerCase().indexOf('android') > -1) {
-  pincher = new Pincher;
+  pincher = new Pincher();
 } else {
-  fontSizeSlider = new FontSizeSlider;
+  fontSizeSlider = new FontSizeSlider();
 }
 
 function useFontScaling(scale) {

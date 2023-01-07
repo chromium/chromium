@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "content/browser/browser_process_sub_thread.h"
+#include "content/browser/browser_process_io_thread.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/startup_data.h"
+#include "content/public/common/startup_data.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 
 namespace content {
@@ -19,7 +19,7 @@ struct CONTENT_EXPORT StartupDataImpl : public StartupData {
   StartupDataImpl();
   ~StartupDataImpl() override;
 
-  std::unique_ptr<BrowserProcessSubThread> io_thread;
+  std::unique_ptr<BrowserProcessIOThread> io_thread;
   std::unique_ptr<mojo::core::ScopedIPCSupport> mojo_ipc_support;
 };
 

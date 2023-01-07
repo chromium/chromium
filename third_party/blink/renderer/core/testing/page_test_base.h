@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,11 @@ class TickClock;
 
 namespace blink {
 
+class AnimationClock;
 class BrowserInterfaceBrokerProxy;
 class Document;
 class FrameSelection;
+class LayoutObject;
 class LocalFrame;
 class PendingAnimations;
 class StyleEngine;
@@ -62,8 +64,8 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
 
   using FrameSettingOverrideFunction = void (*)(Settings&);
 
-  void SetUp(IntSize);
-  void SetupPageWithClients(Page::PageClients* = nullptr,
+  void SetUp(gfx::Size);
+  void SetupPageWithClients(ChromeClient* = nullptr,
                             LocalFrameClient* = nullptr,
                             FrameSettingOverrideFunction = nullptr);
   // TODO(shanmuga.m@samsung.com): These two function to be unified.
@@ -99,8 +101,13 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   // See external/wpt/css/fonts/ahem/README for more about the 'Ahem' font.
   static void LoadAhem(LocalFrame&);
 
+  static void LoadNoto(LocalFrame&);
+
+  static std::string ToSimpleLayoutTree(const LayoutObject& layout_object);
+
  protected:
   void LoadAhem();
+  void LoadNoto();
   void EnablePlatform();
 
   // Used by subclasses to provide a different tick clock. At the moment is only

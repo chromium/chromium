@@ -7,7 +7,6 @@ include_rules = [
   "+third_party/webrtc",
   "+gpu/config/gpu_driver_bug_workarounds.h",
   "+gpu/config/gpu_preferences.h",
-  "+media/cast",
   "+media/video",
   "+media/gpu",
   "+ui/gfx/geometry",

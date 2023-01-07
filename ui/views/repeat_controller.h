@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define UI_VIEWS_REPEAT_CONTROLLER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/views/views_export.h"
 
@@ -30,6 +30,10 @@ class VIEWS_EXPORT RepeatController {
  public:
   explicit RepeatController(base::RepeatingClosure callback,
                             const base::TickClock* tick_clock = nullptr);
+
+  RepeatController(const RepeatController&) = delete;
+  RepeatController& operator=(const RepeatController&) = delete;
+
   virtual ~RepeatController();
 
   // Start repeating.
@@ -49,12 +53,10 @@ class VIEWS_EXPORT RepeatController {
 
  private:
   // Initial time required before the first callback occurs.
-  static constexpr base::TimeDelta kInitialWait =
-      base::TimeDelta::FromMilliseconds(250);
+  static constexpr base::TimeDelta kInitialWait = base::Milliseconds(250);
 
   // Period of callbacks after the first callback.
-  static constexpr base::TimeDelta kRepeatingWait =
-      base::TimeDelta::FromMilliseconds(50);
+  static constexpr base::TimeDelta kRepeatingWait = base::Milliseconds(50);
 
   // Called when the timer expires.
   void Run();
@@ -63,8 +65,6 @@ class VIEWS_EXPORT RepeatController {
   base::OneShotTimer timer_;
 
   base::RepeatingClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RepeatController);
 };
 
 }  // namespace views

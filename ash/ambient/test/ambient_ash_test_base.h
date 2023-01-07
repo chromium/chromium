@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,12 @@
 #include "ash/ambient/ambient_controller.h"
 #include "ash/ambient/test/test_ambient_client.h"
 #include "ash/ambient/ui/ambient_background_image_view.h"
+#include "ash/constants/ambient_animation_theme.h"
+#include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
+#include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/test/ash_test_base.h"
+#include "base/callback.h"
+#include "base/time/time.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -42,6 +47,13 @@ class AmbientAshTestBase : public AshTestBase {
 
   // Enables/disables ambient mode for the currently active user session.
   void SetAmbientModeEnabled(bool enabled);
+
+  // Sets the AmbientAnimationTheme to use when ShowAmbientScreen() is called.
+  // To reflect real world usage, the incoming |theme| does not take effect
+  // immediately if the test is currently displaying the ambient screen. In that
+  // case, the ambient screen must be closed, and the new |theme| will take
+  // effect with the next call to ShowAmbientScreen().
+  void SetAmbientAnimationTheme(AmbientAnimationTheme theme);
 
   // Creates ambient screen in its own widget.
   void ShowAmbientScreen();
@@ -94,6 +106,10 @@ class AmbientAshTestBase : public AshTestBase {
   // Set the size of the next image that will be loaded.
   void SetDecodedPhotoSize(int width, int height);
 
+  void SetPhotoOrientation(bool portrait);
+
+  void SetPhotoTopicType(::ambient::TopicType topic_type);
+
   // Advance the task environment timer to expire the lock screen inactivity
   // timer.
   void FastForwardToLockScreenTimeout();
@@ -115,13 +131,16 @@ class AmbientAshTestBase : public AshTestBase {
   void SetPowerStateCharging();
   void SetPowerStateDischarging();
   void SetPowerStateFull();
+  void SetExternalPowerConnected();
+  void SetExternalPowerDisconnected();
+  void SetBatteryPercent(double percent);
 
   // Returns the number of active wake locks of type |type|.
   int GetNumOfActiveWakeLocks(device::mojom::WakeLockType type);
 
   // Simulate to issue an |access_token|.
-  // If |with_error| is true, will return an empty access token.
-  void IssueAccessToken(const std::string& access_token, bool with_error);
+  // If |is_empty| is true, will return an empty access token.
+  void IssueAccessToken(bool is_empty);
 
   bool IsAccessTokenRequestPending();
 
@@ -137,14 +156,16 @@ class AmbientAshTestBase : public AshTestBase {
   // Returns the media string view for the default display.
   MediaStringView* GetMediaStringView();
 
-  const std::map<int, PhotoCacheEntry>& GetCachedFiles();
-  const std::map<int, PhotoCacheEntry>& GetBackupCachedFiles();
+  const std::map<int, ::ambient::PhotoCacheEntry>& GetCachedFiles();
+  const std::map<int, ::ambient::PhotoCacheEntry>& GetBackupCachedFiles();
 
   AmbientController* ambient_controller();
 
   AmbientPhotoController* photo_controller();
 
   AmbientPhotoCache* photo_cache();
+
+  AmbientWeatherController* weather_controller();
 
   // Returns the top-level views which contains all the ambient components.
   std::vector<AmbientContainerView*> GetContainerViews();
@@ -171,8 +192,15 @@ class AmbientAshTestBase : public AshTestBase {
 
   void SetDecodePhotoImage(const gfx::ImageSkia& image);
 
+  void SetPhotoDownloadDelay(base::TimeDelta delay);
+
  private:
+  void SpinWaitForAmbientViewAvailable(
+      const base::RepeatingClosure& quit_closure);
+
   std::unique_ptr<views::Widget> widget_;
+  power_manager::PowerSupplyProperties proto_;
+  TestImageDownloader image_downloader_;
 };
 
 }  // namespace ash

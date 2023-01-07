@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,13 +19,13 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.GetSubKeysRequestDelegate;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorBase;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.prefeditor.EditorModel;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressField;
 import org.chromium.chrome.browser.autofill.settings.AutofillProfileBridge.AddressUiComponent;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.autofill.prefeditor.EditorFieldModel;
+import org.chromium.components.autofill.prefeditor.EditorFieldModel.EditorFieldValidator;
 import org.chromium.payments.mojom.AddressErrors;
 
 import java.lang.annotation.Retention;
@@ -40,7 +40,11 @@ import java.util.UUID;
 
 /**
  * An address editor. Can be used for either shipping or billing address editing.
+ *
+ * Note that this class is used by PaymentRequest only and will be removed when not needed any more.
+ * Please use {@link org.chromium.chrome.browser.autofill.settings.AddressEditor} instead.
  */
+@Deprecated
 public class AddressEditor
         extends EditorBase<AutofillAddress> implements GetSubKeysRequestDelegate {
     @IntDef({Purpose.PAYMENT_REQUEST, Purpose.AUTOFILL_SETTINGS})

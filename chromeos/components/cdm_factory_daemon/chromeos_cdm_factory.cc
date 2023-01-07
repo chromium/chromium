@@ -1,21 +1,24 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
 
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
+#include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_storage_adapter.h"
 #include "chromeos/components/cdm_factory_daemon/content_decryption_module_adapter.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/content_decryption_module.mojom.h"
 #include "media/base/content_decryption_module.h"
+#include "media/base/decrypt_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -24,10 +27,40 @@ namespace chromeos {
 
 namespace {
 
+// This class is used as a singleton which then allows replacing the underlying
+// mojo::Remote<cdm::mojom::BrowserCdmFactory> that it will return.
+class BrowserCdmFactoryRemoteHolder {
+ public:
+  BrowserCdmFactoryRemoteHolder() = default;
+  BrowserCdmFactoryRemoteHolder(const BrowserCdmFactoryRemoteHolder&) = delete;
+  BrowserCdmFactoryRemoteHolder& operator=(
+      const BrowserCdmFactoryRemoteHolder&) = delete;
+  ~BrowserCdmFactoryRemoteHolder() = default;
+
+  mojo::Remote<cdm::mojom::BrowserCdmFactory>& GetBrowserCdmFactoryRemote() {
+    return remote_;
+  }
+
+  void ReplaceBrowserCdmFactoryRemote(
+      mojo::Remote<cdm::mojom::BrowserCdmFactory> remote) {
+    remote_ = std::move(remote);
+  }
+
+ private:
+  mojo::Remote<cdm::mojom::BrowserCdmFactory> remote_;
+};
+
+// This holds the global single BrowserCdmFactoryRemoteHolder object which then
+// internally can hold either the Mojo connection to the browser process or the
+// Mojo connection to the GPU process if we are doing OOP video decoding.
+BrowserCdmFactoryRemoteHolder& GetBrowserCdmFactoryRemoteHolder() {
+  static base::NoDestructor<BrowserCdmFactoryRemoteHolder> remote_holder;
+  return *remote_holder;
+}
+
 // This holds the global singleton Mojo connection to the browser process.
-mojo::Remote<cdm::mojom::CdmFactoryDaemon>& GetCdmFactoryDaemonRemote() {
-  static base::NoDestructor<mojo::Remote<cdm::mojom::CdmFactoryDaemon>> remote;
-  return *remote;
+mojo::Remote<cdm::mojom::BrowserCdmFactory>& GetBrowserCdmFactoryRemote() {
+  return GetBrowserCdmFactoryRemoteHolder().GetBrowserCdmFactoryRemote();
 }
 
 // This holds the task runner we are bound to.
@@ -38,13 +71,13 @@ scoped_refptr<base::SequencedTaskRunner>& GetFactoryTaskRunner() {
 
 void CreateFactoryOnTaskRunner(
     const std::string& key_system,
-    cdm::mojom::CdmFactoryDaemon::CreateFactoryCallback callback) {
-  GetCdmFactoryDaemonRemote()->CreateFactory(key_system, std::move(callback));
+    cdm::mojom::BrowserCdmFactory::CreateFactoryCallback callback) {
+  GetBrowserCdmFactoryRemote()->CreateFactory(key_system, std::move(callback));
 }
 
 void CreateFactoryCallback(
     scoped_refptr<base::SingleThreadTaskRunner> runner,
-    cdm::mojom::CdmFactoryDaemon::CreateFactoryCallback callback,
+    cdm::mojom::BrowserCdmFactory::CreateFactoryCallback callback,
     mojo::PendingRemote<cdm::mojom::CdmFactory> remote_factory) {
   runner->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
                                              std::move(remote_factory)));
@@ -52,9 +85,73 @@ void CreateFactoryCallback(
 
 void GetOutputProtectionOnTaskRunner(
     mojo::PendingReceiver<cdm::mojom::OutputProtection> output_protection) {
-  GetCdmFactoryDaemonRemote()->GetOutputProtection(
+  GetBrowserCdmFactoryRemote()->GetOutputProtection(
       std::move(output_protection));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class SingletonCdmContextRef : public media::CdmContextRef {
+ public:
+  explicit SingletonCdmContextRef(media::CdmContext* cdm_context)
+      : cdm_context_(cdm_context) {}
+  ~SingletonCdmContextRef() override = default;
+
+  // media::CdmContextRef
+  media::CdmContext* GetCdmContext() override {
+    // Safe because we are a singleton for the process.
+    return cdm_context_;
+  }
+
+ private:
+  media::CdmContext* cdm_context_;
+};
+
+void GetHwKeyDataProxy(const std::string& key_id,
+                       const std::vector<uint8_t>& hw_identifier,
+                       ChromeOsCdmContext::GetHwKeyDataCB callback) {
+  if (!GetFactoryTaskRunner()->RunsTasksInCurrentSequence()) {
+    GetFactoryTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&GetHwKeyDataProxy, key_id, hw_identifier,
+                                  std::move(callback)));
+    return;
+  }
+  GetBrowserCdmFactoryRemote()->GetAndroidHwKeyData(
+      std::vector<uint8_t>(key_id.begin(), key_id.end()), hw_identifier,
+      std::move(callback));
+}
+
+class ArcCdmContext : public ChromeOsCdmContext, public media::CdmContext {
+ public:
+  ArcCdmContext() = default;
+  ArcCdmContext(const ArcCdmContext&) = delete;
+  ArcCdmContext& operator=(const ArcCdmContext&) = delete;
+  ~ArcCdmContext() override = default;
+
+  // ChromeOsCdmContext implementation.
+  void GetHwKeyData(const media::DecryptConfig* decrypt_config,
+                    const std::vector<uint8_t>& hw_identifier,
+                    GetHwKeyDataCB callback) override {
+    GetHwKeyDataProxy(decrypt_config->key_id(), hw_identifier,
+                      std::move(callback));
+  }
+  void GetHwConfigData(
+      ChromeOsCdmContext::GetHwConfigDataCB callback) override {
+    ChromeOsCdmFactory::GetHwConfigData(std::move(callback));
+  }
+  void GetScreenResolutions(
+      ChromeOsCdmContext::GetScreenResolutionsCB callback) override {
+    ChromeOsCdmFactory::GetScreenResolutions(std::move(callback));
+  }
+  std::unique_ptr<media::CdmContextRef> GetCdmContextRef() override {
+    return std::make_unique<SingletonCdmContextRef>(this);
+  }
+  bool UsingArcCdm() const override { return true; }
+  bool IsRemoteCdm() const override { return true; }
+
+  // media::CdmContext implementation.
+  ChromeOsCdmContext* GetChromeOsCdmContext() override { return this; }
+};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -67,66 +164,82 @@ ChromeOsCdmFactory::ChromeOsCdmFactory(
 
 ChromeOsCdmFactory::~ChromeOsCdmFactory() = default;
 
-mojo::PendingReceiver<cdm::mojom::CdmFactoryDaemon>
-ChromeOsCdmFactory::GetCdmFactoryDaemonReceiver() {
-  mojo::PendingRemote<chromeos::cdm::mojom::CdmFactoryDaemon> browser_proxy;
+// static
+mojo::PendingReceiver<cdm::mojom::BrowserCdmFactory>
+ChromeOsCdmFactory::GetBrowserCdmFactoryReceiver() {
+  mojo::PendingRemote<chromeos::cdm::mojom::BrowserCdmFactory> browser_proxy;
   auto receiver = browser_proxy.InitWithNewPipeAndPassReceiver();
-  GetCdmFactoryDaemonRemote().Bind(std::move(browser_proxy));
+  GetBrowserCdmFactoryRemote().Bind(std::move(browser_proxy));
 
   GetFactoryTaskRunner() = base::SequencedTaskRunnerHandle::Get();
   return receiver;
 }
 
 void ChromeOsCdmFactory::Create(
-    const std::string& key_system,
     const media::CdmConfig& cdm_config,
     const media::SessionMessageCB& session_message_cb,
     const media::SessionClosedCB& session_closed_cb,
     const media::SessionKeysChangeCB& session_keys_change_cb,
     const media::SessionExpirationUpdateCB& session_expiration_update_cb,
     media::CdmCreatedCB cdm_created_cb) {
-  DVLOG(1) << __func__ << " key system=" << key_system;
+  DVLOG(1) << __func__ << " cdm_config=" << cdm_config;
   // Check that the user has Verified Access enabled in their Chrome settings
   // and if they do not then block this connection since OEMCrypto utilizes
   // remote attestation as part of verification.
-  if (!platform_verification_) {
+  if (!cdm_document_service_) {
     frame_interfaces_->BindEmbedderReceiver(mojo::GenericPendingReceiver(
-        platform_verification_.BindNewPipeAndPassReceiver()));
-    platform_verification_.set_disconnect_handler(
+        cdm_document_service_.BindNewPipeAndPassReceiver()));
+    cdm_document_service_.set_disconnect_handler(
         base::BindOnce(&ChromeOsCdmFactory::OnVerificationMojoConnectionError,
                        weak_factory_.GetWeakPtr()));
   }
-  platform_verification_->IsVerifiedAccessEnabled(base::BindOnce(
+  cdm_document_service_->IsVerifiedAccessEnabled(base::BindOnce(
       &ChromeOsCdmFactory::OnVerifiedAccessEnabled, weak_factory_.GetWeakPtr(),
-      key_system, cdm_config, session_message_cb, session_closed_cb,
-      session_keys_change_cb, session_expiration_update_cb,
-      std::move(cdm_created_cb)));
+      cdm_config, session_message_cb, session_closed_cb, session_keys_change_cb,
+      session_expiration_update_cb, std::move(cdm_created_cb)));
 }
 
 // static
-void ChromeOsCdmFactory::GetHwConfigData(GetHwConfigDataCB callback) {
+void ChromeOsCdmFactory::GetHwConfigData(
+    ChromeOsCdmContext::GetHwConfigDataCB callback) {
   if (!GetFactoryTaskRunner()->RunsTasksInCurrentSequence()) {
     GetFactoryTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&ChromeOsCdmFactory::GetHwConfigData,
                                   std::move(callback)));
     return;
   }
-  GetCdmFactoryDaemonRemote()->GetHwConfigData(std::move(callback));
+  GetBrowserCdmFactoryRemote()->GetHwConfigData(std::move(callback));
 }
 
 // static
-void ChromeOsCdmFactory::GetScreenResolutions(GetScreenResolutionsCB callback) {
+void ChromeOsCdmFactory::GetScreenResolutions(
+    ChromeOsCdmContext::GetScreenResolutionsCB callback) {
   if (!GetFactoryTaskRunner()->RunsTasksInCurrentSequence()) {
     GetFactoryTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&ChromeOsCdmFactory::GetScreenResolutions,
                                   std::move(callback)));
     return;
   }
-  GetCdmFactoryDaemonRemote()->GetScreenResolutions(std::move(callback));
+  GetBrowserCdmFactoryRemote()->GetScreenResolutions(std::move(callback));
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// static
+void ChromeOsCdmFactory::SetBrowserCdmFactoryRemote(
+    mojo::Remote<cdm::mojom::BrowserCdmFactory> remote) {
+  GetBrowserCdmFactoryRemoteHolder().ReplaceBrowserCdmFactoryRemote(
+      std::move(remote));
+  GetFactoryTaskRunner() = base::SequencedTaskRunnerHandle::Get();
+}
+
+// static
+media::CdmContext* ChromeOsCdmFactory::GetArcCdmContext() {
+  static base::NoDestructor<ArcCdmContext> arc_cdm_context;
+  return arc_cdm_context.get();
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
-    const std::string& key_system,
     const media::CdmConfig& cdm_config,
     const media::SessionMessageCB& session_message_cb,
     const media::SessionClosedCB& session_closed_cb,
@@ -151,7 +264,7 @@ void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
     GetFactoryTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &CreateFactoryOnTaskRunner, key_system,
+            &CreateFactoryOnTaskRunner, cdm_config.key_system,
             base::BindOnce(
                 &CreateFactoryCallback, base::ThreadTaskRunnerHandle::Get(),
                 base::BindOnce(
@@ -257,7 +370,7 @@ void ChromeOsCdmFactory::OnFactoryMojoConnectionError() {
 
 void ChromeOsCdmFactory::OnVerificationMojoConnectionError() {
   DVLOG(1) << __func__;
-  platform_verification_.reset();
+  cdm_document_service_.reset();
 }
 
 }  // namespace chromeos

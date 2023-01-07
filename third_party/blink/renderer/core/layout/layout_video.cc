@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/video_painter.h"
 
 namespace blink {
@@ -110,7 +111,7 @@ LayoutSize LayoutVideo::CalculateIntrinsicSize(float scale) {
     // Otherwise, the intrinsic width is that of the video.
     case kVideo:
       if (const auto* player = MediaElement()->GetWebMediaPlayer()) {
-        IntSize size(player->NaturalSize());
+        gfx::Size size = player->NaturalSize();
         if (!size.IsEmpty()) {
           LayoutSize layout_size = LayoutSize(size);
           layout_size.Scale(scale);
@@ -196,18 +197,8 @@ void LayoutVideo::UpdatePlayer(bool is_in_layout) {
     return;
 
   VideoElement()->SetNeedsCompositingUpdate();
-}
-
-LayoutUnit LayoutVideo::ComputeReplacedLogicalWidth(
-    ShouldComputePreferred should_compute_preferred) const {
-  NOT_DESTROYED();
-  return LayoutReplaced::ComputeReplacedLogicalWidth(should_compute_preferred);
-}
-
-LayoutUnit LayoutVideo::ComputeReplacedLogicalHeight(
-    LayoutUnit estimated_used_width) const {
-  NOT_DESTROYED();
-  return LayoutReplaced::ComputeReplacedLogicalHeight(estimated_used_width);
+  if (HasLayer())
+    Layer()->SetNeedsCompositingInputsUpdate();
 }
 
 LayoutUnit LayoutVideo::MinimumReplacedHeight() const {
@@ -220,11 +211,11 @@ PhysicalRect LayoutVideo::ReplacedContentRect() const {
   if (GetDisplayMode() == kVideo) {
     // Video codecs may need to restart from an I-frame when the output is
     // resized. Round size in advance to avoid 1px snap difference.
-    return PreSnappedRectForPersistentSizing(ComputeObjectFit());
+    return PreSnappedRectForPersistentSizing(ComputeReplacedContentRect());
   }
   // If we are displaying the poster image no pre-rounding is needed, but the
   // size of the image should be used for fitting instead.
-  return ComputeObjectFit(&cached_image_size_);
+  return ComputeReplacedContentRect(&cached_image_size_);
 }
 
 bool LayoutVideo::SupportsAcceleratedRendering() const {
@@ -234,10 +225,6 @@ bool LayoutVideo::SupportsAcceleratedRendering() const {
 
 CompositingReasons LayoutVideo::AdditionalCompositingReasons() const {
   NOT_DESTROYED();
-  auto* element = To<HTMLMediaElement>(GetNode());
-  if (element->IsFullscreen() && element->UsesOverlayFullscreenVideo())
-    return CompositingReason::kVideo;
-
   if (GetDisplayMode() == kVideo && SupportsAcceleratedRendering())
     return CompositingReason::kVideo;
 

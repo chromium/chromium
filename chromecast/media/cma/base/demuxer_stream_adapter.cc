@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/media/cma/base/balanced_media_task_runner_factory.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "chromecast/media/cma/base/simple_media_task_runner.h"

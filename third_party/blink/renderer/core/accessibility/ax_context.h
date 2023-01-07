@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "ui/accessibility/ax_mode.h"
 
 namespace blink {
-
-class AXObjectCache;
 
 // An AXContext enables accessibility support in a Document for as
 // long as the AXContext is alive. While the AXContext exists,
@@ -21,7 +20,7 @@ class CORE_EXPORT AXContext {
   USING_FAST_MALLOC(AXContext);
 
  public:
-  explicit AXContext(Document& document);
+  AXContext(Document& document, const ui::AXMode& mode);
   AXContext(const AXContext&) = delete;
   AXContext& operator=(const AXContext&) = delete;
   virtual ~AXContext();
@@ -36,10 +35,15 @@ class CORE_EXPORT AXContext {
 
   Document* GetDocument();
 
+  const ui::AXMode& GetAXMode() { return ax_mode_; }
+
+  void SetAXMode(const ui::AXMode&);
+
  protected:
   WeakPersistent<Document> document_;
+  ui::AXMode ax_mode_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ACCESSIBILITY_AX_CONTEXT_H_

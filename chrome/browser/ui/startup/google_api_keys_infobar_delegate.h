@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,16 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 // An infobar that is run with a string and a "Learn More" link.
 class GoogleApiKeysInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates a missing Google API Keys infobar and delegate and adds the infobar
-  // to |infobar_service|.
-  static void Create(InfoBarService* infobar_service);
+  // to |infobar_manager|.
+  static void Create(infobars::ContentInfoBarManager* infobar_manager);
 
   GoogleApiKeysInfoBarDelegate(const GoogleApiKeysInfoBarDelegate&) = delete;
   GoogleApiKeysInfoBarDelegate& operator=(const GoogleApiKeysInfoBarDelegate&) =

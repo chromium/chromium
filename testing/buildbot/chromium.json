@@ -21,6 +21,21 @@
       "all"
     ]
   },
+  "lacros-arm-archive-rel": {
+    "additional_compile_targets": [
+      "chrome"
+    ]
+  },
+  "lacros-arm64-archive-rel": {
+    "additional_compile_targets": [
+      "chrome"
+    ]
+  },
+  "lacros64-archive-rel": {
+    "additional_compile_targets": [
+      "chrome"
+    ]
+  },
   "linux-archive-dbg": {
     "additional_compile_targets": [
       "all"
@@ -29,8 +44,7 @@
   "linux-archive-rel": {
     "additional_compile_targets": [
       "all"
-    ],
-    "scripts": []
+    ]
   },
   "linux-official": {
     "additional_compile_targets": [
@@ -45,8 +59,17 @@
   "mac-archive-rel": {
     "additional_compile_targets": [
       "all"
-    ],
-    "scripts": []
+    ]
+  },
+  "mac-arm64-archive-dbg": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
+  "mac-arm64-archive-rel": {
+    "additional_compile_targets": [
+      "all"
+    ]
   },
   "mac-official": {
     "additional_compile_targets": [

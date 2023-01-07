@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,6 +52,10 @@ bool PowerEventObserverTestApi::SimulateCompositorsReadyForSuspend() {
     return false;
   power_event_observer_->OnCompositorsReadyForSuspend();
   return true;
+}
+
+bool PowerEventObserverTestApi::TrackingLockOnSuspendUsage() const {
+  return power_event_observer_->lock_on_suspend_usage_.get();
 }
 
 }  // namespace ash

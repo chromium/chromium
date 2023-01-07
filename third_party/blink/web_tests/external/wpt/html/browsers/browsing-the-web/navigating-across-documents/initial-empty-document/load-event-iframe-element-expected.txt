@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS load event fires synchronously on <iframe> element created with no src
+PASS load event fires synchronously on <iframe> element created with src=''
+PASS load event fires synchronously on <iframe> element created with src='about:blank'
+FAIL load event fires synchronously on <iframe> element created with src='about:blank#foo' assert_equals: expected 1 but got 0
+PASS load event fires synchronously on <iframe> element created with src='about:blank?foo'
+Harness: the test ran to completion.
+

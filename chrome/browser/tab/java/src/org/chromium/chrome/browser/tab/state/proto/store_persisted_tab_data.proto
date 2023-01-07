@@ -1,0 +1,18 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package org.chromium.chrome.browser.tab.proto;
+
+option java_package = "org.chromium.chrome.browser.tab.proto";
+
+message StorePersistedTabDataProto {
+  // int representing opening time in military minutes (ISO 8601 hhmm).
+  // https://en.wikipedia.org/wiki/ISO_8601
+  optional int32 opening_time = 1;
+
+  // int representing closing time in military minutes (ISO 8601 hhmm).
+  optional int32 closing_time = 2;
+}

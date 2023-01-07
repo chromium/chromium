@@ -1,0 +1,6 @@
+Name: rustc-hash
+URL: https://crates.io/crates/rustc-hash
+Description: speed, non-cryptographic hash used in rustc
+Version: 1.1.0
+Security Critical: no
+License: Apache 2.0

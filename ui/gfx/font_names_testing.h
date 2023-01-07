@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,4 +13,4 @@ extern const char kCJKFontName[];
 
 } // end namespace gfx
 
-#endif
+#endif  // UI_GFX_FONT_NAMES_TESTING_H_

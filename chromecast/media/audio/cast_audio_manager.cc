@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,38 +35,39 @@ namespace media {
 CastAudioManager::CastAudioManager(
     std::unique_ptr<::media::AudioThread> audio_thread,
     ::media::AudioLogFactory* audio_log_factory,
+    CastAudioManagerHelper::Delegate* delegate,
     base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-    CastAudioManagerHelper::GetSessionIdCallback get_session_id_callback,
     scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-    mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector,
+    external_service_support::ExternalConnector* connector,
+
     bool use_mixer)
     : CastAudioManager(std::move(audio_thread),
                        audio_log_factory,
+                       delegate,
                        std::move(backend_factory_getter),
-                       std::move(get_session_id_callback),
                        std::move(browser_task_runner),
                        std::move(media_task_runner),
-                       std::move(connector),
+                       connector,
                        use_mixer,
                        false) {}
 
 CastAudioManager::CastAudioManager(
     std::unique_ptr<::media::AudioThread> audio_thread,
     ::media::AudioLogFactory* audio_log_factory,
+    CastAudioManagerHelper::Delegate* delegate,
     base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-    CastAudioManagerHelper::GetSessionIdCallback get_session_id_callback,
     scoped_refptr<base::SingleThreadTaskRunner> browser_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-    mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector,
+    external_service_support::ExternalConnector* connector,
     bool use_mixer,
     bool force_use_cma_backend_for_output)
     : AudioManagerBase(std::move(audio_thread), audio_log_factory),
       helper_(this,
+              delegate,
               std::move(backend_factory_getter),
-              std::move(get_session_id_callback),
               std::move(media_task_runner),
-              std::move(connector)),
+              connector),
       browser_task_runner_(std::move(browser_task_runner)),
       force_use_cma_backend_for_output_(force_use_cma_backend_for_output),
       weak_factory_(this) {
@@ -109,7 +110,7 @@ void CastAudioManager::GetAudioInputDeviceNames(
   // Need to send a valid AudioParameters object even when it will be unused.
   return ::media::AudioParameters(
       ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-      ::media::CHANNEL_LAYOUT_STEREO, kDefaultSampleRate,
+      ::media::ChannelLayoutConfig::Stereo(), kDefaultSampleRate,
       kDefaultInputBufferSize);
 }
 
@@ -189,13 +190,12 @@ void CastAudioManager::ReleaseOutputStream(::media::AudioOutputStream* stream) {
 ::media::AudioParameters CastAudioManager::GetPreferredOutputStreamParameters(
     const std::string& output_device_id,
     const ::media::AudioParameters& input_params) {
-  ::media::ChannelLayout channel_layout = ::media::CHANNEL_LAYOUT_STEREO;
   int sample_rate = kDefaultSampleRate;
   // Set buffer size to 10ms of the sample rate.
   int buffer_size = sample_rate / 100;
   ::media::AudioParameters output_params(
-      ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY, channel_layout,
-      sample_rate, buffer_size);
+      ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      ::media::ChannelLayoutConfig::Stereo(), sample_rate, buffer_size);
   return output_params;
 }
 

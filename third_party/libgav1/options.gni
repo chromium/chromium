@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,5 +12,7 @@ declare_args() {
       is_chromeos_ash && (target_cpu == "arm" || target_cpu == "arm64")
   use_libgav1_parser =
       (is_chromeos || is_linux || is_win) &&
-      (target_cpu == "x86" || target_cpu == "x64" || target_cpu == "arm64")
+      (target_cpu == "x86" || target_cpu == "x64" ||
+      target_cpu == "arm" || target_cpu == "arm64" ||
+      target_cpu == "ppc64")
 }

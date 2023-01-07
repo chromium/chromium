@@ -1,0 +1,12 @@
+<!doctype html>
+<html>
+<body>
+<input id="test" type="text" aria-labelledby="label">
+<div id="label">
+  <!-- role=status normally doesn't support name-from-contents, but when
+       performing name-from-contents on behalf of aria-labelledby, it should
+       contribute its text. -->
+  <div role="status">
+  Label text
+  </div>
+</div>

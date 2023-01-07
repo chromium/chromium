@@ -1,0 +1,6 @@
+Name: adler
+URL: https://crates.io/crates/adler
+Description: A simple clean-room implementation of the Adler-32 checksum
+Version: 1.0.2
+Security Critical: yes
+License: Apache 2.0

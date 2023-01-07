@@ -1,0 +1,75 @@
+<style>
+  :host {
+    width: 100%;
+  }
+
+  .warning-banner {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    min-height: 32px;
+    width: 100%;
+  }
+
+  #warning-text-group {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+  }
+
+  .warning-icon {
+    background-image: var(--icon-src,
+      url(/foreground/images/files/ui/warning_banner_icon.svg));
+    background-size: 32px 32px;
+    flex: none;
+    height: 32px;
+    margin-inline-end: 20px;
+    margin-inline-start: 16px;
+    width: 32px;
+  }
+
+  .warning-message {
+    color: var(--cros-text-color-primary);
+  }
+
+  .button-group {
+    align-items: center;
+    display: flex;
+    flex: 0 0 auto;
+    height: 32px;
+    margin-inline-start: auto;
+    padding-inline-start: 40px;
+  }
+
+  ::slotted(cr-button) {
+    --active-bg: var(--cros-button-background-color-secondary-hover);
+    --hover-bg-color: var(--cros-button-background-color-secondary-hover);
+    --ink-color: rgba(var(--cros-button-ripple-color-secondary-rgb), var(--cros-button-secondary-ripple-opacity));
+    --paper-ripple-opacity: 100%;
+    --text-color: var(--cros-button-label-color-secondary);
+    border: none;
+    box-shadow: none;
+    height: 32px;
+    margin-inline: 4px;
+    padding-inline: 16px;
+    position: relative;
+  }
+
+  :host-context(.focus-outline-visible) ::slotted(cr-button:focus) {
+    outline: 2px solid var(--cros-focus-ring-color);
+    outline-offset: 2px;
+  }
+</style>
+<div class="warning-banner">
+  <div id="warning-text-group">
+    <div class="warning-icon"></div>
+    <div class="warning-message body2-primary">
+      <slot name="text"></slot>
+    </div>
+  </div>
+  <div class="button-group">
+    <slot name="extra-button"></slot>
+    <slot name="dismiss-button"></slot>
+  </div>
+</div>

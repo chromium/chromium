@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,6 @@ class GURL;
 // already visible in this browser, it becomes selected. Otherwise a new tab
 // is created.
 void ShowSingletonTab(Browser* browser, const GURL& url);
-
-// Same as ShowSingletonTab, but does not ignore ref.
-void ShowSingletonTabRespectRef(Browser* browser, const GURL& url);
 
 // As ShowSingletonTab, but if the current tab is the new tab page or
 // about:blank, then overwrite it with the passed contents.

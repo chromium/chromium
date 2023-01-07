@@ -1,10 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
 // TestVolumeMountWatcherWin implementation.
 
 #include "components/storage_monitor/test_volume_mount_watcher_win.h"
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -116,9 +118,9 @@ void TestVolumeMountWatcherWin::DeviceCheckComplete(
 }
 
 void TestVolumeMountWatcherWin::BlockDeviceCheckForTesting() {
-  device_check_complete_event_.reset(
-      new base::WaitableEvent(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                              base::WaitableEvent::InitialState::NOT_SIGNALED));
+  device_check_complete_event_ = std::make_unique<base::WaitableEvent>(
+      base::WaitableEvent::ResetPolicy::AUTOMATIC,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
   devices_checked_.clear();
 }
 

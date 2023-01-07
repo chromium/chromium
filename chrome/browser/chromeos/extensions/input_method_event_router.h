@@ -1,13 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_INPUT_METHOD_EVENT_ROUTER_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_INPUT_METHOD_EVENT_ROUTER_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 
 namespace content {
 class BrowserContext;
@@ -20,6 +18,12 @@ class ExtensionInputMethodEventRouter
     : public input_method::InputMethodManager::Observer {
  public:
   explicit ExtensionInputMethodEventRouter(content::BrowserContext* context);
+
+  ExtensionInputMethodEventRouter(const ExtensionInputMethodEventRouter&) =
+      delete;
+  ExtensionInputMethodEventRouter& operator=(
+      const ExtensionInputMethodEventRouter&) = delete;
+
   ~ExtensionInputMethodEventRouter() override;
 
   // Implements input_method::InputMethodManager::Observer:
@@ -29,8 +33,6 @@ class ExtensionInputMethodEventRouter
 
  private:
   content::BrowserContext* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInputMethodEventRouter);
 };
 
 }  // namespace chromeos

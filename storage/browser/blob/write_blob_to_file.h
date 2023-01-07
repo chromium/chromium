@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
 #define STORAGE_BROWSER_BLOB_WRITE_BLOB_TO_FILE_H_
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_entry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 
@@ -26,7 +26,7 @@ void WriteBlobToFile(
     std::unique_ptr<BlobDataHandle> blob_handle,
     const base::FilePath& file_path,
     bool flush_on_write,
-    base::Optional<base::Time> last_modified,
+    absl::optional<base::Time> last_modified,
     mojom::BlobStorageContext::WriteBlobToFileCallback callback);
 
 }  // namespace storage

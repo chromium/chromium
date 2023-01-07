@@ -1,0 +1,22 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom.demo_mode;
+
+// Implemented in the browser process. Interface for the Demo Mode WebUI to
+// retrieve an endpoint to the PageHandler interface, and to provide its own
+// Page endpoint to receive notifications.
+interface UntrustedPageHandlerFactory {
+  // Create a page handler to provide one-way message passing between the WebUI
+  // and browser process
+  CreatePageHandler(pending_receiver<UntrustedPageHandler> handler);
+};
+
+// Implemented in the browser process. Interface for sending ToggleFullscreen()
+// commands from the Web UI to the browser process.
+interface UntrustedPageHandler {
+  // Fire-and-forget command to trigger enter or exit fullscreen on a native
+  // window. Used for when we need to enter fullscreen without user interaction.
+  ToggleFullscreen();
+};

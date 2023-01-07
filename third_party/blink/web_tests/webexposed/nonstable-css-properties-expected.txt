@@ -72,11 +72,6 @@ el.style.getPropertyValue('grid-template-areas') is "test"
 getComputedStyle(el).getPropertyValue('grid-template-areas') is "test"
 
 
-el.style.setProperty('text-justify', 'distribute')
-el.style.getPropertyValue('text-justify') is distribute
-getComputedStyle(el).getPropertyValue('text-justify') is distribute
-
-
 el.style.setProperty('text-underline-position', 'left')
 el.style.getPropertyValue('text-underline-position') is left
 getComputedStyle(el).getPropertyValue('text-underline-position') is left

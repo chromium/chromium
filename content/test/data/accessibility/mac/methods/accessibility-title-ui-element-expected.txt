@@ -1,0 +1,1 @@
+control.accessibilityTitleUIElement=:4

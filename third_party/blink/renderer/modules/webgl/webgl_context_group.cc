@@ -30,7 +30,7 @@ namespace blink {
 WebGLContextGroup::WebGLContextGroup() : number_of_context_losses_(0) {}
 
 gpu::gles2::GLES2Interface* WebGLContextGroup::GetAGLInterface() {
-  DCHECK(!contexts_.IsEmpty());
+  DCHECK(!contexts_.empty());
   return (*contexts_.begin())->ContextGL();
 }
 

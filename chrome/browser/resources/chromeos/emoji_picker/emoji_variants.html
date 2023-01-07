@@ -1,14 +1,17 @@
 <style>
   :host {
-    background: var(--cr-card-background-color);
-    border-radius: 4px;
-    box-shadow: var(--cr-elevation-3);
+    background: var(--cros-bg-color);
+    border-radius: 4px; /* TODO: might need to be 8 querying with UX */
+    box-shadow: var(--cr-elevation-2);
     display: grid;
     grid-template-columns: max-content max-content max-content;
     grid-template-rows: max-content max-content;
     height: fit-content;
+    padding: 4px;
     position: relative;
     width: fit-content;
+    /** Increase z-index so it is above variant selection triangles. */
+    z-index: 100;
   }
 
   #grid-base-emoji {
@@ -22,7 +25,7 @@
   #grid-skin-tone-top {
     display: flex;
     flex-direction: row;
-
+    gap: var(--emoji-spacing);
     grid-column: 3;
     grid-row: 1;
   }
@@ -51,6 +54,7 @@
   .variant-row {
     display: flex;
     flex-direction: row;
+    gap: var(--emoji-spacing);
     height: var(--emoji-size);
   }
 </style>
@@ -101,10 +105,12 @@
 </div>
 
 <div id="grid-variants">
+  <div id="fake-focus-target" tabindex="-1"></div>
   <template is="dom-repeat" items="[[variantRows]]" as="row">
     <div class="variant-row">
       <template is="dom-repeat" items="[[row]]" as="emoji">
-        <emoji-button emoji="[[emoji.string]]" variant base="[[baseEmoji]]">
+        <emoji-button emoji="[[emoji.string]]" variant base="[[baseEmoji]]"
+          all-variants="[[variants]]" tooltip="[[tooltip]]">
         </emoji-button>
       </template>
     </div>

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/channel_layout.h"
 
 namespace chromecast {
@@ -21,6 +20,10 @@ class InterleavedChannelMixer {
                           ::media::ChannelLayout output_layout,
                           int output_channel_count,
                           int max_frames);
+
+  InterleavedChannelMixer(const InterleavedChannelMixer&) = delete;
+  InterleavedChannelMixer& operator=(const InterleavedChannelMixer&) = delete;
+
   ~InterleavedChannelMixer();
 
   int input_channel_count() const { return input_channel_count_; }
@@ -44,8 +47,6 @@ class InterleavedChannelMixer {
 
   // Output buffer, if needed.
   std::vector<float> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InterleavedChannelMixer);
 };
 
 }  // namespace media

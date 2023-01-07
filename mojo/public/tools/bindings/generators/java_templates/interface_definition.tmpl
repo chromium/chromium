@@ -155,7 +155,6 @@ public interface {{interface|name}} extends org.chromium.mojo.bindings.Interface
 
     {{manager_class(interface)}} MANAGER = {{interface|name}}_Internal.MANAGER;
 {% for method in interface.methods %}
-
     void {{method|name}}({{declare_request_params(method)}});
 {%   if method.response_parameters != None %}
     {{declare_callback(method)|indent(4)}}

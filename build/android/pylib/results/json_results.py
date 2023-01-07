@@ -1,12 +1,15 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 
 import collections
 import itertools
 import json
 import logging
 import time
+
+import six
 
 from pylib.base import base_test_result
 
@@ -92,14 +95,14 @@ def GenerateResultsDict(test_run_results, global_tags=None):
       result_dict = {
           'status': r.GetType(),
           'elapsed_time_ms': r.GetDuration(),
-          'output_snippet': unicode(r.GetLog(), errors='replace'),
+          'output_snippet': six.ensure_text(r.GetLog(), errors='replace'),
           'losless_snippet': True,
           'output_snippet_base64': '',
           'links': r.GetLinks(),
       }
       iteration_data[r.GetName()].append(result_dict)
 
-    all_tests = all_tests.union(set(iteration_data.iterkeys()))
+    all_tests = all_tests.union(set(six.iterkeys(iteration_data)))
     per_iteration_data.append(iteration_data)
 
   return {
@@ -123,7 +126,7 @@ def GenerateJsonTestResultFormatDict(test_run_results, interrupted):
   """
 
   tests = {}
-  counts = {'PASS': 0, 'FAIL': 0}
+  counts = {'PASS': 0, 'FAIL': 0, 'SKIP': 0, 'CRASH': 0, 'TIMEOUT': 0}
 
   for test_run_result in test_run_results:
     if isinstance(test_run_result, list):
@@ -140,8 +143,16 @@ def GenerateJsonTestResultFormatDict(test_run_results, interrupted):
 
       element['expected'] = 'PASS'
 
-      result = 'PASS' if r.GetType(
-      ) == base_test_result.ResultType.PASS else 'FAIL'
+      if r.GetType() == base_test_result.ResultType.PASS:
+        result = 'PASS'
+      elif r.GetType() == base_test_result.ResultType.SKIP:
+        result = 'SKIP'
+      elif r.GetType() == base_test_result.ResultType.CRASH:
+        result = 'CRASH'
+      elif r.GetType() == base_test_result.ResultType.TIMEOUT:
+        result = 'TIMEOUT'
+      else:
+        result = 'FAIL'
 
       if 'actual' in element:
         element['actual'] += ' ' + result
@@ -218,10 +229,11 @@ def ParseResultsFromJson(json_results):
   results_list = []
   testsuite_runs = json_results['per_iteration_data']
   for testsuite_run in testsuite_runs:
-    for test, test_runs in testsuite_run.iteritems():
+    for test, test_runs in six.iteritems(testsuite_run):
       results_list.extend(
           [base_test_result.BaseTestResult(test,
                                            string_as_status(tr['status']),
-                                           duration=tr['elapsed_time_ms'])
+                                           duration=tr['elapsed_time_ms'],
+                                           log=tr.get('output_snippet'))
           for tr in test_runs])
   return results_list

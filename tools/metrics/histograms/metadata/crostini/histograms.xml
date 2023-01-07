@@ -1,0 +1,620 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Crostini histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="CrostiniState">
+  <variant name="CreateContainer" summary="creating container"/>
+  <variant name="CreateDiskImage" summary="creating disk image"/>
+  <variant name="FetchSshKeys" summary="fetching SSH keys"/>
+  <variant name="InstallImageLoader" summary="installing component or DLC"/>
+  <variant name="MountContainer" summary="creating SSHFS mounts"/>
+  <variant name="SetupContainer" summary="setting up container for use"/>
+  <variant name="Start" summary="initial"/>
+  <variant name="StartContainer" summary="starting container"/>
+  <variant name="StartLxd" summary="starting LXD"/>
+  <variant name="StartTerminaVm" summary="starting VM"/>
+</variants>
+
+<histogram name="Crostini.AppLaunch" enum="CrostiniAppLaunchAppType"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Recorded each time a Crostini app is launched, recording whether the app is
+    the built in terminal, a registered app, or an unknown app.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.AppLaunchResult" enum="CrostiniResult"
+    expires_after="2023-04-09">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The result of attempting to launch a Crostini app (including Terminal).
+  </summary>
+</histogram>
+
+<histogram name="Crostini.AppLaunchResult.{Variant}" enum="CrostiniResult"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>The result of attempting to launch {Variant}.</summary>
+  <token key="Variant">
+    <variant name="Registered" summary="a registered GUI app"/>
+    <variant name="Terminal" summary="the Crostini Terminal"/>
+    <variant name="Unknown" summary="an unknown/unregistered app"/>
+  </token>
+</histogram>
+
+<histogram name="Crostini.AvailableDiskCancel" units="MiB"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The available disk space at the start of the crostini install flow, recorded
+    when installation was canceled. This is recorded any time the user cancels
+    the install before it finishes. This includes cases where e.g. they
+    previously tried installing and got an error.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.AvailableDiskError" units="MiB"
+    expires_after="2023-04-09">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The available disk space at the start of the crostini install flow, recorded
+    when installation returned an error. This is recorded any time the user
+    tries to install install crostini and gets an error. This includes cases
+    where e.g. they previously tried installing and got an error.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.AvailableDiskSuccess" units="MiB"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The available disk space at the start of the crostini install flow, recorded
+    when installation succeeded. This is recorded any time the user successfully
+    installs crostini. This includes cases where e.g. they previously tried
+    installing and got an error.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.Backup" enum="CrostiniExportContainerResult"
+    expires_after="2023-03-26">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>Result of crostini backup.</summary>
+</histogram>
+
+<histogram name="Crostini.BackupCompressedSizeLog2" units="units"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    log base 2 of compressed container backup size in bytes, rounded to the
+    nearest integer. Value is between 0 and 50, to give good granularity for
+    common sizes, while maintaining a range that can support very large sizes.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.BackupContainerSizeLog2" units="units"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    log base 2 of uncompressed container image size in bytes, rounded to the
+    nearest integer. Value is between 0 and 50, to give good granularity for
+    common sizes, while maintaining a range that can support very large sizes.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.BackupSizeRatio" units="units"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    100 * compressed size / container size. The conventional compression ratio
+    of input / output has not been used as the resulting value is unbounded.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.BackupTimeFailed" units="ms"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>Time taken for failed backup.</summary>
+</histogram>
+
+<histogram name="Crostini.BackupTimeSuccess" units="ms"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>Time taken for successful backup.</summary>
+</histogram>
+
+<histogram name="Crostini.CleanSession.RestarterResult" enum="CrostiniResult"
+    expires_after="2022-05-01">
+  <obsolete>
+    Removed in M102 - no longer needed
+  </obsolete>
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The result of a single run of CrostiniRestarter. This is the same as
+    Crostini.RestarterResult except only emitted in sessions that happen after a
+    clean start (e.g. after fresh login). Removed in Milestone 102.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.ContainerOsVersion" enum="CrostiniContainerOsVersion"
+    expires_after="2023-04-10">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Recorded each time a Crostini container is launched, recording the OS
+    version running inside the container.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.DiskResize.Result" enum="CrostiniDiskImageStatus"
+    expires_after="2023-03-26">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Records the result (e.g. succeeded) whenever an attempt to resize a Crostini
+    disk finishes.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.DiskResize.Started" enum="BooleanAttempted"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Recorded each time a user tries resizing a Crostini disk to infer attempts
+    that started but never finished (e.g. code bug missing a timeout). This
+    won't exactly line up with the total of Crostini.DiskResizeResult due to how
+    metrics work (e.g. start one day and result the next) but should be close.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.DiskType" enum="CrostiniDiskImageType"
+    expires_after="2023-04-24">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Records the type (e.g. sparse qcow2) of the user's disk. Emitted often, you
+    probably want to look at the unique user numbers of this metric. Certain
+    disk types are vulnerable to disk corruption in certain scenarios so this
+    metric tracks our progress in moving people off them and tells us if we need
+    to do additional work to migrate users off.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.EngagementTime.{Variant}" units="ms"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    {Variant} Engagement time metrics, along with foreground and background
+    time, are only collected on users with Crostini enabled. All four metrics
+    are accumulated and recorded to UMA once a day.
+  </summary>
+  <token key="Variant">
+    <variant name="Background"
+        summary="Times when a user is engaged and Crostini apps are running
+                 in the background, but the user isn't focusing on an
+                 Crostini app window."/>
+    <variant name="CrostiniTotal"
+        summary="Total of Crostini.EngagementTime.Background and .Foreground,
+                 which is the time the user is engaged and Crostini is
+                 running either in the foreground or background."/>
+    <variant name="Foreground"
+        summary="Times when a user is engaged and focuses on a Crostini GUI
+                 window. As of 2020-12-15 this may count some
+                 similar-but-not-quite-Crostini windows e.g. Bruschetta, see
+                 crbug/1158644 for more details."/>
+    <variant name="Total"
+        summary="Total CrOS user session time (from login to logout)
+                 excluding times when a user &quot;disengages&quot;. A user
+                 is disengaged when the screen is locked or dimmed due to
+                 user inactivity. For Total Crostini engagement time, see
+                 Crostini.EngagementTime.CrostiniTotal."/>
+  </token>
+</histogram>
+
+<histogram name="Crostini.FilesystemCorruption" enum="CorruptionStates"
+    expires_after="2023-03-26">
+  <owner>sidereal@google.com</owner>
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Filesystem corruption events in the crostini VM, recorded every time
+    corruption is observed to affect the state of the system.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.InstallSource" enum="CrostiniInstallSource"
+    expires_after="2023-04-10">
+  <obsolete>
+    Removed in M105 - no longer needed
+  </obsolete>
+  <owner>sidereal@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The source (component vs DLC) that was used to install termina. This is
+    recorded every time a CrostiniRestart succeeds at the termina install step
+    to measure the progress of the component-&gt;DLC migration.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.InvalidStateTransition" enum="CrostiniInstallerState"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Emitted when an invalid request to transition states during the Crostini
+    restarter flow is received. For example, when a container start signal is
+    received when the restarter is still waiting for the vm to finish launching.
+    The value is the state the restarter should have been in for the transition
+    to be legal (in this example StartContainer).
+  </summary>
+</histogram>
+
+<histogram name="Crostini.RecoverySource" enum="CrostiniUISurface"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Recorded each time the CrostiniRecoveryView is show, on detecting that a VM
+    is still running after a Chrome crash.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.Restarter.Started" enum="BooleanAttempted"
+    expires_after="2023-05-01">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Emitted whenever a run of CrostiniRestarter is triggered except during the
+    initial install.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.RestarterResult" enum="CrostiniResult"
+    expires_after="2023-05-01">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The result of a single run of CrostiniRestarter. This is recorded every time
+    the crostini restart flow is triggered except for the initial install and
+    (from M104) multi-container creation.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.RestarterResult.Installer" enum="CrostiniResult"
+    expires_after="2023-05-01">
+  <owner>timloh@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The result of a single run of CrostiniRestarter. This is recorded once for
+    each restart triggered by the Crostini installer.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.RestarterResult.MultiContainerCreation"
+    enum="CrostiniResult" expires_after="2023-05-01">
+  <owner>timloh@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The result of a single run of CrostiniRestarter. This is recorded once for
+    each restart triggered for multi-container creation.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.RestarterTimeInState2.{state}" units="ms"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Base histogram for measuring how much time the restarter flow spends in the
+    {state} state, used to set timeouts. Note that this since this is for any
+    restarter run (no-op relaunch, installation, success/failed) the results are
+    expected to be multi-modal. This is emitted by CrostiniRestarter every time
+    a state completes or restart completes, but not for a state that's been
+    aborted.
+  </summary>
+  <token key="state" variants="CrostiniState"/>
+</histogram>
+
+<histogram name="Crostini.Restore" enum="CrostiniImportContainerResult"
+    expires_after="2023-03-12">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>Result of crostini restore.</summary>
+</histogram>
+
+<histogram name="Crostini.RestoreTimeFailed" units="ms"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>Time taken for failed restore.</summary>
+</histogram>
+
+<histogram name="Crostini.RestoreTimeSuccess" units="ms"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>Time taken for successful restore.</summary>
+</histogram>
+
+<histogram name="Crostini.SettingsEvent" enum="CrostiniSettingsEvent"
+    expires_after="2023-04-24">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <owner>victorhsieh@chromium.org</owner>
+  <summary>Record user's choice in Crostini Settings</summary>
+</histogram>
+
+<histogram name="Crostini.Setup.Started" enum="BooleanAttempted"
+    expires_after="2023-05-01">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Emitted whenever a run of CrostiniRestarter is triggered during the initial
+    install.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.SetUpLxdContainerUser.UnknownResult"
+    enum="BooleanYesNo" expires_after="2023-05-01">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Yes if we got an unknown result for the SetUpLxdContainerUser step, No
+    otherwise. Recorded by CrostiniManager after getting the result for the the
+    SetUpLxdContainerUser step so we can check if our hypothesis to the root
+    cause of crbug/1216305 is correct, and to measure how widespread it is.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.SetupResult" enum="CrostiniSetupResult"
+    expires_after="2023-03-26">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Recorded each time the user completes the Crostini setup UI, recording the
+    result of the setup. From M104, Crostini.RestartResult.Installer provides
+    more granular failures metrics.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.SetupSource" enum="CrostiniUISurface"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Recorded each time the user initiates the Crostini setup UI, recording the
+    UI surface that invoked the setup.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.Sshfs.Mount.Result.{Visibility}"
+    enum="CrostiniSshfsResult" expires_after="2023-08-14">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The result of mounting sshfs {Visibility}. Recorded when mounting a Crostini
+    directory using sshfs.
+  </summary>
+  <token key="Visibility">
+    <variant name="Background"
+        summary="in the background, where failures aren't visible to users
+                 (e.g. when premounting at launch to reduce latency if the
+                 user accesses their Linux files)"/>
+    <variant name="UserVisible"
+        summary="where success is required to complete the user action e.g.
+                 viewing Linux files"/>
+  </token>
+</histogram>
+
+<histogram name="Crostini.Sshfs.Mount.TimeTaken" units="ms"
+    expires_after="2023-08-14">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The time taken to mount sshfs (successfully or not, UserVisible or
+    Background). Recorded when mounting a Crostini directory using sshfs.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.Sshfs.Unmount.Result" enum="BooleanSuccess"
+    expires_after="2023-08-14">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The result of unmounting sshfs. Recorded when removing a Crostini sshfs
+    mount.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.Sshfs.Unmount.TimeTaken" units="ms"
+    expires_after="2023-08-14">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The time taken to unmount sshfs (either successfully or failing). Recorded
+    when removing a Crostini sshfs mount.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.Stability" enum="GuestOsFailureClasses"
+    expires_after="2023-03-26">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    A record of post-startup failures in crostini components. Buckets are
+    recorded to whenever we become aware that the corresponding component has
+    failed.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.TerminalSettingsChanged"
+    enum="CrostiniTerminalSetting" expires_after="2023-04-17">
+  <owner>joelhockey@chromium.org</owner>
+  <owner>lxj@google.com</owner>
+  <summary>
+    Record which settings in terminal are changed by users. This is captured
+    each time terminal is launched and fetches the current settings, and not
+    just when settings are changed, in order to give the best information about
+    the current state of active users.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.TimeFromDeviceSetupToInstall" units="ms"
+    expires_after="2023-03-12">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The time from a user setting up their device, to the user enabling Crostini.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.TimeToInstallCancel" units="ms"
+    expires_after="2023-03-26">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The time taken for the crostini installer to be canceled by the user. This
+    is recorded any time the user cancels the install before it finishes. This
+    includes cases where e.g. they previously tried installing and got an error.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.TimeToInstallError" units="ms"
+    expires_after="2023-03-12">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The time taken for the crostini installer to fail due to an error. This is
+    recorded any time the user tries to install install crostini and gets an
+    error. This includes cases where e.g. they previously tried installing and
+    got an error.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.TimeToInstallSuccess" units="ms"
+    expires_after="2023-01-22">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The time taken for the crostini installer to finish successfully. This is
+    recorded any time the user successfully installs crostini. This includes
+    cases where e.g. they previously tried installing and got an error.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.UncleanSession.RestarterResult" enum="CrostiniResult"
+    expires_after="2023-01-06">
+  <obsolete>
+    Removed in M102 - no longer needed
+  </obsolete>
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The result of a single run of CrostiniRestarter. This is the same as
+    Crostini.RestarterResult except only emitted in sessions that happen after
+    an unclean restart (e.g. after a Chrome crash). Removed in milestone 102.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.UninstallResult" enum="CrostiniUninstallResult"
+    expires_after="2023-03-26">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Recorded each time the user completes the Crostini uninstall UI, recording
+    the result of the uninstall. Error cases are broken down more in
+    Crostini.UninstallResult.Reason.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.UninstallResult.Reason" enum="CrostiniResult"
+    expires_after="2023-05-01">
+  <owner>timloh@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    The result of a completed Crostini uninstallation. This is recorded when an
+    uninstall that the user triggered via the Crostini uninstaller dialog
+    finishes, either successfully or unsuccessful.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Crostini.UnsupportedNotification.Reason"
+    enum="CrostiniUnsupportedNotificationReason" expires_after="2023-04-17">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Recorded each time we display (or would display, see suffixes) a
+    notification that the user is trying to do something Crostini doesn't
+    support.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.UpgradeAvailable"
+    enum="CrostiniUpgradeAvailableNotificationClosed"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Recorded each time the user sees the Crostini upgrade Notifiation, recording
+    the action that closed the notification.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.UpgradeDialogEvent" enum="CrostiniUpgradeDialogEvent"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    A collection of events that can occur while upgrading the crostini
+    container, recorded as they occur.
+  </summary>
+</histogram>
+
+<histogram name="Crostini.UpgradeSource" enum="CrostiniUISurface"
+    expires_after="2023-01-06">
+  <owner>davidmunro@google.com</owner>
+  <owner>clumptini@google.com</owner>
+  <summary>
+    Recorded each time the user sees the Crostini upgrade UI, recording the UI
+    surface that initiated the upgrade.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

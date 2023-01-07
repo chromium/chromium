@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ enum PaymentComplete {
     readonly attribute DOMString? payerPhone;
 
     [CallWith=ScriptState, RaisesException, NewObject] Promise<void> complete(optional PaymentComplete paymentResult = "unknown");
-    [CallWith=ScriptState, RaisesException, NewObject, RuntimeEnabled=PaymentRetry] Promise<void> retry(optional PaymentValidationErrors errorFields = {});
+    [CallWith=ScriptState, RaisesException, NewObject, Measure] Promise<void> retry(optional PaymentValidationErrors errorFields = {});
 
-    [RuntimeEnabled=PaymentRetry] attribute EventHandler onpayerdetailchange;
+    attribute EventHandler onpayerdetailchange;
 };

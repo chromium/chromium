@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -12,17 +12,18 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/video/h264_parser.h"
+#include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media {
 
 class V4L2H264Picture;
 class VaapiH264Picture;
+class D3D11H264Picture;
 
 // A picture (a frame or a field) in the H.264 spec sense.
 // See spec at http://www.itu.int/rec/T-REC-H.264
@@ -38,8 +39,12 @@ class MEDIA_GPU_EXPORT H264Picture : public CodecPicture {
 
   H264Picture();
 
+  H264Picture(const H264Picture&) = delete;
+  H264Picture& operator=(const H264Picture&) = delete;
+
   virtual V4L2H264Picture* AsV4L2H264Picture();
   virtual VaapiH264Picture* AsVaapiH264Picture();
+  virtual D3D11H264Picture* AsD3D11H264Picture();
 
   // Values calculated per H.264 specification or taken from slice header.
   // See spec for more details on each (some names have been converted from
@@ -66,6 +71,8 @@ class MEDIA_GPU_EXPORT H264Picture : public CodecPicture {
   bool idr;        // IDR picture?
   int idr_pic_id;  // Valid only if idr == true.
   bool ref;        // reference picture?
+  int ref_pic_list_modification_flag_l0;
+  int abs_diff_pic_num_minus1;
   bool long_term;  // long term reference picture?
   bool outputted;
   // Does memory management op 5 needs to be executed after this
@@ -87,11 +94,10 @@ class MEDIA_GPU_EXPORT H264Picture : public CodecPicture {
   // Position in DPB (i.e. index in DPB).
   int dpb_position;
 
+  absl::optional<H264Metadata> metadata_for_encoding;
+
  protected:
   ~H264Picture() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(H264Picture);
 };
 
 // DPB - Decoded Picture Buffer.
@@ -100,6 +106,10 @@ class MEDIA_GPU_EXPORT H264Picture : public CodecPicture {
 class H264DPB {
  public:
   H264DPB();
+
+  H264DPB(const H264DPB&) = delete;
+  H264DPB& operator=(const H264DPB&) = delete;
+
   ~H264DPB();
 
   void set_max_num_pics(size_t max_num_pics);
@@ -109,8 +119,8 @@ class H264DPB {
   // and free it.
   void DeleteUnused();
 
-  // Remove a picture by its pic_order_cnt and free it.
-  void DeleteByPOC(int poc);
+  // Remove a picture from DPB and free it.
+  void Delete(scoped_refptr<H264Picture> pic);
 
   // Clear DPB.
   void Clear();
@@ -170,8 +180,6 @@ class H264DPB {
 
   H264Picture::Vector pics_;
   size_t max_num_pics_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264DPB);
 };
 
 }  // namespace media

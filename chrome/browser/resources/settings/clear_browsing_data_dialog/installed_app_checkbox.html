@@ -29,14 +29,14 @@
     </style>
 
     <div id="outerRow">
-      <cr-checkbox id="checkbox" checked="{{installed_app.isChecked}}"
+      <cr-checkbox id="checkbox" checked="{{installedApp.isChecked}}"
           disabled="[[disabled]]">
         <div id="innerRow">
-          <site-favicon url="[[installed_app.registerableDomain]]">
+          <site-favicon url="[[installedApp.registerableDomain]]">
           </site-favicon>
-          <div class="label">[[installed_app.appName]]</div>
+          <div class="label">[[installedApp.appName]]</div>
           <div class="secondary label">
-            &nbsp([[installed_app.registerableDomain]])
+            &nbsp([[installedApp.registerableDomain]])
           </div>
         </div>
       </cr-checkbox>

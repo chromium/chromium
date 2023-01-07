@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ class DataDecoder;
 
 namespace content {
 
-class WebContents;
+class WebContentsImpl;
 
 // This class is used by WebContents::GenerateWebBundle() method to generate
 // a Web Bundle file. The instances are created by Start() static method. Every
@@ -34,7 +34,7 @@ class WebContents;
 class SaveAsWebBundleJob {
  public:
   static void Start(
-      WebContents* web_contents,
+      WebContentsImpl* web_contents,
       const base::FilePath& file_path,
       base::OnceCallback<void(uint64_t /* file_size */,
                               data_decoder::mojom::WebBundlerError)> callback);

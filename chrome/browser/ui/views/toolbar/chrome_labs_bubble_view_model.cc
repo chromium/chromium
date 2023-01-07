@@ -1,19 +1,22 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/grit/generated_resources.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
-base::Optional<std::vector<LabInfo>>& GetTestData() {
-  static base::NoDestructor<base::Optional<std::vector<LabInfo>>> test_lab_data;
+absl::optional<std::vector<LabInfo>>& GetTestData() {
+  static base::NoDestructor<absl::optional<std::vector<LabInfo>>> test_lab_data;
   return *test_lab_data;
 }
 
@@ -35,13 +38,6 @@ const std::vector<LabInfo>& GetData() {
   static const base::NoDestructor<std::vector<LabInfo>> lab_info_([]() {
     std::vector<LabInfo> lab_info;
 
-    // Read Later.
-    lab_info.emplace_back(LabInfo(
-        flag_descriptions::kReadLaterFlagId,
-        l10n_util::GetStringUTF16(IDS_READ_LATER_EXPERIMENT_NAME),
-        l10n_util::GetStringUTF16(IDS_READ_LATER_EXPERIMENT_DESCRIPTION),
-        "chrome-labs-read-later", version_info::Channel::BETA));
-
     // Tab Scrolling.
     std::vector<std::u16string> tab_scrolling_variation_descriptions = {
         l10n_util::GetStringUTF16(IDS_TABS_SHRINK_TO_PINNED_TAB_WIDTH),
@@ -56,12 +52,16 @@ const std::vector<LabInfo>& GetData() {
         "chrome-labs-tab-scrolling", version_info::Channel::BETA,
         tab_scrolling_variation_descriptions));
 
-    // Tab Search.
+    // Thumbnail Tab Strip for Windows
+#if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && \
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH))
     lab_info.emplace_back(LabInfo(
-        flag_descriptions::kEnableTabSearchFlagId,
-        l10n_util::GetStringUTF16(IDS_TAB_SEARCH_EXPERIMENT_NAME),
-        l10n_util::GetStringUTF16(IDS_TAB_SEARCH_EXPERIMENT_DESCRIPTION),
-        "chrome-labs-tab-search", version_info::Channel::BETA));
+        flag_descriptions::kWebUITabStripFlagId,
+        l10n_util::GetStringUTF16(IDS_THUMBNAIL_TAB_STRIP_EXPERIMENT_NAME),
+        l10n_util::GetStringUTF16(
+            IDS_THUMBNAIL_TAB_STRIP_EXPERIMENT_DESCRIPTION),
+        "chrome-labs-thumbnail-tab-strip", version_info::Channel::BETA));
+#endif
 
     return lab_info;
   }());

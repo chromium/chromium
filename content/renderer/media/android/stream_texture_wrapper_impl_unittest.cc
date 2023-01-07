@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,11 +17,12 @@ class StreamTextureWrapperImplTest : public testing::Test {
  public:
   StreamTextureWrapperImplTest() {}
 
+  StreamTextureWrapperImplTest(const StreamTextureWrapperImplTest&) = delete;
+  StreamTextureWrapperImplTest& operator=(const StreamTextureWrapperImplTest&) =
+      delete;
+
   // Necessary, or else GetSingleThreadTaskRunnerForTesting() fails.
   base::test::SingleThreadTaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StreamTextureWrapperImplTest);
 };
 
 // This test's purpose is to make sure the StreamTextureWrapperImpl can properly

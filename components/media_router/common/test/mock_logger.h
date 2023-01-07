@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,9 +40,11 @@ class MockLogger : public media_router::mojom::Logger {
                     const std::string&,
                     const std::string&));
 
+  MOCK_METHOD1(BindReceiver, void(mojo::PendingReceiver<mojom::Logger>));
+
  private:
   mojo::Receiver<media_router::mojom::Logger> receiver_{this};
 };
 }  // namespace media_router
 
-#endif
+#endif  // COMPONENTS_MEDIA_ROUTER_COMMON_TEST_MOCK_LOGGER_H_

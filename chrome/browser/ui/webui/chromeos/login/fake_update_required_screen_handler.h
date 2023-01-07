@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,28 +7,26 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/update_required_screen_handler.h"
 
 namespace chromeos {
 
-class UpdateRequiredScreen;
-
 class FakeUpdateRequiredScreenHandler : public UpdateRequiredView {
  public:
   FakeUpdateRequiredScreenHandler() = default;
+
+  FakeUpdateRequiredScreenHandler(const FakeUpdateRequiredScreenHandler&) =
+      delete;
+  FakeUpdateRequiredScreenHandler& operator=(
+      const FakeUpdateRequiredScreenHandler&) = delete;
+
   ~FakeUpdateRequiredScreenHandler() override {}
 
   UpdateRequiredView::UIState ui_state() { return ui_state_; }
 
  private:
   void Show() override {}
-  void Hide() override {}
-  void Bind(UpdateRequiredScreen* screen) override {}
-  void Unbind() override {}
 
   void SetIsConnected(bool connected) override {}
   void SetUpdateProgressUnavailable(bool unavailable) override {}
@@ -43,8 +41,6 @@ class FakeUpdateRequiredScreenHandler : public UpdateRequiredView {
   void SetIsUserDataPresent(bool data_present) override {}
 
   UpdateRequiredView::UIState ui_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeUpdateRequiredScreenHandler);
 };
 
 }  // namespace chromeos

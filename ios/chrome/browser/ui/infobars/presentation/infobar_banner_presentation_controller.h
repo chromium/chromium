@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 // InfobarBanner Presentation Controller.
 @interface InfobarBannerPresentationController : OverlayPresentationController
 
-// Designated initializer. |bannerPositioner| is used to position the
+// Designated initializer. `bannerPositioner` is used to position the
 // InfobarBanner, it can't be nil.
 - (instancetype)
     initWithPresentedViewController:(UIViewController*)presentedViewController

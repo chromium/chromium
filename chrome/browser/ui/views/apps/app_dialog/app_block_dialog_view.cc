@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ void AppServiceProxy::CreateBlockDialog(const std::string& app_name,
 AppBlockDialogView::AppBlockDialogView(const std::string& app_name,
                                        const gfx::ImageSkia& image,
                                        Profile* profile)
-    : AppDialogView(image) {
+    : AppDialogView(ui::ImageModel::FromImageSkia(image)) {
   SetTitle(l10n_util::GetStringFUTF16(IDS_APP_BLOCK_PROMPT_TITLE,
                                       base::UTF8ToUTF16(app_name)));
 

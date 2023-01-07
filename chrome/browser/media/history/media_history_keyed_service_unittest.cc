@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,25 +8,18 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/media/feeds/media_feeds_store.mojom-shared.h"
-#include "chrome/browser/media/feeds/media_feeds_store.mojom.h"
-#include "chrome/browser/media/history/media_history_feed_items_table.h"
-#include "chrome/browser/media/history/media_history_feeds_table.h"
 #include "chrome/browser/media/history/media_history_images_table.h"
 #include "chrome/browser/media/history/media_history_origin_table.h"
 #include "chrome/browser/media/history/media_history_playback_table.h"
 #include "chrome/browser/media/history/media_history_session_images_table.h"
 #include "chrome/browser/media/history/media_history_session_table.h"
-#include "chrome/browser/media/history/media_history_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_database_params.h"
@@ -42,16 +35,9 @@
 #include "services/media_session/public/cpp/media_position.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
-#include "chrome/browser/media/feeds/media_feeds_service.h"
-#include "chrome/browser/media/feeds/media_feeds_service_factory.h"
-#endif
-
 namespace media_history {
 
 namespace {
-
-base::FilePath g_temp_history_dir;
 
 std::unique_ptr<KeyedService> BuildTestHistoryService(
     scoped_refptr<base::SequencedTaskRunner> backend_runner,
@@ -59,7 +45,7 @@ std::unique_ptr<KeyedService> BuildTestHistoryService(
   std::unique_ptr<history::HistoryService> service(
       new history::HistoryService());
   service->set_backend_task_runner_for_testing(std::move(backend_runner));
-  service->Init(history::TestHistoryDatabaseParamsForPath(g_temp_history_dir));
+  service->Init(history::TestHistoryDatabaseParamsForPath(context->GetPath()));
   return service;
 }
 
@@ -77,11 +63,6 @@ class MediaHistoryKeyedServiceTest
       public testing::WithParamInterface<TestState> {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({media::kMediaFeeds}, {});
-
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    g_temp_history_dir = temp_dir_.GetPath();
-
     mock_time_task_runner_ =
         base::MakeRefCounted<base::TestMockTimeTaskRunner>();
 
@@ -89,8 +70,6 @@ class MediaHistoryKeyedServiceTest
     builder.AddTestingFactory(
         HistoryServiceFactory::GetInstance(),
         base::BindRepeating(&BuildTestHistoryService, mock_time_task_runner_));
-    builder.SetPath(temp_dir_.GetPath());
-
     profile_ = builder.Build();
 
     // Sleep the thread to allow the media history store to asynchronously
@@ -104,16 +83,12 @@ class MediaHistoryKeyedServiceTest
 
   Profile* profile() { return profile_.get(); }
 
-  void ConfigureHistoryService(
-      scoped_refptr<base::SequencedTaskRunner> backend_runner) {
-    HistoryServiceFactory::GetInstance()->SetTestingFactory(
-        profile(), base::BindRepeating(&BuildTestHistoryService,
-                                       std::move(backend_runner)));
-  }
-
   void TearDown() override {
     profile()->GetPrefs()->SetBoolean(prefs::kSavingBrowserHistoryDisabled,
                                       false);
+
+    // Destroy the profile, which also stops the history service.
+    profile_.reset();
 
     // Tests that run a history service that uses the mock task runner for
     // backend processing will post tasks there during TearDown. Run them now to
@@ -206,52 +181,12 @@ class MediaHistoryKeyedServiceTest
     return out;
   }
 
-  static std::vector<media_feeds::mojom::MediaFeedItemPtr> GetExpectedItems() {
-    std::vector<media_feeds::mojom::MediaFeedItemPtr> items;
-
-    {
-      auto item = media_feeds::mojom::MediaFeedItem::New();
-      item->type = media_feeds::mojom::MediaFeedItemType::kVideo;
-      item->name = u"The Video";
-      item->date_published = base::Time::FromDeltaSinceWindowsEpoch(
-          base::TimeDelta::FromMinutes(20));
-      item->is_family_friendly = media_feeds::mojom::IsFamilyFriendly::kNo;
-      item->action_status =
-          media_feeds::mojom::MediaFeedItemActionStatus::kActive;
-      items.push_back(std::move(item));
-    }
-
-    return items;
-  }
-
-  media_history::MediaHistoryKeyedService::MediaFeedFetchResult FetchResult(
-      const int64_t feed_id) {
-    media_history::MediaHistoryKeyedService::MediaFeedFetchResult result;
-    result.feed_id = feed_id;
-    result.items = GetExpectedItems();
-    result.status = media_feeds::mojom::FetchResult::kSuccess;
-    result.display_name = "Test";
-    result.reset_token = test::GetResetTokenSync(service(), feed_id);
-    return result;
-  }
-
-#if !defined(OS_ANDROID)
-  media_feeds::MediaFeedsService* GetMediaFeedsService() {
-    return media_feeds::MediaFeedsServiceFactory::GetInstance()->GetForProfile(
-        profile());
-  }
-#endif
-
   scoped_refptr<base::TestMockTimeTaskRunner> mock_time_task_runner_;
 
  private:
-  base::ScopedTempDir temp_dir_;
-
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestingProfile> profile_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -270,8 +205,8 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenHistoryIsDeleted) {
   // Record a playback in the database.
   {
     content::MediaPlayerWatchTime watch_time(
-        url, url.GetOrigin(), base::TimeDelta::FromMilliseconds(123),
-        base::TimeDelta::FromMilliseconds(321), true, false);
+        url, url.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
+        base::Milliseconds(321), true, false);
 
     history->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
@@ -361,28 +296,28 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
   // Record a playback in the database for |url1a|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1a, url1a.GetOrigin(), base::TimeDelta::FromMilliseconds(123),
-        base::TimeDelta::FromMilliseconds(321), true, false);
+        url1a, url1a.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
+        base::Milliseconds(321), true, false);
 
     history->AddPage(url1a, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1a, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url1a_image));
   }
 
   // Record a playback in the database for |url1b|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1b, url1b.GetOrigin(), base::TimeDelta::FromMilliseconds(123),
-        base::TimeDelta::FromMilliseconds(321), true, false);
+        url1b, url1b.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
+        base::Milliseconds(321), true, false);
 
     history->AddPage(url1b, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1b, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url1b_image));
   }
 
@@ -391,57 +326,44 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
   // origin-level.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1c, url1c.GetOrigin(), base::TimeDelta::FromMilliseconds(123),
-        base::TimeDelta::FromMilliseconds(321), true, false);
+        url1c, url1c.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
+        base::Milliseconds(321), true, false);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1c, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(shared_image));
   }
 
   // Record a playback in the database for |url2a|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url2a, url2a.GetOrigin(), base::TimeDelta::FromMilliseconds(123),
-        base::TimeDelta::FromMilliseconds(321), true, false);
+        url2a, url2a.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
+        base::Milliseconds(321), true, false);
 
     history->AddPage(url2a, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url2a, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url2a_image));
   }
 
   // Record a playback in the database for |url2b|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url2b, url2b.GetOrigin(), base::TimeDelta::FromMilliseconds(123),
-        base::TimeDelta::FromMilliseconds(321), true, false);
+        url2b, url2b.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
+        base::Milliseconds(321), true, false);
 
     history->AddPage(url2b, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url2b, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(shared_image));
   }
 
-#if !defined(OS_ANDROID)
-  // Discover the media feeds.
-  GetMediaFeedsService()->DiscoverMediaFeed(media_feed_1);
-  GetMediaFeedsService()->DiscoverMediaFeed(media_feed_2);
-#endif
-
   // Wait until the playbacks have finished saving.
-  WaitForDB();
-
-  // Store the feed data.
-  service()->StoreMediaFeedFetchResult(FetchResult(1), base::DoNothing());
-  service()->StoreMediaFeedFetchResult(FetchResult(2), base::DoNothing());
-
-  // Wait until the feed data has finished saving.
   WaitForDB();
 
   {
@@ -451,12 +373,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
     EXPECT_EQ(5,
               stats->table_row_counts[MediaHistoryPlaybackTable::kTableName]);
     EXPECT_EQ(5, stats->table_row_counts[MediaHistorySessionTable::kTableName]);
-
-#if !defined(OS_ANDROID)
-    EXPECT_EQ(2, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-    EXPECT_EQ(2,
-              stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-#endif
 
     // There are 10 session images because each session has an image with two
     // sizes.
@@ -470,10 +386,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
   EXPECT_EQ(all_urls, GetURLsInTable(MediaHistoryPlaybackTable::kTableName));
   EXPECT_EQ(all_urls, GetURLsInTable(MediaHistorySessionTable::kTableName));
   EXPECT_EQ(images, GetURLsInTable(MediaHistoryImagesTable::kTableName));
-
-#if !defined(OS_ANDROID)
-  EXPECT_EQ(media_feeds, GetURLsInTable(MediaHistoryFeedsTable::kTableName));
-#endif
 
   MaybeSetSavingBrowsingHistoryDisabled();
 
@@ -503,12 +415,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
               stats->table_row_counts[MediaHistoryPlaybackTable::kTableName]);
     EXPECT_EQ(2, stats->table_row_counts[MediaHistorySessionTable::kTableName]);
 
-#if !defined(OS_ANDROID)
-    EXPECT_EQ(1, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-    EXPECT_EQ(1,
-              stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-#endif
-
     // There are 4 session images because each session has an image with two
     // sizes.
     EXPECT_EQ(
@@ -521,11 +427,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenOriginIsDeleted) {
   EXPECT_EQ(remaining, GetURLsInTable(MediaHistorySessionTable::kTableName));
   EXPECT_EQ(remaining_images,
             GetURLsInTable(MediaHistoryImagesTable::kTableName));
-
-#if !defined(OS_ANDROID)
-  EXPECT_EQ(remaining_media_feeds,
-            GetURLsInTable(MediaHistoryFeedsTable::kTableName));
-#endif
 }
 
 TEST_P(MediaHistoryKeyedServiceTest,
@@ -589,28 +490,28 @@ TEST_P(MediaHistoryKeyedServiceTest,
   // Record a playback in the database for |url1a|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1a, url1a.GetOrigin(), base::TimeDelta::FromMilliseconds(123),
-        base::TimeDelta::FromMilliseconds(321), true, false);
+        url1a, url1a.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
+        base::Milliseconds(321), true, false);
 
     history->AddPage(url1a, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1a, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url1a_image));
   }
 
   // Record a playback in the database for |url1b|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1b, url1b.GetOrigin(), base::TimeDelta::FromMilliseconds(123),
-        base::TimeDelta::FromMilliseconds(321), true, false);
+        url1b, url1b.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
+        base::Milliseconds(321), true, false);
 
     history->AddPage(url1b, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1b, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url1b_image));
   }
 
@@ -619,60 +520,47 @@ TEST_P(MediaHistoryKeyedServiceTest,
   // origin-level.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1c, url1c.GetOrigin(), base::TimeDelta::FromMilliseconds(123),
-        base::TimeDelta::FromMilliseconds(321), true, false);
+        url1c, url1c.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
+        base::Milliseconds(321), true, false);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1c, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(shared_image));
   }
 
   // Record a playback in the database for |url2a|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url2a, url2a.GetOrigin(), base::TimeDelta::FromMilliseconds(123),
-        base::TimeDelta::FromMilliseconds(321), true, false);
+        url2a, url2a.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
+        base::Milliseconds(321), true, false);
 
     history->AddPage(url2a, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url2a, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url2a_image));
   }
 
   // Record a playback in the database for |url2b|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url2b, url2b.GetOrigin(), base::TimeDelta::FromMilliseconds(123),
-        base::TimeDelta::FromMilliseconds(321), true, false);
+        url2b, url2b.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
+        base::Milliseconds(321), true, false);
 
     history->AddPage(url2b, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url2b, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(shared_image));
   }
 
   // Record a visit for |url3|.
   history->AddPage(url3, base::Time::Now(), history::SOURCE_BROWSED);
 
-#if !defined(OS_ANDROID)
-  // Discover the media feeds.
-  GetMediaFeedsService()->DiscoverMediaFeed(media_feed_1);
-  GetMediaFeedsService()->DiscoverMediaFeed(media_feed_2);
-#endif
-
   // Wait until the playbacks have finished saving.
-  WaitForDB();
-
-  // Store the feed data.
-  service()->StoreMediaFeedFetchResult(FetchResult(1), base::DoNothing());
-  service()->StoreMediaFeedFetchResult(FetchResult(2), base::DoNothing());
-
-  // Wait until the feed data has finished saving.
   WaitForDB();
 
   {
@@ -682,12 +570,6 @@ TEST_P(MediaHistoryKeyedServiceTest,
     EXPECT_EQ(5,
               stats->table_row_counts[MediaHistoryPlaybackTable::kTableName]);
     EXPECT_EQ(5, stats->table_row_counts[MediaHistorySessionTable::kTableName]);
-
-#if !defined(OS_ANDROID)
-    EXPECT_EQ(2, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-    EXPECT_EQ(2,
-              stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-#endif
 
     // There are 10 session images because each session has an image with two
     // sizes.
@@ -701,10 +583,6 @@ TEST_P(MediaHistoryKeyedServiceTest,
   EXPECT_EQ(all_urls, GetURLsInTable(MediaHistoryPlaybackTable::kTableName));
   EXPECT_EQ(all_urls, GetURLsInTable(MediaHistorySessionTable::kTableName));
   EXPECT_EQ(images, GetURLsInTable(MediaHistoryImagesTable::kTableName));
-
-#if !defined(OS_ANDROID)
-  EXPECT_EQ(media_feeds, GetURLsInTable(MediaHistoryFeedsTable::kTableName));
-#endif
 
   MaybeSetSavingBrowsingHistoryDisabled();
 
@@ -734,12 +612,6 @@ TEST_P(MediaHistoryKeyedServiceTest,
               stats->table_row_counts[MediaHistoryPlaybackTable::kTableName]);
     EXPECT_EQ(4, stats->table_row_counts[MediaHistorySessionTable::kTableName]);
 
-#if !defined(OS_ANDROID)
-    EXPECT_EQ(2, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-    EXPECT_EQ(2,
-              stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-#endif
-
     // There are 8 session images because each session has an image with two
     // sizes.
     EXPECT_EQ(
@@ -752,10 +624,6 @@ TEST_P(MediaHistoryKeyedServiceTest,
   EXPECT_EQ(remaining, GetURLsInTable(MediaHistorySessionTable::kTableName));
   EXPECT_EQ(remaining_images,
             GetURLsInTable(MediaHistoryImagesTable::kTableName));
-
-#if !defined(OS_ANDROID)
-  EXPECT_EQ(media_feeds, GetURLsInTable(MediaHistoryFeedsTable::kTableName));
-#endif
 }
 
 TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
@@ -816,87 +684,74 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
   // Record a playback in the database for |url1a|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1a, url1a.GetOrigin(), base::TimeDelta::FromMinutes(10),
-        base::TimeDelta::FromMilliseconds(321), true, true);
+        url1a, url1a.DeprecatedGetOriginAsURL(), base::Minutes(10),
+        base::Milliseconds(321), true, true);
 
     history->AddPage(url1a, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1a, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url1a_image));
   }
 
   // Record a playback in the database for |url1b|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1b, url1b.GetOrigin(), base::TimeDelta::FromMinutes(25),
-        base::TimeDelta::FromMilliseconds(321), true, true);
+        url1b, url1b.DeprecatedGetOriginAsURL(), base::Minutes(25),
+        base::Milliseconds(321), true, true);
 
     history->AddPage(url1b, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1b, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(shared_image));
   }
 
   // Record a playback in the database for |url1c|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url1c, url1c.GetOrigin(), base::TimeDelta::FromMilliseconds(123),
-        base::TimeDelta::FromMilliseconds(321), true, false);
+        url1c, url1c.DeprecatedGetOriginAsURL(), base::Milliseconds(123),
+        base::Milliseconds(321), true, false);
 
     history->AddPage(url1c, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url1c, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url1c_image));
   }
 
   // Record a playback in the database for |url2a|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url2a, url2a.GetOrigin(), base::TimeDelta::FromMinutes(10),
-        base::TimeDelta::FromMilliseconds(321), true, true);
+        url2a, url2a.DeprecatedGetOriginAsURL(), base::Minutes(10),
+        base::Milliseconds(321), true, true);
 
     history->AddPage(url2a, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url2a, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(url2a_image));
   }
 
   // Record a playback in the database for |url2b|.
   {
     content::MediaPlayerWatchTime watch_time(
-        url2b, url2b.GetOrigin(), base::TimeDelta::FromMinutes(20),
-        base::TimeDelta::FromMilliseconds(321), true, true);
+        url2b, url2b.DeprecatedGetOriginAsURL(), base::Minutes(20),
+        base::Milliseconds(321), true, true);
 
     history->AddPage(url2b, base::Time::Now(), history::SOURCE_BROWSED);
     service()->SavePlayback(watch_time);
 
     service()->SavePlaybackSession(url2b, media_session::MediaMetadata(),
-                                   base::nullopt,
+                                   absl::nullopt,
                                    CreateImageVector(shared_image));
   }
 
-#if !defined(OS_ANDROID)
-  // Discover the media feeds.
-  GetMediaFeedsService()->DiscoverMediaFeed(media_feed_1);
-  GetMediaFeedsService()->DiscoverMediaFeed(media_feed_2);
-#endif
-
   // Wait until the playbacks have finished saving.
-  WaitForDB();
-
-  // Store the feed data.
-  service()->StoreMediaFeedFetchResult(FetchResult(1), base::DoNothing());
-  service()->StoreMediaFeedFetchResult(FetchResult(2), base::DoNothing());
-
-  // Wait until the feed data has finished saving.
   WaitForDB();
 
   {
@@ -906,12 +761,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
     EXPECT_EQ(5,
               stats->table_row_counts[MediaHistoryPlaybackTable::kTableName]);
     EXPECT_EQ(5, stats->table_row_counts[MediaHistorySessionTable::kTableName]);
-
-#if !defined(OS_ANDROID)
-    EXPECT_EQ(2, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-    EXPECT_EQ(2,
-              stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-#endif
 
     // There are 10 session images because each session has an image with two
     // sizes.
@@ -926,22 +775,16 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
   EXPECT_EQ(all_urls, GetURLsInTable(MediaHistorySessionTable::kTableName));
   EXPECT_EQ(images, GetURLsInTable(MediaHistoryImagesTable::kTableName));
 
-#if !defined(OS_ANDROID)
-  EXPECT_EQ(media_feeds, GetURLsInTable(MediaHistoryFeedsTable::kTableName));
-#endif
-
   // Check the origins have the correct aggregate watchtime.
   {
     auto origins = GetOriginRowsSync();
     ASSERT_EQ(2u, origins.size());
 
-    EXPECT_EQ(base::TimeDelta::FromMinutes(35),
-              origins[0]->cached_audio_video_watchtime);
+    EXPECT_EQ(base::Minutes(35), origins[0]->cached_audio_video_watchtime);
     EXPECT_EQ(origins[0]->actual_audio_video_watchtime,
               origins[0]->cached_audio_video_watchtime);
 
-    EXPECT_EQ(base::TimeDelta::FromMinutes(30),
-              origins[1]->cached_audio_video_watchtime);
+    EXPECT_EQ(base::Minutes(30), origins[1]->cached_audio_video_watchtime);
     EXPECT_EQ(origins[1]->actual_audio_video_watchtime,
               origins[1]->cached_audio_video_watchtime);
   }
@@ -974,12 +817,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
               stats->table_row_counts[MediaHistoryPlaybackTable::kTableName]);
     EXPECT_EQ(3, stats->table_row_counts[MediaHistorySessionTable::kTableName]);
 
-#if !defined(OS_ANDROID)
-    EXPECT_EQ(2, stats->table_row_counts[MediaHistoryFeedsTable::kTableName]);
-    EXPECT_EQ(2,
-              stats->table_row_counts[MediaHistoryFeedItemsTable::kTableName]);
-#endif
-
     // There are 6 session images because each session has an image with two
     // sizes.
     EXPECT_EQ(
@@ -993,10 +830,6 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
   EXPECT_EQ(remaining_images,
             GetURLsInTable(MediaHistoryImagesTable::kTableName));
 
-#if !defined(OS_ANDROID)
-  EXPECT_EQ(media_feeds, GetURLsInTable(MediaHistoryFeedsTable::kTableName));
-#endif
-
   // Check the origins have the correct aggregate watchtime.
   {
     auto origins = GetOriginRowsSync();
@@ -1006,8 +839,7 @@ TEST_P(MediaHistoryKeyedServiceTest, CleanUpDatabaseWhenURLIsDeleted) {
     EXPECT_EQ(origins[0]->actual_audio_video_watchtime,
               origins[0]->cached_audio_video_watchtime);
 
-    EXPECT_EQ(base::TimeDelta::FromMinutes(30),
-              origins[1]->cached_audio_video_watchtime);
+    EXPECT_EQ(base::Minutes(30), origins[1]->cached_audio_video_watchtime);
     EXPECT_EQ(origins[1]->actual_audio_video_watchtime,
               origins[1]->cached_audio_video_watchtime);
   }

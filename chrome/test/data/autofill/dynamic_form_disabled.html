@@ -29,32 +29,12 @@
 
 <script src="dynamic_form_utils.js"></script>
 <script>
-
-var notify_on_first_name_input_appear = false;
-
 function CountryChanged() {
   RemoveForm('form1');
   var new_form = AddNewFormAndFields('form1', 'addr1.1');
   document.getElementsByTagName('body')[0].appendChild(new_form);
 
-  if (notify_on_first_name_input_appear) {
-    // Give time to see if it fills.
-    setTimeout(function() {
-      window.domAutomationController.send(document.getElementById("firstname_form1").value != '');
-    }, 1000);
-  }
+  window['refill'] = true;
+  console.log('An event happened that should trigger a refill.');
 }
-
-function hasRefilled() {
-  var first_name_input = document.getElementById('firstname_form1');
-  if (first_name_input) {
-    // Give time to see if it fills.
-    setTimeout(function() {
-      window.domAutomationController.send(first_name_input.value != '');
-    }, 1000);
-  } else {
-    notify_on_first_name_input_appear = true;
-  }
-}
-
 </script>

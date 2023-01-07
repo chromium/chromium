@@ -1,0 +1,33 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This features file defines extension APIs implemented under
+// src/chrome/browser/chromeos/extensions/telemetry/.
+//
+// See chrome/common/extensions/api/_features.md to understand this file, as
+// well as feature.h, simple_feature.h, and feature_provider.h.
+{
+  "os.diagnostics": {
+    "dependencies": [ "permission:os.diagnostics" ],
+    "contexts": [
+      "blessed_extension"
+    ],
+    "platforms": [
+      "chromeos",
+      "lacros"
+    ],
+    "channel": "stable"
+  },
+  "os.telemetry": {
+    "dependencies": [ "permission:os.telemetry" ],
+    "contexts": [
+      "blessed_extension"
+    ],
+    "platforms": [
+      "chromeos",
+      "lacros"
+    ],
+    "channel": "stable"
+  }
+}

@@ -1,0 +1,71 @@
+[{
+  "id": 1,
+  "priority": 1,
+  "condition": {
+    "requestDomains": ["block.example"]
+  },
+  "action": {
+    "type": "block"
+  }
+},
+{
+  "id": 2,
+  "priority": 3,
+  "condition": {
+    "requestDomains": ["modify-headers.example"],
+    "resourceTypes": ["sub_frame", "main_frame"]
+  },
+  "action": {
+    "type": "modifyHeaders",
+    "responseHeaders": [{
+      "header": "Content-Security-Policy",
+      "operation": "append",
+      "value": "script-src 'self' '*' 'unsafe-inline'"
+    }]
+  }
+},
+{
+  "id": 3,
+  "priority": 2,
+  "condition": {
+    "requestDomains": ["modify-headers.example"],
+    "resourceTypes": ["main_frame"]
+  },
+  "action": {
+    "type": "modifyHeaders",
+    "responseHeaders": [{
+      "header": "Content-Security-Policy",
+      "operation": "append",
+      "value": "worker-src 'none'"
+    }]
+  }
+},
+{
+  "id": 4,
+  "priority": 1,
+  "condition": {
+    "urlFilter": "||allowed-redirect.example/ad.js",
+    "resourceTypes": ["script"]
+  },
+  "action": {
+    "type": "redirect",
+    "redirect": {
+      "url": "https://redirect.example/test.js"
+    }
+  }
+},
+{
+  "id": 5,
+  "priority": 1,
+  "condition": {
+    "urlFilter": "||not-allowed-redirect.example/ad1.js",
+    "resourceTypes": ["script"]
+  },
+  "action": {
+    "type": "redirect",
+    "redirect": {
+      "url": "https://redirect.example/test.js"
+    }
+  }
+}
+]

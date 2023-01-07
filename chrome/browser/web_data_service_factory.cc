@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,6 @@
 #include "chrome/browser/profiles/sql_init_error_message_ids.h"
 #include "chrome/browser/ui/profile_error_dialog.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/signin/public/webdata/token_web_data.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
@@ -61,41 +59,33 @@ void ProfileErrorCallback(WebDataServiceWrapper::ErrorType error_type,
                          SqlInitStatusToMessageId(status), diagnostics);
 }
 
-}  // namespace
-
-WebDataServiceFactory::WebDataServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "WebDataService",
-          BrowserContextDependencyManager::GetInstance()) {
-  // WebDataServiceFactory has no dependecies.
+std::unique_ptr<KeyedService> BuildWebDataService(
+    content::BrowserContext* context) {
+  const base::FilePath& profile_path = context->GetPath();
+  return std::make_unique<WebDataServiceWrapper>(
+      profile_path, g_browser_process->GetApplicationLocale(),
+      content::GetUIThreadTaskRunner({}),
+      base::BindRepeating(&ProfileErrorCallback));
 }
 
-WebDataServiceFactory::~WebDataServiceFactory() {}
+}  // namespace
+
+WebDataServiceFactory::WebDataServiceFactory() = default;
+
+WebDataServiceFactory::~WebDataServiceFactory() = default;
 
 // static
 WebDataServiceWrapper* WebDataServiceFactory::GetForProfile(
     Profile* profile,
     ServiceAccessType access_type) {
-  // If |access_type| starts being used for anything other than this
-  // DCHECK, we need to start taking it as a parameter to
-  // the *WebDataService::FromBrowserContext() functions (see above).
-  DCHECK(access_type != ServiceAccessType::IMPLICIT_ACCESS ||
-         !profile->IsOffTheRecord());
-  return static_cast<WebDataServiceWrapper*>(
-      GetInstance()->GetServiceForBrowserContext(profile, true));
+  return GetForBrowserContext(profile, access_type);
 }
 
 // static
 WebDataServiceWrapper* WebDataServiceFactory::GetForProfileIfExists(
     Profile* profile,
     ServiceAccessType access_type) {
-  // If |access_type| starts being used for anything other than this
-  // DCHECK, we need to start taking it as a parameter to
-  // the *WebDataService::FromBrowserContext() functions (see above).
-  DCHECK(access_type != ServiceAccessType::IMPLICIT_ACCESS ||
-         !profile->IsOffTheRecord());
-  return static_cast<WebDataServiceWrapper*>(
-      GetInstance()->GetServiceForBrowserContext(profile, false));
+  return GetForBrowserContextIfExists(profile, access_type);
 }
 
 // static
@@ -146,21 +136,14 @@ scoped_refptr<TokenWebData> WebDataServiceFactory::GetTokenWebDataForProfile(
 }
 
 // static
-scoped_refptr<payments::PaymentManifestWebDataService>
-WebDataServiceFactory::GetPaymentManifestWebDataForProfile(
-    Profile* profile,
-    ServiceAccessType access_type) {
-  WebDataServiceWrapper* wrapper =
-      WebDataServiceFactory::GetForProfile(profile, access_type);
-  // |wrapper| can be null in Incognito mode.
-  return wrapper
-             ? wrapper->GetPaymentManifestWebData()
-             : scoped_refptr<payments::PaymentManifestWebDataService>(nullptr);
+WebDataServiceFactory* WebDataServiceFactory::GetInstance() {
+  return base::Singleton<WebDataServiceFactory>::get();
 }
 
 // static
-WebDataServiceFactory* WebDataServiceFactory::GetInstance() {
-  return base::Singleton<WebDataServiceFactory>::get();
+BrowserContextKeyedServiceFactory::TestingFactory
+WebDataServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildWebDataService);
 }
 
 content::BrowserContext* WebDataServiceFactory::GetBrowserContextToUse(
@@ -170,11 +153,7 @@ content::BrowserContext* WebDataServiceFactory::GetBrowserContextToUse(
 
 KeyedService* WebDataServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  const base::FilePath& profile_path = context->GetPath();
-  return new WebDataServiceWrapper(profile_path,
-                                   g_browser_process->GetApplicationLocale(),
-                                   content::GetUIThreadTaskRunner({}),
-                                   base::BindRepeating(&ProfileErrorCallback));
+  return BuildWebDataService(context).release();
 }
 
 bool WebDataServiceFactory::ServiceIsNULLWhileTesting() const {

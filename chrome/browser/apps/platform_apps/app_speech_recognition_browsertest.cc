@@ -1,6 +1,8 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include <memory>
 
 #include "base/command_line.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -23,8 +25,8 @@ class SpeechRecognitionTest : public extensions::PlatformAppBrowserTest {
     // For SpeechRecognitionTest.SpeechFromBackgroundPage test, we need to
     // fake the speech input to make tests run OK in bots.
     if (!strcmp(test_info->name(), "SpeechFromBackgroundPage")) {
-      fake_speech_recognition_manager_.reset(
-          new content::FakeSpeechRecognitionManager());
+      fake_speech_recognition_manager_ =
+          std::make_unique<content::FakeSpeechRecognitionManager>();
       fake_speech_recognition_manager_->set_should_send_fake_response(true);
       // Inject the fake manager factory so that the test result is returned to
       // the web page.
@@ -43,7 +45,8 @@ class SpeechRecognitionTest : public extensions::PlatformAppBrowserTest {
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionTest, SpeechFromBackgroundPage) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kUseFakeUIForMediaStream);
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/speech/background_page"))
+  ASSERT_TRUE(RunExtensionTest("platform_apps/speech/background_page",
+                               {.launch_as_platform_app = true}))
       << message_;
 }
 
@@ -52,6 +55,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionTest,
   EXPECT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kUseFakeUIForMediaStream));
   ASSERT_TRUE(
-      RunPlatformAppTest("platform_apps/speech/background_page_no_permission"))
+      RunExtensionTest("platform_apps/speech/background_page_no_permission",
+                       {.launch_as_platform_app = true}))
       << message_;
 }

@@ -7,7 +7,7 @@ and `avd.py start`.
 
 ## Config files for `avd.py create`
 These files are normally used only by the builder
-[android-avd-pacakager](https://ci.chromium.org/p/chromium/builders/ci/android-avd-packager).
+[android-avd-packager](https://ci.chromium.org/p/chromium/builders/ci/android-avd-packager).
 It is not expected for end users to use them.
 
 ## Config files for `avd.py install` and `avd.py start`

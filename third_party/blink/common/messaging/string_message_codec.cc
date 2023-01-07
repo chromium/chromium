@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,33 @@
 
 #include <vector>
 
+#include "base/containers/buffer_iterator.h"
 #include "base/logging.h"
+#include "base/notreached.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/blink/public/mojom/array_buffer/array_buffer_contents.mojom.h"
 
 namespace blink {
 namespace {
+
+// Template helpers for visiting std::variant.
+template <class... Ts>
+struct overloaded : Ts... {
+  using Ts::operator()...;
+};
+template <class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
 
 const uint32_t kVarIntShift = 7;
 const uint32_t kVarIntMask = (1 << kVarIntShift) - 1;
 
 const uint8_t kVersionTag = 0xFF;
 const uint8_t kPaddingTag = '\0';
+// serialization_tag, see v8/src/objects/value-serializer.cc
 const uint8_t kOneByteStringTag = '"';
 const uint8_t kTwoByteStringTag = 'c';
+const uint8_t kArrayBuffer = 'B';
+const uint8_t kArrayBufferTransferTag = 't';
 
 const uint32_t kVersion = 10;
 
@@ -52,21 +67,22 @@ void WriteBytes(const char* bytes,
   buffer->insert(buffer->end(), bytes, bytes + num_bytes);
 }
 
-bool ReadUint8(const uint8_t** ptr, const uint8_t* end, uint8_t* value) {
-  if (*ptr >= end)
-    return false;
-  *value = *(*ptr)++;
-  return true;
+bool ReadUint8(base::BufferIterator<const uint8_t>& iter, uint8_t* value) {
+  if (const uint8_t* ptr = iter.Object<uint8_t>()) {
+    *value = *ptr;
+    return true;
+  }
+  return false;
 }
 
-bool ReadUint32(const uint8_t** ptr, const uint8_t* end, uint32_t* value) {
+bool ReadUint32(base::BufferIterator<const uint8_t>& iter, uint32_t* value) {
   *value = 0;
   uint8_t current_byte;
   int shift = 0;
   do {
-    if (*ptr >= end)
+    if (!ReadUint8(iter, &current_byte))
       return false;
-    current_byte = *(*ptr)++;
+
     *value |= (static_cast<uint32_t>(current_byte & kVarIntMask) << shift);
     shift += kVarIntShift;
   } while (current_byte & (1 << kVarIntShift));
@@ -82,65 +98,115 @@ bool ContainsOnlyLatin1(const std::u16string& data) {
 
 }  // namespace
 
-std::vector<uint8_t> EncodeStringMessage(const std::u16string& data) {
+TransferableMessage EncodeWebMessagePayload(const WebMessagePayload& payload) {
+  TransferableMessage message;
   std::vector<uint8_t> buffer;
   WriteUint8(kVersionTag, &buffer);
   WriteUint32(kVersion, &buffer);
 
-  if (ContainsOnlyLatin1(data)) {
-    std::string data_latin1(data.begin(), data.end());
-    WriteUint8(kOneByteStringTag, &buffer);
-    WriteUint32(data_latin1.size(), &buffer);
-    WriteBytes(data_latin1.c_str(), data_latin1.size(), &buffer);
-  } else {
-    size_t num_bytes = data.size() * sizeof(char16_t);
-    if ((buffer.size() + 1 + BytesNeededForUint32(num_bytes)) & 1)
-      WriteUint8(kPaddingTag, &buffer);
-    WriteUint8(kTwoByteStringTag, &buffer);
-    WriteUint32(num_bytes, &buffer);
-    WriteBytes(reinterpret_cast<const char*>(data.data()), num_bytes, &buffer);
-  }
+  absl::visit(
+      overloaded{
+          [&](const std::u16string& str) {
+            if (ContainsOnlyLatin1(str)) {
+              std::string data_latin1(str.cbegin(), str.cend());
+              WriteUint8(kOneByteStringTag, &buffer);
+              WriteUint32(data_latin1.size(), &buffer);
+              WriteBytes(data_latin1.c_str(), data_latin1.size(), &buffer);
+            } else {
+              size_t num_bytes = str.size() * sizeof(char16_t);
+              if ((buffer.size() + 1 + BytesNeededForUint32(num_bytes)) & 1)
+                WriteUint8(kPaddingTag, &buffer);
+              WriteUint8(kTwoByteStringTag, &buffer);
+              WriteUint32(num_bytes, &buffer);
+              WriteBytes(reinterpret_cast<const char*>(str.data()), num_bytes,
+                         &buffer);
+            }
+          },
+          [&](const std::vector<uint8_t>& array_buffer) {
+            WriteUint8(kArrayBufferTransferTag, &buffer);
+            // Write at the first slot.
+            WriteUint32(0, &buffer);
 
-  return buffer;
+            mojo_base::BigBuffer big_buffer(array_buffer);
+            message.array_buffer_contents_array.push_back(
+                mojom::SerializedArrayBufferContents::New(
+                    std::move(big_buffer)));
+          }},
+      payload);
+
+  message.owned_encoded_message = std::move(buffer);
+  message.encoded_message = message.owned_encoded_message;
+
+  return message;
 }
 
-bool DecodeStringMessage(base::span<const uint8_t> encoded_data,
-                         std::u16string* result) {
-  const uint8_t* ptr = encoded_data.data();
-  const uint8_t* end = ptr + encoded_data.size();
+absl::optional<WebMessagePayload> DecodeToWebMessagePayload(
+    const TransferableMessage& message) {
+  base::BufferIterator<const uint8_t> iter(message.encoded_message);
   uint8_t tag;
 
   // Discard any leading version and padding tags.
   // There may be more than one version, due to Blink and V8 having separate
   // version tags.
   do {
-    if (!ReadUint8(&ptr, end, &tag))
-      return false;
+    if (!ReadUint8(iter, &tag))
+      return absl::nullopt;
     uint32_t version;
-    if (tag == kVersionTag && !ReadUint32(&ptr, end, &version))
-      return false;
+    if (tag == kVersionTag && !ReadUint32(iter, &version))
+      return absl::nullopt;
   } while (tag == kVersionTag || tag == kPaddingTag);
 
   switch (tag) {
     case kOneByteStringTag: {
+      // Use of unsigned char rather than char here matters, so that Latin-1
+      // characters are zero-extended rather than sign-extended
       uint32_t num_bytes;
-      if (!ReadUint32(&ptr, end, &num_bytes))
-        return false;
-      result->assign(reinterpret_cast<const char*>(ptr),
-                     reinterpret_cast<const char*>(ptr) + num_bytes);
-      return true;
+      if (!ReadUint32(iter, &num_bytes))
+        return absl::nullopt;
+      auto span = iter.Span<unsigned char>(num_bytes / sizeof(unsigned char));
+      std::u16string str(span.begin(), span.end());
+      return span.size_bytes() == num_bytes
+                 ? absl::make_optional(WebMessagePayload(std::move(str)))
+                 : absl::nullopt;
     }
     case kTwoByteStringTag: {
       uint32_t num_bytes;
-      if (!ReadUint32(&ptr, end, &num_bytes))
-        return false;
-      result->assign(reinterpret_cast<const char16_t*>(ptr), num_bytes / 2);
-      return true;
+      if (!ReadUint32(iter, &num_bytes))
+        return absl::nullopt;
+      auto span = iter.Span<char16_t>(num_bytes / sizeof(char16_t));
+      std::u16string str(span.begin(), span.end());
+      return span.size_bytes() == num_bytes
+                 ? absl::make_optional(WebMessagePayload(std::move(str)))
+                 : absl::nullopt;
+    }
+    case kArrayBuffer: {
+      uint32_t num_bytes;
+      if (!ReadUint32(iter, &num_bytes))
+        return absl::nullopt;
+      auto span = iter.Span<uint8_t>(num_bytes);
+      return span.size_bytes() == num_bytes
+                 ? absl::make_optional(
+                       WebMessagePayload(std::vector(span.begin(), span.end())))
+                 : absl::nullopt;
+    }
+    case kArrayBufferTransferTag: {
+      uint32_t array_buffer_index;
+      if (!ReadUint32(iter, &array_buffer_index))
+        return absl::nullopt;
+      // We only support transfer ArrayBuffer at the first index.
+      if (array_buffer_index != 0)
+        return absl::nullopt;
+      if (message.array_buffer_contents_array.size() != 1)
+        return absl::nullopt;
+      const auto& big_buffer = message.array_buffer_contents_array[0]->contents;
+      // Data is from renderer process, copy it first before use.
+      return std::vector(big_buffer.data(),
+                         big_buffer.data() + big_buffer.size());
     }
   }
 
   DLOG(WARNING) << "Unexpected tag: " << tag;
-  return false;
+  return absl::nullopt;
 }
 
 }  // namespace blink

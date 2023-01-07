@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,6 +21,10 @@ source_set("system_cpu") {
     "//extensions/browser/api/system_info",
     "//extensions/common/api",
   ]
+
+  if (is_fuchsia) {
+    sources += [ "cpu_info_provider_fuchsia.cc" ]
+  }
 
   if (is_mac) {
     sources += [ "cpu_info_provider_mac.cc" ]

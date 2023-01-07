@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-import com.android.webview.chromium.WebViewDelegateFactory.WebViewDelegate;
+import android.webkit.WebViewDelegate;
 
 import org.chromium.android_webview.AwConsoleMessage;
 import org.chromium.android_webview.AwContentsClient;
@@ -51,7 +50,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
@@ -443,7 +441,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             if (mPictureListener != null) {
                 PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> {
                     if (mPictureListener != null) {
-                        if (TRACE) Log.i(TAG, "onPageFinished-fake");
+                        if (TRACE) Log.i(TAG, "onNewPicture - from onPageFinished workaround.");
                         mPictureListener.onNewPicture(
                                 mWebView, mPictureListenerInvalidateOnly ? null : new Picture());
                     }
@@ -513,7 +511,9 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                                             "onGeolocationPermissionsShowPrompt",
                                             String.class,
                                             GeolocationPermissions.Callback.class)) {
-                // This is only required for pre-M versions of android.
+                // The default WebChromeClient.onGeolocationPermissionsShowPrompt() implementation
+                // is a NOOP (does not invoke the callback). Explicitly invoke the callback in
+                // chromium code to deny the permission.
                 callback.invoke(origin, false, false);
                 return;
             }
@@ -1006,8 +1006,6 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                 if (TRACE) Log.i(TAG, "getDefaultVideoPoster");
                 result = mWebChromeClient.getDefaultVideoPoster();
             }
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.WebView.CustomDefaultVideoPoster", result != null);
             if (result == null) {
                 // The ic_play_circle_outline_black_48dp icon is transparent so we need to draw it
                 // on a gray background.
@@ -1083,7 +1081,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                     result |= Resource.AUDIO_CAPTURE;
                 } else if (resource.equals(PermissionRequest.RESOURCE_PROTECTED_MEDIA_ID)) {
                     result |= Resource.PROTECTED_MEDIA_ID;
-                } else if (resource.equals(AwPermissionRequest.RESOURCE_MIDI_SYSEX)) {
+                } else if (resource.equals(PermissionRequest.RESOURCE_MIDI_SYSEX)) {
                     result |= Resource.MIDI_SYSEX;
                 }
             }
@@ -1102,7 +1100,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
                 result.add(PermissionRequest.RESOURCE_PROTECTED_MEDIA_ID);
             }
             if ((resources & Resource.MIDI_SYSEX) != 0) {
-                result.add(AwPermissionRequest.RESOURCE_MIDI_SYSEX);
+                result.add(PermissionRequest.RESOURCE_MIDI_SYSEX);
             }
             String[] resource_array = new String[result.size()];
             return result.toArray(resource_array);

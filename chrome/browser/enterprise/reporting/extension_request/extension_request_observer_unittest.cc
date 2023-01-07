@@ -1,15 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_observer.h"
 
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
+#include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/time/time.h"
-#include "base/util/values/values_util.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/reporting/extension_request/extension_request_report_throttler_test.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -95,14 +96,14 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
     for (const auto& id : ids) {
       base::Value request_data(base::Value::Type::DICTIONARY);
       request_data.SetKey(extension_misc::kExtensionRequestTimestamp,
-                          ::util::TimeToValue(base::Time::Now()));
+                          ::base::TimeToValue(base::Time::Now()));
       id_values->SetKey(id, std::move(request_data));
     }
     profile()->GetTestingPrefService()->SetUserPref(
         prefs::kCloudExtensionRequestIds, std::move(id_values));
   }
 
-  std::vector<base::Optional<message_center::Notification>>
+  std::vector<absl::optional<message_center::Notification>>
   GetAllNotifications() {
     return {display_service_tester_->GetNotification(kApprovedNotificationId),
             display_service_tester_->GetNotification(kRejectedNotificationId),
@@ -118,7 +119,7 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
 
   //
   void SetExtensionSettings(const std::string& settings_string) {
-    base::Optional<base::Value> settings =
+    absl::optional<base::Value> settings =
         base::JSONReader::Read(settings_string);
     ASSERT_TRUE(settings.has_value());
     profile()->GetTestingPrefService()->SetManagedPref(
@@ -131,10 +132,7 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
       const std::vector<std::string>& expected_removed_requests) {
     // Record the number of requests before closing any notification.
     size_t number_of_existing_requests =
-        profile()
-            ->GetPrefs()
-            ->GetDictionary(prefs::kCloudExtensionRequestIds)
-            ->DictSize();
+        profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds).size();
 
     // Close the notification
     base::RunLoop close_run_loop;
@@ -142,18 +140,16 @@ class ExtensionRequestObserverTest : public BrowserWithTestWindowTest {
         close_run_loop.QuitClosure());
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::TRANSIENT, notification_id,
-        base::Optional<int>(), base::Optional<std::u16string>());
+        absl::optional<int>(), absl::optional<std::u16string>());
     close_run_loop.Run();
 
     // Verify that only |expected_removed_requests| are removed from the pref.
-    const base::DictionaryValue* actual_pending_requests =
-        profile()->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
+    const base::Value::Dict& actual_pending_requests =
+        profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds);
     EXPECT_EQ(number_of_existing_requests - expected_removed_requests.size(),
-              actual_pending_requests->DictSize());
-    for (const auto& it : *actual_pending_requests) {
-      EXPECT_EQ(expected_removed_requests.end(),
-                std::find(expected_removed_requests.begin(),
-                          expected_removed_requests.end(), it.first));
+              actual_pending_requests.size());
+    for (auto it : actual_pending_requests) {
+      EXPECT_FALSE(base::Contains(expected_removed_requests, it.first));
     }
     closed_notification_count_ += 1;
     histogram_tester()->ExpectBucketCount(kPendingListUpdateMetricsName,
@@ -210,11 +206,9 @@ TEST_F(ExtensionRequestObserverTest, NotificationClosedWithoutUserConfirmed) {
   VerifyNotification(false);
 
   // No request removed when notification is not closed by user.
-  EXPECT_EQ(pending_list.size(),
-            profile()
-                ->GetPrefs()
-                ->GetDictionary(prefs::kCloudExtensionRequestIds)
-                ->DictSize());
+  EXPECT_EQ(
+      pending_list.size(),
+      profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds).size());
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 
@@ -267,11 +261,9 @@ TEST_F(ExtensionRequestObserverTest, ExtensionRequestPolicyToggle) {
   VerifyNotification(false);
 
   // And no pending requests are removed.
-  EXPECT_EQ(pending_list.size(),
-            profile()
-                ->GetPrefs()
-                ->GetDictionary(prefs::kCloudExtensionRequestIds)
-                ->DictSize());
+  EXPECT_EQ(
+      pending_list.size(),
+      profile()->GetPrefs()->GetDict(prefs::kCloudExtensionRequestIds).size());
   histogram_tester()->ExpectTotalCount(kPendingListUpdateMetricsName, 0);
 }
 
@@ -290,26 +282,18 @@ TEST_F(ExtensionRequestObserverTest, PendingRequestAddedAfterPolicyUpdated) {
                                          /*added*/ 0, 1);
 }
 
-TEST_F(ExtensionRequestObserverTest, UpdateWithReportThrottler) {
-  ScopedExtensionRequestReportThrottler throttler;
-  EXPECT_EQ(0u, throttler.Get()->GetProfiles().size());
-
+TEST_F(ExtensionRequestObserverTest, UpdateWithReportEnabledAndDisabled) {
   ExtensionRequestObserver observer(profile());
-  EXPECT_EQ(0u, throttler.Get()->GetProfiles().size());
 
+  base::MockCallback<ExtensionRequestObserver::ReportTrigger> callback;
+
+  observer.EnableReport(callback.Get());
+  EXPECT_CALL(callback, Run(profile())).Times(1);
   SetPendingList({kExtensionId1});
-  EXPECT_EQ(1u, throttler.Get()->GetProfiles().size());
-  EXPECT_TRUE(throttler.Get()->GetProfiles().contains(profile()->GetPath()));
-}
 
-TEST_F(ExtensionRequestObserverTest, UpdateWithoutReportThrottler) {
-  ScopedExtensionRequestReportThrottler throttler;
-  throttler.Get()->Disable();
-  ExtensionRequestObserver observer(profile());
-  EXPECT_EQ(0u, throttler.Get()->GetProfiles().size());
-
-  SetPendingList({kExtensionId1});
-  EXPECT_EQ(0u, throttler.Get()->GetProfiles().size());
+  observer.DisableReport();
+  EXPECT_CALL(callback, Run(::testing::_)).Times(0);
+  SetPendingList({kExtensionId1, kExtensionId2});
 }
 
 }  // namespace enterprise_reporting

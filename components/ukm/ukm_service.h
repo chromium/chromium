@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 
 #include <stddef.h>
 #include <memory>
-#include <vector>
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/metrics_provider.h"
@@ -51,6 +51,11 @@ enum class ResetReason {
   kMaxValue = kClonedInstall,
 };
 
+// Enables adding the synced user's noised birth year and gender to the UKM
+// report. For more details, see doc of metrics::DemographicMetricsProvider in
+// components/metrics/demographics/demographic_metrics_provider.h.
+BASE_DECLARE_FEATURE(kReportUserNoisedUserBirthYearAndGender);
+
 // The URL-Keyed Metrics (UKM) service is responsible for gathering and
 // uploading reports that contain fine grained performance metrics including
 // URLs for top-level navigations.
@@ -64,7 +69,12 @@ class UkmService : public UkmRecorderImpl {
   UkmService(PrefService* pref_service,
              metrics::MetricsServiceClient* client,
              std::unique_ptr<metrics::UkmDemographicMetricsProvider>
-                 demographics_provider);
+                 demographics_provider,
+             uint64_t external_client_id = 0);
+
+  UkmService(const UkmService&) = delete;
+  UkmService& operator=(const UkmService&) = delete;
+
   ~UkmService() override;
 
   // Initializes the UKM service.
@@ -75,19 +85,23 @@ class UkmService : public UkmRecorderImpl {
   void EnableReporting();
   void DisableReporting();
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   void OnAppEnterBackground();
   void OnAppEnterForeground();
 #endif
 
-  // Records any collected data into logs, and writes to disk.
+  // Records all collected data into logs, and writes to disk.
   void Flush();
 
-  // Deletes any unsent local data.
+  // Deletes all unsent local data (Sources, Events, aggregate info for
+  // collected event metrics, etc.).
   void Purge();
 
-  // Deletes any unsent local data related to Chrome extensions.
-  void PurgeExtensions();
+  // Deletes all unsent local data related to Chrome extensions.
+  void PurgeExtensionsData();
+
+  // Deletes all unsent local data related to Apps.
+  void PurgeAppsData();
 
   // Resets the client prefs (client_id/session_id). |reason| should be passed
   // to provide the reason of the reset - this is only used for UMA logging.
@@ -108,14 +122,7 @@ class UkmService : public UkmRecorderImpl {
 
   int32_t report_count() const { return report_count_; }
 
-  void set_restrict_to_whitelist_entries_for_testing(bool value) {
-    restrict_to_whitelist_entries_ = value;
-  }
-
-  // Enables adding the synced user's noised birth year and gender to the UKM
-  // report. For more details, see doc of metrics::DemographicMetricsProvider in
-  // components/metrics/demographics/demographic_metrics_provider.h.
-  static const base::Feature kReportUserNoisedUserBirthYearAndGender;
+  uint64_t client_id() const { return client_id_; }
 
   // Makes sure that the serialized UKM report can be parsed.
   static bool LogCanBeParsed(const std::string& serialized_data);
@@ -134,6 +141,7 @@ class UkmService : public UkmRecorderImpl {
                            TestRegisterUkmProvidersWhenUKMFeatureEnabled);
   FRIEND_TEST_ALL_PREFIXES(UkmServiceTest,
                            PurgeExtensionDataFromUnsentLogStore);
+  FRIEND_TEST_ALL_PREFIXES(UkmServiceTest, PurgeAppDataFromUnsentLogStore);
 
   // Starts metrics client initialization.
   void StartInitTask();
@@ -155,9 +163,6 @@ class UkmService : public UkmRecorderImpl {
   // Called by log_uploader_ when the an upload is completed.
   void OnLogUploadComplete(int response_code);
 
-  // ukm::UkmRecorderImpl:
-  bool ShouldRestrictToWhitelistedEntries() const override;
-
   // Adds the user's birth year and gender to the UKM |report| only if (1) the
   // provider is registered and (2) the feature is enabled. For more details,
   // see doc of metrics::DemographicMetricsProvider in
@@ -167,13 +172,14 @@ class UkmService : public UkmRecorderImpl {
   void SetInitializationCompleteCallbackForTesting(base::OnceClosure callback);
 
   // A weak pointer to the PrefService used to read and write preferences.
-  PrefService* pref_service_;
-
-  // If true, only whitelisted Entries should be recorded.
-  bool restrict_to_whitelist_entries_;
+  raw_ptr<PrefService> pref_service_;
 
   // The UKM client id stored in prefs.
   uint64_t client_id_ = 0;
+
+  // External client id. If specified client_id will be set to this
+  // instead of generated. This is currently only used in Lacros.
+  uint64_t external_client_id_ = 0;
 
   // The UKM session id stored in prefs.
   int32_t session_id_ = 0;
@@ -183,7 +189,7 @@ class UkmService : public UkmRecorderImpl {
 
   // Used to interact with the embedder. Weak pointer; must outlive |this|
   // instance.
-  metrics::MetricsServiceClient* const client_;
+  const raw_ptr<metrics::MetricsServiceClient> client_;
 
   // Registered metrics providers.
   metrics::DelegatingProvider metrics_providers_;
@@ -211,8 +217,6 @@ class UkmService : public UkmRecorderImpl {
   // Weak pointers factory used to post task on different threads. All weak
   // pointers managed by this factory have the same lifetime as UkmService.
   base::WeakPtrFactory<UkmService> self_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UkmService);
 };
 
 }  // namespace ukm

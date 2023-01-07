@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/process/process.h"
 #include "base/strings/string_util.h"
 #include "base/test/multiprocess_test.h"
+#include "base/win/windows_version.h"
 #include "testing/multiprocess_func_list.h"
 
 namespace {
@@ -55,7 +56,7 @@ void ScopedProcessInformationTest::DoCreateProcess(
   STARTUPINFO startup_info = {};
   startup_info.cb = sizeof(startup_info);
 
-  EXPECT_TRUE(::CreateProcess(nullptr, base::data(cmd_line), nullptr, nullptr,
+  EXPECT_TRUE(::CreateProcess(nullptr, std::data(cmd_line), nullptr, nullptr,
                               false, 0, nullptr, nullptr, &startup_info,
                               process_handle));
 }
@@ -124,6 +125,10 @@ TEST_F(ScopedProcessInformationTest, TakeWholeStruct) {
 }
 
 TEST_F(ScopedProcessInformationTest, Duplicate) {
+  if (base::win::GetVersion() <= base::win::Version::WIN7) {
+    // Disabled on Windows 7 due to flakiness. https://crbug.com/1336879
+    GTEST_SKIP();
+  }
   PROCESS_INFORMATION temp_process_information;
   DoCreateProcess("ReturnSeven", &temp_process_information);
   base::win::ScopedProcessInformation process_info;

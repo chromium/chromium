@@ -1,12 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/find_in_page/find_tab_helper.h"
 
 #include <utility>
-#include <vector>
 
+#include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/find_in_page/find_result_observer.h"
@@ -25,7 +25,7 @@ namespace find_in_page {
 int FindTabHelper::find_request_id_counter_ = -1;
 
 FindTabHelper::FindTabHelper(WebContents* web_contents)
-    : web_contents_(web_contents),
+    : content::WebContentsUserData<FindTabHelper>(*web_contents),
       current_find_request_id_(find_request_id_counter_++),
       current_find_session_id_(current_find_request_id_) {}
 
@@ -58,7 +58,7 @@ void FindTabHelper::StartFinding(std::u16string search_string,
   if (search_string.empty()) {
     StopFinding(find_in_page::SelectionAction::kClear);
     for (auto& observer : observers_)
-      observer.OnFindEmptyText(web_contents_);
+      observer.OnFindEmptyText(&GetWebContents());
     return;
   }
 
@@ -87,7 +87,8 @@ void FindTabHelper::StartFinding(std::u16string search_string,
   options->new_session = new_session;
   options->find_match = find_match;
   options->run_synchronously_for_testing = run_synchronously_for_testing;
-  web_contents_->Find(current_find_request_id_, find_text_, std::move(options));
+  GetWebContents().Find(current_find_request_id_, find_text_,
+                        std::move(options));
 }
 
 void FindTabHelper::StopFinding(SelectionAction selection_action) {
@@ -122,12 +123,13 @@ void FindTabHelper::StopFinding(SelectionAction selection_action) {
       NOTREACHED();
       action = content::STOP_FIND_ACTION_KEEP_SELECTION;
   }
-  web_contents_->StopFinding(action);
+  GetWebContents().StopFinding(action);
 }
 
 void FindTabHelper::ActivateFindInPageResultForAccessibility() {
-  web_contents_->GetMainFrame()->ActivateFindInPageResultForAccessibility(
-      current_find_request_id_);
+  GetWebContents()
+      .GetPrimaryMainFrame()
+      ->ActivateFindInPageResultForAccessibility(current_find_request_id_);
 }
 
 std::u16string FindTabHelper::GetInitialSearchText() {
@@ -139,16 +141,16 @@ std::u16string FindTabHelper::GetInitialSearchText() {
   return delegate_ ? delegate_->GetSearchPrepopulateText() : std::u16string();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void FindTabHelper::ActivateNearestFindResult(float x, float y) {
   if (!find_op_aborted_ && !find_text_.empty()) {
-    web_contents_->ActivateNearestFindResult(x, y);
+    GetWebContents().ActivateNearestFindResult(x, y);
   }
 }
 
 void FindTabHelper::RequestFindMatchRects(int current_version) {
   if (!find_op_aborted_ && !find_text_.empty())
-    web_contents_->RequestFindMatchRects(current_version);
+    GetWebContents().RequestFindMatchRects(current_version);
 }
 #endif
 
@@ -178,10 +180,10 @@ void FindTabHelper::HandleFindReply(int request_id,
         FindNotificationDetails(request_id, number_of_matches, selection,
                                 active_match_ordinal, final_update);
     for (auto& observer : observers_)
-      observer.OnFindResultAvailable(web_contents_);
+      observer.OnFindResultAvailable(&GetWebContents());
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(FindTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(FindTabHelper);
 
 }  // namespace find_in_page

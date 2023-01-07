@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/security_interstitials/content/ssl_blocking_page_base.h"
 #include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/core/mitm_software_ui.h"
@@ -46,6 +45,9 @@ class MITMSoftwareBlockingPage : public SSLBlockingPageBase {
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client);
 
+  MITMSoftwareBlockingPage(const MITMSoftwareBlockingPage&) = delete;
+  MITMSoftwareBlockingPage& operator=(const MITMSoftwareBlockingPage&) = delete;
+
   ~MITMSoftwareBlockingPage() override;
 
   // SecurityInterstitialPage method:
@@ -55,16 +57,13 @@ class MITMSoftwareBlockingPage : public SSLBlockingPageBase {
  protected:
   // SecurityInterstitialPage implementation:
   void CommandReceived(const std::string& command) override;
-  void PopulateInterstitialStrings(
-      base::DictionaryValue* load_time_data) override;
+  void PopulateInterstitialStrings(base::Value::Dict& load_time_data) override;
 
  private:
   const net::SSLInfo ssl_info_;
 
   const std::unique_ptr<security_interstitials::MITMSoftwareUI>
       mitm_software_ui_;
-
-  DISALLOW_COPY_AND_ASSIGN(MITMSoftwareBlockingPage);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_MITM_SOFTWARE_BLOCKING_PAGE_H_

@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -29,12 +29,14 @@ source_set("popup_menu_ui") {
   deps = [
     ":ui_constants",
     "//base",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/image_util",
+    "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
+    "//ios/chrome/browser/ui/popup_menu/cells",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
     "//ios/chrome/browser/ui/popup_menu/public/",
     "//ios/chrome/browser/ui/popup_menu/public/cells",
     "//ios/chrome/browser/ui/presenters",
+    "//ios/chrome/browser/ui/reading_list:reading_list_constants",
     "//ios/chrome/browser/ui/resources:menu_shadow",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:styler",

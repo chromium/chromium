@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,9 @@ import "mojo/public/mojom/base/time.mojom";
 import "services/media_session/public/mojom/media_session.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Implemented by HTMLMediaElement in the renderer process.
+// Implemented by HTMLMediaElement in the renderer process to allow the
+// browser to control media playback.
 interface MediaPlayer {
-  // Sends |observer| to the renderer process so that it can be established a
-  // communication channel with the implementor of MediaPlayerObserver, and
-  // allows multiple observers for more observers like PictureInPictureService.
-  AddMediaPlayerObserver(
-      pending_associated_remote<MediaPlayerObserver> observer);
-
   // Requests the media player to start or resume media playback.
   RequestPlay();
 
@@ -38,6 +33,9 @@ interface MediaPlayer {
   // Requests the media player to exit the Picture-in-Picture mode.
   RequestExitPictureInPicture();
 
+  // Requests the media player to mute or unmute.
+  RequestMute(bool mute);
+
   // Set the volume multiplier to control audio ducking.
   // Output volume should be set to |player_volume| * |multiplier|. The range
   // of |multiplier| is [0, 1], where 1 indicates normal (non-ducked) playback.
@@ -56,6 +54,13 @@ interface MediaPlayer {
 
   // Suspends the media player when the host frame is closed.
   SuspendForFrameClosed();
+};
+
+// Implemented by the MediaWebContentsObserver. The remote lives in the renderer
+// process and the receiver lives in the browser process.
+interface MediaPlayerObserverClient {
+  // Gets a flag indicating whether media has been played before.
+  GetHasPlayedBefore() => (bool has_played_before);
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerObserverHostImpl in the
@@ -95,15 +100,16 @@ interface MediaPlayerObserver {
   // Notifies that the audio output sink has changed.
   OnAudioOutputSinkChanged(string hashed_device_id);
 
+  // Notifies that the playback starts/stops using AudioService.
+  OnUseAudioServiceChanged(bool uses_audio_service);
+
   // Notifies the browser process that the ability to switch audio output
   // devices for the associated media player has been disabled.
   OnAudioOutputSinkChangingDisabled();
 
-  // Notifies that a buffer underflow event happened for the media player.
-  OnBufferUnderflow();
-
-  // Notifies that a playback seek event happened for the media player.
-  OnSeek();
+  // Notifies that the RemotePlayback metadata of the media player has changed.
+  OnRemotePlaybackMetadataChange(media_session.mojom.RemotePlaybackMetadata
+                             remote_playback_metadata);
 };
 
 // Implemented by MediaWebContentsObserver::MediaPlayerHostImpl in the browser
@@ -113,6 +119,9 @@ interface MediaPlayerHost {
   // document owning the HTMLMediaElement that a new MediaPlayer is available,
   // passing a pending remote (i.e. |player_remote|) that will be used in the
   // browser process to establish a channel with the HTMLMediaElement.
+  // |observer| starts observing the MediaPlayer as soon as the player is
+  // created.
   OnMediaPlayerAdded(pending_associated_remote<MediaPlayer> player_remote,
+                     pending_associated_receiver<MediaPlayerObserver> observer,
                      int32 player_id);
 };

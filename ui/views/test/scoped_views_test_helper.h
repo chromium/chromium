@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,14 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/views/test/test_views_delegate.h"
 #include "ui/views/test/views_test_helper.h"
 #include "ui/views/views_delegate.h"
 
 namespace views {
 
-class TestViewsDelegate;
 class Widget;
 
 // Creates a ViewsTestHelper that is destroyed automatically. Acts like
@@ -27,8 +26,8 @@ class ScopedViewsTestHelper {
   // Initialize with the given TestViewsDelegate instance.
   explicit ScopedViewsTestHelper(
       std::unique_ptr<TestViewsDelegate> test_views_delegate = nullptr,
-      base::Optional<ViewsDelegate::NativeWidgetFactory> factory =
-          base::nullopt);
+      absl::optional<ViewsDelegate::NativeWidgetFactory> factory =
+          absl::nullopt);
   ScopedViewsTestHelper(const ScopedViewsTestHelper&) = delete;
   ScopedViewsTestHelper& operator=(const ScopedViewsTestHelper&) = delete;
   ~ScopedViewsTestHelper();

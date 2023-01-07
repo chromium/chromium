@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 var $parseInt = require('safeMethods').SafeMethods.$parseInt;
 var $getComputedStyle = require('safeMethods').SafeMethods.$getComputedStyle;
-var $CSSStyleDeclaration =
-    require('safeMethods').SafeMethods.$CSSStyleDeclaration;
 var $Document = require('safeMethods').SafeMethods.$Document;
 var $Element = require('safeMethods').SafeMethods.$Element;
 var $EventTarget = require('safeMethods').SafeMethods.$EventTarget;
@@ -73,9 +71,9 @@ GuestViewContainer.prototype.createInternalElement = function() {
   var iframeElement = $Document.createElement(document, 'iframe');
 
   var style = $HTMLElement.style.get(iframeElement);
-  $CSSStyleDeclaration.setProperty(style, 'width', '100%');
-  $CSSStyleDeclaration.setProperty(style, 'height', '100%');
-  $CSSStyleDeclaration.setProperty(style, 'border', '0px');
+  $Object.defineProperty(style, 'width', {value: '100%'});
+  $Object.defineProperty(style, 'height', {value: '100%'});
+  $Object.defineProperty(style, 'border', {value: '0px'});
 
   return iframeElement;
 };
@@ -99,13 +97,12 @@ GuestViewContainer.prototype.attachWindow = function() {
   var generatedId = IdGenerator.GetNextId();
   // Generate an instance id for the container.
   this.onInternalInstanceId(generatedId);
-  return true;
 };
 
 GuestViewContainer.prototype.makeGCOwnContainer = function(internalInstanceId) {
   MessagingNatives.BindToGC(this, function() {
     GuestViewInternalNatives.DestroyContainer(internalInstanceId);
-  }, -1);
+  });
 };
 
 GuestViewContainer.prototype.onInternalInstanceId = function(

@@ -1,0 +1,50 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+static_library("content") {
+  sources = [
+    "clipboard_restriction_service.cc",
+    "clipboard_restriction_service.h",
+    "copy_prevention_settings_policy_handler.cc",
+    "copy_prevention_settings_policy_handler.h",
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/content:content",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/policy/proto",
+    "//components/prefs",
+    "//components/strings:components_strings_grit",
+    "//components/url_matcher",
+    "//components/user_prefs:user_prefs",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "clipboard_restriction_service_unittest.cc",
+    "copy_prevention_settings_policy_handler_unittests.cc",
+  ]
+
+  deps = [
+    ":content",
+    "//base",
+    "//base/test:test_support",
+    "//components/policy/core/browser",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+    "//url:url",
+  ]
+}

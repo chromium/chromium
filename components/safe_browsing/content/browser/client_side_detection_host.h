@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,21 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "components/safe_browsing/content/base_ui_manager.h"
-#include "components/safe_browsing/content/browser/client_side_model_loader.h"
+#include "base/time/time.h"
+#include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
-#include "components/safe_browsing/core/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
+#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "url/gurl.h"
@@ -34,9 +41,12 @@ class ClientSideDetectionService;
 // notifies the browser that a URL was classified as phishing.  This
 // class relays this information to the client-side detection service
 // class which sends a ping to a server to validate the verdict.
-// TODO(noelutz): move all client-side detection IPCs to this class.
 class ClientSideDetectionHost : public content::WebContentsObserver {
  public:
+  // A callback via which the client of this component indicates whether the
+  // primary account is signed in.
+  using PrimaryAccountSignedIn = base::RepeatingCallback<bool()>;
+
   // Delegate which allows to provide embedder specific implementations.
   class Delegate {
    public:
@@ -49,19 +59,32 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
     virtual scoped_refptr<SafeBrowsingDatabaseManager>
     GetSafeBrowsingDBManager() = 0;
     virtual scoped_refptr<BaseUIManager> GetSafeBrowsingUIManager() = 0;
-    virtual ClientSideDetectionService* GetClientSideDetectionService() = 0;
+    virtual base::WeakPtr<ClientSideDetectionService>
+    GetClientSideDetectionService() = 0;
     virtual void AddReferrerChain(ClientPhishingRequest* verdict,
-                                  GURL current_url) = 0;
+                                  GURL current_url,
+                                  const content::GlobalRenderFrameHostId&
+                                      current_outermost_main_frame_id) = 0;
+    virtual raw_ptr<VerdictCacheManager> GetCacheManager() = 0;
   };
 
   // The caller keeps ownership of the tab object and is responsible for
   // ensuring that it stays valid until WebContentsDestroyed is called.
+  // The caller also keeps ownership of pref_service. The
+  // ClientSideDetectionHost takes ownership of token_fetcher. is_off_the_record
+  // indicates if the profile is incognito, and account_signed_in_callback is
+  // checked to find out if primary account is signed in.
   static std::unique_ptr<ClientSideDetectionHost> Create(
       content::WebContents* tab,
-      std::unique_ptr<Delegate> delegate);
+      std::unique_ptr<Delegate> delegate,
+      PrefService* pref_service,
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+      bool is_off_the_record,
+      const PrimaryAccountSignedIn& account_signed_in_callback);
 
-  // The caller keeps ownership of the tab object and is responsible for
-  // ensuring that it stays valid until WebContentsDestroyed is called.
+  ClientSideDetectionHost(const ClientSideDetectionHost&) = delete;
+  ClientSideDetectionHost& operator=(const ClientSideDetectionHost&) = delete;
+
   ~ClientSideDetectionHost() override;
 
   // From content::WebContentsObserver.  If we navigate away we cancel all
@@ -70,16 +93,14 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // Send the model to all the render frame hosts in this WebContents.
-  void SendModelToRenderFrame();
-
  protected:
-  explicit ClientSideDetectionHost(content::WebContents* tab,
-                                   std::unique_ptr<Delegate> delegate);
-
-  // From content::WebContentsObserver.
-  void WebContentsDestroyed() override;
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
+  explicit ClientSideDetectionHost(
+      content::WebContents* tab,
+      std::unique_ptr<Delegate> delegate,
+      PrefService* pref_service,
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+      bool is_off_the_record,
+      const PrimaryAccountSignedIn& account_signed_in_callback);
 
   // Used for testing.
   void set_ui_manager(BaseUIManager* ui_manager);
@@ -91,13 +112,17 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   friend class ShouldClassifyUrlRequest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostBrowserTest,
                            VerifyVisualFeatureCollection);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
+                           PrerenderShouldNotAffectClientSideDetection);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
+                           ClassifyPrerenderedPageAfterActivation);
 
   // Called when pre-classification checks are done for the phishing
   // classifiers.
   void OnPhishingPreClassificationDone(bool should_classify);
 
-  // |verdict| is an encoded ClientPhishingRequest protocol message, |result| is
-  // the outcome of the renderer classification.
+  // |verdict| is an encoded ClientPhishingRequest protocol message, |result|
+  // is the outcome of the renderer classification.
   void PhishingDetectionDone(mojom::PhishingDetectorResult result,
                              const std::string& verdict);
 
@@ -112,37 +137,84 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
 
   // Used for testing.  This function does not take ownership of the service
   // class.
-  void set_client_side_detection_service(ClientSideDetectionService* service);
+  void set_client_side_detection_service(
+      base::WeakPtr<ClientSideDetectionService> service);
 
   // Sets a test tick clock only for testing.
   void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
     tick_clock_ = tick_clock;
   }
 
-  // This pointer may be nullptr if client-side phishing detection is disabled.
-  ClientSideDetectionService* csd_service_;
+  // Sets the token fetcher only for testing.
+  void set_token_fetcher_for_testing(
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher) {
+    token_fetcher_ = std::move(token_fetcher);
+  }
+
+  // Sets the incognito bit only for testing.
+  void set_is_off_the_record_for_testing(bool is_off_the_record) {
+    is_off_the_record_ = is_off_the_record;
+  }
+
+  // Sets the primary account signed in callback for testing.
+  void set_account_signed_in_for_testing(
+      const PrimaryAccountSignedIn& account_signed_in_callback) {
+    account_signed_in_callback_ = account_signed_in_callback;
+  }
+
+  // Check if CSD can get an access Token. Should be enabled only for ESB
+  // users, who are signed in and not in incognito mode.
+  bool CanGetAccessToken();
+
+  // Send the client report to CSD server.
+  void SendRequest(std::unique_ptr<ClientPhishingRequest> verdict,
+                   const std::string& access_token);
+
+  // Called when token_fetcher_ has fetched the token.
+  void OnGotAccessToken(std::unique_ptr<ClientPhishingRequest> verdict,
+                        const std::string& access_token);
+
+  // This pointer may be nullptr if client-side phishing detection is
+  // disabled.
+  base::WeakPtr<ClientSideDetectionService> csd_service_;
   // The WebContents that the class is observing.
-  content::WebContents* tab_;
+  raw_ptr<content::WebContents> tab_;
   // These pointers may be nullptr if SafeBrowsing is disabled.
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   scoped_refptr<BaseUIManager> ui_manager_;
   // Keep a handle to the latest classification request so that we can cancel
   // it if necessary.
+  // TODO(drubery): Make this a std::unique_ptr, for clearer lifetimes.
   scoped_refptr<ShouldClassifyUrlRequest> classification_request_;
   // The current URL
   GURL current_url_;
-  // The currently active message pipe to the renderer PhishingDetector.
-  mojo::Remote<mojom::PhishingDetector> phishing_detector_;
+  // The current outermost main frame's id.
+  content::GlobalRenderFrameHostId current_outermost_main_frame_id_;
 
   // Records the start time of when phishing detection started.
   base::TimeTicks phishing_detection_start_time_;
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   std::unique_ptr<Delegate> delegate_;
 
-  base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
+  // Unowned object used for getting preference settings.
+  raw_ptr<PrefService> pref_service_;
 
-  DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionHost);
+  // The token fetcher used for getting access token.
+  std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
+
+  // A boolean indicates whether the associated profile associated is an
+  // incognito profile.
+  bool is_off_the_record_;
+
+  // Callback for checking if the user is signed in, before fetching
+  // acces_token.
+  PrimaryAccountSignedIn account_signed_in_callback_;
+
+  // The remote for the currently active phishing classification.
+  mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector_;
+
+  base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
 };
 
 }  // namespace safe_browsing

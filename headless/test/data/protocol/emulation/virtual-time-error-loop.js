@@ -1,23 +1,22 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function(testRunner) {
-  var {page, session, dp} = await testRunner.startBlank(
+  const {page, session, dp} = await testRunner.startBlank(
       `Tests that virtual time advances 10ms on every navigation.`);
   await dp.Network.enable();
 
   let resourceCounter = 0;
   dp.Network.onRequestWillBeSent(() => { resourceCounter++ });
-  dp.Emulation.onVirtualTimeBudgetExpired(data => {
-    testRunner.log('Resources loaded: ' + resourceCounter);
-    testRunner.completeTest();
-  });
-
   await dp.Emulation.setVirtualTimePolicy({policy: 'pause'});
-  await dp.Emulation.setVirtualTimePolicy({
+  await dp.Page.navigate({
+      url: testRunner.url('resources/virtual-time-error-loop.html')});
+  dp.Emulation.setVirtualTimePolicy({
       policy: 'pauseIfNetworkFetchesPending',
-      budget: 5000, waitForNavigation: true,
+      budget: 5000,
       maxVirtualTimeTaskStarvationCount: 1000000});  // starvation prevents flakes
-  dp.Page.navigate({url: testRunner.url('resources/virtual-time-error-loop.html')});
+  await dp.Emulation.onceVirtualTimeBudgetExpired();
+  testRunner.log('Resources loaded: ' + resourceCounter);
+  testRunner.completeTest();
 })

@@ -5,6 +5,8 @@
   await dp.DOM.enable();
   const aLinkQuads = await quadsFor(`document.querySelector('a')`);
   testRunner.log('Returned quads count: ' + aLinkQuads.length);
+  const bQuads = await quadsFor(`document.querySelector('b')`);
+  testRunner.log('Returned quads count: ' + bQuads.length);
 
   testRunner.completeTest();
 

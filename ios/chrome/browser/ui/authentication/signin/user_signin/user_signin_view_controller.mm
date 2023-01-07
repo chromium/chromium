@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,14 @@
 #import "base/check_op.h"
 #import "base/logging.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
-#import "ios/chrome/browser/ui/authentication/signin/user_signin/gradient_view.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/gradient_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -41,6 +42,11 @@ struct AuthenticationViewConstants {
   CGFloat ButtonVerticalPadding;
   CGFloat ButtonTitleContentHorizontalInset;
   CGFloat ButtonTitleContentVerticalInset;
+};
+
+typedef NS_ENUM(NSUInteger, ActionButtonStyle) {
+  PRIMARY_ACTION_STYLE,
+  SECONDARY_ACTION_STYLE,
 };
 
 const AuthenticationViewConstants kCompactConstants = {
@@ -80,10 +86,10 @@ enum AuthenticationButtonType {
 // progress.
 @property(nonatomic, strong) MDCActivityIndicator* activityIndicator;
 // Button used to confirm the sign-in operation, e.g. "Yes I'm In".
-@property(nonatomic, strong) UIButton* confirmationButton;
+@property(nonatomic, strong) UIButton* primaryActionButton;
 // Button used to exit the sign-in operation without confirmation, e.g. "No
 // Thanks", "Cancel".
-@property(nonatomic, strong) UIButton* skipSigninButton;
+@property(nonatomic, strong) UIButton* secondaryActionButton;
 // Stack view that displays the skip and continue buttons.
 @property(nonatomic, strong) UIStackView* actionButtonsView;
 // Property that denotes whether the unified consent screen reached bottom has
@@ -98,6 +104,8 @@ enum AuthenticationButtonType {
 // Lists of constraints that need to be activated when the view is in
 // regular size class.
 @property(nonatomic, strong, readonly) NSArray* regularSizeClassConstraints;
+// Unified consent view controller embedded in this view controller.
+@property(nonatomic, strong, readonly) UIViewController* embeddedViewController;
 
 @end
 
@@ -109,58 +117,93 @@ enum AuthenticationButtonType {
 
 #pragma mark - Public
 
+- (instancetype)initWithEmbeddedViewController:
+    (UIViewController*)embeddedViewController {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    DCHECK(embeddedViewController);
+    _embeddedViewController = embeddedViewController;
+  }
+  return self;
+}
+
 - (void)markUnifiedConsentScreenReachedBottom {
   // This is the first time the unified consent screen has reached the bottom.
   if (!self.hasUnifiedConsentScreenReachedBottom) {
     self.hasUnifiedConsentScreenReachedBottom = YES;
-    [self setConfirmationButtonProperties];
+    [self updatePrimaryActionButtonStyle];
   }
 }
 
-- (void)setConfirmationButtonProperties {
+- (void)updatePrimaryActionButtonStyle {
   if (![self.delegate unifiedConsentCoordinatorHasIdentity]) {
-    // User has not added an account. Display 'add account' button.
-    [self.confirmationButton setTitle:self.addAccountButtonTitle
-                             forState:UIControlStateNormal];
-    [self setBlueBackgroundStylingWithButton:self.confirmationButton];
-    self.confirmationButton.tag = AuthenticationButtonTypeAddAccount;
-    self.confirmationButton.accessibilityIdentifier =
+    // User does not have an account on the device.
+    [self.primaryActionButton
+        setTitle:l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT)
+        forState:UIControlStateNormal];
+    [self.primaryActionButton setImage:nil forState:UIControlStateNormal];
+    self.primaryActionButton.tag = AuthenticationButtonTypeAddAccount;
+    self.primaryActionButton.accessibilityIdentifier =
         kAddAccountAccessibilityIdentifier;
   } else if (!self.hasUnifiedConsentScreenReachedBottom) {
-    // User has not scrolled to the bottom of the user consent screen.
-    // Display 'more' button.
-    [self.confirmationButton setTitle:self.scrollButtonTitle
-                             forState:UIControlStateNormal];
-    [self setMoreButtonStylingWithButton:self.confirmationButton];
-    self.confirmationButton.tag = AuthenticationButtonTypeMore;
-    self.confirmationButton.accessibilityIdentifier =
+    // User screen is smaller than the consent text. Display option to
+    // auto-scroll to the bottom of the screen.
+    [self.primaryActionButton
+        setTitle:l10n_util::GetNSString(
+                     IDS_IOS_ACCOUNT_CONSISTENCY_CONFIRMATION_SCROLL_BUTTON)
+        forState:UIControlStateNormal];
+    self.primaryActionButton.tag = AuthenticationButtonTypeMore;
+    self.primaryActionButton.accessibilityIdentifier =
         kMoreAccessibilityIdentifier;
+
+    // Set button "more" down directional arrow image.
+    UIImage* buttonImage = [[UIImage imageNamed:@"signin_confirmation_more"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [self.primaryActionButton setImage:buttonImage
+                              forState:UIControlStateNormal];
+    if (UIApplication.sharedApplication.userInterfaceLayoutDirection ==
+        UIUserInterfaceLayoutDirectionLeftToRight) {
+      self.primaryActionButton.imageEdgeInsets =
+          UIEdgeInsetsMake(0, -kImageInset, 0, 0);
+    } else {
+      self.primaryActionButton.imageEdgeInsets =
+          UIEdgeInsetsMake(0, 0, 0, -kImageInset);
+    }
   } else {
     // By default display 'Yes I'm in' button.
-    [self.confirmationButton setTitle:self.confirmationButtonTitle
-                             forState:UIControlStateNormal];
-    [self setBlueBackgroundStylingWithButton:self.confirmationButton];
-    self.confirmationButton.tag = AuthenticationButtonTypeConfirmation;
-    self.confirmationButton.accessibilityIdentifier =
+    [self.primaryActionButton
+        setTitle:l10n_util::GetNSString(self.acceptSigninButtonStringId)
+        forState:UIControlStateNormal];
+    [self.primaryActionButton setImage:nil forState:UIControlStateNormal];
+    self.primaryActionButton.tag = AuthenticationButtonTypeConfirmation;
+    self.primaryActionButton.accessibilityIdentifier =
         kConfirmationAccessibilityIdentifier;
   }
-  [self.confirmationButton addTarget:self
-                              action:@selector(onConfirmationButtonPressed:)
-                    forControlEvents:UIControlEventTouchUpInside];
+
+  // Apply SECONDARY_ACTION_STYLE if the user has accounts on their device and
+  // have not scrolled to the bottom of the consent screen.
+  ActionButtonStyle style =
+      [self.delegate unifiedConsentCoordinatorHasIdentity] &&
+              !self.hasUnifiedConsentScreenReachedBottom
+          ? SECONDARY_ACTION_STYLE
+          : PRIMARY_ACTION_STYLE;
+  [self updateButtonStyleWithButton:self.primaryActionButton style:style];
 }
 
 - (NSUInteger)supportedInterfaceOrientations {
-  return IsIPadIdiom() ? [super supportedInterfaceOrientations]
-                       : UIInterfaceOrientationMaskPortrait;
+  return (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)
+             ? [super supportedInterfaceOrientations]
+             : UIInterfaceOrientationMaskPortrait;
 }
 
 - (void)signinWillStart {
-  self.confirmationButton.enabled = NO;
+  self.primaryActionButton.enabled = NO;
   [self startAnimatingActivityIndicator];
 }
 
 - (void)signinDidStop {
-  self.confirmationButton.enabled = YES;
+  self.primaryActionButton.enabled = YES;
   [self stopAnimatingActivityIndicator];
 }
 
@@ -191,44 +234,49 @@ enum AuthenticationButtonType {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  DCHECK(self.unifiedConsentViewController);
+  DCHECK(self.embeddedViewController);
   self.view.backgroundColor = self.systemBackgroundColor;
 
   self.containerView = [[UIView alloc] init];
   self.containerView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:self.containerView];
 
-  self.confirmationButton = [[UIButton alloc] init];
-  [self setConfirmationButtonProperties];
-  [self maybeEnablePointerSupportWithButton:self.confirmationButton];
-  self.confirmationButton.translatesAutoresizingMaskIntoConstraints = NO;
+  self.primaryActionButton = [[UIButton alloc] init];
+  [self.primaryActionButton addTarget:self
+                               action:@selector(onPrimaryActionButtonPressed:)
+                     forControlEvents:UIControlEventTouchUpInside];
+  [self updatePrimaryActionButtonStyle];
+  self.primaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
 
-  self.skipSigninButton = [[UIButton alloc] init];
-  [self setSkipSigninButtonProperties];
-  [self maybeEnablePointerSupportWithButton:self.skipSigninButton];
-  self.skipSigninButton.translatesAutoresizingMaskIntoConstraints = NO;
+  self.secondaryActionButton = [[UIButton alloc] init];
+  [self.secondaryActionButton
+             addTarget:self
+                action:@selector(onSecondaryActionButtonPressed:)
+      forControlEvents:UIControlEventTouchUpInside];
+  [self updateSecondaryButtonStyle];
+  self.secondaryActionButton.translatesAutoresizingMaskIntoConstraints = NO;
 
   self.actionButtonsView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    self.skipSigninButton, self.confirmationButton
+    self.secondaryActionButton, self.primaryActionButton
   ]];
   self.actionButtonsView.distribution = UIStackViewDistributionEqualCentering;
   self.actionButtonsView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:self.actionButtonsView];
 
-  self.unifiedConsentViewController.view
-      .translatesAutoresizingMaskIntoConstraints = NO;
-  [self addChildViewController:self.unifiedConsentViewController];
-  [self.containerView addSubview:self.unifiedConsentViewController.view];
-  [self.unifiedConsentViewController didMoveToParentViewController:self];
+  self.embeddedViewController.view.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  [self addChildViewController:self.embeddedViewController];
+  [self.containerView addSubview:self.embeddedViewController.view];
+  [self.embeddedViewController didMoveToParentViewController:self];
 
   self.gradientView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.containerView addSubview:self.gradientView];
 
   [NSLayoutConstraint activateConstraints:@[
     // Note that the bottom constraint of the container view and
-    // |unifiedConsentViewController.view| is dependent on the selected
+    // `embeddedViewController.view` is dependent on the selected
     // Accessibility options in Settings, e.g. text size. These constraints
-    // are computed in |setAccessibilityLayoutConstraints|.
+    // are computed in `setAccessibilityLayoutConstraints`.
     [self.containerView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
     [self.containerView.leadingAnchor
         constraintEqualToAnchor:self.view.leadingAnchor],
@@ -237,13 +285,11 @@ enum AuthenticationButtonType {
     // The gradient view needs to be attatched to the bottom of the user
     // consent view which contains the scroll view.
     [self.gradientView.bottomAnchor
-        constraintEqualToAnchor:self.unifiedConsentViewController.view
-                                    .bottomAnchor],
+        constraintEqualToAnchor:self.embeddedViewController.view.bottomAnchor],
     [self.gradientView.leadingAnchor
-        constraintEqualToAnchor:self.unifiedConsentViewController.view
-                                    .leadingAnchor],
+        constraintEqualToAnchor:self.embeddedViewController.view.leadingAnchor],
     [self.gradientView.trailingAnchor
-        constraintEqualToAnchor:self.unifiedConsentViewController.view
+        constraintEqualToAnchor:self.embeddedViewController.view
                                     .trailingAnchor],
     [self.gradientView.heightAnchor constraintEqualToConstant:kGradientHeight],
   ]];
@@ -290,8 +336,10 @@ enum AuthenticationButtonType {
     [NSLayoutConstraint activateConstraints:self.compactSizeClassConstraints];
     fontStyle = UIFontTextStyleSubheadline;
   }
-  [self applyDefaultSizeWithButton:self.confirmationButton fontStyle:fontStyle];
-  [self applyDefaultSizeWithButton:self.skipSigninButton fontStyle:fontStyle];
+  [self applyDefaultSizeWithButton:self.primaryActionButton
+                         fontStyle:fontStyle];
+  [self applyDefaultSizeWithButton:self.secondaryActionButton
+                         fontStyle:fontStyle];
 
   // For larger texts update the layout to display buttons centered on the
   // vertical axis.
@@ -309,25 +357,12 @@ enum AuthenticationButtonType {
   return [UIColor colorNamed:kPrimaryBackgroundColor];
 }
 
-- (NSString*)confirmationButtonTitle {
-  return l10n_util::GetNSString(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_OK_BUTTON);
-}
-
-- (NSString*)skipSigninButtonTitle {
+- (NSString*)secondaryActionButtonTitle {
   if (self.useFirstRunSkipButton) {
     return l10n_util::GetNSString(
         IDS_IOS_FIRSTRUN_ACCOUNT_CONSISTENCY_SKIP_BUTTON);
   }
   return l10n_util::GetNSString(IDS_IOS_ACCOUNT_CONSISTENCY_SETUP_SKIP_BUTTON);
-}
-
-- (NSString*)addAccountButtonTitle {
-  return l10n_util::GetNSString(IDS_IOS_ACCOUNT_UNIFIED_CONSENT_ADD_ACCOUNT);
-}
-
-- (NSString*)scrollButtonTitle {
-  return l10n_util::GetNSString(
-      IDS_IOS_ACCOUNT_CONSISTENCY_CONFIRMATION_SCROLL_BUTTON);
 }
 
 - (int)acceptSigninButtonStringId {
@@ -341,7 +376,10 @@ enum AuthenticationButtonType {
 
 - (UIView*)gradientView {
   if (!_gradientView) {
-    _gradientView = [[GradientView alloc] init];
+    _gradientView = [[GradientView alloc]
+        initWithTopColor:[[UIColor colorNamed:kPrimaryBackgroundColor]
+                             colorWithAlphaComponent:0]
+             bottomColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
   }
   return _gradientView;
 }
@@ -352,13 +390,13 @@ enum AuthenticationButtonType {
         [self generateConstraintsWithConstants:kCompactConstants];
     [constraints addObjectsFromArray:@[
       // Constraints for the user consent view inside the container view.
-      [self.unifiedConsentViewController.view.topAnchor
+      [self.embeddedViewController.view.topAnchor
           constraintEqualToAnchor:self.containerView.topAnchor],
-      [self.unifiedConsentViewController.view.bottomAnchor
+      [self.embeddedViewController.view.bottomAnchor
           constraintEqualToAnchor:self.containerView.bottomAnchor],
-      [self.unifiedConsentViewController.view.leadingAnchor
+      [self.embeddedViewController.view.leadingAnchor
           constraintEqualToAnchor:self.containerView.leadingAnchor],
-      [self.unifiedConsentViewController.view.trailingAnchor
+      [self.embeddedViewController.view.trailingAnchor
           constraintEqualToAnchor:self.containerView.trailingAnchor],
       // Constraint between the container view and the horizontal buttons.
       [self.actionButtonsView.topAnchor
@@ -377,20 +415,20 @@ enum AuthenticationButtonType {
     [constraints addObjectsFromArray:@[
       // Constraints for the user consent view inside the container view, to
       // make sure it is never bigger than the container view.
-      [self.unifiedConsentViewController.view.topAnchor
+      [self.embeddedViewController.view.topAnchor
           constraintGreaterThanOrEqualToAnchor:self.containerView.topAnchor],
-      [self.unifiedConsentViewController.view.bottomAnchor
+      [self.embeddedViewController.view.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.containerView.bottomAnchor],
-      [self.unifiedConsentViewController.view.leadingAnchor
+      [self.embeddedViewController.view.leadingAnchor
           constraintGreaterThanOrEqualToAnchor:self.containerView
                                                    .leadingAnchor],
-      [self.unifiedConsentViewController.view.trailingAnchor
+      [self.embeddedViewController.view.trailingAnchor
           constraintLessThanOrEqualToAnchor:self.containerView.trailingAnchor],
       // The user consent view needs to be centered if the container view is
       // bigger than the max size authorized for the user consent view.
-      [self.unifiedConsentViewController.view.centerXAnchor
+      [self.embeddedViewController.view.centerXAnchor
           constraintEqualToAnchor:self.containerView.centerXAnchor],
-      [self.unifiedConsentViewController.view.centerYAnchor
+      [self.embeddedViewController.view.centerYAnchor
           constraintEqualToAnchor:self.containerView.centerYAnchor],
       // Constraint between the container view and the horizontal buttons.
       [self.actionButtonsView.topAnchor
@@ -403,15 +441,15 @@ enum AuthenticationButtonType {
     // If the screen is smaller than the max size, those constraints are ignored
     // since they have a lower priority than the constraints set aboved.
     NSArray* lowerPriorityConstraints = @[
-      [self.unifiedConsentViewController.view.heightAnchor
+      [self.embeddedViewController.view.heightAnchor
           constraintEqualToConstant:kUserConsentMaxSize],
-      [self.unifiedConsentViewController.view.widthAnchor
+      [self.embeddedViewController.view.widthAnchor
           constraintEqualToConstant:kUserConsentMaxSize],
     ];
-    for (NSLayoutConstraint* constraints in lowerPriorityConstraints) {
-      // We do not use |UILayoutPriorityDefaultHigh| because it makes some
+    for (NSLayoutConstraint* layout_constraints in lowerPriorityConstraints) {
+      // We do not use `UILayoutPriorityDefaultHigh` because it makes some
       // multiline labels on one line and truncated on iPad.
-      constraints.priority = UILayoutPriorityRequired - 1;
+      layout_constraints.priority = UILayoutPriorityRequired - 1;
     }
     [constraints addObjectsFromArray:lowerPriorityConstraints];
     _regularSizeClassConstraints = constraints;
@@ -437,56 +475,44 @@ enum AuthenticationButtonType {
 
 // Sets the text, styling, and other button properties for the skip sign-in
 // button.
-- (void)setSkipSigninButtonProperties {
-  DCHECK(self.skipSigninButton);
-  self.skipSigninButton.accessibilityIdentifier =
+- (void)updateSecondaryButtonStyle {
+  DCHECK(self.secondaryActionButton);
+  self.secondaryActionButton.accessibilityIdentifier =
       kSkipSigninAccessibilityIdentifier;
-  [self.skipSigninButton setTitle:self.skipSigninButtonTitle
-                         forState:UIControlStateNormal];
-  [self.skipSigninButton setTitleColor:[UIColor colorNamed:kBlueColor]
+  [self.secondaryActionButton setTitle:self.secondaryActionButtonTitle
                               forState:UIControlStateNormal];
-  [self.skipSigninButton addTarget:self
-                            action:@selector(onSkipSigninButtonPressed:)
-                  forControlEvents:UIControlEventTouchUpInside];
+
+  [self updateButtonStyleWithButton:self.secondaryActionButton
+                              style:SECONDARY_ACTION_STYLE];
 }
 
 #pragma mark - Styling
 
-// Enables pointer support for the button if it is supported on the iOS version.
-- (void)maybeEnablePointerSupportWithButton:(UIButton*)button {
-  DCHECK(button);
-  if (@available(iOS 13.4, *)) {
-      button.pointerInteractionEnabled = YES;
-      button.pointerStyleProvider =
-          CreateOpaqueOrTransparentButtonPointerStyleProvider();
+- (void)updateButtonStyleWithButton:(UIButton*)button
+                              style:(ActionButtonStyle)style {
+  switch (style) {
+    case PRIMARY_ACTION_STYLE: {
+      // Set the blue background button styling.
+      button.backgroundColor = [UIColor colorNamed:kBlueColor];
+      button.layer.cornerRadius = kButtonCornerRadius;
+      [button setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
+                   forState:UIControlStateNormal];
+      break;
+    }
+    case SECONDARY_ACTION_STYLE: {
+      // Set the blue text button styling.
+      [button setTitleColor:[UIColor colorNamed:kBlueColor]
+                   forState:UIControlStateNormal];
+      break;
+    }
   }
+
+  button.pointerInteractionEnabled = YES;
+  button.pointerStyleProvider =
+      CreateOpaqueOrTransparentButtonPointerStyleProvider();
 }
 
-- (void)setBlueBackgroundStylingWithButton:(UIButton*)button {
-  DCHECK(button);
-  button.backgroundColor = [UIColor colorNamed:kBlueColor];
-  button.layer.cornerRadius = kButtonCornerRadius;
-  [button setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
-               forState:UIControlStateNormal];
-  [button setImage:nil forState:UIControlStateNormal];
-}
-
-- (void)setMoreButtonStylingWithButton:(UIButton*)button {
-  DCHECK(button);
-  UIImage* buttonImage = [[UIImage imageNamed:@"signin_confirmation_more"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-  [button setImage:buttonImage forState:UIControlStateNormal];
-  [button setTitleColor:[UIColor colorNamed:kBlueColor]
-               forState:UIControlStateNormal];
-  if (UIApplication.sharedApplication.userInterfaceLayoutDirection ==
-      UIUserInterfaceLayoutDirectionLeftToRight) {
-    button.imageEdgeInsets = UIEdgeInsetsMake(0, -kImageInset, 0, 0);
-  } else {
-    button.imageEdgeInsets = UIEdgeInsetsMake(0, 0, 0, -kImageInset);
-  }
-}
-
-// Applies font and inset to |button| according to the current size class.
+// Applies font and inset to `button` according to the current size class.
 - (void)applyDefaultSizeWithButton:(UIButton*)button
                          fontStyle:(UIFontTextStyle)fontStyle {
   const AuthenticationViewConstants& constants =
@@ -502,15 +528,15 @@ enum AuthenticationButtonType {
 
 #pragma mark - Events
 
-- (void)onSkipSigninButtonPressed:(id)sender {
-  DCHECK_EQ(self.skipSigninButton, sender);
+- (void)onSecondaryActionButtonPressed:(id)sender {
+  DCHECK_EQ(self.secondaryActionButton, sender);
   [self.delegate userSigninViewControllerDidTapOnSkipSignin];
 }
 
-- (void)onConfirmationButtonPressed:(id)sender {
-  DCHECK_EQ(self.confirmationButton, sender);
+- (void)onPrimaryActionButtonPressed:(id)sender {
+  DCHECK_EQ(self.primaryActionButton, sender);
 
-  switch (self.confirmationButton.tag) {
+  switch (self.primaryActionButton.tag) {
     case AuthenticationButtonTypeMore: {
       [self.delegate userSigninViewControllerDidScrollOnUnifiedConsent];
       break;

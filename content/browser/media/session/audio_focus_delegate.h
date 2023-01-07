@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_MEDIA_SESSION_AUDIO_FOCUS_DELEGATE_H_
 
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class UnguessableToken;
@@ -36,15 +37,18 @@ class AudioFocusDelegate {
   virtual void AbandonAudioFocus() = 0;
 
   // Retrieves the current |AudioFocusType| for the associated |MediaSession|.
-  virtual base::Optional<media_session::mojom::AudioFocusType>
+  virtual absl::optional<media_session::mojom::AudioFocusType>
   GetCurrentFocusType() const = 0;
 
   // |MediaSession| should call this when it's state changes.
   virtual void MediaSessionInfoChanged(
-      media_session::mojom::MediaSessionInfoPtr) = 0;
+      const media_session::mojom::MediaSessionInfoPtr&) = 0;
 
   // Retrieves the current request ID for the associated |MediaSession|.
   virtual const base::UnguessableToken& request_id() const = 0;
+
+  // Inform the AudioFocusManager that this request ID will no longer be used.
+  virtual void ReleaseRequestId() = 0;
 };
 
 }  // namespace content

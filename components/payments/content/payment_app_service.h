@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/payments/content/payment_app_factory.h"
@@ -25,6 +24,10 @@ class PaymentAppService : public KeyedService {
  public:
   // The |context| pointer is not being saved.
   explicit PaymentAppService(content::BrowserContext* context);
+
+  PaymentAppService(const PaymentAppService&) = delete;
+  PaymentAppService& operator=(const PaymentAppService&) = delete;
+
   ~PaymentAppService() override;
 
   // Returns the number of payment app factories, which is the number of times
@@ -38,10 +41,10 @@ class PaymentAppService : public KeyedService {
   // KeyedService implementation:
   void Shutdown() override;
 
+  void AddFactoryForTesting(std::unique_ptr<PaymentAppFactory> factory);
+
  private:
   std::vector<std::unique_ptr<PaymentAppFactory>> factories_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentAppService);
 };
 
 }  // namespace payments

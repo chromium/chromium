@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,18 +16,18 @@
 @property(nonatomic, strong, readonly)
     TableViewModel<TableViewItem*>* tableViewModel;
 
-// Inserts sections at |sections| indexes. Does nothing if the model is not
+// Inserts sections at `sections` indexes. Does nothing if the model is not
 // loaded yet.
 - (void)insertSections:(NSIndexSet*)sections;
 
-// Deletes sections at |sections| indexes. Does nothing if the model is not
+// Deletes sections at `sections` indexes. Does nothing if the model is not
 // loaded yet.
 - (void)deleteSections:(NSIndexSet*)sections;
 
-// Reloads |sections|. Does nothing if the model is not loaded yet.
+// Reloads `sections`. Does nothing if the model is not loaded yet.
 - (void)reloadSections:(NSIndexSet*)sections;
 
-// Reloads only a specific |item|. Does nothing if the model is not loaded
+// Reloads only a specific `item`. Does nothing if the model is not loaded
 // yet.
 - (void)reloadItem:(TableViewItem*)item;
 

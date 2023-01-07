@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -89,8 +89,8 @@ ImposedMatchParser::Status ImposedMatchParser::Parse(
       continue;
     }
     // Check executable types of sub-images.
-    base::Optional<Element> old_element = detector.Run(old_sub_image);
-    base::Optional<Element> new_element = detector.Run(new_sub_image);
+    absl::optional<Element> old_element = detector.Run(old_sub_image);
+    absl::optional<Element> new_element = detector.Run(new_sub_image);
     if (!old_element || !new_element) {
       // Skip unknown types, including those mixed with known types.
       bad_matches_.push_back(matches_[read_idx]);

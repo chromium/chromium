@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/script/import_map.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -18,35 +19,27 @@ PendingImportMap* PendingImportMap::CreateInline(ScriptElementBase& element,
                                                  const String& import_map_text,
                                                  const KURL& base_url) {
   ExecutionContext* context = element.GetExecutionContext();
-  ScriptState* script_state =
-      ToScriptStateForMainWorld(To<LocalDOMWindow>(context)->GetFrame());
-  Modulator* modulator = Modulator::From(script_state);
 
-  ScriptValue error_to_rethrow;
-  ImportMap* import_map = ImportMap::Parse(
-      *modulator, import_map_text, base_url, *context, &error_to_rethrow);
+  absl::optional<ImportMapError> error_to_rethrow;
+  ImportMap* import_map =
+      ImportMap::Parse(import_map_text, base_url, *context, &error_to_rethrow);
   return MakeGarbageCollected<PendingImportMap>(
-      script_state, element, import_map, error_to_rethrow, *context);
+      element, import_map, std::move(error_to_rethrow), *context);
 }
 
-PendingImportMap::PendingImportMap(ScriptState* script_state,
-                                   ScriptElementBase& element,
-                                   ImportMap* import_map,
-                                   ScriptValue error_to_rethrow,
-                                   const ExecutionContext& original_context)
+PendingImportMap::PendingImportMap(
+    ScriptElementBase& element,
+    ImportMap* import_map,
+    absl::optional<ImportMapError> error_to_rethrow,
+    const ExecutionContext& original_context)
     : element_(&element),
       import_map_(import_map),
-      original_execution_context_(&original_context) {
-  if (!error_to_rethrow.IsEmpty()) {
-    ScriptState::Scope scope(script_state);
-    error_to_rethrow_.Set(script_state->GetIsolate(),
-                          error_to_rethrow.V8Value());
-  }
-}
+      error_to_rethrow_(std::move(error_to_rethrow)),
+      original_execution_context_(&original_context) {}
 
 // <specdef href="https://wicg.github.io/import-maps/#register-an-import-map">
 // This is parallel to PendingScript::ExecuteScriptBlock().
-void PendingImportMap::RegisterImportMap() const {
+void PendingImportMap::RegisterImportMap() {
   // <spec step="1">If element’s the script’s result is null, then fire an event
   // named error at element, and return.</spec>
   if (!import_map_) {
@@ -76,20 +69,35 @@ void PendingImportMap::RegisterImportMap() const {
     return;
 
   // Steps 7 and 8.
-  LocalFrame* frame = To<LocalDOMWindow>(context)->GetFrame();
-  if (!frame)
+  Modulator* modulator = Modulator::From(
+      ToScriptStateForMainWorld(To<LocalDOMWindow>(context)->GetFrame()));
+  if (!modulator)
     return;
-
-  Modulator* modulator = Modulator::From(ToScriptStateForMainWorld(frame));
 
   ScriptState* script_state = modulator->GetScriptState();
   ScriptState::Scope scope(script_state);
-  ScriptValue error;
-  if (!error_to_rethrow_.IsEmpty()) {
-    error = ScriptValue(script_state->GetIsolate(),
-                        error_to_rethrow_.Get(script_state));
+
+  // <spec step="7">If import map parse result’s error to rethrow is not null,
+  // then:</spec>
+  if (error_to_rethrow_.has_value()) {
+    // <spec step="7.1">Report the exception given import map parse result’s
+    // error to rethrow. ...</spec>
+    if (ExecutionContext::From(script_state)
+            ->CanExecuteScripts(kAboutToExecuteScript)) {
+      ModuleRecord::ReportException(script_state,
+                                    error_to_rethrow_->ToV8(script_state));
+    }
+
+    // <spec step="7.2">Return.</spec>
+    return;
   }
-  modulator->RegisterImportMap(import_map_, error);
+
+  // <spec step="8">Update element’s node document's import map with import map
+  // parse result’s import map.</spec>
+  //
+  // TODO(crbug.com/927119): Implement merging. Currently only one import map
+  // is allowed.
+  modulator->SetImportMap(import_map_);
 
   // <spec step="9">If element is from an external file, then fire an event
   // named load at element.</spec>
@@ -100,7 +108,6 @@ void PendingImportMap::RegisterImportMap() const {
 void PendingImportMap::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   visitor->Trace(import_map_);
-  visitor->Trace(error_to_rethrow_);
   visitor->Trace(original_execution_context_);
 }
 

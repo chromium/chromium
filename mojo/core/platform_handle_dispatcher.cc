@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,8 +77,10 @@ scoped_refptr<PlatformHandleDispatcher> PlatformHandleDispatcher::Deserialize(
     size_t num_ports,
     PlatformHandle* handles,
     size_t num_handles) {
-  if (num_bytes || num_ports || num_handles != 1)
+  if (num_bytes || num_ports || num_handles != 1) {
+    AssertNotExtractingHandlesFromMessage();
     return nullptr;
+  }
 
   return PlatformHandleDispatcher::Create(std::move(handles[0]));
 }

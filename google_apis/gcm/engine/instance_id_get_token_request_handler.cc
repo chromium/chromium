@@ -1,14 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "google_apis/gcm/engine/instance_id_get_token_request_handler.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "google_apis/gcm/base/gcm_util.h"
-#include "net/url_request/url_request_context_getter.h"
 
 namespace gcm {
 
@@ -55,9 +53,21 @@ void InstanceIDGetTokenRequestHandler::BuildRequestBody(std::string* body) {
 }
 
 void InstanceIDGetTokenRequestHandler::ReportStatusToUMA(
-    RegistrationRequest::Status status) {
-  UMA_HISTOGRAM_ENUMERATION("InstanceID.GetToken.RequestStatus", status,
-                            RegistrationRequest::STATUS_COUNT);
+    RegistrationRequest::Status status,
+    const std::string& subtype) {
+  base::UmaHistogramEnumeration("InstanceID.GetToken.RequestStatus", status);
+
+  // For some specific subtypes, also record separate histograms. This makes
+  // sense for large users (who might want to look at the status of their
+  // requests specifically), or for deep dives into unexplained changes to the
+  // top-level "InstanceID.GetToken.RequestStatus" histogram.
+  if (subtype == "com.google.chrome.fcm.invalidations") {
+    base::UmaHistogramEnumeration(
+        "InstanceID.GetToken.RequestStatus.FcmInvalidations", status);
+  } else if (subtype == "com.google.chrome.sync.invalidations") {
+    base::UmaHistogramEnumeration(
+        "InstanceID.GetToken.RequestStatus.SyncInvalidations", status);
+  }
 }
 
 void InstanceIDGetTokenRequestHandler::ReportNetErrorCodeToUMA(

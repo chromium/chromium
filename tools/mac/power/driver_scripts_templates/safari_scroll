@@ -1,0 +1,46 @@
+{%- from 'macros' import hash_bang with context -%}
+{%- from 'macros' import make_maximized with context -%}
+{{ hash_bang() }}
+
+-- Copyright 2021 The Chromium Authors
+-- Use of this source code is governed by a BSD-style license that can be
+-- found in the LICENSE file.
+
+-- For behavior description see scroll file. Differs from the generic
+-- template becauses tabs and windows are not acessesed in the same way for
+-- Safari. The way to wait for the page to be done loading is also different.
+-- The way to invoke javascript is also different.
+
+
+tell application "Safari"
+    -- If Safari is already started then just bring
+    -- it to the forefront otherwise open it.
+    if it is running then
+      reopen
+    else
+      activate
+    end if
+
+    {{ make_maximized() }}
+
+    open location "http://reddit.com"
+
+    repeat while document 1's source = ""
+      delay 0.5
+    end repeat
+
+    tell document 1
+      repeat with i from 1 to {{ navigation_cycles }}
+
+        -- set the vertical scroll
+        repeat with y from 90 to 100
+          do javascript "h=document.documentElement.scrollHeight-document.documentElement.clientHeight; window.scrollTo(0,h*" & 100 & "/100)"
+          delay 0.25
+        end repeat
+
+        delay 3
+
+      end repeat
+    end tell
+
+end tell

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 
 namespace viz {
@@ -23,10 +24,9 @@ class SkiaOutputDeviceVulkanSecondaryCB final : public SkiaOutputDevice {
 
   std::unique_ptr<SkiaOutputDevice::ScopedPaint> BeginScopedPaint() override;
   void Submit(bool sync_cpu, base::OnceClosure callback) override;
-  bool Reshape(const gfx::Size& size,
-               float device_scale_factor,
+  bool Reshape(const SkSurfaceCharacterization& characterization,
                const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format,
+               float device_scale_factor,
                gfx::OverlayTransform transform) override;
   void SwapBuffers(BufferPresentedCallback feedback,
                    OutputSurfaceFrame frame) override;
@@ -50,7 +50,7 @@ class SkiaOutputDeviceVulkanSecondaryCB final : public SkiaOutputDevice {
             sk_sp<const SkDeferredDisplayList> ddl) override;
 
  private:
-  VulkanContextProvider* const context_provider_;
+  const raw_ptr<VulkanContextProvider> context_provider_;
   gfx::Size size_;
 };
 

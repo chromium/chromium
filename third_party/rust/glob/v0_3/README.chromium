@@ -1,0 +1,6 @@
+Name: glob
+URL: https://crates.io/crates/glob
+Description: Support for matching file paths against Unix shell style patterns.
+Version: 0.3.0
+Security Critical: no
+License: Apache 2.0

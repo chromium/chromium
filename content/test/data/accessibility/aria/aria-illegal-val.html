@@ -73,13 +73,13 @@ Boolean properties should be exposed as true.
 <!-- aria-current rules from https://www.w3.org/TR/wai-aria-1.1/#aria-current:
      "Any value not included in the list of allowed values should be treated by
      assistive technologies as if the value true had been provided." -->
-<div aria-current="X-ILLEGAL" aria-label="Current illegal"></div>
-<div aria-disabled="X-ILLEGAL" aria-label="Disabled illegal"></div>
-<div aria-dropeffect="X-ILLEGAL" aria-label="Dropeffect illegal"></div>
+<div aria-current="X-ILLEGAL" role="group" aria-label="Current illegal"></div>
+<div aria-disabled="X-ILLEGAL" role="group" aria-label="Disabled illegal"></div>
+<div aria-dropeffect="X-ILLEGAL" role="group" aria-label="Dropeffect illegal"></div>
 <div aria-expanded="X-ILLEGAL" role="treeitem" aria-label="Expanded illegal"></div>
-<div aria-grabbed="X-ILLEGAL" aria-label="Grabbed illegal"></div>
+<div aria-grabbed="X-ILLEGAL" role="group" aria-label="Grabbed illegal"></div>
 <div aria-haspopup="X-ILLEGAL" role="button" aria-label="Haspopup illegal"></div>
-<div aria-invalid="X-ILLEGAL" aria-label="Invalid illegal"></div>
+<div aria-invalid="X-ILLEGAL" role="group" aria-label="Invalid illegal"></div>
 <div aria-live="X-ILLEGAL" role="log" aria-label="Live illegal"></div>
 <div aria-modal="X-ILLEGAL" role="dialog" aria-label="Modal illegal"></div>
 <div aria-multiline="X-ILLEGAL" role="textbox" aria-label="Multiline illegal"></div>

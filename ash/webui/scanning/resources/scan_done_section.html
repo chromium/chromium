@@ -1,0 +1,83 @@
+<style include="scanning-fonts">
+  .container,
+  #doneButtonContainer {
+    width: 272px;
+  }
+
+  .container {
+    align-items: center;
+    color: var(--scanning-done-section-option-text-color);
+    cursor: pointer;
+    display: flex;
+    font-family: var(--scanning-done-section-option-font-family);
+    font-size: var(--scanning-done-section-option-font-size);
+    font-weight: var(--scanning-regular-font-weight);
+    height: 36px;
+    line-height: var(--scanning-done-section-option-line-height);
+    margin-bottom: 8px;
+    margin-inline-end: 32px;
+    margin-inline-start: 32px;
+    margin-top: 8px;
+    padding-inline-end: 16px;
+  }
+
+  .container[hidden] {
+    display: none;
+  }
+
+  #doneButtonContainer {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0;
+    margin-inline-end: 32px;
+    margin-inline-start: 32px;
+    margin-top: 32px;
+    padding-inline-end: 16px;
+  }
+
+  .button {
+    flex-direction: column;
+    height: 20px;
+    margin: 0;
+    width: 20px;
+  }
+
+  .label {
+    flex-basis: 252px;
+    flex-grow: 0;
+    flex-shrink: 0;
+  }
+
+  #folderLink {
+    color: var(--cros-link-color);
+    text-decoration: none;
+  }
+</style>
+<div class="container">
+  <span id="fileSavedText" class="label"
+      inner-h-t-m-l="[[fileSavedTextContent_]]">
+  </span>
+</div>
+<div class="container" on-click="showFileInLocation_" >
+  <span id="showInFolderButtonLabel" class="label" aria-hidden="true">
+    [[i18n('showInFolderButtonLabel')]]
+  </span>
+  <cr-icon-button id="showInFolderButton" class="button"
+      iron-icon="cr:open-in-new" aria-labelledby="showInFolderButtonLabel">
+  </cr-icon-button>
+</div>
+<div class="container" hidden="[[!showEditButton_]]"
+    on-click="openMediaApp_" >
+  <span id="editButtonLabel" class="label" aria-hidden="true">
+    [[editButtonLabel_]]
+  </span>
+  <cr-icon-button id="editButton" class="button"
+      iron-icon="cr:open-in-new" aria-labelledby="editButtonLabel">
+  </cr-icon-button>
+</div>
+<div id="doneButtonContainer">
+  <cr-button id="doneButton" class="action-button"
+      on-click="onDoneClick_">
+    [[i18n('doneButtonText')]]
+  </cr-button>
+</div>

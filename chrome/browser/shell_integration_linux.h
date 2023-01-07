@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/common/buildflags.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "url/gurl.h"
@@ -21,6 +21,10 @@
 namespace base {
 class CommandLine;
 class Environment;
+}
+
+namespace web_app {
+struct DesktopActionInfo;
 }
 
 namespace shell_integration_linux {
@@ -64,17 +68,19 @@ std::vector<base::FilePath> GetExistingProfileShortcutFilenames(
 
 // Returns contents for .desktop file based on |url| and |title|. If
 // |no_display| is true, the shortcut will not be visible to the user in menus.
-std::string GetDesktopFileContents(const base::FilePath& chrome_exe_path,
-                                   const std::string& app_name,
-                                   const GURL& url,
-                                   const std::string& extension_id,
-                                   const std::u16string& title,
-                                   const std::string& icon_name,
-                                   const base::FilePath& profile_path,
-                                   const std::string& categories,
-                                   const std::string& mime_type,
-                                   bool no_display,
-                                   const std::string& run_on_os_login_mode);
+std::string GetDesktopFileContents(
+    const base::FilePath& chrome_exe_path,
+    const std::string& app_name,
+    const GURL& url,
+    const std::string& extension_id,
+    const std::u16string& title,
+    const std::string& icon_name,
+    const base::FilePath& profile_path,
+    const std::string& categories,
+    const std::string& mime_type,
+    bool no_display,
+    const std::string& run_on_os_login_mode,
+    std::set<web_app::DesktopActionInfo> action_info);
 
 // Returns contents for .desktop file that executes command_line. This is a more
 // general form of GetDesktopFileContents. If |no_display| is true, the shortcut
@@ -87,7 +93,8 @@ std::string GetDesktopFileContentsForCommand(
     const std::string& icon_name,
     const std::string& categories,
     const std::string& mime_type,
-    bool no_display);
+    bool no_display,
+    std::set<web_app::DesktopActionInfo> action_info);
 
 // Returns contents for .directory file named |title| with icon |icon_name|. If
 // |icon_name| is empty, will use the Chrome icon.
@@ -110,6 +117,12 @@ std::string GetMimeTypesRegistrationFileContents(
 // different) WMClass than normal chrome windows so the window manager groups
 // them as a separate application.
 std::string GetWMClassFromAppName(std::string app_name);
+
+// Wayland version of GetWMClassFromAppName explained above.
+// The XDG application ID must match the name of the desktop entry file, where
+// the latter looks like 'chrome-<web app id>-<profile name>.desktop'.
+std::string GetXdgAppIdForWebApp(std::string app_name,
+                                 const base::FilePath& profile_path);
 
 // Helper to launch xdg scripts. We don't want them to ask any questions on the
 // terminal etc. The function returns true if the utility launches and exits
@@ -134,6 +147,13 @@ bool GetNoDisplayFromDesktopFile(const std::string& shortcut_contents);
 // Returns an empty path if the executable path could not be found, which should
 // never happen.
 base::FilePath GetChromeExePath();
+
+// Get the value of |key| from the [Desktop Entry] section of a .desktop file,
+// given in |shortcut_contents|. If the key is not found, returns an empty
+// string.
+std::string GetDesktopEntryStringValueFromFromDesktopFileForTest(
+    const std::string& key,
+    const std::string& shortcut_contents);
 
 }  // namespace internal
 

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -37,9 +37,16 @@ source_set("security_key") {
     "//ipc",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
+    "//net:net",
+    "//net/traffic_annotation:traffic_annotation",
+    "//remoting/base:logging",
+    "//remoting/host:host_extension",
+    "//remoting/host/mojom",
     "//remoting/proto",
+    "//remoting/protocol:protocol",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+  public_deps = [ "//remoting/host:common_headers" ]
 
   if (is_posix) {
     sources += [ "security_key_auth_handler_posix.cc" ]
@@ -51,20 +58,21 @@ source_set("security_key") {
 }
 
 source_set("main") {
-  defines = [ "HOST_IMPLEMENTATION" ]
+  configs += [ "//remoting/build/config:host_implementation" ]
 
-  if (is_win) {
-    defines += host_predefines
-  }
-
-  sources = [
-    "remote_security_key_main.cc",
-    "remote_security_key_main.h",
-  ]
+  sources = [ "remote_security_key_main.cc" ]
   deps = [
+    ":remote_security_key_main_headers",
+    ":security_key",
     "//base:debugging_buildflags",
     "//mojo/core/embedder",
+    "//remoting/base:breakpad",
+    "//remoting/host:common",
+    "//remoting/host/base",
   ]
+  if (is_win) {
+    deps += [ "//remoting/host/win:acl_util" ]
+  }
 }
 
 if (is_win) {
@@ -75,6 +83,7 @@ if (is_win) {
         host_predefines + [ "REMOTING_HOST_BINARY=BINARY_REMOTE_SECURITY_KEY" ]
 
     deps = [
+      ":remote_security_key_main_headers",
       "//build/win:default_exe_manifest",
       "//remoting/host/win:remoting_core",
       "//remoting/host/win:remoting_windows_resources",
@@ -85,6 +94,11 @@ if (is_win) {
       "remote_security_key_entry_point.cc",
     ]
   }
+}
+
+source_set("remote_security_key_main_headers") {
+  sources = [ "remote_security_key_main.h" ]
+  deps = [ "//remoting/host:host_main_headers" ]
 }
 
 source_set("unit_tests") {
@@ -101,8 +115,17 @@ source_set("unit_tests") {
 
   public_deps = [ ":test_support" ]
   deps = [
+    ":security_key",
     "//mojo/core/test:test_support",
+    "//net:net",
+    "//net:test_support",
+    "//net/traffic_annotation:test_support",
     "//remoting:test_support",
+    "//remoting/host:common",
+    "//remoting/host:test_support",
+    "//remoting/host/mojom",
+    "//remoting/host/setup:common",
+    "//remoting/protocol:protocol",
   ]
 
   if (is_posix) {
@@ -129,7 +152,10 @@ static_library("test_support") {
   ]
 
   deps = [
+    ":security_key",
     "//ipc",
+    "//remoting/host:common",
+    "//remoting/host/mojom",
     "//remoting/proto",
     "//testing/gtest",
   ]

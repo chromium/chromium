@@ -43,5 +43,5 @@
     //   }
     // See https://github.com/mfreed7/declarative-shadow-dom/blob/master/README.md#feature-detection-and-polyfilling
     // for more detail.
-    [RuntimeEnabled=DeclarativeShadowDOM, Affects=Nothing, ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
+    [ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
 };

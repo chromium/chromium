@@ -1,0 +1,33 @@
+caption: Control use of the Serial API
+default: null
+desc: |-
+  Setting the policy to 3 lets websites ask for access to serial ports. Setting the policy to 2 denies access to serial ports.
+
+        Leaving it unset lets websites ask for access, but users can change this setting.
+example_value: 2
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Do not allow any site to request access to serial ports via the Serial
+    API
+  name: BlockSerial
+  value: 2
+- caption: Allow sites to ask the user to grant access to a serial port
+  name: AskSerial
+  value: 3
+owners:
+- reillyg@chromium.org
+schema:
+  enum:
+  - 2
+  - 3
+  type: integer
+supported_on:
+- chrome_os:86-
+- chrome.*:86-
+tags:
+- website-sharing
+type: int-enum

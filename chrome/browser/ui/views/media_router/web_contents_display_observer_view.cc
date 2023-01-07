@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,8 @@ std::unique_ptr<WebContentsDisplayObserver> WebContentsDisplayObserver::Create(
 WebContentsDisplayObserverView::WebContentsDisplayObserverView(
     content::WebContents* web_contents,
     base::RepeatingClosure callback)
-    : web_contents_(web_contents),
+    : WebContentsObserver(web_contents),
+      web_contents_(web_contents),
       widget_(views::Widget::GetWidgetForNativeWindow(
           web_contents->GetTopLevelNativeWindow())),
       callback_(std::move(callback)) {
@@ -64,7 +65,7 @@ void WebContentsDisplayObserverView::OnBrowserSetLastActive(Browser* browser) {
   }
 }
 
-void WebContentsDisplayObserverView::OnWidgetClosing(views::Widget* widget) {
+void WebContentsDisplayObserverView::OnWidgetDestroying(views::Widget* widget) {
   if (widget_)
     widget_->RemoveObserver(this);
   widget_ = nullptr;

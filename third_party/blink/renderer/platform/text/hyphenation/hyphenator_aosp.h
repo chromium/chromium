@@ -23,7 +23,6 @@
  * An implementation of Liang's hyphenation algorithm.
  */
 
-#include <memory>
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace android {
@@ -42,7 +41,7 @@ class Hyphenator {
   // 1 means insert hyphen and break, but this will be expanded to other edits
   // for nonstandard hyphenation.  Example: word is "hyphen", result is [0 0 1 0
   // 0 0], corresponding to "hy-phen".
-  void hyphenate(Vector<uint8_t>* result, const uint16_t* word, size_t len);
+  void hyphenate(Vector<uint8_t>* result, const uint16_t* word, wtf_size_t len);
 
   // pattern data is in binary format, as described in doc/hyb_file_format.md.
   // Note: the caller is responsible for ensuring that the lifetime of the
@@ -54,16 +53,20 @@ class Hyphenator {
 
  private:
   // apply soft hyphens only, ignoring patterns
-  void hyphenateSoft(uint8_t* result, const uint16_t* word, size_t len);
+  void hyphenateSoft(uint8_t* result, const uint16_t* word, wtf_size_t len);
 
   // Try looking up word in alphabet table, return false if any code units fail
   // to map.  Note that this methor writes len+2 entries into alpha_codes
   // (including start and stop).
-  bool alphabetLookup(uint16_t* alpha_codes, const uint16_t* word, size_t len);
+  bool alphabetLookup(uint16_t* alpha_codes,
+                      const uint16_t* word,
+                      wtf_size_t len);
 
   // calculate hyphenation from patterns, assuming alphabet lookup has already
   // been done
-  void hyphenateFromCodes(uint8_t* result, const uint16_t* codes, size_t len);
+  void hyphenateFromCodes(uint8_t* result,
+                          const uint16_t* codes,
+                          wtf_size_t len);
 
   // TODO: these should become parameters, as they might vary by locale, screen
   // size, and possibly explicit user control.
@@ -73,7 +76,7 @@ class Hyphenator {
   // See also LONGEST_HYPHENATED_WORD in LineBreaker.cpp. Here the constant is
   // used so that temporary buffers can be stack-allocated without waste, which
   // is a slightly different use case. It measures UTF-16 code units.
-  static const size_t MAX_HYPHENATED_SIZE = 64;
+  static const wtf_size_t MAX_HYPHENATED_SIZE = 64;
 
   const uint8_t* patternData;
 

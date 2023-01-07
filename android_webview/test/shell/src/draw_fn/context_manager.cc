@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "android_webview/test/shell/src/draw_fn/allocator.h"
 #include "base/android/jni_array.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/native_library.h"
 #include "base/threading/thread_restrictions.h"
 #include "gpu/vulkan/init/gr_vk_memory_allocator_impl.h"
@@ -25,6 +26,7 @@
 #include "gpu/vulkan/vulkan_swap_chain.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkDrawable.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
@@ -65,6 +67,9 @@ void SetColorSpace(T* params) {
 
 class ContextManagerGL : public ContextManager {
   // TODO(penghuang): remove those proc types when EGL header is updated to 1.5.
+  typedef EGLBoolean(EGLAPIENTRYP PFNEGLINITIALIZEPROC)(EGLDisplay dpy,
+                                                        EGLint* major,
+                                                        EGLint* minor);
   typedef EGLBoolean(EGLAPIENTRYP PFNEGLCHOOSECONFIGPROC)(
       EGLDisplay dpy,
       const EGLint* attrib_list,
@@ -101,6 +106,7 @@ class ContextManagerGL : public ContextManager {
   // singleton so just keeping them as member variables / functions.
   PFNEGLGETPROCADDRESSPROC eglGetProcAddressFn = nullptr;
   PFNEGLBINDAPIPROC eglBindAPIFn = nullptr;
+  PFNEGLINITIALIZEPROC eglInitialize = nullptr;
   PFNEGLGETDISPLAYPROC eglGetDisplayFn = nullptr;
   PFNEGLMAKECURRENTPROC eglMakeCurrentFn = nullptr;
   PFNEGLSWAPBUFFERSPROC eglSwapBuffersFn = nullptr;
@@ -134,6 +140,7 @@ class ContextManagerGL : public ContextManager {
     CHECK(eglGetProcAddressFn) << "Failed to get eglGetProcAddress.";
 
     AssignProc(eglBindAPIFn, "eglBindAPI");
+    AssignProc(eglInitialize, "eglInitialize");
     AssignProc(eglGetDisplayFn, "eglGetDisplay");
     AssignProc(eglMakeCurrentFn, "eglMakeCurrent");
     AssignProc(eglSwapBuffersFn, "eglSwapBuffers");
@@ -146,8 +153,12 @@ class ContextManagerGL : public ContextManager {
   }
 
   EGLDisplay GetDisplay() {
-    static EGLDisplay display = eglGetDisplayFn(EGL_DEFAULT_DISPLAY);
-    CHECK_NE(display, EGL_NO_DISPLAY);
+    static EGLDisplay display = nullptr;
+    if (!display) {
+      display = eglGetDisplayFn(EGL_DEFAULT_DISPLAY);
+      CHECK_NE(display, EGL_NO_DISPLAY);
+      CHECK(eglInitialize(display, nullptr, nullptr));
+    }
     return display;
   }
 
@@ -416,7 +427,7 @@ class VkFunctorDrawHandler : public SkDrawable::GpuDrawHandler {
   }
 
  private:
-  OverlaysManager* overlays_manager_;
+  raw_ptr<OverlaysManager> overlays_manager_;
   int functor_;
   int scroll_x_;
   int scroll_y_;
@@ -456,7 +467,7 @@ class FunctorDrawable : public SkDrawable {
   }
 
  private:
-  OverlaysManager* overlays_manager_;
+  raw_ptr<OverlaysManager> overlays_manager_;
   int functor_;
   int scroll_x_;
   int scroll_y_;
@@ -495,8 +506,7 @@ ContextManagerVulkan::ContextManagerVulkan() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   vulkan_implementation_ = gpu::CreateVulkanImplementation(
       /*use_swiftshader=*/false,
-      /*allow_protected_memory*/ false,
-      /*enforce_protected_memory=*/false);
+      /*allow_protected_memory*/ false);
   CHECK(vulkan_implementation_);
   CHECK(
       vulkan_implementation_->InitializeVulkanInstance(/*using_surface=*/true));
@@ -554,10 +564,7 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
       vk_image_info.fSampleCount = 1;
       vk_image_info.fLevelCount = 1;
       vk_image_info.fCurrentQueueFamily = VK_QUEUE_FAMILY_IGNORED;
-      vk_image_info.fProtected =
-          vulkan_surface_->swap_chain()->use_protected_memory()
-              ? GrProtected::kYes
-              : GrProtected::kNo;
+      vk_image_info.fProtected = GrProtected::kNo;
       const auto& vk_image_size = vulkan_surface_->image_size();
       GrBackendRenderTarget render_target(vk_image_size.width(),
                                           vk_image_size.height(),
@@ -626,7 +633,8 @@ base::android::ScopedJavaLocalRef<jintArray> ContextManagerVulkan::Draw(
     CHECK(gr_context_->submit(/*sync_cpu=*/false));
   }
 
-  gfx::SwapResult result = vulkan_surface_->SwapBuffers();
+  gfx::SwapResult result = vulkan_surface_->SwapBuffers(
+      base::DoNothingAs<void(const gfx::PresentationFeedback&)>());
   CHECK_EQ(gfx::SwapResult::SWAP_ACK, result);
   return readback_quadrants ? base::android::ToJavaIntArray(env, results)
                             : nullptr;
@@ -676,9 +684,7 @@ void ContextManagerVulkan::DoCreateContext(JNIEnv* env, int width, int height) {
   backend_context.fDeviceFeatures2 =
       &device_queue_->enabled_device_features_2();
   backend_context.fGetProc = get_proc;
-  backend_context.fProtectedContext =
-      vulkan_implementation_->enforce_protected_memory() ? GrProtected::kYes
-                                                         : GrProtected::kNo;
+  backend_context.fProtectedContext = GrProtected::kNo;
 
   GrContextOptions options;
   gr_context_ = GrDirectContext::MakeVulkan(backend_context, options);

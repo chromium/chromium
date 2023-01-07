@@ -1,0 +1,116 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.multidevice.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Enumeration of software features which can be enabled/disabled for a given
+// device. Each feature has a host and client portion; here, "host" refers to
+// the associated phone which provides the feature (at most one host per
+// account), and "client" refers to the Chromebook which consumes the feature
+// (multiple clients allowed per account).
+enum SoftwareFeature {
+  // The Better Together (MultiDevice) setup flow feature allows users to go
+  // through a unified setup flow which enrolls the device for all multi-device
+  // features.
+  BETTER_TOGETHER_HOST = 1,
+  BETTER_TOGETHER_CLIENT = 2,
+
+  // EasyUnlock gives users the ability to unlock their Chromebooks with their
+  // phone instead of by typing a password.
+  EASY_UNLOCK_HOST = 3,
+  EASY_UNLOCK_CLIENT = 4,
+
+  // Magic Tether (Instant Tethering) gives users the ability to use their
+  // phone's Internet connectivity on their Chromebooks via an automated flow
+  // which does not require any phone-side interaction.
+  MAGIC_TETHER_HOST = 5,
+  MAGIC_TETHER_CLIENT = 6,
+
+  // SMS Connect gives users the ability to read and reply to their text
+  // messages from their Chromebooks.
+  SMS_CONNECT_HOST = 7,
+  SMS_CONNECT_CLIENT = 8,
+
+  // Phone Hub allows users to view phone metadata and send commands to their
+  // phone directly from the Chrome OS UI.
+  PHONE_HUB_HOST = 9,
+  PHONE_HUB_CLIENT = 10,
+
+  // Wifi Sync with Android allows users to sync wifi network configurations
+  // between Chrome OS devices and a connected Android phone
+  WIFI_SYNC_HOST = 11,
+  WIFI_SYNC_CLIENT = 12,
+
+  // Eche
+  ECHE_HOST = 13,
+  ECHE_CLIENT = 14,
+
+  // Camera Roll allows users to view and download recent photos and videos from
+  // the Phone Hub tray
+  PHONE_HUB_CAMERA_ROLL_HOST = 15,
+  PHONE_HUB_CAMERA_ROLL_CLIENT = 16
+};
+
+// Enumeration of what value a SoftwareFeature can be.
+enum SoftwareFeatureState {
+  kNotSupported,
+  kSupported,
+  kEnabled
+};
+
+// Used to generate rotating BLE advertisement data, which is necessary to
+// establish a BLE communication channel between two devices. To
+// create the BLE channel, both devices must possess the other's BeaconSeeds.
+struct BeaconSeed {
+  string data;
+  mojo_base.mojom.Time start_time;
+  mojo_base.mojom.Time end_time;
+};
+
+// Metadata describing a remote device with which the current device can
+// communicate.
+struct RemoteDevice {
+  // Unique identifier of the device. This field is guaranteed to be
+  // human-readable (i.e., it does not contain non-ASCII characters).
+  string device_id;
+
+  // Email for the user to whom this device is registered.
+  string user_email;
+
+  // The immutable FCM Instance ID assigned to the device. Used as the primary
+  // identifier for devices using CryptAuth v2 Enrollment and DeviceSync.
+  string instance_id;
+
+  // Human-readable device name; by default, this is the name of the device
+  // model, but this value is editable.
+  string device_name;
+
+  // A device model name that's guaranteed not to contain any PII.
+  string pii_free_device_name;
+
+  // Encryption key used for communication with this device.
+  string persistent_symmetric_key;
+
+  // The time at which this device's metadata was last updated on the CryptAuth
+  // back-end.
+  mojo_base.mojom.Time last_update_time;
+
+  // The features which this device either does not support, supports, or has
+  // enabled.
+  map<SoftwareFeature, SoftwareFeatureState> software_features;
+
+  // Seeds belonging to the device. Each seed has start and end timestamps which
+  // indicate how long the seed is valid, and each device has enough associated
+  // seeds to keep the device connectable for over 30 days. If no new device
+  // metadata synced for over 30 days, it is possible that a connection will not
+  // be able to be established over BLE.
+  array<BeaconSeed> beacon_seeds;
+
+  // Bluetooth public address, formatted as a hex string with colons and capital
+  // letters (example: "01:23:45:67:89:AB"). If the device does not have a
+  // synced address, this field is empty.
+  string bluetooth_public_address;
+};

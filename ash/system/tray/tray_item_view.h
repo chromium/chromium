@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/compositor/throughput_tracker.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
@@ -52,12 +53,22 @@ class ASH_EXPORT TrayItemView : public views::View,
                                 public views::AnimationDelegateViews {
  public:
   explicit TrayItemView(Shelf* shelf);
+
+  TrayItemView(const TrayItemView&) = delete;
+  TrayItemView& operator=(const TrayItemView&) = delete;
+
   ~TrayItemView() override;
 
   // Convenience function for creating a child Label or ImageView.
   // Only one of the two should be called.
   void CreateLabel();
   void CreateImageView();
+
+  // Methods for destroying a child label or ImageView, which a user of
+  // `TrayItemView` should do if they know a child view is no longer visible and
+  // is expected to remain as such for longer than ~0.1 seconds.
+  void DestroyLabel();
+  void DestroyImageView();
 
   // Called when locale change is detected (which should not happen after the
   // user session starts). It should reload any strings the view is using.
@@ -79,6 +90,10 @@ class ASH_EXPORT TrayItemView : public views::View,
  protected:
   // Returns whether the shelf is horizontal.
   bool IsHorizontalAlignment() const;
+
+  // Perform visibility animation for this view. This function can be overridden
+  // so that the visibility animation can be customized.
+  virtual void PerformVisibilityAnimation(bool visible);
 
  private:
   // views::View.
@@ -122,7 +137,8 @@ class ASH_EXPORT TrayItemView : public views::View,
   IconizedLabel* label_;
   views::ImageView* image_view_;
 
-  DISALLOW_COPY_AND_ASSIGN(TrayItemView);
+  // Measure animation smoothness metrics for `animation_`.
+  absl::optional<ui::ThroughputTracker> throughput_tracker_;
 };
 
 }  // namespace ash

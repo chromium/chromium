@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,6 +96,10 @@ namespace feedbackPrivate {
 
     // Whether or not to include bluetooth logs.
     boolean? includeBluetoothLogs;
+
+    // Whether to show questionnaire in the report description based on detected
+    // domain-related keywords (crbug/1241169).
+    boolean? showQuestionnaire;
   };
 
   // Status of the sending of a feedback report.
@@ -186,7 +190,6 @@ namespace feedbackPrivate {
   callback GetSystemInformationCallback =
       void(SystemInformation[] systemInformation);
   callback SendFeedbackCallback = void(Status status, LandingPageType type);
-  callback GetStringsCallback = void(object result);
   callback ReadLogSourceCallback = void (ReadLogSourceResult result);
 
   interface Functions {
@@ -197,13 +200,16 @@ namespace feedbackPrivate {
     static void getSystemInformation(GetSystemInformationCallback callback);
 
     // Sends a feedback report.
+    // |loadSystemInfo|: Optional flag when present and is true, the backend
+    // should load system information before sending the report. This is added
+    // to reduce user's wait time when sending reports because loading system
+    // information is slow.
+    // |formOpenTime|: The epoch time when the feedback form was opened. This is
+    // used for metrics.
     static void sendFeedback(FeedbackInfo feedback,
+                             optional boolean loadSystemInfo,
+                             optional double formOpenTime,
                              SendFeedbackCallback callback);
-
-    // Gets localized translated strings for feedback. It returns the
-    // strings as a dictionary mapping from string identifier to the
-    // translated string to use in the feedback app UI.
-    static void getStrings(FeedbackFlow flow, GetStringsCallback callback);
 
     // Reads from a log source indicated by <code>source</code>.
     // <p>If <code>incremental</code> is false:
@@ -233,10 +239,6 @@ namespace feedbackPrivate {
     static void readLogSource(ReadLogSourceParams params,
                               ReadLogSourceCallback callback);
 
-    // Invoked when the extension is complete during sending feedback from the
-    // login page. This is then used to know we can unload the feedback
-    // extension from the login profile.
-    static void loginFeedbackComplete();
   };
 
   interface Events {

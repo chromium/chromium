@@ -1,17 +1,18 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/test_simple_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/renderer/media/android/stream_texture_factory.h"
 #include "content/renderer/stream_texture_host_android.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
-#include "gpu/ipc/common/gpu_messages.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,28 +39,28 @@ class TestGpuChannelHost : public gpu::GpuChannelHost {
 class StreamTextureProxyTest : public testing::Test {
  public:
   StreamTextureProxyTest()
-      : task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()),
-        thread_task_runner_handle_override_(task_runner_),
-        channel_(base::MakeRefCounted<TestGpuChannelHost>()) {}
+      : channel_(base::MakeRefCounted<TestGpuChannelHost>()) {}
 
   ~StreamTextureProxyTest() override { channel_ = nullptr; }
 
   std::unique_ptr<StreamTextureProxy> CreateProxyWithNullGpuChannelHost() {
     // Create the StreamTextureHost with a valid |channel_|. Note that route_id
     // does not matter here for the test we are writing.
-    auto host = std::make_unique<StreamTextureHost>(channel_, 1 /* route_id */);
+    mojo::PendingAssociatedRemote<gpu::mojom::StreamTexture> texture;
+    std::ignore = texture.InitWithNewEndpointAndPassReceiver();
+    texture.EnableUnassociatedUsage();
+    auto host = std::make_unique<StreamTextureHost>(channel_, 1 /* route_id */,
+                                                    std::move(texture));
 
     // Force the StreamTextureHost's |channel_| to be null by calling
-    // OnChannelError.
-    host->OnChannelError();
+    // OnDisconnectedFromGpuProcess.
+    host->OnDisconnectedFromGpuProcess();
     auto proxy = base::WrapUnique(new StreamTextureProxy(std::move(host)));
     return proxy;
   }
 
  protected:
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-  base::ThreadTaskRunnerHandleOverrideForTesting
-      thread_task_runner_handle_override_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<TestGpuChannelHost> channel_;
 };
 

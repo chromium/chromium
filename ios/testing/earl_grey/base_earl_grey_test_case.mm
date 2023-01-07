@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,22 @@
 #import <UIKit/UIKit.h>
 #import <objc/runtime.h>
 
-#include "base/feature_list.h"
-#include "base/logging.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/feature_list.h"
+#import "base/logging.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 #import "ios/testing/earl_grey/coverage_utils.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
+#if DCHECK_IS_ON()
+#import "ui/display/screen_base.h"
+#endif
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(BaseEarlGreyTestCaseAppInterface)
 
 namespace {
 
@@ -34,6 +36,25 @@ bool g_needs_set_up_for_test_case = true;
 @implementation BaseEarlGreyTestCase
 
 + (void)setUpForTestCase {
+}
+
++ (void)setUp {
+  // TODO(crbug.com/1316613): app-measurement.com network request started
+  // causing EG synchronization timeouts since iOS 15.4 on simulators. Remove
+  // when the root cause is fixed.
+  NSArray<NSString*>* blockedURLs = @[
+    @"https://app-measurement.com/.*",
+  ];
+  [[GREYConfiguration sharedConfiguration]
+          setValue:blockedURLs
+      forConfigKey:kGREYConfigKeyBlockedURLRegex];
+
+  // Configuration for not tracking hidden animations. By default, all hidden
+  // animations are tracked, and these sometimes cause flake. Set to YES so
+  // tracking *should not* happen for hidden animations.
+  [[GREYConfiguration sharedConfiguration]
+          setValue:@(YES)
+      forConfigKey:kGREYConfigKeyIgnoreHiddenAnimations];
 }
 
 // Invoked upon starting each test method in a test case.
@@ -62,8 +83,20 @@ bool g_needs_set_up_for_test_case = true;
 }
 
 + (void)tearDown {
-  [CoverageUtils writeClangCoverageProfile];
-  [CoverageUtils resetCoverageProfileCounters];
+#if DCHECK_IS_ON()
+  // The same screen object is shared across multiple test runs on IOS build.
+  // Make sure that all display observers are removed at the end of each
+  // test.
+  if (display::Screen::HasScreen()) {
+    display::ScreenBase* screen =
+        static_cast<display::ScreenBase*>(display::Screen::GetScreen());
+    DCHECK(!screen->HasDisplayObservers());
+  }
+#endif
+  if ([[AppLaunchManager sharedManager] appIsLaunched]) {
+    [CoverageUtils writeClangCoverageProfile];
+    [CoverageUtils resetCoverageProfileCounters];
+  }
   g_needs_set_up_for_test_case = true;
   [super tearDown];
 }

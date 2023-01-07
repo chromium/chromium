@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/platform_thread.h"
@@ -39,6 +39,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattApplicationServiceProviderImpl
       const dbus::ObjectPath& object_path,
       const std::map<dbus::ObjectPath, BluetoothLocalGattServiceBlueZ*>&
           services);
+
+  BluetoothGattApplicationServiceProviderImpl(
+      const BluetoothGattApplicationServiceProviderImpl&) = delete;
+  BluetoothGattApplicationServiceProviderImpl& operator=(
+      const BluetoothGattApplicationServiceProviderImpl&) = delete;
+
   ~BluetoothGattApplicationServiceProviderImpl() override;
 
  private:
@@ -83,7 +89,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattApplicationServiceProviderImpl
 
   // D-Bus bus object is exported on, not owned by this object and must
   // outlive it.
-  dbus::Bus* bus_;
+  raw_ptr<dbus::Bus> bus_;
 
   // D-Bus object path of object we are exporting, kept so we can unregister
   // again in our destructor.
@@ -98,8 +104,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattApplicationServiceProviderImpl
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothGattApplicationServiceProviderImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattApplicationServiceProviderImpl);
 };
 
 }  // namespace bluez

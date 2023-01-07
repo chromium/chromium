@@ -1,0 +1,2 @@
+# TODO(crbug.com/1263350): Enable this.
+-OutOfMemoryReporterPrerenderBrowserTest.NotReportedOnPrerenderPage

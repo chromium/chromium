@@ -120,4 +120,4 @@ class WebGraphicsContext3DProvider {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_GRAPHICS_CONTEXT_3D_PROVIDER_H_

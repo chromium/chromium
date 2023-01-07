@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,13 @@
 #include "chrome/browser/page_load_metrics/observers/from_gws_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "content/public/browser/navigation_handle.h"
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 
 namespace internal {
-
-const char kHistogramServiceWorkerPageTransition[] =
-    "PageLoad.Clients.ServiceWorker2.PageTransition";
 
 const char kHistogramServiceWorkerParseStart[] =
     "PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart";
@@ -42,6 +40,13 @@ const char kHistogramServiceWorkerFirstContentfulPaintForwardBack[] =
 const char kHistogramServiceWorkerFirstContentfulPaintForwardBackNoStore[] =
     "PageLoad.Clients.ServiceWorker2.PaintTiming."
     "NavigationToFirstContentfulPaint.LoadType.ForwardBackNavigation.NoStore";
+const char kHistogramServiceWorkerFirstContentfulPaintSkippableFetchHandler[] =
+    "PageLoad.Clients.ServiceWorker2.PaintTiming."
+    "NavigationToFirstContentfulPaint.SkippableFetchHandler";
+const char
+    kHistogramServiceWorkerFirstContentfulPaintNonSkippableFetchHandler[] =
+        "PageLoad.Clients.ServiceWorker2.PaintTiming."
+        "NavigationToFirstContentfulPaint.NonSkippableFetchHandler";
 const char kBackgroundHistogramServiceWorkerFirstContentfulPaint[] =
     "PageLoad.Clients.ServiceWorker2.PaintTiming."
     "NavigationToFirstContentfulPaint.Background";
@@ -56,6 +61,14 @@ const char kHistogramServiceWorkerLoad[] =
 const char kHistogramServiceWorkerLargestContentfulPaint[] =
     "PageLoad.Clients.ServiceWorker2.PaintTiming."
     "NavigationToLargestContentfulPaint2";
+const char
+    kHistogramServiceWorkerLargestContentfulPaintSkippableFetchHandler[] =
+        "PageLoad.Clients.ServiceWorker2.PaintTiming."
+        "NavigationToLargestContentfulPaint2.SkippableFetchHandler";
+const char
+    kHistogramServiceWorkerLargestContentfulPaintNonSkippableFetchHandler[] =
+        "PageLoad.Clients.ServiceWorker2.PaintTiming."
+        "NavigationToLargestContentfulPaint2.NonSkippableFetchHandler";
 
 const char kHistogramServiceWorkerParseStartSearch[] =
     "PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart.search";
@@ -109,9 +122,26 @@ bool IsForwardBackLoad(ui::PageTransition transition) {
 ServiceWorkerPageLoadMetricsObserver::ServiceWorkerPageLoadMetricsObserver() {}
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-ServiceWorkerPageLoadMetricsObserver::OnCommit(
+ServiceWorkerPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
+    const GURL& currently_committed_url) {
+  // All events this class is interested in are preprocessed and forwarded at
+  // PageLoadTracker and observer doesn't need to care for forwarding.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+ServiceWorkerPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // As this class are interested in evaluating the performance gain through the
+  // service workers, we don't count in prerendered metrics.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+ServiceWorkerPageLoadMetricsObserver::OnCommit(
+    content::NavigationHandle* navigation_handle) {
   transition_ = navigation_handle->GetPageTransition();
   const net::HttpResponseHeaders* headers =
       navigation_handle->GetResponseHeaders();
@@ -196,6 +226,18 @@ void ServiceWorkerPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
         internal::kHistogramServiceWorkerFirstContentfulPaintDocs,
         timing.paint_timing->first_contentful_paint.value());
   }
+
+  if (IsServiceWorkerFetchHandlerSkippable()) {
+    PAGE_LOAD_HISTOGRAM(
+        internal::
+            kHistogramServiceWorkerFirstContentfulPaintSkippableFetchHandler,
+        timing.paint_timing->first_contentful_paint.value());
+  } else {
+    PAGE_LOAD_HISTOGRAM(
+        internal::
+            kHistogramServiceWorkerFirstContentfulPaintNonSkippableFetchHandler,
+        timing.paint_timing->first_contentful_paint.value());
+  }
 }
 
 void ServiceWorkerPageLoadMetricsObserver::OnDomContentLoadedEventStart(
@@ -256,24 +298,13 @@ void ServiceWorkerPageLoadMetricsObserver::OnFirstInputInPage(
   UMA_HISTOGRAM_CUSTOM_TIMES(
       internal::kHistogramServiceWorkerFirstInputDelay,
       timing.interactive_timing->first_input_delay.value(),
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-      50);
+      base::Milliseconds(1), base::Seconds(60), 50);
 }
 
 void ServiceWorkerPageLoadMetricsObserver::OnParseStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
   if (!IsServiceWorkerControlled())
     return;
-
-  // TODO(falken): It may be cleaner to record page transition in OnCommit() but
-  // at that point we don't yet know if the page is controlled by a service
-  // worker. It should be possible to plumb the information there since the
-  // browser process already sends the controller service worker in the
-  // navigation commit IPC.
-  UMA_HISTOGRAM_ENUMERATION(
-      internal::kHistogramServiceWorkerPageTransition,
-      static_cast<int>(ui::PageTransitionStripQualifier(transition_)),
-      static_cast<int>(ui::PAGE_TRANSITION_LAST_CORE) + 1);
 
   if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           timing.parse_timing->parse_start, GetDelegate())) {
@@ -339,6 +370,17 @@ void ServiceWorkerPageLoadMetricsObserver::RecordTimingHistograms() {
           all_frames_largest_contentful_paint.Time(), GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramServiceWorkerLargestContentfulPaint,
                         all_frames_largest_contentful_paint.Time().value());
+    if (IsServiceWorkerFetchHandlerSkippable()) {
+      PAGE_LOAD_HISTOGRAM(
+          internal::
+              kHistogramServiceWorkerLargestContentfulPaintSkippableFetchHandler,
+          all_frames_largest_contentful_paint.Time().value());
+    } else {
+      PAGE_LOAD_HISTOGRAM(
+          internal::
+              kHistogramServiceWorkerLargestContentfulPaintNonSkippableFetchHandler,
+          all_frames_largest_contentful_paint.Time().value());
+    }
   }
 }
 
@@ -346,4 +388,12 @@ bool ServiceWorkerPageLoadMetricsObserver::IsServiceWorkerControlled() {
   return (GetDelegate().GetMainFrameMetadata().behavior_flags &
           blink::LoadingBehaviorFlag::
               kLoadingBehaviorServiceWorkerControlled) != 0;
+}
+
+bool ServiceWorkerPageLoadMetricsObserver::
+    IsServiceWorkerFetchHandlerSkippable() {
+  DCHECK(IsServiceWorkerControlled());
+  return (GetDelegate().GetMainFrameMetadata().behavior_flags &
+          blink::LoadingBehaviorFlag::
+              kLoadingBehaviorServiceWorkerFetchHandlerSkippable) != 0;
 }

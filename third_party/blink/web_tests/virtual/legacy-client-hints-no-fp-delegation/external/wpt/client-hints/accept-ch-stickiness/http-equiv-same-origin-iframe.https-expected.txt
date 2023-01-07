@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS http-equiv same origin iframe precondition: Test that the browser does not have client hints preferences cached
-PASS http-equiv same origin iframe set Accept-CH
-PASS http-equiv same origin iframe got client hints according to expectations.
-Harness: the test ran to completion.
-

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,10 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/default_tick_clock.h"
-#include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "media/base/media_export.h"
 
@@ -32,6 +31,9 @@ class MEDIA_EXPORT FrameBufferPool
       public base::trace_event::MemoryDumpProvider {
  public:
   FrameBufferPool();
+
+  FrameBufferPool(const FrameBufferPool&) = delete;
+  FrameBufferPool& operator=(const FrameBufferPool&) = delete;
 
   // Called when a frame buffer allocation is needed. Upon return |fb_priv| will
   // be set to a private value used to identify the buffer in future calls and a
@@ -54,6 +56,8 @@ class MEDIA_EXPORT FrameBufferPool
   void set_tick_clock_for_testing(const base::TickClock* tick_clock) {
     tick_clock_ = tick_clock;
   }
+
+  void force_allocation_error_for_testing() { force_allocation_error_ = true; }
 
   // Called when no more GetFrameBuffer() calls are expected. All unused memory
   // is released at this time. As frames are returned their memory is released.
@@ -92,12 +96,12 @@ class MEDIA_EXPORT FrameBufferPool
 
   bool registered_dump_provider_ = false;
 
+  bool force_allocation_error_ = false;
+
   // |tick_clock_| is always a DefaultTickClock outside of testing.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FrameBufferPool);
 };
 
 }  // namespace media

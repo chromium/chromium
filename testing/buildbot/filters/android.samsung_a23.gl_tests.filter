@@ -1,0 +1,7 @@
+# https://crbug.com/1368306
+-TranslatorVariants/EXTBlendFuncExtendedDrawTest.ESSL1FragData/*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ES3Conflicts/*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ES3GettersArray/*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindArrayAsArray/*
+-TranslatorVariants/EXTBlendFuncExtendedES3DrawTest.ESSL3BindArrayWithSimpleName/*
+-RasterInProcessCommandBufferTest.AllowedBetweenBeginEndRasterCHROMIUM

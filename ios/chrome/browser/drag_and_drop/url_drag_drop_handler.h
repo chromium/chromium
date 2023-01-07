@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,19 +14,19 @@ class GURL;
 
 // The interface for providing a draggable URL from a view.
 @protocol URLDragDataSource
-// Returns a wrapper object with URL and title for dragging from |view|. Returns
-// nil if |view| is not currently draggable.
+// Returns a wrapper object with URL and title for dragging from `view`. Returns
+// nil if `view` is not currently draggable.
 - (URLInfo*)URLInfoForView:(UIView*)view;
-// Returns the visible path for the |view| used for the drag preview.
+// Returns the visible path for the `view` used for the drag preview.
 - (UIBezierPath*)visiblePathForView:(UIView*)view;
 @end
 
 // The interface for handling URL drops in a view.
 @protocol URLDropDelegate
-// Returns whether |view| is in a state to handle URL drops.
+// Returns whether `view` is in a state to handle URL drops.
 - (BOOL)canHandleURLDropInView:(UIView*)view;
-// Provides the receiver with the dropped |URL|, which was dropped at |point| in
-// the coordinate space of the |view|'s bounds.
+// Provides the receiver with the dropped `URL`, which was dropped at `point` in
+// the coordinate space of the `view`'s bounds.
 - (void)view:(UIView*)view didDropURL:(const GURL&)URL atPoint:(CGPoint)point;
 @end
 

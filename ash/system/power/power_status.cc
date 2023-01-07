@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/power_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -15,7 +16,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -36,21 +36,19 @@ std::u16string GetBatteryTimeAccessibilityString(int hour, int min) {
   if (hour && !min) {
     return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
                                   ui::TimeFormat::LENGTH_LONG,
-                                  base::TimeDelta::FromHours(hour));
+                                  base::Hours(hour));
   }
   if (min && !hour) {
     return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
                                   ui::TimeFormat::LENGTH_LONG,
-                                  base::TimeDelta::FromMinutes(min));
+                                  base::Minutes(min));
   }
   return l10n_util::GetStringFUTF16(
       IDS_ASH_STATUS_TRAY_BATTERY_TIME_ACCESSIBLE,
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
-                             ui::TimeFormat::LENGTH_LONG,
-                             base::TimeDelta::FromHours(hour)),
+                             ui::TimeFormat::LENGTH_LONG, base::Hours(hour)),
       ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
-                             ui::TimeFormat::LENGTH_LONG,
-                             base::TimeDelta::FromMinutes(min)));
+                             ui::TimeFormat::LENGTH_LONG, base::Minutes(min)));
 }
 
 int PowerSourceToMessageID(
@@ -173,24 +171,24 @@ bool PowerStatus::IsBatteryTimeBeingCalculated() const {
   return proto_.is_calculating_battery_time();
 }
 
-base::Optional<base::TimeDelta> PowerStatus::GetBatteryTimeToEmpty() const {
+absl::optional<base::TimeDelta> PowerStatus::GetBatteryTimeToEmpty() const {
   // powerd omits the field if no battery is present and sends -1 if it couldn't
   // compute a reasonable estimate.
   if (!proto_.has_battery_time_to_empty_sec() ||
       proto_.battery_time_to_empty_sec() < 0) {
-    return base::nullopt;
+    return absl::nullopt;
   }
-  return base::TimeDelta::FromSeconds(proto_.battery_time_to_empty_sec());
+  return base::Seconds(proto_.battery_time_to_empty_sec());
 }
 
-base::Optional<base::TimeDelta> PowerStatus::GetBatteryTimeToFull() const {
+absl::optional<base::TimeDelta> PowerStatus::GetBatteryTimeToFull() const {
   // powerd omits the field if no battery is present and sends -1 if it couldn't
   // compute a reasonable estimate.
   if (!proto_.has_battery_time_to_full_sec() ||
       proto_.battery_time_to_full_sec() < 0) {
-    return base::nullopt;
+    return absl::nullopt;
   }
-  return base::TimeDelta::FromSeconds(proto_.battery_time_to_full_sec());
+  return base::Seconds(proto_.battery_time_to_full_sec());
 }
 
 bool PowerStatus::IsLinePowerConnected() const {
@@ -250,17 +248,29 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
 
   if (!IsUsbChargerConnected() && !IsBatteryPresent()) {
     info->icon_badge = &kUnifiedMenuBatteryXIcon;
-    info->badge_outline = &kUnifiedMenuBatteryXOutlineIcon;
+    if (features::IsDarkLightModeEnabled()) {
+      info->badge_outline = &kUnifiedMenuBatteryXOutlineMaskIcon;
+    } else {
+      info->badge_outline = &kUnifiedMenuBatteryXOutlineIcon;
+    }
     info->charge_percent = 0;
     return;
   }
 
   if (IsUsbChargerConnected()) {
     info->icon_badge = &kUnifiedMenuBatteryUnreliableIcon;
-    info->badge_outline = &kUnifiedMenuBatteryUnreliableOutlineIcon;
+    if (features::IsDarkLightModeEnabled()) {
+      info->badge_outline = &kUnifiedMenuBatteryUnreliableOutlineMaskIcon;
+    } else {
+      info->badge_outline = &kUnifiedMenuBatteryUnreliableOutlineIcon;
+    }
   } else if (IsLinePowerConnected()) {
     info->icon_badge = &kUnifiedMenuBatteryBoltIcon;
-    info->badge_outline = &kUnifiedMenuBatteryBoltOutlineIcon;
+    if (features::IsDarkLightModeEnabled()) {
+      info->badge_outline = &kUnifiedMenuBatteryBoltOutlineMaskIcon;
+    } else {
+      info->badge_outline = &kUnifiedMenuBatteryBoltOutlineIcon;
+    }
   } else {
     info->icon_badge = nullptr;
     info->badge_outline = nullptr;
@@ -273,16 +283,23 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
   if (GetBatteryPercent() < kCriticalBatteryChargePercentage &&
       !info->icon_badge) {
     info->icon_badge = &kUnifiedMenuBatteryAlertIcon;
-    info->badge_outline = &kUnifiedMenuBatteryAlertOutlineIcon;
+    if (features::IsDarkLightModeEnabled()) {
+      info->badge_outline = &kUnifiedMenuBatteryAlertOutlineMaskIcon;
+    } else {
+      info->badge_outline = &kUnifiedMenuBatteryAlertOutlineIcon;
+    }
   }
 }
 
 // static
-gfx::ImageSkia PowerStatus::GetBatteryImage(const BatteryImageInfo& info,
-                                            int height,
-                                            SkColor bg_color,
-                                            SkColor fg_color) {
-  auto* source = new BatteryImageSource(info, height, bg_color, fg_color);
+gfx::ImageSkia PowerStatus::GetBatteryImage(
+    const BatteryImageInfo& info,
+    int height,
+    SkColor bg_color,
+    SkColor fg_color,
+    absl::optional<SkColor> badge_color) {
+  auto* source = new BatteryImageSource(info, height, bg_color, fg_color,
+                                        std::move(badge_color));
   return gfx::ImageSkia(base::WrapUnique(source), source->size());
 }
 
@@ -302,7 +319,7 @@ std::u16string PowerStatus::GetAccessibleNameString(
     return battery_percentage_accessible;
 
   std::u16string battery_time_accessible = std::u16string();
-  const base::Optional<base::TimeDelta> time =
+  const absl::optional<base::TimeDelta> time =
       IsBatteryCharging() ? GetBatteryTimeToFull() : GetBatteryTimeToEmpty();
 
   if (IsUsbChargerConnected()) {
@@ -343,7 +360,7 @@ std::pair<std::u16string, std::u16string> PowerStatus::GetStatusStrings()
       status =
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING);
     } else {
-      base::Optional<base::TimeDelta> time = IsBatteryCharging()
+      absl::optional<base::TimeDelta> time = IsBatteryCharging()
                                                  ? GetBatteryTimeToFull()
                                                  : GetBatteryTimeToEmpty();
       if (time && power_utils::ShouldDisplayBatteryTime(*time) &&
@@ -365,9 +382,7 @@ std::pair<std::u16string, std::u16string> PowerStatus::GetStatusStrings()
 }
 
 std::u16string PowerStatus::GetInlinedStatusString() const {
-  std::u16string percentage_text;
-  std::u16string status_text;
-  std::tie(percentage_text, status_text) = GetStatusStrings();
+  auto [percentage_text, status_text] = GetStatusStrings();
 
   if (!percentage_text.empty() && !status_text.empty()) {
     return percentage_text +

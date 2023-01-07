@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,21 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/flat_map.h"
 #include "base/i18n/number_formatting.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/origin_trials_controller_delegate.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_navigation_throttle.h"
+#include "content/test/fenced_frame_test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_content_browser_client.h"
 #include "content/test/test_render_frame_host.h"
@@ -24,6 +30,9 @@
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
+#include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
@@ -72,19 +81,16 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
     CreateNavigationHandle();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
   }
 
   void TearDown() override {
-    // Release the |request_| before destroying the WebContents, to match
-    // the WebContentsObserverConsistencyChecker expectations.
-    request_.reset();
     RenderViewHostImplTestHarness::TearDown();
   }
 
   void CancelDeferredNavigation(
       NavigationThrottle::ThrottleCheckResult result) {
-    request_->CancelDeferredNavigationInternal(result);
+    GetNavigationRequest()->CancelDeferredNavigationInternal(result);
   }
 
   // Helper function to call WillStartRequest on |handle|. If this function
@@ -96,11 +102,11 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
 
     // It's safe to use base::Unretained since the NavigationRequest is owned by
     // the NavigationRequestTest.
-    request_->set_complete_callback_for_testing(
+    GetNavigationRequest()->set_complete_callback_for_testing(
         base::BindOnce(&NavigationRequestTest::UpdateThrottleCheckResult,
                        base::Unretained(this)));
 
-    request_->WillStartRequest();
+    GetNavigationRequest()->WillStartRequest();
   }
 
   // Helper function to call WillRedirectRequest on |handle|. If this function
@@ -114,13 +120,12 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
 
     // It's safe to use base::Unretained since the NavigationRequest is owned by
     // the NavigationRequestTest.
-    request_->set_complete_callback_for_testing(
+    GetNavigationRequest()->set_complete_callback_for_testing(
         base::BindOnce(&NavigationRequestTest::UpdateThrottleCheckResult,
                        base::Unretained(this)));
 
-    request_->WillRedirectRequest(
-        GURL(), CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated(),
-        nullptr /* post_redirect_process */);
+    GetNavigationRequest()->WillRedirectRequest(
+        GURL(), nullptr /* post_redirect_process */);
   }
 
   // Helper function to call WillFailRequest on |handle|. If this function
@@ -128,18 +133,18 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   // throttle checks when they are finished.
   void SimulateWillFailRequest(
       net::Error net_error_code,
-      const base::Optional<net::SSLInfo> ssl_info = base::nullopt) {
+      const absl::optional<net::SSLInfo> ssl_info = absl::nullopt) {
     was_callback_called_ = false;
     callback_result_ = NavigationThrottle::DEFER;
-    request_->set_net_error(net_error_code);
+    GetNavigationRequest()->set_net_error(net_error_code);
 
     // It's safe to use base::Unretained since the NavigationRequest is owned by
     // the NavigationRequestTest.
-    request_->set_complete_callback_for_testing(
+    GetNavigationRequest()->set_complete_callback_for_testing(
         base::BindOnce(&NavigationRequestTest::UpdateThrottleCheckResult,
                        base::Unretained(this)));
 
-    request_->WillFailRequest();
+    GetNavigationRequest()->WillFailRequest();
   }
 
   // Whether the callback was called.
@@ -150,7 +155,9 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
     return callback_result_;
   }
 
-  NavigationRequest::NavigationState state() { return request_->state(); }
+  NavigationRequest::NavigationState state() {
+    return GetNavigationRequest()->state();
+  }
 
   bool call_counts_match(TestNavigationThrottle* throttle,
                          int start,
@@ -172,10 +179,10 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   TestNavigationThrottle* CreateTestNavigationThrottle(
       NavigationThrottle::ThrottleCheckResult result) {
     TestNavigationThrottle* test_throttle =
-        new TestNavigationThrottle(request_.get());
+        new TestNavigationThrottle(GetNavigationRequest());
     test_throttle->SetResponseForAllMethods(TestNavigationThrottle::SYNCHRONOUS,
                                             result);
-    request_->RegisterThrottleForTesting(
+    GetNavigationRequest()->RegisterThrottleForTesting(
         std::unique_ptr<TestNavigationThrottle>(test_throttle));
     return test_throttle;
   }
@@ -196,21 +203,43 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
   // TODO(zetamoo): Use NavigationSimulator instead of creating
   // NavigationRequest and NavigationHandleImpl.
   void CreateNavigationHandle() {
-    auto common_params = CreateCommonNavigationParams();
+    auto common_params = blink::CreateCommonNavigationParams();
     common_params->initiator_origin =
         url::Origin::Create(GURL("https://initiator.example.com"));
-    auto commit_params = CreateCommitNavigationParams();
+    auto commit_params = blink::CreateCommitNavigationParams();
     commit_params->frame_policy =
         main_test_rfh()->frame_tree_node()->pending_frame_policy();
-    request_ = NavigationRequest::CreateBrowserInitiated(
+    auto request = NavigationRequest::CreateBrowserInitiated(
         main_test_rfh()->frame_tree_node(), std::move(common_params),
         std::move(commit_params), false /* browser-initiated */,
         false /* was_opener_suppressed */, nullptr /* initiator_frame_token */,
         ChildProcessHost::kInvalidUniqueID /* initiator_process_id */,
         std::string() /* extra_headers */, nullptr /* frame_entry */,
-        nullptr /* entry */, nullptr /* post_body */,
-        nullptr /* navigation_ui_data */, base::nullopt /* impression */);
-    request_->StartNavigation(true);
+        nullptr /* entry */, false /* is_form_submission */,
+        nullptr /* navigation_ui_data */, absl::nullopt /* impression */,
+        false /* is_pdf */);
+    main_test_rfh()->frame_tree_node()->CreatedNavigationRequest(
+        std::move(request));
+    GetNavigationRequest()->StartNavigation();
+  }
+
+  FrameTreeNode* AddFrame(FrameTree& frame_tree,
+                          RenderFrameHostImpl* parent,
+                          int process_id,
+                          int new_routing_id,
+                          const blink::FramePolicy& frame_policy,
+                          blink::FrameOwnerElementType owner_type) {
+    return frame_tree.AddFrame(
+        parent, process_id, new_routing_id,
+        TestRenderFrameHost::CreateStubFrameRemote(),
+        TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
+        TestRenderFrameHost::CreateStubPolicyContainerBindParams(),
+        TestRenderFrameHost::CreateStubAssociatedInterfaceProviderReceiver(),
+        blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName0",
+        false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
+        blink::DocumentToken(), frame_policy,
+        blink::mojom::FrameOwnerProperties(), false, owner_type,
+        /*is_dummy_frame_for_inner_tree=*/false);
   }
 
  private:
@@ -224,7 +253,11 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
     return true;
   }
 
-  std::unique_ptr<NavigationRequest> request_;
+  // This must be called after CreateNavigationHandle().
+  NavigationRequest* GetNavigationRequest() {
+    return main_test_rfh()->frame_tree_node()->navigation_request();
+  }
+
   bool was_callback_called_ = false;
   NavigationThrottle::ThrottleCheckResult callback_result_;
 };
@@ -237,7 +270,7 @@ TEST_F(NavigationRequestTest, SimpleDataChecksRedirectAndProcess) {
   auto navigation =
       NavigationSimulatorImpl::CreateRendererInitiated(kUrl1, main_rfh());
   navigation->Start();
-  EXPECT_EQ(blink::mojom::RequestContextType::HYPERLINK,
+  EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
   EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
@@ -246,7 +279,7 @@ TEST_F(NavigationRequestTest, SimpleDataChecksRedirectAndProcess) {
   navigation->set_http_connection_info(
       net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1);
   navigation->Redirect(kUrl2);
-  EXPECT_EQ(blink::mojom::RequestContextType::HYPERLINK,
+  EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
   EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_HTTP1_1,
@@ -255,7 +288,7 @@ TEST_F(NavigationRequestTest, SimpleDataChecksRedirectAndProcess) {
   navigation->set_http_connection_info(
       net::HttpResponseInfo::CONNECTION_INFO_QUIC_35);
   navigation->ReadyToCommit();
-  EXPECT_EQ(blink::mojom::RequestContextType::HYPERLINK,
+  EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
   EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_QUIC_35,
@@ -282,18 +315,82 @@ TEST_F(NavigationRequestTest, SimpleDataChecksFailure) {
   auto navigation =
       NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
   navigation->Start();
-  EXPECT_EQ(blink::mojom::RequestContextType::HYPERLINK,
+  EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
   EXPECT_EQ(net::HttpResponseInfo::CONNECTION_INFO_UNKNOWN,
             navigation->GetNavigationHandle()->GetConnectionInfo());
 
   navigation->Fail(net::ERR_CERT_DATE_INVALID);
-  EXPECT_EQ(blink::mojom::RequestContextType::HYPERLINK,
+  EXPECT_EQ(blink::mojom::RequestContextType::LOCATION,
             NavigationRequest::From(navigation->GetNavigationHandle())
                 ->request_context_type());
   EXPECT_EQ(net::ERR_CERT_DATE_INVALID,
             navigation->GetNavigationHandle()->GetNetErrorCode());
+}
+
+TEST_F(NavigationRequestTest, FencedFrameNavigationToPendingMappedURN) {
+  // Note that we only run this test for the ShadowDOM implementation of fenced
+  // frames, due to how they add subframes in a way that is very specific to the
+  // ShadowDOM implementation, and not suitable for the MPArch implementation.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kFencedFrames, {{"implementation_type", "shadow_dom"}});
+
+  FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
+  int process_id = root->current_frame_host()->GetProcess()->GetID();
+
+  // Add a fenced frame.
+  constexpr auto kFencedframeOwnerType =
+      blink::FrameOwnerElementType::kFencedframe;
+  blink::FramePolicy policy;
+  policy.is_fenced = true;
+  AddFrame(frame_tree, root->current_frame_host(), process_id, 15, policy,
+           kFencedframeOwnerType);
+
+  FrameTreeNode* fenced_frame_tree_node = root->child_at(0);
+  EXPECT_TRUE(fenced_frame_tree_node->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame_tree_node->IsInFencedFrameTree());
+
+  FencedFrameURLMapping& fenced_frame_urls_map =
+      main_test_rfh()->GetPage().fenced_frame_urls_map();
+
+  auto pending_urn_uuid = fenced_frame_urls_map.GeneratePendingMappedURN();
+  EXPECT_TRUE(pending_urn_uuid.has_value());
+  GURL urn_uuid = pending_urn_uuid.value();
+  const GURL mapped_url = GURL("https://chromium.org");
+
+  auto navigation_simulator = NavigationSimulatorImpl::CreateRendererInitiated(
+      urn_uuid, fenced_frame_tree_node->current_frame_host());
+
+  auto response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  response_headers->SetHeader("Supports-Loading-Mode", "fenced-frame");
+
+  navigation_simulator->SetAutoAdvance(false);
+  navigation_simulator->SetResponseHeaders(response_headers);
+  navigation_simulator->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+
+  navigation_simulator->Start();
+
+  EXPECT_EQ(navigation_simulator->GetNavigationHandle()->GetURL(), urn_uuid);
+
+  SimulateSharedStorageURNMappingComplete(
+      fenced_frame_urls_map, urn_uuid, mapped_url,
+      /*shared_storage_origin=*/url::Origin::Create(GURL("https://bar.com")),
+      /*budget_to_charge=*/2.0);
+
+  // Expect that the url in the NavigationRequest is already mapped.
+  EXPECT_EQ(navigation_simulator->GetNavigationHandle()->GetURL(), mapped_url);
+
+  navigation_simulator->Wait();
+
+  navigation_simulator->SetAutoAdvance(true);
+  navigation_simulator->ReadyToCommit();
+  navigation_simulator->Commit();
+
+  EXPECT_EQ(fenced_frame_tree_node->current_url(), mapped_url);
 }
 
 // Checks that a navigation deferred during WillStartRequest can be properly
@@ -453,6 +550,12 @@ class GetRenderFrameHostOnFailureNavigationThrottle
   explicit GetRenderFrameHostOnFailureNavigationThrottle(
       NavigationHandle* handle)
       : NavigationThrottle(handle) {}
+
+  GetRenderFrameHostOnFailureNavigationThrottle(
+      const GetRenderFrameHostOnFailureNavigationThrottle&) = delete;
+  GetRenderFrameHostOnFailureNavigationThrottle& operator=(
+      const GetRenderFrameHostOnFailureNavigationThrottle&) = delete;
+
   ~GetRenderFrameHostOnFailureNavigationThrottle() override = default;
 
   NavigationThrottle::ThrottleCheckResult WillFailRequest() override {
@@ -463,9 +566,6 @@ class GetRenderFrameHostOnFailureNavigationThrottle
   const char* GetNameForLogging() override {
     return "GetRenderFrameHostOnFailureNavigationThrottle";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GetRenderFrameHostOnFailureNavigationThrottle);
 };
 
 class ThrottleTestContentBrowserClient : public ContentBrowserClient {
@@ -538,7 +638,7 @@ TEST_F(NavigationRequestTest, PolicyContainerInheritance) {
     // - If navigating to a non-local scheme, the target frame should have a new
     //   policy container (hence referrer policy set to "default").
     const GURL kUrl = GURL(test.url);
-    auto navigation =
+    navigation =
         NavigationSimulatorImpl::CreateRendererInitiated(kUrl, child_frame);
     static_cast<blink::mojom::PolicyContainerHost*>(
         child_frame->policy_container_host())
@@ -608,6 +708,114 @@ TEST_F(NavigationRequestTest, NoDnsAliases) {
   EXPECT_TRUE(navigation->GetNavigationHandle()->GetDnsAliases().empty());
 }
 
+TEST_F(NavigationRequestTest, StorageKeyToCommit) {
+  TestRenderFrameHost* child_document = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild(""));
+  auto attributes = child_document->frame_tree_node()->attributes_->Clone();
+  // Set |anonymous| to true.
+  attributes->anonymous = true;
+  child_document->frame_tree_node()->SetAttributes(std::move(attributes));
+
+  const GURL kUrl = GURL("http://chromium.org");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, child_document);
+  navigation->ReadyToCommit();
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+  EXPECT_TRUE(request->commit_params().storage_key.nonce().has_value());
+  EXPECT_EQ(child_document->GetMainFrame()->anonymous_iframes_nonce(),
+            request->commit_params().storage_key.nonce().value());
+
+  navigation->Commit();
+  child_document =
+      static_cast<TestRenderFrameHost*>(navigation->GetFinalRenderFrameHost());
+  EXPECT_TRUE(child_document->IsAnonymous());
+  EXPECT_EQ(blink::StorageKey::CreateWithNonce(
+                url::Origin::Create(kUrl),
+                child_document->GetMainFrame()->anonymous_iframes_nonce()),
+            child_document->storage_key());
+}
+
+TEST_F(NavigationRequestTest,
+       NavigationToAnonymousDocumentNetworkIsolationInfo) {
+  auto* child_frame = static_cast<TestRenderFrameHost*>(
+      content::RenderFrameHostTester::For(main_test_rfh())
+          ->AppendChild("child"));
+  auto attributes = child_frame->frame_tree_node()->attributes_->Clone();
+  // Set |anonymous| to true.
+  attributes->anonymous = true;
+  child_frame->frame_tree_node()->SetAttributes(std::move(attributes));
+
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateRendererInitiated(
+          GURL("https://example.com/navigation.html"), child_frame);
+  navigation->ReadyToCommit();
+
+  EXPECT_EQ(main_test_rfh()->anonymous_iframes_nonce(),
+            static_cast<NavigationRequest*>(navigation->GetNavigationHandle())
+                ->isolation_info_for_subresources()
+                .network_isolation_key()
+                .GetNonce());
+  EXPECT_EQ(main_test_rfh()->anonymous_iframes_nonce(),
+            static_cast<NavigationRequest*>(navigation->GetNavigationHandle())
+                ->GetIsolationInfo()
+                .network_isolation_key()
+                .GetNonce());
+}
+
+class ScopedIsolatedAppBrowserClient : public ContentBrowserClient {
+ public:
+  ScopedIsolatedAppBrowserClient()
+      : old_client_(SetBrowserClientForTesting(this)) {}
+
+  ~ScopedIsolatedAppBrowserClient() override {
+    SetBrowserClientForTesting(old_client_);
+  }
+
+  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
+                                             const GURL& url) override {
+    return true;
+  }
+
+ private:
+  raw_ptr<ContentBrowserClient> old_client_;
+};
+
+TEST_F(NavigationRequestTest, IsolatedAppPolicyInjection) {
+  const GURL kUrl = GURL("https://chromium.org");
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kIsolatedAppOrigins, kUrl.spec());
+  // Disable flag caching so the --isolated-app-origins value takes effect.
+  SiteIsolationPolicy::DisableFlagCachingForTesting();
+  ScopedIsolatedAppBrowserClient client;
+
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
+  navigation->ReadyToCommit();
+
+  // Validate the COOP/COEP headers.
+  const PolicyContainerPolicies& policies =
+      navigation->GetNavigationHandle()->GetPolicyContainerPolicies();
+  EXPECT_EQ(network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep,
+            policies.cross_origin_opener_policy.value);
+  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
+            policies.cross_origin_embedder_policy.value);
+
+  // Validate CSP.
+  EXPECT_EQ(1UL, policies.content_security_policies.size());
+  const auto& csp = policies.content_security_policies[0];
+  EXPECT_EQ(7UL, csp->raw_directives.size());
+  using Directive = network::mojom::CSPDirectiveName;
+  EXPECT_EQ("'none'", csp->raw_directives[Directive::BaseURI]);
+  EXPECT_EQ("'none'", csp->raw_directives[Directive::ObjectSrc]);
+  EXPECT_EQ("'self'", csp->raw_directives[Directive::DefaultSrc]);
+  EXPECT_EQ("'self' https:", csp->raw_directives[Directive::FrameSrc]);
+  EXPECT_EQ("'self' https:", csp->raw_directives[Directive::ConnectSrc]);
+  EXPECT_EQ("'self' 'wasm-unsafe-eval'",
+            csp->raw_directives[Directive::ScriptSrc]);
+  EXPECT_EQ("'script'", csp->raw_directives[Directive::RequireTrustedTypesFor]);
+}
+
 // Test that the required CSP of every frame is computed/inherited correctly and
 // that the Sec-Required-CSP header is set.
 class CSPEmbeddedEnforcementUnitTest : public NavigationRequestTest {
@@ -629,7 +837,10 @@ class CSPEmbeddedEnforcementUnitTest : public NavigationRequestTest {
       std::vector<network::mojom::ContentSecurityPolicyPtr> policies;
       network::AddContentSecurityPolicyFromHeaders(
           *headers, GURL("https://example.com/"), &policies);
-      document->frame_tree_node()->set_csp_attribute(std::move(policies[0]));
+      auto attributes = document->frame_tree_node()->attributes_->Clone();
+      // Set csp value.
+      attributes->parsed_csp_attribute = std::move(policies[0]);
+      document->frame_tree_node()->SetAttributes(std::move(attributes));
     }
 
     // Chrome blocks a document navigating to a URL if more than one of its
@@ -812,6 +1023,107 @@ TEST_F(CSPEmbeddedEnforcementUnitTest,
   EXPECT_TRUE(grand_child_document->required_csp());
   EXPECT_EQ("script-src 'none'",
             grand_child_document->required_csp()->header->header_value);
+}
+
+namespace {
+
+// Mock that allows us to avoid depending on the origin_trials component.
+class OriginTrialsControllerDelegateMock
+    : public OriginTrialsControllerDelegate {
+ public:
+  ~OriginTrialsControllerDelegateMock() override = default;
+
+  void PersistTrialsFromTokens(
+      const url::Origin& origin,
+      const base::span<const std::string> header_tokens,
+      const base::Time current_time) override {
+    persisted_tokens_[origin] =
+        std::vector<std::string>(header_tokens.begin(), header_tokens.end());
+  }
+  bool IsTrialPersistedForOrigin(const url::Origin& origin,
+                                 const base::StringPiece trial_name,
+                                 const base::Time current_time) override {
+    DCHECK(false) << "Method not implemented for test.";
+    return false;
+  }
+
+  base::flat_set<std::string> GetPersistedTrialsForOrigin(
+      const url::Origin& origin,
+      base::Time current_time) override {
+    DCHECK(false) << "Method not implemented for test.";
+    return base::flat_set<std::string>();
+  }
+
+  base::flat_map<url::Origin, std::vector<std::string>> persisted_tokens_;
+};
+
+}  // namespace
+
+class PersistentOriginTrialNavigationRequestTest
+    : public NavigationRequestTest {
+ public:
+  PersistentOriginTrialNavigationRequestTest()
+      : delegate_mock_(std::make_unique<OriginTrialsControllerDelegateMock>()) {
+
+  }
+  ~PersistentOriginTrialNavigationRequestTest() override = default;
+
+  std::vector<std::string> GetPersistedTokens(const url::Origin& origin) {
+    return delegate_mock_->persisted_tokens_[origin];
+  }
+
+ protected:
+  std::unique_ptr<BrowserContext> CreateBrowserContext() override {
+    std::unique_ptr<TestBrowserContext> context =
+        std::make_unique<TestBrowserContext>();
+    context->SetOriginTrialsControllerDelegate(delegate_mock_.get());
+    return context;
+  }
+
+ private:
+  std::unique_ptr<OriginTrialsControllerDelegateMock> delegate_mock_;
+};
+
+// Ensure that navigations with a valid Origin-Trial header with a persistent
+// origin trial token results in the trial being marked as enabled.
+// Then check that subsequent navigations without headers trigger an update
+// that clears out stored trials.
+TEST_F(PersistentOriginTrialNavigationRequestTest,
+       NavigationCommitsPersistentOriginTrials) {
+  // Generated with:
+  // tools/origin_trials/generate_token.py https://example.com
+  // FrobulatePersistent
+  // --expire-timestamp=2000000000
+  const char kPersistentOriginTrialToken[] =
+      "AzZfd1vKZ0SSGRGk/"
+      "8nIszQSlHYjbuYVE3jwaNZG3X4t11zRhzPWWJwTZ+JJDS3JJsyEZcpz+y20pAP6/"
+      "6upOQ4AAABdeyJvcmlnaW4iOiAiaHR0cHM6Ly9leGFtcGxlLmNvbTo0NDMiLCAiZmVhdHVyZ"
+      "SI"
+      "6ICJGcm9idWxhdGVQZXJzaXN0ZW50IiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kPersistentOriginTrials);
+  blink::ScopedTestOriginTrialPolicy origin_trial_policy_;
+
+  const GURL kUrl = GURL("https://example.com");
+  auto navigation =
+      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
+
+  auto response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  response_headers->SetHeader("Origin-Trial", kPersistentOriginTrialToken);
+  navigation->SetResponseHeaders(response_headers);
+
+  navigation->Commit();
+
+  url::Origin origin = url::Origin::Create(kUrl);
+  EXPECT_EQ(std::vector<std::string>{kPersistentOriginTrialToken},
+            GetPersistedTokens(origin));
+
+  // Navigate again without response headers to assert the trial information is
+  // still updated and cleared.
+  NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh())->Commit();
+  EXPECT_EQ(std::vector<std::string>(), GetPersistedTokens(origin));
 }
 
 }  // namespace content

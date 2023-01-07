@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,7 @@ source_set("fakes") {
   deps = [
     "//base",
     "//ios/third_party/webkit",
+    "//ios/web/download",
     "//ios/web/js_messaging",
     "//ios/web/navigation",
     "//ios/web/navigation:core",
@@ -33,17 +34,15 @@ source_set("fakes") {
     "crw_fake_wk_frame_info.mm",
     "crw_fake_wk_navigation_action.h",
     "crw_fake_wk_navigation_action.mm",
-    "crw_fake_wk_navigation_response.h",
-    "crw_fake_wk_navigation_response.mm",
     "fake_java_script_feature.h",
     "fake_java_script_feature.mm",
+    "fake_native_task_bridge.h",
+    "fake_native_task_bridge.mm",
     "fake_navigation_manager_delegate.h",
     "fake_navigation_manager_delegate.mm",
-    "fake_web_frame_impl.cc",
     "fake_web_frame_impl.h",
+    "fake_web_frame_impl.mm",
     "fake_wk_configuration_provider_observer.h",
     "fake_wk_configuration_provider_observer.mm",
-    "mock_interstitial_delegate.h",
-    "mock_interstitial_delegate.mm",
   ]
 }

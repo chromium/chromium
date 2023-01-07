@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,11 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_CONTROLLER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
+#include "components/device_reauth/biometric_authenticator.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
@@ -32,14 +35,14 @@ class AllPasswordsBottomSheetController
       base::PassKey<class AllPasswordsBottomSheetControllerTest>,
       std::unique_ptr<AllPasswordsBottomSheetView> view,
       base::WeakPtr<password_manager::PasswordManagerDriver> driver,
-      password_manager::PasswordStore* store,
+      password_manager::PasswordStoreInterface* store,
       base::OnceCallback<void()> dismissal_callback,
       autofill::mojom::FocusedFieldType focused_field_type,
       password_manager::PasswordManagerClient* client);
 
   AllPasswordsBottomSheetController(
       content::WebContents* web_contents,
-      password_manager::PasswordStore* store,
+      password_manager::PasswordStoreInterface* store,
       base::OnceCallback<void()> dismissal_callback,
       autofill::mojom::FocusedFieldType focused_field_type);
   ~AllPasswordsBottomSheetController() override;
@@ -71,16 +74,23 @@ class AllPasswordsBottomSheetController
   const GURL& GetFrameUrl();
 
  private:
+  // Called when the biometric re-auth completes. |password| is the password
+  // to be filled and |auth_succeded| is the authentication result.
+  void OnReauthCompleted(const std::u16string& password, bool auth_succeeded);
+
+  // Fills the password into the focused field.
+  void FillPassword(const std::u16string& password);
+
   // The controller takes |view_| ownership.
   std::unique_ptr<AllPasswordsBottomSheetView> view_;
 
   // This controller doesn't take |web_contents_| ownership.
   // This controller is attached to this |web_contents_| lifetime. It will be
   // destroyed if |web_contents_| is destroyed.
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 
   // The controller doesn't take |store_| ownership.
-  password_manager::PasswordStore* store_;
+  raw_ptr<password_manager::PasswordStoreInterface> store_;
 
   // A callback method will be consumed when the user dismisses the BottomSheet.
   base::OnceCallback<void()> dismissal_callback_;
@@ -89,13 +99,19 @@ class AllPasswordsBottomSheetController
   // constructor specified for tests.
   base::WeakPtr<password_manager::PasswordManagerDriver> driver_;
 
+  // Authenticator used to trigger a biometric re-auth before password filling.
+  scoped_refptr<device_reauth::BiometricAuthenticator> authenticator_;
+
   // The type of field on which the user is focused, e.g. PASSWORD.
   autofill::mojom::FocusedFieldType focused_field_type_;
 
   // The PasswordManagerClient associated with the current |web_contents_|.
   // Used to tell `PasswordReuseDetectionManager` that a password has been
   // reused.
-  password_manager::PasswordManagerClient* client_ = nullptr;
+  raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
+
+  base::WeakPtrFactory<AllPasswordsBottomSheetController> weak_ptr_factory_{
+      this};
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ALL_PASSWORDS_BOTTOM_SHEET_CONTROLLER_H_

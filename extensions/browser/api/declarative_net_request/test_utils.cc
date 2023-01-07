@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -16,6 +17,7 @@
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 #include "extensions/browser/api/declarative_net_request/rules_count_pair.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
+#include "extensions/browser/api/declarative_net_request/ruleset_source.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
@@ -152,7 +154,7 @@ std::ostream& operator<<(std::ostream& output, const RequestAction& action) {
 }
 
 std::ostream& operator<<(std::ostream& output,
-                         const base::Optional<RequestAction>& action) {
+                         const absl::optional<RequestAction>& action) {
   if (!action)
     return output << "empty Optional<RequestAction>";
   return output << *action;
@@ -165,6 +167,9 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
       break;
     case ParseResult::SUCCESS:
       output << "SUCCESS";
+      break;
+    case ParseResult::ERROR_REQUEST_METHOD_DUPLICATED:
+      output << "ERROR_REQUEST_METHOD_DUPLICATED";
       break;
     case ParseResult::ERROR_RESOURCE_TYPE_DUPLICATED:
       output << "ERROR_RESOURCE_TYPE_DUPLICATED";
@@ -181,8 +186,25 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
     case ParseResult::ERROR_EMPTY_DOMAINS_LIST:
       output << "ERROR_EMPTY_DOMAINS_LIST";
       break;
+    case ParseResult::ERROR_EMPTY_INITIATOR_DOMAINS_LIST:
+      output << "ERROR_EMPTY_INITIATOR_DOMAINS_LIST";
+      break;
+    case ParseResult::ERROR_EMPTY_REQUEST_DOMAINS_LIST:
+      output << "ERROR_EMPTY_REQUEST_DOMAINS_LIST";
+      break;
+    case ParseResult::ERROR_DOMAINS_AND_INITIATOR_DOMAINS_BOTH_SPECIFIED:
+      output << "ERROR_DOMAINS_AND_INITIATOR_DOMAINS_BOTH_SPECIFIED";
+      break;
+    case ParseResult::
+        ERROR_EXCLUDED_DOMAINS_AND_EXCLUDED_INITIATOR_DOMAINS_BOTH_SPECIFIED:
+      output << "ERROR_EXCLUDED_DOMAINS_AND_EXCLUDED_INITIATOR_DOMAINS_BOTH_"
+                "SPECIFIED";
+      break;
     case ParseResult::ERROR_EMPTY_RESOURCE_TYPES_LIST:
       output << "ERROR_EMPTY_RESOURCE_TYPES_LIST";
+      break;
+    case ParseResult::ERROR_EMPTY_REQUEST_METHODS_LIST:
+      output << "ERROR_EMPTY_REQUEST_METHODS_LIST";
       break;
     case ParseResult::ERROR_EMPTY_URL_FILTER:
       output << "ERROR_EMPTY_URL_FILTER";
@@ -193,9 +215,6 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
     case ParseResult::ERROR_DUPLICATE_IDS:
       output << "ERROR_DUPLICATE_IDS";
       break;
-    case ParseResult::ERROR_PERSISTING_RULESET:
-      output << "ERROR_PERSISTING_RULESET";
-      break;
     case ParseResult::ERROR_NON_ASCII_URL_FILTER:
       output << "ERROR_NON_ASCII_URL_FILTER";
       break;
@@ -204,6 +223,18 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
       break;
     case ParseResult::ERROR_NON_ASCII_EXCLUDED_DOMAIN:
       output << "ERROR_NON_ASCII_EXCLUDED_DOMAIN";
+      break;
+    case ParseResult::ERROR_NON_ASCII_INITIATOR_DOMAIN:
+      output << "ERROR_NON_ASCII_INITIATOR_DOMAIN";
+      break;
+    case ParseResult::ERROR_NON_ASCII_EXCLUDED_INITIATOR_DOMAIN:
+      output << "ERROR_NON_ASCII_EXCLUDED_INITIATOR_DOMAIN";
+      break;
+    case ParseResult::ERROR_NON_ASCII_REQUEST_DOMAIN:
+      output << "ERROR_NON_ASCII_REQUEST_DOMAIN";
+      break;
+    case ParseResult::ERROR_NON_ASCII_EXCLUDED_REQUEST_DOMAIN:
+      output << "ERROR_NON_ASCII_EXCLUDED_REQUEST_DOMAIN";
       break;
     case ParseResult::ERROR_INVALID_URL_FILTER:
       output << "ERROR_INVALID_URL_FILTER";
@@ -280,6 +311,15 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
     case ParseResult::ERROR_APPEND_REQUEST_HEADER_UNSUPPORTED:
       output << "ERROR_APPEND_REQUEST_HEADER_UNSUPPORTED";
       break;
+    case ParseResult::ERROR_EMPTY_TAB_IDS_LIST:
+      output << "ERROR_EMPTY_TAB_IDS_LIST";
+      break;
+    case ParseResult::ERROR_TAB_IDS_ON_NON_SESSION_RULE:
+      output << "ERROR_TAB_IDS_ON_NON_SESSION_RULE";
+      break;
+    case ParseResult::ERROR_TAB_ID_DUPLICATED:
+      output << "ERROR_TAB_ID_DUPLICATED";
+      break;
   }
   return output;
 }
@@ -317,9 +357,10 @@ std::ostream& operator<<(std::ostream& output, const RulesCountPair& count) {
 
 bool AreAllIndexedStaticRulesetsValid(
     const Extension& extension,
-    content::BrowserContext* browser_context) {
+    content::BrowserContext* browser_context,
+    FileBackedRulesetSource::RulesetFilter ruleset_filter) {
   std::vector<FileBackedRulesetSource> sources =
-      FileBackedRulesetSource::CreateStatic(extension);
+      FileBackedRulesetSource::CreateStatic(extension, ruleset_filter);
 
   const ExtensionPrefs* prefs = ExtensionPrefs::Get(browser_context);
   for (const auto& source : sources) {
@@ -355,8 +396,10 @@ bool CreateVerifiedMatcher(const std::vector<TestRule>& rules,
   JSONFileValueSerializer(source.json_path()).Serialize(*builder.Build());
 
   // Index ruleset.
+  auto parse_flags = FileBackedRulesetSource::kRaiseErrorOnInvalidRules |
+                     FileBackedRulesetSource::kRaiseWarningOnLargeRegexRules;
   IndexAndPersistJSONRulesetResult result =
-      source.IndexAndPersistJSONRulesetUnsafe();
+      source.IndexAndPersistJSONRulesetUnsafe(parse_flags);
   if (result.status == IndexStatus::kError) {
     DCHECK(result.error.empty()) << result.error;
     return false;
@@ -387,14 +430,12 @@ FileBackedRulesetSource CreateTemporarySource(RulesetID id,
 dnr_api::ModifyHeaderInfo CreateModifyHeaderInfo(
     dnr_api::HeaderOperation operation,
     std::string header,
-    base::Optional<std::string> value) {
+    absl::optional<std::string> value) {
   dnr_api::ModifyHeaderInfo header_info;
 
   header_info.operation = operation;
   header_info.header = header;
-
-  if (value)
-    header_info.value = std::make_unique<std::string>(*value);
+  header_info.value = value;
 
   return header_info;
 }

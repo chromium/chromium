@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/task/task.h"
 
@@ -37,20 +37,23 @@ class AddUniqueUrlsTask : public Task {
                     PrefetchStore* prefetch_store,
                     const std::string& name_space,
                     const std::vector<PrefetchURL>& prefetch_urls);
+
+  AddUniqueUrlsTask(const AddUniqueUrlsTask&) = delete;
+  AddUniqueUrlsTask& operator=(const AddUniqueUrlsTask&) = delete;
+
   ~AddUniqueUrlsTask() override;
  private:
   void Run() override;
   void OnUrlsAdded(Result result);
 
   // Dispatcher to call back to with results. Not owned.
-  PrefetchDispatcher* prefetch_dispatcher_;
+  raw_ptr<PrefetchDispatcher> prefetch_dispatcher_;
   // Prefetch store to execute against. Not owned.
-  PrefetchStore* prefetch_store_;
+  raw_ptr<PrefetchStore> prefetch_store_;
   std::string name_space_;
   std::vector<PrefetchURL> prefetch_urls_;
 
   base::WeakPtrFactory<AddUniqueUrlsTask> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(AddUniqueUrlsTask);
 };
 
 }  // namespace offline_pages

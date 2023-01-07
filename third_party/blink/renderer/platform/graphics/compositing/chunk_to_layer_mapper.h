@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ class PLATFORM_EXPORT ChunkToLayerMapper {
   void SwitchToChunk(const PaintChunk&);
 
   // Maps a visual rectangle in the current chunk space into the layer space.
-  IntRect MapVisualRect(const IntRect&) const;
+  gfx::Rect MapVisualRect(const gfx::Rect&) const;
 
   // Returns the combined transform from the current chunk to the layer.
   SkMatrix Transform() const { return translation_2d_or_matrix_.ToSkMatrix(); }
@@ -43,8 +43,8 @@ class PLATFORM_EXPORT ChunkToLayerMapper {
  private:
   friend class ChunkToLayerMapperTest;
 
-  IntRect MapUsingGeometryMapper(const IntRect&) const;
-  void InflateForRasterEffectOutset(FloatRect&) const;
+  gfx::Rect MapUsingGeometryMapper(const gfx::Rect&) const;
+  void InflateForRasterEffectOutset(gfx::RectF&) const;
 
   const PropertyTreeState layer_state_;
   const gfx::Vector2dF layer_offset_;
@@ -62,4 +62,4 @@ class PLATFORM_EXPORT ChunkToLayerMapper {
 
 }  // namespace blink
 
-#endif  // PaintArtifactCompositor_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_CHUNK_TO_LAYER_MAPPER_H_

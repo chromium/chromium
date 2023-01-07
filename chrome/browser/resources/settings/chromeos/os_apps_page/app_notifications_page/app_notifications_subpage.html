@@ -1,0 +1,54 @@
+<style include="cr-shared-style settings-shared iron-flex">
+  #dndTitle {
+    font-weight: 500;
+    padding-inline-end: 8px;
+  }
+
+  #dndDescription {
+    color: var(--cros-text-color-secondary);
+  }
+
+  #enableDoNotDisturb {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  #appNotificationsList {
+    border-top: var(--card-separator);
+    margin-top: 24px;
+  }
+
+  :host([is-dnd-enabled_]) #dndTitle {
+    color: var(--cros-text-color-prominent);
+  }
+</style>
+<div id="enableDoNotDisturb" class="cr-row first" on-click="onEnableTap_"
+    actionable>
+  <div id="labelWrapper">
+    <div id="dndTitle" aria-hidden="true">
+      $i18n{doNotDisturbToggleTitle}
+    </div>
+    <div id="dndDescription">
+      $i18n{doNotDisturbToggleDescription}
+    </div>
+  </div>
+  <cr-toggle id="enableDndToggle"
+      checked="[[isDndEnabled_]]"
+      on-change="setQuietMode_"
+      aria-labelledby="dndTitle"
+      aria-describedby="dndDescription"
+      deep-link-focus-id$="[[Setting.kDoNotDisturbOnOff]]">
+  </cr-toggle>
+</div>
+<div id="appNotificationsList">
+  <template is="dom-repeat" items="[[appList_]]" as="app"
+      sort="alphabeticalSort_">
+    <app-notification-row app="[[app]]"></app-notification-row>
+  </template>
+</div>
+<div class="cr-row" id="browserSettings">
+  <localized-link class="secondary"
+      localized-string="$i18n{appNotificationsLinkToBrowserSettingsDescription}"
+      link-url="$i18n{appNotificationsBrowserSettingsURL}">
+  </localized-link>
+</div>

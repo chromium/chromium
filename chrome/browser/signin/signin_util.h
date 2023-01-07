@@ -1,27 +1,66 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_
 #define CHROME_BROWSER_SIGNIN_SIGNIN_UTIL_H_
 
+#include <string>
+
+#include "base/containers/enum_set.h"
+#include "base/files/file_path.h"
 #include "base/supports_user_data.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/tribool.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
 namespace signin_util {
 
-// TODO(crbug.com/1134111): Remove GuestSignedInUserData when Ephemeral Guest
-// sign in functioncality is implemented.
-class GuestSignedInUserData : public base::SupportsUserData::Data {
+enum class ProfileSeparationPolicyState {
+  kEnforcedByExistingProfile,
+  kEnforcedByInterceptedAccount,
+  kStrict,
+  kEnforcedOnMachineLevel,
+  kKeepsBrowsingData,
+  kMaxValue = kKeepsBrowsingData
+};
+
+using ProfileSeparationPolicyStateSet =
+    base::EnumSet<ProfileSeparationPolicyState,
+                  ProfileSeparationPolicyState::kEnforcedByExistingProfile,
+                  ProfileSeparationPolicyState::kMaxValue>;
+
+// This class is used by cloud policy to indicate signout is disallowed for
+// cloud-managed enterprise accounts. Signout would require profile destruction
+// (See ChromeSigninClient::PreSignOut(),
+//      PrimaryAccountPolicyManager::EnsurePrimaryAccountAllowedForProfile()).
+// This class is also used on Android to disallow signout for supervised users.
+class UserSignoutSetting : public base::SupportsUserData::Data {
  public:
-  static void SetIsSignedIn(Profile* profile, bool is_signed_in);
-  static bool IsSignedIn(Profile* profile);
+  // Fetch from Profile. Make and store if not already present.
+  static UserSignoutSetting* GetForProfile(Profile* profile);
+
+  // Public as this class extends base::SupportsUserData::Data. Use
+  // |GetForProfile()| to get the instance associated with a profile.
+  UserSignoutSetting();
+  ~UserSignoutSetting() override;
+  UserSignoutSetting(const UserSignoutSetting&) = delete;
+  UserSignoutSetting& operator=(const UserSignoutSetting&) = delete;
+
+  signin::Tribool signout_allowed() const;
+  void SetSignoutAllowed(bool is_allowed);
 
  private:
-  static GuestSignedInUserData* GetForProfile(Profile* profile);
-
-  bool is_signed_in_ = false;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // `signout_allowed()` is always true for Lacros main profile despite of
+  // policies.
+  bool is_main_profile_ = false;
+#endif
+  signin::Tribool signout_allowed_ = signin::Tribool::kUnknown;
 };
 
 // This class calls ResetForceSigninForTesting when destroyed, so that
@@ -30,6 +69,10 @@ class ScopedForceSigninSetterForTesting {
  public:
   explicit ScopedForceSigninSetterForTesting(bool enable);
   ~ScopedForceSigninSetterForTesting();
+  ScopedForceSigninSetterForTesting(const ScopedForceSigninSetterForTesting&) =
+      delete;
+  ScopedForceSigninSetterForTesting& operator=(
+      const ScopedForceSigninSetterForTesting&) = delete;
 };
 
 // Return whether the force sign in policy is enabled or not.
@@ -59,13 +102,37 @@ void SetUserSignoutAllowedForProfile(Profile* profile, bool is_allowed);
 // ensure that the signout allowed flag is updated.
 void EnsureUserSignoutAllowedIsInitializedForProfile(Profile* profile);
 
-// Ensures that the primary account for |profile| is allowed:
-// * If profile does not have any primary account, then this is a no-op.
-// * If |IsUserSignoutAllowedForProfile| is allowed and the primary account
-//   is no longer allowed, then this clears the primary account.
-// * If |IsUserSignoutAllowedForProfile| is not allowed and the primary account
-//   is not longer allowed, then this removes the profile.
-void EnsurePrimaryAccountAllowedForProfile(Profile* profile);
+#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
+// Returns the state of profile separation on any account that would signin
+// inside `profile`. Returns an empty set if profile separation is not enforced
+// on accounts that will sign in the content area of `profile`.
+ProfileSeparationPolicyStateSet GetProfileSeparationPolicyState(
+    Profile* profile,
+    const absl::optional<std::string>& intercepted_account_level_policy_value =
+        absl::nullopt);
+
+// Returns true if profile separation must be enforced on an account signing in
+// the content area of `profile` by the ManagedAccountsSigninRestriction policy
+// for `profile` or if the value of 'intercepted_account_level_policy_value'
+// enforces profile separation for an intercepted account.
+// `intercepted_account_level_policy_value` has a value only in the case of an
+// account interception. This is used mainly in DiceWebSigninInterceptor to
+// determine if an intercepted account requires a new profile.
+bool ProfileSeparationEnforcedByPolicy(
+    Profile* profile,
+    const absl::optional<std::string>& intercepted_account_level_policy_value =
+        absl::nullopt);
+
+bool ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
+    Profile* profile,
+    const std::string& intercepted_account_level_policy_value);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+// Records a UMA metric if the user accepts or not to create an enterprise
+// profile.
+void RecordEnterpriseProfileCreationUserChoice(bool enforced_by_policy,
+                                               bool created);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace signin_util
 

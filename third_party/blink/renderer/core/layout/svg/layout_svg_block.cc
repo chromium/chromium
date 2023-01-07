@@ -34,11 +34,11 @@
 
 namespace blink {
 
-LayoutSVGBlock::LayoutSVGBlock(Element* element)
-    : LayoutBlockFlow(element),
+LayoutSVGBlock::LayoutSVGBlock(ContainerNode* node)
+    : LayoutBlockFlow(node),
       needs_transform_update_(true),
       transform_uses_reference_box_(false) {
-  DCHECK(IsA<SVGElement>(element));
+  DCHECK(IsA<SVGElement>(node));
 }
 
 SVGElement* LayoutSVGBlock::GetElement() const {
@@ -48,7 +48,7 @@ SVGElement* LayoutSVGBlock::GetElement() const {
 
 void LayoutSVGBlock::WillBeDestroyed() {
   NOT_DESTROYED();
-  SVGResources::ClearClipPathFilterMask(*GetElement(), Style());
+  SVGResources::ClearEffects(*this);
   LayoutBlockFlow::WillBeDestroyed();
 }
 
@@ -59,10 +59,6 @@ void LayoutSVGBlock::InsertedIntoTree() {
                                                                          false);
   if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
-  if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
-      CompositingReason::kNone) {
-    SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
-  }
 }
 
 void LayoutSVGBlock::WillBeRemovedFromTree() {
@@ -72,10 +68,6 @@ void LayoutSVGBlock::WillBeRemovedFromTree() {
   if (StyleRef().HasSVGEffect())
     SetNeedsPaintPropertyUpdate();
   LayoutBlockFlow::WillBeRemovedFromTree();
-  if (CompositingReasonFinder::DirectReasonsForSVGChildPaintProperties(*this) !=
-      CompositingReason::kNone) {
-    SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
-  }
 }
 
 void LayoutSVGBlock::UpdateFromStyle() {
@@ -123,7 +115,7 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
   // |HasTransformRelatedProperty| is used for compositing so ensure it was
   // correctly set by the call to |StyleDidChange|.
   DCHECK_EQ(HasTransformRelatedProperty(),
-            StyleRef().HasTransformRelatedProperty());
+            StyleRef().HasTransformRelatedPropertyForSVG());
 
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
@@ -134,18 +126,23 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
       SetNeedsTransformUpdate();
   }
 
-  SVGResources::UpdateClipPathFilterMask(*GetElement(), old_style, StyleRef());
+  SVGResources::UpdateEffects(*this, diff, old_style);
 
   if (!Parent())
     return;
+
   if (diff.BlendModeChanged()) {
     DCHECK(IsBlendingAllowed());
     Parent()->DescendantIsolationRequirementsChanged(
         StyleRef().HasBlendMode() ? kDescendantIsolationRequired
                                   : kDescendantIsolationNeedsUpdate);
   }
-  if (diff.CompositingReasonsChanged())
-    SVGLayoutSupport::NotifySVGRootOfChangedCompositingReasons(this);
+
+  if (StyleRef().HasCurrentTransformRelatedAnimation() &&
+      !old_style->HasCurrentTransformRelatedAnimation()) {
+    Parent()->SetSVGDescendantMayHaveTransformRelatedAnimation();
+  }
+
   if (diff.HasDifference())
     LayoutSVGResourceContainer::StyleChanged(*this, diff);
 }
@@ -189,15 +186,15 @@ bool LayoutSVGBlock::MapToVisualRectInAncestorSpaceInternal(
   rect.Move(PhysicalLocation());
   // Apply other mappings on local SVG coordinates.
   bool retval = SVGLayoutSupport::MapToVisualRectInAncestorSpace(
-      *this, ancestor, FloatRect(rect), rect);
-  transform_state.SetQuad(FloatQuad(FloatRect(rect)));
+      *this, ancestor, gfx::RectF(rect), rect);
+  transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
   return retval;
 }
 
 bool LayoutSVGBlock::NodeAtPoint(HitTestResult&,
                                  const HitTestLocation&,
                                  const PhysicalOffset&,
-                                 HitTestAction) {
+                                 HitTestPhase) {
   NOT_DESTROYED();
   NOTREACHED();
   return false;

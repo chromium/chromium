@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/examples/example_base.h"
@@ -44,10 +44,10 @@ class VIEWS_EXAMPLES_EXPORT TabbedPaneExample : public ExampleBase,
   void SelectAt();
 
   // The tabbed pane to be tested.
-  TabbedPane* tabbed_pane_;
+  raw_ptr<TabbedPane> tabbed_pane_;
 
   // The button that toggles highlighted style.
-  Button* toggle_highlighted_;
+  raw_ptr<Button> toggle_highlighted_;
 };
 
 }  // namespace examples

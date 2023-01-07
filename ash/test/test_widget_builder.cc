@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -82,8 +82,15 @@ TestWidgetBuilder& TestWidgetBuilder::SetContext(aura::Window* context) {
 TestWidgetBuilder& TestWidgetBuilder::SetActivatable(bool activatable) {
   DCHECK(!built_);
   widget_init_params_.activatable =
-      activatable ? views::Widget::InitParams::ACTIVATABLE_YES
-                  : views::Widget::InitParams::ACTIVATABLE_NO;
+      activatable ? views::Widget::InitParams::Activatable::kYes
+                  : views::Widget::InitParams::Activatable::kNo;
+  return *this;
+}
+
+TestWidgetBuilder& TestWidgetBuilder::SetShowState(
+    ui::WindowShowState show_state) {
+  DCHECK(!built_);
+  widget_init_params_.show_state = show_state;
   return *this;
 }
 
@@ -113,7 +120,7 @@ std::unique_ptr<views::Widget> TestWidgetBuilder::BuildOwnsNativeWidget() {
       views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget->Init(std::move(widget_init_params_));
   if (window_id_ != aura::Window::kInitialId)
-    widget->GetNativeWindow()->set_id(window_id_);
+    widget->GetNativeWindow()->SetId(window_id_);
   if (show_)
     widget->Show();
   return widget;
@@ -128,7 +135,7 @@ views::Widget* TestWidgetBuilder::BuildOwnedByNativeWidget() {
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET;
   widget->Init(std::move(widget_init_params_));
   if (window_id_ != aura::Window::kInitialId)
-    widget->GetNativeWindow()->set_id(window_id_);
+    widget->GetNativeWindow()->SetId(window_id_);
   if (show_)
     widget->Show();
   return widget;

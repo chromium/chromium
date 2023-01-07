@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS CacheStorage.open
+PASS CacheStorage.delete dooms, but does not delete immediately
+PASS CacheStorage.open with an empty name
+PASS CacheStorage.open with no arguments
+PASS CacheStorage.has with existing cache
+PASS CacheStorage.has with nonexistent cache
+PASS CacheStorage.open with existing cache
+PASS CacheStorage.delete with existing cache
+PASS CacheStorage.delete with nonexistent cache
+FAIL CacheStorage names are DOMStrings not USVStrings assert_true: keys should include cache with bad name expected true got false
+Harness: the test ran to completion.
+

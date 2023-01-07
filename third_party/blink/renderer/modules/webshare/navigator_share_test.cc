@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,13 @@
 
 #include <memory>
 #include <utility>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_file_property_bag.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_share_data.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
@@ -150,6 +153,9 @@ TEST_F(NavigatorShareTest, ShareText) {
   EXPECT_EQ(mock_share_service().text(), message);
   EXPECT_EQ(mock_share_service().url(), KURL(url));
   EXPECT_EQ(mock_share_service().files().size(), 0U);
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingTitle));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingText));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingUrl));
   EXPECT_TRUE(
       GetDocument().IsUseCounted(WebFeature::kWebShareSuccessfulWithoutFiles));
 }
@@ -158,9 +164,8 @@ File* CreateSampleFile(ExecutionContext* context,
                        const String& file_name,
                        const String& content_type,
                        const String& file_contents) {
-  HeapVector<ArrayBufferOrArrayBufferViewOrBlobOrUSVString> blob_parts;
-  blob_parts.push_back(ArrayBufferOrArrayBufferViewOrBlobOrUSVString());
-  blob_parts.back().SetUSVString(file_contents);
+  HeapVector<Member<V8BlobPart>> blob_parts;
+  blob_parts.push_back(MakeGarbageCollected<V8BlobPart>(file_contents));
 
   FilePropertyBag file_property_bag;
   file_property_bag.setType(content_type);
@@ -181,10 +186,12 @@ TEST_F(NavigatorShareTest, ShareFile) {
   Share(share_data);
 
   EXPECT_EQ(mock_share_service().files().size(), 1U);
-  EXPECT_EQ(mock_share_service().files()[0]->name, file_name);
+  EXPECT_EQ(mock_share_service().files()[0]->name.path(),
+            StringToFilePath(file_name));
   EXPECT_EQ(mock_share_service().files()[0]->blob->GetType(), content_type);
   EXPECT_EQ(mock_share_service().files()[0]->blob->size(),
             file_contents.length());
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingFiles));
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kWebShareSuccessfulContainingFiles));
 }
@@ -196,6 +203,7 @@ TEST_F(NavigatorShareTest, CancelShare) {
 
   mock_share_service().set_error(mojom::blink::ShareError::CANCELED);
   Share(share_data);
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingTitle));
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kWebShareUnsuccessfulWithoutFiles));
 }
@@ -205,15 +213,20 @@ TEST_F(NavigatorShareTest, CancelShareWithFile) {
   const String content_type = "text/csv";
   const String file_contents = "1,2,3";
 
+  const String url = "https://example.site";
+
   HeapVector<Member<File>> files;
   files.push_back(CreateSampleFile(ExecutionContext::From(GetScriptState()),
                                    file_name, content_type, file_contents));
 
   ShareData share_data;
   share_data.setFiles(files);
+  share_data.setUrl(url);
 
   mock_share_service().set_error(mojom::blink::ShareError::CANCELED);
   Share(share_data);
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingFiles));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kWebShareContainingUrl));
   EXPECT_TRUE(GetDocument().IsUseCounted(
       WebFeature::kWebShareUnsuccessfulContainingFiles));
 }

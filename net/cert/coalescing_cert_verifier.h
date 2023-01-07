@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_verifier.h"
 
@@ -33,6 +32,9 @@ class NET_EXPORT CoalescingCertVerifier : public CertVerifier {
   // Create a new verifier that will forward calls to |verifier|, coalescing
   // any in-flight, not-yet-completed calls to Verify().
   explicit CoalescingCertVerifier(std::unique_ptr<CertVerifier> verifier);
+
+  CoalescingCertVerifier(const CoalescingCertVerifier&) = delete;
+  CoalescingCertVerifier& operator=(const CoalescingCertVerifier&) = delete;
 
   ~CoalescingCertVerifier() override;
 
@@ -68,11 +70,9 @@ class NET_EXPORT CoalescingCertVerifier : public CertVerifier {
 
   std::unique_ptr<CertVerifier> verifier_;
 
-  uint32_t config_id_;
-  uint64_t requests_;
-  uint64_t inflight_joins_;
-
-  DISALLOW_COPY_AND_ASSIGN(CoalescingCertVerifier);
+  uint32_t config_id_ = 0;
+  uint64_t requests_ = 0;
+  uint64_t inflight_joins_ = 0;
 };
 
 }  // namespace net

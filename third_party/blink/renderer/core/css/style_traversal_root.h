@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_TRAVERSAL_ROOT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_TRAVERSAL_ROOT_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 
@@ -70,13 +71,14 @@ class CORE_EXPORT StyleTraversalRoot {
   friend class StyleTraversalRootTestImpl;
 
 #if DCHECK_IS_ON()
-  bool InDOMRemoval() const;
+  bool IsModifyingFlatTree() const;
 #endif
 
   void AssertRootNodeInvariants() {
 #if DCHECK_IS_ON()
     DCHECK(!root_node_ || root_node_->IsDocumentNode() ||
-           IsDirty(*root_node_) || IsChildDirty(*root_node_) || InDOMRemoval());
+           IsDirty(*root_node_) || IsChildDirty(*root_node_) ||
+           IsModifyingFlatTree());
 #endif
   }
 

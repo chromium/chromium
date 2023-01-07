@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -24,6 +23,9 @@ namespace {
 class BubbleViewError : public GlobalErrorWithStandardBubble {
  public:
   BubbleViewError() : bubble_view_close_count_(0) { }
+
+  BubbleViewError(const BubbleViewError&) = delete;
+  BubbleViewError& operator=(const BubbleViewError&) = delete;
 
   int bubble_view_close_count() { return bubble_view_close_count_; }
 
@@ -54,8 +56,6 @@ class BubbleViewError : public GlobalErrorWithStandardBubble {
 
  private:
   int bubble_view_close_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleViewError);
 };
 
 } // namespace
@@ -78,7 +78,7 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorServiceBrowserTest, ShowBubbleView) {
 
   // Creating a second browser window should show the bubble view.
   CreateBrowser(browser()->profile());
-  EXPECT_EQ(NULL, service->GetFirstGlobalErrorWithBubbleView());
+  EXPECT_EQ(nullptr, service->GetFirstGlobalErrorWithBubbleView());
   EXPECT_TRUE(error->HasShownBubbleView());
   EXPECT_EQ(0, error->bubble_view_close_count());
 }
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorServiceBrowserTest, CloseBubbleView) {
 
   // Creating a second browser window should show the bubble view.
   CreateBrowser(browser()->profile());
-  EXPECT_EQ(NULL, service->GetFirstGlobalErrorWithBubbleView());
+  EXPECT_EQ(nullptr, service->GetFirstGlobalErrorWithBubbleView());
   EXPECT_TRUE(error->HasShownBubbleView());
   EXPECT_EQ(0, error->bubble_view_close_count());
 

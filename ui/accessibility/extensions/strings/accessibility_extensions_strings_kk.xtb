@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Барлық сурет анимациялары өшеді.</translation>
 <translation id="1703735871906654364">Белсенді курсор</translation>
 <translation id="1791496371305830581">Барлық анимациялық суреттерге рұқсат беріледі.</translation>
+<translation id="1974060860693918893">Қосымша</translation>
 <translation id="1996252509865389616">Қосу қажет пе?</translation>
 <translation id="2079545284768500474">Қайтару</translation>
 <translation id="2179565792157161713">Ұзын сипаттаманы жаңа қойындыда ашу</translation>
@@ -26,7 +27,7 @@
 <translation id="3812541808639806898">Image Alt Text Viewer</translation>
 <translation id="381767806621926835">Ұзын сипаттамасын көру үшін "longdesc" немесе "aria-describedat" төлсипаты бар кез келген нәрседе оң жақ түймені басыңыз.</translation>
 <translation id="4023902424053835668">Көрсеткі пернелерімен веб-беттер мәтінін шолу.</translation>
-<translation id="4388820049312272371">Курсор орнын жылдам жарқыл арқылы бөлектеу.</translation>
+<translation id="4388820049312272371">Курсор орнын жылдам жарқыл арқылы ерекшелеу.</translation>
 <translation id="4394049700291259645">Өшіру</translation>
 <translation id="4769065380738716500">Кескіндер олардың "Alt" мәтіндеріне ауыстырылған.</translation>
 <translation id="4896660567607030658">Әсерлерсіз, курсорды ғана көрсету.</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Color Enhancer</translation>
 <translation id="633394792577263429">Сөздер арқылы жылжыту үшін &lt;span class='key'&gt;Control&lt;/span&gt; пернесін басып тұрыңыз.</translation>
 <translation id="6550675742724504774">Опциялар</translation>
+<translation id="6699630355767768222">3-қадам: түзету үшін түс осін қайта анықтаңыз.</translation>
 <translation id="6838518108677880446">Орнату:</translation>
 <translation id="690628312087070417">Курсор үлкен қашықтыққа өткенде:</translation>
 <translation id="6965382102122355670">Жарайды</translation>
@@ -64,5 +66,6 @@
 <translation id="8321034316479930120">Анимация саясаты</translation>
 <translation id="8480209185614411573">Жоғары контраст</translation>
 <translation id="8609925175482059018">Белсенді курсор режимін іске қосу үшін &lt;span class='key'&gt;F7&lt;/span&gt; басыңыз. Оны өшіру үшін осы пернені қайта басыңыз.</translation>
+<translation id="8798099450830957504">Әдепкі</translation>
 <translation id="894241283505723656">Контекстік мәзірдегі ұзақ сипаттамалар</translation>
 </translationbundle>

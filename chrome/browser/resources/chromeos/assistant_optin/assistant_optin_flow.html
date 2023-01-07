@@ -1,39 +1,37 @@
-<!-- Copyright 2018 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
-<include src="assistant_get_more.html">
-<include src="assistant_loading.html">
-<include src="assistant_related_info.html">
-<include src="assistant_third_party.html">
-<include src="assistant_value_prop.html">
-<include src="assistant_voice_match.html">
-<include src="icon.html">
-<include src="setting_zippy.html">
-<include src="voice_match_entry.html">
+<link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="/components/common_styles.html">
-<link rel="import" href="/components/oobe_i18n_behavior.html">
-<link rel="import" href="/components/oobe_dialog_host_behavior.html">
-<link rel="import" href="/components/multi_step_behavior.html">
+<link rel="import" href="../components/common_styles/common_styles.html">
+<link rel="import" href="../components/behaviors/multi_step_behavior.html">
+<link rel="import" href="../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../components/behaviors/oobe_i18n_behavior.html">
+
+<link rel="import" href="./assistant_common_styles.html">
+<link rel="import" href="./assistant_icon.html">
+<link rel="import" href="./assistant_loading.html">
+<link rel="import" href="./assistant_related_info.html">
+<link rel="import" href="./assistant_voice_match.html">
+<link rel="import" href="./assistant_value_prop.html">
+<link rel="import" href="./browser_proxy.html">
+<link rel="import" href="./setting_zippy.html">
 
 <dom-module id="assistant-optin-flow-element">
   <template>
-    <style include="oobe-common"></style>
+    <style include="oobe-common-styles assistant-common-styles"></style>
     <link rel="stylesheet" href="../login/oobe_popup_overlay.css">
-    <link rel="stylesheet" href="assistant_shared_styles.css">
-    <link rel="stylesheet" href="assistant_value_prop.css">
     <assistant-loading id="loading" for-step="loading">
     </assistant-loading>
     <assistant-value-prop id="valueProp" for-step="value-prop">
     </assistant-value-prop>
     <assistant-related-info id="relatedInfo" for-step="related-info">
     </assistant-related-info>
-    <assistant-third-party id="thirdParty" for-step="third-party">
-    </assistant-third-party>
     <assistant-voice-match id="voiceMatch" for-step="voice-match">
     </assistant-voice-match>
-    <assistant-get-more id="getMore" for-step="get-more">
-    </assistant-get-more>
   </template>
+  <script src="assistant_optin_flow.js"></script>
 </dom-module>

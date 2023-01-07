@@ -1,23 +1,26 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * Javascript for DeviceTable UI, served from chrome://bluetooth-internals/.
  */
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {define as crUiDefine} from 'chrome://resources/js/cr/ui.js';
+import {$} from 'chrome://resources/js/util.js';
 
+import {DeviceInfo} from './device.mojom-webui.js';
 import {DeviceCollection} from './device_collection.js';
+import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';
 
 const COLUMNS = {
   NAME: 0,
   ADDRESS: 1,
   RSSI: 2,
-  SERVICES: 3,
-  CONNECTION_STATE: 4,
-  LINKS: 5,
+  MANUFACTURER_DATA: 3,
+  SERVICE_UUIDS: 4,
+  CONNECTION_STATE: 5,
+  LINKS: 6,
 };
 
 /**
@@ -46,7 +49,7 @@ DeviceTable.prototype = {
     this.body_ = this.tBodies[0];
     /** @private */
     this.headers_ = this.tHead.rows[0].cells;
-    /** @private {!Map<!bluetooth.mojom.DeviceInfo, boolean>} */
+    /** @private {!Map<!DeviceInfo, boolean>} */
     this.inspectionMap_ = new Map();
   },
 
@@ -58,9 +61,12 @@ DeviceTable.prototype = {
     assert(!this.devices_, 'Devices can only be set once.');
 
     this.devices_ = deviceCollection;
-    this.devices_.addEventListener('sorted', this.redraw_.bind(this));
-    this.devices_.addEventListener('change', this.handleChange_.bind(this));
-    this.devices_.addEventListener('splice', this.handleSplice_.bind(this));
+    this.devices_.addEventListener(
+        'device-update', this.handleDeviceUpdate_.bind(this));
+    this.devices_.addEventListener(
+        'device-added', this.handleDeviceAdded_.bind(this));
+    this.devices_.addEventListener(
+        'devices-reset-for-test', this.redraw_.bind(this));
 
     this.redraw_();
   },
@@ -69,12 +75,12 @@ DeviceTable.prototype = {
    * Updates the inspect status of the row matching the given |deviceInfo|.
    * If |isInspecting| is true, the forget link is enabled otherwise it's
    * disabled.
-   * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
+   * @param {!DeviceInfo} deviceInfo
    * @param {boolean} isInspecting
    */
   setInspecting(deviceInfo, isInspecting) {
     this.inspectionMap_.set(deviceInfo, isInspecting);
-    this.updateRow_(deviceInfo, this.devices_.indexOf(deviceInfo));
+    this.updateRow_(deviceInfo, this.devices_.getByAddress(deviceInfo.address));
   },
 
   /**
@@ -87,21 +93,20 @@ DeviceTable.prototype = {
       bubbles: true,
       detail: {
         address: this.devices_.item(index).address,
-      }
+      },
     });
     this.dispatchEvent(event);
   },
 
   /**
    * Updates table row on change event of the device collection.
-   * @param {!Event} event
+   * @param {!CustomEvent<number>} event
    * @private
    */
-  handleChange_(event) {
+  handleDeviceUpdate_(event) {
     this.updateRow_(
-        /** @type {!bluetooth.mojom.DeviceInfo} */ (
-            this.devices_.item(event.index)),
-        event.index);
+        /** @type {!DeviceInfo} */ (this.devices_.item(event.detail)),
+        event.detail);
   },
 
   /**
@@ -114,29 +119,23 @@ DeviceTable.prototype = {
       bubbles: true,
       detail: {
         address: this.devices_.item(index).address,
-      }
+      },
     });
     this.dispatchEvent(event);
   },
 
   /**
    * Updates table row on splice event of the device collection.
-   * @param {!Event} event
+   * @param {!CustomEvent<device: DeviceInfo, index: number>} event
    * @private
    */
-  handleSplice_(event) {
-    event.removed.forEach(function() {
-      this.body_.deleteRow(event.index);
-    }, this);
-
-    event.added.forEach(function(device, index) {
-      this.insertRow_(device, event.index + index);
-    }, this);
+  handleDeviceAdded_(event) {
+    this.insertRow_(event.detail.device, event.detail.index);
   },
 
   /**
    * Inserts a new row at |index| and updates it with info from |device|.
-   * @param {!bluetooth.mojom.DeviceInfo} device
+   * @param {!DeviceInfo} device
    * @param {?number} index
    * @private
    */
@@ -186,14 +185,13 @@ DeviceTable.prototype = {
 
     for (let i = 0; i < this.devices_.length; i++) {
       this.insertRow_(
-          /** @type {!bluetooth.mojom.DeviceInfo} */ (this.devices_.item(i)),
-          null);
+          /** @type {!DeviceInfo} */ (this.devices_.item(i)), null);
     }
   },
 
   /**
    * Updates the row at |index| with the info from |device|.
-   * @param {!bluetooth.mojom.DeviceInfo} device
+   * @param {!DeviceInfo} device
    * @param {number} index
    * @private
    */
@@ -228,8 +226,12 @@ DeviceTable.prototype = {
         obj = obj[part];
       }
 
-      if (propName == 'isGattConnected') {
+      if (propName === 'isGattConnected') {
         obj = obj ? 'Connected' : 'Not Connected';
+      } else if (propName === 'serviceUuids') {
+        obj = formatServiceUuids(obj);
+      } else if (propName === 'manufacturerDataMap') {
+        obj = formatManufacturerDataMap(obj);
       }
 
       const cell = row.cells[i];

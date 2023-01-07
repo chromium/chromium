@@ -1,11 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_MEDIA_OUTPUT_PROTECTION_IMPL_H_
 #define CHROME_BROWSER_MEDIA_OUTPUT_PROTECTION_IMPL_H_
 
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "media/mojo/mojom/output_protection.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -19,13 +19,9 @@ class RenderFrameHost;
 // their statuses. On all platforms we'll check the network links. On ChromeOS
 // we'll also check the hardware links. Can only be used on the UI thread.
 class OutputProtectionImpl final
-    : public content::FrameServiceBase<media::mojom::OutputProtection> {
+    : public content::DocumentService<media::mojom::OutputProtection> {
  public:
   static void Create(
-      content::RenderFrameHost* render_frame_host,
-      mojo::PendingReceiver<media::mojom::OutputProtection> receiver);
-
-  OutputProtectionImpl(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<media::mojom::OutputProtection> receiver);
 
@@ -35,7 +31,11 @@ class OutputProtectionImpl final
                         EnableProtectionCallback callback) final;
 
  private:
-  // |this| can only be destructed as a FrameServiceBase.
+  OutputProtectionImpl(
+      content::RenderFrameHost& render_frame_host,
+      mojo::PendingReceiver<media::mojom::OutputProtection> receiver);
+
+  // |this| can only be destructed as a DocumentService.
   ~OutputProtectionImpl() final;
 
   // Callbacks for QueryStatus and EnableProtection results.

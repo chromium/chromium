@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,10 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
+#include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/lap_timer.h"
 #include "base/values.h"
 #include "cc/layers/layer_impl.h"
@@ -26,12 +29,11 @@ namespace cc {
 
 namespace {
 
-const int kDefaultRasterizeRepeatCount = 100;
 
 void RunBenchmark(RasterSource* raster_source,
                   ImageDecodeCache* image_decode_cache,
                   const gfx::Rect& content_rect,
-                  float contents_scale,
+                  const gfx::Vector2dF& contents_scale,
                   size_t repeat_count,
                   base::TimeDelta* min_time,
                   bool* is_solid_color) {
@@ -44,12 +46,11 @@ void RunBenchmark(RasterSource* raster_source,
   for (size_t i = 0; i < repeat_count; ++i) {
     // Run for a minimum amount of time to avoid problems with timer
     // quantization when the layer is very small.
-    base::LapTimer timer(kWarmupRuns,
-                         base::TimeDelta::FromMilliseconds(kTimeLimitMillis),
+    base::LapTimer timer(kWarmupRuns, base::Milliseconds(kTimeLimitMillis),
                          kTimeCheckInterval);
-    SkColor color = SK_ColorTRANSPARENT;
-    gfx::Rect layer_rect =
-        gfx::ScaleToEnclosingRect(content_rect, 1.f / contents_scale);
+    SkColor4f color = SkColors::kTransparent;
+    gfx::Rect layer_rect = gfx::ScaleToEnclosingRect(
+        content_rect, 1.f / contents_scale.x(), 1.f / contents_scale.y());
     *is_solid_color =
         raster_source->PerformSolidColorAnalysis(layer_rect, &color);
 
@@ -61,19 +62,21 @@ void RunBenchmark(RasterSource* raster_source,
 
       // Pass an empty settings to make sure that the decode cache is used to
       // replace all images.
-      base::Optional<PlaybackImageProvider::Settings> image_settings;
+      absl::optional<PlaybackImageProvider::Settings> image_settings;
       image_settings.emplace();
       image_settings->images_to_skip = {};
       image_settings->image_to_current_frame_index = {};
 
       PlaybackImageProvider image_provider(
-          image_decode_cache, gfx::ColorSpace(), std::move(image_settings));
+          image_decode_cache, TargetColorParams(), std::move(image_settings));
       RasterSource::PlaybackSettings settings;
       settings.image_provider = &image_provider;
 
       raster_source->PlaybackToCanvas(
           &canvas, raster_source->GetContentSize(contents_scale), content_rect,
-          content_rect, gfx::AxisTransform2d(contents_scale, gfx::Vector2dF()),
+          content_rect,
+          gfx::AxisTransform2d::FromScaleAndTranslation(contents_scale,
+                                                        gfx::Vector2dF()),
           settings);
 
       timer.NextLap();
@@ -125,8 +128,16 @@ class FixedInvalidationPictureLayerTilingClient
     return base_client_->IsDirectlyCompositedImage();
   }
 
+  bool ScrollInteractionInProgress() const override {
+    return base_client_->ScrollInteractionInProgress();
+  }
+
+  bool CurrentScrollCheckerboardsDueToNoRecording() const override {
+    return base_client_->CurrentScrollCheckerboardsDueToNoRecording();
+  }
+
  private:
-  PictureLayerTilingClient* base_client_;
+  raw_ptr<PictureLayerTilingClient> base_client_;
   Region invalidation_;
 };
 
@@ -134,18 +145,10 @@ class FixedInvalidationPictureLayerTilingClient
 
 RasterizeAndRecordBenchmarkImpl::RasterizeAndRecordBenchmarkImpl(
     scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner,
-    base::Value* value,
+    int rasterize_repeat_count,
     MicroBenchmarkImpl::DoneCallback callback)
     : MicroBenchmarkImpl(std::move(callback), origin_task_runner),
-      rasterize_repeat_count_(kDefaultRasterizeRepeatCount) {
-  base::DictionaryValue* settings = nullptr;
-  value->GetAsDictionary(&settings);
-  if (!settings)
-    return;
-
-  if (settings->HasKey("rasterize_repeat_count"))
-    settings->GetInteger("rasterize_repeat_count", &rasterize_repeat_count_);
-}
+      rasterize_repeat_count_(rasterize_repeat_count) {}
 
 RasterizeAndRecordBenchmarkImpl::~RasterizeAndRecordBenchmarkImpl() = default;
 
@@ -156,32 +159,31 @@ void RasterizeAndRecordBenchmarkImpl::DidCompleteCommit(
     layer->RunMicroBenchmark(this);
   }
 
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
-  result->SetDouble("rasterize_time_ms",
-                    rasterize_results_.total_best_time.InMillisecondsF());
-  result->SetInteger("pixels_rasterized", rasterize_results_.pixels_rasterized);
-  result->SetInteger("pixels_rasterized_with_non_solid_color",
-                     rasterize_results_.pixels_rasterized_with_non_solid_color);
-  result->SetInteger("pixels_rasterized_as_opaque",
-                     rasterize_results_.pixels_rasterized_as_opaque);
-  result->SetInteger("total_layers", rasterize_results_.total_layers);
-  result->SetInteger("total_picture_layers",
-                     rasterize_results_.total_picture_layers);
-  result->SetInteger("total_picture_layers_with_no_content",
-                     rasterize_results_.total_picture_layers_with_no_content);
-  result->SetInteger("total_picture_layers_off_screen",
-                     rasterize_results_.total_picture_layers_off_screen);
+  base::Value result(base::Value::Type::DICTIONARY);
+  result.SetDoubleKey("rasterize_time_ms",
+                      rasterize_results_.total_best_time.InMillisecondsF());
+  result.SetIntKey("pixels_rasterized", rasterize_results_.pixels_rasterized);
+  result.SetIntKey("pixels_rasterized_with_non_solid_color",
+                   rasterize_results_.pixels_rasterized_with_non_solid_color);
+  result.SetIntKey("pixels_rasterized_as_opaque",
+                   rasterize_results_.pixels_rasterized_as_opaque);
+  result.SetIntKey("total_layers", rasterize_results_.total_layers);
+  result.SetIntKey("total_picture_layers",
+                   rasterize_results_.total_picture_layers);
+  result.SetIntKey("total_picture_layers_with_no_content",
+                   rasterize_results_.total_picture_layers_with_no_content);
+  result.SetIntKey("total_picture_layers_off_screen",
+                   rasterize_results_.total_picture_layers_off_screen);
 
-  std::unique_ptr<base::DictionaryValue> lcd_text_pixels(
-      new base::DictionaryValue());
+  base::Value lcd_text_pixels(base::Value::Type::DICTIONARY);
   for (size_t i = 0; i < kLCDTextDisallowedReasonCount; i++) {
-    lcd_text_pixels->SetInteger(
+    lcd_text_pixels.SetIntKey(
         LCDTextDisallowedReasonToString(
             static_cast<LCDTextDisallowedReason>(i)),
         rasterize_results_.visible_pixels_by_lcd_text_disallowed_reason[i]);
   }
-  result->SetDictionary("visible_pixels_by_lcd_text_disallowed_reason",
-                        std::move(lcd_text_pixels));
+  result.SetKey("visible_pixels_by_lcd_text_disallowed_reason",
+                std::move(lcd_text_pixels));
 
   NotifyDone(std::move(result));
 }
@@ -196,6 +198,9 @@ void RasterizeAndRecordBenchmarkImpl::RunOnLayer(PictureLayerImpl* layer) {
     rasterize_results_.total_picture_layers_off_screen++;
     return;
   }
+
+  if (layer->ShouldAdjustRasterScale())
+    layer->RecalculateRasterScales();
 
   int text_pixels =
       layer->GetRasterSource()->GetDisplayItemList()->AreaOfDrawText(
@@ -219,18 +224,20 @@ void RasterizeAndRecordBenchmarkImpl::RunOnLayer(PictureLayerImpl* layer) {
           settings.skewport_extrapolation_limit_in_screen_pixels,
           settings.max_preraster_distance_in_screen_pixels);
 
-  PictureLayerTiling* tiling =
-      tiling_set->AddTiling(gfx::AxisTransform2d(), layer->GetRasterSource());
+  PictureLayerTiling* tiling = tiling_set->AddTiling(
+      gfx::AxisTransform2d::FromScaleAndTranslation(
+          layer->raster_contents_scale_, gfx::Vector2dF()),
+      layer->GetRasterSource());
   tiling->set_resolution(HIGH_RESOLUTION);
   tiling->CreateAllTilesForTesting();
   RasterSource* raster_source = tiling->raster_source().get();
-  for (PictureLayerTiling::CoverageIterator it(tiling, 1.f,
-                                               layer->visible_layer_rect());
+  for (PictureLayerTiling::CoverageIterator it(
+           tiling, tiling->contents_scale_key(), layer->visible_layer_rect());
        it; ++it) {
     DCHECK(*it);
 
     gfx::Rect content_rect = (*it)->content_rect();
-    float contents_scale = (*it)->raster_transform().scale();
+    const gfx::Vector2dF& contents_scale = (*it)->raster_transform().scale();
 
     base::TimeDelta min_time;
     bool is_solid_color = false;

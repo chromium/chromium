@@ -1,0 +1,75 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  proto_out_dir = "chromecast/media/audio/net"
+  sources = [ "common.proto" ]
+}
+
+cast_source_set("common") {
+  sources = [
+    "conversions.cc",
+    "conversions.h",
+  ]
+
+  public_deps = [
+    ":proto",
+    "//base",
+    "//chromecast/public",
+    "//chromecast/public/media",
+  ]
+}
+
+cast_source_set("audio_socket") {
+  sources = [
+    "audio_socket.cc",
+    "audio_socket.h",
+  ]
+
+  public_deps = [ "//chromecast/net:small_message_socket" ]
+
+  deps = [
+    "//base",
+    "//chromecast/net:io_buffer_pool",
+    "//net",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+cast_source_set("audio_socket_service") {
+  sources = [
+    "audio_socket_service.cc",
+    "audio_socket_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//net",
+  ]
+
+  if (use_unix_sockets) {
+    sources += [ "audio_socket_service_uds.cc" ]
+    deps += [ "//chromecast/net:socket_util" ]
+  } else {
+    sources += [ "audio_socket_service_tcp.cc" ]
+  }
+}
+
+cast_source_set("audio_socket_service_unittests") {
+  testonly = true
+
+  sources = [ "audio_socket_service_uds_unittest.cc" ]
+  deps = [
+    ":audio_socket_service",
+    "//base",
+    "//base/test:test_support",
+    "//chromecast/net:socket_util",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

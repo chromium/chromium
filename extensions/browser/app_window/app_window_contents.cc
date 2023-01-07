@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,14 @@
 
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/common/extension_messages.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
@@ -46,10 +48,10 @@ void AppWindowContentsImpl::Initialize(content::BrowserContext* context,
 void AppWindowContentsImpl::LoadContents(int32_t creator_process_id) {
   // Sandboxed page that are not in the Chrome App package are loaded in a
   // different process.
-  if (web_contents_->GetMainFrame()->GetProcess()->GetID() !=
+  if (web_contents_->GetPrimaryMainFrame()->GetProcess()->GetID() !=
       creator_process_id) {
     VLOG(1) << "AppWindow created in new process ("
-            << web_contents_->GetMainFrame()->GetProcess()->GetID()
+            << web_contents_->GetPrimaryMainFrame()->GetProcess()->GetID()
             << ") != creator (" << creator_process_id << "). Routing disabled.";
   }
   web_contents_->GetController().LoadURL(
@@ -61,10 +63,10 @@ void AppWindowContentsImpl::NativeWindowChanged(
     NativeAppWindow* native_app_window) {
   base::Value dictionary(base::Value::Type::DICTIONARY);
   host_->GetSerializedState(&dictionary);
-  base::Value args(base::Value::Type::LIST);
+  base::Value::List args;
   args.Append(std::move(dictionary));
 
-  content::RenderFrameHost* rfh = web_contents_->GetMainFrame();
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
   // Return early if this method is called before RenderFrameCreated(). (e.g.
   // if AppWindow is created and shown before navigation, this method is called
   // for the visibility change.)
@@ -77,8 +79,11 @@ void AppWindowContentsImpl::NativeWindowChanged(
 }
 
 void AppWindowContentsImpl::NativeWindowClosed(bool send_onclosed) {
+  // Return early if this method is called when the render frame is not live.
+  if (!web_contents_->GetPrimaryMainFrame()->IsRenderFrameLive())
+    return;
   ExtensionWebContentsObserver::GetForWebContents(web_contents())
-      ->GetLocalFrame(web_contents_->GetMainFrame())
+      ->GetLocalFrame(web_contents_->GetPrimaryMainFrame())
       ->AppWindowClosed(send_onclosed);
 }
 
@@ -104,6 +109,9 @@ bool AppWindowContentsImpl::OnMessageReceived(
 
 void AppWindowContentsImpl::DidFinishNavigation(
     content::NavigationHandle* handle) {
+  if (!handle->IsInPrimaryMainFrame())
+    return;
+
   // The callback inside app_window will be moved after the first call.
   host_->OnDidFinishFirstNavigation();
 }
@@ -111,8 +119,15 @@ void AppWindowContentsImpl::DidFinishNavigation(
 void AppWindowContentsImpl::UpdateDraggableRegions(
     content::RenderFrameHost* sender,
     const std::vector<DraggableRegion>& regions) {
-  if (!sender->GetParent())  // Only process events from the main frame.
-    host_->UpdateDraggableRegions(regions);
+  // This message should come from a primary main frame.
+  if (!sender->IsInPrimaryMainFrame()) {
+    bad_message::ReceivedBadMessage(
+        web_contents_->GetPrimaryMainFrame()->GetProcess(),
+        bad_message::AWCI_INVALID_CALL_FROM_NOT_PRIMARY_MAIN_FRAME);
+    return;
+  }
+
+  host_->UpdateDraggableRegions(regions);
 }
 
 }  // namespace extensions

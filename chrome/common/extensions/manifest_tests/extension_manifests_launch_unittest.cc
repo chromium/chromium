@@ -1,12 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/stl_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
@@ -21,18 +21,16 @@ class AppLaunchManifestTest : public ChromeManifestTest {
 };
 
 TEST_F(AppLaunchManifestTest, AppLaunchContainer) {
-  scoped_refptr<Extension> extension;
-
-  extension = LoadAndExpectSuccess("launch_tab.json");
-  EXPECT_EQ(LaunchContainer::kLaunchContainerTab,
+  scoped_refptr<Extension> extension = LoadAndExpectSuccess("launch_tab.json");
+  EXPECT_EQ(apps::LaunchContainer::kLaunchContainerTab,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
 
   extension = LoadAndExpectSuccess("launch_panel.json");
-  EXPECT_EQ(LaunchContainer::kLaunchContainerPanelDeprecated,
+  EXPECT_EQ(apps::LaunchContainer::kLaunchContainerPanelDeprecated,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
 
   extension = LoadAndExpectSuccess("launch_default.json");
-  EXPECT_EQ(LaunchContainer::kLaunchContainerTab,
+  EXPECT_EQ(apps::LaunchContainer::kLaunchContainerTab,
             AppLaunchInfo::GetLaunchContainer(extension.get()));
 
   extension = LoadAndExpectSuccess("launch_width.json");
@@ -66,7 +64,7 @@ TEST_F(AppLaunchManifestTest, AppLaunchContainer) {
                  errors::kInvalidLaunchValue,
                  keys::kLaunchHeight))
   };
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 TEST_F(AppLaunchManifestTest, AppLaunchURL) {
@@ -104,10 +102,10 @@ TEST_F(AppLaunchManifestTest, AppLaunchURL) {
                  errors::kInvalidLaunchValue,
                  keys::kLaunchWebURL))
   };
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 
-  scoped_refptr<Extension> extension;
-  extension = LoadAndExpectSuccess("launch_local_path.json");
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("launch_local_path.json");
   EXPECT_EQ(extension->url().spec() + "launch.html",
             AppLaunchInfo::GetFullLaunchURL(extension.get()).spec());
 

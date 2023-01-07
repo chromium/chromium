@@ -1,0 +1,19 @@
+include_rules = [
+  "+components/keyed_service/core",
+  "+components/prefs",
+  "+components/shared_highlighting",
+  "+components/signin/public/identity_manager",
+  "+components/strings/grit",
+  "+components/version_info",
+  "+google_apis",
+  "+net",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+ui/base",
+]
+
+specific_include_rules = {
+  "template_(fetcher|store)_unittest\.cc": [
+    "+services/network/test",
+  ]
+}

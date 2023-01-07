@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 
 #include <memory>
 #include <utility>
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -17,17 +18,46 @@
 
 namespace blink {
 
-AppBannerController::AppBannerController(LocalFrame& frame) : frame_(frame) {}
+// static
+const char AppBannerController::kSupplementName[] = "AppBannerController";
 
-void AppBannerController::BindMojoRequest(
+// static
+AppBannerController* AppBannerController::From(LocalDOMWindow& window) {
+  return Supplement<LocalDOMWindow>::From<AppBannerController>(window);
+}
+
+// static
+void AppBannerController::BindReceiver(
     LocalFrame* frame,
     mojo::PendingReceiver<mojom::blink::AppBannerController> receiver) {
-  DCHECK(frame);
+  DCHECK(frame && frame->DomWindow());
+  auto& window = *frame->DomWindow();
+  auto* controller = AppBannerController::From(window);
+  if (!controller) {
+    controller = MakeGarbageCollected<AppBannerController>(
+        base::PassKey<AppBannerController>(), window);
+    Supplement<LocalDOMWindow>::ProvideTo(window, controller);
+  }
+  controller->Bind(std::move(receiver));
+}
 
+AppBannerController::AppBannerController(base::PassKey<AppBannerController>,
+                                         LocalDOMWindow& window)
+    : Supplement<LocalDOMWindow>(window), receiver_(this, &window) {}
+
+void AppBannerController::Bind(
+    mojo::PendingReceiver<mojom::blink::AppBannerController> receiver) {
+  // We only expect one BannerPromptRequest() to ever be in flight at a time,
+  // and there shouldn't never be multiple callers bound at a time.
+  receiver_.reset();
   // See https://bit.ly/2S0zRAS for task types.
-  mojo::MakeSelfOwnedReceiver(std::make_unique<AppBannerController>(*frame),
-                              std::move(receiver),
-                              frame->GetTaskRunner(TaskType::kMiscPlatformAPI));
+  receiver_.Bind(std::move(receiver), GetSupplementable()->GetTaskRunner(
+                                          TaskType::kMiscPlatformAPI));
+}
+
+void AppBannerController::Trace(Visitor* visitor) const {
+  visitor->Trace(receiver_);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 void AppBannerController::BannerPromptRequest(
@@ -36,21 +66,21 @@ void AppBannerController::BannerPromptRequest(
     const Vector<String>& platforms,
     BannerPromptRequestCallback callback) {
   // TODO(hajimehoshi): Add tests for the case the frame is detached.
-  if (!frame_ || !frame_->DomWindow() || !frame_->IsAttached()) {
-    std::move(callback).Run(mojom::blink::AppBannerPromptReply::NONE);
-    return;
+  // TODO(http://crbug/1289079): Test that prompt() behaves correctly when
+  // called in pagehide().
+
+  if (!base::FeatureList::IsEnabled(features::kBackForwardCacheAppBanner)) {
+    // With the current implementation, bfcache could cause prompt() event to be
+    // lost if called after being put into the cache, and the banner will not be
+    // hidden properly. We disable bfcache to avoid these issues.
+    GetSupplementable()->GetFrame()->GetFrameScheduler()->RegisterStickyFeature(
+        blink::SchedulingPolicy::Feature::kAppBanner,
+        {blink::SchedulingPolicy::DisableBackForwardCache()});
   }
 
-  // With the current implementation, bfcache could cause prompt() event to be
-  // lost if called after being put into the cache, and the banner will not be
-  // hidden properly. We disable bfcache to avoid these issues.
-  frame_->GetFrameScheduler()->RegisterStickyFeature(
-      blink::SchedulingPolicy::Feature::kAppBanner,
-      {blink::SchedulingPolicy::DisableBackForwardCache()});
-
   mojom::AppBannerPromptReply reply =
-      frame_->DomWindow()->DispatchEvent(*BeforeInstallPromptEvent::Create(
-          event_type_names::kBeforeinstallprompt, *frame_->DomWindow(),
+      GetSupplementable()->DispatchEvent(*BeforeInstallPromptEvent::Create(
+          event_type_names::kBeforeinstallprompt, *GetSupplementable(),
           std::move(service_remote), std::move(event_receiver), platforms), "AppBannerController::BannerPromptRequest") ==
               DispatchEventResult::kNotCanceled
           ? mojom::AppBannerPromptReply::NONE

@@ -1,0 +1,92 @@
+# This is the filter for browser_tests and interactive_ui_tests that support
+# pixel tests. In order for pixel tests to work, you *must* include your test
+# here.
+#
+# Since these tests will all run in both browser_tests (or interactive_ui_tests)
+# and pixel_browser_tests (or pixel_interactive_ui_tests), avoid including
+# non-pixel tests here.
+#
+# Prefer browser_tests to interactive_ui_tests, as they are less expensive to
+# run; only use interactive_ui_tests if running your test in browser_tests
+# causes flakes (due to widget activation, occlusion, etc.)
+
+AccessCodeCastDialogBrowserTest.*
+AccuracyTipBubbleViewDialogBrowserTest.*
+AppInfoDialogBrowserTest.*
+AskGoogleForSuggestionsDialogTest.*
+AssistantOnboardingViewBrowserTest.InvokeUi_*
+BookmarkBubbleViewBrowserTest.*
+BookmarkEditorViewBrowserTest.*
+BubbleFrameViewBrowserTest.*
+ChromeLabsUiTest.*
+ConfirmBubbleTest.*
+ContentAnalysysDialogUiTest.*
+ContentSettingBubbleDialogTest.*
+CookieControlsBubbleViewTest.*
+CryptoModulePasswordDialogTest.*
+DeepScanningFailureModalDialogTest.*
+*DiceWebSigninInterceptionBubblePixelTest.InvokeUi_*
+*DiceWebSigninInterceptionBubbleSyncPromoPixelTest.InvokeUi_*
+ExtensionInstallDialogViewInteractiveBrowserTest.*
+ExtensionUninstallDialogViewInteractiveBrowserTest.*
+*EyeDropperBrowserTest.*
+FeaturePromoDialogIntentChipTest.InvokeUi_*
+FeaturePromoDialogTest.InvokeUi_*
+FileSystemAccessUsageBubbleViewTest.*
+FirstRunDialogTest.*
+GlobalErrorBubbleTest.*
+HatsBubbleTest.*
+HomeButtonUiTest.*
+HungRendererDialogViewBrowserTest.*
+ImportLockDialogViewBrowserTest.*
+InlineLoginHelperBrowserTest.InvokeUi_*
+IntentPickerDialogTest.*
+IntentPickerDialogGridViewTest.*
+WebUIInteractionTestUtilInteractiveUiTest.CompareScreenshot_*
+WebUIInteractionTestUtilTest.CompareScreenshot_*
+LocalCardMigrationBrowserUiTest.*
+NewTabPageTest.*
+OneTimePermissionPromptBubbleViewBrowserTest.*
+OutdatedUpgradeBubbleTest.*
+PageInfoBubbleViewAboutThisSiteDialogBrowserTest.*
+PageInfoBubbleViewDialogBrowserTest.*
+PageInfoBubbleViewPrivacySandboxDialogBrowserTest.*
+PageInfoBubbleViewHistoryDialogBrowserTest.*
+PageInfoBubbleViewCookiesSubpageBrowserTest.*
+PageInfoBubbleViewIsolatedWebAppBrowserTest.*
+*PasswordBubbleBrowserTest.*
+PasswordReuseModalWarningTest.*
+PermissionRequestChipDialogBrowserTest.*
+*PermissionPromptBubbleViewBrowserTest.*
+PrivacySandboxDialogViewBrowserTest.*
+PrivacySandboxNoticeBubbleBrowserTest.*
+PromptForScanningModalDialogTest.*
+QRCodeGeneratorBubbleBrowserTest.*
+RelaunchRecommendedBubbleViewDialogTest.*
+RelaunchRequiredDialogViewDialogTest.*
+ReopenTabPromoControllerDialogBrowserTest.*
+SafetyTipPageInfoBubbleViewDialogTest.*
+ScreenCaptureNotificationUiBrowserTest.*
+SecurePaymentConfirmationDialogViewTest.InvokeUi_*
+*SendTabToSelfBubbleTest.*
+SessionCrashedBubbleViewTest.*
+TabGroupEditorBubbleViewDialogBrowserTest.*
+TabHoverCardBubbleViewDialogBrowserTest.*
+*TailoredSecurityDesktopModalTest.InvokeUi_*
+TranslateBubbleVisualTest.InvokeUi_*
+UpdateRecommendedDialogTest.*
+WebAppConfirmViewBrowserTest.*
+ZoomBubbleDialogTest.*
+
+# This test uses random network port and shows it on ui.
+-ContentSettingBubbleDialogTest.InvokeUi_popups
+-OutdatedUpgradeBubbleTest.InvokeUi_Critical
+# TODO(crbug.com/1108988): Fix this flakiness test.
+-BookmarkBubbleViewBrowserTest.InvokeUi_bookmark_details_signed_in
+
+# TODO(crbug.com/2666206): Flaky
+-ContentSettingBubbleDialogTest.InvokeUi_mediastream_camera
+-ContentSettingBubbleDialogTest.InvokeUi_mediastream_mic_and_camera
+
+# TODO(crbug.com/1164574): Flaky
+-ContentSettingBubbleDialogTest.InvokeUi_mediastream_mic

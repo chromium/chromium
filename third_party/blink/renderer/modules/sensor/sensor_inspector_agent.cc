@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,8 @@
 #include "third_party/blink/renderer/modules/sensor/sensor_provider_proxy.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_proxy_inspector_impl.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
@@ -27,9 +28,9 @@ void FillQuaternion(double alpha,
                     double beta,
                     double gamma,
                     device::SensorReadingQuat* reading) {
-  double half_x_angle = deg2rad(beta) * 0.5;
-  double half_y_angle = deg2rad(gamma) * 0.5;
-  double half_z_angle = deg2rad(alpha) * 0.5;
+  double half_x_angle = Deg2rad(beta) * 0.5;
+  double half_y_angle = Deg2rad(gamma) * 0.5;
+  double half_z_angle = Deg2rad(alpha) * 0.5;
 
   double cos_z = cos(half_z_angle);
   double sin_z = sin(half_z_angle);

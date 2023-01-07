@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
@@ -37,25 +38,29 @@ int GetWindowIdOfGroup(const tab_groups::TabGroupId& id) {
   return -1;
 }
 
-std::unique_ptr<api::tab_groups::TabGroup> CreateTabGroupObject(
+api::tab_groups::TabGroup CreateTabGroupObject(
     const tab_groups::TabGroupId& id,
     const tab_groups::TabGroupVisualData& visual_data) {
-  auto tab_group_object = std::make_unique<api::tab_groups::TabGroup>();
-  tab_group_object->id = GetGroupId(id);
-  tab_group_object->collapsed = visual_data.is_collapsed();
-  tab_group_object->color = ColorIdToColor(visual_data.color());
-  tab_group_object->title =
-      std::make_unique<std::string>(base::UTF16ToUTF8(visual_data.title()));
-  tab_group_object->window_id = GetWindowIdOfGroup(id);
+  api::tab_groups::TabGroup tab_group_object;
+  tab_group_object.id = GetGroupId(id);
+  tab_group_object.collapsed = visual_data.is_collapsed();
+  tab_group_object.color = ColorIdToColor(visual_data.color());
+  tab_group_object.title = base::UTF16ToUTF8(visual_data.title());
+  tab_group_object.window_id = GetWindowIdOfGroup(id);
 
   return tab_group_object;
 }
 
-std::unique_ptr<api::tab_groups::TabGroup> CreateTabGroupObject(
+absl::optional<api::tab_groups::TabGroup> CreateTabGroupObject(
     const tab_groups::TabGroupId& id) {
   Browser* browser = chrome::FindBrowserWithGroup(id, nullptr);
+  if (!browser)
+    return absl::nullopt;
+
+  CHECK(browser->tab_strip_model()->SupportsTabGroups());
+  TabGroupModel* group_model = browser->tab_strip_model()->group_model();
   const tab_groups::TabGroupVisualData* visual_data =
-      browser->tab_strip_model()->group_model()->GetTabGroup(id)->visual_data();
+      group_model->GetTabGroup(id)->visual_data();
 
   DCHECK(visual_data);
 
@@ -75,12 +80,14 @@ bool GetGroupById(int group_id,
   Profile* profile = Profile::FromBrowserContext(browser_context);
   Profile* incognito_profile =
       include_incognito && profile->HasPrimaryOTRProfile()
-          ? profile->GetPrimaryOTRProfile()
+          ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
           : nullptr;
   for (auto* target_browser : *BrowserList::GetInstance()) {
     if (target_browser->profile() == profile ||
         target_browser->profile() == incognito_profile) {
       TabStripModel* target_tab_strip = target_browser->tab_strip_model();
+      if (!target_tab_strip->SupportsTabGroups())
+        continue;
       for (tab_groups::TabGroupId target_group :
            target_tab_strip->group_model()->ListTabGroups()) {
         if (GetGroupId(target_group) == group_id) {
@@ -133,6 +140,8 @@ api::tab_groups::Color ColorIdToColor(
       return api::tab_groups::COLOR_PURPLE;
     case tab_groups::TabGroupColorId::kCyan:
       return api::tab_groups::COLOR_CYAN;
+    case tab_groups::TabGroupColorId::kOrange:
+      return api::tab_groups::COLOR_ORANGE;
   }
 
   NOTREACHED();
@@ -157,6 +166,8 @@ tab_groups::TabGroupColorId ColorToColorId(api::tab_groups::Color color) {
       return tab_groups::TabGroupColorId::kPurple;
     case api::tab_groups::COLOR_CYAN:
       return tab_groups::TabGroupColorId::kCyan;
+    case api::tab_groups::COLOR_ORANGE:
+      return tab_groups::TabGroupColorId::kOrange;
     case api::tab_groups::COLOR_NONE:
       NOTREACHED();
   }

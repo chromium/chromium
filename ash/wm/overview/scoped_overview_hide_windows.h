@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,10 @@ class ScopedOverviewHideWindows : public aura::WindowObserver {
       delete;
   ~ScopedOverviewHideWindows() override;
 
+  bool HasWindow(aura::Window* window) const;
   void AddWindow(aura::Window* window);
   void RemoveWindow(aura::Window* window);
+  void RemoveAllWindows();
 
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;

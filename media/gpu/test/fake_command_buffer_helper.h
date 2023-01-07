@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <map>
 #include <set>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "media/gpu/command_buffer_helper.h"
 
 namespace media {
@@ -19,6 +19,9 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
  public:
   explicit FakeCommandBufferHelper(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  FakeCommandBufferHelper(const FakeCommandBufferHelper&) = delete;
+  FakeCommandBufferHelper& operator=(const FakeCommandBufferHelper&) = delete;
 
   // Signal stub destruction. All textures will be deleted.  Listeners will
   // be notified that we have a current context unless one calls ContextLost
@@ -40,6 +43,9 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
   // CommandBufferHelper implementation.
   gl::GLContext* GetGLContext() override;
   gpu::SharedImageStub* GetSharedImageStub() override;
+#if BUILDFLAG(IS_WIN)
+  gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() override;
+#endif
   bool HasStub() override;
   bool MakeContextCurrent() override;
   std::unique_ptr<gpu::SharedImageRepresentationFactoryRef> Register(
@@ -57,7 +63,6 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
                  gl::GLImage* image,
                  bool client_managed) override;
   gpu::Mailbox CreateMailbox(GLuint service_id) override;
-  void ProduceTexture(const gpu::Mailbox& mailbox, GLuint service_id) override;
   void WaitForSyncToken(gpu::SyncToken sync_token,
                         base::OnceClosure done_cb) override;
   void SetWillDestroyStubCB(WillDestroyStubCB will_destroy_stub_cb) override;
@@ -78,8 +83,6 @@ class FakeCommandBufferHelper : public CommandBufferHelper {
   std::map<gpu::SyncToken, base::OnceClosure> waits_;
 
   WillDestroyStubCB will_destroy_stub_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCommandBufferHelper);
 };
 
 }  // namespace media

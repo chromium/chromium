@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -12,7 +12,6 @@
 #include <ctime>
 #include <string>
 
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/media_galleries/win/mtp_device_object_entry.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,7 +65,7 @@ TEST_F(MTPDeviceObjectEnumeratorWinTest, Empty) {
 
 TEST_F(MTPDeviceObjectEnumeratorWinTest, Traversal) {
   MTPDeviceObjectEntries entries;
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     entries.push_back(MTPDeviceObjectEntry(
         kTestCases[i].object_id,
         kTestCases[i].name,
@@ -77,7 +76,7 @@ TEST_F(MTPDeviceObjectEnumeratorWinTest, Traversal) {
   MTPDeviceObjectEnumerator enumerator(entries);
   TestEnumeratorIsEmpty(&enumerator);
   TestEnumeratorIsEmpty(&enumerator);
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     EXPECT_EQ(kTestCases[i].name, enumerator.Next().AsUTF16Unsafe());
     EXPECT_EQ(kTestCases[i].object_id, enumerator.GetObjectId());
     EXPECT_EQ(kTestCases[i].size, enumerator.Size());

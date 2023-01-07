@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Message sent to closed port should not arrive.
+PASS Message sent from closed port should not arrive.
+PASS Message sent to closed port from transferred port should not arrive.
+PASS Inflight messages should be delivered even when sending port is closed afterwards.
+PASS Close in onmessage should not cancel inflight messages.
+FAIL close() detaches a MessagePort (but not the one its entangled with) assert_throws_dom: function "() => c2.port1.postMessage(null, [c1.port1])" did not throw
+Harness: the test ran to completion.
+

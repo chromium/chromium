@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ CastResourceDelegate::~CastResourceDelegate() {
 
 base::FilePath CastResourceDelegate::GetPathForResourcePack(
     const base::FilePath& pack_path,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return pack_path;
 }
 
@@ -62,18 +62,19 @@ gfx::Image CastResourceDelegate::GetNativeImageNamed(int resource_id) {
 
 base::RefCountedStaticMemory* CastResourceDelegate::LoadDataResourceBytes(
     int resource_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return NULL;
 }
 
-base::Optional<std::string> CastResourceDelegate::LoadDataResourceString(
+absl::optional<std::string> CastResourceDelegate::LoadDataResourceString(
     int resource_id) {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-bool CastResourceDelegate::GetRawDataResource(int resource_id,
-                                              ui::ScaleFactor scale_factor,
-                                              base::StringPiece* value) const {
+bool CastResourceDelegate::GetRawDataResource(
+    int resource_id,
+    ui::ResourceScaleFactor scale_factor,
+    base::StringPiece* value) const {
   return false;
 }
 

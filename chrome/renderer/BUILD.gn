@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import("//components/offline_pages/buildflags/features.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
+import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/widevine/cdm/widevine.gni")
@@ -38,10 +39,13 @@ grit("resources") {
     "//url/mojom:url_mojom_gurl_js",
     "//url/mojom:url_mojom_origin_js",
   ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/components/remote_apps/mojom:mojom_js" ]
+  }
   if (is_chromeos_ash) {
     deps += [
-      "//chromeos/components/remote_apps/mojom:mojom_js",
-      "//chromeos/services/ime/public/mojom:mojom_js",
+      "//ash/services/ime/public/mojom:mojom_js",
+      "//chromeos/ash/components/enhanced_network_tts/mojom:mojom_js",
       "//chromeos/services/tts/public/mojom:mojom_js",
     ]
   }
@@ -53,6 +57,8 @@ static_library("renderer") {
     "benchmarking_extension.h",
     "browser_exposed_renderer_interfaces.cc",
     "browser_exposed_renderer_interfaces.h",
+    "cart/commerce_hint_agent.cc",
+    "cart/commerce_hint_agent.h",
     "chrome_content_renderer_client.cc",
     "chrome_content_renderer_client.h",
     "chrome_content_settings_agent_delegate.cc",
@@ -63,18 +69,10 @@ static_library("renderer") {
     "chrome_render_thread_observer.h",
     "custom_menu_commands.h",
     "instant_restricted_id_cache.h",
-    "lite_video/lite_video_hint_agent.cc",
-    "lite_video/lite_video_hint_agent.h",
-    "lite_video/lite_video_url_loader_throttle.cc",
-    "lite_video/lite_video_url_loader_throttle.h",
-    "lite_video/lite_video_util.cc",
-    "lite_video/lite_video_util.h",
     "loadtimes_extension_bindings.cc",
     "loadtimes_extension_bindings.h",
     "media/chrome_key_systems.cc",
     "media/chrome_key_systems.h",
-    "media/chrome_key_systems_provider.cc",
-    "media/chrome_key_systems_provider.h",
     "media/flash_embed_rewrite.cc",
     "media/flash_embed_rewrite.h",
     "media/media_feeds.cc",
@@ -95,27 +93,6 @@ static_library("renderer") {
     "plugins/pdf_plugin_placeholder.h",
     "plugins/plugin_uma.cc",
     "plugins/plugin_uma.h",
-    "previews/resource_loading_hints_agent.cc",
-    "previews/resource_loading_hints_agent.h",
-    "subresource_redirect/login_robots_compression_metrics.cc",
-    "subresource_redirect/login_robots_compression_metrics.h",
-    "subresource_redirect/login_robots_decider_agent.cc",
-    "subresource_redirect/login_robots_decider_agent.h",
-    "subresource_redirect/public_image_hints_decider_agent.cc",
-    "subresource_redirect/public_image_hints_decider_agent.h",
-    "subresource_redirect/public_resource_decider.h",
-    "subresource_redirect/public_resource_decider_agent.cc",
-    "subresource_redirect/public_resource_decider_agent.h",
-    "subresource_redirect/robots_rules_parser.cc",
-    "subresource_redirect/robots_rules_parser.h",
-    "subresource_redirect/robots_rules_parser_cache.cc",
-    "subresource_redirect/robots_rules_parser_cache.h",
-    "subresource_redirect/subresource_redirect_params.cc",
-    "subresource_redirect/subresource_redirect_params.h",
-    "subresource_redirect/subresource_redirect_url_loader_throttle.cc",
-    "subresource_redirect/subresource_redirect_url_loader_throttle.h",
-    "subresource_redirect/subresource_redirect_util.cc",
-    "subresource_redirect/subresource_redirect_util.h",
     "sync_encryption_keys_extension.cc",
     "sync_encryption_keys_extension.h",
     "url_loader_throttle_provider_impl.cc",
@@ -149,19 +126,32 @@ static_library("renderer") {
     "//chrome:strings",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
+    "//chrome/common/cart:mojo_bindings",
     "//chrome/common/net",
-    "//chrome/common/performance_manager/mojom",
     "//chrome/common/search:mojo_bindings",
+    "//chrome/services/speech/buildflags",
     "//components/autofill/content/renderer",
+    "//components/autofill/core/common:features",
+    "//components/autofill_assistant/content/renderer",
     "//components/base32",
     "//components/cdm/renderer",
+    "//components/commerce/core:commerce_heuristics_data",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:heuristics_provider",
     "//components/content_capture/common",
     "//components/content_capture/renderer",
     "//components/content_settings/common:mojom",
     "//components/content_settings/renderer",
-    "//components/contextual_search/content:renderer",
-    "//components/data_reduction_proxy/core/common",
+    "//components/continuous_search/renderer",
     "//components/dom_distiller/content/renderer",
+    "//components/feed:buildflags",
+    "//components/feed:feature_list",
+    "//components/feed/content/renderer:feed_renderer",
+    "//components/heap_profiling/in_process",
+    "//components/history_clusters/core",
+    "//components/lens",
+    "//components/lens:lens_mojo",
+    "//components/metrics:child_call_stack_profile_builder",
     "//components/network_hints/renderer",
     "//components/no_state_prefetch/common",
     "//components/no_state_prefetch/renderer",
@@ -170,6 +160,7 @@ static_library("renderer") {
     "//components/page_image_annotation/content/renderer",
     "//components/page_load_metrics/renderer",
     "//components/paint_preview/buildflags",
+    "//components/password_manager/core/common",
     "//components/plugins/renderer",
     "//components/resources:components_resources",
     "//components/resources:components_scaled_resources",
@@ -177,24 +168,23 @@ static_library("renderer") {
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/content/renderer",
     "//components/safe_browsing/content/renderer:throttles",
-    "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:interfaces",
+    "//components/search:search",
     "//components/security_interstitials/content/renderer:security_interstitial_page_controller",
     "//components/security_interstitials/core:",
     "//components/security_interstitials/core/common/mojom:",
     "//components/spellcheck:buildflags",
     "//components/subresource_filter/content/renderer",
     "//components/subresource_filter/core/common",
-    "//components/subresource_redirect/common",
-    "//components/subresource_redirect/proto",
     "//components/sync/driver",
     "//components/translate/content/renderer",
     "//components/translate/core/common",
     "//components/translate/core/language_detection",
     "//components/visitedlink/renderer",
+    "//components/web_cache/public:features",
     "//components/web_cache/renderer",
     "//components/webapps/renderer",
-    "//content/app/resources",
     "//content/public/child",
     "//content/public/common",
     "//content/public/renderer",
@@ -207,7 +197,6 @@ static_library("renderer") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//pdf:buildflags",
-    "//pdf:pdf_view_web_plugin",
     "//ppapi/buildflags",
     "//printing/buildflags",
     "//services/metrics/public/cpp:metrics_cpp",
@@ -232,31 +221,35 @@ static_library("renderer") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (enable_nacl) {
-    deps += [
-      "//components/nacl/loader",
-      "//components/nacl/renderer",
-    ]
+    deps += [ "//components/nacl/renderer" ]
+
+    # TODO(https://crbug.com/1299021): Implement building this NaCl target as
+    # ARM32 when Chrome is built for ARM64 (for Linux/Chrome OS).
+    if (target_cpu != "arm64") {
+      deps += [ "//components/nacl/loader" ]
+    }
   }
+
   if (enable_plugins) {
+    sources += [
+      "plugins/chrome_plugin_placeholder.cc",
+      "plugins/chrome_plugin_placeholder.h",
+    ]
+    deps += [ "//components/strings" ]
+  }
+
+  if (enable_ppapi) {
     sources += [
       "pepper/chrome_renderer_pepper_host_factory.cc",
       "pepper/chrome_renderer_pepper_host_factory.h",
-      "pepper/pepper_flash_font_file_host.cc",
-      "pepper/pepper_flash_font_file_host.h",
-      "pepper/pepper_flash_fullscreen_host.cc",
-      "pepper/pepper_flash_fullscreen_host.h",
       "pepper/pepper_helper.cc",
       "pepper/pepper_helper.h",
       "pepper/pepper_shared_memory_message_filter.cc",
       "pepper/pepper_shared_memory_message_filter.h",
       "pepper/pepper_uma_host.cc",
       "pepper/pepper_uma_host.h",
-      "plugins/chrome_plugin_placeholder.cc",
-      "plugins/chrome_plugin_placeholder.h",
     ]
     deps += [
-      "//components/pdf/renderer",
-      "//components/strings",
       "//media:media_buildflags",
       "//ppapi/host",
       "//ppapi/proxy",
@@ -269,8 +262,27 @@ static_library("renderer") {
     }
   }
 
+  if (enable_pdf) {
+    sources += [
+      "pdf/chrome_pdf_internal_plugin_delegate.cc",
+      "pdf/chrome_pdf_internal_plugin_delegate.h",
+    ]
+
+    deps += [
+      "//components/pdf/common",
+      "//components/pdf/renderer",
+    ]
+
+    if (is_linux || is_chromeos) {
+      deps += [ "//pdf:font_table_linux" ]
+    }
+  }
+
   if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
+    deps += [
+      "//ash/constants",
+      "//ash/webui/file_manager:constants",
+    ]
   }
 
   if (enable_widevine_cdm_component) {
@@ -280,6 +292,10 @@ static_library("renderer") {
   if (safe_browsing_mode != 0) {
     deps +=
         [ "//components/safe_browsing/content/renderer/phishing_classifier" ]
+  }
+
+  if (enable_feed_v2) {
+    deps += [ "//components/feed/content/renderer:feed_renderer" ]
   }
 
   if (enable_extensions) {
@@ -292,14 +308,10 @@ static_library("renderer") {
       "extensions/chrome_extensions_dispatcher_delegate.h",
       "extensions/chrome_extensions_renderer_client.cc",
       "extensions/chrome_extensions_renderer_client.h",
-      "extensions/chrome_v8_extension_handler.cc",
-      "extensions/chrome_v8_extension_handler.h",
       "extensions/extension_hooks_delegate.cc",
       "extensions/extension_hooks_delegate.h",
-      "extensions/extension_localization_peer.cc",
-      "extensions/extension_localization_peer.h",
-      "extensions/extension_process_policy.cc",
-      "extensions/extension_process_policy.h",
+      "extensions/identity_hooks_delegate.cc",
+      "extensions/identity_hooks_delegate.h",
       "extensions/media_galleries_custom_bindings.cc",
       "extensions/media_galleries_custom_bindings.h",
       "extensions/notifications_native_handler.cc",
@@ -316,16 +328,11 @@ static_library("renderer") {
       "extensions/tabs_hooks_delegate.h",
     ]
     deps += [
-      # TODO(hclam): See crbug.com/298380 for details.
-      # We should isolate the APIs needed by the renderer.
       "//chrome/common/extensions/api",
       "//components/guest_view/renderer",
       "//extensions:extensions_resources",
       "//extensions/common:mojom",
       "//extensions/renderer",
-      "//media/cast:net",
-      "//media/cast:receiver",
-      "//media/cast:sender",
       "//services/network/public/cpp",
     ]
     public_deps += [ "//ipc" ]
@@ -343,12 +350,6 @@ static_library("renderer") {
       "printing/chrome_print_render_frame_helper_delegate.cc",
       "printing/chrome_print_render_frame_helper_delegate.h",
     ]
-    if (enable_print_preview) {
-      sources += [
-        "pepper/chrome_pdf_print_client.cc",
-        "pepper/chrome_pdf_print_client.h",
-      ]
-    }
   }
 
   if (enable_paint_preview) {
@@ -357,24 +358,22 @@ static_library("renderer") {
 
   if (is_win) {
     deps += [ "//third_party/wtl" ]
-  }
-
-  if (is_chromeos_ash || is_chromeos_lacros) {
     sources += [
-      "extensions/platform_keys_natives.cc",
-      "extensions/platform_keys_natives.h",
+      "font_prewarmer.cc",
+      "font_prewarmer.h",
+      "render_frame_font_family_accessor.cc",
+      "render_frame_font_family_accessor.h",
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "extensions/file_browser_handler_custom_bindings.cc",
       "extensions/file_browser_handler_custom_bindings.h",
-      "extensions/file_manager_private_custom_bindings.cc",
-      "extensions/file_manager_private_custom_bindings.h",
+      "extensions/platform_keys_natives.cc",
+      "extensions/platform_keys_natives.h",
     ]
     if (use_cups) {
-      configs += [ "//printing:cups" ]
       sources += [
         "extensions/printing_hooks_delegate.cc",
         "extensions/printing_hooks_delegate.h",
@@ -382,10 +381,17 @@ static_library("renderer") {
     }
   }
 
+  if (is_chromeos_ash) {
+    sources += [
+      "extensions/file_manager_private_custom_bindings.cc",
+      "extensions/file_manager_private_custom_bindings.h",
+    ]
+  }
+
   if (!is_android) {
     sources += [
-      "cart/commerce_hint_agent.cc",
-      "cart/commerce_hint_agent.h",
+      "accessibility/read_anything_app_controller.cc",
+      "accessibility/read_anything_app_controller.h",
       "media/chrome_speech_recognition_client.cc",
       "media/chrome_speech_recognition_client.h",
       "searchbox/searchbox.cc",
@@ -395,11 +401,8 @@ static_library("renderer") {
     ]
 
     deps += [
-      "//chrome/common/cart:mojo_bindings",
-      "//chrome/common/search:generate_chrome_colors_info",
-      "//chrome/common/search:generate_colors_info",
+      "//chrome/common/accessibility:mojo_bindings",
       "//components/crx_file",
-      "//components/search:search",
     ]
   }
 
@@ -411,10 +414,6 @@ static_library("renderer") {
       "net/page_auto_fetcher_helper_android.h",
       "sandbox_status_extension_android.cc",
       "sandbox_status_extension_android.h",
-    ]
-    deps += [
-      "//components/continuous_search/renderer",
-      "//components/embedder_support/android/common:url_constants",
     ]
   }
 
@@ -428,29 +427,16 @@ static_library("renderer") {
   }
 
   if (is_chromeos_ash) {
-    sources += [
-      "performance_manager/mechanisms/tcmalloc_tunables_impl.cc",
-      "performance_manager/mechanisms/tcmalloc_tunables_impl.h",
-    ]
+    if (target_cpu == "x64") {
+      sources += [
+        "performance_manager/mechanisms/userspace_swap_impl_chromeos.cc",
+        "performance_manager/mechanisms/userspace_swap_impl_chromeos.h",
+      ]
 
-    deps += [ "//chrome/common/performance_manager/mojom" ]
+      deps += [
+        "//chromeos/ash/components/memory/userspace_swap",
+        "//chromeos/ash/components/memory/userspace_swap:mojom",
+      ]
+    }
   }
-}
-
-fuzzer_test("robots_rules_parser_fuzzer") {
-  sources = [
-    "subresource_redirect/robots_rules_parser.cc",
-    "subresource_redirect/robots_rules_parser.h",
-    "subresource_redirect/robots_rules_parser_fuzzer.cc",
-    "subresource_redirect/subresource_redirect_params.cc",
-    "subresource_redirect/subresource_redirect_params.h",
-  ]
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//chrome/common:constants",
-    "//components/subresource_redirect/proto",
-    "//third_party/blink/public/common",
-    "//third_party/icu/fuzzers:fuzzer_support",
-  ]
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.browserservices.intents;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import org.chromium.components.webapps.WebApkDistributor;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +48,17 @@ public class WebApkExtras {
      * URL that the WebAPK should navigate to when launched from the homescreen.
      */
     public final String manifestStartUrl;
+
+    /**
+     * Id field of the Web Manifest.
+     */
+    public final String manifestId;
+
+    /**
+     * Key of the WebAPK. It's either the Manifest URL or the Manifest Unique ID depending on the
+     * situation.
+     */
+    public final String appKey;
 
     /** The source from where the WebAPK is installed. */
     public final @WebApkDistributor int distributor;
@@ -106,7 +119,8 @@ public class WebApkExtras {
     public static WebApkExtras createEmpty() {
         return new WebApkExtras(null /* webApkPackageName */, new WebappIcon(),
                 false /* isSplashIconMaskable */, 0 /* shellApkVersion */, null /* manifestUrl */,
-                null /* manifestStartUrl */, WebApkDistributor.OTHER,
+                null /* manifestStartUrl */, null /* manifestId */, null /*appkey*/,
+                WebApkDistributor.OTHER,
                 new HashMap<String, String>() /* iconUrlToMurmur2HashMap */, null /* shareTarget */,
                 false /* isSplashProvidedByWebApk */, new ArrayList<>() /* shortcutItems */,
                 0 /* webApkVersionCode */);
@@ -114,7 +128,8 @@ public class WebApkExtras {
 
     public WebApkExtras(String webApkPackageName, @NonNull WebappIcon splashIcon,
             boolean isSplashIconMaskable, int shellApkVersion, String manifestUrl,
-            String manifestStartUrl, @WebApkDistributor int distributor,
+            String manifestStartUrl, String manifestId, String appKey,
+            @WebApkDistributor int distributor,
             @NonNull Map<String, String> iconUrlToMurmur2HashMap,
             @Nullable WebApkShareTarget shareTarget, boolean isSplashProvidedByWebApk,
             @NonNull List<ShortcutItem> shortcutItems, int webApkVersionCode) {
@@ -124,6 +139,8 @@ public class WebApkExtras {
         this.shellApkVersion = shellApkVersion;
         this.manifestUrl = manifestUrl;
         this.manifestStartUrl = manifestStartUrl;
+        this.manifestId = manifestId;
+        this.appKey = appKey;
         this.distributor = distributor;
         this.iconUrlToMurmur2HashMap = iconUrlToMurmur2HashMap;
         this.shareTarget = shareTarget;

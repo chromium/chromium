@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL execCommand('selectAll') should select all content in the document even if the document body ends with editable content assert_false: Selection should not be collapsed after calling document.execCommand("selectAll") expected false got true
+FAIL execCommand('selectAll') should select all content in the document when selection is in <input> assert_false: Selection should not be collapsed after calling document.execCommand("selectAll") expected false got true
+FAIL execCommand('selectAll') should select all content in the document when selection is in <textarea> assert_false: Selection should not be collapsed after calling document.execCommand("selectAll") expected false got true
+Harness: the test ran to completion.
+

@@ -43,7 +43,7 @@ class WebDocument;
 class WebPepperSocketClient;
 class WebURL;
 
-class WebPepperSocket {
+class BLINK_EXPORT WebPepperSocket {
  public:
   enum CloseEventCode {
     kCloseEventCodeNotSpecified = -1,
@@ -64,9 +64,8 @@ class WebPepperSocket {
     kCloseEventCodeMaximumUserDefined = 4999
   };
 
-  BLINK_EXPORT static std::unique_ptr<WebPepperSocket> Create(
-      const WebDocument&,
-      WebPepperSocketClient*);
+  static std::unique_ptr<WebPepperSocket> Create(const WebDocument&,
+                                                 WebPepperSocketClient*);
   virtual ~WebPepperSocket() = default;
 
   virtual void Connect(const WebURL&, const WebString& protocol) = 0;

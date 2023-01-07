@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,8 +25,6 @@ import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProp
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.URL_OR_APP;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.USERNAME;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.res.Resources;
 
@@ -39,8 +37,8 @@ import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentVi
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordAccessReauthenticationHelper.ReauthReason;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.widget.Toast;
 
 import java.lang.annotation.Retention;
@@ -57,7 +55,7 @@ public class CredentialEditMediator implements UiActionHandler {
     static final String SAVED_PASSWORD_ACTION_HISTOGRAM =
             "PasswordManager.CredentialEntryActions.SavedPassword";
     static final String FEDERATED_CREDENTIAL_ACTION_HISTOGRAM =
-            "PasswordManager.CredentialEntryActions.FederateCredential";
+            "PasswordManager.CredentialEntryActions.FederatedCredential";
     static final String BLOCKED_CREDENTIAL_ACTION_HISTOGRAM =
             "PasswordManager.CredentialEntryActions.BlockedCredential";
     static final String EDIT_ERROR_HISTOGRAM = "PasswordManager.CredentialEditError";
@@ -70,6 +68,7 @@ public class CredentialEditMediator implements UiActionHandler {
     private PropertyModel mModel;
     private String mOriginalUsername;
     private String mOriginalPassword;
+    private boolean mIsInsecureCredential;
     private Set<String> mExistingUsernames;
 
     /**
@@ -163,9 +162,10 @@ public class CredentialEditMediator implements UiActionHandler {
         mModel = model;
     }
 
-    void setCredential(String username, String password) {
+    void setCredential(String username, String password, boolean isInsecureCredential) {
         mOriginalUsername = username;
         mOriginalPassword = password;
+        mIsInsecureCredential = isInsecureCredential;
 
         mModel.set(USERNAME, username);
         mModel.set(PASSWORD_VISIBLE, false);
@@ -227,7 +227,7 @@ public class CredentialEditMediator implements UiActionHandler {
     @Override
     public void onCopyUsername(Context context) {
         recordUsernameCopied();
-        copyToClipboard(context, "username", USERNAME);
+        Clipboard.getInstance().setText("username", mModel.get(USERNAME));
         Toast.makeText(context, R.string.password_entry_viewer_username_copied_into_clipboard,
                      Toast.LENGTH_SHORT)
                 .show();
@@ -244,8 +244,10 @@ public class CredentialEditMediator implements UiActionHandler {
         if (resources == null) return;
         String title =
                 resources.getString(R.string.password_entry_edit_delete_credential_dialog_title);
-        String message = resources.getString(
-                R.string.password_entry_edit_deletion_dialog_body, mModel.get(URL_OR_APP));
+        String message = resources.getString(mIsInsecureCredential
+                        ? R.string.password_check_delete_credential_dialog_body
+                        : R.string.password_entry_edit_deletion_dialog_body,
+                mModel.get(URL_OR_APP));
         mDeleteDialogHelper.showConfirmation(title, message,
                 R.string.password_entry_edit_delete_credential_dialog_confirm, () -> {
                     recordDeleted();
@@ -264,7 +266,7 @@ public class CredentialEditMediator implements UiActionHandler {
             if (!reauthSucceeded) return;
             RecordHistogram.recordEnumeratedHistogram(
                     SAVED_PASSWORD_ACTION_HISTOGRAM, COPIED_PASSWORD, ACTION_COUNT);
-            copyToClipboard(context, "password", PASSWORD);
+            Clipboard.getInstance().setPassword(mModel.get(PASSWORD));
             Toast.makeText(context, R.string.password_entry_viewer_password_copied_into_clipboard,
                          Toast.LENGTH_SHORT)
                     .show();
@@ -277,14 +279,6 @@ public class CredentialEditMediator implements UiActionHandler {
             return;
         }
         mReauthenticationHelper.reauthenticate(reason, action);
-    }
-
-    private void copyToClipboard(
-            Context context, CharSequence label, ReadableObjectPropertyKey<String> dataKey) {
-        ClipboardManager clipboard =
-                (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = ClipData.newPlainText(label, mModel.get(dataKey));
-        clipboard.setPrimaryClip(clip);
     }
 
     private void recordUsernameCopied() {

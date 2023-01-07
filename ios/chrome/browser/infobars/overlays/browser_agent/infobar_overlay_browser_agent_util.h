@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 class Browser;
 
-// Attaches browser agents to |browser| that manage the model changes for
+// Attaches browser agents to `browser` that manage the model changes for
 // infobar UI presented via OverlayPresenter.
 void AttachInfobarOverlayBrowserAgent(Browser* browser);
 

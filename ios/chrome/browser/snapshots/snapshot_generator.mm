@@ -1,29 +1,28 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/snapshots/snapshot_generator.h"
 
-#include <algorithm>
+#import <algorithm>
 
 // TODO(crbug.com/636188): required to implement ViewHierarchyContainsWKWebView
 // for -drawViewHierarchyInRect:afterScreenUpdates:, remove once the workaround
 // is no longer needed.
 #import <WebKit/WebKit.h>
 
-#include "base/bind.h"
-#include "base/check_op.h"
-#include "base/task/post_task.h"
+#import "base/bind.h"
+#import "base/check_op.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_generator_delegate.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/image/image.h"
+#import "ui/gfx/geometry/rect_f.h"
+#import "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,7 +38,7 @@ struct SnapshotInfo {
   NSArray<UIView*>* overlays;
 };
 
-// Returns YES if |view| or any view it contains is a WKWebView.
+// Returns YES if `view` or any view it contains is a WKWebView.
 BOOL ViewHierarchyContainsWKWebView(UIView* view) {
   if ([view isKindOfClass:[WKWebView class]])
     return YES;
@@ -132,9 +131,9 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
 
   if (![self canTakeSnapshot]) {
     if (completion) {
-      base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                       completion(nil);
-                     }));
+      web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
+                                                 completion(nil);
+                                               }));
     }
     return;
   }
@@ -197,11 +196,16 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
                canTakeSnapshotForWebState:self.webState];
 }
 
-// Returns a snapshot of |baseView| with |frameInBaseView|.
+// Returns a snapshot of `baseView` with `frameInBaseView`.
 - (UIImage*)snapshotBaseView:(UIView*)baseView
              frameInBaseView:(CGRect)frameInBaseView {
   DCHECK(baseView);
   DCHECK(!CGRectIsEmpty(frameInBaseView));
+
+  // Disable the automatic view dimming UIKit performs if a view is presented
+  // modally over `baseView`.
+  baseView.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
+
   // Note: When not using device scale, the output image size may slightly
   // differ from the input size due to rounding.
   const CGFloat kScale =
@@ -214,19 +218,19 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
                         -frameInBaseView.origin.y);
   BOOL snapshotSuccess = YES;
 
-  // |drawViewHierarchyInRect:| has undefined behavior when the view is not
+  // `drawViewHierarchyInRect:` has undefined behavior when the view is not
   // in the visible view hierarchy. In practice, when this method is called
   // on a view that is part of view controller containment and not in the view
   // hierarchy, an UIViewControllerHierarchyInconsistency exception will be
   // thrown.
   if (baseView.window && ViewHierarchyContainsWKWebView(baseView)) {
-    // TODO(crbug.com/636188): |-drawViewHierarchyInRect:afterScreenUpdates:| is
+    // TODO(crbug.com/636188): `-drawViewHierarchyInRect:afterScreenUpdates:` is
     // buggy causing GPU glitches, screen redraws during animations, broken
     // pinch to dismiss on tablet, etc.
     snapshotSuccess = [baseView drawViewHierarchyInRect:baseView.bounds
                                      afterScreenUpdates:YES];
   } else {
-    // |-renderInContext:| is buggy for WKWebView, which is used for some
+    // `-renderInContext:` is buggy for WKWebView, which is used for some
     // Chromium pages such as "No internet" or "Site can't be reached".
     [[baseView layer] renderInContext:context];
   }
@@ -234,11 +238,18 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
   if (snapshotSuccess)
     image = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
+
+  // Defaults to UIViewTintAdjustmentModeAutomatic if there is no delegate.
+  baseView.tintAdjustmentMode =
+      self.delegate ? [self.delegate snapshotGenerator:self
+                          defaultTintAdjustmentModeForWebState:self.webState]
+                    : UIViewTintAdjustmentModeAutomatic;
+
   return image;
 }
 
-// Returns an image of the |baseImage| overlaid with |overlays| with the given
-// |frameInWindow|.
+// Returns an image of the `baseImage` overlaid with `overlays` with the given
+// `frameInWindow`.
 - (UIImage*)snapshotWithOverlays:(NSArray<UIView*>*)overlays
                        baseImage:(UIImage*)baseImage
                    frameInWindow:(CGRect)frameInWindow {
@@ -269,7 +280,7 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
   return snapshot;
 }
 
-// Updates the snapshot cache with |snapshot|.
+// Updates the snapshot cache with `snapshot`.
 - (void)updateSnapshotCacheWithImage:(UIImage*)snapshot {
   if (snapshot) {
     [self.snapshotCache setImage:snapshot withSnapshotID:self.tabID];
@@ -279,7 +290,7 @@ BOOL ViewHierarchyContainsWKWebView(UIView* view) {
   }
 }
 
-// Draws |overlays| onto |context| at offsets relative to the window.
+// Draws `overlays` onto `context` at offsets relative to the window.
 - (void)drawOverlays:(NSArray<UIView*>*)overlays context:(CGContext*)context {
   for (UIView* overlay in overlays) {
     CGContextSaveGState(context);

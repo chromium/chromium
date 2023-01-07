@@ -1,0 +1,1 @@
+logScript("{{GET[label]}}");

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define ASH_EVENTS_KEYBOARD_DRIVEN_EVENT_REWRITER_H_
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/events/event_rewriter.h"
 
 namespace ash {
@@ -17,6 +16,11 @@ namespace ash {
 class ASH_EXPORT KeyboardDrivenEventRewriter : public ui::EventRewriter {
  public:
   KeyboardDrivenEventRewriter();
+
+  KeyboardDrivenEventRewriter(const KeyboardDrivenEventRewriter&) = delete;
+  KeyboardDrivenEventRewriter& operator=(const KeyboardDrivenEventRewriter&) =
+      delete;
+
   ~KeyboardDrivenEventRewriter() override;
 
   // Calls Rewrite for testing.
@@ -43,8 +47,6 @@ class ASH_EXPORT KeyboardDrivenEventRewriter : public ui::EventRewriter {
   // If true, Shift + Arrow keys are rewritten to Tab/Shift-Tab keys.
   // This only applies when the KeyboardDrivenEventRewriter is active.
   bool arrow_to_tab_rewriting_enabled_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardDrivenEventRewriter);
 };
 
 }  // namespace ash

@@ -1,17 +1,20 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 
+#include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
-#include "ui/base/cursor/cursor_loader.h"
-#include "ui/base/cursor/cursor_lookup.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace content {
@@ -29,6 +32,9 @@ class MouseCursorOverlayController::Observer final
     window_->AddObserver(this);
     window_->AddPreTargetHandler(this);
   }
+
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
 
   ~Observer() final {
     if (window_) {
@@ -112,14 +118,17 @@ class MouseCursorOverlayController::Observer final
     window_ = nullptr;
   }
 
-  MouseCursorOverlayController* const controller_;
-  aura::Window* window_;
-
-  DISALLOW_COPY_AND_ASSIGN(Observer);
+  const raw_ptr<MouseCursorOverlayController> controller_;
+  raw_ptr<aura::Window> window_;
 };
 
 MouseCursorOverlayController::MouseCursorOverlayController()
-    : mouse_move_behavior_atomic_(kNotMoving) {
+    : mouse_activity_ended_timer_(
+          FROM_HERE,
+          kIdleTimeout,
+          base::BindRepeating(&MouseCursorOverlayController::OnMouseHasGoneIdle,
+                              base::Unretained(this))),
+      mouse_move_behavior_atomic_(kNotMoving) {
   // MouseCursorOverlayController can be constructed on any thread, but
   // thereafter must be used according to class-level comments.
   DETACH_FROM_SEQUENCE(ui_sequence_checker_);
@@ -148,12 +157,8 @@ gfx::NativeCursor MouseCursorOverlayController::GetCurrentCursorOrDefault()
   if (auto* window = Observer::GetTargetWindow(observer_)) {
     if (auto* host = window->GetHost()) {
       gfx::NativeCursor cursor = host->last_cursor();
-      if (cursor != ui::mojom::CursorType::kNull) {
-        if (cursor.image_scale_factor() < 1.0f) {
-          cursor.set_image_scale_factor(1.0f);
-        }
+      if (cursor != ui::mojom::CursorType::kNull)
         return cursor;
-      }
     }
   }
 
@@ -165,36 +170,33 @@ gfx::RectF MouseCursorOverlayController::ComputeRelativeBoundsForOverlay(
     const gfx::PointF& location) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
 
-  if (auto* window = Observer::GetTargetWindow(observer_)) {
-    const gfx::Size window_size = window->bounds().size();
-    if (!window_size.IsEmpty()) {
-      if (auto* root_window = window->GetRootWindow()) {
-        // Compute the cursor size in terms of DIP coordinates.
-        const SkBitmap& bitmap = GetCursorBitmap(cursor);
-        const float scale_factor = cursor.image_scale_factor();
-        const gfx::SizeF size =
-            scale_factor > 0.0f
-                ? gfx::ScaleSize(gfx::SizeF(bitmap.width(), bitmap.height()),
-                                 1.0f / scale_factor)
-                : gfx::SizeF(bitmap.width(), bitmap.height());
+  auto* window = Observer::GetTargetWindow(observer_);
+  if (!window)
+    return gfx::RectF();
 
-        // Compute the hotspot in terms of DIP coordinates.
-        const gfx::PointF hotspot =
-            scale_factor > 0.0f
-                ? gfx::ScalePoint(gfx::PointF(GetCursorHotspot(cursor)),
-                                  1.0f / scale_factor)
-                : gfx::PointF(GetCursorHotspot(cursor));
+  const gfx::Size& window_size = window->bounds().size();
+  absl::optional<ui::CursorData> cursor_data =
+      aura::client::GetCursorShapeClient()->GetCursorData(cursor);
+  if (window_size.IsEmpty() || !window->GetRootWindow() || !cursor_data)
+    return gfx::RectF();
 
-        // Finally, put it all together: Scale the absolute bounds of the
-        // overlay by the window size to produce relative coordinates.
-        return gfx::ScaleRect(
-            gfx::RectF(location - hotspot.OffsetFromOrigin(), size),
-            1.0f / window_size.width(), 1.0f / window_size.height());
-      }
-    }
-  }
+  const SkBitmap& bitmap = cursor_data->bitmaps[0];
+  const float scale_factor = cursor.image_scale_factor();
+  DCHECK_GT(scale_factor, 0.0f);
 
-  return gfx::RectF();
+  // Compute the cursor size in terms of DIP coordinates.
+  const gfx::SizeF size = gfx::ScaleSize(
+      gfx::SizeF(bitmap.width(), bitmap.height()), 1.0f / scale_factor);
+
+  // Compute the hotspot in terms of DIP coordinates.
+  const gfx::PointF hotspot =
+      gfx::ScalePoint(gfx::PointF(cursor_data->hotspot), 1.0f / scale_factor);
+
+  // Finally, put it all together: Scale the absolute bounds of the
+  // overlay by the window size to produce relative coordinates.
+  return gfx::ScaleRect(gfx::RectF(location - hotspot.OffsetFromOrigin(), size),
+                        1.0f / window_size.width(),
+                        1.0f / window_size.height());
 }
 
 void MouseCursorOverlayController::DisconnectFromToolkitForTesting() {
@@ -210,7 +212,12 @@ void MouseCursorOverlayController::DisconnectFromToolkitForTesting() {
 // static
 SkBitmap MouseCursorOverlayController::GetCursorImage(
     const gfx::NativeCursor& cursor) {
-  return GetCursorBitmap(cursor);
+  absl::optional<ui::CursorData> cursor_data =
+      aura::client::GetCursorShapeClient()->GetCursorData(cursor);
+  if (!cursor_data)
+    return SkBitmap();
+
+  return cursor_data->bitmaps[0];
 }
 
 }  // namespace content

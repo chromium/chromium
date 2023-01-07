@@ -1,12 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_WEB_PUBLIC_JS_MESSAGING_SCRIPT_MESSAGE_H_
 #define IOS_WEB_PUBLIC_JS_MESSAGING_SCRIPT_MESSAGE_H_
 
-#include "base/optional.h"
+#include <memory>
+
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace web {
@@ -17,7 +19,7 @@ class ScriptMessage {
   explicit ScriptMessage(std::unique_ptr<base::Value> body,
                          bool is_user_interacting,
                          bool is_main_frame,
-                         base::Optional<GURL> request_url);
+                         absl::optional<GURL> request_url);
   ~ScriptMessage();
 
   ScriptMessage& operator=(const ScriptMessage&) = delete;
@@ -34,13 +36,13 @@ class ScriptMessage {
   bool is_main_frame() const { return is_main_frame_; }
 
   // The url, if available, of the frame which sent this message.
-  base::Optional<GURL> request_url() const { return request_url_; }
+  absl::optional<GURL> request_url() const { return request_url_; }
 
  private:
   std::unique_ptr<base::Value> body_;
   bool is_user_interacting_;
   bool is_main_frame_;
-  base::Optional<GURL> request_url_;
+  absl::optional<GURL> request_url_;
 };
 
 }  // namespace web

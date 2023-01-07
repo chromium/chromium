@@ -1,0 +1,288 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module location.nearby.connections.mojom;
+
+import "device/bluetooth/public/mojom/uuid.mojom";
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Generic result status of NearbyConnections API calls. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+enum Status {
+  // The operation was successful.
+  kSuccess = 0,
+  // The operation failed, without any more information.
+  kError = 1,
+  // The app called an API method out of order (i.e. another method is expected
+  // to be called first).
+  kOutOfOrderApiCall = 2,
+  // The app already has active operations (advertising, discovering, or
+  // connected to other devices) with another Strategy. Stop these operations on
+  // the current Strategy before trying to advertise or discover with a new
+  // Strategy.
+  kAlreadyHaveActiveStrategy = 3,
+  // The app is already advertising; call StopAdvertising() before trying to
+  // advertise again.
+  kAlreadyAdvertising = 4,
+  // The app is already discovering; call StopDiscovery() before trying to
+  // discover again.
+  kAlreadyDiscovering = 5,
+  // An attempt to read from/write to a connected remote endpoint failed. If
+  // this occurs repeatedly, consider invoking DisconnectFromEndpoint().
+  kEndpointIOError = 6,
+  // An attempt to interact with a remote endpoint failed because it's unknown
+  // to us -- it's either an endpoint that was never discovered, or an endpoint
+  // that never connected to us (both of which are indicative of bad input from
+  // the client app).
+  kEndpointUnknown = 7,
+  // The remote endpoint rejected the connection request.
+  kConnectionRejected = 8,
+  // The app is already connected to the specified endpoint. Multiple
+  // connections to a remote endpoint cannot be maintained simultaneously.
+  kAlreadyConnectedToEndpoint = 9,
+  // The remote endpoint is not connected; messages cannot be sent to it.
+  kNotConnectedToEndpoint = 10,
+  // There was an error trying to use the device's Bluetooth capabilities.
+  kBluetoothError = 11,
+  // There was an error trying to use the device's Bluetooth Low Energy
+  // capabilities.
+  kBleError = 12,
+  // There was an error trying to use the device's WiFi capabilities.
+  kWifiLanError = 13,
+  // An attempt to interact with an in-flight Payload failed because it's
+  // unknown to us.
+  kPayloadUnknown = 14,
+};
+
+// Information about a connection that is being initiated.
+struct ConnectionInfo {
+  // A short human-readable authentication token that has been given to both
+  // devices.
+  string authentication_token;
+  // The raw (significantly longer) version of the authentication token of
+  // authentication_token -- this is intended for headless authentication,
+  // typically on devices with no output capabilities, where the authentication
+  // is purely programmatic and does not have the luxury of human intervention.
+  array<uint8> raw_authentication_token;
+  // Information that represents the remote device.
+  array<uint8> endpoint_info;
+  // True if the connection request was initiated from a remote device. False if
+  // this device was the one to try and initiate the connection.
+  bool is_incoming_connection;
+};
+
+// Information about an endpoint when it's discovered.
+struct DiscoveredEndpointInfo {
+  // Information advertised by the remote endpoint.
+  array<uint8> endpoint_info;
+  // The ID of the service advertised by the remote endpoint.
+  string service_id;
+};
+
+// The Strategy to be used when discovering or advertising to Nearby devices.
+// The Strategy defines the connectivity requirements for the device, and the
+// topology constraints of the connection.
+enum Strategy {
+  // Peer-to-peer strategy that supports an M-to-N, or cluster-shaped,
+  // connection topology. In other words, this enables connecting amorphous
+  // clusters of devices within radio range (~100m), where each device can both
+  // initiate outgoing connections to M other devices and accept incoming
+  // connections from N other devices.
+  kP2pCluster,
+  // Peer-to-peer strategy that supports a 1-to-N, or star-shaped, connection
+  // topology. In other words, this enables connecting devices within radio
+  // range (~100m) in a star shape, where each device can, at any given time,
+  // play the role of either a hub (where it can accept incoming connections
+  // from N other devices), or a spoke (where it can initiate an outgoing
+  // connection to a single hub), but not both.
+  kP2pStar,
+  // Peer-to-peer strategy that supports a 1-to-1 connection topology. In other
+  // words, this enables connecting to a single device within radio range
+  // (~100m). This strategy will give the absolute highest bandwidth, but will
+  // not allow multiple connections at a time.
+  kP2pPointToPoint,
+};
+
+// A selection of on/off toggles to define a set of allowed mediums.
+struct MediumSelection {
+  // Whether Bluetooth should be allowed.
+  bool bluetooth;
+  // Whether BLE should be allowed.
+  bool ble;
+  // Whether WebRTC should be allowed.
+  bool web_rtc;
+  // Whether WiFi LAN should be allowed.
+  bool wifi_lan;
+};
+
+// Options for a call to NearbyConnections::StartAdvertising().
+struct AdvertisingOptions {
+  // The strategy to use for advertising. Must match the strategy used in
+  // DiscoveryOptions for remote devices to see this advertisement.
+  Strategy strategy;
+  // Describes which mediums are allowed to be used for advertising. Note that
+  // allowing an otherwise unsupported medium is ok. Only the intersection of
+  // allowed and supported mediums will be used to advertise.
+  MediumSelection allowed_mediums;
+  // By default, this option is true. If false, we will not attempt to upgrade
+  // the bandwidth until a call to InitiateBandwidthUpgrade() is made.
+  bool auto_upgrade_bandwidth = true;
+  // By default, this option is true. If false, restrictions on topology will be
+  // ignored. This allows you treat all strategies as kP2pCluster (N to M),
+  // although bandwidth will be severely throttled if you don't maintain the
+  // original topology. When used in conjunction with auto_upgrade_bandwidth,
+  // you can initially connect as a kP2pCluster and then trim connections until
+  // you match kP2pStar or kP2pPointToPoint before upgrading the bandwidth.
+  bool enforce_topology_constraints = true;
+  // By default, this option is false. If true, this allows listening on
+  // incoming Bluetooth Classic connections while BLE advertising.
+  bool enable_bluetooth_listening = false;
+  // By default, this option is false. If true, this allows listening on
+  // incoming Web RTC connections while advertising.
+  bool enable_webrtc_listening = false;
+  // Optional. If set, BLE advertisements will be in their "fast advertisement"
+  // form, use this UUID, and non-connectable; if empty, BLE advertisements
+  // will otherwise be normal and connectable.
+  bluetooth.mojom.UUID fast_advertisement_service_uuid;
+};
+
+// Options for a call to NearbyConnections::StartDiscovery().
+struct DiscoveryOptions {
+  // The strategy to use for discovering. Must match the strategy used in
+  // AdvertisingOptions in order to see advertisements.
+  Strategy strategy;
+  // Describes which mediums are allowed to be used for scanning/discovery. Note
+  // that allowing an otherwise unsupported medium is ok. Only the intersection
+  // of allowed and supported mediums will be used to scan.
+  MediumSelection allowed_mediums;
+  // The fast advertisement service id to scan for in BLE.
+  bluetooth.mojom.UUID? fast_advertisement_service_uuid;
+  // Whether this connection request skips over the normal discovery flow to
+  // inject discovery information synced outside the Nearby Connections library.
+  // Intended to be used in conjunction with InjectEndpoint().
+  bool is_out_of_band_connection = false;
+};
+
+// Options for a call to NearbyConnections::RequestConnection().
+struct ConnectionOptions {
+  // Describes which mediums are allowed to be used for connection. Note that
+  // allowing an otherwise unsupported medium is ok. Only the intersection of
+  // allowed and supported mediums will be used to connect.
+  MediumSelection allowed_mediums;
+  // Bluetooth MAC address of remote device in byte format.
+  array<uint8, 6>? remote_bluetooth_mac_address;
+  // How often to send a keep alive message on the channel. An unspecified or
+  // negative value will result in the Nearby Connections default of 5 seconds
+  // being used.
+  mojo_base.mojom.TimeDelta? keep_alive_interval;
+  // The connection will time out if no message is received on the channel
+  // for this length of time. An unspecified or negative value will result in
+  // the Nearby Connections default of 30 seconds being used.
+  mojo_base.mojom.TimeDelta? keep_alive_timeout;
+};
+
+// A simple payload containing raw bytes.
+struct BytesPayload {
+  // The bytes of this payload.
+  array<uint8> bytes;
+};
+
+// A file payload representing a file.
+struct FilePayload {
+  // The file to which this payload points to. When sending this payload, the
+  // NearbyConnections library reads from this file. When receiving a file
+  // payload it writes to this file.
+  mojo_base.mojom.File file;
+};
+
+// Union of all supported payload types.
+union PayloadContent {
+  // A Payload consisting of a single byte array.
+  BytesPayload bytes;
+  // A Payload representing a file on the device.
+  FilePayload file;
+};
+
+// A Payload sent between devices. Payloads sent with a particular content type
+// will be received as that same type on the other device, e.g. the content for
+// a Payload of type BytesPayload must be received by reading from the bytes
+// field returned by Payload::content::bytes.
+struct Payload {
+  // A unique identifier for this payload. Generated by the sender of the
+  // payload and used to keep track of the transfer progress.
+  int64 id;
+  // The content of this payload which is one of multiple types, see
+  // PayloadContent for all possible types.
+  PayloadContent content;
+};
+
+// The status of the payload transfer at the time of this update.
+enum PayloadStatus {
+  // The payload transfer has completed successfully.
+  kSuccess,
+  // The payload transfer failed.
+  kFailure,
+  // The payload transfer is still in progress.
+  kInProgress,
+  // The payload transfer has been canceled.
+  kCanceled,
+};
+
+// Describes the status for an active Payload transfer, either incoming or
+// outgoing. Delivered to PayloadListener::OnPayloadTransferUpdate.
+struct PayloadTransferUpdate {
+  // The ID for the payload related to this update. Clients should match this
+  // with Payload::id.
+  int64 payload_id;
+  // The status of this payload transfer. Always starts with kInProgress and
+  // ends with one of kSuccess, kFailure or kCanceled.
+  PayloadStatus status;
+  // The total expected bytes of this transfer.
+  uint64 total_bytes;
+  // The number of bytes transferred so far.
+  uint64 bytes_transferred;
+};
+
+// Bandwidth quality of a connection.
+enum BandwidthQuality {
+  // Unknown connection quality.
+  kUnknown,
+  // Low quality, e.g. connected via NFC or BLE.
+  kLow,
+  // Medium quality, e.g. connected via Bluetooth Classic.
+  kMedium,
+  // High quality, e.g. connected via WebRTC or WiFi LAN.
+  kHigh,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum Medium {
+  kUnknown = 0,
+  kMdns = 1,
+  kBluetooth = 2,
+  kWifiHotspot = 3,
+  kBle = 4,
+  kWifiLan = 5,
+  kWifiAware = 6,
+  kNfc = 7,
+  kWifiDirect = 8,
+  kWebRtc = 9,
+  kBleL2Cap = 10,
+  kUsb = 11,
+};
+
+// Log severity levels. This is passed as a member of
+// NearbyConnectionsDependencies to set the minimum log level in the Nearby
+// Connections library. Entries should be kept in sync with the values in
+// location::nearby::api::LogMessage::Severity.
+enum LogSeverity {
+  kVerbose = -1,
+  kInfo = 0,
+  kWarning = 1,
+  kError = 2,
+  kFatal = 3,
+};

@@ -1,0 +1,215 @@
+<style include="privacy-guide-fragment-shared">
+  :host {
+    display: flex;
+    flex-flow: column;
+    min-height: calc(432px - var(--privacy-guide-footer-total-height));
+  }
+
+  .headline {
+    outline: none;
+  }
+
+  .headline-container {
+    padding: 36px 120px 16px 120px;
+    row-gap: 8px;
+  }
+
+  :host-context([is-privacy-guide-v2]) .header-phase2 picture {
+    animation: fade-in var(--privacy-guide-animation-duration);
+    animation-delay: 100ms;
+    animation-fill-mode: forwards;
+    opacity: 0;
+  }
+
+  :host-context([is-privacy-guide-v2]) .headline,
+  :host-context([is-privacy-guide-v2]) .cr-secondary-text {
+    animation: fade-in var(--privacy-guide-animation-duration);
+  }
+
+  :host-context([is-privacy-guide-v2]) #privacySandboxRow,
+  :host-context([is-privacy-guide-v2]) #waaRow {
+    animation: fade-in var(--privacy-guide-animation-duration);
+  }
+
+  #picture-container {
+    height: 153px;
+    margin-block-end: 12px;
+    position: relative;
+    width: 354px;
+  }
+
+  :host-context([is-no-link-layout]) #picture-container {
+    margin-block-end: 32px;
+    margin-block-start: 24px;
+  }
+
+  .picture-shapes-container {
+    --shape-color-green: rgba(71, 166, 86, 1);
+    --shape-color-red: rgba(255, 127, 116, 1);
+    --shape-color-yellow: rgba(251, 188, 4, 1);
+    animation: fade-in 50ms ease-in 200ms forwards;
+    opacity: 0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .picture-shapes-container {
+      --shape-color-green: rgba(129, 201, 149, 1);
+      --shape-color-yellow: rgba(253, 214, 99, 1);
+    }
+  }
+
+  .picture-shape {
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100% 100%;
+    animation-delay: 200ms;
+    animation-duration: 300ms;
+    animation-fill-mode: forwards;
+    left: 0;
+    position: absolute;
+    top: 0;
+    transform-origin: center center;
+  }
+
+  @keyframes circle {
+    0% { transform: translate(134px, 131px) rotate(80deg); }
+    100% { transform: translate(0, 117px) rotate(0deg); }
+  }
+
+  #circle {
+    -webkit-mask-image:
+        url(./images/privacy_guide/completion_banner_circle.svg);
+    animation-name: circle;
+    animation-timing-function: cubic-bezier(.12, .44, .46, .78);
+    background: var(--shape-color-yellow);
+    height: 18px;
+    width: 18px;
+  }
+
+  @keyframes pill {
+    0% { transform: translate(194px, 91px) rotate(145deg); }
+    100% { transform: translate(325px, 29px) rotate(-125deg); }
+  }
+
+  #pill {
+    -webkit-mask-image: url(./images/privacy_guide/completion_banner_pill.svg);
+    animation-name: pill;
+    animation-timing-function: cubic-bezier(.06, .55, .44, .87);
+    background: var(--shape-color-yellow);
+    height: 18px;
+    width: 25px;
+  }
+
+  @keyframes square {
+    0% { transform: translate(128px, 99px) rotate(80deg); }
+    100% { transform: translate(83px, 8px) rotate(0deg); }
+  }
+
+  #square {
+    -webkit-mask-image:
+        url(./images/privacy_guide/completion_banner_square.svg);
+    animation-name: square;
+    animation-timing-function: cubic-bezier(.26, .59, .54, .87);
+    background: var(--shape-color-green);
+    height: 13px;
+    width: 13px;
+  }
+
+  @keyframes triangle {
+    0% { transform: translate(243px, 103px) rotate(60deg); }
+    100% { transform: translate(290px, 96px) rotate(0deg); }
+  }
+
+  #triangle {
+    -webkit-mask-image:
+        url(./images/privacy_guide/completion_banner_triangle.svg);
+    animation-name: triangle;
+    animation-timing-function: cubic-bezier(.19, .5, .52, .82);
+    background: var(--shape-color-red);
+    height: 12px;
+    width: 13px;
+  }
+
+  privacy-guide-completion-link-row {
+    border-radius: 4px;
+  }
+
+  .footer {
+    align-items: center;
+    bottom: calc(-1 * var(--privacy-guide-footer-total-height));
+    display: flex;
+    justify-content: space-between;
+    padding: var(--privacy-guide-footer-vertical-padding) 0;
+    position: absolute;
+    width: calc(100% - 48px);  /* 48px = 2x :host horizontal padding */
+  }
+</style>
+<template is="dom-if" if="[[enablePrivacyGuide2_]]">
+  <div class="header-phase2">
+    <div id="picture-container">
+      <div class="picture-shapes-container">
+        <div id="circle" class="picture-shape"></div>
+        <div id="pill" class="picture-shape"></div>
+        <div id="square" class="picture-shape"></div>
+        <div id="triangle" class="picture-shape"></div>
+      </div>
+
+      <picture>
+        <source
+            srcset="./images/privacy_guide/completion_banner_dark_v2.svg"
+            media="(prefers-color-scheme: dark)">
+        <img alt="" src="./images/privacy_guide/completion_banner_v2.svg">
+      </picture>
+    </div>
+    <div class="headline" tabindex="-1">
+      $i18n{privacyGuideCompletionCardHeader}
+    </div>
+    <div class="cr-secondary-text">[[subheader_]]</div>
+  </div>
+</template>
+<template is="dom-if" if="[[!enablePrivacyGuide2_]]">
+  <div class="headline-container">
+    <picture>
+      <source
+          srcset="./images/privacy_guide/completion_banner_dark.svg"
+          media="(prefers-color-scheme: dark)">
+      <img alt="" src="./images/privacy_guide/completion_banner.svg">
+    </picture>
+    <div class="headline" tabindex="-1">
+      $i18n{privacyGuideCompletionCardHeader}
+    </div>
+    <div class="cr-secondary-text">[[subheader_]]</div>
+  </div>
+</template>
+<template is="dom-if" if="[[shouldShowPrivacySandbox_]]">
+  <privacy-guide-completion-link-row id="privacySandboxRow"
+      label="$i18n{privacyGuideCompletionCardPrivacySandboxLabel}"
+      sub-label="$i18n{privacyGuideCompletionCardPrivacySandboxSubLabel}"
+      light-img-src="./images/privacy_guide/privacy_sandbox_graphic.svg"
+      dark-img-src="./images/privacy_guide/privacy_sandbox_graphic_dark.svg"
+      on-click="onPrivacySandboxClick_">
+  </privacy-guide-completion-link-row>
+</template>
+<div aria-disabled="true" role="none">
+  <a id="privacySandboxLink" href="privacySandbox"
+      target="_blank" tabindex="-1" aria-disabled="true"
+      role="none"></a>
+</div>
+<template is="dom-if" if="[[shouldShowWaa_]]">
+  <privacy-guide-completion-link-row id="waaRow"
+      label="$i18n{privacyGuideCompletionCardWaaLabel}"
+      sub-label="$i18n{privacyGuideCompletionCardWaaSubLabel}"
+      light-img-src="./images/privacy_guide/waa_graphic.svg"
+      dark-img-src="./images/privacy_guide/waa_graphic_dark.svg"
+      on-click="onWaaClick_">
+  </privacy-guide-completion-link-row>
+</template>
+<div class="footer">
+  <cr-button id="backButton" role="button" on-click="onBackButtonClick_">
+    $i18n{privacyGuideBackButton}
+  </cr-button>
+  <cr-button class="action-button" id="leaveButton"
+      on-click="onLeaveButtonClick_">
+    $i18n{privacyGuideCompletionCardLeaveButton}
+  </cr-button>
+</div>

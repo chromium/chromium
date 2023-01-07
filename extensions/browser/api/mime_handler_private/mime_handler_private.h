@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,8 @@ class MimeHandlerServiceImpl : public mime_handler::MimeHandlerService {
 
   // mime_handler::MimeHandlerService overrides.
   void GetStreamInfo(GetStreamInfoCallback callback) override;
+  void SetPdfPluginAttributes(
+      mime_handler::PdfPluginAttributesPtr pdf_plugin_attributes) override;
 
   // A handle to the stream being handled by the MimeHandlerViewGuest.
   base::WeakPtr<StreamContainer> stream_;

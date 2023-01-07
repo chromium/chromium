@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.Coordinates;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 
@@ -39,7 +40,7 @@ public class TabLoadObserver extends EmptyTabObserver {
 
     public TabLoadObserver(Tab tab, String expectedTitle, Float expectedScale) {
         mTab = tab;
-        mTab.addObserver(this);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(this));
         mExpectedTitle = expectedTitle;
         mExpectedScale = expectedScale;
     }

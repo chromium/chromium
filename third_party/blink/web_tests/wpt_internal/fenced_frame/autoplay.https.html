@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<title>Verify that autoplaying Web Audio from a fenced frame is blocked</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+
+<body></body>
+<script>
+promise_test(async () => {
+  const frame = attachFencedFrameContext();
+
+  let audioSuspended = await frame.execute(async () => {
+    internals.settings.setAutoplayPolicy('user-gesture-required');
+    internals.runtimeFlags.autoplayIgnoresWebAudioEnabled = false;
+
+    let audioContext = new AudioContext();
+    return audioContext.state == 'suspended';
+  });
+  assert_true(audioSuspended, 'autoplay should be blocked');
+}, 'If Autoplay plocy is set to \'user-gesture-required\', '+
+      'autoplaying  should be blocked in a fenced frame '+
+      'as it\'s treated like a cross-origin subframe.');
+</script>

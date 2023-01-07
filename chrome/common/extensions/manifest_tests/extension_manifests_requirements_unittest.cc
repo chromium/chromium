@@ -1,8 +1,7 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/stl_util.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/manifest_constants.h"
@@ -18,24 +17,24 @@ class RequirementsManifestTest : public ChromeManifestTest {
 
 TEST_F(RequirementsManifestTest, RequirementsInvalid) {
   Testcase testcases[] = {
-    Testcase("requirements_invalid_requirements.json",
-             errors::kInvalidRequirements),
-    Testcase("requirements_invalid_keys.json", errors::kInvalidRequirements),
-    Testcase("requirements_invalid_3d.json",
-             ErrorUtils::FormatErrorMessage(
-                 errors::kInvalidRequirement, "3D")),
-    Testcase("requirements_invalid_3d_features.json",
-             ErrorUtils::FormatErrorMessage(
-                 errors::kInvalidRequirement, "3D")),
-    Testcase("requirements_invalid_3d_features_value.json",
-             ErrorUtils::FormatErrorMessage(
-                 errors::kInvalidRequirement, "3D")),
-    Testcase("requirements_invalid_3d_no_features.json",
-             ErrorUtils::FormatErrorMessage(
-                 errors::kInvalidRequirement, "3D")),
+      Testcase("requirements_invalid_requirements.json",
+               "Error at key 'requirements'. Type is invalid. Expected "
+               "dictionary, found boolean."),
+      Testcase("requirements_invalid_3d.json",
+               "Error at key 'requirements.3D'. Type is invalid. Expected "
+               "dictionary, found boolean."),
+      Testcase("requirements_invalid_3d_features.json",
+               "Error at key 'requirements.3D.features'. Type is invalid. "
+               "Expected list, found boolean."),
+      Testcase("requirements_invalid_3d_features_value.json",
+               "Error at key 'requirements.3D.features'. Parsing array failed "
+               "at index 0: Specified value 'foo' is invalid."),
+      Testcase(
+          "requirements_invalid_3d_no_features.json",
+          "Error at key 'requirements.3D.features'. Manifest key is required."),
   };
 
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
 }
 
 TEST_F(RequirementsManifestTest, RequirementsValid) {
@@ -53,10 +52,12 @@ TEST_F(RequirementsManifestTest, RequirementsValid) {
 
 // Tests the deprecated plugin requirement.
 TEST_F(RequirementsManifestTest, RequirementsPlugin) {
-  // Using the plugins requirement should cause an install warning.
   RunTestcase({"requirements_invalid_plugins_value.json",
-               errors::kPluginsRequirementDeprecated},
-              EXPECT_TYPE_WARNING);
+               "Error at key 'requirements.plugins.npapi'. Type is invalid. "
+               "Expected boolean, found integer."},
+              EXPECT_TYPE_ERROR);
+
+  // Using the plugins requirement should cause an install warning.
   RunTestcase(
       {"requirements_npapi_false.json", errors::kPluginsRequirementDeprecated},
       EXPECT_TYPE_WARNING);

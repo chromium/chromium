@@ -1,18 +1,21 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "headless/lib/browser/protocol/headless_handler.h"
 
+#include <memory>
+
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/time/time.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
 #include "headless/lib/browser/headless_browser_impl.h"
-#include "headless/lib/browser/headless_web_contents_impl.h"
+#include "headless/lib/browser/headless_web_contents_impl.h"  // nogncheck http://crbug.com/1227378
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -77,7 +80,8 @@ HeadlessHandler::HeadlessHandler(HeadlessBrowserImpl* browser,
 HeadlessHandler::~HeadlessHandler() {}
 
 void HeadlessHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new HeadlessExperimental::Frontend(dispatcher->channel()));
+  frontend_ =
+      std::make_unique<HeadlessExperimental::Frontend>(dispatcher->channel());
   HeadlessExperimental::Dispatcher::wire(dispatcher, this);
 }
 
@@ -106,10 +110,10 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
 
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kRunAllCompositorStagesBeforeDraw)) {
-    callback->sendFailure(
-        Response::ServerError("Command is only supported with "
-                              "--run-all-compositor-stages-before-draw, see "
-                              "https://goo.gl/3zHXhB for more info."));
+    callback->sendFailure(Response::ServerError(
+        "Command is only supported with "
+        "--run-all-compositor-stages-before-draw, see "
+        "https://goo.gle/chrome-headless-rendering for more info."));
     return;
   }
 
@@ -118,8 +122,8 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
   bool no_display_updates = in_no_display_updates.fromMaybe(false);
 
   if (in_frame_time_ticks.isJust()) {
-    frame_time_ticks = base::TimeTicks() + base::TimeDelta::FromMillisecondsD(
-                                               in_frame_time_ticks.fromJust());
+    frame_time_ticks =
+        base::TimeTicks() + base::Milliseconds(in_frame_time_ticks.fromJust());
   } else {
     frame_time_ticks = base::TimeTicks::Now();
   }
@@ -131,7 +135,7 @@ void HeadlessHandler::BeginFrame(Maybe<double> in_frame_time_ticks,
           Response::InvalidParams("interval has to be greater than 0"));
       return;
     }
-    interval = base::TimeDelta::FromMillisecondsD(interval_double);
+    interval = base::Milliseconds(interval_double);
   } else {
     interval = viz::BeginFrameArgs::DefaultInterval();
   }

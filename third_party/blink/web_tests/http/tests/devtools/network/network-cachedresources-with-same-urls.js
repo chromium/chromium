@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests that when we load two different images from the same url (e.g. counters), their content is different in network panel as well.\n`);
   await TestRunner.loadTestModule('network_test_runner');
-  await TestRunner.loadModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.evaluateInPagePromise(`
       function loadImages()

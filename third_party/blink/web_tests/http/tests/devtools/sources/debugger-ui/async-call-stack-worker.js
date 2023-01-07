@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests async call stack for workers.\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(
       `
@@ -30,7 +30,7 @@
       .then(() => SourcesTestRunner.runTestFunctionAndWaitUntilPausedPromise())
       .then(
           () => TestRunner.addSnifferPromise(
-              Sources.CallStackSidebarPane.prototype, '_updatedForTest'))
+              Sources.CallStackSidebarPane.prototype, 'updatedForTest'))
       .then(() => dumpCallStackSidebarPane())
       .then(() => SourcesTestRunner.completeDebuggerTest());
 

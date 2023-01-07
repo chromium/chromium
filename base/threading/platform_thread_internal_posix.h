@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,54 +6,67 @@
 #define BASE_THREADING_PLATFORM_THREAD_INTERNAL_POSIX_H_
 
 #include "base/base_export.h"
-#include "base/optional.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
 namespace internal {
 
-struct ThreadPriorityToNiceValuePair {
-  ThreadPriority priority;
+struct ThreadTypeToNiceValuePair {
+  ThreadType thread_type;
   int nice_value;
 };
+
+struct ThreadPriorityToNiceValuePairForTest {
+  ThreadPriorityForTest priority;
+  int nice_value;
+};
+
 // The elements must be listed in the order of increasing priority (lowest
 // priority first), that is, in the order of decreasing nice values (highest
 // nice value first).
-BASE_EXPORT extern
-const ThreadPriorityToNiceValuePair kThreadPriorityToNiceValueMap[4];
+extern const ThreadTypeToNiceValuePair kThreadTypeToNiceValueMap[6];
+
+// The elements must be listed in the order of decreasing priority (highest
+// priority first), that is, in the order of increasing nice values (lowest nice
+// value first).
+extern const ThreadPriorityToNiceValuePairForTest
+    kThreadPriorityToNiceValueMapForTest[4];
 
 // Returns the nice value matching |priority| based on the platform-specific
-// implementation of kThreadPriorityToNiceValueMap.
-int ThreadPriorityToNiceValue(ThreadPriority priority);
+// implementation of kThreadTypeToNiceValueMap.
+int ThreadTypeToNiceValue(ThreadType thread_type);
 
-// Returns the ThreadPrioirty matching |nice_value| based on the platform-
-// specific implementation of kThreadPriorityToNiceValueMap.
-BASE_EXPORT ThreadPriority NiceValueToThreadPriority(int nice_value);
-
-// If non-nullopt, this return value will be used as the platform-specific
-// result of CanIncreaseThreadPriority().
-Optional<bool> CanIncreaseCurrentThreadPriorityForPlatform(
-    ThreadPriority priority);
+// Returns whether SetCurrentThreadTypeForPlatform can set a thread as
+// kRealtimeAudio.
+bool CanSetThreadTypeToRealtimeAudio();
 
 // Allows platform specific tweaks to the generic POSIX solution for
-// SetCurrentThreadPriority(). Returns true if the platform-specific
-// implementation handled this |priority| change, false if the generic
+// SetCurrentThreadType(). Returns true if the platform-specific
+// implementation handled this |thread_type| change, false if the generic
 // implementation should instead proceed.
-bool SetCurrentThreadPriorityForPlatform(ThreadPriority priority);
+bool SetCurrentThreadTypeForPlatform(ThreadType thread_type,
+                                     MessagePumpType pump_type_hint);
 
-// If non-null, this return value will be used as the platform-specific result
-// of CanIncreaseThreadPriority().
-Optional<ThreadPriority> GetCurrentThreadPriorityForPlatform();
-
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Current thread id is cached in thread local storage for performance reasons.
-// In some rare cases it's important to clear that cache explicitly (e.g. after
-// going through clone() syscall which does not call pthread_atfork()
+// In some rare cases it's important to invalidate that cache explicitly (e.g.
+// after going through clone() syscall which does not call pthread_atfork()
 // handlers).
-BASE_EXPORT void ClearTidCache();
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+// This can only be called when the process is single-threaded.
+BASE_EXPORT void InvalidateTidCache();
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+// Returns the ThreadPrioirtyForTest matching |nice_value| based on the
+// platform-specific implementation of kThreadPriorityToNiceValueMapForTest.
+ThreadPriorityForTest NiceValueToThreadPriorityForTest(int nice_value);
+
+absl::optional<ThreadPriorityForTest>
+GetCurrentThreadPriorityForPlatformForTest();
+
+int GetCurrentThreadNiceValue();
 
 }  // namespace internal
 

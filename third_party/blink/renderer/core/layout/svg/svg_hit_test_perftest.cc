@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -109,23 +109,23 @@ TEST_F(SvgHitTestPerfTest, IntersectsClipPath) {
 
   PhysicalOffset document_point =
       event_handling_util::ContentPointFromRootFrame(GetDocument().GetFrame(),
-                                                     FloatPoint(1, 1));
+                                                     gfx::PointF(1, 1));
 
   TransformedHitTestLocation local_location(
       HitTestLocation(document_point), container->LocalToSVGParentTransform());
   ASSERT_TRUE(local_location);
 
-  FloatRect object_bounding_box = container->ObjectBoundingBox();
+  gfx::RectF object_bounding_box = container->ObjectBoundingBox();
 
   RunTest(
       "IntersectsClipPath",
       WTF::BindRepeating(
-          [](const LayoutObject* container, FloatRect& container_bounding_box,
+          [](const LayoutObject* container, gfx::RectF& container_bounding_box,
              TransformedHitTestLocation& local_location) {
             SVGLayoutSupport::IntersectsClipPath(
                 *container, container_bounding_box, *local_location);
           },
-          WTF::Unretained(container), std::ref(object_bounding_box),
+          WrapPersistent(container), std::ref(object_bounding_box),
           std::ref(local_location)));
 }
 

@@ -1,0 +1,390 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This proto should be in sync in the following two locations:
+// https://source.chromium.org/chromium/chromium/src/+/main:components/services/screen_ai/proto/chrome_screen_ai.proto
+// http://google3/chrome/accessibility/machine_intelligence/chrome_screen_ai//chrome_screen_ai.proto
+
+syntax = "proto3";
+
+package chrome_screen_ai;
+
+// This option should be enabled for Chrome, but not in Google3.
+// TODO(https://crbug.com/1278249): Try to make this based on build commands.
+option optimize_for = LITE_RUNTIME;
+
+// A component of a given UI. This proto is filled based on
+// /research/socrates/proto/visual.proto. Refer to that for more context.
+//
+// Next available field is 3.
+message UIComponent {
+  // This enum should be in sync with ax::mojom::Role in
+  // https://source.chromium.org/chromium/chromium/src/+/main:ui/accessibility/ax_enums.mojom.
+  enum Type {
+    NONE = 0;
+    ABBR = 1;
+    ALERT = 2;
+    ALERT_DIALOG = 3;
+    APPLICATION = 4;
+    ARTICLE = 5;
+    AUDIO = 6;
+    BANNER = 7;
+    BLOCK_QUOTE = 8;
+    BUTTON = 9;
+    CANVAS = 10;
+    CAPTION = 11;
+    CARET = 12;
+    CELL = 13;
+    CHECKBOX = 14;
+    CLIENT = 15;
+    CODE = 16;
+    COLOR_WELL = 17;
+    COLUMN = 18;
+    COLUMN_HEADER = 19;
+    COMBOBOX_GROUPING = 20;
+    COMBOBOX_MENU_BUTTON = 21;
+    COMPLEMENTARY = 22;
+    COMMENT = 23;
+    CONTENT_DELETION = 24;
+    CONTENT_INSERTION = 25;
+    CONTENT_INFO = 26;
+    DATE = 27;
+    DATE_TIME = 28;
+    DEFINITION = 29;
+    DESCRIPTION_LIST = 30;
+    DESCRIPTION_LIST_DETAIL = 31;
+    DESCRIPTION_LIST_TERM = 32;
+    DESKTOP = 33;
+    DETAILS = 34;
+    DIALOG = 35;
+    DIRECTORY = 36;
+    DISCLOSURE_TRIANGLE = 37;
+    DOC_ABSTRACT = 38;
+    DOC_ACKNOWLEDGMENTS = 39;
+    DOC_AFTERWORD = 40;
+    DOC_APPENDIX = 41;
+    DOC_BACKLINK = 42;
+    DOC_BIBLIOENTRY = 43;
+    DOC_BIBLIOGRAPHY = 44;
+    DOC_BIBLIOREF = 45;
+    DOC_CHAPTER = 46;
+    DOC_COLOPHON = 47;
+    DOC_CONCLUSION = 48;
+    DOC_COVER = 49;
+    DOC_CREDIT = 50;
+    DOC_CREDITS = 51;
+    DOC_DEDICATION = 52;
+    DOC_END_NOTE = 53;
+    DOC_END_NOTES = 54;
+    DOC_EPIGRAPH = 55;
+    DOC_EPILOGUE = 56;
+    DOC_ERRATA = 57;
+    DOC_EXAMPLE = 58;
+    DOC_FOOTNOTE = 59;
+    DOC_FOREWORD = 60;
+    DOC_GLOSSARY = 61;
+    DOC_GLOSS_REF = 62;
+    DOC_INDEX = 63;
+    DOC_INTRODUCTION = 64;
+    DOC_NOTE_REF = 65;
+    DOC_NOTICE = 66;
+    DOC_PAGE_BREAK = 67;
+    DOC_PAGE_FOOTER = 68;
+    DOC_PAGE_HEADER = 69;
+    DOC_PAGELIST = 70;
+    DOC_PART = 71;
+    DOC_PREFACE = 72;
+    DOC_PROLOGUE = 73;
+    DOC_PULL_QUOTE = 74;
+    DOC_QNA = 75;
+    DOC_SUBTITLE = 76;
+    DOC_TIP = 77;
+    DOC_TOC = 78;
+    DOCUMENT = 79;
+    EMBEDDEDOBJECT = 80;
+    EMPHASIS = 81;
+    FEED = 82;
+    FIG_CAPTION = 83;
+    FIGURE = 84;
+    FOOTER = 85;
+    FOOTER_AS_NON_LANDMARK = 86;
+    FORM = 87;
+    GENERIC_CONTAINER = 88;
+    GRAPHICS_DOCUMENT = 89;
+    GRAPHICS_OBJECT = 90;
+    GRAPHICS_SYMBOL = 91;
+    GRID = 92;
+    GROUP = 93;
+    HEADER = 94;
+    HEADERAS_NON_LANDMARK = 95;
+    HEADING = 96;
+    IFRAME = 97;
+    IFRAME_PRESENTATIONAL = 98;
+    IMAGE = 99;
+    IME_CANDIDATE = 100;
+    INLINE_TEXTBOX = 101;
+    INPUT_TIME = 102;
+    KEYBOARD = 103;
+    LABELTEXT = 104;
+    LAYOUT_TABLE = 105;
+    LAYOUT_TABLE_CELL = 106;
+    LAYOUT_TABLE_ROW = 107;
+    LEGEND = 108;
+    LINEBREAK = 109;
+    LINK = 110;
+    LIST = 111;
+    LISTBOX = 112;
+    LISTBOX_OPTION = 113;
+    LIST_GRID = 114;
+    LIST_ITEM = 115;
+    LIST_MARKER = 116;
+    LOG = 117;
+    MAIN = 118;
+    MARK = 119;
+    MARQUEE = 120;
+    MATH = 121;
+    MATHML_FRACTION = 188;
+    MATHML_IDENTIFIER = 189;
+    MATHML_MATH = 187;
+    MATHML_MULTISCRIPTS = 190;
+    MATHML_NONESCRIPT = 191;
+    MATHML_NUMBER = 192;
+    MATHML_OPERATOR = 193;
+    MATHML_OVER = 194;
+    MATHML_PRESCRIPTDELIMITER = 195;
+    MATHML_ROOT = 196;
+    MATHML_ROW = 197;
+    MATHML_SQUAREROOT = 198;
+    MATHML_STRINGLITERAL = 199;
+    MATHML_SUB = 200;
+    MATHML_SUBSUP = 201;
+    MATHML_SUP = 202;
+    MATHML_TABLE = 203;
+    MATHML_TABLECELL = 204;
+    MATHML_TABLEROW = 205;
+    MATHML_TEXT = 206;
+    MATHML_UNDER = 207;
+    MATHML_UNDEROVER = 208;
+    MENU = 122;
+    MENU_BAR = 123;
+    MENU_ITEM = 124;
+    MENU_ITEM_CHECKBOX = 125;
+    MENU_ITEM_RADIO = 126;
+    MENU_LIST_OPTION = 127;
+    MENU_LIST_POPUP = 128;
+    METER = 129;
+    NAVIGATION = 130;
+    NOTE = 131;
+    PANE = 132;
+    PARAGRAPH = 133;
+    PDF_ACTIONABLE_HIGHLIGHT = 134;
+    PDF_ROOT = 135;
+    PLUGIN_OBJECT = 136;
+    POPUP_BUTTON = 137;
+    PORTAL = 138;
+    PRE = 139;
+    PROGRESS_INDICATOR = 140;
+    RADIO_BUTTON = 141;
+    RADIO_GROUP = 142;
+    REGION = 143;
+    ROOT_WEB_AREA = 144;
+    ROW = 145;
+    ROW_GROUP = 146;
+    ROW_HEADER = 147;
+    RUBY = 148;
+    RUBY_ANNOTATION = 149;
+    SCROLL_BAR = 150;
+    SCROLL_VIEW = 151;
+    SEARCH = 152;
+    SEARCHBOX = 153;
+    SECTION = 154;
+    SLIDER = 155;
+    SPIN_BUTTON = 156;
+    SPLITTER = 157;
+    STATIC_TEXT = 158;
+    STATUS = 159;
+    STRONG = 160;
+    SUBSCRIPT = 185;
+    SUGGESTION = 161;
+    SUPERSCRIPT = 186;
+    SVGROOT = 162;
+    SWITCH = 163;
+    TAB = 164;
+    TABLIST = 165;
+    TABPANEL = 166;
+    TABLE = 167;
+    TABLE_HEADER_CONTAINER = 168;
+    TERM = 169;
+    TEXT_FIELD = 170;
+    TEXT_FIELD_WITH_COMBOBOX = 171;
+    TIME = 172;
+    TIMER = 173;
+    TITLEBAR = 174;
+    TOGGLE_BUTTON = 175;
+    TOOLBAR = 176;
+    TOOLTIP = 177;
+    TREE = 178;
+    TREE_GRID = 179;
+    TREE_ITEM = 180;
+    UNKNOWN = 181;
+    VIDEO = 182;
+    WEBVIEW = 183;
+    WINDOW = 184;
+  }
+
+  // The predicted type of this component.
+  message PredictedType {
+    oneof type_of {
+      Type enum_type = 1;
+      string string_type = 2;
+    }
+  }
+
+  PredictedType predicted_type = 1;
+
+  // The on-screen bounding box for this component. Origin (0,0) is the top-left
+  // corner.
+  Rect bounding_box = 2;
+}
+
+// Defines a rectangle.
+message Rect {
+  int32 x = 1;
+  int32 y = 2;
+  int32 width = 3;
+  int32 height = 4;
+
+  // Angle of rotation of (in degrees, clockwise is positive) of the box about
+  // the top-left corner.
+  float angle = 5;
+}
+
+enum Direction {
+  DIRECTION_UNSPECIFIED = 0;
+  DIRECTION_LEFT_TO_RIGHT = 1;
+  DIRECTION_RIGHT_TO_LEFT = 2;
+  DIRECTION_TOP_TO_BOTTOM = 3;
+}
+
+// Text line with associated bounding box.
+// This proto is copied from google3/ocr/photo/proto/image.proto.
+message LineBox {
+  // Words in the text line with their bounding boxes.
+  repeated WordBox words = 1;
+
+  // Line bounding box relative to the original image.
+  Rect bounding_box = 2;
+
+  // Text line in UTF8 format.
+  string utf8_string = 3;
+
+  // Language guess for the line. The format  is the ISO 639-1 two-letter
+  // language code if that is defined (e.g. "en"), or else the ISO 639-2
+  // three-letter code if that is defined, or else a Google-specific code.
+  string language = 4;
+
+  // ID of the text block that this line belongs to.
+  int32 block_id = 5;
+
+  // Index within the block that this line belongs to.
+  int32 order_within_block = 6;
+
+  // The direction of the script contained in the line.
+  Direction direction = 7;
+
+  // Content type for this line.
+  ContentType content_type = 8;
+}
+
+// Word with associated bounding box.
+// This proto is copied from google3/ocr/photo/proto/image.proto.
+message WordBox {
+  // Symbols in the word with their bounding boxes (relative to the word
+  // ImagePatch).
+  repeated SymbolBox symbols = 1;
+
+  // Word bounding box relative to the original image.
+  Rect bounding_box = 2;
+
+  // Word string in UTF8 format.
+  string utf8_string = 3;
+
+  // True if the word passes the internal beamsearch dictionary check.
+  bool dictionary_word = 4;
+
+  // Language guess for the word. The format  is the ISO 639-1 two-letter
+  // language code if that is defined (e.g. "en"), or else the ISO 639-2
+  // three-letter code if that is defined, or else a Google-specific code.
+  string language = 5;
+
+  // This word is separated from next word by space.
+  bool has_space_after = 6;
+
+  // If true, foreground and background colors successfully detected.
+  bool estimate_color_success = 7;
+
+  // Estimated grayscale value of foreground.
+  int32 foreground_gray_value = 8;
+
+  // Estimated grayscale value of background.
+  int32 background_gray_value = 9;
+
+  // Estimated RGB of foreground. Extracting RGB channels from this
+  // integer is best done using the leptonica helper extractRGBValues().
+  int32 foreground_rgb_value = 10;
+
+  // Estimated RGB of background. Extracting RGB channels from this
+  // integer is best done using the leptonica helper extractRGBValues().
+  int32 background_rgb_value = 11;
+
+  // The direction of the script contained in the word.
+  Direction direction = 12;
+
+  // Content type for this word.
+  ContentType content_type = 13;
+
+  // Detected orientation of the text.
+  Orientation orientation = 14;
+}
+
+// Symbol with associated bounding box.
+// This proto is copied from google3/ocr/photo/proto/image.proto.
+message SymbolBox {
+  // Bounding box of the symbol relative to the original image.
+  Rect bounding_box = 1;
+
+  // Symbol in UTF8 format.
+  string utf8_string = 2;
+}
+
+// Copied from google3/ocr/photo/proto/image.proto.
+enum Orientation {
+  ORIENTATION_DEFAULT = 0;
+  ORIENTATION_HORIZONTAL = 1;
+  ORIENTATION_VERTICAL = 2;
+  ORIENTATION_ROTATED_HORIZONTAL = 3;
+  ORIENTATION_ROTATED_VERTICAL = 4;
+}
+
+// Copied from google3/ocr/goodoc/page-layout.proto
+enum ContentType {
+  CONTENT_TYPE_PRINTED_TEXT = 0;
+  CONTENT_TYPE_HANDWRITTEN_TEXT = 1;
+  CONTENT_TYPE_IMAGE = 2;
+  CONTENT_TYPE_LINE_DRAWING = 3;
+  // E.g. a dividing line.
+  CONTENT_TYPE_SEPARATOR = 4;
+  CONTENT_TYPE_UNREADABLE_TEXT = 5;
+  // Formula: a mathematical or chemical formula.
+  CONTENT_TYPE_FORMULA = 6;
+  // Same as FORMULA, but handwritten.
+  CONTENT_TYPE_HANDWRITTEN_FORMULA = 7;
+  // Signature or intitals.
+  CONTENT_TYPE_SIGNATURE = 8;
+}
+
+message VisualAnnotation {
+  repeated UIComponent ui_component = 1;
+  repeated LineBox lines = 2;
+}

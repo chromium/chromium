@@ -1,11 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_READING_LIST_READING_LIST_DOWNLOAD_SERVICE_H_
 #define IOS_CHROME_BROWSER_READING_LIST_READING_LIST_DOWNLOAD_SERVICE_H_
 
-#include "base/macros.h"
+#include <string>
+
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "ios/chrome/browser/reading_list/url_downloader.h"
@@ -39,6 +40,11 @@ class ReadingListDownloadService
       std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory,
       std::unique_ptr<reading_list::ReadingListDistillerPageFactory>
           distiller_page_factory);
+
+  ReadingListDownloadService(const ReadingListDownloadService&) = delete;
+  ReadingListDownloadService& operator=(const ReadingListDownloadService&) =
+      delete;
+
   ~ReadingListDownloadService() override;
 
   // Initializes the reading list download service.
@@ -66,11 +72,11 @@ class ReadingListDownloadService
  private:
   // Checks the model and determines which entries are processed and which
   // entries need to be processed.
-  // Initiates a cleanup of |OfflineRoot()| directory removing sub_directories
+  // Initiates a cleanup of `OfflineRoot()` directory removing sub_directories
   // not corresponding to a processed ReadingListEntry.
   // Schedules unprocessed entries for distillation.
   void SyncWithModel();
-  // Schedules all entries in |unprocessed_entries| for distillation.
+  // Schedules all entries in `unprocessed_entries` for distillation.
   void DownloadUnprocessedEntries(const std::set<GURL>& unprocessed_entries);
   // Processes a new entry and schedules a download if needed.
   void ProcessNewEntry(const GURL& url);
@@ -109,8 +115,6 @@ class ReadingListDownloadService
   std::unique_ptr<dom_distiller::DistillerFactory> distiller_factory_;
 
   base::WeakPtrFactory<ReadingListDownloadService> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListDownloadService);
 };
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_READING_LIST_DOWNLOAD_SERVICE_H_

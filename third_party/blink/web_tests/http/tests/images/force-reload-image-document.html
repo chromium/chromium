@@ -11,7 +11,7 @@ function triggerReload() {
   var originalWidth = img.width;
   var originalHeight = img.height;
 
-  img.onerror = t.unreached_func();
+  img.onerror = (message) => {assert_unreached(`onerror called: ${message}`)};
   img.onload = t.step_func_done(function() {
     assert_not_equals(originalWidth, img.width, "Should be reloaded: width");
     assert_not_equals(originalHeight, img.height, "Should be reloaded: height");

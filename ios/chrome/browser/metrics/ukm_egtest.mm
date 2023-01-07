@@ -1,12 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ios/ios_util.h"
-#include "base/macros.h"
+#import "base/ios/ios_util.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -53,7 +52,7 @@ using chrome_test_util::SettingsDoneButton;
   // Note: URL-keyed anonymized data collection is turned on as part of the
   // flow to Sign in to Chrome and Turn sync on. This matches the main user
   // flow that enables UKM.
-  [SigninEarlGreyUI signinWithFakeIdentity:[SigninEarlGrey fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeChromeIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncInitialized:YES
                              syncTimeout:syncher::kSyncUKMOperationsTimeout];
 
@@ -265,7 +264,7 @@ using chrome_test_util::SettingsDoneButton;
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
              @"Failed to assert that UKM was not enabled.");
 
-  [SigninEarlGreyUI signinWithFakeIdentity:[SigninEarlGrey fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeChromeIdentity fakeIdentity1]];
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
              @"Failed to assert that UKM was enabled.");
 }
@@ -284,21 +283,21 @@ using chrome_test_util::SettingsDoneButton;
     // Toggle "Make searches and browsing better" switch off.
 
     [[[EarlGrey
-        selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+        selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                      @"betterSearchAndBrowsingItem_switch",
                                      YES)]
            usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
         onElementWithMatcher:chrome_test_util::GoogleServicesSettingsView()]
-        performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+        performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 
     GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:NO],
                @"Failed to assert that UKM was not enabled.");
 
     // Toggle "Make searches and browsing better" switch on.
     [[EarlGrey
-        selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+        selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                      @"betterSearchAndBrowsingItem_switch", NO)]
-        performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
+        performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
     GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
                @"Failed to assert that UKM was enabled.");
@@ -326,7 +325,7 @@ using chrome_test_util::SettingsDoneButton;
                      @"Client ID was not reset.");
 
   const uint64_t clientID2 = [MetricsAppInterface UKMClientID];
-  [SigninEarlGreyUI signinWithFakeIdentity:[SigninEarlGrey fakeIdentity1]];
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeChromeIdentity fakeIdentity1]];
 
   GREYAssert([MetricsAppInterface checkUKMRecordingEnabled:YES],
              @"Failed to assert that UKM was enabled.");

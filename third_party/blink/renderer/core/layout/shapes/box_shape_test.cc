@@ -54,8 +54,8 @@ namespace {
     LineSegment segment = shapePtr->GetExcludedInterval(lineTop, lineHeight); \
     EXPECT_TRUE(segment.is_valid);                                            \
     if (segment.is_valid) {                                                   \
-      EXPECT_FLOAT_EQ(expectedLeft, segment.logical_left);                    \
-      EXPECT_FLOAT_EQ(expectedRight, segment.logical_right);                  \
+      EXPECT_EQ(expectedLeft, segment.logical_left);                          \
+      EXPECT_EQ(expectedRight, segment.logical_right);                        \
     }                                                                         \
   }
 
@@ -66,13 +66,14 @@ namespace {
   }
 
 /* The BoxShape is based on a 100x50 rectangle at 0,0. The shape-margin value is
- * 10, so the shapeMarginBoundingBox rectangle is 120x70 at -10,-10:
+ * 10, so the shape is a rectangle (120x70 at -10,-10) with rounded corners
+ * (radius=10):
  *
  *   -10,-10   110,-10
- *       +--------+
+ *       (--------)
  *       |        |
- *       +--------+
- *   -10,60     60,60
+ *       (--------)
+ *   -10,60    110,60
  */
 TEST_F(BoxShapeTest, zeroRadii) {
   std::unique_ptr<Shape> shape =
@@ -104,11 +105,18 @@ TEST_F(BoxShapeTest, zeroRadii) {
   EXPECT_FALSE(
       shape->LineOverlapsShapeMarginBounds(LayoutUnit(100), LayoutUnit(200)));
 
-  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(-9), LayoutUnit(1), -10, 110);
-  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(-10), LayoutUnit(), -10, 110);
-  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(-10), LayoutUnit(200), -10, 110);
-  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(5), LayoutUnit(10), -10, 110);
-  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(59), LayoutUnit(1), -10, 110);
+  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(-9), LayoutUnit(1), LayoutUnit(-6),
+                         LayoutUnit(106));
+  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(-10), LayoutUnit(), LayoutUnit(0),
+                         LayoutUnit(100));
+  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(-10), LayoutUnit(200),
+                         LayoutUnit(-10), LayoutUnit(110));
+  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(5), LayoutUnit(10), LayoutUnit(-10),
+                         LayoutUnit(110));
+  // 4.34375 is the LayoutUnit value of -sqrt(19).
+  // 104.34375 is the LayoutUnit value of 100 + sqrt(19).
+  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(59), LayoutUnit(1),
+                         LayoutUnit(-4.34375), LayoutUnit(104.34375));
 
   TEST_NO_EXCLUDED_INTERVAL(shape, LayoutUnit(-12), LayoutUnit(2));
   TEST_NO_EXCLUDED_INTERVAL(shape, LayoutUnit(60), LayoutUnit(1));
@@ -130,20 +138,26 @@ TEST_F(BoxShapeTest, zeroRadii) {
  */
 TEST_F(BoxShapeTest, getIntervals) {
   const FloatRoundedRect::Radii corner_radii(
-      FloatSize(10, 15), FloatSize(10, 20), FloatSize(25, 15),
-      FloatSize(20, 30));
+      gfx::SizeF(10, 15), gfx::SizeF(10, 20), gfx::SizeF(25, 15),
+      gfx::SizeF(20, 30));
   std::unique_ptr<Shape> shape = CreateBoxShape(
-      FloatRoundedRect(IntRect(0, 0, 100, 100), corner_radii), 0);
+      FloatRoundedRect(gfx::Rect(0, 0, 100, 100), corner_radii), 0);
   EXPECT_FALSE(shape->IsEmpty());
 
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), shape->ShapeMarginLogicalBoundingBox());
 
-  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(10), LayoutUnit(95), 0, 100);
-  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(5), LayoutUnit(25), 0, 100);
-  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(15), LayoutUnit(6), 0, 100);
-  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(20), LayoutUnit(50), 0, 100);
-  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(69), LayoutUnit(5), 0, 100);
-  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(85), LayoutUnit(10), 0, 97.3125f);
+  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(10), LayoutUnit(95), LayoutUnit(0),
+                         LayoutUnit(100));
+  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(5), LayoutUnit(25), LayoutUnit(0),
+                         LayoutUnit(100));
+  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(15), LayoutUnit(6), LayoutUnit(0),
+                         LayoutUnit(100));
+  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(20), LayoutUnit(50), LayoutUnit(0),
+                         LayoutUnit(100));
+  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(69), LayoutUnit(5), LayoutUnit(0),
+                         LayoutUnit(100));
+  TEST_EXCLUDED_INTERVAL(shape, LayoutUnit(85), LayoutUnit(10), LayoutUnit(0),
+                         LayoutUnit(97.3125f));
 }
 
 }  // anonymous namespace

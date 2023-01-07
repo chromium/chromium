@@ -1,0 +1,15 @@
+Tests that DOM debugging with DOM.enable(includeWhitespace:"all") works
+Testing with includeWhitespace: all
+  FirstChild tag name: #text
+  Listeners: 1
+    DOMNodeRemoved
+  Removing first child...
+  Debugger paused on node-removed
+    nodeId is correct
+  Done removing first child.
+Testing with includeWhitespace: none
+  FirstChild tag name: SPAN
+  Listeners: 0
+  Removing first child...
+  Done removing first child.
+

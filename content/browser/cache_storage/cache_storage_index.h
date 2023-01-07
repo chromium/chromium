@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "content/browser/cache_storage/cache_storage.h"
+#include "content/common/content_export.h"
 
 namespace content {
 
@@ -37,6 +37,10 @@ class CONTENT_EXPORT CacheStorageIndex {
   };
 
   CacheStorageIndex();
+
+  CacheStorageIndex(const CacheStorageIndex&) = delete;
+  CacheStorageIndex& operator=(const CacheStorageIndex&) = delete;
+
   ~CacheStorageIndex();
 
   CacheStorageIndex& operator=(CacheStorageIndex&& rhs);
@@ -109,8 +113,6 @@ class CONTENT_EXPORT CacheStorageIndex {
   CacheMetadata doomed_cache_metadata_;
   std::list<CacheMetadata>::iterator after_doomed_cache_metadata_;
   bool has_doomed_cache_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageIndex);
 };
 
 }  // namespace content

@@ -1,0 +1,60 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// The original version of this file lives in the Chromium repository at:
+// src/components/arc/mojom/protected_buffer_manager.mojom
+// Next Version: 3
+
+module arc.mojom;
+import "media/mojo/mojom/stable/native_pixmap_handle.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// This interface is exposed by the GPU process for translating dummy handles
+// for secure buffers into usable shared memory buffer or native pixmap handles.
+// Next Method ID: 4
+[Stable, Uuid="560fada2-b6b8-4b06-a337-188381028495",
+ ServiceSandbox=sandbox.mojom.Sandbox.kGpu]
+interface ProtectedBufferManager {
+  // This is deprecated! Please use GetProtectedSharedMemoryFromHandle() which
+  // allows returning a null value.
+  //
+  // Translates from a given |dummy_handle| to a shared memory buffer handle.
+  // The intended use is for the video decoder to gain access to the input data:
+  // a decryption operation can write to this shared memory and then the video
+  // decoder can consume it.
+  //
+  // NOTE: This does not use a shared memory handle for the return type
+  // because of incompatibilities between Chrome and Chrome OS mojo versions
+  // regarding the structure used for sending shared memory handles.
+  //
+  // TODO(b/195769334): switch existing clients to
+  // GetProtectedSharedMemoryFromHandle().
+  DeprecatedGetProtectedSharedMemoryFromHandle@0(handle dummy_handle)
+      => (handle shared_memory_handle);
+
+  // Translates from a given |dummy_handle| to a shared memory buffer handle.
+  // The intended use is for the video decoder to gain access to the input data:
+  // a decryption operation can write to this shared memory and then the video
+  // decoder can consume it.
+  //
+  // Returns null on failure (including if the dummy handle does not correspond
+  // to a valid shared memory buffer).
+  [MinVersion=1]
+  GetProtectedSharedMemoryFromHandle@1(handle dummy_handle)
+      => (handle<shared_buffer>? shared_memory_handle);
+
+  // Translates from a given |dummy_handle| to a native pixmap handle. The
+  // intended use is for the video decoder to gain access to the output buffer.
+  // Returns null on failure (including if the dummy handle does not correspond
+  // to a valid native pixmap).
+  [MinVersion=1]
+  GetProtectedNativePixmapHandleFromHandle@2(handle dummy_handle)
+      => (media.stable.mojom.NativePixmapHandle? native_pixmap_handle);
+
+  // This is used by exo in the browser process to determine if a GMB refers to
+  // a protected native pixmap so it can set the HW protection properly in the
+  // quad if the platform supports HWDRM.
+  [MinVersion=2]
+  IsProtectedNativePixmapHandle@3(handle dummy_handle) => (bool is_protected);
+};

@@ -44,11 +44,11 @@ export const {{struct.name}}_Deserialize =
 /**
  * @record
  */
-export const {{struct.name}} = class {
+export class {{struct.name}} {
   constructor() {
 {%- for packed_field in struct.packed.packed_fields %}
     /** @type { {{packed_field.field.kind|field_type_in_js_module}} } */
     this.{{packed_field.field.name}};
 {%-  endfor %}
   }
-};
+}

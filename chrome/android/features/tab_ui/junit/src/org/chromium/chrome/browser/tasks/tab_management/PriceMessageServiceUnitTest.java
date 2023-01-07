@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,8 +27,13 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
+import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceConfig;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
@@ -74,8 +79,15 @@ public class PriceMessageServiceUnitTest {
         doNothing().when(mMessageObserver).messageReady(anyInt(), any());
         doNothing().when(mMessageObserver).messageInvalidate(anyInt());
 
-        TabUiFeatureUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
-        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING, true);
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                PriceTrackingFeatures.PRICE_NOTIFICATION_PARAM, "true");
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                CommerceSubscriptionsServiceConfig.IMPLICIT_SUBSCRIPTIONS_ENABLED_PARAM, "true");
+        FeatureList.setTestValues(testValues);
+
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
                 PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeInt(
@@ -109,18 +121,20 @@ public class PriceMessageServiceUnitTest {
     @Test
     public void testPrepareMessage_PriceWelcome_ExceedMaxShowCount() {
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeInt(
-                PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT, MAX_SHOW_COUNT - 1);
+                PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT, MAX_SHOW_COUNT);
         mMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, mPriceTabData);
-        assertEquals(MAX_SHOW_COUNT, PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
+        assertEquals(
+                MAX_SHOW_COUNT + 1, PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
         assertFalse(PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled());
     }
 
     @Test
     public void testPrepareMessage_PriceAlerts_ExceedMaxShowCount() {
         PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeInt(
-                PriceTrackingUtilities.PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT, MAX_SHOW_COUNT - 1);
+                PriceTrackingUtilities.PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT, MAX_SHOW_COUNT);
         mMessageService.preparePriceMessage(PriceMessageType.PRICE_ALERTS, null);
-        assertEquals(MAX_SHOW_COUNT, PriceTrackingUtilities.getPriceAlertsMessageCardShowCount());
+        assertEquals(
+                MAX_SHOW_COUNT + 1, PriceTrackingUtilities.getPriceAlertsMessageCardShowCount());
         assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
     }
 
@@ -135,6 +149,26 @@ public class PriceMessageServiceUnitTest {
                         any(PriceMessageService.PriceMessageData.class));
         assertEquals(INITIAL_SHOW_COUNT - 1,
                 PriceTrackingUtilities.getPriceAlertsMessageCardShowCount());
+        assertEquals(INITIAL_SHOW_COUNT + 1,
+                PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
+    }
+
+    // Preparing PriceWelcomeMessage shouldn't decrease the show count of PriceAlertsMessage if it's
+    // currently disabled.
+    @Test
+    public void testPrepareMessage_PriceWelcome_PriceAlertsMessageDisabled() {
+        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
+                PriceTrackingUtilities.PRICE_ALERTS_MESSAGE_CARD, false);
+
+        InOrder inOrder = Mockito.inOrder(mMessageObserver);
+        mMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, mPriceTabData);
+        inOrder.verify(mMessageObserver, times(1)).messageInvalidate(eq(MessageType.PRICE_MESSAGE));
+        assertEquals(mPriceTabData, mMessageService.getPriceTabDataForTesting());
+        inOrder.verify(mMessageObserver, times(1))
+                .messageReady(eq(MessageService.MessageType.PRICE_MESSAGE),
+                        any(PriceMessageService.PriceMessageData.class));
+        assertEquals(
+                INITIAL_SHOW_COUNT, PriceTrackingUtilities.getPriceAlertsMessageCardShowCount());
         assertEquals(INITIAL_SHOW_COUNT + 1,
                 PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount());
     }

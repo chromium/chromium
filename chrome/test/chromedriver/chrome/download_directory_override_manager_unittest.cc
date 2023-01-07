@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,13 @@
 namespace {
 void AssertDownloadDirectoryCommand(const Command& command,
                                     const std::string& download_directory) {
-  std::string behavior;
-  std::string download_path;
+  const std::string* behavior = command.params.FindString("behavior");
+  const std::string* download_path = command.params.FindString("downloadPath");
   ASSERT_EQ("Browser.setDownloadBehavior", command.method);
-  ASSERT_TRUE(command.params.GetString("behavior", &behavior));
-  ASSERT_TRUE(command.params.GetString("downloadPath", &download_path));
-  ASSERT_EQ(download_directory, download_path);
-  ASSERT_EQ(behavior, "allow");
+  ASSERT_TRUE(behavior);
+  ASSERT_TRUE(download_path);
+  ASSERT_EQ(download_directory, *download_path);
+  ASSERT_EQ(*behavior, "allow");
 }
 }  // namespace
 

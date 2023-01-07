@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/android/render_widget_host_connector.h"
+#include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
 
 namespace blink {
 class WebGestureEvent;
@@ -17,8 +19,12 @@ class WebGestureEvent;
 
 namespace gfx {
 class SizeF;
-class Vector2dF;
+class PointF;
 }  // namespace gfx
+
+namespace ui {
+struct DidOverscrollParams;
+}
 
 namespace content {
 
@@ -31,6 +37,10 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
   GestureListenerManager(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& obj,
                          WebContentsImpl* web_contents);
+
+  GestureListenerManager(const GestureListenerManager&) = delete;
+  GestureListenerManager& operator=(const GestureListenerManager&) = delete;
+
   ~GestureListenerManager() override;
 
   void ResetGestureDetection(JNIEnv* env,
@@ -46,13 +56,15 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
   bool has_listeners_attached() const { return has_listeners_attached_; }
   void SetHasListenersAttached(JNIEnv* env, jboolean enabled);
   void GestureEventAck(const blink::WebGestureEvent& event,
-                       blink::mojom::InputEventResultState ack_result);
+                       blink::mojom::InputEventResultState ack_result,
+                       blink::mojom::ScrollResultDataPtr scroll_result_data);
   void DidStopFlinging();
   bool FilterInputEvent(const blink::WebInputEvent& event);
+  void DidOverscroll(const ui::DidOverscrollParams& params);
 
   // All sizes and offsets are in CSS pixels (except |top_show_pix|)
   // as cached by the renderer.
-  void UpdateScrollInfo(const gfx::Vector2dF& scroll_offset,
+  void UpdateScrollInfo(const gfx::PointF& scroll_offset,
                         float page_scale_factor,
                         const float min_page_scale,
                         const float max_page_scale,
@@ -62,7 +74,7 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
                         const float top_shown_pix,
                         bool top_changed);
   void UpdateOnTouchDown();
-  void OnRootScrollOffsetChanged(const gfx::Vector2dF& root_scroll_offset);
+  void OnRootScrollOffsetChanged(const gfx::PointF& root_scroll_offset);
 
   // RendetWidgetHostConnector implementation.
   void UpdateRenderProcessConnection(
@@ -80,16 +92,14 @@ class CONTENT_EXPORT GestureListenerManager : public RenderWidgetHostConnector {
   void ResetPopupsAndInput(bool render_process_gone);
 
   std::unique_ptr<ResetScrollObserver> reset_scroll_observer_;
-  WebContentsImpl* web_contents_;
-  RenderWidgetHostViewAndroid* rwhva_ = nullptr;
+  raw_ptr<WebContentsImpl> web_contents_;
+  raw_ptr<RenderWidgetHostViewAndroid> rwhva_ = nullptr;
 
   // A weak reference to the Java GestureListenerManager object.
   JavaObjectWeakGlobalRef java_ref_;
 
   // True if there is at least one listener attached.
   bool has_listeners_attached_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureListenerManager);
 };
 
 }  // namespace content

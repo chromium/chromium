@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,12 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
@@ -33,6 +32,7 @@
 #include "services/audio/loopback_coordinator.h"
 #include "services/audio/loopback_group_member.h"
 #include "services/audio/snooper_node.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TickClock;
@@ -74,6 +74,9 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
       LoopbackCoordinator* coordinator,
       const base::UnguessableToken& group_id);
 
+  LoopbackStream(const LoopbackStream&) = delete;
+  LoopbackStream& operator=(const LoopbackStream&) = delete;
+
   ~LoopbackStream() final;
 
   bool is_recording() const { return network_ && network_->is_started(); }
@@ -112,6 +115,9 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
     FlowNetwork(scoped_refptr<base::SequencedTaskRunner> flow_task_runner,
                 const media::AudioParameters& output_params,
                 std::unique_ptr<InputSyncWriter> writer);
+
+    FlowNetwork(const FlowNetwork&) = delete;
+    FlowNetwork& operator=(const FlowNetwork&) = delete;
 
     // These must be called to override the Clock/SyncWriter before Start().
     void set_clock_for_testing(const base::TickClock* clock) { clock_ = clock; }
@@ -156,7 +162,7 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
     // becomes stopped.
     void GenerateMoreAudio();
 
-    const base::TickClock* clock_;
+    raw_ptr<const base::TickClock> clock_;
 
     // Task runner that calls GenerateMoreAudio() to drive all the audio data
     // flows.
@@ -182,7 +188,7 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
     // This is set once Start() is called, and lives until this FlowNetwork is
     // destroyed. It is used to schedule cancelable tasks run by the
     // |flow_task_runner_|.
-    base::Optional<base::OneShotTimer> timer_;
+    absl::optional<base::DeadlineTimer> timer_;
 
     // These are used to compute when the |timer_| fires and calls
     // GenerateMoreAudio(). They ensure that each timer task is scheduled to
@@ -207,8 +213,6 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
     const std::unique_ptr<media::AudioBus> mix_bus_;
 
     SEQUENCE_CHECKER(control_sequence_);
-
-    DISALLOW_COPY_AND_ASSIGN(FlowNetwork);
   };
 
   // Reports a fatal error to the client, and then runs the BindingLostCallback.
@@ -225,7 +229,7 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
   mojo::Remote<media::mojom::AudioInputStreamObserver> observer_;
 
   // Used for identifying group members and snooping on their audio data flow.
-  LoopbackCoordinator* const coordinator_;
+  const raw_ptr<LoopbackCoordinator> coordinator_;
   const base::UnguessableToken group_id_;
 
   // The snoopers associated with each group member. This is not a flat_map
@@ -241,8 +245,6 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<LoopbackStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LoopbackStream);
 };
 
 }  // namespace audio

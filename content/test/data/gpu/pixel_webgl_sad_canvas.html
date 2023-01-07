@@ -23,30 +23,55 @@ function sendResult(status, detail) {
 // so give it a few seconds before proceeding.
 var numFramesBeforeEnd = 180;
 
+// The heuristics allow one WebGL context restoration in a given time
+// period.
+var numContextLosses = 0;
+
+// Test harness looks for this to know when to kill the GPU process
+// the second time.
+var contextRestored = false;
+
+var gl;
+
+function clearToRed() {
+  gl.clearColor(1.0, 0.0, 0.0, 1.0);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+}
+
 function main() {
   var canvas = document.getElementById("c");
-  var gl = canvas.getContext('webgl');
+  gl = canvas.getContext('webgl');
   if (!gl) {
     sendResult("FAILURE", "WebGL context not supported");
     return;
   }
 
   canvas.addEventListener('webglcontextlost', contextLostHandler, false);
+  canvas.addEventListener('webglcontextrestored', contextRestoredHandler, false);
 
   // Clear the canvas to red. The harness will then crash the GPU
   // process for us, causing the canvas to be drawn as a "sad canvas".
   // Ensure this mechanism is working correctly.
+  clearToRed();
 
-  gl.clearColor(1.0, 0.0, 0.0, 1.0);
-  gl.clear(gl.COLOR_BUFFER_BIT);
-
-  // Sending READY will make the GPU crash.
+  // Sending READY will make the GPU process crash.
   sendResult("READY");
 }
 
 function contextLostHandler(e)
 {
-  waitForFinish();
+  console.log("Context lost");
+  e.preventDefault();
+  ++numContextLosses;
+  if (numContextLosses == 2)
+    waitForFinish();
+}
+
+function contextRestoredHandler()
+{
+  console.log("Context restored");
+  clearToRed();
+  contextRestored = true;
 }
 
 function waitForFinish()

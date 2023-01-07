@@ -1,8 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/client/display/gl_cursor_feedback_texture.h"
+
+#include <cmath>
 
 #include "base/notreached.h"
 #include "remoting/client/display/gl_render_layer.h"

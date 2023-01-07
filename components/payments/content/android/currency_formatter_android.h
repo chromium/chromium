@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 
 namespace payments {
 
@@ -23,6 +22,10 @@ class CurrencyFormatterAndroid {
       jobject jcaller,
       const base::android::JavaParamRef<jstring>& currency_code,
       const base::android::JavaParamRef<jstring>& locale_name);
+
+  CurrencyFormatterAndroid(const CurrencyFormatterAndroid&) = delete;
+  CurrencyFormatterAndroid& operator=(const CurrencyFormatterAndroid&) = delete;
+
   ~CurrencyFormatterAndroid();
 
   // Message from Java to destroy this object.
@@ -44,8 +47,6 @@ class CurrencyFormatterAndroid {
 
  private:
   std::unique_ptr<CurrencyFormatter> currency_formatter_;
-
-  DISALLOW_COPY_AND_ASSIGN(CurrencyFormatterAndroid);
 };
 
 }  // namespace payments

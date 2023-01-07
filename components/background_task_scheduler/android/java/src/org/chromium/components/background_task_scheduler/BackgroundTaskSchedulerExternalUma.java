@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
  */
 public abstract class BackgroundTaskSchedulerExternalUma {
     // BackgroundTaskId defined in tools/metrics/histograms/enums.xml
+    public static final int BACKGROUND_TASK_NOT_FOUND = -1;
     public static final int BACKGROUND_TASK_TEST = 0;
     public static final int BACKGROUND_TASK_OMAHA = 1;
     public static final int BACKGROUND_TASK_GCM = 2;
@@ -25,7 +26,7 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_TASK_WEBVIEW_VARIATIONS = 10;
     public static final int BACKGROUND_TASK_OFFLINE_CONTENT_NOTIFICATION = 11;
     public static final int BACKGROUND_TASK_WEBAPK_UPDATE = 12;
-    public static final int BACKGROUND_TASK_DOWNLOAD_RESUMPTION = 13;
+    public static final int BACKGROUND_TASK_DEPRECATED_DOWNLOAD_RESUMPTION = 13;
     public static final int BACKGROUND_TASK_FEED_REFRESH = 14;
     public static final int BACKGROUND_TASK_COMPONENT_UPDATE = 15;
     public static final int BACKGROUND_TASK_DEPRECATED_EXPLORE_SITES_REFRESH = 16;
@@ -40,8 +41,9 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_TASK_DOWNLOAD_LATER = 25;
     public static final int BACKGROUND_TASK_OFFLINE_MEASUREMENTS = 26;
     public static final int BACKGROUND_TASK_WEBVIEW_COMPONENT_UPDATE = 27;
+    public static final int BACKGROUND_TASK_ATTRIBUTION_PROVIDER_FLUSH = 28;
     // Keep this one at the end and increment appropriately when adding new tasks.
-    public static final int BACKGROUND_TASK_COUNT = 28;
+    public static final int BACKGROUND_TASK_COUNT = 29;
 
     protected BackgroundTaskSchedulerExternalUma() {}
 
@@ -113,8 +115,8 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_OFFLINE_CONTENT_NOTIFICATION;
             case TaskIds.WEBAPK_UPDATE_JOB_ID:
                 return BACKGROUND_TASK_WEBAPK_UPDATE;
-            case TaskIds.DOWNLOAD_RESUMPTION_JOB_ID:
-                return BACKGROUND_TASK_DOWNLOAD_RESUMPTION;
+            case TaskIds.DEPRECATED_DOWNLOAD_RESUMPTION_JOB_ID:
+                return BACKGROUND_TASK_DEPRECATED_DOWNLOAD_RESUMPTION;
             case TaskIds.FEED_REFRESH_JOB_ID:
                 return BACKGROUND_TASK_FEED_REFRESH;
             case TaskIds.COMPONENT_UPDATE_JOB_ID:
@@ -135,14 +137,77 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_QUERY_TILE;
             case TaskIds.FEEDV2_REFRESH_JOB_ID:
                 return BACKGROUND_TASK_FEEDV2_REFRESH;
-            case TaskIds.OFFLINE_MEASUREMENT_JOB_ID:
-                return BACKGROUND_TASK_OFFLINE_MEASUREMENTS;
             case TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID:
                 return BACKGROUND_TASK_WEBVIEW_COMPONENT_UPDATE;
-            default:
-                assert false;
         }
         // Returning a value that is not expected to ever be reported.
-        return BACKGROUND_TASK_TEST;
+        return BACKGROUND_TASK_NOT_FOUND;
+    }
+
+    /**
+     * Keep this in sync with TaskType variant in
+     * //tools/metrics/histograms/metadata/android/histograms.xml.
+     * @return The histogram pattern to be used for the given {@code taskId}.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public String getHistogramPatternForTaskId(int taskId) {
+        switch (taskId) {
+            case TaskIds.TEST:
+                return "Test";
+            case TaskIds.OMAHA_JOB_ID:
+                return "Omaha";
+            case TaskIds.GCM_BACKGROUND_TASK_JOB_ID:
+                return "Gcm";
+            case TaskIds.NOTIFICATION_SERVICE_JOB_ID:
+                return "NotificationService";
+            case TaskIds.WEBVIEW_MINIDUMP_UPLOADING_JOB_ID:
+                return "WebviewMinidumpUploading";
+            case TaskIds.CHROME_MINIDUMP_UPLOADING_JOB_ID:
+                return "ChromeMinidumpUploading";
+            case TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID:
+                return "OfflinePages";
+            case TaskIds.OFFLINE_PAGES_PREFETCH_JOB_ID:
+                return "OfflinePagesPrefetch";
+            case TaskIds.DOWNLOAD_SERVICE_JOB_ID:
+                return "DownloadService";
+            case TaskIds.DOWNLOAD_CLEANUP_JOB_ID:
+                return "DownloadCleanup";
+            case TaskIds.DOWNLOAD_AUTO_RESUMPTION_JOB_ID:
+                return "DownloadAutoResumption";
+            case TaskIds.DOWNLOAD_LATER_JOB_ID:
+                return "DownloadLater";
+            case TaskIds.WEBVIEW_VARIATIONS_SEED_FETCH_JOB_ID:
+                return "WebviewVariationsSeedFetch";
+            case TaskIds.OFFLINE_PAGES_PREFETCH_NOTIFICATION_JOB_ID:
+                return "OfflinePagesPrefetchNotification";
+            case TaskIds.WEBAPK_UPDATE_JOB_ID:
+                return "WebApkUpdate";
+            case TaskIds.DEPRECATED_DOWNLOAD_RESUMPTION_JOB_ID:
+                return "DeprecatedDownloadResumption";
+            case TaskIds.FEED_REFRESH_JOB_ID:
+                return "FeedRefresh";
+            case TaskIds.COMPONENT_UPDATE_JOB_ID:
+                return "ComponentUpdate";
+            case TaskIds.DEPRECATED_EXPLORE_SITES_REFRESH_JOB_ID:
+                return "DeprecatedExploreSitesRefresh";
+            case TaskIds.EXPLORE_SITES_REFRESH_JOB_ID:
+                return "ExploreSitesRefresh";
+            case TaskIds.BACKGROUND_SYNC_ONE_SHOT_JOB_ID:
+                return "BackgroundSyncOneShot";
+            case TaskIds.NOTIFICATION_SCHEDULER_JOB_ID:
+                return "NotificationScheduler";
+            case TaskIds.NOTIFICATION_TRIGGER_JOB_ID:
+                return "NotificationTrigger";
+            case TaskIds.PERIODIC_BACKGROUND_SYNC_CHROME_WAKEUP_TASK_JOB_ID:
+                return "PeriodicBackgroundSyncChromeWakeup";
+            case TaskIds.QUERY_TILE_JOB_ID:
+                return "QueryTile";
+            case TaskIds.FEEDV2_REFRESH_JOB_ID:
+                return "FeedV2Refresh";
+            case TaskIds.WEBVIEW_COMPONENT_UPDATE_JOB_ID:
+                return "WebviewComponentUpdate";
+        }
+        assert false;
+        return null;
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 // Protocol for communicating link-to-text updates.
 @protocol LinkToTextConsumer
 
-// Invoked when a link-to-text was successfully generated, with |payload|
+// Invoked when a link-to-text was successfully generated, with `payload`
 // containing all the information around that deep-link.
 - (void)generatedPayload:(LinkToTextPayload*)payload;
 

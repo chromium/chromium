@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,37 +10,35 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 #include "chrome/common/chrome_paths.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_image_burner_client.h"
-#include "chromeos/disks/disk.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"  // nogncheck
+#include "chromeos/ash/components/dbus/image_burner/fake_image_burner_client.h"
+#include "chromeos/ash/components/dbus/image_burner/image_burner_client.h"
+#include "chromeos/ash/components/disks/disk.h"
 #endif
 
 namespace extensions {
 namespace image_writer {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace {
-
-class ImageWriterFakeImageBurnerClient
-    : public chromeos::FakeImageBurnerClient {
+class ImageWriterFakeImageBurnerClient : public ash::FakeImageBurnerClient {
  public:
   ImageWriterFakeImageBurnerClient() = default;
   ~ImageWriterFakeImageBurnerClient() override = default;
 
   void SetEventHandlers(
-      const BurnFinishedHandler& burn_finished_handler,
+      BurnFinishedHandler burn_finished_handler,
       const BurnProgressUpdateHandler& burn_progress_update_handler) override {
-    burn_finished_handler_ = burn_finished_handler;
+    burn_finished_handler_ = std::move(burn_finished_handler);
     burn_progress_update_handler_ = burn_progress_update_handler;
   }
 
@@ -65,8 +63,6 @@ class ImageWriterFakeImageBurnerClient
   BurnFinishedHandler burn_finished_handler_;
   BurnProgressUpdateHandler burn_progress_update_handler_;
 };
-
-} // namespace
 #endif
 
 MockOperationManager::MockOperationManager(content::BrowserContext* context)
@@ -81,8 +77,7 @@ void FakeDiskMountManager::UnmountDeviceRecursively(
     const std::string& device_path,
     UnmountDeviceRecursivelyCallbackType callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback), chromeos::MOUNT_ERROR_NONE));
+      FROM_HERE, base::BindOnce(std::move(callback), ash::MountError::kNone));
 }
 #endif
 
@@ -227,10 +222,6 @@ void ImageWriterTestUtils::RunOnUtilityClientCreation(
 #endif
 
 void ImageWriterTestUtils::SetUp() {
-  SetUp(false);
-}
-
-void ImageWriterTestUtils::SetUp(bool is_browser_test) {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   ASSERT_TRUE(
       base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &test_image_path_));
@@ -241,25 +232,23 @@ void ImageWriterTestUtils::SetUp(bool is_browser_test) {
   ASSERT_TRUE(FillFile(test_device_path_, kDevicePattern, kTestFileSize));
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!chromeos::DBusThreadManager::IsInitialized()) {
-    std::unique_ptr<chromeos::DBusThreadManagerSetter> dbus_setter =
-        chromeos::DBusThreadManager::GetSetterForTesting();
-    std::unique_ptr<chromeos::ImageBurnerClient> image_burner_fake(
-        new ImageWriterFakeImageBurnerClient());
-    dbus_setter->SetImageBurnerClient(std::move(image_burner_fake));
+  // Browser tests might have already initialized ConciergeClient.
+  if (!ash::ConciergeClient::Get()) {
+    ash::ConciergeClient::InitializeFake(
+        /*fake_cicerone_client=*/nullptr);
+    concierge_client_initialized_ = true;
   }
+  image_burner_client_ = std::make_unique<ImageWriterFakeImageBurnerClient>();
+  ash::ImageBurnerClient::SetInstanceForTest(image_burner_client_.get());
 
   FakeDiskMountManager* disk_manager = new FakeDiskMountManager();
-  chromeos::disks::DiskMountManager::InitializeForTesting(disk_manager);
+  ash::disks::DiskMountManager::InitializeForTesting(disk_manager);
 
   // Adds a disk entry for test_device_path_ with the same device and file path.
   disk_manager->CreateDiskEntryForMountDevice(
-      chromeos::disks::DiskMountManager::MountPointInfo(
-          test_device_path_.value(), "/dummy/mount",
-          chromeos::MOUNT_TYPE_DEVICE, chromeos::disks::MOUNT_CONDITION_NONE),
-      "device_id", "device_label", "Vendor", "Product",
-      chromeos::DEVICE_TYPE_USB, kTestFileSize, true, true, true, false,
-      kTestFileSystemType);
+      {test_device_path_.value(), "/dummy/mount", ash::MountType::kDevice},
+      "device_id", "device_label", "Vendor", "Product", ash::DeviceType::kUSB,
+      kTestFileSize, true, true, true, false, kTestFileSystemType);
   disk_manager->SetupDefaultReplies();
 #else
   ImageWriterUtilityClient::SetFactoryForTesting(&utility_client_factory_);
@@ -268,10 +257,14 @@ void ImageWriterTestUtils::SetUp(bool is_browser_test) {
 
 void ImageWriterTestUtils::TearDown() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::DBusThreadManager::IsInitialized()) {
-    chromeos::DBusThreadManager::Shutdown();
+  ash::ImageBurnerClient::SetInstanceForTest(nullptr);
+  image_burner_client_.reset();
+
+  if (concierge_client_initialized_) {
+    ash::ConciergeClient::Shutdown();
+    concierge_client_initialized_ = false;
   }
-  chromeos::disks::DiskMountManager::Shutdown();
+  ash::disks::DiskMountManager::Shutdown();
 #else
   ImageWriterUtilityClient::SetFactoryForTesting(nullptr);
 #endif

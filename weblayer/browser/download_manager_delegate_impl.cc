@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/browser/download_manager_delegate_impl.h"
 
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
@@ -16,6 +15,7 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
 #include "net/base/filename_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/download_manager_delegate_impl.h"
@@ -90,8 +90,8 @@ bool DownloadManagerDelegateImpl::DetermineDownloadTarget(
         download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
         download::DownloadItem::MixedContentStatus::UNKNOWN,
-        item->GetForcedFilePath(), base::nullopt /*download_schedule*/,
-        download::DOWNLOAD_INTERRUPT_REASON_NONE);
+        item->GetForcedFilePath(), base::FilePath(),
+        std::string() /*mime_type*/, download::DOWNLOAD_INTERRUPT_REASON_NONE);
     return true;
   }
 
@@ -151,7 +151,7 @@ void DownloadManagerDelegateImpl::CheckDownloadAllowed(
     const content::WebContents::Getter& web_contents_getter,
     const GURL& url,
     const std::string& request_method,
-    base::Optional<url::Origin> request_initiator,
+    absl::optional<url::Origin> request_initiator,
     bool from_download_cross_origin_redirect,
     bool content_initiated,
     content::CheckDownloadAllowedCallback check_download_allowed_cb) {
@@ -262,7 +262,7 @@ void DownloadManagerDelegateImpl::OnDownloadPathGenerated(
       download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
       download::DownloadItem::MixedContentStatus::UNKNOWN,
       suggested_path.AddExtension(FILE_PATH_LITERAL(".crdownload")),
-      base::nullopt /*download_schedule*/,
+      base::FilePath(), std::string() /*mime_type*/,
       download::DOWNLOAD_INTERRUPT_REASON_NONE);
 }
 

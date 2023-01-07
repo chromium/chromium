@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
@@ -21,6 +20,9 @@ class Browser;
 class BackgroundModeOptimizer : public KeepAliveStateObserver,
                                 BrowserListObserver {
  public:
+  BackgroundModeOptimizer(const BackgroundModeOptimizer&) = delete;
+  BackgroundModeOptimizer& operator=(const BackgroundModeOptimizer&) = delete;
+
   ~BackgroundModeOptimizer() override;
 
   // Creates a new BackgroundModeOptimizer. Can return null if optimizations
@@ -51,8 +53,6 @@ class BackgroundModeOptimizer : public KeepAliveStateObserver,
   base::TimeTicks creation_time_;
 
   bool browser_was_added_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundModeOptimizer);
 };
 
 #endif  // CHROME_BROWSER_BACKGROUND_BACKGROUND_MODE_OPTIMIZER_H_

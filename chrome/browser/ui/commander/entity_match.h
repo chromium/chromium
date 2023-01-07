@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/commander/command_source.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/range/range.h"
 
 class Browser;
@@ -29,7 +31,7 @@ struct WindowMatch {
 
   std::unique_ptr<CommandItem> ToCommandItem() const;
 
-  Browser* browser;
+  raw_ptr<Browser> browser;
   std::u16string title;
   std::vector<gfx::Range> matched_ranges;
   double score;
@@ -91,7 +93,7 @@ std::vector<WindowMatch> WindowsMatchingInput(const Browser* browser_to_exclude,
 std::vector<GroupMatch> GroupsMatchingInput(
     const Browser* browser,
     const std::u16string& input,
-    base::Optional<tab_groups::TabGroupId> group_to_exclude = base::nullopt);
+    absl::optional<tab_groups::TabGroupId> group_to_exclude = absl::nullopt);
 
 // Options for narrowing results from `TabsMatchingInput`.
 struct TabSearchOptions {
@@ -107,10 +109,10 @@ struct TabSearchOptions {
   bool only_muted = false;
   // Exclude tabs that belong to this group. Explicitly setting this to the
   // same value as `only_tab_group` is invalid.
-  base::Optional<tab_groups::TabGroupId> exclude_tab_group = base::nullopt;
+  absl::optional<tab_groups::TabGroupId> exclude_tab_group = absl::nullopt;
   // Exclude tabs that do not belong to this group. Explicitly setting this to
   // the same value as `exclude_tab_group` is invalid.
-  base::Optional<tab_groups::TabGroupId> only_tab_group = base::nullopt;
+  absl::optional<tab_groups::TabGroupId> only_tab_group = absl::nullopt;
 };
 
 // Returns tabs in `browser` whose titles fuzzy match `input`. If input is

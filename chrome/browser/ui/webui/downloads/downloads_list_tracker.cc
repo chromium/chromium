@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/unicodestring.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,11 +20,13 @@
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_query.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
@@ -35,8 +38,8 @@
 #include "ui/base/l10n/time_format.h"
 
 using content::BrowserContext;
-using download::DownloadItem;
 using content::DownloadManager;
+using download::DownloadItem;
 
 using DownloadVector = DownloadManager::DownloadVector;
 
@@ -54,6 +57,7 @@ const char* GetDangerTypeString(download::DownloadDangerType danger_type) {
       return "DANGEROUS_FILE";
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL:
       return "DANGEROUS_URL";
+    case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_ACCOUNT_COMPROMISE:
     case download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT:
       return "DANGEROUS_CONTENT";
     case download::DOWNLOAD_DANGER_TYPE_UNCOMMON_CONTENT:
@@ -220,7 +224,7 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->started =
       static_cast<int>(download_item->GetStartTime().ToTimeT());
   file_value->since_string = base::UTF16ToUTF8(
-      ui::TimeFormat::RelativeDate(download_item->GetStartTime(), NULL));
+      ui::TimeFormat::RelativeDate(download_item->GetStartTime(), nullptr));
   file_value->date_string = TimeFormatLongDate(download_item->GetStartTime());
 
   file_value->id = base::NumberToString(download_item->GetId());
@@ -302,11 +306,11 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
       if (download_item->CanResume())
         percent = download_item->PercentComplete();
 
-      // TODO(asanka): last_reason_text should be set via
-      // download_model.GetInterruptReasonText(). But we are using
+      // TODO(https://crbug.com/609255): GetHistoryPageStatusText() is using
       // GetStatusText() as a temporary measure until the layout is fixed to
-      // accommodate the longer string. http://crbug.com/609255
-      last_reason_text = download_model.GetStatusText();
+      // accommodate the longer string. Should update it to simply use
+      // GetInterruptDescription().
+      last_reason_text = download_model.GetHistoryPageStatusText();
       if (download::DOWNLOAD_INTERRUPT_REASON_CRASH ==
               download_item->GetLastReason() &&
           !download_item->CanResume()) {
@@ -333,9 +337,17 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   file_value->danger_type = danger_type;
   file_value->is_dangerous = download_item->IsDangerous();
   file_value->is_mixed_content = download_item->IsMixedContent();
+  file_value->is_reviewable =
+      enterprise_connectors::ShouldPromptReviewForDownload(
+          Profile::FromBrowserContext(
+              content::DownloadItemUtils::GetBrowserContext(download_item)),
+          download_item->GetDangerType());
+
   file_value->last_reason_text = base::UTF16ToUTF8(last_reason_text);
   file_value->percent = percent;
   file_value->progress_status_text = base::UTF16ToUTF8(progress_status_text);
+  file_value->show_in_folder_text =
+      base::UTF16ToUTF8(download_model.GetShowInFolderText());
   file_value->retry = retry;
   file_value->state = state;
 
@@ -344,11 +356,11 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
 
 bool DownloadsListTracker::IsIncognito(const DownloadItem& item) const {
   return GetOriginalNotifierManager() && GetMainNotifierManager() &&
-      GetMainNotifierManager()->GetDownload(item.GetId()) == &item;
+         GetMainNotifierManager()->GetDownload(item.GetId()) == &item;
 }
 
-const DownloadItem* DownloadsListTracker::GetItemForTesting(size_t index)
-    const {
+const DownloadItem* DownloadsListTracker::GetItemForTesting(
+    size_t index) const {
   if (index >= sorted_items_.size())
     return nullptr;
 
@@ -387,7 +399,7 @@ void DownloadsListTracker::Init() {
   if (profile->IsOffTheRecord()) {
     Profile* original_profile = profile->GetOriginalProfile();
     original_notifier_ = std::make_unique<download::AllDownloadItemNotifier>(
-        BrowserContext::GetDownloadManager(original_profile), this);
+        original_profile->GetDownloadManager(), this);
   }
 
   RebuildSortedItems();

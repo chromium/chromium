@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -71,10 +72,10 @@ TestCase CreateDefaultTestCase() {
   test_case.input = {{SchedulerClientType::kTest1,
                       2 /* current_max_daily_show */,
                       {} /* impressions */,
-                      base::nullopt /* suppression_info */,
+                      absl::nullopt /* suppression_info */,
                       0 /* negative_events_count */,
-                      base::nullopt /* last_negative_event_ts */,
-                      base::nullopt /* last_shown_ts */}};
+                      absl::nullopt /* last_negative_event_ts */,
+                      absl::nullopt /* last_shown_ts */}};
   test_case.registered_clients = {SchedulerClientType::kTest1};
   test_case.expected = test_case.input;
   return test_case;
@@ -99,12 +100,12 @@ class MockImpressionStore : public CollectionStore<ClientState> {
                void(const std::string&, base::OnceCallback<void(bool)>));
 };
 
-class MockDelegate : public ImpressionHistoryTracker::Delegate {
+class MockDelegate final : public ImpressionHistoryTracker::Delegate {
  public:
   MockDelegate() = default;
   MockDelegate(const MockDelegate&) = delete;
   MockDelegate& operator=(const MockDelegate&) = delete;
-  ~MockDelegate() final = default;
+  ~MockDelegate() override = default;
   MOCK_METHOD2(GetThrottleConfig,
                void(SchedulerClientType,
                     base::OnceCallback<void(std::unique_ptr<ThrottleConfig>)>));
@@ -120,8 +121,8 @@ class ImpressionHistoryTrackerTest : public ::testing::Test {
   ~ImpressionHistoryTrackerTest() override = default;
 
   void SetUp() override {
-    config_.impression_expiration = base::TimeDelta::FromDays(28);
-    config_.suppression_duration = base::TimeDelta::FromDays(56);
+    config_.impression_expiration = base::Days(28);
+    config_.suppression_duration = base::Days(56);
     config_.initial_daily_shown_per_type = 2;
   }
 
@@ -189,7 +190,7 @@ class ImpressionHistoryTrackerTest : public ::testing::Test {
   test::FakeClock clock_;
   SchedulerConfig config_;
   std::unique_ptr<ImpressionHistoryTracker> impression_trakcer_;
-  MockImpressionStore* store_;
+  raw_ptr<MockImpressionStore> store_;
   std::unique_ptr<MockDelegate> delegate_;
 };
 
@@ -199,7 +200,7 @@ TEST_F(ImpressionHistoryTrackerTest, NewReigstedClient) {
   test_case.registered_clients.emplace_back(SchedulerClientType::kTest2);
   test_case.expected.emplace_back(test::ImpressionTestData(
       SchedulerClientType::kTest2, config().initial_daily_shown_per_type, {},
-      base::nullopt, 0, base::nullopt, base::nullopt));
+      absl::nullopt, 0, absl::nullopt, absl::nullopt));
 
   CreateTracker(test_case);
   EXPECT_CALL(*store(), Add(_, _, _));
@@ -222,10 +223,10 @@ TEST_F(ImpressionHistoryTrackerTest, DeprecateClient) {
 // Verifies expired impression will be deleted.
 TEST_F(ImpressionHistoryTrackerTest, DeleteExpiredImpression) {
   TestCase test_case = CreateDefaultTestCase();
-  auto expired_create_time = clock()->Now() - base::TimeDelta::FromDays(1) -
-                             config().impression_expiration;
-  auto not_expired_time = clock()->Now() + base::TimeDelta::FromDays(1) -
-                          config().impression_expiration;
+  auto expired_create_time =
+      clock()->Now() - base::Days(1) - config().impression_expiration;
+  auto not_expired_time =
+      clock()->Now() + base::Days(1) - config().impression_expiration;
 
   Impression expired = CreateImpression(expired_create_time, "guid1");
   Impression not_expired = CreateImpression(not_expired_time, "guid2");
@@ -248,7 +249,7 @@ TEST_F(ImpressionHistoryTrackerTest, AddImpression) {
   // No-op for unregistered client.
   tracker()->AddImpression(SchedulerClientType::kTest2, kGuid2,
                            Impression::ImpressionResultMap(),
-                           Impression::CustomData(), base::nullopt);
+                           Impression::CustomData(), absl::nullopt);
   VerifyClientStates(test_case);
 
   clock()->SetNow(kTimeStr);
@@ -258,7 +259,7 @@ TEST_F(ImpressionHistoryTrackerTest, AddImpression) {
   Impression::CustomData custom_data = {{"url", "https://www.example.com"}};
   EXPECT_CALL(*store(), Update(_, _, _));
   tracker()->AddImpression(SchedulerClientType::kTest1, kGuid1,
-                           impression_mapping, custom_data, base::nullopt);
+                           impression_mapping, custom_data, absl::nullopt);
   Impression expected_impression(SchedulerClientType::kTest1, kGuid1,
                                  clock()->Now());
   expected_impression.impression_mapping = impression_mapping;
@@ -300,15 +301,12 @@ TEST_F(ImpressionHistoryTrackerTest, ConsecutiveDismisses) {
 
   // Construct 3 dismisses in a row, which will generate neutral impression
   // result.
-  auto dismiss_0 =
-      CreateImpression(clock()->Now() - base::TimeDelta::FromDays(1), "guid0",
-                       UserFeedback::kDismiss);
-  auto dismiss_1 =
-      CreateImpression(clock()->Now() - base::TimeDelta::FromMinutes(30),
-                       "guid1", UserFeedback::kDismiss);
-  auto dismiss_2 =
-      CreateImpression(clock()->Now() - base::TimeDelta::FromMinutes(15),
-                       "guid2", UserFeedback::kDismiss);
+  auto dismiss_0 = CreateImpression(clock()->Now() - base::Days(1), "guid0",
+                                    UserFeedback::kDismiss);
+  auto dismiss_1 = CreateImpression(clock()->Now() - base::Minutes(30), "guid1",
+                                    UserFeedback::kDismiss);
+  auto dismiss_2 = CreateImpression(clock()->Now() - base::Minutes(15), "guid2",
+                                    UserFeedback::kDismiss);
   test_case.input.front().impressions = {dismiss_0, dismiss_1, dismiss_2};
   test_case.expected.front().impressions = test_case.input.front().impressions;
   for (auto& impression : test_case.expected.front().impressions) {
@@ -345,19 +343,19 @@ TEST_F(ImpressionHistoryTrackerTest, ConsecutiveDismissesWithIgnoreTimeout) {
                              ImpressionResult::kNegative);
   impression_mapping.emplace(UserFeedback::kIgnore,
                              ImpressionResult::kNegative);
-  base::TimeDelta ignore_timeout_duration = base::TimeDelta::FromHours(12);
+  base::TimeDelta ignore_timeout_duration = base::Hours(12);
 
   // Construct 3 dismisses or timeout-ignored impressions in a row, which will
   // generate negative impression result.
   auto dismiss_0 = CreateImpression(
-      clock()->Now() - base::TimeDelta::FromDays(1), "guid0",
-      UserFeedback::kNoFeedback, ignore_timeout_duration, impression_mapping);
+      clock()->Now() - base::Days(1), "guid0", UserFeedback::kNoFeedback,
+      ignore_timeout_duration, impression_mapping);
   auto dismiss_1 = CreateImpression(
-      clock()->Now() - base::TimeDelta::FromHours(16), "guid1",
-      UserFeedback::kNoFeedback, ignore_timeout_duration, impression_mapping);
+      clock()->Now() - base::Hours(16), "guid1", UserFeedback::kNoFeedback,
+      ignore_timeout_duration, impression_mapping);
   auto dismiss_2 = CreateImpression(
-      clock()->Now() - base::TimeDelta::FromMinutes(15), "guid2",
-      UserFeedback::kDismiss, ignore_timeout_duration, impression_mapping);
+      clock()->Now() - base::Minutes(15), "guid2", UserFeedback::kDismiss,
+      ignore_timeout_duration, impression_mapping);
   test_case.input.front().impressions = {dismiss_0, dismiss_1, dismiss_2};
   test_case.expected.front().impressions = test_case.input.front().impressions;
   for (auto& impression : test_case.expected.front().impressions) {
@@ -389,7 +387,7 @@ struct UserActionTestParam {
   ImpressionResult impression_result = ImpressionResult::kInvalid;
   UserFeedback user_feedback = UserFeedback::kNoFeedback;
   int current_max_daily_show = 0;
-  base::Optional<ActionButtonType> button_type;
+  absl::optional<ActionButtonType> button_type;
   bool integrated = false;
   bool has_suppression = false;
   std::map<UserFeedback, ImpressionResult> impression_mapping;
@@ -409,7 +407,7 @@ class ImpressionHistoryTrackerUserActionTest
 
 const UserActionTestParam kUserActionTestParams[] = {
     // Suite 0: Click.
-    {ImpressionResult::kPositive, UserFeedback::kClick, 3, base::nullopt,
+    {ImpressionResult::kPositive, UserFeedback::kClick, 3, absl::nullopt,
      true /*integrated*/, false /*has_suppression*/},
 
     // Suite 1: Helpful button.
@@ -423,14 +421,14 @@ const UserActionTestParam kUserActionTestParams[] = {
      true /*has_suppression*/},
 
     // Suite 3: One dismiss.
-    {ImpressionResult::kInvalid, UserFeedback::kDismiss, 2, base::nullopt,
+    {ImpressionResult::kInvalid, UserFeedback::kDismiss, 2, absl::nullopt,
      false /*integrated*/, false /*has_suppression*/},
 
     // Suite 4: Click with negative impression result from impression mapping.
     {ImpressionResult::kNegative,
      UserFeedback::kClick,
      0,
-     base::nullopt,
+     absl::nullopt,
      true /*integrated*/,
      true /*has_suppression*/,
      {{UserFeedback::kClick,
@@ -440,7 +438,7 @@ const UserActionTestParam kUserActionTestParams[] = {
     {ImpressionResult::kNegative,
      UserFeedback::kClick,
      0,
-     base::nullopt,
+     absl::nullopt,
      true /*integrated*/,
      true /*has_suppression*/,
      {{UserFeedback::kClick,
@@ -492,7 +490,7 @@ TEST_P(ImpressionHistoryTrackerUserActionTest, UserAction) {
     UserActionData action_data(SchedulerClientType::kTest1,
                                UserActionType::kButtonClick, kGuid1);
     action_data.button_click_info =
-        base::make_optional(std::move(button_click_info));
+        absl::make_optional(std::move(button_click_info));
     tracker()->OnUserAction(action_data);
   } else if (GetParam().user_feedback == UserFeedback::kDismiss) {
     UserActionData action_data(SchedulerClientType::kTest1,

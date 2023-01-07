@@ -1,9 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/exo/wayland/server_util.h"
 
+#include <wayland-server-core.h>
+
+#include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "components/exo/data_offer.h"
 #include "ui/display/display.h"
@@ -25,6 +28,11 @@ DEFINE_UI_CLASS_PROPERTY_KEY(wl_resource*, kSurfaceResourceKey, nullptr)
 // A property key containing the data offer resource that is associated with
 // data offer object.
 DEFINE_UI_CLASS_PROPERTY_KEY(wl_resource*, kDataOfferResourceKey, nullptr)
+
+// Wayland provides no convenient way to annotate a wl_display with arbitrary
+// data. Therefore, to map displays to their security_delegate, we maintain this
+// mapping.
+base::flat_map<wl_display*, SecurityDelegate*> g_display_security_map;
 
 }  // namespace
 
@@ -51,6 +59,27 @@ wl_resource* GetDataOfferResource(const DataOffer* data_offer) {
 void SetDataOfferResource(DataOffer* data_offer,
                           wl_resource* data_offer_resource) {
   data_offer->SetProperty(kDataOfferResourceKey, data_offer_resource);
+}
+
+void SetSecurityDelegate(wl_display* display,
+                         SecurityDelegate* security_delegate) {
+  auto emplace_result =
+      g_display_security_map.emplace(display, security_delegate);
+  DCHECK(emplace_result.second);
+}
+
+void RemoveSecurityDelegate(wl_display* display) {
+  DCHECK(g_display_security_map.contains(display));
+  g_display_security_map.erase(display);
+}
+
+SecurityDelegate* GetSecurityDelegate(wl_display* display) {
+  DCHECK(g_display_security_map.contains(display));
+  return g_display_security_map[display];
+}
+
+SecurityDelegate* GetSecurityDelegate(wl_client* client) {
+  return GetSecurityDelegate(wl_client_get_display(client));
 }
 
 }  // namespace wayland

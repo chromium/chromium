@@ -9,6 +9,11 @@
         "enum": ["one", "two", "three"]
       },
       {
+        "id": "3D",
+        "type": "string",
+        "enum": ["yes", "no"]
+      },
+      {
         "id": "TestType",
         "type": "object",
         "properties": {
@@ -69,11 +74,28 @@
           },
           "obj_bool": {
             "type": "boolean"
+          },
+          "obj_optional_enum_array": {
+            "optional": true,
+            "type": "array",
+            "items": {
+              "$ref": "enums.Enumeration"
+            }
           }
         }
       },
       "key_enum": {
         "$ref": "TestEnum"
+      },
+      "key_enum_array": {
+        "type": "array",
+        "items": {
+          "$ref": "TestEnum"
+        }
+      },
+      "3d_key": {
+        "optional": true,
+        "$ref": "3D"
       }
     },
     "functions": [

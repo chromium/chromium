@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,26 +6,50 @@
 #define GIN_GIN_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "gin/gin_export.h"
 
 namespace features {
 
-GIN_EXPORT extern const base::Feature kV8OptimizeJavascript;
-GIN_EXPORT extern const base::Feature kV8FlushBytecode;
-GIN_EXPORT extern const base::Feature kV8OffThreadFinalization;
-GIN_EXPORT extern const base::Feature kV8LazyFeedbackAllocation;
-GIN_EXPORT extern const base::Feature kV8ConcurrentInlining;
-GIN_EXPORT extern const base::Feature kV8PerContextMarkingWorklist;
-GIN_EXPORT extern const base::Feature kV8FlushEmbeddedBlobICache;
-GIN_EXPORT extern const base::Feature kV8ReduceConcurrentMarkingTasks;
-GIN_EXPORT extern const base::Feature kV8NoReclaimUnmodifiedWrappers;
-GIN_EXPORT extern const base::Feature kV8LocalHeaps;
-GIN_EXPORT extern const base::Feature kV8TurboDirectHeapAccess;
-GIN_EXPORT extern const base::Feature kV8ExperimentalRegexpEngine;
-GIN_EXPORT extern const base::Feature kV8TurboFastApiCalls;
-GIN_EXPORT extern const base::Feature kV8Turboprop;
-GIN_EXPORT extern const base::Feature kV8Sparkplug;
-GIN_EXPORT extern const base::Feature kV8ShortBuiltinCalls;
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8CompactCodeSpaceWithStack);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8CompactMaps);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8CompactWithStack);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8ConcurrentSparkplug);
+GIN_EXPORT extern const base::FeatureParam<int>
+    kV8ConcurrentSparkplugMaxThreads;
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8ConcurrentSparkplugHighPriorityThreads);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8CrashOnEvacuationFailure);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8ExperimentalRegexpEngine);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8FlushBytecode);
+GIN_EXPORT extern const base::FeatureParam<int> kV8FlushBytecodeOldAge;
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8FlushBaselineCode);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8FlushEmbeddedBlobICache);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8LazyFeedbackAllocation);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8Maglev);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8NoReclaimUnmodifiedWrappers);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8CodeMemoryWriteProtection);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8OffThreadFinalization);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8OptimizeJavascript);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8PerContextMarkingWorklist);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8ReduceConcurrentMarkingTasks);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8ScriptAblation);
+GIN_EXPORT extern const base::FeatureParam<double> kV8ScriptDelayFraction;
+GIN_EXPORT extern const base::FeatureParam<int> kV8ScriptDelayMs;
+GIN_EXPORT extern const base::FeatureParam<int> kV8ScriptDelayOnceMs;
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8ShortBuiltinCalls);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistograms);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsCodeMemoryWriteProtection);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsSparkplug);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsSparkplugAndroid);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8SlowHistogramsScriptAblation);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8Sparkplug);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8SparkplugNeedsShortBuiltinCalls);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8TurboFastApiCalls);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8UseMapSpace);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8DelayMemoryReducer);
+GIN_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kV8MemoryReducerStartDelay;
 
 }  // namespace features
 

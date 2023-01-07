@@ -1,0 +1,178 @@
+<style>
+  :host {
+    --white-100: rgba(255, 255, 255, 0);
+    --white-80: rgba(255, 255, 255, .8);
+    --leaf-icon: var(--cr-tree-item-leaf-icon,
+                     url(chrome://theme/IDR_FOLDER_CLOSED));
+  }
+
+  :host .tree-row {
+    align-items: center;
+    background-color: var(--white-100);
+    /* transparent white */
+    border: var(--cr-tree-row-border, 1px solid var(--white-100));
+    border-radius: var(--cr-tree-row-border-radius, 2px);
+    color: black;
+    cursor: default;
+    display: flex;
+    line-height: var(--cr-tree-row-line-height, 28px);
+    padding: 0 3px;
+    position: relative;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .expand-icon {
+    background: url(chrome://resources/images/tree_triangle.svg) no-repeat center center;
+    background-size: 8px 5.5px;
+    height: 16px;
+    min-width: 16px;
+    opacity: .6;
+    transform: rotate(-90deg);
+    transition: all 150ms;
+    width: 16px;
+  }
+
+  :host-context([dir=rtl]) .expand-icon {
+    transform: rotate(90deg);
+  }
+
+  :host([expanded]) .expand-icon {
+    background-image: url(chrome://resources/images/tree_triangle.svg);
+    opacity: .5;
+    transform: rotate(0);
+  }
+
+  .tree-row .expand-icon {
+    visibility: hidden;
+  }
+
+  :host(:not([has-children])) .tree-row .expand-icon {
+    visibility: hidden;
+  }
+
+  :host([may-have-children]) .tree-row .expand-icon {
+    visibility: visible;
+  }
+
+  :host([force-hover-style]) .tree-row,
+  .tree-row:hover {
+    background-color: hsl(214, 91%, 97%);
+    border-color: hsl(214, 91%, 85%);
+    z-index: 1;
+  }
+
+  :host([selected]) .tree-row {
+    background-color: var(--cr-tree-row-selected-color, hsl(0, 0%, 90%));
+    background-image: var(--cr-tree-row-selected-image,
+                          linear-gradient(var(--white-80), var(--white-100)));
+    border-color: hsl(0, 0%, 85%);
+    z-index: 2;
+  }
+
+  :host([selected]) .tree-row:hover,
+  :host([selected]) .tree-row:focus {
+    background-color: hsl(214, 91%, 89%);
+    border-color: rgb(125, 162, 206);
+  }
+
+  :host([expanded]) .tree-children {
+    display: block;
+  }
+
+  .tree-children {
+    display: none;
+  }
+
+  #extra-aria-label {
+    clip: rect(0,0,0,0);
+    display: inline-block;
+    position: fixed;
+  }
+
+  :host .tree-row > * {
+    box-sizing: border-box;
+    display: inline-block;
+  }
+
+  .tree-label-icon {
+    background-position: 0 50%;
+    background-repeat: no-repeat;
+    height: 20px;
+    min-width: 20px;
+    width: 20px;
+  }
+
+  .tree-label {
+    user-select: var(--cr-tree-label-user-select, none);
+    white-space: pre;
+  }
+
+  .tree-label-icon,
+  :host([may-have-children]) .tree-row > .tree-label-icon {
+    background-image: url(chrome://theme/IDR_FOLDER_CLOSED);
+  }
+
+  :host(:not([may-have-children])) .tree-row > .tree-label-icon {
+    background-image: var(--leaf-icon);
+  }
+
+  <if expr="is_macosx or is_ios">
+  @media (prefers-color-scheme: dark) {
+    .tree-label-icon,
+    :host([may-have-children]) .tree-row > .tree-label-icon {
+      background-image: url(chrome://theme/IDR_FOLDER_CLOSED_WHITE);
+    }
+
+    :host(:not([may-have-children])) .tree-row > .tree-label-icon {
+      background-image: var(--leaf-icon);
+    }
+  }
+  </if>
+
+  <if expr="not is_macosx and not is_ios">
+  :host([expanded]) > .tree-row > .tree-label-icon {
+    background-image: url(chrome://theme/IDR_FOLDER_OPEN);
+  }
+  </if>
+
+  :host-context([dir=rtl]) .tree-label-icon,
+  :host-context([dir=rtl]) :host([may-have-children]) .tree-row > .tree-label-icon,
+  :host-context([dir=rtl]) :host([expanded]) > .tree-row > .tree-label-icon {
+    transform: scaleX(-1);
+  }
+
+  :host([icon-visibility=hidden]) .tree-label-icon {
+    display: none;
+  }
+
+  :host([icon-visibility=parent]) .tree-label-icon,
+  :host([icon-visibility=parent]) .tree-row:not([has-children]) > .tree-label-icon {
+    background-image: none;
+  }
+
+  /* We need to ensure that even empty labels take up space */
+  .tree-label:empty::after {
+    content: ' ';
+    white-space: pre;
+  }
+
+  @media(forced-colors) {
+    :host([selected]) .tree-row,
+    .tree-row:hover,
+    :host([selected]) .tree-row:hover {
+      background-color: Highlight;
+      background-image: none;
+      color: HighlightText;
+      forced-color-adjust: none;
+    }
+  }
+</style>
+<div class="tree-row" role="treeitem" aria-owns="tree-children"
+    aria-labelledby="label extra-aria-label">
+  <span class="expand-icon"></span>
+  <span class="tree-label-icon"></span>
+  <span class="tree-label" id="label"></span>
+  <span id="extra-aria-label"></span>
+</div>
+<div class="tree-children" id="tree-children" role="group"></div>

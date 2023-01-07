@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,29 +16,28 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.containsString;
 
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
+import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
-
-import android.support.test.InstrumentationRegistry;
+import static org.chromium.chrome.browser.autofill_assistant.MiniActionTestUtil.addTapSteps;
+import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.ClickProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.NavigateProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.PromptProto.Choice;
-import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.StopProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
@@ -48,8 +47,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.components.autofill_assistant.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,62 +58,44 @@ import java.util.Arrays;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantNavigationIntegrationTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mTestRule = new ChromeTabbedActivityTestRule();
-
-    private static final String HTML_DIRECTORY = "/components/test/data/autofill_assistant/html/";
     private static final String TEST_PAGE_A = "autofill_assistant_target_website.html";
     private static final String TEST_PAGE_B = "form_target_website.html";
 
-    private EmbeddedTestServer mTestServer;
+    private final ChromeTabbedActivityTestRule mTestRule = new ChromeTabbedActivityTestRule();
+    private final AutofillAssistantChromeTabTestRule mTabTestRule =
+            new AutofillAssistantChromeTabTestRule(mTestRule, TEST_PAGE_A);
+
+    @Rule
+    public final TestRule mRulesChain = RuleChain.outerRule(mTestRule).around(mTabTestRule);
 
     private String getURL(String page) {
-        return mTestServer.getURL(HTML_DIRECTORY + page);
+        return mTabTestRule.getURL(page);
     }
 
-    private void setupScripts(AutofillAssistantTestScript... scripts) {
+    private void startAutofillAssistantOnTab(
+            String pageToLoad, AutofillAssistantTestScript... scripts) {
         AutofillAssistantTestService testService =
                 new AutofillAssistantTestService(Arrays.asList(scripts));
-        testService.scheduleForInjection();
-    }
-
-    private void startAutofillAssistantOnTab(String pageToLoad) {
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> AutofillAssistantFacade.start(mTestRule.getActivity(),
-                                /* bundleExtras= */ null, getURL(pageToLoad)));
-    }
-
-    @Before
-    public void setUp() throws Exception {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
-        mTestRule.startMainActivityWithURL(getURL(TEST_PAGE_A));
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        mTestServer.stopAndDestroyServer();
+        startAutofillAssistant(mTestRule.getActivity(), testService, getURL(pageToLoad));
     }
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1311815")
     public void navigatingWithLocationBarShowsError() {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
-        setupScripts(script);
-        startAutofillAssistantOnTab(TEST_PAGE_A);
+        startAutofillAssistantOnTab(TEST_PAGE_A, script);
 
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
 
@@ -133,30 +113,20 @@ public class AutofillAssistantNavigationIntegrationTest {
     @Test
     @MediumTest
     public void clickingLinkDoesNotCauseError() {
-        SelectorProto linkElement =
-                (SelectorProto) SelectorProto.newBuilder()
-                        .addFilters(SelectorProto.Filter.newBuilder().setCssSelector(
-                                "#form_target_website_link"))
-                        .build();
-
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setClick(ClickProto.newBuilder().setElementToClick(linkElement))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        addTapSteps(toCssSelector("#form_target_website_link"), list);
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
-        setupScripts(script);
-        startAutofillAssistantOnTab(TEST_PAGE_A);
+        startAutofillAssistantOnTab(TEST_PAGE_A, script);
 
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         waitUntil(
@@ -169,31 +139,20 @@ public class AutofillAssistantNavigationIntegrationTest {
     @Test
     @MediumTest
     public void javaScriptNavigationDoesNotCauseError() {
-        SelectorProto navigationActionElement =
-                (SelectorProto) SelectorProto.newBuilder()
-                        .addFilters(SelectorProto.Filter.newBuilder().setCssSelector(
-                                "#form_target_navigation_action"))
-                        .build();
-
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setClick(
-                                 ClickProto.newBuilder().setElementToClick(navigationActionElement))
-                         .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        addTapSteps(toCssSelector("#form_target_navigation_action"), list);
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
-        setupScripts(script);
-        startAutofillAssistantOnTab(TEST_PAGE_A);
+        startAutofillAssistantOnTab(TEST_PAGE_A, script);
 
         waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed());
         waitUntil(
@@ -211,53 +170,51 @@ public class AutofillAssistantNavigationIntegrationTest {
                 mTestRule.getActivity().getActivityTab(), getURL(TEST_PAGE_B));
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Page B").addChoices(
                                  Choice.newBuilder().setChip(
                                          ChipProto.newBuilder().setText("Navigate"))))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setNavigate(NavigateProto.newBuilder().setUrl(getURL(TEST_PAGE_A)))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setWaitForNavigation(WaitForNavigationProto.newBuilder())
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Page A").addChoices(
                                  Choice.newBuilder().setChip(
                                          ChipProto.newBuilder().setText("Go back"))))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setNavigate(NavigateProto.newBuilder().setGoBackward(true))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setWaitForNavigation(WaitForNavigationProto.newBuilder())
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Page B").addChoices(
                                  Choice.newBuilder().setChip(
                                          ChipProto.newBuilder().setText("Go forward"))))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setNavigate(NavigateProto.newBuilder().setGoForward(true))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setWaitForNavigation(WaitForNavigationProto.newBuilder())
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setPrompt(PromptProto.newBuilder().setMessage("Page A").addChoices(
                                  PromptProto.Choice.newBuilder()))
                          .build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_B)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
-        setupScripts(script);
-        startAutofillAssistantOnTab(TEST_PAGE_B);
+        startAutofillAssistantOnTab(TEST_PAGE_B, script);
 
         waitUntilViewMatchesCondition(withText("Page B"), isCompletelyDisplayed());
         onView(withText("Navigate")).perform(click());
@@ -291,20 +248,18 @@ public class AutofillAssistantNavigationIntegrationTest {
     @MediumTest
     public void navigatingInStoppedAutofillAssistantStateRemovesUI() {
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add((ActionProto) ActionProto.newBuilder()
+        list.add(ActionProto.newBuilder()
                          .setTell(TellProto.newBuilder().setMessage("Shutdown"))
                          .build());
-        list.add((ActionProto) ActionProto.newBuilder().setStop(StopProto.newBuilder()).build());
+        list.add(ActionProto.newBuilder().setStop(StopProto.newBuilder()).build());
 
         AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
+                SupportedScriptProto.newBuilder()
                         .setPath(TEST_PAGE_A)
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Done")))
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
                         .build(),
                 list);
-        setupScripts(script);
-        startAutofillAssistantOnTab(TEST_PAGE_A);
+        startAutofillAssistantOnTab(TEST_PAGE_A, script);
 
         waitUntilViewMatchesCondition(withText("Shutdown"), isCompletelyDisplayed());
 
@@ -313,30 +268,5 @@ public class AutofillAssistantNavigationIntegrationTest {
         onView(withId(org.chromium.chrome.R.id.url_bar)).perform(pressImeActionButton());
         waitUntilViewAssertionTrue(
                 withId(R.id.autofill_assistant), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
-    }
-
-    @Test
-    @MediumTest
-    public void navigateDuringOnboardingRemovesUI() {
-        // Onboarding has not been accepted.
-        AutofillAssistantPreferencesUtil.setInitialPreferences(false);
-        startAutofillAssistantOnTab(TEST_PAGE_A);
-
-        waitUntil(
-                ()
-                        -> ChromeTabUtils.getUrlOnUiThread(mTestRule.getActivity().getActivityTab())
-                                   .getSpec()
-                                   .equals(getURL(TEST_PAGE_A)));
-        waitUntilViewMatchesCondition(withId(R.id.button_init_ok), isCompletelyDisplayed());
-
-        onView(withId(org.chromium.chrome.R.id.url_bar))
-                .perform(click(), typeText(getURL(TEST_PAGE_B)), pressImeActionButton());
-        waitUntil(
-                ()
-                        -> ChromeTabUtils.getUrlOnUiThread(mTestRule.getActivity().getActivityTab())
-                                   .getSpec()
-                                   .equals(getURL(TEST_PAGE_B)));
-        waitUntilViewAssertionTrue(
-                withId(R.id.button_init_ok), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,15 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.accessibilityFeatures.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 // NOTE: This file was modified by hand after it was generated. All instances of
 // chrome.accessibilityFeatures.types.ChromeSetting must be changed to
 // ChromeSetting after this file is generated.
 
-/** @fileoverview Externs generated from namespace: accessibilityFeatures */
+/**
+ * @fileoverview Externs generated from namespace: accessibilityFeatures
+ * @externs
+ */
 
 /** @const */
 chrome.accessibilityFeatures = {};

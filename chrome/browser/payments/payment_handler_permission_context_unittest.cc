@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -21,8 +20,8 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
-#include "chrome/browser/infobars/infobar_service.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "components/infobars/content/content_infobar_manager.h"
 #else
 #include "components/permissions/permission_request_manager.h"
 #endif
@@ -56,6 +55,12 @@ class TestPermissionContext : public payments::PaymentHandlerPermissionContext {
 
 class PaymentHandlerPermissionContextTests
     : public ChromeRenderViewHostTestHarness {
+ public:
+  PaymentHandlerPermissionContextTests(
+      const PaymentHandlerPermissionContextTests&) = delete;
+  PaymentHandlerPermissionContextTests& operator=(
+      const PaymentHandlerPermissionContextTests&) = delete;
+
  protected:
   PaymentHandlerPermissionContextTests() = default;
 
@@ -63,14 +68,12 @@ class PaymentHandlerPermissionContextTests
   // ChromeRenderViewHostTestHarness:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-#if defined(OS_ANDROID)
-    InfoBarService::CreateForWebContents(web_contents());
+#if BUILDFLAG(IS_ANDROID)
+    infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
 #else
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
 #endif
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentHandlerPermissionContextTests);
 };
 
 // PaymentHandler permission should be denied for insecure origin.
@@ -80,10 +83,11 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureRequestingUrl) {
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
 
   const permissions::PermissionRequestID id(
-      web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(), -1);
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetID(),
+      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+      permissions::PermissionRequestID::RequestLocalId());
   permission_context.RequestPermission(
-      web_contents(), id, url, true,
+      id, url, true,
       base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                      base::Unretained(&permission_context)));
 
@@ -92,7 +96,8 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureRequestingUrl) {
 
   ContentSetting setting =
       HostContentSettingsMapFactory::GetForProfile(profile())
-          ->GetContentSetting(url.GetOrigin(), url.GetOrigin(),
+          ->GetContentSetting(url.DeprecatedGetOriginAsURL(),
+                              url.DeprecatedGetOriginAsURL(),
                               ContentSettingsType::PAYMENT_HANDLER);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, setting);
 }
@@ -106,19 +111,19 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureQueryingUrl) {
   // Check that there is no saved content settings.
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             HostContentSettingsMapFactory::GetForProfile(profile())
-                ->GetContentSetting(insecure_url.GetOrigin(),
-                                    insecure_url.GetOrigin(),
+                ->GetContentSetting(insecure_url.DeprecatedGetOriginAsURL(),
+                                    insecure_url.DeprecatedGetOriginAsURL(),
                                     ContentSettingsType::PAYMENT_HANDLER));
-  EXPECT_EQ(
-      CONTENT_SETTING_ALLOW,
-      HostContentSettingsMapFactory::GetForProfile(profile())
-          ->GetContentSetting(secure_url.GetOrigin(), insecure_url.GetOrigin(),
-                              ContentSettingsType::PAYMENT_HANDLER));
-  EXPECT_EQ(
-      CONTENT_SETTING_ALLOW,
-      HostContentSettingsMapFactory::GetForProfile(profile())
-          ->GetContentSetting(insecure_url.GetOrigin(), secure_url.GetOrigin(),
-                              ContentSettingsType::PAYMENT_HANDLER));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            HostContentSettingsMapFactory::GetForProfile(profile())
+                ->GetContentSetting(secure_url.DeprecatedGetOriginAsURL(),
+                                    insecure_url.DeprecatedGetOriginAsURL(),
+                                    ContentSettingsType::PAYMENT_HANDLER));
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            HostContentSettingsMapFactory::GetForProfile(profile())
+                ->GetContentSetting(insecure_url.DeprecatedGetOriginAsURL(),
+                                    secure_url.DeprecatedGetOriginAsURL(),
+                                    ContentSettingsType::PAYMENT_HANDLER));
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_context

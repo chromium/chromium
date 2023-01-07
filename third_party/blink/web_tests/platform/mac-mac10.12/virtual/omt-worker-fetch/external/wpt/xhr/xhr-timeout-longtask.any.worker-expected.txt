@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Long tasks should not trigger load timeout
-Harness: the test ran to completion.
-

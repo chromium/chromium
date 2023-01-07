@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,15 @@
 #define CHROME_BROWSER_THEMES_THEME_HELPER_H_
 
 #include "base/sequence_checker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/resource/scale_factor.h"
+#include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/theme_provider.h"
 
 class CustomThemeSupplier;
 
 namespace theme_service_internal {
 class ThemeServiceTest;
-}
-
-namespace ui {
-class NativeTheme;
 }
 
 namespace gfx {
@@ -61,18 +58,13 @@ class ThemeHelper {
   static base::RefCountedMemory* GetRawData(
       int id,
       const CustomThemeSupplier* theme_supplier,
-      ui::ScaleFactor scale_factor);
+      ui::ResourceScaleFactor scale_factor);
 
   ThemeHelper();
   virtual ~ThemeHelper();
 
   ThemeHelper(const ThemeHelper&) = delete;
   ThemeHelper& operator=(const ThemeHelper&) = delete;
-
-  SkColor GetColor(int id,
-                   bool incognito,
-                   const CustomThemeSupplier* theme_supplier,
-                   bool* has_custom_color = nullptr) const;
 
   // Get the specified tint - |id| is one of the TINT_* enum values.
   color_utils::HSL GetTint(int id,
@@ -90,80 +82,18 @@ class ThemeHelper {
   virtual bool ShouldUseNativeFrame(
       const CustomThemeSupplier* theme_supplier) const;
 
-  // Decides if the IncreasedContrastThemeSupplier should be used according
-  // to |native_theme|.
-  virtual bool ShouldUseIncreasedContrastThemeSupplier(
-      ui::NativeTheme* native_theme) const;
-
   void DCheckCalledOnValidSequence() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
- protected:
-  // Returns the color to use for |id| and |incognito| if the theme service does
-  // not provide an override.
-  virtual SkColor GetDefaultColor(
-      int id,
-      bool incognito,
-      const CustomThemeSupplier* theme_supplier) const;
-
  private:
   friend class theme_service_internal::ThemeServiceTest;
-
-  struct OmniboxColor {
-    SkColor value;
-
-    // True if any part of the computation of the color relied on a custom base
-    // color from the theme supplier.
-    bool custom;
-  };
-
-  // Computes the "toolbar top separator" color.  This color is drawn atop the
-  // frame to separate it from tabs, the toolbar, and the new tab button, as
-  // well as atop background tabs to separate them from other tabs or the
-  // toolbar.  We use semitransparent black or white so as to darken or lighten
-  // the frame, with the goal of contrasting with both the frame color and the
-  // active tab (i.e. toolbar) color.  (It's too difficult to try to find colors
-  // that will contrast with both of these as well as the background tab color,
-  // and contrasting with the foreground tab is the most important).
-  static SkColor GetSeparatorColor(SkColor tab_color, SkColor frame_color);
-
-  // Whether the default incognito color/tint for |id| should be used, if
-  // available.
-  static bool UseIncognitoColor(int id,
-                                const CustomThemeSupplier* theme_supplier);
 
   // Whether dark default colors/tints should be used, if available.
   static bool UseDarkModeColors(const CustomThemeSupplier* theme_supplier);
 
-  // Whether the color from |theme_supplier| (if any) should be ignored for
-  // the given |id| and |incognito| state.
-  static bool ShouldIgnoreThemeSupplier(
-      int id,
-      bool incognito,
-      const CustomThemeSupplier* theme_supplier);
-
   // Returns a cross platform image for an id.
   gfx::Image GetImageNamed(int id,
-                           bool incognito,
-                           const CustomThemeSupplier* theme_supplier) const;
-
-  // Given a theme property ID |id|, returns the corresponding omnibox color
-  // overridden by the system theme.  Returns base::nullopt if the color is not
-  // overridden, or if |id| does not correspond to an omnibox color.
-  base::Optional<SkColor> GetOmniboxColor(
-      int id,
-      bool incognito,
-      const CustomThemeSupplier* theme_supplier,
-      bool* has_custom_color) const;
-
-  // Helper function that contains the main implementation of GetOmniboxColor().
-  base::Optional<OmniboxColor> GetOmniboxColorImpl(
-      int id,
-      bool incognito,
-      const CustomThemeSupplier* theme_supplier) const;
-
-  SkColor GetTabGroupColor(int id,
                            bool incognito,
                            const CustomThemeSupplier* theme_supplier) const;
 

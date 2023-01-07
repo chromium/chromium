@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,18 +35,10 @@ public class TemplateUrlServiceFactory {
         sTemplateUrlService = service;
     }
 
-    /**
-     * TODO(crbug.com/968156): Move to TemplateUrlServiceHelper.
-     */
-    public static boolean doesDefaultSearchEngineHaveLogo() {
-        return TemplateUrlServiceFactoryJni.get().doesDefaultSearchEngineHaveLogo();
-    }
-
     // Natives interface is public to allow mocking in tests outside of
     // org.chromium.chrome.browser.search_engines package.
     @NativeMethods
     public interface Natives {
         TemplateUrlService getTemplateUrlService();
-        boolean doesDefaultSearchEngineHaveLogo();
     }
 }

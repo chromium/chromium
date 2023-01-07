@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,13 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -93,7 +95,7 @@ public class BlankCTATabInitialStateRule implements TestRule {
     // quickly, at the cost of thoroughness. This should be adequate for most tests.
     private void resetTabStateFast() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            IncognitoUtils.closeAllIncognitoTabs();
+            IncognitoTabHostUtils.closeAllIncognitoTabs();
             // Close all but the first regular tab as these tests expect to start with a single
             // tab.
             TabModel regularTabModel =
@@ -110,9 +112,21 @@ public class BlankCTATabInitialStateRule implements TestRule {
     // Thoroughly resets tab state by closing all tabs before restoring the primary tab to
     // about:blank state.
     private void resetTabStateThorough() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            sActivity.getTabModelSelector().closeAllTabs();
-            sActivity.getTabCreator(false).launchUrl("about:blank", TabLaunchType.FROM_CHROME_UI);
+        Tab createdTab = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            // We have to avoid closing all tabs and triggering CTA's self-finish logic when all
+            // tabs are closed.
+            Tab newTab = sActivity.getTabCreator(false).launchUrl(
+                    "about:blank", TabLaunchType.FROM_CHROME_UI);
+            IncognitoTabHostUtils.closeAllIncognitoTabs();
+
+            TabModel regularTabModel =
+                    sActivity.getTabModelSelector().getModel(/*incognito=*/false);
+            for (int i = regularTabModel.getCount() - 1; i >= 0; i--) {
+                Tab tab = regularTabModel.getTabAt(i);
+                if (tab != newTab) regularTabModel.closeTab(tab);
+            }
+            return newTab;
         });
+        ChromeTabUtils.waitForTabPageLoaded(createdTab, "about:blank");
     }
 }

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>
+    Test if a corner case crashes the exponential ramp.
+  </title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+  <script>
+    const t = async_test('exponential-ramp-crash');
+
+    const onload = () => {
+      const context = new OfflineAudioContext(2, 441000, 44100);
+      const source = new ConstantSourceNode(context);
+      const delay_node = context.createDelay(30);
+      delay_node.connect(context.destination);
+      // The time overlap between 4.1s and 4s caused a crash in M95:
+      // https://crbug.com/1253746
+      delay_node.delayTime.exponentialRampToValueAtTime(2, 4.1);
+      delay_node.delayTime.cancelAndHoldAtTime(4);
+      context.oncomplete = t.step_func_done(() => {
+        // The |delay_node.delayTime| value should be zero because it does not
+        // have the previous anchor value. Based on the specification, if the
+        // beginning of an expoential ramp is zero, the resulting value falls
+        // into zero. In this case, there was no value point before the
+        // exponential ramp, and having no value point is treated as a
+        // default value, which is zero for |delayTime|.
+        assert_equals(delay_node.delayTime.value, 0);
+        assert_equals(context.state, 'closed');
+      });
+      context.startRendering();
+    };
+
+    window.addEventListener('load', t.step_func(onload));
+  </script>
+</body>
+</html>

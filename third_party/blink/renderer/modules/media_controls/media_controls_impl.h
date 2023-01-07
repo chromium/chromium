@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_IMPL_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
@@ -59,6 +58,8 @@ class MediaControlOverlayPlayButtonElement;
 class MediaControlPanelElement;
 class MediaControlPanelEnclosureElement;
 class MediaControlPictureInPictureButtonElement;
+class MediaControlPlaybackSpeedButtonElement;
+class MediaControlPlaybackSpeedListElement;
 class MediaControlPlayButtonElement;
 class MediaControlRemainingTimeDisplayElement;
 class MediaControlScrubbingMessageElement;
@@ -79,6 +80,10 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   static MediaControlsImpl* Create(HTMLMediaElement&, ShadowRoot&);
 
   explicit MediaControlsImpl(HTMLMediaElement&);
+
+  MediaControlsImpl(const MediaControlsImpl&) = delete;
+  MediaControlsImpl& operator=(const MediaControlsImpl&) = delete;
+
   ~MediaControlsImpl() override = default;
 
   // Returns whether the event is considered a touch event.
@@ -127,6 +132,10 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   void ToggleTextTrackList();
   bool TextTrackListIsWanted();
   MediaControlsTextTrackManager& GetTextTrackManager();
+
+  // Methods related to the playback speed menu.
+  void TogglePlaybackSpeedList();
+  bool PlaybackSpeedListIsWanted();
 
   // Methods related to the overflow menu.
   void OpenOverflowMenu();
@@ -218,6 +227,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   friend class MediaControlsImplTest;
   friend class MediaControlsImplInProductHelpTest;
   friend class MediaControlDisplayCutoutFullscreenButtonElementTest;
+  friend class MediaControlPopupMenuElementTest;
   friend class MediaControlTimelineElementTest;
 
   // Need to be members of MediaControls for private member access.
@@ -309,7 +319,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
 
   // Node
   bool IsMediaControls() const override { return true; }
-  bool WillRespondToMouseMoveEvents() override { return true; }
+  bool WillRespondToMouseMoveEvents() const override { return true; }
   void DefaultEventHandler(Event&) override;
   bool ContainsRelatedTarget(Event*);
 
@@ -367,6 +377,8 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   Member<MediaControlToggleClosedCaptionsButtonElement>
       toggle_closed_captions_button_;
   Member<MediaControlTextTrackListElement> text_track_list_;
+  Member<MediaControlPlaybackSpeedButtonElement> playback_speed_button_;
+  Member<MediaControlPlaybackSpeedListElement> playback_speed_list_;
   Member<MediaControlOverflowMenuButtonElement> overflow_menu_;
   Member<MediaControlOverflowMenuListElement> overflow_list_;
   Member<MediaControlButtonPanelElement> media_button_panel_;
@@ -393,6 +405,12 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   bool is_paused_for_scrubbing_ : 1;
   bool is_scrubbing_ = false;
 
+  // When controls are hidden, we defer CSS updates on them in order to avoid
+  // unnecessary style calculation. When controls transition from shown to
+  // hidden, we set this flag to true to ensure that one final style update
+  // takes place in order to eliminate states such as scrubbing.
+  bool is_hiding_controls_ = false;
+
   // Watches the video element for resize and updates media controls as
   // necessary.
   Member<ResizeObserver> resize_observer_;
@@ -402,7 +420,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   Member<MediaElementMutationCallback> element_mutation_callback_;
 
   HeapTaskRunnerTimer<MediaControlsImpl> element_size_changed_timer_;
-  IntSize size_;
+  gfx::Size size_;
 
   bool keep_showing_until_timer_fires_ : 1;
 
@@ -425,9 +443,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   Member<MediaControlsTextTrackManager> text_track_manager_;
 
   bool is_test_mode_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControlsImpl);
 };
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_IMPL_H_

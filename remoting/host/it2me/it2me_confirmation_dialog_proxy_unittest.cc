@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,10 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,8 +28,7 @@ class StubIt2MeConfirmationDialog : public It2MeConfirmationDialog {
  public:
   explicit StubIt2MeConfirmationDialog(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : task_runner_(task_runner) {
-  }
+      : task_runner_(task_runner) {}
   ~StubIt2MeConfirmationDialog() override {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
   }
@@ -60,8 +60,7 @@ class ResultCallbackTarget {
  public:
   explicit ResultCallbackTarget(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : task_runner_(task_runner) {
-  }
+      : task_runner_(task_runner) {}
 
   MOCK_METHOD1(OnDialogResult, void(It2MeConfirmationDialog::Result));
 
@@ -92,21 +91,13 @@ class It2MeConfirmationDialogProxyTest : public testing::Test {
     return dialog_thread_.task_runner();
   }
 
-  void Run() {
-    run_loop_.Run();
-  }
+  void Run() { run_loop_.Run(); }
 
-  void Quit() {
-    run_loop_.Quit();
-  }
+  void Quit() { run_loop_.Quit(); }
 
-  It2MeConfirmationDialogProxy* dialog_proxy() {
-    return dialog_proxy_.get();
-  }
+  It2MeConfirmationDialogProxy* dialog_proxy() { return dialog_proxy_.get(); }
 
-  StubIt2MeConfirmationDialog* dialog() {
-    return dialog_;
-  }
+  StubIt2MeConfirmationDialog* dialog() { return dialog_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -114,7 +105,7 @@ class It2MeConfirmationDialogProxyTest : public testing::Test {
   base::Thread dialog_thread_;
 
   // |dialog_| is owned by |dialog_proxy_| but we keep an alias for testing.
-  StubIt2MeConfirmationDialog* dialog_ = nullptr;
+  raw_ptr<StubIt2MeConfirmationDialog> dialog_ = nullptr;
   std::unique_ptr<It2MeConfirmationDialogProxy> dialog_proxy_;
 };
 
@@ -125,8 +116,8 @@ It2MeConfirmationDialogProxyTest::It2MeConfirmationDialogProxyTest()
   auto dialog =
       std::make_unique<StubIt2MeConfirmationDialog>(dialog_task_runner());
   dialog_ = dialog.get();
-  dialog_proxy_.reset(new It2MeConfirmationDialogProxy(dialog_task_runner(),
-                                                       std::move(dialog)));
+  dialog_proxy_ = std::make_unique<It2MeConfirmationDialogProxy>(
+      dialog_task_runner(), std::move(dialog));
 }
 
 It2MeConfirmationDialogProxyTest::~It2MeConfirmationDialogProxyTest() = default;

@@ -1,0 +1,29 @@
+{
+  children: [
+    {
+      name: "test_fonts",
+      url: "fuchsia-pkg://fuchsia.com/fonts#meta/fonts.cm",
+    },
+  ],
+  offer: [
+    {
+      protocol: "fuchsia.logger.LogSink",
+      from: "parent",
+      to: "#test_fonts",
+    },
+    {
+      directory: "pkg",
+      subdir: "test_fonts",
+      from: "framework",
+      to: "#test_fonts",
+      as: "config-data",
+      rights: [ "r*" ],
+    }
+  ],
+  use: [
+    {
+      protocol: "fuchsia.fonts.Provider",
+      from: "#test_fonts",
+    },
+  ],
+}

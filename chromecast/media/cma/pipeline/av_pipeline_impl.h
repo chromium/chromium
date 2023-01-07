@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,10 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/cma/pipeline/av_pipeline_client.h"
 #include "chromecast/media/cma/pipeline/stream_decryptor.h"
@@ -42,6 +42,10 @@ class DecoderBufferBase;
 class AvPipelineImpl : CmaBackend::Decoder::Delegate {
  public:
   AvPipelineImpl(CmaBackend::Decoder* decoder, AvPipelineClient client);
+
+  AvPipelineImpl(const AvPipelineImpl&) = delete;
+  AvPipelineImpl& operator=(const AvPipelineImpl&) = delete;
+
   ~AvPipelineImpl() override;
 
   void SetCdm(CastCdmContext* cast_cdm_context);
@@ -194,8 +198,6 @@ class AvPipelineImpl : CmaBackend::Decoder::Delegate {
   // cancel pending asynchronous decryption (by invalidating this factory's weak
   // ptrs) without affecting other bound callbacks.
   base::WeakPtrFactory<AvPipelineImpl> decrypt_weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AvPipelineImpl);
 };
 
 }  // namespace media

@@ -1,33 +1,27 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/compiler/compiler.gni")
 
-# This target always builds with -O2. Hot path functions that are sensitive
-# to the difference between optimiation profiles should be placed here.
-#
-# Some functions are extremely sensitive to the optimizer profile setting on
-# architectures like ARM32. For example, in ARM32 using -Oz instead of -O2
-# results in different choices for inlining, loop vectorization, and register
-# spilling that can yield 10%-15% regressions in blink_perf benchmarks.
-#
-# In element.cc, the regressions are caused by just a small set of hot path
-# functions.
-#
-# Unfortunately selective annotation of optimizations (eg ALWAYS_INLINE, or
-# #prgama clang loop) have been unsuccessful at bridging the performance gap
-# and applying -O2 wholesale to all of element.o creates a very large binary
-# size increase (83k) without additional performance gains over just building
-# a small set of hotpath functions with -O2.
-#
-# If adding more translations units, the convention is, for a given foo.cc
-# file, create a foo-hot.cc file which can hold any functions that require
-# -O2 optimiziation. If there is common inlined implementations, put this in
-# foo-inl.h and include that in both foo.cc and foo-hot.cc.
 blink_core_hot_sources_dom = [
-  "element-hot.cc",
-  "element-inl.h",
+  "container_node.cc",
+  "container_node.h",
+  "document.cc",
+  "document.h",
+  "element.cc",
+  "element.h",
+  "element_data_cache.cc",
+  "element_data_cache.h",
+  "events/event_dispatcher.cc",
+  "events/event_dispatcher.h",
+  "events/event_path.cc",
+  "events/event_path.h",
+  "qualified_name.cc",
+  "qualified_name.h",
+  "node_computed_style.h",
+  "tree_scope.cc",
+  "tree_scope.h",
 ]
 
 blink_core_sources_dom = [
@@ -59,19 +53,21 @@ blink_core_sources_dom = [
   "collection_index_cache.h",
   "comment.cc",
   "comment.h",
-  "container_node.cc",
-  "container_node.h",
   "context_features.cc",
   "context_features.h",
   "context_features_client_impl.cc",
   "context_features_client_impl.h",
+  "css_toggle.cc",
+  "css_toggle.h",
+  "css_toggle_event.cc",
+  "css_toggle_event.h",
+  "css_toggle_map.cc",
+  "css_toggle_map.h",
   "create_element_flags.h",
   "dataset_dom_string_map.cc",
   "dataset_dom_string_map.h",
   "decoded_data_document_parser.cc",
   "decoded_data_document_parser.h",
-  "document.cc",
-  "document.h",
   "document_and_element_event_handlers.h",
   "document_data.h",
   "document_encoding_data.cc",
@@ -108,12 +104,8 @@ blink_core_sources_dom = [
   "dom_time_stamp.h",
   "dom_token_list.cc",
   "dom_token_list.h",
-  "element.cc",
-  "element.h",
   "element_data.cc",
   "element_data.h",
-  "element_data_cache.cc",
-  "element_data_cache.h",
   "element_rare_data.cc",
   "element_rare_data.h",
   "element_traversal.h",
@@ -129,13 +121,9 @@ blink_core_sources_dom = [
   "events/event_dispatch_forbidden_scope.cc",
   "events/event_dispatch_forbidden_scope.h",
   "events/event_dispatch_result.h",
-  "events/event_dispatcher.cc",
-  "events/event_dispatcher.h",
   "events/event_listener.h",
   "events/event_listener_map.cc",
   "events/event_listener_map.h",
-  "events/event_path.cc",
-  "events/event_path.h",
   "events/event_queue.cc",
   "events/event_queue.h",
   "events/event_target.cc",
@@ -162,9 +150,13 @@ blink_core_sources_dom = [
   "flat_tree_traversal.h",
   "flat_tree_traversal_forbidden_scope.h",
   "focus_params.h",
+  "focused_element_change_observer.h",
+  "focusgroup_flags.cc",
+  "focusgroup_flags.h",
   "frame_request_callback_collection.cc",
   "frame_request_callback_collection.h",
   "global_event_handlers.h",
+  "has_invalidation_flags.h",
   "icon_url.cc",
   "icon_url.h",
   "id_target_observer.cc",
@@ -205,7 +197,6 @@ blink_core_sources_dom = [
   "node.h",
   "node_child_removal_tracker.cc",
   "node_child_removal_tracker.h",
-  "node_computed_style.h",
   "node_iterator.cc",
   "node_iterator.h",
   "node_iterator_base.cc",
@@ -225,6 +216,9 @@ blink_core_sources_dom = [
   "nth_index_cache.h",
   "parent_node.h",
   "parser_content_policy.h",
+  "popup_animation_finished_event_listener.cc",
+  "popup_animation_finished_event_listener.h",
+  "popup_data.h",
   "presentation_attribute_style.cc",
   "presentation_attribute_style.h",
   "processing_instruction.cc",
@@ -232,8 +226,6 @@ blink_core_sources_dom = [
   "pseudo_element.cc",
   "pseudo_element.h",
   "pseudo_element_data.h",
-  "qualified_name.cc",
-  "qualified_name.h",
   "range.cc",
   "range.h",
   "range_boundary_point.h",
@@ -272,13 +264,12 @@ blink_core_sources_dom = [
   "throw_on_dynamic_markup_insertion_count_incrementer.h",
   "transform_source.h",
   "transform_source_libxslt.cc",
+  "transition_pseudo_element_data.h",
   "traversal_range.h",
   "tree_ordered_list.cc",
   "tree_ordered_list.h",
   "tree_ordered_map.cc",
   "tree_ordered_map.h",
-  "tree_scope.cc",
-  "tree_scope.h",
   "tree_scope_adopter.cc",
   "tree_scope_adopter.h",
   "tree_walker.cc",
@@ -311,6 +302,7 @@ blink_core_tests_dom = [
   "mutation_observer_test.cc",
   "names_map_test.cc",
   "node_test.cc",
+  "node_traversal_test.cc",
   "nth_index_cache_test.cc",
   "range_test.cc",
   "scripted_animation_controller_test.cc",
@@ -319,6 +311,7 @@ blink_core_tests_dom = [
   "space_split_string_test.cc",
   "static_range_test.cc",
   "text_test.cc",
+  "tree_ordered_list_test.cc",
   "tree_ordered_map_test.cc",
   "tree_scope_adopter_test.cc",
   "tree_scope_test.cc",

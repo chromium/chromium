@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -25,6 +24,12 @@ namespace bookmarks {
 class BookmarkExpandedStateTrackerTest : public testing::Test {
  public:
   BookmarkExpandedStateTrackerTest();
+
+  BookmarkExpandedStateTrackerTest(const BookmarkExpandedStateTrackerTest&) =
+      delete;
+  BookmarkExpandedStateTrackerTest& operator=(
+      const BookmarkExpandedStateTrackerTest&) = delete;
+
   ~BookmarkExpandedStateTrackerTest() override;
 
  protected:
@@ -36,8 +41,6 @@ class BookmarkExpandedStateTrackerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<BookmarkModel> model_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkExpandedStateTrackerTest);
 };
 
 BookmarkExpandedStateTrackerTest::BookmarkExpandedStateTrackerTest() = default;

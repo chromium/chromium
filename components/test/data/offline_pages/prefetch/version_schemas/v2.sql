@@ -1,5 +1,5 @@
 INSERT OR REPLACE INTO meta (key, value)
-VALUES ("version", 2), ("last_compatible_version", 1);
+VALUES ('version', 2), ('last_compatible_version', 1);
 
 CREATE TABLE IF NOT EXISTS prefetch_items
 (

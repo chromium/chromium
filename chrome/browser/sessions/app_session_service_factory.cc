@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,8 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/app_session_service.h"
-#include "chrome/browser/sessions/session_data_deleter.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-
-// static
-bool AppSessionServiceFactory::RelevantToAppSessionService(Browser::Type type) {
-  return (type == Browser::Type::TYPE_APP ||
-          type == Browser::Type::TYPE_APP_POPUP);
-}
+#include "chrome/browser/sessions/session_data_service.h"
+#include "chrome/browser/sessions/session_data_service_factory.h"
 
 // static
 AppSessionService* AppSessionServiceFactory::GetForProfile(Profile* profile) {
@@ -45,7 +39,8 @@ AppSessionService* AppSessionServiceFactory::GetForProfileForSessionRestore(
 
 // static
 void AppSessionServiceFactory::ShutdownForProfile(Profile* profile) {
-  DeleteSessionOnlyData(profile);
+  if (SessionDataServiceFactory::GetForProfile(profile))
+    SessionDataServiceFactory::GetForProfile(profile)->StartCleanup();
 
   // We're about to exit, force creation of the session service if it hasn't
   // been created yet. We do this to ensure session state matches the point in
@@ -65,9 +60,10 @@ AppSessionServiceFactory* AppSessionServiceFactory::GetInstance() {
 }
 
 AppSessionServiceFactory::AppSessionServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "AppSessionService",
-          BrowserContextDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactory("AppSessionService") {
+  // Ensure that session data is cleared before session restore can happen.
+  DependsOn(SessionDataServiceFactory::GetInstance());
+}
 
 AppSessionServiceFactory::~AppSessionServiceFactory() = default;
 

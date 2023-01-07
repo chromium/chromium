@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/session/session_observer.h"
+#include "base/callback.h"
 
 TestSessionController::TestSessionController() = default;
 TestSessionController::~TestSessionController() = default;
@@ -48,7 +49,7 @@ void TestSessionController::NotifyChromeLockAnimationsComplete() {
 
 void TestSessionController::RunUnlockAnimation(
     RunUnlockAnimationCallback callback) {
-  std::move(callback).Run();
+  std::move(callback).Run(false);
 }
 
 void TestSessionController::NotifyChromeTerminating() {}

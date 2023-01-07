@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ namespace {
 using ExtensionDialogTest = extensions::ExtensionBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ExtensionDialogTest, TextInputViaKeyEvent) {
-  ExtensionTestMessageListener init_listener("ready", /*will_reply=*/false);
+  ExtensionTestMessageListener init_listener("ready");
 
   scoped_refptr<const extensions::Extension> extension =
       LoadExtension(test_data_dir_.AppendASCII("uitest/tab_traversal"));

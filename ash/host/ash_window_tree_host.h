@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,9 +58,10 @@ class ASH_EXPORT AshWindowTreeHost {
 
   virtual void RegisterMirroringHost(AshWindowTreeHost* mirroring_ash_host) {}
 
-  virtual void SetCursorConfig(const display::Display& display,
-                               display::Display::Rotation rotation) = 0;
+  virtual void UpdateCursorConfig() = 0;
   virtual void ClearCursorConfig() = 0;
+
+  virtual void UpdateRootWindowSize() = 0;
 
  protected:
   // Returns true if cursor confinement should be allowed. For development

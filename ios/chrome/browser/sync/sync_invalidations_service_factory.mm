@@ -1,17 +1,18 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/sync/sync_invalidations_service_factory.h"
+#import "ios/chrome/browser/sync/sync_invalidations_service_factory.h"
 
-#include "components/gcm_driver/gcm_profile_service.h"
-#include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/sync/invalidations/switches.h"
-#include "components/sync/invalidations/sync_invalidations_service_impl.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/gcm/instance_id/ios_chrome_instance_id_profile_service_factory.h"
-#include "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
+#import "base/no_destructor.h"
+#import "components/gcm_driver/gcm_profile_service.h"
+#import "components/gcm_driver/instance_id/instance_id_profile_service.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/sync/base/features.h"
+#import "components/sync/invalidations/sync_invalidations_service_impl.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/gcm/instance_id/ios_chrome_instance_id_profile_service_factory.h"
+#import "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,7 +46,7 @@ SyncInvalidationsServiceFactory::~SyncInvalidationsServiceFactory() = default;
 std::unique_ptr<KeyedService>
 SyncInvalidationsServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  if (!base::FeatureList::IsEnabled(switches::kSyncSendInterestedDataTypes)) {
+  if (!base::FeatureList::IsEnabled(syncer::kSyncSendInterestedDataTypes)) {
     return nullptr;
   }
 

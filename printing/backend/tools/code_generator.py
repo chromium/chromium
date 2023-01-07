@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 '''python %(prog)s [options]
@@ -224,6 +224,11 @@ def main():
       if handler != 'NoOpHandler':
         if args.localization_map and not handler.startswith('Multivalue'):
           add_l10n(l10n_file, attr_name)
+
+    # media-source is only handled for localization because it's inside of
+    # the media-col collection and we don't handle collections otherwise.
+    supported_items.add("media-source")
+    add_l10n(l10n_file, "media-source")
 
     with open(args.keyword_values_file, 'r') as keyword_file:
       keyword_reader = csv.reader(keyword_file)

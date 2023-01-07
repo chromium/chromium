@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ extern "C" {
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/win/scoped_handle.h"
 #include "device/base/device_monitor_win.h"
 #include "services/device/hid/hid_service.h"
@@ -131,6 +131,7 @@ class HidServiceWin : public HidService, public DeviceMonitorWin::Observer {
 
   void Connect(const std::string& device_id,
                bool allow_protected_reports,
+               bool allow_fido_reports,
                ConnectCallback callback) override;
   base::WeakPtr<HidService> GetWeakPtr() override;
 
@@ -141,8 +142,9 @@ class HidServiceWin : public HidService, public DeviceMonitorWin::Observer {
   static void AddDeviceBlocking(
       base::WeakPtr<HidServiceWin> service,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const std::vector<std::wstring>& device_paths,
-      const std::string& physical_device_id);
+      const std::wstring& device_path,
+      const std::string& physical_device_id,
+      const std::wstring& interface_id);
 
   // DeviceMonitorWin::Observer implementation:
   void OnDeviceAdded(const GUID& class_guid,
@@ -155,7 +157,8 @@ class HidServiceWin : public HidService, public DeviceMonitorWin::Observer {
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-  ScopedObserver<DeviceMonitorWin, DeviceMonitorWin::Observer> device_observer_;
+  base::ScopedObservation<DeviceMonitorWin, DeviceMonitorWin::Observer>
+      device_observation_{this};
   base::WeakPtrFactory<HidServiceWin> weak_factory_{this};
 };
 

@@ -1,20 +1,22 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/chromedriver/net/net_util.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "chrome/test/chromedriver/net/url_request_context_getter.h"
@@ -29,6 +31,7 @@
 #include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/transitional_url_loader_factory_owner.h"
+#include "services/network/url_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -40,8 +43,8 @@ class FetchUrlTest : public testing::Test,
       : io_thread_("io"),
         response_(kSendHello),
         task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
-    base::Thread::Options options(base::MessagePumpType::IO, 0);
-    CHECK(io_thread_.StartWithOptions(options));
+    CHECK(io_thread_.StartWithOptions(
+        base::Thread::Options(base::MessagePumpType::IO, 0)));
 
     base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                               base::WaitableEvent::InitialState::NOT_SIGNALED);
@@ -73,9 +76,9 @@ class FetchUrlTest : public testing::Test,
         url_loader_factory_owner_->GetURLLoaderFactory().get();
 
     std::unique_ptr<net::ServerSocket> server_socket(
-        new net::TCPServerSocket(NULL, net::NetLogSource()));
+        new net::TCPServerSocket(nullptr, net::NetLogSource()));
     server_socket->ListenWithAddressAndPort("127.0.0.1", 0, 1);
-    server_.reset(new net::HttpServer(std::move(server_socket), this));
+    server_ = std::make_unique<net::HttpServer>(std::move(server_socket), this);
     net::IPEndPoint address;
     CHECK_EQ(net::OK, server_->GetLocalAddress(&address));
     server_url_ = base::StringPrintf("http://127.0.0.1:%d", address.port());
@@ -84,7 +87,7 @@ class FetchUrlTest : public testing::Test,
 
   void DestroyServerOnIO(base::WaitableEvent* event) {
     url_loader_factory_owner_.reset();
-    server_.reset(NULL);
+    server_.reset();
     event->Signal();
   }
 
@@ -131,7 +134,7 @@ class FetchUrlTest : public testing::Test,
   std::unique_ptr<net::HttpServer> server_;
   std::unique_ptr<network::TransitionalURLLoaderFactoryOwner>
       url_loader_factory_owner_;
-  network::mojom::URLLoaderFactory* url_loader_factory_;
+  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
   std::string server_url_;
   base::test::TaskEnvironment task_environment_;
 };

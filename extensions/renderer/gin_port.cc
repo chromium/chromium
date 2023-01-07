@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "extensions/common/api/messaging/message.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_event_handler.h"
 #include "extensions/renderer/bindings/event_emitter.h"
@@ -16,6 +17,9 @@
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/object_template_builder.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 
@@ -154,8 +158,8 @@ void GinPort::PostMessageHandler(gin::Arguments* arguments,
   }
 
   std::string error;
-  std::unique_ptr<Message> message =
-      messaging_util::MessageFromV8(context, v8_message, &error);
+  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+      context, v8_message, port_id_.serialization_format, &error);
   // NOTE(devlin): JS-based bindings just log to the console here and return,
   // rather than throwing an error. But it really seems like it should be an
   // error. Let's see how this goes.

@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/offline_pages/background_loader_offliner.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -22,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_data.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
 #include "components/offline_pages/core/background/save_page_request.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
@@ -39,7 +38,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 
 namespace offline_pages {
 
@@ -146,7 +144,7 @@ bool BackgroundLoaderOffliner::LoadAndSave(
   MarkLoadStartTime();
 
   // Track copy of pending request.
-  pending_request_.reset(new SavePageRequest(request));
+  pending_request_ = std::make_unique<SavePageRequest>(request);
   completion_callback_ = std::move(completion_callback);
   progress_callback_ = progress_callback;
 
@@ -241,28 +239,26 @@ void BackgroundLoaderOffliner::MarkLoadStartTime() {
   load_start_time_ = base::TimeTicks::Now();
 }
 
-void BackgroundLoaderOffliner::DocumentAvailableInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void BackgroundLoaderOffliner::PrimaryMainDocumentElementAvailable() {
   is_low_bar_met_ = true;
 
   // Add this signal to signal_data_.
-  AddLoadingSignal("DocumentAvailableInMainFrame");
+  AddLoadingSignal("PrimaryMainDocumentElementAvailable");
 }
 
-void BackgroundLoaderOffliner::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void BackgroundLoaderOffliner::DocumentOnLoadCompletedInPrimaryMainFrame() {
   if (!pending_request_.get()) {
     DVLOG(1) << "DidStopLoading called even though no pending request.";
     return;
   }
 
   // Add this signal to signal_data_.
-  AddLoadingSignal("DocumentOnLoadCompletedInMainFrame");
+  AddLoadingSignal("DocumentOnLoadCompletedInPrimaryMainFrame");
 
-  snapshot_controller_->DocumentOnLoadCompletedInMainFrame();
+  snapshot_controller_->DocumentOnLoadCompletedInPrimaryMainFrame();
 }
 
-void BackgroundLoaderOffliner::RenderProcessGone(
+void BackgroundLoaderOffliner::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   if (pending_request_) {
     SavePageRequest request(*pending_request_.get());
@@ -293,7 +289,7 @@ void BackgroundLoaderOffliner::WebContentsDestroyed() {
 
 void BackgroundLoaderOffliner::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame())
     return;
   // If there was an error of any kind (certificate, client, DNS, etc),
   // Mark as error page. Resetting here causes RecordNavigationMetrics to crash.
@@ -482,15 +478,15 @@ void BackgroundLoaderOffliner::ResetState() {
 }
 
 void BackgroundLoaderOffliner::ResetLoader() {
-  loader_.reset(
-      new background_loader::BackgroundLoaderContents(browser_context_));
+  loader_ = std::make_unique<background_loader::BackgroundLoaderContents>(
+      browser_context_);
   loader_->SetDelegate(this);
 }
 
 void BackgroundLoaderOffliner::AttachObservers() {
   content::WebContents* contents = loader_->web_contents();
   content::WebContentsObserver::Observe(contents);
-  OfflinerUserData::AddToWebContents(contents, this);
+  OfflinerUserData::CreateForWebContents(contents, this);
 }
 
 void BackgroundLoaderOffliner::AddLoadingSignal(const char* signal_name) {
@@ -500,7 +496,7 @@ void BackgroundLoaderOffliner::AddLoadingSignal(const char* signal_name) {
   // Given the choice between int and double, we choose to implicitly convert to
   // a double since it maintains more precision (we can get a longer time in
   // milliseconds than we can with a 2 bit int, 53 bits vs 32).
-  signal_data_.SetDouble(signal_name, delay_so_far.InMillisecondsF());
+  signal_data_.SetDoubleKey(signal_name, delay_so_far.InMillisecondsF());
 }
 
 void BackgroundLoaderOffliner::RenovationsCompleted() {

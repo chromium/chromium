@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,9 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "third_party/cros_system_api/constants/cryptohome.h"
 #endif
 
@@ -26,7 +25,7 @@ void DeleteSharedFiles(std::vector<base::FilePath> file_paths) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   for (const base::FilePath& name : file_paths) {
-    base::DeleteFile(name);
+    base::DeletePathRecursively(name);
   }
 }
 
@@ -35,6 +34,10 @@ void DeleteSharedFiles(std::vector<base::FilePath> file_paths) {
 namespace webshare {
 
 constexpr base::TimeDelta PrepareDirectoryTask::kSharedFileLifetime;
+
+PrepareDirectoryTask::PrepareDirectoryTask(base::FilePath directory,
+                                           uint64_t required_space)
+    : directory_(std::move(directory)), required_space_(required_space) {}
 
 PrepareDirectoryTask::PrepareDirectoryTask(
     base::FilePath directory,
@@ -54,6 +57,16 @@ void PrepareDirectoryTask::Start() {
                      required_space_),
       base::BindOnce(&PrepareDirectoryTask::OnPrepareDirectory,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PrepareDirectoryTask::StartWithCallback(
+    PrepareDirectoryCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+      base::BindOnce(&PrepareDirectoryTask::PrepareDirectory, directory_,
+                     required_space_),
+      std::move(callback));
 }
 
 // static
@@ -86,11 +99,11 @@ base::File::Error PrepareDirectoryTask::PrepareDirectory(
       }
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (base::SysInfo::AmountOfFreeDiskSpace(directory) <
         static_cast<int64_t>(cryptohome::kMinFreeSpaceInBytes +
                              required_space)) {
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     if (base::SysInfo::AmountOfFreeDiskSpace(directory) <
         static_cast<int64_t>(required_space)) {
 #else
@@ -109,9 +122,11 @@ base::File::Error PrepareDirectoryTask::PrepareDirectory(
 
 void PrepareDirectoryTask::OnPrepareDirectory(base::File::Error result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::move(callback_).Run((result == base::File::FILE_OK)
-                               ? blink::mojom::ShareError::OK
-                               : blink::mojom::ShareError::PERMISSION_DENIED);
+  if (callback_) {
+    std::move(callback_).Run((result == base::File::FILE_OK)
+                                 ? blink::mojom::ShareError::OK
+                                 : blink::mojom::ShareError::PERMISSION_DENIED);
+  }
 }
 
 }  // namespace webshare

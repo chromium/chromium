@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -47,14 +46,15 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/file_manager/app_id.h"
 #endif
 
 namespace extensions {
 namespace util {
 
 namespace {
+
 // Returns |extension_id|. See note below.
 std::string ReloadExtensionIfEnabled(const std::string& extension_id,
                                      content::BrowserContext* context) {
@@ -77,16 +77,6 @@ std::string ReloadExtensionIfEnabled(const std::string& extension_id,
 
 }  // namespace
 
-bool IsExtensionSiteWithIsolatedStorage(const GURL& site_url,
-                                        content::BrowserContext* context) {
-  if (!site_url.SchemeIs(extensions::kExtensionScheme))
-    return false;
-
-  // The host in an extension site URL is the extension_id.
-  DCHECK(site_url.has_host());
-  return HasIsolatedStorage(site_url.host(), context);
-}
-
 bool HasIsolatedStorage(const std::string& extension_id,
                         content::BrowserContext* context) {
   const Extension* extension =
@@ -97,13 +87,21 @@ bool HasIsolatedStorage(const std::string& extension_id,
   const bool is_policy_extension =
       extension && Manifest::IsPolicyLocation(extension->location());
   Profile* profile = Profile::FromBrowserContext(context);
-  if (profile && chromeos::ProfileHelper::IsSigninProfile(profile) &&
+  if (profile && ash::ProfileHelper::IsSigninProfile(profile) &&
       is_policy_extension) {
     return true;
   }
 #endif
 
   return extension && AppIsolationInfo::HasIsolatedStorage(extension);
+}
+
+bool IsChromeApp(const std::string& extension_id,
+                 content::BrowserContext* context) {
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
+  return extension->is_platform_app();
 }
 
 void SetIsIncognitoEnabled(const std::string& extension_id,
@@ -199,7 +197,7 @@ bool IsAppLaunchable(const std::string& extension_id,
 bool IsAppLaunchableWithoutEnabling(const std::string& extension_id,
                                     content::BrowserContext* context) {
   return ExtensionRegistry::Get(context)->GetExtensionById(
-      extension_id, ExtensionRegistry::ENABLED) != NULL;
+             extension_id, ExtensionRegistry::ENABLED) != nullptr;
 }
 
 bool ShouldSync(const Extension* extension,
@@ -263,19 +261,18 @@ bool IsExtensionIdle(const std::string& extension_id,
   return true;
 }
 
-std::unique_ptr<base::DictionaryValue> GetExtensionInfo(
-    const Extension* extension) {
+base::Value::Dict GetExtensionInfo(const Extension* extension) {
   DCHECK(extension);
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
+  base::Value::Dict dict;
 
-  dict->SetString("id", extension->id());
-  dict->SetString("name", extension->name());
+  dict.Set("id", extension->id());
+  dict.Set("name", extension->name());
 
   GURL icon = extensions::ExtensionIconSource::GetIconURL(
       extension, extension_misc::EXTENSION_ICON_SMALLISH,
       ExtensionIconSet::MATCH_BIGGER,
       false);  // Not grayscale.
-  dict->SetString("icon", icon.spec());
+  dict.Set("icon", icon.spec());
 
   return dict;
 }
@@ -311,15 +308,25 @@ std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
   return permissions_to_display;
 }
 
-std::vector<content::BrowserContext*> GetAllRelatedProfiles(Profile* profile) {
-  std::vector<Profile*> off_the_record_profiles =
-      profile->GetAllOffTheRecordProfiles();
-
+std::vector<content::BrowserContext*> GetAllRelatedProfiles(
+    Profile* profile,
+    const Extension& extension) {
   std::vector<content::BrowserContext*> related_contexts;
-  related_contexts.reserve(1 + off_the_record_profiles.size());
   related_contexts.push_back(profile->GetOriginalProfile());
-  for (Profile* off_the_record_profile : off_the_record_profiles)
-    related_contexts.push_back(off_the_record_profile);
+
+  // The returned `related_contexts` should include all the related incognito
+  // profiles if the extension is globally allowed in incognito (this is a
+  // global, rather than per-profile toggle - this is why we it can be checked
+  // globally here, rather than once for every incognito profile looped over
+  // below).
+  if (IsIncognitoEnabled(extension.id(), profile)) {
+    std::vector<Profile*> off_the_record_profiles =
+        profile->GetAllOffTheRecordProfiles();
+    related_contexts.reserve(related_contexts.size() +
+                             off_the_record_profiles.size());
+    for (Profile* off_the_record_profile : off_the_record_profiles)
+      related_contexts.push_back(off_the_record_profile);
+  }
 
   return related_contexts;
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,5 +18,9 @@ enum LocationBarSecurityIconType {
 // Returns the asset name (to be used in -[UIImage imageNamed:]).
 NSString* GetLocationBarSecurityIconTypeAssetName(
     LocationBarSecurityIconType icon);
+
+// Returns the symbol name corresponding to the given iconType.
+NSString* GetLocationBarSecuritySymbolName(
+    LocationBarSecurityIconType iconType);
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_ICON_TYPE_H_

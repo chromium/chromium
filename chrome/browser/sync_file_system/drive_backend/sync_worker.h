@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@
 #include <unordered_map>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task_manager.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_worker_interface.h"
 #include "chrome/browser/sync_file_system/remote_file_sync_service.h"
@@ -65,6 +66,9 @@ class SyncWorker : public SyncWorkerInterface,
                  extension_service,
              extensions::ExtensionRegistry* extension_registry,
              leveldb::Env* env_override);
+
+  SyncWorker(const SyncWorker&) = delete;
+  SyncWorker& operator=(const SyncWorker&) = delete;
 
   ~SyncWorker() override;
 
@@ -156,7 +160,7 @@ class SyncWorker : public SyncWorkerInterface,
 
   base::FilePath base_dir_;
 
-  leveldb::Env* env_override_;
+  raw_ptr<leveldb::Env> env_override_;
 
   // Sync with SyncEngine.
   RemoteServiceState service_state_;
@@ -173,15 +177,14 @@ class SyncWorker : public SyncWorkerInterface,
 
   base::WeakPtr<extensions::ExtensionServiceInterface> extension_service_;
   // Only guaranteed to be valid if |extension_service_| is not null.
-  extensions::ExtensionRegistry* extension_registry_;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
 
   std::unique_ptr<SyncEngineContext> context_;
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SyncWorker> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SyncWorker);
 };
 
 }  // namespace drive_backend

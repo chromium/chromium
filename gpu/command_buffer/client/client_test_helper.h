@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "gpu/command_buffer/client/gpu_control.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/common/gpu_memory_allocation.h"
@@ -86,6 +85,8 @@ class MockClientCommandBuffer : public CommandBuffer,
 
   void SetTokenForSetGetBuffer(int32_t token) { token_ = token; }
 
+  void ForceLostContext(error::ContextLostReason reason) override;
+
  private:
   int32_t put_offset_ = 0;
   int32_t token_ = 10000;  // All token checks in the tests should pass.
@@ -106,6 +107,10 @@ class MockClientCommandBufferMockFlush : public MockClientCommandBuffer {
 class MockClientGpuControl : public GpuControl {
  public:
   MockClientGpuControl();
+
+  MockClientGpuControl(const MockClientGpuControl&) = delete;
+  MockClientGpuControl& operator=(const MockClientGpuControl&) = delete;
+
   ~MockClientGpuControl() override;
 
   MOCK_METHOD1(SetGpuControlClient, void(GpuControlClient*));
@@ -147,16 +152,15 @@ class MockClientGpuControl : public GpuControl {
                    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
                        callback) override {}
   MOCK_METHOD1(SetDisplayTransform, void(gfx::OverlayTransform));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClientGpuControl);
 };
 
 class FakeDecoderClient : public DecoderClient {
  public:
   ~FakeDecoderClient() override;
   void OnConsoleMessage(int32_t id, const std::string& message) override;
-  void CacheShader(const std::string& key, const std::string& shader) override;
+  void CacheBlob(gpu::GpuDiskCacheType type,
+                 const std::string& key,
+                 const std::string& shader) override;
   void OnFenceSyncRelease(uint64_t release) override;
   void OnDescheduleUntilFinished() override;
   void OnRescheduleAfterFinished() override;

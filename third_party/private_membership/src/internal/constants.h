@@ -15,6 +15,8 @@
 #ifndef THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_CONSTANTS_H_
 #define THIRD_PARTY_PRIVATE_MEMBERSHIP_SRC_INTERNAL_CONSTANTS_H_
 
+#include <cstdint>
+
 #include <openssl/obj_mac.h>
 #include "third_party/shell-encryption/src/montgomery.h"
 #include "third_party/shell-encryption/src/prng/chacha_prng.h"
@@ -28,9 +30,6 @@ constexpr int kCurveId = NID_X9_62_prime256v1;
 
 // Byte length of the encrypted id stored inside buckets.
 constexpr int kStoredEncryptedIdByteLength = 13;
-
-// Byte length of SHA-256 output.
-constexpr int kSha256ByteLength = 32;
 
 // A PRNG that is not thread safe.
 typedef ::rlwe::SingleThreadChaChaPrng SingleThreadPrng;

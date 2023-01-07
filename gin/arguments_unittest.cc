@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,13 @@
 #include "gin/object_template_builder.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/test/v8_test.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-script.h"
+#include "v8/include/v8-template.h"
 
 namespace gin {
 
@@ -51,7 +57,7 @@ TEST_F(ArgumentsTest, TestArgumentsHolderCreationContext) {
     ASSERT_TRUE(ConvertFromV8(isolate, script->Run(context).ToLocalChecked(),
                               &function));
     v8::Local<v8::Value> args[] = {object};
-    function->Call(context, v8::Undefined(isolate), base::size(args), args)
+    function->Call(context, v8::Undefined(isolate), std::size(args), args)
         .ToLocalChecked();
   };
 

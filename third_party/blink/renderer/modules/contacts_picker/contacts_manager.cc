@@ -1,10 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/contacts_picker/contacts_manager.h"
 
-#include "base/stl_util.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_contact_info.h"
@@ -134,7 +133,7 @@ mojom::blink::ContactsManager* ContactsManager::GetContactsManager(
 
 const Vector<String>& ContactsManager::GetProperties(
     ScriptState* script_state) {
-  if (properties_.IsEmpty()) {
+  if (properties_.empty()) {
     properties_ = {kEmail, kName, kTel};
 
     if (RuntimeEnabledFeatures::ContactsManagerExtraPropertiesEnabled(
@@ -155,7 +154,7 @@ ScriptPromise ContactsManager::select(
                           ? LocalDOMWindow::From(script_state)->GetFrame()
                           : nullptr;
 
-  if (!frame || !frame->IsMainFrame()) {
+  if (!frame || !frame->IsOutermostMainFrame()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The contacts API can only be used in the top frame");
@@ -168,7 +167,7 @@ ScriptPromise ContactsManager::select(
     return ScriptPromise();
   }
 
-  if (properties.IsEmpty()) {
+  if (properties.empty()) {
     exception_state.ThrowTypeError("At least one property must be provided");
     return ScriptPromise();
   }
@@ -223,15 +222,15 @@ ScriptPromise ContactsManager::select(
   GetContactsManager(script_state)
       ->Select(options->multiple(), include_names, include_emails, include_tel,
                include_addresses, include_icons,
-               WTF::Bind(&ContactsManager::OnContactsSelected,
-                         WrapPersistent(this), WrapPersistent(resolver)));
+               WTF::BindOnce(&ContactsManager::OnContactsSelected,
+                             WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }
 
 void ContactsManager::OnContactsSelected(
     ScriptPromiseResolver* resolver,
-    base::Optional<Vector<mojom::blink::ContactInfoPtr>> contacts) {
+    absl::optional<Vector<mojom::blink::ContactInfoPtr>> contacts) {
   ScriptState* script_state = resolver->GetScriptState();
 
   if (!script_state->ContextIsValid()) {

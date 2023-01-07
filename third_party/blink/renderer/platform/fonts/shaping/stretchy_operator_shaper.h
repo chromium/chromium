@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,12 +22,12 @@ class StretchyOperatorShaper;
 // TODO(https://crbug.com/1057589): Add a TextDirection parameter, so that it's
 // possible to perform glyph-level (rtlm feature) or character-level mirroring
 // before stretching.
-// https://mathml-refresh.github.io/mathml-core/#algorithms-for-glyph-stretching
+// https://w3c.github.io/mathml-core/#algorithms-for-glyph-stretching
 class PLATFORM_EXPORT StretchyOperatorShaper final {
   DISALLOW_NEW();
 
  public:
-  StretchyOperatorShaper(UChar stretchy_character,
+  StretchyOperatorShaper(UChar32 stretchy_character,
                          OpenTypeMathStretchData::StretchAxis stretch_axis)
       : stretchy_character_(stretchy_character), stretch_axis_(stretch_axis) {}
 
@@ -40,8 +40,7 @@ class PLATFORM_EXPORT StretchyOperatorShaper final {
   // Shape the stretched operator. The coordinates of the glyph(s) use the same
   // origin as the rectangle assigned to the optional OUT Metrics parameter.
   // May be called multiple times; font and direction may vary between calls.
-  // https://mathml-refresh.github.io/mathml-core/#dfn-shape-a-stretchy-glyph
-  // https://mathml-refresh.github.io/mathml-core/#dfn-box-metrics-of-a-stretchy-glyph
+  // https://w3c.github.io/mathml-core/#dfn-shape-a-stretchy-glyph
   scoped_refptr<ShapeResult> Shape(const Font*,
                                    float target_size,
                                    Metrics* metrics = nullptr) const;
@@ -49,7 +48,7 @@ class PLATFORM_EXPORT StretchyOperatorShaper final {
   ~StretchyOperatorShaper() = default;
 
  private:
-  const UChar stretchy_character_;
+  const UChar32 stretchy_character_;
   const OpenTypeMathStretchData::StretchAxis stretch_axis_;
 };
 

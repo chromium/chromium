@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,17 +8,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class ArrayBufferOrArrayBufferViewOrUSVString;
 class Blob;
 class DOMArrayBuffer;
 class ExceptionState;
 class ScriptState;
+class V8UnionArrayBufferOrArrayBufferViewOrUSVString;
 
 class MODULES_EXPORT PushMessageData final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -26,7 +25,7 @@ class MODULES_EXPORT PushMessageData final : public ScriptWrappable {
  public:
   static PushMessageData* Create(const String& data);
   static PushMessageData* Create(
-      const ArrayBufferOrArrayBufferViewOrUSVString& data);
+      const V8UnionArrayBufferOrArrayBufferViewOrUSVString* data);
 
   PushMessageData(const char* data, unsigned bytes_size);
   ~PushMessageData() override;

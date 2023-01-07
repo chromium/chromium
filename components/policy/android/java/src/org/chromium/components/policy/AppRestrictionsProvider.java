@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,7 @@ package org.chromium.components.policy;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.os.UserManager;
-
-import org.chromium.base.metrics.RecordHistogram;
 
 /**
  * Concrete app restriction provider, that uses the default android mechanism to retrieve the
@@ -45,19 +42,7 @@ public class AppRestrictionsProvider extends AbstractAppRestrictionsProvider {
 
     @Override
     protected Bundle getApplicationRestrictions(String packageName) {
-        long startTime = SystemClock.elapsedRealtime();
-        Bundle bundle = getApplicationRestrictionsFromUserManager(mUserManager, packageName);
-        long endTime = SystemClock.elapsedRealtime();
-        long duration = endTime - startTime;
-        RecordHistogram.recordTimesHistogram("Enterprise.AppRestrictionLoadTime2", duration);
-        if (bundle.isEmpty()) {
-            RecordHistogram.recordTimesHistogram(
-                    "Enterprise.AppRestrictionLoadTime2.EmptyBundle", duration);
-        } else {
-            RecordHistogram.recordTimesHistogram(
-                    "Enterprise.AppRestrictionLoadTime2.NonEmptyBundle", duration);
-        }
-        return bundle;
+        return getApplicationRestrictionsFromUserManager(mUserManager, packageName);
     }
 
     @Override

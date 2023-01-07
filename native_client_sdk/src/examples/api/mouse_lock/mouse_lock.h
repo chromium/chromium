@@ -1,6 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#ifndef EXAMPLES_API_MOUSE_LOCK_MOUSE_LOCK_H_
+#define EXAMPLES_API_MOUSE_LOCK_MOUSE_LOCK_H_
 
 #include <cmath>
 
@@ -100,3 +103,5 @@ class MouseLockInstance : public pp::Instance, public pp::MouseLock {
   bool was_fullscreen_;
   uint32_t* background_scanline_;
 };
+
+#endif  // EXAMPLES_API_MOUSE_LOCK_MOUSE_LOCK_H_

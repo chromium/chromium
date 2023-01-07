@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,17 +12,19 @@
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "components/nacl/common/buildflags.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/c/private/ppb_net_address_private.h"
 #include "ppapi/shared_impl/proxy_lock.h"
 #include "ppapi/shared_impl/var.h"
 #include "ppapi/thunk/thunk.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#elif defined(OS_POSIX) && !defined(OS_NACL)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL) && \
+    !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
@@ -389,7 +391,7 @@ GetPPB_NetAddress_Private_1_1_Thunk() {
 }  // namespace thunk
 
 // For the NaCl target, all we need are the API functions and the thunk.
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
 
 // static
 bool NetAddressPrivateImpl::ValidateNetAddress(
@@ -484,7 +486,7 @@ bool NetAddressPrivateImpl::NetAddressToIPEndPoint(
   address->Assign(net_addr->address, address_size);
   return true;
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_MINIMAL_TOOLCHAIN)
 
 // static
 std::string NetAddressPrivateImpl::DescribeNetAddress(

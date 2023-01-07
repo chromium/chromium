@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/shared_impl/resource.h"
 #include "ppapi/thunk/ppb_audio_config_api.h"
 
@@ -26,6 +25,9 @@ class PPAPI_SHARED_EXPORT PPB_AudioConfig_Shared
     : public Resource,
       public thunk::PPB_AudioConfig_API {
  public:
+  PPB_AudioConfig_Shared(const PPB_AudioConfig_Shared&) = delete;
+  PPB_AudioConfig_Shared& operator=(const PPB_AudioConfig_Shared&) = delete;
+
   ~PPB_AudioConfig_Shared() override;
 
   static PP_Resource Create(ResourceObjectType type,
@@ -58,8 +60,6 @@ class PPAPI_SHARED_EXPORT PPB_AudioConfig_Shared
 
   PP_AudioSampleRate sample_rate_;
   uint32_t sample_frame_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_AudioConfig_Shared);
 };
 
 }  // namespace ppapi

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewPr
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
-import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.NEW_TAB_TILE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.NEW_TAB_TILE_DEPRECATED;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.OTHERS;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
@@ -19,6 +19,7 @@ import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyListModel;
@@ -40,15 +41,16 @@ class TabListModel extends ModelList {
      */
     static class CardProperties {
         /** Supported Model type within this ModelList. */
-        @IntDef({TAB, MESSAGE, NEW_TAB_TILE, OTHERS})
+        @IntDef({TAB, MESSAGE, NEW_TAB_TILE_DEPRECATED, OTHERS})
         @Retention(RetentionPolicy.SOURCE)
         public @interface ModelType {
             int TAB = 0;
             int MESSAGE = 1;
-            int NEW_TAB_TILE = 2;
+            int NEW_TAB_TILE_DEPRECATED = 2;
             int OTHERS = 3;
         }
 
+        /** This corresponds to {@link CardProperties.ModelType}*/
         public static final PropertyModel.ReadableIntPropertyKey CARD_TYPE =
                 new PropertyModel.ReadableIntPropertyKey();
 
@@ -130,11 +132,32 @@ class TabListModel extends ModelList {
     }
 
     /**
+     * Gets the new position of the Tab with {@link tabId} from a sorted list with MRU order.
+     * @param tabId The id of the Tab to insert into the list.
+     */
+    public int getNewPositionInMruOrderList(int tabId) {
+        long timestamp = PseudoTab.fromTabId(tabId).getTimestampMillis();
+        int pos = 0;
+        while (pos < size()) {
+            PropertyModel model = get(pos).model;
+            if (model.get(CARD_TYPE) != TAB
+                    || (PseudoTab.fromTabId(model.get(TabProperties.TAB_ID)).getTimestampMillis()
+                                    - timestamp
+                            >= 0)) {
+                pos++;
+            } else {
+                break;
+            }
+        }
+        return pos;
+    }
+
+    /**
      * Get the index that matches a message item that has the given message type.
      * @param messageType The message type to match.
      * @return The index within the model.
      */
-    public int lastIndexForMessageItemFromType(int messageType) {
+    public int lastIndexForMessageItemFromType(@MessageService.MessageType int messageType) {
         for (int i = size() - 1; i >= 0; i--) {
             PropertyModel model = get(i).model;
             if (model.get(CARD_TYPE) == MESSAGE && model.get(MESSAGE_TYPE) == messageType) {
@@ -151,20 +174,6 @@ class TabListModel extends ModelList {
         for (int i = size() - 1; i >= 0; i--) {
             PropertyModel model = get(i).model;
             if (model.get(CARD_TYPE) == MESSAGE) {
-                return i;
-            }
-        }
-        return TabModel.INVALID_TAB_INDEX;
-    }
-
-    /**
-     * Get the index that matches the new tab tile in TabListModel.
-     * @return The index within the model.
-     */
-    public int getIndexForNewTabTile() {
-        for (int i = size() - 1; i >= 0; i--) {
-            PropertyModel model = get(i).model;
-            if (model.get(CARD_TYPE) == NEW_TAB_TILE) {
                 return i;
             }
         }
@@ -199,25 +208,42 @@ class TabListModel extends ModelList {
 
     /**
      * This method gets indexes in the {@link TabListModel} of the two tabs that are merged into one
-     * group.
+     * group. When moving a Tab to a group, we always put it at the end of the group. For example:
+     * move tab1 to tab2 to form a group, tab1 is after tab2 in the TabModel (tab2, tab1); Then
+     * move another Tab tab3 to (tab2, tab1) group, tab3 is after tab1, (tab2, tab1, tab3). Thus,
+     * the last Tab in the related Tabs is the movedTab. When merging groups merge group1 to group2
+     * then the tab will exist in (group2, group1) order. However it is not guaranteed that the
+     * tab representing group1 in this model will be the last tab in the group. To account for this
+     * start at the front of the group in TabModel index order to find the desIndex of the group or
+     * tab to merge to. Then search the rest of the tabs that were merged for srcIndex that was
+     * merged from. For undoing multi-group merges the srcIndex may be invalid while the desIndex is
+     * always valid as the tab may be moving between existing groups and so has no index in this
+     * model of its own.
+     *
      * @param tabModel   The tabModel that owns the tabs.
      * @param tabs       The list that contains tabs of the newly merged group.
-     * @return A Pair with its first member as the index of the tab that is selected to merge and
-     * the second member as the index of the tab that is being merged into.
+     * @return A Pair with its first member as the index of the tab that is selected to merge to and
+     * the second member as the index of the tab that is being merged from.
      */
     Pair<Integer, Integer> getIndexesForMergeToGroup(TabModel tabModel, List<Tab> tabs) {
-        int desIndex = TabModel.INVALID_TAB_INDEX;
         int srcIndex = TabModel.INVALID_TAB_INDEX;
-        int lastTabModelIndex = tabModel.indexOf(tabs.get(tabs.size() - 1));
-        for (int i = lastTabModelIndex; i >= 0; i--) {
+        int desIndex = TabModel.INVALID_TAB_INDEX;
+
+        int startIndex = tabModel.indexOf(tabs.get(0));
+        int endIndex = tabModel.indexOf(tabs.get(tabs.size() - 1));
+        // Ensure the last tab is last in the model and the first tab is the first.
+        assert endIndex - startIndex == tabs.size() - 1;
+        for (int i = startIndex; i <= endIndex; i++) {
             Tab curTab = tabModel.getTabAt(i);
-            if (!tabs.contains(curTab)) break;
+            // Group should be contiguous.
+            assert tabs.contains(curTab);
             int index = indexFromId(curTab.getId());
-            if (index != TabModel.INVALID_TAB_INDEX && srcIndex == TabModel.INVALID_TAB_INDEX) {
-                srcIndex = index;
-            } else if (index != TabModel.INVALID_TAB_INDEX
-                    && desIndex == TabModel.INVALID_TAB_INDEX) {
+            if (index != TabModel.INVALID_TAB_INDEX && desIndex == TabModel.INVALID_TAB_INDEX) {
                 desIndex = index;
+            } else if (index != TabModel.INVALID_TAB_INDEX
+                    && srcIndex == TabModel.INVALID_TAB_INDEX) {
+                srcIndex = index;
+                break;
             }
         }
         return new Pair<>(desIndex, srcIndex);

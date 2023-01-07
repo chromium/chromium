@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -91,8 +92,11 @@ public class NewTabPageUma {
     /** (Obsolete) User clicked on the feed header menu button item in the feed header menu. */
     // public static final int ACTION_CLICKED_FEED_HEADER_MENU = 15;
 
+    /** User clicked to play the full video for a video snippet shown on the NTP. */
+    public static final int ACTION_OPENED_VIDEO = 16;
+
     /** The number of possible actions. */
-    private static final int NUM_ACTIONS = 16;
+    private static final int NUM_ACTIONS = 17;
 
     /** Regular NTP impression (usually when a new tab is opened). */
     public static final int NTP_IMPRESSION_REGULAR = 0;
@@ -143,13 +147,15 @@ public class NewTabPageUma {
     // numeric values should never be reused. This maps directly to
     // the ContentSuggestionsDisplayStatus enum defined in tools/metrics/enums.xml.
     @IntDef({ContentSuggestionsDisplayStatus.VISIBLE, ContentSuggestionsDisplayStatus.COLLAPSED,
-            ContentSuggestionsDisplayStatus.DISABLED_BY_POLICY})
+            ContentSuggestionsDisplayStatus.DISABLED_BY_POLICY,
+            ContentSuggestionsDisplayStatus.DISABLED})
     @Retention(RetentionPolicy.SOURCE)
     private @interface ContentSuggestionsDisplayStatus {
         int VISIBLE = 0;
         int COLLAPSED = 1;
         int DISABLED_BY_POLICY = 2;
-        int NUM_ENTRIES = 3;
+        int DISABLED = 3;
+        int NUM_ENTRIES = 4;
     }
 
     private final TabModelSelector mTabModelSelector;
@@ -279,6 +285,8 @@ public class NewTabPageUma {
         if (!UserPrefs.get(profile).getBoolean(Pref.ENABLE_SNIPPETS)) {
             // Disabled by policy.
             status = ContentSuggestionsDisplayStatus.DISABLED_BY_POLICY;
+        } else if (!FeedFeatures.isFeedEnabled()) {
+            status = ContentSuggestionsDisplayStatus.DISABLED;
         } else if (!UserPrefs.get(profile).getBoolean(Pref.ARTICLES_LIST_VISIBLE)) {
             // Articles are collapsed.
             status = ContentSuggestionsDisplayStatus.COLLAPSED;
@@ -295,7 +303,7 @@ public class NewTabPageUma {
     private static class TabCreationRecorder implements TabModelSelectorObserver {
         @Override
         public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
-            if (!UrlUtilities.isNTPUrl(tab.getUrlString())) return;
+            if (!UrlUtilities.isNTPUrl(tab.getUrl())) return;
             RecordUserAction.record("MobileNTPOpenedInNewTab");
         }
     }

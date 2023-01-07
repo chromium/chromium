@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
  * Channel to the background script.
  * @constructor
  */
-/* #export */ function Channel() {
+export function Channel() {
   this.messageCallbacks_ = {};
   this.internalRequestCallbacks_ = {};
 }
@@ -72,7 +72,7 @@ Channel.prototype = {
     this.send({
       name: Channel.INTERNAL_REQUEST_MESSAGE,
       requestId: requestId,
-      payload: msg
+      payload: msg,
     });
   },
 
@@ -95,15 +95,15 @@ Channel.prototype = {
    */
   onMessage_(msg) {
     const name = msg.name;
-    if (name == Channel.INTERNAL_REQUEST_MESSAGE) {
+    if (name === Channel.INTERNAL_REQUEST_MESSAGE) {
       const payload = msg.payload;
       const result = this.invokeMessageCallbacks_(payload);
       this.send({
         name: Channel.INTERNAL_REPLY_MESSAGE,
         requestId: msg.requestId,
-        result: result
+        result: result,
       });
-    } else if (name == Channel.INTERNAL_REPLY_MESSAGE) {
+    } else if (name === Channel.INTERNAL_REPLY_MESSAGE) {
       const callback = this.internalRequestCallbacks_[msg.requestId];
       delete this.internalRequestCallbacks_[msg.requestId];
       if (callback) {
@@ -112,7 +112,7 @@ Channel.prototype = {
     } else {
       this.invokeMessageCallbacks_(msg);
     }
-  }
+  },
 };
 
 /**

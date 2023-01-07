@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/protocol/connection_to_host.h"
 #include "remoting/protocol/errors.h"
@@ -24,6 +23,10 @@ namespace test {
 class RemoteConnectionObserver {
  public:
   RemoteConnectionObserver() {}
+
+  RemoteConnectionObserver(const RemoteConnectionObserver&) = delete;
+  RemoteConnectionObserver& operator=(const RemoteConnectionObserver&) = delete;
+
   virtual ~RemoteConnectionObserver() {}
 
   // Called when the connection state has changed.
@@ -47,9 +50,6 @@ class RemoteConnectionObserver {
 
   // Called when we have received an ExtensionMessage from the host.
   virtual void HostMessageReceived(const protocol::ExtensionMessage& message) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteConnectionObserver);
 };
 
 }  // namespace test

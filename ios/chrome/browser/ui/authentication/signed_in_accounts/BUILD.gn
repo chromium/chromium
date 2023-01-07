@@ -1,0 +1,57 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("signed_in_accounts") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "signed_in_accounts_presentation_controller.h",
+    "signed_in_accounts_presentation_controller.mm",
+    "signed_in_accounts_table_view_controller.h",
+    "signed_in_accounts_table_view_controller.mm",
+    "signed_in_accounts_view_controller.h",
+    "signed_in_accounts_view_controller.mm",
+  ]
+  deps = [
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/image_util",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/signin",
+  ]
+  public_deps = [ "//base" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "signed_in_accounts_view_controller_unittest.mm" ]
+  deps = [
+    ":signed_in_accounts",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/variations:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/test:block_cleanup_test",
+    "//ios/chrome/test:test_support",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/public/provider/chrome/browser/signin:test_support",
+    "//ios/web/public/test",
+  ]
+}

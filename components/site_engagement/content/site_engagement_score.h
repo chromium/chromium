@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,15 @@
 #define COMPONENTS_SITE_ENGAGEMENT_CONTENT_SITE_ENGAGEMENT_SCORE_H_
 
 #include <array>
-#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/site_engagement/core/mojom/site_engagement_details.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/site_engagement/site_engagement.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -130,6 +130,10 @@ class SiteEngagementScore {
                       const GURL& origin,
                       HostContentSettingsMap* settings);
   SiteEngagementScore(SiteEngagementScore&& other);
+
+  SiteEngagementScore(const SiteEngagementScore&) = delete;
+  SiteEngagementScore& operator=(const SiteEngagementScore&) = delete;
+
   ~SiteEngagementScore();
 
   SiteEngagementScore& operator=(SiteEngagementScore&& other);
@@ -197,7 +201,7 @@ class SiteEngagementScore {
   // This version of the constructor is used in unit tests.
   SiteEngagementScore(base::Clock* clock,
                       const GURL& origin,
-                      std::unique_ptr<base::DictionaryValue> score_dict);
+                      absl::optional<base::Value::Dict> score_dict);
 
   // Determine the score, accounting for any decay.
   double DecayedScore() const;
@@ -207,11 +211,13 @@ class SiteEngagementScore {
 
   // Updates the content settings dictionary |score_dict| with the current score
   // fields. Returns true if |score_dict| changed, otherwise return false.
-  bool UpdateScoreDict(base::DictionaryValue* score_dict);
+  bool UpdateScoreDict(base::Value::Dict& score_dict);
 
   // The clock used to vend times. Enables time travelling in tests. Owned by
   // the SiteEngagementService.
-  base::Clock* clock_;
+  // `clock_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data).
+  RAW_PTR_EXCLUSION base::Clock* clock_;
 
   // |raw_score_| is the score before any decay is applied.
   double raw_score_;
@@ -230,15 +236,15 @@ class SiteEngagementScore {
   base::Time last_shortcut_launch_time_;
 
   // The dictionary that represents this engagement score.
-  std::unique_ptr<base::DictionaryValue> score_dict_;
+  absl::optional<base::Value::Dict> score_dict_;
 
   // The origin this score represents.
   GURL origin_;
 
   // The settings to write this score to when Commit() is called.
-  HostContentSettingsMap* settings_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SiteEngagementScore);
+  // `settings_map_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data).
+  RAW_PTR_EXCLUSION HostContentSettingsMap* settings_map_;
 };
 
 }  // namespace site_engagement

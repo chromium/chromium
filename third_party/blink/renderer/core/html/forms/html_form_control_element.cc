@@ -26,11 +26,16 @@
 
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/forms/validity_state.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -47,7 +52,7 @@ HTMLFormControlElement::HTMLFormControlElement(const QualifiedName& tag_name,
       autofill_state_(WebAutofillState::kNotFilled),
       blocks_form_submission_(false) {
   SetHasCustomStyleCallbacks();
-  static unsigned next_free_unique_id = 1;
+  static uint64_t next_free_unique_id = 1;
   unique_renderer_form_control_id_ = next_free_unique_id++;
 }
 
@@ -60,7 +65,7 @@ void HTMLFormControlElement::Trace(Visitor* visitor) const {
 
 String HTMLFormControlElement::formAction() const {
   const AtomicString& action = FastGetAttribute(html_names::kFormactionAttr);
-  if (action.IsEmpty()) {
+  if (action.empty()) {
     return GetDocument().Url();
   }
   return GetDocument().CompleteURL(StripLeadingAndTrailingHTMLSpaces(action));
@@ -179,6 +184,19 @@ void HTMLFormControlElement::SetAutofillState(WebAutofillState autofill_state) {
 
   autofill_state_ = autofill_state;
   PseudoStateChanged(CSSSelector::kPseudoAutofill);
+  PseudoStateChanged(CSSSelector::kPseudoWebKitAutofill);
+  PseudoStateChanged(CSSSelector::kPseudoAutofillSelected);
+  PseudoStateChanged(CSSSelector::kPseudoAutofillPreviewed);
+}
+
+void HTMLFormControlElement::SetPreventHighlightingOfAutofilledFields(
+    bool prevent_highlighting) {
+  if (prevent_highlighting == prevent_highlighting_of_autofilled_fields_)
+    return;
+
+  prevent_highlighting_of_autofilled_fields_ = prevent_highlighting;
+  PseudoStateChanged(CSSSelector::kPseudoAutofill);
+  PseudoStateChanged(CSSSelector::kPseudoWebKitAutofill);
   PseudoStateChanged(CSSSelector::kPseudoAutofillSelected);
   PseudoStateChanged(CSSSelector::kPseudoAutofillPreviewed);
 }
@@ -187,8 +205,19 @@ void HTMLFormControlElement::SetAutofillSection(const WebString& section) {
   autofill_section_ = section;
 }
 
+bool HTMLFormControlElement::IsAutocompleteEmailUrlOrPassword() const {
+  DEFINE_STATIC_LOCAL(HashSet<AtomicString>, values,
+                      ({"username", "new-password", "current-password", "url",
+                        "email", "impp"}));
+  const AtomicString& autocomplete =
+      FastGetAttribute(html_names::kAutocompleteAttr);
+  if (autocomplete.IsNull())
+    return false;
+  return values.Contains(autocomplete.LowerASCII());
+}
+
 const AtomicString& HTMLFormControlElement::autocapitalize() const {
-  if (!FastGetAttribute(html_names::kAutocapitalizeAttr).IsEmpty())
+  if (!FastGetAttribute(html_names::kAutocapitalizeAttr).empty())
     return HTMLElement::autocapitalize();
 
   // If the form control itself does not have the autocapitalize attribute set,
@@ -264,7 +293,7 @@ bool HTMLFormControlElement::IsKeyboardFocusable() const {
     return HTMLElement::IsKeyboardFocusable();
 
   // Skip tabIndex check in a parent class.
-  return IsFocusable();
+  return IsBaseElementFocusable();
 }
 
 bool HTMLFormControlElement::MayTriggerVirtualKeyboard() const {
@@ -291,6 +320,97 @@ bool HTMLFormControlElement::IsSuccessfulSubmitButton() const {
   return CanBeSuccessfulSubmitButton() && !IsDisabledFormControl();
 }
 
+// The element is returned if a) that element exists, b) it is a valid Popup
+// element, and c) this form control supports popup triggering. If multiple
+// toggle attributes are present:
+//  1. Only one idref will ever be used, if multiple attributes are present.
+//  2. If 'popuptoggletarget' is present, its IDREF will be used.
+//  3. If 'popupshowtarget' is present and 'popuptoggletarget' isn't present
+//     or its value doesn't match that of popupshowtarget, only popupshowtarget
+//     will be used.
+//  4. If both 'popupshowtarget' and 'popuphidetarget' are present and their
+//     values match, the behavior is to toggle.
+HTMLFormControlElement::PopupTargetElement
+HTMLFormControlElement::popupTargetElement() const {
+  const PopupTargetElement no_element{.element = nullptr,
+                                      .action = PopupTriggerAction::kNone,
+                                      .attribute_name = g_null_name};
+  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled(
+          GetDocument().GetExecutionContext()) ||
+      !IsInTreeScope() ||
+      SupportsPopupTriggering() == PopupTriggerSupport::kNone) {
+    return no_element;
+  }
+
+  AtomicString idref;
+  QualifiedName attribute_name = html_names::kPopuptoggletargetAttr;
+  PopupTriggerAction action = PopupTriggerAction::kToggle;
+  if (FastHasAttribute(html_names::kPopuptoggletargetAttr)) {
+    idref = FastGetAttribute(html_names::kPopuptoggletargetAttr);
+  } else if (FastHasAttribute(html_names::kPopupshowtargetAttr)) {
+    idref = FastGetAttribute(html_names::kPopupshowtargetAttr);
+    action = PopupTriggerAction::kShow;
+    attribute_name = html_names::kPopupshowtargetAttr;
+  }
+  if (FastHasAttribute(html_names::kPopuphidetargetAttr)) {
+    if (idref.IsNull()) {
+      idref = FastGetAttribute(html_names::kPopuphidetargetAttr);
+      action = PopupTriggerAction::kHide;
+      attribute_name = html_names::kPopuphidetargetAttr;
+    } else if (FastGetAttribute(html_names::kPopuphidetargetAttr) == idref) {
+      action = PopupTriggerAction::kToggle;
+      // Leave attribute_name as-is in this case.
+    }
+  }
+  if (idref.IsNull())
+    return no_element;
+  Element* popup_element = GetTreeScope().getElementById(idref);
+  if (!popup_element || !popup_element->HasPopupAttribute())
+    return no_element;
+  return PopupTargetElement{.element = popup_element,
+                            .action = action,
+                            .attribute_name = attribute_name};
+}
+
+void HTMLFormControlElement::DefaultEventHandler(Event& event) {
+  if (!IsDisabledFormControl()) {
+    auto popup = popupTargetElement();
+    if (popup.element) {
+      auto trigger_support = SupportsPopupTriggering();
+      DCHECK_NE(popup.action, PopupTriggerAction::kNone);
+      DCHECK_NE(trigger_support, PopupTriggerSupport::kNone);
+      // Note that the order is: `mousedown` which runs popup light dismiss
+      // code, then (for clicked elements) focus is set to the clicked
+      // element, then |DOMActivate| runs here. Also note that the light
+      // dismiss code will not hide popups when an activating element is
+      // clicked. Taking that together, if the clicked control is a triggering
+      // element for a popup, light dismiss will do nothing, focus will be set
+      // to the triggering element, then this code will run and will set focus
+      // to the previously focused element. If instead the clicked control is
+      // not a triggering element, then the light dismiss code will hide the
+      // popup and set focus to the previously focused element, then the
+      // normal focus management code will reset focus to the clicked control.
+      bool can_show = !popup.element->popupOpen() &&
+                      (popup.action == PopupTriggerAction::kToggle ||
+                       popup.action == PopupTriggerAction::kShow);
+      bool can_hide = popup.element->popupOpen() &&
+                      (popup.action == PopupTriggerAction::kToggle ||
+                       popup.action == PopupTriggerAction::kHide);
+      if (event.type() == event_type_names::kDOMActivate &&
+          (!Form() || !IsSuccessfulSubmitButton())) {
+        if (can_hide) {
+          popup.element->HidePopUpInternal(
+              HidePopupFocusBehavior::kFocusPreviousElement,
+              HidePopupForcingLevel::kHideAfterAnimations);
+        } else if (can_show) {
+          popup.element->InvokePopup(this);
+        }
+      }
+    }
+  }
+  HTMLElement::DefaultEventHandler(event);
+}
+
 // static
 const HTMLFormControlElement*
 HTMLFormControlElement::EnclosingFormControlElement(const Node* node) {
@@ -302,7 +422,7 @@ HTMLFormControlElement::EnclosingFormControlElement(const Node* node) {
 String HTMLFormControlElement::NameForAutofill() const {
   String full_name = GetName();
   String trimmed_name = full_name.StripWhiteSpace();
-  if (!trimmed_name.IsEmpty())
+  if (!trimmed_name.empty())
     return trimmed_name;
   full_name = GetIdAttribute();
   trimmed_name = full_name.StripWhiteSpace();
@@ -325,10 +445,18 @@ int32_t HTMLFormControlElement::GetAxId() const {
   if (!document.IsActive() || !document.View())
     return 0;
   if (AXObjectCache* cache = document.ExistingAXObjectCache()) {
+    LocalFrameView* local_frame_view = document.View();
+    if (local_frame_view->IsUpdatingLifecycle()) {
+      // Autofill (the caller of this code) can end up making calls to get AXIDs
+      // of form elements during, e.g. resize observer callbacks, which are
+      // in the middle up updating the document lifecycle. In these cases, just
+      // return the existing AXID of the element.
+      return cache->GetExistingAXID(const_cast<HTMLFormControlElement*>(this));
+    }
+
     if (document.NeedsLayoutTreeUpdate() || document.View()->NeedsLayout() ||
-        document.Lifecycle().GetState() <
-            DocumentLifecycle::kCompositingAssignmentsClean) {
-      document.View()->UpdateLifecycleToCompositingCleanPlusScrolling(
+        document.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
+      document.View()->UpdateAllLifecyclePhasesExceptPaint(
           DocumentUpdateReason::kAccessibility);
     }
     return cache->GetAXID(const_cast<HTMLFormControlElement*>(this));

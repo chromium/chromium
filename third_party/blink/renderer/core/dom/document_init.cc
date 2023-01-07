@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/dom/document_init.h"
 
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
@@ -42,7 +43,6 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html/html_view_source_document.h"
 #include "third_party/blink/renderer/core/html/image_document.h"
-#include "third_party/blink/renderer/core/html/imports/html_imports_controller.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/media_document.h"
 #include "third_party/blink/renderer/core/html/plugin_document.h"
@@ -66,19 +66,14 @@ DocumentInit::DocumentInit(const DocumentInit&) = default;
 
 DocumentInit::~DocumentInit() = default;
 
-DocumentInit& DocumentInit::ForTest() {
+DocumentInit& DocumentInit::ForTest(ExecutionContext* execution_context) {
   DCHECK(!execution_context_);
   DCHECK(!window_);
 #if DCHECK_IS_ON()
   DCHECK(!for_test_);
   for_test_ = true;
 #endif
-  return *this;
-}
-
-DocumentInit& DocumentInit::WithImportsController(
-    HTMLImportsController* controller) {
-  imports_controller_ = controller;
+  execution_context_ = execution_context;
   return *this;
 }
 
@@ -90,11 +85,16 @@ bool DocumentInit::IsSrcdocDocument() const {
   return window_ && !window_->GetFrame()->IsMainFrame() && is_srcdoc_document_;
 }
 
+const KURL& DocumentInit::FallbackSrcdocBaseURL() const {
+  DCHECK(window_ && !window_->GetFrame()->IsMainFrame() ||
+         fallback_srcdoc_base_url_.IsEmpty());
+  return fallback_srcdoc_base_url_;
+}
+
 DocumentInit& DocumentInit::WithWindow(LocalDOMWindow* window,
                                        Document* owner_document) {
   DCHECK(!window_);
   DCHECK(!execution_context_);
-  DCHECK(!imports_controller_);
 #if DCHECK_IS_ON()
   DCHECK(!for_test_);
 #endif
@@ -103,6 +103,18 @@ DocumentInit& DocumentInit::WithWindow(LocalDOMWindow* window,
   execution_context_ = window;
   owner_document_ = owner_document;
   return *this;
+}
+
+DocumentInit& DocumentInit::WithToken(const DocumentToken& token) {
+  token_ = token;
+  return *this;
+}
+
+const DocumentToken& DocumentInit::GetToken() const {
+  if (!token_) {
+    token_.emplace();
+  }
+  return *token_;
 }
 
 DocumentInit& DocumentInit::ForInitialEmptyDocument(bool empty) {
@@ -118,7 +130,6 @@ DocumentInit& DocumentInit::ForPrerendering(bool is_prerendering) {
 // static
 DocumentInit::Type DocumentInit::ComputeDocumentType(
     LocalFrame* frame,
-    const KURL& url,
     const String& mime_type,
     bool* is_for_external_handler) {
   if (frame && frame->InViewSourceMode())
@@ -142,7 +153,7 @@ DocumentInit::Type DocumentInit::ComputeDocumentType(
     return Type::kMedia;
 
   if (frame && frame->GetPage() && frame->Loader().AllowPlugins()) {
-    PluginData* plugin_data = GetPluginData(frame, url);
+    PluginData* plugin_data = GetPluginData(frame);
 
     // Everything else except text/plain can be overridden by plugins.
     // Disallowing plugins to use text/plain prevents plugins from hijacking a
@@ -180,21 +191,13 @@ DocumentInit::Type DocumentInit::ComputeDocumentType(
 }
 
 // static
-PluginData* DocumentInit::GetPluginData(LocalFrame* frame, const KURL& url) {
-  // If the document is being created for the main frame,
-  // frame()->tree().top()->securityContext() returns nullptr.
-  // For that reason, the origin must be retrieved directly from |url|.
-  if (frame->IsMainFrame())
-    return frame->GetPage()->GetPluginData(SecurityOrigin::Create(url).get());
-
-  const SecurityOrigin* main_frame_origin =
-      frame->Tree().Top().GetSecurityContext()->GetSecurityOrigin();
-  return frame->GetPage()->GetPluginData(main_frame_origin);
+PluginData* DocumentInit::GetPluginData(LocalFrame* frame) {
+  return frame->GetPage()->GetPluginData();
 }
 
 DocumentInit& DocumentInit::WithTypeFrom(const String& mime_type) {
   mime_type_ = mime_type;
-  type_ = ComputeDocumentType(window_ ? window_->GetFrame() : nullptr, Url(),
+  type_ = ComputeDocumentType(window_ ? window_->GetFrame() : nullptr,
                               mime_type_, &is_for_external_handler_);
   return *this;
 }
@@ -248,6 +251,11 @@ DocumentInit& DocumentInit::WithSrcdocDocument(bool is_srcdoc_document) {
   return *this;
 }
 
+DocumentInit& DocumentInit::WithFallbackSrcdocBaseURL(
+    const KURL& fallback_srcdoc_base_url) {
+  fallback_srcdoc_base_url_ = fallback_srcdoc_base_url;
+  return *this;
+}
 
 DocumentInit& DocumentInit::WithWebBundleClaimedUrl(
     const KURL& web_bundle_claimed_url) {
@@ -290,7 +298,7 @@ Document* DocumentInit::CreateDocument() const {
     case Type::kText:
       return MakeGarbageCollected<TextDocument>(*this);
     case Type::kUnspecified:
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       break;
   }

@@ -1,0 +1,30 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
+
+// Wifi data relating to a single access point.
+[Stable]
+struct AccessPointData {
+  // MAC address, formatted as per MacAddressAsString16.
+  mojo_base.mojom.String16 mac_address;
+  int64 radio_signal_strength;  // Measured in dBm
+  int64 channel;
+  int64 signal_to_noise;  // Ratio in dB
+  mojo_base.mojom.String16 ssid;  // Network identifier
+};
+
+// Interface to enable communication with ash-chrome's GeolocationHandler.
+[Stable, Uuid="369e690a-a366-41d9-a359-334ec8532746"]
+interface GeolocationService {
+  // Gets the wifi access point data from the GeolocationHandler.
+  GetWifiAccessPoints@0() => (
+    bool service_initialized,
+    bool data_available,
+    mojo_base.mojom.TimeDelta time_since_last_updated,
+    array<AccessPointData> ap_data);
+};

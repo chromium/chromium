@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ namespace blink {
 
 CSSKeywordValue* CSSKeywordValue::Create(const String& keyword,
                                          ExceptionState& exception_state) {
-  if (keyword.IsEmpty()) {
+  if (keyword.empty()) {
     exception_state.ThrowTypeError(
         "CSSKeywordValue does not support empty strings");
     return nullptr;
@@ -43,6 +43,10 @@ CSSKeywordValue* CSSKeywordValue::FromCSSValue(const CSSValue& value) {
     return MakeGarbageCollected<CSSKeywordValue>(
         getValueName(CSSValueID::kRevert));
   }
+  if (value.IsRevertLayerValue()) {
+    return MakeGarbageCollected<CSSKeywordValue>(
+        getValueName(CSSValueID::kRevertLayer));
+  }
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     return MakeGarbageCollected<CSSKeywordValue>(
         getValueName(identifier_value->GetValueID()));
@@ -60,7 +64,7 @@ CSSKeywordValue* CSSKeywordValue::FromCSSValue(const CSSValue& value) {
 }
 
 CSSKeywordValue* CSSKeywordValue::Create(const String& keyword) {
-  DCHECK(!keyword.IsEmpty());
+  DCHECK(!keyword.empty());
   return MakeGarbageCollected<CSSKeywordValue>(keyword);
 }
 
@@ -70,7 +74,7 @@ const String& CSSKeywordValue::value() const {
 
 void CSSKeywordValue::setValue(const String& keyword,
                                ExceptionState& exception_state) {
-  if (keyword.IsEmpty()) {
+  if (keyword.empty()) {
     exception_state.ThrowTypeError(
         "CSSKeywordValue does not support empty strings");
     return;

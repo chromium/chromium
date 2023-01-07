@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,15 +32,15 @@ class FakeAudioInputDelegate : public media::AudioInputDelegate {
  public:
   FakeAudioInputDelegate() {}
 
+  FakeAudioInputDelegate(const FakeAudioInputDelegate&) = delete;
+  FakeAudioInputDelegate& operator=(const FakeAudioInputDelegate&) = delete;
+
   ~FakeAudioInputDelegate() override {}
 
   int GetStreamId() override { return 0; }
   void OnRecordStream() override {}
   void OnSetVolume(double volume) override {}
   void OnSetOutputDeviceForAec(const std::string& output_device_id) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioInputDelegate);
 };
 
 class MockRendererAudioInputStreamFactoryClient
@@ -54,7 +54,7 @@ class MockRendererAudioInputStreamFactoryClient
           client_receiver,
       media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
       bool initially_muted,
-      const base::Optional<base::UnguessableToken>& stream_id) override {
+      const absl::optional<base::UnguessableToken>& stream_id) override {
     EXPECT_TRUE(stream_id.has_value());
     input_stream_.Bind(std::move(input_stream));
     client_receiver_ = std::move(client_receiver);

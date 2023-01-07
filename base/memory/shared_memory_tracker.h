@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/base_export.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/base_tracing.h"
@@ -25,6 +26,9 @@ class BASE_EXPORT SharedMemoryTracker : public trace_event::MemoryDumpProvider {
  public:
   // Returns a singleton instance.
   static SharedMemoryTracker* GetInstance();
+
+  SharedMemoryTracker(const SharedMemoryTracker&) = delete;
+  SharedMemoryTracker& operator=(const SharedMemoryTracker&) = delete;
 
   static std::string GetDumpNameForTracing(const UnguessableToken& id);
 
@@ -72,8 +76,6 @@ class BASE_EXPORT SharedMemoryTracker : public trace_event::MemoryDumpProvider {
 
   Lock usages_lock_;
   std::map<void*, UsageInfo> usages_ GUARDED_BY(usages_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(SharedMemoryTracker);
 };
 
 }  // namespace base

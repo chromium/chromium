@@ -40,26 +40,24 @@ namespace blink {
 #define WEBVTT_BEGIN_STATE(state_name) \
   case state_name:                     \
   state_name:
-#define WEBVTT_ADVANCE_TO(state_name)                     \
-  do {                                                    \
-    state = state_name;                                   \
-    DCHECK(!input_.IsEmpty());                            \
-    input_stream_preprocessor_.Advance(input_);           \
-    cc = input_stream_preprocessor_.NextInputCharacter(); \
-    goto state_name;                                      \
+#define WEBVTT_ADVANCE_TO(state_name)               \
+  do {                                              \
+    state = state_name;                             \
+    DCHECK(!input_.IsEmpty());                      \
+    input_stream_preprocessor_.Advance(input_, cc); \
+    goto state_name;                                \
   } while (false)
-#define WEBVTT_SWITCH_TO(state_name)                      \
-  do {                                                    \
-    state = state_name;                                   \
-    DCHECK(!input_.IsEmpty());                            \
-    input_stream_preprocessor_.Peek(input_);              \
-    cc = input_stream_preprocessor_.NextInputCharacter(); \
-    goto state_name;                                      \
+#define WEBVTT_SWITCH_TO(state_name)             \
+  do {                                           \
+    state = state_name;                          \
+    DCHECK(!input_.IsEmpty());                   \
+    input_stream_preprocessor_.Peek(input_, cc); \
+    goto state_name;                             \
   } while (false)
 
 static void AddNewClass(StringBuilder& classes,
                         const StringBuilder& new_class) {
-  if (!classes.IsEmpty())
+  if (!classes.empty())
     classes.Append(' ');
   classes.Append(new_class);
 }
@@ -104,12 +102,12 @@ VTTTokenizer::VTTTokenizer(const String& input)
 }
 
 bool VTTTokenizer::NextToken(VTTToken& token) {
-  if (input_.IsEmpty() || !input_stream_preprocessor_.Peek(input_))
+  UChar cc;
+  if (input_.IsEmpty() || !input_stream_preprocessor_.Peek(input_, cc))
     return false;
 
-  UChar cc = input_stream_preprocessor_.NextInputCharacter();
   if (cc == kEndOfFileMarker) {
-    input_stream_preprocessor_.Advance(input_);
+    input_stream_preprocessor_.Advance(input_, cc);
     return false;
   }
 
@@ -134,7 +132,7 @@ bool VTTTokenizer::NextToken(VTTToken& token) {
       if (cc == '&') {
         WEBVTT_ADVANCE_TO(kHTMLCharacterReferenceInDataState);
       } else if (cc == '<') {
-        if (result.IsEmpty()) {
+        if (result.empty()) {
           WEBVTT_ADVANCE_TO(kTagState);
         } else {
           // We don't want to advance input or perform a state transition - just
@@ -160,10 +158,10 @@ bool VTTTokenizer::NextToken(VTTToken& token) {
 
     WEBVTT_BEGIN_STATE(kTagState) {
       if (IsTokenizerWhitespace(cc)) {
-        DCHECK(result.IsEmpty());
+        DCHECK(result.empty());
         WEBVTT_ADVANCE_TO(kStartTagAnnotationState);
       } else if (cc == '.') {
-        DCHECK(result.IsEmpty());
+        DCHECK(result.empty());
         WEBVTT_ADVANCE_TO(kStartTagClassState);
       } else if (cc == '/') {
         WEBVTT_ADVANCE_TO(kEndTagState);
@@ -171,7 +169,7 @@ bool VTTTokenizer::NextToken(VTTToken& token) {
         result.Append(cc);
         WEBVTT_ADVANCE_TO(kTimestampTagState);
       } else if (cc == '>' || cc == kEndOfFileMarker) {
-        DCHECK(result.IsEmpty());
+        DCHECK(result.empty());
         return AdvanceAndEmitToken(input_, token,
                                    VTTToken::StartTag(result.ToString()));
       } else {

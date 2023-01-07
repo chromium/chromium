@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2014 The Chromium Authors. All rights reserved.
-
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
+<!--
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
 <!-- Represents a menu item that can display any of the following options:
@@ -27,7 +27,7 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:paddingStart="16dp"
-        android:background="?attr/listChoiceBackgroundIndicator" />
+        android:background="?attr/listChoiceBackgroundIndicator"/>
 
     <!-- Checkbox.  Paddings account for built-in padding from the Android resource. -->
     <org.chromium.chrome.browser.ui.appmenu.AppMenuItemIcon

@@ -1,3 +1,4 @@
 monorail {
   component: "UI>ML>Service"
 }
+team_email: "ml-service-team@google.com"

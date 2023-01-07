@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_SOCKET_SOCKET_NET_LOG_PARAMS_H_
 #define NET_SOCKET_SOCKET_NET_LOG_PARAMS_H_
 
-#include "net/base/sys_addrinfo.h"
 #include "net/log/net_log_event_type.h"
 
 namespace base {

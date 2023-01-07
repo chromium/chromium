@@ -1,0 +1,361 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Chrome histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Chrome.KAnonymityService.JoinSet.Action"
+    enum="KAnonymityServiceJoinSetAction" expires_after="2023-03-26">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Track execution of KAnonymity Service JoinSet requests for both normal
+    operation and errors. The kJoinSet enumeration is emitted when the service
+    is called and either kJoinSetSuccess or one of the error enumerations is
+    emitted at the end of the request.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.KAnonymityService.QuerySet.Action"
+    enum="KAnonymityServiceQuerySetAction" expires_after="2023-03-26">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Track execution of KAnonymity Service QuerySet requests for both normal
+    operation and errors. The kQuerySet enumeration is emitted when the service
+    is called and either kQuerySetsSuccess or one of the error enumerations is
+    emitted at the end of the request.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.KAnonymityService.QuerySet.Size" units="count"
+    expires_after="2023-03-26">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records the number of elements queried per call for each call to QuerySet.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.KAnonymityService.TrustTokenGetter.Action"
+    enum="KAnonymityTrustTokenGetterAction" expires_after="M108">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Track execution of KAnonymityTrustTokenGetter requests for both normal
+    operation and errors. The kTryGetTrustTokenAndKey enumeration is emitted
+    when the service is called and either kGetTrustTokenSuccess or one of the
+    error enumerations is emitted at the end of the request.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.KAnonymityService.TrustTokenGetter.Latency" units="ms"
+    expires_after="2023-03-26">
+  <owner>behamilton@google.com</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <summary>
+    Records how the length of time the K-Anonymity service spends fetching trust
+    tokens. This includes time taken waiting in the TrustTokenGetter queue,
+    getting the OAuth token, getting the key commitment, and requesting the
+    trust token. This metric is only measured for successful requests.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.Lacros.Smoothness.PercentDroppedFrames_1sWindow"
+    units="%" expires_after="2023-07-25">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <summary>
+    Similar to Ash.Smoothness.PercentDroppedFrames_1sWindow but emitted for the
+    browser UI of lacros-chrome.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.MessageLoopProblem" enum="MessageLoopProblems"
+    expires_after="2021-07-31">
+  <owner>fdoray@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Track set of Windows errors inside the meessage loop/pump system, where
+    system calls fail, and we try to gracefully recover. These errors should
+    really never happen, so we should be sure to look closer if they do.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.ProcessSingleton.NotifyResult" enum="NotifyResult"
+    expires_after="2023-05-31">
+  <owner>gab@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    The result of every rendez-vous reported once per browser process launch.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.ProcessSingleton.RemoteHungProcessTerminateReason"
+    enum="RemoteHungProcessTerminateReason" expires_after="2023-05-31">
+  <owner>gab@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>The reason of remote hang processes termination.</summary>
+</histogram>
+
+<histogram name="Chrome.ProcessSingleton.RemoteProcessInteractionResult"
+    enum="RemoteProcessInteractionResult" expires_after="2023-05-31">
+  <owner>gab@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Used to send the result of interaction with remote process as histograms in
+    case when remote process influences on start.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.ProcessSingleton.TerminateProcessErrorCode.Posix"
+    enum="PopularOSErrno" expires_after="2023-05-31">
+  <owner>gab@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    The error code of remote process termination on Posix in case when remote
+    process hung.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.ProcessSingleton.TerminateProcessErrorCode.Windows"
+    enum="WinGetLastError" expires_after="2023-05-31">
+  <owner>gab@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    The error code of remote process termination on Windows in case when remote
+    process hung.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.ProcessSingleton.TerminateProcessTime" units="ms"
+    expires_after="2023-05-31">
+  <owner>gab@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    Time it takes from TerminateProcess call to the moment when we stop waiting
+    for remote process switches to signal state.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.ProcessSingleton.TerminationWaitErrorCode.Windows"
+    enum="WinGetLastError" expires_after="2023-05-31">
+  <owner>gab@chromium.org</owner>
+  <owner>etienneb@chromium.org</owner>
+  <summary>
+    The error code of wating for remote process termination on Windows.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.ProcessSingleton.TimeToCreate" units="ms"
+    expires_after="2023-05-31">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time it takes to grab the process singleton. Reported once per successful
+    attempt at obtaining the singleton.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.ProcessSingleton.TimeToFailure" units="ms"
+    expires_after="2023-05-31">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time it takes to return an error from the process singleton algorithm (nor
+    succeeding in obtaining it, nor in generating a rendez-vous). This does not
+    include time spent in the fast notification path (chrome_exe_main_win.cc).
+  </summary>
+</histogram>
+
+<histogram name="Chrome.ProcessSingleton.TimeToNotify" units="ms"
+    expires_after="2023-05-31">
+  <owner>etienneb@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    Time it takes to find the process singleton owner and notify it. Reported
+    once per successful rendez-vous. This does not include time spent in the
+    fast notification path (chrome_exe_main_win.cc).
+  </summary>
+</histogram>
+
+<histogram
+    name="Chrome.SystemNetworkContextManager.NetworkSandboxLaunchFailed.ErrorCode"
+    enum="LaunchErrorCodes" expires_after="2023-03-12">
+  <owner>wfh@chromium.org</owner>
+  <owner>mmenke@chromium.org</owner>
+  <summary>
+    The platform-specific error code returned from a failed attempt to launch
+    the network service process sandboxed. This is recorded if an attempt is
+    made to launch a sandboxed network service process, and the launch fails.
+    See also ChildProcess.LaunchFailed.UtilityProcessErrorCode.
+  </summary>
+</histogram>
+
+<histogram
+    name="Chrome.SystemNetworkContextManager.NetworkSandboxLaunchFailed.WinLastError"
+    enum="WinGetLastError" expires_after="2022-12-31">
+  <owner>wfh@chromium.org</owner>
+  <owner>mmenke@chromium.org</owner>
+  <summary>
+    The Windows last error obtained from a call to GetLastError after a failed
+    attempt to launch the network service process sandboxed. This is recorded if
+    an attempt is made to launch a sandboxed network service process on Windows,
+    and the launch fails. See also ChildProcess.LaunchFailed.WinLastError.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.SystemNetworkContextManager.NetworkSandboxState"
+    enum="NetworkSandboxState" expires_after="2023-03-05">
+  <owner>wfh@chromium.org</owner>
+  <owner>mmenke@chromium.org</owner>
+  <summary>
+    The operational state of the network sandbox. This is recorded each time the
+    browser attempts to launch the network service process. This might be
+    recorded multiple times from the same client if the network service process
+    crashes or does not launch correctly. This is not recorded if the network
+    service is running in-process.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.Tabs.AnimationSmoothness.HoverCard.FadeIn" units="%"
+    expires_after="2023-03-19">
+  <owner>yichenz@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Tracks the animation smoothness for the fade-in animation of tab hover card.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.Tabs.AnimationSmoothness.HoverCard.FadeOut" units="%"
+    expires_after="2023-02-12">
+  <owner>yichenz@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Tracks the animation smoothness for the fade-out animation of tab hover
+    card.
+  </summary>
+</histogram>
+
+<histogram name="Chrome.Tabs.AnimationSmoothness.TabLoading" units="%"
+    expires_after="2022-04-24">
+  <owner>yichenz@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Tracks the animation smoothness of tab loading animation. A tracker starts
+    when the first tab loading animation starts and stops after the last one
+    stops for each browser window. The metric is emitted when the tracker stops.
+  </summary>
+</histogram>
+
+<histogram name="ChromeColors.ColorOnLoad" enum="ChromeColorsInfo"
+    expires_after="2023-02-12">
+  <owner>gayane@chromium.org</owner>
+  <owner>yyushkina@chromium.org</owner>
+  <summary>
+    Records installed color id every time theme service is initialized from
+    prefs. Happens once per profile load.
+  </summary>
+</histogram>
+
+<histogram name="ChromeElf.ApplyHookResult" enum="NTSTATUS" expires_after="M82">
+  <owner>chrisha@chromium.org</owner>
+  <owner>pmonette@chromium.org</owner>
+  <summary>
+    Records the NTSTATUS result that was returned when attempting to hook
+    NtMapViewOfSection during chrome_elf.dll initialization. Emitted
+    asynchronously shortly after startup.
+  </summary>
+</histogram>
+
+<histogram name="ChromeElf.Beacon.RetryAttemptsBeforeSuccess" units="units"
+    expires_after="M82">
+  <owner>chrisha@chromium.org</owner>
+  <owner>pmonette@chromium.org</owner>
+  <summary>
+    Records the number of attempts needed before third-party DLL blocking was
+    properly set up. This is logged immediately after a successful setup. Only
+    recorded on Windows.
+  </summary>
+</histogram>
+
+<histogram name="ChromeElf.Beacon.SetupStatus" enum="BlacklistSetup"
+    expires_after="M82">
+  <owner>chrisha@chromium.org</owner>
+  <owner>pmonette@chromium.org</owner>
+  <summary>
+    Records the successes and failures when running the third-party DLL blocking
+    setup code, taking into account the safety beacon. Used to determine how
+    often the third-party DLL blocking is disabled because it failed to
+    initialize properly twice in a row. Only recorded on Windows.
+  </summary>
+</histogram>
+
+<histogram name="ChromeElf.ExtensionPoint.EnableState"
+    enum="ExtensionPointEnableState" expires_after="M93">
+  <owner>wfh@chromium.org</owner>
+  <owner>ssmole@microsoft.com</owner>
+  <summary>
+    Records the outcome of the heuristic to selectively enable or disable the
+    ProcessExtensionPointDisablePolicy. Used to determine how often the policy
+    will be enabled in practice, as the heuristic detects the presence of third
+    party software. Only recorded on Windows.
+  </summary>
+</histogram>
+
+<histogram name="ChromeElf.ThirdPartyStatus" enum="ThirdPartyStatus"
+    expires_after="M82">
+  <owner>chrisha@chromium.org</owner>
+  <owner>pmonette@chromium.org</owner>
+  <summary>
+    Records the different status codes that are emitted by chrome_elf.dll while
+    initializing the NtMapViewOfSection hook used to blocked third-party DLLs.
+    Multiple status codes can be emitted per initialization since some of those
+    status codes represent non-fatal failures. E.g. Failure to clear the
+    previous failure codes. This also means that duplicates are possible. This
+    is recorded shortly after Chrome launches, since chrome_elf.dll doesn't have
+    access to the //base API.
+  </summary>
+</histogram>
+
+<histogram name="ChromeGeneratedCustomTab.IntentToFirstNavigationStartTime"
+    units="ms" expires_after="M81">
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    For Custom Tabs generated by Chrome itself instead of external apps, this
+    shows the time between the intent arrival in the CCT and the first
+    navigation start. Recorded when the page has finished loading.
+  </summary>
+</histogram>
+
+<histogram name="ChromeGeneratedCustomTab.IntentToPageLoadedTime" units="ms"
+    expires_after="M77">
+  <owner>lizeb@chromium.org</owner>
+  <summary>
+    For Custom Tabs generated by Chrome itself instead of external apps, this
+    shows time between the intent arrival in the CCT and the first &quot;page
+    loaded&quot; event, if the navigation is successful.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

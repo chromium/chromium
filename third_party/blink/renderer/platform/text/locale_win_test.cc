@@ -189,23 +189,13 @@ TEST_F(LocaleWinTest, monthLabels) {
 }
 
 TEST_F(LocaleWinTest, weekDayShortLabels) {
-  if (features::IsFormControlsRefreshEnabled()) {
-    EXPECT_EQ("Su", WeekDayShortLabel(kEnglishUS, kSunday));
-    EXPECT_EQ("We", WeekDayShortLabel(kEnglishUS, kWednesday));
-    EXPECT_EQ("Sa", WeekDayShortLabel(kEnglishUS, kSaturday));
+  EXPECT_EQ("Su", WeekDayShortLabel(kEnglishUS, kSunday));
+  EXPECT_EQ("We", WeekDayShortLabel(kEnglishUS, kWednesday));
+  EXPECT_EQ("Sa", WeekDayShortLabel(kEnglishUS, kSaturday));
 
-    EXPECT_EQ("di", WeekDayShortLabel(kFrenchFR, kSunday));
-    EXPECT_EQ("me", WeekDayShortLabel(kFrenchFR, kWednesday));
-    EXPECT_EQ("sa", WeekDayShortLabel(kFrenchFR, kSaturday));
-  } else {
-    EXPECT_EQ("Sun", WeekDayShortLabel(kEnglishUS, kSunday));
-    EXPECT_EQ("Wed", WeekDayShortLabel(kEnglishUS, kWednesday));
-    EXPECT_EQ("Sat", WeekDayShortLabel(kEnglishUS, kSaturday));
-
-    EXPECT_EQ("dim.", WeekDayShortLabel(kFrenchFR, kSunday));
-    EXPECT_EQ("mer.", WeekDayShortLabel(kFrenchFR, kWednesday));
-    EXPECT_EQ("sam.", WeekDayShortLabel(kFrenchFR, kSaturday));
-  }
+  EXPECT_EQ("di", WeekDayShortLabel(kFrenchFR, kSunday));
+  EXPECT_EQ("me", WeekDayShortLabel(kFrenchFR, kWednesday));
+  EXPECT_EQ("sa", WeekDayShortLabel(kFrenchFR, kSaturday));
   EXPECT_EQ("\xE6\x97\xA5", WeekDayShortLabel(kJapaneseJP, kSunday).Utf8());
   EXPECT_EQ("\xE6\xB0\xB4", WeekDayShortLabel(kJapaneseJP, kWednesday).Utf8());
   EXPECT_EQ("\xE5\x9C\x9F", WeekDayShortLabel(kJapaneseJP, kSaturday).Utf8());

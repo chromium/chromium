@@ -1,21 +1,26 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync/engine/commit_contribution_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/model_type_worker.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
+#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 namespace syncer {
 
@@ -26,12 +31,6 @@ CommitResponseData BuildCommitResponseData(
     const sync_pb::CommitResponse_EntryResponse& entry_response) {
   CommitResponseData response_data;
   response_data.id = entry_response.id_string();
-  if (response_data.id != commit_request.entity->id) {
-    // Server has changed the sync id in the request. Write back the
-    // original sync id. This is useful for data types without a notion of
-    // a client tag such as bookmarks.
-    response_data.id_in_request = commit_request.entity->id;
-  }
   response_data.response_version = entry_response.version();
   response_data.client_tag_hash = commit_request.entity->client_tag_hash;
   response_data.sequence_number = commit_request.sequence_number;
@@ -84,7 +83,8 @@ void CommitContributionImpl::AddToCommitMessage(
   commit_message->mutable_entries()->Reserve(commit_message->entries_size() +
                                              commit_requests_.size());
 
-  for (const auto& commit_request : commit_requests_) {
+  for (const std::unique_ptr<CommitRequestData>& commit_request :
+       commit_requests_) {
     sync_pb::SyncEntity* sync_entity = commit_message->add_entries();
     if (only_commit_specifics_) {
       DCHECK(!commit_request->entity->is_deleted());
@@ -202,11 +202,15 @@ void CommitContributionImpl::PopulateCommitProto(
     const CommitRequestData& commit_entity,
     sync_pb::SyncEntity* commit_proto) {
   const EntityData& entity_data = *commit_entity.entity;
+  DCHECK(!entity_data.specifics.has_encrypted());
+
   commit_proto->set_id_string(entity_data.id);
-  // Populate client_defined_unique_tag only for non-bookmark and non-Nigori
-  // data types.
+
   if (type == NIGORI) {
-    // Client tags are irrelevant for NIGORI (it uses the root node).
+    // Client tags are irrelevant for NIGORI since it uses the root node. For
+    // historical reasons (although it's unclear if this continues to be
+    // needed), the root node is considered a folder.
+    commit_proto->set_folder(true);
   } else if (type != BOOKMARKS ||
              !entity_data.client_tag_hash.value().empty()) {
     // The client tag is mandatory for all datatypes except bookmarks, and
@@ -214,27 +218,33 @@ void CommitContributionImpl::PopulateCommitProto(
     commit_proto->set_client_defined_unique_tag(
         entity_data.client_tag_hash.value());
   }
+
   commit_proto->set_version(commit_entity.base_version);
   commit_proto->set_deleted(entity_data.is_deleted());
-  commit_proto->set_folder(entity_data.is_folder);
   commit_proto->set_name(entity_data.name);
 
   if (!entity_data.is_deleted()) {
     // Handle bookmarks separately.
     if (type == BOOKMARKS) {
-      // position_in_parent field is set only for legacy reasons.  See comments
-      // in sync.proto for more information.
-      const UniquePosition unique_position =
-          UniquePosition::FromProto(entity_data.unique_position);
-      if (unique_position.IsValid()) {
-        commit_proto->set_position_in_parent(unique_position.ToInt64());
+      // Populate SyncEntity.folder for backward-compatibility.
+      switch (entity_data.specifics.bookmark().type()) {
+        case sync_pb::BookmarkSpecifics::UNSPECIFIED:
+          NOTREACHED();
+          break;
+        case sync_pb::BookmarkSpecifics::URL:
+          commit_proto->set_folder(false);
+          break;
+        case sync_pb::BookmarkSpecifics::FOLDER:
+          commit_proto->set_folder(true);
+          break;
       }
-      commit_proto->mutable_unique_position()->CopyFrom(
-          entity_data.unique_position);
-      // TODO(mamir): check if parent_id_string needs to be populated for
-      // non-deletions.
-      if (!entity_data.parent_id.empty()) {
-        commit_proto->set_parent_id_string(entity_data.parent_id);
+      const UniquePosition unique_position = UniquePosition::FromProto(
+          entity_data.specifics.bookmark().unique_position());
+      DCHECK(unique_position.IsValid());
+      *commit_proto->mutable_unique_position() = unique_position.ToProto();
+      // parent_id field is set only for legacy clients only, before M99.
+      if (!entity_data.legacy_parent_id.empty()) {
+        commit_proto->set_parent_id_string(entity_data.legacy_parent_id);
       }
     }
     commit_proto->set_ctime(TimeToProtoTime(entity_data.creation_time));
@@ -281,6 +291,19 @@ void CommitContributionImpl::AdjustCommitProto(
         password_data,
         encrypted_password.mutable_password()->mutable_encrypted());
     DCHECK(result);
+    if (base::FeatureList::IsEnabled(syncer::kPasswordNotesWithBackup)) {
+      // `encrypted_notes_backup` field needs to be populated regardless of
+      // whether or not there are any notes.
+      result = cryptographer_->Encrypt(password_data.notes(),
+                                       encrypted_password.mutable_password()
+                                           ->mutable_encrypted_notes_backup());
+      DCHECK(result);
+      // When encrypting both blobs succeeds, both encrypted blobs must use the
+      // key name.
+      DCHECK_EQ(
+          encrypted_password.password().encrypted().key_name(),
+          encrypted_password.password().encrypted_notes_backup().key_name());
+    }
     *commit_proto->mutable_specifics() = std::move(encrypted_password);
     commit_proto->set_name("encrypted");
   } else if (cryptographer_) {

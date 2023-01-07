@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,14 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 
 // Call InternalAuthVerification methods on any thread.
 class InternalAuthVerification {
  public:
+  InternalAuthVerification() = delete;
+  InternalAuthVerification(const InternalAuthVerification&) = delete;
+  InternalAuthVerification& operator=(const InternalAuthVerification&) = delete;
+
   // Used by consumer of passport in order to verify credentials.
   static bool VerifyPassport(
       const std::string& passport,
@@ -40,8 +43,6 @@ class InternalAuthVerification {
   static int get_verification_window_ticks();
 
   static int verification_window_seconds_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(InternalAuthVerification);
 };
 
 // Not thread-safe. Make all calls on the same thread (UI thread).

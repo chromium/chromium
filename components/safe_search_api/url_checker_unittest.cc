@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -68,7 +66,7 @@ class SafeSearchURLCheckerTest : public testing::Test {
 
  protected:
   GURL GetNewURL() {
-    CHECK(next_url_ < base::size(kURLs));
+    CHECK(next_url_ < std::size(kURLs));
     return GURL(kURLs[next_url_++]);
   }
 
@@ -89,7 +87,7 @@ class SafeSearchURLCheckerTest : public testing::Test {
   }
 
   size_t next_url_;
-  FakeURLCheckerClient* fake_client_;
+  raw_ptr<FakeURLCheckerClient> fake_client_;
   std::unique_ptr<URLChecker> checker_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
@@ -152,7 +150,7 @@ TEST_F(SafeSearchURLCheckerTest, CoalesceRequestsToSameURL) {
 TEST_F(SafeSearchURLCheckerTest, CacheTimeout) {
   GURL url(GetNewURL());
 
-  checker_->SetCacheTimeoutForTesting(base::TimeDelta::FromSeconds(0));
+  checker_->SetCacheTimeoutForTesting(base::Seconds(0));
 
   EXPECT_CALL(*this, OnCheckDone(url, Classification::SAFE, false));
   ASSERT_FALSE(SendResponse(url, Classification::SAFE, false));
@@ -161,40 +159,6 @@ TEST_F(SafeSearchURLCheckerTest, CacheTimeout) {
   // immediately.
   EXPECT_CALL(*this, OnCheckDone(url, Classification::UNSAFE, false));
   ASSERT_FALSE(SendResponse(url, Classification::UNSAFE, false));
-}
-
-TEST_F(SafeSearchURLCheckerTest, AllowAllGoogleURLs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kAllowAllGoogleUrls);
-  {
-    GURL url("https://sites.google.com/porn");
-    EXPECT_CALL(*this, OnCheckDone(url, Classification::SAFE, _));
-    // No server interaction.
-    bool cache_hit = CheckURL(url);
-    ASSERT_TRUE(cache_hit);
-  }
-  {
-    GURL url("https://youtube.com/porn");
-    EXPECT_CALL(*this, OnCheckDone(url, Classification::SAFE, _));
-    // No server interaction
-    bool cache_hit = CheckURL(url);
-    ASSERT_TRUE(cache_hit);
-  }
-}
-
-TEST_F(SafeSearchURLCheckerTest, NoAllowAllGoogleURLs) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kAllowAllGoogleUrls);
-  {
-    GURL url("https://sites.google.com/porn");
-    EXPECT_CALL(*this, OnCheckDone(url, Classification::UNSAFE, false));
-    ASSERT_FALSE(SendResponse(url, Classification::UNSAFE, false));
-  }
-  {
-    GURL url("https://youtube.com/porn");
-    EXPECT_CALL(*this, OnCheckDone(url, Classification::UNSAFE, false));
-    ASSERT_FALSE(SendResponse(url, Classification::UNSAFE, false));
-  }
 }
 
 TEST_F(SafeSearchURLCheckerTest, DestroyURLCheckerBeforeCallback) {

@@ -1,0 +1,28 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Keep in sync with
+// http://google3/google/internal/communications/instantmessaging/v1/tachyon.proto
+// Messages not used in Chrome have been omitted.
+
+syntax = "proto3";
+
+package nearbyshare.tachyon_proto;
+
+option optimize_for = LITE_RUNTIME;
+
+import "tachyon_common.proto";
+import "ice.proto";
+
+message GetICEServerRequest {
+  // header is the request header
+  RequestHeader header = 1;
+  // ICE config preference.
+  string ice_config_preference = 3;
+}
+
+message GetICEServerResponse {
+  // The ice server configuration to use.
+  ICEConfiguration ice_config = 4;
+}

@@ -21,8 +21,6 @@ template("grpc_library") {
                            [
                              "cc_include",
                              "extra_configs",
-                             "generator_plugin_label",
-                             "generator_plugin_suffix",
                              "generate_python",
                              "import_dirs",
                              "link_deps",
@@ -41,7 +39,10 @@ template("grpc_library") {
       cc_generator_options = "lite"
     }
 
-    extra_configs = ["//third_party/grpc:grpc_config"]
+    if (!defined(extra_configs)) {
+      extra_configs = []
+    }
+    extra_configs += [ "//third_party/grpc:grpc_config" ]
 
     generate_cc = true
 

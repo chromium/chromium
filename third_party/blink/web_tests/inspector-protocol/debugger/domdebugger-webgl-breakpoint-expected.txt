@@ -1,5 +1,5 @@
 Tests instrumentation breakpoint on webgl error
-(anonymous) at test.js:3:7
+(anonymous) at :3:7
 {
     eventName : instrumentation:webglErrorFired
     webglErrorName : INVALID_OPERATION

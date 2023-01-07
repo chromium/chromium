@@ -1,33 +1,43 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_FEED_CORE_V2_SURFACE_UPDATER_H_
 #define COMPONENTS_FEED_CORE_V2_SURFACE_UPDATER_H_
 
+#include <deque>
 #include <map>
 #include <string>
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/observer_list.h"
+#include "base/memory/raw_ptr.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
+#include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
 #include "components/feed/core/v2/enums.h"
-#include "components/feed/core/v2/public/feed_api.h"
+#include "components/feed/core/v2/launch_reliability_logger.h"
 #include "components/feed/core/v2/stream_model.h"
+#include "components/feed/core/v2/stream_surface_set.h"
+#include "components/feed/core/v2/types.h"
+#include "components/feed/core/v2/xsurface_datastore.h"
 
 namespace feedui {
 class StreamUpdate;
 }  // namespace feedui
 namespace feed {
+class FeedStreamSurface;
 class MetricsReporter;
 
 // Keeps the UI up to date by calling |FeedStreamSurface::StreamUpdate()|.
 // Updates are triggered when |StreamModel| changes, or when loading state
 // changes (for spinners and zero-state).
-class SurfaceUpdater : public StreamModel::Observer {
+class SurfaceUpdater : public StreamModel::Observer,
+                       public StreamSurfaceSet::Observer,
+                       public XsurfaceDatastoreDataReader::Observer {
  public:
-  explicit SurfaceUpdater(MetricsReporter* metrics_reporter);
+  explicit SurfaceUpdater(MetricsReporter* metrics_reporter,
+                          XsurfaceDatastoreDataReader* global_datastore_slice,
+                          StreamSurfaceSet* surfaces);
   ~SurfaceUpdater() override;
   SurfaceUpdater(const SurfaceUpdater&) = delete;
   SurfaceUpdater& operator=(const SurfaceUpdater&) = delete;
@@ -36,18 +46,30 @@ class SurfaceUpdater : public StreamModel::Observer {
   // of surfaces. When |model| is null, this does not send any updates to
   // surfaces, so they will keep any content they may have been displaying
   // before. We don't send a zero-state in this case, since we might want to
-  // immedately trigger a load.
+  // immediately trigger a load.
   void SetModel(StreamModel* model);
 
   // StreamModel::Observer.
   void OnUiUpdate(const StreamModel::UiUpdate& update) override;
 
-  // Signals from |FeedStream|.
-  void SurfaceAdded(FeedStreamSurface* surface);
-  void SurfaceRemoved(FeedStreamSurface* surface);
+  // StreamSurfaceSet::Observer.
+  void SurfaceAdded(
+      FeedStreamSurface* surface,
+      feedwire::DiscoverLaunchResult loading_not_allowed_reason) override;
+  void SurfaceRemoved(FeedStreamSurface* surface) override;
+
+  // XsurfaceDatastoreDataReader::Observer.
+  void DatastoreEntryUpdated(XsurfaceDatastoreDataReader* source,
+                             const std::string& key) override;
+  void DatastoreEntryRemoved(XsurfaceDatastoreDataReader* source,
+                             const std::string& key) override;
+
   // Called to indicate the initial model load is in progress.
-  void LoadStreamStarted();
-  void LoadStreamComplete(bool success, LoadStreamStatus load_stream_status);
+  void LoadStreamStarted(bool manual_refreshing);
+  void LoadStreamComplete(bool success,
+                          LoadStreamStatus load_stream_status,
+                          feedwire::DiscoverLaunchResult launch_result);
+
   // Called to indicate whether or not we are currently trying to load more
   // content at the bottom of the stream.
   void SetLoadingMore(bool is_loading);
@@ -56,11 +78,12 @@ class SurfaceUpdater : public StreamModel::Observer {
   // not found. Ignores all non-content slices.
   int GetSliceIndexFromSliceId(const std::string& slice_id);
 
-  // Returns whether or not at least one surface is attached.
-  bool HasSurfaceAttached() const;
-
   void SetOfflinePageAvailability(const std::string& badge_id,
                                   bool available_offline);
+
+  LaunchReliabilityLogger& launch_reliability_logger() {
+    return launch_reliability_logger_;
+  }
 
   // State that together with |model_| determines what should be sent to a
   // surface. |DrawState| is usually the same for all surfaces, except for the
@@ -76,6 +99,7 @@ class SurfaceUpdater : public StreamModel::Observer {
 
  private:
   DrawState GetState() const;
+  bool ShouldSendStreamUpdate() const;
   void SendStreamUpdateIfNeeded();
   void SendStreamUpdate(
       const std::vector<std::string>& updated_shared_state_ids);
@@ -83,6 +107,14 @@ class SurfaceUpdater : public StreamModel::Observer {
                            const feedui::StreamUpdate& update);
   void InsertDatastoreEntry(const std::string& key, const std::string& value);
   void RemoveDatastoreEntry(const std::string& key);
+
+  // Owned by |FeedStream|.
+  raw_ptr<MetricsReporter> metrics_reporter_;
+  raw_ptr<StreamSurfaceSet> surfaces_;
+  // Per-StreamType xsurface data.
+  XsurfaceDatastoreSlice surface_data_slice_;
+  // Combines `surface_data_slice_`, and the global data.
+  XsurfaceDatastoreAggregate aggregate_data_;
 
   // Members that affect what is sent to surfaces. A value change of these may
   // require sending an update to surfaces.
@@ -97,17 +129,11 @@ class SurfaceUpdater : public StreamModel::Observer {
   // The set of content that has been sent to all attached surfaces.
   base::flat_set<ContentRevision> sent_content_;
 
-  // XSurface datastore entries that should be sent to all surfaces.
-  // Cached here so that we don't need to recompute for a new surface.
-  std::map<std::string, std::string> xsurface_datastore_entries_;
-
   // Owned by |FeedStream|. Null when the model is not loaded.
-  StreamModel* model_ = nullptr;
-  // Owned by |FeedStream|.
-  MetricsReporter* metrics_reporter_;
+  raw_ptr<StreamModel> model_ = nullptr;
 
-  // Attached surfaces.
-  base::ObserverList<FeedStreamSurface> surfaces_;
+  LaunchReliabilityLogger launch_reliability_logger_;
+  bool load_stream_started_ = false;
 };
 }  // namespace feed
 

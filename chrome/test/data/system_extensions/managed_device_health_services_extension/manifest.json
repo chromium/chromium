@@ -1,0 +1,7 @@
+{
+    "name": "Sample managed device health services extension",
+    "short_name": "Sample SWX",
+    "service_worker_url": "/sw.js",
+    "id": "01020304",
+    "type": "managed-device-health-services"
+}

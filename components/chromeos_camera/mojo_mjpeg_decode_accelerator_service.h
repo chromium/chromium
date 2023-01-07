@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom.h"
@@ -30,6 +29,11 @@ class MojoMjpegDecodeAcceleratorService
   static void Create(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           receiver);
+
+  MojoMjpegDecodeAcceleratorService(const MojoMjpegDecodeAcceleratorService&) =
+      delete;
+  MojoMjpegDecodeAcceleratorService& operator=(
+      const MojoMjpegDecodeAcceleratorService&) = delete;
 
   ~MojoMjpegDecodeAcceleratorService() override;
 
@@ -65,21 +69,31 @@ class MojoMjpegDecodeAcceleratorService
                         DecodeWithDmaBufCallback callback) override;
   void Uninitialize() override;
 
+  void OnInitialize(
+      std::vector<GpuMjpegDecodeAcceleratorFactory::CreateAcceleratorCB>
+          remaining_accelerator_factory_functions,
+      InitializeCallback init_cb,
+      bool last_initialize_result);
+
+  void InitializeInternal(
+      std::vector<GpuMjpegDecodeAcceleratorFactory::CreateAcceleratorCB>
+          remaining_accelerator_factory_functions,
+      InitializeCallback init_cb);
+
   void NotifyDecodeStatus(
       int32_t bitstream_buffer_id,
       ::chromeos_camera::MjpegDecodeAccelerator::Error error);
 
-  std::vector<GpuMjpegDecodeAcceleratorFactory::CreateAcceleratorCB>
-      accelerator_factory_functions_;
-
   // A map from |task_id| to MojoCallback.
   MojoCallbackMap mojo_cb_map_;
+
+  bool accelerator_initialized_;
 
   std::unique_ptr<::chromeos_camera::MjpegDecodeAccelerator> accelerator_;
 
   THREAD_CHECKER(thread_checker_);
 
-  DISALLOW_COPY_AND_ASSIGN(MojoMjpegDecodeAcceleratorService);
+  base::WeakPtrFactory<MojoMjpegDecodeAcceleratorService> weak_this_factory_;
 };
 
 }  // namespace chromeos_camera

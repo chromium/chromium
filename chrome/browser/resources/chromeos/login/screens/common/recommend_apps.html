@@ -1,0 +1,105 @@
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+
+<link rel="import" href="../../display_manager.html">
+<link rel="import" href="../../components/display_manager_types.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/oobe_apps_list.html">
+<link rel="import" href="../../components/oobe_types.html">
+
+<dom-module id="recommend-apps-element">
+  <template>
+    <style include="oobe-dialog-host-styles action-link">
+      #skipButton {
+        color: rgba(0, 0, 0, 0.54);
+        padding-inline-end: 6px;
+      }
+
+      #app-list-view-container {
+        display: grid;
+        gap: 16px 0;
+        grid-template-areas:
+            'select'
+            'list';
+        grid-template-rows: 20px 1fr;
+        height: 95%;
+      }
+
+      #selectAllButton {
+        display: flex;
+        grid-area: select;
+        justify-content: flex-end;
+      }
+
+      #appView {
+        grid-area: list;
+      }
+
+      #app-list-view-container-new {
+        overflow-y: auto;
+      }
+    </style>
+    <oobe-loading-dialog id="loadingDialog" for-step="loading"
+        title-key="recommendAppsLoading">
+      <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
+    </oobe-loading-dialog>
+    <oobe-adaptive-dialog id="appsDialog" role="dialog"
+        aria-label$="[[i18nDynamic(locale, 'recommendAppsScreenTitle')]]"
+        no-footer-padding footer-shrinkable for-step="list">
+      <iron-icon src="chrome://oobe/playstore.svg" slot="icon">
+      </iron-icon>
+      <h1 slot="title">
+        [[i18nDynamic(locale, 'recommendAppsScreenTitle')]]
+      </h1>
+      <div slot="subtitle">
+        [[i18nDynamic(locale, 'recommendAppsScreenDescription')]]
+      </div>
+      <template is="dom-if" if="[[!isOobeNewRecommendAppsEnabled_]]">
+        <div id="app-list-view-container" slot="content">
+          <div id="selectAllButton">
+            <a id="selectAllLink" class="oobe-local-link focus-on-show"
+                is="action-link" on-click="onSelectAll_">
+              [[i18nDynamic(locale, 'recommendAppsSelectAll')]]
+            </a>
+          </div>
+          <webview id="appView" on-message="onMessage_"></webview>
+        </div>
+      </template>
+      <template is="dom-if" if="[[isOobeNewRecommendAppsEnabled_]]">
+        <div id="app-list-view-container-new" slot="content">
+          <oobe-apps-list id="appsList" app-list="[[appList_]]"
+              apps-selected="{{appsSelected_}}"
+              on-apps-list-loaded="onFullyLoaded_">
+            <div slot="selectAllTitle">
+              [[i18nDynamic(locale, 'recommendAppsSelectAll')]]
+            </div>
+          </oobe-apps-list>
+        </div>
+      </template>
+      <div slot="bottom-buttons">
+        <oobe-text-button id="skipButton"
+            text-key="recommendAppsSkip" on-click="onSkip_" border>
+        </oobe-text-button>
+        <oobe-text-button id="installButton" on-click="onInstall_" inverse
+            text-key="recommendAppsInstall"
+            disabled="[[!canProceed_(appsSelected_)]]">
+        </oobe-text-button>
+      </div>
+    </oobe-adaptive-dialog>
+  </template>
+  <script src="recommend_apps.js"></script>
+</dom-module>

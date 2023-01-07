@@ -7,8 +7,8 @@
   <h4 id="d4" aria-grabbed="true">Item4</h4>
   <script>
     function go() {
-      // Set aria-grabbed from undefined [removed]->false; should fire an event.
-      document.getElementById('d1').setAttribute('aria-grabbed', 'false');
+      // Set aria-grabbed from undefined [removed]->true; should fire an event.
+      document.getElementById('d1').setAttribute('aria-grabbed', 'true');
 
       // Set aria-grabbed from true->false; should fire an event.
       document.getElementById('d2').setAttribute('aria-grabbed', 'false');

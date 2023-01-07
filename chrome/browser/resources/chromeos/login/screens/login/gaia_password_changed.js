@@ -1,132 +1,203 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+/**
+ * @fileoverview Polymer element for GAIA password changed screen.
+ */
 
-(function() {
+import '//resources/cr_elements/cr_input/cr_input.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../components/oobe_icons.m.js';
+import '../../components/buttons/oobe_next_button.m.js';
+import '../../components/common_styles/common_styles.m.js';
+import '../../components/common_styles/oobe_dialog_host_styles.m.js';
+import '../../components/dialogs/oobe_adaptive_dialog.m.js';
+import '../../components/dialogs/oobe_loading_dialog.m.js';
+
+import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.m.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.m.js';
+import {OobeI18nBehavior, OobeI18nBehaviorInterface} from '../../components/behaviors/oobe_i18n_behavior.m.js';
+import {OobeTextButton} from '../../components/buttons/oobe_text_button.m.js';
+import {OOBE_UI_STATE} from '../../components/display_manager_types.m.js';
+import {addSubmitListener} from '../../login_ui_tools.m.js';
 
 
 /**
  * UI mode for the dialog.
  * @enum {string}
  */
-const UIState = {
+const GaiaPasswordChangedUIState = {
   PASSWORD: 'password',
   FORGOT: 'forgot',
   PROGRESS: 'progress',
 };
 
-Polymer({
-  is: 'gaia-password-changed-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ */
+const GaiaPasswordChangedBase = mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior], PolymerElement);
 
-  behaviors: [
-    OobeI18nBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+/**
+ * @typedef {{
+ *   oldPasswordInput:  CrInputElement,
+ *   oldPasswordInput2:  CrInputElement,
+ *   cancel:  OobeTextButton,
+ *   tryAgain:  OobeTextButton,
+ *   proceedAnyway:  OobeTextButton,
+ * }}
+ */
+GaiaPasswordChangedBase.$;
 
-  properties: {
-    email: {
-      type: String,
-      value: '',
-    },
+/**
+ * @polymer
+ */
+class GaiaPasswordChanged extends GaiaPasswordChangedBase {
+  static get is() {
+    return 'gaia-password-changed-element';
+  }
 
-    password_: {
-      type: String,
-      value: '',
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    passwordInvalid_: {
-      type: Boolean,
-      value: false,
-    },
+  static get properties() {
+    return {
+      email: {
+        type: String,
+        value: '',
+      },
 
-    disabled: {type: Boolean, value: false},
-  },
+      password_: {
+        type: String,
+        value: '',
+      },
+
+      passwordInvalid_: {
+        type: Boolean,
+        value: false,
+      },
+
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
+
+      passwordInput_: Object,
+
+      isCryptohomeRecoveryUIFlowEnabled_: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isCryptohomeRecoveryUIFlowEnabled'),
+      },
+    };
+  }
 
   defaultUIStep() {
-    return UIState.PASSWORD;
-  },
+    return GaiaPasswordChangedUIState.PASSWORD;
+  }
 
-  UI_STEPS: UIState,
+  get UI_STEPS() {
+    return GaiaPasswordChangedUIState;
+  }
 
-  /** @override */
+  /**
+   * @override
+   */
   ready() {
-    this.initializeLoginScreen('GaiaPasswordChangedScreen', {
-      resetAllowed: false,
-    });
+    super.ready();
+    this.initializeLoginScreen('GaiaPasswordChangedScreen');
 
-    cr.ui.LoginUITools.addSubmitListener(
-        this.$.oldPasswordInput, this.submit_.bind(this));
-  },
+    this.passwordInput_ = this.isCryptohomeRecoveryUIFlowEnabled_ ?
+        this.$.oldPasswordInput2 :
+        this.$.oldPasswordInput;
+    addSubmitListener(this.passwordInput_, this.submit_.bind(this));
+  }
 
   /** Initial UI State for screen */
   getOobeUIInitialState() {
     return OOBE_UI_STATE.PASSWORD_CHANGED;
-  },
+  }
 
   // Invoked just before being shown. Contains all the data for the screen.
   onBeforeShow(data) {
     this.reset();
     this.email = data && 'email' in data && data.email;
     this.passwordInvalid_ = data && 'showError' in data && data.showError;
-  },
+    if (this.isCryptohomeRecoveryUIFlowEnabled_) {
+      this.$.cancel.textKey = 'continueWithoutLocalDataButton';
+      this.$.tryAgain.textKey = 'oldPasswordHint';
+      this.$.proceedAnyway.textKey = 'continueAndDeleteDataButton';
+    }
+  }
 
   reset() {
-    this.setUIStep(UIState.PASSWORD);
+    this.setUIStep(GaiaPasswordChangedUIState.PASSWORD);
     this.clearPassword();
     this.disabled = false;
-  },
+  }
 
-  /** @private */
+  /**
+   * @private
+   */
   submit_() {
-    if (this.disabled)
+    if (this.disabled) {
       return;
-    if (!this.$.oldPasswordInput.validate())
+    }
+    if (!this.passwordInput_.validate()) {
       return;
-    this.setUIStep(UIState.PROGRESS);
+    }
+    this.setUIStep(GaiaPasswordChangedUIState.PROGRESS);
     this.disabled = true;
-
-    chrome.send('migrateUserData', [this.$.oldPasswordInput.value]);
-  },
+    this.userActed(['migrate-user-data', this.passwordInput_.value]);
+  }
 
   /** @private */
   onForgotPasswordClicked_() {
-    this.setUIStep(UIState.FORGOT);
+    this.setUIStep(GaiaPasswordChangedUIState.FORGOT);
     this.clearPassword();
-  },
+  }
 
   /** @private */
   onTryAgainClicked_() {
-    this.setUIStep(UIState.PASSWORD);
-  },
+    this.setUIStep(GaiaPasswordChangedUIState.PASSWORD);
+  }
 
   /** @private */
   onAnimationFinish_() {
     this.focus();
-  },
+  }
 
   clearPassword() {
     this.password_ = '';
     this.passwordInvalid_ = false;
-  },
+  }
 
   /** @private */
   onProceedClicked_() {
-    if (this.disabled)
+    if (this.disabled) {
       return;
-    this.setUIStep(UIState.PROGRESS);
+    }
+    this.setUIStep(GaiaPasswordChangedUIState.PROGRESS);
     this.disabled = true;
     this.clearPassword();
     this.userActed('resync');
-  },
+  }
 
   /** @private */
   onCancel_() {
-    if (this.disabled)
+    if (this.disabled) {
       return;
+    }
     this.userActed('cancel');
   }
-});
-})();
+}
+
+customElements.define(GaiaPasswordChanged.is, GaiaPasswordChanged);

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,16 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/page_info/page_info_site_security_description.h"
+#import "ios/chrome/browser/ui/permissions/permissions_consumer.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 
-@protocol BrowserCommands;
+@protocol PageInfoCommands;
+@protocol PermissionsDelegate;
 
 // View Controller for displaying the page info.
-@interface PageInfoViewController : ChromeTableViewController
+@interface PageInfoViewController
+    : ChromeTableViewController <PermissionsConsumer,
+                                 UIAdaptivePresentationControllerDelegate>
 
 // Designated initializer.
 - (instancetype)initWithSiteSecurityDescription:
@@ -22,8 +26,11 @@
 
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
-// Handler used to navigate outside the page info.
-@property(nonatomic, weak) id<BrowserCommands> handler;
+@property(nonatomic, weak) id<PageInfoCommands> pageInfoCommandsHandler;
+
+// Delegate used to handle permission actions.
+@property(nonatomic, weak) id<PermissionsDelegate> permissionsDelegate
+    API_AVAILABLE(ios(15.0));
 
 @end
 

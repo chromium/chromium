@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/test/js_checker.h"
 
+#include "base/callback_helpers.h"
 #include "base/json/string_escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
@@ -15,6 +16,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 
+namespace ash {
+namespace test {
 namespace {
 
 std::string WrapSend(const std::string& expression) {
@@ -23,14 +26,14 @@ std::string WrapSend(const std::string& expression) {
 
 bool CheckOobeCondition(content::WebContents* web_contents,
                         const std::string& js_condition) {
-  return chromeos::test::JSChecker(web_contents).GetBool(js_condition);
+  return JSChecker(web_contents).GetBool(js_condition);
 }
 
 bool IsFocused(content::WebContents* web_contents,
                const std::initializer_list<base::StringPiece>& path) {
   if (!web_contents->GetContentNativeView()->HasFocus())
     return false;
-  auto js_checker = chromeos::test::JSChecker(web_contents);
+  auto js_checker = JSChecker(web_contents);
   std::string current_active = "document.activeElement";
   for (const auto& it : path) {
     if (js_checker.GetString(current_active + ".id") != it) {
@@ -46,8 +49,8 @@ std::string ElementHasClassCondition(
     std::initializer_list<base::StringPiece> element_ids) {
   std::string js = "$Element.classList.contains('$ClassName')";
   base::ReplaceSubstringsAfterOffset(&js, 0, "$ClassName", css_class);
-  base::ReplaceSubstringsAfterOffset(
-      &js, 0, "$Element", chromeos::test::GetOobeElementPath(element_ids));
+  base::ReplaceSubstringsAfterOffset(&js, 0, "$Element",
+                                     GetOobeElementPath(element_ids));
   return js;
 }
 
@@ -56,8 +59,8 @@ std::string ElementHasAttributeCondition(
     std::initializer_list<base::StringPiece> element_ids) {
   std::string js = "$Element.hasAttribute('$Attribute')";
   base::ReplaceSubstringsAfterOffset(&js, 0, "$Attribute", attribute);
-  base::ReplaceSubstringsAfterOffset(
-      &js, 0, "$Element", chromeos::test::GetOobeElementPath(element_ids));
+  base::ReplaceSubstringsAfterOffset(&js, 0, "$Element",
+                                     GetOobeElementPath(element_ids));
   return js;
 }
 
@@ -74,9 +77,6 @@ std::string DescribePath(std::initializer_list<base::StringPiece> element_ids) {
 }
 
 }  // namespace
-
-namespace chromeos {
-namespace test {
 
 JSChecker::JSChecker() = default;
 
@@ -96,8 +96,9 @@ void JSChecker::Evaluate(const std::string& expression) {
 void JSChecker::ExecuteAsync(const std::string& expression) {
   CHECK(web_contents_);
   std::string new_script = expression + ";";
-  web_contents_->GetMainFrame()->ExecuteJavaScriptWithUserGestureForTests(
-      base::UTF8ToUTF16(new_script));
+  web_contents_->GetPrimaryMainFrame()
+      ->ExecuteJavaScriptWithUserGestureForTests(base::UTF8ToUTF16(new_script),
+                                                 base::NullCallback());
 }
 
 bool JSChecker::GetBool(const std::string& expression) {
@@ -436,6 +437,16 @@ void JSChecker::ExpectElementContainsText(
   EXPECT_TRUE(std::string::npos != message.find(content));
 }
 
+void JSChecker::ExpectDialogOpen(
+    std::initializer_list<base::StringPiece> element_ids) {
+  ExpectAttributeEQ("open", element_ids, true);
+}
+
+void JSChecker::ExpectDialogClosed(
+    std::initializer_list<base::StringPiece> element_ids) {
+  ExpectAttributeEQ("open", element_ids, false);
+}
+
 void JSChecker::ExpectElementValue(
     const std::string& value,
     std::initializer_list<base::StringPiece> element_ids) {
@@ -456,6 +467,12 @@ void JSChecker::TapOnPath(
     std::initializer_list<base::StringPiece> element_ids) {
   ExpectVisiblePath(element_ids);
   Evaluate(GetOobeElementPath(element_ids) + ".click()");
+}
+
+void JSChecker::TapOnPathAsync(
+    std::initializer_list<base::StringPiece> element_ids) {
+  ExpectVisiblePath(element_ids);
+  ExecuteAsync(GetOobeElementPath(element_ids) + ".click()");
 }
 
 void JSChecker::TapOn(const std::string& element_id) {
@@ -522,6 +539,12 @@ void JSChecker::SelectElementInPath(
   Evaluate(js);
 }
 
+bool JSChecker::IsVisible(
+    std::initializer_list<base::StringPiece> element_ids) {
+  bool is_hidden = GetBool(test::GetOobeElementPath(element_ids) + ".hidden");
+  return !is_hidden;
+}
+
 JSChecker OobeJS() {
   return JSChecker(LoginDisplayHost::default_host()->GetOobeWebContents());
 }
@@ -538,15 +561,14 @@ void ExecuteOobeJSAsync(const std::string& script) {
 
 std::string GetOobeElementPath(
     std::initializer_list<base::StringPiece> element_ids) {
-  std::string result;
+  const char kGetElement[] = "document.getElementById('%s')";
+  const char kShadowRoot[] = ".shadowRoot.querySelector('#%s')";
   CHECK(element_ids.size() > 0);
   std::initializer_list<base::StringPiece>::const_iterator it =
       element_ids.begin();
-  result.append("document.getElementById('")
-      .append(std::string(*it))
-      .append("')");
+  auto result = base::StringPrintf(kGetElement, std::string(*it).c_str());
   for (it++; it < element_ids.end(); it++) {
-    result.append(".$$('#").append(std::string(*it)).append("')");
+      result.append(base::StringPrintf(kShadowRoot, std::string(*it).c_str()));
   }
   return result;
 }
@@ -560,13 +582,5 @@ std::string GetAttributeExpression(
   return result;
 }
 
-std::unique_ptr<TestConditionWaiter> CreateOobeScreenWaiter(
-    const std::string& oobe_screen_id) {
-  std::string js = "Oobe.getInstance().currentScreen.id=='$ScreenId'";
-  base::ReplaceSubstringsAfterOffset(&js, 0, "$ScreenId", oobe_screen_id);
-  std::string description = "OOBE Screen is " + oobe_screen_id;
-  return test::OobeJS().CreateWaiterWithDescription(js, description);
-}
-
 }  // namespace test
-}  // namespace chromeos
+}  // namespace ash

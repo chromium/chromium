@@ -1,31 +1,51 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
 
 mojom("mojom") {
   disable_variants = true
 
   sources = [
+    "accelerator_info.mojom",
+    "accelerator_keys.mojom",
     "assistant_volume_control.mojom",
-    "cros_display_config.mojom",
     "tray_action.mojom",
-    "voice_interaction_controller.mojom",
   ]
 
   public_deps = [
-    "//chromeos/components/proximity_auth/public/mojom",
+    "//chromeos/ash/components/proximity_auth/public/mojom",
     "//components/account_id/mojom",
     "//components/sync/mojom",
     "//mojo/public/mojom/base",
     "//services/preferences/public/mojom",
     "//skia/public/mojom",
-    "//ui/display/mojom:mojom",
+    "//ui/base/accelerators/mojom",
     "//ui/gfx/geometry/mojom",
     "//ui/gfx/image/mojom",
     "//ui/gfx/range/mojom",
     "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "ash.accelerator_keys.mojom.VKey"
+          cpp = "::ui::KeyboardCode"
+        },
+      ]
+
+      traits_headers = [
+        "//ui/events/keycodes/keyboard_codes_posix.h",
+        "accelerator_keys_mojom_traits.h",
+      ]
+      traits_sources = [ "accelerator_keys_mojom_traits.cc" ]
+    },
   ]
 
   component_output_prefix = "ash_public_interfaces"

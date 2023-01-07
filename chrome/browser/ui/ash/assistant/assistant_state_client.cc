@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -14,8 +15,7 @@
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
-#include "components/arc/arc_util.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -32,7 +32,7 @@ AssistantStateClient::~AssistantStateClient() {
 
 void AssistantStateClient::NotifyFeatureAllowed() {
   DCHECK(profile_);
-  chromeos::assistant::AssistantAllowedState state =
+  ash::assistant::AssistantAllowedState state =
       assistant::IsAssistantAllowedForProfile(profile_);
   ash::AssistantState::Get()->NotifyFeatureAllowed(state);
 }
@@ -65,7 +65,7 @@ void AssistantStateClient::OnArcPlayStoreEnabledChanged(bool enabled) {
 }
 
 void AssistantStateClient::SetProfileByUser(const user_manager::User* user) {
-  SetProfile(chromeos::ProfileHelper::Get()->GetProfileByUser(user));
+  SetProfile(ash::ProfileHelper::Get()->GetProfileByUser(user));
 }
 
 void AssistantStateClient::SetProfile(Profile* profile) {
@@ -88,7 +88,7 @@ void AssistantStateClient::SetProfile(Profile* profile) {
                           base::Unretained(this)));
 
   pref_change_registrar_->Add(
-      chromeos::assistant::prefs::kAssistantDisabledByPolicy,
+      ash::assistant::prefs::kAssistantDisabledByPolicy,
       base::BindRepeating(&AssistantStateClient::NotifyFeatureAllowed,
                           base::Unretained(this)));
 

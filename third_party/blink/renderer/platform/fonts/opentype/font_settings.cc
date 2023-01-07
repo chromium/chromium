@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,9 @@ uint32_t AtomicStringToFourByteTag(AtomicString tag) {
 
 AtomicString FourByteTagToAtomicString(uint32_t tag) {
   constexpr size_t tag_size = 4;
-  LChar tag_string[tag_size] = {(tag >> 24) & 0xFF, (tag >> 16) & 0xFF,
-                                (tag >> 8) & 0xFF, tag & 0xFF};
+  LChar tag_string[tag_size] = {
+      static_cast<LChar>(tag >> 24), static_cast<LChar>(tag >> 16),
+      static_cast<LChar>(tag >> 8), static_cast<LChar>(tag)};
   return AtomicString(tag_string, tag_size);
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,19 +16,27 @@
 #include "rlz/buildflags/buildflags.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/bind.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/content_protection.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #if BUILDFLAG(ENABLE_RLZ)
 #include "rlz/lib/machine_id.h"
 #else
 #error "RLZ must be enabled on Windows/Mac"
 #endif  // BUILDFLAG(ENABLE_RLZ)
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -81,7 +89,7 @@ std::vector<uint8_t> CalculateStorageId(
   return result;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ComputeAndReturnStorageId(const std::vector<uint8_t>& profile_salt,
                                const url::Origin& origin,
                                CdmStorageIdCallback callback,
@@ -90,14 +98,14 @@ void ComputeAndReturnStorageId(const std::vector<uint8_t>& profile_salt,
   std::move(callback).Run(
       CalculateStorageId(storage_id_key, profile_salt, origin, machine_id));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
 void ComputeStorageId(const std::vector<uint8_t>& profile_salt,
                       const url::Origin& origin,
                       CdmStorageIdCallback callback) {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   std::string machine_id;
   std::string storage_id_key = GetCdmStorageIdKey();
   rlz_lib::GetMachineId(&machine_id);
@@ -111,7 +119,21 @@ void ComputeStorageId(const std::vector<uint8_t>& profile_salt,
   chromeos::SystemSaltGetter::Get()->GetSystemSalt(
       base::BindOnce(&ComputeAndReturnStorageId, profile_salt, origin,
                      std::move(scoped_callback)));
-
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service ||
+      !lacros_service->IsAvailable<crosapi::mojom::ContentProtection>() ||
+      lacros_service->GetInterfaceVersion(
+          crosapi::mojom::ContentProtection::Uuid_) < 1) {
+    std::move(callback).Run(std::vector<uint8_t>());
+    return;
+  }
+  CdmStorageIdCallback scoped_callback =
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                  std::vector<uint8_t>());
+  lacros_service->GetRemote<crosapi::mojom::ContentProtection>()->GetSystemSalt(
+      base::BindOnce(&ComputeAndReturnStorageId, profile_salt, origin,
+                     std::move(scoped_callback)));
 #else
 #error Storage ID enabled but not implemented for this platform.
 #endif

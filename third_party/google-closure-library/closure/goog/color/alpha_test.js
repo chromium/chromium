@@ -1,24 +1,18 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 goog.module('goog.color.alphaTest');
 goog.setTestOnly();
 
 const alpha = goog.require('goog.color.alpha');
-const googArray = goog.require('goog.array');
 const testSuite = goog.require('goog.testing.testSuite');
 
 testSuite({
+  /**
+   * @suppress {visibility} accessing private properties
+   */
   testIsValidAlphaHexColor() {
     const goodAlphaHexColors = [
       '#ffffffff',
@@ -43,6 +37,9 @@ testSuite({
     }
   },
 
+  /**
+   * @suppress {visibility} accessing private properties
+   */
   testIsValidRgbaColor() {
     const goodRgbaColors = [
       'rgba(1, 20, 234, 1)',
@@ -78,6 +75,9 @@ testSuite({
     }
   },
 
+  /**
+   * @suppress {visibility} accessing private properties
+   */
   testIsValidHslaColor() {
     const goodHslaColors = [
       'hsla(120, 0%, 0%, 1)',
@@ -119,7 +119,7 @@ testSuite({
       '12345678',
       'hsla(160, 50%, 90%, 0.2)',
     ];
-    const parsed = googArray.map(colors, alpha.parse);
+    const parsed = colors.map(alpha.parse);
     assertEquals('rgba', parsed[0].type);
     assertEquals(alpha.rgbaToHex(15, 250, 77, 0.5), parsed[0].hex);
     assertEquals('rgba', parsed[1].type);
@@ -293,6 +293,9 @@ testSuite({
         transparentPurpleHsl);
   },
 
+  /**
+   * @suppress {visibility} accessing private properties
+   */
   testNormalizeAlphaHex() {
     const compactColor = '#abcd';
     const normalizedCompactColor = alpha.normalizeAlphaHex_(compactColor);
@@ -362,6 +365,9 @@ testSuite({
         'rgba(28,23,23,0.9)', alpha.hslaArrayToRgbaStyle([0, 10, 10, 0.9]));
   },
 
+  /**
+   * @suppress {visibility} accessing private properties
+   */
   testRgbaStyleParsableResult() {
     const testColors = [
       [175, 19, 255, 1],

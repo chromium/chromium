@@ -1,18 +1,18 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_disclosure_header_footer_item.h"
 
-#include "base/mac/foundation_util.h"
-#include "base/numerics/math_constants.h"
-#import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
+#import "base/mac/foundation_util.h"
+#import "base/numerics/math_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -21,12 +21,11 @@
 namespace {
 // Identity rotation angle that positions disclosure pointing down.
 constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
+
+static const CGFloat kDisabledOpacity = (CGFloat)0.40;
 }
 
 @implementation TableViewDisclosureHeaderFooterItem
-@synthesize subtitleText = _subtitleText;
-@synthesize text = _text;
-@synthesize collapsed = _collapsed;
 
 - (instancetype)initWithType:(NSInteger)type {
   self = [super initWithType:type];
@@ -45,17 +44,12 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
   header.titleLabel.text = self.text;
   header.subtitleLabel.text = self.subtitleText;
   header.subtitleLabel.numberOfLines = 0;
+  header.disabled = self.disabled;
   header.isAccessibilityElement = YES;
   header.accessibilityTraits |= UIAccessibilityTraitButton;
   DisclosureDirection direction =
       self.collapsed ? DisclosureDirectionTrailing : DisclosureDirectionDown;
   [header setInitialDirection:direction];
-  if (styler.headerFooterTitleColor)
-    header.titleLabel.textColor = styler.headerFooterTitleColor;
-  if (styler.headerFooterDetailColor)
-    header.subtitleLabel.textColor = styler.headerFooterDetailColor;
-  if (styler.cellHighlightColor)
-    header.highlightColor = styler.cellHighlightColor;
 }
 
 @end
@@ -73,13 +67,6 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
 @end
 
 @implementation TableViewDisclosureHeaderFooterView
-@synthesize cellAnimator = _cellAnimator;
-@synthesize cellDefaultBackgroundColor = _cellDefaultBackgroundColor;
-@synthesize disclosureDirection = disclosureDirection;
-@synthesize disclosureImageView = _disclosureImageView;
-@synthesize highlightColor = _highlightColor;
-@synthesize subtitleLabel = _subtitleLabel;
-@synthesize titleLabel = _titleLabel;
 
 - (instancetype)initWithReuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithReuseIdentifier:reuseIdentifier];
@@ -99,7 +86,6 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
     _subtitleLabel = [[UILabel alloc] init];
     _subtitleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
-    _subtitleLabel.textColor = UIColor.cr_secondaryLabelColor;
     [_subtitleLabel
         setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:UILayoutConstraintAxisVertical];
@@ -183,36 +169,31 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
 
 #pragma mark - public methods
 
-- (void)animateHighlight {
-  [self addAnimationHighlightToAnimator];
-  [self.cellAnimator startAnimation];
-}
-
 - (void)setInitialDirection:(DisclosureDirection)direction {
   [self rotateToDirection:direction animate:NO];
 }
 
-- (void)animateHighlightAndRotateToDirection:(DisclosureDirection)direction {
-  [self addAnimationHighlightToAnimator];
+- (void)rotateToDirection:(DisclosureDirection)direction {
   [self rotateToDirection:direction animate:YES];
-  [self.cellAnimator startAnimation];
+}
+
+#pragma mark - properties
+
+- (void)setDisabled:(BOOL)disabled {
+  _subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  if (disabled) {
+    _titleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    _subtitleLabel.alpha = kDisabledOpacity;
+  } else {
+    _titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  }
+
+  _disclosureImageView.image =
+      disabled ? nil : [UIImage imageNamed:@"table_view_cell_chevron"];
+  _disabled = disabled;
 }
 
 #pragma mark - internal methods
-
-- (void)addAnimationHighlightToAnimator {
-  UIColor* originalBackgroundColor = self.cellDefaultBackgroundColor;
-  self.cellAnimator = [[UIViewPropertyAnimator alloc]
-      initWithDuration:kTableViewCellSelectionAnimationDuration
-                 curve:UIViewAnimationCurveLinear
-            animations:^{
-              self.contentView.backgroundColor = self.highlightColor;
-            }];
-  __weak TableViewDisclosureHeaderFooterView* weakSelf = self;
-  [self.cellAnimator addCompletion:^(UIViewAnimatingPosition finalPosition) {
-    weakSelf.contentView.backgroundColor = originalBackgroundColor;
-  }];
-}
 
 // When view is being initialized, it has not been added to the hierarchy yet.
 // So, in order to set the initial direction, a non-animation transform is
@@ -241,10 +222,14 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
 
     if (animate) {
       __weak TableViewDisclosureHeaderFooterView* weakSelf = self;
-      [self.cellAnimator addAnimations:^{
-        weakSelf.disclosureImageView.transform =
-            CGAffineTransformRotate(CGAffineTransformIdentity, angle);
-      }];
+      self.cellAnimator = [[UIViewPropertyAnimator alloc]
+          initWithDuration:kTableViewCellSelectionAnimationDuration
+                     curve:UIViewAnimationCurveLinear
+                animations:^{
+                  weakSelf.disclosureImageView.transform =
+                      CGAffineTransformRotate(CGAffineTransformIdentity, angle);
+                }];
+      [self.cellAnimator startAnimation];
     } else {
       self.disclosureImageView.transform =
           CGAffineTransformRotate(CGAffineTransformIdentity, angle);

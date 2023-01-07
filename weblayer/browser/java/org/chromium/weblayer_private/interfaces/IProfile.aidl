@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@ import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
 import org.chromium.weblayer_private.interfaces.IGoogleAccountAccessTokenFetcherClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.IOpenUrlCallbackClient;
 import org.chromium.weblayer_private.interfaces.IPrerenderController;
 import org.chromium.weblayer_private.interfaces.IProfileClient;
 
@@ -47,4 +48,7 @@ interface IProfile {
 
   // Added in 89.
   void setGoogleAccountAccessTokenFetcherClient(IGoogleAccountAccessTokenFetcherClient client) = 19;
+
+  // Added in 91.
+  void setTablessOpenUrlCallbackClient(IOpenUrlCallbackClient client) = 20;
 }

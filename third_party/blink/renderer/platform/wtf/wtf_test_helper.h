@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <type_traits>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -52,8 +51,6 @@ class MoveOnly {
 
  private:
   int i_;
-
-  DISALLOW_COPY_AND_ASSIGN(MoveOnly);
 };
 
 class MoveOnlyHashValue {

@@ -1,16 +1,15 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web/history_state_util.h"
+#import "ios/web/history_state_util.h"
 
-#include <stddef.h>
+#import <stddef.h>
 
-#include "base/stl_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -63,7 +62,7 @@ const struct TestEntry HistoryStateUtilTest::tests_[] = {
 };
 
 TEST_F(HistoryStateUtilTest, TestIsHistoryStateChangeValid) {
-  for (size_t i = 0; i < base::size(tests_); ++i) {
+  for (size_t i = 0; i < std::size(tests_); ++i) {
     GURL fromUrl(tests_[i].fromUrl);
     GURL toUrl = history_state_util::GetHistoryStateChangeUrl(fromUrl, fromUrl,
                                                               tests_[i].toUrl);
@@ -79,7 +78,7 @@ TEST_F(HistoryStateUtilTest, TestIsHistoryStateChangeValid) {
 }
 
 TEST_F(HistoryStateUtilTest, TestGetHistoryStateChangeUrl) {
-  for (size_t i = 0; i < base::size(tests_); ++i) {
+  for (size_t i = 0; i < std::size(tests_); ++i) {
     GURL fromUrl(tests_[i].fromUrl);
     GURL expectedResult(tests_[i].expectedUrl);
     GURL actualResult = history_state_util::GetHistoryStateChangeUrl(

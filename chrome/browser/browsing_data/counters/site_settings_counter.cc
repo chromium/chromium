@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,21 @@
 
 #include <set>
 #include "build/build_config.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/custom_handlers/protocol_handler.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/host_zoom_map.h"
 #endif
 
 SiteSettingsCounter::SiteSettingsCounter(
     HostContentSettingsMap* map,
     content::HostZoomMap* zoom_map,
-    ProtocolHandlerRegistry* handler_registry,
+    custom_handlers::ProtocolHandlerRegistry* handler_registry,
     PrefService* pref_service)
     : map_(map),
       zoom_map_(zoom_map),
@@ -27,7 +28,7 @@ SiteSettingsCounter::SiteSettingsCounter(
       pref_service_(pref_service) {
   DCHECK(map_);
   DCHECK(handler_registry_);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   DCHECK(zoom_map_);
 #else
   DCHECK(!zoom_map_);
@@ -35,7 +36,7 @@ SiteSettingsCounter::SiteSettingsCounter(
   DCHECK(pref_service_);
 }
 
-SiteSettingsCounter::~SiteSettingsCounter() {}
+SiteSettingsCounter::~SiteSettingsCounter() = default;
 
 void SiteSettingsCounter::OnInitialized() {}
 
@@ -58,9 +59,7 @@ void SiteSettingsCounter::Count() {
           if (content_setting.source == "preference" ||
               content_setting.source == "notification_android" ||
               content_setting.source == "ephemeral") {
-            base::Time last_modified = map_->GetSettingLastModifiedDate(
-                content_setting.primary_pattern,
-                content_setting.secondary_pattern, content_type);
+            base::Time last_modified = content_setting.metadata.last_modified;
             if (last_modified >= period_start && last_modified < period_end) {
               if (content_setting.primary_pattern.GetHost().empty())
                 empty_host_pattern++;
@@ -86,7 +85,7 @@ void SiteSettingsCounter::Count() {
   iterate_content_settings_list(ContentSettingsType::USB_CHOOSER_DATA,
                                 content_settings_list_for_usb_chooser);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   for (const auto& zoom_level : zoom_map_->GetAllZoomLevels()) {
     // zoom_level with non-empty scheme are only used for some internal
     // features and not stored in preferences. They are not counted.
@@ -99,13 +98,13 @@ void SiteSettingsCounter::Count() {
 
   auto handlers =
       handler_registry_->GetUserDefinedHandlers(period_start, period_end);
-  for (const ProtocolHandler& handler : handlers)
+  for (const custom_handlers::ProtocolHandler& handler : handlers)
     hosts.insert(handler.url().host());
 
-  std::vector<std::string> blacklisted_sites =
+  std::vector<std::string> never_prompt_sites =
       ChromeTranslateClient::CreateTranslatePrefs(pref_service_)
           ->GetNeverPromptSitesBetween(period_start, period_end);
-  for (const auto& site : blacklisted_sites)
+  for (const auto& site : never_prompt_sites)
     hosts.insert(site);
 
   ReportResult(hosts.size() + empty_host_pattern);

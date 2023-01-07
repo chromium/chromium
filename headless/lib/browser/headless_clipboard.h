@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,18 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
 namespace headless {
 
+// TODO(crbug.com/1213221): Add tests. This class is mostly untested.
 class HeadlessClipboard : public ui::Clipboard {
  public:
   HeadlessClipboard();
+  HeadlessClipboard(const HeadlessClipboard&) = delete;
+  HeadlessClipboard& operator=(const HeadlessClipboard&) = delete;
   ~HeadlessClipboard() override;
 
  private:
@@ -27,7 +29,11 @@ class HeadlessClipboard : public ui::Clipboard {
   void OnPreShutdown() override;
   ui::DataTransferEndpoint* GetSource(
       ui::ClipboardBuffer buffer) const override;
-  uint64_t GetSequenceNumber(ui::ClipboardBuffer buffer) const override;
+  const ui::ClipboardSequenceNumberToken& GetSequenceNumber(
+      ui::ClipboardBuffer buffer) const override;
+  std::vector<std::u16string> GetStandardFormats(
+      ui::ClipboardBuffer buffer,
+      const ui::DataTransferEndpoint* data_dst) const override;
   bool IsFormatAvailable(
       const ui::ClipboardFormatType& format,
       ui::ClipboardBuffer buffer,
@@ -36,9 +42,6 @@ class HeadlessClipboard : public ui::Clipboard {
   void ReadAvailableTypes(ui::ClipboardBuffer buffer,
                           const ui::DataTransferEndpoint* data_dst,
                           std::vector<std::u16string>* types) const override;
-  std::vector<std::u16string> ReadAvailablePlatformSpecificFormatNames(
-      ui::ClipboardBuffer buffer,
-      const ui::DataTransferEndpoint* data_dst) const override;
   void ReadText(ui::ClipboardBuffer buffer,
                 const ui::DataTransferEndpoint* data_dst,
                 std::u16string* result) const override;
@@ -57,9 +60,9 @@ class HeadlessClipboard : public ui::Clipboard {
   void ReadRTF(ui::ClipboardBuffer buffer,
                const ui::DataTransferEndpoint* data_dst,
                std::string* result) const override;
-  void ReadImage(ui::ClipboardBuffer buffer,
-                 const ui::DataTransferEndpoint* data_dst,
-                 ReadImageCallback callback) const override;
+  void ReadPng(ui::ClipboardBuffer buffer,
+               const ui::DataTransferEndpoint* data_dst,
+               ReadPngCallback callback) const override;
   void ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
                       const std::u16string& type,
                       const ui::DataTransferEndpoint* data_dst,
@@ -76,12 +79,9 @@ class HeadlessClipboard : public ui::Clipboard {
 #if defined(USE_OZONE)
   bool IsSelectionBufferAvailable() const override;
 #endif  // defined(USE_OZONE)
-  void WritePortableRepresentations(
+  void WritePortableAndPlatformRepresentations(
       ui::ClipboardBuffer buffer,
       const ObjectMap& objects,
-      std::unique_ptr<ui::DataTransferEndpoint> data_src) override;
-  void WritePlatformRepresentations(
-      ui::ClipboardBuffer buffer,
       std::vector<Clipboard::PlatformRepresentation> platform_representations,
       std::unique_ptr<ui::DataTransferEndpoint> data_src) override;
   void WriteText(const char* text_data, size_t text_len) override;
@@ -107,11 +107,11 @@ class HeadlessClipboard : public ui::Clipboard {
     DataStore(const DataStore& other);
     ~DataStore();
     void Clear();
-    uint64_t sequence_number;
+    ui::ClipboardSequenceNumberToken sequence_number;
     std::map<ui::ClipboardFormatType, std::string> data;
     std::string url_title;
     std::string html_src_url;
-    SkBitmap image;
+    std::vector<uint8_t> png;
     std::vector<ui::FileInfo> filenames;
   };
 
@@ -123,8 +123,6 @@ class HeadlessClipboard : public ui::Clipboard {
 
   ui::ClipboardBuffer default_store_buffer_;
   mutable std::map<ui::ClipboardBuffer, DataStore> stores_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessClipboard);
 };
 
 }  // namespace headless

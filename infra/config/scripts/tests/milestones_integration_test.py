@@ -1,5 +1,5 @@
 #!/usr/bin/env vpython3
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Integration test for milestones.py"""
@@ -24,10 +24,10 @@ class MilestonesIntgrationTest(unittest.TestCase):
     self._temp_dir.cleanup()
 
   def _execute_milestones_py(self, args):
-    return subprocess.run(
-        ([MILESTONES_PY, '--milestones-json', self._milestones_json] +
-         (args or [])),
-        text=True, capture_output=True)
+    cmd = [MILESTONES_PY, '--milestones-json', self._milestones_json]
+    if os.name == 'nt':
+      cmd = ['vpython3.bat'] + cmd
+    return subprocess.run((cmd + (args or [])), text=True, capture_output=True)
 
   def test_activate_fails_when_missing_required_args(self):
     result = self._execute_milestones_py(['activate'])

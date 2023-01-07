@@ -33,7 +33,6 @@ filesystem, and can be replaced with a MockFileSystem in tests.
 from __future__ import unicode_literals
 
 import codecs
-import errno
 import glob
 import hashlib
 import logging
@@ -161,7 +160,7 @@ class FileSystem(object):
         return os.getcwd()
 
     def glob(self, path):
-        return glob.glob(path)
+        return glob.iglob(path, recursive=True)
 
     def isabs(self, path):
         return os.path.isabs(path)
@@ -220,13 +219,9 @@ class FileSystem(object):
 
     def maybe_make_directory(self, *path):
         """Creates the specified directory if it doesn't already exist."""
-        try:
-            # os.makedirs() supports UNC paths:
-            # https://docs.python.org/2/library/os.html#os.makedirs
-            os.makedirs(self._path_for_access(self.join(*path)))
-        except OSError as error:
-            if error.errno != errno.EEXIST:
-                raise
+        # os.makedirs() supports UNC paths:
+        # https://docs.python.org/2/library/os.html#os.makedirs
+        os.makedirs(self._path_for_access(self.join(*path)), exist_ok=True)
 
     def move(self, source, destination):
         shutil.move(source, destination)
@@ -334,7 +329,7 @@ class FileSystem(object):
             except exceptions.WindowsError:
                 time.sleep(sleep_interval)
                 retry_timeout_sec -= sleep_interval
-                if retry_timeout_sec < 0 and not retry:
+                if retry_timeout_sec < 0 or not retry:
                     raise
 
     def rmtree(self, path, ignore_errors=True, onerror=None):

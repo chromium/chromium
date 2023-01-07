@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "url/origin.h"
 
@@ -20,6 +19,11 @@ class BluetoothAllowedDevices;
 class CONTENT_EXPORT BluetoothAllowedDevicesMap {
  public:
   BluetoothAllowedDevicesMap();
+
+  BluetoothAllowedDevicesMap(const BluetoothAllowedDevicesMap&) = delete;
+  BluetoothAllowedDevicesMap& operator=(const BluetoothAllowedDevicesMap&) =
+      delete;
+
   ~BluetoothAllowedDevicesMap();
 
   // Gets a BluetoothAllowedDevices for each origin; creates one if it doesn't
@@ -33,8 +37,6 @@ class CONTENT_EXPORT BluetoothAllowedDevicesMap {
  private:
   std::map<url::Origin, content::BluetoothAllowedDevices>
       origin_to_allowed_devices_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAllowedDevicesMap);
 };
 
 }  //  namespace content

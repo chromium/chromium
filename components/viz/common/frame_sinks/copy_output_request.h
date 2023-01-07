@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,19 @@
 #define COMPONENTS_VIZ_COMMON_FRAME_SINKS_COPY_OUTPUT_REQUEST_H_
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/callback.h"
-#include "base/optional.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/unguessable_token.h"
+#include "components/viz/common/frame_sinks/blit_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "components/viz/common/viz_common_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -44,17 +46,30 @@ class CopyOutputRequestDataView;
 class VIZ_COMMON_EXPORT CopyOutputRequest {
  public:
   using ResultFormat = CopyOutputResult::Format;
+  // Specifies intended destination for the results. For software compositing,
+  // only the system-memory results are supported - even if the
+  // CopyOutputRequest is issued with ResultDestination::kNativeTextures, the
+  // results will still be returned via ResultDestination::kSystemMemory.
+  using ResultDestination = CopyOutputResult::Destination;
 
   using CopyOutputRequestCallback =
       base::OnceCallback<void(std::unique_ptr<CopyOutputResult> result)>;
 
+  // Creates new CopyOutputRequest. I420_PLANES format returned via
+  // kNativeTextures is currently not supported.
   CopyOutputRequest(ResultFormat result_format,
+                    ResultDestination result_destination,
                     CopyOutputRequestCallback result_callback);
 
-  ~CopyOutputRequest();
+  CopyOutputRequest(const CopyOutputRequest&) = delete;
+  CopyOutputRequest& operator=(const CopyOutputRequest&) = delete;
+
+  virtual ~CopyOutputRequest();
 
   // Returns the requested result format.
   ResultFormat result_format() const { return result_format_; }
+  // Returns the requested result destination.
+  ResultDestination result_destination() const { return result_destination_; }
 
   // Requests that the result callback be run as a task posted to the given
   // |task_runner|. If this is not set, the result callback could be run from
@@ -101,12 +116,33 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   // Optionally specify that only a portion of the result be generated. The
   // selection rect will be clamped to the result bounds, which always starts at
   // 0,0 and spans the post-scaling size of the copy area (see set_area()
-  // above).
+  // above). Only RGBA format supports odd-sized result selection. Can only be
+  // called before blit request was set on the copy request.
   void set_result_selection(const gfx::Rect& selection) {
+    DCHECK(result_format_ == ResultFormat::RGBA ||
+           (selection.width() % 2 == 0 && selection.height() % 2 == 0))
+        << "CopyOutputRequest supports odd-sized result_selection() only for "
+           "RGBA!";
+    DCHECK(!has_blit_request());
     result_selection_ = selection;
   }
   bool has_result_selection() const { return result_selection_.has_value(); }
   const gfx::Rect& result_selection() const { return *result_selection_; }
+
+  // Requests that the region copied by the CopyOutputRequest be blitted into
+  // the caller's textures. Can be called only for CopyOutputRequests that
+  // target native textures. Requires that result selection was set, in which
+  // case the caller's textures will be populated with the results of the
+  // copy request. The region in the caller's textures that will be populated
+  // is specified by `gfx::Rect(blit_request.destination_region_offset(),
+  // result_selection().size())`. If blit request is configured to perform
+  // letterboxing, all contents outside of that region will be overwritten with
+  // black, otherwise they will be unchanged. If the copy request's result would
+  // be smaller than `result_selection().size()`, the request will fail (i.e.
+  // empty result will be sent).
+  void set_blit_request(BlitRequest blit_request);
+  bool has_blit_request() const { return blit_request_.has_value(); }
+  const BlitRequest& blit_request() const { return *blit_request_; }
 
   // Sends the result from executing this request. Called by the internal
   // implementation, usually a DirectRenderer.
@@ -116,8 +152,11 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
   // same TaskRunner as that to which the current task was posted.
   bool SendsResultsInCurrentSequence() const;
 
-  // Creates a RGBA_BITMAP request that ignores results, for testing purposes.
+  // Creates a RGBA request with ResultDestination::kSystemMemory that ignores
+  // results, for testing purposes.
   static std::unique_ptr<CopyOutputRequest> CreateStubForTesting();
+
+  std::string ToString() const;
 
  private:
   // Note: The StructTraits may "steal" the |result_callback_|, to allow it to
@@ -127,15 +166,16 @@ class VIZ_COMMON_EXPORT CopyOutputRequest {
                                    std::unique_ptr<CopyOutputRequest>>;
 
   const ResultFormat result_format_;
+  const ResultDestination result_destination_;
   CopyOutputRequestCallback result_callback_;
   scoped_refptr<base::SequencedTaskRunner> result_task_runner_;
   gfx::Vector2d scale_from_;
   gfx::Vector2d scale_to_;
-  base::Optional<base::UnguessableToken> source_;
-  base::Optional<gfx::Rect> area_;
-  base::Optional<gfx::Rect> result_selection_;
+  absl::optional<base::UnguessableToken> source_;
+  absl::optional<gfx::Rect> area_;
+  absl::optional<gfx::Rect> result_selection_;
 
-  DISALLOW_COPY_AND_ASSIGN(CopyOutputRequest);
+  absl::optional<BlitRequest> blit_request_;
 };
 
 }  // namespace viz

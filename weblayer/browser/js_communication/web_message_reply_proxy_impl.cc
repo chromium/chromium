@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "weblayer/browser/java/jni/WebMessageReplyProxyImpl_jni.h"
+#include "weblayer/browser/page_impl.h"
 #include "weblayer/public/js_communication/web_message.h"
 #include "weblayer/public/js_communication/web_message_reply_proxy.h"
 
@@ -24,7 +25,8 @@ WebMessageReplyProxyImpl::WebMessageReplyProxyImpl(
   auto* env = base::android::AttachCurrentThread();
   java_object_ = Java_WebMessageReplyProxyImpl_create(
       env, reinterpret_cast<intptr_t>(this), id, client, is_main_frame,
-      base::android::ConvertUTF8ToJavaString(env, origin_string));
+      base::android::ConvertUTF8ToJavaString(env, origin_string),
+      static_cast<PageImpl&>(reply_proxy->GetPage()).java_page());
 }
 
 WebMessageReplyProxyImpl::~WebMessageReplyProxyImpl() {
@@ -38,7 +40,7 @@ void WebMessageReplyProxyImpl::PostMessage(
   auto message = std::make_unique<WebMessage>();
   base::android::ConvertJavaStringToUTF16(env, message_contents,
                                           &(message->message));
-  reply_proxy_->PostMessage(std::move(message));
+  reply_proxy_->PostWebMessage(std::move(message));
 }
 
 bool WebMessageReplyProxyImpl::IsActive(JNIEnv* env) {

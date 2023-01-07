@@ -1,0 +1,79 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+namespace org.chromium.chrome.browser.tab.flatbuffer;
+
+enum LaunchTypeAtCreation:int {
+    // SIZE is typically not used for anything other than bound
+    // checking but is included for completeness. It is added
+    // at the start rather than the end to enable other TabLaunchTypes
+    // to be added. It is not a problem that SIZE is not the same
+    // enum value as TabLaunchType.SIZE because the FlatBuffer persisted
+    // enum is mapped directly onto the TabLaunchType value in
+    // CriticalPersistedTabData. An alternative is to set SIZE to a large
+    // value but this is not possible as the enum values need to be sequential.
+    SIZE = -2,
+    // UNKNOWN indicates the TabLaunchType is null/not known.
+    UNKNOWN = -1,
+    FROM_LINK = 0,
+    FROM_EXTERNAL_APP = 1,
+    FROM_CHROME_UI = 2,
+    FROM_RESTORE = 3,
+    FROM_LONGPRESS_FOREGROUND = 4,
+    FROM_LONGPRESS_BACKGROUND = 5,
+    FROM_REPARENTING = 6,
+    FROM_LAUNCHER_SHORTCUT = 7,
+    FROM_SPECULATIVE_BACKGROUND_CREATION = 8,
+    FROM_BROWSER_ACTIONS = 9,
+    FROM_LAUNCH_NEW_INCOGNITO_TAB = 10,
+    FROM_STARTUP = 11,
+    FROM_START_SURFACE = 12,
+    FROM_TAB_GROUP_UI = 13,
+    FROM_LONGPRESS_BACKGROUND_IN_GROUP = 14,
+    FROM_APP_WIDGET = 15,
+    FROM_LONGPRESS_INCOGNITO = 16,
+    FROM_RECENT_TABS = 17,
+    FROM_READING_LIST = 18,
+    // Add new values here and don't change existing values
+    // as they are persisted across restarts. Changing existing
+    // values will lead to backwards compatibility issues crbug.com/1286984.
+}
+
+enum UserAgentType:int {
+    DEFAULT = 0,
+    MOBILE = 1,
+    DESKTOP = 2,
+    UNSET = 3,
+    USER_AGENT_SIZE = 4,
+    USER_AGENT_UNKNOWN = 5,
+}
+
+table CriticalPersistedTabDataFlatBuffer {
+    // Parent Tab identifier.
+    parent_id:int;
+
+    // Root Tab identifier.
+    root_id:int;
+
+    // Timestamp when Tab was last accessed.
+    timestamp_millis:long;
+
+    // WebContentsState.
+    web_contents_state_bytes:[byte];
+
+    // Content State version.
+    content_state_version:int;
+
+    // Identifier for app which opened the Tab.
+    opener_app_id:string;
+
+    // Theme color.
+    theme_color:int;
+
+    // Launch type at creation.
+    launch_type_at_creation:LaunchTypeAtCreation;
+
+    // User Agent.
+    user_agent:UserAgentType=DEFAULT;
+}

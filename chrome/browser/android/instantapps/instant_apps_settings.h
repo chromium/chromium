@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_INSTANTAPPS_INSTANT_APPS_SETTINGS_H_
 
 #include <string>
-#include "base/macros.h"
 
 namespace content {
 class WebContents;
@@ -17,12 +16,14 @@ class WebContents;
 // retrieve information about the Instant App banner events.
 class InstantAppsSettings {
  public:
-  static void RecordInfoBarShowEvent(content::WebContents* web_contents,
-                                     const std::string& url);
-  static void RecordInfoBarDismissEvent(content::WebContents* web_contents,
-                                        const std::string& url);
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(InstantAppsSettings);
+  InstantAppsSettings() = delete;
+  InstantAppsSettings(const InstantAppsSettings&) = delete;
+  InstantAppsSettings& operator=(const InstantAppsSettings&) = delete;
+
+  static void RecordShowEvent(content::WebContents* web_contents,
+                              const std::string& url);
+  static void RecordDismissEvent(content::WebContents* web_contents,
+                                 const std::string& url);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_INSTANTAPPS_INSTANT_APPS_SETTINGS_H_

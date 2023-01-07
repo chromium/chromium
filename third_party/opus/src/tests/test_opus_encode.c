@@ -297,6 +297,7 @@ int run_test1(int no_fuzz)
   /*FIXME: encoder api tests, fs!=48k, mono, VBR*/
 
    fprintf(stdout,"  Encode+Decode tests.\n");
+   fflush(stdout);
 
    enc = opus_encoder_create(48000, 2, OPUS_APPLICATION_VOIP, &err);
    if(err != OPUS_OK || enc==NULL)test_failed();
@@ -466,6 +467,7 @@ int run_test1(int no_fuzz)
             count++;
          }while(i<(SSAMPLES-MAX_FRAME_SAMP));
          fprintf(stdout,"    Mode %s FB encode %s, %6d bps OK.\n",mstrings[modes[j]],rc==0?" VBR":rc==1?"CVBR":" CBR",rate);
+         fflush(stdout);
       }
    }
 
@@ -543,6 +545,7 @@ int run_test1(int no_fuzz)
             count++;
          }while(i<(SSAMPLES/12-MAX_FRAME_SAMP));
          fprintf(stdout,"    Mode %s NB dual-mono MS encode %s, %6d bps OK.\n",mstrings[modes[j]],rc==0?" VBR":rc==1?"CVBR":" CBR",rate);
+         fflush(stdout);
       }
    }
 
@@ -612,6 +615,7 @@ int run_test1(int no_fuzz)
       i+=frame_size;
    }while(i<SAMPLES*4);
    fprintf(stdout,"    All framesize pairs switching encode, %d frames OK.\n",count);
+   fflush(stdout);
 
    if(opus_encoder_ctl(enc, OPUS_RESET_STATE)!=OPUS_OK)test_failed();
    opus_encoder_destroy(enc);

@@ -27,6 +27,7 @@
 #include "absl/strings/string_view.h"
 #include "integral_types.h"
 #include "statusor.h"
+#include "third_party/shell-encryption/base/shell_encryption_export.h"
 
 namespace rlwe {
 namespace internal {
@@ -37,28 +38,33 @@ const int kChaChaOutputBytes = 255 * 32;
 
 // Once pseudorandom output is exhausted, the salt is updated to construct
 // new pseudorandom output.
-absl::Status ChaChaPrngResalt(absl::string_view key, int buffer_size,
-                              int* salt_counter, int* position_in_buffer,
-                              std::vector<Uint8>* buffer);
+SHELL_ENCRYPTION_EXPORT absl::Status ChaChaPrngResalt(
+    absl::string_view key,
+    int buffer_size,
+    int* salt_counter,
+    int* position_in_buffer,
+    std::vector<Uint8>* buffer);
 
 // Generates a secure key for instantiating an CHACHA.
-rlwe::StatusOr<std::string> ChaChaPrngGenerateKey();
+SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::string> ChaChaPrngGenerateKey();
 
 // Returns 8 bits of randomness.
 //
 // Fails on internal cryptographic errors.
-rlwe::StatusOr<Uint8> ChaChaPrngRand8(absl::string_view key,
-                                      int* position_in_buffer,
-                                      int* salt_counter,
-                                      std::vector<Uint8>* buffer);
+SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<Uint8> ChaChaPrngRand8(
+    absl::string_view key,
+    int* position_in_buffer,
+    int* salt_counter,
+    std::vector<Uint8>* buffer);
 
 // Returns 64 bits of randomness.
 //
 // Fails on internal cryptographic errors.
-rlwe::StatusOr<Uint64> ChaChaPrngRand64(absl::string_view key,
-                                        int* position_in_buffer,
-                                        int* salt_counter,
-                                        std::vector<Uint8>* buffer);
+SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<Uint64> ChaChaPrngRand64(
+    absl::string_view key,
+    int* position_in_buffer,
+    int* salt_counter,
+    std::vector<Uint8>* buffer);
 
 }  // namespace internal
 }  // namespace rlwe

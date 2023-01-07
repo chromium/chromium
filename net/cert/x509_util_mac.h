@@ -1,99 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_CERT_X509_UTIL_MAC_H_
 #define NET_CERT_X509_UTIL_MAC_H_
 
-#include <CoreFoundation/CFArray.h>
 #include <Security/Security.h>
 
-#include <string>
-
-#include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
-#include "net/base/hash_value.h"
-#include "net/base/net_export.h"
-#include "net/cert/x509_certificate.h"
-
-namespace net {
-
-namespace x509_util {
-
-// Tests that a given |cert_handle| is actually a valid X.509 certificate, and
-// returns true if it is.
-//
-// On OS X, SecCertificateCreateFromData() does not return any errors if
-// called with invalid data, as long as data is present. The actual decoding
-// of the certificate does not happen until an API that requires a CSSM
-// handle is called. While SecCertificateGetCLHandle is the most likely
-// candidate, as it performs the parsing, it does not check whether the
-// parsing was actually successful. Instead, SecCertificateGetSubject is
-// used (supported since 10.3), as a means to check that the certificate
-// parsed as a valid X.509 certificate.
-NET_EXPORT bool IsValidSecCertificate(SecCertificateRef cert_handle);
-
-// Creates a SecCertificate handle from the DER-encoded representation.
-// Returns NULL on failure.
-NET_EXPORT base::ScopedCFTypeRef<SecCertificateRef>
-CreateSecCertificateFromBytes(const uint8_t* data, size_t length);
-
-// Returns a SecCertificate representing |cert|, or NULL on failure.
-NET_EXPORT base::ScopedCFTypeRef<SecCertificateRef>
-CreateSecCertificateFromX509Certificate(const X509Certificate* cert);
-
-// Creates an X509Certificate representing |sec_cert| with intermediates
-// |sec_chain|.
-NET_EXPORT scoped_refptr<X509Certificate>
-CreateX509CertificateFromSecCertificate(
-    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
-    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain);
-
-// Creates an X509Certificate with non-standard parsing options.
-// Do not use without consulting //net owners.
-NET_EXPORT scoped_refptr<X509Certificate>
-CreateX509CertificateFromSecCertificate(
-    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
-    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain,
-    X509Certificate::UnsafeCreateOptions options);
-
-// Calculates the SHA-256 fingerprint of the certificate.  Returns an empty
-// (all zero) fingerprint on failure.
-NET_EXPORT SHA256HashValue CalculateFingerprint256(SecCertificateRef cert);
-
-// Creates a security policy for certificates used as client certificates
-// in SSL.
-// If a policy is successfully created, it will be stored in
-// |*policy| and ownership transferred to the caller.
-NET_EXPORT OSStatus CreateSSLClientPolicy(SecPolicyRef* policy);
-
-// Create an SSL server policy. While certificate name validation will be
-// performed by SecTrustEvaluate(), it has the following limitations:
-// - Doesn't support IP addresses in dotted-quad literals (127.0.0.1)
-// - Doesn't support IPv6 addresses
-// - Doesn't support the iPAddress subjectAltName
-// Providing the hostname is necessary in order to locate certain user or
-// system trust preferences, such as those created by Safari. Preferences
-// created by Keychain Access do not share this requirement.
-// On success, stores the resultant policy in |*policy| and returns noErr.
-NET_EXPORT OSStatus CreateSSLServerPolicy(const std::string& hostname,
-                                          SecPolicyRef* policy);
-
-// Creates a security policy for basic X.509 validation. If the policy is
-// successfully created, it will be stored in |*policy| and ownership
-// transferred to the caller.
-NET_EXPORT OSStatus CreateBasicX509Policy(SecPolicyRef* policy);
-
-// Creates security policies to control revocation checking (OCSP and CRL).
-// If |enable_revocation_checking| is true, revocation checking will be
-// explicitly enabled.
-// Otherwise, the policies returned will be explicitly prohibited from accessing
-// the network or the local cache, if possible.
-// If the policies are successfully created, they will be appended to
-// |policies|.
-NET_EXPORT OSStatus CreateRevocationPolicies(bool enable_revocation_checking,
-                                             CFMutableArrayRef policies);
+namespace net::x509_util {
 
 // CSSM functions are deprecated as of OSX 10.7, but have no replacement.
 // https://bugs.chromium.org/p/chromium/issues/detail?id=590914#c1
@@ -109,6 +23,10 @@ class CSSMFieldValue {
   CSSMFieldValue(CSSM_CL_HANDLE cl_handle,
                  const CSSM_OID* oid,
                  CSSM_DATA_PTR field);
+
+  CSSMFieldValue(const CSSMFieldValue&) = delete;
+  CSSMFieldValue& operator=(const CSSMFieldValue&) = delete;
+
   ~CSSMFieldValue();
 
   CSSM_OID_PTR oid() const { return oid_; }
@@ -121,7 +39,7 @@ class CSSMFieldValue {
   // enough to actually contain the requested type.
   template <typename T> const T* GetAs() const {
     if (!field_ || field_->Length < sizeof(T))
-      return NULL;
+      return nullptr;
     return reinterpret_cast<const T*>(field_->Data);
   }
 
@@ -133,8 +51,6 @@ class CSSMFieldValue {
   CSSM_CL_HANDLE cl_handle_;
   CSSM_OID_PTR oid_;
   CSSM_DATA_PTR field_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSSMFieldValue);
 };
 
 // CSSMCachedCertificate is a container class that is used to wrap the
@@ -183,8 +99,6 @@ inline bool CSSMOIDEqual(const CSSM_OID* oid1, const CSSM_OID* oid2) {
 
 #pragma clang diagnostic pop  // "-Wdeprecated-declarations"
 
-}  // namespace x509_util
-
-}  // namespace net
+}  // namespace net::x509_util
 
 #endif  // NET_CERT_X509_UTIL_MAC_H_

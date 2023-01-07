@@ -1,8 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.paint_preview;
+
+import android.os.SystemClock;
+import android.view.MotionEvent;
 
 import androidx.test.filters.MediumTest;
 
@@ -15,12 +18,14 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.paint_preview.services.PaintPreviewTabService;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.paintpreview.player.PlayerManager;
+import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.ExecutionException;
@@ -90,8 +95,27 @@ public class TabbedPaintPreviewAccessibilityTest {
         viewReadyCallback.waitForFirst("Paint preview view ready never happened.");
 
         // Assert accessibility support is initialized.
-        Assert.assertNotNull("PlayerManager doesn't have a valid WebContentsAccessibility.",
-                tabbedPaintPreview.getPlayerManagerForTesting()
-                        .getWebContentsAccessibilityForTesting());
+        CriteriaHelper.pollInstrumentationThread(
+                ()
+                        -> tabbedPaintPreview.getPlayerManagerForTesting()
+                                   .getWebContentsAccessibilityForTesting()
+                        != null,
+                "PlayerManager doesn't have a valid WebContentsAccessibility.");
+
+        // Try hit testing.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            WebContentsAccessibility wcax = tabbedPaintPreview.getPlayerManagerForTesting()
+                                                    .getWebContentsAccessibilityForTesting();
+            wcax.setAccessibilityEnabledForTesting();
+            long time = SystemClock.uptimeMillis();
+            MotionEvent e =
+                    MotionEvent.obtain(time, time, MotionEvent.ACTION_HOVER_ENTER, 20, 20, 0);
+            wcax.onHoverEventNoRenderer(e);
+        });
+
+        // Remove the preview.
+        TestThreadUtils.runOnUiThreadBlocking(() -> tabbedPaintPreview.remove(true, false));
+        CriteriaHelper.pollUiThread(
+                () -> !tabbedPaintPreview.isAttached(), "Paint Preview not removed.");
     }
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -60,6 +60,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxDirectoryDatabase {
 
   SandboxDirectoryDatabase(const base::FilePath& filesystem_data_directory,
                            leveldb::Env* env_override);
+
+  SandboxDirectoryDatabase(const SandboxDirectoryDatabase&) = delete;
+  SandboxDirectoryDatabase& operator=(const SandboxDirectoryDatabase&) = delete;
+
   ~SandboxDirectoryDatabase();
 
   bool GetChildWithName(FileId parent_id,
@@ -122,10 +126,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxDirectoryDatabase {
                    const leveldb::Status& status);
 
   const base::FilePath filesystem_data_directory_;
-  leveldb::Env* env_override_;
+  raw_ptr<leveldb::Env> env_override_;
   std::unique_ptr<leveldb::DB> db_;
   base::Time last_reported_time_;
-  DISALLOW_COPY_AND_ASSIGN(SandboxDirectoryDatabase);
 };
 
 }  // namespace storage

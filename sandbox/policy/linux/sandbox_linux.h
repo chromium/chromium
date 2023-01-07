@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,13 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/posix/global_descriptors.h"
+#include "base/sanitizer_buildflags.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
 #include "sandbox/policy/export.h"
 #include "sandbox/policy/linux/sandbox_seccomp_bpf_linux.h"
-#include "sandbox/policy/sandbox_type.h"
-#include "sandbox/policy/sanitizer_buildflags.h"
 
 #if BUILDFLAG(USING_SANITIZER)
 #include <sanitizer/common_interface_defs.h>
@@ -30,6 +29,9 @@ class Thread;
 }  // namespace base
 
 namespace sandbox {
+namespace mojom {
+enum class Sandbox;
+}  // namespace mojom
 namespace syscall_broker {
 class BrokerProcess;
 }  // namespace syscall_broker
@@ -53,7 +55,7 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
  public:
   // This is a list of sandbox IPC methods which the renderer may send to the
   // sandbox host. See
-  // https://chromium.googlesource.com/chromium/src/+/master/docs/linux/sandbox_ipc.md
+  // https://chromium.googlesource.com/chromium/src/+/main/docs/linux/sandbox_ipc.md
   // This isn't the full list, values < 32 are reserved for methods called from
   // Skia, and values < 64 are reserved for libc_interceptor.cc.
   enum LinuxSandboxIPCMethods {
@@ -121,6 +123,9 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // Get our singleton instance.
   static SandboxLinux* GetInstance();
 
+  SandboxLinux(const SandboxLinux&) = delete;
+  SandboxLinux& operator=(const SandboxLinux&) = delete;
+
   // Do some initialization that can only be done before any of the sandboxes
   // are enabled. If using the setuid sandbox, this should be called manually
   // before the setuid sandbox is engaged.
@@ -159,7 +164,7 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // Currently the layer-2 sandbox is composed of seccomp-bpf and address space
   // limitations.
   // This function should only be called without any thread running.
-  bool InitializeSandbox(SandboxType sandbox_type,
+  bool InitializeSandbox(sandbox::mojom::Sandbox sandbox_type,
                          PreSandboxHook hook,
                          const Options& options);
 
@@ -192,7 +197,7 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // |options.allow_threads_during_sandbox_init| is true and the kernel
   // supports seccomp's TSYNC feature. If TSYNC is not available we treat
   // multiple threads as a fatal error.
-  bool StartSeccompBPF(SandboxType sandbox_type,
+  bool StartSeccompBPF(sandbox::mojom::Sandbox sandbox_type,
                        PreSandboxHook hook,
                        const Options& options);
 
@@ -218,15 +223,15 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // typically from a pre-sandbox hook, that will serve requests to access
   // files over an IPC channel. The client  of this runs from a SIGSYS handler
   // triggered by the seccomp-bpf sandbox.
-  // |client_sandbox_policy| is the policy being run by the client, and is
-  // used to derive the equivalent broker-side policy.
+  //
+  // |policy| is the policy being run by the client, and is used to derive the
+  // equivalent broker-side policy.
+  //
   // |broker_side_hook| is an alternate pre-sandbox hook to be run before the
-  // broker itself gets sandboxed, to which the broker side policy and
-  // |options| are passed.
-  // Crashes the process if the broker can not be started since continuation
-  // is impossible (and presumably unsafe).
-  // This should never be destroyed, as after the sandbox is started it is
-  // vital to the process.
+  // broker itself gets sandboxed, to which the broker side policy and |options|
+  // are passed. Crashes the process if the broker can not be started since
+  // continuation is impossible (and presumably unsafe). This should never be
+  // destroyed, as after the sandbox is started it is vital to the process.
   void StartBrokerProcess(
       const syscall_broker::BrokerCommandSet& allowed_command_set,
       std::vector<syscall_broker::BrokerFilePermission> permissions,
@@ -242,7 +247,7 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
   // handled transparently by the broker process. This is useful for file
   // syscalls that take pathnames, so we can enforce pathname whitelisting.
   // Only usable if StartBrokerProcess() was already called.
-  bpf_dsl::ResultExpr HandleViaBroker() const;
+  bpf_dsl::ResultExpr HandleViaBroker(int sysno) const;
 
  private:
   friend struct base::DefaultSingletonTraits<SandboxLinux>;
@@ -265,7 +270,7 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
 
   // GetStatus() makes promises as to how the sandbox will behave. This
   // checks that no promises have been broken.
-  void CheckForBrokenPromises(SandboxType sandbox_type);
+  void CheckForBrokenPromises(sandbox::mojom::Sandbox sandbox_type);
 
   // Stop |thread| and make sure it does not appear in /proc/self/tasks/
   // anymore.
@@ -295,9 +300,7 @@ class SANDBOX_POLICY_EXPORT SandboxLinux {
 #if BUILDFLAG(USING_SANITIZER)
   std::unique_ptr<__sanitizer_sandbox_arguments> sanitizer_args_;
 #endif
-  syscall_broker::BrokerProcess* broker_process_;  // Leaked as global.
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxLinux);
+  raw_ptr<syscall_broker::BrokerProcess> broker_process_;  // Leaked as global.
 };
 
 }  // namespace policy

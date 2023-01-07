@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,15 +61,15 @@ void ModuleMap::Entry::Trace(Visitor* visitor) const {
 void ModuleMap::Entry::DispatchFinishedNotificationAsync(
     SingleModuleClient* client) {
   map_->GetModulator()->TaskRunner()->PostTask(
-      FROM_HERE,
-      WTF::Bind(&SingleModuleClient::NotifyModuleLoadFinished,
-                WrapPersistent(client), WrapPersistent(module_script_.Get())));
+      FROM_HERE, WTF::BindOnce(&SingleModuleClient::NotifyModuleLoadFinished,
+                               WrapPersistent(client),
+                               WrapPersistent(module_script_.Get())));
 }
 
 void ModuleMap::Entry::AddClient(SingleModuleClient* new_client) {
   DCHECK(!clients_.Contains(new_client));
   if (!is_fetching_) {
-    DCHECK(clients_.IsEmpty());
+    DCHECK(clients_.empty());
     DispatchFinishedNotificationAsync(new_client);
     return;
   }

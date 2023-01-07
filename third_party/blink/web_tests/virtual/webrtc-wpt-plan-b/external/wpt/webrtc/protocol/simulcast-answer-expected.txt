@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL createAnswer() with multiple send encodings should create simulcast answer promise_test: Unhandled rejection with value: object "TypeError: Cannot set property 'direction' of undefined"
-Harness: the test ran to completion.
-

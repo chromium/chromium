@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "chromeos/ui/frame/caption_buttons/caption_button_model.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
@@ -24,10 +25,6 @@
 using views::Widget;
 
 namespace {
-
-// Duration of animation scheduled when frame color is changed.
-constexpr base::TimeDelta kFrameColorChangeAnimationDuration =
-    base::TimeDelta::FromMilliseconds(240);
 
 // Tiles an image into an area, rounding the top corners.
 void TileRoundRect(gfx::Canvas* canvas,
@@ -98,7 +95,7 @@ void DefaultFrameHeader::UpdateFrameColors() {
 
   if (updated) {
     UpdateCaptionButtonColors();
-    StartTransitionAnimation(kFrameColorChangeAnimationDuration);
+    StartTransitionAnimation(kDefaultFrameColorChangeAnimationDuration);
   }
 }
 

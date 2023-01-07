@@ -45,7 +45,7 @@ class LayoutSVGResourceFilter final : public LayoutSVGResourceContainer {
 
   void RemoveAllClientsFromCache() override;
 
-  FloatRect ResourceBoundingBox(const FloatRect& reference_box) const;
+  gfx::RectF ResourceBoundingBox(const gfx::RectF& reference_box) const;
 
   SVGUnitTypes::SVGUnitType FilterUnits() const;
   SVGUnitTypes::SVGUnitType PrimitiveUnits() const;
@@ -69,4 +69,4 @@ struct DowncastTraits<LayoutSVGResourceFilter> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_RESOURCE_FILTER_H_

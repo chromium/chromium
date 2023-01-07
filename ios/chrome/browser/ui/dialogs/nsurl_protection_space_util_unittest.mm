@@ -1,16 +1,16 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/dialogs/nsurl_protection_space_util.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/strings/grit/components_strings.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,7 +26,7 @@ NSString* const kTestHost = @"chromium.org";
 NSString* const kTestHttpOrigin = @"http://chromium.org";
 NSString* const kTestHttpsOrigin = @"https://chromium.org:80";
 
-// Returns protection space for the given |host|, |protocol| and |port|.
+// Returns protection space for the given `host`, `protocol` and `port`.
 NSURLProtectionSpace* GetProtectionSpaceForHost(NSString* host,
                                                 NSString* protocol,
                                                 NSInteger port) {
@@ -37,13 +37,13 @@ NSURLProtectionSpace* GetProtectionSpaceForHost(NSString* host,
                                authenticationMethod:nil];
 }
 
-// Returns protection space for the given |host| and |protocol| and port 80.
+// Returns protection space for the given `host` and `protocol` and port 80.
 NSURLProtectionSpace* GetProtectionSpaceForHost(NSString* host,
                                                 NSString* protocol) {
   return GetProtectionSpaceForHost(host, protocol, 80);
 }
 
-// Returns protection space for the given proxy |host| and |protocol|.
+// Returns protection space for the given proxy `host` and `protocol`.
 NSURLProtectionSpace* GetProtectionSpaceForProxyHost(NSString* host,
                                                      NSString* type) {
   return [[NSURLProtectionSpace alloc] initWithProxyHost:host

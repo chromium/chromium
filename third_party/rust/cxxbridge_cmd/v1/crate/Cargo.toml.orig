@@ -1,0 +1,31 @@
+[package]
+name = "cxxbridge-cmd"
+version = "1.0.68"
+authors = ["David Tolnay <dtolnay@gmail.com>"]
+edition = "2018"
+rust-version = "1.54"
+license = "MIT OR Apache-2.0"
+description = "C++ code generator for integrating `cxx` crate into a non-Cargo build."
+repository = "https://github.com/dtolnay/cxx"
+homepage = "https://cxx.rs"
+exclude = ["build.rs"]
+keywords = ["ffi"]
+categories = ["development-tools::ffi"]
+
+[[bin]]
+name = "cxxbridge"
+path = "src/main.rs"
+
+[features]
+# incomplete features that are not covered by a compatibility guarantee:
+experimental-async-fn = []
+
+[dependencies]
+clap = { version = "3.1", default-features = false, features = ["std", "suggestions"] }
+codespan-reporting = "0.11"
+proc-macro2 = { version = "1.0.26", default-features = false, features = ["span-locations"] }
+quote = { version = "1.0", default-features = false }
+syn = { version = "1.0.70", default-features = false, features = ["parsing", "printing", "clone-impls", "full"] }
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]

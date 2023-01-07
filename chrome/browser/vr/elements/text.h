@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,6 +96,10 @@ struct TextRenderParameters {
 class VR_UI_EXPORT Text : public TexturedElement {
  public:
   explicit Text(float font_height_dmms);
+
+  Text(const Text&) = delete;
+  Text& operator=(const Text&) = delete;
+
   ~Text() override;
 
   void SetFontHeightInDmm(float font_height_dmms);
@@ -156,8 +160,6 @@ class VR_UI_EXPORT Text : public TexturedElement {
   std::unique_ptr<TextTexture> texture_;
   gfx::Size text_texture_size_;
   float field_width_ = 0.f;
-
-  DISALLOW_COPY_AND_ASSIGN(Text);
 };
 
 }  // namespace vr

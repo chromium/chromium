@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 // the state.
 class CredentialLeakDialogController : public PasswordBaseDialogController {
  public:
+  ~CredentialLeakDialogController() override = default;
+
   // Called when the user cancels the dialog by clicking a button.
   virtual void OnCancelDialog() = 0;
 
@@ -23,6 +25,10 @@ class CredentialLeakDialogController : public PasswordBaseDialogController {
   // Called when the user closes the dialog without clicking a button,
   // e.g. by pressing the Esc key.
   virtual void OnCloseDialog() = 0;
+
+  // Called when the controller and dialog should drop references to each other
+  // because one of the two is going away.
+  virtual void ResetDialog() = 0;
 
   // Returns the label for the accept button.
   virtual std::u16string GetAcceptButtonLabel() const = 0;
@@ -39,11 +45,12 @@ class CredentialLeakDialogController : public PasswordBaseDialogController {
   // Checks whether the dialog should prompt user to password checkup.
   virtual bool ShouldCheckPasswords() const = 0;
 
+  // Checks whether the dialog should prompt the user to do an automated
+  // password change.
+  virtual bool ShouldOfferAutomatedPasswordChange() const = 0;
+
   // Checks whether the dialog should show cancel button.
   virtual bool ShouldShowCancelButton() const = 0;
-
- protected:
-  ~CredentialLeakDialogController() override = default;
 };
 
 #endif  //  CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_H_

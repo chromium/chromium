@@ -1,10 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_ASH_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_CLIPBOARD_IMAGE_MODEL_FACTORY_IMPL_H_
 
+#include <list>
+#include <memory>
 #include <string>
 
 #include "ash/public/cpp/clipboard_image_model_factory.h"
@@ -28,6 +30,7 @@ class ClipboardImageModelFactoryImpl : public ash::ClipboardImageModelFactory {
   // ash::ClipboardImageModelFactory:
   void Render(const base::UnguessableToken& id,
               const std::string& html_markup,
+              const gfx::Size& bounding_box_size,
               ImageModelCallback callback) override;
   void CancelRequest(const base::UnguessableToken& id) override;
   void Activate() override;

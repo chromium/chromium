@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/cbor/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -24,6 +23,9 @@ namespace device {
 // https://www.w3.org/TR/2017/WD-webauthn-20170505/#cred-attestation.
 class COMPONENT_EXPORT(DEVICE_FIDO) AttestationStatement {
  public:
+  AttestationStatement(const AttestationStatement&) = delete;
+  AttestationStatement& operator=(const AttestationStatement&) = delete;
+
   virtual ~AttestationStatement();
 
   // The CBOR map data to be added to the attestation object, structured
@@ -32,6 +34,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestationStatement {
   // This is not a CBOR-encoded byte array, but the map that will be
   // nested within another CBOR object and encoded then.
   virtual cbor::Value AsCBOR() const = 0;
+
+  // Returns true if the attestation is a "none" attestation.
+  virtual bool IsNoneAttestation() const = 0;
 
   // Returns true if the attestation is a "self" attestation, i.e. is just the
   // private key signing itself to show that it is fresh.
@@ -44,7 +49,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestationStatement {
   virtual bool IsAttestationCertificateInappropriatelyIdentifying() const = 0;
 
   // Return the DER bytes of the leaf X.509 certificate, if any.
-  virtual base::Optional<base::span<const uint8_t>> GetLeafCertificate()
+  virtual absl::optional<base::span<const uint8_t>> GetLeafCertificate()
       const = 0;
 
   const std::string& format_name() const { return format_; }
@@ -52,9 +57,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AttestationStatement {
  protected:
   explicit AttestationStatement(std::string format);
   const std::string format_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AttestationStatement);
 };
 
 // NoneAttestationStatement represents a “none” attestation, which is used when
@@ -64,15 +66,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) NoneAttestationStatement
     : public AttestationStatement {
  public:
   NoneAttestationStatement();
+
+  NoneAttestationStatement(const NoneAttestationStatement&) = delete;
+  NoneAttestationStatement& operator=(const NoneAttestationStatement&) = delete;
+
   ~NoneAttestationStatement() override;
 
   cbor::Value AsCBOR() const override;
+  bool IsNoneAttestation() const override;
   bool IsSelfAttestation() const override;
   bool IsAttestationCertificateInappropriatelyIdentifying() const override;
-  base::Optional<base::span<const uint8_t>> GetLeafCertificate() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoneAttestationStatement);
+  absl::optional<base::span<const uint8_t>> GetLeafCertificate() const override;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)

@@ -45,9 +45,10 @@ class TextFieldInputType : public InputType,
  public:
   void Trace(Visitor*) const override;
   using InputType::GetElement;
+  bool ValueMissing(const String&) const;
 
  protected:
-  TextFieldInputType(HTMLInputElement&);
+  TextFieldInputType(Type, HTMLInputElement&);
   ~TextFieldInputType() override;
   bool CanSetSuggestedValue() override;
   void HandleKeydownEvent(KeyboardEvent&) override;
@@ -68,9 +69,9 @@ class TextFieldInputType : public InputType,
                 TextControlSetValueSelection) override;
   void UpdateView() override;
   void CustomStyleForLayoutObject(ComputedStyle& style) override;
-  bool TypeShouldForceLegacyLayout() const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&,
                                    LegacyLayout) const override;
+  ControlPart AutoAppearance() const override;
 
   virtual bool NeedsContainer() const { return false; }
   virtual String ConvertFromVisibleValue(const String&) const;
@@ -84,13 +85,13 @@ class TextFieldInputType : public InputType,
   ValueMode GetValueMode() const override;
   bool MayTriggerVirtualKeyboard() const final;
   bool IsTextField() const final;
-  bool ValueMissing(const String&) const override;
   bool ShouldSubmitImplicitly(const Event&) final;
   bool ShouldRespectListAttribute() override;
   void ListAttributeTargetChanged() override;
   void UpdatePlaceholderText(bool is_suggested_value) final;
   void AppendToFormData(FormData&) const override;
   void SubtreeHasChanged() final;
+  void OpenPopupView() override;
 
   // SpinButtonElement::SpinButtonOwner functions.
   void FocusAndSelectSpinButtonOwner() final;
@@ -102,6 +103,13 @@ class TextFieldInputType : public InputType,
 
   SpinButtonElement* GetSpinButtonElement() const;
   void DisabledOrReadonlyAttributeChanged();
+};
+
+template <>
+struct DowncastTraits<TextFieldInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsTextFieldInputType();
+  }
 };
 
 }  // namespace blink

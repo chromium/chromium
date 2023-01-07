@@ -1,77 +1,87 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
-generate_grd("build_grd") {
-  grd_prefix = "webrtc_logs"
-  out_grd = "$target_gen_dir/webrtc_logs_resources.grd"
-  input_files = [
-    "webrtc_logs.css",
-    "webrtc_logs.html",
-    "webrtc_logs.js",
+preprocess_folder = "preprocessed"
+copy("copy_mojo") {
+  deps = [
+    "//chrome/browser/media:mojo_bindings_js",
+    "//services/media_session/public/mojom:mojom_js",
   ]
-  input_files_base_dir = rebase_path(".", "//")
+  sources = [
+    "$root_gen_dir/mojom-webui/chrome/browser/media/history/media_history_store.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/media/media_engagement_score_details.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/services/media_session/public/mojom/media_session.mojom-webui.js",
+  ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
 }
 
-grit("webrtc_logs_resources") {
-  source = "$target_gen_dir/webrtc_logs_resources.grd"
+preprocess_if_expr("preprocess_src") {
+  in_files = [
+    "media_history.ts",
+    "media_data_table.ts",
+    "media_engagement.ts",
+    "webrtc_logs.ts",
+  ]
+  out_folder = "$target_gen_dir/$preprocess_folder"
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = target_gen_dir
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "media_history.ts",
+    "media_data_table.ts",
+    "media_engagement.ts",
+    "media_engagement_score_details.mojom-webui.js",
+    "media_history_store.mojom-webui.js",
+    "media_session.mojom-webui.js",
+    "webrtc_logs.ts",
+  ]
+
+  deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+  extra_deps = [
+    ":copy_mojo",
+    ":preprocess_src",
+  ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "media"
+  out_grd = "$target_gen_dir/resources.grd"
+  input_files = [
+    "media_engagement.html",
+    "media_history.html",
+    "webrtc_logs.css",
+    "webrtc_logs.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  deps = [ ":build_ts" ]
+}
+
+grit("resources") {
+  source = "$target_gen_dir/resources.grd"
   deps = [ ":build_grd" ]
   enable_input_discovery_for_gn_analyze = false
   defines = chrome_grit_defines
   use_brotli = true
   outputs = [
-    "grit/webrtc_logs_resources.h",
-    "grit/webrtc_logs_resources_map.cc",
-    "grit/webrtc_logs_resources_map.h",
-    "webrtc_logs_resources.pak",
+    "grit/media_resources.h",
+    "grit/media_resources_map.cc",
+    "grit/media_resources_map.h",
+    "media_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
-}
-
-js_type_check("closure_compile") {
-  deps = [
-    ":media_data_table",
-    ":media_engagement",
-    ":media_feeds",
-    ":media_history",
-  ]
-}
-
-js_library("media_engagement") {
-  deps = [
-    "//chrome/browser/media:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("media_history") {
-  deps = [
-    ":media_data_table",
-    "//chrome/browser/media:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:tabs.m",
-  ]
-}
-
-js_library("media_feeds") {
-  deps = [
-    ":media_data_table",
-    "//chrome/browser/media/feeds:mojo_bindings_js_library_for_compile",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("media_data_table") {
 }

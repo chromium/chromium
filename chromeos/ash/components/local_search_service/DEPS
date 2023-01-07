@@ -1,0 +1,8 @@
+include_rules = [
+  "+chromeos/ash/components/string_matching",
+  "+components/keyed_service/content",
+  "+components/keyed_service/core",
+  "+components/metrics",
+  "+content/public/browser",
+  "+content/public/test",
+]

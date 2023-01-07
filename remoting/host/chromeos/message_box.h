@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,12 @@
 #include <string>
 
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
+#include "ui/base/ui_base_types.h"
+
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
 
 namespace remoting {
 
@@ -19,10 +23,7 @@ namespace remoting {
 // process. Destroy the instance to hide the message box.
 class MessageBox {
  public:
-  enum Result {
-    OK,
-    CANCEL
-  };
+  enum Result { OK, CANCEL };
 
   // ResultCallback will be invoked with Result::Cancel if the user closes the
   // MessageBox without clicking on any buttons.
@@ -33,14 +34,18 @@ class MessageBox {
              const std::u16string& ok_label,
              const std::u16string& cancel_label,
              ResultCallback result_callback);
+
+  MessageBox(const MessageBox&) = delete;
+  MessageBox& operator=(const MessageBox&) = delete;
+
   ~MessageBox();
+
+  void Show();
 
  private:
   class Core;
   Core* core_;
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageBox);
 };
 
 }  // namespace remoting

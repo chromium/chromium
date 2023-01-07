@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_UKM_AGGREGATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_UKM_AGGREGATOR_H_
 
+#include "base/time/time.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
@@ -27,7 +28,7 @@ namespace blink {
 
 enum class DocumentUpdateReason;
 
-// This class aggregaties and records time based UKM and UMA metrics
+// This class aggregates and records time based UKM and UMA metrics
 // for LocalFrameView. The simplest way to use it is via the
 // SCOPED_UMA_AND_UKM_TIMER macro combined with
 // LocalFrameView::RecordEndOfFrameMetrics.
@@ -110,7 +111,7 @@ enum class DocumentUpdateReason;
 // }
 //
 // |ukm_enum| should be an entry in LocalFrameUkmAggregator's enum of
-// metric names (which in turn corresponds to names in from ukm.xml).
+// metric names (which in turn corresponds to names from ukm.xml).
 #define SCOPED_UMA_AND_UKM_TIMER(aggregator, ukm_enum) \
   auto scoped_ukm_hierarchical_timer =                 \
       aggregator.GetScopedTimer(static_cast<size_t>(ukm_enum));
@@ -122,11 +123,12 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // below. For every metric name added here, add an entry in the array in
   // metrics_data() below.
   enum MetricId {
-    kCompositingAssignments,
     kCompositingCommit,
     kCompositingInputs,
     kImplCompositorCommit,
     kIntersectionObservation,
+    kIntersectionObservationInternalCount,
+    kIntersectionObservationJavascriptCount,
     kPaint,
     kPrePaint,
     kStyle,
@@ -139,6 +141,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kJavascriptIntersectionObserver,
     kLazyLoadIntersectionObserver,
     kMediaIntersectionObserver,
+    kAnchorElementMetricsIntersectionObserver,
     kUpdateViewportIntersection,
     kForcedStyleAndLayout,
     kContentDocumentUpdate,
@@ -147,9 +150,15 @@ class CORE_EXPORT LocalFrameUkmAggregator
     kScrollDocumentUpdate,
     kServiceDocumentUpdate,
     kUserDrivenDocumentUpdate,
+    kParseStyleSheet,
+    kAccessibility,
     kCount,
     kMainFrame
   };
+
+  // For metrics that require it, this converts the input value to use
+  // exponential bucketing.
+  static int64_t ApplyBucketIfNecessary(int64_t value, unsigned metric_id);
 
   typedef struct MetricInitializationData {
     const char* const name;
@@ -158,6 +167,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
 
  private:
   friend class LocalFrameUkmAggregatorTest;
+  friend class LocalFrameUkmAggregatorSimTest;
 
   // Primary metric name
   static const char* primary_metric_name() { return "MainFrame"; }
@@ -165,11 +175,12 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // Add an entry in this array every time a new metric is added.
   static base::span<const MetricInitializationData> metrics_data() {
     static const MetricInitializationData data[] = {
-        {"CompositingAssignments", true},
         {"CompositingCommit", true},
         {"CompositingInputs", true},
         {"ImplCompositorCommit", true},
         {"IntersectionObservation", true},
+        {"IntersectionObservationInternalCount", true},
+        {"IntersectionObservationJavascriptCount", true},
         {"Paint", true},
         {"PrePaint", true},
         {"Style", true},
@@ -182,6 +193,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
         {"JavascriptIntersectionObserver", true},
         {"LazyLoadIntersectionObserver", true},
         {"MediaIntersectionObserver", true},
+        {"AnchorElementMetricsIntersectionObserver", true},
         {"UpdateViewportIntersection", true},
         {"ForcedStyleAndLayout", true},
         {"ContentDocumentUpdate", true},
@@ -189,8 +201,10 @@ class CORE_EXPORT LocalFrameUkmAggregator
         {"JavascriptDocumentUpdate", true},
         {"ScrollDocumentUpdate", true},
         {"ServiceDocumentUpdate", true},
-        {"UserDrivenDocumentUpdate", true}};
-    static_assert(base::size(data) == kCount, "Metrics data mismatch");
+        {"UserDrivenDocumentUpdate", true},
+        {"ParseStyleSheet", true},
+        {"Accessibility", true}};
+    static_assert(std::size(data) == kCount, "Metrics data mismatch");
     return data;
   }
 
@@ -204,6 +218,9 @@ class CORE_EXPORT LocalFrameUkmAggregator
 
    public:
     ScopedUkmHierarchicalTimer(ScopedUkmHierarchicalTimer&&);
+    ScopedUkmHierarchicalTimer(const ScopedUkmHierarchicalTimer&) = delete;
+    ScopedUkmHierarchicalTimer& operator=(const ScopedUkmHierarchicalTimer&) =
+        delete;
     ~ScopedUkmHierarchicalTimer();
 
    private:
@@ -217,12 +234,40 @@ class CORE_EXPORT LocalFrameUkmAggregator
     const size_t metric_index_;
     const base::TickClock* clock_;
     const base::TimeTicks start_time_;
+  };
 
-    DISALLOW_COPY_AND_ASSIGN(ScopedUkmHierarchicalTimer);
+  // This is an optimization for the case where we would otherwise instantiate a
+  // ScopedUkmHierarchicalTimer in the body of a loop. On some platforms,
+  // TickClock::NowTicks() is weirdly expensive. Compared to
+  // ScopedUkmHierarchicalTimer, this class makes fewer calls to NowTicks() by
+  // reusing a single timestamp as the end of one measurement and the beginning
+  // of the next.
+  class CORE_EXPORT IterativeTimer {
+    STACK_ALLOCATED();
+
+   public:
+    IterativeTimer(LocalFrameUkmAggregator&);
+    ~IterativeTimer();
+    // Start a time interval measurement for the given metric, completing the
+    // prior interval measurement if necessary.
+    void StartInterval(int64_t metric_index);
+
+   private:
+    void Record(bool should_record_prev_metric, bool should_record_next_metric);
+    scoped_refptr<LocalFrameUkmAggregator> aggregator_;
+    base::TimeTicks start_time_;
+    int64_t metric_index_ = -1;
   };
 
   LocalFrameUkmAggregator(int64_t source_id, ukm::UkmRecorder*);
+  LocalFrameUkmAggregator(const LocalFrameUkmAggregator&) = delete;
+  LocalFrameUkmAggregator& operator=(const LocalFrameUkmAggregator&) = delete;
   ~LocalFrameUkmAggregator();
+
+  const base::TickClock* GetClock() const { return clock_; }
+
+  // For performance reasons, we don't record all metrics for all frames.
+  bool ShouldMeasureMetric(int64_t metric_id) const;
 
   // Create a scoped timer with the index of the metric. Note the index must
   // correspond to the matching index in metric_names.
@@ -240,9 +285,12 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // Record a sample for a sub-metric. This should only be used when
   // a ScopedUkmHierarchicalTimer cannot be used (such as when the timed
   // interval does not fall inside a single calling function).
-  void RecordSample(size_t metric_index,
-                    base::TimeTicks start,
-                    base::TimeTicks end);
+  void RecordTimerSample(size_t metric_index,
+                         base::TimeTicks start,
+                         base::TimeTicks end);
+
+  // Record a sample for a count-based sub-metric.
+  void RecordCountSample(size_t metric_index, int64_t count);
 
   // Record a ForcedLayout sample. The reason will determine which, if any,
   // additional metrics are reported in order to diagnose the cause of
@@ -265,9 +313,8 @@ class CORE_EXPORT LocalFrameUkmAggregator
 
   // Inform the aggregator that we have reached First Contentful Paint.
   // The UKM event for the pre-FCP period will be recorded and UMA for
-  // aggregated contributions to FCP are reported if are_painting_main_frame
-  // is true.
-  void DidReachFirstContentfulPaint(bool are_painting_main_frame);
+  // aggregated contributions to FCP are reported.
+  void DidReachFirstContentfulPaint();
 
   bool InMainFrameUpdate() { return in_main_frame_update_; }
 
@@ -277,6 +324,12 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // RecordEndOfFrameMetrics.
   std::unique_ptr<cc::BeginMainFrameMetrics> GetBeginMainFrameMetrics();
 
+  bool IsBeforeFCPForTesting() const;
+
+  void SetIntersectionObserverSamplePeriod(size_t period) {
+    intersection_observer_sample_period_ = period;
+  }
+
  private:
   struct AbsoluteMetricRecord {
     std::unique_ptr<CustomCountHistogram> pre_fcp_uma_counter;
@@ -285,22 +338,22 @@ class CORE_EXPORT LocalFrameUkmAggregator
 
     // Accumulated at each sample, then reset with a call to
     // RecordEndOfFrameMetrics.
-    base::TimeDelta interval_duration;
+    int64_t interval_count = 0;
 
     // Accumulated at each sample when within a BeginMainFrame,
     // reset with a call to RecordEndOfFrameMetrics.
-    base::TimeDelta main_frame_duration;
+    int64_t main_frame_count = 0;
 
     // Accumulated at each sample up to the time of First Contentful Paint.
-    base::TimeDelta pre_fcp_aggregate;
+    int64_t pre_fcp_aggregate = 0;
 
     void reset();
   };
 
   struct SampleToRecord {
-    base::TimeDelta primary_metric_duration;
-    std::array<base::TimeDelta, kCount> sub_metrics_durations;
-    std::array<base::TimeDelta, kCount> sub_main_frame_durations;
+    int64_t primary_metric_count;
+    std::array<int64_t, kCount> sub_metrics_counts;
+    std::array<int64_t, kCount> sub_main_frame_counts;
     cc::ActiveFrameSequenceTrackers trackers;
   };
 
@@ -322,9 +375,6 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // on the next frame, or do not. Values persist until explicitly changed.
   void ChooseNextFrameForTest();
   void DoNotChooseNextFrameForTest();
-
-  // Used to check that we record only for the MainFrame of a document.
-  bool AllMetricsAreZero();
 
   // The caller is the owner of the |clock|. The |clock| must outlive the
   // LocalFrameUkmAggregator.
@@ -371,7 +421,12 @@ class CORE_EXPORT LocalFrameUkmAggregator
   };
   SampleControlForTest next_frame_sample_control_for_test_ = kNoPreference;
 
-  DISALLOW_COPY_AND_ASSIGN(LocalFrameUkmAggregator);
+  // When they are collected, the overhead of granular IntersectionObserver
+  // metrics is a large part of overall LocalFrameUkmAggregator overhead. The
+  // granular metrics are useful for pinpointing regressions, but we can get
+  // most of the benefit even if we downsample them. This value controls how
+  // frequently we collect granular IntersectionObserver metrics.
+  size_t intersection_observer_sample_period_ = 1;
 };
 
 }  // namespace blink

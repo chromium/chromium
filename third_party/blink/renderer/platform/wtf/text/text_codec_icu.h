@@ -30,7 +30,6 @@
 #include <unicode/utypes.h>
 #include <memory>
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 
@@ -95,11 +94,11 @@ struct ICUConverterWrapper {
 
  public:
   ICUConverterWrapper() : converter(nullptr) {}
+  ICUConverterWrapper(const ICUConverterWrapper&) = delete;
+  ICUConverterWrapper& operator=(const ICUConverterWrapper&) = delete;
   ~ICUConverterWrapper();
 
   UConverter* converter;
-
-  DISALLOW_COPY_AND_ASSIGN(ICUConverterWrapper);
 };
 
 }  // namespace WTF

@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Wasm function throws argument promise_test: Unhandled rejection with value: object "CompileError: WebAssembly.instantiate(): invalid value type 'externref', enable with --experimental-wasm-reftypes @+13"
+FAIL Wasm function throws null promise_test: Unhandled rejection with value: object "CompileError: WebAssembly.instantiate(): invalid value type 'funcref', enable with --experimental-wasm-reftypes @+13"
+FAIL Wasm function throws integer assert_true: Error should be a WebAssembly.Exception with undefined expected true got false
+FAIL Imported JS function throws promise_test: Unhandled rejection with value: object "CompileError: WebAssembly.instantiate(): invalid value type 'externref', enable with --experimental-wasm-reftypes @+16"
+FAIL Imported JS function throws, Wasm catches and rethrows promise_test: Unhandled rejection with value: object "CompileError: WebAssembly.instantiate(): invalid value type 'externref', enable with --experimental-wasm-reftypes @+17"
+Harness: the test ran to completion.
+

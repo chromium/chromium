@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "chromecast/base/bind_to_task_runner.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "chromecast/public/cast_media_shlib.h"
@@ -117,7 +117,7 @@ void LeScanManagerImpl::RequestScan(RequestScanCallback cb) {
 }
 
 void LeScanManagerImpl::GetScanResults(GetScanResultsCallback cb,
-                                       base::Optional<ScanFilter> scan_filter) {
+                                       absl::optional<ScanFilter> scan_filter) {
   MAKE_SURE_IO_THREAD(GetScanResults, BindToCurrentSequence(std::move(cb)),
                       std::move(scan_filter));
   std::move(cb).Run(GetScanResultsInternal(std::move(scan_filter)));
@@ -224,7 +224,7 @@ void LeScanManagerImpl::OnScanResult(
 
 // Returns a list of all scan results. The results are sorted by RSSI.
 std::vector<LeScanResult> LeScanManagerImpl::GetScanResultsInternal(
-    base::Optional<ScanFilter> scan_filter) {
+    absl::optional<ScanFilter> scan_filter) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   std::vector<LeScanResult> results;
   for (const auto& pair : addr_to_scan_results_) {

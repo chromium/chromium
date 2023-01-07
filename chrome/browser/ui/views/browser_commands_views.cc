@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "ui/wm/public/activation_client.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/platform_util.h"
 #endif
 
@@ -30,7 +30,7 @@ views::View* GetActiveWindowRootView(const Browser* browser) {
   if (!client)
     return nullptr;
   gfx::NativeWindow active_window = client->GetActiveWindow();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   NSWindow* active_window = platform_util::GetActiveWindow();
   if (!active_window)
     return nullptr;
@@ -44,11 +44,11 @@ views::View* GetActiveWindowRootView(const Browser* browser) {
 
 namespace chrome {
 
-base::Optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
+absl::optional<int> GetKeyboardFocusedTabIndex(const Browser* browser) {
   BrowserView* view = BrowserView::GetBrowserViewForBrowser(browser);
   if (view && view->tabstrip())
     return view->tabstrip()->GetFocusedTabIndex();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void ExecuteUIDebugCommand(int id, const Browser* browser) {

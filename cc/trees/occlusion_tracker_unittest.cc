@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,6 @@
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_layer_tree_host.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
-#include "cc/test/geometry_test_utils.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/property_tree_test_utils.h"
 #include "cc/test/test_occlusion_tracker.h"
@@ -31,7 +30,7 @@
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace cc {
 namespace {
@@ -208,7 +207,7 @@ class OcclusionTrackerTest : public testing::Test {
     effect_node->render_surface_reason = RenderSurfaceReason::kCopyRequest;
     effect_node->has_copy_request = true;
     effect_node->closest_ancestor_with_copy_request_id = effect_node->id;
-    auto& effect_tree = GetPropertyTrees(layer)->effect_tree;
+    auto& effect_tree = GetPropertyTrees(layer)->effect_tree_mutable();
     effect_tree.AddCopyRequest(effect_node->id,
                                viz::CopyOutputRequest::CreateStubForTesting());
     // TODO(wangxianzhu): Let EffectTree::UpdateEffects() handle this.
@@ -1424,16 +1423,16 @@ class OcclusionTrackerTestDontOccludePixelsNeededForBackdropFilter
       gfx::Rect expected_occlusion = occlusion_rect;
       switch (i) {
         case LEFT:
-          expected_occlusion.Inset(0, 0, 30, 0);
+          expected_occlusion.Inset(gfx::Insets::TLBR(0, 0, 0, 30));
           break;
         case RIGHT:
-          expected_occlusion.Inset(30, 0, 0, 0);
+          expected_occlusion.Inset(gfx::Insets::TLBR(0, 30, 0, 0));
           break;
         case TOP:
-          expected_occlusion.Inset(0, 0, 0, 30);
+          expected_occlusion.Inset(gfx::Insets::TLBR(0, 0, 30, 0));
           break;
         case BOTTOM:
-          expected_occlusion.Inset(0, 30, 0, 0);
+          expected_occlusion.Inset(gfx::Insets::TLBR(30, 0, 0, 0));
           break;
       }
 
@@ -1460,8 +1459,8 @@ class OcclusionTrackerTestPixelsNeededForDropShadowBackdropFilter
     scale_by_half.Scale(0.5, 0.5);
 
     FilterOperations filters;
-    filters.Append(FilterOperation::CreateDropShadowFilter(gfx::Point(10, 10),
-                                                           5, SK_ColorBLACK));
+    filters.Append(FilterOperation::CreateDropShadowFilter(
+        gfx::Point(10, 10), 5, SkColors::kBlack));
 
     enum Direction {
       LEFT,

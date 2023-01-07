@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/graphics/filters/fe_flood.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -38,8 +38,10 @@ bool SVGFEFloodElement::SetFilterEffectAttribute(
 
   FEFlood* flood = static_cast<FEFlood*>(effect);
   if (attr_name == svg_names::kFloodColorAttr) {
+    // TODO(crbug.com/1308932): ComputedStyle::VisitedDependentColor to
+    // SkColor4f
     return flood->SetFloodColor(
-        style.VisitedDependentColor(GetCSSPropertyFloodColor()));
+        style.VisitedDependentColor(GetCSSPropertyFloodColor()).toSkColor4f());
   }
   if (attr_name == svg_names::kFloodOpacityAttr)
     return flood->SetFloodOpacity(style.FloodOpacity());
@@ -53,7 +55,9 @@ FilterEffect* SVGFEFloodElement::Build(SVGFilterBuilder*, Filter* filter) {
   if (!style)
     return nullptr;
 
-  Color color = style->VisitedDependentColor(GetCSSPropertyFloodColor());
+  // TODO(crbug.com/1308932): ComputedStyle::VisitedDependentColor to SkColor4f
+  SkColor4f color =
+      style->VisitedDependentColor(GetCSSPropertyFloodColor()).toSkColor4f();
   float opacity = style->FloodOpacity();
 
   return MakeGarbageCollected<FEFlood>(filter, color, opacity);

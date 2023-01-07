@@ -1,21 +1,19 @@
 template <typename UnionPtrType>
 {{union.name}}Ptr {{union.name}}::Clone() const {
-  // Use UnionPtrType to prevent the compiler from trying to compile this
-  // without being asked.
-  UnionPtrType rv(New());
   switch (tag_) {
 {%- for field in union.fields %}
-    case Tag::{{field.name|upper}}:
+    case Tag::k{{field.name|under_to_camel}}:
 {%-   if field.kind|is_object_kind or
          field.kind|is_any_handle_or_interface_kind %}
-      rv->set_{{field.name}}(mojo::Clone(*data_.{{field.name}}));
+      return New{{field.name|under_to_camel}}(
+          mojo::Clone(*data_.{{field.name}}));
 {%-   else %}
-      rv->set_{{field.name}}(mojo::Clone(data_.{{field.name}}));
+      return New{{field.name|under_to_camel}}(
+          mojo::Clone(data_.{{field.name}}));
 {%-   endif %}
-      break;
 {%- endfor %}
   }
-  return rv;
+  return nullptr;
 }
 
 template <typename T,
@@ -27,7 +25,7 @@ bool {{union.name}}::Equals(const T& other) const {
 
   switch (tag_) {
 {%- for field in union.fields %}
-    case Tag::{{field.name|upper}}:
+    case Tag::k{{field.name|under_to_camel}}:
 {%-   if field.kind|is_object_kind or
          field.kind|is_any_handle_or_interface_kind %}
       return mojo::Equals(*(data_.{{field.name}}), *(other.data_.{{field.name}}));

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #import "base/mac/foundation_util.h"
 #include "base/native_library.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "ui/gfx/animation/tween.h"
 
 // The window animations in this file use private APIs as described here:
@@ -96,7 +95,7 @@ NSPoint GetCGSWindowScreenOrigin(NSWindow* window) {
 // Set the transparency of the window.
 void SetWindowAlpha(NSWindow* window, float alpha) {
   CGSConnection cid = _CGSDefaultConnection();
-  CGSSetWindowAlpha(cid, [window windowNumber], alpha);
+  CGSSetWindowAlpha(cid, static_cast<CGSWindow>([window windowNumber]), alpha);
 }
 
 // Scales the window and translates it so that it stays centered relative
@@ -118,7 +117,8 @@ void SetWindowScale(NSWindow* window, float scale) {
   transform = CGAffineTransformTranslate(transform, new_x, new_y);
 
   CGSConnection cid = _CGSDefaultConnection();
-  CGSSetWindowTransform(cid, [window windowNumber], transform);
+  CGSSetWindowTransform(cid, static_cast<CGSWindow>([window windowNumber]),
+                        transform);
 }
 
 // Unsets any window warp that may have been previously applied.
@@ -126,7 +126,8 @@ void SetWindowScale(NSWindow* window, float scale) {
 // being applied.
 void ClearWindowWarp(NSWindow* window) {
   CGSConnection cid = _CGSDefaultConnection();
-  CGSSetWindowWarp(cid, [window windowNumber], 0, 0, NULL);
+  CGSSetWindowWarp(cid, static_cast<CGSWindow>([window windowNumber]), 0, 0,
+                   NULL);
 }
 
 // Applies various transformations using a warp effect. The window is
@@ -153,27 +154,38 @@ void SetWindowWarp(NSWindow* window,
   // coordinates. Note that the origin of the coordinate system is top, left.
   CGPointWarp mesh[2][2] = {
       {{
-        // Top left.
-        {NSMinX(win_rect), NSMinY(win_rect)},
-        {NSMinX(screen_rect) + perspective_offset, NSMinY(screen_rect)},
+           // Top left.
+           {static_cast<float>(NSMinX(win_rect)),
+            static_cast<float>(NSMinY(win_rect))},
+           {static_cast<float>(NSMinX(screen_rect) + perspective_offset),
+            static_cast<float>(NSMinY(screen_rect))},
        },
        {
-        // Top right.
-        {NSMaxX(win_rect), NSMinY(win_rect)},
-        {NSMaxX(screen_rect) - perspective_offset, NSMinY(screen_rect)}, }},
+           // Top right.
+           {static_cast<float>(NSMaxX(win_rect)),
+            static_cast<float>(NSMinY(win_rect))},
+           {static_cast<float>(NSMaxX(screen_rect) - perspective_offset),
+            static_cast<float>(NSMinY(screen_rect))},
+       }},
       {{
-        // Bottom left.
-        {NSMinX(win_rect), NSMaxY(win_rect)},
-        {NSMinX(screen_rect), NSMaxY(screen_rect)},
+           // Bottom left.
+           {static_cast<float>(NSMinX(win_rect)),
+            static_cast<float>(NSMaxY(win_rect))},
+           {static_cast<float>(NSMinX(screen_rect)),
+            static_cast<float>(NSMaxY(screen_rect))},
        },
        {
-        // Bottom right.
-        {NSMaxX(win_rect), NSMaxY(win_rect)},
-        {NSMaxX(screen_rect), NSMaxY(screen_rect)}, }},
+           // Bottom right.
+           {static_cast<float>(NSMaxX(win_rect)),
+            static_cast<float>(NSMaxY(win_rect))},
+           {static_cast<float>(NSMaxX(screen_rect)),
+            static_cast<float>(NSMaxY(screen_rect))},
+       }},
   };
 
   CGSConnection cid = _CGSDefaultConnection();
-  CGSSetWindowWarp(cid, [window windowNumber], 2, 2, &(mesh[0][0]));
+  CGSSetWindowWarp(cid, static_cast<CGSWindow>([window windowNumber]), 2, 2,
+                   &(mesh[0][0]));
 }
 
 // Sets the various effects that are a part of the Show/Hide animation.
@@ -328,7 +340,7 @@ bool AreWindowServerEffectsDisabled() {
   };
 
   CGFloat scale = 1;
-  for (int i = base::size(frames) - 1; i >= 0; --i) {
+  for (int i = std::size(frames) - 1; i >= 0; --i) {
     if (value >= frames[i].value) {
       CGFloat delta = frames[i + 1].value - frames[i].value;
       CGFloat frame_progress = (value - frames[i].value) / delta;

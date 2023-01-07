@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -92,11 +93,12 @@ public class NativePageFactoryTest {
 
     private static class MockNativePageBuilder extends NativePageFactory.NativePageBuilder {
         private MockNativePageBuilder() {
-            super(null, null, null);
+            super(null, null, null, null, null, null, null, null, null, null,
+                    new DummyJankTracker(), null, null);
         }
 
         @Override
-        public NativePage buildNewTabPage(Tab tab) {
+        public NativePage buildNewTabPage(Tab tab, String url) {
             return new MockNativePage(NativePageType.NTP);
         }
 
@@ -111,14 +113,15 @@ public class NativePageFactoryTest {
         }
 
         @Override
-        public NativePage buildHistoryPage(Tab tab) {
+        public NativePage buildHistoryPage(Tab tab, String url) {
             return new MockNativePage(NativePageType.HISTORY);
         }
     }
 
     @Before
     public void setUp() {
-        mNativePageFactory = new NativePageFactory(null, null);
+        mNativePageFactory = new NativePageFactory(null, null, null, null, null, null, null, null,
+                null, null, null, new DummyJankTracker(), null, null);
         mNativePageFactory.setNativePageBuilderForTesting(new MockNativePageBuilder());
     }
 

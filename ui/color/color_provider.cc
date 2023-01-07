@@ -1,77 +1,111 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/color/color_provider.h"
 
+#include <map>
+#include <set>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/logging.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider_utils.h"
+#include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ui {
 
 ColorProvider::ColorProvider() = default;
 
+ColorProvider::ColorProvider(ColorProvider&&) = default;
+
+ColorProvider& ColorProvider::operator=(ColorProvider&&) = default;
+
 ColorProvider::~ColorProvider() = default;
 
 ColorMixer& ColorProvider::AddMixer() {
-  // Adding a mixer could change any of the result colors.
-  cache_.clear();
+  DCHECK(!color_map_);
 
-  mixers_.emplace_after(first_postprocessing_mixer_,
-                        GetLastNonPostprocessingMixer(),
-                        base::BindRepeating(
-                            [](const ColorProvider* provider) {
-                              return provider->GetLastNonPostprocessingMixer();
-                            },
-                            base::Unretained(this)));
+  mixers_.emplace_after(
+      first_postprocessing_mixer_,
+      base::BindRepeating([](const ColorMixer* mixer) { return mixer; },
+                          GetLastNonPostprocessingMixer()),
+      base::BindRepeating(&ColorProvider::GetLastNonPostprocessingMixer,
+                          base::Unretained(this)));
+
   return *std::next(first_postprocessing_mixer_, 1);
 }
 
 ColorMixer& ColorProvider::AddPostprocessingMixer() {
-  // Adding a mixer could change any of the result colors.
-  cache_.clear();
+  DCHECK(!color_map_);
 
   if (first_postprocessing_mixer_ == mixers_.before_begin()) {
-    mixers_.emplace_front(
-        mixers_.empty() ? nullptr : &mixers_.front(),
-        base::BindRepeating(
-            [](const ColorProvider* provider) {
-              return provider->GetLastNonPostprocessingMixer();
-            },
-            base::Unretained(this)));
+    // The first postprocessing mixer points to the last regular mixer.
+    auto previous_mixer_getter = base::BindRepeating(
+        &ColorProvider::GetLastNonPostprocessingMixer, base::Unretained(this));
+    mixers_.emplace_front(previous_mixer_getter, previous_mixer_getter);
     first_postprocessing_mixer_ = mixers_.begin();
   } else {
-    mixers_.emplace_front(
-        &mixers_.front(),
+    // Other postprocessing mixers point to the next postprocessing mixer.
+    auto previous_mixer_getter =
         base::BindRepeating([](const ColorMixer* mixer) { return mixer; },
-                            base::Unretained(&mixers_.front())));
+                            base::Unretained(&mixers_.front()));
+    mixers_.emplace_front(previous_mixer_getter, previous_mixer_getter);
   }
   return mixers_.front();
 }
 
 SkColor ColorProvider::GetColor(ColorId id) const {
-  DCHECK_COLOR_ID_VALID(id);
+  CHECK(color_map_);
+  auto i = color_map_->find(id);
+  return i == color_map_->end() ? gfx::kPlaceholderColor : i->second;
+}
 
-  if (mixers_.empty()) {
-    DVLOG(2) << "ColorProvider::GetColor: No mixers defined!";
-    return gfx::kPlaceholderColor;
+void ColorProvider::GenerateColorMap() {
+  // This should only be called to generate the `color_map_` once.
+  DCHECK(!color_map_);
+
+  if (mixers_.empty())
+    DVLOG(2) << "ColorProvider::GenerateColorMap: No mixers defined!";
+
+  // Iterate over associated mixers and extract the ColorIds defined for this
+  // provider.
+  std::set<ColorId> color_ids;
+  for (const auto& mixer : mixers_) {
+    const auto mixer_color_ids = mixer.GetDefinedColorIds();
+    color_ids.insert(mixer_color_ids.begin(), mixer_color_ids.end());
   }
 
-  // Only compute the result color when it's not already in the cache.
-  auto i = cache_.find(id);
-  if (i == cache_.end()) {
-    DVLOG(2) << "ColorProvider::GetColor: Computing color for ColorId: "
-             << ColorIdName(id);
-    i = cache_.insert({id, mixers_.front().GetResultColor(id)}).first;
+  // Iterate through all defined ColorIds and seed the `color_map` with the
+  // computed values. Use a std::map rather than a base::flat_map since it has
+  // frequent inserts and could grow very large.
+  std::map<ColorId, SkColor> color_map;
+  for (const auto& color_id : color_ids) {
+    SkColor resulting_color = mixers_.front().GetResultColor(color_id);
+    DVLOG(2) << "GenerateColorMap:"
+             << " Color Id: " << ColorIdName(color_id)
+             << " Resulting Color: " << SkColorName(resulting_color);
+    color_map.insert({color_id, resulting_color});
   }
 
-  DVLOG(2) << "ColorProvider::GetColor: ColorId: " << ColorIdName(id)
-           << " Value: " << SkColorName(i->second);
-  return i->second;
+  // Construct the color_map_.
+  color_map_ = ColorMap(color_map.begin(), color_map.end());
+
+  // Clear away all associated mixers as these are no longer needed.
+  mixers_.clear();
+  first_postprocessing_mixer_ = mixers_.before_begin();
+}
+
+void ColorProvider::SetColorForTesting(ColorId id, SkColor color) {
+  if (color_map_) {
+    (*color_map_)[id] = color;
+  } else {
+    if (mixers_.empty())
+      AddMixer();
+    (*std::next(first_postprocessing_mixer_, 1))[id] = {color};
+  }
 }
 
 const ColorMixer* ColorProvider::GetLastNonPostprocessingMixer() const {

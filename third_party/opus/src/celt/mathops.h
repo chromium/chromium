@@ -153,7 +153,7 @@ static OPUS_INLINE float celt_exp2(float x)
       float f;
       opus_uint32 i;
    } res;
-   integer = floor(x);
+   integer = (int)floor(x);
    if (integer < -50)
       return 0;
    frac = x-integer;

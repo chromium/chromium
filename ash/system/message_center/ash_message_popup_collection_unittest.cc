@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,18 +16,27 @@
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/status_area_widget.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/message_center/public/cpp/notification_delegate.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 #include "ui/message_center/views/message_popup_collection.h"
 #include "ui/message_center/views/message_popup_view.h"
+#include "ui/message_center/views/message_view.h"
+#include "ui/message_center/views/notification_view_base.h"
+#include "ui/views/controls/button/label_button.h"
 
 namespace ash {
 namespace {
@@ -65,12 +74,22 @@ class TestMessagePopupCollection : public AshMessagePopupCollection {
 
 }  // namespace
 
-class AshMessagePopupCollectionTest : public AshTestBase {
+class AshMessagePopupCollectionTest : public AshTestBase,
+                                      public testing::WithParamInterface<bool> {
  public:
   AshMessagePopupCollectionTest() = default;
+
+  AshMessagePopupCollectionTest(const AshMessagePopupCollectionTest&) = delete;
+  AshMessagePopupCollectionTest& operator=(
+      const AshMessagePopupCollectionTest&) = delete;
+
   ~AshMessagePopupCollectionTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
+                                               IsNotificationsRefreshEnabled());
+
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         keyboard::switches::kEnableVirtualKeyboard);
     AshTestBase::SetUp();
@@ -82,6 +101,8 @@ class AshMessagePopupCollectionTest : public AshTestBase {
     popup_collection_.reset();
     AshTestBase::TearDown();
   }
+
+  bool IsNotificationsRefreshEnabled() const { return GetParam(); }
 
  protected:
   enum Position { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, OUTSIDE };
@@ -107,6 +128,10 @@ class AshMessagePopupCollectionTest : public AshTestBase {
                    display::Screen::GetScreen()->GetPrimaryDisplay());
   }
 
+  message_center::MessagePopupView* GetLastPopUpAdded() {
+    return popup_collection()->last_pop_up_added_;
+  }
+
   Position GetPositionInDisplay(const gfx::Point& point) {
     const gfx::Rect work_area =
         display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
@@ -127,10 +152,10 @@ class AshMessagePopupCollectionTest : public AshTestBase {
   std::unique_ptr<message_center::Notification> CreateNotification(
       const std::string& id) {
     return std::make_unique<message_center::Notification>(
-        message_center::NOTIFICATION_TYPE_BASE_FORMAT, id, u"test_title",
-        u"test message", gfx::Image(), std::u16string() /* display_source */,
-        GURL(), message_center::NotifierId(),
-        message_center::RichNotificationData(),
+        message_center::NOTIFICATION_TYPE_SIMPLE, id, u"test_title",
+        u"test message", ui::ImageModel(),
+        std::u16string() /* display_source */, GURL(),
+        message_center::NotifierId(), message_center::RichNotificationData(),
         new message_center::NotificationDelegate());
   }
 
@@ -144,13 +169,16 @@ class AshMessagePopupCollectionTest : public AshTestBase {
  private:
   int notification_id_ = 0;
   std::unique_ptr<AshMessagePopupCollection> popup_collection_;
-
-  DISALLOW_COPY_AND_ASSIGN(AshMessagePopupCollectionTest);
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-TEST_F(AshMessagePopupCollectionTest, ShelfAlignment) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         AshMessagePopupCollectionTest,
+                         testing::Bool() /* IsNotificationsRefreshEnabled() */);
+
+TEST_P(AshMessagePopupCollectionTest, ShelfAlignment) {
   const gfx::Rect toast_size(0, 0, 10, 10);
-  UpdateDisplay("600x600");
+  UpdateDisplay("601x600");
   gfx::Point toast_point;
   toast_point.set_x(popup_collection()->GetToastOriginX(toast_size));
   toast_point.set_y(popup_collection()->GetBaseline());
@@ -173,7 +201,7 @@ TEST_F(AshMessagePopupCollectionTest, ShelfAlignment) {
   EXPECT_TRUE(popup_collection()->IsFromLeft());
 }
 
-TEST_F(AshMessagePopupCollectionTest, LockScreen) {
+TEST_P(AshMessagePopupCollectionTest, LockScreen) {
   const gfx::Rect toast_size(0, 0, 10, 10);
 
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
@@ -192,9 +220,9 @@ TEST_F(AshMessagePopupCollectionTest, LockScreen) {
   EXPECT_FALSE(popup_collection()->IsFromLeft());
 }
 
-TEST_F(AshMessagePopupCollectionTest, AutoHide) {
+TEST_P(AshMessagePopupCollectionTest, AutoHide) {
   const gfx::Rect toast_size(0, 0, 10, 10);
-  UpdateDisplay("600x600");
+  UpdateDisplay("601x600");
   int origin_x = popup_collection()->GetToastOriginX(toast_size);
   int baseline = popup_collection()->GetBaseline();
 
@@ -207,30 +235,30 @@ TEST_F(AshMessagePopupCollectionTest, AutoHide) {
   EXPECT_LT(baseline, popup_collection()->GetBaseline());
 }
 
-TEST_F(AshMessagePopupCollectionTest, DisplayResize) {
+TEST_P(AshMessagePopupCollectionTest, DisplayResize) {
   const gfx::Rect toast_size(0, 0, 10, 10);
-  UpdateDisplay("600x600");
+  UpdateDisplay("601x600");
   int origin_x = popup_collection()->GetToastOriginX(toast_size);
   int baseline = popup_collection()->GetBaseline();
 
-  UpdateDisplay("800x800");
+  UpdateDisplay("801x800");
   EXPECT_LT(origin_x, popup_collection()->GetToastOriginX(toast_size));
   EXPECT_LT(baseline, popup_collection()->GetBaseline());
 
-  UpdateDisplay("400x400");
+  UpdateDisplay("500x400");
   EXPECT_GT(origin_x, popup_collection()->GetToastOriginX(toast_size));
   EXPECT_GT(baseline, popup_collection()->GetBaseline());
 }
 
-TEST_F(AshMessagePopupCollectionTest, DockedMode) {
+TEST_P(AshMessagePopupCollectionTest, DockedMode) {
   const gfx::Rect toast_size(0, 0, 10, 10);
-  UpdateDisplay("600x600");
+  UpdateDisplay("601x600");
   int origin_x = popup_collection()->GetToastOriginX(toast_size);
   int baseline = popup_collection()->GetBaseline();
 
   // Emulate the docked mode; enter to an extended mode, then invoke
   // OnNativeDisplaysChanged() with the info for the secondary display only.
-  UpdateDisplay("600x600,800x800");
+  UpdateDisplay("601x600,801x800");
 
   std::vector<display::ManagedDisplayInfo> new_info;
   new_info.push_back(display_manager()->GetDisplayInfo(
@@ -241,9 +269,9 @@ TEST_F(AshMessagePopupCollectionTest, DockedMode) {
   EXPECT_LT(baseline, popup_collection()->GetBaseline());
 }
 
-TEST_F(AshMessagePopupCollectionTest, TrayHeight) {
+TEST_P(AshMessagePopupCollectionTest, TrayHeight) {
   const gfx::Rect toast_size(0, 0, 10, 10);
-  UpdateDisplay("600x600");
+  UpdateDisplay("601x600");
   int origin_x = popup_collection()->GetToastOriginX(toast_size);
   int baseline = popup_collection()->GetBaseline();
 
@@ -256,8 +284,8 @@ TEST_F(AshMessagePopupCollectionTest, TrayHeight) {
             popup_collection()->GetBaseline());
 }
 
-TEST_F(AshMessagePopupCollectionTest, Extended) {
-  UpdateDisplay("600x600,800x800");
+TEST_P(AshMessagePopupCollectionTest, Extended) {
+  UpdateDisplay("601x600,801x800");
   SetPopupCollection(
       std::make_unique<AshMessagePopupCollection>(GetPrimaryShelf()));
 
@@ -272,8 +300,8 @@ TEST_F(AshMessagePopupCollectionTest, Extended) {
   EXPECT_LT(700, for_2nd_display.GetBaseline());
 }
 
-TEST_F(AshMessagePopupCollectionTest, MixedFullscreenNone) {
-  UpdateDisplay("600x600,800x800");
+TEST_P(AshMessagePopupCollectionTest, MixedFullscreenNone) {
+  UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
   TestMessagePopupCollection collection1(shelf1);
   UpdateWorkArea(&collection1, GetPrimaryDisplay());
@@ -297,8 +325,8 @@ TEST_F(AshMessagePopupCollectionTest, MixedFullscreenNone) {
   EXPECT_TRUE(collection2.popup_shown());
 }
 
-TEST_F(AshMessagePopupCollectionTest, MixedFullscreenSome) {
-  UpdateDisplay("600x600,800x800");
+TEST_P(AshMessagePopupCollectionTest, MixedFullscreenSome) {
+  UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
   TestMessagePopupCollection collection1(shelf1);
   UpdateWorkArea(&collection1, GetPrimaryDisplay());
@@ -322,8 +350,8 @@ TEST_F(AshMessagePopupCollectionTest, MixedFullscreenSome) {
   EXPECT_TRUE(collection2.popup_shown());
 }
 
-TEST_F(AshMessagePopupCollectionTest, MixedFullscreenAll) {
-  UpdateDisplay("600x600,800x800");
+TEST_P(AshMessagePopupCollectionTest, MixedFullscreenAll) {
+  UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
   TestMessagePopupCollection collection1(shelf1);
   UpdateWorkArea(&collection1, GetPrimaryDisplay());
@@ -355,14 +383,14 @@ TEST_F(AshMessagePopupCollectionTest, MixedFullscreenAll) {
   EXPECT_TRUE(collection2.popup_shown());
 }
 
-TEST_F(AshMessagePopupCollectionTest, Unified) {
+TEST_P(AshMessagePopupCollectionTest, Unified) {
   display_manager()->SetUnifiedDesktopEnabled(true);
 
   // Reset the delegate as the primary display's shelf will be destroyed during
   // transition.
   SetPopupCollection(nullptr);
 
-  UpdateDisplay("600x600,800x800");
+  UpdateDisplay("601x600,801x800");
   SetPopupCollection(
       std::make_unique<AshMessagePopupCollection>(GetPrimaryShelf()));
 
@@ -371,16 +399,16 @@ TEST_F(AshMessagePopupCollectionTest, Unified) {
 
 // Tests that when the keyboard is showing that notifications appear above it,
 // and that they return to normal once the keyboard is gone.
-TEST_F(AshMessagePopupCollectionTest, KeyboardShowing) {
+TEST_P(AshMessagePopupCollectionTest, KeyboardShowing) {
   ASSERT_TRUE(keyboard::IsKeyboardEnabled());
   ASSERT_TRUE(
       keyboard::KeyboardUIController::Get()->IsKeyboardOverscrollEnabled());
 
-  UpdateDisplay("600x600");
+  UpdateDisplay("601x600");
   int baseline = popup_collection()->GetBaseline();
 
   Shelf* shelf = GetPrimaryShelf();
-  gfx::Rect keyboard_bounds(0, 300, 600, 300);
+  gfx::Rect keyboard_bounds(0, 300, 601, 300);
   shelf->SetVirtualKeyboardBoundsForTesting(keyboard_bounds);
   int keyboard_baseline = popup_collection()->GetBaseline();
   EXPECT_NE(baseline, keyboard_baseline);
@@ -392,7 +420,7 @@ TEST_F(AshMessagePopupCollectionTest, KeyboardShowing) {
 
 // Tests that notification bubble baseline is correct when entering and exiting
 // overview with a full screen window.
-TEST_F(AshMessagePopupCollectionTest, BaselineInOverview) {
+TEST_P(AshMessagePopupCollectionTest, BaselineInOverview) {
   UpdateDisplay("800x600");
 
   ASSERT_TRUE(GetPrimaryShelf()->IsHorizontalAlignment());
@@ -406,15 +434,106 @@ TEST_F(AshMessagePopupCollectionTest, BaselineInOverview) {
   EXPECT_NE(baseline_with_visible_shelf, baseline_with_hidden_shelf);
 
   auto* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   const int baseline_in_overview = popup_collection()->GetBaseline();
   EXPECT_EQ(baseline_in_overview, baseline_with_visible_shelf);
 
-  overview_controller->EndOverview();
+  ExitOverview();
   EXPECT_FALSE(overview_controller->InOverviewSession());
   const int baseline_no_overview = popup_collection()->GetBaseline();
   EXPECT_EQ(baseline_no_overview, baseline_with_hidden_shelf);
+}
+
+class NotificationDestructingNotificationDelegate
+    : public message_center::NotificationDelegate {
+ public:
+  NotificationDestructingNotificationDelegate() = default;
+  NotificationDestructingNotificationDelegate(
+      const NotificationDestructingNotificationDelegate&) = delete;
+  NotificationDestructingNotificationDelegate& operator=(
+      const NotificationDestructingNotificationDelegate&) = delete;
+
+ private:
+  ~NotificationDestructingNotificationDelegate() override = default;
+
+  // NotificationObserver:
+  void Click(const absl::optional<int>& button_index,
+             const absl::optional<std::u16string>& reply) override {
+    // Show the UnifiedSystemTrayBubble, which will force all popups to be
+    // destroyed.
+    Shell::Get()
+        ->GetPrimaryRootWindowController()
+        ->GetStatusAreaWidget()
+        ->unified_system_tray()
+        ->ShowBubble();
+  }
+};
+
+// Regression test for crbug/1316656. Tests that pressing a button resulting in
+// the notification popup getting destroyed does not crash.
+TEST_P(AshMessagePopupCollectionTest, PopupDestroyedDuringClick) {
+  // Create a Notification popup with 1 action button.
+  message_center::RichNotificationData notification_data;
+  std::u16string button_text = u"BUTTON_TEXT";
+  notification_data.buttons.emplace_back(button_text);
+
+  auto to_be_destroyed_notification(
+      std::make_unique<message_center::Notification>(
+          message_center::NOTIFICATION_TYPE_SIMPLE, "id1",
+          u"Test Web Notification", u"Notification message body.",
+          ui::ImageModel(), u"www.test.org", GURL(),
+          message_center::NotifierId(), notification_data,
+          new NotificationDestructingNotificationDelegate()));
+  message_center::MessageCenter::Get()->AddNotification(
+      std::move(to_be_destroyed_notification));
+  EXPECT_TRUE(GetLastPopUpAdded());
+
+  // Get the view for the button added earlier.
+  auto* message_view = GetLastPopUpAdded()->message_view();
+  auto* action_button =
+      message_view
+          ->GetViewByID(
+              message_center::NotificationViewBase::ViewId::kActionButtonsRow)
+          ->children()[0];
+  EXPECT_EQ(static_cast<views::LabelButton*>(action_button)->GetText(),
+            button_text);
+
+  // Click the action button.
+  // `NotificationDestructingNotificationDelegate::Click()` will destroy the
+  // popup during `NotificationViewBase::ActionButtonPressed()`. There should be
+  // no crash.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(
+      action_button->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+
+  EXPECT_FALSE(GetLastPopUpAdded());
+}
+
+// Tests that notification bubble baseline is correct when entering and exiting
+// tablet mode in a full screen window.
+TEST_P(AshMessagePopupCollectionTest, BaselineInTabletMode) {
+  UpdateDisplay("800x600");
+  ASSERT_TRUE(GetPrimaryShelf()->IsHorizontalAlignment());
+
+  // Baseline is higher than the top of the shelf in clamshell mode.
+  EXPECT_GT(GetPrimaryShelf()->GetShelfBoundsInScreen().y(),
+            popup_collection()->GetBaseline());
+
+  auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
+
+  // Baseline is higher than the top of the shelf after entering tablet mode.
+  tablet_mode_controller->SetEnabledForTest(true);
+  EXPECT_TRUE(tablet_mode_controller->InTabletMode());
+  EXPECT_GT(GetPrimaryShelf()->GetShelfBoundsInScreen().y(),
+            popup_collection()->GetBaseline());
+
+  // Baseline is higher than the top of the shelf after exiting tablet mode.
+  tablet_mode_controller->SetEnabledForTest(false);
+  EXPECT_FALSE(tablet_mode_controller->InTabletMode());
+  EXPECT_GT(GetPrimaryShelf()->GetShelfBoundsInScreen().y(),
+            popup_collection()->GetBaseline());
 }
 
 }  // namespace ash

@@ -13,6 +13,23 @@ MockRuntime.prototype.getMissingFrameCount = function() {
   return this.presentation_provider_.missing_frame_count_;
 };
 
+
+
+// Note that if getEnvironmentProvider hasn't finished running yet this will be
+// undefined. It's recommended that you allow a successful task to post first
+// before attempting to close.
+MockRuntime.prototype.closeEnvironmentIntegrationProvider = function() {
+  if (this.environmentProviderReceiver_) {
+    this.environmentProviderReceiver_.$.close();
+  }
+};
+
+MockRuntime.prototype.closeDataProvider = function() {
+  this.closeEnvironmentIntegrationProvider();
+  this.dataProviderReceiver_.$.close();
+  this.sessionOptions_ = null;
+};
+
 MockRuntime.prototype._injectAdditionalFrameData_preLightEstimation = MockRuntime.prototype._injectAdditionalFrameData;
 MockRuntime.prototype._injectAdditionalFrameData = function(options, frameData) {
   this._injectAdditionalFrameData_preLightEstimation(options, frameData);
@@ -41,6 +58,31 @@ MockRuntime.prototype._injectAdditionalFrameData = function(options, frameData) 
       },
     },
   };
+};
+
+MockRuntime.prototype.setMockAnchorDataIsNull = function(value) {
+  if (value && this.anchor_controllers_.size != 0) {
+    throw new InvalidStateError("Attempted to mock anchorsData to return null despite already having created anchors!");
+  }
+
+  this.mock_anchor_data_is_null_ = value;
+};
+
+MockRuntime.prototype._calculateAnchorInformation_preInternal = MockRuntime.prototype._calculateAnchorInformation;
+MockRuntime.prototype._calculateAnchorInformation = function(frameData) {
+  // Check if anchorsData should was mocked to be returning null.
+  // This should be only used in tests that do not actually attempt to create
+  // any anchors.
+  if (this.mock_anchor_data_is_null_) {
+    if (this.anchor_controllers_.size != 0) {
+      throw new InvalidStateError("Attempted to mock anchorsData to return null despite already having created anchors!");
+    }
+
+    frameData.anchorsData = null;
+    return;
+  }
+
+  return this._calculateAnchorInformation_preInternal(frameData);
 };
 
 ChromeXRTest.prototype.getService = function() {

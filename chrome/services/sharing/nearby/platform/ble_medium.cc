@@ -1,9 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/services/sharing/nearby/platform/ble_medium.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 
@@ -12,6 +13,9 @@ namespace nearby {
 namespace chrome {
 
 namespace {
+// Client name for logging in BLE scanning.
+constexpr char kScanClientName[] = "Nearby Connections";
+
 void LogStartAdvertisingResult(bool success) {
   base::UmaHistogramBoolean(
       "Nearby.Connections.Bluetooth.LEMedium.StartAdvertising.Result", success);
@@ -147,7 +151,8 @@ bool BleMedium::StartScanning(
     }
 
     mojo::PendingRemote<bluetooth::mojom::DiscoverySession> discovery_session;
-    success = adapter_->StartDiscoverySession(&discovery_session);
+    success =
+        adapter_->StartDiscoverySession(kScanClientName, &discovery_session);
 
     if (!success || !discovery_session.is_valid()) {
       adapter_observer_.reset();
@@ -284,10 +289,10 @@ void BleMedium::DeviceAdded(bluetooth::mojom::DeviceInfoPtr device) {
   // BlePeripherals are passed by reference to NearbyConnections, if a
   // BlePeripheral already exists with the given address, the reference should
   // not be invalidated, the update functions should be called instead.
-  std::string address = device->address;
-  auto* ble_peripheral = GetDiscoveredBlePeripheral(address);
-  if (ble_peripheral) {
-    ble_peripheral->UpdateDeviceInfo(std::move(device));
+  const std::string address = device->address;
+  auto* existing_ble_peripheral = GetDiscoveredBlePeripheral(address);
+  if (existing_ble_peripheral) {
+    existing_ble_peripheral->UpdateDeviceInfo(std::move(device));
   } else {
     discovered_ble_peripherals_map_.emplace(
         address,
@@ -309,8 +314,9 @@ void BleMedium::DeviceAdded(bluetooth::mojom::DeviceInfoPtr device) {
     if (it == discovered_peripheral_callbacks_map_.end())
       continue;
 
-    // Fetch |ble_peripheral| again because it might have since been invalidated
-    // while we were iterating through IDs.
+    // Fetch the BlePeripheral with the same `address` again because
+    // previously fetched pointers may have been invalidated while iterating
+    // through the IDs.
     auto* ble_peripheral = GetDiscoveredBlePeripheral(address);
     if (!ble_peripheral)
       continue;

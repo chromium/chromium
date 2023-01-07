@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -122,7 +122,7 @@ bool MediaHistoryOriginTable::RecalculateAggregateAudioVideoWatchTime(
   if (!CanAccessDatabase())
     return false;
 
-  base::Optional<int64_t> origin_id;
+  absl::optional<int64_t> origin_id;
   {
     // Get the ID for the origin.
     sql::Statement statement(DB()->GetCachedStatement(
@@ -176,7 +176,7 @@ std::vector<url::Origin> MediaHistoryOriginTable::GetHighWatchTimeOrigins(
   while (statement.Step()) {
     url::Origin origin = url::Origin::Create(GURL(statement.ColumnString(0)));
     base::TimeDelta cached_audio_video_watchtime =
-        base::TimeDelta::FromSeconds(statement.ColumnInt64(1));
+        base::Seconds(statement.ColumnInt64(1));
 
     if (audio_video_watchtime_min <= cached_audio_video_watchtime)
       origins.push_back(std::move(origin));

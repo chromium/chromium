@@ -28,11 +28,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import copy
-import sys
 
 import hasher
 import json5_generator
-import name_utilities
 import template_expander
 
 from aria_properties import ARIAReader

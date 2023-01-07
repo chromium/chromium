@@ -1,16 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// #import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
-// clang-format on
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 /**
  * Quick view model that doesn't fit into properties of quick view element.
  */
-/* #export */ class QuickViewModel extends cr.EventTarget {
+export class QuickViewModel extends EventTarget {
   constructor() {
     super();
 
@@ -37,6 +35,6 @@
    */
   setSelectedEntry(entry) {
     this.selectedEntry_ = entry;
-    cr.dispatchSimpleEvent(this, 'selected-entry-changed');
+    dispatchSimpleEvent(this, 'selected-entry-changed');
   }
 }

@@ -1,12 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.base;
 
-import static org.chromium.chrome.browser.base.SplitCompatUtils.CHROME_SPLIT_NAME;
+import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AppComponentFactory;
 import android.content.BroadcastReceiver;
@@ -15,6 +14,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 
+import androidx.annotation.RequiresApi;
+
+import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 
@@ -27,7 +29,7 @@ import org.chromium.base.Log;
  * Note: this workaround is not needed for services, since they always uses the base module's
  * ClassLoader, see b/169196314 for more details.
  */
-@TargetApi(Build.VERSION_CODES.P)
+@RequiresApi(Build.VERSION_CODES.P)
 public class SplitCompatAppComponentFactory extends AppComponentFactory {
     private static final String TAG = "SplitCompat";
 
@@ -55,36 +57,21 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         return super.instantiateReceiver(getComponentClassLoader(cl, className), className, intent);
     }
 
-    private ClassLoader getComponentClassLoader(ClassLoader cl, String className) {
-        Context context = ContextUtils.getApplicationContext();
-        if (context == null) {
+    private static ClassLoader getComponentClassLoader(ClassLoader cl, String className) {
+        Context appContext = ContextUtils.getApplicationContext();
+        if (appContext == null) {
             Log.e(TAG, "Unexpected null Context when instantiating component: %s", className);
             return cl;
         }
 
-        ClassLoader chromeClassLoader = context.getClassLoader();
-        if (!cl.equals(chromeClassLoader) && isComponentInChromeSplit(className)) {
+        ClassLoader baseClassLoader = SplitCompatAppComponentFactory.class.getClassLoader();
+        ClassLoader chromeClassLoader = appContext.getClassLoader();
+        if (!cl.equals(chromeClassLoader) && !BundleUtils.canLoadClass(baseClassLoader, className)
+                && BundleUtils.canLoadClass(chromeClassLoader, className)) {
             Log.w(TAG, "Mismatched ClassLoaders between Application and component: %s", className);
             return chromeClassLoader;
         }
 
         return cl;
-    }
-
-    private boolean isComponentInChromeSplit(String className) {
-        // First, try using this class's ClassLoader, which only has classes from the base module.
-        try {
-            Class.forName(className, false, getClass().getClassLoader());
-            return false;
-        } catch (ClassNotFoundException e) {
-        }
-
-        // Next, try using the chrome ClassLoader. If the class is found, it is in the chrome split.
-        try {
-            Class.forName(className, false, ContextUtils.getApplicationContext().getClassLoader());
-            return true;
-        } catch (ClassNotFoundException e) {
-        }
-        return false;
     }
 }

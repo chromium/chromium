@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_io_thread.h"
@@ -39,15 +39,17 @@ namespace {
 class DeviceCatcher : HidService::Observer {
  public:
   DeviceCatcher(HidService* hid_service, const std::u16string& serial_number)
-      : serial_number_(base::UTF16ToUTF8(serial_number)), observer_(this) {
+      : serial_number_(base::UTF16ToUTF8(serial_number)) {
     hid_service->GetDevices(
         base::BindOnce(&DeviceCatcher::OnEnumerationComplete,
                        base::Unretained(this), hid_service));
   }
+  DeviceCatcher(DeviceCatcher&) = delete;
+  DeviceCatcher& operator=(DeviceCatcher&) = delete;
 
   const std::string& WaitForDevice() {
     run_loop_.Run();
-    observer_.RemoveAll();
+    observation_.Reset();
     return device_guid_;
   }
 
@@ -61,7 +63,7 @@ class DeviceCatcher : HidService::Observer {
         break;
       }
     }
-    observer_.Add(hid_service);
+    observation_.Observe(hid_service);
   }
 
   void OnDeviceAdded(mojom::HidDeviceInfoPtr device_info) override {
@@ -72,15 +74,17 @@ class DeviceCatcher : HidService::Observer {
   }
 
   std::string serial_number_;
-  ScopedObserver<HidService, HidService::Observer> observer_;
+  base::ScopedObservation<HidService, HidService::Observer> observation_{this};
   base::RunLoop run_loop_;
   std::string device_guid_;
 };
 
 class TestConnectCallback {
  public:
-  TestConnectCallback() {}
-  ~TestConnectCallback() {}
+  TestConnectCallback() = default;
+  TestConnectCallback(TestConnectCallback&) = delete;
+  TestConnectCallback& operator=(TestConnectCallback&) = delete;
+  ~TestConnectCallback() = default;
 
   void SetConnection(scoped_refptr<HidConnection> connection) {
     connection_ = connection;
@@ -104,8 +108,10 @@ class TestConnectCallback {
 
 class TestIoCallback {
  public:
-  TestIoCallback() {}
-  ~TestIoCallback() {}
+  TestIoCallback() = default;
+  TestIoCallback(TestIoCallback&) = delete;
+  TestIoCallback& operator=(TestIoCallback&) = delete;
+  ~TestIoCallback() = default;
 
   void SetReadResult(bool success,
                      scoped_refptr<base::RefCountedBytes> buffer,
@@ -151,6 +157,8 @@ class HidConnectionTest : public testing::Test {
   HidConnectionTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         io_thread_(base::TestIOThread::kAutoStart) {}
+  HidConnectionTest(HidConnectionTest&) = delete;
+  HidConnectionTest& operator=(HidConnectionTest&) = delete;
 
  protected:
   void SetUp() override {
@@ -186,6 +194,7 @@ TEST_F(HidConnectionTest, ReadWrite) {
 
   TestConnectCallback connect_callback;
   service_->Connect(device_guid_, /*allow_protected_reports=*/false,
+                    /*allow_fido_reports=*/false,
                     connect_callback.GetCallback());
   scoped_refptr<HidConnection> conn = connect_callback.WaitForConnection();
   ASSERT_TRUE(conn.get());

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,55 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/strings/stringprintf.h"
+#include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/unguessable_token.h"
 #include "build/chromecast_buildflags.h"
 #include "media/audio/audio_device_description.h"
+#include "media/base/media_switches.h"
 #include "services/audio/input_stream.h"
 #include "services/audio/local_muter.h"
 #include "services/audio/loopback_stream.h"
 #include "services/audio/output_stream.h"
 #include "services/audio/user_input_monitor.h"
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+#include "services/audio/output_device_mixer.h"
+#endif
+
 namespace audio {
 
-StreamFactory::StreamFactory(media::AudioManager* audio_manager)
+namespace {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+std::unique_ptr<OutputDeviceMixerManager> MaybeCreateOutputDeviceMixerManager(
+    media::AudioManager* audio_manager) {
+  if (!media::IsChromeWideEchoCancellationEnabled())
+    return nullptr;
+
+  return std::make_unique<OutputDeviceMixerManager>(
+      audio_manager, base::BindRepeating(&OutputDeviceMixer::Create));
+}
+#endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+
+// Ideally, this would be based on the incoming audio's buffer durations.
+// However, we might deal with multiple streams, with multiple buffer durations.
+// Using a 10ms constant instead is acceptable (and better than the default)
+// since there are no super-strict realtime requirements (no system audio calls
+// waiting on these threads).
+constexpr base::TimeDelta kReatimeThreadPeriod = base::Milliseconds(10);
+}  // namespace
+
+StreamFactory::StreamFactory(
+    media::AudioManager* audio_manager,
+    media::AecdumpRecordingManager* aecdump_recording_manager)
     : audio_manager_(audio_manager),
-      loopback_worker_thread_("Loopback Worker") {
+      aecdump_recording_manager_(aecdump_recording_manager),
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+      output_device_mixer_manager_(
+          MaybeCreateOutputDeviceMixerManager(audio_manager)),
+#endif
+      loopback_worker_thread_("Loopback Worker", kReatimeThreadPeriod) {
 }
 
 StreamFactory::~StreamFactory() {
@@ -45,6 +78,7 @@ void StreamFactory::CreateInputStream(
     uint32_t shared_memory_count,
     bool enable_agc,
     base::ReadOnlySharedMemoryRegion key_press_count_buffer,
+    media::mojom::AudioProcessingConfigPtr processing_config,
     CreateInputStreamCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT2("audio", "CreateInputStream", this,
@@ -58,9 +92,14 @@ void StreamFactory::CreateInputStream(
   input_streams_.insert(std::make_unique<InputStream>(
       std::move(created_callback), std::move(deleter_callback),
       std::move(stream_receiver), std::move(client), std::move(observer),
-      std::move(pending_log), audio_manager_,
-      UserInputMonitor::Create(std::move(key_press_count_buffer)), device_id,
-      params, shared_memory_count, enable_agc));
+      std::move(pending_log), audio_manager_, aecdump_recording_manager_,
+      UserInputMonitor::Create(std::move(key_press_count_buffer)),
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+      output_device_mixer_manager_.get(), std::move(processing_config),
+#else
+      nullptr, nullptr,
+#endif
+      device_id, params, shared_memory_count, enable_agc));
 }
 
 void StreamFactory::AssociateInputAndOutputForAec(
@@ -95,8 +134,11 @@ void StreamFactory::CreateOutputStream(
 
   // This is required for multizone audio playback on Cast devices.
   // See //chromecast/media/cast_audio_manager.h for more information.
+  //
+  // TODO(crbug.com/1336055): Determine if this condition should instead be
+  // ENABLE_CAST_RECEIVER && !IS_FUCHSIA.
   const std::string device_id_or_group_id =
-#if BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CASTOS) || BUILDFLAG(IS_CAST_ANDROID)
       (::media::AudioDeviceDescription::IsCommunicationsDevice(
            output_device_id) ||
        group_id.is_empty())
@@ -106,8 +148,22 @@ void StreamFactory::CreateOutputStream(
       output_device_id;
 #endif
 
+  // base::Unretained() is safe since |this| owns both |output_mixer_manager_|
+  // and |output_streams_|, and ensures the correct order of destruction.
+  OutputStream::ManagedDeviceOutputStreamCreateCallback
+      managed_device_output_stream_create_callback;
+
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  if (output_device_mixer_manager_) {
+    managed_device_output_stream_create_callback = base::BindRepeating(
+        &OutputDeviceMixerManager::MakeOutputStream,
+        base::Unretained(output_device_mixer_manager_.get()));
+  }
+#endif
+
   output_streams_.insert(std::make_unique<OutputStream>(
       std::move(created_callback), std::move(deleter_callback),
+      std::move(managed_device_output_stream_create_callback),
       std::move(stream_receiver), std::move(observer), std::move(log),
       audio_manager_, device_id_or_group_id, params, &coordinator_, group_id));
 }
@@ -117,18 +173,15 @@ void StreamFactory::BindMuter(
     const base::UnguessableToken& group_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT1("audio", "BindMuter", this, "group id",
-                                      group_id.GetLowForSerialization());
+                                      group_id);
 
   // Find the existing LocalMuter for this group, or create one on-demand.
-  auto it = std::find_if(muters_.begin(), muters_.end(),
-                         [&group_id](const std::unique_ptr<LocalMuter>& muter) {
-                           return muter->group_id() == group_id;
-                         });
+  auto it = base::ranges::find(muters_, group_id, &LocalMuter::group_id);
   LocalMuter* muter;
   if (it == muters_.end()) {
     auto muter_ptr = std::make_unique<LocalMuter>(&coordinator_, group_id);
     muter = muter_ptr.get();
-    muter->SetAllBindingsLostCallback(base::BindOnce(
+    muter->SetAllBindingsLostCallback(base::BindRepeating(
         &StreamFactory::DestroyMuter, base::Unretained(this), muter));
     muters_.emplace_back(std::move(muter_ptr));
   } else {
@@ -149,9 +202,8 @@ void StreamFactory::CreateLoopbackStream(
     CreateLoopbackStreamCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_NESTABLE_ASYNC_INSTANT2("audio", "CreateLoopbackStream", this,
-                                      "group id",
-                                      group_id.GetLowForSerialization(),
-                                      "params", params.AsHumanReadableString());
+                                      "group id", group_id, "params",
+                                      params.AsHumanReadableString());
 
   // All LoopbackStreams share a single realtime worker thread. This is because
   // the execution timing of scheduled tasks must be precise, and top priority
@@ -166,8 +218,8 @@ void StreamFactory::CreateLoopbackStream(
     TRACE_EVENT_BEGIN0("audio", "Start Loopback Worker");
     base::Thread::Options options;
     options.timer_slack = base::TIMER_SLACK_NONE;
-    options.priority = base::ThreadPriority::REALTIME_AUDIO;
-    if (loopback_worker_thread_.StartWithOptions(options)) {
+    options.thread_type = base::ThreadType::kRealtimeAudio;
+    if (loopback_worker_thread_.StartWithOptions(std::move(options))) {
       task_runner = loopback_worker_thread_.task_runner();
       TRACE_EVENT_END1("audio", "Start Loopback Worker", "success", true);
     } else {
@@ -215,12 +267,15 @@ void StreamFactory::DestroyMuter(LocalMuter* muter) {
   auto do_destroy = [](base::WeakPtr<StreamFactory> weak_this,
                        LocalMuter* muter) {
     if (weak_this) {
-
-      const auto it =
-          std::find_if(weak_this->muters_.begin(), weak_this->muters_.end(),
-                       base::MatchesUniquePtr(muter));
+      const auto it = base::ranges::find_if(weak_this->muters_,
+                                            base::MatchesUniquePtr(muter));
       DCHECK(it != weak_this->muters_.end());
-      weak_this->muters_.erase(it);
+
+      // The LocalMuter can still have receivers if a receiver was bound after
+      // DestroyMuter is called but before the do_destroy task is run.
+      if (!muter->HasReceivers()) {
+        weak_this->muters_.erase(it);
+      }
     }
   };
 
@@ -234,8 +289,7 @@ void StreamFactory::DestroyLoopbackStream(LoopbackStream* stream) {
   DCHECK(stream);
 
   const auto it =
-      std::find_if(loopback_streams_.begin(), loopback_streams_.end(),
-                   base::MatchesUniquePtr(stream));
+      base::ranges::find_if(loopback_streams_, base::MatchesUniquePtr(stream));
   DCHECK(it != loopback_streams_.end());
   loopback_streams_.erase(it);
 

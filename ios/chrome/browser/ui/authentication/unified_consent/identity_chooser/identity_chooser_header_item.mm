@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_header_item.h"
 
-#import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -35,8 +35,10 @@ CGFloat kLeadingMargin = 24.;
     label.text =
         l10n_util::GetNSString(IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_CHOOSE_ACCOUNT);
     label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-    label.textColor = UIColor.cr_labelColor;
+    label.textColor = [UIColor colorNamed:kTextPrimaryColor];
     [self.contentView addSubview:label];
+    self.contentView.backgroundColor =
+        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
     NSDictionary* views = @{
       @"label" : label,
     };

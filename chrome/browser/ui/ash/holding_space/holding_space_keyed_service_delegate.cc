@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,12 +26,12 @@ void HoldingSpaceKeyedServiceDelegate::NotifyPersistenceRestored() {
 }
 
 HoldingSpaceKeyedServiceDelegate::HoldingSpaceKeyedServiceDelegate(
-    Profile* profile,
+    HoldingSpaceKeyedService* service,
     HoldingSpaceModel* model)
-    : profile_(profile), model_(model) {
-  // It is expected that `profile` already be ready prior to delegate creation.
-  DCHECK(GetProfileManager()->IsValidProfile(profile));
-  holding_space_model_observer_.Add(model);
+    : service_(service), model_(model) {
+  // It's expected that `profile()` already be ready prior to delegate creation.
+  DCHECK(GetProfileManager()->IsValidProfile(profile()));
+  holding_space_model_observation_.Observe(model);
 }
 
 void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemsAdded(
@@ -40,7 +40,7 @@ void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemsAdded(
 void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {}
 
-void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemFinalized(
+void HoldingSpaceKeyedServiceDelegate::OnHoldingSpaceItemInitialized(
     const HoldingSpaceItem* item) {}
 
 void HoldingSpaceKeyedServiceDelegate::OnPersistenceRestored() {}

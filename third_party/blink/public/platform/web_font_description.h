@@ -31,13 +31,14 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_FONT_DESCRIPTION_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_FONT_DESCRIPTION_H_
 
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
 
 namespace blink {
 
 class FontDescription;
 
-struct WebFontDescription {
+struct BLINK_PLATFORM_EXPORT WebFontDescription {
   enum GenericFamily {
     kGenericFamilyNone,
     kGenericFamilyStandard,
@@ -62,31 +63,25 @@ struct WebFontDescription {
     kWeightBold = kWeight700
   };
 
-  WebFontDescription()
-      : generic_family(kGenericFamilyNone),
-        size(0),
-        italic(false),
-        small_caps(false),
-        weight(kWeightNormal),
-        letter_spacing(0),
-        word_spacing(0) {}
+  WebFontDescription() = default;
 
   WebString family;
-  GenericFamily generic_family;
-  float size;
-  bool italic;
-  bool small_caps;
-  Weight weight;
+  GenericFamily generic_family = kGenericFamilyNone;
+  float size = 0;
+  bool family_is_generic = false;
+  bool italic = false;
+  bool small_caps = false;
+  Weight weight = kWeightNormal;
 
-  int16_t letter_spacing;
-  int16_t word_spacing;
+  int16_t letter_spacing = 0;
+  int16_t word_spacing = 0;
 
 #if INSIDE_BLINK
-  BLINK_PLATFORM_EXPORT WebFontDescription(const FontDescription&);
-  BLINK_PLATFORM_EXPORT operator FontDescription() const;
+  WebFontDescription(const FontDescription&);
+  operator FontDescription() const;
 #endif
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_FONT_DESCRIPTION_H_

@@ -1,6 +1,10 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10 ]
-# tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
+
+# No need to run Virtual test suite plz-dedicated-worker here
+virtual/plz-dedicated-worker/* [ Skip ]
+
+# Isolated-sandboxed-iframe require site isolation to be effective.
+virtual/isolate-sandboxed-iframes/* [ Skip ]
 
 # The following tests fail with UserActivationSameOriginVisibility plus UAv2.
 crbug.com/922725 http/tests/media/autoplay/document-user-activation-cross-origin-feature-policy-disabled.html [ Failure ]
@@ -16,9 +20,6 @@ crbug.com/933880 http/tests/inspector-protocol/network/security-info-on-response
 crbug.com/933880 http/tests/inspector-protocol/network/xhr-interception-auth-fail.js [ Failure ]
 crbug.com/933880 http/tests/misc/redirect-to-about-blank.html [ Timeout ]
 
-# Test is for OOPIF-specific behavior.
-http/tests/inspector-protocol/fetch/fetch-oopif.js [ Skip ]
-
 # JS Self-Profiling currently requires site isolation.
 crbug.com/956688 wpt_internal/js-self-profiling/* [ Skip ]
 
@@ -27,3 +28,107 @@ crbug.com/1106413 external/wpt/webmessaging/multi-globals/broadcastchannel-incum
 
 # Opt-in origin-keying is intentionally disabled with --disable-site-isolation-trials.
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Skip ]
+
+# OOPIF tests need site isolation
+http/tests/inspector-protocol/fetch/fetch-oopif.js [ Skip ]
+http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession.js [ Skip ]
+http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-existing.js [ Skip ]
+http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-wait.js [ Skip ]
+http/tests/inspector-protocol/target/auto-attach-sub-sub-frame.js [ Skip ]
+http/tests/inspector-protocol/target/message-to-detached-session.js [ Skip ]
+http/tests/inspector-protocol/target/tab-target.js [ Skip ]
+http/tests/inspector-protocol/target/target-filter.js [ Skip ]
+virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/fenced-frame-in-oopif-auto-attach.js [ Skip ]
+http/tests/inspector-protocol/target/target-info-changed-auto-attach.js [ Skip ]
+
+# Rely on OOPIF for an iframe to be a separate devtools target
+http/tests/inspector-protocol/timeline/auction-worklet-frame.js [ Skip ]
+virtual/fledge/http/tests/inspector-protocol/timeline/auction-worklet-frame.js [ Skip ]
+
+# Fix to unblock wpt-importer
+# The paths for these tests' baselines (with an `-expected.{txt,png}` suffix) is
+# too long on Windows. Skip for now.
+crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-multi-globals.sub.html [ Failure ]
+crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
+crbug.com/1209233 external/wpt/html/cross-origin-opener-policy/reporting/navigation-reporting/reporting-redirect-with-same-origin-allow-popups.https.html [ Failure ]
+
+# ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/same-document-traversal-same-document-traversal-hashchange.html [ Timeout ]
+crbug.com/626703 external/wpt/html/browsers/browsing-the-web/overlapping-navigations-and-traversals/same-document-traversal-same-document-traversal-pushstate.html [ Timeout ]
+crbug.com/626703 external/wpt/screen-orientation/non-fully-active.html [ Timeout ]
+crbug.com/626703 external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/626703 virtual/orb-v01/external/wpt/fetch/api/abort/serviceworker-intercepted.https.html [ Timeout ]
+crbug.com/626703 external/wpt/encoding/unsupported-labels.window.html [ Failure Timeout ]
+crbug.com/626703 external/wpt/resize-observer/notify.html [ Timeout ]
+crbug.com/626703 external/wpt/resize-observer/svg.html [ Timeout ]
+crbug.com/626703 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-border-sizing.html [ Failure ]
+crbug.com/626703 external/wpt/css/css-flexbox/flex-item-transferred-sizes-padding-content-sizing.html [ Failure ]
+crbug.com/626703 external/wpt/page-visibility/visibility-state-entry.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/css/filter-effects/filter-invalid.html [ Failure ]
+crbug.com/626703 external/wpt/mathml/relations/css-styling/mathvariant-double-struck-font-style-font-weight.html [ Failure ]
+crbug.com/626703 virtual/scalefactor200/external/wpt/css/filter-effects/filter-invalid.html [ Failure ]
+crbug.com/626703 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-3.html [ Failure Timeout ]
+crbug.com/626703 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-1.html [ Timeout ]
+crbug.com/626703 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-2.html [ Timeout ]
+crbug.com/626703 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-indexOf-3.html [ Timeout ]
+crbug.com/626703 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-zero-intersection-area.html [ Timeout ]
+crbug.com/626703 external/wpt/html/browsers/windows/clear-window-name.https.html [ Timeout ]
+crbug.com/626703 external/wpt/custom-elements/form-associated/ElementInternals-target-element-is-held-strongly.html [ Timeout ]
+crbug.com/626703 external/wpt/custom-elements/throw-on-dynamic-markup-insertion-counter-construct-xml-parser.xhtml [ Crash ]
+crbug.com/626703 external/wpt/custom-elements/throw-on-dynamic-markup-insertion-counter-reactions-xml-parser.xhtml [ Crash ]
+crbug.com/626703 external/wpt/css/css-sizing/aspect-ratio/grid-aspect-ratio-040.html [ Crash ]
+crbug.com/626703 external/wpt/css/cssom/caretPositionFromPoint-with-transformation.html [ Timeout ]
+crbug.com/626703 external/wpt/service-workers/cache-storage/crashtests/cache-response-clone.https.html [ Timeout ]
+crbug.com/626703 external/wpt/html/semantics/embedded-content/the-img-element/image-loading-lazy-move-into-script-disabled-iframe.html [ Timeout ]
+crbug.com/626703 external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
+crbug.com/626703 virtual/wasm-csp/external/wpt/content-security-policy/wasm-unsafe-eval/postMessage-wasm-module.html [ Timeout ]
+crbug.com/626703 external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/fetch/metadata/generated/css-images.sub.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/fetch/metadata/generated/element-link-icon.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/fetch/metadata/generated/element-link-icon.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/fetch/metadata/generated/element-video-poster.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/css/css-grid/subgrid/subgrid-baseline-002.html [ Crash ]
+crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-cross-origin-subframe-navigation.html [ Timeout ]
+crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-main-frame-navigation.html [ Timeout ]
+crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-remove-subframe.html [ Timeout ]
+crbug.com/626703 virtual/prerender/wpt_internal/prerender/unload-on-prerender-same-origin-subframe-navigation.html [ Timeout ]
+crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/opt-out.html [ Crash ]
+crbug.com/626703 external/wpt/geolocation-API/getCurrentPosition_permission_allow.https.html [ Timeout ]
+crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy-attribute-redirect-on-load.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy-attribute.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/geolocation-API/enabled-by-feature-policy.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/geolocation-API/enabled-on-self-origin-by-feature-policy.https.sub.html [ Timeout ]
+crbug.com/626703 external/wpt/wasm/webapi/esm-integration/exported-names.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/wasm/webapi/esm-integration/js-wasm-cycle.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/wasm/webapi/esm-integration/wasm-import-wasm-export.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/wasm/webapi/esm-integration/wasm-js-cycle.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/wasm/webapi/esm-integration/worker-import.tentative.html [ Timeout ]
+crbug.com/626703 external/wpt/wasm/webapi/esm-integration/worker.tentative.html [ Timeout ]
+crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/service-workers.https.html [ Failure Timeout ]
+crbug.com/626703 external/wpt/webmessaging/broadcastchannel/opaque-origin.html [ Timeout ]
+crbug.com/626703 external/wpt/webrtc/RTCConfiguration-iceTransportPolicy.html [ Timeout ]
+crbug.com/626703 external/wpt/webrtc-stats/rtp-stats-creation.html [ Crash Failure ]
+crbug.com/626703 external/wpt/domxpath/xpath-evaluate-crash.html [ Crash ]
+crbug.com/626703 virtual/prerender/external/wpt/speculation-rules/prerender/restrictions.html [ Failure Timeout ]
+crbug.com/626703 external/wpt/css/css-masking/mask-image/mask-composite-1c.html [ Crash Failure ]
+crbug.com/626703 external/wpt/selection/textcontrols/onselectionchange-content-attribute.html [ Timeout ]
+crbug.com/626703 external/wpt/infrastructure/channels/test_call.html [ Timeout ]
+crbug.com/626703 external/wpt/infrastructure/channels/test_postMessage.html [ Timeout ]
+crbug.com/626703 external/wpt/infrastructure/channels/test_serialize.html [ Timeout ]
+
+# crbug.com/1339051: some ref tests generate output with minor differences.
+crbug.com/1339051 external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure ]
+crbug.com/1339051 virtual/backface-visibility-interop/external/wpt/css/css-transforms/perspective-split-by-zero-w.html [ Failure ]
+crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/content-with-transform-new-image.html [ Failure ]
+crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/object-view-box-old-image.html [ Failure ]
+crbug.com/1339051 virtual/document-transition/wpt_internal/document-transition/web-animations-api.html [ Failure ]
+crbug.com/1339051 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-canvasFilter.tentative.https.html [ Failure ]
+crbug.com/1339051 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint2d-filter.https.html [ Failure ]
+
+crbug.com/1311518 virtual/document-transition-wide-gamut/wpt_internal/document-transition/iframe-transition.sub.html [ Crash Failure Timeout ]
+crbug.com/1311518 virtual/document-transition/wpt_internal/document-transition/iframe-transition.sub.html [ Crash Failure Timeout ]
+
+# reenable print ref tests
+crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-print.sub.html [ Pass ]
+crbug.com/1090628 external/wpt/html/browsers/windows/iframe-cross-origin-scaled-print.sub.html [ Pass ]
+

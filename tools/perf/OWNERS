@@ -11,15 +11,19 @@ hypan@google.com
 # For changes related to ChromeOS.
 achuith@chromium.org
 
-# For expectations.config file format infrastructure changes.
-rmhasan@google.com
-
 # For system health stories.
-eyaich@chromium.org
 sullivan@chromium.org
+
+# For V8 and system_health stories.
+cbruni@chromium.org
 
 # For page_cycler and loading benchmarks related changes.
 kouhei@chromium.org
+
+# Perf bot sheriffs can disable stories.
+per-file expectations.config=skyostil@chromium.org
+per-file expectations.config=nuskos@chromium.org
+per-file expectations.config=eseckler@chromium.org
 
 # emeritus:
 # perezju@chromium.org

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -30,7 +29,7 @@ struct RequestAction {
   struct HeaderInfo {
     HeaderInfo(std::string header,
                api::declarative_net_request::HeaderOperation operation,
-               base::Optional<std::string> value);
+               absl::optional<std::string> value);
     explicit HeaderInfo(const flat::ModifyHeaderInfo& info);
     ~HeaderInfo();
     HeaderInfo(const HeaderInfo& other);
@@ -42,7 +41,7 @@ struct RequestAction {
     std::string header;
     api::declarative_net_request::HeaderOperation operation;
     // The value for |header| to be appended or set.
-    base::Optional<std::string> value;
+    absl::optional<std::string> value;
   };
 
   enum class Type {
@@ -79,7 +78,7 @@ struct RequestAction {
   Type type = Type::BLOCK;
 
   // Valid iff |IsRedirectOrUpgrade()| is true.
-  base::Optional<GURL> redirect_url;
+  absl::optional<GURL> redirect_url;
 
   // The ID of the matching rule for this action.
   uint32_t rule_id;
@@ -125,9 +124,9 @@ struct RequestAction {
 bool operator<(const RequestAction& lhs, const RequestAction& rhs);
 bool operator>(const RequestAction& lhs, const RequestAction& rhs);
 
-base::Optional<RequestAction> GetMaxPriorityAction(
-    base::Optional<RequestAction> lhs,
-    base::Optional<RequestAction> rhs);
+absl::optional<RequestAction> GetMaxPriorityAction(
+    absl::optional<RequestAction> lhs,
+    absl::optional<RequestAction> rhs);
 
 }  // namespace declarative_net_request
 }  // namespace extensions

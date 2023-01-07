@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Dynamic update of transform; replaceItem() assert_equals: expected 185.640625 but got 185
+Harness: the test ran to completion.
+

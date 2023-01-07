@@ -1,0 +1,27 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 1
+
+module arc.mojom;
+
+// Theme Style Type, defaults to TONAL_SPOT
+[Extensible]
+enum ThemeStyleType {
+  [Default] TONAL_SPOT = 0,
+  VIBRANT = 1,
+  EXPRESSIVE = 2,
+  SPRITZ = 3,
+  RAINBOW = 4,
+  FRUIT_SALAD = 5,
+};
+
+// Next method ID: 2
+interface SystemUiInstance {
+  // Notifies ARC whether the Chrome dark theme is on/off.
+  SetDarkThemeStatus@0(bool active); // Migrated from DarkThemeInstance
+
+  // Sets the dynamic color "source" color (ARGB8888), and the theme style.
+  SetOverlayColor@1(uint32 source_color, ThemeStyleType theme_style);
+};

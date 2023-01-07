@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -97,7 +97,7 @@ IndexedDBClassFactory::CreateIndexedDBDatabase(
     TasksAvailableCallback tasks_available_callback,
     std::unique_ptr<IndexedDBMetadataCoding> metadata_coding,
     const IndexedDBDatabase::Identifier& unique_identifier,
-    ScopesLockManager* transaction_lock_manager) {
+    PartitionedLockManager* transaction_lock_manager) {
   DCHECK(backing_store);
   DCHECK(factory);
   std::unique_ptr<IndexedDBDatabase> database =

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,10 @@
 #include "url/gurl.h"
 
 struct SpellCheckResult;
+
+namespace base {
+class TimeTicks;
+}
 
 namespace content {
 class BrowserContext;
@@ -121,6 +125,10 @@ class SpellingServiceClient {
         std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
         TextCheckCompleteCallback callback,
         std::u16string text);
+
+    TextCheckCallbackData(const TextCheckCallbackData&) = delete;
+    TextCheckCallbackData& operator=(const TextCheckCallbackData&) = delete;
+
     ~TextCheckCallbackData();
 
     // The URL loader used.
@@ -132,9 +140,6 @@ class SpellingServiceClient {
 
     // The text checked by the Spelling service.
     std::u16string text;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(TextCheckCallbackData);
   };
 
   using SpellCheckLoaderList =

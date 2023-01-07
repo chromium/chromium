@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/shared_impl/url_request_info_data.h"
@@ -23,6 +22,10 @@ class PPAPI_PROXY_EXPORT URLRequestInfoResource
  public:
   URLRequestInfoResource(Connection connection, PP_Instance instance,
                          const URLRequestInfoData& data);
+
+  URLRequestInfoResource(const URLRequestInfoResource&) = delete;
+  URLRequestInfoResource& operator=(const URLRequestInfoResource&) = delete;
+
   ~URLRequestInfoResource() override;
 
   // Resource overrides.
@@ -46,8 +49,6 @@ class PPAPI_PROXY_EXPORT URLRequestInfoResource
 
  private:
   URLRequestInfoData data_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLRequestInfoResource);
 };
 
 }  // namespace proxy

@@ -1,4 +1,5 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,7 +9,7 @@ This is required to confirm correctness of properties that aren't readily
 available in Windows UI.
 
 If you run into "ImportError: No module named pywintypes":
-Run this script with vpython instead.
+Run this script with vpython3 instead.
 """
 
 import optparse
@@ -24,7 +25,7 @@ def BuildPKeyToNameMapping():
   # The pscon module contains a number of well-known PKey values. Scan through
   # the module picking out anything that looks plausibly like a PROPERTYKEY (a
   # tuple of a PyIID and an int), and map it to its name in the module.
-  return {item: name for (name, item) in pscon.__dict__.iteritems() if (
+  return {item: name for (name, item) in pscon.__dict__.items() if (
              isinstance(item, tuple) and
              len(item) == 2 and
              isinstance(item[1], int))}
@@ -33,23 +34,23 @@ def BuildPKeyToNameMapping():
 def PrintShortcutProperties(shortcut_path, dump_all):
   properties = propsys.SHGetPropertyStoreFromParsingName(shortcut_path)
 
-  print 'Known properties (--dump-all for more):'
+  print('Known properties (--dump-all for more):')
 
   app_id = properties.GetValue(pscon.PKEY_AppUserModel_ID).GetValue()
-  print '\tAppUserModelId => "%s"' % app_id
+  print('\tAppUserModelId => "%s"' % app_id)
 
   # Hard code PKEY_AppUserModel_IsDualMode as pscon doesn't support it.
   PKEY_AppUserModel_IsDualMode = (IID('{9F4C2855-9F79-4B39-A8D0-E1D42DE1D5F3}'),
                                   11)
   dual_mode = properties.GetValue(PKEY_AppUserModel_IsDualMode).GetValue()
-  print '\tDual Mode => "%s"' % dual_mode
+  print('\tDual Mode => "%s"' % dual_mode)
 
   # Dump all other properties with their raw ID if requested, add them above
   # over time as we explicitly care about more properties, see propkey.h or
   # pscon.py for a reference of existing PKEYs' meaning.
   if dump_all:
     key_to_name = BuildPKeyToNameMapping()
-    print '\nOther properties:'
+    print('\nOther properties:')
     for i in range(0, properties.GetCount()):
       property_key = properties.GetAt(i)
       # |property_key| is a tuple of an IID identifying the format and an int
@@ -59,7 +60,7 @@ def PrintShortcutProperties(shortcut_path, dump_all):
       # propkey.h.
       key_name = key_to_name.get(property_key, str(property_key))
       property_value = properties.GetValue(property_key).GetValue()
-      print '\t%s => "%s"' % (key_name, property_value)
+      print('\t%s => "%s"' % (key_name, property_value))
 
 
 def main():

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,8 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Test suite to ensure that |AccessibilityEventDispatcher| behaves appropriately.
@@ -22,7 +24,8 @@ import java.util.HashSet;
 @RunWith(BaseJUnit4ClassRunner.class)
 public class AccessibilityEventDispatcherTest {
     private AccessibilityEventDispatcher mDispatcher;
-    private HashMap<Integer, Integer> mEventDelays = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> mEventDelays = new HashMap<Integer, Integer>();
+    private Set<Integer> mViewIndependentEvents = new HashSet<Integer>();
 
     // Helper member variables for testing.
     private boolean mRunnablePosted;
@@ -56,7 +59,7 @@ public class AccessibilityEventDispatcherTest {
                 mEventDispatched = true;
                 return true;
             }
-        }, mEventDelays, new HashSet<Integer>());
+        }, mEventDelays, mViewIndependentEvents, new HashSet<Integer>(), false);
 
         mRunnablePosted = false;
         mRunnableRemoved = false;
@@ -146,6 +149,69 @@ public class AccessibilityEventDispatcherTest {
 
         // Send final event, ensure runnable is posted but nothing was dispatched
         mDispatcher.enqueueEvent(1, 3);
+        Assert.assertFalse(mEventDispatched);
+        Assert.assertTrue(mRunnablePosted);
+        Assert.assertTrue(mRunnableRemoved);
+    }
+
+    /**
+     * Test enqueue will drop events that are not part of the relevant events type set.
+     */
+    @Test
+    @SmallTest
+    public void testEnqueue_relevantEventsCheck() {
+        // Create a set of relevant events and pass it to the dispatcher.
+        Set<Integer> relevantEvents = new HashSet<Integer>();
+        relevantEvents.add(3);
+        mDispatcher.updateRelevantEventTypes(relevantEvents);
+        mDispatcher.setOnDemandEnabled(true);
+
+        // Send a relevant event type and ensure it is dispatched.
+        mDispatcher.enqueueEvent(1, 3);
+        Assert.assertTrue(mEventDispatched);
+        Assert.assertFalse(mRunnablePosted);
+        Assert.assertTrue(mRunnableRemoved);
+
+        // Reset trackers.
+        mRunnablePosted = false;
+        mRunnableRemoved = false;
+        mEventDispatched = false;
+
+        // Send a not relevant event type and ensure it is dropped.
+        mDispatcher.enqueueEvent(1, 2);
+        Assert.assertFalse(mEventDispatched);
+        Assert.assertFalse(mRunnablePosted);
+        Assert.assertFalse(mRunnableRemoved);
+    }
+
+    /**
+     * Test the creation of uuid for view independent throttling.
+     */
+    @Test
+    @SmallTest
+    public void testUuid_creation() {
+        // Add a view independent event type.
+        mViewIndependentEvents.add(3);
+
+        // Send first event through as normal.
+        mDispatcher.enqueueEvent(1, 3);
+        Assert.assertTrue(mEventDispatched);
+        Assert.assertFalse(mRunnablePosted);
+        Assert.assertTrue(mRunnableRemoved);
+
+        // Send a series of events from various views of the same type.
+        mDispatcher.enqueueEvent(2, 3);
+        mDispatcher.enqueueEvent(3, 3);
+        mDispatcher.enqueueEvent(4, 3);
+        Assert.assertTrue(mRunnablePosted);
+
+        // Reset trackers.
+        mRunnablePosted = false;
+        mRunnableRemoved = false;
+        mEventDispatched = false;
+
+        // Send final event, ensure runnable is posted but nothing was dispatched.
+        mDispatcher.enqueueEvent(5, 3);
         Assert.assertFalse(mEventDispatched);
         Assert.assertTrue(mRunnablePosted);
         Assert.assertTrue(mRunnableRemoved);

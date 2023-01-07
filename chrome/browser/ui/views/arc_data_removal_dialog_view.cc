@@ -1,20 +1,20 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/app_list/arc/arc_data_removal_dialog.h"
 
-#include "base/macros.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_icon_loader.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
@@ -22,8 +22,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -96,7 +94,8 @@ DataRemovalConfirmationDialog::DataRemovalConfirmationDialog(
 
   std::unique_ptr<views::BoxLayout> layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      provider->GetDialogInsetsForContentType(views::TEXT, views::TEXT),
+      provider->GetDialogInsetsForContentType(views::DialogContentType::kText,
+                                              views::DialogContentType::kText),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_HORIZONTAL));
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
@@ -117,8 +116,6 @@ DataRemovalConfirmationDialog::DataRemovalConfirmationDialog(
   icon_loader_ = std::make_unique<AppServiceAppIconLoader>(
       profile_, kArcAppIconSize, this);
   icon_loader_->FetchImage(kPlayStoreAppId);
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::ARC_DATA_REMOVAL_CONFIRMATION);
 
   ArcSessionManager::Get()->AddObserver(this);
 

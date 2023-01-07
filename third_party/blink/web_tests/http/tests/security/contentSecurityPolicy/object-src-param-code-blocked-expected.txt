@@ -1,4 +1,4 @@
 CONSOLE ERROR: Refused to load plugin data from 'http://127.0.0.1:8080/plugins/resources/mock-plugin.pl?code' because it violates the following Content Security Policy directive: "object-src http://localhost:8080".
 
-CONSOLE MESSAGE: line 16: PASS: Error occurred, so load was correctly blocked.
+CONSOLE MESSAGE: PASS: Error occurred, so load was correctly blocked.
 This test passes if there is a console message saying the plugin was blocked. 

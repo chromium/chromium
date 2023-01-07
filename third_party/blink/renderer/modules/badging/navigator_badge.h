@@ -1,6 +1,6 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file
+// found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BADGING_NAVIGATOR_BADGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BADGING_NAVIGATOR_BADGE_H_
@@ -43,6 +43,8 @@ class NavigatorBadge final : public GarbageCollected<NavigatorBadge>,
       ScriptState* script_state,
       mojom::blink::BadgeValuePtr badge_value);
   static ScriptPromise ClearAppBadgeHelper(ScriptState* script_state);
+  // Returns true if using the Badging API is allowed in this context.
+  static bool IsAllowed(ScriptState* script_state);
 
   mojo::Remote<mojom::blink::BadgeService> badge_service();
 };

@@ -1,0 +1,105 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto2";
+
+package maldoca;
+
+option optimize_for = LITE_RUNTIME;
+
+enum DocType {
+  UNKNOWN_TYPE = 0;
+
+  // Office-type documents, including PDFs
+  DOC = 1;
+  DOCX = 2;
+  PPT = 3;
+  XLS = 4;
+  DOCM = 5;
+  PPS = 6;
+  PPSX = 7;
+  PPTX = 8;
+  XLA = 9;
+  XLSB = 10;
+  XLSM = 11;
+  XLSX = 12;
+  PDF = 13;
+  MSO = 14;  // Microsoft Office Macro Reference file
+  PUB = 15;  // Microsoft Publisher
+  RTF = 16;  // Rtf doc, can actually be Office docs
+  WBK = 17;  // Office document backups
+  WIZ = 18;  // Microsoft Office Wizard file
+
+  // File banned on Gmail by policy (go/gmail-banned-extensions or
+  // caribou/base/lib/internal/bad_file_extensions.cc)
+  APPX = 19;
+  APPXBUNDLE = 20;
+  ADE = 21;
+  APK = 22;
+  BAT = 23;
+  CAB = 24;
+  CHM = 25;
+  CMD = 26;
+  COM = 27;
+  CPL = 28;
+  DLL = 29;
+  DMG = 30;
+  EXE = 31;
+  HTA = 32;
+  INS = 33;
+  ISP = 34;
+  ISO = 35;
+  JAR = 36;
+  JS = 37;
+  JSE = 38;
+  LIB = 39;
+  LNK = 40;
+  MDE = 41;
+  MSC = 42;
+  MSI = 43;
+  MSIX = 44;
+  MSIXBUNDLE = 45;
+  MSP = 46;
+  MST = 47;
+  NSH = 48;
+  PIF = 49;
+  SCR = 50;
+  SCT = 51;
+  SHB = 52;
+  SYS = 53;
+  VB = 54;
+  VBE = 55;
+  VBS = 56;
+  VXD = 57;
+  WSC = 58;
+  WSF = 59;
+  WSH = 60;
+
+  // Anything that features no file extension or a file extension that
+  // isn't already covered by the list above.
+  OTHER = 61;
+}
+
+// Office doc come in different format and this is just to provide the general
+// classification of document type. E.g, DOC and DOCX both belong to
+// GENERAL_DOC_TYPE_DOC.
+enum GeneralDocType {
+  GENERAL_DOC_TYPE_UNKNOWN = 0;
+  GENERAL_DOC_TYPE_DOC = 1;
+  GENERAL_DOC_TYPE_XLS = 2;
+  GENERAL_DOC_TYPE_PPT = 3;
+  // There is only one PDF format but for consistency we also use general type
+  GENERAL_DOC_TYPE_PDF = 4;
+  GENERAL_DOC_TYPE_VBA = 5;
+}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,9 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "content/common/service_worker/service_worker_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/renderer/render_frame_impl.h"
@@ -171,6 +172,13 @@ ServiceWorkerNetworkProviderForFrame::GetControllerServiceWorkerMode() {
   return context()->GetControllerServiceWorkerMode();
 }
 
+blink::mojom::ServiceWorkerFetchHandlerType
+ServiceWorkerNetworkProviderForFrame::GetFetchHandlerType() {
+  if (!context())
+    return blink::mojom::ServiceWorkerFetchHandlerType::kNotSkippable;
+  return context()->GetFetchHandlerType();
+}
+
 int64_t ServiceWorkerNetworkProviderForFrame::ControllerServiceWorkerID() {
   if (!context())
     return blink::mojom::kInvalidServiceWorkerVersionId;
@@ -181,15 +189,6 @@ void ServiceWorkerNetworkProviderForFrame::DispatchNetworkQuiet() {
   if (!context())
     return;
   context()->DispatchNetworkQuiet();
-}
-
-blink::CrossVariantMojoReceiver<
-    blink::mojom::WorkerTimingContainerInterfaceBase>
-ServiceWorkerNetworkProviderForFrame::TakePendingWorkerTimingReceiver(
-    int request_id) {
-  if (!context())
-    return {};
-  return context()->TakePendingWorkerTimingReceiver(request_id);
 }
 
 void ServiceWorkerNetworkProviderForFrame::NotifyExecutionReady() {

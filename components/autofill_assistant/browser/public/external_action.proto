@@ -1,0 +1,117 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.chrome.browser.autofill_assistant.external.proto";
+option java_multiple_files = true;
+
+package autofill_assistant.external;
+
+import "components/autofill_assistant/browser/public/fast_checkout/proto/actions.proto";
+import "components/autofill_assistant/browser/public/password_change/proto/actions.proto";
+import "components/autofill_assistant/browser/public/assistant_ui/proto/assistant_ui_action.proto";
+
+// Defines an action to be executed by the ExternalActionDelegate.
+message Action {
+  // Integrator-specific information. This was forwarded without modifications.
+  optional ActionInfo info = 1;
+}
+
+message ActionInfo {
+  // Action forwarded to the client delegate.
+  oneof action {
+    password_change.GenericPasswordChangeSpecification
+        generic_password_change_specification = 1;
+    fast_checkout.FastCheckoutAction fast_checkout_action = 2;
+    assistant_ui.AssistantUiAction assistant_ui_action = 3;
+  }
+
+  extensions 100 to max;
+}
+
+message AutofillDataModelProto {
+  // The values, where the key is one of autofill::ServerFieldType.
+  map<int32, string> values = 1;
+  // Verification statuses of the `values`. The key is one of
+  // autofill::ServerFieldType, the value is one of
+  // autofill::structured_address::VerificationStatus.
+  map<int32, int32> verification_statuses = 2;
+  // The unique ID of this autofill::AutofillDataModel.
+  optional string guid = 3;
+  // The origin of this autofill::AutofillDataModel.
+  optional string origin = 4;
+}
+
+// Proto representation of autofill::AutofillProfile.
+message ProfileProto {
+  // The data of the underlying autofill::AutofillDataModel covered by
+  // autofill::ServerFieldType and to identify the object.
+  optional AutofillDataModelProto data = 1;
+}
+
+// Proto representation of autofill:CreditCard.
+message CreditCardProto {
+  // The data of the underlying autofill::AutofillDataModel covered by
+  // autofill::ServerFieldType and to identify the object.
+  optional AutofillDataModelProto data = 1;
+  // Remaining autofill::CreditCard fields not in autofill::ServerFieldType :
+  // Specifies e.g. if a card is local, one of autofill::CreditCard::RecordType.
+  optional int64 record_type = 4;
+  // The payments instrument id used to identify and unmask the credit card.
+  optional int64 instrument_id = 5;
+  // The network of the card.
+  optional string network = 6;
+  // Server ID of the card.
+  // TODO(crbug.com/1121806): Remove after autofill::CreditCard::server_id_ was
+  // removed.
+  optional string server_id = 7 [deprecated = true];
+}
+
+// The result of the execution of |Action|.
+message Result {
+  // Integrator-specific information. This will be forwarded to the backend
+  // without modification.
+  optional ResultInfo result_info = 1;
+
+  // Whether the action was successful.
+  optional bool success = 2;
+
+  // Profiles selected by the user, where the key is the client address
+  // identifier - sometimes referred to as profile name. The key is a
+  // compile-time constant; e.g. "SHIPPING" with the mapped value being the
+  // shipping address selected by the user. It needs to be in sync with Autofill
+  // Assistant's server version.
+  map<string, ProfileProto> selected_profiles = 3;
+
+  // Credit card selected by the user.
+  optional CreditCardProto selected_credit_card = 4;
+}
+
+// Extended by the integrator.
+message ResultInfo {
+  oneof result {
+    password_change.GenericPasswordChangeSpecificationResult
+        generic_password_change_specification_result = 1;
+    assistant_ui.AssistantUiActionResult assistant_ui_action_result = 2;
+  }
+
+  extensions 100 to max;
+}
+
+// An update on the status of the DOM conditions for the current action.
+message ElementConditionsUpdate {
+  // The list of conditions whose status changed since the last update. The
+  // first update for each action will contain all the conditions which are
+  // specified in the equivalent action in the backend.
+  message ConditionResult {
+    // The identifier of this condition, matches the one specified in the
+    // equivalent action in the backend.
+    optional int32 id = 1;
+    // Whether the condition was satisfied.
+    optional bool satisfied = 2;
+  }
+  repeated ConditionResult results = 1;
+}

@@ -1,17 +1,32 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/query_tiles/tile_background_task.h"
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/query_tiles/query_tile_utils.h"
 #include "chrome/browser/query_tiles/tile_service_factory.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/query_tiles/switches.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 
 namespace query_tiles {
+namespace {
+bool IsSearchEngineSupported(TemplateURLService* template_url_service) {
+  // Could be first start case, return true by default.
+  if (!template_url_service)
+    return true;
+  const TemplateURL* default_search_provider =
+      template_url_service->GetDefaultSearchProvider();
+  return default_search_provider &&
+         default_search_provider->url_ref().HasGoogleBaseURLs(
+             template_url_service->search_terms_data());
+}
+}  //  namespace
 
 TileBackgroundTask::TileBackgroundTask() = default;
 
@@ -28,16 +43,12 @@ void TileBackgroundTask::OnStartTaskWithFullBrowser(
     const TaskParameters& task_params,
     TaskFinishedCallback callback,
     content::BrowserContext* browser_context) {
-  auto* profile_key =
-      Profile::FromBrowserContext(browser_context)->GetProfileKey();
-  StartFetchTask(profile_key, false, std::move(callback));
+  StartFetchTask(browser_context, std::move(callback));
 }
 
 void TileBackgroundTask::OnFullBrowserLoaded(
     content::BrowserContext* browser_context) {
-  auto* profile_key =
-      Profile::FromBrowserContext(browser_context)->GetProfileKey();
-  StartFetchTask(profile_key, false, std::move(callback_));
+  StartFetchTask(browser_context, std::move(callback_));
 }
 
 bool TileBackgroundTask::OnStopTask(const TaskParameters& task_params) {
@@ -45,20 +56,21 @@ bool TileBackgroundTask::OnStopTask(const TaskParameters& task_params) {
   return false;
 }
 
-void TileBackgroundTask::StartFetchTask(SimpleFactoryKey* key,
-                                        bool is_from_reduced_mode,
-                                        TaskFinishedCallback callback) {
-  if (is_from_reduced_mode)
-    return;
-  auto* tile_service = TileServiceFactory::GetInstance()->GetForKey(key);
+void TileBackgroundTask::StartFetchTask(
+    content::BrowserContext* browser_context,
+    TaskFinishedCallback callback) {
+  auto* profile_key =
+      Profile::FromBrowserContext(browser_context)->GetProfileKey();
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
+  auto* tile_service =
+      TileServiceFactory::GetInstance()->GetForKey(profile_key);
   DCHECK(tile_service);
-  if (!base::FeatureList::IsEnabled(query_tiles::features::kQueryTiles) ||
-      (!base::FeatureList::IsEnabled(query_tiles::features::kQueryTilesInNTP) &&
-       !base::FeatureList::IsEnabled(
-           query_tiles::features::kQueryTilesInOmnibox))) {
-    tile_service->CancelTask();
+  if (IsQueryTilesEnabled() && IsSearchEngineSupported(template_url_service)) {
+    tile_service->StartFetchForTiles(false, std::move(callback));
   } else {
-    tile_service->StartFetchForTiles(is_from_reduced_mode, std::move(callback));
+    tile_service->CancelTask();
   }
 }
 

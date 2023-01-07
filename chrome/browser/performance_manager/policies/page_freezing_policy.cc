@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/containers/contains.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"
@@ -22,8 +20,8 @@ namespace policies {
 
 namespace {
 
-constexpr base::TimeDelta kUnfreezeInterval = base::TimeDelta::FromMinutes(5);
-constexpr base::TimeDelta kUnfreezeDuration = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kUnfreezeInterval = base::Minutes(5);
+constexpr base::TimeDelta kUnfreezeDuration = base::Seconds(10);
 
 bool IsPageNodeFrozen(const PageNode* page_node) {
   return page_node->GetLifecycleState() ==
@@ -180,7 +178,7 @@ void PageFreezingPolicy::OnPageIsHoldingIndexedDBLockChanged(
 
 void PageFreezingPolicy::OnFreezingVoteChanged(
     const PageNode* page_node,
-    base::Optional<performance_manager::freezing::FreezingVote> previous_vote) {
+    absl::optional<performance_manager::freezing::FreezingVote> previous_vote) {
   if (page_node == page_node_being_removed_)
     return;
 
@@ -213,7 +211,9 @@ void PageFreezingPolicy::OnFreezingVoteChanged(
   }
 }
 
-void PageFreezingPolicy::OnLoadingStateChanged(const PageNode* page_node) {
+void PageFreezingPolicy::OnLoadingStateChanged(
+    const PageNode* page_node,
+    PageNode::LoadingState previous_state) {
   if (page_node->GetLoadingState() != PageNode::LoadingState::kLoadedIdle)
     return;
   auto freezing_vote = page_node->GetFreezingVote();

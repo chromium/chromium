@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "base/win/scoped_handle.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/typed_buffer.h"
-#include "remoting/host/host_exit_codes.h"
+#include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/win/rdp_desktop_session.h"
 
 namespace remoting {

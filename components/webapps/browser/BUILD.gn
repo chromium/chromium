@@ -1,8 +1,19 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 assert(!is_ios)
+
+# This source set should contain only types and constants and no dependencies,
+# for use in crosapi type mappings.
+source_set("constants") {
+  sources = [
+    "install_result_code.cc",
+    "install_result_code.h",
+    "uninstall_result_code.cc",
+    "uninstall_result_code.h",
+  ]
+}
 
 source_set("browser") {
   sources = [
@@ -12,6 +23,8 @@ source_set("browser") {
     "banners/app_banner_metrics.h",
     "banners/app_banner_settings_helper.cc",
     "banners/app_banner_settings_helper.h",
+    "features.cc",
+    "features.h",
     "installable/installable_data.cc",
     "installable/installable_data.h",
     "installable/installable_logging.cc",
@@ -48,6 +61,8 @@ source_set("browser") {
     "//url",
   ]
 
+  public_deps = [ ":constants" ]
+
   if (is_android) {
     sources += [
       "android/add_to_homescreen_coordinator.cc",
@@ -62,21 +77,29 @@ source_set("browser") {
       "android/add_to_homescreen_params.h",
       "android/app_banner_manager_android.cc",
       "android/app_banner_manager_android.h",
-      "android/features.cc",
-      "android/features.h",
+      "android/bottomsheet/pwa_bottom_sheet_controller.cc",
+      "android/bottomsheet/pwa_bottom_sheet_controller.h",
+      "android/installable/installable_ambient_badge_client.h",
       "android/installable/installable_ambient_badge_infobar.cc",
       "android/installable/installable_ambient_badge_infobar.h",
       "android/installable/installable_ambient_badge_infobar_delegate.cc",
       "android/installable/installable_ambient_badge_infobar_delegate.h",
+      "android/installable/installable_ambient_badge_message_controller.cc",
+      "android/installable/installable_ambient_badge_message_controller.h",
       "android/shortcut_info.cc",
       "android/shortcut_info.h",
+      "android/webapk/webapk_icon_hasher.cc",
+      "android/webapk/webapk_icon_hasher.h",
+      "android/webapk/webapk_proto_builder.cc",
+      "android/webapk/webapk_proto_builder.h",
+      "android/webapk/webapk_types.h",
       "android/webapps_icon_utils.cc",
       "android/webapps_icon_utils.h",
       "android/webapps_utils.cc",
       "android/webapps_utils.h",
     ]
 
-    public_deps = [ "android:webapps_jni_headers" ]
+    public_deps += [ "android:webapps_jni_headers" ]
 
     deps += [
       "//base",
@@ -87,14 +110,20 @@ source_set("browser") {
       "//components/feature_engagement",
       "//components/infobars/android",
       "//components/infobars/content",
+      "//components/messages/android",
+      "//components/messages/android:feature_flags",
       "//components/strings",
       "//components/url_formatter",
       "//components/version_info",
       "//components/version_info/android:channel_getter",
+      "//components/webapk:proto",
       "//components/webapps/common:mojo_bindings",
       "//services/device/public/mojom",
+      "//third_party/smhasher:murmurhash2",
+      "//ui/android:android",
       "//ui/base",
       "//ui/gfx",
+      "//url:gurl_android",
     ]
   }
 }
@@ -109,6 +138,8 @@ source_set("test_support") {
     ":browser",
     "//base",
     "//skia",
+    "//third_party/blink/public/common:headers",
+    "//third_party/blink/public/mojom:mojom_platform_headers",
     "//url",
   ]
 }
@@ -117,6 +148,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "banners/app_banner_settings_helper_unittest.cc",
+    "install_result_code_unittest.cc",
     "installable/installable_manager_unittest.cc",
     "installable/installable_task_queue_unittest.cc",
     "pwa_install_path_tracker_unittest.cc",
@@ -136,4 +168,9 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/blink/public/mojom:mojom_platform_headers",
   ]
+
+  if (is_android) {
+    sources += [ "android/installable/installable_ambient_badge_message_controller_unittest.cc" ]
+    deps += [ "//components/messages/android:test_support" ]
+  }
 }

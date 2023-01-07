@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,6 @@
 #include "ui/ozone/platform/wayland/test/test_region.h"
 
 namespace wl {
-
-constexpr uint32_t TestCompositor::kVersion;
 
 namespace {
 
@@ -41,8 +39,11 @@ const struct wl_compositor_interface kTestCompositorImpl = {
     CreateRegion,   // create_region
 };
 
-TestCompositor::TestCompositor()
-    : GlobalObject(&wl_compositor_interface, &kTestCompositorImpl, kVersion) {}
+TestCompositor::TestCompositor(uint32_t intended_version)
+    : GlobalObject(&wl_compositor_interface,
+                   &kTestCompositorImpl,
+                   intended_version),
+      version_(intended_version) {}
 
 TestCompositor::~TestCompositor() = default;
 

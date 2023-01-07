@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,7 @@ namespace content {
 
 CONTENT_EXPORT const gpu::GpuPreferences GetGpuPreferencesFromCommandLine();
 
-CONTENT_EXPORT void StopGpuProcess(base::OnceClosure callback);
-
 // Kills the GPU process with a normal termination status.
-// TODO(crbug.com/1095977): Combine with StopGpuProcess
 CONTENT_EXPORT void KillGpuProcess();
 
 CONTENT_EXPORT gpu::GpuChannelEstablishFactory* GetGpuChannelEstablishFactory();

@@ -41,9 +41,9 @@ class CSSCounterValue : public CSSValue {
         list_style_(list_style),
         separator_(separator) {}
 
-  String Identifier() const { return identifier_->Value(); }
-  AtomicString ListStyle() const { return list_style_->Value(); }
-  String Separator() const { return separator_->Value(); }
+  const String& Identifier() const { return identifier_->Value(); }
+  const AtomicString& ListStyle() const { return list_style_->Value(); }
+  const String& Separator() const { return separator_->Value(); }
 
   bool Equals(const CSSCounterValue& other) const {
     return Identifier() == other.Identifier() &&

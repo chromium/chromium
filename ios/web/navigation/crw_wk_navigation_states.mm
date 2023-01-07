@@ -1,13 +1,13 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/navigation/crw_wk_navigation_states.h"
 
-#include "base/check.h"
-#include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
-#include "ios/web/common/features.h"
+#import "base/check.h"
+#import "base/feature_list.h"
+#import "base/metrics/histogram_macros.h"
+#import "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_context_impl.h"
 #import "ios/web/public/web_client.h"
 
@@ -17,7 +17,7 @@
 
 // Holds a pair of state and creation order index.
 @interface CRWWKNavigationsStateRecord : NSObject {
-  // Backs up |context| property.
+  // Backs up `context` property.
   std::unique_ptr<web::NavigationContextImpl> _context;
 }
 // Navigation state.
@@ -142,7 +142,7 @@
            // didFinishNavigation can be called before didCommitNvigation.
            (record.state == web::WKNavigationState::FINISHED &&
             state == web::WKNavigationState::COMMITTED) ||
-           // |navigation| can be nil for same-document navigations.
+           // `navigation` can be nil for same-document navigations.
            !navigation);
     record.state = state;
   }
@@ -161,14 +161,15 @@
           web::features::kClearOldNavigationRecordsWorkaround)) {
     NSUInteger finishedIndex = record.index;
     NSMutableSet* navigationsToRemove = [NSMutableSet set];
-    for (id navigation in _records) {
-      CRWWKNavigationsStateRecord* record = [_records objectForKey:navigation];
-      if (record.index < finishedIndex) {
-        [navigationsToRemove addObject:navigation];
+    for (id recordKey in _records) {
+      CRWWKNavigationsStateRecord* recordObject =
+          [_records objectForKey:recordKey];
+      if (recordObject.index < finishedIndex) {
+        [navigationsToRemove addObject:recordKey];
       }
     }
-    for (id navigation in navigationsToRemove) {
-      [_records removeObjectForKey:navigation];
+    for (id recordKey in navigationsToRemove) {
+      [_records removeObjectForKey:recordKey];
     }
 
     UMA_HISTOGRAM_BOOLEAN("IOS.CRWWKNavigationStatesRemoveOldPending",
@@ -272,7 +273,7 @@
   }
 
   if (*outNavigation == _nullNavigation) {
-    // |_nullNavigation| is a key for storing null navigations.
+    // `_nullNavigation` is a key for storing null navigations.
     *outNavigation = nil;
   }
 }

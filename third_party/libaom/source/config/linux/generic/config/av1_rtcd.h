@@ -13,13 +13,13 @@
  */
 
 #include "aom/aom_integer.h"
+#include "aom_dsp/odintrin.h"
 #include "aom_dsp/txfm_common.h"
 #include "av1/common/av1_txfm.h"
 #include "av1/common/common.h"
 #include "av1/common/convolve.h"
 #include "av1/common/enums.h"
 #include "av1/common/filter.h"
-#include "av1/common/odintrin.h"
 #include "av1/common/quant_common.h"
 #include "av1/common/restoration.h"
 
@@ -82,6 +82,60 @@ typedef void (*cfl_predict_lbd_fn)(const int16_t* src,
 extern "C" {
 #endif
 
+void aom_comp_avg_upsampled_pred_c(MACROBLOCKD* xd,
+                                   const struct AV1Common* const cm,
+                                   int mi_row,
+                                   int mi_col,
+                                   const MV* const mv,
+                                   uint8_t* comp_pred,
+                                   const uint8_t* pred,
+                                   int width,
+                                   int height,
+                                   int subpel_x_q3,
+                                   int subpel_y_q3,
+                                   const uint8_t* ref,
+                                   int ref_stride,
+                                   int subpel_search);
+#define aom_comp_avg_upsampled_pred aom_comp_avg_upsampled_pred_c
+
+void aom_comp_mask_upsampled_pred_c(MACROBLOCKD* xd,
+                                    const struct AV1Common* const cm,
+                                    int mi_row,
+                                    int mi_col,
+                                    const MV* const mv,
+                                    uint8_t* comp_pred,
+                                    const uint8_t* pred,
+                                    int width,
+                                    int height,
+                                    int subpel_x_q3,
+                                    int subpel_y_q3,
+                                    const uint8_t* ref,
+                                    int ref_stride,
+                                    const uint8_t* mask,
+                                    int mask_stride,
+                                    int invert_mask,
+                                    int subpel_search);
+#define aom_comp_mask_upsampled_pred aom_comp_mask_upsampled_pred_c
+
+void aom_dist_wtd_comp_avg_upsampled_pred_c(
+    MACROBLOCKD* xd,
+    const struct AV1Common* const cm,
+    int mi_row,
+    int mi_col,
+    const MV* const mv,
+    uint8_t* comp_pred,
+    const uint8_t* pred,
+    int width,
+    int height,
+    int subpel_x_q3,
+    int subpel_y_q3,
+    const uint8_t* ref,
+    int ref_stride,
+    const DIST_WTD_COMP_PARAMS* jcp_param,
+    int subpel_search);
+#define aom_dist_wtd_comp_avg_upsampled_pred \
+  aom_dist_wtd_comp_avg_upsampled_pred_c
+
 void aom_quantize_b_helper_c(const tran_low_t* coeff_ptr,
                              intptr_t n_coeffs,
                              const int16_t* zbin_ptr,
@@ -98,6 +152,34 @@ void aom_quantize_b_helper_c(const tran_low_t* coeff_ptr,
                              const qm_val_t* iqm_ptr,
                              const int log_scale);
 #define aom_quantize_b_helper aom_quantize_b_helper_c
+
+void aom_upsampled_pred_c(MACROBLOCKD* xd,
+                          const struct AV1Common* const cm,
+                          int mi_row,
+                          int mi_col,
+                          const MV* const mv,
+                          uint8_t* comp_pred,
+                          int width,
+                          int height,
+                          int subpel_x_q3,
+                          int subpel_y_q3,
+                          const uint8_t* ref,
+                          int ref_stride,
+                          int subpel_search);
+#define aom_upsampled_pred aom_upsampled_pred_c
+
+void av1_apply_selfguided_restoration_c(const uint8_t* dat,
+                                        int width,
+                                        int height,
+                                        int stride,
+                                        int eps,
+                                        const int* xqd,
+                                        uint8_t* dst,
+                                        int dst_stride,
+                                        int32_t* tmpbuf,
+                                        int bit_depth,
+                                        int highbd);
+#define av1_apply_selfguided_restoration av1_apply_selfguided_restoration_c
 
 int64_t av1_block_error_c(const tran_low_t* coeff,
                           const tran_low_t* dqcoeff,
@@ -133,17 +215,13 @@ void av1_build_compound_diffwtd_mask_d16_c(uint8_t* mask,
 #define av1_build_compound_diffwtd_mask_d16 \
   av1_build_compound_diffwtd_mask_d16_c
 
-void av1_build_compound_diffwtd_mask_highbd_c(uint8_t* mask,
-                                              DIFFWTD_MASK_TYPE mask_type,
-                                              const uint8_t* src0,
-                                              int src0_stride,
-                                              const uint8_t* src1,
-                                              int src1_stride,
-                                              int h,
-                                              int w,
-                                              int bd);
-#define av1_build_compound_diffwtd_mask_highbd \
-  av1_build_compound_diffwtd_mask_highbd_c
+int64_t av1_calc_frame_error_c(const uint8_t* const ref,
+                               int stride,
+                               const uint8_t* const dst,
+                               int p_width,
+                               int p_height,
+                               int p_stride);
+#define av1_calc_frame_error av1_calc_frame_error_c
 
 void av1_calc_indices_dim1_c(const int* data,
                              const int* centroids,
@@ -454,71 +532,6 @@ void av1_get_nz_map_contexts_c(const uint8_t* const levels,
                                int8_t* const coeff_contexts);
 #define av1_get_nz_map_contexts av1_get_nz_map_contexts_c
 
-void av1_highbd_convolve8_c(const uint8_t* src,
-                            ptrdiff_t src_stride,
-                            uint8_t* dst,
-                            ptrdiff_t dst_stride,
-                            const int16_t* filter_x,
-                            int x_step_q4,
-                            const int16_t* filter_y,
-                            int y_step_q4,
-                            int w,
-                            int h,
-                            int bps);
-#define av1_highbd_convolve8 av1_highbd_convolve8_c
-
-void av1_highbd_convolve8_horiz_c(const uint8_t* src,
-                                  ptrdiff_t src_stride,
-                                  uint8_t* dst,
-                                  ptrdiff_t dst_stride,
-                                  const int16_t* filter_x,
-                                  int x_step_q4,
-                                  const int16_t* filter_y,
-                                  int y_step_q4,
-                                  int w,
-                                  int h,
-                                  int bps);
-#define av1_highbd_convolve8_horiz av1_highbd_convolve8_horiz_c
-
-void av1_highbd_convolve8_vert_c(const uint8_t* src,
-                                 ptrdiff_t src_stride,
-                                 uint8_t* dst,
-                                 ptrdiff_t dst_stride,
-                                 const int16_t* filter_x,
-                                 int x_step_q4,
-                                 const int16_t* filter_y,
-                                 int y_step_q4,
-                                 int w,
-                                 int h,
-                                 int bps);
-#define av1_highbd_convolve8_vert av1_highbd_convolve8_vert_c
-
-void av1_highbd_convolve_avg_c(const uint8_t* src,
-                               ptrdiff_t src_stride,
-                               uint8_t* dst,
-                               ptrdiff_t dst_stride,
-                               const int16_t* filter_x,
-                               int x_step_q4,
-                               const int16_t* filter_y,
-                               int y_step_q4,
-                               int w,
-                               int h,
-                               int bps);
-#define av1_highbd_convolve_avg av1_highbd_convolve_avg_c
-
-void av1_highbd_convolve_copy_c(const uint8_t* src,
-                                ptrdiff_t src_stride,
-                                uint8_t* dst,
-                                ptrdiff_t dst_stride,
-                                const int16_t* filter_x,
-                                int x_step_q4,
-                                const int16_t* filter_y,
-                                int y_step_q4,
-                                int w,
-                                int h,
-                                int bps);
-#define av1_highbd_convolve_copy av1_highbd_convolve_copy_c
-
 void av1_highbd_fwht4x4_c(const int16_t* input, tran_low_t* output, int stride);
 #define av1_highbd_fwht4x4 av1_highbd_fwht4x4_c
 
@@ -793,6 +806,9 @@ void av1_lowbd_fwd_txfm_c(const int16_t* src_diff,
                           TxfmParam* txfm_param);
 #define av1_lowbd_fwd_txfm av1_lowbd_fwd_txfm_c
 
+void av1_nn_fast_softmax_16_c(const float* input_nodes, float* output);
+#define av1_nn_fast_softmax_16 av1_nn_fast_softmax_16_c
+
 void av1_nn_predict_c(const float* input_nodes,
                       const NN_CONFIG* const nn_config,
                       int reduce_prec,
@@ -866,7 +882,8 @@ void av1_quantize_lp_c(const int16_t* coeff_ptr,
                        int16_t* dqcoeff_ptr,
                        const int16_t* dequant_ptr,
                        uint16_t* eob_ptr,
-                       const int16_t* scan);
+                       const int16_t* scan,
+                       const int16_t* iscan);
 #define av1_quantize_lp av1_quantize_lp_c
 
 void av1_resize_and_extend_frame_c(const YV12_BUFFER_CONFIG* src,
@@ -879,6 +896,18 @@ void av1_resize_and_extend_frame_c(const YV12_BUFFER_CONFIG* src,
 void av1_round_shift_array_c(int32_t* arr, int size, int bit);
 #define av1_round_shift_array av1_round_shift_array_c
 
+int av1_selfguided_restoration_c(const uint8_t* dgd8,
+                                 int width,
+                                 int height,
+                                 int dgd_stride,
+                                 int32_t* flt0,
+                                 int32_t* flt1,
+                                 int flt_stride,
+                                 int sgr_params_idx,
+                                 int bit_depth,
+                                 int highbd);
+#define av1_selfguided_restoration av1_selfguided_restoration_c
+
 void av1_txb_init_levels_c(const tran_low_t* const coeff,
                            const int width,
                            const int height,
@@ -890,6 +919,26 @@ void av1_upsample_intra_edge_c(uint8_t* p, int sz);
 
 void av1_upsample_intra_edge_high_c(uint16_t* p, int sz, int bd);
 #define av1_upsample_intra_edge_high av1_upsample_intra_edge_high_c
+
+void av1_warp_affine_c(const int32_t* mat,
+                       const uint8_t* ref,
+                       int width,
+                       int height,
+                       int stride,
+                       uint8_t* pred,
+                       int p_col,
+                       int p_row,
+                       int p_width,
+                       int p_height,
+                       int p_stride,
+                       int subsampling_x,
+                       int subsampling_y,
+                       ConvolveParams* conv_params,
+                       int16_t alpha,
+                       int16_t beta,
+                       int16_t gamma,
+                       int16_t delta);
+#define av1_warp_affine av1_warp_affine_c
 
 void av1_wedge_compute_delta_squares_c(int16_t* d,
                                        const int16_t* a,
@@ -938,24 +987,125 @@ void cdef_copy_rect8_8bit_to_16bit_c(uint16_t* dst,
                                      int h);
 #define cdef_copy_rect8_8bit_to_16bit cdef_copy_rect8_8bit_to_16bit_c
 
-void cdef_filter_block_c(uint8_t* dst8,
-                         uint16_t* dst16,
-                         int dstride,
-                         const uint16_t* in,
-                         int pri_strength,
-                         int sec_strength,
-                         int dir,
-                         int pri_damping,
-                         int sec_damping,
-                         int bsize,
-                         int coeff_shift);
-#define cdef_filter_block cdef_filter_block_c
+void cdef_filter_16_0_c(void* dst16,
+                        int dstride,
+                        const uint16_t* in,
+                        int pri_strength,
+                        int sec_strength,
+                        int dir,
+                        int pri_damping,
+                        int sec_damping,
+                        int coeff_shift,
+                        int block_width,
+                        int block_height);
+#define cdef_filter_16_0 cdef_filter_16_0_c
+
+void cdef_filter_16_1_c(void* dst16,
+                        int dstride,
+                        const uint16_t* in,
+                        int pri_strength,
+                        int sec_strength,
+                        int dir,
+                        int pri_damping,
+                        int sec_damping,
+                        int coeff_shift,
+                        int block_width,
+                        int block_height);
+#define cdef_filter_16_1 cdef_filter_16_1_c
+
+void cdef_filter_16_2_c(void* dst16,
+                        int dstride,
+                        const uint16_t* in,
+                        int pri_strength,
+                        int sec_strength,
+                        int dir,
+                        int pri_damping,
+                        int sec_damping,
+                        int coeff_shift,
+                        int block_width,
+                        int block_height);
+#define cdef_filter_16_2 cdef_filter_16_2_c
+
+void cdef_filter_16_3_c(void* dst16,
+                        int dstride,
+                        const uint16_t* in,
+                        int pri_strength,
+                        int sec_strength,
+                        int dir,
+                        int pri_damping,
+                        int sec_damping,
+                        int coeff_shift,
+                        int block_width,
+                        int block_height);
+#define cdef_filter_16_3 cdef_filter_16_3_c
+
+void cdef_filter_8_0_c(void* dst8,
+                       int dstride,
+                       const uint16_t* in,
+                       int pri_strength,
+                       int sec_strength,
+                       int dir,
+                       int pri_damping,
+                       int sec_damping,
+                       int coeff_shift,
+                       int block_width,
+                       int block_height);
+#define cdef_filter_8_0 cdef_filter_8_0_c
+
+void cdef_filter_8_1_c(void* dst8,
+                       int dstride,
+                       const uint16_t* in,
+                       int pri_strength,
+                       int sec_strength,
+                       int dir,
+                       int pri_damping,
+                       int sec_damping,
+                       int coeff_shift,
+                       int block_width,
+                       int block_height);
+#define cdef_filter_8_1 cdef_filter_8_1_c
+
+void cdef_filter_8_2_c(void* dst8,
+                       int dstride,
+                       const uint16_t* in,
+                       int pri_strength,
+                       int sec_strength,
+                       int dir,
+                       int pri_damping,
+                       int sec_damping,
+                       int coeff_shift,
+                       int block_width,
+                       int block_height);
+#define cdef_filter_8_2 cdef_filter_8_2_c
+
+void cdef_filter_8_3_c(void* dst8,
+                       int dstride,
+                       const uint16_t* in,
+                       int pri_strength,
+                       int sec_strength,
+                       int dir,
+                       int pri_damping,
+                       int sec_damping,
+                       int coeff_shift,
+                       int block_width,
+                       int block_height);
+#define cdef_filter_8_3 cdef_filter_8_3_c
 
 int cdef_find_dir_c(const uint16_t* img,
                     int stride,
                     int32_t* var,
                     int coeff_shift);
 #define cdef_find_dir cdef_find_dir_c
+
+void cdef_find_dir_dual_c(const uint16_t* img1,
+                          const uint16_t* img2,
+                          int stride,
+                          int32_t* var1,
+                          int32_t* var2,
+                          int coeff_shift,
+                          int* out1,
+                          int* out2);
+#define cdef_find_dir_dual cdef_find_dir_dual_c
 
 cfl_subsample_lbd_fn cfl_get_luma_subsampling_420_lbd_c(TX_SIZE tx_size);
 #define cfl_get_luma_subsampling_420_lbd cfl_get_luma_subsampling_420_lbd_c

@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/commander/simple_command_source.h"
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/i18n/case_conversion.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
@@ -62,12 +63,13 @@ CommandSource::CommandResults SimpleCommandSource::GetCommands(
       {IDC_OPTIONS, u"Show settings"},
       {IDC_SHOW_AVATAR_MENU, u"Switch profile"},
       {IDC_DEV_TOOLS_TOGGLE, u"Toggle developer tools"},
-      {IDC_MANAGE_EXTENSIONS, l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSION)},
+      {IDC_MANAGE_EXTENSIONS, l10n_util::GetStringUTF16(IDS_MANAGE_EXTENSIONS)},
       {IDC_TAB_SEARCH, u"Search tabs..."},
       {IDC_SELECT_NEXT_TAB, u"Next tab"},
       {IDC_SELECT_PREVIOUS_TAB, u"Previous tab"},
       {IDC_MOVE_TAB_NEXT, u"Move tab forward"},
       {IDC_MOVE_TAB_PREVIOUS, u"Move tab backward"},
+      {IDC_QRCODE_GENERATOR, u"Create QR code"},
   };
   CommandSource::CommandResults results;
   FuzzyFinder finder(input);

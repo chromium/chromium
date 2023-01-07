@@ -1,0 +1,15 @@
+include_rules = [
+  "+ash/constants",
+  "+chromeos/ash/components/multidevice",
+  "+components/gcm_driver",
+  "+components/signin/public",
+  "+components/version_info",
+  "+crypto",
+  "+device/bluetooth",
+  "+google_apis/gaia",
+  "+mojo/public/cpp",
+  "+services/network/public",
+  "+services/network/test",
+  "+third_party/protobuf/src/google/protobuf/message_lite.h",
+  "+third_party/securemessage",
+]

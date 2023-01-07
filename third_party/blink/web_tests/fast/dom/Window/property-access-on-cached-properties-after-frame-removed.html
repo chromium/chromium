@@ -26,11 +26,10 @@ function insertExpectedResult(path, expected)
 
 function runTest()
 {
-    description("Tests access of cached DOMWindow properties after the associated frame is no longer in a web page. Test should not crash and properties should be set to sane defaults.");
+    description("Tests access of cached DOMWindow properties after the associated frame is no longer in a web page. Test should not crash and properties should be set to reasonable defaults as appropriate.");
     var frame = document.getElementById("test_frame");
     childWindow = frame.contentWindow;
-    // Have expected results assume that the frame hasn't been closed (=> window.closed = false.)
-    collectProperties(document.getElementById("src_frame").contentWindow, false);
+    collectProperties(document.getElementById("src_frame").contentWindow);
     frame.parentNode.removeChild(frame);
     for (var i = 0; i < propertiesToVerify.length; ++i)
         shouldBe(propertiesToVerify[i].property, propertiesToVerify[i].expected);

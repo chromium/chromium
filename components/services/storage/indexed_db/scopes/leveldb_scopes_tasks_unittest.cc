@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -259,7 +259,7 @@ TEST_F(LevelDBScopesTasksTest, RevertAndCleanup) {
       scopes_encoder_.UndoTaskKeyPrefix(metadata_prefix_, kScopeNumber)));
 }
 
-TEST_F(LevelDBScopesTasksTest, ErrorsDuringCleanupArePropogated) {
+TEST_F(LevelDBScopesTasksTest, ErrorsDuringCleanupArePropagated) {
   const int64_t kScopeNumber = 1;
 
   // This test will fail if the pattern of leveldb operations in this test
@@ -296,7 +296,7 @@ TEST_F(LevelDBScopesTasksTest, ErrorsDuringCleanupArePropogated) {
   }
 }
 
-TEST_F(LevelDBScopesTasksTest, ErrorsDuringRevertArePropogated) {
+TEST_F(LevelDBScopesTasksTest, ErrorsDuringRevertArePropagated) {
   const int64_t kScopeNumber = 1;
 
   // This test will fail if the pattern of leveldb operations in this test

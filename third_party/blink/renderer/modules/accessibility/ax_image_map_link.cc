@@ -30,10 +30,11 @@
 
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
-#include "third_party/skia/include/core/SkMatrix44.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -50,17 +51,20 @@ HTMLMapElement* AXImageMapLink::MapElement() const {
   return Traversal<HTMLMapElement>::FirstAncestor(*area);
 }
 
-AXObject* AXImageMapLink::ComputeParentImpl() const {
-  if (MapElement()) {
-    AXObject* ax_parent =
-        AXObjectCache().GetOrCreate(MapElement()->GetLayoutObject());
-    if (ax_parent)
-      return ax_parent;
-  }
-  return AXNodeObject::ComputeParentImpl();
+// static
+AXObject* AXImageMapLink::GetAXObjectForImageMap(AXObjectCacheImpl& cache,
+                                                 Node* area) {
+  DCHECK(area);
+  DCHECK(IsA<HTMLAreaElement>(area));
+
+  HTMLMapElement* map = Traversal<HTMLMapElement>::FirstAncestor(*area);
+  if (!map)
+    return nullptr;
+
+  return cache.GetOrCreate(static_cast<Node*>(map->ImageElement()));
 }
 
-ax::mojom::blink::Role AXImageMapLink::DetermineAccessibilityRole() {
+ax::mojom::blink::Role AXImageMapLink::NativeRoleIgnoringAria() const {
   // https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings
   // <area> tags without an href should be treated as static text.
   // If the area has child nodes, those will be rendered naturally, and the
@@ -68,15 +72,12 @@ ax::mojom::blink::Role AXImageMapLink::DetermineAccessibilityRole() {
   KURL url = Url();
   bool has_url = !url.IsNull() && !url.IsEmpty();
   if (has_url)
-    native_role_ = ax::mojom::blink::Role::kLink;
-  else if (!GetElement()->hasChildren())
-    native_role_ = ax::mojom::blink::Role::kStaticText;
-  else
-    native_role_ = ax::mojom::blink::Role::kGenericContainer;
+    return ax::mojom::blink::Role::kLink;
 
-  aria_role_ = DetermineAriaRoleAttribute();
-  return aria_role_ == ax::mojom::blink::Role::kUnknown ? native_role_
-                                                        : aria_role_;
+  if (!GetElement()->hasChildren())
+    return ax::mojom::blink::Role::kStaticText;
+
+  return ax::mojom::blink::Role::kGenericContainer;
 }
 
 bool AXImageMapLink::ComputeAccessibilityIsIgnored(
@@ -100,12 +101,12 @@ KURL AXImageMapLink::Url() const {
 }
 
 void AXImageMapLink::GetRelativeBounds(AXObject** out_container,
-                                       FloatRect& out_bounds_in_container,
-                                       SkMatrix44& out_container_transform,
+                                       gfx::RectF& out_bounds_in_container,
+                                       gfx::Transform& out_container_transform,
                                        bool* clips_children) const {
   *out_container = nullptr;
-  out_bounds_in_container = FloatRect();
-  out_container_transform.setIdentity();
+  out_bounds_in_container = gfx::RectF();
+  out_container_transform.MakeIdentity();
 
   HTMLAreaElement* area = AreaElement();
   HTMLMapElement* map = MapElement();

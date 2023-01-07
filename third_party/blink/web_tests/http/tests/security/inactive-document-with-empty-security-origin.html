@@ -7,7 +7,7 @@ if (location.hash == "#stop")
 if (window.testRunner) {
     testRunner.dumpAsText();
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 }
 
 blankWindow = open(location + "#stop");

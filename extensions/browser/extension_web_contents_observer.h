@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/mojom/frame.mojom.h"
@@ -19,6 +21,10 @@ namespace content {
 class BrowserContext;
 class RenderFrameHost;
 class WebContents;
+}
+
+namespace sessions {
+class SessionTabHelper;
 }
 
 namespace extensions {
@@ -54,9 +60,19 @@ class ExtensionWebContentsObserver
     : public content::WebContentsObserver,
       public ExtensionFunctionDispatcher::Delegate {
  public:
+  ExtensionWebContentsObserver(const ExtensionWebContentsObserver&) = delete;
+  ExtensionWebContentsObserver& operator=(const ExtensionWebContentsObserver&) =
+      delete;
+
   // Returns the ExtensionWebContentsObserver for the given |web_contents|.
   static ExtensionWebContentsObserver* GetForWebContents(
       content::WebContents* web_contents);
+
+  // Binds the LocalFrameHost interface to the ExtensionFrameHost associated
+  // with the RenderFrameHost.
+  static void BindLocalFrameHost(
+      mojo::PendingAssociatedReceiver<mojom::LocalFrameHost> receiver,
+      content::RenderFrameHost* rfh);
 
   // This must be called by clients directly after the EWCO has been created.
   void Initialize();
@@ -74,8 +90,20 @@ class ExtensionWebContentsObserver
 
   // Returns mojom::LocalFrame* corresponding |render_frame_host|. It emplaces
   // AssociatedRemote<mojom::LocalFrame> to |local_frame_map_| if the map
-  // doesn't have it. Note that it does not return nullptr.
+  // doesn't have it. Note that it could return nullptr if |render_frame_host|
+  // is not live.
   mojom::LocalFrame* GetLocalFrame(content::RenderFrameHost* render_frame_host);
+
+  // Tells the receiver to start listening to window ID changes from the
+  // supplied SessionTabHelper. This method is public to allow the code that
+  // installs new SessionTabHelpers to call it; that in turn is required because
+  // SessionTabHelpers may be created after the corresponding
+  // ExtensionWebContentsObserver has already been initialized.
+  void ListenToWindowIdChangesFrom(sessions::SessionTabHelper* helper);
+
+  ExtensionFrameHost* extension_frame_host_for_testing() {
+    return extension_frame_host_.get();
+  }
 
  protected:
   explicit ExtensionWebContentsObserver(content::WebContents* web_contents);
@@ -107,26 +135,18 @@ class ExtensionWebContentsObserver
       content::NavigationHandle* navigation_handle) override;
   void MediaPictureInPictureChanged(bool is_picture_in_picture) override;
 
-  // Subclasses should call this first before doing their own message handling.
-  bool OnMessageReceived(const IPC::Message& message,
-                         content::RenderFrameHost* render_frame_host) override;
-
   // Per the documentation in WebContentsObserver, these two methods are invoked
   // when a Pepper plugin instance is attached/detached in the page DOM.
   void PepperInstanceCreated() override;
   void PepperInstanceDeleted() override;
 
-  // Returns the extension id associated with the given |render_frame_host|, or
-  // the empty string if there is none.
-  std::string GetExtensionIdFromFrame(
-      content::RenderFrameHost* render_frame_host) const;
-
  private:
-  void OnRequest(content::RenderFrameHost* render_frame_host,
-                 const mojom::RequestParams& params);
+  using PassKey = base::PassKey<ExtensionWebContentsObserver>;
+
+  void OnWindowIdChanged(const SessionID& id);
 
   // The BrowserContext associated with the WebContents being observed.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   ExtensionFunctionDispatcher dispatcher_;
 
@@ -135,11 +155,11 @@ class ExtensionWebContentsObserver
 
   std::unique_ptr<ExtensionFrameHost> extension_frame_host_;
 
+  base::CallbackListSubscription window_id_subscription_;
+
   // A map of render frame host to mojo remotes.
   std::map<content::RenderFrameHost*, mojo::AssociatedRemote<mojom::LocalFrame>>
       local_frame_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionWebContentsObserver);
 };
 
 }  // namespace extensions

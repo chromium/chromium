@@ -1,13 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/extensions/extension_message_bubble_factory.h"
 
+#include <memory>
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/dev_mode_bubble_delegate.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
@@ -46,7 +47,7 @@ bool EnableSuspiciousExtensionsBubble() {
 }
 
 bool EnableSettingsApiBubble() {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return true;
 #else
   return g_override_for_testing ==
@@ -55,7 +56,7 @@ bool EnableSettingsApiBubble() {
 }
 
 bool EnableProxyOverrideBubble() {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return true;
 #else
   return g_override_for_testing ==
@@ -75,7 +76,7 @@ bool EnableDevModeBubble() {
   if (command_line->HasSwitch(switches::kEnableAutomation))
     return false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (chrome::GetChannel() >= version_info::Channel::BETA)
     return true;
 #endif
@@ -112,11 +113,9 @@ ExtensionMessageBubbleFactory::GetController() {
   // the dev mode extensions on the next startup/next window that opens. That
   // way, we're not too spammy with the bubbles.
   if (EnableSuspiciousExtensionsBubble()) {
-    controller.reset(
-        new extensions::ExtensionMessageBubbleController(
-            new extensions::SuspiciousExtensionBubbleDelegate(
-                browser_->profile()),
-            browser_));
+    controller = std::make_unique<extensions::ExtensionMessageBubbleController>(
+        new extensions::SuspiciousExtensionBubbleDelegate(browser_->profile()),
+        browser_);
     if (controller->ShouldShow())
       return controller;
   }
@@ -137,21 +136,16 @@ ExtensionMessageBubbleFactory::GetController() {
   }
 
   if (EnableProxyOverrideBubble()) {
-    controller.reset(
-        new extensions::ExtensionMessageBubbleController(
-            new extensions::ProxyOverriddenBubbleDelegate(
-                browser_->profile()),
-            browser_));
+    controller = std::make_unique<extensions::ExtensionMessageBubbleController>(
+        new extensions::ProxyOverriddenBubbleDelegate(browser_->profile()),
+        browser_);
     if (controller->ShouldShow())
       return controller;
   }
 
   if (EnableDevModeBubble()) {
-    controller.reset(
-        new extensions::ExtensionMessageBubbleController(
-            new extensions::DevModeBubbleDelegate(
-                browser_->profile()),
-            browser_));
+    controller = std::make_unique<extensions::ExtensionMessageBubbleController>(
+        new extensions::DevModeBubbleDelegate(browser_->profile()), browser_);
     if (controller->ShouldShow())
       return controller;
   }

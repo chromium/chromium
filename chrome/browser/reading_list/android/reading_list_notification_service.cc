@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/reading_list/android/reading_list_notification_service.h"
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/notifications/scheduler/public/client_overview.h"
 #include "chrome/browser/notifications/scheduler/public/notification_data.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
@@ -17,8 +18,8 @@
 
 constexpr notifications::SchedulerClientType kNotificationType =
     notifications::SchedulerClientType::kReadingList;
-const base::TimeDelta kDeliverStartTimeDelta = base::TimeDelta::FromDays(7);
-const base::TimeDelta kDeliverEndTimeDelta = base::TimeDelta::FromMinutes(5);
+const base::TimeDelta kDeliverStartTimeDelta = base::Days(7);
+const base::TimeDelta kDeliverEndTimeDelta = base::Minutes(5);
 
 ReadingListNotificationService::Config::Config() = default;
 ReadingListNotificationService::Config::~Config() = default;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,16 @@
 
 // no-include-guard-because-multiply-included
 
+#include "build/build_config.h"
 #include "ppapi/thunk/interfaces_preamble.h"
 
 // See interfaces_ppb_private_no_permissions.h for other private interfaces.
 
 PROXIED_API(PPB_X509Certificate_Private)
 
+#if !BUILDFLAG(IS_NACL)
 PROXIED_IFACE(PPB_X509CERTIFICATE_PRIVATE_INTERFACE_0_1,
               PPB_X509Certificate_Private_0_1)
-
-#if !defined(OS_NACL)
 PROXIED_IFACE(PPB_BROWSERFONT_TRUSTED_INTERFACE_1_0,
               PPB_BrowserFont_Trusted_1_0)
 PROXIED_IFACE(PPB_CHARSET_TRUSTED_INTERFACE_1_0,
@@ -27,6 +27,6 @@ PROXIED_IFACE(PPB_FILECHOOSER_TRUSTED_INTERFACE_0_6,
               PPB_FileChooserTrusted_0_6)
 PROXIED_IFACE(PPB_FILEREFPRIVATE_INTERFACE_0_1,
               PPB_FileRefPrivate_0_1)
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 #include "ppapi/thunk/interfaces_postamble.h"

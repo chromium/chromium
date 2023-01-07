@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/i18n/case_conversion.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -62,6 +63,11 @@ const char DefaultSearchManager::kSuggestionsURLPostParams[] =
     "suggestions_url_post_params";
 const char DefaultSearchManager::kImageURLPostParams[] =
     "image_url_post_params";
+const char DefaultSearchManager::kSideSearchParam[] = "side_search_param";
+const char DefaultSearchManager::kSideImageSearchParam[] =
+    "side_image_search_param";
+const char DefaultSearchManager::kImageSearchBrandingLabel[] =
+    "image_search_branding_label";
 
 const char DefaultSearchManager::kSafeForAutoReplace[] = "safe_for_autoreplace";
 const char DefaultSearchManager::kInputEncodings[] = "input_encodings";
@@ -76,13 +82,17 @@ const char DefaultSearchManager::kCreatedByPolicy[] = "created_by_policy";
 const char DefaultSearchManager::kDisabledByPolicy[] = "disabled_by_policy";
 const char DefaultSearchManager::kCreatedFromPlayAPI[] =
     "created_from_play_api";
+const char DefaultSearchManager::kPreconnectToSearchUrl[] =
+    "preconnect_to_search_url";
+const char DefaultSearchManager::kPrefetchLikelyNavigations[] =
+    "prefetch_likely_navigations";
+const char DefaultSearchManager::kIsActive[] = "is_active";
+const char DefaultSearchManager::kStarterPackId[] = "starter_pack_id";
 
 DefaultSearchManager::DefaultSearchManager(
     PrefService* pref_service,
     const ObserverCallback& change_observer)
-    : pref_service_(pref_service),
-      change_observer_(change_observer),
-      default_search_controlled_by_policy_(false) {
+    : pref_service_(pref_service), change_observer_(change_observer) {
   if (pref_service_) {
     pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
@@ -108,12 +118,10 @@ void DefaultSearchManager::RegisterProfilePrefs(
 }
 
 // static
-void DefaultSearchManager::AddPrefValueToMap(
-    std::unique_ptr<base::DictionaryValue> value,
-    PrefValueMap* pref_value_map) {
-  DCHECK(value);
+void DefaultSearchManager::AddPrefValueToMap(base::Value::Dict value,
+                                             PrefValueMap* pref_value_map) {
   pref_value_map->SetValue(kDefaultSearchProviderDataPrefName,
-                           base::Value::FromUniquePtrValue(std::move(value)));
+                           base::Value(std::move(value)));
 }
 
 // static
@@ -124,9 +132,14 @@ void DefaultSearchManager::SetFallbackSearchEnginesDisabledForTesting(
 
 const TemplateURLData* DefaultSearchManager::GetDefaultSearchEngine(
     Source* source) const {
-  if (default_search_controlled_by_policy_) {
+  if (default_search_mandatory_by_policy_) {
     if (source)
       *source = FROM_POLICY;
+    return prefs_default_search_.get();
+  }
+  if (default_search_recommended_by_policy_) {
+    if (source)
+      *source = FROM_POLICY_RECOMMENDED;
     return prefs_default_search_.get();
   }
   if (extension_default_search_) {
@@ -149,7 +162,8 @@ DefaultSearchManager::GetDefaultSearchEngineIgnoringExtensions() const {
   if (prefs_default_search_)
     return std::make_unique<TemplateURLData>(*prefs_default_search_);
 
-  if (default_search_controlled_by_policy_) {
+  if (default_search_mandatory_by_policy_ ||
+      default_search_recommended_by_policy_) {
     // If a policy specified a specific engine, it would be returned above
     // as |prefs_default_search_|. The only other scenario is that policy has
     // disabled default search, in which case we return null.
@@ -161,10 +175,7 @@ DefaultSearchManager::GetDefaultSearchEngineIgnoringExtensions() const {
   const base::Value* user_value =
       pref_service_->GetUserPrefValue(kDefaultSearchProviderDataPrefName);
   if (user_value && user_value->is_dict()) {
-    const base::DictionaryValue* dict_value = nullptr;
-    user_value->GetAsDictionary(&dict_value);
-    DCHECK(dict_value);
-    auto turl_data = TemplateURLDataFromDictionary(*dict_value);
+    auto turl_data = TemplateURLDataFromDictionary(user_value->GetDict());
     if (turl_data)
       return turl_data;
   }
@@ -191,7 +202,7 @@ const TemplateURLData* DefaultSearchManager::GetFallbackSearchEngine() const {
 void DefaultSearchManager::SetUserSelectedDefaultSearchEngine(
     const TemplateURLData& data) {
   if (!pref_service_) {
-    prefs_default_search_.reset(new TemplateURLData(data));
+    prefs_default_search_ = std::make_unique<TemplateURLData>(data);
     MergePrefsDataWithPrepopulated();
     NotifyObserver();
     return;
@@ -248,11 +259,9 @@ void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
       TemplateURLPrepopulateData::GetPrepopulatedEngines(pref_service_,
                                                          nullptr);
 
-  auto default_engine = std::find_if(
-      prepopulated_urls.begin(), prepopulated_urls.end(),
-      [&](const std::unique_ptr<TemplateURLData>& url) {
-        return url->prepopulate_id == prefs_default_search_->prepopulate_id;
-      });
+  auto default_engine = base::ranges::find(
+      prepopulated_urls, prefs_default_search_->prepopulate_id,
+      &TemplateURLData::prepopulate_id);
 
   if (default_engine == prepopulated_urls.end())
     return;
@@ -284,21 +293,21 @@ void DefaultSearchManager::LoadDefaultSearchEngineFromPrefs() {
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kDefaultSearchProviderDataPrefName);
   DCHECK(pref);
-  default_search_controlled_by_policy_ = pref->IsManaged();
+  default_search_mandatory_by_policy_ = pref->IsManaged();
+  default_search_recommended_by_policy_ = pref->IsRecommended();
 
-  const base::DictionaryValue* url_dict =
-      pref_service_->GetDictionary(kDefaultSearchProviderDataPrefName);
-  if (url_dict->empty())
+  const base::Value::Dict& url_dict =
+      pref_service_->GetDict(kDefaultSearchProviderDataPrefName);
+  if (url_dict.empty())
     return;
 
-  if (default_search_controlled_by_policy_) {
-    bool disabled_by_policy = false;
-    if (url_dict->GetBoolean(kDisabledByPolicy, &disabled_by_policy) &&
-        disabled_by_policy)
+  if (default_search_mandatory_by_policy_ ||
+      default_search_recommended_by_policy_) {
+    if (url_dict.FindBool(kDisabledByPolicy).value_or(false))
       return;
   }
 
-  auto turl_data = TemplateURLDataFromDictionary(*url_dict);
+  auto turl_data = TemplateURLDataFromDictionary(url_dict);
   if (!turl_data)
     return;
 

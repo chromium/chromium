@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,9 @@ import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {assertOrderedAlphabetically, changeSelect} from './scanning_app_test_utils.js';
 
 const ColorMode = {
-  BLACK_AND_WHITE: chromeos.scanning.mojom.ColorMode.kBlackAndWhite,
-  GRAYSCALE: chromeos.scanning.mojom.ColorMode.kGrayscale,
-  COLOR: chromeos.scanning.mojom.ColorMode.kColor,
+  BLACK_AND_WHITE: ash.scanning.mojom.ColorMode.kBlackAndWhite,
+  GRAYSCALE: ash.scanning.mojom.ColorMode.kGrayscale,
+  COLOR: ash.scanning.mojom.ColorMode.kColor,
 };
 
 export function colorModeSelectTest() {
@@ -33,6 +33,8 @@ export function colorModeSelectTest() {
     colorModeSelect = null;
   });
 
+  // Verify that adding color modes results in the dropdown displaying the
+  // correct options.
   test('initializeColorModeSelect', () => {
     // Before options are added, the dropdown should be enabled and empty.
     const select = colorModeSelect.$$('select');
@@ -45,8 +47,6 @@ export function colorModeSelectTest() {
     colorModeSelect.options = [firstColorMode, secondColorMode];
     flush();
 
-    // Verify that adding color modes results in the dropdown displaying the
-    // correct options.
     assertEquals(2, select.length);
     assertEquals(
         getColorModeString(firstColorMode),
@@ -57,24 +57,24 @@ export function colorModeSelectTest() {
     assertEquals(firstColorMode.toString(), select.value);
   });
 
+  // Verify the color modes are sorted alphabetically and that Color is
+  // selected by default.
   test('colorModesSortedAlphabetically', () => {
     colorModeSelect.options =
         [ColorMode.GRAYSCALE, ColorMode.BLACK_AND_WHITE, ColorMode.COLOR];
     flush();
 
-    // Verify the color modes are sorted alphabetically and that color is
-    // selected by default.
     assertOrderedAlphabetically(
         colorModeSelect.options, (colorMode) => getColorModeString(colorMode));
     assertEquals(ColorMode.COLOR.toString(), colorModeSelect.selectedOption);
   });
 
+  // Verify the first color mode in the sorted color mode array is selected by
+  // default when Color is not an available option.
   test('firstColorModeUsedWhenDefaultNotAvailable', () => {
     colorModeSelect.options = [ColorMode.GRAYSCALE, ColorMode.BLACK_AND_WHITE];
     flush();
 
-    // Verify the first color mode in the sorted color mode array is selected by
-    // default when color is not an available option.
     assertEquals(
         ColorMode.BLACK_AND_WHITE.toString(), colorModeSelect.selectedOption);
   });

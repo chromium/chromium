@@ -1,17 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.payments.handler;
 
+import android.app.Activity;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.WebContentsFactory;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.payments.handler.toolbar.PaymentHandlerToolbarCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
+import org.chromium.chrome.browser.tab.TabObscuringHandlerSupplier;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -19,11 +23,14 @@ import org.chromium.components.payments.PaymentHandlerNavigationThrottle;
 import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
@@ -59,41 +66,52 @@ public class PaymentHandlerCoordinator {
      * @param isIncognito Whether the tab is in incognito mode.
      * @param uiObserver The {@link PaymentHandlerUiObserver} that observes this Payment Handler UI.
      * @return The WebContents of the payment handler that's just opened when the showing is
-     *         successful; null if failed.
+     *         successful; null if failed. When null is returned, caller should also call hide().
      */
     public WebContents show(WebContents paymentRequestWebContents, GURL url, boolean isIncognito,
             PaymentHandlerUiObserver uiObserver) {
         assert mHider == null : "Already showing payment-handler UI";
         assert paymentRequestWebContents != null;
-        ChromeActivity activity = ChromeActivity.fromWebContents(paymentRequestWebContents);
+        WindowAndroid windowAndroid = paymentRequestWebContents.getTopLevelNativeWindow();
+        if (windowAndroid == null) return null;
+        Activity activity = windowAndroid.getActivity().get();
         if (activity == null) return null;
-        Profile profile = IncognitoUtils.getProfileFromWindowAndroid(
-                activity.getWindowAndroid(), isIncognito);
+        Profile profile = IncognitoUtils.getProfileFromWindowAndroid(windowAndroid, isIncognito);
         mPaymentHandlerWebContents =
                 WebContentsFactory.createWebContents(profile, /*initiallyHidden=*/false);
         PaymentHandlerNavigationThrottle.markPaymentHandlerWebContents(mPaymentHandlerWebContents);
         ContentView webContentView = ContentView.createContentView(
                 activity, null /* eventOffsetHandler */, mPaymentHandlerWebContents);
-        initializeWebContents(activity, webContentView, url);
+        initializeWebContents(windowAndroid, webContentView, url);
 
-        mToolbarCoordinator = new PaymentHandlerToolbarCoordinator(activity,
-                mPaymentHandlerWebContents, url, activity.getModalDialogManagerSupplier());
+        mToolbarCoordinator = new PaymentHandlerToolbarCoordinator(
+                activity, mPaymentHandlerWebContents, url, windowAndroid::getModalDialogManager);
+
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        Tab currentTab = TabModelSelectorSupplier.getCurrentTabFrom(windowAndroid);
+        TabObscuringHandler tabObscuringHandler =
+                TabObscuringHandlerSupplier.getValueOrNullFrom(windowAndroid);
+        if (bottomSheetController == null || currentTab == null || tabObscuringHandler == null) {
+            return null;
+        }
 
         PropertyModel model = new PropertyModel.Builder(PaymentHandlerProperties.ALL_KEYS).build();
         PaymentHandlerMediator mediator = new PaymentHandlerMediator(model, this::hide,
                 /*paymentRequestWebContents=*/paymentRequestWebContents,
                 /*paymentHandlerWebContents*/ mPaymentHandlerWebContents, uiObserver,
-                activity.getActivityTab().getView(), mToolbarCoordinator.getToolbarHeightPx(),
-                activity.getLifecycleDispatcher(),
-                BottomSheetControllerProvider.from(activity.getWindowAndroid()));
+                currentTab.getView(), mToolbarCoordinator.getToolbarHeightPx(),
+                bottomSheetController, tabObscuringHandler, activity);
         activity.getWindow().getDecorView().addOnLayoutChangeListener(mediator);
-        BottomSheetController bottomSheetController =
-                BottomSheetControllerProvider.from(activity.getWindowAndroid());
+
         bottomSheetController.addObserver(mediator);
         mPaymentHandlerWebContents.addObserver(mediator);
 
         mToolbarCoordinator.setCloseButtonOnClickCallback(mediator::onToolbarCloseButtonClicked);
-        ThinWebView thinWebView = ThinWebViewFactory.create(activity, new ThinWebViewConstraints());
+        IntentRequestTracker intentRequestTracker = windowAndroid.getIntentRequestTracker();
+        assert intentRequestTracker != null;
+        ThinWebView thinWebView = ThinWebViewFactory.create(
+                activity, new ThinWebViewConstraints(), intentRequestTracker);
         assert webContentView.getParent() == null;
         thinWebView.attachWebContents(mPaymentHandlerWebContents, webContentView, null);
         PaymentHandlerView view = new PaymentHandlerView(activity, mPaymentHandlerWebContents,
@@ -114,19 +132,16 @@ public class PaymentHandlerCoordinator {
             mPaymentHandlerWebContents.destroy();
         };
         boolean isShowSuccess = bottomSheetController.requestShowContent(view, /*animate=*/true);
-        if (!isShowSuccess) {
-            mHider.run();
-            mHider = null;
-            return null;
-        }
+        if (!isShowSuccess) return null;
+
         return mPaymentHandlerWebContents;
     }
 
     private void initializeWebContents(
-            ChromeActivity activity, ContentView webContentView, GURL url) {
-        mPaymentHandlerWebContents.initialize(ChromeVersionInfo.getProductVersion(),
+            WindowAndroid windowAndroid, ContentView webContentView, GURL url) {
+        mPaymentHandlerWebContents.initialize(VersionInfo.getProductVersion(),
                 ViewAndroidDelegate.createBasicDelegate(webContentView), webContentView,
-                activity.getWindowAndroid(), WebContents.createDefaultInternalsHolder());
+                windowAndroid, WebContents.createDefaultInternalsHolder());
 
         SelectionPopupController controller =
                 SelectionPopupController.fromWebContents(mPaymentHandlerWebContents);

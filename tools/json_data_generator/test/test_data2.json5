@@ -1,0 +1,17 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This is a test json data file whose content is an array.
+[
+  {
+    "name": "Name2",
+    "age": 25,
+    "habits": [ "game", "hiking" ]
+  },
+  {
+    "name": "Name3",
+    "age": 30,
+    "habits": [ "tennis" ]
+  }
+]

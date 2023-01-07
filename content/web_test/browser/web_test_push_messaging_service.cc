@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,14 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
-#include "content/public/browser/permission_type.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/web_test/browser/web_test_browser_context.h"
 #include "content/web_test/browser/web_test_content_browser_client.h"
 #include "content/web_test/browser/web_test_permission_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
@@ -43,8 +44,7 @@ static_assert(sizeof(kAuthentication) == 12,
 const int64_t kTestExpirationWindowInDays = 90;
 
 base::Time GetFutureTime() {
-  return base::Time::Now() +
-         base::TimeDelta::FromDays(kTestExpirationWindowInDays);
+  return base::Time::Now() + base::Days(kTestExpirationWindowInDays);
 }
 
 }  // anonymous namespace
@@ -58,26 +58,30 @@ WebTestPushMessagingService::~WebTestPushMessagingService() {}
 void WebTestPushMessagingService::SubscribeFromDocument(
     const GURL& requesting_origin,
     int64_t service_worker_registration_id,
-    int renderer_id,
+    int render_process_id,
     int render_frame_id,
     blink::mojom::PushSubscriptionOptionsPtr options,
     bool user_gesture,
     RegisterCallback callback) {
   SubscribeFromWorker(requesting_origin, service_worker_registration_id,
-                      std::move(options), std::move(callback));
+                      render_process_id, std::move(options),
+                      std::move(callback));
 }
 
 void WebTestPushMessagingService::SubscribeFromWorker(
     const GURL& requesting_origin,
     int64_t service_worker_registration_id,
+    int render_process_id,
     blink::mojom::PushSubscriptionOptionsPtr options,
     RegisterCallback callback) {
   blink::mojom::PermissionStatus permission_status =
       WebTestContentBrowserClient::Get()
           ->browser_context()
-          ->GetPermissionControllerDelegate()
-          ->GetPermissionStatus(PermissionType::NOTIFICATIONS,
-                                requesting_origin, requesting_origin);
+          ->GetPermissionController()
+          ->GetPermissionStatusForWorker(
+              blink::PermissionType::NOTIFICATIONS,
+              content::RenderProcessHost::FromID(render_process_id),
+              url::Origin::Create(requesting_origin));
 
   // The `userVisibleOnly` option is still required when subscribing.
   if (!options->user_visible_only)
@@ -85,9 +89,9 @@ void WebTestPushMessagingService::SubscribeFromWorker(
 
   if (permission_status == blink::mojom::PermissionStatus::GRANTED) {
     std::vector<uint8_t> p256dh(kTestP256Key,
-                                kTestP256Key + base::size(kTestP256Key));
+                                kTestP256Key + std::size(kTestP256Key));
     std::vector<uint8_t> auth(kAuthentication,
-                              kAuthentication + base::size(kAuthentication));
+                              kAuthentication + std::size(kAuthentication));
     const std::string subscription_id = "layoutTestRegistrationId";
     const GURL endpoint = CreateEndpoint(subscription_id);
 
@@ -98,7 +102,7 @@ void WebTestPushMessagingService::SubscribeFromWorker(
   } else {
     std::move(callback).Run(
         "registration_id", GURL::EmptyGURL() /* endpoint */,
-        base::nullopt /* expiration_time */,
+        absl::nullopt /* expiration_time */,
         std::vector<uint8_t>() /* p256dh */, std::vector<uint8_t>() /* auth */,
         blink::mojom::PushRegistrationStatus::PERMISSION_DENIED);
   }
@@ -111,9 +115,9 @@ void WebTestPushMessagingService::GetSubscriptionInfo(
     const std::string& subscription_id,
     SubscriptionInfoCallback callback) {
   std::vector<uint8_t> p256dh(kTestP256Key,
-                              kTestP256Key + base::size(kTestP256Key));
+                              kTestP256Key + std::size(kTestP256Key));
   std::vector<uint8_t> auth(kAuthentication,
-                            kAuthentication + base::size(kAuthentication));
+                            kAuthentication + std::size(kAuthentication));
   const GURL endpoint = CreateEndpoint(subscription_id);
   std::move(callback).Run(true /* is_valid */, endpoint, GetFutureTime(),
                           p256dh, auth);

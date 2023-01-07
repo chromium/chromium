@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "services/device/wake_lock/wake_lock_context.h"
 
 namespace device {
@@ -23,7 +25,7 @@ WakeLock::WakeLock(mojo::PendingReceiver<mojom::WakeLock> receiver,
       type_(type),
       reason_(reason),
       description_(std::make_unique<std::string>(description)),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       context_id_(context_id),
       native_view_getter_(native_view_getter),
 #endif
@@ -79,7 +81,7 @@ void WakeLock::ChangeType(mojom::WakeLockType type,
                           ChangeTypeCallback callback) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   LOG(ERROR) << "WakeLock::ChangeType() has no effect on Android.";
   std::move(callback).Run(false);
 #else
@@ -128,7 +130,7 @@ void WakeLock::CreateWakeLock() {
   if (type_ != mojom::WakeLockType::kPreventDisplaySleep)
     return;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (context_id_ == WakeLockContext::WakeLockInvalidContextId) {
     LOG(ERROR) << "Client must pass a valid context_id when requests wake lock "
                   "on Android.";

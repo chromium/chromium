@@ -27,6 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_FRAGMENT_H_
 
 #include "third_party/blink/renderer/core/paint/clip_rect.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -35,27 +37,23 @@ namespace blink {
 class FragmentData;
 class NGPhysicalBoxFragment;
 
-// PaintLayerFragment is the representation of a fragment.
+// PaintLayerFragment is the representation of a fragment of a PaintLayer.
 // https://drafts.csswg.org/css-break/#fragment
 //
-// Fragments are a paint/hit-testing only concept in Blink.
-// Every box has at least one fragment, even if it is not paginated/fragmented.
-// If a box has more than one fragment (i.e. is paginated by an ancestor), the
-// fragments are called "paginated fragments". Note that this is a Blink
-// vocabulary extension and doesn't come from the specification.
-//
-// The fragments are collected by calling PaintLayer::CollectFragments
-// on every box once per paint/hit-testing operation.
+// The fragments are collected by calling PaintLayer::CollectFragments()
+// on every box once per hit-testing operation.
 struct PaintLayerFragment {
   DISALLOW_NEW();
 
  public:
-  // See |root_fragment_data| for the coordinate space of |layer_bounds|,
-  // |background_rect| and |foreground_rect|.
+  // The coordinate space of |layer_offset|, |background_rect| and
+  // |foreground_rect| is defined by the parameters of
+  // PaintLayer::CollectFragments():
+  // - |root_fragment| if it's not nullptr,
+  // - or the first fragment of |root_layer|.
 
-  // The PaintLayer's size in the space defined by |root_fragment_data|.
-  // See PaintLayer::size_ for the exact rectangle.
-  PhysicalRect layer_bounds;
+  // The PaintLayer's offset in the space defined above.
+  PhysicalOffset layer_offset;
 
   // The rectangle used to clip the background.
   //
@@ -78,19 +76,21 @@ struct PaintLayerFragment {
   // See PaintLayerClipper::CalculateRects.
   ClipRect foreground_rect;
 
-  // Defines the coordinate space of the above rects:
-  // root_fragment_data->LocalBorderBoxProperties().Transform() +
-  // root_fragment_data.PaintOffset().
-  const FragmentData* root_fragment_data = nullptr;
+  // The fragment index of fragment_data / physical_fragment.
+  wtf_size_t fragment_idx = WTF::kNotFound;
 
   // The corresponding FragmentData of this structure.
-  const FragmentData* fragment_data = nullptr;
+  Member<const FragmentData> fragment_data = nullptr;
 
-  const NGPhysicalBoxFragment* physical_fragment = nullptr;
+  Member<const NGPhysicalBoxFragment> physical_fragment = nullptr;
+
+  void Trace(Visitor*) const;
 };
 
-typedef Vector<PaintLayerFragment, 1> PaintLayerFragments;
+typedef HeapVector<PaintLayerFragment, 1> PaintLayerFragments;
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::PaintLayerFragment)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_FRAGMENT_H_

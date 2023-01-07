@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,18 +6,18 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
+#include "chrome/browser/subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
@@ -29,22 +29,23 @@
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/media_router/presentation_receiver_window_frame.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "ui/base/accelerators/accelerator_manager.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #endif
 
@@ -71,6 +72,9 @@ class FullscreenWindowObserver : public aura::WindowObserver {
       : on_fullscreen_change_(on_fullscreen_change) {
     window_observation_.Observe(observed_window);
   }
+
+  FullscreenWindowObserver(const FullscreenWindowObserver&) = delete;
+  FullscreenWindowObserver& operator=(const FullscreenWindowObserver&) = delete;
 
   ~FullscreenWindowObserver() override = default;
 
@@ -99,8 +103,6 @@ class FullscreenWindowObserver : public aura::WindowObserver {
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       window_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenWindowObserver);
 };
 
 #endif
@@ -116,6 +118,19 @@ PresentationReceiverWindowView::PresentationReceiverWindowView(
       command_updater_(this),
       exclusive_access_manager_(this) {
   SetHasWindowSizeControls(true);
+
+  // TODO(pbos): See if this can retain SetOwnedByWidget(true) and get deleted
+  // through WidgetDelegate::DeleteDelegate(). This requires confirming that
+  // delegate_->WindowClosed() is safe to call before this deletes.
+  SetOwnedByWidget(false);
+  RegisterDeleteDelegateCallback(base::BindOnce(
+      [](PresentationReceiverWindowView* dialog) {
+        auto* const delegate = dialog->delegate_.get();
+        delete dialog;
+        delegate->WindowClosed();
+      },
+      this));
+
   DCHECK(frame);
   DCHECK(delegate);
 }
@@ -123,7 +138,7 @@ PresentationReceiverWindowView::PresentationReceiverWindowView(
 PresentationReceiverWindowView::~PresentationReceiverWindowView() = default;
 
 void PresentationReceiverWindowView::Init() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS, the mapping between accelerators and commands is dynamic and user
   // configurable. We fetch and use the default mapping.
   bool result = GetDefaultMacAcceleratorForCommandId(IDC_FULLSCREEN,
@@ -131,11 +146,8 @@ void PresentationReceiverWindowView::Init() {
   DCHECK(result);
 #else
   const auto accelerators = GetAcceleratorList();
-  const auto fullscreen_accelerator =
-      std::find_if(accelerators.begin(), accelerators.end(),
-                   [](const AcceleratorMapping& accelerator) {
-                     return accelerator.command_id == IDC_FULLSCREEN;
-                   });
+  const auto fullscreen_accelerator = base::ranges::find(
+      accelerators, IDC_FULLSCREEN, &AcceleratorMapping::command_id);
   DCHECK(fullscreen_accelerator != accelerators.end());
   fullscreen_accelerator_ = ui::Accelerator(fullscreen_accelerator->keycode,
                                             fullscreen_accelerator->modifiers);
@@ -149,14 +161,20 @@ void PresentationReceiverWindowView::Init() {
   auto* const web_contents = GetWebContents();
   DCHECK(web_contents);
 
+  // ContentInfoBarManager comes before common tab helpers since
+  // ContentSubresourceFilterThrottleManager has it as a dependency.
+  infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
+
   SecurityStateTabHelper::CreateForWebContents(web_contents);
   ChromeTranslateClient::CreateForWebContents(web_contents);
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
   autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
       web_contents,
       autofill::ChromeAutofillClient::FromWebContents(web_contents),
-      g_browser_process->GetApplicationLocale(),
-      autofill::AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
+      base::BindRepeating(
+          &autofill::BrowserDriverInitHook,
+          autofill::ChromeAutofillClient::FromWebContents(web_contents),
+          g_browser_process->GetApplicationLocale()));
   ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
       web_contents,
       autofill::ChromeAutofillClient::FromWebContents(web_contents));
@@ -164,9 +182,7 @@ void PresentationReceiverWindowView::Init() {
   SearchTabHelper::CreateForWebContents(web_contents);
   TabDialogs::CreateForWebContents(web_contents);
   FramebustBlockTabHelper::CreateForWebContents(web_contents);
-  ChromeSubresourceFilterClient::CreateThrottleManagerWithClientForWebContents(
-      web_contents);
-  InfoBarService::CreateForWebContents(web_contents);
+  CreateSubresourceFilterWebContentsHelper(web_contents);
   MixedContentSettingsTabHelper::CreateForWebContents(web_contents);
   blocked_content::PopupBlockerTabHelper::CreateForWebContents(web_contents);
   content_settings::PageSpecificContentSettings::CreateForWebContents(
@@ -187,7 +203,7 @@ void PresentationReceiverWindowView::Init() {
   box_owner->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
   auto* box = SetLayoutManager(std::move(box_owner));
-  AddChildView(location_bar_view_);
+  AddChildView(location_bar_view_.get());
   box->SetFlexForView(location_bar_view_, 0);
   AddChildView(web_view);
   box->SetFlexForView(web_view, 1);
@@ -262,12 +278,6 @@ WebContents* PresentationReceiverWindowView::GetActiveWebContents() const {
   return delegate_->web_contents();
 }
 
-void PresentationReceiverWindowView::DeleteDelegate() {
-  auto* const delegate = delegate_;
-  delete this;
-  delegate->WindowClosed();
-}
-
 std::u16string PresentationReceiverWindowView::GetWindowTitle() const {
   return delegate_->web_contents()->GetTitle();
 }
@@ -298,6 +308,7 @@ void PresentationReceiverWindowView::EnterFullscreen(
 #endif
   UpdateExclusiveAccessExitBubbleContent(url, bubble_type,
                                          ExclusiveAccessBubbleHideCallback(),
+                                         /*notify_download=*/false,
                                          /*force_update=*/false);
 }
 
@@ -312,15 +323,18 @@ void PresentationReceiverWindowView::UpdateExclusiveAccessExitBubbleContent(
     const GURL& url,
     ExclusiveAccessBubbleType bubble_type,
     ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
+    bool notify_download,
     bool force_update) {
+  DCHECK(!notify_download || exclusive_access_bubble_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, we will not show the toast for the normal browser fullscreen
   // mode.  The 'F11' text is confusing since how to access F11 on a Chromebook
   // is not common knowledge and there is also a dedicated fullscreen toggle
   // button available.
-  if (bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE || url.is_empty()) {
+  if ((!notify_download && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
+      url.is_empty()) {
 #else
-  if (bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) {
+  if (!notify_download && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) {
 #endif
     // |exclusive_access_bubble_.reset()| will trigger callback for current
     // bubble with |ExclusiveAccessBubbleHideReason::kInterrupted| if available.
@@ -334,12 +348,17 @@ void PresentationReceiverWindowView::UpdateExclusiveAccessExitBubbleContent(
 
   if (exclusive_access_bubble_) {
     exclusive_access_bubble_->UpdateContent(
-        url, bubble_type, std::move(bubble_first_hide_callback), force_update);
+        url, bubble_type, std::move(bubble_first_hide_callback),
+        notify_download, force_update);
     return;
   }
 
   exclusive_access_bubble_ = std::make_unique<ExclusiveAccessBubbleViews>(
       this, url, bubble_type, std::move(bubble_first_hide_callback));
+}
+
+bool PresentationReceiverWindowView::IsExclusiveAccessBubbleDisplayed() const {
+  return exclusive_access_bubble_ && exclusive_access_bubble_->IsShowing();
 }
 
 void PresentationReceiverWindowView::OnExclusiveAccessUserInput() {}

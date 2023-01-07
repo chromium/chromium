@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -109,6 +109,10 @@ void AppShimHost::OnShimProcessTerminated(bool recreate_shims_requested) {
 ////////////////////////////////////////////////////////////////////////////////
 // AppShimHost, chrome::mojom::AppShimHost
 
+void AppShimHost::SetOnShimConnectedForTesting(base::OnceClosure closure) {
+  on_shim_connected_for_testing_ = std::move(closure);
+}
+
 bool AppShimHost::HasBootstrapConnected() const {
   return bootstrap_ != nullptr;
 }
@@ -127,6 +131,9 @@ void AppShimHost::OnBootstrapConnected(
   host_receiver_.Bind(bootstrap_->GetAppShimHostReceiver());
   host_receiver_.set_disconnect_with_reason_handler(
       base::BindOnce(&AppShimHost::ChannelError, base::Unretained(this)));
+
+  if (on_shim_connected_for_testing_)
+    std::move(on_shim_connected_for_testing_).Run();
 }
 
 void AppShimHost::LaunchShim() {
@@ -157,6 +164,14 @@ void AppShimHost::FilesOpened(const std::vector<base::FilePath>& files) {
 
 void AppShimHost::ProfileSelectedFromMenu(const base::FilePath& profile_path) {
   client_->OnShimSelectedProfile(this, profile_path);
+}
+
+void AppShimHost::UrlsOpened(const std::vector<GURL>& urls) {
+  client_->OnShimOpenedUrls(this, urls);
+}
+
+void AppShimHost::OpenAppWithOverrideUrl(const GURL& override_url) {
+  client_->OnShimOpenAppWithOverrideUrl(this, override_url);
 }
 
 base::FilePath AppShimHost::GetProfilePath() const {

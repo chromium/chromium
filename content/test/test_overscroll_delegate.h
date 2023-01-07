@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "base/optional.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
 #include "content/browser/renderer_host/overscroll_controller_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
@@ -17,6 +17,10 @@ namespace content {
 class TestOverscrollDelegate : public OverscrollControllerDelegate {
  public:
   explicit TestOverscrollDelegate(const gfx::Size& display_size);
+
+  TestOverscrollDelegate(const TestOverscrollDelegate&) = delete;
+  TestOverscrollDelegate& operator=(const TestOverscrollDelegate&) = delete;
+
   ~TestOverscrollDelegate() override;
 
   void set_delta_cap(float delta_cap) { delta_cap_ = delta_cap; }
@@ -40,19 +44,17 @@ class TestOverscrollDelegate : public OverscrollControllerDelegate {
                               OverscrollMode new_mode,
                               OverscrollSource source,
                               cc::OverscrollBehavior behavior) override;
-  base::Optional<float> GetMaxOverscrollDelta() const override;
+  absl::optional<float> GetMaxOverscrollDelta() const override;
 
   gfx::Size display_size_;
 
-  base::Optional<float> delta_cap_;
+  absl::optional<float> delta_cap_;
   OverscrollMode current_mode_;
   OverscrollMode completed_mode_;
   std::vector<OverscrollMode> historical_modes_;
 
   float delta_x_;
   float delta_y_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverscrollDelegate);
 };
 
 }  // namespace content

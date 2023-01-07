@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,6 @@ VideoCaptureServiceTest::AddSharedMemoryVirtualDevice(
       producer.InitWithNewPipeAndPassReceiver());
   factory_->AddSharedMemoryVirtualDevice(
       device_info, std::move(producer),
-      false /* send_buffer_handles_to_producer_as_raw_file_descriptors */,
       result->device.BindNewPipeAndPassReceiver());
   return result;
 }

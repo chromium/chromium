@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_predictor.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker_config.pb.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_list {
 
@@ -31,14 +31,14 @@ std::unique_ptr<RecurrencePredictor> MakePredictor(
 class JsonConfigConverter {
  public:
   using OnConfigLoadedCallback =
-      base::OnceCallback<void(base::Optional<RecurrenceRankerConfigProto>)>;
+      base::OnceCallback<void(absl::optional<RecurrenceRankerConfigProto>)>;
 
   // Creates a JsonConfigConverter and starts a conversion of |json_string|.
   // |model_identifier| is used for metrics reporting in the same way as
   // RecurrenceRanker's |model_identifier|.
   //
   // The provided |callback| will be called with the resulting proto if the
-  // conversion succeeded, or base::nullopt if the parsing or conversion failed.
+  // conversion succeeded, or absl::nullopt if the parsing or conversion failed.
   // If the returned JsonConfigConverter instance is destroyed before parsing is
   // complete, |callback| will never be called.
   //

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -66,10 +66,6 @@ mojom("mojom") {
         mojom = "gfx.mojom.Vector3dF"
         cpp = "::gfx::Vector3dF"
       },
-      {
-        mojom = "gfx.mojom.ScrollOffset"
-        cpp = "::gfx::ScrollOffset"
-      },
     ]
 
     traits_headers = [ "geometry_mojom_traits.h" ]
@@ -77,6 +73,7 @@ mojom("mojom") {
   }
   cpp_typemaps = [ shared_cpp_typemap ]
   blink_cpp_typemaps = [ shared_cpp_typemap ]
+  webui_module_path = "chrome://resources/mojo/ui/gfx/geometry/mojom"
 }
 
 mojom("test_interfaces") {

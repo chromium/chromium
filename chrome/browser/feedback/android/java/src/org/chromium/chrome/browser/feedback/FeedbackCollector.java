@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,13 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.util.HashMap;
@@ -36,9 +42,11 @@ public abstract class FeedbackCollector<T> implements Runnable {
 
     private final String mCategoryTag;
     private final String mDescription;
+    private String mAccountInUse;
 
     private List<FeedbackSource> mSynchronousSources;
-    private List<AsyncFeedbackSource> mAsynchronousSources;
+    @VisibleForTesting
+    protected List<AsyncFeedbackSource> mAsynchronousSources;
 
     private ScreenshotSource mScreenshotTask;
 
@@ -53,11 +61,18 @@ public abstract class FeedbackCollector<T> implements Runnable {
     }
 
     // Subclasses must invoke init() at construction time.
-    protected void init(
-            Activity activity, @Nullable ScreenshotSource screenshotTask, T initParams) {
-        // 1. Build all synchronous and asynchronous sources.
-        mSynchronousSources = buildSynchronousFeedbackSources(initParams);
+    protected void init(Activity activity, @Nullable ScreenshotSource screenshotTask, T initParams,
+            Profile profile) {
+        // 1. Build all synchronous and asynchronous sources and determine the currently signed in
+        //    account.
+        mSynchronousSources = buildSynchronousFeedbackSources(activity, initParams);
         mAsynchronousSources = buildAsynchronousFeedbackSources(initParams);
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        if (identityManager != null) {
+            mAccountInUse = CoreAccountInfo.getEmailFrom(
+                    identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+        }
 
         // Sanity check in case a source is added to the wrong list.
         for (FeedbackSource source : mSynchronousSources) {
@@ -80,7 +95,8 @@ public abstract class FeedbackCollector<T> implements Runnable {
 
     @VisibleForTesting
     @NonNull
-    protected abstract List<FeedbackSource> buildSynchronousFeedbackSources(T initParams);
+    protected abstract List<FeedbackSource> buildSynchronousFeedbackSources(
+            Activity activity, T initParams);
 
     @VisibleForTesting
     @NonNull
@@ -94,6 +110,11 @@ public abstract class FeedbackCollector<T> implements Runnable {
     /** @return The description of this feedback report. */
     public String getDescription() {
         return mDescription;
+    }
+
+    /** @return The currently signed in account, or null if the user is not signed in. */
+    public @Nullable String getAccountInUse() {
+        return mAccountInUse;
     }
 
     /**
@@ -184,6 +205,8 @@ public abstract class FeedbackCollector<T> implements Runnable {
             }
         }
 
+        RecordHistogram.recordMediumTimesHistogram("Feedback.Duration.FetchSystemInformation",
+                SystemClock.elapsedRealtime() - mStartTime);
         final Callback<FeedbackCollector> callback = mCallback;
         mCallback = null;
 

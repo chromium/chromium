@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL setup - define tests promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'importKey' on 'SubtleCrypto': Algorithm: Unrecognized name"
+Harness: the test ran to completion.
+

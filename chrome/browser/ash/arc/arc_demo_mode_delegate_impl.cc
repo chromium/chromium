@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,20 +11,19 @@
 
 namespace arc {
 
-void ArcDemoModeDelegateImpl::EnsureOfflineResourcesLoaded(
+void ArcDemoModeDelegateImpl::EnsureResourcesLoaded(
     base::OnceClosure callback) {
-  if (!chromeos::DemoSession::IsDeviceInDemoMode()) {
+  if (!ash::DemoSession::IsDeviceInDemoMode()) {
     std::move(callback).Run();
     return;
   }
-  chromeos::DemoSession::Get()->EnsureOfflineResourcesLoaded(
-      std::move(callback));
+  ash::DemoSession::Get()->EnsureResourcesLoaded(std::move(callback));
 }
 
 base::FilePath ArcDemoModeDelegateImpl::GetDemoAppsPath() {
-  if (!chromeos::DemoSession::IsDeviceInDemoMode())
+  if (!ash::DemoSession::IsDeviceInDemoMode())
     return base::FilePath();
-  return chromeos::DemoSession::Get()->resources()->GetDemoAppsPath();
+  return ash::DemoSession::Get()->resources()->GetDemoAppsPath();
 }
 
 }  // namespace arc

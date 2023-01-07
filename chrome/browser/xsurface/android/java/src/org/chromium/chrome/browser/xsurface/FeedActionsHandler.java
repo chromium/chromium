@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.xsurface;
 
 import android.view.View;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.IntDef;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
 /**
@@ -25,20 +27,7 @@ public interface FeedActionsHandler {
     /**
      * Sends data back to the server when content is clicked.
      */
-    default void processThereAndBackAgainData(byte[] data) {}
-
-    /**
-     * Sends data back to the server when content is clicked and provides the corresponding view
-     * through |actionSourceView| which can be null.
-     */
-    @Deprecated
-    default void processThereAndBackAgainData(byte[] data, @Nullable View actionSourceView) {}
-
-    /**
-     * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
-     * message.
-     */
-    default void processViewAction(byte[] data) {}
+    default void processThereAndBackAgainData(byte[] data, LoggingParameters loggingParameters) {}
 
     /**
      * Triggers Chrome to send user feedback for this card.
@@ -109,4 +98,101 @@ public interface FeedActionsHandler {
      * @param title The title of the page to be shared.
      */
     default void share(String url, String title) {}
+
+    /**
+     * Opens the settings to manager autoplay.
+     */
+    default void openAutoplaySettings() {}
+
+    /**
+     * Watches a view to get notified when the first time it has the visible area percentage not
+     * less than the given threshold. The watch is based on the visibility of full
+     * ListContentManager item containing the view.
+     * @param view The view to watch for.
+     * @param viewedThreshold The threshold of the percentage of the visible area on screen.
+     * @param runnable The runnable to get notified.
+     */
+    default void watchForViewFirstVisible(View view, float viewedThreshold, Runnable runnable) {}
+
+    /**
+     * Reports that the notice identified by the given key is created. It may not be visible yet.
+     * @param key Key to identify the type of the notice. For each new key, please update
+     *            "NoticeKey" token in histograms.xml and NoticeUmaName() in metrics_reporter.cc.
+     */
+    default void reportNoticeCreated(String key) {}
+
+    /**
+     * Reports that the notice identified by the given key is viewed, fully visible in the viewport.
+     * @param key Key to identify the type of the notice. This interaction info can be used to
+     * determine if it is necessary to show the notice to the user again.
+     */
+    default void reportNoticeViewed(String key) {}
+
+    /**
+     * Reports that the user has clicked/tapped the notice identified by the given key to perform
+     * an open action. This interaction info can be used to determine if it is necessary to show
+     * the notice to the user again.
+     * @param key Key to identify the type of the notice.
+     */
+    default void reportNoticeOpenAction(String key) {}
+
+    /**
+     * Reports that the notice identified by the given key is dismissed by the user.
+     * @param key Key to identify the type of the notice.
+     */
+    default void reportNoticeDismissed(String key) {}
+
+    /**
+     * Types of feeds that can be invalidated. These values must match the privately defined values
+     * of InvalidateCacheData.FeedType.
+     */
+    @IntDef({FeedIdentifier.UNSPECIFIED, FeedIdentifier.MAIN_FEED, FeedIdentifier.FOLLOWING_FEED,
+            FeedIdentifier.CHANNEL_FEED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface FeedIdentifier {
+        int UNSPECIFIED = 0;
+        int MAIN_FEED = 1;
+        int FOLLOWING_FEED = 2;
+        int CHANNEL_FEED = 3;
+    }
+
+    /**
+     * Requests that the cache a feed be invalidated so that its contents are re-fetched the next
+     * time the feed is shown/loaded.
+     * @param feedToInvalidate Identifies which feed should have its cache invalidated. The request
+     *         will be dropped if set to FeedIdentifier.UNSPECIFIED.
+     */
+    default void invalidateContentCacheFor(@FeedIdentifier int feedToInvalidate) {}
+
+    /**
+     * Reports that the info card is being tracked for its full visibility.
+     * @param type Type of the info card.
+     */
+    default void reportInfoCardTrackViewStarted(int type) {}
+
+    /**
+     * Reports that the info card is fully visible in the viewport.
+     * @param type Type of the info card.
+     * @param minimumViewIntervalSeconds The minimum interval in seconds from the last time the info
+     * card is viewed in order for it to be considered viewed again.
+     */
+    default void reportInfoCardViewed(int type, int minimumViewIntervalSeconds) {}
+
+    /**
+     * Reports that the user tapps the info card.
+     * @param type Type of the info card.
+     */
+    default void reportInfoCardClicked(int type) {}
+
+    /**
+     * Reports that the user dismisses the info card explicitly by tapping the close button.
+     * @param type Type of the info card.
+     */
+    default void reportInfoCardDismissedExplicitly(int type) {}
+
+    /**
+     * Resets all the states of the info card.
+     * @param type Type of the info card.
+     */
+    default void resetInfoCardStates(int type) {}
 }

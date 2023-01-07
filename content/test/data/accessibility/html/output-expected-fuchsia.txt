@@ -1,0 +1,13 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++UNKNOWN focusable actions='{DEFAULT, SET_VALUE}'
+++++++++++UNKNOWN
+++++++++STATIC_TEXT label=' + '
+++++++++++UNKNOWN label=' + '
+++++++++UNKNOWN focusable actions='{DEFAULT, SET_VALUE}'
+++++++++++UNKNOWN
+++++++++STATIC_TEXT label=' ='
+++++++++++UNKNOWN label=' ='
+++++++++UNKNOWN

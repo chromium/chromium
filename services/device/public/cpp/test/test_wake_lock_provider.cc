@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -26,6 +27,9 @@ class TestWakeLockProvider::TestWakeLock : public mojom::WakeLock {
     receivers_.set_disconnect_handler(base::BindRepeating(
         &TestWakeLock::OnConnectionError, base::Unretained(this)));
   }
+
+  TestWakeLock(const TestWakeLock&) = delete;
+  TestWakeLock& operator=(const TestWakeLock&) = delete;
 
   ~TestWakeLock() override = default;
 
@@ -103,13 +107,11 @@ class TestWakeLockProvider::TestWakeLock : public mojom::WakeLock {
   mojom::WakeLockType type_;
 
   // Not owned.
-  TestWakeLockProvider* provider_;
+  raw_ptr<TestWakeLockProvider> provider_;
 
   mojo::ReceiverSet<mojom::WakeLock, std::unique_ptr<bool>> receivers_;
 
   int num_lock_requests_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWakeLock);
 };
 
 // Holds the state associated with wake locks of a single type across the
@@ -117,6 +119,10 @@ class TestWakeLockProvider::TestWakeLock : public mojom::WakeLock {
 // would be 3.
 struct TestWakeLockProvider::WakeLockDataPerType {
   WakeLockDataPerType() = default;
+
+  WakeLockDataPerType(const WakeLockDataPerType&) = delete;
+  WakeLockDataPerType& operator=(const WakeLockDataPerType&) = delete;
+
   ~WakeLockDataPerType() = default;
 
   // Currently held count of this wake lock type.
@@ -128,8 +134,6 @@ struct TestWakeLockProvider::WakeLockDataPerType {
 
   // Observers for this wake lock type.
   mojo::RemoteSet<mojom::WakeLockObserver> observers;
-
-  DISALLOW_COPY_AND_ASSIGN(WakeLockDataPerType);
 };
 
 TestWakeLockProvider::TestWakeLockProvider() {

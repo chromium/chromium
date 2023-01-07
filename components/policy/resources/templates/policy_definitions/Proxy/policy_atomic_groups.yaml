@@ -1,0 +1,9 @@
+Proxy:
+  caption: Proxy
+  policies:
+  - ProxyMode
+  - ProxyServerMode
+  - ProxyServer
+  - ProxyPacUrl
+  - ProxyBypassList
+  - ProxySettings

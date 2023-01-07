@@ -1,0 +1,183 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 4
+
+module arc.mojom;
+
+// After the browser calls IsPaymentImplemented(), ARC sends back this result
+// if there are no errors.
+struct IsPaymentImplementedValidResult {
+  // The list of activities with intent filter for
+  // org.chromium.intent.action.PAY action and "https://play.google.com/billing"
+  // in either "org.chromium.default_payment_method_name" or
+  // "org.chromium.payment_method_names" metadata. Other payment methods are
+  // ignored for now.
+  // Example activity name: "com.example.app.PaymentActivity".
+  array<string> activity_names;
+
+  // The list of services with intent filter for
+  // org.chromium.intent.action.IS_READY_TO_PAY. Example service name:
+  // "com.example.app.IsReadyToPayService".
+  array<string> service_names;
+};
+
+// After the browser calls IsPaymentImplemented(), ARC sends back this result.
+union IsPaymentImplementedResult {
+  IsPaymentImplementedValidResult valid;
+  string error;
+};
+
+// The common payment parameters for the browser to pass to ARC in both
+// PaymentAppInstance.IsReadyToPayService() and
+// PaymentAppInstance.InvokePaymentApp() Mojo methods. ARC will forward this
+// data to either WebPaymentIntentHelper.createIsReadyToPayIntent() or
+// WebPaymentIntentHelper.createPayIntent(), depending on which method of
+// PaymentApp Mojo IPC service was invoked.
+//
+// WebPaymentIntentHelper in ARC should be used only with the
+// "https://play.google.com/billing" payment method identifier at this time.
+struct PaymentParameters {
+  // The TWA package name, e.g., "com.example.app". This is the "String
+  // packageName" parameter to createIsReadyToPayIntent() and createPayIntent()
+  // methods.
+  string package_name;
+
+  // The name of the IS_READY_TO_PAY service to query or PAY activity to invoke,
+  // depending on whether this struct is passed into IsReadyToPay() or
+  // InvokePaymentApp() method. For example,
+  // "com.example.app.IsReadyToPayService" or "com.example.app.PaymentActivity".
+  // This is the "String serviceName" parameter to createIsReadyToPayIntent() or
+  // "String activityName" parameter to createPayIntent().
+  string activity_or_service_name;
+
+  // The JSON serialization of the JavaScript object "data" in the
+  // PaymentRequest API. For example:
+  //
+  //  {"productId": "test_product_id"}
+  //
+  // This string is serialized in Blink and is parsed in the TWA. The browser
+  // does not parse this string. This string goes into the value of the
+  // "methodDataMap" parameter of createIsReadyToPayIntent() and
+  // createPayIntent() methods, i.e.:
+  //
+  //  methodDataMap.put("https://play.google.com/billing",
+  //                    new PaymentMethodData("https://play.google.com/billing",
+  //                                          stringified_method_data));
+  string stringified_method_data;
+
+  // (Host, optional port) tuple that cannot be an opaque origin. For example:
+  // "shop.com". This is the "String schemelessOrigin" parameter to
+  // createIsReadyToPayIntent() and createPayIntent() methods.
+  string top_level_origin;
+
+  // (Host, optional port) tuple that cannot be an opaque origin. For
+  // example: "payment-service-provider.com". This is the "String
+  // schemelessIframeOrigin" parameter to createIsReadyToPayIntent() and
+  // createPayIntent() methods.
+  string payment_request_origin;
+
+  // The free-form identifier for this pending transaction as set either by the
+  // merchant website in PaymentRequest() constructor in JavaScript, or (more
+  // commonly) a browser-generated GUID string. This is the "String id"
+  // parameter to createPayIntent() method. The createIsReadyToPayIntent() does
+  // not currently need this parameter.
+  [MinVersion=2]
+  string? payment_request_id;
+
+  // Opaque, browser-generated identifier for this payment request. Used to
+  // identify a particular request across calls.
+  [MinVersion=3]
+  string? request_token;
+};
+
+// After the browser calls IsReadyToPay(), ARC sends back this result.
+union IsReadyToPayResult {
+  bool response;
+  string error;
+};
+
+// After the browser calls InvokePaymentApp(), ARC sends back this result, if
+// there are no errors.
+struct InvokePaymentAppValidResult {
+  // Whether the intent return status is Activity.RESULT_OK.
+  bool is_activity_result_ok;
+
+  // The JSON serialization of a JavaScript object that's the response to
+  // PaymentRequest API. For example:
+  //
+  //  {"receiptIdentifier": "test_receipt_identifier"}
+  //
+  // This string is serialized in TWA and is parsed in Blink. The browser does
+  // not parse this string.
+  string stringified_details;
+};
+
+// After the browser calls InvokePaymentApp(), ARC sends back this result.
+union InvokePaymentAppResult {
+  InvokePaymentAppValidResult valid;
+  string error;
+};
+
+// The service that runs in ARC and allows the browser to invoke the TWA payment
+// app that is installed in ARC, if it implements payment intents as described
+// in https://web.dev/android-payment-apps-overview/. At first, only
+// "https://play.google.com/billing" payment method is supported.
+//
+// --------------------      --------------------------------------------------
+// |     Browser      |      |                      ARC                       |
+// |                  |      |                                                |
+// | ---------------  |      |  --------------    -------    ---------------- |
+// | | Web Payment |<-|------|->| PaymentApp |<-->| TWA |<-->| Play Billing | |
+// | ---------------  |      |  --------------    -------    ---------------- |
+// |                  |      |                                                |
+// --------------------      --------------------------------------------------
+//
+// Next method ID: 3
+interface PaymentAppInstance {
+  // Called by the browser to check whether the TWA with |package_name| (e.g.,
+  // "com.example.app") in ARC has intent filters for
+  // org.chromium.intent.action.PAY and
+  // org.chromium.intent.action.IS_READY_TO_PAY with
+  // "https://play.google.com/billing" in either
+  // "org.chromium.default_payment_method_name" or
+  // "org.chromium.payment_method_names" metadata of the PAY intent filter.
+  // Other payment methods are ignored for now.
+  //
+  // Should not invoke any of the TWA activities or connect to any of its
+  // services, because this method may be invoked when off the record, e.g.,
+  // incognito mode or guest mode.
+  IsPaymentImplemented@0(string package_name)
+      => (IsPaymentImplementedResult response);
+
+  // Forwards the request to IsReadyToPayServiceHelper.query(), which queries
+  // the payment app. The payment app should return true if payments can be
+  // made. This should not be invoked when off the record, e.g., incognito mode
+  // or guest mode.
+  [MinVersion=1]
+  IsReadyToPay@1(PaymentParameters parameters)
+      => (IsReadyToPayResult response);
+
+  // Forwards the request to WebPaymentIntentHelper.createPayIntent() and fires
+  // the resulting intent. This invokes the payment flow.
+  //
+  // The "String merchantName" parameter to createPayIntent() should be empty
+  // (but not null).
+  //
+  // The total amount for createPayIntent() should always be "0" with currency
+  // "ZZZ".
+  [MinVersion=2]
+  InvokePaymentApp@2(PaymentParameters parameters)
+      => (InvokePaymentAppResult response);
+
+  // Requests to abort a previous payment flow (identified by |request_token|)
+  // which was opened with InvokePaymentApp().
+  //
+  // This may be called by the website if a payment should no longer be made
+  // (e.g., when an item goes out of stock), or by the browser if the payment is
+  // no longer available (e.g., the page was refreshed).
+  [MinVersion=3]
+  AbortPaymentApp@3(string request_token)
+      => (bool aborted);
+};

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "ash/shell_observer.h"
-#include "base/macros.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -41,6 +40,10 @@ class ASH_EXPORT TouchExplorationManager
  public:
   explicit TouchExplorationManager(
       RootWindowController* root_window_controller);
+
+  TouchExplorationManager(const TouchExplorationManager&) = delete;
+  TouchExplorationManager& operator=(const TouchExplorationManager&) = delete;
+
   ~TouchExplorationManager() override;
 
   // AccessibilityObserver overrides:
@@ -51,6 +54,7 @@ class ASH_EXPORT TouchExplorationManager
   void OnWindowPropertyChanged(aura::Window* window,
                                const void* key,
                                intptr_t old) override;
+  void OnWindowDestroying(aura::Window* window) override;
 
   // TouchExplorationControllerDelegate overrides:
   void SetOutputLevel(int volume) override;
@@ -96,8 +100,7 @@ class ASH_EXPORT TouchExplorationManager
   RootWindowController* root_window_controller_;
   CrasAudioHandler* audio_handler_;
   aura::Window* observing_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchExplorationManager);
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

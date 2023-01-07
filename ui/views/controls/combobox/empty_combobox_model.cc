@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,17 +14,17 @@ namespace internal {
 EmptyComboboxModel::EmptyComboboxModel() = default;
 EmptyComboboxModel::~EmptyComboboxModel() = default;
 
-int EmptyComboboxModel::GetItemCount() const {
+size_t EmptyComboboxModel::GetItemCount() const {
   return 0;
 }
 
-std::u16string EmptyComboboxModel::GetItemAt(int index) const {
+std::u16string EmptyComboboxModel::GetItemAt(size_t index) const {
   NOTREACHED();
   return std::u16string();
 }
 
-int EmptyComboboxModel::GetDefaultIndex() const {
-  return -1;
+absl::optional<size_t> EmptyComboboxModel::GetDefaultIndex() const {
+  return absl::nullopt;
 }
 
 }  // namespace internal

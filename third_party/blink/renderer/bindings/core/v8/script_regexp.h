@@ -27,10 +27,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_REGEXP_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_REGEXP_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8.h"
 
@@ -51,6 +50,9 @@ class CORE_EXPORT ScriptRegexp final : public GarbageCollected<ScriptRegexp> {
                TextCaseSensitivity,
                MultilineMode = kMultilineDisabled,
                CharacterMode = BMP);
+
+  ScriptRegexp(const ScriptRegexp&) = delete;
+  ScriptRegexp& operator=(const ScriptRegexp&) = delete;
 
   // Attempt to match the given input string against the regexp.  Returns the
   // index of the match within the input string on success and -1 otherwise.
@@ -73,8 +75,6 @@ class CORE_EXPORT ScriptRegexp final : public GarbageCollected<ScriptRegexp> {
  private:
   TraceWrapperV8Reference<v8::RegExp> regex_;
   String exception_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptRegexp);
 };
 
 }  // namespace blink

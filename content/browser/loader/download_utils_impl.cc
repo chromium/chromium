@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/loader/download_utils_impl.h"
 
+#include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "net/http/http_content_disposition.h"
@@ -16,9 +17,9 @@ namespace {
 // Allow list to rendering mhtml.
 const char* const kAllowListSchemesToRenderingMhtml[] = {
     url::kFileScheme,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     url::kContentScheme,
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 // Determins whether given url would render the mhtml as html according to

@@ -1,0 +1,17 @@
+include_rules = [
+  "+components/autofill",
+  "+components/browser_ui/bottomsheet",
+  "+components/browser_ui/modaldialog/android",
+  "+components/browser_ui/settings/android",
+  "+components/browser_ui/styles/android",
+  "+components/browser_ui/widget/android",
+  "+components/browser_ui/strings/android",
+  "+components/favicon",
+  "+components/image_fetcher",
+  "+components/module_installer",
+  "+components/prefs",
+  "+components/signin",
+  "+components/user_prefs",
+  "+content/public/android",
+  "+ui/android",
+]

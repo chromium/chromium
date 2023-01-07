@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 #include "ui/gl/gl_export.h"
@@ -21,6 +20,9 @@ namespace gl {
 class GL_EXPORT GLImageSharedMemory : public GLImageMemory {
  public:
   explicit GLImageSharedMemory(const gfx::Size& size);
+
+  GLImageSharedMemory(const GLImageSharedMemory&) = delete;
+  GLImageSharedMemory& operator=(const GLImageSharedMemory&) = delete;
 
   bool Initialize(const base::UnsafeSharedMemoryRegion& shared_memory_region,
                   gfx::GenericSharedMemoryId shared_memory_id,
@@ -39,8 +41,6 @@ class GL_EXPORT GLImageSharedMemory : public GLImageMemory {
  private:
   base::WritableSharedMemoryMapping shared_memory_mapping_;
   gfx::GenericSharedMemoryId shared_memory_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImageSharedMemory);
 };
 
 }  // namespace gl

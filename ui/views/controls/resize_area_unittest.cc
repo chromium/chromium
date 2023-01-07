@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
@@ -17,7 +18,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_MAC)
 #include "ui/aura/window.h"
 #endif
 
@@ -37,6 +38,10 @@ namespace views {
 class TestResizeAreaDelegate : public ResizeAreaDelegate {
  public:
   TestResizeAreaDelegate();
+
+  TestResizeAreaDelegate(const TestResizeAreaDelegate&) = delete;
+  TestResizeAreaDelegate& operator=(const TestResizeAreaDelegate&) = delete;
+
   ~TestResizeAreaDelegate() override;
 
   // ResizeAreaDelegate:
@@ -50,8 +55,6 @@ class TestResizeAreaDelegate : public ResizeAreaDelegate {
   int resize_amount_ = 0;
   bool done_resizing_ = false;
   bool on_resize_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestResizeAreaDelegate);
 };
 
 TestResizeAreaDelegate::TestResizeAreaDelegate() = default;
@@ -68,6 +71,10 @@ void TestResizeAreaDelegate::OnResize(int resize_amount, bool done_resizing) {
 class ResizeAreaTest : public ViewsTestBase {
  public:
   ResizeAreaTest();
+
+  ResizeAreaTest(const ResizeAreaTest&) = delete;
+  ResizeAreaTest& operator=(const ResizeAreaTest&) = delete;
+
   ~ResizeAreaTest() override;
 
   // Callback used by the SuccessfulGestureDrag test.
@@ -87,14 +94,12 @@ class ResizeAreaTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<TestResizeAreaDelegate> delegate_;
-  views::Widget* widget_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 
   // The number of ui::ET_GESTURE_SCROLL_UPDATE events seen by
   // ProcessGesture().
   int gesture_scroll_updates_seen_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeAreaTest);
 };
 
 ResizeAreaTest::ResizeAreaTest() = default;
@@ -147,7 +152,7 @@ void ResizeAreaTest::TearDown() {
 }
 
 // TODO(tdanderson): Enable these tests on OSX. See crbug.com/710475.
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_MAC)
 // Verifies the correct calls have been made to
 // TestResizeAreaDelegate::OnResize() for a sequence of mouse events
 // corresponding to a successful resize operation.
@@ -189,7 +194,7 @@ TEST_F(ResizeAreaTest, SuccessfulGestureDrag) {
   gfx::Point start = widget()->GetNativeView()->bounds().CenterPoint();
   event_generator()->GestureScrollSequenceWithCallback(
       start, gfx::Point(start.x() + kGestureScrollDistance, start.y()),
-      base::TimeDelta::FromMilliseconds(200), kGestureScrollSteps,
+      base::Milliseconds(200), kGestureScrollSteps,
       base::BindRepeating(&ResizeAreaTest::ProcessGesture,
                           base::Unretained(this)));
 }
@@ -201,6 +206,6 @@ TEST_F(ResizeAreaTest, NoDragOnGestureTap) {
 
   EXPECT_EQ(0, resize_amount());
 }
-#endif  // !defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_MAC)
 
 }  // namespace views

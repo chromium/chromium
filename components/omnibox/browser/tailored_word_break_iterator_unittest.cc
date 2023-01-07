@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,19 +10,18 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(TailoredWordBreakIterator, BreakWord) {
-  std::u16string underscore(u"_");
-  std::u16string str(base::UTF8ToUTF16("_foo_bar!_\npouet_boom"));
+  std::u16string str(u"_foo_bar!_\npouet_boom");
   TailoredWordBreakIterator iter(str, TailoredWordBreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(underscore, iter.GetString());
+  EXPECT_EQ(u"_", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
   EXPECT_EQ(u"foo", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(underscore, iter.GetString());
+  EXPECT_EQ(u"_", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
   EXPECT_EQ(u"bar", iter.GetString());
@@ -31,19 +30,44 @@ TEST(TailoredWordBreakIterator, BreakWord) {
   EXPECT_EQ(u"!", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(underscore, iter.GetString());
+  EXPECT_EQ(u"_", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(base::UTF8ToUTF16("\n"), iter.GetString());
+  EXPECT_EQ(u"\n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
   EXPECT_EQ(u"pouet", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(underscore, iter.GetString());
+  EXPECT_EQ(u"_", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
   EXPECT_EQ(u"boom", iter.GetString());
+  EXPECT_FALSE(iter.Advance());
+  EXPECT_FALSE(iter.IsWord());
+  EXPECT_FALSE(iter.Advance());
+  EXPECT_FALSE(iter.IsWord());
+}
+
+TEST(TailoredWordBreakIterator, TrailingUnderscore) {
+  std::u16string str(u"_foo_bar_");
+  TailoredWordBreakIterator iter(str, TailoredWordBreakIterator::BREAK_WORD);
+  ASSERT_TRUE(iter.Init());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_FALSE(iter.IsWord());
+  EXPECT_EQ(u"_", iter.GetString());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_TRUE(iter.IsWord());
+  EXPECT_EQ(u"foo", iter.GetString());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_FALSE(iter.IsWord());
+  EXPECT_EQ(u"_", iter.GetString());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_TRUE(iter.IsWord());
+  EXPECT_EQ(u"bar", iter.GetString());
+  EXPECT_TRUE(iter.Advance());
+  EXPECT_FALSE(iter.IsWord());
+  EXPECT_EQ(u"_", iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_FALSE(iter.Advance());

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,13 +28,11 @@ base::TimeDelta GetDelayImpl(base::TimeDelta last_delay, int jitter_sign) {
     return kMaxBackoffTime;
 
   const base::TimeDelta backoff =
-      std::max(base::TimeDelta::FromSeconds(1),
-               last_delay * kBackoffMultiplyFactor) +
+      std::max(kMinBackoffTime, last_delay * kBackoffMultiplyFactor) +
       jitter_sign * kBackoffJitterFactor * last_delay;
 
   // Clamp backoff between 1 second and |kMaxBackoffTime|.
-  return std::max(base::TimeDelta::FromSeconds(1),
-                  std::min(backoff, kMaxBackoffTime));
+  return std::max(kMinBackoffTime, std::min(backoff, kMaxBackoffTime));
 }
 
 }  // namespace
@@ -60,7 +58,7 @@ BackoffDelayProvider::BackoffDelayProvider(
     : default_initial_backoff_(default_initial_backoff),
       short_initial_backoff_(short_initial_backoff) {}
 
-BackoffDelayProvider::~BackoffDelayProvider() {}
+BackoffDelayProvider::~BackoffDelayProvider() = default;
 
 base::TimeDelta BackoffDelayProvider::GetDelay(
     const base::TimeDelta& last_delay) {
@@ -96,12 +94,6 @@ base::TimeDelta BackoffDelayProvider::GetInitialDelay(
           SyncerError::SERVER_RETURN_MIGRATION_DONE) {
     return short_initial_backoff_;
   }
-
-  // If a datatype decides the GetUpdates must be retried (e.g. because the
-  // context has been updated since the request), use the short delay.
-  if (state.last_download_updates_result.value() ==
-      SyncerError::DATATYPE_TRIGGERED_RETRY)
-    return short_initial_backoff_;
 
   // When the server tells us we have a conflict, then we should download the
   // latest updates so we can see the conflict ourselves, resolve it locally,

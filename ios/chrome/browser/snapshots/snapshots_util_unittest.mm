@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-#include "base/mac/foundation_util.h"
-#include "base/path_service.h"
-#include "base/strings/sys_string_conversions.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "base/mac/foundation_util.h"
+#import "base/path_service.h"
+#import "base/strings/sys_string_conversions.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

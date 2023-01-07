@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,18 +20,18 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * Tests for TabContextObserver
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabContextObserverTest {
     @Rule
@@ -96,7 +96,7 @@ public class TabContextObserverTest {
     public void testCloseTab() {
         TabContextObserverTestHelper tabContextObserverTestHelper =
                 new TabContextObserverTestHelper(mTabModelSelector);
-        tabContextObserverTestHelper.mTabModelObserver.willCloseTab(null, false);
+        tabContextObserverTestHelper.mTabModelObserver.willCloseTab(null, false, true);
         Assert.assertEquals(TabContextObserver.TabContextChangeReason.TAB_CLOSED,
                 tabContextObserverTestHelper.getChangeReason());
     }

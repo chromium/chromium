@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,18 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
-#include "content/public/browser/frame_service_base.h"
+#include "content/public/browser/document_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/media_drm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -43,11 +44,11 @@ extern const char kMediaDrmStorage[];
 // This file is located under components/ so that it can be shared by multiple
 // content embedders (e.g. chrome and chromecast).
 class MediaDrmStorageImpl final
-    : public content::FrameServiceBase<media::mojom::MediaDrmStorage> {
+    : public content::DocumentService<media::mojom::MediaDrmStorage> {
  public:
   // When using per-origin provisioning, this is the ID for the origin.
   // If not specified, the device specific origin ID is to be used.
-  using MediaDrmOriginId = base::Optional<base::UnguessableToken>;
+  using MediaDrmOriginId = absl::optional<base::UnguessableToken>;
 
   // |success| is true if an origin ID was obtained and |origin_id| is
   // specified, false otherwise.
@@ -71,7 +72,7 @@ class MediaDrmStorageImpl final
       base::Time start,
       base::Time end);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Clear media licenses and related data if:
   // 1. Creation time falls in [delete_begin, delete_end], and
   // 2. |filter| returns true for the origin. |filter| is passed in to allow
@@ -99,7 +100,7 @@ class MediaDrmStorageImpl final
   // allowed or not. It is called if |get_origin_id_cb| is unable to return an
   // origin ID.
   MediaDrmStorageImpl(
-      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost& render_frame_host,
       PrefService* pref_service,
       GetOriginIdCB get_origin_id_cb,
       AllowEmptyOriginIdCB allow_empty_origin_id_cb,
@@ -108,7 +109,7 @@ class MediaDrmStorageImpl final
   // As above, but derives the PrefService from |render_frame_host|.
   // TODO(estade): make this the only constructor.
   MediaDrmStorageImpl(
-      content::RenderFrameHost* render_frame_host,
+      content::RenderFrameHost& render_frame_host,
       GetOriginIdCB get_origin_id_cb,
       AllowEmptyOriginIdCB allow_empty_origin_id_cb,
       mojo::PendingReceiver<media::mojom::MediaDrmStorage> receiver);
@@ -125,7 +126,7 @@ class MediaDrmStorageImpl final
                                RemovePersistentSessionCallback callback) final;
 
  private:
-  // |this| can only be destructed as a FrameServiceBase.
+  // |this| can only be destructed as a DocumentService.
   ~MediaDrmStorageImpl() final;
 
   // Called when |get_origin_id_cb_| asynchronously returns a origin ID as part
@@ -135,7 +136,7 @@ class MediaDrmStorageImpl final
   // Called after checking if an empty origin ID is allowed.
   void OnEmptyOriginIdAllowed(bool allowed);
 
-  PrefService* const pref_service_;
+  const raw_ptr<PrefService> pref_service_;
   GetOriginIdCB get_origin_id_cb_;
   AllowEmptyOriginIdCB allow_empty_origin_id_cb_;
 

@@ -1,5 +1,5 @@
 [document web]
 ++[section]
 ++++[image] name=''
-++++[image]
+++++[image] name='To get missing image descriptions, open the context menu.'
 ++++[image] name='full'

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/features/keyboard_accessory/jni_headers/AllPasswordsBottomSheetBridge_jni.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
-#include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"

@@ -1,0 +1,99 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//build/config/locales.gni")
+
+android_aidl("autofill_aidl") {
+  import_include = [ "java/src" ]
+  sources = [
+    "java/src/org/chromium/components/autofill_public/IAutofillHintsService.aidl",
+    "java/src/org/chromium/components/autofill_public/IViewTypeCallback.aidl",
+    "java/src/org/chromium/components/autofill_public/ViewType.aidl",
+  ]
+}
+
+android_library("java") {
+  srcjar_deps = [ ":autofill_aidl" ]
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//components/autofill/android:autofill_java",
+    "//components/autofill/core/common/mojom:mojo_types_java",
+    "//components/version_info/android:version_constants_java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  sources = [
+    "java/src/org/chromium/components/autofill/AutofillActionModeCallback.java",
+    "java/src/org/chromium/components/autofill/AutofillHintsService.java",
+    "java/src/org/chromium/components/autofill/AutofillManagerWrapper.java",
+    "java/src/org/chromium/components/autofill/AutofillProvider.java",
+    "java/src/org/chromium/components/autofill/AutofillProviderUMA.java",
+    "java/src/org/chromium/components/autofill/FormData.java",
+    "java/src/org/chromium/components/autofill/FormFieldData.java",
+    "java/src/org/chromium/components/autofill_public/ViewType.java",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/components/autofill/AutofillProvider.java",
+    "java/src/org/chromium/components/autofill/FormData.java",
+    "java/src/org/chromium/components/autofill/FormFieldData.java",
+  ]
+}
+
+static_library("android") {
+  sources = [
+    "autofill_provider_android.cc",
+    "autofill_provider_android.h",
+    "form_data_android.cc",
+    "form_data_android.h",
+    "form_field_data_android.cc",
+    "form_field_data_android.h",
+  ]
+  public_deps = [ ":browser" ]
+  deps = [
+    ":jni_headers",
+    "//components/autofill/content/browser",
+    "//content/public/browser",
+    "//ui/android",
+  ]
+}
+
+static_library("browser") {
+  sources = [
+    "android_autofill_manager.cc",
+    "android_autofill_manager.h",
+    "autofill_provider.cc",
+    "autofill_provider.h",
+  ]
+  public_deps = [ "//components/autofill/core/browser" ]
+  deps = [
+    "//components/autofill/content/browser",
+    "//content/public/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "autofill_provider_unittest.cc" ]
+  deps = [
+    ":test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [ "test_autofill_provider.h" ]
+  public_deps = [ ":browser" ]
+  deps = [ "//content/public/browser" ]
+}

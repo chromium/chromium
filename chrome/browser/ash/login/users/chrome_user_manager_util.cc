@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_provider.h"
-#include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
@@ -28,11 +28,9 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
   bool is_guest_allowed = false;
   decoded_policies.GetBoolean(kAccountsPrefAllowGuest, &is_guest_allowed);
 
-  const base::Value* value;
-  const base::ListValue* allowlist;
-  if (decoded_policies.GetValue(kAccountsPrefUsers, &value)) {
-    value->GetAsList(&allowlist);
-  }
+  const base::Value* allowlist = nullptr;
+  decoded_policies.GetValue(kAccountsPrefUsers, &allowlist);
+  DCHECK(allowlist);
 
   bool allow_family_link = false;
   decoded_policies.GetBoolean(kAccountsPrefFamilyLinkAccountsAllowed,
@@ -45,7 +43,7 @@ bool AreAllUsersAllowed(const user_manager::UserList& users,
     const bool is_user_allowlisted =
         user->HasGaiaAccount() &&
         CrosSettings::FindEmailInList(
-            allowlist, user->GetAccountId().GetUserEmail(), nullptr);
+            allowlist->GetList(), user->GetAccountId().GetUserEmail(), nullptr);
     const bool is_allowed_because_family_link =
         allow_family_link && user->IsChild();
     const bool is_gaia_user_allowed =
@@ -62,13 +60,9 @@ bool IsUserAllowed(const user_manager::User& user,
                    bool is_user_allowlisted) {
   DCHECK(user.GetType() == user_manager::USER_TYPE_REGULAR ||
          user.GetType() == user_manager::USER_TYPE_GUEST ||
-         user.GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED ||
          user.GetType() == user_manager::USER_TYPE_CHILD);
 
   if (user.GetType() == user_manager::USER_TYPE_GUEST && !is_guest_allowed) {
-    return false;
-  }
-  if (user.GetType() == user_manager::USER_TYPE_SUPERVISED_DEPRECATED) {
     return false;
   }
   if (user.HasGaiaAccount() && !is_user_allowlisted) {
@@ -81,9 +75,7 @@ bool IsPublicSessionOrEphemeralLogin() {
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();
   return user_manager->IsLoggedInAsPublicAccount() ||
-         (user_manager->IsCurrentUserNonCryptohomeDataEphemeral() &&
-          user_manager->GetActiveUser()->GetType() !=
-              user_manager::USER_TYPE_REGULAR);
+         user_manager->IsCurrentUserCryptohomeDataEphemeral();
 }
 
 }  // namespace chrome_user_manager_util

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,12 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
@@ -35,6 +37,10 @@ class RootFrameSinkClient {
       viz::FrameSinkId frame_sink_id,
       uint32_t layer_tree_frame_sink_id,
       std::vector<viz::ReturnedResource> resources) = 0;
+  virtual void OnCompositorFrameTransitionDirectiveProcessed(
+      viz::FrameSinkId frame_sink_id,
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id) = 0;
 };
 
 // This class holds per-AwContents classes on the viz thread that do not need
@@ -47,6 +53,9 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
  public:
   using SetNeedsBeginFrameCallback = base::RepeatingCallback<void(bool)>;
   RootFrameSink(RootFrameSinkClient* client);
+
+  RootFrameSink(const RootFrameSink&) = delete;
+  RootFrameSink& operator=(const RootFrameSink&) = delete;
 
   const viz::FrameSinkId& root_frame_sink_id() const {
     return root_frame_sink_id_;
@@ -61,9 +70,11 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   bool BeginFrame(const viz::BeginFrameArgs& args, bool had_input_event);
   void SetBeginFrameSourcePaused(bool paused);
   void SetNeedsDraw(bool needs_draw);
+  void OnNewUncommittedFrame(const viz::SurfaceId& surface_id);
   bool IsChildSurface(const viz::FrameSinkId& frame_sink_id);
   void DettachClient();
   void EvictChildSurface(const viz::SurfaceId& surface_id);
+  void SetContainedSurfaces(const base::flat_set<viz::SurfaceId>& ids);
 
   void SubmitChildCompositorFrame(ChildFrame* child_frame);
   viz::FrameTimingDetailsMap TakeChildFrameTimingDetailsMap();
@@ -71,17 +82,18 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
 
   // viz::mojom::CompositorFrameSinkClient implementation.
   void DidReceiveCompositorFrameAck(
-      const std::vector<viz::ReturnedResource>& resources) override;
+      std::vector<viz::ReturnedResource> resources) override;
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const viz::FrameTimingDetailsMap& feedbacks) override {}
   void OnBeginFramePausedChanged(bool paused) override {}
-  void ReclaimResources(
-      const std::vector<viz::ReturnedResource>& resources) override;
+  void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
 
   // viz::ExternalBeginFrameSourceClient overrides.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
+
+  void OnCaptureStarted(const viz::FrameSinkId& frame_sink_id);
 
  private:
   friend class base::RefCounted<RootFrameSink>;
@@ -92,6 +104,14 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   void ReturnResources(viz::FrameSinkId frame_sink_id,
                        uint32_t layer_tree_frame_sink_id,
                        std::vector<viz::ReturnedResource> resources);
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      viz::FrameSinkId frame_sink_id,
+      uint32_t layer_tree_frame_sink_id,
+      uint32_t sequence_id);
+
+  bool HasPendingDependency(const viz::SurfaceId& surface_id);
+  void UpdateNeedsBeginFrames(bool needs_begin_frame);
+  bool ProcessVisibleSurfacesInvalidation();
 
   const viz::FrameSinkId root_frame_sink_id_;
   base::flat_set<viz::FrameSinkId> child_frame_sink_ids_;
@@ -105,13 +125,17 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
 
   std::unique_ptr<ChildCompositorFrameSink> child_sink_support_;
 
+  bool clients_need_begin_frames_ = false;
   bool needs_begin_frames_ = false;
+
   bool needs_draw_ = false;
-  RootFrameSinkClient* client_;
+  raw_ptr<RootFrameSinkClient> client_;
+  base::flat_set<viz::SurfaceId> contained_surfaces_;
+  std::map<viz::SurfaceId, viz::BeginFrameId> last_invalidated_frame_id_;
+
+  const bool use_new_invalidate_heuristic_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(RootFrameSink);
 };
 
 using RootFrameSinkGetter =

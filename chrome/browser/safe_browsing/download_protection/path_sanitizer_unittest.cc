@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,7 @@ base::FilePath GetRootDirectory() {
   if (!base::PathService::Get(base::DIR_TEMP, &dir_temp))
     NOTREACHED();
 
-  std::vector<base::FilePath::StringType> components;
-  dir_temp.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components = dir_temp.GetComponents();
 
   return base::FilePath(components[0]).AsEndingWithSeparator();
 }

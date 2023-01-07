@@ -1,9 +1,4 @@
 include_rules = [
-  "+chrome/browser/ui/views/tabs/new_tab_button.h",
-  "+chrome/browser/ui/views/toolbar/browser_app_menu_button.h",
-  "+chrome/browser/ui/views/feature_promos/feature_promo_bubble_view.h",
-  "+chrome/browser/ui/views/frame/browser_view.h",
-  "+chrome/browser/ui/views/toolbar/toolbar_view.h",
   "+content/public/android/java",
 ]
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define ANDROID_WEBVIEW_COMMON_AW_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace android_webview {
 namespace features {
@@ -14,17 +16,29 @@ namespace features {
 // alongside the definition of their values in the .cc file.
 
 // Alphabetical:
-extern const base::Feature kWebViewBrotliSupport;
-extern const base::Feature kWebViewConnectionlessSafeBrowsing;
-extern const base::Feature kWebViewCpuAffinityRestrictToLittleCores;
-extern const base::Feature kWebViewDisplayCutout;
-extern const base::Feature kWebViewExtraHeadersSameOriginOnly;
-extern const base::Feature kWebViewJavaJsBridgeMojo;
-extern const base::Feature kWebViewMeasureScreenCoverage;
-extern const base::Feature kWebViewMixedContentAutoupgrades;
-extern const base::Feature kWebViewOriginTrials;
-extern const base::Feature kWebViewTestFeature;
-extern const base::Feature kWebViewWideColorGamutSupport;
+BASE_DECLARE_FEATURE(kWebViewBrotliSupport);
+BASE_DECLARE_FEATURE(kWebViewCheckReturnResources);
+BASE_DECLARE_FEATURE(kWebViewConnectionlessSafeBrowsing);
+BASE_DECLARE_FEATURE(kWebViewDisplayCutout);
+BASE_DECLARE_FEATURE(kWebViewEmptyComponentLoaderPolicy);
+BASE_DECLARE_FEATURE(kWebViewExtraHeadersSameOriginOnly);
+BASE_DECLARE_FEATURE(kWebViewForceDarkModeMatchTheme);
+BASE_DECLARE_FEATURE(kWebViewHitTestInBlinkOnTouchStart);
+BASE_DECLARE_FEATURE(kWebViewJavaJsBridgeMojo);
+BASE_DECLARE_FEATURE(kWebViewLegacyTlsSupport);
+BASE_DECLARE_FEATURE(kWebViewMeasureScreenCoverage);
+BASE_DECLARE_FEATURE(kWebViewMixedContentAutoupgrades);
+BASE_DECLARE_FEATURE(kWebViewOriginTrials);
+BASE_DECLARE_FEATURE(kWebViewRecordAppDataDirectorySize);
+BASE_DECLARE_FEATURE(kWebViewSuppressDifferentOriginSubframeJSDialogs);
+BASE_DECLARE_FEATURE(kWebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess);
+BASE_DECLARE_FEATURE(kWebViewTestFeature);
+BASE_DECLARE_FEATURE(kWebViewUseMetricsUploadService);
+BASE_DECLARE_FEATURE(kWebViewWideColorGamutSupport);
+BASE_DECLARE_FEATURE(kWebViewXRequestedWithHeaderControl);
+extern const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode;
+BASE_DECLARE_FEATURE(kWebViewXRequestedWithHeaderManifestAllowList);
+BASE_DECLARE_FEATURE(kWebViewClientHintsControllerDelegate);
 
 }  // namespace features
 }  // namespace android_webview

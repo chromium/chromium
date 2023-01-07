@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,16 @@
 #define UI_OZONE_PLATFORM_WAYLAND_GPU_WAYLAND_CANVAS_SURFACE_H_
 
 #include <memory>
+#include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/vsync_provider.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_surface_gpu.h"
 #include "ui/ozone/public/surface_ozone_canvas.h"
 
@@ -43,6 +47,10 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
  public:
   WaylandCanvasSurface(WaylandBufferManagerGpu* buffer_manager,
                        gfx::AcceleratedWidget widget);
+
+  WaylandCanvasSurface(const WaylandCanvasSurface&) = delete;
+  WaylandCanvasSurface& operator=(const WaylandCanvasSurface&) = delete;
+
   ~WaylandCanvasSurface() override;
 
   // SurfaceOzoneCanvas
@@ -50,9 +58,10 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
   // GetCanvas() returns an SkCanvas whose shared memory region is not being
   // used by Wayland. If no such SkCanvas is available, a new one is created.
   SkCanvas* GetCanvas() override;
-  void ResizeCanvas(const gfx::Size& viewport_size) override;
+  void ResizeCanvas(const gfx::Size& viewport_size, float scale) override;
   void PresentCanvas(const gfx::Rect& damage) override;
   std::unique_ptr<gfx::VSyncProvider> CreateVSyncProvider() override;
+  bool SupportsOverridePlatformSize() const override;
 
  private:
   // Internal helper class, which creates a shared memory region, asks the
@@ -60,21 +69,26 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
   // is backed by that shared region.
   class SharedMemoryBuffer;
 
+  // Internal implementation of gfx::VSyncProvider.
+  class VSyncProvider;
+
   void ProcessUnsubmittedBuffers();
 
   // WaylandSurfaceGpu overrides:
-  void OnSubmission(uint32_t buffer_id,
-                    const gfx::SwapResult& swap_result) override;
-  void OnPresentation(uint32_t buffer_id,
+  void OnSubmission(uint32_t frame_id,
+                    const gfx::SwapResult& swap_result,
+                    gfx::GpuFenceHandle release_fence) override;
+  void OnPresentation(uint32_t frame_id,
                       const gfx::PresentationFeedback& feedback) override;
 
   sk_sp<SkSurface> GetNextSurface();
   std::unique_ptr<SharedMemoryBuffer> CreateSharedMemoryBuffer();
 
-  WaylandBufferManagerGpu* const buffer_manager_;
+  const raw_ptr<WaylandBufferManagerGpu> buffer_manager_;
   const gfx::AcceleratedWidget widget_;
 
   gfx::Size size_;
+  float viewport_scale_ = 1.f;
   std::vector<std::unique_ptr<SharedMemoryBuffer>> buffers_;
 
   // Contains pending to be submitted buffers. The vector is processed as FIFO.
@@ -82,16 +96,21 @@ class WaylandCanvasSurface : public SurfaceOzoneCanvas,
 
   // Pending buffer that is to be placed into the |unsubmitted_buffers_| to be
   // processed.
-  SharedMemoryBuffer* pending_buffer_ = nullptr;
+  raw_ptr<SharedMemoryBuffer> pending_buffer_ = nullptr;
 
   // Currently used buffer. Set on PresentCanvas() and released on
   // OnSubmission() call.
-  SharedMemoryBuffer* current_buffer_ = nullptr;
+  raw_ptr<SharedMemoryBuffer> current_buffer_ = nullptr;
 
   // Previously used buffer. Set on OnSubmission().
-  SharedMemoryBuffer* previous_buffer_ = nullptr;
+  raw_ptr<SharedMemoryBuffer> previous_buffer_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(WaylandCanvasSurface);
+  // Used by the internal VSyncProvider implementation. Set on OnPresentation().
+  base::TimeTicks last_timestamp_;
+  base::TimeDelta last_interval_;
+  bool is_hw_clock_;
+
+  base::WeakPtrFactory<WaylandCanvasSurface> weak_factory_{this};
 };
 
 }  // namespace ui

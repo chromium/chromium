@@ -1,8 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 
 #include "base/command_line.h"
 #include "base/test/mock_callback.h"
@@ -71,10 +72,10 @@ class AttemptRestartTest : public InProcessBrowserTest,
       mock_relaunch_callback_.Get()};
 };
 
-INSTANTIATE_TEST_CASE_P(,
-                        AttemptRestartTest,
-                        testing::Values(switches::kIncognito,
-                                        switches::kGuest));
+INSTANTIATE_TEST_SUITE_P(,
+                         AttemptRestartTest,
+                         testing::Values(switches::kIncognito,
+                                         switches::kGuest));
 
 IN_PROC_BROWSER_TEST_P(AttemptRestartTest, AttemptRestartWithOTRProfiles) {
   // We will now attempt restart, prior to (crbug.com/999085)
@@ -103,7 +104,8 @@ class RelaunchIgnoreUnloadHandlersTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(RelaunchIgnoreUnloadHandlersTest, Do) {
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(content::ExecuteScript(

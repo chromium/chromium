@@ -1,7 +1,7 @@
 {
   "name": "Service Worker-based background script",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Test storage APIs for service worker-based background scripts.",
   "permissions": [ ],
   "background": {"service_worker": "service_worker_background.js"}

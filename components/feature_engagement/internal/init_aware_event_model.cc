@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,6 +50,32 @@ void InitAwareEventModel::IncrementEvent(const std::string& event_name,
     return;
 
   queued_events_.push_back(std::tie(event_name, current_day));
+}
+
+void InitAwareEventModel::IncrementSnooze(const std::string& event_name,
+                                          uint32_t current_day,
+                                          base::Time current_time) {
+  event_model_->IncrementSnooze(event_name, current_day, current_time);
+}
+
+void InitAwareEventModel::DismissSnooze(const std::string& event_name) {
+  event_model_->DismissSnooze(event_name);
+}
+
+base::Time InitAwareEventModel::GetLastSnoozeTimestamp(
+    const std::string& event_name) const {
+  return event_model_->GetLastSnoozeTimestamp(event_name);
+}
+
+uint32_t InitAwareEventModel::GetSnoozeCount(const std::string& event_name,
+                                             uint32_t window,
+                                             uint32_t current_day) const {
+  return event_model_->GetSnoozeCount(event_name, window, current_day);
+}
+
+bool InitAwareEventModel::IsSnoozeDismissed(
+    const std::string& event_name) const {
+  return event_model_->IsSnoozeDismissed(event_name);
 }
 
 void InitAwareEventModel::OnInitializeComplete(

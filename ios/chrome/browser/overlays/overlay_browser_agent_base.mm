@@ -1,13 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/public/overlay_browser_agent_base.h"
 
-#include "base/check.h"
+#import "base/check.h"
 #import "ios/chrome/browser/main/browser.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
-#include "ios/chrome/browser/overlays/public/overlay_request_callback_installer.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_request_callback_installer.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -30,11 +30,11 @@ void OverlayBrowserAgentBase::AddInstaller(
   CallbackInstallerStorage& storage = installer_storages_[modality];
   storage.installers.push_back(std::move(installer));
   // Reset the storage's request support to nullptr.  This will cause the
-  // aggregate support for all callback installers added for |modality| to be
+  // aggregate support for all callback installers added for `modality` to be
   // regenerated the next time GetRequestSupport() is called.
   storage.request_support = nullptr;
   // Notify the installation driver if this is the first installer added for
-  // |modality|.
+  // `modality`.
   if (storage.installers.size() == 1U)
     installation_driver_.StartInstallingCallbacks(modality);
 }
@@ -70,7 +70,7 @@ void OverlayBrowserAgentBase::InstallOverlayRequestCallbacks(
 OverlayBrowserAgentBase::CallbackInstallationDriver::CallbackInstallationDriver(
     Browser* browser,
     OverlayBrowserAgentBase* browser_agent)
-    : browser_(browser), browser_agent_(browser_agent), scoped_observer_(this) {
+    : browser_(browser), browser_agent_(browser_agent) {
   DCHECK(browser_agent_);
   DCHECK(browser_);
 }
@@ -82,8 +82,8 @@ void OverlayBrowserAgentBase::CallbackInstallationDriver::
     StartInstallingCallbacks(OverlayModality modality) {
   OverlayPresenter* presenter =
       OverlayPresenter::FromBrowser(browser_, modality);
-  if (!scoped_observer_.IsObserving(presenter))
-    scoped_observer_.Add(presenter);
+  if (!scoped_observations_.IsObservingSource(presenter))
+    scoped_observations_.AddObservation(presenter);
 }
 
 const OverlayRequestSupport*
@@ -104,7 +104,7 @@ void OverlayBrowserAgentBase::CallbackInstallationDriver::WillShowOverlay(
 
 void OverlayBrowserAgentBase::CallbackInstallationDriver::
     OverlayPresenterDestroyed(OverlayPresenter* presenter) {
-  scoped_observer_.Remove(presenter);
+  scoped_observations_.RemoveObservation(presenter);
 }
 
 #pragma mark - OverlayBrowserAgentBase::CallbackInstallerStorage

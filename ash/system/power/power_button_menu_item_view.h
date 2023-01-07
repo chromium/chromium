@@ -1,14 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SYSTEM_POWER_BUTTON_MENU_ITEM_VIEW_H_
-#define ASH_SYSTEM_POWER_BUTTON_MENU_ITEM_VIEW_H_
+#ifndef ASH_SYSTEM_POWER_POWER_BUTTON_MENU_ITEM_VIEW_H_
+#define ASH_SYSTEM_POWER_POWER_BUTTON_MENU_ITEM_VIEW_H_
 
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace views {
@@ -64,4 +63,4 @@ class ASH_EXPORT PowerButtonMenuItemView : public views::ImageButton {
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_POWER_BUTTON_MENU_ITEM_VIEW_H_
+#endif  // ASH_SYSTEM_POWER_POWER_BUTTON_MENU_ITEM_VIEW_H_

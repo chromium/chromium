@@ -1,14 +1,17 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import gpu_project_config
 import inspect
 import itertools
-import mock
 import os
 import re
+import sys
+from typing import List, Optional, Set, Type
 import unittest
+import unittest.mock as mock
+
+import gpu_project_config
 
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
@@ -16,6 +19,7 @@ from gpu_tests import pixel_integration_test
 from gpu_tests import pixel_test_pages
 from gpu_tests import webgl_conformance_integration_test
 from gpu_tests import webgl_test_util
+from gpu_tests import webgpu_cts_integration_test
 
 from py_utils import discover
 from py_utils import tempfile_ext
@@ -61,7 +65,9 @@ GENERIC_CONDITIONS = OS_CONDITIONS + GPU_CONDITIONS
 VALID_BUG_REGEXES = [
     re.compile(r'crbug\.com\/\d+'),
     re.compile(r'crbug\.com\/angleproject\/\d+'),
+    re.compile(r'crbug\.com\/dawn\/\d+'),
     re.compile(r'crbug\.com\/swiftshader\/\d+'),
+    re.compile(r'crbug\.com\/tint\/\d+'),
     re.compile(r'skbug\.com\/\d+'),
 ]
 
@@ -72,44 +78,35 @@ _map_specific_to_generic['debug-x64'] = 'debug'
 _map_specific_to_generic['release-x64'] = 'release'
 
 _get_generic = lambda tags: set(
-    [_map_specific_to_generic.get(tag, tag) for tag in tags])
+    _map_specific_to_generic.get(tag, tag) for tag in tags)
 
 ResultType = json_results.ResultType
 
-INTEL_DRIVER_VERSION_SCHEMA = '''
-The version format of Intel graphics driver is AA.BB.CCC.DDDD.
-DDDD(old schema) or CCC.DDDD(new schema) is the build number. That is,
-indicates the actual driver number. The comparison between old schema
-and new schema is NOT valid. In such a condition the only comparison
-operator that returns true is "not equal".
+INTEL_DRIVER_VERSION_SCHEMA = """
+The version format of Intel graphics driver is AA.BB.CC.DDDD (legacy schema)
+and AA.BB.CCC.DDDD (new schema).
 
 AA.BB: You are free to specify the real number here, but they are meaningless
 when comparing two version numbers. Usually it's okay to leave it to "0.0".
 
-CCC: It's necessary for new schema. Regarding to old schema, you can specify
-the real number or any number less than 100 in order to differentiate from
-new schema.
+CC or CCC: It's meaningful to indicate different branches. Different CC means
+different branch, while all CCCs share the same branch.
 
-DDDD: It's always meaningful. It must not be "0" under old schema.
-
-Legal: "24.20.100.7000", "0.0.100.7000", "0.0.0.7000", "0.0.100.0"
-Illegal: "24.0.0.0", "24.20.0.0", "0.0.99.0"
-'''
+DDDD: It's always meaningful.
+"""
 
 
-def check_intel_driver_version(version):
+def check_intel_driver_version(version: str) -> bool:
   ver_list = version.split('.')
   if len(ver_list) != 4:
     return False
   for ver in ver_list:
     if not ver.isdigit():
       return False
-  if int(ver_list[2]) < 100 and ver_list[3] == '0':
-    return False
   return True
 
 
-def _MapGpuDevicesToVendors(tag_sets):
+def _MapGpuDevicesToVendors(tag_sets: List[Set[str]]) -> None:
   for tag_set in tag_sets:
     if any(gpu in tag_set for gpu in GPU_CONDITIONS):
       _map_specific_to_generic.update({
@@ -123,7 +120,7 @@ def _MapGpuDevicesToVendors(tag_sets):
 # No good way to reduce the number of return statements to the required level
 # without harming readability.
 # pylint: disable=too-many-return-statements,too-many-branches
-def _IsDriverTagDuplicated(driver_tag1, driver_tag2):
+def _IsDriverTagDuplicated(driver_tag1: str, driver_tag2: str) -> bool:
   if driver_tag1 == driver_tag2:
     return True
 
@@ -138,48 +135,45 @@ def _IsDriverTagDuplicated(driver_tag1, driver_tag2):
   operation2, version2 = tag2[1:]
   if operation1 == 'ne':
     return not (operation2 == 'eq' and version1 == version2)
-  elif operation2 == 'ne':
+  if operation2 == 'ne':
     return not (operation1 == 'eq' and version1 == version2)
-  elif operation1 == 'eq':
+  if operation1 == 'eq':
     return gpu_helper.EvaluateVersionComparison(version1, operation2, version2)
-  elif operation2 == 'eq':
+  if operation2 == 'eq':
     return gpu_helper.EvaluateVersionComparison(version2, operation1, version1)
 
-  if operation1 == 'ge' or operation1 == 'gt':
-    if operation2 == 'ge' or operation2 == 'gt':
-      return True
-  elif operation1 == 'le' or operation1 == 'lt':
-    if operation2 == 'le' or operation2 == 'lt':
-      return True
+  if operation1 in ('ge', 'gt') and operation2 in ('ge', 'gt'):
+    return True
+  if operation1 in ('le', 'lt') and operation2 in ('le', 'lt'):
+    return True
 
   if operation1 == 'ge':
     if operation2 == 'le':
       return not gpu_helper.EvaluateVersionComparison(version1, 'gt', version2)
-    elif operation2 == 'lt':
+    if operation2 == 'lt':
       return not gpu_helper.EvaluateVersionComparison(version1, 'ge', version2)
-  elif operation1 == 'gt':
+  if operation1 == 'gt':
     return not gpu_helper.EvaluateVersionComparison(version1, 'ge', version2)
-  elif operation1 == 'le':
+  if operation1 == 'le':
     if operation2 == 'ge':
       return not gpu_helper.EvaluateVersionComparison(version1, 'lt', version2)
-    elif operation2 == 'gt':
+    if operation2 == 'gt':
       return not gpu_helper.EvaluateVersionComparison(version1, 'le', version2)
-  elif operation1 == 'lt':
+  if operation1 == 'lt':
     return not gpu_helper.EvaluateVersionComparison(version1, 'le', version2)
-  else:
-    assert False
+  assert False
+  return False
 # pylint: enable=too-many-return-statements,too-many-branches
 
 
-def _DoTagsConflict(t1, t2):
+def _DoTagsConflict(t1: str, t2: str) -> bool:
   if gpu_helper.MatchDriverTag(t1):
     return not _IsDriverTagDuplicated(t1, t2)
-  else:
-    return (t1 != t2 and t1 != _map_specific_to_generic.get(t2, t2)
-            and t2 != _map_specific_to_generic.get(t1, t1))
+  return (t1 != t2 and t1 != _map_specific_to_generic.get(t2, t2)
+          and t2 != _map_specific_to_generic.get(t1, t1))
 
 
-def _ExtractUnitTestTestExpectations(file_name):
+def _ExtractUnitTestTestExpectations(file_name: str) -> List[str]:
   file_name = os.path.join(
       os.path.dirname(os.path.abspath(__file__)), '..', 'unittest_data',
       'test_expectations', file_name)
@@ -205,10 +199,11 @@ def _ExtractUnitTestTestExpectations(file_name):
   return test_expectations_list
 
 
-def CheckTestExpectationsAreForExistingTests(unittest_testcase,
-                                             test_class,
-                                             mock_options,
-                                             test_names=None):
+def CheckTestExpectationsAreForExistingTests(
+    unittest_testcase: unittest.TestCase,
+    test_class: Type[gpu_integration_test.GpuIntegrationTest],
+    mock_options: mock.MagicMock,
+    test_names: Optional[List[str]] = None) -> None:
   test_names = test_names or [
       args[0] for args in test_class.GenerateGpuTests(mock_options)
   ]
@@ -218,7 +213,7 @@ def CheckTestExpectationsAreForExistingTests(unittest_testcase,
     test_expectations.parse_tagged_list(f.read(), f.name)
     broke_expectations = '\n'.join([
         "\t- {0}:{1}: Expectation with pattern '{2}' does not match"
-        " any tests in the {3} test suite".format(f.name, exp.lineno, exp.test,
+        ' any tests in the {3} test suite'.format(f.name, exp.lineno, exp.test,
                                                   test_class.Name())
         for exp in test_expectations.check_for_broken_expectations(test_names)
     ])
@@ -228,7 +223,8 @@ def CheckTestExpectationsAreForExistingTests(unittest_testcase,
         'the %s test suite:\n%s' % (test_class.Name(), broke_expectations))
 
 
-def CheckTestExpectationPatternsForConflicts(expectations, file_name):
+def CheckTestExpectationPatternsForConflicts(expectations: str,
+                                             file_name: str) -> str:
   test_expectations = expectations_parser.TestExpectations()
   test_expectations.parse_tagged_list(
       expectations, file_name=file_name, tags_conflict=_DoTagsConflict)
@@ -236,25 +232,41 @@ def CheckTestExpectationPatternsForConflicts(expectations, file_name):
   return test_expectations.check_test_expectations_patterns_for_conflicts()
 
 
-def _FindTestCases():
+def _FindTestCases() -> List[Type[gpu_integration_test.GpuIntegrationTest]]:
   test_cases = []
   for start_dir in gpu_project_config.CONFIG.start_dirs:
+    # Note we deliberately only scan the integration tests as a
+    # workaround for http://crbug.com/1195465 .
     modules_to_classes = discover.DiscoverClasses(
         start_dir,
         gpu_project_config.CONFIG.top_level_dir,
-        base_class=gpu_integration_test.GpuIntegrationTest)
+        base_class=gpu_integration_test.GpuIntegrationTest,
+        pattern='*_integration_test.py')
     test_cases.extend(modules_to_classes.values())
+  # Filter out WebGPU tests on Windows 7 since listing tests breaks there due
+  # to Node not working properly on Windows 7.
+  # pylint:disable=no-member
+  # pytype: disable=module-attr
+  if sys.platform == 'win32' and sys.getwindowsversion().major < 10:
+    # pytype: enable=module-attr
+    # pylint:enable=no-member
+    test_cases = [
+        c for c in test_cases
+        if c != webgpu_cts_integration_test.WebGpuCtsIntegrationTest
+    ]
   return test_cases
 
 
 class GpuTestExpectationsValidation(unittest.TestCase):
-  def testNoConflictsInGpuTestExpectations(self):
+  maxDiff = None
+
+  def testNoConflictsInGpuTestExpectations(self) -> None:
     webgl_conformance_test_class = (
         webgl_conformance_integration_test.WebGLConformanceIntegrationTest)
     errors = ''
     for test_case in _FindTestCases():
       if 'gpu_tests.gpu_integration_test_unittest' not in test_case.__module__:
-        for webgl_version in xrange(
+        for webgl_version in range(
             1, 2 + (test_case == webgl_conformance_test_class)):
           _ = list(
               test_case.GenerateGpuTests(
@@ -266,12 +278,12 @@ class GpuTestExpectationsValidation(unittest.TestCase):
                   f.read(), os.path.basename(f.name))
     self.assertEqual(errors, '')
 
-  def testExpectationsFilesCanBeParsed(self):
+  def testExpectationsFilesCanBeParsed(self) -> None:
     webgl_conformance_test_class = (
         webgl_conformance_integration_test.WebGLConformanceIntegrationTest)
     for test_case in _FindTestCases():
       if 'gpu_tests.gpu_integration_test_unittest' not in test_case.__module__:
-        for webgl_version in xrange(
+        for webgl_version in range(
             1, 2 + (test_case == webgl_conformance_test_class)):
           _ = list(
               test_case.GenerateGpuTests(
@@ -285,16 +297,17 @@ class GpuTestExpectationsValidation(unittest.TestCase):
                   ret, 0,
                   'Error parsing %s:\n\t%s' % (os.path.basename(f.name), err))
 
-  def testWebglTestPathsExist(self):
-    def _CheckWebglConformanceTestPathIsValid(pattern):
+  def testWebglTestPathsExist(self) -> None:
+    def _CheckWebglConformanceTestPathIsValid(pattern: str) -> None:
       if not 'WebglExtension_' in pattern:
         full_path = os.path.normpath(
             os.path.join(webgl_test_util.conformance_path, pattern))
-        self.assertTrue(os.path.exists(full_path))
+        self.assertTrue(os.path.exists(full_path),
+                        '%s does not exist' % full_path)
 
     webgl_test_class = (
         webgl_conformance_integration_test.WebGLConformanceIntegrationTest)
-    for webgl_version in xrange(1, 3):
+    for webgl_version in range(1, 3):
       _ = list(
           webgl_test_class.GenerateGpuTests(
               gpu_helper.GetMockArgs(webgl_version='%d.0.0' % webgl_version)))
@@ -304,10 +317,10 @@ class GpuTestExpectationsValidation(unittest.TestCase):
         for pattern, _ in expectations.individual_exps.items():
           _CheckWebglConformanceTestPathIsValid(pattern)
 
-  def testForBrokenWebglExtensionExpectations(self):
+  def testForBrokenWebglExtensionExpectations(self) -> None:
     webgl_test_class = (
         webgl_conformance_integration_test.WebGLConformanceIntegrationTest)
-    for webgl_version in xrange(1, 3):
+    for webgl_version in range(1, 3):
       tests = [
           test[0] for test in webgl_test_class.GenerateGpuTests(
               gpu_helper.GetMockArgs(webgl_version='%d.0.0' % webgl_version))
@@ -317,22 +330,22 @@ class GpuTestExpectationsValidation(unittest.TestCase):
         expectations.parse_tagged_list(f.read())
 
         # remove non webgl extension expectations
-        for test in expectations.individual_exps.keys():
+        for test in list(expectations.individual_exps.keys()):
           if not test.lower().startswith('webglextension'):
             expectations.individual_exps.pop(test)
-        for test in expectations.glob_exps.keys():
+        for test in list(expectations.glob_exps.keys()):
           if not test.lower().startswith('webglextension'):
             expectations.glob_exps.pop(test)
 
         broken_expectations = expectations.check_for_broken_expectations(tests)
         msg = ''
-        for ununsed_pattern in set([e.test for e in broken_expectations]):
+        for ununsed_pattern in set(e.test for e in broken_expectations):
           msg += ("Expectations with pattern '{0}' in {1} do not apply to any "
-                  "webgl version {2} extension tests\n".format(
+                  'webgl version {2} extension tests\n'.format(
                       ununsed_pattern, os.path.basename(f.name), webgl_version))
         self.assertEqual(msg, '')
 
-  def testForBrokenPixelTestExpectations(self):
+  def testForBrokenPixelTestExpectations(self) -> None:
     pixel_test_names = []
     for _, method in inspect.getmembers(
         pixel_test_pages.PixelTestPages, predicate=inspect.isfunction):
@@ -344,7 +357,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
         self, pixel_integration_test.PixelIntegrationTest,
         gpu_helper.GetMockArgs(), pixel_test_names)
 
-  def testForBrokenGpuTestExpectations(self):
+  def testForBrokenGpuTestExpectations(self) -> None:
     options = gpu_helper.GetMockArgs()
     for test_case in _FindTestCases():
       if 'gpu_tests.gpu_integration_test_unittest' not in test_case.__module__:
@@ -352,10 +365,11 @@ class GpuTestExpectationsValidation(unittest.TestCase):
             and test_case.ExpectationsFiles()):
           CheckTestExpectationsAreForExistingTests(self, test_case, options)
 
-  def testExpectationBugValidity(self):
+  def testExpectationBugValidity(self) -> None:
     expectation_dir = os.path.join(os.path.dirname(__file__),
                                    'test_expectations')
-    for expectation_file in os.listdir(expectation_dir):
+    for expectation_file in (f for f in os.listdir(expectation_dir)
+                             if f.endswith('.txt')):
       with open(os.path.join(expectation_dir, expectation_file)) as f:
         content = f.read()
       list_parser = expectations_parser.TaggedTestListParser(content)
@@ -368,7 +382,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
                     'recognized format or references an unknown project.' %
                     (reason, expectation_file))
 
-  def testWebglTestExpectationsForDriverTags(self):
+  def testWebglTestExpectationsForDriverTags(self) -> None:
     webgl_conformance_test_class = (
         webgl_conformance_integration_test.WebGLConformanceIntegrationTest)
     expectations_driver_tags = set()
@@ -400,7 +414,7 @@ class GpuTestExpectationsValidation(unittest.TestCase):
 
 
 class TestGpuTestExpectationsValidators(unittest.TestCase):
-  def testConflictInTestExpectationsWithGpuDriverTags(self):
+  def testConflictInTestExpectationsWithGpuDriverTags(self) -> None:
     failed_test_expectations = _ExtractUnitTestTestExpectations(
         'failed_test_expectations_with_driver_tags.txt')
     self.assertTrue(
@@ -409,7 +423,7 @@ class TestGpuTestExpectationsValidators(unittest.TestCase):
                                                      'test.txt')
             for test_expectations in failed_test_expectations))
 
-  def testNoConflictInTestExpectationsWithGpuDriverTags(self):
+  def testNoConflictInTestExpectationsWithGpuDriverTags(self) -> None:
     passed_test_expectations = _ExtractUnitTestTestExpectations(
         'passed_test_expectations_with_driver_tags.txt')
     for test_expectations in passed_test_expectations:
@@ -417,76 +431,77 @@ class TestGpuTestExpectationsValidators(unittest.TestCase):
                                                         'test.txt')
       self.assertFalse(errors)
 
-  def testConflictsBetweenAngleAndNonAngleConfigurations(self):
-    test_expectations = '''
+  def testConflictsBetweenAngleAndNonAngleConfigurations(self) -> None:
+    test_expectations = """
     # tags: [ android ]
     # tags: [ android-nexus-5x ]
     # tags: [ opengles ]
     # results: [ RetryOnFailure Skip ]
     [ android android-nexus-5x ] a/b/c/d [ RetryOnFailure ]
     [ android opengles ] a/b/c/d [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertTrue(errors)
 
-  def testConflictBetweenTestExpectationsWithOsNameAndOSVersionTags(self):
-    test_expectations = '''# tags: [ mac win linux xp ]
+  def testConflictBetweenTestExpectationsWithOsNameAndOSVersionTags(self
+                                                                    ) -> None:
+    test_expectations = """# tags: [ mac win linux xp ]
     # tags: [ intel amd nvidia ]
     # tags: [ debug release ]
     # results: [ Failure Skip ]
     [ intel xp ] a/b/c/d [ Failure ]
     [ intel win debug ] a/b/c/d [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertTrue(errors)
 
-  def testNoConflictBetweenOsVersionTags(self):
-    test_expectations = '''# tags: [ mac win linux xp win7 ]
+  def testNoConflictBetweenOsVersionTags(self) -> None:
+    test_expectations = """# tags: [ mac win linux xp win7 ]
     # tags: [ intel amd nvidia ]
     # tags: [ debug release ]
     # results: [ Failure Skip ]
     [ intel win7 ] a/b/c/d [ Failure ]
     [ intel xp debug ] a/b/c/d [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertFalse(errors)
 
-  def testConflictBetweenGpuVendorAndGpuDeviceIdTags(self):
-    test_expectations = '''# tags: [ mac win linux xp win7 ]
+  def testConflictBetweenGpuVendorAndGpuDeviceIdTags(self) -> None:
+    test_expectations = """# tags: [ mac win linux xp win7 ]
     # tags: [ intel amd nvidia nvidia-0x01 nvidia-0x02 ]
     # tags: [ debug release ]
     # results: [ Failure Skip ]
     [ nvidia-0x01 ] a/b/c/d [ Failure ]
     [ nvidia debug ] a/b/c/d [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertTrue(errors)
 
-  def testNoConflictBetweenGpuDeviceIdTags(self):
-    test_expectations = '''# tags: [ mac win linux xp win7 ]
+  def testNoConflictBetweenGpuDeviceIdTags(self) -> None:
+    test_expectations = """# tags: [ mac win linux xp win7 ]
     # tags: [ intel amd nvidia nvidia-0x01 nvidia-0x02 ]
     # tags: [ debug release ]
     # results: [ Failure Skip ]
     [ nvidia-0x01 win7 ] a/b/c/d [ Failure ]
     [ nvidia-0x02 win7 debug ] a/b/c/d [ Skip ]
     [ nvidia win debug ] a/b/c/* [ Skip ]
-    '''
+    """
     errors = CheckTestExpectationPatternsForConflicts(test_expectations,
                                                       'test.txt')
     self.assertFalse(errors)
 
-  def testFoundBrokenExpectations(self):
+  def testFoundBrokenExpectations(self) -> None:
     test_expectations = ('# tags: [ mac ]\n'
                          '# results: [ Failure ]\n'
                          '[ mac ] a/b/d [ Failure ]\n'
                          'a/c/* [ Failure ]\n')
     options = gpu_helper.GetMockArgs()
     test_class = gpu_integration_test.GpuIntegrationTest
-    with tempfile_ext.NamedTemporaryFile() as expectations_file,            \
+    with tempfile_ext.NamedTemporaryFile(mode='w') as expectations_file,    \
          mock.patch.object(
              test_class, 'GenerateGpuTests', return_value=[('a/b/c', ())]), \
          mock.patch.object(
@@ -501,59 +516,66 @@ class TestGpuTestExpectationsValidators(unittest.TestCase):
           ' to any tests in the GpuIntegrationTest test suite',
           str(context.exception))
       self.assertIn(
-          '4: Expectation with pattern \'a/c/*\' does not match'
+          "4: Expectation with pattern 'a/c/*' does not match"
           ' any tests in the GpuIntegrationTest test suite',
           str(context.exception))
       self.assertIn(
-          '3: Expectation with pattern \'a/b/d\' does not match'
+          "3: Expectation with pattern 'a/b/d' does not match"
           ' any tests in the GpuIntegrationTest test suite',
           str(context.exception))
 
 
-def testDriverVersionComparision(self):
-  self.assertTrue(
-      gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'eq',
-                                           '24.20.100.7000'))
-  self.assertTrue(
-      gpu_helper.EvaluateVersionComparison('24.20.100', 'ne', '24.20.100.7000'))
-  self.assertTrue(
-      gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'gt', '24.20.100'))
-  self.assertTrue(
-      gpu_helper.EvaluateVersionComparison('24.20.100.7000a', 'gt',
-                                           '24.20.100.7000'))
-  self.assertTrue(
-      gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'lt',
-                                           '24.20.100.7001'))
-  self.assertTrue(
-      gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'lt',
-                                           '24.20.200.6000'))
-  self.assertTrue(
-      gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'lt',
-                                           '25.30.100.6000', 'linux', 'intel'))
-  self.assertTrue(
-      gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'gt',
-                                           '25.30.100.6000', 'win', 'intel'))
-  self.assertTrue(
-      gpu_helper.EvaluateVersionComparison('24.20.101.6000', 'gt',
-                                           '25.30.100.7000', 'win', 'intel'))
-  self.assertFalse(
-      gpu_helper.EvaluateVersionComparison('24.20.99.7000', 'gt',
-                                           '24.20.100.7000', 'win', 'intel'))
-  self.assertFalse(
-      gpu_helper.EvaluateVersionComparison('24.20.99.7000', 'lt',
-                                           '24.20.100.7000', 'win', 'intel'))
-  self.assertTrue(
-      gpu_helper.EvaluateVersionComparison('24.20.99.7000', 'ne',
-                                           '24.20.100.7000', 'win', 'intel'))
-  self.assertFalse(
-      gpu_helper.EvaluateVersionComparison('24.20.100', 'lt', '24.20.100.7000',
-                                           'win', 'intel'))
-  self.assertFalse(
-      gpu_helper.EvaluateVersionComparison('24.20.100', 'gt', '24.20.100.7000',
-                                           'win', 'intel'))
-  self.assertTrue(
-      gpu_helper.EvaluateVersionComparison('24.20.100', 'ne', '24.20.100.7000',
-                                           'win', 'intel'))
-  self.assertTrue(
-      gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'eq',
-                                           '25.20.100.7000', 'win', 'intel'))
+  def testDriverVersionComparision(self) -> None:
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'eq',
+                                             '24.20.100.7000'))
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('24.20.100', 'ne',
+                                             '24.20.100.7000'))
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'gt',
+                                             '24.20.100'))
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('24.20.100.7000a', 'gt',
+                                             '24.20.100.7000'))
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'lt',
+                                             '24.20.100.7001'))
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'lt',
+                                             '24.20.200.6000'))
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'lt',
+                                             '25.30.100.6000', 'linux',
+                                             'intel'))
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'gt',
+                                             '25.30.100.6000', 'win', 'intel'))
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('24.20.101.6000', 'gt',
+                                             '25.30.100.7000', 'win', 'intel'))
+    self.assertFalse(
+        gpu_helper.EvaluateVersionComparison('24.20.99.7000', 'gt',
+                                             '24.20.100.7000', 'win', 'intel'))
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('24.20.99.7000', 'lt',
+                                             '24.20.100.7000', 'win', 'intel'))
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('24.20.99.7000', 'ne',
+                                             '24.20.100.7000', 'win', 'intel'))
+    self.assertFalse(
+        gpu_helper.EvaluateVersionComparison('24.20.100', 'lt',
+                                             '24.20.100.7000', 'win', 'intel'))
+    self.assertFalse(
+        gpu_helper.EvaluateVersionComparison('24.20.100', 'gt',
+                                             '24.20.100.7000', 'win', 'intel'))
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('24.20.100', 'ne',
+                                             '24.20.100.7000', 'win', 'intel'))
+    self.assertTrue(
+        gpu_helper.EvaluateVersionComparison('24.20.100.7000', 'eq',
+                                             '25.20.100.7000', 'win', 'intel'))
+
+
+if __name__ == '__main__':
+  unittest.main(verbosity=2)

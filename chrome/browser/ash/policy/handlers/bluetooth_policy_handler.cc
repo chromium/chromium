@@ -1,0 +1,107 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ash/policy/handlers/bluetooth_policy_handler.h"
+
+#include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/memory/ref_counted.h"
+#include "base/syslog_logging.h"
+#include "base/values.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/components/settings/cros_settings_provider.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+
+namespace policy {
+
+BluetoothPolicyHandler::BluetoothPolicyHandler(ash::CrosSettings* cros_settings)
+    : cros_settings_(cros_settings) {
+  allow_bluetooth_subscription_ = cros_settings_->AddSettingsObserver(
+      ash::kAllowBluetooth,
+      base::BindRepeating(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,
+                          weak_factory_.GetWeakPtr()));
+
+  allowed_services_subscription_ = cros_settings_->AddSettingsObserver(
+      ash::kDeviceAllowedBluetoothServices,
+      base::BindRepeating(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,
+                          weak_factory_.GetWeakPtr()));
+
+  // Fire it once so we're sure we get an invocation on startup.
+  OnBluetoothPolicyChanged();
+}
+
+BluetoothPolicyHandler::~BluetoothPolicyHandler() {}
+
+void BluetoothPolicyHandler::OnBluetoothPolicyChanged() {
+  ash::CrosSettingsProvider::TrustedStatus status =
+      cros_settings_->PrepareTrustedValues(
+          base::BindOnce(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,
+                         weak_factory_.GetWeakPtr()));
+  if (status != ash::CrosSettingsProvider::TRUSTED)
+    return;
+
+  device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
+      &BluetoothPolicyHandler::SetBluetoothPolicy, weak_factory_.GetWeakPtr()));
+}
+
+void SetServiceAllowListSuccess() {
+  SYSLOG(INFO) << "Set ServiceAllowList Success";
+}
+
+void SetServiceAllowListFailed() {
+  SYSLOG(ERROR) << "Set ServiceAllowList Failed";
+}
+
+void BluetoothPolicyHandler::SetBluetoothPolicy(
+    scoped_refptr<device::BluetoothAdapter> adapter) {
+  // Get the updated policy.
+  bool allow_bluetooth = true;
+  const base::Value::List* allowed_services_list = nullptr;
+  std::vector<device::BluetoothUUID> allowed_services;
+
+  cros_settings_->GetBoolean(ash::kAllowBluetooth, &allow_bluetooth);
+  if (!allow_bluetooth) {
+    adapter_ = adapter;
+    adapter_->SetPowered(false, base::DoNothing(), base::DoNothing());
+    adapter_->Shutdown();
+  }
+
+  // Pass empty list to SetServiceAllowList means no restriction for users,
+  // which is the same behavior as leaving DeviceAllowedBluetoothService unset.
+  // Therefore, we don't need to handle the case when device management server
+  // returns an empty list even if the policy did not set.
+  if (cros_settings_->GetList(ash::kDeviceAllowedBluetoothServices,
+                              &allowed_services_list)) {
+    for (const auto& list_value : *allowed_services_list) {
+      if (!list_value.is_string())
+        continue;
+
+      const std::string& uuid_str = list_value.GetString();
+      device::BluetoothUUID uuid(uuid_str);
+      if (!uuid.IsValid()) {
+        SYSLOG(WARNING) << "Failed to parse '" << uuid_str
+                        << "' into UUID struct";
+        continue;
+      }
+
+      allowed_services.push_back(uuid);
+    }
+
+    std::ostringstream info_stream;
+    info_stream << "Setting " << allowed_services.size()
+                << " UUIDs as allowed services;";
+    for (size_t i = 0; i < allowed_services.size(); i++) {
+      info_stream << " " << i << "th allowed service uuid: "
+                  << allowed_services[i].canonical_value() << ";";
+    }
+    SYSLOG(INFO) << info_stream.str();
+
+    adapter->SetServiceAllowList(allowed_services,
+                                 base::BindOnce(SetServiceAllowListSuccess),
+                                 base::BindOnce(SetServiceAllowListFailed));
+  }
+}
+
+}  // namespace policy

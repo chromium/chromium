@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,13 +38,16 @@ class NTPCatalog {
   static std::unique_ptr<NTPCatalog> create(const base::Value& json);
 
   explicit NTPCatalog(const std::vector<Category>& category_list);
+
+  NTPCatalog(const NTPCatalog&) = delete;
+  NTPCatalog& operator=(const NTPCatalog&) = delete;
+
   ~NTPCatalog();
 
   std::vector<Category> categories;
 
  private:
   std::string ToString();
-  DISALLOW_COPY_AND_ASSIGN(NTPCatalog);
 };
 
 bool operator==(const NTPCatalog::Category& a, const NTPCatalog::Category& b);

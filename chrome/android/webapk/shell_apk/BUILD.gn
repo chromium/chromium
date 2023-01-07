@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,18 +22,18 @@ android_library("compiled_in_runtime_library_java") {
   sources = [ "src/org/chromium/webapk/lib/runtime_library/IWebApkApi.java" ]
 }
 
-mustache_pass("generate_old_style_manifest_for_upload") {
+mustache_pass("generate_chromeos_manifest_for_upload") {
   input = "AndroidManifest.xml"
-  output = generate_old_style_manifest_for_upload_output
+  output = generate_chromeos_manifest_for_upload_output
   extra_variables = [
     "shell_apk_version=$current_shell_apk_version",
     "use_new_splash=false",
   ]
 }
 
-mustache_pass("generate_new_style_manifest_for_upload") {
+mustache_pass("generate_manifest_for_upload") {
   input = "AndroidManifest.xml"
-  output = generate_new_style_manifest_for_upload_output
+  output = generate_manifest_for_upload_output
   extra_variables = [
     "shell_apk_version=$current_shell_apk_version",
     "use_new_splash=true",
@@ -62,6 +62,9 @@ template("webapk_java") {
       "src/org/chromium/webapk/shell_apk/InstallHostBrowserDialog.java",
       "src/org/chromium/webapk/shell_apk/LaunchHostBrowserSelector.java",
       "src/org/chromium/webapk/shell_apk/ManageDataLauncherActivity.java",
+      "src/org/chromium/webapk/shell_apk/NotificationPermissionRequestActivity.java",
+      "src/org/chromium/webapk/shell_apk/PermissionStatus.java",
+      "src/org/chromium/webapk/shell_apk/PrefUtils.java",
       "src/org/chromium/webapk/shell_apk/TransparentLauncherActivity.java",
       "src/org/chromium/webapk/shell_apk/WebApkSharedPreferences.java",
       "src/org/chromium/webapk/shell_apk/WebApkUtils.java",
@@ -69,9 +72,11 @@ template("webapk_java") {
       "src/org/chromium/webapk/shell_apk/h2o/H2OMainActivity.java",
       "src/org/chromium/webapk/shell_apk/h2o/H2OOpaqueMainActivity.java",
       "src/org/chromium/webapk/shell_apk/h2o/H2OTransparentLauncherActivity.java",
+      "src/org/chromium/webapk/shell_apk/h2o/LaunchTrigger.java",
       "src/org/chromium/webapk/shell_apk/h2o/SplashActivity.java",
       "src/org/chromium/webapk/shell_apk/h2o/SplashContentProvider.java",
       "src/org/chromium/webapk/shell_apk/h2o/SplashUtils.java",
+      "src/org/chromium/webapk/shell_apk/h2o/SplashUtilsForS.java",
     ]
     deps += [
       "//chrome/android/webapk/libs/common:common_java",
@@ -90,7 +95,10 @@ template("webapk_with_service_java") {
       "src/org/chromium/webapk/shell_apk/WebApkServiceFactory.java",
       "src/org/chromium/webapk/shell_apk/WebApkServiceImplWrapper.java",
     ]
-    deps += [ ":compiled_in_runtime_library_java" ]
+    deps += [
+      ":compiled_in_runtime_library_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+    ]
   }
 }
 
@@ -187,6 +195,7 @@ template("webapk_tmpl") {
       "res/drawable-xxxhdpi/shortcut_3_icon.png",
       "res/drawable-xxxhdpi/shortcut_4_icon.png",
       "res/drawable-xxxhdpi/splash_icon.xml",
+      "res/layout-v31/splash_screen_view.xml",
       "res/layout/choose_host_browser_dialog.xml",
       "res/layout/host_browser_list_item.xml",
       "res/mipmap-anydpi-v26/ic_launcher.xml",
@@ -220,6 +229,8 @@ template("webapk_tmpl") {
       "res/values-mdpi/is_splash_icon_maskable_bool.xml",
       "res/values-v17/styles.xml",
       "res/values-v24/default_enabled_activity.xml",
+      "res/values-v31/dimens.xml",
+      "res/values-v31/styles.xml",
       "res/values-xhdpi/is_splash_icon_maskable_bool.xml",
       "res/values-xxhdpi/is_splash_icon_maskable_bool.xml",
       "res/values-xxxhdpi/is_splash_icon_maskable_bool.xml",
@@ -263,7 +274,7 @@ template("webapk_tmpl") {
 
     android_manifest = _manifest_output
     android_manifest_dep = ":$_manifest_target_name"
-    target_sdk_version = 29
+    target_sdk_version = 33
     never_incremental = true
 
     # Force 32 bit mode on 64 bit devices.
@@ -274,8 +285,6 @@ template("webapk_tmpl") {
       proguard_configs = [
         "//chrome/android/webapk/shell_apk/proguard.flags",
         "//chrome/android/proguard/main.flags",
-        "//base/android/proguard/chromium_apk.flags",
-        "//base/android/proguard/chromium_code.flags",
       ]
     }
   }
@@ -293,16 +302,16 @@ java_strings_grd("webapk_strings_grd") {
 # Template for WebAPK. When a WebAPK is generated:
 # - Android manifest is customized to the website.
 # - App icon is extracted from the website and added to the APK's resources.
-webapk_tmpl("webapk") {
+webapk_tmpl("webapk_chromeos") {
   config_file = "manifest/bound_manifest_config.json"
-  manifest_to_upload_dep = ":generate_old_style_manifest_for_upload"
-  apk_name = "WebApk"
-  apk_package_name = "org.chromium.webapk"
+  manifest_to_upload_dep = ":generate_chromeos_manifest_for_upload"
+  apk_name = "WebApkChromeos"
+  apk_package_name = "org.chromium.webapk.chromeos"
 }
 
 webapk_tmpl("maps_go_webapk") {
   config_file = "manifest/maps_go_manifest_config.json"
-  manifest_to_upload_dep = ":generate_old_style_manifest_for_upload"
+  manifest_to_upload_dep = ":generate_manifest_for_upload"
   apk_name = "MapsWebApk"
   apk_package_name = "org.chromium.maps_go_webapk"
 }
@@ -310,7 +319,7 @@ webapk_tmpl("maps_go_webapk") {
 webapk_tmpl("uiautomator_maps_go_webapk") {
   testonly = true
   config_file = "manifest/maps_go_manifest_config.json"
-  manifest_to_upload_dep = ":generate_old_style_manifest_for_upload"
+  manifest_to_upload_dep = ":generate_manifest_for_upload"
   apk_name = "JavatestsMapsWebApk"
   delta_config_file = "manifest/javatest_maps_go_manifest_config_delta.json"
   apk_package_name = "org.chromium.test.maps_go_webapk"
@@ -318,23 +327,27 @@ webapk_tmpl("uiautomator_maps_go_webapk") {
 
 webapk_tmpl("unbound_webapk") {
   config_file = "manifest/unbound_manifest_config.json"
-  manifest_to_upload_dep = ":generate_old_style_manifest_for_upload"
+  manifest_to_upload_dep = ":generate_manifest_for_upload"
   apk_name = "UnboundWebApk"
   apk_package_name = "org.chromium.arbitrarypackage"
 }
 
-webapk_tmpl("new_splash_webapk") {
+webapk_tmpl("webapk") {
   config_file = "manifest/bound_manifest_config.json"
-  manifest_to_upload_dep = ":generate_new_style_manifest_for_upload"
-  apk_name = "NewSplashWebApk"
-  apk_package_name = "org.chromium.webapk.new_splash"
+  manifest_to_upload_dep = ":generate_manifest_for_upload"
+  apk_name = "WebApk"
+  apk_package_name = "org.chromium.webapk"
+}
+
+group("new_splash_webapk") {
+  deps = [ ":webapk" ]
 }
 
 # Used by javatests
 webapk_tmpl("javatests_webapk") {
   testonly = true
   config_file = "manifest/bound_manifest_config.json"
-  manifest_to_upload_dep = ":generate_new_style_manifest_for_upload"
+  manifest_to_upload_dep = ":generate_manifest_for_upload"
   delta_config_file = "manifest/javatest_manifest_config_delta.json"
   apk_name = "JavatestsWebApk"
   apk_package_name = "org.chromium.webapk.test"
@@ -343,7 +356,7 @@ webapk_tmpl("javatests_webapk") {
 # Used by webapk_shell_apk_h2o_junit_tests
 webapk_tmpl("h2o_j_unit_webapk") {
   config_file = "manifest/bound_manifest_config.json"
-  manifest_to_upload_dep = ":generate_new_style_manifest_for_upload"
+  manifest_to_upload_dep = ":generate_manifest_for_upload"
   apk_name = "H2OJUnitWebApk"
   apk_package_name = "org.chromium.webapk.h2o.junit_webapk"
   manifest_output = h2o_junit_manifest_output
@@ -357,7 +370,7 @@ android_library("shell_apk_javatests") {
     "javatests/src/org/chromium/webapk/shell_apk/h2o/SplashUtilsTest.java",
   ]
   deps = [
-    ":new_splash_webapk_generated_webapk_java",
+    ":webapk_generated_webapk_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android/webapk/libs/common:common_java",
@@ -366,10 +379,10 @@ android_library("shell_apk_javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
-  srcjar_deps = [ "javatests/dex_optimizer:dex_optimizer_service_aidl" ]
 }
 
-junit_binary("webapk_shell_apk_junit_tests") {
+robolectric_binary("webapk_shell_apk_junit_tests") {
+  package_name = "org.chromium.test"
   sources = [
     "junit/src/org/chromium/webapk/shell_apk/HostBrowserClassLoaderTest.java",
     "junit/src/org/chromium/webapk/shell_apk/HostBrowserLauncherParamsTest.java",
@@ -391,7 +404,8 @@ junit_binary("webapk_shell_apk_junit_tests") {
   ]
 }
 
-junit_binary("webapk_shell_apk_h2o_junit_tests") {
+robolectric_binary("webapk_shell_apk_h2o_junit_tests") {
+  package_name = "org.chromium.test"
   sources = [
     "junit/src/org/chromium/webapk/shell_apk/CustomAndroidOsShadowAsyncTask.java",
     "junit/src/org/chromium/webapk/shell_apk/TestBrowserInstaller.java",

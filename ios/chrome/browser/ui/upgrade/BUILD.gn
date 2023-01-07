@@ -1,0 +1,24 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/public/provider/chrome/browser/build_config.gni")
+
+source_set("upgrade") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "upgrade_center_browser_agent.h",
+    "upgrade_center_browser_agent.mm",
+  ]
+  deps = [
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/upgrade",
+    "//ios/chrome/browser/upgrade/utils:features",
+    "//ios/chrome/browser/web_state_list",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

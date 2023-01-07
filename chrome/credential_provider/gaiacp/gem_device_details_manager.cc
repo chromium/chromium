@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,10 @@
 #define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
 #include <ntsecapi.h>  // For POLICY_ALL_ACCESS types
 
+#include <memory>
+
 #include "base/containers/span.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_utils.h"
@@ -28,7 +30,7 @@ namespace credential_provider {
 
 const base::TimeDelta
     GemDeviceDetailsManager::kDefaultUploadDeviceDetailsRequestTimeout =
-        base::TimeDelta::FromMilliseconds(12000);
+        base::Milliseconds(12000);
 
 namespace {
 
@@ -60,8 +62,7 @@ const wchar_t kUploadDeviceDetailsFromEsaEnabledRegKey[] =
     L"upload_device_details_from_esa";
 
 // The period of uploading device details to the backend.
-const base::TimeDelta kUploadDeviceDetailsExecutionPeriod =
-    base::TimeDelta::FromHours(3);
+const base::TimeDelta kUploadDeviceDetailsExecutionPeriod = base::Hours(3);
 
 // True when upload device details from ESA feature  is enabled.
 bool g_upload_device_details_from_esa_enabled = false;
@@ -135,7 +136,7 @@ GemDeviceDetailsManager::GemDeviceDetailsManager(
     : upload_device_details_request_timeout_(
           upload_device_details_request_timeout) {
   g_upload_device_details_from_esa_enabled =
-      GetGlobalFlagOrDefault(kUploadDeviceDetailsFromEsaEnabledRegKey, 0) == 1;
+      GetGlobalFlagOrDefault(kUploadDeviceDetailsFromEsaEnabledRegKey, 1) == 1;
 }
 
 GemDeviceDetailsManager::~GemDeviceDetailsManager() = default;
@@ -162,10 +163,21 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetails(
     return status;
   }
 
+  wchar_t found_username[kWindowsUsernameBufferLength] = {};
+  wchar_t found_domain[kWindowsDomainBufferLength] = {};
+
+  status = OSUserManager::Get()->FindUserBySidWithFallback(
+      context.user_sid.c_str(), found_username, std::size(found_username),
+      found_domain, std::size(found_domain));
+  if (FAILED(status)) {
+    LOGFN(ERROR) << "Could not get username and domain from sid "
+                 << context.user_sid;
+  }
+
   return UploadDeviceDetailsInternal(
       /* access_token= */ std::string(), obfuscated_user_id, context.dm_token,
-      context.user_sid, context.device_resource_id,
-      /* username= */ L"", /* domain= */ L"");
+      context.user_sid, context.device_resource_id, found_username,
+      found_domain);
 }
 
 // Uploads the device details into GEM database using |access_token|
@@ -236,7 +248,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
     }
   }
 
-  request_dict_.reset(new base::Value(base::Value::Type::DICTIONARY));
+  request_dict_ = std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
   request_dict_->SetStringKey(
       kUploadDeviceDetailsRequestSerialNumberParameterName,
       base::WideToUTF8(serial_number));
@@ -282,7 +294,7 @@ HRESULT GemDeviceDetailsManager::UploadDeviceDetailsInternal(
         base::WideToUTF8(known_resource_id));
   }
 
-  base::Optional<base::Value> request_result;
+  absl::optional<base::Value> request_result;
 
   hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       GemDeviceDetailsManager::Get()->GetGemServiceUploadDeviceDetailsUrl(),

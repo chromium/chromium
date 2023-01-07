@@ -5,6 +5,7 @@ include_rules = [
   "+services/network/public/mojom",
   "+third_party/blink/renderer/platform/inspector_protocol",
   "+third_party/inspector_protocol",
+  "+ui/base/interaction",
   "+ui/gfx",
   "+services/tracing/public",
   "+mojo/public",

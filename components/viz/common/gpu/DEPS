@@ -8,7 +8,7 @@ include_rules = [
   "+gpu/config",
   "+gpu/GLES2/gl2extchromium.h",
   "+gpu/vulkan",
-  "+third_party/dawn/src/include",
+  "+third_party/dawn/include",
   "+third_party/khronos/GLES2/gl2.h",
   "+third_party/skia/include/gpu",
   "+third_party/vulkan_headers/include",

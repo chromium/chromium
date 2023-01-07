@@ -1,26 +1,30 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_CHROME_PROXIMITY_AUTH_CLIENT_H_
 #define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_CHROME_PROXIMITY_AUTH_CLIENT_H_
 
-#include "base/macros.h"
-#include "chromeos/components/proximity_auth/proximity_auth_client.h"
+#include "chromeos/ash/components/proximity_auth/proximity_auth_client.h"
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // A Chrome-specific implementation of the ProximityAuthClient interface.
 // There is one `ChromeProximityAuthClient` per `Profile`.
 class ChromeProximityAuthClient : public proximity_auth::ProximityAuthClient {
  public:
   explicit ChromeProximityAuthClient(Profile* profile);
+
+  ChromeProximityAuthClient(const ChromeProximityAuthClient&) = delete;
+  ChromeProximityAuthClient& operator=(const ChromeProximityAuthClient&) =
+      delete;
+
   ~ChromeProximityAuthClient() override;
 
   // proximity_auth::ProximityAuthClient:
-  void UpdateScreenlockState(proximity_auth::ScreenlockState state) override;
+  void UpdateSmartLockState(SmartLockState state) override;
   void FinalizeUnlock(bool success) override;
   void FinalizeSignin(const std::string& secret) override;
   void GetChallengeForUserAndDevice(
@@ -32,10 +36,8 @@ class ChromeProximityAuthClient : public proximity_auth::ProximityAuthClient {
 
  private:
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeProximityAuthClient);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_CHROME_PROXIMITY_AUTH_CLIENT_H_

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -243,12 +243,12 @@ class IPCChannelProxyTest : public IPCChannelMojoTestBase {
 
     Init("ChannelProxyClient");
 
-    thread_.reset(new base::Thread("ChannelProxyTestServerThread"));
+    thread_ = std::make_unique<base::Thread>("ChannelProxyTestServerThread");
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
-    thread_->StartWithOptions(options);
+    thread_->StartWithOptions(std::move(options));
 
-    listener_.reset(new QuitListener());
+    listener_ = std::make_unique<QuitListener>();
     channel_proxy_ = IPC::ChannelProxy::Create(
         TakeHandle().release(), IPC::Channel::MODE_SERVER, listener_.get(),
         thread_->task_runner(), base::ThreadTaskRunnerHandle::Get());
@@ -390,7 +390,7 @@ class IPCChannelBadMessageTest : public IPCChannelMojoTestBase {
 
     Init("ChannelProxyClient");
 
-    listener_.reset(new QuitListener());
+    listener_ = std::make_unique<QuitListener>();
     CreateChannel(listener_.get());
     ASSERT_TRUE(ConnectChannel());
   }

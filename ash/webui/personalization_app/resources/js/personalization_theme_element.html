@@ -1,0 +1,82 @@
+<style include="cros-button-style">
+  #themeLabel > h2 {
+    color: var(--cros-text-color-primary);
+    font: var(--personalization-app-label-font);
+  }
+
+  cr-button {
+    background-color: var(--cros-tab-slider-track-color);
+    border: 0;
+    display: flex;
+    flex-flow: column nowrap;
+    height: 60px;
+    padding-bottom: 8px;
+    padding-top: 8px;
+    --ink-color: rgba(var(--cros-ripple-color-rgb), 1);
+    --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
+  }
+
+  /* These cr-button styles are added here instead of cros-button-style because
+  the specs for these buttons are different from others in the app. */
+  cr-button .text,
+  cr-button:hover .text  {
+    color: var(--cros-text-color-secondary);
+    font: var(--personalization-app-label-font);
+    padding-top: 4px;
+  }
+
+  cr-button iron-icon,
+  cr-button:hover iron-icon {
+    --iron-icon-fill-color: var(--cros-text-color-secondary);
+  }
+
+  cr-button:hover {
+    background-color: rgba(var(--cros-ripple-color-rgb),
+        var(--cros-button-primary-ripple-opacity));
+  }
+
+  #selector {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: auto auto auto;
+  }
+</style>
+<div id="container">
+  <template is="dom-if" if="[[!isJellyEnabled_]]">
+    <div id="themeLabel">
+      <h2>$i18n{themeLabel}</h2>
+    </div>
+  </template>
+  <template is="dom-if" if="[[isJellyEnabled_]]">
+    <theme-header></theme-header>
+  </template>
+  <iron-a11y-keys id="keys" keys="left right" on-keys-pressed="onKeysPress_">
+  </iron-a11y-keys>
+  <iron-selector id="selector" selected="0"
+      selected-item="{{selectedButton_}}">
+    <cr-button id="lightMode" data-color-mode="LIGHT"
+        on-click="onClickColorModeButton_"
+        aria-pressed$="[[getLightAriaPressed_(colorModeAutoScheduleEnabled_, darkModeEnabled_)]]"
+        aria-description="$i18n{ariaLabelEnableLightColorMode}">
+      <iron-icon icon="personalization:light" aria-hidden="true"></iron-icon>
+      <div class="text">$i18n{lightColorMode}</div>
+    </cr-button>
+    <cr-button id="darkMode" data-color-mode="DARK"
+        on-click="onClickColorModeButton_"
+        on-keypress="onClickColorModeButton_" tabindex="-1"
+        aria-pressed$="[[getDarkAriaPressed_(colorModeAutoScheduleEnabled_, darkModeEnabled_)]]"
+        aria-description="$i18n{ariaLabelEnableDarkColorMode}">
+      <iron-icon icon="personalization:dark" aria-hidden="true"></iron-icon>
+      <div class="text">$i18n{darkColorMode}</div>
+    </cr-button>
+    <cr-button id="autoMode"
+        on-click="onClickAutoModeButton_"
+        on-keypress="onClickAutoModeButton_" tabindex="-1"
+        aria-pressed$="[[getAutoAriaPressed_(colorModeAutoScheduleEnabled_)]]"
+        aria-description="$i18n{ariaLabelEnableAutoColorMode}"
+        title="$i18n{tooltipAutoColorMode}">
+      <iron-icon icon="personalization:auto" aria-hidden="true"></iron-icon>
+      <div class="text">$i18n{autoColorMode}</div>
+    </cr-button>
+  </iron-selector>
+</div>

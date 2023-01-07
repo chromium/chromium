@@ -1,0 +1,15 @@
+rootWebArea isLineBreakingObject=true
+++genericContainer ignored isLineBreakingObject=true
+++++genericContainer ignored isLineBreakingObject=true
+++++++genericContainer display='block' isLineBreakingObject=true
+++++++++genericContainer className='copied-element' display='inline'
+++++++++++genericContainer className='before' display='block' isLineBreakingObject=true
+++++++++++++staticText display='block' name='Before'
+++++++++++++++inlineTextBox display='block' name='Before'
+++++++++genericContainer className='ever' display='block' isLineBreakingObject=true
+++++++++++genericContainer className='copied-element' display='inline'
+++++++++++++staticText display='inline' name='Ever '
+++++++++++++++inlineTextBox display='inline' name='Ever '
+++++++++++link className='after' display='inline' name='After'
+++++++++++++staticText display='inline' name='After'
+++++++++++++++inlineTextBox display='inline' name='After'

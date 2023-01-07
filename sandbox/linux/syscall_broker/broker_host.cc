@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,9 +20,11 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "sandbox/linux/services/syscall_wrappers.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_permission_list.h"
 #include "sandbox/linux/syscall_broker/broker_simple_message.h"
+#include "sandbox/linux/system_headers/linux_stat.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 
 namespace sandbox {
@@ -193,10 +195,12 @@ void StatFileForIPC(const BrokerCommandSet& allowed_command_set,
     RAW_CHECK(reply->AddIntToMessage(-permission_list.denied_errno()));
     return;
   }
+
   if (command_type == COMMAND_STAT) {
-    struct stat sb;
-    int sts =
-        follow_links ? stat(file_to_access, &sb) : lstat(file_to_access, &sb);
+    struct kernel_stat sb;
+
+    int sts = follow_links ? sandbox::sys_stat(file_to_access, &sb)
+                           : sandbox::sys_lstat(file_to_access, &sb);
     if (sts < 0) {
       RAW_CHECK(reply->AddIntToMessage(-errno));
       return;
@@ -205,10 +209,12 @@ void StatFileForIPC(const BrokerCommandSet& allowed_command_set,
     RAW_CHECK(
         reply->AddDataToMessage(reinterpret_cast<char*>(&sb), sizeof(sb)));
   } else {
+#if defined(__NR_fstatat64)
     DCHECK(command_type == COMMAND_STAT64);
-    struct stat64 sb;
-    int sts = follow_links ? stat64(file_to_access, &sb)
-                           : lstat64(file_to_access, &sb);
+    struct kernel_stat64 sb;
+
+    int sts = sandbox::sys_fstatat64(AT_FDCWD, file_to_access, &sb,
+                                     follow_links ? 0 : AT_SYMLINK_NOFOLLOW);
     if (sts < 0) {
       RAW_CHECK(reply->AddIntToMessage(-errno));
       return;
@@ -216,6 +222,11 @@ void StatFileForIPC(const BrokerCommandSet& allowed_command_set,
     RAW_CHECK(reply->AddIntToMessage(0));
     RAW_CHECK(
         reply->AddDataToMessage(reinterpret_cast<char*>(&sb), sizeof(sb)));
+#else  // defined(__NR_fstatat64)
+    // We should not reach here on 64-bit systems, as the *stat*64() are only
+    // necessary on 32-bit.
+    RAW_CHECK(false);
+#endif
   }
 }
 
@@ -338,12 +349,9 @@ bool HandleRemoteCommand(const BrokerCommandSet& allowed_command_set,
 
 }  // namespace
 
-BrokerHost::BrokerHost(const BrokerPermissionList& broker_permission_list,
-                       const BrokerCommandSet& allowed_command_set,
+BrokerHost::BrokerHost(const BrokerSandboxConfig& policy,
                        BrokerChannel::EndPoint ipc_channel)
-    : broker_permission_list_(broker_permission_list),
-      allowed_command_set_(allowed_command_set),
-      ipc_channel_(std::move(ipc_channel)) {}
+    : policy_(policy), ipc_channel_(std::move(ipc_channel)) {}
 
 BrokerHost::~BrokerHost() = default;
 
@@ -373,8 +381,9 @@ void BrokerHost::LoopAndHandleRequests() {
 
     BrokerSimpleMessage reply;
     base::ScopedFD opened_file;
-    if (!HandleRemoteCommand(allowed_command_set_, broker_permission_list_,
-                             &message, &reply, &opened_file)) {
+    if (!HandleRemoteCommand(policy_.allowed_command_set,
+                             *policy_.file_permissions, &message, &reply,
+                             &opened_file)) {
       // Does not exit if we received a malformed message.
       LOG(ERROR) << "Received malformed message from the client";
       continue;

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 
 namespace blink {
 
@@ -25,15 +26,6 @@ const char* ConvertMessageLevelEnum(InspectorPlayerMessage::Level level) {
       return protocol::Media::PlayerMessage::LevelEnum::Info;
     case InspectorPlayerMessage::Level::kDebug:
       return protocol::Media::PlayerMessage::LevelEnum::Debug;
-  }
-}
-
-const char* ConvertErrorTypeEnum(InspectorPlayerError::Type level) {
-  switch (level) {
-    case InspectorPlayerError::Type::kPipelineError:
-      return protocol::Media::PlayerError::TypeEnum::Pipeline_error;
-    case InspectorPlayerError::Type::kMediaStatus:
-      return protocol::Media::PlayerError::TypeEnum::Media_error;
   }
 }
 
@@ -61,11 +53,37 @@ std::unique_ptr<protocol::Media::PlayerMessage> ConvertToProtocolType(
       .build();
 }
 
+std::unique_ptr<protocol::Media::PlayerErrorSourceLocation>
+ConvertToProtocolType(const InspectorPlayerError::SourceLocation& stack) {
+  return protocol::Media::PlayerErrorSourceLocation::create()
+      .setFile(stack.filename)
+      .setLine(stack.line_number)
+      .build();
+}
+
 std::unique_ptr<protocol::Media::PlayerError> ConvertToProtocolType(
     const InspectorPlayerError& error) {
+  auto caused_by =
+      std::make_unique<protocol::Array<protocol::Media::PlayerError>>();
+  auto stack = std::make_unique<
+      protocol::Array<protocol::Media::PlayerErrorSourceLocation>>();
+  auto data = protocol::DictionaryValue::create();
+
+  for (const InspectorPlayerError& cause : error.caused_by)
+    caused_by->push_back(ConvertToProtocolType(cause));
+
+  for (const InspectorPlayerError::Data& pair : error.data)
+    data->setString(pair.name, pair.value);
+
+  for (const InspectorPlayerError::SourceLocation& pair : error.stack)
+    stack->push_back(ConvertToProtocolType(pair));
+
   return protocol::Media::PlayerError::create()
-      .setType(ConvertErrorTypeEnum(error.type))
-      .setErrorCode(error.errorCode)
+      .setErrorType(error.group)
+      .setCode(error.code)
+      .setCause(std::move(caused_by))
+      .setData(std::move(data))
+      .setStack(std::move(stack))
       .build();
 }
 
@@ -80,11 +98,20 @@ std::unique_ptr<protocol::Array<To>> ConvertVector(const Vector<From>& from) {
 
 }  // namespace
 
-InspectorMediaAgent::InspectorMediaAgent(InspectedFrames* inspected_frames)
-    : frame_(inspected_frames->Root()),
-      enabled_(&agent_state_, /*default_value = */ false) {}
+InspectorMediaAgent::InspectorMediaAgent(InspectedFrames* inspected_frames,
+                                         WorkerGlobalScope* worker_global_scope)
+    : inspected_frames_(inspected_frames),
+      worker_global_scope_(worker_global_scope),
+      enabled_(&agent_state_, /* default_value = */ false) {}
 
 InspectorMediaAgent::~InspectorMediaAgent() = default;
+
+ExecutionContext* InspectorMediaAgent::GetTargetExecutionContext() const {
+  if (worker_global_scope_)
+    return worker_global_scope_;
+  DCHECK(inspected_frames_);
+  return inspected_frames_->Root()->DomWindow()->GetExecutionContext();
+}
 
 void InspectorMediaAgent::Restore() {
   if (!enabled_.Get())
@@ -94,8 +121,7 @@ void InspectorMediaAgent::Restore() {
 
 void InspectorMediaAgent::RegisterAgent() {
   instrumenting_agents_->AddInspectorMediaAgent(this);
-  auto* cache = MediaInspectorContextImpl::From(
-      *frame_->DomWindow()->GetExecutionContext());
+  auto* cache = MediaInspectorContextImpl::From(*GetTargetExecutionContext());
   Vector<WebString> players = cache->AllPlayerIdsAndMarkSent();
   PlayersCreated(players);
   for (const auto& player_id : players) {
@@ -165,7 +191,8 @@ void InspectorMediaAgent::PlayersCreated(const Vector<WebString>& player_ids) {
 }
 
 void InspectorMediaAgent::Trace(Visitor* visitor) const {
-  visitor->Trace(frame_);
+  visitor->Trace(inspected_frames_);
+  visitor->Trace(worker_global_scope_);
   InspectorBaseAgent::Trace(visitor);
 }
 

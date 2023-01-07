@@ -1,14 +1,18 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/socket/connect_job.h"
 
+#include <set>
 #include <utility>
 
 #include "base/trace_event/trace_event.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
+#include "net/dns/public/host_resolver_results.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_auth_controller.h"
 #include "net/http/http_proxy_connect_job.h"
 #include "net/log/net_log.h"
@@ -19,7 +23,6 @@
 #include "net/socket/ssl_connect_job.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/transport_connect_job.h"
-#include "net/ssl/ssl_config.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {
@@ -95,98 +98,6 @@ ConnectJob::~ConnectJob() {
     net_log().EndEvent(NetLogEventType::CONNECT_JOB);
 }
 
-std::unique_ptr<ConnectJob> ConnectJob::CreateConnectJob(
-    bool using_ssl,
-    const HostPortPair& endpoint,
-    const ProxyServer& proxy_server,
-    const base::Optional<NetworkTrafficAnnotationTag>& proxy_annotation_tag,
-    const SSLConfig* ssl_config_for_origin,
-    const SSLConfig* ssl_config_for_proxy,
-    bool force_tunnel,
-    PrivacyMode privacy_mode,
-    const OnHostResolutionCallback& resolution_callback,
-    RequestPriority request_priority,
-    SocketTag socket_tag,
-    const NetworkIsolationKey& network_isolation_key,
-    bool disable_secure_dns,
-    const CommonConnectJobParams* common_connect_job_params,
-    ConnectJob::Delegate* delegate) {
-  scoped_refptr<HttpProxySocketParams> http_proxy_params;
-  scoped_refptr<SOCKSSocketParams> socks_params;
-
-  if (!proxy_server.is_direct()) {
-    // No need to use a NetworkIsolationKey for looking up the proxy's IP
-    // address. Cached proxy IP addresses doesn't really expose useful
-    // information to destination sites, and not caching them has a performance
-    // cost.
-    auto proxy_tcp_params = base::MakeRefCounted<TransportSocketParams>(
-        proxy_server.host_port_pair(), NetworkIsolationKey(),
-        disable_secure_dns, resolution_callback);
-
-    if (proxy_server.is_http_like()) {
-      scoped_refptr<SSLSocketParams> ssl_params;
-      if (proxy_server.is_secure_http_like()) {
-        DCHECK(ssl_config_for_proxy);
-        // Set ssl_params, and unset proxy_tcp_params
-        ssl_params = base::MakeRefCounted<SSLSocketParams>(
-            std::move(proxy_tcp_params), nullptr, nullptr,
-            proxy_server.host_port_pair(), *ssl_config_for_proxy,
-            PRIVACY_MODE_DISABLED, network_isolation_key);
-        proxy_tcp_params = nullptr;
-      }
-
-      http_proxy_params = base::MakeRefCounted<HttpProxySocketParams>(
-          std::move(proxy_tcp_params), std::move(ssl_params),
-          proxy_server.is_quic(), endpoint, proxy_server.is_trusted_proxy(),
-          force_tunnel || using_ssl, *proxy_annotation_tag,
-          network_isolation_key);
-    } else {
-      DCHECK(proxy_server.is_socks());
-      socks_params = base::MakeRefCounted<SOCKSSocketParams>(
-          std::move(proxy_tcp_params),
-          proxy_server.scheme() == ProxyServer::SCHEME_SOCKS5, endpoint,
-          network_isolation_key, *proxy_annotation_tag);
-    }
-  }
-
-  // Deal with SSL - which layers on top of any given proxy.
-  if (using_ssl) {
-    DCHECK(ssl_config_for_origin);
-    scoped_refptr<TransportSocketParams> ssl_tcp_params;
-    if (proxy_server.is_direct()) {
-      ssl_tcp_params = base::MakeRefCounted<TransportSocketParams>(
-          endpoint, network_isolation_key, disable_secure_dns,
-          resolution_callback);
-    }
-    auto ssl_params = base::MakeRefCounted<SSLSocketParams>(
-        std::move(ssl_tcp_params), std::move(socks_params),
-        std::move(http_proxy_params), endpoint, *ssl_config_for_origin,
-        privacy_mode, network_isolation_key);
-    return std::make_unique<SSLConnectJob>(
-        request_priority, socket_tag, common_connect_job_params,
-        std::move(ssl_params), delegate, nullptr /* net_log */);
-  }
-
-  if (proxy_server.is_http_like()) {
-    return std::make_unique<HttpProxyConnectJob>(
-        request_priority, socket_tag, common_connect_job_params,
-        std::move(http_proxy_params), delegate, nullptr /* net_log */);
-  }
-
-  if (proxy_server.is_socks()) {
-    return std::make_unique<SOCKSConnectJob>(
-        request_priority, socket_tag, common_connect_job_params,
-        std::move(socks_params), delegate, nullptr /* net_log */);
-  }
-
-  DCHECK(proxy_server.is_direct());
-  auto tcp_params = base::MakeRefCounted<TransportSocketParams>(
-      endpoint, network_isolation_key, disable_secure_dns, resolution_callback);
-  return TransportConnectJob::CreateTransportConnectJob(
-      std::move(tcp_params), request_priority, socket_tag,
-      common_connect_job_params, delegate, nullptr /* net_log */);
-}
-
 std::unique_ptr<StreamSocket> ConnectJob::PassSocket() {
   return std::move(socket_);
 }
@@ -225,11 +136,20 @@ scoped_refptr<SSLCertRequestInfo> ConnectJob::GetCertRequestInfo() {
   return nullptr;
 }
 
-void ConnectJob::SetSocket(
-    std::unique_ptr<StreamSocket> socket,
-    base::Optional<std::vector<std::string>> dns_aliases) {
+void ConnectJob::set_done_closure(base::OnceClosure done_closure) {
+  done_closure_ = base::ScopedClosureRunner(std::move(done_closure));
+}
+
+absl::optional<HostResolverEndpointResult>
+ConnectJob::GetHostResolverEndpointResult() const {
+  return absl::nullopt;
+}
+
+void ConnectJob::SetSocket(std::unique_ptr<StreamSocket> socket,
+                           absl::optional<std::set<std::string>> dns_aliases) {
   if (socket) {
-    net_log().AddEvent(NetLogEventType::CONNECT_JOB_SET_SOCKET);
+    net_log().AddEventReferencingSource(NetLogEventType::CONNECT_JOB_SET_SOCKET,
+                                        socket->NetLog().source());
     if (dns_aliases)
       socket->SetDnsAliases(std::move(dns_aliases.value()));
   }
@@ -276,7 +196,7 @@ void ConnectJob::LogConnectCompletion(int net_error) {
 
 void ConnectJob::OnTimeout() {
   // Make sure the socket is NULL before calling into |delegate|.
-  SetSocket(nullptr, base::nullopt /* dns_aliases */);
+  SetSocket(nullptr, absl::nullopt /* dns_aliases */);
 
   OnTimedOutInternal();
 

@@ -5,7 +5,7 @@
 
     // FIXME: this should also test WorkerContext and MessagePort.
     var workerScriptBlob = new Blob([], {type: 'application/javascript'});
-    var eventTargets = [new XMLHttpRequest, (new XMLHttpRequest).upload, window.applicationCache, new Worker(URL.createObjectURL(workerScriptBlob)), document.body];
+    var eventTargets = [new XMLHttpRequest, (new XMLHttpRequest).upload, new Worker(URL.createObjectURL(workerScriptBlob)), document.body];
 
     for (var i = 0; i < eventTargets.length; ++i) {
         eventTarget = eventTargets[i];

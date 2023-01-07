@@ -1,8 +1,9 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/crypto.gni")
+import("//chrome/common/features.gni")
+import("//crypto/features.gni")
 
 assert(!is_ios, "Chromium/iOS shouldn't use anything in //chrome")
 
@@ -14,14 +15,13 @@ static_library("net") {
     "safe_search_util.h",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     "//base",
     "//base:i18n",
     "//chrome:resources",
     "//chrome:strings",
     "//components/google/core/common",
+    "//components/strings:components_strings_grit",
     "//components/url_formatter",
     "//crypto",
     "//net",
@@ -30,15 +30,20 @@ static_library("net") {
     "//ui/base",
   ]
 
+  if (enable_webui_certificate_viewer) {
+    sources += [
+      "x509_certificate_model.cc",
+      "x509_certificate_model.h",
+    ]
+  }
+
   if (use_nss_certs) {
     sources += [
       "x509_certificate_model_nss.cc",
       "x509_certificate_model_nss.h",
     ]
-    deps += [
-      "//chrome/third_party/mozilla_security_manager",
-      "//crypto:platform",
-    ]
+    deps += [ "//chrome/third_party/mozilla_security_manager" ]
+    configs += [ "//build/config/linux/nss" ]
     allow_circular_includes_from =
         [ "//chrome/third_party/mozilla_security_manager" ]
   }

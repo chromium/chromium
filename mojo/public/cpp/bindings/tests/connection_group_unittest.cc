@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -22,10 +21,11 @@ class ConnectionGroupTest : public testing::Test {
  public:
   ConnectionGroupTest() = default;
 
+  ConnectionGroupTest(const ConnectionGroupTest&) = delete;
+  ConnectionGroupTest& operator=(const ConnectionGroupTest&) = delete;
+
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionGroupTest);
 };
 
 using ConnectionGroupBindingsTest = BindingsTestBase;
@@ -37,6 +37,9 @@ class TestInterfaceImpl : public mojom::TestInterface {
     receivers_.set_disconnect_handler(base::BindRepeating(
         &TestInterfaceImpl::OnDisconnect, base::Unretained(this)));
   }
+
+  TestInterfaceImpl(const TestInterfaceImpl&) = delete;
+  TestInterfaceImpl& operator=(const TestInterfaceImpl&) = delete;
 
   ~TestInterfaceImpl() override = default;
 
@@ -60,8 +63,6 @@ class TestInterfaceImpl : public mojom::TestInterface {
 
   ReceiverSet<mojom::TestInterface> receivers_;
   base::OnceClosure wait_for_disconnect_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInterfaceImpl);
 };
 
 TEST_P(ConnectionGroupBindingsTest, RefCounting) {
@@ -168,7 +169,7 @@ TEST_F(ConnectionGroupTest, NotifyOnDecrementToZero) {
 }
 
 TEST_F(ConnectionGroupTest, NotifyOnDecrementToZeroMultipleTimes) {
-  base::Optional<base::RunLoop> loop;
+  absl::optional<base::RunLoop> loop;
   ConnectionGroup::Ref ref =
       ConnectionGroup::Create(base::BindLambdaForTesting([&] {
                                 ASSERT_TRUE(loop.has_value());

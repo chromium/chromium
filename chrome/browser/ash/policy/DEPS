@@ -1,0 +1,23 @@
+include_rules = [
+  # Run
+  #
+  #   buildtools/checkdeps/checkdeps.py chrome/browser/ash/policy
+  #
+  # to test.
+  # Allow includes for shell-encryption and private_membership third_party libs.
+  "+third_party/private_membership",
+  "+third_party/shell-encryption",
+
+  # Allow includes for remoting events reporting.
+  "+remoting/host/chromeos",
+  "+remoting/host/mojom",
+]
+
+specific_include_rules = {
+  "child_status_collector_browsertest.cc": [
+    "+mojo/core/embedder/embedder.h",
+  ],
+  "device_status_collector_browsertest.cc": [
+    "+mojo/core/embedder/embedder.h",
+  ],
+}

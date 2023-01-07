@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,8 @@
 #include <memory>
 
 #include "base/trace_event/trace_event_impl.h"
+#include "base/values.h"
 #include "content/common/content_export.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace content {
 
@@ -23,18 +20,27 @@ class CONTENT_EXPORT BackgroundTracingConfig {
   virtual ~BackgroundTracingConfig();
 
   enum TracingMode {
-    PREEMPTIVE,
-    REACTIVE,
+    PREEMPTIVE = 1 << 0,
+    REACTIVE = 1 << 1,
     // System means that we will inform the system service of triggered rules,
     // but won't manage the trace ourselves.
-    SYSTEM,
+    SYSTEM = 1 << 2,
   };
   TracingMode tracing_mode() const { return tracing_mode_; }
 
-  static std::unique_ptr<BackgroundTracingConfig> FromDict(
-      const base::DictionaryValue* dict);
+  const std::string& scenario_name() const { return scenario_name_; }
+  bool has_crash_scenario() const { return has_crash_scenario_; }
 
-  virtual void IntoDict(base::DictionaryValue* dict) = 0;
+  static std::unique_ptr<BackgroundTracingConfig> FromDict(
+      base::Value::Dict&& dict);
+
+  virtual base::Value::Dict ToDict() = 0;
+
+  virtual void SetPackageNameFilteringEnabled(bool) = 0;
+
+ protected:
+  std::string scenario_name_;
+  bool has_crash_scenario_ = false;
 
  private:
   friend class BackgroundTracingConfigImpl;

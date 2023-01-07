@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/direct_manipulation_event_handler_win.h"
 #include "content/common/content_export.h"
 #include "ui/compositor/compositor_animation_observer.h"
@@ -30,12 +30,6 @@ namespace content {
 
 class DirectManipulationBrowserTestBase;
 class DirectManipulationUnitTest;
-
-// TODO(crbug.com/914914) This is added for help us getting debug log on
-// machine with scrolling issue on Windows Precision Touchpad. We will remove it
-// after Windows Precision Touchpad scrolling issue fixed.
-void DebugLogging(const std::string& s, HRESULT hr = 0);
-bool LoggingEnabled();
 
 // Windows 10 provides a new API called Direct Manipulation which generates
 // smooth scroll and scale factor via IDirectManipulationViewportEventHandler
@@ -61,6 +55,9 @@ class CONTENT_EXPORT DirectManipulationHelper
   static std::unique_ptr<DirectManipulationHelper> CreateInstanceForTesting(
       ui::WindowEventTarget* event_target,
       Microsoft::WRL::ComPtr<IDirectManipulationViewport> viewport);
+
+  DirectManipulationHelper(const DirectManipulationHelper&) = delete;
+  DirectManipulationHelper& operator=(const DirectManipulationHelper&) = delete;
 
   ~DirectManipulationHelper() override;
 
@@ -101,11 +98,9 @@ class CONTENT_EXPORT DirectManipulationHelper
   Microsoft::WRL::ComPtr<IDirectManipulationViewport> viewport_;
   Microsoft::WRL::ComPtr<DirectManipulationEventHandler> event_handler_;
   HWND window_;
-  ui::Compositor* compositor_ = nullptr;
+  raw_ptr<ui::Compositor, DanglingUntriaged> compositor_ = nullptr;
   DWORD view_port_handler_cookie_;
   bool has_animation_observer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectManipulationHelper);
 };
 
 }  // namespace content

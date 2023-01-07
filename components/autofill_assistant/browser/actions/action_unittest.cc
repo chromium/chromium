@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "components/autofill_assistant/browser/actions/action_test_utils.h"
 #include "components/autofill_assistant/browser/actions/mock_action_delegate.h"
 #include "components/autofill_assistant/browser/selector.h"
@@ -77,7 +79,7 @@ class FakeActionTest : public testing::Test {
 };
 
 ACTION_P(Delay, delay) {
-  TimeTicksOverride::now_ticks_ += base::TimeDelta::FromSeconds(delay);
+  TimeTicksOverride::now_ticks_ += base::Seconds(delay);
 }
 
 TEST_F(FakeActionTest, WaitForDomActionTest) {
@@ -86,9 +88,8 @@ TEST_F(FakeActionTest, WaitForDomActionTest) {
   InSequence sequence;
 
   EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
-      .WillOnce(DoAll(Delay(2), RunOnceCallback<1>(
-                                    OkClientStatus(),
-                                    base::TimeDelta::FromMilliseconds(500))));
+      .WillOnce(DoAll(Delay(2), RunOnceCallback<1>(OkClientStatus(),
+                                                   base::Milliseconds(500))));
 
   ProcessedActionProto processed_proto;
   EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&processed_proto));
@@ -105,9 +106,9 @@ TEST_F(FakeActionTest, SlowWarningShownTest) {
   InSequence sequence;
 
   EXPECT_CALL(mock_action_delegate_, OnShortWaitForElement(_, _))
-      .WillOnce(DoAll(Delay(2), RunOnceCallback<1>(
-                                    ClientStatusWithWarning(WARNING_SHOWN),
-                                    base::TimeDelta::FromMilliseconds(500))));
+      .WillOnce(DoAll(Delay(2),
+                      RunOnceCallback<1>(ClientStatusWithWarning(WARNING_SHOWN),
+                                         base::Milliseconds(500))));
 
   ProcessedActionProto processed_proto;
   EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&processed_proto));

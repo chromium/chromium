@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler_list.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/core/common/schema_registry.h"
@@ -25,6 +24,10 @@ class PolicyServiceImpl;
 // the policy component, mainly the PolicyProviders and the PolicyService.
 class POLICY_EXPORT BrowserPolicyConnectorBase {
  public:
+  BrowserPolicyConnectorBase(const BrowserPolicyConnectorBase&) = delete;
+  BrowserPolicyConnectorBase& operator=(const BrowserPolicyConnectorBase&) =
+      delete;
+
   // Invoke Shutdown() before deleting, see below.
   virtual ~BrowserPolicyConnectorBase();
 
@@ -51,6 +54,9 @@ class POLICY_EXPORT BrowserPolicyConnectorBase {
   // whole browser.
   PolicyService* GetPolicyService();
 
+  // Returns true if the PolicyService object has already been created.
+  bool HasPolicyService();
+
   const ConfigurationPolicyHandlerList* GetHandlerList() const;
 
   std::vector<ConfigurationPolicyProvider*> GetPolicyProviders() const;
@@ -64,6 +70,9 @@ class POLICY_EXPORT BrowserPolicyConnectorBase {
   static void SetPolicyProviderForTesting(
       ConfigurationPolicyProvider* provider);
   ConfigurationPolicyProvider* GetPolicyProviderForTesting();
+
+  // Sets the policy service to be returned by |GetPolicyService| during tests.
+  static void SetPolicyServiceForTesting(PolicyService* policy_service);
 
   // Adds a callback that is notified the the ResourceBundle is loaded.
   void NotifyWhenResourceBundleReady(base::OnceClosure closure);
@@ -112,8 +121,6 @@ class POLICY_EXPORT BrowserPolicyConnectorBase {
 
   // Callbacks scheduled via NotifyWhenResourceBundleReady().
   std::vector<base::OnceClosure> resource_bundle_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPolicyConnectorBase);
 };
 
 }  // namespace policy

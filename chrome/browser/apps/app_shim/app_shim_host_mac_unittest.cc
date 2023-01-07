@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
@@ -62,9 +62,11 @@ class TestingAppShim : public chrome::mojom::AppShim {
   void SetUserAttention(
       chrome::mojom::AppShimAttentionType attention_type) override {}
   void SetBadgeLabel(const std::string& badge_label) override {}
-  void UpdateProfileMenu(
-      std::vector<chrome::mojom::ProfileMenuItemPtr> profile_menu_items,
-      bool use_new_picker) override {}
+  void UpdateProfileMenu(std::vector<chrome::mojom::ProfileMenuItemPtr>
+                             profile_menu_items) override {}
+  void UpdateApplicationDockMenu(
+      std::vector<chrome::mojom::ApplicationDockMenuItemPtr> dock_menu_items)
+      override {}
 
   bool received_launch_done_result_ = false;
   chrome::mojom::AppShimLaunchResult launch_done_result_ =
@@ -111,13 +113,6 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
 };
 
 const char kTestAppId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-const char kTestProfileDir[] = "Profile 1";
-
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL TestUrl() {
-  return GURL("https://example.com");
-}
 
 class AppShimHostTest : public testing::Test,
                         public AppShimHostBootstrap::Client,
@@ -137,9 +132,9 @@ class AppShimHostTest : public testing::Test,
 
   void DoOnShimConnected(chrome::mojom::AppShimLaunchType launch_type) {
     auto app_shim_info = chrome::mojom::AppShimInfo::New();
-    app_shim_info->profile_path = base::FilePath(kTestProfileDir);
+    app_shim_info->profile_path = base::FilePath("Profile 1");
     app_shim_info->app_id = kTestAppId;
-    app_shim_info->app_url = TestUrl();
+    app_shim_info->app_url = GURL("https://example.com");
     app_shim_info->launch_type = launch_type;
     // Ownership of TestingAppShimHostBootstrap will be transferred to its host.
     (new TestingAppShimHostBootstrap(shim_->GetHostBootstrapReceiver()))
@@ -187,6 +182,10 @@ class AppShimHostTest : public testing::Test,
                          const std::vector<base::FilePath>& files) override {}
   void OnShimSelectedProfile(AppShimHost* host,
                              const base::FilePath& profile_path) override {}
+  void OnShimOpenedUrls(AppShimHost* host,
+                        const std::vector<GURL>& urls) override {}
+  void OnShimOpenAppWithOverrideUrl(AppShimHost* host,
+                                    const GURL& override_url) override {}
 
   chrome::mojom::AppShimLaunchResult launch_result_ =
       chrome::mojom::AppShimLaunchResult::kSuccess;
@@ -198,7 +197,7 @@ class AppShimHostTest : public testing::Test,
  private:
   void SetUp() override {
     testing::Test::SetUp();
-    shim_.reset(new TestingAppShim());
+    shim_ = std::make_unique<TestingAppShim>();
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

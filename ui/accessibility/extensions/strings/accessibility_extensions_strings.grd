@@ -76,6 +76,7 @@
     <file path="accessibility_extensions_strings_bs.xtb" lang="bs" />
     <file path="accessibility_extensions_strings_ca.xtb" lang="ca" />
     <file path="accessibility_extensions_strings_cs.xtb" lang="cs" />
+    <file path="accessibility_extensions_strings_cy.xtb" lang="cy" />
     <file path="accessibility_extensions_strings_da.xtb" lang="da" />
     <file path="accessibility_extensions_strings_de.xtb" lang="de" />
     <file path="accessibility_extensions_strings_el.xtb" lang="el" />
@@ -252,7 +253,7 @@
       <message desc="Instructions for how to enable or disable this feature on a Chromebook, where you have to hold Search and press the special Increase Brightness key on the top of the keyboard, or F7 if you're using an alternate keyboard." name="IDS_CARET_BROWSING_ENABLEDISABLECROS">
         Press &lt;span class='key'&gt;Search&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (the Increase Brightness key, or F7) to turn on Caret Browsing. Press it again to turn it off.
       </message>
-      <message desc="Instructions for how to enable or disable this feature on any platform other than Chrome OS." name="IDS_CARET_BROWSING_ENABLEDISABLENONCROS">
+      <message desc="Instructions for how to enable or disable this feature on any platform other than ChromeOS." name="IDS_CARET_BROWSING_ENABLEDISABLENONCROS">
         Press &lt;span class='key'&gt;F7&lt;/span&gt; to turn on Caret Browsing. Press it again to turn it off.
       </message>
       <message desc="One of several possible options for what to do when the cursor first appears - this option is to flash something quickly." name="IDS_CARET_BROWSING_FLASH">
@@ -318,6 +319,18 @@
       <message desc="Choice to enhancing the blue color." name="IDS_COLOR_ENHANCER_TYPE_BLUE">
         Blue
       </message>
+      <message desc="Choice to correct over red axis." name="IDS_COLOR_ENHANCER_AXIS_RED">
+        Red
+      </message>
+      <message desc="Choice to correct over green axis." name="IDS_COLOR_ENHANCER_AXIS_GREEN">
+        Green
+      </message>
+      <message desc="Choice to correct over blue axis." name="IDS_COLOR_ENHANCER_AXIS_BLUE">
+        Blue
+      </message>
+      <message desc="Choice to correct over default axis." name="IDS_COLOR_ENHANCER_AXIS_DEFAULT">
+        Default
+      </message>
       <message desc="Title for checkbox that enables the extension." name="IDS_COLOR_ENHANCER_ENABLE">
         Enable?
       </message>
@@ -337,8 +350,14 @@
       <message desc="Cancel button for the color enhancer setup." name="IDS_COLOR_ENHANCER_CANCEL">
         Cancel
       </message>
+      <message desc="Advanced button for the color enhancer setup." name="IDS_COLOR_ENHANCER_ADVANCED">
+        Advanced
+      </message>
       <message desc="Button for the color enhancer popup that opens the Setup part of the popup." name="IDS_COLOR_ENHANCER_SETUP_BUTTON">
         Setup
+      </message>
+      <message desc="Title for radio group which specifies the color axis that will be used by the user. This is an advanced toggle and can override the default setting" name="IDS_COLOR_ENHANCER_AXIS">
+        Step 3: Override the color axis for the correction.
       </message>
 
       <!-- Animation extension -->

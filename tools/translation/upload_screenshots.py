@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,6 +17,11 @@ It will attempt to upload the image anyways.
 """
 
 from __future__ import print_function
+try:
+  # In Python2, override input with raw_input for compatibility.
+  input = raw_input  # pylint: disable=redefined-builtin
+except NameError:
+  pass
 
 import argparse
 import sys
@@ -58,7 +63,7 @@ else:
 
 
 def query_yes_no(question, default='no'):
-  """Ask a yes/no question via raw_input() and return their answer.
+  """Ask a yes/no question via input() and return their answer.
 
   "question" is a string that is presented to the user.
   "default" is the presumed answer if the user just hits <Enter>.
@@ -79,13 +84,12 @@ def query_yes_no(question, default='no'):
   valid = {'yes': True, 'y': True, 'ye': True, 'no': False, 'n': False}
   while True:
     print(question, prompt)
-    choice = raw_input().lower()
+    choice = input().lower()
     if default is not None and choice == '':
       return valid[default]
-    elif choice in valid:
+    if choice in valid:
       return valid[choice]
-    else:
-      print("Please respond with 'yes' or 'no' (or 'y' or 'n').")
+    print("Please respond with 'yes' or 'no' (or 'y' or 'n').")
 
 
 def find_screenshots(repo_root, translation_expectations):
@@ -118,7 +122,7 @@ def find_screenshots(repo_root, translation_expectations):
     if not os.path.exists(screenshots_dir):
       continue
     for f in os.listdir(screenshots_dir):
-      if f in ('OWNERS', 'README.md') or f.endswith('.sha1'):
+      if f in ('OWNERS', 'README.md', 'DIR_METADATA') or f.endswith('.sha1'):
         continue
       if not f.endswith('.png'):
         print('File with unexpected extension: %s in %s' % (f, screenshots_dir))
@@ -156,16 +160,16 @@ def main():
            "screenshot at path/to/file_grd/IDS_HELLO_WORLD.png.\n"
            "- If you added a new, uncommitted .grd file, `git add` it so that "
            "this script can pick up its screenshot directory.")
-    exit(0)
+    sys.exit(0)
 
   print('Found %d updated screenshot(s): ' % len(screenshots))
   for s in screenshots:
     print('  %s' % s)
   print()
-  if not query_yes_no(
-      'Do you want to upload these to Google Cloud Storage?\n\n'
-      'FILES WILL BE PUBLIC, DO NOT UPLOAD ANYTHING CONFIDENTIAL.'):
-    exit(0)
+  if not query_yes_no('Do you want to upload these to Google Cloud Storage?\n\n'
+                      'FILES WILL BE VISIBLE TO A LARGE NUMBER OF PEOPLE. '
+                      'DO NOT UPLOAD ANYTHING CONFIDENTIAL.'):
+    sys.exit(0)
 
   # Creating a standard gsutil object, assuming there are depot_tools
   # and everything related is set up already.
@@ -184,7 +188,7 @@ def main():
         gzip=None) != 0:
       print ('Error uploading screenshots. Try running '
              '`download_from_google_storage --config`.')
-      exit(1)
+      sys.exit(1)
 
   print()
   print('Images are uploaded and their signatures are calculated:')
@@ -199,7 +203,7 @@ def main():
   # no-op.
   if not query_yes_no('Do you want to add these files to your CL?',
                       default='yes'):
-    exit(0)
+    sys.exit(0)
 
   if not args.dry_run:
     git_helper.git_add(signatures, src_path)

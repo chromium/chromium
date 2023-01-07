@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+<title>Huge SVG Must Display Correctly</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+</style>
+<script>
+function sendResult(status, detail) {
+  console.log(detail);
+  if (window.domAutomationController) {
+    window.domAutomationController.send(status);
+  } else {
+    console.log(status);
+  }
+}
+
+function ready() {
+  sendResult("READY", "Image loaded, ready for scrolling");
+}
+
+// We do this logic in the page to simplify the page action and make
+// it clearer that it's executed.
+function scrollOutAndBack() {
+  requestAnimationFrame(() => {
+    window.scrollTo(1000, 1000);
+    requestAnimationFrame(() => {
+      window.scrollTo(0, 0);
+      requestAnimationFrame(() => {
+        sendResult("SUCCESS", "Test complete");
+      });
+    });
+  });
+}
+
+</script>
+</head>
+<body>
+<img src="lots-of-lines.svg" onload="ready()"></img>
+</body>
+</html>

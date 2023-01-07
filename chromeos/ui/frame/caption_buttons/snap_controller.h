@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,22 @@ namespace chromeos {
 // The previewed snap state for a window, corresponding to the use of a
 // PhantomWindowController.
 enum class SnapDirection {
-  kNone,   // No snap preview.
-  kLeft,   // The phantom window controller is previewing a snap to the left.
-  kRight,  // The phantom window controller is previewing a snap to the right.
+  kNone,       // No snap preview.
+  kPrimary,    // The phantom window controller is previewing a snap to the
+               // primary position, translated into left for landscape display
+               // (or right for secondary display layout) and top (or bottom)
+               // for portrait display. For more details, see
+               // description for `SplitViewController::IsLayoutHorizontal()`.
+  kSecondary,  // The phantom window controller is previewing a snap to the
+               // secondary position, the opposite position of the primary. For
+               // example, in primary portrait display, primary position is the
+               // top and secondary position is the bottom.
+};
+
+enum class SnapRatio {
+  kDefaultSnapRatio,   // 0.5f
+  kOneThirdSnapRatio,  // 0.33f
+  kTwoThirdSnapRatio   // 0.67f
 };
 
 // This interface handles snap actions to be performed on a top level window.
@@ -33,11 +46,17 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) SnapController {
   virtual bool CanSnap(aura::Window* window) = 0;
 
   // Shows a preview (phantom window) for the given snap direction.
-  virtual void ShowSnapPreview(aura::Window* window, SnapDirection snap) = 0;
+  // `allow_haptic_feedback` indicates if it should send haptic feedback.
+  virtual void ShowSnapPreview(aura::Window* window,
+                               SnapDirection snap,
+                               bool allow_haptic_feedback) = 0;
 
   // Snaps the window in the given direction, if not kNone. Destroys the preview
   // window, if any.
-  virtual void CommitSnap(aura::Window* window, SnapDirection snap) = 0;
+  virtual void CommitSnap(
+      aura::Window* window,
+      SnapDirection snap,
+      SnapRatio snap_ratio = SnapRatio::kDefaultSnapRatio) = 0;
 
  protected:
   SnapController();

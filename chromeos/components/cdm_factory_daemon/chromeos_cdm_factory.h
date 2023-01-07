@@ -1,21 +1,24 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMEOS_COMPONENTS_CDM_FACTORY_DAEMON_CHROMEOS_CDM_FACTORY_H_
 #define CHROMEOS_COMPONENTS_CDM_FACTORY_DAEMON_CHROMEOS_CDM_FACTORY_H_
 
-#include <vector>
-
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "build/chromeos_buildflags.h"
+#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
+#include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/cdm_factory_daemon.mojom.h"
 #include "media/base/cdm_config.h"
+#include "media/base/cdm_context.h"
 #include "media/base/cdm_factory.h"
+#include "media/mojo/mojom/cdm_document_service.mojom.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
-#include "media/mojo/mojom/platform_verification.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -39,12 +42,11 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ChromeOsCdmFactory
 
   // Invoked on GPU initialization to set the receiver to pass to the browser
   // process.
-  static mojo::PendingReceiver<cdm::mojom::CdmFactoryDaemon>
-  GetCdmFactoryDaemonReceiver();
+  static mojo::PendingReceiver<cdm::mojom::BrowserCdmFactory>
+  GetBrowserCdmFactoryReceiver();
 
   // media::CdmFactory implementation.
   void Create(
-      const std::string& key_system,
       const media::CdmConfig& cdm_config,
       const media::SessionMessageCB& session_message_cb,
       const media::SessionClosedCB& session_closed_cb,
@@ -52,22 +54,33 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ChromeOsCdmFactory
       const media::SessionExpirationUpdateCB& session_expiration_update_cb,
       media::CdmCreatedCB cdm_created_cb) override;
 
-  using GetHwConfigDataCB =
-      base::OnceCallback<void(bool success,
-                              const std::vector<uint8_t>& config_data)>;
   // Used to get hardware specific configuration data from the daemon to be used
   // for setting up decrypt+decode in the GPU.
-  static void GetHwConfigData(GetHwConfigDataCB callback);
+  static void GetHwConfigData(ChromeOsCdmContext::GetHwConfigDataCB callback);
 
-  using GetScreenResolutionsCB =
-      base::OnceCallback<void(const std::vector<gfx::Size>& resolutions)>;
   // Used to get screen resolutions from the browser process so we can optimize
   // our decode target size.
-  static void GetScreenResolutions(GetScreenResolutionsCB callback);
+  static void GetScreenResolutions(
+      ChromeOsCdmContext::GetScreenResolutionsCB callback);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Invoked in the OOP Video Decoder utility process to set the Mojo connection
+  // back to the browser process. Normally the GPU process has a Mojo connection
+  // to the browser process for this purpose. When we launch an OOP Video
+  // Decoder Process from the browser process, we pass a mojo::Remote to it so
+  // the OOP Video Decoder process can then invoke cdm::mojom::BrowserCdmFactory
+  // calls that are received by the browser process just like they would if it
+  // was being handled in the GPU process.
+  static void SetBrowserCdmFactoryRemote(
+      mojo::Remote<cdm::mojom::BrowserCdmFactory> remote);
+
+  // Returns a singleton pointer that can be used as the media::CdmContext for
+  // ARC video decode operations.
+  static media::CdmContext* GetArcCdmContext();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  private:
   void OnVerifiedAccessEnabled(
-      const std::string& key_system,
       const media::CdmConfig& cdm_config,
       const media::SessionMessageCB& session_message_cb,
       const media::SessionClosedCB& session_closed_cb,
@@ -93,9 +106,9 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ChromeOsCdmFactory
   void OnFactoryMojoConnectionError();
   void OnVerificationMojoConnectionError();
 
-  media::mojom::FrameInterfaceFactory* frame_interfaces_;
+  raw_ptr<media::mojom::FrameInterfaceFactory> frame_interfaces_;
   mojo::Remote<cdm::mojom::CdmFactory> remote_factory_;
-  mojo::Remote<media::mojom::PlatformVerification> platform_verification_;
+  mojo::Remote<media::mojom::CdmDocumentService> cdm_document_service_;
 
   // WeakPtrFactory to use for callbacks.
   base::WeakPtrFactory<ChromeOsCdmFactory> weak_factory_{this};

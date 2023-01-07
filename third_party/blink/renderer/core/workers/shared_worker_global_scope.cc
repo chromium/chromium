@@ -35,36 +35,70 @@
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
-#include "third_party/blink/renderer/core/loader/appcache/application_cache_host_for_worker.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/shared_worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
 #include "third_party/blink/renderer/core/workers/worker_module_tree_client.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 
 namespace blink {
 
+// static
+SharedWorkerGlobalScope::ParsedCreationParams
+SharedWorkerGlobalScope::ParseCreationParams(
+    std::unique_ptr<GlobalScopeCreationParams> creation_params,
+    bool is_constructor_origin_secure) {
+  ParsedCreationParams params;
+
+  params.starter_secure_context = creation_params->starter_secure_context;
+  if (!RuntimeEnabledFeatures::SecureContextFixForSharedWorkersEnabled()) {
+    creation_params->starter_secure_context = is_constructor_origin_secure;
+  }
+
+  params.creation_params = std::move(creation_params);
+  return params;
+}
+
 SharedWorkerGlobalScope::SharedWorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
+    bool is_constructor_origin_secure,
     SharedWorkerThread* thread,
     base::TimeTicks time_origin,
-    const SharedWorkerToken& token,
-    const base::UnguessableToken& appcache_host_id)
-    : WorkerGlobalScope(std::move(creation_params), thread, time_origin),
+    const SharedWorkerToken& token)
+    : SharedWorkerGlobalScope(ParseCreationParams(std::move(creation_params),
+                                                  is_constructor_origin_secure),
+                              thread,
+                              time_origin,
+                              token) {}
+
+SharedWorkerGlobalScope::SharedWorkerGlobalScope(
+    ParsedCreationParams parsed_creation_params,
+    SharedWorkerThread* thread,
+    base::TimeTicks time_origin,
+    const SharedWorkerToken& token)
+    : WorkerGlobalScope(std::move(parsed_creation_params.creation_params),
+                        thread,
+                        time_origin,
+                        false),
       token_(token) {
-  appcache_host_ = MakeGarbageCollected<ApplicationCacheHostForWorker>(
-      appcache_host_id, GetBrowserInterfaceBroker(),
-      GetTaskRunner(TaskType::kInternalLoading));
+  if (IsSecureContext() && !parsed_creation_params.starter_secure_context) {
+    CountUse(mojom::blink::WebFeature::kSecureContextIncorrectForSharedWorker);
+  }
 }
 
 SharedWorkerGlobalScope::~SharedWorkerGlobalScope() = default;
@@ -77,10 +111,8 @@ const AtomicString& SharedWorkerGlobalScope::InterfaceName() const {
 void SharedWorkerGlobalScope::Initialize(
     const KURL& response_url,
     network::mojom::ReferrerPolicy response_referrer_policy,
-    network::mojom::IPAddressSpace response_address_space,
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
-    const Vector<String>* response_origin_trial_tokens,
-    int64_t appcache_id) {
+    const Vector<String>* response_origin_trial_tokens) {
   // Step 12.3. "Set worker global scope's url to response's url."
   InitializeURL(response_url);
 
@@ -92,9 +124,6 @@ void SharedWorkerGlobalScope::Initialize(
   // parsing the `Referrer-Policy` header of response."
   SetReferrerPolicy(response_referrer_policy);
 
-  // https://wicg.github.io/cors-rfc1918/#integration-html
-  SetAddressSpace(response_address_space);
-
   // Step 12.6. "Execute the Initialize a global object's CSP list algorithm
   // on worker global scope and response. [CSP]"
   // SharedWorkerGlobalScope inherits the outside's CSP instead of the response
@@ -104,8 +133,6 @@ void SharedWorkerGlobalScope::Initialize(
   // https://fetch.spec.whatwg.org/#local-scheme
   //
   // https://w3c.github.io/webappsec-csp/#initialize-global-object-csp
-  // These should be called after SetAddressSpace() to correctly override the
-  // address space by the "treat-as-public-address" CSP directive.
   Vector<network::mojom::blink::ContentSecurityPolicyPtr> csp_headers =
       response_url.ProtocolIsAbout() || response_url.ProtocolIsData() ||
               response_url.ProtocolIs("blob")
@@ -120,10 +147,7 @@ void SharedWorkerGlobalScope::Initialize(
   // origin trial features in JavaScript's global object.
   ScriptController()->PrepareForEvaluation();
 
-  DCHECK(appcache_host_);
-  appcache_host_->SelectCacheForWorker(
-      appcache_id, WTF::Bind(&SharedWorkerGlobalScope::OnAppCacheSelected,
-                             WrapWeakPersistent(this)));
+  ReadyToRunWorkerScript();
 }
 
 // https://html.spec.whatwg.org/C/#worker-processing-model
@@ -131,10 +155,13 @@ void SharedWorkerGlobalScope::FetchAndRunClassicScript(
     const KURL& script_url,
     std::unique_ptr<WorkerMainScriptLoadParameters>
         worker_main_script_load_params,
+    std::unique_ptr<PolicyContainer> policy_container,
     const FetchClientSettingsObjectSnapshot& outside_settings_object,
     WorkerResourceTimingNotifier& outside_resource_timing_notifier,
     const v8_inspector::V8StackTraceId& stack_id) {
   DCHECK(!IsContextPaused());
+
+  SetPolicyContainer(std::move(policy_container));
 
   // Step 12. "Fetch a classic worker script given url, outside settings,
   // destination, and inside settings."
@@ -156,12 +183,12 @@ void SharedWorkerGlobalScope::FetchAndRunClassicScript(
       script_url, std::move(worker_main_script_load_params), context_type,
       destination, network::mojom::RequestMode::kSameOrigin,
       network::mojom::CredentialsMode::kSameOrigin,
-      WTF::Bind(&SharedWorkerGlobalScope::DidReceiveResponseForClassicScript,
-                WrapWeakPersistent(this),
-                WrapPersistent(classic_script_loader)),
-      WTF::Bind(&SharedWorkerGlobalScope::DidFetchClassicScript,
-                WrapWeakPersistent(this), WrapPersistent(classic_script_loader),
-                stack_id));
+      WTF::BindOnce(
+          &SharedWorkerGlobalScope::DidReceiveResponseForClassicScript,
+          WrapWeakPersistent(this), WrapPersistent(classic_script_loader)),
+      WTF::BindOnce(&SharedWorkerGlobalScope::DidFetchClassicScript,
+                    WrapWeakPersistent(this),
+                    WrapPersistent(classic_script_loader), stack_id));
 }
 
 // https://html.spec.whatwg.org/C/#worker-processing-model
@@ -169,6 +196,7 @@ void SharedWorkerGlobalScope::FetchAndRunModuleScript(
     const KURL& module_url_record,
     std::unique_ptr<WorkerMainScriptLoadParameters>
         worker_main_script_load_params,
+    std::unique_ptr<PolicyContainer> policy_container,
     const FetchClientSettingsObjectSnapshot& outside_settings_object,
     WorkerResourceTimingNotifier& outside_resource_timing_notifier,
     network::mojom::CredentialsMode credentials_mode,
@@ -178,6 +206,7 @@ void SharedWorkerGlobalScope::FetchAndRunModuleScript(
     SetWorkerMainScriptLoadingParametersForModules(
         std::move(worker_main_script_load_params));
   }
+  SetPolicyContainer(std::move(policy_container));
 
   // Step 12: "Let destination be "sharedworker" if is shared is true, and
   // "worker" otherwise."
@@ -208,11 +237,6 @@ void SharedWorkerGlobalScope::Connect(MessagePortChannel channel) {
                            String(), String(), port);
   event->initEvent(event_type_names::kConnect, false, false);
   DispatchEvent(*event, "SharedWorkerGlobalScope::Connect");
-}
-
-void SharedWorkerGlobalScope::OnAppCacheSelected() {
-  DCHECK(IsContextThread());
-  ReadyToRunWorkerScript();
 }
 
 void SharedWorkerGlobalScope::DidReceiveResponseForClassicScript(
@@ -256,13 +280,11 @@ void SharedWorkerGlobalScope::DidFetchClassicScript(
 
   // Step 12.3-12.6 are implemented in Initialize().
   Initialize(classic_script_loader->ResponseURL(), response_referrer_policy,
-             classic_script_loader->ResponseAddressSpace(),
              classic_script_loader->GetContentSecurityPolicy()
                  ? mojo::Clone(classic_script_loader->GetContentSecurityPolicy()
                                    ->GetParsedPolicies())
                  : Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-             classic_script_loader->OriginTrialTokens(),
-             classic_script_loader->AppCacheID());
+             classic_script_loader->OriginTrialTokens());
 
   // Step 12.7. "Asynchronously complete the perform the fetch steps with
   // response."
@@ -279,12 +301,15 @@ void SharedWorkerGlobalScope::ExceptionThrown(ErrorEvent* event) {
 }
 
 void SharedWorkerGlobalScope::Trace(Visitor* visitor) const {
-  visitor->Trace(appcache_host_);
   WorkerGlobalScope::Trace(visitor);
 }
 
 bool SharedWorkerGlobalScope::CrossOriginIsolatedCapability() const {
   return Agent::IsCrossOriginIsolated();
+}
+
+bool SharedWorkerGlobalScope::IsolatedApplicationCapability() const {
+  return Agent::IsIsolatedApplication();
 }
 
 }  // namespace blink

@@ -1,0 +1,98 @@
+<!doctype html>
+<!--
+Tests WebXR secondary views are correctly exposed when requested for a session.
+-->
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="../resources/webxr_e2e.css">
+  </head>
+  <body>
+    <canvas id="webgl-canvas"></canvas>
+    <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
+    <script src="../resources/webxr_e2e.js"></script>
+    <script>var shouldAutoCreateNonImmersiveSession = false;</script>
+    <script src="../resources/webxr_boilerplate.js"></script>
+    <script>
+      // Set the optional features to request secondary views when requesting
+      // a session. This global is defined and used in webxr_boilerplate.js.
+      immersiveSessionInit = {
+        requiredFeatures: ['secondary-views']
+      };
+
+      function FloatEquals(a, b) {
+        return Math.abs(a-b) < 0.001;
+      }
+
+      function GetAnglesFromQuaternion(q) {
+        // Formulas to convert from a quaternion to Euler angles.
+        // For detailed explanation, see
+        // https://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles#Quaternion_to_Euler_angles_conversion
+        let sinX = 2 * (q.w * q.x + q.y * q.z);
+        let cosX = 1 - 2 * (q.x * q.x + q.y * q.y);
+        let xRot = Math.atan(sinX, cosX);
+
+        let yRot = Math.asin(2 * (q.w * q.y + q.z * q.x));
+
+        let sinZ = 2 * (q.w * q.z + q.x * q.y);
+        let cosZ = 1 - 2 * (q.y * q.y + q.z * q.z);
+        let zRot = Math.atan2(sinZ, cosZ);
+
+        // Returns in radians
+        return {x: xRot, y: yRot, z: zRot};
+      }
+
+      let ipd = 0.7;
+      let frameCount = 0;
+      let viewLength = 2;
+      onPoseCallback = function(pose) {
+        assert_equals(pose.views.length, viewLength);
+        updateSingleTestProgressMessage(
+            'Got pose number ' + frameCount + ' with data ' +
+            JSON.stringify(pose));
+
+        for (let i = 0; i < pose.views.length; i++) {
+          let view = pose.views[i];
+
+          if (i == 0) {
+            assert_equals(view.eye, "left");
+            assert_false(view.isFirstPersonObserver);
+          } else if (i == 1) {
+            assert_equals(view.eye, "right");
+            assert_false(view.isFirstPersonObserver);
+          } else {
+            assert_equals(view.eye, "none");
+            assert_true(view.isFirstPersonObserver);
+          }
+
+          // The OpenXR mock runtime uses the IPD provided by
+          // webxr_vr_secondary_views_browser_test.cc to set the view's X
+          // position. It also sets the Y and Z value to the frame count.
+          // See OpenXrTestHelper::UpdateViews for this calculation.
+          assert_true(FloatEquals(view.transform.position.x,
+              (ipd / 2) * ((i % 2 == 0) ? 1 : -1)));
+          assert_true(FloatEquals(view.transform.position.y, frameCount));
+          assert_true(FloatEquals(view.transform.position.z, frameCount));
+
+          // The OpenXR mock runtime sets a rotation equal to the frame count
+          // for the Y axis, and sets no rotation for the X and Z axis.
+          let rotations = GetAnglesFromQuaternion(view.transform.orientation);
+          assert_true(FloatEquals(rotations.x, 0));
+          assert_true(FloatEquals(rotations.y * 180 / Math.PI, frameCount));
+          assert_true(FloatEquals(rotations.z, 0));
+        }
+
+        if (frameCount++ > 40) {
+          // Test 40 frames so we get a couple of iterations where the active
+          // state of the secondary view changes.
+          done();
+        }
+
+        if (frameCount % 10 == 0) {
+          // The OpenXR mock runtime flips the active state of the secondary
+          // view every 10th frame.
+          viewLength = (viewLength == 2) ? 3 : 2;
+        }
+      };
+    </script>
+  </body>
+</html>

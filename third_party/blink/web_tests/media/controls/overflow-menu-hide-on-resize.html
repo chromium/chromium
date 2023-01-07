@@ -6,9 +6,6 @@
 <video controls></video>
 <script>
 async_test(t => {
-  if (window.testRunner)
-    testRunner.useUnfortunateSynchronousResizeMode();
-
   // Set up video
   const video = document.querySelector('video');
   video.src = '../content/test.ogv';

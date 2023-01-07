@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,15 @@
 
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
-#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/buildflags.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
 
 // static
 NotificationDisplayService* NotificationDisplayServiceFactory::GetForProfile(
@@ -29,19 +30,13 @@ NotificationDisplayServiceFactory::GetInstance() {
 }
 
 NotificationDisplayServiceFactory::NotificationDisplayServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "NotificationDisplayService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildForRegularAndIncognito()) {}
 
 KeyedService* NotificationDisplayServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   // TODO(peter): Register the notification handlers here.
   return new NotificationDisplayServiceImpl(
       Profile::FromBrowserContext(context));
-}
-
-content::BrowserContext*
-NotificationDisplayServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextOwnInstanceInIncognito(context);
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,9 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/origin.h"
 
@@ -39,13 +38,13 @@ class WebRequestPermissions {
     REQUIRE_ALL_URLS
   };
 
+  WebRequestPermissions() = delete;
+  WebRequestPermissions(const WebRequestPermissions&) = delete;
+  WebRequestPermissions& operator=(const WebRequestPermissions&) = delete;
+
   // Returns true if the request shall not be reported to extensions.
   static bool HideRequest(extensions::PermissionHelper* permission_helper,
                           const extensions::WebRequestInfo& request);
-
-  // Helper function used only in tests, sets a variable which enables or
-  // disables a CHECK.
-  static void AllowAllExtensionLocationsInPublicSessionForTesting(bool value);
 
   // |host_permission_check| controls how permissions are checked with regard to
   // |url| and |initiator| if an initiator exists.
@@ -56,17 +55,15 @@ class WebRequestPermissions {
       int tab_id,
       bool crosses_incognito,
       HostPermissionsCheck host_permissions_check,
-      const base::Optional<url::Origin>& initiator,
+      const absl::optional<url::Origin>& initiator,
       extensions::WebRequestResourceType web_request_type);
 
   static bool CanExtensionAccessInitiator(
       extensions::PermissionHelper* permission_helper,
       const extensions::ExtensionId extension_id,
-      const base::Optional<url::Origin>& initiator,
+      const absl::optional<url::Origin>& initiator,
       int tab_id,
       bool crosses_incognito);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebRequestPermissions);
 };
 
 #endif  // EXTENSIONS_BROWSER_API_WEB_REQUEST_WEB_REQUEST_PERMISSIONS_H_

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/time/time.h"
 #include "chrome/browser/sharing/features.h"
+#include "chrome/browser/sharing/sharing_constants.h"
 #include "chrome/browser/sharing/sharing_dialog.h"
 #include "chrome/browser/sharing/sharing_dialog_data.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
@@ -66,7 +67,7 @@ std::u16string SharingUiController::GetTitle(SharingDialogType dialog_type) {
     case SharingSendMessageResult::kSuccessful:
     case SharingSendMessageResult::kCancelled:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case SharingSendMessageResult::kPayloadTooLarge:
     case SharingSendMessageResult::kInternalError:
@@ -128,7 +129,7 @@ void SharingUiController::ClearLastDialog() {
 }
 
 void SharingUiController::UpdateAndShowDialog(
-    const base::Optional<url::Origin>& initiating_origin) {
+    const absl::optional<url::Origin>& initiating_origin) {
   ClearLastDialog();
   DoUpdateApps(base::BindOnce(&SharingUiController::OnAppsReceived,
                               weak_ptr_factory_.GetWeakPtr(), last_dialog_id_,
@@ -141,7 +142,8 @@ SharingUiController::GetDevices() const {
 }
 
 bool SharingUiController::HasSendFailed() const {
-  return send_result_ != SharingSendMessageResult::kSuccessful;
+  return send_result_ != SharingSendMessageResult::kSuccessful &&
+         send_result_ != SharingSendMessageResult::kCancelled;
 }
 
 void SharingUiController::MaybeShowErrorDialog() {
@@ -168,24 +170,32 @@ SharingDialogData SharingUiController::CreateDialogData(
   return data;
 }
 
+bool SharingUiController::ShouldShowLoadingIcon() const {
+  return true;
+}
+
+bool SharingUiController::HasAccessibleUi() const {
+  return true;
+}
+
 base::OnceClosure SharingUiController::SendMessageToDevice(
     const syncer::DeviceInfo& device,
-    base::Optional<base::TimeDelta> response_timeout,
+    absl::optional<base::TimeDelta> response_timeout,
     chrome_browser_sharing::SharingMessage sharing_message,
-    base::Optional<SharingMessageSender::ResponseCallback> custom_callback) {
-  last_dialog_id_++;
-  is_loading_ = true;
+    absl::optional<SharingMessageSender::ResponseCallback> custom_callback) {
   send_result_ = SharingSendMessageResult::kSuccessful;
   target_device_name_ = device.client_name();
-  UpdateIcon();
+  if (ShouldShowLoadingIcon()) {
+    last_dialog_id_++;
+    is_loading_ = true;
+    UpdateIcon();
+  }
 
   SharingMessageSender::ResponseCallback response_callback = base::BindOnce(
       &SharingUiController::OnResponse, weak_ptr_factory_.GetWeakPtr(),
       last_dialog_id_, std::move(custom_callback));
   return sharing_service_->SendMessageToDevice(
-      device,
-      response_timeout.value_or(
-          base::TimeDelta::FromSeconds(kSharingMessageTTLSeconds.Get())),
+      device, response_timeout.value_or(kSharingMessageTTL),
       std::move(sharing_message), std::move(response_callback));
 }
 
@@ -230,7 +240,7 @@ std::u16string SharingUiController::GetTargetDeviceName() const {
 
 void SharingUiController::OnResponse(
     int dialog_id,
-    base::Optional<SharingMessageSender::ResponseCallback> custom_callback,
+    absl::optional<SharingMessageSender::ResponseCallback> custom_callback,
     SharingSendMessageResult result,
     std::unique_ptr<chrome_browser_sharing::ResponseMessage> response) {
   if (custom_callback)
@@ -238,14 +248,16 @@ void SharingUiController::OnResponse(
   if (dialog_id != last_dialog_id_)
     return;
 
-  is_loading_ = false;
   send_result_ = result;
-  UpdateIcon();
+  if (ShouldShowLoadingIcon()) {
+    is_loading_ = false;
+    UpdateIcon();
+  }
 }
 
 void SharingUiController::OnAppsReceived(
     int dialog_id,
-    const base::Optional<url::Origin>& initiating_origin,
+    const absl::optional<url::Origin>& initiating_origin,
     std::vector<SharingApp> apps) {
   if (dialog_id != last_dialog_id_)
     return;

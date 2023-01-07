@@ -1,16 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_AUDIO_DELIVERER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_AUDIO_DELIVERER_H_
 
-#include <algorithm>
-
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -29,6 +32,9 @@ template <typename Consumer>
 class MediaStreamAudioDeliverer {
  public:
   MediaStreamAudioDeliverer() {}
+  MediaStreamAudioDeliverer(const MediaStreamAudioDeliverer&) = delete;
+  MediaStreamAudioDeliverer& operator=(const MediaStreamAudioDeliverer&) =
+      delete;
   ~MediaStreamAudioDeliverer() {}
 
   // Returns the current audio parameters. These will be invalid before the
@@ -48,6 +54,9 @@ class MediaStreamAudioDeliverer {
     DCHECK(!base::Contains(consumers_, consumer));
     DCHECK(!base::Contains(pending_consumers_, consumer));
     pending_consumers_.push_back(consumer);
+    SendLogMessage(
+        String::Format("%s => (number of consumer: active=%u, pending=%u)",
+                       __func__, consumers_.size(), pending_consumers_.size()));
   }
 
   // Stop delivering audio to |consumer|. Returns true if |consumer| was the
@@ -58,18 +67,19 @@ class MediaStreamAudioDeliverer {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     base::AutoLock auto_lock(consumers_lock_);
     const bool had_consumers =
-        !consumers_.IsEmpty() || !pending_consumers_.IsEmpty();
-    auto it = std::find(consumers_.begin(), consumers_.end(), consumer);
+        !consumers_.empty() || !pending_consumers_.empty();
+    auto it = base::ranges::find(consumers_, consumer);
     if (it != consumers_.end()) {
       consumers_.erase(it);
     } else {
-      it = std::find(pending_consumers_.begin(), pending_consumers_.end(),
-                     consumer);
+      it = base::ranges::find(pending_consumers_, consumer);
       if (it != pending_consumers_.end())
         pending_consumers_.erase(it);
     }
-    return had_consumers && consumers_.IsEmpty() &&
-           pending_consumers_.IsEmpty();
+    SendLogMessage(
+        String::Format("%s => (number of consumers: active=%u, pending=%u)",
+                       __func__, consumers_.size(), pending_consumers_.size()));
+    return had_consumers && consumers_.empty() && pending_consumers_.empty();
   }
 
   // Returns the current list of connected Consumers. This is normally used to
@@ -93,6 +103,8 @@ class MediaStreamAudioDeliverer {
       base::AutoLock auto_params_lock(params_lock_);
       if (params_.Equals(params))
         return;
+      SendLogMessage(String::Format("%s({params=[%s]})", __func__,
+                                    params.AsHumanReadableString().c_str()));
       params_ = params;
     }
     pending_consumers_.AppendRange(consumers_.begin(), consumers_.end());
@@ -109,7 +121,7 @@ class MediaStreamAudioDeliverer {
 
     // Call OnSetFormat() for all pending consumers and move them to the
     // active-delivery list.
-    if (!pending_consumers_.IsEmpty()) {
+    if (!pending_consumers_.empty()) {
       const media::AudioParameters params = GetAudioParameters();
       DCHECK(params.IsValid());
       for (Consumer* consumer : pending_consumers_)
@@ -117,6 +129,8 @@ class MediaStreamAudioDeliverer {
       consumers_.AppendRange(pending_consumers_.begin(),
                              pending_consumers_.end());
       pending_consumers_.clear();
+      SendLogMessage(String::Format("%s => (number of active consumers=%u)",
+                                    __func__, consumers_.size()));
     }
 
     // Deliver the audio data to each consumer.
@@ -137,6 +151,13 @@ class MediaStreamAudioDeliverer {
   }
 
  private:
+  void SendLogMessage(const WTF::String& message) {
+    WebRtcLogMessage(String::Format("MSAD::%s [this=0x%" PRIXPTR "]",
+                                    message.Utf8().c_str(),
+                                    reinterpret_cast<uintptr_t>(this))
+                         .Utf8());
+  }
+
   // In debug builds, check that all methods that could cause object graph or
   // data flow changes are being called on the main thread.
   THREAD_CHECKER(thread_checker_);
@@ -161,8 +182,6 @@ class MediaStreamAudioDeliverer {
   // Specifies the current format of the audio passing through this
   // MediaStreamAudioDeliverer.
   media::AudioParameters params_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamAudioDeliverer);
 };
 
 }  // namespace blink

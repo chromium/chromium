@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define COMPONENTS_VIZ_TEST_TEST_LATEST_LOCAL_SURFACE_ID_LOOKUP_DELEGATE_H_
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/surfaces/latest_local_surface_id_lookup_delegate.h"
 
@@ -16,6 +15,12 @@ class TestLatestLocalSurfaceIdLookupDelegate
     : public LatestLocalSurfaceIdLookupDelegate {
  public:
   TestLatestLocalSurfaceIdLookupDelegate();
+
+  TestLatestLocalSurfaceIdLookupDelegate(
+      const TestLatestLocalSurfaceIdLookupDelegate&) = delete;
+  TestLatestLocalSurfaceIdLookupDelegate& operator=(
+      const TestLatestLocalSurfaceIdLookupDelegate&) = delete;
+
   ~TestLatestLocalSurfaceIdLookupDelegate() override;
 
   // LatestLocalSurfaceIdLookupDelegate:
@@ -26,8 +31,6 @@ class TestLatestLocalSurfaceIdLookupDelegate
 
  private:
   base::flat_map<FrameSinkId, LocalSurfaceId> surface_id_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLatestLocalSurfaceIdLookupDelegate);
 };
 
 }  // namespace viz

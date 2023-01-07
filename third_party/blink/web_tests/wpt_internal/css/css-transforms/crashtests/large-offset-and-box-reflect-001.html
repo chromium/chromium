@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1282555">
+<style>
+#inner {
+  padding-top: 6px;
+  mix-blend-mode: soft-light;
+  offset: path("M 1 2147483648 h 7 v 0") 76px 0deg;
+}
+#outer {
+  overflow-x: overlay;
+  padding-top: 6px;
+  height: 0px;
+  border-top-right-radius: 8px;
+  resize: vertical;
+  -webkit-box-reflect: above 8px;
+}
+</style>
+<div id="outer"><div id="inner"></div></div>

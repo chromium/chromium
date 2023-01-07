@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/scroll_node.h"
@@ -86,7 +86,7 @@ float ScrollbarLayerImplBase::vertical_adjust() const {
 bool ScrollbarLayerImplBase::CanScrollOrientation() const {
   PropertyTrees* property_trees = layer_tree_impl()->property_trees();
   const auto* scroll_node =
-      property_trees->scroll_tree.FindNodeFromElementId(scroll_element_id_);
+      property_trees->scroll_tree().FindNodeFromElementId(scroll_element_id_);
   DCHECK(scroll_node);
   // TODO(bokan): Looks like we sometimes get here without a ScrollNode. It
   // should be safe to just return false here (we don't use scroll_element_id_
@@ -211,10 +211,14 @@ gfx::Rect ScrollbarLayerImplBase::ComputeThumbQuadRectWithThumbThicknessScale(
   float track_length = TrackLength();
   int thumb_length = ThumbLength();
   int thumb_thickness = ThumbThickness();
-  float maximum = scroll_layer_length() - clip_layer_length();
+  // TODO(crbug.com/1239770): This is a speculative fix.
+  float maximum = std::max(scroll_layer_length() - clip_layer_length(), 0.0f);
+  // TODO(crbug.com/1239510): Re-enable the following DCHECK once the
+  // underlying issue is resolved.
+  // DCHECK(scroll_layer_length() >= clip_layer_length());
 
   // With the length known, we can compute the thumb's position.
-  float clamped_current_pos = base::ClampToRange(current_pos(), 0.0f, maximum);
+  float clamped_current_pos = base::clamp(current_pos(), 0.0f, maximum);
 
   int thumb_offset = TrackStart();
   if (maximum > 0) {
@@ -255,6 +259,10 @@ gfx::Rect ScrollbarLayerImplBase::ComputeThumbQuadRect() const {
       thumb_thickness_scale_factor_);
 }
 
+gfx::Rect ScrollbarLayerImplBase::ComputeHitTestableThumbQuadRect() const {
+  return ComputeThumbQuadRect();
+}
+
 void ScrollbarLayerImplBase::SetOverlayScrollbarLayerOpacityAnimated(
     float opacity) {
   DCHECK(is_overlay_scrollbar());
@@ -263,14 +271,15 @@ void ScrollbarLayerImplBase::SetOverlayScrollbarLayerOpacityAnimated(
 
   PropertyTrees* property_trees = layer_tree_impl()->property_trees();
 
-  EffectNode* node = property_trees->effect_tree.Node(effect_tree_index());
+  EffectNode* node =
+      property_trees->effect_tree_mutable().Node(effect_tree_index());
   if (node->opacity == opacity)
     return;
 
   node->opacity = opacity;
   node->effect_changed = true;
-  property_trees->changed = true;
-  property_trees->effect_tree.set_needs_update(true);
+  property_trees->set_changed(true);
+  property_trees->effect_tree_mutable().set_needs_update(true);
   layer_tree_impl()->set_needs_update_draw_properties();
 }
 
@@ -293,6 +302,10 @@ bool ScrollbarLayerImplBase::SupportsDragSnapBack() const {
 
 bool ScrollbarLayerImplBase::JumpOnTrackClick() const {
   return false;
+}
+
+bool ScrollbarLayerImplBase::IsFluentScrollbarEnabled() const {
+  return layer_tree_impl()->settings().enable_fluent_scrollbar;
 }
 
 gfx::Rect ScrollbarLayerImplBase::BackButtonRect() const {
@@ -323,7 +336,7 @@ ScrollbarPart ScrollbarLayerImplBase::IdentifyScrollbarPart(
   if (ForwardButtonRect().Contains(pointer_location))
     return ScrollbarPart::FORWARD_BUTTON;
 
-  if (ComputeThumbQuadRect().Contains(pointer_location))
+  if (ComputeHitTestableThumbQuadRect().Contains(pointer_location))
     return ScrollbarPart::THUMB;
 
   if (BackTrackRect().Contains(pointer_location))

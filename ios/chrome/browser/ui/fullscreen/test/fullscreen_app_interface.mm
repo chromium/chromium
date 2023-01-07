@@ -1,17 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
 
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser_list.h"
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/test/app/tab_test_util.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/ui/fullscreen_provider.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -19,12 +16,6 @@
 #endif
 
 @implementation FullscreenAppInterface
-
-+ (BOOL)isFullscreenInitialized {
-  return ios::GetChromeBrowserProvider()
-      ->GetFullscreenProvider()
-      ->IsInitialized();
-}
 
 + (UIEdgeInsets)currentViewportInsets {
   web::WebState* webState = chrome_test_util::GetCurrentWebState();

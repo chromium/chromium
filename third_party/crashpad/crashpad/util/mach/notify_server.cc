@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,8 @@
 
 #include "util/mach/notify_server.h"
 
-#include "base/stl_util.h"
+#include <iterator>
+
 #include "util/mach/mach_message.h"
 #include "util/mach/notifyServer.h"
 
@@ -227,7 +228,7 @@ std::set<mach_msg_id_t> NotifyServer::MachMessageServerRequestIDs() {
       MACH_NOTIFY_DEAD_NAME,
   };
   return std::set<mach_msg_id_t>(&request_ids[0],
-                                 &request_ids[base::size(request_ids)]);
+                                 &request_ids[std::size(request_ids)]);
 }
 
 mach_msg_size_t NotifyServer::MachMessageServerRequestSize() {

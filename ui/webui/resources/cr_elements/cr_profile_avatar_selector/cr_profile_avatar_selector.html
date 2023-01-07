@@ -1,15 +1,3 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="../cr_button/cr_button.html">
-<link rel="import" href="../shared_vars_css.html">
-<link rel="import" href="../shared_style_css.html">
-<link rel="import" href="../../html/icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-tooltip/paper-tooltip.html">;
-<link rel="import" href="cr_profile_avatar_selector_grid.html">
-
-<dom-module id="cr-profile-avatar-selector">
-  <template>
     <style include="cr-shared-style">
       :host {
         --avatar-size: 96px;
@@ -18,7 +6,7 @@
       }
 
       #avatar-grid .avatar {
-        --avatar-focus-color: var(--google-grey-refresh-700);
+        --avatar-focus-color: var(--google-grey-700);
         --avatar-gap-color: white;
         --avatar-gap-width: 2px;
         --avatar-selected-color: var(--google-blue-500);
@@ -41,9 +29,9 @@
 
       @media (prefers-color-scheme: dark) {
         #avatar-grid .avatar {
-          --avatar-focus-color: var(--google-grey-refresh-500);
+          --avatar-focus-color: var(--google-grey-500);
           --avatar-gap-color: var(--google-grey-800);
-          --avatar-selected-color: var(--google-blue-refresh-300);
+          --avatar-selected-color: var(--google-blue-300);
         }
       }
 
@@ -87,6 +75,3 @@
         </paper-tooltip>
       </template>
     </cr-profile-avatar-selector-grid>
-  </template>
-  <script src="cr_profile_avatar_selector.js"></script>
-</dom-module>

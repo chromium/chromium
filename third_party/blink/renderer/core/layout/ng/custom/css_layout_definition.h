@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -44,7 +44,7 @@ class CSSLayoutDefinition final : public GarbageCollected<CSSLayoutDefinition>,
       const Vector<AtomicString>& custom_invalidation_properties,
       const Vector<CSSPropertyID>& child_native_invalidation_properties,
       const Vector<AtomicString>& child_custom_invalidation_properties);
-  virtual ~CSSLayoutDefinition();
+  ~CSSLayoutDefinition() final;
 
   // This class represents an instance of the layout class defined by the
   // CSSLayoutDefinition.

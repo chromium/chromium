@@ -1,13 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/mojo/services/mojo_cdm_helper.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/mojo/mojom/cdm_storage.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -74,6 +74,12 @@ class TestFrameInterfaceFactory : public mojom::FrameInterfaceFactory {
     mojo::MakeSelfOwnedReceiver(std::make_unique<MockCdmStorage>(),
                                 std::move(receiver));
   }
+#if BUILDFLAG(IS_WIN)
+  void RegisterMuteStateObserver(
+      mojo::PendingRemote<mojom::MuteStateObserver> observer) override {}
+  void CreateDCOMPSurfaceRegistry(
+      mojo::PendingReceiver<mojom::DCOMPSurfaceRegistry> receiver) override {}
+#endif  // BUILDFLAG(IS_WIN)
   void GetCdmOrigin(GetCdmOriginCallback callback) override {}
   void BindEmbedderReceiver(mojo::GenericPendingReceiver) override {}
 };

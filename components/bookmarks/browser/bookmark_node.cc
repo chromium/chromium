@@ -1,10 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/bookmarks/browser/bookmark_node.h"
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/check.h"
@@ -31,17 +32,42 @@ const char16_t kInvalidChars[] = {'\n',   '\r', '\t',
 
 // BookmarkNode ---------------------------------------------------------------
 
+// Below predefined GUIDs for permanent bookmark folders, determined via named
+// GUIDs/UUIDs. Do NOT modify them as they may be exposed via Sync. For
+// reference, here's the python script to produce them:
+// > import uuid
+// > chromium_namespace = uuid.uuid5(uuid.NAMESPACE_DNS, "chromium.org")
+// > bookmarks_namespace = uuid.uuid5(chromium_namespace, "bookmarks")
+// > root_guid = uuid.uuid5(bookmarks_namespace, "root")
+// > bookmark_bar = uuid.uuid5(bookmarks_namespace, "bookmark_bar")
+// > mobile_bookmarks = uuid.uuid5(bookmarks_namespace, "mobile_bookmarks")
+// > other_bookmarks = uuid.uuid5(bookmarks_namespace, "other_bookmarks")
+// > managed_bookmarks = uuid.uuid5(bookmarks_namespace, "managed_bookmarks")
+
 // static
 const char BookmarkNode::kRootNodeGuid[] =
-    "00000000-0000-4000-a000-000000000001";
+    "2509a7dc-215d-52f7-a429-8d80431c6c75";
+
+// static
 const char BookmarkNode::kBookmarkBarNodeGuid[] =
-    "00000000-0000-4000-a000-000000000002";
+    "0bc5d13f-2cba-5d74-951f-3f233fe6c908";
+
+// static
 const char BookmarkNode::kOtherBookmarksNodeGuid[] =
-    "00000000-0000-4000-a000-000000000003";
+    "82b081ec-3dd3-529c-8475-ab6c344590dd";
+
+// static
 const char BookmarkNode::kMobileBookmarksNodeGuid[] =
-    "00000000-0000-4000-a000-000000000004";
+    "4cf2e351-0e85-532b-bb37-df045d8f8d0f";
+
+// static
 const char BookmarkNode::kManagedNodeGuid[] =
-    "00000000-0000-4000-a000-000000000005";
+    "323123f4-9381-5aee-80e6-ea5fca2f7672";
+
+// This value is the result of exercising sync's function
+// syncer::InferGuidForLegacyBookmark() with an empty input.
+const char BookmarkNode::kBannedGuidDueToPastSyncBug[] =
+    "da39a3ee-5e6b-fb0d-b255-bfef95601890";
 
 BookmarkNode::BookmarkNode(int64_t id, const base::GUID& guid, const GURL& url)
     : BookmarkNode(id, guid, url, url.is_empty() ? FOLDER : URL, false) {}
@@ -76,7 +102,7 @@ bool BookmarkNode::GetMetaInfo(const std::string& key,
 bool BookmarkNode::SetMetaInfo(const std::string& key,
                                const std::string& value) {
   if (!meta_info_map_)
-    meta_info_map_.reset(new MetaInfoMap);
+    meta_info_map_ = std::make_unique<MetaInfoMap>();
 
   auto it = meta_info_map_->find(key);
   if (it == meta_info_map_->end()) {
@@ -103,11 +129,61 @@ void BookmarkNode::SetMetaInfoMap(const MetaInfoMap& meta_info_map) {
   if (meta_info_map.empty())
     meta_info_map_.reset();
   else
-    meta_info_map_.reset(new MetaInfoMap(meta_info_map));
+    meta_info_map_ = std::make_unique<MetaInfoMap>(meta_info_map);
 }
 
 const BookmarkNode::MetaInfoMap* BookmarkNode::GetMetaInfoMap() const {
   return meta_info_map_.get();
+}
+
+bool BookmarkNode::GetUnsyncedMetaInfo(const std::string& key,
+                                       std::string* value) const {
+  if (!unsynced_meta_info_map_)
+    return false;
+
+  MetaInfoMap::const_iterator it = unsynced_meta_info_map_->find(key);
+  if (it == unsynced_meta_info_map_->end())
+    return false;
+
+  *value = it->second;
+  return true;
+}
+
+bool BookmarkNode::SetUnsyncedMetaInfo(const std::string& key,
+                                       const std::string& value) {
+  if (!unsynced_meta_info_map_)
+    unsynced_meta_info_map_ = std::make_unique<MetaInfoMap>();
+
+  auto it = unsynced_meta_info_map_->find(key);
+  if (it == unsynced_meta_info_map_->end()) {
+    (*unsynced_meta_info_map_)[key] = value;
+    return true;
+  }
+  // Key already in map, check if the value has changed.
+  if (it->second == value)
+    return false;
+  it->second = value;
+  return true;
+}
+
+bool BookmarkNode::DeleteUnsyncedMetaInfo(const std::string& key) {
+  if (!unsynced_meta_info_map_)
+    return false;
+  bool erased = unsynced_meta_info_map_->erase(key) != 0;
+  if (unsynced_meta_info_map_->empty())
+    unsynced_meta_info_map_.reset();
+  return erased;
+}
+
+void BookmarkNode::SetUnsyncedMetaInfoMap(const MetaInfoMap& meta_info_map) {
+  if (meta_info_map.empty())
+    unsynced_meta_info_map_.reset();
+  else
+    unsynced_meta_info_map_ = std::make_unique<MetaInfoMap>(meta_info_map);
+}
+
+const BookmarkNode::MetaInfoMap* BookmarkNode::GetUnsyncedMetaInfoMap() const {
+  return unsynced_meta_info_map_.get();
 }
 
 const std::u16string& BookmarkNode::GetTitledUrlNodeTitle() const {
@@ -139,6 +215,7 @@ BookmarkNode::BookmarkNode(int64_t id,
       is_permanent_node_(is_permanent_node) {
   DCHECK_NE(type == URL, url.is_empty());
   DCHECK(guid.is_valid());
+  DCHECK_NE(guid.AsLowercaseString(), std::string(kBannedGuidDueToPastSyncBug));
 }
 
 void BookmarkNode::InvalidateFavicon() {

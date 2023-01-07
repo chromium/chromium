@@ -1,14 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/file_system_access/file_system_access_usage_bubble_view.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/unicodestring.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
-#include "base/stl_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
@@ -31,6 +32,10 @@
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/listformatter.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
@@ -40,8 +45,6 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -134,7 +137,7 @@ class CollapsibleListView : public views::View {
     const views::LayoutProvider* provider = ChromeLayoutProvider::Get();
 
     SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical, gfx::Insets(0, 0),
+        views::BoxLayout::Orientation::kVertical, gfx::Insets(0),
         provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
     auto label_container = std::make_unique<views::View>();
@@ -143,7 +146,7 @@ class CollapsibleListView : public views::View {
     auto* label_layout =
         label_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal,
-            gfx::Insets(/*vertical=*/0, indent),
+            gfx::Insets::VH(0, indent),
             provider->GetDistanceMetric(
                 views::DISTANCE_RELATED_LABEL_HORIZONTAL)));
     std::u16string label_text;
@@ -159,7 +162,8 @@ class CollapsibleListView : public views::View {
       label_text = base::i18n::MessageFormatter::FormatWithNumberedArgs(
           l10n_util::GetStringUTF16(
               IDS_FILE_SYSTEM_ACCESS_USAGE_BUBBLE_FILES_TEXT),
-          model->RowCount(), first_item, second_item);
+          base::checked_cast<int64_t>(model->RowCount()), first_item,
+          second_item);
     }
     auto* label = label_container->AddChildView(std::make_unique<views::Label>(
         label_text, CONTEXT_DIALOG_BODY_TEXT_SMALL,
@@ -202,17 +206,16 @@ class CollapsibleListView : public views::View {
   // views::View
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
-    auto* theme = GetNativeTheme();
-    const SkColor icon_color =
-        theme->GetSystemColor(ui::NativeTheme::kColorId_DefaultIconColor);
+    const auto* color_provider = GetColorProvider();
+    const SkColor icon_color = color_provider->GetColor(ui::kColorIcon);
     const SkColor disabled_icon_color =
-        theme->GetSystemColor(ui::NativeTheme::kColorId_DisabledIconColor);
+        color_provider->GetColor(ui::kColorIconDisabled);
     views::SetImageFromVectorIconWithColor(
-        expand_collapse_button_, kCaretDownIcon, ui::TableModel::kIconSize,
-        icon_color);
+        expand_collapse_button_, vector_icons::kCaretDownIcon,
+        ui::TableModel::kIconSize, icon_color, disabled_icon_color);
     views::SetToggledImageFromVectorIconWithColor(
-        expand_collapse_button_, kCaretUpIcon, ui::TableModel::kIconSize,
-        icon_color, disabled_icon_color);
+        expand_collapse_button_, vector_icons::kCaretUpIcon,
+        ui::TableModel::kIconSize, icon_color, disabled_icon_color);
   }
 
  private:
@@ -224,8 +227,8 @@ class CollapsibleListView : public views::View {
   }
 
   bool table_is_expanded_ = false;
-  views::ScrollView* table_view_parent_;
-  views::ToggleImageButton* expand_collapse_button_;
+  raw_ptr<views::ScrollView> table_view_parent_;
+  raw_ptr<views::ToggleImageButton> expand_collapse_button_;
 };
 
 BEGIN_METADATA(CollapsibleListView, views::View)
@@ -240,41 +243,37 @@ FileSystemAccessUsageBubbleView::Usage&
 FileSystemAccessUsageBubbleView::Usage::operator=(Usage&&) = default;
 
 FileSystemAccessUsageBubbleView::FilePathListModel::FilePathListModel(
-    const views::View* owner,
     std::vector<base::FilePath> files,
     std::vector<base::FilePath> directories)
-    : owner_(owner),
-      files_(std::move(files)),
-      directories_(std::move(directories)) {}
+    : files_(std::move(files)), directories_(std::move(directories)) {}
 
 FileSystemAccessUsageBubbleView::FilePathListModel::~FilePathListModel() =
     default;
 
-int FileSystemAccessUsageBubbleView::FilePathListModel::RowCount() {
+size_t FileSystemAccessUsageBubbleView::FilePathListModel::RowCount() {
   return files_.size() + directories_.size();
 }
 
 std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetText(
-    int row,
+    size_t row,
     int column_id) {
-  if (size_t{row} < files_.size())
-    return files_[row].BaseName().LossyDisplayName();
-  return directories_[row - files_.size()].BaseName().LossyDisplayName();
+  if (row < files_.size())
+    return file_system_access_ui_helper::GetPathForDisplay(files_[row]);
+  return file_system_access_ui_helper::GetPathForDisplay(
+      directories_[row - files_.size()]);
 }
 
-gfx::ImageSkia FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
-    int row) {
-  const SkColor icon_color = owner_->GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_DefaultIconColor);
-  return gfx::CreateVectorIcon(size_t{row} < files_.size()
-                                   ? vector_icons::kInsertDriveFileOutlineIcon
-                                   : vector_icons::kFolderOpenIcon,
-                               kIconSize, icon_color);
+ui::ImageModel FileSystemAccessUsageBubbleView::FilePathListModel::GetIcon(
+    size_t row) {
+  return ui::ImageModel::FromVectorIcon(
+      row < files_.size() ? vector_icons::kInsertDriveFileOutlineIcon
+                          : vector_icons::kFolderOpenIcon,
+      ui::kColorIcon, kIconSize);
 }
 
 std::u16string FileSystemAccessUsageBubbleView::FilePathListModel::GetTooltip(
-    int row) {
-  if (size_t{row} < files_.size())
+    size_t row) {
+  if (row < files_.size())
     return files_[row].LossyDisplayName();
   return directories_[row - files_.size()].LossyDisplayName();
 }
@@ -346,11 +345,9 @@ FileSystemAccessUsageBubbleView::FileSystemAccessUsageBubbleView(
     : LocationBarBubbleDelegateView(anchor_view, web_contents),
       origin_(origin),
       usage_(std::move(usage)),
-      readable_paths_model_(this,
-                            std::move(usage_.readable_files),
+      readable_paths_model_(std::move(usage_.readable_files),
                             std::move(usage_.readable_directories)),
-      writable_paths_model_(this,
-                            std::move(usage_.writable_files),
+      writable_paths_model_(std::move(usage_.writable_files),
                             std::move(usage_.writable_directories)) {
   SetButtonLabel(ui::DIALOG_BUTTON_OK, l10n_util::GetStringUTF16(IDS_DONE));
   SetButtonLabel(
@@ -389,28 +386,30 @@ void FileSystemAccessUsageBubbleView::Init() {
       provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
-      gfx::Insets(0, dialog_insets.left(), 0, dialog_insets.right()),
+      gfx::Insets::TLBR(0, dialog_insets.left(), 0, dialog_insets.right()),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
-  set_margins(
-      gfx::Insets(provider->GetDistanceMetric(
-                      views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT),
-                  0,
-                  provider->GetDistanceMetric(
-                      views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
-                  0));
+  set_margins(gfx::Insets::TLBR(
+      provider->GetDistanceMetric(
+          views::DISTANCE_DIALOG_CONTENT_MARGIN_TOP_TEXT),
+      0,
+      provider->GetDistanceMetric(
+          views::DISTANCE_DIALOG_CONTENT_MARGIN_BOTTOM_CONTROL),
+      0));
 
   base::FilePath embedded_path;
   int heading_message_id =
       ComputeHeadingMessageFromUsage(usage_, &embedded_path);
 
+  auto* browser = chrome::FindBrowserWithWebContents(web_contents());
   if (!embedded_path.empty()) {
     AddChildView(file_system_access_ui_helper::CreateOriginPathLabel(
-        heading_message_id, origin_, embedded_path,
+        browser, heading_message_id, origin_, embedded_path,
         views::style::CONTEXT_DIALOG_BODY_TEXT,
         /*show_emphasis=*/false));
   } else {
     AddChildView(file_system_access_ui_helper::CreateOriginLabel(
-        heading_message_id, origin_, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        browser, heading_message_id, origin_,
+        views::style::CONTEXT_DIALOG_BODY_TEXT,
         /*show_emphasis=*/false));
 
     if (writable_paths_model_.RowCount() > 0) {
@@ -456,7 +455,9 @@ void FileSystemAccessUsageBubbleView::OnDialogCancelled() {
   if (!context)
     return;
 
-  context->RevokeGrants(origin_);
+  context->RevokeGrants(
+      origin_, ChromeFileSystemAccessPermissionContext::
+                   PersistedPermissionOptions::kUpdatePersistedPermission);
 }
 
 void FileSystemAccessUsageBubbleView::WindowClosing() {

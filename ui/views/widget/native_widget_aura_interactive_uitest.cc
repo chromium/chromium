@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,10 @@ namespace {
 class TestFocusRules : public wm::BaseFocusRules {
  public:
   TestFocusRules() = default;
+
+  TestFocusRules(const TestFocusRules&) = delete;
+  TestFocusRules& operator=(const TestFocusRules&) = delete;
+
   ~TestFocusRules() override = default;
 
   void set_can_activate(bool can_activate) { can_activate_ = can_activate; }
@@ -34,8 +38,6 @@ class TestFocusRules : public wm::BaseFocusRules {
 
  private:
   bool can_activate_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFocusRules);
 };
 
 }  // namespace

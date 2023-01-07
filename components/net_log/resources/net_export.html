@@ -1,20 +1,12 @@
-﻿<!doctype html>
+<!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
 <if expr="is_android">
 <meta name="viewport" content="width=device-width">
 </if>
-
-<if expr="is_ios">
-<!-- TODO(crbug.com/487000): Remove this once injected by web. -->
-<script src="chrome://resources/js/ios/web_ui.js"></script>
-</if>
-
-<script src="chrome://resources/js/assert.js"></script>
-<script src="chrome://resources/js/util.js"></script>
-<script src="chrome://resources/js/cr.js"></script>
-<script src="chrome://net-export/net_export.js"></script>
+<script type="module" src="net_export.js"></script>
 <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 <link rel="stylesheet" href="net_export.css">
 <link rel="icon" id="fav-icon">
@@ -166,7 +158,7 @@
               logging once the issue has reproduced.</li>
             <li>Existing log files can be shrunk using
               <a
-                href="https://chromium.googlesource.com/chromium/src/+/master/net/tools/truncate_net_log.py"
+                href="https://chromium.googlesource.com/chromium/src/+/main/net/tools/truncate_net_log.py"
                 target="_blank">
                 net/tools/truncate_net_log.py</a>.</li>
           </ul>

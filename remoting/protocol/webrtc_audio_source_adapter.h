@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,15 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
 
 namespace webrtc {
 class AudioTrackSinkInterface;
 }  // namespace webrtc
 
-namespace remoting {
-
-namespace protocol {
+namespace remoting::protocol {
 
 class AudioSource;
 
@@ -27,6 +23,10 @@ class WebrtcAudioSourceAdapter : public webrtc::AudioSourceInterface {
  public:
   explicit WebrtcAudioSourceAdapter(
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner);
+
+  WebrtcAudioSourceAdapter(const WebrtcAudioSourceAdapter&) = delete;
+  WebrtcAudioSourceAdapter& operator=(const WebrtcAudioSourceAdapter&) = delete;
+
   ~WebrtcAudioSourceAdapter() override;
 
   void Start(std::unique_ptr<AudioSource> audio_source);
@@ -51,11 +51,8 @@ class WebrtcAudioSourceAdapter : public webrtc::AudioSourceInterface {
 
   // Core running on |audio_task_runner_|.
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebrtcAudioSourceAdapter);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_WEBRTC_AUDIO_SOURCE_ADAPTER_H_

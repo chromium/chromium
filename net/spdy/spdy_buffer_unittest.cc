@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "net/base/io_buffer.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -22,7 +21,7 @@ namespace net {
 namespace {
 
 const char kData[] = "hello!\0hi.";
-const size_t kDataSize = base::size(kData);
+const size_t kDataSize = std::size(kData);
 
 class SpdyBufferTest : public ::testing::Test {};
 

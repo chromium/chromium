@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ void SyntheticTrialsActiveGroupIdProvider::OnSyntheticTrialsChanged(
     base::AutoLock scoped_lock(lock_);
     synthetic_trials_.clear();
     for (const auto& group : groups)
-      synthetic_trials_.push_back(group.id);
+      synthetic_trials_.push_back(group.id());
   }
 
   // Update the experiments list for crash reports.

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_throbber.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 PageActionIconLoadingIndicatorView::PageActionIconLoadingIndicatorView(
     PageActionIconView* parent)
@@ -49,8 +49,7 @@ void PageActionIconLoadingIndicatorView::OnPaint(gfx::Canvas* canvas) {
   if (!throbber_start_time_)
     return;
 
-  const SkColor color = GetThemeProvider()->GetColor(
-      ThemeProperties::COLOR_TAB_THROBBER_SPINNING);
+  const SkColor color = GetColorProvider()->GetColor(ui::kColorThrobber);
   constexpr int kThrobberStrokeWidth = 2;
   gfx::PaintThrobberSpinning(canvas, GetLocalBounds(), color,
                              base::TimeTicks::Now() - *throbber_start_time_,

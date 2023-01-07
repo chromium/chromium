@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,15 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/hdr_static_metadata.h"
 
 namespace display {
 
@@ -29,32 +31,49 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
  public:
   using DisplayModeList = std::vector<std::unique_ptr<const DisplayMode>>;
 
-  DisplaySnapshot(int64_t display_id,
-                  const gfx::Point& origin,
-                  const gfx::Size& physical_size,
-                  DisplayConnectionType type,
-                  uint64_t base_connector_id,
-                  const std::vector<uint64_t>& path_topology,
-                  bool is_aspect_preserving_scaling,
-                  bool has_overscan,
-                  PrivacyScreenState privacy_screen_state,
-                  bool has_color_correction_matrix,
-                  bool color_correction_in_linear_space,
-                  const gfx::ColorSpace& color_space,
-                  uint32_t bits_per_channel,
-                  std::string display_name,
-                  const base::FilePath& sys_path,
-                  DisplayModeList modes,
-                  PanelOrientation panel_orientation,
-                  const std::vector<uint8_t>& edid,
-                  const DisplayMode* current_mode,
-                  const DisplayMode* native_mode,
-                  int64_t product_code,
-                  int32_t year_of_manufacture,
-                  const gfx::Size& maximum_cursor_size);
+  DisplaySnapshot(
+      int64_t display_id,
+      int64_t port_display_id,
+      int64_t edid_display_id,
+      uint16_t connector_index,
+      const gfx::Point& origin,
+      const gfx::Size& physical_size,
+      DisplayConnectionType type,
+      uint64_t base_connector_id,
+      const std::vector<uint64_t>& path_topology,
+      bool is_aspect_preserving_scaling,
+      bool has_overscan,
+      PrivacyScreenState privacy_screen_state,
+      bool has_color_correction_matrix,
+      bool color_correction_in_linear_space,
+      const gfx::ColorSpace& color_space,
+      uint32_t bits_per_channel,
+      const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata,
+      std::string display_name,
+      const base::FilePath& sys_path,
+      DisplayModeList modes,
+      PanelOrientation panel_orientation,
+      const std::vector<uint8_t>& edid,
+      const DisplayMode* current_mode,
+      const DisplayMode* native_mode,
+      int64_t product_code,
+      int32_t year_of_manufacture,
+      const gfx::Size& maximum_cursor_size);
+
+  DisplaySnapshot(const DisplaySnapshot&) = delete;
+  DisplaySnapshot& operator=(const DisplaySnapshot&) = delete;
+
   virtual ~DisplaySnapshot();
 
   int64_t display_id() const { return display_id_; }
+
+  // port_display_id() and edid_display_id() are required for
+  // backward-compatibility and will eventually be removed once the migration to
+  // EDID-based display IDs is completed. See http://b/193060019.
+  int64_t port_display_id() const { return port_display_id_; }
+  int64_t edid_display_id() const { return edid_display_id_; }
+
+  uint16_t connector_index() const { return connector_index_; }
   const gfx::Point& origin() const { return origin_; }
   void set_origin(const gfx::Point& origin) { origin_ = origin; }
   const gfx::Size& physical_size() const { return physical_size_; }
@@ -76,6 +95,9 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   }
   const gfx::ColorSpace& color_space() const { return color_space_; }
   uint32_t bits_per_channel() const { return bits_per_channel_; }
+  const absl::optional<gfx::HDRStaticMetadata>& hdr_static_metadata() const {
+    return hdr_static_metadata_;
+  }
   const std::string& display_name() const { return display_name_; }
   const base::FilePath& sys_path() const { return sys_path_; }
   const DisplayModeList& modes() const { return modes_; }
@@ -102,9 +124,21 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   // Returns the buffer format to be used for the primary plane buffer.
   static gfx::BufferFormat PrimaryFormat();
 
+  // Adds |connector_index_| to bits 33-48 of |edid_display_id_|. This function
+  // is not plumbed via mojom to limit and control usage across processes.
+  void AddIndexToDisplayId();
+
  private:
   // Display id for this output.
   const int64_t display_id_;
+  // Port-based display ID.
+  const int64_t port_display_id_;
+  // EDID-based display ID.
+  int64_t edid_display_id_;
+
+  // Used by AddIndexToDisplayId() to resolve display ID collisions when two
+  // (or more) displays produce identical IDs due to incomplete EDIDs.
+  const uint16_t connector_index_;
 
   // Display's origin on the framebuffer.
   gfx::Point origin_;
@@ -173,8 +207,8 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   const bool color_correction_in_linear_space_;
 
   const gfx::ColorSpace color_space_;
-
   uint32_t bits_per_channel_;
+  absl::optional<gfx::HDRStaticMetadata> hdr_static_metadata_;
 
   const std::string display_name_;
 
@@ -190,10 +224,10 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
   std::vector<uint8_t> edid_;
 
   // Mode currently being used by the output.
-  const DisplayMode* current_mode_;
+  raw_ptr<const DisplayMode> current_mode_;
 
   // "Best" mode supported by the output.
-  const DisplayMode* const native_mode_;
+  const raw_ptr<const DisplayMode> native_mode_;
 
   // Combination of manufacturer id and product id.
   const int64_t product_code_;
@@ -202,9 +236,6 @@ class DISPLAY_TYPES_EXPORT DisplaySnapshot {
 
   // Maximum supported cursor size on this display.
   const gfx::Size maximum_cursor_size_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisplaySnapshot);
 };
 
 }  // namespace display

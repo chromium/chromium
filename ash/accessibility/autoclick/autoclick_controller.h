@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,12 @@
 #define ASH_ACCESSIBILITY_AUTOCLICK_AUTOCLICK_CONTROLLER_H_
 
 #include "ash/ash_export.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/public/cpp/ash_constants.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/window_observer.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
@@ -50,6 +51,10 @@ class ASH_EXPORT AutoclickController
   };
 
   AutoclickController();
+
+  AutoclickController(const AutoclickController&) = delete;
+  AutoclickController& operator=(const AutoclickController&) = delete;
+
   ~AutoclickController() override;
 
   // Set whether autoclicking is enabled. If |show_confirmation_dialog|, a
@@ -215,8 +220,6 @@ class ASH_EXPORT AutoclickController
 
   // Holds a weak pointer to the dialog shown when autoclick is being disabled.
   base::WeakPtr<AccessibilityFeatureDisableDialog> disable_dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoclickController);
 };
 
 }  // namespace ash

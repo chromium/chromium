@@ -1,16 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PROFILES_RENDERER_UPDATER_H_
 #define CHROME_BROWSER_PROFILES_RENDERER_UPDATER_H_
 
-#include <string>
 #include <vector>
 
-#include "base/scoped_observer.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/renderer_configuration.mojom-forward.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
@@ -31,7 +32,7 @@ class RenderProcessHost;
 // The RendererUpdater is responsible for updating renderers about state change.
 class RendererUpdater : public KeyedService,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                        public chromeos::OAuth2LoginManager::Observer,
+                        public ash::OAuth2LoginManager::Observer,
 #endif
                         public signin::IdentityManager::Observer {
  public:
@@ -47,17 +48,21 @@ class RendererUpdater : public KeyedService,
   void InitializeRenderer(content::RenderProcessHost* render_process_host);
 
  private:
-  std::vector<mojo::AssociatedRemote<chrome::mojom::RendererConfiguration>>
-  GetRendererConfigurations();
+  using RendererConfigurations = std::vector<
+      std::pair<content::RenderProcessHost*,
+                mojo::AssociatedRemote<chrome::mojom::RendererConfiguration>>>;
+
+  // Returns active mojo interfaces to RendererConfiguration endpoints.
+  RendererConfigurations GetRendererConfigurations();
 
   mojo::AssociatedRemote<chrome::mojom::RendererConfiguration>
   GetRendererConfiguration(content::RenderProcessHost* render_process_host);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // chromeos::OAuth2LoginManager::Observer:
+  // ash::OAuth2LoginManager::Observer:
   void OnSessionRestoreStateChanged(
       Profile* user_profile,
-      chromeos::OAuth2LoginManager::SessionRestoreState state) override;
+      ash::OAuth2LoginManager::SessionRestoreState state) override;
 #endif
 
   // IdentityManager::Observer:
@@ -67,28 +72,29 @@ class RendererUpdater : public KeyedService,
   // Update all renderers due to a configuration change.
   void UpdateAllRenderers();
 
-  // Update the given renderer due to a configuration change.
-  void UpdateRenderer(
-      mojo::AssociatedRemote<chrome::mojom::RendererConfiguration>*
-          renderer_configuration);
+  // Create renderer configuration that changes at runtime.
+  chrome::mojom::DynamicParamsPtr CreateRendererDynamicParams() const;
 
-  Profile* profile_;
-  PrefChangeRegistrar pref_change_registrar_;
+  const raw_ptr<Profile> profile_;
+  const bool is_off_the_record_;
+  const raw_ptr<Profile> original_profile_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::OAuth2LoginManager* oauth2_login_manager_;
+  ash::OAuth2LoginManager* oauth2_login_manager_;
   bool merge_session_running_;
   std::vector<mojo::Remote<chrome::mojom::ChromeOSListener>>
       chromeos_listeners_;
 #endif
 
+  PrefChangeRegistrar pref_change_registrar_;
+
   // Prefs that we sync to the renderers.
   BooleanPrefMember force_google_safesearch_;
   IntegerPrefMember force_youtube_restrict_;
   StringPrefMember allowed_domains_for_apps_;
-
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_;
-  signin::IdentityManager* identity_manager_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_RENDERER_UPDATER_H_

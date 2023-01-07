@@ -1,13 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_SESSION_CLIENT_IMPL_H_
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_SESSION_CLIENT_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client.h"
-#include "components/cast_channel/cast_message_handler.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
+#include "components/media_router/common/providers/cast/channel/cast_message_handler.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace media_router {
@@ -19,27 +20,28 @@ class CastSessionClientImpl : public CastSessionClient,
  public:
   CastSessionClientImpl(const std::string& client_id,
                         const url::Origin& origin,
-                        int tab_id,
+                        int frame_tree_node_id,
                         AutoJoinPolicy auto_join_policy,
                         CastActivity* activity);
   ~CastSessionClientImpl() override;
 
   // CastSessionClient implementation
   mojom::RoutePresentationConnectionPtr Init() override;
-  // TODO(jrw): Remove redundant "ToClient" in the name of this and other
-  // methods.
+  // TODO(crbug.com/1291745): Remove redundant "ToClient" in the name of this
+  // and other methods.
   void SendMessageToClient(
       blink::mojom::PresentationConnectionMessagePtr message) override;
-  void SendMediaStatusToClient(const base::Value& media_status,
-                               base::Optional<int> request_id) override;
+  void SendMediaStatusToClient(const base::Value::Dict& media_status,
+                               absl::optional<int> request_id) override;
   void CloseConnection(
       blink::mojom::PresentationConnectionCloseReason close_reason) override;
   void TerminateConnection() override;
-  bool MatchesAutoJoinPolicy(url::Origin origin, int tab_id) const override;
+  bool MatchesAutoJoinPolicy(url::Origin origin,
+                             int frame_tree_node_id) const override;
   void SendErrorCodeToClient(int sequence_number,
                              CastInternalMessage::ErrorCode error_code,
-                             base::Optional<std::string> description) override;
-  void SendErrorToClient(int sequence_number, base::Value error) override;
+                             absl::optional<std::string> description) override;
+  void SendErrorToClient(int sequence_number, base::Value::Dict error) override;
 
   // blink::mojom::PresentationConnection implementation
   void OnMessage(
@@ -69,7 +71,7 @@ class CastSessionClientImpl : public CastSessionClient,
 
   const AutoJoinPolicy auto_join_policy_;
 
-  CastActivity* const activity_;
+  const raw_ptr<CastActivity> activity_;
 
   // The maximum number of pending media requests, used to prevent memory leaks.
   // Normally the number of pending requests should be fairly small, but each
@@ -82,8 +84,9 @@ class CastSessionClientImpl : public CastSessionClient,
   // sequenceNumber field in outgoing messages so a client can associate a media
   // status message with a previous request.
   //
-  // TODO(jrw): Investigate whether this mapping is really necessary, or if
-  // sequence numbers can be used directly without generating request IDs.
+  // TODO(crbug.com/1291745): Investigate whether this mapping is really
+  // necessary, or if sequence numbers can be used directly without generating
+  // request IDs.
   base::flat_map<int, int> pending_media_requests_;
 
   // Receiver for the PresentationConnection in Blink to receive incoming

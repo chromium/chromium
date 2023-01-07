@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class TabStripModel;
@@ -31,22 +32,28 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   ExistingBaseSubMenuModel(ui::SimpleMenuModel::Delegate* parent_delegate,
                            TabStripModel* model,
                            int context_index,
-                           int min_command_id);
+                           int min_command_id,
+                           int parent_new_command_id_);
 
   // ui::SimpleMenuModel
-  bool GetAcceleratorForCommandId(int command_id,
-                                  ui::Accelerator* accelerator) const override;
+  const gfx::FontList* GetLabelFontListAt(size_t index) const override;
 
   // ui::SimpleMenuModel::Delegate
-  bool IsCommandIdChecked(int command_id) const override;
-  bool IsCommandIdEnabled(int command_id) const override;
+  bool IsCommandIdAlerted(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) final;
 
   // Command IDs for various submenus.
   static constexpr int kMinExistingWindowCommandId = 1001;
   static constexpr int kMinExistingTabGroupCommandId = 1301;
 
+  ExistingBaseSubMenuModel(const ExistingBaseSubMenuModel&) = delete;
+  ExistingBaseSubMenuModel& operator=(const ExistingBaseSubMenuModel&) = delete;
+
   ~ExistingBaseSubMenuModel() override;
+
+  const base::flat_map<int, size_t>& command_id_to_target_index_for_testing() {
+    return command_id_to_target_index_;
+  }
 
  protected:
   struct MenuItemInfo {
@@ -56,12 +63,22 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
     ~MenuItemInfo();
 
     // The text for an entry in the sub menu.
-    const std::u16string text;
+    std::u16string text;
 
     // The optional image for an entry in the sub menu.
-    base::Optional<ui::ImageModel> image;
+    absl::optional<ui::ImageModel> image;
 
     bool may_have_mnemonics = true;
+
+    // The target index for this item. E.g. tab group index or browser
+    // index. If this field is not provided then the entry for this item will be
+    // a title and have no corresponding command.
+    absl::optional<size_t> target_index;
+
+    // An optionally provided accessible name for this menu item. If
+    // |accessible_name| is empty, then the default accessible name will be used
+    // for this item.
+    std::u16string accessible_name;
   };
 
   // Helper method to create consistent submenus.|new_text| is the label to add
@@ -70,22 +87,19 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   // object model.
   void Build(int new_text, std::vector<MenuItemInfo> menu_item_infos);
 
+  // Clears the MenuModel and |command_id_to_target_index_|.
+  void ClearMenu();
+
   // Helper method for checking if the command is to add a tab to a new object
   // model.
-  bool IsNewCommand(int command_id) const {
-    return command_id == min_command_id_;
-  }
-
-  // Performs the action for adding the tab to a new object model (e.g. group or
-  // window).
-  virtual void ExecuteNewCommand(int event_flags);
+  bool IsNewCommand(int command_id) const;
 
   // Performs the action for adding the tab to an existing object model (e.g.
-  // group or window).
-  virtual void ExecuteExistingCommand(int command_index);
+  // group or window) at |target_index|.
+  virtual void ExecuteExistingCommand(size_t target_index);
 
   // Maximum number of entries for a submenu.
-  static constexpr int max_size = 200;
+  static constexpr size_t max_size = 200;
 
   ui::SimpleMenuModel::Delegate* parent_delegate() const {
     return parent_delegate_;
@@ -94,11 +108,15 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   int GetContextIndex() const;
 
  private:
-  ui::SimpleMenuModel::Delegate* parent_delegate_;
-  TabStripModel* model_;
-  content::WebContents* context_contents_;
-  int min_command_id_;
-  DISALLOW_COPY_AND_ASSIGN(ExistingBaseSubMenuModel);
+  const raw_ptr<ui::SimpleMenuModel::Delegate> parent_delegate_;
+  const raw_ptr<TabStripModel> model_;
+  const raw_ptr<const content::WebContents> context_contents_;
+  const int min_command_id_;
+  const int parent_new_command_id_;
+
+  // Stores a mapping from a menu item's command id to its target index (e.g.
+  // tab-group index or browser index).
+  base::flat_map<int, size_t> command_id_to_target_index_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_EXISTING_BASE_SUB_MENU_MODEL_H_

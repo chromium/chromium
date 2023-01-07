@@ -1,0 +1,75 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 11
+
+module arc.mojom;
+
+import "ash/components/arc/mojom/protected_buffer_manager.mojom";
+import "ash/components/arc/mojom/video_decode_accelerator.mojom";
+import "ash/components/arc/mojom/video_decoder.mojom";
+import "ash/components/arc/mojom/video_encode_accelerator.mojom";
+import "ash/components/arc/mojom/video_protected_buffer_allocator.mojom";
+import "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// Deprecated method IDs: 0
+// Next method ID: 2
+interface VideoHost {
+  // Requests an IPC channel from Chrome's browser process to bootstrap a new
+  // mojo child process and a token which can be used to create a message pipe
+  // connected to a new VideoAcceleratorFactory.
+  [MinVersion=4]
+  OnBootstrapVideoAcceleratorFactory@1() => (handle channel_handle,
+                                             string token);
+};
+
+// Deprecated method IDs: 0
+// Next method ID: 2
+interface VideoInstance {
+  // Establishes full-duplex communication with the host.
+  [MinVersion=5] Init@1(pending_remote<VideoHost> host_remote) => ();
+};
+
+// This interface allows ARC++/ARCVM to create connections to various hardware
+// video acceleration interfaces. There's always an implementation of this
+// interface living in the browser process which handles connections from
+// ARC++/ARCVM. However, we declare this interface as needing a
+// kHardwareVideoDecoding sandbox so that the browser process has the option of
+// starting a utility process to host an implementation of this interface and
+// delegating the connection of the video accelerator interfaces to that
+// process. This is intended for out-of-process video decoding where we want
+// accelerated video decoding to run outside the GPU process.
+//
+// TODO(b/195769334): we would probably want different sandboxes for decoding
+// and encoding. Figure out the best way to do this when we implement
+// out-of-process video encoding.
+//
+// Deprecated method IDs: 0
+// Next method ID: 5
+[ServiceSandbox=sandbox.mojom.Sandbox.kHardwareVideoDecoding]
+interface VideoAcceleratorFactory {
+  [MinVersion=1]
+  CreateEncodeAccelerator@1(
+      pending_receiver<VideoEncodeAccelerator> video_encoder);
+
+  [MinVersion=6]
+  CreateDecodeAccelerator@2(
+      pending_receiver<VideoDecodeAccelerator> video_decoder,
+      [MinVersion=8] pending_remote<ProtectedBufferManager>?
+           protected_buffer_manager,
+      [MinVersion=10] pending_remote<chromeos.cdm.mojom.BrowserCdmFactory>?
+           browser_cdm_factory);
+
+  // Create a new |video_decoder| instance.
+  [MinVersion=9]
+  CreateVideoDecoder@4(
+      pending_receiver<VideoDecoder> video_decoder);
+
+  // Create a new |video_protected_buffer_allocator| instance.
+  [MinVersion=7]
+  CreateProtectedBufferAllocator@3(
+      pending_receiver<VideoProtectedBufferAllocator>
+           video_protected_buffer_allocator);
+};

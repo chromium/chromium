@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -32,6 +31,10 @@ class AudioDecodeScheduler : public AudioStub {
   AudioDecodeScheduler(
       scoped_refptr<base::SingleThreadTaskRunner> audio_decode_task_runner,
       base::WeakPtr<AudioStub> audio_consumer);
+
+  AudioDecodeScheduler(const AudioDecodeScheduler&) = delete;
+  AudioDecodeScheduler& operator=(const AudioDecodeScheduler&) = delete;
+
   ~AudioDecodeScheduler() override;
 
   // Initializes decoder with the information from the protocol config.
@@ -51,11 +54,9 @@ class AudioDecodeScheduler : public AudioStub {
   // Decoder used on the audio thread.
   std::unique_ptr<AudioDecoder> decoder_;
 
-  base::ThreadChecker thread_checker_;
+  THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<AudioDecodeScheduler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecodeScheduler);
 };
 
 }  // namespace protocol

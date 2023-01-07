@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,9 @@ class LayoutAnimationsPolicy {
   DISALLOW_NEW();
 
  public:
+  LayoutAnimationsPolicy(const LayoutAnimationsPolicy&) = delete;
+  LayoutAnimationsPolicy& operator=(const LayoutAnimationsPolicy&) = delete;
+
   // Returns a set of the CSS properties which are affected by the permissions
   // policy 'layout-animations'.
   static const HashSet<const CSSProperty*>& AffectedCSSProperties();
@@ -30,12 +33,10 @@ class LayoutAnimationsPolicy {
   // which is tracked by
   // Blink.UserCounters.FeaturePolicy.PotentialViolation.
   static void ReportViolation(const CSSProperty& animated_property,
-                              const ExecutionContext& context);
+                              ExecutionContext& context);
 
  private:
   LayoutAnimationsPolicy();
-
-  DISALLOW_COPY_AND_ASSIGN(LayoutAnimationsPolicy);
 };
 
 }  // namespace blink

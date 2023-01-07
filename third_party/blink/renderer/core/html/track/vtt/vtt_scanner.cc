@@ -121,10 +121,10 @@ unsigned VTTScanner::ScanDigits(unsigned& number) {
   wtf_size_t num_digits = run_of_digits.length();
   if (is_8bit_) {
     number = CharactersToUInt(data_.characters8, num_digits,
-                              WTF::NumberParsingOptions::kNone, &valid_number);
+                              WTF::NumberParsingOptions(), &valid_number);
   } else {
     number = CharactersToUInt(data_.characters16, num_digits,
-                              WTF::NumberParsingOptions::kNone, &valid_number);
+                              WTF::NumberParsingOptions(), &valid_number);
   }
 
   // Since we know that scanDigits only scanned valid (ASCII) digits (and

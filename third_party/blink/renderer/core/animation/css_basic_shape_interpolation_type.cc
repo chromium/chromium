@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/basic_shape_interpolation_functions.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -15,9 +16,8 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/basic_shapes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -47,6 +47,8 @@ const BasicShape* GetBasicShape(const CSSProperty& property,
 
       return shape;
     }
+    case CSSPropertyID::kObjectViewBox:
+      return style.ObjectViewBox();
     default:
       NOTREACHED();
       return nullptr;
@@ -82,8 +84,8 @@ class InheritedShapeChecker
  private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue&) const final {
-    return DataEquivalent(inherited_shape_.get(),
-                          GetBasicShape(property_, *state.ParentStyle()));
+    return base::ValuesEquivalent(
+        inherited_shape_.get(), GetBasicShape(property_, *state.ParentStyle()));
   }
 
   const CSSProperty& property_;
@@ -190,6 +192,9 @@ void CSSBasicShapeInterpolationType::ApplyStandardPropertyValue(
     case CSSPropertyID::kClipPath:
       state.Style()->SetClipPath(
           ShapeClipPathOperation::Create(std::move(shape)));
+      break;
+    case CSSPropertyID::kObjectViewBox:
+      state.Style()->SetObjectViewBox(std::move(shape));
       break;
     default:
       NOTREACHED();

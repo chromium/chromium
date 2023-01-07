@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,18 +8,23 @@
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_result.h"
-#include "url/gurl.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace blink {
+enum class PermissionType;
+}
 
 class PageInfoUiDelegate {
  public:
   virtual ~PageInfoUiDelegate() = default;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   virtual bool IsBlockAutoPlayEnabled() = 0;
+  virtual bool IsMultipleTabsOpen() = 0;
 #endif
-  virtual permissions::PermissionResult GetPermissionStatus(
+  virtual permissions::PermissionResult GetPermissionResult(
+      blink::PermissionType permission) = 0;
+  virtual absl::optional<permissions::PermissionResult> GetEmbargoResult(
       ContentSettingsType type) = 0;
-  virtual bool ShouldShowAllow(ContentSettingsType type) = 0;
-  virtual bool ShouldShowAsk(ContentSettingsType type) = 0;
 };
 
 #endif  // COMPONENTS_PAGE_INFO_PAGE_INFO_UI_DELEGATE_H_

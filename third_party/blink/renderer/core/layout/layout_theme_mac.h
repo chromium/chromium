@@ -50,11 +50,13 @@ class LayoutThemeMac final : public LayoutThemeDefault {
   bool PopsMenuByArrowKeys() const override { return true; }
   bool PopsMenuByReturnKey() const override { return false; }
   bool SupportsSelectionForegroundColors() const override { return false; }
+  bool IsAccentColorCustomized(
+      mojom::blink::ColorScheme color_scheme) const override;
+  Color GetAccentColor(mojom::blink::ColorScheme color_scheme) const override;
 
  protected:
   // Controls color values returned from FocusRingColor().
   bool UsesTestModeFocusRingColor() const;
-  bool IsAccentColorCustomized(mojom::blink::ColorScheme color_scheme) const;
   Color GetCustomFocusRingColor(mojom::blink::ColorScheme color_scheme) const;
 };
 

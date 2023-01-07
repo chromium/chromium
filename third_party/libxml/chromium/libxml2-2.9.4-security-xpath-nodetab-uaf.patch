@@ -4,9 +4,9 @@ and https://bugs.chromium.org/p/chromium/issues/detail?id=705445
 
 --- src/xpath.c	2016-12-25 17:26:52.000000000 -0800
 +++ src/xpath.c	2017-03-30 11:15:41.000000000 -0700
-@@ -4368,7 +4368,7 @@
+@@ -4344,7 +4344,7 @@ xmlXPathNewValueTree(xmlNodePtr val) {
      }
-     memset(ret, 0 , (size_t) sizeof(xmlXPathObject));
+     memset(ret, 0 , sizeof(xmlXPathObject));
      ret->type = XPATH_XSLT_TREE;
 -    ret->boolval = 1;
 +    ret->boolval = 0;

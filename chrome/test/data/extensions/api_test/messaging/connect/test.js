@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@ function compareSenders(expected, actual) {
     chrome.test.assertFalse(!!actual.tab);
   }
 
+  chrome.test.assertEq('active', actual.documentLifecycle);
   chrome.test.assertEq(expected.frameId, actual.frameId);
   chrome.test.assertEq(expected.url, actual.url);
   chrome.test.assertEq(expected.origin, actual.origin);
@@ -182,6 +183,62 @@ chrome.test.getConfig(function(config) {
         'Could not establish connection. Receiving end does not exist.'));
     },
 
+    // connect with a valid documentId should trigger onConnect in that specific
+    // document only.
+    function sendMessageToDocumentInTab() {
+      chrome.webNavigation.getAllFrames({
+        tabId: testTab.id
+      }, function(details) {
+        var frames = details.filter(function(frame) {
+          return /\?testSendMessageFromFrame1$/.test(frame.url);
+        });
+        chrome.test.assertEq(1, frames.length);
+        connectToTabWithDocumentId(frames[0].documentId, ['from_1']);
+      });
+    },
+
+    // connect with a valid frameId and documentId should trigger onConnect in
+    // that specific document only.
+    function sendMessageToDocumentInTab() {
+      chrome.webNavigation.getAllFrames({
+        tabId: testTab.id
+      }, function(details) {
+        var frames = details.filter(function(frame) {
+          return /\?testSendMessageFromFrame1$/.test(frame.url);
+        });
+        chrome.test.assertEq(1, frames.length);
+        connectToTabWithOptions({documentId: frames[0].documentId,
+                                 frameId: frames[0].frameId
+                                }, ['from_1']);
+      });
+    },
+
+    // sendMessage with a valid documentId but invalid frameId should fail.
+    function sendMessageToInvalidDocumentFrameIdInTab() {
+      chrome.webNavigation.getAllFrames({
+        tabId: testTab.id
+      }, function(details) {
+        var frames = details.filter(function(frame) {
+          return /\?testSendMessageFromFrame1$/.test(frame.url);
+        });
+        chrome.test.assertEq(1, frames.length);
+        chrome.tabs.sendMessage(testTab.id, {}, {
+          documentId: frames[0].documentId,
+          // Some (hopefully) invalid frameId.
+          frameId: 999999999
+        }, chrome.test.callbackFail(
+          'Could not establish connection. Receiving end does not exist.'));
+      });
+    },
+
+    // sendMessage with an invalid documentId should fail.
+    function sendMessageToInvalidDocumentInTab() {
+      chrome.tabs.sendMessage(testTab.id, {}, {
+        documentId: '0123456789ABCDEF' // A truncated documentId.
+      }, chrome.test.callbackFail(
+        'Could not establish connection. Receiving end does not exist.'));
+    },
+
     // Tests error handling when sending a request from a content script to an
     // invalid extension.
     function sendMessageFromTabError() {
@@ -272,8 +329,39 @@ chrome.test.getConfig(function(config) {
       chrome.tabs.reload(testTab.id);
     },
 
+    // Tests that the port is still available even if the page is salvaged
+    // from back/forward cache.
+    function keepConnectionOnNavigationWithBfcache() {
+      // Skip test if bfcache is disabled because this test expects
+      // the port will remain open when the page is salvaged from the
+      // back/forward cache.
+      if (config.customArg !== 'bfcache') {
+        chrome.test.succeed();
+        return;
+      }
+      listenOnce(chrome.runtime.onConnect, function(portFromTab) {
+        portFromTab.postMessage('navigateAwayAndHistoryBack');
+        listenOnce(portFromTab.onMessage, function(msg) {
+          chrome.test.assertTrue(msg.salvagedFromBackForwardCache2);
+        });
+      });
+      var port = chrome.tabs.connect(testTab.id);
+      listenOnce(port.onMessage, function(msg) {
+        // The port is still available even if the page is salvaged
+        // from back/forward cache.
+        chrome.test.assertTrue(msg.salvagedFromBackForwardCache1);
+      });
+      port.postMessage({testNavigateAwayAndHistoryBack: true});
+    },
+
     // Tests that we get the disconnect event when the tab context closes.
     function disconnectOnClose() {
+      // Skip test if bfcache is enabled because the port will not be
+      // closed immediately if the page is cached.
+      if (config.customArg === 'bfcache') {
+        chrome.test.succeed();
+        return;
+      }
       listenOnce(chrome.runtime.onConnect, function(portFromTab) {
         listenOnce(portFromTab.onDisconnect, function() {
           chrome.test.assertNoLastError();
@@ -357,16 +445,15 @@ chrome.test.getConfig(function(config) {
   ]);
 });
 
-function connectToTabWithFrameId(frameId, expectedMessages) {
-  var port = chrome.tabs.connect(testTab.id, {
-    frameId: frameId
-  });
+function connectToTabWithOptions(options, expectedMessages) {
+  var port = chrome.tabs.connect(testTab.id, options);
   var messages = [];
   var isDone = false;
   port.onMessage.addListener(function(message) {
     if (isDone) { // Should not get any messages after completing the test.
       chrome.test.fail(
-          'Unexpected message from port to frame ' + frameId + ': ' + message);
+          'Unexpected message from port to frame ' + JSON.stringify(options) +
+          ': ' + message);
       return;
     }
 
@@ -379,10 +466,24 @@ function connectToTabWithFrameId(frameId, expectedMessages) {
   });
   port.onDisconnect.addListener(function() {
     if (!isDone) // The event should never be triggered when we expect messages.
-      chrome.test.fail('Unexpected disconnect from port to frame ' + frameId);
+    chrome.test.fail('Unexpected disconnect from port to frame ' +
+                     JSON.stringify(options));
   });
   port.postMessage({testSendMessageToFrame: true});
-  chrome.test.log('connectToTabWithFrameId: port to frame ' + frameId);
+  chrome.test.log('connectToTabWithOptions: port to frame ' +
+                  JSON.stringify(options));
+}
+
+function connectToTabWithFrameId(frameId, expectedMessages) {
+  connectToTabWithOptions({
+    frameId: frameId
+  }, expectedMessages);
+}
+
+function connectToTabWithDocumentId(documentId, expectedMessages) {
+  connectToTabWithOptions({
+    documentId: documentId
+  }, expectedMessages);
 }
 
 // Listens to |event| and returns a callback to run to stop listening. While

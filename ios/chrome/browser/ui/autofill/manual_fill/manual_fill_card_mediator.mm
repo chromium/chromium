@@ -1,16 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_card_mediator.h"
 
-#include <vector>
+#import <vector>
 
-#include "base/metrics/user_metrics.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/browser/data_model/credit_card.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_consumer.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/card_list_delegate.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/full_card_request_result_delegate_bridge.h"
@@ -19,13 +19,13 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credit_card+CreditCard.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credit_card.h"
-#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "url/gurl.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -49,19 +49,14 @@ NSString* const kAddCreditCardsAccessibilityIdentifier =
 // All available credit cards.
 @property(nonatomic, assign) std::vector<autofill::CreditCard*> cards;
 
-// The command handler used by this Mediator.
-@property(nonatomic, weak) id<BrowserCoordinatorCommands> handler;
-
 @end
 
 @implementation ManualFillCardMediator
 
-- (instancetype)initWithCards:(std::vector<autofill::CreditCard*>)cards
-                      handler:(id<BrowserCoordinatorCommands>)handler {
+- (instancetype)initWithCards:(std::vector<autofill::CreditCard*>)cards {
   self = [super init];
   if (self) {
     _cards = cards;
-    _handler = handler;
   }
   return self;
 }
@@ -141,7 +136,7 @@ NSString* const kAddCreditCardsAccessibilityIdentifier =
              action:^{
                base::RecordAction(base::UserMetricsAction(
                    "ManualFallback_CreditCard_OpenAddCreditCard"));
-               [weakSelf.handler showAddCreditCard];
+               [weakSelf.navigationDelegate openAddCreditCard];
              }];
   addCreditCardsItem.accessibilityIdentifier =
       manual_fill::kAddCreditCardsAccessibilityIdentifier;

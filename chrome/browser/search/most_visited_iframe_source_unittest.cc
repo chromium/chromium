@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
-#include "chrome/grit/local_ntp_resources.h"
+#include "chrome/grit/new_tab_page_instant_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -21,7 +21,6 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "url/gurl.h"
 
 const int kNonInstantRendererPID = 0;
@@ -115,7 +114,6 @@ class MostVisitedIframeSourceTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  net::TestURLRequestContext test_url_request_context_;
   TestingProfile profile_;
   std::unique_ptr<TestMostVisitedIframeSource> source_;
   scoped_refptr<base::RefCountedMemory> response_;
@@ -143,25 +141,28 @@ TEST_F(MostVisitedIframeSourceTest, ShouldServiceRequest) {
 
 TEST_F(MostVisitedIframeSourceTest, GetMimeType) {
   // URLDataManagerBackend does not include / in path_and_query.
-  EXPECT_EQ("text/html", source()->GetMimeType("foo.html"));
-  EXPECT_EQ("application/javascript", source()->GetMimeType("foo.js"));
-  EXPECT_EQ("text/css", source()->GetMimeType("foo.css"));
-  EXPECT_EQ("", source()->GetMimeType("bogus"));
+  EXPECT_EQ("text/html",
+            source()->GetMimeType(GURL("chrome-search://test/foo.html")));
+  EXPECT_EQ("application/javascript",
+            source()->GetMimeType(GURL("chrome-search://test/foo.js")));
+  EXPECT_EQ("text/css",
+            source()->GetMimeType(GURL("chrome-search://test/foo.css")));
+  EXPECT_EQ("", source()->GetMimeType(GURL("chrome-search://test/bogus")));
 }
 
 TEST_F(MostVisitedIframeSourceTest, SendResource) {
-  SendResource(IDR_MOST_VISITED_TITLE_HTML);
+  SendResource(IDR_NEW_TAB_PAGE_INSTANT_MOST_VISITED_TITLE_HTML);
   EXPECT_FALSE(response_string().empty());
 }
 
 TEST_F(MostVisitedIframeSourceTest, SendJSWithOrigin) {
   source()->set_origin(kInstantOrigin);
-  SendJSWithOrigin(IDR_MOST_VISITED_TITLE_JS);
+  SendJSWithOrigin(IDR_NEW_TAB_PAGE_INSTANT_MOST_VISITED_TITLE_JS);
   EXPECT_FALSE(response_string().empty());
   source()->set_origin(kNonInstantOrigin);
-  SendJSWithOrigin(IDR_MOST_VISITED_TITLE_JS);
+  SendJSWithOrigin(IDR_NEW_TAB_PAGE_INSTANT_MOST_VISITED_TITLE_JS);
   EXPECT_FALSE(response_string().empty());
   source()->set_origin(std::string());
-  SendJSWithOrigin(IDR_MOST_VISITED_TITLE_JS);
+  SendJSWithOrigin(IDR_NEW_TAB_PAGE_INSTANT_MOST_VISITED_TITLE_JS);
   EXPECT_TRUE(response_string().empty());
 }

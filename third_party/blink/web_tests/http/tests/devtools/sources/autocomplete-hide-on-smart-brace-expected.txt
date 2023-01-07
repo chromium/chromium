@@ -1,9 +1,0 @@
-Verify that suggest box gets hidden whenever a cursor jumps over smart brace.
-
-
-Running: testSummonSuggestBox
-Suggestions shown.
-
-Running: testTypeSmartBrace
-Suggestions hidden.
-

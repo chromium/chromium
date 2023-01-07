@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,6 +48,14 @@ class SettingsResetPromptConfigTest : public ::testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Expects a DCHECK if enabled, otherwise expects false.
+#if DCHECK_IS_ON()
+#define EXPECT_DCHECK_OR_FALSE(expression) \
+  EXPECT_DEATH_IF_SUPPORTED(expression, ".*")
+#else
+#define EXPECT_DCHECK_OR_FALSE(expression) EXPECT_FALSE((expression))
+#endif
 
 TEST_F(SettingsResetPromptConfigTest, Create) {
   ASSERT_FALSE(IsPromptEnabled());
@@ -219,7 +227,7 @@ TEST_F(SettingsResetPromptConfigTest, DelayBeforePromptSecondsParam) {
   // Bad parameter value.
   params[kDelayParam] = "not-a-number";
   SetFeatureParams(params);
-  EXPECT_FALSE(SettingsResetPromptConfig::Create());
+  EXPECT_DCHECK_OR_FALSE(SettingsResetPromptConfig::Create());
 
   // Negative parameter value.
   params[kDelayParam] = "-3";
@@ -232,7 +240,7 @@ TEST_F(SettingsResetPromptConfigTest, DelayBeforePromptSecondsParam) {
   {
     auto config = SettingsResetPromptConfig::Create();
     ASSERT_TRUE(config);
-    EXPECT_EQ(config->delay_before_prompt(), base::TimeDelta::FromSeconds(12));
+    EXPECT_EQ(config->delay_before_prompt(), base::Seconds(12));
   }
 
   // Correct edge case parameter value.
@@ -241,7 +249,7 @@ TEST_F(SettingsResetPromptConfigTest, DelayBeforePromptSecondsParam) {
   {
     auto config = SettingsResetPromptConfig::Create();
     ASSERT_TRUE(config);
-    EXPECT_EQ(config->delay_before_prompt(), base::TimeDelta::FromSeconds(0));
+    EXPECT_EQ(config->delay_before_prompt(), base::Seconds(0));
   }
 }
 
@@ -263,7 +271,7 @@ TEST_F(SettingsResetPromptConfigTest, PromptWaveParam) {
   // Bad parameter value.
   params[kPromptWaveParam] = "not-a-number";
   SetFeatureParams(params);
-  EXPECT_FALSE(SettingsResetPromptConfig::Create());
+  EXPECT_DCHECK_OR_FALSE(SettingsResetPromptConfig::Create());
 
   // Negative parameter value.
   params[kPromptWaveParam] = "-3";
@@ -298,7 +306,7 @@ TEST_F(SettingsResetPromptConfigTest, TimeBetweenPromptsParam) {
   // Bad parameter value.
   params[kParamName] = "not-a-number";
   SetFeatureParams(params);
-  EXPECT_FALSE(SettingsResetPromptConfig::Create());
+  EXPECT_DCHECK_OR_FALSE(SettingsResetPromptConfig::Create());
 
   // Negative parameter value.
   params[kParamName] = "-3";
@@ -311,8 +319,7 @@ TEST_F(SettingsResetPromptConfigTest, TimeBetweenPromptsParam) {
   {
     auto config = SettingsResetPromptConfig::Create();
     ASSERT_TRUE(config);
-    EXPECT_EQ(config->time_between_prompts(),
-              base::TimeDelta::FromSeconds(3600));
+    EXPECT_EQ(config->time_between_prompts(), base::Seconds(3600));
   }
 }
 

@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_STRING_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_STRING_RESOURCE_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -77,11 +78,6 @@ class V8StringResource {
 
   bool Prepare(v8::Isolate* isolate, ExceptionState& exception_state) {
     return PrepareFast() || PrepareSlow(isolate, exception_state);
-  }
-
-  bool Prepare(ExceptionState& exception_state) {  // DEPRECATED
-    return PrepareFast() ||
-           PrepareSlow(v8::Isolate::GetCurrent(), exception_state);
   }
 
   // Implicit conversions needed to make Blink bindings easier to use.

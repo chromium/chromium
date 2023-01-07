@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,10 +27,9 @@ void HostStopper::StopLocalHost(std::string access_token,
       base::BindOnce(&HostStopper::OnConfigLoaded, weak_ptr_));
 }
 
-void HostStopper::OnConfigLoaded(
-    std::unique_ptr<base::DictionaryValue> config) {
+void HostStopper::OnConfigLoaded(absl::optional<base::Value::Dict> config) {
   const std::string* hostId = nullptr;
-  if (!config || !(hostId = config->FindStringPath("host_id"))) {
+  if (!config || !(hostId = config->FindString("host_id"))) {
     std::move(on_done_).Run();
     return;
   }
@@ -50,7 +49,7 @@ void HostStopper::OnStopped(DaemonController::AsyncResult) {
     stopped =
         (daemon_controller_->GetState() == DaemonController::STATE_STOPPED);
     if (!stopped)
-      base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+      base::PlatformThread::Sleep(base::Seconds(1));
   }
   if (!stopped)
     LOG(WARNING) << "Unable to stop existing host process. Setup will "

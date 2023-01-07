@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -133,9 +133,8 @@ public class PermissionInfoBar
         SpannableStringBuilder descriptionMessage = new SpannableStringBuilder(mDescription);
         if (mLearnMoreLinkText != null && !mLearnMoreLinkText.isEmpty()) {
             SpannableString link = new SpannableString(mLearnMoreLinkText);
-            link.setSpan(
-                    new NoUnderlineClickableSpan(layout.getResources(), view -> onLinkClicked()), 0,
-                    link.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
+            link.setSpan(new NoUnderlineClickableSpan(layout.getContext(), view -> onLinkClicked()),
+                    0, link.length(), Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             descriptionMessage.append(" ").append(link);
         }
         layout.getMessageLayout().addDescription(descriptionMessage);

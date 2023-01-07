@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/qr_scanner/qr_scanner_camera_controller.h"
 
-#include "base/mac/foundation_util.h"
+#import "base/mac/foundation_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -89,8 +89,8 @@
       [resultType isEqualToString:AVMetadataObjectTypeInterleaved2of5Code] ||
       [resultType isEqualToString:AVMetadataObjectTypeITF14Code];
 
-  // Note: |captureOutput| is called on the main queue. This is specified by
-  // |setMetadataObjectsDelegate:queue:|.
+  // Note: `captureOutput` is called on the main queue. This is specified by
+  // `setMetadataObjectsDelegate:queue:`.
   [self.qrScannerDelegate receiveQRScannerResult:resultString
                                  loadImmediately:isAllDigits];
 }

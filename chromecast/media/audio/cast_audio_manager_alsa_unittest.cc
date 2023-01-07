@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include "base/test/test_message_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/common/mojom/service_connector.mojom.h"
+#include "chromecast/external_mojo/external_service_support/fake_external_connector.h"
+#include "chromecast/media/audio/mock_cast_audio_manager_helper_delegate.h"
 #include "chromecast/media/cma/test/mock_cma_backend_factory.h"
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/test_audio_thread.h"
@@ -26,21 +28,11 @@ const char kDefaultAlsaDevice[] = "plug:default";
 
 const ::media::AudioParameters kDefaultAudioParams(
     ::media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-    ::media::CHANNEL_LAYOUT_STEREO,
+    ::media::ChannelLayoutConfig::Stereo(),
     ::media::AudioParameters::kAudioCDSampleRate,
     256);
 
 void OnLogMessage(const std::string& message) {}
-
-mojo::PendingRemote<chromecast::mojom::ServiceConnector> CreateConnector() {
-  mojo::PendingRemote<chromecast::mojom::ServiceConnector> remote;
-  ignore_result(remote.InitWithNewPipeAndPassReceiver());
-  return remote;
-}
-
-std::string DummyGetSessionId(const std::string& /* audio_group_id */) {
-  return "";
-}
 
 class CastAudioManagerAlsaTest : public testing::Test {
  public:
@@ -50,11 +42,11 @@ class CastAudioManagerAlsaTest : public testing::Test {
     backend_factory_ = std::make_unique<MockCmaBackendFactory>();
     audio_manager_ = std::make_unique<CastAudioManagerAlsa>(
         std::make_unique<::media::TestAudioThread>(), &audio_log_factory_,
+        &delegate_,
         base::BindRepeating(&CastAudioManagerAlsaTest::GetCmaBackendFactory,
                             base::Unretained(this)),
-        base::BindRepeating(&DummyGetSessionId),
         base::ThreadTaskRunnerHandle::Get(), media_thread_.task_runner(),
-        CreateConnector(), false);
+        &connector_, false);
   }
 
   ~CastAudioManagerAlsaTest() override { audio_manager_->Shutdown(); }
@@ -65,6 +57,8 @@ class CastAudioManagerAlsaTest : public testing::Test {
   std::unique_ptr<MockCmaBackendFactory> backend_factory_;
   base::Thread media_thread_;
   ::media::FakeAudioLogFactory audio_log_factory_;
+  MockCastAudioManagerHelperDelegate delegate_;
+  external_service_support::FakeExternalConnector connector_;
   std::unique_ptr<CastAudioManagerAlsa> audio_manager_;
 };
 
@@ -73,7 +67,7 @@ TEST_F(CastAudioManagerAlsaTest, MakeAudioInputStream) {
       kDefaultAudioParams, kDefaultAlsaDevice,
       base::BindRepeating(&OnLogMessage));
   ASSERT_TRUE(stream);
-  EXPECT_TRUE(stream->Open());
+  EXPECT_EQ(::media::AudioInputStream::OpenOutcome::kSuccess, stream->Open());
   stream->Close();
 }
 

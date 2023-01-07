@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,21 +9,16 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/base/mac/url_conversions.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "url/gurl.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(HandoffManagerAppInterface);
-#pragma clang diagnostic pop
-
 namespace {
 
-// Checks that Handoff will report the specified |gurl|.
+// Checks that Handoff will report the specified `gurl`.
 void AssertHandoffURL(const GURL& gurl) {
   NSURL* handoffURL =
       [HandoffManagerAppInterface currentUserActivityWebPageURL];

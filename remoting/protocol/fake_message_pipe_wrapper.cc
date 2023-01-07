@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/memory/weak_ptr.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/protocol/fake_message_pipe.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 FakeMessagePipeWrapper::FakeMessagePipeWrapper(FakeMessagePipe* pipe)
     : pipe_(pipe) {
@@ -42,5 +42,8 @@ void FakeMessagePipeWrapper::ClosePipe() {
   pipe_->ClosePipe();
 }
 
-}  // namespace protocol
-}  // namespace remoting
+base::WeakPtr<FakeMessagePipeWrapper> FakeMessagePipeWrapper::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+}  // namespace remoting::protocol

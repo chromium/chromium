@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,7 @@ namespace metrics {
 namespace structured {
 
 void LogInternalError(StructuredMetricsError error) {
-  UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.InternalError", error);
-}
-
-void LogPrefReadError(PersistentPrefStore::PrefReadError error) {
-  UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.PrefReadError", error,
-                            PersistentPrefStore::PREF_READ_ERROR_MAX_ENUM);
+  UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.InternalError2", error);
 }
 
 void LogEventRecordingState(EventRecordingState state) {
@@ -29,6 +24,16 @@ void LogNumEventsInUpload(const int num_events) {
 
 void LogKeyValidation(KeyValidationState state) {
   UMA_HISTOGRAM_ENUMERATION("UMA.StructuredMetrics.KeyValidationState", state);
+}
+
+void LogIsEventRecordedUsingMojo(bool used_mojo_api) {
+  UMA_HISTOGRAM_BOOLEAN("UMA.StructuredMetrics.EventsRecordedUsingMojo",
+                        used_mojo_api);
+}
+
+void LogNumEventsRecordedBeforeInit(int num_events) {
+  UMA_HISTOGRAM_COUNTS_100("UMA.StructuredMetrics.EventsRecordedBeforeInit",
+                           num_events);
 }
 
 }  // namespace structured

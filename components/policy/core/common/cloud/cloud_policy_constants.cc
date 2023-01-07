@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,17 +33,21 @@ const char kAuthHeader[] = "Authorization";
 const char kServiceTokenAuthHeaderPrefix[] = "GoogleLogin auth=";
 const char kDMTokenAuthHeaderPrefix[] = "GoogleDMToken token=";
 const char kEnrollmentTokenAuthHeaderPrefix[] = "GoogleEnrollmentToken token=";
+const char kOAuthTokenHeaderPrefix[] = "OAuth";
 
 // String constants for the device and app type we report to the server.
 const char kValueAppType[] = "Chrome";
+const char kValueBrowserUploadPublicKey[] = "browser_public_key_upload";
 const char kValueDeviceType[] = "2";
 const char kValueRequestAutoEnrollment[] = "enterprise_check";
 const char kValueRequestPsmHasDeviceState[] = "enterprise_psm_check";
+const char kValueCheckUserAccount[] = "check_user_account";
 const char kValueRequestPolicy[] = "policy";
 const char kValueRequestRegister[] = "register";
 const char kValueRequestApiAuthorization[] = "api_authorization";
 const char kValueRequestUnregister[] = "unregister";
 const char kValueRequestUploadCertificate[] = "cert_upload";
+const char kValueRequestUploadEuiccInfo[] = "upload_euicc_info";
 const char kValueRequestDeviceStateRetrieval[] = "device_state_retrieval";
 const char kValueRequestUploadStatus[] = "status_upload";
 const char kValueRequestRemoteCommands[] = "remote_commands";
@@ -67,13 +71,14 @@ const char kValueRequestUploadPolicyValidationReport[] =
     "policy_validation_report";
 const char kValueRequestPublicSamlUser[] = "public_saml_user_request";
 const char kValueRequestCertProvisioningRequest[] = "client_cert_provisioning";
+const char kValueRequestChromeProfileReport[] = "chrome_profile_report";
 
 const char kChromeDevicePolicyType[] = "google/chromeos/device";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kChromeUserPolicyType[] = "google/chromeos/user";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 const char kChromeUserPolicyType[] = "google/android/user";
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 const char kChromeUserPolicyType[] = "google/ios/user";
 #else
 const char kChromeUserPolicyType[] = "google/chrome/user";
@@ -84,6 +89,8 @@ const char kChromeSigninExtensionPolicyType[] =
     "google/chromeos/signinextension";
 const char kChromeMachineLevelUserCloudPolicyType[] =
     "google/chrome/machine-level-user";
+const char kChromeMachineLevelUserCloudPolicyAndroidType[] =
+    "google/chrome/machine-level-user-android";
 const char kChromeMachineLevelUserCloudPolicyIOSType[] =
     "google/chrome/machine-level-user-ios";
 const char kChromeMachineLevelExtensionCloudPolicyType[] =
@@ -130,6 +137,11 @@ std::string GetPolicyVerificationKey() {
   return std::string(reinterpret_cast<const char*>(kPolicyVerificationKey),
                      sizeof(kPolicyVerificationKey));
 }
+// Notes from the past: When the key is rotated in the future, the old one may
+// still worth being kept to verified any existing policy cache so that browser
+// can load it one last time. However, it really depends on the reason of the
+// rotation. From a different angle, if a key is no longer trusted, so should
+// anything bound to it.
 
 const char kPolicyFCMInvalidationSenderID[] = "1013309121859";
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 namespace base {
 
 TEST(ScopedHistogramTimer, ThreeTimersOneScope) {
-  SCOPED_UMA_HISTOGRAM_SHORT_TIMER("TestShortTimer0");
-  SCOPED_UMA_HISTOGRAM_SHORT_TIMER("TestShortTimer1");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("TestShortTimer0");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("TestShortTimer1");
   SCOPED_UMA_HISTOGRAM_TIMER("TestTimer0");
   SCOPED_UMA_HISTOGRAM_TIMER("TestTimer1");
   SCOPED_UMA_HISTOGRAM_LONG_TIMER("TestLongTimer0");

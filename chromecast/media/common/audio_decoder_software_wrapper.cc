@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,10 +36,7 @@ bool IsChannelLayoutSupported(AudioConfig config) {
 
 // Codecs that cannot be decoded on the device and must be passed through.
 constexpr media::AudioCodec kPassthroughCodecs[] = {
-    kCodecEAC3,
-    kCodecAC3,
-    kCodecDTS,
-    kCodecMpegHAudio,
+    kCodecEAC3, kCodecAC3, kCodecDTS, kCodecDTSXP2, kCodecMpegHAudio,
 };
 
 }  // namespace
@@ -115,6 +112,15 @@ bool AudioDecoderSoftwareWrapper::SetVolume(float multiplier) {
 AudioDecoderSoftwareWrapper::RenderingDelay
 AudioDecoderSoftwareWrapper::GetRenderingDelay() {
   return backend_decoder_->GetRenderingDelay();
+}
+
+AudioDecoderSoftwareWrapper::AudioTrackTimestamp
+AudioDecoderSoftwareWrapper::GetAudioTrackTimestamp() {
+  return backend_decoder_->GetAudioTrackTimestamp();
+}
+
+int AudioDecoderSoftwareWrapper::GetStartThresholdInFrames() {
+  return backend_decoder_->GetStartThresholdInFrames();
 }
 
 bool AudioDecoderSoftwareWrapper::IsUsingSoftwareDecoder() {

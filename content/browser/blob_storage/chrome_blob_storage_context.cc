@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,10 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/supports_user_data.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
-#include "content/browser/blob_storage/blob_registry_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/blob_handle.h"
 #include "content/public/browser/browser_context.h"
@@ -34,6 +32,7 @@
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/blob/blob_url_loader_factory.h"
 #include "storage/browser/blob/blob_url_registry.h"
+#include "storage/browser/file_system/file_system_context.h"
 
 using base::FilePath;
 using base::UserDataAdapter;
@@ -54,16 +53,12 @@ void RemoveOldBlobStorageDirectories(FilePath blob_storage_parent,
   }
   base::FileEnumerator enumerator(blob_storage_parent, false /* recursive */,
                                   base::FileEnumerator::DIRECTORIES);
-  bool success = true;
-  bool cleanup_needed = false;
+
   for (FilePath name = enumerator.Next(); !name.empty();
        name = enumerator.Next()) {
-    cleanup_needed = true;
     if (current_run_dir.empty() || name != current_run_dir)
-      success &= base::DeletePathRecursively(name);
+      base::DeletePathRecursively(name);
   }
-  if (cleanup_needed)
-    UMA_HISTOGRAM_BOOLEAN("Storage.Blob.CleanupSuccess", success);
 }
 
 class BlobHandleImpl : public BlobHandle {
@@ -77,10 +72,17 @@ class BlobHandleImpl : public BlobHandle {
 
   mojo::PendingRemote<blink::mojom::Blob> PassBlob() override {
     mojo::PendingRemote<blink::mojom::Blob> result;
-    storage::BlobImpl::Create(
-        std::make_unique<storage::BlobDataHandle>(*handle_),
-        result.InitWithNewPipeAndPassReceiver());
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(base::IgnoreResult(&storage::BlobImpl::Create),
+                       std::make_unique<storage::BlobDataHandle>(*handle_),
+                       result.InitWithNewPipeAndPassReceiver()));
     return result;
+  }
+
+  blink::mojom::SerializedBlobPtr Serialize() override {
+    return blink::mojom::SerializedBlob::New(
+        handle_->uuid(), handle_->content_type(), handle_->size(), PassBlob());
   }
 
  private:
@@ -205,11 +207,42 @@ std::unique_ptr<BlobHandle> ChromeBlobStorageContext::CreateMemoryBackedBlob(
   std::unique_ptr<storage::BlobDataHandle> blob_data_handle =
       context_->AddFinishedBlob(std::move(blob_data_builder));
   if (!blob_data_handle)
-    return std::unique_ptr<BlobHandle>();
+    return nullptr;
 
   std::unique_ptr<BlobHandle> blob_handle(
       new BlobHandleImpl(std::move(blob_data_handle)));
   return blob_handle;
+}
+
+void ChromeBlobStorageContext::CreateFileSystemBlob(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    mojo::PendingReceiver<blink::mojom::Blob> blob_receiver,
+    const storage::FileSystemURL& url,
+    const std::string& blob_uuid,
+    const std::string& content_type,
+    const uint64_t file_size,
+    const base::Time& file_modification_time) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  auto blob_builder = std::make_unique<storage::BlobDataBuilder>(blob_uuid);
+  if (file_size > 0) {
+    // Use AppendFileSystemFile here, since we're streaming the file directly
+    // from the file system backend, and the file thus might not actually be
+    // backed by a file on disk.
+    blob_builder->AppendFileSystemFile(url, 0, file_size,
+                                       file_modification_time,
+                                       std::move(file_system_context));
+  }
+  blob_builder->set_content_type(content_type);
+
+  std::unique_ptr<storage::BlobDataHandle> blob_handle =
+      context_->AddFinishedBlob(std::move(blob_builder));
+
+  // Since the blob we're creating doesn't depend on other blobs, and doesn't
+  // require blob memory/disk quota, creating the blob can't fail.
+  DCHECK(!blob_handle->IsBroken());
+
+  storage::BlobImpl::Create(std::move(blob_handle), std::move(blob_receiver));
 }
 
 // static
@@ -220,21 +253,14 @@ ChromeBlobStorageContext::URLLoaderFactoryForToken(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       blob_url_loader_factory_remote;
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](scoped_refptr<BlobRegistryWrapper> registry,
-             mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-             mojo::PendingRemote<blink::mojom::BlobURLToken> token) {
-            storage::BlobURLLoaderFactory::Create(
-                std::move(token), registry->url_registry()->AsWeakPtr(),
-                std::move(receiver));
-          },
-          base::WrapRefCounted(
-              static_cast<StoragePartitionImpl*>(storage_partition)
-                  ->GetBlobRegistry()),
-          blob_url_loader_factory_remote.InitWithNewPipeAndPassReceiver(),
-          std::move(token)));
+
+  storage::BlobURLLoaderFactory::Create(
+      std::move(token),
+      static_cast<StoragePartitionImpl*>(storage_partition)
+          ->GetBlobUrlRegistry()
+          ->AsWeakPtr(),
+      blob_url_loader_factory_remote.InitWithNewPipeAndPassReceiver());
+
   return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
       std::move(blob_url_loader_factory_remote));
 }
@@ -247,21 +273,13 @@ ChromeBlobStorageContext::URLLoaderFactoryForUrl(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       blob_url_loader_factory_remote;
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](scoped_refptr<BlobRegistryWrapper> registry,
-             mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-             const GURL& url) {
-            auto blob_remote = registry->url_registry()->GetBlobFromUrl(url);
-            storage::BlobURLLoaderFactory::Create(std::move(blob_remote), url,
-                                                  std::move(receiver));
-          },
-          base::WrapRefCounted(
-              static_cast<StoragePartitionImpl*>(storage_partition)
-                  ->GetBlobRegistry()),
-          blob_url_loader_factory_remote.InitWithNewPipeAndPassReceiver(),
-          url));
+
+  storage::BlobURLLoaderFactory::Create(
+      static_cast<StoragePartitionImpl*>(storage_partition)
+          ->GetBlobUrlRegistry()
+          ->GetBlobFromUrl(url),
+      url, blob_url_loader_factory_remote.InitWithNewPipeAndPassReceiver());
+
   return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
       std::move(blob_url_loader_factory_remote));
 }

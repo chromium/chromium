@@ -1,29 +1,24 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.base;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import android.annotation.NonNull;
-import android.annotation.Nullable;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.pm.ProviderInfo;
-import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.ParcelFileDescriptor;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
@@ -274,36 +269,26 @@ public class FileUtilsTest {
     }
 
     @Test
-    public void testExtractAsset() throws IOException {
-        AssetManager assetManager = mContext.getAssets();
-
-        // assetManager from test comes with some .png files. Find and use the first one.
-        String[] assetList = assetManager.list("");
-        String firstPngPath = null;
-        for (String s : assetList) {
-            if (s.endsWith(".png")) {
-                firstPngPath = s;
-                break;
+    public void testGetFileSize() throws IOException {
+        Function<byte[], Boolean> runCase = (byte[] inputBytes) -> {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(inputBytes);
+            byte[] fileBytes;
+            long size;
+            try {
+                File tempFile = temporaryFolder.newFile();
+                FileUtils.copyStreamToFile(inputStream, tempFile);
+                size = FileUtils.getFileSizeBytes(tempFile);
+            } catch (IOException e) {
+                return false;
             }
-        }
-        assertNotNull(firstPngPath); // E.g., "images/android-logo-mask.png"
+            return inputBytes.length == size;
+        };
 
-        // Test successful call to FileUtils.extractAsset().
-        File tempFile1 = temporaryFolder.newFile("temp1.png");
-        assertTrue(FileUtils.extractAsset(mContext, firstPngPath, tempFile1));
-
-        // Read first 4 bytes of |tempFile1|, just check 4 bytes of PNG header.
-        byte[] buffer = new byte[4];
-        InputStream is = new FileInputStream(tempFile1);
-        assertEquals(4, is.read(buffer));
-        is.close();
-        byte[] expected = new byte[] {(byte) 0x89, (byte) 0x50, (byte) 0x4E, (byte) 0x47};
-        Assert.assertArrayEquals(expected, buffer);
-
-        // Test unsuccessful call to FileUtils.extractAsset().
-        File tempFile2 = temporaryFolder.newFile("temp2.png");
-        String nonExistentPngPath = "images/does_not_exist.png";
-        assertFalse(FileUtils.extractAsset(mContext, nonExistentPngPath, tempFile2));
+        assertTrue(runCase.apply(new byte[] {}));
+        assertTrue(runCase.apply(new byte[] {3, 1, 4, 1, 5, 9, 2, 6, 5}));
+        assertTrue(runCase.apply("To be or not to be".getBytes()));
+        assertTrue(runCase.apply(createBigByteArray(131072))); // 1 << 17.
+        assertTrue(runCase.apply(createBigByteArray(119993))); // Prime.
     }
 
     /**
@@ -481,8 +466,7 @@ public class FileUtilsTest {
         }
 
         @Override
-        public @Nullable ParcelFileDescriptor openFile(@NonNull Uri uri, @NonNull String mode)
-                throws FileNotFoundException {
+        public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
             String uriString = uri.toString();
             if (mUriToFilename.containsKey(uriString)) {
                 String filename = mUriToFilename.get(uriString);

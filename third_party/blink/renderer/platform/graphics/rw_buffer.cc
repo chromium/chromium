@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -165,6 +165,10 @@ bool RWBuffer::ROIter::Next() {
   return remaining_ != 0;
 }
 
+bool RWBuffer::ROIter::HasNext() const {
+  return block_ && block_->next_;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 // The reader can only access block.capacity_ (which never changes), and cannot
 // access block.used_, which may be updated by the writer.
@@ -240,6 +244,21 @@ RWBuffer::RWBuffer(size_t initial_capacity) {
     head_ = RWBuffer::BufferHead::Alloc(initial_capacity);
     tail_ = &head_->block_;
   }
+}
+
+RWBuffer::RWBuffer(base::OnceCallback<size_t(void*, size_t)> writer,
+                   size_t initial_capacity) {
+  if (initial_capacity) {
+    head_ = RWBuffer::BufferHead::Alloc(initial_capacity);
+    tail_ = &head_->block_;
+  }
+
+  size_t written = std::move(writer).Run(const_cast<void*>(tail_->startData()),
+                                         initial_capacity);
+  total_used_ += written;
+  tail_->used_ += written;
+
+  Validate();
 }
 
 RWBuffer::~RWBuffer() {

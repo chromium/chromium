@@ -1,0 +1,43 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash.assistant;
+
+import "about_me_settings_ui.proto";
+import "assistant_device_settings_ui.proto";
+import "consent_flow_ui.proto";
+import "email_opt_in_ui.proto";
+import "gaia_user_context_ui.proto";
+
+message SettingsUi {
+  optional AboutMeSettingsUi about_me_settings = 5;
+  optional ConsentFlowUi consent_flow_ui = 27;
+  optional EmailOptInUi email_opt_in_ui = 33;
+  optional GaiaUserContextUi gaia_user_context_ui = 43;
+}
+
+message SettingsUiUpdate {
+  optional AboutMeSettingsUiUpdate about_me_settings_update = 4;
+  optional AssistantDeviceSettingsUiUpdate assistant_device_settings_update = 6;
+  optional ConsentFlowUiUpdate consent_flow_ui_update = 21;
+  optional EmailOptInUpdate email_opt_in_update = 26;
+}
+
+message SettingsUiUpdateResult {
+  optional AboutMeSettingsUiUpdateResult about_me_settings_update_result = 4;
+  optional ConsentFlowUiUpdateResult consent_flow_update_result = 11;
+  optional EmailOptInUpdateResult email_opt_in_update_result = 15;
+}
+
+// Determines which settings sub-pages should be requested to the server.
+message SettingsUiSelector {
+  optional bool about_me_settings = 5;
+  optional ConsentFlowUiSelector consent_flow_ui_selector = 35;
+  optional bool email_opt_in = 43;
+  optional bool gaia_user_context_ui = 54;
+}

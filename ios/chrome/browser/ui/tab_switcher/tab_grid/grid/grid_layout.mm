@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,13 +62,6 @@
     self.itemSize = kGridCellSizeLarge;
     self.sectionInset = kGridLayoutInsetsRegularRegular;
     self.minimumLineSpacing = kGridLayoutLineSpacingRegularRegular;
-  }
-  if (ShowThumbStripInTraitCollection(self.collectionView.traitCollection)) {
-    // When the thumb strip feature is enabled, increase the bottom inset to
-    // account for the bvc on the bottom of the screen.
-    UIEdgeInsets sectionInset = self.sectionInset;
-    sectionInset.bottom += kBVCHeightTabGrid;
-    self.sectionInset = sectionInset;
   }
 }
 

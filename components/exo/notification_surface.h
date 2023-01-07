@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
 #include "ui/gfx/geometry/size.h"
@@ -25,10 +24,14 @@ class NotificationSurface : public SurfaceTreeHost,
   NotificationSurface(NotificationSurfaceManager* manager,
                       Surface* surface,
                       const std::string& notification_key);
+
+  NotificationSurface(const NotificationSurface&) = delete;
+  NotificationSurface& operator=(const NotificationSurface&) = delete;
+
   ~NotificationSurface() override;
 
   // Get the content size of the |root_surface()|.
-  const gfx::Size& GetContentSize() const;
+  gfx::Size GetContentSize() const;
 
   void SetApplicationId(const char* application_id);
 
@@ -42,6 +45,9 @@ class NotificationSurface : public SurfaceTreeHost,
 
   // Overridden from WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old_value) override;
   void OnWindowAddedToRootWindow(aura::Window* window) override;
   void OnWindowRemovingFromRootWindow(aura::Window* window,
                                       aura::Window* new_root) override;
@@ -55,8 +61,6 @@ class NotificationSurface : public SurfaceTreeHost,
   // True if the notification is visible by e.g. being embedded in the message
   // center.
   bool is_embedded_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationSurface);
 };
 
 }  // namespace exo

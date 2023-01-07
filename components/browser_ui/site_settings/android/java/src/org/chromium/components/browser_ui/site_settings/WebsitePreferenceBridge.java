@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,16 @@ package org.chromium.components.browser_ui.site_settings;
 import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class that interacts with native to retrieve and set website settings.
@@ -35,7 +38,7 @@ public class WebsitePreferenceBridge {
     @SuppressWarnings("unchecked")
     public List<PermissionInfo> getPermissionInfo(
             BrowserContextHandle browserContextHandle, @ContentSettingsType int type) {
-        ArrayList<PermissionInfo> list = new ArrayList<PermissionInfo>();
+        ArrayList<PermissionInfo> list = new ArrayList<>();
         boolean managedOnly = false;
         // Camera, Location & Microphone can be managed by the custodian
         // of a supervised account or by enterprise policy.
@@ -88,6 +91,21 @@ public class WebsitePreferenceBridge {
                 .put(origin, new LocalStorageInfo(origin, size, important));
     }
 
+    @CalledByNative
+    private static Object createCookiesInfoMap() {
+        return new HashMap<String, CookiesInfo>();
+    }
+
+    @CalledByNative
+    private static void insertCookieIntoMap(Map<String, CookiesInfo> map, String origin) {
+        CookiesInfo cookies_info = map.get(origin);
+        if (cookies_info == null) {
+            cookies_info = new CookiesInfo();
+            map.put(origin, cookies_info);
+        }
+        cookies_info.increment();
+    }
+
     public List<ContentSettingException> getContentSettingsExceptions(
             BrowserContextHandle browserContextHandle,
             @ContentSettingsType int contentSettingsType) {
@@ -118,6 +136,11 @@ public class WebsitePreferenceBridge {
         WebsitePreferenceBridgeJni.get().fetchStorageInfo(browserContextHandle, callback);
     }
 
+    public void fetchCookiesInfo(BrowserContextHandle browserContextHandle,
+            Callback<Map<String, CookiesInfo>> callback) {
+        WebsitePreferenceBridgeJni.get().fetchCookiesInfo(browserContextHandle, callback);
+    }
+
     /**
      * Returns the list of all chosen object permissions for the given ContentSettingsType.
      *
@@ -144,13 +167,10 @@ public class WebsitePreferenceBridge {
     }
 
     /**
-     * Returns whether the DSE (Default Search Engine) controls the given permission the given
-     * origin.
+     * Returns whether the DSE (Default Search Engine) origin matches the given origin.
      */
-    public static boolean isPermissionControlledByDSE(BrowserContextHandle browserContextHandle,
-            @ContentSettingsType int contentSettingsType, String origin) {
-        return WebsitePreferenceBridgeJni.get().isPermissionControlledByDSE(
-                browserContextHandle, contentSettingsType, origin);
+    public static boolean isDSEOrigin(BrowserContextHandle browserContextHandle, String origin) {
+        return WebsitePreferenceBridgeJni.get().isDSEOrigin(browserContextHandle, origin);
     }
 
     /**
@@ -166,9 +186,10 @@ public class WebsitePreferenceBridge {
     @CalledByNative
     private static void addContentSettingExceptionToList(ArrayList<ContentSettingException> list,
             @ContentSettingsType int contentSettingsType, String primaryPattern,
-            String secondaryPattern, int contentSetting, String source) {
-        ContentSettingException exception = new ContentSettingException(
-                contentSettingsType, primaryPattern, secondaryPattern, contentSetting, source);
+            String secondaryPattern, int contentSetting, String source, boolean isEmbargoed) {
+        String nonNullSource = (source == null) ? "" : source;
+        ContentSettingException exception = new ContentSettingException(contentSettingsType,
+                primaryPattern, secondaryPattern, contentSetting, nonNullSource, isEmbargoed);
         list.add(exception);
     }
 
@@ -252,24 +273,24 @@ public class WebsitePreferenceBridge {
     }
 
     /**
-     * Gets the ContentSetting for a settings type. Should only be used for more
+     * Gets the default ContentSetting for a settings type. Should only be used for more
      * complex settings where a binary on/off value is not sufficient.
      * Otherwise, use isCategoryEnabled() above.
      * @param contentSettingsType The settings type to get setting for.
      * @return The ContentSetting for |contentSettingsType|.
      */
-    public static int getContentSetting(BrowserContextHandle browserContextHandle,
+    public static int getDefaultContentSetting(BrowserContextHandle browserContextHandle,
             @ContentSettingsType int contentSettingsType) {
-        return WebsitePreferenceBridgeJni.get().getContentSetting(
+        return WebsitePreferenceBridgeJni.get().getDefaultContentSetting(
                 browserContextHandle, contentSettingsType);
     }
 
     /**
-     * @param setting New ContentSetting to set for |contentSettingsType|.
+     * @param setting New default ContentSetting to set for |contentSettingsType|.
      */
-    public static void setContentSetting(BrowserContextHandle browserContextHandle,
+    public static void setDefaultContentSetting(BrowserContextHandle browserContextHandle,
             @ContentSettingsType int contentSettingsType, int setting) {
-        WebsitePreferenceBridgeJni.get().setContentSetting(
+        WebsitePreferenceBridgeJni.get().setDefaultContentSetting(
                 browserContextHandle, contentSettingsType, setting);
     }
 
@@ -308,8 +329,37 @@ public class WebsitePreferenceBridge {
                 browserContextHandle, contentSettingsType);
     }
 
-    public static void setContentSettingForPattern(BrowserContextHandle browserContextHandle,
-            int contentSettingType, String primaryPattern, String secondaryPattern, int setting) {
+    /**
+     * Returns the ContentSetting for a specific site.
+     * See HostContentSettingsMap::GetContentSetting() for more details.
+     */
+    public static @ContentSettingValues int getContentSetting(
+            BrowserContextHandle browserContextHandle, @ContentSettingsType int contentSettingType,
+            GURL primaryUrl, GURL secondaryUrl) {
+        return WebsitePreferenceBridgeJni.get().getContentSetting(
+                browserContextHandle, contentSettingType, primaryUrl, secondaryUrl);
+    }
+
+    /**
+     * Sets the content setting for the default scope of the url that is appropriate for the
+     * given contentSettingType.
+     * See HostContentSettingsMap::SetContentSettingDefaultScope() for more details.
+     */
+    public static void setContentSettingDefaultScope(BrowserContextHandle browserContextHandle,
+            @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl,
+            @ContentSettingValues int setting) {
+        WebsitePreferenceBridgeJni.get().setContentSettingDefaultScope(
+                browserContextHandle, contentSettingType, primaryUrl, secondaryUrl, setting);
+    }
+    /**
+     * Sets the ContentSetting for a specific pattern combination.Unless adding a custom-scoped
+     * setting, most developers will want to use setContentSettingDefaultScope()
+     * instead.
+     * See HostContentSettingsMap::SetContentSettingCustomScope() for more details.
+     */
+    public static void setContentSettingCustomScope(BrowserContextHandle browserContextHandle,
+            @ContentSettingsType int contentSettingType, String primaryPattern,
+            String secondaryPattern, @ContentSettingValues int setting) {
         // Currently only Cookie Settings support a non-empty, non-wildcard secondaryPattern.
         // In addition, if a Cookie Setting uses secondaryPattern, the primaryPattern must be
         // the wildcard.
@@ -319,8 +369,27 @@ public class WebsitePreferenceBridge {
             assert primaryPattern.equals(SITE_WILDCARD);
         }
 
-        WebsitePreferenceBridgeJni.get().setContentSettingForPattern(browserContextHandle,
+        WebsitePreferenceBridgeJni.get().setContentSettingCustomScope(browserContextHandle,
                 contentSettingType, primaryPattern, secondaryPattern, setting);
+    }
+
+    /**
+     * Convert pattern to domain wildcard pattern. If fail to extract domain from the pattern,
+     * return the original pattern.
+     * @param pattern The original pattern to be converted to domain wildcard pattern.
+     * @return The domain wildcard pattern.
+     */
+    public static String toDomainWildcardPattern(String pattern) {
+        return WebsitePreferenceBridgeJni.get().toDomainWildcardPattern(pattern);
+    }
+
+    /**
+     * Convert pattern to host only pattern.
+     * @param pattern The original pattern to be converted to host only pattern.
+     * @return The host only pattern.
+     */
+    public static String toHostOnlyPattern(String pattern) {
+        return WebsitePreferenceBridgeJni.get().toHostOnlyPattern(pattern);
     }
 
     @NativeMethods
@@ -343,18 +412,19 @@ public class WebsitePreferenceBridge {
                 @ContentSettingsType int type, String origin, String object);
         boolean isContentSettingsPatternValid(String pattern);
         boolean urlMatchesContentSettingsPattern(String url, String pattern);
+        void fetchCookiesInfo(BrowserContextHandle browserContextHandle, Object callback);
         void fetchStorageInfo(BrowserContextHandle browserContextHandle, Object callback);
         void fetchLocalStorageInfo(BrowserContextHandle browserContextHandle, Object callback,
                 boolean includeImportant);
         void getOriginsForPermission(BrowserContextHandle browserContextHandle,
                 @ContentSettingsType int contentSettingsType, Object list, boolean managedOnly);
-        int getSettingForOrigin(BrowserContextHandle browserContextHandle,
+        @ContentSettingValues
+        int getPermissionSettingForOrigin(BrowserContextHandle browserContextHandle,
                 @ContentSettingsType int contentSettingsType, String origin, String embedder);
-        void setSettingForOrigin(BrowserContextHandle browserContextHandle,
+        void setPermissionSettingForOrigin(BrowserContextHandle browserContextHandle,
                 @ContentSettingsType int contentSettingsType, String origin, String embedder,
-                int value);
-        boolean isPermissionControlledByDSE(BrowserContextHandle browserContextHandle,
-                @ContentSettingsType int contentSettingsType, String origin);
+                @ContentSettingValues int value);
+        boolean isDSEOrigin(BrowserContextHandle browserContextHandle, String origin);
         boolean getAdBlockingActivated(BrowserContextHandle browserContextHandle, String origin);
         boolean isContentSettingEnabled(
                 BrowserContextHandle browserContextHandle, int contentSettingType);
@@ -365,16 +435,26 @@ public class WebsitePreferenceBridge {
                 BrowserContextHandle browserContextHandle, int contentSettingType, boolean allow);
         void getContentSettingsExceptions(BrowserContextHandle browserContextHandle,
                 @ContentSettingsType int contentSettingsType, List<ContentSettingException> list);
-        void setContentSettingForPattern(BrowserContextHandle browserContextHandle,
-                int contentSettingType, String primaryPattern, String secondaryPattern,
-                int setting);
-        int getContentSetting(BrowserContextHandle browserContextHandle, int contentSettingType);
-        void setContentSetting(
-                BrowserContextHandle browserContextHandle, int contentSettingType, int setting);
+        @ContentSettingValues
+        int getContentSetting(BrowserContextHandle browserContextHandle,
+                @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl);
+        void setContentSettingDefaultScope(BrowserContextHandle browserContextHandle,
+                @ContentSettingsType int contentSettingType, GURL primaryUrl, GURL secondaryUrl,
+                @ContentSettingValues int setting);
+        void setContentSettingCustomScope(BrowserContextHandle browserContextHandle,
+                @ContentSettingsType int contentSettingType, String primaryPattern,
+                String secondaryPattern, @ContentSettingValues int setting);
+        @ContentSettingValues
+        int getDefaultContentSetting(BrowserContextHandle browserContextHandle,
+                @ContentSettingsType int contentSettingType);
+        void setDefaultContentSetting(BrowserContextHandle browserContextHandle,
+                @ContentSettingsType int contentSettingType, @ContentSettingValues int setting);
         boolean isContentSettingUserModifiable(
                 BrowserContextHandle browserContextHandle, int contentSettingType);
         boolean isContentSettingManagedByCustodian(
                 BrowserContextHandle browserContextHandle, int contentSettingType);
         boolean getLocationAllowedByPolicy(BrowserContextHandle browserContextHandle);
+        String toDomainWildcardPattern(String pattern);
+        String toHostOnlyPattern(String pattern);
     }
 }

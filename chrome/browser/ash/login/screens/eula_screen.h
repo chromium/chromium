@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,12 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/eula_screen_handler.h"
 #include "url/gurl.h"
 
-namespace chromeos {
-
-class EulaView;
+namespace ash {
 
 // Representation independent class that controls OOBE screen showing EULA
 // to users.
@@ -26,8 +24,15 @@ class EulaScreen : public BaseScreen {
     ACCEPTED_WITH_USAGE_STATS_REPORTING,
     // The user accepted EULA, and disabled usage stats reporting.
     ACCEPTED_WITHOUT_USAGE_STATS_REPORTING,
-    // The usage did not accept EULA - they clicked back button instead.
+    // Eula already accepted, skip screen
+    ALREADY_ACCEPTED,
+    // Eula already accepted, skip screen (demo mode)
+    ALREADY_ACCEPTED_DEMO_MODE,
+    // The user did not accept EULA - they clicked back button instead.
     BACK,
+    // The user did not accept EULA - they clicked back button instead (demo
+    // mode).
+    BACK_DEMO_MODE,
     // Eula screen is skipped.
     NOT_APPLICABLE,
   };
@@ -50,7 +55,12 @@ class EulaScreen : public BaseScreen {
   static std::string GetResultString(Result result);
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  EulaScreen(EulaView* view, const ScreenExitCallback& exit_callback);
+  EulaScreen(base::WeakPtr<EulaView> view,
+             const ScreenExitCallback& exit_callback);
+
+  EulaScreen(const EulaScreen&) = delete;
+  EulaScreen& operator=(const EulaScreen&) = delete;
+
   ~EulaScreen() override;
 
   // Returns URL of the OEM EULA page that should be displayed using current
@@ -62,20 +72,16 @@ class EulaScreen : public BaseScreen {
   // Returns true if usage statistics reporting is enabled.
   bool IsUsageStatsEnabled() const;
 
-  // This method is called, when view is being destroyed. Note, if model
-  // is destroyed earlier then it has to call SetModel(NULL).
-  void OnViewDestroyed(EulaView* view);
-
  protected:
   ScreenExitCallback* exit_callback() { return &exit_callback_; }
 
  private:
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
-  bool HandleAccelerator(ash::LoginAcceleratorAction action) override;
+  void OnUserAction(const base::Value::List& args) override;
+  bool HandleAccelerator(LoginAcceleratorAction action) override;
 
   // EulaView:
   void ShowStatsUsageLearnMore();
@@ -92,13 +98,23 @@ class EulaScreen : public BaseScreen {
   // it's destroyed.
   std::string tpm_password_;
 
-  EulaView* view_;
+  base::WeakPtr<EulaView> view_;
 
   ScreenExitCallback exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(EulaScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::EulaScreen;
+}
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::EulaScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_EULA_SCREEN_H_

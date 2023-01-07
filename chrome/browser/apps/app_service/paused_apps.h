@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 
 #include <set>
 #include <string>
+#include <utility>
 
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 namespace apps {
@@ -26,6 +28,10 @@ class PausedApps {
       apps::mojom::AppType app_type,
       const std::string& app_id,
       bool paused);
+
+  AppPtr CreateAppWithPauseStatus(AppType app_type,
+                                  const std::string& app_id,
+                                  bool paused);
 
   // Returns true if the app was added to the paused set, and false if it was
   // already there.

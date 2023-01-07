@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_package/web_bundle_url_loader_factory.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -14,11 +16,12 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "url/url_constants.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 namespace web_bundle_utils {
@@ -61,10 +64,10 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 bool IsSupportedFileScheme(const GURL& url) {
   if (url.SchemeIsFile())
     return true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (url.SchemeIs(url::kContentScheme))
     return true;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   return false;
 }
 
@@ -110,34 +113,31 @@ bool GetWebBundleFileMimeTypeFromFile(const base::FilePath& path,
 
 GURL GetSynthesizedUrlForWebBundle(const GURL& web_bundle_file_url,
                                    const GURL& url_in_bundles) {
-  url::Replacements<char> replacements;
+  GURL::Replacements replacements;
 
-  url::Replacements<char> clear_ref;
+  GURL::Replacements clear_ref;
   clear_ref.ClearRef();
   std::string query_string = url_in_bundles.ReplaceComponents(clear_ref).spec();
-  url::Component new_query(0, query_string.size());
-  replacements.SetQuery(query_string.c_str(), new_query);
+  replacements.SetQueryStr(query_string);
 
   if (!url_in_bundles.has_ref()) {
     replacements.ClearRef();
     return web_bundle_file_url.ReplaceComponents(replacements);
   }
-  url::Component new_ref(0, url_in_bundles.ref().size());
   std::string ref_string = url_in_bundles.ref();
-  replacements.SetRef(ref_string.c_str(), new_ref);
+  replacements.SetRefStr(ref_string);
   return web_bundle_file_url.ReplaceComponents(replacements);
+}
+
+bool IsAllowedExchangeUrl(const GURL& url) {
+  return url.SchemeIsHTTPOrHTTPS();
 }
 
 void CompleteWithInvalidWebBundleError(
     mojo::Remote<network::mojom::URLLoaderClient> client,
     int frame_tree_node_id,
     const std::string& error_message) {
-  WebContents* web_contents =
-      WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (web_contents) {
-    web_contents->GetMainFrame()->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError, error_message);
-  }
+  LogErrorMessageToConsole(frame_tree_node_id, error_message);
   std::move(client)->OnComplete(
       network::URLLoaderCompletionStatus(net::ERR_INVALID_WEB_BUNDLE));
 }
@@ -146,6 +146,29 @@ std::string GetMetadataParseErrorMessage(
     const web_package::mojom::BundleMetadataParseErrorPtr& metadata_error) {
   return std::string("Failed to read metadata of Web Bundle file: ") +
          metadata_error->message;
+}
+
+void LogErrorMessageToConsole(const int frame_tree_node_id,
+                              const std::string& error_message) {
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (!frame_tree_node) {
+    return;
+  }
+
+  // By default, Dev Tools clears all console messages on navigations, and only
+  // preserves them if the 'Preserve Log' option is enabled. Thus, we use
+  // `AddDeferredConsoleMessage` if a `navigation_request` is currently in
+  // progress, so that the the console messages are logged to the console only
+  // after the navigation is finished and developers can see the detailed
+  // error messages. crbug.com/1068481
+  if (auto* navigation_request = frame_tree_node->navigation_request()) {
+    navigation_request->AddDeferredConsoleMessage(
+        blink::mojom::ConsoleMessageLevel::kError, error_message);
+  } else {
+    frame_tree_node->current_frame_host()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError, error_message);
+  }
 }
 
 }  // namespace web_bundle_utils

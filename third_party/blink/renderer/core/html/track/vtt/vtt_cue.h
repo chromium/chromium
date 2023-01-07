@@ -30,20 +30,25 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_CUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_TRACK_VTT_VTT_CUE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_align_setting.h"
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
 class Document;
-class DoubleOrAutoKeyword;
 class ExecutionContext;
-class VTTCue;
+class V8UnionAutoKeywordOrDouble;
+class VTTCueBox;
 class VTTRegion;
 class VTTScanner;
 
+using AlignSetting = V8AlignSetting::Enum;
 using VTTRegionMap = HeapHashMap<String, Member<VTTRegion>>;
 
 struct VTTDisplayParameters {
@@ -52,27 +57,12 @@ struct VTTDisplayParameters {
  public:
   VTTDisplayParameters();
 
-  FloatPoint position;
+  gfx::PointF position;
   double size;
   CSSValueID direction;
   CSSValueID text_align;
   CSSValueID writing_mode;
   double snap_to_lines_position;
-};
-
-class VTTCueBox final : public HTMLDivElement {
- public:
-  explicit VTTCueBox(Document&);
-
-  void ApplyCSSProperties(const VTTDisplayParameters&);
-
- private:
-  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
-
-  // The computed line position for snap-to-lines layout, and NaN for
-  // non-snap-to-lines layout where no adjustment should take place.
-  // This is set in applyCSSProperties and propagated to LayoutVTTCue.
-  float snap_to_lines_position_;
 };
 
 class VTTCueBackgroundBox final : public HTMLDivElement {
@@ -85,11 +75,16 @@ class VTTCueBackgroundBox final : public HTMLDivElement {
   const TextTrack* GetTrack() const { return track_; }
 
  private:
+  void DidRecalcStyle(const StyleRecalcChange) override;
+
   Member<TextTrack> track_;
 };
 
 template <>
 struct DowncastTraits<VTTCueBackgroundBox> {
+  static bool AllowFrom(const Node& node) {
+    return node.IsElementNode() && To<Element>(node).IsVTTCueBackgroundBox();
+  }
   static bool AllowFrom(const Element& element) {
     return element.IsVTTCueBackgroundBox();
   }
@@ -118,17 +113,18 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
   bool snapToLines() const { return snap_to_lines_; }
   void setSnapToLines(bool);
 
-  void line(DoubleOrAutoKeyword&) const;
-  void setLine(const DoubleOrAutoKeyword&);
+  V8UnionAutoKeywordOrDouble* line() const;
+  void setLine(const V8UnionAutoKeywordOrDouble* position);
 
-  void position(DoubleOrAutoKeyword&) const;
-  void setPosition(const DoubleOrAutoKeyword&, ExceptionState&);
+  V8UnionAutoKeywordOrDouble* position() const;
+  void setPosition(const V8UnionAutoKeywordOrDouble* position,
+                   ExceptionState& exception_state);
 
   double size() const { return cue_size_; }
   void setSize(double, ExceptionState&);
 
-  const String& align() const;
-  void setAlign(const String&);
+  V8AlignSetting align() const;
+  void setAlign(const V8AlignSetting&);
 
   const String& text() const { return text_; }
   void setText(const String&);
@@ -140,33 +136,30 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
 
   DocumentFragment* getCueAsHTML();
 
+  // Handles the entrance and exit of cues for description-tagged tracks.
+  // OnEnter begins speaking the cue. OnExit pauses the video to let the
+  // description finish, if the cue is still being spoken at the specified end
+  // time.
+  void OnEnter(HTMLMediaElement& video) override;
+  void OnExit(HTMLMediaElement& video) override;
+
   void UpdateDisplay(HTMLDivElement& container) override;
 
   void UpdatePastAndFutureNodes(double movie_time) override;
 
-  base::Optional<double> GetNextIntraCueTime(double movie_time) const override;
+  absl::optional<double> GetNextIntraCueTime(double movie_time) const override;
 
   void RemoveDisplayTree(RemovalNotification) override;
 
   double CalculateComputedLinePosition() const;
 
-  enum WritingDirection {
+  enum class WritingDirection {
     kHorizontal = 0,
     kVerticalGrowingLeft,
     kVerticalGrowingRight,
-    kNumberOfWritingDirections
+    kMaxValue = kVerticalGrowingRight
   };
   WritingDirection GetWritingDirection() const { return writing_direction_; }
-
-  enum CueAlignment {
-    kStart = 0,
-    kCenter,
-    kEnd,
-    kLeft,
-    kRight,
-    kNumberOfAlignments
-  };
-  CueAlignment GetCueAlignment() const { return cue_alignment_; }
 
   ExecutionContext* GetExecutionContext() const override;
 
@@ -192,9 +185,9 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
 
   VTTDisplayParameters CalculateDisplayParameters() const;
   double CalculateComputedTextPosition() const;
-  CueAlignment CalculateComputedCueAlignment() const;
+  AlignSetting CalculateComputedCueAlignment() const;
 
-  enum CueSetting {
+  enum class CueSetting {
     kNone,
     kVertical,
     kLine,
@@ -210,7 +203,7 @@ class CORE_EXPORT VTTCue final : public TextTrackCue {
   double text_position_;
   double cue_size_;
   WritingDirection writing_direction_;
-  CueAlignment cue_alignment_;
+  AlignSetting cue_alignment_ = AlignSetting::kCenter;
 
   Member<VTTRegion> region_;
   Member<DocumentFragment> vtt_node_tree_;

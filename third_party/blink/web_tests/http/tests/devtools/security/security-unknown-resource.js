@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
   await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
-  var request = new SDK.NetworkRequest(0, 'http://unknown', 'https://foo.test', 0, 0, null);
+  var request = SDK.NetworkRequest.create(
+      0, 'http://unknown', 'https://foo.test', 0, 0, null);
   SecurityTestRunner.dispatchRequestFinished(request);
 
   SecurityTestRunner.dumpSecurityPanelSidebarOrigins();

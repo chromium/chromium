@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,17 +19,9 @@ PrivacyBudgetSettingsProvider::PrivacyBudgetSettingsProvider()
       blocked_types_(
           DecodeIdentifiabilityFieldTrialParam<IdentifiableSurfaceTypeSet>(
               features::kIdentifiabilityStudyBlockedTypes.Get())),
-      per_surface_sample_rates_(
-          DecodeIdentifiabilityFieldTrialParam<SurfaceSampleRateMap>(
-              features::kIdentifiabilityStudyPerSurfaceSampleRates.Get())),
-      per_type_sample_rates_(
-          DecodeIdentifiabilityFieldTrialParam<TypeSampleRateMap>(
-              features::kIdentifiabilityStudyPerTypeSampleRates.Get())),
-
-      // In practice there's really no point in enabling the feature with a max
-      // active surface count of 0.
-      enabled_(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy) &&
-               features::kIdentifiabilityStudySurfaceSelectionRate.Get() > 0) {}
+      enabled_(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy)),
+      active_sampling_enabled_(
+          features::kIdentifiabilityStudyEnableActiveSampling.Get()) {}
 
 PrivacyBudgetSettingsProvider::PrivacyBudgetSettingsProvider(
     const PrivacyBudgetSettingsProvider&) = default;
@@ -42,54 +34,26 @@ bool PrivacyBudgetSettingsProvider::IsActive() const {
 }
 
 bool PrivacyBudgetSettingsProvider::IsAnyTypeOrSurfaceBlocked() const {
-  return !blocked_surfaces_.empty() || !blocked_types_.empty() ||
-         base::ranges::any_of(per_surface_sample_rates_,
-                              [](const auto& p) { return p.second == 0; }) ||
-         base::ranges::any_of(per_type_sample_rates_,
-                              [](const auto& p) { return p.second == 0; });
+  return !blocked_surfaces_.empty() || !blocked_types_.empty();
 }
 
 bool PrivacyBudgetSettingsProvider::IsSurfaceAllowed(
     blink::IdentifiableSurface surface) const {
   return !base::Contains(blocked_surfaces_, surface) &&
-         IsTypeAllowed(surface.GetType()) && SampleRateImpl(surface) > 0;
+         IsTypeAllowed(surface.GetType());
 }
 
 bool PrivacyBudgetSettingsProvider::IsTypeAllowed(
     blink::IdentifiableSurface::Type type) const {
-  return !base::Contains(blocked_types_, type) && SampleRateImpl(type) > 0;
+  return !base::Contains(blocked_types_, type);
 }
 
-int PrivacyBudgetSettingsProvider::SampleRate(
-    blink::IdentifiableSurface surface) const {
-  if (base::Contains(blocked_surfaces_, surface) ||
-      base::Contains(blocked_types_, surface.GetType())) {
-    return 0;
-  }
-  return SampleRateImpl(surface);
+bool PrivacyBudgetSettingsProvider::ShouldActivelySample() const {
+  return active_sampling_enabled_;
 }
 
-int PrivacyBudgetSettingsProvider::SampleRate(
-    blink::IdentifiableSurface::Type type) const {
-  if (base::Contains(blocked_types_, type))
-    return 0;
-  return SampleRateImpl(type);
-}
-
-int PrivacyBudgetSettingsProvider::SampleRateImpl(
-    blink::IdentifiableSurface surface) const {
-  auto it = per_surface_sample_rates_.find(surface);
-  if (it != per_surface_sample_rates_.end())
-    return it->second;
-
-  return SampleRateImpl(surface.GetType());
-}
-
-int PrivacyBudgetSettingsProvider::SampleRateImpl(
-    blink::IdentifiableSurface::Type type) const {
-  auto it = per_type_sample_rates_.find(type);
-  if (it != per_type_sample_rates_.end())
-    return it->second;
-
-  return 1;
+std::vector<std::string>
+PrivacyBudgetSettingsProvider::FontFamiliesToActivelySample() const {
+  return DecodeIdentifiabilityFieldTrialParam<std::vector<std::string>>(
+      features::kIdentifiabilityStudyActivelySampledFonts.Get());
 }

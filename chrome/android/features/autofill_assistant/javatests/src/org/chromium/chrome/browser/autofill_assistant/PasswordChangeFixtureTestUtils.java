@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,14 @@ import java.util.concurrent.TimeoutException;
  */
 public final class PasswordChangeFixtureTestUtils {
     /** The default maximum time to wait for a criteria to become valid. */
-    public static final long MAX_WAIT_TIME_IN_MS = 60000;
+    public static final long MAX_WAIT_TIME_IN_MS = 90000;
+    /**
+     * The default maximum time to wait in-between consecutive tests.
+     *
+     * The small delay in-between tests allows for easier visualization during consecutive test
+     * runs.
+     * */
+    public static final long MAX_WAIT_BETWEEN_TESTS_IN_MS = 1000;
     /** Default tag to log password change integration tests information. */
     public static final String TAG = "PasswordChangeTest";
 
@@ -86,9 +93,9 @@ public final class PasswordChangeFixtureTestUtils {
      * Validates full password change run UI flow. Accepts generated password.
      */
     public static void validateFullRun() {
-        // Opening site settings.
+        // Opening site's settings.
         waitUntilViewMatchesCondition(
-                withText("Opening site settings..."), isDisplayed(), MAX_WAIT_TIME_IN_MS);
+                withText("Opening site's settings..."), isDisplayed(), MAX_WAIT_TIME_IN_MS);
 
         // Filling out old password.
         waitUntilViewMatchesCondition(

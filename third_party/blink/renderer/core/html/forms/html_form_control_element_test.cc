@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -152,7 +152,7 @@ TEST_F(HTMLFormControlElementTest, DoNotUpdateLayoutDuringDOMMutation) {
 TEST_F(HTMLFormControlElementTest, UniqueRendererFormControlId) {
   SetHtmlInnerHTML("<body><input id=input1><input id=input2></body>");
   auto* form_control1 = To<HTMLFormControlElement>(GetElementById("input1"));
-  unsigned first_id = form_control1->UniqueRendererFormControlId();
+  uint64_t first_id = form_control1->UniqueRendererFormControlId();
   auto* form_control2 = To<HTMLFormControlElement>(GetElementById("input2"));
   EXPECT_EQ(first_id + 1, form_control2->UniqueRendererFormControlId());
   SetHtmlInnerHTML("<body><select id=select1></body>");

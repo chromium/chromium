@@ -1,0 +1,25 @@
+caption: Enable fullscreen alert
+default: null
+desc: |-
+  Specifies whether the fullscreen alert should be shown when the device returns from sleep or dark screen.
+
+        When the policy is unset or set to True, an alert will be shown to remind the users to exit fullscreen before entering password. When the policy is set to False, no alert would be shown.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Enable fullscreen alert
+  value: true
+- caption: Disable show fullscreen alert
+  value: false
+- caption: Enable fullscreen alert
+  value: null
+owners:
+- zxdan@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:88-
+tags: []
+type: main

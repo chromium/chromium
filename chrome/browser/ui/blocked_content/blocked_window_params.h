@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "url/origin.h"
 
 namespace content {
+class RenderProcessHost;
 class WebContents;
 }  // namespace content
 
@@ -30,7 +31,9 @@ class BlockedWindowParams {
   BlockedWindowParams(const BlockedWindowParams& other);
   ~BlockedWindowParams();
 
-  NavigateParams CreateNavigateParams(content::WebContents* web_contents) const;
+  NavigateParams CreateNavigateParams(
+      content::RenderProcessHost* opener_process,
+      content::WebContents* web_contents) const;
 
   blink::mojom::WindowFeatures features() const { return features_; }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -37,15 +37,21 @@ class CancellingNavigationSimulatorTest
     : public RenderViewHostImplTestHarness,
       public WebContentsObserver,
       public testing::WithParamInterface<
-          std::tuple<base::Optional<TestNavigationThrottle::ThrottleMethod>,
+          std::tuple<absl::optional<TestNavigationThrottle::ThrottleMethod>,
                      TestNavigationThrottle::ResultSynchrony>> {
  public:
   CancellingNavigationSimulatorTest() {}
+
+  CancellingNavigationSimulatorTest(const CancellingNavigationSimulatorTest&) =
+      delete;
+  CancellingNavigationSimulatorTest& operator=(
+      const CancellingNavigationSimulatorTest&) = delete;
+
   ~CancellingNavigationSimulatorTest() override {}
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
     Observe(RenderViewHostImplTestHarness::web_contents());
     std::tie(cancel_time_, sync_) = GetParam();
     simulator_ = NavigationSimulator::CreateRendererInitiated(
@@ -78,27 +84,30 @@ class CancellingNavigationSimulatorTest
 
   void OnWillFailRequestCalled() { will_fail_request_called_ = true; }
 
-  base::Optional<TestNavigationThrottle::ThrottleMethod> cancel_time_;
+  absl::optional<TestNavigationThrottle::ThrottleMethod> cancel_time_;
   TestNavigationThrottle::ResultSynchrony sync_;
   std::unique_ptr<NavigationSimulator> simulator_;
   bool did_finish_navigation_ = false;
   bool will_fail_request_called_ = false;
   base::WeakPtrFactory<CancellingNavigationSimulatorTest> weak_ptr_factory_{
       this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CancellingNavigationSimulatorTest);
 };
 
 class MethodCheckingNavigationSimulatorTest : public NavigationSimulatorTest,
                                               public WebContentsObserver {
  public:
   MethodCheckingNavigationSimulatorTest() = default;
+
+  MethodCheckingNavigationSimulatorTest(
+      const MethodCheckingNavigationSimulatorTest&) = delete;
+  MethodCheckingNavigationSimulatorTest& operator=(
+      const MethodCheckingNavigationSimulatorTest&) = delete;
+
   ~MethodCheckingNavigationSimulatorTest() override = default;
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
     Observe(RenderViewHostImplTestHarness::web_contents());
   }
 
@@ -116,8 +125,6 @@ class MethodCheckingNavigationSimulatorTest : public NavigationSimulatorTest,
 
   // Not valid until |did_finish_navigation_| is true;
   bool is_post_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MethodCheckingNavigationSimulatorTest);
 };
 
 class ResponseHeadersCheckingNavigationSimulatorTest
@@ -129,7 +136,7 @@ class ResponseHeadersCheckingNavigationSimulatorTest
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
+    contents()->GetPrimaryMainFrame()->InitializeRenderFrameIfNeeded();
     Observe(RenderViewHostImplTestHarness::web_contents());
   }
 
@@ -139,7 +146,7 @@ class ResponseHeadersCheckingNavigationSimulatorTest
     }
   }
 
-  const net::HttpResponseHeaders* response_headers_;
+  raw_ptr<const net::HttpResponseHeaders> response_headers_;
 };
 
 TEST_F(NavigationSimulatorTest, AutoAdvanceOff) {
@@ -267,7 +274,7 @@ INSTANTIATE_TEST_SUITE_P(
         ::testing::Values(TestNavigationThrottle::WILL_START_REQUEST,
                           TestNavigationThrottle::WILL_REDIRECT_REQUEST,
                           TestNavigationThrottle::WILL_PROCESS_RESPONSE,
-                          base::nullopt),
+                          absl::nullopt),
         ::testing::Values(TestNavigationThrottle::SYNCHRONOUS,
                           TestNavigationThrottle::ASYNCHRONOUS)));
 

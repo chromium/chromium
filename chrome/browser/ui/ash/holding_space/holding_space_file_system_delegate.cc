@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,22 +7,29 @@
 #include <set>
 #include <string>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/trash_common_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/fileapi/file_change_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -30,6 +37,24 @@ namespace ash {
 
 namespace {
 
+// Returns the absolute file path for the specified `drive_path`.
+// NOTE: This method requires that the `DriveIntegrationService` be mounted.
+base::FilePath ConvertDrivePathToAbsoluteFilePath(
+    Profile* profile,
+    const base::FilePath& drive_path) {
+  const auto* drive_integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  if (drive_integration_service) {
+    base::FilePath absolute_file_path =
+        drive_integration_service->GetMountPointPath();
+    if (base::FilePath("/").AppendRelativePath(drive_path, &absolute_file_path))
+      return absolute_file_path;
+  }
+  NOTREACHED();
+  return base::FilePath();
+}
+
+// Returns a mojo connection to the ARC file system.
 arc::ConnectionHolder<arc::mojom::FileSystemInstance,
                       arc::mojom::FileSystemHost>*
 GetArcFileSystem() {
@@ -38,7 +63,7 @@ GetArcFileSystem() {
   return arc::ArcServiceManager::Get()->arc_bridge_service()->file_system();
 }
 
-// Returns whether
+// Returns whether:
 // *   the ARC is enabled for `profile`, and
 // *   connection to ARC file system service is *not* established at the time.
 bool IsArcFileSystemDisconnected(Profile* profile) {
@@ -47,7 +72,7 @@ bool IsArcFileSystemDisconnected(Profile* profile) {
 }
 
 // Returns whether the item is backed by an Android file. Can be used with
-// non-finalized items.
+// non-initialized items.
 bool ItemBackedByAndroidFile(const HoldingSpaceItem* item) {
   return file_manager::util::GetAndroidFilesPath().IsParent(item->file_path());
 }
@@ -105,8 +130,12 @@ class HoldingSpaceFileSystemDelegate::FileSystemWatcher {
  private:
   void OnFilePathChanged(const base::FilePath& file_path, bool error) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(callback_, file_path, error));
+    // In tests `OnFilePathChanged()` events are sometimes propagated before
+    // `OnFileMoved()` events. Delay propagation of `OnFilePathChanged()`
+    // events to give `OnFileMoved()` events time to propagate.
+    content::GetUIThreadTaskRunner({})->PostDelayedTask(
+        FROM_HERE, base::BindOnce(callback_, file_path, error),
+        base::Milliseconds(1));
   }
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -118,9 +147,9 @@ class HoldingSpaceFileSystemDelegate::FileSystemWatcher {
 // HoldingSpaceFileSystemDelegate ----------------------------------------------
 
 HoldingSpaceFileSystemDelegate::HoldingSpaceFileSystemDelegate(
-    Profile* profile,
+    HoldingSpaceKeyedService* service,
     HoldingSpaceModel* model)
-    : HoldingSpaceKeyedServiceDelegate(profile, model),
+    : HoldingSpaceKeyedServiceDelegate(service, model),
       file_system_watcher_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -140,10 +169,83 @@ void HoldingSpaceFileSystemDelegate::OnConnectionReady() {
       continue;
 
     holding_space_util::ValidityRequirement requirements;
-    if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
-      requirements.must_be_newer_than = kMaxFileAge;
+    if (!features::IsHoldingSpacePredictabilityEnabled()) {
+      if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
+        requirements.must_be_newer_than = kMaxFileAge;
+    }
     ScheduleFilePathValidityCheck({item->file_path(), requirements});
   }
+}
+
+void HoldingSpaceFileSystemDelegate::OnFilesChanged(
+    const std::vector<drivefs::mojom::FileChange>& changes) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // When a file is moved, a `kDelete` change will be followed by a `kCreate`
+  // change with the same `stable_id` in the same set of `changes`. In some
+  // versions of the `DriveFsHost`, `stable_id` is not supported and will always
+  // be `0` for backwards compatibility.
+  std::map<int64_t, base::FilePath> deleted_paths_by_stable_id;
+  std::set<base::FilePath> deleted_paths;
+
+  for (const auto& change : changes) {
+    // Holding space requires absolute file paths.
+    const base::FilePath absolute_file_path =
+        ConvertDrivePathToAbsoluteFilePath(profile(), change.path);
+    if (absolute_file_path.empty())
+      continue;
+
+    switch (change.type) {
+      case drivefs::mojom::FileChange::Type::kCreate: {
+        if (change.stable_id) {
+          // If the `kCreate` change has an associated `stable_id`, it can
+          // potentially be paired with a preceding `kDelete` change. In such
+          // cases, the change sequence actually constitutes a move rather than
+          // a delete of the underlying file.
+          auto it = deleted_paths_by_stable_id.find(change.stable_id);
+          if (it != deleted_paths_by_stable_id.end()) {
+            OnFilePathMoved(/*src=*/it->second, /*dst=*/absolute_file_path);
+            deleted_paths_by_stable_id.erase(it);
+          }
+        }
+        break;
+      }
+      case drivefs::mojom::FileChange::Type::kDelete: {
+        // If the change has a `stable_id` it can potentially constitute part of
+        // a move rather than a delete of the underlying file. Whether the
+        // change is move or a delete will not be known until a `kCreate` change
+        // follows (or is confirmed *not* to follow). When `stable_id` is absent
+        // it is not possible to detect a move.
+        if (change.stable_id)
+          deleted_paths_by_stable_id[change.stable_id] = absolute_file_path;
+        else
+          deleted_paths.insert(absolute_file_path);
+        break;
+      }
+      case drivefs::mojom::FileChange::Type::kModify: {
+        OnFilePathModified(absolute_file_path);
+        break;
+      }
+    }
+  }
+
+  // At this point, all `kDelete` changes in `deleted_paths_by_stable_id` are
+  // confirmed to be deletions, having already stripped out all changes that
+  // were actually constituting moves.
+  for (const auto& deleted_path_by_stable_id : deleted_paths_by_stable_id)
+    deleted_paths.insert(deleted_path_by_stable_id.second);
+
+  // Remove any holding space items backed by deleted file paths.
+  model()->RemoveIf(base::BindRepeating(
+      [](const std::set<base::FilePath>& deleted_paths,
+         const HoldingSpaceItem* item) {
+        return base::ranges::any_of(
+            deleted_paths, [&](const base::FilePath& deleted_path) {
+              return item->file_path() == deleted_path ||
+                     deleted_path.IsParent(item->file_path());
+            });
+      },
+      std::cref(deleted_paths)));
 }
 
 void HoldingSpaceFileSystemDelegate::Init() {
@@ -152,24 +254,33 @@ void HoldingSpaceFileSystemDelegate::Init() {
       base::BindRepeating(&HoldingSpaceFileSystemDelegate::OnFilePathChanged,
                           weak_factory_.GetWeakPtr()));
 
+  // Arc file system.
+  auto* const arc_file_system = GetArcFileSystem();
+  if (arc_file_system)
+    arc_file_system_observer_.Observe(arc_file_system);
+
+  // Drive file system.
+  auto* const drive_integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+  if (drive_integration_service)
+    drivefs_host_observer_.Observe(drive_integration_service->GetDriveFsHost());
+
+  // Local file system.
   file_change_service_observer_.Observe(
       chromeos::FileChangeServiceFactory::GetInstance()->GetService(profile()));
 
-  if (file_manager::VolumeManager::Get(profile())) {
-    volume_manager_observer_.Observe(
-        file_manager::VolumeManager::Get(profile()));
-  }
-
-  if (GetArcFileSystem())
-    arc_file_system_observer_.Observe(GetArcFileSystem());
+  // Volume manager.
+  auto* const volume_manager = file_manager::VolumeManager::Get(profile());
+  if (volume_manager)
+    volume_manager_observer_.Observe(volume_manager);
 
   // Schedule a task to clean up items that belong to volumes that haven't been
-  // mounted in a reasonable amount of time.
-  // The primary goal of handling the delayed volume mount is to support volumes
-  // that are mounted asynchronously during the startup.
-  clear_non_finalized_items_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMinutes(1),
-      base::BindOnce(&HoldingSpaceFileSystemDelegate::ClearNonFinalizedItems,
+  // mounted in a reasonable amount of time. The primary goal of handling the
+  // delayed volume mount is to support volumes that are mounted asynchronously
+  // during the startup.
+  clear_non_initialized_items_timer_.Start(
+      FROM_HERE, base::Minutes(1),
+      base::BindOnce(&HoldingSpaceFileSystemDelegate::ClearNonInitializedItems,
                      base::Unretained(this)));
 }
 
@@ -180,20 +291,26 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
   const bool arc_file_system_disconnected =
       IsArcFileSystemDisconnected(profile());
   for (const HoldingSpaceItem* item : items) {
-    if (item->IsFinalized()) {
+    if (item->IsInitialized() && item->progress().IsComplete()) {
       // Watch the directory containing `item`'s backing file. If the directory
-      // is already being watched, this will no-op.
+      // is already being watched, this will no-op. Note that it is not
+      // necessary to register a watch if the `item` is in-progress since
+      // in-progress items are not subject to validity checks.
       AddWatchForParent(item->file_path());
       continue;
     }
 
-    // If the item has not yet been finalized, check whether it's path can be
+    // In-progress items are not subject to validity checks.
+    if (!item->progress().IsComplete())
+      continue;
+
+    // If the item has not yet been initialized, check whether it's path can be
     // resolved to a file system URL - failure to do so may indicate that the
     // volume to which it path belongs is not mounted there. If the file system
     // URL cannot be resolved, leave the item in partially initialized state.
     // Validity will be checked when the associated mount point is mounted.
     // NOTE: Items will not be kept in partially initialized state indefinitely
-    // - see `clear_non_finalized_items_timer_`.
+    // - see `clear_non_initialized_items_timer_`.
     // NOTE: This does not work well for removable devices, as all removable
     // devices have the same top level "external" mount point (media/removable),
     // so a removable device path will be successfully resolved even if the
@@ -205,15 +322,16 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsAdded(
     if (file_system_url.is_empty())
       continue;
 
-    // Defer validity checks (and finalization) for android files if the
-    // ARC file system connection is not yet ready.
+    // Defer validity checks (and initialization) for android files if the ARC
+    // file system connection is not yet ready.
     if (arc_file_system_disconnected && ItemBackedByAndroidFile(item))
       continue;
 
     holding_space_util::ValidityRequirement requirements;
-    if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
-      requirements.must_be_newer_than = kMaxFileAge;
-
+    if (!features::IsHoldingSpacePredictabilityEnabled()) {
+      if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
+        requirements.must_be_newer_than = kMaxFileAge;
+    }
     ScheduleFilePathValidityCheck({item->file_path(), requirements});
   }
 }
@@ -226,19 +344,23 @@ void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemsRemoved(
 }
 
 void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemUpdated(
-    const HoldingSpaceItem* item) {
+    const HoldingSpaceItem* item,
+    uint32_t updated_fields) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  AddWatchForParent(item->file_path());
+
+  // In-progress items are not subject to validity checks.
+  if (item->progress().IsComplete())
+    AddWatchForParent(item->file_path());
 }
 
-void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemFinalized(
+void HoldingSpaceFileSystemDelegate::OnHoldingSpaceItemInitialized(
     const HoldingSpaceItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   AddWatchForParent(item->file_path());
 }
 
 void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
-    chromeos::MountError error_code,
+    MountError error_code,
     const file_manager::Volume& volume) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   holding_space_util::FilePathsWithValidityRequirements
@@ -246,22 +368,34 @@ void HoldingSpaceFileSystemDelegate::OnVolumeMounted(
   // Check validity of partially initialized items under the volume's mount
   // path.
   for (auto& item : model()->items()) {
-    if (item->IsFinalized())
+    if (item->IsInitialized())
       continue;
     if (!volume.mount_path().IsParent(item->file_path()))
       continue;
 
     holding_space_util::ValidityRequirement requirements;
-    if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
-      requirements.must_be_newer_than = kMaxFileAge;
+    if (!features::IsHoldingSpacePredictabilityEnabled()) {
+      if (item->type() != HoldingSpaceItem::Type::kPinnedFile)
+        requirements.must_be_newer_than = kMaxFileAge;
+    }
     ScheduleFilePathValidityCheck({item->file_path(), requirements});
   }
 }
 
 void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
-    chromeos::MountError error_code,
+    MountError error_code,
     const file_manager::Volume& volume) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  // Drive FS may restart from time to time, so only remove items if drive is
+  // disabled.
+  if (volume.type() == file_manager::VOLUME_TYPE_GOOGLE_DRIVE) {
+    const auto* drive_integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile());
+    if (drive_integration_service && drive_integration_service->is_enabled()) {
+      return;
+    }
+  }
   // Schedule task to remove items under the unmounted file path from the model.
   // During suspend, some volumes get unmounted - for example, drive FS. The
   // file system delegate gets shutdown to avoid removing items from unmounted
@@ -278,17 +412,47 @@ void HoldingSpaceFileSystemDelegate::OnVolumeUnmounted(
 void HoldingSpaceFileSystemDelegate::OnFileModified(
     const storage::FileSystemURL& url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  model()->InvalidateItemImageIf(base::BindRepeating(
-      [](const base::FilePath& path, const HoldingSpaceItem* item) {
-        return item->file_path() == path;
-      },
-      url.path()));
+  OnFilePathModified(url.path());
 }
 
 void HoldingSpaceFileSystemDelegate::OnFileMoved(
     const storage::FileSystemURL& src,
     const storage::FileSystemURL& dst) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  OnFilePathMoved(src.path(), dst.path());
+}
+
+void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
+    const base::FilePath& file_path,
+    bool error) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(!error);
+
+  // The `file_path` that changed is a directory containing backing files for
+  // one or more holding space items. Changes to this directory may indicate
+  // that some, all, or none of these backing files have been removed. Verify
+  // the existence of these backing files to trigger removal of any holding
+  // space items that no longer exist.
+  for (const auto& item : model()->items()) {
+    if (file_path.IsParent(item->file_path()))
+      ScheduleFilePathValidityCheck({item->file_path(), /*requirements=*/{}});
+  }
+}
+
+void HoldingSpaceFileSystemDelegate::OnFilePathModified(
+    const base::FilePath& file_path) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  model()->InvalidateItemImageIf(base::BindRepeating(
+      [](const base::FilePath& file_path, const HoldingSpaceItem* item) {
+        return item->file_path() == file_path;
+      },
+      file_path));
+}
+
+void HoldingSpaceFileSystemDelegate::OnFilePathMoved(
+    const base::FilePath& src,
+    const base::FilePath& dst) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Collect items that should be moved to a new path. This includes:
@@ -297,14 +461,14 @@ void HoldingSpaceFileSystemDelegate::OnFileMoved(
   // Maps item ID to the item's new file path.
   std::vector<std::pair<std::string, base::FilePath>> items_to_move;
   for (auto& item : model()->items()) {
-    if (src.path() == item->file_path()) {
-      items_to_move.push_back(std::make_pair(item->id(), dst.path()));
+    if (src == item->file_path()) {
+      items_to_move.push_back(std::make_pair(item->id(), dst));
       continue;
     }
 
-    if (src.path().IsParent(item->file_path())) {
-      base::FilePath target_path = dst.path();
-      if (!src.path().AppendRelativePath(item->file_path(), &target_path)) {
+    if (src.IsParent(item->file_path())) {
+      base::FilePath target_path(dst);
+      if (!src.AppendRelativePath(item->file_path(), &target_path)) {
         NOTREACHED();
         continue;
       }
@@ -325,51 +489,53 @@ void HoldingSpaceFileSystemDelegate::OnFileMoved(
   // *   Handle duplicate file path move notifications.
   // Instead, update the items as if the target path was modified.
   if (items_to_move.empty()) {
-    OnFileModified(dst);
+    OnFilePathModified(dst);
     return;
   }
 
-  // Resolve conflicts with existing items that arise from the move.
+  // Get a list of the enabled Trash locations. Trash can be enabled and
+  // disabled via policy, so ensure the latest list is retrieved.
+  file_manager::trash::TrashPathsMap enabled_trash_locations;
+  if (base::FeatureList::IsEnabled(chromeos::features::kFilesTrash)) {
+    enabled_trash_locations =
+        file_manager::trash::GenerateEnabledTrashLocationsForProfile(
+            profile(), /*base_path=*/base::FilePath());
+  }
+
+  // Mark items that were moved to an enabled Trash location for removal.
   std::set<std::string> item_ids_to_remove;
-  for (auto& item : model()->items()) {
-    if (dst.path() == item->file_path() ||
-        dst.path().IsParent(item->file_path())) {
-      item_ids_to_remove.insert(item->id());
+  for (const auto& it : enabled_trash_locations) {
+    const base::FilePath& trash_location =
+        it.first.Append(it.second.relative_folder_path);
+    for (const auto& [id, file_path] : items_to_move) {
+      if (trash_location.IsParent(file_path))
+        item_ids_to_remove.insert(id);
     }
   }
+
+  // Mark conflicts with existing items that arise from the move for removal.
+  for (auto& item : model()->items()) {
+    if (dst == item->file_path() || dst.IsParent(item->file_path()))
+      item_ids_to_remove.insert(item->id());
+  }
+
+  // Remove items which have been marked for removal.
   model()->RemoveItems(item_ids_to_remove);
 
   // Finally, update the files that have been moved.
-  for (const auto& to_move : items_to_move) {
-    if (item_ids_to_remove.count(to_move.first))
+  for (const auto& [id, file_path] : items_to_move) {
+    if (item_ids_to_remove.count(id))
       continue;
 
-    model()->UpdateBackingFileForItem(
-        to_move.first, to_move.second,
-        holding_space_util::ResolveFileSystemUrl(profile(), to_move.second));
+    model()->UpdateItem(id)->SetBackingFile(
+        file_path,
+        holding_space_util::ResolveFileSystemUrl(profile(), file_path));
   }
 
   // If a backing file update occurred, it's possible that there are no longer
   // any holding space items associated with `src`. When that is the case, `src`
   // no longer needs to be watched.
-  MaybeRemoveWatch(src.path());
-}
-
-void HoldingSpaceFileSystemDelegate::OnFilePathChanged(
-    const base::FilePath& file_path,
-    bool error) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!error);
-
-  // The `file_path` that changed is a directory containing backing files for
-  // one or more holding space items. Changes to this directory may indicate
-  // that some, all, or none of these backing files have been removed. We need
-  // to verify the existence of these backing files and remove any holding space
-  // items that no longer exist.
-  for (const auto& item : model()->items()) {
-    if (file_path.IsParent(item->file_path()))
-      ScheduleFilePathValidityCheck({item->file_path(), /*requirements=*/{}});
-  }
+  MaybeRemoveWatch(src);
 }
 
 void HoldingSpaceFileSystemDelegate::ScheduleFilePathValidityCheck(
@@ -417,6 +583,10 @@ void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
       [](bool arc_file_system_disconnected,
          const std::vector<base::FilePath>* invalid_paths,
          const HoldingSpaceItem* item) {
+        // In-progress items are not subject to validity checks.
+        if (!item->progress().IsComplete())
+          return false;
+
         // Avoid removing Android files if connection to ARC file system has
         // been lost (e.g. Android container might have crashed). Validity
         // checks will be re-run once the file system gets connected.
@@ -427,21 +597,21 @@ void HoldingSpaceFileSystemDelegate::OnFilePathValidityChecksComplete(
       },
       arc_file_system_disconnected, &invalid_paths));
 
-  std::vector<const HoldingSpaceItem*> items_to_finalize;
+  std::vector<const HoldingSpaceItem*> items_to_initialize;
   for (auto& item : model()->items()) {
-    // Defer finalization of items backed by android files if the connection to
-    // ARC file system service has been lost.
+    // Defer initialization of items backed by android files if the connection
+    // to ARC file system service has been lost.
     if (arc_file_system_disconnected && ItemBackedByAndroidFile(item.get()))
       continue;
 
-    if (!item->IsFinalized() &&
+    if (!item->IsInitialized() &&
         base::Contains(valid_paths, item->file_path())) {
-      items_to_finalize.push_back(item.get());
+      items_to_initialize.push_back(item.get());
     }
   }
 
-  for (auto* item : items_to_finalize) {
-    model()->FinalizeOrRemoveItem(
+  for (auto* item : items_to_initialize) {
+    model()->InitializeOrRemoveItem(
         item->id(),
         holding_space_util::ResolveFileSystemUrl(profile(), item->file_path()));
   }
@@ -460,10 +630,10 @@ void HoldingSpaceFileSystemDelegate::MaybeRemoveWatch(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // The watch for `file_path` should only be removed if no holding space items
   // exist in the model which are backed by files it directly parents.
-  const bool remove_watch = std::none_of(
-      model()->items().begin(), model()->items().end(),
-      [&file_path](const auto& item) {
-        return item->IsFinalized() && item->file_path().DirName() == file_path;
+  const bool remove_watch =
+      base::ranges::none_of(model()->items(), [&file_path](const auto& item) {
+        return item->IsInitialized() &&
+               item->file_path().DirName() == file_path;
       });
 
   if (!remove_watch)
@@ -484,17 +654,17 @@ void HoldingSpaceFileSystemDelegate::RemoveItemsParentedByPath(
       parent_path));
 }
 
-void HoldingSpaceFileSystemDelegate::ClearNonFinalizedItems() {
+void HoldingSpaceFileSystemDelegate::ClearNonInitializedItems() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   model()->RemoveIf(base::BindRepeating(
       [](Profile* profile, const HoldingSpaceItem* item) {
-        if (item->IsFinalized())
+        if (item->IsInitialized())
           return false;
 
         // Do not remove items whose path can be resolved to a file system URL.
         // In this case, the associated mount point has been mounted, but the
-        // finalization may have been delayed - for example due to issues/delays
-        // with initializing ARC.
+        // initialization may have been delayed - for example due to
+        // issues/delays with initializing ARC.
         const GURL url = holding_space_util::ResolveFileSystemUrl(
             profile, item->file_path());
         return url.is_empty();

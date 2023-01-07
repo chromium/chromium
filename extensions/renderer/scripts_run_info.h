@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
@@ -29,6 +28,10 @@ struct ScriptsRunInfo {
 
   ScriptsRunInfo(content::RenderFrame* render_frame,
                  mojom::RunLocation location);
+
+  ScriptsRunInfo(const ScriptsRunInfo&) = delete;
+  ScriptsRunInfo& operator=(const ScriptsRunInfo&) = delete;
+
   ~ScriptsRunInfo();
 
   // The number of CSS scripts injected.
@@ -62,8 +65,6 @@ struct ScriptsRunInfo {
 
   // The url of the frame, preserved for the same reason as the routing id.
   GURL frame_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptsRunInfo);
 };
 
 }  // namespace extensions

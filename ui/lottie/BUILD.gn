@@ -1,0 +1,31 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+component("lottie") {
+  sources = [
+    "animation.cc",
+    "animation.h",
+    "animation_observer.h",
+    "resource.cc",
+    "resource.h",
+  ]
+
+  defines = [ "IS_UI_LOTTIE_IMPL" ]
+
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//cc/paint",
+    "//ui/gfx",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ui/base",
+      "//ui/color",
+    ]
+  }
+}

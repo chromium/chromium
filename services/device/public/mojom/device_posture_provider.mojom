@@ -1,0 +1,29 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module device.mojom;
+
+// An enum representing the posture of device, or an no type fold state.
+// Defined https://w3c.github.io/device-posture/#posture-types
+enum DevicePostureType {
+  kContinuous,
+  kFolded,
+};
+
+// This interface is used to get the posture of the device from
+// DevicePostureService.
+interface DevicePostureProvider {
+  // Associates an interface to the posture provider. The initial posture
+  // will then be returned.
+  AddListenerAndGetCurrentPosture(
+    pending_remote<DevicePostureProviderClient> client)
+      => (DevicePostureType posture);
+};
+
+// Interface that client of the DevicePostureProvider interface must implement
+// to observe posture changes.
+interface DevicePostureProviderClient {
+  // Interface used to notify posture changes.
+  OnPostureChanged(DevicePostureType posture);
+};

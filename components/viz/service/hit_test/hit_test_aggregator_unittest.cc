@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 #include <map>
 #include <memory>
+#include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -20,6 +22,7 @@
 #include "components/viz/test/surface_id_allocator_set.h"
 #include "components/viz/test/test_latest_local_surface_id_lookup_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 namespace {
@@ -30,6 +33,10 @@ constexpr FrameSinkId kDisplayFrameSink(kDisplayClientId, 0);
 class TestHostFrameSinkManager : public HostFrameSinkManager {
  public:
   TestHostFrameSinkManager() = default;
+
+  TestHostFrameSinkManager(const TestHostFrameSinkManager&) = delete;
+  TestHostFrameSinkManager& operator=(const TestHostFrameSinkManager&) = delete;
+
   ~TestHostFrameSinkManager() override = default;
 
   void OnAggregatedHitTestRegionListUpdated(
@@ -46,14 +53,17 @@ class TestHostFrameSinkManager : public HostFrameSinkManager {
  private:
   FrameSinkId buffer_frame_sink_id_;
   std::vector<AggregatedHitTestRegion> active_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHostFrameSinkManager);
 };
 
 class TestFrameSinkManagerImpl : public FrameSinkManagerImpl {
  public:
   explicit TestFrameSinkManagerImpl(SharedBitmapManager* shared_bitmap_manager)
-      : FrameSinkManagerImpl(shared_bitmap_manager) {}
+      : FrameSinkManagerImpl(
+            FrameSinkManagerImpl::InitParams(shared_bitmap_manager)) {}
+
+  TestFrameSinkManagerImpl(const TestFrameSinkManagerImpl&) = delete;
+  TestFrameSinkManagerImpl& operator=(const TestFrameSinkManagerImpl&) = delete;
+
   ~TestFrameSinkManagerImpl() override = default;
 
   void SetLocalClient(TestHostFrameSinkManager* client) {
@@ -71,9 +81,7 @@ class TestFrameSinkManagerImpl : public FrameSinkManagerImpl {
   }
 
  private:
-  TestHostFrameSinkManager* host_client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFrameSinkManagerImpl);
+  raw_ptr<TestHostFrameSinkManager> host_client_ = nullptr;
 };
 
 }  // namespace
@@ -105,6 +113,10 @@ class TestHitTestAggregator final : public HitTestAggregator {
 class HitTestAggregatorTest : public testing::Test {
  public:
   HitTestAggregatorTest() = default;
+
+  HitTestAggregatorTest(const HitTestAggregatorTest&) = delete;
+  HitTestAggregatorTest& operator=(const HitTestAggregatorTest&) = delete;
+
   ~HitTestAggregatorTest() override = default;
 
   // testing::Test:
@@ -225,8 +237,6 @@ class HitTestAggregatorTest : public testing::Test {
       local_surface_id_lookup_delegate_;
   std::unique_ptr<CompositorFrameSinkSupport> support_;
   SurfaceIdAllocatorSet allocator_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(HitTestAggregatorTest);
 };
 
 // TODO(gklassen): Add tests for 3D use cases as suggested by and with
@@ -679,10 +689,8 @@ TEST_F(HitTestAggregatorTest, ClippedChildWithTabAndTransparentBackground) {
   EXPECT_EQ(region.rect, gfx::Rect(300, 100, 1600, 800));
   EXPECT_EQ(region.child_count, 2);
 
-  gfx::Point point(300, 300);
-  gfx::Transform transform(region.transform());
-  transform.TransformPointReverse(&point);
-  EXPECT_TRUE(point == gfx::Point(100, 200));
+  EXPECT_EQ(gfx::Point(100, 200),
+            region.transform.InverseMapPoint(gfx::Point(300, 300)));
 
   region = host_regions()[2];
   EXPECT_EQ(HitTestRegionFlags::kHitTestChildSurface |
@@ -1158,7 +1166,7 @@ TEST_F(HitTestAggregatorTest, HitTestDataNotUpdated) {
   // We did not update the hit-test data. Expect the index from Aggregator /
   // Manager to remain unchanged.
   support()->SubmitCompositorFrame(surface_id.local_surface_id(),
-                                   MakeDefaultCompositorFrame(), base::nullopt);
+                                   MakeDefaultCompositorFrame(), absl::nullopt);
   aggregator->Aggregate(surface_id);
   EXPECT_EQ(last_index, aggregator->GetLastSubmitHitTestRegionListIndex());
 

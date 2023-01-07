@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL WebLocks of an iframe under a 3rd-party site are partitioned assert_equals: The 1p iframe failed to acquire the lock expected (undefined) undefined but got (boolean) true
+FAIL WebLocks of a nested iframe with a cross-site ancestor are partitioned assert_equals: The 1p iframe failed to acquire the lock expected (undefined) undefined but got (boolean) true
+Harness: the test ran to completion.
+

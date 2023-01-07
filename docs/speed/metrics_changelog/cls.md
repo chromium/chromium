@@ -2,6 +2,13 @@
 
 This is a list of changes to [Cumulative Layout Shift](https://web.dev/cls).
 
+* Chrome 98
+  * Metric definition improvement: [Record CLS value at the first OnHidden in addition to tab close in UKM](2021_11_cls.md)
+* Chrome 93
+  * Metric definition improvement: [Bug fix involving scroll anchoring](2021_06_cls_2.md)
+  * Metric definition improvement: [Ignore layout shift while dragging or resizing elements with a mouse](2021_06_cls_2.md)
+* Chrome 91
+  * Metric definition improvement: [Cumulative Layout Shift uses max session window](2021_06_cls.md)
 * Chrome 90
   * Metric definition improvement: [Bug fixes involving changes to transform, effect, clip or position](2021_02_cls.md)
   * Metric definition improvement: [Consider transform change countering layout shift](2021_02_cls.md)

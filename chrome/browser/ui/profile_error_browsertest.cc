@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -85,7 +85,8 @@ IN_PROC_BROWSER_TEST_P(ProfileErrorBrowserTest, MAYBE_CorruptedProfile) {
   const char kPaintHistogram[] = "Startup.FirstWebContents.NonEmptyPaint3";
 
   // Navigate to a URL so the first non-empty paint is registered.
-  ui_test_utils::NavigateToURL(browser(), GURL("http://www.example.com/"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("http://www.example.com/")));
 
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();

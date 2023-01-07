@@ -1,8 +1,7 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/web_navigation/frame_navigation_state.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -20,7 +19,7 @@ TEST_F(FrameNavigationStateTest, ErrorState) {
   auto* navigation_state =
       FrameNavigationState::GetOrCreateForCurrentDocument(main_rfh());
 
-  navigation_state->StartTrackingDocumentLoad(url, false, false);
+  navigation_state->StartTrackingDocumentLoad(url, false, false, false);
   EXPECT_TRUE(navigation_state->CanSendEvents());
   EXPECT_FALSE(navigation_state->GetErrorOccurredInFrame());
 
@@ -30,12 +29,12 @@ TEST_F(FrameNavigationStateTest, ErrorState) {
   EXPECT_TRUE(navigation_state->GetErrorOccurredInFrame());
 
   // Navigations to a network error page should be ignored.
-  navigation_state->StartTrackingDocumentLoad(GURL(), false, true);
+  navigation_state->StartTrackingDocumentLoad(GURL(), false, false, true);
   EXPECT_FALSE(navigation_state->CanSendEvents());
   EXPECT_TRUE(navigation_state->GetErrorOccurredInFrame());
 
   // However, when the frame navigates again, it should send events again.
-  navigation_state->StartTrackingDocumentLoad(url, false, false);
+  navigation_state->StartTrackingDocumentLoad(url, false, false, false);
   EXPECT_TRUE(navigation_state->CanSendEvents());
   EXPECT_FALSE(navigation_state->GetErrorOccurredInFrame());
 }
@@ -46,7 +45,7 @@ TEST_F(FrameNavigationStateTest, WebSafeScheme) {
   auto* navigation_state =
       FrameNavigationState::GetOrCreateForCurrentDocument(main_rfh());
 
-  navigation_state->StartTrackingDocumentLoad(url, false, false);
+  navigation_state->StartTrackingDocumentLoad(url, false, false, false);
   EXPECT_FALSE(navigation_state->CanSendEvents());
 }
 
@@ -56,7 +55,7 @@ TEST_F(FrameNavigationStateTest, SrcDoc) {
   auto* navigation_state =
       FrameNavigationState::GetOrCreateForCurrentDocument(main_rfh());
 
-  navigation_state->StartTrackingDocumentLoad(srcdoc, false, false);
+  navigation_state->StartTrackingDocumentLoad(srcdoc, false, false, false);
   EXPECT_TRUE(navigation_state->CanSendEvents());
   EXPECT_EQ(srcdoc, navigation_state->GetUrl());
   EXPECT_TRUE(FrameNavigationState::IsValidUrl(srcdoc));

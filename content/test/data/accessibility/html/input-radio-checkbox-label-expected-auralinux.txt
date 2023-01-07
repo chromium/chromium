@@ -1,7 +1,7 @@
 [document web]
 ++[section]
-++++[radio button] name='label ignored for radio button' labelled-by checkable:true
-++++[check box] name='label ignored for checkbox' labelled-by checkable:true
+++++[radio button] name='label ignored for radio button' checkable:true
+++++[check box] name='label ignored for checkbox' checkable:true
 ++++[label] name='label exposed for radio button ' label-for
 ++++++[static] name='label exposed for radio button '
 ++++++[radio button] name='label exposed for radio button' labelled-by checkable:true

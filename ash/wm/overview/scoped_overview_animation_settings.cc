@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/overview/scoped_overview_animation_settings.h"
 
 #include "ash/metrics/histogram_macros.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "base/bind.h"
@@ -22,32 +21,27 @@ namespace ash {
 namespace {
 
 // The time duration for fading out when closing an item.
-constexpr base::TimeDelta kCloseFadeOut =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kCloseFadeOut = base::Milliseconds(100);
 
 // The time duration for scaling down when an item is closed.
-constexpr base::TimeDelta kCloseScale = base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kCloseScale = base::Milliseconds(100);
 
 // The time duration for widgets to fade in.
-constexpr base::TimeDelta kFadeInDelay = base::TimeDelta::FromMilliseconds(83);
-constexpr base::TimeDelta kFadeIn = base::TimeDelta::FromMilliseconds(167);
+constexpr base::TimeDelta kFadeInDelay = base::Milliseconds(83);
+constexpr base::TimeDelta kFadeIn = base::Milliseconds(167);
 
 // The time duration for widgets to fade out.
-constexpr base::TimeDelta kFadeOut = base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kFadeOut = base::Milliseconds(100);
 
-constexpr base::TimeDelta kFromHomeLauncherDelay =
-    base::TimeDelta::FromMilliseconds(250);
-constexpr base::TimeDelta kHomeLauncherTransition =
-    base::TimeDelta::FromMilliseconds(350);
+constexpr base::TimeDelta kFromHomeLauncherDelay = base::Milliseconds(250);
+constexpr base::TimeDelta kHomeLauncherTransition = base::Milliseconds(350);
 
 // Time duration of the show animation of the drop target.
-constexpr base::TimeDelta kDropTargetFade =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kDropTargetFade = base::Milliseconds(250);
 
 // Time duration to fade in overview windows when a window drag slows down or
 // stops.
-constexpr base::TimeDelta kFadeInOnWindowDrag =
-    base::TimeDelta::FromMilliseconds(350);
+constexpr base::TimeDelta kFadeInOnWindowDrag = base::Milliseconds(350);
 
 base::TimeDelta GetAnimationDuration(OverviewAnimationType animation_type) {
   switch (animation_type) {
@@ -77,6 +71,8 @@ base::TimeDelta GetAnimationDuration(OverviewAnimationType animation_type) {
       return kTransition;
     case OVERVIEW_ANIMATION_OPACITY_ON_WINDOW_DRAG:
       return kFadeInOnWindowDrag;
+    case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_DESKS_TEMPLATES_GRID_FADE_OUT:
+      return kFadeOut;
   }
   NOTREACHED();
   return base::TimeDelta();
@@ -164,6 +160,11 @@ ScopedOverviewAnimationSettings::ScopedOverviewAnimationSettings(
       break;
     case OVERVIEW_ANIMATION_OPACITY_ON_WINDOW_DRAG:
       animation_settings_->SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN);
+      animation_settings_->SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+      break;
+    case OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_DESKS_TEMPLATES_GRID_FADE_OUT:
+      animation_settings_->SetTweenType(gfx::Tween::LINEAR);
       animation_settings_->SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
       break;

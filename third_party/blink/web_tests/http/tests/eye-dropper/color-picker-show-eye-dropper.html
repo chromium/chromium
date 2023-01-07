@@ -4,6 +4,8 @@
 <meta name="color-scheme" content="light dark">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="/forms-test-resources/picker-common.js"></script>
 </head>
 <body>
@@ -16,12 +18,10 @@
 import {waitUntilEyeDropperShown} from './resources/mock-eyedropperchooser.js';
 
 promise_test(async () => {
-  await new Promise((resolve, reject) => {
-    openPicker(document.getElementById('color'), resolve, reject);
-  });
-
-  popupWindow.focus();
-  const popupDocument = popupWindow.document;
+  await openPicker(document.getElementById('color'));
+  
+  internals.pagePopupWindow.focus();
+  const popupDocument = internals.pagePopupWindow.document;
   const eyeDropper = popupDocument.querySelector('eye-dropper');
   const eyeDropperRect = eyeDropper.getBoundingClientRect();
   eventSender.mouseMoveTo(eyeDropperRect.left + (eyeDropperRect.width / 2), eyeDropperRect.top + (eyeDropperRect.height / 2));

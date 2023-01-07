@@ -1,5 +1,5 @@
-#!/usr/bin/env vpython
-# Copyright 2016 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,14 +8,20 @@ import json
 import os
 import unittest
 
+import six
+
 import generate_legacy_perf_dashboard_json
 
 class LegacyResultsProcessorUnittest(unittest.TestCase):
   def setUp(self):
     """Set up for all test method of each test method below."""
     super(LegacyResultsProcessorUnittest, self).setUp()
-    self.data_directory = os.path.join(os.path.dirname(
-      os.path.abspath(__file__)), 'testdata')
+    if six.PY2:
+      self.data_directory = os.path.join(
+          os.path.dirname(os.path.abspath(__file__)), 'testdata')
+    else:
+      self.data_directory = os.path.join(
+          os.path.dirname(os.path.abspath(__file__)), 'testdata', 'python3')
 
   def _ConstructDefaultProcessor(self):
     """Creates a LegacyResultsProcessor instance.

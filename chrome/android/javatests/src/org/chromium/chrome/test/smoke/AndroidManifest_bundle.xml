@@ -1,5 +1,5 @@
 <!--
- * Copyright 2019 The Chromium Authors. All rights reserved.
+ * Copyright 2019 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
 -->
@@ -31,5 +31,10 @@
          for more details. -->
     <queries>
       <package android:name="org.chromium.chrome" />
+      <package android:name="com.google.android.apps.chrome" />
+      <package android:name="com.chrome.canary" />
+      <package android:name="com.chrome.dev" />
+      <package android:name="com.chrome.beta" />
+      <package android:name="com.android.chrome" />
     </queries>
 </manifest>

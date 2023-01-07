@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL checkAddTransceiverWithStream promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
-FAIL checkAddTransceiverWithOfferToReceiveAudio assert_equals: expected "[{currentDirection:null,direction:\"recvonly\",mid:null,receiver:{track:{kind:\"audio\"}},sender:{track:null},stopped:false}]" but got "[]"
-FAIL checkAddTransceiverWithOfferToReceiveVideo assert_equals: expected "[{currentDirection:null,direction:\"recvonly\",mid:null,receiver:{track:{kind:\"video\"}},sender:{track:null},stopped:false}]" but got "[]"
-FAIL checkAddTransceiverWithOfferToReceiveBoth assert_equals: expected "[{currentDirection:null,direction:\"recvonly\",mid:null,receiver:{track:{kind:\"audio\"}},sender:{track:null},stopped:false},{currentDirection:null,direction:\"recvonly\",mid:null,receiver:{track:{kind:\"video\"}},sender:{track:null},stopped:false}]" but got "[]"
-Harness: the test ran to completion.
-

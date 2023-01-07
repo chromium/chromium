@@ -52,7 +52,6 @@ myelement {
   }
 
 test((t) => {
-    var comboBoxRole = (testRunner.platformName == "gtk" || testRunner.platformName == "efl") ? "AXRole: AXComboBox" : "AXRole: AXPopUpButton";
 
     // Check rendered controls.
     check("link1", "AXRole: AXLink");
@@ -61,7 +60,7 @@ test((t) => {
     check("checkbox1", "AXRole: AXCheckBox");
     check("radio1", "AXRole: AXRadioButton");
     check("submit1", "AXRole: AXButton");
-    check("combobox1", comboBoxRole);
+    check("combobox1", "AXRole: AXComboBoxSelect");
     check("focusable1", "AXRole: AXGenericContainer");
     check("aria-button1", "AXRole: AXButton");
     check("aria-link1", "AXRole: AXLink");
@@ -73,7 +72,7 @@ test((t) => {
     check("checkbox2", "AXRole: AXCheckBox");
     check("radio2", "AXRole: AXRadioButton");
     check("submit2", "AXRole: AXButton", t);
-    check("combobox2", comboBoxRole, t);
+    check("combobox2", "AXRole: AXComboBoxSelect", t);
     check("focusable2", "AXRole: AXGenericContainer", t);
     check("aria-button2", "AXRole: AXButton", t);
     check("aria-link2", "AXRole: AXLink", t);

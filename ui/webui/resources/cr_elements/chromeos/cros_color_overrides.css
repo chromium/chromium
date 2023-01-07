@@ -1,0 +1,84 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+
+/* Style Module that defines color overrides for cr-elements on Chrome OS.
+
+This file plumbs semantic colors from cros_styles.css into cr-elements.
+
+To get Chrome OS System Colors, an element must:
+- be beneath a <html> element with a "cros" attribute
+- have a <style include="cros-color-overrides"> module in its style module list
+- import the following URL in JS/TS
+  //resources/cr_elements/chromeos/cros_color_overrides.css.js
+*/
+
+:host-context([cros]) a:not(.item)[href] {
+  color: var(--cros-link-color);
+}
+
+:host-context([cros]) cr-dialog::part(dialog) {
+  background-color: var(--cros-bg-color-elevation-3);
+  background-image: none;
+  box-shadow: var(--cros-elevation-3-shadow);
+}
+
+:host-context([cros]) cr-radio-button {
+  --cr-radio-button-checked-color: var(--cros-radio-button-color);
+  --cr-radio-button-checked-ripple-color:
+      var(--cros-radio-button-ripple-color);
+  --cr-radio-button-unchecked-color:
+      var(--cros-radio-button-color-unchecked);
+  --cr-radio-button-unchecked-ripple-color:
+      var(--cros-radio-button-ripple-color-unchecked);
+}
+
+:host-context([cros]) cr-toast {
+  --cr-toast-background-color: var(--cros-toast-background-color);
+  --cr-toast-background: var(--cros-toast-background-color);
+  --cr-toast-text-color: var(--cros-toast-text-color);
+  --iron-icon-fill-color: var(--cros-toast-icon-color);
+}
+
+:host-context([cros]) cr-toast .error-message {
+  color: var(--cros-toast-text-color);
+}
+
+:host-context([cros]) cr-toggle {
+  --cr-toggle-checked-bar-color: var(--cros-switch-track-color-active);
+  /* |--cros-switch-track-color-active| already includes opacity. */
+  --cr-toggle-checked-bar-opacity: 100%;
+  --cr-toggle-checked-button-color: var(--cros-switch-knob-color-active);
+  --cr-toggle-checked-ripple-color: var(--cros-focus-aura-color);
+  --cr-toggle-unchecked-bar-color: var(--cros-switch-track-color-inactive);
+  --cr-toggle-unchecked-button-color: var(--cros-switch-knob-color-inactive);
+  --cr-toggle-unchecked-ripple-color: var(--cros-ripple-color);
+  --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);
+  --cr-toggle-ripple-diameter: 32px;
+}
+
+:host-context([cros]) cr-toggle:focus {
+  --cr-toggle-ripple-ring: 2px solid var(--cros-focus-ring-color);
+}
+
+:host-context([cros]) .primary-toggle {
+  color: var(--cros-text-color-secondary);
+}
+
+:host-context([cros]) .primary-toggle[checked] {
+  color: var(--cros-text-color-prominent);
+}
+
+:host-context([cros]) paper-spinner-lite {
+  --paper-spinner-color: var(--cros-icon-color-prominent);
+}
+
+:host-context([cros]) cr-tooltip-icon {
+  --cr-link-color: var(--cros-tooltip-link-color);
+}

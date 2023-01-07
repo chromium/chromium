@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,10 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/feature_list.h"
+#include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
-
-namespace base {
-struct Feature;
-}  // namespace base
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 struct FeatureConfig;
@@ -35,6 +33,7 @@ class ConditionValidator {
   struct Result {
     explicit Result(bool initial_values);
     Result(const Result& other);
+    Result& operator=(const Result& other);
 
     // Whether the event model was ready.
     bool event_model_ready_ok;
@@ -69,10 +68,24 @@ class ConditionValidator {
     // Whether there are currently held display locks.
     bool display_lock_ok;
 
+    // Whether the current snooze timer has expired.
+    bool snooze_expiration_ok;
+
+    // Whether the given feature is a priority notification, or there are no
+    // other priority notifications.
+    bool priority_notification_ok;
+
+    // Whether the snooze option should be shown.
+    // This value is excluded from the NoErrors() check.
+    bool should_show_snooze;
+
     // Returns true if this result object has no errors, i.e. no values that
     // are false.
     bool NoErrors() const;
   };
+
+  ConditionValidator(const ConditionValidator&) = delete;
+  ConditionValidator& operator=(const ConditionValidator&) = delete;
 
   virtual ~ConditionValidator() = default;
 
@@ -83,6 +96,7 @@ class ConditionValidator {
       const EventModel& event_model,
       const AvailabilityModel& availability_model,
       const DisplayLockController& display_lock_controller,
+      const Configuration* configuration,
       uint32_t current_day) const = 0;
 
   // Must be called to notify that the |feature| is currently showing.
@@ -94,11 +108,16 @@ class ConditionValidator {
   // Must be called to notify that the |feature| is no longer showing.
   virtual void NotifyDismissed(const base::Feature& feature) = 0;
 
+  // Called to notify that we have a priority notification to be shown next. All
+  // other IPHs will be blocked until then.
+  virtual void SetPriorityNotification(
+      const absl::optional<std::string>& feature) = 0;
+
+  // Called to get if there is a pending priority notification to be shown next.
+  virtual absl::optional<std::string> GetPendingPriorityNotification() = 0;
+
  protected:
   ConditionValidator() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConditionValidator);
 };
 
 std::ostream& operator<<(std::ostream& os,

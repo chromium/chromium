@@ -1,0 +1,34 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<iframe id="i" src="/common/blank.html"></iframe>
+
+<!--
+  Regression test for https://bugs.chromium.org/p/chromium/issues/detail?id=1289864.
+  We can probably remove this once https://github.com/web-platform-tests/wpt/issues/7899
+  happens and the counterpart tests in external/wpt/navigation-api/ are updated.
+-->
+
+<script>
+promise_test(t => {
+  i.contentWindow.navigation.navigate("/common/blank.html?1");
+
+  return asyncGC();
+}, `navigate() from <iframe> with src="" but still on initial about:blank doesn't cause a crash on GC`);
+
+// Copied from web_tests/resources/gc.js
+function asyncGC() {
+  return new Promise(resolve => {
+    const documentsBefore = internals.numberOfLiveDocuments();
+    GCController.asyncCollectAll(() => {
+      const documentsAfter = internals.numberOfLiveDocuments();
+      if (documentsAfter < documentsBefore) {
+        resolve(asyncGC());
+      } else {
+        resolve();
+      }
+    })
+  });
+}
+</script>

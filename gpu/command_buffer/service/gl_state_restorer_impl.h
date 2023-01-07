@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #define GPU_COMMAND_BUFFER_SERVICE_GL_STATE_RESTORER_IMPL_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gl/gl_state_restorer.h"
@@ -26,6 +25,10 @@ class GPU_GLES2_EXPORT GLStateRestorerImpl : public gl::GLStateRestorer {
  public:
   explicit GLStateRestorerImpl(
       base::WeakPtr<GLContextVirtualDelegate> delegate);
+
+  GLStateRestorerImpl(const GLStateRestorerImpl&) = delete;
+  GLStateRestorerImpl& operator=(const GLStateRestorerImpl&) = delete;
+
   ~GLStateRestorerImpl() override;
 
   bool IsInitialized() override;
@@ -44,8 +47,6 @@ class GPU_GLES2_EXPORT GLStateRestorerImpl : public gl::GLStateRestorer {
  private:
   const gles2::ContextState* GetContextState() const;
   base::WeakPtr<GLContextVirtualDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLStateRestorerImpl);
 };
 
 }  // namespace gpu

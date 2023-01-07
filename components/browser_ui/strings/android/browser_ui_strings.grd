@@ -84,157 +84,164 @@
     <output filename="values-zh-rHK/browser_ui_strings.xml" lang="zh-HK" type="android" />
     <output filename="values-zh-rTW/browser_ui_strings.xml" lang="zh-TW" type="android" />
     <output filename="values-zu/browser_ui_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/browser_ui_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/browser_ui_strings.xml" lang="en-XA" type="android" />
   </outputs>
   <translations>
-    <file lang="af" path="translations/browser_ui_strings_af.xtb" />
-    <file lang="am" path="translations/browser_ui_strings_am.xtb" />
-    <file lang="ar" path="translations/browser_ui_strings_ar.xtb" />
-    <file lang="as" path="translations/browser_ui_strings_as.xtb" />
-    <file lang="az" path="translations/browser_ui_strings_az.xtb" />
-    <file lang="be" path="translations/browser_ui_strings_be.xtb" />
-    <file lang="bg" path="translations/browser_ui_strings_bg.xtb" />
-    <file lang="bn" path="translations/browser_ui_strings_bn.xtb" />
-    <file lang="bs" path="translations/browser_ui_strings_bs.xtb" />
-    <file lang="ca" path="translations/browser_ui_strings_ca.xtb" />
-    <file lang="cs" path="translations/browser_ui_strings_cs.xtb" />
-    <file lang="da" path="translations/browser_ui_strings_da.xtb" />
-    <file lang="de" path="translations/browser_ui_strings_de.xtb" />
-    <file lang="el" path="translations/browser_ui_strings_el.xtb" />
-    <file lang="en-GB" path="translations/browser_ui_strings_en-GB.xtb" />
-    <file lang="es" path="translations/browser_ui_strings_es.xtb" />
-    <file lang="es-419" path="translations/browser_ui_strings_es-419.xtb" />
-    <file lang="et" path="translations/browser_ui_strings_et.xtb" />
-    <file lang="eu" path="translations/browser_ui_strings_eu.xtb" />
-    <file lang="fa" path="translations/browser_ui_strings_fa.xtb" />
-    <file lang="fi" path="translations/browser_ui_strings_fi.xtb" />
-    <file lang="fil" path="translations/browser_ui_strings_fil.xtb" />
-    <file lang="fr" path="translations/browser_ui_strings_fr.xtb" />
-    <file lang="fr-CA" path="translations/browser_ui_strings_fr-CA.xtb" />
-    <file lang="gl" path="translations/browser_ui_strings_gl.xtb" />
-    <file lang="gu" path="translations/browser_ui_strings_gu.xtb" />
-    <file lang="hi" path="translations/browser_ui_strings_hi.xtb" />
-    <file lang="hr" path="translations/browser_ui_strings_hr.xtb" />
-    <file lang="hu" path="translations/browser_ui_strings_hu.xtb" />
-    <file lang="hy" path="translations/browser_ui_strings_hy.xtb" />
-    <file lang="id" path="translations/browser_ui_strings_id.xtb" />
-    <file lang="is" path="translations/browser_ui_strings_is.xtb" />
-    <file lang="it" path="translations/browser_ui_strings_it.xtb" />
-    <file lang="iw" path="translations/browser_ui_strings_iw.xtb" />
-    <file lang="ja" path="translations/browser_ui_strings_ja.xtb" />
-    <file lang="ka" path="translations/browser_ui_strings_ka.xtb" />
-    <file lang="kk" path="translations/browser_ui_strings_kk.xtb" />
-    <file lang="km" path="translations/browser_ui_strings_km.xtb" />
-    <file lang="kn" path="translations/browser_ui_strings_kn.xtb" />
-    <file lang="ko" path="translations/browser_ui_strings_ko.xtb" />
-    <file lang="ky" path="translations/browser_ui_strings_ky.xtb" />
-    <file lang="lo" path="translations/browser_ui_strings_lo.xtb" />
-    <file lang="lt" path="translations/browser_ui_strings_lt.xtb" />
-    <file lang="lv" path="translations/browser_ui_strings_lv.xtb" />
-    <file lang="mk" path="translations/browser_ui_strings_mk.xtb" />
-    <file lang="ml" path="translations/browser_ui_strings_ml.xtb" />
-    <file lang="mn" path="translations/browser_ui_strings_mn.xtb" />
-    <file lang="mr" path="translations/browser_ui_strings_mr.xtb" />
-    <file lang="ms" path="translations/browser_ui_strings_ms.xtb" />
-    <file lang="my" path="translations/browser_ui_strings_my.xtb" />
-    <file lang="ne" path="translations/browser_ui_strings_ne.xtb" />
-    <file lang="nl" path="translations/browser_ui_strings_nl.xtb" />
-    <file lang="no" path="translations/browser_ui_strings_no.xtb" />
-    <file lang="or" path="translations/browser_ui_strings_or.xtb" />
-    <file lang="pa" path="translations/browser_ui_strings_pa.xtb" />
-    <file lang="pl" path="translations/browser_ui_strings_pl.xtb" />
-    <file lang="pt-BR" path="translations/browser_ui_strings_pt-BR.xtb" />
-    <file lang="pt-PT" path="translations/browser_ui_strings_pt-PT.xtb" />
-    <file lang="ro" path="translations/browser_ui_strings_ro.xtb" />
-    <file lang="ru" path="translations/browser_ui_strings_ru.xtb" />
-    <file lang="si" path="translations/browser_ui_strings_si.xtb" />
-    <file lang="sk" path="translations/browser_ui_strings_sk.xtb" />
-    <file lang="sl" path="translations/browser_ui_strings_sl.xtb" />
-    <file lang="sq" path="translations/browser_ui_strings_sq.xtb" />
-    <file lang="sr" path="translations/browser_ui_strings_sr.xtb" />
-    <file lang="sr-Latn" path="translations/browser_ui_strings_sr-Latn.xtb" />
-    <file lang="sv" path="translations/browser_ui_strings_sv.xtb" />
-    <file lang="sw" path="translations/browser_ui_strings_sw.xtb" />
-    <file lang="ta" path="translations/browser_ui_strings_ta.xtb" />
-    <file lang="te" path="translations/browser_ui_strings_te.xtb" />
-    <file lang="th" path="translations/browser_ui_strings_th.xtb" />
-    <file lang="tr" path="translations/browser_ui_strings_tr.xtb" />
-    <file lang="uk" path="translations/browser_ui_strings_uk.xtb" />
-    <file lang="ur" path="translations/browser_ui_strings_ur.xtb" />
-    <file lang="uz" path="translations/browser_ui_strings_uz.xtb" />
-    <file lang="vi" path="translations/browser_ui_strings_vi.xtb" />
-    <file lang="zh-CN" path="translations/browser_ui_strings_zh-CN.xtb" />
-    <file lang="zh-HK" path="translations/browser_ui_strings_zh-HK.xtb" />
-    <file lang="zh-TW" path="translations/browser_ui_strings_zh-TW.xtb" />
-    <file lang="zu" path="translations/browser_ui_strings_zu.xtb" />
+    <file path="translations/browser_ui_strings_af.xtb" lang="af" />
+    <file path="translations/browser_ui_strings_am.xtb" lang="am" />
+    <file path="translations/browser_ui_strings_ar.xtb" lang="ar" />
+    <file path="translations/browser_ui_strings_as.xtb" lang="as" />
+    <file path="translations/browser_ui_strings_az.xtb" lang="az" />
+    <file path="translations/browser_ui_strings_be.xtb" lang="be" />
+    <file path="translations/browser_ui_strings_bg.xtb" lang="bg" />
+    <file path="translations/browser_ui_strings_bn.xtb" lang="bn" />
+    <file path="translations/browser_ui_strings_bs.xtb" lang="bs" />
+    <file path="translations/browser_ui_strings_ca.xtb" lang="ca" />
+    <file path="translations/browser_ui_strings_cs.xtb" lang="cs" />
+    <file path="translations/browser_ui_strings_cy.xtb" lang="cy" />
+    <file path="translations/browser_ui_strings_da.xtb" lang="da" />
+    <file path="translations/browser_ui_strings_de.xtb" lang="de" />
+    <file path="translations/browser_ui_strings_el.xtb" lang="el" />
+    <file path="translations/browser_ui_strings_en-GB.xtb" lang="en-GB" />
+    <file path="translations/browser_ui_strings_es.xtb" lang="es" />
+    <file path="translations/browser_ui_strings_es-419.xtb" lang="es-419" />
+    <file path="translations/browser_ui_strings_et.xtb" lang="et" />
+    <file path="translations/browser_ui_strings_eu.xtb" lang="eu" />
+    <file path="translations/browser_ui_strings_fa.xtb" lang="fa" />
+    <file path="translations/browser_ui_strings_fi.xtb" lang="fi" />
+    <file path="translations/browser_ui_strings_fil.xtb" lang="fil" />
+    <file path="translations/browser_ui_strings_fr.xtb" lang="fr" />
+    <file path="translations/browser_ui_strings_fr-CA.xtb" lang="fr-CA" />
+    <file path="translations/browser_ui_strings_gl.xtb" lang="gl" />
+    <file path="translations/browser_ui_strings_gu.xtb" lang="gu" />
+    <file path="translations/browser_ui_strings_hi.xtb" lang="hi" />
+    <file path="translations/browser_ui_strings_hr.xtb" lang="hr" />
+    <file path="translations/browser_ui_strings_hu.xtb" lang="hu" />
+    <file path="translations/browser_ui_strings_hy.xtb" lang="hy" />
+    <file path="translations/browser_ui_strings_id.xtb" lang="id" />
+    <file path="translations/browser_ui_strings_is.xtb" lang="is" />
+    <file path="translations/browser_ui_strings_it.xtb" lang="it" />
+    <file path="translations/browser_ui_strings_iw.xtb" lang="iw" />
+    <file path="translations/browser_ui_strings_ja.xtb" lang="ja" />
+    <file path="translations/browser_ui_strings_ka.xtb" lang="ka" />
+    <file path="translations/browser_ui_strings_kk.xtb" lang="kk" />
+    <file path="translations/browser_ui_strings_km.xtb" lang="km" />
+    <file path="translations/browser_ui_strings_kn.xtb" lang="kn" />
+    <file path="translations/browser_ui_strings_ko.xtb" lang="ko" />
+    <file path="translations/browser_ui_strings_ky.xtb" lang="ky" />
+    <file path="translations/browser_ui_strings_lo.xtb" lang="lo" />
+    <file path="translations/browser_ui_strings_lt.xtb" lang="lt" />
+    <file path="translations/browser_ui_strings_lv.xtb" lang="lv" />
+    <file path="translations/browser_ui_strings_mk.xtb" lang="mk" />
+    <file path="translations/browser_ui_strings_ml.xtb" lang="ml" />
+    <file path="translations/browser_ui_strings_mn.xtb" lang="mn" />
+    <file path="translations/browser_ui_strings_mr.xtb" lang="mr" />
+    <file path="translations/browser_ui_strings_ms.xtb" lang="ms" />
+    <file path="translations/browser_ui_strings_my.xtb" lang="my" />
+    <file path="translations/browser_ui_strings_ne.xtb" lang="ne" />
+    <file path="translations/browser_ui_strings_nl.xtb" lang="nl" />
+    <file path="translations/browser_ui_strings_no.xtb" lang="no" />
+    <file path="translations/browser_ui_strings_or.xtb" lang="or" />
+    <file path="translations/browser_ui_strings_pa.xtb" lang="pa" />
+    <file path="translations/browser_ui_strings_pl.xtb" lang="pl" />
+    <file path="translations/browser_ui_strings_pt-BR.xtb" lang="pt-BR" />
+    <file path="translations/browser_ui_strings_pt-PT.xtb" lang="pt-PT" />
+    <file path="translations/browser_ui_strings_ro.xtb" lang="ro" />
+    <file path="translations/browser_ui_strings_ru.xtb" lang="ru" />
+    <file path="translations/browser_ui_strings_si.xtb" lang="si" />
+    <file path="translations/browser_ui_strings_sk.xtb" lang="sk" />
+    <file path="translations/browser_ui_strings_sl.xtb" lang="sl" />
+    <file path="translations/browser_ui_strings_sq.xtb" lang="sq" />
+    <file path="translations/browser_ui_strings_sr.xtb" lang="sr" />
+    <file path="translations/browser_ui_strings_sr-Latn.xtb" lang="sr-Latn" />
+    <file path="translations/browser_ui_strings_sv.xtb" lang="sv" />
+    <file path="translations/browser_ui_strings_sw.xtb" lang="sw" />
+    <file path="translations/browser_ui_strings_ta.xtb" lang="ta" />
+    <file path="translations/browser_ui_strings_te.xtb" lang="te" />
+    <file path="translations/browser_ui_strings_th.xtb" lang="th" />
+    <file path="translations/browser_ui_strings_tr.xtb" lang="tr" />
+    <file path="translations/browser_ui_strings_uk.xtb" lang="uk" />
+    <file path="translations/browser_ui_strings_ur.xtb" lang="ur" />
+    <file path="translations/browser_ui_strings_uz.xtb" lang="uz" />
+    <file path="translations/browser_ui_strings_vi.xtb" lang="vi" />
+    <file path="translations/browser_ui_strings_zh-CN.xtb" lang="zh-CN" />
+    <file path="translations/browser_ui_strings_zh-HK.xtb" lang="zh-HK" />
+    <file path="translations/browser_ui_strings_zh-TW.xtb" lang="zh-TW" />
+    <file path="translations/browser_ui_strings_zu.xtb" lang="zu" />
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
       <part file="site_settings.grdp" />
 
-      <message name="IDS_DELETED" desc='Text that announces to the user that something was deleted.'>
-        Deleted
+      <message name="IDS_GOT_IT" desc="Button for the user to accept a disclosure/message" formatter_data="android_java">
+        Got it
       </message>
-      <message name="IDS_OK" desc="Label for a confirm button. Used in multiple contexts. [CHAR-LIMIT=20]">
+      <message name="IDS_OK" desc="Label for a confirm button. Used in multiple contexts. [CHAR_LIMIT=20]">
         OK
       </message>
-      <message name="IDS_OK_GOT_IT" desc="Label of a button by which the user confirms that they read and understood the information or instructions. Used in multiple contexts. [CHAR-LIMIT=20]">
+      <message name="IDS_OK_GOT_IT" desc="Label of a button by which the user confirms that they read and understood the information or instructions. Used in multiple contexts. [CHAR_LIMIT=20]">
         OK, got it
       </message>
-      <message name="IDS_CANCEL" desc="Label for a cancel button. Used in multiple contexts. [CHAR-LIMIT=20]">
+      <message name="IDS_YES" desc="Label for a button where the user accepts a disclosure/message. Used in multiple contexts." formatter_data="android_java">
+        Yes
+      </message>
+      <message name="IDS_CANCEL" desc="Label for a cancel button. Used in multiple contexts. [CHAR_LIMIT=20]">
         Cancel
       </message>
-      <message name="IDS_SAVE" desc="Label for a button to save a change. Used in multiple contexts. [CHAR-LIMIT=20]">
+      <message name="IDS_SAVE" desc="Label for a button to save a change. Used in multiple contexts. [CHAR_LIMIT=20]">
         Save
       </message>
       <message name="IDS_DETAILS_LINK" desc="In 1) Settings > Clean up computer (desktop), a link to open details of incompatible applications. In 2) Settings > Lite mode (mobile), static title for data usage breakdown." meaning="Short for 'view details'. Link; static title.">
         Details
       </message>
-      <message name="IDS_CHANGE_LINK" desc="Any link text giving option to the user to edit some settings. [CHAR-LIMIT=20]">
-        Change
-      </message>
-      <message name="IDS_DONE" desc="Label for a button to save a change or finish editing data. Used in multiple contexts. [CHAR-LIMIT=20]">
+     <message name="IDS_DONE" desc="Label for a button to save a change or finish editing data. Used in multiple contexts. [CHAR_LIMIT=20]">
         Done
       </message>
-      <message name="IDS_DELETE" desc="Label for a delete button. Used in multiple contexts. [CHAR-LIMIT=20]">
+      <message name="IDS_DELETE" desc="Label for a delete button. Used in multiple contexts. [CHAR_LIMIT=20]">
         Delete
       </message>
-      <message name="IDS_REMOVE" desc="Label for a button to remove an item (e.g. a bookmark) from a list. [CHAR-LIMIT=20]">
+      <message name="IDS_REMOVE" desc="Label for a button to remove an item (e.g. a bookmark) from a list. [CHAR_LIMIT=20]">
         Remove
       </message>
       <message name="IDS_RESET" desc="Label for a button to reset information you are editing to a default.">
         Reset
       </message>
-      <message name="IDS_TITLE" desc="Text indicating the title of a button or a textfield. Ued in multiple contexts. [CHAR-LIMIT=32]">
+      <message name="IDS_TITLE" desc="Text indicating the title of a button or a textfield. Ued in multiple contexts. [CHAR_LIMIT=32]">
         Title
       </message>
-      <message name="IDS_TEXT_ON" desc="Text indicating that an option is turned on. [CHAR-LIMIT=20]">
+      <message name="IDS_TEXT_ON" desc="Text indicating that an option is turned on. [CHAR_LIMIT=20]">
         On
       </message>
-      <message name="IDS_TEXT_OFF" desc="Text indicating that an option is turned off. [CHAR-LIMIT=20]">
+      <message name="IDS_TEXT_OFF" desc="Text indicating that an option is turned off. [CHAR_LIMIT=20]">
         Off
       </message>
-      <message name="IDS_LEARN_MORE" desc="Generic label for menu item to learn more about a feature. [CHAR-LIMIT=32]">
+      <message name="IDS_LEARN_MORE" desc="Generic label for menu item to learn more about a feature. [CHAR_LIMIT=32]">
         Learn more
       </message>
-      <message name="IDS_MORE" desc="Generic label for a button to show more items or options. [CHAR-LIMIT=20]">
+      <message name="IDS_MORE" desc="Generic label for a button to show more items or options. [CHAR_LIMIT=20]">
         More
       </message>
       <message name="IDS_CLOSE" desc="Content description for a button to close a dialog or popup" >
         Close
       </message>
-      <message name="IDS_RELOAD" desc="Label for a button that reloads the page. Used in multiple contexts. [CHAR-LIMIT=20]">
+      <message name="IDS_RELOAD" desc="Label for a button that reloads the page. Used in multiple contexts. [CHAR_LIMIT=20]">
         Reload
       </message>
-      <message name="IDS_NO_THANKS" desc="Generic label to say no thanks for a feature. [CHAR-LIMIT=32]">
+      <message name="IDS_REFRESH" desc="Tooltip on Android for the button to refresh the current web page. [CHAR_LIMIT=27]">
+        Refresh
+      </message>
+      <message name="IDS_NO_THANKS" desc="Generic label to say no thanks for a feature. [CHAR_LIMIT=32]">
         No thanks
       </message>
-      <message name="IDS_NEXT" desc="Generic label for a button to advance to the next item. [CHAR-LIMIT=20]">
+      <message name="IDS_NEXT" desc="Generic label for a button to advance to the next item. [CHAR_LIMIT=20]">
         Next
       </message>
-      <message name="IDS_CONTINUE_BUTTON" desc="Generic label for a button to continue to the next screen. Used in multiple contexts. [CHAR-LIMIT=20]">
+      <message name="IDS_CONTINUE_BUTTON" desc="Generic label for a button to continue to the next screen. Used in multiple contexts. [CHAR_LIMIT=20]">
         Continue
       </message>
-      <message name="IDS_SUBMIT" desc="Generic label for a button to submit data. Used in multiple contexts. [CHAR-LIMIT=20]">
+      <message name="IDS_SUBMIT" desc="Generic label for a button to submit data. Used in multiple contexts. [CHAR_LIMIT=20]">
         Submit
       </message>
       <message name="IDS_UNDO" desc="Generic label for a button to undo the previous action.">
@@ -249,20 +256,20 @@
       <message name="IDS_YESTERDAY" desc="Generic Label saying the date is yesterday.">
         Yesterday
       </message>
-      <message name="IDS_SELECT" desc="Prompt for user to select something. [CHAR-LIMIT=20]">
+      <message name="IDS_SELECT" desc="Prompt for user to select something. [CHAR_LIMIT=20]">
         Select
       </message>
-      <message name="IDS_ADD" desc="Prompt for the user to add something, like a new address. [CHAR-LIMIT=20]">
+      <message name="IDS_ADD" desc="Prompt for the user to add something, like a new address. [CHAR_LIMIT=20]">
         Add
       </message>
-      <message name="IDS_CHANGE" desc="Prompt for the user to change something. [CHAR-LIMIT=20]">
-        Change
-      </message>
-      <message name="IDS_SHARE" desc="Content description for a button to share item(s). [CHAR-LIMIT=20]">
+      <message name="IDS_SHARE" desc="Content description for a button to share item(s). [CHAR_LIMIT=20]">
         Share
       </message>
       <message name="IDS_SEARCH" desc="The label for a search button.">
         Search
+      </message>
+      <message name="IDS_SETTINGS" desc="Title for Chrome's Settings.">
+        Settings
       </message>
       <message name="IDS_SHOW_INFO" desc="The label for a info button to show info.">
         Show Info
@@ -270,34 +277,31 @@
       <message name="IDS_HIDE_INFO" desc="The label for a info button to hide info.">
         Hide Info
       </message>
-      <message name="IDS_COPY_LINK" desc="The label for a menu item to copy a link. [CHAR-LIMIT=30]">
+      <message name="IDS_COPY_LINK" desc="The label for a menu item to copy a link. [CHAR_LIMIT=30]">
         Copy link
       </message>
       <message name="IDS_COPIED" desc="Notification telling the user that something has been copied to the clipboard.">
         Copied
       </message>
-      <message name="IDS_TRY_AGAIN" desc="The label for a button allowing the user to try an action again. [CHAR-LIMIT=20]">
+      <message name="IDS_TRY_AGAIN" desc="The label for a button allowing the user to try an action again. [CHAR_LIMIT=20]">
         Try again
       </message>
-      <message name="IDS_BACK" desc="Label for a back button to return to a previous UI state or screen. Used in multiple contexts. [CHAR-LIMIT=20]">
+      <message name="IDS_BACK" desc="Label for a back button to return to a previous UI state or screen. Used in multiple contexts. [CHAR_LIMIT=20]">
         Back
       </message>
-      <message name="IDS_CONFIRM" desc="Label for a confirm button. Used in multiple contexts. [CHAR-LIMIT=20]">
+      <message name="IDS_CONFIRM" desc="Label for a confirm button. Used in multiple contexts. [CHAR_LIMIT=20]">
         Confirm
       </message>
-      <message name="IDS_SHOW" desc="Label for a show button. Used in multiple contexts. [CHAR-LIMIT=20]">
+      <message name="IDS_SHOW" desc="Label for a show button. Used in multiple contexts. [CHAR_LIMIT=20]">
         Show
       </message>
-      <message name="IDS_USER" desc="Generic label for UI elements with information about user.">
-        User
-      </message>
-      <message name="IDS_MENU_ITEM_MOVE_UP" desc="Option in item menu. User can click the 'Move up' option to move the item up by one position in its list. [CHAR-LIMIT=24]">
+      <message name="IDS_MENU_ITEM_MOVE_UP" desc="Option in item menu. User can click the 'Move up' option to move the item up by one position in its list. [CHAR_LIMIT=24]">
         Move up
       </message>
-      <message name="IDS_MENU_ITEM_MOVE_DOWN" desc="Option in item menu. User can click the 'Move down' option to move the item down by one position in its list. [CHAR-LIMIT=24]">
+      <message name="IDS_MENU_ITEM_MOVE_DOWN" desc="Option in item menu. User can click the 'Move down' option to move the item down by one position in its list. [CHAR_LIMIT=24]">
         Move down
       </message>
-      <message name="IDS_MENU_ITEM_MOVE_TO_TOP" desc="Option in item menu. User can click the 'Move to top' option to move the item up to the top of its list. [CHAR-LIMIT=24]">
+      <message name="IDS_MENU_ITEM_MOVE_TO_TOP" desc="Option in item menu. User can click the 'Move to top' option to move the item up to the top of its list. [CHAR_LIMIT=24]">
         Move to top
       </message>
       <message name="IDS_JUST_ONCE" desc="Generic label for a user to select an option for just once">
@@ -308,6 +312,12 @@
       </message>
       <message name="IDS_ALWAYS" desc="Generic label for a user to select an always option">
         Always
+      </message>
+      <message name="IDS_LATEST" desc="Generic label for a user to select a Latest option, eg. sort by latest">
+        Latest
+      </message>
+      <message name="IDS_SORT_BY" desc="Generic label for a prompt to sort something.">
+        Sort by:
       </message>
 
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_MENU" desc="Content description for the settings menu button.">
@@ -324,6 +334,9 @@
       </message>
       <message name="IDS_ACCESSIBILITY_LIST_MENU_BUTTON" desc="Content description for the button that shows option menu for a list item.">
         <ph name="NAME_OF_LIST_ITEM">%1$s<ex>Movie Title</ex></ph> Options
+      </message>
+      <message name="IDS_ACCESSIBILITY_LIST_REMOVE_BUTTON" desc="Content description for the button that removes a list item.">
+        <ph name="NAME_OF_LIST_ITEM">%1$s<ex>Movie Title</ex></ph> Remove
       </message>
       <message name="IDS_ACCESSIBILITY_TOOLBAR_SCREEN_POSITION" desc="Accessibility announcement to inform users about a toolbar's location.">
         <ph name="ITEM_COUNT">%1$s<ex>3</ex></ph> selected.  Options available near top of the screen
@@ -346,14 +359,18 @@
       <message name="IDS_SELECT_ITEMS" desc="Label shown on toolbar asking user to select items from the list.">
         Select items
       </message>
-        <message name="IDS_ACCESSIBILITY_SECURITY_BTN_SECURE" desc="Content description for the security icon for pages with a valid certificate. The content description also includes the call to action for opening the page info bubble (Site information).">
-          Connection is secure. Site information
+      <message name="IDS_ACCESSIBILITY_SECURITY_BTN_SECURE" desc="Content description for the security icon for pages with a valid certificate.">
+        Connection is secure
       </message>
-      <message name="IDS_ACCESSIBILITY_SECURITY_BTN_WARN" desc="Content description for the security icon for pages with insecure passive content. The content description also includes the call to action for opening the page info bubble (Site information).">
-        Your connection to this site is not secure. Site information
+      <message name="IDS_ACCESSIBILITY_SECURITY_BTN_WARN" desc="Content description for the security icon for pages with insecure passive content.">
+        Your connection to this site is not secure
       </message>
-      <message name="IDS_ACCESSIBILITY_SECURITY_BTN_DANGEROUS" desc="Content description for the security icon for dangerous pages. The content description also includes the call to action for opening the page info bubble (Site information).">
-        This page is dangerous. Site information
+      <message name="IDS_ACCESSIBILITY_SECURITY_BTN_DANGEROUS" desc="Content description for the security icon for dangerous pages.">
+        This page is dangerous
+      </message>
+
+      <message name="IDS_CONCAT_TWO_STRINGS_WITH_PERIODS" desc="This string concatenates two other strings. In the English language, this particular concatenation is done via a period and a whitespace after the first string, and a period after the second string. For example: '1 compromised password. 2 weak passwords.'">
+        <ph name="TYPE_1">%1$s<ex>2 compromised passwords</ex></ph>. <ph name="TYPE_2">%2$s<ex>7 weak passwords</ex></ph>.
       </message>
 
       <!-- Cookie controls UI -->
@@ -364,7 +381,7 @@
       </message>
 
       <!-- Certificate viewer -->
-      <message name="IDS_CERTTITLE" desc="Dialog box title for viewing security certificates. [CHAR-LIMIT=32]">
+      <message name="IDS_CERTTITLE" desc="Dialog box title for viewing security certificates. [CHAR_LIMIT=32]">
         Certificate viewer
       </message>
 
@@ -387,7 +404,7 @@
       <message name="IDS_ACCESSIBILITY_COLLAPSED_GROUP" desc="The accessibility text to read when the selected widget is collapsed.">
         Collapsed - click to expand.
       </message>
-      <message name="IDS_MENU_HELP" desc="Menu item for opening the help page. [CHAR-LIMIT=27]">
+      <message name="IDS_MENU_HELP" desc="Menu item for opening the help page. [CHAR_LIMIT=27]">
         Help &amp; feedback
       </message>
       <message name="IDS_AUTOMATICALLY_BLOCKED" desc="Description displayed next to an origin when it was placed under embargo by Chrome. This indicates to the user that the origin is blocked automatically instead of being the result of the user's decision.">
@@ -441,6 +458,18 @@
       </message>
 
       <!-- Page Info popup -->
+      <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_TITLE" desc="The title label of the 'About this site' subpage in Page Info bubble.">
+        From the web
+      </message>
+      <message name="IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE" desc="The title of the 'About this page' row in the Page Info bubble.">
+        About this page
+      </message>
+      <message name="IDS_PAGE_INFO_ABOUT_THIS_PAGE_DESCRIPTION_PLACEHOLDER" desc="The description of the 'About this page' row in the Page Info bubble if no more detailed description is available. 'It' refers to the page the user is currently visiting.">
+        Learn about its source and topic
+      </message>
+      <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_SUBPAGE_FROM_LABEL" desc="The label containing the source of the description in the 'About this site' subpage in Page Info bubble.">
+        From <ph name="SOURCE_NAME">%1$s<ex>Wikipedia</ex></ph>
+      </message>
       <message name="IDS_PAGE_INFO_DOMAIN_HIDDEN" desc="Message to display in the page info bubble when the domain is hidden.">
         This content is from <ph name="DOMAIN_NAME">%1$s<ex>google.com</ex></ph>, delivered by Google.
       </message>
@@ -459,14 +488,29 @@
       <message name="IDS_PAGE_INFO_HISTORY_FORGET" desc="Label used in the Page Info dialog for clearing history information">
         Forget this site
       </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY" desc="Summary string for page info history row. The site was last visited today.">
+        Last visited today
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY" desc="Summary string for page info history row. The site was last visited yesterday.">
+        Last visited yesterday
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DAYS" desc="Summary string for page info history row. The site was last visited NUM_DAYS days ago.">
+        Last visited <ph name="NUM_DAYS">%1$s<ex>2</ex></ph> days ago
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE" desc="Summary string for page info history row. The site was last visited on a particular date.">
+        Last visited <ph name="DATE">%1$s<ex>Apr 4, 2021</ex></ph>
+      </message>
       <message name="IDS_PAGE_INFO_PERMISSIONS_TITLE" desc="Label used in the Page Info dialog above the permissions list.">
         Permissions
       </message>
       <message name="IDS_PAGE_INFO_PERMISSIONS_RESET" desc="The label for the button allowing users to reset the permissions for a website.">
         Reset permissions
       </message>
+      <message name="IDS_PAGE_INFO_PERMISSIONS_RESET_DIALOG_TITLE" desc="The title for the dialog asking if the user is sure about resetting the permissions for a site.">
+        Reset permissions?
+      </message>
       <message name="IDS_PAGE_INFO_PERMISSIONS_RESET_CONFIRMATION" desc="The confirmation text asking if the user is sure about resetting the permissions for a site.">
-        Are you sure you want to reset all permissions for this website?
+        This choice will reset permissions for <ph name="WEBSITE">%1$s<ex>example.com</ex></ph>
       </message>
       <message name="IDS_PAGE_INFO_PERMISSIONS_OS_WARNING" desc="Text to show an OS-level permission warning.">
         <ph name="PERMISSION">%1$s<ex>Location</ex></ph> - <ph name="WARNING_MESSAGE">%2$s<ex>Turned off for this device</ex></ph>
@@ -506,9 +550,6 @@
       <message name="IDS_PAGE_INFO_INSTANT_APP_BUTTON" desc="Text in the button that opens an Android Instant app that is associated with the website's URL.">
         Open Instant App
       </message>
-      <message name="IDS_PAGE_INFO_PREVIEW_MESSAGE" desc="This text is displayed in the page info bubble when the currently viewed page has been modified by Google to be a lighter and faster version of the original page. The word 'Lite' should match the translation in TC ID 1019734090540434451">
-        Lite page provided by Google
-      </message>
       <message name="IDS_PAGE_INFO_LITE_MODE_HTTPS_IMAGE_COMPRESSION" desc="This text is displayed in the page info bubble when the currently viewed page has https images that were optimized by Google">
         To save you data, this page's images have been optimized by Google.
       </message>
@@ -518,17 +559,20 @@
       <message name="IDS_PAGE_INFO_SITE_SETTINGS_BUTTON" desc="Text in the button that opens a website's Site Settings from the Page Info dialog.">
         Site settings
       </message>
-      <message name="IDS_PAGE_INFO_FAST_SITE_SUMMARY" desc="A short summary phrase in the Page Info bubble (which shows when you click the lock icon) that indicates that pages on the current website should load quickly.">
-        Site is fast
+      <message name="IDS_PAGE_INFO_COOKIES_TITLE" desc="Page info Cookies subpage title.">
+        Cookies and site data
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_CLEAR" desc="Text on the button to clear cookies for a site.">
-        Clear cookies
+        Delete cookies?
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_CLEAR_CONFIRMATION" desc="Description of the confirmation dialog when the user clicked 'Clear cookies'.">
-        Are you sure you want to clear cookies and other site data for this website?
+      <message name="IDS_PAGE_INFO_COOKIES_CLEAR_CONFIRMATION" desc="Description of the confirmation dialog when the user clicked 'Delete cookies'.">
+        This deletes cookies and other site data for <ph name="WEBSITE">%1$s<ex>example.com</ex></ph>
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_CLEAR_CONFIRMATION_BUTTON" desc="Button in the confirmation dialog when the user clicked 'Clear cookies'.">
-        Clear
+      <message name="IDS_PAGE_INFO_COOKIES_CLEAR_FPS_CONFIRMATION" desc="Description of the confirmation dialog when the user clicked 'Delete cookies'.">
+        This deletes cookies and other site data for <ph name="FPS_MEMBER">%1$s<ex>freep.com</ex></ph> and for sites in <ph name="FPS_OWNER">%2$s<ex>gannett.com</ex></ph>’s group of sites
+      </message>
+      <message name="IDS_PAGE_INFO_COOKIES_CLEAR_CONFIRMATION_BUTTON" desc="Button in the confirmation dialog when the user clicked 'Delete cookies'.">
+        Delete
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_DESCRIPTION" desc="Description in the Page Info UI explaining cookies.">
         Cookies and other site data are used to remember you, for example to sign you in or to personalize ads. To manage cookies for all sites, see <ph name="BEGIN_LINK">&lt;link&gt;</ph>Settings<ph name="END_LINK">&lt;/link&gt;</ph>.
@@ -536,13 +580,13 @@
       <message name="IDS_PAGE_INFO_COOKIES_BLOCK" desc="Label for a toggle to allow or block third-party cookies for a site.">
         Block third-party cookies
       </message>
+      <message name="IDS_PAGE_INFO_ALL_COOKIES_BLOCK" desc="Label for a toggle to allow or block all cookies for a site.">
+        Block cookies
+      </message>
       <message name="IDS_PAGE_INFO_COOKIES_IN_USE" desc="Label showing the amount of cookies being used by a site.">
         {NUM_SELECTED, plural,
           =1 {1 cookie in use}
           other {# cookies in use}}
-      </message>
-      <message name="IDS_PAGE_INFO_FAST_SITE_MESSAGE" desc="A short paragraph that explains what is meant by labeling the current website as fast.">
-        This site opens and responds quickly for most people
       </message>
       <message name="IDS_PAGE_INFO_ANDROID_LOCATION_BLOCKED" desc="The label used in the Page Info dialog to indicate that location has been been disabled for the device in Android settings">
         Turned off for this device
@@ -556,30 +600,36 @@
       <message name="IDS_PAGE_INFO_ANDROID_AR_CAMERA_BLOCKED" desc="The label used in the Page Info dialog for the AR permission to indicate that Camera has been disabled for the device in Android settings">
         Camera is turned off in Android settings
       </message>
-      <message name="IDS_PAGE_INFO_PERMISSION_ALLOWED" desc="The label used in the Page Info dialog to describe an allowed permission. Eg: Location - Allowed">
-        Allowed
-      </message>
-      <message name="IDS_PAGE_INFO_PERMISSION_BLOCKED" desc="The label used in the Page Info dialog to describe a blocked permission. Eg: Location - Blocked">
-        Blocked
-      </message>
-      <message name="IDS_PAGE_INFO_DSE_PERMISSION_ALLOWED" desc="The label used in the Page Info dialog to describe an allowed location permission for the current search engine. Eg: Location - Allowed for current search engine">
-        Allowed for current search engine
-      </message>
-      <message name="IDS_PAGE_INFO_DSE_PERMISSION_BLOCKED" desc="The label used in the Page Info dialog to describe a blocked location permission for the current search engine. Eg: Location - Blocked for current search engine">
-        Blocked for current search engine
-      </message>
       <message name="IDS_PAGE_INFO_URL_EXPANDED" desc="Accessibility announcement when the URL in PageInfo switches from truncated to full display">
         URL expanded
       </message>
       <message name="IDS_PAGE_INFO_URL_TRUNCATED" desc="Accessibility announcement when the URL in PageInfo switches from full to truncated display">
         URL truncated
       </message>
+      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TITLE" desc="The title of the 'Ad personalization' section in Page Info.">
+        Ad personalization
+      </message>
+      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_AND_INTEREST_GROUP_DESCRIPTION" desc="The description label that explains to the user that the current site has accessed the Topics API and joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
+        This site defines interests other sites can use to show you ads. This site also gets your interests from Chrome to show you more relevant ads.
+      </message>
+      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_TOPICS_DESCRIPTION"  desc="The description label that explains to the user that the current site has accessed the Topics API. The label is located in 'Ad personalization' subpage in page info bubble.">
+        This site gets your interests from Chrome to show you more relevant ads
+      </message>
+      <message name="IDS_PAGE_INFO_AD_PERSONALIZATION_INTEREST_GROUP_DESCRIPTION" desc="The description label that explains to the user that the current site has joined the user to an interest group. The label is located in 'Ad personalization' subpage in page info bubble.">
+        This site defines interests other sites can use to show you ads
+      </message>
+      <message name="IDS_PAGE_INFO_AD_MANAGE_INTERESTS" desc="The button label of the 'Manage interests' button in Page Info. The button opens a settings page to manage interests for the site.">
+        Manage interests
+      </message>
 
-      <message name="IDS_COOKIES_TITLE" desc="Title for the Cookies settings screen [CHAR-LIMIT=32]">
+      <message name="IDS_COOKIES_TITLE" desc="Title for the Cookies settings screen [CHAR_LIMIT=32]">
           Cookies
       </message>
       <message name="IDS_ACCESSIBILITY_TOOLBAR_BTN_SITE_INFO" desc="Content description for the page icon that gives more site information when clicked. The icon can be a magnifier for search result pages, or other icons representing the page state.">
         Site information
+      </message>
+      <message name="IDS_ACCESSIBILITY_TOOLBAR_VIEW_SITE_INFO" desc="Spoken by screen readers to explain that clicking on the status icon will show more site information when clicked. The string is read in the context of the 'Double tap to...' Android screen reader accessibility prompt e.g. 'Double tap to view site information'.">
+        View site information
       </message>
 
       <!-- Media Capture and Streams -->
@@ -598,32 +648,57 @@
       <message name="IDS_MEDIA_CAPTURE_NOTIFICATION_CONTENT_TEXT" desc="Url of the current tab. The notification will display this text for the user to identify the tab to return to.">
         Tap to return to <ph name="URL_OF_THE_CURRENT_TAB">%1$s<ex>https://apprtc.appspot.com</ex></ph>
       </message>
-      <message name="IDS_MEDIA_CAPTURE_NOTIFICATION_CONTENT_TEXT_INCOGNITO" desc="The notification will display this text for the user to return to the incognito tab which has created the notification.">
+      <message name="IDS_MEDIA_CAPTURE_NOTIFICATION_CONTENT_TEXT_INCOGNITO" desc="The notification will display this text for the user to return to the Incognito tab which has created the notification.">
         Tap to return to the site
       </message>
       <message name="IDS_ACCESSIBILITY_STOP" desc="Accessible name for a button that stops playing or recording media.">
         Stop
       </message>
-      <message name="IDS_NOTIFICATION_INCOGNITO_TAB" desc="Text used as notifications source when the notification is from incognito tabs.">
+      <message name="IDS_NOTIFICATION_INCOGNITO_TAB" desc="Text used as notifications source when the notification is from Incognito tabs.">
         Incognito tab
       </message>
-      <message name="IDS_NOTIFICATION_CATEGORY_COMPLETED_DOWNLOADS" desc="Label for completed download notifications, within a list of notification categories. [CHAR-LIMIT=32]">
+      <message name="IDS_NOTIFICATION_CATEGORY_COMPLETED_DOWNLOADS" desc="Label for completed download notifications, within a list of notification categories. [CHAR_LIMIT=32]">
         Completed downloads
       </message>
-      <message name="IDS_NOTIFICATION_CATEGORY_DOWNLOADS" desc="Label for notifications shown when something is downloading, within a list of notification categories. [CHAR-LIMIT=32]">
+      <message name="IDS_NOTIFICATION_CATEGORY_DOWNLOADS" desc="Label for notifications shown when something is downloading, within a list of notification categories. [CHAR_LIMIT=32]">
         Active downloads
       </message>
-      <message name="IDS_NOTIFICATION_CATEGORY_MEDIA_PLAYBACK" desc="Label for media playback notifications, within a list of notification categories. [CHAR-LIMIT=32]">
+      <message name="IDS_NOTIFICATION_CATEGORY_MEDIA_PLAYBACK" desc="Label for media playback notifications, within a list of notification categories. [CHAR_LIMIT=32]">
         Playing media
       </message>
-      <message name="IDS_NOTIFICATION_CATEGORY_WEBRTC_CAM_AND_MIC" desc="Label for notifications shown when media is being recorded from a camera or microphone, within a list of notification categories. [CHAR-LIMIT=32]">
+      <message name="IDS_NOTIFICATION_CATEGORY_WEBRTC_CAM_AND_MIC" desc="Label for notifications shown when media is being recorded from a camera or microphone, within a list of notification categories. [CHAR_LIMIT=32]">
         Camera and microphone use
       </message>
       <message name="IDS_SCREEN_CAPTURE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when screen capture is in progress.">
         Sharing your screen
       </message>
 
-      <message name="IDS_SHARE_LINK_CHOOSER_TITLE" desc="title for the share dialog when sharing the current address [CHAR-LIMIT=27]">
+      <!-- Bluetooth -->
+      <message name="IDS_CONNECTED_TO_BLUETOOTH_DEVICE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when a website is connected to a Bluetooth device.">
+        Connected to a Bluetooth device
+      </message>
+      <message name="IDS_SCANNING_FOR_BLUETOOTH_DEVICES_NOTIFICATION_TITLE" desc="Text to be shown as a notification when a website is scanning for nearby Bluetooth devices.">
+        Scanning for Bluetooth devices
+      </message>
+      <message name="IDS_BLUETOOTH_NOTIFICATION_CONTENT_TEXT" desc="Url of the current tab. The notification will display this text for the user to identify the tab to return to.">
+        Tap to return to <ph name="URL_OF_THE_CURRENT_TAB">%1$s<ex>https://googlechrome.github.io/samples/web-bluetooth/device-info.html</ex></ph>
+      </message>
+      <message name="IDS_BLUETOOTH_NOTIFICATION_CONTENT_TEXT_INCOGNITO" desc="The notification will display this text for the user to return to the Incognito tab which has created the notification.">
+        Tap to return to the site
+      </message>
+
+      <!-- USB -->
+      <message name="IDS_CONNECTED_TO_USB_DEVICE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when a website is connected to a USB device.">
+        Connected to a USB device
+      </message>
+      <message name="IDS_USB_NOTIFICATION_CONTENT_TEXT" desc="Url of the current tab. The notification will display this text for the user to identify the tab to return to.">
+        Tap to return to <ph name="URL_OF_THE_CURRENT_TAB">%1$s<ex>https://webusb.github.io/arduino/demos/console/</ex></ph>
+      </message>
+      <message name="IDS_USB_NOTIFICATION_CONTENT_TEXT_INCOGNITO" desc="The notification will display this text for the user to return to the Incognito tab which has created the notification.">
+        Tap to return to the site
+      </message>
+
+      <message name="IDS_SHARE_LINK_CHOOSER_TITLE" desc="title for the share dialog when sharing the current address [CHAR_LIMIT=27]">
         Share via
       </message>
 
@@ -633,6 +708,9 @@
       </message>
       <message name="IDS_ACCESSIBILITY_PAUSE" desc="The pause button that pauses playing the media.">
         Pause
+      </message>
+      <message name="IDS_ACCESSIBILITY_REPLAY" desc="The replay button that replays the media.">
+        Play from the beginning
       </message>
       <message name="IDS_ACCESSIBILITY_PREVIOUS_TRACK" desc="The previous track button that switches media to the previous track.">
         Previous track
@@ -646,7 +724,22 @@
       <message name="IDS_ACCESSIBILITY_SEEK_BACKWARD" desc="The seek backward button that seeks media to an earlier position.">
         Seek backward
       </message>
-      <message name="IDS_MEDIA_NOTIFICATION_INCOGNITO" desc="Text used as a placeholder for a media notification about playing media, when notification is shown from incognito tab.">
+      <message name="IDS_ACCESSIBILITY_HANG_UP" desc="The hang up button that hangs up the video call.">
+        Hang up
+      </message>
+      <message name="IDS_ACCESSIBILITY_MUTE_MICROPHONE" desc="The mute microphone button that mutes the microphone of the video call.">
+        Mute microphone
+      </message>
+      <message name="IDS_ACCESSIBILITY_UNMUTE_MICROPHONE" desc="The unmute microphone button that unmutes the microphone of the video call.">
+        Unmute microphone
+      </message>
+      <message name="IDS_ACCESSIBILITY_TURN_ON_CAMERA" desc="The turn on camera button that turns on the camera of the video call.">
+        Turn on camera
+      </message>
+      <message name="IDS_ACCESSIBILITY_TURN_OFF_CAMERA" desc="The turn off camera button that turns off the camera of the video call.">
+        Turn off camera
+      </message>
+      <message name="IDS_MEDIA_NOTIFICATION_INCOGNITO" desc="Text used as a placeholder for a media notification about playing media, when notification is shown from Incognito tab.">
         A site is playing media
       </message>
 
@@ -668,17 +761,17 @@
         Options available near bottom of the screen
       </message>
 
-      <!-- Warning on sharing info with external apps in incognito mode -->
-      <message name="IDS_EXTERNAL_APP_LEAVE_INCOGNITO_WARNING" desc="Alert dialog text warning the user (who is currently in incognito mode) that the site they are currently using is going to share data with an external application." formatter_data="android_java">
-        This site is about to share information with an app outside of incognito mode.
+      <!-- Warning on sharing info with external apps in Incognito mode -->
+      <message name="IDS_EXTERNAL_APP_LEAVE_INCOGNITO_WARNING" desc="Alert dialog text warning the user (who is currently in Incognito mode) that the site they are currently using is going to share data with an external application." formatter_data="android_java">
+        This site is about to share information with an app outside of Incognito mode.
       </message>
-      <message name="IDS_EXTERNAL_APP_LEAVE_INCOGNITO_WARNING_TITLE" desc="Title for dialog asking if the user wants to leave incognito mode. [CHAR-LIMIT=32]" formatter_data="android_java">
-        Leave incognito mode?
+      <message name="IDS_EXTERNAL_APP_LEAVE_INCOGNITO_WARNING_TITLE" desc="Title for dialog asking if the user wants to leave Incognito mode. [CHAR_LIMIT=32]" formatter_data="android_java">
+        Leave Incognito mode?
       </message>
-      <message name="IDS_EXTERNAL_APP_LEAVE_INCOGNITO_STAY" desc="Label for the dialog button to stay in incognito mode. [CHAR-LIMIT=20]" formatter_data="android_java">
+      <message name="IDS_EXTERNAL_APP_LEAVE_INCOGNITO_STAY" desc="Label for the dialog button to stay in Incognito mode. [CHAR_LIMIT=20]" formatter_data="android_java">
         Stay
       </message>
-      <message name="IDS_EXTERNAL_APP_LEAVE_INCOGNITO_LEAVE" desc="Label for the dialog button to leave incognito mode. [CHAR-LIMIT=20]" formatter_data="android_java">
+      <message name="IDS_EXTERNAL_APP_LEAVE_INCOGNITO_LEAVE" desc="Label for the dialog button to leave Incognito mode. [CHAR_LIMIT=20]" formatter_data="android_java">
         Leave
       </message>
 
@@ -783,9 +876,123 @@
         Drag from top and touch the back button to exit full screen.
       </message>
 
+      <!-- WebApk name/icon report abuse dialog -->
+      <message name="IDS_WEBAPK_REPORT_ABUSE_DIALOG_TITLE" desc="The title at the top of the report abuse dialog.">
+        Uninstall '<ph name="APP_NAME">%1$s<ex>Google App</ex></ph>'?
+      </message>
+      <message name="IDS_WEBAPK_REPORT_ABUSE_CHECKBOX" desc="The label for the box you check when you want to report an app for abuse.">
+        Report abuse
+      </message>
+      <message name="IDS_WEBAPK_REPORT_ABUSE_CONFIRM" desc="The text within the confirmation button of the report abuse dialog.">
+        Uninstall
+      </message>
+      <message name="IDS_WEBAPK_REPORT_ABUSE_CANCEL" desc="The text within the cancelation button of the report abuse dialog.">
+        Cancel
+      </message>
+
       <!-- Messages -->
       <message name="IDS_MESSAGE_SCREEN_POSITION" desc="Accessibility label to inform users about the Message location">
         Option available near top of the screen
+      </message>
+
+      <!-- In-Product Help -->
+      <message name="IDS_IPH_SNOOZE" desc="Snooze button text within In-Product Help tooltip.">
+        Remind me
+      </message>
+
+      <!-- ChipView -->
+      <message name="IDS_CHIP_REMOVE_ICON_CONTENT_DESCRIPTION" desc="Accessibility string for X icon on a chip announcing that clicking on this icon will remove this input chip.">
+        Remove '<ph name="CHIP_LABEL">%1$s<ex>News</ex></ph>'
+      </message>
+
+      <!-- Accessibility preferences -->
+      <message name="IDS_PREFS_ACCESSIBILITY" desc="Title of Accessibility settings, which allows the user to change webpage font sizes. [CHAR_LIMIT=32]">
+        Accessibility
+      </message>
+      <message name="IDS_FONT_SIZE" desc="Title for font size preference.">
+        Text scaling
+      </message>
+      <message name="IDS_FONT_SIZE_PREVIEW_TEXT" desc="Preview text for font-size slider.">
+        Drag the slider until you can read this comfortably. Text should look at least this big after double-tapping on a paragraph.
+      </message>
+      <message name="IDS_FORCE_ENABLE_ZOOM_TITLE" desc="Title of preference that allows the user to zoom in on any webpage, even if the page tries to disable zooming.">
+        Force enable zoom
+      </message>
+      <message name="IDS_FORCE_ENABLE_ZOOM_SUMMARY" desc="Summary of preference that allows the user to zoom in on any webpage, even if the page tries to disable zooming.">
+        Override a website’s request to prevent zooming in
+      </message>
+      <message name="IDS_READER_FOR_ACCESSIBILITY_TITLE" desc="Title of preference that allows the user to use simplified view on any articles, even if the page is mobile-friendly. Simplified view is the new user-facing name for Reader Mode, which extracts the content of an article and removes clutter from a web page and puts the result in a easier-to-read format.">
+        Simplified view for web pages
+      </message>
+      <message name="IDS_READER_FOR_ACCESSIBILITY_SUMMARY" desc="Summary of preference that allows the user to use simplified view on any supported articles, even if the page is mobile-friendly.">
+        Get notified when an article can be shown in simplified view
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_TITLE" desc="Title of preference that allows the user to use a simplified tab switcher that is accessibility friendly. The words 'Open tabs' should match translation in TC ID 3108541343994525384, provided that 'open' is correctly used as an adjective and not a verb.">
+        Simplified view for open tabs
+      </message>
+      <message name="IDS_ACCESSIBILITY_TAB_SWITCHER_SUMMARY" desc="Summary of the preference that allows the user to use a simplified tab switcher. The simplified tab switcher is recommended for use with TalkBack and Switch Access which are accessibility services provided by Android. TalkBack does not need to be translated. 'Switch Access' translation should match TC ID 382005103867249841.">
+       Recommended when TalkBack or Switch Access are on
+      </message>
+      <message name="IDS_ACCESSIBILITY_CAPTIONS_TITLE" desc="Title of the preference that allows the user to update caption settings.">
+        Captions
+      </message>
+
+      <!-- Page Zoom -->
+      <message name="IDS_PAGE_ZOOM_TITLE" desc="Title of the preference that allows the user to update the accessibility page zoom feature that applies to the web contents." translateable="false">
+        Zoom
+      </message>
+      <message name="IDS_PAGE_ZOOM_LABEL" desc="Accessibility label for control to allow user to change page zoom" translateable="false">
+        Page zoom
+      </message>
+      <message name="IDS_PAGE_ZOOM_LEVEL_LABEL" desc="Accessibility label for indicator of current page zoom level set by the user" translateable="false">
+        Current zoom is <ph name="ZOOM_LEVEL">%1$d<ex>100</ex></ph> %%
+      </message>
+      <message name="IDS_PAGE_ZOOM_SUMMARY" desc="Summary of the preference that allows the user to update the accessibility page zoom feature that applies to the web contents." translateable="false">
+        Make the default text and images on sites smaller or larger
+      </message>
+      <message name="IDS_PAGE_ZOOM_DECREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to decrease page zoom" translateable="false">
+        Decrease zoom
+      </message>
+      <message name="IDS_PAGE_ZOOM_INCREASE_ZOOM_BUTTON_TEXT" desc="Accessibility label for button to allow user to increase page zoom" translateable="false">
+        Increase zoom
+      </message>
+      <message name="IDS_PAGE_ZOOM_LEVEL" desc="Text description of the current page zoom level set by the user" translateable="false">
+        <ph name="ZOOM_LEVEL">%1$d<ex>100</ex></ph> %%
+      </message>
+      <message name="IDS_PAGE_ZOOM_ALWAYS_SHOW_PREFERENCE_TITLE" desc="Title of the preference that allows the user to always show the menu item for zoom" translateable="false">
+        Show zoom
+      </message>
+      <message name="IDS_PAGE_ZOOM_ALWAYS_SHOW_PREFERENCE_SUMMARY" desc="Summary of the preference that allows the user to always show the menu item for zoom." translateable="false">
+        Zoom in or out on a page from the main menu
+      </message>
+      <message name="IDS_PAGE_ZOOM_PREVIEW_TITLE" desc="Label of the section of sample text shown to the user to preview zoom level." translateable="false">
+        Preview
+      </message>
+      <message name="IDS_PAGE_ZOOM_PREVIEW_TEXT_TITLE" desc="Sample text displayed to user in settings to see/test a desired zoom level." translateable="false">
+        The Wonderful Wizard of Oz
+      </message>
+      <message name="IDS_PAGE_ZOOM_PREVIEW_TEXT_SUMMARY" desc="Sample text displayed to user in settings to see/test a desired zoom level." translateable="false">
+        Chapter 11: The Wonderful Emerald City of Oz
+      </message>
+      <message name="IDS_PAGE_ZOOM_PREVIEW_TEXT_ITEM" desc="Sample text displayed to user in settings to see/test a desired zoom level." translateable="false">
+        Even with eyes protected by the green spectacles Dorothy and her friends were at first dazzled by the
+      </message>
+
+      <!-- Search resumption module strings -->
+      <message name="IDS_SEARCH_RESUMPTION_MODULE_TITLE" desc="Title of the search resumption module on NTP or Start surface.">
+        Suggested searches based on your last tab
+      </message>
+      <message name="IDS_SEARCH_RESUMPTION_MODULE_TITLE_SHORT" desc="Title of the search resumption module on NTP or Start surface (short version).">
+        Suggested searches
+      </message>
+      <message name="IDS_SEARCH_RESUMPTION_MODULE_SUBTITLE" desc="Subtitle of the search resumption module on NTP or Start surface.">
+        Based on your last tab
+      </message>
+      <message name="IDS_ACCESSIBILITY_EXPANDED" is_accessibility_with_no_ui="true" desc="Content description when the search resumption module is expanded.">
+        Expanded
+      </message>
+      <message name="IDS_ACCESSIBILITY_COLLAPSED" is_accessibility_with_no_ui="true" desc="Content description when the search resumption module is collapsed.">
+        Collapsed
       </message>
     </messages>
   </release>

@@ -1,0 +1,18 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("document_picture_in_picture") {
+  sources = [
+    "document_picture_in_picture.cc",
+    "document_picture_in_picture.h",
+    "document_picture_in_picture_session.cc",
+    "document_picture_in_picture_session.h",
+    "picture_in_picture_controller_impl.cc",
+    "picture_in_picture_controller_impl.h",
+  ]
+
+  deps = [ "//third_party/blink/renderer/modules/picture_in_picture" ]
+}

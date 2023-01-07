@@ -1,13 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <atlbase.h>
-#include <atlcom.h>
+#include "base/win/atl.h"
+
 #include <atlcomcli.h>
 #include <credentialprovider.h>
 #include <wrl/client.h>
 
+#include <memory>
 #include <tuple>
 
 #include "base/strings/utf_string_conversions.h"
@@ -50,9 +51,9 @@ void GcpCredentialProviderTest::SetCloudPoliciesForUser(
     const std::wstring& sid,
     const UserPolicies policies) {
   if (!fake_user_policies_manager_)
-    fake_user_policies_manager_.reset(new FakeUserPoliciesManager());
+    fake_user_policies_manager_ = std::make_unique<FakeUserPoliciesManager>();
   if (!fake_token_generator_)
-    fake_token_generator_.reset(new FakeTokenGenerator());
+    fake_token_generator_ = std::make_unique<FakeTokenGenerator>();
 
   // Ensure user has policies and valid GCPW token.
   fake_user_policies_manager_->SetUserPolicies(sid, policies);
@@ -560,7 +561,6 @@ TEST_P(GcpCredentialProviderWithGaiaUsersTest, ReauthCredentialTest) {
   ASSERT_EQ(S_OK, SetUserProperty((BSTR)sid, kRegDeviceDetailsUploadFailures,
                                   num_upload_device_details_failures));
 
-  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
   Microsoft::WRL::ComPtr<ICredentialProvider> provider;
   DWORD count = 0;
   SetDefaultTokenHandleResponse(valid_token_handle
@@ -684,7 +684,6 @@ TEST_P(GcpCredentialProviderWithADUsersTest, ReauthCredentialTest) {
   // Ensure user has policies and valid GCPW token.
   SetCloudPoliciesForUser((BSTR)sid, policies);
 
-  Microsoft::WRL::ComPtr<ICredentialProviderCredential> cred;
   Microsoft::WRL::ComPtr<ICredentialProvider> provider;
   DWORD count = 0;
   SetDefaultTokenHandleResponse(valid_token_handle
@@ -856,7 +855,7 @@ TEST_P(GcpCredentialProviderAvailableCredentialsTest, AvailableCredentials) {
     auto guid_string = base::win::WStringFromGUID(CLSID_GaiaCredentialProvider);
 
     wchar_t guid_in_registry[64];
-    ULONG length = base::size(guid_in_registry);
+    ULONG length = std::size(guid_in_registry);
     EXPECT_EQ(S_OK, GetMachineRegString(kLogonUiUserTileRegKey, sid,
                                         guid_in_registry, &length));
     EXPECT_EQ(guid_string, std::wstring(guid_in_registry));

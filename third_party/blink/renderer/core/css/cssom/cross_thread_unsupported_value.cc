@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 namespace blink {
 
 CSSStyleValue* CrossThreadUnsupportedValue::ToCSSStyleValue() {
-  return MakeGarbageCollected<CSSUnsupportedStyleValue>(value_.IsolatedCopy());
+  return MakeGarbageCollected<CSSUnsupportedStyleValue>(value_);
 }
 
 bool CrossThreadUnsupportedValue::operator==(
@@ -21,7 +21,7 @@ bool CrossThreadUnsupportedValue::operator==(
 
 std::unique_ptr<CrossThreadStyleValue>
 CrossThreadUnsupportedValue::IsolatedCopy() const {
-  return std::make_unique<CrossThreadUnsupportedValue>(value_.IsolatedCopy());
+  return std::make_unique<CrossThreadUnsupportedValue>(value_);
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,36 +16,31 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "chrome/android/chrome_jni_headers/TabWebContentsDelegateAndroidImpl_jni.h"
-#include "chrome/browser/android/hung_renderer_infobar_delegate.h"
+#include "chrome/browser/android/customtabs/client_data_header_web_contents_observer.h"
+#include "chrome/browser/android/framebust_intervention/framebust_blocked_delegate_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/sound_content_setting_observer.h"
-#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_tab_helper.h"
 #include "chrome/browser/file_select_helper.h"
-#include "chrome/browser/flags/android/cached_feature_flags.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/history/history_tab_helper.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/installable/installed_webapp_bridge.h"
 #include "chrome/browser/installable/installed_webapp_geolocation_context.h"
 #include "chrome/browser/media/protected_media_identifier_permission_context.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
-#include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
+#include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/ui/android/infobars/framebust_block_infobar.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/interventions/framebust_block_message_delegate.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
@@ -58,20 +53,21 @@
 #include "components/browser_ui/util/android/url_constants.h"
 #include "components/find_in_page/find_notification_details.h"
 #include "components/find_in_page/find_tab_helper.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/paint_preview/buildflags/buildflags.h"
-#include "components/security_state/content/content_utils.h"
+#include "components/safe_browsing/content/browser/safe_browsing_navigation_observer.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
-#include "content/public/browser/security_style_explanations.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
@@ -113,27 +109,25 @@ JNI_TabWebContentsDelegateAndroidImpl_CreateJavaRect(JNIEnv* env,
           static_cast<int>(rect.right()), static_cast<int>(rect.bottom())));
 }
 
-infobars::InfoBar* FindHungRendererInfoBar(InfoBarService* infobar_service) {
-  DCHECK(infobar_service);
-  for (size_t i = 0; i < infobar_service->infobar_count(); ++i) {
-    infobars::InfoBar* infobar = infobar_service->infobar_at(i);
-    if (infobar->delegate()->AsHungRendererInfoBarDelegate())
-      return infobar;
-  }
-  return nullptr;
-}
-
-void ShowFramebustBlockInfobarInternal(content::WebContents* web_contents,
+void ShowFramebustBlockMessageInternal(content::WebContents* web_contents,
                                        const GURL& url) {
   auto intervention_outcome =
-      [](FramebustBlockMessageDelegate::InterventionOutcome outcome) {
+      [](blocked_content::FramebustBlockedMessageDelegate::InterventionOutcome
+             outcome) {
         UMA_HISTOGRAM_ENUMERATION("WebCore.Framebust.InterventionOutcome",
                                   outcome);
       };
-  FramebustBlockInfoBar::Show(
-      web_contents,
-      std::make_unique<FramebustBlockMessageDelegate>(
-          web_contents, url, base::BindOnce(intervention_outcome)));
+  blocked_content::FramebustBlockedMessageDelegate::CreateForWebContents(
+      web_contents);
+  blocked_content::FramebustBlockedMessageDelegate*
+      framebust_blocked_message_delegate =
+          blocked_content::FramebustBlockedMessageDelegate::FromWebContents(
+              web_contents);
+  framebust_blocked_message_delegate->ShowMessage(
+      url,
+      HostContentSettingsMapFactory::GetForProfile(
+          web_contents->GetBrowserContext()),
+      base::BindOnce(intervention_outcome));
 }
 
 }  // anonymous namespace
@@ -151,6 +145,9 @@ void TabWebContentsDelegateAndroid::PortalWebContentsCreated(
     content::WebContents* portal_contents) {
   WebContentsDelegateAndroid::PortalWebContentsCreated(portal_contents);
 
+  Profile* profile =
+      Profile::FromBrowserContext(portal_contents->GetBrowserContext());
+
   // This is a subset of the tab helpers that would be attached by
   // TabAndroid::AttachTabHelpers.
   //
@@ -162,17 +159,21 @@ void TabWebContentsDelegateAndroid::PortalWebContentsCreated(
   autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
       portal_contents,
       autofill::ChromeAutofillClient::FromWebContents(portal_contents),
-      g_browser_process->GetApplicationLocale(),
-      autofill::AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
+      base::BindRepeating(
+          &autofill::BrowserDriverInitHook,
+          autofill::ChromeAutofillClient::FromWebContents(portal_contents),
+          g_browser_process->GetApplicationLocale()));
   ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
       portal_contents,
       autofill::ChromeAutofillClient::FromWebContents(portal_contents));
   HistoryTabHelper::CreateForWebContents(portal_contents);
-  InfoBarService::CreateForWebContents(portal_contents);
+  infobars::ContentInfoBarManager::CreateForWebContents(portal_contents);
   PrefsTabHelper::CreateForWebContents(portal_contents);
-  DataReductionProxyTabHelper::CreateForWebContents(portal_contents);
   safe_browsing::SafeBrowsingNavigationObserver::MaybeCreateForWebContents(
-      portal_contents);
+      portal_contents, HostContentSettingsMapFactory::GetForProfile(profile),
+      safe_browsing::SafeBrowsingNavigationObserverManagerFactory::
+          GetForBrowserContext(profile),
+      profile->GetPrefs(), g_browser_process->safe_browsing_service());
 }
 
 void TabWebContentsDelegateAndroid::RunFileChooser(
@@ -195,10 +196,14 @@ void TabWebContentsDelegateAndroid::CreateSmsPrompt(
     const std::string& one_time_code,
     base::OnceClosure on_confirm,
     base::OnceClosure on_cancel) {
+  DCHECK_EQ(host->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
+
   auto* web_contents = content::WebContents::FromRenderFrameHost(host);
   sms::SmsInfoBar::Create(
-      web_contents, InfoBarService::FromWebContents(web_contents), origin_list,
-      one_time_code, std::move(on_confirm), std::move(on_cancel));
+      web_contents,
+      infobars::ContentInfoBarManager::FromWebContents(web_contents),
+      origin_list, one_time_code, std::move(on_confirm), std::move(on_cancel));
 }
 
 bool TabWebContentsDelegateAndroid::ShouldFocusLocationBarByDefault(
@@ -226,8 +231,8 @@ void TabWebContentsDelegateAndroid::FindReply(
     bool final_update) {
   find_in_page::FindTabHelper* find_tab_helper =
       find_in_page::FindTabHelper::FromWebContents(web_contents);
-  if (!find_result_observer_.IsObserving(find_tab_helper))
-    find_result_observer_.Add(find_tab_helper);
+  if (!find_result_observations_.IsObservingSource(find_tab_helper))
+    find_result_observations_.AddObservation(find_tab_helper);
 
   find_tab_helper->HandleFindReply(request_id,
                                    number_of_matches,
@@ -272,14 +277,6 @@ TabWebContentsDelegateAndroid::GetJavaScriptDialogManager(
     return javascript_dialogs::TabModalDialogManager::FromWebContents(source);
   }
   return javascript_dialogs::AppModalDialogManager::GetInstance();
-}
-
-void TabWebContentsDelegateAndroid::AdjustPreviewsStateForNavigation(
-    content::WebContents* web_contents,
-    blink::PreviewsState* previews_state) {
-  if (GetDisplayMode(web_contents) != blink::mojom::DisplayMode::kBrowser) {
-    *previews_state = blink::PreviewsTypes::PREVIEWS_OFF;
-  }
 }
 
 void TabWebContentsDelegateAndroid::RequestMediaAccessPermission(
@@ -346,7 +343,7 @@ WebContents* TabWebContentsDelegateAndroid::OpenURLFromTab(
     return WebContentsDelegateAndroid::OpenURLFromTab(source, params);
   }
 
-  popup_delegate->nav_params()->created_with_opener = true;
+  popup_delegate->nav_params()->opened_by_another_window = true;
   TabModelList::HandlePopupNavigation(popup_delegate->nav_params());
   return nullptr;
 }
@@ -366,7 +363,7 @@ void TabWebContentsDelegateAndroid::AddNewContents(
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
     WindowOpenDisposition disposition,
-    const gfx::Rect& initial_rect,
+    const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
   // No code for this yet.
@@ -379,6 +376,20 @@ void TabWebContentsDelegateAndroid::AddNewContents(
   if (source && blocked_content::ConsiderForPopupBlocking(disposition)) {
     blocked_content::PopupTracker::CreateForWebContents(new_contents.get(),
                                                         source, disposition);
+  }
+
+  // Add the CCT header observer if it was present on the source contents.
+  if (source) {
+    auto* source_observer =
+        customtabs::ClientDataHeaderWebContentsObserver::FromWebContents(
+            source);
+    if (source_observer) {
+      customtabs::ClientDataHeaderWebContentsObserver::CreateForWebContents(
+          new_contents.get());
+      customtabs::ClientDataHeaderWebContentsObserver::FromWebContents(
+          new_contents.get())
+          ->SetHeader(source_observer->header());
+    }
   }
 
   TabHelpers::AttachTabHelpers(new_contents.get());
@@ -408,23 +419,12 @@ void TabWebContentsDelegateAndroid::AddNewContents(
     new_contents.release();
 }
 
-blink::SecurityStyle TabWebContentsDelegateAndroid::GetSecurityStyle(
-    WebContents* web_contents,
-    content::SecurityStyleExplanations* security_style_explanations) {
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents);
-  DCHECK(helper);
-  return security_state::GetSecurityStyle(helper->GetSecurityLevel(),
-                                          *helper->GetVisibleSecurityState(),
-                                          security_style_explanations);
-}
-
 void TabWebContentsDelegateAndroid::OnDidBlockNavigation(
     content::WebContents* web_contents,
     const GURL& blocked_url,
     const GURL& initiator_url,
     blink::mojom::NavigationBlockedReason reason) {
-  ShowFramebustBlockInfobarInternal(web_contents, blocked_url);
+  ShowFramebustBlockMessageInternal(web_contents, blocked_url);
 }
 
 void TabWebContentsDelegateAndroid::UpdateUserGestureCarryoverInfo(
@@ -432,20 +432,29 @@ void TabWebContentsDelegateAndroid::UpdateUserGestureCarryoverInfo(
   auto* intercept_navigation_delegate =
       navigation_interception::InterceptNavigationDelegate::Get(web_contents);
   if (intercept_navigation_delegate)
-    intercept_navigation_delegate->UpdateLastUserGestureCarryoverTimestamp();
+    intercept_navigation_delegate->OnResourceRequestWithGesture();
 }
 
 content::PictureInPictureResult
 TabWebContentsDelegateAndroid::EnterPictureInPicture(
-    content::WebContents* web_contents,
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& natural_size) {
-  return PictureInPictureWindowManager::GetInstance()->EnterPictureInPicture(
-      web_contents, surface_id, natural_size);
+    content::WebContents* web_contents) {
+  return PictureInPictureWindowManager::GetInstance()
+      ->EnterVideoPictureInPicture(web_contents);
 }
 
 void TabWebContentsDelegateAndroid::ExitPictureInPicture() {
   PictureInPictureWindowManager::GetInstance()->ExitPictureInPicture();
+}
+
+bool TabWebContentsDelegateAndroid::IsBackForwardCacheSupported() {
+  return true;
+}
+
+bool TabWebContentsDelegateAndroid::IsPrerender2Supported(
+    content::WebContents& web_contents) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents.GetBrowserContext());
+  return prefetch::IsSomePreloadingEnabled(*profile->GetPrefs());
 }
 
 std::unique_ptr<content::WebContents>
@@ -522,7 +531,7 @@ void TabWebContentsDelegateAndroid::OnFindResultAvailable(
 
 void TabWebContentsDelegateAndroid::OnFindTabHelperDestroyed(
     find_in_page::FindTabHelper* helper) {
-  find_result_observer_.Remove(helper);
+  find_result_observations_.RemoveObservation(helper);
 }
 
 bool TabWebContentsDelegateAndroid::ShouldEnableEmbeddedMediaExperience()
@@ -550,6 +559,15 @@ bool TabWebContentsDelegateAndroid::IsNightModeEnabled() const {
   if (obj.is_null())
     return false;
   return Java_TabWebContentsDelegateAndroidImpl_isNightModeEnabled(env, obj);
+}
+
+bool TabWebContentsDelegateAndroid::IsForceDarkWebContentEnabled() const {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null())
+    return false;
+  return Java_TabWebContentsDelegateAndroidImpl_isForceDarkWebContentEnabled(
+      env, obj);
 }
 
 bool TabWebContentsDelegateAndroid::CanShowAppBanners() const {
@@ -590,11 +608,6 @@ bool TabWebContentsDelegateAndroid::IsCustomTab() const {
 
 bool TabWebContentsDelegateAndroid::IsInstalledWebappDelegateGeolocation()
     const {
-  if (!base::FeatureList::IsEnabled(
-          chrome::android::kTrustedWebActivityLocationDelegation)) {
-    return false;
-  }
-
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
   if (obj.is_null())
@@ -613,36 +626,7 @@ void JNI_TabWebContentsDelegateAndroidImpl_OnRendererUnresponsive(
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
   if (base::RandDouble() < 0.01)
-    web_contents->GetMainFrame()->GetProcess()->DumpProcessStack();
-
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableHungRendererInfoBar)) {
-    return;
-  }
-
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
-  DCHECK(!FindHungRendererInfoBar(infobar_service));
-  HungRendererInfoBarDelegate::Create(
-      infobar_service, web_contents->GetMainFrame()->GetProcess());
-}
-
-void JNI_TabWebContentsDelegateAndroidImpl_OnRendererResponsive(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& java_web_contents) {
-  content::WebContents* web_contents =
-          content::WebContents::FromJavaWebContents(java_web_contents);
-  InfoBarService* infobar_service =
-      InfoBarService::FromWebContents(web_contents);
-  infobars::InfoBar* hung_renderer_infobar =
-      FindHungRendererInfoBar(infobar_service);
-  if (!hung_renderer_infobar)
-    return;
-
-  hung_renderer_infobar->delegate()
-      ->AsHungRendererInfoBarDelegate()
-      ->OnRendererResponsive();
-  infobar_service->RemoveInfoBar(hung_renderer_infobar);
+    web_contents->GetPrimaryMainFrame()->GetProcess()->DumpProcessStack();
 }
 
 void JNI_TabWebContentsDelegateAndroidImpl_ShowFramebustBlockInfoBar(
@@ -652,5 +636,5 @@ void JNI_TabWebContentsDelegateAndroidImpl_ShowFramebustBlockInfoBar(
   GURL url(base::android::ConvertJavaStringToUTF16(env, java_url));
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(java_web_contents);
-  ShowFramebustBlockInfobarInternal(web_contents, url);
+  ShowFramebustBlockMessageInternal(web_contents, url);
 }

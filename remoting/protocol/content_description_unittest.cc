@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 TEST(ContentDescriptionTest, FormatAndParse) {
   std::unique_ptr<CandidateSessionConfig> config =
@@ -104,6 +103,4 @@ TEST(ContentDescriptionTest, NoneTransportWithCodec) {
   EXPECT_TRUE(parsed->config()->audio_configs().front() == ChannelConfig());
 }
 
-}  // namespace protocol
-}  // namespace remoting
-
+}  // namespace remoting::protocol

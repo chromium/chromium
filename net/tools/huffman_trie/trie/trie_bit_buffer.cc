@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,11 @@
 
 #include <ostream>
 
+#include "base/bits.h"
 #include "base/check.h"
 #include "net/tools/huffman_trie/bit_writer.h"
 
-namespace net {
-
-namespace huffman_trie {
+namespace net::huffman_trie {
 
 TrieBitBuffer::TrieBitBuffer() = default;
 
@@ -39,7 +38,7 @@ void TrieBitBuffer::WritePosition(uint32_t position, int32_t* last_position) {
     int32_t delta = position - *last_position;
     DCHECK(delta > 0) << "delta position is not positive.";
 
-    uint8_t number_of_bits = BitLength(delta);
+    uint8_t number_of_bits = base::bits::Log2Floor(delta) + 1;
     DCHECK(number_of_bits <= 7 + 15) << "positive position delta too large.";
 
     if (number_of_bits <= 7) {
@@ -62,15 +61,6 @@ void TrieBitBuffer::WritePosition(uint32_t position, int32_t* last_position) {
   AppendPositionElement(position);
 
   *last_position = position;
-}
-
-uint8_t TrieBitBuffer::BitLength(uint32_t input) const {
-  uint8_t number_of_bits = 0;
-  while (input != 0) {
-    number_of_bits++;
-    input >>= 1;
-  }
-  return number_of_bits;
 }
 
 void TrieBitBuffer::WriteChar(uint8_t byte,
@@ -136,8 +126,8 @@ uint32_t TrieBitBuffer::WriteToBitWriter(BitWriter* writer) {
       uint32_t target = element.position;
       DCHECK(target < current) << "Reference is not backwards";
       uint32_t delta = current - target;
-      uint8_t delta_number_of_bits = BitLength(delta);
-      DCHECK(delta_number_of_bits < 32) << "Delta to large";
+      uint8_t delta_number_of_bits = base::bits::Log2Floor(delta) + 1;
+      DCHECK(delta_number_of_bits < 32) << "Delta too large";
       writer->WriteBits(delta_number_of_bits, 5);
       writer->WriteBits(delta, delta_number_of_bits);
     }
@@ -154,6 +144,4 @@ void TrieBitBuffer::Flush() {
   }
 }
 
-}  // namespace huffman_trie
-
-}  // namespace net
+}  // namespace net::huffman_trie

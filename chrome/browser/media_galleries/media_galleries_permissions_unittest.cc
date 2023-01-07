@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "chrome/browser/extensions/extension_prefs_unittest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
@@ -59,8 +59,9 @@ class MediaGalleriesPermissionsTest : public extensions::ExtensionPrefsTest {
 
   void Initialize() override {
     ASSERT_TRUE(storage_monitor::TestStorageMonitor::CreateAndInstall());
-    profile_.reset(new TestingProfile);
-    gallery_prefs_.reset(new MediaGalleriesPreferences(profile_.get()));
+    profile_ = std::make_unique<TestingProfile>();
+    gallery_prefs_ =
+        std::make_unique<MediaGalleriesPreferences>(profile_.get());
     base::RunLoop loop;
     gallery_prefs_->EnsureInitialized(loop.QuitClosure());
     loop.Run();
@@ -110,15 +111,15 @@ class MediaGalleriesPermissionsTest : public extensions::ExtensionPrefsTest {
 
   void Verify() override {
     struct TestData {
-      std::string* id;
-      std::vector<MediaGalleryPermission>* expectation;
+      raw_ptr<std::string> id;
+      raw_ptr<std::vector<MediaGalleryPermission>> expectation;
     };
 
     const TestData test_data[] = {{&extension1_id_, &extension1_expectation_},
                                   {&extension2_id_, &extension2_expectation_},
                                   {&extension3_id_, &extension3_expectation_},
                                   {&extension4_id_, &extension4_expectation_}};
-    for (size_t i = 0; i < base::size(test_data); i++) {
+    for (size_t i = 0; i < std::size(test_data); i++) {
       std::vector<MediaGalleryPermission> actual =
           gallery_prefs_->GetGalleryPermissionsFromPrefs(*test_data[i].id);
       EXPECT_EQ(test_data[i].expectation->size(), actual.size());

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -55,7 +56,7 @@ class ZeroCopyGpuBacking : public ResourcePool::GpuBacking {
   }
 
   // The SharedImageInterface used to clean up the shared image.
-  gpu::SharedImageInterface* shared_image_interface = nullptr;
+  raw_ptr<gpu::SharedImageInterface> shared_image_interface = nullptr;
   // The backing for zero-copy gpu resources. The |texture_id| is bound to
   // this.
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer;
@@ -67,10 +68,12 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
  public:
   ZeroCopyRasterBufferImpl(
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+      base::WaitableEvent* shutdown_event,
       const ResourcePool::InUsePoolResource& in_use_resource,
       ZeroCopyGpuBacking* backing)
       : backing_(backing),
         gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
+        shutdown_event_(shutdown_event),
         resource_size_(in_use_resource.size()),
         resource_format_(in_use_resource.format()),
         resource_color_space_(in_use_resource.color_space()),
@@ -93,8 +96,8 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
     // we need to do things in IsResourceReadyToDraw() and OrderingBarrier then?
     gpu::SharedImageInterface* sii = backing_->shared_image_interface;
     if (backing_->mailbox.IsZero()) {
-      uint32_t usage =
-          gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      uint32_t usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                       gpu::SHARED_IMAGE_USAGE_SCANOUT;
       // Make a mailbox for export of the GpuMemoryBuffer to the display
       // compositor.
       backing_->mailbox = sii->CreateSharedImage(
@@ -124,7 +127,7 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
     if (!gpu_memory_buffer_) {
       gpu_memory_buffer_ = gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
           resource_size_, viz::BufferFormat(resource_format_), kBufferUsage,
-          gpu::kNullSurfaceHandle);
+          gpu::kNullSurfaceHandle, shutdown_event_);
       // Note that GpuMemoryBuffer allocation can fail.
       // https://crbug.com/554541
       if (!gpu_memory_buffer_)
@@ -152,10 +155,11 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 
  private:
   // This field may only be used on the compositor thread.
-  ZeroCopyGpuBacking* backing_;
+  raw_ptr<ZeroCopyGpuBacking> backing_;
 
   // These fields are for use on the worker thread.
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
+  raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  raw_ptr<base::WaitableEvent> shutdown_event_;
   gfx::Size resource_size_;
   viz::ResourceFormat resource_format_;
   gfx::ColorSpace resource_color_space_;
@@ -201,8 +205,8 @@ ZeroCopyRasterBufferProvider::AcquireBufferForRaster(
   ZeroCopyGpuBacking* backing =
       static_cast<ZeroCopyGpuBacking*>(resource.gpu_backing());
 
-  return std::make_unique<ZeroCopyRasterBufferImpl>(gpu_memory_buffer_manager_,
-                                                    resource, backing);
+  return std::make_unique<ZeroCopyRasterBufferImpl>(
+      gpu_memory_buffer_manager_, shutdown_event_, resource, backing);
 }
 
 void ZeroCopyRasterBufferProvider::Flush() {}
@@ -232,6 +236,11 @@ uint64_t ZeroCopyRasterBufferProvider::SetReadyToDrawCallback(
     uint64_t pending_callback_id) const {
   // Zero-copy resources are immediately ready to draw.
   return 0;
+}
+
+void ZeroCopyRasterBufferProvider::SetShutdownEvent(
+    base::WaitableEvent* shutdown_event) {
+  shutdown_event_ = shutdown_event;
 }
 
 void ZeroCopyRasterBufferProvider::Shutdown() {}

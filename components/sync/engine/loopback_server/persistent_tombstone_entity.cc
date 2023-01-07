@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,9 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/loopback_server.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 using std::string;
 
@@ -13,7 +16,7 @@ using syncer::ModelType;
 
 namespace syncer {
 
-PersistentTombstoneEntity::~PersistentTombstoneEntity() {}
+PersistentTombstoneEntity::~PersistentTombstoneEntity() = default;
 
 // static
 std::unique_ptr<LoopbackServerEntity>

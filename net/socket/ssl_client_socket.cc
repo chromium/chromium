@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,10 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/observer_list.h"
+#include "net/base/features.h"
 #include "net/socket/ssl_client_socket_impl.h"
 #include "net/socket/stream_socket.h"
 #include "net/ssl/ssl_client_session_cache.h"
@@ -14,9 +17,7 @@
 
 namespace net {
 
-SSLClientSocket::SSLClientSocket()
-    : signed_cert_timestamps_received_(false),
-      stapled_ocsp_response_received_(false) {}
+SSLClientSocket::SSLClientSocket() = default;
 
 // static
 void SSLClientSocket::SetSSLKeyLogger(std::unique_ptr<SSLKeyLogger> logger) {
@@ -75,6 +76,11 @@ SSLClientContext::~SSLClientContext() {
     ssl_config_service_->RemoveObserver(this);
   }
   CertDatabase::GetInstance()->RemoveObserver(this);
+}
+
+bool SSLClientContext::EncryptedClientHelloEnabled() const {
+  return config_.ech_enabled &&
+         base::FeatureList::IsEnabled(features::kEncryptedClientHello);
 }
 
 std::unique_ptr<SSLClientSocket> SSLClientContext::CreateSSLClientSocket(

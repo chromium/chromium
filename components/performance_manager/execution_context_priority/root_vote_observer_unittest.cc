@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,13 +24,13 @@ static const char kReason[] = "test reason";
 class LenientMockFrameNodeObserver : public FrameNode::ObserverDefaultImpl {
  public:
   LenientMockFrameNodeObserver() = default;
+  LenientMockFrameNodeObserver(const LenientMockFrameNodeObserver&) = delete;
+  LenientMockFrameNodeObserver& operator=(const LenientMockFrameNodeObserver&) =
+      delete;
   ~LenientMockFrameNodeObserver() override = default;
 
   MOCK_METHOD2(OnPriorityAndReasonChanged,
                void(const FrameNode*, const PriorityAndReason&));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LenientMockFrameNodeObserver);
 };
 
 using MockFrameNodeObserver =
@@ -44,7 +44,7 @@ class RootVoteObserverTest : public GraphTestHarness {
   ~RootVoteObserverTest() override = default;
 
   void SetUp() override {
-    GetGraphFeaturesHelper().EnableExecutionContextRegistry();
+    GetGraphFeatures().EnableExecutionContextRegistry();
     Super::SetUp();
   }
 };

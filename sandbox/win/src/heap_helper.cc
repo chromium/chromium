@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/ref_counted.h"
 #include "base/win/windows_version.h"
 
@@ -35,7 +36,9 @@ struct _HEAP_32 {
   DWORD SegmentSignature;
   DWORD SegmentFlags;
   LIST_ENTRY SegmentListEntry;
-  struct _HEAP_32* Heap;
+  // `Heap` is not a raw_ptr<...>, because reinterpret_cast of uninitialized
+  // memory to raw_ptr can cause ref-counting mismatch.
+  RAW_PTR_EXCLUSION struct _HEAP_32* Heap;
   char Unknown0[0x24];
   // Offset 0x40
   DWORD Flags;
@@ -50,7 +53,9 @@ struct _HEAP_64 {
   DWORD SegmentSignature;
   DWORD SegmentFlags;
   LIST_ENTRY SegmentListEntry;
-  struct _HEAP_64* Heap;
+  // `Heap` is not a raw_ptr<...>, because reinterpret_cast of uninitialized
+  // memory to raw_ptr can cause ref-counting mismatch.
+  RAW_PTR_EXCLUSION struct _HEAP_64* Heap;
   char Unknown0[0x40];
   // Offset 0x70
   DWORD Flags;

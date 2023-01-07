@@ -1,0 +1,52 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
+import("//chrome/common/features.gni")
+
+assert(!is_android)
+
+build_webui("build") {
+  grd_prefix = "feedback"
+
+  static_files = [
+    "css/common.css",
+    "css/feedback.css",
+    "css/feedback_shared_styles.css",
+    "css/feedback_shared_vars.css",
+    "css/sys_info.css",
+    "html/default.html",
+    "html/sys_info.html",
+    "images/2x/button_butter_bar_close_hover.png",
+    "images/2x/button_butter_bar_close.png",
+    "images/2x/button_butter_bar_close_pressed.png",
+    "images/button_butter_bar_close_hover.png",
+    "images/button_butter_bar_close.png",
+    "images/button_butter_bar_close_pressed.png",
+  ]
+
+  if (is_chromeos_ash) {
+    static_files += [
+      "css/assistant_logs_info.css",
+      "html/assistant_logs_info.html",
+      "html/bluetooth_logs_info.html",
+    ]
+  }
+
+  non_web_component_files = [
+    "js/feedback.ts",
+    "js/feedback_util.ts",
+    "js/questionnaire.ts",
+    "js/sys_info.ts",
+    "js/take_screenshot.ts",
+  ]
+
+  ts_definitions = [
+    "//tools/typescript/definitions/feedback_private.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+  ]
+  ts_deps = [ "//ui/webui/resources:library" ]
+  ts_use_local_config = false
+}

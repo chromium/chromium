@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -25,6 +24,10 @@ class SingleLogFileLogSourceTest : public ::testing::Test {
   SingleLogFileLogSourceTest() : num_callback_calls_(0) {
     InitializeTestLogDir();
   }
+
+  SingleLogFileLogSourceTest(const SingleLogFileLogSourceTest&) = delete;
+  SingleLogFileLogSourceTest& operator=(const SingleLogFileLogSourceTest&) =
+      delete;
 
   ~SingleLogFileLogSourceTest() override {
     SingleLogFileLogSource::SetChromeStartTimeForTesting(nullptr);
@@ -71,8 +74,7 @@ class SingleLogFileLogSourceTest : public ::testing::Test {
   }
   bool AppendToFile(const base::FilePath& relative_path,
                     const std::string& input) {
-    return base::AppendToFile(log_dir_.GetPath().Append(relative_path),
-                              input.data(), input.size());
+    return base::AppendToFile(log_dir_.GetPath().Append(relative_path), input);
   }
 
   // Moves source file to destination path, then creates an empty file at the
@@ -133,8 +135,6 @@ class SingleLogFileLogSourceTest : public ::testing::Test {
 
   // Path to the dummy log file in |log_dir_|.
   base::FilePath log_file_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(SingleLogFileLogSourceTest);
 };
 
 TEST_F(SingleLogFileLogSourceTest, EmptyFile) {

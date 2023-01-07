@@ -1,0 +1,6 @@
+specific_include_rules = {
+  'post_message_counter.h': [
+    "+services/metrics/public/cpp/ukm_recorder.h",
+    "+services/metrics/public/cpp/ukm_source_id.h",
+  ],
+}

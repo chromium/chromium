@@ -1,5 +1,5 @@
-#!/usr/bin/python3
-# Copyright 2020 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """A tool for signing an updater metainstaller and contained code.
@@ -26,10 +26,9 @@ import resedit
 
 class SigningError(Exception):
     """Module exception class."""
-    pass
 
 
-class Signer(object):
+class Signer:
     """A container for a signing operation."""
 
     def __init__(self, tmpdir, lzma_exe, signtool_exe, tagging_exe, identity):

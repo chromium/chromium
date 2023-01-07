@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -57,7 +58,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   }
 
   // Unhandled requests result in the Embedded test server sending a 404.
-  return std::unique_ptr<net::test_server::BasicHttpResponse>();
+  return nullptr;
 }
 
 }  // namespace
@@ -92,12 +93,12 @@ class ExtensionURLLoaderThrottleBrowserTest : public ExtensionBrowserTest {
             : net::AppendQueryParameter(unthrottled_test_url,
                                         "expectedFailRequestNum",
                                         expected_throttled_request_num);
-    ui_test_utils::NavigateToURL(browser(), test_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
  private:
-  const Extension* extension_;
+  raw_ptr<const Extension> extension_;
 };
 
 class ExtensionURLLoaderThrottleWithSplitCacheBrowserTest

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CHROMECAST_MEDIA_CMA_BASE_CODED_FRAME_PROVIDER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace media {
@@ -26,6 +25,10 @@ class CodedFrameProvider {
       ReadCB;
 
   CodedFrameProvider();
+
+  CodedFrameProvider(const CodedFrameProvider&) = delete;
+  CodedFrameProvider& operator=(const CodedFrameProvider&) = delete;
+
   virtual ~CodedFrameProvider();
 
   // Request a coded frame which is provided asynchronously through callback
@@ -42,9 +45,6 @@ class CodedFrameProvider {
   // callback will not be invoked.
   // TODO(alokp): Delete this function once CmaRenderer is deprecated.
   virtual void Flush(base::OnceClosure flush_cb) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CodedFrameProvider);
 };
 
 }  // namespace media

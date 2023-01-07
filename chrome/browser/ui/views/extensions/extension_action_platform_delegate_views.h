@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_VIEWS_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "chrome/browser/ui/extensions/extension_action_platform_delegate.h"
@@ -13,7 +13,7 @@
 
 class ToolbarActionViewDelegateViews;
 
-// An abstract "View" for an ExtensionAction (either a BrowserAction or a
+// An abstract "View" for an ExtensionAction (Action, BrowserAction, or a
 // PageAction). This contains the logic for showing the action's popup and
 // the context menu. This class doesn't subclass View directly, as the
 // implementations for page actions/browser actions are different types of
@@ -28,17 +28,21 @@ class ExtensionActionPlatformDelegateViews
  public:
   ExtensionActionPlatformDelegateViews(
       ExtensionActionViewController* controller);
+
+  ExtensionActionPlatformDelegateViews(
+      const ExtensionActionPlatformDelegateViews&) = delete;
+  ExtensionActionPlatformDelegateViews& operator=(
+      const ExtensionActionPlatformDelegateViews&) = delete;
+
   ~ExtensionActionPlatformDelegateViews() override;
 
  private:
   // ExtensionActionPlatformDelegate:
   void RegisterCommand() override;
   void UnregisterCommand() override;
-  void ShowPopup(
-      std::unique_ptr<extensions::ExtensionViewHost> host,
-      bool grant_tab_permissions,
-      ExtensionActionViewController::PopupShowAction show_action) override;
-  void ShowContextMenu() override;
+  void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
+                 PopupShowAction show_action,
+                 ShowPopupCallback callback) override;
 
   // extensions::CommandService::Observer:
   void OnExtensionCommandAdded(const std::string& extension_id,
@@ -54,7 +58,7 @@ class ExtensionActionPlatformDelegateViews
   ToolbarActionViewDelegateViews* GetDelegateViews() const;
 
   // The owning ExtensionActionViewController.
-  ExtensionActionViewController* controller_;
+  raw_ptr<ExtensionActionViewController> controller_;
 
   // The extension key binding accelerator this extension action is listening
   // for (to show the popup).
@@ -63,8 +67,6 @@ class ExtensionActionPlatformDelegateViews
   base::ScopedObservation<extensions::CommandService,
                           extensions::CommandService::Observer>
       command_service_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionPlatformDelegateViews);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_ACTION_PLATFORM_DELEGATE_VIEWS_H_

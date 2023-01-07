@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/session/logout_button_tray.h"
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
@@ -14,7 +14,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
-#include "base/macros.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "components/prefs/pref_service.h"
 #include "ui/events/base_event_utils.h"
@@ -29,6 +28,10 @@ constexpr char kUserEmail[] = "user1@test.com";
 class LogoutButtonTrayTest : public NoSessionAshTestBase {
  public:
   LogoutButtonTrayTest() = default;
+
+  LogoutButtonTrayTest(const LogoutButtonTrayTest&) = delete;
+  LogoutButtonTrayTest& operator=(const LogoutButtonTrayTest&) = delete;
+
   ~LogoutButtonTrayTest() override = default;
 
   // NoSessionAshTestBase:
@@ -41,9 +44,6 @@ class LogoutButtonTrayTest : public NoSessionAshTestBase {
     return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
         AccountId::FromUserEmail(kUserEmail));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LogoutButtonTrayTest);
 };
 
 TEST_F(LogoutButtonTrayTest, Visibility) {
@@ -75,7 +75,6 @@ TEST_F(LogoutButtonTrayTest, Visibility) {
 }
 
 TEST_F(LogoutButtonTrayTest, ButtonPressed) {
-  constexpr char kUserEmail[] = "user1@test.com";
   constexpr char kUserAction[] = "DemoMode.ExitFromShelf";
 
   LogoutButtonTray* const tray = Shell::GetPrimaryRootWindowController()

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ bool GetReturnValue(const unsigned char* offset, int* return_value) {
 
 FixedSetIncrementalLookup::FixedSetIncrementalLookup(const unsigned char* graph,
                                                      size_t length)
-    : pos_(graph), end_(graph + length), pos_is_label_character_(false) {}
+    : pos_(graph), end_(graph + length) {}
 
 FixedSetIncrementalLookup::FixedSetIncrementalLookup(
     const FixedSetIncrementalLookup& other) = default;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,9 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "gpu-vsver",
     "gpu-gl-vendor",
     "gpu-gl-renderer",
+    "gr-context-type",
     "oop_read_failure",
+    "gpu-gl-error-message",
 
     // components/viz
     "viz_deserialization",
@@ -54,41 +56,44 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "total-discardable-memory-allocated",
 
     // Navigation
-    "VerifyDidCommit-browser_intended",
-    "VerifyDidCommit-renderer_intended",
-
-    "VerifyDidCommit-browser_method",
-    "VerifyDidCommit-renderer_method",
-    "VerifyDidCommit-original_method",
-
-    "VerifyDidCommit-browser_unreachable",
-    "VerifyDidCommit-renderer_unreachable",
-
-    "VerifyDidCommit-base_url_exp_match",
     "VerifyDidCommit-prev_ldwb",
     "VerifyDidCommit-prev_ldwbu",
-    "VerifyDidCommit-b_base_url_valid",
-    "VerifyDidCommit-b_base_url_empty",
-    "VerifyDidCommit-b_hist_url_empty",
-    "VerifyDidCommit-b_data_url_empty",
-    "VerifyDidCommit-r_base_url_empty",
-    "VerifyDidCommit-r_base_url_error",
-    "VerifyDidCommit-r_history_url_empty",
+    "VerifyDidCommit-base_url_fdu_type",
+    "VerifyDidCommit-data_url_empty",
+    "VerifyDidCommit-history_url_fdu_type",
 
-    "VerifyDidCommit-browser_post_id",
-    "VerifyDidCommit-renderer_post_id",
+    "VerifyDidCommit-intended_browser",
+    "VerifyDidCommit-intended_renderer",
 
-    "VerifyDidCommit-browser_override_ua",
-    "VerifyDidCommit-renderer_override_ua",
+    "VerifyDidCommit-method_post_browser",
+    "VerifyDidCommit-method_post_renderer",
+    "VerifyDidCommit-original_method_post",
 
-    "VerifyDidCommit-browser_code",
-    "VerifyDidCommit-renderer_code",
+    "VerifyDidCommit-unreachable_browser",
+    "VerifyDidCommit-unreachable_renderer",
 
-    "VerifyDidCommit-browser_suh",
-    "VerifyDidCommit-renderer_suh",
+    "VerifyDidCommit-post_id_matches",
+    "VerifyDidCommit-post_id_-1_browser",
+    "VerifyDidCommit-post_id_-1_renderer",
 
-    "VerifyDidCommit-browser_gesture",
-    "VerifyDidCommit-renderer_gesture",
+    "VerifyDidCommit-override_ua_browser",
+    "VerifyDidCommit-override_ua_renderer",
+
+    "VerifyDidCommit-code_browser",
+    "VerifyDidCommit-code_renderer",
+
+    "VerifyDidCommit-suh_browser",
+    "VerifyDidCommit-suh_renderer",
+
+    "VerifyDidCommit-gesture_browser",
+    "VerifyDidCommit-gesture_renderer",
+
+    "VerifyDidCommit-replace_browser",
+    "VerifyDidCommit-replace_renderer",
+
+    "VerifyDidCommit-url_relation",
+    "VerifyDidCommit-url_browser_type",
+    "VerifyDidCommit-url_renderer_type",
 
     "VerifyDidCommit-is_same_document",
     "VerifyDidCommit-is_history_api",
@@ -102,22 +107,21 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "VerifyDidCommit-redirects_size",
 
     "VerifyDidCommit-entry_offset",
+    "VerifyDidCommit-entry_count",
+    "VerifyDidCommit-last_committed_index",
+
     "VerifyDidCommit-is_reload",
     "VerifyDidCommit-is_restore",
+    "VerifyDidCommit-is_history",
+    "VerifyDidCommit-has_valid_page_state",
+
     "VerifyDidCommit-has_gesture",
     "VerifyDidCommit-was_click",
 
-    "VerifyDidCommit-nav_url_blank",
-    "VerifyDidCommit-nav_url_srcdoc",
-    "VerifyDidCommit-nav_url_blocked",
-    "VerifyDidCommit-nav_url_error",
-
     "VerifyDidCommit-original_same_doc",
 
-    "VerifyDidCommit-last_url_empty",
-    "VerifyDidCommit-last_url_blank",
-    "VerifyDidCommit-last_url_srcdoc",
-    "VerifyDidCommit-last_url_error",
+    "VerifyDidCommit-committed_real_load",
+    "VerifyDidCommit-last_url_type",
 
     "VerifyDidCommit-last_method",
     "VerifyDidCommit-last_code",
@@ -134,6 +138,9 @@ const char* const kWebViewCrashKeyAllowList[] = {
     // crash keys needed for recording finch trials
     "variations",
     "num-experiments",
+
+    // sandbox/linux
+    "seccomp-sigsys",
 
     kWeblayerWebViewCompatMode,
 

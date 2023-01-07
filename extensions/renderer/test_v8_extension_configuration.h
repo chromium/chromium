@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,6 @@
 
 #include <memory>
 #include <vector>
-
-#include "base/macros.h"
 
 namespace v8 {
 class Extension;
@@ -22,6 +20,11 @@ namespace extensions {
 class TestV8ExtensionConfiguration {
  public:
   TestV8ExtensionConfiguration();
+
+  TestV8ExtensionConfiguration(const TestV8ExtensionConfiguration&) = delete;
+  TestV8ExtensionConfiguration& operator=(const TestV8ExtensionConfiguration&) =
+      delete;
+
   ~TestV8ExtensionConfiguration();
 
   static v8::ExtensionConfiguration* GetConfiguration();
@@ -29,8 +32,6 @@ class TestV8ExtensionConfiguration {
  private:
   const char* v8_extension_name_;
   std::unique_ptr<v8::ExtensionConfiguration> v8_extension_configuration_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestV8ExtensionConfiguration);
 };
 
 }  // namespace extensions

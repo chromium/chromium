@@ -1,12 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/gl/gl_version_info.h"
 
+#include <map>
+#include <vector>
+
 #include "base/check_op.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -56,7 +58,7 @@ void GLVersionInfo::Initialize(const char* version_str,
       is_angle_swiftshader =
           renderer_string.find("SwiftShader Device") != std::string::npos;
       is_angle_vulkan = renderer_string.find("Vulkan") != std::string::npos;
-      is_angle_metal = renderer_string.find("Metal") != std::string::npos;
+      is_angle_metal = renderer_string.find("ANGLE Metal") != std::string::npos;
     }
 
     is_swiftshader = base::StartsWith(renderer_str, "Google SwiftShader",
@@ -253,7 +255,7 @@ void GLVersionInfo::ExtractDriverVendorANGLE(const char* renderer_str) {
     driver_vendor = "ANGLE (Google)";
   }
   if (is_angle_metal) {
-    DCHECK(base::StartsWith(rstr, "Metal", base::CompareCase::SENSITIVE));
+    DCHECK(base::StartsWith(rstr, "ANGLE Metal", base::CompareCase::SENSITIVE));
   }
   if (base::StartsWith(rstr, "NVIDIA ", base::CompareCase::SENSITIVE))
     driver_vendor = "ANGLE (NVIDIA)";

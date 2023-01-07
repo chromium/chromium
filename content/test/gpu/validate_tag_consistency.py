@@ -1,8 +1,10 @@
-#!/usr/bin/env vpython
-# Copyright 2020 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Script to ensure that the same tags are in all expectation files."""
+
+from __future__ import print_function
 
 import argparse
 import logging
@@ -12,36 +14,41 @@ import sys
 TAG_HEADER = """\
 # OS
 # tags: [ android android-lollipop android-marshmallow android-nougat
-#             android-pie android-r
+#             android-pie android-r android-s android-t
 #         chromeos
 #         fuchsia
 #         linux ubuntu
-#         mac bigsur catalina lion highsierra mac-10.12 mojave mountainlion
-#             sierra
-#         win win7 win8 win10 ]
+#         mac highsierra mojave catalina bigsur monterey
+#         win win8 win10 ]
 # Devices
-# tags: [ android-nexus-5 android-nexus-5x android-nexus-6 android-nexus-9
-#             android-pixel-2 android-pixel-4 android-shield-android-tv
-#         chromeos-board-amd64-generic chromeos-board-kevin
-#         fuchsia-board-astro fuchsia-board-qemu-x64 ]
+# tags: [ android-nexus-5 android-nexus-5x android-pixel-2 android-pixel-4
+#             android-pixel-6 android-shield-android-tv android-sm-a135m
+#             android-sm-a235m
+#         chromeos-board-amd64-generic chromeos-board-kevin chromeos-board-eve
+#         fuchsia-board-astro fuchsia-board-sherlock fuchsia-board-qemu-x64 ]
 # Platform
 # tags: [ desktop
 #         mobile ]
 # Browser
 # tags: [ android-chromium android-webview-instrumentation
 #         debug debug-x64
-#         release release-x64 ]
+#         release release-x64
+#         fuchsia-chrome web-engine-shell ]
 # GPU
 # tags: [ amd amd-0x6613 amd-0x679e amd-0x6821 amd-0x7340
-#         apple apple-apple-m1 apple-metal-renderer:-apple-m1
+#         apple apple-apple-m1 apple-angle-metal-renderer:-apple-m1
 #         arm
 #         google google-0xffff
-#         intel intel-0xa2e intel-0xd26 intel-0xa011 intel-0x3e92 intel-0x3e9b
-#               intel-0x5912
+#         intel intel-gen-9 intel-0xa2e intel-0xd26 intel-0xa011 intel-0x3e92
+#               intel-0x3e9b intel-0x5912 intel-0x9bc5
 #         nvidia nvidia-0xfe9 nvidia-0x1cb3 nvidia-0x2184
 #         qualcomm ]
+# Architecture
+# tags: [ mac-arm64 mac-x86_64 ]
 # Decoder
 # tags: [ passthrough no-passthrough ]
+# Browser Target CPU
+# tags: [ target-cpu-64 target-cpu-32 target-cpu-31 ]
 # ANGLE Backend
 # tags: [ angle-disabled
 #         angle-d3d9 angle-d3d11
@@ -50,23 +57,22 @@ TAG_HEADER = """\
 #         angle-swiftshader
 #         angle-vulkan ]
 # Skia Renderer
-# tags: [ skia-renderer-dawn
-#         skia-renderer-disabled
-#         skia-renderer-gl
-#         skia-renderer-vulkan ]
-# SwiftShader
-# tags: [ swiftshader-gl no-swiftshader-gl ]
+# tags: [ renderer-skia-dawn
+#         renderer-skia-gl
+#         renderer-skia-vulkan
+#         renderer-software ]
 # Driver
-# tags: [ intel_lt_25.20.100.6444 intel_lt_25.20.100.6577
-#             intel_lt_26.20.100.7000 intel_lt_26.20.100.7870
-#             intel_lt_26.20.100.7323 intel_lt_26.20.100.8141
-#             intel_lt_27.20.100.8280
-#         mesa_lt_19.1 mesa_ge_20.1 ]
+# tags: [ mesa_lt_19.1
+#         mesa_ge_21.0 ]
 # ASan
 # tags: [ asan no-asan ]
 # Display Server
 # tags: [ display-server-wayland display-server-x ]
-# results: [ Failure RetryOnFailure Skip ]
+# OOP-Canvas
+# tags: [ oop-c no-oop-c ]
+# WebGPU Backend Validation
+# tags: [ dawn-backend-validation dawn-no-backend-validation ]
+# results: [ Failure RetryOnFailure Skip Slow ]
 """
 
 TAG_HEADER_BEGIN =\
@@ -79,9 +85,14 @@ EXPECTATION_DIR = os.path.join(os.path.dirname(__file__), 'gpu_tests',
 
 def Validate():
   retval = 0
-  for f in os.listdir(EXPECTATION_DIR):
+  for f in (f for f in os.listdir(EXPECTATION_DIR) if f.endswith('.txt')):
     with open(os.path.join(EXPECTATION_DIR, f)) as infile:
-      if TAG_HEADER not in infile.read():
+      content = infile.read()
+      start_index = content.find(TAG_HEADER_BEGIN)
+      end_index = content.find(TAG_HEADER_END)
+      if (start_index < 0 or end_index < 0
+          or content[start_index + len(TAG_HEADER_BEGIN) + 1:end_index] !=
+          TAG_HEADER):
         retval = 1
         logging.error(
             'Expectation file %s does not have a tag/result header consistent '
@@ -95,7 +106,7 @@ def Validate():
 
 def Apply():
   retval = 0
-  for f in os.listdir(EXPECTATION_DIR):
+  for f in (f for f in os.listdir(EXPECTATION_DIR) if f.endswith('.txt')):
     filepath = os.path.join(EXPECTATION_DIR, f)
     with open(filepath) as infile:
       content = infile.read()
@@ -131,8 +142,7 @@ def main():
   args = parser.parse_args()
   if args.function == 'apply':
     return Apply()
-  else:
-    return Validate()
+  return Validate()
 
 
 if __name__ == '__main__':

@@ -1,11 +1,13 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CC_PAINT_FILTER_OPERATION_H_
 #define CC_PAINT_FILTER_OPERATION_H_
 
+#include <array>
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/check_op.h"
@@ -28,7 +30,8 @@ namespace cc {
 
 class CC_PAINT_EXPORT FilterOperation {
  public:
-  using Matrix = SkScalar[20];
+  // 4x5 color matrix equivalent to SkColorMatrix.
+  using Matrix = std::array<float, 20>;
   using ShapeRects = std::vector<gfx::Rect>;
   enum FilterType {
     GRAYSCALE,
@@ -46,7 +49,8 @@ class CC_PAINT_EXPORT FilterOperation {
     REFERENCE,
     SATURATING_BRIGHTNESS,  // Not used in CSS/SVG.
     ALPHA_THRESHOLD,        // Not used in CSS/SVG.
-    FILTER_TYPE_LAST = ALPHA_THRESHOLD
+    STRETCH,                // Not used in CSS/SVG.
+    FILTER_TYPE_LAST = STRETCH
   };
 
   FilterOperation();
@@ -64,7 +68,7 @@ class CC_PAINT_EXPORT FilterOperation {
   }
 
   float outer_threshold() const {
-    DCHECK_EQ(type_, ALPHA_THRESHOLD);
+    DCHECK(type_ == ALPHA_THRESHOLD || type_ == STRETCH);
     return outer_threshold_;
   }
 
@@ -73,7 +77,7 @@ class CC_PAINT_EXPORT FilterOperation {
     return drop_shadow_offset_;
   }
 
-  SkColor drop_shadow_color() const {
+  SkColor4f drop_shadow_color() const {
     DCHECK_EQ(type_, DROP_SHADOW);
     return drop_shadow_color_;
   }
@@ -143,7 +147,7 @@ class CC_PAINT_EXPORT FilterOperation {
 
   static FilterOperation CreateDropShadowFilter(const gfx::Point& offset,
                                                 float std_deviation,
-                                                SkColor color) {
+                                                SkColor4f color) {
     return FilterOperation(DROP_SHADOW, offset, std_deviation, color);
   }
 
@@ -171,6 +175,10 @@ class CC_PAINT_EXPORT FilterOperation {
                            outer_threshold);
   }
 
+  static FilterOperation CreateStretchFilter(float amount_x, float amount_y) {
+    return FilterOperation(STRETCH, amount_x, amount_y);
+  }
+
   bool operator==(const FilterOperation& other) const;
 
   bool operator!=(const FilterOperation& other) const {
@@ -191,7 +199,7 @@ class CC_PAINT_EXPORT FilterOperation {
   }
 
   void set_outer_threshold(float outer_threshold) {
-    DCHECK_EQ(type_, ALPHA_THRESHOLD);
+    DCHECK(type_ == ALPHA_THRESHOLD || type_ == STRETCH);
     outer_threshold_ = outer_threshold;
   }
 
@@ -200,7 +208,7 @@ class CC_PAINT_EXPORT FilterOperation {
     drop_shadow_offset_ = offset;
   }
 
-  void set_drop_shadow_color(SkColor color) {
+  void set_drop_shadow_color(SkColor4f color) {
     DCHECK_EQ(type_, DROP_SHADOW);
     drop_shadow_color_ = color;
   }
@@ -259,11 +267,13 @@ class CC_PAINT_EXPORT FilterOperation {
   FilterOperation(FilterType type,
                   const gfx::Point& offset,
                   float stdDeviation,
-                  SkColor color);
+                  SkColor4f color);
 
   FilterOperation(FilterType, const Matrix& matrix);
 
   FilterOperation(FilterType type, float amount, int inset);
+
+  FilterOperation(FilterType type, float amount, float outer_threshold);
 
   FilterOperation(FilterType type, sk_sp<PaintFilter> image_filter);
 
@@ -276,7 +286,7 @@ class CC_PAINT_EXPORT FilterOperation {
   float amount_;
   float outer_threshold_;
   gfx::Point drop_shadow_offset_;
-  SkColor drop_shadow_color_;
+  SkColor4f drop_shadow_color_;
   sk_sp<PaintFilter> image_filter_;
   Matrix matrix_;
   int zoom_inset_;

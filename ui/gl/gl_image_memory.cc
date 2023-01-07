@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_make_current.h"
@@ -38,6 +39,7 @@ GLint DataRowLength(size_t stride, gfx::BufferFormat format) {
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_4444:
       return base::checked_cast<GLint>(stride) / 2;
+    case gfx::BufferFormat::RG_1616:
     case gfx::BufferFormat::RGBX_8888:
     case gfx::BufferFormat::RGBA_8888:
     case gfx::BufferFormat::BGRX_8888:
@@ -120,7 +122,7 @@ std::vector<uint8_t> GLES2RGB565Data(const gfx::Size& size,
   return gles2_rgb_data;
 }
 
-base::Optional<std::vector<uint8_t>> GLES2Data(const gfx::Size& size,
+absl::optional<std::vector<uint8_t>> GLES2Data(const gfx::Size& size,
                                                gfx::BufferFormat format,
                                                size_t stride,
                                                const uint8_t* data,
@@ -132,7 +134,7 @@ base::Optional<std::vector<uint8_t>> GLES2Data(const gfx::Size& size,
 
   switch (format) {
     case gfx::BufferFormat::RGBX_8888:
-      return base::make_optional(GLES2RGBData(
+      return absl::make_optional(GLES2RGBData(
           size, stride, data,
           [](const uint8_t* src, uint8_t* dst) {
             dst[0] = src[0];
@@ -141,10 +143,10 @@ base::Optional<std::vector<uint8_t>> GLES2Data(const gfx::Size& size,
           },
           data_format, data_type, data_row_length));
     case gfx::BufferFormat::BGR_565:
-      return base::make_optional(GLES2RGB565Data(
+      return absl::make_optional(GLES2RGB565Data(
           size, stride, data, data_format, data_type, data_row_length));
     case gfx::BufferFormat::BGRX_8888:
-      return base::make_optional(GLES2RGBData(
+      return absl::make_optional(GLES2RGBData(
           size, stride, data,
           [](const uint8_t* src, uint8_t* dst) {
             dst[0] = src[2];
@@ -160,12 +162,13 @@ base::Optional<std::vector<uint8_t>> GLES2Data(const gfx::Size& size,
     case gfx::BufferFormat::RGBA_F16:
     case gfx::BufferFormat::R_8:
     case gfx::BufferFormat::R_16:
-    case gfx::BufferFormat::RG_88: {
+    case gfx::BufferFormat::RG_88:
+    case gfx::BufferFormat::RG_1616: {
       size_t gles2_data_stride =
           RowSizeForBufferFormat(size.width(), format, 0);
       if (stride == gles2_data_stride ||
           g_current_gl_driver->ext.b_GL_EXT_unpack_subimage)
-        return base::nullopt;  // No data conversion needed
+        return absl::nullopt;  // No data conversion needed
 
       std::vector<uint8_t> gles2_data(gles2_data_stride * size.height());
       for (int y = 0; y < size.height(); ++y) {
@@ -173,17 +176,17 @@ base::Optional<std::vector<uint8_t>> GLES2Data(const gfx::Size& size,
                gles2_data_stride);
       }
       *data_row_length = size.width();
-      return base::make_optional(gles2_data);
+      return absl::make_optional(gles2_data);
     }
     case gfx::BufferFormat::YVU_420:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
     case gfx::BufferFormat::P010:
       NOTREACHED() << gfx::BufferFormatToString(format);
-      return base::nullopt;
+      return absl::nullopt;
   }
 
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void MemcpyTask(const void* src,
@@ -245,7 +248,8 @@ GLImageMemory* GLImageMemory::FromGLImage(GLImage* image) {
 
 bool GLImageMemory::Initialize(const unsigned char* memory,
                                gfx::BufferFormat format,
-                               size_t stride) {
+                               size_t stride,
+                               bool disable_pbo_upload) {
   if (!ValidFormat(format)) {
     LOG(ERROR) << "Invalid format: " << gfx::BufferFormatToString(format);
     return false;
@@ -262,13 +266,17 @@ bool GLImageMemory::Initialize(const unsigned char* memory,
   format_ = format;
   stride_ = stride;
 
-  bool tex_image_from_pbo_is_slow = false;
-#if defined(OS_WIN)
-  tex_image_from_pbo_is_slow = true;
-#endif  // OS_WIN
+#if BUILDFLAG(IS_WIN)
+  // CopyTexImage from PBO is slow on Windows.
+  disable_pbo_upload = true;
+#endif  // BUILDFLAG(IS_WIN)
+
+  if (disable_pbo_upload)
+    return true;
+
   GLContext* context = GLContext::GetCurrent();
   DCHECK(context);
-  if (!tex_image_from_pbo_is_slow && SupportsPBO(context) &&
+  if (SupportsPBO(context) &&
       (SupportsMapBuffer(context) || SupportsMapBufferRange(context))) {
     constexpr size_t kTaskBytes = 1024 * 1024;
     buffer_bytes_ = stride * size_.height();
@@ -340,7 +348,7 @@ bool GLImageMemory::CopyTexImage(unsigned target) {
   GLenum data_format = GetDataFormat();
   GLenum data_type = GetDataType();
   GLint data_row_length = DataRowLength(stride_, format_);
-  base::Optional<std::vector<uint8_t>> gles2_data;
+  absl::optional<std::vector<uint8_t>> gles2_data;
 
   GLContext* context = GLContext::GetCurrent();
   DCHECK(context);
@@ -349,8 +357,12 @@ bool GLImageMemory::CopyTexImage(unsigned target) {
                            &data_type, &data_row_length);
   }
 
-  if (data_row_length != size_.width())
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, data_row_length);
+  ScopedPixelStore scoped_unpack_row_length(
+      GL_UNPACK_ROW_LENGTH,
+      data_row_length == size_.width() ? 0 : data_row_length);
+  ScopedPixelStore scoped_unpack_skip_pixels(GL_UNPACK_SKIP_PIXELS, 0);
+  ScopedPixelStore scoped_unpack_skip_rows(GL_UNPACK_SKIP_ROWS, 0);
+  ScopedPixelStore scoped_unpack_alignment(GL_UNPACK_ALIGNMENT, 4);
 
   const void* src;
   size_t size;
@@ -406,9 +418,6 @@ bool GLImageMemory::CopyTexImage(unsigned target) {
                  0, data_format, data_type, src);
   }
 
-  if (data_row_length != size_.width())
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-
   return true;
 }
 
@@ -430,35 +439,25 @@ bool GLImageMemory::CopyTexSubImage(unsigned target,
   GLenum data_format = GetDataFormat();
   GLenum data_type = GetDataType();
   GLint data_row_length = DataRowLength(stride_, format_);
-  base::Optional<std::vector<uint8_t>> gles2_data;
+  absl::optional<std::vector<uint8_t>> gles2_data;
 
   if (GLContext::GetCurrent()->GetVersionInfo()->is_es) {
     gles2_data = GLES2Data(rect.size(), format_, stride_, data, &data_format,
                            &data_type, &data_row_length);
   }
 
-  if (data_row_length != rect.width())
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, data_row_length);
+  ScopedPixelStore scoped_unpack_row_length(
+      GL_UNPACK_ROW_LENGTH,
+      data_row_length == rect.width() ? 0 : data_row_length);
+  ScopedPixelStore scoped_unpack_skip_pixels(GL_UNPACK_SKIP_PIXELS, 0);
+  ScopedPixelStore scoped_unpack_skip_rows(GL_UNPACK_SKIP_ROWS, 0);
+  ScopedPixelStore scoped_unpack_alignment(GL_UNPACK_ALIGNMENT, 4);
 
   glTexSubImage2D(target, 0, offset.x(), offset.y(), rect.width(),
                   rect.height(), data_format, data_type,
                   gles2_data ? gles2_data->data() : data);
 
-  if (data_row_length != rect.width())
-    glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-
   return true;
-}
-
-bool GLImageMemory::ScheduleOverlayPlane(
-    gfx::AcceleratedWidget widget,
-    int z_order,
-    gfx::OverlayTransform transform,
-    const gfx::Rect& bounds_rect,
-    const gfx::RectF& crop_rect,
-    bool enable_blend,
-    std::unique_ptr<gfx::GpuFence> gpu_fence) {
-  return false;
 }
 
 GLImageMemory::Type GLImageMemory::GetType() const {
@@ -471,6 +470,7 @@ bool GLImageMemory::ValidFormat(gfx::BufferFormat format) {
     case gfx::BufferFormat::R_8:
     case gfx::BufferFormat::R_16:
     case gfx::BufferFormat::RG_88:
+    case gfx::BufferFormat::RG_1616:
     case gfx::BufferFormat::BGR_565:
     case gfx::BufferFormat::RGBA_4444:
     case gfx::BufferFormat::RGBX_8888:

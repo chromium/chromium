@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,6 +37,12 @@ class MODULES_EXPORT HtmlAudioElementCapturerSource final
   HtmlAudioElementCapturerSource(
       scoped_refptr<blink::WebAudioSourceProviderImpl> audio_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  HtmlAudioElementCapturerSource(const HtmlAudioElementCapturerSource&) =
+      delete;
+  HtmlAudioElementCapturerSource& operator=(
+      const HtmlAudioElementCapturerSource&) = delete;
+
   ~HtmlAudioElementCapturerSource() override;
 
  private:
@@ -60,8 +66,6 @@ class MODULES_EXPORT HtmlAudioElementCapturerSource final
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<HtmlAudioElementCapturerSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HtmlAudioElementCapturerSource);
 };
 
 }  // namespace blink

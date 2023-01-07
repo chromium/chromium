@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -73,7 +74,7 @@ void CdmAudioDecoderConfigToAVCodecContext(
       codec_context->sample_fmt = AV_SAMPLE_FMT_NONE;
   }
 
-  codec_context->channels = config.channel_count;
+  codec_context->ch_layout.nb_channels = config.channel_count;
   codec_context->sample_rate = config.samples_per_second;
 
   if (config.extra_data) {
@@ -123,8 +124,8 @@ void CopySamples(cdm::AudioFormat cdm_format,
     case cdm::kAudioFormatPlanarS16:
     case cdm::kAudioFormatPlanarF32: {
       const int decoded_size_per_channel =
-          decoded_audio_size / av_frame.channels;
-      for (int i = 0; i < av_frame.channels; ++i) {
+          decoded_audio_size / av_frame.ch_layout.nb_channels;
+      for (int i = 0; i < av_frame.ch_layout.nb_channels; ++i) {
         memcpy(output_buffer, av_frame.extended_data[i],
                decoded_size_per_channel);
         output_buffer += decoded_size_per_channel;
@@ -167,7 +168,7 @@ bool FFmpegCdmAudioDecoder::Initialize(
   if (codec_context_->sample_fmt == AV_SAMPLE_FMT_S16P)
     codec_context_->request_sample_fmt = AV_SAMPLE_FMT_S16;
 
-  AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
+  const AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
   if (!codec || avcodec_open2(codec_context_.get(), codec, NULL) < 0) {
     DLOG(ERROR) << "Could not initialize audio decoder: "
                 << codec_context_->codec_id;
@@ -182,15 +183,16 @@ bool FFmpegCdmAudioDecoder::Initialize(
   }
 
   // Success!
-  decoding_loop_.reset(new FFmpegDecodingLoop(codec_context_.get()));
+  decoding_loop_ = std::make_unique<FFmpegDecodingLoop>(codec_context_.get());
   samples_per_second_ = config.samples_per_second;
-  bytes_per_frame_ = codec_context_->channels * config.bits_per_channel / 8;
-  output_timestamp_helper_.reset(
-      new AudioTimestampHelper(config.samples_per_second));
+  bytes_per_frame_ =
+      codec_context_->ch_layout.nb_channels * config.bits_per_channel / 8;
+  output_timestamp_helper_ =
+      std::make_unique<AudioTimestampHelper>(config.samples_per_second);
   is_initialized_ = true;
 
   // Store initial values to guard against midstream configuration changes.
-  channels_ = codec_context_->channels;
+  channels_ = codec_context_->ch_layout.nb_channels;
   av_sample_format_ = codec_context_->sample_fmt;
 
   return true;
@@ -216,8 +218,7 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
     cdm::AudioFrames* decoded_frames) {
   DVLOG(1) << "DecodeBuffer()";
   const bool is_end_of_stream = !compressed_buffer;
-  base::TimeDelta timestamp =
-      base::TimeDelta::FromMicroseconds(input_timestamp);
+  base::TimeDelta timestamp = base::Microseconds(input_timestamp);
 
   if (!is_end_of_stream && timestamp != kNoTimestamp) {
     if (last_input_timestamp_ != kNoTimestamp &&
@@ -234,20 +235,21 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
   size_t total_size = 0u;
   std::vector<std::unique_ptr<AVFrame, ScopedPtrAVFreeFrame>> audio_frames;
 
-  AVPacket packet;
-  av_init_packet(&packet);
-  packet.data = const_cast<uint8_t*>(compressed_buffer);
-  packet.size = compressed_buffer_size;
+  AVPacket* packet = av_packet_alloc();
+  packet->data = const_cast<uint8_t*>(compressed_buffer);
+  packet->size = compressed_buffer_size;
 
-  switch (decoding_loop_->DecodePacket(
-      &packet, base::BindRepeating(&FFmpegCdmAudioDecoder::OnNewFrame,
-                                   base::Unretained(this), &total_size,
-                                   &audio_frames))) {
+  FFmpegDecodingLoop::DecodeStatus decode_status = decoding_loop_->DecodePacket(
+      packet,
+      base::BindRepeating(&FFmpegCdmAudioDecoder::OnNewFrame,
+                          base::Unretained(this), &total_size, &audio_frames));
+  av_packet_free(&packet);
+  switch (decode_status) {
     case FFmpegDecodingLoop::DecodeStatus::kSendPacketFailed:
       return cdm::kDecodeError;
     case FFmpegDecodingLoop::DecodeStatus::kFrameProcessingFailed:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case FFmpegDecodingLoop::DecodeStatus::kDecodeFrameFailed:
       DLOG(WARNING) << " failed to decode an audio buffer: "
                     << timestamp.InMicroseconds();
@@ -290,17 +292,19 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
   for (auto& frame : audio_frames) {
     int decoded_audio_size = 0;
     if (frame->sample_rate != samples_per_second_ ||
-        frame->channels != channels_ || frame->format != av_sample_format_) {
+        frame->ch_layout.nb_channels != channels_ ||
+        frame->format != av_sample_format_) {
       DLOG(ERROR) << "Unsupported midstream configuration change!"
                   << " Sample Rate: " << frame->sample_rate << " vs "
-                  << samples_per_second_ << ", Channels: " << frame->channels
-                  << " vs " << channels_ << ", Sample Format: " << frame->format
-                  << " vs " << av_sample_format_;
+                  << samples_per_second_
+                  << ", Channels: " << frame->ch_layout.nb_channels << " vs "
+                  << channels_ << ", Sample Format: " << frame->format << " vs "
+                  << av_sample_format_;
       return cdm::kDecodeError;
     }
 
     decoded_audio_size = av_samples_get_buffer_size(
-        nullptr, codec_context_->channels, frame->nb_samples,
+        nullptr, codec_context_->ch_layout.nb_channels, frame->nb_samples,
         codec_context_->sample_fmt, 1);
     if (!decoded_audio_size)
       continue;
@@ -319,9 +323,9 @@ bool FFmpegCdmAudioDecoder::OnNewFrame(
     size_t* total_size,
     std::vector<std::unique_ptr<AVFrame, ScopedPtrAVFreeFrame>>* audio_frames,
     AVFrame* frame) {
-  *total_size += av_samples_get_buffer_size(nullptr, codec_context_->channels,
-                                            frame->nb_samples,
-                                            codec_context_->sample_fmt, 1);
+  *total_size += av_samples_get_buffer_size(
+      nullptr, codec_context_->ch_layout.nb_channels, frame->nb_samples,
+      codec_context_->sample_fmt, 1);
   audio_frames->emplace_back(av_frame_clone(frame));
   return true;
 }

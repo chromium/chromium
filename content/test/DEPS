@@ -11,11 +11,10 @@ include_rules = [
   "+services/viz/public/mojom",
 
   # For WebRTC tests.
-  "+ash/components/audio",
-  "+chromeos/dbus/audio",
-  "+chromeos/network/network_handler.h",
-  "+chromeos/network/network_state.h",
-  "+chromeos/network/network_state_handler.h",
+  "+chromeos/ash/components/dbus/audio",
+  "+chromeos/ash/components/network/network_handler.h",
+  "+chromeos/ash/components/network/network_state.h",
+  "+chromeos/ash/components/network/network_state_handler.h",
   # Testing utilities can access anything in content/
   "+content",
   "+device/bluetooth", # For WebBluetooth tests
@@ -52,5 +51,8 @@ specific_include_rules = {
   ],
   "content_browser_test_test.cc": [
     "+ui/ozone/public/ozone_switches.h",
+  ],
+  "mock_web_bundle_reader_factory.cc": [
+    "+components/web_package/test_support",
   ]
 }

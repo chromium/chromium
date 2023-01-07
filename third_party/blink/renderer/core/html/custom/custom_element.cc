@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,8 +16,7 @@
 #include "third_party/blink/renderer/core/html/html_unknown_element.h"
 #include "third_party/blink/renderer/core/html_element_factory.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
@@ -27,7 +26,7 @@ CustomElementRegistry* CustomElement::Registry(const Element& element) {
 }
 
 CustomElementRegistry* CustomElement::Registry(const Document& document) {
-  if (LocalDOMWindow* window = document.ExecutingWindow())
+  if (LocalDOMWindow* window = document.domWindow())
     return window->customElements();
   return nullptr;
 }
@@ -273,10 +272,9 @@ void CustomElement::EnqueueFormDisabledCallback(Element& element,
   }
 }
 
-void CustomElement::EnqueueFormStateRestoreCallback(
-    Element& element,
-    const FileOrUSVStringOrFormData& value,
-    const String& mode) {
+void CustomElement::EnqueueFormStateRestoreCallback(Element& element,
+                                                    const V8ControlValue* value,
+                                                    const String& mode) {
   auto& definition = *DefinitionForElementWithoutCheck(element);
   if (definition.HasFormStateRestoreCallback()) {
     Enqueue(element, CustomElementReactionFactory::CreateFormStateRestore(

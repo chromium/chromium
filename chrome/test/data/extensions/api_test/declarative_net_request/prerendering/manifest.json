@@ -1,0 +1,16 @@
+{
+  "name": "Test extension",
+  "manifest_version": 2,
+  "permissions": [
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
+    "tabs"
+  ],
+  "version": "1.0",
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false
+  }
+}

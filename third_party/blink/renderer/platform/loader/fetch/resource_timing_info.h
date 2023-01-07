@@ -31,11 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_TIMING_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_TIMING_INFO_H_
 
-#include <memory>
-
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink.h"
+#include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -53,13 +51,23 @@ class PLATFORM_EXPORT ResourceTimingInfo
       const AtomicString& type,
       const base::TimeTicks time,
       mojom::blink::RequestContextType context,
-      network::mojom::RequestDestination destination) {
+      network::mojom::RequestDestination destination,
+      network::mojom::RequestMode mode) {
     return base::AdoptRef(
-        new ResourceTimingInfo(type, time, context, destination));
+        new ResourceTimingInfo(type, time, context, destination, mode));
   }
+  ResourceTimingInfo(const ResourceTimingInfo&) = delete;
+  ResourceTimingInfo& operator=(const ResourceTimingInfo&) = delete;
+
   base::TimeTicks InitialTime() const { return initial_time_; }
 
+  void SetInitiatorType(const AtomicString& type) { type_ = type; }
   const AtomicString& InitiatorType() const { return type_; }
+
+  void SetRenderBlockingStatus(bool render_blocking_status) {
+    render_blocking_status_ = render_blocking_status;
+  }
+  bool RenderBlockingStatus() const { return render_blocking_status_; }
 
   void SetLoadResponseEnd(base::TimeTicks time) { load_response_end_ = time; }
   base::TimeTicks LoadResponseEnd() const { return load_response_end_; }
@@ -71,6 +79,7 @@ class PLATFORM_EXPORT ResourceTimingInfo
     final_response_ = response;
   }
   const ResourceResponse& FinalResponse() const { return final_response_; }
+  uint16_t responseStatus() const { return response_status_; }
 
   void AddRedirect(const ResourceResponse& redirect_response,
                    const KURL& new_url);
@@ -78,10 +87,9 @@ class PLATFORM_EXPORT ResourceTimingInfo
     return redirect_chain_;
   }
 
-  void AddFinalTransferSize(uint64_t encoded_data_length) {
-    transfer_size_ += encoded_data_length;
+  mojom::blink::CacheState CacheState() const {
+    return final_response_.CacheState();
   }
-  uint64_t TransferSize() const { return transfer_size_; }
 
   // The timestamps in PerformanceResourceTiming are measured relative from the
   // time origin. In most cases these timestamps must be positive value, so we
@@ -97,53 +105,35 @@ class PLATFORM_EXPORT ResourceTimingInfo
   network::mojom::RequestDestination RequestDestination() const {
     return request_destination_;
   }
-
-  void SetWorkerTimingReceiver(
-      mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-          worker_timing_receiver) {
-    worker_timing_receiver_ = std::move(worker_timing_receiver);
-  }
-
-  mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-  TakeWorkerTimingReceiver() const {
-    return std::move(worker_timing_receiver_);
-  }
+  network::mojom::RequestMode RequestMode() const { return request_mode_; }
 
  private:
   ResourceTimingInfo(const AtomicString& type,
                      const base::TimeTicks time,
                      mojom::blink::RequestContextType context_type,
-                     network::mojom::RequestDestination request_destination)
+                     network::mojom::RequestDestination request_destination,
+                     network::mojom::RequestMode request_mode)
       : type_(type),
         initial_time_(time),
         context_type_(context_type),
-        request_destination_(request_destination) {}
+        request_destination_(request_destination),
+        request_mode_(request_mode) {}
 
   AtomicString type_;
+  bool render_blocking_status_ = false;
   base::TimeTicks initial_time_;
   mojom::blink::RequestContextType context_type_;
   network::mojom::RequestDestination request_destination_;
+  network::mojom::RequestMode request_mode_;
   base::TimeTicks load_response_end_;
   KURL initial_url_;
   ResourceResponse final_response_;
+  uint16_t response_status_ = 0;
   Vector<ResourceResponse> redirect_chain_;
-  uint64_t transfer_size_ = 0;
   bool has_cross_origin_redirect_ = false;
   bool negative_allowed_ = false;
-
-  // Mutable since it must be passed to blink::PerformanceResourceTiming by move
-  // semantics but ResourceTimingInfo is passed only by const reference.
-  // ResourceTimingInfo can't be changed to pass by value because it can
-  // actually be a large object.
-  // It can be null when service worker doesn't serve a response for the
-  // resource. In that case, PerformanceResourceTiming#workerTiming is kept
-  // empty.
-  mutable mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-      worker_timing_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceTimingInfo);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_TIMING_INFO_H_

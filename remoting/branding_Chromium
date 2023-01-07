@@ -18,3 +18,4 @@ MAC_UNINSTALLER_BUNDLE_ID=org.chromium.chromoting.me2me-host-uninstaller
 MAC_UNINSTALLER_BUNDLE_PREFIX=org.chromium.pkg
 MAC_UNINSTALLER_NAME=Chromoting Host Uninstaller
 ME2ME_HOST_DESCRIPTION=Chromoting Host
+REMOTE_WEBAUTHN_DESCRIPTION=Remote Web Authentication Process for Chromoting

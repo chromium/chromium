@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,9 @@ import org.chromium.base.MathUtils;
  * Helper functions for working with colors.
  */
 public class ColorUtils {
+    // Value used by ui::OptionalSkColorToJavaColor() to represent invalid color.
+    public static final long INVALID_COLOR = ((long) Integer.MAX_VALUE) + 1;
+
     private static final float CONTRAST_LIGHT_ITEM_THRESHOLD = 3f;
     private static final float LIGHTNESS_OPAQUE_BOX_THRESHOLD = 0.82f;
     private static final float MAX_LUMINANCE_FOR_VALID_THEME_COLOR = 0.94f;
@@ -122,12 +125,13 @@ public class ColorUtils {
     }
 
     /**
-     * Determine if a theme color is valid. A theme color is invalid if its luminance is > 0.94.
+     * Determine if a theme color is too bright. A theme color is too bright if its luminance is >
+     * 0.94.
      * @param color The color to test.
-     * @return True if the theme color is valid.
+     * @return True if the theme color is too bright.
      */
-    public static boolean isValidThemeColor(int color) {
-        return ColorUtils.getLightnessForColor(color) <= MAX_LUMINANCE_FOR_VALID_THEME_COLOR;
+    public static boolean isThemeColorTooBright(int color) {
+        return ColorUtils.getLightnessForColor(color) > MAX_LUMINANCE_FOR_VALID_THEME_COLOR;
     }
 
     /**

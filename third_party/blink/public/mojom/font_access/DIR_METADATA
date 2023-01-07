@@ -1,5 +1,2 @@
-monorail {
-  component: "Blink>Storage>FontAccess"
-}
+mixins: "//content/browser/font_access/COMMON_METADATA"
 
-team_email: "storage-dev@chromium.org"

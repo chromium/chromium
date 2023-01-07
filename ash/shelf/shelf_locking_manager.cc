@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,7 @@
 namespace ash {
 
 ShelfLockingManager::ShelfLockingManager(Shelf* shelf)
-    : shelf_(shelf),
-      stored_alignment_(ShelfAlignment::kBottomLocked),
-      scoped_session_observer_(this) {
+    : shelf_(shelf), scoped_session_observer_(this) {
   DCHECK(shelf_);
   Shell::Get()->lock_state_controller()->AddObserver(this);
   SessionControllerImpl* controller = Shell::Get()->session_controller();

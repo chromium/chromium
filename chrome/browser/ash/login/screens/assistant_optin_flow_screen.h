@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,11 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/assistant_optin_flow_screen_handler.h"
 
-namespace chromeos {
-
-class AssistantOptInFlowScreenView;
+namespace ash {
 
 class AssistantOptInFlowScreen : public BaseScreen {
  public:
@@ -29,6 +28,10 @@ class AssistantOptInFlowScreen : public BaseScreen {
 
   AssistantOptInFlowScreen(AssistantOptInFlowScreenView* view,
                            const ScreenExitCallback& exit_callback);
+
+  AssistantOptInFlowScreen(const AssistantOptInFlowScreen&) = delete;
+  AssistantOptInFlowScreen& operator=(const AssistantOptInFlowScreen&) = delete;
+
   ~AssistantOptInFlowScreen() override;
 
   // Called when view is destroyed so there's no dead reference to it.
@@ -47,18 +50,22 @@ class AssistantOptInFlowScreen : public BaseScreen {
 
  protected:
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserActionDeprecated(const std::string& action_id) override;
 
  private:
   AssistantOptInFlowScreenView* view_;
   ScreenExitCallback exit_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantOptInFlowScreen);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash ::AssistantOptInFlowScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_ASSISTANT_OPTIN_FLOW_SCREEN_H_

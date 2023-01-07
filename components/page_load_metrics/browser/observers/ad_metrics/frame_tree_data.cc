@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,6 +34,17 @@ const base::FeatureParam<int> kHeavyAdUnloadPolicyParam = {
     &heavy_ad_intervention::features::kHeavyAdIntervention, "kUnloadPolicy",
     static_cast<int>(HeavyAdUnloadPolicy::kAll)};
 
+// Calculates the depth from the outermost main page to the given `rfh` beyond
+// page boundaries. This is used to ensure that the depth in the created tree is
+// same with the actual page/frame tree structure.
+unsigned int GetFullFrameDepth(content::RenderFrameHost* rfh) {
+  unsigned int depth = rfh->GetFrameDepth();
+  while ((rfh = rfh->GetMainFrame()->GetParentOrOuterDocument())) {
+    depth += rfh->GetFrameDepth() + 1;
+  }
+  return depth;
+}
+
 }  // namespace
 
 FrameTreeData::FrameTreeData(FrameTreeNodeId root_frame_tree_node_id,
@@ -48,9 +59,11 @@ void FrameTreeData::MaybeUpdateFrameDepth(
     content::RenderFrameHost* render_frame_host) {
   if (!render_frame_host)
     return;
-  DCHECK_GE(render_frame_host->GetFrameDepth(), root_frame_depth_);
-  if (render_frame_host->GetFrameDepth() - root_frame_depth_ > frame_depth_)
-    frame_depth_ = render_frame_host->GetFrameDepth() - root_frame_depth_;
+  // TODO(https://crbug.com/1317527): Current logic may not work with Portals'
+  // activation. Revisit later to make sure that the logic below works.
+  DCHECK_GE(GetFullFrameDepth(render_frame_host), root_frame_depth_);
+  if (GetFullFrameDepth(render_frame_host) - root_frame_depth_ > frame_depth_)
+    frame_depth_ = GetFullFrameDepth(render_frame_host) - root_frame_depth_;
 }
 
 void FrameTreeData::UpdateMemoryUsage(int64_t delta_bytes) {
@@ -132,7 +145,7 @@ FrameTreeData::GetCreativeOriginStatusWithThrottling() const {
 }
 
 void FrameTreeData::SetFirstEligibleToPaint(
-    base::Optional<base::TimeDelta> time_stamp) {
+    absl::optional<base::TimeDelta> time_stamp) {
   if (time_stamp.has_value()) {
     // If the ad frame tree hasn't already received an earlier paint
     // eligibility stamp, mark it as eligible to paint. Since multiple frames
@@ -152,7 +165,7 @@ void FrameTreeData::SetFirstEligibleToPaint(
 }
 
 bool FrameTreeData::SetEarliestFirstContentfulPaint(
-    base::Optional<base::TimeDelta> time_stamp) {
+    absl::optional<base::TimeDelta> time_stamp) {
   if (!time_stamp.has_value() || time_stamp.value().is_zero())
     return false;
 
@@ -232,12 +245,13 @@ void FrameTreeData::UpdateForNavigation(
     SetFrameSize(*(render_frame_host->GetFrameSize()));
 
   // For frames triggered on render, their origin is their parent's origin.
-  origin_status_ = AdsPageLoadMetricsObserver::IsSubframeSameOriginToMainFrame(
-                       render_frame_host)
-                       ? OriginStatus::kSame
-                       : OriginStatus::kCross;
+  origin_status_ =
+      AdsPageLoadMetricsObserver::IsFrameSameOriginToOutermostMainFrame(
+          render_frame_host)
+          ? OriginStatus::kSame
+          : OriginStatus::kCross;
 
-  root_frame_depth_ = render_frame_host->GetFrameDepth();
+  root_frame_depth_ = GetFullFrameDepth(render_frame_host);
 }
 
 void FrameTreeData::ProcessResourceLoadInFrame(

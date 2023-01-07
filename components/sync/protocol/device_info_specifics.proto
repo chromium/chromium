@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -32,10 +32,12 @@ message DeviceInfoSpecifics {
   optional SyncEnums.DeviceType device_type = 3;
 
   // The UserAgent used when contacting the Chrome Sync server.
+  // Only present when talking to the HTTP server.
   optional string sync_user_agent = 4;
 
   // The Chrome instance's version.  Updated (if necessary) on every startup.
-  optional string chrome_version = 5;
+  // DEPRECATED in M92. Still populated for backward compatibility.
+  optional string chrome_version = 5 [deprecated = true];
 
   // Last time when pre-sync data on the device was saved. The device can be
   // restored to state back to this time. In millisecond since UNIX epoch.
@@ -43,7 +45,7 @@ message DeviceInfoSpecifics {
   optional int64 deprecated_backup_timestamp = 6 [deprecated = true];
 
   // Device_id that is stable until user signs out. This device_id is used for
-  // annotating login scoped refresh token.
+  // annotating login scoped refresh token. Present only for Chrome Clients.
   optional string signin_scoped_device_id = 7;
 
   // This field is updated to be the current time periodically, and is also set
@@ -78,6 +80,16 @@ message DeviceInfoSpecifics {
   // Information for contacting this device in order to perform security key
   // operations.
   optional PhoneAsASecurityKeySpecificFields paask_fields = 15;
+
+  // Unique hardware identifier string which details the HW combination of
+  // a ChromeOS device. This field will be empty on other OS devices.
+  optional string full_hardware_class = 16;
+
+  // Version information to pin-point which client implementation this is.
+  oneof client_version_info {
+    ChromeVersionInfo chrome_version_info = 17;
+    GooglePlayServicesVersionInfo google_play_services_version_info = 18;
+  }
 }
 
 // Feature specific information about the device that is running a sync-enabled
@@ -123,6 +135,8 @@ message SharingSpecificFields {
     CLICK_TO_CALL_V2 = 7;
     // Suppots Shared Clipboard via both VAPID and sender ID.
     SHARED_CLIPBOARD_V2 = 8;
+    // Supports optimization guide push notification.
+    OPTIMIZATION_GUIDE_PUSH_NOTIFICATION = 9;
   }
 
   // A list of enabled Sharing features.
@@ -182,4 +196,13 @@ message PhoneAsASecurityKeySpecificFields {
   // A P-256, X9.62-encoded public key for this device. Specific to the Chrome
   // instance.
   optional bytes peer_public_key_x962 = 5;
+}
+
+message ChromeVersionInfo {
+  // Version number as per https://www.chromium.org/developers/version-numbers.
+  optional string version_number = 1;
+}
+
+message GooglePlayServicesVersionInfo {
+  optional string apk_version_name = 1;
 }

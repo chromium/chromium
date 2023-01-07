@@ -1,16 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_EDITABLE_CONFIGURATION_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_EDITABLE_CONFIGURATION_H_
 
-#include "base/macros.h"
+#include "base/feature_list.h"
 #include "components/feature_engagement/public/configuration.h"
-
-namespace base {
-struct Feature;
-}  // namespace base
 
 namespace feature_engagement {
 
@@ -20,6 +16,10 @@ namespace feature_engagement {
 class EditableConfiguration : public Configuration {
  public:
   EditableConfiguration();
+
+  EditableConfiguration(const EditableConfiguration&) = delete;
+  EditableConfiguration& operator=(const EditableConfiguration&) = delete;
+
   ~EditableConfiguration() override;
 
   // Configuration implementation.
@@ -38,8 +38,6 @@ class EditableConfiguration : public Configuration {
  private:
   // The current configurations.
   ConfigMap configs_;
-
-  DISALLOW_COPY_AND_ASSIGN(EditableConfiguration);
 };
 
 }  // namespace feature_engagement

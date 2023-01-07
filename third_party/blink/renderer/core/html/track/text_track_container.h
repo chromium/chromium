@@ -61,6 +61,7 @@ class TextTrackContainer final : public HTMLDivElement {
   bool IsTextTrackContainer() const override { return true; }
   void ObserveSizeChanges(Element&);
 
+  bool TypeShouldForceLegacyLayout() const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 
   Member<HTMLMediaElement> media_element_;

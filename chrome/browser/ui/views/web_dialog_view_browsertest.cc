@@ -1,13 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,10 +27,12 @@
 #include "content/public/test/test_utils.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 #include "ui/web_dialogs/test/test_web_dialog_delegate.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -41,58 +43,34 @@ namespace {
 const int kInitialWidth = 60;
 const int kInitialHeight = 60;
 
-class TestWebDialogView : public views::WebDialogView {
+class WidgetResizeWaiter : public views::WidgetObserver {
  public:
-  TestWebDialogView(content::BrowserContext* context,
-                    ui::WebDialogDelegate* delegate,
-                    bool* observed_destroy)
-      : views::WebDialogView(context,
-                             delegate,
-                             std::make_unique<ChromeWebContentsHandler>()),
-        should_quit_on_size_change_(false),
-        observed_destroy_(observed_destroy) {
-    EXPECT_FALSE(*observed_destroy_);
-    delegate->GetDialogSize(&last_size_);
+  explicit WidgetResizeWaiter(views::Widget* widget) {
+    old_size_ = widget->GetWindowBoundsInScreen().size();
+    observation_.Observe(widget);
   }
 
-  ~TestWebDialogView() override { *observed_destroy_ = true; }
+  void Wait() { run_loop_.Run(); }
 
-  void set_should_quit_on_size_change(bool should_quit) {
-    should_quit_on_size_change_ = should_quit;
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& bounds) override {
+    if (bounds.size() != old_size_)
+      run_loop_.Quit();
   }
 
  private:
-  // TODO(xiyuan): Update this when WidgetDelegate has bounds change hook.
-  void SaveWindowPlacement(const gfx::Rect& bounds,
-                           ui::WindowShowState show_state) override {
-    if (should_quit_on_size_change_ && last_size_ != bounds.size()) {
-      // Schedule message loop quit because we could be called while
-      // the bounds change call is on the stack and not in the nested message
-      // loop.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&base::RunLoop::QuitCurrentWhenIdleDeprecated));
-    }
-
-    last_size_ = bounds.size();
-  }
-
-  void OnDialogClosed(const std::string& json_retval) override {
-    should_quit_on_size_change_ = false;  // No quit when we are closing.
-    views::WebDialogView::OnDialogClosed(json_retval);  // Deletes this.
-  }
-
-  // Whether we should quit message loop when size change is detected.
-  bool should_quit_on_size_change_;
-  gfx::Size last_size_;
-  bool* observed_destroy_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWebDialogView);
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+  gfx::Size old_size_;
+  base::RunLoop run_loop_;
 };
 
 class WebDialogBrowserTest : public InProcessBrowserTest {
  public:
   WebDialogBrowserTest() {}
+
+  WebDialogBrowserTest(const WebDialogBrowserTest&) = delete;
+  WebDialogBrowserTest& operator=(const WebDialogBrowserTest&) = delete;
 
   // content::BrowserTestBase:
   void SetUpOnMainThread() override;
@@ -100,13 +78,14 @@ class WebDialogBrowserTest : public InProcessBrowserTest {
  protected:
   void SimulateEscapeKey();
 
-  TestWebDialogView* view_ = nullptr;
+  bool was_view_deleted() const { return !view_tracker_.view(); }
+
+  raw_ptr<views::WebDialogView> view_ = nullptr;
   bool web_dialog_delegate_destroyed_ = false;
-  bool web_dialog_view_destroyed_ = false;
-  ui::test::TestWebDialogDelegate* delegate_ = nullptr;
+  raw_ptr<ui::test::TestWebDialogDelegate> delegate_ = nullptr;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(WebDialogBrowserTest);
+  views::ViewTracker view_tracker_;
 };
 
 void WebDialogBrowserTest::SetUpOnMainThread() {
@@ -118,12 +97,18 @@ void WebDialogBrowserTest::SetUpOnMainThread() {
   // Store the delegate so that we can update ShouldCloseDialogOnEscape().
   delegate_ = delegate;
 
-  view_ = new TestWebDialogView(browser()->profile(), delegate,
-                                &web_dialog_view_destroyed_);
+  auto view = std::make_unique<views::WebDialogView>(
+      browser()->profile(), delegate,
+      std::make_unique<ChromeWebContentsHandler>());
+  view->SetOwnedByWidget(true);
   gfx::NativeView parent_view =
       browser()->tab_strip_model()->GetActiveWebContents()->GetNativeView();
-  views::Widget::CreateWindowWithParent(view_, parent_view);
-  view_->GetWidget()->Show();
+  view_ = view.get();
+  view_tracker_.SetView(view_);
+
+  auto* widget =
+      views::Widget::CreateWindowWithParent(std::move(view), parent_view);
+  widget->Show();
 }
 
 void WebDialogBrowserTest::SimulateEscapeKey() {
@@ -139,14 +124,14 @@ void WebDialogBrowserTest::SimulateEscapeKey() {
 
 // Windows has some issues resizing windows. An off by one problem, and a
 // minimum size that seems too big. See http://crbug.com/52602.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SizeWindow DISABLED_SizeWindow
 #else
 #define MAYBE_SizeWindow SizeWindow
 #endif
 IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   bool centered_in_window = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS 11 (and presumably later) the new mechanism for sheets, which are
   // used for window modals like this dialog, always centers them within the
   // parent window regardless of the requested origin. The size is still
@@ -154,9 +139,6 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   if (base::mac::IsAtLeastOS11())
     centered_in_window = true;
 #endif
-
-  // TestWebDialogView should quit current message loop on size change.
-  view_->set_should_quit_on_size_change(true);
 
   gfx::Rect set_bounds = view_->GetWidget()->GetClientAreaBoundsInScreen();
   gfx::Rect actual_bounds, rwhv_bounds;
@@ -178,8 +160,11 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   // WebDialogView ignores the WebContents* |source| argument to
   // SetContentsBounds. We could pass view_->web_contents(), but it's not
   // relevant for the test.
-  view_->SetContentsBounds(nullptr, set_bounds);
-  base::RunLoop().Run();  // TestWebDialogView will quit.
+  {
+    WidgetResizeWaiter waiter(view_->GetWidget());
+    view_->SetContentsBounds(nullptr, set_bounds);
+    waiter.Wait();
+  }
   actual_bounds = view_->GetWidget()->GetClientAreaBoundsInScreen();
   check_bounds(set_bounds, actual_bounds);
 
@@ -194,8 +179,12 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   set_bounds.set_width(550);
   set_bounds.set_height(250);
 
-  view_->SetContentsBounds(nullptr, set_bounds);
-  base::RunLoop().Run();  // TestWebDialogView will quit.
+  {
+    WidgetResizeWaiter waiter(view_->GetWidget());
+    view_->SetContentsBounds(nullptr, set_bounds);
+    waiter.Wait();
+  }
+
   actual_bounds = view_->GetWidget()->GetClientAreaBoundsInScreen();
   check_bounds(set_bounds, actual_bounds);
 
@@ -213,8 +202,12 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
 
   set_bounds.set_size(min_size);
 
-  view_->SetContentsBounds(nullptr, set_bounds);
-  base::RunLoop().Run();  // TestWebDialogView will quit.
+  {
+    WidgetResizeWaiter waiter(view_->GetWidget());
+    view_->SetContentsBounds(nullptr, set_bounds);
+    waiter.Wait();
+  }
+
   actual_bounds = view_->GetWidget()->GetClientAreaBoundsInScreen();
   check_bounds(set_bounds, actual_bounds);
 
@@ -228,8 +221,13 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   // Check to make sure we can't get to 0x0. First expand beyond the minimum
   // size that was set above so that TestWebDialogView has a change to pick up.
   set_bounds.set_height(250);
-  view_->SetContentsBounds(nullptr, set_bounds);
-  base::RunLoop().Run();  // TestWebDialogView will quit.
+
+  {
+    WidgetResizeWaiter waiter(view_->GetWidget());
+    view_->SetContentsBounds(nullptr, set_bounds);
+    waiter.Wait();
+  }
+
   actual_bounds = view_->GetWidget()->GetClientAreaBoundsInScreen();
   check_bounds(set_bounds, actual_bounds);
 
@@ -237,8 +235,12 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   set_bounds.set_width(0);
   set_bounds.set_height(0);
 
-  view_->SetContentsBounds(nullptr, set_bounds);
-  base::RunLoop().Run();  // TestWebDialogView will quit.
+  {
+    WidgetResizeWaiter waiter(view_->GetWidget());
+    view_->SetContentsBounds(nullptr, set_bounds);
+    waiter.Wait();
+  }
+
   actual_bounds = view_->GetWidget()->GetClientAreaBoundsInScreen();
   EXPECT_EQ(min_size, actual_bounds.size());
 
@@ -257,9 +259,9 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   EXPECT_TRUE(web_dialog_delegate_destroyed_);
 
   // The close of the actual widget should happen asynchronously.
-  EXPECT_FALSE(web_dialog_view_destroyed_);
+  EXPECT_FALSE(was_view_deleted());
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(web_dialog_view_destroyed_);
+  EXPECT_TRUE(was_view_deleted());
 }
 
 // Test that closing the parent of a window-modal web dialog properly destroys
@@ -277,15 +279,15 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseParentWindow) {
 
   // Close the parent window. Tear down may happen asynchronously.
   EXPECT_FALSE(web_dialog_delegate_destroyed_);
-  EXPECT_FALSE(web_dialog_view_destroyed_);
+  EXPECT_FALSE(was_view_deleted());
   browser()->window()->Close();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(web_dialog_delegate_destroyed_);
-  EXPECT_TRUE(web_dialog_view_destroyed_);
+  EXPECT_TRUE(was_view_deleted());
 }
 
 // Tests the Escape key behavior when ShouldCloseDialogOnEscape() is enabled.
-#if defined(OS_WIN) && !defined(NDEBUG)
+#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 // Flaky on win7 tests dbg: https://crbug.com/1035439
 #define MAYBE_CloseDialogOnEscapeEnabled DISABLED_CloseDialogOnEscapeEnabled
 #else
@@ -305,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_CloseDialogOnEscapeEnabled) {
   SimulateEscapeKey();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(web_dialog_delegate_destroyed_);
-  EXPECT_TRUE(web_dialog_view_destroyed_);
+  EXPECT_TRUE(was_view_deleted());
 }
 
 // Tests the Escape key behavior when ShouldCloseDialogOnEscape() is disabled.
@@ -322,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseDialogOnEscapeDisabled) {
   SimulateEscapeKey();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(web_dialog_delegate_destroyed_);
-  EXPECT_FALSE(web_dialog_view_destroyed_);
+  EXPECT_FALSE(was_view_deleted());
 }
 
 // Test that key event is translated to a text input properly.

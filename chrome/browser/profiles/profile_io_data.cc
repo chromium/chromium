@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/net_buildflags.h"
-#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -43,9 +42,9 @@ bool ProfileIOData::IsHandledProtocol(const std::string& scheme) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     content::kExternalFileScheme,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     url::kContentScheme,
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     url::kAboutScheme,
     url::kBlobScheme,
     url::kFileSystemScheme,
@@ -55,12 +54,6 @@ bool ProfileIOData::IsHandledProtocol(const std::string& scheme) {
     if (scheme == supported_protocol)
       return true;
   }
-#if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  if (scheme == url::kFtpScheme &&
-      base::FeatureList::IsEnabled(blink::features::kFtpProtocol)) {
-    return true;
-  }
-#endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
   return false;
 }
 

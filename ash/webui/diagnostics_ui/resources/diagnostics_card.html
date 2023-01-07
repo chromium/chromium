@@ -1,0 +1,93 @@
+<style include="diagnostics-shared">
+  ::slotted([slot=chip]) {
+    background-color: var(--diagnostics-chip-bg-color);
+    border-radius: 16px;
+  }
+
+  ::slotted([slot=icon]) {
+    --iron-icon-fill-color: var(--cros-color-prominent);
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    background-color: var(--cros-highlight-color);
+    border-radius: 50%;
+    margin: 0 20px;
+    padding: 8px;
+    position: relative;
+  }
+
+  ::slotted([slot=title]) {
+    color: var(--cros-text-color-secondary);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: 14px;
+    font-weight: var(--diagnostics-medium-font-weight);
+  }
+
+  ::slotted([slot=left-panel]) {
+    flex: 1;
+    margin-bottom: 16px;
+  }
+
+  .card-container {
+    display: flex;
+    flex-direction: column;
+    margin: 12px 0 12px;
+  }
+
+  .card-header {
+    display: flex;
+    height: 20px;
+    justify-content: space-between;
+    padding-top: 10px;
+  }
+
+  .card-wrapper {
+    border-radius: 4px;
+    box-shadow: var(--diagnostics-box-shadow);
+    margin: 10px 0;
+  }
+
+  .data-points {
+    border-bottom: 1px solid var(--cros-separator-color);
+    display: grid;
+    grid-template-columns: 1fr 0fr 1fr 0fr 1fr;
+    padding-inline: var(--data-point-container-padding);
+  }
+
+  .data-points-column {
+    border-bottom: 1px solid var(--cros-separator-color);
+    padding-inline: 24px;
+  }
+
+  .routine-container {
+    font-family: var(--diagnostics-google-sans-font-family);
+    font-size: 14px;
+    font-weight: var(--diagnostics-medium-font-weight);
+  }
+
+  .top-section {
+    border-bottom: 1px solid var(--cros-separator-color);
+    display: flex;
+    margin-top: 16px;
+  }
+
+  .top-section-networking {
+    margin-top: 0;
+  }
+</style>
+<diagnostics-card-frame>
+  <slot name="title" slot="title"></slot>
+  <slot name="chip" slot="chip"></slot>
+  <div slot="contents">
+    <div class$="[[getTopSectionClassName_(isNetworkingCard)]]">
+      <slot name="icon"></slot>
+      <slot name="left-panel"></slot>
+    </div>
+    <div id="body" class$="[[getBodyClassName_(isNetworkingCard)]]"
+        hidden$="[[hideDataPoints]]">
+      <slot name="body"></slot>
+    </div>
+    <div id="routines" class="routine-container">
+      <slot name="routines"></slot>
+    </div>
+  </div>
+</diagnostics-card-frame>

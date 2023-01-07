@@ -1,0 +1,9 @@
+include_rules = [
+  "+chromeos/utils/pdf_conversion.h",
+  "+components/arc/intent_helper",
+  "+components/content_settings/core/common",
+  "+components/device_event_log",
+  "+components/keyed_service/content",
+  "+components/keyed_service/core",
+  "+services/video_capture/public/mojom/video_capture_service.mojom.h",
+]

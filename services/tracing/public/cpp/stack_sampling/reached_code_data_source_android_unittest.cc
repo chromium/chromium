@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/android/reached_code_profiler.h"
 #include "base/base_switches.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -40,8 +41,7 @@ double BusyLoopFor(base::TimeDelta duration) {
 class ReachedCodeDataSourceTest : public testing::Test {
  public:
   void SetUp() override {
-    PerfettoTracedProcess::ResetTaskRunnerForTesting();
-    PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
+    test_handle_ = tracing::PerfettoTracedProcess::SetupForTesting();
 
     auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
         task_environment_.GetMainThreadTaskRunner());
@@ -56,7 +56,7 @@ class ReachedCodeDataSourceTest : public testing::Test {
   }
 
   void BeginTrace() {
-    ReachedCodeDataSource::Get()->StartTracingWithID(
+    ReachedCodeDataSource::Get()->StartTracing(
         /*data_source_id=*/1, producer_.get(), perfetto::DataSourceConfig());
   }
 
@@ -70,7 +70,7 @@ class ReachedCodeDataSourceTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
+  std::unique_ptr<tracing::PerfettoTracedProcess::TestHandle> test_handle_;
   std::unique_ptr<TestProducerClient> producer_;
 };
 
@@ -78,7 +78,7 @@ class ReachedCodeDataSourceTest : public testing::Test {
 
 TEST_F(ReachedCodeDataSourceTest, ProfilerDisabled) {
   BeginTrace();
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(200));
+  base::PlatformThread::Sleep(base::Milliseconds(200));
   EndTracing();
   EXPECT_EQ(producer()->GetFinalizedPacketCount(), 0u);
 }
@@ -94,7 +94,7 @@ TEST_F(ReachedCodeDataSourceTest, DISABLED_ProfilerOutput) {
       base::android::PROCESS_BROWSER);
   ASSERT_TRUE(base::android::IsReachedCodeProfilerEnabled());
   BeginTrace();
-  BusyLoopFor(base::TimeDelta::FromSeconds(2));
+  BusyLoopFor(base::Seconds(2));
   EndTracing();
   EXPECT_EQ(producer()->GetFinalizedPacketCount(), 1u);
   const auto* packet = producer()->GetFinalizedPacket();

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,8 +31,7 @@ const int kMinIntervalBetweenSessionRestoreCollectionsInSec = 30;
 base::TimeDelta RandomTimeDelta(base::TimeDelta max) {
   if (max.is_zero())
     return max;
-  return base::TimeDelta::FromMicroseconds(
-      base::RandGenerator(max.InMicroseconds()));
+  return base::Microseconds(base::RandGenerator(max.InMicroseconds()));
 }
 
 // PerfDataProto is defined elsewhere with more fields than the definition in
@@ -67,6 +66,15 @@ void RemoveUnknownFieldsFromMessagesWithStrings(PerfDataProto* proto) {
           ->clear();
     }
   }
+  for (PerfDataProto::PerfEventType& event_type :
+       *proto->mutable_event_types()) {
+    event_type.mutable_unknown_fields()->clear();
+  }
+  for (PerfDataProto::PerfPMUMappingsMetadata& mapping :
+       *proto->mutable_pmu_mappings()) {
+    mapping.mutable_unknown_fields()->clear();
+  }
+  proto->mutable_unknown_fields()->clear();
 }
 
 }  // namespace
@@ -151,8 +159,8 @@ void MetricCollector::ScheduleSessionRestoreCollection(int num_tabs_restored) {
     return;
   }
 
-  const auto min_interval = base::TimeDelta::FromSeconds(
-      kMinIntervalBetweenSessionRestoreCollectionsInSec);
+  const auto min_interval =
+      base::Seconds(kMinIntervalBetweenSessionRestoreCollectionsInSec);
   const base::TimeDelta time_since_last_collection =
       (base::TimeTicks::Now() - last_session_restore_collection_time_);
   // Do not collect if there hasn't been enough elapsed time since the last

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 /**
  * Informed of interesting events that happen during the lifetime of a Tab.
  */
-public abstract class TabCallback {
+abstract class TabCallback {
     /**
      * The Uri that should be displayed in the location-bar has updated.
      *
@@ -72,4 +72,21 @@ public abstract class TabCallback {
      */
     public void onScrollNotification(
             @ScrollNotificationType int notificationType, float currentScrollRatio) {}
+
+    /**
+     * Notification for vertical overscroll. This happens when user tries to touch scroll beyond
+     * the scroll bounds, or when a fling animation hits scroll bounds.
+     * A few caveats when using this callback:
+     * * This should be considered independent and unordered with respect to other scroll callbacks
+     *   such as `onScrollNotification` or `ScrollOffsetCallback.onVerticalScrollOffsetChanged`.
+     *   Client should not assume a certain order between this and other scroll notifications.
+     * * The value is accumulated scroll, so the magnitude of the value only goes up for a single
+     *   overscroll gesture. However this is not enough to distinguish between two overscroll
+     *   gestures and client must listen to touch events to make such distinction. Similarly there
+     *   is no "end overscroll" event, and client is expected to listen to touch events as well.
+     *   Added in M101.
+     * @param accumulatedOverscrollY negative for when trying to scroll beyond offset 0, positive
+     *                               for when trying to scroll beyond bottom scroll bounds.
+     */
+    public void onVerticalOverscroll(float accumulatedOverscrollY) {}
 }

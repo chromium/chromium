@@ -1,9 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   TestRunner.addResult("Test frontend's side-effect support check for compatibility.\n");
 
   const executionContext = UI.context.flavor(SDK.ExecutionContext);
@@ -18,7 +18,7 @@
   let supports = executionContext.runtimeModel.hasSideEffectSupport();
   TestRunner.addResult(`Does the runtime support side effect checks? ${supports}`);
   TestRunner.addResult(`\nClearing cached side effect support`);
-  executionContext.runtimeModel._hasSideEffectSupport = null;
+  executionContext.runtimeModel.hasSideEffectSupportInternal = null;
 
   // Debugger evaluateOnCallFrame test.
   await TestRunner.evaluateInPagePromise(`

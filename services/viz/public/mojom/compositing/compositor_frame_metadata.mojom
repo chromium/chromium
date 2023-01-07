@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@ import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
 import "services/viz/public/mojom/compositing/compositor_frame_transition_directive.mojom";
 import "ui/gfx/mojom/delegated_ink_metadata.mojom";
 import "services/viz/public/mojom/compositing/frame_deadline.mojom";
+import "services/viz/public/mojom/compositing/region_capture_bounds.mojom";
 import "services/viz/public/mojom/compositing/selection.mojom";
 import "services/viz/public/mojom/compositing/surface_id.mojom";
 import "services/viz/public/mojom/compositing/surface_range.mojom";
+import "skia/public/mojom/skcolor4f.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
@@ -22,13 +24,14 @@ import "ui/latency/mojom/latency_info.mojom";
 // compositor in the GPU process.
 struct CompositorFrameMetadata {
   float device_scale_factor;
-  gfx.mojom.Vector2dF root_scroll_offset;
+  gfx.mojom.PointF root_scroll_offset;
   float page_scale_factor;
   gfx.mojom.SizeF scrollable_viewport_size;
   gfx.mojom.ContentColorUsage content_color_usage;
   bool may_contain_video;
+  bool may_throttle_if_undrawn_frames;
   bool is_resourceless_software_draw_with_scroll_or_animation;
-  uint32 root_background_color;
+  skia.mojom.SkColor4f root_background_color;
   array<ui.mojom.LatencyInfo> latency_info;
   array<SurfaceRange> referenced_surfaces;
   FrameDeadline deadline;
@@ -36,7 +39,7 @@ struct CompositorFrameMetadata {
   BeginFrameAck begin_frame_ack;
   uint32 frame_token;
   bool send_frame_token_to_embedder;
-  // TODO(crbug.com/657632): This should be a base::Optional<float>.
+  // TODO(crbug.com/657632): This should be a absl::optional<float>.
   bool top_controls_visible_height_set;
   float top_controls_visible_height;
 
@@ -66,4 +69,13 @@ struct CompositorFrameMetadata {
   // Transition directives represent a list of directives for animating a
   // transition between different compositor frames / render passes.
   array<CompositorFrameTransitionDirective> transition_directives;
+
+  // Contains a map of region capture crop identifiers to gfx::Rects
+  // representing their coordinates in the root render pass system.
+  RegionCaptureBounds capture_bounds;
+
+  // Indicates if this frame is embedding SharedElementResourceIds which need to
+  // be replaced by corresponding live render passes or cached textures in the
+  // Viz process.
+  bool has_shared_element_resources;
 };

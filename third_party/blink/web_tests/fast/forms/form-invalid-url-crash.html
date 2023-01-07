@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+
+<form action="http://%T%Ae">
+<select onChange="submit();">
+  <option >A</option>
+  <option >B</option>
+  <option >C</option>
+</select>
+</form>
+
+<style>
+* {
+  visibility: hidden;
+}
+</style>
+
+<script>
+
+// This test passes if there is no crash.
+
+window.onload = () => {
+  if (window.testRunner)
+    testRunner.dumpAsText();
+  const x=document.querySelector('select');
+  x.options[2].selected=true;
+  var evt = document.createEvent("HTMLEvents");
+  evt.initEvent("change", true, true);
+  x.dispatchEvent(evt);
+};
+</script>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 
@@ -20,13 +19,16 @@ class MessageWindow;
 }
 }
 
-namespace gfx {
-class Size;
-}
-
 namespace ui {
 
+// Documentation on the underlying Win32 API this ultimately abstracts is
+// available at
+// https://docs.microsoft.com/en-us/windows/win32/dataxchg/clipboard.
 class ClipboardWin : public Clipboard {
+ public:
+  ClipboardWin(const ClipboardWin&) = delete;
+  ClipboardWin& operator=(const ClipboardWin&) = delete;
+
  private:
   friend class Clipboard;
 
@@ -36,7 +38,11 @@ class ClipboardWin : public Clipboard {
   // Clipboard overrides:
   void OnPreShutdown() override;
   DataTransferEndpoint* GetSource(ClipboardBuffer buffer) const override;
-  uint64_t GetSequenceNumber(ClipboardBuffer buffer) const override;
+  const ClipboardSequenceNumberToken& GetSequenceNumber(
+      ClipboardBuffer buffer) const override;
+  std::vector<std::u16string> GetStandardFormats(
+      ClipboardBuffer buffer,
+      const DataTransferEndpoint* data_dst) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,
                          const DataTransferEndpoint* data_dst) const override;
@@ -44,9 +50,6 @@ class ClipboardWin : public Clipboard {
   void ReadAvailableTypes(ClipboardBuffer buffer,
                           const DataTransferEndpoint* data_dst,
                           std::vector<std::u16string>* types) const override;
-  std::vector<std::u16string> ReadAvailablePlatformSpecificFormatNames(
-      ClipboardBuffer buffer,
-      const DataTransferEndpoint* data_dst) const override;
   void ReadText(ClipboardBuffer buffer,
                 const DataTransferEndpoint* data_dst,
                 std::u16string* result) const override;
@@ -65,9 +68,9 @@ class ClipboardWin : public Clipboard {
   void ReadRTF(ClipboardBuffer buffer,
                const DataTransferEndpoint* data_dst,
                std::string* result) const override;
-  void ReadImage(ClipboardBuffer buffer,
-                 const DataTransferEndpoint* data_dst,
-                 ReadImageCallback callback) const override;
+  void ReadPng(ClipboardBuffer buffer,
+               const DataTransferEndpoint* data_dst,
+               ReadPngCallback callback) const override;
   void ReadCustomData(ClipboardBuffer buffer,
                       const std::u16string& type,
                       const DataTransferEndpoint* data_dst,
@@ -81,12 +84,9 @@ class ClipboardWin : public Clipboard {
   void ReadData(const ClipboardFormatType& format,
                 const DataTransferEndpoint* data_dst,
                 std::string* result) const override;
-  void WritePortableRepresentations(
+  void WritePortableAndPlatformRepresentations(
       ClipboardBuffer buffer,
       const ObjectMap& objects,
-      std::unique_ptr<DataTransferEndpoint> data_src) override;
-  void WritePlatformRepresentations(
-      ClipboardBuffer buffer,
       std::vector<Clipboard::PlatformRepresentation> platform_representations,
       std::unique_ptr<DataTransferEndpoint> data_src) override;
   void WriteText(const char* text_data, size_t text_len) override;
@@ -106,10 +106,11 @@ class ClipboardWin : public Clipboard {
   void WriteData(const ClipboardFormatType& format,
                  const char* data_data,
                  size_t data_len) override;
-  void WriteBitmapFromHandle(HBITMAP source_hbitmap, const gfx::Size& size);
-  SkBitmap ReadImageInternal(ClipboardBuffer buffer) const;
+  std::vector<uint8_t> ReadPngInternal(ClipboardBuffer buffer) const;
+  SkBitmap ReadBitmapInternal(ClipboardBuffer buffer) const;
 
   // Safely write to system clipboard. Free |handle| on failure.
+  // This function takes ownership of the given handle's memory.
   void WriteToClipboard(ClipboardFormatType format, HANDLE handle);
 
   // Return the window that should be the clipboard owner, creating it
@@ -119,7 +120,11 @@ class ClipboardWin : public Clipboard {
   // Mark this as mutable so const methods can still do lazy initialization.
   mutable std::unique_ptr<base::win::MessageWindow> clipboard_owner_;
 
-  DISALLOW_COPY_AND_ASSIGN(ClipboardWin);
+  // Mapping of OS-provided sequence number to a unique token.
+  mutable struct {
+    DWORD sequence_number;
+    ClipboardSequenceNumberToken token;
+  } clipboard_sequence_;
 };
 
 }  // namespace ui

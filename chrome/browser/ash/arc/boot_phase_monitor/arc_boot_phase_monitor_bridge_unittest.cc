@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,21 @@
 
 #include <memory>
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/arc_service_manager.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/test/fake_arc_session.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -32,12 +33,9 @@ namespace {
 class ArcBootPhaseMonitorBridgeTest : public testing::Test {
  public:
   ArcBootPhaseMonitorBridgeTest()
-      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
-        record_uma_counter_(0) {
-    // Need to initialize DBusThreadManager before ArcSessionManager's
-    // constructor calls DBusThreadManager::Get().
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::SessionManagerClient::InitializeFakeInMemory();
+      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()) {
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::SessionManagerClient::InitializeFakeInMemory();
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
     arc_session_manager_ =
@@ -60,16 +58,34 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
         std::make_unique<TestDelegateImpl>(this));
   }
 
+  ArcBootPhaseMonitorBridgeTest(const ArcBootPhaseMonitorBridgeTest&) = delete;
+  ArcBootPhaseMonitorBridgeTest& operator=(
+      const ArcBootPhaseMonitorBridgeTest&) = delete;
+
   ~ArcBootPhaseMonitorBridgeTest() override {
     boot_phase_monitor_bridge_->Shutdown();
     testing_profile_.reset();
     arc_session_manager_.reset();
     arc_service_manager_.reset();
-    chromeos::SessionManagerClient::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+    ash::SessionManagerClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
   }
 
  protected:
+  class TestObserverImpl : public ArcBootPhaseMonitorBridge::Observer {
+   public:
+    explicit TestObserverImpl(ArcBootPhaseMonitorBridgeTest* test)
+        : test_(test) {}
+    TestObserverImpl(const TestObserverImpl&) = delete;
+    TestObserverImpl& operator=(const TestObserverImpl&) = delete;
+    ~TestObserverImpl() override = default;
+
+    void OnBootCompleted() override { ++(test_->on_boot_completed_counter_); }
+
+   private:
+    ArcBootPhaseMonitorBridgeTest* const test_;
+  };
+
   ArcSessionManager* arc_session_manager() const {
     return arc_session_manager_.get();
   }
@@ -78,6 +94,9 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
   }
   size_t record_uma_counter() const { return record_uma_counter_; }
   base::TimeDelta last_time_delta() const { return last_time_delta_; }
+  size_t on_boot_completed_counter() const {
+    return on_boot_completed_counter_;
+  }
 
   sync_preferences::TestingPrefServiceSyncable* GetPrefs() const {
     return testing_profile_->GetTestingPrefService();
@@ -88,6 +107,8 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
    public:
     explicit TestDelegateImpl(ArcBootPhaseMonitorBridgeTest* test)
         : test_(test) {}
+    TestDelegateImpl(const TestDelegateImpl&) = delete;
+    TestDelegateImpl& operator=(const TestDelegateImpl&) = delete;
     ~TestDelegateImpl() override = default;
 
     void RecordFirstAppLaunchDelayUMA(base::TimeDelta delta) override {
@@ -97,8 +118,6 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
 
    private:
     ArcBootPhaseMonitorBridgeTest* const test_;
-
-    DISALLOW_COPY_AND_ASSIGN(TestDelegateImpl);
   };
 
   ash::FakeChromeUserManager* GetFakeUserManager() const {
@@ -113,14 +132,35 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
   std::unique_ptr<TestingProfile> testing_profile_;
   ArcBootPhaseMonitorBridge* boot_phase_monitor_bridge_;
 
-  size_t record_uma_counter_;
+  size_t record_uma_counter_ = 0;
   base::TimeDelta last_time_delta_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBootPhaseMonitorBridgeTest);
+  size_t on_boot_completed_counter_ = 0;
 };
 
 // Tests that ArcBootPhaseMonitorBridge can be constructed and destructed.
 TEST_F(ArcBootPhaseMonitorBridgeTest, TestConstructDestruct) {}
+
+// Tests that ArcBootPhaseMonitorBridge::Observer is called.
+TEST_F(ArcBootPhaseMonitorBridgeTest, TestObserver) {
+  TestObserverImpl observer(this);
+  boot_phase_monitor_bridge()->AddObserver(&observer);
+  EXPECT_EQ(0u, on_boot_completed_counter());
+  boot_phase_monitor_bridge()->OnBootCompleted();
+  EXPECT_EQ(1u, on_boot_completed_counter());
+  boot_phase_monitor_bridge()->RemoveObserver(&observer);
+}
+
+// Tests that ArcBootPhaseMonitorBridge::Observer is called even when it is
+// added after ARC is fully started.
+TEST_F(ArcBootPhaseMonitorBridgeTest, TestObserver_DelayedAdd) {
+  TestObserverImpl observer(this);
+  EXPECT_EQ(0u, on_boot_completed_counter());
+  boot_phase_monitor_bridge()->OnBootCompleted();
+  EXPECT_EQ(0u, on_boot_completed_counter());
+  boot_phase_monitor_bridge()->AddObserver(&observer);
+  EXPECT_EQ(1u, on_boot_completed_counter());
+  boot_phase_monitor_bridge()->RemoveObserver(&observer);
+}
 
 // Tests that the UMA recording function is never called unless
 // RecordFirstAppLaunchDelayUMA is called.
@@ -141,7 +181,7 @@ TEST_F(ArcBootPhaseMonitorBridgeTest, TestRecordUMA_AppLaunchBeforeBoot) {
   boot_phase_monitor_bridge()->RecordFirstAppLaunchDelayUMAForTesting();
   EXPECT_EQ(0U, record_uma_counter());
   // Sleep for 1ms just to make sure 0 won't be passed to RecordUMA().
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+  base::PlatformThread::Sleep(base::Milliseconds(1));
   // UMA recording should be done on BootCompleted.
   boot_phase_monitor_bridge()->OnBootCompleted();
   EXPECT_EQ(1U, record_uma_counter());

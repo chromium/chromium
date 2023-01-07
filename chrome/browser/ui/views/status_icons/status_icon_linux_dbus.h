@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,18 +9,18 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ui/views/status_icons/concat_menu_model.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
 #include "ui/base/models/simple_menu_model.h"
+#include "ui/linux/status_icon_linux.h"
 #include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/linux_ui/status_icon_linux.h"
 
 namespace gfx {
 class ImageSkia;
@@ -31,11 +31,14 @@ class DbusProperties;
 
 // A status icon following the StatusNotifierItem specification.
 // https://www.freedesktop.org/wiki/Specifications/StatusNotifierItem/StatusNotifierItem/
-class StatusIconLinuxDbus : public views::StatusIconLinux,
+class StatusIconLinuxDbus : public ui::StatusIconLinux,
                             public ui::SimpleMenuModel::Delegate,
                             public base::RefCounted<StatusIconLinuxDbus> {
  public:
   StatusIconLinuxDbus();
+
+  StatusIconLinuxDbus(const StatusIconLinuxDbus&) = delete;
+  StatusIconLinuxDbus& operator=(const StatusIconLinuxDbus&) = delete;
 
   // StatusIcon:
   void SetIcon(const gfx::ImageSkia& image) override;
@@ -101,8 +104,8 @@ class StatusIconLinuxDbus : public views::StatusIconLinux,
   scoped_refptr<dbus::Bus> bus_;
 
   int service_id_ = 0;
-  dbus::ObjectProxy* watcher_ = nullptr;
-  dbus::ExportedObject* item_ = nullptr;
+  raw_ptr<dbus::ObjectProxy> watcher_ = nullptr;
+  raw_ptr<dbus::ExportedObject> item_ = nullptr;
 
   base::RepeatingCallback<void(bool)> barrier_;
 
@@ -130,8 +133,6 @@ class StatusIconLinuxDbus : public views::StatusIconLinux,
   base::FilePath icon_file_;
 
   base::WeakPtrFactory<StatusIconLinuxDbus> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StatusIconLinuxDbus);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_ICON_LINUX_DBUS_H_

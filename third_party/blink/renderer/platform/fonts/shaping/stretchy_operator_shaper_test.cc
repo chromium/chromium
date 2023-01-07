@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,20 +6,19 @@
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_test_fonts.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_types.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 
 namespace blink {
 
 namespace {
 
-const UChar32 kLeftBraceCodePoint = '{';
-const UChar32 kOverBraceCodePoint = 0x23DE;
-const UChar32 kRightwardsFrontTiltedShadowedWhiteArrowCodePoint = 0x1F8AB;
-const UChar32 kNAryWhiteVerticalBarCodePoint = 0x2AFF;
 float kSizeError = .1;
 
 ShapeResultTestInfo* TestInfo(const scoped_refptr<ShapeResult>& result) {
@@ -28,7 +27,7 @@ ShapeResultTestInfo* TestInfo(const scoped_refptr<ShapeResult>& result) {
 
 }  // namespace
 
-class StretchyOperatorShaperTest : public testing::Test {
+class StretchyOperatorShaperTest : public FontTestBase {
  protected:
   void SetUp() override {
     font_description.SetComputedSize(10.0);
@@ -49,8 +48,8 @@ class StretchyOperatorShaperTest : public testing::Test {
   Font font;
 };
 
-// See createStretchy() in
-// third_party/blink/web_tests/external/wpt/mathml/tools/operator-dictionary.py
+// See blink/web_tests/external/wpt/mathml/tools/operator-dictionary.py and
+// blink/renderer/platform/fonts/opentype/open_type_math_test_fonts.h.
 TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
   Font math = CreateMathFont("operators.woff");
 
@@ -62,17 +61,9 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
   auto left_brace = math.PrimaryFont()->GlyphForCharacter(kLeftBraceCodePoint);
   auto over_brace = math.PrimaryFont()->GlyphForCharacter(kOverBraceCodePoint);
 
-  // Calculate glyph indices from the last unicode character in the font.
-  // TODO(https://crbug.com/1057596): Find a better way to access these glyph
-  // indices.
-  auto v0 = math.PrimaryFont()->GlyphForCharacter(
-                kRightwardsFrontTiltedShadowedWhiteArrowCodePoint) +
-            1;
-  auto h0 = v0 + 1;
-  auto v1 = h0 + 1;
-  auto h1 = v1 + 1;
-  auto v2 = h1 + 1;
-  auto h2 = v2 + 1;
+  // Calculate glyph indices of stretchy operator's parts.
+  Vector<UChar32> v, h;
+  retrieveGlyphForStretchyOperators(math, v, h);
 
   // Stretch operators to target sizes (in font units) 125, 250, 375, 500, 625,
   // 750, 875, 1000, 1125, ..., 3750, 3875, 4000.
@@ -115,7 +106,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
             horizontal_shaper.Shape(&math, target_size);
         EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
         EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(), 1u);
-        Glyph expected_variant = i ? h0 + 2 * i : over_brace;
+        Glyph expected_variant = i ? h[0] + 2 * i : over_brace;
         EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, 0), expected_variant);
         EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, 0), (i + 1) * 1000,
                     kSizeError);
@@ -127,7 +118,7 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
             vertical_shaper.Shape(&math, target_size);
         EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
         EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(), 1u);
-        Glyph expected_variant = i ? v0 + 2 * i : left_brace;
+        Glyph expected_variant = i ? v[0] + 2 * i : left_brace;
         EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, 0), expected_variant);
         EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, 0), (i + 1) * 1000,
                     kSizeError);
@@ -198,15 +189,15 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
       EXPECT_EQ(TestInfo(result)->NumberOfRunsForTesting(), 1u);
       EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),
                 repetition_count + 1);
-      EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, 0), h2);
+      EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, 0), h[2]);
       EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, 0), 3000 - overlap,
                   kSizeError);
       for (unsigned i = 0; i < repetition_count - 1; i++) {
-        EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, i + 1), h1);
+        EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, i + 1), h[1]);
         EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, i + 1),
                     2000 - overlap, kSizeError);
       }
-      EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, repetition_count), h1);
+      EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, repetition_count), h[1]);
       EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, repetition_count),
                   2000, kSizeError);
     }
@@ -221,11 +212,11 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
       EXPECT_EQ(TestInfo(result)->RunInfoForTesting(0).NumGlyphs(),
                 repetition_count + 1);
       for (unsigned i = 0; i < repetition_count; i++) {
-        EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, i), v1);
+        EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, i), v[1]);
         EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, i), 2000 - overlap,
                     kSizeError);
       }
-      EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, repetition_count), v2);
+      EXPECT_EQ(TestInfo(result)->GlyphForTesting(0, repetition_count), v[2]);
       EXPECT_NEAR(TestInfo(result)->AdvanceForTesting(0, repetition_count),
                   3000, kSizeError);
     }
@@ -260,13 +251,32 @@ TEST_F(StretchyOperatorShaperTest, GlyphVariants) {
     // h1/v1 and minimal overlap 500 is Y = 1500k + 1500.
     // So target_size - Y >= 250 >> kSizeError if the assembly does not have
     // more than the max number of glyphs.
-    target_size = 1500 * HarfBuzzRunGlyphData::kMaxGlyphs + 1750;
+    target_size =
+        static_cast<float>(1500 * HarfBuzzRunGlyphData::kMaxGlyphs + 1750);
     horizontal_shaper.Shape(&math, target_size);
     vertical_shaper.Shape(&math, target_size);
   }
 }
 
-// See third_party/blink/web_tests/external/wpt/mathml/tools/largeop.py
+// See blink/web_tests/external/wpt/mathml/tools/operator-dictionary.py and
+// blink/renderer/platform/fonts/opentype/open_type_math_test_fonts.h.
+TEST_F(StretchyOperatorShaperTest, NonBMPCodePoint) {
+  Font math = CreateMathFont("operators.woff");
+
+  StretchyOperatorShaper horizontal_shaper(
+      kArabicMathematicalOperatorHahWithDal,
+      OpenTypeMathStretchData::StretchAxis::Horizontal);
+
+  float target_size = 10000;
+  StretchyOperatorShaper::Metrics metrics;
+  horizontal_shaper.Shape(&math, target_size, &metrics);
+  EXPECT_NEAR(metrics.advance, target_size, kSizeError);
+  EXPECT_NEAR(metrics.ascent, 1000, kSizeError);
+  EXPECT_FLOAT_EQ(metrics.descent, 0);
+}
+
+// See third_party/blink/web_tests/external/wpt/mathml/tools/largeop.py and
+// blink/renderer/platform/fonts/opentype/open_type_math_test_fonts.h
 TEST_F(StretchyOperatorShaperTest, MathItalicCorrection) {
   {
     Font math = CreateMathFont(

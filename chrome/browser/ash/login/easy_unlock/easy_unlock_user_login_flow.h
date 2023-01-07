@@ -1,18 +1,17 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_USER_LOGIN_FLOW_H_
 #define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_USER_LOGIN_FLOW_H_
 
-#include <string>
-
-#include "base/macros.h"
 #include "chrome/browser/ash/login/user_flow.h"
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
+
+class UserContext;
 
 // Handler for login flow initiazted by Easy Signin login attempt.
 // The only difference to the default login flow is hanlding of the auth
@@ -20,16 +19,18 @@ namespace chromeos {
 class EasyUnlockUserLoginFlow : public ExtendedUserFlow {
  public:
   explicit EasyUnlockUserLoginFlow(const AccountId& account_id);
+
+  EasyUnlockUserLoginFlow(const EasyUnlockUserLoginFlow&) = delete;
+  EasyUnlockUserLoginFlow& operator=(const EasyUnlockUserLoginFlow&) = delete;
+
   ~EasyUnlockUserLoginFlow() override;
 
  private:
   // ExtendedUserFlow implementation.
   bool HandleLoginFailure(const AuthFailure& failure) override;
   void HandleLoginSuccess(const UserContext& context) override;
-
-  DISALLOW_COPY_AND_ASSIGN(EasyUnlockUserLoginFlow);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_USER_LOGIN_FLOW_H_

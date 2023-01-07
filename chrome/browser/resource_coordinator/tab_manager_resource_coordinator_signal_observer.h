@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MANAGER_RESOURCE_COORDINATOR_SIGNAL_OBSERVER_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_TAB_MANAGER_RESOURCE_COORDINATOR_SIGNAL_OBSERVER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -30,11 +29,18 @@ class TabManager::ResourceCoordinatorSignalObserver
 
   explicit ResourceCoordinatorSignalObserver(
       const base::WeakPtr<TabManager>& tab_manager);
+
+  ResourceCoordinatorSignalObserver(const ResourceCoordinatorSignalObserver&) =
+      delete;
+  ResourceCoordinatorSignalObserver& operator=(
+      const ResourceCoordinatorSignalObserver&) = delete;
+
   ~ResourceCoordinatorSignalObserver() override;
 
   // PageNode::ObserverDefaultImpl:
   // This function run on the performance manager sequence.
-  void OnLoadingStateChanged(const PageNode* page_node) override;
+  void OnLoadingStateChanged(const PageNode* page_node,
+                             PageNode::LoadingState previous_state) override;
 
   // GraphOwned implementation:
   void OnPassedToGraph(Graph* graph) override;
@@ -58,8 +64,6 @@ class TabManager::ResourceCoordinatorSignalObserver
   // we'd also then tear down this observer on the perf manager sequence itself,
   // but when one dies they're both about to die.
   base::WeakPtr<TabManager> tab_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceCoordinatorSignalObserver);
 };
 
 }  // namespace resource_coordinator

@@ -1,29 +1,18 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.download;
 
 import android.Manifest.permission;
-import android.app.Activity;
-import android.content.pm.PackageManager;
-import android.util.Pair;
 
-import org.chromium.base.ApplicationStatus;
-import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.download.DownloadCollectionBridge;
-import org.chromium.components.permissions.AndroidPermissionRequester;
-import org.chromium.content_public.browser.BrowserStartupController;
-import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
-import org.chromium.ui.base.AndroidPermissionDelegate;
-import org.chromium.ui.base.PermissionCallback;
-
-import java.lang.ref.WeakReference;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.url.GURL;
 
 /**
  * Java counterpart of android DownloadController. Owned by native.
@@ -60,7 +49,6 @@ public class DownloadController {
     }
 
     private static Observer sObserver;
-    private static AndroidPermissionDelegate sAndroidPermissionDelegateForTesting;
 
     public static void setDownloadNotificationService(Observer observer) {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
@@ -113,92 +101,34 @@ public class DownloadController {
         sObserver.onDownloadUpdated(downloadInfo);
     }
 
-
     /**
      * Returns whether file access is allowed.
      *
      * @return true if allowed, or false otherwise.
      */
     @CalledByNative
-    private static boolean hasFileAccess() {
+    private static boolean hasFileAccess(WindowAndroid windowAndroid) {
         if (DownloadCollectionBridge.supportsDownloadCollection()) return true;
-        Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        AndroidPermissionDelegate permissionDelegate = sAndroidPermissionDelegateForTesting == null
-                ? new ActivityAndroidPermissionDelegate(new WeakReference<>(activity))
-                : sAndroidPermissionDelegateForTesting;
-        return permissionDelegate.hasPermission(permission.WRITE_EXTERNAL_STORAGE);
+        AndroidPermissionDelegate delegate = windowAndroid;
+        return delegate == null ? false : delegate.hasPermission(permission.WRITE_EXTERNAL_STORAGE);
     }
 
     /**
-     * Requests the stoarge permission. This should be called from the native code.
+     * Requests the storage permission. This should be called from the native code.
      * @param callbackId ID of native callback to notify the result.
+     * @param windowAndroid The {@link WindowAndroid} associated with the tab.
      */
     @CalledByNative
-    private static void requestFileAccess(final long callbackId) {
-        requestFileAccessPermissionHelper(result -> {
+    private static void requestFileAccess(final long callbackId, WindowAndroid windowAndroid) {
+        if (windowAndroid == null) {
+            DownloadControllerJni.get().onAcquirePermissionResult(
+                    callbackId, /*granted=*/false, /*permissionToUpdate=*/null);
+            return;
+        }
+        FileAccessPermissionHelper.requestFileAccessPermissionHelper(windowAndroid, result -> {
             DownloadControllerJni.get().onAcquirePermissionResult(
                     callbackId, result.first, result.second);
         });
-    }
-
-    /**
-     * Requests the stoarge permission from Java.
-     * @param callback Callback to notify if the permission is granted or not.
-     */
-    public static void requestFileAccessPermission(final Callback<Boolean> callback) {
-        requestFileAccessPermissionHelper(result -> {
-            boolean granted = result.first;
-            String permissions = result.second;
-            if (granted || permissions == null) {
-                callback.onResult(granted);
-                return;
-            }
-            // TODO(jianli): When the permission request was denied by the user and "Never ask
-            // again" was checked, we'd better show the permission update infobar to remind the
-            // user. Currently the infobar only works for ChromeActivities. We need to investigate
-            // how to make it work for other activities.
-            callback.onResult(false);
-        });
-    }
-
-    private static void requestFileAccessPermissionHelper(
-            final Callback<Pair<Boolean, String>> callback) {
-        Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
-        AndroidPermissionDelegate delegate = sAndroidPermissionDelegateForTesting == null
-                ? new ActivityAndroidPermissionDelegate(new WeakReference<>(activity))
-                : sAndroidPermissionDelegateForTesting;
-
-        if (delegate.hasPermission(permission.WRITE_EXTERNAL_STORAGE)) {
-            callback.onResult(Pair.create(true, null));
-            return;
-        }
-
-        if (!delegate.canRequestPermission(permission.WRITE_EXTERNAL_STORAGE)) {
-            callback.onResult(Pair.create(false,
-                    delegate.isPermissionRevokedByPolicy(permission.WRITE_EXTERNAL_STORAGE)
-                            ? null
-                            : permission.WRITE_EXTERNAL_STORAGE));
-            return;
-        }
-
-        final AndroidPermissionDelegate permissionDelegate = delegate;
-        final PermissionCallback permissionCallback = (permissions, grantResults)
-                -> callback.onResult(Pair.create(grantResults.length > 0
-                                && grantResults[0] == PackageManager.PERMISSION_GRANTED,
-                        null));
-
-        AndroidPermissionRequester.showMissingPermissionDialog(activity,
-                R.string.missing_storage_permission_download_education_text,
-                ()
-                        -> permissionDelegate.requestPermissions(
-                                new String[] {permission.WRITE_EXTERNAL_STORAGE},
-                                permissionCallback),
-                callback.bind(Pair.create(false, null)));
-    }
-
-    /** For testing only. */
-    public static void setAndroidPermissionDelegateForTesting(AndroidPermissionDelegate delegate) {
-        sAndroidPermissionDelegateForTesting = delegate;
     }
 
     /**
@@ -211,8 +141,8 @@ public class DownloadController {
      * @param referrer Referrer to use.
      */
     @CalledByNative
-    private static void enqueueAndroidDownloadManagerRequest(String url, String userAgent,
-            String fileName, String mimeType, String cookie, String referrer) {
+    private static void enqueueAndroidDownloadManagerRequest(GURL url, String userAgent,
+            String fileName, String mimeType, String cookie, GURL referrer) {
         DownloadInfo downloadInfo = new DownloadInfo.Builder()
                 .setUrl(url)
                 .setUserAgent(userAgent)
@@ -235,15 +165,8 @@ public class DownloadController {
                 new DownloadItem(true, info), true);
     }
 
-    /**
-     * Called when a download is started.
-     */
     @CalledByNative
-    private static void onDownloadStarted() {
-        if (!BrowserStartupController.getInstance().isFullBrowserStarted()) return;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_PROGRESS_INFOBAR)) return;
-        DownloadUtils.showDownloadStartToast(ContextUtils.getApplicationContext());
-    }
+    private static void onDownloadStarted() {}
 
     @NativeMethods
     interface Natives {

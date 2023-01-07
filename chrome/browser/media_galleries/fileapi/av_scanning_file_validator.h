@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_AV_SCANNING_FILE_VALIDATOR_H_
 #define CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_AV_SCANNING_FILE_VALIDATOR_H_
 
-#include "base/macros.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 
@@ -16,6 +15,9 @@ class FilePath;
 // This class supports AV scanning on post write validation.
 class AVScanningFileValidator : public storage::CopyOrMoveFileValidator {
  public:
+  AVScanningFileValidator(const AVScanningFileValidator&) = delete;
+  AVScanningFileValidator& operator=(const AVScanningFileValidator&) = delete;
+
   ~AVScanningFileValidator() override;
 
   // Runs AV checks on the resulting file (Windows-only).
@@ -29,8 +31,6 @@ class AVScanningFileValidator : public storage::CopyOrMoveFileValidator {
 
  private:
   download::QuarantineConnectionCallback quarantine_connection_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AVScanningFileValidator);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_AV_SCANNING_FILE_VALIDATOR_H_

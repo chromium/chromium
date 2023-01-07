@@ -33,7 +33,8 @@
             search-label="$i18n{searchPasswords}"
             search-term="{{passwordFilter_}}">
           <passwords-section id="passwordSection" filter="[[passwordFilter_]]"
-              focus-config="[[focusConfig_]]" prefs="{{prefs}}">
+              focus-config="[[focusConfig_]]" prefs="{{prefs}}"
+              on-password-view-page-requested="onPasswordViewPageRequested_">
           </passwords-section>
         </settings-subpage>
       </template>
@@ -45,7 +46,8 @@
             search-label="$i18n{searchPasswords}"
             search-term="{{passwordFilter_}}">
           <passwords-device-section id="passwordDeviceSection"
-              filter="[[passwordFilter_]]">
+              filter="[[passwordFilter_]]" focus-config="[[focusConfig_]]"
+              on-password-view-page-requested="onPasswordViewPageRequested_">
           </passwords-device-section>
         </settings-subpage>
       </template>
@@ -56,6 +58,28 @@
             learn-more-url="$i18n{passwordCheckLearnMoreURL}">
           <settings-password-check prefs="{{prefs}}"></settings-password-check>
         </settings-subpage>
+      </template>
+      <if expr="is_win or is_macosx">
+        <template is="dom-if" route-path="/passkeys">
+          <settings-subpage
+              associated-control="[[$$('#passwordManagerButton')]]"
+              page-title="$i18n{managePasskeysTitle}"
+              search-label="$i18n{managePasskeysSearch}"
+              search-term="{{passkeyFilter_}}">
+            <settings-passkeys-subpage filter="[[passkeyFilter_]]">
+            </settings-passkeys-subpage>
+          </settings-subpage>
+        </template>
+      </if>
+      <template is="dom-if" if="[[enablePasswordViewPage_]]">
+        <template is="dom-if" route-path="/passwords/view">
+          <settings-subpage page-title="[[credential.urls.shown]]"
+              favicon-site-url="[[credential.urls.link]]">
+            <password-view credential="{{credential}}"
+                on-password-view-page-requested="onPasswordViewPageRequested_">
+            </password-view>
+            </settings-subpage>
+        </template>
       </template>
       <template is="dom-if" route-path="/payments">
         <settings-subpage
@@ -75,3 +99,10 @@
         </settings-subpage>
       </template>
     </settings-animated-pages>
+    <if expr="is_chromeos">
+      <template is="dom-if" if="[[showPasswordPromptDialog]]" restamp>
+        <settings-password-prompt-dialog on-token-obtained="onTokenObtained"
+            on-close="onPasswordPromptClose">
+        </settings-password-prompt-dialog>
+      </template>
+    </if>

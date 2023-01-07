@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,12 @@
 #define CHROMECAST_MEDIA_AUDIO_RATE_ADJUSTER_H_
 
 #include <cstdint>
-#include <memory>
 
 #include "base/callback.h"
 #include "base/time/time.h"
+#include "chromecast/base/statistics/weighted_moving_linear_regression.h"
 
 namespace chromecast {
-class WeightedMovingLinearRegression;
-
 namespace media {
 
 // RateAdjuster handles adjusting a clock rate to minimize errors over time.
@@ -26,10 +24,10 @@ class RateAdjuster {
  public:
   struct Config {
     // The minimum interval between clock rate changes.
-    base::TimeDelta rate_change_interval = base::TimeDelta::FromSeconds(1);
+    base::TimeDelta rate_change_interval = base::Seconds(1);
 
     // How long to make the linear regression window for smoothing errors.
-    base::TimeDelta linear_regression_window = base::TimeDelta::FromSeconds(10);
+    base::TimeDelta linear_regression_window = base::Seconds(10);
 
     // The maximum current error to ignore, in microseconds.
     int64_t max_ignored_current_error = 0;
@@ -63,11 +61,19 @@ class RateAdjuster {
   // synchronously within this method via the callback, if necessary.
   void AddError(int64_t error, int64_t timestamp);
 
+  // Reserves space for |count| error samples, to reduce memory allocation
+  // during use.
+  void Reserve(int count);
+
+  // Resets to initial state.
+  void Reset();
+
  private:
   const Config config_;
   RateChangeCallback change_clock_rate_;
 
-  std::unique_ptr<WeightedMovingLinearRegression> linear_error_;
+  WeightedMovingLinearRegression linear_error_;
+  bool initialized_ = false;
   int64_t clock_rate_start_timestamp_ = 0;
   int64_t initial_timestamp_ = 0;
   double clock_rate_error_base_ = 0.0;
@@ -77,4 +83,4 @@ class RateAdjuster {
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_AUDIO_AUDIO_FADER_H_
+#endif  // CHROMECAST_MEDIA_AUDIO_RATE_ADJUSTER_H_

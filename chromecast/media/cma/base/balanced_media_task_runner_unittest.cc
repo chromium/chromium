@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,8 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -53,6 +52,11 @@ MediaTaskRunnerTestContext::~MediaTaskRunnerTestContext() {
 class BalancedMediaTaskRunnerTest : public testing::Test {
  public:
   BalancedMediaTaskRunnerTest();
+
+  BalancedMediaTaskRunnerTest(const BalancedMediaTaskRunnerTest&) = delete;
+  BalancedMediaTaskRunnerTest& operator=(const BalancedMediaTaskRunnerTest&) =
+      delete;
+
   ~BalancedMediaTaskRunnerTest() override;
 
   void SetupTest(base::TimeDelta max_delta,
@@ -82,8 +86,6 @@ class BalancedMediaTaskRunnerTest : public testing::Test {
   // For each media task runner, keep a track of which task has already been
   // scheduled.
   std::vector<MediaTaskRunnerTestContext> contexts_;
-
-  DISALLOW_COPY_AND_ASSIGN(BalancedMediaTaskRunnerTest);
 };
 
 BalancedMediaTaskRunnerTest::BalancedMediaTaskRunnerTest() {
@@ -115,14 +117,14 @@ void BalancedMediaTaskRunnerTest::SetupTest(
         timestamps_in_ms[k].size());
     for (size_t i = 0; i < timestamps_in_ms[k].size(); i++) {
       contexts_[k].task_timestamp_list[i] =
-          base::TimeDelta::FromMilliseconds(timestamps_in_ms[k][i]);
+          base::Milliseconds(timestamps_in_ms[k][i]);
     }
   }
 
   // Expected task order (for tasks that are actually run).
   for (size_t k = 0; k < expected_task_timestamps_ms.size(); k++) {
     expected_task_timestamps_.push_back(
-        base::TimeDelta::FromMilliseconds(expected_task_timestamps_ms[k]));
+        base::Milliseconds(expected_task_timestamps_ms[k]));
   }
 }
 
@@ -131,7 +133,7 @@ void BalancedMediaTaskRunnerTest::ProcessAllTasks() {
       FROM_HERE,
       base::BindOnce(&BalancedMediaTaskRunnerTest::OnTestTimeout,
                      base::Unretained(this)),
-      base::TimeDelta::FromSeconds(5));
+      base::Seconds(5));
   ScheduleTask();
 }
 
@@ -217,7 +219,7 @@ TEST_F(BalancedMediaTaskRunnerTest, OneTaskRunner) {
   int timestamps0_ms[] = {0, 10, 20, 30, 40, 30, 50, 60, 20, 30, 70};
   std::vector<std::vector<int> > timestamps_ms(1);
   timestamps_ms[0] = std::vector<int>(
-      timestamps0_ms, timestamps0_ms + base::size(timestamps0_ms));
+      timestamps0_ms, timestamps0_ms + std::size(timestamps0_ms));
 
   // Scheduling pattern.
   std::vector<size_t> scheduling_pattern(1);
@@ -227,11 +229,9 @@ TEST_F(BalancedMediaTaskRunnerTest, OneTaskRunner) {
   int expected_timestamps[] = {0, 10, 20, 30, 40, 50, 60, 70};
   std::vector<int> expected_timestamps_ms(
       std::vector<int>(expected_timestamps,
-                       expected_timestamps + base::size(expected_timestamps)));
+                       expected_timestamps + std::size(expected_timestamps)));
 
-  SetupTest(base::TimeDelta::FromMilliseconds(30),
-            timestamps_ms,
-            scheduling_pattern,
+  SetupTest(base::Milliseconds(30), timestamps_ms, scheduling_pattern,
             expected_timestamps_ms);
   ProcessAllTasks();
   base::RunLoop().Run();
@@ -246,25 +246,23 @@ TEST_F(BalancedMediaTaskRunnerTest, TwoTaskRunnerUnbalanced) {
   int timestamps1_ms[] = {5, 15, 25, 35, 45, 35, 55, 65, 25, 35, 75};
   std::vector<std::vector<int> > timestamps_ms(2);
   timestamps_ms[0] = std::vector<int>(
-      timestamps0_ms, timestamps0_ms + base::size(timestamps0_ms));
+      timestamps0_ms, timestamps0_ms + std::size(timestamps0_ms));
   timestamps_ms[1] = std::vector<int>(
-      timestamps1_ms, timestamps1_ms + base::size(timestamps1_ms));
+      timestamps1_ms, timestamps1_ms + std::size(timestamps1_ms));
 
   // Scheduling pattern.
   size_t pattern[] = {1, 0, 0, 0, 0};
   std::vector<size_t> scheduling_pattern =
-      std::vector<size_t>(pattern, pattern + base::size(pattern));
+      std::vector<size_t>(pattern, pattern + std::size(pattern));
 
   // Expected results.
   int expected_timestamps[] = {
     5, 0, 10, 20, 30, 15, 40, 25, 50, 35, 60, 45, 70, 55, 65, 75 };
   std::vector<int> expected_timestamps_ms(
       std::vector<int>(expected_timestamps,
-                       expected_timestamps + base::size(expected_timestamps)));
+                       expected_timestamps + std::size(expected_timestamps)));
 
-  SetupTest(base::TimeDelta::FromMilliseconds(30),
-            timestamps_ms,
-            scheduling_pattern,
+  SetupTest(base::Milliseconds(30), timestamps_ms, scheduling_pattern,
             expected_timestamps_ms);
   ProcessAllTasks();
   base::RunLoop().Run();
@@ -288,8 +286,8 @@ TEST_F(BalancedMediaTaskRunnerTest, TwoStreamsOfDifferentLength) {
   std::vector<size_t> scheduling_pattern = {
       0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 0, 0, 0};
 
-  SetupTest(base::TimeDelta::FromMilliseconds(30), timestamps,
-            scheduling_pattern, expected_timestamps);
+  SetupTest(base::Milliseconds(30), timestamps, scheduling_pattern,
+            expected_timestamps);
   ProcessAllTasks();
   base::RunLoop().Run();
   EXPECT_TRUE(expected_task_timestamps_.empty());

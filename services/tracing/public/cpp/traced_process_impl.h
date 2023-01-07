@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include "base/component_export.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "base/synchronization/lock.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/mojom/system_tracing_service.mojom.h"
 #include "services/tracing/public/mojom/traced_process.mojom.h"
@@ -27,6 +29,9 @@ class COMPONENT_EXPORT(TRACING_CPP) TracedProcessImpl
     : public mojom::TracedProcess {
  public:
   static TracedProcessImpl* GetInstance();
+
+  TracedProcessImpl(const TracedProcessImpl&) = delete;
+  TracedProcessImpl& operator=(const TracedProcessImpl&) = delete;
 
   void ResetTracedProcessReceiver();
   void OnTracedProcessRequest(
@@ -55,13 +60,13 @@ class COMPONENT_EXPORT(TRACING_CPP) TracedProcessImpl
       mojom::ConnectToTracingRequestPtr request,
       ConnectToTracingServiceCallback callback) override;
 
+  base::Lock agents_lock_;  // Guards access to |agents_|.
   std::set<BaseAgent*> agents_;
   mojo::Receiver<tracing::mojom::TracedProcess> receiver_{this};
   mojo::Remote<mojom::SystemTracingService> system_tracing_service_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(TracedProcessImpl);
 };
 
 }  // namespace tracing

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,8 +48,9 @@ TestImageTransportFactory::~TestImageTransportFactory() = default;
 
 void TestImageTransportFactory::CreateLayerTreeFrameSink(
     base::WeakPtr<ui::Compositor> compositor) {
-  compositor->SetLayerTreeFrameSink(cc::FakeLayerTreeFrameSink::Create3d(),
-                                    nullptr);
+  compositor->SetLayerTreeFrameSink(
+      cc::FakeLayerTreeFrameSink::Create3d(),
+      mojo::AssociatedRemote<viz::mojom::DisplayPrivate>());
 }
 
 scoped_refptr<viz::ContextProvider>

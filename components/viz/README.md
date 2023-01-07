@@ -20,7 +20,8 @@ For more comprehensive list of design docs relating to Viz, check out
     2. [client](#directory-structure-client)
     3. [host](#directory-structure-host)
     4. [service](#directory-structure-service)
-3. [Naming guidelines with Mojo](#naming-guidelines)
+3. [Runtime Features](#runtime-features)
+4. [Naming guidelines with Mojo](#naming-guidelines)
 
 ## Terminology
 
@@ -130,13 +131,6 @@ Code here supports presentation of the backing store drawn by the display
 compositor (typically thought of as SwapBuffers), as well as the use of
 overlays.
 
-The source code is split into two build targets,
-``components/viz/service:service`` and
-``components/viz/service:gpu_service_dependencies``. The latter is
-code that requires being run in the gpu process, thus could not work
-if the viz service is located elsewhere. This is forward-looking code
-as the viz service is moving into the gpu process always.
-
 | Can depend on:                        |
 |:--------------------------------------|
 | viz/common/*                          |
@@ -186,12 +180,6 @@ method.
 deallocating) gpu memory buffers, setting up a channel for the command buffer,
 etc.
 
-Similar to ``service/display_embedder`` this is split into two targets in
-the build system. Code that must run in the gpu process is compiled in
-the ``components/viz/service:gpu_service_dependencies`` build target,
-and the rest is compiled in ``components/viz/service:service``. As all
-code moves to the gpu process, these two build targets will merge.
-
 | Can depend on:        |
 |:----------------------|
 | viz/common/*          |
@@ -234,6 +222,49 @@ project. See //third\_party/blink/rendering/core/document\_transition/README.md
 |:----------------------|
 | viz/common/           |
 | viz/service/surfaces/ |
+
+## Runtime Features
+
+Viz related runtime feature flags, aka `base::Feature`s, should go in
+[components/viz/common/features.h](https://cs.chromium.org/chromium/src/components/viz/common/features.h).
+
+When adding a new feature `kMyFeature` it's recommended that you add a helper
+function `IsMyFeatureEnabled()` to check if the feature is enabled. Code should
+then use `IsMyFeatureEnabled()` instead of checking
+`base::FeatureList::IsEnabled(kMyFeature)`. Having a helper function makes it
+easy to enforce preconditions that must be met for the feature to be enabled or
+to unconditionally enable a feature on a per platform basis.
+
+### Runtime Feature Checks
+
+`base::FeatureList::IsEnabled()` caches the feature's value internally on the
+first lookup, making all subsequent lookups cheap. Thus, it is acceptable for it
+to be called in a hot code path.
+
+Note `base::ScopedFeatureList` resets/invalidates the feature's internal cache
+on initialization so that the feature's value may be controlled across test
+cases as desired. This does not hold, however, if the calling code itself
+chooses to cache the feature's value in a variable with static storage duration.
+This pattern is discouraged:
+
+```cpp
+bool IsMyFeatureEnabled() {
+  static bool enabled = base::FeatureList::IsEnabled(kMyFeature);  // NO!
+  return enabled;
+}
+```
+
+The first time `IsMyFeatureEnabled()` is called from the test runner process the
+feature state is cached within the static `enabled` variable. If a later test
+uses `base::ScopedFeatureList` to change the feature state, that change will not
+be reflected in `IsMyFeatureEnabled()` and the test will (most likely) fail.
+
+### Testing Viz Features
+
+Ensure that features are enabled/disabled for testing before any viz code is
+initialized. As a general rule `base::ScopedFeatureList` should be the first
+thing initialized in a test fixture to avoid data races and incorrect feature
+values.
 
 ## Naming guidelines with Mojo <a name="naming-guidelines"></a>
 

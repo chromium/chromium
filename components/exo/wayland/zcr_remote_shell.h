@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,10 @@
 
 #include <stdint.h>
 
+#include "base/callback.h"
+
 struct wl_client;
+struct wl_resource;
 
 namespace gfx {
 class Rect;
@@ -17,10 +20,30 @@ class Size;
 
 namespace display {
 class Display;
-}
+}  // namespace display
 
 namespace exo {
+
+class Display;
+
 namespace wayland {
+
+struct WaylandRemoteShellData {
+  using OutputResourceProvider =
+      base::RepeatingCallback<wl_resource*(wl_client*, int64_t)>;
+
+  explicit WaylandRemoteShellData(Display* display,
+                                  OutputResourceProvider output_provider);
+  ~WaylandRemoteShellData();
+
+  // Owned by WaylandServerController, which always outlives this.
+  Display* const display;
+
+  OutputResourceProvider const output_provider;
+
+  WaylandRemoteShellData(const WaylandRemoteShellData&) = delete;
+  WaylandRemoteShellData& operator=(const WaylandRemoteShellData&) = delete;
+};
 
 void bind_remote_shell(wl_client* client,
                        void* data,

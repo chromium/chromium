@@ -1,15 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_RESIZE_VIEWPORT_ANCHOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_RESIZE_VIEWPORT_ANCHOR_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -24,7 +23,9 @@ class LocalFrameView;
 class CORE_EXPORT ResizeViewportAnchor final
     : public GarbageCollected<ResizeViewportAnchor> {
  public:
-  ResizeViewportAnchor(Page& page) : page_(page), scope_count_(0) {}
+  explicit ResizeViewportAnchor(Page& page) : page_(page), scope_count_(0) {}
+  ResizeViewportAnchor(const ResizeViewportAnchor&) = delete;
+  ResizeViewportAnchor& operator=(const ResizeViewportAnchor&) = delete;
 
   class ResizeScope {
     STACK_ALLOCATED();
@@ -39,7 +40,7 @@ class CORE_EXPORT ResizeViewportAnchor final
     ResizeViewportAnchor* anchor_;
   };
 
-  void ResizeFrameView(const IntSize&);
+  void ResizeFrameView(const gfx::Size&);
 
   void Trace(Visitor* visitor) const { visitor->Trace(page_); }
 
@@ -54,8 +55,6 @@ class CORE_EXPORT ResizeViewportAnchor final
   ScrollOffset drift_;
   Member<Page> page_;
   int scope_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeViewportAnchor);
 };
 
 }  // namespace blink

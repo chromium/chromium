@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,11 +15,9 @@ BluetoothGattDescriptorDelegateWrapper::BluetoothGattDescriptorDelegateWrapper(
 
 void BluetoothGattDescriptorDelegateWrapper::GetValue(
     const dbus::ObjectPath& device_path,
-    device::BluetoothLocalGattService::Delegate::ValueCallback callback,
-    device::BluetoothLocalGattService::Delegate::ErrorCallback error_callback) {
+    device::BluetoothLocalGattService::Delegate::ValueCallback callback) {
   service()->GetDelegate()->OnDescriptorReadRequest(
-      GetDeviceWithPath(device_path), descriptor_, 0, std::move(callback),
-      std::move(error_callback));
+      GetDeviceWithPath(device_path), descriptor_, 0, std::move(callback));
 }
 
 void BluetoothGattDescriptorDelegateWrapper::SetValue(

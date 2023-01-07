@@ -1,0 +1,12 @@
+diff --git a/src/htmlminifier.js b/src/htmlminifier.js
+index d7efa99148a21..eb19dd6b33ff3 100644
+--- a/src/htmlminifier.js
++++ b/src/htmlminifier.js
+@@ -5,7 +5,6 @@ var decode = require('he').decode;
+ var HTMLParser = require('./htmlparser').HTMLParser;
+ var RelateUrl = require('relateurl');
+ var TokenChain = require('./tokenchain');
+-var UglifyJS = require('uglify-js');
+ var utils = require('./utils');
+ 
+ function trimWhitespace(str) {

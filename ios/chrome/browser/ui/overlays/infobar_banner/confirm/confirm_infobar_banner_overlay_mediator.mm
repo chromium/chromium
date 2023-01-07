@@ -1,17 +1,17 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/confirm/confirm_infobar_banner_overlay_mediator.h"
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/overlays/public/infobar_banner/confirm_infobar_banner_overlay_request_config.h"
-#include "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/public/infobar_banner/infobar_banner_overlay_responses.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

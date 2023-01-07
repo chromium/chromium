@@ -1,24 +1,9 @@
 CONSOLE WARNING: Failed to decode downloaded font: data:font/truetype;base64,
-Tests load() method of FontFace.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS face1.status is "unloaded"
-PASS face1.status is "loading"
-PASS face1.status is "loaded"
-PASS face2.status is "unloaded"
-PASS face2.status is "loading"
-PASS face2.status is "error"
-PASS face3.status is "unloaded"
-PASS face3.status is "loading"
-PASS face3.status is "loaded"
-PASS face4.status is "unloaded"
-PASS face4.status is "loading"
-PASS face4.status is "error"
-PASS face5.status is "unloaded"
-PASS face5.status is "loading"
-PASS face5.status is "loaded"
-PASS successfullyParsed is true
-
-TEST COMPLETE
+This is a testharness.js-based test.
+PASS face1.load() should be fulfilled
+PASS face2.load() should be rejected
+PASS face3.load() should be fulfilled
+PASS face4.load() should be rejected
+PASS face5.load() should be fulfilled
+Harness: the test ran to completion.
 

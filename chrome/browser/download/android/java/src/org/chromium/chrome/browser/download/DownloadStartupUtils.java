@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ public class DownloadStartupUtils {
     /**
      * Initializes the downloads system if not already initialized.
      * @param isFullBrowserStarted Whether full browser process has been started.
-     * @param isIncognito Whether the system is for incognito profile.
+     * @param isOffTheRecord Whether the system is for incognito profile.
      */
     public static void ensureDownloadSystemInitialized(
             boolean isFullBrowserStarted, boolean isOffTheRecord) {

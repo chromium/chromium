@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/proxy/connection.h"
@@ -57,6 +56,10 @@ class PepperInProcessRouter {
  public:
   // The given host parameter owns this class and must outlive us.
   PepperInProcessRouter(RendererPpapiHostImpl* host_impl);
+
+  PepperInProcessRouter(const PepperInProcessRouter&) = delete;
+  PepperInProcessRouter& operator=(const PepperInProcessRouter&) = delete;
+
   ~PepperInProcessRouter();
 
   // Returns the dummy sender for the cooresponding end of the in-process
@@ -100,8 +103,6 @@ class PepperInProcessRouter {
   bool reply_result_;
 
   base::WeakPtrFactory<PepperInProcessRouter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PepperInProcessRouter);
 };
 
 }  // namespace content

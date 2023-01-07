@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/notreached.h"
-#include "base/numerics/ranges.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkUnPreMultiply.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -345,7 +345,7 @@ std::vector<Swatch> CalculateProminentColors(
     const SkBitmap& bitmap,
     const std::vector<ColorBracket>& color_brackets,
     const gfx::Rect& region,
-    base::Optional<ColorSwatchFilter> filter) {
+    absl::optional<ColorSwatchFilter> filter) {
   DCHECK(!bitmap.empty());
   DCHECK(!bitmap.isNull());
 
@@ -639,7 +639,7 @@ SkColor CalculateKMeanColorOfBitmap(const SkBitmap& bitmap,
   // we can end up creating a larger buffer than we have data for, and the end
   // of the buffer will remain uninitialized after we copy/UnPreMultiply the
   // image data into it).
-  height = base::ClampToRange(height, 0, bitmap.height());
+  height = base::clamp(height, 0, bitmap.height());
 
   // SkBitmap uses pre-multiplied alpha but the KMean clustering function
   // above uses non-pre-multiplied alpha. Transform the bitmap before we
@@ -679,7 +679,7 @@ std::vector<Swatch> CalculateColorSwatches(
     const SkBitmap& bitmap,
     size_t max_swatches,
     const gfx::Rect& region,
-    base::Optional<ColorSwatchFilter> filter) {
+    absl::optional<ColorSwatchFilter> filter) {
   DCHECK(!bitmap.empty());
   DCHECK(!bitmap.isNull());
   DCHECK(!region.IsEmpty());
@@ -814,154 +814,6 @@ std::vector<color_utils::Swatch> CalculateProminentColorsOfBitmap(
       bitmap, color_brackets,
       region ? *region : gfx::Rect(bitmap.width(), bitmap.height()),
       filter.is_null() ? base::BindRepeating(&IsInterestingColor) : filter);
-}
-
-gfx::Matrix3F ComputeColorCovariance(const SkBitmap& bitmap) {
-  // First need basic stats to normalize each channel separately.
-  gfx::Matrix3F covariance = gfx::Matrix3F::Zeros();
-  if (!bitmap.getPixels())
-    return covariance;
-
-  // Assume ARGB_8888 format.
-  DCHECK(bitmap.colorType() == kN32_SkColorType);
-
-  int64_t r_sum = 0;
-  int64_t g_sum = 0;
-  int64_t b_sum = 0;
-  int64_t rr_sum = 0;
-  int64_t gg_sum = 0;
-  int64_t bb_sum = 0;
-  int64_t rg_sum = 0;
-  int64_t rb_sum = 0;
-  int64_t gb_sum = 0;
-
-  for (int y = 0; y < bitmap.height(); ++y) {
-    SkPMColor* current_color = static_cast<uint32_t*>(bitmap.getAddr32(0, y));
-    for (int x = 0; x < bitmap.width(); ++x, ++current_color) {
-      SkColor c = SkUnPreMultiply::PMColorToColor(*current_color);
-      SkColor r = SkColorGetR(c);
-      SkColor g = SkColorGetG(c);
-      SkColor b = SkColorGetB(c);
-
-      r_sum += r;
-      g_sum += g;
-      b_sum += b;
-      rr_sum += r * r;
-      gg_sum += g * g;
-      bb_sum += b * b;
-      rg_sum += r * g;
-      rb_sum += r * b;
-      gb_sum += g * b;
-    }
-  }
-
-  // Covariance (not normalized) is E(X*X.t) - m * m.t and this is how it
-  // is calculated below.
-  // Each row below represents a row of the matrix describing (co)variances
-  // of R, G and B channels with (R, G, B)
-  int pixel_n = bitmap.width() * bitmap.height();
-  covariance.set(
-      static_cast<float>(
-          static_cast<double>(rr_sum) / pixel_n -
-              static_cast<double>(r_sum * r_sum) / pixel_n / pixel_n),
-      static_cast<float>(
-          static_cast<double>(rg_sum) / pixel_n -
-              static_cast<double>(r_sum * g_sum) / pixel_n / pixel_n),
-      static_cast<float>(
-          static_cast<double>(rb_sum) / pixel_n -
-              static_cast<double>(r_sum * b_sum) / pixel_n / pixel_n),
-      static_cast<float>(
-          static_cast<double>(rg_sum) / pixel_n -
-              static_cast<double>(r_sum * g_sum) / pixel_n / pixel_n),
-      static_cast<float>(
-          static_cast<double>(gg_sum) / pixel_n -
-              static_cast<double>(g_sum * g_sum) / pixel_n / pixel_n),
-      static_cast<float>(
-          static_cast<double>(gb_sum) / pixel_n -
-              static_cast<double>(g_sum * b_sum) / pixel_n / pixel_n),
-      static_cast<float>(
-          static_cast<double>(rb_sum) / pixel_n -
-              static_cast<double>(r_sum * b_sum) / pixel_n / pixel_n),
-      static_cast<float>(
-          static_cast<double>(gb_sum) / pixel_n -
-              static_cast<double>(g_sum * b_sum) / pixel_n / pixel_n),
-      static_cast<float>(
-          static_cast<double>(bb_sum) / pixel_n -
-              static_cast<double>(b_sum * b_sum) / pixel_n / pixel_n));
-  return covariance;
-}
-
-bool ApplyColorReduction(const SkBitmap& source_bitmap,
-                         const gfx::Vector3dF& color_transform,
-                         bool fit_to_range,
-                         SkBitmap* target_bitmap) {
-  DCHECK(target_bitmap);
-  DCHECK(source_bitmap.getPixels());
-  DCHECK(target_bitmap->getPixels());
-  DCHECK_EQ(kN32_SkColorType, source_bitmap.colorType());
-  DCHECK_EQ(kAlpha_8_SkColorType, target_bitmap->colorType());
-  DCHECK_EQ(source_bitmap.height(), target_bitmap->height());
-  DCHECK_EQ(source_bitmap.width(), target_bitmap->width());
-  DCHECK(!source_bitmap.empty());
-
-  // Elements of color_transform are explicitly off-loaded to local values for
-  // efficiency reasons. Note that in practice images may correspond to entire
-  // tab captures.
-  float t0 = 0.0;
-  float tr = color_transform.x();
-  float tg = color_transform.y();
-  float tb = color_transform.z();
-
-  if (fit_to_range) {
-    // We will figure out min/max in a preprocessing step and adjust
-    // actual_transform as required.
-    float max_val = std::numeric_limits<float>::min();
-    float min_val = std::numeric_limits<float>::max();
-    for (int y = 0; y < source_bitmap.height(); ++y) {
-      const SkPMColor* source_color_row = static_cast<SkPMColor*>(
-          source_bitmap.getAddr32(0, y));
-      for (int x = 0; x < source_bitmap.width(); ++x) {
-        SkColor c = SkUnPreMultiply::PMColorToColor(source_color_row[x]);
-        uint8_t r = SkColorGetR(c);
-        uint8_t g = SkColorGetG(c);
-        uint8_t b = SkColorGetB(c);
-        float gray_level = tr * r + tg * g + tb * b;
-        max_val = std::max(max_val, gray_level);
-        min_val = std::min(min_val, gray_level);
-      }
-    }
-
-    // Adjust the transform so that the result is scaling.
-    float scale = 0.0;
-    t0 = -min_val;
-    if (max_val > min_val)
-      scale = 255.0f / (max_val - min_val);
-    t0 *= scale;
-    tr *= scale;
-    tg *= scale;
-    tb *= scale;
-  }
-
-  for (int y = 0; y < source_bitmap.height(); ++y) {
-    const SkPMColor* source_color_row = static_cast<SkPMColor*>(
-        source_bitmap.getAddr32(0, y));
-    uint8_t* target_color_row = target_bitmap->getAddr8(0, y);
-    for (int x = 0; x < source_bitmap.width(); ++x) {
-      SkColor c = SkUnPreMultiply::PMColorToColor(source_color_row[x]);
-      uint8_t r = SkColorGetR(c);
-      uint8_t g = SkColorGetG(c);
-      uint8_t b = SkColorGetB(c);
-
-      float gl = t0 + tr * r + tg * g + tb * b;
-      if (gl < 0)
-        gl = 0;
-      if (gl > 0xFF)
-        gl = 0xFF;
-      target_color_row[x] = static_cast<uint8_t>(gl);
-    }
-  }
-
-  return true;
 }
 
 }  // color_utils

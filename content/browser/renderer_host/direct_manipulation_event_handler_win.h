@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <directmanipulation.h>
 #include <wrl.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
@@ -39,6 +39,11 @@ class DirectManipulationEventHandler
               IDirectManipulationInteractionEventHandler>> {
  public:
   DirectManipulationEventHandler(ui::WindowEventTarget* event_target);
+
+  DirectManipulationEventHandler(const DirectManipulationEventHandler&) =
+      delete;
+  DirectManipulationEventHandler& operator=(
+      const DirectManipulationEventHandler&) = delete;
 
   // Return true if viewport_size_in_pixels_ changed.
   bool SetViewportSizeInPixels(const gfx::Size& viewport_size_in_pixels);
@@ -74,8 +79,8 @@ class DirectManipulationEventHandler
   OnInteraction(_In_ IDirectManipulationViewport2* viewport,
                 _In_ DIRECTMANIPULATION_INTERACTION_TYPE interaction) override;
 
-  DirectManipulationHelper* helper_ = nullptr;
-  ui::WindowEventTarget* event_target_ = nullptr;
+  raw_ptr<DirectManipulationHelper> helper_ = nullptr;
+  raw_ptr<ui::WindowEventTarget> event_target_ = nullptr;
   float device_scale_factor_ = 1.0f;
   float last_scale_ = 1.0f;
   int last_x_offset_ = 0;
@@ -86,8 +91,6 @@ class DirectManipulationEventHandler
   GestureState gesture_state_ = GestureState::kNone;
 
   gfx::Size viewport_size_in_pixels_;
-
-  DISALLOW_COPY_AND_ASSIGN(DirectManipulationEventHandler);
 };
 
 }  // namespace content

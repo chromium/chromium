@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ enum class ShutdownReason {
   POWER_BUTTON,            // User pressed the (physical) power button.
   LOGIN_SHUT_DOWN_BUTTON,  // User pressed the login screen shut down button.
   TRAY_SHUT_DOWN_BUTTON,   // User pressed the tray shut down button.
+  ARC_POWER_BUTTON,        // ARC power button is invoked.
 };
 
 // Returns a string describing |reason|.

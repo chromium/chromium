@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL idle status test Cannot read property 'status' of undefined
-Harness: the test ran to completion.
-

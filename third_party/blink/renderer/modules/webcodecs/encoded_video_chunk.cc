@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,49 +7,79 @@
 #include <utility>
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_init.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 EncodedVideoChunk* EncodedVideoChunk::Create(EncodedVideoChunkInit* init) {
-  auto timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
-  bool key_frame = (init->type() == "key");
-  DOMArrayPiece piece(init->data());
+  auto data_wrapper = AsSpan<const uint8_t>(init->data());
+  auto buffer = data_wrapper.empty()
+                    ? base::MakeRefCounted<media::DecoderBuffer>(0)
+                    : media::DecoderBuffer::CopyFrom(data_wrapper.data(),
+                                                     data_wrapper.size());
 
-  // A full copy of the data happens here.
-  auto* buffer = piece.IsNull()
-                     ? nullptr
-                     : DOMArrayBuffer::Create(piece.Data(), piece.ByteLength());
-  auto* result =
-      MakeGarbageCollected<EncodedVideoChunk>(timestamp, key_frame, buffer);
-  if (init->hasDuration())
-    result->duration_ = base::TimeDelta::FromMicroseconds(init->duration());
-  return result;
+  // Clamp within bounds of our internal TimeDelta-based duration. See
+  // media/base/timestamp_constants.h
+  auto timestamp = base::Microseconds(init->timestamp());
+  if (timestamp == media::kNoTimestamp)
+    timestamp = base::TimeDelta::FiniteMin();
+  else if (timestamp == media::kInfiniteDuration)
+    timestamp = base::TimeDelta::FiniteMax();
+  buffer->set_timestamp(timestamp);
+
+  // media::kNoTimestamp corresponds to base::TimeDelta::Min(), and internally
+  // denotes the absence of duration. We use base::TimeDelta::FiniteMax() --
+  // which is one less than base::TimeDelta::Max() -- because
+  // base::TimeDelta::Max() is reserved for media::kInfiniteDuration, and is
+  // handled differently.
+  buffer->set_duration(
+      init->hasDuration()
+          ? base::Microseconds(std::min(
+                uint64_t{base::TimeDelta::FiniteMax().InMicroseconds()},
+                init->duration()))
+          : media::kNoTimestamp);
+
+  buffer->set_is_key_frame(init->type() == "key");
+  return MakeGarbageCollected<EncodedVideoChunk>(std::move(buffer));
 }
 
-EncodedVideoChunk::EncodedVideoChunk(base::TimeDelta timestamp,
-                                     bool key_frame,
-                                     DOMArrayBuffer* buffer)
-    : timestamp_(timestamp), key_frame_(key_frame), buffer_(buffer) {}
+EncodedVideoChunk::EncodedVideoChunk(scoped_refptr<media::DecoderBuffer> buffer)
+    : buffer_(std::move(buffer)) {}
 
 String EncodedVideoChunk::type() const {
-  return key_frame_ ? "key" : "delta";
+  return buffer_->is_key_frame() ? "key" : "delta";
 }
 
-uint64_t EncodedVideoChunk::timestamp() const {
-  return timestamp_.InMicroseconds();
+int64_t EncodedVideoChunk::timestamp() const {
+  return buffer_->timestamp().InMicroseconds();
 }
 
-base::Optional<uint64_t> EncodedVideoChunk::duration() const {
-  if (!duration_.has_value())
-    return base::nullopt;
-  return duration_->InMicroseconds();
+absl::optional<uint64_t> EncodedVideoChunk::duration() const {
+  if (buffer_->duration() == media::kNoTimestamp)
+    return absl::nullopt;
+  return buffer_->duration().InMicroseconds();
 }
 
-DOMArrayBuffer* EncodedVideoChunk::data() const {
-  return buffer_;
+uint64_t EncodedVideoChunk::byteLength() const {
+  return buffer_->data_size();
+}
+
+void EncodedVideoChunk::copyTo(const AllowSharedBufferSource* destination,
+                               ExceptionState& exception_state) {
+  // Validate destination buffer.
+  auto dest_wrapper = AsSpan<uint8_t>(destination);
+  if (!dest_wrapper.data()) {
+    exception_state.ThrowTypeError("destination is detached.");
+    return;
+  }
+  if (dest_wrapper.size() < buffer_->data_size()) {
+    exception_state.ThrowTypeError("destination is not large enough.");
+    return;
+  }
+
+  // Copy data.
+  memcpy(dest_wrapper.data(), buffer_->data(), buffer_->data_size());
 }
 
 }  // namespace blink

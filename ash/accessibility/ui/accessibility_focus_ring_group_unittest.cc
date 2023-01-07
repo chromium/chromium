@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,12 @@ class TestableAccessibilityFocusRingGroup : public AccessibilityFocusRingGroup {
     // By default use an easy round number for testing.
     margin_ = 10;
   }
+
+  TestableAccessibilityFocusRingGroup(
+      const TestableAccessibilityFocusRingGroup&) = delete;
+  TestableAccessibilityFocusRingGroup& operator=(
+      const TestableAccessibilityFocusRingGroup&) = delete;
+
   ~TestableAccessibilityFocusRingGroup() override = default;
 
   void RectsToRings(const std::vector<gfx::Rect>& rects,
@@ -33,7 +39,6 @@ class TestableAccessibilityFocusRingGroup : public AccessibilityFocusRingGroup {
 
  private:
   int margin_;
-  DISALLOW_COPY_AND_ASSIGN(TestableAccessibilityFocusRingGroup);
 };
 
 class AccessibilityFocusRingGroupTest : public AshTestBase {
@@ -46,7 +51,7 @@ class AccessibilityFocusRingGroupTest : public AshTestBase {
 
  protected:
   gfx::Rect AddMargin(gfx::Rect r) {
-    r.Inset(-group_.GetMargin(), -group_.GetMargin());
+    r.Inset(-group_.GetMargin());
     return r;
   }
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ extern void InitCrashReporter(const std::string& process_type);
 // Sets the product/distribution channel crash key.
 void SetChannelCrashKey(const std::string& channel);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern void InitCrashKeysForTesting();
 
 struct SanitizationInfo {
@@ -56,7 +56,7 @@ extern void AddGpuFingerprintToMicrodumpCrashHandler(
 // generate dumps. Calling base::debug::DumpWithoutCrashing will still
 // generate a dump.
 extern void SuppressDumpGeneration();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Checks if crash reporting is enabled. Note that this is not the same as
 // being opted into metrics reporting (and crash reporting), which controls

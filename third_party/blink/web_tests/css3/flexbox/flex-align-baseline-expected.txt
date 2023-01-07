@@ -8,23 +8,19 @@ PASS firstChild.offsetLeft is lastChild.offsetLeft
 PASS firstChild.offsetLeft is lastChild.offsetLeft
 PASS firstChild.offsetLeft is lastChild.offsetLeft
 PASS firstChild.offsetLeft is lastChild.offsetLeft
-PASS firstChild.offsetTop is 0
-PASS lastChild.offsetTop is 20
+PASS firstChild.offsetTop is lastChild.offsetTop
 PASS firstChild.offsetTop is lastChild.offsetTop
 PASS firstChild.offsetLeft is lastChild.offsetLeft
 PASS firstChild.offsetLeft is lastChild.offsetLeft
-PASS firstChild.offsetTop is 0
-PASS lastChild.offsetTop is 20
+PASS firstChild.offsetTop is lastChild.offsetTop
 PASS firstChild.offsetTop is lastChild.offsetTop
 PASS firstChild.offsetLeft is lastChild.offsetLeft
 PASS firstChild.offsetLeft is lastChild.offsetLeft
-PASS firstChild.offsetTop is 0
-PASS lastChild.offsetTop is 20
+PASS firstChild.offsetTop is lastChild.offsetTop
 PASS firstChild.offsetTop is lastChild.offsetTop
 PASS firstChild.offsetLeft is lastChild.offsetLeft
 PASS firstChild.offsetLeft is lastChild.offsetLeft
-PASS firstChild.offsetTop is 0
-PASS lastChild.offsetTop is 20
+PASS firstChild.offsetTop is lastChild.offsetTop
 PASS firstChild.offsetTop is lastChild.offsetTop
 PASS successfullyParsed is true
 

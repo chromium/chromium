@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,10 @@ namespace gfx {
 class ImageSkia;
 class Rect;
 }  // namespace gfx
+
+namespace ui {
+class PaintContext;
+}  // namespace ui
 
 namespace views {
 namespace corewm {
@@ -106,6 +110,7 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual void SetSize(const gfx::Size& size) = 0;
   virtual void StackAbove(aura::Window* window) = 0;
   virtual void StackAtTop() = 0;
+  virtual bool IsStackedAbove(aura::Window* window) = 0;
   virtual void CenterWindow(const gfx::Size& size) = 0;
   virtual void GetWindowPlacement(gfx::Rect* bounds,
                                   ui::WindowShowState* show_state) const = 0;
@@ -142,6 +147,7 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
 
   virtual void ClearNativeFocus() = 0;
 
+  virtual bool IsMoveLoopSupported() const;
   virtual Widget::MoveLoopResult RunMoveLoop(
       const gfx::Vector2d& drag_offset,
       Widget::MoveLoopSource source,
@@ -159,7 +165,10 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
   virtual bool ShouldWindowContentsBeTransparent() const = 0;
   virtual void FrameTypeChanged() = 0;
 
-  virtual void SetFullscreen(bool fullscreen) = 0;
+  // Set the fullscreen state. `target_display_id` indicates the display where
+  // the window should be shown fullscreen; display::kInvalidDisplayId indicates
+  // that no display was specified, so the current display may be used.
+  virtual void SetFullscreen(bool fullscreen, int64_t target_display_id) = 0;
   virtual bool IsFullscreen() const = 0;
 
   virtual void SetOpacity(float opacity) = 0;
@@ -197,7 +206,12 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
 
   // Sets the bounds in screen coordinate DIPs (WindowTreeHost generally
   // operates in pixels). This function is implemented in terms of Screen.
-  virtual void SetBoundsInDIP(const gfx::Rect& bounds);
+  virtual void SetBoundsInDIP(const gfx::Rect& bounds) = 0;
+
+  // Updates window shape by clipping the canvas before paint starts.
+  virtual void UpdateWindowShapeIfNeeded(const ui::PaintContext& context);
+
+  virtual DesktopNativeCursorManager* GetSingletonDesktopNativeCursorManager();
 };
 
 }  // namespace views

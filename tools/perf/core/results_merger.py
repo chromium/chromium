@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,6 +13,8 @@ from __future__ import print_function
 import copy
 import json
 import sys
+
+import six
 
 # These fields must appear in the test result output
 REQUIRED = {
@@ -74,8 +76,7 @@ def merge_test_results(shard_results_list, test_cross_device=False):
 
   if 'seconds_since_epoch' in shard_results_list[0]:
     return _merge_json_test_result_format(shard_results_list, test_cross_device)
-  else:
-    return _merge_simplified_json_format(shard_results_list)
+  return _merge_simplified_json_format(shard_results_list)
 
 
 def _merge_simplified_json_format(shard_results_list):
@@ -191,8 +192,8 @@ def _merge_json_test_result_format(shard_results_list, test_cross_device=False):
 
     if result_json:
       raise MergeException(  # pragma: no cover (covered by
-                             # results_merger_unittest).
-          'Unmergable values %s' % result_json.keys())
+          # results_merger_unittest).
+          'Unmergable values %s' % list(result_json.keys()))
 
   return merged_results
 
@@ -215,7 +216,7 @@ def merge_tries(source, dest):
   pending_nodes = [('', dest, source)]
   while pending_nodes:
     prefix, dest_node, curr_node = pending_nodes.pop()
-    for k, v in curr_node.iteritems():
+    for k, v in curr_node.items():
       if k in dest_node:
         if not isinstance(v, dict):
           raise MergeException(
@@ -246,13 +247,13 @@ def merge_tries_v2(source, dest):
   pending_nodes = [('', dest, source)]
   while pending_nodes:
     prefix, dest_node, curr_node = pending_nodes.pop()
-    for k, v in curr_node.iteritems():
+    for k, v in curr_node.items():
       if k in dest_node:
         if not isinstance(v, dict):
           raise MergeException(
               '%s:%s: %r not mergable, curr_node: %r\ndest_node: %r' %
               (prefix, k, v, curr_node, dest_node))
-        elif 'actual' in v and 'expected' in v:
+        if 'actual' in v and 'expected' in v:
           # v is test result of a story name which is already in dest
           _merging_cross_device_results(v, dest_node[k])
         else:
@@ -270,7 +271,7 @@ def _merging_cross_device_results(src, dest):
   # 2. append each item under the 'artifacts' and 'times'.
   if 'artifacts' in src:
     if 'artifacts' in dest:
-      for artifact, artifact_list in src['artifacts'].iteritems():
+      for artifact, artifact_list in src['artifacts'].items():
         if artifact in dest['artifacts']:
           dest['artifacts'][artifact] += artifact_list
         else:
@@ -308,7 +309,7 @@ def sum_dicts(source, dest):
 
   This is intended for use as a merge_func parameter to merge_value.
   """
-  for k, v in source.iteritems():
+  for k, v in source.items():
     dest.setdefault(k, 0)
     dest[k] += v
 
@@ -333,9 +334,13 @@ def merge_value(source, dest, key, merge_func):
   try:
     dest[key] = merge_func(source[key], dest[key])
   except MergeException as e:
-    e.message = "MergeFailure for %s\n%s" % (key, e.message)
-    e.args = tuple([e.message] + list(e.args[1:]))
-    raise
+    # The message attribute does not exist in Python 3, but Python 3's exception
+    # chaining should get us equivalent functionality.
+    if six.PY2:
+      e.message = "MergeFailure for %s\n%s" % (key, e.message)  # pylint: disable=attribute-defined-outside-init
+      e.args = tuple([e.message] + list(e.args[1:]))
+      raise
+    raise MergeException('MergeFailure for %s\n%s' % (key, e))
   del source[key]
 
 

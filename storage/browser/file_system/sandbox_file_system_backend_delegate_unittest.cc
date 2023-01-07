@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "storage/browser/test/mock_quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -24,10 +25,9 @@ namespace storage {
 namespace {
 
 FileSystemURL CreateFileSystemURL(const char* path) {
-  const GURL kOrigin("http://foo/");
-  return FileSystemURL::CreateForTest(url::Origin::Create(kOrigin),
-                                      kFileSystemTypeTemporary,
-                                      base::FilePath::FromUTF8Unsafe(path));
+  return FileSystemURL::CreateForTest(
+      blink::StorageKey::CreateFromStringForTesting("http://foo/"),
+      kFileSystemTypeTemporary, base::FilePath::FromUTF8Unsafe(path));
 }
 
 }  // namespace
@@ -48,11 +48,12 @@ class SandboxFileSystemBackendDelegateTest : public testing::Test {
     return delegate_->IsAccessValid(url);
   }
 
-  void OpenFileSystem(const url::Origin& origin,
+  void OpenFileSystem(const blink::StorageKey& storage_key,
+                      const absl::optional<BucketLocator>& bucket_locator,
                       FileSystemType type,
                       OpenFileSystemMode mode) {
     delegate_->OpenFileSystem(
-        origin, type, mode,
+        storage_key, bucket_locator, type, mode,
         base::BindOnce(
             &SandboxFileSystemBackendDelegateTest::OpenFileSystemCallback,
             base::Unretained(this)),
@@ -94,8 +95,8 @@ TEST_F(SandboxFileSystemBackendDelegateTest, IsAccessValid) {
 
   // Access from non-allowed scheme should be disallowed.
   EXPECT_FALSE(IsAccessValid(FileSystemURL::CreateForTest(
-      url::Origin::Create(GURL("unknown://bar")), kFileSystemTypeTemporary,
-      base::FilePath::FromUTF8Unsafe("foo"))));
+      blink::StorageKey::CreateFromStringForTesting("unknown://bar"),
+      kFileSystemTypeTemporary, base::FilePath::FromUTF8Unsafe("foo"))));
 
   // Access with restricted name should be disallowed.
   EXPECT_FALSE(IsAccessValid(CreateFileSystemURL(".")));
@@ -120,19 +121,22 @@ TEST_F(SandboxFileSystemBackendDelegateTest, IsAccessValid) {
 }
 
 TEST_F(SandboxFileSystemBackendDelegateTest, OpenFileSystemAccessesStorage) {
-  GURL origin("http://example.com");
-
   EXPECT_EQ(quota_manager_proxy()->notify_storage_accessed_count(), 0);
   EXPECT_EQ(callback_count(), 0);
 
-  OpenFileSystem(url::Origin::Create(origin), kFileSystemTypeTemporary,
+  const blink::StorageKey& storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://example.com");
+
+  // TODO(https://crbug.com/1330608): ensure that this test suite properly
+  // integrates non-default BucketLocators into OpenFileSystem.
+  OpenFileSystem(storage_key, /*bucket_locator=*/absl::nullopt,
+                 kFileSystemTypeTemporary,
                  OPEN_FILE_SYSTEM_CREATE_IF_NONEXISTENT);
 
   EXPECT_EQ(callback_count(), 1);
   EXPECT_EQ(last_error(), base::File::FILE_OK);
   EXPECT_EQ(quota_manager_proxy()->notify_storage_accessed_count(), 1);
-  EXPECT_EQ(quota_manager_proxy()->last_notified_origin(),
-            url::Origin::Create(origin));
+  EXPECT_EQ(quota_manager_proxy()->last_notified_storage_key(), storage_key);
   EXPECT_EQ(quota_manager_proxy()->last_notified_type(),
             blink::mojom::StorageType::kTemporary);
 }

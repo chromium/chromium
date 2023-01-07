@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
@@ -132,7 +131,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowState) {
 
   // Set window to left snapped state.
   PerformMoveWindowAccel();
-  const WMEvent snap_left(WM_EVENT_SNAP_LEFT);
+  const WindowSnapWMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
   window_state->OnWMEvent(&snap_left);
   EXPECT_EQ(display_manager()->GetDisplayAt(0).id(),
             screen->GetDisplayNearestWindow(window).id());
@@ -140,7 +139,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowState) {
   EXPECT_EQ(GetDefaultLeftSnappedBoundsInDisplay(
                 screen->GetDisplayNearestWindow(window)),
             window->GetBoundsInScreen());
-  EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(0.5f, *window_state->snap_ratio());
   PerformMoveWindowAccel();
   EXPECT_EQ(display_manager()->GetDisplayAt(1).id(),
             screen->GetDisplayNearestWindow(window).id());
@@ -149,7 +148,7 @@ TEST_F(DisplayMoveWindowUtilTest, WindowState) {
   EXPECT_EQ(GetDefaultLeftSnappedBoundsInDisplay(
                 screen->GetDisplayNearestWindow(window)),
             window->GetBoundsInScreen());
-  EXPECT_EQ(0.5f, *window_state->snapped_width_ratio());
+  EXPECT_EQ(0.5f, *window_state->snap_ratio());
 }
 
 // Tests that movement follows cycling through sorted display id list.

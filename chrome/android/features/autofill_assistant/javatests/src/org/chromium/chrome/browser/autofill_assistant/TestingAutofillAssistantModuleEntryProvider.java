@@ -1,29 +1,32 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.view.View;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.components.autofill_assistant.AssistantBrowserControlsFactory;
+import org.chromium.components.autofill_assistant.AssistantDependencies;
+import org.chromium.components.autofill_assistant.AssistantModuleInstallUi;
+import org.chromium.components.autofill_assistant.AssistantOnboardingHelper;
+import org.chromium.components.autofill_assistant.AssistantStaticDependencies;
+import org.chromium.components.autofill_assistant.AutofillAssistantActionHandler;
+import org.chromium.components.autofill_assistant.AutofillAssistantActionHandlerImpl;
+import org.chromium.components.autofill_assistant.AutofillAssistantDirectAction;
+import org.chromium.components.autofill_assistant.AutofillAssistantDirectActionImpl;
+import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntry;
+import org.chromium.components.autofill_assistant.AutofillAssistantModuleEntryProvider;
+import org.chromium.components.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
-import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Implementation of {@link AutofillAssistantModuleEntryProvider} that can be manipulated to
@@ -42,12 +45,14 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
     static class MockAutofillAssistantActionHandler extends AutofillAssistantActionHandlerImpl {
         public MockAutofillAssistantActionHandler(Context context,
                 BottomSheetController bottomSheetController,
-                BrowserControlsStateProvider browserControls,
-                CompositorViewHolder compositorViewHolder,
-                ActivityTabProvider activityTabProvider) {
-            super(new OnboardingCoordinatorFactory(
-                          context, bottomSheetController, browserControls, compositorViewHolder),
-                    activityTabProvider);
+                AssistantBrowserControlsFactory browserControlsFactory, View rootView,
+                Supplier<WebContents> webContentsSupplier,
+                AssistantStaticDependencies staticDependencies) {
+            super(new OnboardingCoordinatorFactory(context, bottomSheetController,
+                          staticDependencies.getBrowserContext(), browserControlsFactory, rootView,
+                          staticDependencies.getAccessibilityUtil(),
+                          staticDependencies.createInfoPageUtil()),
+                    webContentsSupplier, staticDependencies);
         }
 
         @Override
@@ -66,24 +71,19 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
     /** Mock module entry. */
     static class MockAutofillAssistantModuleEntry implements AutofillAssistantModuleEntry {
         @Override
-        public void start(BottomSheetController bottomSheetController,
-                BrowserControlsStateProvider browserControls,
-                CompositorViewHolder compositorViewHolder, Context context,
-                @NonNull WebContents webContents,
-                ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
-                ApplicationViewportInsetSupplier bottomInsetProvider,
-                ActivityTabProvider activityTabProvider, boolean isChromeCustomTab,
-                @NonNull String initialUrl, Map<String, String> parameters, String experimentIds,
-                @Nullable String callerEmail, @Nullable String originalDeeplink) {}
+        public AssistantOnboardingHelper createOnboardingHelper(
+                WebContents webContents, AssistantDependencies dependencies) {
+            return null;
+        }
 
         @Override
         public AutofillAssistantActionHandler createActionHandler(Context context,
                 BottomSheetController bottomSheetController,
-                BrowserControlsStateProvider browserControls,
-                CompositorViewHolder compositorViewHolder,
-                ActivityTabProvider activityTabProvider) {
+                AssistantBrowserControlsFactory browserControlsFactory, View rootView,
+                Supplier<WebContents> webContentsSupplier,
+                AssistantStaticDependencies staticDependencies) {
             return new MockAutofillAssistantActionHandler(context, bottomSheetController,
-                    browserControls, compositorViewHolder, activityTabProvider);
+                    browserControlsFactory, rootView, webContentsSupplier, staticDependencies);
         }
     }
 
@@ -112,13 +112,13 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
     }
 
     @Override
-    public void getModuleEntry(
-            Tab tab, Callback<AutofillAssistantModuleEntry> callback, boolean showUi) {
+    public void getModuleEntry(Callback<AutofillAssistantModuleEntry> callback,
+            AssistantModuleInstallUi.Provider moduleInstallUiProvider, boolean showUi) {
         if (mCannotInstall) {
             callback.onResult(null);
             return;
         }
         mNotInstalled = false;
-        super.getModuleEntry(tab, callback, showUi);
+        super.getModuleEntry(callback, moduleInstallUiProvider, showUi);
     }
 }

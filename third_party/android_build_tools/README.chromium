@@ -1,9 +1,9 @@
-Name: Android SDK App Bundle related tools
-Short Name:  Android App bundle tools
+Name: Android SDK related build tools
+Short Name:  Android tools
 Version: 0
 License: Apache Version 2.0
 License File: NOT_SHIPPED
-URL: https://developer.android.com/guide/app-bundle/build
+URL: https://developer.android.com/studio
 Security Critical: No
 
 Description: The tools in this directory either require more recent
@@ -11,7 +11,7 @@ versions than are provided by the Android SDK used by internal or
 public Chrome source checkouts, or are not provided by the SDK at
 all.
 
-See the readme and *.yaml files in each directory for details.
+See the README.chromium in each directory for details.
 
 Local Modifications:
 None

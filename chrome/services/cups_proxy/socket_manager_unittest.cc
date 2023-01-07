@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,14 +26,14 @@
 namespace cups_proxy {
 namespace {
 
-// Returns base::nullopt on failure.
-base::Optional<std::string> GetTestFile(std::string test_name) {
+// Returns absl::nullopt on failure.
+absl::optional<std::string> GetTestFile(std::string test_name) {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Build file path.
   base::FilePath path;
   if (!base::PathService::Get(Paths::DIR_TEST_DATA, &path)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   path = path.Append(FILE_PATH_LITERAL(test_name))
@@ -42,7 +42,7 @@ base::Optional<std::string> GetTestFile(std::string test_name) {
   // Read in file contents.
   std::string contents;
   if (!base::ReadFileToString(path, &contents)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return contents;
@@ -231,7 +231,7 @@ class SocketManagerTest : public testing::Test {
 // All socket accesses are resolved synchronously.
 TEST_F(SocketManagerTest, SyncEverything) {
   // Read request & response
-  base::Optional<std::string> http_handshake = GetTestFile("basic_handshake");
+  absl::optional<std::string> http_handshake = GetTestFile("basic_handshake");
   EXPECT_TRUE(http_handshake);
 
   // Pre-load |socket_| with request/response.
@@ -244,13 +244,7 @@ TEST_F(SocketManagerTest, SyncEverything) {
   EXPECT_EQ(*response, ipp_converter::ConvertToByteBuffer(*http_handshake));
 }
 
-// Flaky on Chrome OS. See: crbug.com/1188650.
-#if defined(OS_CHROMEOS)
-#define MAYBE_AsyncEverything DISABLED_AsyncEverything
-#else
-#define MAYBE_AsyncEverything AsyncEverything
-#endif
-TEST_F(SocketManagerTest, MAYBE_AsyncEverything) {
+TEST_F(SocketManagerTest, AsyncEverything) {
   auto http_handshake = GetTestFile("basic_handshake");
   EXPECT_TRUE(http_handshake);
 

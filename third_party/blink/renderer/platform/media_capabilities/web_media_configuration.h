@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_CAPABILITIES_WEB_MEDIA_CONFIGURATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_CAPABILITIES_WEB_MEDIA_CONFIGURATION_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/media_capabilities/web_audio_configuration.h"
 #include "third_party/blink/renderer/platform/media_capabilities/web_video_configuration.h"
 
@@ -29,16 +29,16 @@ struct WebMediaConfiguration {
 
   WebMediaConfiguration(
       MediaConfigurationType type,
-      base::Optional<WebAudioConfiguration> audio_configuration,
-      base::Optional<WebVideoConfiguration> video_configuration)
+      absl::optional<WebAudioConfiguration> audio_configuration,
+      absl::optional<WebVideoConfiguration> video_configuration)
       : type(type),
         audio_configuration(audio_configuration),
         video_configuration(video_configuration) {}
 
   MediaConfigurationType type;
 
-  base::Optional<WebAudioConfiguration> audio_configuration;
-  base::Optional<WebVideoConfiguration> video_configuration;
+  absl::optional<WebAudioConfiguration> audio_configuration;
+  absl::optional<WebVideoConfiguration> video_configuration;
 };
 
 }  // namespace blink

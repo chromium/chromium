@@ -1,31 +1,35 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/updater/installer.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/optional.h"
-#include "base/task/post_task.h"
+#include "base/notreached.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/updater/action_handler.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/policy_service.h"
+#include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/update_client_errors.h"
 #include "components/update_client/utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
-
 namespace {
 
 // This task joins a process, hence .WithBaseSyncPrimitives().
@@ -36,19 +40,50 @@ static constexpr base::TaskTraits kTaskTraitsBlockWithSyncPrimitives = {
 
 // Returns the full path to the installation directory for the application
 // identified by the |app_id|.
-base::Optional<base::FilePath> GetAppInstallDir(const std::string& app_id) {
-  base::Optional<base::FilePath> app_install_dir = GetBaseDirectory();
+absl::optional<base::FilePath> GetAppInstallDir(UpdaterScope scope,
+                                                const std::string& app_id) {
+  absl::optional<base::FilePath> app_install_dir = GetBaseDataDirectory(scope);
   if (!app_install_dir)
-    return base::nullopt;
+    return absl::nullopt;
 
   return app_install_dir->AppendASCII(kAppsDir).AppendASCII(app_id);
 }
 
 }  // namespace
 
-Installer::Installer(const std::string& app_id,
-                     scoped_refptr<PersistedData> persisted_data)
-    : app_id_(app_id), persisted_data_(persisted_data) {}
+AppInfo::AppInfo(const UpdaterScope scope,
+                 const std::string& app_id,
+                 const std::string& ap,
+                 const base::Version& app_version,
+                 const base::FilePath& ecp)
+    : scope(scope), app_id(app_id), ap(ap), version(app_version), ecp(ecp) {}
+
+AppInfo::AppInfo(const AppInfo&) = default;
+AppInfo& AppInfo::operator=(const AppInfo&) = default;
+AppInfo::~AppInfo() = default;
+
+Installer::Installer(
+    const std::string& app_id,
+    const std::string& client_install_data,
+    const std::string& install_data_index,
+    const std::string& target_channel,
+    const std::string& target_version_prefix,
+    bool rollback_allowed,
+    bool update_disabled,
+    UpdateService::PolicySameVersionUpdate policy_same_version_update,
+    scoped_refptr<PersistedData> persisted_data,
+    crx_file::VerifierFormat crx_verifier_format)
+    : updater_scope_(GetUpdaterScope()),
+      app_id_(app_id),
+      client_install_data_(client_install_data),
+      install_data_index_(install_data_index),
+      rollback_allowed_(rollback_allowed),
+      target_channel_(target_channel),
+      target_version_prefix_(target_version_prefix),
+      update_disabled_(update_disabled),
+      policy_same_version_update_(policy_same_version_update),
+      persisted_data_(persisted_data),
+      crx_verifier_format_(crx_verifier_format) {}
 
 Installer::~Installer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -66,6 +101,7 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
     pv_ = pv;
     checker_path_ = persisted_data_->GetExistenceCheckerPath(app_id_);
     fingerprint_ = persisted_data_->GetFingerprint(app_id_);
+    ap_ = persisted_data_->GetAP(app_id_);
   } else {
     pv_ = base::Version(kNullVersion);
   }
@@ -74,21 +110,26 @@ update_client::CrxComponent Installer::MakeCrxComponent() {
   component.installer = scoped_refptr<Installer>(this);
   component.action_handler = MakeActionHandler();
   component.requires_network_encryption = false;
-  component.crx_format_requirement =
-      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
+  component.crx_format_requirement = crx_verifier_format_;
   component.app_id = app_id_;
+
+  // Query server for install data only when the client does not specify one.
+  if (client_install_data_.empty())
+    component.install_data_index = install_data_index_;
+
+  component.ap = ap_;
+  component.brand = persisted_data_->GetBrandCode(app_id_);
   component.name = app_id_;
   component.version = pv_;
   component.fingerprint = fingerprint_;
+  component.channel = target_channel_;
+  component.rollback_allowed = rollback_allowed_;
+  component.same_version_update_allowed =
+      policy_same_version_update_ ==
+      UpdateService::PolicySameVersionUpdate::kAllowed;
+  component.target_version_prefix = target_version_prefix_;
+  component.updates_enabled = !update_disabled_;
 
-  // In case we fail at getting the target channel, make sure that
-  // |component.channel| is an empty string. Possible failure cases are if the
-  // machine is not managed, the policy was not set or any other unexpected
-  // error.
-  if (!GetUpdaterPolicyService()->GetTargetChannel(app_id_, nullptr,
-                                                   &component.channel)) {
-    component.channel.clear();
-  }
   return component;
 }
 
@@ -96,8 +137,8 @@ void Installer::DeleteOlderInstallPaths() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-  const base::Optional<base::FilePath> app_install_dir =
-      GetAppInstallDir(app_id_);
+  const absl::optional<base::FilePath> app_install_dir =
+      GetAppInstallDir(updater_scope_, app_id_);
   if (!app_install_dir || !base::PathExists(*app_install_dir)) {
     return;
   }
@@ -122,51 +163,7 @@ Installer::Result Installer::InstallHelper(
     ProgressCallback progress_callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-
-  auto local_manifest = update_client::ReadManifest(unpack_path);
-  if (!local_manifest)
-    return Result(update_client::InstallError::BAD_MANIFEST);
-
-  std::string version_ascii;
-  local_manifest->GetStringASCII("version", &version_ascii);
-  const base::Version manifest_version(version_ascii);
-
-  VLOG(1) << "Installed version=" << pv_
-          << ", installing version=" << manifest_version.GetString();
-  if (!manifest_version.IsValid())
-    return Result(update_client::InstallError::INVALID_VERSION);
-
-  if (pv_.CompareTo(manifest_version) > 0)
-    return Result(update_client::InstallError::VERSION_NOT_UPGRADED);
-
-  const base::Optional<base::FilePath> app_install_dir =
-      GetAppInstallDir(app_id_);
-  if (!app_install_dir)
-    return Result(update_client::InstallError::NO_DIR_COMPONENT_USER);
-  if (!base::CreateDirectory(*app_install_dir))
-    return Result(kErrorCreateAppInstallDirectory);
-
-  const auto versioned_install_dir =
-      app_install_dir->AppendASCII(manifest_version.GetString());
-  if (base::PathExists(versioned_install_dir)) {
-    if (!base::DeletePathRecursively(versioned_install_dir))
-      return Result(update_client::InstallError::CLEAN_INSTALL_DIR_FAILED);
-  }
-
-  VLOG(1) << "Install_path=" << versioned_install_dir.AsUTF8Unsafe();
-
-  // TODO(sorin): fix this once crbug.com/1042224 is resolved.
-  // Moving the unpacked files to install this app is just a temporary fix
-  // to make the prototype code work end to end, until app registration for
-  // updates is implemented.
-  if (!base::Move(unpack_path, versioned_install_dir)) {
-    PLOG(ERROR) << "Move failed.";
-    base::DeletePathRecursively(versioned_install_dir);
-    return Result(update_client::InstallError::MOVE_FILES_ERROR);
-  }
-
-  DCHECK(!base::PathExists(unpack_path));
-  DCHECK(base::PathExists(versioned_install_dir));
+  VLOG(1) << "Installing update for " << app_id_;
 
   // Resolve the path to an installer file, which is included in the CRX, and
   // specified by the |run| attribute in the manifest object of an update
@@ -176,7 +173,7 @@ Installer::Result Installer::InstallHelper(
 
   // Assume the install params are ASCII for now.
   const auto application_installer =
-      versioned_install_dir.AppendASCII(install_params->run);
+      unpack_path.AppendASCII(install_params->run);
   if (!base::PathExists(application_installer))
     return Result(kErrorMissingRunableFile);
 
@@ -184,14 +181,18 @@ Installer::Result Installer::InstallHelper(
   // the prefs are updated asynchronously with the new |pv| and |fingerprint|.
   // The task sequencing guarantees that the prefs will be updated by the
   // time another CrxDataCallback is invoked, which needs updated values.
-  return RunApplicationInstaller(application_installer,
-                                 install_params->arguments,
-                                 std::move(progress_callback));
+  return RunApplicationInstaller(
+      AppInfo(updater_scope_, app_id_, ap_, pv_, checker_path_),
+      application_installer, install_params->arguments,
+      WriteInstallerDataToTempFile(unpack_path,
+                                   client_install_data_.empty()
+                                       ? install_params->server_install_data
+                                       : client_install_data_),
+      kWaitForAppInstaller, std::move(progress_callback));
 }
 
 void Installer::InstallWithSyncPrimitives(
     const base::FilePath& unpack_path,
-    const std::string& public_key,
     std::unique_ptr<InstallParams> install_params,
     ProgressCallback progress_callback,
     Callback callback) {
@@ -209,15 +210,15 @@ void Installer::OnUpdateError(int error) {
 }
 
 void Installer::Install(const base::FilePath& unpack_path,
-                        const std::string& public_key,
+                        const std::string& /*public_key*/,
                         std::unique_ptr<InstallParams> install_params,
                         ProgressCallback progress_callback,
                         Callback callback) {
   base::ThreadPool::PostTask(
       FROM_HERE, kTaskTraitsBlockWithSyncPrimitives,
       base::BindOnce(&Installer::InstallWithSyncPrimitives, this, unpack_path,
-                     public_key, std::move(install_params),
-                     std::move(progress_callback), std::move(callback)));
+                     std::move(install_params), std::move(progress_callback),
+                     std::move(callback)));
 }
 
 bool Installer::GetInstalledFile(const std::string& file,
@@ -239,22 +240,29 @@ bool Installer::Uninstall() {
   return false;
 }
 
-base::Optional<base::FilePath> Installer::GetCurrentInstallDir() const {
+absl::optional<base::FilePath> Installer::GetCurrentInstallDir() const {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-  base::Optional<base::FilePath> path = GetAppInstallDir(app_id_);
+  const absl::optional<base::FilePath> path =
+      GetAppInstallDir(updater_scope_, app_id_);
   if (!path)
-    return base::nullopt;
+    return absl::nullopt;
   return path->AppendASCII(pv_.GetString());
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-Installer::Result Installer::RunApplicationInstaller(
-    const base::FilePath& app_installer,
-    const std::string& arguments) {
-  NOTREACHED();
-  return Installer::Result(-1);
+#if BUILDFLAG(IS_LINUX)
+
+AppInstallerResult RunApplicationInstaller(
+    const AppInfo& /*app_info*/,
+    const base::FilePath& /*app_installer*/,
+    const std::string& /*arguments*/,
+    const absl::optional<base::FilePath>& /*install_data_file*/,
+    const base::TimeDelta& timeout,
+    InstallProgressCallback /*progress_callback*/) {
+  NOTIMPLEMENTED();
+  return AppInstallerResult(-1);
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace updater

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
@@ -21,6 +20,10 @@ namespace arc {
 class TestClient : public extensions::NativeMessageHost::Client {
  public:
   TestClient() = default;
+
+  TestClient(const TestClient&) = delete;
+  TestClient& operator=(const TestClient&) = delete;
+
   ~TestClient() override = default;
 
   void PostMessageFromNativeHost(const std::string& message) override {
@@ -35,32 +38,35 @@ class TestClient : public extensions::NativeMessageHost::Client {
 
  private:
   std::vector<std::string> messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestClient);
 };
 
 class TestObserver : public ArcSupportMessageHost::Observer {
  public:
   TestObserver() = default;
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
-  void OnMessage(const base::DictionaryValue& message) override {
-    values_.push_back(message.CreateDeepCopy());
+  void OnMessage(const base::Value::Dict& message) override {
+    values_.push_back(message.Clone());
   }
 
-  const std::vector<std::unique_ptr<base::DictionaryValue>>& values() const {
-    return values_;
-  }
+  const std::vector<base::Value::Dict>& values() const { return values_; }
 
  private:
-  std::vector<std::unique_ptr<base::DictionaryValue>> values_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
+  std::vector<base::Value::Dict> values_;
 };
 
 class ArcSupportMessageHostTest : public testing::Test {
  public:
   ArcSupportMessageHostTest() = default;
+
+  ArcSupportMessageHostTest(const ArcSupportMessageHostTest&) = delete;
+  ArcSupportMessageHostTest& operator=(const ArcSupportMessageHostTest&) =
+      delete;
+
   ~ArcSupportMessageHostTest() override = default;
 
   void SetUp() override {
@@ -90,27 +96,25 @@ class ArcSupportMessageHostTest : public testing::Test {
 
   std::unique_ptr<TestClient> client_;
   std::unique_ptr<extensions::NativeMessageHost> message_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSupportMessageHostTest);
 };
 
 TEST_F(ArcSupportMessageHostTest, SendMessage) {
-  base::DictionaryValue value;
-  value.SetString("foo", "bar");
-  value.SetBoolean("baz", true);
+  base::Value::Dict value;
+  value.Set("foo", "bar");
+  value.Set("baz", true);
 
   message_host()->SendMessage(value);
 
   ASSERT_EQ(1u, client()->messages().size());
-  std::unique_ptr<base::Value> recieved_value =
-      base::JSONReader::ReadDeprecated(client()->messages()[0]);
-  EXPECT_EQ(value, *recieved_value);
+  absl::optional<base::Value> recieved_value =
+      base::JSONReader::Read(client()->messages()[0]);
+  EXPECT_EQ(value, recieved_value->GetDict());
 }
 
 TEST_F(ArcSupportMessageHostTest, ReceiveMessage) {
-  base::DictionaryValue value;
-  value.SetString("foo", "bar");
-  value.SetBoolean("baz", true);
+  base::Value::Dict value;
+  value.Set("foo", "bar");
+  value.Set("baz", true);
 
   TestObserver observer;
   message_host()->SetObserver(&observer);
@@ -122,7 +126,7 @@ TEST_F(ArcSupportMessageHostTest, ReceiveMessage) {
   message_host()->SetObserver(nullptr);
 
   ASSERT_EQ(1u, observer.values().size());
-  EXPECT_EQ(value, *observer.values()[0]);
+  EXPECT_EQ(value, observer.values()[0]);
 }
 
 }  // namespace arc

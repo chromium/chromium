@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,12 @@
 #include "chrome/browser/chrome_browser_main_linux.h"
 
 class MetricsReportingObserver;
+class PrefsAshObserver;
 
 // Startup and shutdown code for Lacros. See ChromeBrowserMainParts for details.
 class ChromeBrowserMainPartsLacros : public ChromeBrowserMainPartsLinux {
  public:
-  ChromeBrowserMainPartsLacros(const content::MainFunctionParams& parameters,
+  ChromeBrowserMainPartsLacros(bool is_integration_test,
                                StartupData* startup_data);
   ChromeBrowserMainPartsLacros(const ChromeBrowserMainPartsLacros&) = delete;
   ChromeBrowserMainPartsLacros& operator=(const ChromeBrowserMainPartsLacros&) =
@@ -23,9 +24,14 @@ class ChromeBrowserMainPartsLacros : public ChromeBrowserMainPartsLinux {
 
   // ChromeBrowserMainParts:
   int PreEarlyInitialization() override;
+  int PreCreateThreads() override;
+  void PostCreateThreads() override;
+  void PreProfileInit() override;
+  void PostDestroyThreads() override;
 
  private:
   std::unique_ptr<MetricsReportingObserver> metrics_reporting_observer_;
+  std::unique_ptr<PrefsAshObserver> prefs_ash_observer_;
 };
 
 #endif  // CHROME_BROWSER_CHROME_BROWSER_MAIN_PARTS_LACROS_H_

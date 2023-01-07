@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,10 +68,8 @@ class VIZ_COMMON_EXPORT LocalSurfaceId {
       : parent_sequence_number_(kInvalidParentSequenceNumber),
         child_sequence_number_(kInvalidChildSequenceNumber) {}
 
-  constexpr LocalSurfaceId(const LocalSurfaceId& other)
-      : parent_sequence_number_(other.parent_sequence_number_),
-        child_sequence_number_(other.child_sequence_number_),
-        embed_token_(other.embed_token_) {}
+  constexpr LocalSurfaceId(const LocalSurfaceId& other) = default;
+  constexpr LocalSurfaceId& operator=(const LocalSurfaceId& other) = default;
 
   constexpr LocalSurfaceId(uint32_t parent_sequence_number,
                            const base::UnguessableToken& embed_token)
@@ -138,7 +136,9 @@ class VIZ_COMMON_EXPORT LocalSurfaceId {
 
   std::string ToString() const;
 
-  // Returns whether this LocalSurfaceId was generated after |other|.
+  // Returns whether this LocalSurfaceId was generated after |other|. In the
+  // case where both `this` and `other` have advanced separate sequences, then
+  // this will return false.
   bool IsNewerThan(const LocalSurfaceId& other) const;
 
   // Returns whether this LocalSurfaceId was generated after |other| or equal to

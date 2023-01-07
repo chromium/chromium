@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,26 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_envelope.h"
 #include "content/browser/web_package/signed_exchange_error.h"
 #include "content/browser/web_package/signed_exchange_prologue.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/isolation_info.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -96,13 +100,18 @@ class CONTENT_EXPORT SignedExchangeHandler {
       std::unique_ptr<net::SourceStream> body,
       ExchangeHeadersCallback headers_callback,
       std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const absl::optional<net::IsolationInfo> outer_request_isolation_info,
       int load_flags,
       const net::IPEndPoint& remote_endpoint,
       std::unique_ptr<blink::WebPackageRequestMatcher> request_matcher,
       std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy,
       SignedExchangeReporter* reporter,
       int frame_tree_node_id);
+
+  SignedExchangeHandler(const SignedExchangeHandler&) = delete;
+  SignedExchangeHandler& operator=(const SignedExchangeHandler&) = delete;
+
   virtual ~SignedExchangeHandler();
 
   int64_t GetExchangeHeaderLength() const { return exchange_header_length_; }
@@ -147,13 +156,20 @@ class CONTENT_EXPORT SignedExchangeHandler {
       const net::X509Certificate* verified_cert);
   bool CheckOCSPStatus(const net::OCSPVerifyResult& ocsp_result);
 
-  void OnVerifyCert(int32_t error_code, const net::CertVerifyResult& cv_result);
+  void OnVerifyCert(int32_t error_code,
+                    const net::CertVerifyResult& cv_result,
+                    bool pkp_bypassed,
+                    const std::string& pinning_failure_log);
+  void CheckAbsenceOfCookies(base::OnceClosure callback);
+  void OnGetCookies(base::OnceClosure callback,
+                    const std::vector<net::CookieWithAccessResult>& results);
+  void CreateResponse(network::mojom::URLResponseHeadPtr response_head);
   std::unique_ptr<net::SourceStream> CreateResponseBodyStream();
 
   const bool is_secure_transport_;
   const bool has_nosniff_;
   ExchangeHeadersCallback headers_callback_;
-  base::Optional<SignedExchangeVersion> version_;
+  absl::optional<SignedExchangeVersion> version_;
   std::unique_ptr<net::SourceStream> source_;
 
   State state_ = State::kReadingPrologueBeforeFallbackUrl;
@@ -166,22 +182,27 @@ class CONTENT_EXPORT SignedExchangeHandler {
   signed_exchange_prologue::BeforeFallbackUrl prologue_before_fallback_url_;
   signed_exchange_prologue::FallbackUrlAndAfter
       prologue_fallback_url_and_after_;
-  base::Optional<SignedExchangeEnvelope> envelope_;
+  absl::optional<SignedExchangeEnvelope> envelope_;
 
   std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory_;
+
+  std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy_;
+
+  // `cert_fetcher_` borrows reference from `devtools_proxy_`, so it needs to be
+  // declared last, so that it is destroyed first.
   std::unique_ptr<SignedExchangeCertFetcher> cert_fetcher_;
-  const net::NetworkIsolationKey network_isolation_key_;
+  const net::NetworkAnonymizationKey network_anonymization_key_;
+  absl::optional<net::IsolationInfo> outer_request_isolation_info_;
   const int load_flags_ = 0;
   const net::IPEndPoint remote_endpoint_;
 
   std::unique_ptr<SignedExchangeCertificateChain> unverified_cert_chain_;
 
   std::unique_ptr<blink::WebPackageRequestMatcher> request_matcher_;
-
-  std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy_;
+  mojo::Remote<network::mojom::RestrictedCookieManager> cookie_manager_;
 
   // This is owned by SignedExchangeLoader which is the owner of |this|.
-  SignedExchangeReporter* reporter_;
+  raw_ptr<SignedExchangeReporter> reporter_;
 
   const int frame_tree_node_id_;
 
@@ -189,8 +210,6 @@ class CONTENT_EXPORT SignedExchangeHandler {
   net::IPAddress cert_server_ip_address_;
 
   base::WeakPtrFactory<SignedExchangeHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeHandler);
 };
 
 // Used only for testing.

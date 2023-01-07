@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,53 @@
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/persisted_data.h"
+#include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_scope.h"
+#include "components/crx_file/crx_verifier.h"
 #include "components/update_client/update_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace base {
+class TimeDelta;
+}
 
 namespace updater {
+
+struct AppInfo {
+  AppInfo(const UpdaterScope scope,
+          const std::string& app_id,
+          const std::string& ap,
+          const base::Version& app_version,
+          const base::FilePath& ecp);
+  AppInfo(const AppInfo&);
+  AppInfo& operator=(const AppInfo&);
+  ~AppInfo();
+
+  UpdaterScope scope;
+  std::string app_id;
+  std::string ap;
+  base::Version version;
+  base::FilePath ecp;
+};
+
+using AppInstallerResult = update_client::CrxInstaller::Result;
+using InstallProgressCallback = update_client::CrxInstaller::ProgressCallback;
+
+// Runs an app installer.
+//   The file `server_install_data` contains additional application-specific
+// install configuration parameters extracted either from the update response or
+// the app manifest.
+AppInstallerResult RunApplicationInstaller(
+    const AppInfo& app_info,
+    const base::FilePath& installer_path,
+    const std::string& install_args,
+    const absl::optional<base::FilePath>& server_install_data,
+    const base::TimeDelta& timeout,
+    InstallProgressCallback progress_callback);
 
 // Manages the install of one application. Some of the functions of this
 // class are blocking and can't be invoked on the main sequence.
@@ -38,11 +76,19 @@ namespace updater {
 class Installer final : public update_client::CrxInstaller {
  public:
   Installer(const std::string& app_id,
-            scoped_refptr<PersistedData> persisted_data);
+            const std::string& client_install_data,
+            const std::string& install_data_index,
+            const std::string& target_channel,
+            const std::string& target_version_prefix,
+            bool rollback_allowed,
+            bool update_disabled,
+            UpdateService::PolicySameVersionUpdate policy_same_version_update,
+            scoped_refptr<PersistedData> persisted_data,
+            crx_file::VerifierFormat crx_verifier_format);
   Installer(const Installer&) = delete;
   Installer& operator=(const Installer&) = delete;
 
-  const std::string app_id() const { return app_id_; }
+  std::string app_id() const { return app_id_; }
 
   // Returns a CrxComponent instance that describes the current install
   // state of the app. Updates the values of |pv_| and the |fingerprint_| with
@@ -75,35 +121,34 @@ class Installer final : public update_client::CrxInstaller {
   // Runs the installer code with sync primitives to allow the code to
   // create processes and wait for them to exit.
   void InstallWithSyncPrimitives(const base::FilePath& unpack_path,
-                                 const std::string& public_key,
                                  std::unique_ptr<InstallParams> install_params,
                                  ProgressCallback progress_callback,
                                  Callback callback);
-
-  // Handles the application installer specified by the |app_installer| and
-  // its |arguments|. This data is returned by the update server as part of
-  // the manifest object in an update response. Handling of the application
-  // installer is typically OS-specific, such as building a command line,
-  // creating processes, mounting images, running scripts, and collecting
-  // exit codes. The install progress, if it can be collected, is reported by
-  // invoking the |progress_callback|.
-  Result RunApplicationInstaller(const base::FilePath& app_installer,
-                                 const std::string& arguments,
-                                 ProgressCallback progress_callback);
 
   // Deletes recursively the install paths not matching the |pv_| version.
   void DeleteOlderInstallPaths();
 
   // Returns an install directory matching the |pv_| version.
-  base::Optional<base::FilePath> GetCurrentInstallDir() const;
+  absl::optional<base::FilePath> GetCurrentInstallDir() const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  UpdaterScope updater_scope_;
+
   const std::string app_id_;
+  const std::string client_install_data_;
+  const std::string install_data_index_;
+  const bool rollback_allowed_;
+  const std::string target_channel_;
+  const std::string target_version_prefix_;
+  const bool update_disabled_;
+  const UpdateService::PolicySameVersionUpdate policy_same_version_update_;
   scoped_refptr<PersistedData> persisted_data_;
+  const crx_file::VerifierFormat crx_verifier_format_;
 
   // These members are not updated when the installer succeeds.
   base::Version pv_;
+  std::string ap_;
   base::FilePath checker_path_;
   std::string fingerprint_;
 };

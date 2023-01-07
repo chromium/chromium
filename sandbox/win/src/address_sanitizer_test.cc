@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,7 +81,7 @@ TEST_F(AddressSanitizerTests, TestAddressSanitizer) {
   base::FilePath exe;
   ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &exe));
   base::FilePath pdb_path = exe.DirName().Append(L"*.pdb");
-  ASSERT_TRUE(runner.AddFsRule(TargetPolicy::FILES_ALLOW_READONLY,
+  ASSERT_TRUE(runner.AddFsRule(Semantics::kFilesAllowReadonly,
                                pdb_path.value().c_str()));
 
   env_->SetVar("ASAN_OPTIONS", "exitcode=123");

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@ ContentSettingImageModelStates::~ContentSettingImageModelStates() = default;
 // static
 ContentSettingImageModelStates* ContentSettingImageModelStates::Get(
     content::WebContents* contents) {
-  DCHECK(contents);
   if (auto* state = FromWebContents(contents))
     return state;
   CreateForWebContents(contents);
@@ -33,8 +32,6 @@ bool ContentSettingImageModelStates::AnimationHasRun(ImageType type) const {
 void ContentSettingImageModelStates::SetAccessibilityNotified(ImageType type,
                                                               bool notified) {
   VerifyType(type);
-  // Currently only NOTIFICATIONS_QUIET_PROMPT will notify accessibility.
-  DCHECK_EQ(ImageType::NOTIFICATIONS_QUIET_PROMPT, type);
 
   accessibility_notified_[static_cast<int>(type)] = notified;
 }
@@ -42,8 +39,6 @@ void ContentSettingImageModelStates::SetAccessibilityNotified(ImageType type,
 bool ContentSettingImageModelStates::GetAccessibilityNotified(
     ImageType type) const {
   VerifyType(type);
-  // Currently only NOTIFICATIONS_QUIET_PROMPT will notify accessibility.
-  DCHECK_EQ(ImageType::NOTIFICATIONS_QUIET_PROMPT, type);
 
   return accessibility_notified_[static_cast<int>(type)];
 }
@@ -72,11 +67,12 @@ bool ContentSettingImageModelStates::PromoWasShown(ImageType type) const {
 }
 
 ContentSettingImageModelStates::ContentSettingImageModelStates(
-    content::WebContents* contents) {}
+    content::WebContents* contents)
+    : content::WebContentsUserData<ContentSettingImageModelStates>(*contents) {}
 
 void ContentSettingImageModelStates::VerifyType(ImageType type) const {
   CHECK_GE(type, static_cast<ImageType>(0));
   CHECK_LT(type, ImageType::NUM_IMAGE_TYPES);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentSettingImageModelStates)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ContentSettingImageModelStates);

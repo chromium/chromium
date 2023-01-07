@@ -1,0 +1,13 @@
+# crbug.com/1301957
+-TransportClientSocketPoolTest.Tag
+-TransportClientSocketPoolTest.TagSSLDirect
+-TransportClientSocketPoolTest.TagSSLDirectTwoSockets
+-TransportClientSocketPoolTest.TagSSLDirectTwoSocketsFullPool
+-TCPClientSocketTest.TagAfterConnect
+-TCPClientSocketTest.Tag
+-TCPSocketTest.Tag
+-TCPSocketTest.TagAfterConnect
+-TrafficStatsAndroidTest.*
+-URLRequestTestHTTP.TestTagging
+-SocketTagTest.Apply
+-UDPSocketTest.Tag

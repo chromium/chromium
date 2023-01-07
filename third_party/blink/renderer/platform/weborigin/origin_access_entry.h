@@ -58,7 +58,10 @@ class PLATFORM_EXPORT OriginAccessEntry {
       network::mojom::CorsDomainMatchMode,
       network::mojom::CorsOriginAccessMatchPriority priority =
           network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority);
+  OriginAccessEntry(const OriginAccessEntry&) = delete;
+  OriginAccessEntry& operator=(const OriginAccessEntry&) = delete;
   OriginAccessEntry(OriginAccessEntry&& from);
+  // TODO: add operator=(OriginAccessEntry&&)?
 
   network::cors::OriginAccessEntry::MatchResult MatchesOrigin(
       const SecurityOrigin&) const;
@@ -71,8 +74,6 @@ class PLATFORM_EXPORT OriginAccessEntry {
 
  private:
   network::cors::OriginAccessEntry private_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginAccessEntry);
 };
 
 }  // namespace blink

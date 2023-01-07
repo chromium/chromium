@@ -10,6 +10,10 @@ celt_neon_intr_sources = sources['CELT_SOURCES_ARM_NEON_INTR']
 
 celt_static_libs = []
 
+if host_cpu_family in ['x86', 'x86_64'] and opus_conf.has('OPUS_HAVE_RTCD')
+  celt_sources +=  sources['CELT_SOURCES_X86_RTCD']
+endif
+
 foreach intr_name : ['sse', 'sse2', 'sse4_1', 'neon_intr']
   have_intr = get_variable('have_' + intr_name)
   if not have_intr
@@ -30,7 +34,9 @@ if (intrinsics_support.length() + asm_optimization.length() + inline_optimizatio
 endif
 
 if host_cpu_family in ['arm', 'aarch64'] and have_arm_intrinsics_or_asm
-  celt_sources +=  sources['CELT_SOURCES_ARM']
+  if opus_conf.has('OPUS_HAVE_RTCD')
+    celt_sources +=  sources['CELT_SOURCES_ARM_RTCD']
+  endif
   if have_arm_ne10
     celt_sources += sources['CELT_SOURCES_ARM_NE10']
   endif

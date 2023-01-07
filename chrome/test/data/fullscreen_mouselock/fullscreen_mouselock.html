@@ -20,15 +20,10 @@ function enterFullscreen() {
     Element.ALLOW_KEYBOARD_INPUT);
 }
 
-function exitFullscreen() {
-  console.log("exitFullscreen()");
-  document.webkitCancelFullScreen();
-}
-
 // Wait for notification from JS, then notify test of success or failure
 // callback that the click has registered and the mouse lock state has changed.
-function lockMouse1(callback) {
-  console.log("lockMouse1()");
+function lockMouse(callback) {
+  console.log("lockMouse()");
   var target = document.getElementById("lockTarget1");
 
   function failure() {
@@ -55,7 +50,7 @@ function lockMouse1(callback) {
 // wait state reading the value of lock_result. One of the two asynchronous
 // functions in the JS will be executed. The PyAuto code waits for lock_result
 // to return "success" or "failure". Sample PyAuto code:
-// lock_result = self._driver.execute_script('lockMouse1AndSetLockResult()')
+// lock_result = self._driver.execute_script('lockMouseAndSetLockResult()')
 function lockMouseAndSetLockResult(targetId) {
   var target = document.getElementById(targetId);
   lock_result = "";
@@ -77,29 +72,17 @@ function lockMouseAndSetLockResult(targetId) {
   target.requestPointerLock();
 }
 
-function lockMouse1AndSetLockResult() {
-  console.log("lockMouse1AndSetLockResult()");
+function lockMouseAndSetLockResult() {
+  console.log("lockMouseAndSetLockResult()");
   lockMouseAndSetLockResult("lockTarget1");
 }
 
-// When mouse lock is initiated and accepted, PyAuto test will wait for the
-// lock_result to return "success" or "failure" to initiate the next action.
-function lockMouse2() {
-  console.log("lockMouse2()");
-  lockMouseAndSetLockResult("lockTarget2");
-}
-
-function delayedLockMouse1() {
-  console.log("delayedLockMouse1()");
-  window.setTimeout(lockMouse1, 1010);
-  // Delay must be over 1 second or the click that initiated the delayed action
-  // may still be considered active and treat this as a user gesture.
-  // We want to test a lock not associated with a user gesture.
-}
-
-function spamLockMouse2() {
-  console.log("spamLockMouse2()")
-  window.setInterval(lockMouse2, 111);
+function delayedLockMouse() {
+  console.log("delayedLockMouse()");
+  window.setTimeout(lockMouse, 5050);
+  // To test a lock not associated with user activation, the delay must
+  // be over 5 seconds so that the transient user activation expires
+  // before locking.
 }
 
 function unlockMouse() {
@@ -107,16 +90,10 @@ function unlockMouse() {
   document.exitPointerLock();
 }
 
-function enterFullscreenAndLockMouse1() {
-  console.log("enterFullscreenAndLockMouse1()");
+function enterFullscreenAndLockMouse() {
+  console.log("enterFullscreenAndLockMouse()");
   enterFullscreen();
-  lockMouse1();
-}
-
-function lockMouse1AndEnterFullscreen() {
-  console.log("lockMouse1AndEnterFullscreen()");
-  lockMouse1();
-  enterFullscreen();
+  lockMouse();
 }
 
 function moveHTMLCursorTo(x, y) {
@@ -175,14 +152,10 @@ function init() {
 
   document.addEventListener("keypress", function (e) {
     switch (String.fromCharCode(e.charCode)) {
-    case "f": enterFullscreen(); break;
-    case "x": exitFullscreen(); break;
-    case "1": lockMouse1(); break;
-    case "2": lockMouse2(); break;
-    case "d": delayedLockMouse1(); break;
+    case "1": lockMouse(); break;
+    case "d": delayedLockMouse(); break;
     case "u": unlockMouse(); break;
-    case "b": enterFullscreenAndLockMouse1(); break;
-    case "B": lockMouse1AndEnterFullscreen(); break;
+    case "b": enterFullscreenAndLockMouse(); break;
     default: moveHTMLCursorToCenter(); break;
     }
   });
@@ -193,34 +166,18 @@ function init() {
 <body onload="init()"
   title="This tooltip should not be shown if the mouse is locked.">
   <div id="container">
-    <button id="enterFullscreen" onclick="enterFullscreen();">
-      enterFullscreen() [f]
+    <button id="lockMouse" onclick="lockMouse();">
+      lockMouse() [1]
     </button><br>
-    <button id="exitFullscreen" onclick="exitFullscreen();">
-      exitFullscreen() [x]
-    </button><br>
-    <button id="lockMouse1" onclick="lockMouse1();">
-      lockMouse1() [1]
-    </button><br>
-    <button id="lockMouse2" onclick="lockMouse2();">
-      lockMouse2() [2]
-    </button><br>
-    <button id="delayedLockMouse1" onclick="delayedLockMouse1();">
-      delayedLockMouse1() [d]
-    </button><br>
-    <button id="spamLockMouse2" onclick="spamLockMouse2();">
-      spamLockMouse2()
+    <button id="delayedLockMouse" onclick="delayedLockMouse();">
+      delayedLockMouse() [d]
     </button><br>
     <button id="unlockMouse" onclick="unlockMouse();">
       unlockMouse() [u]
     </button><br>
-    <button id="enterFullscreenAndLockMouse1"
-      onclick="enterFullscreenAndLockMouse1()">
-      enterFullscreenAndLockMouse1() [b]
-    </button><br>
-    <button id="lockMouse1AndEnterFullscreen"
-      onclick="lockMouse1AndEnterFullscreen()">
-      lockMouse1AndEnterFullscreen() [B]
+    <button id="enterFullscreenAndLockMouse"
+      onclick="enterFullscreenAndLockMouse()">
+      enterFullscreenAndLockMouse() [b]
     </button><br>
     <div id="lockTarget1">lockTarget1</div>
     <div id="lockTarget2">lockTarget2</div>

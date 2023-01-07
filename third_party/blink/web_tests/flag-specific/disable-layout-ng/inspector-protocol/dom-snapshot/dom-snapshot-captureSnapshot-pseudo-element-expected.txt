@@ -1,4 +1,4 @@
-Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo elements.
+Tests DOMSnapshot.captureSnapshot exports layout tree nodes associated with pseudo elements.
 {
     documents : [
         [0] : {
@@ -715,6 +715,12 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                     [36] : 34
                     [37] : 8
                 ]
+                pseudoIdentifier : {
+                    index : [
+                    ]
+                    value : [
+                    ]
+                }
                 pseudoType : {
                     index : [
                         [0] : 11
@@ -737,6 +743,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                         [7] : 43
                     ]
                 }
+                shadowRootType : <object>
                 textValue : {
                     index : [
                     ]

@@ -5,6 +5,17 @@
 # https://www.sqlite.org/compile.html
 #
 # This file is read by a GN build script as well as generate_amalgamation.py
+#
+# By default, we disable all SQLite features that can be disabled by adding a
+# SQLITE_OMIT_ define, or by leaving out a SQLITE_ENABLE_ define. We only enable
+# features that have compelling use cases in the codebase.
+#
+# Each SQLite feature carries a cost to our users (binary size, pressure on
+# caches and branch predictors, extra surface area for security
+# vulnerabilities), as well as a maintenance cost (more surface area to be
+# covered by our fuzzers, more logic to reason through when debugging a crash
+# or a security vulnerability report). Enabled features must provide benefits
+# that outweigh these costs.
 sqlite_chromium_configuration_flags = [
   # Chrome doesn't use the ANALYZE SQLite extension.
   #
@@ -19,6 +30,20 @@ sqlite_chromium_configuration_flags = [
 
   # Chrome initializes SQLite manually in //sql/connection.cc.
   "SQLITE_OMIT_AUTOINIT",
+
+  # Chrome should not use queries with the pathologic performance cases
+  # mitigated by automatic indexes.
+  #
+  # Disabling automatic indexing exposes the pathological performance problems,
+  # instead of having SQLite paper over them. This helps us catch the prbolems
+  # in early testing, such as pinpoint and Finch.
+  #
+  # As a bonus, disabling automatic indexing simplifies the mental model for
+  # SQLite's optimizer, which makes a bit it easier to reason about SQL
+  # statement performance.
+  #
+  # See https://www.sqlite.org/optoverview.html#autoindex
+  "SQLITE_OMIT_AUTOMATIC_INDEX",
 
   # Chrome calls sqlite3_reset() correctly to reset prepared statements.
   "SQLITE_OMIT_AUTORESET",
@@ -42,6 +67,9 @@ sqlite_chromium_configuration_flags = [
 
   # Chrome does not use sqlite3_{get,free}_table().
   "SQLITE_OMIT_GET_TABLE",
+
+  # Chrome does not use PRAGMA {function,module,pragma}_list.
+  "SQLITE_OMIT_INTROSPECTION_PRAGMAS",
 
   # Chrome already depends on malloc being very efficient, so we disable
   # SQLite's arena allocator.

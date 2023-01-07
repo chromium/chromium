@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "device/fido/fido_discovery_factory.h"
@@ -65,6 +64,9 @@ class FakeFidoDiscovery : public FidoDeviceDiscovery,
   explicit FakeFidoDiscovery(FidoTransportProtocol transport,
                              StartMode mode = StartMode::kManual);
 
+  FakeFidoDiscovery(const FakeFidoDiscovery&) = delete;
+  FakeFidoDiscovery& operator=(const FakeFidoDiscovery&) = delete;
+
   // Blocks until start is requested.
   void WaitForCallToStart();
 
@@ -85,8 +87,6 @@ class FakeFidoDiscovery : public FidoDeviceDiscovery,
 
   const StartMode mode_;
   base::RunLoop wait_for_start_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFidoDiscovery);
 };
 
 // Overrides FidoDeviceDiscovery::Create* to construct FakeFidoDiscoveries.
@@ -95,6 +95,10 @@ class FakeFidoDiscoveryFactory : public device::FidoDiscoveryFactory {
   using StartMode = FakeFidoDiscovery::StartMode;
 
   FakeFidoDiscoveryFactory();
+
+  FakeFidoDiscoveryFactory(const FakeFidoDiscoveryFactory&) = delete;
+  FakeFidoDiscoveryFactory& operator=(const FakeFidoDiscoveryFactory&) = delete;
+
   ~FakeFidoDiscoveryFactory() override;
 
   // Constructs a fake discovery to be returned from the next call to
@@ -119,8 +123,6 @@ class FakeFidoDiscoveryFactory : public device::FidoDiscoveryFactory {
   std::unique_ptr<FakeFidoDiscovery> next_nfc_discovery_;
   std::unique_ptr<FakeFidoDiscovery> next_cable_discovery_;
   std::unique_ptr<FakeFidoDiscovery> next_platform_discovery_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFidoDiscoveryFactory);
 };
 
 }  // namespace test

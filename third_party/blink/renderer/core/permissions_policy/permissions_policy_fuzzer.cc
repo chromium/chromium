@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -21,6 +20,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   scoped_refptr<const blink::SecurityOrigin> origin =
       blink::SecurityOrigin::CreateFromString("https://example.com/");
   blink::PermissionsPolicyParser::ParseHeader(
-      g_empty_string, WTF::String(data, size), origin.get(), logger, logger);
+      g_empty_string, WTF::String(data, static_cast<unsigned>(size)),
+      origin.get(), logger, logger);
   return 0;
 }

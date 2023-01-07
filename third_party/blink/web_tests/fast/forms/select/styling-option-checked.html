@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <style>
 option {
-    /* background-color and color are overridden for checked options */
+    /* Default properties */
     background-color: lightgreen;
     color: red;
-    /* properties other than background-color and color apply to checked options */
     padding-left: 20px;
 }
 option:checked {
-    /* properties other than background-color and color apply normally */
+    background-color: green;
     text-decoration: underline;
 }
 </style>
-<select multiple autofocus>
+<select multiple>
     <option>foo</option>
     <option selected>bar</option>
 </select>

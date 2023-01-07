@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
+#include "base/observer_list.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -59,6 +57,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
 #include "google_apis/drive/drive_api_url_generator.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
@@ -101,7 +100,7 @@ SyncEngine::DriveServiceFactory::CreateDriveService(
     base::SequencedTaskRunner* blocking_task_runner) {
   return std::make_unique<drive::DriveAPIService>(
       identity_manager, url_loader_factory, blocking_task_runner,
-      GURL(google_apis::DriveApiUrlGenerator::kBaseUrlForProduction),
+      GaiaUrls::GetInstance()->google_apis_origin_url(),
       GURL(google_apis::DriveApiUrlGenerator::kBaseThumbnailUrlForProduction),
       std::string(), /* custom_user_agent */
       kSyncFileSystemTrafficAnnotation);
@@ -113,11 +112,14 @@ class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
                  base::WeakPtr<SyncEngine> sync_engine)
       : ui_task_runner_(ui_task_runner),
         sync_engine_(sync_engine) {
-    sequence_checker_.DetachFromSequence();
+    DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
+  WorkerObserver(const WorkerObserver&) = delete;
+  WorkerObserver& operator=(const WorkerObserver&) = delete;
+
   ~WorkerObserver() override {
-    DCHECK(sequence_checker_.CalledOnValidSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
   void OnPendingFileListUpdated(int item_count) override {
@@ -127,7 +129,7 @@ class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
       return;
     }
 
-    DCHECK(sequence_checker_.CalledOnValidSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ui_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&SyncEngine::OnPendingFileListUpdated,
                                   sync_engine_, item_count));
@@ -145,7 +147,7 @@ class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
       return;
     }
 
-    DCHECK(sequence_checker_.CalledOnValidSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ui_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&SyncEngine::OnFileStatusChanged, sync_engine_, url,
@@ -160,36 +162,20 @@ class SyncEngine::WorkerObserver : public SyncWorkerInterface::Observer {
       return;
     }
 
-    DCHECK(sequence_checker_.CalledOnValidSequence());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ui_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&SyncEngine::UpdateServiceState, sync_engine_,
                                   state, description));
   }
 
-  void DetachFromSequence() {
-    sequence_checker_.DetachFromSequence();
-  }
+  void DetachFromSequence() { DETACH_FROM_SEQUENCE(sequence_checker_); }
 
  private:
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   base::WeakPtr<SyncEngine> sync_engine_;
 
-  base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerObserver);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
-
-namespace {
-
-void DidRegisterOrigin(const base::TimeTicks& start_time,
-                       SyncStatusCallback callback,
-                       SyncStatusCode status) {
-  base::TimeDelta delta(base::TimeTicks::Now() - start_time);
-  LOCAL_HISTOGRAM_TIMES("SyncFileSystem.RegisterOriginTime", delta);
-  std::move(callback).Run(status);
-}
-
-}  // namespace
 
 std::unique_ptr<SyncEngine> SyncEngine::CreateForBrowserContext(
     content::BrowserContext* context,
@@ -213,7 +199,7 @@ std::unique_ptr<SyncEngine> SyncEngine::CreateForBrowserContext(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(context)
+      context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(context);
@@ -395,8 +381,7 @@ void SyncEngine::RegisterOrigin(const GURL& origin,
   }
 
   SyncStatusCallback relayed_callback = RelayCallbackToCurrentThread(
-      FROM_HERE, base::BindOnce(&DidRegisterOrigin, base::TimeTicks::Now(),
-                                TrackCallback(std::move(callback))));
+      FROM_HERE, TrackCallback(std::move(callback)));
 
   worker_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncWorkerInterface::RegisterOrigin,

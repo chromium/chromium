@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/sampler_manager.h"
@@ -421,8 +422,8 @@ struct GPU_GLES2_EXPORT ContextState {
   // vector<[x,y,w,h]>. Always has space for MAX_WINDOW_RECTANGLES rectangles.
   std::vector<GLint> window_rectangles_;
 
-  gl::GLApi* api_ = nullptr;
-  FeatureInfo* feature_info_;
+  raw_ptr<gl::GLApi, DanglingUntriaged> api_ = nullptr;
+  raw_ptr<FeatureInfo, DanglingUntriaged> feature_info_;
 
   bool context_lost_ = false;
 };

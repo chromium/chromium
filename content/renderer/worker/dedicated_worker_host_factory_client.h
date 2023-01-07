@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
+#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info_notifier.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preference_watcher.mojom-forward.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom-forward.h"
@@ -20,14 +21,13 @@
 
 namespace blink {
 class ChildURLLoaderFactoryBundle;
+class WebDedicatedOrSharedWorkerFetchContext;
 class WebDedicatedWorker;
-class WebWorkerFetchContext;
 }  // namespace blink
 
 namespace content {
 
 class ServiceWorkerProviderContext;
-class WebWorkerFetchContextImpl;
 
 // DedicatedWorkerHostFactoryClient intermediates between
 // blink::(Web)DedicatedWorker and content::DedicatedWorkerHostFactory. This
@@ -47,8 +47,7 @@ class DedicatedWorkerHostFactoryClient final
   void CreateWorkerHostDeprecated(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
       const blink::WebURL& script_url,
-      base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
-          callback) override;
+      CreateWorkerHostCallback callback) override;
   void CreateWorkerHost(
       const blink::DedicatedWorkerToken& dedicated_worker_token,
       const blink::WebURL& script_url,
@@ -60,7 +59,8 @@ class DedicatedWorkerHostFactoryClient final
       blink::WebWorkerFetchContext* web_worker_fetch_context,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
 
-  scoped_refptr<WebWorkerFetchContextImpl> CreateWorkerFetchContext(
+  scoped_refptr<blink::WebDedicatedOrSharedWorkerFetchContext>
+  CreateWorkerFetchContext(
       const blink::RendererPreferences& renderer_preference,
       mojo::PendingReceiver<blink::mojom::RendererPreferenceWatcher>
           watcher_receiver,
@@ -82,7 +82,9 @@ class DedicatedWorkerHostFactoryClient final
           pending_subresource_loader_factory_bundle,
       mojo::PendingReceiver<blink::mojom::SubresourceLoaderUpdater>
           subresource_loader_updater,
-      blink::mojom::ControllerServiceWorkerInfoPtr controller_info) override;
+      blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
+      mojo::PendingRemote<blink::mojom::BackForwardCacheControllerHost>
+          back_forward_cache_controller_host) override;
   void OnScriptLoadStartFailed() override;
 
   // |worker_| owns |this|.

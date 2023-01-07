@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -32,11 +32,37 @@ imageset("enterprise_icon") {
   ]
 }
 
+imageset("round_settings_unsafe_state") {
+  sources = [
+    "round_settings_unsafe_state.imageset/Contents.json",
+    "round_settings_unsafe_state.imageset/round_settings_unsafe_state@2x.png",
+    "round_settings_unsafe_state.imageset/round_settings_unsafe_state@3x.png",
+    "round_settings_unsafe_state.imageset/round_settings_unsafe_state_dark@2x.png",
+    "round_settings_unsafe_state.imageset/round_settings_unsafe_state_dark@3x.png",
+  ]
+}
+
+imageset("settings") {
+  sources = [
+    "settings.imageset/Contents.json",
+    "settings.imageset/settings@2x.png",
+    "settings.imageset/settings@3x.png",
+  ]
+}
+
 imageset("settings_accounts_add_account") {
   sources = [
     "settings_accounts_add_account.imageset/Contents.json",
     "settings_accounts_add_account.imageset/settings_accounts_add_account@2x.png",
     "settings_accounts_add_account.imageset/settings_accounts_add_account@3x.png",
+  ]
+}
+
+imageset("settings_bell") {
+  sources = [
+    "settings_bell.imageset/Contents.json",
+    "settings_bell.imageset/settings_bell@2x.png",
+    "settings_bell.imageset/settings_bell@3x.png",
   ]
 }
 
@@ -96,11 +122,39 @@ imageset("settings_language_settings") {
   ]
 }
 
+imageset("legacy_settings_passwords") {
+  sources = [
+    "legacy_settings_passwords.imageset/Contents.json",
+    "legacy_settings_passwords.imageset/settings_passwords@2x.png",
+    "legacy_settings_passwords.imageset/settings_passwords@3x.png",
+  ]
+}
+
 imageset("settings_passwords") {
   sources = [
     "settings_passwords.imageset/Contents.json",
     "settings_passwords.imageset/settings_passwords@2x.png",
     "settings_passwords.imageset/settings_passwords@3x.png",
+  ]
+}
+
+imageset("legacy_settings_passwords_in_other_apps_banner") {
+  sources = [
+    "legacy_settings_passwords_in_other_apps_banner.imageset/Contents.json",
+    "legacy_settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_dark@2x.png",
+    "legacy_settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_dark@3x.png",
+    "legacy_settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_light@2x.png",
+    "legacy_settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_light@3x.png",
+  ]
+}
+
+imageset("settings_passwords_in_other_apps_banner") {
+  sources = [
+    "settings_passwords_in_other_apps_banner.imageset/Contents.json",
+    "settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_dark@2x.png",
+    "settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_dark@3x.png",
+    "settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_light@2x.png",
+    "settings_passwords_in_other_apps_banner.imageset/settings_passwords_in_other_apps_light@3x.png",
   ]
 }
 
@@ -149,22 +203,6 @@ imageset("settings_voice_search") {
     "settings_voice_search.imageset/Contents.json",
     "settings_voice_search.imageset/settings_voice_search@2x.png",
     "settings_voice_search.imageset/settings_voice_search@3x.png",
-  ]
-}
-
-imageset("sync_and_google_services") {
-  sources = [
-    "sync_and_google_services.imageset/Contents.json",
-    "sync_and_google_services.imageset/sync_and_google_services@2x.png",
-    "sync_and_google_services.imageset/sync_and_google_services@3x.png",
-  ]
-}
-
-imageset("sync_and_google_services_sync_error") {
-  sources = [
-    "sync_and_google_services_sync_error.imageset/Contents.json",
-    "sync_and_google_services_sync_error.imageset/sync_and_google_services_sync_error@2x.png",
-    "sync_and_google_services_sync_error.imageset/sync_and_google_services_sync_error@3x.png",
   ]
 }
 

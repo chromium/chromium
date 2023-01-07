@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,11 +31,6 @@ class ProfileShortcutManager {
   // update the original profile shortcut if |profile_path| is the second
   // profile created.
   virtual void CreateProfileShortcut(const base::FilePath& profile_path) = 0;
-
-  // Create an incognito desktop shortcut for the profile with path
-  // |profile_path|
-  virtual void CreateIncognitoProfileShortcut(
-      const base::FilePath& profile_path) = 0;
 
   // Removes any desktop profile shortcuts for the profile corresponding to
   // |profile_path|.

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback_forward.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -39,30 +40,39 @@ class ASH_PUBLIC_EXPORT AppListClient {
 
   //////////////////////////////////////////////////////////////////////////////
   // Interfaces on searching:
+
+  // Refreshes the search zero-state suggestions and invokes `on_done` when
+  // complete. The client must run `on_done` before `timeout` because this
+  // method is called when the user tries to open the launcher and the UI waits
+  // until `on_done` before opening it.
+  virtual void StartZeroStateSearch(base::OnceClosure on_done,
+                                    base::TimeDelta timeout) = 0;
+
   // Triggers a search query.
   // |trimmed_query|: the trimmed input texts from the search text field.
   virtual void StartSearch(const std::u16string& trimmed_query) = 0;
   // Opens a search result and logs to metrics when its view is clicked or
   // pressed.
-  // |result_id|: the id of the search result the user wants to open.
-  // |launched_from|: where the result was launched.
-  // |launch_type|: how the result is represented in the UI.
-  // |suggestion_index|: the position of the result as a suggestion chip in
+  // `profile_id`: indicates the active profile (i.e. the profile whose app list
+  // data is used by Ash side).
+  // `result_id`: the id of the search result the user wants to open.
+  // `launched_from`: where the result was launched.
+  // `launch_type`: how the result is represented in the UI.
+  // `suggestion_index`: the position of the result as a suggestion chip in
   // the AppsGridView or the position of the result in the zero state search
   // page.
-  // |launch_as_default|: True if the result is launched as the default result
+  // `launch_as_default`: True if the result is launched as the default result
   // by user pressing ENTER key.
-  virtual void OpenSearchResult(const std::string& result_id,
+  virtual void OpenSearchResult(int profile_id,
+                                const std::string& result_id,
                                 int event_flags,
                                 AppListLaunchedFrom launched_from,
                                 AppListLaunchType launch_type,
                                 int suggestion_index,
                                 bool launch_as_default) = 0;
-  // Invokes a custom action on a result with |result_id|.
-  // |action_index| corresponds to the index of an action on the search result,
-  // for example, installing. They are stored in SearchResult::actions_.
+  // Invokes a custom action |action| on a result with |result_id|.
   virtual void InvokeSearchResultAction(const std::string& result_id,
-                                        int action_index) = 0;
+                                        SearchResultActionType action) = 0;
   // Returns the context menu model for the search result with |result_id|, or
   // an empty array if there is currently no menu for the result.
   using GetSearchResultContextMenuModelCallback =
@@ -89,26 +99,18 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // Activates (opens) the item with |id|.
   virtual void ActivateItem(int profile_id,
                             const std::string& id,
-                            int event_flags) = 0;
+                            int event_flags,
+                            ash::AppListLaunchedFrom launched_from) = 0;
   // Returns the context menu model for the item with |id|, or an empty array if
   // there is currently no menu for the item (e.g. during install).
+  // `item_context` is where the item is being shown (e.g. apps grid or recent
+  // apps).
   using GetContextMenuModelCallback =
       base::OnceCallback<void(std::unique_ptr<ui::SimpleMenuModel>)>;
   virtual void GetContextMenuModel(int profile_id,
                                    const std::string& id,
+                                   AppListItemContext item_context,
                                    GetContextMenuModelCallback callback) = 0;
-  // Invoked when an item is added in Ash.
-  virtual void OnItemAdded(int profile_id,
-                           std::unique_ptr<AppListItemMetadata> item) = 0;
-  // Invoked when user changes a folder's name or an item's position.
-  virtual void OnItemUpdated(int profile_id,
-                             std::unique_ptr<AppListItemMetadata> folder) = 0;
-  // Invoked when a folder has only one item left and so gets removed.
-  virtual void OnFolderDeleted(int profile_id,
-                               std::unique_ptr<AppListItemMetadata> folder) = 0;
-  // Invoked when a "page break" item with |id| is deleted.
-  virtual void OnPageBreakItemDeleted(int profile_id,
-                                      const std::string& id) = 0;
   // Invoked when a "quick setting" is changed.
   virtual void OnQuickSettingsChanged(
       const std::string& setting_name,
@@ -118,17 +120,19 @@ class ASH_PUBLIC_EXPORT AppListClient {
   virtual void OnSearchResultVisibilityChanged(const std::string& id,
                                                bool visibility) = 0;
 
-  // TODO(crbug.com/1076270): This method exists for chrome-side logging of UI
-  // actions, and can be folded into the AppListNotifier once it is
-  // complete.
-  virtual void NotifySearchResultsForLogging(
-      const std::u16string& trimmed_query,
-      const SearchResultIdWithPositionIndices& results,
-      int position_index) = 0;
-
   // Returns the AppListNotifier instance owned by this client. Depending on the
   // implementation, this can return nullptr.
   virtual AppListNotifier* GetNotifier() = 0;
+
+  // Invoked to load an icon of the app identified by `app_id`.
+  virtual void LoadIcon(int profile_id, const std::string& app_id) = 0;
+
+  // Returns the sorting order that is saved in perf service and gets shared
+  // among synced devices.
+  virtual ash::AppListSortOrder GetPermanentSortingOrder() const = 0;
+
+  // Invoked to commit the app list temporary sort order.
+  virtual void CommitTemporarySortOrder() = 0;
 
  protected:
   virtual ~AppListClient() = default;

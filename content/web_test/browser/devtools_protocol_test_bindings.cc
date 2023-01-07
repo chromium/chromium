@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/web_test/common/web_test_switches.h"
+#include "ipc/ipc_channel.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/devtools_frontend_host.h"
 #endif
 
@@ -70,7 +72,7 @@ GURL DevToolsProtocolTestBindings::MapTestURLIfNeeded(const GURL& test_url,
 
 void DevToolsProtocolTestBindings::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   content::RenderFrameHost* frame = navigation_handle->GetRenderFrameHost();
   if (frame->GetParent())
     return;
@@ -89,28 +91,20 @@ void DevToolsProtocolTestBindings::WebContentsDestroyed() {
 }
 
 void DevToolsProtocolTestBindings::HandleMessageFromTest(
-    const std::string& message) {
-  std::string method;
-  base::ListValue* params = nullptr;
-  base::DictionaryValue* dict = nullptr;
-  std::unique_ptr<base::Value> parsed_message =
-      base::JSONReader::ReadDeprecated(message);
-  if (!parsed_message || !parsed_message->GetAsDictionary(&dict) ||
-      !dict->GetString("method", &method)) {
+    base::Value::Dict message) {
+  const std::string* method = message.FindString("method");
+  if (!method)
     return;
-  }
 
-  int request_id = 0;
-  dict->GetInteger("id", &request_id);
-  dict->GetList("params", &params);
-
-  if (method == "dispatchProtocolMessage" && params && params->GetSize() == 1) {
-    std::string protocol_message;
-    if (!params->GetString(0, &protocol_message))
+  const base::Value::List* params = message.FindList("params");
+  if (*method == "dispatchProtocolMessage" && params && params->size() == 1) {
+    const std::string* protocol_message = (*params)[0].GetIfString();
+    if (!protocol_message)
       return;
+
     if (agent_host_) {
       agent_host_->DispatchProtocolMessage(
-          this, base::as_bytes(base::make_span(protocol_message)));
+          this, base::as_bytes(base::make_span(*protocol_message)));
     }
     return;
   }
@@ -126,7 +120,7 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
     base::EscapeJSONString(str_message, true, &param);
     std::string code = "DevToolsAPI.dispatchMessage(" + param + ");";
     std::u16string javascript = base::UTF8ToUTF16(code);
-    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+    web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         javascript, base::NullCallback());
     return;
   }
@@ -140,7 +134,7 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
     std::string code = "DevToolsAPI.dispatchMessageChunk(" + param + "," +
                        base::NumberToString(pos ? 0 : total_size) + ");";
     std::u16string javascript = base::UTF8ToUTF16(code);
-    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+    web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
         javascript, base::NullCallback());
   }
 }
@@ -148,6 +142,10 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
 void DevToolsProtocolTestBindings::AgentHostClosed(
     DevToolsAgentHost* agent_host) {
   agent_host_ = nullptr;
+}
+
+bool DevToolsProtocolTestBindings::AllowUnsafeOperations() {
+  return true;
 }
 
 }  // namespace content

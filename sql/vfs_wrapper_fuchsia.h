@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,11 +17,10 @@ namespace sql {
 // same browser process. In most cases databases do not need to be open more
 // than once, i.e. contention is expected to be rare, so the main goal of the
 // design is simplicity and not performance. The manager maintains a list of all
-// currently locked files. It support only exclusive locking, i.e. only one
-// client can acquire SHARED_LOCK.
-int FuchsiaVfsLock(sqlite3_file* sqlite_file, int file_lock);
-int FuchsiaVfsUnlock(sqlite3_file* sqlite_file, int file_lock);
-int FuchsiaVfsCheckReservedLock(sqlite3_file* sqlite_file, int* result);
+// currently locked files.
+int Lock(sqlite3_file* sqlite_file, int file_lock);
+int Unlock(sqlite3_file* sqlite_file, int file_lock);
+int CheckReservedLock(sqlite3_file* sqlite_file, int* result);
 
 }  // namespace sql
 

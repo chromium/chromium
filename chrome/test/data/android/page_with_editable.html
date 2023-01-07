@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      let metaTagContent = 'width=device-width';
+      if (params.has('resizes-content'))
+        metaTagContent += ',interactive-widget=resizes-content';
+      else if (params.has('resizes-visual'))
+        metaTagContent += ',interactive-widget=resizes-visual';
+      else if (params.has('overlays-content')) {
+        metaTagContent += ',interactive-widget=overlays-content';
+
+        window.numGeometryChangeEvents = 0;
+        navigator.virtualKeyboard.addEventListener('geometrychange', () => {
+          window.numGeometryChangeEvents++;
+        });
+      }
+
+      let meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = metaTagContent;
+      document.head.appendChild(meta);
+      onload = () =>{
+        document.getElementById('output').innerText = metaTagContent;
+      }
+    </script>
+  </head>
+  <body>
+    <input id="inputElement" type="text"></input>
+    <p id="output"></p>
+  </body>
+</html>

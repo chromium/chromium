@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,17 +46,25 @@ class TabModelObserverJniBridge implements TabModelObserver {
     }
 
     @Override
-    public final void willCloseTab(Tab tab, boolean animate) {
+    public final void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get().willCloseTab(
                 mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tab, animate);
     }
 
     @Override
-    public final void didCloseTab(int tabId, boolean incognito) {
+    public final void onFinishingTabClosure(Tab tab) {
         assert mNativeTabModelObserverJniBridge != 0;
-        TabModelObserverJniBridgeJni.get().didCloseTab(
-                mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tabId, incognito);
+        TabModelObserverJniBridgeJni.get().onFinishingTabClosure(mNativeTabModelObserverJniBridge,
+                TabModelObserverJniBridge.this, tab.getId(), tab.isIncognito());
+    }
+
+    @Override
+    public final void onFinishingMultipleTabClosure(List<Tab> tabs) {
+        assert mNativeTabModelObserverJniBridge != 0;
+        TabModelObserverJniBridgeJni.get().onFinishingMultipleTabClosure(
+                mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this,
+                tabs.toArray(new Tab[0]));
     }
 
     @Override
@@ -107,12 +115,12 @@ class TabModelObserverJniBridge implements TabModelObserver {
         // Convert the List to an array of objects. This makes the corresponding C++ code much
         // easier.
         assert mNativeTabModelObserverJniBridge != 0;
-        TabModelObserverJniBridgeJni.get().allTabsPendingClosure(
-                mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this, tabs.toArray());
+        TabModelObserverJniBridgeJni.get().allTabsPendingClosure(mNativeTabModelObserverJniBridge,
+                TabModelObserverJniBridge.this, tabs.toArray(new Tab[0]));
     }
 
     @Override
-    public final void allTabsClosureCommitted() {
+    public final void allTabsClosureCommitted(boolean isIncognito) {
         assert mNativeTabModelObserverJniBridge != 0;
         TabModelObserverJniBridgeJni.get().allTabsClosureCommitted(
                 mNativeTabModelObserverJniBridge, TabModelObserverJniBridge.this);
@@ -168,8 +176,10 @@ class TabModelObserverJniBridge implements TabModelObserver {
 
         void willCloseTab(long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller,
                 Tab tab, boolean animate);
-        void didCloseTab(long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller,
-                int tabId, boolean incognito);
+        void onFinishingTabClosure(long nativeTabModelObserverJniBridge,
+                TabModelObserverJniBridge caller, int tabId, boolean incognito);
+        void onFinishingMultipleTabClosure(
+                long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab[] tabs);
         void willAddTab(long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller,
                 Tab tab, int type);
         void didAddTab(long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller,
@@ -182,8 +192,8 @@ class TabModelObserverJniBridge implements TabModelObserver {
                 long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab tab);
         void tabClosureCommitted(
                 long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab tab);
-        void allTabsPendingClosure(long nativeTabModelObserverJniBridge,
-                TabModelObserverJniBridge caller, Object[] tabs);
+        void allTabsPendingClosure(
+                long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller, Tab[] tabs);
         void allTabsClosureCommitted(
                 long nativeTabModelObserverJniBridge, TabModelObserverJniBridge caller);
         void tabRemoved(

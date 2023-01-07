@@ -1,13 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/browser_frame_ash.h"
 
+#include "ash/wm/window_state.h"
+#include "ash/wm/wm_event.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -20,12 +23,13 @@ class BrowserTestParam : public InProcessBrowserTest,
                          public testing::WithParamInterface<bool> {
  public:
   BrowserTestParam() = default;
+
+  BrowserTestParam(const BrowserTestParam&) = delete;
+  BrowserTestParam& operator=(const BrowserTestParam&) = delete;
+
   ~BrowserTestParam() override = default;
 
   bool CreateV1App() { return GetParam(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserTestParam);
 };
 
 }  // namespace
@@ -76,6 +80,35 @@ IN_PROC_BROWSER_TEST_P(BrowserTestParam,
 
   EXPECT_EQ(expectation, browser->window()->GetBounds())
       << (is_test_app ? "for app window" : "for tabbed browser window");
+}
+
+using BrowserFrameAshTest = InProcessBrowserTest;
+
+// Tests that the correct bounds are being saved when a snapped window is
+// closed.
+IN_PROC_BROWSER_TEST_F(BrowserFrameAshTest, SnappedWindowSaveBounds) {
+  auto* profile = browser()->profile();
+
+  // Get the params using the same profile.
+  Browser* browser = CreateBrowser(profile);
+  aura::Window* window = browser->window()->GetNativeWindow();
+  const gfx::Rect restored_bounds(600, 600);
+  window->SetBounds(restored_bounds);
+
+  // Snap the window to the left.
+  const ash::WindowSnapWMEvent left_snap_event(ash::WM_EVENT_SNAP_PRIMARY);
+  ash::WindowState::Get(window)->OnWMEvent(&left_snap_event);
+  const gfx::Size snapped_size = window->GetBoundsInScreen().size();
+
+  browser->window()->Close();
+  ui_test_utils::WaitForBrowserToClose(browser);
+
+  // Recreate the browser window. Test that the bounds are the same as the
+  // snapped size (position has been shifted by the ash auto window positioner).
+  Browser* new_browser = CreateBrowser(profile);
+  new_browser->window()->Show();
+  aura::Window* new_window = new_browser->window()->GetNativeWindow();
+  EXPECT_EQ(snapped_size, new_window->GetBoundsInScreen().size());
 }
 
 INSTANTIATE_TEST_SUITE_P(BrowserTestTabbedOrApp,

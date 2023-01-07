@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,11 @@ namespace ash {
 
 namespace {
 
-constexpr gfx::Insets kQuickActionsViewPadding(16, 4, 12, 4);
+constexpr auto kQuickActionsViewPadding = gfx::Insets::TLBR(16, 4, 12, 4);
 
 }  // namespace
 
-QuickActionsView::QuickActionsView(
-    chromeos::phonehub::PhoneHubManager* phone_hub_manager)
+QuickActionsView::QuickActionsView(phonehub::PhoneHubManager* phone_hub_manager)
     : phone_hub_manager_(phone_hub_manager) {
   SetID(PhoneHubViewID::kQuickActionsView);
 

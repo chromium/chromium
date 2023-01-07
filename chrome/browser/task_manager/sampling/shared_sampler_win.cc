@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,8 @@
 #include "base/bit_cast.h"
 #include "base/command_line.h"
 #include "base/path_service.h"
+#include "base/task/task_runner_util.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chrome/browser/task_manager/sampling/shared_sampler_win_defines.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
@@ -47,6 +49,9 @@ class ByteBuffer {
       grow(capacity);
   }
 
+  ByteBuffer(const ByteBuffer&) = delete;
+  ByteBuffer& operator=(const ByteBuffer&) = delete;
+
   ~ByteBuffer() {}
 
   BYTE* data() { return data_.get(); }
@@ -70,8 +75,6 @@ class ByteBuffer {
   std::unique_ptr<BYTE[]> data_;
   size_t size_;
   size_t capacity_;
-
-  DISALLOW_COPY_AND_ASSIGN(ByteBuffer);
 };
 
 // Wrapper for NtQuerySystemProcessInformation with buffer reallocation logic.
@@ -139,15 +142,14 @@ struct ThreadData {
 // snapshot. This structure is accessed only on the worker thread.
 struct ProcessData {
   ProcessData() = default;
+  ProcessData(const ProcessData&) = delete;
+  ProcessData& operator=(const ProcessData&) = delete;
   ProcessData(ProcessData&&) = default;
 
   int64_t hard_fault_count;
   base::Time start_time;
   base::TimeDelta cpu_time;
   std::vector<ThreadData> threads;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessData);
 };
 
 typedef std::map<base::ProcessId, ProcessData> ProcessDataMap;
@@ -210,13 +212,13 @@ const ProcessData* SeekInPreviousSnapshot(
 
 // A wrapper function converting ticks (in units of 100 ns) to Time.
 base::Time ConvertTicksToTime(uint64_t ticks) {
-  FILETIME ft = bit_cast<FILETIME, uint64_t>(ticks);
+  FILETIME ft = base::bit_cast<FILETIME, uint64_t>(ticks);
   return base::Time::FromFileTime(ft);
 }
 
 // A wrapper function converting ticks (in units of 100 ns) to TimeDelta.
 base::TimeDelta ConvertTicksToTimeDelta(uint64_t ticks) {
-  return base::TimeDelta::FromMicroseconds(ticks / 10);
+  return base::Microseconds(ticks / 10);
 }
 
 }  // namespace
@@ -242,7 +244,7 @@ SharedSampler::SharedSampler(
   // will be used to assert we're running the expensive operations on one of the
   // blocking pool threads.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  worker_pool_sequenced_checker_.DetachFromSequence();
+  DETACH_FROM_SEQUENCE(worker_pool_sequenced_checker_);
 }
 
 SharedSampler::~SharedSampler() {}
@@ -312,7 +314,7 @@ void SharedSampler::ClearState() {
 }
 
 SharedSampler::AllSamplingResults SharedSampler::RefreshOnWorkerThread() {
-  DCHECK(worker_pool_sequenced_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_pool_sequenced_checker_);
 
   AllSamplingResults results;
 
@@ -362,7 +364,7 @@ bool SharedSampler::IsSupportedImageName(
 }
 
 std::unique_ptr<ProcessDataSnapshot> SharedSampler::CaptureSnapshot() {
-  DCHECK(worker_pool_sequenced_checker_.CalledOnValidSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(worker_pool_sequenced_checker_);
 
   // Preallocate the buffer with the size determined on the previous call to
   // QuerySystemProcessInformation. This should be sufficient most of the time.
@@ -370,7 +372,7 @@ std::unique_ptr<ProcessDataSnapshot> SharedSampler::CaptureSnapshot() {
   ByteBuffer data_buffer(previous_buffer_size_);
 
   if (!QuerySystemProcessInformation(&data_buffer))
-    return std::unique_ptr<ProcessDataSnapshot>();
+    return nullptr;
 
   previous_buffer_size_ = data_buffer.capacity();
 

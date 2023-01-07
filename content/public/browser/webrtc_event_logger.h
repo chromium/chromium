@@ -1,11 +1,9 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_PUBLIC_BROWSER_WEBRTC_EVENT_LOGGER_H_
 #define CONTENT_PUBLIC_BROWSER_WEBRTC_EVENT_LOGGER_H_
-
-#include <string>
 
 #include "base/files/file_path.h"
 #include "content/common/content_export.h"
@@ -29,29 +27,6 @@ class CONTENT_EXPORT WebRtcEventLogger {
   // not execute.
   virtual ~WebRtcEventLogger();
 
-  // Call this to let the logger know when a PeerConnection was created.
-  virtual void OnPeerConnectionAdded(const GlobalFrameRoutingId& frame_id,
-                                     int lid) = 0;
-
-  // Call this to let the logger know when a PeerConnection was closed.
-  virtual void OnPeerConnectionRemoved(const GlobalFrameRoutingId& frame_id,
-                                       int lid) = 0;
-
-  // Call this to let the logger know when a PeerConnection was stopped.
-  // Closing of a peer connection is an irreversible action. Its distinction
-  // from the removal event is that it may happen before the peer connection has
-  // been garbage collected.
-  virtual void OnPeerConnectionStopped(const GlobalFrameRoutingId& frame_id,
-                                       int lid) = 0;
-
-  // Call this to let the logger know of a peer connection's session
-  // description ID. By referring to this ID, remote-bound event logging
-  // may later be initiated for the peer connection.
-  virtual void OnPeerConnectionSessionIdSet(
-      const GlobalFrameRoutingId& frame_id,
-      int lid,
-      const std::string& session_id) = 0;
-
   // Enable local logging of WebRTC events.
   // Local logging is distinguished from remote logging, in that local logs are
   // kept in response to explicit user input, are saved to a specific location,
@@ -71,13 +46,6 @@ class CONTENT_EXPORT WebRtcEventLogger {
   // will not get a local log associated with them (unless local logging is
   // once again enabled).
   virtual void DisableLocalLogging() = 0;
-
-  // Called when a new log fragment is sent from the renderer. This will
-  // potentially be written to a local WebRTC event log, a remote-bound log
-  // intended for upload, or both.
-  virtual void OnWebRtcEventLogWrite(const GlobalFrameRoutingId& frame_id,
-                                     int lid,
-                                     const std::string& message) = 0;
 
  protected:
   WebRtcEventLogger();

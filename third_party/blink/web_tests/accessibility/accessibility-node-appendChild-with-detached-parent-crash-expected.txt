@@ -1,0 +1,2 @@
+CONSOLE ERROR: Uncaught InvalidAccessError: Failed to execute 'appendChild' on 'AccessibleNode': Trying to access an AccessibleNode in a detached window.
+PASS if no crash.

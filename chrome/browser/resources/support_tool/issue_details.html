@@ -1,0 +1,52 @@
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="md-select cr-input-style support-tool-shared">
+  .md-select {
+    height: 27px;
+    margin-bottom: 5px;
+    width: 248px;
+  }
+
+  #description {
+    /*TODO(b/222669536): Style the description better when UX reviewer of mocks
+    gives their input.*/
+    background-color: var(--cr-input-background-color);
+    border: none;
+    border-radius: var(--cr-input-border-radius, 4px);
+    caret-color: var(--cr-input-focus-color);
+    color: var(--cr-input-color);
+    display: block;
+    font-family: inherit;
+    height: 120px;
+    outline: none;
+    padding-bottom: 8px;
+    padding-inline-start: 10px;
+    padding-top: 8px;
+    resize: none;
+    width: 520px;
+  }
+</style>
+
+<h1 tabindex="0">Step 1 of 4: Describe the issue</h1>
+<div class="support-tool-title">Support Case ID</div>
+<cr-input class="support-case-id" value="{{caseId_}}"
+  spellcheck="false" maxlength="20" aria-label="Support Case ID">
+</cr-input>
+<div id="email-title" class="support-tool-title" aria-hidden="true">Email</div>
+<select class="md-select" value="{{selectedEmail_::change}}"
+    aria-labelledby="email-title">
+  <template is="dom-repeat" items="[[emails_]]">
+  <option value="[[item]]">[[item]]</option>
+  </template>
+</select>
+<div id="description-title" class="support-tool-title" aria-hidden="true">
+  Describe the issue
+</div>
+<textarea id="description" class="support-tool-text" spellcheck="true"
+  value="{{issueDescription_::input}}" aria-labelledby="description-title"
+  placeholder="Provide a clear desciption of the issue and steps to reproduce the issue (if possible)">
+</textarea>

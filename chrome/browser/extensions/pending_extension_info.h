@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,10 +41,11 @@ class PendingExtensionInfo {
                        bool mark_acknowledged,
                        bool remote_install);
 
-  // Required for STL container membership.  Should not be used directly.
-  PendingExtensionInfo();
+  PendingExtensionInfo(PendingExtensionInfo&& other);
+  PendingExtensionInfo& operator=(PendingExtensionInfo&& other);
 
-  PendingExtensionInfo(const PendingExtensionInfo& other);
+  PendingExtensionInfo(const PendingExtensionInfo& other) = delete;
+  PendingExtensionInfo& operator=(const PendingExtensionInfo& other) = delete;
 
   ~PendingExtensionInfo();
 

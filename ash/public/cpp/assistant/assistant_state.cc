@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,8 +35,7 @@ AssistantState::~AssistantState() {
   g_assistant_state = nullptr;
 }
 
-void AssistantState::NotifyStatusChanged(
-    chromeos::assistant::AssistantStatus status) {
+void AssistantState::NotifyStatusChanged(assistant::AssistantStatus status) {
   if (assistant_status_ == status)
     return;
 
@@ -44,7 +43,7 @@ void AssistantState::NotifyStatusChanged(
 }
 
 void AssistantState::NotifyFeatureAllowed(
-    chromeos::assistant::AssistantAllowedState state) {
+    assistant::AssistantAllowedState state) {
   if (allowed_state_ == state)
     return;
 

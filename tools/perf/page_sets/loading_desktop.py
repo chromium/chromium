@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -97,14 +97,12 @@ class LoadingDesktopStorySet(story.StorySet):
          ('http://pantip.com/', 'Pantip')], cache_temperatures)
     self.AddStories(
         ['typical'],
-        [('http://www.rei.com/', 'REI'),
-         ('http://www.fifa.com/', 'FIFA'),
+        [('http://www.rei.com/', 'REI'), ('http://www.fifa.com/', 'FIFA'),
          ('http://www.economist.com/', 'Economist'),
          ('http://www.theonion.com', 'TheOnion'),
          ('http://arstechnica.com/', 'ArsTechnica'),
          ('http://allrecipes.com/recipe/239896/crunchy-french-onion-chicken',
-             'AllRecipes'),
-         ('http://www.html5rocks.com/en/', 'HTML5Rocks'),
+          'AllRecipes'), ('http://www.html5rocks.com/en/', 'HTML5Rocks'),
          ('http://www.imdb.com/title/tt0910970/', 'IMDB'),
          ('http://www.flickr.com/search/?q=monkeys&f=hp', 'Flickr'),
          ('http://money.cnn.com/', 'money.cnn'),
@@ -113,8 +111,9 @@ class LoadingDesktopStorySet(story.StorySet):
          ('http://colorado.edu', 'Colorado.edu'),
          ('http://www.ticketmaster.com/', 'TicketMaster'),
          ('http://www.theverge.com/', 'TheVerge'),
-         ('http://www.airbnb.com/', 'AirBnB'),
-         ('http://www.ign.com/', 'IGN')], cache_temperatures)
+         ('http://www.airbnb.com/', 'AirBnB'), ('http://www.ign.com/', 'IGN'),
+         ('https://www.google.com/search?q=food', 'Google')],
+        cache_temperatures)
 
   def GetAbridgedStorySetTagFilter(self):
     return ABRIDGED.name

@@ -1,0 +1,93 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/schemeful_site.mojom";
+
+// This struct should match net::FirstPartySetEntry::SiteIndex in
+// //net/first_party_sets/first_party_set_entry.h
+struct SiteIndex {
+  uint32 value;
+};
+
+// This enum should match //net/first_party_sets/first_party_set_entry.h.
+enum SiteType {
+  kPrimary,
+  kAssociated,
+  kService,
+};
+
+// This struct should match //net/first_party_sets/first_party_set_entry.h.
+struct FirstPartySetEntry {
+  SchemefulSite primary;
+  SiteType site_type;
+  SiteIndex? site_index;
+};
+
+// Computed for every cookie access attempt but is only relevant for SameParty
+// cookies.
+enum SamePartyCookieContextType {
+  // The opposite to kSameParty. Should be the default value.
+  kCrossParty,
+  // If the request URL is in the same First-Party Sets as the top-frame site
+  // and each member of the isolation_info.party_context.
+  kSameParty,
+};
+
+// Keep defaults in here in sync with net/cookies/same_party_context.cc.
+struct SamePartyContext {
+  SamePartyCookieContextType context_type = kCrossParty;
+};
+
+// This struct must match the class fields defined in
+// //net/first_party_sets/first_party_set_metadata.h.
+struct FirstPartySetMetadata {
+  SamePartyContext context;
+  // absl::nullopt indicates that the frame's site is not associated with any
+  // First-Party Set.
+  FirstPartySetEntry? frame_entry;
+  // absl::nullopt indicates that the top frame's site is not associated with
+  // any First-Party Set.
+  FirstPartySetEntry? top_frame_entry;
+};
+
+// This struct must match the class fields defined in
+// //net/first_party_sets/first_party_sets_context_config.h.
+struct FirstPartySetsContextConfig {
+  // This map must be computed against the public First-Party Sets, where the
+  // keys are member sites and the values are the ultimate entries of the final
+  // First-Party Sets combining the public sets and the modifications. Map
+  // entries of site -> absl::nullopt means the key site is considered deleted
+  // from the existing First-Party Sets, for the given context.
+  map<SchemefulSite, FirstPartySetEntry?> customizations;
+};
+
+// This struct must match the class fields defined in
+// //net/first_party_sets/first_party_sets_cache_filter.h.
+struct FirstPartySetsCacheFilter {
+  // The filter used to bypass cache. The key is site may be bypassed for
+  // cache access, the value indicates the browser run of which the site
+  // was marked to be cleared.
+  map<SchemefulSite, int64> filter;
+
+  // The id of the current browser run, to mark the cache entry when persisting.
+  // The cache filter should be no-op if this is 0.
+  // TODO(crbug.com/657632): Make this optional.
+  int64 browser_run_id = 0;
+};
+
+// This struct must match the class fields defined in
+// //net/first_party_sets/global_first_party_sets.h.
+struct GlobalFirstPartySets {
+  // The mapping from site to FPS entry.
+  map<SchemefulSite, FirstPartySetEntry> sets;
+
+  // The mapping from site alias to canonical site.
+  map<SchemefulSite, SchemefulSite> aliases;
+
+  // The config induced by the manually-supplied set.
+  FirstPartySetsContextConfig manual_config;
+};
+

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -19,12 +18,14 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util_win.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
+#include "chrome/browser/ui/webui/signin/signin_utils.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
@@ -41,21 +42,21 @@ class SigninUIError;
 
 namespace {
 
-class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
-  ~TestDiceTurnSyncOnHelperDelegate() override {}
+class TestTurnSyncOnHelperDelegate : public TurnSyncOnHelper::Delegate {
+  ~TestTurnSyncOnHelperDelegate() override {}
 
-  // DiceTurnSyncOnHelper::Delegate:
+  // TurnSyncOnHelper::Delegate:
   void ShowLoginError(const SigninUIError& error) override {}
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
       const std::string& new_email,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override {
-    std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
+      signin::SigninChoiceCallback callback) override {
+    std::move(callback).Run(signin::SIGNIN_CHOICE_CONTINUE);
   }
   void ShowEnterpriseAccountConfirmation(
-      const std::string& email,
-      DiceTurnSyncOnHelper::SigninChoiceCallback callback) override {
-    std::move(callback).Run(DiceTurnSyncOnHelper::SIGNIN_CHOICE_CONTINUE);
+      const AccountInfo& account_info,
+      signin::SigninChoiceCallback callback) override {
+    std::move(callback).Run(signin::SIGNIN_CHOICE_CONTINUE);
   }
   void ShowSyncConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
@@ -109,14 +110,8 @@ class BrowserTestHelper {
  public:
   BrowserTestHelper(const std::wstring& gaia_id,
                     const std::wstring& email,
-                    const std::string& refresh_token,
-                    int import_only_on_first_run,
-                    int import_on_primary_account)
-      : gaia_id_(gaia_id),
-        email_(email),
-        refresh_token_(refresh_token),
-        import_only_on_first_run_(import_only_on_first_run),
-        import_on_primary_account_(import_on_primary_account) {}
+                    const std::string& refresh_token)
+      : gaia_id_(gaia_id), email_(email), refresh_token_(refresh_token) {}
 
  protected:
   void CreateRegKey(base::win::RegKey* key) {
@@ -168,21 +163,6 @@ class BrowserTestHelper {
     base::win::RegKey key;
     CreateRegKey(&key);
 
-    if (import_only_on_first_run_ != 2) {
-      EXPECT_TRUE(key.Valid());
-      EXPECT_EQ(ERROR_SUCCESS,
-                key.WriteValue(credential_provider::kAllowImportOnlyOnFirstRun,
-                               import_only_on_first_run_));
-    }
-
-    if (import_on_primary_account_ != 2) {
-      EXPECT_TRUE(key.Valid());
-      EXPECT_EQ(ERROR_SUCCESS,
-                key.WriteValue(
-                    credential_provider::kAllowImportWhenPrimaryAccountExists,
-                    import_on_primary_account_));
-    }
-
     if (!email_.empty()) {
       EXPECT_TRUE(key.Valid());
       EXPECT_EQ(ERROR_SUCCESS,
@@ -213,8 +193,6 @@ class BrowserTestHelper {
   std::wstring gaia_id_;
   std::wstring email_;
   std::string refresh_token_;
-  int import_only_on_first_run_;
-  int import_on_primary_account_;
 };
 
 class SigninUtilWinBrowserTest
@@ -225,9 +203,7 @@ class SigninUtilWinBrowserTest
   SigninUtilWinBrowserTest()
       : BrowserTestHelper(GetParam().gaia_id,
                           GetParam().email,
-                          GetParam().refresh_token,
-                          2,
-                          2) {}
+                          GetParam().refresh_token) {}
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -239,9 +215,9 @@ class SigninUtilWinBrowserTest
   bool SetUpUserDataDirectory() override {
     registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
 
-    signin_util::SetDiceTurnSyncOnHelperDelegateForTesting(
-        std::unique_ptr<DiceTurnSyncOnHelper::Delegate>(
-            new TestDiceTurnSyncOnHelperDelegate()));
+    signin_util::SetTurnSyncOnHelperDelegateForTesting(
+        std::unique_ptr<TurnSyncOnHelper::Delegate>(
+            new TestTurnSyncOnHelperDelegate()));
 
     SetSigninUtilRegistry();
 
@@ -258,10 +234,8 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, Run) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
-  ASSERT_EQ(profile_manager->GetInitialProfileDir(),
-            profile->GetPath().BaseName());
+  Profile* profile = profile_manager->GetLastUsedProfile();
+  ASSERT_EQ(profile_manager->GetInitialProfileDir(), profile->GetBaseName());
 
   Browser* browser = chrome::FindLastActiveWithProfile(profile);
   ASSERT_NE(nullptr, browser);
@@ -278,8 +252,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, ReauthNoop) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
 
   // Whether the profile was signed in with the credential provider or not,
   // reauth should be a noop.
@@ -290,8 +263,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, NoReauthAfterSignout) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
 
   if (GetParam().expect_is_started) {
     // Write a new refresh token.
@@ -306,7 +278,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, NoReauthAfterSignout) {
             ->GetPrimaryAccountMutator();
     primary_account_mutator->RevokeSyncConsent(
         signin_metrics::FORCE_SIGNOUT_ALWAYS_ALLOWED_FOR_TEST,
-        signin_metrics::SignoutDelete::DELETED);
+        signin_metrics::SignoutDelete::kDeleted);
 
     // Even with a refresh token available, no reauth happens if the profile
     // is signed out.
@@ -319,8 +291,7 @@ IN_PROC_BROWSER_TEST_P(SigninUtilWinBrowserTest, FixReauth) {
 
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
 
   if (GetParam().expect_is_started) {
     // Write a new refresh token. This time reauth should work.
@@ -396,15 +367,13 @@ INSTANTIATE_TEST_SUITE_P(SigninUtilWinBrowserTest6,
                              /*gaia_id=*/L"gaia-123456",
                              /*email=*/L"foo@gmail.com",
                              /*refresh_token=*/"lst-123456",
-                             /*expect_is_started=*/false)));
+                             /*expect_is_started=*/true)));
 
 struct ExistingWinBrowserSigninUtilTestParams : SigninUtilWinBrowserTestParams {
   ExistingWinBrowserSigninUtilTestParams(
       const std::wstring& gaia_id,
       const std::wstring& email,
       const std::string& refresh_token,
-      const int allow_import_only_on_first_run,
-      const int allow_import_on_primary_account,
       const std::wstring& existing_email,
       bool expect_is_started)
       : SigninUtilWinBrowserTestParams(false,
@@ -412,12 +381,8 @@ struct ExistingWinBrowserSigninUtilTestParams : SigninUtilWinBrowserTestParams {
                                        email,
                                        refresh_token,
                                        expect_is_started),
-        import_only_on_first_run(allow_import_only_on_first_run),
-        import_on_primary_account(allow_import_on_primary_account),
         existing_email(existing_email) {}
 
-  int import_only_on_first_run;
-  int import_on_primary_account;
   std::wstring existing_email;
 };
 
@@ -430,17 +395,15 @@ class ExistingWinBrowserSigninUtilTest
   ExistingWinBrowserSigninUtilTest()
       : BrowserTestHelper(GetParam().gaia_id,
                           GetParam().email,
-                          GetParam().refresh_token,
-                          GetParam().import_only_on_first_run,
-                          GetParam().import_on_primary_account) {}
+                          GetParam().refresh_token) {}
 
  protected:
   bool SetUpUserDataDirectory() override {
     registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
 
-    signin_util::SetDiceTurnSyncOnHelperDelegateForTesting(
-        std::unique_ptr<DiceTurnSyncOnHelper::Delegate>(
-            new TestDiceTurnSyncOnHelperDelegate()));
+    signin_util::SetTurnSyncOnHelperDelegateForTesting(
+        std::unique_ptr<TurnSyncOnHelper::Delegate>(
+            new TestTurnSyncOnHelperDelegate()));
     if (!IsPreTest())
       SetSigninUtilRegistry();
 
@@ -454,11 +417,9 @@ class ExistingWinBrowserSigninUtilTest
 IN_PROC_BROWSER_TEST_P(ExistingWinBrowserSigninUtilTest,
                        PRE_ExistingWinBrowser) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
 
-  ASSERT_EQ(profile_manager->GetInitialProfileDir(),
-            profile->GetPath().BaseName());
+  ASSERT_EQ(profile_manager->GetInitialProfileDir(), profile->GetBaseName());
 
   if (!GetParam().existing_email.empty()) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -466,7 +427,8 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserSigninUtilTest,
     ASSERT_TRUE(identity_manager);
 
     signin::MakePrimaryAccountAvailable(
-        identity_manager, base::WideToUTF8(GetParam().existing_email));
+        identity_manager, base::WideToUTF8(GetParam().existing_email),
+        signin::ConsentLevel::kSync);
 
     ASSERT_TRUE(
         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -477,10 +439,8 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserSigninUtilTest, ExistingWinBrowser) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_EQ(1u, profile_manager->GetNumberOfProfiles());
 
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
-  ASSERT_EQ(profile_manager->GetInitialProfileDir(),
-            profile->GetPath().BaseName());
+  Profile* profile = profile_manager->GetLastUsedProfile();
+  ASSERT_EQ(profile_manager->GetInitialProfileDir(), profile->GetBaseName());
 
   AssertSigninStarted(GetParam().expect_is_started, profile);
 
@@ -490,25 +450,12 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserSigninUtilTest, ExistingWinBrowser) {
     ExpectRefreshTokenExists(false);
 }
 
-INSTANTIATE_TEST_SUITE_P(OnlyAllowFirstRun,
-                         ExistingWinBrowserSigninUtilTest,
-                         testing::Values(ExistingWinBrowserSigninUtilTestParams(
-                             /*gaia_id=*/L"gaia-123456",
-                             /*email=*/L"foo@gmail.com",
-                             /*refresh_token=*/"lst-123456",
-                             /*import_only_on_first_run=*/1,
-                             /*import_on_primary_account=*/0,
-                             /*existing_email=*/std::wstring(),
-                             /*expect_is_started=*/false)));
-
 INSTANTIATE_TEST_SUITE_P(AllowSubsequentRun,
                          ExistingWinBrowserSigninUtilTest,
                          testing::Values(ExistingWinBrowserSigninUtilTestParams(
                              /*gaia_id=*/L"gaia-123456",
                              /*email=*/L"foo@gmail.com",
                              /*refresh_token=*/"lst-123456",
-                             /*import_only_on_first_run=*/0,
-                             /*import_on_primary_account=*/0,
                              /*existing_email=*/std::wstring(),
                              /*expect_is_started=*/true)));
 
@@ -518,8 +465,6 @@ INSTANTIATE_TEST_SUITE_P(OnlyAllowProfileWithNoPrimaryAccount,
                              /*gaia_id=*/L"gaia_id_for_foo_gmail.com",
                              /*email=*/L"foo@gmail.com",
                              /*refresh_token=*/"lst-123456",
-                             /*import_only_on_first_run=*/0,
-                             /*import_on_primary_account=*/0,
                              /*existing_email=*/L"bar@gmail.com",
                              /*expect_is_started=*/false)));
 
@@ -529,21 +474,9 @@ INSTANTIATE_TEST_SUITE_P(AllowProfileWithPrimaryAccount_DifferentUser,
                              /*gaia_id=*/L"gaia_id_for_foo_gmail.com",
                              /*email=*/L"foo@gmail.com",
                              /*refresh_token=*/"lst-123456",
-                             /*import_only_on_first_run=*/0,
-                             /*import_on_primary_account=*/1,
                              /*existing_email=*/L"bar@gmail.com",
                              /*expect_is_started=*/false)));
 
-INSTANTIATE_TEST_SUITE_P(AllowProfileWithPrimaryAccount_DisabledImport,
-                         ExistingWinBrowserSigninUtilTest,
-                         testing::Values(ExistingWinBrowserSigninUtilTestParams(
-                             /*gaia_id=*/L"gaia_id_for_foo_gmail.com",
-                             /*email=*/L"foo@gmail.com",
-                             /*refresh_token=*/"lst-123456",
-                             /*import_only_on_first_run=*/0,
-                             /*import_on_primary_account=*/0,
-                             /*existing_email=*/L"foo@gmail.com",
-                             /*expect_is_started=*/false)));
 
 INSTANTIATE_TEST_SUITE_P(AllowProfileWithPrimaryAccount_SameUser,
                          ExistingWinBrowserSigninUtilTest,
@@ -551,38 +484,17 @@ INSTANTIATE_TEST_SUITE_P(AllowProfileWithPrimaryAccount_SameUser,
                              /*gaia_id=*/L"gaia_id_for_foo_gmail.com",
                              /*email=*/L"foo@gmail.com",
                              /*refresh_token=*/"lst-123456",
-                             /*import_only_on_first_run=*/0,
-                             /*import_on_primary_account=*/1,
                              /*existing_email=*/L"foo@gmail.com",
                              /*expect_is_started=*/true)));
-
-void UnblockOnProfileInitialized(base::OnceClosure quit_closure,
-                                 Profile* profile,
-                                 Profile::CreateStatus status) {
-  // If the status is CREATE_STATUS_CREATED, then the function will be called
-  // again with CREATE_STATUS_INITIALIZED.
-  if (status == Profile::CREATE_STATUS_CREATED)
-    return;
-
-  EXPECT_EQ(Profile::CREATE_STATUS_INITIALIZED, status);
-  std::move(quit_closure).Run();
-}
 
 void CreateAndSwitchToProfile(const std::string& basepath) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(profile_manager);
 
   base::FilePath path = profile_manager->user_data_dir().AppendASCII(basepath);
-  base::RunLoop run_loop;
-  profile_manager->CreateProfileAsync(
-      path,
-      base::BindRepeating(&UnblockOnProfileInitialized, run_loop.QuitClosure()),
-      std::u16string(), std::string());
-  // Run the message loop to allow profile initialization to take place; the
-  // loop is terminated by UnblockOnProfileInitialized.
-  run_loop.Run();
+  profiles::testing::CreateProfileSync(profile_manager, path);
 
-  profiles::SwitchToProfile(path, false, ProfileManager::CreateCallback());
+  profiles::SwitchToProfile(path, false);
 }
 
 struct ExistingWinBrowserProfilesSigninUtilTestParams {
@@ -614,26 +526,20 @@ class ExistingWinBrowserProfilesSigninUtilTest
   ExistingWinBrowserProfilesSigninUtilTest()
       : BrowserTestHelper(L"gaia_id_for_foo_gmail.com",
                           L"foo@gmail.com",
-                          "lst-123456",
-                          0,
-                          1) {
-    // TODO(droger): Disable the profile picker using the local state preference
-    // instead.
-    feature_list_.InitAndDisableFeature(features::kNewProfilePicker);
-  }
+                          "lst-123456") {}
 
  protected:
   bool SetUpUserDataDirectory() override {
     registry_override_.OverrideRegistry(HKEY_CURRENT_USER);
 
-    signin_util::SetDiceTurnSyncOnHelperDelegateForTesting(
-        std::unique_ptr<DiceTurnSyncOnHelper::Delegate>(
-            new TestDiceTurnSyncOnHelperDelegate()));
+    signin_util::SetTurnSyncOnHelperDelegateForTesting(
+        std::unique_ptr<TurnSyncOnHelper::Delegate>(
+            new TestTurnSyncOnHelperDelegate()));
     if (!IsPreTest()) {
       SetSigninUtilRegistry();
     } else if (IsPrePreTest() && GetParam().cred_provider_used_other_profile) {
       BrowserTestHelper(L"gaia_id_for_bar_gmail.com", L"bar@gmail.com",
-                        "lst-123456", 0, 1)
+                        "lst-123456")
           .SetSigninUtilRegistry();
     }
 
@@ -651,13 +557,14 @@ class ExistingWinBrowserProfilesSigninUtilTest
 // but before this step ends, |current_profile| is created and browser switches
 // to that profile just to prepare the browser for the next step.
 IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_PRE_Run) {
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kBrowserShowProfilePickerOnStartup, false);
+
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
 
-  ASSERT_EQ(profile_manager->GetInitialProfileDir(),
-            profile->GetPath().BaseName());
+  ASSERT_EQ(profile_manager->GetInitialProfileDir(), profile->GetBaseName());
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   ASSERT_TRUE(identity_manager);
@@ -668,7 +575,8 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_PRE_Run) {
   if (!GetParam().cred_provider_used_other_profile &&
       !GetParam().email_in_other_profile.empty()) {
     signin::MakePrimaryAccountAvailable(
-        identity_manager, base::WideToUTF8(GetParam().email_in_other_profile));
+        identity_manager, base::WideToUTF8(GetParam().email_in_other_profile),
+        signin::ConsentLevel::kSync);
 
     ASSERT_TRUE(
         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -682,10 +590,9 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_PRE_Run) {
 // the primary account in the profile.
 IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_Run) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
 
-  ASSERT_EQ(GetParam().current_profile, profile->GetPath().BaseName().value());
+  ASSERT_EQ(GetParam().current_profile, profile->GetBaseName().value());
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   ASSERT_TRUE(identity_manager);
@@ -694,8 +601,8 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_Run) {
 
   if (!GetParam().email_in_current_profile.empty()) {
     signin::MakePrimaryAccountAvailable(
-        identity_manager,
-        base::WideToUTF8(GetParam().email_in_current_profile));
+        identity_manager, base::WideToUTF8(GetParam().email_in_current_profile),
+        signin::ConsentLevel::kSync);
 
     ASSERT_TRUE(
         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -708,10 +615,9 @@ IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, PRE_Run) {
 // profile in this case) may have a primary account as well.
 IN_PROC_BROWSER_TEST_P(ExistingWinBrowserProfilesSigninUtilTest, Run) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile =
-      profile_manager->GetLastUsedProfile(profile_manager->user_data_dir());
+  Profile* profile = profile_manager->GetLastUsedProfile();
 
-  ASSERT_EQ(GetParam().current_profile, profile->GetPath().BaseName().value());
+  ASSERT_EQ(GetParam().current_profile, profile->GetBaseName().value());
   AssertSigninStarted(GetParam().expect_is_started, profile);
 }
 

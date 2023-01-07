@@ -4,4 +4,4 @@ PRODUCT_FULLNAME=Software Reporter Tool
 PRODUCT_SHORTNAME=Software Reporter Tool
 PRODUCT_INSTALLER_FULLNAME=Software Reporter Tool Installer
 PRODUCT_INSTALLER_SHORTNAME=Software Reporter Tool Installer
-COPYRIGHT=Copyright 2021 The Chromium Authors. All rights reserved.
+COPYRIGHT=Copyright @LASTCHANGE_YEAR@ The Chromium Authors. All rights reserved.

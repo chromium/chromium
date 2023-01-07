@@ -1,4 +1,4 @@
-CONSOLE WARNING: line 18: The specified value "0" does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
+CONSOLE WARNING: The specified value "0" does not conform to the required format.  The format is "#rrggbb" where rr, gg, bb are two-digit hexadecimal numbers.
 Tests for .valueAsNumber with non-supported input types.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
 #include "base/time/default_tick_clock.h"
-#include "components/sync/base/sync_base_switches.h"
+#include "components/sync/base/passphrase_enums.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "crypto/encryptor.h"
 #include "crypto/hmac.h"
 #include "crypto/random.h"
@@ -36,8 +36,6 @@ const size_t kDerivedKeySizeInBytes = kDerivedKeySizeInBits / 8;
 const size_t kHashSize = 32;
 
 namespace syncer {
-
-const char kNigoriKeyName[] = "nigori-key";
 
 namespace {
 
@@ -88,43 +86,6 @@ const char* GetHistogramSuffixForKeyDerivationMethod(
 
 }  // namespace
 
-KeyDerivationParams::KeyDerivationParams(KeyDerivationMethod method,
-                                         const std::string& scrypt_salt)
-    : method_(method), scrypt_salt_(scrypt_salt) {}
-
-KeyDerivationParams::KeyDerivationParams(const KeyDerivationParams& other) =
-    default;
-KeyDerivationParams::KeyDerivationParams(KeyDerivationParams&& other) = default;
-
-KeyDerivationParams& KeyDerivationParams::operator=(
-    const KeyDerivationParams& other) = default;
-
-bool KeyDerivationParams::operator==(const KeyDerivationParams& other) const {
-  return method_ == other.method_ && scrypt_salt_ == other.scrypt_salt_;
-}
-
-bool KeyDerivationParams::operator!=(const KeyDerivationParams& other) const {
-  return !(*this == other);
-}
-
-const std::string& KeyDerivationParams::scrypt_salt() const {
-  DCHECK_EQ(method_, KeyDerivationMethod::SCRYPT_8192_8_11);
-  return scrypt_salt_;
-}
-
-KeyDerivationParams KeyDerivationParams::CreateForPbkdf2() {
-  return {KeyDerivationMethod::PBKDF2_HMAC_SHA1_1003, /*scrypt_salt_=*/""};
-}
-
-KeyDerivationParams KeyDerivationParams::CreateForScrypt(
-    const std::string& salt) {
-  return {KeyDerivationMethod::SCRYPT_8192_8_11, salt};
-}
-
-KeyDerivationParams KeyDerivationParams::CreateWithUnsupportedMethod() {
-  return {KeyDerivationMethod::UNSUPPORTED, /*scrypt_salt_=*/""};
-}
-
 Nigori::Keys::Keys() = default;
 Nigori::Keys::~Keys() = default;
 
@@ -134,14 +95,15 @@ void Nigori::Keys::InitByDerivationUsingPbkdf2(const std::string& password) {
   // "dummy") as PBKDF2_HMAC_SHA1(Ns("dummy") + Ns("localhost"), "saltsalt",
   // 1001, 128), where Ns(S) is the NigoriStream representation of S (32-bit
   // big-endian length of S followed by S itself).
-  const char kRawConstantSalt[] = {0xc7, 0xca, 0xfb, 0x23, 0xec, 0x2a,
-                                   0x9d, 0x4c, 0x03, 0x5a, 0x90, 0xae,
-                                   0xed, 0x8b, 0xa4, 0x98};
+  const uint8_t kRawConstantSalt[] = {0xc7, 0xca, 0xfb, 0x23, 0xec, 0x2a,
+                                      0x9d, 0x4c, 0x03, 0x5a, 0x90, 0xae,
+                                      0xed, 0x8b, 0xa4, 0x98};
   const size_t kUserIterations = 1002;
   const size_t kEncryptionIterations = 1003;
   const size_t kSigningIterations = 1004;
 
-  std::string salt(kRawConstantSalt, sizeof(kRawConstantSalt));
+  std::string salt(reinterpret_cast<const char*>(kRawConstantSalt),
+                   sizeof(kRawConstantSalt));
 
   // Kuser = PBKDF2(P, Suser, Nuser, 16)
   user_key = SymmetricKey::DeriveKeyFromPasswordUsingPbkdf2(
@@ -217,7 +179,7 @@ bool Nigori::Keys::InitByImport(const std::string& user_key_str,
   return true;
 }
 
-Nigori::~Nigori() {}
+Nigori::~Nigori() = default;
 
 // static
 std::unique_ptr<Nigori> Nigori::CreateByDerivation(
@@ -276,9 +238,6 @@ bool Nigori::Permute(Type type,
 
 // Enc[Kenc,Kmac](value)
 bool Nigori::Encrypt(const std::string& value, std::string* encrypted) const {
-  if (0U >= value.size())
-    return false;
-
   std::string iv;
   crypto::RandBytes(base::WriteInto(&iv, kIvSize + 1), kIvSize);
 
@@ -362,7 +321,7 @@ std::string Nigori::GenerateScryptSalt() {
   static const size_t kSaltSizeInBytes = 32;
   std::string salt;
   salt.resize(kSaltSizeInBytes);
-  crypto::RandBytes(base::data(salt), salt.size());
+  crypto::RandBytes(std::data(salt), salt.size());
   return salt;
 }
 
@@ -387,8 +346,6 @@ std::unique_ptr<Nigori> Nigori::CreateByDerivationImpl(
       nigori->keys_.InitByDerivationUsingPbkdf2(password);
       break;
     case KeyDerivationMethod::SCRYPT_8192_8_11:
-      DCHECK(!base::FeatureList::IsEnabled(
-          switches::kSyncForceDisableScryptForCustomPassphrase));
       nigori->keys_.InitByDerivationUsingScrypt(
           key_derivation_params.scrypt_salt(), password);
       break;

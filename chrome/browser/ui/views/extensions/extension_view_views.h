@@ -1,17 +1,17 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_VIEW_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_VIEW_VIEWS_H_
 
-#include "base/compiler_specific.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_view.h"
 #include "content/public/browser/native_web_keyboard_event.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace extensions {
 class ExtensionViewHost;
@@ -61,17 +61,17 @@ class ExtensionViewViews : public views::WebView,
   void OnLoaded() override;
 
   // views::WebView:
-  gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override;
+  ui::Cursor GetCursor(const ui::MouseEvent& event) override;
   void PreferredSizeChanged() override;
   void OnWebContentsAttached() override;
 
-  extensions::ExtensionViewHost* host_;
+  raw_ptr<extensions::ExtensionViewHost> host_;
 
   // What we should set the preferred width to once the ExtensionViewViews has
   // loaded.
   gfx::Size pending_preferred_size_;
 
-  base::Optional<gfx::Size> minimum_size_;
+  absl::optional<gfx::Size> minimum_size_;
 
   // The container this view is in (not necessarily its direct superview).
   // Note: the view does not own its container.

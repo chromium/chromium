@@ -1,0 +1,175 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/device_signals/core/system_signals/win/win_platform_delegate.h"
+
+#include <windows.h>
+
+#include <softpub.h>
+#include <wincrypt.h>
+#include <wintrust.h>
+
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
+#include "base/strings/string_util_win.h"
+#include "components/device_signals/core/common/common_types.h"
+#include "components/device_signals/core/common/platform_utils.h"
+#include "crypto/scoped_capi_types.h"
+#include "crypto/sha2.h"
+#include "net/cert/asn1_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace device_signals {
+
+namespace {
+
+struct FreeCertBufferFunctor {
+  void operator()(WIN_CERTIFICATE* certificate) const {
+    if (certificate) {
+      delete[] reinterpret_cast<char*>(certificate);
+    }
+  }
+};
+
+// Returns the SHA-256 hash for the DER-encoded SPKI from the first signer
+// cert chain's leaf cert. Return absl::nullopt if unable to get to that
+// certificate.
+absl::optional<std::string> GetSPKIHash(HANDLE verify_trust_state_data) {
+  CRYPT_PROVIDER_DATA* crypt_provider_data =
+      WTHelperProvDataFromStateData(verify_trust_state_data);
+  if (!crypt_provider_data) {
+    return absl::nullopt;
+  }
+
+  CRYPT_PROVIDER_SGNR* provider_sgnr =
+      WTHelperGetProvSignerFromChain(crypt_provider_data,
+                                     /*idxSigner=*/0,
+                                     /*fCounterSigner=*/false,
+                                     /*idxCounterSigner=*/0);
+  if (!provider_sgnr) {
+    return absl::nullopt;
+  }
+
+  CRYPT_PROVIDER_CERT* provider_cert =
+      WTHelperGetProvCertFromChain(provider_sgnr, /*idcCert=*/0);
+
+  if (!provider_cert || !provider_cert->pChainElement) {
+    return absl::nullopt;
+  }
+
+  const CERT_CHAIN_ELEMENT* element = provider_cert->pChainElement;
+  const CERT_CONTEXT* cert_context = element->pCertContext;
+  if (!cert_context || !cert_context->pbCertEncoded) {
+    return absl::nullopt;
+  }
+
+  base::StringPiece der_bytes(
+      reinterpret_cast<const char*>(cert_context->pbCertEncoded),
+      cert_context->cbCertEncoded);
+
+  base::StringPiece spki;
+  if (!net::asn1::ExtractSPKIFromDERCert(der_bytes, &spki)) {
+    return absl::nullopt;
+  }
+
+  return crypto::SHA256HashString(spki);
+}
+
+}  // namespace
+
+WinPlatformDelegate::WinPlatformDelegate() = default;
+
+WinPlatformDelegate::~WinPlatformDelegate() = default;
+
+bool WinPlatformDelegate::ResolveFilePath(const base::FilePath& file_path,
+                                          base::FilePath* resolved_file_path) {
+  return ResolvePath(file_path, resolved_file_path);
+}
+
+absl::optional<std::vector<std::string>>
+WinPlatformDelegate::GetSigningCertificatesPublicKeyHashes(
+    const base::FilePath& file_path) {
+  std::vector<std::string> spki_hashes;
+
+  WINTRUST_FILE_INFO file_info{};
+  file_info.cbStruct = sizeof(file_info);
+  file_info.pcwszFilePath = file_path.value().c_str();
+  file_info.hFile = NULL;
+  file_info.pgKnownSubject = NULL;
+
+  WINTRUST_DATA wintrust_data{};
+  wintrust_data.cbStruct = sizeof(wintrust_data);
+  wintrust_data.pPolicyCallbackData = NULL;
+  wintrust_data.pSIPClientData = NULL;
+  wintrust_data.dwUIChoice = WTD_UI_NONE;
+  wintrust_data.fdwRevocationChecks = WTD_REVOKE_NONE;
+  wintrust_data.dwUnionChoice = WTD_CHOICE_FILE;
+  wintrust_data.pFile = &file_info;
+  wintrust_data.dwStateAction = WTD_STATEACTION_VERIFY;
+  wintrust_data.hWVTStateData = NULL;
+  wintrust_data.pwszURLReference = NULL;
+  // Disallow revocation checks over the network.
+  wintrust_data.dwProvFlags = WTD_CACHE_ONLY_URL_RETRIEVAL;
+
+  // Check first signature first while getting the secondary signatures'
+  // count, iterate over those after.
+  WINTRUST_SIGNATURE_SETTINGS signature_settings{};
+  signature_settings.cbStruct = sizeof(signature_settings);
+  signature_settings.dwIndex = 0;
+  signature_settings.dwFlags =
+      WSS_VERIFY_SPECIFIC | WSS_GET_SECONDARY_SIG_COUNT;
+
+  wintrust_data.pSignatureSettings = &signature_settings;
+
+  GUID policy_guid = WINTRUST_ACTION_GENERIC_VERIFY_V2;
+
+  WinVerifyTrust(static_cast<HWND>(INVALID_HANDLE_VALUE), &policy_guid,
+                 &wintrust_data);
+  auto primary_spki_hash = GetSPKIHash(wintrust_data.hWVTStateData);
+  if (!primary_spki_hash) {
+    // No values could be extracted for the primary signature, return early.
+    return spki_hashes;
+  }
+
+  spki_hashes.push_back(primary_spki_hash.value());
+
+  // Collect SPKI hashes for secondary signatures' certs.
+  DWORD secondary_signatures_count =
+      wintrust_data.pSignatureSettings->cSecondarySigs;
+  wintrust_data.pSignatureSettings->dwFlags = WSS_VERIFY_SPECIFIC;
+  for (DWORD i = 0; i < secondary_signatures_count; ++i) {
+    // Free the previous provider data.
+    wintrust_data.dwStateAction = WTD_STATEACTION_CLOSE;
+    WinVerifyTrust(static_cast<HWND>(INVALID_HANDLE_VALUE), &policy_guid,
+                   &wintrust_data);
+    wintrust_data.hWVTStateData = NULL;
+
+    // Secondary signatures start at index 1 as 0 is the primary signature.
+    wintrust_data.dwStateAction = WTD_STATEACTION_VERIFY;
+    wintrust_data.pSignatureSettings->dwIndex = i + 1;
+    WinVerifyTrust(static_cast<HWND>(INVALID_HANDLE_VALUE), &policy_guid,
+                   &wintrust_data);
+
+    auto secondary_spki_hash = GetSPKIHash(wintrust_data.hWVTStateData);
+    if (secondary_spki_hash) {
+      spki_hashes.push_back(secondary_spki_hash.value());
+    }
+  }
+
+  // Free the previous provider data.
+  wintrust_data.dwStateAction = WTD_STATEACTION_CLOSE;
+  WinVerifyTrust(static_cast<HWND>(INVALID_HANDLE_VALUE), &policy_guid,
+                 &wintrust_data);
+
+  return spki_hashes;
+}
+
+}  // namespace device_signals

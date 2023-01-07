@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,13 +43,13 @@ constexpr double kBounceBackwardsY2 = 1.0;
 
 base::TimeDelta CalculateBounceForwardsDuration(
     double bounce_forwards_distance) {
-  return base::TimeDelta::FromMillisecondsD(
+  return base::Milliseconds(
       std::min(kOverbounceMaxDurationMilliseconds,
                kOverbounceMillisecondsPerPixel * bounce_forwards_distance));
 }
 
 base::TimeDelta CalculateBounceBackDuration(double bounce_back_distance) {
-  return base::TimeDelta::FromMillisecondsD(std::min(
+  return base::Milliseconds(std::min(
       kBounceBackMaxDurationMilliseconds,
       kBounceBackMillisecondsPerPixel * std::abs(bounce_back_distance)));
 }

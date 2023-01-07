@@ -1,21 +1,22 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/activity_services/activities/bookmark_activity.h"
 
-#include "components/bookmarks/browser/bookmark_model.h"
-#include "components/bookmarks/browser/bookmark_node.h"
-#include "components/bookmarks/common/bookmark_pref_names.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
-#include "ios/chrome/browser/ui/bookmarks/bookmark_ios_unittest.h"
-#include "ios/chrome/browser/ui/commands/bookmark_page_command.h"
-#include "ios/chrome/browser/ui/commands/bookmarks_commands.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/browser/bookmark_node.h"
+#import "components/bookmarks/common/bookmark_pref_names.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_ios_unittest.h"
+#import "ios/chrome/browser/ui/commands/bookmark_add_command.h"
+#import "ios/chrome/browser/ui/commands/bookmarks_commands.h"
+#import "ios/chrome/browser/ui/util/url_with_title.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "url/gurl.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -46,13 +47,13 @@ class BookmarkActivityTest : public BookmarkIOSUnitTest {
         bookmarks::prefs::kEditBookmarksEnabled, true);
   }
 
-  // Sets the edit bookmarks pref to |canEdit|.
+  // Sets the edit bookmarks pref to `canEdit`.
   void SetCanEditBookmarkPref(bool canEdit) {
     testing_pref_service_.SetBoolean(bookmarks::prefs::kEditBookmarksEnabled,
                                      canEdit);
   }
 
-  // Creates a BookmarkActivity instance with the given |URL|.
+  // Creates a BookmarkActivity instance with the given `URL`.
   BookmarkActivity* CreateActivity(const GURL& URL) {
     return [[BookmarkActivity alloc] initWithURL:URL
                                            title:kTestTitle
@@ -115,14 +116,14 @@ TEST_F(BookmarkActivityTest, ActivityTitle_EditBookmark) {
   EXPECT_TRUE([editBookmarkString isEqualToString:activity.activityTitle]);
 }
 
-TEST_F(BookmarkActivityTest, PerformActivity_BookmarkPageCommand) {
+TEST_F(BookmarkActivityTest, PerformActivity_BookmarkAddCommand) {
   GURL testUrl("https://example.com/");
   BookmarkActivity* activity = CreateActivity(testUrl);
 
   [[mocked_handler_ expect]
-      bookmarkPage:[OCMArg checkWithBlock:^BOOL(BookmarkPageCommand* value) {
-        EXPECT_EQ(testUrl, value.URL);
-        EXPECT_EQ(kTestTitle, value.title);
+      bookmark:[OCMArg checkWithBlock:^BOOL(BookmarkAddCommand* value) {
+        EXPECT_EQ(testUrl, value.URLs.firstObject.URL);
+        EXPECT_EQ(kTestTitle, value.URLs.firstObject.title);
         return YES;
       }]];
 

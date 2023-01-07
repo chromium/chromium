@@ -1,0 +1,126 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+source_set("google") {
+  sources = [
+    "google_brand.cc",
+    "google_brand.h",
+    "google_search_domain_mixing_metrics_emitter.cc",
+    "google_search_domain_mixing_metrics_emitter.h",
+    "google_search_domain_mixing_metrics_emitter_factory.cc",
+    "google_search_domain_mixing_metrics_emitter_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//components/history/core/browser:browser",
+    "//components/keyed_service/core:core",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs:prefs",
+    "//content/public/browser",
+  ]
+
+  if (is_mac) {
+    deps += [ "//chrome/browser/mac:keystone_glue" ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "google_brand_chromeos.cc",
+      "google_brand_chromeos.h",
+      "google_brand_code_map_chromeos.cc",
+      "google_brand_code_map_chromeos.h",
+    ]
+
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chromeos/system:system",
+      "//components/policy/core/common:common_constants",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "did_run_updater_win.cc",
+      "did_run_updater_win.h",
+    ]
+    if (is_chrome_branded) {
+      sources += [
+        "google_update_policy_fetcher_win.cc",
+        "google_update_policy_fetcher_win.h",
+        "google_update_policy_fetcher_win_util.cc",
+        "google_update_policy_fetcher_win_util.h",
+        "google_update_win.cc",
+        "google_update_win.h",
+        "switches.cc",
+        "switches.h",
+      ]
+
+      deps += [ "//google_update" ]
+    }
+
+    deps += [
+      "//chrome/app:generated_resources_grit",
+      "//chrome/common",
+      "//chrome/install_static:install_static_util",
+      "//chrome/installer/util:with_no_strings",
+      "//components/policy/core/browser",
+      "//components/policy/core/common",
+    ]
+  }
+
+  if (is_posix || is_fuchsia) {
+    sources += [ "google_update_settings_posix.cc" ]
+  }
+  if (is_posix) {
+    deps += [ "//components/crash/core/app" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "google_search_domain_mixing_metrics_emitter_factory_unittest.cc",
+    "google_search_domain_mixing_metrics_emitter_unittest.cc",
+    "google_update_settings_unittest.cc",
+  ]
+
+  deps = [
+    ":google",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common:constants",
+    "//chrome/common:version_header",
+    "//chrome/installer/util:with_no_strings",
+    "//components/history/core/browser:browser",
+    "//components/history/core/test:test",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gtest:gtest",
+    "//url:url",
+  ]
+
+  if (is_chromeos_ash) {
+    sources += [ "google_brand_code_map_chromeos_unittest.cc" ]
+  }
+
+  if (is_win && is_chrome_branded) {
+    sources += [
+      "google_update_policy_fetcher_win_util_unittest.cc",
+      "google_update_win_unittest.cc",
+    ]
+
+    deps += [
+      "//chrome/install_static/test:test_support",
+      "//components/policy/core/common",
+      "//google_update",
+    ]
+  }
+}

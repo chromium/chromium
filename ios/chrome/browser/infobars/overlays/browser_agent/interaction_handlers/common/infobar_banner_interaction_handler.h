@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,17 +22,17 @@ class InfobarBannerInteractionHandler
     : public InfobarInteractionHandler::Handler {
  public:
   // Constructor for a banner interaction handler that creates callback
-  // installers with |request_support|.
+  // installers with `request_support`.
   explicit InfobarBannerInteractionHandler(
       const OverlayRequestSupport* request_support);
   ~InfobarBannerInteractionHandler() override;
 
-  // Updates the model when the visibility of |infobar|'s banner is changed.
+  // Updates the model when the visibility of `infobar`'s banner is changed.
   virtual void BannerVisibilityChanged(InfoBarIOS* infobar, bool visible) {}
-  // Updates the model when the main button is tapped for |infobar|'s banner.
+  // Updates the model when the main button is tapped for `infobar`'s banner.
   virtual void MainButtonTapped(InfoBarIOS* infobar) {}
-  // Shows the modal when the modal button is tapped for |infobar|'s banner.
-  // |web_state| is the WebState associated with |infobar|'s InfoBarManager.
+  // Shows the modal when the modal button is tapped for `infobar`'s banner.
+  // `web_state` is the WebState associated with `infobar`'s InfoBarManager.
   virtual void ShowModalButtonTapped(InfoBarIOS* infobar,
                                      web::WebState* web_state);
   // Notifies the model that the upcoming dismissal is user-initiated (i.e.

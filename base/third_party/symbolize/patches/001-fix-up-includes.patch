@@ -1,0 +1,56 @@
+diff --git a/base/third_party/symbolize/demangle.h b/base/third_party/symbolize/demangle.h
+index f347b98148fb1..416f7ee153560 100644
+--- a/base/third_party/symbolize/demangle.h
++++ b/base/third_party/symbolize/demangle.h
+@@ -71,7 +71,7 @@
+ #define BASE_DEMANGLE_H_
+ 
+ #include "config.h"
+-#include <glog/logging.h>
++#include "glog/logging.h"
+ 
+ _START_GOOGLE_NAMESPACE_
+ 
+diff --git a/base/third_party/symbolize/symbolize.cc b/base/third_party/symbolize/symbolize.cc
+index f56e97c99332a..2cfd4c490cc94 100644
+--- a/base/third_party/symbolize/symbolize.cc
++++ b/base/third_party/symbolize/symbolize.cc
+@@ -132,7 +132,7 @@ _END_GOOGLE_NAMESPACE_
+ 
+ #include "symbolize.h"
+ #include "config.h"
+-#include <glog/raw_logging.h>
++#include "glog/raw_logging.h"
+ 
+ // Re-runs fn until it doesn't cause EINTR.
+ #define NO_INTR(fn)   do {} while ((fn) < 0 && errno == EINTR)
+diff --git a/base/third_party/symbolize/symbolize.h b/base/third_party/symbolize/symbolize.h
+index dcbb194c4b37e..5959e579ffc93 100644
+--- a/base/third_party/symbolize/symbolize.h
++++ b/base/third_party/symbolize/symbolize.h
+@@ -56,7 +56,7 @@
+ 
+ #include "utilities.h"
+ #include "config.h"
+-#include <glog/logging.h>
++#include "glog/logging.h"
+ 
+ #ifdef HAVE_SYMBOLIZE
+ 
+diff --git a/base/third_party/symbolize/utilities.h b/base/third_party/symbolize/utilities.h
+index 760c142c09e18..efa3a8d99856e 100644
+--- a/base/third_party/symbolize/utilities.h
++++ b/base/third_party/symbolize/utilities.h
+@@ -52,11 +52,9 @@
+ #define PRIXS __PRIS_PREFIX "X"
+ #define PRIoS __PRIS_PREFIX "o"
+ 
+-#include "base/mutex.h"  // This must go first so we get _XOPEN_SOURCE
+-
+ #include <string>
+ 
+-#include <glog/logging.h>
++#include "glog/logging.h"
+ 
+ #if defined(GLOG_OS_WINDOWS)
+ # include "port.h"

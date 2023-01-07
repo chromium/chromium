@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,9 +24,9 @@
 namespace ui {
 
 InputMethodWinImm32::InputMethodWinImm32(
-    internal::InputMethodDelegate* delegate,
-    HWND toplevel_window_handle)
-    : InputMethodWinBase(delegate, toplevel_window_handle),
+    ImeKeyEventDispatcher* ime_key_event_dispatcher,
+    HWND attached_window_handle)
+    : InputMethodWinBase(ime_key_event_dispatcher, attached_window_handle),
 
       enabled_(false),
       is_candidate_popup_open_(false),
@@ -42,7 +42,7 @@ void InputMethodWinImm32::OnFocus() {
 }
 
 bool InputMethodWinImm32::OnUntranslatedIMEMessage(
-    const MSG event,
+    const CHROME_MSG event,
     InputMethod::NativeEventResult* result) {
   LRESULT original_result = 0;
   BOOL handled = FALSE;
@@ -86,12 +86,11 @@ bool InputMethodWinImm32::OnUntranslatedIMEMessage(
   return !!handled;
 }
 
-void InputMethodWinImm32::OnTextInputTypeChanged(
-    const TextInputClient* client) {
+void InputMethodWinImm32::OnTextInputTypeChanged(TextInputClient* client) {
   InputMethodBase::OnTextInputTypeChanged(client);
   if (!IsTextInputClientFocused(client) || !IsWindowFocused(client))
     return;
-  imm32_manager_.CancelIME(toplevel_window_handle_);
+  imm32_manager_.CancelIME(attached_window_handle_);
   UpdateIMEState();
 }
 
@@ -108,9 +107,9 @@ void InputMethodWinImm32::OnCaretBoundsChanged(const TextInputClient* client) {
   // Pixel). See the comment in text_input_client.h and http://crbug.com/360334.
   const gfx::Rect dip_screen_bounds(GetTextInputClient()->GetCaretBounds());
   const gfx::Rect screen_bounds = display::win::ScreenWin::DIPToScreenRect(
-      toplevel_window_handle_, dip_screen_bounds);
+      attached_window_handle_, dip_screen_bounds);
 
-  HWND attached_window = toplevel_window_handle_;
+  HWND attached_window = attached_window_handle_;
   // TODO(ime): see comment in TextInputClient::GetCaretBounds(), this
   // conversion shouldn't be necessary.
   RECT r = {};
@@ -124,7 +123,7 @@ void InputMethodWinImm32::OnCaretBoundsChanged(const TextInputClient* client) {
 
 void InputMethodWinImm32::CancelComposition(const TextInputClient* client) {
   if (IsTextInputClientFocused(client) && enabled_) {
-    imm32_manager_.CancelIME(toplevel_window_handle_);
+    imm32_manager_.CancelIME(attached_window_handle_);
   }
 }
 
@@ -183,7 +182,7 @@ LRESULT InputMethodWinImm32::OnImeSetContext(HWND window_handle,
     // See https://crbug.com/509984.
     tsf_inputscope::InitializeTsfForInputScopes();
     tsf_inputscope::SetInputScopeForTsfUnawareWindow(
-        toplevel_window_handle_, GetTextInputType(), GetTextInputMode());
+        attached_window_handle_, GetTextInputType(), GetTextInputMode());
   }
 
   OnInputMethodChanged();
@@ -268,9 +267,9 @@ LRESULT InputMethodWinImm32::OnImeEndComposition(HWND window_handle,
   // Also see Firefox's implementation:
   // https://dxr.mozilla.org/mozilla-beta/source/widget/windows/IMMHandler.cpp#800
   // TODO(crbug.com/654865): Further investigations and clean-ups required.
-  MSG compositionMsg;
-  if (::PeekMessage(&compositionMsg, window_handle, WM_IME_STARTCOMPOSITION,
-                    WM_IME_COMPOSITION, PM_NOREMOVE) &&
+  CHROME_MSG compositionMsg;
+  if (::PeekMessage(ChromeToWindowsType(&compositionMsg), window_handle,
+                    WM_IME_STARTCOMPOSITION, WM_IME_COMPOSITION, PM_NOREMOVE) &&
       compositionMsg.message == WM_IME_COMPOSITION &&
       (compositionMsg.lParam & GCS_RESULTSTR))
     return 0;
@@ -323,10 +322,15 @@ void InputMethodWinImm32::ConfirmCompositionText() {
     imm32_manager_.CleanupComposition(composing_window_handle_);
 }
 
+TextInputMode InputMethodWinImm32::GetTextInputMode() const {
+  TextInputClient* client = GetTextInputClient();
+  return client ? client->GetTextInputMode() : TEXT_INPUT_MODE_DEFAULT;
+}
+
 void InputMethodWinImm32::UpdateIMEState() {
   // Use switch here in case we are going to add more text input types.
   // We disable input method in password field.
-  const HWND window_handle = toplevel_window_handle_;
+  const HWND window_handle = attached_window_handle_;
   const TextInputType text_input_type = GetTextInputType();
   const TextInputMode text_input_mode = GetTextInputMode();
   switch (text_input_type) {

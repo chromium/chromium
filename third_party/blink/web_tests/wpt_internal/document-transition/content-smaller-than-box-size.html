@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html class=reftest-wait>
+<title>Shared transitions: element with content less than box size</title>
+<link rel="help" href="https://github.com/WICG/shared-element-transitions">
+<link rel="author" href="mailto:khushalsagar@chromium.org">
+<link rel="match" href="content-smaller-than-box-size-ref.html">
+
+<script src="/common/reftest-wait.js"></script>
+<style>
+div { contain: paint; }
+#target {
+  width: 100px;
+  height: 100px;
+  page-transition-tag: target;
+}
+#inner {
+  width: 10px;
+  height: 10px;
+  background: blue;
+  position: relative;
+  top: 10px;
+  left: 10px;
+}
+
+.hidden {
+  background: pink;
+  width: 10px;
+  height: 10px;
+  page-transition-tag: hidden;
+}
+
+html::page-transition-container(hidden) { animation-duration: 300s; }
+html::page-transition-image-wrapper(hidden) { animation: unset; opacity: 0; }
+
+html::page-transition-incoming-image(target) { animation: unset; opacity: 0; }
+html::page-transition-outgoing-image(target) { animation: unset; opacity: 1; }
+
+</style>
+
+<div id=target>
+  <div id=inner></div>
+</div>
+<div id=hidden class=hidden></div>
+
+<script>
+async function runTest() {
+  let t = document.createDocumentTransition();
+  t.start(() => {
+    requestAnimationFrame(takeScreenshot);
+  });
+}
+onload = () => requestAnimationFrame(runTest);
+</script>
+

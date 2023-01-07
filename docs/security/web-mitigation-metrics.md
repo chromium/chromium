@@ -127,16 +127,40 @@ openers. Pages can choose to restrict this relation to same-origin pages with
 similar COOP value, same-origin unless they are opening popups or put no
 restriction by default.
 
-* Explicit values of "same-origin" and "same-origin-allow-popups" are tracked
-  via `kCrossOriginOpenerPolicySameOrigin` and
-  `kCrossOriginOpenerPolicySameOriginAllowPopups` respectively.
+* Usage of COOP is tracked via:
+  - `kCrossOriginOpenerPolicySameOrigin`
+  - `kCrossOriginOpenerPolicySameOriginAllowPopups`
+  * `kCoopAndCoepIsolated`
+They correspond respectively to the values: "same-origin",
+"same-origin-allow-popups" and "same-origin" used conjointly with COEP.
+
+* Usage of COOP in report-only mode is tracked symmetrically via:
+  - `kCrossOriginOpenerPolicySameOriginReportOnly`
+  - `kCrossOriginOpenerPolicySameOriginAllowPopupsReportOnly`
+  * `kCoopAndCoepIsolatedReportOnly`
+
+* We track how often same-origin documents are present in two pages with
+  different COOP values via `kSameOriginDocumentsWithDifferentCOOPStatus`. We
+  might restrict synchronous access between those in order to allow COOP
+  "same-origin-allow-popups" to enable crossOriginIsolated when used in
+  conjunction with COEP.
 
 [Cross-Origin-Embedder-Policy][coep] is used to restrict the embedding of
 subresources to only those that have explicitly opted in via
 [Cross-Origin-Resource-Policy].
 
-* COEP is simply "require-corp" or nothing and we track uses of the feature via
-  `kCrossOriginEmbedderPolicyRequireCorp`.
+* Usage of COEP is tracked via:
+  - `kCrossOriginEmbedderPolicyCredentialless`
+  - `kCrossOriginEmbedderPolicyRequireCorp`.
+
+* Usage of COEP in report-only mode is tracked symmetrically via:
+  - `kCrossOriginEmbedderPolicyCredentiallessReportOnly`
+  - `kCrossOriginEmbedderPolicyRequireCorpReportOnly`.
+
+* Usage of COEP in SharedWorker is tracked via:
+  - `kCoepNoneSharedWorker`,
+  - `kCoepRequireCorpSharedWorker`
+  - `kCoepCredentiallessSharedWorker`.
 
 Note that some APIs having precise timers or memory measurement are enabled only
 for pages that set COOP to "same-origin" and COEP to "require-corp".
@@ -157,12 +181,31 @@ platform.
 * Sanitizer creation: `kSanitizerAPICreated` and
   `kSanitizerAPIDefaultConfiguration` tell us how many Sanitizers are
   created and how many Sanitizers are created without custom configurations.
-* Sanitizing process: `kSanitizerAPIToString` and
-  `kSanitizerAPIToFragment` counts the usage of two methods,
-  `Sanitizer::sanitizeToString` and `Sanitizer::sanitize`.
-* `kSanitizerAPIActionTaken` shows how many times do the
-  actual sanitize action has been performed while calling the Sanitizer APIs.
+* Sanitizer method: `kSanitizerAPIToFragment`, `kSanitizerAPISanitizeFor`,
+  and `kSanitizerAPIElementSetSanitized` measure which API entry point has been
+  called.
+* `kSanitizerAPIActionTaken` shows how many times a sanitize action has been
+  performed while calling the Sanitizer APIs. (That is, on how many sanitizer
+  calls did the sanitizer remove nodes from the input sets.)
 * Input type: `kSanitizerAPIFromString`, `kSanitizerAPIFromDocument` and
   `kSanitizerAPIFromFragment` tell us what kind of input people are using.
 
 [sanitizer]: https://wicg.github.io/sanitizer-api/
+
+## Private Network Access
+
+[Private Network Access][pna] helps to prevent the user agent from
+inadvertently enabling attacks on devices running on a user's local intranet,
+or services running on the user's machine directly.
+
+* Use of PNA in workers tracked via:
+  - `kPrivateNetworkAccessFetchesWorkerScript`
+  - `kPrivateNetworkAccessWithWorker`
+
+* `kPrivateNetworkAccessNullIpAddress` is an experimental use counter for
+  accesses to the 0.0.0.0 IP address (and the corresponding `[::]` IPv6 address).
+  These can be used to access localhost on MacOS and Linux and bypass Private
+  Network Access checks. We intent to block all such requests. See
+  https://crbug.com/1300021 and https://github.com/whatwg/fetch/issues/1117.
+
+[pna]: https://wicg.github.io/private-network-access/

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 
 namespace base {
@@ -47,7 +45,7 @@ class FileOperations {
 
   class Reader {
    public:
-    using OpenResult = protocol::FileTransferResult<Monostate>;
+    using OpenResult = protocol::FileTransferResult<absl::monostate>;
     using OpenCallback = base::OnceCallback<void(OpenResult result)>;
 
     // On success, |result| will contain the read data, or an empty vector on
@@ -73,7 +71,7 @@ class FileOperations {
 
   class Writer {
    public:
-    using Result = protocol::FileTransferResult<Monostate>;
+    using Result = protocol::FileTransferResult<absl::monostate>;
     using Callback = base::OnceCallback<void(Result result)>;
 
     // Destructing before the file is completely written and closed will
@@ -88,7 +86,7 @@ class FileOperations {
     // complete.
     virtual void Open(const base::FilePath& filename, Callback callback) = 0;
 
-    // Writes a chuck to the file. Chunks cannot be queued; the caller must
+    // Writes a chunk to the file. Chunks cannot be queued; the caller must
     // wait until callback is called before calling WriteChunk again or calling
     // Close.
     virtual void WriteChunk(std::vector<std::uint8_t> data,
@@ -102,12 +100,14 @@ class FileOperations {
   };
 
   FileOperations() = default;
+
+  FileOperations(const FileOperations&) = delete;
+  FileOperations& operator=(const FileOperations&) = delete;
+
   virtual ~FileOperations() = default;
 
   virtual std::unique_ptr<Reader> CreateReader() = 0;
   virtual std::unique_ptr<Writer> CreateWriter() = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FileOperations);
 };
 }  // namespace remoting
 

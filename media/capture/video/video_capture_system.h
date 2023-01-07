@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,10 +25,12 @@ class CAPTURE_EXPORT VideoCaptureSystem {
   // that calls GetDeviceInfosAsync()
   virtual void GetDeviceInfosAsync(DeviceInfoCallback result_callback) = 0;
 
-  // Creates a VideoCaptureDevice object. Returns nullptr if something goes
-  // wrong.
-  virtual std::unique_ptr<VideoCaptureDevice> CreateDevice(
+  // Creates a VideoCaptureErrorOrDevice object. Contains an error code if
+  // something goes wrong.
+  virtual VideoCaptureErrorOrDevice CreateDevice(
       const std::string& device_id) = 0;
+
+  virtual VideoCaptureDeviceFactory* GetFactory() = 0;
 };
 
 }  // namespace media

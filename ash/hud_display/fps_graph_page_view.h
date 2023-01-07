@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@
 #include "ash/hud_display/graph.h"
 #include "ash/hud_display/graph_page_view_base.h"
 #include "base/containers/circular_deque.h"
+#include "base/time/time.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/compositor_observer.h"
-#include "ui/views/view_observer.h"
+#include "ui/views/widget/widget_observer.h"
 
 namespace gfx {
 struct PresentationFeedback;
@@ -21,14 +22,14 @@ struct PresentationFeedback;
 namespace ash {
 namespace hud_display {
 
-class Grid;
+class ReferenceLines;
 
 // Draws several graphs per UI compositor frame.  Every time
 // OnDidPresentCompositorFrame() is called a new value is appended to the end
 // of the graph. Every time UpdateData() is called, legend values are updated.
 class FPSGraphPageView : public GraphPageViewBase,
                          public ui::CompositorObserver,
-                         public views::ViewObserver,
+                         public views::WidgetObserver,
                          public aura::WindowObserver {
  public:
   METADATA_HEADER(FPSGraphPageView);
@@ -39,6 +40,8 @@ class FPSGraphPageView : public GraphPageViewBase,
   ~FPSGraphPageView() override;
 
   // GraphPageViewBase:
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
   void OnPaint(gfx::Canvas* canvas) override;
   void UpdateData(const DataSource::Snapshot& snapshot) override;
 
@@ -47,8 +50,8 @@ class FPSGraphPageView : public GraphPageViewBase,
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override;
 
-  // views::ViewObserver:
-  void OnViewRemovedFromWidget(views::View* observed_view) override;
+  // views::WidgetObserver:
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   // aura::WindowObserver:
   void OnWindowAddedToRootWindow(aura::Window* window) override;
@@ -62,7 +65,7 @@ class FPSGraphPageView : public GraphPageViewBase,
     return frame_rate_for_last_half_second_;
   }
 
-  // Sets grid top label to the maximum of the observed refresh rate.
+  // Sets top reference line label to the maximum of the observed refresh rate.
   void UpdateTopLabel(float f_refresh_rate);
 
   // Updates the stats with |feedback|.
@@ -75,7 +78,7 @@ class FPSGraphPageView : public GraphPageViewBase,
   // Active display refresh rate.
   Graph refresh_rate_;
 
-  Grid* grid_;  // not owned
+  ReferenceLines* reference_lines_;  // not owned
 
   float frame_rate_for_last_half_second_;
 

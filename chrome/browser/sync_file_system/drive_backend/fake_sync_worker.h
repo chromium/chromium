@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_worker_interface.h"
@@ -42,6 +41,10 @@ class SyncEngineContext;
 class FakeSyncWorker : public SyncWorkerInterface {
  public:
   FakeSyncWorker();
+
+  FakeSyncWorker(const FakeSyncWorker&) = delete;
+  FakeSyncWorker& operator=(const FakeSyncWorker&) = delete;
+
   ~FakeSyncWorker() override;
 
   // SyncWorkerInterface overrides.
@@ -94,9 +97,7 @@ class FakeSyncWorker : public SyncWorkerInterface {
   std::unique_ptr<SyncEngineContext> sync_engine_context_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-  base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSyncWorker);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace drive_backend

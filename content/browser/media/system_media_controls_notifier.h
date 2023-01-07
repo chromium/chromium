@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -15,9 +16,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/timer/timer.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace system_media_controls {
 class SystemMediaControls;
@@ -35,20 +36,25 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
  public:
   explicit SystemMediaControlsNotifier(
       system_media_controls::SystemMediaControls* system_media_controls);
+
+  SystemMediaControlsNotifier(const SystemMediaControlsNotifier&) = delete;
+  SystemMediaControlsNotifier& operator=(const SystemMediaControlsNotifier&) =
+      delete;
+
   ~SystemMediaControlsNotifier() override;
 
   // media_session::mojom::MediaControllerObserver implementation.
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) override;
   void MediaSessionMetadataChanged(
-      const base::Optional<media_session::MediaMetadata>& metadata) override;
+      const absl::optional<media_session::MediaMetadata>& metadata) override;
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& actions)
       override;
   void MediaSessionChanged(
-      const base::Optional<base::UnguessableToken>& request_id) override {}
+      const absl::optional<base::UnguessableToken>& request_id) override;
   void MediaSessionPositionChanged(
-      const base::Optional<media_session::MediaPosition>& position) override;
+      const absl::optional<media_session::MediaPosition>& position) override;
 
   // media_session::mojom::MediaControllerImageObserver implementation.
   void MediaControllerImageChanged(
@@ -60,7 +66,7 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
 
   // We want to hide the controls on the lock screen on Windows in certain
   // cases. We don't want this functionality on other OSes.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Polls the current idle state of the system.
   void CheckLockState();
 
@@ -79,11 +85,12 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
   bool screen_locked_ = false;
   base::RepeatingTimer lock_polling_timer_;
   base::OneShotTimer hide_smtc_timer_;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Our connection to the System Media Controls. We don't own it since it's a
   // global instance.
-  system_media_controls::SystemMediaControls* const system_media_controls_;
+  const raw_ptr<system_media_controls::SystemMediaControls>
+      system_media_controls_;
 
   // Tracks current media session state/metadata.
   mojo::Remote<media_session::mojom::MediaController> media_controller_;
@@ -96,8 +103,6 @@ class CONTENT_EXPORT SystemMediaControlsNotifier
       media_controller_image_observer_receiver_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMediaControlsNotifier);
 };
 
 }  // namespace content

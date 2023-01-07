@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,9 @@ void RemoteObjectGatewayImpl::InjectNamed(const WTF::String& object_name,
   ScriptState* script_state = ToScriptStateForMainWorld(GetSupplementable());
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
+  v8::MicrotasksScope microtasks_scope(
+      isolate, ToMicrotaskQueue(script_state),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Local<v8::Context> context = script_state->GetContext();
   if (context.IsEmpty())
     return;
@@ -112,10 +115,12 @@ void RemoteObjectGatewayImpl::BindRemoteObjectReceiver(
   object_host_->GetObject(object_id, std::move(receiver));
 }
 
-void RemoteObjectGatewayImpl::ReleaseObject(int32_t object_id) {
+void RemoteObjectGatewayImpl::ReleaseObject(int32_t object_id,
+                                            RemoteObject* remote_object) {
   auto iter = remote_objects_.find(object_id);
   DCHECK(iter != remote_objects_.end());
-  remote_objects_.erase(iter);
+  if (iter->value == remote_object)
+    remote_objects_.erase(iter);
   object_host_->ReleaseObject(object_id);
 }
 

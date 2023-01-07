@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/rotation/rotation_lock_feature_pod_controller.h"
 
+#include "ash/constants/quick_settings_catalogs.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -34,12 +35,16 @@ FeaturePodButton* RotationLockFeaturePodController::CreateButton() {
   return button_;
 }
 
-void RotationLockFeaturePodController::OnIconPressed() {
-  Shell::Get()->screen_orientation_controller()->ToggleUserRotationLock();
+QsFeatureCatalogName RotationLockFeaturePodController::GetCatalogName() {
+  return QsFeatureCatalogName::kRotationLock;
 }
 
-SystemTrayItemUmaType RotationLockFeaturePodController::GetUmaType() const {
-  return SystemTrayItemUmaType::UMA_ROTATION_LOCK;
+void RotationLockFeaturePodController::OnIconPressed() {
+  TrackToggleUMA(/*target_toggle_state=*/!Shell::Get()
+                     ->screen_orientation_controller()
+                     ->user_rotation_locked());
+
+  Shell::Get()->screen_orientation_controller()->ToggleUserRotationLock();
 }
 
 void RotationLockFeaturePodController::OnTabletPhysicalStateChanged() {
@@ -51,6 +56,10 @@ void RotationLockFeaturePodController::OnUserRotationLockChanged() {
 }
 
 void RotationLockFeaturePodController::UpdateButton() {
+  // Even though auto-rotation is also supported when the device is not in a
+  // tablet physical state but kSupportsClamshellAutoRotation is set. The "Auto
+  // rotate" feature pod button in the system tray menu is not expected to be
+  // shown in the case.
   const bool is_auto_rotation_allowed =
       Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
   button_->SetVisible(is_auto_rotation_allowed);

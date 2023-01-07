@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,5 +21,10 @@ MediaStreamTrackPlatform::MediaStreamTrackPlatform(bool is_local_track)
     : is_local_track_(is_local_track) {}
 
 MediaStreamTrackPlatform::~MediaStreamTrackPlatform() {}
+
+MediaStreamTrackPlatform::CaptureHandle
+MediaStreamTrackPlatform::GetCaptureHandle() {
+  return MediaStreamTrackPlatform::CaptureHandle();
+}
 
 }  // namespace blink

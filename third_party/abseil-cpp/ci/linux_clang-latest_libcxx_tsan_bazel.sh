@@ -25,7 +25,7 @@ if [[ -z ${ABSEIL_ROOT:-} ]]; then
 fi
 
 if [[ -z ${STD:-} ]]; then
-  STD="c++11 c++14 c++17 c++20"
+  STD="c++14 c++17 c++20"
 fi
 
 if [[ -z ${COMPILATION_MODE:-} ]]; then
@@ -70,17 +70,20 @@ for std in ${STD}; do
         --rm \
         -e CC="/opt/llvm/clang/bin/clang" \
         -e BAZEL_CXXOPTS="-std=${std}:-nostdinc++" \
-        -e BAZEL_LINKOPTS="-L/opt/llvm/libcxx-tsan/lib:-lc++:-lc++abi:-lm:-Wl,-rpath=/opt/llvm/libcxx-tsan/lib" \
-        -e CPLUS_INCLUDE_PATH="/opt/llvm/libcxx-tsan/include/c++/v1" \
+        -e BAZEL_LINKOPTS="-L/opt/llvm/libcxx-tsan/lib/x86_64-unknown-linux-gnu:-lc++:-lc++abi:-lm:-Wl,-rpath=/opt/llvm/libcxx-tsan/lib/x86_64-unknown-linux-gnu" \
+        -e CPLUS_INCLUDE_PATH="/opt/llvm/libcxx-tsan/include/x86_64-unknown-linux-gnu/c++/v1:/opt/llvm/libcxx-tsan/include/c++/v1" \
         ${DOCKER_EXTRA_ARGS:-} \
         ${DOCKER_CONTAINER} \
         /usr/local/bin/bazel test ... \
           --build_tag_filters="-notsan" \
           --compilation_mode="${compilation_mode}" \
           --copt="${exceptions_mode}" \
+          --copt="-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1" \
           --copt="-fsanitize=thread" \
           --copt="-fno-sanitize-blacklist" \
           --copt=-Werror \
+          --distdir="/bazel-distdir" \
+          --features=external_include_paths \
           --keep_going \
           --linkopt="-fsanitize=thread" \
           --show_timestamps \

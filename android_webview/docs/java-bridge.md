@@ -58,7 +58,7 @@ somewhat limited. This is what is allowed:
 
 The purpose of Java bridge is to establish interaction between two virtual
 machines (VMs): Java and JavaScript. Both VMs employ a similar approach to
-managing objects lifetime -- VMs gather and dispose unreferenced objects during
+managing objects lifetime—VMs gather and dispose unreferenced objects during
 garbage collection (GC) cycles. The twist that Java bridge adds is that objects
 in one VM can now virtually reference (and prevent from being disposed) objects
 from another VM. Let us consider the following Java code:
@@ -150,11 +150,11 @@ The figure is now much scarier. Let's figure out what is what here:
 - On the C++ browser side:
   Here we have the aforementioned **WebContents** object which delegates Java
   Bridge-related requests to **JavaBridgeHost**. WebContents talks to the
-  objects on the renderer side via Chrome's IPC mechanism.
+  objects on the renderer side via Chromium's IPC mechanism.
 - On the C++ renderer side:
   **RenderFrame** corresponds to a single HTML frame and it "owns" a JavaScript
   global context object (aka **window**). For each JavaScript interface object,
-  a corresponding **JavaBridgeObject** instance is maintained. In Chrome
+  a corresponding **JavaBridgeObject** instance is maintained. In Chromium
   terminology, this object is called "wrapper". In the Gin-based implementation,
   wrappers don't hold strong references to their corresponding JavaScript
   interface objects, also to prevent memory leaks due to cycles of
@@ -221,8 +221,8 @@ marked as LIVECONNECT_COMPLIANCE in Java Bridge code and tests.
 
 When coercing JavaScript "array-like" objects into Java arrays, only indexed
 properties are preserved, and named properties are shaved off. Also, passing an
-arbitrary JavaScript dictionary object via an interface method is impossible --
-it is simply converted into 0, "", or null (depending on the destination Java
+arbitrary JavaScript dictionary object via an interface method is impossible—it
+is simply converted into 0, "", or null (depending on the destination Java
 type).
 
 For dealing with method overloading, the spec proposes a cost-based model for
@@ -266,10 +266,10 @@ Threading issues need to be considered when dealing with invocations of methods
 of injected objects. In accordance with the API definition, methods are invoked
 on a dedicated thread maintained by WebView.
 
-Calls to interface methods are synchronous -- JavaScript VM stops and waits for
-a result to be returned from the invoked method. In Chrome, this means that the
-IPC message sent from a renderer to the browser must be synchronous (such
-messages are in fact rarely used in Chrome).
+Calls to interface methods are synchronous—JavaScript VM stops and waits for
+a result to be returned from the invoked method. In Chromium, this means that
+the IPC message sent from a renderer to the browser must be synchronous (such
+messages are in fact rarely used in Chromium).
 
 The requirement for serving the requests on the background thread means that the
 following code must work (see

@@ -1,0 +1,7 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='123-456-7890'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='123-456-7890'
+++++++++++++UNKNOWN label='123-456-7890'

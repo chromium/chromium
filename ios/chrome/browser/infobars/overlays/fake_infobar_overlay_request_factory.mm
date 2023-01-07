@@ -1,26 +1,22 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/infobars/overlays/fake_infobar_overlay_request_factory.h"
 
+#import "base/check.h"
 #import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-FakeInfobarOverlayRequestFactory::FakeInfobarOverlayRequestFactory() = default;
-
-FakeInfobarOverlayRequestFactory::~FakeInfobarOverlayRequestFactory() = default;
-
-std::unique_ptr<OverlayRequest>
-FakeInfobarOverlayRequestFactory::CreateInfobarRequest(
-    infobars::InfoBar* infobar,
-    InfobarOverlayType type) {
+std::unique_ptr<OverlayRequest> FakeInfobarOverlayRequestFactory(
+    InfoBarIOS* infobar_ios,
+    InfobarOverlayType overlay_type) {
+  DCHECK(infobar_ios);
   return OverlayRequest::CreateWithConfig<InfobarOverlayRequestConfig>(
-      static_cast<InfoBarIOS*>(infobar), type,
-      static_cast<InfoBarIOS*>(infobar)->high_priority());
+      infobar_ios, overlay_type, infobar_ios->high_priority());
 }

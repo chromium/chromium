@@ -1,19 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/public/cpp/network_icon_image_source.h"
 
-#include "ash/public/cpp/ash_constants.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/gfx/vector_icon_utils.h"
 
 namespace ash {
 namespace network_icon {
@@ -70,6 +70,7 @@ void NetworkIconImageSource::Draw(gfx::Canvas* canvas) {
 
   if (badges_.top_left.icon)
     paint_badge(badges_.top_left, 0, icon_y);
+
   if (badges_.bottom_left.icon) {
     paint_badge(
         badges_.bottom_left, 0,
@@ -123,11 +124,12 @@ bool SignalStrengthImageSource::HasRepresentationAtAllScales() const {
 
 void SignalStrengthImageSource::DrawArcs(gfx::Canvas* canvas) {
   gfx::RectF oval_bounds((gfx::Rect(size())));
-  oval_bounds.Inset(gfx::Insets(padding_));
+  oval_bounds.Inset(padding_);
   // Double the width and height. The new midpoint should be the former
   // bottom center.
-  oval_bounds.Inset(-oval_bounds.width() / 2, 0, -oval_bounds.width() / 2,
-                    -oval_bounds.height());
+  oval_bounds.Inset(gfx::InsetsF::TLBR(0, -oval_bounds.width() / 2,
+                                       -oval_bounds.height(),
+                                       -oval_bounds.width() / 2));
 
   constexpr SkScalar kAngleAboveHorizontal = 51.f;
   constexpr SkScalar kStartAngle = 180.f + kAngleAboveHorizontal;

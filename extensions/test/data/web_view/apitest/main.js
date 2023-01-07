@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@ embedder.setUp_ = function(config) {
   embedder.windowOpenGuestURL = embedder.baseGuestURL + '/guest.html';
   embedder.sameDocumentNavigationURL =
       embedder.baseGuestURL + '/guest_same_document_navigation.html';
+  embedder.expectUserAgentURL = 'https://localhost:' + config.testServer.port + '/expect-user-agent';
 };
 
 window.runTest = function(testName) {
@@ -1128,20 +1129,20 @@ function testLoadAbortNonWebSafeScheme() {
 // cause a crash.
 function testLoadAbortUnknownScheme() {
   var webview = document.createElement('webview');
-  var ftpURL = 'ftp://example.com/';
+  var wsURL = 'ws://example.com/';
   webview.addEventListener('loadabort', function(e) {
     embedder.test.assertEq('ERR_UNKNOWN_URL_SCHEME', e.reason);
-    embedder.test.assertEq(ftpURL, e.url);
+    embedder.test.assertEq(wsURL, e.url);
   });
   webview.addEventListener('loadstop', function(e) {
-    embedder.test.assertEq(ftpURL, webview.src);
+    embedder.test.assertEq(wsURL, webview.src);
     embedder.test.succeed();
   });
   webview.addEventListener('exit', function(e) {
     // We should not crash.
     embedder.test.fail();
   });
-  webview.src = ftpURL;
+  webview.src = wsURL;
   document.body.appendChild(webview);
 }
 
@@ -1943,6 +1944,21 @@ function testClosedShadowRoot() {
   document.body.appendChild(webview);
 }
 
+// Ensure that the 'setUserAgentOverride' function sets the correct User-Agent
+// request header and removes the values of User-Agent Client Hint headers
+function testSetUserAgentOverride() {
+  var webview = new WebView();
+  webview.setUserAgentOverride('foobar');
+
+  // Expectations are checked in the server.
+  webview.addEventListener('loadstop', () => {
+    embedder.test.succeed();
+  });
+
+  webview.setAttribute("src", embedder.expectUserAgentURL);
+  document.body.appendChild(webview);
+}
+
 // Tests end.
 
 embedder.test.testList = {
@@ -2021,6 +2037,7 @@ embedder.test.testList = {
   'testWebRequestAPIGoogleProperty': testWebRequestAPIGoogleProperty,
   'testCaptureVisibleRegion': testCaptureVisibleRegion,
   'testClosedShadowRoot': testClosedShadowRoot,
+  'testSetUserAgentOverride': testSetUserAgentOverride,
 };
 
 onload = function() {

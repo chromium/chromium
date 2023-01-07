@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2016 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -37,10 +37,10 @@ def sha1sumfile(filename):
 
 
 def get_proc_output(args):
-  return subprocess.check_output(args).strip()
+  return subprocess.check_output(args, encoding='utf-8').strip()
 
 
-def build_and_upload(script_path, distro, release, arch, lock):
+def build_and_upload(script_path, distro, release, key, arch, lock):
   script_dir = os.path.dirname(os.path.realpath(__file__))
 
   run_script([script_path, 'BuildSysroot' + arch])
@@ -56,13 +56,13 @@ def build_and_upload(script_path, distro, release, arch, lock):
       'Tarball': tarball,
       'Sha1Sum': sha1sum,
       'SysrootDir': sysroot_dir,
+      'Key': key,
   }
   with lock:
-    with open(os.path.join(script_dir, 'sysroots.json'), 'rw+') as f:
-      sysroots = json.load(f)
+    fname = os.path.join(script_dir, 'sysroots.json')
+    sysroots = json.load(open(fname))
+    with open(fname, 'w') as f:
       sysroots["%s_%s" % (release, arch.lower())] = sysroot_metadata
-      f.seek(0)
-      f.truncate()
       f.write(
           json.dumps(
               sysroots, sort_keys=True, indent=4, separators=(',', ': ')))
@@ -77,11 +77,12 @@ def main():
     script_path = os.path.join(script_dir, filename)
     distro = get_proc_output([script_path, 'PrintDistro'])
     release = get_proc_output([script_path, 'PrintRelease'])
+    key = get_proc_output([script_path, 'PrintKey'])
     architectures = get_proc_output([script_path, 'PrintArchitectures'])
     for arch in architectures.split('\n'):
-      proc = multiprocessing.Process(
-          target=build_and_upload,
-          args=(script_path, distro, release, arch, lock))
+      proc = multiprocessing.Process(target=build_and_upload,
+                                     args=(script_path, distro, release, key,
+                                           arch, lock))
       procs.append(("%s %s (%s)" % (distro, release, arch), proc))
       proc.start()
   for _, proc in procs:

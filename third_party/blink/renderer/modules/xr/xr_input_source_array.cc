@@ -1,9 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/xr/xr_input_source_array.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 
 namespace blink {
 
@@ -29,7 +28,10 @@ XRInputSource* XRInputSourceArray::operator[](unsigned index) const {
 }
 
 XRInputSource* XRInputSourceArray::GetWithSourceId(uint32_t source_id) {
-  return input_sources_.at(source_id);
+  auto it = input_sources_.find(source_id);
+  if (it != input_sources_.end())
+    return it->value;
+  return nullptr;
 }
 
 void XRInputSourceArray::RemoveWithSourceId(uint32_t source_id) {

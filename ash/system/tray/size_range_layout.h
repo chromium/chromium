@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/layout_manager.h"
 
@@ -46,12 +45,15 @@ class ASH_EXPORT SizeRangeLayout : public views::LayoutManager {
   SizeRangeLayout();
 
   // Create a layout using the given size set as the minimum and maximum sizes.
-  SizeRangeLayout(const gfx::Size& size);
+  explicit SizeRangeLayout(const gfx::Size& size);
 
   // Create a layout with the given minimum and maximum preferred sizes. If
   // |max_size| is smaller than |min_size| then |min_size| will be set to the
   // smaller |max_size| value.
   SizeRangeLayout(const gfx::Size& min_size, const gfx::Size& max_size);
+
+  SizeRangeLayout(const SizeRangeLayout&) = delete;
+  SizeRangeLayout& operator=(const SizeRangeLayout&) = delete;
 
   ~SizeRangeLayout() override;
 
@@ -110,8 +112,6 @@ class ASH_EXPORT SizeRangeLayout : public views::LayoutManager {
 
   // The maximum preferred size.
   gfx::Size max_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(SizeRangeLayout);
 };
 
 }  // namespace ash

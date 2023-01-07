@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,11 +28,10 @@
 #include "url/origin.h"
 
 // TODO(crbug.com/722453): Use a dedicated build flag for GuestView.
-#if !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 #include "components/guest_view/browser/guest_view_base.h"  // nogncheck
 #endif
 
-using base::TimeDelta;
 using base::TimeTicks;
 using content::RenderViewHost;
 using content::SessionStorageNamespace;
@@ -58,7 +57,7 @@ NoStatePrefetchLinkManager::LinkTrigger::LinkTrigger(
     : launcher_render_process_id(launcher_render_process_id),
       launcher_render_view_id(launcher_render_view_id),
       url(attributes->url),
-      rel_type(attributes->rel_type),
+      trigger_type(attributes->trigger_type),
       referrer(content::Referrer(*attributes->referrer)),
       initiator_origin(initiator_origin),
       size(attributes->view_size),
@@ -87,21 +86,20 @@ NoStatePrefetchLinkManager::~NoStatePrefetchLinkManager() {
   }
 }
 
-base::Optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
+absl::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
     int launcher_render_process_id,
     int launcher_render_view_id,
+    int launcher_render_frame_id,
     blink::mojom::PrerenderAttributesPtr attributes,
     const url::Origin& initiator_origin) {
 // TODO(crbug.com/722453): Use a dedicated build flag for GuestView.
-#if !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
-  content::RenderViewHost* rvh = content::RenderViewHost::FromID(
-      launcher_render_process_id, launcher_render_view_id);
-  content::WebContents* web_contents =
-      rvh ? content::WebContents::FromRenderViewHost(rvh) : nullptr;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      launcher_render_process_id, launcher_render_frame_id);
   // Guests inside <webview> do not support cross-process navigation and so we
   // do not allow guests to prerender content.
-  if (guest_view::GuestViewBase::IsGuest(web_contents))
-    return base::nullopt;
+  if (guest_view::GuestViewBase::IsGuest(rfh))
+    return absl::nullopt;
 #endif
 
   // Check if the launcher is itself an unswapped prerender.
@@ -113,7 +111,7 @@ base::Optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
     // The launcher is a prerender about to be destroyed asynchronously, but
     // its AddLinkRelPrerender message raced with shutdown. Ignore it.
     DCHECK_NE(FINAL_STATUS_USED, no_state_prefetch_contents->final_status());
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto trigger = std::make_unique<LinkTrigger>(
@@ -133,7 +131,7 @@ base::Optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
   // may have been discarded by StartLinkTriggers().
   if (!triggers_.empty() && triggers_.back().get() == trigger_ptr)
     return trigger_ptr->link_trigger_id;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void NoStatePrefetchLinkManager::OnCancelLinkTrigger(int link_trigger_id) {
@@ -231,7 +229,7 @@ void NoStatePrefetchLinkManager::StartLinkTriggers() {
        pending_triggers) {
     LinkTrigger* pending_trigger = it->get();
 
-    TimeDelta trigger_age = now - pending_trigger->creation_time;
+    base::TimeDelta trigger_age = now - pending_trigger->creation_time;
     if (trigger_age >= manager_->config().max_wait_to_launch) {
       // This trigger waited too long in the queue before launching.
       triggers_.erase(it);
@@ -262,10 +260,10 @@ void NoStatePrefetchLinkManager::StartLinkTriggers() {
     }
 
     std::unique_ptr<NoStatePrefetchHandle> handle =
-        manager_->AddPrerenderFromLinkRelPrerender(
+        manager_->StartPrefetchingFromLinkRelPrerender(
             pending_trigger->launcher_render_process_id,
             pending_trigger->launcher_render_view_id, pending_trigger->url,
-            pending_trigger->rel_type, pending_trigger->referrer,
+            pending_trigger->trigger_type, pending_trigger->referrer,
             pending_trigger->initiator_origin, pending_trigger->size);
     if (!handle) {
       // This trigger couldn't be launched, it's gone.

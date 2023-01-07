@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
-#include "net/cert/x509_cert_types.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "net/cert/x509_certificate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,8 +37,7 @@ class BinaryFeatureExtractorWinTest : public testing::Test {
     for (int i = 0; i < chain.element_size(); ++i) {
       scoped_refptr<net::X509Certificate> cert =
           net::X509Certificate::CreateFromBytes(
-              chain.element(i).certificate().data(),
-              chain.element(i).certificate().size());
+              base::as_bytes(base::make_span(chain.element(i).certificate())));
       if (cert)
         certs->push_back(cert);
     }

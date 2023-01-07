@@ -1,16 +1,8 @@
-// Copyright 2010 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.cssom.iframe.styleTest');
 goog.setTestOnly();
@@ -106,6 +98,10 @@ function normalizeCssText(cssText) {
 }
 
 testSuite({
+  /**
+   * @suppress {visibility,missingProperties} CssSelector_ property is private
+   * and selectorPartIndex is unknown.
+   */
   testMatchCssSelector() {
     const container = dom.createElement(TagName.DIV);
     container.className = 'container';
@@ -146,7 +142,8 @@ testSuite({
       const input = expectedResults[i][0];
       const expectedResult = expectedResults[i][1];
       const selector = new style.CssSelector_(input);
-      const result = selector.matchElementAncestry(elementAncestry);
+      const result =
+          /** @type {?} */ (selector.matchElementAncestry(elementAncestry));
       if (expectedResult == null) {
         assertEquals('Expected null result', expectedResult, result);
       } else {
@@ -194,17 +191,13 @@ testSuite({
     const color = standardizeCSSValue('color', 'red');
     const NORMAL_RULE = `a{color:${color}`;
     const FF_2_RULE = `a{color:${color}!important`;
-    if (userAgent.GECKO && !userAgent.isVersionOrHigher('1.9a')) {
-      assertContains(FF_2_RULE, cssText);
-    } else {
-      assertContains(NORMAL_RULE, cssText);
-      assertNotContains(FF_2_RULE, cssText);
-    }
+    assertContains(NORMAL_RULE, cssText);
+    assertNotContains(FF_2_RULE, cssText);
   },
 
   testCopyBackgroundContext() {
     const testDiv = document.getElementById('backgroundTest');
-    const cssText = style.getElementContext(testDiv, null, true);
+    const cssText = style.getElementContext(testDiv, undefined, true);
     const iframe = dom.createElement(TagName.IFRAME);
     const ancestor = document.getElementById('backgroundTest-ancestor-1');
     ancestor.parentNode.insertBefore(iframe, ancestor.nextSibling);
@@ -222,19 +215,15 @@ testSuite({
     assertTrue(
         'Background image should be copied from ancestor element',
         /body{[^{]*background-image:url\(/.test(normalizedCssText));
-    // Background-position can't be calculated in FF2, due to this bug:
-    // http://bugzilla.mozilla.org/show_bug.cgi?id=316981
-    if (!(userAgent.GECKO && !userAgent.isVersionOrHigher('1.9'))) {
-      // Expected x position is:
-      // originalBackgroundPositionX - elementOffsetLeft
-      // 40px - (1px + 8px) == 31px
-      // Expected y position is:
-      // originalBackgroundPositionY - elementOffsetLeft
-      // 70px - (1px + 10px + 5px) == 54px;
-      assertTrue(
-          'Background image position should be adjusted correctly',
-          /body{[^{]*background-position:31px54px/.test(normalizedCssText));
-    }
+    // Expected x position is:
+    // originalBackgroundPositionX - elementOffsetLeft
+    // 40px - (1px + 8px) == 31px
+    // Expected y position is:
+    // originalBackgroundPositionY - elementOffsetLeft
+    // 70px - (1px + 10px + 5px) == 54px;
+    assertTrue(
+        'Background image position should be adjusted correctly',
+        /body{[^{]*background-position:31px54px/.test(normalizedCssText));
   },
 
   testCopyBackgroundContextFromIframe() {
@@ -253,7 +242,7 @@ testSuite({
     doc.body.style.padding = '0';
     doc.body.innerHTML = '<p style="margin: 0">I am transparent!</p>';
     const normalizedCssText = normalizeCssText(
-        style.getElementContext(doc.body.firstChild, null, true));
+        style.getElementContext(doc.body.firstChild, undefined, true));
     // Background properties should get copied through from the parent
     // document since the iframe is transparent
     assertTrue(
@@ -263,27 +252,23 @@ testSuite({
     assertTrue(
         'Background image should be copied from ancestor element',
         /body{[^{]*background-image:url\(/.test(normalizedCssText));
-    // Background-position can't be calculated in FF2, due to this bug:
-    // http://bugzilla.mozilla.org/show_bug.cgi?id=316981
-    if (!(userAgent.GECKO && !userAgent.isVersionOrHigher('1.9'))) {
-      // Image offset should have been calculated to be the same as the
-      // above example, but adding iframe offset and borderWidth.
-      // Expected x position is:
-      // originalBackgroundPositionX - elementOffsetLeft
-      // 40px - (1px + 8px + 5px + 2px) == 24px
-      // Expected y position is:
-      // originalBackgroundPositionY - elementOffsetLeft
-      // 70px - (1px + 10px + 5px + 5px + 2px) == 47px;
-      assertTrue(
-          'Background image position should be adjusted correctly',
-          !!/body{[^{]*background-position:24px47px/.exec(normalizedCssText));
-    }
+    // Image offset should have been calculated to be the same as the
+    // above example, but adding iframe offset and borderWidth.
+    // Expected x position is:
+    // originalBackgroundPositionX - elementOffsetLeft
+    // 40px - (1px + 8px + 5px + 2px) == 24px
+    // Expected y position is:
+    // originalBackgroundPositionY - elementOffsetLeft
+    // 70px - (1px + 10px + 5px + 5px + 2px) == 47px;
+    assertTrue(
+        'Background image position should be adjusted correctly',
+        !!/body{[^{]*background-position:24px47px/.exec(normalizedCssText));
+
     iframe.parentNode.removeChild(iframe);
   },
 
   testCopyFontFaceRules() {
-    const isFontFaceCssomSupported = userAgent.WEBKIT || userAgent.OPERA ||
-        (userAgent.GECKO && userAgent.isVersionOrHigher('1.9.1'));
+    const isFontFaceCssomSupported = userAgent.WEBKIT || userAgent.GECKO;
     // We cannot use goog.testing.ExpectedFailures since it dynamically
     // brings in CSS which causes the background context tests to fail
     // in IE6.

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 
@@ -40,6 +41,8 @@ public interface ButtonData {
         // TODO(crbug.com/1185382): make mOnClickListener @NonNull
         @Nullable
         private final View.OnClickListener mOnClickListener;
+        @Nullable
+        private final View.OnLongClickListener mOnLongClickListener;
         @StringRes
         private final int mContentDescriptionResId;
         private final boolean mSupportsTinting;
@@ -47,24 +50,23 @@ public interface ButtonData {
         private final IPHCommandBuilder mIPHCommandBuilder;
         @AdaptiveToolbarButtonVariant
         private final int mButtonVariant;
+        private final boolean mIsDynamicAction;
+        @StringRes
+        private final int mActionChipLabelResId;
 
         public ButtonSpec(@NonNull Drawable drawable, @NonNull View.OnClickListener onClickListener,
-                int contentDescriptionResId, boolean supportsTinting,
-                @Nullable IPHCommandBuilder iphCommandBuilder,
-                @AdaptiveToolbarButtonVariant int buttonVariant) {
+                @Nullable View.OnLongClickListener onLongClickListener, int contentDescriptionResId,
+                boolean supportsTinting, @Nullable IPHCommandBuilder iphCommandBuilder,
+                @AdaptiveToolbarButtonVariant int buttonVariant, int actionChipLabelResId) {
             mDrawable = drawable;
             mOnClickListener = onClickListener;
+            mOnLongClickListener = onLongClickListener;
             mContentDescriptionResId = contentDescriptionResId;
             mSupportsTinting = supportsTinting;
             mIPHCommandBuilder = iphCommandBuilder;
             mButtonVariant = buttonVariant;
-        }
-
-        public ButtonSpec(Drawable drawable, View.OnClickListener onClickListener,
-                int contentDescriptionResId, boolean supportsTinting,
-                IPHCommandBuilder iphCommandBuilder) {
-            this(drawable, onClickListener, contentDescriptionResId, supportsTinting,
-                    iphCommandBuilder, AdaptiveToolbarButtonVariant.UNKNOWN);
+            mIsDynamicAction = AdaptiveToolbarFeatures.isDynamicAction(mButtonVariant);
+            mActionChipLabelResId = actionChipLabelResId;
         }
 
         /** Returns the {@link Drawable} for the button icon. */
@@ -79,10 +81,22 @@ public interface ButtonData {
             return mOnClickListener;
         }
 
+        /** Returns an optional {@link View.OnLongClickListener} used on the button. */
+        @NonNull
+        public View.OnLongClickListener getOnLongClickListener() {
+            return mOnLongClickListener;
+        }
+
         /** Returns the resource if of the string describing the button. */
         @StringRes
         public int getContentDescriptionResId() {
             return mContentDescriptionResId;
+        }
+
+        /** Returns the resource ID of the string for the button's action chip label. */
+        @StringRes
+        public int getActionChipLabelResId() {
+            return mActionChipLabelResId;
         }
 
         /** Returns {@code true} if the button supports tinting. */
@@ -104,6 +118,11 @@ public interface ButtonData {
         @AdaptiveToolbarButtonVariant
         public int getButtonVariant() {
             return mButtonVariant;
+        }
+
+        /** Returns {@code true} if the button is a contextual page action. False otherwise. */
+        public boolean isDynamicAction() {
+            return mIsDynamicAction;
         }
     }
 }

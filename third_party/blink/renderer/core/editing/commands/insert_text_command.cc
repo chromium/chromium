@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/editing/commands/editing_commands_utilities.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
+#include "third_party/blink/renderer/core/editing/relocatable_position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
@@ -95,7 +96,7 @@ bool InsertTextCommand::PerformTrivialReplace(const String& text) {
   // We may need to manipulate neighboring whitespace if we're deleting text.
   // This case is tested in
   // InsertTextCommandTest_InsertEmptyTextAfterWhitespaceThatNeedsFixup.
-  if (text.IsEmpty())
+  if (text.empty())
     return false;
 
   if (!EndingSelection().IsRange())
@@ -121,36 +122,13 @@ bool InsertTextCommand::PerformTrivialReplace(const String& text) {
       return false;
   }
 
+  RelocatablePosition relocatable_start(start);
   Position end_position = ReplaceSelectedTextInNode(text);
   if (end_position.IsNull())
     return false;
 
-  SetEndingSelectionWithoutValidation(start, end_position);
-  SetEndingSelection(SelectionForUndoStep::From(
-      SelectionInDOMTree::Builder()
-          .Collapse(EndingVisibleSelection().End())
-          .Build()));
-  return true;
-}
-
-bool InsertTextCommand::PerformOverwrite(const String& text) {
-  Position start = EndingVisibleSelection().Start();
-  auto* text_node = DynamicTo<Text>(start.ComputeContainerNode());
-  if (start.IsNull() || !start.IsOffsetInAnchor() || !text_node)
-    return false;
-
-  unsigned count = std::min(
-      text.length(), text_node->length() - start.OffsetInContainerNode());
-  if (!count)
-    return false;
-
-  ReplaceTextInNode(text_node, start.OffsetInContainerNode(), count, text);
-
-  Position end_position =
-      Position(text_node, start.OffsetInContainerNode() + text.length());
-  SetEndingSelectionWithoutValidation(start, end_position);
-  if (EndingSelection().IsNone())
-    return true;
+  SetEndingSelectionWithoutValidation(relocatable_start.GetPosition(),
+                                      end_position);
   SetEndingSelection(SelectionForUndoStep::From(
       SelectionInDOMTree::Builder()
           .Collapse(EndingVisibleSelection().End())
@@ -194,9 +172,6 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
             GetDocument().GetExecutionContext());
       }
     }
-  } else if (GetDocument().GetFrame()->GetEditor().IsOverwriteModeEnabled()) {
-    if (PerformOverwrite(text_))
-      return;
   }
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);

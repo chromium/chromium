@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,10 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -68,6 +70,10 @@ void VerifyAccountTokens(
 class CustomFakeGCMDriver : public FakeGCMDriver {
  public:
   CustomFakeGCMDriver();
+
+  CustomFakeGCMDriver(const CustomFakeGCMDriver&) = delete;
+  CustomFakeGCMDriver& operator=(const CustomFakeGCMDriver&) = delete;
+
   ~CustomFakeGCMDriver() override;
 
   // GCMDriver overrides:
@@ -97,12 +103,10 @@ class CustomFakeGCMDriver : public FakeGCMDriver {
   bool connected_;
   std::vector<GCMClient::AccountTokenInfo> accounts_;
   bool update_accounts_called_;
-  GCMConnectionObserver* last_connection_observer_;
-  GCMConnectionObserver* removed_connection_observer_;
+  raw_ptr<GCMConnectionObserver> last_connection_observer_;
+  raw_ptr<GCMConnectionObserver> removed_connection_observer_;
   net::IPEndPoint ip_endpoint_;
   base::Time last_token_fetch_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomFakeGCMDriver);
 };
 
 CustomFakeGCMDriver::CustomFakeGCMDriver()
@@ -162,6 +166,7 @@ class GCMAccountTrackerTest : public testing::Test {
   // Helpers to pass fake info to the tracker.
   CoreAccountInfo AddAccount(const std::string& email);
   CoreAccountInfo SetPrimaryAccount(const std::string& email);
+  void ClearPrimaryAccount();
   void RemoveAccount(const CoreAccountId& account_id);
 
   // Helpers for dealing with OAuth2 access token requests.
@@ -196,9 +201,9 @@ GCMAccountTrackerTest::GCMAccountTrackerTest() {
   std::unique_ptr<AccountTracker> gaia_account_tracker(
       new AccountTracker(identity_test_env_.identity_manager()));
 
-  tracker_.reset(new GCMAccountTracker(std::move(gaia_account_tracker),
-                                       identity_test_env_.identity_manager(),
-                                       &driver_));
+  tracker_ = std::make_unique<GCMAccountTracker>(
+      std::move(gaia_account_tracker), identity_test_env_.identity_manager(),
+      &driver_);
 }
 
 GCMAccountTrackerTest::~GCMAccountTrackerTest() {
@@ -219,7 +224,12 @@ CoreAccountInfo GCMAccountTrackerTest::SetPrimaryAccount(
   // setting of the primary account is done afterward to check that the flow
   // that ensues from the GoogleSigninSucceeded callback firing works as
   // expected.
-  return identity_test_env_.MakePrimaryAccountAvailable(email);
+  return identity_test_env_.MakePrimaryAccountAvailable(
+      email, signin::ConsentLevel::kSync);
+}
+
+void GCMAccountTrackerTest::ClearPrimaryAccount() {
+  identity_test_env_.ClearPrimaryAccount();
 }
 
 void GCMAccountTrackerTest::RemoveAccount(const CoreAccountId& account_id) {
@@ -333,6 +343,29 @@ TEST_F(GCMAccountTrackerTest, AccountRemoved) {
   expected_accounts.push_back(MakeAccountToken(account1));
   VerifyAccountTokens(expected_accounts, driver()->accounts());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Tests that clearing the primary account when having multiple accounts
+// does not crash the application.
+// Regression test for crbug.com/1234406
+TEST_F(GCMAccountTrackerTest, AccountRemovedWithoutSyncConsentNoCrash) {
+  CoreAccountInfo account1 = SetPrimaryAccount(kEmail1);
+  CoreAccountInfo account2 = AddAccount(kEmail2);
+
+  // Set last fetch time to now so that access token fetch is not required
+  // but not started.
+  driver()->SetLastTokenFetchTime(base::Time::Now());
+  tracker()->Start();
+  EXPECT_FALSE(driver()->update_accounts_called());
+
+  // Reset the last fetch time to verify that clearing the primary account
+  // will not trigger a token fetch.
+  driver()->SetLastTokenFetchTime(base::Time());
+  EXPECT_EQ(base::TimeDelta(), GetTimeToNextTokenReporting());
+  ClearPrimaryAccount();
+  EXPECT_TRUE(driver()->update_accounts_called());
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(GCMAccountTrackerTest, GetTokenFailed) {
   CoreAccountInfo account1 = SetPrimaryAccount(kEmail1);
@@ -464,20 +497,16 @@ TEST_F(GCMAccountTrackerTest, GetTimeToNextTokenReporting) {
 
   // Regular case. The tokens have been just reported.
   driver()->SetLastTokenFetchTime(base::Time::Now());
-  EXPECT_TRUE(GetTimeToNextTokenReporting() <=
-                  base::TimeDelta::FromSeconds(12 * 60 * 60));
+  EXPECT_TRUE(GetTimeToNextTokenReporting() <= base::Seconds(12 * 60 * 60));
 
   // A case when gcm driver is not yet initialized.
   driver()->SetLastTokenFetchTime(base::Time::Max());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(12 * 60 * 60),
-            GetTimeToNextTokenReporting());
+  EXPECT_EQ(base::Seconds(12 * 60 * 60), GetTimeToNextTokenReporting());
 
   // A case when token reporting calculation is expected to result in more than
   // 12 hours, in which case we expect exactly 12 hours.
-  driver()->SetLastTokenFetchTime(base::Time::Now() +
-      base::TimeDelta::FromDays(2));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(12 * 60 * 60),
-            GetTimeToNextTokenReporting());
+  driver()->SetLastTokenFetchTime(base::Time::Now() + base::Days(2));
+  EXPECT_EQ(base::Seconds(12 * 60 * 60), GetTimeToNextTokenReporting());
 }
 
 // Tests conditions when token reporting is required.

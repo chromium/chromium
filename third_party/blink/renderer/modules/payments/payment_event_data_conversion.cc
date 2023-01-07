@@ -1,11 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/payments/payment_event_data_conversion.h"
 
 #include "third_party/blink/public/mojom/payments/payment_app.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_currency_amount.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_modifier.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_item.h"
@@ -64,8 +64,10 @@ PaymentMethodData* ToPaymentMethodData(
   DCHECK(data);
   PaymentMethodData* method_data = PaymentMethodData::Create();
   method_data->setSupportedMethod(data->supported_method);
-  method_data->setData(
-      StringDataToScriptValue(script_state, data->stringified_data));
+  ScriptValue v8_data =
+      StringDataToScriptValue(script_state, data->stringified_data);
+  if (!v8_data.IsEmpty())
+    method_data->setData(std::move(v8_data));
   return method_data;
 }
 
@@ -192,7 +194,6 @@ CanMakePaymentEventInit* PaymentEventDataConversion::ToCanMakePaymentEventInit(
         ToPaymentDetailsModifier(script_state, std::move(modifier)));
   }
   event_init->setModifiers(modifiers);
-  event_init->setCurrency(event_data->currency);
   return event_init;
 }
 

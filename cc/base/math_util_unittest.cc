@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,13 @@
 #include <cmath>
 #include <limits>
 
-#include "cc/test/geometry_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace cc {
 namespace {
@@ -26,7 +26,7 @@ TEST(MathUtilTest, ProjectionOfPerpendicularPlane) {
 
   gfx::Transform transform;
   transform.MakeIdentity();
-  transform.matrix().set(2, 2, 0);
+  transform.set_rc(2, 2, 0);
 
   gfx::RectF rect = gfx::RectF(0, 0, 1, 1);
   gfx::RectF projected_rect = MathUtil::ProjectClippedRect(transform, rect);
@@ -47,12 +47,11 @@ TEST(MathUtilTest, ProjectionOfAlmostPerpendicularPlane) {
   //   +16331238407143424.0000 +0.0000 -0.0000 +51346917453137000267776.0000
   //   +0.0000 +0.0000 +0.0000 +1.0000 ]
   transform.MakeIdentity();
-  transform.matrix().set(0, 2, static_cast<SkScalar>(-1));
-  transform.matrix().set(0, 3, static_cast<SkScalar>(3144132.0));
-  transform.matrix().set(2, 0, static_cast<SkScalar>(16331238407143424.0));
-  transform.matrix().set(2, 2, static_cast<SkScalar>(-1e-33));
-  transform.matrix().set(2, 3,
-                         static_cast<SkScalar>(51346917453137000267776.0));
+  transform.set_rc(0, 2, static_cast<SkScalar>(-1));
+  transform.set_rc(0, 3, static_cast<SkScalar>(3144132.0));
+  transform.set_rc(2, 0, static_cast<SkScalar>(16331238407143424.0));
+  transform.set_rc(2, 2, static_cast<SkScalar>(-1e-33));
+  transform.set_rc(2, 3, static_cast<SkScalar>(51346917453137000267776.0));
 
   gfx::RectF rect = gfx::RectF(0, 0, 1, 1);
   gfx::RectF projected_rect = MathUtil::ProjectClippedRect(transform, rect);
@@ -145,8 +144,7 @@ TEST(MathUtilTest, EnclosingClippedRectUsesCorrectInitialBounds) {
 
   // Due to floating point math in ComputeClippedPointForEdge this result
   // is fairly imprecise.  0.15f was empirically determined.
-  EXPECT_RECT_NEAR(
-      gfx::RectF(gfx::PointF(-100, -100), gfx::SizeF(90, 90)), result, 0.15f);
+  EXPECT_RECTF_NEAR(gfx::RectF(-100, -100, 90, 90), result, 0.15f);
 }
 
 TEST(MathUtilTest, EnclosingClippedRectHandlesSmallPositiveW) {
@@ -200,8 +198,7 @@ TEST(MathUtilTest, EnclosingRectOfVerticesUsesCorrectInitialBounds) {
   gfx::RectF result =
       MathUtil::ComputeEnclosingRectOfVertices(vertices, num_vertices);
 
-  EXPECT_FLOAT_RECT_EQ(gfx::RectF(gfx::PointF(-100, -100), gfx::SizeF(90, 90)),
-                       result);
+  EXPECT_RECTF_EQ(gfx::RectF(-100, -100, 90, 90), result);
 }
 
 TEST(MathUtilTest, SmallestAngleBetweenVectors) {
@@ -236,15 +233,15 @@ TEST(MathUtilTest, VectorProjection) {
   gfx::Vector2dF test_vector(0.3f, 0.7f);
 
   // Orthogonal vectors project to a zero vector.
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), MathUtil::ProjectVector(x, y));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, 0), MathUtil::ProjectVector(y, x));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), MathUtil::ProjectVector(x, y));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, 0), MathUtil::ProjectVector(y, x));
 
   // Projecting a vector onto the orthonormal basis gives the corresponding
   // component of the vector.
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(test_vector.x(), 0),
-                   MathUtil::ProjectVector(test_vector, x));
-  EXPECT_VECTOR_EQ(gfx::Vector2dF(0, test_vector.y()),
-                   MathUtil::ProjectVector(test_vector, y));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(test_vector.x(), 0),
+                      MathUtil::ProjectVector(test_vector, x));
+  EXPECT_VECTOR2DF_EQ(gfx::Vector2dF(0, test_vector.y()),
+                      MathUtil::ProjectVector(test_vector, y));
 
   // Finally check than an arbitrary vector projected to another one gives a
   // vector parallel to the second vector.
@@ -347,33 +344,33 @@ TEST(MathUtilTest, MapEnclosingRectWithLargeTransforms) {
   gfx::Transform rotation;
   rotation.RotateAboutYAxis(170.0);
 
-  int max_int = std::numeric_limits<int>::max();
-
+  // The following code should not crash due to NaNs. The result rects are
+  // empty because either the geometry was saturated or NaNs were set to 0.
   output = MathUtil::MapEnclosingClippedRect(large_x_scale, input);
-  EXPECT_EQ(gfx::Rect(max_int, 2, 0, 200), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(large_x_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(infinite_x_scale, input);
-  EXPECT_EQ(gfx::Rect(max_int, 2, 0, 200), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::MapEnclosingClippedRect(infinite_x_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(large_y_scale, input);
-  EXPECT_EQ(gfx::Rect(1, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(large_y_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(-100, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::MapEnclosingClippedRect(infinite_y_scale, input);
-  EXPECT_EQ(gfx::Rect(1, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::MapEnclosingClippedRect(infinite_y_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 }
 
 TEST(MathUtilTest, MapEnclosingRectIgnoringError) {
@@ -415,35 +412,35 @@ TEST(MathUtilTest, ProjectEnclosingRectWithLargeTransforms) {
   gfx::Transform rotation;
   rotation.RotateAboutYAxis(170.0);
 
-  int max_int = std::numeric_limits<int>::max();
-
+  // The following code should not crash due to NaNs. The result rects are
+  // empty because either the geometry was saturated or NaNs were set to 0.
   output = MathUtil::ProjectEnclosingClippedRect(large_x_scale, input);
-  EXPECT_EQ(gfx::Rect(max_int, 2, 0, 200), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::ProjectEnclosingClippedRect(large_x_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::ProjectEnclosingClippedRect(infinite_x_scale, input);
-  EXPECT_EQ(gfx::Rect(max_int, 2, 0, 200), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::ProjectEnclosingClippedRect(infinite_x_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::ProjectEnclosingClippedRect(large_y_scale, input);
-  EXPECT_EQ(gfx::Rect(1, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::ProjectEnclosingClippedRect(large_y_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(-103, max_int, 102, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output = MathUtil::ProjectEnclosingClippedRect(infinite_y_scale, input);
-  EXPECT_EQ(gfx::Rect(1, max_int, 100, 0), output);
+  EXPECT_TRUE(output.IsEmpty());
 
   output =
       MathUtil::ProjectEnclosingClippedRect(infinite_y_scale * rotation, input);
-  EXPECT_EQ(gfx::Rect(), output);
+  EXPECT_TRUE(output.IsEmpty());
 }
 
 TEST(MathUtilTest, RoundUp) {
@@ -619,18 +616,43 @@ TEST(MathUtilTest, ApproximatePoint3F) {
 }
 
 // This takes a quad for which two points, (at x = -99) are behind and below
-// the eyepoint and checks to make sure we build a triangle.  We used to build
-// a degenerate quad.
+// the eyepoint and checks to make sure we build a quad that doesn't include
+// anything from w<0 space.  We used to build a degenerate quad.
 TEST(MathUtilTest, MapClippedQuadDuplicateTriangle) {
   gfx::Transform transform;
   transform.MakeIdentity();
   transform.ApplyPerspectiveDepth(50.0);
   transform.RotateAboutYAxis(89.0);
-  // We are amost looking along the X-Y plane from (-50, almost 0)
+  // We are almost looking along the X-Y plane from (-50, almost 0)
 
-  gfx::QuadF src_quad(gfx::PointF(0.0f, 100.0f), gfx::PointF(0.0f, -100.0f),
+  gfx::QuadF src_quad(gfx::PointF(0.0f, -50.0f), gfx::PointF(0.0f, -100.0f),
                       gfx::PointF(-99.0f, -300.0f),
                       gfx::PointF(-99.0f, -100.0f));
+
+  gfx::Point3F clipped_quad[8];
+  int num_vertices_in_clipped_quad;
+
+  MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
+                             &num_vertices_in_clipped_quad);
+
+  // If we include anything from w<0 space, it will produce positive y
+  // coordinates rather than negative ones.
+  for (int i = 0; i < num_vertices_in_clipped_quad; ++i) {
+    EXPECT_LE(clipped_quad[i].y(), 0);
+  }
+
+  EXPECT_EQ(num_vertices_in_clipped_quad, 4);
+}
+
+// This takes a quad for which two points are identical and checks to make
+// sure we build a triangle.
+TEST(MathUtilTest, MapClippedQuadDuplicatePoints) {
+  gfx::Transform transform;
+  transform.MakeIdentity();
+  transform.RotateAboutYAxis(45.0);
+
+  gfx::QuadF src_quad(gfx::PointF(-99.0f, -50.0f), gfx::PointF(-99.0f, -50.0f),
+                      gfx::PointF(0.0f, 100.0f), gfx::PointF(0.0f, -100.0f));
 
   gfx::Point3F clipped_quad[8];
   int num_vertices_in_clipped_quad;
@@ -641,18 +663,16 @@ TEST(MathUtilTest, MapClippedQuadDuplicateTriangle) {
   EXPECT_EQ(num_vertices_in_clipped_quad, 3);
 }
 
-// This takes a quad for which two points, (at x = -99) are behind and below
-// the eyepoint and checks to make sure we build a triangle.  We used to build
-// a degenerate quad.  The quirk here is that the two shared points are first
-// and last, not sequential.
-TEST(MathUtilTest, MapClippedQuadDuplicateTriangleWrapped) {
+// This takes a quad for which two points are identical and checks to make
+// sure we build a triangle.  The quirk here is that the two shared points are
+// first and last, not sequential.
+TEST(MathUtilTest, MapClippedQuadDuplicatePointsWrapped) {
   gfx::Transform transform;
   transform.MakeIdentity();
-  transform.ApplyPerspectiveDepth(50.0);
-  transform.RotateAboutYAxis(89.0);
+  transform.RotateAboutYAxis(45.0);
 
-  gfx::QuadF src_quad(gfx::PointF(-99.0f, -100.0f), gfx::PointF(0.0f, 100.0f),
-                      gfx::PointF(0.0f, -100.0f), gfx::PointF(-99.0f, -300.0f));
+  gfx::QuadF src_quad(gfx::PointF(-99.0f, -50.0f), gfx::PointF(0.0f, 100.0f),
+                      gfx::PointF(0.0f, -100.0f), gfx::PointF(-99.0f, -50.0f));
 
   gfx::Point3F clipped_quad[8];
   int num_vertices_in_clipped_quad;
@@ -672,7 +692,7 @@ TEST(MathUtilTest, MapClippedQuadDuplicateQuad) {
   transform.ApplyPerspectiveDepth(50.0);
   transform.RotateAboutYAxis(89.0);
 
-  gfx::QuadF src_quad(gfx::PointF(0.0f, 100.0f), gfx::PointF(400.0f, 0.0f),
+  gfx::QuadF src_quad(gfx::PointF(0.0f, -50.0f), gfx::PointF(400.0f, -50.0f),
                       gfx::PointF(0.0f, -100.0f), gfx::PointF(-99.0f, -300.0f));
 
   gfx::Point3F clipped_quad[8];
@@ -681,7 +701,306 @@ TEST(MathUtilTest, MapClippedQuadDuplicateQuad) {
   MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
                              &num_vertices_in_clipped_quad);
 
+  // If we include anything from w<0 space, it will produce positive y
+  // coordinates rather than negative ones.
+  for (int i = 0; i < num_vertices_in_clipped_quad; ++i) {
+    EXPECT_LE(clipped_quad[i].y(), 0);
+  }
+
+  EXPECT_EQ(num_vertices_in_clipped_quad, 5);
+}
+
+#define EXPECT_LT_LT(a, b, c)  \
+  do {                         \
+    auto b_evaluated = b;      \
+    EXPECT_LT(a, b_evaluated); \
+    EXPECT_LT(b_evaluated, c); \
+  } while (0)
+
+#define EXPECT_LE_LT(a, b, c)  \
+  do {                         \
+    auto b_evaluated = b;      \
+    EXPECT_LE(a, b_evaluated); \
+    EXPECT_LT(b_evaluated, c); \
+  } while (0)
+
+#define EXPECT_LT_LE(a, b, c)  \
+  do {                         \
+    auto b_evaluated = b;      \
+    EXPECT_LT(a, b_evaluated); \
+    EXPECT_LE(b_evaluated, c); \
+  } while (0)
+
+#define EXPECT_LE_LE(a, b, c)  \
+  do {                         \
+    auto b_evaluated = b;      \
+    EXPECT_LE(a, b_evaluated); \
+    EXPECT_LE(b_evaluated, c); \
+  } while (0)
+
+// Here we map and clip a quad with a point that disappears to infinity behind
+// us while staying finite in one dimension (i.e., x goes to 0 as w goes to 0,
+// and x' is constant along the edge).
+TEST(MathUtilTest, MapClippedQuadInfiniteInSomeDimensions) {
+  gfx::Transform transform;
+  transform.MakeIdentity();
+  transform.ApplyPerspectiveDepth(50.0);
+  transform.RotateAboutXAxis(89.0);
+
+  gfx::QuadF src_quad(gfx::PointF(0.0f, 0.0f), gfx::PointF(0.0f, 100.0f),
+                      gfx::PointF(100.0f, 100.0f), gfx::PointF(100.0f, 0.0f));
+
+  gfx::Point3F clipped_quad[8];
+  int num_vertices_in_clipped_quad;
+
+  MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
+                             &num_vertices_in_clipped_quad);
+
   EXPECT_EQ(num_vertices_in_clipped_quad, 4);
+
+  EXPECT_EQ(clipped_quad[0].x(), 0.0f);
+  EXPECT_EQ(clipped_quad[0].y(), 0.0f);
+  EXPECT_EQ(clipped_quad[0].z(), 0.0f);
+
+  EXPECT_EQ(clipped_quad[1].x(), 0.0f);
+  EXPECT_LT_LT(17000.0f, clipped_quad[1].y(), 18000.0f);
+  EXPECT_LT_LE(998000.0f, clipped_quad[1].z(), 1000000.0f);
+
+  EXPECT_LT_LE(998000.0f, clipped_quad[2].x(), 1000000.0f);
+  EXPECT_LT_LT(8500.0f, clipped_quad[2].y(), 9000.0f);
+  EXPECT_LT_LE(499000.0f, clipped_quad[2].z(), 500000.0f);
+
+  EXPECT_EQ(clipped_quad[3].x(), 100.0f);
+  EXPECT_EQ(clipped_quad[3].y(), 0.0f);
+  EXPECT_EQ(clipped_quad[3].z(), 0.0f);
+}
+
+// Here we map and clip a quad with a point that disappears to infinity behind
+// us while staying finite in one dimension (i.e., x goes to 0 as w goes to 0,
+// and x' is constant along the edge).  This differs from the previous test
+// in that the edge with constant x' is at 100 rather than 0.
+TEST(MathUtilTest, MapClippedQuadInfiniteInSomeDimensionsNonZero) {
+  gfx::Transform transform;
+  transform.MakeIdentity();
+  transform.Translate(100.0, 0.0);
+  transform.ApplyPerspectiveDepth(50.0);
+  transform.RotateAboutXAxis(89.0);
+  transform.Translate(-100.0, 0.0);
+
+  gfx::QuadF src_quad(gfx::PointF(0.0f, 0.0f), gfx::PointF(0.0f, 100.0f),
+                      gfx::PointF(100.0f, 100.0f), gfx::PointF(100.0f, 0.0f));
+
+  gfx::Point3F clipped_quad[8];
+  int num_vertices_in_clipped_quad;
+
+  MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
+                             &num_vertices_in_clipped_quad);
+
+  EXPECT_EQ(num_vertices_in_clipped_quad, 4);
+
+  EXPECT_EQ(clipped_quad[0].x(), 0.0f);
+  EXPECT_EQ(clipped_quad[0].y(), 0.0f);
+  EXPECT_EQ(clipped_quad[0].z(), 0.0f);
+
+  EXPECT_LE_LT(-1000000.0f, clipped_quad[1].x(), -998000.0f);
+  EXPECT_LT_LT(8500.0f, clipped_quad[1].y(), 9000.0f);
+  EXPECT_LT_LE(499000.0f, clipped_quad[1].z(), 500000.0f);
+
+  EXPECT_EQ(clipped_quad[2].x(), 100.0f);
+  EXPECT_LT_LT(17000.0f, clipped_quad[2].y(), 18000.0f);
+  EXPECT_LT_LE(996000.0f, clipped_quad[2].z(), 1000000.0f);
+
+  EXPECT_EQ(clipped_quad[3].x(), 100.0f);
+  EXPECT_EQ(clipped_quad[3].y(), 0.0f);
+  EXPECT_EQ(clipped_quad[3].z(), 0.0f);
+}
+
+// Test that planes that are parallel to the z axis (other than those going
+// through the origin!) just fall through to clipping by points.
+TEST(MathUtilTest, MapClippedQuadClampInvisiblePlane) {
+  gfx::Transform transform;
+
+  gfx::QuadF src_quad(gfx::PointF(0.0f, 0.0f), gfx::PointF(0.0f, 1000.0f),
+                      gfx::PointF(1000.0f, 1000.0f),
+                      gfx::PointF(1000.0f, 0.0f));
+
+  gfx::Point3F clipped_quad[8];
+  int num_vertices_in_clipped_quad;
+
+  transform.MakeIdentity();
+  transform.Translate(100.0, 0.0);
+  transform.RotateAboutYAxis(90.0);
+  transform.Scale(10000.0f, 10000.0);
+
+  MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
+                             &num_vertices_in_clipped_quad);
+
+  EXPECT_EQ(num_vertices_in_clipped_quad, 4);
+
+  EXPECT_EQ(clipped_quad[0].x(), 100.0f);
+  EXPECT_EQ(clipped_quad[0].y(), 0.0f);
+  EXPECT_EQ(clipped_quad[0].z(), 0.0f);
+
+  EXPECT_EQ(clipped_quad[1].x(), 100.0f);
+  EXPECT_EQ(clipped_quad[1].y(), 1000000.0f);
+  EXPECT_EQ(clipped_quad[1].z(), 0.0f);
+
+  EXPECT_EQ(clipped_quad[2].x(), 100.0f);
+  EXPECT_EQ(clipped_quad[2].y(), 1000000.0f);
+  EXPECT_EQ(clipped_quad[2].z(), -1000000.0f);
+
+  EXPECT_EQ(clipped_quad[3].x(), 100.0f);
+  EXPECT_EQ(clipped_quad[3].y(), 0.0f);
+  EXPECT_EQ(clipped_quad[3].z(), -1000000.0f);
+
+  transform.MakeIdentity();
+  transform.Translate(0.0, -50.0);
+  transform.RotateAboutXAxis(-90.0);
+  transform.Scale(10000.0f, 10000.0);
+
+  MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
+                             &num_vertices_in_clipped_quad);
+
+  EXPECT_EQ(num_vertices_in_clipped_quad, 4);
+
+  EXPECT_EQ(clipped_quad[0].x(), 0.0f);
+  EXPECT_EQ(clipped_quad[0].y(), -50.0f);
+  EXPECT_EQ(clipped_quad[0].z(), 0.0f);
+
+  EXPECT_EQ(clipped_quad[1].x(), 0.0f);
+  EXPECT_EQ(clipped_quad[1].y(), -50.0f);
+  EXPECT_EQ(clipped_quad[1].z(), -1000000.0f);
+
+  EXPECT_EQ(clipped_quad[2].x(), 1000000.0f);
+  EXPECT_EQ(clipped_quad[2].y(), -50.0f);
+  EXPECT_EQ(clipped_quad[2].z(), -1000000.0f);
+
+  EXPECT_EQ(clipped_quad[3].x(), 1000000.0f);
+  EXPECT_EQ(clipped_quad[3].y(), -50.0f);
+  EXPECT_EQ(clipped_quad[3].z(), 0.0f);
+
+  transform.MakeIdentity();
+  transform.Translate(10.0, 10.0);
+  transform.Rotate(30.0);
+  transform.RotateAboutXAxis(90.0);
+  transform.Scale(10000.0, 10000.0);
+
+  MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
+                             &num_vertices_in_clipped_quad);
+
+  EXPECT_EQ(num_vertices_in_clipped_quad, 4);
+
+  EXPECT_EQ(clipped_quad[0].x(), 10.0f);
+  EXPECT_EQ(clipped_quad[0].y(), 10.0f);
+  EXPECT_EQ(clipped_quad[0].z(), 0.0f);
+
+  EXPECT_EQ(clipped_quad[1].x(), 10.0f);
+  EXPECT_EQ(clipped_quad[1].y(), 10.0f);
+  EXPECT_EQ(clipped_quad[1].z(), 1000000.0f);
+
+  EXPECT_EQ(clipped_quad[2].x(), 1000000.0f);
+  EXPECT_EQ(clipped_quad[2].y(), 1000000.0f);
+  EXPECT_EQ(clipped_quad[2].z(), 1000000.0f);
+
+  EXPECT_EQ(clipped_quad[3].x(), 1000000.0f);
+  EXPECT_EQ(clipped_quad[3].y(), 1000000.0f);
+  EXPECT_EQ(clipped_quad[3].z(), 0.0f);
+}
+
+// Test that when the plane passes too far from the origin, we bring it closer
+// before clamping coordinates.
+TEST(MathUtilTest, MapClippedQuadClampWholePlane) {
+  gfx::Transform transform;
+  transform.MakeIdentity();
+  transform.Scale3d(1000.0, 1000.0, 1000.0);
+  transform.Translate3d(0.0, 0.0, 10000.0);
+  transform.RotateAboutXAxis(-45.0);
+
+  gfx::QuadF src_quad(gfx::PointF(0.0f, 0.0f), gfx::PointF(0.0f, 10000.0f),
+                      gfx::PointF(100.0f, 10000.0f),
+                      gfx::PointF(100.0f, -10000.0f));
+
+  gfx::Point3F clipped_quad[8];
+  int num_vertices_in_clipped_quad;
+
+  MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
+                             &num_vertices_in_clipped_quad);
+
+  EXPECT_EQ(num_vertices_in_clipped_quad, 4);
+
+  EXPECT_EQ(clipped_quad[0].x(), 0.0f);
+  EXPECT_EQ(clipped_quad[0].y(), 0.0f);
+  EXPECT_EQ(clipped_quad[0].z(), 750000.0f);
+
+  EXPECT_EQ(clipped_quad[1].x(), 0.0f);
+  EXPECT_EQ(clipped_quad[1].y(), 1000000.0f);
+  EXPECT_LE_LE(-250001.0f, clipped_quad[1].z(), -249999.0f);
+
+  EXPECT_LE_LE(14100.0f, clipped_quad[2].x(), 14200.0f);
+  EXPECT_EQ(clipped_quad[2].y(), 1000000.0f);
+  EXPECT_LE_LE(-250001.0f, clipped_quad[2].z(), -249999.0f);
+
+  EXPECT_LE_LE(3500.0f, clipped_quad[3].x(), 3600.0f);
+  EXPECT_LE_LE(-250001.0f, clipped_quad[3].y(), -249999.0f);
+  EXPECT_EQ(clipped_quad[3].z(), 1000000.0f);
+}
+
+// Like the previous test, but with a plane with large negative z.
+TEST(MathUtilTest, MapClippedQuadClampWholePlaneBelow) {
+  gfx::Transform transform;
+  transform.MakeIdentity();
+  transform.Scale3d(1000.0, 1000.0, 1000.0);
+  transform.Translate3d(0.0, 0.0, -5000.0);
+  transform.RotateAboutYAxis(30.0);
+
+  gfx::QuadF src_quad(gfx::PointF(0.0f, 0.0f), gfx::PointF(-10000.0f, 100.0f),
+                      gfx::PointF(10000.0f, 100.0f),
+                      gfx::PointF(10000.0f, 0.0f));
+
+  gfx::Point3F clipped_quad[8];
+  int num_vertices_in_clipped_quad;
+
+  MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
+                             &num_vertices_in_clipped_quad);
+
+  EXPECT_EQ(num_vertices_in_clipped_quad, 4);
+
+  EXPECT_EQ(clipped_quad[0].x(), 0.0f);
+  EXPECT_EQ(clipped_quad[0].y(), 0.0f);
+  EXPECT_LE_LE(-750001.0f, clipped_quad[0].z(), -750000.0f);
+
+  EXPECT_EQ(clipped_quad[1].x(), -1000000.0f);
+  EXPECT_LE_LE(11540.0f, clipped_quad[1].y(), 11550.0f);
+  EXPECT_LE_LE(-172660.0f, clipped_quad[1].z(), -172640.0f);
+
+  EXPECT_LE_LE(433000.0f, clipped_quad[2].x(), 433025.0f);
+  EXPECT_LT_LT(4999.9f, clipped_quad[2].y(), 5000.1f);
+  EXPECT_EQ(clipped_quad[2].z(), -1000000.0f);
+
+  EXPECT_LE_LE(433000.0f, clipped_quad[3].x(), 433025.0f);
+  EXPECT_EQ(clipped_quad[3].y(), 0.0f);
+  EXPECT_EQ(clipped_quad[3].z(), -1000000.0f);
+}
+
+TEST(MathUtilTest, MapClippedQuadInfiniteMatrix) {
+  // clang-format off
+  auto transform = gfx::Transform::RowMajor(
+      1.0f, 0.0f, 0.0f, 0.0f,
+      0.0f, -100.0f, 0.0f, std::numeric_limits<float>::infinity(),
+      0.0f, 0.0f, 1.0f, 0.0f,
+      0.0f, 0.0f, 0.0f, 1.0f);
+  // clang-format on
+
+  gfx::QuadF src_quad(gfx::PointF(0.0f, 1.0f), gfx::PointF(1.0f, 1.0f),
+                      gfx::PointF(1.0f, 2.0f), gfx::PointF(0.0f, 2.0f));
+
+  gfx::Point3F clipped_quad[8];
+  int num_vertices_in_clipped_quad;
+
+  MathUtil::MapClippedQuad3d(transform, src_quad, clipped_quad,
+                             &num_vertices_in_clipped_quad);
+
+  // Nothing to test other than we don't fail DCHECK()s.
 }
 
 }  // namespace

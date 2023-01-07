@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,7 @@
 
 #include <memory>
 
-namespace chromeos {
-
+namespace ash {
 namespace login_screen_extension_ui {
 
 CreateOptions::CreateOptions(const std::string& extension_name,
@@ -22,5 +21,4 @@ CreateOptions::CreateOptions(const std::string& extension_name,
 CreateOptions::~CreateOptions() = default;
 
 }  // namespace login_screen_extension_ui
-
-}  // namespace chromeos
+}  // namespace ash

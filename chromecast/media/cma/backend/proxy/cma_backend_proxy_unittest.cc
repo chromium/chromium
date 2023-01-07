@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,6 @@ class MockMultizoneAudioDecoderProxy : public MultizoneAudioDecoderProxy {
   MOCK_METHOD0(GetRenderingDelay, RenderingDelay());
   MOCK_METHOD1(GetStatistics, void(Statistics*));
   MOCK_METHOD0(RequiresDecryption, bool());
-  MOCK_METHOD1(SetObserver, void(Observer*));
 
  private:
   // Used only for the ctor parameter.
@@ -183,27 +182,6 @@ TEST_F(CmaBackendProxyTest, Resume) {
 
   EXPECT_TRUE(backend_->Resume());
   EXPECT_FALSE(backend_->Resume());
-}
-
-TEST_F(CmaBackendProxyTest, GetCurrentPts) {
-  EXPECT_EQ(backend_->GetCurrentPts(), std::numeric_limits<int64_t>::min());
-
-  CreateVideoDecoder();
-
-  EXPECT_CALL(*delegated_backend_, GetCurrentPts()).WillOnce(Return(42));
-  EXPECT_EQ(backend_->GetCurrentPts(), 42);
-  testing::Mock::VerifyAndClearExpectations(delegated_backend_);
-
-  ASSERT_EQ(backend_->CreateAudioDecoder(), audio_decoder_);
-  EXPECT_CALL(*audio_decoder_, GetCurrentPts())
-      .WillOnce(Return(42))
-      .WillOnce(Return(42));
-  EXPECT_CALL(*delegated_backend_, GetCurrentPts())
-      .WillOnce(Return(16))
-      .WillOnce(Return(360));
-
-  EXPECT_EQ(backend_->GetCurrentPts(), 16);
-  EXPECT_EQ(backend_->GetCurrentPts(), 42);
 }
 
 TEST_F(CmaBackendProxyTest, SetPlaybackRate) {

@@ -1,0 +1,102 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// Proto to hold office document parser output.
+
+syntax = "proto2";
+
+package maldoca.office;
+
+option optimize_for = LITE_RUNTIME;
+
+import "maldoca/ole/proto/ole.proto";
+import "maldoca/ole/proto/ooxml.proto";
+import "maldoca/ole/proto/vba_extraction.proto";
+
+// Output from the Office document parser.
+message ParserOutput {
+  // This is the version of our results, nothing to do with the OLE file itself.
+  optional int64 results_version = 1 [default = 0];
+
+  optional MetadataFeatures metadata_features = 2;
+  optional DocumentStructureFeatures structure_features = 3;
+  optional EmbeddedFileFeatures embedded_file_features = 4;
+  optional ScriptFeatures script_features = 5;
+}
+
+message OleMetadataFeatures {
+  optional ole.OleReservedProperties reserved_properties = 1;
+  optional ole.CompObj comp_obj = 2;
+}
+
+message OOXMLMetadataFeatures {
+  repeated ooxml.OOXMLRelationship relationships = 1;
+}
+
+message MetadataFeatures {
+  optional ole.PropertySetStream summary_information = 1;
+  optional ole.PropertySetStream document_summary_information = 2;
+
+  // Format-specific features.
+  oneof metadata {
+    // Only relevant to OLE files.
+    OleMetadataFeatures ole_metadata_features = 3;
+    // Only relevant to OOXML files.
+    OOXMLMetadataFeatures ooxml_metadata_features = 4;
+  }
+}
+
+message OOXMLArchiveEntry {
+  // Actual content of the file.
+  optional bytes content = 1;
+  // SHA256 hash value of the content, stored in hex.
+  optional string sha256 = 2;
+  optional string file_name = 3;
+  optional int64 file_size = 4;
+
+  // Only filled if the entry is an OLE file.
+  // TODO: should this be ParserOutput?
+  optional ole.OleFile ole_content = 5;
+}
+
+message OOXMLEntries {
+  repeated OOXMLArchiveEntry entries = 1;
+}
+
+message OleEntries {
+  repeated ole.OleDirectoryEntry entries = 1;
+}
+
+message DocumentStructureFeatures {
+  oneof structure {
+    OleEntries ole = 1;
+    // TODO: Remove stuff from OOXMLFile that is now contained in ParserOutput.
+    OOXMLEntries ooxml = 2;
+  }
+}
+
+message EmbeddedFileFeatures {
+  // Only relevant to OLE files.
+  repeated ole.OleNativeEmbedded ole_native_embedded = 1;
+}
+
+message Script {
+  optional string filename = 1;
+  optional maldoca.VBACodeChunks vba_code = 2;
+  reserved 3;
+}
+
+message ScriptFeatures {
+  repeated Script scripts = 1;
+}

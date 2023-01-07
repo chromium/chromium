@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,20 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace perf_test {
 
 class LuciTestResultTest : public testing::Test {
  public:
   LuciTestResultTest() = default;
+
+  LuciTestResultTest(const LuciTestResultTest&) = delete;
+  LuciTestResultTest& operator=(const LuciTestResultTest&) = delete;
+
   ~LuciTestResultTest() override = default;
 
   // testing::Test:
@@ -39,10 +43,10 @@ class LuciTestResultTest : public testing::Test {
 
     std::string json;
     ASSERT_TRUE(ReadFileToString(GetResultFilePath(), &json));
-    base::Optional<base::Value> value = base::JSONReader::Read(json);
+    absl::optional<base::Value> value = base::JSONReader::Read(json);
     ASSERT_TRUE(value.has_value());
 
-    base::Optional<base::Value> expected_value =
+    absl::optional<base::Value> expected_value =
         base::JSONReader::Read(expected_json);
     ASSERT_TRUE(expected_value.has_value());
 
@@ -53,8 +57,6 @@ class LuciTestResultTest : public testing::Test {
 
  private:
   base::ScopedTempDir temp_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(LuciTestResultTest);
 };
 
 TEST_F(LuciTestResultTest, Basic) {
@@ -73,7 +75,7 @@ TEST_F(LuciTestResultTest, Basic) {
       base::Time::FromUTCExploded({2019, 9, 3, 11, 12, 30, 0}, &start_time));
   result.set_start_time(start_time);
 
-  result.set_duration(base::TimeDelta::FromMilliseconds(1500));
+  result.set_duration(base::Milliseconds(1500));
 
   result.AddOutputArtifactContents("plain", "plain data", "text/plain");
   result.AddOutputArtifactContents("new_line", "first\nsecond", "text/plain");
@@ -171,7 +173,7 @@ TEST_P(LuciTestResultParameterizedTest, Variant) {
       base::Time::FromUTCExploded({2019, 9, 3, 11, 12, 30, 0}, &start_time));
   result.set_start_time(start_time);
 
-  result.set_duration(base::TimeDelta::FromMilliseconds(1500));
+  result.set_duration(base::Milliseconds(1500));
 
   const std::string json_template =
       R"({
@@ -213,7 +215,7 @@ TYPED_TEST_P(LuciTestResultTypedTest, Variant) {
       base::Time::FromUTCExploded({2019, 9, 3, 11, 12, 30, 0}, &start_time));
   result.set_start_time(start_time);
 
-  result.set_duration(base::TimeDelta::FromMilliseconds(1500));
+  result.set_duration(base::Milliseconds(1500));
 
   std::string test_suite_name =
       testing::UnitTest::GetInstance()->current_test_info()->test_suite_name();

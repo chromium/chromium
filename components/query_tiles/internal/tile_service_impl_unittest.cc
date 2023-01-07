@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -18,6 +19,7 @@
 #include "components/query_tiles/internal/image_prefetcher.h"
 #include "components/query_tiles/test/empty_logger.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,6 +28,7 @@
 
 using testing::_;
 using ::testing::Invoke;
+using ::testing::NiceMock;
 
 namespace query_tiles {
 namespace {
@@ -34,8 +37,8 @@ class MockTileManager : public TileManager {
  public:
   MockTileManager() = default;
   MOCK_METHOD(void, Init, (TileGroupStatusCallback));
-  MOCK_METHOD(void, GetTiles, (GetTilesCallback));
-  MOCK_METHOD(void, GetTile, (const std::string&, TileCallback));
+  MOCK_METHOD(void, GetTiles, (bool, GetTilesCallback));
+  MOCK_METHOD(void, GetTile, (const std::string&, bool, TileCallback));
   MOCK_METHOD(void,
               SaveTiles,
               (std::unique_ptr<TileGroup>, TileGroupStatusCallback));
@@ -45,7 +48,7 @@ class MockTileManager : public TileManager {
   MOCK_METHOD(void, OnTileClicked, (const std::string&));
   MOCK_METHOD(void,
               OnQuerySelected,
-              (const base::Optional<std::string>&, const std::u16string&));
+              (const absl::optional<std::string>&, const std::u16string&));
 };
 
 class MockTileServiceScheduler : public TileServiceScheduler {
@@ -82,7 +85,7 @@ class TileServiceImplTest : public testing::Test {
     auto tile_manager = std::make_unique<MockTileManager>();
     tile_manager_ = tile_manager.get();
     auto image_prefetcher = std::make_unique<MockImagePrefetcher>();
-    auto scheduler = std::make_unique<MockTileServiceScheduler>();
+    auto scheduler = std::make_unique<NiceMock<MockTileServiceScheduler>>();
     scheduler_ = scheduler.get();
     image_prefetcher_ = image_prefetcher.get();
     ON_CALL(*image_prefetcher_, Prefetch(_, _, _))
@@ -121,7 +124,7 @@ class TileServiceImplTest : public testing::Test {
   }
 
   void OnGetTileDone(const std::string& expected_id,
-                     base::Optional<Tile> actual_tile) {
+                     absl::optional<Tile> actual_tile) {
     EXPECT_EQ(expected_id, actual_tile->id);
   }
 
@@ -168,9 +171,9 @@ class TileServiceImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::SimpleTestClock clock_;
   std::unique_ptr<TileServiceImpl> tile_service_impl_;
-  MockTileServiceScheduler* scheduler_;
-  MockTileManager* tile_manager_;
-  MockImagePrefetcher* image_prefetcher_;
+  raw_ptr<MockTileServiceScheduler> scheduler_;
+  raw_ptr<MockTileManager> tile_manager_;
+  raw_ptr<MockImagePrefetcher> image_prefetcher_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
@@ -232,8 +235,8 @@ TEST_F(TileServiceImplTest, CancelTask) {
 
 TEST_F(TileServiceImplTest, GetTiles) {
   int expected_size = 5;
-  EXPECT_CALL(*tile_manager(), GetTiles(_))
-      .WillOnce(Invoke([&](GetTilesCallback callback) {
+  EXPECT_CALL(*tile_manager(), GetTiles(true, _))
+      .WillOnce(Invoke([&](bool, GetTilesCallback callback) {
         std::vector<Tile> out = std::vector<Tile>(expected_size, Tile());
         std::move(callback).Run(std::move(out));
       }));
@@ -244,8 +247,8 @@ TEST_F(TileServiceImplTest, GetTiles) {
 
 TEST_F(TileServiceImplTest, GetTile) {
   std::string tile_id = "test-id";
-  EXPECT_CALL(*tile_manager(), GetTile(tile_id, _))
-      .WillOnce(Invoke([&](const std::string& id, TileCallback callback) {
+  EXPECT_CALL(*tile_manager(), GetTile(tile_id, true, _))
+      .WillOnce(Invoke([&](const std::string& id, bool, TileCallback callback) {
         EXPECT_EQ(id, tile_id);
         Tile out;
         out.id = tile_id;
@@ -258,7 +261,7 @@ TEST_F(TileServiceImplTest, GetTile) {
 
 TEST_F(TileServiceImplTest, PurgeDb) {
   EXPECT_CALL(*tile_manager(), PurgeDb());
-  EXPECT_CALL(*tile_manager(), GetTiles(_));
+  EXPECT_CALL(*tile_manager(), GetTiles(true, _));
   EXPECT_CALL(*scheduler(), OnDbPurged(_));
   query_tiles_service()->PurgeDb();
   query_tiles_service()->GetQueryTiles(base::BindOnce(

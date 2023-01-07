@@ -1,17 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/renderer/gc_callback.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/renderer/bindings/test_js_runner.h"
 #include "extensions/renderer/scoped_web_frame.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
@@ -35,6 +35,9 @@ enum CallbackType { NATIVE, NATIVE_WITH_NO_FALLBACK, JS, JS_WITH_NO_FALLBACK };
 class GCCallbackTest : public testing::TestWithParam<CallbackType> {
  public:
   GCCallbackTest() : script_context_set_(&active_extensions_) {}
+
+  GCCallbackTest(const GCCallbackTest&) = delete;
+  GCCallbackTest& operator=(const GCCallbackTest&) = delete;
 
  protected:
   ScriptContextSet& script_context_set() { return script_context_set_; }
@@ -106,10 +109,13 @@ class GCCallbackTest : public testing::TestWithParam<CallbackType> {
         web_frame_.frame()->MainWorldScriptContext();
     DCHECK(!local_v8_context.IsEmpty());
     v8_context_.Reset(isolate, local_v8_context);
+    test_js_runner_ =
+        std::make_unique<TestJSRunner::Scope>(std::make_unique<TestJSRunner>());
   }
 
   void TearDown() override {
     v8_context_.Reset();
+    test_js_runner_.reset();
     RequestGarbageCollection();
   }
 
@@ -121,8 +127,7 @@ class GCCallbackTest : public testing::TestWithParam<CallbackType> {
   ExtensionIdSet active_extensions_;
   ScriptContextSet script_context_set_;
   v8::Global<v8::Context> v8_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCCallbackTest);
+  std::unique_ptr<TestJSRunner::Scope> test_js_runner_;
 };
 
 TEST_P(GCCallbackTest, GCBeforeContextInvalidated) {

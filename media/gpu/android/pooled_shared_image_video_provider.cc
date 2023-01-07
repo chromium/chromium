@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,12 @@ std::unique_ptr<PooledSharedImageVideoProvider>
 PooledSharedImageVideoProvider::Create(
     scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
     GetStubCB get_stub_cb,
-    std::unique_ptr<SharedImageVideoProvider> provider) {
+    std::unique_ptr<SharedImageVideoProvider> provider,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock) {
   return base::WrapUnique(new PooledSharedImageVideoProvider(
       base::SequenceBound<GpuHelperImpl>(std::move(gpu_task_runner),
                                          std::move(get_stub_cb)),
-      std::move(provider)));
+      std::move(provider), std::move(drdc_lock)));
 }
 
 PooledSharedImageVideoProvider::PooledImage::PooledImage(const ImageSpec& spec,
@@ -38,8 +39,10 @@ PooledSharedImageVideoProvider::PendingRequest::~PendingRequest() = default;
 
 PooledSharedImageVideoProvider::PooledSharedImageVideoProvider(
     base::SequenceBound<GpuHelper> gpu_helper,
-    std::unique_ptr<SharedImageVideoProvider> provider)
-    : provider_(std::move(provider)),
+    std::unique_ptr<SharedImageVideoProvider> provider,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock)
+    : gpu::RefCountedLockHelperDrDc(std::move(drdc_lock)),
+      provider_(std::move(provider)),
       gpu_helper_(std::move(gpu_helper)),
       weak_factory_(this) {}
 
@@ -52,10 +55,8 @@ void PooledSharedImageVideoProvider::Initialize(GpuInitCB gpu_init_cb) {
   provider_->Initialize(std::move(gpu_init_cb));
 }
 
-void PooledSharedImageVideoProvider::RequestImage(
-    ImageReadyCB cb,
-    const ImageSpec& spec,
-    scoped_refptr<gpu::TextureOwner> texture_owner) {
+void PooledSharedImageVideoProvider::RequestImage(ImageReadyCB cb,
+                                                  const ImageSpec& spec) {
   // See if the pool matches the requested spec.
   if (pool_spec_ != spec) {
     // Nope -- mark any outstanding images for destruction and start a new pool.
@@ -106,7 +107,7 @@ void PooledSharedImageVideoProvider::RequestImage(
   auto ready_cb =
       base::BindOnce(&PooledSharedImageVideoProvider::OnImageCreated,
                      weak_factory_.GetWeakPtr(), spec);
-  provider_->RequestImage(std::move(ready_cb), spec, std::move(texture_owner));
+  provider_->RequestImage(std::move(ready_cb), spec);
 }
 
 void PooledSharedImageVideoProvider::OnImageCreated(ImageSpec spec,
@@ -126,7 +127,8 @@ void PooledSharedImageVideoProvider::OnImageReturned(
       .WithArgs(sync_token, pooled_image->record.codec_image_holder,
                 BindToCurrentLoop(base::BindOnce(
                     &PooledSharedImageVideoProvider::ProcessFreePooledImage,
-                    weak_factory_.GetWeakPtr(), pooled_image)));
+                    weak_factory_.GetWeakPtr(), pooled_image)),
+                GetDrDcLock());
 }
 
 void PooledSharedImageVideoProvider::ProcessFreePooledImage(
@@ -198,18 +200,25 @@ PooledSharedImageVideoProvider::GpuHelperImpl::~GpuHelperImpl() = default;
 void PooledSharedImageVideoProvider::GpuHelperImpl::OnImageReturned(
     const gpu::SyncToken& sync_token,
     scoped_refptr<CodecImageHolder> codec_image_holder,
-    base::OnceClosure cb) {
+    base::OnceClosure cb,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock) {
   auto on_sync_token_cleared_cb = base::BindOnce(
       &GpuHelperImpl::OnSyncTokenCleared, weak_factory_.GetWeakPtr(),
-      std::move(codec_image_holder), std::move(cb));
+      std::move(codec_image_holder), std::move(cb), std::move(drdc_lock));
   command_buffer_helper_->WaitForSyncToken(sync_token,
                                            std::move(on_sync_token_cleared_cb));
 }
 
 void PooledSharedImageVideoProvider::GpuHelperImpl::OnSyncTokenCleared(
     scoped_refptr<CodecImageHolder> codec_image_holder,
-    base::OnceClosure cb) {
-  codec_image_holder->codec_image_raw()->NotifyUnused();
+    base::OnceClosure cb,
+    scoped_refptr<gpu::RefCountedLock> drdc_lock) {
+  {
+    base::AutoLockMaybe auto_lock(drdc_lock ? drdc_lock->GetDrDcLockPtr()
+                                            : nullptr);
+    codec_image_holder->codec_image_raw()->NotifyUnused();
+  }
+
   // Do this last, since |cb| might post to some other thread.
   std::move(cb).Run();
 }

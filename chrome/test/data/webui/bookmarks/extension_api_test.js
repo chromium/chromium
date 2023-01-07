@@ -1,17 +1,28 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Bookmark Manager API test for Chrome.
-import {simulateChromeExtensionAPITest} from 'chrome://test/bookmarks/test_util.js';
+import {simulateChromeExtensionAPITest} from './test_util.js';
 
 test('bookmarkManagerPrivate', async () => {
   const bookmarkManager = chrome.bookmarkManagerPrivate;
   const {pass, fail, runTests} = simulateChromeExtensionAPITest();
 
-  let fooNode, fooNode2, barNode, gooNode, count, emptyFolder, emptyFolder2;
-  let folder, nodeA, nodeB;
-  let childFolder, grandChildFolder, childNodeA, childNodeB;
+  let fooNode;
+  let fooNode2;
+  let barNode;
+  let gooNode;
+  let count;
+  let emptyFolder;
+  let emptyFolder2;
+  let folder;
+  let nodeA;
+  let nodeB;
+  let childFolder;
+  let grandChildFolder;
+  let childNodeA;
+  let childNodeB;
 
   function doCopy() {
     bookmarkManager.copy.apply(null, arguments);
@@ -57,11 +68,11 @@ test('bookmarkManagerPrivate', async () => {
       childFolder = {parentId: folder.id, title: 'Child Folder'};
       childNodeA = {
         title: 'childNodeA',
-        url: 'http://www.example.com/childNodeA'
+        url: 'http://www.example.com/childNodeA',
       };
       childNodeB = {
         title: 'childNodeB',
-        url: 'http://www.example.com/childNodeB'
+        url: 'http://www.example.com/childNodeB',
       };
       grandChildFolder = {title: 'grandChildFolder'};
       chrome.bookmarks.create(
@@ -110,7 +121,7 @@ test('bookmarkManagerPrivate', async () => {
       fooNode = {
         parentId: '1',
         title: 'Foo',
-        url: 'http://www.example.com/foo'
+        url: 'http://www.example.com/foo',
       };
 
       emptyFolder = {parentId: '1', title: 'Empty Folder'};
@@ -132,7 +143,7 @@ test('bookmarkManagerPrivate', async () => {
       barNode = {
         parentId: '1',
         title: 'Bar',
-        url: 'http://www.example.com/bar'
+        url: 'http://www.example.com/bar',
       };
 
       chrome.bookmarks.create(barNode, pass(function(result) {
@@ -144,7 +155,7 @@ test('bookmarkManagerPrivate', async () => {
       gooNode = {
         parentId: '1',
         title: 'Goo',
-        url: 'http://www.example.com/goo'
+        url: 'http://www.example.com/goo',
       };
 
       chrome.bookmarks.create(gooNode, pass(function(result) {

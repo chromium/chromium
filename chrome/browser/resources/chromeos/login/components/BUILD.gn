@@ -1,123 +1,79 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//chrome/test/base/js2gtest.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//tools/polymer/html_to_js.gni")
 import("//tools/polymer/polymer.gni")
+import("//ui/webui/resources/tools/js_modulizer.gni")
+import("../oobe_auto_imports.gni")
 
 group("closure_compile") {
   deps = [
-    ":closure_compile_local",
-    "hd_iron_icon:closure_compile",
-    "oobe_adaptive_dialog:closure_compile",
-    "oobe_carousel:closure_compile",
-    "oobe_content_dialog:closure_compile",
-    "oobe_dialog_host_behavior:closure_compile",
-    "oobe_focus_behavior:closure_compile",
-    "oobe_i18n_behavior:closure_compile",
-    "oobe_scrollable_behavior:closure_compile",
-    "oobe_slide:closure_compile",
-    "progress_list_item:closure_compile",
-    "throbber_notice:closure_compile",
-  ]
-}
+    "behaviors:closure_compile",
+    "buttons:closure_compile",
+    "common_styles:closure_compile",
+    "dialogs:closure_compile",
+    "oobe_vars:closure_compile",
 
-js_type_check("closure_compile_local") {
-  uses_legacy_modules = true
-  deps = [
-    ":fake_oobe",
-    ":html-echo",
-    ":login_screen_behavior",
-    ":multi_step_behavior",
-    ":network_select_login",
-    ":oobe_buttons",
-    ":oobe_i18n_dropdown",
-    ":oobe_modal_dialog",
-    ":oobe_select",
-    ":oobe_types",
-  ]
-}
-
-js_type_check("closure_compile_module") {
-  is_polymer3 = true
-  deps = [
+    # Local targets
     ":display_manager_types.m",
-    ":login_screen_behavior.m",
-    ":multi_step_behavior.m",
+    ":gaia_button",
+    ":gaia_dialog.m",
+    ":gaia_header",
+    ":gaia_input_form",
+    ":hd_iron_icon",
+    ":keyboard_utils_for_injection",
+    ":keyboard_utils_for_injection.m",
+    ":long_touch_detector.m",
+    ":network_select_login.m",
+    ":notification_card",
+    ":oobe_a11y_option.m",
+    ":oobe_apps_list.m",
+    ":oobe_carousel.m",
+    ":oobe_cr_lottie.m",
+    ":oobe_i18n_dropdown",
+    ":oobe_icons.m",
+    ":oobe_network_icons.m",
+    ":oobe_select.m",
+    ":oobe_slide.m",
+    ":oobe_types.m",
+    ":progress_list_item",
+    ":security_token_pin",
+    ":test_util.m",
+    ":throbber_notice.m",
+    ":web_view_helper.m",
+    ":web_view_loader.m",
   ]
+}
+
+group("polymer3_elements") {
+  public_deps = [
+                  "behaviors:modulize",
+                  "buttons:polymer3_elements",
+                  "common_styles:polymer3_elements",
+                  "dialogs:polymer3_elements",
+                  "oobe_vars:polymer3_elements",
+
+                  # Local targets
+                  ":gaia_dialog_module",
+                  ":network_select_login_module",
+                  ":oobe_a11y_option_module",
+                  ":oobe_a11y_option_module",
+                  ":oobe_apps_list_module",
+                  ":oobe_carousel_module",
+                  ":oobe_cr_lottie_module",
+                  ":oobe_icons_module",
+                  ":oobe_icons_module",
+                  ":oobe_network_icons_module",
+                  ":oobe_slide_module",
+                  ":throbber_notice_module",
+                ] + [ ":modulize" ]
 }
 
 ###############################
 # Closure compiler libraries below
-
-js_library("oobe_types") {
-}
-
-js_library("display_manager_types") {
-}
-
-# This is special file to be used as a substutute of Oobe object for closure
-# compilation until we make real one closure compile.
-# TODO (https://crbug.com/950198)
-js_library("fake_oobe") {
-  deps = [
-    ":display_manager_types",
-    ":oobe_types",
-    "//ui/webui/resources/js:util",
-  ]
-}
-
-# This is special file to be used as a substitute of Authenticaor object for
-# closure compilation until OOBE migrates to modules.
-js_library("fake_authenticator") {
-  deps = [ "//ui/webui/resources/js:cr" ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-  ]
-}
-
-js_library("login_screen_behavior") {
-  deps = [
-    ":display_manager_types",
-    ":fake_oobe",
-  ]
-}
-
-js_library("multi_step_behavior") {
-}
-
-js_library("network_select_login") {
-  deps = [
-    "//ui/webui/resources/cr_components/chromeos/network:network_select",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo",
-  ]
-}
-
-js_library("oobe_buttons") {
-  deps = [ "oobe_i18n_behavior:oobe_i18n_behavior" ]
-}
-
-js_library("oobe_i18n_dropdown") {
-  deps = [
-    ":oobe_select",
-    ":oobe_types",
-  ]
-}
-
-js_library("oobe_modal_dialog") {
-  deps = [ "oobe_i18n_behavior:oobe_i18n_behavior" ]
-}
-
-js_library("oobe_select") {
-}
-
-js_library("html-echo") {
-}
-
-#### Polymer3 / JS Modules
 
 js_library("display_manager_types.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/display_manager_types.m.js" ]
@@ -125,25 +81,307 @@ js_library("display_manager_types.m") {
   extra_deps = [ ":modulize" ]
 }
 
-js_library("login_screen_behavior.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/login_screen_behavior.m.js" ]
+js_library("gaia_button") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_button.js" ]
   deps = [
-    ":display_manager_types.m"
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("gaia_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_dialog.m.js" ]
+  deps = [
+    ":oobe_types.m",
+    "./behaviors:oobe_dialog_host_behavior.m",
+    "./behaviors:oobe_i18n_behavior.m",
+    "./buttons:oobe_back_button.m",
+    "./buttons:oobe_text_button.m",
+    "./dialogs:oobe_content_dialog.m",
+    "//chrome/browser/resources/gaia_auth_host:authenticator",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  extra_deps = [ ":gaia_dialog_module" ]
+}
+
+js_library("gaia_header") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_header.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("gaia_input_form") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_input_form.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("hd_iron_icon") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/hd_iron_icon.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("keyboard_utils_for_injection.m") {
+}
+
+js_library("keyboard_utils_for_injection") {
+}
+
+js_library("long_touch_detector.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/long_touch_detector.m.js" ]
+  deps = []
   extra_deps = [ ":modulize" ]
 }
 
-js_library("multi_step_behavior.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/multi_step_behavior.m.js" ]
+js_library("network_select_login.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/network_select_login.m.js" ]
+  deps = [
+    "../:cr_ui.m",
+    "//ash/webui/common/resources/network:network_select",
+    "//ash/webui/common/resources/network:onc_mojo",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
+    "//ui/webui/resources/js:assert",
+  ]
+  extra_deps = [ ":network_select_login_module" ]
+}
+
+js_library("notification_card") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/notification_card.js" ]
+  deps = []
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("oobe_a11y_option.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_a11y_option.m.js" ]
+  deps = []
+  extra_deps = [ ":oobe_a11y_option_module" ]
+}
+
+js_library("oobe_apps_list.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_apps_list.m.js" ]
+  deps = []
+  extra_deps = [ ":oobe_apps_list_module" ]
+}
+
+js_library("oobe_icons.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_icons.m.js" ]
+  deps = []
+  extra_deps = [ ":oobe_icons_module" ]
+}
+
+js_library("oobe_i18n_dropdown") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_i18n_dropdown.js" ]
+  deps = [
+    ":oobe_select.m",
+    ":oobe_types.m",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("oobe_carousel.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_carousel.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+  extra_deps = [ ":oobe_carousel_module" ]
+}
+
+js_library("oobe_cr_lottie.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_cr_lottie.m.js" ]
+  deps = [
+    "behaviors:oobe_i18n_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_lottie/cr_lottie_externs.js" ]
+  extra_deps = [ ":oobe_cr_lottie_module" ]
+}
+
+js_library("oobe_network_icons.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_network_icons.m.js" ]
+  deps = []
+  extra_deps = [ ":oobe_network_icons_module" ]
+}
+
+js_library("oobe_select.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_select.m.js" ]
   deps = []
   extra_deps = [ ":modulize" ]
+}
+
+js_library("oobe_slide.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_slide.m.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":oobe_slide_module" ]
+}
+
+js_library("oobe_types.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/oobe_types.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("progress_list_item") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/progress_list_item.js" ]
+  deps = [
+    "./behaviors:oobe_i18n_behavior.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("security_token_pin") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/security_token_pin.js" ]
+  deps = [
+    ":oobe_types.m",
+    "./behaviors:oobe_i18n_behavior.m",
+  ]
+  extra_deps = [ ":web_components" ]
+}
+
+js_library("throbber_notice.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/throbber_notice.m.js" ]
+  deps = [ "./behaviors:oobe_i18n_behavior.m" ]
+  extra_deps = [ ":throbber_notice_module" ]
+}
+
+js_library("test_util.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/test_util.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("web_view_helper.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/web_view_helper.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
+js_library("web_view_loader.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/web_view_loader.m.js" ]
+  deps = []
+  extra_deps = [ ":modulize" ]
+}
+
+polymer_modulizer("gaia_dialog") {
+  js_file = "gaia_dialog.js"
+  html_file = "gaia_dialog.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("network_select_login") {
+  js_file = "network_select_login.js"
+  html_file = "network_select_login.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("oobe_a11y_option") {
+  js_file = "oobe_a11y_option.js"
+  html_file = "oobe_a11y_option.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("oobe_apps_list") {
+  js_file = "oobe_apps_list.js"
+  html_file = "oobe_apps_list.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("oobe_icons") {
+  js_file = "oobe_icons.m.js"
+  html_file = "oobe_icons.html"
+  html_type = "iron-iconset"
+}
+
+polymer_modulizer("oobe_carousel") {
+  js_file = "oobe_carousel.js"
+  html_file = "oobe_carousel.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("oobe_cr_lottie") {
+  js_file = "oobe_cr_lottie.js"
+  html_file = "oobe_cr_lottie.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("oobe_network_icons") {
+  js_file = "oobe_network_icons.m.js"
+  html_file = "oobe_network_icons.html"
+  html_type = "iron-iconset"
+}
+
+polymer_modulizer("oobe_slide") {
+  js_file = "oobe_slide.js"
+  html_file = "oobe_slide.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("throbber_notice") {
+  js_file = "throbber_notice.js"
+  html_file = "throbber_notice.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  migrated_imports = oobe_migrated_imports
+  namespace_rewrites = oobe_namespace_rewrites
 }
 
 js_modulizer("modulize") {
   input_files = [
     "display_manager_types.js",
-    "login_screen_behavior.js",
-    "multi_step_behavior.js",
+    "long_touch_detector.js",
+    "oobe_select.js",
+    "oobe_types.js",
+    "web_view_helper.js",
+    "web_view_loader.js",
+    "test_util.js",
   ]
   namespace_rewrites = []
+}
+
+html_to_js("web_components") {
+  js_files = [
+    "gaia_button.js",
+    "gaia_header.js",
+    "gaia_input_form.js",
+    "hd_iron_icon.js",
+    "notification_card.js",
+    "progress_list_item.js",
+    "oobe_i18n_dropdown.js",
+    "security_token_pin.js",
+  ]
 }

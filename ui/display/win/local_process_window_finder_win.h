@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,9 @@
 #include <shobjidl.h>
 #include <wrl/client.h>
 
+#include <set>
+
+#include "base/memory/raw_ptr.h"
 #include "ui/display/win/base_window_finder_win.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/native_widget_types.h"
@@ -48,7 +51,7 @@ class LocalProcessWindowFinder : public BaseWindowFinderWin {
 
   // ScreenWin we're looking on. Used to access WindowTreeHost, which
   // ui/display code can't access directly.
-  ScreenWin* screen_win_;
+  raw_ptr<ScreenWin> screen_win_;
 
   // Only used on Win10+.
   Microsoft::WRL::ComPtr<IVirtualDesktopManager> virtual_desktop_manager_;

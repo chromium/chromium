@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,25 +15,25 @@ DebugBorderDrawQuad::DebugBorderDrawQuad() = default;
 void DebugBorderDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                                  const gfx::Rect& rect,
                                  const gfx::Rect& visible_rect,
-                                 SkColor color,
-                                 int width) {
-  bool needs_blending = SkColorGetA(color) < 255;
+                                 SkColor4f c,
+                                 int w) {
+  bool needs_blending = c.fA < 1.0f;
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kDebugBorder, rect,
                    visible_rect, needs_blending);
-  this->color = color;
-  this->width = width;
+  color = c;
+  width = w;
 }
 
 void DebugBorderDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                                  const gfx::Rect& rect,
                                  const gfx::Rect& visible_rect,
                                  bool needs_blending,
-                                 SkColor color,
-                                 int width) {
+                                 SkColor4f c,
+                                 int w) {
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kDebugBorder, rect,
                    visible_rect, needs_blending);
-  this->color = color;
-  this->width = width;
+  color = c;
+  width = w;
 }
 
 const DebugBorderDrawQuad* DebugBorderDrawQuad::MaterialCast(
@@ -44,7 +44,8 @@ const DebugBorderDrawQuad* DebugBorderDrawQuad::MaterialCast(
 
 void DebugBorderDrawQuad::ExtendValue(
     base::trace_event::TracedValue* value) const {
-  value->SetString("color", color_utils::SkColorToRgbaString(color));
+  value->SetString("color",
+                   color_utils::SkColorToRgbaString(color.toSkColor()));
   value->SetInteger("width", width);
 }
 

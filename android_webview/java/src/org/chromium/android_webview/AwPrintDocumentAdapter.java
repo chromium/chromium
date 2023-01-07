@@ -1,10 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.android_webview;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
@@ -20,7 +19,6 @@ import java.util.ArrayList;
  * system class PrintDocumentAdapter and hides all printing details from
  * the developer.
  */
-@SuppressLint("NewApi")  // Printing requires API level 19.
 public class AwPrintDocumentAdapter extends PrintDocumentAdapter {
 
     private AwPdfExporter mPdfExporter;

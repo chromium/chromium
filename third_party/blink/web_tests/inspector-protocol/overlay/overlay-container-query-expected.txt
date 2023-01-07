@@ -1,0 +1,107 @@
+Verifies that Overlay.setShowContainerQueryOverlays works.
+Overlay not rendered:
+
+Overlay rendered:
+{
+  "name": "drawContainerQueryHighlight",
+  "data": {
+    "containerBorder": [
+      "M",
+      8,
+      8,
+      "L",
+      408,
+      8,
+      "L",
+      408,
+      508,
+      "L",
+      8,
+      508,
+      "Z"
+    ],
+    "containerQueryContainerHighlightConfig": {
+      "containerBorder": {
+        "color": "rgb(0, 0, 0)",
+        "pattern": "solid"
+      }
+    }
+  }
+}
+Overlay rendered:
+[
+  {
+    "containerBorder": [
+      "M",
+      8,
+      8,
+      "L",
+      408,
+      8,
+      "L",
+      408,
+      508,
+      "L",
+      8,
+      508,
+      "Z"
+    ],
+    "containerQueryContainerHighlightConfig": {
+      "containerBorder": {
+        "color": "rgb(0, 0, 0)",
+        "pattern": "solid"
+      }
+    }
+  }
+]
+Overlay rendered:
+{
+  "name": "drawContainerQueryHighlight",
+  "data": {
+    "containerBorder": [
+      "M",
+      8,
+      8,
+      "L",
+      408,
+      8,
+      "L",
+      408,
+      508,
+      "L",
+      8,
+      508,
+      "Z"
+    ],
+    "queryingDescendants": [
+      {
+        "descendantBorder": [
+          "M",
+          8,
+          8,
+          "L",
+          108,
+          8,
+          "L",
+          108,
+          108,
+          "L",
+          8,
+          108,
+          "Z"
+        ]
+      }
+    ],
+    "containerQueryContainerHighlightConfig": {
+      "containerBorder": {
+        "color": "rgb(0, 0, 0)",
+        "pattern": "solid"
+      },
+      "descendantBorder": {
+        "color": "rgb(1, 0, 0)",
+        "pattern": "solid"
+      }
+    }
+  }
+}
+

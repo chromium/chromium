@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,19 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using blink::mojom::StorageType;
+using ::blink::StorageKey;
+using ::blink::mojom::StorageType;
 
 namespace storage {
 
@@ -31,16 +35,28 @@ constexpr StorageType kPersistent = StorageType::kPersistent;
 constexpr QuotaClientType kClientFile = QuotaClientType::kFileSystem;
 constexpr QuotaClientType kClientDB = QuotaClientType::kIndexedDatabase;
 
+bool ContainsBucket(const std::set<BucketLocator>& buckets,
+                    const BucketInfo& target_bucket) {
+  BucketLocator target_bucket_locator(
+      target_bucket.id, target_bucket.storage_key, target_bucket.type,
+      target_bucket.name == kDefaultBucketName);
+  auto it = buckets.find(target_bucket_locator);
+  return it != buckets.end();
+}
+
 }  // namespace
 
 class MockQuotaManagerTest : public testing::Test {
  public:
   MockQuotaManagerTest() : deletion_callback_count_(0) {}
 
+  MockQuotaManagerTest(const MockQuotaManagerTest&) = delete;
+  MockQuotaManagerTest& operator=(const MockQuotaManagerTest&) = delete;
+
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
-    policy_ = new MockSpecialStoragePolicy;
-    manager_ = new MockQuotaManager(
+    policy_ = base::MakeRefCounted<MockSpecialStoragePolicy>();
+    manager_ = base::MakeRefCounted<MockQuotaManager>(
         false /* is_incognito */, data_dir_.GetPath(),
         base::ThreadTaskRunnerHandle::Get().get(), policy_.get());
   }
@@ -51,31 +67,113 @@ class MockQuotaManagerTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void GetModifiedOrigins(StorageType type, base::Time begin, base::Time end) {
-    manager_->GetOriginsModifiedBetween(
+  QuotaErrorOr<BucketInfo> GetOrCreateBucket(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name) {
+    QuotaErrorOr<BucketInfo> result;
+    base::RunLoop run_loop;
+    BucketInitParams params(storage_key, bucket_name);
+    manager_->UpdateOrCreateBucket(
+        params,
+        base::BindLambdaForTesting([&](QuotaErrorOr<BucketInfo> bucket) {
+          result = std::move(bucket);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
+  }
+
+  QuotaErrorOr<BucketInfo> GetOrCreateBucketDeprecated(
+      const blink::StorageKey& storage_key,
+      blink::mojom::StorageType type,
+      const std::string& bucket_name) {
+    QuotaErrorOr<BucketInfo> result;
+    base::RunLoop run_loop;
+    BucketInitParams params(storage_key, bucket_name);
+    manager_->GetOrCreateBucketDeprecated(
+        params, type,
+        base::BindLambdaForTesting([&](QuotaErrorOr<BucketInfo> bucket) {
+          result = std::move(bucket);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
+  }
+
+  QuotaErrorOr<BucketInfo> GetBucket(const blink::StorageKey& storage_key,
+                                     const std::string& bucket_name,
+                                     blink::mojom::StorageType type) {
+    QuotaErrorOr<BucketInfo> result;
+    base::RunLoop run_loop;
+    manager_->GetBucket(
+        storage_key, bucket_name, type,
+        base::BindLambdaForTesting([&](QuotaErrorOr<BucketInfo> bucket) {
+          result = std::move(bucket);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return result;
+  }
+
+  QuotaErrorOr<BucketInfo> CreateBucketForTesting(
+      const blink::StorageKey& storage_key,
+      const std::string& bucket_name,
+      blink::mojom::StorageType type) {
+    base::test::TestFuture<QuotaErrorOr<BucketInfo>> bucket_future;
+    manager_->CreateBucketForTesting(storage_key, bucket_name, type,
+                                     bucket_future.GetCallback());
+    return bucket_future.Take();
+  }
+
+  void GetModifiedBuckets(StorageType type, base::Time begin, base::Time end) {
+    base::RunLoop run_loop;
+    manager_->GetBucketsModifiedBetween(
         type, begin, end,
-        base::BindOnce(&MockQuotaManagerTest::GotModifiedOrigins,
-                       weak_factory_.GetWeakPtr()));
+        base::BindOnce(&MockQuotaManagerTest::GotModifiedBuckets,
+                       weak_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
-  void GotModifiedOrigins(const std::set<url::Origin>& origins,
+  void GotModifiedBuckets(base::OnceClosure quit_closure,
+                          const std::set<BucketLocator>& buckets,
                           StorageType type) {
-    origins_ = origins;
+    buckets_ = buckets;
     type_ = type;
+    std::move(quit_closure).Run();
   }
 
-  void DeleteOriginData(const url::Origin& origin,
-                        StorageType type,
+  void DeleteBucketData(const BucketLocator& bucket,
                         QuotaClientTypes quota_client_types) {
-    manager_->DeleteOriginData(
-        origin, type, std::move(quota_client_types),
-        base::BindOnce(&MockQuotaManagerTest::DeletedOriginData,
-                       weak_factory_.GetWeakPtr()));
+    base::RunLoop run_loop;
+    manager_->DeleteBucketData(
+        bucket, std::move(quota_client_types),
+        base::BindOnce(&MockQuotaManagerTest::DeletedBucketData,
+                       weak_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
-  void DeletedOriginData(blink::mojom::QuotaStatusCode status) {
+  void DeletedBucketData(base::OnceClosure quit_closure,
+                         blink::mojom::QuotaStatusCode status) {
     ++deletion_callback_count_;
     EXPECT_EQ(blink::mojom::QuotaStatusCode::kOk, status);
+    std::move(quit_closure).Run();
+  }
+
+  void CheckUsageAndQuota(const blink::StorageKey& storage_key,
+                          StorageType type,
+                          const int64_t expected_usage,
+                          const int64_t expected_quota) {
+    base::test::TestFuture<blink::mojom::QuotaStatusCode, int64_t, int64_t>
+        future;
+    manager()->GetUsageAndQuota(storage_key, type, future.GetCallback());
+
+    blink::mojom::QuotaStatusCode status = future.Get<0>();
+    int64_t usage = future.Get<1>();
+    int64_t quota = future.Get<2>();
+
+    EXPECT_EQ(status, blink::mojom::QuotaStatusCode::kOk);
+    EXPECT_EQ(usage, expected_usage);
+    EXPECT_EQ(quota, expected_quota);
   }
 
   int deletion_callback_count() const {
@@ -86,7 +184,7 @@ class MockQuotaManagerTest : public testing::Test {
     return manager_.get();
   }
 
-  const std::set<url::Origin>& origins() const { return origins_; }
+  const std::set<BucketLocator>& buckets() const { return buckets_; }
 
   const StorageType& type() const {
     return type_;
@@ -100,138 +198,375 @@ class MockQuotaManagerTest : public testing::Test {
 
   int deletion_callback_count_;
 
-  std::set<url::Origin> origins_;
+  std::set<BucketLocator> buckets_;
   StorageType type_;
 
   base::WeakPtrFactory<MockQuotaManagerTest> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockQuotaManagerTest);
 };
 
-TEST_F(MockQuotaManagerTest, BasicOriginManipulation) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
+TEST_F(MockQuotaManagerTest, GetOrCreateBucket) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://host2:1/");
+  const char kBucketName[] = "bucket_name";
 
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kTemporary, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kPersistent, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientDB));
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 0);
+  EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
 
-  manager()->AddOrigin(kOrigin1, kTemporary, {kClientFile}, base::Time::Now());
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin1, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kTemporary, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kPersistent, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientDB));
+  QuotaErrorOr<BucketInfo> bucket1 =
+      GetOrCreateBucket(kStorageKey1, kBucketName);
+  EXPECT_TRUE(bucket1.ok());
+  EXPECT_EQ(bucket1->storage_key, kStorageKey1);
+  EXPECT_EQ(bucket1->name, kBucketName);
+  EXPECT_EQ(bucket1->type, kTemporary);
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 1);
+  EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), kClientFile));
 
-  manager()->AddOrigin(kOrigin1, kPersistent, {kClientFile}, base::Time::Now());
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin1, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kTemporary, kClientDB));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin1, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kPersistent, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientDB));
+  QuotaErrorOr<BucketInfo> bucket2 =
+      GetOrCreateBucket(kStorageKey2, kBucketName);
+  EXPECT_TRUE(bucket2.ok());
+  EXPECT_EQ(bucket2->storage_key, kStorageKey2);
+  EXPECT_EQ(bucket2->name, kBucketName);
+  EXPECT_EQ(bucket2->type, kTemporary);
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
+  EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), kClientFile));
 
-  manager()->AddOrigin(kOrigin2, kTemporary, {kClientFile, kClientDB},
-                       base::Time::Now());
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin1, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kTemporary, kClientDB));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin1, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin1, kPersistent, kClientDB));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin2, kTemporary, kClientFile));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin2, kTemporary, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kPersistent, kClientDB));
+  QuotaErrorOr<BucketInfo> dupe_bucket =
+      GetOrCreateBucket(kStorageKey1, kBucketName);
+  EXPECT_TRUE(dupe_bucket.ok());
+  EXPECT_EQ(dupe_bucket.value(), bucket1.value());
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
+
+  // GetOrCreateBucket actually creates buckets associated with all quota client
+  // types, so check them all.
+  for (auto client_type : AllQuotaClientTypes()) {
+    EXPECT_EQ(manager()->BucketDataCount(client_type), 2);
+    EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), client_type));
+    EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), client_type));
+  }
 }
 
-TEST_F(MockQuotaManagerTest, OriginDeletion) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
-  const url::Origin kOrigin3 = url::Origin::Create(GURL("http://host3:1/"));
+TEST_F(MockQuotaManagerTest, GetOrCreateBucketSync) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://host2:1/");
+  const char kBucketName[] = "bucket_name";
 
-  manager()->AddOrigin(kOrigin1, kTemporary, {kClientFile}, base::Time::Now());
-  manager()->AddOrigin(kOrigin2, kTemporary, {kClientFile, kClientDB},
-                       base::Time::Now());
-  manager()->AddOrigin(kOrigin3, kTemporary, {kClientFile, kClientDB},
-                       base::Time::Now());
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 0);
+  EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
 
-  DeleteOriginData(kOrigin2, kTemporary, {kClientFile});
-  base::RunLoop().RunUntilIdle();
+  BucketInitParams params(kStorageKey1, kBucketName);
+  QuotaErrorOr<BucketInfo> bucket1 = manager()->GetOrCreateBucketSync(params);
+  EXPECT_TRUE(bucket1.ok());
+  EXPECT_EQ(bucket1->storage_key, kStorageKey1);
+  EXPECT_EQ(bucket1->name, kBucketName);
+  EXPECT_EQ(bucket1->type, kTemporary);
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 1);
+  EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), kClientFile));
+
+  params = BucketInitParams(kStorageKey2, kBucketName);
+  QuotaErrorOr<BucketInfo> bucket2 = manager()->GetOrCreateBucketSync(params);
+  EXPECT_TRUE(bucket2.ok());
+  EXPECT_EQ(bucket2->storage_key, kStorageKey2);
+  EXPECT_EQ(bucket2->name, kBucketName);
+  EXPECT_EQ(bucket2->type, kTemporary);
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
+  EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), kClientFile));
+
+  params = BucketInitParams(kStorageKey1, kBucketName);
+  QuotaErrorOr<BucketInfo> dupe_bucket =
+      manager()->GetOrCreateBucketSync(params);
+  EXPECT_TRUE(dupe_bucket.ok());
+  EXPECT_EQ(dupe_bucket.value(), bucket1.value());
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
+
+  // GetOrCreateBucket actually creates buckets associated with all quota client
+  // types, so check them all.
+  for (auto client_type : AllQuotaClientTypes()) {
+    EXPECT_EQ(manager()->BucketDataCount(client_type), 2);
+    EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), client_type));
+    EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), client_type));
+  }
+}
+
+TEST_F(MockQuotaManagerTest, CreateBucketForTesting) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://host2:1/");
+  const char kBucketName[] = "bucket_name";
+
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 0);
+  EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
+
+  QuotaErrorOr<BucketInfo> bucket1 =
+      CreateBucketForTesting(kStorageKey1, kBucketName, kTemporary);
+  EXPECT_TRUE(bucket1.ok());
+  EXPECT_EQ(bucket1->storage_key, kStorageKey1);
+  EXPECT_EQ(bucket1->name, kBucketName);
+  EXPECT_EQ(bucket1->type, kTemporary);
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 1);
+  EXPECT_TRUE(manager()->BucketHasData(bucket1.value(), kClientFile));
+
+  QuotaErrorOr<BucketInfo> bucket2 =
+      CreateBucketForTesting(kStorageKey2, kBucketName, kTemporary);
+  EXPECT_TRUE(bucket2.ok());
+  EXPECT_EQ(bucket2->storage_key, kStorageKey2);
+  EXPECT_EQ(bucket2->name, kBucketName);
+  EXPECT_EQ(bucket2->type, kTemporary);
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
+  EXPECT_TRUE(manager()->BucketHasData(bucket2.value(), kClientFile));
+
+  QuotaErrorOr<BucketInfo> dupe_bucket =
+      GetOrCreateBucket(kStorageKey1, kBucketName);
+  EXPECT_TRUE(dupe_bucket.ok());
+  EXPECT_EQ(dupe_bucket.value(), bucket1.value());
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
+}
+
+TEST_F(MockQuotaManagerTest, GetBucket) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://host2:1/");
+  const char kBucketName[] = "bucket_name";
+
+  {
+    QuotaErrorOr<BucketInfo> created =
+        GetOrCreateBucket(kStorageKey1, kBucketName);
+    EXPECT_TRUE(created.ok());
+    QuotaErrorOr<BucketInfo> fetched =
+        GetBucket(kStorageKey1, kBucketName, kTemporary);
+    EXPECT_TRUE(fetched.ok());
+    EXPECT_EQ(fetched.value(), created.value());
+    EXPECT_EQ(fetched->storage_key, kStorageKey1);
+    EXPECT_EQ(fetched->name, kBucketName);
+    EXPECT_EQ(fetched->type, kTemporary);
+  }
+
+  {
+    QuotaErrorOr<BucketInfo> created =
+        GetOrCreateBucket(kStorageKey2, kBucketName);
+    EXPECT_TRUE(created.ok());
+    QuotaErrorOr<BucketInfo> fetched =
+        GetBucket(kStorageKey2, kBucketName, kTemporary);
+    EXPECT_TRUE(fetched.ok());
+    EXPECT_EQ(fetched.value(), created.value());
+    EXPECT_EQ(fetched->storage_key, kStorageKey2);
+    EXPECT_EQ(fetched->name, kBucketName);
+    EXPECT_EQ(fetched->type, kTemporary);
+  }
+
+  QuotaErrorOr<BucketInfo> not_found =
+      GetBucket(kStorageKey1, kBucketName, kPersistent);
+  EXPECT_FALSE(not_found.ok());
+}
+
+TEST_F(MockQuotaManagerTest, BasicBucketManipulation) {
+  const StorageKey kStorageKey1 =
+      StorageKey::CreateFromStringForTesting("http://host1:1/");
+  const StorageKey kStorageKey2 =
+      StorageKey::CreateFromStringForTesting("http://host2:1/");
+
+  const BucketInfo temp_bucket1 =
+      manager()->CreateBucket({kStorageKey1, "temp_host1"}, kTemporary);
+  const BucketInfo perm_bucket1 =
+      manager()->CreateBucket({kStorageKey1, "perm_host1"}, kPersistent);
+  const BucketInfo temp_bucket2 =
+      manager()->CreateBucket({kStorageKey2, "temp_host2"}, kTemporary);
+  const BucketInfo perm_bucket2 =
+      manager()->CreateBucket({kStorageKey2, "perm_host2"}, kPersistent);
+
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 0);
+  EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
+
+  manager()->AddBucket(temp_bucket1, {kClientFile}, base::Time::Now());
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 1);
+  EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
+  EXPECT_TRUE(manager()->BucketHasData(temp_bucket1, kClientFile));
+
+  manager()->AddBucket(perm_bucket1, {kClientFile}, base::Time::Now());
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
+  EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
+  EXPECT_TRUE(manager()->BucketHasData(temp_bucket1, kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(perm_bucket1, kClientFile));
+
+  manager()->AddBucket(temp_bucket2, {kClientFile, kClientDB},
+                       base::Time::Now());
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 3);
+  EXPECT_EQ(manager()->BucketDataCount(kClientDB), 1);
+  EXPECT_TRUE(manager()->BucketHasData(temp_bucket1, kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(perm_bucket1, kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(temp_bucket2, kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(temp_bucket2, kClientDB));
+
+  manager()->AddBucket(perm_bucket2, {kClientDB}, base::Time::Now());
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 3);
+  EXPECT_EQ(manager()->BucketDataCount(kClientDB), 2);
+  EXPECT_TRUE(manager()->BucketHasData(temp_bucket1, kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(perm_bucket1, kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(temp_bucket2, kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(temp_bucket2, kClientDB));
+  EXPECT_TRUE(manager()->BucketHasData(perm_bucket2, kClientDB));
+}
+
+TEST_F(MockQuotaManagerTest, BucketDeletion) {
+  const BucketInfo bucket1 = manager()->CreateBucket(
+      {StorageKey::CreateFromStringForTesting("http://host1:1/"),
+       kDefaultBucketName},
+      kTemporary);
+  const BucketInfo bucket2 = manager()->CreateBucket(
+      {StorageKey::CreateFromStringForTesting("http://host2:1/"),
+       kDefaultBucketName},
+      kPersistent);
+  const BucketInfo bucket3 = manager()->CreateBucket(
+      {StorageKey::CreateFromStringForTesting("http://host3:1/"),
+       kDefaultBucketName},
+      kTemporary);
+
+  manager()->AddBucket(bucket1, {kClientFile}, base::Time::Now());
+  manager()->AddBucket(bucket2, {kClientFile, kClientDB}, base::Time::Now());
+  manager()->AddBucket(bucket3, {kClientFile, kClientDB}, base::Time::Now());
+
+  DeleteBucketData(bucket2.ToBucketLocator(), {kClientFile});
 
   EXPECT_EQ(1, deletion_callback_count());
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin1, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientFile));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin2, kTemporary, kClientDB));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin3, kTemporary, kClientFile));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin3, kTemporary, kClientDB));
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 2);
+  EXPECT_EQ(manager()->BucketDataCount(kClientDB), 2);
+  EXPECT_TRUE(manager()->BucketHasData(bucket1, kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(bucket2, kClientDB));
+  EXPECT_TRUE(manager()->BucketHasData(bucket3, kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(bucket3, kClientDB));
 
-  DeleteOriginData(kOrigin3, kTemporary, {kClientFile, kClientDB});
-  base::RunLoop().RunUntilIdle();
+  DeleteBucketData(bucket3.ToBucketLocator(), {kClientFile, kClientDB});
 
   EXPECT_EQ(2, deletion_callback_count());
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin1, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin2, kTemporary, kClientFile));
-  EXPECT_TRUE(manager()->OriginHasData(kOrigin2, kTemporary, kClientDB));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin3, kTemporary, kClientFile));
-  EXPECT_FALSE(manager()->OriginHasData(kOrigin3, kTemporary, kClientDB));
+  EXPECT_EQ(manager()->BucketDataCount(kClientFile), 1);
+  EXPECT_EQ(manager()->BucketDataCount(kClientDB), 1);
+  EXPECT_TRUE(manager()->BucketHasData(bucket1, kClientFile));
+  EXPECT_TRUE(manager()->BucketHasData(bucket2, kClientDB));
 }
 
-TEST_F(MockQuotaManagerTest, ModifiedOrigins) {
-  const url::Origin kOrigin1 = url::Origin::Create(GURL("http://host1:1/"));
-  const url::Origin kOrigin2 = url::Origin::Create(GURL("http://host2:1/"));
+TEST_F(MockQuotaManagerTest, ModifiedBuckets) {
+  const BucketInfo bucket1 = manager()->CreateBucket(
+      {StorageKey::CreateFromStringForTesting("http://host1:1/"),
+       kDefaultBucketName},
+      kTemporary);
+  const BucketInfo bucket2 = manager()->CreateBucket(
+      {StorageKey::CreateFromStringForTesting("http://host2:1/"),
+       kDefaultBucketName},
+      kTemporary);
 
   base::Time now = base::Time::Now();
   base::Time then = base::Time();
-  base::TimeDelta an_hour = base::TimeDelta::FromMilliseconds(3600000);
-  base::TimeDelta a_minute = base::TimeDelta::FromMilliseconds(60000);
+  base::TimeDelta an_hour = base::Milliseconds(3600000);
+  base::TimeDelta a_minute = base::Milliseconds(60000);
 
-  GetModifiedOrigins(kTemporary, then, base::Time::Max());
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(origins().empty());
+  GetModifiedBuckets(kTemporary, then, base::Time::Max());
+  EXPECT_TRUE(buckets().empty());
 
-  manager()->AddOrigin(kOrigin1, kTemporary, {kClientFile}, now - an_hour);
+  manager()->AddBucket(bucket1, {kClientFile}, now - an_hour);
 
-  GetModifiedOrigins(kTemporary, then, base::Time::Max());
-  base::RunLoop().RunUntilIdle();
+  GetModifiedBuckets(kTemporary, then, base::Time::Max());
 
   EXPECT_EQ(kTemporary, type());
-  EXPECT_EQ(1UL, origins().size());
-  EXPECT_EQ(1UL, origins().count(kOrigin1));
-  EXPECT_EQ(0UL, origins().count(kOrigin2));
+  EXPECT_EQ(1UL, buckets().size());
+  EXPECT_TRUE(ContainsBucket(buckets(), bucket1));
+  EXPECT_FALSE(ContainsBucket(buckets(), bucket2));
 
-  manager()->AddOrigin(kOrigin2, kTemporary, {kClientFile}, now);
+  manager()->AddBucket(bucket2, {kClientFile}, now);
 
-  GetModifiedOrigins(kTemporary, then, base::Time::Max());
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(kTemporary, type());
-  EXPECT_EQ(2UL, origins().size());
-  EXPECT_EQ(1UL, origins().count(kOrigin1));
-  EXPECT_EQ(1UL, origins().count(kOrigin2));
-
-  GetModifiedOrigins(kTemporary, then, now);
-  base::RunLoop().RunUntilIdle();
+  GetModifiedBuckets(kTemporary, then, base::Time::Max());
 
   EXPECT_EQ(kTemporary, type());
-  EXPECT_EQ(1UL, origins().size());
-  EXPECT_EQ(1UL, origins().count(kOrigin1));
-  EXPECT_EQ(0UL, origins().count(kOrigin2));
+  EXPECT_EQ(2UL, buckets().size());
+  EXPECT_TRUE(ContainsBucket(buckets(), bucket1));
+  EXPECT_TRUE(ContainsBucket(buckets(), bucket2));
 
-  GetModifiedOrigins(kTemporary, now - a_minute, now + a_minute);
-  base::RunLoop().RunUntilIdle();
+  GetModifiedBuckets(kTemporary, then, now);
 
   EXPECT_EQ(kTemporary, type());
-  EXPECT_EQ(1UL, origins().size());
-  EXPECT_EQ(0UL, origins().count(kOrigin1));
-  EXPECT_EQ(1UL, origins().count(kOrigin2));
+  EXPECT_EQ(1UL, buckets().size());
+  EXPECT_TRUE(ContainsBucket(buckets(), bucket1));
+  EXPECT_FALSE(ContainsBucket(buckets(), bucket2));
+
+  GetModifiedBuckets(kTemporary, now - a_minute, now + a_minute);
+
+  EXPECT_EQ(kTemporary, type());
+  EXPECT_EQ(1UL, buckets().size());
+  EXPECT_FALSE(ContainsBucket(buckets(), bucket1));
+  EXPECT_TRUE(ContainsBucket(buckets(), bucket2));
+}
+
+TEST_F(MockQuotaManagerTest, QuotaAndUsage) {
+  const blink::StorageKey storage_key1 =
+      StorageKey::CreateFromStringForTesting("http://host1:1/");
+
+  const blink::StorageKey storage_key2 =
+      StorageKey::CreateFromStringForTesting("http://host2:1/");
+
+  QuotaErrorOr<BucketInfo> result =
+      GetOrCreateBucketDeprecated(storage_key1, kTemporary, kDefaultBucketName);
+  ASSERT_TRUE(result.ok());
+  const BucketLocator storage_key1_temp_default_bucket =
+      result->ToBucketLocator();
+
+  result = GetOrCreateBucketDeprecated(storage_key1, kTemporary, "non-default");
+  ASSERT_TRUE(result.ok());
+  const BucketLocator storage_key1_temp_named_bucket =
+      result->ToBucketLocator();
+
+  result = GetOrCreateBucketDeprecated(storage_key1, kPersistent,
+                                       kDefaultBucketName);
+  ASSERT_TRUE(result.ok());
+  const BucketLocator storage_key1_persist_default_bucket =
+      result->ToBucketLocator();
+
+  result =
+      GetOrCreateBucketDeprecated(storage_key1, kPersistent, "non-default");
+  ASSERT_TRUE(result.ok());
+  const BucketLocator storage_key1_persist_named_bucket =
+      result->ToBucketLocator();
+
+  result =
+      GetOrCreateBucketDeprecated(storage_key2, kTemporary, kDefaultBucketName);
+  ASSERT_TRUE(result.ok());
+  const BucketLocator storage_key2_temp_default_bucket =
+      result->ToBucketLocator();
+
+  SCOPED_TRACE(
+      "Checking default usage and quota for storage_key1 (kTemporary)");
+  CheckUsageAndQuota(storage_key1, kTemporary, 0,
+                     std::numeric_limits<int64_t>::max());
+
+  manager()->SetQuota(storage_key1, kTemporary, 1000);
+  // Add usages in different buckets for the same storage key so that we can
+  // ensure that these get added together correctly.
+  manager()->UpdateUsage(storage_key1_temp_default_bucket.id, 10);
+  manager()->UpdateUsage(storage_key1_temp_named_bucket.id, 100);
+
+  // Set a quota for the same storage key using a different type to test that
+  // these quotas don't affect one another.
+  manager()->SetQuota(storage_key1, kPersistent, 2000);
+  // Add usages for buckets tied to the same storage key but using a different
+  // type to test that these don't affect one another.
+  manager()->UpdateUsage(storage_key1_persist_default_bucket.id, 20);
+  manager()->UpdateUsage(storage_key1_persist_named_bucket.id, 200);
+
+  // Set a quota and add usage for a different storage key to test that this
+  // doesn't affect the quota and usage of the other storage key.
+  manager()->SetQuota(storage_key2, kTemporary, 3000);
+  manager()->UpdateUsage(storage_key2_temp_default_bucket.id, 30);
+
+  SCOPED_TRACE("Checking usage and quota for storage_key1 (kTemporary)");
+  CheckUsageAndQuota(storage_key1, kTemporary, 110, 1000);
+
+  SCOPED_TRACE("Checking usage and quota for storage_key1 (kPersistent)");
+  CheckUsageAndQuota(storage_key1, kPersistent, 220, 2000);
+
+  SCOPED_TRACE("Checking usage and quota for storage_key2 (kTemporary)");
+  CheckUsageAndQuota(storage_key2, kTemporary, 30, 3000);
 }
 }  // namespace storage

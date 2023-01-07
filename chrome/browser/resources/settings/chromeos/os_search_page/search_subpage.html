@@ -1,0 +1,68 @@
+<style include="cr-shared-style settings-shared">
+  .subsection {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-indent-padding);
+  }
+
+  .subsection > settings-toggle-button {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
+  #quick-answers-enable {
+    --cr-subsequent-anchors-of-span-margin: 0;
+  }
+
+  #quick-answers-definition-enable {
+    border-top: none;
+  }
+</style>
+<settings-search-engine
+    deep-link-focus-id$="[[Setting.kPreferredSearchEngine]]">
+</settings-search-engine>
+<template is="dom-if"
+    if="[[!quickAnswersSubToggleEnabled_]]">
+  <settings-toggle-button id="quick-answers-enable"
+      class="hr"
+      pref="{{prefs.settings.quick_answers.enabled}}"
+      label="$i18n{quickAnswersEnable}"
+      sub-label-with-link="[[quickAnswersSubLabel_]]"
+      on-sub-label-link-clicked="onSettingsLinkClick_"
+      deep-link-focus-id$="[[Setting.kQuickAnswersOnOff]]">
+  </settings-toggle-button>
+</template>
+<template is="dom-if"
+    if="[[quickAnswersSubToggleEnabled_]]">
+  <settings-toggle-button id="quick-answers-enable"
+      class="hr"
+      pref="{{prefs.settings.quick_answers.enabled}}"
+      label="$i18n{quickAnswersEnable}"
+      sub-label="$i18n{quickAnswersEnableDescription}"
+      deep-link-focus-id$="[[Setting.kQuickAnswersOnOff]]">
+  </settings-toggle-button>
+  <template is="dom-if"
+      if="[[prefs.settings.quick_answers.enabled.value]]">
+    <settings-toggle-button id="quick-answers-definition-enable"
+        class="hr subsection no-border-top"
+        pref="{{prefs.settings.quick_answers.definition.enabled}}"
+        label="$i18n{quickAnswersDefinitionEnable}"
+        deep-link-focus-id$="[[Setting.kQuickAnswersDefinition]]">
+    </settings-toggle-button>
+    <template is="dom-if" if="[[!quickAnswersTranslationDisabled_]]" restamp>
+      <settings-toggle-button id="quick-answers-translation-enable"
+          class="hr subsection"
+          pref="{{prefs.settings.quick_answers.translation.enabled}}"
+          label="$i18n{quickAnswersTranslationEnable}"
+          sub-label-with-link="[[translationSubLabel_]]"
+          on-sub-label-link-clicked="onSettingsLinkClick_"
+          deep-link-focus-id$="[[Setting.kQuickAnswersTranslation]]">
+      </settings-toggle-button>
+    </template>
+    <settings-toggle-button id="quick-answers-unit-conversion-enable"
+        class="hr subsection"
+        pref="{{prefs.settings.quick_answers.unit_conversion.enabled}}"
+        label="$i18n{quickAnswersUnitConversionEnable}"
+        deep-link-focus-id$="[[Setting.kQuickAnswersUnitConversion]]">
+    </settings-toggle-button>
+  </template>
+</template>

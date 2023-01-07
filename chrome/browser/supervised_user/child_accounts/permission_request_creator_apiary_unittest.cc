@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,7 +30,8 @@ std::string BuildResponse() {
   base::DictionaryValue dict;
   auto permission_dict = std::make_unique<base::DictionaryValue>();
   permission_dict->SetKey("id", base::Value("requestid"));
-  dict.SetWithoutPathExpansion("permissionRequest", std::move(permission_dict));
+  dict.SetKey("permissionRequest",
+              base::Value::FromUniquePtrValue(std::move(permission_dict)));
   std::string result;
   base::JSONWriter::Write(dict, &result);
   return result;
@@ -43,8 +45,8 @@ class PermissionRequestCreatorApiaryTest : public testing::Test {
       : test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    AccountInfo account_info =
-        identity_test_env_.MakeUnconsentedPrimaryAccountAvailable(kEmail);
+    AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+        kEmail, signin::ConsentLevel::kSignin);
     account_id_ = account_info.account_id;
     permission_creator_ = std::make_unique<PermissionRequestCreatorApiary>(
         identity_test_env_.identity_manager(), test_shared_loader_factory_);
@@ -54,8 +56,7 @@ class PermissionRequestCreatorApiaryTest : public testing::Test {
  protected:
   void IssueAccessTokens() {
     identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-        account_id_, "access_token",
-        base::Time::Now() + base::TimeDelta::FromHours(1));
+        account_id_, "access_token", base::Time::Now() + base::Hours(1));
   }
 
   void IssueAccessTokenErrors() {

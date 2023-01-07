@@ -1,7 +1,7 @@
 include_rules = [
   "+dbus",
   "+ui/base",
-  "+ui/events/keycodes",
+  "+ui/events",
   "+ui/gfx/image",
   "+ui/gfx/x",
   "+ui/ozone/public",

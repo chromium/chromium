@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>color scheme test</title>
+</head>
+
+<script>
+  if (window.matchMedia("(prefers-color-scheme: light)").matches) {
+    document.documentElement.style.backgroundColor = "White";
+    document.documentElement.style.color = "Black";
+  } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    document.documentElement.style.backgroundColor = "Black";
+    document.documentElement.style.color = "White";
+  }
+</script>
+<body>
+color scheme test
+</body>
+</html>

@@ -1,156 +1,66 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-    /* This css is from http://www.whatwg.org/specs/web-apps/current-work/multipage/rendering.html#quotes */
+    /*
+    This css is built using the International Components for Unicode (ICU)
+    See here for list of languages supported by Chrome: https://docs.google.com/document/d/1iOMXwI4MriHgHEtGm3n2c7s8_XfBUkmwtQ9uDIk2Bww/edit
+    */
 
-    :root:lang(af),       :not(:lang(af)) > :lang(af)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(agq),      :not(:lang(agq)) > :lang(agq)           { quotes: '\201e' '\201d' '\201a' '\2019' } /* „ ” ‚ ’ */
-    :root:lang(ak),       :not(:lang(ak)) > :lang(ak)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(am),       :not(:lang(am)) > :lang(am)             { quotes: '\00ab' '\00bb' '\2039' '\203a' } /* « » ‹ › */
     :root:lang(ar),       :not(:lang(ar)) > :lang(ar)             { quotes: '\201d' '\201c' '\2019' '\2018' } /* ” “ ’ ‘ */
-    :root:lang(asa),      :not(:lang(asa)) > :lang(asa)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(az-Cyrl),  :not(:lang(az-Cyrl)) > :lang(az-Cyrl)   { quotes: '\00ab' '\00bb' '\2039' '\203a' } /* « » ‹ › */
-    :root:lang(bas),      :not(:lang(bas)) > :lang(bas)           { quotes: '\00ab' '\00bb' '\201e' '\201c' } /* « » „ “ */
-    :root:lang(bem),      :not(:lang(bem)) > :lang(bem)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(bez),      :not(:lang(bez)) > :lang(bez)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(bg),       :not(:lang(bg)) > :lang(bg)             { quotes: '\201e' '\201c' '\201a' '\2018' } /* „ “ ‚ ‘ */
-    :root:lang(bm),       :not(:lang(bm)) > :lang(bm)             { quotes: '\00ab' '\00bb' '\201c' '\201d' } /* « » “ ” */
+    :root:lang(bg),       :not(:lang(bg)) > :lang(bg)             { quotes: '\201e' '\201c' '\201e' '\201c' } /* „ “ „ “ */
     :root:lang(bn),       :not(:lang(bn)) > :lang(bn)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(br),       :not(:lang(br)) > :lang(br)             { quotes: '\00ab' '\00bb' '\2039' '\203a' } /* « » ‹ › */
-    :root:lang(brx),      :not(:lang(brx)) > :lang(brx)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(bs-Cyrl),  :not(:lang(bs-Cyrl)) > :lang(bs-Cyrl)   { quotes: '\201e' '\201c' '\201a' '\2018' } /* „ “ ‚ ‘ */
-    :root:lang(ca),       :not(:lang(ca)) > :lang(ca)             { quotes: '\201c' '\201d' '\00ab' '\00bb' } /* “ ” « » */
-    :root:lang(cgg),      :not(:lang(cgg)) > :lang(cgg)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(chr),      :not(:lang(chr)) > :lang(chr)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
+    :root:lang(ca),       :not(:lang(ca)) > :lang(ca)             { quotes: '\00ab' '\00bb' '\201c' '\201d' } /* « » “ ” */
     :root:lang(cs),       :not(:lang(cs)) > :lang(cs)             { quotes: '\201e' '\201c' '\201a' '\2018' } /* „ “ ‚ ‘ */
     :root:lang(da),       :not(:lang(da)) > :lang(da)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(dav),      :not(:lang(dav)) > :lang(dav)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(de),       :not(:lang(de)) > :lang(de)             { quotes: '\201e' '\201c' '\201a' '\2018' } /* „ “ ‚ ‘ */
-    :root:lang(de-CH),    :not(:lang(de-CH)) > :lang(de-CH)       { quotes: '\00ab' '\00bb' '\2039' '\203a' } /* « » ‹ › */
-    :root:lang(dje),      :not(:lang(dje)) > :lang(dje)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(dua),      :not(:lang(dua)) > :lang(dua)           { quotes: '\00ab' '\00bb' '\2018' '\2019' } /* « » ‘ ’ */
-    :root:lang(dyo),      :not(:lang(dyo)) > :lang(dyo)           { quotes: '\00ab' '\00bb' '\201c' '\201d' } /* « » “ ” */
-    :root:lang(dz),       :not(:lang(dz)) > :lang(dz)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(ebu),      :not(:lang(ebu)) > :lang(ebu)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(ee),       :not(:lang(ee)) > :lang(ee)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
+    :root:lang(de-CH),    :not(:lang(de-CH)) > :lang(de-CH)       { quotes: '\201e' '\201c' '\201a' '\2018' } /* „ “ ‚ ‘ */
     :root:lang(el),       :not(:lang(el)) > :lang(el)             { quotes: '\00ab' '\00bb' '\201c' '\201d' } /* « » “ ” */
     :root:lang(en),       :not(:lang(en)) > :lang(en)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(en-GB),    :not(:lang(en-GB)) > :lang(en-GB)       { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(es),       :not(:lang(es)) > :lang(es)             { quotes: '\201c' '\201d' '\00ab' '\00bb' } /* “ ” « » */
+    :root:lang(es),       :not(:lang(es)) > :lang(es)             { quotes: '\00ab' '\00bb' '\201c' '\201d' } /* “ ” « » */
     :root:lang(et),       :not(:lang(et)) > :lang(et)             { quotes: '\201e' '\201c' '\201a' '\2018' } /* „ “ ‚ ‘ */
-    :root:lang(eu),       :not(:lang(eu)) > :lang(eu)             { quotes: '\201c' '\201d' '\00ab' '\00bb' } /* “ ” « » */
-    :root:lang(ewo),      :not(:lang(ewo)) > :lang(ewo)           { quotes: '\00ab' '\00bb' '\201c' '\201d' } /* « » “ ” */
     :root:lang(fa),       :not(:lang(fa)) > :lang(fa)             { quotes: '\00ab' '\00bb' '\2039' '\203a' } /* « » ‹ › */
-    :root:lang(ff),       :not(:lang(ff)) > :lang(ff)             { quotes: '\201e' '\201d' '\201a' '\2019' } /* „ ” ‚ ’ */
+    :root:lang(fil),      :not(:lang(fil)) > :lang(fil)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(fi),       :not(:lang(fi)) > :lang(fi)             { quotes: '\201d' '\201d' '\2019' '\2019' } /* ” ” ’ ’ */
     :root:lang(fr),       :not(:lang(fr)) > :lang(fr)             { quotes: '\00ab' '\00bb' '\00ab' '\00bb' } /* « » « » */
-    :root:lang(fr-CA),    :not(:lang(fr-CA)) > :lang(fr-CA)       { quotes: '\00ab' '\00bb' '\2039' '\203a' } /* « » ‹ › */
+    :root:lang(fr-CA),    :not(:lang(fr-CA)) > :lang(fr-CA)       { quotes: '\00ab' '\00bb' '\201d' '\201c' } /* « » ” “ */
     :root:lang(fr-CH),    :not(:lang(fr-CH)) > :lang(fr-CH)       { quotes: '\00ab' '\00bb' '\2039' '\203a' } /* « » ‹ › */
-    :root:lang(gsw),      :not(:lang(gsw)) > :lang(gsw)           { quotes: '\00ab' '\00bb' '\2039' '\203a' } /* « » ‹ › */
     :root:lang(gu),       :not(:lang(gu)) > :lang(gu)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(guz),      :not(:lang(guz)) > :lang(guz)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(ha),       :not(:lang(ha)) > :lang(ha)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(he),       :not(:lang(he)) > :lang(he)             { quotes: '\0022' '\0022' '\0027' '\0027' } /* " " ' ' */
     :root:lang(hi),       :not(:lang(hi)) > :lang(hi)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(hr),       :not(:lang(hr)) > :lang(hr)             { quotes: '\201e' '\201c' '\201a' '\2018' } /* „ “ ‚ ‘ */
     :root:lang(hu),       :not(:lang(hu)) > :lang(hu)             { quotes: '\201e' '\201d' '\00bb' '\00ab' } /* „ ” » « */
     :root:lang(id),       :not(:lang(id)) > :lang(id)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(ig),       :not(:lang(ig)) > :lang(ig)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(it),       :not(:lang(it)) > :lang(it)             { quotes: '\00ab' '\00bb' '\201c' '\201d' } /* « » “ ” */
     :root:lang(ja),       :not(:lang(ja)) > :lang(ja)             { quotes: '\300c' '\300d' '\300e' '\300f' } /* 「 」 『 』 */
-    :root:lang(jgo),      :not(:lang(jgo)) > :lang(jgo)           { quotes: '\00ab' '\00bb' '\2039' '\203a' } /* « » ‹ › */
-    :root:lang(jmc),      :not(:lang(jmc)) > :lang(jmc)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(kab),      :not(:lang(kab)) > :lang(kab)           { quotes: '\00ab' '\00bb' '\201c' '\201d' } /* « » “ ” */
-    :root:lang(kam),      :not(:lang(kam)) > :lang(kam)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(kde),      :not(:lang(kde)) > :lang(kde)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(kea),      :not(:lang(kea)) > :lang(kea)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(khq),      :not(:lang(khq)) > :lang(khq)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(ki),       :not(:lang(ki)) > :lang(ki)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(kkj),      :not(:lang(kkj)) > :lang(kkj)           { quotes: '\00ab' '\00bb' '\2039' '\203a' } /* « » ‹ › */
-    :root:lang(kln),      :not(:lang(kln)) > :lang(kln)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(km),       :not(:lang(km)) > :lang(km)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(kn),       :not(:lang(kn)) > :lang(kn)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(ko),       :not(:lang(ko)) > :lang(ko)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(ksb),      :not(:lang(ksb)) > :lang(ksb)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(ksf),      :not(:lang(ksf)) > :lang(ksf)           { quotes: '\00ab' '\00bb' '\2018' '\2019' } /* « » ‘ ’ */
-    :root:lang(lag),      :not(:lang(lag)) > :lang(lag)           { quotes: '\201d' '\201d' '\2019' '\2019' } /* ” ” ’ ’ */
-    :root:lang(lg),       :not(:lang(lg)) > :lang(lg)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(ln),       :not(:lang(ln)) > :lang(ln)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(lo),       :not(:lang(lo)) > :lang(lo)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(lt),       :not(:lang(lt)) > :lang(lt)             { quotes: '\201e' '\201c' '\201e' '\201c' } /* „ “ „ “ */
-    :root:lang(lu),       :not(:lang(lu)) > :lang(lu)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(luo),      :not(:lang(luo)) > :lang(luo)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(luy),      :not(:lang(luy)) > :lang(luy)           { quotes: '\201e' '\201c' '\201a' '\2018' } /* „ “ ‚ ‘ */
     :root:lang(lv),       :not(:lang(lv)) > :lang(lv)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(mas),      :not(:lang(mas)) > :lang(mas)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(mer),      :not(:lang(mer)) > :lang(mer)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(mfe),      :not(:lang(mfe)) > :lang(mfe)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(mg),       :not(:lang(mg)) > :lang(mg)             { quotes: '\00ab' '\00bb' '\201c' '\201d' } /* « » “ ” */
-    :root:lang(mgo),      :not(:lang(mgo)) > :lang(mgo)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(mk),       :not(:lang(mk)) > :lang(mk)             { quotes: '\201e' '\201c' '\201a' '\2018' } /* „ “ ‚ ‘ */
     :root:lang(ml),       :not(:lang(ml)) > :lang(ml)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(mr),       :not(:lang(mr)) > :lang(mr)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(ms),       :not(:lang(ms)) > :lang(ms)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(mua),      :not(:lang(mua)) > :lang(mua)           { quotes: '\00ab' '\00bb' '\201c' '\201d' } /* « » “ ” */
-    :root:lang(my),       :not(:lang(my)) > :lang(my)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(naq),      :not(:lang(naq)) > :lang(naq)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(nb),       :not(:lang(nb)) > :lang(nb)             { quotes: '\00ab' '\00bb' '\2018' '\2019' } /* « » ‘ ’ */
-    :root:lang(nd),       :not(:lang(nd)) > :lang(nd)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(nl),       :not(:lang(nl)) > :lang(nl)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(nmg),      :not(:lang(nmg)) > :lang(nmg)           { quotes: '\201e' '\201d' '\00ab' '\00bb' } /* „ ” « » */
-    :root:lang(nn),       :not(:lang(nn)) > :lang(nn)             { quotes: '\00ab' '\00bb' '\2018' '\2019' } /* « » ‘ ’ */
-    :root:lang(nnh),      :not(:lang(nnh)) > :lang(nnh)           { quotes: '\00ab' '\00bb' '\201c' '\201d' } /* « » “ ” */
-    :root:lang(nus),      :not(:lang(nus)) > :lang(nus)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(nyn),      :not(:lang(nyn)) > :lang(nyn)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
+    :root:lang(nl),       :not(:lang(nl)) > :lang(nl)             { quotes: '\2018' '\2019' '\2018' '\2019' } /* ‘ ’ ‘ ’ */
+    :root:lang(no),       :not(:lang(no)) > :lang(no)             { quotes: '\00ab' '\00bb' '\2018' '\2019' } /* « » ‘ ’ */
     :root:lang(pl),       :not(:lang(pl)) > :lang(pl)             { quotes: '\201e' '\201d' '\00ab' '\00bb' } /* „ ” « » */
     :root:lang(pt),       :not(:lang(pt)) > :lang(pt)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(pt-PT),    :not(:lang(pt-PT)) > :lang(pt-PT)       { quotes: '\00ab' '\00bb' '\201c' '\201d' } /* « » “ ” */
-    :root:lang(rn),       :not(:lang(rn)) > :lang(rn)             { quotes: '\201d' '\201d' '\2019' '\2019' } /* ” ” ’ ’ */
     :root:lang(ro),       :not(:lang(ro)) > :lang(ro)             { quotes: '\201e' '\201d' '\00ab' '\00bb' } /* „ ” « » */
-    :root:lang(rof),      :not(:lang(rof)) > :lang(rof)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(ru),       :not(:lang(ru)) > :lang(ru)             { quotes: '\00ab' '\00bb' '\201e' '\201c' } /* « » „ “ */
-    :root:lang(rw),       :not(:lang(rw)) > :lang(rw)             { quotes: '\00ab' '\00bb' '\2018' '\2019' } /* « » ‘ ’ */
-    :root:lang(rwk),      :not(:lang(rwk)) > :lang(rwk)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(saq),      :not(:lang(saq)) > :lang(saq)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(sbp),      :not(:lang(sbp)) > :lang(sbp)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(seh),      :not(:lang(seh)) > :lang(seh)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(ses),      :not(:lang(ses)) > :lang(ses)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(sg),       :not(:lang(sg)) > :lang(sg)             { quotes: '\00ab' '\00bb' '\201c' '\201d' } /* « » “ ” */
-    :root:lang(shi),      :not(:lang(shi)) > :lang(shi)           { quotes: '\00ab' '\00bb' '\201e' '\201d' } /* « » „ ” */
-    :root:lang(shi-Tfng), :not(:lang(shi-Tfng)) > :lang(shi-Tfng) { quotes: '\00ab' '\00bb' '\201e' '\201d' } /* « » „ ” */
-    :root:lang(si),       :not(:lang(si)) > :lang(si)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(sk),       :not(:lang(sk)) > :lang(sk)             { quotes: '\201e' '\201c' '\201a' '\2018' } /* „ “ ‚ ‘ */
     :root:lang(sl),       :not(:lang(sl)) > :lang(sl)             { quotes: '\201e' '\201c' '\201a' '\2018' } /* „ “ ‚ ‘ */
-    :root:lang(sn),       :not(:lang(sn)) > :lang(sn)             { quotes: '\201d' '\201d' '\2019' '\2019' } /* ” ” ’ ’ */
-    :root:lang(so),       :not(:lang(so)) > :lang(so)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(sq),       :not(:lang(sq)) > :lang(sq)             { quotes: '\201e' '\201c' '\201a' '\2018' } /* „ “ ‚ ‘ */
-    :root:lang(sr),       :not(:lang(sr)) > :lang(sr)             { quotes: '\201e' '\201c' '\201a' '\2018' } /* „ “ ‚ ‘ */
-    :root:lang(sr-Latn),  :not(:lang(sr-Latn)) > :lang(sr-Latn)   { quotes: '\201e' '\201c' '\201a' '\2018' } /* „ “ ‚ ‘ */
+    :root:lang(sr),       :not(:lang(sr)) > :lang(sr)             { quotes: '\201e' '\201c' '\2018' '\2018' } /* „ “ ‘ ‘ */
+    :root:lang(sr-Latn),  :not(:lang(sr-Latn)) > :lang(sr-Latn)   { quotes: '\201e' '\201c' '\2018' '\2018' } /* „ “ ‘ ‘ */
     :root:lang(sv),       :not(:lang(sv)) > :lang(sv)             { quotes: '\201d' '\201d' '\2019' '\2019' } /* ” ” ’ ’ */
     :root:lang(sw),       :not(:lang(sw)) > :lang(sw)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(swc),      :not(:lang(swc)) > :lang(swc)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(ta),       :not(:lang(ta)) > :lang(ta)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(te),       :not(:lang(te)) > :lang(te)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(teo),      :not(:lang(teo)) > :lang(teo)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(th),       :not(:lang(th)) > :lang(th)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(ti-ER),    :not(:lang(ti-ER)) > :lang(ti-ER)       { quotes: '\2018' '\2019' '\201c' '\201d' } /* ‘ ’ “ ” */
-    :root:lang(to),       :not(:lang(to)) > :lang(to)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(tr),       :not(:lang(tr)) > :lang(tr)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(twq),      :not(:lang(twq)) > :lang(twq)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(tzm),      :not(:lang(tzm)) > :lang(tzm)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(uk),       :not(:lang(uk)) > :lang(uk)             { quotes: '\00ab' '\00bb' '\201e' '\201c' } /* « » „ “ */
-    :root:lang(ur),       :not(:lang(ur)) > :lang(ur)             { quotes: '\201d' '\201c' '\2019' '\2018' } /* ” “ ’ ‘ */
-    :root:lang(vai),      :not(:lang(vai)) > :lang(vai)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(vai-Latn), :not(:lang(vai-Latn)) > :lang(vai-Latn) { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(vi),       :not(:lang(vi)) > :lang(vi)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(vun),      :not(:lang(vun)) > :lang(vun)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(xh),       :not(:lang(xh)) > :lang(xh)             { quotes: '\2018' '\2019' '\201c' '\201d' } /* ‘ ’ “ ” */
-    :root:lang(xog),      :not(:lang(xog)) > :lang(xog)           { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
-    :root:lang(yav),      :not(:lang(yav)) > :lang(yav)           { quotes: '\00ab' '\00bb' '\00ab' '\00bb' } /* « » « » */
-    :root:lang(yo),       :not(:lang(yo)) > :lang(yo)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(zh),       :not(:lang(zh)) > :lang(zh)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
     :root:lang(zh-Hant),  :not(:lang(zh-Hant)) > :lang(zh-Hant)   { quotes: '\300c' '\300d' '\300e' '\300f' } /* 「 」 『 』 */
-    :root:lang(zu),       :not(:lang(zu)) > :lang(zu)             { quotes: '\201c' '\201d' '\2018' '\2019' } /* “ ” ‘ ’ */
 </style>
 
 <p>
@@ -159,153 +69,60 @@
 </p>
 
 <!-- Custom quotes are inlined to make this test fail if you don't implement CSS quotes. -->
-<div lang="custom">ACcustomDB</div>
-<q><q>default</q></q>
-<q lang="af"><q>af</q></q>
-<q lang="agq"><q>agq</q></q>
-<q lang="ak"><q>ak</q></q>
-<q lang="am"><q>am</q></q>
-<q lang="ar"><q>ar</q></q>
-<q lang="asa"><q>asa</q></q>
-<q lang="az-Cyrl"><q>az-Cyrl</q></q>
-<q lang="bas"><q>bas</q></q>
-<q lang="bem"><q>bem</q></q>
-<q lang="bez"><q>bez</q></q>
-<q lang="bg"><q>bg</q></q>
-<q lang="bm"><q>bm</q></q>
-<q lang="bn"><q>bn</q></q>
-<q lang="br"><q>br</q></q>
-<q lang="brx"><q>brx</q></q>
-<q lang="bs-Cyrl"><q>bs-Cyrl</q></q>
-<q lang="ca"><q>ca</q></q>
-<q lang="cgg"><q>cgg</q></q>
-<q lang="chr"><q>chr</q></q>
-<q lang="cs"><q>cs</q></q>
-<q lang="da"><q>da</q></q>
-<q lang="dav"><q>dav</q></q>
-<q lang="de"><q>de</q></q>
-<q lang="de-CH"><q>de-CH</q></q>
-<q lang="dje"><q>dje</q></q>
-<q lang="dua"><q>dua</q></q>
-<q lang="dyo"><q>dyo</q></q>
-<q lang="dz"><q>dz</q></q>
-<q lang="ebu"><q>ebu</q></q>
-<q lang="ee"><q>ee</q></q>
-<q lang="el"><q>el</q></q>
-<q lang="en"><q>en</q></q>
-<q lang="en-GB"><q>en-GB</q></q>
-<q lang="es"><q>es</q></q>
-<q lang="et"><q>et</q></q>
-<q lang="eu"><q>eu</q></q>
-<q lang="ewo"><q>ewo</q></q>
-<q lang="fa"><q>fa</q></q>
-<q lang="ff"><q>ff</q></q>
-<q lang="fi"><q>fi</q></q>
-<q lang="fr"><q>fr</q></q>
-<q lang="fr-CA"><q>fr-CA</q></q>
-<q lang="fr-CH"><q>fr-CH</q></q>
-<q lang="gsw"><q>gsw</q></q>
-<q lang="gu"><q>gu</q></q>
-<q lang="guz"><q>guz</q></q>
-<q lang="ha"><q>ha</q></q>
-<q lang="he"><q>he</q></q>
-<q lang="hi"><q>hi</q></q>
-<q lang="hr"><q>hr</q></q>
-<q lang="hu"><q>hu</q></q>
-<q lang="id"><q>id</q></q>
-<q lang="ig"><q>ig</q></q>
-<q lang="it"><q>it</q></q>
-<q lang="ja"><q>ja</q></q>
-<q lang="jgo"><q>jgo</q></q>
-<q lang="jmc"><q>jmc</q></q>
-<q lang="kab"><q>kab</q></q>
-<q lang="kam"><q>kam</q></q>
-<q lang="kde"><q>kde</q></q>
-<q lang="kea"><q>kea</q></q>
-<q lang="khq"><q>khq</q></q>
-<q lang="ki"><q>ki</q></q>
-<q lang="kkj"><q>kkj</q></q>
-<q lang="kln"><q>kln</q></q>
-<q lang="km"><q>km</q></q>
-<q lang="kn"><q>kn</q></q>
-<q lang="ko"><q>ko</q></q>
-<q lang="ksb"><q>ksb</q></q>
-<q lang="ksf"><q>ksf</q></q>
-<q lang="lag"><q>lag</q></q>
-<q lang="lg"><q>lg</q></q>
-<q lang="ln"><q>ln</q></q>
-<q lang="lo"><q>lo</q></q>
-<q lang="lt"><q>lt</q></q>
-<q lang="lu"><q>lu</q></q>
-<q lang="luo"><q>luo</q></q>
-<q lang="luy"><q>luy</q></q>
-<q lang="lv"><q>lv</q></q>
-<q lang="mas"><q>mas</q></q>
-<q lang="mer"><q>mer</q></q>
-<q lang="mfe"><q>mfe</q></q>
-<q lang="mg"><q>mg</q></q>
-<q lang="mgo"><q>mgo</q></q>
-<q lang="mk"><q>mk</q></q>
-<q lang="ml"><q>ml</q></q>
-<q lang="mr"><q>mr</q></q>
-<q lang="ms"><q>ms</q></q>
-<q lang="mua"><q>mua</q></q>
-<q lang="my"><q>my</q></q>
-<q lang="naq"><q>naq</q></q>
-<q lang="nb"><q>nb</q></q>
-<q lang="nd"><q>nd</q></q>
-<q lang="nl"><q>nl</q></q>
-<q lang="nmg"><q>nmg</q></q>
-<q lang="nn"><q>nn</q></q>
-<q lang="nnh"><q>nnh</q></q>
-<q lang="nus"><q>nus</q></q>
-<q lang="nyn"><q>nyn</q></q>
-<q lang="pl"><q>pl</q></q>
-<q lang="pt"><q>pt</q></q>
-<q lang="pt-PT"><q>pt-PT</q></q>
-<q lang="rn"><q>rn</q></q>
-<q lang="ro"><q>ro</q></q>
-<q lang="rof"><q>rof</q></q>
-<q lang="ru"><q>ru</q></q>
-<q lang="rw"><q>rw</q></q>
-<q lang="rwk"><q>rwk</q></q>
-<q lang="saq"><q>saq</q></q>
-<q lang="sbp"><q>sbp</q></q>
-<q lang="seh"><q>seh</q></q>
-<q lang="ses"><q>ses</q></q>
-<q lang="sg"><q>sg</q></q>
-<q lang="shi"><q>shi</q></q>
-<q lang="shi-Tfng"><q>shi-Tfng</q></q>
-<q lang="si"><q>si</q></q>
-<q lang="sk"><q>sk</q></q>
-<q lang="sl"><q>sl</q></q>
-<q lang="sn"><q>sn</q></q>
-<q lang="so"><q>so</q></q>
-<q lang="sq"><q>sq</q></q>
-<q lang="sr"><q>sr</q></q>
-<q lang="sr-Latn"><q>sr-Latn</q></q>
-<q lang="sv"><q>sv</q></q>
-<q lang="sw"><q>sw</q></q>
-<q lang="swc"><q>swc</q></q>
-<q lang="ta"><q>ta</q></q>
-<q lang="te"><q>te</q></q>
-<q lang="teo"><q>teo</q></q>
-<q lang="th"><q>th</q></q>
-<q lang="ti-ER"><q>ti-ER</q></q>
-<q lang="to"><q>to</q></q>
-<q lang="tr"><q>tr</q></q>
-<q lang="twq"><q>twq</q></q>
-<q lang="tzm"><q>tzm</q></q>
-<q lang="uk"><q>uk</q></q>
-<q lang="ur"><q>ur</q></q>
-<q lang="vai"><q>vai</q></q>
-<q lang="vai-Latn"><q>vai-Latn</q></q>
-<q lang="vi"><q>vi</q></q>
-<q lang="vun"><q>vun</q></q>
-<q lang="xh"><q>xh</q></q>
-<q lang="xog"><q>xog</q></q>
-<q lang="yav"><q>yav</q></q>
-<q lang="yo"><q>yo</q></q>
-<q lang="zh"><q>zh</q></q>
-<q lang="zh-Hant"><q>zh-Hant</q></q>
-<q lang="zu"><q>zu</q></q>
+<span lang="custom">ACcustomDB</span>
+<span><q><q>default</q></q></span>
+<span lang="am"><q><q>am</q></q></span>
+<span lang="ar"><q><q>ar</q></q></span>
+<span lang="bg"><q><q>bg</q></q></span>
+<span lang="bn"><q><q>bn</q></q></span>
+<span lang="ca"><q><q>ca</q></q></span>
+<span lang="cs"><q><q>cs</q></q></span>
+<span lang="da"><q><q>da</q></q></span>
+<span lang="de"><q><q>de</q></q></span>
+<span lang="de-CH"><q><q>de-CH</q></q></span>
+<span lang="el"><q><q>el</q></q></span>
+<span lang="en"><q><q>en</q></q></span>
+<span lang="en-GB"><q><q>en-GB</q></q></span>
+<span lang="es"><q><q>es</q></q></span>
+<span lang="et"><q><q>et</q></q></span>
+<span lang="fa"><q><q>fa</q></q></span>
+<span lang="fil"><q><q>fil</q></q></span>
+<span lang="fi"><q><q>fi</q></q></span>
+<span lang="fr"><q><q>fr</q></q></span>
+<span lang="fr-CA"><q><q>fr-CA</q></q></span>
+<span lang="fr-CH"><q><q>fr-CH</q></q></span>
+<span lang="gu"><q><q>gu</q></q></span>
+<span lang="hi"><q><q>hi</q></q></span>
+<span lang="hu"><q><q>hu</q></q></span>
+<span lang="hr"><q><q>hr</q></q></span>
+<span lang="id"><q><q>id</q></q></span>
+<span lang="it"><q><q>it</q></q></span>
+<span lang="ja"><q><q>ja</q></q></span>
+<span lang="kn"><q><q>kn</q></q></span>
+<span lang="ko"><q><q>ko</q></q></span>
+<span lang="lt"><q><q>lt</q></q></span>
+<span lang="lv"><q><q>lv</q></q></span>
+<span lang="ml"><q><q>ml</q></q></span>
+<span lang="mr"><q><q>mr</q></q></span>
+<span lang="ms"><q><q>ms</q></q></span>
+<span lang="nl"><q><q>nl</q></q></span>
+<span lang="no"><q><q>no</q></q></span>
+<span lang="pl"><q><q>pl</q></q></span>
+<span lang="pt"><q><q>pt</q></q></span>
+<span lang="pt-PT"><q><q>pt-PT</q></q></span>
+<span lang="ro"><q><q>ro</q></q></span>
+<span lang="ru"><q><q>ru</q></q></span>
+<span lang="sk"><q><q>sk</q></q></span>
+<span lang="sl"><q><q>sl</q></q></span>
+<span lang="sr"><q><q>sr</q></q></span>
+<span lang="sr-Latn"><q><q>sr-Latn</q></q></span>
+<span lang="sv"><q><q>sv</q></q></span>
+<span lang="sw"><q><q>sw</q></q></span>
+<span lang="ta"><q><q>ta</q></q></span>
+<span lang="te"><q><q>te</q></q></span>
+<span lang="th"><q><q>th</q></q></span>
+<span lang="tr"><q><q>tr</q></q></span>
+<span lang="uk"><q><q>uk</q></q></span>
+<span lang="vi"><q><q>vi</q></q></span>
+<span lang="zh"><q><q>zh</q></q></span>
+<span lang="zh-Hant"><q><q>zh-Hant</q></q></span>

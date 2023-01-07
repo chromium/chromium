@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -36,6 +37,10 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   static const char kProfileStatsCountReadyEventName[];
 
   explicit ProfileInfoHandler(Profile* profile);
+
+  ProfileInfoHandler(const ProfileInfoHandler&) = delete;
+  ProfileInfoHandler& operator=(const ProfileInfoHandler&) = delete;
+
   ~ProfileInfoHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -58,21 +63,21 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(ProfileInfoHandlerTest, PushProfileInfo);
 
   // Callbacks from the page.
-  void HandleGetProfileInfo(const base::ListValue* args);
+  void HandleGetProfileInfo(const base::Value::List& args);
   void PushProfileInfo();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  void HandleGetProfileStats(const base::ListValue* args);
+  void HandleGetProfileStats(const base::Value::List& args);
 
   // Returns the sum of the counts of individual profile states. Returns 0 if
   // there exists a stat that was not successfully retrieved.
   void PushProfileStatsCount(profiles::ProfileCategoryStats stats);
 #endif
 
-  std::unique_ptr<base::DictionaryValue> GetAccountNameAndIcon() const;
+  base::Value::Dict GetAccountNameAndIcon();
 
   // Weak pointer.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::ScopedObservation<user_manager::UserManager,
@@ -86,8 +91,6 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
   base::WeakPtrFactory<ProfileInfoHandler> callback_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileInfoHandler);
 };
 
 }  // namespace settings

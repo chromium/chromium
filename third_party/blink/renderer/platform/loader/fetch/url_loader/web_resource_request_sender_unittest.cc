@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -27,6 +26,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -67,7 +67,7 @@ std::string ReadOneChunk(mojo::ScopedDataPipeConsumerHandle* handle) {
 
 // Returns a fake TimeTicks based on the given microsecond offset.
 base::TimeTicks TicksFromMicroseconds(int64_t micros) {
-  return base::TimeTicks() + base::TimeDelta::FromMicroseconds(micros);
+  return base::TimeTicks() + base::Microseconds(micros);
 }
 
 }  // namespace
@@ -76,6 +76,10 @@ class TestResourceRequestSenderDelegate
     : public WebResourceRequestSenderDelegate {
  public:
   TestResourceRequestSenderDelegate() = default;
+  TestResourceRequestSenderDelegate(const TestResourceRequestSenderDelegate&) =
+      delete;
+  TestResourceRequestSenderDelegate& operator=(
+      const TestResourceRequestSenderDelegate&) = delete;
   ~TestResourceRequestSenderDelegate() override = default;
 
   void OnRequestComplete() override {}
@@ -91,6 +95,8 @@ class TestResourceRequestSenderDelegate
    public:
     explicit WrapperPeer(scoped_refptr<WebRequestPeer> original_peer)
         : original_peer_(std::move(original_peer)) {}
+    WrapperPeer(const WrapperPeer&) = delete;
+    WrapperPeer& operator=(const WrapperPeer&) = delete;
 
     // WebRequestPeer overrides:
     void OnUploadProgress(uint64_t position, uint64_t size) override {}
@@ -99,7 +105,8 @@ class TestResourceRequestSenderDelegate
                             std::vector<std::string>*) override {
       return false;
     }
-    void OnReceivedResponse(network::mojom::URLResponseHeadPtr head) override {
+    void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
+                            base::TimeTicks response_arrival) override {
       response_head_ = std::move(head);
     }
     void OnStartLoadingResponseBody(
@@ -118,12 +125,7 @@ class TestResourceRequestSenderDelegate
     scoped_refptr<WebRequestPeer> original_peer_;
     network::mojom::URLResponseHeadPtr response_head_;
     mojo::ScopedDataPipeConsumerHandle body_handle_;
-
-    DISALLOW_COPY_AND_ASSIGN(WrapperPeer);
   };
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestResourceRequestSenderDelegate);
 };
 
 // A mock WebRequestPeer to receive messages from the WebResourceRequestSender.
@@ -140,7 +142,8 @@ class MockRequestPeer : public WebRequestPeer {
     last_load_timing_ = head->load_timing;
     return true;
   }
-  void OnReceivedResponse(network::mojom::URLResponseHeadPtr head) override {
+  void OnReceivedResponse(network::mojom::URLResponseHeadPtr head,
+                          base::TimeTicks response_arrival) override {
     last_load_timing_ = head->load_timing;
     received_response_ = true;
     if (cancel_on_receive_response_) {
@@ -218,14 +221,15 @@ class WebResourceRequestSenderTest : public testing::Test,
     NOTREACHED();
   }
 
-  void CallOnReceiveResponse(network::mojom::URLLoaderClient* client) {
+  void CallOnReceiveResponse(network::mojom::URLLoaderClient* client,
+                             mojo::ScopedDataPipeConsumerHandle body) {
     auto head = network::mojom::URLResponseHead::New();
     std::string raw_headers(kTestPageHeaders);
     std::replace(raw_headers.begin(), raw_headers.end(), '\n', '\0');
     head->headers = new net::HttpResponseHeaders(raw_headers);
     head->mime_type = kTestPageMimeType;
     head->charset = kTestPageCharset;
-    client->OnReceiveResponse(std::move(head));
+    client->OnReceiveResponse(std::move(head), std::move(body), absl::nullopt);
   }
 
   std::unique_ptr<network::ResourceRequest> CreateResourceRequest() {
@@ -320,17 +324,16 @@ TEST_F(WebResourceRequestSenderTest, DelegateTest) {
       std::move(loader_and_clients_[0].second));
   loader_and_clients_.clear();
 
-  // The wrapper eats all messages until RequestComplete message is sent.
-  CallOnReceiveResponse(client.get());
-
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   auto options = DataPipeOptions();
   ASSERT_EQ(mojo::CreateDataPipe(&options, producer_handle, consumer_handle),
             MOJO_RESULT_OK);
-  client->OnStartLoadingResponseBody(std::move(consumer_handle));
 
-  uint32_t size = strlen(kTestPageContents);
+  // The wrapper eats all messages until RequestComplete message is sent.
+  CallOnReceiveResponse(client.get(), std::move(consumer_handle));
+
+  uint32_t size = static_cast<uint32_t>(strlen(kTestPageContents));
   auto result = producer_handle->WriteData(kTestPageContents, &size,
                                            MOJO_WRITE_DATA_FLAG_NONE);
   ASSERT_EQ(result, MOJO_RESULT_OK);
@@ -369,14 +372,14 @@ TEST_F(WebResourceRequestSenderTest, CancelDuringCallbackWithWrapperPeer) {
       std::move(loader_and_clients_[0].second));
   loader_and_clients_.clear();
 
-  CallOnReceiveResponse(client.get());
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
   auto options = DataPipeOptions();
   ASSERT_EQ(mojo::CreateDataPipe(&options, producer_handle, consumer_handle),
             MOJO_RESULT_OK);
-  client->OnStartLoadingResponseBody(std::move(consumer_handle));
-  uint32_t size = strlen(kTestPageContents);
+
+  CallOnReceiveResponse(client.get(), std::move(consumer_handle));
+  uint32_t size = static_cast<uint32_t>(strlen(kTestPageContents));
   auto result = producer_handle->WriteData(kTestPageContents, &size,
                                            MOJO_WRITE_DATA_FLAG_NONE);
   ASSERT_EQ(result, MOJO_RESULT_OK);
@@ -415,7 +418,9 @@ class TimeConversionTest : public WebResourceRequestSenderTest {
     mojo::Remote<network::mojom::URLLoaderClient> client(
         std::move(loader_and_clients_[0].second));
     loader_and_clients_.clear();
-    client->OnReceiveResponse(std::move(response_head));
+    client->OnReceiveResponse(std::move(response_head),
+                              mojo::ScopedDataPipeConsumerHandle(),
+                              absl::nullopt);
   }
 
   const network::mojom::URLResponseHead& response_info() const {
@@ -442,7 +447,7 @@ TEST_F(TimeConversionTest, DISABLED_ProperlyInitialized) {
 
   EXPECT_LT(base::TimeTicks(), response_info().load_timing.request_start);
   EXPECT_EQ(base::TimeTicks(),
-            response_info().load_timing.connect_timing.dns_start);
+            response_info().load_timing.connect_timing.domain_lookup_start);
   EXPECT_LE(request_start,
             response_info().load_timing.connect_timing.connect_start);
 }
@@ -456,7 +461,7 @@ TEST_F(TimeConversionTest, PartiallyInitialized) {
 
   EXPECT_EQ(base::TimeTicks(), response_info().load_timing.request_start);
   EXPECT_EQ(base::TimeTicks(),
-            response_info().load_timing.connect_timing.dns_start);
+            response_info().load_timing.connect_timing.domain_lookup_start);
 }
 
 TEST_F(TimeConversionTest, NotInitialized) {
@@ -466,7 +471,7 @@ TEST_F(TimeConversionTest, NotInitialized) {
 
   EXPECT_EQ(base::TimeTicks(), response_info().load_timing.request_start);
   EXPECT_EQ(base::TimeTicks(),
-            response_info().load_timing.connect_timing.dns_start);
+            response_info().load_timing.connect_timing.domain_lookup_start);
 }
 
 class CompletionTimeConversionTest : public WebResourceRequestSenderTest {
@@ -489,14 +494,15 @@ class CompletionTimeConversionTest : public WebResourceRequestSenderTest {
     // We need to put something non-null time, otherwise no values will be
     // copied.
     response_head->load_timing.request_start_time =
-        base::Time() + base::TimeDelta::FromSeconds(99);
-    client->OnReceiveResponse(std::move(response_head));
+        base::Time() + base::Seconds(99);
 
     mojo::ScopedDataPipeProducerHandle producer_handle;
     mojo::ScopedDataPipeConsumerHandle consumer_handle;
     ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
               MOJO_RESULT_OK);
-    client->OnStartLoadingResponseBody(std::move(consumer_handle));
+
+    client->OnReceiveResponse(std::move(response_head),
+                              std::move(consumer_handle), absl::nullopt);
     producer_handle.reset();  // The response is empty.
 
     network::URLLoaderCompletionStatus status;
@@ -506,7 +512,7 @@ class CompletionTimeConversionTest : public WebResourceRequestSenderTest {
 
     const base::TimeTicks until = base::TimeTicks::Now() + delay;
     while (base::TimeTicks::Now() < until)
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+      base::PlatformThread::Sleep(base::Milliseconds(1));
     base::RunLoop().RunUntilIdle();
     loader_and_clients_.clear();
   }
@@ -522,8 +528,7 @@ class CompletionTimeConversionTest : public WebResourceRequestSenderTest {
 };
 
 TEST_F(CompletionTimeConversionTest, NullCompletionTimestamp) {
-  const auto remote_request_start =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(4);
+  const auto remote_request_start = base::TimeTicks() + base::Milliseconds(4);
 
   PerformTest(remote_request_start, base::TimeTicks(), base::TimeDelta());
 
@@ -533,8 +538,7 @@ TEST_F(CompletionTimeConversionTest, NullCompletionTimestamp) {
 TEST_F(CompletionTimeConversionTest, RemoteRequestStartIsUnavailable) {
   base::TimeTicks begin = base::TimeTicks::Now();
 
-  const auto remote_completion_time =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(8);
+  const auto remote_completion_time = base::TimeTicks() + base::Milliseconds(8);
 
   PerformTest(base::TimeTicks(), remote_completion_time, base::TimeDelta());
 
@@ -544,17 +548,15 @@ TEST_F(CompletionTimeConversionTest, RemoteRequestStartIsUnavailable) {
 }
 
 TEST_F(CompletionTimeConversionTest, Convert) {
-  const auto remote_request_start =
-      base::TimeTicks() + base::TimeDelta::FromMilliseconds(4);
+  const auto remote_request_start = base::TimeTicks() + base::Milliseconds(4);
 
   const auto remote_completion_time =
-      remote_request_start + base::TimeDelta::FromMilliseconds(3);
+      remote_request_start + base::Milliseconds(3);
 
   PerformTest(remote_request_start, remote_completion_time,
-              base::TimeDelta::FromMilliseconds(15));
+              base::Milliseconds(15));
 
-  EXPECT_EQ(completion_time(),
-            request_start() + base::TimeDelta::FromMilliseconds(3));
+  EXPECT_EQ(completion_time(), request_start() + base::Milliseconds(3));
 }
 
 }  // namespace blink

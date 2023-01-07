@@ -1,8 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.app.tabmodel;
+
+import android.app.Activity;
+import android.content.Context;
 
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelFilter;
@@ -20,8 +23,15 @@ import javax.inject.Inject;
  */
 @ActivityScope
 public class ChromeTabModelFilterFactory implements TabModelFilterFactory {
+    private Context mContext;
+
     @Inject
-    public ChromeTabModelFilterFactory() {}
+    /**
+     * @param context The activity context.
+     */
+    public ChromeTabModelFilterFactory(Activity activity) {
+        mContext = activity;
+    }
 
     /**
      * Return a {@link TabModelFilter} based on feature flags. This can return either:
@@ -33,7 +43,7 @@ public class ChromeTabModelFilterFactory implements TabModelFilterFactory {
      */
     @Override
     public TabModelFilter createTabModelFilter(TabModel model) {
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(mContext)) {
             TabManagementDelegate tabManagementDelegate = TabManagementModuleProvider.getDelegate();
             if (tabManagementDelegate != null) {
                 return tabManagementDelegate.createTabGroupModelFilter(model);

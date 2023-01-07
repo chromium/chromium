@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,8 @@
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace disk_cache {
@@ -50,8 +49,9 @@ scoped_refptr<BackendCleanupTracker> BackendCleanupTracker::TryCreate(
       all_trackers->map.insert(
           std::pair<base::FilePath, BackendCleanupTracker*>(path, nullptr));
   if (insert_result.second) {
-    insert_result.first->second = new BackendCleanupTracker(path);
-    return insert_result.first->second;
+    auto tracker = base::WrapRefCounted(new BackendCleanupTracker(path));
+    insert_result.first->second = tracker.get();
+    return tracker;
   } else {
     insert_result.first->second->AddPostCleanupCallbackImpl(
         std::move(retry_closure));
@@ -68,8 +68,8 @@ void BackendCleanupTracker::AddPostCleanupCallback(base::OnceClosure cb) {
 }
 
 void BackendCleanupTracker::AddPostCleanupCallbackImpl(base::OnceClosure cb) {
-  post_cleanup_cbs_.push_back(
-      std::make_pair(base::SequencedTaskRunnerHandle::Get(), std::move(cb)));
+  post_cleanup_cbs_.emplace_back(base::SequencedTaskRunnerHandle::Get(),
+                                 std::move(cb));
 }
 
 BackendCleanupTracker::BackendCleanupTracker(const base::FilePath& path)

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,29 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "extensions/common/extension_features.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_observer.h"
 
@@ -41,14 +49,15 @@ void ToolbarIconContainerView::RoundRectBorder::OnPaintLayer(
   gfx::Canvas* canvas = paint_recorder.canvas();
 
   const int radius = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
-      views::EMPHASIS_MAXIMUM, layer_.size());
+      views::Emphasis::kMaximum, layer_.size());
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(1);
-  flags.setColor(ToolbarButton::GetDefaultBorderColor(parent_));
+  flags.setColor(
+      parent_->GetColorProvider()->GetColor(kColorToolbarButtonBorder));
   gfx::RectF rect(gfx::SizeF(layer_.size()));
-  rect.Inset(0.5f, 0.5f);  // Pixel edges -> pixel centers.
+  rect.Inset(0.5f);  // Pixel edges -> pixel centers.
   canvas->DrawRoundRect(rect, radius, flags);
 }
 
@@ -98,7 +107,7 @@ class ToolbarIconContainerView::WidgetRestoreObserver
 
  private:
   bool was_collapsed_ = true;
-  ToolbarIconContainerView* const toolbar_icon_container_view_;
+  const raw_ptr<ToolbarIconContainerView> toolbar_icon_container_view_;
   base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_{
       this};
 };
@@ -120,30 +129,35 @@ ToolbarIconContainerView::ToolbarIconContainerView(bool uses_highlight)
       std::make_unique<views::FlexLayout>());
   flex_layout->SetCollapseMargins(true)
       .SetIgnoreDefaultMainAxisMargins(true)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets(0, GetLayoutConstant(TOOLBAR_ELEMENT_PADDING)));
+      .SetDefault(
+          views::kMarginsKey,
+          gfx::Insets::VH(0, GetLayoutConstant(TOOLBAR_ELEMENT_PADDING)));
 }
 
 ToolbarIconContainerView::~ToolbarIconContainerView() {
   // As childred might be Observers of |this|, we need to destroy them before
   // destroying |observers_|.
-  RemoveAllChildViews(true);
+  RemoveAllChildViews();
 }
 
-void ToolbarIconContainerView::AddMainButton(views::Button* main_button) {
-  DCHECK(!main_button_);
-  main_button_ = main_button;
-  ObserveButton(main_button_);
-  AddChildView(main_button_);
+void ToolbarIconContainerView::AddMainItem(views::View* item) {
+  DCHECK(!main_item_);
+  main_item_ = item;
+  auto* const main_button = views::Button::AsButton(item);
+  if (main_button)
+    ObserveButton(main_button);
+
+  AddChildView(main_item_.get());
 }
 
 void ToolbarIconContainerView::ObserveButton(views::Button* button) {
   // We don't care about the main button being highlighted.
-  if (button != main_button_) {
+  if (button != main_item_) {
     subscriptions_.push_back(
-        button->AddHighlightedChangedCallback(base::BindRepeating(
-            &ToolbarIconContainerView::OnButtonHighlightedChanged,
-            base::Unretained(this), base::Unretained(button))));
+        views::InkDrop::Get(button)->AddHighlightedChangedCallback(
+            base::BindRepeating(
+                &ToolbarIconContainerView::OnButtonHighlightedChanged,
+                base::Unretained(this), base::Unretained(button))));
   }
   subscriptions_.push_back(button->AddStateChangedCallback(base::BindRepeating(
       &ToolbarIconContainerView::UpdateHighlight, base::Unretained(this))));
@@ -168,19 +182,19 @@ void ToolbarIconContainerView::SetIconColor(SkColor color) {
 
 SkColor ToolbarIconContainerView::GetIconColor() const {
   return icon_color_.value_or(
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON));
+      GetColorProvider()->GetColor(kColorToolbarButtonIcon));
 }
 
 bool ToolbarIconContainerView::GetHighlighted() const {
   if (!uses_highlight_)
     return false;
 
-  if (IsMouseHovered() && (!main_button_ || !main_button_->IsMouseHovered()))
+  if (IsMouseHovered() && (!main_item_ || !main_item_->IsMouseHovered()))
     return true;
 
   // Focused, pressed or hovered children should trigger the highlight.
   for (const views::View* child : children()) {
-    if (child == main_button_)
+    if (child == main_item_)
       continue;
     if (child->HasFocus())
       return true;
@@ -249,6 +263,14 @@ void ToolbarIconContainerView::AddedToWidget() {
 }
 
 void ToolbarIconContainerView::UpdateHighlight() {
+  // New feature doesn't have a border around the toolbar icons.
+  // TODO(crbug.com/1279986): Remove ToolbarIconContainerView once feature is
+  // rolled out.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    return;
+  }
+
   bool showing_before = border_.layer()->GetTargetOpacity() == 1;
 
   {
@@ -274,7 +296,7 @@ void ToolbarIconContainerView::UpdateHighlight() {
 
 void ToolbarIconContainerView::OnButtonHighlightedChanged(
     views::Button* button) {
-  if (button->GetHighlighted())
+  if (views::InkDrop::Get(button)->GetHighlighted())
     highlighted_buttons_.insert(button);
   else
     highlighted_buttons_.erase(button);
@@ -283,6 +305,6 @@ void ToolbarIconContainerView::OnButtonHighlightedChanged(
 }
 
 BEGIN_METADATA(ToolbarIconContainerView, views::View)
-ADD_PROPERTY_METADATA(SkColor, IconColor, views::metadata::SkColorConverter)
+ADD_PROPERTY_METADATA(SkColor, IconColor, ui::metadata::SkColorConverter)
 ADD_READONLY_PROPERTY_METADATA(bool, Highlighted)
 END_METADATA

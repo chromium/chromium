@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,11 @@ package org.chromium.chrome.browser.survey;
 import android.app.Activity;
 import android.content.Context;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 /**
  * Class that controls retrieving and displaying surveys. Clients should call #downloadSurvey() and
@@ -27,27 +31,21 @@ public class SurveyController {
         return sInstance;
     }
 
-    /**
-     * Returns if there already exists a downloaded survey from the provided site id.
-     * @param siteId The id of the site from where the survey should have been downloaded.
-     * @param context The context of the application.
-     * @return If the survey with a matching site id exists.
-     */
-    public boolean doesSurveyExist(String siteId, Context context) {
-        return false;
+    @VisibleForTesting
+    static void setInstanceForTesting(SurveyController testInstance) {
+        sInstance = testInstance;
     }
 
     /**
      * Asynchronously downloads the survey using the provided parameters.
-     * @param context The context used to register a broadcast receiver.
-     * @param siteId The id of the site from where the survey will be downloaded.
+     * @param context The context used to create the survey.
+     * @param triggerId  The ID used to fetch the data for the surveys.
      * @param onSuccessRunnable The runnable to notify when the survey is ready.
-     *                          If no survey is available, the runnable will not be run.
-     * @param siteContext Optional parameter to build the download request. Site context can be
-     *                    used for adding metadata.
+     * @param onFailureRunnable The runnable to notify when downloading the survey failed, or the
+     *                          survey does not exist.
      */
-    public void downloadSurvey(
-            Context context, String siteId, Runnable onSuccessRunnable, String siteContext) {}
+    public void downloadSurvey(Context context, String triggerId, Runnable onSuccessRunnable,
+            Runnable onFailureRunnable) {}
 
     /**
      * Show the survey.
@@ -56,13 +54,17 @@ public class SurveyController {
      * @param showAsBottomSheet Whether the survey should be presented as a bottom sheet or not.
      * @param displayLogoResId Optional resource id of the logo to be displayed on the survey.
      *                         Pass 0 for no logo.
+     * @param lifecycleDispatcher LifecycleDispatcher that will dispatch different activity signals.
      */
-    public void showSurveyIfAvailable(
-            Activity activity, String siteId, boolean showAsBottomSheet, int displayLogoResId) {}
+    public void showSurveyIfAvailable(Activity activity, String siteId, boolean showAsBottomSheet,
+            int displayLogoResId, @Nullable ActivityLifecycleDispatcher lifecycleDispatcher) {}
 
     /**
-     * Clears the survey cache containing responses and history.
-     * @param context The context used to clear the cache.
+     * Check if a survey is valid or expired.
+     * @param triggerId  The ID used to fetch the data for the surveys.
+     * @return true if the survey has expired, false if the survey is valid.
      */
-    public void clearCache(Context context) {}
+    public boolean isSurveyExpired(String triggerId) {
+        return false;
+    }
 }

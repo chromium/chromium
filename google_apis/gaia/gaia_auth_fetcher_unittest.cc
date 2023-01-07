@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -13,7 +13,6 @@
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -72,7 +71,6 @@ class GaiaAuthFetcherTest : public testing::Test {
         uberauth_token_source_(
             GaiaUrls::GetInstance()->oauth1_login_url().Resolve(
                 "?source=&issueuberauth=1")),
-        oauth_login_gurl_(GaiaUrls::GetInstance()->oauth1_login_url()),
         task_environment_(base::test::TaskEnvironment::MainThreadType::UI),
         test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -81,30 +79,13 @@ class GaiaAuthFetcherTest : public testing::Test {
         &GaiaAuthFetcherTest::OnResourceIntercepted, base::Unretained(this)));
   }
 
-  void RunParsingTest(const std::string& data,
-                      const std::string& sid,
-                      const std::string& lsid,
-                      const std::string& token) {
-    std::string out_sid;
-    std::string out_lsid;
-    std::string out_token;
-
-    GaiaAuthFetcher::ParseClientLoginResponse(data,
-                                              &out_sid,
-                                              &out_lsid,
-                                              &out_token);
-    EXPECT_EQ(lsid, out_lsid);
-    EXPECT_EQ(sid, out_sid);
-    EXPECT_EQ(token, out_token);
-  }
-
   void RunErrorParsingTest(const std::string& data,
                            const std::string& error,
                            const std::string& error_url) {
     std::string out_error;
     std::string out_error_url;
 
-    GaiaAuthFetcher::ParseClientLoginFailure(data, &out_error, &out_error_url);
+    GaiaAuthFetcher::ParseFailureResponse(data, &out_error, &out_error_url);
     EXPECT_EQ(error, out_error);
     EXPECT_EQ(error_url, out_error_url);
   }
@@ -113,7 +94,6 @@ class GaiaAuthFetcherTest : public testing::Test {
   GURL token_auth_source_;
   GURL merge_session_source_;
   GURL uberauth_token_source_;
-  GURL oauth_login_gurl_;
 
  protected:
   void OnResourceIntercepted(const network::ResourceRequest& resource) {
@@ -135,7 +115,6 @@ class MockGaiaConsumer : public GaiaAuthConsumer {
   MockGaiaConsumer() {}
   ~MockGaiaConsumer() override {}
 
-  MOCK_METHOD1(OnClientLoginSuccess, void(const ClientLoginResult& result));
   MOCK_METHOD1(OnClientOAuthCode, void(const std::string& data));
   MOCK_METHOD1(OnClientOAuthSuccess,
                void(const GaiaAuthConsumer::ClientOAuthResult& result));
@@ -143,8 +122,6 @@ class MockGaiaConsumer : public GaiaAuthConsumer {
   MOCK_METHOD1(OnOAuthMultiloginFinished,
                void(const OAuthMultiloginResult& result));
   MOCK_METHOD1(OnUberAuthTokenSuccess, void(const std::string& data));
-  MOCK_METHOD1(OnClientLoginFailure,
-      void(const GoogleServiceAuthError& error));
   MOCK_METHOD1(OnClientOAuthFailure,
       void(const GoogleServiceAuthError& error));
   MOCK_METHOD1(OnOAuth2RevokeTokenCompleted,
@@ -162,7 +139,7 @@ class MockGaiaConsumer : public GaiaAuthConsumer {
                void(GaiaAuthConsumer::ReAuthProofTokenStatus status));
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ErrorComparator DISABLED_ErrorComparator
 #else
 #define MAYBE_ErrorComparator ErrorComparator
@@ -217,16 +194,6 @@ class TestGaiaAuthFetcher : public GaiaAuthFetcher {
     OnURLLoadCompleteInternal(net_error, response_code, response_body);
   }
 };
-
-TEST_F(GaiaAuthFetcherTest, ParseRequest) {
-  RunParsingTest("SID=sid\nLSID=lsid\nAuth=auth\n", "sid", "lsid", "auth");
-  RunParsingTest("LSID=lsid\nSID=sid\nAuth=auth\n", "sid", "lsid", "auth");
-  RunParsingTest("SID=sid\nLSID=lsid\nAuth=auth", "sid", "lsid", "auth");
-  RunParsingTest("SID=sid\nAuth=auth\n", "sid", std::string(), "auth");
-  RunParsingTest("LSID=lsid\nAuth=auth\n", std::string(), "lsid", "auth");
-  RunParsingTest("\nAuth=auth\n", std::string(), std::string(), "auth");
-  RunParsingTest("SID=sid", "sid", std::string(), std::string());
-}
 
 TEST_F(GaiaAuthFetcherTest, ParseErrorRequest) {
   RunErrorParsingTest(
@@ -476,26 +443,6 @@ TEST_F(GaiaAuthFetcherTest, UberAuthTokenSuccess) {
   auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK, "uberToken");
 
   EXPECT_FALSE(auth.HasPendingFetch());
-}
-
-TEST_F(GaiaAuthFetcherTest, StartOAuthLogin) {
-  // OAuthLogin returns the same as the ClientLogin endpoint.
-  std::string data("SID=sid\nLSID=lsid\nAuth=auth\n");
-
-  GaiaAuthConsumer::ClientLoginResult result;
-  result.lsid = "lsid";
-  result.sid = "sid";
-  result.token = "auth";
-  result.data = data;
-
-  MockGaiaConsumer consumer;
-  EXPECT_CALL(consumer, OnClientLoginSuccess(result)).Times(1);
-
-  TestGaiaAuthFetcher auth(&consumer, GetURLLoaderFactory());
-  auth.CreateAndStartGaiaFetcherForTesting(
-      /*body=*/"", /*headers=*/"", oauth_login_gurl_,
-      network::mojom::CredentialsMode::kInclude, TRAFFIC_ANNOTATION_FOR_TESTS);
-  auth.TestOnURLLoadCompleteInternal(net::OK, net::HTTP_OK, data);
 }
 
 TEST_F(GaiaAuthFetcherTest, ListAccounts) {

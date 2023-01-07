@@ -2,8 +2,11 @@
   "name": "Host permissions with malformed host",
   "version": "0.1",
   "manifest_version": 3,
-  "description": "Extension with an invalid host in host_permissions",
+  "description": "Extension with an invalid host in host_permissions and optional_host_permissions",
   "host_permissions": [
     "malformed_host"
+  ],
+  "optional_host_permissions": [
+    "optional_malformed_host"
   ]
 }

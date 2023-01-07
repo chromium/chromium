@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,10 @@ class FakeOverlayRequestCoordinatorDelegate
   FakeOverlayRequestCoordinatorDelegate();
   ~FakeOverlayRequestCoordinatorDelegate() override;
 
-  // Whether the overlay UI for |request| has been presented.
+  // Whether the overlay UI for `request` has been presented.
   bool HasUIBeenPresented(OverlayRequest* request) const;
 
-  // Whether the overlay UI for |request| has been dismissed.
+  // Whether the overlay UI for `request` has been dismissed.
   bool HasUIBeenDismissed(OverlayRequest* request) const;
 
   // OverlayRequestCoordinatorDelegate:

@@ -12,6 +12,9 @@
       <supportedOS Id="{1f676c76-80e1-4239-95bb-83d0f6d0da78}"/>
       <!--The ID below indicates application support for Windows 10 -->
       <supportedOS Id="{8e0f7a12-bfb3-4fe8-b9a5-48fd50a15a9a}"/>
+      <!-- This tag is required for XAML islands usage in the process for media scenarios. -->
+      <!-- This version corresponds to the Windows 10 May 2019 Update. -->
+      <maxversiontested Id="10.0.18362.0"/>
     </application>
   </compatibility>
 </assembly>

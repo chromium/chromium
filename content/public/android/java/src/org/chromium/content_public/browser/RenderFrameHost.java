@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,36 @@ package org.chromium.content_public.browser;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.mojo.bindings.Interface;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
+
+import java.util.List;
 
 /**
  * The RenderFrameHost Java wrapper to allow communicating with the native RenderFrameHost object.
  */
 public interface RenderFrameHost {
+    /** The results of {@link #GetAssertionWebAuthSecurityChecks}. */
+    final class WebAuthSecurityChecksResults {
+        public final boolean isCrossOrigin;
+        public final @AuthenticatorStatus.EnumType int securityCheckResult;
+
+        /**
+         * Creates an instance of this class.
+         * @param securityCheckResult The status code indicating the result of the GetAssertion
+         *        request security checks.
+         * @param isCrossOrigin Whether the given origin is cross-origin with any frame in the
+         *        current frame's ancestor chain.
+         */
+        public WebAuthSecurityChecksResults(
+                @AuthenticatorStatus.EnumType int securityCheckResult, boolean isCrossOrigin) {
+            this.securityCheckResult = securityCheckResult;
+            this.isCrossOrigin = isCrossOrigin;
+        }
+    }
+
     /**
      * Get the last committed URL of the frame.
      *
@@ -41,6 +63,13 @@ public interface RenderFrameHost {
     void getCanonicalUrlForSharing(Callback<GURL> callback);
 
     /**
+     * Fetch all RenderFramesHosts from the current frame.
+     *
+     * @return A list of RenderFramesHosts including the current frame and all descendents.
+     */
+    public List<RenderFrameHost> getAllRenderFrameHosts();
+
+    /**
      * Returns whether the feature policy allows the feature in this frame.
      *
      * @param feature A feature controlled by feature policy.
@@ -56,7 +85,7 @@ public interface RenderFrameHost {
      *
      * Callers are responsible to ensure that the renderer Frame exists before
      * trying to make a mojo connection to it. This can be done via
-     * isRenderFrameCreated() if the caller is not inside the call-stack of an
+     * isRenderFrameLive() if the caller is not inside the call-stack of an
      * IPC form the renderer (which would guarantee its existence at that time).
      *
      * @param pipe The message pipe to be connected to the renderer. If it fails
@@ -79,10 +108,10 @@ public interface RenderFrameHost {
     void notifyUserActivation();
 
     /**
-     * If a ModalCloseWatcher is active in this RenderFrameHost, signal it to close.
+     * If a CloseWatcher is active in this RenderFrameHost, signal it to close.
      * @return Whether a close signal was sent.
      */
-    boolean signalModalCloseWatcherIfActive();
+    boolean signalCloseWatcherIfActive();
 
     /**
      * Returns whether we're in incognito mode.
@@ -92,11 +121,11 @@ public interface RenderFrameHost {
     boolean isIncognito();
 
     /**
-     * See native RenderFrameHost::IsRenderFrameCreated().
+     * See native RenderFrameHost::IsRenderFrameLive().
      *
      * @return {@code true} if render frame is created.
      */
-    boolean isRenderFrameCreated();
+    boolean isRenderFrameLive();
 
     /**
      * @return Whether input events from the renderer are ignored on the browser side.
@@ -109,25 +138,43 @@ public interface RenderFrameHost {
      * process, then the effective origin is the same as the last committed origin. However, if the
      * request originated from an internal request from the browser process (e.g. Payments
      * Autofill), then the relying party ID would not match the renderer's origin, and will
-     * therefore have to provide its own effective origin. The return value is a code corresponding
-     * to the AuthenticatorStatus mojo enum.
+     * therefore have to provide its own effective origin. `isPaymentCredentialGetAssertion`
+     * indicates whether the security check is done for getting an assertion for Secure Payment
+     * Confirmation (SPC). The return value is a code corresponding to the AuthenticatorStatus
+     * mojo enum.
      *
-     * @return Status code indicating the result of the GetAssertion request security checks.
+     * @return An object containing (1) the status code indicating the result of the GetAssertion
+     *         request security checks. (2) whether the effectiveOrigin is a cross-origin with any
+     *         frame in this frame's ancestor chain.
      */
-    int performGetAssertionWebAuthSecurityChecks(String relyingPartyId, Origin effectiveOrigin);
+    WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
+            String relyingPartyId, Origin effectiveOrigin, boolean isPaymentCredentialGetAssertion);
 
     /**
      * Runs security checks associated with a Web Authentication MakeCredential request for the
-     * the given relying party ID and an effective origin. See
+     * the given relying party ID, an effective origin and whether MakeCredential is making the
+     * payment credential. See
      * performGetAssertionWebAuthSecurityChecks for more on |effectiveOrigin|. The return value is a
      * code corresponding to the AuthenticatorStatus mojo enum.
      *
      * @return Status code indicating the result of the MakeCredential request security checks.
      */
-    int performMakeCredentialWebAuthSecurityChecks(String relyingPartyId, Origin effectiveOrigin);
+    int performMakeCredentialWebAuthSecurityChecks(
+            String relyingPartyId, Origin effectiveOrigin, boolean isPaymentCredentialCreation);
 
     /**
      * @return An identifier for this RenderFrameHost.
      */
-    GlobalFrameRoutingId getGlobalFrameRoutingId();
+    GlobalRenderFrameHostId getGlobalRenderFrameHostId();
+
+    /**
+     * Returns the LifecycleState associated with this RenderFrameHost.
+     * Features that display UI to the user (or cross document/tab boundary in
+     * general, e.g. when using WebContents::FromRenderFrameHost) should first
+     * check whether the RenderFrameHost is in the appropriate lifecycle state.
+     *
+     * @return The LifecycleState associated with this RenderFrameHost.
+     */
+    @LifecycleState
+    int getLifecycleState();
 }

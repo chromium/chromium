@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,7 +53,7 @@ ConnectionInfoViewAndroid::ConnectionInfoViewAndroid(
   // Important to use GetVisibleEntry to match what's showing in the omnibox.
   content::NavigationEntry* nav_entry =
       web_contents->GetController().GetVisibleEntry();
-  if (nav_entry == nullptr)
+  if (!nav_entry || nav_entry->IsInitialEntry())
     return;
 
   popup_jobject_.Reset(env, java_page_info_pop);
@@ -61,7 +61,7 @@ ConnectionInfoViewAndroid::ConnectionInfoViewAndroid(
   presenter_ = std::make_unique<PageInfo>(
       page_info_client_->CreatePageInfoDelegate(web_contents), web_contents,
       nav_entry->GetURL());
-  presenter_->InitializeUiState(this);
+  presenter_->InitializeUiState(this, base::DoNothing());
 }
 
 ConnectionInfoViewAndroid::~ConnectionInfoViewAndroid() {}
@@ -141,20 +141,4 @@ void ConnectionInfoViewAndroid::SetIdentityInfo(
       ConvertUTF8ToJavaString(
           env, l10n_util::GetStringUTF8(IDS_PAGE_INFO_HELP_CENTER_LINK)));
   Java_ConnectionInfoView_onReady(env, popup_jobject_);
-}
-
-void ConnectionInfoViewAndroid::SetCookieInfo(
-    const CookieInfoList& cookie_info_list) {
-  NOTIMPLEMENTED();
-}
-
-void ConnectionInfoViewAndroid::SetPageFeatureInfo(
-    const PageFeatureInfo& info) {
-  NOTIMPLEMENTED();
-}
-
-void ConnectionInfoViewAndroid::SetPermissionInfo(
-    const PermissionInfoList& permission_info_list,
-    ChosenObjectInfoList chosen_object_info_list) {
-  NOTIMPLEMENTED();
 }

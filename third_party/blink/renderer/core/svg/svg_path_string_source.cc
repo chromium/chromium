@@ -20,8 +20,9 @@
 
 #include "third_party/blink/renderer/core/svg/svg_path_string_source.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -194,50 +195,50 @@ PathSegmentData SVGPathStringSource::ParseSegment() {
   switch (segment.command) {
     case kPathSegCurveToCubicRel:
     case kPathSegCurveToCubicAbs:
-      segment.point1.SetX(ParseNumberWithError());
-      segment.point1.SetY(ParseNumberWithError());
-      FALLTHROUGH;
+      segment.point1.set_x(ParseNumberWithError());
+      segment.point1.set_y(ParseNumberWithError());
+      [[fallthrough]];
     case kPathSegCurveToCubicSmoothRel:
     case kPathSegCurveToCubicSmoothAbs:
-      segment.point2.SetX(ParseNumberWithError());
-      segment.point2.SetY(ParseNumberWithError());
-      FALLTHROUGH;
+      segment.point2.set_x(ParseNumberWithError());
+      segment.point2.set_y(ParseNumberWithError());
+      [[fallthrough]];
     case kPathSegMoveToRel:
     case kPathSegMoveToAbs:
     case kPathSegLineToRel:
     case kPathSegLineToAbs:
     case kPathSegCurveToQuadraticSmoothRel:
     case kPathSegCurveToQuadraticSmoothAbs:
-      segment.target_point.SetX(ParseNumberWithError());
-      segment.target_point.SetY(ParseNumberWithError());
+      segment.target_point.set_x(ParseNumberWithError());
+      segment.target_point.set_y(ParseNumberWithError());
       break;
     case kPathSegLineToHorizontalRel:
     case kPathSegLineToHorizontalAbs:
-      segment.target_point.SetX(ParseNumberWithError());
+      segment.target_point.set_x(ParseNumberWithError());
       break;
     case kPathSegLineToVerticalRel:
     case kPathSegLineToVerticalAbs:
-      segment.target_point.SetY(ParseNumberWithError());
+      segment.target_point.set_y(ParseNumberWithError());
       break;
     case kPathSegClosePath:
       EatWhitespace();
       break;
     case kPathSegCurveToQuadraticRel:
     case kPathSegCurveToQuadraticAbs:
-      segment.point1.SetX(ParseNumberWithError());
-      segment.point1.SetY(ParseNumberWithError());
-      segment.target_point.SetX(ParseNumberWithError());
-      segment.target_point.SetY(ParseNumberWithError());
+      segment.point1.set_x(ParseNumberWithError());
+      segment.point1.set_y(ParseNumberWithError());
+      segment.target_point.set_x(ParseNumberWithError());
+      segment.target_point.set_y(ParseNumberWithError());
       break;
     case kPathSegArcRel:
     case kPathSegArcAbs:
-      segment.ArcRadii().SetX(ParseNumberWithError());
-      segment.ArcRadii().SetY(ParseNumberWithError());
+      segment.SetArcRadiusX(ParseNumberWithError());
+      segment.SetArcRadiusY(ParseNumberWithError());
       segment.SetArcAngle(ParseNumberWithError());
       segment.arc_large = ParseArcFlagWithError();
       segment.arc_sweep = ParseArcFlagWithError();
-      segment.target_point.SetX(ParseNumberWithError());
-      segment.target_point.SetY(ParseNumberWithError());
+      segment.target_point.set_x(ParseNumberWithError());
+      segment.target_point.set_y(ParseNumberWithError());
       break;
     case kPathSegUnknown:
       NOTREACHED();

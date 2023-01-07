@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,10 @@ namespace notification_helper {
 class ComServerModule {
  public:
   ComServerModule();
+
+  ComServerModule(const ComServerModule&) = delete;
+  ComServerModule& operator=(const ComServerModule&) = delete;
+
   ~ComServerModule();
 
   // Handles object registration and unregistration. Returns when all registered
@@ -45,8 +49,6 @@ class ComServerModule {
   // This event starts "unsignaled", and is signaled when the last instance
   // object is released from the module.
   base::WaitableEvent object_zero_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComServerModule);
 };
 
 }  // namespace notification_helper

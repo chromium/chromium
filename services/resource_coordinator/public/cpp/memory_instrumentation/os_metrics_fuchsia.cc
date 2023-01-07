@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ bool OSMetrics::FillOSMemoryDump(base::ProcessId pid,
 // static
 std::vector<mojom::VmRegionPtr> OSMetrics::GetProcessMemoryMaps(
     base::ProcessId) {
-  // TODO(crbug.com/750948): Implement this.
+  // TODO(https://crbug.com/1129269): Implement this.
   NOTIMPLEMENTED();
   return std::vector<mojom::VmRegionPtr>();
 }

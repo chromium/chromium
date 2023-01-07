@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+FAIL insertParagraph in empty <title style="display:block;white-space:pre-line"> should not split it promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL insertParagraph in <title style="display:block;white-space:pre-line"> containing text should not split it promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL insertParagraph in empty <style style="display:block;white-space:pre-line"> should not split it promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL insertParagraph in <style style="display:block;white-space:pre-line"> containing text should not split it promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL insertParagraph in empty <script style="display:block;white-space:pre-line"> should not split it promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL insertParagraph in <script style="display:block;white-space:pre-line"> containing text should not split it promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL insertParagraph in empty <div style="white-space:pre-line"> in the <head> should split the <div> promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL insertParagraph in <div style="white-space:pre-line"> (containing only a <br>) in the <head> should split the <div> element promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+FAIL insertParagraph in <div style="white-space:pre-line"> (containing text) in the <head> should split the <div> element promise_test: Unhandled rejection with value: object "Error: can only send actions in top-level window"
+Harness: the test ran to completion.
+

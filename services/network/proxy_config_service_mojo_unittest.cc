@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/proxy_config_service_mojo.h"
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service.h"
@@ -22,6 +22,12 @@ class TestProxyConfigServiceObserver
  public:
   explicit TestProxyConfigServiceObserver(net::ProxyConfigService* service)
       : service_(service) {}
+
+  TestProxyConfigServiceObserver(const TestProxyConfigServiceObserver&) =
+      delete;
+  TestProxyConfigServiceObserver& operator=(
+      const TestProxyConfigServiceObserver&) = delete;
+
   ~TestProxyConfigServiceObserver() override {}
 
   void OnProxyConfigChanged(
@@ -56,10 +62,8 @@ class TestProxyConfigServiceObserver
  private:
   net::ProxyConfigWithAnnotation observed_config_;
 
-  net::ProxyConfigService* const service_;
+  const raw_ptr<net::ProxyConfigService> service_;
   int config_changes_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestProxyConfigServiceObserver);
 };
 
 // Test fixture for notifying ProxyConfigServiceMojo of changes through the
@@ -70,11 +74,15 @@ class ProxyConfigServiceMojoTest : public testing::Test {
   ProxyConfigServiceMojoTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         proxy_config_service_(config_client_.BindNewPipeAndPassReceiver(),
-                              base::Optional<net::ProxyConfigWithAnnotation>(),
+                              absl::optional<net::ProxyConfigWithAnnotation>(),
                               mojo::NullRemote()),
         observer_(&proxy_config_service_) {
     proxy_config_service_.AddObserver(&observer_);
   }
+
+  ProxyConfigServiceMojoTest(const ProxyConfigServiceMojoTest&) = delete;
+  ProxyConfigServiceMojoTest& operator=(const ProxyConfigServiceMojoTest&) =
+      delete;
 
   ~ProxyConfigServiceMojoTest() override {
     proxy_config_service_.RemoveObserver(&observer_);
@@ -89,8 +97,6 @@ class ProxyConfigServiceMojoTest : public testing::Test {
   mojo::Remote<mojom::ProxyConfigClient> config_client_;
   ProxyConfigServiceMojo proxy_config_service_;
   TestProxyConfigServiceObserver observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyConfigServiceMojoTest);
 };
 
 // Most tests of this class are in network_context_unittests.
@@ -99,10 +105,10 @@ class ProxyConfigServiceMojoTest : public testing::Test {
 // changes when the ProxyConfig changes, and is not informed of them in the case
 // of "changes" that result in the same ProxyConfig as before.
 TEST_F(ProxyConfigServiceMojoTest, ObserveProxyChanges) {
-  net::ProxyConfigWithAnnotation proxy_config;
+  net::ProxyConfigWithAnnotation temp;
   // The service should start without a config.
   EXPECT_EQ(net::ProxyConfigService::CONFIG_PENDING,
-            proxy_config_service_.GetLatestProxyConfig(&proxy_config));
+            proxy_config_service_.GetLatestProxyConfig(&temp));
 
   net::ProxyConfig proxy_configs[3];
   proxy_configs[0].proxy_rules().ParseFromString("http=foopy:80");

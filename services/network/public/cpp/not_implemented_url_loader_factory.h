@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) NotImplementedURLLoaderFactory final
   // method).
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create();
 
+  NotImplementedURLLoaderFactory(const NotImplementedURLLoaderFactory&) =
+      delete;
+  NotImplementedURLLoaderFactory& operator=(
+      const NotImplementedURLLoaderFactory&) = delete;
+
   ~NotImplementedURLLoaderFactory() override;
 
  private:
@@ -44,8 +49,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) NotImplementedURLLoaderFactory final
   // as receivers that connect via the Clone method).
   explicit NotImplementedURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
-
-  DISALLOW_COPY_AND_ASSIGN(NotImplementedURLLoaderFactory);
 };
 
 }  // namespace network

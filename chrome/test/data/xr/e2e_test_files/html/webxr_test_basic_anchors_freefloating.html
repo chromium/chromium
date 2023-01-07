@@ -12,11 +12,10 @@ Tests that free-floating anchors can be created in an AR session.
     <script>var shouldAutoCreateNonImmersiveSession = false;</script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       const TestState = Object.freeze({
         "Initial":  0,
-        "AnchorRequested": 1,
+        "SpaceObtained": 1,
+        "AnchorRequested": 2,
         });
 
       let testState = TestState.Initial;
@@ -24,15 +23,28 @@ Tests that free-floating anchors can be created in an AR session.
       function stepStartTest() {
         const sessionInfo = sessionInfos[sessionTypes.AR];
         const referenceSpace = sessionInfo.currentRefSpace;
+        let localReferenceSpace = null;
 
         testState = TestState.Initial;
 
+        console.log('Requesting local reference space');
+        sessionInfo.session.requestReferenceSpace("local").then(localSpace => {
+          console.log('Got local reference space');
+          localReferenceSpace = localSpace;
+          testState = TestState.SpaceObtained;
+        });
+
         onARFrameCallback = (session, frame) => {
+          console.log('Got AR frame, test state is ' + testState);
           switch(testState) {
-            case TestState.Initial: {
-              // In initial state, we should attempt to create an anchor once viewer pose is available.
-              const viewerPose = frame.getViewerPose(referenceSpace);
+            case TestState.SpaceObtained: {
+              // We should attempt to create an anchor once the tracking is established.
+              // We can observe whether the tracking was established by inspecting the relationship between
+              // viewer space and local space - if the pose is non-null and non-emulated, the AR is in
+              // steady state.
+              const viewerPose = frame.getViewerPose(localReferenceSpace);
               if(viewerPose && !viewerPose.emulatedPosition) {
+                console.log('Creating anchor');
                 frame.createAnchor(new XRRigidTransform(), referenceSpace).then((anchor) => {
                   done();
                   return;

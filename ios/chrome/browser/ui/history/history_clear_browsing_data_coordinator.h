@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ enum class UrlLoadStrategy;
 // Delegate used to make the Tab UI visible.
 @property(nonatomic, weak) id<HistoryPresentationDelegate> presentationDelegate;
 
-// Stops this Coordinator then calls |completionHandler|. |completionHandler|
+// Stops this Coordinator then calls `completionHandler`. `completionHandler`
 // always will be run.
 - (void)stopWithCompletion:(ProceduralBlock)completionHandler;
 

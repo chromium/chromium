@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/test/base/chrome_test_launcher.h"
+
+#include <memory>
 
 #include "base/command_line.h"
 #include "base/test/launcher/test_launcher.h"
@@ -17,23 +19,20 @@
 #if defined(USE_AURA)
 #include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/base/test/ui_controls_aura.h"
-#if defined(USE_OZONE) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-#include "ui/base/ui_base_features.h"
+#if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/common/platform_window_defaults.h"
 #include "ui/views/test/ui_controls_factory_desktop_aura_ozone.h"
-#endif
-#if defined(USE_X11)
-#include "ui/views/test/ui_controls_factory_desktop_aurax11.h"
-#endif
-#endif
+#endif  // defined(USE_OZONE)
+#endif  // defined(USE_AURA)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ui_controls_factory_ash.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
+#include "base/win/win_util.h"
 #include "chrome/test/base/always_on_top_window_killer_win.h"
 #endif
 
@@ -49,50 +48,33 @@ class InteractiveUITestSuite : public ChromeTestSuite {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ui_controls::InstallUIControlsAura(ash::test::CreateAshUIControls());
-#elif defined(OS_WIN)
-    com_initializer_.reset(new base::win::ScopedCOMInitializer());
+#elif BUILDFLAG(IS_WIN)
+    com_initializer_ = std::make_unique<base::win::ScopedCOMInitializer>();
     ui_controls::InstallUIControlsAura(
         aura::test::CreateUIControlsAura(nullptr));
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#if defined(USE_OZONE)
-    if (features::IsUsingOzonePlatform()) {
-      // Notifies the platform that test config is needed. For Wayland, for
-      // example, makes it possible to use emulated input.
-      ui::test::EnableTestConfigForPlatformWindows();
+#elif defined(USE_OZONE)
+    // Notifies the platform that test config is needed. For Wayland, for
+    // example, makes it possible to use emulated input.
+    ui::test::EnableTestConfigForPlatformWindows();
 
-      ui::OzonePlatform::InitParams params;
-      params.single_process = true;
-      ui::OzonePlatform::InitializeForUI(params);
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-      // TODO(1134495): when ozone/wayland implements ui controls test helper,
-      // make lacros also use the ui controls created below.
-      //
-      // ui controls implementation for Ozone desktop.
-      ui_controls::InstallUIControlsAura(
-          views::test::CreateUIControlsDesktopAuraOzone());
-      return;
-#endif
-    }
-#endif
-#if defined(USE_X11)
-    DCHECK(!features::IsUsingOzonePlatform());
+    ui::OzonePlatform::InitParams params;
+    params.single_process = true;
+    ui::OzonePlatform::InitializeForUI(params);
     ui_controls::InstallUIControlsAura(
-        views::test::CreateUIControlsDesktopAura());
-#endif
+        views::test::CreateUIControlsDesktopAuraOzone());
 #else
     ui_controls::EnableUIControls();
 #endif
   }
 
   void Shutdown() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     com_initializer_.reset();
 #endif
   }
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_;
 #endif
 };
@@ -110,7 +92,7 @@ class InteractiveUITestLauncherDelegate : public ChromeTestLauncherDelegate {
   // content::TestLauncherDelegate:
   void PreSharding() override {
     ChromeTestLauncherDelegate::PreSharding();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Check for any always-on-top windows present before any tests are run.
     // Take a snapshot if any are found and attempt to close any that are system
     // dialogs.
@@ -119,7 +101,7 @@ class InteractiveUITestLauncherDelegate : public ChromeTestLauncherDelegate {
   }
 
   void OnTestTimedOut(const base::CommandLine& command_line) override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Take a snapshot of the screen and check for any always-on-top windows
     // present before terminating the test. Attempt to close any that are system
     // dialogs.
@@ -128,7 +110,7 @@ class InteractiveUITestLauncherDelegate : public ChromeTestLauncherDelegate {
     ChromeTestLauncherDelegate::OnTestTimedOut(command_line);
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void PreRunTest() override {
     // Clear currently pressed modifier keys (if any) before the test starts.
     ui_test_utils::ClearKeyEventModifiers();
@@ -144,7 +126,7 @@ class InteractiveUITestLauncherDelegate : public ChromeTestLauncherDelegate {
     }
     ChromeTestLauncherDelegate::PostRunTest(test_result);
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 };
 
 class InteractiveUITestSuiteRunner : public ChromeTestSuiteRunner {
@@ -174,8 +156,22 @@ int main(int argc, char** argv) {
   InProcessBrowserTest::set_global_browser_set_up_function(
       &ui_test_utils::BringBrowserWindowToFront);
 
+#if BUILDFLAG(IS_WIN)
+  base::win::EnableHighDPISupport();
+#endif  // BUILDFLAG(IS_WIN)
+
+  // For ash chrome, it's using multiple X11 windows to host the browser.
+  // Also, {emulating|injecting} keyboard and mouse events happen at ozone
+  // level, not OS level. So it is fine to run tests in parallel.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  size_t parallel_jobs = base::NumParallelJobs(/*cores_per_job=*/2);
+  if (parallel_jobs == 0) {
+    parallel_jobs = 1;
+  }
+#else
   // Run interactive_ui_tests serially, they do not support running in parallel.
-  size_t parallel_jobs = 1U;
+  size_t parallel_jobs = 1;
+#endif
 
   InteractiveUITestSuiteRunner runner;
   InteractiveUITestLauncherDelegate delegate(&runner);

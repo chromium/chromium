@@ -1,11 +1,12 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/user_script_listener.h"
 
+#include <memory>
+
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/browser_process.h"
@@ -15,11 +16,13 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/notification_service.h"
+#include "extensions/browser/api/scripting/scripting_utils.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/url_pattern.h"
+#include "extensions/common/url_pattern_set.h"
 
 using content::NavigationThrottle;
 
@@ -31,6 +34,9 @@ class UserScriptListener::Throttle
  public:
   explicit Throttle(content::NavigationHandle* navigation_handle)
       : NavigationThrottle(navigation_handle) {}
+
+  Throttle(const Throttle&) = delete;
+  Throttle& operator=(const Throttle&) = delete;
 
   void ResumeIfDeferred() {
     DCHECK(should_defer_);
@@ -48,7 +54,7 @@ class UserScriptListener::Throttle
     // Only defer requests if Resume has not yet been called.
     if (should_defer_) {
       did_defer_ = true;
-      timer_.reset(new base::ElapsedTimer());
+      timer_ = std::make_unique<base::ElapsedTimer>();
       return DEFER;
     }
     return PROCEED;
@@ -62,8 +68,6 @@ class UserScriptListener::Throttle
   bool should_defer_ = true;
   bool did_defer_ = false;
   std::unique_ptr<base::ElapsedTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Throttle);
 };
 
 struct UserScriptListener::ProfileData {
@@ -98,6 +102,10 @@ UserScriptListener::CreateNavigationThrottle(
   auto throttle = std::make_unique<Throttle>(navigation_handle);
   throttles_.push_back(throttle->AsWeakPtr());
   return throttle;
+}
+
+void UserScriptListener::OnScriptsLoaded(content::BrowserContext* context) {
+  UserScriptsReady(context);
 }
 
 void UserScriptListener::SetUserScriptsNotReadyForTesting(
@@ -185,13 +193,22 @@ void UserScriptListener::ReplaceURLPatterns(content::BrowserContext* context,
   profile_data_[context].url_patterns = patterns;
 }
 
-void UserScriptListener::CollectURLPatterns(const Extension* extension,
+void UserScriptListener::CollectURLPatterns(content::BrowserContext* context,
+                                            const Extension* extension,
                                             URLPatterns* patterns) {
   for (const std::unique_ptr<UserScript>& script :
        ContentScriptsInfo::GetContentScripts(extension)) {
     patterns->insert(patterns->end(), script->url_patterns().begin(),
                      script->url_patterns().end());
   }
+
+  // Retrieve patterns from persistent dynamic user scripts.
+  // TODO(crbug.com/1271758): Intersect these patterns with the extension's host
+  // permissions.
+  URLPatternSet dynamic_patterns =
+      scripting::GetPersistentScriptURLPatterns(context, extension->id());
+  patterns->insert(patterns->end(), dynamic_patterns.begin(),
+                   dynamic_patterns.end());
 }
 
 void UserScriptListener::Observe(int type,
@@ -203,16 +220,6 @@ void UserScriptListener::Observe(int type,
       auto* registry = ExtensionRegistry::Get(profile);
       DCHECK(!extension_registry_observations_.IsObservingSource(registry));
       extension_registry_observations_.AddObservation(registry);
-
-      UserScriptManager* user_script_manager =
-          ExtensionSystem::Get(profile)->user_script_manager();
-      // Note: |user_script_manager| can be null in some tests.
-      if (user_script_manager) {
-        UserScriptLoader* loader =
-            user_script_manager->manifest_script_loader();
-        DCHECK(!user_script_loader_observations_.IsObservingSource(loader));
-        user_script_loader_observations_.AddObservation(loader);
-      }
       break;
     }
     default:
@@ -223,12 +230,11 @@ void UserScriptListener::Observe(int type,
 void UserScriptListener::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
-  if (ContentScriptsInfo::GetContentScripts(extension).empty())
-    return;  // no new patterns from this extension.
-
   URLPatterns new_patterns;
-  CollectURLPatterns(extension, &new_patterns);
-  DCHECK(!new_patterns.empty());
+  CollectURLPatterns(browser_context, extension, &new_patterns);
+  if (new_patterns.empty())
+    return;  // No new patterns from this extension.
+
   AppendNewURLPatterns(browser_context, new_patterns);
 }
 
@@ -236,14 +242,24 @@ void UserScriptListener::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
-  if (ContentScriptsInfo::GetContentScripts(extension).empty())
-    return;  // No patterns to delete for this extension.
-
   // It's possible to unload extensions before loading extensions when the
   // ExtensionService uninstalls an orphaned extension. In this case we don't
   // need to update |profile_data_|. See crbug.com/1036028
   if (profile_data_.count(browser_context) == 0)
     return;
+
+  // TODO(crbug.com/1273184): These patterns may have changed since the
+  // extension was loaded as they are associated with dynamic scripts. Once this
+  // class is split so URLPatterns are maintained per (profile, extension), we
+  // would only look up these patterns when the extension is loaded.
+  bool has_persistent_dynamic_scripts =
+      !scripting::GetPersistentScriptURLPatterns(browser_context,
+                                                 extension->id())
+           .is_empty();
+  if (ContentScriptsInfo::GetContentScripts(extension).empty() &&
+      !has_persistent_dynamic_scripts) {
+    return;  // No patterns to delete for this extension.
+  }
 
   // Clear all our patterns and reregister all the still-loaded extensions.
   const ExtensionSet& extensions =
@@ -252,23 +268,13 @@ void UserScriptListener::OnExtensionUnloaded(
   for (ExtensionSet::const_iterator it = extensions.begin();
        it != extensions.end(); ++it) {
     if (it->get() != extension)
-      CollectURLPatterns(it->get(), &new_patterns);
+      CollectURLPatterns(browser_context, it->get(), &new_patterns);
   }
   ReplaceURLPatterns(browser_context, new_patterns);
 }
 
 void UserScriptListener::OnShutdown(ExtensionRegistry* registry) {
   extension_registry_observations_.RemoveObservation(registry);
-}
-
-void UserScriptListener::OnScriptsLoaded(
-    UserScriptLoader* loader,
-    content::BrowserContext* browser_context) {
-  UserScriptsReady(browser_context);
-}
-
-void UserScriptListener::OnUserScriptLoaderDestroyed(UserScriptLoader* loader) {
-  user_script_loader_observations_.RemoveObservation(loader);
 }
 
 }  // namespace extensions

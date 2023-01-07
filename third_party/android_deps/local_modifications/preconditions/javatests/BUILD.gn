@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,9 +9,9 @@ android_library("javatests") {
   sources = [ "org/chromium/preconditions/PreconditionsTest.java" ]
   deps = [
     "$google_play_services_package:google_play_services_basement_java",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base/test:test_support_java",
+    "//build/android:build_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",

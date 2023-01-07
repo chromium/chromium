@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -21,6 +20,10 @@ class Buffer;
 class SharedMemory {
  public:
   explicit SharedMemory(base::UnsafeSharedMemoryRegion shared_memory_region);
+
+  SharedMemory(const SharedMemory&) = delete;
+  SharedMemory& operator=(const SharedMemory&) = delete;
+
   ~SharedMemory();
 
   // Creates a buffer from the shared memory. The buffer is created offset bytes
@@ -31,15 +34,13 @@ class SharedMemory {
   std::unique_ptr<Buffer> CreateBuffer(const gfx::Size& size,
                                        gfx::BufferFormat format,
                                        unsigned offset,
-                                       int stride);
+                                       uint32_t stride);
 
   size_t GetSize() const;
   bool Resize(const size_t new_size);
 
  private:
   base::UnsafeSharedMemoryRegion shared_memory_region_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedMemory);
 };
 
 }  // namespace exo

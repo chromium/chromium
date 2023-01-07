@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -18,7 +18,7 @@ source_set("translate") {
     "//components/metrics",
     "//components/translate/core/browser",
     "//components/translate/core/common",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/common/infobars",
@@ -45,6 +45,7 @@ source_set("unit_tests") {
     ":translate",
     "//base/test:test_support",
     "//components/infobars/core",
+    "//components/translate/core/browser:browser",
     "//components/translate/core/browser:test_support",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars/test",
@@ -52,7 +53,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/public/infobar_modal",
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/translate:test_support",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/infobars/coordinators:translate_public",
     "//ios/chrome/browser/ui/infobars/modals/test",
     "//ios/chrome/browser/ui/infobars/test",

@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests that autocompletions are computed correctly when editing the Styles pane.\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -121,9 +121,9 @@
       selectionRange.selectNodeContents(proxyElement);
     }
     var range = selectionRange.startContainer.rangeOfWord(
-        selectionRange.startOffset, prompt._completionStopCharacters, proxyElement, 'backward');
+        selectionRange.startOffset, prompt.completionStopCharacters, proxyElement, 'backward');
     var prefix = range.toString();
-    prompt._buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, force)
+    prompt.buildPropertyCompletions(inputText.substring(0, inputText.length - prefix.length), prefix, force)
         .then(completions);
 
     function completions(result) {

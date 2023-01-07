@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Desactivar todas as animacións das imaxes.</translation>
 <translation id="1703735871906654364">Navegación por cursor de texto</translation>
 <translation id="1791496371305830581">Permitir todas as imaxes animadas.</translation>
+<translation id="1974060860693918893">Configuración avanzada</translation>
 <translation id="1996252509865389616">Activar?</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="2179565792157161713">Abrir descrición longa nunha pestana nova</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Optimizador da cor</translation>
 <translation id="633394792577263429">Mantén tocado &lt;span class='key'&gt;Control&lt;/span&gt; para moverte polas palabras.</translation>
 <translation id="6550675742724504774">Opcións</translation>
+<translation id="6699630355767768222">Paso 3: ignorar o eixe de cor para a corrección.</translation>
 <translation id="6838518108677880446">Configuración:</translation>
 <translation id="690628312087070417">Cando o cursor efectúa un salto de longa distancia:</translation>
 <translation id="6965382102122355670">Aceptar</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">Política de animacións</translation>
 <translation id="8480209185614411573">Contraste alto</translation>
 <translation id="8609925175482059018">Preme &lt;span class='key'&gt;F7&lt;/span&gt; para activar a navegación por cursor de texto. Prémeo de novo para desactivala.</translation>
+<translation id="8798099450830957504">Predeterminado</translation>
 <translation id="894241283505723656">Descricións longas no menú contextual</translation>
 </translationbundle>

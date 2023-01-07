@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,9 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "chrome/browser/ui/webui/downloads/downloads_dom_handler.h"
 #include "chrome/browser/ui/webui/managed_ui_handler.h"
@@ -94,6 +94,7 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
       {"dangerSave", IDS_CONFIRM_DOWNLOAD},
       {"dangerRestore", IDS_CONFIRM_DOWNLOAD_RESTORE},
       {"dangerDiscard", IDS_DISCARD_DOWNLOAD},
+      {"dangerReview", IDS_REVIEW_DOWNLOAD},
 
       // Deep scanning strings.
       {"deepScannedSafeDesc", IDS_DEEP_SCANNED_SAFE_DESCRIPTION},
@@ -135,8 +136,10 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
                              IDS_BLOCK_REASON_MIXED_CONTENT);
   source->AddLocalizedString("asyncScanningDownloadDesc",
                              IDS_BLOCK_REASON_DEEP_SCANNING);
-  if (browser_defaults::kDownloadPageHasShowInFolder)
-    source->AddLocalizedString("controlShowInFolder", IDS_DOWNLOAD_LINK_SHOW);
+  source->AddLocalizedString("accountCompromiseDownloadDesc",
+                             IDS_BLOCK_REASON_ACCOUNT_COMPROMISE);
+  source->AddBoolean("hasShowInFolder",
+                     browser_defaults::kDownloadPageHasShowInFolder);
 
   // Build an Accelerator to describe undo shortcut
   // NOTE: the undo shortcut is also defined in downloads/downloads.html
@@ -150,7 +153,7 @@ content::WebUIDataSource* CreateDownloadsUIHTMLSource(Profile* profile) {
   PrefService* prefs = profile->GetPrefs();
   source->AddBoolean("allowDeletingHistory",
                      prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory) &&
-                         !profile->IsSupervised());
+                         !profile->IsChild());
 
   source->AddLocalizedString("inIncognito", IDS_DOWNLOAD_IN_INCOGNITO);
 
@@ -183,8 +186,9 @@ DownloadsUI::DownloadsUI(content::WebUI* web_ui)
   content::WebUIDataSource::Add(profile, source);
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
 
-  base::UmaHistogramEnumeration("Download.OpenDownloads.PerProfileType",
-                                ProfileMetrics::GetBrowserProfileType(profile));
+  base::UmaHistogramEnumeration(
+      "Download.OpenDownloads.PerProfileType",
+      profile_metrics::GetBrowserProfileType(profile));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DownloadsUI)
@@ -193,7 +197,7 @@ DownloadsUI::~DownloadsUI() = default;
 
 // static
 base::RefCountedMemory* DownloadsUI::GetFaviconResourceBytes(
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_DOWNLOADS_FAVICON, scale_factor);
 }
@@ -210,7 +214,7 @@ void DownloadsUI::CreatePageHandler(
     mojo::PendingReceiver<downloads::mojom::PageHandler> receiver) {
   DCHECK(page);
   Profile* profile = Profile::FromWebUI(web_ui());
-  DownloadManager* dlm = BrowserContext::GetDownloadManager(profile);
+  DownloadManager* dlm = profile->GetDownloadManager();
 
   page_handler_ = std::make_unique<DownloadsDOMHandler>(
       std::move(receiver), std::move(page), dlm, web_ui());

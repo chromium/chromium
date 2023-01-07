@@ -1,0 +1,1 @@
+slider.isAccessibilitySelectorAllowed(@SEL:setAccessibilityValue:)=0

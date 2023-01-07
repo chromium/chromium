@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/notifier_settings_observer.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
@@ -31,7 +30,11 @@ namespace ash {
 class ASH_EXPORT NotifierSettingsView : public views::View,
                                         public NotifierSettingsObserver {
  public:
-  explicit NotifierSettingsView();
+  NotifierSettingsView();
+
+  NotifierSettingsView(const NotifierSettingsView&) = delete;
+  NotifierSettingsView& operator=(const NotifierSettingsView&) = delete;
+
   ~NotifierSettingsView() override;
 
   bool IsScrollable();
@@ -48,6 +51,17 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   const char* GetClassName() const override;
 
+  views::ScrollView* get_scroller_view_for_test() { return scroller_; }
+  views::Label* get_notification_settings_lable_for_test() {
+    return notification_settings_label_;
+  }
+  views::ImageView* get_quiet_mode_icon_view_for_test() {
+    return quiet_mode_icon_;
+  }
+  views::ToggleButton* get_quiet_mode_toggle_for_test() {
+    return quiet_mode_toggle_;
+  }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(NotifierSettingsViewTest, TestLearnMoreButton);
   FRIEND_TEST_ALL_PREFIXES(NotifierSettingsViewTest, TestEmptyNotifierView);
@@ -55,6 +69,10 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
   class ASH_EXPORT NotifierButton : public views::Button {
    public:
     explicit NotifierButton(const NotifierMetadata& notifier);
+
+    NotifierButton(const NotifierButton&) = delete;
+    NotifierButton& operator=(const NotifierButton&) = delete;
+
     ~NotifierButton() override;
 
     void UpdateIconImage(const gfx::ImageSkia& icon);
@@ -79,8 +97,6 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
     views::ImageView* icon_view_ = nullptr;
     views::Label* name_view_ = nullptr;
     views::Checkbox* checkbox_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(NotifierButton);
   };
 
   // Overridden from views::View:
@@ -105,13 +121,13 @@ class ASH_EXPORT NotifierSettingsView : public views::View,
   views::ImageView* quiet_mode_icon_ = nullptr;
   views::ToggleButton* quiet_mode_toggle_ = nullptr;
   views::View* header_view_ = nullptr;
+  views::Label* notification_settings_label_ = nullptr;
   views::Label* top_label_ = nullptr;
   views::ScrollBar* scroll_bar_ = nullptr;
   views::ScrollView* scroller_ = nullptr;
   views::View* no_notifiers_view_ = nullptr;
+  // TODO(crbug/1194632): remove |buttons_| and all related views.
   std::set<NotifierButton*> buttons_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotifierSettingsView);
 };
 
 }  // namespace ash

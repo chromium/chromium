@@ -8,6 +8,8 @@
 <script>
 'use strict';
 bluetooth_test(() => {
+  // Note, this test fails when converted to use the dynamic mocking system.
+  // See https://crbug.com/736226 for more details.
   return setBluetoothFakeAdapter('HeartRateAdapter')
     .then(() => requestDeviceWithTrustedClick({
       filters: [{services: ['heart_rate']}]}))

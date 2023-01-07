@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,27 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "content/public/common/url_constants.h"
 #include "net/base/net_errors.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 
 namespace safe_browsing {
+
+namespace {
+
+// Returns true if the URL is known to be safe. We also require that this URL
+// never redirects to a potentially unsafe URL.
+bool KnownSafeUrl(const GURL& url) {
+  return url.SchemeIs(content::kChromeUIScheme);
+}
+
+}  // namespace
 
 RendererURLLoaderThrottle::RendererURLLoaderThrottle(
     mojom::SafeBrowsing* safe_browsing,
@@ -23,7 +35,8 @@ RendererURLLoaderThrottle::RendererURLLoaderThrottle(
 
 RendererURLLoaderThrottle::~RendererURLLoaderThrottle() {
   if (deferred_)
-    TRACE_EVENT_ASYNC_END0("safe_browsing", "Deferred", this);
+    TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
+                                    TRACE_ID_LOCAL(this));
 }
 
 void RendererURLLoaderThrottle::DetachFromCurrentSequence() {
@@ -40,6 +53,9 @@ void RendererURLLoaderThrottle::WillStartRequest(
   DCHECK_EQ(0u, pending_checks_);
   DCHECK(!blocked_);
   DCHECK(!url_checker_);
+
+  if (KnownSafeUrl(request->url))
+    return;
 
   if (safe_browsing_pending_remote_.is_valid()) {
     // Bind the pipe created in DetachFromCurrentSequence to the current
@@ -97,15 +113,21 @@ void RendererURLLoaderThrottle::WillProcessResponse(
   // shouldn't be such a notification.
   DCHECK(!blocked_);
 
-  if (pending_checks_ == 0)
+  bool check_completed = (pending_checks_ == 0);
+  base::UmaHistogramBoolean(
+      "SafeBrowsing.RendererThrottle.IsCheckCompletedOnProcessResponse",
+      check_completed);
+
+  if (check_completed)
     return;
 
   DCHECK(!deferred_);
   deferred_ = true;
   defer_start_time_ = base::TimeTicks::Now();
   *defer = true;
-  TRACE_EVENT_ASYNC_BEGIN1("safe_browsing", "Deferred", this, "original_url",
-                           original_url_.spec());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("safe_browsing", "Deferred",
+                                    TRACE_ID_LOCAL(this), "original_url",
+                                    original_url_.spec());
 }
 
 const char* RendererURLLoaderThrottle::NameForLoggingWillProcessResponse() {
@@ -164,7 +186,6 @@ void RendererURLLoaderThrottle::OnCompleteCheckInternal(
     pending_slow_checks_--;
   }
 
-  user_action_involved_ = user_action_involved_ || showed_interstitial;
   // If the resource load is currently deferred and is going to exit that state
   // (either being cancelled or resumed), record the total delay.
   if (deferred_ && (!proceed || pending_checks_ == 0))
@@ -176,7 +197,10 @@ void RendererURLLoaderThrottle::OnCompleteCheckInternal(
 
     if (pending_checks_ == 0 && deferred_) {
       deferred_ = false;
-      TRACE_EVENT_ASYNC_END0("safe_browsing", "Deferred", this);
+      TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
+                                      TRACE_ID_LOCAL(this));
+      base::UmaHistogramTimes("SafeBrowsing.RendererThrottle.TotalDelay",
+                              total_delay_);
       delegate_->Resume();
     }
   } else {
@@ -212,7 +236,8 @@ void RendererURLLoaderThrottle::OnMojoDisconnect() {
     total_delay_ = base::TimeTicks::Now() - defer_start_time_;
 
     deferred_ = false;
-    TRACE_EVENT_ASYNC_END0("safe_browsing", "Deferred", this);
+    TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
+                                    TRACE_ID_LOCAL(this));
     delegate_->Resume();
   }
 }

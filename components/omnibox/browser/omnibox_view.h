@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -177,14 +178,18 @@ class OmniboxView {
                                            bool notify_text_changed) = 0;
 
   // Called when the inline autocomplete text in the model may have changed.
-  // |display_text| is the new text to show. |selection| indicates the
-  // autocompleted portions which should be selected. |user_text_length| is the
-  // length of the user input portion of the text (not including the
-  // autocompletion).
+  // `display_text` is the new text to show. `selection` indicates the
+  // autocompleted portions which should be selected. `*_autocompletion`
+  // represents the appropriate autocompletion.
+  // TODO(manukh) The last 3 parameters are redundant except when split
+  //  autocompletion is enabled. Once we've cleaned up split autocompletion
+  //  (it's unlikely to launch but still useful for experimenting), `selections`
+  //  should be removed.
   virtual void OnInlineAutocompleteTextMaybeChanged(
       const std::u16string& display_text,
       std::vector<gfx::Range> selections,
-      size_t user_text_length) = 0;
+      const std::u16string& prefix_autocompletion,
+      const std::u16string& inline_autocompletion) = 0;
 
   // Called when the inline autocomplete text in the model has been cleared.
   virtual void OnInlineAutocompleteTextCleared() = 0;
@@ -318,7 +323,7 @@ class OmniboxView {
 
   // |model_| can be NULL in tests.
   std::unique_ptr<OmniboxEditModel> model_;
-  OmniboxEditController* controller_;
+  raw_ptr<OmniboxEditController> controller_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_VIEW_H_

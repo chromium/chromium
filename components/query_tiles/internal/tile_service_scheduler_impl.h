@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_QUERY_TILES_INTERNAL_TILE_SERVICE_SCHEDULER_IMPL_H_
 #define COMPONENTS_QUERY_TILES_INTERNAL_TILE_SERVICE_SCHEDULER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/tick_clock.h"
 #include "components/query_tiles/internal/log_source.h"
@@ -49,7 +50,6 @@ class TileServiceSchedulerImpl : public TileServiceScheduler, public LogSource {
   std::unique_ptr<net::BackoffEntry> GetBackoff();
   void AddBackoff();
   void ResetBackoff();
-  void MaximizeBackoff();
   int64_t GetDelaysFromBackoff();
   void GetInstantTaskWindow(int64_t* start_time_ms,
                             int64_t* end_time_ms,
@@ -71,15 +71,15 @@ class TileServiceSchedulerImpl : public TileServiceScheduler, public LogSource {
   void PingLogSink();
 
   // Native Background Scheduler instance.
-  background_task::BackgroundTaskScheduler* scheduler_;
+  raw_ptr<background_task::BackgroundTaskScheduler> scheduler_;
 
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   // Clock object to get current time.
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // TickClock used for building backoff entry.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Backoff policy used for reschdule.
   std::unique_ptr<net::BackoffEntry::Policy> backoff_policy_;
@@ -89,7 +89,7 @@ class TileServiceSchedulerImpl : public TileServiceScheduler, public LogSource {
   bool is_suspend_;
 
   // Delegate instance.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Internal fetcher status.
   TileInfoRequestStatus fetcher_status_;
@@ -98,9 +98,9 @@ class TileServiceSchedulerImpl : public TileServiceScheduler, public LogSource {
   TileGroupStatus group_status_;
 
   // LogSink instance.
-  LogSink* log_sink_;
+  raw_ptr<LogSink> log_sink_;
 };
 
 }  // namespace query_tiles
 
-#endif  // COMPONENTS_QUERY_TILES_INTERNAL_TILE_SERVICE_SCHEDULER_H_
+#endif  // COMPONENTS_QUERY_TILES_INTERNAL_TILE_SERVICE_SCHEDULER_IMPL_H_

@@ -24,12 +24,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_FRAME_SET_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_FRAME_SET_ELEMENT_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 namespace blink {
+
+class FrameEdgeInfo;
+class MouseEvent;
 
 class HTMLFrameSetElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
@@ -40,8 +44,8 @@ class HTMLFrameSetElement final : public HTMLElement {
   // HTMLElement override
   bool IsHTMLFrameSetElement() const override { return true; }
 
-  bool HasFrameBorder() const { return frameborder_; }
-  bool NoResize() const { return noresize_; }
+  bool HasFrameBorder() const;
+  bool NoResize() const;
 
   wtf_size_t TotalRows() const {
     return std::max<wtf_size_t>(1, row_lengths_.size());
@@ -49,14 +53,24 @@ class HTMLFrameSetElement final : public HTMLElement {
   wtf_size_t TotalCols() const {
     return std::max<wtf_size_t>(1, col_lengths_.size());
   }
-  int Border() const { return HasFrameBorder() ? border_ : 0; }
+  int Border(const ComputedStyle& style) const;
+  FrameEdgeInfo EdgeInfo() const;
+  void DirtyEdgeInfo();
+  void DirtyEdgeInfoAndFullPaintInvalidation();
 
-  bool HasBorderColor() const { return border_color_set_; }
+  bool HasBorderColor() const;
 
   const Vector<HTMLDimension>& RowLengths() const { return row_lengths_; }
   const Vector<HTMLDimension>& ColLengths() const { return col_lengths_; }
+  const Vector<int>& RowDeltas() const { return resize_rows_.deltas_; }
+  const Vector<int>& ColDeltas() const { return resize_cols_.deltas_; }
+  const Vector<bool>& AllowBorderRows() const;
+  const Vector<bool>& AllowBorderColumns() const;
 
   bool HasNonInBodyInsertionMode() const override { return true; }
+
+  bool CanResizeRow(const gfx::Point& p) const;
+  bool CanResizeColumn(const gfx::Point& p) const;
 
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(blur, kBlur)
   DEFINE_WINDOW_ATTRIBUTE_EVENT_LISTENER(error, kError)
@@ -83,17 +97,57 @@ class HTMLFrameSetElement final : public HTMLElement {
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void WillRecalcStyle(const StyleRecalcChange) override;
 
+  void ResizeChildrenData();
+
+  class ResizeAxis {
+    DISALLOW_NEW();
+
+   public:
+    ResizeAxis() = default;
+    ResizeAxis(const ResizeAxis&) = delete;
+    ResizeAxis& operator=(const ResizeAxis&) = delete;
+
+    void Resize(wtf_size_t number_of_frames);
+    // Returns true if a split is being resized now.
+    bool IsResizingSplit() const { return split_being_resized_ != kNoSplit; }
+    // Returns true if a split is being resized now.
+    bool CanResizeSplitAt(int split_index) const;
+
+    static constexpr int kNoSplit = -1;
+
+    Vector<int> deltas_;
+    Vector<bool> prevent_resize_;
+    int split_being_resized_ = kNoSplit;
+    int split_resize_offset_;
+  };
+
+  bool UserResize(const MouseEvent& event);
+  void SetIsResizing(bool is_resizing);
+  void StartResizing(const Vector<LayoutUnit>& sizes,
+                     int position,
+                     ResizeAxis& resize_axis);
+  void ContinueResizing(const Vector<LayoutUnit>& sizes,
+                        int position,
+                        ResizeAxis& resize_axis);
+  int SplitPosition(const Vector<LayoutUnit>& sizes, int split) const;
+  int HitTestSplit(const Vector<LayoutUnit>& sizes, int position) const;
+
+  void CollectEdgeInfoIfDirty();
+  void FillFromEdgeInfo(const FrameEdgeInfo& edge_info,
+                        wtf_size_t r,
+                        wtf_size_t c);
+
   Vector<HTMLDimension> row_lengths_;
   Vector<HTMLDimension> col_lengths_;
+  ResizeAxis resize_rows_;
+  ResizeAxis resize_cols_;
+  Vector<bool> allow_border_rows_;
+  Vector<bool> allow_border_cols_;
 
-  int border_;
-  bool border_set_;
-
-  bool border_color_set_;
-
-  bool frameborder_;
-  bool frameborder_set_;
-  bool noresize_;
+  absl::optional<int> border_;
+  absl::optional<bool> frameborder_;
+  bool is_edge_info_dirty_ = true;
+  bool is_resizing_ = false;
 };
 
 }  // namespace blink

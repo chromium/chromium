@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -48,7 +48,8 @@ constexpr char kValueExpectationSwitch[] = "value-expectation";
 class DISABLED_CanvasInputKeyBrowserTest : public PlatformBrowserTest {
  public:
   DISABLED_CanvasInputKeyBrowserTest() {
-    privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters());
+    privacy_budget_config_.Apply(test::ScopedPrivacyBudgetConfig::Parameters(
+        test::ScopedPrivacyBudgetConfig::Presets::kEnableRandomSampling));
   }
 
   content::WebContents* web_contents() {
@@ -90,7 +91,7 @@ struct MetricKeyValue {
 // Verify that there's only one entry of type |type|, and return the the
 // |input_key|, |value| pair.
 template <typename MapType>
-base::Optional<MetricKeyValue> ExtractKeyOfType(IdentifiableSurface::Type type,
+absl::optional<MetricKeyValue> ExtractKeyOfType(IdentifiableSurface::Type type,
                                                 const MapType& metrics) {
   MetricKeyValue last_result = {};
   for (const auto& pair : metrics) {
@@ -101,7 +102,7 @@ base::Optional<MetricKeyValue> ExtractKeyOfType(IdentifiableSurface::Type type,
                       << static_cast<uint64_t>(type)
                       << ". First input hash: " << last_result.input_key
                       << " second input hash: " << surface.GetInputHash();
-        return base::nullopt;
+        return absl::nullopt;
       }
       last_result.input_key = surface.GetInputHash();
       last_result.value = pair.second;
@@ -113,7 +114,7 @@ base::Optional<MetricKeyValue> ExtractKeyOfType(IdentifiableSurface::Type type,
 IN_PROC_BROWSER_TEST_F(DISABLED_CanvasInputKeyBrowserTest,
                        TestCanvasFingerprint) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::DOMMessageQueue messages;
+  content::DOMMessageQueue messages(web_contents());
   base::RunLoop run_loop;
 
   recorder().SetOnAddEntryCallback(ukm::builders::Identifiability::kEntryName,
@@ -140,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_CanvasInputKeyBrowserTest,
   // adjust this test to deal.
   ASSERT_EQ(1u, merged_entries.size());
 
-  base::Optional<MetricKeyValue> canvas_key_value =
+  absl::optional<MetricKeyValue> canvas_key_value =
       ExtractKeyOfType(IdentifiableSurface::Type::kCanvasReadback,
                        merged_entries.begin()->second->metrics);
   ASSERT_TRUE(canvas_key_value);

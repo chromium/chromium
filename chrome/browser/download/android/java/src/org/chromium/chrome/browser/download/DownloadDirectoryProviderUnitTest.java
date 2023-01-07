@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,15 +19,15 @@ import org.robolectric.shadows.ShadowLog;
 import org.robolectric.util.TempDirectory;
 
 import org.chromium.base.PathUtils;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.download.DownloadDirectoryProviderUnitTest.ShadowPathUtils;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 import java.nio.file.Path;
 
 /**
  * Unit tests for DownloadDirectoryProvider. It mocks Android API behaviors.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowPathUtils.class})
 @SuppressLint("NewApi")
 public class DownloadDirectoryProviderUnitTest {

@@ -22,7 +22,7 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/svg/svg_marker_element.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -42,7 +42,7 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
 
   // Calculates marker boundaries, mapped to the target element's coordinate
   // space.
-  FloatRect MarkerBoundaries(
+  gfx::RectF MarkerBoundaries(
       const AffineTransform& marker_transformation) const;
   AffineTransform MarkerTransformation(const MarkerPosition&,
                                        float stroke_width) const;
@@ -55,14 +55,14 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
 
   // The viewport origin is (0,0) and not the reference point because each
   // marker instance includes the reference in markerTransformation().
-  FloatRect Viewport() const {
+  gfx::RectF Viewport() const {
     NOT_DESTROYED();
-    return FloatRect(FloatPoint(), viewport_size_);
+    return gfx::RectF(viewport_size_);
   }
 
   bool ShouldPaint() const;
 
-  FloatPoint ReferencePoint() const;
+  gfx::PointF ReferencePoint() const;
   float Angle() const;
   SVGMarkerUnitsType MarkerUnits() const;
   SVGMarkerOrientType OrientType() const;
@@ -79,7 +79,7 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
   bool FindCycleFromSelf() const override;
 
   AffineTransform local_to_parent_transform_;
-  FloatSize viewport_size_;
+  gfx::SizeF viewport_size_;
   bool needs_transform_update_;
   bool is_in_layout_;
 };
@@ -93,4 +93,4 @@ struct DowncastTraits<LayoutSVGResourceMarker> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_RESOURCE_MARKER_H_

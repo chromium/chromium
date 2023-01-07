@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/events/event_rewriter.h"
 
 namespace ui {
@@ -17,6 +16,10 @@ namespace test {
 class TestEventRewriter : public ui::EventRewriter {
  public:
   TestEventRewriter();
+
+  TestEventRewriter(const TestEventRewriter&) = delete;
+  TestEventRewriter& operator=(const TestEventRewriter&) = delete;
+
   ~TestEventRewriter() override;
 
   void clear_events_seen() { events_seen_ = 0; }
@@ -32,8 +35,6 @@ class TestEventRewriter : public ui::EventRewriter {
  private:
   int events_seen_ = 0;
   std::unique_ptr<ui::Event> last_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventRewriter);
 };
 
 }  // namespace test

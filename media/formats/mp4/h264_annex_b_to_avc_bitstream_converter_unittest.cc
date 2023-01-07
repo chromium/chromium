@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,7 +53,7 @@ TEST(H264AnnexBToAvcBitstreamConverterTest, Success) {
 
     auto status =
         converter.ConvertChunk(input, output, &config_changed, &desired_size);
-    ASSERT_EQ(status.code(), StatusCode::kH264BufferTooSmall);
+    ASSERT_EQ(status.code(), MP4Status::Codes::kBufferTooSmall);
     output.resize(desired_size);
 
     status = converter.ConvertChunk(input, output, &config_changed, nullptr);
@@ -81,6 +80,50 @@ TEST(H264AnnexBToAvcBitstreamConverterTest, Success) {
   }
 }
 
+// Tests that stream can contain multiple picture parameter sets and switch
+// between them without having to reconfigure the decoder.
+TEST(H264AnnexBToAvcBitstreamConverterTest, PPS_SwitchWithoutReconfig) {
+  std::vector<uint8_t> sps{0x00, 0x00, 0x00, 0x01, 0x27, 0x42, 0x00, 0x1E,
+                           0x89, 0x8A, 0x12, 0x05, 0x01, 0x7F, 0xCA, 0x80};
+  std::vector<uint8_t> pps1{0x00, 0x00, 0x00, 0x01, 0x28, 0xce, 0x3c, 0x80};
+  std::vector<uint8_t> pps2{0x00, 0x00, 0x00, 0x01, 0x28, 0x53, 0x8f, 0x20};
+  std::vector<uint8_t> pps3{0x00, 0x00, 0x00, 0x01, 0x28, 0x73, 0x8F, 0x20};
+  std::vector<uint8_t> first_frame_idr{
+      0x00, 0x00, 0x00, 0x01, 0x25, 0xb4, 0x00, 0x10, 0x00, 0x24, 0xff,
+      0xff, 0xf8, 0x7a, 0x28, 0x00, 0x08, 0x0a, 0x7b, 0xdd
+      // Encoded data omitted here, it's not important for NALU parsing
+  };
+
+  std::vector<uint8_t> first_chunk;
+  first_chunk.insert(first_chunk.end(), sps.begin(), sps.end());
+  first_chunk.insert(first_chunk.end(), pps1.begin(), pps1.end());
+  first_chunk.insert(first_chunk.end(), pps2.begin(), pps2.end());
+  first_chunk.insert(first_chunk.end(), pps3.begin(), pps3.end());
+  first_chunk.insert(first_chunk.end(), first_frame_idr.begin(),
+                     first_frame_idr.end());
+
+  std::vector<uint8_t> second_non_idr_chunk{
+      0x00, 0x00, 0x00, 0x01, 0x21, 0xd8, 0x00, 0x80, 0x04,
+      0x95, 0x9d, 0x45, 0x70, 0xd9, 0xbe, 0x21, 0xff, 0x87,
+      0x20, 0x03, 0x9c, 0x66, 0x84, 0xe1
+      // Encoded data omitted here, it's not important for NALU parsing
+  };
+
+  H264AnnexBToAvcBitstreamConverter converter;
+  std::vector<uint8_t> output(10000);
+  bool config_changed = false;
+
+  auto status =
+      converter.ConvertChunk(first_chunk, output, &config_changed, nullptr);
+  EXPECT_TRUE(status.is_ok()) << status.message();
+  EXPECT_TRUE(config_changed);
+
+  status = converter.ConvertChunk(second_non_idr_chunk, output, &config_changed,
+                                  nullptr);
+  EXPECT_TRUE(status.is_ok()) << status.message();
+  EXPECT_FALSE(config_changed);
+}
+
 TEST(H264AnnexBToAvcBitstreamConverterTest, Failure) {
   H264AnnexBToAvcBitstreamConverter converter;
 
@@ -89,7 +132,8 @@ TEST(H264AnnexBToAvcBitstreamConverterTest, Failure) {
   std::vector<uint8_t> output(input.size());
 
   auto status = converter.ConvertChunk(input, output, nullptr, nullptr);
-  ASSERT_EQ(status.code(), StatusCode::kH264ParsingError);
+
+  ASSERT_EQ(status.code(), MP4Status::Codes::kInvalidSPS);
 }
 
 }  // namespace media

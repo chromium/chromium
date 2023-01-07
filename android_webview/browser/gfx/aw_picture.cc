@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,7 +38,7 @@ void AwPicture::Draw(JNIEnv* env,
     return;
   }
   std::unique_ptr<SoftwareCanvasHolder> canvas_holder =
-      SoftwareCanvasHolder::Create(canvas, gfx::Vector2d(),
+      SoftwareCanvasHolder::Create(canvas, gfx::Point(),
                                    gfx::Size(bounds.width(), bounds.height()),
                                    false);
   if (!canvas_holder || !canvas_holder->GetCanvas()) {

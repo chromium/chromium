@@ -44,7 +44,6 @@ class DocumentType final : public Node {
 
  private:
   String nodeName() const override;
-  NodeType getNodeType() const override;
   Node* Clone(Document&, CloneChildrenFlag) const override;
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;

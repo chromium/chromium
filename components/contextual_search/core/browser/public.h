@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,10 +41,6 @@ extern const int kContextualCardsDiagnosticIntegration;
 extern const int kSimplifiedServerDeprecatedMixin;
 // Activates server-side debugging.
 extern const int kContextualCardsServerDebugMixin;
-
-// Longpress resolve variations:
-extern const char kLongpressResolveParamName[];
-extern const char kLongpressResolvePreserveTap[];
 
 }  // namespace contextual_search
 

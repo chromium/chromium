@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace ash {
@@ -76,7 +75,7 @@ class ASH_EXPORT SessionStateAnimator {
     // The primary root window.
     ROOT_CONTAINER = 1 << 6,
   };
-
+  using AnimationCallback = base::OnceCallback<void(bool)>;
   // A bitfield mask including LOCK_SCREEN_WALLPAPER,
   // LOCK_SCREEN_CONTAINERS, and LOCK_SCREEN_RELATED_CONTAINERS.
   static const int kAllLockScreenContainersMask;
@@ -109,6 +108,9 @@ class ASH_EXPORT SessionStateAnimator {
   //
   class ASH_EXPORT AnimationSequence {
    public:
+    AnimationSequence(const AnimationSequence&) = delete;
+    AnimationSequence& operator=(const AnimationSequence&) = delete;
+
     virtual ~AnimationSequence();
 
     // Apply animation |type| to all containers included in |container_mask|
@@ -128,7 +130,7 @@ class ASH_EXPORT SessionStateAnimator {
    protected:
     // AnimationSequence should not be instantiated directly, only through
     // subclasses.
-    explicit AnimationSequence(base::OnceClosure callback);
+    explicit AnimationSequence(AnimationCallback callback);
 
     // Subclasses should call this when the contained animations completed
     // successfully.
@@ -148,23 +150,25 @@ class ASH_EXPORT SessionStateAnimator {
     void CleanupIfSequenceCompleted();
 
     // Tracks whether the sequence has ended.
-    bool sequence_ended_;
+    bool sequence_ended_ = false;
 
     // Track whether the contained animations have completed or not, both
     // successfully and unsuccessfully.
-    bool animation_completed_;
+    bool animation_finished_ = false;
 
     // Flag to specify whether the callback should be invoked once the sequence
     // has completed.
-    bool invoke_callback_;
+    bool animation_aborted_ = false;
 
-    // Callback to be called.
-    base::OnceClosure callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(AnimationSequence);
+    // Callback to be called when the aniamtion is finished or aborted.
+    AnimationCallback callback_;
   };
 
   SessionStateAnimator();
+
+  SessionStateAnimator(const SessionStateAnimator&) = delete;
+  SessionStateAnimator& operator=(const SessionStateAnimator&) = delete;
+
   virtual ~SessionStateAnimator();
 
   // Reports animation duration for |speed|.
@@ -188,9 +192,9 @@ class ASH_EXPORT SessionStateAnimator {
   // a group of animations are completed.  See AnimationSequence documentation
   // for more details.
   virtual AnimationSequence* BeginAnimationSequence(
-      base::OnceClosure callback) = 0;
+      AnimationCallback callback) = 0;
 
-  // Retruns true if the wallpaper is hidden.
+  // Returns true if the wallpaper is hidden.
   virtual bool IsWallpaperHidden() const = 0;
 
   // Shows the wallpaper immediately.
@@ -198,9 +202,6 @@ class ASH_EXPORT SessionStateAnimator {
 
   // Hides the wallpaper immediately.
   virtual void HideWallpaper() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SessionStateAnimator);
 };
 
 }  // namespace ash

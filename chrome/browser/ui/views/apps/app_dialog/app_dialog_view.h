@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,13 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
-namespace gfx {
-class ImageSkia;
+namespace ui {
+class ImageModel;
 }
 
 // The app dialog that may display the app's name, icon. This is the base class
@@ -20,8 +21,11 @@ class ImageSkia;
 class AppDialogView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(AppDialogView);
-  explicit AppDialogView(const gfx::ImageSkia& image);
+  explicit AppDialogView(const ui::ImageModel& image);
   ~AppDialogView() override;
+
+  // views::BubbleDialogDelegateView:
+  void OnThemeChanged() override;
 
  protected:
   void InitializeView(const std::u16string& heading_text);
@@ -30,7 +34,8 @@ class AppDialogView : public views::BubbleDialogDelegateView {
   void SetLabelText(const std::u16string& text);
 
  private:
-  views::Label* label_ = nullptr;
+  ui::ImageModel image_;
+  raw_ptr<views::Label> label_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_DIALOG_APP_DIALOG_VIEW_H_

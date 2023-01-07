@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_RUNTIME_OBSERVER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_BROWSER_PUBLIC_RUNTIME_OBSERVER_H_
 
-#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/autofill_assistant/browser/public/ui_state.h"
 
 namespace autofill_assistant {

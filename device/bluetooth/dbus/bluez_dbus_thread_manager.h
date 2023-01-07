@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "device/bluetooth/bluetooth_export.h"
 
@@ -37,6 +36,9 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusThreadManager {
   // Gets the global instance. Initialize() must be called first.
   static BluezDBusThreadManager* Get();
 
+  BluezDBusThreadManager(const BluezDBusThreadManager&) = delete;
+  BluezDBusThreadManager& operator=(const BluezDBusThreadManager&) = delete;
+
   // Returns various D-Bus bus instances, owned by BluezDBusThreadManager.
   dbus::Bus* GetSystemBus();
 
@@ -46,10 +48,8 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusThreadManager {
 
   std::unique_ptr<base::Thread> dbus_thread_;
   scoped_refptr<dbus::Bus> system_bus_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluezDBusThreadManager);
 };
 
 }  // namespace bluez
 
-#endif  // DEVICE_BLUETOOTH_DBUS_DBUS_THREAD_MANAGER_LINUX_H_
+#endif  // DEVICE_BLUETOOTH_DBUS_BLUEZ_DBUS_THREAD_MANAGER_H_

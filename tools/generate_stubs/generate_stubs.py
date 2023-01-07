@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -147,7 +147,6 @@ void %(export)s %(name)s(%(params)s) {
 # following named parameters:
 #   guard_name: The macro to use as the header guard.
 #   namespace: The namespace for the stub functions.
-#   logging_include: Header file where the logging function is defined.
 STUB_HEADER_PREAMBLE = """// This is generated file. Do not modify directly.
 
 #ifndef %(guard_name)s
@@ -179,7 +178,7 @@ IMPLEMENTATION_PREAMBLE = """// This is generated file. Do not modify directly.
 
 #include <cstdarg>
 
-#include "base/compiler_specific.h"
+#include "%(macro_include)s"
 #include "%(logging_include)s"
 """
 
@@ -314,7 +313,12 @@ UMBRELLA_INITIALIZER_INITIALIZE_FUNCTION_START = (
         opened_libraries[cur_module] = handle;
       } else {
         %(logging_function)s << "dlopen(" << dso_path->c_str() << ") failed.";
-        %(logging_function)s << "dlerror() says:\\n" << dlerror();
+        if (char *errstr = dlerror()) {
+          %(logging_function)s << "dlerror() says:\\n" << errstr;
+        } else {
+          %(logging_function)s << "dlerror() is nullptr";
+        }
+
       }
     }
 
@@ -461,7 +465,7 @@ def QuietRun(args, filter=None, write_to=sys.stdout):
   with |filter|."""
   popen = subprocess.Popen(args, stdout=subprocess.PIPE)
   out, _ = popen.communicate()
-  for line in out.splitlines():
+  for line in out.decode('utf-8').splitlines():
     if not filter or not line.startswith(filter):
       write_to.write(line + '\n')
   return popen.returncode
@@ -528,8 +532,7 @@ class PosixStubWriter(object):
   functions plus initialization code for them.
   """
 
-  def __init__(self, module_name, export_macro, signatures, logging_function,
-               logging_include):
+  def __init__(self, module_name, export_macro, signatures, logging_function):
     """Initializes PosixStubWriter for this set of signatures and module_name.
 
     Args:
@@ -539,13 +542,11 @@ class PosixStubWriter(object):
       signatures: The list of signature hashes, as produced by ParseSignatures,
                   to create stubs for.
       logging_function: Function call that will be used for error logging.
-      logging_include: Header file where the logging function is defined.
     """
     self.signatures = signatures
     self.module_name = module_name
     self.export_macro = export_macro
     self.logging_function = logging_function
-    self.logging_include = logging_include
 
   @classmethod
   def CStyleIdentifier(cls, identifier):
@@ -703,17 +704,20 @@ class PosixStubWriter(object):
       }
 
   @classmethod
-  def WriteImplementationPreamble(cls, header_path, outfile, logging_include):
+  def WriteImplementationPreamble(cls, header_path, outfile, logging_include,
+                                  macro_include):
     """Write the necessary includes for the implementation file.
 
     Args:
       header_path: The path to the header file.
       outfile: The file handle to populate.
     """
-    outfile.write(IMPLEMENTATION_PREAMBLE % {
-        'header_path': header_path,
-        'logging_include': logging_include
-    })
+    outfile.write(
+        IMPLEMENTATION_PREAMBLE % {
+            'header_path': header_path,
+            'logging_include': logging_include,
+            'macro_include': macro_include,
+        })
 
   @classmethod
   def WriteUmbrellaInitializer(cls, module_names, namespace, outfile,
@@ -781,7 +785,6 @@ class PosixStubWriter(object):
       namespace: The namespace these functions should be in.
       header_guard: The macro to use as our header guard.
       outfile: The output handle to populate.
-      logging_include: Header file where the logging function is defined.
     """
     outfile.write(STUB_HEADER_PREAMBLE % {
         'guard_name': header_guard,
@@ -992,6 +995,10 @@ def CreateOptionParser():
                     dest='logging_include',
                     default='base/logging.h',
                     help=('Header file where the logging function is defined.'))
+  parser.add_option('--macro-include',
+                    dest='macro_include',
+                    default='base/compiler_specific.h',
+                    help=('Header file where DISABLE_CFI_ICALL is defined.'))
 
   return parser
 
@@ -1122,8 +1129,8 @@ def CreateWindowsDefForSigFiles(sig_files, out_dir, module_name):
 
 def CreatePosixStubsForSigFiles(sig_files, stub_name, out_dir, intermediate_dir,
                                 path_from_source, extra_stub_header,
-                                export_macro, logging_function,
-                                logging_include):
+                                export_macro, logging_function, logging_include,
+                                macro_include):
   """Create a POSIX stub library with a module for each signature file.
 
   Args:
@@ -1139,6 +1146,7 @@ def CreatePosixStubsForSigFiles(sig_files, stub_name, out_dir, intermediate_dir,
                   an EXPORT marking, to control visibility.
     logging_function: Function call that will be used for error logging.
     logging_include: Header file where the logging function is defined.
+    header_include: Header file where the logging function is defined.
   """
   header_base_name = stub_name + '.h'
   header_path = os.path.join(out_dir, header_base_name)
@@ -1155,7 +1163,7 @@ def CreatePosixStubsForSigFiles(sig_files, stub_name, out_dir, intermediate_dir,
     # Open the file, and create the preamble which consists of a file
     # header plus any necessary includes.
     PosixStubWriter.WriteImplementationPreamble(header_include_path, impl_file,
-                                                logging_include)
+                                                logging_include, macro_include)
     if extra_stub_header is not None:
       extra_header_file = open(extra_stub_header, 'r')
       try:
@@ -1179,8 +1187,7 @@ def CreatePosixStubsForSigFiles(sig_files, stub_name, out_dir, intermediate_dir,
         signatures = ParseSignatures(infile)
       finally:
         infile.close()
-      writer = PosixStubWriter(name, export_macro, signatures, logging_function,
-                               logging_include)
+      writer = PosixStubWriter(name, export_macro, signatures, logging_function)
       writer.WriteImplementationContents(namespace, impl_file)
 
     # Lastly, output the umbrella function for the file.
@@ -1213,7 +1220,7 @@ def main():
                                 intermediate_dir, options.path_from_source,
                                 options.extra_stub_header, options.export_macro,
                                 options.logging_function,
-                                options.logging_include)
+                                options.logging_include, options.macro_include)
   elif options.type == FILE_TYPE_WIN_DEF:
     CreateWindowsDefForSigFiles(args, out_dir, options.module_name)
 

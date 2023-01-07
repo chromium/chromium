@@ -1,11 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IPC_IPC_SECURITY_TEST_UTIL_H_
 #define IPC_IPC_SECURITY_TEST_UTIL_H_
-
-#include "base/macros.h"
 
 namespace IPC {
 
@@ -14,6 +12,9 @@ class Message;
 
 class IpcSecurityTestUtil {
  public:
+  IpcSecurityTestUtil(const IpcSecurityTestUtil&) = delete;
+  IpcSecurityTestUtil& operator=(const IpcSecurityTestUtil&) = delete;
+
   // Enables testing of security exploit scenarios where a compromised child
   // process can send a malicious message of an arbitrary type.
   //
@@ -31,8 +32,6 @@ class IpcSecurityTestUtil {
 
  private:
   IpcSecurityTestUtil();  // Not instantiable.
-
-  DISALLOW_COPY_AND_ASSIGN(IpcSecurityTestUtil);
 };
 
 }  // namespace IPC

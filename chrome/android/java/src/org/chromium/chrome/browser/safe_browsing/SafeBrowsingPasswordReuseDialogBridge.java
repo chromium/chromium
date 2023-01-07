@@ -1,19 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.chrome.browser.safe_browsing;
 
+import androidx.annotation.Nullable;
+
+import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.password_manager.PasswordManagerDialogContents;
 import org.chromium.chrome.browser.password_manager.PasswordManagerDialogCoordinator;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
-
-import java.lang.ref.WeakReference;
 
 /** JNI call glue between the native and Java for password reuse dialogs. */
 @JNINamespace("safe_browsing")
@@ -24,16 +25,16 @@ public class SafeBrowsingPasswordReuseDialogBridge {
     // objects.
     private final PasswordManagerDialogCoordinator mDialogCoordinator;
     // Used to initialize the custom view of the dialog.
-    private final WeakReference<ChromeActivity> mActivity;
+    private final WindowAndroid mWindowAndroid;
 
     private SafeBrowsingPasswordReuseDialogBridge(
             WindowAndroid windowAndroid, long nativePasswordReuseDialogViewAndroid) {
         mNativePasswordReuseDialogViewAndroid = nativePasswordReuseDialogViewAndroid;
-        ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();
-        mActivity = new WeakReference<>(activity);
-        mDialogCoordinator = new PasswordManagerDialogCoordinator(activity.getModalDialogManager(),
-                activity.findViewById(android.R.id.content), activity.getBrowserControlsManager(),
-                activity.getControlContainerHeightResource());
+        mWindowAndroid = windowAndroid;
+        mDialogCoordinator =
+                new PasswordManagerDialogCoordinator(mWindowAndroid.getModalDialogManager(),
+                        mWindowAndroid.getActivity().get().findViewById(android.R.id.content),
+                        BrowserControlsManagerSupplier.getValueOrNullFrom(mWindowAndroid));
     }
 
     @CalledByNative
@@ -43,22 +44,26 @@ public class SafeBrowsingPasswordReuseDialogBridge {
     }
 
     @CalledByNative
-    public void showDialog(String dialogTitle, String dialogDetails, String buttonText,
-            int[] boldStartRanges, int[] boldEndRanges) {
-        if (mActivity.get() == null) return;
+    public void showDialog(String dialogTitle, String dialogDetails, String primaryButtonText,
+            @Nullable String secondaryButtonText) {
+        if (mWindowAndroid.getActivity().get() == null) return;
 
-        PasswordManagerDialogContents contents =
-                createDialogContents(dialogTitle, dialogDetails, buttonText);
-        contents.setBoldRanges(boldStartRanges, boldEndRanges);
+        PasswordManagerDialogContents contents = createDialogContents(
+                dialogTitle, dialogDetails, primaryButtonText, secondaryButtonText);
+        contents.setPrimaryButtonFilled(secondaryButtonText != null);
 
-        mDialogCoordinator.initialize(mActivity.get(), contents);
+        mDialogCoordinator.initialize(mWindowAndroid.getActivity().get(), contents);
         mDialogCoordinator.showDialog();
     }
 
-    private PasswordManagerDialogContents createDialogContents(
-            String credentialLeakTitle, String credentialLeakDetails, String positiveButton) {
+    private PasswordManagerDialogContents createDialogContents(String credentialLeakTitle,
+            String credentialLeakDetails, String positiveButton, @Nullable String negativeButton) {
+        Callback<Integer> onClick = negativeButton != null
+                ? this::onClickWithNegativeButtonEnabled
+                : this::onClickWithNegativeButtonDisabled;
+
         return new PasswordManagerDialogContents(credentialLeakTitle, credentialLeakDetails,
-                R.drawable.password_checkup_warning, positiveButton, null, this::onClick);
+                R.drawable.password_checkup_warning, positiveButton, 0, negativeButton, onClick);
     }
 
     @CalledByNative
@@ -67,15 +72,44 @@ public class SafeBrowsingPasswordReuseDialogBridge {
         mDialogCoordinator.dismissDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
     }
 
-    private void onClick(@DialogDismissalCause int dismissalCause) {
+    private void onClickWithNegativeButtonDisabled(@DialogDismissalCause int dismissalCause) {
         // 0 indicates its C++ counterpart has already been destroyed.
         if (mNativePasswordReuseDialogViewAndroid == 0) return;
+
         SafeBrowsingPasswordReuseDialogBridgeJni.get().close(
                 mNativePasswordReuseDialogViewAndroid, SafeBrowsingPasswordReuseDialogBridge.this);
     }
 
+    private void onClickWithNegativeButtonEnabled(@DialogDismissalCause int dismissalCause) {
+        // 0 indicates its C++ counterpart has already been destroyed.
+        if (mNativePasswordReuseDialogViewAndroid == 0) return;
+
+        switch (dismissalCause) {
+            case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
+                SafeBrowsingPasswordReuseDialogBridgeJni.get().checkPasswords(
+                        mNativePasswordReuseDialogViewAndroid,
+                        SafeBrowsingPasswordReuseDialogBridge.this);
+                return;
+            case DialogDismissalCause.NEGATIVE_BUTTON_CLICKED:
+                SafeBrowsingPasswordReuseDialogBridgeJni.get().ignore(
+                        mNativePasswordReuseDialogViewAndroid,
+                        SafeBrowsingPasswordReuseDialogBridge.this);
+                return;
+            default:
+                SafeBrowsingPasswordReuseDialogBridgeJni.get().close(
+                        mNativePasswordReuseDialogViewAndroid,
+                        SafeBrowsingPasswordReuseDialogBridge.this);
+        }
+    }
+
     @NativeMethods
     interface Natives {
+        void checkPasswords(long nativePasswordReuseDialogViewAndroid,
+                SafeBrowsingPasswordReuseDialogBridge caller);
+
+        void ignore(long nativePasswordReuseDialogViewAndroid,
+                SafeBrowsingPasswordReuseDialogBridge caller);
+
         void close(long nativePasswordReuseDialogViewAndroid,
                 SafeBrowsingPasswordReuseDialogBridge caller);
     }

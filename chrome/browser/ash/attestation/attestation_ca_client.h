@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
-#include "chromeos/attestation/attestation_flow.h"
-#include "chromeos/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/attestation/attestation_flow.h"
+#include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 
 namespace network {
 
@@ -31,6 +30,10 @@ namespace attestation {
 class AttestationCAClient : public ServerProxy {
  public:
   AttestationCAClient();
+
+  AttestationCAClient(const AttestationCAClient&) = delete;
+  AttestationCAClient& operator=(const AttestationCAClient&) = delete;
+
   ~AttestationCAClient() override;
 
   // chromeos::attestation::ServerProxy:
@@ -66,8 +69,6 @@ class AttestationCAClient : public ServerProxy {
   std::list<std::unique_ptr<network::SimpleURLLoader>> url_loaders_;
 
   network::mojom::NetworkContext* network_context_for_testing_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AttestationCAClient);
 };
 
 }  // namespace attestation

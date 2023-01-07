@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ namespace content {
 // frame.
 struct CONTENT_EXPORT PresentationRequest {
  public:
-  PresentationRequest(const GlobalFrameRoutingId& render_frame_host_id,
+  PresentationRequest(const GlobalRenderFrameHostId& render_frame_host_id,
                       const std::vector<GURL>& presentation_urls,
                       const url::Origin& frame_origin);
   ~PresentationRequest();
@@ -34,7 +34,7 @@ struct CONTENT_EXPORT PresentationRequest {
   }
 
   // ID of RenderFrameHost that initiated the request.
-  GlobalFrameRoutingId render_frame_host_id;
+  GlobalRenderFrameHostId render_frame_host_id;
 
   // URLs of presentation.
   std::vector<GURL> presentation_urls;

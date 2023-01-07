@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -75,32 +74,32 @@ void CertReportHelper::SetFakeOfficialBuildForTesting() {
 }
 
 void CertReportHelper::PopulateExtendedReportingOption(
-    base::DictionaryValue* load_time_data) {
+    base::Value::Dict& load_time_data) {
   // Only show the checkbox if not off-the-record and if this client is
   // part of the respective Finch group, and the feature is not disabled
   // by policy.
   const bool show = ShouldShowCertificateReporterCheckbox() &&
                     !ShouldShowEnhancedProtectionMessage();
 
-  load_time_data->SetBoolean(security_interstitials::kDisplayCheckBox, show);
+  load_time_data.Set(security_interstitials::kDisplayCheckBox, show);
   if (!show)
     return;
 
-  load_time_data->SetBoolean(
+  load_time_data.Set(
       security_interstitials::kBoxChecked,
       safe_browsing::IsExtendedReportingEnabled(*GetPrefs(web_contents_)));
 
-  load_time_data->SetString(
+  load_time_data.Set(
       security_interstitials::kOptInLink,
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
 }
 
 void CertReportHelper::PopulateEnhancedProtectionMessage(
-    base::DictionaryValue* load_time_data) {
+    base::Value::Dict& load_time_data) {
   const bool show = ShouldShowEnhancedProtectionMessage();
 
-  load_time_data->SetBoolean(
-      security_interstitials::kDisplayEnhancedProtectionMessage, show);
+  load_time_data.Set(security_interstitials::kDisplayEnhancedProtectionMessage,
+                     show);
 
   if (!show)
     return;
@@ -110,7 +109,7 @@ void CertReportHelper::PopulateEnhancedProtectionMessage(
         security_interstitials::MetricsHelper::SHOW_ENHANCED_PROTECTION);
   }
 
-  load_time_data->SetString(
+  load_time_data.Set(
       security_interstitials::kEnhancedProtectionMessage,
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
 }

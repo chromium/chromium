@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@ import java.util.Set;
  */
 public class ContextualSearchHeuristics {
     protected Set<ContextualSearchHeuristic> mHeuristics;
-    private QuickAnswersHeuristic mQuickAnswersHeuristic;
 
     /**
      * Manages a set of heuristics.
@@ -30,21 +29,6 @@ public class ContextualSearchHeuristics {
     public void logResultsSeen(boolean wasSearchContentViewSeen, boolean wasActivatedByTap) {
         for (ContextualSearchHeuristic heuristic : mHeuristics) {
             heuristic.logResultsSeen(wasSearchContentViewSeen, wasActivatedByTap);
-        }
-    }
-
-    /**
-     * Optionally logs data about the duration the panel was viewed and /or opened.
-     * Default is to not log anything.
-     * @param panelViewDurationMs The duration that the panel was viewed (Peek and opened) by the
-     *        user.  This should always be a positive number, since this method is only called when
-     *        the panel has been viewed (Peeked).
-     * @param panelOpenDurationMs The duration that the panel was opened, or 0 if it was never
-     *        opened.
-     */
-    public void logPanelViewedDurations(long panelViewDurationMs, long panelOpenDurationMs) {
-        for (ContextualSearchHeuristic heuristic : mHeuristics) {
-            heuristic.logPanelViewedDurations(panelViewDurationMs, panelOpenDurationMs);
         }
     }
 
@@ -77,41 +61,5 @@ public class ContextualSearchHeuristics {
             }
         }
         return false;
-    }
-
-    /**
-     * Logs all the heuristics that want to provide a Ranker "feature" to the given recorder.
-     * @param recorder The recorder to log to.
-     */
-    public void logRankerTapSuppression(ContextualSearchInteractionRecorder recorder) {
-        for (ContextualSearchHeuristic heuristic : mHeuristics) {
-            heuristic.logRankerTapSuppression(recorder);
-        }
-    }
-
-    /**
-     * Logs all the heuristics that want to provide outcomes to Ranker to the given recorder.
-     * @param recorder The logger to log to.
-     */
-    public void logRankerTapSuppressionOutcome(ContextualSearchInteractionRecorder recorder) {
-        for (ContextualSearchHeuristic heuristic : mHeuristics) {
-            heuristic.logRankerTapSuppressionOutcome(recorder);
-        }
-    }
-
-    /**
-     * Sets the {@link QuickAnswersHeuristic} so that it can be accessed externally by
-     * {@link #getQuickAnswersHeuristic}.
-     * @param quickAnswersHeuristic The active {@link QuickAnswersHeuristic}.
-     */
-    public void setQuickAnswersHeuristic(QuickAnswersHeuristic quickAnswersHeuristic) {
-        mQuickAnswersHeuristic = quickAnswersHeuristic;
-    }
-
-    /**
-     * @return The active {@link QuickAnswersHeuristic}.
-     */
-    public QuickAnswersHeuristic getQuickAnswersHeuristic() {
-        return mQuickAnswersHeuristic;
     }
 }

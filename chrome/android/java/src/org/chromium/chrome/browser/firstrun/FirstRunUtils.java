@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 
 /** Provides first run related utility functions. */
 public class FirstRunUtils {
@@ -65,10 +66,11 @@ public class FirstRunUtils {
 
     /**
      * Sets the EULA/Terms of Services state as "ACCEPTED".
-     * @param allowCrashUpload True if the user allows to upload crash dumps and collect stats.
+     * @param allowMetricsAndCrashUploading True if the user allows to upload crash dumps and
+     *         collect stats.
      */
-    public static void acceptTermsOfService(boolean allowCrashUpload) {
-        UmaSessionStats.changeMetricsReportingConsent(allowCrashUpload);
+    static void acceptTermsOfService(boolean allowMetricsAndCrashUploading) {
+        UmaSessionStats.changeMetricsReportingConsent(allowMetricsAndCrashUploading);
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
         setEulaAccepted();
@@ -92,8 +94,16 @@ public class FirstRunUtils {
     }
 
     @VisibleForTesting
+    static void resetHasGoogleAccountAuthenticator() {
+        sHasGoogleAccountAuthenticator = null;
+    }
+
+    @VisibleForTesting
     static boolean hasGoogleAccounts() {
-        return !AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts().isEmpty();
+        return !AccountUtils
+                        .getAccountsIfFulfilledOrEmpty(
+                                AccountManagerFacadeProvider.getInstance().getAccounts())
+                        .isEmpty();
     }
 
     @SuppressLint("InlinedApi")
@@ -114,6 +124,7 @@ public class FirstRunUtils {
     /**
      * Sets the preference that signals when the user has accepted the EULA.
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setEulaAccepted() {
         FirstRunUtilsJni.get().setEulaAccepted();
     }

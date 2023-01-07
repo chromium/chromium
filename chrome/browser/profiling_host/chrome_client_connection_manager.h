@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,10 +17,12 @@ class ChromeClientConnectionManager : public ClientConnectionManager {
  public:
   ChromeClientConnectionManager(base::WeakPtr<Controller> controller,
                                 Mode mode);
-  bool AllowedToProfileRenderer(content::RenderProcessHost* host) override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeClientConnectionManager);
+  ChromeClientConnectionManager(const ChromeClientConnectionManager&) = delete;
+  ChromeClientConnectionManager& operator=(
+      const ChromeClientConnectionManager&) = delete;
+
+  bool AllowedToProfileRenderer(content::RenderProcessHost* host) override;
 };
 
 }  // namespace heap_profiling

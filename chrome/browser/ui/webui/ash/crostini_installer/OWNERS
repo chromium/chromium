@@ -1,0 +1,4 @@
+file://chrome/browser/ash/guest_os/OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,10 +49,12 @@ void BackGestureContextualNudgeDelegate::DidFinishNavigation(
   // Make sure for one valid navigation, we only fire one status change
   // notification.
   if (navigation_handle->HasCommitted() &&
-      (navigation_handle->IsInMainFrame() ||
-       navigation_handle->HasSubframeNavigationEntryCommitted()) &&
-      (navigation_handle->GetURL() !=
-       navigation_handle->GetPreviousMainFrameURL())) {
+      ((navigation_handle->IsInPrimaryMainFrame() &&
+        (navigation_handle->GetURL() !=
+         navigation_handle->GetPreviousPrimaryMainFrameURL())) ||
+       (navigation_handle->GetParentFrame() &&
+        navigation_handle->GetParentFrame()->GetPage().IsPrimary() &&
+        navigation_handle->HasSubframeNavigationEntryCommitted()))) {
     controller_->NavigationEntryChanged(window_);
   }
 }

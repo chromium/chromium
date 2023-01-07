@@ -1,9 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/views/controls/button/md_text_button.h"
 
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/background.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/views_drawing_test_utils.h"
@@ -18,7 +22,7 @@ TEST_F(MdTextButtonTest, CustomPadding) {
   const std::u16string text = u"abc";
   auto button = std::make_unique<MdTextButton>(Button::PressedCallback(), text);
 
-  const gfx::Insets custom_padding(10, 20);
+  const auto custom_padding = gfx::Insets::VH(10, 20);
   ASSERT_NE(button->GetInsets(), custom_padding);
 
   button->SetCustomPadding(custom_padding);
@@ -38,7 +42,7 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
   button->SetBounds(0, 0, 70, 20);
   widget->LayoutRootViewIfNecessary();
 
-  const ui::NativeTheme* native_theme = button->GetNativeTheme();
+  const ui::ColorProvider* color_provider = button->GetColorProvider();
 
   test::WidgetTest::SimulateNativeActivate(widget.get());
   EXPECT_TRUE(widget->IsActive());
@@ -57,13 +61,12 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
   };
 
   EXPECT_EQ(background_color(active_bitmap),
-            native_theme->GetSystemColor(
-                ui::NativeTheme::kColorId_ProminentButtonColor));
+            color_provider->GetColor(ui::kColorButtonBackgroundProminent));
 
   // It would be neat to also check the text color here, but the label's text
   // ends up drawn on top of the background with antialiasing, which means there
   // aren't any pixels that are actually *exactly*
-  // kColorId_TextOnProminentButtonColor. Bummer.
+  // kColorButtonForegroundProminent. Bummer.
 
   // Activate another widget to cause the original widget to deactivate.
   std::unique_ptr<Widget> other_widget = CreateTestWidget();
@@ -71,9 +74,9 @@ TEST_F(MdTextButtonTest, BackgroundColorChangesWithWidgetActivation) {
   EXPECT_FALSE(widget->IsActive());
   SkBitmap inactive_bitmap = views::test::PaintViewToBitmap(button);
 
-  EXPECT_EQ(background_color(inactive_bitmap),
-            native_theme->GetSystemColor(
-                ui::NativeTheme::kColorId_ProminentButtonDisabledColor));
+  EXPECT_EQ(
+      background_color(inactive_bitmap),
+      color_provider->GetColor(ui::kColorButtonBackgroundProminentDisabled));
 }
 
 }  // namespace views

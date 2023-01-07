@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/time/time.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/target_device_info.h"
 
@@ -23,12 +22,10 @@ class TestSendTabToSelfModel : public SendTabToSelfModel {
 
   // SendTabToSelfModel:
   std::vector<std::string> GetAllGuids() const override;
-  void DeleteAllEntries() override;
   const SendTabToSelfEntry* GetEntryByGUID(
       const std::string& guid) const override;
   const SendTabToSelfEntry* AddEntry(const GURL& url,
                                      const std::string& title,
-                                     base::Time navigation_time,
                                      const std::string& device_id) override;
   void DeleteEntry(const std::string& guid) override;
   void DismissEntry(const std::string& guid) override;

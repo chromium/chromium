@@ -32,13 +32,14 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
-#include "third_party/blink/renderer/core/css/css_property_id_templates.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -117,7 +118,7 @@ CSSPropertyID ParseCSSPropertyID(const ExecutionContext* execution_context,
   if (has_seen_dash && has_seen_upper)
     return CSSPropertyID::kInvalid;
 
-  String prop_name = builder.ToString();
+  String prop_name = builder.ReleaseString();
   return UnresolvedCSSPropertyID(execution_context, prop_name);
 }
 
@@ -156,7 +157,20 @@ void CSSStyleDeclaration::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-String CSSStyleDeclaration::GetPropertyAttribute(const AtomicString& name) {
+CSSStyleDeclaration::CSSStyleDeclaration(ExecutionContext* context)
+    : ExecutionContextClient(context) {}
+
+CSSStyleDeclaration::~CSSStyleDeclaration() = default;
+
+void CSSStyleDeclaration::setCSSFloat(const ExecutionContext* execution_context,
+                                      const String& value,
+                                      ExceptionState& exception_state) {
+  SetPropertyInternal(CSSPropertyID::kFloat, String(), value, false,
+                      execution_context->GetSecureContextMode(),
+                      exception_state);
+}
+
+String CSSStyleDeclaration::AnonymousNamedGetter(const AtomicString& name) {
   // Search the style declaration.
   CSSPropertyID unresolved_property =
       CssPropertyInfo(GetExecutionContext(), name);
@@ -168,17 +182,78 @@ String CSSStyleDeclaration::GetPropertyAttribute(const AtomicString& name) {
   return GetPropertyValueInternal(ResolveCSSPropertyID(unresolved_property));
 }
 
-void CSSStyleDeclaration::SetPropertyAttribute(
-    const ExecutionContext* execution_context,
+NamedPropertySetterResult CSSStyleDeclaration::AnonymousNamedSetter(
+    ScriptState* script_state,
     const AtomicString& name,
-    const String& value,
-    ExceptionState& exception_state) {
+    const ScriptValue& value) {
+  const ExecutionContext* execution_context =
+      ExecutionContext::From(script_state);
+  if (!execution_context)
+    return NamedPropertySetterResult::kDidNotIntercept;
   CSSPropertyID unresolved_property = CssPropertyInfo(execution_context, name);
   if (!IsValidCSSPropertyID(unresolved_property))
-    return;
-  SetPropertyInternal(unresolved_property, String(), value, false,
+    return NamedPropertySetterResult::kDidNotIntercept;
+  // We create the ExceptionState manually due to performance issues: adding
+  // [RaisesException] to the IDL causes the bindings layer to expensively
+  // create a std::string to set the ExceptionState's |property_name| argument,
+  // while we can use CSSProperty::GetPropertyName() here (see bug 829408).
+  ExceptionState exception_state(
+      script_state->GetIsolate(), ExceptionState::kSetterContext,
+      "CSSStyleDeclaration",
+      CSSProperty::Get(ResolveCSSPropertyID(unresolved_property))
+          .GetPropertyName());
+  // Perform a type conversion from ES value to
+  // IDL [LegacyNullToEmptyString] DOMString only after we've confirmed that
+  // the property name is a valid CSS attribute name (see bug 1310062).
+  auto&& string_value =
+      NativeValueTraits<IDLStringTreatNullAsEmptyString>::NativeValue(
+          script_state->GetIsolate(), value.V8Value(), exception_state);
+  if (UNLIKELY(exception_state.HadException()))
+    return NamedPropertySetterResult::kIntercepted;
+  SetPropertyInternal(unresolved_property, String(), string_value, false,
                       execution_context->GetSecureContextMode(),
                       exception_state);
+  if (exception_state.HadException())
+    return NamedPropertySetterResult::kIntercepted;
+  return NamedPropertySetterResult::kIntercepted;
+}
+
+NamedPropertyDeleterResult CSSStyleDeclaration::AnonymousNamedDeleter(
+    const AtomicString& name) {
+  // Pretend to be deleted since web author can define their own property with
+  // the same name.
+  return NamedPropertyDeleterResult::kDeleted;
+}
+
+void CSSStyleDeclaration::NamedPropertyEnumerator(Vector<String>& names,
+                                                  ExceptionState&) {
+  typedef Vector<String, kNumCSSProperties - 1> PreAllocatedPropertyVector;
+  DEFINE_STATIC_LOCAL(PreAllocatedPropertyVector, property_names, ());
+
+  const ExecutionContext* execution_context = GetExecutionContext();
+
+  if (property_names.empty()) {
+    for (CSSPropertyID property_id : CSSPropertyIDList()) {
+      const CSSProperty& property_class =
+          CSSProperty::Get(ResolveCSSPropertyID(property_id));
+      if (property_class.IsWebExposed(execution_context))
+        property_names.push_back(property_class.GetJSPropertyName());
+    }
+    for (CSSPropertyID property_id : kCSSPropertyAliasList) {
+      const CSSUnresolvedProperty* property_class =
+          CSSUnresolvedProperty::GetAliasProperty(property_id);
+      if (property_class->IsWebExposed(execution_context))
+        property_names.push_back(property_class->GetJSPropertyName());
+    }
+    std::sort(property_names.begin(), property_names.end(),
+              WTF::CodeUnitCompareLessThan);
+  }
+  names = property_names;
+}
+
+bool CSSStyleDeclaration::NamedPropertyQuery(const AtomicString& name,
+                                             ExceptionState&) {
+  return IsValidCSSPropertyID(CssPropertyInfo(GetExecutionContext(), name));
 }
 
 }  // namespace blink

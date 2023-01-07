@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 
 #include "base/component_export.h"
 #include "base/i18n/string_compare.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 
 namespace l10n_util {
@@ -37,7 +38,7 @@ class StringMethodComparatorWithCollator {
   }
 
  private:
-  icu::Collator* collator_;
+  raw_ptr<icu::Collator> collator_;
   Method method_;
 };
 
@@ -100,7 +101,7 @@ class StringComparator {
   }
 
  private:
-  icu::Collator* collator_;
+  raw_ptr<icu::Collator> collator_;
 };
 
 // Specialization of operator() method for std::u16string version.
@@ -137,12 +138,12 @@ void SortVectorWithStringKey(const std::string& locale,
   if (U_FAILURE(error))
     collator.reset();
   StringComparator<Element> c(collator.get());
+  const auto begin = elements->begin() + static_cast<ptrdiff_t>(begin_index);
+  const auto end = elements->begin() + static_cast<ptrdiff_t>(end_index);
   if (needs_stable_sort) {
-    stable_sort(elements->begin() + begin_index,
-                elements->begin() + end_index,
-                c);
+    stable_sort(begin, end, c);
   } else {
-    sort(elements->begin() + begin_index, elements->begin() + end_index, c);
+    sort(begin, end, c);
   }
 }
 

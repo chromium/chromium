@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/declarative_content/content_action.h"
 #include "chrome/browser/extensions/api/declarative_content/content_condition.h"
 #include "chrome/browser/extensions/api/declarative_content/content_predicate_evaluator.h"
@@ -59,6 +59,10 @@ class ChromeContentRulesRegistry
                              RulesCacheDelegate* cache_delegate,
                              PredicateEvaluatorsFactory evaluators_factory);
 
+  ChromeContentRulesRegistry(const ChromeContentRulesRegistry&) = delete;
+  ChromeContentRulesRegistry& operator=(const ChromeContentRulesRegistry&) =
+      delete;
+
   // ContentRulesRegistry:
   void MonitorWebContentsForRuleEvaluation(
       content::WebContents* contents) override;
@@ -66,7 +70,9 @@ class ChromeContentRulesRegistry
       content::WebContents* tab,
       content::NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed(content::WebContents* contents) override;
-
+  void OnWatchedPageChanged(
+      content::WebContents* contents,
+      const std::vector<std::string>& css_selectors) override;
   // RulesRegistry:
   std::string AddRulesImpl(
       const std::string& extension_id,
@@ -96,15 +102,16 @@ class ChromeContentRulesRegistry
                 std::vector<std::unique_ptr<const ContentCondition>> conditions,
                 std::vector<std::unique_ptr<const ContentAction>> actions,
                 int priority);
+
+    ContentRule(const ContentRule&) = delete;
+    ContentRule& operator=(const ContentRule&) = delete;
+
     ~ContentRule();
 
-    const Extension* extension;
+    raw_ptr<const Extension> extension;
     std::vector<std::unique_ptr<const ContentCondition>> conditions;
     std::vector<std::unique_ptr<const ContentAction>> actions;
     int priority;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(ContentRule);
   };
 
   // Specifies what to do with evaluation requests.
@@ -171,8 +178,6 @@ class ChromeContentRulesRegistry
   // Contains WebContents which require rule evaluation. Only used while
   // |evaluation_disposition_| is DEFER.
   std::set<content::WebContents*> evaluation_pending_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentRulesRegistry);
 };
 
 }  // namespace extensions

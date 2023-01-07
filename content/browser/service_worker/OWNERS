@@ -2,8 +2,8 @@
 #
 # This file also covers ownership of the following:
 #   //chrome/browser/chrome_service_worker_browsertest.cc
+#   //components/services/storage/service_worker/
 #   //content/browser/resources/service_worker/
-#   //content/common/service_worker/
 #   //content/renderer/service_worker/
 #   //third_party/blink/common/service_worker/
 #   //third_party/blink/public/common/service_worker/
@@ -17,11 +17,10 @@
 #   //third_party/blink/web_tests/external/wpt/service-workers/
 
 bashi@chromium.org
-falken@chromium.org
-kinuko@chromium.org
 mek@chromium.org
 nhiroki@chromium.org
 wanderview@chromium.org
+yyanagisawa@chromium.org
 
 # per-file rules:
 per-file *_type_converter*.*=set noparent

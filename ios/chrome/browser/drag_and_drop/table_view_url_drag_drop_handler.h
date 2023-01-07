@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ class GURL;
 // The interface for providing draggable URLs from a table view.
 @protocol TableViewURLDragDataSource
 // Returns a wrapper object with URL and title to drag for the item at
-// |indexPath| in |tableView|. Returns nil if item at |indexPath| is not
+// `indexPath` in `tableView`. Returns nil if item at `indexPath` is not
 // draggable.
 - (URLInfo*)tableView:(UITableView*)tableView
     URLInfoAtIndexPath:(NSIndexPath*)indexPath;
@@ -23,10 +23,10 @@ class GURL;
 
 // The interface for handling URL drops in a table view.
 @protocol TableViewURLDropDelegate
-// Returns whether |tableView| is in a state to handle URL drops.
+// Returns whether `tableView` is in a state to handle URL drops.
 - (BOOL)canHandleURLDropInTableView:(UITableView*)tableView;
-// Provides the receiver with the dropped |URL|, which was dropped at
-// |indexPath| in |tableView|.
+// Provides the receiver with the dropped `URL`, which was dropped at
+// `indexPath` in `tableView`.
 - (void)tableView:(UITableView*)tableView
        didDropURL:(const GURL&)URL
       atIndexPath:(NSIndexPath*)indexPath;

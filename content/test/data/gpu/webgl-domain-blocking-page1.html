@@ -2,13 +2,26 @@
 <head>
 <script type="text/javascript">
 var gl;
+var restored;
+var numLosses = 0;
 
 function init()
 {
   var canvas = document.getElementById('c');
   canvas.addEventListener('webglcontextlost', function(e) {
     e.preventDefault();
-    window.location.href = "webgl-domain-blocking-page2.html";
+    restored = false;
+    ++numLosses;
+    // This bakes in knowledge that GpuDataManagerImplPrivate blocks
+    // WebGL contexts from restoration after two context losses on the
+    // same domain.
+    if (numLosses == 2) {
+      window.location.href = "webgl-domain-blocking-page2.html";
+    }
+  }, false);
+  canvas.addEventListener('webglcontextrestored', function(e) {
+    e.preventDefault();
+    restored = true;
   }, false);
   gl = canvas.getContext('webgl');
   if (window.domAutomationController) {

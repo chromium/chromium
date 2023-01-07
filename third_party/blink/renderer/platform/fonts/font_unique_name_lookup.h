@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,14 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_UNIQUE_NAME_LOOKUP_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/common/font_unique_name_lookup/font_table_matcher.h"
 #endif
 
@@ -34,6 +34,8 @@ class FontUniqueNameLookup {
 
   virtual sk_sp<SkTypeface> MatchUniqueName(const String& font_unique_name) = 0;
 
+  FontUniqueNameLookup(const FontUniqueNameLookup&) = delete;
+  FontUniqueNameLookup& operator=(const FontUniqueNameLookup&) = delete;
   virtual ~FontUniqueNameLookup() = default;
 
   // Below: Methods for asynchronously retrieving the FontUniqueNameLookup
@@ -54,18 +56,21 @@ class FontUniqueNameLookup {
     NOTREACHED();
   }
 
+  // Performs any global initialization needed for this renderer. This is called
+  // early in renderer startup, as opposed to PrepareFontUniqueNameLookup()
+  // which is called when sync lookup is first needed.
+  virtual void Init() {}
+
  protected:
   FontUniqueNameLookup();
 
   // Windows and Android share the concept of connecting to a Mojo service for
   // retrieving a ReadOnlySharedMemoryRegion with the lookup table in it.
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   std::unique_ptr<FontTableMatcher> font_table_matcher_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(FontUniqueNameLookup);
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_UNIQUE_NAME_LOOKUP_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_UNIQUE_NAME_LOOKUP_H_

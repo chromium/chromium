@@ -1,10 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/web_contents/file_chooser_impl.h"
 
+#include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/ranges/algorithm.h"
+#include "base/task/thread_pool.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -17,11 +21,25 @@
 
 namespace content {
 
+namespace {
+
+std::vector<blink::mojom::FileChooserFileInfoPtr> RemoveSymlinks(
+    std::vector<blink::mojom::FileChooserFileInfoPtr> files) {
+  auto new_end = base::ranges::remove_if(
+      files, &base::IsLink,
+      [](const auto& file) { return file->get_native_file()->file_path; });
+  files.erase(new_end, files.end());
+  return files;
+}
+
+}  // namespace
+
 FileChooserImpl::FileSelectListenerImpl::~FileSelectListenerImpl() {
 #if DCHECK_IS_ON()
-  DCHECK(was_file_select_listener_function_called_)
-      << "Must call either FileSelectListener::FileSelected() or "
-         "FileSelectListener::FileSelectionCanceled()";
+  if (!was_file_select_listener_function_called_) {
+    LOG(ERROR) << "Must call either FileSelectListener::FileSelected() or "
+                  "FileSelectListener::FileSelectionCanceled()";
+  }
   // TODO(avi): Turn on the DCHECK on the following line. This cannot yet be
   // done because I can't say for sure that I know who all the callers who bind
   // blink::mojom::FileChooser are. https://crbug.com/1054811
@@ -49,8 +67,20 @@ void FileChooserImpl::FileSelectListenerImpl::FileSelected(
          "FileSelectListener::FileSelectionCanceled()";
   was_file_select_listener_function_called_ = true;
 #endif
-  if (owner_)
-    owner_->FileSelected(std::move(files), base_dir, mode);
+  if (!owner_)
+    return;
+
+  if (mode != blink::mojom::FileChooserParams::Mode::kUploadFolder) {
+    owner_->FileSelected(base_dir, mode, std::move(files));
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&RemoveSymlinks, std::move(files)),
+      base::BindOnce(&FileChooserImpl::FileSelected, owner_->GetWeakPtr(),
+                     base_dir, mode));
 }
 
 void FileChooserImpl::FileSelectListenerImpl::FileSelectionCanceled() {
@@ -160,9 +190,9 @@ void FileChooserImpl::EnumerateChosenDirectory(
 }
 
 void FileChooserImpl::FileSelected(
-    std::vector<blink::mojom::FileChooserFileInfoPtr> files,
     const base::FilePath& base_dir,
-    blink::mojom::FileChooserParams::Mode mode) {
+    blink::mojom::FileChooserParams::Mode mode,
+    std::vector<blink::mojom::FileChooserFileInfoPtr> files) {
   listener_impl_ = nullptr;
   if (!render_frame_host_) {
     std::move(callback_).Run(nullptr);
@@ -179,13 +209,11 @@ void FileChooserImpl::FileSelected(
       if (file->is_file_system()) {
         if (!file_system_context) {
           file_system_context =
-              BrowserContext::GetStoragePartition(
-                  render_frame_host_->GetProcess()->GetBrowserContext(),
-                  render_frame_host_->GetSiteInstance())
-                  ->GetFileSystemContext();
+              render_frame_host_->GetStoragePartition()->GetFileSystemContext();
         }
         policy->GrantReadFileSystem(
-            pid, file_system_context->CrackURL(file->get_file_system()->url)
+            pid, file_system_context
+                     ->CrackURLInFirstPartyContext(file->get_file_system()->url)
                      .mount_filesystem_id());
       } else {
         policy->GrantReadFile(pid, file->get_native_file()->file_path);

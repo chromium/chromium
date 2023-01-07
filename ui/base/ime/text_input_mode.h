@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,4 +25,4 @@ enum TextInputMode {
 
 }  // namespace ui
 
-#endif  // UI_BASE_IME_TEXT_INPUT_TYPE_H_
+#endif  // UI_BASE_IME_TEXT_INPUT_MODE_H_

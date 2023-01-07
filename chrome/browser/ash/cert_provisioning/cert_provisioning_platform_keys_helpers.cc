@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys_service.h"
+#include "chrome/browser/ash/platform_keys/platform_keys_service.h"
+#include "chrome/browser/platform_keys/platform_keys.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace cert_provisioning {
@@ -50,10 +50,10 @@ void CertIterator::Cancel() {
 
 void CertIterator::OnGetCertificatesDone(
     std::unique_ptr<net::CertificateList> existing_certs,
-    platform_keys::Status status) {
+    chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (status != platform_keys::Status::kSuccess) {
+  if (status != chromeos::platform_keys::Status::kSuccess) {
     StopIteration(status);
     return;
   }
@@ -67,10 +67,11 @@ void CertIterator::OnGetCertificatesDone(
   wait_counter_ = existing_certs->size();
 
   for (const auto& cert : *existing_certs) {
-    std::string public_key = platform_keys::GetSubjectPublicKeyInfo(cert);
+    std::string public_key =
+        chromeos::platform_keys::GetSubjectPublicKeyInfo(cert);
     platform_keys_service_->GetAttributeForKey(
         GetPlatformKeysTokenId(cert_scope_), public_key,
-        platform_keys::KeyAttributeType::kCertificateProvisioningId,
+        chromeos::platform_keys::KeyAttributeType::kCertificateProvisioningId,
         base::BindOnce(&CertIterator::OnGetAttributeForKeyDone,
                        weak_factory_.GetWeakPtr(), cert));
   }
@@ -78,8 +79,8 @@ void CertIterator::OnGetCertificatesDone(
 
 void CertIterator::OnGetAttributeForKeyDone(
     scoped_refptr<net::X509Certificate> cert,
-    const base::Optional<std::string>& attr_value,
-    platform_keys::Status status) {
+    const absl::optional<std::string>& attr_value,
+    chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(wait_counter_ > 0);
 
@@ -88,23 +89,23 @@ void CertIterator::OnGetAttributeForKeyDone(
   // nullopt for cert_profile_id and empty error message. When
   // PlatformKeysService switches to error codes, a code for such situation
   // should not be returned via callback and cert collection can be continued.
-  if (status != platform_keys::Status::kSuccess) {
+  if (status != chromeos::platform_keys::Status::kSuccess) {
     StopIteration(status);
     return;
   }
 
   if (attr_value) {
     for_each_callback_.Run(cert, attr_value.value(),
-                           platform_keys::Status::kSuccess);
+                           chromeos::platform_keys::Status::kSuccess);
   }
 
   --wait_counter_;
   if (wait_counter_ == 0) {
-    StopIteration(platform_keys::Status::kSuccess);
+    StopIteration(chromeos::platform_keys::Status::kSuccess);
   }
 }
 
-void CertIterator::StopIteration(platform_keys::Status status) {
+void CertIterator::StopIteration(chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!on_finished_callback_.is_null());
 
@@ -148,10 +149,10 @@ bool LatestCertsWithIdsGetter::IsRunning() const {
 void LatestCertsWithIdsGetter::ProcessOneCert(
     scoped_refptr<net::X509Certificate> new_cert,
     const CertProfileId& cert_profile_id,
-    platform_keys::Status status) {
+    chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (status != platform_keys::Status::kSuccess) {
+  if (status != chromeos::platform_keys::Status::kSuccess) {
     OnIterationFinished(status);
     return;
   }
@@ -170,13 +171,13 @@ void LatestCertsWithIdsGetter::ProcessOneCert(
 }
 
 void LatestCertsWithIdsGetter::OnIterationFinished(
-    platform_keys::Status status) {
+    chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_.is_null());
 
   weak_factory_.InvalidateWeakPtrs();
 
-  if (status != platform_keys::Status::kSuccess) {
+  if (status != chromeos::platform_keys::Status::kSuccess) {
     certs_with_ids_ = {};
   }
 
@@ -219,10 +220,10 @@ void CertDeleter::Cancel() {
 
 void CertDeleter::ProcessOneCert(scoped_refptr<net::X509Certificate> cert,
                                  const CertProfileId& cert_profile_id,
-                                 platform_keys::Status status) {
+                                 chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (status != platform_keys::Status::kSuccess) {
+  if (status != chromeos::platform_keys::Status::kSuccess) {
     ReturnStatus(status);
     return;
   }
@@ -268,11 +269,11 @@ void CertDeleter::DeleteCert(scoped_refptr<net::X509Certificate> cert) {
                           weak_factory_.GetWeakPtr()));
 }
 
-void CertDeleter::OnDeleteCertDone(platform_keys::Status status) {
+void CertDeleter::OnDeleteCertDone(chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_delete_tasks_counter_ > 0);
 
-  if (status != platform_keys::Status::kSuccess) {
+  if (status != chromeos::platform_keys::Status::kSuccess) {
     ReturnStatus(status);
     return;
   }
@@ -281,7 +282,7 @@ void CertDeleter::OnDeleteCertDone(platform_keys::Status status) {
   CheckStateAndMaybeFinish();
 }
 
-void CertDeleter::OnIterationFinished(platform_keys::Status status) {
+void CertDeleter::OnIterationFinished(chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   iteration_finished_ = true;
@@ -295,10 +296,10 @@ void CertDeleter::CheckStateAndMaybeFinish() {
     return;
   }
 
-  ReturnStatus(platform_keys::Status::kSuccess);
+  ReturnStatus(chromeos::platform_keys::Status::kSuccess);
 }
 
-void CertDeleter::ReturnStatus(platform_keys::Status status) {
+void CertDeleter::ReturnStatus(chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback_.is_null());
 

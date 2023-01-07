@@ -1,0 +1,2 @@
+CONSOLE ERROR: Uncaught InvalidAccessError: Failed to execute 'appendChild' on 'AccessibleNode': AccessibleNode must have an ancestor that is attached to a document.
+PASS if no crash.

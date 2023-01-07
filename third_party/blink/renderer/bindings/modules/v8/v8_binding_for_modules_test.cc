@@ -32,7 +32,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialization_tag.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
@@ -183,7 +183,7 @@ void SerializeV8Value(v8::Local<v8::Value> value,
       SerializedScriptValue::Serialize(isolate, value, options,
                                        non_throwable_exception_state);
   base::span<const uint8_t> ssv_wire_data = serialized_value->GetWireData();
-  DCHECK(wire_bytes->IsEmpty());
+  DCHECK(wire_bytes->empty());
   wire_bytes->Append(ssv_wire_data.data(),
                      static_cast<wtf_size_t>(ssv_wire_data.size()));
 

@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_PARAM_TIMELINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_PARAM_TIMELINE_H_
 
+#include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_destination_node.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
@@ -73,8 +74,8 @@ class AudioParamTimeline {
   //
   //   bool has_value - to indicate if the value could be computed from the
   //                    timeline
-  //   float value    - the timeline value if |has_value| is true; otherwise
-  //                    |default_value| is returned.
+  //   float value    - the timeline value if `has_value` is true; otherwise
+  //                    `default_value` is returned.
   std::tuple<bool, float> ValueForContextTime(AudioDestinationHandler&,
                                               float default_value,
                                               float min_value,
@@ -120,7 +121,7 @@ class AudioParamTimeline {
       kSetValueCurve,
       // For cancelValuesAndHold
       kCancelValues,
-      // Special marker for the end of a |kSetValueCurve| event.
+      // Special marker for the end of a `kSetValueCurve` event.
       kSetValueCurveEnd,
       kLastType
     };
@@ -303,7 +304,8 @@ class AudioParamTimeline {
     const int event_index;
   };
 
-  void InsertEvent(std::unique_ptr<ParamEvent>, ExceptionState&);
+  void InsertEvent(std::unique_ptr<ParamEvent>, ExceptionState&)
+      EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
   float ValuesForFrameRangeImpl(size_t start_frame,
                                 size_t end_frame,
                                 float default_value,
@@ -311,7 +313,8 @@ class AudioParamTimeline {
                                 unsigned number_of_values,
                                 double sample_rate,
                                 double control_rate,
-                                unsigned render_quantum_frames);
+                                unsigned render_quantum_frames)
+      EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
   // Produce a nice string describing the event in human-readable form.
   String EventToString(const ParamEvent&) const;
@@ -340,8 +343,8 @@ class AudioParamTimeline {
                          unsigned curve_length);
 
   // Handles the special case where the first event in the timeline
-  // starts after |startFrame|.  These initial values are filled using
-  // |defaultValue|.  The updated |currentFrame| and |writeIndex| is
+  // starts after `start_frame`.  These initial values are filled using
+  // `default_value`.  The updated `current_frame` and `write_index` is
   // returned.
   std::tuple<size_t, unsigned> HandleFirstEvent(float* values,
                                                 float default_value,
@@ -350,39 +353,42 @@ class AudioParamTimeline {
                                                 size_t end_frame,
                                                 double sample_rate,
                                                 size_t current_frame,
-                                                unsigned write_index);
+                                                unsigned write_index)
+      EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
-  // Return true if |currentEvent| starts after |currentFrame|, but
-  // also takes into account the |nextEvent| if any.
+  // Return true if `current_event` starts after `current_frame`, but
+  // also takes into account the `next_event` if any.
   bool IsEventCurrent(const ParamEvent* current_event,
                       const ParamEvent* next_event,
                       size_t current_frame,
                       double sample_rate) const;
 
   // Clamp times to current time, if needed for any new events.  Note,
-  // this method can mutate |events_|, so do call this only in safe
+  // this method can mutate `events_`, so do call this only in safe
   // places.
-  void ClampNewEventsToCurrentTime(double current_time);
+  void ClampNewEventsToCurrentTime(double current_time)
+      EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
   // Handle the case where the last event in the timeline is in the
   // past.  Returns false if any event is not in the past. Otherwise,
-  // return true and also fill in |values| with |defaultValue|.
-  // |defaultValue| may be updated with a new value.
+  // return true and also fill in `values` with `default_value`.
+  // `default_value` may be updated with a new value.
   bool HandleAllEventsInThePast(double current_time,
                                 double sample_rate,
                                 float& default_value,
                                 unsigned number_of_values,
                                 float* values,
-                                unsigned render_quantum_frames);
+                                unsigned render_quantum_frames)
+      EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
   // Handle processing of CancelValue event. If cancellation happens, value2,
   // time2, and nextEventType will be updated with the new value due to
-  // cancellation.  Note that |next_event| or its member can be null.
+  // cancellation.  Note that `next_event` or its member can be null.
   std::tuple<float, double, ParamEvent::Type> HandleCancelValues(
       const ParamEvent* current_event,
       ParamEvent* next_event,
       float value2,
-      double time2);
+      double time2) EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
   // Process a SetTarget event and the next event is a
   // LinearRampToValue or ExponentialRampToValue event.  This requires
@@ -395,11 +401,12 @@ class AudioParamTimeline {
                                       size_t current_frame,
                                       double sample_rate,
                                       double control_rate,
-                                      float& value);
+                                      float& value)
+      EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
-  // Handle processing of linearRampEvent, writing the appropriate
-  // values to |values|.  Returns the updated |currentFrame|, last
-  // computed |value|, and the updated |writeIndex|.
+  // Handle processing of LinearRampEvent, writing the appropriate
+  // values to `values`.  Returns the updated `current_frame`, last
+  // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessLinearRamp(
       const AutomationState& current_state,
       float* values,
@@ -407,9 +414,9 @@ class AudioParamTimeline {
       float value,
       unsigned write_index);
 
-  // Handle processing of exponentialRampEvent, writing the appropriate
-  // values to |values|.  Returns the updated |currentFrame|, last
-  // computed |value|, and the updated |writeIndex|.
+  // Handle processing of ExponentialRampEvent, writing the appropriate
+  // values to `values`.  Returns the updated `current_frame`, last
+  // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessExponentialRamp(
       const AutomationState& current_state,
       float* values,
@@ -418,8 +425,8 @@ class AudioParamTimeline {
       unsigned write_index);
 
   // Handle processing of SetTargetEvent, writing the appropriate
-  // values to |values|.  Returns the updated |currentFrame|, last
-  // computed |value|, and the updated |writeIndex|.
+  // values to `values`.  Returns the updated `current_frame`, last
+  // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessSetTarget(
       const AutomationState& current_state,
       float* values,
@@ -428,8 +435,8 @@ class AudioParamTimeline {
       unsigned write_index);
 
   // Handle processing of SetValueCurveEvent, writing the appropriate
-  // values to |values|.  Returns the updated |currentFrame|, last
-  // computed |value|, and the updated |writeIndex|.
+  // values to `values`.  Returns the updated `current_frame`, last
+  // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessSetValueCurve(
       const AutomationState& current_state,
       float* values,
@@ -438,45 +445,46 @@ class AudioParamTimeline {
       unsigned write_index);
 
   // Handle processing of CancelValuesEvent, writing the appropriate
-  // values to |values|.  Returns the updated |currentFrame|, last
-  // computed |value|, and the updated |writeIndex|.
+  // values to `values`.  Returns the updated `current_frame`, last
+  // computed `value`, and the updated `write_index`.
   std::tuple<size_t, float, unsigned> ProcessCancelValues(
       const AutomationState& current_state,
       float* values,
       size_t current_frame,
       float value,
-      unsigned write_index);
+      unsigned write_index) EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
-  // Fill the output vector |values| with the value |defaultValue|,
-  // starting at |writeIndex| and continuing up to |endFrame|
-  // (exclusive).  |writeIndex| is updated with the new index.
+  // Fill the output vector `values` with the value `default_value`,
+  // starting at `write_index` and continuing up to `end_frame`
+  // (exclusive).  `write_index` is updated with the new index.
   uint32_t FillWithDefault(float* values,
                            float default_value,
                            uint32_t end_frame,
                            uint32_t write_index);
 
-  // When cancelling events, remove the items from |events_| starting
-  // at the given index.  Update |new_events_| too.
-  void RemoveCancelledEvents(wtf_size_t first_event_to_remove);
+  // When cancelling events, remove the items from `events_` starting
+  // at the given index.  Update `new_events_` too.
+  void RemoveCancelledEvents(wtf_size_t first_event_to_remove)
+      EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
   // Remove old events, but always leave at least one event in the timeline.
   // This is needed in case a new event is added (like linearRamp) that would
   // use a previous event to compute the automation.
-  void RemoveOldEvents(wtf_size_t n_events);
+  void RemoveOldEvents(wtf_size_t n_events)
+      EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
-  // Vector of all automation events for the AudioParam.  Access must
-  // be locked via m_eventsLock.
-  Vector<std::unique_ptr<ParamEvent>> events_;
+  // Vector of all automation events for the AudioParam.
+  Vector<std::unique_ptr<ParamEvent>> events_ GUARDED_BY(events_lock_);
 
   // Vector of raw pointers to the actual ParamEvent that was
-  // inserted.  As new events are added, |new_events_| is updated with
-  // tne new event.  When the timline is processed, these events are
-  // clamped to current time by |ClampNewEventsToCurrentTime|. Access
-  // must be locked via |events_lock_|.  Must be maintained together
-  // with |events_|.
-  HashSet<ParamEvent*> new_events_;
+  // inserted.  As new events are added, `new_events_` is updated with
+  // the new event.  When the timline is processed, these events are
+  // clamped to current time by `ClampNewEventsToCurrentTime`. Access
+  // must be locked via `events_lock_`.  Must be maintained together
+  // with `events_`.
+  HashSet<ParamEvent*> new_events_ GUARDED_BY(events_lock_);
 
-  mutable Mutex events_lock_;
+  mutable base::Lock events_lock_;
 
   // Smoothing (de-zippering)
   float smoothed_value_;

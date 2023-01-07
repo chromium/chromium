@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 // Model object representing an item in the tab switchers.
 @interface TabSwitcherItem : NSObject
 
-// Create an item with |identifier|, which cannot be nil.
+// Create an item with `identifier`, which cannot be nil.
 - (instancetype)initWithIdentifier:(NSString*)identifier
     NS_DESIGNATED_INITIALIZER;
 
@@ -19,6 +19,7 @@
 @property(nonatomic, readonly) NSString* identifier;
 @property(nonatomic, copy) NSString* title;
 @property(nonatomic, assign) BOOL hidesTitle;
+@property(nonatomic, assign) BOOL showsActivity;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_SWITCHER_ITEM_H_

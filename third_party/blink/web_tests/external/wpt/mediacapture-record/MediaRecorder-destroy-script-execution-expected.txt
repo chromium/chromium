@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL MediaRecorder will throw when start() is called and the script execution context is going away assert_throws_dom: MediaRecorder.start() should throw function "() => recorder.start()" threw object "NotAllowedError: Failed to execute 'start' on 'MediaRecorder': Execution context is detached." that is not a DOMException NotSupportedError: property "code" is equal to 0, expected 9
+PASS MediaRecorder will not fire the stop event when stop() is called and the script execution context is going away
+PASS MediaRecorder will not fire the stop event when all tracks are ended and the script execution context is going away
+PASS MediaRecorder will not crash on accessing audioBitrateMode when the script execution context is going away
+Harness: the test ran to completion.
+

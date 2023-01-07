@@ -26,7 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_OBJECT_CHILD_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_OBJECT_CHILD_LIST_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -38,6 +39,7 @@ class LayoutObjectChildList {
 
  public:
   LayoutObjectChildList() : first_child_(nullptr), last_child_(nullptr) {}
+  void Trace(Visitor*) const;
 
   LayoutObject* FirstChild() const { return first_child_; }
   LayoutObject* LastChild() const { return last_child_; }
@@ -60,8 +62,8 @@ class LayoutObjectChildList {
  private:
   void InvalidatePaintOnRemoval(LayoutObject& old_child);
 
-  LayoutObject* first_child_;
-  LayoutObject* last_child_;
+  Member<LayoutObject> first_child_;
+  Member<LayoutObject> last_child_;
 };
 
 }  // namespace blink

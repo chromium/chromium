@@ -1,0 +1,19 @@
+<html>
+<head>
+<script>
+  window.onload = function() {
+  if (typeof chrome.setSyncEncryptionKeys != "undefined") {
+    console.log("chrome.setSyncEncryptionKeys() should not be available in the mainframe.");
+    return;
+  }
+  setTimeout(function() {
+    console.log('Loading iframe with source: ', location.search.substring(1));
+      document.getElementById("retrieval").src = location.search.substring(1);
+  }, 0);
+}
+</script>
+</head>
+<body>
+  <iframe src="/title1.html" id="retrieval"></iframe>
+</body>
+</html>

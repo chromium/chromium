@@ -1,21 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/input_method_manager/input_method_prefs.h"
 
 #include "base/containers/contains.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
 
 namespace arc {
 
-namespace ce = ::chromeos::extension_ime_util;
-using ::chromeos::input_method::InputMethodDescriptors;
+namespace ce = ::ash::extension_ime_util;
+using ::ash::input_method::InputMethodDescriptors;
 
 InputMethodPrefs::InputMethodPrefs(Profile* profile) : profile_(profile) {}
 InputMethodPrefs::~InputMethodPrefs() = default;
@@ -30,7 +30,7 @@ void InputMethodPrefs::UpdateEnabledImes(
       enabled_ime_ids, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   base::EraseIf(enabled_ime_list, [](const auto& id) {
-    return chromeos::extension_ime_util::IsArcIME(id);
+    return ash::extension_ime_util::IsArcIME(id);
   });
   for (const auto& descriptor : enabled_arc_imes)
     enabled_ime_list.push_back(descriptor.id());

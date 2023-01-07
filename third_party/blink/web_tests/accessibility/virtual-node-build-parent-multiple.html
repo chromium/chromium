@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<!--
+  First, we build the following AXTree:
+    AXObject, role="alert", DOM
+    ++AXObject, role="checkbox", DOM
+    ++AXVirtualObject, role="button", AccessibleNode
+    ++++AXVirtualObject, role="radio", AccessibleNode
+
+  Then, we remove |AXObject, role="checkbox"| to trigger childrenChanged on
+  |AXObject, role="alert"| which will detach all its children. We then access
+  |AXVirtualObject, role="radio"| which will attempt to recompute its parent
+  chain. We should end up with the following AXTree:
+    AXObject, role="alert", DOM
+    ++AXVirtualObject, role="button", AccessibleNode
+    ++++AXVirtualObject, role="radio", AccessibleNode
+-->
+
+<div id="main" role="alert">
+    <div role="checkbox" id="checkbox">checkbox</div>
+</div>
+
+<script>
+test(function() {
+    var main = document.getElementById("main");
+    var checkbox = document.getElementById("checkbox");
+    var button_accNode = new AccessibleNode();
+    button_accNode.role = "button";
+    var radio_accNode = new AccessibleNode();
+    radio_accNode.role = "radio";
+
+    main.accessibleNode.appendChild(button_accNode);
+    button_accNode.appendChild(radio_accNode);
+
+    var axMain = accessibilityController.accessibleElementById("main");
+    assert_equals(axMain.role, "AXRole: AXAlert");
+    assert_equals(axMain.childrenCount, 2);
+    var axButton = axMain.childAtIndex(1);
+    assert_equals(axButton.role, "AXRole: AXButton");
+    var axRadio =  axButton.childAtIndex(0);
+    assert_equals(axRadio.role, "AXRole: AXRadioButton");
+
+    // Remove checkbox will cause ChildrenChanged called on axMain, which will
+    // remove all its children in the AXObjectCache.
+    checkbox.remove();
+    assert_equals(axMain.childrenCount, 1);
+    axButton = axMain.childAtIndex(0);
+    assert_equals(axButton.role, "AXRole: AXButton");
+
+    // Try to fetch axRadio, since its detached from its parent axMain, we need
+    // to recompute its parent. Make sure no DCHECK or crash occurs.
+    axRadio = axButton.childAtIndex(0);
+    assert_equals(axRadio.role, "AXRole: AXRadioButton");
+
+    // Walk up axRadio's parent chain to validate we have correctly reparented
+    // detached nodes.
+    axButton = axRadio.parentElement();
+    assert_equals(axButton.role, "AXRole: AXButton");
+    axMain = axButton.parentElement();
+    assert_equals(axMain.role, "AXRole: AXAlert");
+    // Validate that axMain's parent is the body element.
+    assert_equals(axMain.parentElement().role, "AXRole: AXGenericContainer");
+});
+</script>
+
+</body>
+</html>

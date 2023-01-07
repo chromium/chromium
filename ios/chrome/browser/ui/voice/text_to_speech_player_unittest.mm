@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,15 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/mac/foundation_util.h"
+#import "base/mac/foundation_util.h"
 #import "base/test/ios/wait_util.h"
-#include "base/time/time.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/ui/voice/voice_search_notification_names.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "url/gurl.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -112,7 +112,7 @@ TEST_F(TextToSpeechPlayerTest, ReadyForPlayback) {
 }
 
 // Tests that kTTSAudioReadyForPlaybackNotification is received and that
-// TTSPlayer's |-readyForPlayback| is NO for empty data.
+// TTSPlayer's `-readyForPlayback` is NO for empty data.
 TEST_F(TextToSpeechPlayerTest, ReadyForPlaybackEmtpyData) {
   NSData* audio_data = [@"" dataUsingEncoding:NSUTF8StringEncoding];
   [tts_player_ prepareToPlayAudioData:audio_data];

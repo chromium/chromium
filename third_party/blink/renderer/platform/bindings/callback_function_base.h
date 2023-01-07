@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_CALLBACK_FUNCTION_BASE_H_
 
 #include "base/callback.h"
+#include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -26,12 +27,12 @@ class PLATFORM_EXPORT CallbackFunctionBase
     : public GarbageCollected<CallbackFunctionBase>,
       public NameClient {
  public:
-  virtual ~CallbackFunctionBase() = default;
+  ~CallbackFunctionBase() override = default;
 
   virtual void Trace(Visitor* visitor) const;
 
   v8::Local<v8::Object> CallbackObject() {
-    return callback_function_.NewLocal(GetIsolate());
+    return callback_function_.Get(GetIsolate());
   }
 
   v8::Isolate* GetIsolate() const {
@@ -41,7 +42,7 @@ class PLATFORM_EXPORT CallbackFunctionBase
   // Returns the ScriptState of the relevant realm of the callback object.
   //
   // NOTE: This function must be used only when it's pretty sure that the
-  // callcack object is the same origin-domain. Otherwise,
+  // callback object is the same origin-domain. Otherwise,
   // |CallbackRelevantScriptStateOrReportError| or
   // |CallbackRelevantScriptStateOrThrowException| must be used instead.
   ScriptState* CallbackRelevantScriptState() {
@@ -85,14 +86,22 @@ class PLATFORM_EXPORT CallbackFunctionBase
   // really need V8 *Scavenger* GC to collect the V8 function before V8 Full GC
   // runs.
   void DisposeV8FunctionImmediatelyToReduceMemoryFootprint() {
-    callback_function_.Clear();
+    callback_function_.Reset();
+  }
+
+  absl::optional<scheduler::TaskAttributionId> GetParentTaskId() const {
+    return parent_task_id_;
+  }
+
+  void SetParentTaskId(absl::optional<scheduler::TaskAttributionId> task_id) {
+    parent_task_id_ = task_id;
   }
 
  protected:
   explicit CallbackFunctionBase(v8::Local<v8::Object>);
 
   v8::Local<v8::Function> CallbackFunction() const {
-    return callback_function_.NewLocal(GetIsolate()).As<v8::Function>();
+    return callback_function_.Get(GetIsolate()).As<v8::Function>();
   }
 
  private:
@@ -105,8 +114,10 @@ class PLATFORM_EXPORT CallbackFunctionBase
   Member<ScriptState> callback_relevant_script_state_;
   // The callback context, i.e. the incumbent Realm when an ECMAScript value is
   // converted to an IDL value.
-  // https://heycam.github.io/webidl/#dfn-callback-context
+  // https://webidl.spec.whatwg.org/#dfn-callback-context
   Member<ScriptState> incumbent_script_state_;
+
+  absl::optional<scheduler::TaskAttributionId> parent_task_id_;
 };
 
 }  // namespace blink

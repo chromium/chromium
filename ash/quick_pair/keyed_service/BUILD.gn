@@ -1,0 +1,85 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+
+static_library("keyed_service") {
+  sources = [
+    "battery_update_message_handler.cc",
+    "battery_update_message_handler.h",
+    "fast_pair_bluetooth_config_delegate.cc",
+    "fast_pair_bluetooth_config_delegate.h",
+    "quick_pair_keyed_service.cc",
+    "quick_pair_keyed_service.h",
+    "quick_pair_mediator.cc",
+    "quick_pair_mediator.h",
+    "quick_pair_metrics_logger.cc",
+    "quick_pair_metrics_logger.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/fast_pair_handshake",
+    "//ash/quick_pair/feature_status_tracker",
+    "//ash/quick_pair/message_stream",
+    "//ash/quick_pair/pairing",
+    "//ash/quick_pair/repository",
+    "//ash/quick_pair/scanning",
+    "//ash/quick_pair/ui",
+    "//base",
+    "//chromeos/ash/services/bluetooth_config",
+    "//chromeos/ash/services/bluetooth_config/public/cpp",
+    "//chromeos/ash/services/bluetooth_config/public/mojom",
+    "//chromeos/ash/services/quick_pair",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/user_manager",
+    "//device/bluetooth",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "battery_update_message_handler_unittest.cc",
+    "quick_pair_mediator_unittest.cc",
+    "quick_pair_metrics_logger_unittest.cc",
+  ]
+
+  deps = [
+    ":keyed_service",
+    "//ash:test_support",
+    "//ash/constants:constants",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/common:test_support",
+    "//ash/quick_pair/fast_pair_handshake:test_support",
+    "//ash/quick_pair/feature_status_tracker:test_support",
+    "//ash/quick_pair/message_stream",
+    "//ash/quick_pair/message_stream:test_support",
+    "//ash/quick_pair/pairing:test_support",
+    "//ash/quick_pair/repository",
+    "//ash/quick_pair/repository:test_support",
+    "//ash/quick_pair/scanning:test_support",
+    "//ash/quick_pair/ui:test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/services/bluetooth_config",
+    "//chromeos/ash/services/bluetooth_config:test_support",
+    "//chromeos/ash/services/bluetooth_config/public/mojom",
+    "//chromeos/ash/services/quick_pair",
+    "//chromeos/ash/services/quick_pair:test_support",
+    "//components/prefs:test_support",
+    "//components/user_manager:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}

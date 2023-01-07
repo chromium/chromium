@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -6,7 +6,6 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
-#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -16,11 +15,11 @@
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 // The factory callback that will be used to create RecommendAppsFetcher
@@ -37,11 +36,11 @@ std::unique_ptr<RecommendAppsFetcher> RecommendAppsFetcher::Create(
     return g_factory_callback->Run(delegate);
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kFakeArcRecommendedAppsForTesting)) {
+          switches::kFakeArcRecommendedAppsForTesting)) {
     LOG(WARNING) << "Using fake recommended apps fetcher";
     std::string num_apps_str =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-            chromeos::switches::kFakeArcRecommendedAppsForTesting);
+            switches::kFakeArcRecommendedAppsForTesting);
     int fake_apps_count = 0;
     if (!base::StringToInt(num_apps_str, &fake_apps_count)) {
       fake_apps_count = 3;
@@ -50,13 +49,14 @@ std::unique_ptr<RecommendAppsFetcher> RecommendAppsFetcher::Create(
                                                       fake_apps_count);
   }
 
-  mojo::PendingRemote<ash::mojom::CrosDisplayConfigController> display_config;
-  ash::BindCrosDisplayConfigController(
+  mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
+      display_config;
+  BindCrosDisplayConfigController(
       display_config.InitWithNewPipeAndPassReceiver());
   return std::make_unique<RecommendAppsFetcherImpl>(
       delegate, std::move(display_config),
-      content::BrowserContext::GetDefaultStoragePartition(
-          ProfileManager::GetActiveUserProfile())
+      ProfileManager::GetActiveUserProfile()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get());
 }
@@ -69,4 +69,4 @@ void RecommendAppsFetcher::SetFactoryCallbackForTesting(
   g_factory_callback = callback;
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -1,16 +1,18 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROMECAST_BINDINGS_BINDINGS_MANAGER_FUCHSIA_H_
 #define CHROMECAST_BINDINGS_BINDINGS_MANAGER_FUCHSIA_H_
 
+#include <fuchsia/mem/cpp/fidl.h>
+
+#include <list>
 #include <map>
 #include <string>
 
-#include "base/callback.h"
 #include "chromecast/bindings/bindings_manager.h"
-#include "fuchsia/fidl/chromium/cast/cpp/fidl.h"
+#include "fuchsia_web/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 
 namespace chromecast {
 namespace bindings {
@@ -20,6 +22,10 @@ class BindingsManagerFuchsia : public chromium::cast::ApiBindings,
                                public BindingsManager {
  public:
   BindingsManagerFuchsia();
+
+  BindingsManagerFuchsia(const BindingsManagerFuchsia&) = delete;
+  BindingsManagerFuchsia& operator=(const BindingsManagerFuchsia&) = delete;
+
   ~BindingsManagerFuchsia() override;
 
   // BindingsManager implementation:
@@ -35,10 +41,9 @@ class BindingsManagerFuchsia : public chromium::cast::ApiBindings,
 
  private:
   // Stores all bindings, keyed on the string-based IDs provided by the
-  // ApiBindings interface.
-  std::map<std::string, fuchsia::mem::Buffer> bindings_;
-
-  DISALLOW_COPY_AND_ASSIGN(BindingsManagerFuchsia);
+  // ApiBindings interface. Bindings are stored in the order they are added
+  // because evaluation order matters when one depends on another.
+  std::list<std::pair<std::string, fuchsia::mem::Buffer>> bindings_;
 };
 
 }  // namespace bindings

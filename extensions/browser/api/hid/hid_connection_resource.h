@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource.h"
@@ -25,6 +24,10 @@ class HidConnectionResource : public ApiResource {
   HidConnectionResource(
       const std::string& owner_extension_id,
       mojo::PendingRemote<device::mojom::HidConnection> connection);
+
+  HidConnectionResource(const HidConnectionResource&) = delete;
+  HidConnectionResource& operator=(const HidConnectionResource&) = delete;
+
   ~HidConnectionResource() override;
 
   device::mojom::HidConnection* connection() const { return connection_.get(); }
@@ -35,8 +38,6 @@ class HidConnectionResource : public ApiResource {
 
  private:
   mojo::Remote<device::mojom::HidConnection> connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(HidConnectionResource);
 };
 
 }  // namespace extensions

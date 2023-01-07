@@ -1,6 +1,6 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,8 +14,6 @@ import os
 import sys
 import threading
 
-import customtabs_benchmark
-
 _SRC_PATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..', '..'))
 
@@ -25,6 +23,10 @@ from devil.android import device_utils
 sys.path.append(os.path.join(_SRC_PATH, 'build', 'android'))
 import devil_chromium
 
+sys.path.append(
+    os.path.join(_SRC_PATH, 'tools', 'android', 'customtabs_benchmark',
+                 'scripts'))
+import customtabs_benchmark
 
 _KEYS = ['url', 'warmup', 'skip_launcher_activity', 'speculation_mode',
          'delay_to_may_launch_url', 'delay_to_launch_url', 'cold',
@@ -59,6 +61,14 @@ def _ParseConfiguration(filename):
     A list of configurations, where each value is specified.
   """
   config = json.load(open(filename, 'r'))
+
+  # Set defaults for optional keys.
+  config.setdefault('pinning_benchmark', False)
+  config.setdefault('pin_filename', '')
+  config.setdefault('pin_offset', -1)
+  config.setdefault('pin_length', -1)
+  config.setdefault('extra_brief_memory_mb', 0)
+
   has_all_values = all(k in config for k in _KEYS)
   assert has_all_values
   config['url'] = str(config['url'])  # Intents don't like unicode.

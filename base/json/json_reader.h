@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,8 +23,6 @@
 // Configurable (see the JSONParserOptions type) deviations from the RFC:
 // - Allow trailing commas: "[1,2,]".
 // - Replace invalid Unicode with U+FFFD REPLACEMENT CHARACTER.
-//
-// Non-configurable deviations from the RFC:
 // - Allow "// etc\n" and "/* etc */" C-style comments.
 // - Allow ASCII control characters, including literal (not escaped) NUL bytes
 //   and new lines, within a JSON string.
@@ -43,15 +41,15 @@
 
 #include "base/base_export.h"
 #include "base/json/json_common.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "base/types/expected.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
 enum JSONParserOptions {
-  // Parses the input strictly according to RFC 8259, except for where noted
-  // above.
+  // Parses the input strictly according to RFC 8259.
   JSON_PARSE_RFC = 0,
 
   // Allows commas to exist after the last element in structures.
@@ -62,32 +60,61 @@ enum JSONParserOptions {
   // not set, invalid code points trigger a hard error and parsing
   // fails.
   JSON_REPLACE_INVALID_CHARACTERS = 1 << 1,
+
+  // Allows both C (/* */) and C++ (//) style comments.
+  JSON_ALLOW_COMMENTS = 1 << 2,
+
+  // Permits unescaped ASCII control characters (such as unescaped \r and \n)
+  // in the range [0x00,0x1F].
+  JSON_ALLOW_CONTROL_CHARS = 1 << 3,
+
+  // Permits \\v vertical tab escapes.
+  JSON_ALLOW_VERT_TAB = 1 << 4,
+
+  // Permits \\xNN escapes as described above.
+  JSON_ALLOW_X_ESCAPES = 1 << 5,
+
+  // This parser historically accepted, without configuration flags,
+  // non-standard JSON extensions. This flag enables that traditional parsing
+  // behavior.
+  //
+  // This set of options is mirrored in Rust
+  // base::JsonOptions::with_chromium_extensions().
+  JSON_PARSE_CHROMIUM_EXTENSIONS = JSON_ALLOW_COMMENTS |
+                                   JSON_ALLOW_CONTROL_CHARS |
+                                   JSON_ALLOW_VERT_TAB | JSON_ALLOW_X_ESCAPES,
 };
 
 class BASE_EXPORT JSONReader {
  public:
-  struct BASE_EXPORT ValueWithError {
-    ValueWithError();
-    ValueWithError(ValueWithError&& other);
-    ValueWithError& operator=(ValueWithError&& other);
-    ~ValueWithError();
+  struct BASE_EXPORT Error {
+    Error();
+    Error(Error&& other);
+    Error& operator=(Error&& other);
 
-    Optional<Value> value;
+    Error(const Error&) = delete;
+    Error& operator=(const Error&) = delete;
 
-    // Contains default values if |value| exists, or the error status if |value|
-    // is base::nullopt.
-    std::string error_message;
-    int error_line = 0;
-    int error_column = 0;
+    ~Error();
 
-    DISALLOW_COPY_AND_ASSIGN(ValueWithError);
+    std::string message;
+    int line = 0;
+    int column = 0;
   };
 
+  using Result = base::expected<Value, Error>;
+
+  // This class contains only static methods.
+  JSONReader() = delete;
+  JSONReader(const JSONReader&) = delete;
+  JSONReader& operator=(const JSONReader&) = delete;
+
   // Reads and parses |json|, returning a Value.
-  // If |json| is not a properly formed JSON string, returns base::nullopt.
-  static Optional<Value> Read(StringPiece json,
-                              int options = JSON_PARSE_RFC,
-                              size_t max_depth = internal::kAbsoluteMaxDepth);
+  // If |json| is not a properly formed JSON string, returns absl::nullopt.
+  static absl::optional<Value> Read(
+      StringPiece json,
+      int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
+      size_t max_depth = internal::kAbsoluteMaxDepth);
 
   // Deprecated. Use the Read() method above.
   // Reads and parses |json|, returning a Value.
@@ -96,19 +123,16 @@ class BASE_EXPORT JSONReader {
   // convert to a FooValue at the same time.
   static std::unique_ptr<Value> ReadDeprecated(
       StringPiece json,
-      int options = JSON_PARSE_RFC,
+      int options = JSON_PARSE_CHROMIUM_EXTENSIONS,
       size_t max_depth = internal::kAbsoluteMaxDepth);
 
-  // Reads and parses |json| like Read(). Returns a ValueWithError, which on
-  // error, will be populated with a formatted error message, an error code, and
-  // the error location if appropriate.
-  static ValueWithError ReadAndReturnValueWithError(
+  // Reads and parses |json| like Read(). On success returns a Value as the
+  // expected value. Otherwise, it returns an Error instance, populated with a
+  // formatted error message, an error code, and the error location if
+  // appropriate as the error value of the expected type.
+  static Result ReadAndReturnValueWithError(
       StringPiece json,
-      int options = JSON_PARSE_RFC);
-
-  // This class contains only static methods.
-  JSONReader() = delete;
-  DISALLOW_COPY_AND_ASSIGN(JSONReader);
+      int options = JSON_PARSE_CHROMIUM_EXTENSIONS);
 };
 
 }  // namespace base

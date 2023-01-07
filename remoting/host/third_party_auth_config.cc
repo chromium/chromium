@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/policy_constants.h"
 
 namespace remoting {
@@ -71,25 +72,30 @@ bool ThirdPartyAuthConfig::ParseStrings(
 
 namespace {
 
-void ExtractHelper(const base::DictionaryValue& policy_dict,
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
+void ExtractHelper(const base::Value::Dict& policy_dict,
                    const std::string& policy_name,
                    bool* policy_present,
                    std::string* policy_value) {
-  if (policy_dict.GetString(policy_name, policy_value)) {
+  DCHECK(policy_value);
+  if (const std::string* value = policy_dict.FindString(policy_name)) {
+    *policy_value = *value;
     *policy_present = true;
   } else {
     policy_value->clear();
   }
 }
+#endif
 
 }  // namespace
 
 bool ThirdPartyAuthConfig::ExtractStrings(
-    const base::DictionaryValue& policy_dict,
+    const base::Value::Dict& policy_dict,
     std::string* token_url,
     std::string* token_validation_url,
     std::string* token_validation_cert_issuer) {
   bool policies_present = false;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
   ExtractHelper(policy_dict, policy::key::kRemoteAccessHostTokenUrl,
                 &policies_present, token_url);
   ExtractHelper(policy_dict, policy::key::kRemoteAccessHostTokenValidationUrl,
@@ -97,11 +103,12 @@ bool ThirdPartyAuthConfig::ExtractStrings(
   ExtractHelper(policy_dict,
                 policy::key::kRemoteAccessHostTokenValidationCertificateIssuer,
                 &policies_present, token_validation_cert_issuer);
+#endif
   return policies_present;
 }
 
 ThirdPartyAuthConfig::ParseStatus ThirdPartyAuthConfig::Parse(
-    const base::DictionaryValue& policy_dict,
+    const base::Value::Dict& policy_dict,
     ThirdPartyAuthConfig* result) {
   // Extract 3 individial policy values.
   std::string token_url;

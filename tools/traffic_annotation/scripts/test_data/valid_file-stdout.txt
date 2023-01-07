@@ -95,3 +95,19 @@ test_partial
 test
 Traffic annotation for unit, browser and other tests
 ==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+valid_file.cc
+83
+Definition
+undefined
+
+Nothing here yet.
+==== ANNOTATION ENDS ====
+==== NEW ANNOTATION ====
+valid_file.cc
+132
+Definition
+undefined
+
+Nothing here yet.
+==== ANNOTATION ENDS ====

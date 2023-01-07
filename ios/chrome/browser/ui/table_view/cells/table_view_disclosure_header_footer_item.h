@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,8 @@
 @property(nonatomic, readwrite, strong) NSString* subtitleText;
 // Determines the direction of the disclosure view.
 @property(nonatomic, readwrite, assign) BOOL collapsed;
+// Determines if the header is shown has disabled.
+@property(nonatomic, readwrite, assign) BOOL disabled;
 @end
 
 // UITableViewHeaderFooterView that displays a text label, subtitle, and a
@@ -32,20 +34,15 @@ typedef NS_ENUM(NSInteger, DisclosureDirection) {
 @property(nonatomic, readwrite, strong) UILabel* titleLabel;
 // Shows the subtitleText of the TableViewDisclosureHeaderFooterItem.
 @property(nonatomic, readwrite, strong) UILabel* subtitleLabel;
+// Determines if the header is shown has disabled.
+@property(nonatomic, readwrite, assign) BOOL disabled;
 // Determines if disclosureImageView should be pointing down or to the right.
 @property(nonatomic, assign) DisclosureDirection disclosureDirection;
-// Color used on the highlight animation.
-@property(nonatomic, readwrite, strong) UIColor* highlightColor;
-// Animates a change in the backgroundView color and then changes it back to the
-// original backGround color in order to simulate a selection highlight.
-- (void)animateHighlight;
 // Sets initial direction of disclosure view.
 - (void)setInitialDirection:(DisclosureDirection)direction;
-// Animates a change in the backgroundView color and then changes it back to the
-// original backGround color in order to simulate a selection highlight AND
 // Rotates the disclosure view if the direction parameter is different from its
 // current state.
-- (void)animateHighlightAndRotateToDirection:(DisclosureDirection)direction;
+- (void)rotateToDirection:(DisclosureDirection)direction;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_DISCLOSURE_HEADER_FOOTER_ITEM_H_

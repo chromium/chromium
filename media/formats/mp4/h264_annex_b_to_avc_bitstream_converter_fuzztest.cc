@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/formats/mp4/h264_annex_b_to_avc_bitstream_converter.h"
 
 // Entry point for LibFuzzer.

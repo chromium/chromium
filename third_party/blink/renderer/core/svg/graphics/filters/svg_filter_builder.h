@@ -21,20 +21,23 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_FILTERS_SVG_FILTER_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_FILTERS_SVG_FILTER_BUILDER_H_
 
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/graphics/interpolation_space.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
+
+namespace gfx {
+class RectF;
+}
 
 namespace blink {
 
 class Filter;
 class FilterEffect;
-class FloatRect;
 class SVGFilterElement;
 class SVGFilterPrimitiveStandardAttributes;
 
@@ -55,7 +58,8 @@ class SVGFilterGraphNodeMap final
   // SvgAttributeChanged.
   FilterEffect* EffectForElement(
       SVGFilterPrimitiveStandardAttributes& primitive) {
-    return effect_element_.at(&primitive);
+    auto it = effect_element_.find(&primitive);
+    return it != effect_element_.end() ? it->value : nullptr;
   }
 
   void InvalidateDependentEffects(FilterEffect*);
@@ -83,10 +87,10 @@ class SVGFilterBuilder {
  public:
   SVGFilterBuilder(FilterEffect* source_graphic,
                    SVGFilterGraphNodeMap* = nullptr,
-                   const PaintFlags* fill_flags = nullptr,
-                   const PaintFlags* stroke_flags = nullptr);
+                   const cc::PaintFlags* fill_flags = nullptr,
+                   const cc::PaintFlags* stroke_flags = nullptr);
 
-  void BuildGraph(Filter*, SVGFilterElement&, const FloatRect&);
+  void BuildGraph(Filter*, SVGFilterElement&, const gfx::RectF&);
 
   FilterEffect* GetEffectById(const AtomicString& id) const;
   FilterEffect* LastEffect() const { return last_effect_; }

@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/service_factory.h"
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 namespace mojo {
 
@@ -33,6 +33,9 @@ bool ServiceFactory::RunService(GenericPendingReceiver receiver,
     return false;
 
   auto instance = it->second.Run(std::move(receiver));
+  if (!instance)
+    return false;
+
   auto disconnect_callback =
       base::BindOnce(&ServiceFactory::OnInstanceDisconnected,
                      weak_ptr_factory_.GetWeakPtr(), instance.get());

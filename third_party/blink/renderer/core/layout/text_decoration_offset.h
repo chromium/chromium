@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,7 @@ class CORE_EXPORT TextDecorationOffset : public TextDecorationOffsetBase {
 
   int ComputeUnderlineOffsetForUnder(const Length& style_underline_offset,
                                      float computed_font_size,
+                                     const SimpleFontData* font_data,
                                      float text_decoration_thickness,
                                      FontVerticalPositionType) const override;
 

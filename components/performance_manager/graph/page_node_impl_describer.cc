@@ -1,15 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/performance_manager/graph/page_node_impl_describer.h"
 
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/node_data_describer_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace performance_manager {
 
@@ -18,7 +18,7 @@ namespace {
 const char kDescriberName[] = "PageNodeImpl";
 
 const char* FreezingVoteToString(
-    base::Optional<freezing::FreezingVote> freezing_vote) {
+    absl::optional<freezing::FreezingVote> freezing_vote) {
   if (!freezing_vote)
     return "None";
 
@@ -69,6 +69,8 @@ base::Value PageNodeImplDescriber::DescribePageNodeData(
                       page_node_impl->contents_mime_type_);
   result.SetStringKey("browser_context_id",
                       page_node_impl->browser_context_id_);
+  result.SetStringKey("type",
+                      PageNode::ToString(page_node_impl->type_.value()));
   result.SetBoolKey("is_visible", page_node_impl->is_visible_.value());
   result.SetBoolKey("is_audible", page_node_impl->is_audible_.value());
   result.SetStringKey(
@@ -86,9 +88,9 @@ base::Value PageNodeImplDescriber::DescribePageNodeData(
                     page_node_impl->is_holding_indexeddb_lock_.value());
   result.SetBoolKey("had_form_interaction",
                     page_node_impl->had_form_interaction_.value());
-  if (page_node_impl->opened_type_ != PageNode::OpenedType::kInvalid) {
-    result.SetStringKey("opened_type",
-                        PageNode::ToString(page_node_impl->opened_type_));
+  if (page_node_impl->embedding_type_ != PageNode::EmbeddingType::kInvalid) {
+    result.SetStringKey("embedding_type",
+                        PageNode::ToString(page_node_impl->embedding_type_));
   }
   result.SetStringKey("freezing_vote",
                       FreezingVoteToString(page_node_impl->freezing_vote()));

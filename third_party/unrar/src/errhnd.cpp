@@ -7,6 +7,7 @@
 
 #include "rar.hpp"
 
+#include <ostream>
 
 void ErrorHandler::Clean()
 {

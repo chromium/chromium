@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace google_brand {
 namespace chromeos {
@@ -18,7 +18,7 @@ namespace chromeos {
 // indicates the device is not enrolled).
 std::string GetRlzBrandCode(
     const std::string& static_brand_code,
-    base::Optional<policy::MarketSegment> market_segment);
+    absl::optional<policy::MarketSegment> market_segment);
 
 }  // namespace chromeos
 }  // namespace google_brand

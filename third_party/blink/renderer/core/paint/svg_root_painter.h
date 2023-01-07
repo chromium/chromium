@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,13 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace gfx {
+class Rect;
+}
+
 namespace blink {
 
 class AffineTransform;
-class IntRect;
 class LayoutSVGRoot;
 struct PaintInfo;
 struct PhysicalOffset;
@@ -32,7 +35,7 @@ class SVGRootPainter {
       const PhysicalOffset& paint_offset) const;
 
  private:
-  IntRect PixelSnappedSize(const PhysicalOffset& paint_offset) const;
+  gfx::Rect PixelSnappedSize(const PhysicalOffset& paint_offset) const;
 
   const LayoutSVGRoot& layout_svg_root_;
 };

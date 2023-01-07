@@ -26,12 +26,11 @@ FAIL PeriodicSyncManager interface: calling unregister(DOMString) on registratio
 PASS PeriodicSyncEvent interface: existence and properties of interface object
 FAIL PeriodicSyncEvent must be primary interface of new PeriodicSyncEvent("tag") assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PeriodicSyncEvent is not defined"
 FAIL Stringification of new PeriodicSyncEvent("tag") assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PeriodicSyncEvent is not defined"
+FAIL PeriodicSyncEvent interface: new PeriodicSyncEvent("tag") must not have property "undefined" assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PeriodicSyncEvent is not defined"
 FAIL PeriodicSyncEvent interface: new PeriodicSyncEvent("tag") must not have property "tag" assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: PeriodicSyncEvent is not defined"
 PASS ServiceWorkerRegistration interface: attribute periodicSync
 FAIL ServiceWorkerRegistration interface: registration must inherit property "periodicSync" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: registration is not defined"
-PASS ServiceWorkerGlobalScope interface: existence and properties of interface object
 PASS ServiceWorkerGlobalScope interface: self must not have property "onperiodicsync"
 FAIL ServiceWorkerGlobalScope interface: onperiodicsync must not have property "onperiodicsync" assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: onperiodicsync is not defined"
-PASS ExtendableEvent interface: existence and properties of interface object
 Harness: the test ran to completion.
 

@@ -1,0 +1,21 @@
+caption: Policy overrides for Debug builds of the remote access host
+deprecated: true
+desc: |-
+  Overrides policies on Debug builds of the remote access host.
+
+            The value is parsed as a JSON dictionary of policy name to policy value mappings.
+example_value: '{ "RemoteAccessHostMatchUsername": true }'
+features:
+  dynamic_refresh: true
+  per_profile: false
+  platform_only: true
+owners:
+- file://remoting/OWNERS
+- jamiewalch@chromium.org
+schema:
+  type: string
+supported_on:
+- chrome.*:25-47
+- chrome_os:42-47
+tags: []
+type: string

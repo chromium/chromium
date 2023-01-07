@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,9 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -37,6 +36,12 @@ const int kMaxPtsDiffMs = 2000;
 class MultiDemuxerStreamAdaptersTest : public testing::Test {
  public:
   MultiDemuxerStreamAdaptersTest();
+
+  MultiDemuxerStreamAdaptersTest(const MultiDemuxerStreamAdaptersTest&) =
+      delete;
+  MultiDemuxerStreamAdaptersTest& operator=(
+      const MultiDemuxerStreamAdaptersTest&) = delete;
+
   ~MultiDemuxerStreamAdaptersTest() override;
 
   void Start();
@@ -69,7 +74,6 @@ class MultiDemuxerStreamAdaptersTest : public testing::Test {
   int running_stream_count_;
 
   scoped_refptr<BalancedMediaTaskRunnerFactory> media_task_runner_factory_;
-  DISALLOW_COPY_AND_ASSIGN(MultiDemuxerStreamAdaptersTest);
 };
 
 MultiDemuxerStreamAdaptersTest::MultiDemuxerStreamAdaptersTest() {
@@ -83,10 +87,10 @@ void MultiDemuxerStreamAdaptersTest::Start() {
       FROM_HERE,
       base::BindOnce(&MultiDemuxerStreamAdaptersTest::OnTestTimeout,
                      base::Unretained(this)),
-      base::TimeDelta::FromSeconds(5));
+      base::Seconds(5));
 
-  media_task_runner_factory_ = new BalancedMediaTaskRunnerFactory(
-      base::TimeDelta::FromMilliseconds(kMaxPtsDiffMs));
+  media_task_runner_factory_ =
+      new BalancedMediaTaskRunnerFactory(base::Milliseconds(kMaxPtsDiffMs));
 
   coded_frame_providers_.clear();
   frame_received_count_ = 0;

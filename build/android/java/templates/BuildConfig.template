@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,15 +81,15 @@ public class BuildConfig {
     public static MAYBE_FINAL boolean IS_INCREMENTAL_INSTALL MAYBE_FALSE;
 #endif
 
-#if defined(_IS_CHROMECAST_BRANDING_INTERNAL)
-    public static MAYBE_FINAL boolean IS_CHROMECAST_BRANDING_INTERNAL = true;
-#else
-    public static MAYBE_FINAL boolean IS_CHROMECAST_BRANDING_INTERNAL MAYBE_FALSE;
-#endif
-
 #if defined(_ISOLATED_SPLITS_ENABLED)
     public static MAYBE_FINAL boolean ISOLATED_SPLITS_ENABLED = true;
 #else
     public static MAYBE_FINAL boolean ISOLATED_SPLITS_ENABLED MAYBE_FALSE;
+#endif
+
+#if defined(_IS_FOR_TEST)
+    public static MAYBE_FINAL boolean IS_FOR_TEST = true;
+#else
+    public static MAYBE_FINAL boolean IS_FOR_TEST MAYBE_FALSE;
 #endif
 }

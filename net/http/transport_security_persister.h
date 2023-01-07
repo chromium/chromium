@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/important_file_writer.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_export.h"
@@ -45,7 +45,6 @@
 
 namespace base {
 class SequencedTaskRunner;
-class Value;
 }
 
 namespace net {
@@ -59,10 +58,18 @@ class NET_EXPORT TransportSecurityPersister
     : public TransportSecurityState::Delegate,
       public base::ImportantFileWriter::DataSerializer {
  public:
+  // Create a TransportSecurityPersister with state |state| on background runner
+  // |background_runner|. |data_path| points to the file to hold the transport
+  // security state data on disk.
   TransportSecurityPersister(
       TransportSecurityState* state,
-      const base::FilePath& profile_path,
-      const scoped_refptr<base::SequencedTaskRunner>& background_runner);
+      const scoped_refptr<base::SequencedTaskRunner>& background_runner,
+      const base::FilePath& data_path);
+
+  TransportSecurityPersister(const TransportSecurityPersister&) = delete;
+  TransportSecurityPersister& operator=(const TransportSecurityPersister&) =
+      delete;
+
   ~TransportSecurityPersister() override;
 
   // Called by the TransportSecurityState when it changes its state.
@@ -107,32 +114,17 @@ class NET_EXPORT TransportSecurityPersister
 
   // Clears any existing non-static entries, and then re-populates
   // |transport_security_state_|.
-  //
-  // Sets |*data_in_old_format| to true if the loaded data is in an older format
-  // and should be overwritten with data in the newest format.
-  bool LoadEntries(const std::string& serialized, bool* data_in_old_format);
+  void LoadEntries(const std::string& serialized);
 
  private:
-  // Populates |state| from the JSON string |serialized|. Returns true if
-  // all entries were parsed and deserialized correctly.
-  //
-  // Sets |*data_in_old_format| to true if the old data is in the old file
-  // format and needs to be overwritten with data in the newer format; false
-  // otherwise.
-  static bool Deserialize(const std::string& serialized,
-                          bool* data_in_old_format,
+  // Populates |state| from the JSON string |serialized|.
+  static void Deserialize(const std::string& serialized,
                           TransportSecurityState* state);
-
-  // Used internally by Deserialize() to handle older dictionaries.
-  // TODO(https://crbug.com/1086975): This should be removed in Chrome 88.
-  static bool DeserializeObsoleteData(const base::Value& value,
-                                      bool* dirty,
-                                      TransportSecurityState* state);
 
   void CompleteLoad(const std::string& state);
   void OnWriteFinished(base::OnceClosure callback);
 
-  TransportSecurityState* transport_security_state_;
+  raw_ptr<TransportSecurityState> transport_security_state_;
 
   // Helper for safely writing the data.
   base::ImportantFileWriter writer_;
@@ -141,8 +133,6 @@ class NET_EXPORT TransportSecurityPersister
   scoped_refptr<base::SequencedTaskRunner> background_runner_;
 
   base::WeakPtrFactory<TransportSecurityPersister> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TransportSecurityPersister);
 };
 
 }  // namespace net

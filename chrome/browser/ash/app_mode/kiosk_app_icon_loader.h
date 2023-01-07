@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace base {
@@ -31,16 +31,17 @@ class KioskAppIconLoader {
   };
 
   using ResultCallback =
-      base::OnceCallback<void(base::Optional<gfx::ImageSkia> result)>;
+      base::OnceCallback<void(absl::optional<gfx::ImageSkia> result)>;
 
   explicit KioskAppIconLoader(Delegate* delegate);
-
+  KioskAppIconLoader(const KioskAppIconLoader&) = delete;
+  KioskAppIconLoader& operator=(const KioskAppIconLoader&) = delete;
   ~KioskAppIconLoader();
 
   void Start(const base::FilePath& icon_path);
 
  private:
-  void OnImageDecodingFinished(base::Optional<gfx::ImageSkia> result);
+  void OnImageDecodingFinished(absl::optional<gfx::ImageSkia> result);
 
   // Delegate always lives longer than this class as it's owned by delegate.
   Delegate* const delegate_;
@@ -48,8 +49,6 @@ class KioskAppIconLoader {
   gfx::ImageSkia icon_;
 
   base::WeakPtrFactory<KioskAppIconLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(KioskAppIconLoader);
 };
 
 }  // namespace ash

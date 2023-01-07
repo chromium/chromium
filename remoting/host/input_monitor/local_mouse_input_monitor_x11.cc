@@ -1,7 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/host/input_monitor/local_pointer_input_monitor.h"
 
 #include <sys/select.h>
@@ -14,9 +15,8 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/input_monitor/local_input_monitor_x11_common.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/event.h"
@@ -37,6 +37,11 @@ class LocalMouseInputMonitorX11 : public LocalPointerInputMonitor {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       LocalInputMonitor::PointerMoveCallback on_mouse_move);
+
+  LocalMouseInputMonitorX11(const LocalMouseInputMonitorX11&) = delete;
+  LocalMouseInputMonitorX11& operator=(const LocalMouseInputMonitorX11&) =
+      delete;
+
   ~LocalMouseInputMonitorX11() override;
 
  private:
@@ -47,6 +52,9 @@ class LocalMouseInputMonitorX11 : public LocalPointerInputMonitor {
     Core(scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
          scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
          LocalInputMonitor::PointerMoveCallback on_mouse_move);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
 
     void Start();
     void Stop();
@@ -73,16 +81,12 @@ class LocalMouseInputMonitorX11 : public LocalPointerInputMonitor {
     // Used to send mouse event notifications.
     LocalInputMonitor::PointerMoveCallback on_mouse_move_;
 
-    x11::Connection* connection_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
+    raw_ptr<x11::Connection> connection_ = nullptr;
   };
 
   scoped_refptr<Core> core_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalMouseInputMonitorX11);
 };
 
 LocalMouseInputMonitorX11::LocalMouseInputMonitorX11(

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@
     (BookmarkInteractionController*)controller;
 
 // Called when the controller is stopped and the receiver can safely free any
-// references to |controller|.
+// references to `controller`.
 - (void)bookmarkInteractionControllerDidStop:
     (BookmarkInteractionController*)controller;
 

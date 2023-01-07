@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,11 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.touch_to_fill.data.Credential;
+import org.chromium.chrome.browser.touch_to_fill.data.WebAuthnCredential;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 
@@ -60,8 +62,21 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
     }
 
     @CalledByNative
-    private void showCredentials(String url, boolean isOriginSecure, Credential[] credentials) {
-        mTouchToFillComponent.showCredentials(url, isOriginSecure, Arrays.asList(credentials));
+    private static WebAuthnCredential[] createWebAuthnCredentialArray(int size) {
+        return new WebAuthnCredential[size];
+    }
+
+    @CalledByNative
+    private static void insertWebAuthnCredential(
+            WebAuthnCredential[] credentials, int index, String username, String id) {
+        credentials[index] = new WebAuthnCredential(username, id);
+    }
+
+    @CalledByNative
+    private void showCredentials(GURL url, boolean isOriginSecure, Credential[] credentials,
+            WebAuthnCredential[] webAuthnCredentials, boolean submitCredential) {
+        mTouchToFillComponent.showCredentials(url, isOriginSecure, Arrays.asList(credentials),
+                Arrays.asList(webAuthnCredentials), submitCredential);
     }
 
     @Override
@@ -81,9 +96,18 @@ class TouchToFillBridge implements TouchToFillComponent.Delegate {
         }
     }
 
+    @Override
+    public void onWebAuthnCredentialSelected(WebAuthnCredential credential) {
+        if (mNativeView != 0) {
+            TouchToFillBridgeJni.get().onWebAuthnCredentialSelected(mNativeView, credential);
+        }
+    }
+
     @NativeMethods
     interface Natives {
         void onCredentialSelected(long nativeTouchToFillViewImpl, Credential credential);
+        void onWebAuthnCredentialSelected(
+                long nativeTouchToFillViewImpl, WebAuthnCredential credential);
         void onManagePasswordsSelected(long nativeTouchToFillViewImpl);
         void onDismiss(long nativeTouchToFillViewImpl);
     }

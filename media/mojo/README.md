@@ -97,6 +97,18 @@ Note that `media::mojom::InterfaceFactory` interface is reused in the
 communication between `MediaInterfaceProxy` and `MediaService` (see
 [below](#Site-Isolation)).
 
+### Frameless Media Interface Factory
+
+In addition to the main `MediaInterfaceProxy`, which handles requests from
+ordinary media playback, `FramelessMediaInterfaceProxy` handles requests for
+media cases that do not need or have a frame.
+
+A frame is required for protected media playback because media decoding and
+the CDM are associated within a frame.
+
+The `FramelessMediaInterfaceProxy` is used by WebCodecs (which may be operating
+in a worker context), by WebRTC, and for early querying of supported codecs.
+
 ### MediaService
 
 The MediaService is a mojo `service_manager::Service` that provides media player
@@ -107,13 +119,13 @@ mojo interface implementations. It comes with some nice benefits.
 Different platforms or products have different requirements on where the remote
 media components should run. For example, a hardware decoder typically should
 run in the GPU process. The `ServiceManagerContext` provides the ability to run
-a service_manager::Service in-process (browser), out-of-process (utility) or in
-the GPU process. Therefore, by using a `MediaService`, it’s very easy to support
-hosting remote media components interfaces in most common Chromium process types
-(Browser/Utility/GPU). This can by set using the gn argument  `mojo_media_host`,
+a service in-process (browser) or in the GPU process. Therefore, by using a
+`MediaService`, it’s very easy to support hosting remote media components
+interfaces in most common Chromium process types (Browser/GPU). This can by set
+using the gn argument  `mojo_media_host`,
 e.g.
 ```
-mojo_media_host = "browser" or “gpu” or “utility”
+mojo_media_host = "browser" or “gpu”
 ```
 
 MediaService is registered in `ServiceManagerContext` using `kMediaServiceName`.

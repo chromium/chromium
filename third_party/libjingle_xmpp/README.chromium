@@ -7,18 +7,17 @@ Security Critical: Yes
 License Android Compatible: Yes
 
 Description:
-XMPP (Extensible Messaging and Presence Protocol) is a communications protocol
-for messaging based on XML. xmllite is a minimalistic library for parsing and
-generating XML. The source for these libraries originates from the libjingle
-project, which was merged into the WebRTC codebase where it received minor
-updates. The code in the task_runner subdirectory used to live in
-third_party/webrtc/base, and it is a dependency for these libraries and
-Chromium's jingle component. As time passed, the code was no longer used in
-WebRTC but is still used in Chromium. Only the parts that are used in Chromium
-are added here.
+xmllite is a minimalistic library for parsing and generating XML. Initially it
+was a part of libjingle, which was used in chromium in the past. xmllite is the
+only part of libjingle still being used in chromium, particularly in
+//remoting.
 
-Nothing but Chromium uses this copy. If code in this directory is found to be
-unused in Chromium, it's OK to delete it.
+Nothing outside Chromium uses this copy. If code in this directory is found to
+be unused in Chromium, it's OK to delete it.
+
+The targets are restricted to current consumers. People considering whether
+to add new consumers should consider if they want to take over maintenance
+of the library.
 
 Local Modifications:
 This code does not exist in an upstream repo anymore.

@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -148,21 +148,14 @@ void ShapeOutsideInfo::SetPercentageResolutionInlineSize(
 
 static bool CheckShapeImageOrigin(Document& document,
                                   const StyleImage& style_image) {
-  if (style_image.IsGeneratedImage())
+  String failing_url;
+  if (style_image.IsAccessAllowed(failing_url))
     return true;
-
-  DCHECK(style_image.CachedImage());
-  ImageResourceContent& image_content = *(style_image.CachedImage());
-  if (image_content.IsAccessAllowed())
-    return true;
-
-  const KURL& url = image_content.Url();
-  String url_string = url.IsNull() ? "''" : url.ElidedString();
+  String url_string = failing_url.IsNull() ? "''" : failing_url;
   document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kSecurity,
       mojom::ConsoleMessageLevel::kError,
       "Unsafe attempt to load URL " + url_string + "."));
-
   return false;
 }
 
@@ -196,19 +189,20 @@ std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
           LayoutObject::ShouldRespectImageOrientation(layout_box_));
 
   const LayoutSize& image_size = RoundedLayoutSize(style_image->ImageSize(
-      layout_box_->GetDocument(), layout_box_->StyleRef().EffectiveZoom(),
-      FloatSize(reference_box_logical_size_), respect_orientation));
+      layout_box_->StyleRef().EffectiveZoom(),
+      gfx::SizeF(reference_box_logical_size_), respect_orientation));
 
   const LayoutRect& margin_rect =
       GetShapeImageMarginRect(*layout_box_, reference_box_logical_size_);
-  const LayoutRect& image_rect =
-      (layout_box_->IsLayoutImage())
-          ? To<LayoutImage>(layout_box_)->ReplacedContentRect().ToLayoutRect()
-          : LayoutRect(LayoutPoint(), image_size);
+  const LayoutRect& image_rect = (layout_box_->IsLayoutImage())
+                                     ? To<LayoutImage>(layout_box_.Get())
+                                           ->ReplacedContentRect()
+                                           .ToLayoutRect()
+                                     : LayoutRect(LayoutPoint(), image_size);
 
   scoped_refptr<Image> image =
       style_image->GetImage(*layout_box_, layout_box_->GetDocument(),
-                            layout_box_->StyleRef(), FloatSize(image_size));
+                            layout_box_->StyleRef(), gfx::SizeF(image_size));
 
   return Shape::CreateRasterShape(image.get(), shape_image_threshold,
                                   image_rect, margin_rect, writing_mode, margin,
@@ -231,7 +225,7 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
   // block has a vertical scrollbar and its content is smaller than the
   // scrollbar width.
   LayoutUnit percentage_resolution_inline_size =
-      containing_block.IsLayoutNGMixin()
+      containing_block.IsLayoutNGObject()
           ? percentage_resolution_inline_size_
           : std::max(LayoutUnit(), containing_block.ContentWidth());
 
@@ -252,6 +246,7 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
       break;
     case ShapeValue::kImage:
       DCHECK(shape_value.GetImage());
+      DCHECK(shape_value.GetImage()->IsLoaded());
       DCHECK(shape_value.GetImage()->CanRender());
       shape_ = CreateShapeForImage(shape_value.GetImage(),
                                    shape_image_threshold, writing_mode, margin);
@@ -391,7 +386,7 @@ bool ShapeOutsideInfo::IsEnabledFor(const LayoutBox& box) {
     case ShapeValue::kImage: {
       StyleImage* image = shape_value->GetImage();
       DCHECK(image);
-      return image->CanRender() &&
+      return image->IsLoaded() && image->CanRender() &&
              CheckShapeImageOrigin(box.GetDocument(), *image);
     }
     case ShapeValue::kBox:
@@ -432,7 +427,7 @@ ShapeOutsideDeltas ShapeOutsideInfo::ComputeDeltasForContainingBlockLine(
                 : containing_block.MarginEndForChild(*layout_box_);
         LayoutUnit raw_left_margin_box_delta =
             segment.logical_left + LogicalLeftOffset() + logical_left_margin;
-        LayoutUnit left_margin_box_delta = clampTo<LayoutUnit>(
+        LayoutUnit left_margin_box_delta = ClampTo<LayoutUnit>(
             raw_left_margin_box_delta, LayoutUnit(), float_margin_box_width);
 
         LayoutUnit logical_right_margin =
@@ -443,7 +438,7 @@ ShapeOutsideDeltas ShapeOutsideInfo::ComputeDeltasForContainingBlockLine(
             segment.logical_right + LogicalLeftOffset() -
             containing_block.LogicalWidthForChild(*layout_box_) -
             logical_right_margin;
-        LayoutUnit right_margin_box_delta = clampTo<LayoutUnit>(
+        LayoutUnit right_margin_box_delta = ClampTo<LayoutUnit>(
             raw_right_margin_box_delta, -float_margin_box_width, LayoutUnit());
 
         shape_outside_deltas_ =
@@ -483,14 +478,26 @@ PhysicalRect ShapeOutsideInfo::ComputedShapePhysicalBoundingBox() const {
   return PhysicalRect(physical_bounding_box);
 }
 
-FloatPoint ShapeOutsideInfo::ShapeToLayoutObjectPoint(FloatPoint point) const {
-  FloatPoint result = FloatPoint(point.X() + LogicalLeftOffset(),
-                                 point.Y() + LogicalTopOffset());
+gfx::PointF ShapeOutsideInfo::ShapeToLayoutObjectPoint(
+    gfx::PointF point) const {
+  gfx::PointF result = gfx::PointF(point.x() + LogicalLeftOffset(),
+                                   point.y() + LogicalTopOffset());
   if (layout_box_->StyleRef().IsFlippedBlocksWritingMode())
-    result.SetY(layout_box_->LogicalHeight() - result.Y());
+    result.set_y(layout_box_->LogicalHeight() - result.y());
   if (!layout_box_->StyleRef().IsHorizontalWritingMode())
-    result = result.TransposedPoint();
+    result.Transpose();
   return result;
+}
+
+// static
+ShapeOutsideInfo::InfoMap& ShapeOutsideInfo::GetInfoMap() {
+  DEFINE_STATIC_LOCAL(Persistent<InfoMap>, static_info_map,
+                      (MakeGarbageCollected<InfoMap>()));
+  return *static_info_map;
+}
+
+void ShapeOutsideInfo::Trace(Visitor* visitor) const {
+  visitor->Trace(layout_box_);
 }
 
 }  // namespace blink

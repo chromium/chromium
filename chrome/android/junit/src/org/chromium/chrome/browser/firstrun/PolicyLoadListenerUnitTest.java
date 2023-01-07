@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,8 @@ import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowProcess;
 
 import org.chromium.base.Callback;
@@ -29,6 +31,8 @@ import org.chromium.components.policy.PolicyService;
 /** Unit tests for PolicyLoadListener. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowProcess.class})
+// TODO(crbug.com/1210371): Change to use paused loop. See crbug for details.
+@LooperMode(LooperMode.Mode.LEGACY)
 public class PolicyLoadListenerUnitTest {
     private static final String LOADED_POLICY_READY = "Policy service should be ready to read.";
     private static final String LOADED_NO_POLICY = "Policy should not exist.";
@@ -164,6 +168,24 @@ public class PolicyLoadListenerUnitTest {
         // and the state for PolicyLoadListener should stay at not finished.
         mTestPolicyServiceSupplier.set(mPolicyService);
         Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.get());
+        Mockito.verify(mListener, never()).onResult(anyBoolean());
+    }
+
+    @Test
+    public void testDestroyAfterStart_PolicyInitializedInterleaved() {
+        Assert.assertNull(LOADING_NOT_FINISHED, mPolicyLoadListener.onAvailable(mListener));
+
+        // OneshotSupplierImpl will post to a Handler when it runs callbacks. By pausing the main
+        // looper, we temporarily stop these from being run. Otherwise Robolectric will run them
+        // synchronously.
+        ShadowLooper.pauseMainLooper();
+        mAppRestrictionsCallback.onResult(false);
+        Assert.assertFalse(LOADED_NO_POLICY, mPolicyLoadListener.get());
+
+        // Because #destroy() is called before mListener has been notified, the notification should
+        // dropped.
+        mPolicyLoadListener.destroy();
+        ShadowLooper.unPauseMainLooper();
         Mockito.verify(mListener, never()).onResult(anyBoolean());
     }
 

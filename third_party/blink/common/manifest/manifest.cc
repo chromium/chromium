@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,41 +14,111 @@ Manifest::ImageResource::~ImageResource() = default;
 
 bool Manifest::ImageResource::operator==(
     const Manifest::ImageResource& other) const {
-  return src == other.src && type == other.type && sizes == other.sizes;
+  auto AsTuple = [](const auto& item) {
+    return std::tie(item.src, item.type, item.sizes);
+  };
+  return AsTuple(*this) == AsTuple(other);
 }
 
 Manifest::ShortcutItem::ShortcutItem() = default;
 
 Manifest::ShortcutItem::~ShortcutItem() = default;
 
+bool Manifest::ShortcutItem::operator==(const ShortcutItem& other) const {
+  auto AsTuple = [](const auto& item) {
+    return std::tie(item.name, item.short_name, item.description, item.url,
+                    item.icons);
+  };
+  return AsTuple(*this) == AsTuple(other);
+}
+
+bool Manifest::FileFilter::operator==(const FileFilter& other) const {
+  auto AsTuple = [](const auto& item) {
+    return std::tie(item.name, item.accept);
+  };
+  return AsTuple(*this) == AsTuple(other);
+}
+
 Manifest::ShareTargetParams::ShareTargetParams() = default;
 
 Manifest::ShareTargetParams::~ShareTargetParams() = default;
+
+bool Manifest::ShareTargetParams::operator==(
+    const ShareTargetParams& other) const {
+  auto AsTuple = [](const auto& item) {
+    return std::tie(item.title, item.text, item.url, item.files);
+  };
+  return AsTuple(*this) == AsTuple(other);
+}
 
 Manifest::ShareTarget::ShareTarget() = default;
 
 Manifest::ShareTarget::~ShareTarget() = default;
 
+bool Manifest::ShareTarget::operator==(const ShareTarget& other) const {
+  auto AsTuple = [](const auto& item) {
+    return std::tie(item.action, item.method, item.enctype, item.params);
+  };
+  return AsTuple(*this) == AsTuple(other);
+}
+
 Manifest::RelatedApplication::RelatedApplication() = default;
 
 Manifest::RelatedApplication::~RelatedApplication() = default;
 
-Manifest::Manifest() = default;
+bool Manifest::RelatedApplication::operator==(
+    const RelatedApplication& other) const {
+  auto AsTuple = [](const auto& item) {
+    return std::tie(item.platform, item.url, item.id);
+  };
+  return AsTuple(*this) == AsTuple(other);
+}
 
-Manifest::Manifest(const Manifest& other) = default;
+bool Manifest::LaunchHandler::operator==(const LaunchHandler& other) const {
+  return client_mode == other.client_mode;
+}
 
-Manifest::~Manifest() = default;
+bool Manifest::LaunchHandler::operator!=(const LaunchHandler& other) const {
+  return !(*this == other);
+}
 
-bool Manifest::IsEmpty() const {
-  return !name && !short_name && start_url.is_empty() &&
-         display == blink::mojom::DisplayMode::kUndefined &&
-         display_override.empty() &&
-         orientation == device::mojom::ScreenOrientationLockType::DEFAULT &&
-         icons.empty() && shortcuts.empty() && !share_target.has_value() &&
-         related_applications.empty() && file_handlers.empty() &&
-         !prefer_related_applications && !theme_color && !background_color &&
-         !gcm_sender_id && scope.is_empty() && protocol_handlers.empty() &&
-         url_handlers.empty();
+Manifest::TranslationItem::TranslationItem() = default;
+
+Manifest::TranslationItem::~TranslationItem() = default;
+
+bool Manifest::TranslationItem::operator==(const TranslationItem& other) const {
+  auto AsTuple = [](const auto& item) {
+    return std::tie(item.name, item.short_name, item.description);
+  };
+  return AsTuple(*this) == AsTuple(other);
+}
+
+Manifest::HomeTabParams::HomeTabParams() = default;
+
+Manifest::HomeTabParams::~HomeTabParams() = default;
+
+bool Manifest::HomeTabParams::operator==(const HomeTabParams& other) const {
+  return icons == other.icons;
+}
+
+Manifest::NewTabButtonParams::NewTabButtonParams() = default;
+
+Manifest::NewTabButtonParams::~NewTabButtonParams() = default;
+
+bool Manifest::NewTabButtonParams::operator==(
+    const NewTabButtonParams& other) const {
+  return url == other.url;
+}
+
+Manifest::TabStrip::TabStrip() = default;
+
+Manifest::TabStrip::~TabStrip() = default;
+
+bool Manifest::TabStrip::operator==(const TabStrip& other) const {
+  auto AsTuple = [](const auto& item) {
+    return std::tie(item.home_tab, item.new_tab_button);
+  };
+  return AsTuple(*this) == AsTuple(other);
 }
 
 }  // namespace blink

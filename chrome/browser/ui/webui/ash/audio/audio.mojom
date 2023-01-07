@@ -1,0 +1,55 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module audio.mojom;
+
+struct DeviceData {
+  // String for the device type.
+  string type;
+  uint64 id;
+  string display_name;
+  bool is_active;
+  bool is_input;
+  int32 volume_gain_percent;
+  bool is_muted;
+};
+
+// Interface for creating page handler.
+interface PageHandlerFactory {
+    // Creates a page handler to update and respond to requests or
+    // audio device information.
+    CreatePageHandler(pending_remote<Page> page,
+                      pending_receiver<PageHandler> handler);
+};
+
+// Interface for browser-side handler.
+// Respond to calls from the WebUI page.
+interface PageHandler {
+    // Request to get audio device information from the browser side.
+    GetAudioDeviceInfo();
+
+    // Request to get active output device name from the browser side.
+    // Return nullopt if active output device does not exist.
+    GetActiveOutputDeviceName() => (string? device_name);
+
+    // Request to get active input device name from the browser side.
+    // Return nullopt if active input device does not exist.
+    GetActiveInputDeviceName() => (string? device_name);
+
+    // Request to open Chrome feedback dialog.
+    OpenFeedbackDialog();
+};
+
+// Interface for the WebUI page.
+// Respond to calls from the browser end.
+interface Page {
+    // Updates the page with new audio device information.
+    UpdateDeviceInfo(map<uint64, DeviceData> devices);
+
+    // Updates device volume.
+    UpdateDeviceVolume(uint64 node_id, int32 volume);
+
+    // Updates device mute state.
+    UpdateDeviceMute(uint64 node_id, bool is_muted);
+};

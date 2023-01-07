@@ -1,6 +1,12 @@
+ender@google.com
 jdonnelly@chromium.org
+mahmadi@chromium.org
 manukh@chromium.org
+mfacey@chromium.org
 mpearson@chromium.org
 orinj@chromium.org
 tommycli@chromium.org
 yoangela@chromium.org
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

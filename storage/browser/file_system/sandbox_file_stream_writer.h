@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "storage/browser/blob/shareable_file_reference.h"
 #include "storage/browser/file_system/file_stream_writer.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -33,6 +32,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamWriter
                           const FileSystemURL& url,
                           int64_t initial_offset,
                           const UpdateObserverList& observers);
+
+  SandboxFileStreamWriter(const SandboxFileStreamWriter&) = delete;
+  SandboxFileStreamWriter& operator=(const SandboxFileStreamWriter&) = delete;
+
   ~SandboxFileStreamWriter() override;
 
   // FileStreamWriter overrides.
@@ -91,8 +94,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxFileStreamWriter
   int64_t default_quota_;
 
   base::WeakPtrFactory<SandboxFileStreamWriter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxFileStreamWriter);
 };
 
 }  // namespace storage

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -71,7 +71,7 @@ void FontFaceSetWorker::FireDoneEventIfPossible() {
 
 bool FontFaceSetWorker::ResolveFontStyle(const String& font_string,
                                          Font& font) {
-  if (font_string.IsEmpty())
+  if (font_string.empty())
     return false;
 
   // Interpret fontString in the same way as the 'font' attribute of
@@ -81,7 +81,9 @@ bool FontFaceSetWorker::ResolveFontStyle(const String& font_string,
     return false;
 
   FontFamily font_family;
-  font_family.SetFamily(FontFaceSet::kDefaultFontFamily);
+  font_family.SetFamily(
+      FontFaceSet::kDefaultFontFamily,
+      FontFamily::InferredTypeFor(FontFaceSet::kDefaultFontFamily));
 
   FontDescription default_font_description;
   default_font_description.SetFamily(font_family);

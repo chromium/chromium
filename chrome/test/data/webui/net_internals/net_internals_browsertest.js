@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,12 @@
  * @fileoverview The way these tests work is as follows:
  * C++ in net_internals_ui_browsertest.cc does any necessary setup, and then
  * calls the entry point for a test with RunJavascriptTest.  The called
- * function can then use the assert/expect functions defined in test_api.js.
+ * function can then use the assert functions defined in test_api.js.
  * All callbacks from the browser are wrapped in such a way that they can
- * also use the assert/expect functions.
+ * also use the assert functions.
  *
  * A test ends when testDone is called.  This can be done by the test itself,
- * but will also be done by the test framework when an assert/expect test fails
+ * but will also be done by the test framework when an assert test fails
  * or an exception is thrown.
  */
 GEN_INCLUDE(
@@ -59,10 +59,44 @@ NetInternalsDnsViewTest.prototype = {
 
   browsePreload:
       'chrome://net-internals/index.html?module=net_internals/dns_view_test.js',
+
+  /** @param {string} testName The name of the test to run. */
+  runMochaTest: function(testName) {
+    runMochaTest(dns_view_test.suiteName, testName);
+  },
 };
 
+TEST_F(
+    'NetInternalsDnsViewTest', 'ResolveSingleHostWithoutMetadata', function() {
+      this.runMochaTest(
+          dns_view_test.TestNames.ResolveSingleHostWithoutMetadata);
+    });
+
+TEST_F(
+    'NetInternalsDnsViewTest', 'ResolveSingleHostWithHTTP2Metadata',
+    function() {
+      this.runMochaTest(dns_view_test.TestNames.ResolveSingleHostWithHTTP2Alpn);
+    });
+
+TEST_F(
+    'NetInternalsDnsViewTest', 'ResolveSingleHostWithHTTP3Metadata',
+    function() {
+      this.runMochaTest(dns_view_test.TestNames.ResolveSingleHostWithHTTP3Alpn);
+    });
+
+TEST_F(
+    'NetInternalsDnsViewTest', 'ResolveMultipleHostWithMultipleAlpns',
+    function() {
+      this.runMochaTest(
+          dns_view_test.TestNames.ResolveMultipleHostWithMultipleAlpns);
+    });
+
+TEST_F('NetInternalsDnsViewTest', 'ErrorNameNotResolved', function() {
+  this.runMochaTest(dns_view_test.TestNames.ErrorNameNotResolved);
+});
+
 TEST_F('NetInternalsDnsViewTest', 'ClearCache', function() {
-  mocha.run();
+  this.runMochaTest(dns_view_test.TestNames.ClearCache);
 });
 
 /**

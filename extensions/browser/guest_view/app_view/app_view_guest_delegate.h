@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 namespace content {
 struct ContextMenuParams;
+class RenderFrameHost;
 class WebContents;
 }
 
@@ -20,8 +21,13 @@ class AppViewGuestDelegate {
   virtual ~AppViewGuestDelegate();
 
   // Shows the context menu for the guest.
+  //
+  // The `render_frame_host` represents the frame that requests the context menu
+  // (typically this frame is focused, but this is not necessarily the case -
+  // see https://crbug.com/1257907#c14).
+  //
   // Returns true if the context menu was handled.
-  virtual bool HandleContextMenu(content::WebContents* web_contents,
+  virtual bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                                  const content::ContextMenuParams& params) = 0;
 
   // Returns an AppDelegate to be used by the AppViewGuest.

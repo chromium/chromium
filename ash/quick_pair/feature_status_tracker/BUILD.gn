@@ -1,0 +1,104 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+
+static_library("feature_status_tracker") {
+  sources = [
+    "base_enabled_provider.cc",
+    "base_enabled_provider.h",
+    "bluetooth_enabled_provider.cc",
+    "bluetooth_enabled_provider.h",
+    "fast_pair_enabled_provider.cc",
+    "fast_pair_enabled_provider.h",
+    "fast_pair_pref_enabled_provider.cc",
+    "fast_pair_pref_enabled_provider.h",
+    "fast_pair_support_utils.cc",
+    "fast_pair_support_utils.h",
+    "google_api_key_availability_provider.cc",
+    "google_api_key_availability_provider.h",
+    "logged_in_user_enabled_provider.cc",
+    "logged_in_user_enabled_provider.h",
+    "quick_pair_feature_status_tracker.h",
+    "quick_pair_feature_status_tracker_impl.cc",
+    "quick_pair_feature_status_tracker_impl.h",
+    "screen_state_enabled_provider.cc",
+    "screen_state_enabled_provider.h",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/quick_pair/common",
+    "//base",
+    "//components/prefs",
+    "//device/bluetooth",
+    "//google_apis",
+    "//skia",
+    "//ui/display",
+    "//ui/display/manager",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_bluetooth_adapter.cc",
+    "fake_bluetooth_adapter.h",
+    "fake_feature_status_tracker.cc",
+    "fake_feature_status_tracker.h",
+    "mock_bluetooth_enabled_provider.cc",
+    "mock_bluetooth_enabled_provider.h",
+    "mock_fast_pair_pref_enabled_provider.cc",
+    "mock_fast_pair_pref_enabled_provider.h",
+    "mock_google_api_key_availability_provider.cc",
+    "mock_google_api_key_availability_provider.h",
+    "mock_logged_in_user_enabled_provider.cc",
+    "mock_logged_in_user_enabled_provider.h",
+    "mock_quick_pair_feature_status_tracker.cc",
+    "mock_quick_pair_feature_status_tracker.h",
+    "mock_screen_state_enabled_provider.cc",
+    "mock_screen_state_enabled_provider.h",
+    "quick_pair_feature_status_tracker.h",
+  ]
+
+  deps = [
+    ":feature_status_tracker",
+    "//base/test:test_support",
+    "//device/bluetooth:mocks",
+    "//skia",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "base_enabled_provider_unittest.cc",
+    "bluetooth_enabled_provider_unittest.cc",
+    "fast_pair_enabled_provider_unittest.cc",
+    "fast_pair_support_utils_unittest.cc",
+    "logged_in_user_enabled_provider_unittest.cc",
+    "screen_state_enabled_provider_unittest.cc",
+  ]
+
+  deps = [
+    ":feature_status_tracker",
+    ":test_support",
+    "//ash:test_support",
+    "//ash/constants",
+    "//ash/quick_pair/common",
+    "//base/test:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
+    "//skia",
+    "//testing/gtest",
+    "//ui/display/fake",
+  ]
+}

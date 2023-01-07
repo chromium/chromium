@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,8 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_context.h"
@@ -74,7 +73,6 @@ void WebUIUserScriptLoader::AddScripts(
 
 void WebUIUserScriptLoader::LoadScripts(
     std::unique_ptr<extensions::UserScriptList> user_scripts,
-    const std::set<extensions::mojom::HostID>& changed_hosts,
     const std::set<std::string>& added_script_ids,
     LoadScriptsCallback callback) {
   DCHECK(!user_scripts_cache_) << "Loading scripts in flight.";

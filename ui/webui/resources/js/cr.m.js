@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
  * logic in js_modulizer.py only to address the cr.js case, which is not worth
  * it.
  */
-import {assert, assertNotReached} from './assert.m.js';
-import {PromiseResolver} from './promise_resolver.m.js';
+import {assert, assertNotReached} from './assert.js';
+import {PromiseResolver} from './promise_resolver.js';
 
 /** @typedef {{eventName: string, uid: number}} */
 export let WebUIListener;
@@ -32,17 +32,16 @@ function createUid() {
  * Dispatches a simple event on an event target.
  * @param {!EventTarget} target The event target to dispatch the event on.
  * @param {string} type The type of the event.
- * @param {boolean=} opt_bubbles Whether the event bubbles or not.
- * @param {boolean=} opt_cancelable Whether the default action of the event
+ * @param {boolean=} bubbles Whether the event bubbles or not.
+ * @param {boolean=} cancelable Whether the default action of the event
  *     can be prevented. Default is true.
  * @return {boolean} If any of the listeners called {@code preventDefault}
  *     during the dispatch this will return false.
  */
-export function dispatchSimpleEvent(target, type, opt_bubbles, opt_cancelable) {
-  const e = new Event(type, {
-    bubbles: opt_bubbles,
-    cancelable: opt_cancelable === undefined || opt_cancelable
-  });
+export function dispatchSimpleEvent(target, type, bubbles, cancelable) {
+  const e = new Event(
+      type,
+      {bubbles: bubbles, cancelable: cancelable === undefined || cancelable});
   return target.dispatchEvent(e);
 }
 
@@ -204,7 +203,7 @@ export const isWindows = /Win/.test(navigator.platform);
 /** Whether this is the ChromeOS/ash web browser. */
 export const isChromeOS = (() => {
   let returnValue = false;
-  // <if expr="chromeos">
+  // <if expr="chromeos_ash">
   returnValue = true;
   // </if>
   return returnValue;
@@ -213,7 +212,7 @@ export const isChromeOS = (() => {
 /** Whether this is the ChromeOS/Lacros web browser. */
 export const isLacros = (() => {
   let returnValue = false;
-  // <if expr="lacros">
+  // <if expr="chromeos_lacros">
   returnValue = true;
   // </if>
   return returnValue;
@@ -262,7 +261,7 @@ export const PropertyKind = {
    * element has the attribute then the value is true.
    * Use only for properties of type {boolean}.
    */
-  BOOL_ATTR: 'boolAttr'
+  BOOL_ATTR: 'boolAttr',
 };
 
 /**
@@ -302,11 +301,11 @@ function getGetter(name, kind) {
  *     for.
  * @param {PropertyKind} kind The kind of property we are getting the
  *     setter for.
- * @param {function(*, *):void=} opt_setHook A function to run after the
+ * @param {function(*, *):void=} setHook A function to run after the
  *     property is set, but before the propertyChange event is fired.
  * @return {function(*):void} The function to use as a setter.
  */
-function getSetter(name, kind, opt_setHook) {
+function getSetter(name, kind, setHook) {
   let attributeName;
   switch (kind) {
     case PropertyKind.JS:
@@ -315,8 +314,8 @@ function getSetter(name, kind, opt_setHook) {
         const oldValue = this[name];
         if (value !== oldValue) {
           this[privateName] = value;
-          if (opt_setHook) {
-            opt_setHook.call(this, value, oldValue);
+          if (setHook) {
+            setHook.call(this, value, oldValue);
           }
           dispatchPropertyChange(this, name, value, oldValue);
         }
@@ -332,8 +331,8 @@ function getSetter(name, kind, opt_setHook) {
           } else {
             this.setAttribute(attributeName, value);
           }
-          if (opt_setHook) {
-            opt_setHook.call(this, value, oldValue);
+          if (setHook) {
+            setHook.call(this, value, oldValue);
           }
           dispatchPropertyChange(this, name, value, oldValue);
         }
@@ -349,8 +348,8 @@ function getSetter(name, kind, opt_setHook) {
           } else {
             this.removeAttribute(attributeName);
           }
-          if (opt_setHook) {
-            opt_setHook.call(this, value, oldValue);
+          if (setHook) {
+            setHook.call(this, value, oldValue);
           }
           dispatchPropertyChange(this, name, value, oldValue);
         }
@@ -365,15 +364,13 @@ function getSetter(name, kind, opt_setHook) {
  * Object.defineProperty(). When the setter changes the value a property change
  * event with the type {@code name + 'Change'} is fired.
  * @param {string} name The name of the property.
- * @param {PropertyKind=} opt_kind What kind of underlying storage to use.
- * @param {function(?, ?):void=} opt_setHook A function to run after the
+ * @param {PropertyKind=} kind What kind of underlying storage to use.
+ * @param {function(?, ?):void=} setHook A function to run after the
  *     property is set, but before the propertyChange event is fired.
  */
-export function getPropertyDescriptor(name, opt_kind, opt_setHook) {
-  const kind = /** @type {PropertyKind} */ (opt_kind || PropertyKind.JS);
-
+export function getPropertyDescriptor(name, kind = PropertyKind.JS, setHook) {
   return {
     get: getGetter(name, kind),
-    set: getSetter(name, kind, opt_setHook),
+    set: getSetter(name, kind, setHook),
   };
 }

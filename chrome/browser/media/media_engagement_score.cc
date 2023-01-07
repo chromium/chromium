@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 #include <utility>
 
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/site_engagement/content/site_engagement_metrics.h"
 #include "media/base/media_switches.h"
 
@@ -25,6 +27,8 @@ const char MediaEngagementScore::kHighScoreLowerThresholdParamName[] =
 const char MediaEngagementScore::kHighScoreUpperThresholdParamName[] =
     "upper_threshold";
 
+base::TimeDelta kScoreExpirationDuration = base::Days(90);
+
 namespace {
 
 const int kScoreMinVisitsParamDefault = 20;
@@ -37,10 +41,10 @@ std::unique_ptr<base::DictionaryValue> GetMediaEngagementScoreDictForSettings(
   if (!settings)
     return std::make_unique<base::DictionaryValue>();
 
-  std::unique_ptr<base::DictionaryValue> value =
-      base::DictionaryValue::From(settings->GetWebsiteSetting(
+  std::unique_ptr<base::DictionaryValue> value = base::DictionaryValue::From(
+      content_settings::ToNullableUniquePtrValue(settings->GetWebsiteSetting(
           origin.GetURL(), origin.GetURL(),
-          ContentSettingsType::MEDIA_ENGAGEMENT, nullptr));
+          ContentSettingsType::MEDIA_ENGAGEMENT, nullptr)));
 
   if (value.get())
     return value;
@@ -146,18 +150,21 @@ MediaEngagementScore::MediaEngagementScore(MediaEngagementScore&&) = default;
 MediaEngagementScore& MediaEngagementScore::operator=(MediaEngagementScore&&) =
     default;
 
-void MediaEngagementScore::Commit() {
+void MediaEngagementScore::Commit(bool force_update) {
   DCHECK(settings_map_);
 
   if (origin_.opaque())
     return;
 
-  if (!UpdateScoreDict())
+  if (!UpdateScoreDict(force_update))
     return;
 
+  content_settings::ContentSettingConstraints constraints = {
+      base::Time::Now() + kScoreExpirationDuration};
   settings_map_->SetWebsiteSettingDefaultScope(
       origin_.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-      std::move(score_dict_));
+      content_settings::FromNullableUniquePtrValue(std::move(score_dict_)),
+      constraints);
 }
 
 void MediaEngagementScore::IncrementMediaPlaybacks() {
@@ -165,7 +172,7 @@ void MediaEngagementScore::IncrementMediaPlaybacks() {
   last_media_playback_time_ = clock_->Now();
 }
 
-bool MediaEngagementScore::UpdateScoreDict() {
+bool MediaEngagementScore::UpdateScoreDict(bool force_update) {
   int stored_visits = 0;
   int stored_media_playbacks = 0;
   double stored_last_media_playback_internal = 0;
@@ -200,13 +207,13 @@ bool MediaEngagementScore::UpdateScoreDict() {
                  stored_last_media_playback_internal !=
                      last_media_playback_time_.ToInternalValue();
 
-  if (!changed)
+  if (!changed && !force_update)
     return false;
 
   score_dict_->SetInteger(kVisitsKey, visits_);
   score_dict_->SetInteger(kMediaPlaybacksKey, media_playbacks_);
-  score_dict_->SetDouble(kLastMediaPlaybackTimeKey,
-                         last_media_playback_time_.ToInternalValue());
+  score_dict_->SetDoubleKey(kLastMediaPlaybackTimeKey,
+                            last_media_playback_time_.ToInternalValue());
   score_dict_->SetBoolean(kHasHighScoreKey, is_high_);
 
   // visitsWithMediaTag was deprecated in https://crbug.com/998687 and should

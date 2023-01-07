@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,15 +12,20 @@
 #include "net/cert/trial_comparison_cert_verifier.h"
 #include "net/der/encode_values.h"
 #include "net/der/parse_values.h"
+#include "net/net_buildflags.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "net/cert/cert_verify_proc_mac.h"
 #include "net/cert/internal/trust_store_mac.h"
 #endif
 
+#if BUILDFLAG(IS_WIN)
+#include "net/cert/cert_verify_proc_win.h"
+#endif
+
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType
 TrustImplTypeToMojom(net::TrustStoreMac::TrustImplType input) {
   switch (input) {
@@ -33,9 +38,12 @@ TrustImplTypeToMojom(net::TrustStoreMac::TrustImplType input) {
     case net::TrustStoreMac::TrustImplType::kSimple:
       return cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
           kSimple;
-    case net::TrustStoreMac::TrustImplType::kMruCache:
+    case net::TrustStoreMac::TrustImplType::kLruCache:
       return cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
-          kMruCache;
+          kLruCache;
+    case net::TrustStoreMac::TrustImplType::kDomainCacheFullCerts:
+      return cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType::
+          kDomainCacheFullCerts;
   }
 }
 #endif
@@ -51,12 +59,15 @@ TrialComparisonCertVerifierMojo::TrialComparisonCertVerifierMojo(
     mojo::PendingRemote<mojom::TrialComparisonCertVerifierReportClient>
         report_client,
     scoped_refptr<net::CertVerifyProc> primary_verify_proc,
-    scoped_refptr<net::CertVerifyProc> trial_verify_proc)
+    scoped_refptr<net::CertVerifyProcFactory> primary_verify_proc_factory,
+    scoped_refptr<net::CertVerifyProc> trial_verify_proc,
+    scoped_refptr<net::CertVerifyProcFactory> trial_verify_proc_factory)
     : receiver_(this, std::move(config_client_receiver)),
       report_client_(std::move(report_client)) {
   trial_comparison_cert_verifier_ =
       std::make_unique<net::TrialComparisonCertVerifier>(
-          primary_verify_proc, trial_verify_proc,
+          primary_verify_proc, primary_verify_proc_factory, trial_verify_proc,
+          trial_verify_proc_factory,
           base::BindRepeating(
               &TrialComparisonCertVerifierMojo::OnSendTrialReport,
               // Unretained safe because the report_callback will not be called
@@ -81,6 +92,13 @@ void TrialComparisonCertVerifierMojo::SetConfig(const Config& config) {
   trial_comparison_cert_verifier_->SetConfig(config);
 }
 
+void TrialComparisonCertVerifierMojo::UpdateChromeRootStoreData(
+    scoped_refptr<net::CertNetFetcher> cert_net_fetcher,
+    const net::ChromeRootStoreData* root_store_data) {
+  trial_comparison_cert_verifier_->UpdateChromeRootStoreData(
+      std::move(cert_net_fetcher), root_store_data);
+}
+
 void TrialComparisonCertVerifierMojo::OnTrialConfigUpdated(bool allowed) {
   trial_comparison_cert_verifier_->set_trial_allowed(allowed);
 }
@@ -98,7 +116,8 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
     const net::CertVerifyResult& trial_result) {
   mojom::CertVerifierDebugInfoPtr debug_info =
       mojom::CertVerifierDebugInfo::New();
-#if defined(OS_MAC)
+
+#if BUILDFLAG(IS_MAC)
   auto* mac_platform_debug_info =
       net::CertVerifyProcMac::ResultDebugData::Get(&primary_result);
   if (mac_platform_debug_info) {
@@ -125,7 +144,21 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
     debug_info->mac_trust_impl =
         TrustImplTypeToMojom(mac_trust_debug_info->trust_impl());
   }
-#endif
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
+  auto* win_platform_debug_info =
+      net::CertVerifyProcWin::ResultDebugData::Get(&primary_result);
+  if (win_platform_debug_info) {
+    debug_info->win_platform_debug_info =
+        mojom::WinPlatformVerifierDebugInfo::New();
+    debug_info->win_platform_debug_info->authroot_this_update =
+        win_platform_debug_info->authroot_this_update();
+    debug_info->win_platform_debug_info->authroot_sequence_number =
+        win_platform_debug_info->authroot_sequence_number();
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   auto* cert_verify_proc_builtin_debug_data =
       net::CertVerifyProcBuiltinResultDebugData::Get(&trial_result);
   if (cert_verify_proc_builtin_debug_data) {
@@ -139,6 +172,15 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
           encoded_generalized_time,
           encoded_generalized_time + net::der::kGeneralizedTimeLength);
     }
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+    if (cert_verify_proc_builtin_debug_data->chrome_root_store_version()) {
+      debug_info->chrome_root_store_debug_info =
+          mojom::ChromeRootStoreDebugInfo::New();
+      debug_info->chrome_root_store_debug_info->chrome_root_store_version =
+          cert_verify_proc_builtin_debug_data->chrome_root_store_version()
+              .value();
+    }
+#endif
   }
 
   report_client_->SendTrialReport(

@@ -1,12 +1,14 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync/engine/get_updates_processor.h"
 
 #include <stddef.h>
+#include <map>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
@@ -17,6 +19,9 @@
 #include "components/sync/engine/nigori/keystore_keys_handler.h"
 #include "components/sync/engine/syncer_proto_util.h"
 #include "components/sync/engine/update_handler.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "third_party/protobuf/src/google/protobuf/repeated_field.h"
 
 namespace syncer {
@@ -90,7 +95,7 @@ void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
     if (it == updates_by_type->end()) {
       DLOG(WARNING) << "Received update for unexpected type, or the type is "
                        "throttled or failed with partial failure:"
-                    << ModelTypeToString(type);
+                    << ModelTypeToDebugString(type);
       continue;
     }
 
@@ -114,7 +119,7 @@ void PartitionProgressMarkersByType(
     if (!request_types.Has(model_type)) {
       DLOG(WARNING)
           << "Skipping unexpected progress marker for non-enabled type "
-          << ModelTypeToString(model_type);
+          << ModelTypeToDebugString(model_type);
       continue;
     }
     index_map->insert(std::make_pair(model_type, i));
@@ -135,7 +140,7 @@ void PartitionContextMutationsByType(
     if (!request_types.Has(model_type)) {
       DLOG(WARNING)
           << "Skipping unexpected context mutation for non-enabled type "
-          << ModelTypeToString(model_type);
+          << ModelTypeToDebugString(model_type);
       continue;
     }
     index_map->insert(std::make_pair(model_type, i));
@@ -175,7 +180,7 @@ GetUpdatesProcessor::GetUpdatesProcessor(UpdateHandlerMap* update_handler_map,
                                          const GetUpdatesDelegate& delegate)
     : update_handler_map_(update_handler_map), delegate_(delegate) {}
 
-GetUpdatesProcessor::~GetUpdatesProcessor() {}
+GetUpdatesProcessor::~GetUpdatesProcessor() = default;
 
 SyncerError GetUpdatesProcessor::DownloadUpdates(ModelTypeSet* request_types,
                                                  SyncCycle* cycle) {
@@ -198,15 +203,15 @@ void GetUpdatesProcessor::PrepareGetUpdates(
   for (ModelType type : gu_types) {
     auto handler_it = update_handler_map_->find(type);
     DCHECK(handler_it != update_handler_map_->end())
-        << "Failed to look up handler for " << ModelTypeToString(type);
+        << "Failed to look up handler for " << ModelTypeToDebugString(type);
     sync_pb::DataTypeProgressMarker* progress_marker =
         get_updates->add_from_progress_marker();
     *progress_marker = handler_it->second->GetDownloadProgress();
-    progress_marker->clear_gc_directive();
+    DCHECK(!progress_marker->has_gc_directive());
 
     sync_pb::DataTypeContext context = handler_it->second->GetDataTypeContext();
     if (!context.context().empty())
-      get_updates->add_client_contexts()->Swap(&context);
+      *get_updates->add_client_contexts() = std::move(context);
   }
 
   delegate_.HelpPopulateGuMessage(get_updates);
@@ -289,9 +294,10 @@ SyncerError GetUpdatesProcessor::ExecuteDownloadUpdates(
 
 SyncerError GetUpdatesProcessor::ProcessResponse(
     const sync_pb::GetUpdatesResponse& gu_response,
-    const ModelTypeSet& request_types,
-    StatusController* status) {
-  status->increment_num_updates_downloaded_by(gu_response.entries_size());
+    const ModelTypeSet& gu_types,
+    StatusController* status_controller) {
+  status_controller->increment_num_updates_downloaded_by(
+      gu_response.entries_size());
 
   // The changes remaining field is used to prevent the client from looping.  If
   // that field is being set incorrectly, we're in big trouble.
@@ -299,22 +305,6 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
     return SyncerError(SyncerError::SERVER_RESPONSE_VALIDATION_FAILED);
   }
 
-  SyncerError result =
-      ProcessGetUpdatesResponse(request_types, gu_response, status);
-  if (result.value() != SyncerError::SYNCER_OK)
-    return result;
-
-  if (gu_response.changes_remaining() == 0) {
-    return SyncerError(SyncerError::SYNCER_OK);
-  } else {
-    return SyncerError(SyncerError::SERVER_MORE_TO_DOWNLOAD);
-  }
-}
-
-SyncerError GetUpdatesProcessor::ProcessGetUpdatesResponse(
-    const ModelTypeSet& gu_types,
-    const sync_pb::GetUpdatesResponse& gu_response,
-    StatusController* status_controller) {
   TypeSyncEntityMap updates_by_type;
   PartitionUpdatesByType(gu_response, gu_types, &updates_by_type);
   DCHECK_EQ(gu_types.Size(), updates_by_type.size());
@@ -347,28 +337,30 @@ SyncerError GetUpdatesProcessor::ProcessGetUpdatesResponse(
       context.CopyFrom(gu_response.context_mutations(context_iter->second));
 
     if (update_handler_iter != update_handler_map_->end()) {
-      SyncerError result =
-          update_handler_iter->second->ProcessGetUpdatesResponse(
-              gu_response.new_progress_marker(progress_marker_iter->second),
-              context, updates_iter->second, status_controller);
-      if (result.value() != SyncerError::SYNCER_OK)
-        return result;
+      update_handler_iter->second->ProcessGetUpdatesResponse(
+          gu_response.new_progress_marker(progress_marker_iter->second),
+          context, updates_iter->second, status_controller);
     } else {
       DLOG(WARNING) << "Ignoring received updates of a type we can't handle.  "
-                    << "Type is: " << ModelTypeToString(type);
+                    << "Type is: " << ModelTypeToDebugString(type);
       continue;
     }
   }
   DCHECK(progress_marker_iter == progress_index_by_type.end() &&
          updates_iter == updates_by_type.end());
 
-  return SyncerError(SyncerError::SYNCER_OK);
+  return gu_response.changes_remaining() == 0
+             ? SyncerError(SyncerError::SYNCER_OK)
+             : SyncerError(SyncerError::SERVER_MORE_TO_DOWNLOAD);
 }
 
 void GetUpdatesProcessor::ApplyUpdates(const ModelTypeSet& gu_types,
                                        StatusController* status_controller) {
-  status_controller->set_get_updates_request_types(gu_types);
-  delegate_.ApplyUpdates(gu_types, status_controller, update_handler_map_);
+  for (const auto& [type, update_handler] : *update_handler_map_) {
+    if (gu_types.Has(type)) {
+      update_handler->ApplyUpdates(status_controller);
+    }
+  }
 }
 
 }  // namespace syncer

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,10 +28,9 @@ void FullscreenNotificationBlocker::CheckState() {
     NotifyBlockingStateChanged();
 
   if (is_fullscreen_mode_) {
-    timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromSeconds(kFullscreenStatePollingIntervalSeconds),
-        this, &FullscreenNotificationBlocker::CheckState);
+    timer_.Start(FROM_HERE,
+                 base::Seconds(kFullscreenStatePollingIntervalSeconds), this,
+                 &FullscreenNotificationBlocker::CheckState);
   }
 }
 

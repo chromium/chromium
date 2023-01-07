@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,6 +17,7 @@ class TestCopyExistingBaselines(BaseTestCase):
             'suffixes': 'txt',
             'verbose': False,
             'port_name': None,
+            'flag_specific': None,
         }
         options_dict.update(kwargs)
         return optparse.Values(options_dict)
@@ -42,6 +43,11 @@ class TestCopyExistingBaselines(BaseTestCase):
                 self.baseline_path(
                     'platform/test-mac-mac10.10/failures/expected/image-expected.txt'
                 )))
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self.baseline_path(
+                    'platform/test-mac-mac10.11/virtual/virtual_failures/failures/expected/image-expected.txt'
+                )))
 
         self.command.execute(
             self.options(
@@ -58,6 +64,122 @@ class TestCopyExistingBaselines(BaseTestCase):
                 self.baseline_path(
                     'platform/test-mac-mac10.10/failures/expected/image-expected.txt'
                 )), 'original test-mac-mac10.11 result')
+        self.assertEqual(
+            self._read(
+                self.baseline_path(
+                    'platform/test-mac-mac10.11/virtual/virtual_failures/failures/expected/image-expected.txt'
+                )), 'original test-mac-mac10.11 result')
+
+    def test_copy_baseline_linux_newer_to_older_and_flag_specific(self):
+        self._write(
+            self.baseline_path(
+                'platform/test-linux-trusty/failures/expected/image-expected.txt'
+            ), 'original test-linux-trusty result')
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self.baseline_path(
+                    'platform/test-linux-precise/failures/expected/image-expected.txt'
+                )))
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self.baseline_path(
+                    'flag-specific/disable-layout-ng/failures/expected/image-expected.txt'
+                )))
+
+        self.command.execute(
+            self.options(port_name='test-linux-trusty',
+                         test='failures/expected/image.html'), [], self.tool)
+
+        self.assertEqual(
+            self._read(
+                self.baseline_path(
+                    'platform/test-linux-trusty/failures/expected/image-expected.txt'
+                )), 'original test-linux-trusty result')
+        self.assertEqual(
+            self._read(
+                self.baseline_path(
+                    'platform/test-linux-precise/failures/expected/image-expected.txt'
+                )), 'original test-linux-trusty result')
+        self.assertEqual(
+            self._read(
+                self.baseline_path(
+                    'flag-specific/disable-layout-ng/failures/expected/image-expected.txt'
+                )), 'original test-linux-trusty result')
+
+    def test_copy_virtual_baseline_for_flag_specific(self):
+        self._write(
+            self.baseline_path(
+                'flag-specific/disable-layout-ng/failures/expected/image1-expected.txt'
+            ), 'original test-linux-trusty image1 result')
+        self._write(
+            self.baseline_path(
+                'flag-specific/disable-layout-ng/failures/expected/image2-expected.txt'
+            ), 'original test-linux-trusty image2 result')
+        self._write(
+            self.baseline_path(
+                'platform/test-linux-trusty/virtual/virtual_failures/failures/expected/image2-expected.txt'
+            ), 'original test-linux-trusty image2 virtual result')
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self.baseline_path(
+                    'platform/test-linux-trusty/virtual/virtual_failures/failures/expected/image1-expected.txt'
+                )))
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self.baseline_path(
+                    'flag-specific/disable-layout-ng/virtual/virtual_failures/failures/expected/image1-expected.txt'
+                )))
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self.baseline_path(
+                    'flag-specific/disable-layout-ng/virtual/virtual_failures/failures/expected/image2-expected.txt'
+                )))
+
+        self.command.execute(
+            self.options(port_name='test-linux-trusty',
+                         flag_specific='disable-layout-ng',
+                         test='failures/expected/image1.html'), [], self.tool)
+
+        self.command.execute(
+            self.options(port_name='test-linux-trusty',
+                         flag_specific='disable-layout-ng',
+                         test='failures/expected/image2.html'), [], self.tool)
+
+        self.assertEqual(
+            self._read(
+                self.baseline_path(
+                    'flag-specific/disable-layout-ng/virtual/virtual_failures/failures/expected/image1-expected.txt'
+                )), 'original test-linux-trusty image1 result')
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self.baseline_path(
+                    'flag-specific/disable-layout-ng/virtual/virtual_failures/failures/expected/image2-expected.txt'
+                )))
+
+    def test_no_copy_existing_virtual_baseline(self):
+        self._write(
+            self.baseline_path(
+                'platform/test-mac-mac10.10/failures/expected/image-expected.txt'
+            ), 'original test-mac-mac10.10 result')
+        self._write(
+            self.baseline_path(
+                'platform/test-mac-mac10.11/virtual/virtual_failures/failures/expected/image-expected.txt'
+            ), 'original test-mac-mac10.11 result')
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self.baseline_path(
+                    'platform/test-mac-mac10.10/virtual/virtual_failures/failures/expected/image-expected.txt'
+                )))
+
+        self.command.execute(
+            self.options(port_name='test-mac-mac10.11',
+                         test='failures/expected/image.html'), [], self.tool)
+
+        self.assertFalse(
+            self.tool.filesystem.exists(
+                self.baseline_path(
+                    'platform/test-mac-mac10.10/virtual/virtual_failures/failures/expected/image-expected.txt'
+                )))
 
     def test_copy_baseline_to_multiple_immediate_predecessors(self):
         # The test-win-win10 baseline is copied over to the test-linux-trusty

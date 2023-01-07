@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <fuchsia/feedback/cpp/fidl.h>
 #include <fuchsia/hardware/power/statecontrol/cpp/fidl.h>
+#include <fuchsia/recovery/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
 #include <zircon/status.h>
@@ -25,6 +26,7 @@ using fuchsia::feedback::LastRebootInfoProviderSyncPtr;
 using fuchsia::feedback::RebootReason;
 using fuchsia::hardware::power::statecontrol::Admin_Reboot_Result;
 using fuchsia::hardware::power::statecontrol::AdminPtr;
+using fuchsia::recovery::FactoryResetPtr;
 using StateControlRebootReason =
     fuchsia::hardware::power::statecontrol::RebootReason;
 
@@ -32,6 +34,9 @@ namespace chromecast {
 
 namespace {
 FuchsiaComponentRestartReason state_;
+
+// If true, the next reboot should trigger a factory data reset.
+bool fdr_on_reboot_ = false;
 }
 
 AdminPtr& GetAdminPtr() {
@@ -44,12 +49,21 @@ LastRebootInfoProviderSyncPtr& GetLastRebootInfoProviderSyncPtr() {
   return *g_last_reboot_info;
 }
 
+fuchsia::recovery::FactoryResetPtr& GetFactoryResetPtr() {
+  static base::NoDestructor<FactoryResetPtr> g_factory_reset;
+  return *g_factory_reset;
+}
+
 void InitializeRebootShlib(const std::vector<std::string>& argv,
                            sys::ServiceDirectory* incoming_directory) {
   incoming_directory->Connect(GetAdminPtr().NewRequest());
   incoming_directory->Connect(GetLastRebootInfoProviderSyncPtr().NewRequest());
+  incoming_directory->Connect(GetFactoryResetPtr().NewRequest());
   GetAdminPtr().set_error_handler([](zx_status_t status) {
     ZX_LOG(ERROR, status) << "AdminPtr disconnected";
+  });
+  GetFactoryResetPtr().set_error_handler([](zx_status_t status) {
+    ZX_LOG(ERROR, status) << "FactoryResetPtr disconnected";
   });
   InitializeRestartCheck();
 }
@@ -85,6 +99,22 @@ bool RebootShlib::IsRebootSourceSupported(
 
 // static
 bool RebootShlib::RebootNow(RebootSource reboot_source) {
+  if (fdr_on_reboot_) {
+    fdr_on_reboot_ = false;
+
+    // Intentionally using async Ptr to avoid deadlock
+    // Otherwise caller is blocked, and if caller needs to be notified
+    // as well, it will go into a deadlock state.
+    GetFactoryResetPtr()->Reset([](zx_status_t status) {
+      if (status != ZX_OK) {
+        ZX_LOG(ERROR, status) << "Failed to trigger FDR";
+      }
+    });
+
+    // FDR will perform its own reboot, return immediately.
+    return true;
+  }
+
   StateControlRebootReason reason;
   switch (reboot_source) {
     case RebootSource::API:
@@ -118,11 +148,13 @@ bool RebootShlib::RebootNow(RebootSource reboot_source) {
 
 // static
 bool RebootShlib::IsFdrForNextRebootSupported() {
-  return false;
+  return true;
 }
 
 // static
-void RebootShlib::SetFdrForNextReboot() {}
+void RebootShlib::SetFdrForNextReboot() {
+  fdr_on_reboot_ = true;
+}
 
 // static
 bool RebootShlib::IsOtaForNextRebootSupported() {
@@ -131,6 +163,14 @@ bool RebootShlib::IsOtaForNextRebootSupported() {
 
 // static
 void RebootShlib::SetOtaForNextReboot() {}
+
+// static
+bool RebootShlib::IsClearOtaForNextRebootSupported() {
+  return false;
+}
+
+// static
+void RebootShlib::ClearOtaForNextReboot() {}
 
 // RebootUtil implementation:
 
@@ -179,6 +219,7 @@ RebootShlib::RebootSource RebootUtil::GetLastRebootSource() {
       return RebootShlib::RebootSource::API;
     case RebootReason::SYSTEM_UPDATE:
     case RebootReason::RETRY_SYSTEM_UPDATE:
+    case RebootReason::ZBI_SWAP:
       return RebootShlib::RebootSource::OTA;
     case RebootReason::HIGH_TEMPERATURE:
       return RebootShlib::RebootSource::OVERHEAT;

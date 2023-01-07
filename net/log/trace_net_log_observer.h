@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_LOG_TRACE_NET_LOG_OBSERVER_H_
 #define NET_LOG_TRACE_NET_LOG_OBSERVER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_log.h"
 #include "net/base/net_export.h"
@@ -20,6 +20,10 @@ class NET_EXPORT TraceNetLogObserver
       public base::trace_event::TraceLog::AsyncEnabledStateObserver {
  public:
   TraceNetLogObserver();
+
+  TraceNetLogObserver(const TraceNetLogObserver&) = delete;
+  TraceNetLogObserver& operator=(const TraceNetLogObserver&) = delete;
+
   ~TraceNetLogObserver() override;
 
   // net::NetLog::ThreadSafeObserver implementation:
@@ -40,10 +44,8 @@ class NET_EXPORT TraceNetLogObserver
   void OnTraceLogDisabled() override;
 
  private:
-  NetLog* net_log_to_watch_;
+  raw_ptr<NetLog> net_log_to_watch_ = nullptr;
   base::WeakPtrFactory<TraceNetLogObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TraceNetLogObserver);
 };
 
 }  // namespace net

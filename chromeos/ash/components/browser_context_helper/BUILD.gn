@@ -1,0 +1,29 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non ChromeOS builds must not depend on //chromeos/ash")
+
+component("browser_context_helper") {
+  defines = [ "IS_ASH_BROWSER_CONTEXT_HELPER_IMPL" ]
+  deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+  sources = [
+    "browser_context_helper.cc",
+    "browser_context_helper.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":browser_context_helper",
+    "//base/test:test_support",
+    "//content/test:test_support",
+  ]
+  sources = [ "browser_context_helper_unittest.cc" ]
+}

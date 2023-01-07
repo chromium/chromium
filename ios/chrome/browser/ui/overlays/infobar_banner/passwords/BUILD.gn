@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,9 +14,11 @@ source_set("passwords") {
 
   deps = [
     "//base",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/ui/icons:infobar_icons",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/infobars/banners",
     "//ios/chrome/browser/ui/overlays/infobar_banner:mediators",
     "//ui/base",
@@ -38,20 +40,23 @@ source_set("unit_tests") {
     "//components/autofill/core/common",
     "//components/infobars/core",
     "//components/password_manager/core/browser:test_support",
-    "//components/strings:components_strings_grit",
+    "//components/password_manager/core/common",
+    "//components/strings",
     "//components/url_formatter",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/infobar_banner",
     "//ios/chrome/browser/overlays/test",
     "//ios/chrome/browser/passwords:infobar_delegates",
     "//ios/chrome/browser/passwords/test",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/icons:infobar_icons",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/infobars/banners/test",
     "//ios/chrome/browser/ui/infobars/test",
     "//ios/chrome/browser/ui/overlays/test",
-    "//ios/chrome/browser/ui/resources:password_key",
+    "//ios/chrome/browser/ui/resources:legacy_password_key",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",

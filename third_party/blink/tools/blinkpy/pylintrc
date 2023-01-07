@@ -64,16 +64,31 @@ load-plugins=
 # CHANGED:
 # The "design" disable below disables all of the "too-many-*" checks,
 # e.g. too-many-arguments, too-many-branches.
+#disable=
+#  design,
+#  missing-docstring,
+#  locally-disabled,
+#  locally-enabled,
+#  star-args,
+#  wildcard-import,
+#  fixme,
+#  global-statement,
+#  no-self-use,
+
+# TODO(crbug.com/1351132): pylint has been broken for a while. For now, only
+# flag errors and above that will stop programs from running. Gradually fix
+# warnings in follow-up changes.
 disable=
-  design,
-  missing-docstring,
-  locally-disabled,
-  locally-enabled,
-  star-args,
-  wildcard-import,
-  fixme,
-  global-statement,
-  no-self-use,
+  C,
+  R,
+  W,
+  # Many packages become available at runtime by manipulating `sys.path`.
+  import-error,
+  # Allow dynamically created attributes.
+  no-member,
+
+enable=
+  unused-import
 
 
 [REPORTS]

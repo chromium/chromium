@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ PrivacyContainerView::PrivacyContainerView(AppListViewDelegate* view_delegate)
 
   // This container simply wraps around PrivacyInfoView.
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, gfx::Insets(0, 0, 0, 0), 0));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
 }
 
 PrivacyContainerView::~PrivacyContainerView() = default;

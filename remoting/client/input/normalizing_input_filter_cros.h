@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/input_filter.h"
 
@@ -28,6 +27,11 @@ namespace remoting {
 class NormalizingInputFilterCros : public protocol::InputFilter {
  public:
   explicit NormalizingInputFilterCros(protocol::InputStub* input_stub);
+
+  NormalizingInputFilterCros(const NormalizingInputFilterCros&) = delete;
+  NormalizingInputFilterCros& operator=(const NormalizingInputFilterCros&) =
+      delete;
+
   ~NormalizingInputFilterCros() override;
 
   // InputFilter overrides.
@@ -61,8 +65,6 @@ class NormalizingInputFilterCros : public protocol::InputFilter {
   // Previous mouse coordinates.
   int previous_mouse_x_;
   int previous_mouse_y_;
-
-  DISALLOW_COPY_AND_ASSIGN(NormalizingInputFilterCros);
 };
 
 }  // namespace remoting

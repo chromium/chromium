@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,8 @@
 #define CHROME_BROWSER_VR_TEST_UI_UTILS_H_
 
 #include "base/callback.h"
-#include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "chrome/browser/vr/ui_test_input.h"
 
 namespace vr {
@@ -34,6 +31,10 @@ class UiUtils {
   static std::unique_ptr<UiUtils> Create();
 
   UiUtils();
+
+  UiUtils(const UiUtils&) = delete;
+  UiUtils& operator=(const UiUtils&) = delete;
+
   ~UiUtils();
 
   // Runs |action| and waits until the native UI reports that |element_name|'s
@@ -64,8 +65,6 @@ class UiUtils {
   std::vector<base::OnceCallback<void()>> ui_operation_callbacks_;
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(UiUtils);
 };
 
 }  // namespace vr

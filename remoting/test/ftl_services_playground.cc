@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,6 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "remoting/base/oauth_token_getter_impl.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/url_request_context_getter.h"
@@ -87,8 +86,6 @@ void FtlServicesPlayground::StartAndAuthenticate() {
 
 void FtlServicesPlayground::StartLoop() {
   std::vector<test::CommandOption> options{
-      {"PullMessages", base::BindRepeating(&FtlServicesPlayground::PullMessages,
-                                           weak_factory_.GetWeakPtr())},
       {"ReceiveMessages",
        base::BindRepeating(&FtlServicesPlayground::StartReceivingMessages,
                            weak_factory_.GetWeakPtr())},
@@ -153,25 +150,6 @@ void FtlServicesPlayground::OnSignInGaiaResponse(
                      &registration_id_base64);
   printf("Service signed in. registration_id(base64)=%s\n",
          registration_id_base64.c_str());
-  std::move(on_done).Run();
-}
-
-void FtlServicesPlayground::PullMessages(base::OnceClosure on_done) {
-  DCHECK(messaging_client_);
-  VLOG(0) << "Running PullMessages...";
-
-  messaging_client_->PullMessages(
-      base::BindOnce(&FtlServicesPlayground::OnPullMessagesResponse,
-                     weak_factory_.GetWeakPtr(), std::move(on_done)));
-}
-
-void FtlServicesPlayground::OnPullMessagesResponse(
-    base::OnceClosure on_done,
-    const ProtobufHttpStatus& status) {
-  if (!status.ok()) {
-    HandleStatusError(std::move(on_done), status);
-    return;
-  }
   std::move(on_done).Run();
 }
 
@@ -277,7 +255,7 @@ void FtlServicesPlayground::OnReceiveMessagesStreamClosed(
   base::OnceClosure callback = std::move(receive_messages_done_callback_);
   bool is_callback_null = callback.is_null();
   if (is_callback_null) {
-    callback = base::DoNothing::Once();
+    callback = base::DoNothing();
   }
   if (status.error_code() == ProtobufHttpStatus::Code::CANCELLED) {
     printf("ReceiveMessages stream canceled by client.\n");

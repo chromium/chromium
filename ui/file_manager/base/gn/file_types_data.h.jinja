@@ -1,0 +1,33 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- set header_guard = "%s_" | format(out_file_path | to_header_guard ) %}
+
+// This file is generated from:
+{%- for path in source_json_files %}
+//   {{ path }}
+{%- endfor %}
+
+#ifndef {{ header_guard }}
+#define {{ header_guard }}
+
+#include <string>
+
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+
+namespace file_types_data {
+
+// Maps a file extension to the MIME type, e.g.:
+//   {".jpeg", "image/jpeg"},
+//   {".jpg", "image/jpeg"},
+extern const base::flat_map<std::string, std::string> kExtensionToMIME;
+
+// A set includes all the MIME types for Documents, e.g.:
+//   {"text/plain", "application/vnd.google-apps.document", "application/pdf"}
+extern const base::flat_set<std::string> kDocumentMIMETypes;
+
+}  // namespace file_types_data
+
+#endif  // {{ header_guard }}

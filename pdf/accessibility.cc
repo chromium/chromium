@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,7 @@ bool GetAccessibilityInfo(PDFEngine* engine,
 
   int char_index = 0;
   while (char_index < char_count) {
-    base::Optional<AccessibilityTextRunInfo> text_run_info_result =
+    absl::optional<AccessibilityTextRunInfo> text_run_info_result =
         engine->GetTextRunInfo(page_index, char_index);
     DCHECK(text_run_info_result.has_value());
     const auto& text_run_info = text_run_info_result.value();

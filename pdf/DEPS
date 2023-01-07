@@ -1,29 +1,22 @@
 include_rules = [
   "+cc/paint",
-  "+content/public/renderer/v8_value_converter.h",
-  "+gin/handle.h",
-  "+gin/public",
-  "+gin/object_template_builder.h",
-  "+gin/wrappable.h",
+  "+gin",
+  "+mojo/core/embedder",
+  "+mojo/public/cpp/bindings",
   "+net",
-  "+ppapi",
-  "+printing/units.h",
+  "+printing",
+  "+services/network/public/mojom/referrer_policy.mojom-shared.h",
   "+third_party/blink/public",
   "+third_party/skia/include/core",
-  "+ui/base/cursor/cursor.h",
-  "+ui/base/cursor/mojom",
-  "+ui/base/text/bytes_formatting.h",
-  "+ui/base/window_open_disposition.h",
-  "+ui/events/keycodes/keyboard_codes.h",
-  "+ui/gfx/geometry",
-  "+ui/gfx/range/range.h",
-  "+ui/gfx/skia_util.h",
-  "+ui/gfx/test/gfx_util.h",
-  "+v8/include/v8.h"
+  "+ui/base",
+  "+ui/events",
+  "+ui/gfx",
+  "+v8/include",
 ]
 
 specific_include_rules = {
   ".*_unittest.*\.cc": [
     "+cc/test",
+    "+ui/latency/latency_info.h",
   ],
 }

@@ -1,19 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync/model/in_memory_metadata_change_list.h"
 
+#include <memory>
+
 namespace syncer {
 
-InMemoryMetadataChangeList::InMemoryMetadataChangeList() {}
-InMemoryMetadataChangeList::~InMemoryMetadataChangeList() {}
+InMemoryMetadataChangeList::InMemoryMetadataChangeList() = default;
+InMemoryMetadataChangeList::~InMemoryMetadataChangeList() = default;
 
 void InMemoryMetadataChangeList::TransferChangesTo(MetadataChangeList* other) {
   DCHECK(other);
-  for (const auto& pair : metadata_changes_) {
-    const std::string& storage_key = pair.first;
-    const MetadataChange& change = pair.second;
+  for (const auto& [storage_key, change] : metadata_changes_) {
     switch (change.type) {
       case UPDATE:
         other->UpdateMetadata(storage_key, change.metadata);
@@ -39,11 +39,13 @@ void InMemoryMetadataChangeList::TransferChangesTo(MetadataChangeList* other) {
 
 void InMemoryMetadataChangeList::UpdateModelTypeState(
     const sync_pb::ModelTypeState& model_type_state) {
-  state_change_.reset(new ModelTypeStateChange{UPDATE, model_type_state});
+  state_change_ = std::make_unique<ModelTypeStateChange>(
+      ModelTypeStateChange{UPDATE, model_type_state});
 }
 
 void InMemoryMetadataChangeList::ClearModelTypeState() {
-  state_change_.reset(new ModelTypeStateChange{CLEAR});
+  state_change_ = std::make_unique<ModelTypeStateChange>(
+      ModelTypeStateChange{CLEAR, sync_pb::ModelTypeState()});
 }
 
 void InMemoryMetadataChangeList::UpdateMetadata(

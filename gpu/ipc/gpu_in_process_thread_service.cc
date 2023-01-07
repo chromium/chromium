@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/scheduler.h"
-#include "gpu/ipc/scheduler_sequence.h"
+#include "gpu/command_buffer/service/scheduler_sequence.h"
 
 namespace gpu {
 
@@ -53,7 +53,7 @@ bool GpuInProcessThreadService::ShouldCreateMemoryTracker() const {
 
 std::unique_ptr<SingleTaskSequence>
 GpuInProcessThreadService::CreateSequence() {
-  return std::make_unique<SchedulerSequence>(scheduler_);
+  return std::make_unique<SchedulerSequence>(scheduler_, task_runner_);
 }
 
 void GpuInProcessThreadService::ScheduleOutOfOrderTask(base::OnceClosure task) {
@@ -62,7 +62,7 @@ void GpuInProcessThreadService::ScheduleOutOfOrderTask(base::OnceClosure task) {
 
 void GpuInProcessThreadService::ScheduleDelayedWork(base::OnceClosure task) {
   task_runner_->PostDelayedTask(FROM_HERE, std::move(task),
-                                base::TimeDelta::FromMilliseconds(2));
+                                base::Milliseconds(2));
 }
 
 void GpuInProcessThreadService::PostNonNestableToClient(

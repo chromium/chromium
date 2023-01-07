@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/throttling/throttling_network_transaction_factory.h"
 
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -30,8 +31,8 @@ int ThrottlingNetworkTransactionFactory::CreateTransaction(
   if (rv != net::OK) {
     return rv;
   }
-  trans->reset(
-      new ThrottlingNetworkTransaction(std::move(network_transaction)));
+  *trans = std::make_unique<ThrottlingNetworkTransaction>(
+      std::move(network_transaction));
   return net::OK;
 }
 

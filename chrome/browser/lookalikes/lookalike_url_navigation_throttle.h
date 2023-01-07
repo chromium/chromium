@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,11 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/elapsed_timer.h"
-#include "base/timer/timer.h"
 #include "chrome/browser/lookalikes/digital_asset_links_cross_validator.h"
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "components/digital_asset_links/digital_asset_links_handler.h"
-#include "components/site_engagement/core/mojom/site_engagement_details.mojom.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -50,6 +48,7 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
   ~LookalikeUrlNavigationThrottle() override;
 
   // content::NavigationThrottle:
+  ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
@@ -71,14 +70,20 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
 
   // A void-returning variant, only used with deferred throttle results (e.g.
   // when we need to fetch engaged sites list or digital asset link manifests).
-  void PerformChecksDeferred(const std::vector<DomainInfo>& engaged_sites);
+  // |start| is the time at which the navigation was deferred, for metrics.
+  void PerformChecksDeferred(base::TimeTicks start,
+                             const std::vector<DomainInfo>& engaged_sites);
 
   // Returns whether |url| is a lookalike, setting |match_type| and
   // |suggested_url| appropriately. Used in PerformChecks() on a per-URL basis.
+  // |get_domain_info_duration| should hold zero when IsLookalikeUrl() is
+  // invoked. After invocation, it will hold the duration spent in
+  // GetDomainInfo() if GetDomainInfo() was invoked.
   bool IsLookalikeUrl(const GURL& url,
                       const std::vector<DomainInfo>& engaged_sites,
                       LookalikeUrlMatchType* match_type,
-                      GURL* suggested_url);
+                      GURL* suggested_url,
+                      base::TimeDelta* get_domain_info_duration);
 
   // Shows a full page interstitial. |safe_domain| is the domain suggested as
   // safe by the interstitial. |lookalike_domain| is the domain that triggered
@@ -95,9 +100,10 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
                                        LookalikeUrlMatchType match_type,
                                        bool triggered_by_initial_url);
 
-  // Checks digital asset links of |lookalike_domain| and |safe_domain| and
-  // shows a full page interstitial if either manifest validation fails.
-  ThrottleCheckResult CheckManifestsAndMaybeShowInterstitial(
+  // Checks if a full page intersitial can be shown. This function checks if
+  // manifest validation fails for digital asset links of |lookalike_domain|,
+  // |safe_domain| or if the navigation isn't in prerendering navigation.
+  ThrottleCheckResult CheckAndMaybeShowInterstitial(
       const GURL& safe_domain,
       const GURL& lookalike_domain,
       ukm::SourceId source_id,
@@ -112,7 +118,7 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
                                   bool triggered_by_initial_url,
                                   bool validation_success);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   bool use_test_profile_ = false;
 
   std::unique_ptr<DigitalAssetLinkCrossValidator> digital_asset_link_validator_;

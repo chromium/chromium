@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 namespace remoting {
 
-protocol::FileTransferResult<Monostate> EnsureUserContext() {
+protocol::FileTransferResult<absl::monostate> EnsureUserContext() {
   // Make sure we're not on the log-in screen.
   if (getuid() == 0) {
     LOG(ERROR) << "Cannot transfer files on log-in screen.";

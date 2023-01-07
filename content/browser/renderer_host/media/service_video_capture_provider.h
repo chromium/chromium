@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,13 @@
 
 #include "base/threading/sequence_bound.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/ref_counted_video_source_provider.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
+#include "content/common/content_export.h"
+#include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/browser/service_process_host.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
@@ -24,7 +27,7 @@ namespace content {
 // been released and no more answers to GetDeviceInfosAsync() calls are pending.
 class CONTENT_EXPORT ServiceVideoCaptureProvider
     : public VideoCaptureProvider,
-      public ServiceProcessHost::Observer {
+      public content::GpuDataManagerObserver {
  public:
   // This constructor uses a default factory for instances of
   // viz::mojom::Gpu which produces instances of class content::GpuClient.
@@ -47,9 +50,14 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   void GetDeviceInfosAsync(GetDeviceInfosCallback result_callback) override;
   std::unique_ptr<VideoCaptureDeviceLauncher> CreateDeviceLauncher() override;
 
+  // content::GpuDataManagerObserver implementation.
+  void OnGpuInfoUpdate() override;
+
  private:
   void OnServiceStarted();
   void OnServiceStopped();
+
+  void RegisterWithGpuDataManager();
 
   enum class ReasonForDisconnect { kShutdown, kUnused, kConnectionLost };
 
@@ -58,8 +66,8 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   // Discarding the returned RefCountedVideoSourceProvider indicates that the
   // caller no longer requires the connection to the service and allows it to
   // disconnect.
-  scoped_refptr<RefCountedVideoSourceProvider> LazyConnectToService()
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] scoped_refptr<RefCountedVideoSourceProvider>
+  LazyConnectToService();
 
   void GetDeviceInfosAsyncForRetry(GetDeviceInfosCallback result_callback,
                                    int retry_count);
@@ -86,14 +94,14 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   base::TimeTicks time_of_last_connect_;
   base::TimeTicks time_of_last_uninitialize_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   GetDeviceInfosCallback stashed_result_callback_for_retry_;
   int stashed_retry_count_;
 #endif
 
   // We own this but it must operate on the UI thread.
   class ServiceProcessObserver;
-  base::Optional<base::SequenceBound<ServiceProcessObserver>>
+  absl::optional<base::SequenceBound<ServiceProcessObserver>>
       service_process_observer_;
 
   base::WeakPtrFactory<ServiceVideoCaptureProvider> weak_ptr_factory_{this};

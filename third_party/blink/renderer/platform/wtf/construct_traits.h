@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ class ConstructTraits {
   // placement new.
   template <typename... Args>
   static T* Construct(void* location, Args&&... args) {
-    return new (NotNull, location) T(std::forward<Args>(args)...);
+    return new (NotNullTag::kNotNull, location) T(std::forward<Args>(args)...);
   }
 
   // After constructing elements using memcopy or memmove (or similar)

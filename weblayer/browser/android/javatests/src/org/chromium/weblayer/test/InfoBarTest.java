@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,6 +32,7 @@ import org.chromium.weblayer.shell.InstrumentationActivity;
  */
 @RunWith(WebLayerJUnit4ClassRunner.class)
 @CommandLineFlags.Add("enable-features=ImmediatelyHideBrowserControlsForTest")
+@DisabledTest(message = "crbug.com/1223953, crbug.com/1098625")
 public class InfoBarTest {
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =
@@ -115,7 +116,6 @@ public class InfoBarTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "crbug.com/1098625")
     /**
      * Tests that infobars respond to scrolling.
      *

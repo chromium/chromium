@@ -193,17 +193,16 @@ Node* EnclosingBlockToSplitTreeTo(Node* start_node) {
   DCHECK(start_node);
   Node* last_block = start_node;
   for (Node& runner : NodeTraversal::InclusiveAncestorsOf(*start_node)) {
-    if (!HasEditableStyle(runner))
+    if (!IsEditable(runner))
       return last_block;
     if (IsTableCell(&runner) || IsA<HTMLBodyElement>(&runner) ||
-        !runner.parentNode() || !HasEditableStyle(*runner.parentNode()) ||
+        !runner.parentNode() || !IsEditable(*runner.parentNode()) ||
         IsElementForFormatBlock(&runner))
       return &runner;
     if (IsEnclosingBlock(&runner))
       last_block = &runner;
     if (IsHTMLListElement(&runner))
-      return HasEditableStyle(*runner.parentNode()) ? runner.parentNode()
-                                                    : &runner;
+      return IsEditable(*runner.parentNode()) ? runner.parentNode() : &runner;
   }
   return last_block;
 }

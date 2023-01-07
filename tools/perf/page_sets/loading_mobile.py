@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -57,6 +57,8 @@ class LoadingMobileStorySet(story.StorySet):
 
     if '*' in include_tags or 'global' in include_tags:
       self.AddStories(['global'], [
+          ('https://www.google.com/search?q=flower#q=flower+delivery',
+           'Google'),
           ('https://www.google.com/search?q=flower#q=flower+delivery',
            'GoogleRedirectToGoogleJapan'),
           ('https://www.youtube.com/watch?v=MU3YuvNRhVY', 'Youtube'),

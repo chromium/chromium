@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<head>
+  <meta charset="utf-8">
+  <style>
+    @media (prefers-color-scheme: dark) {
+      body {
+        background-color: var(--md-background-color);
+      }
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+    }
+  </style>
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+</head>
+<body>
+  <script type="module" src="web_app_settings.js"></script>
+  <web-app-settings-app hidden></web-app-settings-app>
+</body>
+</html>

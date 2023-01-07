@@ -2,6 +2,7 @@ include_rules = [
   "+ash/constants",
   "+components/account_id/account_id.h",
   "+components/prefs",
+  "+components/crash/core/common",
   "+google_apis/gaia/gaia_auth_util.h",
   "+third_party/skia/include",
   "+ui/gfx/codec",

@@ -1,20 +1,20 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 
-#include <memory>
-#include <string>
+#import <memory>
+#import <string>
 
 #import <PassKit/PassKit.h>
 
-#include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "ios/chrome/browser/download/pass_kit_mime_type.h"
+#import "base/files/file_path.h"
+#import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/download/mime_type_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper_delegate.h"
 #import "ios/web/public/download/download_task.h"
-#include "net/url_request/url_fetcher_response_writer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -40,25 +40,14 @@ DownloadPassKitResult GetUmaResult(web::DownloadTask* task) {
 
 }  // namespace
 
-PassKitTabHelper::PassKitTabHelper(web::WebState* web_state,
-                                   id<PassKitTabHelperDelegate> delegate)
-    : web_state_(web_state), delegate_(delegate) {
+PassKitTabHelper::PassKitTabHelper(web::WebState* web_state)
+    : web_state_(web_state) {
   DCHECK(web_state_);
 }
 
 PassKitTabHelper::~PassKitTabHelper() {
   for (auto& task : tasks_) {
     task->RemoveObserver(this);
-  }
-}
-
-void PassKitTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    id<PassKitTabHelperDelegate> delegate) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(UserDataKey(), base::WrapUnique(new PassKitTabHelper(
-                                              web_state, delegate)));
   }
 }
 
@@ -69,30 +58,43 @@ void PassKitTabHelper::Download(std::unique_ptr<web::DownloadTask> task) {
   // unfinished tasks.
   tasks_.insert(std::move(task));
   task_ptr->AddObserver(this);
-  task_ptr->Start(std::make_unique<net::URLFetcherStringWriter>());
+  task_ptr->Start(base::FilePath());
+}
+
+void PassKitTabHelper::SetDelegate(id<PassKitTabHelperDelegate> delegate) {
+  delegate_ = delegate;
 }
 
 void PassKitTabHelper::OnDownloadUpdated(web::DownloadTask* updated_task) {
-  auto it = tasks_.find(updated_task);
-  DCHECK(it != tasks_.end());
-
+  auto iterator = tasks_.find(updated_task);
+  DCHECK(iterator != tasks_.end());
   if (!updated_task->IsDone())
     return;
 
-  net::URLFetcherResponseWriter* writer = updated_task->GetResponseWriter();
-  std::string data = writer->AsStringWriter()->data();
-  NSData* nsdata = [NSData dataWithBytes:data.c_str() length:data.size()];
-  PKPass* pass = [[PKPass alloc] initWithData:nsdata error:nil];
+  // Extract the std::unique_ptr<> from the std::set<>.
+  auto node = tasks_.extract(iterator);
+  auto task = std::move(node.value());
+  DCHECK_EQ(task.get(), updated_task);
+
+  // Stop observing the task as its ownership is transfered to the callback
+  // that will destroy when it is invoked or cancelled.
+  updated_task->RemoveObserver(this);
+  updated_task->GetResponseData(
+      base::BindOnce(&PassKitTabHelper::OnDownloadDataRead,
+                     weak_factory_.GetWeakPtr(), std::move(task)));
+}
+
+void PassKitTabHelper::OnDownloadDataRead(
+    std::unique_ptr<web::DownloadTask> task,
+    NSData* data) {
+  DCHECK(task);
+  PKPass* pass = [[PKPass alloc] initWithData:data error:nil];
   [delegate_ passKitTabHelper:this
          presentDialogForPass:pass
                      webState:web_state_];
 
-  UMA_HISTOGRAM_ENUMERATION(kUmaDownloadPassKitResult,
-                            GetUmaResult(updated_task),
+  UMA_HISTOGRAM_ENUMERATION(kUmaDownloadPassKitResult, GetUmaResult(task.get()),
                             DownloadPassKitResult::Count);
-
-  updated_task->RemoveObserver(this);
-  tasks_.erase(it);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(PassKitTabHelper)

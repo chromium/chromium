@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<grit-part>
-  <include name="IDR_AUTOFILL_REGEX_JSON" file="../autofill/core/browser/pattern_provider/resources/regex_patterns.json" type="BINDATA" compress="brotli" />
-</grit-part>

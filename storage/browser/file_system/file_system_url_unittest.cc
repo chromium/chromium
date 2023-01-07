@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,11 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 #define FPL FILE_PATH_LITERAL
@@ -23,6 +23,8 @@
 #else
 #define DRIVE FPL("/a/")
 #endif
+
+constexpr int kBucketId = 1;
 
 namespace storage {
 
@@ -37,6 +39,13 @@ FileSystemURL CreateFileSystemURL(const std::string& url_string) {
 
 std::string NormalizedUTF8Path(const base::FilePath& path) {
   return path.NormalizePathSeparators().AsUTF8Unsafe();
+}
+
+BucketLocator CreateNonDefaultBucket() {
+  return BucketLocator(
+      BucketId::FromUnsafeValue(kBucketId),
+      blink::StorageKey::CreateFromStringForTesting("http://www.example.com/"),
+      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
 }
 
 }  // namespace
@@ -111,8 +120,8 @@ TEST(FileSystemURLTest, CompareURLs) {
       GURL("filesystem:https://chromium.org/temporary/dir a/file a")};
 
   FileSystemURL::Comparator compare;
-  for (size_t i = 0; i < base::size(urls); ++i) {
-    for (size_t j = 0; j < base::size(urls); ++j) {
+  for (size_t i = 0; i < std::size(urls); ++i) {
+    for (size_t j = 0; j < std::size(urls); ++j) {
       SCOPED_TRACE(testing::Message() << i << " < " << j);
       EXPECT_EQ(urls[i] < urls[j],
                 compare(FileSystemURL::CreateForTest(urls[i]),
@@ -120,12 +129,25 @@ TEST(FileSystemURLTest, CompareURLs) {
     }
   }
 
-  const FileSystemURL a = CreateFileSystemURL(
+  FileSystemURL a = CreateFileSystemURL(
       "filesystem:http://chromium.org/temporary/dir a/file a");
-  const FileSystemURL b = CreateFileSystemURL(
+  FileSystemURL b = CreateFileSystemURL(
       "filesystem:http://chromium.org/persistent/dir a/file a");
   EXPECT_EQ(a.type() < b.type(), compare(a, b));
   EXPECT_EQ(b.type() < a.type(), compare(b, a));
+
+  // Testing comparison between FileSystemURLs that have a non-empty,
+  // non-default bucket value set.
+  BucketLocator bucket = CreateNonDefaultBucket();
+  a.SetBucket(bucket);
+  b.SetBucket(bucket);
+  // An identical bucket added to each URL does not alter type mismatch.
+  EXPECT_EQ(a.type() < b.type(), compare(a, b));
+  // c is a copy of a, just without a bucket value set.
+  const FileSystemURL c = CreateFileSystemURL(
+      "filesystem:http://chromium.org/temporary/dir a/file a");
+  // Ensure that buckets are taken into consideration for comparison.
+  EXPECT_EQ(a.bucket() < c.bucket(), compare(a, c));
 }
 
 TEST(FileSystemURLTest, IsParent) {
@@ -182,46 +204,74 @@ TEST(FileSystemURLTest, ToGURL) {
 }
 
 TEST(FileSystemURLTest, DebugString) {
-  const GURL kOrigin("http://example.com");
   const base::FilePath kPath(FPL("dir/file"));
 
   const FileSystemURL kURL1 = FileSystemURL::CreateForTest(
-      url::Origin::Create(kOrigin), kFileSystemTypeTemporary, kPath);
-  EXPECT_EQ(
-      "filesystem:http://example.com/temporary/" + NormalizedUTF8Path(kPath),
-      kURL1.DebugString());
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"),
+      kFileSystemTypeTemporary, kPath);
+  EXPECT_EQ("{ uri: filesystem:http://example.com/temporary/" +
+                NormalizedUTF8Path(kPath) +
+                ", storage key: " + kURL1.storage_key().GetDebugString() + " }",
+            kURL1.DebugString());
+  const FileSystemURL kURL2 = FileSystemURL::CreateForTest(
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"),
+      kFileSystemTypeLocal, kPath);
+  EXPECT_EQ("{ path: " + NormalizedUTF8Path(kPath) +
+                ", storage key: " + kURL1.storage_key().GetDebugString() + " }",
+            kURL2.DebugString());
+  FileSystemURL kURL3 = FileSystemURL::CreateForTest(
+      blink::StorageKey::CreateFromStringForTesting("http://example.com"),
+      kFileSystemTypeTemporary, kPath);
+  kURL3.SetBucket(CreateNonDefaultBucket());
+  EXPECT_EQ("{ uri: filesystem:http://example.com/temporary/" +
+                NormalizedUTF8Path(kPath) +
+                ", storage key: " + kURL3.storage_key().GetDebugString() +
+                ", bucket id: " + base::NumberToString(kBucketId) + " }",
+            kURL3.DebugString());
 }
 
 TEST(FileSystemURLTest, IsInSameFileSystem) {
   FileSystemURL url_foo_temp_a = FileSystemURL::CreateForTest(
-      url::Origin::Create(GURL("http://foo")), kFileSystemTypeTemporary,
-      base::FilePath::FromUTF8Unsafe("a"));
+      blink::StorageKey::CreateFromStringForTesting("http://foo"),
+      kFileSystemTypeTemporary, base::FilePath::FromUTF8Unsafe("a"));
   FileSystemURL url_foo_temp_b = FileSystemURL::CreateForTest(
-      url::Origin::Create(GURL("http://foo")), kFileSystemTypeTemporary,
-      base::FilePath::FromUTF8Unsafe("b"));
+      blink::StorageKey::CreateFromStringForTesting("http://foo"),
+      kFileSystemTypeTemporary, base::FilePath::FromUTF8Unsafe("b"));
   FileSystemURL url_foo_perm_a = FileSystemURL::CreateForTest(
-      url::Origin::Create(GURL("http://foo")), kFileSystemTypePersistent,
-      base::FilePath::FromUTF8Unsafe("a"));
+      blink::StorageKey::CreateFromStringForTesting("http://foo"),
+      kFileSystemTypePersistent, base::FilePath::FromUTF8Unsafe("a"));
   FileSystemURL url_bar_temp_a = FileSystemURL::CreateForTest(
-      url::Origin::Create(GURL("http://bar")), kFileSystemTypeTemporary,
-      base::FilePath::FromUTF8Unsafe("a"));
+      blink::StorageKey::CreateFromStringForTesting("http://bar"),
+      kFileSystemTypeTemporary, base::FilePath::FromUTF8Unsafe("a"));
   FileSystemURL url_bar_perm_a = FileSystemURL::CreateForTest(
-      url::Origin::Create(GURL("http://bar")), kFileSystemTypePersistent,
-      base::FilePath::FromUTF8Unsafe("a"));
+      blink::StorageKey::CreateFromStringForTesting("http://bar"),
+      kFileSystemTypePersistent, base::FilePath::FromUTF8Unsafe("a"));
 
   EXPECT_TRUE(url_foo_temp_a.IsInSameFileSystem(url_foo_temp_a));
   EXPECT_TRUE(url_foo_temp_a.IsInSameFileSystem(url_foo_temp_b));
   EXPECT_FALSE(url_foo_temp_a.IsInSameFileSystem(url_foo_perm_a));
   EXPECT_FALSE(url_foo_temp_a.IsInSameFileSystem(url_bar_temp_a));
   EXPECT_FALSE(url_foo_temp_a.IsInSameFileSystem(url_bar_perm_a));
+
+  // Test that non-empty, non-default bucket values are taken into account when
+  // determining of two URLs are in the same FileSystem.
+  BucketLocator bucket = CreateNonDefaultBucket();
+  url_foo_temp_a.SetBucket(bucket);
+  url_foo_temp_b.SetBucket(bucket);
+  EXPECT_TRUE(url_foo_temp_a.IsInSameFileSystem(url_foo_temp_b));
+  // url_foo_temp_c is identical to url_foo_temp_a but without a bucket value.
+  FileSystemURL url_foo_temp_c = FileSystemURL::CreateForTest(
+      blink::StorageKey::CreateFromStringForTesting("http://foo"),
+      kFileSystemTypeTemporary, base::FilePath::FromUTF8Unsafe("a"));
+  EXPECT_FALSE(url_foo_temp_a.IsInSameFileSystem(url_foo_temp_c));
 }
 
 TEST(FileSystemURLTest, ValidAfterMoves) {
   // Move constructor.
   {
     FileSystemURL original = FileSystemURL::CreateForTest(
-        url::Origin::Create(GURL("http://foo")), kFileSystemTypeTemporary,
-        base::FilePath::FromUTF8Unsafe("a"));
+        blink::StorageKey::CreateFromStringForTesting("http://foo"),
+        kFileSystemTypeTemporary, base::FilePath::FromUTF8Unsafe("a"));
     EXPECT_TRUE(original.is_valid());
     FileSystemURL new_url(std::move(original));
     EXPECT_TRUE(new_url.is_valid());
@@ -231,8 +281,8 @@ TEST(FileSystemURLTest, ValidAfterMoves) {
   // Move operator.
   {
     FileSystemURL original = FileSystemURL::CreateForTest(
-        url::Origin::Create(GURL("http://foo")), kFileSystemTypeTemporary,
-        base::FilePath::FromUTF8Unsafe("a"));
+        blink::StorageKey::CreateFromStringForTesting("http://foo"),
+        kFileSystemTypeTemporary, base::FilePath::FromUTF8Unsafe("a"));
     EXPECT_TRUE(original.is_valid());
     FileSystemURL new_url;
     new_url = std::move(std::move(original));

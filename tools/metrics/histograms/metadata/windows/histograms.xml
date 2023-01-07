@@ -1,0 +1,317 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Windows histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Windows.CetAvailable" enum="BooleanAvailable"
+    expires_after="2022-12-01">
+  <owner>ajgo@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Records if CET (Control-flow Enforcement Technology / Hardware Enforced
+    Shadow Stack) is available, based on IsUserCetAvailableInEnvironment().
+    Reported once per browser session, on startup.
+  </summary>
+</histogram>
+
+<histogram name="Windows.CetEnabled" enum="BooleanEnabled"
+    expires_after="2023-02-12">
+  <owner>ajgo@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Records if CET (Control-flow Enforcement Technology / Hardware Enforced
+    Shadow Stack) is enabled or if it has been disabled by IFEO. Reported only
+    if CetAvailable is true, once per browser session, on startup. Note: This
+    was recorded incorrectly in M91.
+  </summary>
+</histogram>
+
+<histogram name="Windows.CreateOrUpdateShortcuts.Result"
+    enum="CreateOrUpdateShortcutsResult" expires_after="2022-11-26">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@google.com</owner>
+  <summary>
+    The result of creating or updating a Windows shortcut out of process.
+    Recorded when Chrome creates or updates a Windows shortcut using
+    shell_integration::win::CreateOrUpdateShortcuts, e.g., when a profile is
+    added.
+  </summary>
+</histogram>
+
+<histogram name="Windows.DragEventsAfterPress" units="events"
+    expires_after="2022-08-01">
+  <obsolete>
+    We stopped emitting this stat on 07/14/22 in crrev.com/c/3761201.
+  </obsolete>
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@google.com</owner>
+  <summary>
+    The number of drag events after a press event before we got a mouse move to
+    0, 0 that is more than 200 pixels away from the current cursor position.
+    This will be used to change the detection of spurious 0,0 move move events
+    to a much smaller value (e.g., 20 pixels) but with the addition of a check
+    that we've only received a few mouse move events, once we've determined the
+    distribution of the number of drag events we receive before the 0,0 mouse
+    move events. Recorded in HWNDMessageHandler::HandleMouseEventInternal when
+    we see a mouse drag to 0,0 that is more than 200 pixels from the cursor
+    position.
+  </summary>
+</histogram>
+
+<histogram name="Windows.HasHighResolutionTimeTicks" enum="Boolean"
+    expires_after="2023-12-19">
+  <owner>brucedawson@chromium.org</owner>
+  <owner>gab@chromium.org</owner>
+  <summary>
+    The value of TimeTicks::IsHighResolution(). Reported once per browser
+    session, on startup.
+  </summary>
+</histogram>
+
+<histogram name="Windows.HighResolutionTimerUsage" units="%"
+    expires_after="2023-03-05">
+  <owner>olivierli@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Percentage of elapsed time the high resolution timer is activated. The usage
+    is reported by each of Chrome processes individually (without aggregation)
+    and logged every 10 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Windows.HypervPresent" enum="BooleanEnabled"
+    expires_after="2023-06-01">
+  <owner>rkc@chromium.org</owner>
+  <owner>vnagarnaik@google.com</owner>
+  <owner>rockot@chromium.org</owner>
+  <summary>
+    Whether Hyper-V is enabled on this machine. Logged shortly after startup.
+    This metric will only be logged on Windows 10+.
+  </summary>
+</histogram>
+
+<histogram name="Windows.InstallerPinUnpinned" enum="IsPinnedToTaskbarResult"
+    expires_after="2023-08-31">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@chromium.org</owner>
+  <summary>
+    Records whether or not the user unpinned Chrome after the installer pinned
+    Chrome, on Win10+. Recorded when Chrome checks if Chrome is pinned to the
+    taskbar, on startup. This check is currently done on 1% of startups. Records
+    true if the installer pinned Chrome, and it's no longer pinned, false if the
+    installer pinned Chrome and it's still pinned. The unpin is only recorded at
+    most once per user, whereas the still pinned state is recorded on every
+    launch that checks if Chrome is pinned to the taskbar.
+  </summary>
+</histogram>
+
+<histogram name="Windows.IsPinnedToTaskbar" enum="IsPinnedToTaskbarResult"
+    expires_after="never">
+<!-- expires-never: Used to assess Chrome usage on Windows -->
+
+  <owner>markchang@google.com</owner>
+  <owner>pmonette@chromium.org</owner>
+  <summary>
+    Indicates whether Chrome is pinned to the Windows taskbar for the current
+    user. Recorded shortly after startup.
+  </summary>
+</histogram>
+
+<histogram name="Windows.IsPinnedToTaskbar.ProcessError" enum="BooleanError"
+    expires_after="M85">
+  <owner>pmonette@chromium.org</owner>
+  <summary>
+    Indicates whether a connection error occured between the browser and the
+    shell handler process. This is usually caused by a crash in the utility
+    process. This is logged every time the pinned state is queried.
+  </summary>
+</histogram>
+
+<histogram name="Windows.Launch.TaskbarInstallerPinned" enum="Boolean"
+    expires_after="2023-08-23">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@google.com</owner>
+  <summary>
+    Whether or not the taskbar shortcut Chrome was launched from was pinned by
+    the installer. Recorded when Chrome is launched from the taskbar, and the
+    install was done after the installer started pinning Chrome to the taskbar
+    for Windows 10+.
+  </summary>
+</histogram>
+
+<histogram name="Windows.MakeChromeDefaultDirectly.Result"
+    enum="DefaultDirectAttemptResult" expires_after="M109">
+  <owner>robliao@chromium.org</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    Records the outcome of attempting to set the default directly. Recorded when
+    a request to make Chrome default is received and is eligible for the direct
+    path.
+  </summary>
+</histogram>
+
+<histogram name="Windows.Menu.Win11Style" enum="BooleanWin11MenuStyle"
+    expires_after="M97">
+  <owner>kylixrd@chromium.org</owner>
+  <owner>robliao@chromium.org</owner>
+  <summary>
+    Indicates whether Windows 11 style menus are used. Recorded on menu
+    configuration initialization.
+  </summary>
+</histogram>
+
+<histogram name="Windows.OnCurrentWorkspaceCached" enum="BooleanCacheHit"
+    expires_after="2023-02-12">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>sky@chromium.org</owner>
+  <summary>
+    Indicates if the current workspace state of a window is cached or not. If
+    it's known that the window is on the current workspace or not, then we can
+    avoid the COM method call IsWindowOnCurrentVirtualDesktop. This is recorded
+    in BrowserView::IsOnCurrentWorkspace. In general, the state should almost
+    always be cached.
+  </summary>
+</histogram>
+
+<histogram name="Windows.OOPSelectFileDialog.ProcessError" enum="BooleanError"
+    expires_after="M82">
+  <owner>pmonette@chromium.org</owner>
+  <summary>
+    Indicates whether a connection error occured between the browser and the
+    shell handler process. This is usually caused by a crash in the utility
+    process. This is logged every time SelectFile() function is called and the
+    WinOOPSelectFileDialog feature is enabled.
+  </summary>
+</histogram>
+
+<histogram name="Windows.ParallelDllLoadingEnabled" enum="BooleanEnabled"
+    expires_after="never">
+<!-- expires-never: Needed to measure third party incompatibilities on Windows which could happen at any time. -->
+
+  <owner>forshaw@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    Records whether or not parallel DLL loading is enabled for the browser
+    process executable. This is recorded once per browser session, on startup.
+  </summary>
+</histogram>
+
+<histogram name="Windows.ParentProcessNameHash" enum="ProcessNameHash"
+    expires_after="never">
+<!-- expires-never: Needed to measure third party incompatibilities on Windows which could happen at any time. -->
+
+  <owner>wfh@chromium.org</owner>
+  <owner>brucedawson@chromium.org</owner>
+  <summary>
+    The 32-bit hash of the lower-case parent process basename (e.g.
+    explorer.exe) of the main Chrome executable. Reported once during startup as
+    part of install verification.
+  </summary>
+</histogram>
+
+<histogram name="Windows.PatchLevel" enum="WindowsPatchLevel"
+    expires_after="never">
+<!-- expires-never: Needed to measure Windows ecosystem. -->
+
+  <owner>wfh@chromium.org</owner>
+  <owner>brucedawson@chromium.org</owner>
+  <summary>
+    A 32-bit value formed from combining the minor and patch level of the
+    currently running Windows operating system as reported by GetVersionEx().
+    E.g. &quot;Windows 10 OS Version 1809 (Build 17763.503)&quot; would be 17763
+    (0x4563), combined with 503 (0x1F7) = 0x456301F7. If either minor or patch
+    level exceeds the value that can fit in a 16-bit unsigned integer, then this
+    histogram will report 0. Reported once, shortly after browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Windows.PatchLevelKernel32" enum="WindowsPatchLevel"
+    expires_after="never">
+<!-- expires-never: Needed to measure Windows ecosystem. -->
+
+  <owner>wfh@chromium.org</owner>
+  <owner>brucedawson@chromium.org</owner>
+  <summary>
+    A 32-bit value formed from combining the minor and patch level of the
+    currently running Windows operating system as reported by VerQueryValue() of
+    kernel32.dll. E.g. &quot;Windows 10 OS Version 1809 (Build 17763.503)&quot;
+    would be 17763 (0x4563), combined with 503 (0x1F7) = 0x456301F7. If either
+    minor or patch level exceeds the value that can fit in a 16-bit unsigned
+    integer, then this histogram will report 0. Reported once, shortly after
+    browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Windows.ProcessorFamily" enum="ProcessorFamily"
+    expires_after="2023-06-01">
+  <owner>rkc@chromium.org</owner>
+  <owner>vnagarnaik@google.com</owner>
+  <owner>rockot@chromium.org</owner>
+  <summary>
+    The processor family type. Logged shortly after startup. The value is
+    specified in the SMBIOS specification, section 7.5.2:
+    https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
+    This metric will only be logged on Windows 10+.
+  </summary>
+</histogram>
+
+<histogram name="Windows.ProcessorVirtualizationFirmwareEnabled"
+    enum="BooleanEnabled" expires_after="2023-06-01">
+  <owner>rkc@chromium.org</owner>
+  <owner>vnagarnaik@google.com</owner>
+  <owner>rockot@chromium.org</owner>
+  <summary>
+    Whether virtualization has been enabled in the system firmware. Logged
+    shortly after startup. This metric will only be logged on Windows 10+.
+  </summary>
+</histogram>
+
+<histogram name="Windows.TouchDrag.Success" enum="BooleanSuccess"
+    expires_after="2021-12-01">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>dfried@chromium.org</owner>
+  <summary>
+    Recorded each time the user starts a Windows touch drag drop of web
+    contents. This is currently only used by the WebUI tab strip, where touch
+    drag drop is enabled, to count the number of touch drags attempted.
+    ::DoDragDrop occasionally blocks waiting for a right mouse button down
+    followed by a move, which is detected by ::DoDragDrop not calling
+    QueryContinueDrag for more than a second. This will be recorded as false.
+    This stat will be used to determine how much of a real world problem this
+    is.
+  </summary>
+</histogram>
+
+<histogram name="Windows.UnpinShortcut.ProcessError" enum="BooleanError"
+    expires_after="2023-03-30">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
+  <summary>
+    Indicates whether a connection error occured between the browser and the
+    shell handler process. This is usually caused by a crash in the utility
+    process. This is logged every time shortcuts are unpinned from the taskbar.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

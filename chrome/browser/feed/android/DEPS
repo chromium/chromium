@@ -1,5 +1,15 @@
 include_rules = [
-  "-content/public/android",
-  "+components/favicon/android",
-  "+content/public/android/java/src/org/chromium/content_public",
+  "+components/browser_ui/share/android"
 ]
+
+specific_include_rules = {
+  ".*_[a-z]*test\.cc": [
+    "+mojo/core/embedder",
+  ],
+  "feed_reliability_logging_bridge.cc": [
+    "+third_party/abseil-cpp/absl/status/status.h",
+  ],
+  ".*FeedProcessScopeDependencyProvider\.java": [
+     "+chrome/android/java/src/org/chromium/chrome/browser/base",
+  ]
+}

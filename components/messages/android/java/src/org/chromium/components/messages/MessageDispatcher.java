@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,9 +17,23 @@ public interface MessageDispatcher {
      * @param messageProperties The PropertyModel with message's visual properties.
      * @param webContents The webContents the message is associated with.
      * @param scopeType The {@link MessageScopeType} of the message.
+     * @param highPriority True if the message should be displayed ASAP.
      */
     void enqueueMessage(PropertyModel messageProperties, WebContents webContents,
-            @MessageScopeType int scopeType);
+            @MessageScopeType int scopeType, boolean highPriority);
+
+    /**
+     * Enqueues a message defined by its properties. This message will be of a
+     * {@link MessageScopeType#WINDOW} scope. And it will be be associated with WindowAndroid for
+     * which this message dispatcher was created. Use {@link
+     * MessageDispatcher#enqueueMessage(PropertyModel, WebContents, int, boolean)} to ensure the
+     * message is attached to given webContents or the windowAndroid associated with the given
+     * webContents.
+     *
+     * @param messageProperties The PropertyModel with message's visual properties.
+     * @param highPriority True if the message should be displayed ASAP.
+     */
+    void enqueueWindowScopedMessage(PropertyModel messageProperties, boolean highPriority);
 
     /**
      * Dismisses a message referenced by its PropertyModel. Hides the message if it is currently

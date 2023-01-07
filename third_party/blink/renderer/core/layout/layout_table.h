@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_TABLE_H_
 
-#include <memory>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
@@ -139,6 +138,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
  public:
   explicit LayoutTable(Element*);
   ~LayoutTable() override;
+  void Trace(Visitor*) const override;
 
   // Per CSS 3 writing-mode: "The first and second values of the
   // 'border-spacing' property represent spacing between columns and rows
@@ -316,15 +316,13 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   LayoutTableCol* FirstColumn() const;
 
   struct ColAndColGroup {
-    ColAndColGroup()
-        : col(nullptr),
-          colgroup(nullptr),
-          adjoins_start_border_of_col_group(false),
-          adjoins_end_border_of_col_group(false) {}
-    LayoutTableCol* col;
-    LayoutTableCol* colgroup;
-    bool adjoins_start_border_of_col_group;
-    bool adjoins_end_border_of_col_group;
+    STACK_ALLOCATED();
+
+   public:
+    LayoutTableCol* col = nullptr;
+    LayoutTableCol* colgroup = nullptr;
+    bool adjoins_start_border_of_col_group = false;
+    bool adjoins_end_border_of_col_group = false;
     LayoutTableCol* InnermostColOrColGroup() { return col ? col : colgroup; }
   };
   ColAndColGroup ColElementAtAbsoluteColumn(
@@ -336,7 +334,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
       return ColAndColGroup();
     return SlowColElementAtAbsoluteColumn(absolute_column_index);
   }
-  bool HasColElements() const final {
+  bool HasColElements() const {
     NOT_DESTROYED();
     return has_col_elements_;
   }
@@ -385,7 +383,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   void InvalidateCollapsedBorders();
   void InvalidateCollapsedBordersForAllCellsIfNeeded();
 
-  bool HasCollapsedBorders() const final {
+  bool HasCollapsedBorders() const {
     NOT_DESTROYED();
     DCHECK(collapsed_borders_valid_);
     return has_collapsed_borders_;
@@ -474,16 +472,15 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
     NOT_DESTROYED();
     return this;
   }
-  bool IsFixedTableLayout() const final {
-    NOT_DESTROYED();
-    return StyleRef().IsFixedTableLayout();
-  }
   LayoutNGTableSectionInterface* FirstBodyInterface() const final;
-  LayoutNGTableSectionInterface* TopSectionInterface() const final;
-  LayoutNGTableSectionInterface* TopNonEmptySectionInterface() const final;
-  LayoutNGTableSectionInterface* BottomSectionInterface() const final;
-  LayoutNGTableSectionInterface* BottomNonEmptySectionInterface() const final;
-  LayoutNGTableSectionInterface* SectionBelowInterface(
+  LayoutNGTableSectionInterface* FirstSectionInterface() const final;
+  LayoutNGTableSectionInterface* FirstNonEmptySectionInterface() const final;
+  LayoutNGTableSectionInterface* LastSectionInterface() const final;
+  LayoutNGTableSectionInterface* LastNonEmptySectionInterface() const final;
+  LayoutNGTableSectionInterface* NextSectionInterface(
+      const LayoutNGTableSectionInterface*,
+      SkipEmptySectionsValue) const final;
+  LayoutNGTableSectionInterface* PreviousSectionInterface(
       const LayoutNGTableSectionInterface*,
       SkipEmptySectionsValue) const final;
   bool IsFirstCell(const LayoutNGTableCellInterface&) const final;
@@ -504,7 +501,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 
   LayoutUnit BaselinePosition(
       FontBaseline,
@@ -581,17 +578,17 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   mutable Vector<int> effective_column_positions_;
 
   // The captions associated with this object.
-  mutable Vector<LayoutTableCaption*> captions_;
+  mutable HeapVector<Member<LayoutTableCaption>> captions_;
 
   // Holds pointers to LayoutTableCol objects for <col>s and <colgroup>s under
   // this table.
   // There is no direct relationship between the size of and index into this
   // vector and those of m_effectiveColumns because they hold different things.
-  mutable Vector<LayoutTableCol*> column_layout_objects_;
+  mutable HeapVector<Member<LayoutTableCol>> column_layout_objects_;
 
-  mutable LayoutTableSection* head_;
-  mutable LayoutTableSection* foot_;
-  mutable LayoutTableSection* first_body_;
+  mutable Member<LayoutTableSection> head_;
+  mutable Member<LayoutTableSection> foot_;
+  mutable Member<LayoutTableSection> first_body_;
 
   // The layout algorithm used by this table.
   //
@@ -604,7 +601,7 @@ class CORE_EXPORT LayoutTable final : public LayoutBlock,
   //
   // As the algorithm is dependent on the style, this field is nullptr before
   // the first style is applied in styleDidChange().
-  std::unique_ptr<TableLayoutAlgorithm> table_layout_;
+  Member<TableLayoutAlgorithm> table_layout_;
 
   // Collapsed borders are SUPER EXPENSIVE to compute. The reason is that we
   // need to compare a cells border against all the adjoining cells, rows,

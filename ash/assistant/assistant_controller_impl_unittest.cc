@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,19 @@
 #include <string>
 
 #include "ash/assistant/test/assistant_ash_test_base.h"
+#include "ash/assistant/test/test_assistant_service.h"
 #include "ash/assistant/util/deep_link_util.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "base/scoped_observation.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -59,8 +68,8 @@ class MockAssistantUiModelObserver : public AssistantUiModelObserver {
               OnUiVisibilityChanged,
               (AssistantVisibility new_visibility,
                AssistantVisibility old_visibility,
-               base::Optional<AssistantEntryPoint> entry_point,
-               base::Optional<AssistantExitPoint> exit_point),
+               absl::optional<AssistantEntryPoint> entry_point,
+               absl::optional<AssistantExitPoint> exit_point),
               (override));
 };
 
@@ -70,11 +79,15 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
   MOCK_METHOD(void,
-              NewTabWithUrl,
-              (const GURL& url, bool from_user_interaction),
+              OpenUrl,
+              (const GURL& url, OpenUrlFrom from, Disposition disposition),
               (override));
 
-  MOCK_METHOD(void, OpenFeedbackPage, (bool from_assistant), (override));
+  MOCK_METHOD(void,
+              OpenFeedbackPage,
+              (NewWindowDelegate::FeedbackSource source,
+               const std::string& description_template),
+              (override));
 };
 
 // AssistantControllerImplTest -------------------------------------------------
@@ -93,10 +106,17 @@ class AssistantControllerImplTest : public AssistantAshTestBase {
   const AssistantUiModel* ui_model() {
     return AssistantUiController::Get()->GetModel();
   }
+  TestAssistantService* test_assistant_service() {
+    return &test_assistant_service_;
+  }
 
  private:
   MockNewWindowDelegate* new_window_delegate_;
   std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
+
+  // AssistantService must outlive AssistantController as destructor can
+  // reference AssistantService.
+  TestAssistantService test_assistant_service_;
 };
 
 }  // namespace
@@ -145,11 +165,10 @@ TEST_F(AssistantControllerImplTest, NotifiesOpeningUrlAndUrlOpened) {
             EXPECT_TRUE(from_server);
           }));
 
-  EXPECT_CALL(new_window_delegate(), NewTabWithUrl)
-      .WillOnce([](const GURL& url, bool from_user_interaction) {
-        EXPECT_EQ(GURL("https://g.co/"), url);
-        EXPECT_TRUE(from_user_interaction);
-      });
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL("https://g.co/"),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+                      NewWindowDelegate::Disposition::kNewForegroundTab));
 
   EXPECT_CALL(controller_observer_mock, OnUrlOpened)
       .WillOnce(testing::Invoke([](const GURL& url, bool from_server) {
@@ -157,6 +176,19 @@ TEST_F(AssistantControllerImplTest, NotifiesOpeningUrlAndUrlOpened) {
         EXPECT_TRUE(from_server);
       }));
 
+  controller()->OpenUrl(GURL("https://g.co/"), /*in_background=*/true,
+                        /*from_server=*/true);
+}
+
+TEST_F(AssistantControllerImplTest, NotOpenUrlIfAssistantNotReady) {
+  testing::NiceMock<MockAssistantControllerObserver> controller_observer_mock;
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      scoped_controller_obs{&controller_observer_mock};
+  scoped_controller_obs.Observe(controller());
+
+  EXPECT_CALL(controller_observer_mock, OnOpeningUrl).Times(0);
+
+  controller()->SetAssistant(nullptr);
   controller()->OpenUrl(GURL("https://g.co/"), /*in_background=*/true,
                         /*from_server=*/true);
 }
@@ -177,7 +209,12 @@ TEST_F(AssistantControllerImplTest, OpensFeedbackPageForFeedbackDeeplink) {
           }));
 
   EXPECT_CALL(new_window_delegate(), OpenFeedbackPage)
-      .WillOnce([](bool from_assistant) { EXPECT_TRUE(from_assistant); });
+      .WillOnce([](NewWindowDelegate::FeedbackSource source,
+                   const std::string& description_template) {
+        EXPECT_EQ(NewWindowDelegate::FeedbackSource::kFeedbackSourceAssistant,
+                  source);
+        EXPECT_EQ(std::string(), description_template);
+      });
 
   controller()->OpenUrl(GURL("googleassistant://send-feedback"),
                         /*in_background=*/false, /*from_server=*/true);
@@ -189,12 +226,23 @@ TEST_F(AssistantControllerImplTest, ClosesAssistantUiForFeedbackDeeplink) {
   testing::NiceMock<MockAssistantUiModelObserver> ui_model_observer_mock;
   ui_model()->AddObserver(&ui_model_observer_mock);
 
+  testing::InSequence sequence;
   EXPECT_CALL(ui_model_observer_mock, OnUiVisibilityChanged)
       .WillOnce([](AssistantVisibility new_visibility,
                    AssistantVisibility old_visibility,
-                   base::Optional<AssistantEntryPoint> entry_point,
-                   base::Optional<AssistantExitPoint> exit_point) {
+                   absl::optional<AssistantEntryPoint> entry_point,
+                   absl::optional<AssistantExitPoint> exit_point) {
         EXPECT_EQ(old_visibility, AssistantVisibility::kVisible);
+        EXPECT_EQ(new_visibility, AssistantVisibility::kClosing);
+        EXPECT_FALSE(entry_point.has_value());
+        EXPECT_EQ(exit_point.value(), AssistantExitPoint::kUnspecified);
+      });
+  EXPECT_CALL(ui_model_observer_mock, OnUiVisibilityChanged)
+      .WillOnce([](AssistantVisibility new_visibility,
+                   AssistantVisibility old_visibility,
+                   absl::optional<AssistantEntryPoint> entry_point,
+                   absl::optional<AssistantExitPoint> exit_point) {
+        EXPECT_EQ(old_visibility, AssistantVisibility::kClosing);
         EXPECT_EQ(new_visibility, AssistantVisibility::kClosed);
         EXPECT_FALSE(entry_point.has_value());
         EXPECT_EQ(exit_point.value(), AssistantExitPoint::kUnspecified);
@@ -204,6 +252,47 @@ TEST_F(AssistantControllerImplTest, ClosesAssistantUiForFeedbackDeeplink) {
                         /*in_background=*/false, /*from_server=*/true);
 
   ui_model()->RemoveObserver(&ui_model_observer_mock);
+}
+
+// Dark mode is set to true if the DarkLightMode flag is off. This is determined
+// in DarkLightModeControllerImpl::IsDarkModeEnabled().
+TEST_F(AssistantControllerImplTest, ColorModeIsSetWhenAssistantIsReadyFlagOff) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{}, /*disabled_features=*/{
+          chromeos::features::kDarkLightMode, features::kNotificationsRefresh});
+
+  controller()->SetAssistant(test_assistant_service());
+
+  ASSERT_TRUE(test_assistant_service()->dark_mode_enabled().has_value());
+  EXPECT_TRUE(test_assistant_service()->dark_mode_enabled().value());
+}
+
+TEST_F(AssistantControllerImplTest, ColorModeIsUpdated) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(chromeos::features::kDarkLightMode);
+
+  ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
+
+  auto* active_user_pref_service =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(active_user_pref_service);
+
+  auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->OnActiveUserPrefServiceChanged(
+      active_user_pref_service);
+  controller()->SetAssistant(test_assistant_service());
+  const bool initial_dark_mode_status =
+      dark_light_mode_controller->IsDarkModeEnabled();
+  ASSERT_TRUE(test_assistant_service()->dark_mode_enabled().has_value());
+  EXPECT_EQ(initial_dark_mode_status,
+            test_assistant_service()->dark_mode_enabled().value());
+
+  // Switch the color mode.
+  dark_light_mode_controller->ToggleColorMode();
+  ASSERT_TRUE(test_assistant_service()->dark_mode_enabled().has_value());
+  EXPECT_NE(initial_dark_mode_status,
+            test_assistant_service()->dark_mode_enabled().value());
 }
 
 }  // namespace ash

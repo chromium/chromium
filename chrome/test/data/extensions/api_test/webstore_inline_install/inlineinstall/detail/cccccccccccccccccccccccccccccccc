@@ -1,8 +1,0 @@
-{
-  "icon_url": "webstore_inline_install/extension/icon.png",
-  "users": "0",
-  "average_rating": 5,
-  "rating_count": 0,
-  "verified_site": "app.com",
-  "manifest": "{\"name\":\"Install Failure Test Extension\",\"version\":\"0.1\",\"manifest_version\":2}"
-}

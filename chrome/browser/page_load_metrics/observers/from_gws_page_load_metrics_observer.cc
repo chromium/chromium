@@ -1,18 +1,24 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/page_load_metrics/observers/from_gws_page_load_metrics_observer.h"
 #include <string>
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "content/public/browser/navigation_handle.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+
+#if defined(TOOLKIT_VIEWS)
+#include "chrome/browser/ui/side_search/side_search_tab_contents_helper.h"
+#endif  // defined(TOOLKIT_VIEWS)
 
 using page_load_metrics::PageAbortReason;
 
@@ -33,7 +39,7 @@ const char kHistogramFromGWSFirstContentfulPaint[] =
     "NavigationToFirstContentfulPaint";
 const char kHistogramFromGWSLargestContentfulPaint[] =
     "PageLoad.Clients.FromGoogleSearch.PaintTiming."
-    "NavigationToLargestContentfulPaint";
+    "NavigationToLargestContentfulPaint2";
 const char kHistogramFromGWSParseStartToFirstContentfulPaint[] =
     "PageLoad.Clients.FromGoogleSearch.PaintTiming."
     "ParseStartToFirstContentfulPaint";
@@ -120,9 +126,58 @@ const char kHistogramFromGWSCumulativeLayoutShiftMainFrame[] =
     "PageLoad.Clients.FromGoogleSearch.LayoutInstability.CumulativeShiftScore."
     "MainFrame";
 
+const char kHistogramFromGWSMaxCumulativeShiftScoreSessionWindow[] =
+    "PageLoad.LayoutInstability.MaxCumulativeShiftScore.SessionWindow.Gap1000ms"
+    ".Max5000ms2";
+
+const char kHistogramFromGWSFromSidePanelFirstInputDelay[] =
+    "PageLoad.Clients.FromGoogleSearch.FromSidePanel.InteractiveTiming."
+    "FirstInputDelay4";
+const char
+    kHistogramFromGWSFromSidePanelMaxCumulativeShiftScoreSessionWindow[] =
+        "PageLoad.Clients.FromGoogleSearch.FromSidePanel.LayoutInstability."
+        "MaxCumulativeShiftScore.SessionWindow.Gap1000ms.Max5000ms2";
+const char kHistogramFromGWSFromSidePanelFirstContentfulPaint[] =
+    "PageLoad.Clients.FromGoogleSearch.FromSidePanel.PaintTiming."
+    "NavigationToFirstContentfulPaint";
+const char kHistogramFromGWSFromSidePanelFirstImagePaint[] =
+    "PageLoad.Clients.FromGoogleSearch.FromSidePanel.PaintTiming."
+    "NavigationToFirstImagePaint";
+const char kHistogramFromGWSFromSidePanelLargestContentfulPaint[] =
+    "PageLoad.Clients.FromGoogleSearch.FromSidePanel.PaintTiming."
+    "NavigationToLargestContentfulPaint2";
+
 }  // namespace internal
 
 namespace {
+
+void SetUpLoggerForSidePanelIfNecessary(
+    content::NavigationHandle& navigation_handle,
+    FromGWSPageLoadMetricsLogger& logger) {
+#if defined(TOOLKIT_VIEWS)
+  // If the side search helper does not exist for this tab, setup is not needed.
+  const auto* helper = SideSearchTabContentsHelper::FromWebContents(
+      navigation_handle.GetWebContents());
+  if (!helper)
+    return;
+
+  // If no side panel redirect is being tracked by the helper, setup is not
+  // needed.
+  const auto& side_panel_initiated_redirect_info =
+      helper->side_panel_initiated_redirect_info();
+  if (!side_panel_initiated_redirect_info)
+    return;
+
+  // If this navigation is part of a chain originating from the side panel set
+  // the relevant logger state bits.
+  if (navigation_handle.GetRedirectChain()[0] ==
+      side_panel_initiated_redirect_info->initiated_redirect_url) {
+    logger.SetNavigationStateForSidePanel(
+        side_panel_initiated_redirect_info->initiated_redirect_url,
+        side_panel_initiated_redirect_info->initiated_via_link);
+  }
+#endif  // defined(TOOLKIT_VIEWS)
+}
 
 void LogCommittedAbortsBeforePaint(PageAbortReason abort_reason,
                                    base::TimeDelta page_end_time) {
@@ -242,7 +297,7 @@ void LogForegroundDurations(
     const page_load_metrics::mojom::PageLoadTiming& timing,
     const page_load_metrics::PageLoadMetricsObserverDelegate& delegate,
     base::TimeTicks app_background_time) {
-  base::Optional<base::TimeDelta> foreground_duration =
+  absl::optional<base::TimeDelta> foreground_duration =
       page_load_metrics::GetInitialForegroundDuration(delegate,
                                                       app_background_time);
   if (!foreground_duration)
@@ -279,13 +334,13 @@ bool WasAbortedInForeground(
       abort_info.reason == PageAbortReason::ABORT_NONE)
     return false;
 
-  base::Optional<base::TimeDelta> time_to_abort(abort_info.time_to_abort);
+  absl::optional<base::TimeDelta> time_to_abort(abort_info.time_to_abort);
   if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
           time_to_abort, delegate))
     return true;
 
   const base::TimeDelta time_to_first_background =
-      delegate.GetFirstBackgroundTime().value();
+      delegate.GetTimeToFirstBackground().value();
   DCHECK_GT(abort_info.time_to_abort, time_to_first_background);
   base::TimeDelta background_abort_delta =
       abort_info.time_to_abort - time_to_first_background;
@@ -299,7 +354,7 @@ bool WasAbortedInForeground(
 
 bool WasAbortedBeforeInteraction(
     const page_load_metrics::PageAbortInfo& abort_info,
-    const base::Optional<base::TimeDelta>& time_to_interaction) {
+    const absl::optional<base::TimeDelta>& time_to_interaction) {
   // These conditions should be guaranteed by the call to
   // WasAbortedInForeground, which is called before WasAbortedBeforeInteraction
   // gets invoked.
@@ -319,8 +374,7 @@ bool WasAbortedBeforeInteraction(
   // revealed by the interaction.
   if (abort_info.reason == PageAbortReason::ABORT_RELOAD ||
       abort_info.reason == PageAbortReason::ABORT_FORWARD_BACK) {
-    return time_to_interaction.value() +
-               base::TimeDelta::FromMilliseconds(1000) >
+    return time_to_interaction.value() + base::Milliseconds(1000) >
            abort_info.time_to_abort;
   } else {
     return time_to_interaction > abort_info.time_to_abort;
@@ -338,8 +392,11 @@ FromGWSPageLoadMetricsLogger::FromGWSPageLoadMetricsLogger() = default;
 FromGWSPageLoadMetricsLogger::~FromGWSPageLoadMetricsLogger() = default;
 
 void FromGWSPageLoadMetricsLogger::SetPreviouslyCommittedUrl(const GURL& url) {
-  previously_committed_url_is_search_results_ =
-      page_load_metrics::IsGoogleSearchResultUrl(url);
+  if (page_load_metrics::IsGoogleSearchResultUrl(url)) {
+    previously_committed_url_is_search_results_ = true;
+    navigation_initiated_search_mode_ =
+        google_util::GoogleSearchModeFromUrl(url);
+  }
   previously_committed_url_is_search_redirector_ =
       page_load_metrics::IsGoogleSearchRedirectorUrl(url);
 }
@@ -349,7 +406,18 @@ void FromGWSPageLoadMetricsLogger::SetProvisionalUrl(const GURL& url) {
       page_load_metrics::IsGoogleSearchHostname(url);
 }
 
-FromGWSPageLoadMetricsObserver::FromGWSPageLoadMetricsObserver() {}
+void FromGWSPageLoadMetricsLogger::SetNavigationStateForSidePanel(
+    const GURL& initiating_side_panel_url,
+    bool navigation_initiated_via_link) {
+  initiating_side_panel_url_ = initiating_side_panel_url;
+  navigation_initiated_via_link_ = navigation_initiated_via_link;
+  if (page_load_metrics::IsGoogleSearchResultUrl(initiating_side_panel_url)) {
+    navigation_initiated_search_mode_ =
+        google_util::GoogleSearchModeFromUrl(initiating_side_panel_url);
+  }
+}
+
+FromGWSPageLoadMetricsObserver::FromGWSPageLoadMetricsObserver() = default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 FromGWSPageLoadMetricsObserver::OnStart(
@@ -358,27 +426,51 @@ FromGWSPageLoadMetricsObserver::OnStart(
     bool started_in_foreground) {
   logger_.SetPreviouslyCommittedUrl(currently_committed_url);
   logger_.SetProvisionalUrl(navigation_handle->GetURL());
+  SetUpLoggerForSidePanelIfNecessary(*navigation_handle, logger_);
   return CONTINUE_OBSERVING;
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-FromGWSPageLoadMetricsObserver::OnCommit(
+FromGWSPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
-    ukm::SourceId source_id) {
-  // We'd like to also check navigation_handle->HasUserGesture() here, however
-  // this signal is not carried forward for navigations that open links in new
-  // tabs, so we look only at PAGE_TRANSITION_LINK. Back/forward navigations
-  // that were originally navigated from a link will continue to report a core
-  // type of link, so to filter out back/forward navs, we also check that the
-  // page transition is a new navigation.
-  logger_.set_navigation_initiated_via_link(
-      ui::PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
-                                   ui::PAGE_TRANSITION_LINK) &&
-      ui::PageTransitionIsNewNavigation(
-          navigation_handle->GetPageTransition()));
+    const GURL& currently_committed_url) {
+  // This class is interested only in events that are preprocessed and
+  // dispatched also to the outermost page at PageLoadTracker. So, this class
+  // doesn't need to forward events for FencedFrames.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+FromGWSPageLoadMetricsObserver::OnPrerenderStart(
+    content::NavigationHandle* navigation_handle,
+    const GURL& currently_committed_url) {
+  // This class focuses on measuring pages outside the current scope of
+  // Prerendering: cross-origin/cross-site.
+  return STOP_OBSERVING;
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+FromGWSPageLoadMetricsObserver::OnCommit(
+    content::NavigationHandle* navigation_handle) {
+  // If this is a side panel initiated navigation the bit determining whether
+  // the navigation was initiated via link is known and has been set in
+  // `SetUpLoggerForSidePanelIfNecessary()`.
+  if (!logger_.IsSidePanelInitiatedNavigation()) {
+    // We'd like to also check navigation_handle->HasUserGesture() here, however
+    // this signal is not carried forward for navigations that open links in new
+    // tabs, so we look only at PAGE_TRANSITION_LINK. Back/forward navigations
+    // that were originally navigated from a link will continue to report a core
+    // type of link, so to filter out back/forward navs, we also check that the
+    // page transition is a new navigation.
+    logger_.set_navigation_initiated_via_link(
+        ui::PageTransitionCoreTypeIs(navigation_handle->GetPageTransition(),
+                                     ui::PAGE_TRANSITION_LINK) &&
+        ui::PageTransitionIsNewNavigation(
+            navigation_handle->GetPageTransition()));
+  }
 
   logger_.SetNavigationStart(navigation_handle->NavigationStart());
-  logger_.OnCommit(navigation_handle, source_id);
+  logger_.OnCommit(navigation_handle, GetDelegate().GetPageUkmSourceId());
   return CONTINUE_OBSERVING;
 }
 
@@ -445,13 +537,22 @@ void FromGWSPageLoadMetricsObserver::OnUserInput(
   logger_.OnUserInput(event, timing, GetDelegate());
 }
 
+void FromGWSPageLoadMetricsObserver::SetNavigationStateForSidePanelForTesting(
+    const GURL& initiating_side_panel_url,
+    bool navigation_initiated_via_link) {
+  logger_.SetNavigationStateForSidePanel(initiating_side_panel_url,
+                                         navigation_initiated_via_link);
+}
+
 void FromGWSPageLoadMetricsLogger::OnCommit(
     content::NavigationHandle* navigation_handle,
     ukm::SourceId source_id) {
   if (!ShouldLogPostCommitMetrics(navigation_handle->GetURL()))
     return;
-  ukm::builders::PageLoad_FromGoogleSearch(source_id).Record(
-      ukm::UkmRecorder::Get());
+  ukm::builders::PageLoad_FromGoogleSearch(source_id)
+      .SetGoogleSearchMode(
+          static_cast<int64_t>(navigation_initiated_search_mode_))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void FromGWSPageLoadMetricsLogger::OnComplete(
@@ -509,6 +610,9 @@ bool FromGWSPageLoadMetricsLogger::ShouldLogFailedProvisionalLoadMetrics() {
   if (provisional_url_has_search_hostname_)
     return false;
 
+  if (IsSidePanelInitiatedNavigation())
+    return ShouldLogSidePanelMetrics();
+
   return previously_committed_url_is_search_results_ ||
          previously_committed_url_is_search_redirector_;
 }
@@ -528,6 +632,9 @@ bool FromGWSPageLoadMetricsLogger::ShouldLogPostCommitMetrics(const GURL& url) {
   if (page_load_metrics::IsGoogleSearchHostname(url))
     return false;
 
+  if (IsSidePanelInitiatedNavigation())
+    return ShouldLogSidePanelMetrics();
+
   // We're only interested in tracking navigations (e.g. clicks) initiated via
   // links. Note that the redirector will mask these, so don't enforce this if
   // the navigation came from a redirect url. TODO(csharrison): Use this signal
@@ -545,7 +652,7 @@ bool FromGWSPageLoadMetricsLogger::ShouldLogPostCommitMetrics(const GURL& url) {
 }
 
 bool FromGWSPageLoadMetricsLogger::ShouldLogForegroundEventAfterCommit(
-    const base::Optional<base::TimeDelta>& event,
+    const absl::optional<base::TimeDelta>& event,
     const page_load_metrics::PageLoadMetricsObserverDelegate& delegate) {
   DCHECK(delegate.DidCommit())
       << "ShouldLogForegroundEventAfterCommit called without committed URL.";
@@ -593,6 +700,11 @@ void FromGWSPageLoadMetricsLogger::OnFirstImagePaintInPage(
           timing.paint_timing->first_image_paint, delegate)) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramFromGWSFirstImagePaint,
                         timing.paint_timing->first_image_paint.value());
+    if (IsSidePanelInitiatedNavigation()) {
+      PAGE_LOAD_HISTOGRAM(
+          internal::kHistogramFromGWSFromSidePanelFirstImagePaint,
+          timing.paint_timing->first_image_paint.value());
+    }
   }
 }
 
@@ -603,6 +715,11 @@ void FromGWSPageLoadMetricsLogger::OnFirstContentfulPaintInPage(
           timing.paint_timing->first_contentful_paint, delegate)) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramFromGWSFirstContentfulPaint,
                         timing.paint_timing->first_contentful_paint.value());
+    if (IsSidePanelInitiatedNavigation()) {
+      PAGE_LOAD_HISTOGRAM(
+          internal::kHistogramFromGWSFromSidePanelFirstContentfulPaint,
+          timing.paint_timing->first_contentful_paint.value());
+    }
 
     // If we have a foreground paint, we should have a foreground parse start,
     // since paints can't happen until after parsing starts.
@@ -620,11 +737,13 @@ void FromGWSPageLoadMetricsLogger::OnFirstInputInPage(
     const page_load_metrics::PageLoadMetricsObserverDelegate& delegate) {
   if (ShouldLogForegroundEventAfterCommit(
           timing.interactive_timing->first_input_delay, delegate)) {
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        internal::kHistogramFromGWSFirstInputDelay,
-        timing.interactive_timing->first_input_delay.value(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+    INPUT_DELAY_HISTOGRAM(internal::kHistogramFromGWSFirstInputDelay,
+                          timing.interactive_timing->first_input_delay.value());
+    if (IsSidePanelInitiatedNavigation()) {
+      INPUT_DELAY_HISTOGRAM(
+          internal::kHistogramFromGWSFromSidePanelFirstInputDelay,
+          timing.interactive_timing->first_input_delay.value());
+    }
   }
 }
 
@@ -667,6 +786,18 @@ void FromGWSPageLoadMetricsLogger::FlushMetricsOnAppEnterBackground(
   LogForegroundDurations(timing, delegate, base::TimeTicks::Now());
 }
 
+bool FromGWSPageLoadMetricsLogger::IsSidePanelInitiatedNavigation() const {
+  return initiating_side_panel_url_.has_value();
+}
+
+bool FromGWSPageLoadMetricsLogger::ShouldLogSidePanelMetrics() const {
+  // We are only interested in link initiated navigations from Google search
+  // pages in the side panel.
+  return navigation_initiated_via_link_ &&
+         page_load_metrics::IsGoogleSearchHostname(
+             initiating_side_panel_url_.value());
+}
+
 void FromGWSPageLoadMetricsLogger::LogMetricsOnComplete(
     const page_load_metrics::PageLoadMetricsObserverDelegate& delegate) {
   if (!delegate.DidCommit() || !ShouldLogPostCommitMetrics(delegate.GetUrl()))
@@ -681,10 +812,30 @@ void FromGWSPageLoadMetricsLogger::LogMetricsOnComplete(
           all_frames_largest_contentful_paint.Time(), delegate)) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramFromGWSLargestContentfulPaint,
                         all_frames_largest_contentful_paint.Time().value());
+    if (IsSidePanelInitiatedNavigation()) {
+      PAGE_LOAD_HISTOGRAM(
+          internal::kHistogramFromGWSFromSidePanelLargestContentfulPaint,
+          all_frames_largest_contentful_paint.Time().value());
+    }
   }
 
   UMA_HISTOGRAM_COUNTS_100(
       internal::kHistogramFromGWSCumulativeLayoutShiftMainFrame,
       LayoutShiftUmaValue(
           delegate.GetMainFrameRenderData().layout_shift_score));
+
+  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
+      delegate.GetNormalizedCLSData(
+          page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
+              ACCUMULATE);
+
+  page_load_metrics::UmaMaxCumulativeShiftScoreHistogram10000x(
+      internal::kHistogramFromGWSMaxCumulativeShiftScoreSessionWindow,
+      normalized_cls_data);
+  if (IsSidePanelInitiatedNavigation()) {
+    page_load_metrics::UmaMaxCumulativeShiftScoreHistogram10000x(
+        internal::
+            kHistogramFromGWSFromSidePanelMaxCumulativeShiftScoreSessionWindow,
+        normalized_cls_data);
+  }
 }

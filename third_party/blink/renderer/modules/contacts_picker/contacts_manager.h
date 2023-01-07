@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_contacts_select_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
@@ -51,7 +50,7 @@ class ContactsManager final : public ScriptWrappable,
 
   void OnContactsSelected(
       ScriptPromiseResolver* resolver,
-      base::Optional<Vector<mojom::blink::ContactInfoPtr>> contacts);
+      absl::optional<Vector<mojom::blink::ContactInfoPtr>> contacts);
 
   const Vector<String>& GetProperties(ScriptState* script_state);
 

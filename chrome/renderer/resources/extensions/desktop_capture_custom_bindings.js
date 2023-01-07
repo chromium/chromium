@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,8 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   }
 
   apiFunctions.setHandleRequest('chooseDesktopMedia',
-                                function(sources, target_tab, callback) {
+                                function(sources, target_tab, options,
+                                         callback) {
     // |target_tab| is an optional parameter.
     if (callback === undefined) {
       callback = target_tab;
@@ -29,7 +30,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     var id = idGenerator.GetNextId();
     pendingRequests[id] = callback;
     bindingUtil.sendRequest('desktopCapture.chooseDesktopMedia',
-                            [id, sources, target_tab,
+                            [id, sources, target_tab, options,
                             $Function.bind(onRequestResult, null, id)],
                             undefined);
     return id;

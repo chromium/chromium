@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <map>
 #include <vector>
 
-#include "base/optional.h"
 #include "content/public/browser/global_routing_id.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -33,20 +33,23 @@ class RulesetMatcherBase {
  public:
   RulesetMatcherBase(const ExtensionId& extension_id, RulesetID ruleset_id);
 
+  RulesetMatcherBase(const RulesetMatcherBase&) = delete;
+  RulesetMatcherBase& operator=(const RulesetMatcherBase&) = delete;
+
   virtual ~RulesetMatcherBase();
 
   // Returns the ruleset's highest priority matching RequestAction for the
-  // onBeforeRequest phase, or base::nullopt if the ruleset has no matching
+  // onBeforeRequest phase, or absl::nullopt if the ruleset has no matching
   // rule. Also takes into account any matching allowAllRequests rules for the
   // ancestor frames.
-  base::Optional<RequestAction> GetBeforeRequestAction(
+  absl::optional<RequestAction> GetBeforeRequestAction(
       const RequestParams& params) const;
 
   // Returns a vector of RequestAction for all matching modifyHeaders rules
   // with priority greater than |min_priority| if specified.
   virtual std::vector<RequestAction> GetModifyHeadersActions(
       const RequestParams& params,
-      base::Optional<uint64_t> min_priority) const = 0;
+      absl::optional<uint64_t> min_priority) const = 0;
 
   // Returns whether this modifies "extraHeaders".
   virtual bool IsExtraHeadersMatcher() const = 0;
@@ -66,7 +69,7 @@ class RulesetMatcherBase {
 
   // Returns the tracked highest priority matching allowsAllRequests action, if
   // any, for |host|.
-  base::Optional<RequestAction> GetAllowlistedFrameActionForTesting(
+  absl::optional<RequestAction> GetAllowlistedFrameActionForTesting(
       content::RenderFrameHost* host) const;
 
  protected:
@@ -89,19 +92,19 @@ class RulesetMatcherBase {
       const url_pattern_index::flat::UrlRule& rule) const;
 
   // Helper to create a RequestAction of type |REDIRECT| with the request
-  // upgraded. Returns base::nullopt if the request is not upgradeable.
-  base::Optional<RequestAction> CreateUpgradeAction(
+  // upgraded. Returns absl::nullopt if the request is not upgradeable.
+  absl::optional<RequestAction> CreateUpgradeAction(
       const RequestParams& params,
       const url_pattern_index::flat::UrlRule& rule) const;
 
   // Helpers to create a RequestAction of type |REDIRECT| with the appropriate
-  // redirect url. Can return base::nullopt if the redirect url is ill-formed or
+  // redirect url. Can return absl::nullopt if the redirect url is ill-formed or
   // same as the current request url.
-  base::Optional<RequestAction> CreateRedirectActionFromMetadata(
+  absl::optional<RequestAction> CreateRedirectActionFromMetadata(
       const RequestParams& params,
       const url_pattern_index::flat::UrlRule& rule,
       const ExtensionMetadataList& metadata_list) const;
-  base::Optional<RequestAction> CreateRedirectAction(
+  absl::optional<RequestAction> CreateRedirectAction(
       const RequestParams& params,
       const url_pattern_index::flat::UrlRule& rule,
       GURL redirect_url) const;
@@ -115,17 +118,17 @@ class RulesetMatcherBase {
 
  private:
   // Returns the ruleset's highest priority matching allowAllRequests action or
-  // base::nullopt if there is no corresponding matching rule. Only takes into
+  // absl::nullopt if there is no corresponding matching rule. Only takes into
   // account the request |params| passed in. This doesn't take any account any
   // matching allowAllRequests rules for ancestor frames.
-  virtual base::Optional<RequestAction> GetAllowAllRequestsAction(
+  virtual absl::optional<RequestAction> GetAllowAllRequestsAction(
       const RequestParams& params) const = 0;
 
   // Returns the ruleset's highest priority matching RequestAction for the
-  // onBeforeRequest phase, or base::nullopt if the ruleset has no matching
+  // onBeforeRequest phase, or absl::nullopt if the ruleset has no matching
   // rule. This doesn't take any account any matching allowAllRequests rules for
   // ancestor frames.
-  virtual base::Optional<RequestAction> GetBeforeRequestActionIgnoringAncestors(
+  virtual absl::optional<RequestAction> GetBeforeRequestActionIgnoringAncestors(
       const RequestParams& params) const = 0;
 
   RequestAction CreateRequestAction(
@@ -133,9 +136,9 @@ class RulesetMatcherBase {
       const url_pattern_index::flat::UrlRule& rule) const;
 
   // Returns the matching RequestAction from |allowlisted_frames_| or
-  // base::nullopt if none is found.
-  base::Optional<RequestAction> GetAllowlistedFrameAction(
-      content::GlobalFrameRoutingId frame_id) const;
+  // absl::nullopt if none is found.
+  absl::optional<RequestAction> GetAllowlistedFrameAction(
+      content::GlobalRenderFrameHostId frame_id) const;
 
   const ExtensionId extension_id_;
   const RulesetID ruleset_id_;
@@ -143,10 +146,8 @@ class RulesetMatcherBase {
   // Stores the IDs for the RenderFrameHosts which are allow-listed due to an
   // allowAllRequests action and the corresponding highest priority
   // RequestAction.
-  std::map<content::GlobalFrameRoutingId, const RequestAction>
+  std::map<content::GlobalRenderFrameHostId, const RequestAction>
       allowlisted_frames_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetMatcherBase);
 };
 
 }  // namespace declarative_net_request

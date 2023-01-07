@@ -1,10 +1,12 @@
 include_rules = [
-    "+base/containers/mru_cache.h",
+    "+base/allocator/partition_allocator/partition_alloc_constants.h",
+    "+base/containers/lru_cache.h",
     "+device/vr/public/mojom/vr_service.mojom-blink.h",
     "+gpu/GLES2/gl2extchromium.h",
     "+gpu/command_buffer/client/gles2_interface.h",
     "+gpu/command_buffer/client/raster_interface.h",
     "+gpu/command_buffer/common/capabilities.h",
+    "+gpu/config/gpu_driver_bug_workaround_type.h",
     "+gpu/config/gpu_feature_info.h",
     "+media/base/video_frame.h",
     "+media/base/wait_and_replace_sync_token_client.h",

@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(
       `Test if coverage view also shows completly uncovered css files\n`);
-  await TestRunner.loadModule('panels/coverage'); await TestRunner.loadTestModule('coverage_test_runner');
+  await TestRunner.loadLegacyModule('panels/coverage'); await TestRunner.loadTestModule('coverage_test_runner');
   await TestRunner.navigatePromise(
       TestRunner.url('resources/css-coverage-import.html'));
 

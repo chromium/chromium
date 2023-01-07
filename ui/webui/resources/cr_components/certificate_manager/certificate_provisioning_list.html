@@ -13,7 +13,8 @@
 </style>
 
 <template is="dom-if" if="[[showProvisioningDetailsDialog_]]" restamp>
-  <certificate-provisioning-details-dialog model="[[provisioningDetailsDialogModel_]]">
+  <certificate-provisioning-details-dialog model="[[provisioningDetailsDialogModel_]]"
+      on-close="onDialogClose_">
   </certificate-provisioning-details-dialog>
 </template>
 

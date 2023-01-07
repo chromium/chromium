@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ namespace ash {
 // Section for downloads in the `RecentFilesBubble`.
 class DownloadsSection : public HoldingSpaceItemViewsSection {
  public:
-  explicit DownloadsSection(HoldingSpaceItemViewDelegate* delegate);
+  explicit DownloadsSection(HoldingSpaceViewDelegate* delegate);
   DownloadsSection(const DownloadsSection& other) = delete;
   DownloadsSection& operator=(const DownloadsSection& other) = delete;
   ~DownloadsSection() override;

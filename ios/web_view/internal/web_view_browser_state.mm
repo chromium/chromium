@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/history/core/common/pref_names.h"
@@ -23,12 +22,15 @@
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_filter.h"
 #include "components/prefs/pref_service_factory.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/sync_prefs.h"
+#include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync_device_info/device_info_prefs.h"
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
+#include "components/unified_consent/unified_consent_service.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
@@ -36,9 +38,11 @@
 #include "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_log_router_factory.h"
 #include "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
+#include "ios/web_view/internal/language/web_view_accept_languages_service_factory.h"
 #include "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
 #include "ios/web_view/internal/language/web_view_url_language_histogram_factory.h"
 #include "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
+#import "ios/web_view/internal/passwords/web_view_bulk_leak_check_service_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_log_router_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_requirements_service_factory.h"
 #include "ios/web_view/internal/passwords/web_view_password_store_factory.h"
@@ -47,8 +51,7 @@
 #import "ios/web_view/internal/sync/web_view_gcm_profile_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_model_type_store_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_profile_invalidation_provider_factory.h"
-#import "ios/web_view/internal/sync/web_view_profile_sync_service_factory.h"
-#include "ios/web_view/internal/translate/web_view_translate_accept_languages_factory.h"
+#import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
 #include "ios/web_view/internal/translate/web_view_translate_ranker_factory.h"
 #include "ios/web_view/internal/web_view_download_manager.h"
 #include "ios/web_view/internal/web_view_url_request_context_getter.h"
@@ -81,34 +84,38 @@ WebViewBrowserState::WebViewBrowserState(
           !recording_browser_state->IsOffTheRecord()));
   recording_browser_state_ = recording_browser_state;
 
-  // IO access is required to setup the browser state. In Chrome, this is
-  // already allowed during thread startup. However, startup time of
-  // ChromeWebView is not predetermined, so IO access is temporarily allowed.
-  bool wasIOAllowed = base::ThreadRestrictions::SetIOAllowed(true);
+  profile_metrics::SetBrowserProfileType(
+      this, off_the_record ? profile_metrics::BrowserProfileType::kIncognito
+                           : profile_metrics::BrowserProfileType::kRegular);
 
-  CHECK(base::PathService::Get(base::DIR_APP_DATA, &path_));
+  {
+    // IO access is required to setup the browser state. In Chrome, this is
+    // already allowed during thread startup. However, startup time of
+    // ChromeWebView is not predetermined, so IO access is temporarily allowed.
+    base::ScopedAllowBlocking allow_blocking;
 
-  request_context_getter_ = new WebViewURLRequestContextGetter(
-      GetStatePath(), this, ApplicationContext::GetInstance()->GetNetLog(),
-      base::CreateSingleThreadTaskRunner({web::WebThread::IO}));
+    CHECK(base::PathService::Get(base::DIR_APP_DATA, &path_));
 
-  // Initialize prefs.
-  scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry =
-      new user_prefs::PrefRegistrySyncable;
-  RegisterPrefs(pref_registry.get());
+    request_context_getter_ = new WebViewURLRequestContextGetter(
+        GetStatePath(), this, ApplicationContext::GetInstance()->GetNetLog(),
+        web::GetIOThreadTaskRunner({}));
 
-  scoped_refptr<PersistentPrefStore> user_pref_store;
-  if (off_the_record) {
-    user_pref_store = new InMemoryPrefStore();
-  } else {
-    user_pref_store = new JsonPrefStore(path_.Append(kPreferencesFilename));
+    // Initialize prefs.
+    scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry =
+        new user_prefs::PrefRegistrySyncable;
+    RegisterPrefs(pref_registry.get());
+
+    scoped_refptr<PersistentPrefStore> user_pref_store;
+    if (off_the_record) {
+      user_pref_store = new InMemoryPrefStore();
+    } else {
+      user_pref_store = new JsonPrefStore(path_.Append(kPreferencesFilename));
+    }
+
+    PrefServiceFactory factory;
+    factory.set_user_prefs(user_pref_store);
+    prefs_ = factory.Create(pref_registry.get());
   }
-
-  PrefServiceFactory factory;
-  factory.set_user_prefs(user_pref_store);
-  prefs_ = factory.Create(pref_registry.get());
-
-  base::ThreadRestrictions::SetIOAllowed(wasIOAllowed);
 
   BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(
       this);
@@ -118,8 +125,8 @@ WebViewBrowserState::~WebViewBrowserState() {
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
 
-  base::PostTask(FROM_HERE, {web::WebThread::IO},
-                 base::BindOnce(&WebViewURLRequestContextGetter::ShutDown,
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&WebViewURLRequestContextGetter::ShutDown,
                                 request_context_getter_));
 }
 
@@ -163,7 +170,8 @@ net::URLRequestContextGetter* WebViewBrowserState::GetRequestContext() {
 
 void WebViewBrowserState::RegisterPrefs(
     user_prefs::PrefRegistrySyncable* pref_registry) {
-  pref_registry->RegisterBooleanPref(prefs::kOfferTranslateEnabled, true);
+  pref_registry->RegisterBooleanPref(translate::prefs::kOfferTranslateEnabled,
+                                     true);
   pref_registry->RegisterBooleanPref(prefs::kSavingBrowserHistoryDisabled,
                                      true);
   language::LanguagePrefs::RegisterProfilePrefs(pref_registry);
@@ -172,14 +180,16 @@ void WebViewBrowserState::RegisterPrefs(
   autofill::prefs::RegisterProfilePrefs(pref_registry);
   password_manager::PasswordManager::RegisterProfilePrefs(pref_registry);
   syncer::SyncPrefs::RegisterProfilePrefs(pref_registry);
+  syncer::SyncTransportDataPrefs::RegisterProfilePrefs(pref_registry);
   syncer::DeviceInfoPrefs::RegisterProfilePrefs(pref_registry);
   safe_browsing::RegisterProfilePrefs(pref_registry);
+  unified_consent::UnifiedConsentService::RegisterPrefs(pref_registry);
 
   // Instantiate all factories to setup dependency graph for pref registration.
   WebViewLanguageModelManagerFactory::GetInstance();
   WebViewTranslateRankerFactory::GetInstance();
   WebViewUrlLanguageHistogramFactory::GetInstance();
-  WebViewTranslateAcceptLanguagesFactory::GetInstance();
+  WebViewAcceptLanguagesServiceFactory::GetInstance();
   WebViewWebUIIOSControllerFactory::GetInstance();
   autofill::WebViewAutofillLogRouterFactory::GetInstance();
   WebViewPersonalDataManagerFactory::GetInstance();
@@ -192,8 +202,9 @@ void WebViewBrowserState::RegisterPrefs(
   WebViewIdentityManagerFactory::GetInstance();
   WebViewGCMProfileServiceFactory::GetInstance();
   WebViewProfileInvalidationProviderFactory::GetInstance();
-  WebViewProfileSyncServiceFactory::GetInstance();
+  WebViewSyncServiceFactory::GetInstance();
   WebViewModelTypeStoreServiceFactory::GetInstance();
+  WebViewBulkLeakCheckServiceFactory::GetInstance();
 
   BrowserStateDependencyManager::GetInstance()
       ->RegisterBrowserStatePrefsForServices(pref_registry);

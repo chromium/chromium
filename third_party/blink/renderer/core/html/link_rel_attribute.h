@@ -55,7 +55,6 @@ class CORE_EXPORT LinkRelAttribute {
   bool IsLinkPreload() const { return is_link_preload_; }
   bool IsLinkPrerender() const { return is_link_prerender_; }
   bool IsLinkNext() const { return is_link_next_; }
-  bool IsImport() const { return is_import_; }
   bool IsManifest() const { return is_manifest_; }
   bool IsModulePreload() const { return is_module_preload_; }
   bool IsServiceWorker() const { return is_service_worker_; }
@@ -73,7 +72,6 @@ class CORE_EXPORT LinkRelAttribute {
   bool is_link_preload_ : 1;
   bool is_link_prerender_ : 1;
   bool is_link_next_ : 1;
-  bool is_import_ : 1;
   bool is_manifest_ : 1;
   bool is_module_preload_ : 1;
   bool is_service_worker_ : 1;
@@ -84,4 +82,4 @@ class CORE_EXPORT LinkRelAttribute {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_LINK_REL_ATTRIBUTE_H_

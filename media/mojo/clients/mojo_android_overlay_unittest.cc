@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -112,9 +111,9 @@ class MojoAndroidOverlayTest : public ::testing::Test {
 
     base::UnguessableToken routing_token = base::UnguessableToken::Create();
 
-    overlay_client_.reset(
-        new MojoAndroidOverlay(provider_receiver_.BindNewPipeAndPassRemote(),
-                               std::move(config_), routing_token));
+    overlay_client_ = std::make_unique<MojoAndroidOverlay>(
+        provider_receiver_.BindNewPipeAndPassRemote(), std::move(config_),
+        routing_token);
     overlay_client_->AddSurfaceDestroyedCallback(base::BindOnce(
         &MockClientCallbacks::OnDestroyed, base::Unretained(&callbacks_)));
     base::RunLoop().RunUntilIdle();

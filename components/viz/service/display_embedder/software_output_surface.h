@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 #include <queue>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/display/update_vsync_parameters_callback.h"
@@ -26,32 +28,26 @@ class VIZ_SERVICE_EXPORT SoftwareOutputSurface : public OutputSurface {
  public:
   explicit SoftwareOutputSurface(
       std::unique_ptr<SoftwareOutputDevice> software_device);
+
+  SoftwareOutputSurface(const SoftwareOutputSurface&) = delete;
+  SoftwareOutputSurface& operator=(const SoftwareOutputSurface&) = delete;
+
   ~SoftwareOutputSurface() override;
 
   // OutputSurface implementation.
   void BindToClient(OutputSurfaceClient* client) override;
   void EnsureBackbuffer() override;
   void DiscardBackbuffer() override;
-  void BindFramebuffer() override;
-  void Reshape(const gfx::Size& size,
-               float device_scale_factor,
-               const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format,
-               bool use_stencil) override;
+  void Reshape(const ReshapeParams& params) override;
   void SwapBuffers(OutputSurfaceFrame frame) override;
   bool IsDisplayedAsOverlayPlane() const override;
-  unsigned GetOverlayTextureId() const override;
-  bool HasExternalStencilTest() const override;
-  void ApplyExternalStencil() override;
-  uint32_t GetFramebufferCopyTextureFormat() override;
-  unsigned UpdateGpuFence() override;
   void SetUpdateVSyncParametersCallback(
       UpdateVSyncParametersCallback callback) override;
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
   gfx::OverlayTransform GetDisplayTransform() override;
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetNeedsSwapSizeNotifications(
       bool needs_swap_size_notifications) override;
 #endif
@@ -62,7 +58,7 @@ class VIZ_SERVICE_EXPORT SoftwareOutputSurface : public OutputSurface {
   void UpdateVSyncParameters(base::TimeTicks timebase,
                              base::TimeDelta interval);
 
-  OutputSurfaceClient* client_ = nullptr;
+  raw_ptr<OutputSurfaceClient> client_ = nullptr;
 
   UpdateVSyncParametersCallback update_vsync_parameters_callback_;
   base::TimeTicks refresh_timebase_;
@@ -73,13 +69,11 @@ class VIZ_SERVICE_EXPORT SoftwareOutputSurface : public OutputSurface {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   bool needs_swap_size_notifications_ = false;
 #endif
 
   base::WeakPtrFactory<SoftwareOutputSurface> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SoftwareOutputSurface);
 };
 
 }  // namespace viz

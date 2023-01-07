@@ -1,15 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/network/vpn_list.h"
 
-#include <algorithm>
 #include <vector>
 
 #include "ash/system/network/tray_network_state_model.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,6 +44,10 @@ std::vector<VpnProviderPtr> CopyProviders(
 class VpnListTest : public AshTestBase {
  public:
   VpnListTest() = default;
+
+  VpnListTest(const VpnListTest&) = delete;
+  VpnListTest& operator=(const VpnListTest&) = delete;
+
   ~VpnListTest() override = default;
 
   void SetUp() override {
@@ -62,8 +65,6 @@ class VpnListTest : public AshTestBase {
  private:
   std::unique_ptr<TrayNetworkStateModel> network_state_model_;
   std::unique_ptr<VpnList> vpn_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(VpnListTest);
 };
 
 TEST_F(VpnListTest, BuiltInProvider) {
@@ -138,9 +139,8 @@ TEST_F(VpnListTest, ThirdPartyProviders) {
   }
 
   // The first Arc VPN gets uninstalled.
-  auto iter = std::find_if(
-      third_party_providers.begin(), third_party_providers.end(),
-      [](const auto& p) { return p->provider_id == "package.name.foo1"; });
+  auto iter = base::ranges::find(third_party_providers, "package.name.foo1",
+                                 &VpnProvider::provider_id);
   ASSERT_NE(iter, third_party_providers.end());
   third_party_providers.erase(iter);
   vpn_list.SetVpnProvidersForTest(CopyProviders(third_party_providers));

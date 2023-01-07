@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,9 +26,6 @@ constexpr SkColor kGoogleBlue700 = SkColorSetRGB(0x19, 0x67, 0xD2);
 constexpr SkColor kGoogleBlue800 = SkColorSetRGB(0x18, 0x5A, 0xBC);
 constexpr SkColor kGoogleBlue900 = SkColorSetRGB(0x17, 0x4E, 0xA6);
 
-constexpr SkColor kGoogleBlueDark400 = SkColorSetRGB(0x6B, 0xA5, 0xED);
-constexpr SkColor kGoogleBlueDark600 = SkColorSetRGB(0x25, 0x81, 0xDF);
-
 constexpr SkColor kGoogleRed050 = SkColorSetRGB(0xFC, 0xE8, 0xE6);
 constexpr SkColor kGoogleRed100 = SkColorSetRGB(0xFA, 0xD2, 0xCF);
 constexpr SkColor kGoogleRed200 = SkColorSetRGB(0xF6, 0xAE, 0xA9);
@@ -40,10 +37,6 @@ constexpr SkColor kGoogleRed700 = SkColorSetRGB(0xC5, 0x22, 0x1F);
 constexpr SkColor kGoogleRed800 = SkColorSetRGB(0xB3, 0x14, 0x12);
 constexpr SkColor kGoogleRed900 = SkColorSetRGB(0xA5, 0x0E, 0x0E);
 
-constexpr SkColor kGoogleRedDark500 = SkColorSetRGB(0xE6, 0x6A, 0x5E);
-constexpr SkColor kGoogleRedDark600 = SkColorSetRGB(0xD3, 0x3B, 0x30);
-constexpr SkColor kGoogleRedDark800 = SkColorSetRGB(0xB4, 0x1B, 0x1A);
-
 constexpr SkColor kGoogleGreen050 = SkColorSetRGB(0xE6, 0xF4, 0xEA);
 constexpr SkColor kGoogleGreen100 = SkColorSetRGB(0xCE, 0xEA, 0xD6);
 constexpr SkColor kGoogleGreen200 = SkColorSetRGB(0xA8, 0xDA, 0xB5);
@@ -54,9 +47,6 @@ constexpr SkColor kGoogleGreen600 = SkColorSetRGB(0x1E, 0x8E, 0x3E);
 constexpr SkColor kGoogleGreen700 = SkColorSetRGB(0x18, 0x80, 0x38);
 constexpr SkColor kGoogleGreen800 = SkColorSetRGB(0x13, 0x73, 0x33);
 constexpr SkColor kGoogleGreen900 = SkColorSetRGB(0x0D, 0x65, 0x2D);
-
-constexpr SkColor kGoogleGreenDark500 = SkColorSetRGB(0x41, 0xAF, 0x6A);
-constexpr SkColor kGoogleGreenDark600 = SkColorSetRGB(0x28, 0x99, 0x4F);
 
 constexpr SkColor kGoogleYellow050 = SkColorSetRGB(0xFE, 0xF7, 0xE0);
 constexpr SkColor kGoogleYellow100 = SkColorSetRGB(0xFE, 0xEF, 0xC3);
@@ -124,6 +114,28 @@ constexpr SkColor kGoogleCyan700 = SkColorSetRGB(0x12, 0x9E, 0xAF);
 constexpr SkColor kGoogleCyan800 = SkColorSetRGB(0x09, 0x85, 0x91);
 constexpr SkColor kGoogleCyan900 = SkColorSetRGB(0x00, 0x7B, 0x83);
 
+constexpr SkColor kGoogleMagenta050 = SkColorSetRGB(0xF6, 0xE9, 0xF8);
+constexpr SkColor kGoogleMagenta100 = SkColorSetRGB(0xFA, 0xCB, 0xFF);
+constexpr SkColor kGoogleMagenta200 = SkColorSetRGB(0xF4, 0xB5, 0xFB);
+constexpr SkColor kGoogleMagenta300 = SkColorSetRGB(0xF8, 0x82, 0xFF);
+constexpr SkColor kGoogleMagenta400 = SkColorSetRGB(0xEE, 0x5F, 0xFA);
+constexpr SkColor kGoogleMagenta500 = SkColorSetRGB(0xDA, 0x36, 0xE8);
+constexpr SkColor kGoogleMagenta600 = SkColorSetRGB(0xC6, 0x1A, 0xD9);
+constexpr SkColor kGoogleMagenta700 = SkColorSetRGB(0xAA, 0x00, 0xB8);
+constexpr SkColor kGoogleMagenta800 = SkColorSetRGB(0x8A, 0x0E, 0x9E);
+constexpr SkColor kGoogleMagenta900 = SkColorSetRGB(0x68, 0x09, 0x8A);
+
+constexpr SkColor kGoogleElectric050 = SkColorSetRGB(0xE7, 0xFD, 0xFD);
+constexpr SkColor kGoogleElectric100 = SkColorSetRGB(0xBA, 0xFF, 0xFF);
+constexpr SkColor kGoogleElectric200 = SkColorSetRGB(0x80, 0xF9, 0xF9);
+constexpr SkColor kGoogleElectric300 = SkColorSetRGB(0x5E, 0xF1, 0xF2);
+constexpr SkColor kGoogleElectric400 = SkColorSetRGB(0x30, 0xE2, 0xEA);
+constexpr SkColor kGoogleElectric500 = SkColorSetRGB(0x2B, 0xDD, 0xE5);
+constexpr SkColor kGoogleElectric600 = SkColorSetRGB(0x03, 0xB6, 0xBE);
+constexpr SkColor kGoogleElectric700 = SkColorSetRGB(0x00, 0x90, 0x99);
+constexpr SkColor kGoogleElectric800 = SkColorSetRGB(0x00, 0x72, 0x82);
+constexpr SkColor kGoogleElectric900 = SkColorSetRGB(0x00, 0x5B, 0x70);
+
 // The following are the values that correspond to the above kGoogleGreyXXX
 // values, which are the opaque colors created from the following alpha values
 // applied to kGoogleGrey900 on a white background.
@@ -138,12 +150,6 @@ constexpr SkAlpha kGoogleGreyAlpha500 = 0x6E;  //  43%
 constexpr SkAlpha kGoogleGreyAlpha600 = 0x8C;  //  55%
 constexpr SkAlpha kGoogleGreyAlpha700 = 0xB5;  //  71%
 constexpr SkAlpha kGoogleGreyAlpha800 = 0xDB;  //  86%
-
-// kChromeIconGrey is subject to change in the future, kGoogleGrey700 is set in
-// stone. If you're semantically looking for "the icon color Chrome uses" then
-// use kChromeIconGrey, if you're looking for GG700 grey specifically, use the
-// Google-grey constant directly.
-constexpr SkColor kChromeIconGrey = kGoogleGrey700;
 
 // An alpha value for designating a control's disabled state. In specs this is
 // sometimes listed as 0.38a.

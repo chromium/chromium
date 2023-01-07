@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ namespace base {
 
 namespace env_vars {
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 BASE_EXPORT extern const char kHome[];
 #endif
 
@@ -47,9 +47,9 @@ class BASE_EXPORT Environment {
   virtual bool UnSetVar(StringPiece variable_name) = 0;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 using NativeEnvironmentString = std::wstring;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 using NativeEnvironmentString = std::string;
 #endif
 using EnvironmentMap =

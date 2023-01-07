@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ namespace updater {
 
 scoped_refptr<update_client::ActionHandler> MakeActionHandler();
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 // TODO(sorin): implement the action handler for other platforms.
 // http://crbug.com/1030863
 inline scoped_refptr<update_client::ActionHandler> MakeActionHandler() {

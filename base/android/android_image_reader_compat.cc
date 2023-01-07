@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,8 @@ namespace android {
 AndroidImageReader& AndroidImageReader::GetInstance() {
   // C++11 static local variable initialization is
   // thread-safe.
-  static base::NoDestructor<AndroidImageReader> instance;
-  return *instance;
+  static AndroidImageReader instance;
+  return instance;
 }
 
 bool AndroidImageReader::IsSupported() {

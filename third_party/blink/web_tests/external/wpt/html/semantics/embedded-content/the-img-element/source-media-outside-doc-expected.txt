@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Image source selection using media queries is performed for img elements outside the document assert_equals: After removing img expected "data:,c" but got "data:,b"
+Harness: the test ran to completion.
+

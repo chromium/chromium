@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -16,7 +16,7 @@
 
 namespace blink {
 
-MODULES_EXPORT extern const base::Feature kWebRtcThermalResource;
+MODULES_EXPORT BASE_DECLARE_FEATURE(kWebRtcThermalResource);
 
 // The ThermalResource reports kOveruse or kUnderuse every 10 seconds(*) while
 // it has a registered listener and the DeviceThermalMeasurement is known.

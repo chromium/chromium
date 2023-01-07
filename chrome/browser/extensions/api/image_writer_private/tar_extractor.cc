@@ -1,11 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/image_writer_private/tar_extractor.h"
 
+#include <utility>
+
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/error_constants.h"
 
 namespace extensions {
 namespace image_writer {
@@ -13,11 +15,28 @@ namespace image_writer {
 namespace {
 constexpr base::FilePath::CharType kExtractedBinFileName[] =
     FILE_PATH_LITERAL("extracted.bin");
+
+// https://www.gnu.org/software/tar/manual/html_node/Standard.html
+constexpr char kExpectedMagic[5] = {'u', 's', 't', 'a', 'r'};
+constexpr int kMagicOffset = 257;
+
 }  // namespace
 
 bool TarExtractor::IsTarFile(const base::FilePath& image_path) {
-  // TODO(tetsui): Check the file header instead of the extension.
-  return image_path.Extension() == FILE_PATH_LITERAL(".tar");
+  base::File infile(image_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                    base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                    base::File::FLAG_WIN_SHARE_DELETE);
+  if (!infile.IsValid())
+    return false;
+
+  // Tar header record is always 512 bytes, so if the file is shorter than that,
+  // it's not tar.
+  char header[512] = {};
+  if (infile.ReadAtCurrentPos(header, sizeof(header)) != sizeof(header))
+    return false;
+
+  return std::equal(kExpectedMagic, kExpectedMagic + sizeof(kExpectedMagic),
+                    header + kMagicOffset);
 }
 
 // static
@@ -33,12 +52,16 @@ TarExtractor::TarExtractor(ExtractionProperties properties)
 
 TarExtractor::~TarExtractor() = default;
 
-int TarExtractor::ReadTarFile(char* data, int size, std::string* error_id) {
-  const int bytes_read = infile_.ReadAtCurrentPos(data, size);
+SingleFileTarReader::Result TarExtractor::ReadTarFile(char* data,
+                                                      uint32_t* size,
+                                                      std::string* error_id) {
+  const int bytes_read = infile_.ReadAtCurrentPos(data, *size);
   if (bytes_read < 0) {
     *error_id = error::kUnzipGenericError;
+    return SingleFileTarReader::Result::kFailure;
   }
-  return bytes_read;
+  *size = bytes_read;
+  return SingleFileTarReader::Result::kSuccess;
 }
 
 bool TarExtractor::WriteContents(const char* data,
@@ -76,7 +99,7 @@ void TarExtractor::ExtractImpl() {
 }
 
 void TarExtractor::ExtractChunk() {
-  if (!tar_reader_.ExtractChunk()) {
+  if (tar_reader_.ExtractChunk() != SingleFileTarReader::Result::kSuccess) {
     std::move(properties_.failure_callback).Run(tar_reader_.error_id());
     delete this;
     return;
@@ -88,7 +111,7 @@ void TarExtractor::ExtractChunk() {
     return;
   }
 
-  properties_.progress_callback.Run(tar_reader_.total_bytes(),
+  properties_.progress_callback.Run(tar_reader_.total_bytes().value(),
                                     tar_reader_.curr_bytes());
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ namespace mojo {
 gfx::mojom::CALayerContentPtr
 StructTraits<gfx::mojom::CALayerParamsDataView, gfx::CALayerParams>::content(
     const gfx::CALayerParams& ca_layer_params) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (ca_layer_params.io_surface_mach_port) {
     DCHECK(!ca_layer_params.ca_context_id);
     return gfx::mojom::CALayerContent::NewIoSurfaceMachPort(
@@ -33,11 +33,11 @@ bool StructTraits<gfx::mojom::CALayerParamsDataView, gfx::CALayerParams>::Read(
   gfx::mojom::CALayerContentDataView content_data;
   data.GetContentDataView(&content_data);
   switch (content_data.tag()) {
-    case gfx::mojom::CALayerContentDataView::Tag::CA_CONTEXT_ID:
+    case gfx::mojom::CALayerContentDataView::Tag::kCaContextId:
       out->ca_context_id = content_data.ca_context_id();
       break;
-    case gfx::mojom::CALayerContentDataView::Tag::IO_SURFACE_MACH_PORT:
-#if defined(OS_MAC)
+    case gfx::mojom::CALayerContentDataView::Tag::kIoSurfaceMachPort:
+#if BUILDFLAG(IS_MAC)
       mojo::PlatformHandle platform_handle =
           content_data.TakeIoSurfaceMachPort();
       if (!platform_handle.is_mach_send())

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,6 @@
 
 namespace autofill_assistant {
 namespace {
-
-using ::testing::_;
-using ::testing::Eq;
 
 TEST(StringConversionsTest, ConversionIsSymmetrical) {
   // String containing 1-byte, 2-byte, 3-byte and 4-byte UTF-8 characters.

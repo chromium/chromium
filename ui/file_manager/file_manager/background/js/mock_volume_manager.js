@@ -1,31 +1,30 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {EntryLocationImpl} from './entry_location_impl.m.js';
-// #import {VolumeInfoImpl} from './volume_info_impl.m.js';
-// #import {VolumeInfoListImpl} from './volume_info_list_impl.m.js';
-// #import * as wrappedVolumeManagerFactory from './volume_manager_factory.m.js'; const {volumeManagerFactory} = wrappedVolumeManagerFactory;
-// #import {VolumeManagerImpl} from './volume_manager_impl.m.js';
-// #import * as wrappedVolumeManagerCommon from '../../common/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.m.js';
-// #import * as wrappedUtil from '../../common/js/util.m.js'; const {util} = wrappedUtil;
-// #import {str} from '../../common/js/util.m.js';
-// #import {EntryLocation} from '../../externs/entry_location.m.js';
-// #import {FilesAppEntry, FakeEntry} from '../../externs/files_app_entry_interfaces.m.js';
-// #import {VolumeInfo} from '../../externs/volume_info.m.js';
-// #import {VolumeInfoList} from '../../externs/volume_info_list.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {MockEntry, MockFileSystem} from '../../common/js/mock_entry.js';
+import {str, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {EntryLocation} from '../../externs/entry_location.js';
+import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+import {VolumeInfoList} from '../../externs/volume_info_list.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {EntryLocationImpl} from './entry_location_impl.js';
+import {VolumeInfoImpl} from './volume_info_impl.js';
+import {VolumeInfoListImpl} from './volume_info_list_impl.js';
+import {volumeManagerFactory} from './volume_manager_factory.js';
+import {VolumeManagerImpl} from './volume_manager_impl.js';
 
 /**
  * Mock class for VolumeManager.
  * @final
  * @implements {VolumeManager}
  */
-/* #export */ class MockVolumeManager {
+export class MockVolumeManager {
   constructor() {
     /** @const {!VolumeInfoList} */
     this.volumeInfoList = new VolumeInfoListImpl();
@@ -76,7 +75,14 @@
         str('DOWNLOADS_DIRECTORY_LABEL'));
   }
 
-  /** @override */
+  getFuseBoxOnlyFilterEnabled() {
+    return false;
+  }
+
+  getMediaStoreFilesOnlyFilterEnabled() {
+    return false;
+  }
+
   dispose() {}
 
   /**
@@ -118,9 +124,14 @@
    */
   getLocationInfo(entry) {
     if (util.isFakeEntry(entry)) {
+      const isReadOnly =
+          entry.rootType === VolumeManagerCommon.RootType.RECENT ?
+          !util.isRecentsFilterV2Enabled() :
+          true;
       return new EntryLocationImpl(
           this.volumeInfoList.item(0),
-          /** @type {!FakeEntry} */ (entry).rootType, true, true);
+          /** @type {!FakeEntry} */ (entry).rootType, /* isRootType= */ true,
+          isReadOnly);
     }
 
     if (entry.filesystem.name === VolumeManagerCommon.VolumeType.DRIVE) {
@@ -143,6 +154,8 @@
           rootType = VolumeManagerCommon.RootType.COMPUTER;
           isRootEntry = util.isComputersRoot(entry);
         }
+      } else if (/^\/\.(files|shortcut-targets)-by-id/.test(entry.fullPath)) {
+        rootType = VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME;
       }
       return new EntryLocationImpl(volumeInfo, rootType, isRootEntry, true);
     }
@@ -191,10 +204,18 @@
       type, volumeId, label, devicePath, providerId, remoteMountPath) {
     const fileSystem = new MockFileSystem(volumeId, 'filesystem:' + volumeId);
 
+    let diskFileSystemType = VolumeManagerCommon.FileSystemType.UNKNOWN;
+    if (devicePath && devicePath.startsWith('fusebox')) {
+      diskFileSystemType =
+          /** @type VolumeManagerCommon.FileSystemType */ ('fusebox');
+    }
+
     // If there's no label set it to volumeId to make it shorter to write
     // tests.
     const volumeInfo = new VolumeInfoImpl(
-        type, volumeId, fileSystem,
+        type,
+        volumeId,
+        fileSystem,
         '',                                         // error
         '',                                         // deviceType
         devicePath || '',                           // devicePath
@@ -207,15 +228,25 @@
         false,                                      // configurable
         false,                                      // watchable
         VolumeManagerCommon.Source.NETWORK,         // source
-        VolumeManagerCommon.FileSystemType.UNKNOWN,  // diskFileSystemType
-        {},                                          // iconSet
-        '',                                          // driveLabel
-        remoteMountPath);                            // remoteMountPath
+        diskFileSystemType,                         // diskFileSystemType
+        {},                                         // iconSet
+        '',                                         // driveLabel
+        remoteMountPath,                            // remoteMountPath
+        undefined,                                  // vmType
+    );
+
 
     return volumeInfo;
   }
 
+  /**
+   * @return {!Promise<!VolumeInfo>}
+   */
   async mountArchive(fileUrl, password) {
+    throw new Error('Not implemented');
+  }
+
+  async cancelMounting(fileUrl) {
     throw new Error('Not implemented');
   }
 
@@ -223,7 +254,7 @@
     throw new Error('Not implemented');
   }
 
-  configure(volumeInfo) {
+  async configure(volumeInfo) {
     throw new Error('Not implemented');
   }
 
@@ -235,6 +266,9 @@
     throw new Error('Not implemented');
   }
 
+  /**
+   * @return {boolean}
+   */
   dispatchEvent(event) {
     throw new Error('Not implemented');
   }
@@ -243,19 +277,15 @@
 /** @private {?VolumeManager} */
 MockVolumeManager.instance_ = null;
 
-/** @override */
 MockVolumeManager.prototype.getVolumeInfo =
     VolumeManagerImpl.prototype.getVolumeInfo;
 
-/** @override */
 MockVolumeManager.prototype.getDefaultDisplayRoot =
     VolumeManagerImpl.prototype.getDefaultDisplayRoot;
 
-/** @override */
 MockVolumeManager.prototype.findByDevicePath =
     VolumeManagerImpl.prototype.findByDevicePath;
 
-/** @override */
 MockVolumeManager.prototype.whenVolumeInfoReady =
     VolumeManagerImpl.prototype.whenVolumeInfoReady;
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,15 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread_checker.h"
 #include "components/drive/service/drive_service_interface.h"
-#include "google_apis/drive/auth_service_interface.h"
-#include "google_apis/drive/auth_service_observer.h"
+#include "google_apis/common/auth_service_interface.h"
+#include "google_apis/common/auth_service_observer.h"
 #include "google_apis/drive/drive_api_url_generator.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -27,7 +27,7 @@ class GURL;
 namespace base {
 class FilePath;
 class SequencedTaskRunner;
-}
+}  // namespace base
 
 namespace google_apis {
 class FilesListRequestRunner;
@@ -56,6 +56,10 @@ class BatchRequestConfigurator : public BatchRequestConfiguratorInterface {
       base::SequencedTaskRunner* task_runner,
       const google_apis::DriveApiUrlGenerator& url_generator,
       const google_apis::CancelCallbackRepeating& cancel_callback);
+
+  BatchRequestConfigurator(const BatchRequestConfigurator&) = delete;
+  BatchRequestConfigurator& operator=(const BatchRequestConfigurator&) = delete;
+
   ~BatchRequestConfigurator() override;
 
   // BatchRequestConfiguratorInterface overrides.
@@ -86,8 +90,6 @@ class BatchRequestConfigurator : public BatchRequestConfiguratorInterface {
   google_apis::CancelCallbackRepeating cancel_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BatchRequestConfigurator);
 };
 
 // This class provides Drive request calls using Drive V2 API.
@@ -116,6 +118,10 @@ class DriveAPIService : public DriveServiceInterface,
       const GURL& base_thumbnail_url,
       const std::string& custom_user_agent,
       const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
+  DriveAPIService(const DriveAPIService&) = delete;
+  DriveAPIService& operator=(const DriveAPIService&) = delete;
+
   ~DriveAPIService() override;
 
   // DriveServiceInterface Overrides
@@ -266,7 +272,7 @@ class DriveAPIService : public DriveServiceInterface,
   // The class is expected to run on UI thread.
   base::ThreadChecker thread_checker_;
 
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   std::unique_ptr<google_apis::RequestSender> sender_;
@@ -276,8 +282,6 @@ class DriveAPIService : public DriveServiceInterface,
   google_apis::DriveApiUrlGenerator url_generator_;
   const std::string custom_user_agent_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(DriveAPIService);
 };
 
 }  // namespace drive

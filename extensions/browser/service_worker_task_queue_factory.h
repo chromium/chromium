@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_SERVICE_WORKER_TASK_QUEUE_FACTORY_H_
 #define EXTENSIONS_BROWSER_SERVICE_WORKER_TASK_QUEUE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -15,6 +14,10 @@ class ServiceWorkerTaskQueue;
 
 class ServiceWorkerTaskQueueFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ServiceWorkerTaskQueueFactory(const ServiceWorkerTaskQueueFactory&) = delete;
+  ServiceWorkerTaskQueueFactory& operator=(
+      const ServiceWorkerTaskQueueFactory&) = delete;
+
   static ServiceWorkerTaskQueue* GetForBrowserContext(
       content::BrowserContext* context);
   static ServiceWorkerTaskQueueFactory* GetInstance();
@@ -30,8 +33,6 @@ class ServiceWorkerTaskQueueFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerTaskQueueFactory);
 };
 
 }  // namespace extensions

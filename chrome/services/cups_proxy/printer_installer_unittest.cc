@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/task_environment.h"
@@ -52,9 +53,9 @@ class FakeServiceDelegate : public FakeCupsProxyServiceDelegate {
     installed_printers_[printer.id()] = true;
   }
 
-  base::Optional<Printer> GetPrinter(const std::string& id) override {
+  absl::optional<Printer> GetPrinter(const std::string& id) override {
     if (!base::Contains(installed_printers_, id)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     return Printer(id);

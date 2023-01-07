@@ -1,22 +1,22 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// CancelableCallback is a wrapper around base::Callback that allows
-// cancellation of a callback. CancelableCallback takes a reference on the
+// CancelableOnceCallback is a wrapper around OnceCallback that allows
+// cancellation of the callback. CanacelableRepeatingCallback is the same sort
+// of wrapper around RepeatingCallback. The wrapper takes a reference on the
 // wrapped callback until this object is destroyed or Reset()/Cancel() are
 // called.
 //
 // NOTE:
 //
-// Calling CancelableCallback::Cancel() brings the object back to its natural,
-// default-constructed state, i.e., CancelableCallback::callback() will return
-// a null callback.
+// Calling Cancel() brings the object back to its natural, default-constructed
+// state, i.e., callback() will return a null callback.
 //
 // THREAD-SAFETY:
 //
-// CancelableCallback objects must be created on, posted to, cancelled on, and
-// destroyed on the same thread.
+// Cancelable callback objects must be created on, posted to, cancelled on, and
+// destroyed on the same SequencedTaskRunner.
 //
 //
 // EXAMPLE USAGE:
@@ -36,7 +36,7 @@
 // CancelableOnceClosure timeout(
 //     base::BindOnce(&TimeoutCallback, "Test timed out."));
 // ThreadTaskRunnerHandle::Get()->PostDelayedTask(FROM_HERE, timeout.callback(),
-//                                                TimeDelta::FromSeconds(4));
+//                                                Seconds(4));
 // RunIntensiveTest();
 // run_loop.Run();
 // timeout.Cancel();  // Hopefully this is hit before the timeout callback runs.
@@ -47,12 +47,11 @@
 
 #include <utility>
 
-#include "base/base_export.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_internal.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/functional/callback_internal.h"
 #include "base/memory/weak_ptr.h"
 
 namespace base {
@@ -135,8 +134,8 @@ class CancelableCallbackImpl {
 
 }  // namespace internal
 
-// Consider using base::WeakPtr directly instead of base::CancelableCallback for
-// the task cancellation.
+// Consider using base::WeakPtr directly instead of base::CancelableOnceCallback
+// for task cancellation.
 template <typename Signature>
 using CancelableOnceCallback =
     internal::CancelableCallbackImpl<OnceCallback<Signature>>;
@@ -146,10 +145,6 @@ template <typename Signature>
 using CancelableRepeatingCallback =
     internal::CancelableCallbackImpl<RepeatingCallback<Signature>>;
 using CancelableRepeatingClosure = CancelableRepeatingCallback<void()>;
-
-template <typename Signature>
-using CancelableCallback = CancelableRepeatingCallback<Signature>;
-using CancelableClosure = CancelableCallback<void()>;
 
 }  // namespace base
 

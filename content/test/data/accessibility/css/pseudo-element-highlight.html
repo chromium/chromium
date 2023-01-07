@@ -1,0 +1,21 @@
+<!--
+@BLINK-ALLOW:marker*
+-->
+<!DOCTYPE html>
+<html>
+<style>
+  ::highlight(example-highlight) {
+    background-color: yellow;
+  }
+</style>
+<body>
+<span>This is some highlighted text.</span>
+<script>
+  let span = document.querySelector("span");
+  let r = new Range();
+  r.setStart(span.firstChild, 0);
+  r.setEnd(span.firstChild, span.firstChild.textContent.length);
+  CSS.highlights.set("example-highlight", new Highlight(r));
+</script>
+</body>
+</html>

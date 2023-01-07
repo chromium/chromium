@@ -49,4 +49,4 @@ class BLINK_PLATFORM_EXPORT WebImageGenerator {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_IMAGE_GENERATOR_H_

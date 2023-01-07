@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -19,17 +19,14 @@ bool ShouldOfferClickToCallForURL(content::BrowserContext* browser_context,
                                   const GURL& url);
 
 // Returns the first possible phone number in |selection_text| if click to call
-// should be offered. Otherwise returns base::nullopt.
-base::Optional<std::string> ExtractPhoneNumberForClickToCall(
+// should be offered. Otherwise returns absl::nullopt.
+absl::optional<std::string> ExtractPhoneNumberForClickToCall(
     content::BrowserContext* browser_context,
     const std::string& selection_text);
 
-// Returns the first possible phone number in |selection_text| given the
-// |regex_variant| to be used or base::nullopt if the regex did not match.
-base::Optional<std::string> ExtractPhoneNumber(
-    const std::string& selection_text);
-
-// Unescapes and returns the URL contents.
-std::string GetUnescapedURLContent(const GURL& url);
+// Checks if the given |url| is safe to be used by Click to Call to be sent to
+// remote Android devices. Note that the remote device might open the dialer
+// immediately with the given |url| so any USSD codes should return false here.
+bool IsUrlSafeForClickToCall(const GURL& url);
 
 #endif  // CHROME_BROWSER_SHARING_CLICK_TO_CALL_CLICK_TO_CALL_UTILS_H_

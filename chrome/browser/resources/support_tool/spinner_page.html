@@ -1,0 +1,20 @@
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<style include="support-tool-shared">
+  paper-spinner-lite {
+    display: flex;
+    margin: 0 auto;
+    margin-top: 30px;
+  }
+</style>
+
+<h1  id="header" tabindex="0">[[pageTitle]]</h1>
+<paper-spinner-lite active>
+</paper-spinner-lite>
+<div class="navigation-buttons">
+  <cr-button id="cancelButton" on-click="onCancelClick_">Cancel</cr-button>
+</div>

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,8 @@ chrome.runtime.onConnect.addListener(function(port) {
   chrome.tabs.sendMessage(port.sender.tab.id, 'Rob says hi', function() {
     chrome.test.log('tab.sendMessage\'s response callback was invoked');
     chrome.test.assertLastError(
-        'The message port closed before a response was received.');
+        'A listener indicated an asynchronous response by returning true, ' +
+        'but the message channel closed before a response was received');
     succeed2();
   });
 });

@@ -1,0 +1,54 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "metrics_reporter.mojom" ]
+  webui_module_path = "chrome://resources/js/metrics_reporter"
+  public_deps = [ "//mojo/public/mojom/base" ]
+}
+
+# Output folder used to hold ts_library() output.
+preprocess_folder =
+    "$root_gen_dir/ui/webui/resources/preprocessed/js/metrics_reporter"
+
+ts_library("build_ts") {
+  root_dir = target_gen_dir
+  out_dir = preprocess_folder
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "metrics_reporter.ts",
+    "browser_proxy.ts",
+    "metrics_reporter.mojom-webui.js",
+  ]
+  definitions = [ "//tools/typescript/definitions/chrome_timeticks.d.ts" ]
+  deps = [
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+  extra_deps = [ ":copy_src_and_mojom" ]
+}
+
+copy("copy_src_and_mojom") {
+  deps = [ ":mojo_bindings_webui_js" ]
+  sources = [
+    "$root_gen_dir/mojom-webui/ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",
+    "browser_proxy.ts",
+    "metrics_reporter.ts",
+  ]
+  outputs = [ "$target_gen_dir/{{source_file_part}}" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_js_metrics_reporter"
+  out_grd = "$target_gen_dir/resources.grdp"
+  public_deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "js/metrics_reporter"
+}

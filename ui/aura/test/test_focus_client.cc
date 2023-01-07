@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,13 +39,13 @@ void TestFocusClient::FocusWindow(Window* window) {
     return;
 
   if (focused_window_) {
-    DCHECK(observation_manager_.IsObservingSource(focused_window_));
+    DCHECK(observation_manager_.IsObservingSource(focused_window_.get()));
     observation_manager_.Reset();
   }
   aura::Window* old_focused_window = focused_window_;
   focused_window_ = window;
   if (focused_window_)
-    observation_manager_.Observe(focused_window_);
+    observation_manager_.Observe(focused_window_.get());
 
   for (aura::client::FocusChangeObserver& observer : focus_observers_)
     observer.OnWindowFocused(focused_window_, old_focused_window);

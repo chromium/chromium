@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ namespace {
 
 class SettingsPrivateGuestModeTest : public MixinBasedInProcessBrowserTest {
  protected:
-  chromeos::GuestSessionMixin guest_session_{&mixin_host_};
+  ash::GuestSessionMixin guest_session_{&mixin_host_};
 };
 
 // Regression test for https://crbug.com/887383.

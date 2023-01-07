@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,14 @@
 #include "build/build_config.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/password_generation_util.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_submission_observer.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 
 namespace password_manager {
+
+class PasswordManagerClient;
 
 // Abstract interface for PasswordManagers.
 class PasswordManagerInterface : public FormSubmissionObserver {
@@ -35,8 +38,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   // Handles password forms being rendered.
   virtual void OnPasswordFormsRendered(
       PasswordManagerDriver* driver,
-      const std::vector<autofill::FormData>& visible_forms_data,
-      bool did_stop_loading) = 0;
+      const std::vector<autofill::FormData>& visible_forms_data) = 0;
 
   // Handles a password form being submitted.
   virtual void OnPasswordFormSubmitted(PasswordManagerDriver* driver,
@@ -53,7 +55,10 @@ class PasswordManagerInterface : public FormSubmissionObserver {
       autofill::FieldRendererId generation_element,
       autofill::password_generation::PasswordGenerationType type) = 0;
 
-#if defined(OS_IOS)
+  // Getter for the PasswordManagerClient.
+  virtual PasswordManagerClient* GetClient() = 0;
+
+#if BUILDFLAG(IS_IOS)
   // Handles a subframe form submission. In contrast to OnPasswordFormSubmitted
   // this method does not wait for OnPasswordFormsRendered before invoking
   // OnLoginSuccessful), but rather invokes ProvisionallySave immediately and

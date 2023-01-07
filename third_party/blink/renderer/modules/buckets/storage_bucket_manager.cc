@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_storage_bucket_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/modules/buckets/storage_bucket.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -26,7 +28,7 @@ bool IsValidName(const String& name) {
   if (!name.ContainsOnlyASCIIOrEmpty())
     return false;
 
-  if (name.IsEmpty() || name.length() >= 64)
+  if (name.empty() || name.length() >= 64)
     return false;
 
   // | name | must only contain lowercase latin letters, digits 0-9, or special
@@ -43,19 +45,26 @@ bool IsValidName(const String& name) {
 mojom::blink::BucketPoliciesPtr ToMojoBucketPolicies(
     const StorageBucketOptions* options) {
   auto policies = mojom::blink::BucketPolicies::New();
-  policies->persisted = options->persisted();
-  policies->quota = options->hasQuotaNonNull()
-                        ? options->quotaNonNull()
-                        : mojom::blink::kNoQuotaPolicyValue;
+  if (options->hasPersistedNonNull()) {
+    policies->persisted = options->persistedNonNull();
+    policies->has_persisted = true;
+  }
 
-  if (options->durability() == "strict") {
-    policies->durability = mojom::blink::BucketDurability::kStrict;
-  } else {
-    policies->durability = mojom::blink::BucketDurability::kRelaxed;
+  if (options->hasQuotaNonNull()) {
+    policies->quota = options->quotaNonNull();
+    policies->has_quota = true;
+  }
+
+  if (options->hasDurabilityNonNull()) {
+    policies->durability = options->durabilityNonNull() == "strict"
+                               ? mojom::blink::BucketDurability::kStrict
+                               : mojom::blink::BucketDurability::kRelaxed;
+    policies->has_durability = true;
   }
 
   if (options->hasExpiresNonNull())
     policies->expires = base::Time::FromJavaTime(options->expiresNonNull());
+
   return policies;
 }
 
@@ -66,7 +75,8 @@ const char StorageBucketManager::kSupplementName[] = "StorageBucketManager";
 StorageBucketManager::StorageBucketManager(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       ExecutionContextClient(navigator.GetExecutionContext()),
-      manager_remote_(navigator.GetExecutionContext()) {}
+      manager_remote_(navigator.GetExecutionContext()),
+      navigator_base_(navigator) {}
 
 StorageBucketManager* StorageBucketManager::storageBuckets(
     ScriptState* script_state,
@@ -105,9 +115,10 @@ ScriptPromise StorageBucketManager::open(ScriptState* script_state,
   mojom::blink::BucketPoliciesPtr bucket_policies =
       ToMojoBucketPolicies(options);
   GetBucketManager(script_state)
-      ->OpenBucket(name, std::move(bucket_policies),
-                   WTF::Bind(&StorageBucketManager::DidOpen,
-                             WrapPersistent(this), WrapPersistent(resolver)));
+      ->OpenBucket(
+          name, std::move(bucket_policies),
+          WTF::BindOnce(&StorageBucketManager::DidOpen, WrapPersistent(this),
+                        WrapPersistent(resolver)));
   return promise;
 }
 
@@ -124,8 +135,8 @@ ScriptPromise StorageBucketManager::keys(ScriptState* script_state,
   }
 
   GetBucketManager(script_state)
-      ->Keys(WTF::Bind(&StorageBucketManager::DidGetKeys, WrapPersistent(this),
-                       WrapPersistent(resolver)));
+      ->Keys(WTF::BindOnce(&StorageBucketManager::DidGetKeys,
+                           WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -150,9 +161,9 @@ ScriptPromise StorageBucketManager::Delete(ScriptState* script_state,
   }
 
   GetBucketManager(script_state)
-      ->DeleteBucket(name,
-                     WTF::Bind(&StorageBucketManager::DidDelete,
-                               WrapPersistent(this), WrapPersistent(resolver)));
+      ->DeleteBucket(
+          name, WTF::BindOnce(&StorageBucketManager::DidDelete,
+                              WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -184,7 +195,7 @@ void StorageBucketManager::DidOpen(
     return;
   }
   resolver->Resolve(MakeGarbageCollected<StorageBucket>(
-      GetExecutionContext(), std::move(bucket_remote)));
+      navigator_base_, std::move(bucket_remote)));
 }
 
 void StorageBucketManager::DidGetKeys(ScriptPromiseResolver* resolver,
@@ -222,6 +233,7 @@ void StorageBucketManager::DidDelete(ScriptPromiseResolver* resolver,
 
 void StorageBucketManager::Trace(Visitor* visitor) const {
   visitor->Trace(manager_remote_);
+  visitor->Trace(navigator_base_);
   ScriptWrappable::Trace(visitor);
   Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextClient::Trace(visitor);

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,7 +58,8 @@ final class FakeUrlRequest extends UrlRequestBase {
     // The fake {@link CronetEngine} that should be notified when this request starts and stops.
     private final FakeCronetEngine mFakeCronetEngine;
     // Source of thread safety for this class.
-    private final Object mLock = new Object();
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    final Object mLock = new Object();
     // True if direct execution is allowed for this request.
     private final boolean mAllowDirectExecutor;
     // The chain of URL's this request has received.
@@ -653,7 +656,8 @@ final class FakeUrlRequest extends UrlRequestBase {
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     final class FakeDataSink extends JavaUploadDataSinkBase {
-        private final ByteArrayOutputStream mTotalUploadStream = new ByteArrayOutputStream();
+        private final ByteArrayOutputStream mBodyStream = new ByteArrayOutputStream();
+        private final WritableByteChannel mBodyChannel = Channels.newChannel(mBodyStream);
 
         FakeDataSink(final Executor userExecutor, Executor executor, UploadDataProvider provider) {
             super(userExecutor, executor, provider);
@@ -691,8 +695,7 @@ final class FakeUrlRequest extends UrlRequestBase {
 
         @Override
         protected int processSuccessfulRead(ByteBuffer buffer) throws IOException {
-            mTotalUploadStream.write(buffer.array(), buffer.arrayOffset(), buffer.remaining());
-            return buffer.remaining();
+            return mBodyChannel.write(buffer);
         }
 
         /**
@@ -702,7 +705,7 @@ final class FakeUrlRequest extends UrlRequestBase {
         @Override
         protected void finish() throws IOException {
             synchronized (mLock) {
-                mRequestBody = mTotalUploadStream.toByteArray();
+                mRequestBody = mBodyStream.toByteArray();
                 fakeConnect();
             }
         }

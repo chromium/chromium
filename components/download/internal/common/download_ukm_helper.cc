@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,7 @@ void DownloadUkmHelper::RecordDownloadStarted(int download_id,
 
 void DownloadUkmHelper::RecordDownloadInterrupted(
     int download_id,
-    base::Optional<int> change_in_file_size,
+    absl::optional<int> change_in_file_size,
     DownloadInterruptReason reason,
     int resulting_file_size,
     const base::TimeDelta& time_since_start,

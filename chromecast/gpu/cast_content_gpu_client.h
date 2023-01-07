@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,9 @@ class CastContentGpuClient : public content::ContentGpuClient {
  public:
   static std::unique_ptr<CastContentGpuClient> Create();
 
+  CastContentGpuClient(const CastContentGpuClient&) = delete;
+  CastContentGpuClient& operator=(const CastContentGpuClient&) = delete;
+
   ~CastContentGpuClient() override;
 
   // content::ContentGpuClient:
@@ -24,9 +27,6 @@ class CastContentGpuClient : public content::ContentGpuClient {
 
  protected:
   CastContentGpuClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastContentGpuClient);
 };
 
 }  // namespace shell

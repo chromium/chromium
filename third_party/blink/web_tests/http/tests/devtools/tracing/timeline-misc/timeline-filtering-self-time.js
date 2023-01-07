@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(
       `Test filtering in Bottom-Up Timeline Tree View panel.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';
@@ -84,8 +84,8 @@
     }
   ];
 
-  var model = PerformanceTestRunner.createPerformanceModelWithEvents(testData);
-  const tabbedPane = UI.panels.timeline._flameChart._detailsView._tabbedPane;
+  var model = await PerformanceTestRunner.createPerformanceModelWithEvents(testData);
+  const tabbedPane = UI.panels.timeline.flameChart.detailsView.tabbedPane;
   tabbedPane.selectTab(Timeline.TimelineDetailsView.Tab.BottomUp);
   const view = tabbedPane.visibleView;
 
@@ -102,7 +102,7 @@
 
   async function dumpRecords() {
     await PerformanceTestRunner.walkTimelineEventTreeUnderNode(
-        printEventMessage, view._root);
+        printEventMessage, view.root);
     TestRunner.addResult('');
   }
 
@@ -110,11 +110,11 @@
   await dumpRecords();
 
   TestRunner.addResult(`Filtered by 'AAA':`);
-  view._textFilterUI.setValue('AAA', true);
+  view.textFilterUI.setValue('AAA', true);
   await dumpRecords();
 
   TestRunner.addResult(`Filtered by 'BBB':`);
-  view._textFilterUI.setValue('BBB', true);
+  view.textFilterUI.setValue('BBB', true);
   await dumpRecords();
 
   TestRunner.completeTest();

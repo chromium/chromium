@@ -1,0 +1,40 @@
+caption: Enable attestation flow for a list of URLs
+desc: |-
+  Enable <ph name="CHROME_ENTERPRISE_PLATFORM_IDENTITY_CONNECTOR">Chrome Enterprise Platform Identity Connector</ph> for a list of URLs.
+
+        Setting this policy specifies which URLs should be allowed to be part of the attestation flow to get the set of signals from the machine.
+
+        Leaving this policy unset or empty means that no endpoint will be able to start the attestation flow nor get signals from the machine.
+
+        URLs must have HTTPS scheme, e.g. "https://example.com".
+
+        Note: Wildcards, <ph name="WILDCARD_VALUE">*</ph>, are allowed.
+
+        For ChromeOS, this policy is related to remote attestation where a certificate is automatically generated and uploaded to the Device Management Server.
+
+        For detailed information on valid <ph name="URL_LABEL">URL</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+example_value:
+- https://example1.com
+- https://[*.]example2.com
+- https://foo.example3.com/path
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- rodmartin@google.com
+- rogerta@chromium.org
+- mad@chromium.org
+- seblalancette@chromium.org
+- cbe-device-trust-eng@google.com
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome.*:95-
+- chrome_os:95-
+tags: []
+type: list

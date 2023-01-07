@@ -104,7 +104,7 @@ int main(int _argc,char **_argv){
   nbits=ec_tell_frac(&enc);
   ec_enc_done(&enc);
   fprintf(stderr,
-   "Encoded %0.2lf bits of entropy to %0.2lf bits (%0.3lf%% wasted).\n",
+   "Encoded %0.2f bits of entropy to %0.2f bits (%0.3f%% wasted).\n",
    entropy,ldexp(nbits,-3),100*(nbits-ldexp(entropy,3))/nbits);
   fprintf(stderr,"Packed to %li bytes.\n",(long)ec_range_bytes(&enc));
   ec_dec_init(&dec,ptr,DATA_SIZE);
@@ -129,7 +129,7 @@ int main(int _argc,char **_argv){
   nbits2=ec_tell_frac(&dec);
   if(nbits!=nbits2){
     fprintf(stderr,
-     "Reported number of bits used was %0.2lf, should be %0.2lf.\n",
+     "Reported number of bits used was %0.2f, should be %0.2f.\n",
      ldexp(nbits2,-3),ldexp(nbits,-3));
     ret=-1;
   }

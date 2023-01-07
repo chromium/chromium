@@ -1,0 +1,17 @@
+<style include="scanning-shared"></style>
+<scan-settings-section>
+  <span id="fileTypeLabel" slot="label" aria-hidden="true">
+    [[i18n('fileTypeDropdownLabel')]]
+  </span>
+  <div slot="settings">
+    <select id="fileTypeSelect" class="md-select"
+        value="{{selectedFileType::change}}" disabled="[[disabled]]"
+        aria-labelledby="fileTypeLabel">
+      <!-- The option values must match the ash.scanning.mojom.FileType
+          values they correspond to. -->
+      <option value="0">[[i18n('jpgOptionText')]]</option>
+      <option value="2">[[i18n('pngOptionText')]]</option>
+      <option value="1" selected>[[i18n('pdfOptionText')]]</option>
+    </select>
+  </div>
+</scan-settings-section>

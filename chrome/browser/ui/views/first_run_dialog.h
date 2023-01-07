@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_FIRST_RUN_DIALOG_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/window/dialog_delegate.h"
-
-class Profile;
 
 namespace views {
 class Checkbox;
@@ -24,10 +22,12 @@ class FirstRunDialog : public views::DialogDelegateView {
   FirstRunDialog& operator=(const FirstRunDialog&) = delete;
 
   // Displays the first run UI for reporting opt-in, import data etc.
-  static void Show(Profile* profile);
+  static void Show(base::RepeatingClosure learn_more_callback,
+                   base::RepeatingClosure quit_runloop);
 
  private:
-  explicit FirstRunDialog(Profile* profile);
+  FirstRunDialog(base::RepeatingClosure learn_more_callback,
+                 base::RepeatingClosure quit_runloop);
   ~FirstRunDialog() override;
 
   // This terminates the nested message-loop.
@@ -39,8 +39,13 @@ class FirstRunDialog : public views::DialogDelegateView {
   // views::WidgetDelegate:
   void WindowClosing() override;
 
-  views::Checkbox* make_default_ = nullptr;
-  views::Checkbox* report_crashes_ = nullptr;
+  // Used to determine whether the dialog was closed by pressing the accept
+  // button. The user might close the dialog by pressing the close button
+  // instead, in which we default to disabling metrics reporting.
+  bool closed_through_accept_button_ = false;
+
+  raw_ptr<views::Checkbox> make_default_ = nullptr;
+  raw_ptr<views::Checkbox> report_crashes_ = nullptr;
   base::RepeatingClosure quit_runloop_;
 };
 

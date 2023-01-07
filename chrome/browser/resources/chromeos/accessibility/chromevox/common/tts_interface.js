@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,6 @@
  * All TTS engines in ChromeVox conform to the this interface.
  *
  */
-
-goog.provide('QueueMode');
-goog.provide('TtsCapturingEventListener');
-goog.provide('TtsCategory');
-goog.provide('TtsInterface');
 
 /**
  * Categories for a speech utterance. This can be used with the
@@ -24,9 +19,9 @@ goog.provide('TtsInterface');
  *
  * @enum {string}
  */
-TtsCategory = {
+export const TtsCategory = {
   LIVE: 'live',
-  NAV: 'nav'
+  NAV: 'nav',
 };
 
 /**
@@ -34,7 +29,7 @@ TtsCategory = {
  * descending order of priority.
  * @enum
  */
-QueueMode = {
+export const QueueMode = {
   /**
      Prepend the current utterance (if any) to the queue, stop speech, and
      speak this utterance.
@@ -51,7 +46,7 @@ QueueMode = {
   CATEGORY_FLUSH: 2,
 
   /** Append this utterance to the end of the queue. */
-  QUEUE: 3
+  QUEUE: 3,
 };
 
 /**
@@ -59,7 +54,7 @@ QueueMode = {
  * starts or ends from any source.
  * @interface
  */
-TtsCapturingEventListener = class {
+export class TtsCapturingEventListener {
   /**
    * Called when any utterance starts.
    */
@@ -74,18 +69,100 @@ TtsCapturingEventListener = class {
    * Called when any utterance gets interrupted.
    */
   onTtsInterrupted() {}
-};
+}
 
+/** Structure to store properties around TTS speech production. */
+export class TtsSpeechProperties {
+  /** @param {Object=} opt_initialValues */
+  constructor(opt_initialValues) {
+    /** @public {TtsCategory|undefined} */
+    this.category;
+
+    /** @public {string|undefined} */
+    this.color;
+
+    /** @public {boolean|undefined} */
+    this.delay;
+
+    /** @public {boolean|undefined} */
+    this.doNotInterrupt;
+
+    /** @public {string|undefined} */
+    this.fontWeight;
+
+    /** @public {string|undefined} */
+    this.lang;
+
+    /** @public {boolean|undefined} */
+    this.math;
+
+    /** @public {boolean|undefined} */
+    this.pause;
+
+    /** @public {boolean|undefined} */
+    this.phoneticCharacters;
+
+    /** @public {string|undefined} */
+    this.punctuationEcho;
+
+    /** @public {boolean|undefined} */
+    this.token;
+
+    /** @public {string|undefined} */
+    this.voiceName;
+
+    /** @public {number|undefined} */
+    this.pitch;
+    /** @public {number|undefined} */
+    this.relativePitch;
+
+    /** @public {number|undefined} */
+    this.rate;
+    /** @public {number|undefined} */
+    this.relativeRate;
+
+    /** @public {number|undefined} */
+    this.volume;
+    /** @public {number|undefined} */
+    this.relativeVolume;
+
+    /** @public {function()|undefined} */
+    this.startCallback;
+    /** @public {function(boolean=)|undefined} */
+    this.endCallback;
+
+    /** @public {function(Object)|undefined} */
+    this.onEvent;
+
+    this.init_(opt_initialValues);
+  }
+
+
+  /** @return {!Object} */
+  toJSON() {
+    return Object.assign({}, this);
+  }
+
+  /**
+   * @param {Object=} opt_initialValues
+   * @private
+   */
+  init_(opt_initialValues) {
+    if (!opt_initialValues) {
+      return;
+    }
+    Object.assign(this, opt_initialValues);
+  }
+}
 
 /** @interface */
-TtsInterface = class {
-  constructor() {}
-
+export class TtsInterface {
   /**
    * Speaks the given string using the specified queueMode and properties.
    * @param {string} textString The string of text to be spoken.
    * @param {QueueMode} queueMode The queue mode to use for speaking.
-   * @param {Object=} properties Speech properties to use for this utterance.
+   * @param {TtsSpeechProperties=} properties Speech properties to use for this
+   *     utterance.
    * @return {TtsInterface} A tts object useful for chaining speak calls.
    */
   speak(textString, queueMode, properties) {}
@@ -146,4 +223,4 @@ TtsInterface = class {
    * Sets the rate, pitch, and volume TTS Settings to their defaults.
    */
   resetTextToSpeechSettings() {}
-};
+}

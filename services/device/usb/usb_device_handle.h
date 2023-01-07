@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,9 @@
 #include <stdint.h>
 
 #include <map>
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/usb/usb_descriptors.h"
@@ -37,6 +35,9 @@ class UsbDeviceHandle : public base::RefCountedThreadSafe<UsbDeviceHandle> {
   using IsochronousTransferCallback = base::OnceCallback<void(
       scoped_refptr<base::RefCountedBytes>,
       std::vector<mojom::UsbIsochronousPacketPtr> packets)>;
+
+  UsbDeviceHandle(const UsbDeviceHandle&) = delete;
+  UsbDeviceHandle& operator=(const UsbDeviceHandle&) = delete;
 
   virtual scoped_refptr<UsbDevice> GetDevice() const = 0;
 
@@ -101,9 +102,6 @@ class UsbDeviceHandle : public base::RefCountedThreadSafe<UsbDeviceHandle> {
 
   UsbDeviceHandle();
   virtual ~UsbDeviceHandle();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsbDeviceHandle);
 };
 
 }  // namespace device

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,4 +49,4 @@ class ON_LOAD_SCRIPT_INJECTOR_EXPORT OnLoadScriptInjector
 
 }  // namespace on_load_script_injector
 
-#endif  // COMPONENTS_CAST_API_BINDINGS_API_BINDINGS_RENDERER_ON_LOAD_SCRIPT_INJECTOR_H_
+#endif  // COMPONENTS_ON_LOAD_SCRIPT_INJECTOR_RENDERER_ON_LOAD_SCRIPT_INJECTOR_H_

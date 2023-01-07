@@ -118,7 +118,7 @@ GizmoFrobulateFunction::~ GizmoFrobulateFunction() = default;
 ExtensionFunction::ResponseAction GizmoFrobulateFunction::Run() {
   // We can create a typed struct of the arguments from the generated code.
   std::unique_ptr<api::gizmo::Frobulate::Params> params(
-      api::gizmo::Frobulate::Params::Create(*args_));
+      api::gizmo::Frobulate::Params::Create(args()));
 
   // EXTENSION_FUNCTION_VALIDATE() is used to assert things that should only
   // ever be true, and should have already been enforced. This equates to a
@@ -157,7 +157,7 @@ implement.
 ```
 ExtensionFunction::ResponseAction GizmoFrobulateFunction::Run() {
   std::unique_ptr<api::gizmo::Frobulate::Params> params(
-      api::gizmo::Frobulate::Params::Create(*args_));
+      api::gizmo::Frobulate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   int max_cycles = GetMaxCyclesFromPrefs();

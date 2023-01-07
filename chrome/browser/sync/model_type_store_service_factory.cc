@@ -1,12 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 
-#include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/sync/model/model_type_store_service_impl.h"
 
 // static
@@ -22,19 +20,14 @@ syncer::ModelTypeStoreService* ModelTypeStoreServiceFactory::GetForProfile(
 }
 
 ModelTypeStoreServiceFactory::ModelTypeStoreServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ModelTypeStoreService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          ProfileSelections::BuildRedirectedInIncognito()) {}
 
-ModelTypeStoreServiceFactory::~ModelTypeStoreServiceFactory() {}
+ModelTypeStoreServiceFactory::~ModelTypeStoreServiceFactory() = default;
 
 KeyedService* ModelTypeStoreServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   return new syncer::ModelTypeStoreServiceImpl(profile->GetPath());
-}
-
-content::BrowserContext* ModelTypeStoreServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return chrome::GetBrowserContextRedirectedInIncognito(context);
 }

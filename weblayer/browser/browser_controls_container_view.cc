@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,9 @@
 
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/browser/render_view_host.h"
@@ -34,7 +36,7 @@ BrowserControlsContainerView::BrowserControlsContainerView(
       is_top_(is_top) {
   DCHECK(content_view_render_view_);
   if (!is_top_) {
-    content_view_render_view_->SetHeightChangedListener(
+    content_view_render_view_->SetContentHeightChangedListener(
         base::BindRepeating(&BrowserControlsContainerView::ContentHeightChanged,
                             base::Unretained(this)));
   }
@@ -42,7 +44,7 @@ BrowserControlsContainerView::BrowserControlsContainerView(
 
 BrowserControlsContainerView::~BrowserControlsContainerView() {
   if (!is_top_) {
-    content_view_render_view_->SetHeightChangedListener(
+    content_view_render_view_->SetContentHeightChangedListener(
         base::RepeatingClosure());
   }
 }
@@ -73,7 +75,8 @@ int BrowserControlsContainerView::GetContentHeightDelta() {
   if (is_top_)
     return web_contents()->GetNativeView()->GetLayer()->position().y();
 
-  return content_view_render_view_->height() - controls_layer_->position().y();
+  return content_view_render_view_->content_height() -
+         controls_layer_->position().y();
 }
 
 bool BrowserControlsContainerView::IsFullyVisible() const {
@@ -173,8 +176,8 @@ void BrowserControlsContainerView::DoSetBottomControlsOffset() {
   if (!controls_layer_)
     return;
   controls_layer_->SetPosition(
-      gfx::PointF(0, content_view_render_view_->height() - GetControlsHeight() +
-                         GetControlsOffset()));
+      gfx::PointF(0, content_view_render_view_->content_height() -
+                         GetControlsHeight() + GetControlsOffset()));
 }
 
 static jlong

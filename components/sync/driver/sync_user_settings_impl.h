@@ -1,13 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SYNC_DRIVER_SYNC_USER_SETTINGS_IMPL_H_
 #define COMPONENTS_SYNC_DRIVER_SYNC_USER_SETTINGS_IMPL_H_
 
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -48,12 +50,13 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   void SetSelectedOsTypes(bool sync_all_os_types,
                           UserSelectableOsTypeSet types) override;
   UserSelectableOsTypeSet GetRegisteredSelectableOsTypes() const override;
-
-  bool IsOsSyncFeatureEnabled() const override;
-  void SetOsSyncFeatureEnabled(bool enabled) override;
 #endif
 
-  bool IsEncryptEverythingAllowed() const override;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void SetAppsSyncEnabledByOs(bool apps_sync_enabled) override;
+#endif
+
+  bool IsCustomPassphraseAllowed() const override;
   bool IsEncryptEverythingEnabled() const override;
 
   ModelTypeSet GetEncryptedDataTypes() const override;
@@ -64,28 +67,24 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   bool IsTrustedVaultKeyRequired() const override;
   bool IsTrustedVaultKeyRequiredForPreferredDataTypes() const override;
   bool IsTrustedVaultRecoverabilityDegraded() const override;
-  bool IsUsingSecondaryPassphrase() const override;
+  bool IsUsingExplicitPassphrase() const override;
   base::Time GetExplicitPassphraseTime() const override;
   PassphraseType GetPassphraseType() const override;
 
   void SetEncryptionPassphrase(const std::string& passphrase) override;
   bool SetDecryptionPassphrase(const std::string& passphrase) override;
+  void SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) override;
+  std::unique_ptr<Nigori> GetDecryptionNigoriKey() const override;
 
   void SetSyncRequestedIfNotSetExplicitly();
 
   ModelTypeSet GetPreferredDataTypes() const;
   bool IsEncryptedDatatypeEnabled() const;
 
-  // Converts |selected_types| to ModelTypeSet of corresponding UserTypes() by
-  // resolving pref groups (e.g. {kExtensions} becomes {EXTENSIONS,
-  // EXTENSION_SETTINGS}).
-  static ModelTypeSet ResolvePreferredTypesForTesting(
-      UserSelectableTypeSet selected_types);
-
  private:
-  SyncServiceCrypto* const crypto_;
-  SyncPrefs* const prefs_;
-  const SyncTypePreferenceProvider* const preference_provider_;
+  const raw_ptr<SyncServiceCrypto> crypto_;
+  const raw_ptr<SyncPrefs> prefs_;
+  const raw_ptr<const SyncTypePreferenceProvider> preference_provider_;
   const ModelTypeSet registered_model_types_;
   base::RepeatingCallback<void(bool)> sync_allowed_by_platform_changed_cb_;
 };

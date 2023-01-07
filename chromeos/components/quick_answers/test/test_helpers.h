@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace chromeos {
 namespace quick_answers {
 
 std::string GetQuickAnswerTextForTesting(
@@ -28,7 +27,6 @@ class MockQuickAnswersDelegate : public QuickAnswersDelegate {
   // QuickAnswersClient::QuickAnswersDelegate:
   MOCK_METHOD1(OnQuickAnswerReceived, void(std::unique_ptr<QuickAnswer>));
   MOCK_METHOD1(OnRequestPreprocessFinished, void(const QuickAnswersRequest&));
-  MOCK_METHOD1(OnEligibilityChanged, void(bool));
   MOCK_METHOD0(OnNetworkError, void());
 };
 
@@ -62,6 +60,5 @@ MATCHER_P(PreprocessedOutputEqual, preprocessed_output, "") {
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_TEST_TEST_HELPERS_H_

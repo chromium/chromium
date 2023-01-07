@@ -1,74 +1,44 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_BUCKETS_BUCKET_CONTEXT_H_
 #define CONTENT_BROWSER_BUCKETS_BUCKET_CONTEXT_H_
 
-#include <memory>
-
-#include "base/memory/ref_counted.h"
-#include "base/memory/ref_counted_delete_on_sequence.h"
-#include "base/sequence_checker.h"
-#include "base/sequenced_task_runner_helpers.h"
-#include "base/thread_annotations.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-forward.h"
-#include "url/origin.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-forward.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-forward.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-forward.h"
+
+namespace blink {
+enum class PermissionType;
+}
+
+namespace storage {
+struct BucketInfo;
+}
 
 namespace content {
 
-class BucketManager;
-class BucketManagerHost;
-
-// One instance of this exists per StoragePartition, and services multiple
-// child processes/origins. An instance must only be used on the sequence
-// it was created on.
-//
-// The reference counting is a consequence of the need to interact with the
-// BucketManager on the I/O thread, and will probably disappear when
-// BucketManager moves to the Storage Service.
-class BucketContext : public base::RefCountedDeleteOnSequence<BucketContext> {
+// An interface that represents an execution context from which a bucket can be
+// created and used. This may correlate to a RenderFrame or a worker.
+class CONTENT_EXPORT BucketContext {
  public:
-  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+  virtual ~BucketContext() = default;
 
-  BucketContext();
+  // Returns the StorageKey for the context.
+  virtual blink::StorageKey GetBucketStorageKey() = 0;
 
-  BucketContext(const BucketContext&) = delete;
-  BucketContext& operator=(const BucketContext&) = delete;
+  // Checks the permission status for the given type.
+  virtual blink::mojom::PermissionStatus GetPermissionStatus(
+      blink::PermissionType permission_type) = 0;
 
-  void Initialize();
-
-  // Posts task on IO thread and calls BindBucketManagerHostOnIOThread to create
-  // BucketManagerHost and bind blink::mojom::BucketManagerHost receiver.
-  void BindBucketManagerHost(
-      const url::Origin& origin,
-      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver);
-
- private:
-  friend class base::RefCountedDeleteOnSequence<BucketContext>;
-  friend class base::DeleteHelper<BucketContext>;
-
-  ~BucketContext();
-
-  void InitializeOnIOThread();
-
-  // Must be called on the IO thread. This will create a BucketManagerHost
-  // and bind the blink::mojom::BucketManagerHost receiver.
-  void BindBucketManagerHostOnIOThread(
-      const url::Origin& origin,
-      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
-      mojo::ReportBadMessageCallback bad_message_callback);
-
-  SEQUENCE_CHECKER(sequence_checker_);
-
-#if DCHECK_IS_ON()
-  // Only accessed on the UI thread.
-  bool initialize_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-#endif  // DCHECK_IS_ON()
-
-  // Must be accessed on the IO thread.
-  std::unique_ptr<BucketManager> bucket_manager_;
+  // Used to access CacheStorage for the bucket.
+  virtual void BindCacheStorageForBucket(
+      const storage::BucketInfo& bucket,
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) = 0;
 };
 
 }  // namespace content

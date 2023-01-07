@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,21 +47,6 @@ enum class CustomizedShortcutSettings {
   CUSTOMIZED_SHORTCUT_SETTINGS_HIDDEN = 2,
 
   kMaxValue = CUSTOMIZED_SHORTCUT_SETTINGS_HIDDEN
-};
-
-// This enum must match the numbering for NTPCustomizeAction in
-// enums.xml. Do not reorder or remove items, and update kMaxValue when new
-// items are added.
-enum class CustomizeAction {
-  CUSTOMIZE_ACTION_CHROME_BACKGROUNDS = 0,
-  CUSTOMIZE_ACTION_LOCAL_IMAGE = 1,
-  CUSTOMIZE_ACTION_RESTORE_BACKGROUND = 2,
-  CUSTOMIZE_ACTION_ATTRIBUTION = 3,
-  CUSTOMIZE_ACTION_ADD_SHORTCUT = 4,
-  CUSTOMIZE_ACTION_EDIT_SHORTCUT = 5,
-  CUSTOMIZE_ACTION_RESTORE_SHORTCUT = 6,
-
-  kMaxValue = CUSTOMIZE_ACTION_RESTORE_SHORTCUT
 };
 
 // This enum must match the numbering for NTPCustomizeChromeBackgroundAction in

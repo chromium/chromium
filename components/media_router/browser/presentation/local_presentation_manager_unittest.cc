@@ -1,9 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -42,8 +41,7 @@ class LocalPresentationManagerTest : public content::RenderViewHostTestHarness {
   LocalPresentationManagerTest()
       : render_frame_host_id_(1, 1),
         presentation_info_(GURL(kPresentationUrl), kPresentationId),
-        route_("route_1", MediaSource("source_1"), "sink_1", "", false, false) {
-  }
+        route_("route_1", MediaSource("source_1"), "sink_1", "", false) {}
 
   LocalPresentationManager* manager() { return &manager_; }
 
@@ -67,7 +65,7 @@ class LocalPresentationManagerTest : public content::RenderViewHostTestHarness {
   }
 
   void RegisterController(
-      const content::GlobalFrameRoutingId& render_frame_id,
+      const content::GlobalRenderFrameHostId& render_frame_id,
       mojo::PendingRemote<blink::mojom::PresentationConnection> controller) {
     RegisterController(presentation_info_, render_frame_id,
                        std::move(controller));
@@ -81,7 +79,7 @@ class LocalPresentationManagerTest : public content::RenderViewHostTestHarness {
 
   void RegisterController(
       const PresentationInfo& presentation_info,
-      const content::GlobalFrameRoutingId& render_frame_id,
+      const content::GlobalRenderFrameHostId& render_frame_id,
       mojo::PendingRemote<blink::mojom::PresentationConnection> controller) {
     mojo::PendingReceiver<blink::mojom::PresentationConnection>
         receiver_conn_receiver;
@@ -107,7 +105,7 @@ class LocalPresentationManagerTest : public content::RenderViewHostTestHarness {
   }
 
   void UnregisterController(
-      const content::GlobalFrameRoutingId& render_frame_id) {
+      const content::GlobalRenderFrameHostId& render_frame_id) {
     manager()->UnregisterLocalPresentationController(kPresentationId,
                                                      render_frame_id);
   }
@@ -122,7 +120,7 @@ class LocalPresentationManagerTest : public content::RenderViewHostTestHarness {
   }
 
  private:
-  const content::GlobalFrameRoutingId render_frame_host_id_;
+  const content::GlobalRenderFrameHostId render_frame_host_id_;
   const PresentationInfo presentation_info_;
   LocalPresentationManager manager_;
   MediaRoute route_;
@@ -157,10 +155,10 @@ TEST_F(LocalPresentationManagerTest, UnregisterNonexistentReceiver) {
 TEST_F(LocalPresentationManagerTest,
        RegisterMultipleControllersSamePresentation) {
   mojo::PendingRemote<blink::mojom::PresentationConnection> controller1;
-  RegisterController(content::GlobalFrameRoutingId(1, 1),
+  RegisterController(content::GlobalRenderFrameHostId(1, 1),
                      std::move(controller1));
   mojo::PendingRemote<blink::mojom::PresentationConnection> controller2;
-  RegisterController(content::GlobalFrameRoutingId(1, 2),
+  RegisterController(content::GlobalRenderFrameHostId(1, 2),
                      std::move(controller2));
   VerifyPresentationsSize(1);
 }
@@ -251,10 +249,10 @@ TEST_F(LocalPresentationManagerTest,
 TEST_F(LocalPresentationManagerTest,
        RegisterTwoControllersThenReceiverInvokesCallbackTwice) {
   mojo::PendingRemote<blink::mojom::PresentationConnection> controller1;
-  RegisterController(content::GlobalFrameRoutingId(1, 1),
+  RegisterController(content::GlobalRenderFrameHostId(1, 1),
                      std::move(controller1));
   mojo::PendingRemote<blink::mojom::PresentationConnection> controller2;
-  RegisterController(content::GlobalFrameRoutingId(1, 2),
+  RegisterController(content::GlobalRenderFrameHostId(1, 2),
                      std::move(controller2));
 
   MockReceiverConnectionAvailableCallback receiver_callback;
@@ -266,7 +264,7 @@ TEST_F(LocalPresentationManagerTest,
 TEST_F(LocalPresentationManagerTest,
        RegisterControllerReceiverConontrollerInvokesCallbackTwice) {
   mojo::PendingRemote<blink::mojom::PresentationConnection> controller1;
-  RegisterController(content::GlobalFrameRoutingId(1, 1),
+  RegisterController(content::GlobalRenderFrameHostId(1, 1),
                      std::move(controller1));
 
   MockReceiverConnectionAvailableCallback receiver_callback;
@@ -275,25 +273,25 @@ TEST_F(LocalPresentationManagerTest,
   RegisterReceiver(receiver_callback);
 
   mojo::PendingRemote<blink::mojom::PresentationConnection> controller2;
-  RegisterController(content::GlobalFrameRoutingId(1, 2),
+  RegisterController(content::GlobalRenderFrameHostId(1, 2),
                      std::move(controller2));
 }
 
 TEST_F(LocalPresentationManagerTest,
        UnregisterFirstControllerFromeConnectedPresentation) {
   mojo::PendingRemote<blink::mojom::PresentationConnection> controller1;
-  RegisterController(content::GlobalFrameRoutingId(1, 1),
+  RegisterController(content::GlobalRenderFrameHostId(1, 1),
                      std::move(controller1));
   mojo::PendingRemote<blink::mojom::PresentationConnection> controller2;
-  RegisterController(content::GlobalFrameRoutingId(1, 2),
+  RegisterController(content::GlobalRenderFrameHostId(1, 2),
                      std::move(controller2));
 
   MockReceiverConnectionAvailableCallback receiver_callback;
   EXPECT_CALL(receiver_callback, OnReceiverConnectionAvailable(_, _, _))
       .Times(2);
   RegisterReceiver(receiver_callback);
-  UnregisterController(content::GlobalFrameRoutingId(1, 1));
-  UnregisterController(content::GlobalFrameRoutingId(1, 1));
+  UnregisterController(content::GlobalRenderFrameHostId(1, 1));
+  UnregisterController(content::GlobalRenderFrameHostId(1, 1));
 
   VerifyPresentationsSize(1);
 }
@@ -338,7 +336,7 @@ TEST_F(LocalPresentationManagerTest, TestIsLocalPresentationWithWebContents) {
 
 TEST_F(LocalPresentationManagerTest, TestRegisterAndGetRoute) {
   MediaSource source("source_1");
-  MediaRoute route("route_1", source, "sink_1", "", false, false);
+  MediaRoute route("route_1", source, "sink_1", "", false);
 
   EXPECT_FALSE(manager()->GetRoute(kPresentationId));
   mojo::PendingRemote<blink::mojom::PresentationConnection> controller;

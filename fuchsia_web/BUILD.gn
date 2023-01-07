@@ -1,0 +1,19 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+visibility = [ "//:gn_all" ]
+
+# Ensures every target within this directory is reachable.
+# Used by "//:gn_all".
+group("gn_all") {
+  testonly = true
+  deps = [
+    "runners:cast_runner",
+    "runners:web_runner",
+    "shell",
+    "webengine:web_engine",
+  ]
+}

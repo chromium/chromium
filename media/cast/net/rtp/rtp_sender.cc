@@ -1,12 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/cast/net/rtp/rtp_sender.h"
 
+#include <memory>
+
 #include "base/big_endian.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/constants.h"
 
 namespace media {
@@ -45,7 +48,7 @@ bool RtpSender::Initialize(const CastTransportRtpConfig& config) {
     config_.payload_type = 127;
   else
     config_.payload_type = 96;
-  packetizer_.reset(new RtpPacketizer(transport_, &storage_, config_));
+  packetizer_ = std::make_unique<RtpPacketizer>(transport_, &storage_, config_);
   return true;
 }
 
@@ -77,8 +80,9 @@ void RtpSender::ResendPackets(
     if (!stored_packets)
       continue;
 
-    for (auto it = stored_packets->begin(); it != stored_packets->end(); ++it) {
-      const PacketKey& packet_key = it->first;
+    for (auto packet_it = stored_packets->begin();
+         packet_it != stored_packets->end(); ++packet_it) {
+      const PacketKey& packet_key = packet_it->first;
       const uint16_t packet_id = packet_key.packet_id;
 
       // Should we resend the packet?
@@ -92,7 +96,7 @@ void RtpSender::ResendPackets(
 
       // If we were asked to resend the last packet, check if it's the
       // last packet.
-      if (!resend && resend_last && (it + 1) == stored_packets->end()) {
+      if (!resend && resend_last && (packet_it + 1) == stored_packets->end()) {
         resend = true;
       }
 
@@ -100,11 +104,11 @@ void RtpSender::ResendPackets(
         // Resend packet to the network.
         VLOG(3) << "Resend " << frame_id << ":" << packet_id;
         // Set a unique incremental sequence number for every packet.
-        PacketRef packet_copy = FastCopyPacket(it->second);
+        PacketRef packet_copy = FastCopyPacket(packet_it->second);
         UpdateSequenceNumber(&packet_copy->data);
         packets_to_resend.push_back(std::make_pair(packet_key, packet_copy));
       } else if (cancel_rtx_if_not_in_list) {
-        transport_->CancelSendingPacket(it->first);
+        transport_->CancelSendingPacket(packet_it->first);
       }
     }
     transport_->ResendPackets(packets_to_resend, dedup_info);
@@ -141,9 +145,7 @@ void RtpSender::ResendFrameForKickstart(FrameId frame_id,
 }
 
 void RtpSender::UpdateSequenceNumber(Packet* packet) {
-  // TODO(miu): This is an abstraction violation.  This needs to be a part of
-  // the overall packet (de)serialization consolidation.
-  static const int kByteOffsetToSequenceNumber = 2;
+  constexpr int kByteOffsetToSequenceNumber = 2;
   base::BigEndianWriter big_endian_writer(
       reinterpret_cast<char*>((&packet->front()) + kByteOffsetToSequenceNumber),
       sizeof(uint16_t));

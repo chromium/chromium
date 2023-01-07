@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,7 +100,7 @@ std::unique_ptr<sharing::Advertisement> AdvertisementDecoder::FromEndpointInfo(
     return nullptr;
   }
 
-  base::Optional<std::string> optional_device_name;
+  absl::optional<std::string> optional_device_name;
   if (device_name_length > 0) {
     optional_device_name = std::string(iter, iter + device_name_length);
     iter += device_name_length;

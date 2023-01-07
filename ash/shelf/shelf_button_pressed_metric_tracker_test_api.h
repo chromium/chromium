@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,6 @@
 
 #include "ash/shelf/shelf_button_pressed_metric_tracker.h"
 
-#include <memory>
-
-#include "base/macros.h"
 #include "ui/events/event.h"
 
 namespace base {
@@ -22,6 +19,12 @@ class ShelfButtonPressedMetricTrackerTestAPI {
  public:
   explicit ShelfButtonPressedMetricTrackerTestAPI(
       ShelfButtonPressedMetricTracker* shelf_button_pressed_metric_tracker);
+
+  ShelfButtonPressedMetricTrackerTestAPI(
+      const ShelfButtonPressedMetricTrackerTestAPI&) = delete;
+  ShelfButtonPressedMetricTrackerTestAPI& operator=(
+      const ShelfButtonPressedMetricTrackerTestAPI&) = delete;
+
   ~ShelfButtonPressedMetricTrackerTestAPI();
 
   // Set's the |tick_clock_| on the internal ShelfButtonPressedMetricTracker.
@@ -30,9 +33,7 @@ class ShelfButtonPressedMetricTrackerTestAPI {
   void SetTickClock(const base::TickClock* tick_clock);
 
  private:
-  ShelfButtonPressedMetricTracker* shelf_button_pressed_metric_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfButtonPressedMetricTrackerTestAPI);
+  ShelfButtonPressedMetricTracker* const shelf_button_pressed_metric_tracker_;
 };
 
 }  // namespace ash

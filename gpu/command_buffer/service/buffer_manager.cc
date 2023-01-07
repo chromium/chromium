@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <memory>
 
 #include "base/check_op.h"
 #include "base/format_macros.h"
@@ -33,8 +34,7 @@ static const GLsizeiptr kDefaultMaxBufferSize = 1u << 30;  // 1GB
 
 BufferManager::BufferManager(MemoryTracker* memory_tracker,
                              FeatureInfo* feature_info)
-    : memory_type_tracker_(
-          new MemoryTypeTracker(memory_tracker)),
+    : memory_type_tracker_(new MemoryTypeTracker(memory_tracker)),
       memory_tracker_(memory_tracker),
       feature_info_(feature_info),
       max_buffer_size_(kDefaultMaxBufferSize),
@@ -44,10 +44,9 @@ BufferManager::BufferManager(MemoryTracker* memory_tracker,
       primitive_restart_fixed_index_(0),
       lost_context_(false),
       use_client_side_arrays_for_stream_buffers_(
-          feature_info
-              ? feature_info->workarounds()
-                    .use_client_side_arrays_for_stream_buffers
-              : 0) {
+          feature_info ? feature_info->workarounds()
+                             .use_client_side_arrays_for_stream_buffers
+                       : false) {
   // When created from InProcessCommandBuffer, we won't have a |memory_tracker_|
   // so don't register a dump provider.
   if (memory_tracker_) {
@@ -356,8 +355,8 @@ bool Buffer::GetMaxValueForRange(
 void Buffer::SetMappedRange(GLintptr offset, GLsizeiptr size, GLenum access,
                             void* pointer, scoped_refptr<gpu::Buffer> shm,
                             unsigned int shm_offset) {
-  mapped_range_.reset(
-      new MappedRange(offset, size, access, pointer, shm, shm_offset));
+  mapped_range_ = std::make_unique<MappedRange>(offset, size, access, pointer,
+                                                shm, shm_offset);
 }
 
 void Buffer::RemoveMappedRange() {

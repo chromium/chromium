@@ -1,27 +1,27 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/open_in/open_in_tab_helper.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/memory/ref_counted.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
+#import "base/memory/ref_counted.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/open_in/open_in_tab_helper_delegate.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/web/public/navigation/navigation_item.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "net/http/http_response_headers.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "net/http/http_response_headers.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -70,41 +70,29 @@ std::string ContentTypeForMimeType(OpenInMimeType parameter) {
   switch (parameter) {
     case OpenInMimeType::kMimeTypeMicrosoftPowerPointOpenXML:
       return content_type::kMimeTypeMicrosoftPowerPointOpenXML;
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftWordOpenXML:
       return content_type::kMimeTypeMicrosoftWordOpenXML;
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftExcelOpenXML:
       return content_type::kMimeTypeMicrosoftExcelOpenXML;
-      break;
     case OpenInMimeType::kMimeTypePDF:
       return content_type::kMimeTypePDF;
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftWord:
       return content_type::kMimeTypeMicrosoftWord;
-      break;
     case OpenInMimeType::kMimeTypeJPEG:
       return content_type::kMimeTypeJPEG;
-      break;
     case OpenInMimeType::kMimeTypePNG:
       return content_type::kMimeTypePNG;
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftPowerPoint:
       return content_type::kMimeTypeMicrosoftPowerPoint;
-      break;
     case OpenInMimeType::kMimeTypeRTF:
       return content_type::kMimeTypeRTF;
-      break;
     case OpenInMimeType::kMimeTypeSVG:
       return content_type::kMimeTypeSVG;
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftExcel:
       return content_type::kMimeTypeMicrosoftExcel;
-      break;
     // Should not be reached.
     case OpenInMimeType::kMimeTypeNotHandled:
       return "";
-      break;
   }
 }
 
@@ -113,41 +101,29 @@ std::string ExtensionForMimeType(OpenInMimeType parameter) {
   switch (parameter) {
     case OpenInMimeType::kMimeTypeMicrosoftPowerPointOpenXML:
       return ".pptx";
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftWordOpenXML:
       return ".docx";
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftExcelOpenXML:
       return ".xlsx";
-      break;
     case OpenInMimeType::kMimeTypePDF:
       return ".pdf";
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftWord:
       return ".doc";
-      break;
     case OpenInMimeType::kMimeTypeJPEG:
       return ".jpeg";
-      break;
     case OpenInMimeType::kMimeTypePNG:
       return ".png";
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftPowerPoint:
       return ".ppt";
-      break;
     case OpenInMimeType::kMimeTypeRTF:
       return ".rtf";
-      break;
     case OpenInMimeType::kMimeTypeSVG:
       return ".svg";
-      break;
     case OpenInMimeType::kMimeTypeMicrosoftExcel:
       return ".xls";
-      break;
     // Should not be reached.
     case OpenInMimeType::kMimeTypeNotHandled:
       return "";
-      break;
   }
 }
 
@@ -177,8 +153,8 @@ class OpenInTabHelperTest
     return OpenInTabHelper::FromWebState(&web_state_);
   }
 
-  // Simulates a navigation to |url| and set the proper response headers based
-  // on |content_type| and |content_disposition|
+  // Simulates a navigation to `url` and set the proper response headers based
+  // on `content_type` and `content_disposition`
   void NavigateTo(const GURL& url,
                   const char* content_type,
                   const char* content_disposition) {
@@ -283,12 +259,6 @@ TEST_P(OpenInTabHelperTest, OpenInForExportableFilesWithDefaultFileName) {
   std::string default_file_name =
       l10n_util::GetStringUTF8(IDS_IOS_OPEN_IN_FILE_DEFAULT_TITLE) +
       ExtensionForMimeType(OpenInTabHelperTest::GetParam());
-
-  // .rtf files return a default name without extension.
-  if (OpenInTabHelperTest::GetParam() == OpenInMimeType::kMimeTypeRTF) {
-    default_file_name =
-        l10n_util::GetStringUTF8(IDS_IOS_OPEN_IN_FILE_DEFAULT_TITLE);
-  }
 
   EXPECT_NSEQ(base::SysUTF8ToNSString(default_file_name),
               delegate_.lastSuggestedFileName);

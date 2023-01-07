@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_VIEWS_EXAMPLES_BUTTON_STICKER_SHEET_H_
 #define UI_VIEWS_EXAMPLES_BUTTON_STICKER_SHEET_H_
 
-#include "base/macros.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
@@ -18,13 +17,14 @@ namespace examples {
 class VIEWS_EXAMPLES_EXPORT ButtonStickerSheet : public ExampleBase {
  public:
   ButtonStickerSheet();
+
+  ButtonStickerSheet(const ButtonStickerSheet&) = delete;
+  ButtonStickerSheet& operator=(const ButtonStickerSheet&) = delete;
+
   ~ButtonStickerSheet() override;
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ButtonStickerSheet);
 };
 
 }  // namespace examples

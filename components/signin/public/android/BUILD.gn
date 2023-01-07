@@ -5,43 +5,47 @@ android_library("java") {
     "$google_play_services_package:google_play_services_auth_base_java",
     "$google_play_services_package:google_play_services_base_java",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//components/externalauth/android:java",
     "//net/android:net_java",
-    "//third_party/android_deps:android_support_v4_java",
     "//third_party/android_deps:chromium_play_services_availability_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 
   srcjar_deps = [
+    ":account_capabilities_constants_javagen",
+    ":tribool_javagen",
+    "//components/signin/public/base:consent_level_enum_javagen",
     "//components/signin/public/base:signin_metrics_enum_javagen",
-    "//components/signin/public/identity_manager:identity_manager_enum_javagen",
+    "//components/signin/public/identity_manager:primary_account_mutator_enum_javagen",
   ]
 
   sources = [
     "java/src/org/chromium/components/signin/AccessTokenData.java",
+    "java/src/org/chromium/components/signin/AccountCapabilitiesFetcher.java",
     "java/src/org/chromium/components/signin/AccountManagerDelegate.java",
-    "java/src/org/chromium/components/signin/AccountManagerDelegateException.java",
     "java/src/org/chromium/components/signin/AccountManagerFacade.java",
     "java/src/org/chromium/components/signin/AccountManagerFacadeImpl.java",
     "java/src/org/chromium/components/signin/AccountManagerFacadeProvider.java",
-    "java/src/org/chromium/components/signin/AccountManagerResult.java",
-    "java/src/org/chromium/components/signin/AccountTrackerService.java",
+    "java/src/org/chromium/components/signin/AccountRenameChecker.java",
+    "java/src/org/chromium/components/signin/AccountRestrictionPatternReceiver.java",
     "java/src/org/chromium/components/signin/AccountUtils.java",
     "java/src/org/chromium/components/signin/AccountsChangeObserver.java",
     "java/src/org/chromium/components/signin/AuthException.java",
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
-    "java/src/org/chromium/components/signin/ChildAccountStatus.java",
     "java/src/org/chromium/components/signin/ConnectionRetry.java",
-    "java/src/org/chromium/components/signin/GmsAvailabilityException.java",
-    "java/src/org/chromium/components/signin/GmsJustUpdatedException.java",
-    "java/src/org/chromium/components/signin/MutableObservableValue.java",
-    "java/src/org/chromium/components/signin/ObservableValue.java",
     "java/src/org/chromium/components/signin/PatternMatcher.java",
-    "java/src/org/chromium/components/signin/ProfileDataSource.java",
     "java/src/org/chromium/components/signin/SystemAccountManagerDelegate.java",
+    "java/src/org/chromium/components/signin/base/AccountCapabilities.java",
     "java/src/org/chromium/components/signin/base/AccountInfo.java",
     "java/src/org/chromium/components/signin/base/CoreAccountId.java",
     "java/src/org/chromium/components/signin/base/CoreAccountInfo.java",
     "java/src/org/chromium/components/signin/base/GoogleServiceAuthError.java",
+    "java/src/org/chromium/components/signin/identitymanager/AccountInfoService.java",
+    "java/src/org/chromium/components/signin/identitymanager/AccountInfoServiceImpl.java",
+    "java/src/org/chromium/components/signin/identitymanager/AccountInfoServiceProvider.java",
+    "java/src/org/chromium/components/signin/identitymanager/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityManager.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityMutator.java",
     "java/src/org/chromium/components/signin/identitymanager/PrimaryAccountChangeEvent.java",
@@ -54,13 +58,15 @@ android_library("java") {
 generate_jni("jni_headers") {
   namespace = "signin"
   sources = [
+    "java/src/org/chromium/components/signin/AccountCapabilitiesFetcher.java",
     "java/src/org/chromium/components/signin/AccountManagerFacadeProvider.java",
-    "java/src/org/chromium/components/signin/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/ChildAccountInfoFetcher.java",
+    "java/src/org/chromium/components/signin/base/AccountCapabilities.java",
     "java/src/org/chromium/components/signin/base/AccountInfo.java",
     "java/src/org/chromium/components/signin/base/CoreAccountId.java",
     "java/src/org/chromium/components/signin/base/CoreAccountInfo.java",
     "java/src/org/chromium/components/signin/base/GoogleServiceAuthError.java",
+    "java/src/org/chromium/components/signin/identitymanager/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityManager.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityMutator.java",
     "java/src/org/chromium/components/signin/identitymanager/PrimaryAccountChangeEvent.java",
@@ -68,9 +74,23 @@ generate_jni("jni_headers") {
   ]
 }
 
+java_cpp_template("account_capabilities_constants_javagen") {
+  sources = [ "java_templates/AccountCapabilitiesConstants.template" ]
+  inputs = [
+    "//components/signin/internal/identity_manager/account_capabilities_list.h",
+  ]
+}
+
+java_cpp_enum("tribool_javagen") {
+  sources = [ "//components/signin/public/identity_manager/tribool.h" ]
+}
+
 generate_jni("test_support_jni_headers") {
   namespace = "signin"
-  sources = [ "java/src/org/chromium/components/signin/test/util/AccountManagerFacadeUtil.java" ]
+  sources = [
+    "java/src/org/chromium/components/signin/test/util/AccountCapabilitiesFetcherTestUtil.java",
+    "java/src/org/chromium/components/signin/test/util/AccountManagerFacadeUtil.java",
+  ]
 }
 
 android_library("signin_java_test_support") {
@@ -80,35 +100,44 @@ android_library("signin_java_test_support") {
     ":signin_test_resources",
     ":test_support_jni_headers",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:jni_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/mockito:mockito_java",
   ]
   sources = [
+    "java/src/org/chromium/components/signin/test/util/AccountCapabilitiesBuilder.java",
+    "java/src/org/chromium/components/signin/test/util/AccountCapabilitiesFetcherTestUtil.java",
     "java/src/org/chromium/components/signin/test/util/AccountHolder.java",
     "java/src/org/chromium/components/signin/test/util/AccountManagerFacadeUtil.java",
+    "java/src/org/chromium/components/signin/test/util/FakeAccountInfoService.java",
     "java/src/org/chromium/components/signin/test/util/FakeAccountManagerDelegate.java",
     "java/src/org/chromium/components/signin/test/util/FakeAccountManagerFacade.java",
-    "java/src/org/chromium/components/signin/test/util/FakeProfileDataSource.java",
   ]
   resources_package = "org.chromium.components.signin.test.util"
 }
 
-android_resources("signin_test_resources") {
-  testonly = true
-  sources = [ "java/res/drawable/test_profile_picture.xml" ]
+android_resources("java_resources") {
+  sources = [ "java/res/drawable/anonymous_account_image.xml" ]
 }
 
-android_library("javatests") {
+android_resources("signin_test_resources") {
+  testonly = true
+  sources = [ "javatests/res/drawable/test_profile_picture.xml" ]
+}
+
+android_library("unit_device_javatests") {
   testonly = true
   deps = [
     ":java",
     ":signin_java_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//content/public/test/android:content_java_test_support",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
@@ -120,23 +149,29 @@ android_library("javatests") {
   ]
 }
 
-java_library("junit") {
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/components/signin/AccountManagerFacadeImplTest.java",
-    "junit/src/org/chromium/components/signin/AccountTrackerServiceTest.java",
-    "junit/src/org/chromium/components/signin/ObservableValueTest.java",
+    "junit/src/org/chromium/components/signin/AccountRenameCheckerTest.java",
+    "junit/src/org/chromium/components/signin/AccountUtilsTest.java",
     "junit/src/org/chromium/components/signin/PatternMatcherTest.java",
+    "junit/src/org/chromium/components/signin/base/AccountCapabilitiesTest.java",
+    "junit/src/org/chromium/components/signin/identitymanager/AccountInfoServiceImplTest.java",
+    "junit/src/org/chromium/components/signin/identitymanager/AccountTrackerServiceTest.java",
   ]
   deps = [
     ":java",
     ":signin_java_test_support",
+    "$google_play_services_package:google_play_services_auth_base_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/externalauth/android:google_delegate_public_impl_java",
+    "//components/externalauth/android:java",
     "//testing/android/junit:junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_rules_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,14 +15,14 @@ using testing::ElementsAre;
 TEST(NGBidiParagraph, SetParagraphHeuristicLtr) {
   String text(u"abc");
   NGBidiParagraph bidi;
-  bidi.SetParagraph(text, base::nullopt);
+  bidi.SetParagraph(text, absl::nullopt);
   EXPECT_EQ(bidi.BaseDirection(), TextDirection::kLtr);
 }
 
 TEST(NGBidiParagraph, SetParagraphHeuristicRtl) {
   String text(u"\u05D0\u05D1\u05D2");
   NGBidiParagraph bidi;
-  bidi.SetParagraph(text, base::nullopt);
+  bidi.SetParagraph(text, absl::nullopt);
   EXPECT_EQ(bidi.BaseDirection(), TextDirection::kRtl);
 }
 

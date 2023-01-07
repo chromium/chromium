@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,8 @@ public class ChromePowerModeVoter
     @SuppressLint("StaticFieldLeak")
     private static ChromePowerModeVoter sInstance;
 
+    private boolean mOnDrawListenerAdded;
+
     public static ChromePowerModeVoter getInstance() {
         if (sInstance == null) {
             sInstance = new ChromePowerModeVoter();
@@ -43,10 +45,12 @@ public class ChromePowerModeVoter
         if (window != null) {
             View rootView = window.getDecorView().getRootView();
             ViewTreeObserver treeObserver = rootView.getViewTreeObserver();
-            if (active) {
+            if (active && !mOnDrawListenerAdded) {
                 treeObserver.addOnDrawListener(this);
-            } else {
+                mOnDrawListenerAdded = true;
+            } else if (!active && mOnDrawListenerAdded) {
                 treeObserver.removeOnDrawListener(this);
+                mOnDrawListenerAdded = false;
             }
         }
 
@@ -60,6 +64,7 @@ public class ChromePowerModeVoter
         TraceEvent.instant("ChromePowerModeVoter.onDraw");
         if (!LibraryLoader.getInstance().isInitialized()) return;
         ChromePowerModeVoterJni.get().onViewTreeDraw();
+        TraceEvent.snapshotViewHierarchy();
     }
 
     public Runnable getTouchEventCallback() {

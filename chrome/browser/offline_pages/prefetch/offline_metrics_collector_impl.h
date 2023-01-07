@@ -1,14 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_PREFETCH_OFFLINE_METRICS_COLLECTOR_IMPL_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_PREFETCH_OFFLINE_METRICS_COLLECTOR_IMPL_H_
 
-#include <memory>
-
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "components/offline_pages/core/prefetch/offline_metrics_collector.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -84,6 +83,11 @@ class OfflineMetricsCollectorImpl : public OfflineMetricsCollector {
   };
 
   explicit OfflineMetricsCollectorImpl(PrefService* prefs);
+
+  OfflineMetricsCollectorImpl(const OfflineMetricsCollectorImpl&) = delete;
+  OfflineMetricsCollectorImpl& operator=(const OfflineMetricsCollectorImpl&) =
+      delete;
+
   ~OfflineMetricsCollectorImpl() override;
 
   // OfflineMetricsCollector implementation.
@@ -147,9 +151,7 @@ class OfflineMetricsCollectorImpl : public OfflineMetricsCollector {
 
   // Has the same lifetime as profile, so should outlive this subcomponent
   // of profile's PrefetchService.
-  PrefService* prefs_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineMetricsCollectorImpl);
+  raw_ptr<PrefService> prefs_ = nullptr;
 };
 
 }  // namespace offline_pages

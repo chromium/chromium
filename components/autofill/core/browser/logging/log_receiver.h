@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_LOGGING_LOG_RECEIVER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_LOGGING_LOG_RECEIVER_H_
 
-#include "base/macros.h"
 #include "base/values.h"
 
 namespace autofill {
@@ -14,13 +13,14 @@ namespace autofill {
 // logs about progress of actions like saving a password.
 class LogReceiver {
  public:
-  LogReceiver() {}
-  virtual ~LogReceiver() {}
+  LogReceiver() = default;
 
-  virtual void LogEntry(const base::Value& entry) = 0;
+  LogReceiver(const LogReceiver&) = delete;
+  LogReceiver& operator=(const LogReceiver&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(LogReceiver);
+  virtual ~LogReceiver() = default;
+
+  virtual void LogEntry(const base::Value::Dict& entry) = 0;
 };
 
 }  // namespace autofill

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!--
+Copyright 2017 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+
+Refer to README.md for content description and update process.
+-->
+
+<annotations>
+ <item id="G" added_in_milestone="62" hash_code="4" content_hash_code="40" os_list="linux,windows"/>
+</annotations>

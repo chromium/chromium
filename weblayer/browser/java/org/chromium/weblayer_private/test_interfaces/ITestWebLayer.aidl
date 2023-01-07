@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,4 +77,32 @@ interface ITestWebLayer {
   void addContentCaptureConsumer(in IBrowser browser,
                                  in IObjectWrapper /* Runnable */ onNewEvent,
                                  in IObjectWrapper /* ArrayList<Integer> */ eventsObserved) = 24;
+
+  // Notifies the caller of autofill-related events that occur in |browser|. The caller is notified
+  // via |onNewEvent| when a new event occurs, at which point the list of events that have occurred
+  // since notifyOfAutofillEvents() was first invoked will be available via |eventsObserved|.
+  // Note: Calling this method results in stubbing out the actual system-level integration with
+  // Android Autofill.
+  void notifyOfAutofillEvents(in IBrowser browser,
+                              in IObjectWrapper /* Runnable */ onNewEvent,
+                              in IObjectWrapper /* ArrayList<Integer> */ eventsObserved) = 25;
+
+  // Simulates tapping the download notification with `id`.
+  void activateBackgroundFetchNotification(int id) = 26;
+
+  // Speeds up download service initialization.
+  void expediteDownloadService() = 27;
+
+  // Mocks the GMSCore Fido calls used by WebAuthn.
+  void setMockWebAuthnEnabled(in boolean enabled) = 28;
+
+  // Simulates the implementation-side event of an access token being
+  // identified as invalid.
+  void fireOnAccessTokenIdentifiedAsInvalid(in IProfile profile, in IObjectWrapper /* Set<String */ scopes, in IObjectWrapper /* String */ token) = 29;
+
+  // Grants `url` location permission.
+  void grantLocationPermission(String url) = 30;
+
+  void setTextScaling(in IProfile profile, float value) = 31;
+  boolean getForceEnableZoom(in IProfile profile) = 32;
 }

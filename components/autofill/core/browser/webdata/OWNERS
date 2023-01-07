@@ -1,8 +1,5 @@
-per-file *sync_bridge*=jkrcal@chromium.org
 per-file *sync_bridge*=file://components/sync/OWNERS
 
-per-file autofill_profile_sync_difference_tracker*=jkrcal@chromium.org
 per-file autofill_profile_sync_difference_tracker*=file://components/sync/OWNERS
 
-per-file *type_controller*=jkrcal@chromium.org
 per-file *type_controller*=file://components/sync/OWNERS

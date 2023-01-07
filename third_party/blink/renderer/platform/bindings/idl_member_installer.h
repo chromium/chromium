@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -138,7 +138,8 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
 
   struct NoAllocDirectCallOperationConfig {
     OperationConfig operation_config;
-    v8::CFunction v8_c_function;
+    const v8::CFunction* v8_cfunction_table_data;
+    uint32_t v8_cfunction_table_size;
   };
   static void InstallOperations(
       v8::Isolate* isolate,
@@ -148,11 +149,19 @@ class PLATFORM_EXPORT IDLMemberInstaller final {
       v8::Local<v8::Template> interface_template,
       v8::Local<v8::Signature> signature,
       base::span<const NoAllocDirectCallOperationConfig> configs);
+  static void InstallOperations(
+      v8::Isolate* isolate,
+      const DOMWrapperWorld& world,
+      v8::Local<v8::Object> instance_object,
+      v8::Local<v8::Object> prototype_object,
+      v8::Local<v8::Object> interface_object,
+      v8::Local<v8::Signature> signature,
+      base::span<const NoAllocDirectCallOperationConfig> configs);
 
   // Global property reference
-  // https://heycam.github.io/webidl/#define-the-global-property-references
+  // https://webidl.spec.whatwg.org/#define-the-global-property-references
   // [LegacyNamespace]
-  // https://heycam.github.io/webidl/#LegacyNamespace
+  // https://webidl.spec.whatwg.org/#LegacyNamespace
   struct ExposedConstructConfig {
     ExposedConstructConfig& operator=(const ExposedConstructConfig&) = delete;
 

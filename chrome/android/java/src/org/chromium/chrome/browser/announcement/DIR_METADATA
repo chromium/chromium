@@ -2,4 +2,3 @@ monorail {
   component: "UI>Notifications"
 }
 team_email: "chrome-notifications@google.com"
-os: ANDROID

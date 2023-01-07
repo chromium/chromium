@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,13 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Clock;
@@ -36,8 +39,7 @@ class ActionTracker {
  public:
   // The lifespan of matched rules in |rules_matched_| not associated with an
   // active document,
-  static constexpr base::TimeDelta kNonActiveTabRuleLifespan =
-      base::TimeDelta::FromMinutes(5);
+  static constexpr base::TimeDelta kNonActiveTabRuleLifespan = base::Minutes(5);
 
   explicit ActionTracker(content::BrowserContext* browser_context);
   ~ActionTracker();
@@ -91,7 +93,7 @@ class ActionTracker {
   // rules matched for |tab_id| will be returned.
   std::vector<api::declarative_net_request::MatchedRuleInfo> GetMatchedRules(
       const Extension& extension,
-      const base::Optional<int>& tab_id,
+      const absl::optional<int>& tab_id,
       const base::Time& min_time_stamp);
 
   // Returns the number of matched rules in |rules_tracked_| for the given
@@ -207,9 +209,9 @@ class ActionTracker {
   // TrackedInfo is added to |rules_tracked_| once the navigation commits.
   std::map<ExtensionNavigationIdKey, TrackedInfo> pending_navigation_actions_;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
-  ExtensionPrefs* extension_prefs_;
+  raw_ptr<ExtensionPrefs> extension_prefs_;
 };
 
 }  // namespace declarative_net_request

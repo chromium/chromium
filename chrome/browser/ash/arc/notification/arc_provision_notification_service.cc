@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/constants/notifier_catalogs.h"
 #include "base/memory/singleton.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -19,7 +21,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/session_manager/core/session_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -105,7 +106,7 @@ void ArcProvisionNotificationService::ShowNotification() {
   Profile* profile = Profile::FromBrowserContext(context_);
   message_center::NotifierId notifier_id(
       message_center::NotifierType::SYSTEM_COMPONENT,
-      kManagedProvisionNotifierId);
+      kManagedProvisionNotifierId, ash::NotificationCatalogName::kArcProvision);
   notifier_id.profile_id =
       multi_user_util::GetAccountIdFromProfile(profile).GetUserEmail();
   message_center::RichNotificationData optional_fields;
@@ -116,8 +117,9 @@ void ArcProvisionNotificationService::ShowNotification() {
       l10n_util::GetStringUTF16(IDS_ARC_MANAGED_PROVISION_NOTIFICATION_TITLE),
       l10n_util::GetStringFUTF16(IDS_ARC_MANAGED_PROVISION_NOTIFICATION_MESSAGE,
                                  ui::GetChromeOSDeviceName()),
-      gfx::Image(ui::ResourceBundle::GetSharedInstance().GetImageNamed(
-          IDR_ARC_PLAY_STORE_OPTIN_IN_PROGRESS_NOTIFICATION)),
+      ui::ImageModel::FromImage(
+          ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+              IDR_ARC_PLAY_STORE_OPTIN_IN_PROGRESS_NOTIFICATION)),
       l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE), GURL(),
       notifier_id, optional_fields, new message_center::NotificationDelegate());
 
@@ -147,8 +149,7 @@ void ArcProvisionNotificationService::OnArcPlayStoreEnabledChanged(
 void ArcProvisionNotificationService::OnArcStarted() {
   // Show notification only for Public Session (except for Demo Session) when
   // ARC is going to start.
-  if (profiles::IsPublicSession() &&
-      !chromeos::DemoSession::IsDeviceInDemoMode()) {
+  if (profiles::IsPublicSession() && !ash::DemoSession::IsDeviceInDemoMode()) {
     MaybeShowNotification();
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
-#include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -22,6 +19,7 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "mojo/public/interfaces/bindings/tests/new_endpoint_types.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace test {
@@ -35,6 +33,9 @@ class WidgetImpl : public mojom::Widget {
       : client_(std::move(client)) {
     client_->OnInitialized();
   }
+
+  WidgetImpl(const WidgetImpl&) = delete;
+  WidgetImpl& operator=(const WidgetImpl&) = delete;
 
   ~WidgetImpl() override = default;
 
@@ -52,14 +53,16 @@ class WidgetImpl : public mojom::Widget {
  private:
   mojo::Remote<mojom::WidgetClient> client_;
   std::vector<mojo::Remote<mojom::WidgetObserver>> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(WidgetImpl);
 };
 
 class FactoryImpl : public mojom::WidgetFactory {
  public:
   explicit FactoryImpl(mojo::PendingReceiver<mojom::WidgetFactory> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  FactoryImpl(const FactoryImpl&) = delete;
+  FactoryImpl& operator=(const FactoryImpl&) = delete;
+
   ~FactoryImpl() override = default;
 
   // mojom::WidgetFactory:
@@ -72,13 +75,15 @@ class FactoryImpl : public mojom::WidgetFactory {
  private:
   mojo::Receiver<mojom::WidgetFactory> receiver_;
   mojo::UniqueReceiverSet<mojom::Widget> widgets_;
-
-  DISALLOW_COPY_AND_ASSIGN(FactoryImpl);
 };
 
 class ClientImpl : public mojom::WidgetClient {
  public:
   ClientImpl() = default;
+
+  ClientImpl(const ClientImpl&) = delete;
+  ClientImpl& operator=(const ClientImpl&) = delete;
+
   ~ClientImpl() override = default;
 
   mojo::PendingRemote<mojom::WidgetClient> BindNewPipeAndPassRemote() {
@@ -93,13 +98,15 @@ class ClientImpl : public mojom::WidgetClient {
  private:
   mojo::Receiver<mojom::WidgetClient> receiver_{this};
   base::RunLoop wait_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientImpl);
 };
 
 class ObserverImpl : public mojom::WidgetObserver {
  public:
   ObserverImpl() = default;
+
+  ObserverImpl(const ObserverImpl&) = delete;
+  ObserverImpl& operator=(const ObserverImpl&) = delete;
+
   ~ObserverImpl() override = default;
 
   mojo::PendingRemote<mojom::WidgetObserver> BindNewPipeAndPassRemote() {
@@ -121,13 +128,15 @@ class ObserverImpl : public mojom::WidgetObserver {
   mojo::Receiver<mojom::WidgetObserver> receiver_{this};
   base::RunLoop click_loop_;
   base::RunLoop disconnect_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObserverImpl);
 };
 
 class PingerImpl : public mojom::Pinger {
  public:
   PingerImpl() = default;
+
+  PingerImpl(const PingerImpl&) = delete;
+  PingerImpl& operator=(const PingerImpl&) = delete;
+
   ~PingerImpl() override = default;
 
   int ping_count() const { return ping_count_; }
@@ -145,8 +154,6 @@ class PingerImpl : public mojom::Pinger {
 
   mojo::AssociatedReceiverSet<mojom::Pinger> receivers_;
   int ping_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PingerImpl);
 };
 
 class AssociatedPingerHostImpl : public mojom::AssociatedPingerHost {
@@ -154,6 +161,10 @@ class AssociatedPingerHostImpl : public mojom::AssociatedPingerHost {
   explicit AssociatedPingerHostImpl(
       mojo::PendingReceiver<mojom::AssociatedPingerHost> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  AssociatedPingerHostImpl(const AssociatedPingerHostImpl&) = delete;
+  AssociatedPingerHostImpl& operator=(const AssociatedPingerHostImpl&) = delete;
+
   ~AssociatedPingerHostImpl() override = default;
 
   int ping_count() const { return pinger_.ping_count(); }
@@ -170,8 +181,6 @@ class AssociatedPingerHostImpl : public mojom::AssociatedPingerHost {
 
   mojo::Receiver<mojom::AssociatedPingerHost> receiver_;
   PingerImpl pinger_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssociatedPingerHostImpl);
 };
 
 TEST(NewEndpointTypesTest, BasicUsage) {

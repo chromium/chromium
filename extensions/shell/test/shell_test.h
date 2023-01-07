@@ -1,12 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_SHELL_TEST_SHELL_TEST_H_
 #define EXTENSIONS_SHELL_TEST_SHELL_TEST_H_
 
-#include <memory>
-
+#include "base/memory/raw_ptr.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 
@@ -32,8 +31,8 @@ class AppShellTest : public content::BrowserTestBase {
   content::BrowserContext* browser_context() { return browser_context_; }
 
  protected:
-  content::BrowserContext* browser_context_ = nullptr;
-  ShellExtensionSystem* extension_system_ = nullptr;
+  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
+  raw_ptr<ShellExtensionSystem> extension_system_ = nullptr;
 };
 
 }  // namespace extensions

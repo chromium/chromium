@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/sessions/session_restore.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/common/pref_names.h"
@@ -29,6 +29,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents.h"
+#include "url/android/gurl_android.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
@@ -99,7 +100,7 @@ void JNI_ForeignSessionHelper_CopyTabToJava(
   GURL tab_url = current_navigation.virtual_url();
 
   Java_ForeignSessionHelper_pushTab(
-      env, j_window, ConvertUTF8ToJavaString(env, tab_url.spec()),
+      env, j_window, url::GURLAndroid::FromNativeGURL(env, tab_url),
       ConvertUTF16ToJavaString(env, current_navigation.title()),
       tab.timestamp.ToJavaTime(), tab.tab_id.id());
 }
@@ -176,8 +177,7 @@ jboolean ForeignSessionHelper::IsTabSyncEnabled(JNIEnv* env) {
 }
 
 void ForeignSessionHelper::TriggerSessionSync(JNIEnv* env) {
-  syncer::SyncService* service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
   if (!service)
     return;
 
@@ -212,12 +212,11 @@ jboolean ForeignSessionHelper::GetForeignSessions(
   // Use a pref to keep track of sessions that were collapsed by the user.
   // To prevent the pref from accumulating stale sessions, clear it each time
   // and only add back sessions that are still current.
-  DictionaryPrefUpdate pref_update(profile_->GetPrefs(),
+  ScopedDictPrefUpdate pref_update(profile_->GetPrefs(),
                                    prefs::kNtpCollapsedForeignSessions);
-  base::DictionaryValue* pref_collapsed_sessions = pref_update.Get();
-  std::unique_ptr<base::DictionaryValue> collapsed_sessions(
-      pref_collapsed_sessions->DeepCopy());
-  pref_collapsed_sessions->Clear();
+  base::Value::Dict& pref_collapsed_sessions = pref_update.Get();
+  base::Value::Dict collapsed_sessions = pref_collapsed_sessions.Clone();
+  pref_collapsed_sessions.clear();
 
   ScopedJavaLocalRef<jobject> last_pushed_session;
 
@@ -227,10 +226,11 @@ jboolean ForeignSessionHelper::GetForeignSessions(
     if (ShouldSkipSession(session))
       continue;
 
-    const bool is_collapsed = collapsed_sessions->HasKey(session.session_tag);
+    const bool is_collapsed =
+        (collapsed_sessions.Find(session.session_tag) != nullptr);
 
     if (is_collapsed)
-      pref_collapsed_sessions->SetBoolean(session.session_tag, true);
+      pref_collapsed_sessions.Set(session.session_tag, true);
 
     last_pushed_session.Reset(Java_ForeignSessionHelper_pushSession(
         env, result, ConvertUTF8ToJavaString(env, session.session_tag),
@@ -298,8 +298,7 @@ void ForeignSessionHelper::DeleteForeignSession(
 void ForeignSessionHelper::SetInvalidationsForSessionsEnabled(
     JNIEnv* env,
     jboolean enabled) {
-  syncer::SyncService* service =
-      ProfileSyncServiceFactory::GetForProfile(profile_);
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile_);
   if (!service)
     return;
 

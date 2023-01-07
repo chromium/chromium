@@ -93,7 +93,7 @@ void FlatTreeTraversal::AssertFlatTreeNodeDataUpdated(
 Node* FlatTreeTraversal::TraverseChild(const Node& node,
                                        TraversalDirection direction) {
   if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
-    if (slot->AssignedNodes().IsEmpty()) {
+    if (slot->AssignedNodes().empty()) {
       return direction == kTraversalDirectionForward ? slot->firstChild()
                                                      : slot->lastChild();
     }
@@ -158,7 +158,7 @@ ContainerNode* FlatTreeTraversal::TraverseParent(const Node& node) {
 
   if (auto* parent_slot =
           ToHTMLSlotElementIfSupportsAssignmentOrNull(node.parentElement())) {
-    if (!parent_slot->AssignedNodes().IsEmpty())
+    if (!parent_slot->AssignedNodes().empty())
       return nullptr;
     return parent_slot;
   }

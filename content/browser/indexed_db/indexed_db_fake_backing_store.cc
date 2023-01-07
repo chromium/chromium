@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,9 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_factory.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 namespace {
@@ -24,12 +26,20 @@ TransactionalLevelDBFactory* GetTransactionalLevelDBFactory() {
   return factory.get();
 }
 
+const storage::BucketLocator GetBucketLocator(blink::StorageKey storage_key) {
+  auto bucket_locator = storage::BucketLocator();
+  bucket_locator.storage_key = storage_key;
+  return bucket_locator;
+}
+
 }  // namespace
 
 IndexedDBFakeBackingStore::IndexedDBFakeBackingStore()
     : IndexedDBBackingStore(IndexedDBBackingStore::Mode::kInMemory,
                             GetTransactionalLevelDBFactory(),
-                            url::Origin::Create(GURL("http://localhost:81")),
+                            storage::BucketLocator(GetBucketLocator(
+                                blink::StorageKey::CreateFromStringForTesting(
+                                    "http://localhost:81"))),
                             base::FilePath(),
                             std::unique_ptr<TransactionalLevelDBDatabase>(),
                             /*blob_storage_context=*/nullptr,
@@ -46,7 +56,9 @@ IndexedDBFakeBackingStore::IndexedDBFakeBackingStore(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : IndexedDBBackingStore(IndexedDBBackingStore::Mode::kOnDisk,
                             GetTransactionalLevelDBFactory(),
-                            url::Origin::Create(GURL("http://localhost:81")),
+                            storage::BucketLocator(GetBucketLocator(
+                                blink::StorageKey::CreateFromStringForTesting(
+                                    "http://localhost:81"))),
                             base::FilePath(),
                             std::unique_ptr<TransactionalLevelDBDatabase>(),
                             /*blob_storage_context=*/nullptr,
@@ -141,7 +153,7 @@ IndexedDBFakeBackingStore::OpenObjectStoreKeyCursor(
     const IndexedDBKeyRange& key_range,
     blink::mojom::IDBCursorDirection,
     leveldb::Status* s) {
-  return std::unique_ptr<IndexedDBBackingStore::Cursor>();
+  return nullptr;
 }
 std::unique_ptr<IndexedDBBackingStore::Cursor>
 IndexedDBFakeBackingStore::OpenObjectStoreCursor(
@@ -151,7 +163,7 @@ IndexedDBFakeBackingStore::OpenObjectStoreCursor(
     const IndexedDBKeyRange& key_range,
     blink::mojom::IDBCursorDirection,
     leveldb::Status* s) {
-  return std::unique_ptr<IndexedDBBackingStore::Cursor>();
+  return nullptr;
 }
 std::unique_ptr<IndexedDBBackingStore::Cursor>
 IndexedDBFakeBackingStore::OpenIndexKeyCursor(
@@ -162,7 +174,7 @@ IndexedDBFakeBackingStore::OpenIndexKeyCursor(
     const IndexedDBKeyRange& key_range,
     blink::mojom::IDBCursorDirection,
     leveldb::Status* s) {
-  return std::unique_ptr<IndexedDBBackingStore::Cursor>();
+  return nullptr;
 }
 std::unique_ptr<IndexedDBBackingStore::Cursor>
 IndexedDBFakeBackingStore::OpenIndexCursor(
@@ -173,7 +185,7 @@ IndexedDBFakeBackingStore::OpenIndexCursor(
     const IndexedDBKeyRange& key_range,
     blink::mojom::IDBCursorDirection,
     leveldb::Status* s) {
-  return std::unique_ptr<IndexedDBBackingStore::Cursor>();
+  return nullptr;
 }
 
 IndexedDBFakeBackingStore::FakeTransaction::FakeTransaction(
@@ -188,7 +200,7 @@ IndexedDBFakeBackingStore::FakeTransaction::FakeTransaction(
           mode),
       result_(result) {}
 void IndexedDBFakeBackingStore::FakeTransaction::Begin(
-    std::vector<ScopeLock> locks) {}
+    std::vector<PartitionedLock> locks) {}
 leveldb::Status IndexedDBFakeBackingStore::FakeTransaction::CommitPhaseOne(
     BlobWriteCallback callback) {
   return std::move(callback).Run(

@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "open_with_menu\.cc": [
+    "+chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h",
+  ],
+  "start_smart_selection_action_menu\.cc": [
+    "+ash/components/arc/metrics/arc_metrics_constants.h",
+  ],
+}

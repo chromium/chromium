@@ -10,7 +10,6 @@
       ".vpython",
       "build/check_gn_headers.py",
       "build/check_gn_headers_whitelist.txt",
-      "build/fuchsia/.*py",
       "build/get_landmines.py",
       "build/gn_helpers.py",
       "build/mac_toolchain.py",
@@ -20,6 +19,7 @@
       "build/vs_toolchain.py",
       "DEPS",
       "infra/scripts/.*",
+      "infra/orchestrator/BUILD.gn",
       "testing/buildbot/gn_isolate_map.pyl",
       "testing/merge_scripts/.*",
       "testing/scripts/.*",
@@ -32,8 +32,14 @@
       "infra/recipes/.*"
     ]
   },
+  "chromeos": {
+    "exclusions": [
+      "chromeos/CHROMEOS_LKGM"
+    ]
+  },
   "chromium": {
     "exclusions": [
+      "buildtools/checkdeps/.*",
       "chrome/android/profiles/newest.txt",
       "chrome/browser/resources/.*(css|html|js)",
       "chrome/browser/ui/webui/.*browsertest.*js",
@@ -54,12 +60,16 @@
       "third_party/angle/DEPS",
       "third_party/chaijs/.*(css|html|js)",
       "third_party/closure_compiler/.*(css|html|js)",
+      "third_party/dawn/DEPS",
       "third_party/hunspell_dictionaries/.*",
       "third_party/jstemplate/.*(css|html|js)",
       "third_party/mocha/.*(css|html|js)",
+      "third_party/openscreen/src/DEPS",
       "third_party/polymer/v1_0/components-chromium/.*(css|html|js)",
+      "third_party/vulkan-deps/DEPS",
       "third_party/web-animations-js/.*(css|html|js)",
       "third_party/zlib/google/test/data/.*",
+      "tools/android/avd/proto/creation/.*",
       "tools/clang/scripts/update.py",
       "tools/grit/.*",
       "tools/mb/.*",

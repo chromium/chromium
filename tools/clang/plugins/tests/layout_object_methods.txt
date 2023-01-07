@@ -1,0 +1,20 @@
+In file included from layout_object_methods.cpp:5:
+./layout_object_methods.h:26:3: warning: [layout] LayoutObject's method 'ShouldFail1' in 'LayoutObject' must call CheckIsNotDestroyed() at the beginning.
+  int ShouldFail1() {
+  ^~~~~~~~~~~~~~~~~~~
+./layout_object_methods.h:33:3: warning: [layout] LayoutObject's method 'EmptyMethod' in 'LayoutObject' must call CheckIsNotDestroyed() at the beginning.
+  void EmptyMethod() {}
+  ^~~~~~~~~~~~~~~~~~~~~
+./layout_object_methods.h:42:3: warning: [layout] LayoutObject's method 'ShouldFail2' in 'LayoutBoxModelObject' must call CheckIsNotDestroyed() at the beginning.
+  int ShouldFail2() const {
+  ^~~~~~~~~~~~~~~~~~~~~~~~~
+./layout_object_methods.h:48:3: warning: [layout] LayoutObject's method 'VirtualEmptyMethod' in 'LayoutBoxModelObject' must call CheckIsNotDestroyed() at the beginning.
+  void VirtualEmptyMethod() override {}
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+./layout_object_methods.h:57:3: warning: [layout] LayoutObject's method 'ShouldFail3' in 'LayoutBox' must call CheckIsNotDestroyed() at the beginning.
+  int ShouldFail3() {
+  ^~~~~~~~~~~~~~~~~~~
+./layout_object_methods.h:63:3: warning: [layout] LayoutObject's method 'VirtualEmptyMethod' in 'LayoutBox' must call CheckIsNotDestroyed() at the beginning.
+  void VirtualEmptyMethod() override {}
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+6 warnings generated.

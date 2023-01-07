@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -20,7 +21,7 @@ namespace bad_message {
 namespace {
 
 void LogBadMessage(BadMessageReason reason) {
-  static auto* bad_message_reason = base::debug::AllocateCrashKeyString(
+  static auto* const bad_message_reason = base::debug::AllocateCrashKeyString(
       "bad_message_reason", base::debug::CrashKeySize::Size64);
 
   TRACE_EVENT_INSTANT1("ipc,security", "content::ReceivedBadMessage",
@@ -72,7 +73,7 @@ void ReceivedBadMessage(BrowserMessageFilter* filter, BadMessageReason reason) {
 }
 
 base::debug::CrashKeyString* GetRequestedSiteInfoKey() {
-  static auto* crash_key = base::debug::AllocateCrashKeyString(
+  static auto* const crash_key = base::debug::AllocateCrashKeyString(
       "requested_site_info", base::debug::CrashKeySize::Size256);
   return crash_key;
 }

@@ -1,64 +1,36 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 </head>
 <body>
-<p id="description"></p>
-<div id="console"></div>
 <script>
-description("Test onactive/oninactive callback.");
 
-function error() {
-    testFailed('Stream generation failed.');
-    finishJSTest();
-}
+promise_test(async t => {
+  let stream = await navigator.mediaDevices.getUserMedia({audio:true, video:true});
+  assert_true(stream.active);
+  stream.oninactive = t.step_func_done(() => {
+    assert_false(stream.active);
+  });
 
-function getUserMedia(dictionary, callback) {
-    try {
-        navigator.webkitGetUserMedia(dictionary, callback, error);
-    } catch (e) {
-        testFailed('webkitGetUserMedia threw exception :' + e);
-        finishJSTest();
-    }
-}
+  assert_equals(stream.getAudioTracks().length, 1);
+  assert_equals(stream.getVideoTracks().length, 1);
+  stream.removeTrack(stream.getAudioTracks()[0]);
+  stream.removeTrack(stream.getVideoTracks()[0]);
+}, "onInactive called");
 
-var stream;
+promise_test(async t => {
+  let stream = await navigator.mediaDevices.getUserMedia({audio:true});
 
-function streamActive() {
-    testPassed('streamActive was called.');
-    shouldBeTrue('stream.active');
-    finishJSTest();
-}
+  let new_stream = new MediaStream();
+  assert_false(new_stream.active);
+  new_stream.onactive = t.step_func_done(() => {
+    assert_true(new_stream.active);
+  });
+  new_stream.addTrack(stream.getAudioTracks()[0]);
+}, "onActive called");
 
-function gotStream2(s) {
-    stream = new MediaStream();
-    shouldBeFalse('stream.active');
-    stream.onactive = streamActive;
-    stream.addTrack(s.getAudioTracks()[0]);
-}
-
-function streamInactive() {
-    testPassed('streamInactive was called.');
-    shouldBeFalse('stream.active');
-
-    getUserMedia({audio:true, video:true}, gotStream2);
-}
-
-function gotStream(s) {
-    stream = s;
-    shouldBeTrue('stream.active');
-    stream.oninactive = streamInactive;
-    shouldBe('stream.getAudioTracks().length', '1');
-    shouldBe('stream.getVideoTracks().length', '1');
-    stream.removeTrack(stream.getAudioTracks()[0]);
-    stream.removeTrack(stream.getVideoTracks()[0]);
-}
-
-getUserMedia({audio:true, video:true}, gotStream);
-
-window.jsTestIsAsync = true;
-window.successfullyParsed = true;
 </script>
 </body>
 </html>

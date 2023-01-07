@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,12 +12,14 @@
 struct UrlLoadParams;
 
 // Mocks a class adopting the TabOpening protocol. It saves the arguments of
-// -dismissModalsAndOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
+// -dismissModalsAndMaybeOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
 //  completion:. Can also save the arguments of
 // -dismissModalsAndOpenMultipleTabsInMode:URLs:dismissOmnibox:completion:.
+// This mock assumes the Incognito interstitial setting is disabled, so it
+// falls back to `NORMAL` mode if `targetMode` is `UNDETERMINED`.
 @interface MockTabOpener : NSObject<TabOpening>
 // Arguments for
-// -dismissModalsAndOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
+// -dismissModalsAndMaybeOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
 //  completion:.
 @property(nonatomic, readonly) UrlLoadParams urlLoadParams;
 @property(nonatomic, readonly) ApplicationModeForTabOpening applicationMode;
@@ -30,7 +32,7 @@ struct UrlLoadParams;
 - (void)resetURL;
 
 - (ProceduralBlock)completionBlockForTriggeringAction:
-    (NTPTabOpeningPostOpeningAction)action;
+    (TabOpeningPostOpeningAction)action;
 @end
 
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_MOCK_TAB_OPENER_H_

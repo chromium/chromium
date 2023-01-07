@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
 #include "third_party/blink/renderer/core/svg_names.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
@@ -188,7 +188,7 @@ bool SVGImageElement::SelfHasRelativeLengths() const {
 
 LayoutObject* SVGImageElement::CreateLayoutObject(const ComputedStyle&,
                                                   LegacyLayout) {
-  return new LayoutSVGImage(this);
+  return MakeGarbageCollected<LayoutSVGImage>(this);
 }
 
 bool SVGImageElement::HaveLoadedRequiredResources() {

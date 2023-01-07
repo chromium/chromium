@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,6 @@ enum class InfobarOverlayType : short {
   // Used to create banner overlays that are displayed in
   // OverlayModality::kInfobarBanner.
   kBanner,
-  // Used to create detail action sheet overlays that are displayed in
-  // OverlayModality::kInfobarModal.
-  kDetailSheet,
   // Used to create modal overlays that are displayed in
   // OverlayModality::kInfobarModal.
   kModal,

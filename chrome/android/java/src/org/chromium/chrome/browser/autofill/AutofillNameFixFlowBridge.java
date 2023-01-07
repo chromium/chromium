@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.AutofillNameFixFlowPrompt.AutofillNameFixFlowPromptDelegate;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.WindowAndroid;
@@ -62,21 +61,31 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
     }
 
     @Override
-    public void onUserAccept(String name) {
+    public void onUserDismiss() {
+        AutofillNameFixFlowBridgeJni.get().onUserDismiss(mNativeCardNameFixFlowViewAndroid);
+    }
+
+    @Override
+    public void onUserAcceptCardholderName(String name) {
         AutofillNameFixFlowBridgeJni.get().onUserAccept(
                 mNativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge.this, name);
     }
+
+    /* no-op. Legal lines aren't set. */
+    @Override
+    public void onLinkClicked(String url) {}
 
     /**
      * Shows a prompt for name fix flow.
      */
     @CalledByNative
     private void show(WindowAndroid windowAndroid) {
-        mNameFixFlowPrompt = new AutofillNameFixFlowPrompt(
-                mActivity, this, mTitle, mInferredName, mConfirmButtonLabel, mIconId);
+        mNameFixFlowPrompt = AutofillNameFixFlowPrompt.createAsInfobarFixFlowPrompt(
+                mActivity, this, mInferredName, mTitle, mIconId, mConfirmButtonLabel);
 
         if (mNameFixFlowPrompt != null) {
-            mNameFixFlowPrompt.show((ChromeActivity) (windowAndroid.getActivity().get()));
+            mNameFixFlowPrompt.show(
+                    windowAndroid.getActivity().get(), windowAndroid.getModalDialogManager());
         }
     }
 
@@ -94,6 +103,7 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
     interface Natives {
         void promptDismissed(
                 long nativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge caller);
+        void onUserDismiss(long nativeCardNameFixFlowViewAndroid);
         void onUserAccept(long nativeCardNameFixFlowViewAndroid, AutofillNameFixFlowBridge caller,
                 String name);
     }

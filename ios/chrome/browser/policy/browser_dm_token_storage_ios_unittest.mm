@@ -1,24 +1,24 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/policy/browser_dm_token_storage_ios.h"
+#import "ios/chrome/browser/policy/browser_dm_token_storage_ios.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/base64url.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/hash/sha1.h"
-#include "base/path_service.h"
-#include "base/run_loop.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task_runner_util.h"
-#include "base/test/scoped_path_override.h"
-#include "base/test/task_environment.h"
+#import "base/base64url.h"
+#import "base/files/file_util.h"
+#import "base/files/scoped_temp_dir.h"
+#import "base/hash/sha1.h"
+#import "base/path_service.h"
+#import "base/run_loop.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/task_runner_util.h"
+#import "base/test/scoped_path_override.h"
+#import "base/test/task_environment.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,6 +37,23 @@ const char kEnrollmentTokenPolicyName[] = "CloudManagementEnrollmentToken";
 }  // namespace
 
 class BrowserDMTokenStorageIOSTest : public PlatformTest {
+ protected:
+  BrowserDMTokenStorageIOSTest() {
+    // Make sure there is no pre-existing policy present.
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
+  }
+  ~BrowserDMTokenStorageIOSTest() override {
+    // Cleanup any policies left from the test.
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
+
+    // Cleanup registerDefaults usage.
+    [[NSUserDefaults standardUserDefaults]
+        setVolatileDomain:@{}
+                  forName:NSRegistrationDomain];
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
 };
@@ -46,7 +63,7 @@ class TestStoreDMTokenDelegate {
   TestStoreDMTokenDelegate() : called_(false), success_(true) {}
   ~TestStoreDMTokenDelegate() {}
 
-  void OnDMTokenStored(bool success) {
+  void OnDMTokenUpdated(bool success) {
     run_loop_.Quit();
     called_ = true;
     success_ = success;
@@ -94,20 +111,21 @@ TEST_F(BrowserDMTokenStorageIOSTest, StoreAndLoadDMToken) {
   base::ScopedTempDir fake_app_data_dir;
 
   ASSERT_TRUE(fake_app_data_dir.CreateUniqueTempDir());
-  path_override.reset(new base::ScopedPathOverride(
-      base::DIR_APP_DATA, fake_app_data_dir.GetPath()));
+  path_override = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_APP_DATA, fake_app_data_dir.GetPath());
 
   TestStoreDMTokenDelegate callback_delegate;
   BrowserDMTokenStorageIOS storage_delegate;
   auto task = storage_delegate.SaveDMTokenTask(kDMToken,
                                                storage_delegate.InitClientId());
-  auto reply = base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenStored,
+  auto reply = base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenUpdated,
                               base::Unretained(&callback_delegate));
   base::PostTaskAndReplyWithResult(
       storage_delegate.SaveDMTokenTaskRunner().get(), FROM_HERE,
       std::move(task), std::move(reply));
 
   callback_delegate.Wait();
+  ASSERT_TRUE(callback_delegate.WasCalled());
   ASSERT_TRUE(callback_delegate.success());
 
   base::FilePath app_data_dir_path;
@@ -124,6 +142,82 @@ TEST_F(BrowserDMTokenStorageIOSTest, StoreAndLoadDMToken) {
   ASSERT_TRUE(base::ReadFileToString(dm_token_file_path, &dm_token));
   EXPECT_EQ(kDMToken, dm_token);
   EXPECT_EQ(kDMToken, storage_delegate.InitDMToken());
+}
+
+TEST_F(BrowserDMTokenStorageIOSTest, DeleteDMToken) {
+  std::unique_ptr<base::ScopedPathOverride> path_override;
+  base::ScopedTempDir fake_app_data_dir;
+
+  ASSERT_TRUE(fake_app_data_dir.CreateUniqueTempDir());
+  path_override = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_APP_DATA, fake_app_data_dir.GetPath());
+
+  // Creating the DMToken file.
+  base::FilePath app_data_dir_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_APP_DATA, &app_data_dir_path));
+  base::FilePath dm_token_dir_path = app_data_dir_path.Append(kDmTokenBaseDir);
+  ASSERT_TRUE(base::CreateDirectory(dm_token_dir_path));
+
+  std::string filename;
+  BrowserDMTokenStorageIOS storage_delegate;
+  base::Base64UrlEncode(base::SHA1HashString(storage_delegate.InitClientId()),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING, &filename);
+  base::FilePath dm_token_file_path = dm_token_dir_path.Append(filename);
+  ASSERT_TRUE(base::WriteFile(base::FilePath(dm_token_file_path), kDMToken));
+  ASSERT_TRUE(base::PathExists(dm_token_file_path));
+
+  // Deleting the saved DMToken.
+  TestStoreDMTokenDelegate delete_callback_delegate;
+  auto delete_task =
+      storage_delegate.DeleteDMTokenTask(storage_delegate.InitClientId());
+  auto delete_reply =
+      base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenUpdated,
+                     base::Unretained(&delete_callback_delegate));
+  base::PostTaskAndReplyWithResult(
+      storage_delegate.SaveDMTokenTaskRunner().get(), FROM_HERE,
+      std::move(delete_task), std::move(delete_reply));
+
+  delete_callback_delegate.Wait();
+  ASSERT_TRUE(delete_callback_delegate.WasCalled());
+  ASSERT_TRUE(delete_callback_delegate.success());
+
+  ASSERT_FALSE(base::PathExists(dm_token_file_path));
+}
+
+TEST_F(BrowserDMTokenStorageIOSTest, DeleteEmptyDMToken) {
+  std::unique_ptr<base::ScopedPathOverride> path_override;
+  base::ScopedTempDir fake_app_data_dir;
+
+  ASSERT_TRUE(fake_app_data_dir.CreateUniqueTempDir());
+  path_override = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_APP_DATA, fake_app_data_dir.GetPath());
+
+  BrowserDMTokenStorageIOS storage_delegate;
+  base::FilePath app_data_dir_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_APP_DATA, &app_data_dir_path));
+  base::FilePath dm_token_dir_path = app_data_dir_path.Append(kDmTokenBaseDir);
+  std::string filename;
+  base::Base64UrlEncode(base::SHA1HashString(storage_delegate.InitClientId()),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING, &filename);
+  base::FilePath dm_token_file_path = dm_token_dir_path.Append(filename);
+
+  ASSERT_FALSE(base::PathExists(dm_token_file_path));
+
+  TestStoreDMTokenDelegate callback_delegate;
+  auto delete_task =
+      storage_delegate.DeleteDMTokenTask(storage_delegate.InitClientId());
+  auto delete_reply =
+      base::BindOnce(&TestStoreDMTokenDelegate::OnDMTokenUpdated,
+                     base::Unretained(&callback_delegate));
+  base::PostTaskAndReplyWithResult(
+      storage_delegate.SaveDMTokenTaskRunner().get(), FROM_HERE,
+      std::move(delete_task), std::move(delete_reply));
+
+  callback_delegate.Wait();
+  ASSERT_TRUE(callback_delegate.WasCalled());
+  ASSERT_TRUE(callback_delegate.success());
+
+  ASSERT_FALSE(base::PathExists(dm_token_file_path));
 }
 
 TEST_F(BrowserDMTokenStorageIOSTest, InitDMTokenWithoutDirectory) {

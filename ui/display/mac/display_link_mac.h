@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,12 @@
 
 #include <QuartzCore/CVDisplayLink.h>
 
-#include <map>
+#include <vector>
 
+#include "base/callback_forward.h"
 #include "base/mac/scoped_typeref.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "ui/display/display_export.h"
 
@@ -20,6 +21,9 @@ namespace ui {
 class DISPLAY_EXPORT DisplayLinkMac
     : public base::RefCountedThreadSafe<DisplayLinkMac> {
  public:
+  using VSyncUpdatedCallback =
+      base::OnceCallback<void(base::TimeTicks, base::TimeDelta)>;
+
   // This must only be called from the main thread.
   static scoped_refptr<DisplayLinkMac> GetForDisplay(
       CGDirectDisplayID display_id);
@@ -30,6 +34,14 @@ class DISPLAY_EXPORT DisplayLinkMac
 
   // Get the panel/monitor refresh rate
   double GetRefreshRate();
+
+  // Registers a callback that is notified next time vsync is updated.
+  void RegisterCallbackForNextVSyncUpdate(VSyncUpdatedCallback callback);
+
+  // Returns true if the current vsync params are potentially out of date. If
+  // this returns true, the next call to GetVSyncParameters() will trigger
+  // (asynchronously) updating them.
+  bool IsVSyncPotentiallyStale() const;
 
  private:
   friend class base::RefCountedThreadSafe<DisplayLinkMac>;
@@ -81,6 +93,8 @@ class DISPLAY_EXPORT DisplayLinkMac
   // The time after which we should re-start the display link to get fresh
   // parameters.
   base::TimeTicks recalculate_time_;
+
+  std::vector<VSyncUpdatedCallback> vsync_updated_callbacks_;
 };
 
 }  // namespace ui

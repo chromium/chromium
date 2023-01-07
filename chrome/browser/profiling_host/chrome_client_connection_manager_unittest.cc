@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,8 @@ TEST(ChromeClientConnectionManager, ShouldProfileNewRenderer) {
   manager.SetModeForTesting(Mode::kAll);
   EXPECT_TRUE(manager.ShouldProfileNewRenderer(&rph));
 
-  Profile* incognito_profile = testing_profile.GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      testing_profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
   content::MockRenderProcessHost incognito_rph(incognito_profile);
   EXPECT_FALSE(manager.ShouldProfileNewRenderer(&incognito_rph));
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "util/misc/address_types.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/numeric/checked_vm_address_range.h"
@@ -31,6 +30,10 @@ namespace crashpad {
 class ProcessMemoryRange {
  public:
   ProcessMemoryRange();
+
+  ProcessMemoryRange(const ProcessMemoryRange&) = delete;
+  ProcessMemoryRange& operator=(const ProcessMemoryRange&) = delete;
+
   ~ProcessMemoryRange();
 
   //! \brief Initializes this object.
@@ -120,8 +123,6 @@ class ProcessMemoryRange {
   const ProcessMemory* memory_;  // weak
   CheckedVMAddressRange range_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryRange);
 };
 
 }  // namespace crashpad

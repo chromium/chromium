@@ -1,18 +1,25 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 # TODO(crbug/1022172): This should be a separate build target when circular
 # dependencies are removed.
 share_java_sources = [
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/BaseScreenshotCoordinator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/BitmapDownloadRequest.java",
-  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/clipboard/ClipboardImageFileProvider.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/SaveBitmapDelegate.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/crow/CrowBridge.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/crow/CrowIphController.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextBridge.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextCoordinator.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextHelper.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextIPHController.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextMetricsHelper.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsAreaSelectionDialogProperties.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsAreaSelectionDialogViewBinder.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsCoordinator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsMediator.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsMetrics.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/BitmapGenerator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/EntryManager.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsCompositor.java",
@@ -50,26 +57,37 @@ share_java_sources = [
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/screenshot/ScreenshotShareSheetView.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/screenshot/ScreenshotShareSheetViewBinder.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/screenshot/ScreenshotShareSheetViewProperties.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/scroll_capture/ScrollCaptureCallbackDelegate.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/scroll_capture/ScrollCaptureCallbackImpl.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/scroll_capture/ScrollCaptureManager.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/scroll_capture/ScrollCaptureManagerDelegate.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/scroll_capture/ScrollCaptureManagerDelegateImpl.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/DevicePickerBottomSheetAdapter.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/DevicePickerBottomSheetContent.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/ManageAccountDevicesLinkView.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/MetricsRecorder.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/NoTargetDeviceBottomSheetContent.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationManager.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationSharedPrefManager.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfAndroidBridge.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfCoordinator.java",
-  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfEntry.java",
-  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfInfoBar.java",
-  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfInfoBarController.java",
-  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfMetrics.java",
-  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfModelObserverBridge.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/TargetDeviceInfo.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ChromeProvidedSharingOptionsProvider.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetBottomSheetContent.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetCoordinator.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetItemViewProperties.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetLinkToggleCoordinator.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetLinkToggleMetricsHelper.java",
   "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilder.java",
+  "//chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetUsageRankingHelper.java",
 ]
 
 share_java_deps = [
+  "//chrome/browser/content_creation/notes/android:factory_java",
+  "//chrome/browser/content_creation/notes/android:public_java",
+  "//chrome/browser/content_creation/reactions/android:factory_java",
+  "//chrome/browser/content_creation/reactions/android:public_java",
   "//components/feature_engagement/public:public_java",
-  "//components/paint_preview/common/proto:proto_java",
+  "//components/shared_highlighting/core/common:shared_highlighting_android_enums_java",
+  "//components/sync_device_info:sync_device_info_java",
 ]

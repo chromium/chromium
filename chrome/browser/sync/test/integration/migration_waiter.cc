@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,9 @@ MigrationWaiter::~MigrationWaiter() {
 // Returns true when sync reports that there is no pending migration, and
 // migration is complete for all data types in |expected_types_|.
 bool MigrationWaiter::IsExitConditionSatisfied(std::ostream* os) {
-  *os << "Waiting to migrate (" + ModelTypeSetToString(expected_types_) +
+  *os << "Waiting to migrate (" + ModelTypeSetToDebugString(expected_types_) +
              "); " + "Currently migrated: (" +
-             ModelTypeSetToString(watcher_->GetMigratedTypes()) + ")";
+             ModelTypeSetToDebugString(watcher_->GetMigratedTypes()) + ")";
   return watcher_->GetMigratedTypes().HasAll(expected_types_) &&
          !watcher_->HasPendingBackendMigration();
 }

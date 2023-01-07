@@ -35,11 +35,8 @@
     readonly attribute DOMStringList objectStoreNames;
 
     [NewObject, CallWith=ScriptState, RaisesException] IDBTransaction transaction((DOMString or sequence<DOMString>) storeNames,
-                                                                                  optional IDBTransactionMode mode = "readonly");
-
-    [NewObject, CallWith=ScriptState, RaisesException, RuntimeEnabled=IDBRelaxedDurability] IDBTransaction transaction((DOMString or sequence<DOMString>) storeNames,
                                                                                   optional IDBTransactionMode mode = "readonly",
-                                                                                  IDBTransactionOptions options);
+                                                                                  optional IDBTransactionOptions options = {});
     void close();
 
     [MeasureAs=IndexedDBWrite, NewObject, RaisesException]

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -22,6 +22,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/time/time.h"
 #include "media/test/pipeline_integration_test_base.h"
 
 namespace media {
@@ -223,7 +224,7 @@ FFMPEG_TEST_CASE_SEEKING(Cr666770,
                          "security/666770.mp4",
                          PIPELINE_ERROR_DECODE,
                          PIPELINE_ERROR_DECODE,
-                         base::TimeDelta::FromSecondsD(0.0843));
+                         base::Seconds(0.0843));
 FFMPEG_TEST_CASE(Cr666874,
                  "security/666874.mp3",
                  DEMUXER_ERROR_COULD_NOT_OPEN,

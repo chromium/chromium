@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
@@ -59,8 +59,8 @@ class AppInfoPanel : public views::View {
       std::unique_ptr<views::View> key,
       std::unique_ptr<views::View> value) const;
 
-  Profile* profile_;
-  const extensions::Extension* app_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<const extensions::Extension> app_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, AppInfoPanel, views::View)

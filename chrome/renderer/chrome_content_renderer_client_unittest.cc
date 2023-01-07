@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/privacy_budget/scoped_privacy_budget_config.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/webplugininfo.h"
 #include "extensions/buildflags/buildflags.h"
@@ -103,14 +102,14 @@ scoped_refptr<const extensions::Extension> CreateTestExtension(
       extensions::Extension::NO_FLAGS;
 
   base::DictionaryValue manifest;
-  manifest.SetString("name", "NaCl Extension");
-  manifest.SetString("version", "1");
-  manifest.SetInteger("manifest_version", 2);
+  manifest.SetStringKey("name", "NaCl Extension");
+  manifest.SetStringKey("version", "1");
+  manifest.SetIntKey("manifest_version", 2);
   if (is_hosted_app) {
-    auto url_list = std::make_unique<base::ListValue>();
-    url_list->AppendString(app_url);
-    manifest.Set(extensions::manifest_keys::kWebURLs, std::move(url_list));
-    manifest.SetString(extensions::manifest_keys::kLaunchWebURL, app_url);
+    base::ListValue url_list;
+    url_list.Append(app_url);
+    manifest.SetPath(extensions::manifest_keys::kWebURLs, std::move(url_list));
+    manifest.SetStringPath(extensions::manifest_keys::kLaunchWebURL, app_url);
   }
   std::string error;
   return extensions::Extension::Create(base::FilePath(), location, manifest,

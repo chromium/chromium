@@ -1,35 +1,56 @@
 // META: title=Headers normalize values
 // META: global=window,worker
 
-var headerDictWS = {"name1": " space ",
-                    "name2": "\ttab\t",
-                    "name3": " spaceAndTab\t",
-                    "name4": "\r\n newLine", //obs-fold cases
-                    "name5": "newLine\r\n ",
-                    "name6": "\r\n\tnewLine",
-                    };
+"use strict";
 
-test(function() {
-  var headers = new Headers(headerDictWS);
-  for (name in headerDictWS)
-    assert_equals(headers.get(name), headerDictWS[name].trim(),
-      "name: " + name + " has normalized value: " + headerDictWS[name].trim());
+const expectations = {
+  "name1": [" space ", "space"],
+  "name2": ["\ttab\t", "tab"],
+  "name3": [" spaceAndTab\t", "spaceAndTab"],
+  "name4": ["\r\n newLine", "newLine"], //obs-fold cases
+  "name5": ["newLine\r\n ", "newLine"],
+  "name6": ["\r\n\tnewLine", "newLine"],
+  "name7": ["\t\f\tnewLine\n", "\f\tnewLine"],
+  "name8": ["newLine\xa0", "newLine\xa0"], // \xa0 == non breaking space
+};
+
+test(function () {
+  const headerDict = Object.fromEntries(
+    Object.entries(expectations).map(([name, [actual]]) => [name, actual]),
+  );
+  var headers = new Headers(headerDict);
+  for (const name in expectations) {
+    const expected = expectations[name][1];
+    assert_equals(
+      headers.get(name),
+      expected,
+      "name: " + name + " has normalized value: " + expected,
+    );
+  }
 }, "Create headers with not normalized values");
 
-test(function() {
+test(function () {
   var headers = new Headers();
-  for (name in headerDictWS) {
-    headers.append(name, headerDictWS[name]);
-    assert_equals(headers.get(name), headerDictWS[name].trim(),
-      "name: " + name + " has value: " + headerDictWS[name].trim());
+  for (const name in expectations) {
+    headers.append(name, expectations[name][0]);
+    const expected = expectations[name][1];
+    assert_equals(
+      headers.get(name),
+      expected,
+      "name: " + name + " has value: " + expected,
+    );
   }
 }, "Check append method with not normalized values");
 
-test(function() {
+test(function () {
   var headers = new Headers();
-  for (name in headerDictWS) {
-    headers.set(name, headerDictWS[name]);
-    assert_equals(headers.get(name), headerDictWS[name].trim(),
-      "name: " + name + " has value: " + headerDictWS[name].trim());
+  for (const name in expectations) {
+    headers.set(name, expectations[name][0]);
+    const expected = expectations[name][1];
+    assert_equals(
+      headers.get(name),
+      expected,
+      "name: " + name + " has value: " + expected,
+    );
   }
 }, "Check set method with not normalized values");

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,8 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/omnibox/browser/in_memory_url_index_cache.pb.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/scored_history_match.h"
 
@@ -27,17 +27,10 @@ namespace bookmarks {
 class BookmarkModel;
 }
 
-namespace in_memory_url_index {
-class InMemoryURLIndexCacheItem;
-}
-
 namespace history {
 class HistoryDatabase;
 class InMemoryURLIndex;
 }
-
-// Current version of the cache file.
-static const int kCurrentCacheFileVersion = 5;
 
 // A structure private to InMemoryURLIndex describing its internal data and
 // providing for restoring, rebuilding and updating that internal data. As
@@ -56,30 +49,33 @@ class URLIndexPrivateData
 
   URLIndexPrivateData();
 
-  // Given a std::u16string in |term_string|, scans the history index and
+  // Given a std::u16string in `term_string`, scans the history index and
   // returns a vector with all scored, matching history items. The
-  // |term_string| is broken down into individual terms (words), each of which
+  // `term_string` is broken down into individual terms (words), each of which
   // must occur in the candidate history item's URL or page title for the item
   // to qualify; however, the terms do not necessarily have to be adjacent. We
-  // also allow breaking |term_string| at |cursor_position| (if
-  // set). Once we have a set of candidates, they are filtered to ensure
-  // that all |term_string| terms, as separated by whitespace and the
-  // cursor (if set), occur within the candidate's URL or page title.
-  // Scores are then calculated on no more than |kItemsToScoreLimit|
-  // candidates, as the scoring of such a large number of candidates may
-  // cause perceptible typing response delays in the omnibox. This is
-  // likely to occur for short omnibox terms such as 'h' and 'w' which
+  // also allow breaking `term_string` at `cursor_position` (if set). Once we
+  // have a set of candidates, they are filtered to ensure that all
+  // `term_string` terms, as separated by whitespace and the cursor (if set),
+  // occur within the candidate's URL or page title. Scores are then calculated
+  // on no more than `kItemsToScoreLimit` candidates, as scoring too many
+  // candidates may cause perceptible typing response delays in the omnibox.
+  // This is likely to occur for short omnibox terms such as 'h' and 'w' which
   // will be found in nearly all history candidates. Results are sorted by
   // descending score. The full results set (i.e. beyond the
-  // |kItemsToScoreLimit| limit) will be retained and used for subsequent calls
-  // to this function. In total, |max_matches| of items will be returned in the
-  // |ScoredHistoryMatches| vector.
+  // `kItemsToScoreLimit` limit) will be retained and used for subsequent calls
+  // to this function. In total, `max_matches` of items will be returned. If
+  // `host_filter` is not empty, only matches of that host are returned.
   ScoredHistoryMatches HistoryItemsForTerms(
       std::u16string term_string,
       size_t cursor_position,
+      const std::string& host_filter,
       size_t max_matches,
       bookmarks::BookmarkModel* bookmark_model,
       TemplateURLService* template_url_service);
+
+  // Returns URL hosts that have been visited more than a threshold.
+  std::vector<std::string> HighlyVisitedHosts() const;
 
   // Adds the history item in |row| to the index if it does not already already
   // exist and it meets the minimum 'quick' criteria. If the row already exists
@@ -113,24 +109,12 @@ class URLIndexPrivateData
   // was actually updated.
   bool DeleteURL(const GURL& url);
 
-  // Constructs a new object by restoring its contents from the cache file
-  // at |path|. Returns the new URLIndexPrivateData which on success will
-  // contain the restored data but upon failure will be empty.
-  // This function should be run on the the file thread.
-  static scoped_refptr<URLIndexPrivateData> RestoreFromFile(
-      const base::FilePath& path);
-
   // Constructs a new object by rebuilding its contents from the history
   // database in |history_db|. Returns the new URLIndexPrivateData which on
   // success will contain the rebuilt data but upon failure will be empty.
   static scoped_refptr<URLIndexPrivateData> RebuildFromHistory(
       history::HistoryDatabase* history_db,
       const std::set<std::string>& scheme_allowlist);
-
-  // Writes |private_data| as a cache file to |file_path| and returns success.
-  static bool WritePrivateDataToCacheFileTask(
-      scoped_refptr<URLIndexPrivateData> private_data,
-      const base::FilePath& file_path);
 
   // Creates a copy of ourself.
   scoped_refptr<URLIndexPrivateData> Duplicate() const;
@@ -146,30 +130,17 @@ class URLIndexPrivateData
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
 
-  // Returns true if |row| is indexed.
-  bool IsUrlRowIndexed(const history::URLRow& row) const;
-
-  // Returns true if a visit with |transition| should not be returned.
-  static bool ShouldExcludeBecauseOfCctTransition(
-      ui::PageTransition transition);
-
-  // Returns true |visits| should be excluded (not shown).
-  static bool ShouldExcludeBecauseOfCctVisits(
-      const history::VisitVector& visits);
-
  private:
   friend class base::RefCountedThreadSafe<URLIndexPrivateData>;
   ~URLIndexPrivateData();
 
   friend class ::HistoryQuickProviderTest;
   friend class InMemoryURLIndexTest;
-  FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, CacheSaveRestore);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, CalculateWordStartsOffsets);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest,
                            CalculateWordStartsOffsetsUnderscore);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, HugeResultSet);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, ReadVisitsFromHistory);
-  FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, RebuildFromHistoryIfCacheOld);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, Scoring);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, TitleSearch);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, TrimHistoryIds);
@@ -226,6 +197,23 @@ class URLIndexPrivateData
     const HistoryInfoMap& history_info_map_;
   };
 
+  // Information about a URL host aggregated from all URLs of that host. Used to
+  // determine `highly_visited_hosts_`.
+  class HostInfo {
+   public:
+    // Returns whether this host is considered highly-visited.
+    bool IsHighlyVisited() const;
+
+    // Called for each URL of the same host.
+    void AddUrl(const history::URLRow& row);
+
+   private:
+    int typed_urls_ = 0;    // The number of URLs that have `typed_count > X`;
+                            // where X is finch param controlled.
+    int typed_visits_ = 0;  // The sum of all URLs' `clamp(typed_count - X, 0,
+                            // Y)`; where X and Y are finch param controlled.
+  };
+
   // URL History indexing support functions.
 
   // Composes a vector of history item IDs by intersecting the set for each word
@@ -251,6 +239,7 @@ class URLIndexPrivateData
   // the matches listed in |history_ids|.
   void HistoryIdsToScoredMatches(HistoryIDVector history_ids,
                                  const std::u16string& lower_raw_string,
+                                 const std::string& host_filter,
                                  const TemplateURLService* template_url_service,
                                  bookmarks::BookmarkModel* bookmark_model,
                                  ScoredHistoryMatches* scored_items) const;
@@ -297,82 +286,38 @@ class URLIndexPrivateData
   // Clears |used_| for each item in the search term cache.
   void ResetSearchTermCache();
 
-  // Caches the index private data and writes the cache file to the profile
-  // directory.  Called by WritePrivateDataToCacheFileTask.
-  bool SaveToFile(const base::FilePath& file_path);
-
-  // Encode a data structure into the protobuf |cache|.
-  void SavePrivateData(
-      in_memory_url_index::InMemoryURLIndexCacheItem* cache) const;
-  void SaveWordList(
-      in_memory_url_index::InMemoryURLIndexCacheItem* cache) const;
-  void SaveWordMap(in_memory_url_index::InMemoryURLIndexCacheItem* cache) const;
-  void SaveCharWordMap(
-      in_memory_url_index::InMemoryURLIndexCacheItem* cache) const;
-  void SaveWordIDHistoryMap(
-      in_memory_url_index::InMemoryURLIndexCacheItem* cache) const;
-  void SaveHistoryInfoMap(
-      in_memory_url_index::InMemoryURLIndexCacheItem* cache) const;
-  void SaveWordStartsMap(
-      in_memory_url_index::InMemoryURLIndexCacheItem* cache) const;
-
-  // Decode a data structure from the protobuf |cache|. Return false if there
-  // is any kind of failure.
-  bool RestorePrivateData(
-      const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
-  bool RestoreWordList(
-      const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
-  bool RestoreWordMap(
-      const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
-  bool RestoreCharWordMap(
-      const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
-  bool RestoreWordIDHistoryMap(
-      const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
-  bool RestoreHistoryInfoMap(
-      const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
-  bool RestoreWordStartsMap(
-      const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
-
   // Determines if |gurl| has a allowlisted scheme and returns true if so.
   static bool URLSchemeIsAllowlisted(const GURL& gurl,
                                      const std::set<std::string>& allowlist);
 
-  // Returns true if the URL associated with |history_id| is missing, malformed,
-  // or otherwise should not be displayed.  (Results from the default search
-  // provider fall into this category.)
-  bool ShouldFilter(const HistoryID history_id,
-                    const TemplateURLService* template_url_service) const;
+  // Returns true if the URL associated with `history_id` is missing, malformed,
+  // or otherwise should not be displayed. If `host_filter` is not empty,
+  // results of a different host are filtered. Results from the default search
+  // provider are filtered.
+  bool ShouldExclude(const HistoryID history_id,
+                     const std::string& host_filter,
+                     const TemplateURLService* template_url_service) const;
 
   // Cache of search terms.
   SearchTermCacheMap search_term_cache_;
-
-  // Start of data members that are cached -------------------------------------
-
-  // The version of the cache file most recently used to restore this instance
-  // of the private data. If the private data was rebuilt from the history
-  // database this will be 0.
-  int restored_cache_version_;
-
-  // The last time the data was rebuilt from the history database.
-  base::Time last_time_rebuilt_from_history_;
 
   // A list of all of indexed words. The index of a word in this list is the
   // ID of the word in the word_map_. It reduces the memory overhead by
   // replacing a potentially long and repeated string with a simple index.
   String16Vector word_list_;
 
-  // A list of available words slots in |word_list_|. An available word slot
-  // is the index of a unused word in word_list_ vector, also referred to as
-  // a WordID. As URL visits are added or modified new words may be added to
-  // the index, in which case any available words are used, if any, and then
-  // words are added to the end of the word_list_. When URL visits are
-  // modified or deleted old words may be removed from the index, in which
-  // case the slots for those words are added to available_words_ for reuse
-  // by future URL updates.
+  // A list of available words slots in |word_list_|. An available word slot is
+  // the index of an unused word in word_list_ vector, also referred to as a
+  // WordID. As URL visits are added or modified new words may be added to the
+  // index, in which case any available words are used, if any, and then words
+  // are added to the end of the word_list_. When URL visits are modified or
+  // deleted old words may be removed from the index, in which case the slots
+  // for those words are added to available_words_ for reuse by future URL
+  // updates.
   base::stack<WordID> available_words_;
 
-  // A one-to-one mapping from the a word string to its slot number (i.e.
-  // WordID) in the |word_list_|.
+  // A one-to-one mapping from a word string to its slot number (i.e. WordID) in
+  // the |word_list_|.
   WordMap word_map_;
 
   // A one-to-many mapping from a single character to all WordIDs of words
@@ -396,12 +341,16 @@ class URLIndexPrivateData
   // item's URL and page title.
   WordStartsMap word_starts_map_;
 
-  // End of data members that are cached ---------------------------------------
+  // Aggregates typed visit counts by URL hosts. Isn't a pure sum, but rather
+  // each visit's contribution is capped.
+  // TODO(manukh): Consider capping the size of `host_visits_`. It's typically
+  //  (based on my own history DB) about 250 items, but can grow as the user
+  //  navigate to new hosts.
+  std::map<std::string, HostInfo> host_visits_;
 
-  // For unit testing only. Specifies the version of the cache file to be saved.
-  // Used only for testing upgrading of an older version of the cache upon
-  // restore.
-  int saved_cache_version_;
+  // The URL hosts that have been visited more than some threshold. Empty if the
+  // `kDomainSuggestions` feature is disabled.
+  std::vector<std::string> highly_visited_hosts_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_URL_INDEX_PRIVATE_DATA_H_

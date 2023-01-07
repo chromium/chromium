@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "base/nix/mime_util_xdg.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "ui/views/linux_ui/linux_ui.h"
+#include "ui/linux/linux_ui.h"
 
 // static
 IconLoader::IconGroup IconLoader::GroupForFilepath(
@@ -18,7 +18,7 @@ IconLoader::IconGroup IconLoader::GroupForFilepath(
 
 // static
 scoped_refptr<base::TaskRunner> IconLoader::GetReadIconTaskRunner() {
-  // ReadIcon() calls into views::LinuxUI and GTK code, so it must be on the UI
+  // ReadIcon() calls into ui::LinuxUi and GTK code, so it must be on the UI
   // thread.
   return content::GetUIThreadTaskRunner({});
 }
@@ -40,9 +40,9 @@ void IconLoader::ReadIcon() {
   }
 
   gfx::Image image;
-  views::LinuxUI* ui = views::LinuxUI::instance();
+  ui::LinuxUi* ui = ui::LinuxUi::instance();
   if (ui) {
-    image = gfx::Image(ui->GetIconForContentType(group_, size_pixels));
+    image = ui->GetIconForContentType(group_, size_pixels, scale_);
   }
 
   target_task_runner_->PostTask(

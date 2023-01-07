@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,27 +9,43 @@
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/views/keyboard_shortcut_item_view.h"
 #include "ash/shortcut_viewer/views/ksv_search_box_view.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/bind.h"
-#include "base/test/metrics/histogram_tester.h"
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
-#include "ui/compositor/test/test_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/widget/widget.h"
 
 namespace keyboard_shortcut_viewer {
 
+namespace {
+
+constexpr SkColor kTitleAndFrameColorLight = SK_ColorWHITE;
+constexpr SkColor kTitleAndFrameColorDark = gfx::kGoogleGrey900;
+
+}  // namespace
+
 class KeyboardShortcutViewTest : public ash::AshTestBase {
  public:
   KeyboardShortcutViewTest()
       : ash::AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  KeyboardShortcutViewTest(const KeyboardShortcutViewTest&) = delete;
+  KeyboardShortcutViewTest& operator=(const KeyboardShortcutViewTest&) = delete;
+
   ~KeyboardShortcutViewTest() override = default;
 
   views::Widget* Toggle() { return KeyboardShortcutView::Toggle(GetContext()); }
@@ -78,14 +94,9 @@ class KeyboardShortcutViewTest : public ash::AshTestBase {
     }
   }
 
-  base::HistogramTester histograms_;
-
- private:
   KeyboardShortcutView* GetView() const {
     return KeyboardShortcutView::GetInstanceForTesting();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardShortcutViewTest);
 };
 
 // Shows and closes the widget for KeyboardShortcutViewer.
@@ -95,13 +106,6 @@ TEST_F(KeyboardShortcutViewTest, ShowAndClose) {
   EXPECT_TRUE(widget);
 
   // Cleaning up.
-  widget->CloseNow();
-}
-
-TEST_F(KeyboardShortcutViewTest, StartupTimeHistogram) {
-  views::Widget* widget = Toggle();
-  EXPECT_TRUE(ui::WaitForNextFrameToBePresented(widget->GetCompositor()));
-  histograms_.ExpectTotalCount("Keyboard.ShortcutViewer.StartupTime", 1);
   widget->CloseNow();
 }
 
@@ -132,9 +136,9 @@ TEST_F(KeyboardShortcutViewTest, SideTabsCount) {
   views::Widget* widget = Toggle();
 
   size_t category_number = 0;
-  ShortcutCategory current_category = ShortcutCategory::kUnknown;
+  ash::ShortcutCategory current_category = ash::ShortcutCategory::kUnknown;
   for (const auto& item_view : GetShortcutViews()) {
-    const ShortcutCategory category = item_view->category();
+    const ash::ShortcutCategory category = item_view->category();
     if (current_category != category) {
       DCHECK(current_category < category);
       ++category_number;
@@ -155,7 +159,7 @@ TEST_F(KeyboardShortcutViewTest, TopLineCenterAlignedInItemView) {
   for (const auto& item_view : GetShortcutViews()) {
     // We only initialize the first visible category and other non-visible panes
     // are deferred initialized.
-    if (item_view->category() != ShortcutCategory::kPopular)
+    if (item_view->category() != ash::ShortcutCategory::kPopular)
       continue;
 
     ASSERT_EQ(2u, item_view->children().size());
@@ -185,7 +189,6 @@ TEST_F(KeyboardShortcutViewTest, FocusOnSearchBox) {
 
   // Press a key should enter search mode.
   KeyPress(ui::VKEY_A, /*should_insert=*/true);
-  EXPECT_FALSE(GetSearchBoxView()->back_button()->GetVisible());
   EXPECT_TRUE(GetSearchBoxView()->close_button()->GetVisible());
   EXPECT_FALSE(GetSearchBoxView()->search_box()->GetText().empty());
 
@@ -262,7 +265,7 @@ TEST_F(KeyboardShortcutViewTest, ShouldAlignSubLabelsInSearchResults) {
   EXPECT_TRUE(GetFoundShortcutItems().empty());
   // Type a letter and show the search results.
   KeyPress(ui::VKEY_A, /*should_insert=*/true);
-  auto time_out = base::TimeDelta::FromMilliseconds(300);
+  auto time_out = base::Milliseconds(300);
   task_environment()->FastForwardBy(time_out);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetFoundShortcutItems().empty());
@@ -291,6 +294,31 @@ TEST_F(KeyboardShortcutViewTest, ShouldAlignSubLabelsInSearchResults) {
       EXPECT_EQ(center_y, child->bounds().CenterPoint().y());
     }
   }
+}
+
+TEST_F(KeyboardShortcutViewTest, FrameAndBackgroundColorUpdates) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(chromeos::features::kDarkLightMode);
+  ash::AshTestBase::SimulateGuestLogin();
+  auto* dark_light_mode_controller = ash::DarkLightModeControllerImpl::Get();
+  dark_light_mode_controller->SetDarkModeEnabledForTest(false);
+  // Show the widget.
+  Toggle();
+
+  auto* window = GetSearchBoxView()->GetWidget()->GetNativeWindow();
+  EXPECT_EQ(kTitleAndFrameColorLight,
+            window->GetProperty(chromeos::kFrameActiveColorKey));
+  EXPECT_EQ(kTitleAndFrameColorLight,
+            window->GetProperty(chromeos::kFrameInactiveColorKey));
+  EXPECT_EQ(kTitleAndFrameColorLight, GetView()->GetBackground()->get_color());
+
+  dark_light_mode_controller->ToggleColorMode();
+
+  EXPECT_EQ(kTitleAndFrameColorDark,
+            window->GetProperty(chromeos::kFrameActiveColorKey));
+  EXPECT_EQ(kTitleAndFrameColorDark,
+            window->GetProperty(chromeos::kFrameInactiveColorKey));
+  EXPECT_EQ(kTitleAndFrameColorDark, GetView()->GetBackground()->get_color());
 }
 
 }  // namespace keyboard_shortcut_viewer

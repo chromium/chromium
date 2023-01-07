@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "ash/components/arc/mojom/process.mojom-forward.h"
 #include "base/process/process_handle.h"
-#include "components/arc/mojom/process.mojom-forward.h"
 
 namespace arc {
 
@@ -25,6 +24,10 @@ class ArcProcess {
              mojom::ProcessState process_state,
              bool is_focused,
              int64_t last_activity_time);
+
+  ArcProcess(const ArcProcess&) = delete;
+  ArcProcess& operator=(const ArcProcess&) = delete;
+
   ~ArcProcess();
 
   ArcProcess(ArcProcess&& other);
@@ -70,6 +73,10 @@ class ArcProcess {
   // Returns true if this is ARC protected process which we don't allow to kill.
   bool IsArcProtected() const;
 
+  // Returns true if this is key GMS Core or related service which we don't
+  // allow to kill.
+  bool IsGmsCoreProtected() const;
+
   base::ProcessId nspid_;
   base::ProcessId pid_;
   std::string process_name_;
@@ -84,8 +91,6 @@ class ArcProcess {
 
   friend std::ostream& operator<<(std::ostream& out,
                                   const ArcProcess& arc_process);
-
-  DISALLOW_COPY_AND_ASSIGN(ArcProcess);
 };
 
 }  // namespace arc

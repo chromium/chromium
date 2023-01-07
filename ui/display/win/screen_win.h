@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "ui/display/display_change_notifier.h"
 #include "ui/display/display_export.h"
@@ -18,6 +17,7 @@
 #include "ui/display/win/color_profile_reader.h"
 #include "ui/display/win/uwp_text_scale_factor.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/gfx/mojom/dxgi_info.mojom.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
 
@@ -32,14 +32,21 @@ class Size;
 namespace display {
 namespace win {
 
-class DisplayInfo;
 class ScreenWinDisplay;
+
+namespace internal {
+class DisplayInfo;
+}  // namespace internal
 
 class DISPLAY_EXPORT ScreenWin : public Screen,
                                  public ColorProfileReader::Client,
                                  public UwpTextScaleFactor::Observer {
  public:
   ScreenWin();
+
+  ScreenWin(const ScreenWin&) = delete;
+  ScreenWin& operator=(const ScreenWin&) = delete;
+
   ~ScreenWin() override;
 
   // Converts a screen physical point to a screen DIP point.
@@ -140,13 +147,16 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   static void SetRequestHDRStatusCallback(
       RequestHDRStatusCallback request_hdr_status_callback);
 
-  // Set whether or not to treat all displays as HDR capable. Note that
-  // more precise information about which displays are HDR capable is
-  // available. We make a conscious choice to force all displays to HDR mode if
-  // any display is in HDR mode, under the assumption that the user will be
-  // using the HDR display to view media, and thus will want all media queries
-  // to return that HDR is supported.
-  static void SetHDREnabled(bool hdr_enabled);
+  // Set information gathered from DXGI adapters and outputs (e.g, HDR
+  // parameters).
+  static void SetDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info);
+
+  // Returns the ScreenWinDisplay with the given id, or a default object if an
+  // unrecognized id was specified or if this was called during a screen update.
+  static ScreenWinDisplay GetScreenWinDisplayWithDisplayId(int64_t id);
+
+  // Returns the device id for the given `device_name`.
+  static int64_t DeviceIdFromDeviceName(const wchar_t* device_name);
 
   // Returns the HWND associated with the NativeWindow.
   virtual HWND GetHWNDFromNativeWindow(gfx::NativeWindow view) const;
@@ -156,6 +166,11 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
 
   // Returns true if the native window is occluded.
   virtual bool IsNativeWindowOccluded(gfx::NativeWindow window) const;
+
+  // Returns the cached on_current_workspace() value for the NativeWindow's
+  // host.
+  virtual absl::optional<bool> IsWindowOnCurrentVirtualDesktop(
+      gfx::NativeWindow window) const;
 
  protected:
   ScreenWin(bool initialize);
@@ -184,7 +199,8 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // ColorProfileReader::Client:
   void OnColorProfilesChanged() override;
 
-  void UpdateFromDisplayInfos(const std::vector<DisplayInfo>& display_infos);
+  void UpdateFromDisplayInfos(
+      const std::vector<internal::DisplayInfo>& display_infos);
 
   // Virtual to support mocking by unit tests.
   virtual MONITORINFOEX MonitorInfoFromScreenPoint(
@@ -262,14 +278,11 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // Callback to use to query when the HDR status may have changed.
   RequestHDRStatusCallback request_hdr_status_callback_;
 
-  // Whether or not HDR mode is enabled for any monitor via the "HDR and
-  // advanced color" setting.
-  bool hdr_enabled_ = false;
+  // Information gathered from DXGI adapters and outputs.
+  gfx::mojom::DXGIInfoPtr dxgi_info_;
 
   base::ScopedObservation<UwpTextScaleFactor, UwpTextScaleFactor::Observer>
       scale_factor_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenWin);
 };
 
 }  // namespace win

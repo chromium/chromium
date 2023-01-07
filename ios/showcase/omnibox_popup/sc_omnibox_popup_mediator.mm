@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/showcase/omnibox_popup/sc_omnibox_popup_mediator.h"
 
 #import "ios/chrome/browser/ui/omnibox/popup/autocomplete_result_consumer.h"
+#import "ios/chrome/browser/ui/omnibox/popup/autocomplete_suggestion_group_impl.h"
 #import "ios/showcase/omnibox_popup/fake_autocomplete_suggestion.h"
 #import "url/gurl.h"
 
@@ -51,7 +52,11 @@
     [FakeAutocompleteSuggestion richEntitySuggestion],
   ];
 
-  [self.consumer updateMatches:suggestions withAnimation:YES];
+  AutocompleteSuggestionGroupImpl* group =
+      [AutocompleteSuggestionGroupImpl groupWithTitle:nil
+                                          suggestions:suggestions];
+
+  [self.consumer updateMatches:@[ group ] preselectedMatchGroupIndex:0];
 }
 
 @end

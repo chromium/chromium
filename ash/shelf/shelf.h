@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,7 @@ class HotseatWidget;
 class HotseatWidgetAnimationMetricsReporter;
 class NavigationWidgetAnimationMetricsReporter;
 class ShelfFocusCycler;
+class LoginShelfWidget;
 class ShelfLayoutManager;
 class ShelfLayoutManagerTest;
 class ShelfLockingManager;
@@ -44,9 +45,39 @@ class ShelfView;
 class ShelfWidget;
 class StatusAreaWidget;
 class ShelfObserver;
-class TrayBackgroundView;
 class WorkAreaInsets;
 class ShelfTooltipManager;
+
+// TODO(oshima) : move to .cc
+
+// Returns a value based on shelf alignment.
+template <typename T>
+T SelectValueByShelfAlignment(ShelfAlignment alignment,
+                              T bottom,
+                              T left,
+                              T right) {
+  switch (alignment) {
+    case ShelfAlignment::kBottom:
+    case ShelfAlignment::kBottomLocked:
+      return bottom;
+    case ShelfAlignment::kLeft:
+      return left;
+    case ShelfAlignment::kRight:
+      return right;
+  }
+  NOTREACHED();
+  return bottom;
+}
+
+bool IsHorizontalAlignment(ShelfAlignment alignment);
+
+// Returns |horizontal| if shelf is horizontal, otherwise |vertical|.
+template <typename T>
+T PrimaryAxisValueByShelfAlignment(ShelfAlignment alignment,
+                                   T horizontal,
+                                   T vertical) {
+  return IsHorizontalAlignment(alignment) ? horizontal : vertical;
+}
 
 // Controller for the shelf state. One per display, because each display might
 // have different shelf alignment, autohide, etc. Exists for the lifetime of the
@@ -70,6 +101,10 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   };
 
   Shelf();
+
+  Shelf(const Shelf&) = delete;
+  Shelf& operator=(const Shelf&) = delete;
+
   ~Shelf() override;
 
   // Returns the shelf for the display that |window| is on. Note that the shelf
@@ -87,11 +122,20 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // on the display identified by |display_id|.
   static void ActivateShelfItemOnDisplay(int item_index, int64_t display_id);
 
+  // Updates the shelf visibility on all displays. This method exists for
+  // historical reasons. If a display or shelf instance is available, prefer
+  // Shelf::UpdateVisibilityState() below.
+  static void UpdateShelfVisibility();
+
   void CreateNavigationWidget(aura::Window* container);
   void CreateHotseatWidget(aura::Window* container);
   void CreateStatusAreaWidget(aura::Window* status_container);
   void CreateShelfWidget(aura::Window* root);
+
+  // Begins shutdown of the ShelfWidget and all child widgets.
   void ShutdownShelfWidget();
+
+  // Resets `shelf_widget_`.
   void DestroyShelfWidget();
 
   // Returns true if the shelf is visible. Shelf can be visible in 1)
@@ -111,17 +155,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // Returns a value based on shelf alignment.
   template <typename T>
   T SelectValueForShelfAlignment(T bottom, T left, T right) const {
-    switch (alignment_) {
-      case ShelfAlignment::kBottom:
-      case ShelfAlignment::kBottomLocked:
-        return bottom;
-      case ShelfAlignment::kLeft:
-        return left;
-      case ShelfAlignment::kRight:
-        return right;
-    }
-    NOTREACHED();
-    return bottom;
+    return SelectValueByShelfAlignment(alignment_, bottom, left, right);
   }
 
   // Returns |horizontal| if shelf is horizontal, otherwise |vertical|.
@@ -171,20 +205,15 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // Handles a scroll |event| coming from the Shelf.
   void ProcessScrollEvent(ui::ScrollEvent* event);
 
-  // Handles a mousewheel scroll event coming from the shelf. We use
-  // |from_touchpad| to distinguish if an event originated from a touchpad
-  // scroll or a mousewheel scroll.
-  void ProcessMouseWheelEvent(ui::MouseWheelEvent* event, bool from_touchpad);
+  // Handles a mousewheel scroll event coming from the shelf.
+  void ProcessMouseWheelEvent(ui::MouseWheelEvent* event);
 
   void AddObserver(ShelfObserver* observer);
   void RemoveObserver(ShelfObserver* observer);
 
   void NotifyShelfIconPositionsChanged();
-  StatusAreaWidget* GetStatusAreaWidget() const;
 
-  // Get the tray button that the system tray bubble and the notification center
-  // bubble will be anchored. See also: StatusAreaWidget::GetSystemTrayAnchor()
-  TrayBackgroundView* GetSystemTrayAnchorView() const;
+  StatusAreaWidget* GetStatusAreaWidget() const;
 
   // Get the anchor rect that the system tray bubble and the notification center
   // bubble will be anchored.
@@ -213,10 +242,15 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   StatusAreaWidget* status_area_widget() const {
     return status_area_widget_.get();
   }
+  LoginShelfWidget* login_shelf_widget() { return login_shelf_widget_.get(); }
 
   ShelfAlignment alignment() const { return alignment_; }
   ShelfAutoHideBehavior auto_hide_behavior() const {
     return auto_hide_behavior_;
+  }
+
+  ShelfAlignment stored_alignment() const {
+    return shelf_locking_manager_.stored_alignment();
   }
 
   ShelfFocusCycler* shelf_focus_cycler() { return shelf_focus_cycler_.get(); }
@@ -276,6 +310,7 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // Null during display teardown, see WindowTreeHostManager::DeleteHost() and
   // RootWindowController::CloseAllChildWindows().
   std::unique_ptr<ShelfWidget> shelf_widget_;
+  std::unique_ptr<LoginShelfWidget> login_shelf_widget_;
 
   // These initial values hide the shelf until user preferences are available.
   ShelfAlignment alignment_ = ShelfAlignment::kBottomLocked;
@@ -324,8 +359,6 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   int auto_hide_lock_ = 0;
 
   std::unique_ptr<ShelfTooltipManager> tooltip_;
-
-  DISALLOW_COPY_AND_ASSIGN(Shelf);
 };
 
 }  // namespace ash

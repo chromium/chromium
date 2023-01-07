@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef PPAPI_PROXY_BROWSER_FONT_SINGLETON_RESOURCE_H_
 #define PPAPI_PROXY_BROWSER_FONT_SINGLETON_RESOURCE_H_
 
-#include "base/macros.h"
 #include "ppapi/proxy/connection.h"
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/thunk/ppb_browser_font_singleton_api.h"
@@ -20,6 +19,11 @@ class BrowserFontSingletonResource
       public thunk::PPB_BrowserFont_Singleton_API {
  public:
   BrowserFontSingletonResource(Connection connection, PP_Instance instance);
+
+  BrowserFontSingletonResource(const BrowserFontSingletonResource&) = delete;
+  BrowserFontSingletonResource& operator=(const BrowserFontSingletonResource&) =
+      delete;
+
   ~BrowserFontSingletonResource() override;
 
   // Resource override.
@@ -32,12 +36,9 @@ class BrowserFontSingletonResource
  private:
   // Lazily-filled-in list of font families.
   std::string families_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserFontSingletonResource);
 };
 
 }  // namespace proxy
 }  // namespace ppapi
 
 #endif  // PPAPI_PROXY_BROWSER_FONT_SINGLETON_RESOURCE_H_
-

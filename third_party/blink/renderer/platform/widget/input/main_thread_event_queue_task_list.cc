@@ -1,10 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/widget/input/main_thread_event_queue_task_list.h"
 
 #include <utility>
+
+#include "base/containers/adapters.h"
 
 namespace blink {
 
@@ -15,9 +17,8 @@ MainThreadEventQueueTaskList::~MainThreadEventQueueTaskList() {}
 MainThreadEventQueueTaskList::EnqueueResult
 MainThreadEventQueueTaskList::Enqueue(
     std::unique_ptr<MainThreadEventQueueTask> event) {
-  for (auto last_event_iter = queue_.rbegin(); last_event_iter != queue_.rend();
-       ++last_event_iter) {
-    switch ((*last_event_iter)->FilterNewEvent(event.get())) {
+  for (const auto& last_event : base::Reversed(queue_)) {
+    switch (last_event->FilterNewEvent(event.get())) {
       case MainThreadEventQueueTask::FilterResult::CoalescedEvent:
         return EnqueueResult::kCoalesced;
       case MainThreadEventQueueTask::FilterResult::StopIterating:
@@ -34,7 +35,7 @@ MainThreadEventQueueTaskList::Enqueue(
 std::unique_ptr<MainThreadEventQueueTask> MainThreadEventQueueTaskList::Pop() {
   std::unique_ptr<MainThreadEventQueueTask> result;
   if (!queue_.empty()) {
-    result.reset(queue_.front().release());
+    result = std::move(queue_.front());
     queue_.pop_front();
   }
   return result;
@@ -44,7 +45,7 @@ std::unique_ptr<MainThreadEventQueueTask> MainThreadEventQueueTaskList::remove(
     size_t pos) {
   std::unique_ptr<MainThreadEventQueueTask> result;
   if (!queue_.empty()) {
-    result.reset(queue_.at(pos).release());
+    result = std::move(queue_.at(pos));
     queue_.erase(queue_.begin() + pos);
   }
   return result;

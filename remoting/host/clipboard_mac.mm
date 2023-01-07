@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 #include <utility>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/timer.h"
 #include "remoting/base/constants.h"
@@ -32,6 +32,10 @@ namespace remoting {
 class ClipboardMac : public Clipboard {
  public:
   ClipboardMac();
+
+  ClipboardMac(const ClipboardMac&) = delete;
+  ClipboardMac& operator=(const ClipboardMac&) = delete;
+
   ~ClipboardMac() override;
 
   void Start(
@@ -44,8 +48,6 @@ class ClipboardMac : public Clipboard {
   std::unique_ptr<protocol::ClipboardStub> client_clipboard_;
   std::unique_ptr<base::RepeatingTimer> clipboard_polling_timer_;
   NSInteger current_change_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClipboardMac);
 };
 
 ClipboardMac::ClipboardMac() : current_change_count_(0) {}
@@ -62,17 +64,17 @@ void ClipboardMac::Start(
 
   // OS X doesn't provide a clipboard-changed notification. The only way to
   // detect clipboard changes is by polling.
-  clipboard_polling_timer_.reset(new base::RepeatingTimer());
-  clipboard_polling_timer_->Start(FROM_HERE,
-      base::TimeDelta::FromMilliseconds(kClipboardPollingIntervalMs),
-      this, &ClipboardMac::CheckClipboardForChanges);
+  clipboard_polling_timer_ = std::make_unique<base::RepeatingTimer>();
+  clipboard_polling_timer_->Start(
+      FROM_HERE, base::Milliseconds(kClipboardPollingIntervalMs), this,
+      &ClipboardMac::CheckClipboardForChanges);
 }
 
 void ClipboardMac::InjectClipboardEvent(const protocol::ClipboardEvent& event) {
   // Currently we only handle UTF-8 text.
   if (event.mime_type().compare(kMimeTypeTextUtf8) != 0)
     return;
-  if (!StringIsUtf8(event.data().c_str(), event.data().length())) {
+  if (!base::IsStringUTF8AllowingNoncharacters(event.data())) {
     LOG(ERROR) << "ClipboardEvent data is not UTF-8 encoded.";
     return;
   }

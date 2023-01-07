@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -544,7 +545,7 @@ namespace csp_validator {
 
 void PrintTo(const CSPParser::Directive& directive, ::std::ostream* os) {
   *os << base::StringPrintf(
-      "[[%s] [%s] [%s]]", directive.directive_string.as_string().c_str(),
+      "[[%s] [%s] [%s]]", std::string(directive.directive_string).c_str(),
       directive.directive_name.c_str(),
       base::JoinString(directive.directive_values, ",").c_str());
 }

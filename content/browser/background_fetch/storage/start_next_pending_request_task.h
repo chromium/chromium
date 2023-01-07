@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,10 @@ class StartNextPendingRequestTask : public DatabaseTask {
       DatabaseTaskHost* host,
       const BackgroundFetchRegistrationId& registration_id,
       NextRequestCallback callback);
+
+  StartNextPendingRequestTask(const StartNextPendingRequestTask&) = delete;
+  StartNextPendingRequestTask& operator=(const StartNextPendingRequestTask&) =
+      delete;
 
   ~StartNextPendingRequestTask() override;
 
@@ -62,8 +66,6 @@ class StartNextPendingRequestTask : public DatabaseTask {
 
   base::WeakPtrFactory<StartNextPendingRequestTask> weak_factory_{
       this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(StartNextPendingRequestTask);
 };
 
 }  // namespace background_fetch

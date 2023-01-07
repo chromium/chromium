@@ -1,0 +1,47 @@
+<!doctype html>
+<title>Tests that a contenteditable is rechecked after diabling and re-enabling spellcheck</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script src="spellcheck_test.js"></script>
+<script>
+const n = 100;
+const markup = '<div>zz zz zz zz.</div>'.repeat(n);
+const checkedMarkup = '<div>#zz# #zz# #zz# #zz#.</div>'.repeat(n);
+
+const step1 = () => spellcheck_test(
+    `<div contenteditable id="target">${markup}</div>`,
+    document => document.getElementById('target').focus(),
+    `<div contenteditable id="target">${checkedMarkup}</div>`,
+    {
+      title: 'Initial full checking for contenteditable',
+      needsFullCheck: true,
+      callback: step2,
+    }
+);
+
+const step2 = sample => spellcheck_test(
+    sample,
+    document => document.getElementById('target').setAttribute('spellcheck', 'false'),
+    `<div contenteditable id="target" spellcheck="false">${markup}</div>`,
+    {
+      title: 'Clear markers after disabling spellcheck',
+      callback: step3,
+    }
+);
+
+const step3 = sample => spellcheck_test(
+    sample,
+    document => document.getElementById('target').setAttribute('spellcheck', 'true'),
+    `<div contenteditable id="target" spellcheck="true">${checkedMarkup}</div>`,
+    {
+      title: 'Content is re-checked in full after re-enabling spellcheck',
+      needsFullCheck: true,
+    }
+);
+
+step1();
+
+// TODO(editing-dev): We should also test against form control elements like
+// <input> and <textarea>, but they are too slow when containing a lot of text.
+</script>

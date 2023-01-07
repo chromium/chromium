@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@ class WebState;
 - (instancetype)initWithWebView:(WKWebView*)webView
                        webState:(web::WebState*)webState;
 
-// Asynchronously fetches information about DOM element for the given |point|
-// (in the scroll view coordinates). |handler| can not be nil.
+// Asynchronously fetches information about DOM element for the given `point`
+// (in the scroll view coordinates). `handler` can not be nil.
 - (void)fetchDOMElementAtPoint:(CGPoint)point
              completionHandler:(void (^)(const web::ContextMenuParams&))handler;
 

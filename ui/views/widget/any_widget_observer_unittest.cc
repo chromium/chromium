@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -106,6 +106,14 @@ TEST_F(NamedWidgetShownWaiterTest, ShownBeforeWait) {
                                        "TestWidget");
   WidgetAutoclosePtr w0(CreateNamedWidget("TestWidget"));
   w0->Show();
+  EXPECT_EQ(waiter.WaitIfNeededAndGet(), w0.get());
+}
+
+TEST_F(NamedWidgetShownWaiterTest, ShownInactive) {
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "TestWidget");
+  WidgetAutoclosePtr w0(CreateNamedWidget("TestWidget"));
+  w0->ShowInactive();
   EXPECT_EQ(waiter.WaitIfNeededAndGet(), w0.get());
 }
 

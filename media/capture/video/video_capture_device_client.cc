@@ -1,16 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/capture/video/video_capture_device_client.h"
 
-#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -146,9 +147,6 @@ class BufferPoolBufferHandleProvider
 
   base::UnsafeSharedMemoryRegion DuplicateAsUnsafeRegion() override {
     return buffer_pool_->DuplicateAsUnsafeRegion(buffer_id_);
-  }
-  mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() override {
-    return buffer_pool_->DuplicateAsMojoBuffer(buffer_id_);
   }
   gfx::GpuMemoryBufferHandle GetGpuMemoryBufferHandle() override {
     return buffer_pool_->GetGpuMemoryBufferHandle(buffer_id_);
@@ -319,14 +317,14 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
 // see http://linuxtv.org/downloads/v4l-dvb-apis/packed-rgb.html.
 // Windows RGB24 defines blue at lowest byte,
 // see https://msdn.microsoft.com/en-us/library/windows/desktop/dd407253
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       fourcc_format = libyuv::FOURCC_RAW;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
       fourcc_format = libyuv::FOURCC_24BG;
 #else
       NOTREACHED() << "RGB24 is only available in Linux and Windows platforms";
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       // TODO(wjia): Currently, for RGB24 on WIN, capture device always passes
       // in positive src_width and src_height. Remove this hardcoded value when
       // negative src_height is supported. The negative src_height indicates
@@ -496,8 +494,7 @@ ReadyFrameInBuffer VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
   // If a buffer to retire was specified, retire one.
   if (buffer_id_to_drop != VideoCaptureBufferPool::kInvalidId) {
     auto entry_iter =
-        std::find(buffer_ids_known_by_receiver_.begin(),
-                  buffer_ids_known_by_receiver_.end(), buffer_id_to_drop);
+        base::ranges::find(buffer_ids_known_by_receiver_, buffer_id_to_drop);
     if (entry_iter != buffer_ids_known_by_receiver_.end()) {
       buffer_ids_known_by_receiver_.erase(entry_iter);
       receiver_->OnBufferRetired(buffer_id_to_drop);
@@ -507,8 +504,8 @@ ReadyFrameInBuffer VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
   // Register the buffer with the receiver if it is new.
   if (!base::Contains(buffer_ids_known_by_receiver_, buffer_id)) {
     media::mojom::VideoBufferHandlePtr buffer_handle =
-        media::mojom::VideoBufferHandle::New();
-    buffer_handle->set_gpu_memory_buffer_handle(std::move(buffer.handle));
+        media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
+            std::move(buffer.handle));
     receiver_->OnNewBuffer(buffer_id, std::move(buffer_handle));
     buffer_ids_known_by_receiver_.push_back(buffer_id);
   }
@@ -553,8 +550,7 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
     // |buffer_pool_| has decided to release a buffer. Notify receiver in case
     // the buffer has already been shared with it.
     auto entry_iter =
-        std::find(buffer_ids_known_by_receiver_.begin(),
-                  buffer_ids_known_by_receiver_.end(), buffer_id_to_drop);
+        base::ranges::find(buffer_ids_known_by_receiver_, buffer_id_to_drop);
     if (entry_iter != buffer_ids_known_by_receiver_.end()) {
       buffer_ids_known_by_receiver_.erase(entry_iter);
       receiver_->OnBufferRetired(buffer_id_to_drop);
@@ -568,24 +564,28 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
   DCHECK_NE(VideoCaptureBufferPool::kInvalidId, buffer_id);
 
   if (!base::Contains(buffer_ids_known_by_receiver_, buffer_id)) {
-    media::mojom::VideoBufferHandlePtr buffer_handle =
-        media::mojom::VideoBufferHandle::New();
-    switch (target_buffer_type_) {
+    VideoCaptureBufferType target_buffer_type = target_buffer_type_;
+#if BUILDFLAG(IS_WIN)
+    // If MediaFoundationD3D11VideoCapture fails, a shared memory buffer may be
+    // sent instead.
+    if (target_buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer &&
+        pixel_format != PIXEL_FORMAT_NV12) {
+      target_buffer_type = VideoCaptureBufferType::kSharedMemory;
+    }
+#endif
+    media::mojom::VideoBufferHandlePtr buffer_handle;
+    switch (target_buffer_type) {
       case VideoCaptureBufferType::kSharedMemory:
-        buffer_handle->set_shared_buffer_handle(
-            buffer_pool_->DuplicateAsMojoBuffer(buffer_id));
-        break;
-      case VideoCaptureBufferType::kSharedMemoryViaRawFileDescriptor:
-        buffer_handle->set_shared_memory_via_raw_file_descriptor(
-            buffer_pool_->CreateSharedMemoryViaRawFileDescriptorStruct(
-                buffer_id));
+        buffer_handle = media::mojom::VideoBufferHandle::NewUnsafeShmemRegion(
+            buffer_pool_->DuplicateAsUnsafeRegion(buffer_id));
         break;
       case VideoCaptureBufferType::kMailboxHolder:
         NOTREACHED();
         break;
       case VideoCaptureBufferType::kGpuMemoryBuffer:
-        buffer_handle->set_gpu_memory_buffer_handle(
-            buffer_pool_->GetGpuMemoryBufferHandle(buffer_id));
+        buffer_handle =
+            media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(
+                buffer_pool_->GetGpuMemoryBufferHandle(buffer_id));
         break;
     }
     receiver_->OnNewBuffer(buffer_id, std::move(buffer_handle));
@@ -628,6 +628,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
   info->coded_size = format.frame_size;
   info->visible_rect = visible_rect;
   info->metadata = metadata;
+  info->is_premapped = buffer.is_premapped;
 
   buffer_pool_->HoldForConsumers(buffer.id, 1);
   receiver_->OnFrameReadyInBuffer(

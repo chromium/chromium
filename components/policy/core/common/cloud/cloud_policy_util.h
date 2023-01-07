@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,14 @@
 #include <string>
 
 #include "components/policy/policy_export.h"
-#include "components/policy/proto/device_management_backend.pb.h"
 #include "components/version_info/channel.h"
 
+namespace enterprise_management {
+class BrowserDeviceIdentifier;
+enum Channel : int;
+}  // namespace enterprise_management
+
 namespace policy {
-
-// Returns the model of the device. This function is platform specific.
-POLICY_EXPORT std::string GetDeviceModel();
-
-// Returns the brand/manufacturer of the device. This function is platform
-// specific.
-POLICY_EXPORT std::string GetDeviceManufacturer();
 
 // Returns the name of the machine. This function is platform specific.
 POLICY_EXPORT std::string GetMachineName();

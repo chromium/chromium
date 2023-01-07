@@ -1,0 +1,9 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++BUTTON focusable label='Button' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='Button'
+++++++++++UNKNOWN label='Button'
+++++++BUTTON focusable label='Name' actions='{DEFAULT}' secondary_label='Description'
+++++++++STATIC_TEXT label='Description'
+++++++++++UNKNOWN label='Description'

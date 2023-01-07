@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,7 @@ bool operator==(const VideoEncoderInfo& l, const VideoEncoderInfo& r) {
          l.has_trusted_rate_controller == r.has_trusted_rate_controller &&
          l.is_hardware_accelerated == r.is_hardware_accelerated &&
          l.supports_simulcast == r.supports_simulcast &&
+         l.reports_average_qp == r.reports_average_qp &&
          l.resolution_bitrate_limits == r.resolution_bitrate_limits;
 }
 }  // namespace media

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace remoting {
@@ -18,6 +17,9 @@ class HostStatusMonitor;
 
 class HostEventLogger {
  public:
+  HostEventLogger(const HostEventLogger&) = delete;
+  HostEventLogger& operator=(const HostEventLogger&) = delete;
+
   virtual ~HostEventLogger() {}
 
   // Creates an event-logger that monitors host status changes and logs
@@ -28,9 +30,6 @@ class HostEventLogger {
 
  protected:
   HostEventLogger() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostEventLogger);
 };
 
 }

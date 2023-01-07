@@ -1,50 +1,106 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/time/time_view.h"
 
+#include <memory>
+
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/widget/widget.h"
 
 namespace ash {
-namespace tray {
 
 class TimeViewTest : public AshTestBase {
  public:
-  TimeViewTest() = default;
+  TimeViewTest()
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  TimeViewTest(const TimeViewTest&) = delete;
+  TimeViewTest& operator=(const TimeViewTest&) = delete;
   ~TimeViewTest() override = default;
 
+  void SetUp() override {
+    AshTestBase::SetUp();
+    widget_ = CreateFramelessTestWidget();
+    widget_->SetFullscreen(true);
+  }
+
   void TearDown() override {
-    time_view_.reset();
+    widget_.reset();
     AshTestBase::TearDown();
   }
 
-  TimeView* time_view() { return time_view_.get(); }
+  TimeView* time_view() { return time_view_; }
 
   // Access to private fields of |time_view_|.
   views::View* horizontal_view() { return time_view_->horizontal_view_.get(); }
   views::View* vertical_view() { return time_view_->vertical_view_.get(); }
+  views::View* horizontal_date_view() {
+    return time_view_->horizontal_date_view_.get();
+  }
+  views::View* vertical_date_view() {
+    return time_view_->vertical_date_view_.get();
+  }
   views::Label* horizontal_label() { return time_view_->horizontal_label_; }
   views::Label* vertical_label_hours() {
     return time_view_->vertical_label_hours_;
   }
+
   views::Label* vertical_label_minutes() {
     return time_view_->vertical_label_minutes_;
   }
+  views::Label* horizontal_date_label() {
+    return time_view_->horizontal_label_date_;
+  }
+  VerticalDateView* vertical_date() { return time_view_->date_view_; }
 
   // Creates a time view with horizontal or vertical |clock_layout|.
-  void CreateTimeView(TimeView::ClockLayout clock_layout) {
-    time_view_.reset(
-        new TimeView(clock_layout, Shell::Get()->system_tray_model()->clock()));
+  void CreateTimeView(TimeView::ClockLayout clock_layout,
+                      TimeView::Type type = TimeView::kTime) {
+    time_view_ = widget_->SetContentsView(std::make_unique<TimeView>(
+        clock_layout, Shell::Get()->system_tray_model()->clock(), type));
   }
 
  private:
-  std::unique_ptr<TimeView> time_view_;
+  std::unique_ptr<views::Widget> widget_;
+  // Owned by `widget_`.
+  TimeView* time_view_;
+  base::WeakPtrFactory<TimeViewTest> weak_factory_{this};
+};
 
-  DISALLOW_COPY_AND_ASSIGN(TimeViewTest);
+class TimeViewObserver : public views::ViewObserver {
+ public:
+  explicit TimeViewObserver(views::View* observed_view) {
+    observation_.Observe(observed_view);
+  }
+  TimeViewObserver(const TimeViewObserver&) = delete;
+  TimeViewObserver& operator=(const TimeViewObserver&) = delete;
+  ~TimeViewObserver() override = default;
+
+  void reset_preferred_size_changed_called() {
+    preferred_size_changed_called_ = false;
+  }
+
+  bool preferred_size_changed_called() const {
+    return preferred_size_changed_called_;
+  }
+
+  // views::ViewObserver:
+  void OnViewPreferredSizeChanged(views::View* observed_view) override {
+    preferred_size_changed_called_ = true;
+  }
+
+ private:
+  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
+  bool preferred_size_changed_called_ = false;
 };
 
 // Test the basics of the time view, mostly to ensure we don't leak memory.
@@ -76,29 +132,54 @@ TEST_F(TimeViewTest, Basics) {
   EXPECT_FALSE(vertical_view()->parent());
 }
 
-// Test the show date mode in the time view.
-TEST_F(TimeViewTest, ShowDateMode) {
+// Test `PreferredSizeChanged()` is called when there's a size change of the
+// `TimeView`.
+TEST_F(TimeViewTest, UpdateSize) {
+  // Set current time to 8:00AM for testing.
+  task_environment()->AdvanceClock(base::Time::Now().LocalMidnight() +
+                                   base::Hours(32) - base::Time::Now());
+
+  // A newly created horizontal clock only has the horizontal label.
   CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK);
-  std::u16string time_text = horizontal_label()->GetText();
+  TimeViewObserver test_observer(time_view());
+  test_observer.reset_preferred_size_changed_called();
 
-  // When showing date, the text is expected to be longer since it's showing
-  // more content.
-  time_view()->SetShowDateWhenHorizontal(true /* show_date_when_horizontal */);
-  EXPECT_GT(horizontal_label()->GetText(), time_text);
+  EXPECT_FALSE(test_observer.preferred_size_changed_called());
 
-  // Resetting show date mode should show only the time.
-  time_view()->SetShowDateWhenHorizontal(false /* show_date_when_horizontal */);
-  EXPECT_EQ(time_text, horizontal_label()->GetText());
+  // Move to 9:59AM. There should be no layout change of the `time_view()`.
+  task_environment()->FastForwardBy(base::Minutes(119));
+  EXPECT_FALSE(test_observer.preferred_size_changed_called());
 
-  time_view()->UpdateClockLayout(TimeView::ClockLayout::VERTICAL_CLOCK);
-  std::u16string hours_text = vertical_label_hours()->GetText();
-  std::u16string minutes_text = vertical_label_minutes()->GetText();
-
-  // Show date mode should not affect vertical view.
-  time_view()->SetShowDateWhenHorizontal(true /* show_date_when_horizontal */);
-  EXPECT_EQ(hours_text, vertical_label_hours()->GetText());
-  EXPECT_EQ(minutes_text, vertical_label_minutes()->GetText());
+  // Move to 10:00AM. There should be a layout change of the `time_view()`.
+  task_environment()->FastForwardBy(base::Seconds(61));
+  EXPECT_TRUE(test_observer.preferred_size_changed_called());
 }
 
-}  // namespace tray
+// Test the Date view of the time view.
+TEST_F(TimeViewTest, DateView) {
+  // A newly created horizontal Date only has the horizontal date view.
+  CreateTimeView(TimeView::ClockLayout::HORIZONTAL_CLOCK, TimeView::kDate);
+  ASSERT_TRUE(horizontal_date_label()->parent());
+  EXPECT_EQ(time_view(), horizontal_date_label()->parent()->parent());
+  EXPECT_FALSE(horizontal_date_view());
+  ASSERT_TRUE(vertical_date_view());
+  EXPECT_FALSE(vertical_date_view()->parent());
+
+  // Switching the date to vertical updates the views.
+  time_view()->UpdateClockLayout(TimeView::ClockLayout::VERTICAL_CLOCK);
+  ASSERT_TRUE(horizontal_date_view());
+  EXPECT_FALSE(horizontal_date_view()->parent());
+  EXPECT_FALSE(vertical_date_view());
+  ASSERT_TRUE(vertical_date()->parent());
+  EXPECT_EQ(time_view(), vertical_date()->parent()->parent());
+
+  // Switching back to horizontal updates the views again.
+  time_view()->UpdateClockLayout(TimeView::ClockLayout::HORIZONTAL_CLOCK);
+  ASSERT_TRUE(horizontal_date_label()->parent());
+  EXPECT_EQ(time_view(), horizontal_date_label()->parent()->parent());
+  EXPECT_FALSE(horizontal_date_view());
+  ASSERT_TRUE(vertical_date_view());
+  EXPECT_FALSE(vertical_date_view()->parent());
+}
+
 }  // namespace ash

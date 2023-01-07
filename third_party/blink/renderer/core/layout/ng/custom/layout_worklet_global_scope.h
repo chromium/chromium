@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/pending_layout_registry.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -56,6 +57,12 @@ class CORE_EXPORT LayoutWorkletGlobalScope final : public WorkletGlobalScope {
  private:
   // https://drafts.css-houdini.org/css-layout-api/#layout-definitions
   typedef HeapHashMap<String, Member<CSSLayoutDefinition>> DefinitionMap;
+
+  // TODO(crbug.com/1286244): Return a proper destination for LayoutWorklet.
+  network::mojom::RequestDestination GetDestination() const override {
+    return network::mojom::RequestDestination::kScript;
+  }
+
   DefinitionMap layout_definitions_;
   Member<PendingLayoutRegistry> pending_layout_registry_;
 

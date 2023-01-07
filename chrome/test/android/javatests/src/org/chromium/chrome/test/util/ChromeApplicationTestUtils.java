@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,11 @@ import java.util.Locale;
 public class ChromeApplicationTestUtils {
     private static final String TAG = "ApplicationTestUtils";
     private static final float FLOAT_EPSILON = 0.001f;
+
+    // Increase the default timeout, as it can take a long time for Android to
+    // fully stop/start Chrome.
+    private static final long CHROME_STOP_START_TIMEOUT_MS =
+            Math.max(10000L, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
 
     private static PowerManager.WakeLock sWakeLock;
 
@@ -114,7 +119,7 @@ public class ChromeApplicationTestUtils {
             Criteria.checkThat(getVisibleActivitiesError(), state,
                     Matchers.anyOf(Matchers.equalTo(ApplicationState.HAS_STOPPED_ACTIVITIES),
                             Matchers.equalTo(ApplicationState.HAS_DESTROYED_ACTIVITIES)));
-        });
+        }, CHROME_STOP_START_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /** Waits until Chrome is in the foreground. */
@@ -122,7 +127,7 @@ public class ChromeApplicationTestUtils {
         CriteriaHelper.pollInstrumentationThread(() -> {
             Criteria.checkThat(ApplicationStatus.getStateForApplication(),
                     Matchers.is(ApplicationState.HAS_RUNNING_ACTIVITIES));
-        });
+        }, CHROME_STOP_START_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
     }
 
     /**
@@ -141,7 +146,24 @@ public class ChromeApplicationTestUtils {
             Coordinates coord = Coordinates.createFor(tab.getWebContents());
             float scale = coord.getPageScaleFactor();
             Criteria.checkThat(
-                    (double) expectedScale, Matchers.is(Matchers.closeTo(scale, FLOAT_EPSILON)));
+                    (double) scale, Matchers.is(Matchers.closeTo(expectedScale, FLOAT_EPSILON)));
+        });
+    }
+
+    /**
+     * Waits till the WebContents receives a page scale factor different
+     * from the specified value and asserts that this happens.
+     */
+    public static void assertWaitForPageScaleFactorChange(
+            final ChromeActivity activity, final float initialScale) {
+        CriteriaHelper.pollUiThread(() -> {
+            Tab tab = activity.getActivityTab();
+            Criteria.checkThat(tab, Matchers.notNullValue());
+
+            Coordinates coord = Coordinates.createFor(tab.getWebContents());
+            float scale = coord.getPageScaleFactor();
+            Criteria.checkThat(
+                    (double) scale, Matchers.not(Matchers.closeTo(initialScale, FLOAT_EPSILON)));
         });
     }
 }

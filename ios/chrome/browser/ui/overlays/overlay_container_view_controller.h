@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 // Delegate protocol for the container view.
 @protocol OverlayContainerViewControllerDelegate <NSObject>
 
-// Called when |containerViewController|'s view moves to a new window. Overlay
+// Called when `containerViewController`'s view moves to a new window. Overlay
 // presentation should not be attempted until the container is added to
 // a window.
 - (void)containerViewController:

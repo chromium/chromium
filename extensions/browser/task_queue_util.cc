@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,20 @@
 namespace extensions {
 
 namespace {
+
+#if DCHECK_IS_ON()
+// Whether the task queue is allowed to be created for OTR profile.
+bool IsOffTheRecordContextAllowed(content::BrowserContext* browser_context) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // In Guest mode on Chrome OS we want to create a task queue for OTR profile.
+  if (ExtensionsBrowserClient::Get()->IsGuestSession(browser_context))
+    return true;
+#endif
+
+  // In other cases don't create a task queue for OTR profile.
+  return false;
+}
+#endif  // DCHECK_IS_ON()
 
 // Get the ServiceWorkerTaskQueue instance for the BrowserContext.
 //
@@ -73,6 +87,11 @@ using TaskQueueFunction = void (ServiceWorkerTaskQueue::*)(const Extension*);
 void DoTaskQueueFunction(content::BrowserContext* browser_context,
                          const Extension* extension,
                          TaskQueueFunction function) {
+#if DCHECK_IS_ON()
+  DCHECK(IsOffTheRecordContextAllowed(browser_context) ||
+         !browser_context->IsOffTheRecord());
+#endif  // DCHECK_IS_ON()
+
   // This is only necessary for service worker-based extensions.
   if (!BackgroundInfo::IsServiceWorkerBased(extension))
     return;
@@ -113,14 +132,12 @@ LazyContextTaskQueue* GetTaskQueueForLazyContextId(
 
 void ActivateTaskQueueForExtension(content::BrowserContext* browser_context,
                                    const Extension* extension) {
-  DCHECK(!browser_context->IsOffTheRecord());
   DoTaskQueueFunction(browser_context, extension,
                       &ServiceWorkerTaskQueue::ActivateExtension);
 }
 
 void DeactivateTaskQueueForExtension(content::BrowserContext* browser_context,
                                      const Extension* extension) {
-  DCHECK(!browser_context->IsOffTheRecord());
   DoTaskQueueFunction(browser_context, extension,
                       &ServiceWorkerTaskQueue::DeactivateExtension);
 }

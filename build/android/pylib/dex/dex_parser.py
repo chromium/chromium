@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2019 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,7 +10,7 @@ A DexFile class that exposes access to several memory items in the dex format
 is provided, but it does not include error handling or validation.
 """
 
-from __future__ import print_function
+
 
 import argparse
 import collections
@@ -65,7 +65,7 @@ _ClassDefItem = collections.namedtuple(
     'annotations_off,class_data_off,static_values_off')
 
 
-class _MemoryItemList(object):
+class _MemoryItemList:
   """Base class for repeated memory items."""
 
   def __init__(self,
@@ -91,7 +91,7 @@ class _MemoryItemList(object):
     self.offset = offset
     self.size = size
     reader.Seek(first_item_offset or offset)
-    self._items = [factory(reader) for _ in xrange(size)]
+    self._items = [factory(reader) for _ in range(size)]
 
     if alignment:
       reader.AlignUpTo(alignment)
@@ -119,14 +119,14 @@ class _TypeIdItemList(_MemoryItemList):
 
   def __init__(self, reader, offset, size):
     factory = lambda x: _TypeIdItem(x.ReadUInt())
-    super(_TypeIdItemList, self).__init__(reader, offset, size, factory)
+    super().__init__(reader, offset, size, factory)
 
 
 class _ProtoIdItemList(_MemoryItemList):
 
   def __init__(self, reader, offset, size):
     factory = lambda x: _ProtoIdItem(x.ReadUInt(), x.ReadUInt(), x.ReadUInt())
-    super(_ProtoIdItemList, self).__init__(reader, offset, size, factory)
+    super().__init__(reader, offset, size, factory)
 
 
 class _MethodIdItemList(_MemoryItemList):
@@ -134,21 +134,21 @@ class _MethodIdItemList(_MemoryItemList):
   def __init__(self, reader, offset, size):
     factory = (
         lambda x: _MethodIdItem(x.ReadUShort(), x.ReadUShort(), x.ReadUInt()))
-    super(_MethodIdItemList, self).__init__(reader, offset, size, factory)
+    super().__init__(reader, offset, size, factory)
 
 
 class _StringItemList(_MemoryItemList):
 
   def __init__(self, reader, offset, size):
     reader.Seek(offset)
-    string_item_offsets = iter([reader.ReadUInt() for _ in xrange(size)])
+    string_item_offsets = iter([reader.ReadUInt() for _ in range(size)])
 
     def factory(x):
       data_offset = next(string_item_offsets)
       string = x.ReadString(data_offset)
       return _StringDataItem(len(string), string)
 
-    super(_StringItemList, self).__init__(reader, offset, size, factory)
+    super().__init__(reader, offset, size, factory)
 
 
 class _TypeListItem(_MemoryItemList):
@@ -160,19 +160,18 @@ class _TypeListItem(_MemoryItemList):
     # This is necessary because we need to extract the size of the type list
     # (in other cases the list size is provided in the header).
     first_item_offset = reader.Tell()
-    super(_TypeListItem, self).__init__(
-        reader,
-        offset,
-        size,
-        factory,
-        alignment=4,
-        first_item_offset=first_item_offset)
+    super().__init__(reader,
+                     offset,
+                     size,
+                     factory,
+                     alignment=4,
+                     first_item_offset=first_item_offset)
 
 
 class _TypeListItemList(_MemoryItemList):
 
   def __init__(self, reader, offset, size):
-    super(_TypeListItemList, self).__init__(reader, offset, size, _TypeListItem)
+    super().__init__(reader, offset, size, _TypeListItem)
 
 
 class _ClassDefItemList(_MemoryItemList):
@@ -182,12 +181,12 @@ class _ClassDefItemList(_MemoryItemList):
 
     def factory(x):
       return _ClassDefItem(*(x.ReadUInt()
-                             for _ in xrange(len(_ClassDefItem._fields))))
+                             for _ in range(len(_ClassDefItem._fields))))
 
-    super(_ClassDefItemList, self).__init__(reader, offset, size, factory)
+    super().__init__(reader, offset, size, factory)
 
 
-class _DexMapItem(object):
+class _DexMapItem:
 
   def __init__(self, reader):
     self.type = reader.ReadUShort()
@@ -200,7 +199,7 @@ class _DexMapItem(object):
         self.type, self.size, self.offset)
 
 
-class _DexMapList(object):
+class _DexMapList:
   # Full list of type codes:
   # https://source.android.com/devices/tech/dalvik/dex-format#type-codes
   TYPE_TYPE_LIST = 0x1001
@@ -209,7 +208,7 @@ class _DexMapList(object):
     self._map = {}
     reader.Seek(offset)
     self._size = reader.ReadUInt()
-    for _ in xrange(self._size):
+    for _ in range(self._size):
       item = _DexMapItem(reader)
       self._map[item.type] = item
 
@@ -223,7 +222,7 @@ class _DexMapList(object):
     return '_DexMapList(size={}, items={})'.format(self._size, self._map)
 
 
-class _DexReader(object):
+class _DexReader:
 
   def __init__(self, data):
     self._data = data
@@ -299,7 +298,7 @@ class _DexReader(object):
     self.Seek(offset)
     ret = ''
 
-    for _ in xrange(string_length):
+    for _ in range(string_length):
       a = self.ReadUByte()
       if a == 0:
         raise _MUTf8DecodeError('Early string termination encountered',
@@ -320,7 +319,10 @@ class _DexReader(object):
       else:
         raise _MUTf8DecodeError('Bad byte', string_length, offset)
 
-      ret += unichr(code)
+      try:
+        ret += unichr(code)
+      except NameError:
+        ret += chr(code)
 
     if self.ReadUByte() != 0x00:
       raise _MUTf8DecodeError('Expected string termination', string_length,
@@ -334,10 +336,10 @@ class _MUTf8DecodeError(Exception):
   def __init__(self, message, length, offset):
     message += ' (decoded string length: {}, string data offset: {:#x})'.format(
         length, offset)
-    super(_MUTf8DecodeError, self).__init__(message)
+    super().__init__(message)
 
 
-class DexFile(object):
+class DexFile:
   """Represents a single dex file.
 
   Parses and exposes access to dex file structure and contents, as described
@@ -417,10 +419,9 @@ class DexFile(object):
 
   @staticmethod
   def ResolveClassAccessFlags(access_flags):
-    return tuple(
-        flag_string
-        for flag, flag_string in DexFile._CLASS_ACCESS_FLAGS.iteritems()
-        if flag & access_flags)
+    return tuple(flag_string
+                 for flag, flag_string in DexFile._CLASS_ACCESS_FLAGS.items()
+                 if flag & access_flags)
 
   def IterMethodSignatureParts(self):
     """Yields the string components of dex methods in a dex file.
@@ -453,7 +454,7 @@ class DexFile(object):
     return '\n'.join(str(item) for item in items)
 
 
-class _DumpCommand(object):
+class _DumpCommand:
 
   def __init__(self, dexfile):
     self._dexfile = dexfile

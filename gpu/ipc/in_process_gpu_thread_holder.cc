@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,11 @@
 #include "gpu/command_buffer/service/mailbox_manager_factory.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
-#include "gpu/command_buffer/service/shared_image_manager.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_util.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace gpu {
@@ -68,8 +69,8 @@ CommandBufferTaskExecutor* InProcessGpuThreadHolder::GetTaskExecutor() {
 void InProcessGpuThreadHolder::InitializeOnGpuThread(
     base::WaitableEvent* completion) {
   sync_point_manager_ = std::make_unique<SyncPointManager>();
-  scheduler_ = std::make_unique<Scheduler>(
-      task_runner(), sync_point_manager_.get(), gpu_preferences_);
+  scheduler_ =
+      std::make_unique<Scheduler>(sync_point_manager_.get(), gpu_preferences_);
   mailbox_manager_ = gles2::CreateMailboxManager(gpu_preferences_);
   shared_image_manager_ = std::make_unique<SharedImageManager>();
 
@@ -78,7 +79,8 @@ void InProcessGpuThreadHolder::InitializeOnGpuThread(
       gles2::PassthroughCommandDecoderSupported();
 
   share_group_ = new gl::GLShareGroup();
-  surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
+  surface_ =
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size());
   gl::GLContextAttribs attribs = gles2::GenerateGLContextAttribs(
       ContextCreationAttribs(), use_passthrough_cmd_decoder);
   context_ =
@@ -88,7 +90,7 @@ void InProcessGpuThreadHolder::InitializeOnGpuThread(
       gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
 
   bool use_virtualized_gl_context = false;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Virtualize GpuPreference:::kLowPower contexts by default on OS X to prevent
   // performance regressions when enabling FCM. https://crbug.com/180463
   use_virtualized_gl_context = true;

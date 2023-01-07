@@ -1,242 +1,121 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/browser/resources/tools/optimize_webui.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/grit/grit_rule.gni")
-import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
+assert(is_linux || is_chromeos || is_win || is_mac || is_fuchsia)
+
+import("//chrome/browser/resources/tools/build_webui.gni")
+
 preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_web_components_manifest = "preprocessed_gen_manifest.json"
-preprocess_fuse_manifest = "preprocessed_fuse_manifest.json"
-preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 
-if (optimize_webui) {
-  build_manifest = "build_manifest.json"
+build_webui("build") {
+  grd_prefix = "tab_search"
 
-  optimize_webui("build") {
-    host = "tab-search.top-chrome"
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
-    js_out_files = [ "tab_search.rollup.js" ]
-    js_module_in_files = [ "tab_search.js" ]
-    out_manifest = "$target_gen_dir/$build_manifest"
+  static_files = [
+    "alert_indicators/tab_audio_muting_rounded.svg",
+    "alert_indicators/tab_audio_rounded.svg",
+    "alert_indicators/tab_media_recording.svg",
+    "tab_search.html",
+  ]
 
-    excludes = [
+  web_component_files = [
+    "app.ts",
+    "infinite_list.ts",
+    "tab_search_group_item.ts",
+    "tab_search_item.ts",
+    "tab_search_search_field.ts",
+  ]
+
+  non_web_component_files = [
+    "bimap.ts",
+    "fuzzy_search.ts",
+    "tab_data.ts",
+    "tab_group_color_helper.ts",
+    "tab_search_api_proxy.ts",
+    "tab_search.ts",
+    "tab_search_utils.ts",
+    "title_item.ts",
+  ]
+
+  css_files = [ "tab_group_shared_vars.css" ]
+
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/tab_search:mojo_bindings_webui_js",
+    "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js",
+    "//components/tab_groups/public/mojom:mojo_bindings_webui_js",
+  ]
+  mojo_files = [
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search/tab_search.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs/tabs.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/components/tab_groups/public/mojom/tab_group_types.mojom-webui.js",
+  ]
+
+  ts_composite = true
+  ts_definitions = [
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "$target_gen_dir/$preprocess_folder/fuse.d.ts",
+  ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/js/metrics_reporter:build_ts",
+    "//ui/webui/resources/mojo:library",
+  ]
+  ts_extra_deps = [
+    ":copy_fuse",
+    ":copy_fuse_dts",
+    ":copy_fuse_dts_tsc",
+  ]
+
+  extra_grdp_deps = [ ":build_fuse_grdp" ]
+  extra_grdp_files = [ "$target_gen_dir/fuse_resources.grdp" ]
+
+  optimize = optimize_webui
+  if (optimize) {
+    optimize_webui_host = "tab-search.top-chrome"
+    optimize_webui_out_files = [ "tab_search.rollup.js" ]
+    optimize_webui_in_files = [ "tab_search.js" ]
+    optimize_webui_excludes = [
       "chrome://resources/js/cr.m.js",
+      "chrome://resources/js/metrics_reporter/metrics_reporter.js",
       "chrome://resources/mojo/mojo/public/js/bindings.js",
       "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js",
+      "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
       "fuse.js",
     ]
-
-    deps = [
-      ":preprocess",
-      ":preprocess_mojo",
-      ":preprocess_web_components",
-      "../../../../ui/webui/resources:preprocess",
-    ]
+    optimize_webui_resource_paths_rewrites =
+        [ "tab_search.rollup.js|tab_search.js" ]
   }
 }
 
-generate_grd("build_grd") {
+generate_grd("build_fuse_grdp") {
   grd_prefix = "tab_search"
-  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [ "tab_search.html" ]
-  input_files_base_dir = rebase_path(".", "//")
-  resource_path_rewrites = [ "fuse.basic.esm.min.js|fuse.js" ]
-
-  if (optimize_webui) {
-    deps = [
-      ":build",
-      ":preprocess_fuse",
-    ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_fuse_manifest",
-      "$target_gen_dir/$build_manifest",
-    ]
-    resource_path_rewrites += [ "tab_search.rollup.js|tab_search.js" ]
-  } else {
-    deps = [
-      ":preprocess",
-      ":preprocess_fuse",
-      ":preprocess_mojo",
-      ":preprocess_web_components",
-    ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_manifest",
-      "$target_gen_dir/$preprocess_fuse_manifest",
-      "$target_gen_dir/$preprocess_mojo_manifest",
-      "$target_gen_dir/$preprocess_web_components_manifest",
-    ]
-  }
+  out_grd = "$target_gen_dir/fuse_resources.grdp"
+  input_files = [ "fuse.js" ]
+  input_files_base_dir =
+      rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+  deps = [ ":copy_fuse" ]
 }
 
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
-  in_files = [
-    "bimap.js",
-    "fuzzy_search.js",
-    "tab_data.js",
-    "tab_search.js",
-    "tab_search_api_proxy.js",
-    "title_item.js",
-  ]
+copy("copy_fuse") {
+  sources = [ "//third_party/fusejs/dist/fuse.basic.esm.min.js" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/fuse.js" ]
 }
 
-preprocess_if_expr("preprocess_web_components") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_web_components_manifest"
-  in_files = [
-    "app.js",
-    "infinite_list.js",
-    "tab_search_item.js",
-    "tab_search_search_field.js",
-  ]
+copy("copy_fuse_dts") {
+  sources = [ "//third_party/fusejs/dist/fuse.d.ts" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
 }
 
-preprocess_if_expr("preprocess_fuse") {
-  in_folder = "../../../../third_party/fusejs/dist/"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_fuse_manifest"
-  in_files = [ "fuse.basic.esm.min.js" ]
-}
-
-preprocess_if_expr("preprocess_mojo") {
-  deps = [ "//chrome/browser/ui/webui/tab_search:mojo_bindings_webui_js" ]
-  in_folder = "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search/"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
-  in_files = [ "tab_search.mojom-webui.js" ]
-}
-
-grit("resources") {
-  defines = chrome_grit_defines
-
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  source = "$target_gen_dir/tab_search_resources.grd"
-  deps = [ ":build_grd" ]
-
-  outputs = [
-    "grit/tab_search_resources.h",
-    "grit/tab_search_resources_map.cc",
-    "grit/tab_search_resources_map.h",
-    "tab_search_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chrome"
-}
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "js_module_root=" + rebase_path(".", root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search",
-                root_build_dir),
-      ]
-  deps = [
-    ":app",
-    ":bimap",
-    ":fuzzy_search",
-    ":infinite_list",
-    ":tab_data",
-    ":tab_search",
-    ":tab_search_api_proxy",
-    ":tab_search_item",
-    ":tab_search_search_field",
-    ":title_item",
-  ]
-}
-
-js_library("app") {
-  deps = [
-    ":fuzzy_search",
-    ":infinite_list",
-    ":tab_data",
-    ":tab_search_api_proxy",
-    ":tab_search_item",
-    ":tab_search_search_field",
-    ":title_item",
-    "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("bimap") {
-  deps = []
-}
-
-js_library("fuzzy_search") {
-  deps = [
-    ":tab_data",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("infinite_list") {
-  deps = [
-    ":bimap",
-    "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("tab_data") {
-  deps = []
-}
-
-js_library("tab_search") {
-  deps = [ ":app" ]
-}
-
-js_library("tab_search_api_proxy") {
-  deps = [
-    "//chrome/browser/ui/webui/tab_search:mojo_bindings_webui_js",
-    "//ui/webui/resources/js:cr.m",
-  ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("tab_search_item") {
-  deps = [
-    ":tab_data",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:icon.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-js_library("tab_search_search_field") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field_behavior",
-  ]
-}
-
-js_library("title_item") {
-  deps = []
-}
-
-html_to_js("web_components") {
-  js_files = [
-    "app.js",
-    "infinite_list.js",
-    "tab_search_item.js",
-    "tab_search_search_field.js",
-  ]
+# Work-around for https://github.com/microsoft/TypeScript/issues/47035, so
+# that the manually provided fuse.d.ts file prevails.
+copy("copy_fuse_dts_tsc") {
+  sources = [ "//third_party/fusejs/dist/fuse.d.ts" ]
+  outputs = [ "$target_gen_dir/tsc/{{source_file_part}}" ]
 }

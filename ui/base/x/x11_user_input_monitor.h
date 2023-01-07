@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "base/component_export.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/events/keyboard_event_counter.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/xinput.h"

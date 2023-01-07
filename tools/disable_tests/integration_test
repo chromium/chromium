@@ -1,0 +1,10 @@
+#!/bin/sh
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# disable -- a shell wrapper for disable.py, to avoid calling disable.py
+# directly. This will give us flexibility to restructure things later.
+
+base_dir=$(dirname "$0")
+PYTHONDONTWRITEBYTECODE=1 exec vpython3 "$base_dir/integration_test.py" "$@"

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,11 +17,9 @@
 //    has no logic in the getter except threading stuff, which we don't want
 //    to run.
 
-#include "components/history/core/browser/history_backend.h"
-
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "components/history/core/browser/history_backend.h"
 #include "components/history/core/test/history_backend_db_base_test.h"
 
 namespace history {
@@ -89,11 +87,11 @@ TEST_F(ContentHistoryBackendDBTest,
        ConfirmDownloadInterruptReasonBackwardsCompatible) {
   // Are there any cases in which a historical number has been repurposed
   // for an error other than it's original?
-  for (size_t i = 0; i < base::size(current_reasons); i++) {
+  for (size_t i = 0; i < std::size(current_reasons); i++) {
     const InterruptReasonAssociation& cur_reason(current_reasons[i]);
     bool found = false;
 
-    for (size_t j = 0; j < base::size(historical_reasons); ++j) {
+    for (size_t j = 0; j < std::size(historical_reasons); ++j) {
       const InterruptReasonAssociation& hist_reason(historical_reasons[j]);
 
       if (hist_reason.value == cur_reason.value) {

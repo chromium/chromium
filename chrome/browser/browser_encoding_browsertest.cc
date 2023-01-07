@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -96,8 +95,7 @@ class BrowserEncodingTest
     scoped_refptr<content::MessageLoopRunner> loop_runner(
         new content::MessageLoopRunner);
     content::SavePackageFinishedObserver observer(
-        content::BrowserContext::GetDownloadManager(browser()->profile()),
-        loop_runner->QuitClosure());
+        browser()->profile()->GetDownloadManager(), loop_runner->QuitClosure());
     browser()->tab_strip_model()->GetActiveWebContents()->SavePage(
         full_file_name, temp_sub_resource_dir_,
         content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML);
@@ -155,7 +153,7 @@ IN_PROC_BROWSER_TEST_P(BrowserEncodingTest, TestEncodingAliasMapping) {
 
   GURL url =
       embedded_test_server()->GetURL("/" + test_file_path.MaybeAsASCII());
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(GetParam().encoding_name,
             browser()->tab_strip_model()->GetActiveWebContents()->
                 GetEncoding());
@@ -242,12 +240,12 @@ IN_PROC_BROWSER_TEST_F(BrowserEncodingTest, TestEncodingAutoDetect) {
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  for (size_t i = 0; i < base::size(kTestDatas); ++i) {
+  for (size_t i = 0; i < std::size(kTestDatas); ++i) {
     base::FilePath test_file_path(test_dir_path);
     test_file_path = test_file_path.AppendASCII(kTestDatas[i].test_file_name);
     GURL url =
         embedded_test_server()->GetURL("/" + test_file_path.MaybeAsASCII());
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
     // Get the encoding of page. It should return the real encoding now.
     EXPECT_EQ(kTestDatas[i].expected_encoding, web_contents->GetEncoding());

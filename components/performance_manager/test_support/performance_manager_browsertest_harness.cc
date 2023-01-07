@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_web_contents_view_delegate_creator.h"
@@ -35,8 +36,8 @@ void PerformanceManagerBrowserTestHarness::SetUp() {
   base::Lock lock;
   base::ConditionVariable cv(&lock);
   bool graph_initialization_complete = false;
-  PerformanceManagerLifetime::SetDecoratorsOverrideForTesting(
-      Decorators::kNone);
+  PerformanceManagerLifetime::SetGraphFeaturesOverrideForTesting(
+      GraphFeatures::WithNone());
   PerformanceManagerLifetime::SetAdditionalGraphCreatedCallbackForTesting(
       base::BindLambdaForTesting([&](Graph* graph) {
         OnGraphCreatedImpl(graph);
@@ -91,6 +92,19 @@ void PerformanceManagerBrowserTestHarness::StartNavigation(
   contents->Focus();
 }
 
+::testing::AssertionResult
+PerformanceManagerBrowserTestHarness::NavigateAndWaitForConsoleMessage(
+    content::WebContents* contents,
+    const GURL& url,
+    base::StringPiece console_pattern) {
+  content::WebContentsConsoleObserver console_observer(contents);
+  console_observer.SetPattern(std::string(console_pattern));
+  if (!NavigateToURL(contents, url))
+    return ::testing::AssertionFailure();
+  console_observer.Wait();
+  return ::testing::AssertionSuccess();
+}
+
 namespace {
 
 class WaitForLoadObserver : public content::WebContentsObserver {
@@ -121,7 +135,7 @@ void PerformanceManagerBrowserTestHarness::WaitForLoad(
 }
 
 void PerformanceManagerBrowserTestHarness::OnGraphCreatedImpl(Graph* graph) {
-  graph_features_helper_.ConfigureGraph(graph);
+  graph_features_.ConfigureGraph(graph);
   OnGraphCreated(graph);
 }
 

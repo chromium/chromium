@@ -28,7 +28,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_CHILD_REMOVAL_TRACKER_H_
 
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -73,4 +73,4 @@ inline bool NodeChildRemovalTracker::IsBeingRemoved(const Node& node) {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_CHILD_REMOVAL_TRACKER_H_

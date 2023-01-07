@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,14 +17,15 @@
 #include <signal.h>
 #include <sys/types.h>
 
-#include "base/stl_util.h"
+#include <iterator>
+
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 
 #define NUL_TEST_DATA(string) \
-  { string, base::size(string) - 1 }
+  { string, std::size(string) - 1 }
 
 namespace crashpad {
 namespace test {
@@ -35,38 +36,23 @@ constexpr struct {
   const char* full_name;
   const char* short_name;
 } kSignalTestData[] = {
-    {SIGABRT, "SIGABRT", "ABRT"},
-    {SIGALRM, "SIGALRM", "ALRM"},
-    {SIGBUS, "SIGBUS", "BUS"},
-    {SIGCHLD, "SIGCHLD", "CHLD"},
-    {SIGCONT, "SIGCONT", "CONT"},
-    {SIGFPE, "SIGFPE", "FPE"},
-    {SIGHUP, "SIGHUP", "HUP"},
-    {SIGILL, "SIGILL", "ILL"},
-    {SIGINT, "SIGINT", "INT"},
-    {SIGIO, "SIGIO", "IO"},
-    {SIGKILL, "SIGKILL", "KILL"},
-    {SIGPIPE, "SIGPIPE", "PIPE"},
-    {SIGPROF, "SIGPROF", "PROF"},
-    {SIGQUIT, "SIGQUIT", "QUIT"},
-    {SIGSEGV, "SIGSEGV", "SEGV"},
-    {SIGSTOP, "SIGSTOP", "STOP"},
-    {SIGSYS, "SIGSYS", "SYS"},
-    {SIGTERM, "SIGTERM", "TERM"},
-    {SIGTRAP, "SIGTRAP", "TRAP"},
-    {SIGTSTP, "SIGTSTP", "TSTP"},
-    {SIGTTIN, "SIGTTIN", "TTIN"},
-    {SIGTTOU, "SIGTTOU", "TTOU"},
-    {SIGURG, "SIGURG", "URG"},
-    {SIGUSR1, "SIGUSR1", "USR1"},
-    {SIGUSR2, "SIGUSR2", "USR2"},
-    {SIGVTALRM, "SIGVTALRM", "VTALRM"},
-    {SIGWINCH, "SIGWINCH", "WINCH"},
-    {SIGXCPU, "SIGXCPU", "XCPU"},
-#if defined(OS_APPLE)
-    {SIGEMT, "SIGEMT", "EMT"},
-    {SIGINFO, "SIGINFO", "INFO"},
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+    {SIGABRT, "SIGABRT", "ABRT"},    {SIGALRM, "SIGALRM", "ALRM"},
+    {SIGBUS, "SIGBUS", "BUS"},       {SIGCHLD, "SIGCHLD", "CHLD"},
+    {SIGCONT, "SIGCONT", "CONT"},    {SIGFPE, "SIGFPE", "FPE"},
+    {SIGHUP, "SIGHUP", "HUP"},       {SIGILL, "SIGILL", "ILL"},
+    {SIGINT, "SIGINT", "INT"},       {SIGIO, "SIGIO", "IO"},
+    {SIGKILL, "SIGKILL", "KILL"},    {SIGPIPE, "SIGPIPE", "PIPE"},
+    {SIGPROF, "SIGPROF", "PROF"},    {SIGQUIT, "SIGQUIT", "QUIT"},
+    {SIGSEGV, "SIGSEGV", "SEGV"},    {SIGSTOP, "SIGSTOP", "STOP"},
+    {SIGSYS, "SIGSYS", "SYS"},       {SIGTERM, "SIGTERM", "TERM"},
+    {SIGTRAP, "SIGTRAP", "TRAP"},    {SIGTSTP, "SIGTSTP", "TSTP"},
+    {SIGTTIN, "SIGTTIN", "TTIN"},    {SIGTTOU, "SIGTTOU", "TTOU"},
+    {SIGURG, "SIGURG", "URG"},       {SIGUSR1, "SIGUSR1", "USR1"},
+    {SIGUSR2, "SIGUSR2", "USR2"},    {SIGVTALRM, "SIGVTALRM", "VTALRM"},
+    {SIGWINCH, "SIGWINCH", "WINCH"}, {SIGXCPU, "SIGXCPU", "XCPU"},
+#if BUILDFLAG(IS_APPLE)
+    {SIGEMT, "SIGEMT", "EMT"},       {SIGINFO, "SIGINFO", "INFO"},
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
     {SIGPWR, "SIGPWR", "PWR"},
 #if !defined(ARCH_CPU_MIPS_FAMILY)
     {SIGSTKFLT, "SIGSTKFLT", "STKFLT"},
@@ -116,14 +102,14 @@ void TestSignalToString(int value,
 }
 
 TEST(SymbolicConstantsPOSIX, SignalToString) {
-  for (size_t index = 0; index < base::size(kSignalTestData); ++index) {
+  for (size_t index = 0; index < std::size(kSignalTestData); ++index) {
     SCOPED_TRACE(base::StringPrintf("index %zu", index));
     TestSignalToString(kSignalTestData[index].signal,
                        kSignalTestData[index].full_name,
                        kSignalTestData[index].short_name);
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // NSIG is 64 to account for real-time signals.
   constexpr int kSignalCount = 32;
 #else
@@ -171,11 +157,11 @@ TEST(SymbolicConstantsPOSIX, StringToSignal) {
       kAllowFullName | kAllowShortName | kAllowNumber,
   };
 
-  for (size_t option_index = 0; option_index < base::size(kOptions);
+  for (size_t option_index = 0; option_index < std::size(kOptions);
        ++option_index) {
     SCOPED_TRACE(base::StringPrintf("option_index %zu", option_index));
     StringToSymbolicConstantOptions options = kOptions[option_index];
-    for (size_t index = 0; index < base::size(kSignalTestData); ++index) {
+    for (size_t index = 0; index < std::size(kSignalTestData); ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       int signal = kSignalTestData[index].signal;
       {
@@ -213,7 +199,7 @@ TEST(SymbolicConstantsPOSIX, StringToSignal) {
         "",
     };
 
-    for (size_t index = 0; index < base::size(kNegativeTestData); ++index) {
+    for (size_t index = 0; index < std::size(kNegativeTestData); ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       TestStringToSignal(kNegativeTestData[index], options, false, 0);
     }
@@ -234,7 +220,7 @@ TEST(SymbolicConstantsPOSIX, StringToSignal) {
         NUL_TEST_DATA("1\0002"),
     };
 
-    for (size_t index = 0; index < base::size(kNULTestData); ++index) {
+    for (size_t index = 0; index < std::size(kNULTestData); ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       base::StringPiece string(kNULTestData[index].string,
                                kNULTestData[index].length);

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,19 @@ class Server;
 class WaylandWatcher : public base::MessagePumpForUI::FdWatcher {
  public:
   explicit WaylandWatcher(wayland::Server* server);
+
+  WaylandWatcher(const WaylandWatcher&) = delete;
+  WaylandWatcher& operator=(const WaylandWatcher&) = delete;
+
   ~WaylandWatcher() override;
 
+  // Start/Stop watching the fd for testing.
+  void StartForTesting();
+  void StopForTesting();
+
  private:
+  void Start();
+
   // base::MessagePumpForUI::FdWatcher:
   void OnFileCanReadWithoutBlocking(int fd) override;
 
@@ -26,8 +36,6 @@ class WaylandWatcher : public base::MessagePumpForUI::FdWatcher {
 
   base::MessagePumpForUI::FdWatchController controller_;
   wayland::Server* const server_;
-
-  DISALLOW_COPY_AND_ASSIGN(WaylandWatcher);
 };
 
 }  // namespace wayland

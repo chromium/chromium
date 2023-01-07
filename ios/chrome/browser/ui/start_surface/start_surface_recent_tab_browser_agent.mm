@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,13 +29,21 @@ StartSurfaceRecentTabBrowserAgent::~StartSurfaceRecentTabBrowserAgent() =
 #pragma mark - Public
 
 void StartSurfaceRecentTabBrowserAgent::SaveMostRecentTab() {
-  most_recent_tab_ = browser_->GetWebStateList()->GetActiveWebState();
-  DCHECK(favicon::WebFaviconDriver::FromWebState(most_recent_tab_));
-  if (favicon_driver_observer_.IsObserving()) {
-    favicon_driver_observer_.Reset();
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  if (most_recent_tab_ != active_web_state) {
+    most_recent_tab_ = active_web_state;
+    DCHECK(favicon::WebFaviconDriver::FromWebState(most_recent_tab_));
+    if (favicon_driver_observer_.IsObserving()) {
+      favicon_driver_observer_.Reset();
+    }
+    favicon_driver_observer_.Observe(
+        favicon::WebFaviconDriver::FromWebState(most_recent_tab_));
+    if (web_state_observation_.IsObserving()) {
+      web_state_observation_.Reset();
+    }
+    web_state_observation_.Observe(most_recent_tab_);
   }
-  favicon_driver_observer_.Observe(
-      favicon::WebFaviconDriver::FromWebState(most_recent_tab_));
 }
 
 void StartSurfaceRecentTabBrowserAgent::AddObserver(
@@ -54,6 +62,8 @@ void StartSurfaceRecentTabBrowserAgent::RemoveObserver(
 void StartSurfaceRecentTabBrowserAgent::BrowserDestroyed(Browser* browser) {
   browser_->GetWebStateList()->RemoveObserver(this);
   browser_->RemoveObserver(this);
+  favicon_driver_observer_.Reset();
+  web_state_observation_.Reset();
 }
 
 #pragma mark - WebStateListObserver
@@ -70,9 +80,20 @@ void StartSurfaceRecentTabBrowserAgent::WebStateDetachedAt(
     for (auto& observer : observers_) {
       observer.MostRecentTabRemoved(most_recent_tab_);
     }
+    favicon_driver_observer_.Reset();
+    web_state_observation_.Reset();
     most_recent_tab_ = nullptr;
     return;
   }
+}
+
+#pragma mark - WebStateObserver
+
+void StartSurfaceRecentTabBrowserAgent::WebStateDestroyed(
+    web::WebState* web_state) {
+  favicon_driver_observer_.Reset();
+  web_state_observation_.Reset();
+  most_recent_tab_ = nullptr;
 }
 
 void StartSurfaceRecentTabBrowserAgent::OnFaviconUpdated(
@@ -85,8 +106,14 @@ void StartSurfaceRecentTabBrowserAgent::OnFaviconUpdated(
     gfx::Image favicon = driver->GetFavicon();
     if (!favicon.IsEmpty()) {
       for (auto& observer : observers_) {
-        observer.MostRecentTabFaviconUpdated(image.ToUIImage());
+        observer.MostRecentTabFaviconUpdated(favicon.ToUIImage());
       }
     }
+  }
+}
+
+void StartSurfaceRecentTabBrowserAgent::TitleWasSet(web::WebState* web_state) {
+  for (auto& observer : observers_) {
+    observer.MostRecentTabTitleUpdated(web_state->GetTitle());
   }
 }

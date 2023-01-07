@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -80,7 +80,8 @@ public class DetachedResourceRequestTest {
         mContext = InstrumentationRegistry.getInstrumentation()
                            .getTargetContext()
                            .getApplicationContext();
-        TestThreadUtils.runOnUiThreadBlocking(OriginVerifier::clearCachedVerificationsForTesting);
+        TestThreadUtils.runOnUiThreadBlocking(
+                ChromeOriginVerifier::clearCachedVerificationsForTesting);
     }
 
     @After
@@ -99,8 +100,8 @@ public class DetachedResourceRequestTest {
                 () -> Assert.assertFalse(mConnection.canDoParallelRequest(session, ORIGIN)));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             String packageName = mContext.getPackageName();
-            OriginVerifier.addVerificationOverride(packageName, Origin.create(ORIGIN.toString()),
-                    CustomTabsService.RELATION_USE_AS_ORIGIN);
+            ChromeOriginVerifier.addVerificationOverride(packageName,
+                    Origin.create(ORIGIN.toString()), CustomTabsService.RELATION_USE_AS_ORIGIN);
             Assert.assertTrue(mConnection.canDoParallelRequest(session, ORIGIN));
         });
     }
@@ -113,7 +114,8 @@ public class DetachedResourceRequestTest {
         Assert.assertTrue(mConnection.newSession(session));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             String packageName = mContext.getPackageName();
-            OriginVerifier.addVerificationOverride(packageName, Origin.create(ORIGIN.toString()),
+            ChromeOriginVerifier.addVerificationOverride(packageName,
+                    Origin.create(ORIGIN.toString()),
 
                     CustomTabsService.RELATION_USE_AS_ORIGIN);
         });
@@ -383,7 +385,7 @@ public class DetachedResourceRequestTest {
         });
 
         String echoUrl = mServer.getURL("/echoheader?Cookie");
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
@@ -393,14 +395,12 @@ public class DetachedResourceRequestTest {
     }
 
     /**
-     * Demonstrates upcoming restrictions on cookies in third party contexts
+     * Demonstrates that cookies are SameSite=Lax by default, and cookies in third-party contexts
+     * require both SameSite=None and Secure.
      */
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.SAME_SITE_BY_DEFAULT_COOKIES,
-            ChromeFeatureList.COOKIES_WITHOUT_SAME_SITE_MUST_BE_SECURE})
-    public void
-    testUpcomingThirdPartyCookiePolicies() throws Exception {
+    public void testSameSiteLaxByDefaultCookies() throws Exception {
         CustomTabsSessionToken session = prepareSession();
         CustomTabsTestUtils.warmUpAndWait();
         mServer = EmbeddedTestServer.createAndStartHTTPSServer(mContext, ServerCertificate.CERT_OK);
@@ -422,7 +422,7 @@ public class DetachedResourceRequestTest {
         });
 
         String echoUrl = mServer.getURL("/echoheader?Cookie");
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
@@ -452,7 +452,7 @@ public class DetachedResourceRequestTest {
         });
 
         String echoUrl = mServer.getURL("/echoheader?Cookie");
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
@@ -485,7 +485,7 @@ public class DetachedResourceRequestTest {
         Assert.assertTrue(mConnection.newSession(token));
         mConnection.mClientManager.setAllowParallelRequestForSession(token, true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            OriginVerifier.addVerificationOverride(mContext.getPackageName(),
+            ChromeOriginVerifier.addVerificationOverride(mContext.getPackageName(),
                     Origin.create(ORIGIN.toString()), CustomTabsService.RELATION_USE_AS_ORIGIN);
             Assert.assertTrue(mConnection.canDoParallelRequest(token, ORIGIN));
         });
@@ -542,7 +542,7 @@ public class DetachedResourceRequestTest {
         customTabsCallback.waitForCompletion(0, 1);
 
         String echoUrl = mServer.getURL("/echoheader?Cookie");
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, echoUrl);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
@@ -553,8 +553,7 @@ public class DetachedResourceRequestTest {
 
     private void testSafeBrowsingMainResource(boolean afterNative, boolean splitCacheEnabled)
             throws Exception {
-        SafeBrowsingApiBridge.setSafeBrowsingHandlerType(
-                new MockSafeBrowsingApiHandler().getClass());
+        SafeBrowsingApiBridge.setHandler(new MockSafeBrowsingApiHandler());
         CustomTabsSessionToken session = prepareSession();
 
         String cacheable = "/cachetime";
@@ -566,8 +565,8 @@ public class DetachedResourceRequestTest {
             MockSafeBrowsingApiHandler.addMockResponse(
                     url.toString(), "{\"matches\":[{\"threat_type\":\"5\"}]}");
 
-            Intent intent =
-                    CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, url.toString());
+            Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                    mContext, url.toString());
             mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
             Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
@@ -597,8 +596,7 @@ public class DetachedResourceRequestTest {
     }
 
     private void testSafeBrowsingSubresource(boolean afterNative) throws Exception {
-        SafeBrowsingApiBridge.setSafeBrowsingHandlerType(
-                new MockSafeBrowsingApiHandler().getClass());
+        SafeBrowsingApiBridge.setHandler(new MockSafeBrowsingApiHandler());
         CustomTabsSessionToken session = prepareSession();
         String cacheable = "/cachetime";
         waitForDetachedRequest(session, cacheable, afterNative);
@@ -609,7 +607,8 @@ public class DetachedResourceRequestTest {
                     url.toString(), "{\"matches\":[{\"threat_type\":\"5\"}]}");
 
             String pageUrl = mServer.getURL("/chrome/test/data/android/cacheable_subresource.html");
-            Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, pageUrl);
+            Intent intent =
+                    CustomTabsIntentTestUtils.createMinimalCustomTabIntent(mContext, pageUrl);
             mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 
             Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
@@ -641,7 +640,7 @@ public class DetachedResourceRequestTest {
         mConnection.mClientManager.setAllowParallelRequestForSession(token, true);
         mConnection.mClientManager.setAllowResourcePrefetchForSession(token, true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            OriginVerifier.addVerificationOverride(mContext.getPackageName(),
+            ChromeOriginVerifier.addVerificationOverride(mContext.getPackageName(),
                     Origin.create(origin.toString()), CustomTabsService.RELATION_USE_AS_ORIGIN);
             Assert.assertTrue(mConnection.canDoParallelRequest(token, origin));
         });

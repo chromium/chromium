@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,17 +32,21 @@ class MyInstance : public pp::Instance {
     pp::Graphics2D graphics(this, last_size_, false);
     BindGraphics(graphics);
 
-    pp::BrowserFontDescription desc;
-    desc.set_family(PP_BROWSERFONT_TRUSTED_FAMILY_SANSSERIF);
-    desc.set_size(100);
-    pp::BrowserFont_Trusted font(this, desc);
+    {
+      pp::BrowserFontDescription desc;
+      desc.set_family(PP_BROWSERFONT_TRUSTED_FAMILY_SANSSERIF);
+      desc.set_size(100);
+      pp::BrowserFont_Trusted font(this, desc);
 
-    // Draw some large, alpha blended text, including Arabic shaping.
-    pp::Rect text_clip(position.size());  // Use entire bounds for clip.
-    font.DrawTextAt(&image,
-        pp::BrowserFontTextRun(
-            "\xD9\x85\xD8\xB1\xD8\xAD\xD8\xA8\xD8\xA7\xE2\x80\x8E", true, true),
-        pp::Point(20, 100), 0x80008000, clip, false);
+      // Draw some large, alpha blended text, including Arabic shaping.
+      pp::Rect text_clip(position.size());  // Use entire bounds for clip.
+      font.DrawTextAt(
+          &image,
+          pp::BrowserFontTextRun(
+              "\xD9\x85\xD8\xB1\xD8\xAD\xD8\xA8\xD8\xA7\xE2\x80\x8E", true,
+              true),
+          pp::Point(20, 100), 0x80008000, clip, false);
+    }
 
     // Draw the default font names and sizes.
     int y = 160;
@@ -95,7 +99,7 @@ class MyInstance : public pp::Instance {
     font.Describe(&desc, &metrics);
 
     char buf[256];
-    sprintf(buf, "%s = %s %dpt",
+    snprintf(buf, sizeof(buf), "%s = %s %dpt",
             title, desc.face().AsString().c_str(), desc.size());
     return std::string(buf);
   }

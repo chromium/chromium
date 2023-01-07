@@ -1,15 +1,18 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/android/compositor/layer/tab_handle_layer.h"
 
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
+#include "base/metrics/field_trial_params.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/resources/scoped_ui_resource.h"
 #include "chrome/browser/android/compositor/decoration_title.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/base/l10n/l10n_util_android.h"
@@ -128,7 +131,16 @@ void TabHandleLayer::SetProperties(
   const float padding_right = tab_handle_resource->size().width() -
                               tab_handle_resource->padding().right();
   const float padding_left = tab_handle_resource->padding().x();
-  const float close_width = close_button_->bounds().width();
+
+  float close_width = close_button_->bounds().width();
+  // For the min_tab_width experiments, if close button is not shown, fill
+  // the remaining space with the title text
+  if (base::FeatureList::IsEnabled(chrome::android::kTabStripImprovements)) {
+    if (close_button_alpha == 0.f) {
+      close_width = 0.f;
+    }
+  }
+
   if (title_layer) {
     int title_y = tab_handle_resource->padding().y() / 2 + height / 2 -
                   title_layer->size().height() / 2;

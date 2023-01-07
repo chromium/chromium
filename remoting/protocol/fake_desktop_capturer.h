@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,23 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
+#include "base/memory/raw_ptr.h"
+#include "remoting/protocol/desktop_capturer.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/screen_capture_frame_queue.h"
+#include "third_party/webrtc/modules/desktop_capture/shared_desktop_frame.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
-// A FakeDesktopCapturer generates artificial image for testing purpose.
+// A FakeDesktopCapturer which generates an artificial image for testing.
 //
 // FakeDesktopCapturer is double-buffered as required by DesktopCapturer.
-class FakeDesktopCapturer : public webrtc::DesktopCapturer {
+class FakeDesktopCapturer : public DesktopCapturer {
  public:
   // By default FakeDesktopCapturer generates frames of size kWidth x kHeight,
   // but custom frame generator set using set_frame_generator() may generate
-  // frames of different size.
+  // frames of a different size.
   static const int kWidth = 800;
   static const int kHeight = 600;
 
@@ -32,6 +33,10 @@ class FakeDesktopCapturer : public webrtc::DesktopCapturer {
           webrtc::SharedMemoryFactory* shared_memory_factory)>;
 
   FakeDesktopCapturer();
+
+  FakeDesktopCapturer(const FakeDesktopCapturer&) = delete;
+  FakeDesktopCapturer& operator=(const FakeDesktopCapturer&) = delete;
+
   ~FakeDesktopCapturer() override;
 
   void set_frame_generator(FrameGenerator frame_generator);
@@ -47,14 +52,11 @@ class FakeDesktopCapturer : public webrtc::DesktopCapturer {
  private:
   FrameGenerator frame_generator_;
 
-  Callback* callback_;
+  raw_ptr<Callback> callback_;
 
   std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDesktopCapturer);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_FAKE_DESKTOP_CAPTURER_H_

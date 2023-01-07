@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--
+Take frames coming from various sources and render them to a canvas with
+CanvasRenderingContext2D.drawImage().
+-->
+<html>
+
+<head>
+  <title>drawImage() test</title>
+  <script src="webcodecs_common.js"></script>
+  <script type="text/javascript">
+    'use strict';
+
+    async function main(arg) {
+      const frames_to_draw = 5;
+      let source_type = arg.source_type;
+      let cnv = document.getElementById('display');
+      let ctx = cnv.getContext('2d');
+      let source = await createFrameSource(source_type, cnv.width, cnv.height);
+      if (!source) {
+        TEST.skip('Unsupported source: ' + source_type);
+        return;
+      }
+
+      for (let i = 0; i < frames_to_draw; i++) {
+        let frame = await source.getNextFrame();
+        ctx.drawImage(frame, 0, 0, cnv.width, cnv.height);
+        switch (source_type) {
+          case 'camera': {
+            if (arg.validate_camera_frames)
+              checkFourColorsFrame(ctx, cnv.width, cnv.height, 5);
+            else
+              TEST.log("Skip render result validation");
+            break;
+          }
+          case 'arraybuffer':
+          case 'offscreen':
+          case 'capture': {
+            checkFourColorsFrame(ctx, cnv.width, cnv.height, 5);
+            break;
+          }
+          case 'sw_decoder':
+          case 'hw_decoder': {
+            checkFourColorsFrame(ctx, cnv.width, cnv.height, 15);
+            break;
+          }
+          default:
+            TEST.reportFailure("Unexpected frame source.");
+        }
+        frame.close();
+        await waitForNextFrame();
+      }
+      source.close();
+    }
+  </script>
+</head>
+
+<body>
+  <div>
+    <canvas id='display' width="640" height="480"></canvas>
+  </div>
+</body>
+
+</html>

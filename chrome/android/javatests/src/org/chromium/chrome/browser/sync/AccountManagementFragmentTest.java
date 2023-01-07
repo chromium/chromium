@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.is;
 
-import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
-import android.accounts.Account;
 import android.view.View;
 
 import androidx.test.filters.MediumTest;
@@ -33,7 +32,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -42,29 +40,17 @@ import org.chromium.chrome.browser.sync.settings.AccountManagementFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.ChildAccountStatus;
+import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-/**
- * Tests {@link AccountManagementFragment}.
- */
+/** Tests {@link AccountManagementFragment}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountManagementFragmentTest {
-    private static final String CHILD_ACCOUNT_EMAIL = "child@gmail.com";
-
-    private final FakeAccountManagerFacade mFakeFacade = new FakeAccountManagerFacade(null) {
-        @Override
-        public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {
-            listener.onStatusReady(CHILD_ACCOUNT_EMAIL.equals(account.name)
-                            ? ChildAccountStatus.REGULAR_CHILD
-                            : ChildAccountStatus.NOT_CHILD);
-        }
-    };
+    private static final String CHILD_ACCOUNT_NAME =
+            AccountManagerTestRule.generateChildEmail("account@gmail.com");
 
     public final SettingsActivityTestRule<AccountManagementFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(AccountManagementFragment.class);
@@ -79,12 +65,13 @@ public class AccountManagementFragmentTest {
             RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
 
     @Rule
-    public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(mFakeFacade);
+    public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().build();
+            ChromeRenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
+                    .build();
 
     @Before
     public void setUp() {
@@ -94,21 +81,8 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @Features.DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-    public void testAccountManagementFragmentViewLegacy() throws Exception {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
-        mSettingsActivityTestRule.startSettingsActivity();
-        View view = mSettingsActivityTestRule.getFragment().getView();
-        onViewWaiting(allOf(is(view), isDisplayed()));
-        mRenderTestRule.render(view, "account_management_fragment_view_legacy");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testAccountManagementFragmentView() throws Exception {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
@@ -118,10 +92,9 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testSignedInAccountShownOnTop() throws Exception {
-        mAccountManagerTestRule.addAccount("testSecondary@gmail.com");
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addAccount("testSecondary@gmail.com");
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
@@ -131,57 +104,69 @@ public class AccountManagementFragmentTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @Features.DisableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-    public void testAccountManagementViewForChildAccountLegacy() throws Exception {
-        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_EMAIL);
-        final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
-                Profile::getLastUsedRegularProfile);
-        CriteriaHelper.pollUiThread(profile::isChild);
-        mSettingsActivityTestRule.startSettingsActivity();
-        View view = mSettingsActivityTestRule.getFragment().getView();
-        onViewWaiting(allOf(is(view), isDisplayed()));
-        mRenderTestRule.render(view, "account_management_fragment_for_child_account_legacy");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testAccountManagementViewForChildAccount() throws Exception {
-        mAccountManagerTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_EMAIL);
+        mSigninTestRule.addAccountAndWaitForSeeding(CHILD_ACCOUNT_NAME);
         final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
                 Profile::getLastUsedRegularProfile);
         CriteriaHelper.pollUiThread(profile::isChild);
         mSettingsActivityTestRule.startSettingsActivity();
+        CriteriaHelper.pollUiThread(() -> {
+            return mSettingsActivityTestRule.getFragment()
+                    .getProfileDataCacheForTesting()
+                    .hasProfileDataForTesting(CHILD_ACCOUNT_NAME);
+        });
         View view = mSettingsActivityTestRule.getFragment().getView();
         onViewWaiting(allOf(is(view), isDisplayed()));
         mRenderTestRule.render(view, "account_management_fragment_for_child_account");
     }
 
     @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testAccountManagementViewForChildAccountWithSecondaryEduAccount() throws Exception {
+        mSigninTestRule.addAccount(CHILD_ACCOUNT_NAME);
+        // The code under test doesn't care what account type this is, though in practice only
+        // EDU accounts are supported on devices where the primary account is a child account.
+        mSigninTestRule.addAccount("account@school.com");
+        mSigninTestRule.waitForSeeding();
+        final Profile profile = TestThreadUtils.runOnUiThreadBlockingNoException(
+                Profile::getLastUsedRegularProfile);
+        CriteriaHelper.pollUiThread(profile::isChild);
+        mSettingsActivityTestRule.startSettingsActivity();
+        CriteriaHelper.pollUiThread(() -> {
+            return mSettingsActivityTestRule.getFragment()
+                    .getProfileDataCacheForTesting()
+                    .hasProfileDataForTesting(CHILD_ACCOUNT_NAME);
+        });
+        View view = mSettingsActivityTestRule.getFragment().getView();
+        onViewWaiting(allOf(is(view), isDisplayed()));
+        mRenderTestRule.render(view, "account_management_fragment_for_child_and_edu_accounts");
+    }
+
+    @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void testSignOutUserWithoutShowingSignOutDialog() {
-        mAccountManagerTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addTestAccountThenSignin();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withText(R.string.sign_out)).perform(click());
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> Assert.assertNull("Account should be signed out!",
+                        -> Assert.assertFalse("Account should be signed out!",
                                 IdentityServicesProvider.get()
                                         .getIdentityManager(Profile.getLastUsedRegularProfile())
-                                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
+                                        .hasPrimaryAccount(ConsentLevel.SIGNIN)));
     }
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
     public void showSignOutDialogBeforeSigningUserOut() {
-        mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withText(R.string.sign_out_and_turn_off_sync)).perform(click());
-        onView(withText(R.string.signout_title)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onView(withText(R.string.turn_off_sync_and_signout_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/i18n/char_iterator.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
@@ -24,6 +26,17 @@ bool CompareLocation(const SpellCheckResult& r1, const SpellCheckResult& r2) {
 }
 
 }  // namespace
+
+// static
+std::unique_ptr<SpellingRequest> SpellingRequest::CreateForTest(
+    const std::u16string& text,
+    RequestTextCheckCallback callback,
+    DestructionCallback destruction_callback,
+    base::RepeatingClosure completion_barrier) {
+  return base::WrapUnique<SpellingRequest>(new SpellingRequest(
+      text, std::move(callback), std::move(destruction_callback),
+      std::move(completion_barrier)));
+}
 
 SpellingRequest::SpellingRequest(PlatformSpellChecker* platform_spell_checker,
                                  SpellingServiceClient* client,
@@ -45,6 +58,16 @@ SpellingRequest::SpellingRequest(PlatformSpellChecker* platform_spell_checker,
   RequestRemoteCheck(client, render_process_id);
   RequestLocalCheck(platform_spell_checker, document_tag);
 }
+
+SpellingRequest::SpellingRequest(const std::u16string& text,
+                                 RequestTextCheckCallback callback,
+                                 DestructionCallback destruction_callback,
+                                 base::RepeatingClosure completion_barrier)
+    : completion_barrier_(std::move(completion_barrier)),
+      remote_success_(false),
+      text_(text),
+      callback_(std::move(callback)),
+      destruction_callback_(std::move(destruction_callback)) {}
 
 SpellingRequest::~SpellingRequest() = default;
 
@@ -124,6 +147,56 @@ void SpellingRequest::OnRemoteCheckCompleted(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   remote_success_ = success;
   remote_results_ = results;
+
+  if (results.size() > 0) {
+    // The spelling service uses "logical" character positions, whereas the
+    // Chromium spell check infrastructure uses positions based on code points,
+    // which causes mismatches when the text contains characters made of
+    // multiple code points (such as emojis). Use a UTF-16 char iterator on the
+    // text to replace the logical positions of the remote results with their
+    // corresponding code points position in the string.
+    std::sort(remote_results_.begin(), remote_results_.end(), CompareLocation);
+    base::i18n::UTF16CharIterator char_iter(text);
+    std::vector<SpellCheckResult>::iterator result_iter;
+
+    for (result_iter = remote_results_.begin();
+         result_iter != remote_results_.end(); ++result_iter) {
+      while (char_iter.char_offset() < result_iter->location) {
+        char_iter.Advance();
+      }
+
+      if (char_iter.char_offset() > result_iter->location) {
+        // This remote result has a logical position that somehow doesn't
+        // correspond to a code point boundary position in the string. This is
+        // undefined behavior, so leave the result as is.
+        continue;
+      }
+
+      result_iter->location = char_iter.array_pos();
+
+      // Also fix the result's length.
+      base::i18n::UTF16CharIterator length_iter =
+          base::i18n::UTF16CharIterator::LowerBound(text,
+                                                    char_iter.array_pos());
+      int32_t initial_char_offset = length_iter.char_offset();
+
+      while (length_iter.char_offset() - initial_char_offset <
+             result_iter->length) {
+        length_iter.Advance();
+      }
+
+      if (length_iter.char_offset() - initial_char_offset >
+          result_iter->length) {
+        // The corrected position + logical length of this remote result does
+        // not match a code point boundary position in the string. This is
+        // undefined behavior, so leave the result as is.
+        continue;
+      }
+
+      result_iter->length = length_iter.array_pos() - char_iter.array_pos();
+    }
+  }
+
   completion_barrier_.Run();
 }
 

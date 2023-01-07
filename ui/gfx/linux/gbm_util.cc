@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,9 +37,9 @@ uint32_t BufferUsageToGbmFlags(gfx::BufferUsage usage) {
       return GBM_BO_USE_LINEAR | GBM_BO_USE_CAMERA_WRITE |
              GBM_BO_USE_TEXTURING | GBM_BO_USE_HW_VIDEO_ENCODER |
              GBM_BO_USE_SW_READ_OFTEN;
-    default:
-      NOTREACHED();
-      return 0;
+    case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
+      return GBM_BO_USE_SCANOUT | GBM_BO_USE_TEXTURING |
+             GBM_BO_USE_FRONT_RENDERING;
   }
 }
 

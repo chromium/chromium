@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_player_id.h"
@@ -35,6 +34,11 @@ class WebContentsObserverConsistencyChecker
     : public WebContentsObserver,
       public base::SupportsUserData::Data {
  public:
+  WebContentsObserverConsistencyChecker(
+      const WebContentsObserverConsistencyChecker&) = delete;
+  WebContentsObserverConsistencyChecker& operator=(
+      const WebContentsObserverConsistencyChecker&) = delete;
+
   ~WebContentsObserverConsistencyChecker() override;
 
   // Enables these checks on |web_contents|. Usually
@@ -46,15 +50,14 @@ class WebContentsObserverConsistencyChecker
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* new_host) override;
-  void FrameDeleted(RenderFrameHost* render_frame_host) override;
+  void FrameDeleted(int frame_tree_node_id) override;
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
-  void DocumentAvailableInMainFrame(
-      RenderFrameHost* render_frame_host) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      RenderFrameHost* render_frame_host) override;
+  void PrimaryPageChanged(Page& page) override;
+  void PrimaryMainDocumentElementAvailable() override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void DOMContentLoaded(RenderFrameHost* render_frame_host) override;
   void DidFinishLoad(RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
@@ -82,6 +85,8 @@ class WebContentsObserverConsistencyChecker
   void DidStopLoading() override;
 
  private:
+  class TestInputEventObserver;
+
   explicit WebContentsObserverConsistencyChecker(WebContents* web_contents);
 
   std::string Format(RenderFrameHost* render_frame_host);
@@ -93,6 +98,9 @@ class WebContentsObserverConsistencyChecker
   void EnsureStableParentValue(RenderFrameHost* render_frame_host);
   bool HasAnyChildren(RenderFrameHost* render_frame_host);
 
+  void AddInputEventObserver(RenderFrameHost* render_frame_host);
+  void RemoveInputEventObserver(RenderFrameHost* render_frame_host);
+
   std::map<int64_t, RenderFrameHost*> ready_to_commit_hosts_;
   std::set<GlobalRoutingID> current_hosts_;
   std::set<GlobalRoutingID> live_routes_;
@@ -101,14 +109,37 @@ class WebContentsObserverConsistencyChecker
   std::set<NavigationHandle*> ongoing_navigations_;
   std::vector<MediaPlayerId> active_media_players_;
 
+  std::map<RenderFrameHost*, std::unique_ptr<TestInputEventObserver>>
+      input_observer_map_;
+
+  // Used for checking if observer calls for navigation run in the same task.
+  class TaskChecker {
+   public:
+    TaskChecker();
+
+    void BindCurrentTask();
+
+    // Returns true if the current task is the same as the task bound by
+    // BindCurrentTask().
+    bool IsRunningInSameTask();
+
+   private:
+    absl::optional<int> GetSequenceNumberOfCurrentTask();
+
+    // In some tests, the current task is not set. In that case, `sequence_num`
+    // is absl::nullopt.
+    absl::optional<int> sequence_num_;
+  };
+  TaskChecker task_checker_for_prerendered_page_activation_;
+
   // Remembers parents to make sure RenderFrameHost::GetParent() never changes.
   std::map<GlobalRoutingID, GlobalRoutingID> parent_ids_;
+
+  std::set<int> frame_tree_node_ids_;
 
   bool is_loading_;
 
   bool web_contents_destroyed_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsObserverConsistencyChecker);
 };
 
 }  // namespace content

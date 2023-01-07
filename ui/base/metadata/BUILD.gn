@@ -1,0 +1,63 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//testing/test.gni")
+
+source_set("metadata_headers") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "base_type_conversion.h",
+    "metadata_cache.h",
+    "metadata_header_macros.h",
+    "metadata_impl_macros.h",
+    "metadata_macros_internal.h",
+    "metadata_types.h",
+    "property_metadata.h",
+  ]
+
+  public_deps = [
+    "//base:base",
+    "//skia:skia",
+    "//ui/base",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
+component("metadata") {
+  sources = [
+    "base_type_conversion.cc",
+    "metadata_cache.cc",
+    "metadata_types.cc",
+  ]
+
+  defines = [ "IS_UI_BASE_METADATA_IMPL" ]
+
+  deps = [
+    "//skia:skia",
+    "//ui/gfx:color_utils",
+  ]
+
+  public_deps = [ ":metadata_headers" ]
+}
+
+source_set("metadata_tests") {
+  testonly = true
+
+  sources = [
+    "base_type_conversion_unittest.cc",
+    "metadata_unittest.cc",
+  ]
+
+  deps = [
+    ":metadata",
+    "//base/test:test_support",
+    "//skia:skia",
+    "//testing/gtest",
+    "//ui/gfx:color_utils",
+    "//ui/gfx:test_support",
+  ]
+}

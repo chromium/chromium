@@ -34,7 +34,9 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
+#include "base/dcheck_is_on.h"
+#include "base/ranges/algorithm.h"
+#include "base/types/optional_util.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
@@ -46,7 +48,6 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -229,11 +230,6 @@ class CORE_EXPORT SerializedScriptValue
   // Returns true if the array was filled, or false if the passed value was not
   // of an appropriate type.
   static bool ExtractTransferables(v8::Isolate*,
-                                   v8::Local<v8::Value>,
-                                   int,
-                                   Transferables&,
-                                   ExceptionState&);
-  static bool ExtractTransferables(v8::Isolate*,
                                    const HeapVector<ScriptValue>&,
                                    Transferables&,
                                    ExceptionState&);
@@ -272,13 +268,6 @@ class CORE_EXPORT SerializedScriptValue
   size_t DataLengthInBytes() const { return data_buffer_size_; }
 
   TransferredWasmModulesArray& WasmModules() { return wasm_modules_; }
-
-  const SecurityOrigin* origin() { return origin_.get(); }
-
-  void set_origin(const SecurityOrigin* origin) {
-    origin_ = origin->IsolatedCopy();
-  }
-
   SharedArrayBufferContentsArray& SharedArrayBuffersContents() {
     return shared_array_buffers_contents_;
   }
@@ -300,14 +289,11 @@ class CORE_EXPORT SerializedScriptValue
 
   StreamArray& GetStreams() { return streams_; }
 
-  bool IsLockedToAgentCluster() const {
-    return !wasm_modules_.IsEmpty() ||
-           !shared_array_buffers_contents_.IsEmpty() ||
-           std::any_of(attachments_.begin(), attachments_.end(),
-                       [](const auto& entry) {
-                         return entry.value->IsLockedToAgentCluster();
-                       });
+  const v8::SharedValueConveyor* MaybeGetSharedValueConveyor() const {
+    return base::OptionalToPtr(shared_value_conveyor_);
   }
+
+  bool IsLockedToAgentCluster() const;
 
   // Returns true after serializing script values that remote origins cannot
   // access.
@@ -357,8 +343,12 @@ class CORE_EXPORT SerializedScriptValue
     // to improve robustness and allow the replay to continue.
     size_t recorded_size = recordreplay::RecordReplayValue("SerializedScriptValue::SetData", size);
     if (recorded_size != size) {
+      recordreplay::Print("Warning: SerializedScriptValue::SetData mismatched size, expected %zu got %zu",
+                          recorded_size, size);
+
       data_buffer_ = AllocateBuffer(recorded_size);
       memset(data_buffer_.get(), 0, recorded_size);
+      data_buffer_size_ = recorded_size;
       return;
     }
 
@@ -410,16 +400,13 @@ class CORE_EXPORT SerializedScriptValue
 
   // These do not have one-use transferred contents, like the above.
   TransferredWasmModulesArray wasm_modules_;
-  // To count how often WebAssembly modules get transferred cross-origin, we
-  // allow to store the |SecurityOrigin| in the |V8SerializedScriptValue|. The
-  // |SecurityOrigin| has to be set explicitly with |set_origin()|.
-  scoped_refptr<SecurityOrigin> origin_;
   BlobDataHandleMap blob_data_handles_;
   MojoScopedHandleArray mojo_handles_;
   SharedArrayBufferContentsArray shared_array_buffers_contents_;
   FileSystemAccessTokensArray file_system_access_tokens_;
   HashMap<const void* const*, std::unique_ptr<Attachment>> attachments_;
 
+  absl::optional<v8::SharedValueConveyor> shared_value_conveyor_;
   bool has_registered_external_allocation_;
 #if DCHECK_IS_ON()
   bool was_unpacked_ = false;

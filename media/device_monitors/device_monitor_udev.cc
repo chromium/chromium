@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/sequence_checker.h"
 #include "base/system/system_monitor.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "device/udev_linux/udev.h"
 #include "device/udev_linux/udev_watcher.h"
@@ -45,6 +44,10 @@ class DeviceMonitorLinux::BlockingTaskRunnerHelper
     : public device::UdevWatcher::Observer {
  public:
   BlockingTaskRunnerHelper();
+
+  BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
+  BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
+
   ~BlockingTaskRunnerHelper() override = default;
 
   void Initialize();
@@ -60,8 +63,6 @@ class DeviceMonitorLinux::BlockingTaskRunnerHelper
   std::unique_ptr<device::UdevWatcher> udev_watcher_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingTaskRunnerHelper);
 };
 
 DeviceMonitorLinux::BlockingTaskRunnerHelper::BlockingTaskRunnerHelper() {
@@ -73,8 +74,8 @@ DeviceMonitorLinux::BlockingTaskRunnerHelper::BlockingTaskRunnerHelper() {
 void DeviceMonitorLinux::BlockingTaskRunnerHelper::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<device::UdevWatcher::Filter> filters;
-  for (const SubsystemMap& entry : kSubsystemMap) {
-    filters.emplace_back(entry.subsystem, entry.devtype);
+  for (const auto& [device_type, subsys, devtype] : kSubsystemMap) {
+    filters.emplace_back(subsys, devtype);
   }
   udev_watcher_ = device::UdevWatcher::StartWatching(this, filters);
 }
@@ -98,20 +99,19 @@ void DeviceMonitorLinux::BlockingTaskRunnerHelper::OnDevicesChanged(
     device::ScopedUdevDevicePtr device) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::SystemMonitor::DeviceType device_type =
-      base::SystemMonitor::DEVTYPE_UNKNOWN;
+  base::SystemMonitor::DeviceType type = base::SystemMonitor::DEVTYPE_UNKNOWN;
   const std::string subsystem(device::udev_device_get_subsystem(device.get()));
-  for (const SubsystemMap& entry : kSubsystemMap) {
-    if (subsystem == entry.subsystem) {
-      device_type = entry.device_type;
+  for (const auto& [device_type, subsys, devtype] : kSubsystemMap) {
+    if (subsystem == subsys) {
+      type = device_type;
       break;
     }
   }
-  DCHECK_NE(device_type, base::SystemMonitor::DEVTYPE_UNKNOWN);
+  DCHECK_NE(type, base::SystemMonitor::DEVTYPE_UNKNOWN);
 
   // base::SystemMonitor takes care of notifying each observer in their own task
   // runner via base::ObserverListThreadSafe.
-  base::SystemMonitor::Get()->ProcessDevicesChanged(device_type);
+  base::SystemMonitor::Get()->ProcessDevicesChanged(type);
 }
 
 DeviceMonitorLinux::DeviceMonitorLinux()

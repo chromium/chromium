@@ -1,21 +1,25 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.widget.listmenu;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.UiUtils;
@@ -75,7 +79,7 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
                         .with(ListMenuItemProperties.END_ICON_ID, endIconId)
                         .with(ListMenuItemProperties.ENABLED, enabled)
                         .with(ListMenuItemProperties.TINT_COLOR_ID,
-                                R.color.default_icon_color_secondary)
+                                R.color.default_icon_color_secondary_tint_list)
                         .build());
     }
 
@@ -112,6 +116,7 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
      * @param context The {@link Context} to inflate the layout.
      * @param data Data representing the list items.
      *             All items in data are assumed to be enabled.
+     * @param delegate The {@link Delegate} that would be called when the menu is clicked.
      */
     public BasicListMenu(@NonNull Context context, ModelList data, Delegate delegate) {
         mContext = context;
@@ -124,6 +129,20 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
         mDelegate = delegate;
         mClickRunnables = new LinkedList<>();
         registerListItemTypes();
+    }
+
+    /**
+     * @param context The {@link Context} to inflate the layout.
+     * @param data Data representing the list items.
+     *             All items in data are assumed to be enabled.
+     * @param delegate The {@link Delegate} that would be called when the menu is clicked.
+     * @param backgroundTintColor The background tint color of the menu.
+     */
+    public BasicListMenu(@NonNull Context context, ModelList data, Delegate delegate,
+            @ColorRes int backgroundTintColor) {
+        this(context, data, delegate);
+        ViewCompat.setBackgroundTintList(mContentView,
+                ColorStateList.valueOf(ContextCompat.getColor(mContext, backgroundTintColor)));
     }
 
     @Override
@@ -172,7 +191,8 @@ public class BasicListMenu implements ListMenu, OnItemClickListener {
                 .with(ListMenuItemProperties.MENU_ITEM_ID, menuId)
                 .with(ListMenuItemProperties.START_ICON_ID, iconId)
                 .with(ListMenuItemProperties.ENABLED, enabled)
-                .with(ListMenuItemProperties.TINT_COLOR_ID, R.color.default_icon_color_secondary)
+                .with(ListMenuItemProperties.TINT_COLOR_ID,
+                        R.color.default_icon_color_secondary_tint_list)
                 .build();
     }
 }

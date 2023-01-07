@@ -1,0 +1,11 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module omnibox.mojom;
+
+// Events that indicate that the user is about to navigate to a suggestion.
+enum NavigationPredictor {
+  kMouseDown = 1,           // The user pushed the mouse button down.
+  kUpOrDownArrowButton = 2  // The user pushed the down or up arrow button.
+};

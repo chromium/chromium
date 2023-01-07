@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_test_suite.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 
 namespace blink {
@@ -22,7 +23,7 @@ TEST_F(ScrollbarThemeOverlayTest, PaintInvalidation) {
   NiceMock<MockScrollableArea>* mock_scrollable_area =
       MakeGarbageCollected<NiceMock<MockScrollableArea>>(
           ScrollOffset(100, 100));
-  ScrollbarThemeOverlay theme(14, 0);
+  ScrollbarThemeOverlay theme(14, 0, 14, 0);
 
   Scrollbar* vertical_scrollbar = Scrollbar::CreateForTesting(
       mock_scrollable_area, kVerticalScrollbar, &theme);
@@ -33,8 +34,8 @@ TEST_F(ScrollbarThemeOverlayTest, PaintInvalidation) {
   ON_CALL(*mock_scrollable_area, HorizontalScrollbar())
       .WillByDefault(Return(horizontal_scrollbar));
 
-  IntRect vertical_rect(1010, 0, 14, 768);
-  IntRect horizontal_rect(0, 754, 1024, 14);
+  gfx::Rect vertical_rect(1010, 0, 14, 768);
+  gfx::Rect horizontal_rect(0, 754, 1024, 14);
   vertical_scrollbar->SetFrameRect(vertical_rect);
   horizontal_scrollbar->SetFrameRect(horizontal_rect);
 

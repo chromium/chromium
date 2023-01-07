@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -16,14 +15,17 @@ namespace ash {
 class ASH_EXPORT ScopedBacklightsForcedOff {
  public:
   explicit ScopedBacklightsForcedOff(base::OnceClosure unregister_callback);
+
+  ScopedBacklightsForcedOff(const ScopedBacklightsForcedOff&) = delete;
+  ScopedBacklightsForcedOff& operator=(const ScopedBacklightsForcedOff&) =
+      delete;
+
   ~ScopedBacklightsForcedOff();
 
  private:
   // Callback that should be called in order for |this| to unregister backlights
   // forced off request.
   base::OnceClosure unregister_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedBacklightsForcedOff);
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define COMPONENTS_UPDATE_CLIENT_UPDATE_QUERY_PARAMS_H_
 
 #include <string>
-
-#include "base/macros.h"
 
 namespace update_client {
 
@@ -21,6 +19,10 @@ class UpdateQueryParamsDelegate;
 class UpdateQueryParams {
  public:
   enum ProdId { CHROME = 0, CRX, WEBVIEW };
+
+  UpdateQueryParams() = delete;
+  UpdateQueryParams(const UpdateQueryParams&) = delete;
+  UpdateQueryParams& operator=(const UpdateQueryParams&) = delete;
 
   // Generates a string of URL query parameters for Omaha. Includes the
   // following fields: "os", "arch", "nacl_arch", "prod", "prodchannel",
@@ -50,9 +52,6 @@ class UpdateQueryParams {
 
   // Use this delegate.
   static void SetDelegate(UpdateQueryParamsDelegate* delegate);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(UpdateQueryParams);
 };
 
 }  // namespace update_client

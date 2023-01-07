@@ -1,9 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/zoom/zoom_controller.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -18,6 +17,7 @@
 #include "ipc/ipc_message.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using zoom::ZoomChangedWatcher;
 using zoom::ZoomController;
@@ -54,6 +54,7 @@ TEST_F(ZoomControllerTest, DidNavigateMainFrame) {
                                          zoom_change_data);
   content::MockNavigationHandle handle;
   handle.set_has_committed(true);
+  handle.set_is_in_primary_main_frame(true);
   zoom_controller_->DidFinishNavigation(&handle);
   zoom_change_watcher.Wait();
 }

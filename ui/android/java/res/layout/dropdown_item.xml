@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2014 The Chromium Authors. All rights reserved.
-
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
+<!--
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
 <LinearLayout
@@ -39,7 +39,7 @@
             android:includeFontPadding="false"
             android:singleLine="true"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary.Baseline" />
 
         <TextView
             android:id="@+id/dropdown_sublabel"
@@ -51,7 +51,7 @@
             android:includeFontPadding="false"
             android:singleLine="true"
             android:textAlignment="viewStart"
-            android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary.Baseline" />
     </LinearLayout>
 
     <ImageView

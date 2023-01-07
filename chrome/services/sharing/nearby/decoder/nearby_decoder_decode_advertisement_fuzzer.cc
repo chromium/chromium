@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "chromeos/ash/services/nearby/public/mojom/nearby_decoder_types.mojom.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

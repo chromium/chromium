@@ -1,16 +1,22 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_IPC_CLIENT_SHARED_IMAGE_INTERFACE_PROXY_H_
 #define GPU_IPC_CLIENT_SHARED_IMAGE_INTERFACE_PROXY_H_
 
+#include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/buffer.h"
+
+namespace viz {
+class SharedImageFormat;
+}
 
 namespace gpu {
 class GpuChannelHost;
@@ -20,13 +26,13 @@ class SharedImageInterfaceProxy {
  public:
   explicit SharedImageInterfaceProxy(GpuChannelHost* host, int32_t route_id);
   ~SharedImageInterfaceProxy();
-  Mailbox CreateSharedImage(viz::ResourceFormat format,
+  Mailbox CreateSharedImage(viz::SharedImageFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
                             GrSurfaceOrigin surface_origin,
                             SkAlphaType alpha_type,
                             uint32_t usage);
-  Mailbox CreateSharedImage(viz::ResourceFormat format,
+  Mailbox CreateSharedImage(viz::SharedImageFormat format,
                             const gfx::Size& size,
                             const gfx::ColorSpace& color_space,
                             GrSurfaceOrigin surface_origin,
@@ -35,16 +41,16 @@ class SharedImageInterfaceProxy {
                             base::span<const uint8_t> pixel_data);
   Mailbox CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
                             GpuMemoryBufferManager* gpu_memory_buffer_manager,
+                            gfx::BufferPlane plane,
                             const gfx::ColorSpace& color_space,
                             GrSurfaceOrigin surface_origin,
                             SkAlphaType alpha_type,
                             uint32_t usage);
 
-#if defined(OS_ANDROID)
-  Mailbox CreateSharedImageWithAHB(const Mailbox& mailbox,
-                                   uint32_t usage,
-                                   const SyncToken& sync_token);
-#endif
+#if BUILDFLAG(IS_WIN)
+  void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
+                             const Mailbox& mailbox);
+#endif  // BUILDFLAG(IS_WIN)
 
   void UpdateSharedImage(const SyncToken& sync_token, const Mailbox& mailbox);
   void UpdateSharedImage(const SyncToken& sync_token,
@@ -66,14 +72,14 @@ class SharedImageInterfaceProxy {
       uint32_t usage);
   void PresentSwapChain(const SyncToken& sync_token, const Mailbox& mailbox);
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
                                       zx::channel token,
                                       gfx::BufferFormat format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe);
   void ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id);
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(const gpu::Mailbox& mailbox);
 
@@ -88,7 +94,7 @@ class SharedImageInterfaceProxy {
   void AddMailbox(const Mailbox& mailbox, uint32_t usage)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  GpuChannelHost* const host_;
+  const raw_ptr<GpuChannelHost> host_;
   const int32_t route_id_;
   base::Lock lock_;
   uint32_t next_release_id_ GUARDED_BY(lock_) = 0;

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,8 @@
 IPC_ENUM_TRAITS_MAX_VALUE(gfx::BufferFormat, gfx::BufferFormat::LAST)
 
 IPC_ENUM_TRAITS_MAX_VALUE(gfx::BufferUsage, gfx::BufferUsage::LAST)
+
+IPC_ENUM_TRAITS_MAX_VALUE(gfx::BufferPlane, gfx::BufferPlane::LAST)
 
 #undef IPC_MESSAGE_EXPORT
 #define IPC_MESSAGE_EXPORT

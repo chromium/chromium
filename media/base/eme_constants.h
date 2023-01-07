@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 
 #include <stdint.h>
 
+#include "media/base/media_export.h"
 #include "media/media_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -19,9 +21,9 @@ enum class EmeInitDataType { UNKNOWN, WEBM, CENC, KEYIDS, MAX = KEYIDS };
 // Defines bitmask values that specify codecs used in Encrypted Media Extensions
 // (EME). Generally codec profiles are not specified and it is assumed that the
 // profile support for encrypted playback is the same as for clear playback.
-// The only exception is VP9 where we have older CDMs only supporting profile 0,
-// while new CDMs could support profile 2. Profile 1 and 3 are not supported by
-// EME, see https://crbug.com/898298.
+// For VP9 we have older CDMs only supporting profile 0, while new CDMs could
+// support profile 2. Profile 1 and 3 are not supported by EME, see
+// https://crbug.com/898298.
 enum EmeCodec : uint32_t {
   EME_CODEC_NONE = 0,
   EME_CODEC_OPUS = 1 << 0,
@@ -32,20 +34,34 @@ enum EmeCodec : uint32_t {
   EME_CODEC_AVC1 = 1 << 5,
   EME_CODEC_VP9_PROFILE2 = 1 << 6,  // VP9 profiles 2
   EME_CODEC_HEVC_PROFILE_MAIN = 1 << 7,
-  EME_CODEC_DOLBY_VISION_AVC = 1 << 8,
-  EME_CODEC_DOLBY_VISION_HEVC = 1 << 9,
-  EME_CODEC_AC3 = 1 << 10,
-  EME_CODEC_EAC3 = 1 << 11,
-  EME_CODEC_MPEG_H_AUDIO = 1 << 12,
-  EME_CODEC_FLAC = 1 << 13,
-  EME_CODEC_AV1 = 1 << 14,
-  EME_CODEC_HEVC_PROFILE_MAIN10 = 1 << 15,
+  EME_CODEC_DOLBY_VISION_PROFILE0 = 1 << 8,
+  EME_CODEC_DOLBY_VISION_PROFILE4 = 1 << 9,
+  EME_CODEC_DOLBY_VISION_PROFILE5 = 1 << 10,
+  EME_CODEC_DOLBY_VISION_PROFILE7 = 1 << 11,
+  EME_CODEC_DOLBY_VISION_PROFILE8 = 1 << 12,
+  EME_CODEC_DOLBY_VISION_PROFILE9 = 1 << 13,
+  EME_CODEC_AC3 = 1 << 14,
+  EME_CODEC_EAC3 = 1 << 15,
+  EME_CODEC_MPEG_H_AUDIO = 1 << 16,
+  EME_CODEC_FLAC = 1 << 17,
+  EME_CODEC_AV1 = 1 << 18,
+  EME_CODEC_HEVC_PROFILE_MAIN10 = 1 << 19,
+  EME_CODEC_DTS = 1 << 20,
+  EME_CODEC_DTSXP2 = 1 << 21,
 };
 
 // *_ALL values should only be used for masking, do not use them to specify
 // codec support because they may be extended to include more codecs.
 
 using SupportedCodecs = uint32_t;
+
+// Dolby Vision profile 0 and 9 are based on AVC while profile 4, 5, 7 and 8 are
+// based on HEVC.
+constexpr SupportedCodecs EME_CODEC_DOLBY_VISION_AVC =
+    EME_CODEC_DOLBY_VISION_PROFILE0 | EME_CODEC_DOLBY_VISION_PROFILE9;
+constexpr SupportedCodecs EME_CODEC_DOLBY_VISION_HEVC =
+    EME_CODEC_DOLBY_VISION_PROFILE4 | EME_CODEC_DOLBY_VISION_PROFILE5 |
+    EME_CODEC_DOLBY_VISION_PROFILE7 | EME_CODEC_DOLBY_VISION_PROFILE8;
 
 namespace {
 
@@ -56,6 +72,9 @@ constexpr SupportedCodecs GetMp4AudioCodecs() {
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
   codecs |= EME_CODEC_AC3 | EME_CODEC_EAC3;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  codecs |= EME_CODEC_DTS | EME_CODEC_DTSXP2;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
   codecs |= EME_CODEC_MPEG_H_AUDIO;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
@@ -121,17 +140,6 @@ static_assert(
 #endif  // BUILDFLAG(ENABLE_MSE_MPEG2TS_STREAM_PARSER)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
-enum class EmeSessionTypeSupport {
-  // Invalid default value.
-  INVALID,
-  // The session type is not supported.
-  NOT_SUPPORTED,
-  // The session type is supported if a distinctive identifier is available.
-  SUPPORTED_WITH_IDENTIFIER,
-  // The session type is always supported.
-  SUPPORTED,
-};
-
 // Used to declare support for distinctive identifier and persistent state.
 // These are purposefully limited to not allow one to require the other, so that
 // transitive requirements are not possible. Non-trivial refactoring would be
@@ -152,57 +160,50 @@ enum class EmeMediaType {
   VIDEO,
 };
 
-// Configuration rules indicate the configuration state required to support a
-// configuration option (note: a configuration option may be disallowing a
-// feature). Configuration rules are used to answer queries about distinctive
-// identifier, persistent state, and robustness requirements, as well as to
-// describe support for different session types.
-//
-// If in the future there are reasons to request user permission other than
-// access to a distinctive identifier, then additional rules should be added.
-// Rules are implemented in ConfigState and are otherwise opaque.
-enum class EmeConfigRule {
-  // The configuration option is not supported.
-  NOT_SUPPORTED,
+enum class EmeConfigRuleState {
+  // To correctly identify the EmeConfig as Supported, we use the enum value
+  // kUnset for each of the rules so that it is easy to check for, and cannot be
+  // confused.
+  kUnset,
 
-  // The configuration option prevents use of a distinctive identifier.
-  IDENTIFIER_NOT_ALLOWED,
+  // Not Allowed represents when the rule in the collection of EmeConfigRules is
+  // not allowed by the current system.
+  kNotAllowed,
 
-  // The configuration option is supported if a distinctive identifier is
-  // available.
-  IDENTIFIER_REQUIRED,
+  // Recommended represents when the rule in the collection of EmeConfigRules is
+  // recommended by the current system. In our design, the recommended takes a
+  // second priority and cannot override the NotAllowed or Required value.
+  kRecommended,
 
-  // The configuration option is supported, but the user experience may be
-  // improved if a distinctive identifier is available.
-  IDENTIFIER_RECOMMENDED,
-
-  // The configuration option prevents use of persistent state.
-  PERSISTENCE_NOT_ALLOWED,
-
-  // The configuration option is supported if persistent state is available.
-  PERSISTENCE_REQUIRED,
-
-  // The configuration option is supported if both a distinctive identifier and
-  // persistent state are available.
-  IDENTIFIER_AND_PERSISTENCE_REQUIRED,
-
-  // The configuration option prevents use of hardware-secure codecs.
-  // This rule only has meaning on platforms that distinguish hardware-secure
-  // codecs (i.e. Android, Windows and ChromeOS).
-  HW_SECURE_CODECS_NOT_ALLOWED,
-
-  // The configuration option is supported if hardware-secure codecs are used.
-  // This rule only has meaning on platforms that distinguish hardware-secure
-  // codecs (i.e. Android, Windows and ChromeOS).
-  HW_SECURE_CODECS_REQUIRED,
-
-  // The configuration option is supported on platforms where hardware-secure
-  // codecs are used and an identifier is also required (i.e. ChromeOS).
-  IDENTIFIER_AND_HW_SECURE_CODECS_REQUIRED,
-
-  // The configuration option is supported without conditions.
-  SUPPORTED,
+  // Required represents when the rule in the collection of EmeConfigRules is
+  // required by the current system.
+  kRequired,
 };
+
+struct MEDIA_EXPORT EmeConfig {
+  using Rule = absl::optional<EmeConfig>;
+
+  // Refer to the EME spec for definitions on what identifier, persistence, and
+  // hw_secure_codecs represent.
+  EmeConfigRuleState identifier = EmeConfigRuleState::kUnset;
+  EmeConfigRuleState persistence = EmeConfigRuleState::kUnset;
+  EmeConfigRuleState hw_secure_codecs = EmeConfigRuleState::kUnset;
+
+  // To represent an EmeConfig::Rule where the feature is supported without any
+  // special requirements. This type adds nothing during the AddRule() function.
+  // Internally, we represent Supported as all the States set to kUnset.
+  static EmeConfig::Rule SupportedRule() { return EmeConfig(); }
+
+  // To represent an EmeConfig::Rule where the feature is not supported.
+  // Internally, we represent Unsupported as absl::nullopt.
+  static EmeConfig::Rule UnsupportedRule() { return absl::nullopt; }
+};
+
+inline bool operator==(EmeConfig const& lhs, EmeConfig const& rhs) {
+  return lhs.persistence == rhs.persistence &&
+         lhs.identifier == rhs.identifier &&
+         lhs.hw_secure_codecs == rhs.hw_secure_codecs;
+}
 
 }  // namespace media
 

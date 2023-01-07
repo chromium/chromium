@@ -1,6 +1,47 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+//
+// This file defines macros for defining browser tests. The macros mirror
+// googletest's built-in `TEST_F()` and `TEST_P()` macros. Note that there is no
+// equivalent to googletest's `TEST()` macro, as browser tests always require a
+// test fixture.
+//
+// `IN_PROC_BROWSER_TEST_F(TestFixture, Name)` is analogous to `TEST_F()`.
+// `TestFixture` should be a subclass of `content::BrowserTestBase`, e.g.
+// `content::ContentBrowserTest` for browser tests that only need features from
+// content_shell, `InProcessBrowserTest` for tests that require Chrome features,
+// et cetera.
+//
+// To add additional functionality, e.g. helper methods, to a test fixture,
+// subclass `content::ContentBrowserTest`, `InProcessBrowserTest`, et cetera,
+// *not* `content::BrowserTestBase`. `content::BrowserTestBase` provides
+// low-level functionality shared amongst different types of browser tests, but
+// does not actually define how to launch and run the test in an actual browser.
+//
+// `IN_PROC_BROWSER_TEST_P(TestFixture, Name)` is similar to `TEST_P()`.
+// Parameterized tests will need to define their own test fixture by subclassing
+// from `content::ContentBrowserTest`, `InProcessBrowserTest`, et cetera as
+// noted above *and* `::testing::WithParamInterface<T>`.
+//
+// Finally, note that like googletest, the browser test fixture is *not* reused
+// across different test runs, and each test run gets a clean profile. However,
+// browser tests that need to exercise functionality across browser restarts can
+// define two tests and link them together using `PRE_` tests, e.g.:
+//
+//   using MyBrowserTest = content::ContentBrowserTest;
+//
+//   IN_PROC_BROWSER_TEST_F(MyBrowserTest, PRE_MyTest) {
+//     ...
+//   }
+//
+//   IN_PROC_BROWSER_TEST_F(MyBrowserTest, MyTest) {
+//     ...
+//   }
+//
+// MyBrowserTest.PRE_MyTest will always run before MyBrowserTest.MyTest; more
+// importantly, profile data is not reset between runs. In addition, the `PRE_`
+// prefix applies recursively, e.g. `PRE_PRE_MyTest` runs before `PRE_MyTest`.
 
 #ifndef CONTENT_PUBLIC_TEST_BROWSER_TEST_H_
 #define CONTENT_PUBLIC_TEST_BROWSER_TEST_H_
@@ -15,8 +56,6 @@
 #error Can't reliably terminate hanging event tests without OOP test runner.
 #endif
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #define IN_PROC_BROWSER_TEST_(                                               \

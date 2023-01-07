@@ -66,9 +66,12 @@ async function registerCredential(options = {}) {
         transports: credential.response.getTransports(),
       },
     };
-    if (credential.getClientExtensionResults().largeBlob) {
-      result.largeBlobSupported =
-          credential.getClientExtensionResults().largeBlob.supported;
+    const extensions = credential.getClientExtensionResults();
+    if (extensions.largeBlob) {
+      result.largeBlobSupported = extensions.largeBlob.supported;
+    }
+    if ('credBlob' in extensions) {
+      result.credBlob = extensions.credBlob;
     }
     return result;
   } catch (error) {

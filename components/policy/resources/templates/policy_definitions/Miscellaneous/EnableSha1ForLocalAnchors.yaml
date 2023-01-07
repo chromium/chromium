@@ -1,0 +1,29 @@
+caption: Allow SHA-1 signed certificates issued by local trust anchors
+deprecated: true
+desc: |-
+  When this setting is enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> allows SHA-1 signed certificates as long as they successfully validate and chain to a locally-installed CA certificates.
+
+        Note that this policy depends on the operating system certificate verification stack allowing SHA-1 signatures. If an OS update changes the OS handling of SHA-1 certificates, this policy may no longer have effect.  Further, this policy is intended as a temporary workaround to give enterprises more time to move away from SHA-1.  This policy will be removed on or around January 1st 2019.
+
+        If this policy is not set, or it is set to false, then <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> follows the publicly announced SHA-1 deprecation schedule.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Allow SHA-1 signed certificates issued by local trust anchors
+  value: true
+- caption: Disallow SHA-1 signed certificates
+  value: false
+owners:
+- mattm@chromium.org
+- rsleevi@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:54-71
+- chrome_os:54-71
+- android:54-71
+tags:
+- system-security
+type: main

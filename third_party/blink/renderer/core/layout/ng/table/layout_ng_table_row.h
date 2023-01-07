@@ -1,13 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_LAYOUT_NG_TABLE_ROW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_LAYOUT_NG_TABLE_ROW_H_
 
+#include "base/dcheck_is_on.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_block.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_row_interface.h"
+#include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_section_interface.h"
 
 namespace blink {
 
@@ -17,7 +20,7 @@ class LayoutNGTable;
 // NOTE:
 // Legacy table row inherits from LayoutBox, not LayoutBlock.
 // Every child of LayoutNGTableRow must be LayoutNGTableCell.
-class CORE_EXPORT LayoutNGTableRow : public LayoutNGMixin<LayoutBlock>,
+class CORE_EXPORT LayoutNGTableRow : public LayoutNGBlock,
                                      public LayoutNGTableRowInterface {
  public:
   explicit LayoutNGTableRow(Element*);
@@ -28,7 +31,10 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGMixin<LayoutBlock>,
 
   // LayoutBlock methods start.
 
-  void UpdateBlockLayout(bool relayout_children) override { NOTREACHED(); }
+  void UpdateBlockLayout(bool relayout_children) override {
+    NOT_DESTROYED();
+    NOTREACHED();
+  }
 
   const char* GetName() const override {
     NOT_DESTROYED();
@@ -65,12 +71,14 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGMixin<LayoutBlock>,
     return false;
   }
 
-  bool AllowsNonVisibleOverflow() const override {
+  bool RespectsCSSOverflow() const override {
     NOT_DESTROYED();
     return false;
   }
 
+#if DCHECK_IS_ON()
   void AddVisualOverflowFromBlockChildren() override;
+#endif
 
   bool VisualRectRespectsVisibility() const final {
     NOT_DESTROYED();
@@ -86,11 +94,6 @@ class CORE_EXPORT LayoutNGTableRow : public LayoutNGMixin<LayoutBlock>,
   const LayoutObject* ToLayoutObject() const final {
     NOT_DESTROYED();
     return this;
-  }
-
-  const LayoutTableRow* ToLayoutTableRow() const final {
-    NOTREACHED();
-    return nullptr;
   }
 
   const LayoutNGTableRowInterface* ToLayoutNGTableRowInterface() const final {

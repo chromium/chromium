@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/environment.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -16,17 +17,18 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/vr/test/conditional_skipping.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "device/base/features.h"
 #include "device/vr/test/test_hook.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
+
+namespace content {
+class WebContents;
+}
 
 namespace vr {
 
@@ -38,15 +40,13 @@ namespace vr {
 class XrBrowserTestBase : public InProcessBrowserTest {
  public:
   static constexpr base::TimeDelta kPollCheckIntervalShort =
-      base::TimeDelta::FromMilliseconds(50);
+      base::Milliseconds(50);
   static constexpr base::TimeDelta kPollCheckIntervalLong =
-      base::TimeDelta::FromMilliseconds(100);
-  static constexpr base::TimeDelta kPollTimeoutShort =
-      base::TimeDelta::FromMilliseconds(1000);
+      base::Milliseconds(100);
+  static constexpr base::TimeDelta kPollTimeoutShort = base::Milliseconds(1000);
   static constexpr base::TimeDelta kPollTimeoutMedium =
-      base::TimeDelta::FromMilliseconds(5000);
-  static constexpr base::TimeDelta kPollTimeoutLong =
-      base::TimeDelta::FromMilliseconds(10000);
+      base::Milliseconds(5000);
+  static constexpr base::TimeDelta kPollTimeoutLong = base::Milliseconds(10000);
   static constexpr char kOpenXrConfigPathEnvVar[] = "XR_RUNTIME_JSON";
   static constexpr char kOpenXrConfigPathVal[] =
       "./mock_vr_clients/bin/openxr/openxr.json";
@@ -69,6 +69,10 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   };
 
   XrBrowserTestBase();
+
+  XrBrowserTestBase(const XrBrowserTestBase&) = delete;
+  XrBrowserTestBase& operator=(const XrBrowserTestBase&) = delete;
+
   ~XrBrowserTestBase() override;
 
   void SetUp() override;
@@ -149,7 +153,8 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   void AssertNoJavaScriptErrors(content::WebContents* web_contents);
 
   Browser* browser() {
-    return browser_ == nullptr ? InProcessBrowserTest::browser() : browser_;
+    return browser_ == nullptr ? InProcessBrowserTest::browser()
+                               : browser_.get();
   }
 
   void SetBrowser(Browser* browser) { browser_ = browser; }
@@ -207,14 +212,14 @@ class XrBrowserTestBase : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<base::Environment> env_;
-  std::vector<base::Feature> enable_features_;
-  std::vector<base::Feature> disable_features_;
+  std::vector<base::test::FeatureRef> enable_features_;
+  std::vector<base::test::FeatureRef> disable_features_;
   std::vector<std::string> append_switches_;
   std::vector<std::string> enable_blink_features_;
   std::vector<XrTestRequirement> runtime_requirements_;
   std::unordered_set<std::string> ignored_requirements_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HWND hwnd_;
 #endif
 
@@ -229,12 +234,11 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   // HTML files, initializing and starting the server if necessary.
   net::EmbeddedTestServer* GetEmbeddedServer();
 
-  Browser* browser_ = nullptr;
+  raw_ptr<Browser> browser_ = nullptr;
   std::unique_ptr<net::EmbeddedTestServer> server_;
   base::test::ScopedFeatureList scoped_feature_list_;
   bool test_skipped_at_startup_ = false;
   bool javascript_failed_ = false;
-  DISALLOW_COPY_AND_ASSIGN(XrBrowserTestBase);
 };
 
 }  // namespace vr

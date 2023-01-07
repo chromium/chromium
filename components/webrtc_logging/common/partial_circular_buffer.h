@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define COMPONENTS_WEBRTC_LOGGING_COMMON_PARTIAL_CIRCULAR_BUFFER_H_
 
 #include <stdint.h>
+
+#include "base/memory/raw_ptr.h"
 
 namespace webrtc_logging {
 
@@ -56,7 +58,7 @@ class PartialCircularBuffer {
   void DoWrite(const uint8_t* input, uint32_t input_size);
 
   // Used for reading and writing.
-  BufferData* buffer_data_;
+  raw_ptr<BufferData> buffer_data_;
   uint32_t memory_buffer_size_;
   uint32_t data_size_;
   uint32_t position_;

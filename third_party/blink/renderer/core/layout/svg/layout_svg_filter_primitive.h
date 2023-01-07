@@ -43,6 +43,7 @@ class LayoutSVGFilterPrimitive final : public LayoutObject {
     return false;
   }
 
+  void WillBeDestroyed() override;
   void StyleDidChange(StyleDifference, const ComputedStyle*) override;
   void UpdateLayout() override;
 
@@ -56,17 +57,17 @@ class LayoutSVGFilterPrimitive final : public LayoutObject {
            type == kLayoutObjectSVGFilterPrimitive ||
            LayoutObject::IsOfType(type);
   }
-  FloatRect ObjectBoundingBox() const override {
+  gfx::RectF ObjectBoundingBox() const override {
     NOT_DESTROYED();
-    return FloatRect();
+    return gfx::RectF();
   }
-  FloatRect VisualRectInLocalSVGCoordinates() const override {
+  gfx::RectF VisualRectInLocalSVGCoordinates() const override {
     NOT_DESTROYED();
-    return FloatRect();
+    return gfx::RectF();
   }
-  FloatRect LocalBoundingBoxRectForAccessibility() const override {
+  gfx::RectF LocalBoundingBoxRectForAccessibility() const override {
     NOT_DESTROYED();
-    return FloatRect();
+    return gfx::RectF();
   }
 };
 

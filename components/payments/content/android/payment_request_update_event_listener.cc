@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,11 +44,11 @@ bool PaymentRequestUpdateEventListener::ChangeShippingAddress(
   std::vector<uint8_t> byte_vector =
       mojom::PaymentAddress::Serialize(&shipping_address);
   JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj(
+      env, env->NewDirectByteBuffer(byte_vector.data(), byte_vector.size()));
+  base::android::CheckException(env);
   return Java_PaymentRequestUpdateEventListener_changeShippingAddress(
-      env, listener_,
-      base::android::ScopedJavaLocalRef<jobject>(
-          env,
-          env->NewDirectByteBuffer(byte_vector.data(), byte_vector.size())));
+      env, listener_, obj);
 }
 
 }  // namespace android

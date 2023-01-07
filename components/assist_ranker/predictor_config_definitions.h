@@ -1,13 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_ASSIST_RANKER_PREDICTOR_CONFIG_DEFINITIONS_H_
 #define COMPONENTS_ASSIST_RANKER_PREDICTOR_CONFIG_DEFINITIONS_H_
-
-#include <memory>
-#include <string>
-#include <unordered_map>
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -16,10 +12,10 @@
 
 namespace assist_ranker {
 
-#if defined(OS_ANDROID)
-extern const base::Feature kContextualSearchRankerQuery;
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kContextualSearchRankerQuery);
 const PredictorConfig GetContextualSearchPredictorConfig();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace assist_ranker
 

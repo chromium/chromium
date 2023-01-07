@@ -1,10 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/commander_frontend_views.h"
 
-#include "base/macros.h"
+#include <tuple>
+
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/commander/commander_backend.h"
 #include "chrome/browser/ui/commander/commander_view_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -103,7 +105,7 @@ class CommanderFrontendViewsTest : public InProcessBrowserTest {
   }
 
   void OnWidgetShown(views::Widget* widget) {
-    if (widget->GetName() == "Commander") {
+    if (widget->GetName() == "Quick Commands") {
       active_widget_ = widget;
       if (IsWidgetAttachedToBrowser(expected_browser_)) {
         expected_browser_ = nullptr;
@@ -130,8 +132,8 @@ class CommanderFrontendViewsTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<views::AnyWidgetObserver> observer_;
-  views::Widget* active_widget_ = nullptr;
-  Browser* expected_browser_ = nullptr;
+  raw_ptr<views::Widget> active_widget_ = nullptr;
+  raw_ptr<Browser> expected_browser_ = nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
@@ -213,24 +215,6 @@ IN_PROC_BROWSER_TEST_F(CommanderFrontendViewsTest, ToggleTogglesWidget) {
   EXPECT_EQ(backend_->reset_invocation_count(), 1);
 }
 
-// When a commander widget is showing on browser A, toggling it on browser B
-// should hide it on browser A and show it on browser B.
-IN_PROC_BROWSER_TEST_F(CommanderFrontendViewsTest, ToggleReplacesWidget) {
-  auto frontend = std::make_unique<CommanderFrontendViews>(backend_.get());
-
-  frontend->ToggleForBrowser(browser());
-  views::Widget* commander_widget = WaitForCommanderWidgetAttachedTo(browser());
-
-  Browser* other_browser = CreateBrowser(browser()->profile());
-  views::test::WidgetDestroyedWaiter destroyed_waiter(commander_widget);
-  frontend->ToggleForBrowser(other_browser);
-  destroyed_waiter.Wait();
-  EXPECT_EQ(backend_->reset_invocation_count(), 1);
-  EXPECT_TRUE(WaitForCommanderWidgetAttachedTo(other_browser));
-
-  frontend->Hide();
-}
-
 IN_PROC_BROWSER_TEST_F(CommanderFrontendViewsTest, OnHeightChangedSizesWidget) {
   auto frontend = std::make_unique<CommanderFrontendViews>(backend_.get());
 
@@ -251,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(CommanderFrontendViewsTest, PassesOnOptionSelected) {
   auto frontend = std::make_unique<CommanderFrontendViews>(backend_.get());
 
   frontend->Show(browser());
-  ignore_result(WaitForCommanderWidgetAttachedTo(browser()));
+  std::ignore = WaitForCommanderWidgetAttachedTo(browser());
 
   frontend->OnOptionSelected(8, 13);
   ASSERT_EQ(backend_->command_selected_invocations().size(), 1u);
@@ -262,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(CommanderFrontendViewsTest, PassesOnOptionSelected) {
 IN_PROC_BROWSER_TEST_F(CommanderFrontendViewsTest, PassesOnTextChanged) {
   auto frontend = std::make_unique<CommanderFrontendViews>(backend_.get());
   frontend->Show(browser());
-  ignore_result(WaitForCommanderWidgetAttachedTo(browser()));
+  std::ignore = WaitForCommanderWidgetAttachedTo(browser());
 
   const std::u16string input = u"orange";
   frontend->OnTextChanged(input);
@@ -275,10 +259,23 @@ IN_PROC_BROWSER_TEST_F(CommanderFrontendViewsTest,
                        PassesOnCompositeCommandCancelled) {
   auto frontend = std::make_unique<CommanderFrontendViews>(backend_.get());
   frontend->Show(browser());
-  ignore_result(WaitForCommanderWidgetAttachedTo(browser()));
+  std::ignore = WaitForCommanderWidgetAttachedTo(browser());
 
   EXPECT_EQ(backend_->composite_command_cancelled_invocation_count(), 0);
   frontend->OnCompositeCommandCancelled();
   EXPECT_EQ(backend_->composite_command_cancelled_invocation_count(), 1);
   frontend->Hide();
+}
+IN_PROC_BROWSER_TEST_F(CommanderFrontendViewsTest, HidesOnFocusLoss) {
+  auto frontend = std::make_unique<CommanderFrontendViews>(backend_.get());
+
+  frontend->Show(browser());
+  views::Widget* widget = WaitForCommanderWidgetAttachedTo(browser());
+  EXPECT_TRUE(widget);
+  EXPECT_EQ(backend_->reset_invocation_count(), 0);
+
+  // Activate the main browser window.
+  widget->parent()->Activate();
+  WaitForCommanderWidgetToClose();
+  EXPECT_EQ(backend_->reset_invocation_count(), 1);
 }

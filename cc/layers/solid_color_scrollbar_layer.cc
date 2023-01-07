@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 namespace cc {
 
 std::unique_ptr<LayerImpl> SolidColorScrollbarLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return SolidColorScrollbarLayerImpl::Create(
       tree_impl, id(), orientation(), thumb_thickness_, track_start_,
       is_left_side_vertical_scrollbar());
@@ -74,9 +74,7 @@ void SolidColorScrollbarLayer::SetOpacity(float opacity) {
   Layer::SetOpacity(opacity);
 }
 
-void SolidColorScrollbarLayer::SetNeedsDisplayRect(const gfx::Rect& rect) {
-  // Never needs repaint.
-}
+void SolidColorScrollbarLayer::SetNeedsDisplayRect(const gfx::Rect& rect) {}
 
 bool SolidColorScrollbarLayer::OpacityCanAnimateOnImplThread() const {
   return true;

@@ -144,53 +144,53 @@ class DriverTest(unittest.TestCase):
         port = self.make_port()
         driver = Driver(port, 0)
         driver._server_process = MockServerProcess(lines=[
-            'ActualHash: foobar',
-            'Content-Type: my_type',
-            'Content-Transfer-Encoding: none',
-            '#EOF',
+            b'ActualHash: foobar',
+            b'Content-Type: my_type',
+            b'Content-Transfer-Encoding: none',
+            b'#EOF',
         ])
         content_block = driver._read_block(0)
-        self.assertEqual(content_block.content, '')
-        self.assertEqual(content_block.content_type, 'my_type')
-        self.assertEqual(content_block.encoding, 'none')
-        self.assertEqual(content_block.content_hash, 'foobar')
+        self.assertEqual(content_block.content, b'')
+        self.assertEqual(content_block.content_type, b'my_type')
+        self.assertEqual(content_block.encoding, b'none')
+        self.assertEqual(content_block.content_hash, b'foobar')
         driver._server_process = None
 
     def test_read_binary_block(self):
         port = self.make_port()
         driver = Driver(port, 0)
         driver._server_process = MockServerProcess(lines=[
-            'ActualHash: actual',
-            'ExpectedHash: expected',
-            'Content-Type: image/png',
-            'Content-Length: 9',
-            '12345678',
-            '#EOF',
+            b'ActualHash: actual',
+            b'ExpectedHash: expected',
+            b'Content-Type: image/png',
+            b'Content-Length: 9',
+            b'12345678',
+            b'#EOF',
         ])
         content_block = driver._read_block(0)
-        self.assertEqual(content_block.content_type, 'image/png')
-        self.assertEqual(content_block.content_hash, 'actual')
-        self.assertEqual(content_block.content, '12345678\n')
-        self.assertEqual(content_block.decoded_content, '12345678\n')
+        self.assertEqual(content_block.content_type, b'image/png')
+        self.assertEqual(content_block.content_hash, b'actual')
+        self.assertEqual(content_block.content, b'12345678\n')
+        self.assertEqual(content_block.decoded_content, b'12345678\n')
         driver._server_process = None
 
     def test_read_base64_block(self):
         port = self.make_port()
         driver = Driver(port, 0)
         driver._server_process = MockServerProcess(lines=[
-            'ActualHash: actual',
-            'ExpectedHash: expected',
-            'Content-Type: image/png',
-            'Content-Transfer-Encoding: base64',
-            'Content-Length: 12',
-            'MTIzNDU2NzgK#EOF',
+            b'ActualHash: actual',
+            b'ExpectedHash: expected',
+            b'Content-Type: image/png',
+            b'Content-Transfer-Encoding: base64',
+            b'Content-Length: 12',
+            b'MTIzNDU2NzgK#EOF',
         ])
         content_block = driver._read_block(0)
-        self.assertEqual(content_block.content_type, 'image/png')
-        self.assertEqual(content_block.content_hash, 'actual')
-        self.assertEqual(content_block.encoding, 'base64')
-        self.assertEqual(content_block.content, 'MTIzNDU2NzgK')
-        self.assertEqual(content_block.decoded_content, '12345678\n')
+        self.assertEqual(content_block.content_type, b'image/png')
+        self.assertEqual(content_block.content_hash, b'actual')
+        self.assertEqual(content_block.encoding, b'base64')
+        self.assertEqual(content_block.content, b'MTIzNDU2NzgK')
+        self.assertEqual(content_block.decoded_content, b'12345678\n')
 
     def test_no_timeout(self):
         port = self.make_port()

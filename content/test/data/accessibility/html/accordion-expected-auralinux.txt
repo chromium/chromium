@@ -3,7 +3,7 @@
 ++++[push button] name='Accordion Section #1' expanded controller-for label-for
 ++++++[paragraph]
 ++++++++[static] name='Accordion Section #1'
-++[section] name='Accordion Section #1' controlled-by labelled-by
+++[landmark] name='Accordion Section #1' controlled-by labelled-by
 ++++[paragraph]
 ++++++[static] name='Content for first section of accordion element.'
 ++[heading] name='Accordion Section #2'
@@ -18,6 +18,6 @@
 ++++[push button] name='Accordion Section #4' expanded label-for
 ++++++[paragraph]
 ++++++++[static] name='Accordion Section #4'
-++[section] name='Accordion Section #4' labelled-by
+++[landmark] name='Accordion Section #4' labelled-by
 ++++[paragraph]
 ++++++[static] name='Content for forth section of accordion element. This section will always be visible but disabled.'

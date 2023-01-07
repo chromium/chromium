@@ -1,21 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_TABS_PINNED_TAB_CODEC_H_
 #define CHROME_BROWSER_UI_TABS_PINNED_TAB_CODEC_H_
 
-#include <vector>
-
-#include "base/macros.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "url/gurl.h"
 
 class Profile;
-
-namespace base {
-class Value;
-}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -30,6 +23,9 @@ class PrefRegistrySyncable;
 // dictionary describing the entry.
 class PinnedTabCodec {
  public:
+  PinnedTabCodec(const PinnedTabCodec&) = delete;
+  PinnedTabCodec& operator=(const PinnedTabCodec&) = delete;
+
   // Registers the preference used by this class.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -41,13 +37,10 @@ class PinnedTabCodec {
 
   // Reads and returns the set of pinned tabs to restore from preferences.
   static StartupTabs ReadPinnedTabs(Profile* profile);
-  static StartupTabs ReadPinnedTabs(const base::Value* value);
 
  private:
   PinnedTabCodec();
   ~PinnedTabCodec();
-
-  DISALLOW_COPY_AND_ASSIGN(PinnedTabCodec);
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_PINNED_TAB_CODEC_H_

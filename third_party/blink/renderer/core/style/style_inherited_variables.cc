@@ -1,16 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/style/style_inherited_variables.h"
 
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
+#include "base/memory/values_equivalent.h"
 
 namespace blink {
 
 bool StyleInheritedVariables::operator==(
     const StyleInheritedVariables& other) const {
-  return DataEquivalent(root_, other.root_) && variables_ == other.variables_;
+  return base::ValuesEquivalent(root_, other.root_) &&
+         variables_ == other.variables_;
 }
 
 StyleInheritedVariables::StyleInheritedVariables() : root_(nullptr) {}
@@ -31,7 +32,7 @@ StyleVariables::OptionalData StyleInheritedVariables::GetData(
     return *data;
   if (root_)
     return root_->variables_.GetData(name);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 StyleVariables::OptionalValue StyleInheritedVariables::GetValue(
@@ -40,7 +41,7 @@ StyleVariables::OptionalValue StyleInheritedVariables::GetValue(
     return *data;
   if (root_)
     return root_->variables_.GetValue(name);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void StyleInheritedVariables::CollectNames(HashSet<AtomicString>& names) const {

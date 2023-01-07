@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@ class IOBuffer;
 // A UDP Socket.
 class NET_EXPORT DatagramServerSocket : public DatagramSocket {
  public:
-  ~DatagramServerSocket() override {}
+  ~DatagramServerSocket() override = default;
 
   // Initialize this socket as a server socket listening at |address|.
   // Returns a network error code.

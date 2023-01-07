@@ -1,0 +1,24 @@
+module blink.mojom;
+
+// Represents how web app launches should be handled with regard to opening
+// windows or recycling existing ones.
+// Spec: https://github.com/WICG/sw-launch/blob/main/launch_handler.md
+struct ManifestLaunchHandler {
+  // The client behavior to use for app launches.
+  enum ClientMode {
+    // Use whatever the platform would do by default.
+    kAuto,
+    // Create a new client for each app launch and navigate it to the launch
+    // URL.
+    kNavigateNew,
+    // Use an existing client if available, otherwise create a new one to use.
+    // Navigate the existing client to the launch URL.
+    kNavigateExisting,
+    // Use an existing client if available, otherwise create a new one to use.
+    // Do not navigate the client and just enqueue a LaunchParams in the
+    // document's LaunchQueue.
+    kFocusExisting,
+  };
+  ClientMode client_mode;
+};
+

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,6 @@ bool CollectRemovablePupFiles(const std::vector<UwSId>& pup_ids,
                                            base::DoNothing());
 
   for (const auto& pup_id : pup_ids) {
-    size_t added_pup_files_size = 0;
     const auto* pup = PUPData::GetPUP(pup_id);
 
     for (const auto& file_path : pup->expanded_disk_footprints.file_paths()) {
@@ -32,7 +31,6 @@ bool CollectRemovablePupFiles(const std::vector<UwSId>& pup_ids,
       if (file_remover.CanRemove(file_path) ==
           FileRemoverAPI::DeletionValidationStatus::ALLOWED) {
         pup_files->Insert(file_path);
-        ++added_pup_files_size;
       }
     }
   }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/media_export.h"
@@ -32,15 +31,17 @@ class MEDIA_EXPORT VideoThumbnailDecoder {
   VideoThumbnailDecoder(std::unique_ptr<VideoDecoder> decoder,
                         const VideoDecoderConfig& config,
                         std::vector<uint8_t> encoded_data);
+  VideoThumbnailDecoder(const VideoThumbnailDecoder&) = delete;
+  VideoThumbnailDecoder& operator=(const VideoThumbnailDecoder&) = delete;
   ~VideoThumbnailDecoder();
 
   // Starts to decode the video frame.
   void Start(VideoFrameCallback video_frame_callback);
 
  private:
-  void OnVideoDecoderInitialized(Status status);
-  void OnVideoBufferDecoded(Status status);
-  void OnEosBufferDecoded(Status status);
+  void OnVideoDecoderInitialized(DecoderStatus status);
+  void OnVideoBufferDecoded(DecoderStatus status);
+  void OnEosBufferDecoded(DecoderStatus status);
 
   // Called when the output frame is generated.
   void OnVideoFrameDecoded(scoped_refptr<VideoFrame> frame);
@@ -56,8 +57,6 @@ class MEDIA_EXPORT VideoThumbnailDecoder {
 
   VideoFrameCallback video_frame_callback_;
   base::WeakPtrFactory<VideoThumbnailDecoder> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoThumbnailDecoder);
 };
 
 }  // namespace media

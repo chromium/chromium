@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
 namespace quick_answers {
 
 class ResultParserFactoryTest : public testing::Test {
@@ -37,4 +36,3 @@ TEST_F(ResultParserFactoryTest, UnsupportedType) {
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos

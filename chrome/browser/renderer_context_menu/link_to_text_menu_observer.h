@@ -1,23 +1,30 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_LINK_TO_TEXT_MENU_OBSERVER_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_LINK_TO_TEXT_MENU_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
+#include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+#include "content/public/browser/render_frame_host.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom.h"
 #include "url/gurl.h"
 
 class RenderViewContextMenuProxy;
 
+using CompletionCallback = base::OnceClosure;
+
 // A class that implements the menu item for copying selected text and a link
 // to the selected text to the user's clipboard.
 class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
  public:
   static std::unique_ptr<LinkToTextMenuObserver> Create(
-      RenderViewContextMenuProxy* proxy);
+      RenderViewContextMenuProxy* proxy,
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      CompletionCallback callback);
 
   LinkToTextMenuObserver(const LinkToTextMenuObserver&) = delete;
   LinkToTextMenuObserver& operator=(const LinkToTextMenuObserver&) = delete;
@@ -28,45 +35,103 @@ class LinkToTextMenuObserver : public RenderViewContextMenuObserver {
   bool IsCommandIdSupported(int command_id) override;
   bool IsCommandIdEnabled(int command_id) override;
   void ExecuteCommand(int command_id) override;
+  void OnMenuClosed() override;
 
-  // Convenience method for overriding the generated selector to bypass making
-  // calls to the remote interface during tests.
-  void OverrideGeneratedSelectorForTesting(const std::string& selector);
+  // Used in tests for waiting and receiving generation result.
+  static void RegisterGenerationCompleteCallbackForTesting(
+      base::OnceCallback<void(const std::string& selector)> cb);
 
  private:
-  explicit LinkToTextMenuObserver(RenderViewContextMenuProxy* proxy);
-  // Returns true if the link should be generated from the constructor, vs
-  // determined when executed.
-  bool ShouldPreemptivelyGenerateLink();
+  friend class MockLinkToTextMenuObserver;
+
+  explicit LinkToTextMenuObserver(
+      RenderViewContextMenuProxy* proxy,
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      CompletionCallback callback);
+
+  // Requests link generation if needed.
+  void RequestLinkGeneration();
 
   // Make an async request to the renderer to generate the link to text.
-  void RequestLinkGeneration();
+  // (virtual so it can be mocked in tests).
+  virtual void StartLinkGenerationRequestWithTimeout();
 
   // Callback after the request to generate the selector has completed. This is
   // called with an empty selector if the generation failed or was called on
   // an invalid selection.
-  void OnRequestLinkGenerationCompleted(const std::string& selector);
+  void OnRequestLinkGenerationCompleted(
+      const std::string& selector,
+      shared_highlighting::LinkGenerationError error,
+      shared_highlighting::LinkGenerationReadyStatus ready_status);
 
-  // Copies the generated link to the user's clipboard.
-  void CopyLinkToClipboard();
+  // Called when "Copy Link to Text" option is selected from a context menu for
+  // a selected text.
+  void ExecuteCopyLinkToText();
 
-  // Copies the current URL to the clipboard. Used to reshare an
+  // Make a request to the renderer to retrieve the selector for an
   // existing highlight.
-  void CopyPageURLToClipboard();
+  // (virtual so it can be mocked in tests).
+  virtual void ReshareLink();
+
+  // Callback after the request to retrieve an existing selector
+  // is complete.
+  void OnGetExistingSelectorsComplete(
+      const std::vector<std::string>& selectors);
 
   // Removes the highlight from the page and updates the URL.
-  void RemoveHighlight();
+  void RemoveHighlights();
 
   // Cancels link generation if we are still waiting for it.
   void Timeout();
 
-  mojo::Remote<blink::mojom::TextFragmentSelectorProducer> remote_;
-  RenderViewContextMenuProxy* proxy_;
+  // Completes necessary tasks when link to text was not generated or generation
+  // was unsuccessful.
+  void CompleteWithError(shared_highlighting::LinkGenerationError error);
+
+  // Copies given text to clipboard.
+  void CopyTextToClipboard(const std::string& text);
+
+  // Uses |CompletionCallback| to notify that |LinkToTextMenuObserver| is not
+  // needed anymore. Calling this function can potentially result in this object
+  // cleanup.
+  void NotifyLinkToTextMenuCompleted();
+
+  // Returns |remote_|, for the frame in which the context menu was opened.
+  mojo::Remote<blink::mojom::TextFragmentReceiver>& GetRemote();
+
+  mojo::Remote<blink::mojom::TextFragmentReceiver> remote_;
+  raw_ptr<RenderViewContextMenuProxy> proxy_;
   GURL url_;
   GURL raw_url_;
-  bool highlight_exists_ = false;
-  base::Optional<std::string> generated_link_;
-  base::Optional<std::string> generated_selector_for_testing_;
+  content::GlobalRenderFrameHostId render_frame_host_id_;
+
+  std::unordered_map<content::GlobalRenderFrameHostId,
+                     std::vector<std::string>,
+                     content::GlobalRenderFrameHostIdHasher>
+      frames_selectors_;
+
+  std::vector<content::GlobalRenderFrameHostId> render_frame_host_ids_;
+  std::vector<mojo::Remote<blink::mojom::TextFragmentReceiver>>
+      text_fragment_remotes_;
+  size_t get_frames_existing_selectors_counter_;
+
+  // True when the context menu was opened with text selected.
+  bool open_from_new_selection_ = false;
+
+  absl::optional<std::string> generated_link_;
+
+  // True when generation is completed.
+  bool is_generation_complete_ = false;
+
+  // True when ExecuteCommand was called for any of the supported commands, but
+  // is not finished.
+  bool execute_command_pending_ = false;
+
+  // True if menu is closed.
+  bool is_menu_closed_ = false;
+
+  // Used for self-destruction.
+  CompletionCallback completion_callback_;
 
   base::WeakPtrFactory<LinkToTextMenuObserver> weak_ptr_factory_{this};
 };

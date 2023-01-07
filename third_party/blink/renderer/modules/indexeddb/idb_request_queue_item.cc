@@ -1,13 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_queue_item.h"
 
+#include <algorithm>
+#include <cstdint>
+#include <iterator>
 #include <memory>
 #include <utility>
 
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -17,6 +21,9 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -30,7 +37,7 @@ class IDBDatabaseGetAllResultSinkImpl
       : receiver_(this, std::move(receiver)),
         owner_(owner),
         key_only_(key_only) {
-    receiver_.set_disconnect_handler(WTF::Bind(
+    receiver_.set_disconnect_handler(WTF::BindOnce(
         &IDBDatabaseGetAllResultSinkImpl::OnDisconnect, WTF::Unretained(this)));
   }
 
@@ -78,12 +85,12 @@ class IDBDatabaseGetAllResultSinkImpl
     DCHECK(!key_only_);
     DCHECK_LE(values.size(),
               static_cast<wtf_size_t>(mojom::blink::kIDBGetAllChunkSize));
-    if (values_.IsEmpty()) {
+    if (values_.empty()) {
       values_ = std::move(values);
       return;
     }
 
-    values_.ReserveCapacity(values_.size() + values.size());
+    values_.reserve(values_.size() + values.size());
     for (auto& value : values)
       values_.emplace_back(std::move(value));
   }
@@ -92,12 +99,12 @@ class IDBDatabaseGetAllResultSinkImpl
     DCHECK(key_only_);
     DCHECK_LE(keys.size(),
               static_cast<wtf_size_t>(mojom::blink::kIDBGetAllChunkSize));
-    if (keys_.IsEmpty()) {
+    if (keys_.empty()) {
       keys_ = std::move(keys);
       return;
     }
 
-    keys_.ReserveCapacity(keys_.size() + keys.size());
+    keys_.reserve(keys_.size() + keys.size());
     for (auto& key : keys)
       keys_.emplace_back(std::move(key));
   }
@@ -206,6 +213,31 @@ IDBRequestQueueItem::IDBRequestQueueItem(
   request_->queue_item_ = this;
   if (attach_loader)
     loader_ = std::make_unique<IDBRequestLoader>(this, values_);
+}
+
+IDBRequestQueueItem::IDBRequestQueueItem(
+    IDBRequest* request,
+    Vector<Vector<std::unique_ptr<IDBValue>>> all_values,
+    bool attach_loader,
+    base::OnceClosure on_result_load_complete)
+    : request_(request),
+      on_result_load_complete_(std::move(on_result_load_complete)),
+      response_type_(kValueArrayArray),
+      ready_(!attach_loader) {
+  DCHECK(on_result_load_complete_);
+  DCHECK_EQ(request->queue_item_, nullptr);
+  request_->queue_item_ = this;
+
+  all_values_size_info_.ReserveInitialCapacity(all_values.size());
+  for (Vector<std::unique_ptr<IDBValue>>& values : all_values) {
+    all_values_size_info_.push_back(values.size());
+    values_.AppendRange(std::make_move_iterator(values.begin()),
+                        std::make_move_iterator(values.end()));
+  }
+
+  if (attach_loader) {
+    loader_ = std::make_unique<IDBRequestLoader>(this, values_);
+  }
 }
 
 IDBRequestQueueItem::IDBRequestQueueItem(
@@ -394,6 +426,23 @@ void IDBRequestQueueItem::EnqueueResponse() {
     case kValueArray:
       request_->EnqueueResponse(std::move(values_));
       break;
+
+    case kValueArrayArray: {
+      // rebuild all_values (2d vector)
+      wtf_size_t current_value_idx = 0;
+      Vector<Vector<std::unique_ptr<IDBValue>>> all_values;
+      for (auto s : all_values_size_info_) {
+        Vector<std::unique_ptr<IDBValue>> all_value;
+        all_value.AppendRange(
+            std::make_move_iterator(values_.begin() + current_value_idx),
+            std::make_move_iterator(values_.begin() + current_value_idx + s));
+        all_values.push_back(std::move(all_value));
+        current_value_idx += s;
+      }
+
+      request_->EnqueueResponse(std::move(all_values));
+      break;
+    }
 
     case kVoid:
       DCHECK_EQ(values_.size(), 0U);

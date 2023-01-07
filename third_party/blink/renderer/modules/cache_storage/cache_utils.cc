@@ -1,8 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/cache_storage/cache_utils.h"
+
+#include <utility>
 
 #include "third_party/blink/renderer/core/fetch/fetch_response_data.h"
 #include "third_party/blink/renderer/core/fetch/response.h"

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
+#include "chrome/browser/ui/app_list/search/ranking/ranking_item_util.h"
 
 namespace app_list {
 namespace {
@@ -72,18 +72,6 @@ void LogZeroStateLaunchType(RankingItemType ranking_item_type) {
   const auto zero_state_type = ZeroStateTypeFromRankingType(ranking_item_type);
   UMA_HISTOGRAM_ENUMERATION("Apps.AppList.ZeroStateResults.LaunchedItemType",
                             zero_state_type);
-}
-
-void LogChipUsageMetrics(const AppLaunchData& launch) {
-  // Filter launches that aren't from the chips.
-  if (launch.launched_from !=
-      ash::AppListLaunchedFrom::kLaunchedFromSuggestionChip)
-    return;
-
-  // Launch index. At most 5 chips are shown and indices are 0-based, so the
-  // maximum index is 4.
-  UMA_HISTOGRAM_EXACT_LINEAR("Apps.AppList.SuggestedFiles.LaunchIndex",
-                             launch.suggestion_index, 4);
 }
 
 }  // namespace app_list

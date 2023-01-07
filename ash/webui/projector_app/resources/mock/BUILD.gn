@@ -1,0 +1,16 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos_ash, "Projector is ChromeOS only")
+
+js_library("mock_app") {
+  sources = [ "app_bin.js" ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [ "../common/projector_app.externs.js" ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,8 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/values.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace content_settings {
 
@@ -39,24 +35,43 @@ class WebsiteSettingsInfo {
   };
 
   enum ScopingType {
-    // Settings scoped to the domain of the requesting frame by default.
-    // Embedded settings can be stored.
-    COOKIES_SCOPE,
+    // Settings scoped to the origin of the requesting frame that can have
+    // exceptions for specific top-level frame origin.
+    // Use only after strongly considering if this is the right choice;
+    // preseting settings that are scoped on two origins is difficult to get
+    // right and often result in surprising UX.
+    REQUESTING_ORIGIN_WITH_TOP_ORIGIN_EXCEPTIONS_SCOPE,
 
-    // Storage access specific scoped that is scoped to the pair of requesting
-    // and embedding origin.
-    STORAGE_ACCESS_SCOPE,
+    // Settings scoped to the origin of the requesting frame and the top-level
+    // frame.
+    // Use only after strongly considering if this is the right choice;
+    // preseting settings that are scoped on two origins is difficult to get
+    // right and often result in surprising UX.
+    REQUESTING_AND_TOP_ORIGIN_SCOPE,
 
-    // Settings scoped to a single origin (generally either the requesting
-    // origin or the top level origin of a frame) for a request. Embedded
-    // exceptions are not allowed.
-    SINGLE_ORIGIN_ONLY_SCOPE,
+    // Settings scoped to the top-level origin that can have exceptions for
+    // specific resource origins.
+    TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE,
 
-    // Settings scoped to a single origin (generally either the requesting
-    // origin or the top level origin of a frame) for a request. Embedded
-    // exceptions are allowed. This should only be used after careful thought.
-    // Allowing embedded exceptions requires much more complicated UI.
-    SINGLE_ORIGIN_WITH_EMBEDDED_EXCEPTIONS_SCOPE,
+    // Setting scoped to the origin of the requesting frame only.
+    REQUESTING_ORIGIN_ONLY_SCOPE,
+
+    // Setting scoped to the origin of the top-level frame only.
+    TOP_ORIGIN_ONLY_SCOPE,
+
+    // Setting scoped to a single origin. This does not fit into a
+    // requesting/top-level origin paradigm and instead simply refers to
+    // settings stored on a per-origin basis without defining which origin that
+    // is. Use only when |REQUESTING_ORIGIN_ONLY_SCOPE| and
+    // |TOP_ORIGIN_ONLY_SCOPE| don't apply.
+    //
+    // Use this comment section to keep track of cases where a better option
+    // than GENERIC_SINGLE_ORIGIN_SCOPE should exist but it's not one of the
+    // choices above. If the use cases are sufficient, consider adding new
+    // scoping types to account for them:
+    // * MEDIA_ENGAGEMENT is always scoped to the origin of the frame that a
+    // video is played in. A `FRAME_ORIGIN_ONLY` scope could be considered.
+    GENERIC_SINGLE_ORIGIN_SCOPE,
   };
 
   enum IncognitoBehavior {
@@ -69,11 +84,15 @@ class WebsiteSettingsInfo {
 
   WebsiteSettingsInfo(ContentSettingsType type,
                       const std::string& name,
-                      std::unique_ptr<base::Value> initial_default_value,
+                      base::Value initial_default_value,
                       SyncStatus sync_status,
                       LossyStatus lossy_status,
                       ScopingType scoping_type,
                       IncognitoBehavior incognito_behavior);
+
+  WebsiteSettingsInfo(const WebsiteSettingsInfo&) = delete;
+  WebsiteSettingsInfo& operator=(const WebsiteSettingsInfo&) = delete;
+
   ~WebsiteSettingsInfo();
 
   ContentSettingsType type() const { return type_; }
@@ -83,8 +102,8 @@ class WebsiteSettingsInfo {
   const std::string& default_value_pref_name() const {
     return default_value_pref_name_;
   }
-  const base::Value* initial_default_value() const {
-    return initial_default_value_.get();
+  const base::Value& initial_default_value() const {
+    return initial_default_value_;
   }
 
   uint32_t GetPrefRegistrationFlags() const;
@@ -100,13 +119,11 @@ class WebsiteSettingsInfo {
 
   const std::string pref_name_;
   const std::string default_value_pref_name_;
-  const std::unique_ptr<base::Value> initial_default_value_;
+  const base::Value initial_default_value_;
   const SyncStatus sync_status_;
   const LossyStatus lossy_status_;
   const ScopingType scoping_type_;
   const IncognitoBehavior incognito_behavior_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebsiteSettingsInfo);
 };
 
 }  // namespace content_settings

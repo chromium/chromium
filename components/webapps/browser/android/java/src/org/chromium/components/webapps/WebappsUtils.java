@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.webapps;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,6 +14,8 @@ import android.content.pm.ShortcutManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -75,7 +76,7 @@ public class WebappsUtils {
         showAddedToHomescreenToast(title);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public static void addShortcutWithShortcutManager(
             String id, String title, Bitmap bitmap, boolean isMaskableIcon, Intent shortcutIntent) {
         Context context = ContextUtils.getApplicationContext();
@@ -120,6 +121,21 @@ public class WebappsUtils {
     }
 
     /**
+     * Shows toast notifying user of the result of a WebAPK install if the installation was not
+     * successful.
+     */
+    @SuppressWarnings("unused")
+    @CalledByNative
+    private static void showWebApkInstallResultToast(@WebApkInstallResult int result) {
+        Context applicationContext = ContextUtils.getApplicationContext();
+        if (result == WebApkInstallResult.INSTALL_ALREADY_IN_PROGRESS) {
+            showToast(applicationContext.getString(R.string.webapk_install_in_progress));
+        } else if (result != WebApkInstallResult.SUCCESS) {
+            showToast(applicationContext.getString(R.string.webapk_install_failed));
+        }
+    }
+
+    /**
      * Utility method to check if a shortcut can be added to the home screen.
      * @return if a shortcut can be added to the home screen under the current profile.
      */
@@ -153,7 +169,7 @@ public class WebappsUtils {
         return WebApkValidator.queryFirstWebApkPackage(ContextUtils.getApplicationContext(), url);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private static void checkIfRequestPinShortcutSupported() {
         ShortcutManager shortcutManager =
                 ContextUtils.getApplicationContext().getSystemService(ShortcutManager.class);

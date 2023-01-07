@@ -75,7 +75,7 @@ clang-tidy across all of Chromium is a single command:
 
 ```
 $ cd ${chromium}/src
-$ ${chromium_build}/recipes/recipe_modules/tricium_clang_tidy/resources/tricium_clang_tidy.py \
+$ ${chromium_build}/recipes/recipe_modules/tricium_clang_tidy/resources/tricium_clang_tidy_script.py \
     --base_path $PWD \
     --out_dir out/Linux \
     --findings_file all_findings.json \
@@ -83,16 +83,30 @@ $ ${chromium_build}/recipes/recipe_modules/tricium_clang_tidy/resources/tricium_
     --all
 ```
 
+To only run clang-tidy against certain files, replace the `--all` parameter with
+the individual file paths.
+
 All clang-tidy checks are run on Linux builds of Chromium, so please set up your
 `args.gn` to build Linux.
 
 `all_findings.json` is where all of clang-tidy's findings will be dumped. The
-format of this file is detailed in `tricium_clang_tidy.py`.
+format of this file is detailed in `tricium_clang_tidy_script.py`.
 
 **Note** that the above command will use Chromium's top-level `.clang-tidy` file
 (or `.clang-tidy` files scattered throughout `third_party/`, depending on the
-files we lint. In order to test a *new* check, you'll have to add it to
-Chromium's top-level `.clang-tidy` file.
+files we lint. In order to test a *new* check, it's recommended that you use
+`tricium_clang_tidy_script.py`'s `--tidy_checks` flag. Usage of this looks like:
+
+```
+$ cd ${chromium}/src
+$ ${chromium_build}/recipes/recipe_modules/tricium_clang_tidy/resources/tricium_clang_tidy_script.py \
+    --base_path $PWD \
+    --out_dir out/Linux \
+    --findings_file all_findings.json \
+    --clang_tidy_binary $PWD/third_party/llvm-build/Release+Asserts/bin/clang-tidy \
+    --tidy_checks '-*,YOUR-NEW-CHECK-NAME-HERE'
+    --all
+```
 
 ### Ignoring a check
 
@@ -197,7 +211,20 @@ That said, assuming you have the LLVM sources available, you'll need to bring
 your own `clang-apply-replacements` binary if you want to use the `-fix` option
 noted below.
 
-Running clang-tidy is (hopefully) simple.
+**Note:** If you're on a system that offers a clang tools through its package
+manager (e.g., on Debian/Ubuntu, `sudo apt-get install clang-tidy clang-tools`),
+you might not need an LLVM checkout to make the required binaries and scripts
+(`clang-tidy`, `run-clang-tidy` and `clang-apply-replacements`) available in
+your `$PATH`. However, the system packaged binaries might be several versions
+behind Chromium's toolchain, so not all flags are guaranteed to work. If this is
+a problem, consider building clang-tidy from the same revision the current
+toolchain is using, rather than filing a bug against the toolchain component.
+This can be done as follows:
+```
+tools/clang/scripts/build_clang_tools_extra.py \
+    --fetch out/Release clang-tidy clang-apply-replacements
+```
+Running clang-tidy is then (hopefully) simple.
 1.  Build chrome normally.
 ```
 ninja -C out/Release chrome
@@ -248,7 +275,7 @@ Questions about the local flow? Reach out to rdevlin.cronin@chromium.org,
 thakis@chromium.org, or gbiv@chromium.org.
 
 Questions about the Gerrit flow? Email tricium-dev@google.com or
-infra-dev+tricium@chromium.org, or file a bug against `Infra>Platform>Tricium`.
+infra-dev+tricium@chromium.org, or file a bug against `Infra>LUCI>BuildService>PreSubmit>Tricium`.
 Please CC gbiv@chromium.org on any of these.
 
 Discoveries? Update the doc!

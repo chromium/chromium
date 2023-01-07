@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Checks that JavaScriptSourceFrame show inline breakpoints correctly\n`);
-  await TestRunner.loadModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function foo()
@@ -30,7 +30,7 @@
       //# sourceURL=foo.js
     `);
 
-  Bindings.breakpointManager._storage._breakpoints = new Map();
+  Bindings.breakpointManager.storage._breakpoints = new Map();
   SourcesTestRunner.runDebuggerTestSuite([
     function testAddRemoveBreakpoint(next) {
       var javaScriptSourceFrame;

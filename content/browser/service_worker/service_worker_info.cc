@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,6 @@ namespace content {
 ServiceWorkerVersionInfo::ServiceWorkerVersionInfo()
     : running_status(EmbeddedWorkerStatus::STOPPED),
       status(ServiceWorkerVersion::NEW),
-      fetch_handler_existence(
-          ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN),
-      registration_id(blink::mojom::kInvalidServiceWorkerRegistrationId),
-      version_id(blink::mojom::kInvalidServiceWorkerVersionId),
-      process_id(ChildProcessHost::kInvalidUniqueID),
       thread_id(ServiceWorkerConsts::kInvalidEmbeddedWorkerThreadId),
       devtools_agent_route_id(MSG_ROUTING_NONE),
       ukm_source_id(ukm::kInvalidSourceId) {}
@@ -28,23 +23,27 @@ ServiceWorkerVersionInfo::ServiceWorkerVersionInfo()
 ServiceWorkerVersionInfo::ServiceWorkerVersionInfo(
     EmbeddedWorkerStatus running_status,
     ServiceWorkerVersion::Status status,
-    ServiceWorkerVersion::FetchHandlerExistence fetch_handler_existence,
+    absl::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type,
     const GURL& script_url,
-    const url::Origin& origin,
+    const GURL& scope,
+    const blink::StorageKey& storage_key,
     int64_t registration_id,
     int64_t version_id,
     int process_id,
     int thread_id,
     int devtools_agent_route_id,
-    ukm::SourceId ukm_source_id)
-    : running_status(running_status),
+    ukm::SourceId ukm_source_id,
+    blink::mojom::AncestorFrameType ancestor_frame_type)
+    : ServiceWorkerVersionBaseInfo(scope,
+                                   storage_key,
+                                   registration_id,
+                                   version_id,
+                                   process_id,
+                                   ancestor_frame_type),
+      running_status(running_status),
       status(status),
-      fetch_handler_existence(fetch_handler_existence),
+      fetch_handler_type(fetch_handler_type),
       script_url(script_url),
-      origin(origin),
-      registration_id(registration_id),
-      version_id(version_id),
-      process_id(process_id),
       thread_id(thread_id),
       devtools_agent_route_id(devtools_agent_route_id),
       ukm_source_id(ukm_source_id) {}
@@ -63,9 +62,11 @@ ServiceWorkerRegistrationInfo::ServiceWorkerRegistrationInfo()
 
 ServiceWorkerRegistrationInfo::ServiceWorkerRegistrationInfo(
     const GURL& scope,
+    const blink::StorageKey& key,
     int64_t registration_id,
     DeleteFlag delete_flag)
     : scope(scope),
+      key(key),
       registration_id(registration_id),
       delete_flag(delete_flag),
       stored_version_size_bytes(0),
@@ -74,6 +75,7 @@ ServiceWorkerRegistrationInfo::ServiceWorkerRegistrationInfo(
 
 ServiceWorkerRegistrationInfo::ServiceWorkerRegistrationInfo(
     const GURL& scope,
+    const blink::StorageKey& key,
     blink::mojom::ServiceWorkerUpdateViaCache update_via_cache,
     int64_t registration_id,
     DeleteFlag delete_flag,
@@ -84,6 +86,7 @@ ServiceWorkerRegistrationInfo::ServiceWorkerRegistrationInfo(
     bool navigation_preload_enabled,
     size_t navigation_preload_header_length)
     : scope(scope),
+      key(key),
       update_via_cache(update_via_cache),
       registration_id(registration_id),
       delete_flag(delete_flag),

@@ -27,6 +27,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import optparse
+import os
 import logging
 import sys
 
@@ -148,3 +149,20 @@ class HelpPrintingOptionParser(optparse.OptionParser):
         if self.epilog_method:
             return '\n%s\n' % self.epilog_method()
         return ''
+
+
+def check_file_option(option, _opt_str, value, parser):
+    if value:
+        value = os.path.expanduser(value)
+        if not os.path.isfile(value):
+            raise optparse.OptionValueError('%s is not a regular file.' %
+                                            value)
+    setattr(parser.values, option.dest, value)
+
+
+def check_dir_option(option, _opt_str, value, parser):
+    if value:
+        value = os.path.expanduser(value)
+        if not os.path.isdir(value):
+            raise optparse.OptionValueError('%s is not a directory.' % value)
+    setattr(parser.values, option.dest, value)

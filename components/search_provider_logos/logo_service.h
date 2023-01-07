@@ -1,9 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SEARCH_PROVIDER_LOGOS_ANDROID_LOGO_SERVICE_H_
-#define COMPONENTS_SEARCH_PROVIDER_LOGOS_ANDROID_LOGO_SERVICE_H_
+#ifndef COMPONENTS_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_H_
+#define COMPONENTS_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_H_
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/search_provider_logos/logo_common.h"
@@ -23,6 +23,9 @@ class LogoObserver;
 //
 class LogoService : public KeyedService {
  public:
+  LogoService(const LogoService&) = delete;
+  LogoService& operator=(const LogoService&) = delete;
+
   // Gets the logo for the default search provider and calls the provided
   // callbacks with the encoded and decoded logos. The service will:
   //
@@ -47,11 +50,8 @@ class LogoService : public KeyedService {
 
  protected:
   LogoService();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LogoService);
 };
 
 }  // namespace search_provider_logos
 
-#endif  // COMPONENTS_SEARCH_PROVIDER_LOGOS_ANDROID_LOGO_SERVICE_H_
+#endif  // COMPONENTS_SEARCH_PROVIDER_LOGOS_LOGO_SERVICE_H_

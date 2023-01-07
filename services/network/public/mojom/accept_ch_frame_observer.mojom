@@ -1,0 +1,32 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/http_request_headers.mojom";
+import "services/network/public/mojom/web_client_hints_types.mojom";
+import "url/mojom/origin.mojom";
+
+// An observer that checks if an ACCEPT_CH HTTP 2/3 frame will affect the
+// request it is associated with. Should only be applied to navigation
+// requests.
+//
+// Implemented in the browser process to be sent messages from the network
+// service. Owned by a single URLLoader.
+interface AcceptCHFrameObserver {
+  // Informs the observer that an ACCEPT_CH frame was received for the given
+  // origin. The observer should check if the hints in the frame would be added
+  // to a request. If so, the observer should drop the associated URLLoader and
+  // issue a new request with the new headers, which should terminate the pipe.
+  //
+  // The callback expects a net::Error value. For non-error states, including a
+  // restarting and non-restarting request, send net::OK.
+  OnAcceptCHFrameReceived(
+    url.mojom.Origin origin,
+    array<WebClientHintsType> accept_ch_frame) => (int32 status);
+
+  // Used to make a copy of the observer when copying a ResourceRequest or
+  // passing a network.mojom.URLRequest struct through a mojo pipe.
+  Clone(pending_receiver<AcceptCHFrameObserver> listener);
+};

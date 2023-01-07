@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,12 @@
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/profiler/profile_builder.h"
 #include "base/profiler/sampling_profiler_thread_token.h"
-#include "base/profiler/unwinder.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -80,14 +78,14 @@ class BASE_EXPORT StackSamplingProfiler {
   // Represents parameters that configure the sampling.
   struct BASE_EXPORT SamplingParams {
     // Time to delay before first samples are taken.
-    TimeDelta initial_delay = TimeDelta::FromMilliseconds(0);
+    TimeDelta initial_delay = Milliseconds(0);
 
     // Number of samples to record per profile.
     int samples_per_profile = 300;
 
     // Interval between samples during a sampling profile. This is the desired
     // duration from the start of one sample to the start of the next sample.
-    TimeDelta sampling_interval = TimeDelta::FromMilliseconds(100);
+    TimeDelta sampling_interval = Milliseconds(100);
   };
 
   // Returns true if the profiler is supported on the current platform
@@ -113,9 +111,13 @@ class BASE_EXPORT StackSamplingProfiler {
 
   // Same as above function, with custom |sampler| implementation. The sampler
   // on Android is not implemented in base.
-  StackSamplingProfiler(const SamplingParams& params,
+  StackSamplingProfiler(SamplingProfilerThreadToken thread_token,
+                        const SamplingParams& params,
                         std::unique_ptr<ProfileBuilder> profile_builder,
                         std::unique_ptr<StackSampler> sampler);
+
+  StackSamplingProfiler(const StackSamplingProfiler&) = delete;
+  StackSamplingProfiler& operator=(const StackSamplingProfiler&) = delete;
 
   // Stops any profiling currently taking place before destroying the profiler.
   // This will block until profile_builder_'s OnProfileCompleted function has
@@ -181,19 +183,23 @@ class BASE_EXPORT StackSamplingProfiler {
 
   // Friend the global function from sample_metadata.cc so that it can call into
   // the function below.
-  friend void ApplyMetadataToPastSamplesImpl(TimeTicks period_start,
-                                             TimeTicks period_end,
-                                             int64_t name_hash,
-                                             Optional<int64_t> key,
-                                             int64_t value);
+  friend void ApplyMetadataToPastSamplesImpl(
+      TimeTicks period_start,
+      TimeTicks period_end,
+      uint64_t name_hash,
+      absl::optional<int64_t> key,
+      int64_t value,
+      absl::optional<PlatformThreadId> thread_id);
 
   // Apply metadata to already recorded samples. See the
   // ApplyMetadataToPastSamples() docs in sample_metadata.h.
-  static void ApplyMetadataToPastSamples(TimeTicks period_start,
-                                         TimeTicks period_end,
-                                         int64_t name_hash,
-                                         Optional<int64_t> key,
-                                         int64_t value);
+  static void ApplyMetadataToPastSamples(
+      TimeTicks period_start,
+      TimeTicks period_end,
+      uint64_t name_hash,
+      absl::optional<int64_t> key,
+      int64_t value,
+      absl::optional<PlatformThreadId> thread_id);
 
   // The thread whose stack will be sampled.
   SamplingProfilerThreadToken thread_token_;
@@ -218,8 +224,6 @@ class BASE_EXPORT StackSamplingProfiler {
   // An ID uniquely identifying this profiler to the sampling thread. This
   // will be an internal "null" value when no collection has been started.
   int profiler_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(StackSamplingProfiler);
 };
 
 }  // namespace base

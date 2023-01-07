@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"
 
 namespace base {
@@ -17,7 +18,7 @@ struct RefCountedData : RefCounted<RefCountedData> {
  public:
   explicit RefCountedData(std::string data) : data_(data) {}
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const {
+  void WriteIntoTrace(perfetto::TracedValue context) const {
     std::move(context).WriteString(data_);
   }
 
@@ -32,11 +33,11 @@ struct WeakData {
  public:
   explicit WeakData(std::string data) : data_(data) {}
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const {
+  void WriteIntoTrace(perfetto::TracedValue context) const {
     std::move(context).WriteString(data_);
   }
 
-  base::WeakPtr<WeakData> GetWeakPtr() const {
+  base::WeakPtr<const WeakData> GetWeakPtr() const {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -58,28 +59,26 @@ TEST(TracedValueSupportTest, ScopedRefPtr) {
 }
 
 TEST(TracedValueSupportTest, Optional) {
-  EXPECT_EQ(perfetto::TracedValueToString(base::Optional<int>()), "0x0");
-  EXPECT_EQ(perfetto::TracedValueToString(base::Optional<const int>(42)), "42");
+  EXPECT_EQ(perfetto::TracedValueToString(absl::optional<int>()), "0x0");
+  EXPECT_EQ(perfetto::TracedValueToString(absl::optional<const int>(42)), "42");
 }
 
 TEST(TracedValueSupportTest, WeakPtr) {
   std::unique_ptr<WeakData> data = std::make_unique<WeakData>("weak");
-  base::WeakPtr<WeakData> weak_ptr = data->GetWeakPtr();
+  base::WeakPtr<const WeakData> weak_ptr = data->GetWeakPtr();
   EXPECT_EQ(perfetto::TracedValueToString(weak_ptr), "weak");
   data.reset();
   EXPECT_EQ(perfetto::TracedValueToString(weak_ptr), "0x0");
 }
 
 TEST(TracedValueSupportTest, Time) {
+  EXPECT_EQ(perfetto::TracedValueToString(base::Microseconds(42)), "42");
   EXPECT_EQ(
-      perfetto::TracedValueToString(base::TimeDelta::FromMicroseconds(42)),
+      perfetto::TracedValueToString(base::Time() + base::Microseconds(42)),
       "42");
-  EXPECT_EQ(perfetto::TracedValueToString(
-                base::Time() + base::TimeDelta::FromMicroseconds(42)),
-            "42");
-  EXPECT_EQ(perfetto::TracedValueToString(
-                base::TimeTicks() + base::TimeDelta::FromMicroseconds(42)),
-            "42");
+  EXPECT_EQ(
+      perfetto::TracedValueToString(base::TimeTicks() + base::Microseconds(42)),
+      "42");
 }
 
 TEST(TracedValueSupportTest, UnguessableToken) {
@@ -100,6 +99,14 @@ TEST(TracedValueSupportTest, WideString) {
   EXPECT_EQ(perfetto::TracedValueToString(static_cast<const wchar_t*>(L"wide")),
             "wide");
   EXPECT_EQ(perfetto::TracedValueToString(std::wstring(L"wide")), "wide");
+}
+
+TEST(TracedValueSupportTest, StringPiece) {
+  EXPECT_EQ(perfetto::TracedValueToString(base::StringPiece("string")),
+            "string");
+  EXPECT_EQ(perfetto::TracedValueToString(base::StringPiece16(u"utf-16")),
+            "utf-16");
+  EXPECT_EQ(perfetto::TracedValueToString(base::WStringPiece(L"wide")), "wide");
 }
 
 }  // namespace trace_event

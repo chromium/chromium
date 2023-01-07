@@ -29,9 +29,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_CONE_EFFECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_CONE_EFFECT_H_
 
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+
+namespace gfx {
+class Point3F;
+class Vector3dF;
+}  // namespace gfx
 
 namespace blink {
 
@@ -44,9 +48,9 @@ class PLATFORM_EXPORT ConeEffect {
   ConeEffect();
 
   // Returns scalar gain for the given source/listener positions/orientations
-  double Gain(FloatPoint3D source_position,
-              FloatPoint3D source_orientation,
-              FloatPoint3D listener_position);
+  double Gain(gfx::Point3F source_position,
+              gfx::Vector3dF source_orientation,
+              gfx::Point3F listener_position);
 
   // Angles in degrees
   void SetInnerAngle(double inner_angle) { inner_angle_ = inner_angle; }

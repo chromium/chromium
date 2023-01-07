@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Presubmit tests for android_webview/javatests/
@@ -6,11 +6,15 @@
 Runs various style checks before upload.
 """
 
+USE_PYTHON3 = True
+
+
 def CheckChangeOnUpload(input_api, output_api):
   results = []
   results.extend(_CheckAwJUnitTestRunner(input_api, output_api))
   results.extend(_CheckNoSkipCommandLineAnnotation(input_api, output_api))
   results.extend(_CheckNoSandboxedRendererSwitch(input_api, output_api))
+  results.extend(_CheckNoDomUtils(input_api, output_api))
   return results
 
 
@@ -120,3 +124,36 @@ to run in multi-process only. Instead, use @OnlyRunIn(MULTI_PROCESS).
 """, errors))
 
   return results
+
+
+def _CheckNoDomUtils(input_api, output_api):
+  """Checks that tests prefer JSUtils.clickNodeWithUserGesture() over
+  DOMUtils.clickNode().
+  """
+
+  dom_utils_pattern = input_api.re.compile(r'DOMUtils\.clickNode\(')
+  errors = []
+  def _FilterFile(affected_file):
+    return input_api.FilterSourceFile(
+        affected_file,
+        files_to_skip=input_api.DEFAULT_FILES_TO_SKIP,
+        files_to_check=[r'.*\.java$'])
+
+  for f in input_api.AffectedSourceFiles(_FilterFile):
+    for line_num, line in f.ChangedContents():
+      m = dom_utils_pattern.search(line)
+      if m:
+        errors.append("%s:%d" % (f.LocalPath(), line_num))
+
+  results = []
+  if errors:
+    results.append(output_api.PresubmitPromptWarning("""
+DOMUtils.clickNode() has been observed to cause flakiness in WebView tests.
+Prefer using JSUtils.clickNodeWithUserGesture() as a more reliable replacement
+where possible. This is a "soft" warning, so you can bypass this if
+DOMUtils.clickNode() is the only way.
+""", errors))
+
+  return results
+
+

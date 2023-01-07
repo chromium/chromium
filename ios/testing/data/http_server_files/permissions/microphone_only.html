@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width">
+
+  <title>Requesting Microphone Permissions</title>
+</head>
+
+<body>
+  <p>Current volume: <span id="volume">0</span></p>
+  <script type="text/javascript">
+    const volumeNode = document.getElementById("volume");
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(
+      function(stream) {
+        const audioCtx = new AudioContext();
+        const source = audioCtx.createMediaStreamSource(stream);
+
+        const analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 64;
+        const bufferLength = analyser.frequencyBinCount;
+        let dataArray = new Uint8Array(bufferLength);
+
+        // Connect the source to be analysed.
+        source.connect(analyser);
+        setInterval(function () {
+          analyser.getByteFrequencyData(dataArray);
+          let averageVolume = dataArray.reduce((a, b) => a + b) / bufferLength;
+          volumeNode.innerHTML = averageVolume;
+        }, 500);
+    });
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,15 @@ enum ObjectType {
   kISO_14496_3 = 0x40,         // MPEG4 AAC
   kISO_13818_7_AAC_LC = 0x67,  // MPEG2 AAC-LC
   kAC3 = 0xa5,                 // AC3
-  kEAC3 = 0xa6                 // EAC3 / Dolby Digital Plus
+  kEAC3 = 0xa6,                // EAC3 / Dolby Digital Plus
+  kDTS = 0xa9,                 // DTS
+  kDTSX = 0xb2                 // DTS:X
+};
+
+enum Tag {
+  kESDescrTag = 0x03,
+  kDecoderConfigDescrTag = 0x04,
+  kDecoderSpecificInfoTag = 0x05
 };
 
 // This class parse object type and decoder specific information from an
@@ -44,12 +52,6 @@ class MEDIA_EXPORT ESDescriptor {
   const std::vector<uint8_t>& decoder_specific_info() const;
 
  private:
-  enum Tag {
-    kESDescrTag = 0x03,
-    kDecoderConfigDescrTag = 0x04,
-    kDecoderSpecificInfoTag = 0x05
-  };
-
   bool ParseDecoderConfigDescriptor(BitReader* reader);
   bool ParseDecoderSpecificInfo(BitReader* reader);
 

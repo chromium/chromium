@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-
-#include "base/macros.h"
 
 namespace sync_file_system {
 namespace drive_backend {
@@ -36,6 +34,12 @@ bool operator<(const ParentIDAndTitle& left, const ParentIDAndTitle& right);
 class MetadataDatabaseIndexInterface {
  public:
   MetadataDatabaseIndexInterface() {}
+
+  MetadataDatabaseIndexInterface(const MetadataDatabaseIndexInterface&) =
+      delete;
+  MetadataDatabaseIndexInterface& operator=(
+      const MetadataDatabaseIndexInterface&) = delete;
+
   virtual ~MetadataDatabaseIndexInterface() {}
 
   // Removes unreachable items.
@@ -120,9 +124,6 @@ class MetadataDatabaseIndexInterface {
   virtual std::vector<std::string> GetRegisteredAppIDs() const = 0;
   virtual std::vector<int64_t> GetAllTrackerIDs() const = 0;
   virtual std::vector<std::string> GetAllMetadataIDs() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetadataDatabaseIndexInterface);
 };
 
 }  // namespace drive_backend

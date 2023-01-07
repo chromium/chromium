@@ -1,16 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/os_settings.js';
-
-// #import {BrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {flushTasks} from 'chrome://test/test_util.m.js';
-// #import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf} from './test_util.m.js';
-// clang-format on
-
 'use strict';
+
+import {BrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {setupFakeHandler, replaceStore, replaceBody, isHiddenByDomIf} from './test_util.js';
 
 suite('AppManagementPageTests', () => {
   let appManagementPage;
@@ -19,7 +15,9 @@ suite('AppManagementPageTests', () => {
 
   /** @return {Element} */
   function getAppList() {
-    return appManagementPage.$$('app-management-main-view').$['app-list'];
+    return appManagementPage.shadowRoot
+        .querySelector('app-management-main-view')
+        .$['app-list'];
   }
 
   /** @return {number} */
@@ -30,8 +28,9 @@ suite('AppManagementPageTests', () => {
 
   /** @return {Element} */
   function getNoAppsFoundLabel() {
-    return appManagementPage.$$('app-management-main-view')
-        .$$('#no-apps-label');
+    return appManagementPage.shadowRoot
+        .querySelector('app-management-main-view')
+        .shadowRoot.querySelector('#no-apps-label');
   }
 
   setup(async () => {
@@ -45,51 +44,51 @@ suite('AppManagementPageTests', () => {
   test('loads', async () => {
     // Check that the browser responds to the getApps() message.
     const {apps: initialApps} =
-        await app_management.BrowserProxy.getInstance().handler.getApps();
+        await BrowserProxy.getInstance().handler.getApps();
   });
 
   test('App list renders on page change', async () => {
     await fakeHandler.addApp();
-    expectEquals(1, getAppListChildren());
+    assertEquals(1, getAppListChildren());
     await fakeHandler.addApp();
-    expectEquals(2, getAppListChildren());
+    assertEquals(2, getAppListChildren());
   });
 
   test('No Apps Found Label', async () => {
-    expectEquals(0, getAppListChildren());
-    expectFalse(isHiddenByDomIf(getNoAppsFoundLabel()));
+    assertEquals(0, getAppListChildren());
+    assertFalse(isHiddenByDomIf(getNoAppsFoundLabel()));
 
     const app = await fakeHandler.addApp();
-    expectEquals(1, getAppListChildren());
-    expectTrue(isHiddenByDomIf(getNoAppsFoundLabel()));
+    assertEquals(1, getAppListChildren());
+    assertTrue(isHiddenByDomIf(getNoAppsFoundLabel()));
 
     fakeHandler.uninstall(app.id);
-    await test_util.flushTasks();
-    expectEquals(0, getAppListChildren());
-    expectFalse(isHiddenByDomIf(getNoAppsFoundLabel()));
+    await flushTasks();
+    assertEquals(0, getAppListChildren());
+    assertFalse(isHiddenByDomIf(getNoAppsFoundLabel()));
   });
 
   test('App list filters when searching', async () => {
     await fakeHandler.addApp(null, {title: 'slides'});
     await fakeHandler.addApp(null, {title: 'calculator'});
     const sheets = await fakeHandler.addApp(null, {title: 'sheets'});
-    expectEquals(3, getAppListChildren());
+    assertEquals(3, getAppListChildren());
 
     appManagementPage.searchTerm = 's';
-    await test_util.flushTasks();
-    expectEquals(2, getAppListChildren());
+    await flushTasks();
+    assertEquals(2, getAppListChildren());
 
     fakeHandler.uninstall(sheets.id);
-    await test_util.flushTasks();
-    expectEquals(1, getAppListChildren());
+    await flushTasks();
+    assertEquals(1, getAppListChildren());
 
     appManagementPage.searchTerm = 'ss';
-    await test_util.flushTasks();
-    expectEquals(0, getAppListChildren());
-    expectFalse(isHiddenByDomIf(getNoAppsFoundLabel()));
+    await flushTasks();
+    assertEquals(0, getAppListChildren());
+    assertFalse(isHiddenByDomIf(getNoAppsFoundLabel()));
 
     appManagementPage.searchTerm = '';
-    await test_util.flushTasks();
-    expectEquals(2, getAppListChildren());
+    await flushTasks();
+    assertEquals(2, getAppListChildren());
   });
 });

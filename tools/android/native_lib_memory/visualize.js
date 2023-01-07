@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ const COLOR_MAPPING = [
   [["chrome/android"], colors(colorIndex++), "//chrome/android"],
   [["chrome"], colors(colorIndex++), "//chrome"],
   [["net", "third_party/boringssl"], colors(colorIndex++), "Net"],
-  [["third_party/webrtc", "third_party/opus", "third_party/usrsctp"],
+  [["third_party/webrtc", "third_party/opus"],
    colors(colorIndex++), "WebRTC"],
   [["third_party/ffmpeg", "third_party/libvpx"], colors(colorIndex++), "Media"],
   [["third_party/icu"], colors(colorIndex++), "ICU"],

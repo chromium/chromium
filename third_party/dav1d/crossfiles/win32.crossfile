@@ -2,10 +2,6 @@
 c = 'clang-cl'
 ar = 'llvm-ar'
 
-[properties]
-c_args = ['-m32', '-fuse-ld=lld',]
-
-
 [host_machine]
 system = 'windows'
 cpu_family = 'x86'

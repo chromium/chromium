@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,14 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-
 namespace ukm {
 
 // The native part of java UkmUtilsForTest class.
 class UkmUtilsForTest {
  public:
+  UkmUtilsForTest(const UkmUtilsForTest&) = delete;
+  UkmUtilsForTest& operator=(const UkmUtilsForTest&) = delete;
+
   static bool IsEnabled();
   static bool HasSourceWithId(SourceId source_id);
   static void RecordSourceWithId(SourceId source_id);
@@ -24,8 +25,6 @@ class UkmUtilsForTest {
   // access UKM internals for testing.
   UkmUtilsForTest();
   ~UkmUtilsForTest();
-
-  DISALLOW_COPY_AND_ASSIGN(UkmUtilsForTest);
 };
 
 }  // namespace ukm

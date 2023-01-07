@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,14 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/token.h"
+#include "base/unguessable_token.h"
+#include "build/build_config.h"
+#include "media/cdm/cdm_type.h"
+#include "media/media_buildflags.h"
+
+#if !BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#error This file only applies to builds that enable_library_cdms.
+#endif
 
 namespace media {
 
@@ -21,15 +28,11 @@ extern const char kClearKeyCdmBaseDirectory[];
 extern const char kClearKeyCdmDisplayName[];
 
 // The default GUID for Clear Key Cdm.
-extern const base::Token kClearKeyCdmGuid;
+extern const CdmType kClearKeyCdmType;
 
 // A different GUID for Clear Key Cdm for testing running different types of
 // CDMs in the system.
-extern const base::Token kClearKeyCdmDifferentGuid;
-
-// Identifier used by the PluginPrivateFileSystem to identify the files stored
-// for the Clear Key CDM.
-extern const char kClearKeyCdmFileSystemId[];
+extern const CdmType kClearKeyCdmDifferentCdmType;
 
 // Returns the path of a CDM relative to DIR_COMPONENTS.
 // On platforms where a platform specific path is used, returns
@@ -40,6 +43,16 @@ extern const char kClearKeyCdmFileSystemId[];
 base::FilePath GetPlatformSpecificDirectory(
     const base::FilePath& cdm_base_path);
 base::FilePath GetPlatformSpecificDirectory(const std::string& cdm_base_path);
+
+#if BUILDFLAG(IS_WIN)
+// Returns the "CDM store path" to be passed to `MediaFoundationCdm`. The
+// `cdm_store_path_root` is typically the path to the Chrome user's profile,
+// e.g.
+// C:\Users\<user>\AppData\Local\Google\Chrome\Default\MediaFoundationCdmStore\x86_x64
+base::FilePath GetCdmStorePath(const base::FilePath& cdm_store_path_root,
+                               const base::UnguessableToken& cdm_origin_id,
+                               const std::string& key_system);
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace media
 

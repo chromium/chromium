@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "content/common/content_export.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -27,7 +25,7 @@ class VirtualFidoDiscoveryFactory;
 // Implements the Mojo interface representing a virtual authenticator manager
 // for the Web Authentication API. Allows setting up and configurating virtual
 // authenticator devices for testing.
-class CONTENT_EXPORT VirtualAuthenticatorManagerImpl
+class VirtualAuthenticatorManagerImpl
     : public blink::test::mojom::VirtualAuthenticatorManager {
  public:
   class Observer : public base::CheckedObserver {
@@ -50,20 +48,15 @@ class CONTENT_EXPORT VirtualAuthenticatorManagerImpl
       mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
           receiver);
 
-  // Creates an authenticator backed by a virtual U2F device. Returns nullptr
-  // if an error occurs when trying to create the authenticator.
-  VirtualAuthenticator* CreateU2FAuthenticator(
-      device::FidoTransportProtocol transport);
+  // Creates an authenticator based on |options| and adds it to the list of
+  // authenticators owned by this object. It returns a non-owning pointer to
+  // the authenticator, or |nullptr| on error.
+  VirtualAuthenticator* AddAuthenticatorAndReturnNonOwningPointer(
+      const blink::test::mojom::VirtualAuthenticatorOptions& options);
 
-  // Creates an authenticator backed by a virtual CTAP2 device. Returns nullptr
-  // if an error occurs when trying to create the authenticator.
-  VirtualAuthenticator* CreateCTAP2Authenticator(
-      device::Ctap2Version ctap2_version,
-      device::FidoTransportProtocol transport,
-      device::AuthenticatorAttachment attachment,
-      bool has_resident_key,
-      bool has_user_verification,
-      bool has_large_blob);
+  // Sets whether the UI is enabled or not. Defaults to false.
+  void enable_ui(bool enable_ui) { enable_ui_ = enable_ui; }
+  bool is_ui_enabled() const { return enable_ui_; }
 
   // Returns the authenticator with the given |id|. Returns nullptr if no
   // authenticator matches the ID.
@@ -93,6 +86,8 @@ class CONTENT_EXPORT VirtualAuthenticatorManagerImpl
       std::unique_ptr<VirtualAuthenticator> authenticator);
 
   base::ObserverList<Observer> observers_;
+
+  bool enable_ui_ = false;
 
   // The key is the unique_id of the corresponding value (the authenticator).
   std::map<std::string, std::unique_ptr<VirtualAuthenticator>> authenticators_;

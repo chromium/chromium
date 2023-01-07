@@ -1,13 +1,10 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_CERTIFICATE_GENERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_CERTIFICATE_GENERATOR_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
@@ -18,6 +15,8 @@ class SingleThreadTaskRunner;
 
 namespace blink {
 
+class ExecutionContext;
+
 using RTCCertificateCallback =
     base::OnceCallback<void(rtc::scoped_refptr<rtc::RTCCertificate>)>;
 
@@ -27,6 +26,10 @@ using RTCCertificateCallback =
 class MODULES_EXPORT RTCCertificateGenerator {
  public:
   RTCCertificateGenerator() {}
+
+  RTCCertificateGenerator(const RTCCertificateGenerator&) = delete;
+  RTCCertificateGenerator& operator=(const RTCCertificateGenerator&) = delete;
+
   ~RTCCertificateGenerator() {}
 
   // Start generating a certificate asynchronously. |observer| is invoked on the
@@ -35,11 +38,13 @@ class MODULES_EXPORT RTCCertificateGenerator {
   void GenerateCertificate(
       const rtc::KeyParams& key_params,
       blink::RTCCertificateCallback completion_callback,
+      ExecutionContext& context,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   void GenerateCertificateWithExpiration(
       const rtc::KeyParams& key_params,
       uint64_t expires_ms,
       blink::RTCCertificateCallback completion_callback,
+      ExecutionContext& context,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Determines if the parameters are supported by |GenerateCertificate|.
@@ -51,9 +56,6 @@ class MODULES_EXPORT RTCCertificateGenerator {
   // |rtc::RTCCertificate::ToPEM|.
   rtc::scoped_refptr<rtc::RTCCertificate> FromPEM(String pem_private_key,
                                                   String pem_certificate);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RTCCertificateGenerator);
 };
 
 }  // namespace blink

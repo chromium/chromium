@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import json
 import os
 import traceback
@@ -12,10 +14,7 @@ from .request import Authentication
 from .response import MultipartContent
 from .utils import HTTPException
 
-try:
-    from html import escape
-except ImportError:
-    from cgi import escape
+from html import escape
 
 __all__ = ["file_handler", "python_script_handler",
            "FunctionHandler", "handler", "json_handler",
@@ -51,7 +50,7 @@ def filesystem_path(base_path, request, url_base="/"):
     return new_path
 
 
-class DirectoryHandler(object):
+class DirectoryHandler:
     def __init__(self, base_path=None, url_base="/"):
         self.base_path = base_path
         self.url_base = url_base
@@ -185,7 +184,7 @@ def load_headers(request, path):
         try:
             with open(headers_path, "rb") as headers_file:
                 data = headers_file.read()
-        except IOError:
+        except OSError:
             return []
         else:
             if use_sub:
@@ -197,7 +196,7 @@ def load_headers(request, path):
             _load(request, path))
 
 
-class FileHandler(object):
+class FileHandler:
     def __init__(self, base_path=None, url_base="/"):
         self.base_path = base_path
         self.url_base = url_base
@@ -229,7 +228,7 @@ class FileHandler(object):
             response = wrap_pipeline(path, request, response)
             return response
 
-        except (OSError, IOError):
+        except OSError:
             raise HTTPException(404)
 
     def get_headers(self, request, path):
@@ -276,10 +275,10 @@ class FileHandler(object):
         return f.read(byte_range.upper - byte_range.lower)
 
 
-file_handler = FileHandler()
+file_handler = FileHandler()  # type: ignore
 
 
-class PythonScriptHandler(object):
+class PythonScriptHandler:
     def __init__(self, base_path=None, url_base="/"):
         self.base_path = base_path
         self.url_base = url_base
@@ -308,7 +307,7 @@ class PythonScriptHandler(object):
             if func is not None:
                 return func(request, response, environ, path)
 
-        except IOError:
+        except OSError:
             raise HTTPException(404)
 
     def __call__(self, request, response):
@@ -350,10 +349,10 @@ class PythonScriptHandler(object):
         return self._load_file(request, None, func)
 
 
-python_script_handler = PythonScriptHandler()
+python_script_handler = PythonScriptHandler()  # type: ignore
 
 
-class FunctionHandler(object):
+class FunctionHandler:
     def __init__(self, func):
         self.func = func
 
@@ -386,7 +385,7 @@ def handler(func):
     return FunctionHandler(func)
 
 
-class JsonHandler(object):
+class JsonHandler:
     def __init__(self, func):
         self.func = func
 
@@ -412,7 +411,7 @@ def json_handler(func):
     return JsonHandler(func)
 
 
-class AsIsHandler(object):
+class AsIsHandler:
     def __init__(self, base_path=None, url_base="/"):
         self.base_path = base_path
         self.url_base = url_base
@@ -425,14 +424,14 @@ class AsIsHandler(object):
                 response.writer.write_raw_content(f.read())
             wrap_pipeline(path, request, response)
             response.close_connection = True
-        except IOError:
+        except OSError:
             raise HTTPException(404)
 
 
-as_is_handler = AsIsHandler()
+as_is_handler = AsIsHandler()  # type: ignore
 
 
-class BasicAuthHandler(object):
+class BasicAuthHandler:
     def __init__(self, handler, user, password):
         """
          A Basic Auth handler
@@ -459,10 +458,10 @@ class BasicAuthHandler(object):
             return self.handler(request, response)
 
 
-basic_auth_handler = BasicAuthHandler(file_handler, None, None)
+basic_auth_handler = BasicAuthHandler(file_handler, None, None)  # type: ignore
 
 
-class ErrorHandler(object):
+class ErrorHandler:
     def __init__(self, status):
         self.status = status
 
@@ -470,7 +469,7 @@ class ErrorHandler(object):
         response.set_error(self.status)
 
 
-class StringHandler(object):
+class StringHandler:
     def __init__(self, data, content_type, **headers):
         """Handler that returns a fixed data string and headers
 
@@ -510,4 +509,4 @@ class StaticHandler(StringHandler):
             if format_args:
                 data = data % format_args
 
-        return super(StaticHandler, self).__init__(data, content_type, **headers)
+        return super().__init__(data, content_type, **headers)

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,9 @@
 // Notifies the consumer to set the following image as an image
 // in an omnibox with empty text
 - (void)setEmptyTextLeadingImage:(UIImage*)icon;
+
+// Notifies the consumer to update the text immediately.
+- (void)updateText:(NSAttributedString*)text;
 
 @end
 

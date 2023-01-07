@@ -1,13 +1,15 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef BASE_MEMORY_UNSAFE_SHARED_MEMORY_POOL_H_
 #define BASE_MEMORY_UNSAFE_SHARED_MEMORY_POOL_H_
 
+#include <memory>
+#include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/base_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/synchronization/lock.h"

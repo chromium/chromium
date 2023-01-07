@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,15 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/message_center_public_export.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -30,6 +30,10 @@
 namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
+
+namespace ui {
+class ColorProvider;
+}
 
 namespace message_center {
 
@@ -68,7 +72,7 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT ButtonInfo {
   // The placeholder string that should be displayed in the input field for
   // text input type buttons until the user has entered a response themselves.
   // If the value is null, there is no input field associated with the button.
-  base::Optional<std::u16string> placeholder;
+  absl::optional<std::u16string> placeholder;
 };
 
 enum class FullscreenVisibility {
@@ -131,6 +135,12 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // retain VectorIcon reference.  https://crbug.com/760866
   const gfx::VectorIcon* vector_small_image = &gfx::kNoneIcon;
 
+  // Vector image to display on the parent notification of this notification,
+  // illustrating the source of the group notification that this notification
+  // belongs to. Optional. Note that all notification belongs to the same group
+  // should have the same `parent_vector_small_image`.
+  const gfx::VectorIcon* parent_vector_small_image = &gfx::kNoneIcon;
+
   // Items to display on the notification. Only applicable for notifications
   // that have type NOTIFICATION_TYPE_MULTIPLE.
   std::vector<NotificationItem> items;
@@ -179,7 +189,13 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // Usually, it should not be set directly.
   // For system notification, ash::CreateSystemNotification with
   // SystemNotificationWarningLevel should be used.
-  base::Optional<SkColor> accent_color;
+  absl::optional<SkColor> accent_color;
+
+  // Similar to `accent_color`, but store a ColorId instead of SkColor so that
+  // the notification view can use this id to correctly handle theme change. In
+  // CrOS notification, if `accent_color_id` is provided, `accent_color` will
+  // not be used.
+  absl::optional<ui::ColorId> accent_color_id;
 
   // Controls whether a settings button should appear on the notification. See
   // enum definition. TODO(estade): turn this into a boolean. See
@@ -188,6 +204,10 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
 
   // Controls whether a snooze button should appear on the notification.
   bool should_show_snooze_button = false;
+
+  // If true, instead of using an app-themed accent color for views containing
+  // text, use the style's default. This affects the action buttons and title.
+  bool ignore_accent_color_for_text = false;
 
   FullscreenVisibility fullscreen_visibility = FullscreenVisibility::NONE;
 };
@@ -216,7 +236,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
                const std::string& id,
                const std::u16string& title,
                const std::u16string& message,
-               const gfx::Image& icon,
+               const ui::ImageModel& icon,
                const std::u16string& display_source,
                const GURL& origin_url,
                const NotifierId& notifier_id,
@@ -246,6 +266,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // platforms.
   static std::unique_ptr<Notification> DeepCopy(
       const Notification& notification,
+      const ui::ColorProvider* color_provider,
       bool include_body_image,
       bool include_small_image,
       bool include_icon_images);
@@ -274,6 +295,12 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
 
   // A display string for the source of the notification.
   const std::u16string& display_source() const { return display_source_; }
+
+  bool allow_group() const { return allow_group_; }
+  void set_allow_group(bool allow_group) { allow_group_ = allow_group; }
+
+  bool group_child() const { return group_child_; }
+  bool group_parent() const { return group_parent_; }
 
   const NotifierId& notifier_id() const { return notifier_id_; }
 
@@ -341,8 +368,8 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // End unpacked values.
 
   // Images fetched asynchronously.
-  const gfx::Image& icon() const { return icon_; }
-  void set_icon(const gfx::Image& icon) { icon_ = icon; }
+  ui::ImageModel icon() const { return icon_; }
+  void set_icon(const ui::ImageModel& icon) { icon_ = icon; }
 
   const gfx::Image& image() const { return optional_fields_.image; }
   void set_image(const gfx::Image& image) { optional_fields_.image = image; }
@@ -368,6 +395,13 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // See detailed comment in RichNotificationData::vector_small_image.
   void set_vector_small_image(const gfx::VectorIcon& image) {
     optional_fields_.vector_small_image = &image;
+  }
+
+  const gfx::VectorIcon& parent_vector_small_image() const {
+    return *optional_fields_.parent_vector_small_image;
+  }
+  void set_parent_vector_small_image(const gfx::VectorIcon& image) {
+    optional_fields_.parent_vector_small_image = &image;
   }
 
   // Mask the color of |small_image| to the given |color|.
@@ -419,11 +453,18 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
     return optional_fields_.accessible_name;
   }
 
-  base::Optional<SkColor> accent_color() const {
+  absl::optional<SkColor> accent_color() const {
     return optional_fields_.accent_color;
   }
   void set_accent_color(SkColor accent_color) {
     optional_fields_.accent_color = accent_color;
+  }
+
+  absl::optional<ui::ColorId> accent_color_id() const {
+    return optional_fields_.accent_color_id;
+  }
+  void set_accent_color_id(ui::ColorId accent_color_id) {
+    optional_fields_.accent_color_id = accent_color_id;
   }
 
   bool should_show_settings_button() const {
@@ -461,6 +502,23 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // method explicitly, to avoid setting it accidentally.
   void SetSystemPriority();
 
+  // Set the notification as a group child. This means it can only be displayed
+  // inside a group notification.
+  void SetGroupChild();
+
+  // Set the notification as a group parent. This means the message view
+  // associated with this notification will act as a container for all
+  // notifications that are part of its group.
+  void SetGroupParent();
+
+  // Set `group_child_` to false so it's back to it's
+  // default state.
+  void ClearGroupChild();
+
+  // Set `group_parent_` to false so it's back to it's
+  // default state.
+  void ClearGroupParent();
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void set_system_notification_warning_level(
       SystemNotificationWarningLevel warning_level) {
@@ -487,7 +545,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   std::u16string message_;
 
   // Image data for the associated icon, used by Ash when available.
-  gfx::Image icon_;
+  ui::ImageModel icon_;
 
   // The display string for the source of the notification.  Could be
   // the same as |origin_url_|, or the name of an extension.
@@ -505,6 +563,18 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // TODO(estade): these book-keeping fields should be moved into
   // NotificationList.
   unsigned serial_number_;
+
+  // If set to true the notification can be displayed inside a group
+  // notification.
+  bool allow_group_ = false;
+
+  // If set to true the notification should not be displayed separately
+  // but inside a group notification.
+  bool group_child_ = false;
+
+  // If set to true the message view associated with this notification will
+  // be responsible to display all notifications that are part of its group.
+  bool group_parent_ = false;
 
   // A proxy object that allows access back to the JavaScript object that
   // represents the notification, for firing events.

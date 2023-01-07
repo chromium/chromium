@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
 #include <cmath>
 #include <tuple>
 #include <utility>
@@ -17,18 +16,16 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -41,7 +38,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/runtime_data.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/extension_messages.h"
 #include "net/cookies/cookie_util.h"
@@ -71,6 +67,7 @@ namespace dnr_api = extensions::api::declarative_net_request;
 using ParsedResponseCookies = std::vector<std::unique_ptr<net::ParsedCookie>>;
 
 void ClearCacheOnNavigationOnUI() {
+  extensions::ExtensionsBrowserClient::Get()->ClearBackForwardCache();
   web_cache::WebCacheManager::GetInstance()->ClearCacheOnNavigation();
 }
 
@@ -126,7 +123,7 @@ void RecordDNRRequestHeaderChanged(RequestHeaderType type) {
 }
 
 bool IsStringLowerCaseASCII(base::StringPiece s) {
-  return std::none_of(s.begin(), s.end(), base::IsAsciiUpper<char>);
+  return base::ranges::none_of(s, base::IsAsciiUpper<char>);
 }
 
 constexpr auto kRequestHeaderEntries =
@@ -532,28 +529,31 @@ IgnoredAction::IgnoredAction(extensions::ExtensionId extension_id,
 IgnoredAction::IgnoredAction(IgnoredAction&& rhs) = default;
 
 bool ExtraInfoSpec::InitFromValue(content::BrowserContext* browser_context,
-                                  const base::ListValue& value,
+                                  const base::Value& value,
                                   int* extra_info_spec) {
   *extra_info_spec = 0;
-  for (size_t i = 0; i < value.GetSize(); ++i) {
-    std::string str;
-    if (!value.GetString(i, &str))
+  if (!value.is_list())
+    return false;
+  for (const auto& item : value.GetList()) {
+    const std::string* str = item.GetIfString();
+    if (!str)
       return false;
 
-    if (str == "requestHeaders")
+    if (*str == "requestHeaders") {
       *extra_info_spec |= REQUEST_HEADERS;
-    else if (str == "responseHeaders")
+    } else if (*str == "responseHeaders") {
       *extra_info_spec |= RESPONSE_HEADERS;
-    else if (str == "blocking")
+    } else if (*str == "blocking") {
       *extra_info_spec |= BLOCKING;
-    else if (str == "asyncBlocking")
+    } else if (*str == "asyncBlocking") {
       *extra_info_spec |= ASYNC_BLOCKING;
-    else if (str == "requestBody")
+    } else if (*str == "requestBody") {
       *extra_info_spec |= REQUEST_BODY;
-    else if (str == "extraHeaders")
+    } else if (*str == "extraHeaders") {
       *extra_info_spec |= EXTRA_HEADERS;
-    else
+    } else {
       return false;
+    }
   }
   // BLOCKING and ASYNC_BLOCKING are mutually exclusive.
   if ((*extra_info_spec & BLOCKING) && (*extra_info_spec & ASYNC_BLOCKING))
@@ -698,22 +698,23 @@ bool InDecreasingExtensionInstallationTimeOrder(const EventResponseDelta& a,
   return a.extension_install_time > b.extension_install_time;
 }
 
-std::unique_ptr<base::ListValue> StringToCharList(const std::string& s) {
-  auto result = std::make_unique<base::ListValue>();
+base::Value StringToCharList(const std::string& s) {
+  base::Value result(base::Value::Type::LIST);
   for (size_t i = 0, n = s.size(); i < n; ++i) {
-    result->AppendInteger(*reinterpret_cast<const unsigned char*>(&s[i]));
+    result.Append(*reinterpret_cast<const unsigned char*>(&s[i]));
   }
   return result;
 }
 
-bool CharListToString(const base::ListValue* list, std::string* out) {
-  if (!list)
-    return false;
-  const size_t list_length = list->GetSize();
+bool CharListToString(const base::Value::List& list, std::string* out) {
+  const size_t list_length = list.size();
   out->resize(list_length);
   int value = 0;
   for (size_t i = 0; i < list_length; ++i) {
-    if (!list->GetInteger(i, &value) || value < 0 || value > 255)
+    if (!list[i].is_int())
+      return false;
+    value = list[i].GetInt();
+    if (value < 0 || value > 255)
       return false;
     unsigned char tmp = static_cast<unsigned char>(value);
     (*out)[i] = *reinterpret_cast<char*>(&tmp);
@@ -807,10 +808,9 @@ EventResponseDelta CalculateOnHeadersReceivedDelta(
         continue;
       if (ShouldHideResponseHeader(extra_info_spec, name))
         continue;
-      std::string name_lowercase = base::ToLowerASCII(name);
       bool header_found = false;
       for (const auto& i : *new_response_headers) {
-        if (base::LowerCaseEqualsASCII(i.first, name_lowercase) &&
+        if (base::EqualsCaseInsensitiveASCII(i.first, name) &&
             value == i.second) {
           header_found = true;
           break;
@@ -828,13 +828,12 @@ EventResponseDelta CalculateOnHeadersReceivedDelta(
         continue;
       if (ShouldHideResponseHeader(extra_info_spec, i.first))
         continue;
-      std::string name_lowercase = base::ToLowerASCII(i.first);
       size_t iter = 0;
       std::string name;
       std::string value;
       bool header_found = false;
       while (old_response_headers->EnumerateHeaderLines(&iter, &name, &value)) {
-        if (base::LowerCaseEqualsASCII(name, name_lowercase) &&
+        if (base::EqualsCaseInsensitiveASCII(name, i.first) &&
             value == i.second) {
           header_found = true;
           break;
@@ -852,7 +851,7 @@ EventResponseDelta CalculateOnAuthRequiredDelta(
     const std::string& extension_id,
     const base::Time& extension_install_time,
     bool cancel,
-    base::Optional<net::AuthCredentials> auth_credentials) {
+    absl::optional<net::AuthCredentials> auth_credentials) {
   EventResponseDelta result(extension_id, extension_install_time);
   result.cancel = cancel;
   result.auth_credentials = std::move(auth_credentials);
@@ -861,8 +860,8 @@ EventResponseDelta CalculateOnAuthRequiredDelta(
 
 void MergeCancelOfResponses(
     const EventResponseDeltas& deltas,
-    base::Optional<extensions::ExtensionId>* canceled_by_extension) {
-  *canceled_by_extension = base::nullopt;
+    absl::optional<extensions::ExtensionId>* canceled_by_extension) {
+  *canceled_by_extension = absl::nullopt;
   for (const auto& delta : deltas) {
     if (delta.cancel) {
       *canceled_by_extension = delta.extension_id;
@@ -937,7 +936,7 @@ void MergeOnBeforeRequestResponses(const GURL& url,
 
 static bool DoesRequestCookieMatchFilter(
     const ParsedRequestCookie& cookie,
-    const base::Optional<RequestCookie>& filter) {
+    const absl::optional<RequestCookie>& filter) {
   if (!filter.has_value())
     return true;
   if (filter->name.has_value() && cookie.first != *filter->name)
@@ -1010,7 +1009,7 @@ static bool MergeEditRequestCookieModifications(
         continue;
 
       const std::string& new_value = *mod->modification->value;
-      const base::Optional<RequestCookie>& filter = mod->filter;
+      const absl::optional<RequestCookie>& filter = mod->filter;
       for (auto cookie = cookies->begin(); cookie != cookies->end(); ++cookie) {
         if (!DoesRequestCookieMatchFilter(*cookie, filter))
           continue;
@@ -1042,7 +1041,7 @@ static bool MergeRemoveRequestCookieModifications(
       if (mod->type != REMOVE)
         continue;
 
-      const base::Optional<RequestCookie>& filter = mod->filter;
+      const absl::optional<RequestCookie>& filter = mod->filter;
       auto i = cookies->begin();
       while (i != cookies->end()) {
         if (DoesRequestCookieMatchFilter(*i, filter)) {
@@ -1239,10 +1238,8 @@ void MergeOnBeforeSendHeadersResponses(
   };
 
   // Some sanity checks.
-  DCHECK(std::all_of(removed_headers->begin(), removed_headers->end(),
-                     IsStringLowerCaseASCII));
-  DCHECK(std::all_of(set_headers->begin(), set_headers->end(),
-                     IsStringLowerCaseASCII));
+  DCHECK(base::ranges::all_of(*removed_headers, IsStringLowerCaseASCII));
+  DCHECK(base::ranges::all_of(*set_headers, IsStringLowerCaseASCII));
   DCHECK(base::ranges::includes(
       *set_headers,
       base::STLSetUnion<std::set<std::string>>(
@@ -1318,7 +1315,7 @@ static bool ApplyResponseCookieModification(const ResponseCookie& modification,
 
 static bool DoesResponseCookieMatchFilter(
     const net::ParsedCookie& cookie,
-    const base::Optional<FilterResponseCookie>& filter) {
+    const absl::optional<FilterResponseCookie>& filter) {
   if (!cookie.IsValid())
     return false;
   if (!filter.has_value())
@@ -1465,7 +1462,7 @@ void MergeCookiesInOnHeadersReceivedResponses(
     return;
 
   // Only create a copy if we really want to modify the response headers.
-  if (override_response_headers->get() == NULL) {
+  if (override_response_headers->get() == nullptr) {
     *override_response_headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         original_response_headers->raw_headers());
   }
@@ -1608,7 +1605,7 @@ void MergeOnHeadersReceivedResponses(
   MergeRedirectUrlOfResponses(request.url, deltas, &new_url, ignored_actions);
   if (new_url.is_valid()) {
     // Only create a copy if we really want to modify the response headers.
-    if (override_response_headers->get() == NULL) {
+    if (override_response_headers->get() == nullptr) {
       *override_response_headers =
           base::MakeRefCounted<net::HttpResponseHeaders>(
               original_response_headers->raw_headers());
@@ -1656,12 +1653,9 @@ void MergeOnHeadersReceivedResponses(
         modified_header_names.insert(header.first);
     }
 
-    DCHECK(std::all_of(modified_header_names.begin(),
-                       modified_header_names.end(), IsStringLowerCaseASCII));
-    DCHECK(std::all_of(added_header_names.begin(), added_header_names.end(),
-                       IsStringLowerCaseASCII));
-    DCHECK(std::all_of(removed_header_names.begin(), removed_header_names.end(),
-                       IsStringLowerCaseASCII));
+    DCHECK(base::ranges::all_of(modified_header_names, IsStringLowerCaseASCII));
+    DCHECK(base::ranges::all_of(added_header_names, IsStringLowerCaseASCII));
+    DCHECK(base::ranges::all_of(removed_header_names, IsStringLowerCaseASCII));
 
     record_response_headers(modified_header_names,
                             &RecordResponseHeaderChanged);
@@ -1705,15 +1699,14 @@ void ClearCacheOnNavigation() {
 
 // Converts the |name|, |value| pair of a http header to a HttpHeaders
 // dictionary.
-std::unique_ptr<base::DictionaryValue> CreateHeaderDictionary(
-    const std::string& name,
-    const std::string& value) {
-  auto header = std::make_unique<base::DictionaryValue>();
-  header->SetString(keys::kHeaderNameKey, name);
+base::Value::Dict CreateHeaderDictionary(const std::string& name,
+                                         const std::string& value) {
+  base::Value::Dict header;
+  header.Set(keys::kHeaderNameKey, name);
   if (base::IsStringUTF8(value)) {
-    header->SetString(keys::kHeaderValueKey, value);
+    header.Set(keys::kHeaderValueKey, value);
   } else {
-    header->Set(keys::kHeaderBinaryValueKey, StringToCharList(value));
+    header.Set(keys::kHeaderBinaryValueKey, StringToCharList(value));
   }
   return header;
 }
@@ -1731,7 +1724,7 @@ bool ShouldHideRequestHeader(content::BrowserContext* browser_context,
 
 bool ShouldHideResponseHeader(int extra_info_spec, const std::string& name) {
   return !(extra_info_spec & ExtraInfoSpec::EXTRA_HEADERS) &&
-         base::LowerCaseEqualsASCII(name, "set-cookie");
+         base::EqualsCaseInsensitiveASCII(name, "set-cookie");
 }
 
 }  // namespace extension_web_request_api_helpers

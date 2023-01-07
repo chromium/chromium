@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 namespace supervised_user_test_util {
 
 void AddCustodians(Profile* profile) {
-  DCHECK(profile->IsSupervised());
+  DCHECK(profile->IsChild());
   PrefService* prefs = profile->GetPrefs();
   prefs->SetString(prefs::kSupervisedUserCustodianEmail,
                    "test_parent_0@google.com");

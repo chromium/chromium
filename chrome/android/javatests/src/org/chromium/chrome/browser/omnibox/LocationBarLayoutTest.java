@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -44,18 +43,15 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.components.security_state.ConnectionSecurityLevel;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.Callable;
@@ -81,12 +77,12 @@ public class LocationBarLayoutTest {
     @Mock
     SearchEngineLogoUtils mSearchEngineLogoUtils;
 
-    private TestLocationBarModel mTestLocationBarModel;
+    private OmniboxTestUtils mOmnibox;
 
     public static final LocationBarModel.OfflineStatus OFFLINE_STATUS =
             new LocationBarModel.OfflineStatus() {
                 @Override
-                public boolean isShowingTrustedOfflinePage(WebContents webContents) {
+                public boolean isShowingTrustedOfflinePage(Tab tab) {
                     return false;
                 }
 
@@ -95,66 +91,15 @@ public class LocationBarLayoutTest {
                     return false;
                 }
             };
-    private class TestLocationBarModel extends LocationBarModel {
-        private String mCurrentUrl;
-        private String mEditingText;
-        private String mDisplayText;
-        private Integer mSecurityLevel;
-
-        public TestLocationBarModel(SearchEngineLogoUtils searchEngineLogoUtils) {
-            super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
-                    DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
-                    window -> null, OFFLINE_STATUS, searchEngineLogoUtils);
-            initializeWithNative();
-        }
-
-        void setCurrentUrl(String url) {
-            mCurrentUrl = url;
-        }
-
-        void setSecurityLevel(@ConnectionSecurityLevel int securityLevel) {
-            mSecurityLevel = securityLevel;
-        }
-
-        @Override
-        public String getCurrentUrl() {
-            if (mCurrentUrl == null) return super.getCurrentUrl();
-            return mCurrentUrl;
-        }
-
-        @Override
-        @ConnectionSecurityLevel
-        public int getSecurityLevel() {
-            if (mSecurityLevel == null) return super.getSecurityLevel();
-            return mSecurityLevel;
-        }
-
-        @Override
-        public UrlBarData getUrlBarData() {
-            UrlBarData urlBarData = super.getUrlBarData();
-            CharSequence displayText = mDisplayText == null ? urlBarData.displayText : mDisplayText;
-            String editingText = mEditingText == null ? urlBarData.editingText : mEditingText;
-            return UrlBarData.forUrlAndText(getCurrentUrl(), displayText.toString(), editingText);
-        }
-    }
 
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        setupModelsForCurrentTab();
+        mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
 
         doReturn(true).when(mAndroidPermissionDelegate).hasPermission(anyString());
         mActivityTestRule.getActivity().getWindowAndroid().setAndroidPermissionDelegate(
                 mAndroidPermissionDelegate);
-    }
-
-    private void setupModelsForCurrentTab() {
-        mTestLocationBarModel = new TestLocationBarModel(mSearchEngineLogoUtils);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        mTestLocationBarModel.setTab(tab, tab.isIncognito());
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> getLocationBar().setLocationBarDataProviderForTesting(mTestLocationBarModel));
     }
 
     private String getUrlText(UrlBar urlBar) {
@@ -302,16 +247,14 @@ public class LocationBarLayoutTest {
         Callable<Integer> softInputModeCallable = () -> {
             return mActivityTestRule.getActivity().getWindow().getAttributes().softInputMode;
         };
-        OmniboxTestUtils.toggleUrlBarFocus(urlBar, true);
-        CriteriaHelper.pollUiThread(urlBar::hasFocus);
+        mOmnibox.requestFocus();
         CriteriaHelper.pollUiThread(() -> {
             int inputMode =
                     mActivityTestRule.getActivity().getWindow().getAttributes().softInputMode;
             Criteria.checkThat(inputMode, is(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN));
         });
 
-        OmniboxTestUtils.toggleUrlBarFocus(urlBar, false);
-        CriteriaHelper.pollUiThread(() -> !urlBar.hasFocus());
+        mOmnibox.clearFocus();
         CriteriaHelper.pollUiThread(() -> {
             int inputMode =
                     mActivityTestRule.getActivity().getWindow().getAttributes().softInputMode;
@@ -349,9 +292,7 @@ public class LocationBarLayoutTest {
             urlLayoutParams = (MarginLayoutParams) urlContainer.getLayoutParams();
             int endMarginWithIcon = MarginLayoutParamsCompat.getMarginEnd(urlLayoutParams);
 
-            Assert.assertEquals(endMarginNoIcon
-                            + locationBar.getStatusCoordinatorForTesting()
-                                      .getEndPaddingPixelSizeOnFocusDelta(),
+            Assert.assertEquals(endMarginNoIcon + locationBar.getEndPaddingPixelSizeOnFocusDelta(),
                     endMarginWithIcon);
         });
     }
@@ -359,7 +300,6 @@ public class LocationBarLayoutTest {
     /** Load a new URL and also update the location bar models. */
     private Tab loadUrlInNewTabAndUpdateModels(String url, boolean incognito) {
         Tab tab = mActivityTestRule.loadUrlInNewTab(url, incognito);
-        setupModelsForCurrentTab();
         updateLocationBar();
         return tab;
     }

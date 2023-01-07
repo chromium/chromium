@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package safe_browsing;
+
+import "components/safe_browsing/core/common/proto/client_model.proto";
+
+message ClientSidePhishingFuzzerCase {
+  optional ClientSideModel model = 1;
+
+  message RealFeature {
+    optional bytes name = 1;
+    optional float value = 2;
+  }
+
+  repeated RealFeature real_features = 2;
+  repeated bytes boolean_features = 3;
+}

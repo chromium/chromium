@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ MessageBoxResult ShowMessageBoxCocoa(const std::u16string& message,
 
   NSAlert* alert = [[[NSAlert alloc] init] autorelease];
   [alert setMessageText:base::SysUTF16ToNSString(message)];
-  [alert setAlertStyle:NSWarningAlertStyle];
+  [alert setAlertStyle:NSAlertStyleWarning];
   if (type == MESSAGE_BOX_TYPE_QUESTION) {
     [alert addButtonWithTitle:l10n_util::GetNSString(
                                   IDS_CONFIRM_MESSAGEBOX_YES_BUTTON_LABEL)];

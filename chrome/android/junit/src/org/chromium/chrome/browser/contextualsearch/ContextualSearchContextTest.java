@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,17 +19,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.BlockJUnit4ClassRunner;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 
 /**
  * Tests parts of the ContextualSearchContext class.
  */
-@RunWith(BlockJUnit4ClassRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 public class ContextualSearchContextTest {
     private static final int INVALID = ContextualSearchContext.INVALID_OFFSET;
     private static final String UTF_8 = "UTF-8";
@@ -84,13 +84,13 @@ public class ContextualSearchContextTest {
 
     private void setupResolvingTapInBarak() {
         setupTapInBarack();
-        mContext.setResolveProperties(HOME_COUNTRY, true, 0, 0, "", "");
+        mContext.setResolveProperties(HOME_COUNTRY, true, "", "");
     }
 
     private void setupResolvingTapInObama() {
         int obamaBeforeMOffset = "Now Barack Oba".length();
         mContext.setSurroundingText(SAMPLE_TEXT, obamaBeforeMOffset, obamaBeforeMOffset);
-        mContext.setResolveProperties(HOME_COUNTRY, true, 0, 0, "", "");
+        mContext.setResolveProperties(HOME_COUNTRY, true, "", "");
     }
 
     @Test
@@ -101,16 +101,11 @@ public class ContextualSearchContextTest {
         assertFalse(mContext.hasValidSelection());
         assertFalse(mContext.canResolve());
         assertNull(mContext.getWordTapped());
-        assertNull(mContext.getWordPreviousToTap());
-        assertNull(mContext.getWordFollowingTap());
-        assertEquals(INVALID, mContext.getWordTappedOffset());
         assertEquals(INVALID, mContext.getTapOffsetWithinTappedWord());
-        assertEquals(INVALID, mContext.getWordFollowingTapOffset());
         assertNull(mContext.getSurroundingText());
         assertEquals(INVALID, mContext.getSelectionStartOffset());
         assertEquals(INVALID, mContext.getSelectionEndOffset());
         assertNull(mContext.getEncoding());
-        assertNull(mContext.getInitialSelectedWord());
         assertEquals("", mContext.getTextContentFollowingSelection());
     }
 
@@ -141,11 +136,9 @@ public class ContextualSearchContextTest {
         assertTrue(mContext.getSelectionStartOffset() >= 0);
         assertTrue(mContext.getSelectionEndOffset() >= 0);
         assertNotNull(mContext.getEncoding());
-        assertNull(mContext.getInitialSelectedWord());
         assertFalse(mDidSelectionChange);
 
         simulateSelectWordAroundCaret(-"Ba".length(), "rack".length());
-        assertEquals("Barack", mContext.getInitialSelectedWord());
         assertEquals("Barack".length(),
                 mContext.getSelectionEndOffset() - mContext.getSelectionStartOffset());
         assertTrue(mDidSelectionChange);
@@ -162,7 +155,6 @@ public class ContextualSearchContextTest {
         assertTrue(mContext.canResolve());
 
         simulateResolve(0, " Obama".length());
-        assertEquals("Barack", mContext.getInitialSelectedWord());
         assertEquals("Barack Obama".length(),
                 mContext.getSelectionEndOffset() - mContext.getSelectionStartOffset());
     }
@@ -173,17 +165,6 @@ public class ContextualSearchContextTest {
         setupResolvingTapInBarak();
         assertEquals("Barack", mContext.getWordTapped());
         assertEquals("Ba".length(), mContext.getTapOffsetWithinTappedWord());
-        assertEquals("Now ".length(), mContext.getWordTappedOffset());
-    }
-
-    @Test
-    @Feature({"ContextualSearch", "Context"})
-    public void testAnalysisOfWordsPreviousAndFollowing() {
-        setupResolvingTapInObama();
-        assertEquals("Barack", mContext.getWordPreviousToTap());
-        assertEquals("is", mContext.getWordFollowingTap());
-        assertEquals("Now ".length(), mContext.getWordPreviousToTapOffset());
-        assertEquals("Now Barack Obama ".length(), mContext.getWordFollowingTapOffset());
     }
 
     @Test
@@ -191,10 +172,8 @@ public class ContextualSearchContextTest {
     public void testAnalysisAtStartOfText() {
         int startOffset = 0;
         mContext.setSurroundingText(SAMPLE_TEXT, startOffset, startOffset);
-        assertNull(mContext.getWordPreviousToTap());
         // We can't recognize the first word because we need a space before it to do so.
         assertNull(mContext.getWordTapped());
-        assertNull(mContext.getWordFollowingTap());
     }
 
     @Test
@@ -202,9 +181,7 @@ public class ContextualSearchContextTest {
     public void testAnalysisAtSecondWordOfText() {
         int secondWordOffset = "Now ".length();
         mContext.setSurroundingText(SAMPLE_TEXT, secondWordOffset, secondWordOffset);
-        assertNull(mContext.getWordPreviousToTap());
         assertEquals("Barack", mContext.getWordTapped());
-        assertEquals("Obama", mContext.getWordFollowingTap());
     }
 
     @Test
@@ -212,9 +189,7 @@ public class ContextualSearchContextTest {
     public void testAnalysisAtEndOfText() {
         int endOffset = SAMPLE_TEXT.length();
         mContext.setSurroundingText(SAMPLE_TEXT, endOffset, endOffset);
-        assertNull(mContext.getWordPreviousToTap());
         assertNull(mContext.getWordTapped());
-        assertNull(mContext.getWordFollowingTap());
     }
 
     @Test
@@ -222,9 +197,7 @@ public class ContextualSearchContextTest {
     public void testAnalysisAtWordBeforeEndOfText() {
         int wordBeforeEndOffset = SAMPLE_TEXT.length() - "s ambiguous.".length();
         mContext.setSurroundingText(SAMPLE_TEXT, wordBeforeEndOffset, wordBeforeEndOffset);
-        assertEquals("Clinton", mContext.getWordPreviousToTap());
         assertEquals("is", mContext.getWordTapped());
-        assertEquals("ambiguous", mContext.getWordFollowingTap());
     }
 
     @Test

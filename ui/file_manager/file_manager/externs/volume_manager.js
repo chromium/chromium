@@ -1,20 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {EntryLocation} from './entry_location.m.js';
-// #import {VolumeInfo} from './volume_info.m.js';
-// #import {VolumeInfoList} from './volume_info_list.m.js';
-// #import {FilesAppEntry, FilesAppDirEntry} from './files_app_entry_interfaces.m.js';
-// #import * as wrappedVolumeManagerCommon from '../common/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// clang-format on
+import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
+
+import {EntryLocation} from './entry_location.js';
+import {FilesAppDirEntry, FilesAppEntry} from './files_app_entry_interfaces.js';
+import {VolumeInfo} from './volume_info.js';
+import {VolumeInfoList} from './volume_info_list.js';
 
 /**
  * VolumeManager is responsible for tracking list of mounted volumes.
  * @interface
  */
-/* #export */ class VolumeManager {
+export class VolumeManager {
   constructor() {
     /**
      * The list of VolumeInfo instances for each mounted volume.
@@ -22,6 +21,22 @@
      */
     this.volumeInfoList;
   }
+
+  /**
+   * Gets the 'fusebox-only' filter state: true if enabled, false if disabled.
+   * The filter is only enabled by the SelectFileAsh (Lacros) file picker, and
+   * implemented by {FilteredVolumeManager} override.
+   * @return {boolean}
+   */
+  getFuseBoxOnlyFilterEnabled() {}
+
+  /**
+   * Gets the 'media-store-files-only' filter state: true if enabled, false if
+   * disabled. The filter is only enabled by the Android (ARC) file picker, and
+   * implemented by {FilteredVolumeManager} override.
+   * @return {boolean}
+   */
+  getMediaStoreFilesOnlyFilterEnabled() {}
 
   /**
    * Disposes the instance. After the invocation of this method, any other
@@ -52,6 +67,14 @@
   mountArchive(fileUrl, password) {}
 
   /**
+   * Cancels mounting an archive.
+   * @param {string} fileUrl File url to the archive file.
+   * @return {!Promise<void>} Fulfilled on success, otherwise rejected
+   *     with a VolumeManagerCommon.VolumeError.
+   */
+  cancelMounting(fileUrl) {}
+
+  /**
    * Unmounts a volume.
    * @param {!VolumeInfo} volumeInfo Volume to be unmounted.
    * @return {!Promise<void>} Fulfilled on success, otherwise rejected with a
@@ -71,7 +94,7 @@
    * Obtains volume information of the current profile.
    *
    * @param {VolumeManagerCommon.VolumeType} volumeType Volume type.
-   * @return {VolumeInfo} Volume info.
+   * @return {?VolumeInfo} Volume info.
    */
   getCurrentProfileVolumeInfo(volumeType) {}
 
@@ -112,7 +135,7 @@
    * Searches the information of the volume that exists on the given device
    * path.
    * @param {string} devicePath Path of the device to search.
-   * @return {VolumeInfo} The volume's information, or null if not found.
+   * @return {?VolumeInfo} The volume's information, or null if not found.
    */
   findByDevicePath(devicePath) {}
 
@@ -138,4 +161,4 @@
  * Event object which is dispached with 'externally-unmounted' event.
  * @typedef {!CustomEvent<!VolumeInfo>}
  */
-/* #export */ let ExternallyUnmountedEvent;
+export let ExternallyUnmountedEvent;

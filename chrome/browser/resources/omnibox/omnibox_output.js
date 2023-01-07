@@ -1,9 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ACMatchClassification, AutocompleteMatch, OmniboxResponse} from '/chrome/browser/ui/webui/omnibox/omnibox.mojom-webui.js';
-
+import {ACMatchClassification, AutocompleteMatch, OmniboxResponse} from './omnibox.mojom-webui.js';
 import {OmniboxElement} from './omnibox_element.js';
 import {DisplayInputs, OmniboxInput} from './omnibox_input.js';
 
@@ -1046,8 +1045,12 @@ const COLUMNS = [
           'blue.\nMATCH classifications are styled bold.\nDIM ' +
           'classifications are styled with a gray background.',
       [
-        'image', 'contents', 'description', 'answer', 'contentsClass',
-        'descriptionClass'
+        'image',
+        'contents',
+        'description',
+        'answer',
+        'contentsClass',
+        'descriptionClass',
       ],
       OutputAnswerProperty),
   new Column(
@@ -1076,6 +1079,11 @@ const COLUMNS = [
           'the result.',
       ['destinationUrl', 'isSearchType', 'strippedDestinationUrl'],
       OutputUrlProperty),
+  new Column(
+      ['AQS Type & Subtypes'], '', 'aqsTypeSubtypes', false,
+      'The type and subtypes reported in the Assisted Query Stats (AQS) url ' +
+          'query param.',
+      ['aqsTypeSubtypes'], OutputTextProperty),
   new Column(
       ['Fill', 'Inline'], '', 'fillAndInline', false,
       'Fill & Inline\nThe text shown in the omnibox when the result is ' +
@@ -1118,13 +1126,13 @@ const COLUMNS = [
       ['duplicates'], OutputTextProperty),
   new Column(
       ['pi'],
-      'https://source.chromium.org/chromium/chromium/src/+/master:components/omnibox/browser/omnibox_pedal_concepts.h;l=19;drc=c741e070dbfcc33b2369e7a5131be87c7b21bb99',
+      'https://source.chromium.org/chromium/chromium/src/+/main:components/omnibox/browser/omnibox_pedal_concepts.h;l=19;drc=c741e070dbfcc33b2369e7a5131be87c7b21bb99',
       'pedalId', false, 'Pedal ID\nThe ID of attached Pedal, or zero if none.',
       ['pedalId'], OutputTextProperty),
   new Column(
       ['Additional Info'], '', 'additionalInfo', true,
       'Additional Info\nProvider-specific information about the result.',
-      ['additionalInfo'], OutputAdditionalInfoProperty)
+      ['additionalInfo'], OutputAdditionalInfoProperty),
 ];
 
 /** @type {!Column} */

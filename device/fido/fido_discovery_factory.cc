@@ -1,11 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/fido/fido_discovery_factory.h"
 
+#include "base/containers/contains.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/aoa/android_accessory_discovery.h"
 #include "device/fido/cable/fido_cable_discovery.h"
@@ -14,23 +17,24 @@
 #include "device/fido/fido_discovery_base.h"
 
 // HID is not supported on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "device/fido/hid/fido_hid_discovery.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <Winuser.h>
 #include "device/fido/win/discovery.h"
 #include "device/fido/win/webauthn_api.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
+#include "base/process/process_info.h"
 #include "device/fido/mac/discovery.h"
-#endif  // defined(OSMACOSX)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/fido/cros/discovery.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace device {
 
@@ -45,31 +49,47 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
           std::make_unique<FidoHidDiscovery>(hid_ignore_list_));
     case FidoTransportProtocol::kBluetoothLowEnergy:
       return {};
-    case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
+    case FidoTransportProtocol::kHybrid:
+#if BUILDFLAG(IS_MAC)
+      if (!base::IsProcessSelfResponsible()) {
+        // On recent macOS a process must have listed Bluetooth metadata in
+        // its Info.plist in order to call Bluetooth APIs. Failure to do so
+        // results in the system killing with process with SIGABRT once
+        // Bluetooth calls are made.
+        //
+        // However, unless Chromium is started from the Finder, or with special
+        // posix_spawn flags, then the responsible process—the one that needs
+        // to have the right Info.plist—is one of the parent processes, often
+        // the terminal emulator. This can lead to Chromium getting killed when
+        // trying to do WebAuthn. This also affects layout tests.
+        //
+        // Thus, if the responsible process is not Chromium itself, then we
+        // disable caBLE (and thus avoid Bluetooth calls).
+        FIDO_LOG(ERROR) << "Cannot start caBLE because process is not "
+                           "self-responsible. Launch from Finder to fix.";
+        return {};
+      }
+#endif
       if (device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
           (cable_data_.has_value() || qr_generator_key_.has_value())) {
-        std::unique_ptr<cablev2::Discovery> v2_discovery;
-        const bool have_v2_discovery_data =
-            cable_data_.has_value() &&
-            std::any_of(cable_data_->begin(), cable_data_->end(),
-                        [](const CableDiscoveryData& v) -> bool {
-                          return v.version == CableDiscoveryData::Version::V2;
-                        });
-        if (qr_generator_key_.has_value() || have_v2_discovery_data) {
-          v2_discovery = std::make_unique<cablev2::Discovery>(
-              network_context_, qr_generator_key_, std::move(v2_pairings_),
-              cable_data_.value_or(std::vector<CableDiscoveryData>()),
-              std::move(cable_pairing_callback_));
-        }
-        std::unique_ptr<FidoDiscoveryBase> v1_discovery =
-            std::make_unique<FidoCableDiscovery>(
-                cable_data_.value_or(std::vector<CableDiscoveryData>()),
-                v2_discovery ? v2_discovery.get() : nullptr);
+        auto v1_discovery = std::make_unique<FidoCableDiscovery>(
+            cable_data_.value_or(std::vector<CableDiscoveryData>()));
 
         std::vector<std::unique_ptr<FidoDiscoveryBase>> ret;
-        if (v2_discovery) {
-          ret.emplace_back(std::move(v2_discovery));
+        const bool have_v2_discovery_data =
+            cable_data_.has_value() &&
+            base::Contains(*cable_data_, CableDiscoveryData::Version::V2,
+                           &CableDiscoveryData::version);
+        if (qr_generator_key_.has_value() || have_v2_discovery_data) {
+          ret.emplace_back(std::make_unique<cablev2::Discovery>(
+              request_type_.value(), network_context_, qr_generator_key_,
+              v1_discovery->GetV2AdvertStream(), std::move(v2_pairings_),
+              std::move(contact_device_stream_),
+              cable_data_.value_or(std::vector<CableDiscoveryData>()),
+              std::move(cable_pairing_callback_),
+              std::move(cable_invalidated_pairing_callback_)));
         }
+
         ret.emplace_back(std::move(v1_discovery));
         return ret;
       }
@@ -78,7 +98,7 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
       // TODO(https://crbug.com/825949): Add NFC support.
       return {};
     case FidoTransportProtocol::kInternal: {
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
       std::unique_ptr<FidoDiscoveryBase> discovery =
           MaybeCreatePlatformDiscovery();
       if (discovery) {
@@ -108,10 +128,12 @@ bool FidoDiscoveryFactory::IsTestOverride() {
 }
 
 void FidoDiscoveryFactory::set_cable_data(
+    CableRequestType request_type,
     std::vector<CableDiscoveryData> cable_data,
-    const base::Optional<std::array<uint8_t, cablev2::kQRKeySize>>&
+    const absl::optional<std::array<uint8_t, cablev2::kQRKeySize>>&
         qr_generator_key,
     std::vector<std::unique_ptr<cablev2::Pairing>> v2_pairings) {
+  request_type_ = request_type;
   cable_data_ = std::move(cable_data);
   qr_generator_key_ = std::move(qr_generator_key);
   v2_pairings_ = std::move(v2_pairings);
@@ -130,8 +152,23 @@ void FidoDiscoveryFactory::set_network_context(
 }
 
 void FidoDiscoveryFactory::set_cable_pairing_callback(
-    base::RepeatingCallback<void(cablev2::PairingEvent)> pairing_callback) {
-  cable_pairing_callback_.emplace(std::move(pairing_callback));
+    base::RepeatingCallback<void(std::unique_ptr<cablev2::Pairing>)> callback) {
+  cable_pairing_callback_.emplace(std::move(callback));
+}
+
+void FidoDiscoveryFactory::set_cable_invalidated_pairing_callback(
+    base::RepeatingCallback<void(size_t)> callback) {
+  cable_invalidated_pairing_callback_.emplace(std::move(callback));
+}
+
+base::RepeatingCallback<void(size_t)>
+FidoDiscoveryFactory::get_cable_contact_callback() {
+  DCHECK(!contact_device_stream_);
+
+  base::RepeatingCallback<void(size_t)> ret;
+  std::tie(ret, contact_device_stream_) =
+      FidoDeviceDiscovery::EventStream<size_t>::New();
+  return ret;
 }
 
 void FidoDiscoveryFactory::set_hid_ignore_list(
@@ -152,7 +189,7 @@ FidoDiscoveryFactory::SingleDiscovery(
   return ret;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void FidoDiscoveryFactory::set_win_webauthn_api(WinWebAuthnApi* api) {
   win_webauthn_api_ = api;
 }
@@ -173,9 +210,9 @@ FidoDiscoveryFactory::MaybeCreateWinWebAuthnApiDiscovery() {
                    GetForegroundWindow(), win_webauthn_api_)
              : nullptr;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 std::unique_ptr<FidoDiscoveryBase>
 FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
   return mac_touch_id_config_
@@ -185,7 +222,7 @@ FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<FidoDiscoveryBase>
 FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
   if (base::FeatureList::IsEnabled(kWebAuthCrosPlatformAuthenticator)) {
@@ -200,7 +237,7 @@ FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
 }
 
 void FidoDiscoveryFactory::set_generate_request_id_callback(
-    base::RepeatingCallback<uint32_t()> callback) {
+    base::RepeatingCallback<std::string()> callback) {
   generate_request_id_callback_ = std::move(callback);
 }
 

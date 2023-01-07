@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -28,12 +29,12 @@ struct FontExpectation {
   uint16_t ttc_index;
 };
 
-constexpr FontExpectation kExpectedTestFonts[] = {{u8"CambriaMath", 1},
-                                                  {u8"Ming-Lt-HKSCS-ExtB", 2},
-                                                  {u8"NSimSun", 1},
-                                                  {u8"calibri-bolditalic", 0}};
+constexpr FontExpectation kExpectedTestFonts[] = {{"CambriaMath", 1},
+                                                  {"Ming-Lt-HKSCS-ExtB", 2},
+                                                  {"NSimSun", 1},
+                                                  {"calibri-bolditalic", 0}};
 
-constexpr base::TimeDelta kTestingTimeout = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kTestingTimeout = base::Seconds(10);
 
 class DWriteFontLookupTableBuilderTest : public testing::Test {
  public:
@@ -61,7 +62,7 @@ class DWriteFontLookupTableBuilderTest : public testing::Test {
     blink::FontTableMatcher font_table_matcher(font_table_memory.Map());
 
     for (auto& test_font_name_index : kExpectedTestFonts) {
-      base::Optional<blink::FontTableMatcher::MatchResult> match_result =
+      absl::optional<blink::FontTableMatcher::MatchResult> match_result =
           font_table_matcher.MatchName(test_font_name_index.font_name);
       ASSERT_TRUE(match_result) << "No font matched for font name: "
                                 << test_font_name_index.font_name;
@@ -77,7 +78,7 @@ class DWriteFontLookupTableBuilderTest : public testing::Test {
  protected:
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
-  DWriteFontLookupTableBuilder* font_lookup_table_builder_;
+  raw_ptr<DWriteFontLookupTableBuilder> font_lookup_table_builder_;
   base::ScopedTempDir scoped_temp_dir_;
 };
 
@@ -118,7 +119,7 @@ TEST_P(DWriteFontLookupTableBuilderTimeoutTest, TestTimeout) {
         blink::FontTableMatcher font_table_matcher(font_table_memory.Map());
 
         for (auto& test_font_name_index : kExpectedTestFonts) {
-          base::Optional<blink::FontTableMatcher::MatchResult> match_result =
+          absl::optional<blink::FontTableMatcher::MatchResult> match_result =
               font_table_matcher.MatchName(test_font_name_index.font_name);
           ASSERT_TRUE(!match_result);
         }
@@ -176,7 +177,10 @@ TEST_F(DWriteFontLookupTableBuilderTest, RepeatedScheduling) {
 }
 
 TEST_F(DWriteFontLookupTableBuilderTest, FontsHash) {
-  ASSERT_GT(font_lookup_table_builder_->ComputePersistenceHash().size(), 0u);
+  ASSERT_GT(
+      font_lookup_table_builder_->ComputePersistenceHash("6.0.1.2").size(), 0u);
+  // Validate an empty string doesn't cause problems.
+  ASSERT_GT(font_lookup_table_builder_->ComputePersistenceHash("").size(), 0u);
 }
 
 TEST_F(DWriteFontLookupTableBuilderTest, HandleCorruptCacheFile) {
@@ -194,13 +198,13 @@ TEST_F(DWriteFontLookupTableBuilderTest, HandleCorruptCacheFile) {
         // Truncate table for testing
         base::FilePath cache_file_path = scoped_temp_dir_.GetPath().Append(
             FILE_PATH_LITERAL("font_unique_name_table.pb"));
-        // Use FLAG_EXCLUSIVE_WRITE to block file and make persisting the
+        // Use FLAG_WIN_EXCLUSIVE_WRITE to block file and make persisting the
         // cache fail as well, use FLAG_OPEN to ensure it got created by the
         // table builder implementation.
         cache_file = base::File(cache_file_path,
                                 base::File::FLAG_OPEN | base::File::FLAG_READ |
                                     base::File::FLAG_WRITE |
-                                    base::File::FLAG_EXCLUSIVE_WRITE);
+                                    base::File::FLAG_WIN_EXCLUSIVE_WRITE);
         // Ensure the cache file was created in the empty scoped_temp_dir_
         // and has a non-zero length.
         ASSERT_TRUE(cache_file.IsValid());

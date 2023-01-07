@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,11 @@
 
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_usage_session.h"
 #include "sql/database.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace base {
@@ -62,7 +61,7 @@ class PermissionAuditingDatabase {
   // Returns when the given permission `type` was last used on a given `origin`.
   // Returns nullopt if no permission usages match the given constraints. The
   // `origin` must not be opaque.
-  base::Optional<base::Time> GetLastPermissionUsageTime(
+  absl::optional<base::Time> GetLastPermissionUsageTime(
       ContentSettingsType type,
       const url::Origin& origin);
 

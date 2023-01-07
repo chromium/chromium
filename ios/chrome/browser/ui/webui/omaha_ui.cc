@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/omaha/omaha_service.h"
+#include "ios/chrome/browser/url/chrome_url_constants.h"
 #include "ios/chrome/grit/ios_resources.h"
 #include "ios/web/public/webui/web_ui_ios.h"
 #include "ios/web/public/webui/web_ui_ios_data_source.h"
@@ -37,6 +37,10 @@ web::WebUIIOSDataSource* CreateOmahaUIHTMLSource() {
 class OmahaDOMHandler : public WebUIIOSMessageHandler {
  public:
   OmahaDOMHandler();
+
+  OmahaDOMHandler(const OmahaDOMHandler&) = delete;
+  OmahaDOMHandler& operator=(const OmahaDOMHandler&) = delete;
+
   ~OmahaDOMHandler() override;
 
   // WebUIIOSMessageHandler implementation.
@@ -44,16 +48,14 @@ class OmahaDOMHandler : public WebUIIOSMessageHandler {
 
  private:
   // Asynchronously fetches the debug information. Called from JS.
-  void HandleRequestDebugInformation(const base::ListValue* args);
+  void HandleRequestDebugInformation(const base::Value::List& args);
 
   // Called when the debug information have been computed.
-  void OnDebugInformationAvailable(base::DictionaryValue* debug_information);
+  void OnDebugInformationAvailable(base::Value::Dict debug_information);
 
   // WeakPtr factory needed because this object might be deleted before
   // receiving the callbacks from the OmahaService.
   base::WeakPtrFactory<OmahaDOMHandler> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(OmahaDOMHandler);
 };
 
 OmahaDOMHandler::OmahaDOMHandler() : weak_ptr_factory_(this) {}
@@ -68,15 +70,15 @@ void OmahaDOMHandler::RegisterMessages() {
 }
 
 void OmahaDOMHandler::HandleRequestDebugInformation(
-    const base::ListValue* args) {
+    const base::Value::List& args) {
   OmahaService::GetDebugInformation(
       base::BindOnce(&OmahaDOMHandler::OnDebugInformationAvailable,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OmahaDOMHandler::OnDebugInformationAvailable(
-    base::DictionaryValue* debug_information) {
-  std::vector<const base::Value*> args{debug_information};
+    base::Value::Dict debug_information) {
+  base::ValueView args[] = {debug_information};
   web_ui()->CallJavascriptFunction("updateOmahaDebugInformation", args);
 }
 

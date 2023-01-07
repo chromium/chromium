@@ -1,0 +1,4 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++CheckBox checkable clickable actions:[CLICK, AX_FOCUS] bundle:[brailleRoleDescription="aria braille role description", chromeRole="checkBox", roleDescription="checkbox"]
+++CheckBox checkable clickable actions:[CLICK, AX_FOCUS] bundle:[chromeRole="checkBox", roleDescription="checkbox"]
+++CheckBox checkable clickable actions:[CLICK, AX_FOCUS] bundle:[chromeRole="checkBox", roleDescription="checkbox"]

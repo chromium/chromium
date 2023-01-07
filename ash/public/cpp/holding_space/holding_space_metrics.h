@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,10 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
-namespace ash {
-namespace holding_space_metrics {
+namespace ash::holding_space_metrics {
+
+// Returns the numeric representation of the extension for `file_path`.
+ASH_PUBLIC_EXPORT size_t FilePathToExtension(const base::FilePath& file_path);
 
 // Enumeration of actions that can be taken on the holding space pod in the
 // shelf. These values are persisted to logs. Entries should not be renumbered
@@ -69,7 +71,10 @@ enum class ItemAction {
   kShowInFolder = 4,
   kUnpin = 5,
   kRemove = 6,
-  kMaxValue = kRemove,
+  kCancel = 7,
+  kPause = 8,
+  kResume = 9,
+  kMaxValue = kResume,
 };
 
 // Records the specified `action` taken on a set of holding space `items`.
@@ -81,8 +86,43 @@ ASH_PUBLIC_EXPORT void RecordItemAction(
 ASH_PUBLIC_EXPORT void RecordItemCounts(
     const std::vector<const HoldingSpaceItem*>& items);
 
-// Records a failure to launch a holding space item of the specified `type`.
-ASH_PUBLIC_EXPORT void RecordItemFailureToLaunch(HoldingSpaceItem::Type type);
+// Enumeration of reasons that a holding space item might fail to launch. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class ItemFailureToLaunchReason {
+  kUnknown = 0,
+  kCrosApiNotFound = 1,
+  kDownloadNotFound = 2,
+  kFileError = 3,
+  kFileInfoError = 4,
+  kInvalidType = 5,
+  kNoHandlerForFileType = 6,
+  kNoHandlerForItemType = 7,
+  kPathEmpty = 8,
+  kPathNotFound = 9,
+  kReattemptToOpenWhenComplete = 10,
+  kShutdown = 11,
+  kMaxValue = kShutdown,
+};
+
+// Records a failure to launch a holding space item of the specified `type`
+// backed by the file at the specified `file_path` with the specified `reason`.
+ASH_PUBLIC_EXPORT void RecordItemFailureToLaunch(
+    HoldingSpaceItem::Type type,
+    const base::FilePath& file_path,
+    ItemFailureToLaunchReason reason);
+
+// Enumeration of actions that can be taken on the holding space suggestions
+// section button. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class SuggestionsAction {
+  kCollapse = 0,
+  kExpand = 1,
+  kMaxValue = kExpand,
+};
+
+// Records the specified `action` taken on the holding space suggestions header.
+ASH_PUBLIC_EXPORT void RecordSuggestionsAction(SuggestionsAction action);
 
 // Records time from the first availability of the holding space feature to the
 // first item being added to holding space.
@@ -107,7 +147,19 @@ ASH_PUBLIC_EXPORT void RecordBubbleResizeAnimationSmoothness(int smoothness);
 // representing ideal smoothness of >= 60 frames per second.
 ASH_PUBLIC_EXPORT void RecordPodResizeAnimationSmoothness(int smoothness);
 
-}  // namespace holding_space_metrics
-}  // namespace ash
+// Representation of a user's preferences.
+struct ASH_PUBLIC_EXPORT UserPreferences {
+  bool previews_enabled = false;
+  bool suggestions_expanded = false;
+};
+
+// Records a user's preferences.
+ASH_PUBLIC_EXPORT void RecordUserPreferences(UserPreferences user_preferences);
+
+// Records counts for the visible holding space `items` specified.
+ASH_PUBLIC_EXPORT void RecordVisibleItemCounts(
+    const std::vector<const HoldingSpaceItem*>& items);
+
+}  // namespace ash::holding_space_metrics
 
 #endif  // ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_METRICS_H_

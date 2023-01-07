@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,15 +12,14 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/device_operation.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_task.h"
 #include "device/fido/pin.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cbor {
 class Value;
@@ -37,7 +36,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionTask : public FidoTask {
  public:
   using GetAssertionTaskCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
-      base::Optional<AuthenticatorGetAssertionResponse>)>;
+      absl::optional<AuthenticatorGetAssertionResponse>)>;
   using SignOperation = DeviceOperation<CtapGetAssertionRequest,
                                         AuthenticatorGetAssertionResponse>;
   using RegisterOperation =
@@ -48,6 +47,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionTask : public FidoTask {
                    CtapGetAssertionRequest request,
                    CtapGetAssertionOptions options,
                    GetAssertionTaskCallback callback);
+
+  GetAssertionTask(const GetAssertionTask&) = delete;
+  GetAssertionTask& operator=(const GetAssertionTask&) = delete;
+
   ~GetAssertionTask() override;
 
   // FidoTask:
@@ -72,19 +75,19 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionTask : public FidoTask {
   void HandleResponse(
       std::vector<PublicKeyCredentialDescriptor> allow_list,
       CtapDeviceResponseCode response_code,
-      base::Optional<AuthenticatorGetAssertionResponse> response_data);
+      absl::optional<AuthenticatorGetAssertionResponse> response_data);
 
   // HandleResponseToSilentRequest is a callback to a request without user-
   // presence requested used to silently probe credentials from the allow list.
   void HandleResponseToSilentRequest(
       CtapDeviceResponseCode response_code,
-      base::Optional<AuthenticatorGetAssertionResponse> response_data);
+      absl::optional<AuthenticatorGetAssertionResponse> response_data);
 
   // HandleDummyMakeCredentialComplete is the callback for the dummy credential
   // creation request that will be triggered, if needed, to get a touch.
   void HandleDummyMakeCredentialComplete(
       CtapDeviceResponseCode response_code,
-      base::Optional<AuthenticatorMakeCredentialResponse> response_data);
+      absl::optional<AuthenticatorMakeCredentialResponse> response_data);
 
   void MaybeSetPRFParameters(
       CtapGetAssertionRequest* request,
@@ -92,7 +95,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionTask : public FidoTask {
 
   void MaybeRevertU2fFallbackAndInvokeCallback(
       CtapDeviceResponseCode status,
-      base::Optional<AuthenticatorGetAssertionResponse> response);
+      absl::optional<AuthenticatorGetAssertionResponse> response);
 
   CtapGetAssertionRequest request_;
   CtapGetAssertionOptions options_;
@@ -107,8 +110,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionTask : public FidoTask {
   bool canceled_ = false;
 
   base::WeakPtrFactory<GetAssertionTask> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GetAssertionTask);
 };
 
 }  // namespace device

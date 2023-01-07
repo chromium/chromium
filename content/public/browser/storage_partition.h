@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,14 @@
 #include <stdint.h>
 
 #include <set>
-#include <string>
 
 #include "base/callback_forward.h"
-#include "base/files/file_path.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "components/services/storage/privileged/mojom/indexed_db_control.mojom-forward.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom-forward.h"
-#include "components/services/storage/public/mojom/indexed_db_control.mojom-forward.h"
+#include "components/services/storage/public/mojom/local_storage_control.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
@@ -24,56 +25,62 @@
 class GURL;
 
 namespace base {
+class FilePath;
 class Time;
-}
+}  // namespace base
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 class FileSystemContext;
-}
+}  // namespace storage
 
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
-}
+}  // namespace leveldb_proto
 
 namespace network {
 namespace mojom {
 class CookieManager;
 class NetworkContext;
-}
+class URLLoaderNetworkServiceObserver;
+}  // namespace mojom
 }  // namespace network
 
 namespace storage {
 class QuotaManager;
 class SpecialStoragePolicy;
 struct QuotaSettings;
-}
-
-namespace storage {
 class DatabaseTracker;
-}
+}  // namespace storage
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace content {
 
-class AppCacheService;
 class BackgroundSyncContext;
 class BrowserContext;
+class BrowsingDataFilterBuilder;
+class BrowsingTopicsSiteDataManager;
 class ContentIndexContext;
 class DedicatedWorkerService;
 class DevToolsBackgroundServicesContext;
 class DOMStorageContext;
-class FontAccessContext;
-class GeneratedCodeCacheContext;
 class FileSystemAccessEntryFactory;
+class GeneratedCodeCacheContext;
+class HostZoomLevelContext;
+class HostZoomMap;
+class InterestGroupManager;
+class NativeIOContext;
 class PlatformNotificationContext;
 class ServiceWorkerContext;
 class SharedWorkerService;
-class NativeIOContext;
-
-#if !defined(OS_ANDROID)
-class HostZoomLevelContext;
-class HostZoomMap;
 class ZoomLevelDelegate;
-#endif  // !defined(OS_ANDROID)
+class NavigationRequest;
 
 // Defines what persistent state a child process can access.
 //
@@ -107,15 +114,13 @@ class CONTENT_EXPORT StoragePartition {
   // from RenderFrameHost::CreateNetworkServiceDefaultFactory).
   virtual scoped_refptr<network::SharedURLLoaderFactory>
   GetURLLoaderFactoryForBrowserProcess() = 0;
-  virtual scoped_refptr<network::SharedURLLoaderFactory>
-  GetURLLoaderFactoryForBrowserProcessWithCORBEnabled() = 0;
   virtual std::unique_ptr<network::PendingSharedURLLoaderFactory>
   GetURLLoaderFactoryForBrowserProcessIOThread() = 0;
   virtual network::mojom::CookieManager*
   GetCookieManagerForBrowserProcess() = 0;
 
-  virtual void CreateHasTrustTokensAnswerer(
-      mojo::PendingReceiver<network::mojom::HasTrustTokensAnswerer> receiver,
+  virtual void CreateTrustTokenQueryAnswerer(
+      mojo::PendingReceiver<network::mojom::TrustTokenQueryAnswerer> receiver,
       const url::Origin& top_frame_origin) = 0;
 
   virtual mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
@@ -124,15 +129,14 @@ class CONTENT_EXPORT StoragePartition {
 
   virtual mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
   CreateURLLoaderNetworkObserverForNavigationRequest(
-      int frame_tree_node_id) = 0;
+      NavigationRequest& navigation_request) = 0;
 
   virtual storage::QuotaManager* GetQuotaManager() = 0;
-  virtual AppCacheService* GetAppCacheService() = 0;
   virtual BackgroundSyncContext* GetBackgroundSyncContext() = 0;
   virtual storage::FileSystemContext* GetFileSystemContext() = 0;
-  virtual FontAccessContext* GetFontAccessContext() = 0;
   virtual storage::DatabaseTracker* GetDatabaseTracker() = 0;
   virtual DOMStorageContext* GetDOMStorageContext() = 0;
+  virtual storage::mojom::LocalStorageControl* GetLocalStorageControl() = 0;
   virtual storage::mojom::IndexedDBControl& GetIndexedDBControl() = 0;
   virtual FileSystemAccessEntryFactory* GetFileSystemAccessEntryFactory() = 0;
   virtual ServiceWorkerContext* GetServiceWorkerContext() = 0;
@@ -144,12 +148,12 @@ class CONTENT_EXPORT StoragePartition {
   GetDevToolsBackgroundServicesContext() = 0;
   virtual ContentIndexContext* GetContentIndexContext() = 0;
   virtual NativeIOContext* GetNativeIOContext() = 0;
-#if !defined(OS_ANDROID)
   virtual HostZoomMap* GetHostZoomMap() = 0;
   virtual HostZoomLevelContext* GetHostZoomLevelContext() = 0;
   virtual ZoomLevelDelegate* GetZoomLevelDelegate() = 0;
-#endif  // !defined(OS_ANDROID)
   virtual PlatformNotificationContext* GetPlatformNotificationContext() = 0;
+  virtual InterestGroupManager* GetInterestGroupManager() = 0;
+  virtual BrowsingTopicsSiteDataManager* GetBrowsingTopicsSiteDataManager() = 0;
 
   virtual leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() = 0;
   // Must be set before the first call to GetProtoDatabaseProvider(), or a new
@@ -159,7 +163,7 @@ class CONTENT_EXPORT StoragePartition {
           optional_proto_db_provider) = 0;
 
   enum : uint32_t {
-    REMOVE_DATA_MASK_APPCACHE = 1 << 0,
+    REMOVE_DATA_MASK_APPCACHE_DEPRECATED = 1 << 0,
     REMOVE_DATA_MASK_COOKIES = 1 << 1,
     REMOVE_DATA_MASK_FILE_SYSTEMS = 1 << 2,
     REMOVE_DATA_MASK_INDEXEDDB = 1 << 3,
@@ -168,9 +172,27 @@ class CONTENT_EXPORT StoragePartition {
     REMOVE_DATA_MASK_WEBSQL = 1 << 6,
     REMOVE_DATA_MASK_SERVICE_WORKERS = 1 << 7,
     REMOVE_DATA_MASK_CACHE_STORAGE = 1 << 8,
-    REMOVE_DATA_MASK_PLUGIN_PRIVATE_DATA = 1 << 9,
+    REMOVE_DATA_MASK_MEDIA_LICENSES = 1 << 9,
     REMOVE_DATA_MASK_BACKGROUND_FETCH = 1 << 10,
-    REMOVE_DATA_MASK_CONVERSIONS = 1 << 11,
+    REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_SITE_CREATED = 1 << 11,
+    // Interest groups are stored as part of the Interest Group API experiment
+    // Public explainer here:
+    // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+    REMOVE_DATA_MASK_INTEREST_GROUPS = 1 << 12,
+    REMOVE_DATA_MASK_AGGREGATION_SERVICE = 1 << 13,
+    // Shared storage data as part of the Shared Storage API.
+    // Public explainer: https://github.com/pythagoraskitty/shared-storage
+    REMOVE_DATA_MASK_SHARED_STORAGE = 1 << 14,
+    // Fairly obscure cache of .well-known responses for cross-origin
+    // joining/leaving of interest groups used by FLEDGE.
+    // Public explainer here:
+    // https://github.com/WICG/turtledove/blob/main/FLEDGE.md
+    REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE = 1 << 15,
+
+    REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL = 1 << 16,
+    REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL = 1 << 17,
+    REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL = 1 << 18,
+
     REMOVE_DATA_MASK_ALL = 0xFFFFFFFF,
 
     // Corresponds to storage::kStorageTypeTemporary.
@@ -185,6 +207,8 @@ class CONTENT_EXPORT StoragePartition {
   // Starts an asynchronous task that does a best-effort clear the data
   // corresponding to the given |remove_mask| and |quota_storage_remove_mask|
   // inside this StoragePartition for the given |storage_origin|.
+  // |callback| is called when data deletion is done or at least the deletion is
+  // scheduled.
   // Note session dom storage is not cleared even if you specify
   // REMOVE_DATA_MASK_LOCAL_STORAGE.
   // No notification is dispatched upon completion.
@@ -196,62 +220,73 @@ class CONTENT_EXPORT StoragePartition {
   // is fixed.
   virtual void ClearDataForOrigin(uint32_t remove_mask,
                                   uint32_t quota_storage_remove_mask,
-                                  const GURL& storage_origin) = 0;
+                                  const GURL& storage_origin,
+                                  base::OnceClosure callback) = 0;
 
-  // A callback type to check if a given origin matches a storage policy.
-  // Can be passed empty/null where used, which means the origin will always
-  // match.
-  using OriginMatcherFunction =
-      base::RepeatingCallback<bool(const url::Origin&,
+  // A callback type to check if a given StorageKey matches a storage policy.
+  // Can be passed empty/null where used, which means the StorageKey will always
+  // match. Returns true if the given StorageKey matches the storage policy,
+  // false otherwise.
+  using StorageKeyPolicyMatcherFunction =
+      base::RepeatingCallback<bool(const blink::StorageKey&,
                                    storage::SpecialStoragePolicy*)>;
+
+  // A callback type to check if a given StorageKey matches. Can be passed
+  // empty/null where used which means the StorageKey will always match. Returns
+  // true when the given StorageKey matches, false otherwise.
+  using StorageKeyMatcherFunction =
+      base::RepeatingCallback<bool(const blink::StorageKey&)>;
 
   // Observer interface that is notified of specific data clearing events which
   // which were facilitated by the StoragePartition. Notification occurs on the
   // UI thread, observer life time is not managed by the StoragePartition.
   class DataRemovalObserver : public base::CheckedObserver {
    public:
-    // Called on a deletion event for origin keyed storage APIs.
-    virtual void OnOriginDataCleared(
+    // Called on a deletion event for storage keyed storage APIs.
+    virtual void OnStorageKeyDataCleared(
         uint32_t remove_mask,
-        base::RepeatingCallback<bool(const url::Origin&)> origin_matcher,
+        StorageKeyMatcherFunction storage_key_policy_matcher,
         const base::Time begin,
         const base::Time end) = 0;
   };
 
   // Similar to ClearDataForOrigin().
-  // Deletes all data out for the StoragePartition if |storage_origin| is empty.
-  // |callback| is called when data deletion is done or at least the deletion is
-  // scheduled.
+  // Deletes all data out for the StoragePartition if |storage_key|'s origin is
+  // opaque. |callback| is called when data deletion is done or at least the
+  // deletion is scheduled.
   virtual void ClearData(uint32_t remove_mask,
                          uint32_t quota_storage_remove_mask,
-                         const GURL& storage_origin,
+                         const blink::StorageKey& storage_key,
                          const base::Time begin,
                          const base::Time end,
                          base::OnceClosure callback) = 0;
 
   // Similar to ClearData().
   // Deletes all data out for the StoragePartition.
-  // * |origin_matcher| is present if special storage policy is to be handled,
-  //   otherwise the callback should be null (base::Callback::is_null()==true).
-  //   The origin matcher does not apply to cookies, instead use:
-  // * |cookie_deletion_filter| identifies the cookies to delete and will be
-  //   used if |remove_mask| has the REMOVE_DATA_MASK_COOKIES bit set. Note:
+  // * `filter_builder` is present if origin/domain filters are to be handled,
+  //   otherwise should be nullptr.
+  // * `storage_key_policy_matcher` is present if special storage policy is to
+  //   be handled, otherwise the callback should be null.
+  //   The StorageKey matcher does not apply to cookies, instead use:
+  // * `cookie_deletion_filter` identifies the cookies to delete and will be
+  //   used if `remove_mask` has the REMOVE_DATA_MASK_COOKIES bit set. Note:
   //   CookieDeletionFilterPtr also contains a time interval
   //   (created_after_time/created_before_time), so when deleting cookies
-  //   |begin| and |end| will be used ignoring the interval in
-  //   |cookie_deletion_filter|.
-  //   If |perform_storage_cleanup| is true, the storage will try to remove
+  //   `begin` and `end` will be used ignoring the interval in
+  //   `cookie_deletion_filter`.
+  //   If `perform_storage_cleanup` is true, the storage will try to remove
   //   traces about deleted data from disk. This is an expensive operation that
   //   should only be performed if we are sure that almost all data will be
   //   deleted anyway.
-  // * |callback| is called when data deletion is done or at least the deletion
+  // * `callback` is called when data deletion is done or at least the deletion
   //   is scheduled.
   // Note: Make sure you know what you are doing before clearing cookies
   // selectively. You don't want to break the web.
   virtual void ClearData(
       uint32_t remove_mask,
       uint32_t quota_storage_remove_mask,
-      OriginMatcherFunction origin_matcher,
+      BrowsingDataFilterBuilder* filter_builder,
+      StorageKeyPolicyMatcherFunction storage_key_policy_matcher,
       network::mojom::CookieDeletionFilterPtr cookie_deletion_filter,
       bool perform_storage_cleanup,
       const base::Time begin,
@@ -302,12 +337,15 @@ class CONTENT_EXPORT StoragePartition {
   virtual leveldb_proto::ProtoDatabaseProvider*
   GetProtoDatabaseProviderForTesting() = 0;
 
+  // Resets all state associated with the Attribution Reporting API for use in
+  // hermetic tests.
+  virtual void ResetAttributionManagerForTesting(
+      base::OnceCallback<void(bool success)> callback) = 0;
+
   // The value pointed to by |settings| should remain valid until the
   // the function is called again with a new value or a nullptr.
   static void SetDefaultQuotaSettingsForTesting(
       const storage::QuotaSettings* settings);
-
-  static bool IsAppCacheEnabled();
 
  protected:
   virtual ~StoragePartition() {}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ class InProcessJsonParser {
   using SuccessCallback = base::OnceCallback<void(base::Value)>;
   using ErrorCallback = base::OnceCallback<void(const std::string&)>;
 
-  // As with SafeJsonParser, runs either |success_callback| or |error_callback|
+  // As with SafeJsonParser, runs either `success_callback` or `error_callback`
   // on the calling thread, but not before the call returns.
   static void Parse(const std::string& unsafe_json,
                     SuccessCallback success_callback,

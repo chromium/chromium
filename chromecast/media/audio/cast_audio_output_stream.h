@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,14 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chromecast/base/task_runner_impl.h"
 #include "chromecast/common/mojom/multiroom.mojom.h"
-#include "chromecast/common/mojom/service_connector.mojom.h"
+#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -107,6 +106,10 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
                         const ::media::AudioParameters& audio_params,
                         const std::string& device_id_or_group_id,
                         bool use_mixer_service);
+
+  CastAudioOutputStream(const CastAudioOutputStream&) = delete;
+  CastAudioOutputStream& operator=(const CastAudioOutputStream&) = delete;
+
   ~CastAudioOutputStream() override;
 
   // ::media::AudioOutputStream implementation.
@@ -135,7 +138,7 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
   double volume_;
   AudioOutputState audio_thread_state_;
   CastAudioManagerHelper* const audio_manager_;
-  chromecast::mojom::ServiceConnector* connector_;
+  external_service_support::ExternalConnector* const connector_;
   const ::media::AudioParameters audio_params_;
   // Valid |device_id_| are kDefaultDeviceId, and kCommunicationsDeviceId
   const std::string device_id_;
@@ -156,8 +159,6 @@ class CastAudioOutputStream : public ::media::AudioOutputStream {
   THREAD_CHECKER(audio_thread_checker_);
   base::WeakPtr<CastAudioOutputStream> audio_weak_this_;
   base::WeakPtrFactory<CastAudioOutputStream> audio_weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastAudioOutputStream);
 };
 
 }  // namespace media

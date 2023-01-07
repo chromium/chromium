@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,25 +53,6 @@ public class CastWebContentsIntentUtilsTest {
     }
 
     @Test
-    public void testOnGesture() {
-        Intent in = CastWebContentsIntentUtils.onGesture(SESSION_ID, 1);
-        String uri = in.getDataString();
-        Assert.assertNotNull(uri);
-        Assert.assertEquals(EXPECTED_URI, uri);
-        int type = CastWebContentsIntentUtils.getGestureType(in);
-        Assert.assertEquals(1, type);
-        Assert.assertTrue(CastWebContentsIntentUtils.isIntentOfGesturing(in));
-
-        in = CastWebContentsIntentUtils.onGestureWithUriString(EXPECTED_URI, 2);
-        uri = in.getDataString();
-        Assert.assertNotNull(uri);
-        Assert.assertEquals(EXPECTED_URI, uri);
-        type = CastWebContentsIntentUtils.getGestureType(in);
-        Assert.assertEquals(2, type);
-        Assert.assertTrue(CastWebContentsIntentUtils.isIntentOfGesturing(in));
-    }
-
-    @Test
     public void testOnVisibilityChange() {
         Intent in = CastWebContentsIntentUtils.onVisibilityChange(SESSION_ID, 3);
         String uri = in.getDataString();
@@ -80,63 +61,12 @@ public class CastWebContentsIntentUtilsTest {
         int type = CastWebContentsIntentUtils.getVisibilityType(in);
         Assert.assertEquals(3, type);
         Assert.assertTrue(CastWebContentsIntentUtils.isIntentOfVisibilityChange(in));
-
-        in = CastWebContentsIntentUtils.onVisibilityChangeWithUriString(EXPECTED_URI, 2);
-        uri = in.getDataString();
-        Assert.assertNotNull(uri);
-        Assert.assertEquals(EXPECTED_URI, uri);
-        type = CastWebContentsIntentUtils.getVisibilityType(in);
-        Assert.assertEquals(2, type);
-        Assert.assertTrue(CastWebContentsIntentUtils.isIntentOfVisibilityChange(in));
-    }
-
-    @Test
-    public void testRequestVisibilityPriority() {
-        Intent in = CastWebContentsIntentUtils.requestVisibilityPriority(SESSION_ID, 2);
-        Assert.assertNull(in.getData());
-        String uri = CastWebContentsIntentUtils.getUriString(in);
-        Assert.assertNotNull(uri);
-        Assert.assertEquals(EXPECTED_URI, uri);
-        int type = CastWebContentsIntentUtils.getVisibilityPriority(in);
-        Assert.assertEquals(2, type);
-        Assert.assertTrue(CastWebContentsIntentUtils.isIntentToRequestVisibilityPriority(in));
-    }
-
-    @Test
-    public void testRequestMoveOut() {
-        Intent in = CastWebContentsIntentUtils.requestMoveOut(SESSION_ID);
-        Assert.assertNull(in.getData());
-        String uri = CastWebContentsIntentUtils.getUriString(in);
-        Assert.assertNotNull(uri);
-        Assert.assertEquals(EXPECTED_URI, uri);
-        Assert.assertTrue(CastWebContentsIntentUtils.isIntentToRequestMoveOut(in));
-    }
-
-    @Test
-    public void testGestureConsumed() {
-        Intent in = CastWebContentsIntentUtils.gestureConsumed(SESSION_ID, 1, true);
-        Assert.assertNull(in.getData());
-        String uri = CastWebContentsIntentUtils.getUriString(in);
-        Assert.assertEquals(EXPECTED_URI, uri);
-        int type = CastWebContentsIntentUtils.getGestureType(in);
-        Assert.assertEquals(1, type);
-        Assert.assertTrue(CastWebContentsIntentUtils.isGestureConsumed(in));
-        Assert.assertEquals(CastWebContentsIntentUtils.ACTION_GESTURE_CONSUMED, in.getAction());
-
-        in = CastWebContentsIntentUtils.gestureConsumed(SESSION_ID, 2, false);
-        Assert.assertNull(in.getData());
-        uri = CastWebContentsIntentUtils.getUriString(in);
-        Assert.assertNotNull(uri);
-        Assert.assertEquals(EXPECTED_URI, uri);
-        type = CastWebContentsIntentUtils.getGestureType(in);
-        Assert.assertEquals(2, type);
-        Assert.assertFalse(CastWebContentsIntentUtils.isGestureConsumed(in));
     }
 
     @Test
     public void testRequestStartCastActivity() {
         Intent in = CastWebContentsIntentUtils.requestStartCastActivity(
-                mActivity, mWebContents, true, false, true, SESSION_ID);
+                mActivity, mWebContents, true, false, true, false, SESSION_ID);
         Assert.assertFalse(CastWebContentsIntentUtils.isRemoteControlMode(in));
         Assert.assertNull(in.getData());
         String uri = CastWebContentsIntentUtils.getUriString(in);
@@ -146,24 +76,6 @@ public class CastWebContentsIntentUtilsTest {
         Assert.assertEquals(mWebContents, webContents);
         Assert.assertTrue(CastWebContentsIntentUtils.isTouchable(in));
         Assert.assertEquals(Intent.ACTION_VIEW, in.getAction());
-    }
-
-    @Test
-    public void testRequestStartCastFragment() {
-        Intent in = CastWebContentsIntentUtils.requestStartCastFragment(
-                mWebContents, APP_ID, 3, true, SESSION_ID, true, true);
-        Assert.assertNull(in.getData());
-        String uri = CastWebContentsIntentUtils.getUriString(in);
-        Assert.assertNotNull(uri);
-        Assert.assertEquals(EXPECTED_URI, uri);
-        WebContents webContents = CastWebContentsIntentUtils.getWebContents(in);
-        Assert.assertEquals(mWebContents, webContents);
-        Assert.assertTrue(CastWebContentsIntentUtils.isTouchable(in));
-        Assert.assertEquals(APP_ID, CastWebContentsIntentUtils.getAppId(in));
-        Assert.assertEquals(SESSION_ID, CastWebContentsIntentUtils.getSessionId(in));
-        Assert.assertEquals(3, CastWebContentsIntentUtils.getVisibilityPriority(in));
-        Assert.assertEquals(CastIntents.ACTION_SHOW_WEB_CONTENT, in.getAction());
-        Assert.assertTrue(CastWebContentsIntentUtils.isRemoteControlMode(in));
     }
 
     @Test
@@ -209,28 +121,14 @@ public class CastWebContentsIntentUtilsTest {
     @Test
     public void testShouldTurnOnScreenActivityTrue() {
         Intent intent = CastWebContentsIntentUtils.requestStartCastActivity(
-                mActivity, mWebContents, true, false, true, SESSION_ID);
+                mActivity, mWebContents, true, false, true, false, SESSION_ID);
         Assert.assertTrue(CastWebContentsIntentUtils.shouldTurnOnScreen(intent));
     }
 
     @Test
     public void testShouldTurnOnScreenActivityFalse() {
         Intent intent = CastWebContentsIntentUtils.requestStartCastActivity(
-                mActivity, mWebContents, true, false, false, SESSION_ID);
-        Assert.assertFalse(CastWebContentsIntentUtils.shouldTurnOnScreen(intent));
-    }
-
-    @Test
-    public void testShouldTurnOnScreenFragmentTrue() {
-        Intent intent = CastWebContentsIntentUtils.requestStartCastFragment(
-                mWebContents, APP_ID, 3, true, SESSION_ID, true, true);
-        Assert.assertTrue(CastWebContentsIntentUtils.shouldTurnOnScreen(intent));
-    }
-
-    @Test
-    public void testShouldTurnOnScreenFragmentFalse() {
-        Intent intent = CastWebContentsIntentUtils.requestStartCastFragment(
-                mWebContents, APP_ID, 3, true, SESSION_ID, true, false);
+                mActivity, mWebContents, true, false, false, false, SESSION_ID);
         Assert.assertFalse(CastWebContentsIntentUtils.shouldTurnOnScreen(intent));
     }
 
@@ -240,30 +138,5 @@ public class CastWebContentsIntentUtilsTest {
         String uri = CastWebContentsIntentUtils.getUriString(in);
         Assert.assertNotNull(uri);
         Assert.assertEquals(EXPECTED_URI, uri);
-    }
-
-    @Test
-    public void testIsRemoteControlModeTrue() {
-        Intent in = CastWebContentsIntentUtils.requestStartCastFragment(
-                mWebContents, APP_ID, 3, true, SESSION_ID, true, true);
-        Assert.assertTrue(CastWebContentsIntentUtils.isRemoteControlMode(in));
-    }
-
-    @Test
-    public void testIsRemoteControlModeFalse() {
-        Intent in = CastWebContentsIntentUtils.requestStartCastFragment(
-                mWebContents, APP_ID, 3, false, SESSION_ID, false, true);
-        Assert.assertFalse(CastWebContentsIntentUtils.isRemoteControlMode(in));
-    }
-
-    @Test
-    public void testSetHostContext() {
-        Intent in = CastWebContentsIntentUtils.setHostContext(SESSION_ID, 123, "foo");
-        String uri = CastWebContentsIntentUtils.getUriString(in);
-        Assert.assertNotNull(uri);
-        Assert.assertEquals(EXPECTED_URI, uri);
-        Assert.assertEquals(CastWebContentsIntentUtils.ACTION_SET_HOST_CONTEXT, in.getAction());
-        Assert.assertEquals(CastWebContentsIntentUtils.getInteractionId(in), 123);
-        Assert.assertEquals(CastWebContentsIntentUtils.getConversationId(in), "foo");
     }
 }

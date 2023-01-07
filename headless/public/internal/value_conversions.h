@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,11 @@
 #define HEADLESS_PUBLIC_INTERNAL_VALUE_CONVERSIONS_H_
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
-#include "headless/lib/browser/protocol/base_string_adapter.h"
+#include "base/values.h"
 #include "headless/public/util/error_reporter.h"
 
 namespace headless {
@@ -16,7 +19,7 @@ namespace internal {
 // Generic conversion from a type to a base::Value. Implemented below
 // (for composite and low level types) and and in types_DOMAIN.cc.
 template <typename T>
-std::unique_ptr<base::Value> ToValue(const T& value);
+base::Value ToValue(const T& value);
 
 // Generic conversion from a base::Value to a type. Note that this generic
 // variant is never defined. Instead, we declare a specific template
@@ -28,53 +31,52 @@ struct FromValue {
 };
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(const int& value) {
-  return std::make_unique<base::Value>(value);
+inline base::Value ToValue(const int& value) {
+  return base::Value(value);
 }
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(const double& value) {
-  return std::make_unique<base::Value>(value);
+inline base::Value ToValue(const double& value) {
+  return base::Value(value);
 }
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(const bool& value) {
-  return std::make_unique<base::Value>(value);
+inline base::Value ToValue(const bool& value) {
+  return base::Value(value);
 }
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(const std::string& value) {
-  return std::make_unique<base::Value>(value);
+inline base::Value ToValue(const std::string& value) {
+  return base::Value(value);
 }
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(const base::Value& value) {
-  return value.CreateDeepCopy();
+inline base::Value ToValue(const base::Value& value) {
+  return value.Clone();
 }
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(
-    const base::DictionaryValue& value) {
+inline base::Value ToValue(const base::DictionaryValue& value) {
   return ToValue(static_cast<const base::Value&>(value));
 }
 
 // Note: Order of the two templates below is important to handle
 // vectors of unique_ptr.
 template <typename T>
-std::unique_ptr<base::Value> ToValue(const std::unique_ptr<T>& value) {
+base::Value ToValue(const std::unique_ptr<T>& value) {
   return ToValue(*value);
 }
 
 template <typename T>
-std::unique_ptr<base::Value> ToValue(const std::vector<T>& vector_of_values) {
-  std::unique_ptr<base::ListValue> result(new base::ListValue());
+base::Value ToValue(const std::vector<T>& vector_of_values) {
+  base::Value::List result;
   for (const T& value : vector_of_values)
-    result->Append(ToValue(value));
-  return std::move(result);
+    result.Append(ToValue(value));
+  return base::Value(std::move(result));
 }
 
 template <>
-inline std::unique_ptr<base::Value> ToValue(const protocol::Binary& value) {
+inline base::Value ToValue(const protocol::Binary& value) {
   return ToValue(value.toBase64());
 }
 
@@ -140,7 +142,7 @@ template <>
 struct FromValue<base::Value> {
   static std::unique_ptr<base::Value> Parse(const base::Value& value,
                                             ErrorReporter* errors) {
-    return value.CreateDeepCopy();
+    return base::Value::ToUniquePtrValue(value.Clone());
   }
 };
 
@@ -178,7 +180,7 @@ struct FromValue<std::vector<T>> {
       return result;
     }
     errors->Push();
-    for (const auto& item : value.GetList())
+    for (const auto& item : value.GetListDeprecated())
       result.push_back(FromValue<T>::Parse(item, errors));
     errors->Pop();
     return result;

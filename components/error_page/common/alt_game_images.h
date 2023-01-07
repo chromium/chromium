@@ -1,4 +1,4 @@
-// Copyright (c) 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,29 +8,21 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace error_page {
 
-extern const base::Feature kNetErrorAltGameMode;
+BASE_DECLARE_FEATURE(kNetErrorAltGameMode);
 extern const base::FeatureParam<std::string> kNetErrorAltGameModeKey;
 
 // Gets the value of kNetErrorAltGameMode.
 bool EnableAltGameMode();
 
-// Image loading result.
-struct AltGameImages {
-  std::string common_1x;
-  std::string specific_1x;
-  std::string common_2x;
-  std::string specific_2x;
+// Returns a data URL corresponding to the image ID and scale.
+std::string GetAltGameImage(int image_id, int scale);
 
-  AltGameImages();
-  ~AltGameImages();
-};
-
-// Load images into |result| and game type into |choice|. Returns true on
-// success.
-bool GetAltGameImages(AltGameImages* result, int* choice);
+// Returns an image ID.
+int ChooseAltGame();
 
 }  // namespace error_page
 

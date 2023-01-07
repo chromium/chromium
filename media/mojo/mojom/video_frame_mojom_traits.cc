@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,12 @@
 
 #include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/format_utils.h"
-#include "media/mojo/common/mojo_shared_buffer_video_frame.h"
 #include "media/mojo/mojom/video_frame_metadata_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/system/handle.h"
@@ -21,13 +22,80 @@
 #include "ui/gfx/mojom/color_space_mojom_traits.h"
 #include "ui/gfx/mojom/hdr_metadata_mojom_traits.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/posix/eintr_wrapper.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace mojo {
 
 namespace {
+
+base::ReadOnlySharedMemoryRegion CreateRegion(const media::VideoFrame& frame,
+                                              std::vector<uint32_t>& offsets,
+                                              std::vector<int32_t>& strides) {
+  if (!media::IsYuvPlanar(frame.format()) || !media::IsOpaque(frame.format())) {
+    DLOG(ERROR) << "format is not opaque YUV: "
+                << VideoPixelFormatToString(frame.format());
+    return base::ReadOnlySharedMemoryRegion();
+  }
+
+  size_t num_planes = media::VideoFrame::NumPlanes(frame.format());
+  DCHECK_LE(num_planes, 3u);
+  offsets.resize(num_planes);
+  strides.resize(num_planes);
+  if (frame.storage_type() == media::VideoFrame::STORAGE_SHMEM) {
+    for (size_t i = 0; i < num_planes; ++i) {
+      // This offset computation is safe because the planes are in the single
+      // buffer, a single SharedMemoryBuffer. The first plane data must lie
+      // in the beginning of the buffer.
+      base::CheckedNumeric<intptr_t> offset =
+          reinterpret_cast<intptr_t>(frame.data(i));
+      offset -= reinterpret_cast<intptr_t>(frame.data(0));
+      if (!offset.AssignIfValid(&offsets[i])) {
+        DLOG(ERROR) << "Invalid offset: "
+                    << static_cast<intptr_t>(frame.data(i) - frame.data(0));
+        return base::ReadOnlySharedMemoryRegion();
+      }
+
+      strides[i] = frame.stride(i);
+    }
+    return frame.shm_region()->Duplicate();
+  }
+
+  // |frame| is on-memory based VideoFrame. Creates a ReadOnlySharedMemoryRegion
+  // and copy the frame data to the region. This DCHECK is safe because of the
+  // the conditional in a calling function.
+  DCHECK(frame.storage_type() == media::VideoFrame::STORAGE_UNOWNED_MEMORY ||
+         frame.storage_type() == media::VideoFrame::STORAGE_OWNED_MEMORY);
+  std::vector<size_t> sizes(num_planes);
+  size_t aggregate_size = 0;
+  for (size_t i = 0; i < num_planes; ++i) {
+    strides[i] = frame.stride(i);
+    offsets[i] = aggregate_size;
+    sizes[i] = media::VideoFrame::Rows(i, frame.format(),
+                                       frame.coded_size().height()) *
+               strides[i];
+    aggregate_size += sizes[i];
+  }
+
+  auto mapped_region = base::ReadOnlySharedMemoryRegion::Create(aggregate_size);
+  if (!mapped_region.IsValid()) {
+    DLOG(ERROR) << "Can't create new frame backing memory";
+    return base::ReadOnlySharedMemoryRegion();
+  }
+
+  base::WritableSharedMemoryMapping& dst_mapping = mapped_region.mapping;
+  uint8_t* dst_data = dst_mapping.GetMemoryAs<uint8_t>();
+  // The data from |frame| may not be consecutive between planes. Copy data into
+  // a shared memory buffer which is tightly packed. Padding inside each planes
+  // are preserved.
+  for (size_t i = 0; i < num_planes; ++i) {
+    memcpy(dst_data + offsets[i], static_cast<const void*>(frame.data(i)),
+           sizes[i]);
+  }
+
+  return std::move(mapped_region.region);
+}
 
 media::mojom::VideoFrameDataPtr MakeVideoFrameData(
     const media::VideoFrame* input) {
@@ -36,31 +104,20 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
         media::mojom::EosVideoFrameData::New());
   }
 
-  if (input->storage_type() == media::VideoFrame::STORAGE_MOJO_SHARED_BUFFER) {
-    const media::MojoSharedBufferVideoFrame* mojo_frame =
-        static_cast<const media::MojoSharedBufferVideoFrame*>(input);
-
-    // Mojo shared buffer handles are always writable. For example,
-    // cdm_video_decoder in ToCdmVideoFrame maps a frame writable; these frames
-    // are returned via callback and reused in ToCdmVideoFrame. Since returning
-    // via callback involves a Clone(), and since cloning a region read-only
-    // makes both the source handle and the cloned handle read-only, it must be
-    // cloned writable.
-    mojo::ScopedSharedBufferHandle dup = mojo_frame->Handle().Clone(
-        mojo::SharedBufferHandle::AccessMode::READ_WRITE);
-    DCHECK(dup.is_valid());
-    size_t num_planes = media::VideoFrame::NumPlanes(mojo_frame->format());
-    std::vector<uint32_t> offsets(num_planes);
-    std::vector<int32_t> strides(num_planes);
-    for (size_t i = 0; i < num_planes; ++i) {
-      offsets[i] = mojo_frame->PlaneOffset(i);
-      strides[i] = mojo_frame->stride(i);
+  if (input->storage_type() == media::VideoFrame::STORAGE_SHMEM ||
+      input->storage_type() == media::VideoFrame::STORAGE_UNOWNED_MEMORY ||
+      input->storage_type() == media::VideoFrame::STORAGE_OWNED_MEMORY) {
+    std::vector<uint32_t> offsets;
+    std::vector<int32_t> strides;
+    auto region = CreateRegion(*input, offsets, strides);
+    if (!region.IsValid()) {
+      DLOG(ERROR) << "Failed to create region from VideoFrame";
+      return nullptr;
     }
 
-    return media::mojom::VideoFrameData::NewSharedBufferData(
-        media::mojom::SharedBufferVideoFrameData::New(
-            std::move(dup), mojo_frame->MappedSize(), std::move(strides),
-            std::move(offsets)));
+    return media::mojom::VideoFrameData::NewSharedMemoryData(
+        media::mojom::SharedMemoryVideoFrameData::New(
+            std::move(region), std::move(strides), std::move(offsets)));
   }
 
   std::vector<gpu::MailboxHolder> mailbox_holder(media::VideoFrame::kMaxPlanes);
@@ -134,22 +191,54 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     return false;
 
   scoped_refptr<media::VideoFrame> frame;
-  if (data.is_shared_buffer_data()) {
-    media::mojom::SharedBufferVideoFrameDataDataView shared_buffer_data;
-    data.GetSharedBufferDataDataView(&shared_buffer_data);
+  if (data.is_shared_memory_data()) {
+    media::mojom::SharedMemoryVideoFrameDataDataView shared_memory_data;
+    data.GetSharedMemoryDataDataView(&shared_memory_data);
 
-    std::vector<int32_t> strides;
-    if (!shared_buffer_data.ReadStrides(&strides))
+    base::ReadOnlySharedMemoryRegion region;
+    if (!shared_memory_data.ReadFrameData(&region))
       return false;
 
-    std::vector<uint32_t> offsets;
-    if (!shared_buffer_data.ReadOffsets(&offsets))
+    mojo::ArrayDataView<uint32_t> offsets;
+    shared_memory_data.GetOffsetsDataView(&offsets);
+
+    mojo::ArrayDataView<int32_t> strides;
+    shared_memory_data.GetStridesDataView(&strides);
+
+    base::ReadOnlySharedMemoryMapping mapping = region.Map();
+    if (!mapping.IsValid()) {
+      DLOG(ERROR) << "Failed to map ReadOnlySharedMemoryRegion";
       return false;
-    frame = media::MojoSharedBufferVideoFrame::Create(
-        format, coded_size, visible_rect, natural_size,
-        shared_buffer_data.TakeFrameData(),
-        shared_buffer_data.frame_data_size(), std::move(offsets),
-        std::move(strides), timestamp);
+    }
+
+    const size_t num_planes = offsets.size();
+    if (num_planes == 0 || num_planes > 3) {
+      DLOG(ERROR) << "Invalid number of planes: " << num_planes;
+      return false;
+    }
+
+    uint8_t* addr[3] = {};
+    std::vector<media::ColorPlaneLayout> planes(num_planes);
+    for (size_t i = 0; i < num_planes; i++) {
+      addr[i] =
+          const_cast<uint8_t*>(mapping.GetMemoryAs<uint8_t>()) + offsets[i];
+      planes[i].stride = strides[i];
+      planes[i].offset = base::strict_cast<size_t>(offsets[i]);
+      planes[i].size = i + 1 < num_planes
+                           ? offsets[i + 1] - offsets[i]
+                           : mapping.size() - offsets[num_planes - 1];
+    }
+
+    auto layout = media::VideoFrameLayout::CreateWithPlanes(format, coded_size,
+                                                            std::move(planes));
+    if (!layout) {
+      DLOG(ERROR) << "Invalid layout";
+      return false;
+    }
+    frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
+        *layout, visible_rect, natural_size, addr[0], addr[1], addr[2],
+        timestamp);
+    frame->BackWithOwnedSharedMemory(std::move(region), std::move(mapping));
   } else if (data.is_gpu_memory_buffer_data()) {
     media::mojom::GpuMemoryBufferVideoFrameDataDataView gpu_memory_buffer_data;
     data.GetGpuMemoryBufferDataDataView(&gpu_memory_buffer_data);
@@ -157,6 +246,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle;
     if (!gpu_memory_buffer_data.ReadGpuMemoryBufferHandle(
             &gpu_memory_buffer_handle)) {
+      DLOG(ERROR) << "Failed to read GpuMemoryBufferHandle";
       return false;
     }
 
@@ -174,23 +264,29 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     for (size_t i = 0; i < mailbox_holder.size(); i++)
       mailbox_holder_array[i] = mailbox_holder[i];
 
-    base::Optional<gfx::BufferFormat> buffer_format =
+    absl::optional<gfx::BufferFormat> buffer_format =
         VideoPixelFormatToGfxBufferFormat(format);
     if (!buffer_format)
       return false;
+
+    // Shared memory GMBs do not support VEA/CAMERA usage.
+    const gfx::BufferUsage buffer_usage =
+        (gpu_memory_buffer_handle.type ==
+         gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER)
+            ? gfx::BufferUsage::SCANOUT_CPU_READ_WRITE
+            : gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
 
     gpu::GpuMemoryBufferSupport support;
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer =
         support.CreateGpuMemoryBufferImplFromHandle(
             std::move(gpu_memory_buffer_handle), coded_size, *buffer_format,
-            gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-            base::NullCallback());
+            buffer_usage, base::NullCallback());
     if (!gpu_memory_buffer)
       return false;
 
     frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect, natural_size, std::move(gpu_memory_buffer),
-        mailbox_holder_array, media::VideoFrame::ReleaseMailboxCB(), timestamp);
+        mailbox_holder_array, base::NullCallback(), timestamp);
   } else if (data.is_mailbox_data()) {
     media::mojom::MailboxVideoFrameDataDataView mailbox_data;
     data.GetMailboxDataDataView(&mailbox_data);
@@ -203,7 +299,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     for (size_t i = 0; i < media::VideoFrame::kMaxPlanes; i++)
       mailbox_holder_array[i] = mailbox_holder[i];
 
-    base::Optional<gpu::VulkanYCbCrInfo> ycbcr_info;
+    absl::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
     if (!mailbox_data.ReadYcbcrData(&ycbcr_info))
       return false;
 
@@ -231,7 +327,7 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     return false;
   frame->set_color_space(color_space);
 
-  base::Optional<gfx::HDRMetadata> hdr_metadata;
+  absl::optional<gfx::HDRMetadata> hdr_metadata;
   if (!input.ReadHdrMetadata(&hdr_metadata))
     return false;
   frame->set_hdr_metadata(std::move(hdr_metadata));

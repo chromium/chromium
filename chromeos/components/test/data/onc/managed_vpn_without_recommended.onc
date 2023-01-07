@@ -1,0 +1,28 @@
+{ "GUID": "123",
+  "Type": "VPN",
+  "Name": "testopenvpn",
+  "StaticIPConfig": {
+    "Type": "IPv4",
+    "IPAddress": "127.0.0.1",
+    "NameServers": [  ],
+    "RoutingPrefix": 32
+  },
+  "VPN": {
+    "Host": "policys host",
+    "Type": "OpenVPN",
+    "OpenVPN": {
+      "Port": 1194,
+      "Username": "policy user",
+      "ClientCertType": "Pattern",
+      "ClientCertPattern": {
+        "IssuerCARef": [ "openvpn-test-ca" ],
+      },
+      "ServerCARefs": ["ref1", "ref2"]
+    },
+    "IPsec": {
+      "AuthenticationType": "PSK",
+      "PSK": "sharedkey",
+      "IKEVersion": 1
+    }
+  }
+}

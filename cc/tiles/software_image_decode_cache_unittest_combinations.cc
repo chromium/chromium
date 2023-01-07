@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,13 +17,12 @@ namespace cc {
 namespace {
 
 size_t kLockedMemoryLimitBytes = 128 * 1024 * 1024;
-SkMatrix CreateMatrix(const SkSize& scale, bool is_decomposable) {
-  SkMatrix matrix;
-  matrix.setScale(scale.width(), scale.height());
+SkM44 CreateMatrix(const SkSize& scale, bool is_decomposable) {
+  SkM44 matrix = SkM44::Scale(scale.width(), scale.height());
 
   if (!is_decomposable) {
     // Perspective is not decomposable, add it.
-    matrix[SkMatrix::kMPersp0] = 0.1f;
+    matrix.setRC(3, 0, 0.1f);
   }
 
   return matrix;
@@ -49,8 +48,9 @@ class BaseTest : public testing::Test {
         src_rect.isEmpty()
             ? SkIRect::MakeWH(paint_image().width(), paint_image().height())
             : src_rect,
-        kMedium_SkFilterQuality, CreateMatrix(SkSize::Make(scale, scale), true),
-        PaintImage::kDefaultFrameIndex, GetColorSpace());
+        PaintFlags::FilterQuality::kMedium,
+        CreateMatrix(SkSize::Make(scale, scale), true),
+        PaintImage::kDefaultFrameIndex, GetTargetColorParams());
   }
 
   SoftwareImageDecodeCache& cache() { return *cache_; }
@@ -65,7 +65,10 @@ class BaseTest : public testing::Test {
   virtual std::unique_ptr<SoftwareImageDecodeCache> CreateCache() = 0;
   virtual CacheEntryResult GenerateCacheEntry(const DrawImage& image) = 0;
   virtual PaintImage CreatePaintImage(const gfx::Size& size) = 0;
-  virtual gfx::ColorSpace GetColorSpace() = 0;
+  virtual TargetColorParams GetTargetColorParams() const = 0;
+  gfx::ColorSpace GetColorSpace() const {
+    return GetTargetColorParams().color_space;
+  }
   virtual void VerifyEntryExists(int line,
                                  const DrawImage& draw_image,
                                  const gfx::Size& expected_size) = 0;
@@ -78,27 +81,24 @@ class BaseTest : public testing::Test {
 class N32Cache : public virtual BaseTest {
  protected:
   std::unique_ptr<SoftwareImageDecodeCache> CreateCache() override {
-    return std::make_unique<SoftwareImageDecodeCache>(
-        kN32_SkColorType, kLockedMemoryLimitBytes,
-        PaintImage::kDefaultGeneratorClientId);
+    return std::make_unique<SoftwareImageDecodeCache>(kN32_SkColorType,
+                                                      kLockedMemoryLimitBytes);
   }
 };
 
 class RGBA4444Cache : public virtual BaseTest {
  protected:
   std::unique_ptr<SoftwareImageDecodeCache> CreateCache() override {
-    return std::make_unique<SoftwareImageDecodeCache>(
-        kARGB_4444_SkColorType, kLockedMemoryLimitBytes,
-        PaintImage::kDefaultGeneratorClientId);
+    return std::make_unique<SoftwareImageDecodeCache>(kARGB_4444_SkColorType,
+                                                      kLockedMemoryLimitBytes);
   }
 };
 
 class RGBA_F16Cache : public virtual BaseTest {
  protected:
   std::unique_ptr<SoftwareImageDecodeCache> CreateCache() override {
-    return std::make_unique<SoftwareImageDecodeCache>(
-        kRGBA_F16_SkColorType, kLockedMemoryLimitBytes,
-        PaintImage::kDefaultGeneratorClientId);
+    return std::make_unique<SoftwareImageDecodeCache>(kRGBA_F16_SkColorType,
+                                                      kLockedMemoryLimitBytes);
   }
 };
 
@@ -165,24 +165,25 @@ class NoDecodeToScaleSupportF16 : public virtual BaseTest {
 
 class DefaultColorSpace : public virtual BaseTest {
  protected:
-  gfx::ColorSpace GetColorSpace() override {
-    return gfx::ColorSpace::CreateSRGB();
+  TargetColorParams GetTargetColorParams() const override {
+    return TargetColorParams();
   }
 };
 
 class ExoticColorSpace : public virtual BaseTest {
  protected:
-  gfx::ColorSpace GetColorSpace() override {
-    return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::XYZ_D50,
-                           gfx::ColorSpace::TransferID::IEC61966_2_1);
+  TargetColorParams GetTargetColorParams() const override {
+    return TargetColorParams(
+        gfx::ColorSpace(gfx::ColorSpace::PrimaryID::XYZ_D50,
+                        gfx::ColorSpace::TransferID::SRGB));
   }
 };
 
 class WideGamutCanvasColorSpace : public virtual BaseTest {
  protected:
-  gfx::ColorSpace GetColorSpace() override {
-    return gfx::ColorSpace(gfx::ColorSpace::PrimaryID::SMPTEST432_1,  // P3
-                           gfx::ColorSpace::TransferID::LINEAR);
+  TargetColorParams GetTargetColorParams() const override {
+    return TargetColorParams(gfx::ColorSpace(
+        gfx::ColorSpace::PrimaryID::P3, gfx::ColorSpace::TransferID::LINEAR));
   }
 };
 class SoftwareImageDecodeCacheTest_Typical : public N32Cache,

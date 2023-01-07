@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
 namespace base {
@@ -32,6 +31,11 @@ class WebViewDeviceInfoSyncServiceFactory
 
   static WebViewDeviceInfoSyncServiceFactory* GetInstance();
 
+  WebViewDeviceInfoSyncServiceFactory(
+      const WebViewDeviceInfoSyncServiceFactory&) = delete;
+  WebViewDeviceInfoSyncServiceFactory& operator=(
+      const WebViewDeviceInfoSyncServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       WebViewDeviceInfoSyncServiceFactory>;
@@ -42,8 +46,6 @@ class WebViewDeviceInfoSyncServiceFactory
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewDeviceInfoSyncServiceFactory);
 };
 
 }  // namespace ios_web_view

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 
 namespace optimization_guide {
@@ -26,15 +25,20 @@ namespace testing {
 class TestHintsComponentCreator {
  public:
   TestHintsComponentCreator();
+
+  TestHintsComponentCreator(const TestHintsComponentCreator&) = delete;
+  TestHintsComponentCreator& operator=(const TestHintsComponentCreator&) =
+      delete;
+
   ~TestHintsComponentCreator();
 
-  // Creates component data based on |whitelisted_hosts| and
+  // Creates component data based on |allowlisted_hosts| and
   // |page_pattern| with page hints for type |optimization_type| blocking
   // resources specified by |resource_patterns|, and returns the
   // HintsComponentInfo for it.
   optimization_guide::HintsComponentInfo CreateHintsComponentInfoWithPageHints(
       optimization_guide::proto::OptimizationType optimization_type,
-      const std::vector<std::string>& whitelisted_hosts,
+      const std::vector<std::string>& allowlisted_hosts,
       const std::string& page_pattern);
 
  private:
@@ -56,8 +60,6 @@ class TestHintsComponentCreator {
 
   std::unique_ptr<base::ScopedTempDir> scoped_temp_dir_;
   int next_component_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHintsComponentCreator);
 };
 
 }  // namespace testing

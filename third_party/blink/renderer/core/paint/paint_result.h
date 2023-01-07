@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,4 +22,4 @@ enum PaintResult {
 
 }  // namespace blink
 
-#endif  // PaintResult.h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_RESULT_H_

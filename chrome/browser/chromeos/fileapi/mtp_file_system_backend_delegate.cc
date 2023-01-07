@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,7 @@ MTPFileSystemBackendDelegate::CreateFileStreamWriter(
   DCHECK_EQ(storage::kFileSystemTypeDeviceMediaAsFileStorage, url.type());
 
   // TODO(kinaba): support writing.
-  return std::unique_ptr<storage::FileStreamWriter>();
+  return nullptr;
 }
 
 storage::WatcherManager* MTPFileSystemBackendDelegate::GetWatcherManager(

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "sql/database.h"
 
 namespace sqlite_proto {
@@ -43,7 +43,7 @@ TableManager::~TableManager() = default;
 void TableManager::Initialize(sql::Database* db) {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
   db_ = db;
-  CreateTablesIfNonExistent();
+  CreateOrClearTablesIfNecessary();
 }
 
 void TableManager::SetCancelled() {

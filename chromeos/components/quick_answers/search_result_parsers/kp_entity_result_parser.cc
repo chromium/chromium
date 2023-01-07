@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/values.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 
-namespace chromeos {
 namespace quick_answers {
 namespace {
 
@@ -62,4 +61,3 @@ bool KpEntityResultParser::Parse(const Value* result,
 }
 
 }  // namespace quick_answers
-}  // namespace chromeos

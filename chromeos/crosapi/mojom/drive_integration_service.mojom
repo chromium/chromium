@@ -1,0 +1,34 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+
+// Interface for drive mount point path observers. Implemented by lacros-chrome.
+// Used by ash-chrome to send drive availability updates.
+[Stable]
+interface DriveIntegrationServiceObserver {
+  // Called when an observed drive availability changes.
+  [MinVersion=1]
+  OnMountPointPathChanged@0(mojo_base.mojom.FilePath path);
+};
+
+// This interface is used to query the DriveIntegrationService for the local
+// Google Drive mount associated with the current Ash profile. As well as allows
+// clients to subscribe to drive availability updates.
+// Implemented by ash-chrome.
+[Stable, Uuid="60fd345d-0f72-4941-a035-910b93c141fa"]
+interface DriveIntegrationService {
+  // Returns the path of the mount point for Google Drive. Returns an empty file
+  // path if the Google Drive mount is not available.
+  GetMountPointPath@0() => (mojo_base.mojom.FilePath drive_path);
+
+  // Adds an observer for changes in drive availability. The observer is fired
+  // immediately with the current mount point path value or empty value in case
+  // drive is disabled in Ash. Multiple observers may be registered.
+  [MinVersion=1]
+  AddDriveIntegrationServiceObserver@1(
+      pending_remote<DriveIntegrationServiceObserver> observer);
+};

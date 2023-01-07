@@ -1,14 +1,17 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -16,7 +19,6 @@
 #include "google_apis/gcm/engine/gcm_request_test_base.h"
 #include "google_apis/gcm/engine/instance_id_get_token_request_handler.h"
 #include "google_apis/gcm/monitoring/fake_gcm_stats_recorder.h"
-#include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -101,13 +103,13 @@ void GCMRegistrationRequestTest::CreateRequest(const std::string& sender_ids) {
                                                 std::string() /* subtype */);
   std::unique_ptr<GCMRegistrationRequestHandler> request_handler(
       new GCMRegistrationRequestHandler(sender_ids));
-  request_.reset(new RegistrationRequest(
+  request_ = std::make_unique<RegistrationRequest>(
       GURL(kRegistrationURL), request_info, std::move(request_handler),
       GetBackoffPolicy(),
       base::BindOnce(&RegistrationRequestTest::RegistrationCallback,
                      base::Unretained(this)),
       max_retry_count_, url_loader_factory(),
-      base::ThreadTaskRunnerHandle::Get(), &recorder_, sender_ids));
+      base::ThreadTaskRunnerHandle::Get(), &recorder_, sender_ids);
 }
 
 TEST_F(GCMRegistrationRequestTest, RequestSuccessful) {
@@ -164,7 +166,7 @@ TEST_F(GCMRegistrationRequestTest, RequestRegistrationWithMultipleSenderIds) {
     continue;
 
   ASSERT_TRUE(data_tokenizer.GetNext());
-  std::string senders(net::UnescapeBinaryURLComponent(data_tokenizer.token()));
+  std::string senders(base::UnescapeBinaryURLComponent(data_tokenizer.token()));
   base::StringTokenizer sender_tokenizer(senders, ",");
   ASSERT_TRUE(sender_tokenizer.GetNext());
   EXPECT_EQ("sender1", sender_tokenizer.token());
@@ -425,13 +427,13 @@ void InstanceIDGetTokenRequestTest::CreateRequest(
   std::unique_ptr<InstanceIDGetTokenRequestHandler> request_handler(
       new InstanceIDGetTokenRequestHandler(instance_id, authorized_entity,
                                            scope, kGCMVersion, time_to_live));
-  request_.reset(new RegistrationRequest(
+  request_ = std::make_unique<RegistrationRequest>(
       GURL(kRegistrationURL), request_info, std::move(request_handler),
       GetBackoffPolicy(),
       base::BindOnce(&RegistrationRequestTest::RegistrationCallback,
                      base::Unretained(this)),
       max_retry_count_, url_loader_factory(),
-      base::ThreadTaskRunnerHandle::Get(), &recorder_, authorized_entity));
+      base::ThreadTaskRunnerHandle::Get(), &recorder_, authorized_entity);
 }
 
 TEST_F(InstanceIDGetTokenRequestTest, RequestSuccessful) {
@@ -487,7 +489,7 @@ TEST_F(InstanceIDGetTokenRequestTest, RequestDataAndURL) {
 
 TEST_F(InstanceIDGetTokenRequestTest, RequestDataWithTTL) {
   CreateRequest(false, kInstanceId, kDeveloperId, kScope,
-                /*time_to_live=*/base::TimeDelta::FromSeconds(100));
+                /*time_to_live=*/base::Seconds(100));
   request_->Start();
 
   // Same as RequestDataAndURL except "ttl" and "X-Foo".

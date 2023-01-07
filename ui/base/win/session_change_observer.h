@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace ui {
 
@@ -25,6 +24,10 @@ class COMPONENT_EXPORT(UI_BASE) SessionChangeObserver {
   // session id, it will be nullptr.
   using WtsCallback = base::RepeatingCallback<void(WPARAM, const bool*)>;
   explicit SessionChangeObserver(const WtsCallback& callback);
+
+  SessionChangeObserver(const SessionChangeObserver&) = delete;
+  SessionChangeObserver& operator=(const SessionChangeObserver&) = delete;
+
   ~SessionChangeObserver();
 
  private:
@@ -34,8 +37,6 @@ class COMPONENT_EXPORT(UI_BASE) SessionChangeObserver {
   void ClearCallback();
 
   WtsCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionChangeObserver);
 };
 
 }  // namespace ui

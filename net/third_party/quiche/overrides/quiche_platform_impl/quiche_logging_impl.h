@@ -1,15 +1,18 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_LOGGING_IMPL_H_
 #define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUICHE_LOGGING_IMPL_H_
 
+#include <vector>
+
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "net/base/net_export.h"
+#include "quiche/common/platform/api/quiche_export.h"
+#include "third_party/abseil-cpp/absl/base/optimization.h"
 
 #define QUICHE_LOG_IMPL(severity) QUICHE_CHROMIUM_LOG_##severity
 #define QUICHE_VLOG_IMPL(verbose_level) VLOG(verbose_level)
@@ -59,7 +62,7 @@
 #endif
 #define QUICHE_DLOG_INFO_IS_ON_IMPL() 0
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // wingdi.h defines ERROR to be 0. When we call QUICHE_DLOG(ERROR), it gets
 // substituted with 0, and it expands to QUICHE_CHROMIUM_DLOG_0. To allow us to
 // keep using this syntax, we define this macro to do the same thing as
@@ -69,9 +72,6 @@
 #define QUICHE_CHROMIUM_LOG_IF_0 QUICHE_CHROMIUM_LOG_IF_ERROR
 #define QUICHE_CHROMIUM_DLOG_IF_0 QUICHE_CHROMIUM_DLOG_IF_ERROR
 #endif
-
-#define QUICHE_PREDICT_FALSE_IMPL(x) x
-#define QUICHE_PREDICT_TRUE_IMPL(x) x
 
 #define QUICHE_NOTREACHED_IMPL() NOTREACHED()
 
@@ -95,8 +95,8 @@
 
 namespace quic {
 template <typename T>
-NET_EXPORT_PRIVATE inline std::ostream& operator<<(std::ostream& out,
-                                                   const std::vector<T>& v) {
+QUICHE_EXPORT_PRIVATE inline std::ostream& operator<<(std::ostream& out,
+                                                      const std::vector<T>& v) {
   out << "[";
   const char* sep = "";
   for (size_t i = 0; i < v.size(); ++i) {

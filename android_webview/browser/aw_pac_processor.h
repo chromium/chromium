@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <android/multinetwork.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "net/log/net_log_with_source.h"
 #include "services/proxy_resolver/proxy_host_resolver.h"
@@ -38,7 +37,7 @@ class AwPacProcessor {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& jurl);
-  std::string MakeProxyRequest(std::string url);
+  bool MakeProxyRequest(std::string url, std::string* result);
   void SetNetworkAndLinkAddresses(
       JNIEnv* env,
       net_handle_t net_handle,

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gin/gin_export.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace gin {
 
@@ -23,6 +23,8 @@ class WrappableBase;
 class GIN_EXPORT NamedPropertyInterceptor {
  public:
   NamedPropertyInterceptor(v8::Isolate* isolate, WrappableBase* base);
+  NamedPropertyInterceptor(const NamedPropertyInterceptor&) = delete;
+  NamedPropertyInterceptor& operator=(const NamedPropertyInterceptor&) = delete;
   virtual ~NamedPropertyInterceptor();
 
   virtual v8::Local<v8::Value> GetNamedProperty(v8::Isolate* isolate,
@@ -35,15 +37,16 @@ class GIN_EXPORT NamedPropertyInterceptor {
       v8::Isolate* isolate);
 
  private:
-  v8::Isolate* isolate_;
-  WrappableBase* base_;
-
-  DISALLOW_COPY_AND_ASSIGN(NamedPropertyInterceptor);
+  raw_ptr<v8::Isolate> isolate_;
+  raw_ptr<WrappableBase> base_;
 };
 
 class GIN_EXPORT IndexedPropertyInterceptor {
  public:
   IndexedPropertyInterceptor(v8::Isolate* isolate, WrappableBase* base);
+  IndexedPropertyInterceptor(const IndexedPropertyInterceptor&) = delete;
+  IndexedPropertyInterceptor& operator=(const IndexedPropertyInterceptor&) =
+      delete;
   virtual ~IndexedPropertyInterceptor();
 
   virtual v8::Local<v8::Value> GetIndexedProperty(v8::Isolate* isolate,
@@ -56,10 +59,8 @@ class GIN_EXPORT IndexedPropertyInterceptor {
       v8::Isolate* isolate);
 
  private:
-  v8::Isolate* isolate_;
-  WrappableBase* base_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndexedPropertyInterceptor);
+  raw_ptr<v8::Isolate> isolate_;
+  raw_ptr<WrappableBase> base_;
 };
 
 }  // namespace gin

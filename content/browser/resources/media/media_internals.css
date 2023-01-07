@@ -1,4 +1,4 @@
-/* Copyright 2013 The Chromium Authors. All rights reserved.
+/* Copyright 2013 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
@@ -12,19 +12,19 @@ body,
   width: 100%;
 }
 
-tabbox {
+cr-tab-box {
   padding-top: 10px;
 }
 
-tab {
+div[slot='tab'] {
   -webkit-user-select: none;
 }
 
-body tabpanels {
+body div[slot='panel'] {
   box-shadow: none;
 }
 
-tabpanel {
+div[slot='panel'] {
   padding: 10px;
 }
 
@@ -179,6 +179,7 @@ h3 {
 }
 
 label.audio-focus-session,
+label.cdm,
 label.selectable-button {
   border: solid 1px #999;
   border-radius: 3px;
@@ -210,6 +211,7 @@ input.selectable-button:hover + label.selectable-button {
 }
 
 label.audio-focus-session,
+label.cdm,
 label.destructed-player {
   background-color: #EEE;
 }
@@ -238,18 +240,6 @@ label.destructed-player {
   list-style: none;
 }
 
-#devtools-notice-window {
-  background-color: rgb(252, 247, 134);
-  border: 1px solid black;
-  border-radius: 4px;
-  font-size: 10px;
-  height: 60px;
-  left: 50%;
-  line-height: 20px;
-  margin-inline-start: -300px;
-  position: fixed;
-  text-align: center;
-  top: 10px;
-  width: 420px;
-  z-index: 1;
+#cdm-list {
+  list-style: none;
 }

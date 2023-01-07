@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "courgette/disassembler_elf_32.h"
 #include "courgette/types_elf.h"
 
@@ -39,6 +38,9 @@ class DisassemblerElf32X86 : public DisassemblerElf32 {
 
   DisassemblerElf32X86(const uint8_t* start, size_t length);
 
+  DisassemblerElf32X86(const DisassemblerElf32X86&) = delete;
+  DisassemblerElf32X86& operator=(const DisassemblerElf32X86&) = delete;
+
   ~DisassemblerElf32X86() override { }
 
   // DisassemblerElf32 interfaces.
@@ -47,20 +49,16 @@ class DisassemblerElf32X86 : public DisassemblerElf32 {
 
  protected:
   // DisassemblerElf32 interfaces.
-  CheckBool RelToRVA(Elf32_Rel rel,
-                     RVA* result) const override WARN_UNUSED_RESULT;
-  CheckBool ParseRelocationSection(const Elf32_Shdr* section_header,
-                                   InstructionReceptor* receptor) const override
-      WARN_UNUSED_RESULT;
-  CheckBool ParseRel32RelocsFromSection(const Elf32_Shdr* section)
-      override WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool RelToRVA(Elf32_Rel rel, RVA* result) const override;
+  [[nodiscard]] CheckBool ParseRelocationSection(
+      const Elf32_Shdr* section_header,
+      InstructionReceptor* receptor) const override;
+  [[nodiscard]] CheckBool ParseRel32RelocsFromSection(
+      const Elf32_Shdr* section) override;
 
 #if COURGETTE_HISTOGRAM_TARGETS
   std::map<RVA, int> rel32_target_rvas_;
 #endif
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DisassemblerElf32X86);
 };
 
 }  // namespace courgette

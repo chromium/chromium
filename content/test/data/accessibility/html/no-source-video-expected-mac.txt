@@ -5,5 +5,13 @@ AXWebArea
 ++++++++AXGroup
 ++++++++AXGroup
 ++++++++++AXGroup
-++++++++++++AXButton AXDescription='show more media controls' AXHelp='more options'
-++++++++++AXSlider AXValue='0' AXHelp='video time scrubber'
+++++++++++++AXButton AXDescription='play'
+++++++++++++++AXGroup
+++++++++++++AXGroup
+++++++++++++++AXGroup
+++++++++++++++AXButton AXDescription='mute'
+++++++++++++AXButton AXDescription='enter full screen'
+++++++++++++++AXGroup
+++++++++++++AXPopUpButton AXDescription='show more media controls' AXHelp='more options'
+++++++++++++++AXGroup
+++++++++++AXSlider AXDescription='video time scrubber' AXHelp='total time: 0:00' AXValue=0

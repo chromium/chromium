@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,19 +6,18 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/logging.h"
-#include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#import "base/logging.h"
+#import "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
-#include "ios/chrome/browser/passwords/ios_chrome_change_password_url_service_factory.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/passwords/ios_chrome_affiliation_service_factory.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "net/base/mac/url_conversions.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/base/page_transition_types.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
+#import "services/metrics/public/cpp/ukm_recorder.h"
+#import "services/network/public/cpp/shared_url_loader_factory.h"
+#import "ui/base/page_transition_types.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -29,16 +28,8 @@ using password_manager::WellKnownChangePasswordTabHelper;
 WellKnownChangePasswordTabHelper::WellKnownChangePasswordTabHelper(
     web::WebState* web_state)
     : web::WebStatePolicyDecider(web_state), web_state_(web_state) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kChangePasswordAffiliationInfo)) {
-    affiliation_service_ =
-        IOSChromeAffiliationServiceFactory::GetForBrowserState(
-            web_state->GetBrowserState());
-  } else {
-    change_password_url_service_ =
-        IOSChromeChangePasswordUrlServiceFactory::GetForBrowserState(
-            web_state->GetBrowserState());
-  }
+  affiliation_service_ = IOSChromeAffiliationServiceFactory::GetForBrowserState(
+      web_state->GetBrowserState());
   web_state->AddObserver(this);
 }
 
@@ -47,8 +38,8 @@ WellKnownChangePasswordTabHelper::~WellKnownChangePasswordTabHelper() = default;
 void WellKnownChangePasswordTabHelper::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  // |request_url_| is set when the first request goes to
-  // .well-known-change-password. If the navigation url and |request_url_| are
+  // `request_url_` is set when the first request goes to
+  // .well-known-change-password. If the navigation url and `request_url_` are
   // equal, DidStartNavigation() is called for the .well-known/change-password
   // navigation. Otherwise a different navigation was started.
   if (!(request_url_.is_valid() &&
@@ -57,10 +48,10 @@ void WellKnownChangePasswordTabHelper::DidStartNavigation(
   }
 }
 
-web::WebStatePolicyDecider::PolicyDecision
-WellKnownChangePasswordTabHelper::ShouldAllowRequest(
+void WellKnownChangePasswordTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
-    const RequestInfo& request_info) {
+    web::WebStatePolicyDecider::RequestInfo request_info,
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   GURL request_url = net::GURLWithNSURL(request.URL);
   // The custom behaviour is only used if the .well-known/change-password
   // request if the request is the main frame opened in a new tab.
@@ -71,15 +62,9 @@ WellKnownChangePasswordTabHelper::ShouldAllowRequest(
         web_state_->GetLastCommittedURL().is_empty() &&  // empty tab history
         IsWellKnownChangePasswordUrl(request_url)) {
       request_url_ = request_url;
-      if (base::FeatureList::IsEnabled(
-              password_manager::features::kChangePasswordAffiliationInfo)) {
-        if (affiliation_service_->GetChangePasswordURL(request_url_)
-                .is_empty()) {
-          well_known_change_password_state_.PrefetchChangePasswordURLs(
-              affiliation_service_, {request_url_});
-        }
-      } else {
-        change_password_url_service_->PrefetchURLs();
+      if (affiliation_service_->GetChangePasswordURL(request_url_).is_empty()) {
+        well_known_change_password_state_.PrefetchChangePasswordURLs(
+            affiliation_service_, {request_url_});
       }
       auto url_loader_factory =
           web_state_->GetBrowserState()->GetSharedURLLoaderFactory();
@@ -91,12 +76,12 @@ WellKnownChangePasswordTabHelper::ShouldAllowRequest(
     }
   }
 
-  return web::WebStatePolicyDecider::PolicyDecision::Allow();
+  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
 }
 
 void WellKnownChangePasswordTabHelper::ShouldAllowResponse(
     NSURLResponse* response,
-    bool for_main_frame,
+    web::WebStatePolicyDecider::ResponseInfo response_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   GURL url = net::GURLWithNSURL(response.URL);
   // True if the TabHelper expects the response from .well-known/change-password
@@ -137,27 +122,20 @@ void WellKnownChangePasswordTabHelper::WebStateDestroyed(
 void WellKnownChangePasswordTabHelper::OnProcessingFinished(bool is_supported) {
   if (!response_policy_callback_)
     return;
-  if (is_supported) {
+  GURL redirect_url = affiliation_service_->GetChangePasswordURL(request_url_);
+  if (is_supported || redirect_url == request_url_) {
     std::move(response_policy_callback_)
         .Run(web::WebStatePolicyDecider::PolicyDecision::Allow());
     RecordMetric(WellKnownChangePasswordResult::kUsedWellKnownChangePassword);
   } else {
     std::move(response_policy_callback_)
         .Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
-    GURL redirect_url;
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kChangePasswordAffiliationInfo)) {
-      redirect_url = affiliation_service_->GetChangePasswordURL(request_url_);
-    } else {
-      redirect_url =
-          change_password_url_service_->GetChangePasswordUrl(request_url_);
-    }
     if (redirect_url.is_valid()) {
       RecordMetric(WellKnownChangePasswordResult::kFallbackToOverrideUrl);
       Redirect(redirect_url);
     } else {
       RecordMetric(WellKnownChangePasswordResult::kFallbackToOriginUrl);
-      Redirect(request_url_.GetOrigin());
+      Redirect(request_url_.DeprecatedGetOriginAsURL());
     }
   }
 }

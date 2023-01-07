@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,13 @@
 
 #include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
@@ -18,8 +21,11 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/sync/base/client_tag_hash.h"
-#include "components/sync/engine/entity_data.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/autofill_offer_specifics.pb.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/autofill_wallet_usage_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -33,6 +39,9 @@ class TestAutofillTable : public AutofillTable {
   explicit TestAutofillTable(std::vector<CreditCard> cards_on_disk)
       : cards_on_disk_(cards_on_disk) {}
 
+  TestAutofillTable(const TestAutofillTable&) = delete;
+  TestAutofillTable& operator=(const TestAutofillTable&) = delete;
+
   ~TestAutofillTable() override {}
 
   bool GetServerCreditCards(
@@ -44,8 +53,6 @@ class TestAutofillTable : public AutofillTable {
 
  private:
   std::vector<CreditCard> cards_on_disk_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillTable);
 };
 
 EntityData SpecificsToEntity(const sync_pb::AutofillWalletSpecifics& specifics,
@@ -60,10 +67,12 @@ EntityData SpecificsToEntity(const sync_pb::AutofillWalletSpecifics& specifics,
 class AutofillSyncBridgeUtilTest : public testing::Test {
  public:
   AutofillSyncBridgeUtilTest() {}
-  ~AutofillSyncBridgeUtilTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AutofillSyncBridgeUtilTest);
+  AutofillSyncBridgeUtilTest(const AutofillSyncBridgeUtilTest&) = delete;
+  AutofillSyncBridgeUtilTest& operator=(const AutofillSyncBridgeUtilTest&) =
+      delete;
+
+  ~AutofillSyncBridgeUtilTest() override {}
 };
 
 // Tests that PopulateWalletTypesFromSyncData behaves as expected.
@@ -84,6 +93,9 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
       CreateAutofillWalletSpecificsForCard(
           /*id=*/credit_card_id_1,
           /*billing_address_id=*/address_id);
+  wallet_specifics_card1.mutable_masked_card()
+      ->set_virtual_card_enrollment_state(
+          sync_pb::WalletMaskedCreditCard::UNENROLLED);
   // Add the second card that has nickname.
   std::string nickname("Grocery card");
   sync_pb::AutofillWalletSpecifics wallet_specifics_card2 =
@@ -94,6 +106,11 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   wallet_specifics_card2.mutable_masked_card()
       ->mutable_card_issuer()
       ->set_issuer(sync_pb::CardIssuer::GOOGLE);
+  wallet_specifics_card2.mutable_masked_card()
+      ->set_virtual_card_enrollment_state(
+          sync_pb::WalletMaskedCreditCard::ENROLLED);
+  wallet_specifics_card2.mutable_masked_card()->set_card_art_url(
+      "https://www.example.com/card.png");
   entity_data.push_back(EntityChange::CreateAdd(
       credit_card_id_1,
       SpecificsToEntity(wallet_specifics_card1, /*client_tag=*/"card-card1")));
@@ -140,6 +157,17 @@ TEST_F(AutofillSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   // Verify that the card_issuer is set correctly.
   EXPECT_EQ(wallet_cards.front().card_issuer(), CreditCard::ISSUER_UNKNOWN);
   EXPECT_EQ(wallet_cards.back().card_issuer(), CreditCard::GOOGLE);
+
+  // Verify that the virtual_card_enrollment_state is set correctly.
+  EXPECT_EQ(wallet_cards.front().virtual_card_enrollment_state(),
+            CreditCard::UNENROLLED);
+  EXPECT_EQ(wallet_cards.back().virtual_card_enrollment_state(),
+            CreditCard::ENROLLED);
+
+  // Verify that the card_art_url is set correctly.
+  EXPECT_TRUE(wallet_cards.front().card_art_url().is_empty());
+  EXPECT_EQ(wallet_cards.back().card_art_url().spec(),
+            "https://www.example.com/card.png");
 }
 
 // Verify that the billing address id from the card saved on disk is kept if it
@@ -239,35 +267,69 @@ TEST_F(AutofillSyncBridgeUtilTest,
   EXPECT_EQ(disk_time, wallet_cards.back().use_date());
 }
 
-// Test to ensure the an AutofillOfferData is correctly converted to an
-// AutofillOfferSpecifics.
+// Test to ensure the general-purpose fields from an AutofillOfferData are
+// correctly converted to an AutofillOfferSpecifics.
 TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromOfferData) {
   sync_pb::AutofillOfferSpecifics offer_specifics;
   AutofillOfferData offer_data = test::GetCardLinkedOfferData1();
   SetAutofillOfferSpecificsFromOfferData(offer_data, &offer_specifics);
 
-  EXPECT_EQ(offer_specifics.id(), offer_data.offer_id);
-  EXPECT_EQ(offer_specifics.offer_details_url(), offer_data.offer_details_url);
+  EXPECT_EQ(offer_specifics.id(), offer_data.GetOfferId());
+  EXPECT_EQ(offer_specifics.offer_details_url(),
+            offer_data.GetOfferDetailsUrl());
   EXPECT_EQ(offer_specifics.offer_expiry_date(),
-            (offer_data.expiry - base::Time::UnixEpoch()).InSeconds());
-  EXPECT_TRUE(offer_specifics.percentage_reward().percentage() ==
-                  offer_data.offer_reward_amount ||
-              offer_specifics.fixed_amount_reward().amount() ==
-                  offer_data.offer_reward_amount);
+            (offer_data.GetExpiry() - base::Time::UnixEpoch()).InSeconds());
   EXPECT_EQ(offer_specifics.merchant_domain().size(),
-            (int)offer_data.merchant_domain.size());
+            (int)offer_data.GetMerchantOrigins().size());
   for (int i = 0; i < offer_specifics.merchant_domain().size(); i++) {
     EXPECT_EQ(offer_specifics.merchant_domain(i),
-              offer_data.merchant_domain[i].GetOrigin().spec());
+              offer_data.GetMerchantOrigins()[i].spec());
   }
+  EXPECT_EQ(offer_specifics.display_strings().value_prop_text(),
+            offer_data.GetDisplayStrings().value_prop_text);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_EQ(offer_specifics.display_strings().see_details_text_mobile(),
+            offer_data.GetDisplayStrings().see_details_text);
+  EXPECT_EQ(offer_specifics.display_strings().usage_instructions_text_mobile(),
+            offer_data.GetDisplayStrings().usage_instructions_text);
+#else
+  EXPECT_EQ(offer_specifics.display_strings().see_details_text_desktop(),
+            offer_data.GetDisplayStrings().see_details_text);
+  EXPECT_EQ(offer_specifics.display_strings().usage_instructions_text_desktop(),
+            offer_data.GetDisplayStrings().usage_instructions_text);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+}
+
+// Test to ensure the card-linked offer-specific fields from an
+// AutofillOfferData are correctly converted to an AutofillOfferSpecifics.
+TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromCardLinkedOfferData) {
+  sync_pb::AutofillOfferSpecifics offer_specifics;
+  AutofillOfferData offer_data = test::GetCardLinkedOfferData1();
+  SetAutofillOfferSpecificsFromOfferData(offer_data, &offer_specifics);
+
+  EXPECT_TRUE(offer_specifics.percentage_reward().percentage() ==
+                  offer_data.GetOfferRewardAmount() ||
+              offer_specifics.fixed_amount_reward().amount() ==
+                  offer_data.GetOfferRewardAmount());
   EXPECT_EQ(offer_specifics.card_linked_offer_data().instrument_id().size(),
-            (int)offer_data.eligible_instrument_id.size());
+            (int)offer_data.GetEligibleInstrumentIds().size());
   for (int i = 0;
        i < offer_specifics.card_linked_offer_data().instrument_id().size();
        i++) {
     EXPECT_EQ(offer_specifics.card_linked_offer_data().instrument_id(i),
-              offer_data.eligible_instrument_id[i]);
+              offer_data.GetEligibleInstrumentIds()[i]);
   }
+}
+
+// Test to ensure the promo code offer-specific fields from an AutofillOfferData
+// are correctly converted to an AutofillOfferSpecifics.
+TEST_F(AutofillSyncBridgeUtilTest, OfferSpecificsFromPromoCodeOfferData) {
+  sync_pb::AutofillOfferSpecifics offer_specifics;
+  AutofillOfferData offer_data = test::GetPromoCodeOfferData();
+  SetAutofillOfferSpecificsFromOfferData(offer_data, &offer_specifics);
+
+  EXPECT_EQ(offer_specifics.promo_code_offer_data().promo_code(),
+            offer_data.GetPromoCode());
 }
 
 // Ensures that the ShouldResetAutofillWalletData function works correctly, if
@@ -285,7 +347,8 @@ TEST_F(AutofillSyncBridgeUtilTest,
   new_offer_data.push_back(data1);
   EXPECT_FALSE(AreAnyItemsDifferent(old_offer_data, new_offer_data));
 
-  new_offer_data.at(0).offer_id += 456;
+  new_offer_data.at(0).SetOfferIdForTesting(new_offer_data.at(0).GetOfferId() +
+                                            456);
   EXPECT_TRUE(AreAnyItemsDifferent(old_offer_data, new_offer_data));
 }
 
@@ -309,7 +372,7 @@ TEST_F(AutofillSyncBridgeUtilTest, IsOfferSpecificsValid) {
   sync_pb::AutofillOfferSpecifics specifics;
   SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
                                          &specifics);
-  // Expects default specifics is valid.
+  // Expects default card-linked offer specifics is valid.
   EXPECT_TRUE(IsOfferSpecificsValid(specifics));
 
   specifics.clear_id();
@@ -328,23 +391,54 @@ TEST_F(AutofillSyncBridgeUtilTest, IsOfferSpecificsValid) {
   SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
                                          &specifics);
   specifics.mutable_card_linked_offer_data()->clear_instrument_id();
-  // Expects specifics without linked card instrument id to be invalid.
+  // Expects card-linked offer specifics without linked card instrument id to be
+  // invalid.
   EXPECT_FALSE(IsOfferSpecificsValid(specifics));
   specifics.clear_card_linked_offer_data();
-  // Expects specifics without card linked offer data to be invalid.
+  // Expects specifics without card linked offer data or promo code offer data
+  // to be invalid.
   EXPECT_FALSE(IsOfferSpecificsValid(specifics));
 
   SetAutofillOfferSpecificsFromOfferData(test::GetCardLinkedOfferData1(),
                                          &specifics);
   specifics.mutable_percentage_reward()->set_percentage("5");
-  // Expects specifics without correct reward text to be invalid.
+  // Expects card-linked offer specifics without correct reward text to be
+  // invalid.
   EXPECT_FALSE(IsOfferSpecificsValid(specifics));
   specifics.clear_percentage_reward();
-  // Expects specifics without reward text to be invalid.
+  // Expects card-linked offer specifics without reward text to be invalid.
   EXPECT_FALSE(IsOfferSpecificsValid(specifics));
   specifics.mutable_fixed_amount_reward()->set_amount("$5");
-  // Expects specifics with only fixed amount reward text to be valid.
+  // Expects card-linked offer specifics with only fixed amount reward text to
+  // be valid.
   EXPECT_TRUE(IsOfferSpecificsValid(specifics));
+
+  SetAutofillOfferSpecificsFromOfferData(test::GetPromoCodeOfferData(),
+                                         &specifics);
+  // Expects default promo code offer specifics is valid.
+  EXPECT_TRUE(IsOfferSpecificsValid(specifics));
+  // Expects promo code offer specifics without promo code to be invalid.
+  specifics.mutable_promo_code_offer_data()->clear_promo_code();
+  EXPECT_FALSE(IsOfferSpecificsValid(specifics));
+}
+
+// Test to ensure that Wallet Usage Data for virtual card retrieval is correctly
+// converted to AutofillWalletUsageSpecifics.
+TEST_F(AutofillSyncBridgeUtilTest, WalletUsageSpecificsFromWalletUsageData) {
+  sync_pb::AutofillWalletUsageSpecifics usage_specifics;
+  AutofillWalletUsageData usage_data =
+      test::GetAutofillWalletUsageDataForVirtualCard();
+  SetAutofillWalletUsageSpecificsFromAutofillWalletUsageData(usage_data,
+                                                             &usage_specifics);
+
+  EXPECT_EQ(usage_specifics.virtual_card_usage_data().instrument_id(),
+            usage_data.virtual_card_usage_data().instrument_id.value());
+  EXPECT_EQ(usage_specifics.virtual_card_usage_data().virtual_card_last_four(),
+            usage_data.virtual_card_usage_data().virtual_card_last_four);
+  EXPECT_EQ(usage_specifics.virtual_card_usage_data().merchant_url(),
+            usage_data.virtual_card_usage_data().merchant_origin.Serialize());
+  EXPECT_EQ(usage_specifics.virtual_card_usage_data().merchant_app_package(),
+            usage_data.virtual_card_usage_data().merchant_app_package);
 }
 
 }  // namespace

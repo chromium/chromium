@@ -1,8 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/cookies/site_for_cookies.h"
+
+#include <utility>
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -202,6 +204,24 @@ void SiteForCookies::MarkIfCrossScheme(const SchemefulSite& other) {
 
   // Mark that the two are cross-scheme to each other.
   schemefully_same_ = false;
+}
+
+bool operator<(const SiteForCookies& lhs, const SiteForCookies& rhs) {
+  // Similar to IsEquivalent(), if they're both null then they're equivalent
+  // and therefore `lhs` is not < `rhs`.
+  if (lhs.IsNull() && rhs.IsNull())
+    return false;
+
+  // If only `lhs` is null then it's always < `rhs`.
+  if (lhs.IsNull())
+    return true;
+
+  // If only `rhs` is null then `lhs` is not < `rhs`.
+  if (rhs.IsNull())
+    return false;
+
+  // Otherwise neither are null and we need to compare the `site_`s.
+  return lhs.site_ < rhs.site_;
 }
 
 }  // namespace net

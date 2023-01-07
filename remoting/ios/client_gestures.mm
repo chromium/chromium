@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -311,8 +311,8 @@ static remoting::GestureInterpreter::GestureState toGestureState(
     return YES;
   }
 
-  // TODO(nicholss): If we return NO here, it dismisses the other reconizers.
-  // As we add more types of reconizers, they need to be accounted for in the
+  // TODO(nicholss): If we return NO here, it dismisses the other recognizers.
+  // As we add more types of recognizers, they need to be accounted for in the
   // above logic.
   return NO;
 }

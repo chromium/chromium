@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,7 +59,7 @@ CommandSource::CommandResults OpenURLCommandSource::GetCommands(
     // closed.
     item->command =
         base::BindOnce(&chrome::AddTabAt, base::Unretained(browser),
-                       command_spec.second, -1, true, base::nullopt);
+                       command_spec.second, -1, true, absl::nullopt);
     results.push_back(std::move(item));
   }
   return results;

@@ -1,16 +1,16 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/wm/overview/scoped_overview_transform_window.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/window_state.h"
 #include "base/numerics/safe_conversions.h"
 #include "ui/aura/window.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
@@ -261,7 +261,7 @@ TEST_F(ScopedOverviewTransformWindowTest, InvisibleTransients) {
   EXPECT_TRUE(child->IsVisible());
   EXPECT_FALSE(child2->IsVisible());
 
-  gfx::Transform transform(1.f, 0.f, 0.f, 1.f, 10.f, 10.f);
+  auto transform = gfx::Transform::MakeTranslation(10.f, 10.f);
   SetTransform(window.get(), transform);
   EXPECT_EQ(transform, window->transform());
   EXPECT_EQ(transform, child->transform());

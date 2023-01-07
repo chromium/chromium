@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "base/time/time.h"
 #include "components/feedback/system_logs/system_logs_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace system_logs {
 
@@ -27,10 +27,20 @@ bool ReadEndOfFile(const base::FilePath& path,
                    std::string* contents,
                    size_t max_size);
 
+// Exposes the utility methods only for unittests.
+#if defined(UNIT_TEST)
+std::string ReadUserLogFile(const base::FilePath& log_file_path);
+std::string ReadUserLogFilePattern(const base::FilePath& log_file_path_pattern);
+#endif  // defined(UNIT_TEST)
+
 // Gathers log data from Debug Daemon.
 class DebugDaemonLogSource : public SystemLogsSource {
  public:
   explicit DebugDaemonLogSource(bool scrub);
+
+  DebugDaemonLogSource(const DebugDaemonLogSource&) = delete;
+  DebugDaemonLogSource& operator=(const DebugDaemonLogSource&) = delete;
+
   ~DebugDaemonLogSource() override;
 
   // SystemLogsSource override:
@@ -44,9 +54,10 @@ class DebugDaemonLogSource : public SystemLogsSource {
 
   // Callbacks for the dbus calls to debugd.
   void OnGetRoutes(bool is_ipv6,
-                   base::Optional<std::vector<std::string>> routes);
-  void OnGetOneLog(std::string key, base::Optional<std::string> status);
-  void OnGetLogs(bool succeeded,
+                   absl::optional<std::vector<std::string>> routes);
+  void OnGetOneLog(std::string key, absl::optional<std::string> status);
+  void OnGetLogs(const base::TimeTicks get_start_time,
+                 bool succeeded,
                  const KeyValueMap& logs);
 
   // Reads the logged-in users' log files that have to be read by Chrome as
@@ -73,8 +84,6 @@ class DebugDaemonLogSource : public SystemLogsSource {
   int num_pending_requests_;
   bool scrub_;
   base::WeakPtrFactory<DebugDaemonLogSource> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DebugDaemonLogSource);
 };
 
 

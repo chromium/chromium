@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_invert.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -31,9 +32,10 @@ CSSNumericSumValue::UnitMap MultiplyUnitMaps(
 
 }  // namespace
 
-CSSMathProduct* CSSMathProduct::Create(const HeapVector<CSSNumberish>& args,
-                                       ExceptionState& exception_state) {
-  if (args.IsEmpty()) {
+CSSMathProduct* CSSMathProduct::Create(
+    const HeapVector<Member<V8CSSNumberish>>& args,
+    ExceptionState& exception_state) {
+  if (args.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                       "Arguments can't be empty");
     return nullptr;
@@ -58,15 +60,15 @@ CSSMathProduct* CSSMathProduct::Create(CSSNumericValueVector values) {
                      final_type);
 }
 
-base::Optional<CSSNumericSumValue> CSSMathProduct::SumValue() const {
+absl::optional<CSSNumericSumValue> CSSMathProduct::SumValue() const {
   CSSNumericSumValue sum;
   // Start with the number '1', which is the multiplicative identity.
   sum.terms.push_back(CSSNumericSumValue::Term{1, {}});
 
   for (const auto& value : NumericValues()) {
     const auto child_sum = value->SumValue();
-    if (!child_sum)
-      return base::nullopt;
+    if (!child_sum.has_value())
+      return absl::nullopt;
 
     CSSNumericSumValue new_sum;
     for (const auto& a : sum.terms) {
@@ -83,20 +85,7 @@ base::Optional<CSSNumericSumValue> CSSMathProduct::SumValue() const {
 
 CSSMathExpressionNode* CSSMathProduct::ToCalcExpressionNode() const {
   // TODO(crbug.com/782103): Handle the single value case correctly.
-  if (NumericValues().size() == 1)
-    return NumericValues()[0]->ToCalcExpressionNode();
-
-  CSSMathExpressionNode* node = CSSMathExpressionBinaryOperation::Create(
-      NumericValues()[0]->ToCalcExpressionNode(),
-      NumericValues()[1]->ToCalcExpressionNode(), CSSMathOperator::kMultiply);
-
-  for (wtf_size_t i = 2; i < NumericValues().size(); i++) {
-    node = CSSMathExpressionBinaryOperation::Create(
-        node, NumericValues()[i]->ToCalcExpressionNode(),
-        CSSMathOperator::kMultiply);
-  }
-
-  return node;
+  return ToCalcExporessionNodeForVariadic(CSSMathOperator::kMultiply);
 }
 
 void CSSMathProduct::BuildCSSText(Nested nested,
@@ -106,7 +95,7 @@ void CSSMathProduct::BuildCSSText(Nested nested,
     result.Append(nested == Nested::kYes ? "(" : "calc(");
 
   const auto& values = NumericValues();
-  DCHECK(!values.IsEmpty());
+  DCHECK(!values.empty());
   values[0]->BuildCSSText(Nested::kYes, ParenLess::kNo, result);
 
   for (wtf_size_t i = 1; i < values.size(); i++) {

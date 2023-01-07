@@ -1,11 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
+<translation id="1220509181886849806">保存したパスワードを使用しますか？</translation>
 <translation id="1717486229951421299">タップ操作で入力する認証情報のリストが画面の下半分に表示されています。</translation>
 <translation id="207576718733492531">タップ操作で入力する認証情報のリストは閉じています。</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2410754283952462441">アカウントの選択</translation>
 <translation id="3399357656427473483">タップ操作で入力する認証情報のリスト。</translation>
+<translation id="3653689374478248324"><ph name="SITE_NAME" /> にログインします</translation>
+<translation id="3950820424414687140">ログイン</translation>
+<translation id="4598345735110653698">パスキーを管理</translation>
+<translation id="4907224763885298217">画面ロックを使用する</translation>
 <translation id="5441504010984421144">タップ操作で入力する認証情報のリストが画面全体に表示されています。</translation>
 <translation id="5624120631404540903">パスワードを管理</translation>
 <translation id="804577341878669140">次のアカウントで続行</translation>

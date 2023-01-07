@@ -1,15 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// clang-format on
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
 
 /**
  * Model for managing a list of Android apps.
  */
-/* #export */ class AndroidAppListModel extends cr.EventTarget {
+export class AndroidAppListModel extends EventTarget {
   /**
    * @param {boolean} showAndroidPickerApps Whether to show picker apps in file
    *     selector.

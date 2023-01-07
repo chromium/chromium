@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 #define HEADLESS_LIB_BROWSER_HEADLESS_DEVTOOLS_AGENT_HOST_CLIENT_H_
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/public/browser/devtools_agent_host_client.h"
 #include "headless/public/headless_devtools_channel.h"
@@ -19,6 +20,12 @@ class HEADLESS_EXPORT HeadlessDevToolsAgentHostClient
  public:
   explicit HeadlessDevToolsAgentHostClient(
       scoped_refptr<content::DevToolsAgentHost> agent_host);
+
+  HeadlessDevToolsAgentHostClient(const HeadlessDevToolsAgentHostClient&) =
+      delete;
+  HeadlessDevToolsAgentHostClient& operator=(
+      const HeadlessDevToolsAgentHostClient&) = delete;
+
   ~HeadlessDevToolsAgentHostClient() override;
 
   // content::DevToolsAgentHostClient implementation.
@@ -32,9 +39,7 @@ class HEADLESS_EXPORT HeadlessDevToolsAgentHostClient
 
  private:
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
-  HeadlessDevToolsChannel::Client* client_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessDevToolsAgentHostClient);
+  raw_ptr<HeadlessDevToolsChannel::Client> client_ = nullptr;
 };
 
 }  // namespace headless

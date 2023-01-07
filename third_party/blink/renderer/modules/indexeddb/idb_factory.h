@@ -40,14 +40,12 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_open_db_request.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class ExceptionState;
 class ScriptState;
-class IndexedDBDatabaseCallbacksImpl;
 class WebIDBCallbacks;
 
 class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
@@ -56,6 +54,9 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
  public:
   IDBFactory();
   ~IDBFactory() override;
+
+  void SetFactory(mojo::PendingRemote<mojom::blink::IDBFactory>,
+                  ExecutionContext*);
 
   // Implement the IDBFactory IDL
   IDBOpenDBRequest* open(ScriptState*, const String& name, ExceptionState&);
@@ -102,9 +103,6 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
 
   mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> GetCallbacksProxy(
       std::unique_ptr<WebIDBCallbacks> callbacks);
-  mojo::PendingAssociatedRemote<mojom::blink::IDBDatabaseCallbacks>
-  GetDatabaseCallbacksProxy(
-      std::unique_ptr<IndexedDBDatabaseCallbacksImpl> callbacks);
   mojo::PendingRemote<mojom::blink::ObservedFeature> GetObservedFeature();
 
   mojo::Remote<mojom::blink::IDBFactory> factory_;

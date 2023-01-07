@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,11 @@ class OfflineContentAggregatorBridge : public OfflineContentProvider::Observer,
   // be only one bridge per OfflineContentAggregator.
   static base::android::ScopedJavaLocalRef<jobject>
   GetBridgeForOfflineContentAggregator(OfflineContentAggregator* aggregator);
+
+  OfflineContentAggregatorBridge(const OfflineContentAggregatorBridge&) =
+      delete;
+  OfflineContentAggregatorBridge& operator=(
+      const OfflineContentAggregatorBridge&) = delete;
 
   ~OfflineContentAggregatorBridge() override;
 
@@ -87,13 +92,6 @@ class OfflineContentAggregatorBridge : public OfflineContentProvider::Observer,
                   const base::android::JavaParamRef<jstring>& j_name,
                   const base::android::JavaParamRef<jobject>& j_callback);
 
-  void ChangeSchedule(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& jobj,
-                      const base::android::JavaParamRef<jstring>& j_namespace,
-                      const base::android::JavaParamRef<jstring>& j_id,
-                      jboolean j_only_on_wifi,
-                      jlong j_start_time_ms);
-
  private:
   OfflineContentAggregatorBridge(OfflineContentAggregator* aggregator);
 
@@ -102,7 +100,7 @@ class OfflineContentAggregatorBridge : public OfflineContentProvider::Observer,
       const OfflineContentProvider::OfflineItemList& items) override;
   void OnItemRemoved(const ContentId& id) override;
   void OnItemUpdated(const OfflineItem& item,
-                     const base::Optional<UpdateDelta>& update_delta) override;
+                     const absl::optional<UpdateDelta>& update_delta) override;
   void OnContentProviderGoingDown() override;
 
   // A reference to the Java counterpart of this class.  See
@@ -110,8 +108,6 @@ class OfflineContentAggregatorBridge : public OfflineContentProvider::Observer,
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 
   std::unique_ptr<ThrottledOfflineContentProvider> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineContentAggregatorBridge);
 };
 
 }  // namespace android

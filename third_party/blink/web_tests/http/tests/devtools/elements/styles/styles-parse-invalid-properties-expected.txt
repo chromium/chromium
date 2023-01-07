@@ -22,7 +22,7 @@ element.style { ()
 #inspected { (<style>)
 /-- overloaded --/     color: blue;
 /-- overloaded --/     a property with spaces: red;
-/-- overloaded --/     --a-property-with-no-value: ;
+    --a-property-with-no-value: ;
 /-- overloaded --/     content: "forgot the semicolon"
           --next-property: "next property";
 

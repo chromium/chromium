@@ -1,4 +1,4 @@
-# Copyright (c) 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -20,6 +20,8 @@ unique to the res/ directory.
 This requirement is needed to upload the resources to the Google storage
 build bucket.
 """
+
+USE_PYTHON3 = True
 
 CURRENT_VERSION_VARIABLE = 'current_shell_apk_version'
 CURRENT_VERSION_LOCAL_PATH = 'shell_apk/current_version/current_version.gni'
@@ -65,8 +67,9 @@ def _FindFileNamesInDirectory(input_api, dir_path, search_file_names):
 def _CheckVersionVariableChanged(input_api, version_file_local_path,
                                  variable_name):
   for f in input_api.AffectedFiles():
-    local_path = input_api.os_path.relpath(f.AbsoluteLocalPath(),
-                                           input_api.PresubmitLocalPath())
+    local_path = input_api.os_path.relpath(
+        f.AbsoluteLocalPath(),
+        input_api.PresubmitLocalPath()).replace('\\', '/')
     if local_path == version_file_local_path:
       return _DoChangedContentsContain(f.ChangedContents(), variable_name)
 
@@ -99,8 +102,9 @@ def _CheckCurrentVersionIncreaseRule(input_api, output_api):
   """
   files_requiring_version_increase = []
   for f in input_api.AffectedFiles():
-    local_path = input_api.os_path.relpath(f.AbsoluteLocalPath(),
-                                           input_api.PresubmitLocalPath())
+    local_path = input_api.os_path.relpath(
+        f.AbsoluteLocalPath(),
+        input_api.PresubmitLocalPath()).replace('\\', '/')
     for trigger_local_path in TRIGGER_CURRENT_VERSION_UPDATE_LOCAL_PATHS:
       if local_path.startswith(trigger_local_path):
         files_requiring_version_increase.append(local_path)
@@ -127,8 +131,9 @@ def _CheckNoOverlappingFileNamesInResourceDirsRule(input_api, output_api):
   """
   res_dir_file_names_map = {}
   for f in input_api.AffectedFiles():
-    local_path = input_api.os_path.relpath(f.AbsoluteLocalPath(),
-                                           input_api.PresubmitLocalPath())
+    local_path = input_api.os_path.relpath(
+        f.AbsoluteLocalPath(),
+        input_api.PresubmitLocalPath()).replace('\\', '/')
     for res_dir_local_path in RES_DIR_LOCAL_PATHS:
       if local_path.startswith(res_dir_local_path):
         file_name = input_api.os_path.basename(local_path)

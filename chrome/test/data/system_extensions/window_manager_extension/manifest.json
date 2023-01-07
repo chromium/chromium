@@ -1,0 +1,7 @@
+{
+    "name": "Window Manager Extension",
+    "short_name": "WM Extension",
+    "service_worker_url": "/sw.js",
+    "id": "01020304",
+    "type": "window-management"
+}

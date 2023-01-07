@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,6 +80,11 @@ class AsyncDestroyVideoDecoder final : public VideoDecoder {
   int GetMaxDecodeRequests() const override {
     DCHECK(wrapped_decoder_);
     return wrapped_decoder_->GetMaxDecodeRequests();
+  }
+
+  bool FramesHoldExternalResources() const override {
+    DCHECK(wrapped_decoder_);
+    return wrapped_decoder_->FramesHoldExternalResources();
   }
 
  private:

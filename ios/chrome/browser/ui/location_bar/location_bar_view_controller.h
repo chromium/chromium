@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,10 @@
 #import "ios/chrome/browser/ui/orchestrator/location_bar_animatee.h"
 
 @class InfobarMetricsRecorder;
+@class LayoutGuideCenter;
 @class OmniboxTextFieldIOS;
 @protocol ActivityServiceCommands;
 @protocol ApplicationCommands;
-@protocol BrowserCommands;
-@protocol InfobarCommands;
 @protocol LocationBarOffsetProvider;
 @protocol LoadQueryCommands;
 
@@ -37,6 +36,13 @@
 
 // Notifies the delegate about a tap on the share button to record metrics.
 - (void)recordShareButtonPressed;
+
+// Notifies the delegate about a tap on the Visit Copied Link context menu
+// action.
+- (void)locationBarVisitCopyLinkTapped;
+
+// Starts a reverse image search for the image currently in the pasteboard.
+- (void)searchCopiedImage;
 
 @end
 
@@ -60,8 +66,6 @@
 // The dispatcher for the share button, voice search, and long press actions.
 @property(nonatomic, weak) id<ActivityServiceCommands,
                               ApplicationCommands,
-                              BrowserCommands,
-                              InfobarCommands,
                               LoadQueryCommands,
                               OmniboxCommands>
     dispatcher;
@@ -72,24 +76,27 @@
 // The offset provider for the edit/steady transition animation.
 @property(nonatomic, weak) id<LocationBarOffsetProvider> offsetProvider;
 
+// The layout guide center to use to refer to the first suggestion label.
+@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
+
 // Switches between the two states of the location bar:
 // - editing state, with the textfield;
 // - non-editing state, with location icon and text.
 - (void)switchToEditing:(BOOL)editing;
 
-// Updates the location icon to become |icon| and use the new |statusText| for
+// Updates the location icon to become `icon` and use the new `statusText` for
 // a11y labeling.
 - (void)updateLocationIcon:(UIImage*)icon
         securityStatusText:(NSString*)statusText;
 // Updates the location text in the non-editing mode.
-// |clipTail| indicates whether the tail or the head should be clipped when the
+// `clipTail` indicates whether the tail or the head should be clipped when the
 // location text is too long.
 - (void)updateLocationText:(NSString*)text clipTail:(BOOL)clipTail;
 // Updates the location view to show a fake placeholder in the steady location
-// view and hides the trailing button if |isNTP|. Otherwise, shows the
+// view and hides the trailing button if `isNTP`. Otherwise, shows the
 // location text and the button as normal.
 - (void)updateForNTP:(BOOL)isNTP;
-// Sets |enabled| of the share button.
+// Sets `enabled` of the share button.
 - (void)setShareButtonEnabled:(BOOL)enabled;
 
 // Displays the voice search button instead of the share button in steady state,

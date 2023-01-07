@@ -1,0 +1,41 @@
+{
+ "compilerOptions": {
+    "baseUrl": "../../../third_party/material_web_components/components-chromium/node_modules/",
+    "module": "ESNext",
+    "target": "ES2021",
+    "moduleResolution": "node",
+    "lib": ["ES2021", "dom", "dom.iterable"],
+    "declaration": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "experimentalDecorators": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "importHelpers": true,
+    "plugins": [
+      {
+        "name": "ts-lit-plugin",
+        "rules": {
+          "no-boolean-in-attribute-binding": "error",
+          "no-complex-attribute-binding": "error",
+          "no-expressionless-property-binding": "error",
+          "no-incompatible-property-type": "error",
+          "no-incompatible-type-binding": "error",
+          "no-invalid-attribute-name": "error",
+          "no-invalid-boolean-binding": "error",
+          "no-invalid-directive-binding": "error",
+          "no-invalid-tag-name": "error",
+          "no-noncallable-event-binding": "error",
+          "no-nullable-attribute-binding": "error",
+          "no-unclosed-tag": "error",
+          "no-unintended-mixed-binding": "error",
+          "no-unknown-property-converter": "error",
+          "no-unknown-property": "error",
+          "no-unknown-tag-name": "error"
+        }
+      }
+    ]
+  }
+}

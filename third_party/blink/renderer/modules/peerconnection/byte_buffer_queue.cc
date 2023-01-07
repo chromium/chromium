@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ wtf_size_t ByteBufferQueue::ReadInto(base::span<uint8_t> buffer_out) {
 }
 
 void ByteBufferQueue::Append(Vector<uint8_t> buffer) {
-  if (buffer.IsEmpty()) {
+  if (buffer.empty()) {
     return;
   }
   size_ += buffer.size();
@@ -57,7 +57,7 @@ void ByteBufferQueue::Clear() {
 void ByteBufferQueue::CheckInvariants() const {
   wtf_size_t buffer_size_sum = 0;
   for (const auto& buffer : deque_of_buffers_) {
-    DCHECK(!buffer.IsEmpty());
+    DCHECK(!buffer.empty());
     buffer_size_sum += buffer.size();
   }
   DCHECK_EQ(size_, buffer_size_sum - front_buffer_offset_);

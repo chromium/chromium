@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -125,7 +125,7 @@ TEST_F(TraceCategoryTest, Basic) {
 
 // Tries to cover the case of multiple threads creating the same category
 // simultaneously. Should never end up with distinct entries with the same name.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/738275): This is flaky on Fuchsia.
 #define MAYBE_ThreadRaces DISABLED_ThreadRaces
 #else
@@ -135,7 +135,7 @@ TEST_F(TraceCategoryTest, MAYBE_ThreadRaces) {
   const int kNumThreads = 32;
   std::unique_ptr<Thread> threads[kNumThreads];
   for (int i = 0; i < kNumThreads; i++) {
-    threads[i].reset(new Thread("test thread"));
+    threads[i] = std::make_unique<Thread>("test thread");
     threads[i]->Start();
   }
   WaitableEvent sync_event(WaitableEvent::ResetPolicy::MANUAL,
@@ -160,7 +160,7 @@ TEST_F(TraceCategoryTest, MAYBE_ThreadRaces) {
 TEST_F(TraceCategoryTest, GetCategoryAtCompileTime) {
   static_assert(GetBuiltinCategoryByName("nonexistent") == nullptr,
                 "nonexistent found");
-#if defined(OS_WIN) && defined(COMPONENT_BUILD)
+#if BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
   static_assert(GetBuiltinCategoryByName("toplevel") == nullptr,
                 "toplevel found");
 #else

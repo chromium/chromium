@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -141,6 +141,7 @@ class NativeMethod(object):
 
     self.proxy_name = kwargs.get('proxy_name', self.name)
     self.hashed_proxy_name = kwargs.get('hashed_proxy_name', None)
+    self.switch_num = None
 
     if self.params:
       assert type(self.params) is list
@@ -159,6 +160,8 @@ class NativeMethod(object):
     else:
       self.type = 'function'
     self.method_id_var_name = kwargs.get('method_id_var_name', None)
+    self.return_and_signature = (self.return_type,
+                                 tuple(p.datatype for p in self.params))
 
 
 class CalledByNative(object):
@@ -314,6 +317,10 @@ def _StripGenerics(value):
   out.append(value[start_index:])
 
   return ''.join(out)
+
+
+def _NameIsTestOnly(name):
+  return name.endswith('ForTest') or name.endswith('ForTesting')
 
 
 class JniParams(object):
@@ -472,7 +479,7 @@ class JniParams(object):
     return '"%s"' % signature_line[index + len(prefix):]
 
   @staticmethod
-  def Parse(params, use_proxy_types=False):
+  def Parse(params, use_proxy_types=False, from_javap=False):
     """Parses the params into a list of Param objects."""
     if not params:
       return []
@@ -495,6 +502,12 @@ class JniParams(object):
           datatype=items[0],
           name=(items[1] if len(items) > 1 else 'p%s' % len(ret)),
       )
+      # Handle varargs.
+      if param.datatype.endswith('...'):
+        param.datatype = param.datatype[:-3] + '[]'
+
+      if from_javap:
+        param.datatype = param.datatype.replace('.', '/')
 
       if use_proxy_types:
         param.datatype = JavaTypeToProxyCast(param.datatype)
@@ -672,7 +685,8 @@ RE_SCOPED_JNI_TYPES = re.compile('jobject|jclass|jstring|jthrowable|.*Array')
 
 # Regex to match a string like "@CalledByNative public void foo(int bar)".
 RE_CALLED_BY_NATIVE = re.compile(
-    r'@CalledByNative(?P<Unchecked>(?:Unchecked)?)(?:\("(?P<annotation>.*)"\))?'
+    r'@CalledByNative((?P<Unchecked>(?:Unchecked)?|ForTesting))'
+    r'(?:\("(?P<annotation>.*)"\))?'
     r'(?:\s+@\w+(?:\(.*\))?)*'  # Ignore any other annotations.
     r'\s+(?P<prefix>('
     r'(private|protected|public|static|abstract|final|default|synchronized)'
@@ -782,12 +796,12 @@ class JNIFromJavaP(object):
       self.called_by_natives += [
           CalledByNative(
               system_class=True,
-              unchecked=False,
+              unchecked=options.unchecked_exceptions,
               static='static' in match.group('prefix'),
               java_class_name='',
               return_type=match.group('return_type').replace('.', '/'),
               name=match.group('name'),
-              params=JniParams.Parse(match.group('params').replace('.', '/')),
+              params=JniParams.Parse(match.group('params'), from_javap=True),
               signature=JniParams.ParseJavaPSignature(contents[lineno + 1]))
       ]
     re_constructor = re.compile('(.*?)public ' +
@@ -798,16 +812,17 @@ class JNIFromJavaP(object):
       if not match:
         continue
       self.called_by_natives += [
-          CalledByNative(
-              system_class=True,
-              unchecked=False,
-              static=False,
-              java_class_name='',
-              return_type=self.fully_qualified_class,
-              name='Constructor',
-              params=JniParams.Parse(match.group('params').replace('.', '/')),
-              signature=JniParams.ParseJavaPSignature(contents[lineno + 1]),
-              is_constructor=True)
+          CalledByNative(system_class=True,
+                         unchecked=options.unchecked_exceptions,
+                         static=False,
+                         java_class_name='',
+                         return_type=self.fully_qualified_class,
+                         name='Constructor',
+                         params=JniParams.Parse(match.group('params'),
+                                                from_javap=True),
+                         signature=JniParams.ParseJavaPSignature(
+                             contents[lineno + 1]),
+                         is_constructor=True)
       ]
     self.called_by_natives = MangleCalledByNatives(
         self.jni_params, self.called_by_natives, options.always_mangle)
@@ -882,8 +897,20 @@ class ProxyHelpers(object):
     if not isinstance(hash_b64, str):
       hash_b64 = hash_b64.decode()
 
-    hashed_name = ('M' + hash_b64).rstrip('=')
-    return hashed_name[0:ProxyHelpers.MAX_CHARS_FOR_HASHED_NATIVE_METHODS]
+    long_hash = ('M' + hash_b64).rstrip('=')
+    hashed_name = long_hash[:ProxyHelpers.MAX_CHARS_FOR_HASHED_NATIVE_METHODS]
+
+    # If the method is a test-only method, we don't care about saving size on
+    # the method name, since it shouldn't show up in the binary. Additionally,
+    # if we just hash the name, our checkers which enforce that we have no
+    # "ForTesting" methods by checking for the suffix "ForTesting" will miss
+    # these. We could preserve the name entirely and not hash anything, but
+    # that risks collisions. So, instead, we just append "ForTesting" to any
+    # test-only hashes, to ensure we catch any test-only methods that
+    # shouldn't be in our final binary.
+    if _NameIsTestOnly(method_name):
+      return hashed_name + '_ForTesting'
+    return hashed_name
 
   @staticmethod
   def CreateProxyMethodName(fully_qualified_class, old_name, use_hash=False):
@@ -901,12 +928,18 @@ class ProxyHelpers(object):
     return EscapeClassName(fully_qualified_class + '/' + old_name)
 
   @staticmethod
-  def ExtractStaticProxyNatives(fully_qualified_class, contents, ptr_type):
+  def ExtractStaticProxyNatives(fully_qualified_class,
+                                contents,
+                                ptr_type,
+                                include_test_only=True):
     methods = []
     for match in _NATIVE_PROXY_EXTRACTION_REGEX.finditer(contents):
       interface_body = match.group('interface_body')
       for method in _EXTRACT_METHODS_REGEX.finditer(interface_body):
         name = method.group('name')
+        if not include_test_only and _NameIsTestOnly(name):
+          continue
+
         params = JniParams.Parse(method.group('params'), use_proxy_types=True)
         return_type = JavaTypeToProxyCast(method.group('return_type'))
         proxy_name = ProxyHelpers.CreateProxyMethodName(fully_qualified_class,
@@ -969,12 +1002,17 @@ class JNIFromJavaSource(object):
 class HeaderFileGeneratorHelper(object):
   """Include helper methods for header generators."""
 
-  def __init__(self, class_name, fully_qualified_class, use_proxy_hash,
-               split_name):
+  def __init__(self,
+               class_name,
+               fully_qualified_class,
+               use_proxy_hash,
+               split_name=None,
+               enable_jni_multiplexing=False):
     self.class_name = class_name
     self.fully_qualified_class = fully_qualified_class
     self.use_proxy_hash = use_proxy_hash
     self.split_name = split_name
+    self.enable_jni_multiplexing = enable_jni_multiplexing
 
   def GetStubName(self, native):
     """Return the name of the stub function for this native method.
@@ -991,7 +1029,9 @@ class HeaderFileGeneratorHelper(object):
       else:
         method_name = EscapeClassName(native.proxy_name)
       return 'Java_%s_%s' % (EscapeClassName(
-          ProxyHelpers.GetQualifiedClass(self.use_proxy_hash)), method_name)
+          ProxyHelpers.GetQualifiedClass(
+              self.use_proxy_hash
+              or self.enable_jni_multiplexing)), method_name)
 
     template = Template('Java_${JAVA_NAME}_native${NAME}')
 
@@ -1006,8 +1046,9 @@ class HeaderFileGeneratorHelper(object):
     ret = collections.OrderedDict()
     for entry in origin:
       if isinstance(entry, NativeMethod) and entry.is_proxy:
-        ret[ProxyHelpers.GetClass(self.use_proxy_hash)] \
-          = ProxyHelpers.GetQualifiedClass(self.use_proxy_hash)
+        use_hash = self.use_proxy_hash or self.enable_jni_multiplexing
+        ret[ProxyHelpers.GetClass(use_hash)] \
+          = ProxyHelpers.GetQualifiedClass(use_hash)
         continue
       ret[self.class_name] = self.fully_qualified_class
 
@@ -1040,7 +1081,8 @@ const char kClassPath_${JAVA_CLASS}[] = \
       }
       # Since all proxy methods use the same class, defining this in every
       # header file would result in duplicated extern initializations.
-      if full_clazz != ProxyHelpers.GetQualifiedClass(self.use_proxy_hash):
+      if full_clazz != ProxyHelpers.GetQualifiedClass(
+          self.use_proxy_hash or self.enable_jni_multiplexing):
         ret += [template.substitute(values)]
 
     class_getter = """\
@@ -1071,7 +1113,8 @@ JNI_REGISTRATION_EXPORT std::atomic<jclass> g_${JAVA_CLASS}_clazz(nullptr);
       }
       # Since all proxy methods use the same class, defining this in every
       # header file would result in duplicated extern initializations.
-      if full_clazz != ProxyHelpers.GetQualifiedClass(self.use_proxy_hash):
+      if full_clazz != ProxyHelpers.GetQualifiedClass(
+          self.use_proxy_hash or self.enable_jni_multiplexing):
         ret += [template.substitute(values)]
 
     return ''.join(ret)
@@ -1091,15 +1134,17 @@ class InlHeaderFileGenerator(object):
     self.constant_fields = constant_fields
     self.jni_params = jni_params
     self.options = options
-    self.helper = HeaderFileGeneratorHelper(self.class_name,
-                                            fully_qualified_class,
-                                            self.options.use_proxy_hash,
-                                            self.options.split_name)
+    self.helper = HeaderFileGeneratorHelper(
+        self.class_name,
+        fully_qualified_class,
+        self.options.use_proxy_hash,
+        split_name=self.options.split_name,
+        enable_jni_multiplexing=self.options.enable_jni_multiplexing)
 
   def GetContent(self):
     """Returns the content of the JNI binding file."""
     template = Template("""\
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -1418,7 +1463,7 @@ JNIEnv* env${FIRST_PARAM_IN_DECLARATION}${PARAMS_IN_DECLARATION})""")
     function_header_template = Template("""\
 ${FUNCTION_SIGNATURE} {""")
     function_header_with_unused_template = Template("""\
-${FUNCTION_SIGNATURE} __attribute__ ((unused));
+[[maybe_unused]] ${FUNCTION_SIGNATURE};
 ${FUNCTION_SIGNATURE} {""")
     template = Template("""
 static std::atomic<jmethodID> g_${JAVA_CLASS}_${METHOD_ID_VAR_NAME}(nullptr);
@@ -1508,18 +1553,18 @@ def GetScriptName():
   return os.sep.join(script_components[base_index:])
 
 
-def _RemoveStaleHeaders(path, output_files):
+def _RemoveStaleHeaders(path, output_names):
   if not os.path.isdir(path):
     return
   # Do not remove output files so that timestamps on declared outputs are not
   # modified unless their contents are changed (avoids reverse deps needing to
   # be rebuilt).
-  preserve = set(output_files)
+  preserve = set(output_names)
   for root, _, files in os.walk(path):
     for f in files:
-      file_path = os.path.join(root, f)
-      if file_path not in preserve:
-        if os.path.isfile(file_path) and os.path.splitext(file_path)[1] == '.h':
+      if f not in preserve:
+        file_path = os.path.join(root, f)
+        if os.path.isfile(file_path) and file_path.endswith('.h'):
           os.remove(file_path)
 
 
@@ -1546,18 +1591,21 @@ See SampleForTests.java for more details.
       help='Uses as a namespace in the generated header '
       'instead of the javap class name, or when there is '
       'no JNINamespace annotation in the java source.')
-  parser.add_argument(
-      '--input_file',
-      action='append',
-      required=True,
-      dest='input_files',
-      help='Input file names, or paths within a .jar if '
-      '--jar-file is used.')
-  parser.add_argument(
-      '--output_file',
-      action='append',
-      dest='output_files',
-      help='Output file names.')
+  parser.add_argument('--input_file',
+                      action='append',
+                      required=True,
+                      dest='input_files',
+                      help='Input filenames, or paths within a .jar if '
+                      '--jar-file is used.')
+  parser.add_argument('--output_dir', required=True, help='Output directory.')
+  # TODO(agrieve): --prev_output_dir used only to make incremental builds work.
+  #     Remove --prev_output_dir at some point after 2022.
+  parser.add_argument('--prev_output_dir',
+                      help='Delete headers found in this directory.')
+  parser.add_argument('--output_name',
+                      action='append',
+                      dest='output_names',
+                      help='Output filenames within output directory.')
   parser.add_argument(
       '--script_name',
       default=GetScriptName(),
@@ -1589,30 +1637,45 @@ See SampleForTests.java for more details.
       help='Add TRACE_EVENTs to generated functions.')
   parser.add_argument(
       '--always_mangle', action='store_true', help='Mangle all function names')
+  parser.add_argument('--unchecked_exceptions',
+                      action='store_true',
+                      help='Do not check that no exceptions were thrown.')
+  parser.add_argument('--include_test_only',
+                      action='store_true',
+                      help='Whether to maintain ForTesting JNI methods.')
   parser.add_argument(
       '--use_proxy_hash',
       action='store_true',
       help='Hashes the native declaration of methods used '
       'in @JniNatives interface.')
+  parser.add_argument('--enable_jni_multiplexing',
+                      action='store_true',
+                      help='Enables JNI multiplexing for Java native methods')
   parser.add_argument(
       '--split_name',
       help='Split name that the Java classes should be loaded from.')
+  # TODO(agrieve): --stamp used only to make incremental builds work.
+  #     Remove --stamp at some point after 2022.
+  parser.add_argument('--stamp',
+                      help='Process --prev_output_dir and touch this file.')
   args = parser.parse_args()
   input_files = args.input_files
-  output_files = args.output_files
-  if output_files:
-    output_dirs = set(os.path.dirname(f) for f in output_files)
-    if len(output_dirs) != 1:
-      parser.error(
-          'jni_generator only supports a single output directory per target '
-          '(got {})'.format(output_dirs))
-    output_dir = output_dirs.pop()
+  output_names = args.output_names
+
+  if args.prev_output_dir:
+    _RemoveStaleHeaders(args.prev_output_dir, [])
+
+  if args.stamp:
+    build_utils.Touch(args.stamp)
+    sys.exit(0)
+
+  if output_names:
     # Remove existing headers so that moving .java source files but not updating
     # the corresponding C++ include will be a compile failure (otherwise
     # incremental builds will usually not catch this).
-    _RemoveStaleHeaders(output_dir, output_files)
+    _RemoveStaleHeaders(args.output_dir, output_names)
   else:
-    output_files = [None] * len(input_files)
+    output_names = [None] * len(input_files)
   temp_dir = tempfile.mkdtemp()
   try:
     if args.jar_file:
@@ -1620,7 +1683,11 @@ See SampleForTests.java for more details.
         z.extractall(temp_dir, input_files)
       input_files = [os.path.join(temp_dir, f) for f in input_files]
 
-    for java_path, header_path in zip(input_files, output_files):
+    for java_path, header_name in zip(input_files, output_names):
+      if header_name:
+        header_path = os.path.join(args.output_dir, header_name)
+      else:
+        header_path = None
       GenerateJNIHeader(java_path, header_path, args)
   finally:
     shutil.rmtree(temp_dir)

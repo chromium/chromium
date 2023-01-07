@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,7 +35,7 @@ enum class ContentSettingsType : int32_t {
   MEDIASTREAM_MIC,
   MEDIASTREAM_CAMERA,
   PROTOCOL_HANDLERS,
-  PPAPI_BROKER,
+  DEPRECATED_PPAPI_BROKER,
   AUTOMATIC_DOWNLOADS,
   MIDI_SYSEX,
   SSL_CERT_DECISIONS,
@@ -71,14 +71,10 @@ enum class ContentSettingsType : int32_t {
   // sound. This will not block playback but instead the user will not hear it.
   SOUND,
 
-  // Website setting which stores the list of client hints (and the preference
-  // expiration time for each of the client hints) that the origin requested
-  // the browser to remember. Spec:
-  // http://httpwg.org/http-extensions/client-hints.html#accept-ch-lifetime.
-  // The setting is stored as a dictionary that includes the mapping from
-  // different client hints to their respective expiration times (seconds since
-  // epoch). The browser is expected to send all the unexpired client hints in
-  // the HTTP request headers for every resource requested from that origin.
+  // Website setting which stores the list of client hints that the origin
+  // requested the browser to remember. The browser is expected to send all
+  // client hints in the HTTP request headers for every resource requested
+  // from that origin.
   CLIENT_HINTS,
 
   // Generic Sensor API covering ambient-light-sensor, accelerometer, gyroscope
@@ -115,6 +111,9 @@ enum class ContentSettingsType : int32_t {
   // Used to store whether to allow a website to detect user active/idle state.
   IDLE_DETECTION,
 
+  // Setting for enabling auto-select of all screens for getDisplayMediaSet.
+  GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS,
+
   // Content settings for access to serial ports. The "guard" content setting
   // stores whether to allow sites to ask for permission to access a port. The
   // permissions granted to access particular ports are stored in the "chooser
@@ -146,11 +145,11 @@ enum class ContentSettingsType : int32_t {
   WAKE_LOCK_SCREEN,
   WAKE_LOCK_SYSTEM,
 
-  // Legacy SameSite cookie behavior. This disables SameSiteByDefaultCookies,
-  // CookiesWithoutSameSiteMustBeSecure, and SchemefulSameSite, forcing the
-  // legacy behavior wherein cookies that don't specify SameSite are treated as
-  // SameSite=None, SameSite=None cookies are not required to be Secure, and
-  // schemeful same-site is not active.
+  // Legacy SameSite cookie behavior. This disables SameSite=Lax-by-default,
+  // SameSite=None requires Secure, and Schemeful Same-Site, forcing the
+  // legacy behavior wherein 1) cookies that don't specify SameSite are treated
+  // as SameSite=None, 2) SameSite=None cookies are not required to be Secure,
+  // and 3) schemeful same-site is not active.
   //
   // This will also be used to revert to legacy behavior when future changes
   // in cookie handling are introduced.
@@ -158,12 +157,8 @@ enum class ContentSettingsType : int32_t {
 
   // Content settings which stores whether to allow sites to ask for permission
   // to save changes to an original file selected by the user through the
-  // File System API.
+  // File System Access API.
   FILE_SYSTEM_WRITE_GUARD,
-
-  // Content settings for installed web apps that browsing history may be
-  // inferred from e.g. last update check timestamp.
-  INSTALLED_WEB_APP_METADATA,
 
   // Used to store whether to allow a website to exchange data with NFC devices.
   NFC,
@@ -194,7 +189,7 @@ enum class ContentSettingsType : int32_t {
   AR,
 
   // Content setting which stores whether to allow site to open and read files
-  // and directories selected through the File System API.
+  // and directories selected through the File System Access API.
   FILE_SYSTEM_READ_GUARD,
 
   // Access to first party storage in a third-party context. Exceptions are
@@ -208,10 +203,11 @@ enum class ContentSettingsType : int32_t {
   // movements. It does not give access to camera.
   CAMERA_PAN_TILT_ZOOM,
 
-  // Content setting for Screen Enumeration and Window Placement functionality.
-  // Permits access to information about the screens, like size and position.
-  // Permits creating and placing windows across the set of connected screens.
-  WINDOW_PLACEMENT,
+  // Content setting for Screen Enumeration and Screen Detail functionality.
+  // Permits access to detailed multi-screen information, like size and
+  // position. Permits placing fullscreen and windowed content on specific
+  // screens. See also: https://w3c.github.io/window-placement
+  WINDOW_MANAGEMENT,
 
   // Stores whether to allow insecure websites to make private network requests.
   // See also: https://wicg.github.io/cors-rfc1918
@@ -219,8 +215,8 @@ enum class ContentSettingsType : int32_t {
   INSECURE_PRIVATE_NETWORK,
 
   // Content setting which stores whether or not a site can access low-level
-  // locally installed font data using the Font Access API.
-  FONT_ACCESS,
+  // locally installed font data using the Local Fonts Access API.
+  LOCAL_FONTS,
 
   // Stores per-origin state for permission auto-revocation (for all permission
   // types).
@@ -230,11 +226,71 @@ enum class ContentSettingsType : int32_t {
   // by the File System Access API.
   FILE_SYSTEM_LAST_PICKED_DIRECTORY,
 
-  // Capture the current tab using getCurrentBrowsingContextMedia().
-  // TODO(crbug.com/1150788): Apply this to getDisplayMedia() as well.
+  // Controls access to the getDisplayMedia API when {preferCurrentTab: true}
+  // is specified.
+  // TODO(crbug.com/1150788): Also apply this when getDisplayMedia() is called
+  // without specifying {preferCurrentTab: true}.
   // No values are stored for this type, this is solely needed to be able to
   // register the PermissionContext.
   DISPLAY_CAPTURE,
+
+  // Website setting to store permissions metadata granted to paths on the local
+  // file system via the File System Access API. |FILE_SYSTEM_WRITE_GUARD| is
+  // the corresponding "guard" setting.
+  FILE_SYSTEM_ACCESS_CHOOSER_DATA,
+
+  // Stores a grant that allows a relying party to send a request for identity
+  // information to specified identity providers, potentially through any
+  // anti-tracking measures that would otherwise prevent it. This setting is
+  // associated with the relying party's origin.
+  FEDERATED_IDENTITY_SHARING,
+
+  // Whether to use the v8 optimized JIT for running JavaScript on the page.
+  JAVASCRIPT_JIT,
+
+  // Content setting which stores user decisions to allow loading a site over
+  // HTTP. Entries are added by hostname when a user bypasses the HTTPS-First
+  // Mode interstitial warning when a site does not support HTTPS. Allowed hosts
+  // are exact hostname matches -- subdomains of a host on the allowlist must be
+  // separately allowlisted.
+  HTTP_ALLOWED,
+
+  // Stores metadata related to form fill, such as e.g. whether user data was
+  // autofilled on a specific website.
+  FORMFILL_METADATA,
+
+  // Setting to indicate that there is an active federated sign-in session
+  // between a specified relying party and a specified identity provider for
+  // a specified account. When this is present it allows access to session
+  // management capabilities between the sites. This setting is associated
+  // with the relying party's origin.
+  FEDERATED_IDENTITY_ACTIVE_SESSION,
+
+  // Setting to indicate whether Chrome should automatically apply darkening to
+  // web content.
+  AUTO_DARK_WEB_CONTENT,
+
+  // Setting to indicate whether Chrome should request the desktop view of a
+  // site instead of the mobile one.
+  REQUEST_DESKTOP_SITE,
+
+  // Setting to indicate whether browser should allow signing into a website via
+  // the browser FedCM API.
+  FEDERATED_IDENTITY_API,
+
+  // Stores notification interactions per origin for the past 90 days.
+  // Interactions per origin are pre-aggregated over seven-day windows: A
+  // notification interaction or display is assigned to the last Monday midnight
+  // in local time.
+  NOTIFICATION_INTERACTIONS,
+
+  // Website setting which stores the last reduced accept language negotiated
+  // for a given origin, to be used on future visits to the origin.
+  REDUCED_ACCEPT_LANGUAGE,
+
+  // Website setting which is used for NotificationPermissionReviewService to
+  // store origin blocklist from review notification permissions feature.
+  NOTIFICATION_PERMISSION_REVIEW,
 
   NUM_TYPES,
 };

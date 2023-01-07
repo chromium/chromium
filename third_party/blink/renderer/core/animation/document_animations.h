@@ -31,14 +31,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_DOCUMENT_ANIMATIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_DOCUMENT_ANIMATIONS_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
 class AnimationTimeline;
-class CSSScrollTimeline;
 class Document;
 class PaintArtifactCompositor;
 
@@ -64,7 +67,8 @@ class CORE_EXPORT DocumentAnimations final
   // both composited and non-composited animations.
   void UpdateAnimations(
       DocumentLifecycle::LifecycleState required_lifecycle_state,
-      const PaintArtifactCompositor* paint_artifact_compositor);
+      const PaintArtifactCompositor*,
+      bool compositor_properties_updated);
 
   size_t GetAnimationsCount();
 
@@ -85,11 +89,15 @@ class CORE_EXPORT DocumentAnimations final
   // the timeline are marked for recalc, which causes the style/layout phase
   // to run again.
   //
+  // Returns true if all timeline states are correct, otherwise returns false.
+  //
   // https://github.com/w3c/csswg-drafts/issues/5261
-  void ValidateTimelines();
+  bool ValidateTimelines();
 
-  void CacheCSSScrollTimeline(CSSScrollTimeline&);
-  CSSScrollTimeline* FindCachedCSSScrollTimeline(const AtomicString&);
+  // Detach compositor timelines to prevent further ticking of any animations
+  // associated with the timelines.  Detached timelines may be subsequently
+  // reattached if needed.
+  void DetachCompositorTimelines();
 
   const HeapHashSet<WeakMember<AnimationTimeline>>& GetTimelinesForTesting()
       const {
@@ -108,19 +116,14 @@ class CORE_EXPORT DocumentAnimations final
   void RemoveReplacedAnimations(ReplaceableAnimationsMap*);
 
  private:
+  void MarkPendingIfCompositorPropertyAnimationChanges(
+      const PaintArtifactCompositor*);
+
   Member<Document> document_;
   HeapHashSet<WeakMember<AnimationTimeline>> timelines_;
   HeapHashSet<WeakMember<AnimationTimeline>> unvalidated_timelines_;
-
-  // We cache CSSScrollTimelines by name, such that multiple animations using
-  // the same timeline can use the same CSSScrollTimeline instance.
-  //
-  // Note that timelines present in |cached_css_timelines_| are also present
-  // in |timelines_|.
-  HeapHashMap<AtomicString, WeakMember<AnimationTimeline>>
-      cached_css_timelines_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_DOCUMENT_ANIMATIONS_H_

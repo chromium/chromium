@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/stl_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
@@ -17,6 +17,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/trust_tokens/proto/public.pb.h"
 #include "services/network/trust_tokens/trust_token_database_owner.h"
+#include "services/network/trust_tokens/trust_token_key_commitment_parser.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/trust_token_store.h"
 #include "url/url_constants.h"
@@ -50,6 +51,8 @@ TrustTokenRequestRedemptionHelper::TrustTokenRequestRedemptionHelper(
     mojom::TrustTokenRefreshPolicy refresh_policy,
     TrustTokenStore* token_store,
     const TrustTokenKeyCommitmentGetter* key_commitment_getter,
+    absl::optional<std::string> custom_key_commitment,
+    absl::optional<url::Origin> custom_issuer,
     std::unique_ptr<KeyPairGenerator> key_pair_generator,
     std::unique_ptr<Cryptographer> cryptographer,
     net::NetLogWithSource net_log)
@@ -57,6 +60,8 @@ TrustTokenRequestRedemptionHelper::TrustTokenRequestRedemptionHelper(
       refresh_policy_(refresh_policy),
       token_store_(token_store),
       key_commitment_getter_(std::move(key_commitment_getter)),
+      custom_key_commitment_(custom_key_commitment),
+      custom_issuer_(custom_issuer),
       key_pair_generator_(std::move(key_pair_generator)),
       cryptographer_(std::move(cryptographer)),
       net_log_(std::move(net_log)) {
@@ -77,18 +82,27 @@ void TrustTokenRequestRedemptionHelper::Begin(
   net_log_.BeginEvent(
       net::NetLogEventType::TRUST_TOKEN_OPERATION_BEGIN_REDEMPTION);
 
-  issuer_ = SuitableTrustTokenOrigin::Create(request->url());
+  if (custom_issuer_) {
+    issuer_ = SuitableTrustTokenOrigin::Create(*custom_issuer_);
+  } else {
+    issuer_ = SuitableTrustTokenOrigin::Create(request->url());
+  }
+
   if (!issuer_) {
     LogOutcome(net_log_, kBegin, "Unsuitable issuer URL (request destination)");
     std::move(done).Run(mojom::TrustTokenOperationStatus::kInvalidArgument);
     return;
   }
 
-  if (refresh_policy_ == mojom::TrustTokenRefreshPolicy::kRefresh &&
-      (!request->initiator() ||
-       !request->initiator()->IsSameOriginWith(*issuer_))) {
-    LogOutcome(net_log_, kBegin, "Refresh from non-issuer context");
-    std::move(done).Run(mojom::TrustTokenOperationStatus::kFailedPrecondition);
+  if (custom_key_commitment_) {
+    mojom::TrustTokenKeyCommitmentResultPtr keys =
+        TrustTokenKeyCommitmentParser().Parse(*custom_key_commitment_);
+    if (!keys) {
+      LogOutcome(net_log_, kBegin, "Failed to parse custom keys");
+      std::move(done).Run(mojom::TrustTokenOperationStatus::kInvalidArgument);
+      return;
+    }
+    OnGotKeyCommitment(request, std::move(done), std::move(keys));
     return;
   }
 
@@ -103,6 +117,12 @@ void TrustTokenRequestRedemptionHelper::Begin(
                                                      top_level_origin_)) {
     LogOutcome(net_log_, kBegin, "Redemption record cache hit");
     std::move(done).Run(mojom::TrustTokenOperationStatus::kAlreadyExists);
+    return;
+  }
+
+  if (token_store_->IsRedemptionLimitHit(*issuer_, top_level_origin_)) {
+    LogOutcome(net_log_, kBegin, "Redemption limit hit.");
+    std::move(done).Run(mojom::TrustTokenOperationStatus::kResourceExhausted);
     return;
   }
 
@@ -126,7 +146,7 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
   // recent commitments.
   token_store_->PruneStaleIssuerState(*issuer_, commitment_result->keys);
 
-  base::Optional<TrustToken> maybe_token_to_redeem = RetrieveSingleToken();
+  absl::optional<TrustToken> maybe_token_to_redeem = RetrieveSingleToken();
   if (!maybe_token_to_redeem) {
     LogOutcome(net_log_, kBegin, "No tokens to redeem");
     std::move(done).Run(mojom::TrustTokenOperationStatus::kResourceExhausted);
@@ -150,7 +170,7 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
     return;
   }
 
-  base::Optional<std::string> maybe_redemption_header =
+  absl::optional<std::string> maybe_redemption_header =
       cryptographer_->BeginRedemption(
           *maybe_token_to_redeem, bound_verification_key_, top_level_origin_);
 
@@ -159,6 +179,9 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
     std::move(done).Run(mojom::TrustTokenOperationStatus::kInternalError);
     return;
   }
+
+  base::UmaHistogramBoolean("Net.TrustTokens.RedemptionRequestEmpty",
+                            maybe_redemption_header->empty());
 
   request->SetExtraRequestHeaderByName(kTrustTokensSecTrustTokenHeader,
                                        std::move(*maybe_redemption_header),
@@ -207,6 +230,8 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   if (!response->headers->EnumerateHeader(
           /*iter=*/nullptr, kTrustTokensSecTrustTokenHeader, &header_value)) {
     LogOutcome(net_log_, kFinalize, "Response missing Trust Tokens header");
+    response->headers->RemoveHeader(
+        kTrustTokensResponseHeaderSecTrustTokenLifetime);
     std::move(done).Run(mojom::TrustTokenOperationStatus::kBadResponse);
     return;
   }
@@ -215,7 +240,7 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   // base64-decoded, to BoringSSL.
   response->headers->RemoveHeader(kTrustTokensSecTrustTokenHeader);
 
-  base::Optional<std::string> maybe_redemption_record =
+  absl::optional<std::string> maybe_redemption_record =
       cryptographer_->ConfirmRedemption(header_value);
 
   // 3. If BoringSSL fails its structural validation / signature check, return
@@ -224,18 +249,40 @@ void TrustTokenRequestRedemptionHelper::Finalize(
     // The response was rejected by the underlying cryptographic library as
     // malformed or otherwise invalid.
     LogOutcome(net_log_, kFinalize, "RR validation failed");
+    response->headers->RemoveHeader(
+        kTrustTokensResponseHeaderSecTrustTokenLifetime);
     std::move(done).Run(mojom::TrustTokenOperationStatus::kBadResponse);
     return;
   }
 
-  // 4. Otherwise, if these checks succeed, store the RR and return success.
+  // 4. Get lifetime from response header
+  // If there are multiple lifetime headers, the last one is used.
+  bool has_lifetime = false;
+  uint64_t lifetime = 0;
+  if (response->headers->HasHeader(
+          kTrustTokensResponseHeaderSecTrustTokenLifetime)) {
+    // GetInt64HeaderValue returns -1 in case of errors, if not -1, then
+    // non-negative values ensuring non-negative values is important since we
+    // cast it to unsigned
+    int64_t maybe_lifetime = response->headers->GetInt64HeaderValue(
+        kTrustTokensResponseHeaderSecTrustTokenLifetime);
+    if (maybe_lifetime != -1) {
+      has_lifetime = true;
+      lifetime = static_cast<uint64_t>(maybe_lifetime);
+    }
+    response->headers->RemoveHeader(
+        kTrustTokensResponseHeaderSecTrustTokenLifetime);
+  }
 
+  // 5. Otherwise, if these checks succeed, store the RR and return success.
   TrustTokenRedemptionRecord record_to_store;
   record_to_store.set_body(std::move(*maybe_redemption_record));
   record_to_store.set_signing_key(std::move(bound_signing_key_));
   record_to_store.set_public_key(std::move(bound_verification_key_));
   record_to_store.set_token_verification_key(
       std::move(token_verification_key_));
+  if (has_lifetime)
+    record_to_store.set_lifetime(lifetime);
   token_store_->SetRedemptionRecord(*issuer_, top_level_origin_,
                                     std::move(record_to_store));
 
@@ -243,7 +290,7 @@ void TrustTokenRequestRedemptionHelper::Finalize(
   std::move(done).Run(mojom::TrustTokenOperationStatus::kOk);
 }
 
-base::Optional<TrustToken>
+absl::optional<TrustToken>
 TrustTokenRequestRedemptionHelper::RetrieveSingleToken() {
   // As a postcondition of UpdateTokenStoreFromKeyCommitmentResult, all of the
   // store's tokens for |issuer_| match the key commitment result obtained at
@@ -256,7 +303,7 @@ TrustTokenRequestRedemptionHelper::RetrieveSingleToken() {
       token_store_->RetrieveMatchingTokens(*issuer_, key_matcher);
 
   if (matching_tokens.empty())
-    return base::nullopt;
+    return absl::nullopt;
 
   return matching_tokens.front();
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.build.annotations.MainDex;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -20,8 +21,55 @@ import java.util.Map;
 @JNINamespace("base::android")
 @MainDex
 public class FeatureList {
+    /**
+     * Test value overrides for tests without native.
+     */
+    public static class TestValues {
+        private Map<String, Boolean> mFeatureFlags = new HashMap<>();
+        private Map<String, String> mFieldTrialParams = new HashMap<>();
+
+        /**
+         * Constructor.
+         */
+        public TestValues() {}
+
+        /**
+         * Set overrides for feature flags.
+         */
+        public void setFeatureFlagsOverride(Map<String, Boolean> featureFlags) {
+            mFeatureFlags = featureFlags;
+        }
+
+        /**
+         * Add an override for a feature flag.
+         */
+        public void addFeatureFlagOverride(String featureName, boolean testValue) {
+            mFeatureFlags.put(featureName, testValue);
+        }
+
+        /**
+         * Add an override for a field trial parameter.
+         */
+        public void addFieldTrialParamOverride(
+                String featureName, String paramName, String testValue) {
+            mFieldTrialParams.put(makeKey(featureName, paramName), testValue);
+        }
+
+        Boolean getFeatureFlagOverride(String featureName) {
+            return mFeatureFlags.get(featureName);
+        }
+
+        String getFieldTrialParamOverride(String featureName, String paramName) {
+            return mFieldTrialParams.get(makeKey(featureName, paramName));
+        }
+
+        private static String makeKey(String featureName, String paramName) {
+            return featureName + ":" + paramName;
+        }
+    }
+
     /** Map that stores substitution feature flags for tests. */
-    private static @Nullable Map<String, Boolean> sTestFeatures;
+    private static @Nullable TestValues sTestFeatures;
 
     /** Access to default values of the native feature flag. */
     private static boolean sTestCanUseDefaults;
@@ -77,6 +125,21 @@ public class FeatureList {
      */
     @VisibleForTesting
     public static void setTestFeatures(Map<String, Boolean> testFeatures) {
+        if (testFeatures == null) {
+            setTestValues(null);
+        } else {
+            TestValues testValues = new TestValues();
+            testValues.setFeatureFlagsOverride(testFeatures);
+            setTestValues(testValues);
+        }
+    }
+
+    /**
+     * Sets the feature flags and field trial parameters to use in JUnit tests, since native calls
+     * are not available there.
+     */
+    @VisibleForTesting
+    public static void setTestValues(TestValues testFeatures) {
         sTestFeatures = testFeatures;
     }
 
@@ -88,6 +151,14 @@ public class FeatureList {
     }
 
     /**
+     * @param featureName The name of the feature to query.
+     * @return Whether the feature has a test value configured.
+     */
+    public static boolean hasTestFeature(String featureName) {
+        return hasTestFeatures() && sTestFeatures.mFeatureFlags.containsKey(featureName);
+    }
+
+    /**
      * Returns the test value of the feature with the given name.
      *
      * @param featureName The name of the feature to query.
@@ -96,18 +167,41 @@ public class FeatureList {
      */
     public static Boolean getTestValueForFeature(String featureName) {
         if (hasTestFeatures()) {
-            if (sTestFeatures.containsKey(featureName)) {
-                return sTestFeatures.get(featureName);
+            Boolean override = sTestFeatures.getFeatureFlagOverride(featureName);
+            if (override != null) {
+                return override;
             }
             if (!sTestCanUseDefaults) {
-                throw new IllegalArgumentException("No test value configured for " + featureName);
+                throw new IllegalArgumentException("No test value configured for " + featureName
+                        + " and native is not available to provide a default value. Use"
+                        + " @EnableFeatures or @DisableFeatures to provide test values for the"
+                        + " flag.");
             }
         }
         return null;
     }
 
+    /**
+     * Returns the test value of the field trial parameter.
+     *
+     * @param featureName The name of the feature to query.
+     * @param paramName The name of the field trial parameter to query.
+     * @return The test value set for the parameter, or null if no test value has been set.
+     * @throws IllegalArgumentException if no test value was set and default values aren't allowed.
+     */
+    public static String getTestValueForFieldTrialParam(String featureName, String paramName) {
+        if (hasTestFeatures()) {
+            String override = sTestFeatures.getFieldTrialParamOverride(featureName, paramName);
+            if (override != null) {
+                return override;
+            }
+        }
+        return null;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         boolean isInitialized();
     }
 }

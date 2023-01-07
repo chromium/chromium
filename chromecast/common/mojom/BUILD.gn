@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,20 +7,29 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [
     "activity_url_filter.mojom",
+    "activity_window.mojom",
     "application_media_capabilities.mojom",
+    "assistant_messenger.mojom",
+    "audio_socket.mojom",
+    "cast_demo.mojom",
     "constants.mojom",
     "feature_manager.mojom",
-    "identification_settings.mojom",
+    "feature_update.mojom",
+    "gesture.mojom",
     "js_channel.mojom",
     "media_caps.mojom",
     "memory_pressure.mojom",
+    "metrics_helper.mojom",
     "multiroom.mojom",
     "queryable_data_store.mojom",
     "service_connector.mojom",
+    "settings_ui.mojom",
   ]
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//ui/events/mojom",
+    "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 

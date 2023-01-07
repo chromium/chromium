@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 
 #include "base/callback_list.h"
 #include "base/i18n/time_formatting.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -37,6 +36,10 @@ class SystemClock : public chromeos::LoginState::Observer,
                     public user_manager::UserManager::UserSessionStateObserver {
  public:
   SystemClock();
+
+  SystemClock(const SystemClock&) = delete;
+  SystemClock& operator=(const SystemClock&) = delete;
+
   ~SystemClock() override;
 
   // Could be used to temporary set the required clock type. At most one should
@@ -83,10 +86,10 @@ class SystemClock : public chromeos::LoginState::Observer,
 
   void UpdateClockType();
 
-  base::Optional<base::HourClockType> scoped_hour_clock_type_;
+  absl::optional<base::HourClockType> scoped_hour_clock_type_;
 
   Profile* user_profile_ = nullptr;
-  ScopedObserver<Profile, ProfileObserver> profile_observer_{this};
+  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   std::unique_ptr<PrefChangeRegistrar> user_pref_registrar_;
 
   base::ObserverList<SystemClockObserver>::Unchecked observer_list_;
@@ -94,8 +97,6 @@ class SystemClock : public chromeos::LoginState::Observer,
   base::CallbackListSubscription device_settings_observer_;
 
   base::WeakPtrFactory<SystemClock> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemClock);
 };
 
 }  // namespace system

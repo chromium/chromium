@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@
 #include "base/check.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/macros.h"
 #include "base/notreached.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
@@ -150,6 +148,9 @@ class TestExceptionPorts : public MachMultiprocess,
     }
   }
 
+  TestExceptionPorts(const TestExceptionPorts&) = delete;
+  TestExceptionPorts& operator=(const TestExceptionPorts&) = delete;
+
   SetOrSwap set_or_swap() const { return set_or_swap_; }
   SetOn set_on() const { return set_on_; }
   SetType set_type() const { return set_type_; }
@@ -230,6 +231,9 @@ class TestExceptionPorts : public MachMultiprocess,
           thread_(),
           init_semaphore_(0),
           crash_semaphore_(0) {}
+
+    Child(const Child&) = delete;
+    Child& operator=(const Child&) = delete;
 
     ~Child() {}
 
@@ -413,8 +417,6 @@ class TestExceptionPorts : public MachMultiprocess,
     // The child thread waits on this for the parent thread to indicate that the
     // child can test its exception ports and possibly crash, as appropriate.
     Semaphore crash_semaphore_;
-
-    DISALLOW_COPY_AND_ASSIGN(Child);
   };
 
   // MachMultiprocess:
@@ -553,13 +555,12 @@ class TestExceptionPorts : public MachMultiprocess,
       UniversalMachExcServer universal_mach_exc_server(this);
 
       constexpr mach_msg_timeout_t kTimeoutMs = 50;
-      kern_return_t kr =
-          MachMessageServer::Run(&universal_mach_exc_server,
-                                 local_port,
-                                 kMachMessageReceiveAuditTrailer,
-                                 MachMessageServer::kOneShot,
-                                 MachMessageServer::kReceiveLargeError,
-                                 kTimeoutMs);
+      kr = MachMessageServer::Run(&universal_mach_exc_server,
+                                  local_port,
+                                  kMachMessageReceiveAuditTrailer,
+                                  MachMessageServer::kOneShot,
+                                  MachMessageServer::kReceiveLargeError,
+                                  kTimeoutMs);
       EXPECT_EQ(kr, KERN_SUCCESS)
           << MachErrorMessage(kr, "MachMessageServer::Run");
 
@@ -584,8 +585,6 @@ class TestExceptionPorts : public MachMultiprocess,
 
   // true if an exception message was handled.
   bool handled_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExceptionPorts);
 };
 
 TEST(ExceptionPorts, TaskExceptionPorts_SetInProcess_NoCrash) {

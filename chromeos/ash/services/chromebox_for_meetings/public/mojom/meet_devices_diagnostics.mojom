@@ -1,0 +1,19 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.cfm.mojom;
+
+import "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom";
+
+// Interface defined by chromium specifically for the ChromeboxForMeetings
+// platform to query system diagnostics of devices in the fleet.
+interface MeetDevicesDiagnostics {
+  // Retrieves and forwards device telemetry from cros_healthd.
+  GetCrosHealthdTelemetry@0()
+      => (ash.cros_healthd.mojom.TelemetryInfo telemetry);
+
+  // Retrieves information about a specific process from cros_healthd.
+  GetCrosHealthdProcessInfo@1(uint32 pid)
+      => (ash.cros_healthd.mojom.ProcessResult process_info);
+};

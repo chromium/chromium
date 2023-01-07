@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -63,7 +62,6 @@ XSLStyleSheetResource* XSLStyleSheetResource::FetchSynchronously(
 XSLStyleSheetResource* XSLStyleSheetResource::Fetch(FetchParameters& params,
                                                     ResourceFetcher* fetcher,
                                                     ResourceClient* client) {
-  DCHECK(RuntimeEnabledFeatures::XSLTEnabled());
   ApplyXSLRequestProperties(params);
   return To<XSLStyleSheetResource>(
       fetcher->RequestResource(params, XSLStyleSheetResourceFactory(), client));

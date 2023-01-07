@@ -1,16 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
 
-#include "components/keyed_service/core/service_access_type.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/safe_browsing/core/verdict_cache_manager.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/core/service_access_type.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/safe_browsing/core/browser/sync/safe_browsing_sync_observer_impl.h"
+#import "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#import "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/history/history_service_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -47,7 +51,10 @@ VerdictCacheManagerFactory::BuildServiceInstanceFor(
       ios::HistoryServiceFactory::GetForBrowserState(
           chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS),
       ios::HostContentSettingsMapFactory::GetForBrowserState(
-          chrome_browser_state));
+          chrome_browser_state),
+      chrome_browser_state->GetPrefs(),
+      std::make_unique<safe_browsing::SafeBrowsingSyncObserverImpl>(
+          SyncServiceFactory::GetForBrowserState(chrome_browser_state)));
 }
 
 web::BrowserState* VerdictCacheManagerFactory::GetBrowserStateToUse(

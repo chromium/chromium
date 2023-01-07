@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,12 +42,15 @@ class LeakDetectionRequest : public LeakDetectionRequestInterface {
   ~LeakDetectionRequest() override;
 
   // Initiates a leak lookup network request for the credential corresponding to
-  // |username_hash_prefix| and |encrypted_payload|. |access_token| is required
-  // to authenticate the request. Invokes |callback| on completion, unless this
-  // instance is deleted beforehand. If the request failed, |callback| is
-  // invoked with |nullptr|, otherwise a SingleLookupResponse is returned.
+  // |username_hash_prefix| and |encrypted_payload|.
+  // |access_token| is required to authenticate the request for signed-in users.
+  // |api_key| is required to authenticate the request for signed-out users.
+  // Invokes |callback| on completion, unless this instance is deleted
+  // beforehand. If the request failed, |callback| is invoked with |nullptr|,
+  // otherwise a SingleLookupResponse is returned.
   void LookupSingleLeak(network::mojom::URLLoaderFactory* url_loader_factory,
-                        const std::string& access_token,
+                        const absl::optional<std::string>& access_token,
+                        const absl::optional<std::string>& api_key,
                         LookupSingleLeakPayload payload,
                         LookupSingleLeakCallback callback) override;
 

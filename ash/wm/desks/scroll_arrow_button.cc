@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,14 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
+#include "base/bind.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
-base::TimeDelta kScrollTimeInterval = base::TimeDelta::FromSeconds(1);
+base::TimeDelta kScrollTimeInterval = base::Seconds(1);
 }
 
 namespace ash {

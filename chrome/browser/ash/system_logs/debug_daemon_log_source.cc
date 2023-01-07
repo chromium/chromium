@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,19 +11,18 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "components/feedback/feedback_util.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -46,10 +45,15 @@ constexpr struct UserLogs {
 
   // The log file's path relative to the user's profile directory.
   const char* log_file_relative_path;
+
+  // If true, |log_file_relative_path| is a pattern for which files to match.
+  // This works like shell globbing. If there are multiple matches files, it
+  // chooses the newest file, with the latest modified time.
+  bool pattern = false;
 } kUserLogs[] = {
     {"chrome_user_log", "log/chrome"},
-    {"chrome_user_log.PREVIOUS", "log/chrome.PREVIOUS"},
-    {"libassistant_user_log", "log/libassistant.log"},
+    {"chrome_user_log.PREVIOUS", "log/chrome_????????-??????", true},
+    {"libassistant_user_log", "google-assistant-library/log/libassistant.log"},
     {"login-times", "login-times"},
     {"logout-times", "logout-times"},
 };
@@ -57,8 +61,6 @@ constexpr struct UserLogs {
 // List of debugd entries to exclude from the results.
 constexpr std::array<const char*, 2> kExcludeList = {
     // Shill device and service properties are retrieved by ShillLogSource.
-    // TODO(https://crbug.com/967800): Modify debugd to omit these for
-    // feedback report gathering and remove these entries.
     "network-devices",
     "network-services",
 };
@@ -70,28 +72,56 @@ const int64_t kMaxLogSize = 1024 * 1024;
 
 }  // namespace
 
+std::string ReadUserLogFile(const base::FilePath& log_file_path) {
+  std::string value;
+  const bool read_success =
+      feedback_util::ReadEndOfFile(log_file_path, kMaxLogSize, &value);
+
+  if (read_success && value.length() == kMaxLogSize) {
+    value.replace(0, strlen(kLogTruncated), kLogTruncated);
+
+    LOG(WARNING) << "Large log file was likely truncated: " << log_file_path;
+  }
+  return (read_success && !value.empty()) ? value : std::string(kNotAvailable);
+}
+
+std::string ReadUserLogFilePattern(
+    const base::FilePath& log_file_path_pattern) {
+  base::FilePath log_file_dir = log_file_path_pattern.DirName();
+  base::FileEnumerator file_enumerator(
+      log_file_dir, /*recursive=*/false, base::FileEnumerator::FILES,
+      log_file_path_pattern.BaseName().value());
+
+  base::Time newest_file_mtime;
+  base::FilePath newest_file_path;
+  for (base::FilePath path = file_enumerator.Next(); !path.empty();
+       path = file_enumerator.Next()) {
+    const base::FileEnumerator::FileInfo info = file_enumerator.GetInfo();
+    if (newest_file_mtime.is_null() ||
+        info.GetLastModifiedTime() >= newest_file_mtime) {
+      newest_file_mtime = info.GetLastModifiedTime();
+      newest_file_path = path;
+    }
+  }
+
+  return newest_file_mtime.is_null() ? std::string(kNotAvailable)
+                                     : ReadUserLogFile(newest_file_path);
+}
+
 // Reads the contents of the user log files listed in |kUserLogs| and adds them
 // to the |response| parameter.
 void ReadUserLogFiles(const std::vector<base::FilePath>& profile_dirs,
                       SystemLogsResponse* response) {
   for (size_t i = 0; i < profile_dirs.size(); ++i) {
     std::string profile_prefix = "Profile[" + base::NumberToString(i) + "] ";
+    const base::FilePath profile_dir = profile_dirs[i];
     for (const auto& log : kUserLogs) {
-      std::string value;
-      const bool read_success = feedback_util::ReadEndOfFile(
-          profile_dirs[i].Append(log.log_file_relative_path), kMaxLogSize,
-          &value);
-
-      if (read_success && value.length() == kMaxLogSize) {
-        value.replace(0, strlen(kLogTruncated), kLogTruncated);
-
-        LOG(WARNING) << "Large log file was likely truncated: "
-                     << log.log_file_relative_path;
-      }
-
-      response->emplace(
-          profile_prefix + log.log_key,
-          (read_success && !value.empty()) ? std::move(value) : kNotAvailable);
+      const base::FilePath log_file_path_or_pattern =
+          profile_dir.AppendASCII(log.log_file_relative_path);
+      const std::string content =
+          log.pattern ? ReadUserLogFilePattern(log_file_path_or_pattern)
+                      : ReadUserLogFile(log_file_path_or_pattern);
+      response->emplace(profile_prefix + log.log_key, content);
     }
   }
 }
@@ -110,38 +140,43 @@ void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK(callback_.is_null());
 
   callback_ = std::move(callback);
-  chromeos::DebugDaemonClient* client =
-      chromeos::DBusThreadManager::Get()->GetDebugDaemonClient();
+  ash::DebugDaemonClient* client = ash::DebugDaemonClient::Get();
 
   client->GetRoutes(true,   // Numeric
                     false,  // No IPv6
+                    false,  // All tables option disabled
                     base::BindOnce(&DebugDaemonLogSource::OnGetRoutes,
                                    weak_ptr_factory_.GetWeakPtr(), false));
   ++num_pending_requests_;
-  client->GetRoutes(true,  // Numeric
-                    true,  // with IPv6
+  client->GetRoutes(true,   // Numeric
+                    true,   // with IPv6
+                    false,  // All tables option disabled
                     base::BindOnce(&DebugDaemonLogSource::OnGetRoutes,
                                    weak_ptr_factory_.GetWeakPtr(), true));
   ++num_pending_requests_;
 
+  const auto start_time = base::TimeTicks::Now();
   if (scrub_) {
     const user_manager::User* user =
         user_manager::UserManager::Get()->GetActiveUser();
-    client->GetScrubbedBigLogs(
+    client->GetFeedbackLogsV2(
         cryptohome::CreateAccountIdentifierFromAccountId(
             user ? user->GetAccountId() : EmptyAccountId()),
+        // Send `requested_logs` as empty to request all logs.
+        /*requested_logs=*/{},
         base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr(), start_time));
   } else {
     client->GetAllLogs(base::BindOnce(&DebugDaemonLogSource::OnGetLogs,
-                                      weak_ptr_factory_.GetWeakPtr()));
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      start_time));
   }
   ++num_pending_requests_;
 }
 
 void DebugDaemonLogSource::OnGetRoutes(
     bool is_ipv6,
-    base::Optional<std::vector<std::string>> routes) {
+    absl::optional<std::vector<std::string>> routes) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   std::string key = is_ipv6 ? kRoutesv6KeyName : kRoutesKeyName;
   (*response_)[key] = routes.has_value()
@@ -151,17 +186,28 @@ void DebugDaemonLogSource::OnGetRoutes(
 }
 
 void DebugDaemonLogSource::OnGetOneLog(std::string key,
-                                       base::Optional<std::string> status) {
+                                       absl::optional<std::string> status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   (*response_)[std::move(key)] = std::move(status).value_or(kNotAvailable);
   RequestCompleted();
 }
 
-void DebugDaemonLogSource::OnGetLogs(bool /* succeeded */,
+void DebugDaemonLogSource::OnGetLogs(const base::TimeTicks get_start_time,
+                                     bool succeeded,
                                      const KeyValueMap& logs) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  // We are interested in the performance of gathering the logs for feedback
+  // reports only where the logs will always be scrubbed. GetBigFeedbackLogs is
+  // the dbus method used.
+  if (scrub_) {
+    base::UmaHistogramBoolean("Feedback.ChromeOSApp.GetBigFeedbackLogs.Success",
+                              succeeded);
+    base::UmaHistogramMediumTimes(
+        "Feedback.ChromeOSApp.Duration.GetBigFeedbackLogs",
+        base::TimeTicks::Now() - get_start_time);
+  }
   // We ignore 'succeeded' for this callback - we want to display as much of the
   // debug info as we can even if we failed partway through parsing, and if we
   // couldn't fetch any of it, none of the fields will even appear.
@@ -185,8 +231,7 @@ void DebugDaemonLogSource::GetLoggedInUsersLogFiles() {
       continue;
 
     profile_dirs.emplace_back(
-        chromeos::ProfileHelper::GetProfilePathByUserIdHash(
-            user->username_hash()));
+        ash::ProfileHelper::GetProfilePathByUserIdHash(user->username_hash()));
   }
 
   auto response = std::make_unique<SystemLogsResponse>();

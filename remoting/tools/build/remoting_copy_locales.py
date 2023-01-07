@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,8 @@ Gyp doesn't have any built-in looping capability, so this just provides a way to
 loop over a list of locales when repacking pak files, thus avoiding a
 proliferation of mostly duplicate, cut-n-paste gyp actions.
 """
+
+from __future__ import print_function
 
 import optparse
 import os
@@ -159,4 +161,4 @@ def DoMain(argv):
 if __name__ == '__main__':
   results = DoMain(sys.argv[1:])
   if results:
-    print results
+    print(results)

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,14 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_transformation.h"
 #include "media/base/video_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -98,34 +98,27 @@ class MEDIA_EXPORT VideoDecoderConfig {
   // Region of coded_size() that contains image data, also known as the clean
   // aperture. Usually, but not always, origin-aligned (top-left).
   const gfx::Rect& visible_rect() const { return visible_rect_; }
+  void set_visible_rect(const gfx::Rect& visible_rect) {
+    visible_rect_ = visible_rect;
+  }
 
+  // DEPRECATED: Use aspect_ratio().GetNaturalSize().
+  // TODO(crbug.com/1214061): Remove.
   // Final visible width and height of a video frame with aspect ratio taken
   // into account. Image data in the visible_rect() should be scaled to this
   // size for display.
   const gfx::Size& natural_size() const { return natural_size_; }
+  void set_natural_size(const gfx::Size& natural_size) {
+    natural_size_ = natural_size;
+  }
 
-  // The shape of encoded pixels. Given visible_rect() and a pixel aspect ratio,
-  // it is possible to compute natural_size() (see video_util.h).
-  //
-  // SUBTLE: "pixel aspect ratio" != "display aspect ratio". *Pixel* aspect
-  // ratio describes the shape of a *pixel* as the ratio of its width to its
-  // height (ex: anamorphic video may have rectangular pixels). *Display* aspect
-  // ratio is natural_width / natural_height.
-  //
-  // CONTRACT: Dynamic changes to *pixel* aspect ratio are not supported unless
-  // done with explicit signal (new init-segment in MSE). Streams may still
-  // change their frame sizes dynamically, including their *display* aspect
-  // ratio. But, at this time (2019) changes to pixel aspect ratio are not
-  // surfaced by all platform decoders (ex: MediaCodec), so non-support is
-  // chosen for cross platform consistency. Hence, natural size should always be
-  // computed by scaling visbilte_size by the *pixel* aspect ratio from the
-  // container metadata. See GetNaturalSize() in video_util.h.
-  //
-  // TODO(crbug.com/837337): This should be explicitly set (replacing
-  // |natural_size|). Alternatively, this could be replaced by
-  // GetNaturalSize(visible_rect), with pixel aspect ratio being an internal
-  // detail of the config.
-  double GetPixelAspectRatio() const;
+  // The aspect ratio parsed from the container. Decoders may override using
+  // in-band metadata only if !aspect_ratio().IsValid().
+  const VideoAspectRatio& aspect_ratio() const { return aspect_ratio_; }
+
+  void set_aspect_ratio(const VideoAspectRatio& aspect_ratio) {
+    aspect_ratio_ = aspect_ratio;
+  }
 
   // Optional video decoder initialization data, such as H.264 AVCC.
   //
@@ -155,7 +148,7 @@ class MEDIA_EXPORT VideoDecoderConfig {
   void set_hdr_metadata(const gfx::HDRMetadata& hdr_metadata) {
     hdr_metadata_ = hdr_metadata;
   }
-  const base::Optional<gfx::HDRMetadata>& hdr_metadata() const {
+  const absl::optional<gfx::HDRMetadata>& hdr_metadata() const {
     return hdr_metadata_;
   }
 
@@ -172,7 +165,7 @@ class MEDIA_EXPORT VideoDecoderConfig {
   bool is_rtc() const { return is_rtc_; }
 
  private:
-  VideoCodec codec_ = kUnknownVideoCodec;
+  VideoCodec codec_ = VideoCodec::kUnknown;
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
 
   // Optional video codec level. kNoVideoCodecLevel means the field is not
@@ -185,16 +178,17 @@ class MEDIA_EXPORT VideoDecoderConfig {
 
   // Deprecated. TODO(wolenetz): Remove. See https://crbug.com/665539.
   gfx::Size coded_size_;
-
   gfx::Rect visible_rect_;
   gfx::Size natural_size_;
+
+  VideoAspectRatio aspect_ratio_;
 
   std::vector<uint8_t> extra_data_;
 
   EncryptionScheme encryption_scheme_ = EncryptionScheme::kUnencrypted;
 
   VideoColorSpace color_space_info_;
-  base::Optional<gfx::HDRMetadata> hdr_metadata_;
+  absl::optional<gfx::HDRMetadata> hdr_metadata_;
   bool is_rtc_ = false;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,24 +20,21 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
-import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.bottombar.contextualsearch.ContextualSearchPanel;
 import org.chromium.chrome.browser.compositor.layouts.Layout.Orientation;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
-import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.gesturenav.HistoryNavigationCoordinator;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
-import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
@@ -65,6 +62,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.bottom.ScrollingBottomViewSceneLayer;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarOverlayCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.LocalizationUtils;
@@ -75,6 +73,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.util.TokenHolder;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,8 +84,8 @@ import java.util.Map;
  * A class that is responsible for managing an active {@link Layout} to show to the screen.  This
  * includes lifecycle managment like showing/hiding this {@link Layout}.
  */
-public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost, LayoutProvider,
-                                          TabModelSelector.CloseAllTabsDelegate {
+public class LayoutManagerImpl
+        implements ManagedLayoutManager, LayoutUpdateHost, LayoutProvider, BackPressHandler {
     /** Sampling at 60 fps. */
     private static final long FRAME_DELTA_TIME_MS = 16;
 
@@ -95,12 +94,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
 
     /** The {@link LayoutManagerHost}, who is responsible for showing the active {@link Layout}. */
     protected final LayoutManagerHost mHost;
-
-    /**
-     * A means of notifying features that the browser controls' android view is being forced to
-     * hide.
-     */
-    private final ObservableSupplierImpl<Boolean> mAndroidViewShownSupplier;
 
     /** The last X coordinate of the last {@link MotionEvent#ACTION_DOWN} event. */
     protected int mLastTapX;
@@ -132,6 +125,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     // Current Layout State
     private Layout mActiveLayout;
     private Layout mNextActiveLayout;
+    private boolean mAnimateNextLayout;
 
     // Current Event Fitler State
     private EventFilter mActiveEventFilter;
@@ -164,9 +158,9 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplier<TabContentManager> mTabContentManagerSupplier;
-    private final ObservableSupplierImpl<BrowserControlsStateProvider>
-            mBrowserControlsStateProviderSupplier = new ObservableSupplierImpl<>();
     private final CompositorModelChangeProcessor.FrameRequestSupplier mFrameRequestSupplier;
+
+    private BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     /** The overlays that can be drawn on top of the active layout. */
     protected final List<SceneOverlay> mSceneOverlays = new ArrayList<>();
@@ -174,14 +168,12 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     /** A map of {@link SceneOverlay} to its position relative to the others. */
     private Map<Class, Integer> mOverlayOrderMap = new HashMap<>();
 
-    /** The supplier used to supply the LayoutStateProvider. */
-    private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderOneshotSupplier;
-
     /** The supplier of {@link ThemeColorProvider} for top UI. */
     private final Supplier<TopUiThemeColorProvider> mTopUiThemeColorProvider;
 
-    /** A cache of title textures to use in different layouts. */
-    protected Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
+    /** The supplier of whether this is going to intercept back press gesture. */
+    private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier =
+            new ObservableSupplierImpl<>();
 
     /**
      * Protected class to handle {@link TabModelObserver} related tasks. Extending classes will
@@ -203,12 +195,12 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
             if (type == TabLaunchType.FROM_RESTORE || type == TabLaunchType.FROM_REPARENTING
                     || type == TabLaunchType.FROM_EXTERNAL_APP
                     || type == TabLaunchType.FROM_LAUNCHER_SHORTCUT
-                    || type == TabLaunchType.FROM_STARTUP) {
+                    || type == TabLaunchType.FROM_STARTUP
+                    || type == TabLaunchType.FROM_APP_WIDGET) {
                 return;
             }
 
-            tabCreating(
-                    getTabModelSelector().getCurrentTabId(), tab.getUrlString(), tab.isIncognito());
+            tabCreating(getTabModelSelector().getCurrentTabId(), tab.isIncognito());
         }
 
         @Override
@@ -220,6 +212,8 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
             } else {
                 boolean incognito = tab.isIncognito();
                 boolean willBeSelected = launchType != TabLaunchType.FROM_LONGPRESS_BACKGROUND
+                                && launchType != TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
+                                && launchType != TabLaunchType.FROM_RECENT_TABS
                         || (!getTabModelSelector().isIncognitoSelected() && incognito);
                 float lastTapX = LocalizationUtils.isLayoutRtl() ? mHost.getWidth() * mPxToDp : 0.f;
                 float lastTapY = 0.f;
@@ -235,8 +229,13 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         }
 
         @Override
-        public void didCloseTab(int tabId, boolean incognito) {
-            tabClosed(tabId, incognito, false);
+        public void willCloseAllTabs(boolean isIncognito) {
+            onTabsAllClosing(isIncognito);
+        }
+
+        @Override
+        public void onFinishingTabClosure(Tab tab) {
+            tabClosed(tab.getId(), tab.isIncognito(), false);
         }
 
         @Override
@@ -260,23 +259,14 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * @param host A {@link LayoutManagerHost} instance.
      * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
-     * @param layerTitleCacheSupplier A supplier of the cache of title textures.
-     * @param layoutStateProviderOneshotSupplier Supplier used to supply the {@link
-     *         LayoutStateProvider}.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
     public LayoutManagerImpl(LayoutManagerHost host, ViewGroup contentContainer,
             ObservableSupplier<TabContentManager> tabContentManagerSupplier,
-            Supplier<LayerTitleCache> layerTitleCacheSupplier,
-            OneshotSupplierImpl<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
         mHost = host;
         mPxToDp = 1.f / mHost.getContext().getResources().getDisplayMetrics().density;
-        mAndroidViewShownSupplier = new ObservableSupplierImpl<>();
-        mAndroidViewShownSupplier.set(true);
         mTabContentManagerSupplier = tabContentManagerSupplier;
-        mLayoutStateProviderOneshotSupplier = layoutStateProviderOneshotSupplier;
-        mLayerTitleCacheSupplier = layerTitleCacheSupplier;
         mTopUiThemeColorProvider = topUiThemeColorProvider;
         mContext = host.getContext();
         LayoutRenderHost renderHost = host.getLayoutRenderHost();
@@ -285,10 +275,12 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         // Overlays are ordered back (closest to the web content) to front.
         Class[] overlayOrder = new Class[] {
                 HistoryNavigationCoordinator.getSceneOverlayClass(),
-                ContinuousSearchContainerCoordinator.getSceneOverlayClass(),
                 TopToolbarOverlayCoordinator.class,
-                ScrollingBottomViewSceneLayer.class,
+                // StripLayoutHelperManager should be updated before ScrollingBottomViewSceneLayer
+                // Since ScrollingBottomViewSceneLayer change the container size,
+                // it causes relocation tab strip scene layer.
                 StripLayoutHelperManager.class,
+                ScrollingBottomViewSceneLayer.class,
                 StatusIndicatorCoordinator.getSceneOverlayClass(),
                 ContextualSearchPanel.class};
         // clang-format on
@@ -304,8 +296,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
 
         mFrameRequestSupplier =
                 new CompositorModelChangeProcessor.FrameRequestSupplier(this::requestUpdate);
-
-        mLayoutStateProviderOneshotSupplier.set(this);
     }
 
     /**
@@ -475,27 +465,22 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * @param creator                  A {@link TabCreatorManager} instance.
      * @param controlContainer         A {@link ControlContainer} for browser controls' layout.
      * @param dynamicResourceLoader    A {@link DynamicResourceLoader} instance.
+     * @param topUiColorProvider       A theme color provider for the top browser controls.
      */
     public void init(TabModelSelector selector, TabCreatorManager creator,
             @Nullable ControlContainer controlContainer,
-            DynamicResourceLoader dynamicResourceLoader) {
+            DynamicResourceLoader dynamicResourceLoader,
+            TopUiThemeColorProvider topUiColorProvider) {
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
+
+        mBrowserControlsStateProvider = mHost.getBrowserControlsManager();
 
         // Build Layouts
         mStaticLayout = new StaticLayout(mContext, this, renderHost, mHost, mFrameRequestSupplier,
-                selector, mTabContentManagerSupplier.get(), mBrowserControlsStateProviderSupplier,
+                selector, mTabContentManagerSupplier.get(), mBrowserControlsStateProvider,
                 mTopUiThemeColorProvider);
 
-        // Set up layout parameters
-        mStaticLayout.setLayoutHandlesTabLifecycles(true);
-
-        setNextLayout(null);
-
-        // Initialize Layouts
-        mStaticLayout.onFinishNativeInitialization();
-
-        // Initialize Layouts
-        mBrowserControlsStateProviderSupplier.set(mHost.getBrowserControlsManager());
+        setNextLayout(null, true);
 
         // Set the dynamic resource loader for all overlay panels.
         mOverlayPanelManager.setDynamicResourceLoader(dynamicResourceLoader);
@@ -549,7 +534,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
             }
         };
         selector.addObserver(mTabModelSelectorObserver);
-        selector.setCloseAllTabsDelegate(this);
 
         mTabModelFilterObserver = createTabModelObserver();
         getTabModelSelector().getTabModelFilterProvider().addTabModelFilterObserver(
@@ -607,12 +591,11 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         getViewportPixel(mCachedVisibleViewport);
         mHost.getWindowViewport(mCachedWindowViewport);
         SceneLayer layer = mActiveLayout.getUpdatedSceneLayer(mCachedWindowViewport,
-                mCachedVisibleViewport, mLayerTitleCacheSupplier.get(), tabContentManager,
-                resourceManager, browserControlsManager);
+                mCachedVisibleViewport, tabContentManager, resourceManager, browserControlsManager);
 
-        float offsetPx = mBrowserControlsStateProviderSupplier.get() == null
+        float offsetPx = mBrowserControlsStateProvider == null
                 ? 0
-                : mBrowserControlsStateProviderSupplier.get().getTopControlOffset();
+                : mBrowserControlsStateProvider.getTopControlOffset();
 
         for (int i = 0; i < mSceneOverlays.size(); i++) {
             // If the SceneOverlay is not showing, don't bother adding it to the tree.
@@ -647,10 +630,8 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         if (overlayHidesControls || mActiveLayout.forceHideBrowserControlsAndroidView()) {
             mControlsHidingToken = controlsVisibilityManager.hideAndroidControlsAndClearOldToken(
                     mControlsHidingToken);
-            mAndroidViewShownSupplier.set(false);
         } else {
             controlsVisibilityManager.releaseAndroidControlsHidingToken(mControlsHidingToken);
-            mAndroidViewShownSupplier.set(true);
         }
     }
 
@@ -716,7 +697,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * @param url         The url of the created tab.
      * @param isIncognito Whether or not created tab will be incognito.
      */
-    protected void tabCreating(int sourceId, String url, boolean isIncognito) {
+    protected void tabCreating(int sourceId, boolean isIncognito) {
         if (getActiveLayout() != null) getActiveLayout().onTabCreating(sourceId);
     }
 
@@ -775,12 +756,14 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         if (getActiveLayout() != null) getActiveLayout().onTabModelSwitched(incognito);
     }
 
-    @Override
-    public boolean closeAllTabsRequest(boolean incognito) {
-        if (!getActiveLayout().handlesCloseAll()) return false;
+    public void onTabsAllClosing(boolean incognito) {
+        if (getActiveLayout() == null) return;
 
-        getActiveLayout().onTabsAllClosing(time(), incognito);
-        return true;
+        getActiveLayout().onTabsAllClosing(incognito);
+    }
+
+    protected Supplier<TopUiThemeColorProvider> getTopUiThemeColorProvider() {
+        return mTopUiThemeColorProvider;
     }
 
     @Override
@@ -794,9 +777,9 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         LayoutTab layoutTab = mTabCache.get(tabId);
         if (layoutTab == null) return;
 
-        String url = tab.getUrlString();
-        boolean isNativePage = tab.isNativePage()
-                || (url != null && url.startsWith(UrlConstants.CHROME_NATIVE_URL_PREFIX));
+        GURL url = tab.getUrl();
+        boolean isNativePage =
+                tab.isNativePage() || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
 
         boolean canUseLiveTexture = tab.getWebContents() != null && !SadTab.isShowing(tab)
                 && !isNativePage && !tab.isHidden();
@@ -804,8 +787,8 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
         layoutTab.initFromHost(topUiTheme.getBackgroundColor(tab), shouldStall(tab),
                 canUseLiveTexture, topUiTheme.getSceneLayerBackground(tab),
-                ThemeUtils.getTextBoxColorForToolbarBackground(mContext.getResources(), tab,
-                        topUiTheme.calculateColor(tab, tab.getThemeColor())),
+                ThemeUtils.getTextBoxColorForToolbarBackground(
+                        mContext, tab, topUiTheme.calculateColor(tab, tab.getThemeColor())),
                 topUiTheme.getTextBoxBackgroundAlpha(tab));
 
         mHost.requestRender();
@@ -814,19 +797,18 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     // Whether the tab is ready to display or it should be faded in as it loads.
     private static boolean shouldStall(Tab tab) {
         return (tab.isFrozen() || tab.needsReload())
-                && !NativePage.isNativePageUrl(tab.getUrlString(), tab.isIncognito());
+                && !NativePage.isNativePageUrl(tab.getUrl(), tab.isIncognito());
     }
 
     @Override
-    public LayoutTab createLayoutTab(int id, boolean incognito, boolean showCloseButton,
-            boolean isTitleNeeded, float maxContentWidth, float maxContentHeight) {
+    public LayoutTab createLayoutTab(
+            int id, boolean incognito, float maxContentWidth, float maxContentHeight) {
         LayoutTab tab = mTabCache.get(id);
         if (tab == null) {
-            tab = new LayoutTab(id, incognito, mHost.getWidth(), mHost.getHeight(), showCloseButton,
-                    isTitleNeeded);
+            tab = new LayoutTab(id, incognito, mHost.getWidth(), mHost.getHeight());
             mTabCache.put(id, tab);
         } else {
-            tab.init(mHost.getWidth(), mHost.getHeight(), showCloseButton, isTitleNeeded);
+            tab.init(mHost.getWidth(), mHost.getHeight());
         }
         if (maxContentWidth > 0.f) tab.setMaxContentWidth(maxContentWidth);
         if (maxContentHeight > 0.f) tab.setMaxContentHeight(maxContentHeight);
@@ -856,6 +838,11 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      */
     protected Layout getNextLayout() {
         return mNextActiveLayout != null ? mNextActiveLayout : getDefaultLayout();
+    }
+
+    /** @return Whether a next layout has been explicitly specified. */
+    protected boolean hasExplicitNextLayout() {
+        return mNextActiveLayout != null;
     }
 
     @Override
@@ -911,18 +898,22 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     public void startHiding(int nextTabId, boolean hintAtTabSelection) {
         requestUpdate();
         if (hintAtTabSelection) {
-            notifyObserversOnTabSelectionHinted(nextTabId);
-
             // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver.
             for (SceneChangeObserver observer : mSceneChangeObservers) {
+                observer.onTabSelectionHinted(nextTabId);
+            }
+
+            for (LayoutStateObserver observer : mLayoutObservers) {
                 observer.onTabSelectionHinted(nextTabId);
             }
         }
 
         Layout layoutBeingHidden = getActiveLayout();
-        notifyObserversLayoutStartedHiding(layoutBeingHidden.getLayoutType(),
-                shouldShowToolbarAnimationOnHide(layoutBeingHidden, nextTabId),
-                shouldDelayHideAnimation(layoutBeingHidden));
+        for (LayoutStateObserver observer : mLayoutObservers) {
+            observer.onStartedHiding(layoutBeingHidden.getLayoutType(),
+                    shouldShowToolbarAnimationOnHide(layoutBeingHidden, nextTabId),
+                    shouldDelayHideAnimation(layoutBeingHidden));
+        }
     }
 
     @Override
@@ -932,16 +923,47 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         assert mNextActiveLayout != null : "Need to have a next active layout.";
         if (mNextActiveLayout != null) {
             // Notify LayoutObservers the active layout is finished hiding.
-            notifyObserversLayoutFinishedHiding(getActiveLayout().getLayoutType());
+            for (LayoutStateObserver observer : mLayoutObservers) {
+                observer.onFinishedHiding(getActiveLayout().getLayoutType());
+            }
 
-            startShowing(mNextActiveLayout, true);
+            startShowing(mNextActiveLayout, mAnimateNextLayout);
         }
     }
 
     @Override
     public void doneShowing() {
         // Notify LayoutObservers the active layout is finished showing.
-        notifyObserversLayoutFinishedShowing(getActiveLayout().getLayoutType());
+        for (LayoutStateObserver observer : mLayoutObservers) {
+            observer.onFinishedShowing(getActiveLayout().getLayoutType());
+        }
+    }
+
+    @Override
+    public void showLayout(int layoutType, boolean animate) {
+        Layout activeLayout = getActiveLayout();
+        if (activeLayout != null && !activeLayout.isStartingToHide()) {
+            setNextLayout(getLayoutForType(layoutType), animate);
+            activeLayout.startHiding(Tab.INVALID_TAB_ID, animate);
+        } else {
+            startShowing(getLayoutForType(layoutType), animate);
+        }
+    }
+
+    /**
+     * @param layoutType A layout type to get the implementation for.
+     * @return The layout implementation for the provided type.
+     */
+    protected Layout getLayoutForType(@LayoutType int layoutType) {
+        // TODO(1248073): Register these types and look them up in a map rather than overriding this
+        //                method in multiple places.
+        // Use the static layout by default or if explicitly specified.
+        if (layoutType == LayoutType.NONE || layoutType == LayoutType.BROWSING) {
+            return mStaticLayout;
+        }
+
+        assert false : "Unsupported layout type: " + layoutType;
+        return null;
     }
 
     /**
@@ -956,8 +978,11 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     protected void startShowing(Layout layout, boolean animate) {
         assert layout != null : "Can't show a null layout.";
 
+        // This can happen in some cases where the start surface may not have been created yet.
+        if (layout == null) return;
+
         // Set the new layout
-        setNextLayout(null);
+        setNextLayout(null, true);
         Layout oldLayout = getActiveLayout();
         if (oldLayout != layout) {
             if (oldLayout != null) {
@@ -992,7 +1017,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         getActiveLayout().show(time(), animate);
         mHost.setContentOverlayVisibility(getActiveLayout().shouldDisplayContentOverlay(),
                 getActiveLayout().canHostBeFocusable());
-        mHost.requestRender();
+        requestUpdate();
 
         // TODO(crbug.com/1108496): Remove after migrates to LayoutStateObserver#onStartedShowing.
         // Notify observers about the new scene.
@@ -1000,22 +1025,36 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
             observer.onSceneChange(getActiveLayout());
         }
 
-        notifyObserversLayoutStartedShowing(
-                layout.getLayoutType(), shouldShowToolbarAnimationOnShow(animate));
+        for (LayoutStateObserver observer : mLayoutObservers) {
+            observer.onStartedShowing(
+                    layout.getLayoutType(), shouldShowToolbarAnimationOnShow(animate));
+        }
     }
 
     /**
      * Sets the next {@link Layout} to show after the current {@link Layout} is finished and is done
      * hiding.
      * @param layout The new {@link Layout} to show.
+     * @param animate Whether the next layout should be animated.
      */
-    public void setNextLayout(Layout layout) {
+    protected void setNextLayout(Layout layout, boolean animate) {
         mNextActiveLayout = (layout == null) ? getDefaultLayout() : layout;
+        mAnimateNextLayout = animate;
+    }
+
+    /** @return The ID of the next layout to show or {@code LayoutType.NONE} if one isn't set. */
+    public int getNextLayoutType() {
+        return mNextActiveLayout != null ? mNextActiveLayout.getLayoutType() : LayoutType.NONE;
     }
 
     @Override
     public boolean isActiveLayout(Layout layout) {
         return layout == mActiveLayout;
+    }
+
+    @Override
+    public int getActiveLayoutType() {
+        return getActiveLayout() != null ? getActiveLayout().getLayoutType() : LayoutType.NONE;
     }
 
     /**
@@ -1053,9 +1092,40 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
             if (!mSceneOverlays.get(i).isSceneOverlayTreeShowing()) continue;
 
             // If the back button was consumed by any overlays, return true.
-            if (mSceneOverlays.get(i).onBackPressed()) return true;
+            if (mSceneOverlays.get(i).onBackPressed()) {
+                BackPressManager.record(BackPressHandler.Type.SCENE_OVERLAY);
+                return true;
+            }
         }
+        // Back press metrics of active layout is recorded by their implementations.
         return getActiveLayout() != null && getActiveLayout().onBackPressed();
+    }
+
+    @Override
+    public void handleBackPress() {
+        for (SceneOverlay sceneOverlay : mSceneOverlays) {
+            Boolean enabled = sceneOverlay.getHandleBackPressChangedSupplier().get();
+            if (enabled != null && enabled) {
+                sceneOverlay.handleBackPress();
+                return;
+            }
+        }
+    }
+
+    @Override
+    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+        return mHandleBackPressChangedSupplier;
+    }
+
+    private void onBackPressStateChanged() {
+        for (SceneOverlay sceneOverlay : mSceneOverlays) {
+            Boolean enabled = sceneOverlay.getHandleBackPressChangedSupplier().get();
+            if (enabled != null && enabled) {
+                mHandleBackPressChangedSupplier.set(true);
+                return;
+            }
+        }
+        mHandleBackPressChangedSupplier.set(false);
     }
 
     @Override
@@ -1074,6 +1144,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
         }
 
         mSceneOverlays.add(index, overlay);
+        overlay.getHandleBackPressChangedSupplier().addObserver((v) -> onBackPressStateChanged());
     }
 
     @VisibleForTesting
@@ -1090,7 +1161,7 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
      * Clears all content associated with {@code tabId} from the internal caches.
      * @param tabId The id of the tab to clear.
      */
-    protected void emptyCachesExcept(int tabId) {
+    protected void emptyTabCachesExcept(int tabId) {
         LayoutTab tab = mTabCache.get(tabId);
         mTabCache.clear();
         if (tab != null) mTabCache.put(tabId, tab);
@@ -1122,6 +1193,11 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     }
 
     @Override
+    public boolean isLayoutStartingToHide(int layoutType) {
+        return isLayoutVisible(layoutType) && getActiveLayout().isStartingToHide();
+    }
+
+    @Override
     public void addObserver(LayoutStateObserver listener) {
         mLayoutObservers.addObserver(listener);
     }
@@ -1129,48 +1205,6 @@ public class LayoutManagerImpl implements ManagedLayoutManager, LayoutUpdateHost
     @Override
     public void removeObserver(LayoutStateObserver listener) {
         mLayoutObservers.removeObserver(listener);
-    }
-
-    protected final void notifyObserversLayoutStartedShowing(
-            @LayoutType int layoutType, boolean showToolbar) {
-        mLayoutStateProviderOneshotSupplier.onAvailable((unused) -> {
-            for (LayoutStateObserver observer : mLayoutObservers) {
-                observer.onStartedShowing(layoutType, showToolbar);
-            }
-        });
-    }
-
-    protected final void notifyObserversLayoutFinishedShowing(@LayoutType int layoutType) {
-        mLayoutStateProviderOneshotSupplier.onAvailable((unused) -> {
-            for (LayoutStateObserver observer : mLayoutObservers) {
-                observer.onFinishedShowing(layoutType);
-            }
-        });
-    }
-
-    protected final void notifyObserversLayoutStartedHiding(
-            @LayoutType int layoutType, boolean showToolbar, boolean delayAnimation) {
-        mLayoutStateProviderOneshotSupplier.onAvailable((unused) -> {
-            for (LayoutStateObserver observer : mLayoutObservers) {
-                observer.onStartedHiding(layoutType, showToolbar, delayAnimation);
-            }
-        });
-    }
-
-    protected final void notifyObserversLayoutFinishedHiding(@LayoutType int layoutType) {
-        mLayoutStateProviderOneshotSupplier.onAvailable((unused) -> {
-            for (LayoutStateObserver observer : mLayoutObservers) {
-                observer.onFinishedHiding(layoutType);
-            }
-        });
-    }
-
-    protected final void notifyObserversOnTabSelectionHinted(int tabId) {
-        mLayoutStateProviderOneshotSupplier.onAvailable((unused) -> {
-            for (LayoutStateObserver observer : mLayoutObservers) {
-                observer.onTabSelectionHinted(tabId);
-            }
-        });
     }
 
     protected boolean shouldShowToolbarAnimationOnShow(boolean isAnimate) {

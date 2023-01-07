@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,11 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -35,14 +35,20 @@ class NoStatePrefetchLinkManager : public KeyedService,
                                    public NoStatePrefetchHandle::Observer {
  public:
   explicit NoStatePrefetchLinkManager(NoStatePrefetchManager* manager);
+
+  NoStatePrefetchLinkManager(const NoStatePrefetchLinkManager&) = delete;
+  NoStatePrefetchLinkManager& operator=(const NoStatePrefetchLinkManager&) =
+      delete;
+
   ~NoStatePrefetchLinkManager() override;
 
   // Called when a <link rel=prerender ...> element has been inserted into the
   // document. Returns the link trigger id that is used for canceling or
-  // abandoning prefetch. Returns base::nullopt if the prefetch was not started.
-  virtual base::Optional<int> OnStartLinkTrigger(
+  // abandoning prefetch. Returns absl::nullopt if the prefetch was not started.
+  virtual absl::optional<int> OnStartLinkTrigger(
       int launcher_render_process_id,
       int launcher_render_view_id,
+      int launcher_render_frame_id,
       blink::mojom::PrerenderAttributesPtr attributes,
       const url::Origin& initiator_origin);
 
@@ -58,7 +64,7 @@ class NoStatePrefetchLinkManager : public KeyedService,
 
  private:
   friend class PrerenderBrowserTest;
-  friend class PrerenderTest;
+  friend class NoStatePrefetchTest;
   // WebViewTest.NoPrerenderer needs to access the private IsEmpty() method.
   FRIEND_TEST_ALL_PREFIXES(::WebViewTest, NoPrerenderer);
 
@@ -80,7 +86,7 @@ class NoStatePrefetchLinkManager : public KeyedService,
     const int launcher_render_process_id;
     const int launcher_render_view_id;
     const GURL url;
-    const blink::mojom::PrerenderRelType rel_type;
+    const blink::mojom::PrerenderTriggerType trigger_type;
     const content::Referrer referrer;
     const url::Origin initiator_origin;
     const gfx::Size size;
@@ -91,7 +97,7 @@ class NoStatePrefetchLinkManager : public KeyedService,
     // If non-null, this trigger was launched by an unswapped prefetcher,
     // |deferred_launcher|. When |deferred_launcher| is swapped in, the field is
     // set to null.
-    const NoStatePrefetchContents* deferred_launcher;
+    raw_ptr<const NoStatePrefetchContents> deferred_launcher;
 
     // Initially null, |handle| is set once we start this trigger. It is owned
     // by this struct, and must be deleted before destructing this struct.
@@ -138,15 +144,13 @@ class NoStatePrefetchLinkManager : public KeyedService,
 
   bool has_shutdown_;
 
-  NoStatePrefetchManager* const manager_;
+  const raw_ptr<NoStatePrefetchManager> manager_;
 
   // All triggers known to this NoStatePrefetchLinkManager. Insertions are
   // always made at the back, so the oldest trigger is at the front, and the
   // youngest at the back. Using std::unique_ptr<> here as LinkTrigger is not
   // copyable.
   std::list<std::unique_ptr<LinkTrigger>> triggers_;
-
-  DISALLOW_COPY_AND_ASSIGN(NoStatePrefetchLinkManager);
 };
 
 }  // namespace prerender

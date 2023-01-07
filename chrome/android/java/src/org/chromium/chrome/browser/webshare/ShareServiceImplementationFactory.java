@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.webshare;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareOrigin;
+import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.webshare.ShareServiceImpl;

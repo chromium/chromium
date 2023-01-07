@@ -1,0 +1,32 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser") {
+  sources = []
+  deps = []
+
+  if (!is_ios) {
+    sources += [ "internal_authenticator.h" ]
+
+    deps += [
+      "//third_party/blink/public/common",
+      "//url",
+    ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mock_internal_authenticator.cc",
+    "mock_internal_authenticator.h",
+  ]
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//content/public/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

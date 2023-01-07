@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/storage_partition.h"
@@ -37,8 +37,7 @@ class UDPSocketUnitTest : public extensions::ExtensionServiceTestBase {
 
   std::unique_ptr<UDPSocket> CreateSocket() {
     network::mojom::NetworkContext* network_context =
-        content::BrowserContext::GetDefaultStoragePartition(profile())
-            ->GetNetworkContext();
+        profile()->GetDefaultStoragePartition()->GetNetworkContext();
     mojo::PendingRemote<network::mojom::UDPSocket> socket;
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener_remote;
     mojo::PendingReceiver<network::mojom::UDPSocketListener> listener_receiver =
@@ -64,7 +63,7 @@ static void OnCompleted(int bytes_read,
 }
 
 static const char kTestMessage[] = "$$TESTMESSAGETESTMESSAGETESTMESSAGETEST$$";
-static const int kTestMessageLength = base::size(kTestMessage);
+static const int kTestMessageLength = std::size(kTestMessage);
 
 net::AddressList CreateAddressList(const char* address_string, int port) {
   net::IPAddress ip;
@@ -151,7 +150,7 @@ static void SendMulticastPacket(base::OnceClosure quit_run_loop,
         FROM_HERE,
         base::BindOnce(&SendMulticastPacket, std::move(quit_run_loop), src,
                        result),
-        base::TimeDelta::FromSeconds(1));
+        base::Seconds(1));
   } else {
     std::move(quit_run_loop).Run();
     FAIL() << "Failed to connect to multicast address. Error code: " << result;
@@ -171,7 +170,13 @@ static void OnMulticastReadCompleted(base::OnceClosure quit_run_loop,
   std::move(quit_run_loop).Run();
 }
 
-TEST_F(UDPSocketUnitTest, TestUDPMulticastRecv) {
+// TODO(https://crbug.com/1210643): Test is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TestUDPMulticastRecv DISABLED_TestUDPMulticastRecv
+#else
+#define MAYBE_TestUDPMulticastRecv TestUDPMulticastRecv
+#endif
+TEST_F(UDPSocketUnitTest, MAYBE_TestUDPMulticastRecv) {
   const int kPort = 9999;
   const char kGroup[] = "237.132.100.17";
   bool packet_received = false;

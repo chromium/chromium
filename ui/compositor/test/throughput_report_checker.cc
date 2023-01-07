@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ namespace ui {
 
 bool ThroughputReportChecker::WaitUntilReported() {
   DCHECK(!reported_);
-  test_base_->Advance(base::TimeDelta::FromSeconds(5));
+  test_base_->Advance(base::Seconds(5));
   return reported_;
 }
 

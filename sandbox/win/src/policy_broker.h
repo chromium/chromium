@@ -1,18 +1,15 @@
-// Copyright (c) 2006-2010 The Chromium Authors. All rights reserved.
+// Copyright 2006-2010 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_POLICY_BROKER_H_
-#define SANDBOX_SRC_POLICY_BROKER_H_
+#ifndef SANDBOX_WIN_SRC_POLICY_BROKER_H_
+#define SANDBOX_WIN_SRC_POLICY_BROKER_H_
 
 #include "sandbox/win/src/interception.h"
 
 namespace sandbox {
 
 class TargetProcess;
-
-// Initializes global imported symbols from ntdll.
-bool InitGlobalNt();
 
 // Sets up interceptions not controlled by explicit policies.
 bool SetupBasicInterceptions(InterceptionManager* manager,
@@ -24,4 +21,4 @@ bool SetupNtdllImports(TargetProcess& child);
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_POLICY_BROKER_H_
+#endif  // SANDBOX_WIN_SRC_POLICY_BROKER_H_

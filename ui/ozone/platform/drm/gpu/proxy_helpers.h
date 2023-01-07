@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include <utility>
 
-#include "base/bind_post_task.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace ui {

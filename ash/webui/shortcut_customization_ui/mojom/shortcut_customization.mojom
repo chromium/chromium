@@ -1,0 +1,25 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.shortcut_customization.mojom;
+
+import "ash/public/mojom/accelerator_info.mojom";
+
+// Provides methods to allow the Shortcut Customization SWA to call on the
+// shortcut provider implementor. Interface is implemented by C++ accelerator
+// source configurators, e.g. BrowserAcceleratorConfiguration,
+// AcceleratorController, EventRewriterConfiguration. Remote is to be used by
+// the Shortcut Customization webui app (JS).
+interface AcceleratorConfigurationProvider {
+  // Whether the source is mutable and shortcuts can be changed.
+  IsMutable(ash.mojom.AcceleratorSource source) => (bool is_mutable);
+
+  // Get the accelerator mappings for all sources. This is formatted as
+  // AcceleratorSource -> map<AcceleratorActionId, Array<AcceleratorInfo>>.
+  // Note that an accelerator action can have multiple accelerators associated
+  // with it.
+  GetAccelerators() =>
+      (map<ash.mojom.AcceleratorSource,
+       map<uint32, array<ash.mojom.AcceleratorInfo>>> config);
+};

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,24 +7,23 @@ package org.chromium.chrome.browser.sync.settings;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import androidx.annotation.IntDef;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
-import org.chromium.chrome.browser.signin.services.SigninManager.SignInAllowedObserver;
-import org.chromium.chrome.browser.sync.ProfileSyncService;
-import org.chromium.chrome.browser.sync.ProfileSyncService.SyncStateChangedListener;
+import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
+import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncService.SyncStateChangedListener;
+import org.chromium.chrome.browser.ui.signin.TangibleSyncCoordinator;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -35,9 +34,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ViewUtils;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 /**
  * A preference that displays "Sign in to Chrome" when the user is not sign in, and displays
@@ -45,24 +42,14 @@ import java.lang.annotation.RetentionPolicy;
  * in.
  */
 public class SignInPreference
-        extends Preference implements SignInAllowedObserver, ProfileDataCache.Observer,
+        extends Preference implements SignInStateObserver, ProfileDataCache.Observer,
                                       SyncStateChangedListener, AccountsChangeObserver {
-    @IntDef({State.SIGNIN_DISABLED_BY_POLICY, State.SIGNIN_DISALLOWED, State.GENERIC_PROMO,
-            State.SIGNED_IN})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface State {
-        int SIGNIN_DISABLED_BY_POLICY = 0;
-        int SIGNIN_DISALLOWED = 1;
-        int GENERIC_PROMO = 2;
-        int SIGNED_IN = 3;
-    }
-
     private final PrefService mPrefService;
     private boolean mWasGenericSigninPromoDisplayed;
     private boolean mViewEnabled;
+    private boolean mIsShowingSigninPromo;
     private final ProfileDataCache mProfileDataCache;
     private final AccountManagerFacade mAccountManagerFacade;
-    private @State int mState;
 
     /**
      * Constructor for inflating from XML.
@@ -74,9 +61,7 @@ public class SignInPreference
         mPrefService = UserPrefs.get(Profile.getLastUsedRegularProfile());
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
-
-        // State will be updated in registerForUpdates.
-        mState = State.SIGNED_IN;
+        mIsShowingSigninPromo = false;
     }
 
     @Override
@@ -86,10 +71,9 @@ public class SignInPreference
         mAccountManagerFacade.addObserver(this);
         IdentityServicesProvider.get()
                 .getSigninManager(Profile.getLastUsedRegularProfile())
-                .addSignInAllowedObserver(this);
+                .addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
-        FirstRunSignInProcessor.updateSigninManagerFirstRunCheckDone();
-        ProfileSyncService syncService = ProfileSyncService.get();
+        SyncService syncService = SyncService.get();
         if (syncService != null) {
             syncService.addSyncStateChangedListener(this);
         }
@@ -104,22 +88,26 @@ public class SignInPreference
         mAccountManagerFacade.removeObserver(this);
         IdentityServicesProvider.get()
                 .getSigninManager(Profile.getLastUsedRegularProfile())
-                .removeSignInAllowedObserver(this);
+                .removeSignInStateObserver(this);
         mProfileDataCache.removeObserver(this);
-        ProfileSyncService syncService = ProfileSyncService.get();
+        SyncService syncService = SyncService.get();
         if (syncService != null) {
             syncService.removeSyncStateChangedListener(this);
         }
     }
 
-    /** Returns the state of the preference. Not valid until registerForUpdates is called. */
-    @State
-    public int getState() {
-        return mState;
+    /**
+     * Sets whether Personalized Signin Promo is being shown in {@link
+     * org.chromium.chrome.browser.settings.MainSettings} page
+     */
+    public void setIsShowingPersonalizedSigninPromo(boolean isShowingSigninPromo) {
+        mIsShowingSigninPromo = isShowingSigninPromo;
+        update();
     }
 
     /** Updates the title, summary, and image based on the current sign-in state. */
     private void update() {
+        setVisible(!mIsShowingSigninPromo);
         if (IdentityServicesProvider.get()
                         .getSigninManager(Profile.getLastUsedRegularProfile())
                         .isSigninDisabledByPolicy()) {
@@ -128,6 +116,9 @@ public class SignInPreference
                 setupSigninDisabledByPolicy();
             } else {
                 setupSigninDisallowed();
+                assert !mIsShowingSigninPromo
+                    : "Signin Promo should not be shown when signin is not allowed";
+                setVisible(false);
             }
             return;
         }
@@ -145,16 +136,10 @@ public class SignInPreference
     }
 
     private void setupSigninDisabledByPolicy() {
-        mState = State.SIGNIN_DISABLED_BY_POLICY;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            setTitle(R.string.sync_promo_turn_on_sync);
-        } else {
-            setTitle(R.string.sign_in_to_chrome);
-        }
+        setTitle(R.string.sync_promo_turn_on_sync);
         setSummary(R.string.sign_in_to_chrome_disabled_summary);
         setFragment(null);
         setIcon(ManagedPreferencesUtils.getManagedByEnterpriseIconId());
-        setWidgetLayoutResource(0);
         setViewEnabled(false);
         setOnPreferenceClickListener(pref -> {
             ManagedPreferencesUtils.showManagedByAdministratorToast(getContext());
@@ -164,34 +149,28 @@ public class SignInPreference
     }
 
     private void setupSigninDisallowed() {
-        // TODO(https://crbug.com/1133743): Revise the preference behavior.
-        mState = State.SIGNIN_DISALLOWED;
-        setTitle(R.string.signin_pref_disallowed_title);
-        setSummary(null);
-        setFragment(null);
-        setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.logo_avatar_anonymous));
-        setWidgetLayoutResource(0);
-        setViewEnabled(false);
-        setOnPreferenceClickListener(null);
         mWasGenericSigninPromoDisplayed = false;
     }
 
     private void setupGenericPromo() {
-        mState = State.GENERIC_PROMO;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-            setTitle(R.string.sync_promo_turn_on_sync);
-        } else {
-            setTitle(R.string.sign_in_to_chrome);
-        }
+        setTitle(R.string.sync_promo_turn_on_sync);
         setSummary(R.string.signin_pref_summary);
 
         setFragment(null);
-        setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.logo_avatar_anonymous));
-        setWidgetLayoutResource(0);
+        setIcon(AppCompatResources.getDrawable(getContext(), R.drawable.anonymous_account_image));
         setViewEnabled(true);
-        setOnPreferenceClickListener(pref
-                -> SigninActivityLauncherImpl.get().launchActivityIfAllowed(
-                        getContext(), SigninAccessPoint.SETTINGS));
+        setOnPreferenceClickListener(pref -> {
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TANGIBLE_SYNC)) {
+                TangibleSyncCoordinator.start(getContext(),
+                        ((ModalDialogManagerHolder) getContext()).getModalDialogManager(),
+                        SyncConsentActivityLauncherImpl.get(),
+                        SigninAccessPoint.SETTINGS_SYNC_OFF_ROW);
+                return true;
+            } else {
+                return SyncConsentActivityLauncherImpl.get().launchActivityIfAllowed(
+                        getContext(), SigninAccessPoint.SETTINGS_SYNC_OFF_ROW);
+            }
+        });
 
         if (!mWasGenericSigninPromoDisplayed) {
             RecordUserAction.record("Signin_Impression_FromSettings");
@@ -201,14 +180,12 @@ public class SignInPreference
     }
 
     private void setupSignedIn(String accountName) {
-        mState = State.SIGNED_IN;
         DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(accountName);
 
         setTitle(profileData.getFullNameOrEmail());
         setSummary(accountName);
         setFragment(AccountManagementFragment.class.getName());
         setIcon(profileData.getImage());
-        setWidgetLayoutResource(0);
         setViewEnabled(true);
         setOnPreferenceClickListener(null);
 
@@ -231,7 +208,7 @@ public class SignInPreference
         ViewUtils.setEnabledRecursive(holder.itemView, mViewEnabled);
     }
 
-    // ProfileSyncServiceListener implementation.
+    // SyncService.SyncStateChangedListener implementation.
     @Override
     public void syncStateChanged() {
         update();

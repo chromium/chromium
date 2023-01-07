@@ -8,6 +8,7 @@ include_rules = [
   "+cc/test/test_task_graph_runner.h",
   "+cc/trees/layer_tree_host.h",
   "+cc/trees/swap_promise.h",
+  "+components/url_formatter",
   "+components/viz/client",
   "+components/viz/common",
   "+components/viz/host",
@@ -27,5 +28,8 @@ include_rules = [
 specific_include_rules = {
   ".*test\.(cc|h)": [
     "+components/viz/test"
-  ]
+  ],
+  ".*BlankUiTestActivity\.java": [
+    "+components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog",
+  ],
 }

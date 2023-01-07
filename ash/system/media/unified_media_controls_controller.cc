@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/system/media/unified_media_controls_view.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "services/media_session/public/cpp/util.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -21,12 +22,10 @@ constexpr int kMinimumArtworkSize = 30;
 constexpr int kDisiredArtworkSize = 48;
 
 // Time to wait for new media session.
-constexpr base::TimeDelta kFreezeControlsTime =
-    base::TimeDelta::FromMilliseconds(2000);
+constexpr base::TimeDelta kFreezeControlsTime = base::Milliseconds(2000);
 
 // Time to wait for new artwork.
-constexpr base::TimeDelta kHideArtworkDelay =
-    base::TimeDelta::FromMilliseconds(2000);
+constexpr base::TimeDelta kHideArtworkDelay = base::Milliseconds(2000);
 
 }  // namespace
 
@@ -83,7 +82,7 @@ void UnifiedMediaControlsController::MediaSessionInfoChanged(
 }
 
 void UnifiedMediaControlsController::MediaSessionMetadataChanged(
-    const base::Optional<media_session::MediaMetadata>& metadata) {
+    const absl::optional<media_session::MediaMetadata>& metadata) {
   pending_metadata_ = metadata.value_or(media_session::MediaMetadata());
   if (freeze_session_timer_->IsRunning())
     return;
@@ -110,7 +109,7 @@ void UnifiedMediaControlsController::MediaSessionActionsChanged(
 }
 
 void UnifiedMediaControlsController::MediaSessionChanged(
-    const base::Optional<base::UnguessableToken>& request_id) {
+    const absl::optional<base::UnguessableToken>& request_id) {
   // If previous session resumes, stop freeze timer if necessary and discard
   // any pending data.
   if (request_id == media_session_id_) {
@@ -161,7 +160,7 @@ void UnifiedMediaControlsController::MediaControllerImageChanged(
 void UnifiedMediaControlsController::UpdateSession() {
   media_session_id_ = pending_session_id_;
 
-  if (media_session_id_ == base::nullopt)
+  if (media_session_id_ == absl::nullopt)
     ResetPendingData();
 
   if (pending_session_info_.has_value()) {
@@ -219,11 +218,11 @@ void UnifiedMediaControlsController::UpdateArtwork(
     return;
   }
 
-  if (media_controls_->artwork_view()->GetImage().isNull())
+  if (media_controls_->artwork_view()->GetImageModel().IsEmpty())
     return;
 
   if (!should_start_hide_timer) {
-    media_controls_->SetArtwork(base::nullopt);
+    media_controls_->SetArtwork(absl::nullopt);
     return;
   }
 
@@ -233,7 +232,7 @@ void UnifiedMediaControlsController::UpdateArtwork(
     hide_artwork_timer_->Start(
         FROM_HERE, kHideArtworkDelay,
         base::BindOnce(&UnifiedMediaControlsView::SetArtwork,
-                       base::Unretained(media_controls_), base::nullopt));
+                       base::Unretained(media_controls_), absl::nullopt));
   }
 }
 

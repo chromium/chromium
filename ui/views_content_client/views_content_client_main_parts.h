@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_parts.h"
 
@@ -17,7 +17,6 @@ class RunLoop;
 
 namespace content {
 class ShellBrowserContext;
-struct MainFunctionParams;
 }
 
 namespace views {
@@ -32,11 +31,13 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
  public:
   // Platform-specific create function.
   static std::unique_ptr<ViewsContentClientMainParts> Create(
-      const content::MainFunctionParams& content_params,
       ViewsContentClient* views_content_client);
 
-  // Invoked before the BrowserMainLoop constructor.
-  static void PreCreateMainMessageLoop();
+  static void PreBrowserMain();
+
+  ViewsContentClientMainParts(const ViewsContentClientMainParts&) = delete;
+  ViewsContentClientMainParts& operator=(const ViewsContentClientMainParts&) =
+      delete;
 
   ~ViewsContentClientMainParts() override;
 
@@ -53,11 +54,10 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
   }
 
  protected:
-  ViewsContentClientMainParts(
-      const content::MainFunctionParams& content_params,
+  explicit ViewsContentClientMainParts(
       ViewsContentClient* views_content_client);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   views::TestViewsDelegate* views_delegate() { return views_delegate_.get(); }
 #endif
 
@@ -66,11 +66,9 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
 
   std::unique_ptr<views::TestViewsDelegate> views_delegate_;
 
-  ViewsContentClient* views_content_client_;
+  raw_ptr<ViewsContentClient> views_content_client_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentClientMainParts);
 };
 
 }  // namespace ui

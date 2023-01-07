@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@ package org.chromium.chrome.test.pagecontroller.controllers.ntp;
 
 import static org.chromium.chrome.test.pagecontroller.utils.Ui2Locators.withText;
 
-import android.support.test.uiautomator.UiObject2;
+import androidx.test.uiautomator.UiObject2;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.pagecontroller.controllers.ElementController;
@@ -57,7 +57,7 @@ public class SuggestionTileController extends ElementController {
     }
 
     private static final IUi2Locator LOCATOR_TILE_TITLES =
-            Ui2Locators.withPath(Ui2Locators.withAnyResEntry(R.id.tile_grid_layout),
+            Ui2Locators.withPath(Ui2Locators.withAnyResEntry(R.id.mv_tiles_layout),
                     Ui2Locators.withAnyResEntry(R.id.tile_view_title));
     private static final IUi2Locator LOCATOR_TILE_TITLE_TEXT = Ui2Locators.withTextRegex(".+");
 

@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_VR_ELEMENTS_TEXTURED_ELEMENT_H_
 #define CHROME_BROWSER_VR_ELEMENTS_TEXTURED_ELEMENT_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "device/vr/gl_bindings.h"
@@ -21,6 +21,9 @@ class UiTexture;
 class VR_UI_EXPORT TexturedElement : public UiElement {
  public:
   TexturedElement();
+
+  TexturedElement(const TexturedElement&) = delete;
+  TexturedElement& operator=(const TexturedElement&) = delete;
 
   ~TexturedElement() override;
 
@@ -59,9 +62,7 @@ class VR_UI_EXPORT TexturedElement : public UiElement {
   bool initialized_ = false;
 
   sk_sp<SkSurface> surface_;
-  SkiaSurfaceProvider* provider_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TexturedElement);
+  raw_ptr<SkiaSurfaceProvider> provider_ = nullptr;
 };
 
 }  // namespace vr

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,16 +52,14 @@ void FieldDataManager::UpdateFieldDataMap(FieldRendererId id,
                                           const std::u16string& value,
                                           FieldPropertiesMask mask) {
   if (HasFieldData(id)) {
-    field_value_and_properties_map_.at(id).first =
-        base::Optional<std::u16string>(value);
-    field_value_and_properties_map_.at(id).second |= mask;
+    field_value_and_properties_map_[id].first = value;
+    field_value_and_properties_map_[id].second |= mask;
   } else {
-    field_value_and_properties_map_[id] =
-        std::make_pair(base::Optional<std::u16string>(value), mask);
+    field_value_and_properties_map_[id] = {value, mask};
   }
   // Reset kUserTyped and kAutofilled flags if the value is empty.
   if (value.empty()) {
-    field_value_and_properties_map_.at(id).second &=
+    field_value_and_properties_map_[id].second &=
         ~(FieldPropertiesFlags::kUserTyped | FieldPropertiesFlags::kAutofilled);
   }
 }
@@ -69,10 +67,11 @@ void FieldDataManager::UpdateFieldDataMap(FieldRendererId id,
 void FieldDataManager::UpdateFieldDataMapWithNullValue(
     FieldRendererId id,
     FieldPropertiesMask mask) {
-  if (HasFieldData(id))
-    field_value_and_properties_map_.at(id).second |= mask;
-  else
-    field_value_and_properties_map_[id] = std::make_pair(base::nullopt, mask);
+  if (HasFieldData(id)) {
+    field_value_and_properties_map_[id].second |= mask;
+  } else {
+    field_value_and_properties_map_[id] = {absl::nullopt, mask};
+  }
 }
 
 bool FieldDataManager::DidUserType(FieldRendererId id) const {

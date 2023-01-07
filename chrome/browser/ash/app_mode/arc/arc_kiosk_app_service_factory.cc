@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 namespace ash {
 
@@ -24,9 +23,7 @@ ArcKioskAppServiceFactory* ArcKioskAppServiceFactory::GetInstance() {
 }
 
 ArcKioskAppServiceFactory::ArcKioskAppServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ArcKioskAppService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("ArcKioskAppService") {
   DependsOn(ArcAppListPrefsFactory::GetInstance());
 }
 

@@ -15,6 +15,7 @@
   var fontStyle = font.fontStyle;
   var fontVariant = font.fontVariant;
   var fontWeight = font.fontWeight;
+  var fontDisplay = font.fontDisplay;
   var fontStretch = font.fontStretch;
   var unicodeRange = font.unicodeRange;
   var src = font.src;
@@ -25,6 +26,7 @@
   testRunner.log(fontVariant);        // normal (default)
   testRunner.log(fontWeight);         // normal (default)
   testRunner.log(fontStretch);        // normal (default)
+  testRunner.log(fontDisplay);        // auto (default)
   testRunner.log(unicodeRange);       // U+0-10FFFE
   testRunner.log(platformFontFamily); // ಠ_ಠNoto Monoಠ_ಠ
 

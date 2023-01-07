@@ -1,0 +1,30 @@
+caption: Enable <ph name="CHROME_DEVICES_LINK">chrome://devices</ph>
+default: true
+deprecated: true
+desc: "This policy controls access to controllable features in the local discovery\
+  \ UI (<ph name=\"CHROME_DEVICES_LINK\">chrome://devices</ph>) which shows discoverable\
+  \ devices near the user as well as cloud devices registered to them. On all operating\
+  \ systems except for <ph name=\"PRODUCT_OS_NAME\">$2<ex>Google ChromeOS</ex></ph>,\
+  \ the local discovery UI also allows users to add classic printers connected to\
+  \ their computers to <ph name=\"CLOUD_PRINT_NAME\">Google Cloud Print</ph>.\n\n\
+  \      Setting the policy to Enabled or not set allow local device discovery.\n\n\
+  \      Setting the policy to Disabled prevents local device discovery.\n      "
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Allow local device discovery
+  value: true
+- caption: Prevent local device discovery
+  value: false
+owners:
+- thestig@chromium.org
+- weili@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:81-87
+- chrome_os:81-87
+tags: []
+type: main

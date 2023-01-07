@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,28 +22,43 @@
 // Enables the Badged Reading List help feature. Clients must call +reset after
 // the test finish running. Returns NO if FeatureEngagementTracker failed to
 // load.
-+ (BOOL)enableBadgedReadingListTriggering WARN_UNUSED_RESULT;
++ (BOOL)enableBadgedReadingListTriggering [[nodiscard]];
 
 // Enables the Badged Translate Manual Trigger feature. Clients must call +reset
 // after the test finish running. Returns NO if FeatureEngagementTracker failed
 // to load.
-+ (BOOL)enableBadgedTranslateManualTrigger WARN_UNUSED_RESULT;
++ (BOOL)enableBadgedTranslateManualTrigger [[nodiscard]];
 
 // Enables the New Tab Tip to be triggered. Clients must call +reset after the
 // test finish running. Returns NO if FeatureEngagementTracker failed to load.
-+ (BOOL)enableNewTabTipTriggering WARN_UNUSED_RESULT;
++ (BOOL)enableNewTabTipTriggering [[nodiscard]];
 
 // Enables the Bottom Toolbar Tip to be triggered. Clients must call +reset
 // after the test finish running. Returns NO if FeatureEngagementTracker failed
 // to load.
-+ (BOOL)enableBottomToolbarTipTriggering WARN_UNUSED_RESULT;
++ (BOOL)enableBottomToolbarTipTriggering [[nodiscard]];
 
 // Enables the Long Press Tip to be triggered. Clients must call +reset
 // after the test finish running. The tip has a configuration where it can be
 // displayed as first or second tip of the session and needs to be displayed
 // after the BottomToolbar tip is displayed. Returns NO if
 // FeatureEngagementTracker failed to load.
-+ (BOOL)enableLongPressTipTriggering WARN_UNUSED_RESULT;
++ (BOOL)enableLongPressTipTriggering [[nodiscard]];
+
+// Enables the Default Site View tip to be triggered. The tip is triggered only
+// once after requesting the desktop version 3 times. Returns NO if
+// FeatureEngagementTracker failed to load.
++ (BOOL)enableDefaultSiteViewTipTriggering [[nodiscard]];
+
+// Enables the Password Suggestions tip to be triggered. The tip is triggered
+// only once the first time Autofill password suggestions are shown. Returns NO
+// if FeatureEngagementTracker failed to load.
++ (BOOL)enablePasswordSuggestionsTipTriggering [[nodiscard]];
+
+// Enables the Overflow Menu tip to be triggered. The tip is triggered
+// after the user has opened the overflow menu twice and not scrolled. Returns
+// NO if FeatureEngagementTracker failed to load.
++ (BOOL)enableOverflowMenuTipTriggering [[nodiscard]];
 
 // Starts manual page translation.
 + (void)showTranslate;

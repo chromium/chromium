@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_NETWORK_MOJO_SOCKET_TEST_UTIL_H_
 #define SERVICES_NETWORK_MOJO_SOCKET_TEST_UTIL_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -18,6 +17,10 @@ namespace network {
 class TestSocketObserver : public mojom::SocketObserver {
  public:
   TestSocketObserver();
+
+  TestSocketObserver(const TestSocketObserver&) = delete;
+  TestSocketObserver& operator=(const TestSocketObserver&) = delete;
+
   ~TestSocketObserver() override;
 
   // Returns a mojo pending remote. This can only be called once.
@@ -37,8 +40,6 @@ class TestSocketObserver : public mojom::SocketObserver {
   base::RunLoop read_loop_;
   base::RunLoop write_loop_;
   mojo::Receiver<mojom::SocketObserver> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketObserver);
 };
 
 }  // namespace network

@@ -1,0 +1,25 @@
+<!-- Copyright 2020 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
+    <title>$i18n{printJobTitle}</title>
+    <link rel="stylesheet"
+        href="chrome://resources/chromeos/colors/cros_styles.css">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+    <style>
+      html {
+        background-color: var(--cros-bg-color);
+      }
+    </style>
+  </head>
+  <body>
+    <print-management></print-management>
+    <script type="module" src="print_management.js"></script>
+    <script type="module" src="mojo_interface_provider.js"></script>
+  </body>
+</html>

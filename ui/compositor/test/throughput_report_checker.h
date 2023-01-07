@@ -1,13 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_COMPOSITOR_TEST_THROUGHPUT_REPORT_CHECKER_H_
 #define UI_COMPOSITOR_TEST_THROUGHPUT_REPORT_CHECKER_H_
 
-#include <memory>
-
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 
 namespace ui {
@@ -48,7 +47,7 @@ class ThroughputReportChecker {
  private:
   void OnReport(const cc::FrameSequenceMetrics::CustomReportData&);
 
-  AnimationThroughputReporterTestBase* test_base_;
+  raw_ptr<AnimationThroughputReporterTestBase> test_base_;
   bool reported_ = false;
   bool fail_if_reported_ = false;
 };

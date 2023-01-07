@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,62 +28,13 @@
 #include "content/public/common/content_features.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 
 namespace content {
 
 namespace {
-const char kXFrameOptionsSameOriginHistogram[] = "Security.XFrameOptions";
-
-// This enum is used for UMA metrics. Keep these enums up to date with
-// tools/metrics/histograms/histograms.xml.
-enum XFrameOptionsHistogram {
-  // A frame is loaded without any X-Frame-Options header.
-  NONE = 0,
-
-  // X-Frame-Options: DENY.
-  DENY = 1,
-
-  // X-Frame-Options: SAMEORIGIN. The navigation proceeds and every ancestor
-  // has the same origin.
-  SAMEORIGIN = 2,
-
-  // X-Frame-Options: SAMEORIGIN. The navigation is blocked because the
-  // top-frame doesn't have the same origin.
-  SAMEORIGIN_BLOCKED = 3,
-
-  // X-Frame-Options: SAMEORIGIN. The navigation proceeds despite the fact that
-  // there is an ancestor that doesn't have the same origin.
-  SAMEORIGIN_WITH_BAD_ANCESTOR_CHAIN = 4,
-
-  // X-Frame-Options: ALLOWALL.
-  ALLOWALL = 5,
-
-  // Invalid 'X-Frame-Options' directive encountered.
-  INVALID = 6,
-
-  // The frame sets multiple 'X-Frame-Options' header with conflicting values.
-  CONFLICT = 7,
-
-  // The 'frame-ancestors' CSP directive should take effect instead.
-  BYPASS = 8,
-
-  // Navigation would have been blocked if we applied 'X-Frame-Options' to
-  // redirects.
-  //
-  // TODO(mkwst): Rename this when we make a decision around
-  // https://crbug.com/835465.
-  REDIRECT_WOULD_BE_BLOCKED = 9,
-
-  XFRAMEOPTIONS_HISTOGRAM_MAX = REDIRECT_WOULD_BE_BLOCKED
-};
-
-void RecordXFrameOptionsUsage(XFrameOptionsHistogram usage) {
-  UMA_HISTOGRAM_ENUMERATION(
-      kXFrameOptionsSameOriginHistogram, usage,
-      XFrameOptionsHistogram::XFRAMEOPTIONS_HISTOGRAM_MAX);
-}
 
 bool HeadersContainFrameAncestorsCSP(
     const network::mojom::ParsedHeadersPtr& headers) {
@@ -96,10 +47,12 @@ bool HeadersContainFrameAncestorsCSP(
       });
 }
 
-// Returns the parent, including outer delegates in the case of portals.
-RenderFrameHostImpl* ParentOrOuterDelegate(RenderFrameHostImpl* frame) {
-  return frame->InsidePortal() ? frame->ParentOrOuterDelegateFrame()
-                               : frame->GetParent();
+// From a RenderFrameHost |rfh|, return its parent. This goes through nested
+// WebContents like Portals, but doesn't go through FencedFrames. This returns
+// nullptr for the top-level document and FencedFrame top-level document.
+RenderFrameHostImpl* GetParentExceptForFencedFrame(RenderFrameHostImpl* frame) {
+  return frame->IsFencedFrameRoot() ? nullptr
+                                    : frame->GetParentOrOuterDocument();
 }
 
 }  // namespace
@@ -123,9 +76,6 @@ AncestorThrottle::WillRedirectRequest() {
   NavigationThrottle::ThrottleCheckResult result = ProcessResponseImpl(
       LoggingDisposition::DO_NOT_LOG_TO_CONSOLE, false /* is_response_check */);
 
-  if (result.action() == NavigationThrottle::BLOCK_RESPONSE)
-    RecordXFrameOptionsUsage(XFrameOptionsHistogram::REDIRECT_WOULD_BE_BLOCKED);
-
   // TODO(mkwst): We need to decide whether we'll be able to get away with
   // tightening the XFO check to include redirect responses once we have a
   // feel for the REDIRECT_WOULD_BE_BLOCKED numbers we're collecting above.
@@ -144,8 +94,7 @@ NavigationThrottle::ThrottleCheckResult AncestorThrottle::ProcessResponseImpl(
     bool is_response_check) {
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
 
-  bool is_portal =
-      request->frame_tree_node()->current_frame_host()->InsidePortal();
+  bool is_portal = request->frame_tree_node()->frame_tree()->IsPortal();
   if (request->IsInMainFrame() && !is_portal) {
     // Allow main frame navigations.
     return NavigationThrottle::PROCEED;
@@ -189,8 +138,6 @@ void AncestorThrottle::ParseXFrameOptionsError(
   DCHECK(disposition == network::mojom::XFrameOptionsValue::kConflict ||
          disposition == network::mojom::XFrameOptionsValue::kInvalid);
   DCHECK(headers);
-  if (!navigation_handle()->GetRenderFrameHost())
-    return;  // Some responses won't have a RFH (i.e. 204/205s or downloads).
 
   std::string value;
   headers->GetNormalizedHeader("X-Frame-Options", &value);
@@ -217,20 +164,12 @@ void AncestorThrottle::ParseXFrameOptionsError(
         value.c_str());
   }
 
-  // Log a console error in the parent of the current RenderFrameHost (as
-  // the current RenderFrameHost itself doesn't yet have a document).
-  auto* frame = static_cast<RenderFrameHostImpl*>(
-      navigation_handle()->GetRenderFrameHost());
-  ParentOrOuterDelegate(frame)->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kError, message);
+  AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
+                      std::move(message));
 }
 
 void AncestorThrottle::ConsoleErrorEmbeddingRequiresOptIn() {
   DCHECK(base::FeatureList::IsEnabled(features::kEmbeddingRequiresOptIn));
-
-  if (!navigation_handle()->GetRenderFrameHost())
-    return;  // Some responses won't have a RFH (i.e. 204/205s or downloads).
-
   std::string message = base::StringPrintf(
       "Refused to display '%s' in a frame: It did not opt-into cross-origin "
       "embedding by setting either an 'X-Frame-Options' header, or a "
@@ -241,26 +180,14 @@ void AncestorThrottle::ConsoleErrorEmbeddingRequiresOptIn() {
           .spec()
           .c_str());
 
-  // Log a console error in the parent of the current RenderFrameHost (as
-  // the current RenderFrameHost itself doesn't yet have a document).
-  //
-  // TODO(https://crbug.com/1146651): We should not leak any information at all
-  // to the parent frame. Send a message directly to Devtools instead (without
-  // passing through a renderer): that can also contain more information (like
-  // the full blocked url).
-  auto* frame = static_cast<RenderFrameHostImpl*>(
-      navigation_handle()->GetRenderFrameHost());
-  ParentOrOuterDelegate(frame)->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kError, message);
+  AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
+                      std::move(message));
 }
 
 void AncestorThrottle::ConsoleErrorXFrameOptions(
     network::mojom::XFrameOptionsValue disposition) {
   DCHECK(disposition == network::mojom::XFrameOptionsValue::kDeny ||
          disposition == network::mojom::XFrameOptionsValue::kSameOrigin);
-  if (!navigation_handle()->GetRenderFrameHost())
-    return;  // Some responses won't have a RFH (i.e. 204/205s or downloads).
-
   std::string message = base::StringPrintf(
       "Refused to display '%s' in a frame because it set 'X-Frame-Options' "
       "to '%s'.",
@@ -271,17 +198,15 @@ void AncestorThrottle::ConsoleErrorXFrameOptions(
       disposition == network::mojom::XFrameOptionsValue::kDeny ? "deny"
                                                                : "sameorigin");
 
-  // Log a console error in the parent of the current RenderFrameHost (as
-  // the current RenderFrameHost itself doesn't yet have a document).
-  //
-  // TODO(https://crbug.com/1146651): We should not leak any information at all
-  // to the parent frame. Send a message directly to Devtools instead (without
-  // passing through a renderer): that can also contain more information (like
-  // the full blocked url).
-  auto* frame = static_cast<RenderFrameHostImpl*>(
-      navigation_handle()->GetRenderFrameHost());
-  ParentOrOuterDelegate(frame)->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kError, message);
+  AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
+                      std::move(message));
+}
+
+void AncestorThrottle::AddMessageToConsole(
+    blink::mojom::ConsoleMessageLevel level,
+    std::string message) {
+  NavigationRequest::From(navigation_handle())
+      ->AddDeferredConsoleMessage(level, std::move(message));
 }
 
 AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
@@ -296,7 +221,6 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
   if (disposition != network::mojom::XFrameOptionsValue::kNone &&
       disposition != network::mojom::XFrameOptionsValue::kAllowAll &&
       HeadersContainFrameAncestorsCSP(request->response()->parsed_headers)) {
-    RecordXFrameOptionsUsage(XFrameOptionsHistogram::BYPASS);
     return CheckResult::PROCEED;
   }
 
@@ -304,13 +228,11 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
     case network::mojom::XFrameOptionsValue::kConflict:
       if (logging == LoggingDisposition::LOG_TO_CONSOLE)
         ParseXFrameOptionsError(request->GetResponseHeaders(), disposition);
-      RecordXFrameOptionsUsage(XFrameOptionsHistogram::CONFLICT);
       return CheckResult::BLOCK;
 
     case network::mojom::XFrameOptionsValue::kInvalid:
       if (logging == LoggingDisposition::LOG_TO_CONSOLE)
         ParseXFrameOptionsError(request->GetResponseHeaders(), disposition);
-      RecordXFrameOptionsUsage(XFrameOptionsHistogram::INVALID);
       // TODO(mkwst): Consider failing here, especially if we end up shipping
       // a new default behavior which requires embedees to explicitly opt-in
       // to being embedded: https://crbug.com/1153274.
@@ -319,45 +241,31 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(
     case network::mojom::XFrameOptionsValue::kDeny:
       if (logging == LoggingDisposition::LOG_TO_CONSOLE)
         ConsoleErrorXFrameOptions(disposition);
-      RecordXFrameOptionsUsage(XFrameOptionsHistogram::DENY);
       return CheckResult::BLOCK;
 
     case network::mojom::XFrameOptionsValue::kSameOrigin: {
       // Block the request when any ancestor is not same-origin.
-      RenderFrameHostImpl* parent = ParentOrOuterDelegate(
+      // We enforce XFrameOptions in the outer documents, but not for
+      // embedders/GuestViews.
+      RenderFrameHostImpl* parent = GetParentExceptForFencedFrame(
           request->frame_tree_node()->current_frame_host());
       url::Origin current_origin =
           url::Origin::Create(navigation_handle()->GetURL());
       while (parent) {
         if (!parent->GetLastCommittedOrigin().IsSameOriginWith(
                 current_origin)) {
-          RecordXFrameOptionsUsage(XFrameOptionsHistogram::SAMEORIGIN_BLOCKED);
           if (logging == LoggingDisposition::LOG_TO_CONSOLE)
             ConsoleErrorXFrameOptions(disposition);
-
-          // TODO(mkwst): Stop recording this metric once we convince other
-          // vendors to follow our lead with XFO: SAMEORIGIN processing.
-          //
-          // https://crbug.com/250309
-          if (parent->GetMainFrame()->GetLastCommittedOrigin().IsSameOriginWith(
-                  current_origin)) {
-            RecordXFrameOptionsUsage(
-                XFrameOptionsHistogram::SAMEORIGIN_WITH_BAD_ANCESTOR_CHAIN);
-          }
-
           return CheckResult::BLOCK;
         }
-        parent = ParentOrOuterDelegate(parent);
+        parent = GetParentExceptForFencedFrame(parent);
       }
-      RecordXFrameOptionsUsage(XFrameOptionsHistogram::SAMEORIGIN);
       return CheckResult::PROCEED;
     }
 
     case network::mojom::XFrameOptionsValue::kNone:
-      RecordXFrameOptionsUsage(XFrameOptionsHistogram::NONE);
       return CheckResult::PROCEED;
     case network::mojom::XFrameOptionsValue::kAllowAll:
-      RecordXFrameOptionsUsage(XFrameOptionsHistogram::ALLOWALL);
       return CheckResult::PROCEED;
   }
 }
@@ -368,16 +276,17 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateEmbeddingOptIn(
   // enabled, a response will be blocked unless it's explicitly opted-into
   // being embeddable via 'X-Frame-Options'/'frame-ancestors', or is same-origin
   // with its ancestors.
+  // We enforce frame-ancestors in the outer documents, but not for
+  // embedders/GuestViews.
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
   if (request->response()->parsed_headers->xfo ==
           network::mojom::XFrameOptionsValue::kNone &&
       !HeadersContainFrameAncestorsCSP(request->response()->parsed_headers)) {
-    RenderFrameHostImpl* parent =
-        ParentOrOuterDelegate(request->frame_tree_node()->current_frame_host());
-    url::Origin current_origin =
-        url::Origin::Create(navigation_handle()->GetURL());
+    RenderFrameHostImpl* parent = GetParentExceptForFencedFrame(
+        request->frame_tree_node()->current_frame_host());
     while (parent) {
-      if (!parent->GetLastCommittedOrigin().IsSameOriginWith(current_origin)) {
+      if (!parent->GetLastCommittedOrigin().IsSameOriginWith(
+              navigation_handle()->GetURL())) {
         GetContentClient()->browser()->LogWebFeatureForCurrentPage(
             parent, blink::mojom::WebFeature::
                         kEmbeddedCrossOriginFrameWithoutFrameAncestorsOrXFO);
@@ -390,7 +299,7 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateEmbeddingOptIn(
 
         return CheckResult::BLOCK;
       }
-      parent = ParentOrOuterDelegate(parent);
+      parent = GetParentExceptForFencedFrame(parent);
     }
   }
   return CheckResult::PROCEED;
@@ -405,11 +314,12 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
   auto empty_source_location = network::mojom::SourceLocation::New();
 
   // Check CSP frame-ancestors against every parent.
-  // We enforce frame-ancestors in the outer delegate for portals, but not
-  // for other uses of inner/outer WebContents (GuestViews).
+  // We enforce frame-ancestors in the outer documents, but not for
+  // embedders/GuestViews.
   RenderFrameHostImpl* parent =
-      ParentOrOuterDelegate(static_cast<RenderFrameHostImpl*>(
+      GetParentExceptForFencedFrame(static_cast<RenderFrameHostImpl*>(
           navigation_handle()->GetRenderFrameHost()));
+
   while (parent) {
     // CSP violations (if any) are reported via the disallowed ancestor of the
     // navigated frame (because while the throttle runs the navigation hasn't
@@ -420,13 +330,14 @@ AncestorThrottle::CheckResult AncestorThrottle::EvaluateFrameAncestors(
             content_security_policy,
             network::mojom::CSPDirectiveName::FrameAncestors,
             parent->GetLastCommittedOrigin().GetURL(),
+            GURL(),  // url_before_redirects is ignored for frame-ancestors
             navigation_handle()->WasServerRedirect(),
             true /* is_response_check */, empty_source_location,
             network::CSPContext::CheckCSPDisposition::CHECK_ALL_CSP,
             navigation_handle()->IsFormSubmission())) {
       return CheckResult::BLOCK;
     }
-    parent = ParentOrOuterDelegate(parent);
+    parent = GetParentExceptForFencedFrame(parent);
   }
 
   return CheckResult::PROCEED;

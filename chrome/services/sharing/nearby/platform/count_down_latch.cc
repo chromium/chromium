@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ ExceptionOr<bool> CountDownLatch::Await(absl::Duration timeout) {
   // Return true if |count_waitable_event_| is signaled before TimedAwait()
   // times out. Otherwise, this returns false due to timing out.
   return ExceptionOr<bool>(count_waitable_event_.TimedWait(
-      base::TimeDelta::FromMicroseconds(absl::ToInt64Microseconds(timeout))));
+      base::Microseconds(absl::ToInt64Microseconds(timeout))));
 }
 
 void CountDownLatch::CountDown() {

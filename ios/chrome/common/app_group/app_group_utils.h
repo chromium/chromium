@@ -1,13 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_UTILSS_H_
-#define IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_UTILSS_H_
+#ifndef IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_UTILS_H_
+#define IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_UTILS_H_
 
 namespace app_group {
 
-// Synchronously clears the |ApplicationGroup| and the |CommonApplicationGroup|
+// Synchronously clears the `ApplicationGroup` and the `CommonApplicationGroup`
 // app group sandbox (folder and NSUserDefaults).
 // The function will be executed on the calling thread.
 // Disclaimer: This method may delete data that were not created by Chrome. Its
@@ -18,4 +18,4 @@ void ClearAppGroupSandbox();
 
 }  // namespace app_group
 
-#endif  // IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_UTILSS_H_
+#endif  // IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_UTILS_H_

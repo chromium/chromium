@@ -32,30 +32,30 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_BINDING_FOR_CORE_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_BINDING_FOR_CORE_H_
 
+#include "base/check_op.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
-#include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/bindings/v8_value_cache.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "v8/include/v8.h"
 
 namespace blink {
+
+namespace scheduler {
+class EventLoop;
+}  // namespace scheduler
 
 // This file contains core-specific bindings utility functions. For functions
 // that are core independent, see platform/bindings/V8Binding.h. When adding a
@@ -65,21 +65,39 @@ namespace blink {
 class DOMWindow;
 class ExceptionState;
 class ExecutionContext;
-class FlexibleArrayBufferView;
 class Frame;
 class LocalDOMWindow;
 class LocalFrame;
 class XPathNSResolver;
+class ScriptState;
 
 // Determines how a V8 -> C++ union conversion should be performed: when the
 // JavaScript value being converted is either undefined or null, kNullable will
 // stop the conversion attempt and the union's IsNull() method will return true.
 // If kNotNullable is used, the other conversion steps listed in
-// https://heycam.github.io/webidl/#es-union will continue being attempted.
+// https://webidl.spec.whatwg.org/#es-union will continue being attempted.
 enum class UnionTypeConversionMode {
   kNullable,
   kNotNullable,
 };
+
+// Embedder enum set in v8 to let the V8 Profiler surface back in samples the
+// type of work performed by the embedder during a trace.
+// Explainer: https://github.com/WICG/js-self-profiling/blob/main/markers.md
+enum class BlinkState : uint8_t {
+  EMPTY = 0,
+  OTHER = 1,
+  STYLE = 2,
+  LAYOUT = 3,
+  PAINT = 4,
+};
+
+#define ENTER_EMBEDDER_STATE(isolate, frame, state)               \
+  v8::HandleScope scope(isolate);                                 \
+  v8::Local<v8::Context> v8_context =                             \
+      ToV8ContextMaybeEmpty(frame, DOMWrapperWorld::MainWorld()); \
+  v8::EmbedderStateScope embedder_state(                          \
+      isolate, v8_context, static_cast<v8::EmbedderStateTag>(state));
 
 template <typename CallbackInfo, typename T>
 inline void V8SetReturnValue(const CallbackInfo& callbackInfo,
@@ -245,7 +263,7 @@ inline uint64_t ToUInt64(v8::Isolate* isolate,
 }
 
 // NaNs and +/-Infinity should be 0, otherwise modulo 2^64.
-// Step 8 - 12 of https://heycam.github.io/webidl/#abstract-opdef-converttoint
+// Step 8 - 12 of https://webidl.spec.whatwg.org/#abstract-opdef-converttoint
 inline uint64_t DoubleToInteger(double d) {
   if (std::isnan(d) || std::isinf(d))
     return 0;
@@ -304,7 +322,7 @@ CORE_EXPORT float ToRestrictedFloat(v8::Isolate*,
                                     v8::Local<v8::Value>,
                                     ExceptionState&);
 
-inline base::Optional<base::Time> ToCoreNullableDate(
+inline absl::optional<base::Time> ToCoreNullableDate(
     v8::Isolate* isolate,
     v8::Local<v8::Value> object,
     ExceptionState& exception_state) {
@@ -313,14 +331,14 @@ inline base::Optional<base::Time> ToCoreNullableDate(
   //   NaN time value, then set the value of the element to the empty string;
   // We'd like to return same values for |null| and an invalid Date object.
   if (object->IsNull())
-    return base::nullopt;
+    return absl::nullopt;
   if (!object->IsDate()) {
     exception_state.ThrowTypeError("The provided value is not a Date.");
-    return base::nullopt;
+    return absl::nullopt;
   }
   double time_value = object.As<v8::Date>()->ValueOf();
   if (!std::isfinite(time_value))
-    return base::nullopt;
+    return absl::nullopt;
   return base::Time::FromJsTime(time_value);
 }
 
@@ -435,6 +453,10 @@ CORE_EXPORT v8::Local<v8::Context> ToV8Context(LocalFrame*, DOMWrapperWorld&);
 CORE_EXPORT v8::Local<v8::Context> ToV8ContextEvenIfDetached(LocalFrame*,
                                                              DOMWrapperWorld&);
 
+// Like toV8Context but does not force the creation of context
+CORE_EXPORT v8::Local<v8::Context> ToV8ContextMaybeEmpty(LocalFrame*,
+                                                         DOMWrapperWorld&);
+
 // These methods can return nullptr if the context associated with the
 // ScriptState has already been detached.
 CORE_EXPORT ScriptState* ToScriptState(ExecutionContext*, DOMWrapperWorld&);
@@ -446,10 +468,6 @@ CORE_EXPORT ScriptState* ToScriptStateForMainWorld(LocalFrame*);
 // Returns the frame object of the window object associated with
 // a context, if the window is currently being displayed in a Frame.
 CORE_EXPORT LocalFrame* ToLocalFrameIfNotDetached(v8::Local<v8::Context>);
-
-CORE_EXPORT void ToFlexibleArrayBufferView(v8::Isolate*,
-                                           v8::Local<v8::Value>,
-                                           FlexibleArrayBufferView&);
 
 CORE_EXPORT bool IsValidEnum(const String& value,
                              const char* const* valid_values,
@@ -501,8 +519,19 @@ CORE_EXPORT Vector<String> GetOwnPropertyNames(v8::Isolate*,
                                                const v8::Local<v8::Object>&,
                                                ExceptionState&);
 
-v8::MicrotaskQueue* ToMicrotaskQueue(ExecutionContext*);
-v8::MicrotaskQueue* ToMicrotaskQueue(ScriptState*);
+CORE_EXPORT v8::MicrotaskQueue* ToMicrotaskQueue(ExecutionContext*);
+CORE_EXPORT v8::MicrotaskQueue* ToMicrotaskQueue(ScriptState*);
+CORE_EXPORT scheduler::EventLoop& ToEventLoop(ExecutionContext*);
+CORE_EXPORT scheduler::EventLoop& ToEventLoop(ScriptState*);
+
+// Helper finction used in the callback functions to validate context.
+// Returns true if the given execution context and V8 context are capable to run
+// an "in parallel" algorithm, otherwise returns false.  What implements an "in
+// parallel" algorithm should check the runnability before using the context.
+// https://html.spec.whatwg.org/C/#in-parallel
+CORE_EXPORT bool IsInParallelAlgorithmRunnable(
+    ExecutionContext* execution_context,
+    ScriptState* script_state);
 
 }  // namespace blink
 

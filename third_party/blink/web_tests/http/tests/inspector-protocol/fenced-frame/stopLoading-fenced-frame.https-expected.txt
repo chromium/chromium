@@ -1,0 +1,5 @@
+Tests that Page.stopLoading() in a fenced frame returns an error.
+Page.stopLoading() from a fenced frame:
+PASS: Command can only be executed on top-level targets
+navigation finished
+

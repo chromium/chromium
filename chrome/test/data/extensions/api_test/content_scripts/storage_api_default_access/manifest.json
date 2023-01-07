@@ -1,0 +1,16 @@
+{
+  "name": "content_script_storage_api_default_access",
+  "version": "1.0",
+  "manifest_version": 3,
+  "description": "Tests the Storage API behavior with default access level (trusted) from a content script.",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": ["storage"],
+  "content_scripts": [
+    {
+      "matches": ["http://*/extensions/test_file.html"],
+      "js": ["content_script.js"]
+    }
+  ]
+}

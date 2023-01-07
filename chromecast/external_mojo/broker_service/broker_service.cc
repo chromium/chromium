@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "chromecast/external_mojo/public/cpp/common.h"
 #include "chromecast/external_mojo/public/cpp/external_mojo_broker.h"
@@ -68,12 +67,13 @@ BrokerService::BrokerService(service_manager::Connector* connector) {
   io_thread_->StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));
 
-  bundle_.AddInterface(this);
   std::vector<std::string> external_services_to_proxy;
   const service_manager::Manifest& manifest = GetManifest();
   for (const auto& sub_manifest : manifest.packaged_services) {
     external_services_to_proxy.push_back(sub_manifest.service_name);
   }
+  bundle_.AddBinder(base::BindRepeating(&BrokerService::BindConnector,
+                                        base::Unretained(this)));
   broker_ = base::SequenceBound<ExternalMojoBroker>(io_thread_->task_runner(),
                                                     GetBrokerPath());
   broker_.AsyncCall(&ExternalMojoBroker::InitializeChromium)
@@ -119,7 +119,7 @@ const service_manager::Manifest& BrokerService::GetManifest() {
           .ExposeCapability(
               "connector_factory",
               std::set<const char*>{
-                  "chromecast.external_mojo.mojom.ConnectorFactory",
+                  "chromecast.external_mojo.mojom.ExternalConnector",
               })
           .Build()
           .Amend(MakePackagedServices(GetExternalManifests()))};
@@ -146,6 +146,10 @@ mojo::PendingRemote<mojom::ExternalConnector> BrokerService::CreateConnector() {
 
 void BrokerService::BindServiceRequest(
     mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
+  if (service_receiver_.is_bound()) {
+    LOG(INFO) << "BrokerService is re-binding to the Service Manager.";
+    service_receiver_.Close();
+  }
   service_receiver_.Bind(std::move(receiver));
 }
 

@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -31,7 +31,8 @@ source_set("database") {
 
   deps = [
     "//base",
-    "//components/download/database/proto",
+    "//components/download/database/proto:download_entry_proto",
+    "//components/download/database/proto:download_source_proto",
     "//components/leveldb_proto",
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",
@@ -50,7 +51,8 @@ source_set("unit_tests") {
   deps = [
     ":database",
     "//base/test:test_support",
-    "//components/download/database/proto",
+    "//components/download/database/proto:download_entry_proto",
+    "//components/download/database/proto:download_source_proto",
     "//components/leveldb_proto:test_support",
     "//content/test:test_support",
     "//testing/gmock",

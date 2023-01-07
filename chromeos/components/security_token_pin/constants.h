@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,13 +28,5 @@ enum class ErrorLabel {
 
 }  // namespace security_token_pin
 }  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-namespace security_token_pin {
-using ::chromeos::security_token_pin::CodeType;
-using ::chromeos::security_token_pin::ErrorLabel;
-}  // namespace security_token_pin
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_SECURITY_TOKEN_PIN_CONSTANTS_H_

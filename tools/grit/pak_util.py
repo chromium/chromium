@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2017 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,15 +16,20 @@ import gzip
 import hashlib
 import os
 import shutil
+import subprocess
 import sys
 import tempfile
 
-# Import grit first to get local third_party modules.
-import grit  # pylint: disable=ungrouped-imports,unused-import
+_HERE_PATH = os.path.dirname(__file__)
+_SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..'))
+sys.path.insert(0, os.path.join(_SRC_PATH, 'third_party', 'six', 'src'))
 
 import six
 
+from grit import constants
 from grit.format import data_pack
+
+_GZIP_HEADER = b'\x1f\x8b'
 
 
 def _RepackMain(args):
@@ -51,6 +56,34 @@ def _RepackMain(args):
         shutil.copyfileobj(temp_outfile, outgz)
 
 
+def _MaybeDecompress(payload, brotli_path=None):
+  if payload.startswith(_GZIP_HEADER):
+    return gzip.decompress(payload)
+  if payload.startswith(constants.BROTLI_CONST):
+    shell = brotli_path is None
+    brotli_path = brotli_path or 'brotli'
+    # Header is 2 bytes, size is 6 bytes.
+    payload = payload[8:]
+    try:
+      result = subprocess.run([brotli_path, '--decompress', '--stdout'],
+                              shell=shell,
+                              input=payload,
+                              stdout=subprocess.PIPE,
+                              check=True)
+      # I don't know why with "sudo apt-get install brotli", files come out 4
+      # bytes larger and the command doesn't fail.
+      if len(result.stdout) == len(payload) + 4:
+        sys.stderr.write('Brotli decompression failed. You likely need to use '
+                         'the version of brotli built by Chrome '
+                         '(out/Release/clang_x64/brotli).\n')
+        sys.exit(1)
+      return result.stdout
+    except subprocess.CalledProcessError as e:
+      sys.stderr.write(str(e) + '\n')
+      sys.exit(1)
+  return payload
+
+
 def _ExtractMain(args):
   pak = data_pack.ReadDataPack(args.pak_file)
   if args.textual_id:
@@ -60,7 +93,9 @@ def _ExtractMain(args):
         info_dict[resource_id].textual_id
         if args.textual_id else str(resource_id))
     path = os.path.join(args.output_dir, filename)
-    with open(path, 'w') as f:
+    with open(path, 'wb') as f:
+      if not args.raw:
+        payload = _MaybeDecompress(payload, args.brotli)
       f.write(payload)
 
 
@@ -109,7 +144,7 @@ def _PrintMain(args):
       try:
         desc = six.text_type(data, encoding)
         if len(desc) > 60:
-          desc = desc[:60] + u'...'
+          desc = desc[:60] + '...'
         desc = desc.replace('\n', '\\n')
       except UnicodeDecodeError:
         pass
@@ -118,13 +153,13 @@ def _PrintMain(args):
       textual_id = info_dict[resource_id].textual_id
       canonical_textual_id = info_dict[canonical_id].textual_id
       output.write(
-          u'Entry(id={}, canonical_id={}, size={}, sha1={}): {}\n'.format(
+          'Entry(id={}, canonical_id={}, size={}, sha1={}): {}\n'.format(
               textual_id, canonical_textual_id, len(data), sha1,
-              desc).encode('utf-8'))
+              desc))
     else:
       output.write(
-          u'Entry(id={}, canonical_id={}, size={}, sha1={}): {}\n'.format(
-              resource_id, canonical_id, len(data), sha1, desc).encode('utf-8'))
+          'Entry(id={}, canonical_id={}, size={}, sha1={}): {}\n'.format(
+              resource_id, canonical_id, len(data), sha1, desc))
 
 
 def _ListMain(args):
@@ -173,6 +208,13 @@ def main():
   sub_parser.add_argument('pak_file')
   sub_parser.add_argument('-o', '--output-dir', default='.',
                           help='Directory to extract to.')
+  sub_parser.add_argument('--raw',
+                          action='store_true',
+                          help='Do not decompress when extracting.')
+  sub_parser.add_argument('--brotli',
+                          help='Path to brotli executable. Needed only to '
+                          'decompress brotli-compressed entries. For a '
+                          'chromium checkout, find in your output directory')
   sub_parser.add_argument(
       '-t',
       '--textual-id',

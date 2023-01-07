@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ uint32_t PixFormatVideoToDrm(VideoPixelFormat from) {
   }
 }
 
-base::Optional<gfx::BufferFormat> PixFormatVideoToGfx(
+absl::optional<gfx::BufferFormat> PixFormatVideoToGfx(
     VideoPixelFormat pixel_format) {
   switch (pixel_format) {
     case PIXEL_FORMAT_MJPEG:
@@ -70,7 +70,7 @@ base::Optional<gfx::BufferFormat> PixFormatVideoToGfx(
     case PIXEL_FORMAT_NV12:
       return gfx::BufferFormat::YUV_420_BIPLANAR;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

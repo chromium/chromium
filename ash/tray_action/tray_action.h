@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/mojom/tray_action.mojom.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -42,6 +41,10 @@ class ASH_EXPORT TrayAction : public mojom::TrayAction,
                               public ui::InputDeviceEventObserver {
  public:
   explicit TrayAction(BacklightsForcedOffSetter* backlights_forced_off_setter);
+
+  TrayAction(const TrayAction&) = delete;
+  TrayAction& operator=(const TrayAction&) = delete;
+
   ~TrayAction() override;
 
   LockScreenNoteDisplayStateHandler*
@@ -102,8 +105,6 @@ class ASH_EXPORT TrayAction : public mojom::TrayAction,
 
   base::ScopedObservation<ui::DeviceDataManager, ui::InputDeviceEventObserver>
       stylus_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TrayAction);
 };
 
 }  // namespace ash

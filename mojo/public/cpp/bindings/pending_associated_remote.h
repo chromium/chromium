@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 #include <stdint.h>
 
+#include <type_traits>
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
 #include "mojo/public/cpp/bindings/lib/multiplex_router.h"
@@ -38,26 +38,24 @@ class PendingAssociatedRemote {
                           uint32_t version)
       : handle_(std::move(handle)), version_(version) {}
 
-  // Temporary helper for transitioning away from old types. Intentionally an
-  // implicit constructor.
-  PendingAssociatedRemote(AssociatedInterfacePtrInfo<Interface>&& ptr_info)
-      : PendingAssociatedRemote(ptr_info.PassHandle(), ptr_info.version()) {}
-
   // Disabled on NaCl since it crashes old version of clang.
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // Move conversion operator for custom remote types. Only participates in
   // overload resolution if a typesafe conversion is supported.
   template <typename T,
             std::enable_if_t<std::is_same<
                 PendingAssociatedRemote<Interface>,
-                std::result_of_t<decltype (&PendingAssociatedRemoteConverter<
-                                           T>::template To<Interface>)(T&&)>>::
-                                 value>* = nullptr>
+                std::invoke_result_t<decltype(&PendingAssociatedRemoteConverter<
+                                              T>::template To<Interface>),
+                                     T&&>>::value>* = nullptr>
   PendingAssociatedRemote(T&& other)
       : PendingAssociatedRemote(
             PendingAssociatedRemoteConverter<T>::template To<Interface>(
                 std::move(other))) {}
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
+
+  PendingAssociatedRemote(const PendingAssociatedRemote&) = delete;
+  PendingAssociatedRemote& operator=(const PendingAssociatedRemote&) = delete;
 
   ~PendingAssociatedRemote() = default;
 
@@ -72,12 +70,6 @@ class PendingAssociatedRemote {
 
   void reset() { handle_.reset(); }
 
-  // Temporary helper for transitioning away from old bindings types. This is
-  // intentionally an implicit conversion.
-  operator AssociatedInterfacePtrInfo<Interface>() {
-    return AssociatedInterfacePtrInfo<Interface>(PassHandle(), version());
-  }
-
   ScopedInterfaceEndpointHandle PassHandle() { return std::move(handle_); }
   const ScopedInterfaceEndpointHandle& handle() const { return handle_; }
   void set_handle(ScopedInterfaceEndpointHandle handle) {
@@ -87,8 +79,8 @@ class PendingAssociatedRemote {
   uint32_t version() const { return version_; }
   void set_version(uint32_t version) { version_ = version; }
 
-  PendingAssociatedReceiver<Interface> InitWithNewEndpointAndPassReceiver()
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] REINITIALIZES_AFTER_MOVE PendingAssociatedReceiver<Interface>
+  InitWithNewEndpointAndPassReceiver();
 
   // Associates this endpoint with a dedicated message pipe. This allows the
   // entangled AssociatedReceiver/AssociatedRemote endpoints to be used
@@ -103,11 +95,11 @@ class PendingAssociatedRemote {
 
     MessagePipe pipe;
     scoped_refptr<internal::MultiplexRouter> router0 =
-        new internal::MultiplexRouter(
+        internal::MultiplexRouter::CreateAndStartReceiving(
             std::move(pipe.handle0), internal::MultiplexRouter::MULTI_INTERFACE,
             false, base::SequencedTaskRunnerHandle::Get());
     scoped_refptr<internal::MultiplexRouter> router1 =
-        new internal::MultiplexRouter(
+        internal::MultiplexRouter::CreateAndStartReceiving(
             std::move(pipe.handle1), internal::MultiplexRouter::MULTI_INTERFACE,
             true, base::SequencedTaskRunnerHandle::Get());
 
@@ -118,8 +110,6 @@ class PendingAssociatedRemote {
  private:
   ScopedInterfaceEndpointHandle handle_;
   uint32_t version_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PendingAssociatedRemote);
 };
 
 // Constructs an invalid PendingAssociatedRemote of any arbitrary interface

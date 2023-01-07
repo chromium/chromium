@@ -1,0 +1,3 @@
+Tests that reload of an OOPIF page doesn't cause a crash
+PASSED: alive and kicking!
+

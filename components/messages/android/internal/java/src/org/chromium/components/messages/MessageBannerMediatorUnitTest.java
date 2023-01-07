@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,7 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
+import org.chromium.components.messages.MessageStateHandler.Position;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link MessageBannerMediator}. */
@@ -45,6 +46,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class MessageBannerMediatorUnitTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    private static final int PEEKING_LAYER_HEIGHT = 20;
+    private static final int DEFAULT_MARGIN = 18;
+    private static final int PEEKING_MARGIN = PEEKING_LAYER_HEIGHT + DEFAULT_MARGIN;
 
     @Mock
     private Resources mResources;
@@ -67,6 +72,8 @@ public class MessageBannerMediatorUnitTest {
     @Before
     public void setUp() {
         mModel = new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                         .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                 MessageIdentifier.TEST_MESSAGE)
                          .with(MessageBannerProperties.TITLE, "Title")
                          .with(MessageBannerProperties.DESCRIPTION, "Desc")
                          .build();
@@ -78,6 +85,10 @@ public class MessageBannerMediatorUnitTest {
                 .thenReturn(24);
         when(mResources.getDimensionPixelSize(R.dimen.message_max_horizontal_translation))
                 .thenReturn(120);
+        when(mResources.getDimensionPixelSize(R.dimen.message_peeking_layer_height))
+                .thenReturn(PEEKING_LAYER_HEIGHT);
+        when(mResources.getDimensionPixelSize(R.dimen.message_shadow_top_margin))
+                .thenReturn(DEFAULT_MARGIN);
         doAnswer(invocation -> {
             ((Animator) invocation.getArguments()[0]).start();
             return null;
@@ -91,102 +102,121 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testShowMessage() {
-        mMediator.show(mShownRunnable);
+        Animator animator = mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable);
 
         verify(mShownRunnable, times(0)).run();
-        assertModelState(0, -100, 0, "before showing.");
+        assertModelState(0, -100, 0, DEFAULT_MARGIN, "before showing.");
 
+        animator.start();
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
+        verify(mShownRunnable, times(1)).run();
+    }
+
+    @Test
+    public void testShowBackMessage() {
+        Animator animator = mMediator.show(Position.FRONT, Position.BACK, mShownRunnable);
+
+        verify(mShownRunnable, times(0)).run();
+        assertModelState(0, 0, 0, DEFAULT_MARGIN, "before showing.");
+
+        animator.start();
+        shadowOf(getMainLooper()).idle();
+
+        assertModelState(0, 0, 1, PEEKING_MARGIN, "fully shown.");
         verify(mShownRunnable, times(1)).run();
     }
 
     @Test
     public void testHideMessage() {
-        mMediator.show(mShownRunnable);
+        Animator animator = mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable);
+        animator.start();
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
-        mMediator.hide(true, mHiddenRunnable);
+        animator = mMediator.hide(true, mHiddenRunnable);
         verify(mHiddenRunnable, times(0)).run();
 
+        animator.start();
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, -100, 0, "after hidden.");
+        assertModelState(0, -100, 0, DEFAULT_MARGIN, "after hidden.");
         verify(mHiddenRunnable, times(1)).run();
     }
 
     @Test
     public void testHideMessageNoAnimation() {
-        mMediator.show(mShownRunnable);
+        Animator animator = mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable);
+        animator.start();
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         mMediator.hide(false, mHiddenRunnable);
-        assertModelState(0, -100, 0, "after hidden.");
+
+        assertModelState(0, -100, 0, DEFAULT_MARGIN, "after hidden.");
         verify(mHiddenRunnable, times(1)).run();
     }
 
     @Test
     public void testVerticalDismiss() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // More than the threshold to dismiss
         swipeVertical(-20, 0);
 
         // .8 is 1 (fully opaque) - 20 (translationY) / 100 (maxTranslation)
-        assertModelState(0, -20, .8f, "after swipe.");
+        assertModelState(0, -20, .8f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, -100, 0, "after dismiss animation.");
+        assertModelState(0, -100, 0, DEFAULT_MARGIN, "after dismiss animation.");
         verify(mDismissedRunnable, times(1)).run();
     }
 
     @Test
     public void testVerticalNotDismissed() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Less than the threshold to dismiss
         swipeVertical(-10, 0);
 
         // .9 is 1 (fully opaque) - 20 (translationY) / 100 (maxTranslation)
-        assertModelState(0, -10, .9f, "after swipe.");
+        assertModelState(0, -10, .9f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
         // Should return back to idle position
-        assertModelState(0, 0, 1, "animated to idle position.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "animated to idle position.");
         verify(mDismissedRunnable, times(0)).run();
     }
 
     @Test
     public void testSwipeDownIsNoop() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         swipeVertical(10, 0);
 
-        assertModelState(0, 0, 1, "swipe doesn't do anything.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "swipe doesn't do anything.");
 
         shadowOf(getMainLooper()).idle();
         verify(mDismissedRunnable, times(0)).run();
@@ -194,164 +224,142 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testLeftDismiss() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // More than the threshold to dismiss
         swipeHorizontal(-30, 0);
 
         // .75 is 1 (fully opaque) - 30 (translationX) / 120 (maxTranslation)
-        assertModelState(-30, 0, .75f, "after swipe.");
+        assertModelState(-30, 0, .75f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(-120, 0, 0, "after dismiss animation.");
+        assertModelState(-120, 0, 0, DEFAULT_MARGIN, "after dismiss animation.");
         verify(mDismissedRunnable, times(1)).run();
     }
 
     @Test
     public void testLeftNotDismissed() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Less than the threshold to dismiss
         swipeHorizontal(-12, 0);
 
         // Alpha .9 is 1 (fully opaque) - 12 (translationY) / 120 (maxTranslation)
-        assertModelState(-12, 0, .9f, "after swipe.");
+        assertModelState(-12, 0, .9f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, "animated to idle position.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "animated to idle position.");
         verify(mDismissedRunnable, times(0)).run();
     }
 
     @Test
     public void testRightDismiss() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // More than the threshold to dismiss
         swipeHorizontal(30, 0);
 
         // Alpha .75 is 1 (fully opaque) - 30 (translationY) / 120 (maxTranslation)
-        assertModelState(30, 0, .75f, "after swipe.");
+        assertModelState(30, 0, .75f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(120, 0, 0, "after dismiss animation.");
+        assertModelState(120, 0, 0, DEFAULT_MARGIN, "after dismiss animation.");
         verify(mDismissedRunnable, times(1)).run();
     }
 
     @Test
     public void testRightNotDismissed() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Less than the threshold to dismiss
         swipeHorizontal(12, 0);
 
         // Alpha .9 is 1 (fully opaque) - 12 (translationY) / 120 (maxTranslation)
-        assertModelState(12, 0, .9f, "after swipe.");
+        assertModelState(12, 0, .9f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, "animated to idle position.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "animated to idle position.");
         verify(mDismissedRunnable, times(0)).run();
     }
 
     @Test
-    public void testHorizontalFlingFromOutsideThresholdToCenterNotDismissed() {
-        mMediator.show(mShownRunnable);
+    public void testHorizontalFlingFromOutsideThresholdToCenterDismissed() {
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // More than the threshold to dismiss, fling back to center
         swipeHorizontal(60, -100);
 
         // Alpha .5 is 1 (fully opaque) - 60 (translationY) / 120 (maxTranslation)
-        assertModelState(60, 0, .5f, "after swipe.");
+        assertModelState(60, 0, .5f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, "animated to idle position after fling.");
-        verify(mDismissedRunnable, times(0)).run();
-
-        // More than the threshold to dismiss, fling back to center
-        swipeHorizontal(-30, 100);
-
-        // Alpha .75 is 1 (fully opaque) - 30 (translationY) / 120 (maxTranslation)
-        assertModelState(-30, 0, .75f, "after swipe.");
-
-        shadowOf(getMainLooper()).idle();
-
-        assertModelState(0, 0, 1, "animated to idle position after fling.");
-        verify(mDismissedRunnable, times(0)).run();
+        assertModelState(120, 0, 0, DEFAULT_MARGIN, "after swipe");
+        verify(mDismissedRunnable).run();
     }
 
     @Test
     public void testVerticalFlingDown() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // More than the threshold to dismiss, fling back to center
         swipeVertical(-20, 100);
 
         // .8 is 1 (fully opaque) - 20 (translationY) / 100 (maxTranslation)
-        assertModelState(0, -20, .8f, "after swipe.");
+        assertModelState(0, -20, .8f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(0, 0, 1, "animated to idle position after fling.");
-        verify(mDismissedRunnable, times(0)).run();
-
-        // Less than the threshold to dismiss, fling back to center
-        swipeVertical(-10, 100);
-
-        // .9 is 1 (fully opaque) - 10 (translationY) / 100 (maxTranslation)
-        assertModelState(0, -10, .9f, "after swipe.");
-
-        shadowOf(getMainLooper()).idle();
-
-        assertModelState(0, 0, 1, "animated to idle position after fling.");
-        verify(mDismissedRunnable, times(0)).run();
+        assertModelState(0, -100, 0, DEFAULT_MARGIN, "after swipe");
+        verify(mDismissedRunnable, times(1)).run();
     }
 
     @Test
     public void testVerticalFlingDownIsNoop() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Swipe and fling down
         swipeVertical(10, 100);
-        assertModelState(0, 0, 1, "gesture doesn't do anything.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "gesture doesn't do anything.");
 
         shadowOf(getMainLooper()).idle();
         verify(mDismissedRunnable, times(0)).run();
@@ -359,165 +367,165 @@ public class MessageBannerMediatorUnitTest {
 
     @Test
     public void testVerticalFlingUpWithinThresholdDismisses() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Swipe less than threshold and fling up
         swipeVertical(-10, -100);
         // .9 is 1 (fully opaque) - 10 (translationY) / 100 (maxTranslation)
-        assertModelState(0, -10, .9f, "after swipe.");
+        assertModelState(0, -10, .9f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
-        assertModelState(0, -100, 0, "after dismiss animation.");
+        assertModelState(0, -100, 0, DEFAULT_MARGIN, "after dismiss animation.");
         verify(mDismissedRunnable, times(1)).run();
     }
 
     @Test
     public void testVerticalFlingUpOutsideThresholdDismisses() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Swipe more than threshold and fling up
         swipeVertical(-20, -100);
         // .8 is 1 (fully opaque) - 10 (translationY) / 100 (maxTranslation)
-        assertModelState(0, -20, .8f, "after swipe.");
+        assertModelState(0, -20, .8f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
-        assertModelState(0, -100, 0, "after dismiss animation.");
+        assertModelState(0, -100, 0, DEFAULT_MARGIN, "after dismiss animation.");
         verify(mDismissedRunnable, times(1)).run();
     }
 
     @Test
-    public void testLeftFlingWithinThresholdPositiveXDismisses() {
-        mMediator.show(mShownRunnable);
+    public void testLeftFlingWithinThresholdPositiveXNoDismisses() {
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Less than the threshold to dismiss to the right, fling left
         swipeHorizontal(12, -100);
 
         // Alpha .9 is 1 (fully opaque) - 12 (translationY) / 120 (maxTranslation)
-        assertModelState(12, 0, .9f, "after swipe.");
+        assertModelState(12, 0, .9f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(-120, 0, 0, "dismissed to left after fling.");
-        verify(mDismissedRunnable, times(1)).run();
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "animate back to center.");
+        verify(mDismissedRunnable, times(0)).run();
     }
 
     @Test
-    public void testLeftFlingWithinThresholdNegativeXDismisses() {
-        mMediator.show(mShownRunnable);
+    public void testLeftFlingWithinThresholdNegativeXNoDismisses() {
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Less than the threshold to dismiss to the left, fling left
         swipeHorizontal(-12, -100);
 
         // Alpha .9 is 1 (fully opaque) - 12 (translationY) / 120 (maxTranslation)
-        assertModelState(-12, 0, .9f, "after swipe.");
+        assertModelState(-12, 0, .9f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(-120, 0, 0, "dismissed to left after fling.");
-        verify(mDismissedRunnable, times(1)).run();
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "animate back to center.");
+        verify(mDismissedRunnable, times(0)).run();
     }
 
     @Test
-    public void testRightFlingWithinThresholdNegativeXDismisses() {
-        mMediator.show(mShownRunnable);
+    public void testRightFlingWithinThresholdNegativeXNoDismisses() {
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Less than the threshold to dismiss to the left, fling right
         swipeHorizontal(-12, 100);
 
         // Alpha .9 is 1 (fully opaque) - 12 (translationY) / 120 (maxTranslation)
-        assertModelState(-12, 0, .9f, "after swipe.");
+        assertModelState(-12, 0, .9f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(120, 0, 0, "dismissed to right after fling.");
-        verify(mDismissedRunnable, times(1)).run();
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "animate back to center.");
+        verify(mDismissedRunnable, times(0)).run();
     }
 
     @Test
-    public void testRightFlingWithinThresholdPositiveXDismisses() {
-        mMediator.show(mShownRunnable);
+    public void testRightFlingWithinThresholdPositiveXNoDismisses() {
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // Less than the threshold to dismiss to the right, fling right
         swipeHorizontal(12, 100);
 
         // Alpha .9 is 1 (fully opaque) - 12 (translationY) / 120 (maxTranslation)
-        assertModelState(12, 0, .9f, "after swipe.");
+        assertModelState(12, 0, .9f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(120, 0, 0, "dismissed to right after fling.");
-        verify(mDismissedRunnable, times(1)).run();
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "animate back to center.");
+        verify(mDismissedRunnable, times(0)).run();
     }
 
     @Test
     public void testLeftFlingOutsideThresholdDismisses() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // More than the threshold to dismiss to the left, fling left
         swipeHorizontal(-30, -100);
 
         // Alpha .75 is 1 (fully opaque) - 30 (translationY) / 120 (maxTranslation)
-        assertModelState(-30, 0, .75f, "after swipe.");
+        assertModelState(-30, 0, .75f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(-120, 0, 0, "dismissed to left after fling.");
+        assertModelState(-120, 0, 0, DEFAULT_MARGIN, "dismissed to left after fling.");
         verify(mDismissedRunnable, times(1)).run();
     }
 
     @Test
     public void testRightFlingOutsideThresholdDismisses() {
-        mMediator.show(mShownRunnable);
+        mMediator.show(Position.INVISIBLE, Position.FRONT, mShownRunnable).start();
 
         shadowOf(getMainLooper()).idle();
 
         verify(mDismissedRunnable, times(0)).run();
-        assertModelState(0, 0, 1, "fully shown.");
+        assertModelState(0, 0, 1, DEFAULT_MARGIN, "fully shown.");
 
         // More than the threshold to dismiss to the right, fling right
         swipeHorizontal(30, 100);
 
         // Alpha .75 is 1 (fully opaque) - 30 (translationY) / 120 (maxTranslation)
-        assertModelState(30, 0, .75f, "after swipe.");
+        assertModelState(30, 0, .75f, DEFAULT_MARGIN, "after swipe.");
 
         shadowOf(getMainLooper()).idle();
 
-        assertModelState(120, 0, 0, "dismissed to right after fling.");
+        assertModelState(120, 0, 0, DEFAULT_MARGIN, "dismissed to right after fling.");
         verify(mDismissedRunnable, times(1)).run();
     }
 
@@ -572,12 +580,14 @@ public class MessageBannerMediatorUnitTest {
     }
 
     private void assertModelState(float translationXExpected, float translationYExpected,
-            float alphaExpected, String message) {
+            float alphaExpected, int marginTopExpected, String message) {
         assertEquals("Incorrect translation x, " + message, translationXExpected,
                 mModel.get(MessageBannerProperties.TRANSLATION_X), MathUtils.EPSILON);
         assertEquals("Incorrect translation y, " + message, translationYExpected,
                 mModel.get(MessageBannerProperties.TRANSLATION_Y), MathUtils.EPSILON);
         assertEquals("Incorrect alpha, " + message, alphaExpected,
                 mModel.get(MessageBannerProperties.ALPHA), MathUtils.EPSILON);
+        assertEquals("Incorrect margin top, " + message, marginTopExpected,
+                mModel.get(MessageBannerProperties.MARGIN_TOP));
     }
 }

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<title>For crbug.com/1347097</title>
+<!-- This is not a WPT test because 'zoom' is not a standard CSS property. -->
+<style>
+.test {
+  width: 14px;
+  height: 14px;
+  background: red;
+  box-shadow: inset 16px 0 green;
+}
+</style>
+<div class="test"></div>
+<div class="test" style="zoom: 1.1"></div>
+<div class="test" style="zoom: 1.218"></div>
+<div class="test" style="zoom: 1.337"></div>
+<div class="test" style="zoom: 3.122"></div>

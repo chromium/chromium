@@ -1,0 +1,31 @@
+noparent = True
+
+include_rules = [
+  "+base",
+  "+chromeos/ash/components/dbus",
+  "+chromeos/ash/components/login/auth/public",
+  "+chromeos/dbus",
+  "+components/account_id",
+  "+components/device_event_log",
+  "+components/user_manager",
+  "+components/version_info",
+  "+third_party/cros_system_api",
+
+  # Abseil features must be allowlisted explicitly for now. See
+  # //styleguide/c++/c++11.html. Allowed features' headers will be listed
+  # explicitly here.
+  # Please keep this section in sync with //DEPS.
+  '-absl',
+  '-third_party/abseil-cpp',
+  '+third_party/abseil-cpp/absl/base/attributes.h',
+  "+third_party/abseil-cpp/absl/numeric/int128.h",
+  '+third_party/abseil-cpp/absl/types/optional.h',
+  '+third_party/abseil-cpp/absl/types/variant.h',
+  '+third_party/abseil-cpp/absl/utility/utility.h',
+]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+testing",
+  ],
+}

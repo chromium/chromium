@@ -1,12 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -92,7 +92,7 @@ const BrowserDescriptor kBrowserDescriptors[] = {
 };
 
 const BrowserDescriptor* FindBrowserDescriptor(const std::string& package) {
-  size_t count = base::size(kBrowserDescriptors);
+  size_t count = std::size(kBrowserDescriptors);
   for (size_t i = 0; i < count; i++) {
     if (kBrowserDescriptors[i].package == package)
       return &kBrowserDescriptors[i];
@@ -102,7 +102,7 @@ const BrowserDescriptor* FindBrowserDescriptor(const std::string& package) {
 
 bool BrowserCompare(const AndroidDeviceManager::BrowserInfo& a,
                     const AndroidDeviceManager::BrowserInfo& b) {
-  size_t count = base::size(kBrowserDescriptors);
+  size_t count = std::size(kBrowserDescriptors);
   for (size_t i = 0; i < count; i++) {
     bool isA = kBrowserDescriptors[i].display_name == a.display_name;
     bool isB = kBrowserDescriptors[i].display_name == b.display_name;
@@ -230,9 +230,9 @@ StringMap MapIdsToUsers(const std::string& response) {
       size_t first_pos = fields.find_first_of(":");
       size_t last_pos = fields.find_last_of(":");
       if (first_pos != std::string::npos && last_pos != std::string::npos) {
-        std::string id = fields.substr(0, first_pos).as_string();
-        std::string name = fields.substr(first_pos + 1,
-                                         last_pos - first_pos - 1).as_string();
+        std::string id(fields.substr(0, first_pos));
+        std::string name(
+            fields.substr(first_pos + 1, last_pos - first_pos - 1));
         id_to_username[id] = name;
       }
     }

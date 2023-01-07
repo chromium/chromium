@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -16,7 +15,7 @@
 #include "third_party/skia/include/gpu/gl/GrGLAssembleInterface.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace exo {
@@ -73,7 +72,9 @@ bool FullscreenClient::Run(const InitParams& params) {
 
 void FullscreenClient::AllocateBuffers(const InitParams& params) {
   for (size_t i = 0; i < params.num_buffers; ++i) {
-    auto buffer = CreateBuffer(size_, params.drm_format, params.bo_usage);
+    auto buffer =
+        CreateBuffer(size_, params.drm_format, params.bo_usage,
+                     /*add_buffer_listener=*/!params.use_release_fences);
     if (!buffer) {
       LOG(ERROR) << "Failed to create buffer";
       return;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CONTENT_PUBLIC_BROWSER_POSIX_FILE_DESCRIPTOR_INFO_H_
 
 #include <stddef.h>
-
-#include <memory>
 
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"

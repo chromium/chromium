@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,15 +103,9 @@ TEST_F(ScrollerTest, Fling) {
   base::TimeTicks start_time = base::TimeTicks::Now();
 
   // Start a fling and verify initialized values.
-  scroller.Fling(kDefaultStartX,
-                 kDefaultStartY,
-                 kDefaultVelocityX,
-                 kDefaultVelocityY,
-                 INT_MIN,
-                 INT_MAX,
-                 INT_MIN,
-                 INT_MAX,
-                 start_time);
+  scroller.Fling(kDefaultStartX, kDefaultStartY, kDefaultVelocityX,
+                 kDefaultVelocityY, INT_MIN, static_cast<float>(INT_MAX),
+                 INT_MIN, static_cast<float>(INT_MAX), start_time);
 
   EXPECT_EQ(kDefaultStartX, scroller.GetStartX());
   EXPECT_EQ(kDefaultStartY, scroller.GetStartY());

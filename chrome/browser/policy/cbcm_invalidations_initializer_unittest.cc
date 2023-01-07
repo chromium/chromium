@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,12 @@
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/device_identity/device_oauth2_token_store_desktop.h"
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/policy/core/common/features.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -25,10 +23,14 @@ namespace policy {
 
 namespace {
 
-static const char kRefreshToken[] = "refresh_token";
-static const char kServiceAccountEmail[] = "service_account@example.com";
+static const char kFirstRefreshToken[] = "first_refresh_token";
+static const char kSecondRefreshToken[] = "second_refresh_token";
+static const char kFirstAccessToken[] = "first_access_token";
+static const char kSecondAccessToken[] = "second_access_token";
+static const char kServiceAccountEmail[] =
+    "service_account@system.gserviceaccount.com";
 static const char kOtherServiceAccountEmail[] =
-    "other_service_account@example.com";
+    "other_service_account@system.gserviceaccount.com";
 static const char kDMToken[] = "dm_token";
 static const char kAuthCode[] = "auth_code";
 
@@ -77,15 +79,20 @@ class CBCMInvalidationsInitializerTest
 
   FakeCloudPolicyClient* policy_client() { return &mock_policy_client_; }
 
+  TestingPrefServiceSimple* testing_local_state() {
+    return &testing_local_state_;
+  }
+
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
   }
 
-  std::string MakeTokensFromAuthCodesResponse() {
+  std::string MakeTokensFromAuthCodesResponse(const std::string& refresh_token,
+                                              const std::string& access_token) {
     base::DictionaryValue dict;
-    dict.SetString("access_token", "access_token");
-    dict.SetString("refresh_token", kRefreshToken);
-    dict.SetInteger("expires_in", 9999);
+    dict.SetStringKey("access_token", access_token);
+    dict.SetStringKey("refresh_token", refresh_token);
+    dict.SetIntKey("expires_in", 9999);
 
     std::string json;
     base::JSONWriter::Write(dict, &json);
@@ -94,10 +101,6 @@ class CBCMInvalidationsInitializerTest
 
  private:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {features::kCBCMPolicyInvalidations, features::kCBCMRemoteCommands},
-        {});
-
     DeviceOAuth2TokenStoreDesktop::RegisterPrefs(
         testing_local_state_.registry());
     DeviceOAuth2TokenServiceFactory::Initialize(GetURLLoaderFactory(),
@@ -117,7 +120,6 @@ class CBCMInvalidationsInitializerTest
   FakeCloudPolicyClient mock_policy_client_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple testing_local_state_;
 };
 
@@ -134,7 +136,7 @@ TEST_F(CBCMInvalidationsInitializerTest,
   DeviceOAuth2TokenServiceFactory::Get()->SetServiceAccountEmail(
       kServiceAccountEmail);
   DeviceOAuth2TokenServiceFactory::Get()->SetAndSaveRefreshToken(
-      kRefreshToken,
+      kFirstRefreshToken,
       base::BindRepeating(&CBCMInvalidationsInitializerTest::
                               RefreshTokenSavedCallbackExpectSuccess,
                           base::Unretained(this)));
@@ -150,7 +152,8 @@ TEST_F(CBCMInvalidationsInitializerTest,
   EXPECT_TRUE(IsInvalidationsServiceStarted());
 }
 
-TEST_F(CBCMInvalidationsInitializerTest, InvalidationsStartAfterTokenFetched) {
+TEST_F(CBCMInvalidationsInitializerTest,
+       InvalidationsStartIfRefreshTokenAbsent) {
   CBCMInvalidationsInitializer initializer(this);
 
   EXPECT_FALSE(IsInvalidationsServiceStarted());
@@ -160,11 +163,11 @@ TEST_F(CBCMInvalidationsInitializerTest, InvalidationsStartAfterTokenFetched) {
   EXPECT_EQ(GaiaUrls::GetInstance()->oauth2_token_url().spec(),
             test_url_loader_factory()->GetPendingRequest(0)->request.url);
 
-  EXPECT_FALSE(IsInvalidationsServiceStarted());
+  EXPECT_TRUE(IsInvalidationsServiceStarted());
 
   EXPECT_TRUE(test_url_loader_factory()->SimulateResponseForPendingRequest(
       GaiaUrls::GetInstance()->oauth2_token_url().spec(),
-      MakeTokensFromAuthCodesResponse()));
+      MakeTokensFromAuthCodesResponse(kFirstRefreshToken, kFirstAccessToken)));
 
   EXPECT_TRUE(IsInvalidationsServiceStarted());
 }
@@ -179,7 +182,7 @@ TEST_F(CBCMInvalidationsInitializerTest,
 
   EXPECT_TRUE(test_url_loader_factory()->SimulateResponseForPendingRequest(
       GaiaUrls::GetInstance()->oauth2_token_url().spec(),
-      MakeTokensFromAuthCodesResponse()));
+      MakeTokensFromAuthCodesResponse(kFirstRefreshToken, kFirstAccessToken)));
 
   EXPECT_TRUE(IsInvalidationsServiceStarted());
   EXPECT_EQ(0, test_url_loader_factory()->NumPending());
@@ -193,32 +196,99 @@ TEST_F(CBCMInvalidationsInitializerTest,
 }
 
 TEST_F(CBCMInvalidationsInitializerTest,
-       InvalidationsDontStartTwiceWhenTokenFetchRaces) {
+       CanHandleServiceAccountChangedAfterFetchingInSameSession) {
   CBCMInvalidationsInitializer initializer(this);
 
   EXPECT_FALSE(IsInvalidationsServiceStarted());
 
+  // Simulate that a policy sets a service account and triggers a fetch.
   initializer.OnServiceAccountSet(policy_client(), kServiceAccountEmail);
+  EXPECT_TRUE(IsInvalidationsServiceStarted());
   EXPECT_EQ(1, test_url_loader_factory()->NumPending());
   EXPECT_EQ(GaiaUrls::GetInstance()->oauth2_token_url().spec(),
             test_url_loader_factory()->GetPendingRequest(0)->request.url);
-
-  EXPECT_FALSE(IsInvalidationsServiceStarted());
-
-  // Trying to set the service account again when a request is already pending
-  // cancels the old request and starts a new one
-  initializer.OnServiceAccountSet(policy_client(), kOtherServiceAccountEmail);
-  EXPECT_EQ(1, test_url_loader_factory()->NumPending());
-
-  EXPECT_FALSE(IsInvalidationsServiceStarted());
-
   EXPECT_TRUE(test_url_loader_factory()->SimulateResponseForPendingRequest(
       GaiaUrls::GetInstance()->oauth2_token_url().spec(),
-      MakeTokensFromAuthCodesResponse()));
+      MakeTokensFromAuthCodesResponse(kFirstRefreshToken, kFirstAccessToken)));
+
+  EXPECT_EQ(0, test_url_loader_factory()->NumPending());
+  EXPECT_TRUE(
+      DeviceOAuth2TokenServiceFactory::Get()->RefreshTokenIsAvailable());
+  EXPECT_EQ(CoreAccountId::FromRobotEmail(kServiceAccountEmail),
+            DeviceOAuth2TokenServiceFactory::Get()->GetRobotAccountId());
+  std::string first_refresh_token =
+      testing_local_state()->GetString(kCBCMServiceAccountRefreshToken);
+
+  // Simulate that a policy comes in with a different service account. This
+  // should trigger a re-initialization of the service account.
+  initializer.OnServiceAccountSet(policy_client(), kOtherServiceAccountEmail);
+  EXPECT_EQ(1, test_url_loader_factory()->NumPending());
+  EXPECT_TRUE(IsInvalidationsServiceStarted());
+  EXPECT_TRUE(test_url_loader_factory()->SimulateResponseForPendingRequest(
+      GaiaUrls::GetInstance()->oauth2_token_url().spec(),
+      MakeTokensFromAuthCodesResponse(kSecondRefreshToken,
+                                      kSecondAccessToken)));
 
   EXPECT_EQ(1, num_invalidations_started());
-  EXPECT_EQ(CoreAccountId::FromEmail(kOtherServiceAccountEmail),
+  EXPECT_TRUE(
+      DeviceOAuth2TokenServiceFactory::Get()->RefreshTokenIsAvailable());
+  // Now a different refresh token and email should be present. The token
+  // themselves aren't validated because they're encrypted. Verifying that it
+  // changed is sufficient.
+  EXPECT_EQ(CoreAccountId::FromRobotEmail(kOtherServiceAccountEmail),
             DeviceOAuth2TokenServiceFactory::Get()->GetRobotAccountId());
+  EXPECT_NE(first_refresh_token,
+            testing_local_state()->GetString(kCBCMServiceAccountRefreshToken));
+}
+
+TEST_F(CBCMInvalidationsInitializerTest,
+       CanHandleServiceAccountChangedWhenAccountPresentOnStartup) {
+  CBCMInvalidationsInitializer initializer(this);
+
+  // Set up the token service as if there was already a service account set up
+  // on start up.
+  DeviceOAuth2TokenServiceFactory::Get()->SetServiceAccountEmail(
+      kServiceAccountEmail);
+  DeviceOAuth2TokenServiceFactory::Get()->SetAndSaveRefreshToken(
+      kFirstRefreshToken,
+      base::BindRepeating(&CBCMInvalidationsInitializerTest::
+                              RefreshTokenSavedCallbackExpectSuccess,
+                          base::Unretained(this)));
+
+  EXPECT_EQ(1, num_refresh_tokens_saved());
+  EXPECT_TRUE(
+      DeviceOAuth2TokenServiceFactory::Get()->RefreshTokenIsAvailable());
+  std::string first_refresh_token =
+      testing_local_state()->GetString(kCBCMServiceAccountRefreshToken);
+
+  EXPECT_FALSE(IsInvalidationsServiceStarted());
+  // On first policy store load, this will be called and invalidations started.
+  initializer.OnServiceAccountSet(policy_client(), kServiceAccountEmail);
+  EXPECT_EQ(0, test_url_loader_factory()->NumPending());
+  EXPECT_TRUE(IsInvalidationsServiceStarted());
+  // The same refresh token should be present in local state.
+  EXPECT_EQ(first_refresh_token,
+            testing_local_state()->GetString(kCBCMServiceAccountRefreshToken));
+
+  // Simulate that a new policy is fetched with a different service account.
+  // This should result in a gaia call for the service account initialization.
+  initializer.OnServiceAccountSet(policy_client(), kOtherServiceAccountEmail);
+  EXPECT_EQ(1, test_url_loader_factory()->NumPending());
+  EXPECT_TRUE(test_url_loader_factory()->SimulateResponseForPendingRequest(
+      GaiaUrls::GetInstance()->oauth2_token_url().spec(),
+      MakeTokensFromAuthCodesResponse(kSecondRefreshToken,
+                                      kSecondAccessToken)));
+
+  EXPECT_TRUE(IsInvalidationsServiceStarted());
+  EXPECT_TRUE(
+      DeviceOAuth2TokenServiceFactory::Get()->RefreshTokenIsAvailable());
+  // Now a different refresh token and email should be present. The token
+  // themselves aren't validated because they're encrypted. Verifying that it
+  // changed is sufficient.
+  EXPECT_EQ(CoreAccountId::FromRobotEmail(kOtherServiceAccountEmail),
+            DeviceOAuth2TokenServiceFactory::Get()->GetRobotAccountId());
+  EXPECT_NE(first_refresh_token,
+            testing_local_state()->GetString(kCBCMServiceAccountRefreshToken));
 }
 
 }  // namespace policy

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "content/browser/service_worker/service_worker_job_coordinator.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace content {
@@ -22,8 +21,9 @@ typedef ServiceWorkerRegisterJobBase::RegistrationJobType RegistrationJobType;
 ServiceWorkerUnregisterJob::ServiceWorkerUnregisterJob(
     ServiceWorkerContextCore* context,
     const GURL& scope,
+    const blink::StorageKey& key,
     bool is_immediate)
-    : context_(context), scope_(scope), is_immediate_(is_immediate) {
+    : context_(context), scope_(scope), key_(key), is_immediate_(is_immediate) {
   DCHECK(context_);
 }
 
@@ -35,8 +35,9 @@ void ServiceWorkerUnregisterJob::AddCallback(UnregistrationCallback callback) {
 
 void ServiceWorkerUnregisterJob::Start() {
   context_->registry()->FindRegistrationForScope(
-      scope_, base::BindOnce(&ServiceWorkerUnregisterJob::OnRegistrationFound,
-                             weak_factory_.GetWeakPtr()));
+      scope_, key_,
+      base::BindOnce(&ServiceWorkerUnregisterJob::OnRegistrationFound,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void ServiceWorkerUnregisterJob::Abort() {
@@ -86,7 +87,7 @@ void ServiceWorkerUnregisterJob::Complete(
     int64_t registration_id,
     blink::ServiceWorkerStatusCode status) {
   CompleteInternal(registration_id, status);
-  context_->job_coordinator()->FinishJob(scope_, this);
+  context_->job_coordinator()->FinishJob(scope_, key_, this);
 }
 
 void ServiceWorkerUnregisterJob::CompleteInternal(

@@ -1,15 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/extension_action_icon_factory.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -31,6 +32,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/skia_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -90,6 +92,11 @@ class ExtensionActionIconFactoryTest
  public:
   ExtensionActionIconFactoryTest() : quit_in_icon_updated_(false) {}
 
+  ExtensionActionIconFactoryTest(const ExtensionActionIconFactoryTest&) =
+      delete;
+  ExtensionActionIconFactoryTest& operator=(
+      const ExtensionActionIconFactoryTest&) = delete;
+
   ~ExtensionActionIconFactoryTest() override {}
 
   void WaitForIconUpdate() {
@@ -132,7 +139,7 @@ class ExtensionActionIconFactoryTest
 
   // testing::Test overrides:
   void SetUp() override {
-    profile_.reset(new TestingProfile);
+    profile_ = std::make_unique<TestingProfile>();
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     extension_service_ = static_cast<extensions::TestExtensionSystem*>(
         extensions::ExtensionSystem::Get(profile_.get()))->
@@ -166,14 +173,12 @@ class ExtensionActionIconFactoryTest
   content::BrowserTaskEnvironment task_environment_;
   bool quit_in_icon_updated_;
   std::unique_ptr<TestingProfile> profile_;
-  ExtensionService* extension_service_;
+  raw_ptr<ExtensionService> extension_service_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   ash::ScopedTestUserManager test_user_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionActionIconFactoryTest);
 };
 
 // If there is no default icon, and the icon has not been set using |SetIcon|,
@@ -233,9 +238,6 @@ TEST_F(ExtensionActionIconFactoryTest, InvisibleIcon) {
       icon.ToImageSkia()->GetRepresentation(1.0f)));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "Extensions.ManifestIconSetIconWasVisibleForPacked"),
-              testing::ElementsAre(base::Bucket(0, 1)));
-  EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Extensions.ManifestIconSetIconWasVisibleForPackedRendered"),
               testing::ElementsAre(base::Bucket(0, 1)));
 
   // Reset the flag for testing.

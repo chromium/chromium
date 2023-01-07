@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/gestures/layout_switcher_provider.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_animatee.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_animation_layout_providing.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
@@ -18,6 +19,8 @@
 @protocol GridCommands;
 @protocol GridDragDropHandler;
 @protocol GridImageDataSource;
+@protocol PriceCardDataSource;
+@protocol GridShareableItemsProvider;
 class GURL;
 @protocol IncognitoReauthCommands;
 @protocol IncognitoReauthConsumer;
@@ -27,6 +30,7 @@ class GURL;
 @class TabGridViewController;
 @protocol ThumbStripCommands;
 @protocol ViewControllerTraitCollectionObserver;
+@protocol GridContextMenuProvider;
 
 // Configurations for tab grid pages.
 enum class TabGridPageConfiguration {
@@ -41,9 +45,9 @@ enum class TabGridPageConfiguration {
 // Delegate protocol for an object that can handle presenting ("opening") tabs
 // from the tab grid.
 @protocol TabPresentationDelegate <NSObject>
-// Show the active tab in |page|, presented on top of the tab grid.  The
-// omnibox will be focused after the animation if |focusOmnibox| is YES. If
-// |closeTabGrid| is NO, then the tab grid will not be closed, and the active
+// Show the active tab in `page`, presented on top of the tab grid.  The
+// omnibox will be focused after the animation if `focusOmnibox` is YES. If
+// `closeTabGrid` is NO, then the tab grid will not be closed, and the active
 // tab will simply be displayed in its current position.
 // This last parameter is used for the thumb strip, where the
 // BVCContainerViewController is never dismissed.
@@ -66,18 +70,33 @@ enum class TabGridPageConfiguration {
 // Opens a link when the user clicks on the in-text link.
 - (void)openLinkWithURL:(const GURL&)URL;
 
+// BVC is completely hidden, detach it from view (for thumbstrip mode).
+- (void)dismissBVC;
+
+// Asks the delegate to open history modal with results filtered by
+// `searchText`.
+- (void)showHistoryFilteredBySearchText:(NSString*)searchText;
+
+// Asks the delegate to open a new tab page with a web search for `searchText`.
+- (void)openSearchResultsPageForSearchText:(NSString*)searchText;
+
+// Sets BVC accessibilityViewIsModal to `modal` (for thumbstrip mode).
+- (void)setBVCAccessibilityViewModal:(BOOL)modal;
+
 @end
 
 // View controller representing a tab switcher. The tab switcher has an
 // incognito tab grid, regular tab grid, and remote tabs.
 @interface TabGridViewController
     : UIViewController <GridTransitionAnimationLayoutProviding,
+                        IncognitoReauthObserver,
                         LayoutSwitcherProvider,
                         TabGridPaging,
                         ThumbStripSupporting>
 
 @property(nonatomic, weak) id<ApplicationCommands> handler;
 @property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
+@property(nonatomic, weak) IncognitoReauthSceneAgent* reauthAgent;
 // Handlers for popup menu commands for the regular and incognito states.
 @property(nonatomic, weak) id<PopupMenuCommands> regularPopupMenuHandler;
 @property(nonatomic, weak) id<PopupMenuCommands> incognitoPopupMenuHandler;
@@ -108,6 +127,14 @@ enum class TabGridPageConfiguration {
 @property(nonatomic, weak) id<GridImageDataSource> regularTabsImageDataSource;
 @property(nonatomic, weak) id<GridImageDataSource> incognitoTabsImageDataSource;
 
+// Data source for acquiring data which power the PriceCardView
+@property(nonatomic, weak) id<PriceCardDataSource> priceCardDataSource;
+
+@property(nonatomic, weak) id<GridShareableItemsProvider>
+    regularTabsShareableItemsProvider;
+@property(nonatomic, weak) id<GridShareableItemsProvider>
+    incognitoTabsShareableItemsProvider;
+
 // An optional object to be notified whenever the trait collection of this view
 // controller changes.
 @property(nonatomic, weak) id<ViewControllerTraitCollectionObserver>
@@ -124,6 +151,12 @@ enum class TabGridPageConfiguration {
 // model objects used in this view controller should be factored out.
 @property(nonatomic, strong)
     RecentTabsTableViewController* remoteTabsViewController;
+
+// Provides the context menu for the tabs on the grid.
+@property(nonatomic, weak) id<GridContextMenuProvider>
+    regularTabsContextMenuProvider;
+@property(nonatomic, weak) id<GridContextMenuProvider>
+    incognitoTabsContextMenuProvider;
 
 // Init with tab grid view configuration, which decides which sub view
 // controller should be added.
@@ -146,9 +179,12 @@ enum class TabGridPageConfiguration {
 - (void)contentDidAppear;
 - (void)contentWillDisappearAnimated:(BOOL)animated;
 
-// Notifies the ViewController that the Close All Tabs confirmation action sheet
-// has been closed.
-- (void)closeAllTabsConfirmationClosed;
+// Dismisses any modal UI which may be presented.
+- (void)dismissModals;
+
+// Sets both the current page and page control's selected page to `page`.
+// Animation is used if `animated` is YES.
+- (void)setCurrentPageAndPageControl:(TabGridPage)page animated:(BOOL)animated;
 
 @end
 

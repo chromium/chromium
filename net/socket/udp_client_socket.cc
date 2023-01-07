@@ -1,33 +1,50 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/socket/udp_client_socket.h"
 
+#include "base/metrics/histogram_macros.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_change_notifier.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {
 
+namespace {
+
+int LogReadSize(int result) {
+  if (result > 0) {
+    UMA_HISTOGRAM_COUNTS_10M("Net.UDPClientSocketReadSize", result);
+  }
+  return result;
+}
+
+}  // namespace
+
 UDPClientSocket::UDPClientSocket(DatagramSocket::BindType bind_type,
                                  net::NetLog* net_log,
-                                 const net::NetLogSource& source)
-    : socket_(bind_type, net_log, source),
-      network_(NetworkChangeNotifier::kInvalidNetworkHandle) {}
+                                 const net::NetLogSource& source,
+                                 handles::NetworkHandle network)
+    : socket_(bind_type, net_log, source), connect_using_network_(network) {}
 
 UDPClientSocket::~UDPClientSocket() = default;
 
 int UDPClientSocket::Connect(const IPEndPoint& address) {
+  if (connect_using_network_ != handles::kInvalidNetworkHandle)
+    return ConnectUsingNetwork(connect_using_network_, address);
+
   int rv = socket_.Open(address.GetFamily());
   if (rv != OK)
     return rv;
   return socket_.Connect(address);
 }
 
-int UDPClientSocket::ConnectUsingNetwork(
-    NetworkChangeNotifier::NetworkHandle network,
-    const IPEndPoint& address) {
+int UDPClientSocket::ConnectUsingNetwork(handles::NetworkHandle network,
+                                         const IPEndPoint& address) {
   if (!NetworkChangeNotifier::AreNetworkHandlesSupported())
     return ERR_NOT_IMPLEMENTED;
   int rv = socket_.Open(address.GetFamily());
@@ -54,10 +71,10 @@ int UDPClientSocket::ConnectUsingDefaultNetwork(const IPEndPoint& address) {
   // can change in between when we query it and when we bind to it.  This is
   // rare but should be accounted for.  Since changes of the default network
   // should not come in quick succession, we can simply try again.
-  NetworkChangeNotifier::NetworkHandle network;
+  handles::NetworkHandle network;
   for (int attempt = 0; attempt < 2; attempt++) {
     network = NetworkChangeNotifier::GetDefaultNetwork();
-    if (network == NetworkChangeNotifier::kInvalidNetworkHandle)
+    if (network == handles::kInvalidNetworkHandle)
       return ERR_INTERNET_DISCONNECTED;
     rv = socket_.BindToNetwork(network);
     // |network| may have disconnected between the call to GetDefaultNetwork()
@@ -72,7 +89,27 @@ int UDPClientSocket::ConnectUsingDefaultNetwork(const IPEndPoint& address) {
   return socket_.Connect(address);
 }
 
-NetworkChangeNotifier::NetworkHandle UDPClientSocket::GetBoundNetwork() const {
+int UDPClientSocket::ConnectAsync(const IPEndPoint& address,
+                                  CompletionOnceCallback callback) {
+  DCHECK(callback);
+  return Connect(address);
+}
+
+int UDPClientSocket::ConnectUsingNetworkAsync(handles::NetworkHandle network,
+                                              const IPEndPoint& address,
+                                              CompletionOnceCallback callback) {
+  DCHECK(callback);
+  return ConnectUsingNetwork(network, address);
+}
+
+int UDPClientSocket::ConnectUsingDefaultNetworkAsync(
+    const IPEndPoint& address,
+    CompletionOnceCallback callback) {
+  DCHECK(callback);
+  return ConnectUsingDefaultNetwork(address);
+}
+
+handles::NetworkHandle UDPClientSocket::GetBoundNetwork() const {
   return network_;
 }
 
@@ -83,7 +120,8 @@ void UDPClientSocket::ApplySocketTag(const SocketTag& tag) {
 int UDPClientSocket::Read(IOBuffer* buf,
                           int buf_len,
                           CompletionOnceCallback callback) {
-  return socket_.Read(buf, buf_len, std::move(callback));
+  return socket_.Read(buf, buf_len,
+                      base::BindOnce(&LogReadSize).Then(std::move(callback)));
 }
 
 int UDPClientSocket::Write(
@@ -91,30 +129,8 @@ int UDPClientSocket::Write(
     int buf_len,
     CompletionOnceCallback callback,
     const NetworkTrafficAnnotationTag& traffic_annotation) {
+  UMA_HISTOGRAM_COUNTS_10M("Net.UDPClientSocketWriteSize", buf_len);
   return socket_.Write(buf, buf_len, std::move(callback), traffic_annotation);
-}
-
-int UDPClientSocket::WriteAsync(
-    const char* buffer,
-    size_t buf_len,
-    CompletionOnceCallback callback,
-    const NetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK(WriteAsyncEnabled());
-  return socket_.WriteAsync(buffer, buf_len, std::move(callback),
-                            traffic_annotation);
-}
-
-int UDPClientSocket::WriteAsync(
-    DatagramBuffers buffers,
-    CompletionOnceCallback callback,
-    const NetworkTrafficAnnotationTag& traffic_annotation) {
-  DCHECK(WriteAsyncEnabled());
-  return socket_.WriteAsync(std::move(buffers), std::move(callback),
-                            traffic_annotation);
-}
-
-DatagramBuffers UDPClientSocket::GetUnwrittenBuffers() {
-  return socket_.GetUnwrittenBuffers();
 }
 
 void UDPClientSocket::Close() {
@@ -150,33 +166,9 @@ const NetLogWithSource& UDPClientSocket::NetLog() const {
 }
 
 void UDPClientSocket::UseNonBlockingIO() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   socket_.UseNonBlockingIO();
 #endif
-}
-
-void UDPClientSocket::SetWriteAsyncEnabled(bool enabled) {
-  socket_.SetWriteAsyncEnabled(enabled);
-}
-
-void UDPClientSocket::SetMaxPacketSize(size_t max_packet_size) {
-  socket_.SetMaxPacketSize(max_packet_size);
-}
-
-bool UDPClientSocket::WriteAsyncEnabled() {
-  return socket_.WriteAsyncEnabled();
-}
-
-void UDPClientSocket::SetWriteMultiCoreEnabled(bool enabled) {
-  socket_.SetWriteMultiCoreEnabled(enabled);
-}
-
-void UDPClientSocket::SetSendmmsgEnabled(bool enabled) {
-  socket_.SetSendmmsgEnabled(enabled);
-}
-
-void UDPClientSocket::SetWriteBatchingActive(bool active) {
-  socket_.SetWriteBatchingActive(active);
 }
 
 int UDPClientSocket::SetMulticastInterface(uint32_t interface_index) {
@@ -184,13 +176,13 @@ int UDPClientSocket::SetMulticastInterface(uint32_t interface_index) {
 }
 
 void UDPClientSocket::EnableRecvOptimization() {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   socket_.enable_experimental_recv_optimization();
 #endif
 }
 
 void UDPClientSocket::SetIOSNetworkServiceType(int ios_network_service_type) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   socket_.SetIOSNetworkServiceType(ios_network_service_type);
 #endif
 }

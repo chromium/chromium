@@ -43,10 +43,9 @@ class TextRunIterator {
   TextRunIterator(const TextRun* text_run, unsigned offset)
       : text_run_(text_run), offset_(offset), length_(text_run_->length()) {}
 
-  TextRunIterator(const TextRunIterator& other)
-      : text_run_(other.text_run_),
-        offset_(other.offset_),
-        length_(text_run_->length()) {}
+  TextRunIterator(const TextRunIterator&) = default;
+
+  TextRunIterator& operator=(const TextRunIterator&) = default;
 
   unsigned Offset() const { return offset_; }
   void Increment() { offset_++; }
@@ -58,11 +57,13 @@ class TextRunIterator {
   }
   bool AtParagraphSeparator() const { return Current() == '\n'; }
 
-  bool operator==(const TextRunIterator& other) {
+  bool operator==(const TextRunIterator& other) const {
     return offset_ == other.offset_ && text_run_ == other.text_run_;
   }
 
-  bool operator!=(const TextRunIterator& other) { return !operator==(other); }
+  bool operator!=(const TextRunIterator& other) const {
+    return !operator==(other);
+  }
 
  private:
   const TextRun* text_run_;

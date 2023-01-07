@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 
 namespace web {
@@ -20,6 +19,12 @@ class FakeLanguageDetectionTabHelperObserver
     : public language::IOSLanguageDetectionTabHelper::Observer {
  public:
   FakeLanguageDetectionTabHelperObserver(web::WebState* web_state);
+
+  FakeLanguageDetectionTabHelperObserver(
+      const FakeLanguageDetectionTabHelperObserver&) = delete;
+  FakeLanguageDetectionTabHelperObserver& operator=(
+      const FakeLanguageDetectionTabHelperObserver&) = delete;
+
   ~FakeLanguageDetectionTabHelperObserver() override;
 
   // language::IOSLanguageDetectionTabHelper::Observer
@@ -37,10 +42,8 @@ class FakeLanguageDetectionTabHelperObserver
       language_detection_details_;
 
   // Stops observing the IOSLanguageDetectionTabHelper instance associated with
-  // |web_state_| and sets |web_state_| to null.
+  // `web_state_` and sets `web_state_` to null.
   void StopObservingIOSLanguageDetectionTabHelper();
-
-  DISALLOW_COPY_AND_ASSIGN(FakeLanguageDetectionTabHelperObserver);
 };
 
 #endif  // IOS_CHROME_TEST_FAKES_FAKE_LANGUAGE_DETECTION_TAB_HELPER_OBSERVER_H_

@@ -1,15 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/autofill_data_util.h"
 
-#include <algorithm>
 #include <iterator>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/i18n/char_iterator.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -110,7 +109,7 @@ bool ContainsString(const char* const set[],
       base::TrimString(element, u".", base::TRIM_ALL);
 
   for (size_t i = 0; i < set_size; ++i) {
-    if (base::LowerCaseEqualsASCII(trimmed_element, set[i]))
+    if (base::EqualsCaseInsensitiveASCII(trimmed_element, set[i]))
       return true;
   }
 
@@ -121,7 +120,7 @@ bool ContainsString(const char* const set[],
 void StripPrefixes(std::vector<base::StringPiece16>* name_tokens) {
   auto iter = name_tokens->begin();
   while (iter != name_tokens->end()) {
-    if (!ContainsString(name_prefixes, base::size(name_prefixes), *iter))
+    if (!ContainsString(name_prefixes, std::size(name_prefixes), *iter))
       break;
     ++iter;
   }
@@ -134,7 +133,7 @@ void StripPrefixes(std::vector<base::StringPiece16>* name_tokens) {
 // Removes common name suffixes from |name_tokens|.
 void StripSuffixes(std::vector<base::StringPiece16>* name_tokens) {
   while (!name_tokens->empty()) {
-    if (!ContainsString(name_suffixes, base::size(name_suffixes),
+    if (!ContainsString(name_suffixes, std::size(name_suffixes),
                         name_tokens->back())) {
       break;
     }
@@ -223,13 +222,13 @@ bool SplitCJKName(const std::vector<base::StringPiece16>& name_tokens,
       // ones)
       surname_length = std::max<size_t>(
           1, StartsWithAny(name, korean_multi_char_surnames,
-                           base::size(korean_multi_char_surnames)));
+                           std::size(korean_multi_char_surnames)));
     } else {
       // Default to 1 character if the surname is not in
       // |common_cjk_multi_char_surnames|.
       surname_length = std::max<size_t>(
           1, StartsWithAny(name, common_cjk_multi_char_surnames,
-                           base::size(common_cjk_multi_char_surnames)));
+                           std::size(common_cjk_multi_char_surnames)));
     }
     parts->family = std::u16string(name.substr(0, surname_length));
     parts->given = std::u16string(name.substr(surname_length));
@@ -427,7 +426,7 @@ NameParts SplitName(base::StringPiece16 name) {
   reverse_family_tokens.push_back(name_tokens.back());
   name_tokens.pop_back();
   while (name_tokens.size() >= 1 &&
-         ContainsString(family_name_prefixes, base::size(family_name_prefixes),
+         ContainsString(family_name_prefixes, std::size(family_name_prefixes),
                         name_tokens.back())) {
     reverse_family_tokens.push_back(name_tokens.back());
     name_tokens.pop_back();
@@ -495,12 +494,8 @@ const char* GetIssuerNetworkForBasicCardIssuerNetwork(
 
 bool IsValidBasicCardIssuerNetwork(
     const std::string& basic_card_issuer_network) {
-  auto* it = std::find_if(
-      std::begin(kPaymentRequestData), std::end(kPaymentRequestData),
-      [basic_card_issuer_network](const auto& data) {
-        return data.basic_card_issuer_network == basic_card_issuer_network;
-      });
-  return it != std::end(kPaymentRequestData);
+  return base::Contains(kPaymentRequestData, basic_card_issuer_network,
+                        &PaymentRequestData::basic_card_issuer_network);
 }
 
 bool IsValidCountryCode(const std::string& country_code) {

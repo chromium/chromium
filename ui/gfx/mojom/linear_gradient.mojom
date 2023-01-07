@@ -1,0 +1,17 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gfx.mojom;
+
+// See ui/gfx/geometry/linear_gradient.h.
+struct Step {
+  float fraction;
+  uint8 alpha;
+};
+
+struct LinearGradient {
+  int16 angle = 0;
+  uint8 step_count = 0;
+  array<Step, 8> steps;
+};

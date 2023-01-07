@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,6 +15,8 @@ blink_modules_sources("mediarecorder") {
   sources = [
     "audio_track_encoder.cc",
     "audio_track_encoder.h",
+    "audio_track_mojo_encoder.cc",
+    "audio_track_mojo_encoder.h",
     "audio_track_opus_encoder.cc",
     "audio_track_opus_encoder.h",
     "audio_track_pcm_encoder.cc",
@@ -39,6 +41,9 @@ blink_modules_sources("mediarecorder") {
   deps = [
     ":buildflags",
     "//build:chromeos_buildflags",
+    "//media",
+    "//media/mojo/clients",
+    "//media/mojo/mojom",
     "//third_party/blink/renderer/modules/mediastream",
     "//third_party/libvpx",
     "//third_party/libyuv",

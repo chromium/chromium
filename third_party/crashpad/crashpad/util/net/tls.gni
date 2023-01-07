@@ -1,4 +1,4 @@
-# Copyright 2018 The Crashpad Authors. All rights reserved.
+# Copyright 2018 The Crashpad Authors
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,6 +15,14 @@
 import("../../build/crashpad_buildconfig.gni")
 
 declare_args() {
+  if (crashpad_is_fuchsia || crashpad_is_android) {
+    crashpad_http_transport_impl = "socket"
+  } else if (crashpad_is_linux) {
+    crashpad_http_transport_impl = "libcurl"
+  } else {
+    crashpad_http_transport_impl = ""
+  }
+
   # TODO(scottmg): https://crbug.com/crashpad/266 fuchsia:DX-690: BoringSSL
   # was removed from the Fuchsia SDK. Re-enable it when we have a way to acquire
   # a BoringSSL lib again.

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,13 @@
 
 namespace mojo {
 
-// Deserializes has_field and field into a base::Optional.
+// Deserializes has_field and field into a absl::optional.
 #define DESERIALIZE_INTO_OPT(field) \
   if (input.has_##field())          \
     output->field = input.field()
 
 #define READ_AND_ASSIGN_OPT(type, field, FieldInCamelCase) \
-  base::Optional<type> field;                              \
+  absl::optional<type> field;                              \
   if (!input.Read##FieldInCamelCase(&field))               \
     return false;                                          \
                                                            \
@@ -33,17 +33,21 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
          media::VideoFrameMetadata* output) {
   // int.
   DESERIALIZE_INTO_OPT(capture_counter);
+  output->crop_version = input.crop_version();
 
   // bool.
   output->allow_overlay = input.allow_overlay();
+  output->copy_required = input.copy_required();
   output->end_of_stream = input.end_of_stream();
   output->texture_owner = input.texture_owner();
   output->wants_promotion_hint = input.wants_promotion_hint();
   output->protected_video = input.protected_video();
   output->hw_protected = input.hw_protected();
+  output->is_webgpu_compatible = input.is_webgpu_compatible();
   output->power_efficient = input.power_efficient();
   output->read_lock_fences_enabled = input.read_lock_fences_enabled();
   output->interactive_content = input.interactive_content();
+  output->texture_origin_is_top_left = input.texture_origin_is_top_left();
 
   // double.
   DESERIALIZE_INTO_OPT(device_scale_factor);
@@ -54,22 +58,14 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   DESERIALIZE_INTO_OPT(frame_rate);
   DESERIALIZE_INTO_OPT(rtp_timestamp);
 
-  // unsigned int.
-  output->hw_protected_validation_id = input.hw_protected_validation_id();
-
   READ_AND_ASSIGN_OPT(media::VideoTransformation, transformation,
                       Transformation);
 
-  if (input.has_copy_mode()) {
-    media::VideoFrameMetadata::CopyMode copy_mode;
-    if (!input.ReadCopyMode(&copy_mode))
-      return false;
-    output->copy_mode = copy_mode;
-  }
-
   READ_AND_ASSIGN_OPT(base::UnguessableToken, overlay_plane_id, OverlayPlaneId);
 
+  READ_AND_ASSIGN_OPT(gfx::Size, source_size, SourceSize);
   READ_AND_ASSIGN_OPT(gfx::Rect, capture_update_rect, CaptureUpdateRect);
+  READ_AND_ASSIGN_OPT(gfx::Rect, region_capture_rect, RegionCaptureRect);
 
   READ_AND_ASSIGN_OPT(base::TimeTicks, receive_time, ReceiveTime);
   READ_AND_ASSIGN_OPT(base::TimeTicks, capture_begin_time, CaptureBeginTime);

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,45 +8,78 @@
 
 #include <memory>
 
+#include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
+#include "base/test/task_environment.h"
 #include "testing/platform_test.h"
 #import "ui/base/test/cocoa_helper.h"
+#import "ui/base/test/windowed_nsnotification_observer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 
 namespace ui {
 namespace {
 
-typedef CocoaTest GrabWindowSnapshotTest;
+class GrabWindowSnapshotTest : public CocoaTest {
+ private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
+};
 
-// TODO(https://crbug.com/685088): This test fails.
-TEST_F(GrabWindowSnapshotTest, DISABLED_TestGrabWindowSnapshot) {
+TEST_F(GrabWindowSnapshotTest, TestGrabWindowSnapshot) {
+  // Flaky only on the 10.13 bot yet not on any subsequent macOS bot.
+  // https://crbug.com/1359153
+  if (base::mac::IsOS10_13())
+    GTEST_SKIP() << "flaky on macOS 10.13 bot";
+
+  // The window snapshot code uses `CGWindowListCreateImage` which requires
+  // going to the windowserver. By default, unittests are run with the
+  // `NSApplicationActivationPolicyProhibited` policy which prohibits
+  // windowserver connections, which would cause this test to fail for reasons
+  // other than the code not actually working.
+  NSApp.activationPolicy = NSApplicationActivationPolicyAccessory;
+
   // Launch a test window so we can take a snapshot.
-  NSRect frame = NSMakeRect(0, 0, 400, 400);
+  const NSUInteger window_size = 400;
+  NSRect frame = NSMakeRect(0, 0, window_size, window_size);
   NSWindow* window = test_window();
+  base::scoped_nsobject<WindowedNSNotificationObserver> waiter(
+      [[WindowedNSNotificationObserver alloc]
+          initForNotification:NSWindowDidUpdateNotification
+                       object:window]);
   [window setFrame:frame display:false];
-  [window setBackgroundColor:[NSColor whiteColor]];
-  [window makeKeyAndOrderFront:NSApp];
+  [window setBackgroundColor:NSColor.blueColor];
+  [window makeKeyAndOrderFront:nil];
   [window display];
+  EXPECT_TRUE([waiter wait]);
 
+  // Take the snapshot.
   gfx::Image image;
-  gfx::Rect bounds = gfx::Rect(0, 0, frame.size.width, frame.size.height);
+  gfx::Rect bounds = gfx::Rect(0, 0, window_size, window_size);
   EXPECT_TRUE(ui::GrabWindowSnapshot(window, bounds, &image));
 
-  NSImage* nsImage = image.ToNSImage();
-  CGImageRef cgImage =
-      [nsImage CGImageForProposedRect:nil context:nil hints:nil];
-  base::scoped_nsobject<NSBitmapImageRep> rep(
-      [[NSBitmapImageRep alloc] initWithCGImage:cgImage]);
-  EXPECT_TRUE([rep isKindOfClass:[NSBitmapImageRep class]]);
-  CGFloat scaleFactor = 1.0f;
-  if ([window respondsToSelector:@selector(backingScaleFactor)])
-    scaleFactor = [window backingScaleFactor];
-  EXPECT_EQ(400 * scaleFactor, CGImageGetWidth([rep CGImage]));
-  NSColor* color = [rep colorAtX:200 * scaleFactor y:200 * scaleFactor];
+  // The call to `CGWindowListCreateImage` returned a `CGImageRef` that is
+  // wrapped in an `NSImage` (inside the returned `gfx::Image`). The image rep
+  // that results (e.g. an `NSCGImageSnapshotRep` in macOS 12) isn't anything
+  // that pixel values can be retrieved from, so do a quick-and-dirty conversion
+  // to an `NSBitmapImageRep`.
+  NSBitmapImageRep* image_rep =
+      [NSBitmapImageRep imageRepWithData:image.ToNSImage().TIFFRepresentation];
+
+  // Test the size.
+  EXPECT_EQ(window_size * window.backingScaleFactor, image_rep.pixelsWide);
+  EXPECT_EQ(window_size * window.backingScaleFactor, image_rep.pixelsHigh);
+
+  // Pick a pixel in the middle of the screenshot and expect it to be some
+  // version of blue.
+  NSColor* color = [image_rep colorAtX:image_rep.pixelsWide / 2
+                                     y:image_rep.pixelsHigh / 2];
   CGFloat red = 0, green = 0, blue = 0, alpha = 0;
   [color getRed:&red green:&green blue:&blue alpha:&alpha];
-  EXPECT_GE(red + green + blue, 3.0);
+  EXPECT_LE(red, 0.2);
+  EXPECT_LE(green, 0.2);
+  EXPECT_GE(blue, 0.9);
+  EXPECT_EQ(alpha, 1);
 }
 
 }  // namespace

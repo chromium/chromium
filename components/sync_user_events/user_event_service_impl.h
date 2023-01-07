@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,7 @@
 #define COMPONENTS_SYNC_USER_EVENTS_USER_EVENT_SERVICE_IMPL_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
@@ -21,6 +19,10 @@ class UserEventSyncBridge;
 class UserEventServiceImpl : public UserEventService {
  public:
   explicit UserEventServiceImpl(std::unique_ptr<UserEventSyncBridge> bridge);
+
+  UserEventServiceImpl(const UserEventServiceImpl&) = delete;
+  UserEventServiceImpl& operator=(const UserEventServiceImpl&) = delete;
+
   ~UserEventServiceImpl() override;
 
   // KeyedService implementation.
@@ -43,8 +45,6 @@ class UserEventServiceImpl : public UserEventService {
   // restart it will be regenerated. This can be attached to events to know
   // which events came from the same session.
   uint64_t session_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserEventServiceImpl);
 };
 
 }  // namespace syncer

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,12 @@
 #include <vector>
 
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chromeos/login/auth/stub_authenticator_builder.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/login/auth/stub_authenticator_builder.h"
 #include "components/account_id/account_id.h"
 #include "net/dns/mock_host_resolver.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 user_manager::UserType ConvertUserType(LoggedInUserMixin::LogInType type) {
@@ -41,9 +40,9 @@ LoggedInUserMixin::LoggedInUserMixin(
     net::EmbeddedTestServer* embedded_test_server,
     InProcessBrowserTest* test_base,
     bool should_launch_browser,
-    base::Optional<AccountId> account_id,
+    absl::optional<AccountId> account_id,
     bool include_initial_user,
-    bool use_local_policy_server)
+    bool use_embedded_policy_server)
     : InProcessBrowserTestMixin(mixin_host),
       user_(account_id.value_or(
                 AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
@@ -52,14 +51,15 @@ LoggedInUserMixin::LoggedInUserMixin(
       login_manager_(mixin_host,
                      GetInitialUsers(user_, include_initial_user),
                      &fake_gaia_),
-      local_policy_server_(mixin_host),
-      user_policy_(mixin_host,
-                   user_.account_id,
-                   use_local_policy_server ? &local_policy_server_ : nullptr),
+      embedded_policy_server_(mixin_host),
+      user_policy_(
+          mixin_host,
+          user_.account_id,
+          use_embedded_policy_server ? &embedded_policy_server_ : nullptr),
       user_policy_helper_(user_.account_id.GetUserEmail(),
-                          &local_policy_server_),
+                          &embedded_policy_server_),
       embedded_test_server_setup_(mixin_host, embedded_test_server),
-      fake_gaia_(mixin_host, embedded_test_server),
+      fake_gaia_(mixin_host),
       test_base_(test_base) {
   // By default, LoginManagerMixin will set up user session manager not to
   // launch browser as part of user session setup - use this to override that
@@ -75,7 +75,7 @@ void LoggedInUserMixin::SetUpOnMainThread() {
   // this.
   test_base_->host_resolver()->AddRule("*", "127.0.0.1");
   // Ensures logging in doesn't hang on the post login Gaia screens.
-  WizardController::SkipPostLoginScreensForTesting();
+  login_manager_.SkipPostLoginScreens();
 }
 
 void LoggedInUserMixin::LogInUser(bool issue_any_scope_token,
@@ -108,4 +108,4 @@ void LoggedInUserMixin::LogInUser(bool issue_any_scope_token,
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

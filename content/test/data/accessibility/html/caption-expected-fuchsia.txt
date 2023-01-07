@@ -1,0 +1,42 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++TABLE label='Browser and Engine' number_of_rows=3 number_of_columns=2
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Browser and Engine'
+++++++++++++UNKNOWN label='Browser and '
+++++++++++++UNKNOWN label='Engine'
+++++++++ROW_GROUP hidden
+++++++++++TABLE_ROW
+++++++++++++COLUMN_HEADER label='Browser' cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Browser'
+++++++++++++++++UNKNOWN label='Browser'
+++++++++++++COLUMN_HEADER label='Engine' cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Engine'
+++++++++++++++++UNKNOWN label='Engine'
+++++++++++TABLE_ROW row_index=1
+++++++++++++CELL label='Chrome' cell_row_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Chrome'
+++++++++++++++++UNKNOWN label='Chrome'
+++++++++++++CELL label='Blink' cell_row_index=1 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Blink'
+++++++++++++++++UNKNOWN label='Blink'
+++++++++++TABLE_ROW row_index=2
+++++++++++++CELL label='Safari' cell_row_index=2 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='Safari'
+++++++++++++++++UNKNOWN label='Safari'
+++++++++++++CELL label='WebKit' cell_row_index=2 cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='WebKit'
+++++++++++++++++UNKNOWN label='WebKit'
+++++++TABLE label='Name' secondary_label='Description' number_of_rows=1 number_of_columns=2
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Description'
+++++++++++++UNKNOWN label='Description'
+++++++++ROW_GROUP hidden
+++++++++++TABLE_ROW
+++++++++++++CELL label='A' cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='A'
+++++++++++++++++UNKNOWN label='A'
+++++++++++++CELL label='B' cell_column_index=1 cell_row_span=1 cell_column_span=1
+++++++++++++++STATIC_TEXT label='B'
+++++++++++++++++UNKNOWN label='B'

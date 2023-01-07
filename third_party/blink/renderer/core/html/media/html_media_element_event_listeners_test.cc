@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,14 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -22,7 +25,8 @@
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/bindings/microtask.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -79,7 +83,7 @@ class FakeWebMediaPlayer final : public EmptyWebMediaPlayer {
       ScheduleTimeIncrement();
   }
 
-  void SetAutoIncrementTimeDelta(base::Optional<base::TimeDelta> delta) {
+  void SetAutoIncrementTimeDelta(absl::optional<base::TimeDelta> delta) {
     auto_time_increment_delta_ = delta;
     ScheduleTimeIncrement();
   }
@@ -120,15 +124,15 @@ class FakeWebMediaPlayer final : public EmptyWebMediaPlayer {
     }
 
     // Run V8 Microtasks (update OfficialPlaybackPosition)
-    Microtask::PerformCheckpoint(context_->GetIsolate());
+    context_->GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
   }
 
   WebMediaPlayerClient* client_;
   WeakPersistent<ExecutionContext> context_;
   mutable double current_time_ = 0;
   bool playing_ = false;
-  base::Optional<base::TimeDelta> auto_time_increment_delta_ =
-      base::TimeDelta::FromMilliseconds(33);
+  absl::optional<base::TimeDelta> auto_time_increment_delta_ =
+      base::Milliseconds(33);
   bool scheduled_time_increment_ = false;
   double last_seek_time_ = -1;
   const double duration_;
@@ -219,6 +223,7 @@ TEST_F(HTMLMediaElementEventListenersTest, RemovingFromDocumentCollectsAll) {
     EXPECT_TRUE(persistent_video->HasEventListeners());
   }
 
+  UpdateAllLifecyclePhasesForTest();
   test::RunPendingTasks();
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -343,8 +348,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
   SimulateReadyState(HTMLMediaElement::kHaveFutureData);
 
   // Simulate advancing playback time.
-  WebMediaPlayer()->SetAutoIncrementTimeDelta(
-      base::TimeDelta::FromMilliseconds(33));
+  WebMediaPlayer()->SetAutoIncrementTimeDelta(base::Milliseconds(33));
   Video()->Play();
 
   // While playing, timeupdate should fire every 250 ms -> 4x per second as long
@@ -354,7 +358,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, OneTimeupdatePerSeek) {
 
   // If media playback time is fixed, periodic timeupdate's should not continue
   // to fire.
-  WebMediaPlayer()->SetAutoIncrementTimeDelta(base::nullopt);
+  WebMediaPlayer()->SetAutoIncrementTimeDelta(absl::nullopt);
   EXPECT_CALL(*timeupdate_handler, Invoke(_, _)).Times(0);
   platform()->RunForPeriodSeconds(1);
 
@@ -397,8 +401,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, PeriodicTimeupdateAfterSeek) {
   SimulateReadyState(HTMLMediaElement::kHaveFutureData);
 
   // Simulate advancing playback time to enable periodic timeupdates.
-  WebMediaPlayer()->SetAutoIncrementTimeDelta(
-      base::TimeDelta::FromMilliseconds(8));
+  WebMediaPlayer()->SetAutoIncrementTimeDelta(base::Milliseconds(8));
   Video()->Play();
 
   // Advance a full periodic timeupdate interval (250 ms) and expect a single
@@ -467,8 +470,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, ShowPosterFlag_FalseAfterLoop) {
   SimulateReadyState(HTMLMediaElement::kHaveEnoughData);
 
   // Simulate advancing playback time to enable periodic timeupdates.
-  WebMediaPlayer()->SetAutoIncrementTimeDelta(
-      base::TimeDelta::FromMilliseconds(8));
+  WebMediaPlayer()->SetAutoIncrementTimeDelta(base::Milliseconds(8));
   Video()->Play();
 
   // Ensure the 'seeking' and 'seeked' events are fired, so we know a loop
@@ -507,8 +509,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, ShowPosterFlag_FalseAfterEnded) {
   SimulateReadyState(HTMLMediaElement::kHaveEnoughData);
 
   // Simulate advancing playback time to enable periodic timeupdates.
-  WebMediaPlayer()->SetAutoIncrementTimeDelta(
-      base::TimeDelta::FromMilliseconds(8));
+  WebMediaPlayer()->SetAutoIncrementTimeDelta(base::Milliseconds(8));
   Video()->Play();
 
   // Ensure the 'ended' event is fired
@@ -542,8 +543,7 @@ constexpr TestCue kTestCueData[] = {
     {57.110, 61.110, "Get up.\nEmo, it's not safe here."},
     {62.030, 63.570, "Let's go."},
 };
-constexpr base::TimeDelta kTestCueDataLength =
-    base::TimeDelta::FromSecondsD(65);
+constexpr base::TimeDelta kTestCueDataLength = base::Seconds(65);
 
 class CueEventListener final : public NativeEventListener {
  public:
@@ -586,12 +586,12 @@ class CueEventListener final : public NativeEventListener {
     // The difference between when the cue was scheduled to begin and when the
     // |kEnter| event was fired. The optional will be empty if the |kEnter|
     // event was never fired.
-    base::Optional<base::TimeDelta> enter_time_delta;
+    absl::optional<base::TimeDelta> enter_time_delta;
 
     // The difference between when the cue was scheduled to end and when the
     // |kExit| event fired. The optional will be empty if the |kExit| event
     // was never fired.
-    base::Optional<base::TimeDelta> exit_time_delta;
+    absl::optional<base::TimeDelta> exit_time_delta;
   };
 
   void OnCueEnter(HTMLMediaElement* media_element, VTTCue* cue) {
@@ -601,8 +601,7 @@ class CueEventListener final : public NativeEventListener {
 
     // Get the start time delta
     double const diff_seconds = media_element->currentTime() - cue->startTime();
-    cue_event_deltas_[cue_index].enter_time_delta =
-        base::TimeDelta::FromSecondsD(diff_seconds);
+    cue_event_deltas_[cue_index].enter_time_delta = base::Seconds(diff_seconds);
   }
 
   void OnCueExit(HTMLMediaElement* media_element, VTTCue* cue) {
@@ -613,11 +612,10 @@ class CueEventListener final : public NativeEventListener {
     // Get the end time delta
     double const diff_seconds =
         std::fabs(media_element->currentTime() - cue->endTime());
-    cue_event_deltas_[cue_index].exit_time_delta =
-        base::TimeDelta::FromSecondsD(diff_seconds);
+    cue_event_deltas_[cue_index].exit_time_delta = base::Seconds(diff_seconds);
   }
 
-  std::array<CueChangeEventTimeDelta, base::size(kTestCueData)>
+  std::array<CueChangeEventTimeDelta, std::size(kTestCueData)>
       cue_event_deltas_;
 };
 
@@ -649,8 +647,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, CueEnterExitEventLatency) {
   SimulateReadyState(HTMLMediaElement::kHaveFutureData);
 
   // Simulate advancing playback time to enable periodic timeupdates.
-  WebMediaPlayer()->SetAutoIncrementTimeDelta(
-      base::TimeDelta::FromMilliseconds(8));
+  WebMediaPlayer()->SetAutoIncrementTimeDelta(base::Milliseconds(8));
   Video()->Play();
 
   platform()->RunForPeriod(kTestCueDataLength);
@@ -659,8 +656,7 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, CueEnterExitEventLatency) {
   // Ensure all cue events fired when expected with a 20ms tolerance
   // As suggested by the spec:
   // https://html.spec.whatwg.org/multipage/media.html#playing-the-media-resource:current-playback-position-13
-  listener->ExpectAllEventsFiredWithinMargin(
-      base::TimeDelta::FromMilliseconds(20));
+  listener->ExpectAllEventsFiredWithinMargin(base::Milliseconds(20));
 }
 
 }  // namespace blink

@@ -1,8 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/net_log_exporter.h"
+
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -10,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -40,7 +41,7 @@ NetLogExporter::~NetLogExporter() {
 }
 
 void NetLogExporter::Start(base::File destination,
-                           base::Value extra_constants,
+                           base::Value::Dict extra_constants,
                            net::NetLogCaptureMode capture_mode,
                            uint64_t max_file_size,
                            StartCallback callback) {
@@ -78,25 +79,21 @@ void NetLogExporter::Start(base::File destination,
   }
 }
 
-void NetLogExporter::Stop(base::Value polled_data_value,
+void NetLogExporter::Stop(base::Value::Dict polled_data,
                           StopCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::DictionaryValue* polled_data = nullptr;
-  bool ok = polled_data_value.GetAsDictionary(&polled_data);
-  DCHECK(ok);  // mojo is supposed to enforce that.
 
   if (state_ != STATE_RUNNING) {
     std::move(callback).Run(net::ERR_UNEXPECTED);
     return;
   }
 
-  base::Value net_info =
+  base::Value::Dict net_info =
       net::GetNetInfo(network_context_->url_request_context());
-  if (polled_data)
-    net_info.MergeDictionary(polled_data);
+  net_info.Merge(std::move(polled_data));
 
   file_net_observer_->StopObserving(
-      base::Value::ToUniquePtrValue(std::move(net_info)),
+      std::make_unique<base::Value>(std::move(net_info)),
       base::BindOnce([](StopCallback sc) { std::move(sc).Run(net::OK); },
                      std::move(callback)));
   file_net_observer_ = nullptr;
@@ -134,7 +131,7 @@ base::FilePath NetLogExporter::CreateScratchDir(
 
 void NetLogExporter::StartWithScratchDirOrCleanup(
     base::WeakPtr<NetLogExporter> object,
-    base::Value extra_constants,
+    base::Value::Dict extra_constants,
     net::NetLogCaptureMode capture_mode,
     uint64_t max_file_size,
     StartCallback callback,
@@ -152,20 +149,17 @@ void NetLogExporter::StartWithScratchDirOrCleanup(
         {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
         // The delete is non-recursive since the only time this is invoked is
         // when the directory is expected to be empty.
-        base::BindOnce(base::GetDeleteFileCallback(), scratch_dir_path));
+        base::GetDeleteFileCallback(scratch_dir_path));
   }
 }
 
 void NetLogExporter::StartWithScratchDir(
-    base::Value extra_constants_value,
+    base::Value::Dict extra_constants,
     net::NetLogCaptureMode capture_mode,
     uint64_t max_file_size,
     StartCallback callback,
     const base::FilePath& scratch_dir_path) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::DictionaryValue* extra_constants = nullptr;
-  bool ok = extra_constants_value.GetAsDictionary(&extra_constants);
-  DCHECK(ok);  // mojo is supposed to enforce that before Start() is invoked.
 
   if (scratch_dir_path.empty() && max_file_size != kUnlimitedFileSize) {
     state_ = STATE_IDLE;
@@ -176,21 +170,19 @@ void NetLogExporter::StartWithScratchDir(
 
   state_ = STATE_RUNNING;
 
-  std::unique_ptr<base::DictionaryValue> constants =
-      base::DictionaryValue::From(
-          base::Value::ToUniquePtrValue(net::GetNetConstants()));
-
-  if (extra_constants)
-    constants->MergeDictionary(extra_constants);
+  base::Value::Dict constants = net::GetNetConstants();
+  constants.Merge(std::move(extra_constants));
+  std::unique_ptr<base::Value> constants_value =
+      std::make_unique<base::Value>(std::move(constants));
 
   if (max_file_size != kUnlimitedFileSize) {
     file_net_observer_ = net::FileNetLogObserver::CreateBoundedPreExisting(
         scratch_dir_path, std::move(destination_), max_file_size, capture_mode,
-        std::move(constants));
+        std::move(constants_value));
   } else {
     DCHECK(scratch_dir_path.empty());
     file_net_observer_ = net::FileNetLogObserver::CreateUnboundedPreExisting(
-        std::move(destination_), capture_mode, std::move(constants));
+        std::move(destination_), capture_mode, std::move(constants_value));
   }
 
   // There might not be a NetworkService object e.g. on iOS; in that case

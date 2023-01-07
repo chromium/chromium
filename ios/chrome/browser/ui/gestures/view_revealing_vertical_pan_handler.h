@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,11 +27,9 @@
                 UIGestureRecognizerDelegate,
                 UIScrollViewDelegate>
 
-// |peekedHeight| is the height of the view when peeked (partially revealed).
-// |revealedCoverHeight| is the height of the cover view that remains visible
-// after the view is revealed. |baseViewHeight| is the height of the base view.
+// `peekedHeight` is the height of the view when peeked (partially revealed).
+// `baseViewHeight` is the height of the base view.
 - (instancetype)initWithPeekedHeight:(CGFloat)peekedHeight
-                 revealedCoverHeight:(CGFloat)revealedCoverHeight
                       baseViewHeight:(CGFloat)baseViewHeight
                         initialState:(ViewRevealState)initialState
     NS_DESIGNATED_INITIALIZER;
@@ -42,20 +40,20 @@
 // method. It is called when a gesture starts, moves, or ends.
 - (void)handlePanGesture:(UIPanGestureRecognizer*)gesture;
 
-// Adds UI element to the set of animated objects. The set holds weak references
-// to the animatees.
+// Adds UI element to the set of animated objects. The set holds strong
+// references to the animatees. It gets cleaned up at destruction of the
+// handler.
 - (void)addAnimatee:(id<ViewRevealingAnimatee>)animatee;
 
-// Requests the pan handler to transition to |state|. Depending on the
+// Requests the pan handler to transition to `state`. Depending on the
 // internals, this may not happen immediately.
-- (void)setNextState:(ViewRevealState)state animated:(BOOL)animated;
+- (void)setNextState:(ViewRevealState)state
+            animated:(BOOL)animated
+             trigger:(ViewRevealTrigger)trigger;
 
 // Height of the view that will be revealed after the transition to Peeked
 // state.
 @property(nonatomic, assign, readonly) CGFloat peekedHeight;
-
-// Height of the revealed view after the transition to Revealed state.
-@property(nonatomic, assign, readonly) CGFloat revealedHeight;
 
 // Height of the base view. It changes when the user rotates the screen.
 @property(nonatomic, assign) CGFloat baseViewHeight;
@@ -68,6 +66,15 @@
 // No view revealed (Hidden), view partially revealed (Peeked), and view
 // completely revealed (Revealed).
 @property(nonatomic, readonly) ViewRevealState currentState;
+
+@end
+
+@interface ViewRevealingPanGestureRecognizer : UIPanGestureRecognizer
+
+// Inits a custom `UIPanGestureRecognizer` for the given `trigger`.
+- (instancetype)initWithTarget:(id)target
+                        action:(SEL)action
+                       trigger:(ViewRevealTrigger)trigger;
 
 @end
 

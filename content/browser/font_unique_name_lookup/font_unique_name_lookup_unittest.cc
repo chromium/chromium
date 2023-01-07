@@ -1,21 +1,20 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "testing/gtest/include/gtest/gtest.h"
+#include "content/browser/font_unique_name_lookup/font_unique_name_lookup.h"
+
+#include <functional>
+#include <memory>
 
 #include "base/android/build_info.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
-#include "content/browser/font_unique_name_lookup/font_unique_name_lookup.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/font_unique_name_lookup/font_table_matcher.h"
-
-#include <functional>
-#include <memory>
 
 namespace {
 
@@ -131,6 +130,13 @@ TEST_F(FontUniqueNameLookupTest, TestHandleFailedRead) {
 }
 
 TEST_F(FontUniqueNameLookupTest, TestMatchPostScriptName) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SdkVersion::SDK_VERSION_S) {
+    // TODO(https://crbug.com/1264649): Fonts identified by
+    // kRobotoCondensedBoldItalicNames do not seem to be available on Android
+    // 12, SDK level 31, Android S.
+    return;
+  }
   ASSERT_TRUE(font_unique_name_lookup_->UpdateTable());
   blink::FontTableMatcher matcher(
       font_unique_name_lookup_->DuplicateMemoryRegion().Map());
@@ -161,6 +167,17 @@ TEST_F(FontUniqueNameLookupTest, TestMatchPostScriptNameTtc) {
       "NotoSansMonoCJKjp-Regular", "NotoSansMonoCJKkr-Regular",
       "NotoSansMonoCJKsc-Regular", "NotoSansMonoCJKtc-Regular",
   };
+  // In Android 11 the font file contains addition HK variants as part of the
+  // TrueType collection.
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SdkVersion::SDK_VERSION_R) {
+    ttc_postscript_names = std::vector<std::string>(
+        {"NotoSansCJKjp-Regular", "NotoSansCJKkr-Regular",
+         "NotoSansCJKsc-Regular", "NotoSansCJKtc-Regular",
+         "NotoSansCJKhk-Regular", "NotoSansMonoCJKjp-Regular",
+         "NotoSansMonoCJKkr-Regular", "NotoSansMonoCJKsc-Regular",
+         "NotoSansMonoCJKtc-Regular", "NotoSansMonoCJKhk-Regular"});
+  }
   for (size_t i = 0; i < ttc_postscript_names.size(); ++i) {
     auto match_result = matcher.MatchName(ttc_postscript_names[i]);
     ASSERT_TRUE(match_result);
@@ -174,6 +191,13 @@ TEST_F(FontUniqueNameLookupTest, TestMatchPostScriptNameTtc) {
 }
 
 TEST_F(FontUniqueNameLookupTest, TestMatchFullFontName) {
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SdkVersion::SDK_VERSION_S) {
+    // TODO(https://crbug.com/1264649): Fonts identified by
+    // kRobotoCondensedBoldItalicNames do not seem to be available on Android
+    // 12, SDK level 31, Android S.
+    return;
+  }
   ASSERT_TRUE(font_unique_name_lookup_->UpdateTable());
   blink::FontTableMatcher matcher(
       font_unique_name_lookup_->DuplicateMemoryRegion().Map());
@@ -206,7 +230,7 @@ size_t GetNumTables(base::File& font_file) {
   font_file.Seek(base::File::FROM_BEGIN, 5);
   uint8_t num_tables_bytes[2] = {};
   font_file.ReadAtCurrentPos(reinterpret_cast<char*>(num_tables_bytes),
-                             base::size(num_tables_bytes));
+                             std::size(num_tables_bytes));
   uint16_t num_tables =
       static_cast<uint16_t>(num_tables_bytes[0] + (num_tables_bytes[1] << 8));
   return num_tables;
@@ -240,7 +264,7 @@ class FontFileCorruptor {
       for (size_t i = 0; i < num_tables; ++i) {
         CHECK_EQ(static_cast<int>(kSizeOneTableRecord),
                  font_file.Write(kOffsetTableRecords + i * kSizeOneTableRecord,
-                                 garbage, base::size(garbage)));
+                                 garbage, std::size(garbage)));
       }
     });
   }

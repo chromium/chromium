@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/download/public/common/rate_estimator.h"
 
 #include "base/check.h"
+#include "base/time/time.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace download {
@@ -20,13 +20,13 @@ static const size_t kDefaultNumBuckets = 10;
 
 RateEstimator::RateEstimator()
     : history_(kDefaultNumBuckets),
-      bucket_time_(TimeDelta::FromSeconds(kDefaultBucketTimeSeconds)),
+      bucket_time_(base::Seconds(kDefaultBucketTimeSeconds)),
       oldest_index_(0),
       bucket_count_(1) {
   ResetBuckets(TimeTicks::Now());
 }
 
-RateEstimator::RateEstimator(TimeDelta bucket_time,
+RateEstimator::RateEstimator(base::TimeDelta bucket_time,
                              size_t num_buckets,
                              TimeTicks now)
     : history_(num_buckets),

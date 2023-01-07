@@ -100,7 +100,7 @@ static inline Element* CreateXHTMLParserErrorHeader(
       QualifiedName(g_null_atom, "parsererror", html_names::xhtmlNamespaceURI),
       flags);
 
-  Vector<Attribute> report_attributes;
+  Vector<Attribute, kAttributePrealloc> report_attributes;
   report_attributes.push_back(Attribute(
       html_names::kStyleAttr,
       "display: block; white-space: pre; border: 2px solid #c77; padding: 0 "
@@ -113,7 +113,7 @@ static inline Element* CreateXHTMLParserErrorHeader(
       doc->createTextNode("This page contains the following errors:"));
 
   Element* fixed = doc->CreateRawElement(html_names::kDivTag, flags);
-  Vector<Attribute> fixed_attributes;
+  Vector<Attribute, kAttributePrealloc> fixed_attributes;
   fixed_attributes.push_back(Attribute(html_names::kStyleAttr,
                                        "font-family:monospace;font-size:12px"));
   fixed->ParserSetAttributes(fixed_attributes);
@@ -171,7 +171,7 @@ void XMLErrors::InsertErrorMessageBlock() {
       CreateXHTMLParserErrorHeader(document_, error_messages);
 
   if (DocumentXSLT::HasTransformSourceDocument(*document_)) {
-    Vector<Attribute> attributes;
+    Vector<Attribute, kAttributePrealloc> attributes;
     attributes.push_back(
         Attribute(html_names::kStyleAttr, "white-space: normal"));
     Element* paragraph = document_->CreateRawElement(html_names::kPTag, flags);

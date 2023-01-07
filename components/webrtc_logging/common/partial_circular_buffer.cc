@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ PartialCircularBuffer::PartialCircularBuffer(void* buffer, uint32_t buffer_size)
       position_(0),
       total_read_(0) {
   uint32_t header_size =
-      buffer_data_->data - reinterpret_cast<uint8_t*>(buffer_data_);
+      buffer_data_->data - reinterpret_cast<uint8_t*>(buffer_data_.get());
   data_size_ = memory_buffer_size_ - header_size;
 
   DCHECK(buffer_data_);
@@ -38,7 +38,7 @@ PartialCircularBuffer::PartialCircularBuffer(void* buffer,
       position_(0),
       total_read_(0) {
   uint32_t header_size =
-      buffer_data_->data - reinterpret_cast<uint8_t*>(buffer_data_);
+      buffer_data_->data - reinterpret_cast<uint8_t*>(buffer_data_.get());
   data_size_ = memory_buffer_size_ - header_size;
 
   DCHECK(buffer_data_);

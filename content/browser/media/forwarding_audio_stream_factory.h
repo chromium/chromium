@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,18 +11,19 @@
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "content/browser/media/audio_muting_session.h"
-#include "content/browser/media/audio_stream_broker.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/audio_stream_broker.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 #include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
 
 namespace media {
@@ -58,6 +59,10 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     Core(base::WeakPtr<ForwardingAudioStreamFactory> owner,
          media::UserInputMonitorBase* user_input_monitor,
          std::unique_ptr<AudioStreamBrokerFactory> factory);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     ~Core() final;
 
     const base::UnguessableToken& group_id() const { return group_id_; }
@@ -73,6 +78,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
         const media::AudioParameters& params,
         uint32_t shared_memory_count,
         bool enable_agc,
+        media::mojom::AudioProcessingConfigPtr processing_config,
         mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
             renderer_factory_client);
 
@@ -123,7 +129,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     void ResetRemoteFactoryPtrIfIdle();
     void ResetRemoteFactoryPtr();
 
-    media::UserInputMonitorBase* const user_input_monitor_;
+    const raw_ptr<media::UserInputMonitorBase> user_input_monitor_;
 
     // Used for posting tasks the UI thread to communicate when a loopback
     // stream is started/stopped. Weak since |this| on the IO thread outlives
@@ -150,7 +156,7 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
     int stream_id_counter_ = 0;
 
     // Instantiated when |outputs_| should be muted, empty otherwise.
-    base::Optional<AudioMutingSession> muter_;
+    absl::optional<AudioMutingSession> muter_;
 
     StreamBrokerSet inputs_;
     StreamBrokerSet outputs_;
@@ -158,8 +164,6 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
 
     base::WeakPtrFactory<ForwardingAudioStreamFactory::Core> weak_ptr_factory_{
         this};
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   // Returns the ForwardingAudioStreamFactory which takes care of stream
@@ -179,6 +183,10 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
       WebContents* web_contents,
       media::UserInputMonitorBase* user_input_monitor,
       std::unique_ptr<AudioStreamBrokerFactory> factory);
+
+  ForwardingAudioStreamFactory(const ForwardingAudioStreamFactory&) = delete;
+  ForwardingAudioStreamFactory& operator=(const ForwardingAudioStreamFactory&) =
+      delete;
 
   ~ForwardingAudioStreamFactory() final;
 
@@ -214,9 +222,9 @@ class CONTENT_EXPORT ForwardingAudioStreamFactory final
   std::unique_ptr<Core> core_;
   bool is_muted_ = false;
 
-  base::WeakPtrFactory<ForwardingAudioStreamFactory> weak_ptr_factory_{this};
+  base::ScopedClosureRunner capture_handle_;
 
-  DISALLOW_COPY_AND_ASSIGN(ForwardingAudioStreamFactory);
+  base::WeakPtrFactory<ForwardingAudioStreamFactory> weak_ptr_factory_{this};
 };
 
 }  // namespace content

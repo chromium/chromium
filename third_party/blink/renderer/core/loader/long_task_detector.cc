@@ -1,11 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/long_task_detector.h"
 
+#include "base/time/time.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -24,6 +26,7 @@ LongTaskDetector::LongTaskDetector() = default;
 void LongTaskDetector::RegisterObserver(LongTaskObserver* observer) {
   DCHECK(IsMainThread());
   DCHECK(observer);
+  DCHECK(!iterating_);
   if (observers_.insert(observer).is_new_entry && observers_.size() == 1) {
     // Number of observers just became non-zero.
     Thread::Current()->AddTaskTimeObserver(this);
@@ -32,6 +35,10 @@ void LongTaskDetector::RegisterObserver(LongTaskObserver* observer) {
 
 void LongTaskDetector::UnregisterObserver(LongTaskObserver* observer) {
   DCHECK(IsMainThread());
+  if (iterating_) {
+    observers_to_be_removed_.push_back(observer);
+    return;
+  }
   observers_.erase(observer);
   if (observers_.size() == 0) {
     Thread::Current()->RemoveTaskTimeObserver(this);
@@ -43,13 +50,27 @@ void LongTaskDetector::DidProcessTask(base::TimeTicks start_time,
   if ((end_time - start_time) < LongTaskDetector::kLongTaskThreshold)
     return;
 
+  iterating_ = true;
+  HeapVector<Member<LongTaskObserver>> observers_vector;
   for (auto& observer : observers_) {
+    observers_vector.push_back(observer);
+  }
+  std::sort(observers_vector.begin(), observers_vector.end(),
+            recordreplay::CompareMemberByPointerId<Member<LongTaskObserver>>());
+  for (auto& observer : observers_vector) {
     observer->OnLongTaskDetected(start_time, end_time);
   }
+  iterating_ = false;
+
+  for (const auto& observer : observers_to_be_removed_) {
+    UnregisterObserver(observer);
+  }
+  observers_to_be_removed_.clear();
 }
 
 void LongTaskDetector::Trace(Visitor* visitor) const {
   visitor->Trace(observers_);
+  visitor->Trace(observers_to_be_removed_);
 }
 
 }  // namespace blink

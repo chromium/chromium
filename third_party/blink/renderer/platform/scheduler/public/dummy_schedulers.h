@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@ namespace blink {
 class FrameScheduler;
 class PageScheduler;
 class AgentGroupScheduler;
-class ThreadScheduler;
 
 namespace scheduler {
 class WebThreadScheduler;
@@ -36,9 +35,8 @@ PLATFORM_EXPORT std::unique_ptr<FrameScheduler> CreateDummyFrameScheduler();
 PLATFORM_EXPORT std::unique_ptr<PageScheduler> CreateDummyPageScheduler();
 PLATFORM_EXPORT std::unique_ptr<AgentGroupScheduler>
 CreateDummyAgentGroupScheduler();
-PLATFORM_EXPORT std::unique_ptr<ThreadScheduler> CreateDummyThreadScheduler();
 PLATFORM_EXPORT std::unique_ptr<WebThreadScheduler>
-CreateDummyWebThreadScheduler();
+CreateDummyWebMainThreadScheduler();
 
 }  // namespace scheduler
 }  // namespace blink

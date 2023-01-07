@@ -1,3 +1,5 @@
+# mypy: allow-untyped-defs
+
 import os
 import shutil
 import sys
@@ -20,7 +22,7 @@ from tools.wpt.utils import call
 
 logger = logging.getLogger(__name__)
 
-class Virtualenv(object):
+class Virtualenv:
     def __init__(self, path, skip_virtualenv_setup):
         self.path = path
         self.skip_virtualenv_setup = skip_virtualenv_setup
@@ -76,7 +78,7 @@ class Virtualenv(object):
             if IS_WIN:
                 site_packages = os.path.join(base, "Lib", "site-packages")
             else:
-                site_packages = os.path.join(base, "lib", "python{}".format(sys.version[:3]), "site-packages")
+                site_packages = os.path.join(base, "lib", f"python{sys.version[:3]}", "site-packages")
 
         return site_packages
 
@@ -91,6 +93,13 @@ class Virtualenv(object):
         return self._working_set
 
     def activate(self):
+        if sys.platform == 'darwin':
+            # The default Python on macOS sets a __PYVENV_LAUNCHER__ environment
+            # variable which affects invocation of python (e.g. via pip) in a
+            # virtualenv. Unset it if present to avoid this. More background:
+            # https://github.com/web-platform-tests/wpt/issues/27377
+            # https://github.com/python/cpython/pull/9516
+            os.environ.pop('__PYVENV_LAUNCHER__', None)
         path = os.path.join(self.bin_path, "activate_this.py")
         with open(path) as f:
             exec(f.read(), {"__file__": path})

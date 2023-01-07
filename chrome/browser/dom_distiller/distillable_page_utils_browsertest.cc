@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -25,11 +25,11 @@
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
 #include "components/ukm/test_ukm_recorder.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #endif
 
 namespace dom_distiller {
@@ -63,14 +63,14 @@ class MockObserver : public DistillabilityObserver {
 // so 100ms should be pretty safe to catch extra calls.
 //
 // If there are no extra calls, changing this doesn't change the test result.
-const auto kWaitAfterLastCall = base::TimeDelta::FromMilliseconds(100);
+const auto kWaitAfterLastCall = base::Milliseconds(100);
 
 // Wait a bit if no calls are expected to make sure any unexpected calls are
 // caught. Expected calls happen within 100ms after content::WaitForLoadStop()
 // on linux release build, so 1s provides a safe margin.
 //
 // If there are no extra calls, changing this doesn't change the test result.
-const auto kWaitNoExpectedCall = base::TimeDelta::FromSeconds(1);
+const auto kWaitNoExpectedCall = base::Seconds(1);
 
 }  // namespace
 
@@ -101,7 +101,7 @@ class TestOption : public InProcessBrowserTest {
     }
 
     // This blocks until the navigation has completely finished.
-    ui_test_utils::NavigateToURL(browser(), article_url);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url));
     EXPECT_TRUE(content::WaitForLoadStop(web_contents_));
 
     if (!test_timeout.is_zero())
@@ -114,7 +114,7 @@ class TestOption : public InProcessBrowserTest {
   void QuitSoon() { QuitAfter(kWaitAfterLastCall); }
 
   void QuitAfter(base::TimeDelta delta) {
-    DCHECK(delta > base::TimeDelta());
+    DCHECK(delta.is_positive());
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop_->QuitClosure(), delta);
   }
@@ -125,7 +125,7 @@ class TestOption : public InProcessBrowserTest {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   MockObserver holder_;
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<net::test_server::EmbeddedTestServer> https_server_;
 };
 
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAlways,
                        LocalUrlsDoNotCallObserver) {
   EXPECT_CALL(holder_, OnResult(_)).Times(0);
   NavigateAndWait("about:blank", kWaitNoExpectedCall);
-  EXPECT_EQ(GetLatestResult(web_contents_), base::nullopt);
+  EXPECT_EQ(GetLatestResult(web_contents_), absl::nullopt);
 }
 
 using DistillablePageUtilsBrowserTestNone =
@@ -172,7 +172,7 @@ using DistillablePageUtilsBrowserTestNone =
 IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestNone, NeverCallObserver) {
   EXPECT_CALL(holder_, OnResult(_)).Times(0);
   NavigateAndWait(kSimpleArticlePath, kWaitNoExpectedCall);
-  EXPECT_EQ(GetLatestResult(web_contents_), base::nullopt);
+  EXPECT_EQ(GetLatestResult(web_contents_), absl::nullopt);
 }
 
 using DistillablePageUtilsBrowserTestOGArticle =
@@ -279,8 +279,8 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
       Optional(AllOf(IsDistillable(), IsLast(), Not(IsMobileFriendly()))));
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
                        RecordPageIsDistillableOnArticleLoad) {
   ON_CALL(holder_, OnResult(IsLast()))
@@ -312,6 +312,7 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
                                           "IsPageDistillable"),
               Pointee(false));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || OS_LINUX || OS_MACOS || OS_WIN
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_MAC)OS || BUILDFLAG(IS_WIN)
 
 }  // namespace dom_distiller

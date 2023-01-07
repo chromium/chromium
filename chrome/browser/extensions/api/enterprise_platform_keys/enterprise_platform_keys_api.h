@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,14 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_H_
 
-#include "build/chromeos_buildflags.h"
+#include <string>
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api_lacros.h"
-#else
-#include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api_ash.h"
-#endif
+#include "build/chromeos_buildflags.h"
+#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
+#include "chromeos/crosapi/mojom/keystore_service.mojom.h"
+#include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_function_histogram_value.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Extension;
 class Profile;
@@ -25,13 +26,97 @@ class PrefRegistrySyncable;
 }  // namespace user_prefs
 
 namespace extensions {
+
 namespace platform_keys {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
 bool IsExtensionAllowed(Profile* profile, const Extension* extension);
 
 }  // namespace platform_keys
+
+class EnterprisePlatformKeysInternalGenerateKeyFunction
+    : public ExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysInternalGenerateKeyFunction() override;
+  ResponseAction Run() override;
+
+  // Called when the key was generated. If an error occurred, |public_key_der|
+  // will be empty.
+  void OnGeneratedKey(const std::string& public_key_der,
+                      absl::optional<crosapi::mojom::KeystoreError> error);
+
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.generateKey",
+                             ENTERPRISE_PLATFORMKEYSINTERNAL_GENERATEKEY)
+};
+
+class EnterprisePlatformKeysGetCertificatesFunction : public ExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysGetCertificatesFunction() override = default;
+  ResponseAction Run() override;
+
+  void OnGetCertificates(
+      crosapi::mojom::DEPRECATED_GetCertificatesResultPtr result);
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.getCertificates",
+                             ENTERPRISE_PLATFORMKEYS_GETCERTIFICATES)
+};
+
+class EnterprisePlatformKeysImportCertificateFunction
+    : public ExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysImportCertificateFunction() override = default;
+  ResponseAction Run() override;
+
+  void OnAddCertificate(const std::string& error);
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.importCertificate",
+                             ENTERPRISE_PLATFORMKEYS_IMPORTCERTIFICATE)
+};
+
+class EnterprisePlatformKeysRemoveCertificateFunction
+    : public ExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysRemoveCertificateFunction() override = default;
+  ResponseAction Run() override;
+
+  void OnRemoveCertificate(const std::string& error);
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.removeCertificate",
+                             ENTERPRISE_PLATFORMKEYS_REMOVECERTIFICATE)
+};
+
+class EnterprisePlatformKeysInternalGetTokensFunction
+    : public ExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysInternalGetTokensFunction() override = default;
+  ResponseAction Run() override;
+
+  void OnGetKeyStores(crosapi::mojom::DEPRECATED_GetKeyStoresResultPtr result);
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeysInternal.getTokens",
+                             ENTERPRISE_PLATFORMKEYSINTERNAL_GETTOKENS)
+};
+
+class EnterprisePlatformKeysChallengeMachineKeyFunction
+    : public ExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysChallengeMachineKeyFunction() override = default;
+  ResponseAction Run() override;
+
+  void OnChallengeAttestationOnlyKeystore(
+      crosapi::mojom::DEPRECATED_KeystoreStringResultPtr result);
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeMachineKey",
+                             ENTERPRISE_PLATFORMKEYS_CHALLENGEMACHINEKEY)
+};
+
+class EnterprisePlatformKeysChallengeUserKeyFunction
+    : public ExtensionFunction {
+ private:
+  ~EnterprisePlatformKeysChallengeUserKeyFunction() override = default;
+  ResponseAction Run() override;
+
+  void OnChallengeAttestationOnlyKeystore(
+      crosapi::mojom::DEPRECATED_KeystoreStringResultPtr result);
+  DECLARE_EXTENSION_FUNCTION("enterprise.platformKeys.challengeUserKey",
+                             ENTERPRISE_PLATFORMKEYS_CHALLENGEUSERKEY)
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_PLATFORM_KEYS_ENTERPRISE_PLATFORM_KEYS_API_H_

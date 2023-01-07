@@ -1,8 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
+
+#include <tuple>
 
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
@@ -35,10 +37,10 @@ void FrameBackButton::ButtonPressed() {
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::KeyEvent press_key_event(ui::ET_KEY_PRESSED, ui::VKEY_BROWSER_BACK,
                                ui::EF_NONE);
-  ignore_result(root_window->GetHost()->SendEventToSink(&press_key_event));
+  std::ignore = root_window->GetHost()->SendEventToSink(&press_key_event);
   ui::KeyEvent release_key_event(ui::ET_KEY_RELEASED, ui::VKEY_BROWSER_BACK,
                                  ui::EF_NONE);
-  ignore_result(root_window->GetHost()->SendEventToSink(&release_key_event));
+  std::ignore = root_window->GetHost()->SendEventToSink(&release_key_event);
 }
 
 }  // namespace chromeos

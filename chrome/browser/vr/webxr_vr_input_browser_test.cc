@@ -1,12 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/vr/test/mock_xr_device_hook_base.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
 #include "chrome/browser/vr/test/webxr_vr_browser_test.h"
+#include "device/vr/openxr/openxr_interaction_profile_type.h"
 #include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
 
 // Browser test equivalent of
@@ -60,7 +62,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationLocksFocus) {
 class WebXrControllerInputMock : public MockXRDeviceHookBase {
  public:
   void OnFrameSubmitted(
-      device_test::mojom::SubmittedFrameDataPtr frame_data,
+      std::vector<device_test::mojom::ViewDataPtr> views,
       device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) final;
 
   void WaitNumFrames(unsigned int num_frames) {
@@ -146,8 +148,7 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
                          bool is_valid) {
     auto controller_data = GetCurrentControllerData(index);
     controller_data.pose_data.is_valid = is_valid;
-    device_to_origin.matrix().asColMajorf(
-        controller_data.pose_data.device_to_origin);
+    device_to_origin.GetColMajorF(controller_data.pose_data.device_to_origin);
     UpdateControllerAndWait(index, controller_data);
   }
 
@@ -207,6 +208,14 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
     UpdateControllerAndWait(controller_index, controller_data);
   }
 
+  void UpdateInteractionProfile(
+      device_test::mojom::InteractionProfileType new_profile) {
+    device_test::mojom::EventData data = {};
+    data.type = device_test::mojom::EventType::kInteractionProfileChanged;
+    data.interaction_profile = new_profile;
+    PopulateEvent(std::move(data));
+  }
+
   // A controller is necessary to simulate voice input because of how the test
   // API works.
   unsigned int CreateVoiceController() {
@@ -228,13 +237,13 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
     return iter->second;
   }
 
-  base::RunLoop* wait_loop_ = nullptr;
+  raw_ptr<base::RunLoop> wait_loop_ = nullptr;
   unsigned int num_submitted_frames_ = 0;
   unsigned int target_submitted_frames_ = 0;
 };
 
 void WebXrControllerInputMock::OnFrameSubmitted(
-    device_test::mojom::SubmittedFrameDataPtr frame_data,
+    std::vector<device_test::mojom::ViewDataPtr> views,
     device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) {
   num_submitted_frames_++;
   if (wait_loop_ && target_submitted_frames_ == num_submitted_frames_) {
@@ -565,11 +574,9 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestGamepadCompleteData) {
   t->EndTest();
 }
 
-#if BUILDFLAG(ENABLE_OPENXR)
-// Ensure that if OpenXR Runtime receive interaction profile chagnes event,
+// Ensure that if OpenXR Runtime receive interaction profile changes event,
 // input profile name will be changed accordingly.
-IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest,
-                       TestInteractionProfileChanged) {
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestInteractionProfileChanged) {
   WebXrControllerInputMock my_mock;
 
   // Create a controller that supports all reserved buttons.
@@ -589,33 +596,104 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTest,
       device::ControllerRole::kControllerRoleRight, axis_types,
       supported_buttons);
 
-  this->LoadFileAndAwaitInitialization("test_webxr_input_same_object");
-  this->EnterSessionWithUserGestureOrFail();
+  t->LoadFileAndAwaitInitialization("test_webxr_input_same_object");
+  t->EnterSessionWithUserGestureOrFail();
 
   // We should only have seen the first change indicating we have input sources.
-  PollJavaScriptBooleanOrFail("inputChangeEvents === 1", kPollTimeoutShort);
+  t->PollJavaScriptBooleanOrFail("inputChangeEvents === 1",
+                                 WebXrVrBrowserTestBase::kPollTimeoutShort);
 
   // We only expect one input source, cache it.
-  this->RunJavaScriptOrFail("validateInputSourceLength(1)");
-  this->RunJavaScriptOrFail("updateCachedInputSource(0)");
+  t->RunJavaScriptOrFail("validateInputSourceLength(1)");
+  t->RunJavaScriptOrFail("updateCachedInputSource(0)");
 
-  // Simulate Runtimes Sends change interaction profile event to change from
-  // Windows motion controller to Khronos simple Controller.
-  device_test::mojom::EventData data = {};
-  data.type = device_test::mojom::EventType::kInteractionProfileChanged;
-  data.interaction_profile =
-      device_test::mojom::InteractionProfileType::kKHRSimple;
-  my_mock.PopulateEvent(data);
+  // Simulate the runtime sending an interaction profile change event to change
+  // from Windows motion controller to Khronos simple Controller.
+  my_mock.UpdateInteractionProfile(
+      device_test::mojom::InteractionProfileType::kKHRSimple);
+  // Make sure change events happens again since interaction profile changed
+  t->PollJavaScriptBooleanOrFail("inputChangeEvents === 2",
+                                 WebXrVrBrowserTestBase::kPollTimeoutShort);
+  t->RunJavaScriptOrFail("validateInputSourceLength(1)");
+  t->RunJavaScriptOrFail("validateCachedSourcePresence(false)");
 
-  // Make sure change events happens again since interaction profile changedd
-  PollJavaScriptBooleanOrFail("inputChangeEvents === 2", kPollTimeoutShort);
-  this->RunJavaScriptOrFail("validateInputSourceLength(1)");
-  this->RunJavaScriptOrFail("validateCachedSourcePresence(false)");
-
-  this->RunJavaScriptOrFail("done()");
-  this->EndTest();
+  t->RunJavaScriptOrFail("done()");
+  t->EndTest();
 }
-#endif  // BUILDFLAG(ENABLE_OPENXR)
+
+// We explicitly translate between the two types because this ensures that we
+// add a corresponding mojom InteractionProfileType whenever we add a new OpenXr
+// Interaction Profile. Since the mojom type is only needed for tests, we can't
+// just use only the mojom type, and because the mojom type may be used for
+// other runtimes, we can't just typemap it.
+device_test::mojom::InteractionProfileType GetMojomInteractionProfile(
+    device::OpenXrInteractionProfileType profile) {
+  switch (profile) {
+    case device::OpenXrInteractionProfileType::kMicrosoftMotion:
+      return device_test::mojom::InteractionProfileType::kWMRMotion;
+    case device::OpenXrInteractionProfileType::kKHRSimple:
+      return device_test::mojom::InteractionProfileType::kKHRSimple;
+    case device::OpenXrInteractionProfileType::kOculusTouch:
+      return device_test::mojom::InteractionProfileType::kOculusTouch;
+    case device::OpenXrInteractionProfileType::kValveIndex:
+      return device_test::mojom::InteractionProfileType::kValveIndex;
+    case device::OpenXrInteractionProfileType::kHTCVive:
+      return device_test::mojom::InteractionProfileType::kHTCVive;
+    case device::OpenXrInteractionProfileType::kSamsungOdyssey:
+      return device_test::mojom::InteractionProfileType::kSamsungOdyssey;
+    case device::OpenXrInteractionProfileType::kHPReverbG2:
+      return device_test::mojom::InteractionProfileType::kHPReverbG2;
+    case device::OpenXrInteractionProfileType::kHandSelectGrasp:
+      return device_test::mojom::InteractionProfileType::kHandSelectGrasp;
+    case device::OpenXrInteractionProfileType::kViveCosmos:
+      return device_test::mojom::InteractionProfileType::kViveCosmos;
+    case device::OpenXrInteractionProfileType::kCount:
+      return device_test::mojom::InteractionProfileType::kInvalid;
+  }
+}
+
+// Ensure that OpenXR can change between all known Interaction Profile types.
+// If you're adding a new interaction profile, you may need to validate that
+// openxr_test_helper has any required extensions listed as supported in it's
+// header and that it knows about all of the buttons/input types that you're
+// adding with the new interaction profile.
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestAllKnownInteractionProfileTypes) {
+  WebXrControllerInputMock my_mock;
+
+  // Explicitly set us to the first interaction profile before we start the
+  // session.
+  my_mock.UpdateInteractionProfile(GetMojomInteractionProfile(
+      static_cast<device::OpenXrInteractionProfileType>(0)));
+  auto controller_data = my_mock.CreateValidController(
+      device::ControllerRole::kControllerRoleRight);
+  my_mock.ConnectController(controller_data);
+
+  t->LoadFileAndAwaitInitialization("test_webxr_input_sources_change_event");
+  t->EnterSessionWithUserGestureOrFail();
+
+  // We should only have seen the first change indicating we have input sources.
+  uint32_t expected_change_events = 1;
+  t->PollJavaScriptBooleanOrFail(
+      "inputChangeEvents === " + base::NumberToString(expected_change_events),
+      WebXrVrBrowserTestBase::kPollTimeoutShort);
+
+  // Note that since we explicitly set ourselves to the 0th value above, we want
+  // to start changing to the first item in the enum.
+  static uint32_t kFinalValue =
+      static_cast<uint32_t>(device::OpenXrInteractionProfileType::kCount);
+  for (uint32_t i = 1; i < kFinalValue; i++) {
+    my_mock.UpdateInteractionProfile(GetMojomInteractionProfile(
+        static_cast<device::OpenXrInteractionProfileType>(i)));
+    expected_change_events++;
+    // Make sure change events happens again since interaction profile changed
+    t->PollJavaScriptBooleanOrFail(
+        "inputChangeEvents === " + base::NumberToString(expected_change_events),
+        WebXrVrBrowserTestBase::kPollTimeoutShort);
+  }
+
+  t->RunJavaScriptOrFail("done()");
+  t->EndTest();
+}
 
 // Test that controller input is registered via WebXR's input method. This uses
 // multiple controllers to make sure the input is going to the correct one.
@@ -676,7 +754,7 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestControllerInputRegistered) {
 
 std::string TransformToColMajorString(const gfx::Transform& t) {
   float array[16];
-  t.matrix().asColMajorf(array);
+  t.GetColMajorF(array);
   std::string array_string = "[";
   for (int i = 0; i < 16; i++) {
     array_string += base::NumberToString(array[i]) + ",";

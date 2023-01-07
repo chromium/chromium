@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 
 #include <utility>
 
-#include "chrome/browser/infobars/infobar_service.h"
+#include "chrome/browser/infobars/confirm_infobar_creator.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -15,11 +16,11 @@ namespace extensions {
 
 // static
 infobars::InfoBar* IncognitoConnectabilityInfoBarDelegate::Create(
-    InfoBarService* infobar_service,
+    infobars::ContentInfoBarManager* infobar_manager,
     const std::u16string& message,
     IncognitoConnectabilityInfoBarDelegate::InfoBarCallback callback) {
-  return infobar_service->AddInfoBar(infobar_service->CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate>(
+  return infobar_manager->AddInfoBar(
+      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
           new IncognitoConnectabilityInfoBarDelegate(message,
                                                      std::move(callback)))));
 }

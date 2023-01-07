@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,15 @@
 
 #include <memory>
 
+#include "ash/public/cpp/style/color_provider.h"
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -25,6 +27,7 @@ class ImageButton;
 
 namespace ash {
 
+class AssistantButton;
 class AssistantButtonListener;
 enum class AssistantButtonId;
 
@@ -48,12 +51,15 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
     // Params for the icon.
     int icon_size_in_dip = 0;
     SkColor icon_color = gfx::kGoogleGrey700;
+    // If both icon_color and icon_color_type are specified, icon_color_type
+    // will be used.
+    absl::optional<ui::ColorId> icon_color_type;
 
     // ID of the localization string for the button's accessible name.
-    base::Optional<int> accessible_name_id;
+    absl::optional<int> accessible_name_id;
 
     // ID of the localization string for the button's tooltip text.
-    base::Optional<int> tooltip_id;
+    absl::optional<int> tooltip_id;
   };
 
   AssistantButton(AssistantButtonListener* listener,
@@ -71,17 +77,25 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
 
   AssistantButtonId GetAssistantButtonId() const { return id_; }
 
+  // views::ImageButton:
+  void OnBlur() override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
+  void OnFocus() override;
+
+  // views::View:
+  void OnPaintBackground(gfx::Canvas* canvas) override;
+  void OnThemeChanged() override;
 
  private:
   void OnButtonPressed();
 
   AssistantButtonListener* listener_;
   const AssistantButtonId id_;
+
+  // |icon_color_type_| and |icon_description_| are stored only when
+  // icon_color_type is specified in InitParams.
+  absl::optional<ui::ColorId> icon_color_type_;
+  absl::optional<gfx::IconDescription> icon_description_;
 };
 
 }  // namespace ash

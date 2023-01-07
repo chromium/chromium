@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,7 +58,8 @@ class AudioDecoderSelectorTestParam {
   // Decoder::Initialize() takes different parameters depending on the type.
   static void ExpectInitialize(MockDecoder* decoder,
                                DecoderCapability capability,
-                               media::AudioDecoderConfig expected_config) {
+                               media::AudioDecoderConfig expected_config,
+                               bool /*low_delay */) {
     EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _))
         .WillRepeatedly([capability, expected_config](
                             const media::AudioDecoderConfig& config,
@@ -68,8 +69,8 @@ class AudioDecoderSelectorTestParam {
                             const media::WaitingCB&) {
           EXPECT_TRUE(config.Matches(expected_config));
           std::move(init_cb).Run(capability == kSucceed
-                                     ? media::OkStatus()
-                                     : media::StatusCode::kCodeOnlyForTesting);
+                                     ? media::DecoderStatus::Codes::kOk
+                                     : media::DecoderStatus::Codes::kFailed);
         });
   }
 };
@@ -96,8 +97,9 @@ class VideoDecoderSelectorTestParam {
 
   static void ExpectInitialize(MockDecoder* decoder,
                                DecoderCapability capability,
-                               media::VideoDecoderConfig expected_config) {
-    EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _, _))
+                               media::VideoDecoderConfig expected_config,
+                               bool low_delay) {
+    EXPECT_CALL(*decoder, Initialize_(_, low_delay, _, _, _, _))
         .WillRepeatedly([capability, expected_config](
                             const media::VideoDecoderConfig& config,
                             bool low_delay, media::CdmContext*,
@@ -106,8 +108,8 @@ class VideoDecoderSelectorTestParam {
                             const media::WaitingCB&) {
           EXPECT_TRUE(config.Matches(expected_config));
           std::move(init_cb).Run(capability == kSucceed
-                                     ? media::OkStatus()
-                                     : media::StatusCode::kCodeOnlyForTesting);
+                                     ? media::DecoderStatus::Codes::kOk
+                                     : media::DecoderStatus::Codes::kFailed);
         });
   }
 };
@@ -134,6 +136,10 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
   using DecoderType = typename TypeParam::DecoderType;
 
   WebCodecsDecoderSelectorTest() { CreateDecoderSelector(); }
+
+  WebCodecsDecoderSelectorTest(const WebCodecsDecoderSelectorTest&) = delete;
+  WebCodecsDecoderSelectorTest& operator=(const WebCodecsDecoderSelectorTest&) =
+      delete;
 
   void OnOutput(scoped_refptr<Output> output) { NOTREACHED(); }
 
@@ -162,7 +168,7 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
               /*is_platform_decoder=*/false, /*supports_decryption=*/true,
               info.first);
       TypeParam::ExpectInitialize(decoder.get(), info.second,
-                                  last_set_decoder_config_);
+                                  last_set_decoder_config_, low_delay_);
       decoders.push_back(std::move(decoder));
     }
 
@@ -180,7 +186,7 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
   void SelectDecoder(DecoderConfig config = TypeParam::CreateConfig()) {
     last_set_decoder_config_ = config;
     decoder_selector_->SelectDecoder(
-        config,
+        config, low_delay_,
         base::BindOnce(&Self::OnDecoderSelectedThunk, base::Unretained(this)));
     RunUntilIdle();
   }
@@ -196,8 +202,7 @@ class WebCodecsDecoderSelectorTest : public ::testing::Test {
 
   std::vector<std::pair<int, DecoderCapability>> mock_decoders_to_create_;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebCodecsDecoderSelectorTest);
+  bool low_delay_ = false;
 };
 
 using WebCodecsDecoderSelectorTestParams =
@@ -212,6 +217,14 @@ TYPED_TEST(WebCodecsDecoderSelectorTest, NoDecoders) {
 }
 
 TYPED_TEST(WebCodecsDecoderSelectorTest, OneDecoder) {
+  this->AddMockDecoder(kDecoder1, kSucceed);
+
+  EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));
+  this->SelectDecoder();
+}
+
+TYPED_TEST(WebCodecsDecoderSelectorTest, LowDelay) {
+  this->low_delay_ = true;
   this->AddMockDecoder(kDecoder1, kSucceed);
 
   EXPECT_CALL(*this, OnDecoderSelected(kDecoder1));

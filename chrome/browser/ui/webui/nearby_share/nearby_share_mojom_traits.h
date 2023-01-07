@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,19 @@
 
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
+#include "mojo/public/cpp/bindings/optional_as_pointer.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "url/gurl.h"
 
 namespace mojo {
 
 template <>
 struct StructTraits<nearby_share::mojom::ShareTargetDataView, ShareTarget> {
-  static base::UnguessableToken id(const ShareTarget& share_target);
-  static std::string name(const ShareTarget& share_target);
+  static const base::UnguessableToken& id(const ShareTarget& share_target);
+  static const std::string& name(const ShareTarget& share_target);
   static nearby_share::mojom::ShareTargetType type(
+      const ShareTarget& share_target);
+  static mojo::OptionalAsPointer<const GURL> image_url(
       const ShareTarget& share_target);
   static nearby_share::mojom::PayloadPreviewPtr payload_preview(
       const ShareTarget& share_target);

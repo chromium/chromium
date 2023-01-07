@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/name_node_list.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 
@@ -17,7 +17,7 @@ namespace {
 
 class LiveNodeListRegistryTest : public PageTestBase {
  public:
-  void SetUp() override { PageTestBase::SetUp(IntSize()); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size()); }
 
  protected:
   const LiveNodeListBase* CreateNodeList() {

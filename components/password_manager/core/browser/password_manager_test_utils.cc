@@ -1,19 +1,21 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 
-#include <algorithm>
 #include <memory>
 #include <ostream>
 #include <string>
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
 
@@ -46,7 +48,6 @@ std::unique_ptr<PasswordForm> FillPasswordFormWithData(
     const PasswordFormData& form_data,
     bool use_federated_login) {
   auto form = PasswordFormFromData(form_data);
-  form->date_synced = form->date_created + base::TimeDelta::FromDays(1);
   if (form_data.username_value)
     form->display_name = form->username_value;
   else
@@ -56,8 +57,14 @@ std::unique_ptr<PasswordForm> FillPasswordFormWithData(
     form->password_value.clear();
     form->federation_origin =
         url::Origin::Create(GURL("https://accounts.google.com/login"));
+    if (!IsValidAndroidFacetURI(form->signon_realm)) {
+      form->signon_realm =
+          "federation://" + form->url.host() + "/accounts.google.com";
+      form->type = PasswordForm::Type::kApi;
+    }
   }
   form->in_store = PasswordForm::Store::kProfileStore;
+  form->password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   return form;
 }
 
@@ -86,11 +93,9 @@ bool ContainsEqualPasswordFormsUnordered(
 
   bool had_mismatched_actual_form = false;
   for (const auto& actual : actual_values) {
-    auto it_matching_expectation = std::find_if(
-        remaining_expectations.begin(), remaining_expectations.end(),
-        [&actual](const PasswordForm* expected) {
-          return *expected == *actual;
-        });
+    auto it_matching_expectation = base::ranges::find(
+        remaining_expectations, *actual,
+        [](const PasswordForm* expected) { return *expected; });
     if (it_matching_expectation != remaining_expectations.end()) {
       // Erase the matched expectation by moving the last element to its place.
       *it_matching_expectation = remaining_expectations.back();
@@ -127,16 +132,18 @@ MockPasswordReuseDetectorConsumer::~MockPasswordReuseDetectorConsumer() =
     default;
 
 PasswordHashDataMatcher::PasswordHashDataMatcher(
-    base::Optional<PasswordHashData> expected)
+    absl::optional<PasswordHashData> expected)
     : expected_(expected) {}
 
-bool PasswordHashDataMatcher::MatchAndExplain(
-    base::Optional<PasswordHashData> hash_data,
-    ::testing::MatchResultListener* listener) const {
-  if (expected_ == base::nullopt)
-    return hash_data == base::nullopt;
+PasswordHashDataMatcher::~PasswordHashDataMatcher() = default;
 
-  if (hash_data == base::nullopt)
+bool PasswordHashDataMatcher::MatchAndExplain(
+    absl::optional<PasswordHashData> hash_data,
+    ::testing::MatchResultListener* listener) const {
+  if (expected_ == absl::nullopt)
+    return hash_data == absl::nullopt;
+
+  if (hash_data == absl::nullopt)
     return false;
 
   return expected_->username == hash_data->username &&
@@ -152,8 +159,8 @@ void PasswordHashDataMatcher::DescribeNegationTo(::std::ostream* os) const {
   *os << "doesn't match password hash data for " << expected_->username;
 }
 
-::testing::Matcher<base::Optional<PasswordHashData>> Matches(
-    base::Optional<PasswordHashData> expected) {
+::testing::Matcher<absl::optional<PasswordHashData>> Matches(
+    absl::optional<PasswordHashData> expected) {
   return ::testing::MakeMatcher(new PasswordHashDataMatcher(expected));
 }
 

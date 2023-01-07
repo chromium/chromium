@@ -127,7 +127,7 @@ def guess_string_length(valobj, error):
     if not valobj.GetValue():
         return 0
 
-    for i in xrange(0, 2048):
+    for i in range(0, 2048):
         if valobj.GetPointeeData(i, 1).GetUnsignedInt16(error, 0) == 0:
             return i
 
@@ -140,10 +140,10 @@ def ustring_to_string(valobj, error, length=None):
     else:
         length = int(length)
 
-    out_string = u""
-    for i in xrange(0, length):
+    out_string = ""
+    for i in range(0, length):
         char_value = valobj.GetPointeeData(i, 1).GetUnsignedInt16(error, 0)
-        out_string = out_string + unichr(char_value)
+        out_string = out_string + chr(char_value)
 
     return out_string.encode('utf-8')
 
@@ -154,10 +154,10 @@ def lstring_to_string(valobj, error, length=None):
     else:
         length = int(length)
 
-    out_string = u""
-    for i in xrange(0, length):
+    out_string = ""
+    for i in range(0, length):
         char_value = valobj.GetPointeeData(i, 1).GetUnsignedInt8(error, 0)
-        out_string = out_string + unichr(char_value)
+        out_string = out_string + chr(char_value)
 
     return out_string.encode('utf-8')
 
@@ -218,7 +218,7 @@ class WTFStringProvider:
     def to_string(self):
         impl = self.stringimpl()
         if not impl:
-            return u""
+            return ""
         return impl.to_string()
 
 

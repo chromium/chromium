@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "url/gurl.h"
 
 namespace web {
+class WebFrame;
 class WebState;
 }
 
@@ -28,6 +29,9 @@ bool WebStateContentIsSecureHtml(const web::WebState* web_state);
 bool JsonStringToFormData(NSString* json_string,
                           autofill::FormData* form_data,
                           GURL page_url);
+
+// Returns whether an iframe is cross-origin.
+bool IsCrossOriginIframe(web::WebState* web_state, web::WebFrame* web_frame);
 
 }  // namespace password_manager
 

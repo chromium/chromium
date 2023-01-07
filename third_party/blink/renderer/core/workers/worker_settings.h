@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_WORKER_SETTINGS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
+
+class Settings;
 
 class CORE_EXPORT WorkerSettings {
   USING_FAST_MALLOC(WorkerSettings);
@@ -40,10 +41,6 @@ class CORE_EXPORT WorkerSettings {
 
   const GenericFontFamilySettings& GetGenericFontFamilySettings() const {
     return generic_font_family_settings_;
-  }
-
-  void MakeGenericFontFamilySettingsAtomic() {
-    generic_font_family_settings_.MakeAtomic();
   }
 
  private:

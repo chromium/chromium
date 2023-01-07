@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -16,17 +15,19 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/favicon/core/favicon_database.h"
 #include "components/history/core/browser/history_backend_client.h"
 #include "components/history/core/browser/history_backend_notifier.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_database.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/history/core/browser/top_sites_impl.h"
 #include "components/history/core/browser/top_sites_observer.h"
@@ -62,14 +63,13 @@ base::Time PretendNow() {
   return out_time;
 }
 
-// Returns whether |url| can be added to history.
+// Returns whether `url` can be added to history.
 bool MockCanAddURLToHistory(const GURL& url) {
   return url.is_valid();
 }
 
 base::Time GetOldFaviconThreshold() {
-  return PretendNow() -
-         base::TimeDelta::FromDays(internal::kOnDemandFaviconIsOldAfterDays);
+  return PretendNow() - base::Days(internal::kOnDemandFaviconIsOldAfterDays);
 }
 
 }  // namespace
@@ -99,7 +99,7 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
 
   // EXPECTs that each URL-specific history thing (basically, everything but
   // favicons) is gone, the reason being either that it was automatically
-  // |expired|, or manually deleted.
+  // `expired`, or manually deleted.
   void EnsureURLInfoGone(const URLRow& row, bool expired);
 
   const DeletionInfo* GetLastDeletionInfo() {
@@ -109,7 +109,7 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
   }
 
   // Returns whether HistoryBackendNotifier::NotifyURLsModified was
-  // called for |url|.
+  // called for `url`.
   bool ModifiedNotificationSentDueToExpiry(const GURL& url);
   bool ModifiedNotificationSentDueToUserAction(const GURL& url);
 
@@ -155,7 +155,7 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
 
     base::FilePath history_name = path().Append(kHistoryFilename);
-    main_db_.reset(new TestHistoryDatabase);
+    main_db_ = std::make_unique<TestHistoryDatabase>();
     if (main_db_->Init(history_name) != sql::INIT_OK)
       main_db_.reset();
 
@@ -164,13 +164,13 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
     if (thumb_db_->Init(thumb_name) != sql::INIT_OK)
       thumb_db_.reset();
 
-    pref_service_.reset(new TestingPrefServiceSimple);
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     TopSitesImpl::RegisterPrefs(pref_service_->registry());
 
     expirer_.SetDatabases(main_db_.get(), thumb_db_.get());
-    top_sites_ =
-        new TopSitesImpl(pref_service_.get(), nullptr, PrepopulatedPageList(),
-                         base::BindRepeating(MockCanAddURLToHistory));
+    top_sites_ = new TopSitesImpl(pref_service_.get(), nullptr, nullptr,
+                                  PrepopulatedPageList(),
+                                  base::BindRepeating(MockCanAddURLToHistory));
     WaitTopSitesLoadedObserver wait_top_sites_observer(top_sites_);
     top_sites_->Init(path().Append(kTopSitesFilename));
     wait_top_sites_observer.Run();
@@ -199,18 +199,18 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
   // HistoryBackendNotifier:
   void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                              const GURL& icon_url) override {}
-  void NotifyURLVisited(ui::PageTransition transition,
-                        const URLRow& row,
-                        const RedirectList& redirects,
-                        base::Time visit_time) override {}
+  void NotifyURLVisited(const URLRow& url_row,
+                        const VisitRow& visit_row) override {}
   void NotifyURLsModified(const URLRows& rows,
-                          UrlsModifiedReason reason) override {
+                          bool is_from_expiration) override {
     urls_modified_notifications_.push_back(
-        std::make_pair(reason == UrlsModifiedReason::kExpired, rows));
+        std::make_pair(is_from_expiration, rows));
   }
   void NotifyURLsDeleted(DeletionInfo deletion_info) override {
     urls_deleted_notifications_.push_back(std::move(deletion_info));
   }
+  void NotifyVisitUpdated(const VisitRow& visit) override {}
+  void NotifyVisitDeleted(const VisitRow& visit) override {}
 };
 
 // The example data consists of 4 visits. The middle two visits are to the
@@ -232,9 +232,9 @@ void ExpireHistoryTest::AddExampleData(URLID url_ids[3],
 
   // Four times for each visit.
   visit_times[3] = PretendNow();
-  visit_times[2] = visit_times[3] - base::TimeDelta::FromDays(1);
-  visit_times[1] = visit_times[3] - base::TimeDelta::FromDays(2);
-  visit_times[0] = visit_times[3] - base::TimeDelta::FromDays(3);
+  visit_times[2] = visit_times[3] - base::Days(1);
+  visit_times[1] = visit_times[3] - base::Days(2);
+  visit_times[0] = visit_times[3] - base::Days(3);
 
   // Two favicons. The first two URLs will share the same one, while the last
   // one will have a unique favicon.
@@ -287,36 +287,6 @@ void ExpireHistoryTest::AddExampleData(URLID url_ids[3],
   main_db_->AddVisit(&visit_row4, SOURCE_BROWSED);
 }
 
-void ExpireHistoryTest::AddExampleSourceData(const GURL& url, URLID* id) {
-  if (!main_db_)
-    return;
-
-  base::Time last_visit_time = PretendNow();
-  // Add one URL.
-  URLRow url_row1(url);
-  url_row1.set_last_visit(last_visit_time);
-  url_row1.set_visit_count(4);
-  URLID url_id = main_db_->AddURL(url_row1);
-  *id = url_id;
-
-  // Four times for each visit.
-  VisitRow visit_row1(url_id, last_visit_time - base::TimeDelta::FromDays(4), 0,
-                      ui::PAGE_TRANSITION_TYPED, 0, true, false);
-  main_db_->AddVisit(&visit_row1, SOURCE_SYNCED);
-
-  VisitRow visit_row2(url_id, last_visit_time - base::TimeDelta::FromDays(3), 0,
-                      ui::PAGE_TRANSITION_TYPED, 0, true, false);
-  main_db_->AddVisit(&visit_row2, SOURCE_BROWSED);
-
-  VisitRow visit_row3(url_id, last_visit_time - base::TimeDelta::FromDays(2), 0,
-                      ui::PAGE_TRANSITION_TYPED, 0, true, false);
-  main_db_->AddVisit(&visit_row3, SOURCE_EXTENSION);
-
-  VisitRow visit_row4(url_id, last_visit_time, 0, ui::PAGE_TRANSITION_TYPED, 0,
-                      true, false);
-  main_db_->AddVisit(&visit_row4, SOURCE_FIREFOX_IMPORTED);
-}
-
 bool ExpireHistoryTest::HasFavicon(favicon_base::FaviconID favicon_id) {
   if (!thumb_db_ || favicon_id == 0)
     return false;
@@ -335,8 +305,8 @@ favicon_base::FaviconID ExpireHistoryTest::GetFavicon(
 }
 
 void ExpireHistoryTest::EnsureURLInfoGone(const URLRow& row, bool expired) {
-  // The passed in |row| must originate from |main_db_| so that its ID will be
-  // set to what had been in effect in |main_db_| before the deletion.
+  // The passed in `row` must originate from `main_db_` so that its ID will be
+  // set to what had been in effect in `main_db_` before the deletion.
   ASSERT_NE(0, row.id());
 
   // Verify the URL no longer exists.
@@ -352,8 +322,8 @@ void ExpireHistoryTest::EnsureURLInfoGone(const URLRow& row, bool expired) {
   for (const auto& info : urls_deleted_notifications_) {
     EXPECT_EQ(expired, info.is_from_expiration());
     const history::URLRows& rows(info.deleted_rows());
-    auto it_row = std::find_if(rows.begin(), rows.end(),
-                               history::URLRow::URLRowHasURL(row.url()));
+    auto it_row =
+        base::ranges::find_if(rows, history::URLRow::URLRowHasURL(row.url()));
     if (it_row != rows.end()) {
       // Further verify that the ID is set to what had been in effect in the
       // main database before the deletion. The InMemoryHistoryBackend relies
@@ -364,9 +334,8 @@ void ExpireHistoryTest::EnsureURLInfoGone(const URLRow& row, bool expired) {
   }
   for (const auto& pair : urls_modified_notifications_) {
     const auto& rows = pair.second;
-    EXPECT_TRUE(std::find_if(rows.begin(), rows.end(),
-                             history::URLRow::URLRowHasURL(row.url())) ==
-                rows.end());
+    EXPECT_TRUE(
+        base::ranges::none_of(rows, history::URLRow::URLRowHasURL(row.url())));
   }
   EXPECT_TRUE(found_delete_notification);
 }
@@ -388,8 +357,7 @@ bool ExpireHistoryTest::ModifiedNotificationSent(
     const bool is_from_expiration = pair.first;
     const auto& rows = pair.second;
     if (is_from_expiration == should_be_from_expiration &&
-        std::find_if(rows.begin(), rows.end(),
-                     history::URLRow::URLRowHasURL(url)) != rows.end()) {
+        base::ranges::any_of(rows, history::URLRow::URLRowHasURL(url))) {
       return true;
     }
   }
@@ -541,6 +509,35 @@ TEST_F(ExpireHistoryTest, DeleteURLWithoutFavicon) {
   EXPECT_TRUE(HasFavicon(favicon_id));
 }
 
+// Deletes a URL with context annotations attached to the visits. Verifies the
+// context annotations are also deleted.
+TEST_F(ExpireHistoryTest, DeleteURLAndContextAnnotations) {
+  URLID url_ids[3];
+  base::Time visit_times[4];
+  AddExampleData(url_ids, visit_times);
+
+  // Add some stub context annotations for the last URL row.
+  URLRow last_row;
+  ASSERT_TRUE(main_db_->GetURLRow(url_ids[2], &last_row));
+
+  VisitVector visits;
+  main_db_->GetVisitsForURL(url_ids[2], &visits);
+  ASSERT_EQ(1U, visits.size());
+  int test_visit_id = visits[0].visit_id;
+  main_db_->AddContextAnnotationsForVisit(test_visit_id, {});
+
+  // Verify that the context annotation is there for that visit.
+  VisitContextAnnotations unused;
+  EXPECT_TRUE(main_db_->GetContextAnnotationsForVisit(test_visit_id, &unused));
+
+  // Delete the URL and its dependencies.
+  expirer_.DeleteURL(last_row.url(), base::Time::Max());
+
+  // All the normal data + the favicon should be gone.
+  EnsureURLInfoGone(last_row, false);
+  EXPECT_FALSE(main_db_->GetContextAnnotationsForVisit(test_visit_id, &unused));
+}
+
 // DeleteURL should delete the history of starred urls, but the URL should
 // remain starred and its favicon should remain too.
 TEST_F(ExpireHistoryTest, DeleteStarredVisitedURL) {
@@ -607,7 +604,7 @@ TEST_F(ExpireHistoryTest, DeleteURLs) {
   std::vector<GURL> urls;
   // Push back a bogus URL (which shouldn't change anything).
   urls.push_back(GURL());
-  for (size_t i = 0; i < base::size(rows); ++i) {
+  for (size_t i = 0; i < std::size(rows); ++i) {
     ASSERT_TRUE(main_db_->GetURLRow(url_ids[i], &rows[i]));
     favicon_ids[i] =
         GetFavicon(rows[i].url(), favicon_base::IconType::kFavicon);
@@ -1056,8 +1053,8 @@ TEST_F(ExpireHistoryTest, ExpireSomeOldHistory) {
   const ExpiringVisitsReader* reader = expirer_.GetAllVisitsReader();
 
   // Deleting a time range with no URLs should return false (nothing found).
-  EXPECT_FALSE(expirer_.ExpireSomeOldHistory(
-      visit_times[0] - base::TimeDelta::FromDays(100), reader, 1));
+  EXPECT_FALSE(expirer_.ExpireSomeOldHistory(visit_times[0] - base::Days(100),
+                                             reader, 1));
   EXPECT_EQ(nullptr, GetLastDeletionInfo());
 
   // Deleting a time range with not up the the max results should also return
@@ -1116,7 +1113,7 @@ TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesDeleteUnstarred) {
   favicon_base::FaviconID icon_id = thumb_db_->AddFavicon(
       url, favicon_base::IconType::kFavicon, favicon,
       favicon::FaviconBitmapType::ON_DEMAND,
-      GetOldFaviconThreshold() - base::TimeDelta::FromSeconds(1), gfx::Size());
+      GetOldFaviconThreshold() - base::Seconds(1), gfx::Size());
   ASSERT_NE(0, icon_id);
   GURL page_url("http://google.com/");
   ASSERT_NE(0, thumb_db_->AddIconMapping(page_url, icon_id));
@@ -1142,7 +1139,7 @@ TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesNotDeleteStarred) {
   favicon_base::FaviconID icon_id = thumb_db_->AddFavicon(
       url, favicon_base::IconType::kFavicon, favicon,
       favicon::FaviconBitmapType::ON_DEMAND,
-      GetOldFaviconThreshold() - base::TimeDelta::FromSeconds(1), gfx::Size());
+      GetOldFaviconThreshold() - base::Seconds(1), gfx::Size());
   ASSERT_NE(0, icon_id);
   GURL page_url1("http://google.com/1");
   ASSERT_NE(0, thumb_db_->AddIconMapping(page_url1, icon_id));
@@ -1170,7 +1167,7 @@ TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesNotDeleteStarred) {
 TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesDeleteAfterLongDelay) {
   // Previous clearing (2 days ago).
   expirer_.ClearOldOnDemandFaviconsIfPossible(GetOldFaviconThreshold() -
-                                              base::TimeDelta::FromDays(2));
+                                              base::Days(2));
 
   // The blob does not encode any real bitmap, obviously.
   const unsigned char kBlob[] = "0";
@@ -1182,7 +1179,7 @@ TEST_F(ExpireHistoryTest, ClearOldOnDemandFaviconsDoesDeleteAfterLongDelay) {
   favicon_base::FaviconID icon_id = thumb_db_->AddFavicon(
       url, favicon_base::IconType::kFavicon, favicon,
       favicon::FaviconBitmapType::ON_DEMAND,
-      GetOldFaviconThreshold() - base::TimeDelta::FromSeconds(1), gfx::Size());
+      GetOldFaviconThreshold() - base::Seconds(1), gfx::Size());
   ASSERT_NE(0, icon_id);
   GURL page_url("http://google.com/");
   ASSERT_NE(0, thumb_db_->AddIconMapping(page_url, icon_id));
@@ -1201,7 +1198,7 @@ TEST_F(ExpireHistoryTest,
        ClearOldOnDemandFaviconsDoesNotDeleteAfterShortDelay) {
   // Previous clearing (5 minutes ago).
   expirer_.ClearOldOnDemandFaviconsIfPossible(GetOldFaviconThreshold() -
-                                              base::TimeDelta::FromMinutes(5));
+                                              base::Minutes(5));
 
   // The blob does not encode any real bitmap, obviously.
   const unsigned char kBlob[] = "0";
@@ -1213,7 +1210,7 @@ TEST_F(ExpireHistoryTest,
   favicon_base::FaviconID icon_id = thumb_db_->AddFavicon(
       url, favicon_base::IconType::kFavicon, favicon,
       favicon::FaviconBitmapType::ON_DEMAND,
-      GetOldFaviconThreshold() - base::TimeDelta::FromSeconds(1), gfx::Size());
+      GetOldFaviconThreshold() - base::Seconds(1), gfx::Size());
   ASSERT_NE(0, icon_id);
   GURL page_url1("http://google.com/1");
   ASSERT_NE(0, thumb_db_->AddIconMapping(page_url1, icon_id));
@@ -1241,7 +1238,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitAndRedirects) {
   // Set up the example data.
   base::Time now = PretendNow();
   URLRow url_row1(GURL("http://google.com/1"));
-  url_row1.set_last_visit(now - base::TimeDelta::FromDays(1));
+  url_row1.set_last_visit(now - base::Days(1));
   url_row1.set_visit_count(1);
   URLID url1 = main_db_->AddURL(url_row1);
 
@@ -1254,7 +1251,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitAndRedirects) {
   // "http://www.google.com/1".
   VisitRow visit_row1;
   visit_row1.url_id = url1;
-  visit_row1.visit_time = now - base::TimeDelta::FromDays(1);
+  visit_row1.visit_time = now - base::Days(1);
   visit_row1.transition = ui::PAGE_TRANSITION_CHAIN_START;
 
   main_db_->AddVisit(&visit_row1, SOURCE_BROWSED);
@@ -1283,7 +1280,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitAndRedirectsWithLoop) {
   // Set up the example data.
   base::Time now = PretendNow();
   URLRow url_row1(GURL("http://google.com/1"));
-  url_row1.set_last_visit(now - base::TimeDelta::FromDays(1));
+  url_row1.set_last_visit(now - base::Days(1));
   url_row1.set_visit_count(1);
   URLID url1 = main_db_->AddURL(url_row1);
 
@@ -1296,7 +1293,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitAndRedirectsWithLoop) {
   // "http://www.google.com/1".
   VisitRow visit_row1;
   visit_row1.url_id = url1;
-  visit_row1.visit_time = now - base::TimeDelta::FromDays(1);
+  visit_row1.visit_time = now - base::Days(1);
   visit_row1.transition = ui::PAGE_TRANSITION_CHAIN_START;
   main_db_->AddVisit(&visit_row1, SOURCE_BROWSED);
 
@@ -1329,7 +1326,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitButNotActualReferers) {
   // Set up the example data.
   base::Time now = PretendNow();
   URLRow url_row1(GURL("http://google.com/1"));
-  url_row1.set_last_visit(now - base::TimeDelta::FromDays(1));
+  url_row1.set_last_visit(now - base::Days(1));
   url_row1.set_visit_count(1);
   URLID url1 = main_db_->AddURL(url_row1);
 
@@ -1342,7 +1339,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitButNotActualReferers) {
   // "http://www.google.com/1". But both are separate redirect chains.
   VisitRow visit_row1;
   visit_row1.url_id = url1;
-  visit_row1.visit_time = now - base::TimeDelta::FromDays(1);
+  visit_row1.visit_time = now - base::Days(1);
   visit_row1.transition = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_CHAIN_START | ui::PAGE_TRANSITION_CHAIN_END);
   main_db_->AddVisit(&visit_row1, SOURCE_BROWSED);

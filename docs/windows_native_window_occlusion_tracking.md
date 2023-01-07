@@ -3,7 +3,7 @@
 ## Background
 
 Ui::aura has an
-[API](https://source.chromium.org/chromium/chromium/src/+/master:ui/aura/window_occlusion_tracker.h)
+[API](https://source.chromium.org/chromium/chromium/src/+/main:ui/aura/window_occlusion_tracker.h)
 to track which aura windows are occluded, i.e., covered by
 one or more other windows. If a window is occluded, Chromium treats foreground
 tabs as if they were background tabs; rendering stops, and js is throttled. On
@@ -11,7 +11,7 @@ ChromeOS, since all windows are aura windows, this is sufficient to determine
 if a Chromium window is covered by other windows. On Windows, we need to
 consider native app windows when determining if a Chromium window is occluded.
 This is implemented in
-[native_window_occlusion_tracker_win.cc](https://source.chromium.org/chromium/chromium/src/+/master:ui/aura/native_window_occlusion_tracker_win.cc).
+[native_window_occlusion_tracker_win.cc](https://source.chromium.org/chromium/chromium/src/+/main:ui/aura/native_window_occlusion_tracker_win.cc).
 
 ## Implementation
 When the core WindowOcclusionTracker decides to track a WindowTreeHost, it
@@ -29,7 +29,7 @@ The main work of occlusion calculation is done by a helper class,
 WindowOcclusionCalculator, which runs on a separate COM task runner, in order
 to not block the UI thread. If the WindowOcclusionCalculator is tracking any
 windows, it 
-[registers](https://source.chromium.org/chromium/chromium/src/+/master:ui/aura/native_window_occlusion_tracker_win.cc?q=WindowOcclusionCalculator::RegisterEventHooks)
+[registers](https://source.chromium.org/chromium/chromium/src/+/main:ui/aura/native_window_occlusion_tracker_win.cc?q=WindowOcclusionCalculator::RegisterEventHooks)
 a set of
 [event](https://docs.microsoft.com/en-us/windows/win32/winauto/event-constants)
 hooks with Windows, in order to know when
@@ -41,7 +41,7 @@ occlude Chromium windows, (i.e., fully visible windows on the current virtual
 desktop), we register for EVENT_OBJECT_LOCATIONCHANGE events for the window's
 process. pids_for_location_change_hook_ keeps track of which pids are hooked,
 and is
-[used to remove the hook](https://source.chromium.org/chromium/chromium/src/+/master:ui/aura/native_window_occlusion_tracker_win.cc;drc=eeee643ae963e1d78c7457184f8af93f48bba9d3;l=443)
+[used to remove the hook](https://source.chromium.org/chromium/chromium/src/+/main:ui/aura/native_window_occlusion_tracker_win.cc;drc=eeee643ae963e1d78c7457184f8af93f48bba9d3;l=443)
 if the process no longer has any windows open.
 
 When the event handler gets notified of an event, it usually kicks off new
@@ -71,7 +71,7 @@ it is occluded, otherwise, not.
 Once the occlusion state of all root Chromium windows has been determined, the
 WindowOcclusionTracker posts a task to the ui thread to run a callback on the
 NativeWindowOcclusionTrackerWin object. That callback is
-[NativeWindowOcclusionTrackerWin::UpdateOcclusionState](https://source.chromium.org/chromium/chromium/src/+/master:ui/aura/native_window_occlusion_tracker_win.cc;l=226?q=NativeWindowOcclusionTrackerWin::UpdateOcclusionState)
+[NativeWindowOcclusionTrackerWin::UpdateOcclusionState](https://source.chromium.org/chromium/chromium/src/+/main:ui/aura/native_window_occlusion_tracker_win.cc;l=226?q=NativeWindowOcclusionTrackerWin::UpdateOcclusionState)
 , and is passed
 root_window_hwnds_occlusion_state_, which is a map between root window HWNDs
 and their calculated occlusion state.

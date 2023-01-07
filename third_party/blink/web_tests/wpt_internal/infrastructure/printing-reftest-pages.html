@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>Check that reftest-pages attribute works correctly</title>
+<meta name="reftest-pages" content="1,3,4-6,8-">
+<link rel="match" href="printing-reftest-pages-ref.html">
+<script>
+    if (window.testRunner)
+        testRunner.setPrinting();
+</script>
+<style>
+    div {
+        break-before:page;
+    }
+</style>
+<div>Page 1.</div>
+<div>Page 2. (not shown)</div>
+<div>Page 3.</div>
+<div>Page 4.</div>
+<div>Page 5.</div>
+<div>Page 6.</div>
+<div>Page 7. (not shown)</div>
+<div>Page 8.</div>
+<div>Page 9.</div>
+<div>Page 10.</div>

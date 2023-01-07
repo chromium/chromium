@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -22,7 +22,7 @@
 namespace autofill {
 
 class AutofillDriver;
-class AutofillManager;
+class BrowserAutofillManager;
 class CreditCard;
 
 // TODO(csharp): A lot of the logic in this class is copied from autofillagent.
@@ -32,32 +32,37 @@ class CreditCard;
 // Delegate for in-browser Autocomplete and Autofill display and selection.
 class AutofillExternalDelegate : public AutofillPopupDelegate {
  public:
-  // Creates an AutofillExternalDelegate for the specified AutofillManager and
-  // AutofillDriver.
-  AutofillExternalDelegate(AutofillManager* manager, AutofillDriver* driver);
-  virtual ~AutofillExternalDelegate();
+  // Creates an AutofillExternalDelegate for the specified
+  // BrowserAutofillManager and AutofillDriver.
+  AutofillExternalDelegate(BrowserAutofillManager* manager,
+                           AutofillDriver* driver);
+
+  AutofillExternalDelegate(const AutofillExternalDelegate&) = delete;
+  AutofillExternalDelegate& operator=(const AutofillExternalDelegate&) = delete;
+
+  ~AutofillExternalDelegate() override;
 
   // AutofillPopupDelegate implementation.
   void OnPopupShown() override;
   void OnPopupHidden() override;
   void OnPopupSuppressed() override;
   void DidSelectSuggestion(const std::u16string& value,
-                           int identifier) override;
-  void DidAcceptSuggestion(const std::u16string& value,
-                           int identifier,
-                           int position) override;
+                           int frontend_id,
+                           const Suggestion::BackendId& backend_id) override;
+  void DidAcceptSuggestion(const Suggestion& suggestion, int position) override;
   bool GetDeletionConfirmationText(const std::u16string& value,
-                                   int identifier,
+                                   int frontend_id,
                                    std::u16string* title,
                                    std::u16string* body) override;
-  bool RemoveSuggestion(const std::u16string& value, int identifier) override;
+  bool RemoveSuggestion(const std::u16string& value, int frontend_id) override;
   void ClearPreviewedForm() override;
 
   // Returns PopupType::kUnspecified for all popups prior to |onQuery|, or the
   // popup type after call to |onQuery|.
   PopupType GetPopupType() const override;
 
-  AutofillDriver* GetAutofillDriver() override;
+  absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
+  GetDriver() override;
 
   // Returns the ax node id associated with the current web contents' element
   // who has a controller relation to the current autofill popup.
@@ -109,7 +114,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AutofillExternalDelegateUnitTest,
-                           FillCreditCardForm);
+                           FillCreditCardFormImpl);
 
   // Called when a credit card is scanned using device camera.
   void OnCreditCardScanned(const CreditCard& card);
@@ -144,11 +149,11 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   // Returns the text (i.e. |Suggestion| value) for Chrome autofill options.
   std::u16string GetSettingsSuggestionValue() const;
 
-  AutofillManager* const manager_;  // weak.
+  const raw_ptr<BrowserAutofillManager> manager_;  // weak.
 
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
-  AutofillDriver* const driver_;  // weak
+  const raw_ptr<AutofillDriver> driver_;  // weak
 
   // The ID of the last request sent for form field Autofill.  Used to ignore
   // out of date responses.
@@ -180,8 +185,6 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   base::OnceClosure deletion_callback_;
 
   base::WeakPtrFactory<AutofillExternalDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillExternalDelegate);
 };
 
 }  // namespace autofill

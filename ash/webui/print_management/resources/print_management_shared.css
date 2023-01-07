@@ -1,0 +1,215 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+ /* #css_wrapper_metadata_start
+ * #type=style
+ * #import=chrome://resources/cr_elements/cr_shared_style.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-shared-style
+ * #css_wrapper_metadata_end */
+
+html {
+  background-color: var(--cros-bg-color);
+}
+
+.flex-center {
+  align-items: center;
+  display: flex;
+}
+
+.file-icon-blue {
+  --iron-icon-fill-color: var(--google-blue-600);
+}
+
+.file-icon-gray {
+  --iron-icon-fill-color: var(--google-grey-700);
+}
+
+.file-icon-green {
+  --iron-icon-fill-color: var(--google-green-600);
+}
+
+.file-icon-red {
+  --iron-icon-fill-color: var(--google-red-600);
+}
+
+.file-icon-yellow {
+  --iron-icon-fill-color: var(--google-yellow-600);
+}
+
+@media (prefers-color-scheme: dark) {
+  .file-icon-blue {
+    --iron-icon-fill-color: var(--google-blue-300);
+  }
+
+  .file-icon-gray {
+    --iron-icon-fill-color: var(--google-grey-300);
+  }
+
+  .file-icon-green {
+    --iron-icon-fill-color: var(--google-green-300);
+  }
+
+  .file-icon-red {
+    --iron-icon-fill-color: var(--google-red-300);
+  }
+
+  .file-icon-yellow {
+    --iron-icon-fill-color: var(--google-yellow-300);
+  }
+}
+
+.overflow-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 600px) and (max-width: 767px) {
+  .date-column {
+    width: 56px;
+  }
+
+  .file-name-column {
+    width: 184px;
+  }
+
+  .file-name-header-column {
+    width: 224px;
+  }
+
+  .margin-border {
+    margin: 0px 40px 0px 40px;
+  }
+
+  .padded-left {
+    margin-inline-start: 32px;
+  }
+
+  .printer-name-column {
+    width: 68px;
+  }
+
+  .status-column {
+    width: 124px;
+  }
+
+  #activeStatusContainer:hover {
+    background-color: rgba(var(--google-blue-600-rgb), 0.06);
+    border-radius: 16px;
+    margin-inline-start: 16px;
+    padding-left: 16px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 959px) {
+  .date-column {
+    width: 82px;
+  }
+
+  .file-name-column {
+    width: 224px;
+  }
+
+  .file-name-header-column {
+    width: 264px;
+  }
+
+  .margin-border {
+    margin: 0px 40px 0px 40px;
+  }
+
+  .padded-left {
+    margin-inline-start: 40px;
+  }
+
+  .printer-name-column {
+    width: 88px;
+  }
+
+  .status-column {
+    width: 182px;
+  }
+
+  #activeStatusContainer:hover {
+    background-color: rgba(var(--google-blue-600-rgb), 0.06);
+    border-radius: 16px;
+    margin-inline-start: 16px;
+    padding-left: 16px;
+  }
+}
+
+@media (min-width: 960px) and (max-width: 1279px) {
+  .date-column {
+    width: 82px;
+  }
+
+  .file-name-column {
+    width: 280px;
+  }
+
+  .file-name-header-column {
+    width: 320px;
+  }
+
+  .margin-border {
+    margin: 0px 64px 0px 64px;
+  }
+
+  .padded-left {
+    margin-inline-start: 48px;
+  }
+
+  .printer-name-column {
+    width: 152px;
+  }
+
+  .status-column {
+    width: 182px;
+  }
+
+  #activeStatusContainer:hover {
+    background-color: rgba(var(--google-blue-600-rgb), 0.06);
+    border-radius: 16px;
+    margin-inline-start: 16px;
+    padding-left: 16px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .date-column {
+    width: 144px;
+  }
+
+  .file-name-column {
+    width: 316px;
+  }
+
+  .file-name-header-column {
+    width: 356px;
+  }
+
+  .margin-border {
+    margin: 0px 144px 0px 144px;
+  }
+
+  .padded-left {
+    margin-inline-start: 56px;
+  }
+
+  .printer-name-column {
+    width: 190px;
+  }
+
+  .status-column {
+    width: 182px;
+  }
+
+  #activeStatusContainer:hover {
+    background-color: rgba(var(--google-blue-600-rgb), 0.06);
+    border-radius: 16px;
+    margin-inline-start: 16px;
+    padding-left: 16px;
+  }
+}

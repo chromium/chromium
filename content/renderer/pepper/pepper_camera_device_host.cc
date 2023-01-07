@@ -1,12 +1,14 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/renderer/pepper/pepper_camera_device_host.h"
 
+#include <memory>
+
+#include "content/public/renderer/render_frame.h"
 #include "content/renderer/pepper/pepper_platform_camera_device.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
-#include "content/renderer/render_frame_impl.h"
 #include "ppapi/host/dispatch_host_message.h"
 #include "ppapi/proxy/ppapi_messages.h"
 
@@ -87,10 +89,10 @@ int32_t PepperCameraDeviceHost::OnOpen(ppapi::host::HostMessageContext* context,
   if (!document_url.is_valid())
     return PP_ERROR_FAILED;
 
-  platform_camera_device_.reset(new PepperPlatformCameraDevice(
+  platform_camera_device_ = std::make_unique<PepperPlatformCameraDevice>(
       renderer_ppapi_host_->GetRenderFrameForInstance(pp_instance())
           ->GetRoutingID(),
-      device_id, this));
+      device_id, this);
 
   open_reply_context_ = context->MakeReplyMessageContext();
 

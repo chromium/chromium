@@ -30,56 +30,54 @@
 
 #include "third_party/blink/renderer/platform/graphics/generated_image.h"
 
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
-void GeneratedImage::DrawPattern(
-    GraphicsContext& dest_context,
-    const FloatRect& src_rect,
-    const FloatSize& scale,
-    const FloatPoint& phase,
-    SkBlendMode composite_op,
-    const FloatRect& dest_rect,
-    const FloatSize& repeat_spacing,
-    RespectImageOrientationEnum respect_orientation) {
-  FloatRect tile_rect = src_rect;
-  tile_rect.Expand(repeat_spacing);
+void GeneratedImage::DrawPattern(GraphicsContext& dest_context,
+                                 const cc::PaintFlags& base_flags,
+                                 const gfx::RectF& dest_rect,
+                                 const ImageTilingInfo& tiling_info,
+                                 const ImageDrawOptions& draw_options) {
+  gfx::RectF tile_rect = tiling_info.image_rect;
+  tile_rect.set_size(tile_rect.size() + tiling_info.spacing);
 
-  SkMatrix pattern_matrix = SkMatrix::Translate(phase.X(), phase.Y());
-  pattern_matrix.preScale(scale.Width(), scale.Height());
-  pattern_matrix.preTranslate(tile_rect.X(), tile_rect.Y());
+  SkMatrix pattern_matrix =
+      SkMatrix::Translate(tiling_info.phase.x(), tiling_info.phase.y());
+  pattern_matrix.preScale(tiling_info.scale.x(), tiling_info.scale.y());
+  pattern_matrix.preTranslate(tile_rect.x(), tile_rect.y());
 
-  sk_sp<PaintShader> tile_shader =
-      CreateShader(tile_rect, &pattern_matrix, src_rect, respect_orientation);
+  sk_sp<PaintShader> tile_shader = CreateShader(
+      tile_rect, &pattern_matrix, tiling_info.image_rect, draw_options);
 
-  PaintFlags fill_flags = dest_context.FillFlags();
+  cc::PaintFlags fill_flags(base_flags);
   fill_flags.setShader(std::move(tile_shader));
   fill_flags.setColor(SK_ColorBLACK);
-  fill_flags.setBlendMode(composite_op);
 
-  dest_context.DrawRect(dest_rect, fill_flags);
+  dest_context.DrawRect(gfx::RectFToSkRect(dest_rect), fill_flags,
+                        AutoDarkMode(draw_options));
 }
 
 sk_sp<PaintShader> GeneratedImage::CreateShader(
-    const FloatRect& tile_rect,
+    const gfx::RectF& tile_rect,
     const SkMatrix* pattern_matrix,
-    const FloatRect& src_rect,
-    RespectImageOrientationEnum respect_orientation) {
+    const gfx::RectF& src_rect,
+    const ImageDrawOptions& draw_options) {
   auto paint_controller =
       std::make_unique<PaintController>(PaintController::kTransient);
   GraphicsContext context(*paint_controller);
   context.BeginRecording(tile_rect);
-  DrawTile(context, src_rect, respect_orientation);
+  DrawTile(context, src_rect, draw_options);
   sk_sp<PaintRecord> record = context.EndRecording();
 
-  return PaintShader::MakePaintRecord(std::move(record), tile_rect,
-                                      SkTileMode::kRepeat, SkTileMode::kRepeat,
-                                      pattern_matrix);
+  return PaintShader::MakePaintRecord(
+      std::move(record), gfx::RectFToSkRect(tile_rect), SkTileMode::kRepeat,
+      SkTileMode::kRepeat, pattern_matrix);
 }
 
 PaintImage GeneratedImage::PaintImageForCurrentFrame() {

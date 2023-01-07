@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -206,7 +206,7 @@ cvox.Api.internalEnable = function() {
  * @return {boolean} True if ChromeVox is currently active.
  */
 cvox.Api.isChromeVoxActive = function() {
-  return !!channel;
+  return Boolean(channel);
 };
 
 /**
@@ -227,7 +227,6 @@ cvox.Api.speak = function(textString, queueMode, properties) {
 
 /**
  * This method is kept to keep Docs from throwing an error.
- *
  */
 cvox.Api.stop = function() {};
 

@@ -1,4 +1,4 @@
-# Copyright (c) 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Provides gzip utilities for strings.
@@ -23,6 +23,8 @@ def GzipStringRsyncable(data):
                                stdin=subprocess.PIPE,
                                stdout=subprocess.PIPE,
                                stderr=subprocess.PIPE)
+  if isinstance(data, str):
+    data = data.encode('utf8')
   data, stderr = gzip_proc.communicate(data)
   if gzip_proc.returncode != 0:
     raise subprocess.CalledProcessError(gzip_proc.returncode, 'gzip',
@@ -37,6 +39,8 @@ def GzipString(data):
   # not have --rsyncable. If used over GzipStringRsyncable, the primary
   # difference of this function's compression will be larger updates every time
   # a compressed resource is changed.
+  if isinstance(data, str):
+    data = data.encode('utf8')
   gzip_output = io.BytesIO()
   with gzip.GzipFile(mode='wb', compresslevel=9, fileobj=gzip_output,
                      mtime=0) as gzip_file:

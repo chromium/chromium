@@ -1,11 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 
 #import "base/logging.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/common/app_group/app_group_command.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"

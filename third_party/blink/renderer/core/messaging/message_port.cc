@@ -28,31 +28,43 @@
 
 #include <memory>
 
+#include "base/numerics/safe_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
+#include "third_party/blink/public/mojom/messaging/transferable_message.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
-#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message_mojom_traits.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
 MessagePort::MessagePort(ExecutionContext& execution_context)
-    : ExecutionContextLifecycleObserver(&execution_context),
+    : ExecutionContextLifecycleObserver(execution_context.IsContextDestroyed()
+                                            ? nullptr
+                                            : &execution_context),
+      // Ports in a destroyed context start out in a closed state.
+      closed_(execution_context.IsContextDestroyed()),
       task_runner_(execution_context.GetTaskRunner(TaskType::kPostedMessage)) {}
 
 MessagePort::~MessagePort() {
@@ -82,7 +94,7 @@ void MessagePort::postMessage(ScriptState* script_state,
                               HeapVector<ScriptValue>& transfer,
                               ExceptionState& exception_state) {
   PostMessageOptions* options = PostMessageOptions::Create();
-  if (!transfer.IsEmpty())
+  if (!transfer.empty())
     options->setTransfer(transfer);
   postMessage(script_state, message, options, exception_state);
 }
@@ -129,10 +141,14 @@ void MessagePort::postMessage(ScriptState* script_state,
   if (debugger)
     msg.sender_stack_trace_id = debugger->StoreCurrentStackTrace("postMessage");
 
-  if (msg.message->IsLockedToAgentCluster()) {
-    msg.locked_agent_cluster_id = GetExecutionContext()->GetAgentClusterID();
-  } else {
-    msg.locked_agent_cluster_id = base::nullopt;
+  msg.sender_agent_cluster_id = GetExecutionContext()->GetAgentClusterID();
+  msg.locked_to_sender_agent_cluster = msg.message->IsLockedToAgentCluster();
+
+  auto* tracker = ThreadScheduler::Current()->GetTaskAttributionTracker();
+  // Only pass the parent task ID if we're in the main world, as isolated world
+  // task tracking is not yet supported.
+  if (tracker && script_state->World().IsMainWorld()) {
+    msg.parent_task_id = tracker->RunningTaskAttributionId(script_state);
   }
 
   mojo::Message mojo_message =
@@ -157,7 +173,7 @@ void MessagePort::start() {
     return;
 
   started_ = true;
-  connector_->ResumeIncomingMethodCallProcessing();
+  connector_->StartReceiving(task_runner_);
 }
 
 void MessagePort::close() {
@@ -182,14 +198,24 @@ void MessagePort::Entangle(MessagePortDescriptor port) {
   DCHECK(port.IsValid());
   DCHECK(!connector_);
 
+  // If the context was already destroyed, there is no reason to actually
+  // entangle the port and create a Connector. No messages will ever be able to
+  // be sent or received anyway, as StartReceiving will never be called.
+  if (!GetExecutionContext())
+    return;
+
   port_ = std::move(port);
   connector_ = std::make_unique<mojo::Connector>(
       port_.TakeHandleToEntangle(GetExecutionContext()),
-      mojo::Connector::SINGLE_THREADED_SEND, task_runner_);
-  connector_->PauseIncomingMethodCallProcessing();
+      mojo::Connector::SINGLE_THREADED_SEND);
+  // The raw `this` is safe despite `this` being a garbage collected object
+  // because we make sure that:
+  // 1. This object will not be garbage collected while it is connected and
+  //    the execution context is not destroyed, and
+  // 2. when the execution context is destroyed, the connector_ is reset.
   connector_->set_incoming_receiver(this);
   connector_->set_connection_error_handler(
-      WTF::Bind(&MessagePort::close, WrapWeakPersistent(this)));
+      WTF::BindOnce(&MessagePort::close, WrapWeakPersistent(this)));
 }
 
 void MessagePort::Entangle(MessagePortChannel channel) {
@@ -265,7 +291,7 @@ MessagePortArray* MessagePort::EntanglePorts(
     WebVector<MessagePortChannel> channels) {
   // https://html.spec.whatwg.org/C/#message-ports
   // |ports| should be an empty array, not null even when there is no ports.
-  wtf_size_t count = SafeCast<wtf_size_t>(channels.size());
+  wtf_size_t count = base::checked_cast<wtf_size_t>(channels.size());
   MessagePortArray* port_array = MakeGarbageCollected<MessagePortArray>(count);
   for (wtf_size_t i = 0; i < count; ++i) {
     auto* port = MakeGarbageCollected<MessagePort>(context);
@@ -293,16 +319,49 @@ bool MessagePort::Accept(mojo::Message* mojo_message) {
     return false;
   }
 
+  ExecutionContext* context = GetExecutionContext();
   // WorkerGlobalScope::close() in Worker onmessage handler should prevent
   // the next message from dispatching.
-  if (auto* scope = DynamicTo<WorkerGlobalScope>(GetExecutionContext())) {
+  if (auto* scope = DynamicTo<WorkerGlobalScope>(context)) {
     if (scope->IsClosing())
       return true;
   }
 
   Event* evt = CreateMessageEvent(message);
+  // This unique_ptr is here to ensure that the TaskScope remains alive for the
+  // lifetime of this function.
+  std::unique_ptr<scheduler::TaskAttributionTracker::TaskScope>
+      task_attribution_scope;
+  if (message.sender_origin &&
+      message.sender_origin->IsSameOriginWith(context->GetSecurityOrigin()) &&
+      context->IsSameAgentCluster(message.sender_agent_cluster_id) &&
+      context->IsWindow()) {
+    // TODO(crbug.com/1351643): It is not correct to assume we're running in the
+    // main world here. Even though we're in Window, this could be running in an
+    // isolated world context. At the same time, even if we are running in such
+    // a context, the TaskScope creation here will not leak any meaningful
+    // information to that world. At worst, TaskAttributionTracking will return
+    // the wrong ancestor for tasks initiated by MessagePort::PostMessage inside
+    // of extensions. TaskScope is using the v8::Context in order to store the
+    // current TaskAttributionId in the context's
+    // EmbedderPreservedContinuationData, and it's only used later for
+    // attributing continuations to that original task.
+    // We cannot check `content->GetCurrentWorld()->IsMainWorld()` here, as the
+    // v8::Context may still be empty (and hence
+    // ExecutionContext::GetCurrentWorld returns null).
+    if (ScriptState* script_state =
+            ToScriptState(context, DOMWrapperWorld::MainWorld())) {
+      DCHECK(ThreadScheduler::Current());
+      if (auto* tracker =
+              ThreadScheduler::Current()->GetTaskAttributionTracker()) {
+        task_attribution_scope = tracker->CreateTaskScope(
+            script_state, message.parent_task_id,
+            scheduler::TaskAttributionTracker::TaskScopeType::kPostMessage);
+      }
+    }
+  }
 
-  v8::Isolate* isolate = GetExecutionContext()->GetIsolate();
+  v8::Isolate* isolate = context->GetIsolate();
   ThreadDebugger* debugger = ThreadDebugger::From(isolate);
   if (debugger)
     debugger->ExternalAsyncTaskStarted(message.sender_stack_trace_id);
@@ -324,8 +383,9 @@ Event* MessagePort::CreateMessageEvent(BlinkTransferableMessage& message) {
     }
   }
 
-  if (message.locked_agent_cluster_id) {
-    if (!context->IsSameAgentCluster(*message.locked_agent_cluster_id)) {
+  if (message.locked_to_sender_agent_cluster) {
+    DCHECK(message.sender_agent_cluster_id);
+    if (!context->IsSameAgentCluster(message.sender_agent_cluster_id)) {
       UseCounter::Count(
           context,
           WebFeature::kMessageEventSharedArrayBufferDifferentAgentCluster);
@@ -350,6 +410,7 @@ Event* MessagePort::CreateMessageEvent(BlinkTransferableMessage& message) {
         message.user_activation->has_been_active,
         message.user_activation->was_active);
   }
+
   return MessageEvent::Create(ports, std::move(message.message),
                               user_activation);
 }

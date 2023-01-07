@@ -1,6 +1,0 @@
-include_rules = [
-  "+third_party/protobuf",
-  "+content/public/common",
-  "+components/prefs",
-  "+third_party/blink/public",
-]

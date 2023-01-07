@@ -52,12 +52,13 @@ browse:social:twitter_infinite_scroll:2018,,desktop,"2018,infinite_scroll"
 browse:tech:discourse_infinite_scroll:2018,,"desktop,mobile","2018,infinite_scroll"
 browse:tools:autocad:2021,"AutoCAD desktop story,",desktop,"2021,keyboard_input,wasm,webgl"
 browse:tools:docs_scrolling,Google Docs scrolling story:,desktop,"2020,javascript_heavy"
-browse:tools:earth:2020,Load Google Earth and search for the Empire State Building. Watch the,desktop,"2020,keyboard_input,wasm,webgl"
 browse:tools:gmail-compose:2020,,desktop,2020
 browse:tools:gmail-labelclick:2020,,desktop,2020
 browse:tools:gmail-openconversation:2020,,desktop,2020
 browse:tools:gmail-search:2020,,desktop,2020
 browse:tools:maps:2019,Google maps story:,"desktop,mobile","2019,emerging_market,health_check,javascript_heavy,webgl"
+browse:tools:photoshop:2021,"Photoshop desktop story,",desktop,"2021,wasm"
+browse:tools:photoshop_warm:2021,"Photoshop desktop story, measuring warm startup,",desktop,"2021,wasm"
 browse:tools:sheets:2019,,desktop,"2019,health_check,javascript_heavy"
 browse_accessibility:media:youtube,Tests interacting with the YouTube home page.,desktop,"2016,accessibility,keyboard_input"
 browse_accessibility:tech:codesearch:2018,Tests scrolling an element within a page.,desktop,"2018,accessibility,scroll"

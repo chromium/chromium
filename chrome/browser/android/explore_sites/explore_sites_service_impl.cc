@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/android/explore_sites/block_site_task.h"
 #include "chrome/browser/android/explore_sites/catalog.pb.h"
 #include "chrome/browser/android/explore_sites/clear_activities_task.h"

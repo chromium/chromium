@@ -1,0 +1,32 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//chrome/browser/password_manager/buildflags.gni")
+
+group("password_manager") {
+  public_deps = [ ":backend_factory" ]
+}
+
+source_set("backend_factory") {
+  deps = [
+    ":password_manager_buildflags",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common:common",
+    "//components/prefs",
+  ]
+  if (is_android) {
+    deps += [ "//chrome/browser/password_manager/android:backend" ]
+  }
+
+  sources = [ "password_store_backend_factory.cc" ]
+}
+
+buildflag_header("password_manager_buildflags") {
+  header = "password_manager_buildflags.h"
+  flags = [
+    "USE_LEGACY_PASSWORD_STORE_BACKEND=$use_legacy_password_store_backend",
+    "PASSWORD_MANAGER_USE_INTERNAL_ANDROID_RESOURCES=$password_manager_use_internal_android_resources",
+  ]
+}

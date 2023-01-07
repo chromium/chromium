@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,14 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "extensions/browser/api/declarative_net_request/index_helper.h"
+#include "extensions/browser/api/declarative_net_request/install_index_helper.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
+#include "extensions/browser/content_verifier/content_verifier_key.h"
 #include "extensions/browser/crx_file_info.h"
 #include "extensions/browser/image_sanitizer.h"
 #include "extensions/browser/install/crx_install_error.h"
@@ -28,6 +27,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class SkBitmap;
 
@@ -62,6 +62,12 @@ class SandboxedUnpackerClient
   virtual void ShouldComputeHashesForOffWebstoreExtension(
       scoped_refptr<const Extension> extension,
       base::OnceCallback<void(bool)> callback);
+
+  // Since data for content verification (verifier_contents.json) may be present
+  // in the CRX header, we need to verify it against public key. Normally it is
+  // Chrome Web Store public key, but may be overridden for tests.
+  virtual void GetContentVerifierKey(
+      base::OnceCallback<void(ContentVerifierKey)> callback);
 
   // temp_dir - A temporary directory containing the results of the extension
   // unpacking. The client is responsible for deleting this directory.
@@ -109,17 +115,7 @@ class SandboxedUnpackerClient
 // transcoding all images to PNG, parsing all message catalogs, and rewriting
 // the manifest JSON. As such, it should not be used when the output is not
 // intended to be given back to the author.
-//
-// Lifetime management:
-//
-// This class is ref-counted by each call it makes to itself on another thread.
-//
-// Additionally, we hold a reference to our own client so that the client lives
-// long enough to receive the result of unpacking.
-//
-// NOTE: This class should only be used on the FILE thread.
-//
-class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
+class SandboxedUnpacker : public ImageSanitizer::Client {
  public:
   // Overrides the required verifier format for testing purposes. Only one
   // ScopedVerifierFormatOverrideForTest may exist at a time.
@@ -128,6 +124,9 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
     explicit ScopedVerifierFormatOverrideForTest(
         crx_file::VerifierFormat format);
     ~ScopedVerifierFormatOverrideForTest();
+
+   private:
+    THREAD_CHECKER(thread_checker_);
   };
 
   // Creates a SandboxedUnpacker that will do work to unpack an extension,
@@ -147,6 +146,9 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
       const scoped_refptr<base::SequencedTaskRunner>& unpacker_io_task_runner,
       SandboxedUnpackerClient* client);
 
+  SandboxedUnpacker(const SandboxedUnpacker&) = delete;
+  SandboxedUnpacker& operator=(const SandboxedUnpacker&) = delete;
+
   // Start processing the extension, either from a CRX file or already unzipped
   // in a directory. The client is called with the results. The directory form
   // requires the id and base64-encoded public key (for insertion into the
@@ -157,11 +159,10 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
                           const base::FilePath& directory);
 
  private:
-  friend class base::RefCountedThreadSafe<SandboxedUnpacker>;
-
   friend class SandboxedUnpackerTest;
+  class IOThreadState;
 
-  ~SandboxedUnpacker();
+  ~SandboxedUnpacker() override;
 
   // Create |temp_dir_| used to unzip or unpack the extension in.
   bool CreateTempDirectory();
@@ -187,25 +188,29 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   // Callback which is called after the verified contents are uncompressed.
   void OnVerifiedContentsUncompressed(
       const base::FilePath& unzip_dir,
-      data_decoder::DataDecoder::ResultOrError<mojo_base::BigBuffer> result);
+      base::expected<mojo_base::BigBuffer, std::string> result);
 
   // Verifies the decompressed verified contents fetched from the header of CRX
   // and stores them if the verification of these contents is successful.
-  bool StoreVerifiedContentsInExtensionDir(
-      base::span<const uint8_t> verified_contents);
+  void StoreVerifiedContentsInExtensionDir(
+      const base::FilePath& unzip_dir,
+      base::span<const uint8_t> verified_contents,
+      ContentVerifierKey content_verifier_key);
 
   // Unpacks the extension in directory and returns the manifest.
   void Unpack(const base::FilePath& directory);
-  void ReadManifestDone(base::Optional<base::Value> manifest,
-                        const base::Optional<std::string>& error);
+  void ReadManifestDone(absl::optional<base::Value> manifest,
+                        const absl::optional<std::string>& error);
   void UnpackExtensionSucceeded(base::Value manifest);
 
   // Helper which calls ReportFailure.
   void ReportUnpackExtensionFailed(base::StringPiece error);
 
-  void ImageSanitizationDone(ImageSanitizer::Status status,
-                             const base::FilePath& path);
-  void ImageSanitizerDecodedImage(const base::FilePath& path, SkBitmap image);
+  // Implementation of ImageSanitizer::Client:
+  data_decoder::DataDecoder* GetDataDecoder() override;
+  void OnImageSanitizationDone(ImageSanitizer::Status status,
+                               const base::FilePath& path) override;
+  void OnImageDecoded(const base::FilePath& path, SkBitmap image) override;
 
   void ReadMessageCatalogs();
 
@@ -225,7 +230,7 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
 
   // Overwrites original manifest with safe result from utility process.
   // Returns nullopt on error.
-  base::Optional<base::Value> RewriteManifestFile(const base::Value& manifest);
+  absl::optional<base::Value> RewriteManifestFile(const base::Value& manifest);
 
   // Cleans up temp directory artifacts.
   void Cleanup();
@@ -236,7 +241,7 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   void IndexAndPersistJSONRulesetsIfNeeded();
 
   void OnJSONRulesetsIndexed(
-      declarative_net_request::IndexHelper::Result result);
+      declarative_net_request::InstallIndexHelper::Result result);
 
   // Computed hashes: if requested (via ShouldComputeHashes callback in
   // SandbloxedUnpackerClient), calculate hashes of all extensions' resources
@@ -274,7 +279,7 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   // Parsed original manifest of the extension. Set after unpacking the
   // extension and working with its manifest, so after UnpackExtensionSucceeded
   // is called.
-  base::Optional<base::Value> manifest_;
+  absl::optional<base::Value> manifest_;
 
   // Install prefs needed for the Declarative Net Request API.
   declarative_net_request::RulesetInstallPrefs ruleset_install_prefs_;
@@ -299,6 +304,9 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   // when calling Extension::Create() by the CRX installer.
   int creation_flags_;
 
+  // Overridden value of VerifierFormat that is used from StartWithCrx().
+  absl::optional<crx_file::VerifierFormat> format_verifier_override_;
+
   // Sequenced task runner where file I/O operations will be performed.
   scoped_refptr<base::SequencedTaskRunner> unpacker_io_task_runner_;
 
@@ -308,22 +316,8 @@ class SandboxedUnpacker : public base::RefCountedThreadSafe<SandboxedUnpacker> {
   // The decoded install icon.
   SkBitmap install_icon_;
 
-  // Controls our own lazily started, isolated instance of the Data Decoder
-  // service so that multiple decode operations related to this
-  // SandboxedUnpacker can share a single instance.
-  data_decoder::DataDecoder data_decoder_;
-
-  // The JSONParser remote from the data decoder service.
-  mojo::Remote<data_decoder::mojom::JsonParser> json_parser_;
-
-  // The ImageSanitizer used to clean-up images.
-  std::unique_ptr<ImageSanitizer> image_sanitizer_;
-
-  // Used during the message catalog rewriting phase to sanitize the extension
-  // provided message catalogs.
-  std::unique_ptr<JsonFileSanitizer> json_file_sanitizer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxedUnpacker);
+  // TODO(crbug.com/1346172): Consider to wrap it in base::SequenceBound
+  std::unique_ptr<IOThreadState> io_thread_state_;
 };
 
 }  // namespace extensions

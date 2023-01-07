@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,6 +65,9 @@ class DragDropOperation : public DataSourceObserver,
       const gfx::PointF& drag_start_point,
       ui::mojom::DragEventSource event_source);
 
+  DragDropOperation(const DragDropOperation&) = delete;
+  DragDropOperation& operator=(const DragDropOperation&) = delete;
+
   // Abort the operation if it hasn't been started yet, otherwise do nothing.
   void AbortIfPending();
 
@@ -76,7 +79,6 @@ class DragDropOperation : public DataSourceObserver,
 
   // aura::client::DragDropClientObserver:
   void OnDragStarted() override;
-  void OnDragEnded() override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnDragActionsChanged(int actions) override;
 
@@ -99,12 +101,26 @@ class DragDropOperation : public DataSourceObserver,
 
   void OnDragIconCaptured(const SkBitmap& icon_bitmap);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Called when the focused window is a Lacros window and a source
+  // DataTransferEndpoint is found in the available MIME types. This
+  // is currently used to synchronize drag source metadata from
+  // Lacros to Ash.
+  void OnDataTransferEndpointRead(const std::string& mime_type,
+                                  std::u16string data);
+#endif
+
   void OnTextRead(const std::string& mime_type, std::u16string data);
   void OnHTMLRead(const std::string& mime_type, std::u16string data);
   void OnFilenamesRead(DataExchangeDelegate* data_exchange_delegate,
                        aura::Window* source,
                        const std::string& mime_type,
                        const std::vector<uint8_t>& data);
+  void OnFileContentsRead(const std::string& mime_type,
+                          const base::FilePath& filename,
+                          const std::vector<uint8_t>& data);
+  void OnWebCustomDataRead(const std::string& mime_type,
+                           const std::vector<uint8_t>& data);
 
   void ScheduleStartDragDropOperation();
 
@@ -148,8 +164,6 @@ class DragDropOperation : public DataSourceObserver,
 #endif
 
   base::WeakPtrFactory<DragDropOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DragDropOperation);
 };
 
 }  // namespace exo

@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,7 +8,14 @@ proto_library("proto") {
   proto_in_dir = "//"
   sources = [
     "web_app.proto",
+    "web_app_launch_handler.proto",
+    "web_app_os_integration_state.proto",
     "web_app_share_target.proto",
+    "web_app_tab_strip.proto",
+    "web_app_translations.proto",
   ]
-  link_deps = [ "//components/sync/protocol" ]
+  link_deps = [
+    "//chrome/browser/ash/system_web_apps/types:proto",
+    "//components/sync/protocol",
+  ]
 }

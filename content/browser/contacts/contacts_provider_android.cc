@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,6 @@
 #include "content/public/android/content_jni_headers/ContactsDialogHost_jni.h"
 #include "content/public/browser/contacts_picker_properties_requested.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/android/window_android.h"
 #include "url/origin.h"
 
 namespace content {
@@ -51,9 +50,9 @@ ContactsProviderAndroid::ContactsProviderAndroid(
       render_frame_host->GetLastCommittedOrigin().GetURL(),
       url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 
-  dialog_.Reset(Java_ContactsDialogHost_create(
-      env, web_contents->GetTopLevelNativeWindow()->GetJavaObject(),
-      reinterpret_cast<intptr_t>(this)));
+  dialog_.Reset(
+      Java_ContactsDialogHost_create(env, web_contents->GetJavaWebContents(),
+                                     reinterpret_cast<intptr_t>(this)));
   DCHECK(!dialog_.is_null());
 }
 
@@ -70,7 +69,7 @@ void ContactsProviderAndroid::Select(bool multiple,
                                      bool include_icons,
                                      ContactsSelectedCallback callback) {
   if (!dialog_) {
-    std::move(callback).Run(base::nullopt, /*percentage_shared=*/-1,
+    std::move(callback).Run(absl::nullopt, /*percentage_shared=*/-1,
                             PROPERTIES_NONE);
     return;
   }
@@ -93,28 +92,28 @@ void ContactsProviderAndroid::AddContact(
     const base::android::JavaParamRef<jobjectArray>& icons_java) {
   DCHECK(callback_);
 
-  base::Optional<std::vector<std::string>> names;
+  absl::optional<std::vector<std::string>> names;
   if (names_java) {
     std::vector<std::string> names_vector;
     AppendJavaStringArrayToStringVector(env, names_java, &names_vector);
     names = std::move(names_vector);
   }
 
-  base::Optional<std::vector<std::string>> emails;
+  absl::optional<std::vector<std::string>> emails;
   if (emails_java) {
     std::vector<std::string> emails_vector;
     AppendJavaStringArrayToStringVector(env, emails_java, &emails_vector);
     emails = std::move(emails_vector);
   }
 
-  base::Optional<std::vector<std::string>> tel;
+  absl::optional<std::vector<std::string>> tel;
   if (tel_java) {
     std::vector<std::string> tel_vector;
     AppendJavaStringArrayToStringVector(env, tel_java, &tel_vector);
     tel = std::move(tel_vector);
   }
 
-  base::Optional<std::vector<payments::mojom::PaymentAddressPtr>> addresses;
+  absl::optional<std::vector<payments::mojom::PaymentAddressPtr>> addresses;
   if (addresses_java) {
     std::vector<payments::mojom::PaymentAddressPtr> addresses_vector;
 
@@ -133,7 +132,7 @@ void ContactsProviderAndroid::AddContact(
     addresses = std::move(addresses_vector);
   }
 
-  base::Optional<std::vector<blink::mojom::ContactIconBlobPtr>> icons;
+  absl::optional<std::vector<blink::mojom::ContactIconBlobPtr>> icons;
   if (icons_java) {
     std::vector<blink::mojom::ContactIconBlobPtr> icons_vector;
 
@@ -169,7 +168,7 @@ void ContactsProviderAndroid::EndContactsList(JNIEnv* env,
 
 void ContactsProviderAndroid::EndWithPermissionDenied(JNIEnv* env) {
   DCHECK(callback_);
-  std::move(callback_).Run(base::nullopt, /*percentage_shared=*/-1,
+  std::move(callback_).Run(absl::nullopt, /*percentage_shared=*/-1,
                            PROPERTIES_NONE);
 }
 

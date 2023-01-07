@@ -1,10 +1,9 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
-import collections
-from base_generator import Color, Modes, BaseGenerator, VariableType
+from style_variable_generator.base_generator import Color, BaseGenerator
+from style_variable_generator.model import Modes, VariableType
 
 
 class BaseProtoStyleGenerator(BaseGenerator):
@@ -23,16 +22,20 @@ class BaseProtoStyleGenerator(BaseGenerator):
     def GetGlobals(self):
         return {
             'Modes': Modes,
-            'in_files': self.in_file_to_context.keys(),
+            'in_files': sorted(self.in_file_to_context.keys()),
         }
 
     def _CreateFieldList(self):
         field_value_map = dict()
         field_id_map = dict()
         field_list = []
+        PROTO_CTX_KEY = ProtoStyleGenerator.GetName()
         for ctx in self.in_file_to_context.values():
-            field_name = ctx['field_name']
-            field_id = ctx['field_id']
+            if PROTO_CTX_KEY not in ctx:
+                continue
+            proto_ctx = ctx[PROTO_CTX_KEY]
+            field_name = proto_ctx['field_name']
+            field_id = proto_ctx['field_id']
             if field_name in field_id_map and field_id_map.get(
                     field_name) != field_id:
                 raise Exception(
@@ -48,7 +51,7 @@ class BaseProtoStyleGenerator(BaseGenerator):
         field_list.sort(key=lambda x: x['id'])
 
         # Populate each field with its corresponding colors.
-        color_model = self.model[VariableType.COLOR]
+        color_model = self.model.colors
         for name, mode_values in color_model.items():
             color_item = {
                 'name': name,
@@ -57,8 +60,9 @@ class BaseProtoStyleGenerator(BaseGenerator):
                     Modes.DARK: color_model.ResolveToRGBA(name, Modes.DARK),
                 }
             }
-            field_value_map[self.context_map[name]['field_name']].append(
-                color_item)
+            field_value_map[
+                self.model.variable_map[name].context[PROTO_CTX_KEY]
+                ['field_name']].append(color_item)
 
         return field_list
 
@@ -78,8 +82,7 @@ class ProtoStyleGenerator(BaseProtoStyleGenerator):
         return 'proto'
 
     def Render(self):
-        self.Validate()
-        return self.ApplyTemplate(self, 'proto_generator.tmpl',
+        return self.ApplyTemplate(self, 'templates/proto_generator.tmpl',
                                   self.GetParameters())
 
 
@@ -88,10 +91,6 @@ class ProtoJSONStyleGenerator(BaseProtoStyleGenerator):
     def GetName():
         return 'protojson'
 
-    def GetContextKey(self):
-        return ProtoStyleGenerator.GetName()
-
     def Render(self):
-        self.Validate()
-        return self.ApplyTemplate(self, 'proto_json_generator.tmpl',
+        return self.ApplyTemplate(self, 'templates/proto_json_generator.tmpl',
                                   self.GetParameters())

@@ -1,0 +1,4 @@
+drop_effect.accessibilityAttributeNames.has(AXDropEffects)='yes'
+drop_effect.accessibilityAttributeValue(AXDropEffects)='copy'
+not_applicable.accessibilityAttributeNames.has(AXDropEffects)='no'
+not_applicable.accessibilityAttributeValue(AXDropEffects)=NULL

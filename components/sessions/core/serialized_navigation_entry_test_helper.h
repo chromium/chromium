@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,7 @@
 #include <stdint.h>
 
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "ui/base/page_transition_types.h"
@@ -44,22 +42,17 @@ extern const int64_t kParentTaskId;
 extern const int64_t kRootTaskId;
 extern const int64_t kTaskId;
 
-// TODO(https://crbug.com/1042727): Fix test GURL scoping and remove this getter
-// function.
-GURL ReferrerUrl();
-GURL Url();
-GURL VirtualUrl();
-GURL OriginalRequestUrl();
-GURL FaviconUrl();
-GURL RedirectUrl0();
-GURL RedirectUrl1();
-GURL OtherUrl();
-
 }  // namespace test_data
 
 // Set of test functions to manipulate a SerializedNavigationEntry.
 class SerializedNavigationEntryTestHelper {
  public:
+  SerializedNavigationEntryTestHelper() = delete;
+  SerializedNavigationEntryTestHelper(
+      const SerializedNavigationEntryTestHelper&) = delete;
+  SerializedNavigationEntryTestHelper& operator=(
+      const SerializedNavigationEntryTestHelper&) = delete;
+
   // Compares the two entries. This uses EXPECT_XXX on each member, if your test
   // needs to stop after this wrap calls to this in EXPECT_NO_FATAL_FAILURE.
   static void ExpectNavigationEquals(const SerializedNavigationEntry& expected,
@@ -100,9 +93,6 @@ class SerializedNavigationEntryTestHelper {
   static void SetReplacedEntryData(
       const SerializedNavigationEntry::ReplacedNavigationEntryData& data,
       SerializedNavigationEntry* navigation);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(SerializedNavigationEntryTestHelper);
 };
 
 }  // namespace sessions

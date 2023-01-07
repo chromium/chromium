@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@
 #include "base/one_shot_event.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -38,12 +38,14 @@
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/browser/user_script_manager.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/test_content_script_load_waiter.h"
 #include "net/base/filename_util.h"
@@ -59,6 +61,51 @@ using extensions::ExtensionRegistry;
 // had many silly bugs where command line flags did not get propagated correctly
 // into the services, so we didn't start correctly.
 
+// A waiter for manifest content script loads. The waiter finishes when all of
+// its observed extensions have finished loading their manifest scripts.
+class ManifestContentScriptWaiter
+    : public extensions::UserScriptLoader::Observer {
+ public:
+  ManifestContentScriptWaiter() = default;
+  ~ManifestContentScriptWaiter() = default;
+  ManifestContentScriptWaiter(const ManifestContentScriptWaiter& other) =
+      delete;
+  ManifestContentScriptWaiter& operator=(
+      const ManifestContentScriptWaiter& other) = delete;
+
+  // Adds an extension for this waiter to wait on their next script load.
+  void Observe(extensions::UserScriptLoader* loader) {
+    scoped_observation_.AddObservation(loader);
+  }
+
+  // Start waiting for manifest scripts to be loaded.
+  void Wait() {
+    if (scoped_observation_.IsObservingAnySource())
+      run_loop_.Run();
+  }
+
+ private:
+  // UserScriptLoader::Observer:
+  void OnScriptsLoaded(extensions::UserScriptLoader* loader,
+                       content::BrowserContext* browser_context) override {
+    ASSERT_TRUE(loader->initial_load_complete());
+    scoped_observation_.RemoveObservation(loader);
+    if (!scoped_observation_.IsObservingAnySource())
+      run_loop_.Quit();
+  }
+
+  void OnUserScriptLoaderDestroyed(
+      extensions::UserScriptLoader* loader) override {
+    scoped_observation_.RemoveObservation(loader);
+  }
+
+  base::RunLoop run_loop_;
+
+  base::ScopedMultiSourceObservation<extensions::UserScriptLoader,
+                                     extensions::UserScriptLoader::Observer>
+      scoped_observation_{this};
+};
+
 class ExtensionStartupTestBase : public InProcessBrowserTest {
  public:
   ExtensionStartupTestBase() : unauthenticated_load_allowed_(true) {
@@ -68,26 +115,18 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
  protected:
   // InProcessBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (load_extensions_.empty()) {
-      // If no |load_extensions_| were specified, allow unauthenticated
-      // extension settings to be loaded from Preferences as if they had been
-      // authenticated correctly before they were handed to the ExtensionSystem.
-      command_line->AppendSwitchASCII(
-          switches::kForceFieldTrials,
-          base::StringPrintf(
-              "%s/%s/", chrome_prefs::internals::kSettingsEnforcementTrialName,
-              chrome_prefs::internals::kSettingsEnforcementGroupNoEnforcement));
-#if defined(OS_WIN) || defined(OS_MAC)
-      // In Windows and MacOS builds, it is not possible to disable settings
-      // enforcement.
-      unauthenticated_load_allowed_ = false;
-#endif
-    } else {
+    if (!load_extensions_.empty()) {
       base::FilePath::StringType paths = base::JoinString(
           load_extensions_, base::FilePath::StringType(1, ','));
       command_line->AppendSwitchNative(extensions::switches::kLoadExtension,
                                        paths);
       command_line->AppendSwitch(switches::kDisableExtensionsFileAccessCheck);
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+    } else {
+      // In Windows and MacOS builds, it is not possible to disable settings
+      // enforcement.
+      unauthenticated_load_allowed_ = false;
+#endif
     }
   }
 
@@ -161,14 +200,28 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
     if (num_expected_extensions == 0)
       return;
 
+    extensions::ExtensionRegistry* registry =
+        extensions::ExtensionRegistry::Get(browser()->profile());
+
+    ManifestContentScriptWaiter waiter;
     extensions::UserScriptManager* manager =
         extensions::ExtensionSystem::Get(browser()->profile())
             ->user_script_manager();
 
-    extensions::UserScriptLoader* loader = manager->manifest_script_loader();
-    if (!loader->initial_load_complete())
-      extensions::ContentScriptLoadWaiter(loader).Wait();
-    ASSERT_TRUE(loader->initial_load_complete());
+    for (const auto& extension : registry->enabled_extensions()) {
+      extensions::ExtensionUserScriptLoader* loader =
+          manager->GetUserScriptLoaderForExtension(extension->id());
+
+      // Do not wait for extensions which have no manifest scripts or have
+      // already finished a script load.
+      if (!extensions::ContentScriptsInfo::GetContentScripts(extension.get())
+               .empty() &&
+          !loader->initial_load_complete()) {
+        waiter.Observe(loader);
+      }
+    }
+
+    waiter.Wait();
   }
 
   void TestInjection(bool expect_css, bool expect_script) {
@@ -183,7 +236,8 @@ class ExtensionStartupTestBase : public InProcessBrowserTest {
     test_file =
         test_file.AppendASCII("extensions").AppendASCII("test_file.html");
 
-    ui_test_utils::NavigateToURL(browser(), net::FilePathToFileURL(test_file));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), net::FilePathToFileURL(test_file)));
 
     bool result = false;
     ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
@@ -248,13 +302,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionStartupTest, NoFileAccess) {
       extensions::ExtensionSystem::Get(browser()->profile())
           ->user_script_manager();
 
-  extensions::UserScriptLoader* loader = manager->manifest_script_loader();
-
   for (size_t i = 0; i < extension_list.size(); ++i) {
-    extensions::ContentScriptLoadWaiter waiter(loader);
-    extensions::util::SetAllowFileAccess(extension_list[i]->id(),
-                                         browser()->profile(), false);
-    waiter.Wait();
+    extensions::ExtensionId id = extension_list[i]->id();
+    extensions::TestExtensionRegistryObserver registry_observer(registry, id);
+    ManifestContentScriptWaiter waiter;
+
+    extensions::util::SetAllowFileAccess(id, browser()->profile(), false);
+    registry_observer.WaitForExtensionLoaded();
+    extensions::ExtensionUserScriptLoader* loader =
+        manager->GetUserScriptLoaderForExtension(id);
+    if (!loader->initial_load_complete()) {
+      waiter.Observe(loader);
+      waiter.Wait();
+    }
   }
 
   TestInjection(false, false);
@@ -289,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsLoadTest,
   // The --load-extension command line flag should not be applied to the sign-in
   // profile.
   EXPECT_EQ(0, GetNonComponentEnabledExtensionCount(
-                   chromeos::ProfileHelper::GetSigninProfile()));
+                   ash::ProfileHelper::GetSigninProfile()));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

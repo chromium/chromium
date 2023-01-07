@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,8 +61,7 @@ bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
       manifest_keys::kFileSystemProviderCapabilities, &section);
 
   if (has_permission && !section) {
-    *error = base::ASCIIToUTF16(
-        manifest_errors::kInvalidFileSystemProviderMissingCapabilities);
+    *error = manifest_errors::kInvalidFileSystemProviderMissingCapabilities;
     return false;
   }
 
@@ -102,14 +101,10 @@ bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
 
   std::unique_ptr<FileSystemProviderCapabilities> capabilities(
       new FileSystemProviderCapabilities(
-          idl_capabilities.configurable.get()
-              ? *idl_capabilities.configurable.get()
-              : false /* false by default */,
-          idl_capabilities.watchable.get() ? *idl_capabilities.watchable.get()
-                                           : false /* false by default */,
-          idl_capabilities.multiple_mounts.get()
-              ? *idl_capabilities.multiple_mounts.get()
-              : false /* false by default */,
+          idl_capabilities.configurable.value_or(false) /* false by default */,
+          idl_capabilities.watchable.value_or(false) /* false by default */,
+          idl_capabilities.multiple_mounts.value_or(
+              false) /* false by default */,
           source));
 
   extension->SetManifestData(manifest_keys::kFileSystemProviderCapabilities,

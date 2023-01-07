@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,6 @@ class VIZ_SERVICE_EXPORT NullRenderer : public DirectRenderer {
   void DoDrawQuad(const DrawQuad* quad,
                   const gfx::QuadF* clip_region) override {}
   void BeginDrawingFrame() override;
-  void FlushOverdrawFeedback(const gfx::Rect& output_rect) override {}
   void FinishDrawingFrame() override {}
   bool FlippedFramebuffer() const override;
   void EnsureScissorTestEnabled() override {}

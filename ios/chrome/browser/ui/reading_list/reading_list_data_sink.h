@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,11 +23,11 @@
 // Returns the unread items displayed.
 - (NSArray<id<ReadingListListItem>>*)unreadItems;
 
-// Notifies the DataSink that the |item| has changed and it should be reloaded
+// Notifies the DataSink that the `item` has changed and it should be reloaded
 // if it is still displayed.
 - (void)itemHasChangedAfterDelay:(id<ReadingListListItem>)item;
-// Notifies the DataSink that the |items| have changed and must be reloaded. The
-// |items| must be presented.
+// Notifies the DataSink that the `items` have changed and must be reloaded. The
+// `items` must be presented.
 - (void)itemsHaveChanged:(NSArray<id<ReadingListListItem>>*)items;
 
 @end

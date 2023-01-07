@@ -1,8 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync/model/model_type_store_service_impl.h"
+
+#include <memory>
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -35,7 +37,7 @@ TEST(ModelTypeStoreServiceImplTest, ShouldSupportFactoryOutlivingService) {
   base::RunLoop loop;
   store_factory.Run(
       syncer::PREFERENCES,
-      base::BindLambdaForTesting([&](const base::Optional<ModelError>& error,
+      base::BindLambdaForTesting([&](const absl::optional<ModelError>& error,
                                      std::unique_ptr<ModelTypeStore> store) {
         EXPECT_FALSE(error.has_value());
         EXPECT_THAT(store, NotNull());

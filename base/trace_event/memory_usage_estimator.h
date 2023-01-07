@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,9 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/linked_list.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/stl_util.h"
 #include "base/template_util.h"
 
@@ -177,11 +178,17 @@ size_t EstimateMemoryUsage(const base::flat_set<T, C>& set);
 template <class K, class V, class C>
 size_t EstimateMemoryUsage(const base::flat_map<K, V, C>& map);
 
-template <class Key,
-          class Payload,
-          class HashOrComp,
-          template <typename, typename, typename> class Map>
-size_t EstimateMemoryUsage(const MRUCacheBase<Key, Payload, HashOrComp, Map>&);
+template <class K, class V, class C>
+size_t EstimateMemoryUsage(const base::LRUCache<K, V, C>& lru);
+
+template <class K, class V, class C>
+size_t EstimateMemoryUsage(const base::HashingLRUCache<K, V, C>& lru);
+
+template <class V, class C>
+size_t EstimateMemoryUsage(const base::LRUCacheSet<V, C>& lru);
+
+template <class V, class C>
+size_t EstimateMemoryUsage(const base::HashingLRUCacheSet<V, C>& lru);
 
 // TODO(dskiba):
 //   std::forward_list
@@ -396,10 +403,10 @@ size_t EstimateMemoryUsage(const std::shared_ptr<T>& ptr) {
   // Model shared_ptr after libc++,
   // see __shared_ptr_pointer from include/memory
   struct SharedPointer {
-    void* vtbl;
+    raw_ptr<void> vtbl;
     long shared_owners;
     long shared_weak_owners;
-    T* value;
+    raw_ptr<T> value;
   };
   // If object of size S shared N > S times we prefer to (potentially)
   // overestimate than to return 0.
@@ -428,8 +435,8 @@ template <class T, class A>
 size_t EstimateMemoryUsage(const std::list<T, A>& list) {
   using value_type = typename std::list<T, A>::value_type;
   struct Node {
-    Node* prev;
-    Node* next;
+    raw_ptr<Node> prev;
+    raw_ptr<Node> next;
     value_type value;
   };
   return sizeof(Node) * list.size() +
@@ -455,9 +462,9 @@ size_t EstimateTreeMemoryUsage(size_t size) {
   // Tree containers are modeled after libc++
   // (__tree_node from include/__tree)
   struct Node {
-    Node* left;
-    Node* right;
-    Node* parent;
+    raw_ptr<Node> left;
+    raw_ptr<Node> right;
+    raw_ptr<Node> parent;
     bool is_black;
     V value;
   };
@@ -506,10 +513,10 @@ size_t HashMapBucketCountForTesting(size_t bucket_count) {
   return bucket_count;
 }
 
-template <class MruCacheType>
-size_t DoEstimateMemoryUsageForMruCache(const MruCacheType& mru_cache) {
-  return EstimateMemoryUsage(mru_cache.ordering_) +
-         EstimateMemoryUsage(mru_cache.index_);
+template <class LruCacheType>
+size_t DoEstimateMemoryUsageForLruCache(const LruCacheType& lru_cache) {
+  return EstimateMemoryUsage(lru_cache.ordering_) +
+         EstimateMemoryUsage(lru_cache.index_);
 }
 
 }  // namespace internal
@@ -519,7 +526,7 @@ size_t EstimateHashMapMemoryUsage(size_t bucket_count, size_t size) {
   // Hashtable containers are modeled after libc++
   // (__hash_node from include/__hash_table)
   struct Node {
-    void* next;
+    raw_ptr<void> next;
     size_t hash;
     V value;
   };
@@ -650,13 +657,24 @@ size_t EstimateMemoryUsage(const base::flat_map<K, V, C>& map) {
   return sizeof(value_type) * map.capacity() + EstimateIterableMemoryUsage(map);
 }
 
-template <class Key,
-          class Payload,
-          class HashOrComp,
-          template <typename, typename, typename> class Map>
-size_t EstimateMemoryUsage(
-    const MRUCacheBase<Key, Payload, HashOrComp, Map>& mru_cache) {
-  return internal::DoEstimateMemoryUsageForMruCache(mru_cache);
+template <class K, class V, class C>
+size_t EstimateMemoryUsage(const LRUCache<K, V, C>& lru_cache) {
+  return internal::DoEstimateMemoryUsageForLruCache(lru_cache);
+}
+
+template <class K, class V, class C>
+size_t EstimateMemoryUsage(const HashingLRUCache<K, V, C>& lru_cache) {
+  return internal::DoEstimateMemoryUsageForLruCache(lru_cache);
+}
+
+template <class V, class C>
+size_t EstimateMemoryUsage(const LRUCacheSet<V, C>& lru_cache) {
+  return internal::DoEstimateMemoryUsageForLruCache(lru_cache);
+}
+
+template <class V, class C>
+size_t EstimateMemoryUsage(const HashingLRUCacheSet<V, C>& lru_cache) {
+  return internal::DoEstimateMemoryUsageForLruCache(lru_cache);
 }
 
 }  // namespace trace_event

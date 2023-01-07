@@ -1,13 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef HEADLESS_LIB_BROWSER_HEADLESS_FOCUS_CLIENT_H_
 #define HEADLESS_LIB_BROWSER_HEADLESS_FOCUS_CLIENT_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_observer.h"
 
@@ -17,6 +17,10 @@ class HeadlessFocusClient : public aura::client::FocusClient,
                             public aura::WindowObserver {
  public:
   HeadlessFocusClient();
+
+  HeadlessFocusClient(const HeadlessFocusClient&) = delete;
+  HeadlessFocusClient& operator=(const HeadlessFocusClient&) = delete;
+
   ~HeadlessFocusClient() override;
 
  private:
@@ -30,12 +34,11 @@ class HeadlessFocusClient : public aura::client::FocusClient,
   // Overridden from aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
 
-  aura::Window* focused_window_;
-  ScopedObserver<aura::Window, aura::WindowObserver> observer_manager_;
+  raw_ptr<aura::Window> focused_window_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      observation_manager_{this};
   base::ObserverList<aura::client::FocusChangeObserver>::Unchecked
       focus_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessFocusClient);
 };
 
 }  // namespace headless

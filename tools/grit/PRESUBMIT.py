@@ -1,4 +1,4 @@
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts for
 details on the presubmit API built into gcl.
 """
+
+USE_PYTHON3 = True
 
 
 def RunUnittests(input_api, output_api):
@@ -18,7 +20,8 @@ def RunUnittests(input_api, output_api):
           input_api.os_path.join(input_api.PresubmitLocalPath(),
                                  'preprocess_if_expr_test.py')
       ],
-      run_on_python3=False)  # See https://crbug.com/1145395.
+      run_on_python2=False,
+      skip_shebang_check=True)
 
 
 def CheckChangeOnUpload(input_api, output_api):

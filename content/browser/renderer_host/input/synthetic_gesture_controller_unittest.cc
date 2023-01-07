@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/input/synthetic_gesture.h"
@@ -29,6 +30,7 @@
 #include "content/common/input/synthetic_smooth_drag_gesture_params.h"
 #include "content/common/input/synthetic_smooth_scroll_gesture_params.h"
 #include "content/common/input/synthetic_tap_gesture_params.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_view_host.h"
@@ -145,7 +147,7 @@ class MockSyntheticGesture : public SyntheticGesture {
   }
 
  protected:
-  bool* finished_;
+  raw_ptr<bool> finished_;
   int num_steps_;
   int step_count_;
 };
@@ -158,7 +160,11 @@ class MockSyntheticGestureTarget : public SyntheticGestureTarget {
   ~MockSyntheticGestureTarget() override {}
 
   // SyntheticGestureTarget:
-  void DispatchInputEventToPlatform(const WebInputEvent& event) override {}
+  void DispatchInputEventToPlatform(const WebInputEvent& event) override {
+    if (!(event.GetModifiers() & blink::WebInputEvent::kFromDebugger)) {
+      all_from_debugger_ = false;
+    }
+  }
 
   content::mojom::GestureSourceType GetDefaultSyntheticGestureSourceType()
       const override {
@@ -166,7 +172,7 @@ class MockSyntheticGestureTarget : public SyntheticGestureTarget {
   }
 
   base::TimeDelta PointerAssumedStoppedTime() const override {
-    return base::TimeDelta::FromMilliseconds(pointer_assumed_stopped_time_ms_);
+    return base::Milliseconds(pointer_assumed_stopped_time_ms_);
   }
 
   void set_pointer_assumed_stopped_time_ms(int time_ms) {
@@ -195,10 +201,13 @@ class MockSyntheticGestureTarget : public SyntheticGestureTarget {
     std::move(callback).Run();
   }
 
+  bool all_from_debugger() { return all_from_debugger_; }
+
  private:
   bool flush_requested_;
 
   int pointer_assumed_stopped_time_ms_;
+  bool all_from_debugger_ = true;
 };
 
 class MockMoveGestureTarget : public MockSyntheticGestureTarget {
@@ -229,6 +238,7 @@ class MockScrollMouseTarget : public MockMoveGestureTarget {
   ~MockScrollMouseTarget() override {}
 
   void DispatchInputEventToPlatform(const WebInputEvent& event) override {
+    MockSyntheticGestureTarget::DispatchInputEventToPlatform(event);
     ASSERT_EQ(event.GetType(), WebInputEvent::Type::kMouseWheel);
     const WebMouseWheelEvent& mouse_wheel_event =
         static_cast<const WebMouseWheelEvent&>(event);
@@ -245,6 +255,7 @@ class MockMoveTouchTarget : public MockMoveGestureTarget {
   ~MockMoveTouchTarget() override {}
 
   void DispatchInputEventToPlatform(const WebInputEvent& event) override {
+    MockSyntheticGestureTarget::DispatchInputEventToPlatform(event);
     ASSERT_TRUE(WebInputEvent::IsTouchEventType(event.GetType()));
     const WebTouchEvent& touch_event = static_cast<const WebTouchEvent&>(event);
     ASSERT_EQ(touch_event.touches_length, 1U);
@@ -281,6 +292,7 @@ class MockFlingGestureTarget : public MockMoveGestureTarget {
   ~MockFlingGestureTarget() override {}
 
   void DispatchInputEventToPlatform(const WebInputEvent& event) override {
+    MockSyntheticGestureTarget::DispatchInputEventToPlatform(event);
     if (event.GetType() == WebInputEvent::Type::kGestureFlingStart) {
       const blink::WebGestureEvent& gesture_event =
           static_cast<const blink::WebGestureEvent&>(event);
@@ -303,6 +315,7 @@ class MockDragMouseTarget : public MockMoveGestureTarget {
   ~MockDragMouseTarget() override {}
 
   void DispatchInputEventToPlatform(const WebInputEvent& event) override {
+    MockSyntheticGestureTarget::DispatchInputEventToPlatform(event);
     ASSERT_TRUE(WebInputEvent::IsMouseEventType(event.GetType()));
     const WebMouseEvent& mouse_event = static_cast<const WebMouseEvent&>(event);
     if (!started_) {
@@ -347,6 +360,7 @@ class MockSyntheticTouchscreenPinchTouchTarget
   ~MockSyntheticTouchscreenPinchTouchTarget() override {}
 
   void DispatchInputEventToPlatform(const WebInputEvent& event) override {
+    MockSyntheticGestureTarget::DispatchInputEventToPlatform(event);
     ASSERT_TRUE(WebInputEvent::IsTouchEventType(event.GetType()));
     const WebTouchEvent& touch_event = static_cast<const WebTouchEvent&>(event);
     ASSERT_EQ(touch_event.touches_length, 2U);
@@ -438,6 +452,7 @@ class MockSyntheticTouchpadPinchTouchTarget
   ~MockSyntheticTouchpadPinchTouchTarget() override {}
 
   void DispatchInputEventToPlatform(const WebInputEvent& event) override {
+    MockSyntheticGestureTarget::DispatchInputEventToPlatform(event);
     EXPECT_TRUE(WebInputEvent::IsGestureEventType(event.GetType()));
     const blink::WebGestureEvent& gesture_event =
         static_cast<const blink::WebGestureEvent&>(event);
@@ -516,6 +531,7 @@ class MockSyntheticTapTouchTarget : public MockSyntheticTapGestureTarget {
   ~MockSyntheticTapTouchTarget() override {}
 
   void DispatchInputEventToPlatform(const WebInputEvent& event) override {
+    MockSyntheticGestureTarget::DispatchInputEventToPlatform(event);
     ASSERT_TRUE(WebInputEvent::IsTouchEventType(event.GetType()));
     const WebTouchEvent& touch_event = static_cast<const WebTouchEvent&>(event);
     ASSERT_EQ(touch_event.touches_length, 1U);
@@ -547,6 +563,7 @@ class MockSyntheticTapMouseTarget : public MockSyntheticTapGestureTarget {
   ~MockSyntheticTapMouseTarget() override {}
 
   void DispatchInputEventToPlatform(const WebInputEvent& event) override {
+    MockSyntheticGestureTarget::DispatchInputEventToPlatform(event);
     ASSERT_TRUE(WebInputEvent::IsMouseEventType(event.GetType()));
     const WebMouseEvent& mouse_event = static_cast<const WebMouseEvent&>(event);
 
@@ -599,6 +616,7 @@ class MockSyntheticPointerTouchActionTarget
   ~MockSyntheticPointerTouchActionTarget() override {}
 
   void DispatchInputEventToPlatform(const WebInputEvent& event) override {
+    MockSyntheticGestureTarget::DispatchInputEventToPlatform(event);
     DCHECK(WebInputEvent::IsTouchEventType(event.GetType()));
     const WebTouchEvent& touch_event = static_cast<const WebTouchEvent&>(event);
     type_ = touch_event.GetType();
@@ -673,6 +691,7 @@ class MockSyntheticPointerMouseActionTarget
   ~MockSyntheticPointerMouseActionTarget() override {}
 
   void DispatchInputEventToPlatform(const WebInputEvent& event) override {
+    MockSyntheticGestureTarget::DispatchInputEventToPlatform(event);
     ASSERT_TRUE(WebInputEvent::IsMouseEventType(event.GetType()));
     const WebMouseEvent& mouse_event = static_cast<const WebMouseEvent&>(event);
     type_ = mouse_event.GetType();
@@ -749,13 +768,17 @@ class DummySyntheticGestureControllerDelegate
     : public SyntheticGestureController::Delegate {
  public:
   DummySyntheticGestureControllerDelegate() {}
+
+  DummySyntheticGestureControllerDelegate(
+      const DummySyntheticGestureControllerDelegate&) = delete;
+  DummySyntheticGestureControllerDelegate& operator=(
+      const DummySyntheticGestureControllerDelegate&) = delete;
+
   ~DummySyntheticGestureControllerDelegate() override {}
 
  private:
   // SyntheticGestureController::Delegate:
   bool HasGestureStopped() override { return true; }
-
-  DISALLOW_COPY_AND_ASSIGN(DummySyntheticGestureControllerDelegate);
 };
 
 }  // namespace
@@ -784,10 +807,10 @@ class SyntheticGestureControllerTestBase {
   void FlushInputUntilComplete() {
     // Start and stop the timer explicitly here, since the test does not need to
     // wait for begin-frame to start the timer.
-    controller_->dispatch_timer_.Start(
-        FROM_HERE, base::TimeDelta::FromSeconds(1), base::DoNothing());
+    controller_->dispatch_timer_.Start(FROM_HERE, base::Seconds(1),
+                                       base::DoNothing());
     do
-      time_ += base::TimeDelta::FromMilliseconds(kFlushInputRateInMs);
+      time_ += base::Milliseconds(kFlushInputRateInMs);
     while (controller_->DispatchNextEvent(time_));
     controller_->dispatch_timer_.Stop();
   }
@@ -806,8 +829,8 @@ class SyntheticGestureControllerTestBase {
 
   base::TimeDelta GetTotalTime() const { return time_ - start_time_; }
 
-  base::test::TaskEnvironment env_;
-  MockSyntheticGestureTarget* target_;
+  content::BrowserTaskEnvironment env_;
+  raw_ptr<MockSyntheticGestureTarget> target_;
   DummySyntheticGestureControllerDelegate delegate_;
   std::unique_ptr<SyntheticGestureController> controller_;
   base::TimeTicks start_time_;
@@ -1141,6 +1164,29 @@ TEST_P(SyntheticGestureControllerTestWithParam,
   EXPECT_EQ(gfx::Vector2dF(0, 0), scroll_target->start_to_end_distance());
 }
 
+TEST_P(SyntheticGestureControllerTestWithParam,
+       SingleScrollGestureTouchFromDebugger) {
+  CreateControllerAndTarget<MockMoveTouchTarget>();
+
+  SyntheticSmoothMoveGestureParams params;
+  params.from_devtools_debugger = true;
+  params.input_type = SyntheticSmoothMoveGestureParams::TOUCH_INPUT;
+  if (GetParam() == TOUCH_DRAG) {
+    params.add_slop = false;
+  }
+  params.start_point.SetPoint(89, 32);
+  params.distances.push_back(gfx::Vector2d(0, 123));
+
+  std::unique_ptr<SyntheticSmoothMoveGesture> gesture(
+      new SyntheticSmoothMoveGesture(params));
+  QueueSyntheticGesture(std::move(gesture));
+  FlushInputUntilComplete();
+
+  EXPECT_EQ(1, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(target_->all_from_debugger());
+}
+
 TEST_F(SyntheticGestureControllerTest, SingleScrollGestureMouseVertical) {
   CreateControllerAndTarget<MockScrollMouseTarget>();
 
@@ -1315,6 +1361,25 @@ TEST_F(SyntheticGestureControllerTest, SingleScrollGestureMouseScrollByPage) {
   EXPECT_EQ(params.granularity, scroll_target->granularity());
 }
 
+TEST_F(SyntheticGestureControllerTest, SingleScrollGestureMouseFromDebugger) {
+  CreateControllerAndTarget<MockScrollMouseTarget>();
+
+  SyntheticSmoothMoveGestureParams params;
+  params.from_devtools_debugger = true;
+  params.input_type = SyntheticSmoothMoveGestureParams::MOUSE_WHEEL_INPUT;
+  params.start_point.SetPoint(432, 89);
+  params.distances.push_back(gfx::Vector2d(0, -234));
+
+  std::unique_ptr<SyntheticSmoothMoveGesture> gesture(
+      new SyntheticSmoothMoveGesture(params));
+  QueueSyntheticGesture(std::move(gesture));
+  FlushInputUntilComplete();
+
+  EXPECT_EQ(1, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(target_->all_from_debugger());
+}
+
 void CheckIsWithinRangeMulti(float scroll_distance,
                              int target_distance,
                              SyntheticGestureTarget* target) {
@@ -1479,6 +1544,23 @@ TEST_F(SyntheticGestureControllerTest,
 }
 
 TEST_F(SyntheticGestureControllerTest,
+       SyntheticSmoothDragTestUsingSingleMouseDragFromDebugger) {
+  CreateControllerAndTarget<MockDragMouseTarget>();
+
+  SyntheticSmoothDragGestureParams params;
+  params.from_devtools_debugger = true;
+  params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
+  params.distances.push_back(gfx::Vector2d(234, 133));
+  params.speed_in_pixels_s = 800;
+
+  std::unique_ptr<SyntheticSmoothDragGesture> gesture(
+      new SyntheticSmoothDragGesture(params));
+  const base::TimeTicks timestamp;
+  gesture->ForwardInputEvents(timestamp, target_);
+  EXPECT_TRUE(target_->all_from_debugger());
+}
+
+TEST_F(SyntheticGestureControllerTest,
        SyntheticSmoothDragTestUsingSingleTouchDrag) {
   CreateControllerAndTarget<MockMoveTouchTarget>();
 
@@ -1495,6 +1577,24 @@ TEST_F(SyntheticGestureControllerTest,
 }
 
 TEST_F(SyntheticGestureControllerTest,
+       SyntheticSmoothDragTestUsingSingleTouchDragFromDebugger) {
+  CreateControllerAndTarget<MockMoveTouchTarget>();
+
+  SyntheticSmoothDragGestureParams params;
+  params.from_devtools_debugger = true;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
+  params.start_point.SetPoint(89, 32);
+  params.distances.push_back(gfx::Vector2d(0, 123));
+  params.speed_in_pixels_s = 800;
+
+  std::unique_ptr<SyntheticSmoothDragGesture> gesture(
+      new SyntheticSmoothDragGesture(params));
+  const base::TimeTicks timestamp;
+  gesture->ForwardInputEvents(timestamp, target_);
+  EXPECT_TRUE(target_->all_from_debugger());
+}
+
+TEST_F(SyntheticGestureControllerTest,
        SyntheticSmoothScrollTestUsingSingleTouchScroll) {
   CreateControllerAndTarget<MockMoveTouchTarget>();
 
@@ -1505,6 +1605,26 @@ TEST_F(SyntheticGestureControllerTest,
       new SyntheticSmoothScrollGesture(params));
   const base::TimeTicks timestamp;
   gesture->ForwardInputEvents(timestamp, target_);
+}
+
+TEST_F(SyntheticGestureControllerTest,
+       SyntheticSmoothScrollTestUsingSingleTouchScrollFromDebugger) {
+  CreateControllerAndTarget<MockMoveTouchTarget>();
+
+  SyntheticSmoothScrollGestureParams params;
+  params.from_devtools_debugger = true;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
+  params.anchor.SetPoint(432, 89);
+  params.distances.push_back(gfx::Vector2d(0, -234));
+  params.speed_in_pixels_s = 800;
+
+  std::unique_ptr<SyntheticSmoothScrollGesture> gesture(
+      new SyntheticSmoothScrollGesture(params));
+  QueueSyntheticGesture(std::move(gesture));
+  FlushInputUntilComplete();
+  EXPECT_EQ(1, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(target_->all_from_debugger());
 }
 
 TEST_F(SyntheticGestureControllerTest,
@@ -1521,6 +1641,26 @@ TEST_F(SyntheticGestureControllerTest,
       new SyntheticSmoothScrollGesture(params));
   const base::TimeTicks timestamp;
   gesture->ForwardInputEvents(timestamp, target_);
+}
+
+TEST_F(SyntheticGestureControllerTest,
+       SyntheticSmoothScrollTestUsingSingleMouseScrollFromDebugger) {
+  CreateControllerAndTarget<MockScrollMouseTarget>();
+
+  SyntheticSmoothScrollGestureParams params;
+  params.from_devtools_debugger = true;
+  params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
+  params.anchor.SetPoint(432, 89);
+  params.distances.push_back(gfx::Vector2d(0, -234));
+  params.speed_in_pixels_s = 800;
+
+  std::unique_ptr<SyntheticSmoothScrollGesture> gesture(
+      new SyntheticSmoothScrollGesture(params));
+  QueueSyntheticGesture(std::move(gesture));
+  FlushInputUntilComplete();
+  EXPECT_EQ(1, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(target_->all_from_debugger());
 }
 
 TEST_F(SyntheticGestureControllerTest,
@@ -1591,6 +1731,26 @@ TEST_F(SyntheticGestureControllerTest,
   EXPECT_EQ(params.scale_factor, pinch_target->ComputeScaleFactor());
 }
 
+TEST_F(SyntheticGestureControllerTest,
+       TouchscreenTouchpadPinchGestureTouchFromDebugger) {
+  CreateControllerAndTarget<MockSyntheticTouchscreenPinchTouchTarget>();
+
+  SyntheticPinchGestureParams params;
+  params.from_devtools_debugger = true;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
+  params.scale_factor = 2.3f;
+  params.anchor.SetPoint(54, 89);
+
+  std::unique_ptr<SyntheticTouchscreenPinchGesture> gesture(
+      new SyntheticTouchscreenPinchGesture(params));
+  QueueSyntheticGesture(std::move(gesture));
+  FlushInputUntilComplete();
+
+  EXPECT_EQ(1, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(target_->all_from_debugger());
+}
+
 TEST_F(SyntheticGestureControllerTest, TouchpadPinchGestureTouchZoomIn) {
   CreateControllerAndTarget<MockSyntheticTouchpadPinchTouchTarget>();
 
@@ -1654,6 +1814,25 @@ TEST_F(SyntheticGestureControllerTest, TouchpadPinchGestureTouchNoScaling) {
   EXPECT_EQ(pinch_target->zoom_direction(),
             MockSyntheticTouchpadPinchTouchTarget::ZOOM_DIRECTION_UNKNOWN);
   EXPECT_EQ(params.scale_factor, pinch_target->scale_factor());
+}
+
+TEST_F(SyntheticGestureControllerTest, TouchpadPinchGestureTouchFromDebugger) {
+  CreateControllerAndTarget<MockSyntheticTouchpadPinchTouchTarget>();
+
+  SyntheticPinchGestureParams params;
+  params.from_devtools_debugger = true;
+  params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
+  params.scale_factor = 2.3f;
+  params.anchor.SetPoint(54, 89);
+
+  std::unique_ptr<SyntheticTouchpadPinchGesture> gesture(
+      new SyntheticTouchpadPinchGesture(params));
+  QueueSyntheticGesture(std::move(gesture));
+  FlushInputUntilComplete();
+
+  EXPECT_EQ(1, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(target_->all_from_debugger());
 }
 
 // Ensure that if SyntheticPinchGesture is instantiated with TOUCH_INPUT it
@@ -1751,8 +1930,25 @@ TEST_F(SyntheticGestureControllerTest, TapGestureTouch) {
   EXPECT_TRUE(tap_target->GestureFinished());
   EXPECT_EQ(tap_target->position(), params.position);
   EXPECT_EQ(tap_target->GetDuration().InMilliseconds(), params.duration_ms);
-  EXPECT_GE(GetTotalTime(),
-            base::TimeDelta::FromMilliseconds(params.duration_ms));
+  EXPECT_GE(GetTotalTime(), base::Milliseconds(params.duration_ms));
+}
+
+TEST_F(SyntheticGestureControllerTest, TapGestureTouchFromDebugger) {
+  CreateControllerAndTarget<MockSyntheticTapTouchTarget>();
+
+  SyntheticTapGestureParams params;
+  params.from_devtools_debugger = true;
+  params.gesture_source_type = content::mojom::GestureSourceType::kTouchInput;
+  params.duration_ms = 123;
+  params.position.SetPoint(87, -124);
+
+  std::unique_ptr<SyntheticTapGesture> gesture(new SyntheticTapGesture(params));
+  QueueSyntheticGesture(std::move(gesture));
+  FlushInputUntilComplete();
+
+  EXPECT_EQ(1, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(target_->all_from_debugger());
 }
 
 TEST_F(SyntheticGestureControllerTest, TapGestureMouse) {
@@ -1774,8 +1970,25 @@ TEST_F(SyntheticGestureControllerTest, TapGestureMouse) {
   EXPECT_TRUE(tap_target->GestureFinished());
   EXPECT_EQ(tap_target->position(), params.position);
   EXPECT_EQ(tap_target->GetDuration().InMilliseconds(), params.duration_ms);
-  EXPECT_GE(GetTotalTime(),
-            base::TimeDelta::FromMilliseconds(params.duration_ms));
+  EXPECT_GE(GetTotalTime(), base::Milliseconds(params.duration_ms));
+}
+
+TEST_F(SyntheticGestureControllerTest, TapGestureMouseFromDebugger) {
+  CreateControllerAndTarget<MockSyntheticTapMouseTarget>();
+
+  SyntheticTapGestureParams params;
+  params.from_devtools_debugger = true;
+  params.gesture_source_type = content::mojom::GestureSourceType::kMouseInput;
+  params.duration_ms = 79;
+  params.position.SetPoint(98, 123);
+
+  std::unique_ptr<SyntheticTapGesture> gesture(new SyntheticTapGesture(params));
+  QueueSyntheticGesture(std::move(gesture));
+  FlushInputUntilComplete();
+
+  EXPECT_EQ(1, num_success_);
+  EXPECT_EQ(0, num_failure_);
+  EXPECT_TRUE(target_->all_from_debugger());
 }
 
 TEST_F(SyntheticGestureControllerTest, PointerTouchAction) {
@@ -1819,7 +2032,7 @@ TEST_F(SyntheticGestureControllerTest, PointerTouchAction) {
   param_list.push_back(param0);
   param_list.push_back(param1);
   params.PushPointerActionParamsList(param_list);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_touch_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1837,7 +2050,7 @@ TEST_F(SyntheticGestureControllerTest, PointerTouchAction) {
   param_list.clear();
   param_list.push_back(param1);
   params.PushPointerActionParamsList(param_list);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_touch_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1878,8 +2091,9 @@ TEST_F(SyntheticGestureControllerTest, PointerMouseAction) {
   param.set_pointer_action_type(
       SyntheticPointerActionParams::PointerActionType::PRESS);
   param.set_position(gfx::PointF(183, 239));
+  param.set_button(SyntheticPointerActionParams::Button::LEFT);
   params.PushPointerActionParams(param);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_mouse_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1895,7 +2109,7 @@ TEST_F(SyntheticGestureControllerTest, PointerMouseAction) {
       SyntheticPointerActionParams::PointerActionType::MOVE);
   param.set_position(gfx::PointF(254, 279));
   params.PushPointerActionParams(param);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_mouse_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1910,7 +2124,7 @@ TEST_F(SyntheticGestureControllerTest, PointerMouseAction) {
   param.set_pointer_action_type(
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params.PushPointerActionParams(param);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_mouse_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1950,9 +2164,10 @@ TEST_F(SyntheticGestureControllerTest, PointerPenAction) {
   // Second, send a pen press.
   param.set_pointer_action_type(
       SyntheticPointerActionParams::PointerActionType::PRESS);
+  param.set_button(SyntheticPointerActionParams::Button::LEFT);
   param.set_position(gfx::PointF(183, 239));
   params.PushPointerActionParams(param);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_pen_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1968,7 +2183,7 @@ TEST_F(SyntheticGestureControllerTest, PointerPenAction) {
       SyntheticPointerActionParams::PointerActionType::MOVE);
   param.set_position(gfx::PointF(254, 279));
   params.PushPointerActionParams(param);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_pen_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1983,7 +2198,7 @@ TEST_F(SyntheticGestureControllerTest, PointerPenAction) {
   param.set_pointer_action_type(
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params.PushPointerActionParams(param);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_pen_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1998,7 +2213,7 @@ TEST_F(SyntheticGestureControllerTest, PointerPenAction) {
   param.set_pointer_action_type(
       SyntheticPointerActionParams::PointerActionType::LEAVE);
   params.PushPointerActionParams(param);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_pen_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();

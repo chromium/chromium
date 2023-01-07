@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- This drawable and ic_sync_off_48dp.xml should be kept identical except for the
+     colour, size and presence of a background disc. -->
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+
+    <path
+        android:pathData="M18.7501,16.4687V15.1625C18.2501,15.2938 17.7813,15.5 17.3563,15.7625L18.2688,16.675C18.4251,16.6 18.5813,16.525 18.7501,16.4687ZM14.2876,15.8812L15.7626,17.3562C15.2813,18.1188 15.0001,19.025 15.0001,20C15.0001,21.3813 15.5688,22.625 16.4751,23.525L15.0001,25H18.7501V21.25L17.3501,22.65C16.6751,21.9687 16.2501,21.0375 16.2501,20C16.2501,19.375 16.4063,18.7875 16.6751,18.2687L21.7251,23.3187C21.5688,23.4 21.4126,23.475 21.2438,23.5312V24.8375C21.7438,24.7062 22.2126,24.5 22.6376,24.2375L24.1126,25.7125L24.9063,24.9188L15.0876,15.0875L14.2876,15.8812ZM25.0001,15H21.2501V18.75L22.6501,17.35C23.3251,18.0313 23.7501,18.9625 23.7501,20C23.7501,20.625 23.5938,21.2125 23.3251,21.7313L24.2376,22.6437C24.7188,21.8812 25.0001,20.975 25.0001,20C25.0001,18.6187 24.4313,17.375 23.5251,16.475L25.0001,15Z"
+        android:fillColor="@macro/default_icon_color"/>
+</vector>

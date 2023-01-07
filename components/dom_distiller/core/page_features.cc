@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -147,45 +147,43 @@ std::vector<double> CalculateDerivedFeatures(bool isOGArticle,
 
 std::vector<double> CalculateDerivedFeaturesFromJSON(
     const base::Value* stringified_json) {
-  std::string stringified;
-  if (!stringified_json->GetAsString(&stringified)) {
+  if (!stringified_json->is_string()) {
     return std::vector<double>();
   }
 
-  std::unique_ptr<base::Value> json =
-      base::JSONReader::ReadDeprecated(stringified);
+  absl::optional<base::Value> json =
+      base::JSONReader::Read(stringified_json->GetString());
   if (!json) {
     return std::vector<double>();
   }
 
-  const base::DictionaryValue* dict;
-  if (!json->GetAsDictionary(&dict)) {
+  if (!json->is_dict()) {
     return std::vector<double>();
   }
 
-  bool isOGArticle = false;
-  std::string url, innerText, textContent, innerHTML;
-  double numElements = 0.0, numAnchors = 0.0, numForms = 0.0;
+  auto& dict = json->GetDict();
+  absl::optional<double> numElements = dict.FindDouble("numElements");
+  absl::optional<double> numAnchors = dict.FindDouble("numAnchors");
+  absl::optional<double> numForms = dict.FindDouble("numForms");
+  absl::optional<bool> isOGArticle = dict.FindBool("opengraph");
 
-  if (!(dict->GetBoolean("opengraph", &isOGArticle) &&
-        dict->GetString("url", &url) &&
-        dict->GetDouble("numElements", &numElements) &&
-        dict->GetDouble("numAnchors", &numAnchors) &&
-        dict->GetDouble("numForms", &numForms) &&
-        dict->GetString("innerText", &innerText) &&
-        dict->GetString("textContent", &textContent) &&
-        dict->GetString("innerHTML", &innerHTML))) {
+  std::string* url = dict.FindString("url");
+  std::string* innerText = dict.FindString("innerText");
+  std::string* textContent = dict.FindString("textContent");
+  std::string* innerHTML = dict.FindString("innerHTML");
+  if (!(isOGArticle.has_value() && url && numElements && numAnchors &&
+        numForms && innerText && textContent && innerHTML)) {
     return std::vector<double>();
   }
 
-  GURL parsed_url(url);
+  GURL parsed_url(*url);
   if (!parsed_url.is_valid()) {
     return std::vector<double>();
   }
 
-  return CalculateDerivedFeatures(isOGArticle, parsed_url, numElements,
-                                  numAnchors, numForms, innerText, textContent,
-                                  innerHTML);
+  return CalculateDerivedFeatures(isOGArticle.value(), parsed_url, *numElements,
+                                  *numAnchors, *numForms, *innerText,
+                                  *textContent, *innerHTML);
 }
 
 std::vector<double> CalculateDerivedFeatures(bool openGraph,

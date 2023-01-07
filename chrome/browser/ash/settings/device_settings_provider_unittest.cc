@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,21 +14,20 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/values.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
-#include "chrome/browser/chromeos/policy/device_local_account.h"
-#include "chrome/browser/chromeos/policy/device_policy_builder.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/settings/cros_settings_names.h"
-#include "chromeos/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -53,6 +52,10 @@ const char kDisabledMessage[] = "This device has been disabled.";
 
 class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
  public:
+  DeviceSettingsProviderTest(const DeviceSettingsProviderTest&) = delete;
+  DeviceSettingsProviderTest& operator=(const DeviceSettingsProviderTest&) =
+      delete;
+
   MOCK_METHOD1(SettingChanged, void(const std::string&));
   MOCK_METHOD0(GetTrustedCallback, void(void));
 
@@ -65,10 +68,10 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     DeviceSettingsTestBase::SetUp();
 
     EXPECT_CALL(*this, SettingChanged(_)).Times(AnyNumber());
-    provider_.reset(new DeviceSettingsProvider(
+    provider_ = std::make_unique<DeviceSettingsProvider>(
         base::BindRepeating(&DeviceSettingsProviderTest::SettingChanged,
                             base::Unretained(this)),
-        device_settings_service_.get(), local_state_.Get()));
+        device_settings_service_.get(), local_state_.Get());
     Mock::VerifyAndClearExpectations(this);
   }
 
@@ -91,22 +94,30 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
         device_policy_->payload().mutable_device_reporting();
     proto->set_report_version_info(enable_reporting);
     proto->set_report_activity_times(enable_reporting);
+    proto->set_report_audio_status(enable_reporting);
     proto->set_report_boot_mode(enable_reporting);
     proto->set_report_location(enable_reporting);
-    proto->set_report_network_interfaces(enable_reporting);
+    proto->set_report_network_configuration(enable_reporting);
+    proto->set_report_network_status(enable_reporting);
     proto->set_report_users(enable_reporting);
-    proto->set_report_hardware_status(enable_reporting);
     proto->set_report_session_status(enable_reporting);
     proto->set_report_graphics_status(enable_reporting);
     proto->set_report_crash_report_info(enable_reporting);
     proto->set_report_os_update_status(enable_reporting);
     proto->set_report_running_kiosk_app(enable_reporting);
+    proto->set_report_peripherals(enable_reporting);
     proto->set_report_power_status(enable_reporting);
+    proto->set_report_security_status(enable_reporting);
     proto->set_report_storage_status(enable_reporting);
     proto->set_report_board_status(enable_reporting);
     proto->set_report_app_info(enable_reporting);
     proto->set_report_print_jobs(enable_reporting);
+    proto->set_report_login_logout(enable_reporting);
+    proto->set_report_crd_sessions(enable_reporting);
+    proto->set_report_network_telemetry_collection_rate_ms(frequency);
+    proto->set_report_network_telemetry_event_checking_rate_ms(frequency);
     proto->set_device_status_frequency(frequency);
+    proto->set_report_device_audio_status_checking_rate_ms(frequency);
     BuildAndInstallDevicePolicy();
   }
 
@@ -169,20 +180,24 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     const char* reporting_settings[] = {
         kReportDeviceVersionInfo,
         kReportDeviceActivityTimes,
+        kReportDeviceAudioStatus,
         kReportDeviceBoardStatus,
         kReportDeviceBootMode,
         // Device location reporting is not currently supported.
         // kReportDeviceLocation,
-        kReportDeviceNetworkInterfaces,
+        kReportDeviceNetworkConfiguration,
+        kReportDeviceNetworkStatus,
         kReportDeviceUsers,
-        kReportDeviceHardwareStatus,
+        kReportDevicePeripherals,
         kReportDevicePowerStatus,
         kReportDeviceStorageStatus,
         kReportDeviceSessionStatus,
+        kReportDeviceSecurityStatus,
         kReportDeviceGraphicsStatus,
         kReportDeviceCrashReportInfo,
         kReportDeviceAppInfo,
         kReportDevicePrintJobs,
+        kReportDeviceLoginLogout,
         kReportOsUpdateStatus,
         kReportRunningKioskApp,
     };
@@ -192,9 +207,18 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
       EXPECT_EQ(expected_enable_value, *provider_->Get(setting))
           << "Value for " << setting << " does not match expected";
     }
+
+    const char* const reporting_frequency_settings[] = {
+        kReportUploadFrequency,
+        kReportDeviceNetworkTelemetryCollectionRateMs,
+        kReportDeviceNetworkTelemetryEventCheckingRateMs,
+        kReportDeviceAudioStatusCheckingRateMs,
+    };
     const base::Value expected_frequency_value(expected_frequency);
-    EXPECT_EQ(expected_frequency_value,
-              *provider_->Get(kReportUploadFrequency));
+    for (auto* frequency_setting : reporting_frequency_settings) {
+      EXPECT_EQ(expected_frequency_value, *provider_->Get(frequency_setting))
+          << "Value for " << frequency_setting << " does not match expected";
+    }
   }
 
   // Helper routine to ensure log upload policy has been correctly
@@ -239,6 +263,14 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     BuildAndInstallDevicePolicy();
   }
 
+  // Helper to set the content protection policy
+  void SetContentProtection(bool content_protection) {
+    em::AttestationSettingsProto* proto =
+        device_policy_->payload().mutable_attestation_settings();
+    proto->set_content_protection_enabled(content_protection);
+    BuildAndInstallDevicePolicy();
+  }
+
   // Helper routine to set HostnameTemplate policy.
   void SetHostnameTemplate(const std::string& hostname_template) {
     em::NetworkHostnameProto* proto =
@@ -247,16 +279,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     BuildAndInstallDevicePolicy();
   }
 
-  // Helper routine to set the DeviceSamlLoginAuthenticationType policy.
-  void SetSamlLoginAuthenticationType(
-      em::SamlLoginAuthenticationTypeProto::Type value) {
-    em::SamlLoginAuthenticationTypeProto* proto =
-        device_policy_->payload().mutable_saml_login_authentication_type();
-    proto->set_saml_login_authentication_type(value);
-    BuildAndInstallDevicePolicy();
-  }
-
-  // Helper routine that sets the device DeviceAutoUpdateTimeRestricitons policy
+  // Helper routine that sets the device DeviceAutoUpdateTimeRestrictions policy
   void SetDeviceAutoUpdateTimeRestrictions(const std::string& json_string) {
     em::AutoUpdateSettingsProto* proto =
         device_policy_->payload().mutable_auto_update_settings();
@@ -276,13 +299,6 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     em::PluginVmAllowedProto* proto =
         device_policy_->payload().mutable_plugin_vm_allowed();
     proto->set_plugin_vm_allowed(plugin_vm_allowed);
-    BuildAndInstallDevicePolicy();
-  }
-
-  void SetPluginVmLicenseKeySetting(const std::string& plugin_vm_license_key) {
-    em::PluginVmLicenseKeyProto* proto =
-        device_policy_->payload().mutable_plugin_vm_license_key();
-    proto->set_plugin_vm_license_key(plugin_vm_license_key);
     BuildAndInstallDevicePolicy();
   }
 
@@ -347,26 +363,11 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     BuildAndInstallDevicePolicy();
   }
 
-  void SetNativeDevicePrinterAccessMode(
-      em::DeviceNativePrintersAccessModeProto::AccessMode access_mode) {
-    em::DeviceNativePrintersAccessModeProto* proto =
-        device_policy_->payload().mutable_native_device_printers_access_mode();
-    proto->set_access_mode(access_mode);
-  }
-
   void SetDevicePrinterAccessMode(
       em::DevicePrintersAccessModeProto::AccessMode access_mode) {
     em::DevicePrintersAccessModeProto* proto =
         device_policy_->payload().mutable_device_printers_access_mode();
     proto->set_access_mode(access_mode);
-  }
-
-  void SetNativeDevicePrintersBlacklist(std::vector<std::string>& values) {
-    em::DeviceNativePrintersBlacklistProto* proto =
-        device_policy_->payload().mutable_native_device_printers_blacklist();
-    for (auto const& value : values) {
-      proto->add_blacklist(value);
-    }
   }
 
   void SetDevicePrintersBlocklist(std::vector<std::string>& values) {
@@ -377,20 +378,20 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     }
   }
 
-  void SetNativeDevicePrintersWhitelist(std::vector<std::string>& values) {
-    em::DeviceNativePrintersWhitelistProto* proto =
-        device_policy_->payload().mutable_native_device_printers_whitelist();
-    for (auto const& value : values) {
-      proto->add_whitelist(value);
-    }
-  }
-
   void SetDevicePrintersAllowlist(std::vector<std::string>& values) {
     em::DevicePrintersAllowlistProto* proto =
         device_policy_->payload().mutable_device_printers_allowlist();
     for (auto const& value : values) {
       proto->add_allowlist(value);
     }
+  }
+
+  // Helper routine that sets the DeviceScheduledReboot policy.
+  void SetDeviceScheduledReboot(const std::string& json_string) {
+    em::DeviceScheduledRebootProto* proto =
+        device_policy_->payload().mutable_device_scheduled_reboot();
+    proto->set_device_scheduled_reboot_settings(json_string);
+    BuildAndInstallDevicePolicy();
   }
 
   void VerifyDevicePrinterList(const char* policy_key,
@@ -426,9 +427,9 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   }
 
   void AddUserToAllowlist(const std::string& user_id) {
-    em::UserAllowlistProto* proto =
-        device_policy_->payload().mutable_user_allowlist();
-    proto->add_user_allowlist(user_id);
+    auto& proto = device_policy_->payload();
+    proto.mutable_user_allowlist()->add_user_allowlist(user_id);
+    proto.mutable_allow_new_users()->set_allow_new_users(true);
     BuildAndInstallDevicePolicy();
   }
 
@@ -443,9 +444,6 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   std::unique_ptr<DeviceSettingsProvider> provider_;
 
   base::ScopedPathOverride user_data_dir_override_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceSettingsProviderTest);
 };
 
 // Same as above, but enrolled into an enterprise
@@ -474,9 +472,8 @@ TEST_F(DeviceSettingsProviderTest, InitializationTest) {
   EXPECT_TRUE(closure);  // Ownership of |closure| was not taken.
   const base::Value* value = provider_->Get(kStatsReportingPref);
   ASSERT_TRUE(value);
-  bool bool_value;
-  EXPECT_TRUE(value->GetAsBoolean(&bool_value));
-  EXPECT_FALSE(bool_value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
 }
 
 TEST_F(DeviceSettingsProviderTest, InitializationTestUnowned) {
@@ -491,9 +488,8 @@ TEST_F(DeviceSettingsProviderTest, InitializationTestUnowned) {
   EXPECT_TRUE(closure);  // Ownership of |closure| was not taken.
   const base::Value* value = provider_->Get(kReleaseChannel);
   ASSERT_TRUE(value);
-  std::string string_value;
-  EXPECT_TRUE(value->GetAsString(&string_value));
-  EXPECT_TRUE(string_value.empty());
+  ASSERT_TRUE(value->is_string());
+  EXPECT_TRUE(value->GetString().empty());
 
   // Sets should succeed though and be readable from the cache.
   EXPECT_CALL(*this, SettingChanged(_)).Times(AnyNumber());
@@ -510,8 +506,8 @@ TEST_F(DeviceSettingsProviderTest, InitializationTestUnowned) {
   // Verify the change has been applied.
   const base::Value* saved_value = provider_->Get(kReleaseChannel);
   ASSERT_TRUE(saved_value);
-  EXPECT_TRUE(saved_value->GetAsString(&string_value));
-  ASSERT_EQ("stable-channel", string_value);
+  ASSERT_TRUE(saved_value->is_string());
+  ASSERT_EQ("stable-channel", saved_value->GetString());
 }
 
 TEST_F(DeviceSettingsProviderTestEnterprise, NoPolicyDefaultsOn) {
@@ -520,9 +516,8 @@ TEST_F(DeviceSettingsProviderTestEnterprise, NoPolicyDefaultsOn) {
   SetMetricsReportingSettings(REMOVE_METRICS_POLICY);
   const base::Value* saved_value = provider_->Get(kStatsReportingPref);
   ASSERT_TRUE(saved_value);
-  bool bool_value;
-  EXPECT_TRUE(saved_value->GetAsBoolean(&bool_value));
-  EXPECT_TRUE(bool_value);
+  ASSERT_TRUE(saved_value->is_bool());
+  EXPECT_TRUE(saved_value->GetBool());
 }
 
 TEST_F(DeviceSettingsProviderTest, NoPolicyDefaultsOff) {
@@ -531,9 +526,8 @@ TEST_F(DeviceSettingsProviderTest, NoPolicyDefaultsOff) {
   SetMetricsReportingSettings(REMOVE_METRICS_POLICY);
   const base::Value* saved_value = provider_->Get(kStatsReportingPref);
   ASSERT_TRUE(saved_value);
-  bool bool_value;
-  EXPECT_TRUE(saved_value->GetAsBoolean(&bool_value));
-  EXPECT_FALSE(bool_value);
+  ASSERT_TRUE(saved_value->is_bool());
+  EXPECT_FALSE(saved_value->GetBool());
 }
 
 TEST_F(DeviceSettingsProviderTest, SetPrefFailed) {
@@ -553,13 +547,13 @@ TEST_F(DeviceSettingsProviderTest, SetPrefFailed) {
   // Verify the change has not been applied.
   const base::Value* saved_value = provider_->Get(kStatsReportingPref);
   ASSERT_TRUE(saved_value);
-  bool bool_value;
-  EXPECT_TRUE(saved_value->GetAsBoolean(&bool_value));
-  EXPECT_FALSE(bool_value);
+  ASSERT_TRUE(saved_value->is_bool());
+  EXPECT_FALSE(saved_value->GetBool());
 }
 
 TEST_F(DeviceSettingsProviderTest, SetPrefSucceed) {
-  owner_key_util_->SetPrivateKey(device_policy_->GetSigningKey());
+  owner_key_util_->ImportPrivateKeyAndSetPublicKey(
+      device_policy_->GetSigningKey());
   InitOwner(AccountId::FromUserEmail(device_policy_->policy_data().username()),
             true);
   FlushDeviceSettings();
@@ -583,13 +577,13 @@ TEST_F(DeviceSettingsProviderTest, SetPrefSucceed) {
   // Verify the change has been applied.
   const base::Value* saved_value = provider_->Get(kStatsReportingPref);
   ASSERT_TRUE(saved_value);
-  bool bool_value;
-  EXPECT_TRUE(saved_value->GetAsBoolean(&bool_value));
-  EXPECT_TRUE(bool_value);
+  ASSERT_TRUE(saved_value->is_bool());
+  EXPECT_TRUE(saved_value->GetBool());
 }
 
 TEST_F(DeviceSettingsProviderTest, SetPrefTwice) {
-  owner_key_util_->SetPrivateKey(device_policy_->GetSigningKey());
+  owner_key_util_->ImportPrivateKeyAndSetPublicKey(
+      device_policy_->GetSigningKey());
   InitOwner(AccountId::FromUserEmail(device_policy_->policy_data().username()),
             true);
   FlushDeviceSettings();
@@ -607,7 +601,7 @@ TEST_F(DeviceSettingsProviderTest, SetPrefTwice) {
 
   // Verify the second change has been applied.
   const base::Value* saved_value = provider_->Get(kReleaseChannel);
-  EXPECT_TRUE(value2.Equals(saved_value));
+  EXPECT_EQ(value2, *saved_value);
 
   Mock::VerifyAndClearExpectations(this);
 }
@@ -691,7 +685,7 @@ TEST_F(DeviceSettingsProviderTest, PolicyFailedPermanentlyNotification) {
   ReloadDeviceSettings();
   Mock::VerifyAndClearExpectations(this);
 
-  closure = base::DoNothing::Once();
+  closure = base::DoNothing();
   EXPECT_EQ(CrosSettingsProvider::PERMANENTLY_UNTRUSTED,
             provider_->PrepareTrustedValues(&closure));
   EXPECT_TRUE(closure);  // Ownership of |closure| was not taken.
@@ -729,17 +723,16 @@ TEST_F(DeviceSettingsProviderTest, LegacyDeviceLocalAccounts) {
   BuildAndInstallDevicePolicy();
 
   // On load, the deprecated spec should have been converted to the new format.
-  base::ListValue expected_accounts;
-  std::unique_ptr<base::DictionaryValue> entry_dict(
-      new base::DictionaryValue());
-  entry_dict->SetString(kAccountsPrefDeviceLocalAccountsKeyId,
-                        policy::PolicyBuilder::kFakeUsername);
-  entry_dict->SetInteger(kAccountsPrefDeviceLocalAccountsKeyType,
-                         policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
+  base::Value::List expected_accounts;
+  base::Value::Dict entry_dict;
+  entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyId,
+                 policy::PolicyBuilder::kFakeUsername);
+  entry_dict.Set(kAccountsPrefDeviceLocalAccountsKeyType,
+                 policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION);
   expected_accounts.Append(std::move(entry_dict));
   const base::Value* actual_accounts =
       provider_->Get(kAccountsPrefDeviceLocalAccounts);
-  EXPECT_EQ(expected_accounts, *actual_accounts);
+  EXPECT_EQ(expected_accounts, actual_accounts->GetList());
 }
 
 TEST_F(DeviceSettingsProviderTest, DecodeDeviceState) {
@@ -776,6 +769,27 @@ TEST_F(DeviceSettingsProviderTest, DecodeReportingSettings) {
   // correctly.
   SetReportingSettings(false, status_frequency);
   VerifyReportingSettings(false, status_frequency);
+}
+
+TEST_F(DeviceSettingsProviderTest,
+       DecodeReportingSignalStrengthEventDrivenTelemetrySetting) {
+  em::DeviceReportingProto* proto =
+      device_policy_->payload().mutable_device_reporting();
+  proto->mutable_report_signal_strength_event_driven_telemetry()->add_entries(
+      "https_latency");
+  proto->mutable_report_signal_strength_event_driven_telemetry()->add_entries(
+      "network_telemetry");
+
+  BuildAndInstallDevicePolicy();
+
+  base::Value::List signal_strength_telemetry_list;
+  signal_strength_telemetry_list.Append("https_latency");
+  signal_strength_telemetry_list.Append("network_telemetry");
+  base::Value signal_strength_telemetry_list_value =
+      base::Value(std::move(signal_strength_telemetry_list));
+
+  VerifyPolicyValue(kReportDeviceSignalStrengthEventDrivenTelemetry,
+                    &signal_strength_telemetry_list_value);
 }
 
 TEST_F(DeviceSettingsProviderTest, DecodeHeartbeatSettings) {
@@ -820,7 +834,7 @@ TEST_F(DeviceSettingsProviderTest, EmptyAllowedConnectionTypesForUpdate) {
   // Check some meaningful value. Policy should be set.
   SetAutoUpdateConnectionTypes(single_value);
   base::ListValue allowed_connections;
-  allowed_connections.AppendInteger(0);
+  allowed_connections.Append(0);
   VerifyPolicyValue(kAllowedConnectionTypesForUpdate, &allowed_connections);
 }
 
@@ -847,25 +861,7 @@ TEST_F(DeviceSettingsProviderTest, DecodeLogUploadSettings) {
   VerifyLogUploadSettings(false);
 }
 
-TEST_F(DeviceSettingsProviderTest, SamlLoginAuthenticationType) {
-  using PolicyProto = em::SamlLoginAuthenticationTypeProto;
-
-  VerifyPolicyValue(kSamlLoginAuthenticationType, nullptr);
-
-  {
-    SetSamlLoginAuthenticationType(PolicyProto::TYPE_DEFAULT);
-    base::Value expected_value(PolicyProto::TYPE_DEFAULT);
-    VerifyPolicyValue(kSamlLoginAuthenticationType, &expected_value);
-  }
-
-  {
-    SetSamlLoginAuthenticationType(PolicyProto::TYPE_CLIENT_CERTIFICATE);
-    base::Value expected_value(PolicyProto::TYPE_CLIENT_CERTIFICATE);
-    VerifyPolicyValue(kSamlLoginAuthenticationType, &expected_value);
-  }
-}
-
-// Test invalid cases
+// Test invalid cases.
 TEST_F(DeviceSettingsProviderTest, DeviceAutoUpdateTimeRestrictionsEmpty) {
   // Policy should not be set by default
   VerifyPolicyValue(kDeviceAutoUpdateTimeRestrictions, nullptr);
@@ -916,9 +912,9 @@ TEST_F(DeviceSettingsProviderTest, DeviceScheduledUpdateCheckTests) {
   base::DictionaryValue expected_val;
   expected_val.SetPath({"update_check_time", "hour"}, base::Value(23));
   expected_val.SetPath({"update_check_time", "minute"}, base::Value(35));
-  expected_val.Set("frequency", std::make_unique<base::Value>("DAILY"));
-  expected_val.Set("day_of_week", std::make_unique<base::Value>("MONDAY"));
-  expected_val.Set("day_of_month", std::make_unique<base::Value>(15));
+  expected_val.SetKey("frequency", base::Value("DAILY"));
+  expected_val.SetKey("day_of_week", base::Value("MONDAY"));
+  expected_val.SetKey("day_of_month", base::Value(15));
   SetDeviceScheduledUpdateCheck(json_string);
   VerifyPolicyValue(kDeviceScheduledUpdateCheck, &expected_val);
 }
@@ -929,11 +925,6 @@ TEST_F(DeviceSettingsProviderTest, DecodePluginVmAllowedSetting) {
 
   SetPluginVmAllowedSetting(false);
   EXPECT_EQ(base::Value(false), *provider_->Get(kPluginVmAllowed));
-}
-
-TEST_F(DeviceSettingsProviderTest, DecodePluginVmLicenseKeySetting) {
-  SetPluginVmLicenseKeySetting("LICENSE_KEY");
-  EXPECT_EQ(base::Value("LICENSE_KEY"), *provider_->Get(kPluginVmLicenseKey));
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceRebootAfterUserSignout) {
@@ -978,8 +969,8 @@ TEST_F(DeviceSettingsProviderTest, DeviceWilcoDtcAllowedSetting) {
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceDockMacAddressSourceSetting) {
-  // Policy should not be set by default
-  VerifyPolicyValue(kDeviceDockMacAddressSource, nullptr);
+  const base::Value default_value(3);
+  VerifyPolicyValue(kDeviceDockMacAddressSource, &default_value);
 
   SetDeviceDockMacAddressSourceSetting(
       em::DeviceDockMacAddressSourceProto::DEVICE_DOCK_MAC_ADDRESS);
@@ -1020,7 +1011,7 @@ TEST_F(DeviceSettingsProviderTest,
 }
 
 TEST_F(DeviceSettingsProviderTest, DevicePowerwashAllowed) {
-  // Policy should be set to true by default
+  // Policy should be set to true by default.
   base::Value default_value(true);
   VerifyPolicyValue(kDevicePowerwashAllowed, &default_value);
 
@@ -1032,7 +1023,7 @@ TEST_F(DeviceSettingsProviderTest, DevicePowerwashAllowed) {
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceLoginScreenSystemInfoEnforced) {
-  // Policy should not be set by default
+  // Policy should not be set by default.
   VerifyPolicyValue(kDeviceLoginScreenSystemInfoEnforced, nullptr);
 
   SetSystemInfoEnforced(true);
@@ -1045,7 +1036,7 @@ TEST_F(DeviceSettingsProviderTest, DeviceLoginScreenSystemInfoEnforced) {
 }
 
 TEST_F(DeviceSettingsProviderTest, DeviceShowNumericKeyboardForPassword) {
-  // Policy should not be set by default
+  // Policy should not be set by default.
   VerifyPolicyValue(kDeviceShowNumericKeyboardForPassword, nullptr);
 
   SetShowNumericKeyboardForPassword(true);
@@ -1058,34 +1049,12 @@ TEST_F(DeviceSettingsProviderTest, DeviceShowNumericKeyboardForPassword) {
 }
 
 TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_empty) {
-  // Policy should be ACCESS_MODE_ALL by default
+  // Policy should be ACCESS_MODE_ALL by default.
   base::Value default_value(em::DevicePrintersAccessModeProto::ACCESS_MODE_ALL);
   VerifyPolicyValue(kDevicePrintersAccessMode, &default_value);
 }
 
-TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_native) {
-  // WHITELIST => ALLOWLIST
-  SetNativeDevicePrinterAccessMode(
-      em::DeviceNativePrintersAccessModeProto::ACCESS_MODE_WHITELIST);
-  BuildAndInstallDevicePolicy();
-  base::Value expected_value(
-      em::DevicePrintersAccessModeProto::ACCESS_MODE_ALLOWLIST);
-  VerifyPolicyValue(kDevicePrintersAccessMode, &expected_value);
-}
-
-TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_accessmode) {
-  SetDevicePrinterAccessMode(
-      em::DevicePrintersAccessModeProto::ACCESS_MODE_ALLOWLIST);
-  BuildAndInstallDevicePolicy();
-  base::Value expected_value(
-      em::DevicePrintersAccessModeProto::ACCESS_MODE_ALLOWLIST);
-  VerifyPolicyValue(kDevicePrintersAccessMode, &expected_value);
-}
-
-TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_both) {
-  // If both are set use the DevicePrintersAccessMode
-  SetNativeDevicePrinterAccessMode(
-      em::DeviceNativePrintersAccessModeProto::ACCESS_MODE_BLACKLIST);
+TEST_F(DeviceSettingsProviderTest, DevicePrintersAccessMode_allowlist) {
   SetDevicePrinterAccessMode(
       em::DevicePrintersAccessModeProto::ACCESS_MODE_ALLOWLIST);
   BuildAndInstallDevicePolicy();
@@ -1099,15 +1068,6 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersBlocklist_empty) {
   VerifyPolicyValue(kDevicePrintersBlocklist, nullptr);
 }
 
-TEST_F(DeviceSettingsProviderTest, DevicePrintersBlocklist_blacklist) {
-  std::vector<std::string> values = {"foo", "bar"};
-
-  // If the blacklist only is set, use that.
-  SetNativeDevicePrintersBlacklist(values);
-  BuildAndInstallDevicePolicy();
-  VerifyDevicePrinterList(kDevicePrintersBlocklist, values);
-}
-
 TEST_F(DeviceSettingsProviderTest, DevicePrintersBlocklist_blocklist) {
   std::vector<std::string> values = {"foo", "bar"};
 
@@ -1117,46 +1077,15 @@ TEST_F(DeviceSettingsProviderTest, DevicePrintersBlocklist_blocklist) {
   VerifyDevicePrinterList(kDevicePrintersBlocklist, values);
 }
 
-TEST_F(DeviceSettingsProviderTest, DevicePrintersBlocklist_both) {
-  std::vector<std::string> values = {"foo", "bar"};
-  std::vector<std::string> other_values = {"baz"};
-
-  // If both are set use the blocklist
-  SetNativeDevicePrintersBlacklist(other_values);
-  SetDevicePrintersBlocklist(values);
-  BuildAndInstallDevicePolicy();
-  VerifyDevicePrinterList(kDevicePrintersBlocklist, values);
-}
-
 TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_empty) {
-  // Policy should not be set by default
+  // Policy should not be set by default.
   VerifyPolicyValue(kDevicePrintersAllowlist, nullptr);
-}
-
-TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_whitelist) {
-  std::vector<std::string> values = {"foo", "bar"};
-
-  // If the blacklist only is set, use that.
-  SetNativeDevicePrintersWhitelist(values);
-  BuildAndInstallDevicePolicy();
-  VerifyDevicePrinterList(kDevicePrintersAllowlist, values);
 }
 
 TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_allowlist) {
   std::vector<std::string> values = {"foo", "bar"};
 
-  // If the blocklist only is set, use that.
-  SetDevicePrintersAllowlist(values);
-  BuildAndInstallDevicePolicy();
-  VerifyDevicePrinterList(kDevicePrintersAllowlist, values);
-}
-
-TEST_F(DeviceSettingsProviderTest, DevicePrintersAllowlist_both) {
-  std::vector<std::string> values = {"foo", "bar"};
-  std::vector<std::string> other_values = {"baz"};
-
-  // If both are set use the blocklist
-  SetNativeDevicePrintersWhitelist(other_values);
+  // If the allowlist only is set, use that.
   SetDevicePrintersAllowlist(values);
   BuildAndInstallDevicePolicy();
   VerifyDevicePrinterList(kDevicePrintersAllowlist, values);
@@ -1252,6 +1181,117 @@ TEST_F(DeviceSettingsProviderTest, DecodeBorealisDisallowed) {
       false);
   BuildAndInstallDevicePolicy();
   EXPECT_EQ(base::Value(false), *provider_->Get(kBorealisAllowedForDevice));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceAllowedBluetoothServices) {
+  em::DeviceAllowedBluetoothServicesProto* proto =
+      device_policy_->payload().mutable_device_allowed_bluetooth_services();
+  proto->add_allowlist("0x1124");
+  BuildAndInstallDevicePolicy();
+  base::ListValue allowlist;
+  allowlist.Append(base::Value("0x1124"));
+  EXPECT_EQ(allowlist, *provider_->Get(kDeviceAllowedBluetoothServices));
+}
+
+// Check valid JSON for DeviceScheduledReboot.
+TEST_F(DeviceSettingsProviderTest, DeviceScheduledReboot) {
+  const std::string json_string =
+      "{\"reboot_time\": {\"hour\": 22, \"minute\": 30}, "
+      "\"frequency\": \"MONTHLY\", \"day_of_week\": \"MONDAY\", "
+      "\"day_of_month\": 15}";
+  base::DictionaryValue expected_val;
+  expected_val.SetPath({"reboot_time", "hour"}, base::Value(22));
+  expected_val.SetPath({"reboot_time", "minute"}, base::Value(30));
+  expected_val.SetKey("frequency", base::Value("MONTHLY"));
+  expected_val.SetKey("day_of_week", base::Value("MONDAY"));
+  expected_val.SetKey("day_of_month", base::Value(15));
+  SetDeviceScheduledReboot(json_string);
+  VerifyPolicyValue(kDeviceScheduledReboot, &expected_val);
+}
+
+// Checks that content_protection decodes correctly.
+TEST_F(DeviceSettingsProviderTest, DecodeContentProtectionDefault) {
+  BuildAndInstallDevicePolicy();
+  const base::Value* value =
+      provider_->Get(kAttestationForContentProtectionEnabled);
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_TRUE(value->GetBool());
+}
+
+// Checks that content_protection decodes correctly.
+TEST_F(DeviceSettingsProviderTest, DecodeContentProtectionEnable) {
+  SetContentProtection(true);
+  const base::Value* value =
+      provider_->Get(kAttestationForContentProtectionEnabled);
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_TRUE(value->GetBool());
+}
+
+// Checks that content_protection decodes correctly.
+TEST_F(DeviceSettingsProviderTest, DecodeContentProtectionDisable) {
+  SetContentProtection(false);
+  const base::Value* value =
+      provider_->Get(kAttestationForContentProtectionEnabled);
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceRestrictedManagedGuestSessionEnabled) {
+  device_policy_->payload()
+      .mutable_device_restricted_managed_guest_session_enabled()
+      ->set_enabled(true);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(true),
+            *provider_->Get(kDeviceRestrictedManagedGuestSessionEnabled));
+}
+
+TEST_F(DeviceSettingsProviderTest,
+       DeviceRestrictedManagedGuestSessionDisabled) {
+  device_policy_->payload()
+      .mutable_device_restricted_managed_guest_session_enabled()
+      ->set_enabled(false);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(false),
+            *provider_->Get(kDeviceRestrictedManagedGuestSessionEnabled));
+}
+
+TEST_F(DeviceSettingsProviderTest, KioskCRXManifestUpdateURLIgnoredEnabled) {
+  device_policy_->payload()
+      .mutable_kiosk_crx_manifest_update_url_ignored()
+      ->set_value(true);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(true),
+            *provider_->Get(kKioskCRXManifestUpdateURLIgnored));
+}
+
+TEST_F(DeviceSettingsProviderTest, KioskCRXManifestUpdateURLIgnoredDisabled) {
+  device_policy_->payload()
+      .mutable_kiosk_crx_manifest_update_url_ignored()
+      ->set_value(false);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(false),
+            *provider_->Get(kKioskCRXManifestUpdateURLIgnored));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceEncryptedReportingPipelineEnabled) {
+  device_policy_->payload()
+      .mutable_device_encrypted_reporting_pipeline_enabled()
+      ->set_enabled(true);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(true),
+            *provider_->Get(kDeviceEncryptedReportingPipelineEnabled));
+}
+
+TEST_F(DeviceSettingsProviderTest, DeviceEncryptedReportingPipelineDisabled) {
+  device_policy_->payload()
+      .mutable_device_encrypted_reporting_pipeline_enabled()
+      ->set_enabled(false);
+  BuildAndInstallDevicePolicy();
+  EXPECT_EQ(base::Value(false),
+            *provider_->Get(kDeviceEncryptedReportingPipelineEnabled));
 }
 
 }  // namespace ash

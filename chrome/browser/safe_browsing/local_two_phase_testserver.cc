@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -75,7 +75,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleTwoPhaseRequest(
       if (it.GetKey() == "p2close")
         p2close = "1";
       if (it.GetKey() == "p2code")
-        p2code = it.GetValue();
+        p2code = std::string(it.GetValue());
     }
 
     std::string put_url = base::StringPrintf(

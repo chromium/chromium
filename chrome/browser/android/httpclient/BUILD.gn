@@ -1,0 +1,104 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/android/httpclient/AnnotatedSimpleHttpClient.java",
+    "java/src/org/chromium/chrome/browser/android/httpclient/SimpleHttpClient.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//chrome/browser/android/httpclient/public:java",
+    "//chrome/browser/profiles/android:java",
+    "//content/public/android:content_java",
+    "//net/android:net_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//url:gurl_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/android/httpclient/SimpleHttpClient.java" ]
+}
+
+source_set("android") {
+  # Not listed here are http_client_bridge.h|cc because they need to use
+  # profile_android.h which is not modularised yet. As such they live in
+  # //chrome/browser:browser next to other unmodularized code.
+  sources = [
+    "http_client.cc",
+    "http_client.h",
+  ]
+
+  deps = [
+    "//base:base",
+    "//chrome/browser/profiles:profile",
+    "//content/public/browser",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom:url_loader_base",
+    "//url",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [ "http_client_unittest.cc" ]
+  deps = [
+    ":android",
+    "//base:base",
+    "//base/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//net:net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp",
+    "//services/network/public/mojom:url_loader_base",
+    "//testing/gmock",
+    "//testing/gtest:gtest",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/android/httpclient/SimpleHttpClientTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java",
+    "//net/android:net_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//url:gurl_java",
+  ]
+}
+
+java_library("junit_tests") {
+  bypass_platform_checks = true
+  testonly = true
+  sources = [ "java/src/org/chromium/chrome/browser/android/httpclient/SimpleHttpClientUnitTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/profiles/android:java",
+    "//net/android:net_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
+  ]
+}

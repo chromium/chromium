@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <utility>
 
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
@@ -96,7 +95,7 @@ TEST_F(FileBrowserHandlerManifestTest, InvalidFileBrowserHandlers) {
       Testcase("filebrowser_invalid_file_filters_url.json",
                extensions::ErrorUtils::FormatErrorMessage(
                    errors::kInvalidURLPatternError, "http:*.html"))};
-  RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
+  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_ERROR);
   RunTestcase(Testcase("filebrowser_missing_permission.json",
                        errors::kInvalidFileBrowserHandlerMissingPermission),
               EXPECT_TYPE_WARNING);
@@ -131,7 +130,7 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandler) {
   ASSERT_TRUE(extension.get());
   FileBrowserHandler::List* handlers =
       FileBrowserHandler::GetHandlers(extension.get());
-  ASSERT_TRUE(handlers != NULL);
+  ASSERT_TRUE(handlers != nullptr);
   ASSERT_EQ(1U, handlers->size());
   const FileBrowserHandler* action = handlers->at(0).get();
 
@@ -145,6 +144,11 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandler) {
   EXPECT_FALSE(action->HasCreateAccessPermission());
   EXPECT_TRUE(action->CanRead());
   EXPECT_TRUE(action->CanWrite());
+
+  EXPECT_EQ(action, FileBrowserHandler::FindForActionId(extension.get(),
+                                                        "ExtremelyCoolAction"));
+  EXPECT_EQ(nullptr, FileBrowserHandler::FindForActionId(extension.get(),
+                                                         "(does not exist)"));
 }
 
 TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerMIMETypes) {
@@ -177,7 +181,7 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerMIMETypes) {
   ASSERT_TRUE(extension.get());
   FileBrowserHandler::List* handlers =
       FileBrowserHandler::GetHandlers(extension.get());
-  ASSERT_TRUE(handlers != NULL);
+  ASSERT_TRUE(handlers != nullptr);
   ASSERT_EQ(1U, handlers->size());
   const FileBrowserHandler* action = handlers->at(0).get();
 
@@ -185,6 +189,10 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerMIMETypes) {
   ASSERT_EQ(1U, patterns.patterns().size());
   EXPECT_TRUE(action->MatchesURL(
       GURL("filesystem:chrome-extension://foo/local/test.txt")));
+
+  EXPECT_EQ(action, FileBrowserHandler::FindForActionId(extension.get(), "ID"));
+  EXPECT_EQ(nullptr, FileBrowserHandler::FindForActionId(extension.get(),
+                                                         "(does not exist)"));
 }
 
 TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerWithCreate) {
@@ -219,7 +227,7 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerWithCreate) {
   ASSERT_TRUE(extension.get());
   FileBrowserHandler::List* handlers =
       FileBrowserHandler::GetHandlers(extension.get());
-  ASSERT_TRUE(handlers != NULL);
+  ASSERT_TRUE(handlers != nullptr);
   ASSERT_EQ(1U, handlers->size());
   const FileBrowserHandler* action = handlers->at(0).get();
   const extensions::URLPatternSet& patterns = action->file_url_patterns();
@@ -228,6 +236,10 @@ TEST_F(FileBrowserHandlerManifestTest, ValidFileBrowserHandlerWithCreate) {
   EXPECT_TRUE(action->HasCreateAccessPermission());
   EXPECT_FALSE(action->CanRead());
   EXPECT_FALSE(action->CanWrite());
+
+  EXPECT_EQ(action, FileBrowserHandler::FindForActionId(extension.get(), "ID"));
+  EXPECT_EQ(nullptr, FileBrowserHandler::FindForActionId(extension.get(),
+                                                         "(does not exist)"));
 }
 
 }  // namespace

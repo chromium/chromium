@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,21 +8,21 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/scoped_observer.h"
-#include "chromeos/components/drivefs/drivefs_host.h"
-#include "chromeos/dbus/power/power_manager_client.h"
+#include "base/time/time.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chromeos/ash/components/drivefs/drivefs_host.h"
+#include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "components/drive/drive_notification_observer.h"
 #include "components/drive/file_errors.h"
 #include "components/drive/file_system_core_util.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -80,6 +80,15 @@ class DriveIntegrationServiceObserver : public base::CheckedObserver {
   // Triggered when mounting the filesystem has failed in a fashion that will
   // not be automatically retried.
   virtual void OnFileSystemMountFailed() {}
+
+  // Triggered when the `DriveIntegrationService` is being destroyed.
+  virtual void OnDriveIntegrationServiceDestroyed() {}
+
+  // Triggered when the mirroring functionality is enabled.
+  virtual void OnMirroringEnabled() {}
+
+  // Triggered when the mirroring functionality is disabled.
+  virtual void OnMirroringDisabled() {}
 };
 
 // DriveIntegrationService is used to integrate Drive to Chrome. This class
@@ -91,8 +100,7 @@ class DriveIntegrationServiceObserver : public base::CheckedObserver {
 // that are used to integrate Drive to Chrome. The object of this class is
 // created per-profile.
 class DriveIntegrationService : public KeyedService,
-                                public drivefs::DriveFsHost::MountObserver,
-                                public chromeos::PowerManagerClient::Observer {
+                                public drivefs::DriveFsHost::MountObserver {
  public:
   class PreferenceWatcher;
   using DriveFsMojoListenerFactory = base::RepeatingCallback<
@@ -102,6 +110,8 @@ class DriveIntegrationService : public KeyedService,
   using SearchDriveByFileNameCallback =
       base::OnceCallback<void(drive::FileError,
                               std::vector<drivefs::mojom::QueryItemPtr>)>;
+  using GetThumbnailCallback =
+      base::OnceCallback<void(const absl::optional<std::vector<uint8_t>>&)>;
 
   // test_mount_point_name, test_cache_root and
   // test_drivefs_mojo_listener_factory are used by tests to inject customized
@@ -112,6 +122,10 @@ class DriveIntegrationService : public KeyedService,
       const std::string& test_mount_point_name,
       const base::FilePath& test_cache_root,
       DriveFsMojoListenerFactory test_drivefs_mojo_listener_factory = {});
+
+  DriveIntegrationService(const DriveIntegrationService&) = delete;
+  DriveIntegrationService& operator=(const DriveIntegrationService&) = delete;
+
   ~DriveIntegrationService() override;
 
   // KeyedService override:
@@ -144,9 +158,9 @@ class DriveIntegrationService : public KeyedService,
 
   // MountObserver implementation.
   void OnMounted(const base::FilePath& mount_path) override;
-  void OnUnmounted(base::Optional<base::TimeDelta> remount_delay) override;
+  void OnUnmounted(absl::optional<base::TimeDelta> remount_delay) override;
   void OnMountFailed(MountFailure failure,
-                     base::Optional<base::TimeDelta> remount_delay) override;
+                     absl::optional<base::TimeDelta> remount_delay) override;
 
   EventLogger* event_logger() { return logger_.get(); }
 
@@ -170,6 +184,7 @@ class DriveIntegrationService : public KeyedService,
       int max_results,
       drivefs::mojom::QueryParameters::SortField sort_field,
       drivefs::mojom::QueryParameters::SortDirection sort_direction,
+      drivefs::mojom::QueryParameters::QuerySource query_source,
       SearchDriveByFileNameCallback callback) const;
 
   // Returns the metadata for Drive file at |local_path|.
@@ -181,6 +196,15 @@ class DriveIntegrationService : public KeyedService,
   void LocateFilesByItemIds(
       const std::vector<std::string>& item_ids,
       drivefs::mojom::DriveFs::LocateFilesByItemIdsCallback callback);
+
+  // Returns the total and free space available in the user's Drive.
+  void GetQuotaUsage(drivefs::mojom::DriveFs::GetQuotaUsageCallback callback);
+
+  // Returns the total and free space available in the user's Drive.
+  // Additionally, if the user belongs to an organization, whether the
+  // organization quota is full or not, and the name of the organization.
+  void GetPooledQuotaUsage(
+      drivefs::mojom::DriveFs::GetPooledQuotaUsageCallback callback);
 
   void RestartDrive();
 
@@ -213,6 +237,42 @@ class DriveIntegrationService : public KeyedService,
   // Loads account settings (including feature flags) from
   // |data_dir_path/account_settings. Should only be called in developer mode.
   void LoadAccountSettings();
+
+  // Returns a PNG containing a thumbnail for |path|. If |crop_to_square|, a
+  // 360x360 thumbnail, cropped to fit a square is returned; otherwise a
+  // thumbnail up to 500x500, maintaining aspect ration, is returned. If |path|
+  // does not exist or does not have a thumbnail, |thumbnail| will be null.
+  void GetThumbnail(const base::FilePath& path,
+                    bool crop_to_square,
+                    GetThumbnailCallback callback);
+
+  // Toggle mirroring on or off defined by |enabled|.
+  void ToggleMirroring(
+      bool enabled,
+      drivefs::mojom::DriveFs::ToggleMirroringCallback callback);
+
+  // Toggle syncing for a specific path. Should only be called once mirroring
+  // has been enabled via |ToggleMirroring|.
+  void ToggleSyncForPath(
+      const base::FilePath& path,
+      drivefs::mojom::MirrorPathStatus status,
+      drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback);
+
+  // Retrieves a list of paths being synced.
+  void GetSyncingPaths(
+      drivefs::mojom::DriveFs::GetSyncingPathsCallback callback);
+
+  drivefs::SyncStatus GetSyncStatusForPath(const base::FilePath& drive_path);
+
+  // Tells DriveFS to update its cached pin states of hosted files (once).
+  void PollHostedFilePinStates();
+
+  // Returns whether mirroring is enabled.
+  bool IsMirroringEnabled();
+
+  // Requests Drive to resync the office file at |local_path| from the cloud.
+  void ForceReSyncFile(const base::FilePath& local_path,
+                       base::OnceClosure callback);
 
  private:
   enum State {
@@ -253,13 +313,19 @@ class DriveIntegrationService : public KeyedService,
   // then tries to add it back after that delay. If |remount_delay| isn't
   // specified, |failed_to_mount| is true and the user is offline, schedules a
   // retry when the user is online.
-  void MaybeRemountFileSystem(base::Optional<base::TimeDelta> remount_delay,
+  void MaybeRemountFileSystem(absl::optional<base::TimeDelta> remount_delay,
                               bool failed_to_mount);
 
   // Helper function for ClearCacheAndRemountFileSystem() that deletes the cache
-  // folder and remounts Drive.
-  void ClearCacheAndRemountFileSystemAfterUnmount(
+  // folder.
+  void ClearCacheAndRemountFileSystemAfterDelay(
       base::OnceCallback<void(bool)> callback);
+
+  // Helper function for ClearCacheAndRemountFileSystem() that remounts Drive if
+  // necessary.
+  void MaybeRemountFileSystemAfterClearCache(
+      base::OnceCallback<void(bool)> callback,
+      bool success);
 
   // Initializes the object. This function should be called before any
   // other functions.
@@ -281,19 +347,25 @@ class DriveIntegrationService : public KeyedService,
   // Pin all the files in |files_to_pin| with DriveFS.
   void PinFiles(const std::vector<base::FilePath>& files_to_pin);
 
-  // chromeos::PowerManagerClient::Observer overrides:
-  void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;
-  void SuspendDone(base::TimeDelta sleep_duration) override;
-
   void OnGetQuickAccessItems(
       GetQuickAccessItemsCallback callback,
       drive::FileError error,
-      base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
 
   void OnSearchDriveByFileName(
       SearchDriveByFileNameCallback callback,
       drive::FileError error,
-      base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+      absl::optional<std::vector<drivefs::mojom::QueryItemPtr>> items);
+
+  void OnEnableMirroringStatusUpdate(drivefs::mojom::MirrorSyncStatus status);
+
+  void OnDisableMirroringStatusUpdate(drivefs::mojom::MirrorSyncStatus status);
+
+  // Toggle syncing for |path| if the the directory exists.
+  void ToggleSyncForPathIfDirectoryExists(
+      const base::FilePath& path,
+      drivefs::mojom::DriveFs::ToggleSyncForPathCallback callback,
+      bool exists);
 
   friend class DriveIntegrationServiceFactory;
 
@@ -304,6 +376,8 @@ class DriveIntegrationService : public KeyedService,
   bool in_clear_cache_ = false;
   // Custom mount point name that can be injected for testing in constructor.
   std::string mount_point_name_;
+
+  bool mirroring_enabled_ = false;
 
   base::FilePath cache_root_directory_;
   std::unique_ptr<EventLogger> logger_;
@@ -321,20 +395,14 @@ class DriveIntegrationService : public KeyedService,
 
   base::TimeTicks mount_start_;
 
-  ScopedObserver<chromeos::PowerManagerClient,
-                 chromeos::PowerManagerClient::Observer>
-      power_manager_observer_{this};
-
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<DriveIntegrationService> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(DriveIntegrationService);
 };
 
 // Singleton that owns all instances of DriveIntegrationService and
 // associates them with Profiles.
-class DriveIntegrationServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class DriveIntegrationServiceFactory : public ProfileKeyedServiceFactory {
  public:
   // Factory function used by tests.
   using FactoryCallback =
@@ -366,8 +434,6 @@ class DriveIntegrationServiceFactory
   ~DriveIntegrationServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory overrides.
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
 

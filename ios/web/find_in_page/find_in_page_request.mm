@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -152,7 +152,7 @@ int FindInPageRequest::GetCurrentSelectedMatchPageIndex() {
     return -1;
   }
   // Count all matches in frames that come before frame with id
-  // |selected_frame_id|.
+  // `selected_frame_id`.
   int total_match_index = selected_match_index_in_selected_frame_;
   for (auto it = frame_order_.begin(); it != selected_frame_id_; ++it) {
     total_match_index += frame_match_count_[*it];

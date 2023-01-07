@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace payments {
 

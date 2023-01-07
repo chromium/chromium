@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ public class ExportErrorDialogFragment extends DialogFragment {
             detailedDescription.setVisibility(View.GONE);
         }
         return new AlertDialog
-                .Builder(getActivity(), R.style.Theme_Chromium_AlertDialog_NoActionBar)
+                .Builder(getActivity(), R.style.ThemeOverlay_BrowserUI_AlertDialog_NoActionBar)
                 .setView(dialog)
                 .setTitle(R.string.password_settings_export_error_title)
                 .setPositiveButton(mParams.positiveButtonLabelId, mHandler)

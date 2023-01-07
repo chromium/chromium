@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,11 +45,10 @@ LocalMediaStreamAudioSource::LocalMediaStreamAudioSource(
   // channel layout is reported since it will result in an invalid channel
   // count (=0) if only default constructions is used.
   media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                device.input.channel_layout(),
+                                device.input.channel_layout_config(),
                                 device.input.sample_rate(), frames_per_buffer);
   if (device.input.channel_layout() == media::CHANNEL_LAYOUT_DISCRETE) {
     DCHECK_LE(device.input.channels(), 2);
-    params.set_channels_for_discrete(device.input.channels());
   }
   SetFormat(params);
 }
@@ -119,9 +118,14 @@ void LocalMediaStreamAudioSource::Capture(const media::AudioBus* audio_bus,
   DeliverDataToTracks(*audio_bus, audio_capture_time);
 }
 
-void LocalMediaStreamAudioSource::OnCaptureError(const std::string& why) {
-  WebRtcLogMessage("LocalMediaStreamAudioSource::OnCaptureError: " + why);
-  StopSourceOnError(why);
+void LocalMediaStreamAudioSource::OnCaptureError(
+    media::AudioCapturerSource::ErrorCode code,
+    const std::string& why) {
+  WebRtcLogMessage(
+      base::StringPrintf("LocalMediaStreamAudioSource::OnCaptureError: %d, %s",
+                         static_cast<int>(code), why.c_str()));
+
+  StopSourceOnError(code, why);
 }
 
 void LocalMediaStreamAudioSource::OnCaptureMuted(bool is_muted) {
@@ -141,7 +145,7 @@ void LocalMediaStreamAudioSource::ChangeSourceImpl(
 using EchoCancellationType =
     blink::AudioProcessingProperties::EchoCancellationType;
 
-base::Optional<blink::AudioProcessingProperties>
+absl::optional<blink::AudioProcessingProperties>
 LocalMediaStreamAudioSource::GetAudioProcessingProperties() const {
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();

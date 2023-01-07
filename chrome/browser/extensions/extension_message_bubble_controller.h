@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -40,6 +40,10 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   class Delegate {
    public:
     explicit Delegate(Profile* profile);
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
     virtual ~Delegate();
 
     virtual bool ShouldIncludeExtension(const Extension* extension) = 0;
@@ -90,16 +94,8 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
     // Whether to show a list of extensions in the bubble.
     virtual bool ShouldShowExtensionList() const = 0;
 
-    // Returns true if the set of affected extensions should be highlighted in
-    // the toolbar.
-    virtual bool ShouldHighlightExtensions() const = 0;
-
     // Returns true if only enabled extensions should be considered.
     virtual bool ShouldLimitToEnabledExtensions() const = 0;
-
-    // Record, through UMA, how many extensions were found.
-    virtual void LogExtensionCount(size_t count) = 0;
-    virtual void LogAction(BubbleAction action) = 0;
 
     // Returns true if the bubble is informing about a single extension that can
     // be policy-installed.
@@ -122,22 +118,26 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
 
    private:
     // A weak pointer to the profile we are associated with. Not owned by us.
-    Profile* profile_;
+    raw_ptr<Profile> profile_;
 
     // The extension service associated with the profile.
-    ExtensionService* service_;
+    raw_ptr<ExtensionService> service_;
 
     // The extension registry associated with the profile.
-    ExtensionRegistry* registry_;
+    raw_ptr<ExtensionRegistry> registry_;
 
     // Name for corresponding pref that keeps if the info the bubble contains
     // was acknowledged by user.
     std::string acknowledged_pref_name_;
-
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   ExtensionMessageBubbleController(Delegate* delegate, Browser* browser);
+
+  ExtensionMessageBubbleController(const ExtensionMessageBubbleController&) =
+      delete;
+  ExtensionMessageBubbleController& operator=(
+      const ExtensionMessageBubbleController&) = delete;
+
   ~ExtensionMessageBubbleController() override;
 
   Delegate* delegate() const { return delegate_.get(); }
@@ -163,10 +163,6 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
 
   // Whether to close the bubble when it loses focus.
   bool CloseOnDeactivate();
-
-  // Highlights the affected extensions if appropriate. Safe to call multiple
-  // times.
-  void HighlightExtensionsIfNecessary();
 
   // Called when the bubble is actually shown. Because some bubbles are delayed
   // (in order to weather the "focus storm"), they are not shown immediately.
@@ -209,10 +205,10 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   void OnClose();
 
   // A weak pointer to the Browser we are associated with. Not owned by us.
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
   // The associated ToolbarActionsModel. Not owned.
-  ToolbarActionsModel* model_;
+  raw_ptr<ToolbarActionsModel> model_;
 
   // The list of extensions found.
   ExtensionIdList extension_list_;
@@ -226,9 +222,6 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
   // Whether this class has initialized.
   bool initialized_;
 
-  // Whether or not the bubble is highlighting extensions.
-  bool is_highlighting_;
-
   // Whether or not this bubble is the active bubble being shown.
   bool is_active_bubble_;
 
@@ -237,8 +230,6 @@ class ExtensionMessageBubbleController : public BrowserListObserver,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleController);
 };
 
 }  // namespace extensions

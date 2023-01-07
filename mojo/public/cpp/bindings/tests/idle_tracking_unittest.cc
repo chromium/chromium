@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -27,6 +26,9 @@ class TestServiceImpl : public mojom::TestService, public mojom::KeepAlive {
  public:
   explicit TestServiceImpl(PendingReceiver<mojom::TestService> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  TestServiceImpl(const TestServiceImpl&) = delete;
+  TestServiceImpl& operator=(const TestServiceImpl&) = delete;
 
   ~TestServiceImpl() override = default;
 
@@ -58,8 +60,6 @@ class TestServiceImpl : public mojom::TestService, public mojom::KeepAlive {
 
   bool hold_next_ping_pong_ = false;
   base::OnceClosure last_ping_pong_reply_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestServiceImpl);
 };
 
 TEST_P(IdleTrackingTest, ControlMessagesDontExpectAck) {
@@ -191,7 +191,7 @@ TEST_P(IdleTrackingTest, NonZeroTimeout) {
   Remote<mojom::TestService> remote;
   TestServiceImpl impl(remote.BindNewPipeAndPassReceiver());
 
-  constexpr auto kTimeout = base::TimeDelta::FromMilliseconds(500);
+  constexpr auto kTimeout = base::Milliseconds(500);
   base::ElapsedTimer timer;
   base::RunLoop loop;
   remote.set_idle_handler(kTimeout, base::BindLambdaForTesting([&] {

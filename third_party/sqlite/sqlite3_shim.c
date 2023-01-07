@@ -1,8 +1,8 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This is a shim that injects Chrome-specific defitions into sqlite3.c
+// This is a shim that injects Chrome-specific definitions into sqlite3.c
 // BUILD.gn uses this instead of building the sqlite3 amalgamation directly.
 
 // We prefix chrome_ to SQLite's exported symbols, so that we don't clash with

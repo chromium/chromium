@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
@@ -36,7 +36,6 @@ struct GlobalRequestID;
 
 namespace mojom {
 class FrameRenderDataUpdate;
-class PageLoadFeatures;
 class FrameMetadata;
 class PageLoadTiming;
 }  // namespace mojom
@@ -66,6 +65,11 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
       content::WebContents* web_contents,
       content::RenderViewHostTestHarness* rfh_test_harness,
       const RegisterObserversCallback& callback);
+
+  PageLoadMetricsObserverTester(const PageLoadMetricsObserverTester&) = delete;
+  PageLoadMetricsObserverTester& operator=(
+      const PageLoadMetricsObserverTester&) = delete;
+
   ~PageLoadMetricsObserverTester() override;
 
   // Simulates starting a navigation to the given gurl, without committing the
@@ -95,11 +99,15 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   void SimulateInputTimingUpdate(const mojom::InputTiming& input_timing);
   void SimulateInputTimingUpdate(const mojom::InputTiming& input_timing,
                                  content::RenderFrameHost* rfh);
+  void SimulateMobileFriendlinessUpdate(
+      const blink::MobileFriendliness& mobile_friendliness,
+      content::RenderFrameHost* rfh);
   void SimulateTimingAndMetadataUpdate(const mojom::PageLoadTiming& timing,
                                        const mojom::FrameMetadata& metadata);
   void SimulateMetadataUpdate(const mojom::FrameMetadata& metadata,
                               content::RenderFrameHost* rfh);
-  void SimulateFeaturesUpdate(const mojom::PageLoadFeatures& new_features);
+  void SimulateFeaturesUpdate(
+      const std::vector<blink::UseCounterFeature>& new_features);
   void SimulateResourceDataUseUpdate(
       const std::vector<mojom::ResourceDataUpdatePtr>& resources);
   void SimulateResourceDataUseUpdate(
@@ -109,6 +117,7 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
       const mojom::FrameRenderDataUpdate& render_data);
   void SimulateRenderDataUpdate(const mojom::FrameRenderDataUpdate& render_data,
                                 content::RenderFrameHost* render_frame_host);
+  void SimulateSoftNavigationCountUpdate(uint32_t soft_navigation_count);
 
   // Simulates a loaded resource. Main frame resources must specify a
   // GlobalRequestID, using the SimulateLoadedResource() method that takes a
@@ -119,8 +128,8 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   void SimulateLoadedResource(const ExtraRequestCompleteInfo& info,
                               const content::GlobalRequestID& request_id);
 
-  // Simulate the first user interaction for a frame.
-  void SimulateFrameReceivedFirstUserActivation(
+  // Simulate the user interaction for a frame.
+  void SimulateFrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host);
 
   // Simulates a user input.
@@ -131,6 +140,7 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
 
   // Simulate playing a media element.
   void SimulateMediaPlayed();
+  void SimulateMediaPlayed(content::RenderFrameHost* rfh);
 
   // Simulate accessingcookies.
   void SimulateCookieAccess(const content::CookieAccessDetails& details);
@@ -164,24 +174,22 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
   void SimulatePageLoadTimingUpdate(
       const mojom::PageLoadTiming& timing,
       const mojom::FrameMetadata& metadata,
-      const mojom::PageLoadFeatures& new_features,
+      const std::vector<blink::UseCounterFeature>& new_features,
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTiming& cpu_timing,
-      const mojom::DeferredResourceCounts& new_deferred_resource_data,
       const mojom::InputTiming& input_timing,
       const blink::MobileFriendliness& mobile_friendliness,
-      content::RenderFrameHost* rfh);
+      content::RenderFrameHost* rfh,
+      uint32_t soft_navigation_count = 0);
 
   content::WebContents* web_contents() const { return web_contents_; }
 
   RegisterObserversCallback register_callback_;
-  content::WebContents* web_contents_;
-  content::RenderViewHostTestHarness* rfh_test_harness_;
-  MetricsWebContentsObserver* metrics_web_contents_observer_;
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<content::RenderViewHostTestHarness> rfh_test_harness_;
+  raw_ptr<MetricsWebContentsObserver> metrics_web_contents_observer_;
   base::HistogramTester histogram_tester_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageLoadMetricsObserverTester);
 };
 
 }  // namespace page_load_metrics

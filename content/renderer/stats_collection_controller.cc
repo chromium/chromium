@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,12 @@
 #include "base/strings/string_util.h"
 #include "content/common/renderer_host.mojom.h"
 #include "content/renderer/render_thread_impl.h"
-#include "content/renderer/render_view_impl.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "v8/include/v8-context.h"
 
 namespace content {
 

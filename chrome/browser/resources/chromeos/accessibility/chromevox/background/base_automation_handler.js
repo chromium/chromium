@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,28 +6,27 @@
  * @fileoverview Basic facillities to handle events from a single automation
  * node.
  */
+import {CursorRange} from '../../common/cursors/range.js';
+import {ChromeVoxEvent} from '../common/custom_automation_event.js';
+import {EventSourceType} from '../common/event_source_type.js';
 
-goog.provide('BaseAutomationHandler');
+import {ChromeVoxState} from './chromevox_state.js';
+import {EventSourceState} from './event_source.js';
+import {Output} from './output/output.js';
 
-goog.scope(function() {
 const ActionType = chrome.automation.ActionType;
 const AutomationEvent = chrome.automation.AutomationEvent;
 const AutomationNode = chrome.automation.AutomationNode;
 const EventType = chrome.automation.EventType;
 
-BaseAutomationHandler = class {
-  /**
-   * @param {AutomationNode|undefined} node
-   */
+export class BaseAutomationHandler {
+  /** @param {?AutomationNode} node */
   constructor(node) {
-    /**
-     * @type {AutomationNode|undefined}
-     */
+    /** @type {?AutomationNode} */
     this.node_ = node;
 
     /**
-     * @type {!Object<EventType,
-     *     function(!AutomationEvent): void>} @private
+     * @private {!Object<EventType, function(!AutomationEvent)>}
      */
     this.listeners_ = {};
   }
@@ -48,9 +47,7 @@ BaseAutomationHandler = class {
     this.listeners_[eventType] = listener;
   }
 
-  /**
-   * Removes all listeners from this handler.
-   */
+  /** Removes all listeners from this handler. */
   removeAllListeners() {
     for (const eventType in this.listeners_) {
       this.node_.removeEventListener(
@@ -65,13 +62,13 @@ BaseAutomationHandler = class {
    * @private
    */
   makeListener_(callback) {
-    return function(evt) {
+    return evt => {
       if (this.willHandleEvent_(evt)) {
         return;
       }
       callback(evt);
       this.didHandleEvent_(evt);
-    }.bind(this);
+    };
   }
 
   /**
@@ -100,15 +97,18 @@ BaseAutomationHandler = class {
     }
 
     // Decide whether to announce and sync this event.
-    if (!DesktopAutomationHandler.announceActions &&
-        evt.eventFrom === 'action' &&
-        evt.eventFromAction !== ActionType.DO_DEFAULT) {
+    const prevRange = ChromeVoxState.instance.getCurrentRangeWithoutRecovery();
+    if ((prevRange && !prevRange.requiresRecovery()) &&
+        BaseAutomationHandler.disallowEventFromAction(evt)) {
       return;
     }
 
-    const prevRange = ChromeVoxState.instance.getCurrentRangeWithoutRecovery();
+    ChromeVoxState.instance.setCurrentRange(CursorRange.fromNode(node));
 
-    ChromeVoxState.instance.setCurrentRange(cursors.Range.fromNode(node));
+    // Because Closure doesn't know this is non-null.
+    if (!ChromeVoxState.instance.currentRange) {
+      return;
+    }
 
     // Don't output if focused node hasn't changed. Allow focus announcements
     // when interacting via touch. Touch never sets focus without a double tap.
@@ -123,5 +123,22 @@ BaseAutomationHandler = class {
         ChromeVoxState.instance.currentRange, prevRange, evt.type);
     output.go();
   }
-};
-});  // goog.scope
+
+  /**
+   * Returns true if the event contains an action that should not be processed.
+   * @param {!ChromeVoxEvent} evt
+   * @return {boolean}
+   */
+  static disallowEventFromAction(evt) {
+    return !BaseAutomationHandler.announceActions &&
+        evt.eventFrom === 'action' &&
+        evt.eventFromAction !== ActionType.DO_DEFAULT &&
+        evt.eventFromAction !== ActionType.SHOW_CONTEXT_MENU;
+  }
+}
+
+/**
+ * Controls announcement of non-user-initiated events.
+ * @public {boolean}
+ */
+BaseAutomationHandler.announceActions = false;

@@ -1,17 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests JS ignore list for timeline\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   const sessionId = '6.23';
   const rawTraceEvents = [
     {
       'args': {'name': 'Renderer'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 17851,
@@ -20,7 +20,7 @@
     },
     {
       'args': {'name': 'CrRendererMain'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': 17851,
@@ -214,16 +214,16 @@
     }
   }
 
-  Root.Runtime.experiments.enableForTest('blackboxJSFramesOnTimeline');
+  Root.Runtime.experiments.enableForTest('ignoreListJSFramesOnTimeline');
   const dataProvider = new Timeline.TimelineFlameChartDataProvider();
-  dataProvider.setModel(PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
+  dataProvider.setModel(await PerformanceTestRunner.createPerformanceModelWithEvents(rawTraceEvents));
 
   TestRunner.addResult('\nIgnore listed url: lib_script.js');
-  Bindings.ignoreListManager._ignoreListURL('lib_script.js');
+  Bindings.ignoreListManager.ignoreListURL('lib_script.js');
   printTimelineData(dataProvider);
 
   TestRunner.addResult('\nUnignored url: lib_script.js');
-  Bindings.ignoreListManager._unIgnoreListURL('lib_script.js');
+  Bindings.ignoreListManager.unIgnoreListURL('lib_script.js');
   printTimelineData(dataProvider);
   TestRunner.completeTest();
 })();

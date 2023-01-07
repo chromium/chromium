@@ -1,0 +1,11 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^session_saving_scene_agent.h": [
+    "+ios/chrome/browser/ui/main/observing_scene_state_agent.h",
+  ],
+  "^session_saving_scene_agent.mm": [
+    "+ios/chrome/browser/ui/main/browser_interface_provider.h",
+  ],
+
+}
+

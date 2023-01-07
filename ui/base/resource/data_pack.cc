@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "net/filter/gzip_header.h"
 #include "third_party/zlib/google/compression_utils.h"
+#include "ui/base/resource/scoped_file_writer.h"
 
 // For details of the file layout, see
 // http://dev.chromium.org/developers/design-documents/linuxresourcesandlocalizedstrings
@@ -93,76 +94,6 @@ void MaybePrintResourceId(uint16_t resource_id) {
   }
 }
 
-// Convenience class to write data to a file. Usage is the following:
-// 1) Create a new instance, passing a base::FilePath.
-// 2) Call Write() repeatedly to write all desired data to the file.
-// 3) Call valid() whenever you want to know if something failed.
-// 4) The file is closed automatically on destruction. Though it is possible
-//    to call the Close() method before that.
-//
-// If an I/O error happens, a PLOG(ERROR) message will be generated, and
-// a flag will be set in the writer, telling it to ignore future Write()
-// requests. This allows the caller to ignore error handling until the
-// very end, as in:
-//
-//   {
-//     base::ScopedFileWriter  writer(<some-path>);
-//     writer.Write(&foo, sizeof(foo));
-//     writer.Write(&bar, sizeof(bar));
-//     ....
-//     writer.Write(&zoo, sizeof(zoo));
-//     if (!writer.valid()) {
-//        // An error happened.
-//     }
-//   }   // closes the file.
-//
-class ScopedFileWriter {
- public:
-  // Constructor takes a |path| parameter and tries to open the file.
-  // Call valid() to check if the operation was succesful.
-  explicit ScopedFileWriter(const base::FilePath& path)
-      : valid_(true), file_(base::OpenFile(path, "wb")) {
-    if (!file_) {
-      PLOG(ERROR) << "Could not open pak file for writing";
-      valid_ = false;
-    }
-  }
-
-  // Destructor.
-  ~ScopedFileWriter() { Close(); }
-
-  // Return true if the last i/o operation was succesful.
-  bool valid() const { return valid_; }
-
-  // Try to write |data_size| bytes from |data| into the file, if a previous
-  // operation didn't already failed.
-  void Write(const void* data, size_t data_size) {
-    if (valid_ && fwrite(data, data_size, 1, file_) != 1) {
-      PLOG(ERROR) << "Could not write to pak file";
-      valid_ = false;
-    }
-  }
-
-  // Close the file explicitly. Return true if all previous operations
-  // succeeded, including the close, or false otherwise.
-  bool Close() {
-    if (file_) {
-      valid_ = (fclose(file_) == 0);
-      file_ = nullptr;
-      if (!valid_) {
-        PLOG(ERROR) << "Could not close pak file";
-      }
-    }
-    return valid_;
-  }
-
- private:
-  bool valid_ = false;
-  FILE* file_ = nullptr;  // base::ScopedFILE doesn't check errors on close.
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFileWriter);
-};
-
 bool MmapHasGzipHeader(const base::MemoryMappedFile* mmap) {
   net::GZipHeader header;
   const char* header_end = nullptr;
@@ -175,43 +106,43 @@ bool MmapHasGzipHeader(const base::MemoryMappedFile* mmap) {
 
 namespace ui {
 
-#pragma pack(push, 2)
-struct DataPack::Entry {
-  uint16_t resource_id;
-  uint32_t file_offset;
+// static
+int DataPack::Entry::CompareById(const void* void_key, const void* void_entry) {
+  uint16_t key = *reinterpret_cast<const uint16_t*>(void_key);
+  const Entry* entry = reinterpret_cast<const Entry*>(void_entry);
+  return key - entry->resource_id;
+}
 
-  static int CompareById(const void* void_key, const void* void_entry) {
-    uint16_t key = *reinterpret_cast<const uint16_t*>(void_key);
-    const Entry* entry = reinterpret_cast<const Entry*>(void_entry);
-    return key - entry->resource_id;
-  }
-};
+// static
+int DataPack::Alias::CompareById(const void* void_key, const void* void_entry) {
+  uint16_t key = *reinterpret_cast<const uint16_t*>(void_key);
+  const Alias* entry = reinterpret_cast<const Alias*>(void_entry);
+  return key - entry->resource_id;
+}
 
-struct DataPack::Alias {
-  uint16_t resource_id;
-  uint16_t entry_index;
+void DataPack::Iterator::UpdateResourceData() {
+  const Entry* next_entry = entry_ + 1;
+  base::StringPiece data;
+  GetStringPieceFromOffset(entry_->file_offset, next_entry->file_offset,
+                           data_source_, &data);
+  resource_data_ = new ResourceData(entry_->resource_id, data);
+}
 
-  static int CompareById(const void* void_key, const void* void_entry) {
-    uint16_t key = *reinterpret_cast<const uint16_t*>(void_key);
-    const Alias* entry = reinterpret_cast<const Alias*>(void_entry);
-    return key - entry->resource_id;
-  }
-};
-#pragma pack(pop)
+DataPack::Iterator DataPack::begin() const {
+  return Iterator(data_source_->GetData(), &resource_table_[0]);
+}
 
-// Abstraction of a data source (memory mapped file or in-memory buffer).
-class DataPack::DataSource {
- public:
-  virtual ~DataSource() {}
-
-  virtual size_t GetLength() const = 0;
-  virtual const uint8_t* GetData() const = 0;
-};
+DataPack::Iterator DataPack::end() const {
+  return Iterator(data_source_->GetData(), &resource_table_[resource_count_]);
+}
 
 class DataPack::MemoryMappedDataSource : public DataPack::DataSource {
  public:
   explicit MemoryMappedDataSource(std::unique_ptr<base::MemoryMappedFile> mmap)
       : mmap_(std::move(mmap)) {}
+
+  MemoryMappedDataSource(const MemoryMappedDataSource&) = delete;
+  MemoryMappedDataSource& operator=(const MemoryMappedDataSource&) = delete;
 
   ~MemoryMappedDataSource() override {}
 
@@ -221,14 +152,15 @@ class DataPack::MemoryMappedDataSource : public DataPack::DataSource {
 
  private:
   std::unique_ptr<base::MemoryMappedFile> mmap_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryMappedDataSource);
 };
 
 // Takes ownership of a string of uncompressed pack data.
 class DataPack::StringDataSource : public DataPack::DataSource {
  public:
   explicit StringDataSource(std::string&& data) : data_(std::move(data)) {}
+
+  StringDataSource(const StringDataSource&) = delete;
+  StringDataSource& operator=(const StringDataSource&) = delete;
 
   ~StringDataSource() override {}
 
@@ -240,35 +172,33 @@ class DataPack::StringDataSource : public DataPack::DataSource {
 
  private:
   const std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(StringDataSource);
 };
 
 class DataPack::BufferDataSource : public DataPack::DataSource {
  public:
-  explicit BufferDataSource(base::StringPiece buffer) : buffer_(buffer) {}
+  explicit BufferDataSource(base::span<const uint8_t> buffer)
+      : buffer_(buffer) {}
+
+  BufferDataSource(const BufferDataSource&) = delete;
+  BufferDataSource& operator=(const BufferDataSource&) = delete;
 
   ~BufferDataSource() override {}
 
   // DataPack::DataSource:
-  size_t GetLength() const override { return buffer_.length(); }
-  const uint8_t* GetData() const override {
-    return reinterpret_cast<const uint8_t*>(buffer_.data());
-  }
+  size_t GetLength() const override { return buffer_.size(); }
+  const uint8_t* GetData() const override { return buffer_.data(); }
 
  private:
-  base::StringPiece buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferDataSource);
+  base::span<const uint8_t> buffer_;
 };
 
-DataPack::DataPack(ui::ScaleFactor scale_factor)
+DataPack::DataPack(ResourceScaleFactor resource_scale_factor)
     : resource_table_(nullptr),
       resource_count_(0),
       alias_table_(nullptr),
       alias_count_(0),
       text_encoding_type_(BINARY),
-      scale_factor_(scale_factor) {
+      resource_scale_factor_(resource_scale_factor) {
   // Static assert must be within a DataPack member to appease visiblity rules.
   static_assert(sizeof(Entry) == 6, "size of Entry must be 6");
   static_assert(sizeof(Alias) == 4, "size of Alias must be 4");
@@ -277,24 +207,26 @@ DataPack::DataPack(ui::ScaleFactor scale_factor)
 DataPack::~DataPack() {
 }
 
-bool DataPack::LoadFromPath(const base::FilePath& path) {
+// static
+std::unique_ptr<DataPack::DataSource> DataPack::LoadFromPathInternal(
+    const base::FilePath& path) {
   std::unique_ptr<base::MemoryMappedFile> mmap =
       std::make_unique<base::MemoryMappedFile>();
   // Open the file for reading; allowing other consumers to also open it for
   // reading and deleting. Do not allow others to write to it.
   base::File data_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                 base::File::FLAG_EXCLUSIVE_WRITE |
-                                 base::File::FLAG_SHARE_DELETE);
+                                 base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                 base::File::FLAG_WIN_SHARE_DELETE);
   if (!data_file.IsValid()) {
     DLOG(ERROR) << "Failed to open datapack with base::File::Error "
                 << data_file.error_details();
     LogDataPackError(OPEN_FAILED);
-    return false;
+    return nullptr;
   }
   if (!mmap->Initialize(std::move(data_file))) {
     DLOG(ERROR) << "Failed to mmap datapack";
     LogDataPackError(MAP_FAILED);
-    return false;
+    return nullptr;
   }
   if (MmapHasGzipHeader(mmap.get())) {
     base::StringPiece compressed(reinterpret_cast<char*>(mmap->data()),
@@ -303,11 +235,19 @@ bool DataPack::LoadFromPath(const base::FilePath& path) {
     if (!compression::GzipUncompress(compressed, &data)) {
       LOG(ERROR) << "Failed to unzip compressed datapack: " << path;
       LogDataPackError(UNZIP_FAILED);
-      return false;
+      return nullptr;
     }
-    return LoadImpl(std::make_unique<StringDataSource>(std::move(data)));
+    return std::make_unique<StringDataSource>(std::move(data));
   }
-  return LoadImpl(std::make_unique<MemoryMappedDataSource>(std::move(mmap)));
+  return std::make_unique<MemoryMappedDataSource>(std::move(mmap));
+}
+
+bool DataPack::LoadFromPath(const base::FilePath& path) {
+  std::unique_ptr<DataSource> data_source = LoadFromPathInternal(path);
+  if (!data_source)
+    return false;
+
+  return LoadImpl(std::move(data_source));
 }
 
 bool DataPack::LoadFromFile(base::File file) {
@@ -329,8 +269,55 @@ bool DataPack::LoadFromFileRegion(
   return LoadImpl(std::make_unique<MemoryMappedDataSource>(std::move(mmap)));
 }
 
-bool DataPack::LoadFromBuffer(base::StringPiece buffer) {
+bool DataPack::LoadFromBuffer(base::span<const uint8_t> buffer) {
   return LoadImpl(std::make_unique<BufferDataSource>(buffer));
+}
+
+bool DataPack::SanityCheckFileAndRegisterResources(size_t margin_to_skip,
+                                                   const uint8_t* data,
+                                                   size_t data_length) {
+  // 1) Check we have enough entries. There's an extra entry after the last item
+  // which gives the length of the last item.
+  size_t resource_table_size = (resource_count_ + 1) * sizeof(Entry);
+  size_t alias_table_size = alias_count_ * sizeof(Alias);
+  if (margin_to_skip + resource_table_size + alias_table_size > data_length) {
+    // TODO(crbug.com/1315912): Add more information to LOG. Ditto below.
+    LOG(ERROR) << "Data pack file corruption: "
+               << "too short for number of entries. "
+               << "data length is " << data_length
+               << " bytes, expected longer than "
+               << margin_to_skip + resource_table_size + alias_table_size
+               << " bytes.";
+    LogDataPackError(INDEX_TRUNCATED);
+    return false;
+  }
+
+  resource_table_ = reinterpret_cast<const Entry*>(&data[margin_to_skip]);
+  alias_table_ = reinterpret_cast<const Alias*>(
+      &data[margin_to_skip + resource_table_size]);
+
+  // 2) Verify the entries are within the appropriate bounds. There's an extra
+  // entry after the last item which gives us the length of the last item.
+  for (size_t i = 0; i < resource_count_ + 1; ++i) {
+    if (resource_table_[i].file_offset > data_length) {
+      LOG(ERROR) << "Data pack file corruption: "
+                 << "Entry #" << i << " past end.";
+      LogDataPackError(ENTRY_NOT_FOUND);
+      return false;
+    }
+  }
+
+  // 3) Verify the aliases are within the appropriate bounds.
+  for (size_t i = 0; i < alias_count_; ++i) {
+    if (alias_table_[i].entry_index >= resource_count_) {
+      LOG(ERROR) << "Data pack file corruption: "
+                 << "Alias #" << i << " past end.";
+      LogDataPackError(ENTRY_NOT_FOUND);
+      return false;
+    }
+  }
+
+  return true;
 }
 
 bool DataPack::LoadImpl(std::unique_ptr<DataPack::DataSource> data_source) {
@@ -374,41 +361,8 @@ bool DataPack::LoadImpl(std::unique_ptr<DataPack::DataSource> data_source) {
   }
 
   // Sanity check the file.
-  // 1) Check we have enough entries. There's an extra entry after the last item
-  // which gives the length of the last item.
-  size_t resource_table_size = (resource_count_ + 1) * sizeof(Entry);
-  size_t alias_table_size = alias_count_ * sizeof(Alias);
-  if (header_length + resource_table_size + alias_table_size > data_length) {
-    LOG(ERROR) << "Data pack file corruption: "
-               << "too short for number of entries.";
-    LogDataPackError(INDEX_TRUNCATED);
+  if (!SanityCheckFileAndRegisterResources(header_length, data, data_length))
     return false;
-  }
-
-  resource_table_ = reinterpret_cast<const Entry*>(&data[header_length]);
-  alias_table_ = reinterpret_cast<const Alias*>(
-      &data[header_length + resource_table_size]);
-
-  // 2) Verify the entries are within the appropriate bounds. There's an extra
-  // entry after the last item which gives us the length of the last item.
-  for (size_t i = 0; i < resource_count_ + 1; ++i) {
-    if (resource_table_[i].file_offset > data_length) {
-      LOG(ERROR) << "Data pack file corruption: "
-                 << "Entry #" << i << " past end.";
-      LogDataPackError(ENTRY_NOT_FOUND);
-      return false;
-    }
-  }
-
-  // 3) Verify the aliases are within the appropriate bounds.
-  for (size_t i = 0; i < alias_count_; ++i) {
-    if (alias_table_[i].entry_index >= resource_count_) {
-      LOG(ERROR) << "Data pack file corruption: "
-                 << "Alias #" << i << " past end.";
-      LogDataPackError(ENTRY_NOT_FOUND);
-      return false;
-    }
-  }
 
   data_source_ = std::move(data_source);
   return true;
@@ -433,6 +387,16 @@ const DataPack::Entry* DataPack::LookupEntryById(uint16_t resource_id) const {
 
 bool DataPack::HasResource(uint16_t resource_id) const {
   return !!LookupEntryById(resource_id);
+}
+
+// static
+void DataPack::GetStringPieceFromOffset(uint32_t target_offset,
+                                        uint32_t next_offset,
+                                        const uint8_t* data_source,
+                                        base::StringPiece* data) {
+  size_t length = next_offset - target_offset;
+  *data = base::StringPiece(
+      reinterpret_cast<const char*>(data_source + target_offset), length);
 }
 
 bool DataPack::GetStringPiece(uint16_t resource_id,
@@ -463,10 +427,8 @@ bool DataPack::GetStringPiece(uint16_t resource_id,
   }
 
   MaybePrintResourceId(resource_id);
-  size_t length = next_entry->file_offset - target->file_offset;
-  *data = base::StringPiece(reinterpret_cast<const char*>(
-                                data_source_->GetData() + target->file_offset),
-                            length);
+  GetStringPieceFromOffset(target->file_offset, next_entry->file_offset,
+                           data_source_->GetData(), data);
   return true;
 }
 
@@ -483,8 +445,8 @@ ResourceHandle::TextEncodingType DataPack::GetTextEncodingType() const {
   return text_encoding_type_;
 }
 
-ui::ScaleFactor DataPack::GetScaleFactor() const {
-  return scale_factor_;
+ResourceScaleFactor DataPack::GetResourceScaleFactor() const {
+  return resource_scale_factor_;
 }
 
 #if DCHECK_IS_ON()
@@ -492,9 +454,11 @@ void DataPack::CheckForDuplicateResources(
     const std::vector<std::unique_ptr<ResourceHandle>>& packs) {
   for (size_t i = 0; i < resource_count_ + 1; ++i) {
     const uint16_t resource_id = resource_table_[i].resource_id;
-    const float resource_scale = GetScaleForScaleFactor(scale_factor_);
+    const float resource_scale =
+        GetScaleForResourceScaleFactor(resource_scale_factor_);
     for (const auto& handle : packs) {
-      if (GetScaleForScaleFactor(handle->GetScaleFactor()) != resource_scale)
+      if (GetScaleForResourceScaleFactor(handle->GetResourceScaleFactor()) !=
+          resource_scale)
         continue;
       DCHECK(!handle->HasResource(resource_id)) << "Duplicate resource "
                                                 << resource_id << " with scale "
@@ -578,8 +542,8 @@ bool DataPack::WritePack(const base::FilePath& path,
 
   // We place an extra entry after the last item that allows us to read the
   // size of the last item.
-  const uint16_t resource_id = 0;
-  file.Write(&resource_id, sizeof(resource_id));
+  const uint16_t extra_resource_id = 0;
+  file.Write(&extra_resource_id, sizeof(extra_resource_id));
   file.Write(&data_offset, sizeof(data_offset));
 
   // Write the aliases table, if any. Note: |aliases| is an std::map,

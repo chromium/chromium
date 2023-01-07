@@ -1,0 +1,14 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# To run NaCl on CrOS ARM64, we use a nacl_helper binary which gets built for
+# ARM32. is_minimal_toolchain indicates that we are currently building this.
+# This is required because the Chrome OS build makes only a minimal set of ARM32
+# libraries available inside an ARM64 build, which means we need to limit the
+# (indirect) dependencies of nacl_helper.
+# Note that this is different from is_nacl in that we are not actually using a
+# nacl toolchain to compile nacl_helper.
+# See https://crbug.com/1339021 for more details.
+is_minimal_toolchain =
+    target_cpu == "arm64" && current_cpu == "arm" && (is_chromeos || is_linux)

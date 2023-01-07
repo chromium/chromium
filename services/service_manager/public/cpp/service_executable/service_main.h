@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,4 +13,4 @@
 void ServiceMain(
     mojo::PendingReceiver<service_manager::mojom::Service> receiver);
 
-#endif  // SERVICES_SERVICE_MANAGER_PUBLIC_CPP_STANDALONE_SERVICE_SERVICE_MAIN_H_
+#endif  // SERVICES_SERVICE_MANAGER_PUBLIC_CPP_SERVICE_EXECUTABLE_SERVICE_MAIN_H_

@@ -1,14 +1,15 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {MetadataItem} from './metadata_item.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {MetadataItem} from './metadata_item.js';
 
 /**
  * Cache of metadata for a FileEntry.
  */
-/* #export */ class MetadataCacheItem {
+export class MetadataCacheItem {
   constructor() {
     /**
      * Map of property name and MetadataCacheItemProperty.
@@ -164,13 +165,13 @@
 const MetadataCacheItemPropertyState = {
   INVALIDATED: 'invalidated',
   LOADING: 'loading',
-  FULFILLED: 'fulfilled'
+  FULFILLED: 'fulfilled',
 };
 
 /**
  * Cache of metadata for a property.
  */
-/* #export */ class MetadataCacheItemProperty {
+export class MetadataCacheItemProperty {
   constructor() {
     /**
      * Cached value of property.

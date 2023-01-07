@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,8 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/values.h"
 #include "build/build_config.h"
 
 class GURL;
@@ -83,7 +82,7 @@ class AlternativeBrowserDriverImpl : public AlternativeBrowserDriver {
  private:
   using StringType = base::FilePath::StringType;
 
-  const BrowserSwitcherPrefs* const prefs_;
+  const raw_ptr<const BrowserSwitcherPrefs> prefs_;
 };
 
 }  // namespace browser_switcher

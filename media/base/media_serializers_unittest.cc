@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ TEST(MediaSerializersTest, BaseTypes) {
   const char* g = "bar";
 
   ASSERT_EQ(ToString(MediaSerialize(a)), "1");
-  ASSERT_EQ(ToString(MediaSerialize(b)), "2.0");
+  ASSERT_EQ(ToString(MediaSerialize(b)), "0x2");
   ASSERT_EQ(ToString(MediaSerialize(c)), "false");
   ASSERT_EQ(ToString(MediaSerialize(d)), "100.0");
   ASSERT_EQ(ToString(MediaSerialize(e)), "4523.0");
@@ -41,7 +41,7 @@ TEST(MediaSerializersTest, BaseTypes) {
 }
 
 TEST(MediaSerializersTest, Optional) {
-  base::Optional<int> foo;
+  absl::optional<int> foo;
   ASSERT_EQ(ToString(MediaSerialize(foo)), "unset");
 
   foo = 1;

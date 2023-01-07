@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,13 +34,15 @@ class ShellExtensionsClient : public ExtensionsClient {
       const APIPermissionSet& api_permissions) const override;
   bool IsScriptableURL(const GURL& url, std::string* error) const override;
   const GURL& GetWebstoreBaseURL() const override;
+  const GURL& GetNewWebstoreBaseURL() const override;
   const GURL& GetWebstoreUpdateURL() const override;
-  bool IsBlacklistUpdateURL(const GURL& url) const override;
+  bool IsBlocklistUpdateURL(const GURL& url) const override;
 
  private:
   ScriptingAllowlist scripting_allowlist_;
 
   const GURL webstore_base_url_;
+  const GURL new_webstore_base_url_;
   const GURL webstore_update_url_;
 };
 

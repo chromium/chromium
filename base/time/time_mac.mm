@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,48 +20,76 @@
 #include "base/mac/scoped_mach_port.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/time/time_override.h"
 #include "build/build_config.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include <time.h>
 #include "base/ios/ios_util.h"
 #endif
 
 namespace {
 
-#if defined(OS_MAC)
-int64_t MachTimeToMicroseconds(uint64_t mach_time) {
-  static mach_timebase_info_data_t timebase_info;
-  if (timebase_info.denom == 0) {
-    // Zero-initialization of statics guarantees that denom will be 0 before
-    // calling mach_timebase_info.  mach_timebase_info will never set denom to
-    // 0 as that would be invalid, so the zero-check can be used to determine
-    // whether mach_timebase_info has already been called.  This is
-    // recommended by Apple's QA1398.
-    kern_return_t kr = mach_timebase_info(&timebase_info);
+#if BUILDFLAG(IS_MAC)
+// Returns a pointer to the initialized Mach timebase info struct.
+mach_timebase_info_data_t* MachTimebaseInfo() {
+  static mach_timebase_info_data_t timebase_info = []() {
+    mach_timebase_info_data_t info;
+    kern_return_t kr = mach_timebase_info(&info);
     MACH_DCHECK(kr == KERN_SUCCESS, kr) << "mach_timebase_info";
+    DCHECK(info.numer);
+    DCHECK(info.denom);
+    return info;
+  }();
+  return &timebase_info;
+}
+
+int64_t MachTimeToMicroseconds(uint64_t mach_time) {
+  // timebase_info gives us the conversion factor between absolute time tick
+  // units and nanoseconds.
+  mach_timebase_info_data_t* timebase_info = MachTimebaseInfo();
+
+  // Take the fast path when the conversion is 1:1. The result will for sure fit
+  // into an int_64 because we're going from nanoseconds to microseconds.
+  if (timebase_info->numer == timebase_info->denom) {
+    return static_cast<int64_t>(mach_time /
+                                base::Time::kNanosecondsPerMicrosecond);
   }
 
-  // timebase_info converts absolute time tick units into nanoseconds.  Convert
-  // to microseconds up front to stave off overflows.
-  base::CheckedNumeric<uint64_t> result(mach_time /
-                                        base::Time::kNanosecondsPerMicrosecond);
-  result *= timebase_info.numer;
-  result /= timebase_info.denom;
+  uint64_t microseconds = 0;
+  const uint64_t divisor =
+      timebase_info->denom * base::Time::kNanosecondsPerMicrosecond;
+
+  // Microseconds is mach_time * timebase.numer /
+  // (timebase.denom * kNanosecondsPerMicrosecond). Divide first to reduce
+  // the chance of overflow. Also stash the remainder right now, a likely
+  // byproduct of the division.
+  microseconds = mach_time / divisor;
+  const uint64_t mach_time_remainder = mach_time % divisor;
+
+  // Now multiply, keeping an eye out for overflow.
+  CHECK(!__builtin_umulll_overflow(microseconds, timebase_info->numer,
+                                   &microseconds));
+
+  // By dividing first we lose precision. Regain it by adding back the
+  // microseconds from the remainder, with an eye out for overflow.
+  uint64_t least_significant_microseconds =
+      (mach_time_remainder * timebase_info->numer) / divisor;
+  CHECK(!__builtin_uaddll_overflow(microseconds, least_significant_microseconds,
+                                   &microseconds));
 
   // Don't bother with the rollover handling that the Windows version does.
-  // With numer and denom = 1 (the expected case), the 64-bit absolute time
-  // reported in nanoseconds is enough to last nearly 585 years.
-  return base::checked_cast<int64_t>(result.ValueOrDie());
+  // The returned time in microseconds is enough for 292,277 years (starting
+  // from 2^63 because the returned int64_t is signed,
+  // 9223372036854775807 / (1e6 * 60 * 60 * 24 * 365.2425) = 292,277).
+  return base::checked_cast<int64_t>(microseconds);
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // Returns monotonically growing number of ticks in microseconds since some
 // unspecified starting point.
 int64_t ComputeCurrentTicks() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // iOS 10 supports clock_gettime(CLOCK_MONOTONIC, ...), which is
   // around 15 times faster than sysctl() call. Use it if possible;
   // otherwise, fall back to sysctl().
@@ -79,19 +107,18 @@ int64_t ComputeCurrentTicks() {
   struct timeval boottime;
   int mib[2] = {CTL_KERN, KERN_BOOTTIME};
   size_t size = sizeof(boottime);
-  int kr = sysctl(mib, base::size(mib), &boottime, &size, nullptr, 0);
+  int kr = sysctl(mib, std::size(mib), &boottime, &size, nullptr, 0);
   DCHECK_EQ(KERN_SUCCESS, kr);
-  base::TimeDelta time_difference =
-      base::subtle::TimeNowIgnoringOverride() -
-      (base::Time::FromTimeT(boottime.tv_sec) +
-       base::TimeDelta::FromMicroseconds(boottime.tv_usec));
+  base::TimeDelta time_difference = base::subtle::TimeNowIgnoringOverride() -
+                                    (base::Time::FromTimeT(boottime.tv_sec) +
+                                     base::Microseconds(boottime.tv_usec));
   return time_difference.InMicroseconds();
 #else
   // mach_absolute_time is it when it comes to ticks on the Mac.  Other calls
   // with less precision (such as TickCount) just call through to
   // mach_absolute_time.
   return MachTimeToMicroseconds(mach_absolute_time());
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 static inline bool MaybeRecordingOrReplaying() {
@@ -99,7 +126,7 @@ static inline bool MaybeRecordingOrReplaying() {
 }
 
 int64_t ComputeThreadTicks() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   NOTREACHED();
   return 0;
 #else
@@ -131,7 +158,7 @@ int64_t ComputeThreadTicks() {
   absolute_micros += (thread_info_data.user_time.microseconds +
                       thread_info_data.system_time.microseconds);
   return absolute_micros.ValueOrDie();
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 }  // namespace
@@ -165,8 +192,8 @@ Time Time::FromCFAbsoluteTime(CFAbsoluteTime t) {
     return Time();  // Consider 0 as a null Time.
   return (t == std::numeric_limits<CFAbsoluteTime>::infinity())
              ? Max()
-             : (UnixEpoch() + TimeDelta::FromSecondsD(double{
-                                  t + kCFAbsoluteTimeIntervalSince1970}));
+             : (UnixEpoch() +
+                Seconds(double{t + kCFAbsoluteTimeIntervalSince1970}));
 }
 
 CFAbsoluteTime Time::ToCFAbsoluteTime() const {
@@ -191,18 +218,18 @@ NSDate* Time::ToNSDate() const {
 
 // TimeDelta ------------------------------------------------------------------
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // static
 TimeDelta TimeDelta::FromMachTime(uint64_t mach_time) {
-  return TimeDelta::FromMicroseconds(MachTimeToMicroseconds(mach_time));
+  return Microseconds(MachTimeToMicroseconds(mach_time));
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // TimeTicks ------------------------------------------------------------------
 
 namespace subtle {
 TimeTicks TimeTicksNowIgnoringOverride() {
-  return TimeTicks() + TimeDelta::FromMicroseconds(ComputeCurrentTicks());
+  return TimeTicks() + Microseconds(ComputeCurrentTicks());
 }
 }  // namespace subtle
 
@@ -216,27 +243,38 @@ bool TimeTicks::IsConsistentAcrossProcesses() {
   return true;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // static
 TimeTicks TimeTicks::FromMachAbsoluteTime(uint64_t mach_absolute_time) {
   return TimeTicks(MachTimeToMicroseconds(mach_absolute_time));
 }
-#endif  // defined(OS_MAC)
+
+// static
+mach_timebase_info_data_t TimeTicks::SetMachTimebaseInfoForTesting(
+    mach_timebase_info_data_t timebase) {
+  mach_timebase_info_data_t orig_timebase = *MachTimebaseInfo();
+
+  *MachTimebaseInfo() = timebase;
+
+  return orig_timebase;
+}
+
+#endif  // BUILDFLAG(IS_MAC)
 
 // static
 TimeTicks::Clock TimeTicks::GetClock() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return Clock::IOS_CF_ABSOLUTE_TIME_MINUS_KERN_BOOTTIME;
 #else
   return Clock::MAC_MACH_ABSOLUTE_TIME;
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 // ThreadTicks ----------------------------------------------------------------
 
 namespace subtle {
 ThreadTicks ThreadTicksNowIgnoringOverride() {
-  return ThreadTicks() + TimeDelta::FromMicroseconds(ComputeThreadTicks());
+  return ThreadTicks() + Microseconds(ComputeThreadTicks());
 }
 }  // namespace subtle
 

@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/feedstore_util.h"
 
 #include <string>
+#include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/test/test_util.h"
@@ -13,7 +14,7 @@
 namespace feedstore {
 namespace {
 base::Time kTestTimeEpoch = base::Time::UnixEpoch();
-const base::Time kExpiryTime1 = kTestTimeEpoch + base::TimeDelta::FromHours(2);
+const base::Time kExpiryTime1 = kTestTimeEpoch + base::Hours(2);
 
 const std::string Token1() {
   return "token1";
@@ -40,23 +41,24 @@ TEST(feedstore_util_test, MaybeUpdateSessionId) {
   SetSessionId(metadata, Token1(), kExpiryTime1);
 
   // Updating the token with nullopt is a NOP.
-  EXPECT_FALSE(MaybeUpdateSessionId(metadata, base::nullopt));
+  MaybeUpdateSessionId(metadata, absl::nullopt);
+  EXPECT_EQ(Token1(), metadata.session_id().token());
 
   // Updating the token with the same value is a NOP.
-  EXPECT_FALSE(MaybeUpdateSessionId(metadata, Token1()));
+  MaybeUpdateSessionId(metadata, Token1());
+  EXPECT_EQ(Token1(), metadata.session_id().token());
 
   // Updating the token with a different value resets the token and assigns a
   // new expiry time.
-  base::Optional<Metadata> metadata2 = MaybeUpdateSessionId(metadata, Token2());
-  ASSERT_TRUE(metadata2);
-  EXPECT_EQ(Token2(), metadata2->session_id().token());
+  MaybeUpdateSessionId(metadata, Token2());
+  EXPECT_EQ(Token2(), metadata.session_id().token());
   EXPECT_TIME_EQ(base::Time::Now() + feed::GetFeedConfig().session_id_max_age,
-                 GetSessionIdExpiryTime(*metadata2));
+                 GetSessionIdExpiryTime(metadata));
 
   // Updating the token with the empty string clears its value.
-  base::Optional<Metadata> metadata3 = MaybeUpdateSessionId(*metadata2, "");
-  EXPECT_TRUE(metadata3->session_id().token().empty());
-  EXPECT_TRUE(GetSessionIdExpiryTime(*metadata3).is_null());
+  MaybeUpdateSessionId(metadata, "");
+  EXPECT_TRUE(metadata.session_id().token().empty());
+  EXPECT_TRUE(GetSessionIdExpiryTime(metadata).is_null());
 }
 
 TEST(feedstore_util_test, GetNextActionId) {
@@ -64,6 +66,28 @@ TEST(feedstore_util_test, GetNextActionId) {
 
   EXPECT_EQ(feed::LocalActionId(1), GetNextActionId(metadata));
   EXPECT_EQ(feed::LocalActionId(2), GetNextActionId(metadata));
+}
+
+using feed::StreamKind;
+using feed::StreamType;
+TEST(feedstore_util_test, StreamTypeFromKey) {
+  StreamType for_you = StreamType(StreamKind::kForYou);
+  StreamType following = StreamType(StreamKind::kFollowing);
+  StreamType channel = StreamType(StreamKind::kChannel);
+  StreamType channel_a = StreamType(StreamKind::kChannel, "A");
+  StreamType unknown = StreamType();
+
+  EXPECT_EQ(StreamKey(for_you), kForYouStreamKey);
+  EXPECT_EQ(StreamKey(following), kFollowStreamKey);
+  EXPECT_DCHECK_DEATH(StreamKey(unknown));
+
+  EXPECT_TRUE(StreamTypeFromKey(StreamKey(channel)).IsChannelFeed());
+  EXPECT_TRUE(StreamTypeFromKey(StreamKey(channel_a)).IsChannelFeed());
+
+  EXPECT_EQ(StreamTypeFromKey(StreamKey(channel_a)).GetWebFeedId(), "A");
+
+  EXPECT_TRUE(StreamTypeFromKey(StreamKey(following)).IsWebFeed());
+  EXPECT_TRUE(StreamTypeFromKey(StreamKey(for_you)).IsForYou());
 }
 
 }  // namespace

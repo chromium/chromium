@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "components/performance_manager/freezing/freezing_vote_aggregator.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -128,7 +128,7 @@ class FreezingVoteTokenPMRegistry
 
   VotingChannelsMap voting_channels_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  Graph* graph_ GUARDED_BY_CONTEXT(sequence_checker_);
+  raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -189,7 +189,7 @@ void FreezingVoteTokenPMRegistry::RegisterVoteForWebContents(
                 FreezingVoteTokenPMRegistry::GetOrCreateInstance(graph);
             registry->RegisterVoteOnPMSequence(page_node, vote, token);
           },
-          PerformanceManager::GetPageNodeForWebContents(contents),
+          PerformanceManager::GetPrimaryPageNodeForWebContents(contents),
           FreezingVote(vote_value, vote_reason), token));
 }
 
@@ -205,7 +205,7 @@ void FreezingVoteTokenPMRegistry::UnregisterVote(FreezingVoteTokenImpl* token) {
                 FreezingVoteTokenPMRegistry::GetOrCreateInstance(graph);
             registry->UnregisterVoteOnPMSequence(token);
           },
-          token));
+          base::UnsafeDanglingUntriaged(token)));
 }
 
 void FreezingVoteTokenPMRegistry::RegisterVoteOnPMSequence(

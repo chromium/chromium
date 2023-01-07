@@ -69,9 +69,8 @@ function getImageSetting(canvasColorSettings) {
 }
 
 function checkImageDataSettings(expectedColorSetting, imageData) {
-  var imageDataSettings = imageData.getSettings();
   assert_equals(expectedColorSetting.colorSpace,
-                imageDataSettings.colorSpace);
+                imageData.colorSpace);
   // According to the proposal for canvas color management
   // (github.com/WICG/canvas-color-space/blob/master/CanvasColorSpaceProposal.md),
   // pixelFormat can be "uint8", "10-10-10-2", "12-12-12-12", or "float16".
@@ -79,7 +78,7 @@ function checkImageDataSettings(expectedColorSetting, imageData) {
   // "float16", which are mapped to "uint8" and "float32" storage formats for
   // ImageData, respectively.
   assert_equals(expectedColorSetting.storageFormat,
-                imageDataSettings.storageFormat);
+                imageData.storageFormat);
 }
 
 function checkImageDataColorValues(canvasColorSettings, imageData, isBlank = '',

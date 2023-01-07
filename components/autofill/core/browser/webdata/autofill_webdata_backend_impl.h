@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/observer_list.h"
@@ -32,6 +31,7 @@ namespace autofill {
 class AutofillProfile;
 class AutofillWebDataServiceObserverOnDBSequence;
 class CreditCard;
+class IBAN;
 
 // Backend implementation for the AutofillWebDataService. This class runs on the
 // DB sequence, as it handles reads and writes to the WebDatabase, and functions
@@ -57,6 +57,10 @@ class AutofillWebDataBackendImpl
       const base::RepeatingClosure& on_address_conversion_completed_callback,
       const base::RepeatingCallback<void(syncer::ModelType)>&
           on_sync_started_callback);
+
+  AutofillWebDataBackendImpl(const AutofillWebDataBackendImpl&) = delete;
+  AutofillWebDataBackendImpl& operator=(const AutofillWebDataBackendImpl&) =
+      delete;
 
   void SetAutofillProfileChangedCallback(
       base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
@@ -152,7 +156,7 @@ class AutofillWebDataBackendImpl
 
   // Updates Autofill entries in the web database.
   WebDatabase::State UpdateAutofillEntries(
-      const std::vector<autofill::AutofillEntry>& autofill_entries,
+      const std::vector<AutofillEntry>& autofill_entries,
       WebDatabase* db);
 
   // Adds a credit card to the web database. Valid only for local cards.
@@ -173,6 +177,18 @@ class AutofillWebDataBackendImpl
   // Returns a vector of local/server credit cards from the web database.
   std::unique_ptr<WDTypedResult> GetCreditCards(WebDatabase* db);
   std::unique_ptr<WDTypedResult> GetServerCreditCards(WebDatabase* db);
+
+  // Returns a vector of local IBANs from the web database.
+  std::unique_ptr<WDTypedResult> GetIBANs(WebDatabase* db);
+
+  // Adds an IBAN to the web database. Valid only for local IBANs.
+  WebDatabase::State AddIBAN(const IBAN& iban, WebDatabase* db);
+
+  // Updates an IBAN in the web database. Valid only for local IBANs.
+  WebDatabase::State UpdateIBAN(const IBAN& iban, WebDatabase* db);
+
+  // Removes an IBAN from the web database. Valid only for local IBANs.
+  WebDatabase::State RemoveIBAN(const std::string& guid, WebDatabase* db);
 
   // Server credit cards can be masked (only last 4 digits stored) or unmasked
   // (all data stored). These toggle between the two states.
@@ -199,7 +215,7 @@ class AutofillWebDataBackendImpl
   std::unique_ptr<WDTypedResult> GetCreditCardCloudTokenData(WebDatabase* db);
 
   // Returns Credit Card Offers Data from the database.
-  std::unique_ptr<WDTypedResult> GetCreditCardOffers(WebDatabase* db);
+  std::unique_ptr<WDTypedResult> GetAutofillOffers(WebDatabase* db);
 
   WebDatabase::State ClearAllServerData(WebDatabase* db);
   WebDatabase::State ClearAllLocalData(WebDatabase* db);
@@ -236,10 +252,12 @@ class AutofillWebDataBackendImpl
   class SupportsUserDataAggregatable : public base::SupportsUserData {
    public:
     SupportsUserDataAggregatable() {}
-    ~SupportsUserDataAggregatable() override {}
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SupportsUserDataAggregatable);
+    SupportsUserDataAggregatable(const SupportsUserDataAggregatable&) = delete;
+    SupportsUserDataAggregatable& operator=(
+        const SupportsUserDataAggregatable&) = delete;
+
+    ~SupportsUserDataAggregatable() override {}
   };
 
   // The task runner that this class uses for its UI tasks.
@@ -260,11 +278,8 @@ class AutofillWebDataBackendImpl
   base::RepeatingClosure on_changed_callback_;
   base::RepeatingClosure on_address_conversion_completed_callback_;
   base::RepeatingCallback<void(syncer::ModelType)> on_sync_started_callback_;
-
   base::RepeatingCallback<void(const AutofillProfileDeepChange&)>
       on_autofill_profile_changed_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillWebDataBackendImpl);
 };
 
 }  // namespace autofill

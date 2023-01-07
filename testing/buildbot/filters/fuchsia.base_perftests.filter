@@ -1,4 +1,0 @@
-# Fuchsia OOM bug crbug.com/851698
--MessageLoopPerfTest.PostTaskRate/1_Posting_Thread
-# crbug.com/848499
--WaitableEventPerfTest.Throughput

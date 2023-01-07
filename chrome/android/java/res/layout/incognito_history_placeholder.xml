@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@macro/default_bg_color">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/menu_history"
+            android:textAppearance="@style/TextAppearance.Headline"/>
+
+        <org.chromium.ui.widget.ChromeImageButton
+            android:id="@+id/close_history_placeholder_button"
+            android:layout_height="56dp"
+            android:layout_width="56dp"
+            android:src="@drawable/btn_close"
+            android:contentDescription="@string/close"
+            android:background="?attr/selectableItemBackground"
+            app:tint="@color/default_icon_color_tint_list"
+            style="@style/ToolbarButton"/>
+
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
+
+            <org.chromium.ui.widget.ChromeImageView
+                android:id="@+id/incognito_history_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/incognito_history_placeholder_image"
+                tools:ignore="ContentDescription"/>
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_horizontal"
+                android:textAppearance="@style/TextAppearance.Headline"
+                android:text="@string/incognito_history_placeholder_title"
+                app:leading="@dimen/text_size_large_leading" />
+
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="center_horizontal"
+                android:textAppearance="@style/TextAppearance.TextMedium"
+                android:text="@string/incognito_history_placeholder_description"
+                app:leading="@dimen/text_size_medium_leading" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

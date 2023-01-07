@@ -1,33 +1,37 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ContentMetadataProvider} from './content_metadata_provider.m.js';
-// #import {ExternalMetadataProvider} from './external_metadata_provider.m.js';
-// #import {FileSystemMetadataProvider} from './file_system_metadata_provider.m.js';
-// #import {MetadataItem} from './metadata_item.m.js';
-// #import {MetadataProvider} from './metadata_provider.m.js';
-// #import {MetadataRequest} from './metadata_request.m.js';
-// #import * as wrappedVolumeManagerCommon from '../../../common/js/volume_manager_types.m.js'; const {VolumeManagerCommon} = wrappedVolumeManagerCommon;
-// #import {VolumeManager} from '../../../externs/volume_manager.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// clang-format on
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {util} from '../../../common/js/util.js';
+import {VolumeManagerCommon} from '../../../common/js/volume_manager_types.js';
+import {VolumeManager} from '../../../externs/volume_manager.js';
+
+import {ContentMetadataProvider} from './content_metadata_provider.js';
+import {DlpMetadataProvider} from './dlp_metadata_provider.js';
+import {ExternalMetadataProvider} from './external_metadata_provider.js';
+import {FileSystemMetadataProvider} from './file_system_metadata_provider.js';
+import {MetadataItem} from './metadata_item.js';
+import {MetadataProvider} from './metadata_provider.js';
+import {MetadataRequest} from './metadata_request.js';
 
 /** @final */
-/* #export */ class MultiMetadataProvider extends MetadataProvider {
+export class MultiMetadataProvider extends MetadataProvider {
   /**
    * @param {!FileSystemMetadataProvider} fileSystemMetadataProvider
    * @param {!ExternalMetadataProvider} externalMetadataProvider
    * @param {!ContentMetadataProvider} contentMetadataProvider
+   * @param {!DlpMetadataProvider} dlpMetadataProvider
    * @param {!VolumeManager} volumeManager
    */
   constructor(
       fileSystemMetadataProvider, externalMetadataProvider,
-      contentMetadataProvider, volumeManager) {
+      contentMetadataProvider, dlpMetadataProvider, volumeManager) {
     super(FileSystemMetadataProvider.PROPERTY_NAMES
               .concat(ExternalMetadataProvider.PROPERTY_NAMES)
-              .concat(ContentMetadataProvider.PROPERTY_NAMES));
+              .concat(ContentMetadataProvider.PROPERTY_NAMES)
+              .concat(DlpMetadataProvider.PROPERTY_NAMES));
 
     /** @private @const {!FileSystemMetadataProvider} */
     this.fileSystemMetadataProvider_ = fileSystemMetadataProvider;
@@ -37,6 +41,9 @@
 
     /** @private @const {!ContentMetadataProvider} */
     this.contentMetadataProvider_ = contentMetadataProvider;
+
+    /** @private @const {!DlpMetadataProvider} */
+    this.dlpMetadataProvider_ = dlpMetadataProvider;
 
     /** @private @const {!VolumeManager} */
     this.volumeManager_ = volumeManager;
@@ -52,12 +59,14 @@
     const externalRequests = [];
     const contentRequests = [];
     const fallbackContentRequests = [];
+    const dlpRequests = [];
     requests.forEach(request => {
       // Group property names.
       const fileSystemPropertyNames = [];
       const externalPropertyNames = [];
       const contentPropertyNames = [];
       const fallbackContentPropertyNames = [];
+      const dlpPropertyNames = [];
       for (let i = 0; i < request.names.length; i++) {
         const name = request.names[i];
         const isFileSystemProperty =
@@ -66,7 +75,11 @@
             ExternalMetadataProvider.PROPERTY_NAMES.indexOf(name) !== -1;
         const isContentProperty =
             ContentMetadataProvider.PROPERTY_NAMES.indexOf(name) !== -1;
-        assert(isFileSystemProperty || isExternalProperty || isContentProperty);
+        const isDlpProperty =
+            DlpMetadataProvider.PROPERTY_NAMES.indexOf(name) !== -1;
+        assert(
+            isFileSystemProperty || isExternalProperty || isContentProperty ||
+            isDlpProperty);
         assert(!(isFileSystemProperty && isContentProperty));
         // If the property can be obtained both from ExternalProvider and from
         // ContentProvider, we can obtain the property from ExternalProvider
@@ -87,6 +100,9 @@
         if (isContentProperty) {
           contentPropertyNames.push(name);
         }
+        if (isDlpProperty) {
+          dlpPropertyNames.push(name);
+        }
       }
       const volumeInfo = this.volumeManager_.getVolumeInfo(request.entry);
       const addRequests = (list, names) => {
@@ -94,7 +110,7 @@
           list.push(new MetadataRequest(request.entry, names));
         }
       };
-      if (volumeInfo &&
+      if (volumeInfo && !util.isTrashEntry(request.entry) &&
           (volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DRIVE ||
            volumeInfo.volumeType === VolumeManagerCommon.VolumeType.PROVIDED)) {
         // Because properties can be out of sync just after sync completion
@@ -127,6 +143,7 @@
             contentRequests,
             contentPropertyNames.concat(fallbackContentPropertyNames));
       }
+      addRequests(dlpRequests, dlpPropertyNames);
     });
 
     const get = (provider, inRequests) => {
@@ -155,6 +172,7 @@
             return dirtyMap[request.entry.toURL()];
           }));
     });
+    const dlpPromise = get(this.dlpMetadataProvider_, dlpRequests);
 
     // Merge results.
     return Promise
@@ -163,6 +181,7 @@
           externalPromise,
           contentPromise,
           fallbackContentPromise,
+          dlpPromise,
         ])
         .then(resultsList => {
           const integratedResults = {};

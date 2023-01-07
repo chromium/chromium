@@ -1,9 +1,10 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
@@ -11,38 +12,59 @@ source_set("color_headers") {
   sources = [
     "color_id.h",
     "color_id_macros.inc",
+    "color_id_map_macros.inc",
     "color_mixer.h",
     "color_provider.h",
     "color_provider_manager.h",
     "color_provider_utils.h",
-    "color_set.h",
+    "system_theme.h",
   ]
 
   public_deps = [
-    "//base:base",
-    "//skia:skia",
+    ":mojom",
+    "//base",
+    "//skia",
+    "//ui/gfx:color_utils",
   ]
+}
+
+component("color_switches") {
+  sources = [
+    "color_switches.cc",
+    "color_switches.h",
+  ]
+
+  defines = [ "IS_COLOR_SWITCHES_IMPL" ]
+
+  public_deps = [ "//base" ]
 }
 
 component("color") {
   sources = [
     "color_mixer.cc",
     "color_provider.cc",
+    "color_provider_source.cc",
+    "color_provider_source.h",
+    "color_provider_source_observer.cc",
+    "color_provider_source_observer.h",
     "color_provider_utils.cc",
     "color_provider_utils.h",
     "color_recipe.cc",
     "color_recipe.h",
-    "color_set.cc",
     "color_transform.cc",
     "color_transform.h",
+    "temp_palette.cc",
+    "temp_palette.h",
   ]
+
+  configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
 
   defines = [ "IS_COLOR_IMPL" ]
 
   public_deps = [
     ":color_headers",
-    "//base:base",
-    "//skia:skia",
+    "//base",
+    "//skia",
     "//ui/gfx:color_utils",
   ]
 
@@ -56,15 +78,24 @@ component("color") {
   }
 }
 
+source_set("test_support") {
+  testonly = true
+
+  sources = [ "color_test_ids.h" ]
+
+  deps = [ ":color_headers" ]
+}
+
 test("color_unittests") {
   testonly = true
 
   sources = [
     "color_mixer_unittest.cc",
     "color_provider_manager_unittest.cc",
+    "color_provider_source_observer_unittest.cc",
     "color_provider_unittest.cc",
+    "color_provider_utils_unittest.cc",
     "color_recipe_unittest.cc",
-    "color_test_ids.h",
     "color_transform_unittest.cc",
     "run_all_unittests.cc",
   ]
@@ -72,18 +103,49 @@ test("color_unittests") {
   deps = [
     ":color",
     ":mixers",
+    ":test_support",
     "//base/test:test_support",
     "//testing/gtest",
   ]
 }
 
+if (is_win) {
+  component("accent_color_observer") {
+    sources = [
+      "win/accent_color_observer.cc",
+      "win/accent_color_observer.h",
+    ]
+
+    defines = [ "IS_COLOR_IMPL" ]
+
+    public_deps = [
+      "//base",
+      "//third_party/abseil-cpp:absl",
+    ]
+
+    deps = [
+      "//skia",
+      "//ui/gfx:color_utils",
+    ]
+  }
+}
+
 component("mixers") {
   sources = [
+    "color_mixers.cc",
     "color_mixers.h",
     "color_provider_manager.cc",
     "color_provider_manager.h",
     "core_default_color_mixer.cc",
+    "core_default_color_mixer.h",
+    "native_color_mixers.cc",
+    "native_color_mixers.h",
+    "ref_color_mixer.cc",
+    "ref_color_mixer.h",
+    "sys_color_mixer.cc",
+    "sys_color_mixer.h",
     "ui_color_mixer.cc",
+    "ui_color_mixer.h",
   ]
 
   defines = [ "IS_COLOR_IMPL" ]
@@ -97,22 +159,24 @@ component("mixers") {
 
   public_deps = [ "//base" ]
 
-  if (is_chromeos_ash) {
-    sources += [ "cros/native_color_mixers.cc" ]
-  } else if (is_fuchsia) {
-    sources += [ "fuchsia/native_color_mixers.cc" ]
-  } else if (is_linux || is_chromeos) {
-    sources += [ "linux/native_color_mixers.cc" ]
+  if (is_chromeos) {
+    sources += [ "chromeos/native_color_mixers_chromeos.cc" ]
   } else if (is_mac) {
     frameworks = [ "AppKit.framework" ]
     sources += [
-      "mac/native_color_mixers.mm",
+      "mac/native_color_mixers_mac.mm",
       "mac/scoped_current_nsappearance.h",
       "mac/scoped_current_nsappearance.mm",
     ]
-  } else if (is_ios) {
-    sources += [ "ios/native_color_mixers.mm" ]
   } else if (is_win) {
-    sources += [ "win/native_color_mixers.cc" ]
+    sources += [ "win/native_color_mixers_win.cc" ]
+    deps += [
+      ":accent_color_observer",
+      ":color_switches",
+    ]
   }
+}
+
+mojom("mojom") {
+  sources = [ "color_id.mojom" ]
 }

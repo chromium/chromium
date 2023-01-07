@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/wm/core/transient_window_controller.h"
 
+#include "base/observer_list.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/wm/core/transient_window_manager.h"
 

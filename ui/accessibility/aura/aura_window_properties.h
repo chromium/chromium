@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,11 +16,17 @@ namespace ui {
 // Value is a serialized |ui::AXTreeID| because code in //ui/aura/mus needs
 // to serialize the window property, but //ui/aura cannot depend on
 // //ui/accessibility and hence cannot know about the type ui::AXTreeID.
-// TODO(dmazzoni): Convert from string to base::UnguessableToken.
+// (Note: it would probably be better if this was a base::UnguessableToken
+// instead of a std::string.)
 AX_EXPORT extern const aura::WindowProperty<std::string*>* const kChildAXTreeID;
 
 AX_EXPORT extern const aura::WindowProperty<ax::mojom::Role>* const
     kAXRoleOverride;
+
+// Whether to force a window to be invisible with its children ignored. Used
+// to hide the non-lock screen contents when the lock screen is shown.
+AX_EXPORT extern const aura::WindowProperty<bool>* const
+    kAXConsiderInvisibleAndIgnoreChildren;
 
 }  // namespace ui
 

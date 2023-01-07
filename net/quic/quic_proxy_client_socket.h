@@ -1,4 +1,4 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/proxy_server.h"
 #include "net/http/proxy_client_socket.h"
@@ -22,7 +23,7 @@ namespace net {
 class HttpAuthController;
 class ProxyDelegate;
 
-// QuicProxyClientSocket provides a socket interface to an underlying
+// QuicProxyClientSocket tunnels a stream socket over an underlying
 // QuicChromiumClientStream. Bytes written to/read from a QuicProxyClientSocket
 // are sent/received via STREAM frames in the underlying QUIC stream.
 class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
@@ -37,8 +38,11 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
       const std::string& user_agent,
       const HostPortPair& endpoint,
       const NetLogWithSource& net_log,
-      HttpAuthController* auth_controller,
+      scoped_refptr<HttpAuthController> auth_controller,
       ProxyDelegate* proxy_delegate);
+
+  QuicProxyClientSocket(const QuicProxyClientSocket&) = delete;
+  QuicProxyClientSocket& operator=(const QuicProxyClientSocket&) = delete;
 
   // On destruction Disconnect() is called.
   ~QuicProxyClientSocket() override;
@@ -47,8 +51,6 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   const HttpResponseInfo* GetConnectResponseInfo() const override;
   const scoped_refptr<HttpAuthController>& GetAuthController() const override;
   int RestartWithAuth(CompletionOnceCallback callback) override;
-  bool IsUsingSpdy() const override;
-  NextProto GetProxyNegotiatedProtocol() const override;
   void SetStreamPriority(RequestPriority priority) override;
 
   // StreamSocket implementation.
@@ -61,9 +63,6 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   bool WasAlpnNegotiated() const override;
   NextProto GetNegotiatedProtocol() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
-  void GetConnectionAttempts(ConnectionAttempts* out) const override;
-  void ClearConnectionAttempts() override {}
-  void AddConnectionAttempts(const ConnectionAttempts& attempts) override {}
   int64_t GetTotalReceivedBytes() const override;
   void ApplySocketTag(const SocketTag& tag) override;
 
@@ -108,7 +107,7 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   int DoReadReply();
   int DoReadReplyComplete(int result);
 
-  State next_state_;
+  State next_state_ = STATE_DISCONNECTED;
 
   // Handle to the QUIC Stream that this sits on top of.
   std::unique_ptr<QuicChromiumClientStream::Handle> stream_;
@@ -121,11 +120,11 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   // Stores the callback for Read().
   CompletionOnceCallback read_callback_;
   // Stores the read buffer pointer for Read().
-  IOBuffer* read_buf_;
+  raw_ptr<IOBuffer> read_buf_ = nullptr;
   // Stores the callback for Write().
   CompletionOnceCallback write_callback_;
   // Stores the write buffer length for Write().
-  int write_buf_len_;
+  int write_buf_len_ = 0;
 
   // CONNECT request and response.
   HttpRequestInfo request_;
@@ -141,7 +140,7 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   const ProxyServer proxy_server_;
 
   // This delegate must outlive this proxy client socket.
-  ProxyDelegate* const proxy_delegate_;
+  const raw_ptr<ProxyDelegate> proxy_delegate_;
 
   std::string user_agent_;
 
@@ -149,8 +148,6 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
 
   // The default weak pointer factory.
   base::WeakPtrFactory<QuicProxyClientSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicProxyClientSocket);
 };
 
 }  // namespace net

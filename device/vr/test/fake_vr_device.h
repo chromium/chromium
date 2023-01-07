@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef DEVICE_VR_TEST_FAKE_VR_DEVICE_H_
 #define DEVICE_VR_TEST_FAKE_VR_DEVICE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/vr_device_base.h"
@@ -18,6 +17,10 @@ class DEVICE_VR_EXPORT FakeVRDevice : public VRDeviceBase,
                                       public mojom::XRSessionController {
  public:
   explicit FakeVRDevice(mojom::XRDeviceId id);
+
+  FakeVRDevice(const FakeVRDevice&) = delete;
+  FakeVRDevice& operator=(const FakeVRDevice&) = delete;
+
   ~FakeVRDevice() override;
 
   void RequestSession(
@@ -34,12 +37,7 @@ class DEVICE_VR_EXPORT FakeVRDevice : public VRDeviceBase,
  private:
   void OnPresentingControllerMojoConnectionError();
 
-  mojom::VRDisplayInfoPtr InitBasicDevice();
-  mojom::VREyeParametersPtr InitEye(float fov, float offset, uint32_t size);
-
   mojom::VRPosePtr pose_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVRDevice);
 };
 
 }  // namespace device

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -46,6 +47,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Arrays;
 
 /**
  * This is a lightweight activity for tests that only require WebView functionality.
@@ -113,7 +115,12 @@ public class AwShellActivity extends Activity {
     }
 
     private AwTestContainerView createAwTestContainerView() {
-        AwTestContainerView.installDrawFnFunctionTable(/*useVulkan=*/false);
+        final String supportedModels[] = {
+                "Pixel 6",
+                "Pixel 6 Pro",
+        };
+        boolean useVulkan = Arrays.asList(supportedModels).contains(Build.MODEL);
+        AwTestContainerView.installDrawFnFunctionTable(useVulkan);
         AwBrowserProcess.start();
         AwTestContainerView testContainerView = new AwTestContainerView(this, true);
         AwContentsClient awContentsClient = new NullContentsClient() {

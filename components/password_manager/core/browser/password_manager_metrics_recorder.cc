@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,12 +19,9 @@ typedef autofill::SavePasswordProgressLogger Logger;
 namespace password_manager {
 
 PasswordManagerMetricsRecorder::PasswordManagerMetricsRecorder(
-    ukm::SourceId source_id,
-    std::unique_ptr<NavigationMetricRecorderDelegate>
-        navigation_metric_recorder)
+    ukm::SourceId source_id)
     : ukm_entry_builder_(
-          std::make_unique<ukm::builders::PageWithPassword>(source_id)),
-      navigation_metric_recorder_(std::move(navigation_metric_recorder)) {}
+          std::make_unique<ukm::builders::PageWithPassword>(source_id)) {}
 
 PasswordManagerMetricsRecorder::PasswordManagerMetricsRecorder(
     PasswordManagerMetricsRecorder&& that) noexcept = default;
@@ -42,17 +39,7 @@ PasswordManagerMetricsRecorder& PasswordManagerMetricsRecorder::operator=(
     PasswordManagerMetricsRecorder&& that) = default;
 
 void PasswordManagerMetricsRecorder::RecordUserModifiedPasswordField() {
-  if (!user_modified_password_field_ && navigation_metric_recorder_) {
-    navigation_metric_recorder_->OnUserModifiedPasswordFieldFirstTime();
-  }
   user_modified_password_field_ = true;
-}
-
-void PasswordManagerMetricsRecorder::RecordUserFocusedPasswordField() {
-  if (!user_focused_password_field_ && navigation_metric_recorder_) {
-    navigation_metric_recorder_->OnUserFocusedPasswordFieldFirstTime();
-  }
-  user_focused_password_field_ = true;
 }
 
 void PasswordManagerMetricsRecorder::RecordProvisionalSaveFailure(
@@ -87,7 +74,8 @@ void PasswordManagerMetricsRecorder::RecordProvisionalSaveFailure(
       case SAVING_ON_HTTP_AFTER_HTTPS:
         logger->LogSuccessiveOrigins(
             Logger::STRING_BLOCK_PASSWORD_SAME_ORIGIN_INSECURE_SCHEME,
-            main_frame_url.GetOrigin(), form_origin.GetOrigin());
+            main_frame_url.DeprecatedGetOriginAsURL(),
+            form_origin.DeprecatedGetOriginAsURL());
         break;
       case MAX_FAILURE_VALUE:
         NOTREACHED();

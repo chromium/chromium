@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,11 +57,9 @@ void AutofillPopupControllerImplMac::Show(
     bool autoselect_first_suggestion,
     PopupType popup_type) {
   if (!suggestions.empty() && is_credit_card_popup_) {
-    if (@available(macOS 10.12.2, *)) {
-      touch_bar_controller_ = [WebTextfieldTouchBarController
-          controllerForWindow:[container_view().GetNativeNSView() window]];
-      [touch_bar_controller_ showCreditCardAutofillWithController:this];
-    }
+    touch_bar_controller_ = [WebTextfieldTouchBarController
+        controllerForWindow:[container_view().GetNativeNSView() window]];
+    [touch_bar_controller_ showCreditCardAutofillWithController:this];
   }
 
   AutofillPopupControllerImpl::Show(suggestions, autoselect_first_suggestion,
@@ -83,15 +81,15 @@ void AutofillPopupControllerImplMac::UpdateDataListValues(
   // |UpdateDataListValues| should be the last line.
 }
 
-void AutofillPopupControllerImplMac::Hide(PopupHidingReason reason) {
+void AutofillPopupControllerImplMac::HideViewAndDie() {
   if (touch_bar_controller_) {
     [touch_bar_controller_ hideCreditCardAutofillTouchBar];
     touch_bar_controller_ = nil;
   }
 
-  AutofillPopupControllerImpl::Hide(reason);
+  AutofillPopupControllerImpl::HideViewAndDie();
   // No code below this line!
-  // |Hide()| destroys |this|, so it should be the last line.
+  // |HideViewAndDie()| destroys |this|, so it should be the last line.
 }
 
 }  // namespace autofill

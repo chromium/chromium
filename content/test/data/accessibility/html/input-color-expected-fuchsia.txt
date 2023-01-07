@@ -1,0 +1,6 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN focusable actions='{DEFAULT, SET_VALUE}' value='#ff9900'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden

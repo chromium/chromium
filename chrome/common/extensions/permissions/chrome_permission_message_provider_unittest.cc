@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
@@ -35,6 +34,12 @@ class ChromePermissionMessageProviderUnittest : public ChromeManifestTest {
  public:
   ChromePermissionMessageProviderUnittest()
       : message_provider_(new ChromePermissionMessageProvider()) {}
+
+  ChromePermissionMessageProviderUnittest(
+      const ChromePermissionMessageProviderUnittest&) = delete;
+  ChromePermissionMessageProviderUnittest& operator=(
+      const ChromePermissionMessageProviderUnittest&) = delete;
+
   ~ChromePermissionMessageProviderUnittest() override {}
 
  protected:
@@ -76,8 +81,6 @@ class ChromePermissionMessageProviderUnittest : public ChromeManifestTest {
 
  private:
   std::unique_ptr<ChromePermissionMessageProvider> message_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromePermissionMessageProviderUnittest);
 };
 
 // Checks that if an app has a superset and a subset permission, only the
@@ -129,10 +132,10 @@ TEST_F(ChromePermissionMessageProviderUnittest,
       new UsbDevicePermission(PermissionsInfo::GetInstance()->GetByID(
           mojom::APIPermissionID::kUsbDevice)));
   std::unique_ptr<base::ListValue> devices_list(new base::ListValue());
-  devices_list->Append(
-      UsbDevicePermissionData(0x02ad, 0x138c, -1, -1).ToValue());
-  devices_list->Append(
-      UsbDevicePermissionData(0x02ad, 0x138d, -1, -1).ToValue());
+  devices_list->Append(base::Value::FromUniquePtrValue(
+      UsbDevicePermissionData(0x02ad, 0x138c, -1, -1).ToValue()));
+  devices_list->Append(base::Value::FromUniquePtrValue(
+      UsbDevicePermissionData(0x02ad, 0x138d, -1, -1).ToValue()));
   ASSERT_TRUE(usb->FromValue(devices_list.get(), nullptr, nullptr));
   permissions.insert(std::move(usb));
 

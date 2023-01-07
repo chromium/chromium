@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 namespace web {
 
 // Converts WKSecurityOrigin to GURL origin.
-// Returns empty url if |origin| is nil.
+// Returns empty url if `origin` is nil.
 GURL GURLOriginWithWKSecurityOrigin(WKSecurityOrigin* origin);
 
 }  // namespace web

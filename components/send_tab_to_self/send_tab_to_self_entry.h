@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
 
@@ -17,7 +16,7 @@ class SendTabToSelfSpecifics;
 
 namespace send_tab_to_self {
 
-constexpr base::TimeDelta kExpiryTime = base::TimeDelta::FromDays(10);
+constexpr base::TimeDelta kExpiryTime = base::Days(10);
 
 class SendTabToSelfLocal;
 
@@ -35,9 +34,12 @@ class SendTabToSelfEntry {
                      const GURL& url,
                      const std::string& title,
                      base::Time shared_time,
-                     base::Time original_navigation_time,
                      const std::string& device_name,
                      const std::string& target_device_sync_cache_guid);
+
+  SendTabToSelfEntry(const SendTabToSelfEntry&);
+  SendTabToSelfEntry& operator=(const SendTabToSelfEntry&) = delete;
+
   ~SendTabToSelfEntry();
 
   // The unique random id for the entry.
@@ -48,8 +50,6 @@ class SendTabToSelfEntry {
   const std::string& GetTitle() const;
   // The time that the tab was shared.
   base::Time GetSharedTime() const;
-  // The time that the tab was navigated to.
-  base::Time GetOriginalNavigationTime() const;
   // The name of the device that originated the sent tab.
   const std::string& GetDeviceName() const;
   // The cache guid of of the device that this tab is shared with.
@@ -83,6 +83,8 @@ class SendTabToSelfEntry {
   bool IsExpired(base::Time current_time) const;
 
   // Creates a SendTabToSelfEntry consisting of only the required fields.
+  // This entry will have an expired SharedTime and therefor this function
+  // should only be used for testing.
   static std::unique_ptr<SendTabToSelfEntry> FromRequiredFields(
       const std::string& guid,
       const GURL& url,
@@ -95,11 +97,8 @@ class SendTabToSelfEntry {
   std::string device_name_;
   std::string target_device_sync_cache_guid_;
   base::Time shared_time_;
-  base::Time original_navigation_time_;
   bool notification_dismissed_;
   bool opened_;
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfEntry);
 };
 
 }  // namespace send_tab_to_self

@@ -7,7 +7,7 @@ includedir=@includedir@
 Name: libexslt
 Version: @LIBEXSLT_VERSION@
 Description: EXSLT Extension library
-Requires: libxml-2.0
+Requires: libxml-2.0, libxslt
 Cflags: @EXSLT_INCLUDEDIR@
-Libs: @EXSLT_LIBDIR@ @EXSLT_LIBS@
+Libs: @EXSLT_LIBDIR@ -lexslt
 Libs.private: @EXSLT_PRIVATE_LIBS@

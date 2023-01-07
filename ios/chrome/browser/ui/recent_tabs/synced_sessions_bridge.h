@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include <memory>
-
 #include "base/callback_list.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 class ChromeBrowserState;
@@ -33,24 +30,28 @@ class SyncedSessionsObserverBridge : public signin::IdentityManager::Observer {
  public:
   SyncedSessionsObserverBridge(id<SyncedSessionsObserver> owner,
                                ChromeBrowserState* browserState);
+
+  SyncedSessionsObserverBridge(const SyncedSessionsObserverBridge&) = delete;
+  SyncedSessionsObserverBridge& operator=(const SyncedSessionsObserverBridge&) =
+      delete;
+
   ~SyncedSessionsObserverBridge() override;
   // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
 
-  // Returns true if user is signed in.
-  bool IsSignedIn();
+  // Returns true if user has granted sync consent.
+  bool HasSyncConsent();
 
  private:
   void OnForeignSessionChanged();
 
   __weak id<SyncedSessionsObserver> owner_ = nil;
   signin::IdentityManager* identity_manager_ = nullptr;
-  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
-      identity_manager_observer_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
   base::CallbackListSubscription foreign_session_updated_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncedSessionsObserverBridge);
 };
 
 }  // namespace synced_sessions

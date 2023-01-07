@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ namespace {
 constexpr int kNumHops = 13;
 constexpr int kNumTasks = 8;
 
-#if DCHECK_IS_ON() && !defined(OS_ANDROID)
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_ANDROID)
 // Expect that in builds with working DCHECK messages the failure message
 // includes a hint towards using the BrowserTaskEnvironment class.
 const char kDeathMatcher[] = "Check failed:.*\n*.*BrowserTaskEnvironment";
@@ -128,7 +128,7 @@ TEST(BrowserTaskEnvironmentTest, MessageLoopTypeMismatch) {
 
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        BrowserTaskEnvironment task_environment(
+        BrowserTaskEnvironment second_task_environment(
             BrowserTaskEnvironment::IO_MAINLOOP);
       },
       "");
@@ -159,7 +159,7 @@ TEST(BrowserTaskEnvironmentTest, TraitsConstructor) {
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,
                                 Unretained(&signaled_on_real_io_thread)));
-  signaled_on_real_io_thread.TimedWait(base::TimeDelta::FromSeconds(5));
+  signaled_on_real_io_thread.TimedWait(base::Seconds(5));
   EXPECT_TRUE(signaled_on_real_io_thread.IsSignaled());
 
   // Tasks posted via ThreadPool::PostTask don't run in
@@ -169,7 +169,7 @@ TEST(BrowserTaskEnvironmentTest, TraitsConstructor) {
       FROM_HERE, BindOnce([](base::AtomicFlag* task_ran) { task_ran->Set(); },
                           Unretained(&task_ran)));
 
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
+  base::PlatformThread::Sleep(base::Milliseconds(100));
   EXPECT_FALSE(task_ran.IsSet());
 
   task_environment.RunUntilIdle();

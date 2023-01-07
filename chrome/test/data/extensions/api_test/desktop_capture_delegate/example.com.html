@@ -1,5 +1,5 @@
 <!--
-Copyright 2013 The Chromium Authors. All rights reserved.
+Copyright 2013 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -9,6 +9,11 @@ var extensionId = "knldjmfmopnpolahpmmgbagdohdnhkik";
 
 function sendToBrowser(msg) {
   domAutomationController.send(msg);
+}
+
+function onMediaStreamError(mediaStreamError) {
+  console.log(mediaStreamError.message);
+  sendToBrowser(false);
 }
 
 function requestStreamId(callback) {
@@ -35,7 +40,7 @@ function getStream() {
       audio:false,
       video: { mandatory: { chromeMediaSource: "desktop",
                             chromeMediaSourceId: id } }
-    }, sendToBrowser.bind(null, true), sendToBrowser.bind(null, false));
+    }, sendToBrowser.bind(null, true), onMediaStreamError);
   };
   requestStreamId(onStreamId);
 }

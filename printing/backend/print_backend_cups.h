@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,10 @@
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "printing/backend/print_backend.h"
-#include "printing/printing_export.h"
+#include "printing/mojom/print.mojom.h"
 #include "url/gurl.h"
 
 namespace printing {
@@ -25,11 +26,12 @@ class PrintBackendCUPS : public PrintBackend {
                    const std::string& locale);
 
   // These static functions are exposed here for use in the tests.
-  PRINTING_EXPORT static bool PrinterBasicInfoFromCUPS(
+  COMPONENT_EXPORT(PRINT_BACKEND)
+  static mojom::ResultCode PrinterBasicInfoFromCUPS(
       const cups_dest_t& printer,
       PrinterBasicInfo* printer_info);
-  PRINTING_EXPORT static std::string PrinterDriverInfoFromCUPS(
-      const cups_dest_t& printer);
+  COMPONENT_EXPORT(PRINT_BACKEND)
+  static std::string PrinterDriverInfoFromCUPS(const cups_dest_t& printer);
 
  private:
   struct DestinationDeleter {
@@ -40,15 +42,18 @@ class PrintBackendCUPS : public PrintBackend {
   ~PrintBackendCUPS() override;
 
   // PrintBackend implementation.
-  bool EnumeratePrinters(PrinterList* printer_list) override;
-  std::string GetDefaultPrinterName() override;
-  bool GetPrinterBasicInfo(const std::string& printer_name,
-                           PrinterBasicInfo* printer_info) override;
-  bool GetPrinterSemanticCapsAndDefaults(
+  mojom::ResultCode EnumeratePrinters(PrinterList& printer_list) override;
+  mojom::ResultCode GetDefaultPrinterName(
+      std::string& default_printer) override;
+  mojom::ResultCode GetPrinterBasicInfo(
+      const std::string& printer_name,
+      PrinterBasicInfo* printer_info) override;
+  mojom::ResultCode GetPrinterSemanticCapsAndDefaults(
       const std::string& printer_name,
       PrinterSemanticCapsAndDefaults* printer_info) override;
-  bool GetPrinterCapsAndDefaults(const std::string& printer_name,
-                                 PrinterCapsAndDefaults* printer_info) override;
+  mojom::ResultCode GetPrinterCapsAndDefaults(
+      const std::string& printer_name,
+      PrinterCapsAndDefaults* printer_info) override;
   std::string GetPrinterDriverInfo(const std::string& printer_name) override;
   bool IsValidPrinter(const std::string& printer_name) override;
 
@@ -62,9 +67,10 @@ class PrintBackendCUPS : public PrintBackend {
   // Wrapper around cupsGetNamedDest().
   ScopedDestination GetNamedDest(const std::string& printer_name);
 
-  GURL print_server_url_;
+  const std::string locale_;
+  const GURL print_server_url_;
   http_encryption_t cups_encryption_;
-  bool blocking_;
+  const bool blocking_;
 };
 
 }  // namespace printing

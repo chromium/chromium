@@ -1,10 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/actions/get_element_status_action.h"
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -13,6 +13,8 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
+#include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -26,7 +28,17 @@ struct MaybeRe2 {
 
 std::string RemoveWhitespace(const std::string& value) {
   std::string copy = value;
-  base::EraseIf(copy, base::IsUnicodeWhitespace);
+  base::EraseIf(copy, base::IsAsciiWhitespace<char>);
+  return copy;
+}
+
+std::string FindAndRemove(const std::string& value,
+                          const std::string& find_and_remove_re2) {
+  if (find_and_remove_re2.empty()) {
+    return value;
+  }
+  std::string copy = value;
+  RE2::GlobalReplace(&copy, find_and_remove_re2, "");
   return copy;
 }
 
@@ -34,17 +46,24 @@ GetElementStatusProto::ComparisonReport CreateComparisonReport(
     const std::string& actual,
     const MaybeRe2& re2,
     bool case_sensitive,
-    bool remove_space) {
+    bool remove_space,
+    const std::string& find_and_remove_re2) {
   GetElementStatusProto::ComparisonReport report;
   report.mutable_match_options()->set_case_sensitive(case_sensitive);
   report.mutable_match_options()->set_remove_space(remove_space);
 
-  std::string actual_for_match =
-      remove_space ? RemoveWhitespace(actual) : actual;
+  std::string actual_for_match = FindAndRemove(
+      remove_space ? RemoveWhitespace(actual) : actual, find_and_remove_re2);
   report.set_empty(actual_for_match.empty());
 
-  std::string value_for_match =
-      !re2.is_re2 && remove_space ? RemoveWhitespace(re2.value) : re2.value;
+  std::string value_for_match;
+  if (re2.is_re2) {
+    value_for_match = re2.value;
+  } else {
+    value_for_match =
+        FindAndRemove(remove_space ? RemoveWhitespace(re2.value) : re2.value,
+                      find_and_remove_re2);
+  }
 
   if (!re2.is_re2 && value_for_match.empty()) {
     if (actual_for_match.empty()) {
@@ -93,28 +112,65 @@ GetElementStatusAction::~GetElementStatusAction() = default;
 void GetElementStatusAction::InternalProcessAction(
     ProcessActionCallback callback) {
   callback_ = std::move(callback);
-  selector_ = Selector(proto_.get_element_status().element());
 
-  if (selector_.empty()) {
+  switch (proto_.get_element_status().element_case()) {
+    case GetElementStatusProto::kSelector:
+      GetElementBySelector(Selector(proto_.get_element_status().selector()));
+      return;
+    case GetElementStatusProto::kClientId:
+      GetElementByClientId(proto_.get_element_status().client_id());
+      return;
+    case GetElementStatusProto::ELEMENT_NOT_SET:
+      EndAction(ClientStatus(INVALID_ACTION));
+      return;
+  }
+}
+
+void GetElementStatusAction::GetElementBySelector(const Selector& selector) {
+  if (selector.empty()) {
     VLOG(1) << __func__ << ": empty selector";
     EndAction(ClientStatus(INVALID_SELECTOR));
     return;
   }
 
   delegate_->ShortWaitForElementWithSlowWarning(
-      selector_,
+      selector,
       base::BindOnce(&GetElementStatusAction::OnWaitForElementTimed,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::BindOnce(&GetElementStatusAction::OnWaitForElement,
-                                    weak_ptr_factory_.GetWeakPtr())));
+                                    weak_ptr_factory_.GetWeakPtr(), selector)));
 }
 
 void GetElementStatusAction::OnWaitForElement(
+    const Selector& selector,
     const ClientStatus& element_status) {
   if (!element_status.ok()) {
     EndAction(element_status);
     return;
   }
+
+  delegate_->FindElement(selector,
+                         base::BindOnce(&GetElementStatusAction::OnGetElement,
+                                        weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GetElementStatusAction::GetElementByClientId(
+    const ClientIdProto& client_id) {
+  auto element = std::make_unique<ElementFinderResult>();
+  auto* element_ptr = element.get();
+  OnGetElement(delegate_->GetElementStore()->GetElement(client_id.identifier(),
+                                                        element_ptr),
+               std::move(element));
+}
+
+void GetElementStatusAction::OnGetElement(
+    const ClientStatus& status,
+    std::unique_ptr<ElementFinderResult> element) {
+  if (!status.ok()) {
+    EndAction(status);
+    return;
+  }
+  element_ = std::move(element);
 
   std::vector<std::string> attribute_list;
   switch (proto_.get_element_status().value_source()) {
@@ -129,15 +185,10 @@ void GetElementStatusAction::OnWaitForElement(
       return;
   }
 
-  delegate_->FindElement(
-      selector_,
-      base::BindOnce(
-          &action_delegate_util::TakeElementAndGetProperty<std::string>,
-          base::BindOnce(&WebController::GetStringAttribute,
-                         delegate_->GetWebController()->GetWeakPtr(),
-                         attribute_list),
-          base::BindOnce(&GetElementStatusAction::OnGetStringAttribute,
-                         weak_ptr_factory_.GetWeakPtr())));
+  delegate_->GetWebController()->GetStringAttribute(
+      attribute_list, *element_,
+      base::BindOnce(&GetElementStatusAction::OnGetStringAttribute,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void GetElementStatusAction::OnGetStringAttribute(const ClientStatus& status,
@@ -149,51 +200,84 @@ void GetElementStatusAction::OnGetStringAttribute(const ClientStatus& status,
 
   const auto& expected_match =
       proto_.get_element_status().expected_value_match().text_match();
-  MaybeRe2 expected_re2;
   switch (expected_match.value_source_case()) {
-    case GetElementStatusProto::TextMatch::kValue:
-      expected_re2.value = expected_match.value();
-      break;
-    case GetElementStatusProto::TextMatch::kAutofillValue: {
-      ClientStatus autofill_status = GetFormattedAutofillValue(
-          expected_match.autofill_value(), delegate_->GetUserData(),
-          &expected_re2.value);
-      if (!autofill_status.ok()) {
-        EndAction(autofill_status);
-        return;
-      }
-      break;
-    }
     case GetElementStatusProto::TextMatch::kRe2:
-      expected_re2.value = expected_match.re2();
-      expected_re2.is_re2 = true;
-      break;
+      CompareResult(text, expected_match.re2(), /* is_re2= */ true);
+      return;
+    case GetElementStatusProto::TextMatch::kTextValue:
+      user_data::ResolveTextValue(
+          expected_match.text_value(), *element_, delegate_,
+          base::BindOnce(&GetElementStatusAction::OnResolveTextValue,
+                         weak_ptr_factory_.GetWeakPtr(), text));
+      return;
     case GetElementStatusProto::TextMatch::VALUE_SOURCE_NOT_SET:
       EndAction(ClientStatus(INVALID_ACTION));
       return;
   }
+}
+
+void GetElementStatusAction::OnResolveTextValue(const std::string& text,
+                                                const ClientStatus& status,
+                                                const std::string& value) {
+  if (!status.ok()) {
+    EndAction(status);
+    return;
+  }
+
+  CompareResult(text, value, /* is_re2= */ false);
+}
+
+void GetElementStatusAction::CompareResult(const std::string& text,
+                                           const std::string& expected_value,
+                                           bool is_re2) {
+  MaybeRe2 expected_re2;
+  expected_re2.value = expected_value;
+  expected_re2.is_re2 = is_re2;
+
+  const auto& expected_match =
+      proto_.get_element_status().expected_value_match().text_match();
 
   auto* result = processed_action_proto_->mutable_get_element_status_result();
   result->set_not_empty(!text.empty());
 
   bool success = true;
-  *result->add_reports() = CreateComparisonReport(
-      text, expected_re2, /* case_sensitive= */ true, /* remove_space= */ true);
+  const std::string& find_and_remove_re2 =
+      expected_match.match_expectation().match_options().find_and_remove_re2();
   *result->add_reports() =
       CreateComparisonReport(text, expected_re2, /* case_sensitive= */ true,
-                             /* remove_space= */ false);
+                             /* remove_space= */ true, find_and_remove_re2);
+  *result->add_reports() =
+      CreateComparisonReport(text, expected_re2, /* case_sensitive= */ true,
+                             /* remove_space= */ false, find_and_remove_re2);
   *result->add_reports() =
       CreateComparisonReport(text, expected_re2, /* case_sensitive= */ false,
-                             /* remove_space= */ true);
+                             /* remove_space= */ true, find_and_remove_re2);
   *result->add_reports() =
       CreateComparisonReport(text, expected_re2, /* case_sensitive= */ false,
-                             /* remove_space= */ false);
+                             /* remove_space= */ false, find_and_remove_re2);
+  if (!find_and_remove_re2.empty()) {
+    *result->add_reports() =
+        CreateComparisonReport(text, expected_re2, /* case_sensitive= */ true,
+                               /* remove_space= */ true,
+                               /* find_and_remove_re2= */ std::string());
+    *result->add_reports() =
+        CreateComparisonReport(text, expected_re2, /* case_sensitive= */ true,
+                               /* remove_space= */ false,
+                               /* find_and_remove_re2= */ std::string());
+    *result->add_reports() =
+        CreateComparisonReport(text, expected_re2, /* case_sensitive= */ false,
+                               /* remove_space= */ true,
+                               /* find_and_remove_re2= */ std::string());
+    *result->add_reports() = CreateComparisonReport(
+        text, expected_re2, /* case_sensitive= */ false,
+        /* remove_space= */ false, /* find_and_remove_re2= */ std::string());
+  }
 
   if (expected_match.has_match_expectation()) {
     const auto& expectation = expected_match.match_expectation();
     auto report = CreateComparisonReport(
         text, expected_re2, expectation.match_options().case_sensitive(),
-        expectation.match_options().remove_space());
+        expectation.match_options().remove_space(), find_and_remove_re2);
 
     switch (expectation.match_level_case()) {
       case GetElementStatusProto::MatchExpectation::MATCH_LEVEL_NOT_SET:

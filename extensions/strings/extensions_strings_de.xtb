@@ -5,7 +5,7 @@
 <translation id="1140871961407805696">Rückkamera</translation>
 <translation id="1196338895211115272">Privater Schlüssel konnte nicht exportiert werden.</translation>
 <translation id="1420684932347524586">Der per Zufallsauswahl generierte private RSA-Schlüssel konnte nicht erstellt werden.</translation>
-<translation id="1445572445564823378">Diese Erweiterung verlangsamt die Ausführung von <ph name="PRODUCT_NAME" />. Deaktivieren Sie sie, um die Leistung von <ph name="PRODUCT_NAME" /> nicht zu beeinträchtigen.</translation>
+<translation id="1445572445564823378">Diese Erweiterung verlangsamt die Ausführung von <ph name="PRODUCT_NAME" />. Deaktiviere sie, um die Leistung von <ph name="PRODUCT_NAME" /> nicht zu beeinträchtigen.</translation>
 <translation id="1468038450257740950">WebGL wird nicht unterstützt.</translation>
 <translation id="1803557475693955505">Hintergrundseite "<ph name="BACKGROUND_PAGE" />" konnte nicht geladen werden.</translation>
 <translation id="2159915644201199628">Bild konnte nicht decodiert werden: "<ph name="IMAGE_NAME" />"</translation>
@@ -15,10 +15,10 @@
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (Erweiterungs-ID "<ph name="EXTENSION_ID" />") wurde vom Administrator blockiert. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Paket konnte nicht installiert werden: "<ph name="ERROR_CODE" />".</translation>
 <translation id="3115238746683532089">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von Anbieter <ph name="VENDOR_ID" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="3144135466825225871">CRX-Datei konnte nicht ersetzt werden. Überprüfen Sie, ob die Datei verwendet wird.</translation>
+<translation id="3144135466825225871">CRX-Datei konnte nicht ersetzt werden. Überprüfe, ob die Datei verwendet wird.</translation>
 <translation id="3163201441334626963">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von Anbieter <ph name="VENDOR_ID" /></translation>
 <translation id="3302709122321372472">CSS-Datei "<ph name="RELATIVE_PATH" />" konnte nicht für das Content-Skript geladen werden.</translation>
-<translation id="3369521687965833290">Erweiterung kann nicht entpackt werden. Damit eine Erweiterung sicher entpackt werden kann, muss ein Pfad zu Ihrem Profilverzeichnis zur Verfügung stehen, der mit einem Laufwerksbuchstaben beginnt und keine Verknüpfung, keinen Bereitstellungspunkt und keine symbolische Verbindung enthält. Für Ihr Profil besteht kein solcher Pfad.</translation>
+<translation id="3369521687965833290">Erweiterung kann nicht entpackt werden. Damit eine Erweiterung sicher entpackt werden kann, muss ein Pfad zu deinem Profilverzeichnis zur Verfügung stehen, der mit einem Laufwerksbuchstaben beginnt und keine Verknüpfung, keinen Bereitstellungspunkt und keine symbolische Verbindung enthält. Für dein Profil besteht kein solcher Pfad.</translation>
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> von Anbieter <ph name="VENDOR_ID" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Der Eingabewert für den privaten Schlüssel muss ein gültiger Pfad sein.</translation>
@@ -28,22 +28,22 @@
 <translation id="4115165561519362854">Der Administrator dieses Geräts hat festgelegt, dass für <ph name="EXTENSION_NAME" /> mindestens Version <ph name="EXTENSION_VERSION" /> installiert sein muss. Die Erweiterung kann erst aktiviert werden, nachdem sie auf diese oder eine höhere Version aktualisiert wurde.</translation>
 <translation id="4233778200880751280">Infoseite "<ph name="ABOUT_PAGE" />" konnte nicht geladen werden.</translation>
 <translation id="471800408830181311">Privater Schlüssel konnte nicht ausgegeben werden.</translation>
-<translation id="4811956658694082538">Das Paket konnte nicht installiert werden, da der Prozess eines Dienstprogramms abgestürzt ist. Starten Sie Chrome neu und versuchen Sie es erneut.</translation>
+<translation id="4811956658694082538">Das Paket konnte nicht installiert werden, da der Prozess eines Dienstprogramms abgestürzt ist. Starte Chrome neu und versuche es noch einmal.</translation>
 <translation id="4988792151665380515">Öffentlicher Schlüssel konnte nicht exportiert werden.</translation>
 <translation id="5026754133087629784">Web-Ansicht: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Der absolute Pfad zum Verzeichnis wurde nicht gefunden.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
 <translation id="5436430103864390185">Es werden nur rechteckige Fenster unterstützt.</translation>
-<translation id="5456409301717116725">Die Erweiterung enthält die Schlüsseldatei "<ph name="KEY_PATH" />". Möchten Sie den Vorgang wirklich fortsetzen?</translation>
+<translation id="5456409301717116725">Die Erweiterung enthält die Schlüsseldatei „<ph name="KEY_PATH" />“. Möchtest du den Vorgang wirklich fortsetzen?</translation>
 <translation id="5486326529110362464">Es muss ein Eingabewert für den privaten Schlüssel vorhanden sein.</translation>
 <translation id="5972529113578162692">Der Administrator dieses Computers hat die Installation von <ph name="EXTENSION_NAME" /> vorgegeben. Eine Deinstallation ist daher nicht möglich.</translation>
 <translation id="6027032947578871493">Unbekanntes Produkt <ph name="PRODUCT_ID" /> von <ph name="VENDOR_NAME" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> von Anbieter <ph name="VENDOR_ID" /></translation>
-<translation id="6143635259298204954">Erweiterung kann nicht entpackt werden. Damit eine Erweiterung sicher entpackt werden kann, muss ein Pfad zu Ihrem Profilverzeichnis zur Verfügung stehen, der keine symbolische Verbindung enthält. Für Ihr Profil besteht kein solcher Pfad.</translation>
+<translation id="6143635259298204954">Erweiterung kann nicht entpackt werden. Damit eine Erweiterung sicher entpackt werden kann, muss ein Pfad zu deinem Profilverzeichnis zur Verfügung stehen, der keine symbolische Verbindung enthält. Für dein Profil besteht kein solcher Pfad.</translation>
 <translation id="6322279351188361895">Privater Schlüssel konnte nicht gelesen werden.</translation>
 <translation id="6391538222494443604">Eingabeverzeichnis muss vorhanden sein.</translation>
 <translation id="641087317769093025">Erweiterung kann nicht entpackt werden.</translation>
-<translation id="6542618148162044354">"<ph name="APP_NAME" />" fordert Zugriff auf eines oder mehrere Ihrer Geräte an:</translation>
+<translation id="6542618148162044354">„<ph name="APP_NAME" />“ fordert Zugriff auf eines oder mehrere deiner Geräte an:</translation>
 <translation id="657064425229075395">Hintergrundskript "<ph name="BACKGROUND_SCRIPT" />" konnte nicht geladen werden.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> von <ph name="VENDOR_NAME" /> (Seriennummer <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
@@ -59,8 +59,8 @@
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> von <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Manifest-Datei fehlt oder ist nicht lesbar</translation>
 <translation id="8636666366616799973">Paket ist ungültig. Details: "<ph name="ERROR_MESSAGE" />"</translation>
-<translation id="8761756413268424715">"<ph name="APP_NAME" />" fordert Zugriff auf eines Ihrer Geräte an:</translation>
-<translation id="8885905466771744233">Es existiert bereits ein privater Schlüssel für die angegebene Erweiterung. Verwenden Sie diesen Schlüssel oder löschen Sie ihn zuerst.</translation>
+<translation id="8761756413268424715">„<ph name="APP_NAME" />“ fordert Zugriff auf eines deiner Geräte an:</translation>
+<translation id="8885905466771744233">Es existiert bereits ein privater Schlüssel für die angegebene Erweiterung. Verwende diesen Schlüssel oder lösche ihn zuerst.</translation>
 <translation id="907841381057066561">Während des Packvorgangs wurde keine temporäre ZIP-Datei erstellt.</translation>
 <translation id="941543339607623937">Ungültiger privater Schlüssel</translation>
 </translationbundle>

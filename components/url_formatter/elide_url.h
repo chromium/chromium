@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -25,7 +25,7 @@ namespace url_formatter {
 
 // ElideUrl and Elide host require
 // gfx::GetStringWidthF which is not implemented in Android
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // This function takes a GURL object and elides it. It returns a string
 // composed of parts from subdomain, domain, path, filename and query.
 // A "..." is added automatically at the end if the elided string is bigger
@@ -49,7 +49,7 @@ std::u16string ElideUrl(const GURL& url,
 std::u16string ElideHost(const GURL& host_url,
                          const gfx::FontList& font_list,
                          float available_pixel_width);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.url_formatter
 enum class SchemeDisplay {
@@ -97,6 +97,50 @@ std::u16string FormatUrlForSecurityDisplay(
 std::u16string FormatOriginForSecurityDisplay(
     const url::Origin& origin,
     const SchemeDisplay scheme_display = SchemeDisplay::SHOW);
+
+// This is a convenience function for formatting a URL in a concise and
+// human-friendly way, omitting the HTTP/HTTPS scheme, the username and
+// password, the path and removing trivial subdomains.
+
+// The IDN hostname is turned to Unicode if the Unicode representation is deemed
+// safe, including RTL characters (as opposed to
+// `url_formatter::FormatUrlForSecurityDisplay()`).
+
+// Example:
+//  - "http://user:password@example.com/%20test" -> "example.com"
+//  - "http://user:password@example.com/" -> "example.com"
+//  - "http://www.xn--frgbolaget-q5a.se" -> "färgbolaget.se"
+std::u16string FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
+    const GURL& url);
+
+// This is a convenience function for formatting a URL in a concise and
+// human-friendly way, omitting the HTTP/HTTPS scheme, the username and
+// password, the path and removing trivial subdomains and the mobile prefix
+// "m.".
+
+// The IDN hostname is turned to Unicode if the Unicode representation is deemed
+// safe, including RTL characters (as opposed to
+// `url_formatter::FormatUrlForSecurityDisplay()`).
+
+// Example:
+//  - "http://user:password@example.com/%20test" -> "example.com"
+//  - "http://user:password@example.com/" -> "example.com"
+//  - "http://www.xn--frgbolaget-q5a.se" -> "färgbolaget.se"
+//  - "http://www.m.google.com" -> "google.com"
+//  - "http://m.google.com" -> "google.com"
+#if BUILDFLAG(IS_IOS)
+std::u16string
+FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+    const GURL& url);
+#endif
+
+// Splits the hostname in the `url` into sub-strings for the full hostname,
+// the domain (TLD+1), and the subdomain (everything leading the domain).
+// The `url_subdomain` may be nullptr if it isn't needed by the caller.
+void SplitHost(const GURL& url,
+               std::u16string* url_host,
+               std::u16string* url_domain,
+               std::u16string* url_subdomain);
 
 }  // namespace url_formatter
 

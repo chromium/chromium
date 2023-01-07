@@ -1,0 +1,12 @@
+Test that using a non-HTTP-family URL as an attributionsrc triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : wss://example.com
+            violatingNodeId : <number>
+            violationType : UntrustworthyReportingOrigin
+        }
+    }
+}
+

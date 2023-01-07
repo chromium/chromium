@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,9 @@ PasswordHashData::PasswordHashData() = default;
 
 PasswordHashData::PasswordHashData(const PasswordHashData& other) = default;
 
+PasswordHashData& PasswordHashData::operator=(const PasswordHashData& other) =
+    default;
+
 PasswordHashData::PasswordHashData(const std::string& username,
                                    const std::u16string& password,
                                    bool force_update,
@@ -44,16 +47,15 @@ PasswordHashData::PasswordHashData(const std::string& username,
       force_update(force_update),
       is_gaia_password(is_gaia_password) {}
 
-bool PasswordHashData::MatchesPassword(const std::string& username,
-                                       const std::u16string& password,
-                                       bool is_gaia_password) const {
-  if (password.size() != this->length ||
-      !AreUsernamesSame(username, is_gaia_password, this->username,
-                        this->is_gaia_password)) {
+bool PasswordHashData::MatchesPassword(const std::string& user,
+                                       const std::u16string& pass,
+                                       bool is_gaia_pass) const {
+  if (pass.size() != length ||
+      !AreUsernamesSame(user, is_gaia_pass, username, is_gaia_password)) {
     return false;
   }
 
-  return CalculatePasswordHash(password, this->salt) == this->hash;
+  return CalculatePasswordHash(pass, salt) == hash;
 }
 
 uint64_t CalculatePasswordHash(const base::StringPiece16& text,

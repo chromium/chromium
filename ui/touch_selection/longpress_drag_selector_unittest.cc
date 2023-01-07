@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -221,8 +221,8 @@ TEST_F(LongPressDragSelectorTest, NoValidLongPress) {
 
   // Activate a longpress-triggered selection, but at a time before the current
   // touch down event.
-  selector.OnLongPressEvent(
-      event.GetEventTime() - base::TimeDelta::FromSeconds(1), gfx::PointF());
+  selector.OnLongPressEvent(event.GetEventTime() - base::Seconds(1),
+                            gfx::PointF());
   selector.OnSelectionActivated();
   EXPECT_FALSE(GetAndResetActiveStateChanged());
   EXPECT_FALSE(IsDragging());

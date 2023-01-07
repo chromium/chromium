@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -41,13 +42,16 @@ class MockTabStripUIEmbedder : public TabStripUIEmbedder {
  public:
   MOCK_CONST_METHOD0(GetAcceleratorProvider, const ui::AcceleratorProvider*());
   MOCK_METHOD0(CloseContainer, void());
-  MOCK_METHOD2(ShowContextMenuAtPoint,
-               void(gfx::Point, std::unique_ptr<ui::MenuModel>));
+  MOCK_METHOD3(ShowContextMenuAtPoint,
+               void(gfx::Point,
+                    std::unique_ptr<ui::MenuModel>,
+                    base::RepeatingClosure));
+  MOCK_METHOD0(CloseContextMenu, void());
   MOCK_METHOD3(ShowEditDialogForGroupAtPoint,
                void(gfx::Point, gfx::Rect, tab_groups::TabGroupId));
+  MOCK_METHOD0(HideEditDialogForGroup, void());
   MOCK_METHOD0(GetLayout, TabStripUILayout());
-  MOCK_CONST_METHOD1(GetColor, SkColor(int));
-  MOCK_CONST_METHOD1(GetSystemColor, SkColor(ui::NativeTheme::ColorId));
+  MOCK_CONST_METHOD1(GetColorProviderColor, SkColor(ui::ColorId));
 };
 
 }  // namespace
@@ -102,7 +106,17 @@ const std::string TabStripUIBrowserTest::tab_query_js(
     "    .shadowRoot.querySelector('tabstrip-tab')"
     "    .shadowRoot.querySelector('#tab')");
 
-IN_PROC_BROWSER_TEST_F(TabStripUIBrowserTest, ActivatingTabClosesEmbedder) {
+// https://crbug.com/1246369: Test is flaky on Linux/Windows, disabled for
+// investigation.
+// https://crbug.com/1263485: Also flaky on chromeos.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ActivatingTabClosesEmbedder DISABLED_ActivatingTabClosesEmbedder
+#else
+#define MAYBE_ActivatingTabClosesEmbedder ActivatingTabClosesEmbedder
+#endif
+
+IN_PROC_BROWSER_TEST_F(TabStripUIBrowserTest,
+                       MAYBE_ActivatingTabClosesEmbedder) {
   const std::string activate_tab_js = tab_query_js + ".click()";
 
   EXPECT_CALL(mock_embedder_, CloseContainer()).Times(1);

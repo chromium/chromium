@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -38,18 +38,31 @@ cast_source_set("activity_url_filter") {
   deps = [
     "//base",
     "//components/url_matcher",
-    "//content/public/common",
+    "//services/network/public/cpp:cpp_base",
+    "//third_party/blink/public/common:common",
+    "//third_party/blink/public/common:headers",
     "//url",
+  ]
+}
+
+cast_source_set("feature_constants") {
+  sources = [
+    "feature_constants.cc",
+    "feature_constants.h",
   ]
 }
 
 test("cast_common_unittests") {
   testonly = true
 
-  sources = [ "activity_url_filter_unittest.cc" ]
+  sources = [
+    "activity_url_filter_unittest.cc",
+    "cors_exempt_headers_unittest.cc",
+  ]
 
   deps = [
     ":activity_url_filter",
+    ":cors_exempt_headers",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//testing/gmock",
@@ -58,59 +71,40 @@ test("cast_common_unittests") {
   ]
 }
 
+cast_source_set("cors_exempt_headers") {
+  sources = [
+    "cors_exempt_headers.cc",
+    "cors_exempt_headers.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 cast_source_set("common") {
   sources = [
     "cast_content_client.cc",
     "cast_content_client.h",
-    "cast_url_loader_throttle.cc",
-    "cast_url_loader_throttle.h",
     "global_descriptors.h",
-    "identification_settings_manager.cc",
-    "identification_settings_manager.h",
+    "user_agent.cc",
+    "user_agent.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//chromecast:chromecast_buildflags",
     "//chromecast/base",
     "//chromecast/base:cast_version",
     "//chromecast/common/media",
-    "//chromecast/common/mojom",
+    "//components/cast/common:constants",
     "//components/cdm/common:common",
+    "//components/version_info",
     "//content/public/common",
     "//media:media_buildflags",
-    "//mojo/public/cpp/bindings",
-    "//net",
-    "//services/network/public/cpp:cpp",
     "//third_party/widevine/cdm:buildflags",
     "//ui/base",
     "//url:url",
   ]
-
-  if (enable_chromecast_extensions) {
-    sources += [
-      "cast_extensions_api_provider.cc",
-      "cast_extensions_api_provider.h",
-      "cast_extensions_client.cc",
-      "cast_extensions_client.h",
-      "cast_redirect_manifest_handler.cc",
-      "cast_redirect_manifest_handler.h",
-      "extensions_api/cast_api_permissions.cc",
-      "extensions_api/cast_api_permissions.h",
-    ]
-
-    deps += [
-      "//chromecast/common/extensions_api:api",
-      "//chromecast/common/extensions_api:extensions_features",
-      "//components/version_info",
-      "//extensions:extensions_resources_grd_grit",
-      "//extensions/common",
-      "//extensions/common:core_api_provider",
-      "//extensions/common/api",
-      "//extensions/shell:resources",
-      "//extensions/shell:resources_grit",
-    ]
-  }
 
   if (!is_fuchsia) {
     deps += [ "//components/services/heap_profiling/public/cpp" ]
@@ -119,4 +113,5 @@ cast_source_set("common") {
   if (enable_library_cdms) {
     deps += [ "//media/cdm:cdm_paths" ]  # Needed by cast_content_client.cc
   }
+  defines = [ "DEVICE_USER_AGENT_SUFFIX=\"${device_user_agent_suffix}\"" ]
 }

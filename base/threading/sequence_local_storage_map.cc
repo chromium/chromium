@@ -1,9 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/threading/sequence_local_storage_map.h"
 
+#include <ostream>
 #include <utility>
 
 #include "base/check_op.h"
@@ -35,6 +36,7 @@ ScopedSetSequenceLocalStorageMapForCurrentThread::
   tls_current_sequence_local_storage.Get().Set(nullptr);
 }
 
+// static
 SequenceLocalStorageMap& SequenceLocalStorageMap::GetForCurrentThread() {
   SequenceLocalStorageMap* current_sequence_local_storage =
       tls_current_sequence_local_storage.Get().Get();
@@ -46,6 +48,11 @@ SequenceLocalStorageMap& SequenceLocalStorageMap::GetForCurrentThread() {
          "SequenceLocalStorageMap object in TLS.";
 
   return *current_sequence_local_storage;
+}
+
+// static
+bool SequenceLocalStorageMap::IsSetForCurrentThread() {
+  return tls_current_sequence_local_storage.Get().Get() != nullptr;
 }
 
 void* SequenceLocalStorageMap::Get(int slot_id) {

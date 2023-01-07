@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <atomic>
 
-#include "base/trace_event/trace_event.h"
+#include "base/memory/raw_ptr.h"
 #include "components/power_scheduler/power_mode.h"
 
 namespace power_scheduler {
@@ -21,15 +21,17 @@ class TracedPowerMode {
   TracedPowerMode(const TracedPowerMode&) = delete;
   TracedPowerMode(TracedPowerMode&&);
 
-  void OnTraceLogEnabled() const;
+  void OnTraceLogEnabled();
+  void OnIncrementalStateCleared();
 
   void SetMode(PowerMode);
   PowerMode mode() const { return mode_; }
 
  private:
   const char* name_;
-  const void* trace_id_;
+  raw_ptr<const void> trace_id_;
   PowerMode mode_;
+  bool incremental_state_cleared_ = false;
 };
 
 }  // namespace power_scheduler

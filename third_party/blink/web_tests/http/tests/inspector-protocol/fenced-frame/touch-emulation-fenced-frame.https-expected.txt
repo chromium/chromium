@@ -1,0 +1,3 @@
+Tests that fenced frame target does not support Emulation.setEmitTouchEventsForMouse
+FAIL: Command can only be executed on top-level targets
+

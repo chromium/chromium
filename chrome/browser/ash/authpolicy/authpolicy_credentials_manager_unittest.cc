@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,9 +15,8 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/ash/components/dbus/authpolicy/fake_authpolicy_client.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -28,12 +26,12 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::AuthPolicyClient;
-
 constexpr char kProfileSigninNotificationId[] = "chrome://settings/signin/";
 constexpr char kProfileEmail[] = "user@example.com";
 constexpr char kDisplayName[] = "DisplayName";
+constexpr char16_t kDisplayName16[] = u"DisplayName";
 constexpr char kGivenName[] = "Given Name";
+constexpr char16_t kGivenName16[] = u"Given Name";
 
 MATCHER_P(UserAccountDataEq, value, "Compares two UserAccountData") {
   const user_manager::UserManager::UserAccountData& expected_data = value;
@@ -49,11 +47,15 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
   AuthPolicyCredentialsManagerTest()
       : user_manager_enabler_(std::make_unique<MockUserManager>()),
         local_state_(TestingBrowserProcess::GetGlobal()) {}
+
+  AuthPolicyCredentialsManagerTest(const AuthPolicyCredentialsManagerTest&) =
+      delete;
+  AuthPolicyCredentialsManagerTest& operator=(
+      const AuthPolicyCredentialsManagerTest&) = delete;
+
   ~AuthPolicyCredentialsManagerTest() override = default;
 
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
-    chromeos::NetworkHandler::Initialize();
     AuthPolicyClient::InitializeFake();
     fake_authpolicy_client()->DisableOperationDelayForTesting();
 
@@ -86,8 +88,6 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
     EXPECT_CALL(*mock_user_manager(), Shutdown());
     profile_.reset();
     AuthPolicyClient::Shutdown();
-    NetworkHandler::Shutdown();
-    DBusThreadManager::Shutdown();
   }
 
  protected:
@@ -96,8 +96,8 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
   AuthPolicyCredentialsManager* authpolicy_credentials_manager() {
     return authpolicy_credentials_manager_;
   }
-  chromeos::FakeAuthPolicyClient* fake_authpolicy_client() const {
-    return chromeos::FakeAuthPolicyClient::Get();
+  FakeAuthPolicyClient* fake_authpolicy_client() const {
+    return FakeAuthPolicyClient::Get();
   }
 
   MockUserManager* mock_user_manager() {
@@ -128,6 +128,7 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   AccountId account_id_;
   std::unique_ptr<TestingProfile> profile_;
 
@@ -138,9 +139,6 @@ class AuthPolicyCredentialsManagerTest : public testing::Test {
   std::unique_ptr<NotificationDisplayServiceTester> display_service_;
 
   ScopedTestingLocalState local_state_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AuthPolicyCredentialsManagerTest);
 };
 
 // Tests saving display and given name into user manager. No error means no
@@ -149,8 +147,7 @@ TEST_F(AuthPolicyCredentialsManagerTest, SaveNames) {
   fake_authpolicy_client()->set_display_name(kDisplayName);
   fake_authpolicy_client()->set_given_name(kGivenName);
   user_manager::UserManager::UserAccountData user_account_data(
-      base::UTF8ToUTF16(kDisplayName), base::UTF8ToUTF16(kGivenName),
-      std::string() /* locale */);
+      kDisplayName16, kGivenName16, std::string() /* locale */);
 
   EXPECT_CALL(*mock_user_manager(),
               UpdateUserAccountData(

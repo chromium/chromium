@@ -1,0 +1,26 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.stable.mojom;
+
+// Based on |gfx.mojom.NativePixmapPlane|.
+// Next min field ID: 4
+[Stable]
+struct NativePixmapPlane {
+  uint32 stride@0;
+  uint64 offset@1;
+  uint64 size@2;
+
+  // A platform-specific handle to the underlying memory object.
+  handle<platform> buffer_handle@3;
+};
+
+// Based on |gfx.mojom.NativePixmapHandle|.
+// Next min field ID: 2
+[Stable]
+struct NativePixmapHandle {
+  array<NativePixmapPlane> planes@0;
+  uint64 modifier@1;
+};
+

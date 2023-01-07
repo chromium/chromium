@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,12 @@
 #define ASH_ASSISTANT_UTIL_ASSISTANT_UTIL_H_
 
 #include "base/component_export.h"
-#include "base/optional.h"
-
-namespace chromeos {
-namespace assistant {
-enum class AssistantEntryPoint;
-}  // namespace assistant
-}  // namespace chromeos
 
 namespace ash {
+
+namespace assistant {
+enum class AssistantEntryPoint;
+}
 
 enum class AssistantVisibility;
 
@@ -35,8 +32,7 @@ bool IsFinishingSession(AssistantVisibility new_visibility);
 // |prefer_voice| is true if user prefers voice input modality or if the device
 // is in tablet mode.
 COMPONENT_EXPORT(ASSISTANT_UTIL)
-bool IsVoiceEntryPoint(chromeos::assistant::AssistantEntryPoint entry_point,
-                       bool prefer_voice);
+bool IsVoiceEntryPoint(AssistantEntryPoint entry_point, bool prefer_voice);
 
 COMPONENT_EXPORT(ASSISTANT_UTIL)
 bool IsGoogleDevice();

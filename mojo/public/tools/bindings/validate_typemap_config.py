@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,7 +17,7 @@ def CheckCppTypemapConfigs(target_name, config_filename, out_filename):
   ])
   _SUPPORTED_TYPE_KEYS = set([
       'mojom', 'cpp', 'copyable_pass_by_value', 'force_serialize', 'hashable',
-      'move_only', 'nullable_is_same_type'
+      'move_only', 'nullable_is_same_type', 'forward_declaration'
   ])
   with open(config_filename, 'r') as f:
     for config in json.load(f):

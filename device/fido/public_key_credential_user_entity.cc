@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,28 +6,32 @@
 
 #include <utility>
 
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 
 namespace device {
 
 // static
-base::Optional<PublicKeyCredentialUserEntity>
+absl::optional<PublicKeyCredentialUserEntity>
 PublicKeyCredentialUserEntity::CreateFromCBORValue(const cbor::Value& cbor) {
   if (!cbor.is_map())
-    return base::nullopt;
+    return absl::nullopt;
 
   const cbor::Value::MapValue& cbor_map = cbor.GetMap();
 
   auto id_it = cbor_map.find(cbor::Value(kEntityIdMapKey));
   if (id_it == cbor_map.end() || !id_it->second.is_bytestring())
-    return base::nullopt;
+    return absl::nullopt;
 
   PublicKeyCredentialUserEntity user(id_it->second.GetBytestring());
 
+  // Note: this code treats `name` and `displayName` fields as optional, but
+  // they are required in the spec:
+  // https://www.w3.org/TR/webauthn-2/#dictionary-user-credential-params
   auto name_it = cbor_map.find(cbor::Value(kEntityNameMapKey));
   if (name_it != cbor_map.end()) {
     if (!name_it->second.is_string()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     user.name = name_it->second.GetString();
   }
@@ -35,20 +39,9 @@ PublicKeyCredentialUserEntity::CreateFromCBORValue(const cbor::Value& cbor) {
   auto display_name_it = cbor_map.find(cbor::Value(kDisplayNameMapKey));
   if (display_name_it != cbor_map.end()) {
     if (!display_name_it->second.is_string()) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     user.display_name = display_name_it->second.GetString();
-  }
-
-  auto icon_it = cbor_map.find(cbor::Value(kIconUrlMapKey));
-  if (icon_it != cbor_map.end()) {
-    if (!icon_it->second.is_string()) {
-      return base::nullopt;
-    }
-    user.icon_url = GURL(icon_it->second.GetString());
-    if (!user.icon_url->is_valid()) {
-      return base::nullopt;
-    }
   }
 
   return user;
@@ -62,13 +55,11 @@ PublicKeyCredentialUserEntity::PublicKeyCredentialUserEntity(
 
 PublicKeyCredentialUserEntity::PublicKeyCredentialUserEntity(
     std::vector<uint8_t> id_,
-    base::Optional<std::string> name_,
-    base::Optional<std::string> display_name_,
-    base::Optional<GURL> icon_url_)
+    absl::optional<std::string> name_,
+    absl::optional<std::string> display_name_)
     : id(std::move(id_)),
       name(std::move(name_)),
-      display_name(std::move(display_name_)),
-      icon_url(std::move(icon_url_)) {}
+      display_name(std::move(display_name_)) {}
 
 PublicKeyCredentialUserEntity::PublicKeyCredentialUserEntity(
     const PublicKeyCredentialUserEntity& other) = default;
@@ -87,7 +78,7 @@ PublicKeyCredentialUserEntity::~PublicKeyCredentialUserEntity() = default;
 bool PublicKeyCredentialUserEntity::operator==(
     const PublicKeyCredentialUserEntity& other) const {
   return id == other.id && name == other.name &&
-         display_name == other.display_name && icon_url == other.icon_url;
+         display_name == other.display_name;
 }
 
 cbor::Value AsCBOR(const PublicKeyCredentialUserEntity& user) {
@@ -95,11 +86,13 @@ cbor::Value AsCBOR(const PublicKeyCredentialUserEntity& user) {
   user_map.emplace(kEntityIdMapKey, user.id);
   if (user.name)
     user_map.emplace(kEntityNameMapKey, *user.name);
-  // Empty icon URLs result in CTAP1_ERR_INVALID_LENGTH on some security keys.
-  if (user.icon_url && !user.icon_url->is_empty())
-    user_map.emplace(kIconUrlMapKey, user.icon_url->spec());
-  if (user.display_name)
+  // Empty display names result in CTAP1_ERR_INVALID_LENGTH on some security
+  // keys.
+  if (user.display_name &&
+      (!base::FeatureList::IsEnabled(kWebAuthnNoEmptyDisplayNameCBOR) ||
+       !user.display_name->empty())) {
     user_map.emplace(kDisplayNameMapKey, *user.display_name);
+  }
   return cbor::Value(std::move(user_map));
 }
 

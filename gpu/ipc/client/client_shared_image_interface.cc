@@ -1,11 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gpu/ipc/client/client_shared_image_interface.h"
 
+#include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 #include "ui/gfx/gpu_fence.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gpu {
 
@@ -37,7 +41,7 @@ void ClientSharedImageInterface::PresentSwapChain(const SyncToken& sync_token,
   proxy_->PresentSwapChain(sync_token, mailbox);
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 void ClientSharedImageInterface::RegisterSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id,
     zx::channel token,
@@ -52,7 +56,7 @@ void ClientSharedImageInterface::ReleaseSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id) {
   proxy_->ReleaseSysmemBufferCollection(id);
 }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 SyncToken ClientSharedImageInterface::GenUnverifiedSyncToken() {
   return proxy_->GenUnverifiedSyncToken();
@@ -85,8 +89,10 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     uint32_t usage,
     gpu::SurfaceHandle surface_handle) {
   DCHECK_EQ(surface_handle, kNullSurfaceHandle);
+  DCHECK(gpu::IsValidClientUsage(usage));
+  auto si_format = viz::SharedImageFormat::SinglePlane(format);
   return AddMailbox(proxy_->CreateSharedImage(
-      format, size, color_space, surface_origin, alpha_type, usage));
+      si_format, size, color_space, surface_origin, alpha_type, usage));
 }
 
 Mailbox ClientSharedImageInterface::CreateSharedImage(
@@ -97,7 +103,9 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
-  return AddMailbox(proxy_->CreateSharedImage(format, size, color_space,
+  DCHECK(gpu::IsValidClientUsage(usage));
+  auto si_format = viz::SharedImageFormat::SinglePlane(format);
+  return AddMailbox(proxy_->CreateSharedImage(si_format, size, color_space,
                                               surface_origin, alpha_type, usage,
                                               pixel_data));
 }
@@ -105,22 +113,22 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
 Mailbox ClientSharedImageInterface::CreateSharedImage(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    gfx::BufferPlane plane,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     uint32_t usage) {
+  DCHECK(gpu::IsValidClientUsage(usage));
   return AddMailbox(proxy_->CreateSharedImage(
-      gpu_memory_buffer, gpu_memory_buffer_manager, color_space, surface_origin,
-      alpha_type, usage));
+      gpu_memory_buffer, gpu_memory_buffer_manager, plane, color_space,
+      surface_origin, alpha_type, usage));
 }
 
-#if defined(OS_ANDROID)
-Mailbox ClientSharedImageInterface::CreateSharedImageWithAHB(
-    const Mailbox& mailbox,
-    uint32_t usage,
-    const SyncToken& sync_token) {
-  return AddMailbox(
-      proxy_->CreateSharedImageWithAHB(mailbox, usage, sync_token));
+#if BUILDFLAG(IS_WIN)
+void ClientSharedImageInterface::CopyToGpuMemoryBuffer(
+    const SyncToken& sync_token,
+    const Mailbox& mailbox) {
+  proxy_->CopyToGpuMemoryBuffer(sync_token, mailbox);
 }
 #endif
 
@@ -131,6 +139,7 @@ ClientSharedImageInterface::CreateSwapChain(viz::ResourceFormat format,
                                             GrSurfaceOrigin surface_origin,
                                             SkAlphaType alpha_type,
                                             uint32_t usage) {
+  DCHECK(gpu::IsValidClientUsage(usage));
   auto mailboxes = proxy_->CreateSwapChain(format, size, color_space,
                                            surface_origin, alpha_type, usage);
   AddMailbox(mailboxes.front_buffer);

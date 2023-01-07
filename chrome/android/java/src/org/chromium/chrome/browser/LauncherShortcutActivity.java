@@ -1,10 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -14,11 +13,9 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -64,15 +61,6 @@ public class LauncherShortcutActivity extends Activity {
      * @param context The context used to retrieve the system {@link ShortcutManager}.
      */
     public static void updateIncognitoShortcut(Context context) {
-        updateIncognitoShortcutInternal(context, null);
-    }
-
-    /**
-     * @param context The context used to retrieve the system {@link ShortcutManager}.
-     * @param callback Called when updating is finished or when nothing should be done.
-     */
-    private static void updateIncognitoShortcutInternal(
-            Context context, @Nullable Runnable callback) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return;
 
         SharedPreferencesManager preferences = SharedPreferencesManager.getInstance();
@@ -83,25 +71,17 @@ public class LauncherShortcutActivity extends Activity {
         // Add the shortcut regardless of whether it was previously added in case the locale has
         // changed since the last addition.
         // TODO(https://crbug.com/1068847): Investigate better locale change handling.
-        PostTask.postTask(TaskTraits.USER_VISIBLE_MAY_BLOCK, () -> {
-            if (incognitoEnabled) {
-                boolean success = LauncherShortcutActivity.addIncognitoLauncherShortcut(context);
+        if (incognitoEnabled) {
+            boolean success = LauncherShortcutActivity.addIncognitoLauncherShortcut(context);
 
-                // Save a shared preference indicating the incognito shortcut has been added.
-                if (success) {
-                    preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, true);
-                }
-            } else if (!incognitoEnabled && incognitoShortcutAdded) {
-                LauncherShortcutActivity.removeIncognitoLauncherShortcut(context);
-                preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
+            // Save a shared preference indicating the incognito shortcut has been added.
+            if (success) {
+                preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, true);
             }
-            if (callback != null) callback.run();
-        });
-    }
-
-    @VisibleForTesting
-    static void updateIncognitoShortcutForTesting(Context context, Runnable callback) {
-        updateIncognitoShortcutInternal(context, callback);
+        } else if (!incognitoEnabled && incognitoShortcutAdded) {
+            LauncherShortcutActivity.removeIncognitoLauncherShortcut(context);
+            preferences.writeBoolean(ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
+        }
     }
 
     /**
@@ -110,7 +90,7 @@ public class LauncherShortcutActivity extends Activity {
      * @return True if adding the shortcut has succeeded. False if the call fails due to rate
      *         limiting. See {@link ShortcutManager#addDynamicShortcuts}.
      */
-    @TargetApi(Build.VERSION_CODES.N_MR1)
+    @RequiresApi(Build.VERSION_CODES.N_MR1)
     private static boolean addIncognitoLauncherShortcut(Context context) {
         Intent intent = new Intent(LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_TAB);
         intent.setPackage(context.getPackageName());
@@ -136,7 +116,7 @@ public class LauncherShortcutActivity extends Activity {
      * Removes the dynamic "New incognito tab" launcher shortcut.
      * @param context The context used to retrieve the system {@link ShortcutManager}.
      */
-    @TargetApi(Build.VERSION_CODES.N_MR1)
+    @RequiresApi(Build.VERSION_CODES.N_MR1)
     private static void removeIncognitoLauncherShortcut(Context context) {
         List<String> shortcutList = new ArrayList<>();
         shortcutList.add(DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID);

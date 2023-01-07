@@ -1,0 +1,26 @@
+caption: Blocks external extensions from being installed
+desc: "Controls external extensions installation.\n\n      Setting this policy to\
+  \ Enabled blocks external extensions from being installed.\n\n      Setting this\
+  \ policy to Disabled or leaving it unset allows external extensions to be installed.\n\
+  \n      External extensions and their installation are documented at https://developer.chrome.com/apps/external_extensions.\n\
+  \      "
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Block installation of external extensions
+  value: true
+- caption: Allow installation of external extensions
+  value: false
+owners:
+- reillyg@chromium.org
+- file://extensions/OWNERS
+schema:
+  type: boolean
+supported_on:
+- chrome.*:80-
+tags: []
+type: main

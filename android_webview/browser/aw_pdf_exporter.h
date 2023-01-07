@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 #include "printing/page_range.h"
 
@@ -27,6 +27,9 @@ class AwPdfExporter {
                 const base::android::JavaRef<jobject>& obj,
                 content::WebContents* web_contents);
 
+  AwPdfExporter(const AwPdfExporter&) = delete;
+  AwPdfExporter& operator=(const AwPdfExporter&) = delete;
+
   ~AwPdfExporter();
 
   void ExportToPdf(JNIEnv* env,
@@ -43,9 +46,7 @@ class AwPdfExporter {
   void DidExportPdf(int page_count);
 
   JavaObjectWeakGlobalRef java_ref_;
-  content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwPdfExporter);
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace android_webview

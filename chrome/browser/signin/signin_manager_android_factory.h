@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,13 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/no_destructor.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
-class Profile;
+class SigninManagerAndroid;
 
-class SigninManagerAndroidFactory : public BrowserContextKeyedServiceFactory {
+class SigninManagerAndroidFactory : public ProfileKeyedServiceFactory {
  public:
-  static base::android::ScopedJavaLocalRef<jobject> GetJavaObjectForProfile(
-      Profile* profile);
+  static SigninManagerAndroid* GetForProfile(Profile* profile);
 
   // Returns an instance of the SigninManagerAndroidFactory singleton.
   static SigninManagerAndroidFactory* GetInstance();

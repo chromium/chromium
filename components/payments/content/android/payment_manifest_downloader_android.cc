@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
+#include "components/payments/content/android/csp_checker_android.h"
 #include "components/payments/content/android/jni_headers/PaymentManifestDownloader_jni.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "content/public/browser/browser_context.h"
@@ -27,6 +28,9 @@ class DownloadCallback {
   explicit DownloadCallback(
       const base::android::JavaParamRef<jobject>& jcallback)
       : jcallback_(jcallback) {}
+
+  DownloadCallback(const DownloadCallback&) = delete;
+  DownloadCallback& operator=(const DownloadCallback&) = delete;
 
   ~DownloadCallback() {}
 
@@ -66,16 +70,15 @@ class DownloadCallback {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> jcallback_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadCallback);
 };
 
 }  // namespace
 
 PaymentManifestDownloaderAndroid::PaymentManifestDownloaderAndroid(
     std::unique_ptr<ErrorLogger> log,
+    base::WeakPtr<CSPChecker> csp_checker,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : downloader_(std::move(log), std::move(url_loader_factory)) {}
+    : downloader_(std::move(log), csp_checker, std::move(url_loader_factory)) {}
 
 PaymentManifestDownloaderAndroid::~PaymentManifestDownloaderAndroid() {}
 
@@ -115,7 +118,11 @@ void PaymentManifestDownloaderAndroid::Destroy(
 // Caller owns the result. Returns 0 on error.
 static jlong JNI_PaymentManifestDownloader_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
+    const base::android::JavaParamRef<jobject>& jweb_contents,
+    jlong native_csp_checker_android) {
+  if (!jweb_contents || !native_csp_checker_android)
+    return 0;
+
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents)
@@ -123,8 +130,9 @@ static jlong JNI_PaymentManifestDownloader_Init(
 
   return reinterpret_cast<jlong>(new PaymentManifestDownloaderAndroid(
       std::make_unique<DeveloperConsoleLogger>(web_contents),
-      content::BrowserContext::GetDefaultStoragePartition(
-          web_contents->GetBrowserContext())
+      payments::CSPCheckerAndroid::GetWeakPtr(native_csp_checker_android),
+      web_contents->GetBrowserContext()
+          ->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()));
 }
 

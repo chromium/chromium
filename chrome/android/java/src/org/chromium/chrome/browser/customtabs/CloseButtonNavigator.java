@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,7 +104,7 @@ public class CloseButtonNavigator {
             // consider the current Tab) because in that case if the user started on a landing page,
             // we would not navigate at all.
             Tab nextTab = mTabProvider.getTab();
-            if (nextTab != null && isLandingPage(nextTab.getUrlString())) {
+            if (nextTab != null && isLandingPage(nextTab.getUrl().getSpec())) {
                 if (isFromChildTab) {
                     recordChildTabScopeAlgorithmClosesOneTab(numTabsClosed == 1);
                 }

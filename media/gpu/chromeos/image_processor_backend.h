@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/color_plane_layout.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/chromeos/fourcc.h"
@@ -53,6 +52,13 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
         const gfx::Rect& visible_rect,
         const std::vector<VideoFrame::StorageType>& preferred_storage_types);
     ~PortConfig();
+
+    bool operator==(const PortConfig& other) const {
+      return fourcc == other.fourcc && size == other.size &&
+             planes == other.planes && visible_rect == other.visible_rect &&
+             preferred_storage_types == other.preferred_storage_types;
+    }
+    bool operator!=(const PortConfig& other) const { return !(*this == other); }
 
     // Get the first |preferred_storage_types|.
     // If |preferred_storage_types| is empty, return STORAGE_UNKNOWN.
@@ -105,6 +111,10 @@ class MEDIA_GPU_EXPORT ImageProcessorBackend {
   const PortConfig& input_config() const { return input_config_; }
   const PortConfig& output_config() const { return output_config_; }
   OutputMode output_mode() const { return output_mode_; }
+
+  virtual bool needs_linear_output_buffers() const;
+
+  virtual bool supports_incoherent_buffers() const;
 
  protected:
   friend struct std::default_delete<ImageProcessorBackend>;

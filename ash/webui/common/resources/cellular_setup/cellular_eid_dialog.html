@@ -1,0 +1,62 @@
+<style include="cr-shared-style iron-flex">
+  :host {
+    --cr-dialog-body-padding-horizontal: 24px;
+    --cr-dialog-button-container-padding-bottom: 20px;
+    --cr-dialog-button-container-padding-horizontal: 24px;
+    --cr-dialog-width: 320px;
+    --cr-dialog-title-slot-padding-bottom: 12px;
+    --cr-dialog-title-slot-padding-end: 24px;
+    --cr-dialog-title-slot-padding-start: 24px;
+    --cr-dialog-title-font-size: calc(16 / 13 * 100%);
+  }
+
+  .cellular-network-list-header {
+    border-top: var(--cr-separator-line);
+    padding: 16px 0 8px 0;
+  }
+
+  .cellular-network-content {
+    margin: 8px 0 8px 32px;
+  }
+
+  #qrCodeCanvas {
+    display: block;
+    margin: 20px auto 16px auto;
+    max-width: calc(var(--cr-dialog-width) -
+        var(--cr-dialog-title-slot-padding-start) -
+        var(--cr-dialog-title-slot-padding-end));
+  }
+
+  @media(prefers-color-scheme: dark) {
+    /* NOTE: In dark mode a light background is applied to the QR code
+      * canvas as some QR code scanners cannot read an inverted QR code in
+      * which the background is darker than the foreground. */
+    #qrCodeCanvas {
+      background-color: var(--cros-icon-color-primary);
+      padding: 1px;
+    }
+  }
+
+  #eid {
+    margin-top: 16px;
+  }
+</style>
+<cr-dialog id="eidDialog" show-on-attach>
+  <div slot="title">[[i18n('eidPopupTitle')]]</div>
+  <div slot="body" aria-label="[[getA11yLabel_(eid_)]]">
+    <div id="eidDescription" aria-hidden="true">
+      [[i18n('eidPopupDescription')]]
+    </div>
+    <div id="eid" aria-hidden="true">[[eid_]]</div>
+    <canvas id="qrCodeCanvas"
+        width="[[canvasSize_]]"
+        height="[[canvasSize_]]">
+    </canvas>
+  </div>
+  <div slot="button-container">
+    <cr-button id="done" class="action-button"
+        on-click="onDonePressed_">
+      [[i18n('done')]]
+    </cr-button>
+  </div>
+</cr-dialog>

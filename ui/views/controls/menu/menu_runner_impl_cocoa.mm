@@ -1,16 +1,23 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ui/views/controls/menu/menu_runner_impl_cocoa.h"
 
+#include <dispatch/dispatch.h>
+
+#include "base/i18n/rtl.h"
 #include "base/mac/mac_util.h"
 #import "base/message_loop/message_pump_mac.h"
+#include "base/numerics/safe_conversions.h"
 #import "skia/ext/skia_utils_mac.h"
 #import "ui/base/cocoa/cocoa_base_utils.h"
 #import "ui/base/cocoa/menu_controller.h"
+#include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/geometry/rect.h"
@@ -21,6 +28,7 @@
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_runner_impl_adapter.h"
 #include "ui/views/controls/menu/new_badge.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 
@@ -30,7 +38,7 @@ constexpr CGFloat kNativeCheckmarkWidth = 18;
 constexpr CGFloat kNativeMenuItemHeight = 18;
 constexpr CGFloat kIPHDotSize = 6;
 
-NSImage* NewTagImage() {
+NSImage* NewTagImage(const ui::ColorProvider* color_provider) {
   // 1. Make the attributed string.
 
   NSString* badge_text = l10n_util::GetNSString(IDS_NEW_BADGE);
@@ -45,9 +53,9 @@ NSImage* NewTagImage() {
   badge_font = badge_font.Derive(views::NewBadge::kNewBadgeFontSizeAdjustment,
                                  gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM);
 
+  DCHECK(color_provider);
   NSColor* badge_text_color = skia::SkColorToSRGBNSColor(
-      ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
-          ui::NativeTheme::kColorId_TextOnProminentButtonColor));
+      color_provider->GetColor(ui::kColorButtonBackgroundProminent));
 
   NSDictionary* badge_attrs = @{
     NSFontAttributeName : badge_font.GetNativeFont(),
@@ -80,9 +88,9 @@ NSImage* NewTagImage() {
             bezierPathWithRoundedRect:badge_frame
                               xRadius:views::NewBadge::kNewBadgeCornerRadius
                               yRadius:views::NewBadge::kNewBadgeCornerRadius];
+        DCHECK(color_provider);
         NSColor* badge_color = skia::SkColorToSRGBNSColor(
-            ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
-                ui::NativeTheme::kColorId_ProminentButtonColor));
+            color_provider->GetColor(ui::kColorButtonBackgroundProminent));
         [badge_color set];
         [rounded_badge_rect fill];
 
@@ -96,7 +104,7 @@ NSImage* NewTagImage() {
       }];
 }
 
-NSImage* IPHDotImage() {
+NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
   // Embed horizontal centering space as NSMenuItem will otherwise left-align
   // it.
   return [NSImage
@@ -107,30 +115,12 @@ NSImage* IPHDotImage() {
             bezierPathWithOvalInRect:NSMakeRect(kIPHDotSize / 2, 0, kIPHDotSize,
                                                 kIPHDotSize)];
         NSColor* dot_color = skia::SkColorToSRGBNSColor(
-            ui::NativeTheme::GetInstanceForNativeUi()->GetSystemColor(
-                ui::NativeTheme::kColorId_ProminentButtonColor));
+            color_provider->GetColor(ui::kColorButtonBackgroundProminent));
         [dot_color set];
         [dot_path fill];
 
         return YES;
       }];
-}
-
-NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
-    NSString* string) {
-  // Starting in 10.13, if an attributed string is set as a menu item title,
-  // and NSFontAttributeName is not specified for it, it is automatically
-  // rendered in a font matching other menu items. Prior to then, a menu item
-  // with no specified font is rendered in Helvetica. In addition, while the
-  // documentation says that -[NSFont menuFontOfSize:0] gives the standard
-  // menu font, that doesn't actually match up. Therefore, specify a font that
-  // visually matches.
-  NSDictionary* attrs = nil;
-  if (base::mac::IsAtMostOS10_12())
-    attrs = @{NSFontAttributeName : [NSFont menuFontOfSize:14]};
-
-  return [[[NSMutableAttributedString alloc] initWithString:string
-                                                 attributes:attrs] autorelease];
 }
 
 }  // namespace
@@ -143,6 +133,7 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
 
 @interface NSMenu ()
 - (NSCarbonMenuImpl*)_menuImpl;
+- (CGRect)_boundsIfOpen;
 @end
 
 // --- Private API end ---
@@ -163,9 +154,9 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
 
 @implementation NewTagAttachmentCell
 
-- (instancetype)init {
+- (instancetype)initWithColorProvider:(const ui::ColorProvider*)colorProvider {
   if (self = [super init]) {
-    self.image = NewTagImage();
+    self.image = NewTagImage(colorProvider);
   }
   return self;
 }
@@ -180,36 +171,62 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
 
 @end
 
+@interface IdentifierContainer : NSObject
+- (std::vector<ui::ElementIdentifier>&)ids;
+@end
+
+@implementation IdentifierContainer {
+  std::vector<ui::ElementIdentifier> _ids;
+}
+- (std::vector<ui::ElementIdentifier>&)ids {
+  return _ids;
+}
+@end
+
 @interface MenuControllerDelegate : NSObject <MenuControllerCocoaDelegate> {
-  id<NSObject> _menuOpenObserver;
+  NSMutableArray* _menuObservers;
+  gfx::Rect _anchorRect;
 }
 @end
 
 @implementation MenuControllerDelegate
 
+- (instancetype)init {
+  if (self = [super init]) {
+    _menuObservers = [[NSMutableArray alloc] init];
+  }
+  return self;
+}
+
 - (void)dealloc {
-  if (_menuOpenObserver)
-    [[NSNotificationCenter defaultCenter] removeObserver:_menuOpenObserver];
+  for (NSObject* obj in _menuObservers)
+    [[NSNotificationCenter defaultCenter] removeObserver:obj];
+
+  [_menuObservers release];
 
   [super dealloc];
 }
 
+- (void)setAnchorRect:(gfx::Rect)rect {
+  _anchorRect = rect;
+}
+
 - (void)controllerWillAddItem:(NSMenuItem*)menuItem
                     fromModel:(ui::MenuModel*)model
-                      atIndex:(NSInteger)index {
-  static const bool newBadgeFeatureEnabled =
-      base::FeatureList::IsEnabled(views::features::kEnableNewBadgeOnMenuItems);
-  if (newBadgeFeatureEnabled && model->IsNewFeatureAt(index)) {
+                      atIndex:(size_t)index
+            withColorProvider:(const ui::ColorProvider*)colorProvider {
+  if (model->IsNewFeatureAt(index)) {
+    NSMutableAttributedString* attrTitle = [[[NSMutableAttributedString alloc]
+        initWithString:menuItem.title] autorelease];
+
     // /!\ WARNING /!\ Do not update this to use NSTextAttachment.image until
     // macOS 10.15 is the minimum required OS. See the details on the class
     // comment above.
     NSTextAttachment* attachment =
         [[[NSTextAttachment alloc] init] autorelease];
-    attachment.attachmentCell =
-        [[[NewTagAttachmentCell alloc] init] autorelease];
+    attachment.attachmentCell = [[[NewTagAttachmentCell alloc]
+        initWithColorProvider:colorProvider] autorelease];
 
-    NSMutableAttributedString* attrTitle =
-        MutableAttributedStringForMenuItemTitleString(menuItem.title);
     [attrTitle
         appendAttributedString:[NSAttributedString
                                    attributedStringWithAttachment:attachment]];
@@ -218,40 +235,144 @@ NSMutableAttributedString* MutableAttributedStringForMenuItemTitleString(
   }
 
   if (model->IsAlertedAt(index)) {
-    NSImage* iphDotImage = IPHDotImage();
+    NSImage* iphDotImage = IPHDotImage(colorProvider);
     menuItem.onStateImage = iphDotImage;
     menuItem.offStateImage = iphDotImage;
     menuItem.mixedStateImage = iphDotImage;
+  }
+}
 
-    DCHECK(!_menuOpenObserver);
-    _menuOpenObserver = [[NSNotificationCenter defaultCenter]
-        addObserverForName:NSMenuDidBeginTrackingNotification
-                    object:menuItem.menu
-                     queue:nil
-                usingBlock:^(NSNotification* note) {
-                  NSMenu* menu = note.object;
-                  if ([menu respondsToSelector:@selector(_menuImpl)]) {
-                    NSCarbonMenuImpl* menuImpl = [menu _menuImpl];
-                    if ([menuImpl respondsToSelector:@selector
-                                  (highlightItemAtIndex:)]) {
-                      [menuImpl highlightItemAtIndex:index];
-                    }
-                  }
-                }];
+- (void)controllerWillAddMenu:(NSMenu*)menu fromModel:(ui::MenuModel*)model {
+  absl::optional<size_t> alerted_index;
+  IdentifierContainer* const element_ids =
+      [[[IdentifierContainer alloc] init] autorelease];
+  for (size_t i = 0; i < model->GetItemCount(); ++i) {
+    if (model->IsAlertedAt(i)) {
+      DCHECK(!alerted_index.has_value());
+      alerted_index = i;
+    }
+    const ui::ElementIdentifier identifier = model->GetElementIdentifierAt(i);
+    if (identifier)
+      [element_ids ids].push_back(identifier);
+  }
+
+  if (alerted_index.has_value() || ![element_ids ids].empty()) {
+    auto shown_callback = ^(NSNotification* note) {
+      NSMenu* const menu_obj = note.object;
+      if (alerted_index.has_value()) {
+        if ([menu respondsToSelector:@selector(_menuImpl)]) {
+          NSCarbonMenuImpl* menuImpl = [menu_obj _menuImpl];
+          if ([menuImpl respondsToSelector:@selector(highlightItemAtIndex:)]) {
+            const auto index =
+                base::checked_cast<NSInteger>(alerted_index.value());
+            [menuImpl highlightItemAtIndex:index];
+          }
+        }
+      }
+
+      // This situation is broken.
+      //
+      // First, NSMenuDidBeginTrackingNotification is the best way to get called
+      // right before the menu is shown, but at the moment of the call, the menu
+      // isn't open yet. Second, to make things worse, the implementation of
+      // -_boundsIfOpen *tries* to return an NSZeroRect if the menu isn't open
+      // yet but fails to detect it correctly, and instead falls over and
+      // returns a bogus bounds. Fortunately, those bounds are broken in a
+      // predictable way, so that situation can be detected. Don't even bother
+      // trying to make the -_boundsIfOpen call on the notification; there's no
+      // point.
+      //
+      // However, it takes just one trip through the main loop for the menu to
+      // appear and the -_boundsIfOpen call to work.
+      dispatch_after(
+          dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_MSEC),
+          dispatch_get_main_queue(), ^{
+            // Even though all supported macOS releases have `-_boundsIfOpen`,
+            // because it's not official API, retain the fallback code written
+            // for earlier versions of macOSes.
+            //
+            // The fallback bounds are intentionally twice as wide as they
+            // should be because even though we could check the RTL bit and
+            // guess whether the menu should appear to the left or right of the
+            // anchor, if the anchor is near one side of the screen the menu
+            // could end up on the other side.
+            gfx::Rect screen_rect = _anchorRect;
+            CGSize menu_size = [menu_obj size];
+            screen_rect.Inset(gfx::Insets::TLBR(
+                0, -menu_size.width, -menu_size.height, -menu_size.width));
+            if ([menu_obj respondsToSelector:@selector(_boundsIfOpen)]) {
+              CGRect bounds = [menu_obj _boundsIfOpen];
+              // A broken bounds for a menu that isn't
+              // actually yet open looks like: {{zeroish,
+              // main display height}, {zeroish, zeroish}}.
+              auto is_zeroish = [](CGFloat f) { return f >= 0 && f < 0.00001; };
+              if (is_zeroish(bounds.origin.x) && bounds.origin.y > 300 &&
+                  is_zeroish(bounds.size.width) &&
+                  is_zeroish(bounds.size.height)) {
+                // FYI, this never actually happens.
+                LOG(ERROR) << "Get menu bounds failed.";
+              } else {
+                screen_rect = gfx::ScreenRectFromNSRect(bounds);
+              }
+            }
+
+            for (ui::ElementIdentifier element_id : [element_ids ids]) {
+              ui::ElementTrackerMac::GetInstance()->NotifyMenuItemShown(
+                  menu_obj, element_id, screen_rect);
+            }
+          });
+    };
+
+    [_menuObservers
+        addObject:[[NSNotificationCenter defaultCenter]
+                      addObserverForName:NSMenuDidBeginTrackingNotification
+                                  object:menu
+                                   queue:nil
+                              usingBlock:shown_callback]];
+  }
+
+  if (![element_ids ids].empty()) {
+    auto hidden_callback = ^(NSNotification* note) {
+      NSMenu* const menu_obj = note.object;
+      // We expect to see the following order of events:
+      // - element shown
+      // - element activated (optional)
+      // - element hidden
+      // However, the code that detects menu item activation is called *after*
+      // the current callback. To make sure the events happen in the right order
+      // we'll defer processing of element hidden events until the end of the
+      // current system event queue.
+      dispatch_after(
+          dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_MSEC),
+          dispatch_get_main_queue(), ^{
+            for (ui::ElementIdentifier element_id : [element_ids ids]) {
+              ui::ElementTrackerMac::GetInstance()->NotifyMenuItemHidden(
+                  menu_obj, element_id);
+            }
+          });
+    };
+
+    [_menuObservers
+        addObject:[[NSNotificationCenter defaultCenter]
+                      addObserverForName:NSMenuDidEndTrackingNotification
+                                  object:menu
+                                   queue:nil
+                              usingBlock:hidden_callback]];
   }
 }
 
 @end
 
-namespace views {
-namespace internal {
+namespace views::internal {
 namespace {
 
 // Returns the first item in |menu_controller|'s menu that will be checked.
 NSMenuItem* FirstCheckedItem(MenuControllerCocoa* menu_controller) {
   for (NSMenuItem* item in [[menu_controller menu] itemArray]) {
-    if ([menu_controller model]->IsItemCheckedAt([item tag]))
+    if ([menu_controller model]->IsItemCheckedAt(
+            base::checked_cast<size_t>([item tag]))) {
       return item;
+    }
   }
   return nil;
 }
@@ -318,19 +439,19 @@ NSEvent* EventForPositioningContextMenu(const gfx::Rect& anchor,
                                         NSWindow* window) {
   NSEvent* event = [NSApp currentEvent];
   switch ([event type]) {
-    case NSLeftMouseDown:
-    case NSLeftMouseUp:
-    case NSRightMouseDown:
-    case NSRightMouseUp:
-    case NSOtherMouseDown:
-    case NSOtherMouseUp:
+    case NSEventTypeLeftMouseDown:
+    case NSEventTypeLeftMouseUp:
+    case NSEventTypeRightMouseDown:
+    case NSEventTypeRightMouseUp:
+    case NSEventTypeOtherMouseDown:
+    case NSEventTypeOtherMouseUp:
       return event;
     default:
       break;
   }
   NSPoint location_in_window = ui::ConvertPointFromScreenToWindow(
       window, gfx::ScreenPointToNSPoint(anchor.CenterPoint()));
-  return [NSEvent mouseEventWithType:NSRightMouseDown
+  return [NSEvent mouseEventWithType:NSEventTypeRightMouseDown
                             location:location_in_window
                        modifierFlags:0
                            timestamp:0
@@ -360,10 +481,7 @@ MenuRunnerImplInterface* MenuRunnerImplInterface::Create(
 MenuRunnerImplCocoa::MenuRunnerImplCocoa(
     ui::MenuModel* menu,
     base::RepeatingClosure on_menu_closed_callback)
-    : running_(false),
-      delete_after_run_(false),
-      closing_event_time_(base::TimeTicks()),
-      on_menu_closed_callback_(std::move(on_menu_closed_callback)) {
+    : on_menu_closed_callback_(std::move(on_menu_closed_callback)) {
   menu_delegate_.reset([[MenuControllerDelegate alloc] init]);
   menu_controller_.reset([[MenuControllerCocoa alloc]
                initWithModel:menu
@@ -397,24 +515,33 @@ void MenuRunnerImplCocoa::RunMenuAt(Widget* parent,
                                     MenuButtonController* button_controller,
                                     const gfx::Rect& bounds,
                                     MenuAnchorPosition anchor,
-                                    int32_t run_types) {
+                                    int32_t run_types,
+                                    gfx::NativeView native_view_for_gestures) {
   DCHECK(!IsRunning());
   DCHECK(parent);
   closing_event_time_ = base::TimeTicks();
   running_ = true;
+  [menu_delegate_ setAnchorRect:bounds];
 
   // Ensure the UI can update while the menu is fading out.
   base::ScopedPumpMessagesInPrivateModes pump_private;
 
   NSWindow* window = parent->GetNativeWindow().GetNativeNSWindow();
   NSView* view = parent->GetNativeView().GetNativeNSView();
+  [menu_controller_ maybeBuildWithColorProvider:parent->GetColorProvider()];
+  NSMenu* const menu = [menu_controller_ menu];
   if (run_types & MenuRunner::CONTEXT_MENU) {
-    [NSMenu popUpContextMenu:[menu_controller_ menu]
+    ui::ElementTrackerMac::GetInstance()->NotifyMenuWillShow(
+        menu, views::ElementTrackerViews::GetContextForWidget(parent));
+
+    [NSMenu popUpContextMenu:menu
                    withEvent:EventForPositioningContextMenu(bounds, window)
                      forView:view];
+
+    ui::ElementTrackerMac::GetInstance()->NotifyMenuDoneShowing(menu);
+
   } else if (run_types & MenuRunner::COMBOBOX) {
     NSMenuItem* checked_item = FirstCheckedItem(menu_controller_);
-    NSMenu* menu = [menu_controller_ menu];
     base::scoped_nsobject<NSView> anchor_view(CreateMenuAnchorView(
         window, bounds, checked_item, menu.size.width, anchor));
     [menu setMinimumWidth:bounds.width() + kNativeCheckmarkWidth];
@@ -449,7 +576,6 @@ base::TimeTicks MenuRunnerImplCocoa::GetClosingEventTime() const {
   return closing_event_time_;
 }
 
-MenuRunnerImplCocoa::~MenuRunnerImplCocoa() {}
+MenuRunnerImplCocoa::~MenuRunnerImplCocoa() = default;
 
-}  // namespace internal
-}  // namespace views
+}  // namespace views::internal

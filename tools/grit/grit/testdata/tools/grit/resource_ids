@@ -1,4 +1,4 @@
-# Copyright (c) 2011 The Chromium Authors. All rights reserved.
+# Copyright 2011 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -156,9 +156,6 @@
   "chrome/browser/debugger/frontend/devtools_frontend_resources.grd": {
     "META": {"join": 2},
     "includes": [21500],
-  },
-  "cloud_print/virtual_driver/win/install/virtual_driver_setup_resources.grd": {
-    "messages": [22500],
   },
   "chrome/browser/resources/quota_internals_resources.grd": {
     "includes": [23000],

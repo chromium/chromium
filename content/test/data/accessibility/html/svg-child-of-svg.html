@@ -1,0 +1,26 @@
+<!--
+@AURALINUX-ALLOW:tag:*
+@BLINK-ALLOW:htmlTag*
+-->
+<!--
+  Test that nested <svg> elements use the group role.
+  Note that this mapping is not yet in the SVG-AAM, but
+  initial feedback suggests it is the correct thing to do.
+  See https://github.com/w3c/svg-aam/issues/18.
+-->
+<svg aria-label="Has two simple children">
+  <svg x="10">
+    <rect x="10" y="10" height="50" width="50"/>
+  </svg>
+  <svg x="100">
+    <rect x="10" y="10" height="50" width="50"/>
+  </svg>
+</svg>
+<svg aria-label="Has two focusable children">
+  <svg x="10" tabindex="0">
+    <rect x="10" y="10" height="50" width="50"/>
+  </svg>
+  <svg x="100" tabindex="0">
+    <rect x="10" y="10" height="50" width="50"/>
+  </svg>
+</svg>

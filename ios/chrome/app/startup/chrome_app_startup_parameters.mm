@@ -1,23 +1,23 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 
-#include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/stringprintf.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
-#include "ios/chrome/common/app_group/app_group_constants.h"
-#include "ios/chrome/common/x_callback_url.h"
-#include "ios/components/webui/web_ui_url_constants.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/x_callback_url.h"
+#import "ios/components/webui/web_ui_url_constants.h"
 #import "net/base/mac/url_conversions.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -52,6 +52,9 @@ NSString* const kWidgetKitHostSearchWidget = @"search-widget";
 NSString* const kWidgetKitHostQuickActionsWidget = @"quick-actions-widget";
 // Host used to identify Dino Game (small) widget.
 NSString* const kWidgetKitHostDinoGameWidget = @"dino-game-widget";
+// Host used to identify the Lockscreen Launcher widget.
+NSString* const kWidgetKitHostLockscreenLauncherWidget =
+    @"lockscreen-launcher-widget";
 // Path for search action.
 NSString* const kWidgetKitActionSearch = @"/search";
 // Path for incognito action.
@@ -117,12 +120,51 @@ enum class WidgetKitExtensionAction {
   ACTION_QUICK_ACTIONS_INCOGNITO = 3,
   ACTION_QUICK_ACTIONS_VOICE_SEARCH = 4,
   ACTION_QUICK_ACTIONS_QR_READER = 5,
-  kMaxValue = ACTION_QUICK_ACTIONS_QR_READER,
+  ACTION_LOCKSCREEN_LAUNCHER_SEARCH = 6,
+  ACTION_LOCKSCREEN_LAUNCHER_INCOGNITO = 7,
+  ACTION_LOCKSCREEN_LAUNCHER_VOICE_SEARCH = 8,
+  ACTION_LOCKSCREEN_LAUNCHER_GAME = 9,
+  kMaxValue = ACTION_LOCKSCREEN_LAUNCHER_GAME,
 };
 
 // Histogram helper to log the UMA IOS.WidgetKit.Action histogram.
 void LogWidgetKitAction(WidgetKitExtensionAction action) {
   UmaHistogramEnumeration("IOS.WidgetKit.Action", action);
+  LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeMadeForIOS);
+}
+
+bool CallerAppIsFirstParty(MobileSessionCallerApp callerApp) {
+  switch (callerApp) {
+    case CALLER_APP_GOOGLE_SEARCH:
+    case CALLER_APP_GOOGLE_GMAIL:
+    case CALLER_APP_GOOGLE_PLUS:
+    case CALLER_APP_GOOGLE_DRIVE:
+    case CALLER_APP_GOOGLE_EARTH:
+    case CALLER_APP_GOOGLE_OTHER:
+    case CALLER_APP_GOOGLE_YOUTUBE:
+    case CALLER_APP_GOOGLE_MAPS:
+    case CALLER_APP_GOOGLE_CHROME_TODAY_EXTENSION:
+    case CALLER_APP_GOOGLE_CHROME_SEARCH_EXTENSION:
+    case CALLER_APP_GOOGLE_CHROME_CONTENT_EXTENSION:
+    case CALLER_APP_GOOGLE_CHROME_SHARE_EXTENSION:
+    case CALLER_APP_GOOGLE_CHROME:
+      return true;
+    case CALLER_APP_OTHER:
+    case CALLER_APP_APPLE_MOBILESAFARI:
+    case CALLER_APP_APPLE_OTHER:
+    case CALLER_APP_THIRD_PARTY:
+    case CALLER_APP_NOT_AVAILABLE:
+    case MOBILE_SESSION_CALLER_APP_COUNT:
+      return false;
+  }
+}
+
+TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
+    const std::string& poa_param) {
+  if (poa_param == "default-browser-settings") {
+    return SHOW_DEFAULT_BROWSER_SETTINGS;
+  }
+  return NO_ACTION;
 }
 
 }  // namespace
@@ -135,9 +177,11 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
 - (instancetype)initWithExternalURL:(const GURL&)externalURL
                   declaredSourceApp:(NSString*)declaredSourceApp
                     secureSourceApp:(NSString*)secureSourceApp
-                        completeURL:(NSURL*)completeURL {
+                        completeURL:(NSURL*)completeURL
+                    applicationMode:(ApplicationModeForTabOpening)mode {
   self = [super initWithExternalURL:externalURL
-                        completeURL:net::GURLWithNSURL(completeURL)];
+                        completeURL:net::GURLWithNSURL(completeURL)
+                    applicationMode:mode];
   if (self) {
     _declaredSourceApp = [declaredSourceApp copy];
     _secureSourceApp = [secureSourceApp copy];
@@ -169,17 +213,26 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
     } else if ([completeURL.path isEqual:kWidgetKitActionQRReader]) {
       command = app_group::kChromeAppGroupQRScannerCommand;
     } else if ([completeURL.path isEqual:kWidgetKitActionGame]) {
-      LogWidgetKitAction(WidgetKitExtensionAction::ACTION_DINO_WIDGET_GAME);
+      if ([sourceWidget isEqualToString:kWidgetKitHostDinoGameWidget]) {
+        LogWidgetKitAction(WidgetKitExtensionAction::ACTION_DINO_WIDGET_GAME);
+      } else if ([sourceWidget
+                     isEqualToString:kWidgetKitHostLockscreenLauncherWidget]) {
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_GAME);
+      }
 
-      LogLikelyInterestedDefaultBrowserUserActivity();
+      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 
       GURL URL(
           base::StringPrintf("%s://%s", kChromeUIScheme, kChromeUIDinoHost));
-      return
-          [[ChromeAppStartupParameters alloc] initWithExternalURL:URL
-                                                declaredSourceApp:appId
-                                                  secureSourceApp:sourceWidget
-                                                      completeURL:completeURL];
+      ChromeAppStartupParameters* appStartupParameters =
+          [[ChromeAppStartupParameters alloc]
+              initWithExternalURL:URL
+                declaredSourceApp:appId
+                  secureSourceApp:sourceWidget
+                      completeURL:completeURL
+                  applicationMode:ApplicationModeForTabOpening::NORMAL];
+      return appStartupParameters;
     }
 
     NSString* commandString = base::SysUTF8ToNSString(command);
@@ -227,17 +280,26 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
         (!url.SchemeIs(url::kHttpScheme) && !url.SchemeIs(url::kHttpsScheme))) {
       return nil;
     }
+    TabOpeningPostOpeningAction postOpeningAction =
+        XCallbackPoaToPostOpeningAction(parameters["poa"]);
 
-    return [[ChromeAppStartupParameters alloc] initWithExternalURL:url
-                                                 declaredSourceApp:appId
-                                                   secureSourceApp:nil
-                                                       completeURL:completeURL];
-
+    ChromeAppStartupParameters* startupParameters =
+        [[ChromeAppStartupParameters alloc]
+            initWithExternalURL:url
+              declaredSourceApp:appId
+                secureSourceApp:nil
+                    completeURL:completeURL
+                applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
+    // postOpeningAction can only be NO_ACTION or SHOW_DEFAULT_BROWSER_SETTINGS
+    // (these are the only values returned by `XCallbackPoaToPostOpeningAction`)
+    // so this assignment should not DCHECK, no matter what the URL is.
+    startupParameters.postOpeningAction = postOpeningAction;
+    return startupParameters;
   } else if (gurl.SchemeIsFile()) {
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram,
                               START_ACTION_OPEN_FILE,
                               MOBILE_SESSION_START_ACTION_COUNT);
-    // |url| is the path to a file received from another application.
+    // `url` is the path to a file received from another application.
     GURL::Replacements replacements;
     const std::string host(kChromeUIExternalFileHost);
     std::string filename = gurl.ExtractFileName();
@@ -247,12 +309,15 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
     GURL externalURL = gurl.ReplaceComponents(replacements);
     if (!externalURL.is_valid())
       return nil;
-    return [[ChromeAppStartupParameters alloc] initWithExternalURL:externalURL
-                                                 declaredSourceApp:appId
-                                                   secureSourceApp:nil
-                                                       completeURL:completeURL];
+    return [[ChromeAppStartupParameters alloc]
+        initWithExternalURL:externalURL
+          declaredSourceApp:appId
+            secureSourceApp:nil
+                completeURL:completeURL
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
   } else {
     GURL externalURL = gurl;
+    BOOL openedViaSpecificScheme = NO;
     MobileSessionStartAction action = START_ACTION_OTHER;
     if (gurl.SchemeIs(url::kHttpScheme)) {
       action = START_ACTION_OPEN_HTTP_FROM_OS;
@@ -264,7 +329,7 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
           base::UserMetricsAction("MobileDefaultBrowserViewIntent"));
     } else {
       // Replace the scheme with https or http depending on whether the input
-      // |url| scheme ends with an 's'.
+      // `url` scheme ends with an 's'.
       BOOL useHttps = gurl.scheme()[gurl.scheme().length() - 1] == 's';
       action = useHttps ? START_ACTION_OPEN_HTTPS : START_ACTION_OPEN_HTTP;
       base::RecordAction(base::UserMetricsAction("MobileFirstPartyViewIntent"));
@@ -275,6 +340,7 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
       else
         replace_scheme.SetSchemeStr(url::kHttpScheme);
       externalURL = gurl.ReplaceComponents(replace_scheme);
+      openedViaSpecificScheme = YES;
     }
     UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartActionHistogram, action,
                               MOBILE_SESSION_START_ACTION_COUNT);
@@ -282,7 +348,7 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
     // be logged as siginficnat activity for a potential user that would want
     // Chrome as their default browser in case the user changes away from
     // Chrome. This will leave a trace of this activity for re-prompting.
-    LogLikelyInterestedDefaultBrowserUserActivity();
+    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
 
     if (action == START_ACTION_OPEN_HTTP_FROM_OS ||
         action == START_ACTION_OPEN_HTTPS_FROM_OS) {
@@ -292,10 +358,15 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
 
     if (!externalURL.is_valid())
       return nil;
-    return [[ChromeAppStartupParameters alloc] initWithExternalURL:externalURL
-                                                 declaredSourceApp:appId
-                                                   secureSourceApp:nil
-                                                       completeURL:completeURL];
+    ChromeAppStartupParameters* params = [[ChromeAppStartupParameters alloc]
+        initWithExternalURL:externalURL
+          declaredSourceApp:appId
+            secureSourceApp:nil
+                completeURL:completeURL
+            applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
+    params.openedViaFirstPartyScheme =
+        openedViaSpecificScheme && CallerAppIsFirstParty(params.callerApp);
+    return params;
   }
 }
 
@@ -311,7 +382,7 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
 
   [sharedDefaults removeObjectForKey:commandDictionaryPreference];
 
-  // |sharedDefaults| is used for communication between apps. Synchronize to
+  // `sharedDefaults` is used for communication between apps. Synchronize to
   // avoid synchronization issues (like removing the next order).
   [sharedDefaults synchronize];
 
@@ -386,7 +457,8 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
         initWithExternalURL:GURL(kChromeUINewTabURL)
           declaredSourceApp:appId
             secureSourceApp:secureSourceApp
-                completeURL:url];
+                completeURL:url
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
     [params setPostOpeningAction:START_VOICE_SEARCH];
     action = ACTION_NEW_VOICE_SEARCH;
   }
@@ -397,7 +469,8 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
         initWithExternalURL:GURL(kChromeUINewTabURL)
           declaredSourceApp:appId
             secureSourceApp:secureSourceApp
-                completeURL:url];
+                completeURL:url
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
     action = ACTION_NO_ACTION;
   }
 
@@ -408,7 +481,8 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
         initWithExternalURL:GURL(kChromeUINewTabURL)
           declaredSourceApp:appId
             secureSourceApp:secureSourceApp
-                completeURL:url];
+                completeURL:url
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
     [params setPostOpeningAction:FOCUS_OMNIBOX];
     action = ACTION_NEW_SEARCH;
   }
@@ -420,11 +494,12 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
     GURL externalGURL(base::SysNSStringToUTF8(externalText));
     if (!externalGURL.is_valid() || !externalGURL.SchemeIsHTTPOrHTTPS())
       return nil;
-    params =
-        [[ChromeAppStartupParameters alloc] initWithExternalURL:externalGURL
-                                              declaredSourceApp:appId
-                                                secureSourceApp:secureSourceApp
-                                                    completeURL:url];
+    params = [[ChromeAppStartupParameters alloc]
+        initWithExternalURL:externalGURL
+          declaredSourceApp:appId
+            secureSourceApp:secureSourceApp
+                completeURL:url
+            applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
     action = ACTION_OPEN_URL;
   }
 
@@ -439,7 +514,8 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
         initWithExternalURL:GURL(kChromeUINewTabURL)
           declaredSourceApp:appId
             secureSourceApp:secureSourceApp
-                completeURL:url];
+                completeURL:url
+            applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
 
     params.textQuery = externalText;
 
@@ -457,7 +533,8 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
         initWithExternalURL:GURL(kChromeUINewTabURL)
           declaredSourceApp:appId
             secureSourceApp:secureSourceApp
-                completeURL:url];
+                completeURL:url
+            applicationMode:ApplicationModeForTabOpening::UNDETERMINED];
 
     params.imageSearchData = externalData;
 
@@ -471,8 +548,10 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
         initWithExternalURL:GURL(kChromeUINewTabURL)
           declaredSourceApp:appId
             secureSourceApp:secureSourceApp
-                completeURL:url];
+                completeURL:url
+            applicationMode:ApplicationModeForTabOpening::NORMAL];
     [params setPostOpeningAction:START_QR_CODE_SCANNER];
+
     action = ACTION_NEW_QR_CODE_SEARCH;
   }
 
@@ -483,8 +562,8 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
         initWithExternalURL:GURL(kChromeUINewTabURL)
           declaredSourceApp:appId
             secureSourceApp:secureSourceApp
-                completeURL:url];
-    [params setLaunchInIncognito:YES];
+                completeURL:url
+            applicationMode:ApplicationModeForTabOpening::INCOGNITO];
     [params setPostOpeningAction:FOCUS_OMNIBOX];
     action = ACTION_NEW_INCOGNITO_SEARCH;
   }
@@ -493,7 +572,7 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
     // An external action that opened Chrome (i.e. GrowthKit link open, open
     // Search, search clipboard content) is activity that should indicate a user
     // that would be interested in setting Chrome as the default browser.
-    LogLikelyInterestedDefaultBrowserUserActivity();
+    LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeGeneral);
   }
 
   if ([secureSourceApp
@@ -537,6 +616,30 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
         break;
     }
   }
+  if ([secureSourceApp
+          isEqualToString:kWidgetKitHostLockscreenLauncherWidget]) {
+    switch (action) {
+      case ACTION_NEW_SEARCH:
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_SEARCH);
+        break;
+
+      case ACTION_NEW_INCOGNITO_SEARCH:
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_INCOGNITO);
+        break;
+
+      case ACTION_NEW_VOICE_SEARCH:
+        LogWidgetKitAction(
+            WidgetKitExtensionAction::ACTION_LOCKSCREEN_LAUNCHER_VOICE_SEARCH);
+        break;
+
+      default:
+        NOTREACHED();
+        break;
+    }
+  }
+
   return params;
 }
 
@@ -601,11 +704,11 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
   // Takes care of degenerated case of no QUERY_STRING.
   if (![query length])
     return first_run::LAUNCH_BY_MOBILESAFARI;
-  // Look for |kSmartAppBannerKey| anywhere within the query string.
+  // Look for `kSmartAppBannerKey` anywhere within the query string.
   NSRange found = [query rangeOfString:kSmartAppBannerKey];
   if (found.location == NSNotFound)
     return first_run::LAUNCH_BY_MOBILESAFARI;
-  // |kSmartAppBannerKey| can be at the beginning or end of the query
+  // `kSmartAppBannerKey` can be at the beginning or end of the query
   // string and may also be optionally followed by a equal sign and a value.
   // For now, just look for the presence of the key and ignore the value.
   if (found.location + found.length < [query length]) {

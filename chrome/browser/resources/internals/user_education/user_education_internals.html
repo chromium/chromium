@@ -1,0 +1,23 @@
+<h1>User Education Testing</h1>
+<div>
+  <h2>Start a tutorial</h2>
+  <ul>
+    <template is="dom-repeat" items="[[tutorials_]]">
+      <li>
+        <button id="[[item]]" on-click="startTutorial_">[[item]]</button>
+      </li>
+    </template>
+  </ul>
+  <h2>Show an IPH</h2>
+  <ul>
+    <template is="dom-repeat" id="promos" items="[[featurePromos_]]">
+      <li>
+        <h3>[[item.displayTitle]]</h3>
+        <h4>[[item.displayDescription]]</h4>
+        <button id="[[item.displayTitle]]" on-click="showFeaturePromo_">
+          [[item.displayTitle]]
+        </button>
+      </li>
+    </template>
+  </ul>
+</div>

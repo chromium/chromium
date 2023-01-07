@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,8 +65,8 @@ WebViewPersonalDataManagerFactory::BuildServiceInstanceFor(
       profile_db, account_db, browser_state->GetPrefs(),
       ApplicationContext::GetInstance()->GetLocalState(),
       WebViewIdentityManagerFactory::GetForBrowserState(browser_state),
-      /*client_profile_validator=*/nullptr, /*history_service=*/nullptr,
-      browser_state->IsOffTheRecord());
+      /*history_service=*/nullptr, /*strike_database=*/nullptr,
+      /*image_fetcher=*/nullptr, browser_state->IsOffTheRecord());
   return service;
 }
 

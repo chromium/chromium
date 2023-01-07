@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,10 +25,6 @@ class WebContents;
 
 namespace extensions {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class PermissionIDSet;
-#endif
-
 class PageCaptureSaveAsMHTMLFunction : public ExtensionFunction {
  public:
   PageCaptureSaveAsMHTMLFunction();
@@ -50,11 +46,6 @@ class PageCaptureSaveAsMHTMLFunction : public ExtensionFunction {
   ~PageCaptureSaveAsMHTMLFunction() override;
   ResponseAction Run() override;
   bool OnMessageReceived(const IPC::Message& message) override;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Resolves the API permission request in Public Sessions.
-  void ResolvePermissionRequest(const PermissionIDSet& allowed_permissions);
-#endif
 
   // Returns whether or not the extension has permission to capture the current
   // page. Sets |*error| to an error value on failure.

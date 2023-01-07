@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
   TestRunner.addResult('Tests that styles sidebar can be navigated with arrow keys.\n');
 
   await TestRunner.showPanel('elements');
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
 
   await TestRunner.loadHTML(`
     <style>
@@ -26,11 +26,11 @@
 
   await waitForStylesRebuild();
 
-  let ssp = Elements.ElementsPanel.instance()._stylesWidget;
+  let ssp = Elements.ElementsPanel.instance().stylesWidget;
 
   // start editing
-  ssp._sectionBlocks[0].sections[0].element.focus();
-  ssp._sectionBlocks[0].sections[0].addNewBlankProperty(0).startEditing();
+  ssp.sectionBlocks[0].sections[0].element.focus();
+  ssp.sectionBlocks[0].sections[0].addNewBlankProperty(0).startEditing();
 
   dumpState();
 
@@ -71,14 +71,14 @@
 
   function dumpState() {
     TestRunner.addResult('Editing: ' + UI.isEditing())
-    TestRunner.addResult(document.deepActiveElement().textContent);
+    TestRunner.addResult(Platform.DOMUtilities.deepActiveElement(document).textContent);
     TestRunner.addResult('');
   }
 
   function waitForStylesRebuild(node) {
     if (node && node.getAttribute("id") === 'foo')
       return;
-    return TestRunner.addSnifferPromise(Elements.StylesSidebarPane.prototype, "_nodeStylesUpdatedForTest").then(waitForStylesRebuild);
+    return TestRunner.addSnifferPromise(Elements.StylesSidebarPane.prototype, "nodeStylesUpdatedForTest").then(waitForStylesRebuild);
   }
 
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,9 +31,9 @@ bool SurfaceDependencyDeadline::HasDeadlinePassed() const {
   return tick_clock_->NowTicks() >= deadline_;
 }
 
-base::Optional<base::TimeDelta> SurfaceDependencyDeadline::Cancel() {
+absl::optional<base::TimeDelta> SurfaceDependencyDeadline::Cancel() {
   if (!deadline_)
-    return base::nullopt;
+    return absl::nullopt;
 
   deadline_.reset();
 

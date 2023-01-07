@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,14 @@
 
 #include <memory>
 #include <queue>
-#include <string>
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "media/base/media_export.h"
 #include "media/base/supported_video_decoder_config.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame_pool.h"
 #include "media/filters/offloading_video_decoder.h"
@@ -47,7 +46,6 @@ class MEDIA_EXPORT Gav1VideoDecoder : public OffloadableVideoDecoder {
                   const WaitingCB& waiting_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure reset_cb) override;
-  bool IsOptimizedForRTC() const override;
 
   // OffloadableVideoDecoder implementation.
   void Detach() override;
@@ -74,7 +72,7 @@ class MEDIA_EXPORT Gav1VideoDecoder : public OffloadableVideoDecoder {
 
   // Info configured in Initialize(). These are used in outputting frames.
   VideoColorSpace color_space_;
-  double pixel_aspect_ratio_;
+  VideoAspectRatio aspect_ratio_;
 
   DecoderState state_ = DecoderState::kUninitialized;
 
@@ -96,7 +94,7 @@ class OffloadingGav1VideoDecoder : public OffloadingVideoDecoder {
   explicit OffloadingGav1VideoDecoder(MediaLog* media_log)
       : OffloadingVideoDecoder(
             0,
-            std::vector<VideoCodec>(1, kCodecAV1),
+            std::vector<VideoCodec>(1, VideoCodec::kAV1),
             std::make_unique<Gav1VideoDecoder>(
                 media_log,
                 OffloadableVideoDecoder::OffloadState::kOffloaded)) {}

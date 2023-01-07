@@ -1,0 +1,16 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+library chromium.cast;
+
+using fuchsia.web;
+
+/// Provides a list of header names that should be exempted from CORS preflight
+/// security checks for all Cast apps.
+@discoverable
+protocol CorsExemptHeaderProvider {
+    GetCorsExemptHeaderNames() -> (struct {
+        header_names vector<vector<uint8>:fuchsia.web.MAX_HEADERS_COUNT>:MAX;
+    });
+};

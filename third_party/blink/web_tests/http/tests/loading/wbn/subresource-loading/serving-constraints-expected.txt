@@ -7,4 +7,5 @@ main frame - didHandleOnloadEventsForFrame
 main frame - didFinishLoadForFrame
 CONSOLE WARNING: http://127.0.0.1:8000/loading/wbn/resources/wbn/hello.wbn-wrong-mime-type: Web Bundle response must have "application/webbundle" content-type.
 CONSOLE WARNING: http://127.0.0.1:8000/loading/wbn/resources/wbn/hello.wbn-without-nosniff: Web Bundle response must have "X-Content-Type-Options: nosniff" header.
+CONSOLE WARNING: http://127.0.0.1:8000/loading/wbn/resources/wbn/hello.wbn-without-nosniff: Failed to fetch the Web Bundle.
 

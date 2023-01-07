@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,10 @@ import androidx.browser.customtabs.TrustedWebUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
-import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
+import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.tab.TabBrowserControlsConstraintsHelper;
 import org.chromium.components.embedder_support.util.Origin;
@@ -55,7 +56,7 @@ public class TrustedWebActivityTestUtil {
 
     /** Creates an Intent that will launch a Custom Tab to the given |url|. */
     public static Intent createTrustedWebActivityIntent(String url) {
-        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+        Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                 InstrumentationRegistry.getTargetContext(), url);
         intent.putExtra(TrustedWebUtils.EXTRA_LAUNCH_AS_TRUSTED_WEB_ACTIVITY, true);
         return intent;
@@ -76,8 +77,8 @@ public class TrustedWebActivityTestUtil {
     /** Caches a successful verification for the given |packageName| and |url|. */
     public static void spoofVerification(String packageName, String url) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> OriginVerifier.addVerificationOverride(packageName, Origin.create(url),
-                        CustomTabsService.RELATION_HANDLE_ALL_URLS));
+                () -> ChromeOriginVerifier.addVerificationOverride(packageName,
+                                Origin.create(url), CustomTabsService.RELATION_HANDLE_ALL_URLS));
     }
 
     /** Creates a Custom Tabs Session from the Intent, specifying the |packageName|. */

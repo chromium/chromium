@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ namespace content {
 // Default value for is_background_suspend_enabled is determined statically in
 // Chromium, but some content embedders (e.g. Cast) may need to change it at
 // runtime.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const bool kIsBackgroundMediaSuspendEnabled = true;
 #else
 const bool kIsBackgroundMediaSuspendEnabled = false;

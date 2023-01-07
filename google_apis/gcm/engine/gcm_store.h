@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -72,6 +71,10 @@ class GCM_EXPORT GCMStore {
   using UpdateCallback = base::OnceCallback<void(bool success)>;
 
   GCMStore();
+
+  GCMStore(const GCMStore&) = delete;
+  GCMStore& operator=(const GCMStore&) = delete;
+
   virtual ~GCMStore();
 
   // Load the data from persistent store and pass the initial state back to
@@ -159,9 +162,6 @@ class GCM_EXPORT GCMStore {
                                  UpdateCallback callback) = 0;
   virtual void RemoveInstanceIDData(const std::string& app_id,
                                     UpdateCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GCMStore);
 };
 
 }  // namespace gcm

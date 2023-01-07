@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,9 @@
 
 #include "base/values.h"
 
-namespace chromeos {
 namespace quick_answers {
 
 // Utility class for unit conversion.
-// TODO(b/182389513): Add unittests.
 class UnitConverter {
  public:
   explicit UnitConverter(const base::Value& rule_set);
@@ -47,6 +45,5 @@ class UnitConverter {
 };
 
 }  // namespace quick_answers
-}  // namespace chromeos
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_UTILS_UNIT_CONVERTER_H_

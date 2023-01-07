@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width initial-scale=1.0" />
+</head>
+<body>
+<script>
+
+const viewportTag = document.getElementsByTagName('meta')[0];
+const defaultViewportContent = viewportTag.getAttribute('content');
+
+function setViewportFit(value) {
+  viewportTag.setAttribute('content', defaultViewportContent + ', viewport-fit=' + value);
+}
+
+</script>
+</body>
+</html>

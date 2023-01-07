@@ -19,34 +19,28 @@ void HeapObject::Trace(Visitor* visitor) const {}
 ./trace_collections.h:24:5: note: [blink-gc] Untraced field 'm_wtfSet' declared here:
     HashSet<Member<HeapObject>, void, HeapAllocator> m_wtfSet;
     ^
-./trace_collections.h:26:5: note: [blink-gc] Untraced field 'm_heapListSet' declared here:
-    HeapListHashSet<Member<HeapObject> > m_heapListSet;
-    ^
-./trace_collections.h:27:5: note: [blink-gc] Untraced field 'm_wtfListSet' declared here:
-    ListHashSet<Member<HeapObject>, void, HeapAllocator> m_wtfListSet;
-    ^
-./trace_collections.h:29:5: note: [blink-gc] Untraced field 'm_heapLinkedSet' declared here:
+./trace_collections.h:26:5: note: [blink-gc] Untraced field 'm_heapLinkedSet' declared here:
     HeapLinkedHashSet<Member<HeapObject> > m_heapLinkedSet;
     ^
-./trace_collections.h:30:5: note: [blink-gc] Untraced field 'm_wtfLinkedSet' declared here:
+./trace_collections.h:27:5: note: [blink-gc] Untraced field 'm_wtfLinkedSet' declared here:
     LinkedHashSet<Member<HeapObject>, void, HeapAllocator> m_wtfLinkedSet;
     ^
-./trace_collections.h:32:5: note: [blink-gc] Untraced field 'm_heapCountedSet' declared here:
+./trace_collections.h:29:5: note: [blink-gc] Untraced field 'm_heapCountedSet' declared here:
     HeapHashCountedSet<Member<HeapObject> > m_heapCountedSet;
     ^
-./trace_collections.h:33:5: note: [blink-gc] Untraced field 'm_wtfCountedSet' declared here:
+./trace_collections.h:30:5: note: [blink-gc] Untraced field 'm_wtfCountedSet' declared here:
     HashCountedSet<Member<HeapObject>, void, HeapAllocator> m_wtfCountedSet;
     ^
-./trace_collections.h:35:5: note: [blink-gc] Untraced field 'm_heapMapKey' declared here:
+./trace_collections.h:32:5: note: [blink-gc] Untraced field 'm_heapMapKey' declared here:
     HeapHashMap<int, Member<HeapObject> > m_heapMapKey;
     ^
-./trace_collections.h:36:5: note: [blink-gc] Untraced field 'm_heapMapVal' declared here:
+./trace_collections.h:33:5: note: [blink-gc] Untraced field 'm_heapMapVal' declared here:
     HeapHashMap<Member<HeapObject>, int > m_heapMapVal;
     ^
-./trace_collections.h:37:5: note: [blink-gc] Untraced field 'm_wtfMapKey' declared here:
+./trace_collections.h:34:5: note: [blink-gc] Untraced field 'm_wtfMapKey' declared here:
     HashMap<int, Member<HeapObject>, void, void, void, HeapAllocator>
     ^
-./trace_collections.h:39:5: note: [blink-gc] Untraced field 'm_wtfMapVal' declared here:
+./trace_collections.h:36:5: note: [blink-gc] Untraced field 'm_wtfMapVal' declared here:
     HashMap<Member<HeapObject>, int, void, void, void, HeapAllocator>
     ^
 1 warning generated.

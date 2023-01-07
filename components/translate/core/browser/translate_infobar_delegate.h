@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -32,12 +31,8 @@ class InfoBarManager;
 
 namespace translate {
 
-// Feature flag used to control the auto-always and auto-never snackbar
-// parameters (i.e. threshold and maximum-number-of).
-extern const base::Feature kTranslateAutoSnackbars;
-
 // Feature flag for "Translate Compact Infobar UI" project.
-extern const base::Feature kTranslateCompactUI;
+BASE_DECLARE_FEATURE(kTranslateCompactUI);
 
 class TranslateDriver;
 class TranslateManager;
@@ -49,7 +44,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
    public:
     // Handles UI changes on the translate step given.
     virtual void OnTranslateStepChanged(translate::TranslateStep step,
-                                        TranslateErrors::Type error_type) = 0;
+                                        TranslateErrors error_type) = 0;
     // Handles UI changes when the target language is updated.
     virtual void OnTargetLanguageChanged(
         const std::string& target_language_code) = 0;
@@ -62,12 +57,8 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
 
   static const size_t kNoIndex;
 
-  // Get the threshold and maximum number of occurences that parameterize
-  // automatic always- and never-translate.
-  static int GetAutoAlwaysThreshold();
-  static int GetAutoNeverThreshold();
-  static int GetMaximumNumberOfAutoAlways();
-  static int GetMaximumNumberOfAutoNever();
+  TranslateInfoBarDelegate(const TranslateInfoBarDelegate&) = delete;
+  TranslateInfoBarDelegate& operator=(const TranslateInfoBarDelegate&) = delete;
 
   ~TranslateInfoBarDelegate() override;
 
@@ -86,11 +77,10 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   static void Create(bool replace_existing_infobar,
                      const base::WeakPtr<TranslateManager>& translate_manager,
                      infobars::InfoBarManager* infobar_manager,
-                     bool is_off_the_record,
                      translate::TranslateStep step,
                      const std::string& source_language,
                      const std::string& target_language,
-                     TranslateErrors::Type error_type,
+                     TranslateErrors error_type,
                      bool triggered_from_menu);
 
   // Returns the number of languages supported.
@@ -104,9 +94,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
 
   translate::TranslateStep translate_step() const { return step_; }
 
-  bool is_off_the_record() { return is_off_the_record_; }
-
-  TranslateErrors::Type error_type() const { return error_type_; }
+  TranslateErrors error_type() const { return error_type_; }
 
   std::string source_language_code() const {
     return ui_delegate_.GetSourceLanguageCode();
@@ -130,13 +118,11 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
     return step_ == translate::TRANSLATE_STEP_TRANSLATE_ERROR;
   }
 
-  void OnErrorShown(TranslateErrors::Type error_type);
+  void OnErrorShown(TranslateErrors error_type);
 
   // Return true if the translation was triggered by a menu entry instead of
   // via an infobar/bubble or preference.
-  bool triggered_from_menu() const {
-    return triggered_from_menu_;
-  }
+  bool triggered_from_menu() const { return triggered_from_menu_; }
   // Languages supporting translate.
   virtual void GetLanguagesNames(std::vector<std::u16string>* languages) const;
   virtual void GetLanguagesCodes(
@@ -145,7 +131,6 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   virtual void Translate();
   virtual void RevertTranslation();
   virtual void RevertWithoutClosingInfobar();
-  void ReportLanguageDetectionError();
 
   // Called when the user declines to translate a page, by either closing the
   // infobar or pressing the "Don't translate" button.
@@ -155,7 +140,8 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   virtual bool IsTranslatableLanguageByPrefs() const;
   virtual void ToggleTranslatableLanguageByPrefs();
   virtual bool IsSiteOnNeverPromptList() const;
-  virtual void ToggleNeverPrompt();
+  virtual bool ShouldNeverTranslateLanguage() const;
+  virtual void ToggleNeverPromptSite();
   virtual bool ShouldAlwaysTranslate() const;
   virtual void ToggleAlwaysTranslate();
 
@@ -182,12 +168,6 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   // If true, this method has the side effect of mutating some prefs.
   bool ShouldAutoNeverTranslate();
 
-  int GetTranslationAutoAlwaysCount();
-  int GetTranslationAutoNeverCount();
-
-  void IncrementTranslationAutoAlwaysCount();
-  void IncrementTranslationAutoNeverCount();
-
   // The following methods are called by the infobar that displays the status
   // while translating and also the one displaying the error message.
   std::u16string GetMessageInfoBarButtonText();
@@ -200,7 +180,7 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   bool ShouldShowAlwaysTranslateShortcut();
   bool ShouldShowNeverTranslateShortcut();
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Shows the Infobar offering to never translate the language or the site.
   void ShowNeverTranslateInfobar();
 #endif
@@ -248,25 +228,23 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
  protected:
   TranslateInfoBarDelegate(
       const base::WeakPtr<TranslateManager>& translate_manager,
-      bool is_off_the_record,
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
-      TranslateErrors::Type error_type,
+      TranslateErrors error_type,
       bool triggered_from_menu);
 
  private:
   friend class TranslateInfoBarDelegateTest;
   typedef std::pair<std::string, std::u16string> LanguageNamePair;
 
-  bool is_off_the_record_;
   translate::TranslateStep step_;
 
   TranslateUIDelegate ui_delegate_;
   base::WeakPtr<TranslateManager> translate_manager_;
 
   // The error that occurred when trying to translate (NONE if no error).
-  TranslateErrors::Type error_type_;
+  TranslateErrors error_type_;
 
   // The translation related preferences.
   std::unique_ptr<TranslatePrefs> prefs_;
@@ -278,8 +256,6 @@ class TranslateInfoBarDelegate : public infobars::InfoBarDelegate {
   // Observers to handle front-end changes on different steps.
   // It's only used when we try to reuse the existing UI.
   base::ObserverList<Observer> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateInfoBarDelegate);
 };
 
 }  // namespace translate

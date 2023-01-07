@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,12 +38,7 @@ class HTMLVideoElementPersistentTest : public PageTestBase {
  protected:
   void SetUp() override {
     chrome_client_ = MakeGarbageCollected<FullscreenMockChromeClient>();
-
-    Page::PageClients clients;
-    FillWithEmptyClients(clients);
-    clients.chrome_client = chrome_client_.Get();
-
-    PageTestBase::SetupPageWithClients(&clients);
+    PageTestBase::SetupPageWithClients(chrome_client_);
     GetDocument().body()->setInnerHTML(
         "<body><div><video></video></div></body>");
   }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 
 #include <memory>
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
-#include "base/optional.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_util.h"
 
@@ -23,7 +22,7 @@ class Profile;
 // prompts to be low.
 class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
  public:
-  class Factory : public BrowserContextKeyedServiceFactory {
+  class Factory : public ProfileKeyedServiceFactory {
    public:
     static AdaptiveQuietNotificationPermissionUiEnabler* GetForProfile(
         Profile* profile);
@@ -39,12 +38,16 @@ class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
     // BrowserContextKeyedServiceFactory
     KeyedService* BuildServiceInstanceFor(
         content::BrowserContext* context) const override;
-    content::BrowserContext* GetBrowserContextToUse(
-        content::BrowserContext* context) const override;
   };
 
   static AdaptiveQuietNotificationPermissionUiEnabler* GetForProfile(
       Profile* profile);
+
+  AdaptiveQuietNotificationPermissionUiEnabler() = delete;
+  AdaptiveQuietNotificationPermissionUiEnabler(
+      const AdaptiveQuietNotificationPermissionUiEnabler&) = delete;
+  AdaptiveQuietNotificationPermissionUiEnabler& operator=(
+      const AdaptiveQuietNotificationPermissionUiEnabler&) = delete;
 
   // Called after a notification permission prompt was resolved.
   void PermissionPromptResolved();
@@ -65,11 +68,9 @@ class AdaptiveQuietNotificationPermissionUiEnabler : public KeyedService {
   // before M88.
   void BackfillEnablingMethodIfMissing();
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   bool is_enabling_adaptively_ = false;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AdaptiveQuietNotificationPermissionUiEnabler);
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_ADAPTIVE_QUIET_NOTIFICATION_PERMISSION_UI_ENABLER_H_

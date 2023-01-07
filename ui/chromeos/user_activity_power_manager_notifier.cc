@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,7 +73,7 @@ void UserActivityPowerManagerNotifier::OnUserActivity(const Event* event) {
 }
 
 void UserActivityPowerManagerNotifier::OnAuthScanDone(
-    device::mojom::ScanResult scan_result,
+    const device::mojom::FingerprintMessagePtr msg,
     const base::flat_map<std::string, std::vector<std::string>>& matches) {
   MaybeNotifyUserActivity(power_manager::USER_ACTIVITY_OTHER);
 }

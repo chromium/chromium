@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,16 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
-
 // Custom spellcheck dictionary. Words in this dictionary are always correctly
 // spelled. Words that are not in this dictionary may or may not be correctly
 // spelled.
 class CustomDictionaryEngine {
  public:
   CustomDictionaryEngine();
+
+  CustomDictionaryEngine(const CustomDictionaryEngine&) = delete;
+  CustomDictionaryEngine& operator=(const CustomDictionaryEngine&) = delete;
+
   ~CustomDictionaryEngine();
 
   // Initialize the custom dictionary engine.
@@ -35,8 +37,6 @@ class CustomDictionaryEngine {
  private:
   // Correctly spelled words.
   std::set<std::u16string> dictionary_;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomDictionaryEngine);
 };
 
 #endif  // COMPONENTS_SPELLCHECK_RENDERER_CUSTOM_DICTIONARY_ENGINE_H_

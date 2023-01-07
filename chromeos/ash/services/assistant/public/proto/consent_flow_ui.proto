@@ -1,0 +1,194 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash.assistant;
+
+import "activity_control_settings_ui.proto";
+import "activity_control_settings_common.proto";
+
+// Parameters to ConsentFlowUi.
+message ConsentFlowUiSelector {
+  // An ID that uniquely identifies a client integration with consent flow.
+  //
+  // Required.
+  optional ActivityControlSettingsUiSelector.FlowId flow_id = 1;
+}
+
+// Represents the result of an ConsentFlow fetch. Contains a status to indicate
+// what happened, and then all the relevant pieces of data to render a UI
+// appropriate to that outcome.
+message ConsentFlowUi {
+  // A top-level indicator of what to do next in the consent flow. This
+  // field's value determines what is present in the other fields of this
+  // message.
+  enum ConsentStatus {
+    UNSPECIFIED = 0;
+
+    // Show the consent flow to the user, where they can enable any missing
+    // opt-ins.
+    ASK_FOR_CONSENT = 1;
+
+    // The user has already granted all opt-ins.
+    ALREADY_CONSENTED = 2;
+
+    // Indicates an account-level error. The client may (but is not required to)
+    // let the user retry with a different account.
+    ERROR_ACCOUNT = 3;
+
+    // Something else went wrong. Show an error message.
+    ERROR = 4;
+  }
+  optional ConsentStatus consent_status = 1;
+
+  // Representation of the consent flow UI, where the opt-ins are displayed
+  // and the user can either accept or reject to proceed.
+  //
+  // Only present if ConsentStatus is ASK_FOR_CONSENT.
+  message ConsentUi {
+    // Represents the subsection of the ConsentUi that displays and conveys user
+    // opt-ins.
+    //
+    // Only present if the user needs to opt-in.
+    message ActivityControlUi {
+      // An opaque token that the client can pass back to the server to commit
+      // a user's opt in.
+      //
+      // Required.
+      optional bytes consent_token = 2;
+
+      // An opaque token to pass to Gmscore's auditing API, which strengthens
+      // the audit trail.
+      //
+      // Required.
+      optional bytes ui_audit_key = 3;
+
+      // The title of the page.
+      //
+      // Required.
+      optional string title = 4;
+
+      // A series of paragraphs serving as the introduction to the page.
+      //
+      // Required.
+      repeated string intro_text_paragraph = 5;
+
+      // An exact copy of the user's account name, so they know exactly which
+      // account is using.
+      //
+      // Required.
+      optional string identity = 6;
+
+      // The set of settings that the user is consenting to, in the order
+      // that they should be displayed to the user.
+      //
+      // Required.
+      repeated ClassicActivityControlUiTexts.SettingZippy setting_zippy = 7;
+
+      // A series of paragraphs at the end.
+      //
+      // Required.
+      repeated string footer_paragraph = 9;
+
+      message LearnMoreDialog {
+        // Title heading of the dialog.
+        optional string title = 1;
+        message HtmlProto {
+          optional string value = 2;
+        }
+        // May contain HTML tags for like bold and hyperlinks.
+        repeated HtmlProto paragraph = 2;
+        // Bottom button that closes dialog.
+        optional string dismiss_button = 3;
+      }
+      // Learn more dialog that can be opened from the Learn More CTA within
+      // setting_zippy.
+      optional LearnMoreDialog learn_more_dialog = 13;
+    }
+    optional ActivityControlUi activity_control_ui = 1;
+
+    // Represents the subsection of the ConsentUi that displays and conveys a
+    // disclosure that the user's account might be shared with third
+    // parties the user invokes in conversation/interaction with the Assistant.
+    //
+    // Always present.
+    message ThirdPartyDisclosureUi {
+      // Title of the page.
+      //
+      // Required.
+      optional string title = 5;
+
+      // The disclosures to present.
+      //
+      // Required.
+      repeated ClassicActivityControlUiTexts.SettingZippy disclosures = 2;
+
+      // Text for button that lets user acknowledge disclosures and continue
+      // to next screen.
+      //
+      // Required.
+      optional string button_continue = 3;
+    }
+    optional ThirdPartyDisclosureUi third_party_disclosure_ui = 3;
+
+    // Contains an HTML string with links to Google's Terms of Service and
+    // Privacy Policy.
+    optional string tos_pp_links = 9;
+
+    // Text for the button that lets the user accept the opt-ins, committing
+    // their new state.
+    //
+    // Required, since the user must be able to continue past this screen.
+    optional string accept_button_text = 4;
+
+    // Text for the button that lets the user reject the opt-ins.
+    //
+    // Optional. If absent, do not let the user reject.
+    optional string reject_button_text = 5;
+  }
+  optional ConsentUi consent_ui = 2;
+
+  // One or multiple consent UIs required for rendering. This serves as a
+  // replacement for the non-repeated field. If present, prefer to use this over
+  // consent_ui, otherwise fallback to using consent_ui. In the case that
+  // neither exists, the user does not need to (or cannot) perform any UDC
+  // consents. It is REQUIRED to present the consents in the order provided in
+  // this field.
+  repeated ConsentUi multi_consent_ui = 8;
+}
+
+// Represents an update to consent flow opt-ins. This occurs when the user
+// clicks a button to opt-in.
+message ConsentFlowUiUpdate {
+  // An ID that uniquely identifies a single consent screen / client integration
+  // with consent flow.
+  //
+  // Required.
+  optional ActivityControlSettingsUiSelector.FlowId flow_id = 4;
+
+  // If present, opt the user in.
+  optional bytes consent_token = 1;
+
+  // True means the user saw 3p disclosure and acknowledged it, false means 3p
+  // disclosure was not presented to the user.
+  optional bool saw_third_party_disclosure = 3;
+}
+
+// Represents the response to updating consent flow.
+message ConsentFlowUiUpdateResult {
+  // Represents the outcome of the update; did it succeed or fail?
+  enum UpdateStatus {
+    UNSPECIFIED = 0;
+
+    // The update was successfully executed. The user can proceed.
+    SUCCESS = 1;
+
+    // The update was not successfully executed. The user should not proceed.
+    ERROR = 2;
+  }
+  optional UpdateStatus update_status = 1;
+}

@@ -1,0 +1,38 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/base/mojom/ui_base_types.mojom";
+
+// The different ways the multipaste menu can be shown. These values are
+// written to logs. New enum values can be added, but existing enums must
+// never be renumbered, deleted, or reused. If adding an enum, add it at the
+// bottom.
+[Stable, Extensible]
+enum ClipboardHistoryControllerShowSource {
+  // Shown by the accelerator(search + v).
+  kAccelerator,
+  // Shown by a render view's context menu.
+  kRenderViewContextMenu,
+  // Shown by a textfield context menu.
+  kTextfieldContextMenu,
+  // Shown by the virtual keyboard.
+  kVirtualKeyboard,
+  // Used as a default value in case of version skew.
+  [Default] kUnknown
+};
+
+// This interface is implemented by Ash-Chrome.
+// ClipboardHistory (//ash/clipboard) is an Ash-Chrome feature that shows the
+// last few things copied. It is shown by accelerator and contextual menu. This
+// allows Lacros-Chrome to show the ClipboardHistory menu by contextual menu.
+[Stable, Uuid="2dc3f126-d79f-4d9e-a7a7-0989c1be8acd"]
+interface ClipboardHistory {
+  // Shows a menu in Ash-Chrome with the last few things copied.
+  ShowClipboard@0(gfx.mojom.Rect anchor_point,
+      ui.mojom.MenuSourceType menu_source_type,
+      crosapi.mojom.ClipboardHistoryControllerShowSource show_source);
+};

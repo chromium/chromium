@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<iframe></iframe>
+
+<script>
+  async_test(t => {
+    addEventListener("load", () => {
+      let iframe_element = document.querySelector("iframe");
+      let iframe_window = iframe_element.contentWindow;
+      iframe_element.remove();
+      let mql = iframe_window.matchMedia("(max-width:100px)");
+      requestAnimationFrame(() => { setTimeout(() => {
+        mql.matches;
+        t.done();
+      }); });
+    });
+  }, "window.matchMedia does not crash on a detached frame");
+</script>

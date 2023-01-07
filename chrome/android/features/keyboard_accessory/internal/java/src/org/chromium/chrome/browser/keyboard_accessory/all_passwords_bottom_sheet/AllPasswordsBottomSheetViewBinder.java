@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,13 +12,11 @@ import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_botto
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ORIGIN;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.VISIBLE;
+import static org.chromium.chrome.browser.password_manager.PasswordManagerHelper.usesUnifiedPasswordManagerBranding;
 
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.text.Spannable;
-import android.text.SpannableString;
 import android.text.method.PasswordTransformationMethod;
-import android.text.style.StyleSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -29,6 +27,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.ItemType;
 import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -36,7 +35,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
-import org.chromium.ui.widget.ChipView;
 import org.chromium.url.GURL;
 
 /**
@@ -188,20 +186,13 @@ class AllPasswordsBottomSheetViewBinder {
         iconView.setImageDrawable(icon);
     }
 
-    private static SpannableString formatWarningForOrigin(Resources resources, String origin) {
+    private static String formatWarningForOrigin(Resources resources, String origin) {
         String formattedOrigin = UrlFormatter.formatUrlForSecurityDisplay(
                 new GURL(origin), SchemeDisplay.OMIT_CRYPTOGRAPHIC);
-        String message = String.format(
-                resources.getString(
-                        R.string.all_passwords_bottom_sheet_warning_dialog_message_first),
+        return String.format(
+                resources.getString(usesUnifiedPasswordManagerBranding()
+                                ? R.string.all_passwords_bottom_sheet_subtitle
+                                : R.string.all_passwords_bottom_sheet_warning_dialog_message_first),
                 formattedOrigin);
-
-        int startIndex = message.indexOf(formattedOrigin);
-        int endIndex = startIndex + formattedOrigin.length();
-        SpannableString spannableMessage = new SpannableString(message);
-        StyleSpan boldStyle = new StyleSpan(android.graphics.Typeface.BOLD);
-        spannableMessage.setSpan(
-                boldStyle, startIndex, endIndex, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return spannableMessage;
     }
 }

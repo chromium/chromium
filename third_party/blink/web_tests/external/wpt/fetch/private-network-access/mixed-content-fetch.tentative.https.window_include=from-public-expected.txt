@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+FAIL public to local with local targetAddressSpace option: success. assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+PASS public to local with local targetAddressSpace option: PUT success.
+PASS public to local with private targetAddressSpace option: failed.
+PASS public to local with private targetAddressSpace option: PUT failed.
+PASS public to local with public targetAddressSpace option: failed.
+PASS public to local with public targetAddressSpace option: PUT failed.
+PASS public to private with local targetAddressSpace option: failed.
+PASS public to private with local targetAddressSpace option: PUT failed.
+FAIL public to private with private targetAddressSpace option: success. assert_equals: error expected (undefined) undefined but got (string) "TypeError: Failed to fetch"
+PASS public to private with private targetAddressSpace option: PUT success.
+PASS public to private with public targetAddressSpace option: failed.
+PASS public to private with public targetAddressSpace option: PUT failed.
+PASS public to public with local targetAddressSpace option: failed.
+PASS public to public with local targetAddressSpace option: PUT failed.
+PASS public to public with private targetAddressSpace option: failed.
+PASS public to public with private targetAddressSpace option: PUT failed.
+PASS public to public with public targetAddressSpace option: failed.
+PASS public to public with public targetAddressSpace option: PUT failed.
+Harness: the test ran to completion.
+

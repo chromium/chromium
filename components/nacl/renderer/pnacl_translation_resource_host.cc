@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/nacl/common/nacl_host_messages.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/shared_impl/ppapi_globals.h"
@@ -49,7 +49,6 @@ bool PnaclTranslationResourceHost::OnMessageReceived(
 }
 
 void PnaclTranslationResourceHost::RequestNexeFd(
-    int render_view_id,
     PP_Instance instance,
     const nacl::PnaclCacheInfo& cache_info,
     RequestNexeFdCallback callback) {
@@ -58,19 +57,17 @@ void PnaclTranslationResourceHost::RequestNexeFd(
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&PnaclTranslationResourceHost::SendRequestNexeFd, this,
-                     render_view_id, instance, cache_info,
-                     std::move(callback)));
+                     instance, cache_info, std::move(callback)));
   return;
 }
 
 void PnaclTranslationResourceHost::SendRequestNexeFd(
-    int render_view_id,
     PP_Instance instance,
     const nacl::PnaclCacheInfo& cache_info,
     RequestNexeFdCallback callback) {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
   if (!sender_ || !sender_->Send(new NaClHostMsg_NexeTempFileRequest(
-          render_view_id, instance, cache_info))) {
+                      instance, cache_info))) {
     PpapiGlobals::Get()->GetMainThreadMessageLoop()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   static_cast<int32_t>(PP_ERROR_FAILED), false,

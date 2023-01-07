@@ -1,8 +1,9 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/builders.star", "builder", "defaults", "goma", "os")
+load("//lib/builders.star", "builder", "defaults", "goma", "reclient")
+load("//lib/consoles.star", "consoles")
 load("//lib/swarming.star", swarming_lib = "swarming")
 
 luci.bucket(
@@ -21,6 +22,10 @@ luci.bucket(
     ],
 )
 
+consoles.list_view(
+    name = "findit",
+)
+
 # FindIt builders use a separate pool with a dedicated set of permissions.
 swarming_lib.pool_realm(name = "pools/findit")
 
@@ -35,12 +40,11 @@ defaults.auto_builder_dimension.set(False)
 defaults.bucket.set("findit")
 defaults.build_numbers.set(True)
 defaults.builderless.set(True)
+defaults.list_view.set("findit")
 defaults.ssd.set(True)
-defaults.configure_kitchen.set(True)
 defaults.execution_timeout.set(8 * time.hour)
 defaults.pool.set("luci.chromium.findit")
 defaults.service_account.set("findit-builder@chops-service-accounts.iam.gserviceaccount.com")
-defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 
 defaults.caches.set([
     swarming.cache(
@@ -48,6 +52,9 @@ defaults.caches.set([
         path = "win_toolchain",
     ),
 ])
+
+# TODO(crbug.com/1362440): remove this.
+defaults.omit_python2.set(False)
 
 # Builders are defined in lexicographic order by name
 
@@ -57,32 +64,15 @@ builder(
     name = "findit-rerun",
     executable = "recipe:findit/chromium/single_revision",
     goma_backend = goma.backend.RBE_PROD,
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )
 
-# Dimensionless trybot for findit.
-#
-# Findit will add appropriate dimensions and properties as needed based on
-# the waterfall builder being analyzed.
-#
-# TODO(robertocn): Remove _variable trybot builders from "try" bucket
-#   after they have been configured to use this generic builder, as well as
-#   the findit 'mixin'.
+# GoFindit builder to verify a culprit (go/gofindit-design-doc)
 builder(
-    name = "findit_variable",
-    # Findit app specifies these for each build it schedules. The reason why
-    # we specify them here is to pass validation of the buildbucket config.
-    # Also, to illustrate the typical use case of this bucket.
-    executable = "recipe:findit/chromium/compile",
+    name = "gofindit-culprit-verification",
+    executable = "recipe:gofindit/chromium/single_revision",
     goma_backend = goma.backend.RBE_PROD,
-)
-
-builder(
-    name = "linux_chromium_bot_db_exporter",
-    executable = "recipe:findit/chromium/export_bot_db",
-    os = os.LINUX_DEFAULT,
-    properties = {
-        "gs_bucket": "findit-for-me",
-        "gs_object": "bot_db.json",
-    },
-    schedule = "0 0,6,12,18 * * *",
+    reclient_instance = reclient.instance.DEFAULT_TRUSTED,
+    reclient_jobs = reclient.jobs.DEFAULT,
 )

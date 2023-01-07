@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class Browser;
-class GURL;
 class Profile;
 
 namespace content {
@@ -42,6 +41,9 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     PAGE_ACCESS_RUN_ON_SITE,
     PAGE_ACCESS_RUN_ON_ALL_SITES,
     PAGE_ACCESS_LEARN_MORE,
+    PAGE_ACCESS_ALL_EXTENSIONS_GRANTED,
+    PAGE_ACCESS_ALL_EXTENSIONS_BLOCKED,
+    PAGE_ACCESS_PERMISSIONS_PAGE,
     // NOTE: If you update this, you probably need to update the
     // ContextMenuAction enum below.
   };
@@ -66,8 +68,12 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     kPageAccessRunOnSite = 9,
     kPageAccessRunOnAllSites = 10,
     kPageAccessLearnMore = 11,
-    kMaxValue = kPageAccessLearnMore,
+    kPageAccessPermissionsPage = 12,
+    kMaxValue = kPageAccessPermissionsPage,
   };
+
+  // Location where the context menu is open from.
+  enum class ContextMenuSource { kToolbarAction = 0, kMenuItem = 1 };
 
   // The current visibility of the extension; this affects the "pin" / "unpin"
   // strings in the menu.
@@ -103,7 +109,13 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
                             Browser* browser,
                             ButtonVisibility visibility,
                             PopupDelegate* delegate,
-                            bool can_show_icon_in_toolbar);
+                            bool can_show_icon_in_toolbar,
+                            ContextMenuSource source);
+
+  ExtensionContextMenuModel(const ExtensionContextMenuModel&) = delete;
+  ExtensionContextMenuModel& operator=(const ExtensionContextMenuModel&) =
+      delete;
+
   ~ExtensionContextMenuModel() override;
 
   // SimpleMenuModel::Delegate:
@@ -119,24 +131,19 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   }
 
  private:
-  void InitMenu(const Extension* extension, ButtonVisibility button_visibility);
+  void InitMenu(const Extension* extension, bool can_show_icon_in_toolbar);
 
-  void CreatePageAccessSubmenu(const Extension* extension);
-
-  MenuEntries GetCurrentPageAccess(const Extension* extension,
-                                   content::WebContents* web_contents) const;
+  // Adds the page access items based on the current site setting pointed by
+  // `web_contents`.
+  void CreatePageAccessItems(const Extension* extension,
+                             content::WebContents* web_contents);
 
   // Returns true if the given page access command is enabled in the menu.
   bool IsPageAccessCommandEnabled(const Extension& extension,
-                                  const GURL& url,
                                   int command_id) const;
 
   void HandlePageAccessCommand(int command_id,
                                const Extension* extension) const;
-
-  // Logs a user action when an option is selected in the page access section of
-  // the context menu.
-  void LogPageAccessAction(int command_id) const;
 
   // Gets the extension we are displaying the menu for. Returns NULL if the
   // extension has been uninstalled and no longer exists.
@@ -156,19 +163,17 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   // The extension action of the extension we are displaying the menu for (if
   // it has one, otherwise NULL).
-  ExtensionAction* extension_action_;
+  raw_ptr<ExtensionAction> extension_action_;
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The delegate which handles the 'inspect popup' menu command (or NULL).
-  PopupDelegate* delegate_;
+  raw_ptr<PopupDelegate> delegate_;
 
   // The visibility of the button at the time the menu opened.
   ButtonVisibility button_visibility_;
-
-  const bool can_show_icon_in_toolbar_;
 
   // Menu matcher for context menu items specified by the extension.
   std::unique_ptr<ContextMenuMatcher> extension_items_;
@@ -177,9 +182,9 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   // The action taken by the menu. Has a valid value when the menu is being
   // shown.
-  base::Optional<ContextMenuAction> action_taken_;
+  absl::optional<ContextMenuAction> action_taken_;
 
-  DISALLOW_COPY_AND_ASSIGN(ExtensionContextMenuModel);
+  ContextMenuSource source_;
 };
 
 }  // namespace extensions

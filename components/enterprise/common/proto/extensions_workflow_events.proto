@@ -1,0 +1,42 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package enterprise_reporting;
+
+// ExtensionsWorkflowEvent contains an extension request and is sent whenever a
+// user requests an extension or cancels one.
+// This proto must be synced with the server side proto with same name.
+//
+// Next ID: 7.
+message ExtensionsWorkflowEvent {
+  // ID of the installed app/extension for a Chrome app or extension.
+  optional string id = 1;
+
+  // When the user commits to requesting the extension.
+  // [request_timestamp] is milliseconds since Epoch in UTC timezone
+  // (Java time).
+  optional int64 request_timestamp_millis = 2;
+
+  // Whether the user has requested an extension or has removed a request.
+  optional bool removed = 3;
+
+  enum ClientType {
+    UNKNOWN = 0;
+    CHROME_OS_USER = 1;
+    BROWSER_DEVICE = 2;
+  }
+
+  // From which client type the request was sent.
+  optional ClientType client_type = 4;
+
+  // User justification describing why the extension is being requested.
+  optional string justification = 5;
+
+  // Device name (aka machine name) of a browser device, used for the audit log.
+  optional string device_name = 6;
+}

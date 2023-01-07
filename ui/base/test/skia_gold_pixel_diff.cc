@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/base/test/skia_gold_pixel_diff.h"
 
 #include "build/build_config.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -21,8 +21,6 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_switches.h"
 #include "base/threading/thread_restrictions.h"
@@ -39,10 +37,14 @@ namespace test {
 
 const char* kSkiaGoldInstance = "chrome";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const wchar_t* kSkiaGoldCtl = L"tools/skia_goldctl/win/goldctl.exe";
-#elif defined(OS_APPLE)
-const char* kSkiaGoldCtl = "tools/skia_goldctl/mac/goldctl";
+#elif BUILDFLAG(IS_APPLE)
+#if defined(ARCH_CPU_ARM64)
+const char* kSkiaGoldCtl = "tools/skia_goldctl/mac_arm64/goldctl";
+#else
+const char* kSkiaGoldCtl = "tools/skia_goldctl/mac_amd64/goldctl";
+#endif  // defined(ARCH_CPU_ARM64)
 #else
 const char* kSkiaGoldCtl = "tools/skia_goldctl/linux/goldctl";
 #endif
@@ -58,6 +60,10 @@ const char* kCodeReviewSystemKey = "code-review-system";
 const char* kNoLuciAuth = "no-luci-auth";
 const char* kBypassSkiaGoldFunctionality = "bypass-skia-gold-functionality";
 const char* kDryRun = "dryrun";
+
+// The switch key for saving png file locally for debugging. This will allow
+// the framework to save the screenshot png file to this path.
+const char* kPngFilePathDebugging = "skia-gold-local-png-write-directory";
 
 namespace {
 
@@ -77,7 +83,7 @@ void AppendArgsJustAfterProgram(base::CommandLine& cmd,
   argv.insert(argv.begin() + 1, args.begin(), args.end());
 }
 
-void FillInSystemEnvironment(base::Value::DictStorage& ds) {
+void FillInSystemEnvironment(base::Value::Dict& ds) {
   std::string processor = "unknown";
 #if defined(ARCH_CPU_X86)
   processor = "x86";
@@ -87,40 +93,8 @@ void FillInSystemEnvironment(base::Value::DictStorage& ds) {
   LOG(WARNING) << "Unknown Processor.";
 #endif
 
-  ds["system"] = base::Value(SkiaGoldPixelDiff::GetPlatform());
-  ds["processor"] = base::Value(processor);
-}
-
-// Returns whether image comparison failure should result in Gerrit comments.
-// In general, when a pixel test fails on CQ, Gold will make a gerrit
-// comment indicating that the cl breaks some pixel tests. However,
-// if the test is flaky and has a failure->passing pattern, we don't
-// want Gold to make gerrit comments on the first failure.
-// This function returns true iff:
-//  * it's a tryjob and no retries left.
-//  or * it's a CI job.
-bool ShouldMakeGerritCommentsOnFailures() {
-  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-  if (!cmd->HasSwitch(kIssueKey))
-    return true;
-  if (cmd->HasSwitch(switches::kTestLauncherRetriesLeft)) {
-    int retries_left = 0;
-    bool succeed = base::StringToInt(
-        cmd->GetSwitchValueASCII(switches::kTestLauncherRetriesLeft),
-        &retries_left);
-    if (!succeed) {
-      LOG(ERROR) << switches::kTestLauncherRetriesLeft << " = "
-                 << cmd->GetSwitchValueASCII(switches::kTestLauncherRetriesLeft)
-                 << " can not convert to integer.";
-      return true;
-    }
-    if (retries_left > 0) {
-      LOG(INFO) << "Test failure will not result in Gerrit comment because"
-                   " there are more retries.";
-      return false;
-    }
-  }
-  return true;
+  ds.Set("system", SkiaGoldPixelDiff::GetPlatform());
+  ds.Set("processor", processor);
 }
 
 // Fill in test environment to the keys_file. The format is json.
@@ -129,7 +103,7 @@ bool ShouldMakeGerritCommentsOnFailures() {
 // should be filled in. Eg: operating system, graphics card, processor
 // architecture, screen resolution, etc.
 bool FillInTestEnvironment(const base::FilePath& keys_file) {
-  base::Value::DictStorage ds;
+  base::Value::Dict ds;
   FillInSystemEnvironment(ds);
   base::Value root(std::move(ds));
   std::string content;
@@ -162,14 +136,18 @@ SkiaGoldPixelDiff::~SkiaGoldPixelDiff() = default;
 
 // static
 std::string SkiaGoldPixelDiff::GetPlatform() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return "windows";
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   return "macOS";
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
   return "linux";
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  return "lacros";
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  return "ash";
 #endif
 }
 
@@ -280,6 +258,27 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
     return true;
   }
 
+  // Copy the png file to another place for local debugging.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kPngFilePathDebugging)) {
+    base::FilePath path =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            kPngFilePathDebugging);
+    if (!base::PathExists(path)) {
+      base::CreateDirectory(path);
+    }
+    base::FilePath filepath;
+    if (remote_golden_image_name.length() <= 4 ||
+        (remote_golden_image_name.length() > 4 &&
+         remote_golden_image_name.substr(remote_golden_image_name.length() -
+                                         4) != ".png")) {
+      filepath = path.AppendASCII(remote_golden_image_name + ".png");
+    } else {
+      filepath = path.AppendASCII(remote_golden_image_name);
+    }
+    base::CopyFile(local_file_path, filepath);
+  }
+
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::CommandLine cmd(GetAbsoluteSrcRelativePath(kSkiaGoldCtl));
   cmd.AppendSwitchASCII("test-name", remote_golden_image_name);
@@ -289,15 +288,6 @@ bool SkiaGoldPixelDiff::UploadToSkiaGoldServer(
 
   if (!BotModeEnabled(base::CommandLine::ForCurrentProcess())) {
     cmd.AppendSwitch(kDryRun);
-  }
-
-  std::map<std::string, std::string> optional_keys;
-  if (!ShouldMakeGerritCommentsOnFailures()) {
-    optional_keys["ignore"] = "1";
-  }
-  for (auto key : optional_keys) {
-    cmd.AppendSwitchASCII("add-test-optional-key",
-                          base::StrCat({key.first, ":", key.second}));
   }
 
   if (algorithm)

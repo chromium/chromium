@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,7 +50,6 @@ public final class NavigationImpl extends INavigation.Stub {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
-        NavigationImplJni.get().setJavaNavigation(mNativeNavigationImpl, NavigationImpl.this);
     }
 
     public IClientNavigation getClientNavigation() {
@@ -100,6 +99,13 @@ public final class NavigationImpl extends INavigation.Stub {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
         return NavigationImplJni.get().getHttpStatusCode(mNativeNavigationImpl);
+    }
+
+    @Override
+    public List<String> getResponseHeaders() {
+        StrictModeWorkaround.apply();
+        throwIfNativeDestroyed();
+        return Arrays.asList(NavigationImplJni.get().getResponseHeaders(mNativeNavigationImpl));
     }
 
     @Override
@@ -207,6 +213,13 @@ public final class NavigationImpl extends INavigation.Stub {
     }
 
     @Override
+    public void disableIntentProcessing() {
+        if (!NavigationImplJni.get().disableIntentProcessing(mNativeNavigationImpl)) {
+            throw new IllegalStateException();
+        }
+    }
+
+    @Override
     public boolean isFormSubmission() {
         StrictModeWorkaround.apply();
         throwIfNativeDestroyed();
@@ -227,14 +240,31 @@ public final class NavigationImpl extends INavigation.Stub {
         if (mPage == null) {
             long nativePageImpl = NavigationImplJni.get().getPage(mNativeNavigationImpl);
             if (nativePageImpl == -1) {
-                throw new IllegalStateException("Using Navigation after native destroyed");
+                throw new IllegalStateException(
+                        "Invoking Navigation#getPage() outside of valid calling context");
             }
 
-            if (nativePageImpl == 0) return null;
+            // There should always be a Page associated with the navigation within the valid
+            // calling contexts for Navigation#getPage().
+            assert (nativePageImpl != 0);
 
             mPage = mNavigationController.getPage(nativePageImpl);
         }
         return mPage.getClientPage();
+    }
+
+    @Override
+    public int getNavigationEntryOffset() {
+        StrictModeWorkaround.apply();
+        throwIfNativeDestroyed();
+        return NavigationImplJni.get().getNavigationEntryOffset(mNativeNavigationImpl);
+    }
+
+    @Override
+    public boolean wasFetchedFromCache() {
+        StrictModeWorkaround.apply();
+        throwIfNativeDestroyed();
+        return NavigationImplJni.get().wasFetchedFromCache(mNativeNavigationImpl);
     }
 
     public void setIntentLaunched() {
@@ -285,11 +315,11 @@ public final class NavigationImpl extends INavigation.Stub {
 
     @NativeMethods
     interface Natives {
-        void setJavaNavigation(long nativeNavigationImpl, NavigationImpl caller);
         int getState(long nativeNavigationImpl);
         String getUri(long nativeNavigationImpl);
         String[] getRedirectChain(long nativeNavigationImpl);
         int getHttpStatusCode(long nativeNavigationImpl);
+        String[] getResponseHeaders(long nativeNavigationImpl);
         boolean isSameDocument(long nativeNavigationImpl);
         boolean isErrorPage(long nativeNavigationImpl);
         boolean isDownload(long nativeNavigationImpl);
@@ -304,9 +334,12 @@ public final class NavigationImpl extends INavigation.Stub {
         boolean isReload(long nativeNavigationImpl);
         boolean isServedFromBackForwardCache(long nativeNavigationImpl);
         boolean disableNetworkErrorAutoReload(long nativeNavigationImpl);
+        boolean disableIntentProcessing(long nativeNavigationImpl);
         boolean areIntentLaunchesAllowedInBackground(long nativeNavigationImpl);
         boolean isFormSubmission(long nativeNavigationImpl);
         String getReferrer(long nativeNavigationImpl);
         long getPage(long nativeNavigationImpl);
+        int getNavigationEntryOffset(long nativeNavigationImpl);
+        boolean wasFetchedFromCache(long nativeNavigationImpl);
     }
 }

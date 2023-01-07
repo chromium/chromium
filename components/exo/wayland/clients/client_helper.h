@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,36 +7,43 @@
 
 #include <alpha-compositing-unstable-v1-client-protocol.h>
 #include <aura-shell-client-protocol.h>
-#include <color-space-unstable-v1-client-protocol.h>
+#include <chrome-color-management-client-protocol.h>
+#include <content-type-v1-client-protocol.h>
 #include <cursor-shapes-unstable-v1-client-protocol.h>
 #include <extended-drag-unstable-v1-client-protocol.h>
 #include <fullscreen-shell-unstable-v1-client-protocol.h>
 #include <gaming-input-unstable-v2-client-protocol.h>
+#include <idle-inhibit-unstable-v1-client-protocol.h>
 #include <input-timestamps-unstable-v1-client-protocol.h>
 #include <keyboard-configuration-unstable-v1-client-protocol.h>
 #include <keyboard-extension-unstable-v1-client-protocol.h>
+#include <keyboard-shortcuts-inhibit-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <notification-shell-unstable-v1-client-protocol.h>
+#include <overlay-prioritizer-client-protocol.h>
 #include <pointer-constraints-unstable-v1-client-protocol.h>
 #include <pointer-gestures-unstable-v1-client-protocol.h>
 #include <presentation-time-client-protocol.h>
 #include <relative-pointer-unstable-v1-client-protocol.h>
 #include <remote-shell-unstable-v1-client-protocol.h>
+#include <remote-shell-unstable-v2-client-protocol.h>
 #include <secure-output-unstable-v1-client-protocol.h>
 #include <stylus-tools-unstable-v1-client-protocol.h>
 #include <stylus-unstable-v2-client-protocol.h>
+#include <surface-augmenter-client-protocol.h>
+#include <text-input-extension-unstable-v1-client-protocol.h>
 #include <text-input-unstable-v1-client-protocol.h>
+#include <touchpad-haptics-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
 #include <vsync-feedback-unstable-v1-client-protocol.h>
 #include <wayland-client-core.h>
 #include <wayland-client-protocol.h>
+#include <weston-test-client-protocol.h>
 #include <xdg-decoration-unstable-v1-client-protocol.h>
+#include <xdg-output-unstable-v1-client-protocol.h>
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
-
-#include <memory>
-
 #include "base/scoped_generic.h"
 
 #if defined(USE_GBM)
@@ -55,6 +62,8 @@
   };                                    \
   }
 
+DEFAULT_DELETER_FDECL(surface_augmenter)
+DEFAULT_DELETER_FDECL(overlay_prioritizer)
 DEFAULT_DELETER_FDECL(wl_buffer)
 DEFAULT_DELETER_FDECL(wl_callback)
 DEFAULT_DELETER_FDECL(wl_compositor)
@@ -77,6 +86,11 @@ DEFAULT_DELETER_FDECL(struct wp_presentation_feedback)
 DEFAULT_DELETER_FDECL(zaura_shell)
 DEFAULT_DELETER_FDECL(zaura_surface)
 DEFAULT_DELETER_FDECL(zaura_output)
+DEFAULT_DELETER_FDECL(zcr_color_manager_v1)
+DEFAULT_DELETER_FDECL(zcr_color_management_output_v1)
+DEFAULT_DELETER_FDECL(zcr_color_management_surface_v1)
+DEFAULT_DELETER_FDECL(zcr_color_space_creator_v1)
+DEFAULT_DELETER_FDECL(zcr_color_space_v1)
 DEFAULT_DELETER_FDECL(zwp_linux_buffer_release_v1)
 DEFAULT_DELETER_FDECL(zwp_fullscreen_shell_v1)
 DEFAULT_DELETER_FDECL(zwp_input_timestamps_manager_v1)
@@ -85,10 +99,11 @@ DEFAULT_DELETER_FDECL(zwp_linux_buffer_params_v1)
 DEFAULT_DELETER_FDECL(zwp_linux_dmabuf_v1)
 DEFAULT_DELETER_FDECL(zwp_linux_explicit_synchronization_v1)
 DEFAULT_DELETER_FDECL(zwp_linux_surface_synchronization_v1)
-DEFAULT_DELETER_FDECL(zcr_color_space_v1)
 DEFAULT_DELETER_FDECL(zcr_vsync_feedback_v1)
 DEFAULT_DELETER_FDECL(zcr_vsync_timing_v1)
 DEFAULT_DELETER_FDECL(wl_data_device_manager)
+DEFAULT_DELETER_FDECL(wp_content_type_manager_v1)
+DEFAULT_DELETER_FDECL(wp_content_type_v1)
 DEFAULT_DELETER_FDECL(wp_viewporter)
 DEFAULT_DELETER_FDECL(zxdg_shell_v6)
 DEFAULT_DELETER_FDECL(xdg_wm_base)
@@ -96,13 +111,18 @@ DEFAULT_DELETER_FDECL(zwp_text_input_manager_v1)
 DEFAULT_DELETER_FDECL(zcr_secure_output_v1)
 DEFAULT_DELETER_FDECL(zcr_alpha_compositing_v1)
 DEFAULT_DELETER_FDECL(zcr_stylus_v2)
+DEFAULT_DELETER_FDECL(zcr_pointer_stylus_v2)
 DEFAULT_DELETER_FDECL(zcr_cursor_shapes_v1)
 DEFAULT_DELETER_FDECL(zcr_gaming_input_v2)
 DEFAULT_DELETER_FDECL(zcr_keyboard_configuration_v1)
 DEFAULT_DELETER_FDECL(zcr_keyboard_extension_v1)
+DEFAULT_DELETER_FDECL(zwp_keyboard_shortcuts_inhibit_manager_v1)
 DEFAULT_DELETER_FDECL(zcr_notification_shell_v1)
 DEFAULT_DELETER_FDECL(zcr_remote_shell_v1)
+DEFAULT_DELETER_FDECL(zcr_remote_shell_v2)
 DEFAULT_DELETER_FDECL(zcr_stylus_tools_v1)
+DEFAULT_DELETER_FDECL(zcr_text_input_extension_v1)
+DEFAULT_DELETER_FDECL(zcr_touchpad_haptics_v1)
 DEFAULT_DELETER_FDECL(zwp_pointer_gestures_v1)
 DEFAULT_DELETER_FDECL(zwp_pointer_constraints_v1)
 DEFAULT_DELETER_FDECL(zwp_relative_pointer_manager_v1)
@@ -112,6 +132,11 @@ DEFAULT_DELETER_FDECL(xdg_surface)
 DEFAULT_DELETER_FDECL(xdg_toplevel)
 DEFAULT_DELETER_FDECL(zxdg_surface_v6)
 DEFAULT_DELETER_FDECL(zxdg_toplevel_v6)
+DEFAULT_DELETER_FDECL(zxdg_output_manager_v1)
+DEFAULT_DELETER_FDECL(weston_test)
+DEFAULT_DELETER_FDECL(zwp_idle_inhibit_manager_v1)
+DEFAULT_DELETER_FDECL(zcr_remote_surface_v1)
+DEFAULT_DELETER_FDECL(zcr_remote_surface_v2)
 
 #if defined(USE_GBM)
 DEFAULT_DELETER_FDECL(gbm_bo)

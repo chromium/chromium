@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,18 +16,18 @@ using KnownInterceptionDisclosureUITest = InProcessBrowserTest;
 // Tests that the chrome://connection-monitoring-detected WebUI page shows the
 // expected title and strings.
 IN_PROC_BROWSER_TEST_F(KnownInterceptionDisclosureUITest, PageDisplaysStrings) {
-  constexpr char kTabTitle[] = "Monitoring Detected";
-  constexpr char kBodyText[] = "Your activity on the web";
+  constexpr char16_t kTabTitle[] = u"Monitoring Detected";
+  constexpr char16_t kBodyText[] = u"Your activity on the web";
 
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       content::GetWebUIURL(
-          security_interstitials::kChromeUIConnectionMonitoringDetectedHost));
+          security_interstitials::kChromeUIConnectionMonitoringDetectedHost)));
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  EXPECT_EQ(base::ASCIIToUTF16(kTabTitle), contents->GetTitle());
-  EXPECT_GE(ui_test_utils::FindInPage(contents, base::ASCIIToUTF16(kBodyText),
-                                      true, true, nullptr, nullptr),
+  EXPECT_EQ(kTabTitle, contents->GetTitle());
+  EXPECT_GE(ui_test_utils::FindInPage(contents, kBodyText, true, true, nullptr,
+                                      nullptr),
             1);
 }

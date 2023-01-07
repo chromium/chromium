@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/css_property_name.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -31,6 +32,7 @@ class MatchedPropertiesCacheTestKey {
                                 const TreeScope& tree_scope) {
     result_.FinishAddingUARules();
     result_.FinishAddingUserRules();
+    result_.FinishAddingPresentationalHints();
     auto* set = css_test_helpers::ParseDeclarationBlock(block_text);
     result_.AddMatchedProperties(set);
     result_.FinishAddingAuthorRulesForTreeScope(tree_scope);
@@ -65,6 +67,7 @@ class MatchedPropertiesCacheTestCache {
                                       const ComputedStyle& style,
                                       const ComputedStyle& parent_style) {
     StyleResolverState state(document_, *document_.body(),
+                             nullptr /* StyleRecalcContext */,
                              StyleRequest(&parent_style));
     state.SetStyle(ComputedStyle::Clone(style));
     return cache_.Find(key.InnerKey(), state);
@@ -224,6 +227,24 @@ TEST_F(MatchedPropertiesCacheTest, DirectionDependency) {
   auto style_b = CreateStyle();
   parent_a->SetDirection(TextDirection::kLtr);
   parent_b->SetDirection(TextDirection::kRtl);
+
+  TestKey key("display:block", 1, GetDocument());
+
+  cache.Add(key, *style_a, *parent_a);
+  EXPECT_TRUE(cache.Find(key, *style_a, *parent_a));
+  EXPECT_TRUE(cache.Find(key, *style_b, *parent_a));
+  EXPECT_FALSE(cache.Find(key, *style_b, *parent_b));
+}
+
+TEST_F(MatchedPropertiesCacheTest, ColorSchemeDependency) {
+  TestCache cache(GetDocument());
+
+  auto parent_a = CreateStyle();
+  auto parent_b = CreateStyle();
+  auto style_a = CreateStyle();
+  auto style_b = CreateStyle();
+  parent_a->SetDarkColorScheme(false);
+  parent_b->SetDarkColorScheme(true);
 
   TestKey key("display:block", 1, GetDocument());
 

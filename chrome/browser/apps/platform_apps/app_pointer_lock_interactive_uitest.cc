@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,8 @@
 class ExtensionPointerLockTest : public extensions::PlatformAppBrowserTest {
  public:
   bool RunExtensionPointerLockTest(const char* app_path) {
-    ExtensionTestMessageListener launched_listener("Launched", true);
+    ExtensionTestMessageListener launched_listener("Launched",
+                                                   ReplyBehavior::kWillReply);
     LoadAndLaunchPlatformApp(app_path, &launched_listener);
 
     extensions::ResultCatcher catcher;

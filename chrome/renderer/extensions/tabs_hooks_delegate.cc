@@ -1,15 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/renderer/extensions/tabs_hooks_delegate.h"
 
-#include "base/strings/stringprintf.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
-#include "extensions/renderer/bindings/api_signature.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/message_target.h"
 #include "extensions/renderer/messaging_util.h"
@@ -43,7 +42,7 @@ RequestResult TabsHooksDelegate::HandleRequest(
   // TODO(devlin): This logic is the same in the RuntimeCustomHooksDelegate -
   // would it make sense to share it?
   using Handler = RequestResult (TabsHooksDelegate::*)(
-      ScriptContext*, const std::vector<v8::Local<v8::Value>>&);
+      ScriptContext*, const APISignature::V8ParseResult&);
   static const struct {
     Handler handler;
     base::StringPiece method;
@@ -74,19 +73,25 @@ RequestResult TabsHooksDelegate::HandleRequest(
     return result;
   }
 
-  return (this->*handler)(script_context, *parse_result.arguments);
+  return (this->*handler)(script_context, parse_result);
 }
 
 RequestResult TabsHooksDelegate::HandleSendRequest(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
   DCHECK_EQ(3u, arguments.size());
+  // tabs.sendRequest() is restricted to MV2, so it should never be called with
+  // a promise based request as they are restricted to MV3 and above.
+  DCHECK_NE(binding::AsyncResponseType::kPromise, parse_result.async_type);
 
   int tab_id = messaging_util::ExtractIntegerId(arguments[0]);
   v8::Local<v8::Value> v8_message = arguments[1];
   std::string error;
+
   std::unique_ptr<Message> message = messaging_util::MessageFromV8(
-      script_context->v8_context(), v8_message, &error);
+      script_context->v8_context(), v8_message,
+      messaging_util::GetSerializationFormat(*script_context), &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);
@@ -99,14 +104,16 @@ RequestResult TabsHooksDelegate::HandleSendRequest(
 
   messaging_service_->SendOneTimeMessage(
       script_context, MessageTarget::ForTab(tab_id, messaging_util::kNoFrameId),
-      messaging_util::kSendRequestChannel, *message, response_callback);
+      messaging_util::kSendRequestChannel, *message, parse_result.async_type,
+      response_callback);
 
   return RequestResult(RequestResult::HANDLED);
 }
 
 RequestResult TabsHooksDelegate::HandleSendMessage(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
   DCHECK_EQ(4u, arguments.size());
 
   int tab_id = messaging_util::ExtractIntegerId(arguments[0]);
@@ -120,8 +127,10 @@ RequestResult TabsHooksDelegate::HandleSendMessage(
   v8::Local<v8::Value> v8_message = arguments[1];
   DCHECK(!v8_message.IsEmpty());
   std::string error;
+
   std::unique_ptr<Message> message = messaging_util::MessageFromV8(
-      script_context->v8_context(), v8_message, &error);
+      script_context->v8_context(), v8_message,
+      messaging_util::GetSerializationFormat(*script_context), &error);
   if (!message) {
     RequestResult result(RequestResult::INVALID_INVOCATION);
     result.error = std::move(error);
@@ -132,17 +141,29 @@ RequestResult TabsHooksDelegate::HandleSendMessage(
   if (!arguments[3]->IsNull())
     response_callback = arguments[3].As<v8::Function>();
 
-  messaging_service_->SendOneTimeMessage(
-      script_context, MessageTarget::ForTab(tab_id, options.frame_id),
-      messaging_util::kSendMessageChannel, *message, response_callback);
+  v8::Local<v8::Promise> promise = messaging_service_->SendOneTimeMessage(
+      script_context,
+      MessageTarget::ForTab(tab_id, options.frame_id, options.document_id),
+      messaging_util::kSendMessageChannel, *message, parse_result.async_type,
+      response_callback);
+  DCHECK_EQ(parse_result.async_type == binding::AsyncResponseType::kPromise,
+            !promise.IsEmpty())
+      << "SendOneTimeMessage should only return a Promise for promise based "
+         "API calls, otherwise it should be empty";
 
-  return RequestResult(RequestResult::HANDLED);
+  RequestResult result(RequestResult::HANDLED);
+  if (parse_result.async_type == binding::AsyncResponseType::kPromise) {
+    result.return_value = promise;
+  }
+  return result;
 }
 
 RequestResult TabsHooksDelegate::HandleConnect(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
   DCHECK_EQ(2u, arguments.size());
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
 
   int tab_id = messaging_util::ExtractIntegerId(arguments[0]);
 
@@ -154,8 +175,10 @@ RequestResult TabsHooksDelegate::HandleConnect(
   }
 
   gin::Handle<GinPort> port = messaging_service_->Connect(
-      script_context, MessageTarget::ForTab(tab_id, options.frame_id),
-      options.channel_name);
+      script_context,
+      MessageTarget::ForTab(tab_id, options.frame_id, options.document_id),
+      options.channel_name,
+      messaging_util::GetSerializationFormat(*script_context));
   DCHECK(!port.IsEmpty());
 
   RequestResult result(RequestResult::HANDLED);

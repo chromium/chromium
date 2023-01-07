@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,17 +15,25 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
-#import "components/autofill/ios/browser/js_autofill_manager.h"
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
+#import "components/password_manager/ios/password_controller_driver_helper.h"
 #import "components/password_manager/ios/shared_password_controller.h"
+#import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #include "components/url_formatter/elide_url.h"
 #include "google_apis/google_api_keys.h"
+#import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
+#import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
+#import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_helper.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_client.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_unsafe_resource_container.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/favicon/favicon_url.h"
 #include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -50,12 +58,13 @@
 #import "ios/web_view/internal/cwv_web_view_configuration_internal.h"
 #import "ios/web_view/internal/language/web_view_url_language_histogram_factory.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
-#import "ios/web_view/internal/passwords/web_view_password_manager_driver.h"
+#import "ios/web_view/internal/safe_browsing/web_view_safe_browsing_client_factory.h"
 #import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
 #import "ios/web_view/internal/translate/web_view_translate_client.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #include "ios/web_view/internal/web_view_global_state_util.h"
 #import "ios/web_view/internal/web_view_java_script_dialog_presenter.h"
+#import "ios/web_view/internal/web_view_message_handler_java_script_feature.h"
 #import "ios/web_view/internal/web_view_web_state_policy_decider.h"
 #import "ios/web_view/public/cwv_navigation_delegate.h"
 #import "ios/web_view/public/cwv_preview_element_info.h"
@@ -73,20 +82,69 @@ namespace {
 // A key used in NSCoder to store the session storage object.
 NSString* const kSessionStorageKey = @"sessionStorage";
 
-// Converts base::DictionaryValue to NSDictionary.
-NSDictionary* NSDictionaryFromDictionaryValue(
-    const base::DictionaryValue& value) {
+// Converts base::Value expected to be a dictionary or list to NSDictionary or
+// NSArray, respectively.
+id NSObjectFromCollectionValue(const base::Value* value) {
+  DCHECK(value->is_dict() || value->is_list())
+      << "Incorrect value type: " << value->type();
+
   std::string json;
-  if (!base::JSONWriter::Write(value, &json)) {
-    NOTREACHED() << "Failed to convert base::DictionaryValue to JSON";
-    return nil;
-  }
+  const bool success = base::JSONWriter::Write(*value, &json);
+  DCHECK(success) << "Failed to convert base::Value to JSON";
 
   NSData* json_data = [NSData dataWithBytes:json.c_str() length:json.length()];
-  NSDictionary* ns_dictionary =
+  id ns_object = [NSJSONSerialization JSONObjectWithData:json_data
+                                                 options:kNilOptions
+                                                   error:nil];
+  DCHECK(ns_object) << "Failed to convert JSON to Collection";
+  return ns_object;
+}
+
+// Converts base::Value to an appropriate Obj-C object.
+// |value| must not be null.
+id NSObjectFromValue(const base::Value* value) {
+  switch (value->type()) {
+    case base::Value::Type::NONE:
+      return nil;
+    case base::Value::Type::BOOLEAN:
+      return @(value->GetBool());
+    case base::Value::Type::INTEGER:
+      return @(value->GetInt());
+    case base::Value::Type::DOUBLE:
+      return @(value->GetDouble());
+    case base::Value::Type::STRING:
+      return base::SysUTF8ToNSString(value->GetString());
+    case base::Value::Type::BINARY:
+      // Unsupported.
+      return nil;
+    case base::Value::Type::DICT:
+    case base::Value::Type::LIST:
+      return NSObjectFromCollectionValue(value);
+  }
+  return nil;
+}
+
+// Converts base::Value expected to be a dictionary to NSDictionary.
+NSDictionary* NSDictionaryFromDictionaryValue(const base::Value& value) {
+  DCHECK(value.is_dict()) << "Incorrect value type: " << value.type();
+
+  NSDictionary* ns_dictionary = base::mac::ObjCCastStrict<NSDictionary>(
+      NSObjectFromCollectionValue(&value));
+  DCHECK(ns_dictionary) << "Failed to convert JSON to NSDictionary";
+  return ns_dictionary;
+}
+
+// Converts base::Value::Dict to NSDictionary.
+NSDictionary* NSDictionaryFromDictValue(const base::Value::Dict& value) {
+  std::string json;
+  const bool success = base::JSONWriter::Write(value, &json);
+  DCHECK(success) << "Failed to convert base::Value to JSON";
+
+  NSData* json_data = [NSData dataWithBytes:json.c_str() length:json.length()];
+  NSDictionary* ns_dictionary = base::mac::ObjCCastStrict<NSDictionary>(
       [NSJSONSerialization JSONObjectWithData:json_data
                                       options:kNilOptions
-                                        error:nil];
+                                        error:nil]);
   DCHECK(ns_dictionary) << "Failed to convert JSON to NSDictionary";
   return ns_dictionary;
 }
@@ -158,7 +216,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 namespace {
 NSString* gCustomUserAgent = nil;
 NSString* gUserAgentProduct = nil;
-BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
+BOOL gChromeContextMenuEnabled = NO;
 }  // namespace
 
 @implementation CWVWebView
@@ -186,12 +244,12 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
   ios_web_view::InitializeGlobalState();
 }
 
-+ (BOOL)chromeLongPressAndForceTouchHandlingEnabled {
-  return gChromeLongPressAndForceTouchHandlingEnabled;
++ (BOOL)chromeContextMenuEnabled {
+  return gChromeContextMenuEnabled;
 }
 
-+ (void)setChromeLongPressAndForceTouchHandlingEnabled:(BOOL)newValue {
-  gChromeLongPressAndForceTouchHandlingEnabled = newValue;
++ (void)setChromeContextMenuEnabled:(BOOL)newValue {
+  gChromeContextMenuEnabled = newValue;
 }
 
 + (NSString*)customUserAgent {
@@ -339,10 +397,44 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
                                        completionHandler:completionHandler];
 }
 
+- (void)evaluateJavaScript:(NSString*)javaScriptString
+                completion:(void (^)(id, NSError*))completion {
+  web::WebFrame* mainFrame = web::GetMainFrame(_webState.get());
+  if (!mainFrame) {
+    if (completion) {
+      completion(nil, [NSError errorWithDomain:@"org.chromium.chromewebview"
+                                          code:0
+                                      userInfo:nil]);
+    }
+    return;
+  }
+
+  if (!completion) {
+    mainFrame->ExecuteJavaScript(base::SysNSStringToUTF16(javaScriptString));
+    return;
+  }
+
+  mainFrame->ExecuteJavaScript(
+      base::SysNSStringToUTF16(javaScriptString),
+      base::BindOnce(^(const base::Value* result, NSError* error) {
+        id jsResult = nil;
+        if (!error && result) {
+          jsResult = NSObjectFromValue(result);
+        }
+        completion(jsResult, error);
+      }));
+}
+
 - (void)setUIDelegate:(id<CWVUIDelegate>)UIDelegate {
   _UIDelegate = UIDelegate;
 
   _javaScriptDialogPresenter->SetUIDelegate(_UIDelegate);
+}
+
+- (void)setNavigationDelegate:(id<CWVNavigationDelegate>)navigationDelegate {
+  _navigationDelegate = navigationDelegate;
+
+  [self attachSecurityInterstitialHelpersToWebStateIfNecessary];
 }
 
 #pragma mark - UIResponder
@@ -413,6 +505,10 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
     // Failure callbacks will be handled inside |webState:didFinishNavigation:|.
     return;
   }
+
+  // TODO(crbug.com/1374071): Fragment navigations currently skip calling
+  // `webViewDidStartNavigation:` and `webViewDidCommitNavigation:`, and instead
+  // only calls `webViewDidFinishNavigation:` below. Fix this inconsistency.
   SEL selector = @selector(webViewDidFinishNavigation:);
   if ([_navigationDelegate respondsToSelector:selector]) {
     [_navigationDelegate webViewDidFinishNavigation:self];
@@ -451,26 +547,6 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
   }
 }
 
-- (void)webState:(web::WebState*)webState
-    handleContextMenu:(const web::ContextMenuParams&)params {
-  SEL selector = @selector(webView:
-           runContextMenuWithTitle:forHTMLElement:inView:userGestureLocation:);
-  if (![_UIDelegate respondsToSelector:selector]) {
-    return;
-  }
-  NSURL* hyperlink = net::NSURLWithGURL(params.link_url);
-  NSURL* mediaSource = net::NSURLWithGURL(params.src_url);
-  CWVHTMLElement* HTMLElement =
-      [[CWVHTMLElement alloc] initWithHyperlink:hyperlink
-                                    mediaSource:mediaSource
-                                           text:params.link_text];
-  [_UIDelegate webView:self
-      runContextMenuWithTitle:params.menu_title
-               forHTMLElement:HTMLElement
-                       inView:params.view
-          userGestureLocation:params.location];
-}
-
 #pragma mark - CRWWebStateDelegate
 
 - (web::WebState*)webState:(web::WebState*)webState
@@ -506,93 +582,51 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
   }
 }
 
+- (web::WebState*)webState:(web::WebState*)webState
+         openURLWithParams:(const web::WebState::OpenURLParams&)params {
+  web::NavigationManager::WebLoadParams load_params(params.url);
+  load_params.referrer = params.referrer;
+  load_params.transition_type = params.transition;
+  load_params.is_renderer_initiated = params.is_renderer_initiated;
+  load_params.virtual_url = params.virtual_url;
+  _webState->GetNavigationManager()->LoadURLWithParams(load_params);
+  [self updateCurrentURLs];
+  return _webState.get();
+}
+
 - (web::JavaScriptDialogPresenter*)javaScriptDialogPresenterForWebState:
     (web::WebState*)webState {
   return _javaScriptDialogPresenter.get();
 }
 
-- (BOOL)webState:(web::WebState*)webState
-    shouldPreviewLinkWithURL:(const GURL&)linkURL {
-  SEL selector = @selector(webView:shouldPreviewElement:);
-  if ([_UIDelegate respondsToSelector:selector]) {
-    CWVPreviewElementInfo* elementInfo = [[CWVPreviewElementInfo alloc]
-        initWithLinkURL:net::NSURLWithGURL(linkURL)];
-    return [_UIDelegate webView:self shouldPreviewElement:elementInfo];
-  }
-  return NO;
-}
-
-- (UIViewController*)webState:(web::WebState*)webState
-    previewingViewControllerForLinkWithURL:(const GURL&)linkURL {
-  SEL selector = @selector(webView:previewingViewControllerForElement:);
-  if ([_UIDelegate respondsToSelector:selector]) {
-    CWVPreviewElementInfo* elementInfo = [[CWVPreviewElementInfo alloc]
-        initWithLinkURL:net::NSURLWithGURL(linkURL)];
-    return [_UIDelegate webView:self
-        previewingViewControllerForElement:elementInfo];
-  }
-  return nil;
-}
-
-- (void)webState:(web::WebState*)webState
-    commitPreviewingViewController:(UIViewController*)previewingViewController {
-  SEL selector = @selector(webView:commitPreviewingViewController:);
-  if ([_UIDelegate respondsToSelector:selector]) {
-    [_UIDelegate webView:self
-        commitPreviewingViewController:previewingViewController];
-  }
-}
-
 - (void)webState:(web::WebState*)webState
     contextMenuConfigurationForParams:(const web::ContextMenuParams&)params
-                      previewProvider:
-                          (UIContextMenuContentPreviewProvider)previewProvider
-                    completionHandler:
-                        (void (^)(UIContextMenuConfiguration*))completionHandler
-    API_AVAILABLE(ios(13.0)) {
+                    completionHandler:(void (^)(UIContextMenuConfiguration*))
+                                          completionHandler {
   SEL selector = @selector(webView:
-      contextMenuConfigurationForLinkWithURL:completionHandler:);
+      contextMenuConfigurationForElement:completionHandler:);
   if ([_UIDelegate respondsToSelector:selector]) {
+    NSURL* hyperlink = net::NSURLWithGURL(params.link_url);
+    NSURL* mediaSource = net::NSURLWithGURL(params.src_url);
+    CWVHTMLElement* HTMLElement =
+        [[CWVHTMLElement alloc] initWithHyperlink:hyperlink
+                                      mediaSource:mediaSource
+                                             text:params.text];
+
     [_UIDelegate webView:self
-        contextMenuConfigurationForLinkWithURL:net::NSURLWithGURL(
-                                                   params.link_url)
-                             completionHandler:completionHandler];
+        contextMenuConfigurationForElement:HTMLElement
+                         completionHandler:completionHandler];
   } else {
     completionHandler(nil);
   }
 }
 
 - (void)webState:(web::WebState*)webState
-    contextMenuWillPresentForLinkWithURL:(const GURL&)linkURL
-    API_AVAILABLE(ios(13.0)) {
-  SEL selector = @selector(webView:contextMenuWillPresentForLinkWithURL:);
+    contextMenuWillCommitWithAnimator:
+        (id<UIContextMenuInteractionCommitAnimating>)animator {
+  SEL selector = @selector(webView:contextMenuWillCommitWithAnimator:);
   if ([_UIDelegate respondsToSelector:selector]) {
-    [_UIDelegate webView:self
-        contextMenuWillPresentForLinkWithURL:net::NSURLWithGURL(linkURL)];
-  }
-}
-
-- (void)webState:(web::WebState*)webState
-    contextMenuForLinkWithURL:(const GURL&)linkURL
-       willCommitWithAnimator:
-           (id<UIContextMenuInteractionCommitAnimating>)animator
-    API_AVAILABLE(ios(13.0)) {
-  SEL selector = @selector(webView:
-         contextMenuForLinkWithURL:willCommitWithAnimator:);
-  if ([_UIDelegate respondsToSelector:selector]) {
-    [_UIDelegate webView:self
-        contextMenuForLinkWithURL:net::NSURLWithGURL(linkURL)
-           willCommitWithAnimator:animator];
-  }
-}
-
-- (void)webState:(web::WebState*)webState
-    contextMenuDidEndForLinkWithURL:(const GURL&)linkURL
-    API_AVAILABLE(ios(13.0)) {
-  SEL selector = @selector(webView:contextMenuDidEndForLinkWithURL:);
-  if ([_UIDelegate respondsToSelector:selector]) {
-    [_UIDelegate webView:self
-        contextMenuDidEndForLinkWithURL:net::NSURLWithGURL(linkURL)];
+    [_UIDelegate webView:self contextMenuWillCommitWithAnimator:animator];
   }
 }
 
@@ -618,7 +652,7 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
                   commandPrefix:(NSString*)commandPrefix {
   CWVWebView* __weak weakSelf = self;
   const web::WebState::ScriptCommandCallback callback = base::BindRepeating(
-      ^(const base::DictionaryValue& content, const GURL& mainDocumentURL,
+      ^(const base::Value& content, const GURL& mainDocumentURL,
         bool userInteracting, web::WebFrame* senderFrame) {
         NSDictionary* nsContent = NSDictionaryFromDictionaryValue(content);
         CWVScriptCommand* command = [[CWVScriptCommand alloc]
@@ -640,6 +674,22 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
 - (void)removeScriptCommandHandlerForCommandPrefix:(NSString*)commandPrefix {
   std::string stdCommandPrefix = base::SysNSStringToUTF8(commandPrefix);
   _scriptCommandCallbacks.erase(stdCommandPrefix);
+}
+
+- (void)addMessageHandler:(void (^)(NSDictionary* payload))handler
+               forCommand:(NSString*)nsCommand {
+  DCHECK(handler);
+  std::string command = base::SysNSStringToUTF8(nsCommand);
+  WebViewMessageHandlerJavaScriptFeature::GetInstance()->RegisterHandler(
+      command, base::BindRepeating(^(const base::Value::Dict& payload) {
+        handler(NSDictionaryFromDictValue(payload));
+      }));
+}
+
+- (void)removeMessageHandlerForCommand:(NSString*)nsCommand {
+  std::string command = base::SysNSStringToUTF8(nsCommand);
+  WebViewMessageHandlerJavaScriptFeature::GetInstance()->UnregisterHandler(
+      command);
 }
 
 #pragma mark - Translation
@@ -683,35 +733,32 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
   AutofillAgent* autofillAgent = [[AutofillAgent alloc]
       initWithPrefService:_configuration.browserState->GetPrefs()
                  webState:_webState.get()];
-  JsAutofillManager* JSAutofillManager = [[JsAutofillManager alloc] init];
 
   auto passwordManagerClient =
       ios_web_view::WebViewPasswordManagerClient::Create(
           _webState.get(), _configuration.browserState);
   auto passwordManager = std::make_unique<password_manager::PasswordManager>(
       passwordManagerClient.get());
-  auto passwordManagerDriver =
-      std::make_unique<ios_web_view::WebViewPasswordManagerDriver>(
-          passwordManager.get());
 
   PasswordFormHelper* formHelper =
       [[PasswordFormHelper alloc] initWithWebState:_webState.get()];
   PasswordSuggestionHelper* suggestionHelper =
-      [[PasswordSuggestionHelper alloc] init];
+      [[PasswordSuggestionHelper alloc] initWithWebState:_webState.get()];
+  PasswordControllerDriverHelper* driverHelper =
+      [[PasswordControllerDriverHelper alloc] initWithWebState:_webState.get()];
   SharedPasswordController* passwordController =
       [[SharedPasswordController alloc] initWithWebState:_webState.get()
                                                  manager:passwordManager.get()
                                               formHelper:formHelper
-                                        suggestionHelper:suggestionHelper];
+                                        suggestionHelper:suggestionHelper
+                                            driverHelper:driverHelper];
 
   return [[CWVAutofillController alloc]
            initWithWebState:_webState.get()
              autofillClient:std::move(autofillClient)
               autofillAgent:autofillAgent
-          JSAutofillManager:JSAutofillManager
             passwordManager:std::move(passwordManager)
       passwordManagerClient:std::move(passwordManagerClient)
-      passwordManagerDriver:std::move(passwordManagerDriver)
          passwordController:passwordController
           applicationLocale:ios_web_view::ApplicationContext::GetInstance()
                                 ->GetApplicationLocale()];
@@ -818,6 +865,7 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
     *createdWebView = webView;
   }
 
+  [self attachSecurityInterstitialHelpersToWebStateIfNecessary];
   WebViewHolder::CreateForWebState(_webState.get());
   WebViewHolder::FromWebState(_webState.get())->set_web_view(self);
 
@@ -927,6 +975,41 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
         [[CWVSSLStatus alloc] initWithInternalStatus:visibleItem->GetSSL()];
   } else {
     self.visibleSSLStatus = nil;
+  }
+}
+
+- (void)attachSecurityInterstitialHelpersToWebStateIfNecessary {
+  if (!_webState) {
+    return;
+  }
+
+  // Lookalike URLs should only be intercepted if handled by the delegate.
+  if ([_navigationDelegate respondsToSelector:@selector
+                           (webView:handleLookalikeURLWithHandler:)]) {
+    LookalikeUrlTabHelper::CreateForWebState(_webState.get());
+    LookalikeUrlTabAllowList::CreateForWebState(_webState.get());
+    LookalikeUrlContainer::CreateForWebState(_webState.get());
+  } else {
+    LookalikeUrlTabHelper::RemoveFromWebState(_webState.get());
+    LookalikeUrlTabAllowList::RemoveFromWebState(_webState.get());
+    LookalikeUrlContainer::RemoveFromWebState(_webState.get());
+  }
+
+  // Unsafe URLs should only be intercepted if handled by the delegate.
+  if ([_navigationDelegate
+          respondsToSelector:@selector(webView:handleUnsafeURLWithHandler:)]) {
+    SafeBrowsingClient* client =
+        ios_web_view::WebViewSafeBrowsingClientFactory::GetForBrowserState(
+            _webState->GetBrowserState());
+    SafeBrowsingQueryManager::CreateForWebState(_webState.get(), client);
+    SafeBrowsingTabHelper::CreateForWebState(_webState.get(), client);
+    SafeBrowsingUrlAllowList::CreateForWebState(_webState.get());
+    SafeBrowsingUnsafeResourceContainer::CreateForWebState(_webState.get());
+  } else {
+    SafeBrowsingQueryManager::RemoveFromWebState(_webState.get());
+    SafeBrowsingTabHelper::RemoveFromWebState(_webState.get());
+    SafeBrowsingUrlAllowList::RemoveFromWebState(_webState.get());
+    SafeBrowsingUnsafeResourceContainer::RemoveFromWebState(_webState.get());
   }
 }
 

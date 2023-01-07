@@ -1,0 +1,122 @@
+<style include="settings-shared">
+  .column-title {
+    color: var(--cr-secondary-text-color);
+  }
+
+  .vm-column {
+    flex: 1;
+    flex-grow: 3;
+    word-break: break-all;
+  }
+
+  #createExtraContainer {
+    padding-top: 10px;
+  }
+
+</style>
+<div  class="settings-box first">
+  <div id="extraContainersDescription" class="start">
+    $i18n{crostiniExtraContainersDescription}
+  </div>
+</div>
+<div class="settings-box first">
+  <div id="extraContainersTableTitle" class="start"
+      aria-hidden="true">
+    $i18n{crostiniExtraContainersTableTitle}
+  </div>
+  <cr-button id="create" on-click="onCreateClick_" disabled="[[!enableButtons_]]">
+    $i18n{crostiniExtraContainersCreate}
+  </cr-button>
+</div>
+
+<div class="list-frame vertical-list">
+  <div class="list-item">
+    <div id="containerName"
+        class="start column-title"
+        aria-hidden="true">
+      $i18n{crostiniExtraContainersContainerNameLabel}
+    </div>
+    <div id="vmName"
+        class="column-title vm-column"
+        aria-hidden="true">
+      $i18n{crostiniExtraContainersVmNameLabel}
+    </div>
+    <div id="IPAddress"
+        class="column-title vm-column"
+        aria-hidden="true">
+      $i18n{crostiniExtraContainersContainerIpLabel}
+    </div>
+    <div id="color"
+        class="column-title vm-column"
+        aria-hidden="true">
+    </div>
+  </div>
+  <template is="dom-repeat" items="[[allContainers_]]" mutable-data>
+    <div class="list-item">
+      <div class="start" aria-hidden="true">
+        [[item.id.container_name]]
+      </div>
+      <div class="vm-column" aria-hidden="true">
+        [[item.id.vm_name]]
+      </div>
+       <div class="vm-column" aria-hidden="true">
+        [[item.ipv4]]
+      </div>
+      <div class="vm-column"
+          aria-hidden="true">
+        <input type="color"
+            data-container-id="[[item.id]]"
+            value="[[item.badge_color]]"
+            on-change="onContainerColorChange_">
+      </div>
+      <cr-icon-button id="showContainerMenu[[index]]"
+          class="icon-more-vert"
+          title="$i18n{moreActions}"
+          data-container-id="[[item.id]]"
+          on-click="onContainerMenuClick_">
+      </cr-icon-button>
+    </div>
+  </template>
+</div>
+
+<template is="dom-if" if="[[showCreateContainerDialog_]]" restamp>
+  <settings-crostini-create-container-dialog
+      on-close="onCreateContainerDialogClose_"
+      all-containers="[[allContainers_]]">
+  </settings-crostini-create-container-dialog>
+</template>
+<cr-lazy-render id="containerMenu">
+  <template>
+    <cr-action-menu class="complex" role-description="$i18n{menu}">
+      <button id="stopContainerButton"
+          class="dropdown-item"
+          role="menuitem"
+          disabled="[[shouldDisableStopContainer_(lastMenuContainerInfo_)]]"
+          on-click="onStopContainerClick_">
+        $i18n{crostiniExtraContainersStop}
+      </button>
+      <button id="deleteContainerButton"
+          class="dropdown-item"
+          role="menuitem"
+          disabled="[[shouldDisableDeleteContainer_(lastMenuContainerInfo_)]]"
+          on-click="onDeleteContainerClick_">
+        $i18n{crostiniExtraContainersDelete}
+      </button>
+      <button id="exportContainerButton"
+          class="dropdown-item"
+          role="menuitem"
+          on-click="onExportContainerClick_"
+          disabled="[[!enableButtons_]]">
+          $i18n{crostiniExport}
+      </button>
+      <button id="importContainerButton"
+          class="dropdown-item"
+          role="menuitem"
+          on-click="onImportContainerClick_"
+          disabled="[[!enableButtons_]]">
+          $i18n{crostiniImport}
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
+

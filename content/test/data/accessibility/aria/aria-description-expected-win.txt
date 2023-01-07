@@ -1,0 +1,5 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION name='description' description:Text-description description-from:aria-description description='Text-description'
+++IA2_ROLE_SECTION name='both' description-from:tooltip description='Description from describedby'
+++ROLE_SYSTEM_TOOLTIP name='Description from describedby' READONLY
+++++ROLE_SYSTEM_STATICTEXT name='Description from describedby'

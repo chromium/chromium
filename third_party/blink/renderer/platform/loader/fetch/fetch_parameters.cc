@@ -47,7 +47,7 @@ FetchParameters::FetchParameters(ResourceRequest resource_request,
       options_(std::move(world)),
       speculative_preload_type_(SpeculativePreloadType::kNotSpeculative),
       defer_(kNoDefer),
-      image_request_behavior_(kNone) {}
+      image_request_behavior_(ImageRequestBehavior::kNone) {}
 
 FetchParameters::FetchParameters(ResourceRequest resource_request,
                                  const ResourceLoaderOptions& options)
@@ -56,7 +56,7 @@ FetchParameters::FetchParameters(ResourceRequest resource_request,
       options_(options),
       speculative_preload_type_(SpeculativePreloadType::kNotSpeculative),
       defer_(kNoDefer),
-      image_request_behavior_(kNone) {}
+      image_request_behavior_(ImageRequestBehavior::kNone) {}
 
 FetchParameters::FetchParameters(FetchParameters&&) = default;
 
@@ -121,13 +121,13 @@ void FetchParameters::MakeSynchronous() {
 }
 
 void FetchParameters::SetLazyImageDeferred() {
-  DCHECK_EQ(kNone, image_request_behavior_);
-  image_request_behavior_ = kDeferImageLoad;
+  DCHECK_EQ(ImageRequestBehavior::kNone, image_request_behavior_);
+  image_request_behavior_ = ImageRequestBehavior::kDeferImageLoad;
 }
 
 void FetchParameters::SetLazyImageNonBlocking() {
   // TODO(domfarolino): [Before merging]: can we DCHECK here.
-  image_request_behavior_ = kNonBlockingImage;
+  image_request_behavior_ = ImageRequestBehavior::kNonBlockingImage;
 }
 
 void FetchParameters::SetModuleScript() {

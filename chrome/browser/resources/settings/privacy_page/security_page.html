@@ -7,6 +7,10 @@
         padding: 0 var(--cr-section-padding);
       }
 
+      #httpsOnlyModeToggle {
+        padding: 0 var(--cr-section-padding);
+      }
+
       .bullet-line {
         align-items: center;
         display: flex;
@@ -151,9 +155,25 @@
     <div class="cr-row first">
       <h2>$i18n{advancedPageTitle}</h2>
     </div>
+    <template is="dom-if" if="[[showHttpsOnlyModeSetting_]]">
+      <settings-toggle-button
+        id="httpsOnlyModeToggle"
+        pref="{{prefs.https_only_mode_enabled}}"
+        label="$i18n{httpsOnlyModeTitle}"
+        sub-label="$i18n{httpsOnlyModeDescription}">
+      </settings-toggle-button>
+    </template>
     <template is="dom-if" if="[[showSecureDnsSetting_]]">
       <settings-secure-dns prefs="{{prefs}}"></settings-secure-dns>
     </template>
+<if expr="is_chromeos">
+    <template is="dom-if" if="[[showSecureDnsSettingLink_]]">
+        <cr-link-row id="openChromeOSSecureDnsSettings"
+            on-click="onOpenChromeOSSecureDnsSettingsClicked_"
+            label="$i18n{openChromeOSSecureDnsSettingsLabel}" external>
+        </cr-link-row>
+    </template>
+</if>
     <template is="dom-if" if="[[enableSecurityKeysSubpage_]]">
         <cr-link-row id="security-keys-subpage-trigger"
           class="hr"
@@ -162,7 +182,18 @@
           on-click="onSecurityKeysClick_"
           role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
     </template>
-<if expr="use_nss_certs or is_win or is_macosx">
+
+<if expr="is_win">
+    <template is="dom-if" if="[[enableSecurityKeysPhonesSubpage_]]">
+        <cr-link-row
+          id="security-keys-phones-subpage-trigger"
+          label="$i18n{securityKeysPhonesManage}"
+          sub-label="$i18n{securityKeysPhonesManageDesc}"
+          on-click="onManagePhonesClick_"></cr-link-row>
+    </template>
+</if>
+
+<if expr="(use_nss_certs or is_win or is_macosx) and not chrome_root_store_supported">
     <cr-link-row id="manageCertificates"
         class="hr"
 <if expr="not use_nss_certs">
@@ -175,6 +206,34 @@
         sub-label="$i18n{manageCertificatesDescription}"
         on-click="onManageCertificatesClick_"></cr-link-row>
 </if>
+
+<if expr="chrome_root_store_supported">
+    <template is="dom-if" if="[[!showChromeRootStoreCertificates_]]">
+      <cr-link-row id="manageCertificates"
+          class="hr"
+          external
+          label="$i18n{manageCertificates}"
+          sub-label="$i18n{manageCertificatesDescription}"
+          on-click="onManageCertificatesClick_"></cr-link-row>
+    </template>
+
+    <template is="dom-if" if="[[showChromeRootStoreCertificates_]]">
+      <cr-link-row id="manageCertificates"
+          class="hr"
+          external
+          label="$i18n{manageDeviceCertificates}"
+          sub-label="$i18n{manageDeviceCertificatesDescription}"
+          on-click="onManageCertificatesClick_"></cr-link-row>
+
+      <cr-link-row id="chromeCertificates"
+          class="hr"
+          external
+          label="$i18n{chromeCertificates}"
+          sub-label="$i18n{chromeCertificatesDescription}"
+          on-click="onChromeCertificatesClick_"></cr-link-row>
+    </template>
+</if>
+
     <cr-link-row id="advanced-protection-program-link"
         class="hr"
         label="$i18n{advancedProtectionProgramTitle}"

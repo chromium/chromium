@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,11 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotShareSheetViewProperties.NoArgOperation;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,8 +38,8 @@ class ScreenshotShareSheetMediator {
     private final Runnable mCloseDialogRunnable;
     private final Callback<Runnable> mInstallCallback;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
-
-    private final Tab mTab;
+    private final WindowAndroid mWindowAndroid;
+    private final String mShareUrl;
 
     /**
      * The ScreenshotShareSheetMediator constructor.
@@ -47,20 +47,22 @@ class ScreenshotShareSheetMediator {
      * @param propertyModel The property model to use to communicate with views.
      * @param closeDialogRunnable The action to take to close the dialog.
      * @param saveRunnable The action to take when save is called.
-     * @param tab The tab that originated this screenshot.
+     * @param windowAndroid The {@link WindowAndroid} that originated this screenshot.
+     * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback The callback to share a screenshot via the share sheet.
      * @param installCallback The action to take when install is called, will call runnable on
      *         success.
      */
     ScreenshotShareSheetMediator(Context context, PropertyModel propertyModel,
-            Runnable closeDialogRunnable, Runnable saveRunnable, Tab tab,
-            ChromeOptionShareCallback chromeOptionShareCallback,
+            Runnable closeDialogRunnable, Runnable saveRunnable, WindowAndroid windowAndroid,
+            String shareUrl, ChromeOptionShareCallback chromeOptionShareCallback,
             Callback<Runnable> installCallback) {
         mCloseDialogRunnable = closeDialogRunnable;
         mSaveRunnable = saveRunnable;
         mContext = context;
         mModel = propertyModel;
-        mTab = tab;
+        mWindowAndroid = windowAndroid;
+        mShareUrl = shareUrl;
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mInstallCallback = installCallback;
         mModel.set(ScreenshotShareSheetViewProperties.NO_ARG_OPERATION_LISTENER,
@@ -97,26 +99,27 @@ class ScreenshotShareSheetMediator {
      * Sends the current image to the share target.
      */
     private void share() {
-        if (!mTab.isInitialized()) {
-            return;
-        }
         Bitmap bitmap = mModel.get(ScreenshotShareSheetViewProperties.SCREENSHOT_BITMAP);
 
-        WindowAndroid window = mTab.getWindowAndroid();
         String isoDate = new SimpleDateFormat(sIsoDateFormat, Locale.getDefault())
                                  .format(new Date(System.currentTimeMillis()));
         String title = mContext.getString(R.string.screenshot_title_for_share, isoDate);
         Callback<Uri> callback = (bitmapUri) -> {
             ShareParams params =
-                    new ShareParams.Builder(window, title, /*url=*/"")
+                    new ShareParams.Builder(mWindowAndroid, title, /*url=*/"")
                             .setFileUris(new ArrayList<>(Collections.singletonList(bitmapUri)))
-                            .setFileContentType(
-                                    window.getApplicationContext().getContentResolver().getType(
-                                            bitmapUri))
+                            .setFileContentType(mWindowAndroid.getApplicationContext()
+                                                        .getContentResolver()
+                                                        .getType(bitmapUri))
                             .build();
 
-            mChromeOptionShareCallback.showThirdPartyShareSheet(
-                    params, new ChromeShareExtras.Builder().build(), System.currentTimeMillis());
+            mChromeOptionShareCallback.showThirdPartyShareSheet(params,
+                    new ChromeShareExtras.Builder()
+                            .setContentUrl(new GURL(mShareUrl))
+                            .setDetailedContentType(
+                                    ChromeShareExtras.DetailedContentType.SCREENSHOT)
+                            .build(),
+                    System.currentTimeMillis());
         };
 
         generateTemporaryUriFromBitmap(title, bitmap, callback);

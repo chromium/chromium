@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,19 @@
 #include <windows.h>
 
 #include <atomic>
-#include <list>
 #include <memory>
 
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/win/message_window.h"
 #include "base/win/scoped_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -40,7 +40,7 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   struct RunState {
     explicit RunState(Delegate* delegate_in) : delegate(delegate_in) {}
 
-    Delegate* const delegate;
+    const raw_ptr<Delegate> delegate;
 
     // Used to flag that the current Run() invocation should return ASAP.
     bool should_quit = false;
@@ -133,10 +133,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
 
   // MessagePump methods:
   void ScheduleWork() override;
-  void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
-
-  // Make the MessagePumpForUI respond to WM_QUIT messages.
-  void EnableWmQuit();
+  void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) override;
 
   // An observer interface to give the scheduler an opportunity to log
   // information about MSGs before and after they are dispatched.
@@ -167,14 +165,10 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
 
   base::win::MessageWindow message_window_;
 
-  // Whether MessagePumpForUI responds to WM_QUIT messages or not.
-  // TODO(thestig): Remove when the Cloud Print Service goes away.
-  bool enable_wm_quit_ = false;
-
   // Non-nullopt if there's currently a native timer installed. If so, it
   // indicates when the timer is set to fire and can be used to avoid setting
   // redundant timers.
-  Optional<TimeTicks> installed_native_timer_;
+  absl::optional<TimeTicks> installed_native_timer_;
 
   // This will become true when a native loop takes our kMsgHaveWork out of the
   // system queue. It will be reset to false whenever DoRunLoop regains control.
@@ -260,7 +254,8 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
 
   // MessagePump methods:
   void ScheduleWork() override;
-  void ScheduleDelayedWork(const TimeTicks& delayed_work_time) override;
+  void ScheduleDelayedWork(
+      const Delegate::NextWorkInfo& next_work_info) override;
 
   // Register the handler to be used when asynchronous IO for the given file
   // completes. The registration persists as long as |file_handle| is valid, so
@@ -275,8 +270,8 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
 
  private:
   struct IOItem {
-    IOHandler* handler;
-    IOContext* context;
+    raw_ptr<IOHandler> handler;
+    raw_ptr<IOContext> context;
     DWORD bytes_transfered;
     DWORD error;
   };

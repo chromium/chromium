@@ -1,21 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/alvestrand/webrtc-media-streams/blob/master/explainer.md#api
-// TODO(crbug.com/1052765): Add link to standard when available.
+// https://www.w3.org/TR/webrtc-encoded-transform/#scriptTransform
 
 // TODO(crbug.com/1052765): Align with WebCodecs definition once it is stable.
 [
-    Exposed=Window
+    Exposed=(Window, DedicatedWorker)
 ] interface RTCEncodedAudioFrame {
-    readonly attribute unsigned long long timestamp;  // microseconds
+    readonly attribute unsigned long timestamp;  // RTP timestamp.
     attribute ArrayBuffer data;
     RTCEncodedAudioFrameMetadata getMetadata();
-    // TODO(crbug.com/1052765): Remove the following fields before enabling
-    // by default.
-    [RuntimeEnabled=RTCInsertableStreams] readonly attribute ArrayBuffer additionalData;
-    [RuntimeEnabled=RTCInsertableStreams] readonly attribute unsigned long synchronizationSource;
-    [RuntimeEnabled=RTCInsertableStreams] readonly attribute FrozenArray<unsigned long> contributingSources;
     stringifier;
 };

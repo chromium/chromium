@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "extensions/browser/extension_registry.h"
@@ -54,6 +53,10 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   ExtensionKeybindingRegistry(content::BrowserContext* context,
                               ExtensionFilter extension_filter,
                               Delegate* delegate);
+
+  ExtensionKeybindingRegistry(const ExtensionKeybindingRegistry&) = delete;
+  ExtensionKeybindingRegistry& operator=(const ExtensionKeybindingRegistry&) =
+      delete;
 
   ~ExtensionKeybindingRegistry() override;
 
@@ -155,13 +158,13 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   // Returns true if any media keys are registered.
   bool IsListeningToAnyMediaKeys() const;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // What extensions to register keybindings for.
   ExtensionFilter extension_filter_;
 
   // Weak pointer to our delegate. Not owned by us. Must outlive this class.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Maps an accelerator to a list of string pairs (extension id, command name)
   // for commands that have been registered. This keeps track of the targets for
@@ -190,8 +193,6 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
 
   // Listen for Media keys events.
   std::unique_ptr<ui::MediaKeysListener> media_keys_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionKeybindingRegistry);
 };
 
 }  // namespace extensions

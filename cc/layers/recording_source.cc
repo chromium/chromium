@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,14 @@
 #include <algorithm>
 
 #include "base/numerics/safe_math.h"
-#include "base/record_replay.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/base/region.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/solid_color_analyzer.h"
 #include "cc/raster/raster_source.h"
+
+#include "base/record_replay.h"
 
 namespace {
 
@@ -69,6 +71,10 @@ bool RecordingSource::UpdateAndExpandInvalidation(
     Region* invalidation,
     const gfx::Size& layer_size,
     const gfx::Rect& new_recorded_viewport) {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("RecordingSource::UpdateAndExpandInvalidation %d %d",
+                       layer_size.width(), layer_size.height());
+
   bool updated = false;
 
   if (size_ != layer_size)
@@ -112,6 +118,9 @@ gfx::Size RecordingSource::GetSize() const {
 }
 
 void RecordingSource::SetEmptyBounds() {
+  // https://linear.app/replay/issue/RUN-885
+  recordreplay::Assert("RecordingSource::SetEmptyBounds");
+
   size_ = gfx::Size();
   is_solid_color_ = false;
 
@@ -123,7 +132,7 @@ void RecordingSource::SetSlowdownRasterScaleFactor(int factor) {
   slow_down_raster_scale_factor_for_debug_ = factor;
 }
 
-void RecordingSource::SetBackgroundColor(SkColor background_color) {
+void RecordingSource::SetBackgroundColor(SkColor4f background_color) {
   background_color_ = background_color;
 }
 
@@ -138,7 +147,7 @@ scoped_refptr<RasterSource> RecordingSource::CreateRasterSource() const {
 void RecordingSource::DetermineIfSolidColor() {
   DCHECK(display_list_);
   is_solid_color_ = false;
-  solid_color_ = SK_ColorTRANSPARENT;
+  solid_color_ = SkColors::kTransparent;
 
   if (display_list_->TotalOpCount() > kMaxOpsToAnalyzeForLayer)
     return;

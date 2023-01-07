@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_delegate.h"
 
@@ -33,7 +32,7 @@ class ViewsTestHelper {
   // Does any additional necessary setup of the provided |delegate|.
   virtual void SetUpTestViewsDelegate(
       TestViewsDelegate* delegate,
-      base::Optional<ViewsDelegate::NativeWidgetFactory> factory);
+      absl::optional<ViewsDelegate::NativeWidgetFactory> factory);
 
   // Does any additional necessary setup of this object or its members.
   virtual void SetUp();

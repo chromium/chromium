@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,10 +19,9 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/process/launch.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/events/devices/device_data_manager.h"
@@ -192,7 +191,8 @@ base::FilePath GetDevicePath(x11::Connection* connection,
   auto deviceid = static_cast<uint16_t>(device.deviceid);
   if (deviceid > std::numeric_limits<uint8_t>::max())
     return base::FilePath();
-  if (connection->xinput().OpenDevice({deviceid}).Sync().error)
+  uint8_t deviceid_u8 = static_cast<uint8_t>(deviceid);
+  if (connection->xinput().OpenDevice({deviceid_u8}).Sync().error)
     return base::FilePath();
 
   x11::Input::GetDevicePropertyRequest req{
@@ -200,19 +200,19 @@ base::FilePath GetDevicePath(x11::Connection* connection,
       .type = x11::Atom::Any,
       .offset = 0,
       .len = std::numeric_limits<uint32_t>::max(),
-      .device_id = deviceid,
+      .device_id = deviceid_u8,
       .c_delete = false,
   };
   auto reply = connection->xinput().GetDeviceProperty(req).Sync();
   if (!reply || reply->type != x11::Atom::STRING || !reply->data8.has_value()) {
-    connection->xinput().CloseDevice({deviceid});
+    connection->xinput().CloseDevice({deviceid_u8});
     return base::FilePath();
   }
 
   std::string path(reinterpret_cast<char*>(reply->data8->data()),
                    reply->data8->size());
 
-  connection->xinput().CloseDevice({deviceid});
+  connection->xinput().CloseDevice({deviceid_u8});
 
   return base::FilePath(path);
 }

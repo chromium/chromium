@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,12 +43,12 @@ Status JavaScriptDialogManager::HandleDialog(bool accept,
   if (!IsDialogOpen())
     return Status(kNoSuchAlert);
 
-  base::DictionaryValue params;
-  params.SetBoolean("accept", accept);
+  base::Value::Dict params;
+  params.Set("accept", accept);
   if (text)
-    params.SetString("promptText", *text);
+    params.Set("promptText", *text);
   else
-    params.SetString("promptText", prompt_text_);
+    params.Set("promptText", prompt_text_);
   Status status = client_->SendCommand("Page.handleJavaScriptDialog", params);
   if (status.IsError()) {
     // Retry once to work around
@@ -72,7 +72,7 @@ Status JavaScriptDialogManager::HandleDialog(bool accept,
 Status JavaScriptDialogManager::OnConnected(DevToolsClient* client) {
   unhandled_dialog_queue_.clear();
   dialog_type_queue_.clear();
-  base::DictionaryValue params;
+  base::Value::Dict params;
   return client_->SendCommand("Page.enable", params);
 }
 

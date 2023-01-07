@@ -1,83 +1,55 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//pdf/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/css_to_wrapper.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
-
-preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+import("./pdf.gni")
 
 assert(enable_pdf, "enable_pdf check failed")
 
-preprocess_if_expr("preprocess") {
-  in_folder = "./"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
-  in_files = [
-    "bookmark_type.js",
-    "constants.js",
-    "controller.js",
-    "gesture_detector.js",
-    "local_storage_proxy.js",
-    "metrics.js",
-    "navigator.js",
-    "open_pdf_params_parser.js",
-    "pdf_scripting_api.js",
-    "pdf_viewer_base.js",
-    "pdf_viewer_utils.js",
-    "pdf_viewer_wrapper.js",
-    "viewport.js",
-    "viewport_scroller.js",
-    "zoom_manager.js",
-  ]
+preprocess_folder = "${target_gen_dir}/preprocessed"
+tsc_folder = "tsc"
 
-  if (is_chromeos_ash) {
-    in_files += [ "ink_controller.js" ]
-  }
+preprocess_if_expr("preprocess") {
+  out_folder = preprocess_folder
+  defines = [ "enable_ink=$enable_ink" ]
+  in_files = ts_files + html_files + shared_icons_html_files + css_files
 }
 
-preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
-  in_folder = target_gen_dir
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+html_to_wrapper("html_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = preprocess_folder
+  out_folder = preprocess_folder
+  in_files = html_files + shared_icons_html_files
+  minify = optimize_webui
+}
+
+css_to_wrapper("css_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = preprocess_folder
+  out_folder = preprocess_folder
+  in_files = css_files
+  minify = optimize_webui
+}
+
+# Preprocess and build a manifest file for the Print Preview HTML/CSS files,
+# which aren't passed to ts_library().
+print_preview_html_css_manifest = "print_preview_html_css_manifest.json"
+preprocess_if_expr("preprocess_print_preview_html_css") {
+  out_folder = preprocess_folder
+  out_manifest = "$target_gen_dir/$print_preview_html_css_manifest"
   in_files = [
-    "elements/icons.js",
-    "elements/shared-css.js",
-    "elements/shared-vars.js",
-    "elements/viewer-bookmark.js",
-    "elements/viewer-document-outline.js",
-    "elements/viewer-download-controls.js",
-    "elements/viewer-error-screen.js",
-    "elements/viewer-page-selector.js",
-    "elements/viewer-password-dialog.js",
-    "elements/viewer-pdf-sidenav.js",
-    "elements/viewer-pdf-toolbar-new.js",
-    "elements/viewer-properties-dialog.js",
-    "elements/viewer-thumbnail-bar.js",
-    "elements/viewer-thumbnail.js",
-    "pdf_viewer.js",
-    "pdf_viewer_shared_style.js",
+    "index_pp.html",
+    "index.css",
   ]
-  if (is_chromeos_ash) {
-    in_files += [
-      "elements/viewer-annotations-bar.js",
-      "elements/viewer-annotations-mode-dialog.js",
-      "elements/viewer-form-warning.js",
-      "elements/viewer-ink-host.js",
-      "elements/viewer-pen-options.js",
-      "elements/viewer-toolbar-dropdown.js",
-    ]
-  }
 }
 
 if (optimize_webui) {
@@ -85,60 +57,70 @@ if (optimize_webui) {
 
   optimize_webui("build") {
     host = "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai"
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
+    input = rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
     js_out_files = [ "pdf_viewer_wrapper.rollup.js" ]
     js_module_in_files = [ "pdf_viewer_wrapper.js" ]
     out_manifest = "$target_gen_dir/$build_manifest"
 
     deps = [
-      ":preprocess",
-      ":preprocess_generated",
+      ":build_ts",
       "../../../../ui/webui/resources:preprocess",
     ]
     excludes = [
       "browser_api.js",
       "chrome://resources/js/cr.m.js",
     ]
+    if (enable_ink) {
+      excludes += [
+        "ink/drawing_canvas_externs.js",
+        "ink/ink_api.js",
+      ]
+    }
   }
 }
 
-generate_grd("build_grd") {
-  input_files = [
-    "browser_api.js",
-    "index.css",
-    "index.html",
-    "main.js",
-  ]
-  if (is_chromeos_ash) {
-    input_files += [
-      "ink/index.html",
-      "ink/ink_api.js",
-    ]
-  }
-  input_files_base_dir = rebase_path(".", "//")
+# This script is injected by `pdf::PluginResponseWriter`, and must stand alone.
+# Consequently, it must always be rolled up by `optimize_webui()`.
+build_internal_plugin_manifest = "build_internal_plugin_manifest.json"
+optimize_webui("build_internal_plugin") {
+  host = "about:blank"
+  input = rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
+  js_out_files = [ "pdf_internal_plugin_wrapper.rollup.js" ]
+  js_module_in_files = [ "pdf_internal_plugin_wrapper.js" ]
+  out_manifest = "$target_gen_dir/$build_internal_plugin_manifest"
 
-  if (optimize_webui) {
-    deps = [ ":build" ]
-    resource_path_rewrites =
-        [ "pdf_viewer_wrapper.rollup.js|pdf_viewer_wrapper.js" ]
-    manifest_files = [ "$target_gen_dir/$build_manifest" ]
-  } else {
-    deps = [
-      ":preprocess",
-      ":preprocess_generated",
+  deps = [
+    ":build_ts",
+    "../../../../ui/webui/resources:preprocess",
+  ]
+  excludes = [
+    "browser_api.js",
+    "chrome://resources/js/cr.m.js",
+  ]
+}
+
+if (optimize_webui) {
+  # Need to manually register files that are excluded from the optimized bundle.
+  generate_grd("build_excluded_grdp") {
+    input_files = [
+      "browser_api.js",
+      "main.js",
     ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_manifest",
-      "$target_gen_dir/$preprocess_gen_manifest",
-    ]
+    if (enable_ink) {
+      input_files += [ "ink/ink_api.js" ]
+    }
+    input_files_base_dir =
+        rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
+    deps = [ ":build_ts" ]
+
+    grd_prefix = "pdf"
+    out_grd = "$target_gen_dir/excluded_resources.grdp"
+    resource_path_prefix = "pdf"
   }
-  grd_prefix = "pdf"
-  out_grd = "$target_gen_dir/resources.grd"
-  resource_path_prefix = "pdf"
 }
 
 grit("resources") {
-  defines = chrome_grit_defines
+  defines = chrome_grit_defines + [ "enable_ink=$enable_ink" ]
 
   enable_input_discovery_for_gn_analyze = false
   source = "$target_gen_dir/resources.grd"
@@ -153,244 +135,85 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-assert(enable_pdf, "enable_pdf check failed")
+ts_library("build_ts") {
+  root_dir = preprocess_folder
+  out_dir = "$target_gen_dir/$tsc_folder"
+  tsconfig_base = "tsconfig_base.json"
+  composite = true
 
-group("web_components") {
-  public_deps = [
-    ":web_components_local",
-    "elements:web_components",
-  ]
-}
+  in_files = ts_files + html_wrapper_files + css_wrapper_files
 
-html_to_js("web_components_local") {
-  js_files = [
-    "pdf_viewer.js",
-    "pdf_viewer_pp.js",
-    "pdf_viewer_shared_style.js",
-  ]
-}
+  manifest_excludes =
+      [ "pdf_internal_plugin_wrapper.js" ] + print_preview_only_files
 
-group("closure_compile") {
+  definitions = ts_definitions
+
   deps = [
-    ":closure_compile_local",
-    "elements:closure_compile",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
   ]
-  if (is_chromeos_ash) {
-    deps += [ "ink:closure_compile" ]
+  extra_deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+    ":preprocess",
+  ]
+}
+
+# Build the grdp for Print Preview.
+generate_grd("build_print_preview_grdp") {
+  # Get all the shared files out of the tsc folder.
+  input_files = print_preview_grdp_input_files
+  input_files_base_dir =
+      rebase_path("$target_gen_dir/$tsc_folder", root_build_dir)
+
+  manifest_files = [ "$target_gen_dir/$print_preview_html_css_manifest" ]
+  deps = [
+    ":build_ts",
+    ":preprocess_print_preview_html_css",
+  ]
+  resource_path_rewrites = [
+    "index_pp.html|index.html",
+
+    # Expose pdf_viewer_pp.js as pdf_viewer_wrapper.js so that the PDF viewer
+    # and Print Preview viewer can use the same main.js source.
+    "pdf_viewer_pp.js|pdf_viewer_wrapper.js",
+  ]
+  grd_prefix = "print_preview_pdf"
+
+  # Print Preview expects to import from "pdf/" relative path
+  resource_path_prefix = "pdf"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
+}
+
+generate_grd("build_grd") {
+  input_files = [
+    "index.css",
+    "index.html",
+  ]
+  if (enable_ink) {
+    input_files += [ "ink/index.html" ]
   }
-}
+  input_files_base_dir = rebase_path(".", "//")
 
-js_library("annotation_tool") {
-}
+  if (optimize_webui) {
+    deps = [
+      ":build",
+      ":build_excluded_grdp",
+    ]
+    resource_path_rewrites =
+        [ "pdf_viewer_wrapper.rollup.js|pdf_viewer_wrapper.js" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    grdp_files = [ "$target_gen_dir/excluded_resources.grdp" ]
+  } else {
+    deps = [ ":build_ts" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  }
 
-js_library("bookmark_type") {
-}
+  deps += [ ":build_internal_plugin" ]
+  manifest_files += [ "$target_gen_dir/$build_internal_plugin_manifest" ]
 
-js_library("browser_api") {
-  deps = [ "//ui/webui/resources/js:assert.m" ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/mime_handler_private.js",
-  ]
-}
-
-js_library("constants") {
-}
-
-js_library("gesture_detector") {
-  deps = [
-    ":constants",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("open_pdf_params_parser") {
-  deps = [ ":constants" ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
-js_library("pdf_scripting_api") {
-}
-
-js_library("viewport_scroller") {
-}
-
-js_library("viewport") {
-  deps = [
-    ":constants",
-    ":gesture_detector",
-    ":zoom_manager",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
-js_library("zoom_manager") {
-  deps = [
-    ":browser_api",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("metrics") {
-  deps = [ ":constants" ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
-js_library("navigator") {
-  deps = [
-    ":browser_api",
-    ":open_pdf_params_parser",
-    ":viewport",
-  ]
-}
-
-js_library("toolbar_manager") {
-  deps = [
-    "elements:viewer-zoom-toolbar",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("ink_controller") {
-  deps = [
-    ":annotation_tool",
-    ":controller",
-    ":viewport",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("local_storage_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-js_library("controller") {
-  deps = [
-    ":viewport",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js/cr:event_target.m",
-  ]
-}
-
-js_library("pdf_viewer_base") {
-  deps = [
-    ":browser_api",
-    ":constants",
-    ":controller",
-    ":metrics",
-    ":pdf_scripting_api",
-    ":pdf_viewer_utils",
-    ":viewport",
-    ":viewport_scroller",
-    "elements:viewer-error-screen",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/resources_private.js" ]
-}
-
-js_library("pdf_viewer") {
-  deps = [
-    ":bookmark_type",
-    ":browser_api",
-    ":constants",
-    ":controller",
-    ":ink_controller",
-    ":local_storage_proxy",
-    ":metrics",
-    ":navigator",
-    ":pdf_scripting_api",
-    ":pdf_viewer_base",
-    ":pdf_viewer_utils",
-    "elements:viewer-error-screen",
-    "elements:viewer-password-dialog",
-    "elements:viewer-pdf-sidenav",
-    "elements:viewer-pdf-toolbar-new",
-    "elements:viewer-properties-dialog",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
-  ]
-  externs_list = [ "$externs_path/resources_private.js" ]
-}
-
-js_library("pdf_viewer_wrapper") {
-  deps = [ ":pdf_viewer" ]
-}
-
-js_library("pdf_viewer_utils") {
-  deps = [
-    ":controller",
-    ":viewport",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("pdf_viewer_pp") {
-  deps = [
-    ":constants",
-    ":controller",
-    ":pdf_scripting_api",
-    ":pdf_viewer_base",
-    ":pdf_viewer_utils",
-    ":toolbar_manager",
-    ":viewport",
-    "elements:viewer-error-screen",
-    "elements:viewer-page-indicator",
-    "elements:viewer-zoom-toolbar",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-  externs_list = [ "$externs_path/resources_private.js" ]
-}
-
-js_library("main") {
-  deps = [
-    ":browser_api",
-    ":pdf_viewer",
-  ]
-}
-
-js_type_check("closure_compile_local") {
-  is_polymer3 = true
-  deps = [
-    ":annotation_tool",
-    ":browser_api",
-    ":constants",
-    ":controller",
-    ":gesture_detector",
-    ":ink_controller",
-    ":local_storage_proxy",
-    ":main",
-    ":metrics",
-    ":navigator",
-    ":open_pdf_params_parser",
-    ":pdf_scripting_api",
-    ":pdf_viewer",
-    ":pdf_viewer_base",
-    ":pdf_viewer_pp",
-    ":pdf_viewer_utils",
-    ":pdf_viewer_wrapper",
-    ":toolbar_manager",
-    ":viewport",
-    ":viewport_scroller",
-    ":zoom_manager",
-  ]
+  grd_prefix = "pdf"
+  out_grd = "$target_gen_dir/resources.grd"
+  resource_path_prefix = "pdf"
 }

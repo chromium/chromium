@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,21 +10,21 @@
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/mac/url_conversions.h"
 
-//#import <ScreenTime/ScreenTime.h>
+#import <ScreenTime/ScreenTime.h>
 
 namespace screentime {
 
 HistoryDeleterImpl::~HistoryDeleterImpl() = default;
 
 std::unique_ptr<HistoryDeleterImpl> HistoryDeleterImpl::Create() {
-  if (@available(macOS 11.0, *))
+  if (@available(macOS 12.1, *))
     return base::WrapUnique(new HistoryDeleterImpl);
   return nullptr;
 }
 
 void HistoryDeleterImpl::DeleteAllHistory() {
-  if (@available(macOS 11.0, *)) {
-    //[platform_deleter_ deleteAllHistory];
+  if (@available(macOS 12.1, *)) {
+    [platform_deleter_ deleteAllHistory];
   } else {
     NOTIMPLEMENTED();
   }
@@ -32,27 +32,26 @@ void HistoryDeleterImpl::DeleteAllHistory() {
 
 void HistoryDeleterImpl::DeleteHistoryDuringInterval(
     const TimeInterval& interval) {
-  if (@available(macOS 11.0, *)) {
+  if (@available(macOS 12.1, *)) {
     base::scoped_nsobject<NSDateInterval> nsinterval([[NSDateInterval alloc]
         initWithStartDate:interval.first.ToNSDate()
                   endDate:interval.second.ToNSDate()]);
-    //[platform_deleter_ deleteHistoryDuringInterval:nsinterval.get()];
+    [platform_deleter_ deleteHistoryDuringInterval:nsinterval.get()];
   } else {
     NOTIMPLEMENTED();
   }
 }
 
 void HistoryDeleterImpl::DeleteHistoryForURL(const GURL& url) {
-  if (@available(macOS 11.0, *)) {
-    //[platform_deleter_ deleteHistoryForURL:net::NSURLWithGURL(url)];
+  if (@available(macOS 12.1, *)) {
+    [platform_deleter_ deleteHistoryForURL:net::NSURLWithGURL(url)];
   } else {
     NOTIMPLEMENTED();
   }
 }
 
 HistoryDeleterImpl::HistoryDeleterImpl() {
-  /*
-  if (@available(macOS 11.0, *)) {
+  if (@available(macOS 12.1, *)) {
     NSError* error = nil;
     NSString* bundle_id = base::SysUTF8ToNSString(base::mac::BaseBundleID());
     platform_deleter_.reset(
@@ -61,7 +60,6 @@ HistoryDeleterImpl::HistoryDeleterImpl() {
   } else {
     NOTIMPLEMENTED();
   }
-  */
 }
 
 }  // namespace screentime

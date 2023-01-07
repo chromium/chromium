@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ void WebstoreReinstaller::BeginReinstall() {
 }
 
 bool WebstoreReinstaller::CheckRequestorAlive() const {
-  return web_contents() != NULL;
+  return web_contents() != nullptr;
 }
 
 std::unique_ptr<ExtensionInstallPrompt::Prompt>
@@ -76,23 +76,21 @@ void WebstoreReinstaller::WebContentsDestroyed() {
 }
 
 void WebstoreReinstaller::OnInstallPromptDone(
-    ExtensionInstallPrompt::Result result) {
-  if (result != ExtensionInstallPrompt::Result::ACCEPTED) {
-    WebstoreStandaloneInstaller::OnInstallPromptDone(result);
+    ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  if (payload.result != ExtensionInstallPrompt::Result::ACCEPTED) {
+    WebstoreStandaloneInstaller::OnInstallPromptDone(std::move(payload));
     return;
   }
 
   if (!ExtensionSystem::Get(profile())->extension_service()->UninstallExtension(
-          id(),
-          UNINSTALL_REASON_REINSTALL,
-          NULL)) {
+          id(), UNINSTALL_REASON_REINSTALL, nullptr)) {
     // Run the callback now, because AbortInstall() doesn't do it.
     RunCallback(
         false, kCouldNotUninstallExtension, webstore_install::OTHER_ERROR);
     AbortInstall();
     return;
   }
-  WebstoreStandaloneInstaller::OnInstallPromptDone(result);
+  WebstoreStandaloneInstaller::OnInstallPromptDone(std::move(payload));
 }
 
 }  // namespace extensions

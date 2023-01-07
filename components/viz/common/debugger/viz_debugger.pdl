@@ -1,0 +1,32 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+version
+  major 1
+  minor 0
+
+
+# The VisualDebugger domain defines methods and events for the Visual Debugger.
+domain VisualDebugger
+  # Sends filtering information to the visual debugging instance.
+  command filterStream
+    parameters
+      # This string contains filtering information for the debugging stream.
+      # See: //components/viz/service/debugger/README.md 
+      object filter
+
+  # Starts communication stream for visual debugger.
+  command startStream
+  # Simply informs the visual debugger that debugging session has ended.
+  command stopStream
+
+  # Frame data is sent from the debugging instance with this event. 
+  # This event will be emitted every render frame.
+  event frameResponse
+    parameters
+      # This Json dictionary object contains one full frame 
+      # of visual debug submissions.
+      # See: //components/viz/service/debugger/README.md 
+      object frameData
+

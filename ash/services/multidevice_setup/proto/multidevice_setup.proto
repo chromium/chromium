@@ -1,0 +1,38 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package ash.multidevice_setup;
+
+option optimize_for = LITE_RUNTIME;
+
+enum MessageType {
+  UNKNOWN_TYPE = 0;
+  ENABLE_BETTER_TOGETHER_REQUEST = 1;
+  ENABLE_BETTER_TOGETHER_RESPONSE = 2;
+}
+
+// Client to host, indicating that the client is requesting Better Together
+// setup.
+message EnableBetterTogetherRequest {}
+
+// Host to client, indicating that Better Together setup was completed.
+// Next id: 2
+message EnableBetterTogetherResponse {
+  enum ResultCode {
+    NORMAL = 0;
+    ERROR = 1;
+  }
+
+  optional ResultCode result_code = 1;
+}
+
+// Wrapper that Better Together setup messages use to explicitly indicate
+// message type.
+// Next id: 3
+message BetterTogetherSetupMessageWrapper {
+  required MessageType type = 1;
+  optional bytes payload = 2;
+}

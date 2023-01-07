@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/android/edge_effect.h"
@@ -19,6 +18,8 @@
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
 #include "ui/base/l10n/l10n_util_android.h"
+#include "ui/base/ui_base_switches.h"
+#include "ui/base/ui_base_switches_util.h"
 #include "ui/events/blink/did_overscroll_params.h"
 
 using ui::DidOverscrollParams;
@@ -48,6 +49,12 @@ std::unique_ptr<OverscrollGlow> CreateGlowEffect(OverscrollGlowClient* client) {
           switches::kDisableOverscrollEdgeEffect)) {
     return nullptr;
   }
+
+  // The elastic overscroll feature indicates when the user is scrolling beyond
+  // the range of the scrollable area. Showing a glow in addition would be
+  // redundant.
+  if (switches::IsElasticOverscrollEnabled())
+    return nullptr;
 
   return std::make_unique<OverscrollGlow>(client);
 }
@@ -211,15 +218,11 @@ void OverscrollControllerAndroid::OnOverscrolled(
 
   // When use-zoom-for-dsf is enabled, each value of params was already scaled
   // by the device scale factor.
-  float scale_factor = IsUseZoomForDSFEnabled() ? 1.f : dpi_scale_;
-  gfx::Vector2dF accumulated_overscroll =
-      gfx::ScaleVector2d(params.accumulated_overscroll, scale_factor);
-  gfx::Vector2dF latest_overscroll_delta =
-      gfx::ScaleVector2d(params.latest_overscroll_delta, scale_factor);
-  gfx::Vector2dF current_fling_velocity =
-      gfx::ScaleVector2d(params.current_fling_velocity, scale_factor);
-  gfx::Vector2dF overscroll_location = gfx::ScaleVector2d(
-      params.causal_event_viewport_point.OffsetFromOrigin(), scale_factor);
+  gfx::Vector2dF accumulated_overscroll = params.accumulated_overscroll;
+  gfx::Vector2dF latest_overscroll_delta = params.latest_overscroll_delta;
+  gfx::Vector2dF current_fling_velocity = params.current_fling_velocity;
+  gfx::Vector2dF overscroll_location =
+      params.causal_event_viewport_point.OffsetFromOrigin();
 
   if (params.overscroll_behavior.x == cc::OverscrollBehavior::Type::kNone) {
     accumulated_overscroll.set_x(0);
@@ -255,7 +258,7 @@ void OverscrollControllerAndroid::OnFrameMetadataUpdated(
     float device_scale_factor,
     const gfx::SizeF& scrollable_viewport_size,
     const gfx::SizeF& root_layer_size,
-    const gfx::Vector2dF& root_scroll_offset,
+    const gfx::PointF& root_scroll_offset,
     bool root_overflow_y_hidden) {
   if (!refresh_effect_ && !glow_effect_)
     return;
@@ -263,14 +266,11 @@ void OverscrollControllerAndroid::OnFrameMetadataUpdated(
   // When use-zoom-for-dsf is enabled, frame_metadata.page_scale_factor was
   // already scaled by the device scale factor.
   float scale_factor = page_scale_factor;
-  if (!IsUseZoomForDSFEnabled()) {
-    scale_factor *= device_scale_factor;
-  }
   gfx::SizeF viewport_size =
       gfx::ScaleSize(scrollable_viewport_size, scale_factor);
   gfx::SizeF content_size = gfx::ScaleSize(root_layer_size, scale_factor);
-  gfx::Vector2dF content_scroll_offset =
-      gfx::ScaleVector2d(root_scroll_offset, scale_factor);
+  gfx::PointF content_scroll_offset =
+      gfx::ScalePoint(root_scroll_offset, scale_factor);
 
   if (refresh_effect_) {
     refresh_effect_->OnFrameUpdated(viewport_size, content_scroll_offset,

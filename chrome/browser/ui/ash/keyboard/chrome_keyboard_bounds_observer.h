@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget_observer.h"
@@ -23,10 +22,16 @@ class ChromeKeyboardBoundsObserver
       public ChromeKeyboardControllerClient::Observer {
  public:
   explicit ChromeKeyboardBoundsObserver(aura::Window* keyboard_window);
+
+  ChromeKeyboardBoundsObserver(const ChromeKeyboardBoundsObserver&) = delete;
+  ChromeKeyboardBoundsObserver& operator=(const ChromeKeyboardBoundsObserver&) =
+      delete;
+
   ~ChromeKeyboardBoundsObserver() override;
 
   // keyboard::ChromeKeyboardControllerClient::Observer:
   void OnKeyboardVisibilityChanged(bool visible) override {}
+  void OnKeyboardVisibleBoundsChanged(const gfx::Rect& screen_bounds) override;
   void OnKeyboardOccludedBoundsChanged(const gfx::Rect& screen_bounds) override;
 
  private:
@@ -49,8 +54,6 @@ class ChromeKeyboardBoundsObserver
   aura::Window* const keyboard_window_;
   std::set<views::Widget*> observed_widgets_;
   gfx::Rect occluded_bounds_in_screen_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeKeyboardBoundsObserver);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_KEYBOARD_CHROME_KEYBOARD_BOUNDS_OBSERVER_H_

@@ -1,22 +1,48 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
+#include "base/ranges/algorithm.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/media_message_center/media_notification_controller.h"
+#include "components/feature_engagement/public/tracker.h"
+#include "components/global_media_controls/public/media_item_manager.h"
+#include "components/media_message_center/media_notification_util.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
+#include "components/media_router/common/pref_names.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
+#include "components/prefs/pref_service.h"
 
 namespace {
 
-bool ShouldHideNotification(const media_router::MediaRoute& route) {
-  if (!route.for_display() ||
-      route.controller_type() != media_router::RouteControllerType::kGeneric) {
+// Returns false if a notification item shouldn't be created for |route|.
+// If a route should be hidden, it's not possible to create an item
+// for this route until the next time |OnModuleUpdated()| is called.
+bool ShouldHideNotification(const raw_ptr<Profile> profile,
+                            const media_router::MediaRoute& route) {
+  // TODO(crbug.com/1195382): Display multizone group route.
+  if (route.is_connecting()) {
     return true;
   }
+
+  if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
+    // Hide a route if it's a mirroring route.
+    if (route.media_source().IsTabMirroringSource() ||
+        route.media_source().IsDesktopMirroringSource())
+      return true;
+  } else if (route.controller_type() !=
+             media_router::RouteControllerType::kGeneric) {
+    // Hide a route if it doesn't have a generic controller (play, pause etc.).
+    return true;
+  }
+
+  // Skip the multizone member check if it's a DIAL route.
   if (!route.media_source().IsCastPresentationUrl()) {
     return false;
   }
@@ -33,30 +59,26 @@ bool ShouldHideNotification(const media_router::MediaRoute& route) {
 
 CastMediaNotificationProducer::CastMediaNotificationProducer(
     Profile* profile,
-    media_message_center::MediaNotificationController* notification_controller,
-    base::RepeatingClosure items_changed_callback)
+    global_media_controls::MediaItemManager* item_manager)
     : CastMediaNotificationProducer(
           profile,
           media_router::MediaRouterFactory::GetApiForBrowserContext(profile),
-          notification_controller,
-          std::move(items_changed_callback)) {}
+          item_manager) {}
 
 CastMediaNotificationProducer::CastMediaNotificationProducer(
     Profile* profile,
     media_router::MediaRouter* router,
-    media_message_center::MediaNotificationController* notification_controller,
-    base::RepeatingClosure items_changed_callback)
+    global_media_controls::MediaItemManager* item_manager)
     : media_router::MediaRoutesObserver(router),
       profile_(profile),
       router_(router),
-      notification_controller_(notification_controller),
-      items_changed_callback_(std::move(items_changed_callback)),
-      container_observer_set_(this) {}
+      item_manager_(item_manager),
+      item_ui_observer_set_(this) {}
 
 CastMediaNotificationProducer::~CastMediaNotificationProducer() = default;
 
 base::WeakPtr<media_message_center::MediaNotificationItem>
-CastMediaNotificationProducer::GetNotificationItem(const std::string& id) {
+CastMediaNotificationProducer::GetMediaItem(const std::string& id) {
   const auto item_it = items_.find(id);
   if (item_it == items_.end())
     return nullptr;
@@ -64,52 +86,84 @@ CastMediaNotificationProducer::GetNotificationItem(const std::string& id) {
 }
 
 std::set<std::string>
-CastMediaNotificationProducer::GetActiveControllableNotificationIds() const {
+CastMediaNotificationProducer::GetActiveControllableItemIds() const {
   std::set<std::string> ids;
   for (const auto& item : items_) {
-    if (item.second.is_active())
-      ids.insert(item.first);
+    if (!item.second.is_active())
+      continue;
+
+// kMediaRouterShowCastSessionsStartedByOtherDevices is not registered on
+// Android nor ChromeOS.
+// // TODO(crbug.com/1308053): Enable it on ChromeOS once Cast+GMC ships.
+#if !BUILDFLAG(IS_CHROMEOS)
+    // The non-local Cast session filter should not be put in
+    // |ShouldHideNotification()| because it's used to determine if an item
+    // should be created. It's possible that users later change the pref to
+    // show all Cast sessions.
+    if (media_router::GlobalMediaControlsCastStartStopEnabled(profile_) &&
+        !this->profile_->GetPrefs()->GetBoolean(
+            media_router::prefs::
+                kMediaRouterShowCastSessionsStartedByOtherDevices) &&
+        !item.second.route_is_local()) {
+      continue;
+    }
+#endif
+
+    ids.insert(item.first);
   }
   return ids;
 }
 
-void CastMediaNotificationProducer::OnItemShown(
-    const std::string& id,
-    MediaNotificationContainerImpl* container) {
-  if (container)
-    container_observer_set_.Observe(id, container);
+bool CastMediaNotificationProducer::HasFrozenItems() {
+  return false;
 }
 
-void CastMediaNotificationProducer::OnContainerDismissed(
+void CastMediaNotificationProducer::OnItemShown(
+    const std::string& id,
+    global_media_controls::MediaItemUI* item_ui) {
+  if (item_ui)
+    item_ui_observer_set_.Observe(id, item_ui);
+}
+
+void CastMediaNotificationProducer::OnDialogDisplayed() {
+  media_message_center::RecordConcurrentCastNotificationCount(
+      GetActiveItemCount());
+}
+
+bool CastMediaNotificationProducer::IsItemActivelyPlaying(
     const std::string& id) {
-  auto item = GetNotificationItem(id);
+  // TODO: This is a stub, since we currently only care about
+  // MediaSessionNotificationProducer, but we probably should care about the
+  // other ones.
+  return false;
+}
+
+void CastMediaNotificationProducer::OnMediaItemUIDismissed(
+    const std::string& id) {
+  auto item = GetMediaItem(id);
   if (item) {
     item->Dismiss();
   }
   if (!HasActiveItems()) {
-    items_changed_callback_.Run();
+    item_manager_->OnItemsChanged();
   }
 }
 
 void CastMediaNotificationProducer::OnRoutesUpdated(
-    const std::vector<media_router::MediaRoute>& routes,
-    const std::vector<media_router::MediaRoute::Id>& joinable_route_ids) {
+    const std::vector<media_router::MediaRoute>& routes) {
   const bool had_items = HasActiveItems();
 
   base::EraseIf(items_, [&routes](const auto& item) {
-    return std::find_if(routes.begin(), routes.end(),
-                        [&item](const media_router::MediaRoute& route) {
-                          return item.first == route.media_route_id();
-                        }) == routes.end();
+    return !base::Contains(routes, item.first,
+                           &media_router::MediaRoute::media_route_id);
   });
 
   for (const auto& route : routes) {
-    if (ShouldHideNotification(route))
+    if (ShouldHideNotification(profile_, route))
       continue;
-    auto item_it =
-        std::find_if(items_.begin(), items_.end(), [&route](const auto& item) {
-          return item.first == route.media_route_id();
-        });
+
+    auto item_it = base::ranges::find(items_, route.media_route_id(),
+                                      &Items::value_type::first);
     if (item_it == items_.end()) {
       mojo::Remote<media_router::mojom::MediaController> controller_remote;
       mojo::PendingReceiver<media_router::mojom::MediaController>
@@ -117,28 +171,33 @@ void CastMediaNotificationProducer::OnRoutesUpdated(
       auto it_pair = items_.emplace(
           std::piecewise_construct,
           std::forward_as_tuple(route.media_route_id()),
-          std::forward_as_tuple(route, notification_controller_,
+          std::forward_as_tuple(route, item_manager_,
                                 std::make_unique<CastMediaSessionController>(
                                     std::move(controller_remote)),
                                 profile_));
       router_->GetMediaController(
           route.media_route_id(), std::move(controller_receiver),
           it_pair.first->second.GetObserverPendingRemote());
-      notification_controller_->ShowNotification(route.media_route_id());
+      item_manager_->ShowItem(route.media_route_id());
     } else {
       item_it->second.OnRouteUpdated(route);
     }
   }
-  if (HasActiveItems() != had_items)
-    items_changed_callback_.Run();
+  if (HasActiveItems() != had_items) {
+    item_manager_->OnItemsChanged();
+  }
 }
 
 size_t CastMediaNotificationProducer::GetActiveItemCount() const {
-  return std::count_if(items_.begin(), items_.end(), [](const auto& item) {
-    return item.second.is_active();
-  });
+  return GetActiveControllableItemIds().size();
 }
 
 bool CastMediaNotificationProducer::HasActiveItems() const {
-  return GetActiveItemCount() != 0;
+  return !GetActiveControllableItemIds().empty();
+}
+
+bool CastMediaNotificationProducer::HasLocalMediaRoute() const {
+  return base::ranges::any_of(items_,
+                              &CastMediaNotificationItem::route_is_local,
+                              &Items::value_type::second);
 }

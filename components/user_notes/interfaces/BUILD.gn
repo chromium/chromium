@@ -1,0 +1,21 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("interfaces") {
+  sources = [
+    "user_note_metadata_snapshot.cc",
+    "user_note_metadata_snapshot.h",
+    "user_note_service_delegate.h",
+    "user_note_storage.h",
+    "user_notes_ui.cc",
+    "user_notes_ui.h",
+    "user_notes_ui_delegate.h",
+  ]
+
+  deps = [
+    "//components/user_notes/model",
+    "//ui/gfx/geometry:geometry",
+    "//url",
+  ]
+}

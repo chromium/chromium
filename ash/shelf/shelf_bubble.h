@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,13 +22,12 @@ namespace ash {
 class ASH_EXPORT ShelfBubble : public views::BubbleDialogDelegateView,
                                public ShelfBackgroundAnimatorObserver {
  public:
-  ShelfBubble(views::View* anchor,
-              ShelfAlignment alignment,
-              SkColor background_color);
-  ~ShelfBubble() override;
+  ShelfBubble(views::View* anchor, ShelfAlignment alignment);
 
-  // views::BubbleDialogDelegateView
-  ax::mojom::Role GetAccessibleWindowRole() override;
+  ShelfBubble(const ShelfBubble&) = delete;
+  ShelfBubble& operator=(const ShelfBubble&) = delete;
+
+  ~ShelfBubble() override;
 
   // Returns true if we should close when we get a press down event within our
   // bounds.
@@ -51,8 +50,6 @@ class ASH_EXPORT ShelfBubble : public views::BubbleDialogDelegateView,
   int border_radius_ = 0;
 
   ShelfBackgroundAnimator background_animator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfBubble);
 };
 
 }  // namespace ash

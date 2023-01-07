@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/notification_blocker.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -78,6 +78,10 @@ class MESSAGE_CENTER_EXPORT NotificationList {
   using PopupNotifications = std::set<Notification*, CompareTimestampSerial>;
 
   explicit NotificationList(MessageCenter* message_center);
+
+  NotificationList(const NotificationList&) = delete;
+  NotificationList& operator=(const NotificationList&) = delete;
+
   virtual ~NotificationList();
 
   // Makes a message "read". Collects the set of ids whose state have changed
@@ -103,9 +107,12 @@ class MESSAGE_CENTER_EXPORT NotificationList {
   // Returns all notifications that have a matching |app_id|.
   Notifications GetNotificationsByAppId(const std::string& app_id) const;
 
+  // Returns all notifications that have a matching `origin_url`.
+  Notifications GetNotificationsByOriginUrl(const GURL& origin_url) const;
+
   // Returns true if the notification exists and was updated.
   bool SetNotificationIcon(const std::string& notification_id,
-                           const gfx::Image& image);
+                           const ui::ImageModel& image);
 
   // Returns true if the notification exists and was updated.
   bool SetNotificationImage(const std::string& notification_id,
@@ -129,6 +136,13 @@ class MESSAGE_CENTER_EXPORT NotificationList {
   PopupNotifications GetPopupNotifications(const NotificationBlockers& blockers,
                                            std::list<std::string>* blocked);
 
+  // Lists all notifications (even those that aren't shown due to shown popup
+  // limits) that would qualify as popups with the given list of blockers.
+  // Doesn't mark popups as shown.
+  PopupNotifications GetPopupNotificationsWithoutBlocker(
+      const NotificationBlockers& blockers,
+      const NotificationBlocker& blocker) const;
+
   // Marks a specific popup item as shown. Set |mark_notification_as_read| to
   // true in case marking the notification as read too.
   void MarkSinglePopupAsShown(const std::string& id,
@@ -136,6 +150,10 @@ class MESSAGE_CENTER_EXPORT NotificationList {
 
   // Marks a specific popup item as displayed.
   void MarkSinglePopupAsDisplayed(const std::string& id);
+
+  // Resets the state for a pop up so that it can be shown again. Used to
+  // bring up a grouped notification when a new item is added to it.
+  void ResetSinglePopup(const std::string& id);
 
   NotificationDelegate* GetNotificationDelegate(const std::string& id);
 
@@ -174,11 +192,9 @@ class MESSAGE_CENTER_EXPORT NotificationList {
 
   void PushNotification(std::unique_ptr<Notification> notification);
 
-  MessageCenter* message_center_;  // owner
+  raw_ptr<MessageCenter> message_center_;  // owner
   OwnedNotifications notifications_;
   bool quiet_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationList);
 };
 
 }  // namespace message_center

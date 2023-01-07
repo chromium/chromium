@@ -1,0 +1,25 @@
+<!--
+@SCRIPT:
+  // Combobox input with active descendant.
+  combobox.accessibilityAttributeNames.has(AXOwns)
+  combobox.accessibilityAttributeValue(AXOwns)
+  // Combobox input with no selection container
+  combobox_no_descendant.accessibilityAttributeValue(AXOwns)
+  // Div with role combobox (does not support AXOwns).
+  div.accessibilityAttributeNames.has(AXOwns)
+  // Input without role combobox (does support AXOwns)
+  input_not_combobox.accessibilityAttributeNames.has(AXOwns)
+-->
+<!DOCTYPE html>
+<input id="combobox" role="combobox" aria-activedescendant="item">
+<ul role="listbox">
+  <li id="item" role="option"></li>
+</ul>
+
+<input id="combobox_no_descendant" role="combobox" aria-activedescendant="div">
+<div id="div"></div>
+
+<div id="div" role="combobox"></div>
+
+<input id="input_not_combobox"></div>
+

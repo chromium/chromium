@@ -49,7 +49,7 @@ void SQLTransactionCoordinator::Trace(Visitor* visitor) const {}
 
 void SQLTransactionCoordinator::ProcessPendingTransactions(
     CoordinationInfo& info) {
-  if (info.active_write_transaction || info.pending_transactions.IsEmpty())
+  if (info.active_write_transaction || info.pending_transactions.empty())
     return;
 
   SQLTransactionBackend* first_pending_transaction =
@@ -59,9 +59,9 @@ void SQLTransactionCoordinator::ProcessPendingTransactions(
       first_pending_transaction = info.pending_transactions.TakeFirst();
       info.active_read_transactions.insert(first_pending_transaction);
       first_pending_transaction->LockAcquired();
-    } while (!info.pending_transactions.IsEmpty() &&
+    } while (!info.pending_transactions.empty() &&
              info.pending_transactions.front()->IsReadOnly());
-  } else if (info.active_read_transactions.IsEmpty()) {
+  } else if (info.active_read_transactions.empty()) {
     info.pending_transactions.pop_front();
     info.active_write_transaction = first_pending_transaction;
     first_pending_transaction->LockAcquired();
@@ -138,7 +138,7 @@ void SQLTransactionCoordinator::Shutdown() {
     // Clean up transactions that have NOT reached "lockAcquired":
     // Transaction phase 3 cleanup. See comment on "What happens if a
     // transaction is interrupted?" at the top of SQLTransactionBackend.cpp.
-    while (!info.pending_transactions.IsEmpty()) {
+    while (!info.pending_transactions.empty()) {
       SQLTransactionBackend* transaction =
           info.pending_transactions.TakeFirst();
       transaction->NotifyDatabaseThreadIsShuttingDown();

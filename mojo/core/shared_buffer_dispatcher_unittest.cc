@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/writable_shared_memory_region.h"
-#include "base/stl_util.h"
 #include "mojo/core/dispatcher.h"
 #include "mojo/core/platform_shared_memory_mapping.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,10 +45,12 @@ void RevalidateCreateOptions(
 class SharedBufferDispatcherTest : public testing::Test {
  public:
   SharedBufferDispatcherTest() = default;
-  ~SharedBufferDispatcherTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SharedBufferDispatcherTest);
+  SharedBufferDispatcherTest(const SharedBufferDispatcherTest&) = delete;
+  SharedBufferDispatcherTest& operator=(const SharedBufferDispatcherTest&) =
+      delete;
+
+  ~SharedBufferDispatcherTest() override = default;
 };
 
 // Tests valid inputs to |ValidateCreateOptions()|.
@@ -65,7 +66,7 @@ TEST_F(SharedBufferDispatcherTest, ValidateCreateOptionsValid) {
   // Different flags.
   MojoCreateSharedBufferFlags flags_values[] = {
       MOJO_CREATE_SHARED_BUFFER_FLAG_NONE};
-  for (size_t i = 0; i < base::size(flags_values); i++) {
+  for (size_t i = 0; i < std::size(flags_values); i++) {
     const MojoCreateSharedBufferFlags flags = flags_values[i];
 
     // Different capacities (size 1).

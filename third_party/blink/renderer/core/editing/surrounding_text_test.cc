@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ class SurroundingTextTest : public testing::Test {
 };
 
 void SurroundingTextTest::SetUp() {
-  dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
+  dummy_page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
 }
 
 void SurroundingTextTest::SetHTML(const String& content) {
@@ -321,7 +321,7 @@ TEST_F(SurroundingTextTest, EmptyInputElementWithChild) {
 
   // Surrounding text should not crash. See http://crbug.com/758438.
   SurroundingText surrounding_text(EphemeralRange(start, end), 8);
-  EXPECT_TRUE(surrounding_text.TextContent().IsEmpty());
+  EXPECT_TRUE(surrounding_text.TextContent().empty());
 }
 
 TEST_F(SurroundingTextTest, ButtonsAndParagraph) {
@@ -352,7 +352,7 @@ TEST_F(SurroundingTextTest, ButtonsAndParagraph) {
     EphemeralRange selection = Select(0);
     SurroundingText surrounding_text(selection, 0);
 
-    EXPECT_TRUE(surrounding_text.TextContent().IsEmpty());
+    EXPECT_TRUE(surrounding_text.TextContent().empty());
   }
 
   {
@@ -443,14 +443,14 @@ TEST_F(SurroundingTextTest, EmptySurroundingTextInOptionsAndButton) {
     EphemeralRange selection = Select(1);
     SurroundingText surrounding_text(selection, 100);
 
-    EXPECT_TRUE(surrounding_text.TextContent().IsEmpty());
+    EXPECT_TRUE(surrounding_text.TextContent().empty());
   }
 
   {
     EphemeralRange selection = Select(3);
     SurroundingText surrounding_text(selection, 100);
 
-    EXPECT_TRUE(surrounding_text.TextContent().IsEmpty());
+    EXPECT_TRUE(surrounding_text.TextContent().empty());
   }
 }
 

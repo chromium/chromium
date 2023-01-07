@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,8 @@ const CGFloat kSpotlightHeight = 36.0f;
   spotlightView.translatesAutoresizingMaskIntoConstraints = NO;
   spotlightView.userInteractionEnabled = NO;
   spotlightView.layer.cornerRadius = kSpotlightHeight / 2;
-  spotlightView.backgroundColor = self.configuration.buttonsSpotlightColor;
+  spotlightView.backgroundColor =
+      self.toolbarConfiguration.buttonsSpotlightColor;
   // Make sure that the spotlightView is below the image to avoid changing the
   // color of the image.
   [self insertSubview:spotlightView belowSubview:self.imageView];
@@ -54,11 +55,9 @@ const CGFloat kSpotlightHeight = 36.0f;
       .active = YES;
   self.spotlightView = spotlightView;
 
-  if (@available(iOS 13.4, *)) {
-      // Customize the pointer highlight tomatch the spotlight view.
-      self.pointerInteractionEnabled = YES;
-      self.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();
-  }
+  // Customize the pointer highlight tomatch the spotlight view.
+  self.pointerInteractionEnabled = YES;
+  self.pointerStyleProvider = CreateLiftEffectCirclePointerStyleProvider();
 }
 
 @end

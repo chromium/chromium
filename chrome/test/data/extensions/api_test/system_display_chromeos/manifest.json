@@ -4,9 +4,8 @@
   "version": "1.0",
   "description": "Test system.display API",
   "permissions": ["system.display"],
-  "app": {
-    "background": {
-      "scripts": ["background.js"]
-    }
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/stack_container.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/record_replay.h"
 #include "base/synchronization/lock.h"
@@ -30,6 +29,9 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
     MojoResult rv = CreateTrap(&Context::OnNotification, &trap_handle_);
     DCHECK_EQ(MOJO_RESULT_OK, rv);
   }
+
+  State(const State&) = delete;
+  State& operator=(const State&) = delete;
 
   void ShutDown() {
     // NOTE: This may immediately invoke Notify for every context.
@@ -245,6 +247,9 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
     Context(scoped_refptr<State> state, Handle handle)
         : state_(state), handle_(handle) {}
 
+    Context(const Context&) = delete;
+    Context& operator=(const Context&) = delete;
+
     Handle handle() const { return handle_; }
 
     uintptr_t context_value() const {
@@ -267,8 +272,6 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
 
     const scoped_refptr<State> state_;
     const Handle handle_;
-
-    DISALLOW_COPY_AND_ASSIGN(Context);
   };
 
   ~State() {}
@@ -338,8 +341,6 @@ class WaitSet::State : public base::RefCountedThreadSafe<State> {
   // to guard against event starvation, as base::WaitableEvent::WaitMany gives
   // preference to events in left-to-right order.
   size_t waitable_index_shift_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(State);
 };
 
 WaitSet::WaitSet() : state_(new State) {}

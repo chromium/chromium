@@ -1,0 +1,63 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "password_manager"
+  static_files = [
+    "password_manager.html",
+    "manifest.webmanifest",
+    "images/checkup_result_banner_error_dark.svg",
+    "images/checkup_result_banner_compromised_dark.svg",
+    "images/checkup_result_banner_running_dark.svg",
+    "images/checkup_result_banner_error.svg",
+    "images/checkup_result_banner_compromised.svg",
+    "images/checkup_result_banner_running.svg",
+  ]
+  web_component_files = [
+    "checkup_section.ts",
+    "password_manager_app.ts",
+    "password_list_item.ts",
+    "passwords_section.ts",
+    "prefs/pref_toggle_button.ts",
+    "settings_section.ts",
+    "side_bar.ts",
+    "site_favicon.ts",
+    "toolbar.ts",
+  ]
+  non_web_component_files = [
+    "password_manager_proxy.ts",
+    "password_manager.ts",
+    "router.ts",
+    "prefs/prefs_browser_proxy.ts",
+    "prefs/pref_mixin.ts",
+  ]
+
+  # Files that are passed as input to css_to_wrapper().
+  css_files = [
+    "shared_style.css",
+    "shared_vars.css",
+  ]
+
+  icons_html_files = [ "icons.html" ]
+
+  ts_composite = true
+
+  ts_definitions = [
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/passwords_private.d.ts",
+    "//tools/typescript/definitions/runtime.d.ts",
+    "//tools/typescript/definitions/chrome_send.d.ts",
+    "//tools/typescript/definitions/settings_private.d.ts",
+    "//tools/typescript/definitions/tabs.d.ts",
+  ]
+
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/js/browser_command:build_ts",
+  ]
+}

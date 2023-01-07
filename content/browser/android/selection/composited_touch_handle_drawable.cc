@@ -1,13 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/android/selection/composited_touch_handle_drawable.h"
 
 #include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
-#include "base/numerics/ranges.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "content/public/browser/android/compositor.h"
 #include "ui/android/handle_view_resources.h"
@@ -85,7 +84,7 @@ void CompositedTouchHandleDrawable::SetOrigin(const gfx::PointF& origin) {
 
 void CompositedTouchHandleDrawable::SetAlpha(float alpha) {
   DCHECK(layer_->parent());
-  alpha = base::ClampToRange(alpha, 0.0f, 1.0f);
+  alpha = base::clamp(alpha, 0.0f, 1.0f);
   layer_->SetOpacity(alpha);
   layer_->SetHideLayerAndSubtree(!alpha);
 }

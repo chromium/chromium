@@ -1,0 +1,31 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.libassistant.mojom;
+
+import "services/media_session/public/mojom/media_session.mojom";
+
+// Interface that allows Libassistant to make audio related changes on
+// ChromeOS.
+interface AudioOutputDelegate {
+  // Called when a particular stream needs to be brought into focus. The focus
+  // can be set for different streams. This api also ducks the
+  // volume of non-focused streams to bring the current stream into focus.
+  RequestAudioFocus(AudioOutputStreamType stream_type);
+
+  // Abandon the current audio focus.
+  AbandonAudioFocusIfNeeded();
+
+  // Allow Libassistant to observe media session changes.
+  AddMediaSessionObserver(
+    pending_remote<media_session.mojom.MediaSessionObserver> observer);
+};
+
+
+// The possible types of audio output stream.
+enum AudioOutputStreamType {
+  kAlarmStream,
+  kTtsStream,
+  kMediaStream,
+};

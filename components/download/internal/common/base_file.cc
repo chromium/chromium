@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
@@ -26,14 +25,10 @@
 #include "components/services/quarantine/quarantine.h"
 #include "crypto/secure_hash.h"
 
-#if defined(OS_WIN)
-#include "components/services/quarantine/public/cpp/quarantine_features_win.h"
-#endif  // defined(OS_WIN)
-
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
 #include "components/download/internal/common/android/download_collection_bridge.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #define CONDITIONAL_TRACE(trace)                  \
   do {                                            \
@@ -53,6 +48,9 @@ class FileErrorData : public base::trace_event::ConvertableToTraceFormat {
         os_error_(os_error),
         interrupt_reason_(interrupt_reason) {}
 
+  FileErrorData(const FileErrorData&) = delete;
+  FileErrorData& operator=(const FileErrorData&) = delete;
+
   ~FileErrorData() override = default;
 
   void AppendAsTraceFormat(std::string* out) const override {
@@ -70,38 +68,32 @@ class FileErrorData : public base::trace_event::ConvertableToTraceFormat {
   std::string operation_;
   int os_error_;
   DownloadInterruptReason interrupt_reason_;
-  DISALLOW_COPY_AND_ASSIGN(FileErrorData);
 };
 
 void InitializeFile(base::File* file, const base::FilePath& file_path) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (file_path.IsContentUri()) {
     *file = DownloadCollectionBridge::OpenIntermediateUri(file_path);
     return;
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Use exclusive write to prevent another process from writing the file.
-  file->Initialize(
-      file_path,
-      base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
-          base::File::FLAG_READ
-#if defined(OS_WIN)
-          // Don't allow other process to write to the file while Chrome is
-          // writing to it. On posix systems, use FLAG_EXCLUSIVE_WRITE will
-          // cause file creation to fail if the file already exists.
-          | base::File::FLAG_EXCLUSIVE_WRITE
-#endif  // defined(OS_WIN)
-  );
+  file->Initialize(file_path,
+                   base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
+                       base::File::FLAG_READ |
+                       // Don't allow other processes to write to the file while
+                       // Chrome is writing (Windows-specific).
+                       base::File::FLAG_WIN_EXCLUSIVE_WRITE);
 }
 
 void DeleteFileWrapper(const base::FilePath& file_path) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (file_path.IsContentUri()) {
     DownloadCollectionBridge::DeleteIntermediateUri(file_path);
     return;
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   base::DeleteFile(file_path);
 }
 
@@ -261,7 +253,7 @@ DownloadInterruptReason BaseFile::Rename(const base::FilePath& new_path) {
                            full_path_.AsUTF8Unsafe(), "new_filename",
                            new_path.AsUTF8Unsafe()));
   bool need_to_move_file = true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (new_path.IsContentUri()) {
     rename_result = DownloadCollectionBridge::MoveFileToIntermediateUri(
         full_path_, new_path);
@@ -520,7 +512,7 @@ DownloadInterruptReason BaseFile::LogInterruptReason(
   return reason;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 DownloadInterruptReason BaseFile::PublishDownload() {
   Close();
   base::FilePath new_path =
@@ -531,7 +523,7 @@ DownloadInterruptReason BaseFile::PublishDownload() {
   }
   return DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -621,16 +613,13 @@ void BaseFile::OnFileQuarantined(
 
 void BaseFile::OnQuarantineServiceError(const GURL& source_url,
                                         const GURL& referrer_url) {
-#if defined(OS_WIN)
-  if (base::FeatureList::IsEnabled(quarantine::kOutOfProcessQuarantine)) {
-    OnFileQuarantined(/*connection_error=*/true,
-                      quarantine::SetInternetZoneIdentifierDirectly(
-                          full_path_, source_url, referrer_url));
-    return;
-  }
-#endif  // defined(OS_WIN)
-
+#if BUILDFLAG(IS_WIN)
+  OnFileQuarantined(/*connection_error=*/true,
+                    quarantine::SetInternetZoneIdentifierDirectly(
+                        full_path_, source_url, referrer_url));
+#else   // !BUILDFLAG(IS_WIN)
   CHECK(false) << "In-process quarantine service should not have failed.";
+#endif  // !BUILDFLAG(IS_WIN)
 }
 
 void BaseFile::AnnotateWithSourceInformation(
@@ -641,7 +630,7 @@ void BaseFile::AnnotateWithSourceInformation(
     OnAnnotationDoneCallback on_annotation_done_callback) {
   GURL authority_url = GetEffectiveAuthorityURL(source_url, referrer_url);
   if (!remote_quarantine) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     quarantine::mojom::QuarantineFileResult result =
         quarantine::SetInternetZoneIdentifierDirectly(full_path_, authority_url,
                                                       referrer_url);

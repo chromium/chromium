@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 #define CONTENT_BROWSER_RENDERER_HOST_TEXT_INPUT_CLIENT_MAC_H_
 
 #include "base/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/mac/scoped_block.h"
-#include "base/macros.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "ui/base/mojom/attributed_string.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
@@ -51,6 +52,9 @@ class CONTENT_EXPORT TextInputClientMac {
  public:
   // Returns the singleton instance.
   static TextInputClientMac* GetInstance();
+
+  TextInputClientMac(const TextInputClientMac&) = delete;
+  TextInputClientMac& operator=(const TextInputClientMac&) = delete;
 
   // Each of the three methods mentioned above has an associated pair of methods
   // to get data from the renderer. The Get*() methods block the calling thread
@@ -100,6 +104,7 @@ class CONTENT_EXPORT TextInputClientMac {
 
  private:
   friend struct base::DefaultSingletonTraits<TextInputClientMac>;
+  FRIEND_TEST_ALL_PREFIXES(TextInputClientMacTest, TimeoutRectForRange);
   TextInputClientMac();
   ~TextInputClientMac();
 
@@ -112,13 +117,21 @@ class CONTENT_EXPORT TextInputClientMac {
   // condition.
   void AfterRequest() UNLOCK_FUNCTION(lock_);
 
+  base::TimeDelta wait_timeout_for_tests() const { return wait_timeout_; }
+  void set_wait_timeout_for_tests(base::TimeDelta wait_timeout) {
+    wait_timeout_ = wait_timeout;
+  }
+
   uint32_t character_index_;
   gfx::Rect first_rect_;
 
   base::Lock lock_;
   base::ConditionVariable condition_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextInputClientMac);
+  // The amount of time that the browser process will wait for a response from
+  // the renderer.
+  // TODO(rsesek): Using the histogram data, find the best upper-bound for this
+  // value.
+  base::TimeDelta wait_timeout_ = base::Milliseconds(1500);
 };
 
 }  // namespace content

@@ -1,0 +1,70 @@
+<style include="multidevice-setup-shared">
+  :host {
+    display: block;
+    height: 100%;
+    overflow: scroll;
+    width: 100%;
+  }
+
+  #container {
+    background-color: var(--cr-card-background-color);
+    box-sizing: border-box;
+    color: var(--cros-text-color-secondary);
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+    height: 100%;
+    line-height: 16px;
+    margin: auto;
+  }
+
+  iron-pages {
+    height: 100%;
+    overflow: var(--iron-pages-overflow, visible);
+  }
+
+  button-bar {
+    padding: 24px;
+  }
+
+  @media screen and (orientation: portrait) {
+    :host-context([screen=oobe]) button-bar,
+    :host-context([screen=gaia-signin]) button-bar {
+      align-items: center;
+    }
+  }
+</style>
+<div id="container">
+  <iron-pages id="ironPages"
+      attr-for-selected="is"
+      selected="[[visiblePageName]]"
+      selected-item="{{visiblePage_}}">
+    <template is="dom-if" if="[[shouldPasswordPageBeIncluded_(delegate)]]"
+        restamp>
+      <password-page class="ui-page"
+          auth-token="{{authToken_}}"
+          forward-button-disabled="{{passwordPageForwardButtonDisabled_}}"
+          password-field-valid="{{passwordFieldValid}}"
+          on-user-submitted-password="onUserSubmittedPassword_">
+      </password-page>
+    </template>
+    <template is="dom-if"
+        if="[[shouldSetupSucceededPageBeIncluded_(delegate)]]" restamp>
+      <setup-succeeded-page class="ui-page"></setup-succeeded-page>
+    </template>
+    <start-setup-page class="ui-page"
+        devices="[[devices_]]"
+        selected-instance-id-or-legacy-device-id="{{selectedInstanceIdOrLegacyDeviceId_}}"
+        delegate="[[delegate]]">
+    </start-setup-page>
+  </iron-pages>
+  <div class="flex"></div>
+  <button-bar forward-button-hidden="[[!forwardButtonTextId]]"
+      backward-button-hidden="[[!backwardButtonTextId]]"
+      cancel-button-hidden="[[!cancelButtonTextId]]"
+      should-show-shadow="[[isScrolledToBottom_]]">
+    <slot name="backward-button" slot="backward-button"></slot>
+    <slot name="cancel-button" slot="cancel-button"></slot>
+    <slot name="forward-button" slot="forward-button"></slot>
+  </button-bar>
+</div>

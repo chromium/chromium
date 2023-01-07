@@ -1,12 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {NavigationModelVolumeItem, NavigationModelItem} from './navigation_list_model.m.js';
-// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
-// clang-format on
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.js';
+
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {NavigationModelItem, NavigationModelVolumeItem} from './navigation_list_model.js';
 
 /**
  * Container for a NavigationModelVolumeItem, allowing it to be reused for a
@@ -31,7 +31,7 @@ class MockNavigationListItem {
  * Mock class for NavigationListModel.
  * Current implementation of mock class cannot handle shortcut list.
  */
-/* #export */ class MockNavigationListModel extends cr.EventTarget {
+export class MockNavigationListModel extends EventTarget {
   /**
    * @param {VolumeManager} volumeManager A volume manager.
    */

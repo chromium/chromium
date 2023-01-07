@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,6 @@
 #ifndef CHROME_COMMON_IMPORTER_PROFILE_IMPORT_PROCESS_PARAM_TRAITS_MACROS_H_
 #define CHROME_COMMON_IMPORTER_PROFILE_IMPORT_PROCESS_PARAM_TRAITS_MACROS_H_
 
-#include <string>
-#include <vector>
-
-#include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
@@ -21,7 +17,7 @@
 #include "content/public/common/common_param_traits.h"
 #include "ipc/ipc_message_macros.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IPC_ENUM_TRAITS_MIN_MAX_VALUE(importer::ImporterType,
                               importer::TYPE_UNKNOWN,
                               importer::TYPE_EDGE)

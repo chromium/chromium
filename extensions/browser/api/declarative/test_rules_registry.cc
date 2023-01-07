@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@ namespace extensions {
 TestRulesRegistry::TestRulesRegistry(content::BrowserThread::ID owner_thread,
                                      const std::string& event_name,
                                      int rules_registry_id)
-    : RulesRegistry(NULL /*profile*/,
+    : RulesRegistry(nullptr /*profile*/,
                     event_name,
                     owner_thread,
-                    NULL,
-                    rules_registry_id) {
-}
+                    nullptr,
+                    rules_registry_id) {}
 
 TestRulesRegistry::TestRulesRegistry(content::BrowserContext* browser_context,
                                      const std::string& event_name,

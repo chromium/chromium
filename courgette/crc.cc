@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #  include "zlib.h"
 #else
 extern "C" {
-#  include "third_party/lzma_sdk/7zCrc.h"
+#include "third_party/lzma_sdk/C/7zCrc.h"
 }
 #endif
 

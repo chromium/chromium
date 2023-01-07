@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.components.permissions.BluetoothScanningPermissionDialog;
+import org.chromium.components.permissions.BluetoothScanningPermissionDialogJni;
+import org.chromium.components.permissions.DeviceItemAdapter;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.bluetooth_scanning.Event;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -36,6 +39,8 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 
 /**
  * Tests for the BluetoothScanningPermissionDialog class.
+ *
+ * TODO(crbug.com/1222669): Componentize this test.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
@@ -77,6 +82,7 @@ public class BluetoothScanningPermissionDialogTest {
             mWindowAndroid = sActivityTestRule.getActivity().getWindowAndroid();
             BluetoothScanningPermissionDialog dialog = new BluetoothScanningPermissionDialog(
                     mWindowAndroid, "https://origin.example.com/", ConnectionSecurityLevel.SECURE,
+                    new ChromeBluetoothScanningPromptAndroidDelegate(),
                     /*nativeBluetoothScanningPermissionDialogPtr=*/42);
             return dialog;
         });

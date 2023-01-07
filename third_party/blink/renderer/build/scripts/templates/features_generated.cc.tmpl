@@ -1,0 +1,42 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file, platform_buildflag %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#include "third_party/blink/public/common/features_generated.h"
+
+namespace blink {
+namespace features {
+
+{% for feature in features %}
+{% if feature.base_feature %}
+BASE_FEATURE(k{{feature.base_feature}},
+    "{{feature.base_feature}}",
+{% if feature.base_feature_status %}
+    base::FEATURE_{{'ENABLED' if feature.base_feature_status == 'enabled' else 'DISABLED'}}_BY_DEFAULT
+{% else %}
+{% if feature.status_type == 'str' %}
+    base::FEATURE_{{'ENABLED' if feature.status == 'stable' else 'DISABLED'}}_BY_DEFAULT
+{% else %}
+{% for platform in platforms %}
+#if {{platform_buildflag(platform)}}
+    base::FEATURE_{{'ENABLED' if feature.status[platform] == 'stable' else 'DISABLED'}}_BY_DEFAULT
+#endif
+{% endfor %}
+#if
+  {%- for platform in platforms %}
+  {%- if not loop.first %} &&{% endif %}
+ !{{platform_buildflag(platform)}}
+  {%- endfor %}
+
+    base::FEATURE_{{'ENABLED' if feature.status['default'] == 'stable' else 'DISABLED'}}_BY_DEFAULT
+#endif
+{% endif %}
+{% endif %}
+);
+
+{% endif %}
+{% endfor %}
+
+}  // namespace features
+}  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "ash/login/ui/login_test_utils.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/test_session_controller_client.h"
+#include "ash/shelf/login_shelf_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -34,10 +35,26 @@ using LockScreenSanityTest = ash::LoginTestBase;
 namespace ash {
 namespace {
 
+// Returns the widget contents view that contains login shelf in the same root
+// window as `native_window`.
+views::View* GetLoginShelfContentsView(gfx::NativeWindow native_window) {
+  // TODO(https://crbug.com/1343114): refactor the code below after the login
+  // shelf widget is ready.
+  Shelf* shelf = Shelf::ForWindow(native_window);
+  if (features::IsUseLoginShelfWidgetEnabled())
+    return shelf->login_shelf_widget()->GetContentsView();
+
+  return shelf->shelf_widget()->GetContentsView();
+}
+
 class LockScreenAppFocuser {
  public:
   explicit LockScreenAppFocuser(views::Widget* lock_screen_app_widget)
       : lock_screen_app_widget_(lock_screen_app_widget) {}
+
+  LockScreenAppFocuser(const LockScreenAppFocuser&) = delete;
+  LockScreenAppFocuser& operator=(const LockScreenAppFocuser&) = delete;
+
   ~LockScreenAppFocuser() = default;
 
   bool reversed_tab_order() const { return reversed_tab_order_; }
@@ -50,8 +67,6 @@ class LockScreenAppFocuser {
  private:
   bool reversed_tab_order_ = false;
   views::Widget* lock_screen_app_widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenAppFocuser);
 };
 
 testing::AssertionResult VerifyFocused(views::View* view) {
@@ -184,23 +199,22 @@ TEST_F(LockScreenSanityTest, TabGoesFromLockToShelfAndBackToLock) {
       std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(lock);
-  views::View* shelf = Shelf::ForWindow(lock->GetWidget()->GetNativeWindow())
-                           ->shelf_widget()
-                           ->GetContentsView();
+  views::View* login_shelf_contents_view =
+      GetLoginShelfContentsView(lock->GetWidget()->GetNativeWindow());
 
   // Lock has focus.
   EXPECT_TRUE(VerifyFocused(lock));
-  EXPECT_TRUE(VerifyNotFocused(shelf));
+  EXPECT_TRUE(VerifyNotFocused(login_shelf_contents_view));
 
   // Tab (eventually) goes to the shelf.
   ASSERT_TRUE(TabThroughView(GetEventGenerator(), lock, false /*reverse*/));
   EXPECT_TRUE(VerifyNotFocused(lock));
-  EXPECT_TRUE(VerifyFocused(shelf));
+  EXPECT_TRUE(VerifyFocused(login_shelf_contents_view));
 
   // A single shift+tab brings focus back to the lock screen.
   GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
   EXPECT_TRUE(VerifyFocused(lock));
-  EXPECT_TRUE(VerifyNotFocused(shelf));
+  EXPECT_TRUE(VerifyNotFocused(login_shelf_contents_view));
 }
 
 // Verifies that shift-tabbing from the lock screen will eventually focus the
@@ -249,9 +263,8 @@ TEST_F(LockScreenSanityTest, TabWithLockScreenAppActive) {
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(lock);
 
-  views::View* shelf = Shelf::ForWindow(lock->GetWidget()->GetNativeWindow())
-                           ->shelf_widget()
-                           ->GetContentsView();
+  views::View* login_shelf_contents_view =
+      GetLoginShelfContentsView((lock->GetWidget()->GetNativeWindow()));
 
   views::View* status_area =
       RootWindowController::ForWindow(lock->GetWidget()->GetNativeWindow())
@@ -280,7 +293,7 @@ TEST_F(LockScreenSanityTest, TabWithLockScreenAppActive) {
   // focus (notified via mojo interface), shelf should get the focus next.
   EXPECT_TRUE(VerifyFocused(lock_screen_app));
   DataDispatcher()->HandleFocusLeavingLockScreenApps(false /*reverse*/);
-  EXPECT_TRUE(VerifyFocused(shelf));
+  EXPECT_TRUE(VerifyFocused(login_shelf_contents_view));
 
   // Reversing focus should bring focus back to the lock screen app.
   GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_TAB, ui::EF_SHIFT_DOWN);
@@ -301,7 +314,7 @@ TEST_F(LockScreenSanityTest, TabWithLockScreenAppActive) {
   // Tab out of the lock screen app once more - the shelf should get the focus
   // again.
   DataDispatcher()->HandleFocusLeavingLockScreenApps(false /*reverse*/);
-  EXPECT_TRUE(VerifyFocused(shelf));
+  EXPECT_TRUE(VerifyFocused(login_shelf_contents_view));
 }
 
 TEST_F(LockScreenSanityTest, FocusLockScreenWhenLockScreenAppExit) {
@@ -315,9 +328,8 @@ TEST_F(LockScreenSanityTest, FocusLockScreenWhenLockScreenAppExit) {
   SetUserCount(1);
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(lock);
 
-  views::View* shelf = Shelf::ForWindow(lock->GetWidget()->GetNativeWindow())
-                           ->shelf_widget()
-                           ->GetContentsView();
+  views::View* login_shelf_contents_view =
+      GetLoginShelfContentsView(lock->GetWidget()->GetNativeWindow());
 
   // Setup and focus a lock screen app.
   DataDispatcher()->SetLockScreenNoteState(mojom::TrayActionState::kActive);
@@ -330,7 +342,7 @@ TEST_F(LockScreenSanityTest, FocusLockScreenWhenLockScreenAppExit) {
 
   // Tab out of the lock screen app - shelf should get the focus.
   DataDispatcher()->HandleFocusLeavingLockScreenApps(false /*reverse*/);
-  EXPECT_TRUE(VerifyFocused(shelf));
+  EXPECT_TRUE(VerifyFocused(login_shelf_contents_view));
 
   // Move the lock screen note taking to available state (which happens when the
   // app session ends) - this should focus the lock screen.
@@ -339,7 +351,7 @@ TEST_F(LockScreenSanityTest, FocusLockScreenWhenLockScreenAppExit) {
 
   // Tab through the lock screen - the focus should eventually get to the shelf.
   ASSERT_TRUE(TabThroughView(GetEventGenerator(), lock, false /*reverse*/));
-  EXPECT_TRUE(VerifyFocused(shelf));
+  EXPECT_TRUE(VerifyFocused(login_shelf_contents_view));
 }
 
 TEST_F(LockScreenSanityTest, RemoveUser) {
@@ -381,18 +393,19 @@ TEST_F(LockScreenSanityTest, RemoveUser) {
   // The secondary user is not removable (as configured above) so showing the
   // dropdown does not result in an interactive/focusable view.
   focus_and_submit(secondary().dropdown());
-  EXPECT_TRUE(secondary().menu());
-  EXPECT_FALSE(HasFocusInAnyChildView(secondary().menu()));
-  // TODO(jdufault): Run submit() and then EXPECT_FALSE(secondary().menu()); to
+  EXPECT_TRUE(secondary().remove_account_dialog());
+  EXPECT_FALSE(HasFocusInAnyChildView(secondary().remove_account_dialog()));
+  // TODO(jdufault): Run submit() and then
+  // EXPECT_FALSE(secondary().remove_account_dialog()); to
   // verify that double-enter closes the bubble.
 
-  // The primary user is removable, so the menu is interactive. Submitting the
-  // first time shows the remove user warning, submitting the second time
-  // actually removes the user. Removing the user triggers a mojo API call as
-  // well as removes the user from the UI.
+  // The primary user is removable, so the remove account dialog is interactive.
+  // Submitting the first time shows the remove user warning, submitting the
+  // second time actually removes the user. Removing the user triggers a mojo
+  // API call as well as removes the user from the UI.
   focus_and_submit(primary().dropdown());
-  EXPECT_TRUE(primary().menu());
-  EXPECT_TRUE(HasFocusInAnyChildView(primary().menu()));
+  EXPECT_TRUE(primary().remove_account_dialog());
+  EXPECT_TRUE(HasFocusInAnyChildView(primary().remove_account_dialog()));
   EXPECT_CALL(*client, OnRemoveUserWarningShown()).Times(1);
   submit();
   EXPECT_CALL(*client, RemoveUser(users()[0].basic_user_info.account_id))

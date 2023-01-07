@@ -1,0 +1,77 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  proto_in_dir = "../../../.."
+  proto_out_dir = "chromecast/media/audio/audio_output_service"
+  sources = [ "audio_output_service.proto" ]
+  link_deps = [ "//chromecast/media/audio/net:proto" ]
+}
+
+cast_source_set("constants") {
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+}
+
+cast_source_set("output_socket") {
+  sources = [
+    "output_socket.cc",
+    "output_socket.h",
+  ]
+
+  public_deps = [ "//chromecast/media/audio/net:audio_socket" ]
+
+  deps = [
+    ":proto",
+    "//base",
+    "//net",
+  ]
+}
+
+cast_source_set("output_connection") {
+  sources = [
+    "output_connection.cc",
+    "output_connection.h",
+    "output_stream_connection.cc",
+    "output_stream_connection.h",
+  ]
+
+  public_deps = [
+    ":output_socket",
+    ":proto",
+    "//chromecast/common/mojom",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast/net:socket_util",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//net",
+  ]
+}
+
+cast_source_set("unittests") {
+  testonly = true
+
+  sources = [ "output_connection_unittest.cc" ]
+
+  deps = [
+    ":output_connection",
+    ":proto",
+    "//base",
+    "//base/test:test_support",
+    "//chromecast/net:socket_util",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//net",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

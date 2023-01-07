@@ -1,0 +1,30 @@
+caption: Browser experiments icon in toolbar
+default: true
+desc: |-
+  Setting the policy to Enabled or leaving the policy unset means that users can access browser experimental features through an icon in the toolbar
+
+        Setting the policy to Disabled removes the browser experimental features icon from the toolbar.
+
+        chrome://flags and any other means of turning off and on browser features will still behave as expected regardless of whether this policy is Enabled or Disabled.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Enable browser experimental features toolbar entrypoint
+  value: true
+- caption: Disable browser experimental features toolbar entrypoint
+  value: false
+owners:
+- elainechien@chromium.org
+- labs-on-chrome@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome.*:89-
+- chrome_os:93-
+tags:
+- google-sharing
+type: main

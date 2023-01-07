@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,13 @@
 
 #include "base/at_exit.h"
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
@@ -60,7 +59,7 @@ class TestRunner {
 
  protected:
   std::string id_;
-  const base::Process* process_;
+  raw_ptr<const base::Process> process_;
 
   base::OnceClosure done_read_closure_;
 };
@@ -112,13 +111,15 @@ class RegistryTestRunner : public TestRunner {
 
   void StartRegistryTest(ProcessProxyRegistry* registry) override {
     for (int i = 0; i < kTestLineNum; i++) {
-      EXPECT_TRUE(registry->SendInput(id_, kTestLineToSend));
+      registry->SendInput(id_, kTestLineToSend, base::BindOnce([](bool result) {
+                            EXPECT_TRUE(result);
+                          }));
     }
   }
 
  private:
   bool ProcessReceivedCharacter(char received, size_t stream) {
-    if (stream >= base::size(left_to_check_index_))
+    if (stream >= std::size(left_to_check_index_))
       return false;
     bool success = left_to_check_index_[stream] < expected_line_.length() &&
         expected_line_[left_to_check_index_[stream]] == received;
@@ -174,7 +175,8 @@ class RegistryNotifiedOnProcessExitTestRunner : public TestRunner {
   }
 
   void StartRegistryTest(ProcessProxyRegistry* registry) override {
-    EXPECT_TRUE(registry->SendInput(id_, "p"));
+    registry->SendInput(
+        id_, "p", base::BindOnce([](bool result) { EXPECT_TRUE(result); }));
   }
 
  private:
@@ -260,9 +262,9 @@ class ProcessProxyTest : public testing::Test {
   // Destroys ProcessProxyRegistry LazyInstance after each test.
   base::ShadowingAtExitManager shadowing_at_exit_manager_;
 
-  ProcessProxyRegistry* registry_;
+  raw_ptr<ProcessProxyRegistry> registry_;
   std::string id_;
-  const base::Process* process_ = nullptr;
+  raw_ptr<const base::Process> process_ = nullptr;
 
   base::test::TaskEnvironment task_environment_;
 };
@@ -270,7 +272,7 @@ class ProcessProxyTest : public testing::Test {
 // Test will open new process that will run cat command, and verify data we
 // write to process gets echoed back.
 TEST_F(ProcessProxyTest, RegistryTest) {
-  test_runner_.reset(new RegistryTestRunner());
+  test_runner_ = std::make_unique<RegistryTestRunner>();
   RunTest();
 }
 
@@ -278,7 +280,7 @@ TEST_F(ProcessProxyTest, RegistryTest) {
 //
 // Disabled due to flakiness: https://crbug.com/1151205
 TEST_F(ProcessProxyTest, DISABLED_RegistryNotifiedOnProcessExit) {
-  test_runner_.reset(new RegistryNotifiedOnProcessExitTestRunner());
+  test_runner_ = std::make_unique<RegistryNotifiedOnProcessExitTestRunner>();
   RunTest();
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -90,8 +90,8 @@ void BackgroundSyncMetrics::RecordBatchSyncEventComplete(
   // 6 minutes, to be safe.
   base::UmaHistogramCustomTimes(
       GetBackgroundSyncPrefix(sync_type) + "BackgroundSync.Event.Time", time,
-      /* min= */ base::TimeDelta::FromMilliseconds(10),
-      /* max= */ base::TimeDelta::FromMinutes(6),
+      /* min= */ base::Milliseconds(10),
+      /* max= */ base::Minutes(6),
       /* buckets= */ 50);
   base::UmaHistogramCounts100(
       GetBackgroundSyncPrefix(sync_type) + "BackgroundSync.Event.BatchSize",

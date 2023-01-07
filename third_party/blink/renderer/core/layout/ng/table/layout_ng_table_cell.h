@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,12 +71,9 @@ class CORE_EXPORT LayoutNGTableCell
 
   void WillBeRemovedFromTree() override;
 
-  // TODO(atotic) Remove "New" from name.
-  // Currently,  LayoutNGTableCellLegacy is named LayoutNGTableCell for test
-  // compat.
   const char* GetName() const final {
     NOT_DESTROYED();
-    return "LayoutNGTableCellNew";
+    return "LayoutNGTableCell";
   }
 
   bool CreatesNewFormattingContext() const final {
@@ -97,11 +94,6 @@ class CORE_EXPORT LayoutNGTableCell
 
   // LayoutNGTableCellInterface methods start.
 
-  const LayoutTableCell* ToLayoutTableCell() const final {
-    NOTREACHED();
-    return nullptr;
-  }
-
   const LayoutNGTableCellInterface* ToLayoutNGTableCellInterface() const final {
     NOT_DESTROYED();
     return this;
@@ -119,19 +111,6 @@ class CORE_EXPORT LayoutNGTableCell
   LayoutNGTableInterface* TableInterface() const final;
 
   void ColSpanOrRowSpanChanged() final;
-
-  Length StyleOrColLogicalWidth() const final;
-
-  // Not used in LayoutNG.
-  int IntrinsicPaddingBefore() const final {
-    NOT_DESTROYED();
-    return 0;
-  }
-  // Not used in LayoutNG.
-  int IntrinsicPaddingAfter() const final {
-    NOT_DESTROYED();
-    return 0;
-  }
 
   unsigned RowIndex() const final;
 

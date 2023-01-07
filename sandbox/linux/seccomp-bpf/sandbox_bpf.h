@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "sandbox/linux/bpf_dsl/codegen.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
 #include "sandbox/sandbox_export.h"
@@ -33,6 +32,10 @@ class SANDBOX_EXPORT SandboxBPF {
   // Ownership of |policy| is transfered here to the sandbox object.
   // nullptr is allowed for unit tests.
   explicit SandboxBPF(std::unique_ptr<bpf_dsl::Policy> policy);
+
+  SandboxBPF(const SandboxBPF&) = delete;
+  SandboxBPF& operator=(const SandboxBPF&) = delete;
+
   // NOTE: Setting a policy and starting the sandbox is a one-way operation.
   // The kernel does not provide any option for unloading a loaded sandbox. The
   // sandbox remains engaged even when the object is destructed.
@@ -65,8 +68,7 @@ class SANDBOX_EXPORT SandboxBPF {
   //
   // |enable_ibpb| controls if the sandbox will forcibly enable indirect branch
   // prediction barrier through prctl(2) to mitigate Spectre variant 2.
-  bool StartSandbox(SeccompLevel level,
-                    bool enable_ibpb = true) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool StartSandbox(SeccompLevel level, bool enable_ibpb = true);
 
   // The sandbox needs to be able to access files in "/proc/self/". If
   // this directory is not accessible when "StartSandbox()" gets called, the
@@ -116,8 +118,6 @@ class SANDBOX_EXPORT SandboxBPF {
   base::ScopedFD proc_fd_;
   bool sandbox_has_started_;
   std::unique_ptr<bpf_dsl::Policy> policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxBPF);
 };
 
 }  // namespace sandbox

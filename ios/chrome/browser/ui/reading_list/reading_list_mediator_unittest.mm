@@ -1,28 +1,28 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/reading_list/reading_list_mediator.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/strings/sys_string_conversions.h"
-#include "base/test/simple_test_clock.h"
-#include "components/favicon/core/large_icon_service_impl.h"
-#include "components/favicon/core/test/mock_favicon_service.h"
-#include "components/favicon_base/favicon_types.h"
-#include "components/reading_list/core/reading_list_model_impl.h"
-#include "components/url_formatter/url_formatter.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/simple_test_clock.h"
+#import "components/favicon/core/large_icon_service_impl.h"
+#import "components/favicon/core/test/mock_favicon_service.h"
+#import "components/favicon_base/favicon_types.h"
+#import "components/reading_list/core/reading_list_model_impl.h"
+#import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
-#include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#import "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_accessibility_delegate.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_custom_action_factory.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_list_item_factory.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_table_view_item.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -67,10 +67,10 @@ class ReadingListMediatorTest
     model_->SetReadStatus(GURL("http://chromium.org/read1"), true);
     model_->AddEntry(GURL("http://chromium.org/unread2"), "unread2",
                      reading_list::ADDED_VIA_CURRENT_APP);
-    clock_.Advance(base::TimeDelta::FromMilliseconds(10));
+    clock_.Advance(base::Milliseconds(10));
     model_->AddEntry(no_title_entry_url_, "",
                      reading_list::ADDED_VIA_CURRENT_APP);
-    clock_.Advance(base::TimeDelta::FromMilliseconds(10));
+    clock_.Advance(base::Milliseconds(10));
     model_->AddEntry(GURL("http://chromium.org/read2"), "read2",
                      reading_list::ADDED_VIA_CURRENT_APP);
     model_->SetReadStatus(GURL("http://chromium.org/read2"), true);
@@ -88,6 +88,9 @@ class ReadingListMediatorTest
         listItemFactory:[[ReadingListListItemFactory alloc] init]];
   }
 
+  ReadingListMediatorTest(const ReadingListMediatorTest&) = delete;
+  ReadingListMediatorTest& operator=(const ReadingListMediatorTest&) = delete;
+
  protected:
   testing::StrictMock<favicon::MockFaviconService> mock_favicon_service_;
   std::unique_ptr<ReadingListModelImpl> model_;
@@ -99,7 +102,6 @@ class ReadingListMediatorTest
 
  private:
   web::WebTaskEnvironment task_environment_;
-  DISALLOW_COPY_AND_ASSIGN(ReadingListMediatorTest);
 };
 
 TEST_P(ReadingListMediatorTest, fillItems) {

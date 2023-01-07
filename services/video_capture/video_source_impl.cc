@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 namespace video_capture {
 
 VideoSourceImpl::VideoSourceImpl(
-    mojom::DeviceFactory* device_factory,
+    DeviceFactory* device_factory,
     const std::string& device_id,
     base::RepeatingClosure on_last_binding_closed_cb)
     : device_factory_(device_factory),
@@ -92,45 +92,51 @@ void VideoSourceImpl::OnClientDisconnected() {
 void VideoSourceImpl::StartDeviceWithSettings(
     const media::VideoCaptureParams& requested_settings) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto scoped_trace = ScopedCaptureTrace::CreateIfEnabled(
+      "VideoSourceImpl::StartDeviceWithSettings");
+  if (scoped_trace)
+    scoped_trace->AddStep("CreateDevice");
+
   device_start_settings_ = requested_settings;
   device_status_ = DeviceStatus::kStartingAsynchronously;
   device_factory_->CreateDevice(
       device_id_, device_.BindNewPipeAndPassReceiver(),
       base::BindOnce(&VideoSourceImpl::OnCreateDeviceResponse,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), std::move(scoped_trace)));
 }
 
 void VideoSourceImpl::OnCreateDeviceResponse(
-    mojom::DeviceAccessResultCode result_code) {
+    std::unique_ptr<ScopedCaptureTrace> scoped_trace,
+    media::VideoCaptureError result_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  switch (result_code) {
-    case mojom::DeviceAccessResultCode::SUCCESS: {
-      broadcaster_video_frame_handler_.reset();
-      device_->Start(
-          device_start_settings_,
-          broadcaster_video_frame_handler_.BindNewPipeAndPassRemote());
-      device_status_ = DeviceStatus::kStarted;
-      if (push_subscriptions_.empty()) {
-        StopDeviceAsynchronously();
-        return;
-      }
-      for (auto& entry : push_subscriptions_) {
-        auto& subscription = entry.second;
-        subscription->OnDeviceStartSucceededWithSettings(
-            device_start_settings_);
-      }
+
+  if (result_code == media::VideoCaptureError::kNone) {
+    if (scoped_trace)
+      scoped_trace->AddStep("StartDevice");
+
+    // Device was created successfully.
+    broadcaster_video_frame_handler_.reset();
+    device_->Start(device_start_settings_,
+                   broadcaster_video_frame_handler_.BindNewPipeAndPassRemote());
+    device_status_ = DeviceStatus::kStarted;
+    if (push_subscriptions_.empty()) {
+      StopDeviceAsynchronously();
       return;
     }
-    case mojom::DeviceAccessResultCode::ERROR_DEVICE_NOT_FOUND:  // Fall through
-    case mojom::DeviceAccessResultCode::NOT_INITIALIZED:
-      for (auto& entry : push_subscriptions_) {
-        auto& subscription = entry.second;
-        subscription->OnDeviceStartFailed();
-      }
-      push_subscriptions_.clear();
-      device_status_ = DeviceStatus::kNotStarted;
-      return;
+    for (auto& entry : push_subscriptions_) {
+      auto& subscription = entry.second;
+      subscription->OnDeviceStartSucceededWithSettings(device_start_settings_);
+    }
+    return;
   }
+  for (auto& entry : push_subscriptions_) {
+    auto& subscription = entry.second;
+    subscription->OnDeviceStartFailed(result_code);
+  }
+  push_subscriptions_.clear();
+  device_status_ = DeviceStatus::kNotStarted;
+  return;
 }
 
 void VideoSourceImpl::OnPushSubscriptionClosedOrDisconnectedOrDiscarded(

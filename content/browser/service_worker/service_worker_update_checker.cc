@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/loader/browser_initiated_resource_request.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -118,6 +116,7 @@ void ServiceWorkerUpdateChecker::OnOneUpdateCheckFinished(
   if (is_main_script) {
     cross_origin_embedder_policy_ =
         running_checker_->cross_origin_embedder_policy();
+    policy_container_host_ = running_checker_->policy_container_host();
   }
 
   if (ServiceWorkerSingleScriptUpdateChecker::Result::kDifferent == result) {
@@ -202,6 +201,12 @@ void ServiceWorkerUpdateChecker::OnResourceIdAssignedForOneScriptCheck(
     const GURL& url,
     const int64_t resource_id,
     const int64_t new_resource_id) {
+  if (context_->process_manager()->IsShutdown()) {
+    // If it's being shut down, ServiceWorkerUpdateChecker is going to be
+    // destroyed after this task. We do nothing here.
+    return;
+  }
+
   // When the url matches with the main script url, we can always think that
   // it's the main script even if a main script imports itself because the
   // second load (network load for imported script) should hit the script

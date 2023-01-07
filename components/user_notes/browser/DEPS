@@ -1,0 +1,14 @@
+include_rules = [
+  "+content/public/browser",
+  "+content/public/test",
+  "+mojo/public/cpp/bindings",
+  "+services/service_manager/public/cpp/interface_provider.h",
+  "+third_party/blink/public/mojom/annotation",
+  "+ui/gfx/geometry",
+]
+
+specific_include_rules = {
+  "user_note_service_unittest.cc": [
+    "+components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+  ]
+}

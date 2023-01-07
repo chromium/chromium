@@ -1,28 +1,30 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/host/input_injector_chromeos.h"
 
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
 
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/system/sys_info.h"
 #include "remoting/host/chromeos/point_transformer.h"
 #include "remoting/host/clipboard.h"
 #include "remoting/proto/internal.pb.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/ime/chromeos/ime_keyboard.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
+#include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -77,10 +79,29 @@ bool IsLockKey(ui::DomCode dom_code) {
 
 // If caps_lock is specified, sets local keyboard state to match.
 void SetCapsLockState(bool caps_lock) {
-  chromeos::input_method::InputMethodManager* ime =
-      chromeos::input_method::InputMethodManager::Get();
+  auto* ime = ash::input_method::InputMethodManager::Get();
   ime->GetImeKeyboard()->SetCapsLockEnabled(caps_lock);
 }
+
+class SystemInputInjectorStub : public ui::SystemInputInjector {
+ public:
+  SystemInputInjectorStub() {
+    LOG(WARNING)
+        << "Using stubbed input injector; All CRD user input will be ignored.";
+  }
+  SystemInputInjectorStub(const SystemInputInjectorStub&) = delete;
+  SystemInputInjectorStub& operator=(const SystemInputInjectorStub&) = delete;
+  ~SystemInputInjectorStub() override = default;
+
+  // SystemInputInjector implementation:
+  void SetDeviceId(int device_id) override {}
+  void MoveCursorTo(const gfx::PointF& location) override {}
+  void InjectMouseButton(ui::EventFlags button, bool down) override {}
+  void InjectMouseWheel(int delta_x, int delta_y) override {}
+  void InjectKeyEvent(ui::DomCode physical_key,
+                      bool down,
+                      bool suppress_auto_repeat) override {}
+};
 
 }  // namespace
 
@@ -88,6 +109,10 @@ void SetCapsLockState(bool caps_lock) {
 class InputInjectorChromeos::Core {
  public:
   Core();
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core();
 
   // Mirrors the public InputInjectorChromeos interface.
@@ -100,15 +125,11 @@ class InputInjectorChromeos::Core {
  private:
   void SetLockStates(uint32_t states);
 
+  void InjectMouseMove(const MouseEvent& event);
+
   bool hide_cursor_on_disconnect_ = false;
   std::unique_ptr<ui::SystemInputInjector> delegate_;
   std::unique_ptr<Clipboard> clipboard_;
-
-  // Used to rotate the input coordinates appropriately based on the current
-  // display rotation settings.
-  std::unique_ptr<PointTransformer> point_transformer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 InputInjectorChromeos::Core::Core() = default;
@@ -192,21 +213,38 @@ void InputInjectorChromeos::Core::InjectMouseEvent(const MouseEvent& event) {
   } else if (event.has_wheel_delta_y() || event.has_wheel_delta_x()) {
     delegate_->InjectMouseWheel(event.wheel_delta_x(), event.wheel_delta_y());
   } else {
-    DCHECK(event.has_x() && event.has_y());
-    delegate_->MoveCursorTo(point_transformer_->ToScreenCoordinates(
-        gfx::PointF(event.x(), event.y())));
+    InjectMouseMove(event);
   }
+}
+
+void InputInjectorChromeos::Core::InjectMouseMove(const MouseEvent& event) {
+  DCHECK(event.has_x() && event.has_y());
+  gfx::PointF location_in_screen_in_dip = gfx::PointF(event.x(), event.y());
+  gfx::PointF location_in_screen_in_pixels =
+      PointTransformer::ConvertScreenInDipToScreenInPixel(
+          location_in_screen_in_dip);
+
+  delegate_->MoveCursorTo(location_in_screen_in_pixels);
 }
 
 void InputInjectorChromeos::Core::Start(
     std::unique_ptr<protocol::ClipboardStub> client_clipboard) {
   delegate_ = ui::OzonePlatform::GetInstance()->CreateSystemInputInjector();
+  if (!delegate_ && !base::SysInfo::IsRunningOnChromeOS()) {
+    // This happens when directly running the Chrome binary on linux.
+    // We'll simply ignore all input there (instead of crashing).
+    // Note: it would be nicer to swap this out with input_injector_x11.cc
+    // on linux instead (and properly handle the input), but that runs into
+    // dependency issues.
+    delegate_ = std::make_unique<SystemInputInjectorStub>();
+  }
   DCHECK(delegate_);
+
+  delegate_->SetDeviceId(ui::ED_REMOTE_INPUT_DEVICE);
 
   // Implemented by remoting::ClipboardAura.
   clipboard_ = Clipboard::Create();
   clipboard_->Start(std::move(client_clipboard));
-  point_transformer_.reset(new PointTransformer());
 
   // If the cursor was hidden before we start injecting input then we should try
   // to restore its state when the remote user disconnects.  The main scenario

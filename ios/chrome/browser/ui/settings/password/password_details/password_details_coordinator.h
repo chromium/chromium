@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
 namespace password_manager {
-struct PasswordForm;
+struct CredentialUIEntry;
 }  // namespace password_manager
 
 @protocol ApplicationCommands;
@@ -24,14 +24,18 @@ class IOSChromePasswordCheckManager;
     initWithBaseNavigationController:
         (UINavigationController*)navigationController
                              browser:(Browser*)browser
-                            password:
-                                (const password_manager::PasswordForm&)password
+                          credential:
+                              (const password_manager::CredentialUIEntry&)
+                                  credential
                         reauthModule:(ReauthenticationModule*)reauthModule
                 passwordCheckManager:(IOSChromePasswordCheckManager*)manager
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
+
+// Displays the password data in edit mode without requiring any authentication.
+- (void)showPasswordDetailsInEditModeWithoutAuthentication;
 
 // Delegate.
 @property(nonatomic, weak) id<PasswordDetailsCoordinatorDelegate> delegate;

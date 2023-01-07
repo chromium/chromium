@@ -1,15 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_V4L2_V4L2_BUFFER_AFFINITY_TRACKER_H_
-#define MEDIA_GPU_V4L2_V4L2_BUFFER_AFFINITY_TRACKER_H_
+#ifndef MEDIA_GPU_V4L2_BUFFER_AFFINITY_TRACKER_H_
+#define MEDIA_GPU_V4L2_BUFFER_AFFINITY_TRACKER_H_
 
 #include <cstddef>
 #include <map>
 
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/generic_shared_memory_id.h"
 
 namespace media {
@@ -42,7 +42,7 @@ class BufferAffinityTracker {
    * On subsequent calls with the same id, that same V4L2 buffer will be
    * returned.
    */
-  base::Optional<size_t> get_buffer_for_id(gfx::GenericSharedMemoryId id);
+  absl::optional<size_t> get_buffer_for_id(gfx::GenericSharedMemoryId id);
 
  private:
   base::Lock lock_;
@@ -53,4 +53,4 @@ class BufferAffinityTracker {
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_V4L2_V4L2_BUFFER_AFFINITY_TRACKER_H_
+#endif  // MEDIA_GPU_V4L2_BUFFER_AFFINITY_TRACKER_H_

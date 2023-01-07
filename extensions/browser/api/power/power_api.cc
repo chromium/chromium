@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ base::LazyInstance<BrowserContextKeyedAPIFactory<PowerAPI>>::DestructorAtExit
 
 ExtensionFunction::ResponseAction PowerRequestKeepAwakeFunction::Run() {
   std::unique_ptr<api::power::RequestKeepAwake::Params> params(
-      api::power::RequestKeepAwake::Params::Create(*args_));
+      api::power::RequestKeepAwake::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   PowerAPI::Get(browser_context())->AddRequest(extension_id(), params->level);
   return RespondNow(NoArguments());

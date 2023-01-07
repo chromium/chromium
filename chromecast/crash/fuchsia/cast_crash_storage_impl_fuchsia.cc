@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@ const char kStadiaSessionId[] = "stadia-session-id";
 fuchsia::feedback::Annotation MakeAnnotation(base::StringPiece key,
                                              base::StringPiece value) {
   fuchsia::feedback::Annotation annotation;
-  annotation.key = key.as_string();
-  annotation.value = value.as_string();
+  annotation.key = std::string(key);
+  annotation.value = std::string(value);
   return annotation;
 }
 

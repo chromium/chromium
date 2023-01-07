@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,10 @@ class RuleIterator;
 class GlobalValueMap {
  public:
   GlobalValueMap();
+
+  GlobalValueMap(const GlobalValueMap&) = delete;
+  GlobalValueMap& operator=(const GlobalValueMap&) = delete;
+
   ~GlobalValueMap();
 
   // Returns nullptr to indicate the RuleIterator is empty.
@@ -33,8 +37,6 @@ class GlobalValueMap {
 
  private:
   std::map<ContentSettingsType, ContentSetting> settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalValueMap);
 };
 
 }  // namespace content_settings

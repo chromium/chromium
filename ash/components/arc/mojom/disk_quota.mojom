@@ -1,0 +1,37 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 3
+
+module arc.mojom;
+
+struct DiskSpace {
+  uint64 space_in_bytes;
+};
+
+// Next Method ID: 6
+// Deprecated method ID: 4
+interface DiskQuotaHost {
+  // Whether cryptohome supports quota-based stats.
+  IsQuotaSupported@0() => (bool supported);
+
+  // Get the current disk space usage for a uid. Returns -1 for failure.
+  GetCurrentSpaceForUid@1(uint32 uid) => (int64 cur_space);
+
+  // Get the current disk space usage for a gid. Returns -1 for failure.
+  GetCurrentSpaceForGid@2(uint32 gid) => (int64 cur_space);
+
+  // Get the current disk space usage for a project ID. Returns -1 for failure.
+  [MinVersion=1] GetCurrentSpaceForProjectId@3(uint32 project_id) =>
+      (int64 cur_space);
+
+  // Get free disk space in the stateful partition.
+  [MinVersion=2] GetFreeDiskSpace@5() => (DiskSpace? free_space);
+};
+
+// Next Method ID: 1
+interface DiskQuotaInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(pending_remote<DiskQuotaHost> host_remote) => ();
+};

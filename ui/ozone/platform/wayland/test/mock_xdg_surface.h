@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <xdg-shell-server-protocol.h>
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_xdg_popup.h"
@@ -31,11 +32,14 @@ class MockXdgTopLevel;
 class MockXdgSurface : public ServerObject {
  public:
   MockXdgSurface(wl_resource* resource, wl_resource* surface);
+
+  MockXdgSurface(const MockXdgSurface&) = delete;
+  MockXdgSurface& operator=(const MockXdgSurface&) = delete;
+
   ~MockXdgSurface() override;
 
   MOCK_METHOD1(AckConfigure, void(uint32_t serial));
-  MOCK_METHOD4(SetWindowGeometry,
-               void(int32_t x, int32_t y, int32_t width, int32_t height));
+  MOCK_METHOD1(SetWindowGeometry, void(const gfx::Rect&));
 
   void set_xdg_toplevel(std::unique_ptr<MockXdgTopLevel> xdg_toplevel) {
     xdg_toplevel_ = std::move(xdg_toplevel);
@@ -49,18 +53,20 @@ class MockXdgSurface : public ServerObject {
   // Has either toplevel role..
   std::unique_ptr<MockXdgTopLevel> xdg_toplevel_;
   // Or popup role.
-  TestXdgPopup* xdg_popup_ = nullptr;
+  raw_ptr<TestXdgPopup> xdg_popup_ = nullptr;
 
   // MockSurface that is the ground for this xdg_surface.
-  wl_resource* surface_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockXdgSurface);
+  raw_ptr<wl_resource> surface_ = nullptr;
 };
 
 // Manage zxdg_toplevel for providing desktop UI.
 class MockXdgTopLevel : public ServerObject {
  public:
   MockXdgTopLevel(wl_resource* resource, const void* implementation);
+
+  MockXdgTopLevel(const MockXdgTopLevel&) = delete;
+  MockXdgTopLevel& operator=(const MockXdgTopLevel&) = delete;
+
   ~MockXdgTopLevel() override;
 
   MOCK_METHOD1(SetParent, void(wl_resource* parent));
@@ -94,8 +100,6 @@ class MockXdgTopLevel : public ServerObject {
 
   std::string title_;
   std::string app_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockXdgTopLevel);
 };
 
 }  // namespace wl

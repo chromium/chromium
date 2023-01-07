@@ -35,8 +35,10 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/layout/shapes/shape.h"
 #include "third_party/blink/renderer/core/style/shape_value.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -91,10 +93,11 @@ class ShapeOutsideDeltas final {
   bool is_valid_ : 1;
 };
 
-class ShapeOutsideInfo final {
-  USING_FAST_MALLOC(ShapeOutsideInfo);
-
+class ShapeOutsideInfo final : public GarbageCollected<ShapeOutsideInfo> {
  public:
+  explicit ShapeOutsideInfo(const LayoutBox& layout_box)
+      : layout_box_(&layout_box), is_computing_shape_(false) {}
+
   void SetReferenceBoxLogicalSize(LayoutSize);
   void SetPercentageResolutionInlineSize(LayoutUnit);
 
@@ -111,10 +114,11 @@ class ShapeOutsideInfo final {
 
   static ShapeOutsideInfo& EnsureInfo(const LayoutBox& key) {
     InfoMap& info_map = ShapeOutsideInfo::GetInfoMap();
-    if (ShapeOutsideInfo* info = info_map.at(&key))
-      return *info;
+    auto it = info_map.find(&key);
+    if (it != info_map.end())
+      return *it->value;
     InfoMap::AddResult result =
-        info_map.insert(&key, base::WrapUnique(new ShapeOutsideInfo(key)));
+        info_map.insert(&key, MakeGarbageCollected<ShapeOutsideInfo>(key));
     return *result.stored_value->value;
   }
   static void RemoveInfo(const LayoutBox& key) { GetInfoMap().erase(&key); }
@@ -129,12 +133,10 @@ class ShapeOutsideInfo final {
   bool IsComputingShape() const { return is_computing_shape_; }
 
   PhysicalRect ComputedShapePhysicalBoundingBox() const;
-  FloatPoint ShapeToLayoutObjectPoint(FloatPoint) const;
+  gfx::PointF ShapeToLayoutObjectPoint(gfx::PointF) const;
   const Shape& ComputedShape() const;
 
- protected:
-  explicit ShapeOutsideInfo(const LayoutBox& layout_box)
-      : layout_box_(&layout_box), is_computing_shape_(false) {}
+  void Trace(Visitor* visitor) const;
 
  private:
   static bool IsEnabledFor(const LayoutBox&);
@@ -147,13 +149,11 @@ class ShapeOutsideInfo final {
   LayoutUnit LogicalTopOffset() const;
   LayoutUnit LogicalLeftOffset() const;
 
-  typedef HashMap<const LayoutBox*, std::unique_ptr<ShapeOutsideInfo>> InfoMap;
-  static InfoMap& GetInfoMap() {
-    DEFINE_STATIC_LOCAL(InfoMap, static_info_map, ());
-    return static_info_map;
-  }
+  using InfoMap =
+      HeapHashMap<WeakMember<const LayoutBox>, Member<ShapeOutsideInfo>>;
+  static InfoMap& GetInfoMap();
 
-  const LayoutBox* const layout_box_;
+  const Member<const LayoutBox> layout_box_;
   mutable std::unique_ptr<Shape> shape_;
   LayoutSize reference_box_logical_size_;
   LayoutUnit percentage_resolution_inline_size_;
@@ -162,4 +162,4 @@ class ShapeOutsideInfo final {
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SHAPES_SHAPE_OUTSIDE_INFO_H_

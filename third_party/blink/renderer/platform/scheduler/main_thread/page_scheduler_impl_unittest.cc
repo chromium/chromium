@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,16 +12,16 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/sequence_manager/test/fake_task.h"
 #include "base/task/sequence_manager/test/sequence_manager_for_test.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/platform/scheduler/common/features.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_task_queue_controller.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
@@ -33,7 +33,7 @@ using base::sequence_manager::FakeTask;
 using base::sequence_manager::FakeTaskTiming;
 using base::sequence_manager::TaskQueue;
 using testing::ElementsAre;
-using VirtualTimePolicy = blink::PageScheduler::VirtualTimePolicy;
+using VirtualTimePolicy = blink::VirtualTimeController::VirtualTimePolicy;
 
 namespace blink {
 namespace scheduler {
@@ -64,10 +64,10 @@ std::unique_ptr<PageSchedulerImpl> CreatePageScheduler(
 std::unique_ptr<FrameSchedulerImpl> CreateFrameScheduler(
     PageSchedulerImpl* page_scheduler,
     FrameScheduler::Delegate* delegate,
-    blink::BlameContext* blame_context,
+    bool is_in_embedded_frame_tree,
     FrameScheduler::FrameType frame_type) {
-  auto frame_scheduler =
-      page_scheduler->CreateFrameScheduler(delegate, blame_context, frame_type);
+  auto frame_scheduler = page_scheduler->CreateFrameScheduler(
+      delegate, is_in_embedded_frame_tree, frame_type);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler_impl(
       static_cast<FrameSchedulerImpl*>(frame_scheduler.release()));
   return frame_scheduler_impl;
@@ -79,19 +79,13 @@ using testing::UnorderedElementsAreArray;
 
 class MockPageSchedulerDelegate : public PageScheduler::Delegate {
  public:
-  MockPageSchedulerDelegate() : idle_(false) {}
-
-  void SetLocalMainFrameNetworkIsAlmostIdle(bool idle) { idle_ = idle; }
-  bool LocalMainFrameNetworkIsAlmostIdle() const override { return idle_; }
-  bool IsFocused() const override { return true; }
+  MockPageSchedulerDelegate() {}
 
  private:
   void ReportIntervention(const WTF::String&) override {}
   bool RequestBeginMainFrameNotExpected(bool) override { return false; }
   void OnSetPageFrozen(bool is_frozen) override {}
   bool IsOrdinary() const override { return true; }
-
-  bool idle_;
 };
 
 class PageSchedulerImplTest : public testing::Test {
@@ -100,8 +94,8 @@ class PageSchedulerImplTest : public testing::Test {
     feature_list_.InitAndEnableFeature(blink::features::kStopInBackground);
   }
 
-  PageSchedulerImplTest(std::vector<base::Feature> enabled_features,
-                        std::vector<base::Feature> disabled_features) {
+  PageSchedulerImplTest(std::vector<base::test::FeatureRef> enabled_features,
+                        std::vector<base::test::FeatureRef> disabled_features) {
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
@@ -112,19 +106,18 @@ class PageSchedulerImplTest : public testing::Test {
     test_task_runner_ = base::WrapRefCounted(new base::TestMockTimeTaskRunner(
         base::TestMockTimeTaskRunner::Type::kBoundToThread));
     // A null clock triggers some assertions.
-    test_task_runner_->AdvanceMockTickClock(
-        base::TimeDelta::FromMilliseconds(5));
+    test_task_runner_->AdvanceMockTickClock(base::Milliseconds(5));
     scheduler_ = std::make_unique<MainThreadSchedulerImpl>(
         base::sequence_manager::SequenceManagerForTest::Create(
-            nullptr, test_task_runner_, test_task_runner_->GetMockTickClock()),
-        base::nullopt);
+            nullptr, test_task_runner_, test_task_runner_->GetMockTickClock()));
     agent_group_scheduler_ = scheduler_->CreateAgentGroupScheduler();
     page_scheduler_delegate_ = std::make_unique<MockPageSchedulerDelegate>();
     page_scheduler_ =
         CreatePageScheduler(page_scheduler_delegate_.get(), scheduler_.get(),
                             *agent_group_scheduler_);
     frame_scheduler_ =
-        CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+        CreateFrameScheduler(page_scheduler_.get(), nullptr,
+                             /*is_in_embedded_frame_tree=*/false,
                              FrameScheduler::FrameType::kSubframe);
   }
 
@@ -152,10 +145,6 @@ class PageSchedulerImplTest : public testing::Test {
 
   base::TimeDelta delay_for_background_tab_freezing() const {
     return page_scheduler_->delay_for_background_tab_freezing_;
-  }
-
-  base::TimeDelta delay_for_background_and_network_idle_tab_freezing() const {
-    return page_scheduler_->delay_for_background_and_network_idle_tab_freezing_;
   }
 
   PageScheduler::Delegate* delegate() { return page_scheduler_->delegate_; }
@@ -266,16 +255,6 @@ class PageSchedulerImplTest : public testing::Test {
     EXPECT_EQ(5, counter);
   }
 
-  bool NetworkIsAlmostIdle() const {
-    return page_scheduler_delegate_->LocalMainFrameNetworkIsAlmostIdle();
-  }
-
-  void NotifyLocalMainFrameNetworkIsAlmostIdle() {
-    EXPECT_FALSE(page_scheduler_delegate_->LocalMainFrameNetworkIsAlmostIdle());
-    page_scheduler_delegate_->SetLocalMainFrameNetworkIsAlmostIdle(true);
-    page_scheduler_->OnLocalMainFrameNetworkAlmostIdle();
-  }
-
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
   std::unique_ptr<MainThreadSchedulerImpl> scheduler_;
   std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler_;
@@ -290,19 +269,23 @@ class PageSchedulerImplTest : public testing::Test {
 TEST_F(PageSchedulerImplTest, TestDestructionOfFrameSchedulersBefore) {
   std::unique_ptr<blink::FrameScheduler> frame1(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, nullptr, FrameScheduler::FrameType::kSubframe));
+          nullptr, /*is_in_embedded_frame_tree=*/false,
+          FrameScheduler::FrameType::kSubframe));
   std::unique_ptr<blink::FrameScheduler> frame2(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, nullptr, FrameScheduler::FrameType::kSubframe));
+          nullptr, /*is_in_embedded_frame_tree=*/false,
+          FrameScheduler::FrameType::kSubframe));
 }
 
 TEST_F(PageSchedulerImplTest, TestDestructionOfFrameSchedulersAfter) {
   std::unique_ptr<blink::FrameScheduler> frame1(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, nullptr, FrameScheduler::FrameType::kSubframe));
+          nullptr, /*is_in_embedded_frame_tree=*/false,
+          FrameScheduler::FrameType::kSubframe));
   std::unique_ptr<blink::FrameScheduler> frame2(
       page_scheduler_->CreateFrameScheduler(
-          nullptr, nullptr, FrameScheduler::FrameType::kSubframe));
+          nullptr, /*is_in_embedded_frame_tree=*/false,
+          FrameScheduler::FrameType::kSubframe));
   page_scheduler_.reset();
 }
 
@@ -341,10 +324,10 @@ TEST_F(PageSchedulerImplTest, RepeatingTimer_PageInForeground) {
       FROM_HERE,
       MakeRepeatingTask(
           ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType(),
-          &run_count, base::TimeDelta::FromMilliseconds(1)),
-      base::TimeDelta::FromMilliseconds(1));
+          &run_count, base::Milliseconds(1)),
+      base::Milliseconds(1));
 
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1000, run_count);
 }
 
@@ -356,10 +339,10 @@ TEST_F(PageSchedulerImplTest, RepeatingTimer_PageInBackgroundThenForeground) {
       FROM_HERE,
       MakeRepeatingTask(
           ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType(),
-          &run_count, base::TimeDelta::FromMilliseconds(20)),
-      base::TimeDelta::FromMilliseconds(20));
+          &run_count, base::Milliseconds(20)),
+      base::Milliseconds(20));
 
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, run_count);
 
   // Make sure there's no delay in throttling being removed for pages that have
@@ -367,7 +350,7 @@ TEST_F(PageSchedulerImplTest, RepeatingTimer_PageInBackgroundThenForeground) {
   page_scheduler_->SetPageVisible(true);
 
   run_count = 0;
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(50, run_count);
 }
 
@@ -378,10 +361,10 @@ TEST_F(PageSchedulerImplTest, RepeatingLoadingTask_PageInBackground) {
   LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
       FROM_HERE,
       MakeRepeatingTask(LoadingTaskQueue()->GetTaskRunnerWithDefaultTaskType(),
-                        &run_count, base::TimeDelta::FromMilliseconds(1)),
-      base::TimeDelta::FromMilliseconds(1));
+                        &run_count, base::Milliseconds(1)),
+      base::Milliseconds(1));
 
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1000, run_count);  // Loading tasks should not be throttled
 }
 
@@ -389,7 +372,8 @@ TEST_F(PageSchedulerImplTest, RepeatingTimers_OneBackgroundOneForeground) {
   std::unique_ptr<PageSchedulerImpl> page_scheduler2 =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler2 =
-      CreateFrameScheduler(page_scheduler2.get(), nullptr, nullptr,
+      CreateFrameScheduler(page_scheduler2.get(), nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
   page_scheduler_->SetPageVisible(true);
@@ -401,8 +385,8 @@ TEST_F(PageSchedulerImplTest, RepeatingTimers_OneBackgroundOneForeground) {
       FROM_HERE,
       MakeRepeatingTask(
           ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType(),
-          &run_count1, base::TimeDelta::FromMilliseconds(20)),
-      base::TimeDelta::FromMilliseconds(20));
+          &run_count1, base::Milliseconds(20)),
+      base::Milliseconds(20));
   ThrottleableTaskQueueForScheduler(frame_scheduler2.get())
       ->GetTaskRunnerWithDefaultTaskType()
       ->PostDelayedTask(
@@ -410,12 +394,36 @@ TEST_F(PageSchedulerImplTest, RepeatingTimers_OneBackgroundOneForeground) {
           MakeRepeatingTask(
               ThrottleableTaskQueueForScheduler(frame_scheduler2.get())
                   ->GetTaskRunnerWithDefaultTaskType(),
-              &run_count2, base::TimeDelta::FromMilliseconds(20)),
-          base::TimeDelta::FromMilliseconds(20));
+              &run_count2, base::Milliseconds(20)),
+          base::Milliseconds(20));
 
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(50, run_count1);
   EXPECT_EQ(1, run_count2);
+}
+
+TEST_F(PageSchedulerImplTest, IsLoadingTest) {
+  // 1st Page is loaded.
+  EXPECT_FALSE(page_scheduler_->IsLoading());
+
+  std::unique_ptr<PageSchedulerImpl> page_scheduler2 =
+      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
+  std::unique_ptr<FrameSchedulerImpl> frame_scheduler2 =
+      CreateFrameScheduler(page_scheduler2.get(), nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
+                           FrameScheduler::FrameType::kMainFrame);
+
+  // 1st Page is loaded. 2nd page is loading.
+  EXPECT_FALSE(page_scheduler_->IsLoading());
+  EXPECT_TRUE(page_scheduler2->IsLoading());
+
+  // 2nd page finishes loading.
+  frame_scheduler2->OnFirstContentfulPaintInMainFrame();
+  frame_scheduler2->OnFirstMeaningfulPaint();
+
+  // Both pages are loaded.
+  EXPECT_FALSE(page_scheduler_->IsLoading());
+  EXPECT_FALSE(page_scheduler2->IsLoading());
 }
 
 namespace {
@@ -425,7 +433,7 @@ void RunVirtualTimeRecorderTask(const base::TickClock* clock,
                                 Vector<base::TimeTicks>* out_real_times,
                                 Vector<base::TimeTicks>* out_virtual_times) {
   out_real_times->push_back(clock->NowTicks());
-  out_virtual_times->push_back(scheduler->GetVirtualTimeDomain()->Now());
+  out_virtual_times->push_back(scheduler->NowTicks());
 }
 
 base::OnceClosure MakeVirtualTimeRecorderTask(
@@ -444,102 +452,96 @@ TEST_F(PageSchedulerImplTest, VirtualTime_TimerFastForwarding) {
   Vector<base::TimeTicks> real_times;
   Vector<base::TimeTicks> virtual_times;
 
-  page_scheduler_->EnableVirtualTime();
+  page_scheduler_->GetVirtualTimeController()->EnableVirtualTime(base::Time());
 
-  base::TimeTicks initial_real_time = scheduler_->tick_clock()->NowTicks();
-  base::TimeTicks initial_virtual_time =
-      scheduler_->GetVirtualTimeDomain()->Now();
-
-  ThrottleableTaskRunner()->PostDelayedTask(
-      FROM_HERE,
-      MakeVirtualTimeRecorderTask(test_task_runner_->GetMockTickClock(),
-                                  scheduler_.get(), &real_times,
-                                  &virtual_times),
-      base::TimeDelta::FromMilliseconds(2));
+  base::TimeTicks initial_real_time = scheduler_->NowTicks();
+  base::TimeTicks initial_virtual_time = scheduler_->NowTicks();
 
   ThrottleableTaskRunner()->PostDelayedTask(
       FROM_HERE,
       MakeVirtualTimeRecorderTask(test_task_runner_->GetMockTickClock(),
                                   scheduler_.get(), &real_times,
                                   &virtual_times),
-      base::TimeDelta::FromMilliseconds(20));
+      base::Milliseconds(2));
 
   ThrottleableTaskRunner()->PostDelayedTask(
       FROM_HERE,
       MakeVirtualTimeRecorderTask(test_task_runner_->GetMockTickClock(),
                                   scheduler_.get(), &real_times,
                                   &virtual_times),
-      base::TimeDelta::FromMilliseconds(200));
+      base::Milliseconds(20));
+
+  ThrottleableTaskRunner()->PostDelayedTask(
+      FROM_HERE,
+      MakeVirtualTimeRecorderTask(test_task_runner_->GetMockTickClock(),
+                                  scheduler_.get(), &real_times,
+                                  &virtual_times),
+      base::Milliseconds(200));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
   EXPECT_THAT(real_times, ElementsAre(initial_real_time, initial_real_time,
                                       initial_real_time));
-  EXPECT_THAT(
-      virtual_times,
-      ElementsAre(
-          initial_virtual_time + base::TimeDelta::FromMilliseconds(2),
-          initial_virtual_time + base::TimeDelta::FromMilliseconds(20),
-          initial_virtual_time + base::TimeDelta::FromMilliseconds(200)));
+  EXPECT_THAT(virtual_times,
+              ElementsAre(initial_virtual_time + base::Milliseconds(2),
+                          initial_virtual_time + base::Milliseconds(20),
+                          initial_virtual_time + base::Milliseconds(200)));
 }
 
 TEST_F(PageSchedulerImplTest, VirtualTime_LoadingTaskFastForwarding) {
   Vector<base::TimeTicks> real_times;
   Vector<base::TimeTicks> virtual_times;
 
-  page_scheduler_->EnableVirtualTime();
+  page_scheduler_->GetVirtualTimeController()->EnableVirtualTime(base::Time());
 
-  base::TimeTicks initial_real_time = scheduler_->tick_clock()->NowTicks();
-  base::TimeTicks initial_virtual_time =
-      scheduler_->GetVirtualTimeDomain()->Now();
-
-  LoadingTaskRunner()->PostDelayedTask(
-      FROM_HERE,
-      MakeVirtualTimeRecorderTask(test_task_runner_->GetMockTickClock(),
-                                  scheduler_.get(), &real_times,
-                                  &virtual_times),
-      base::TimeDelta::FromMilliseconds(2));
+  base::TimeTicks initial_real_time = scheduler_->NowTicks();
+  base::TimeTicks initial_virtual_time = scheduler_->NowTicks();
 
   LoadingTaskRunner()->PostDelayedTask(
       FROM_HERE,
       MakeVirtualTimeRecorderTask(test_task_runner_->GetMockTickClock(),
                                   scheduler_.get(), &real_times,
                                   &virtual_times),
-      base::TimeDelta::FromMilliseconds(20));
+      base::Milliseconds(2));
 
   LoadingTaskRunner()->PostDelayedTask(
       FROM_HERE,
       MakeVirtualTimeRecorderTask(test_task_runner_->GetMockTickClock(),
                                   scheduler_.get(), &real_times,
                                   &virtual_times),
-      base::TimeDelta::FromMilliseconds(200));
+      base::Milliseconds(20));
+
+  LoadingTaskRunner()->PostDelayedTask(
+      FROM_HERE,
+      MakeVirtualTimeRecorderTask(test_task_runner_->GetMockTickClock(),
+                                  scheduler_.get(), &real_times,
+                                  &virtual_times),
+      base::Milliseconds(200));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
   EXPECT_THAT(real_times, ElementsAre(initial_real_time, initial_real_time,
                                       initial_real_time));
-  EXPECT_THAT(
-      virtual_times,
-      ElementsAre(
-          initial_virtual_time + base::TimeDelta::FromMilliseconds(2),
-          initial_virtual_time + base::TimeDelta::FromMilliseconds(20),
-          initial_virtual_time + base::TimeDelta::FromMilliseconds(200)));
+  EXPECT_THAT(virtual_times,
+              ElementsAre(initial_virtual_time + base::Milliseconds(2),
+                          initial_virtual_time + base::Milliseconds(20),
+                          initial_virtual_time + base::Milliseconds(200)));
 }
 
 TEST_F(PageSchedulerImplTest,
        RepeatingTimer_PageInBackground_MeansNothingForVirtualTime) {
-  page_scheduler_->EnableVirtualTime();
+  page_scheduler_->GetVirtualTimeController()->EnableVirtualTime(base::Time());
   page_scheduler_->SetPageVisible(false);
   scheduler_->GetSchedulerHelperForTesting()->SetWorkBatchSizeForTesting(1);
-  base::TimeTicks initial_real_time = scheduler_->tick_clock()->NowTicks();
+  base::TimeTicks initial_real_time = scheduler_->NowTicks();
 
   int run_count = 0;
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
       FROM_HERE,
       MakeRepeatingTask(
           ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType(),
-          &run_count, base::TimeDelta::FromMilliseconds(1)),
-      base::TimeDelta::FromMilliseconds(1));
+          &run_count, base::Milliseconds(1)),
+      base::Milliseconds(1));
 
   test_task_runner_->RunUntilIdle();
   // Virtual time means page visibility is ignored.
@@ -548,7 +550,34 @@ TEST_F(PageSchedulerImplTest,
 
   // The global tick clock has not moved, yet we ran a large number of "delayed"
   // tasks despite calling setPageVisible(false).
-  EXPECT_EQ(initial_real_time, scheduler_->tick_clock()->NowTicks());
+  EXPECT_EQ(initial_real_time, test_task_runner_->NowTicks());
+}
+
+// Check that enabling virtual time while the page is backgrounded prevents a
+// page from being frozen if it wasn't already.
+TEST_F(PageSchedulerImplTest, PageBackgrounded_EnableVirtualTime) {
+  page_scheduler_->SetPageVisible(false);
+  EXPECT_FALSE(page_scheduler_->IsFrozen());
+
+  page_scheduler_->GetVirtualTimeController()->EnableVirtualTime(base::Time());
+  test_task_runner_->FastForwardUntilNoTasksRemain();
+
+  // Page should not be frozen after a delay since virtual time
+  // was enabled.
+  EXPECT_FALSE(page_scheduler_->IsFrozen());
+}
+
+// Check that enabling virtual time while a backgrounded page is frozen
+// unfreezes it.
+TEST_F(PageSchedulerImplTest, PageFrozen_EnableVirtualTime) {
+  page_scheduler_->SetPageVisible(false);
+  test_task_runner_->FastForwardUntilNoTasksRemain();
+  EXPECT_TRUE(page_scheduler_->IsFrozen());
+
+  page_scheduler_->GetVirtualTimeController()->EnableVirtualTime(base::Time());
+
+  // Page should not be frozen since virtual time was enabled.
+  EXPECT_FALSE(page_scheduler_->IsFrozen());
 }
 
 namespace {
@@ -571,8 +600,9 @@ void DelayedRunOrderTask(
 TEST_F(PageSchedulerImplTest, VirtualTime_NotAllowedToAdvance) {
   Vector<int> run_order;
 
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
-  page_scheduler_->EnableVirtualTime();
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
 
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
@@ -584,7 +614,7 @@ TEST_F(PageSchedulerImplTest, VirtualTime_NotAllowedToAdvance) {
           &DelayedRunOrderTask, 1,
           ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType(),
           base::Unretained(&run_order)),
-      base::TimeDelta::FromMilliseconds(2));
+      base::Milliseconds(2));
 
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
       FROM_HERE,
@@ -592,7 +622,7 @@ TEST_F(PageSchedulerImplTest, VirtualTime_NotAllowedToAdvance) {
           &DelayedRunOrderTask, 3,
           ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType(),
           base::Unretained(&run_order)),
-      base::TimeDelta::FromMilliseconds(4));
+      base::Milliseconds(4));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
@@ -603,8 +633,9 @@ TEST_F(PageSchedulerImplTest, VirtualTime_NotAllowedToAdvance) {
 TEST_F(PageSchedulerImplTest, VirtualTime_AllowedToAdvance) {
   Vector<int> run_order;
 
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
-  page_scheduler_->EnableVirtualTime();
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
 
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE,
@@ -616,7 +647,7 @@ TEST_F(PageSchedulerImplTest, VirtualTime_AllowedToAdvance) {
           &DelayedRunOrderTask, 1,
           ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType(),
           base::Unretained(&run_order)),
-      base::TimeDelta::FromMilliseconds(2));
+      base::Milliseconds(2));
 
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
       FROM_HERE,
@@ -624,7 +655,7 @@ TEST_F(PageSchedulerImplTest, VirtualTime_AllowedToAdvance) {
           &DelayedRunOrderTask, 3,
           ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType(),
           base::Unretained(&run_order)),
-      base::TimeDelta::FromMilliseconds(4));
+      base::Milliseconds(4));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
@@ -640,21 +671,23 @@ TEST_F(PageSchedulerImplTest, RepeatingTimer_PageInBackground) {
       FROM_HERE,
       MakeRepeatingTask(
           ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType(),
-          &run_count, base::TimeDelta::FromMilliseconds(1)),
-      base::TimeDelta::FromMilliseconds(1));
+          &run_count, base::Milliseconds(1)),
+      base::Milliseconds(1));
 
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1000, run_count);
 }
 
 TEST_F(PageSchedulerImplTest, VirtualTimeSettings_NewFrameScheduler) {
   Vector<int> run_order;
 
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
-  page_scheduler_->EnableVirtualTime();
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+      CreateFrameScheduler(page_scheduler_.get(), nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
   ThrottleableTaskQueueForScheduler(frame_scheduler.get())
@@ -662,12 +695,12 @@ TEST_F(PageSchedulerImplTest, VirtualTimeSettings_NewFrameScheduler) {
       ->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&RunOrderTask, 1, base::Unretained(&run_order)),
-          base::TimeDelta::FromMilliseconds(1));
+          base::Milliseconds(1));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
-  EXPECT_TRUE(run_order.IsEmpty());
+  EXPECT_TRUE(run_order.empty());
 
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
   EXPECT_THAT(run_order, ElementsAre(1));
@@ -685,13 +718,14 @@ base::OnceClosure MakeDeletionTask(T* obj) {
 TEST_F(PageSchedulerImplTest, DeleteFrameSchedulers_InTask) {
   for (int i = 0; i < 10; i++) {
     FrameSchedulerImpl* frame_scheduler =
-        CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+        CreateFrameScheduler(page_scheduler_.get(), nullptr,
+                             /*is_in_embedded_frame_tree=*/false,
                              FrameScheduler::FrameType::kSubframe)
             .release();
     ThrottleableTaskQueueForScheduler(frame_scheduler)
         ->GetTaskRunnerWithDefaultTaskType()
         ->PostDelayedTask(FROM_HERE, MakeDeletionTask(frame_scheduler),
-                          base::TimeDelta::FromMilliseconds(1));
+                          base::Milliseconds(1));
   }
   test_task_runner_->FastForwardUntilNoTasksRemain();
 }
@@ -706,7 +740,8 @@ TEST_F(PageSchedulerImplTest, DeleteThrottledQueue_InTask) {
   page_scheduler_->SetPageVisible(false);
 
   FrameSchedulerImpl* frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+      CreateFrameScheduler(page_scheduler_.get(), nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe)
           .release();
   scoped_refptr<MainThreadTaskQueue> timer_task_queue =
@@ -716,22 +751,22 @@ TEST_F(PageSchedulerImplTest, DeleteThrottledQueue_InTask) {
   timer_task_queue->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
       FROM_HERE,
       MakeRepeatingTask(timer_task_queue->GetTaskRunnerWithDefaultTaskType(),
-                        &run_count, base::TimeDelta::FromMilliseconds(100)),
-      base::TimeDelta::FromMilliseconds(100));
+                        &run_count, base::Milliseconds(100)),
+      base::Milliseconds(100));
 
   // Note this will run at time t = 10s since we start at time t = 5000us.
   // However, we still should run all tasks after frame scheduler deletion.
   timer_task_queue->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
-      FROM_HERE, MakeDeletionTask(frame_scheduler),
-      base::TimeDelta::FromMilliseconds(9990));
+      FROM_HERE, MakeDeletionTask(frame_scheduler), base::Milliseconds(9990));
 
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(20));
+  test_task_runner_->FastForwardBy(base::Seconds(20));
   EXPECT_EQ(110, run_count);
 }
 
 TEST_F(PageSchedulerImplTest, VirtualTimePauseCount_DETERMINISTIC_LOADING) {
-  page_scheduler_->SetVirtualTimePolicy(
-      VirtualTimePolicy::kDeterministicLoading);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kDeterministicLoading);
   EXPECT_TRUE(scheduler_->VirtualTimeAllowedToAdvance());
 
   scheduler_->IncrementVirtualTimePauseCount();
@@ -755,11 +790,13 @@ TEST_F(PageSchedulerImplTest, VirtualTimePauseCount_DETERMINISTIC_LOADING) {
 
 TEST_F(PageSchedulerImplTest,
        WebScopedVirtualTimePauser_DETERMINISTIC_LOADING) {
-  page_scheduler_->SetVirtualTimePolicy(
-      VirtualTimePolicy::kDeterministicLoading);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kDeterministicLoading);
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+      CreateFrameScheduler(page_scheduler_.get(), nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
   {
@@ -786,14 +823,14 @@ namespace {
 
 void RecordVirtualTime(MainThreadSchedulerImpl* scheduler,
                        base::TimeTicks* out) {
-  *out = scheduler->GetVirtualTimeDomain()->Now();
+  *out = scheduler->NowTicks();
 }
 
 void PauseAndUnpauseVirtualTime(MainThreadSchedulerImpl* scheduler,
                                 FrameSchedulerImpl* frame_scheduler,
                                 base::TimeTicks* paused,
                                 base::TimeTicks* unpaused) {
-  *paused = scheduler->GetVirtualTimeDomain()->Now();
+  *paused = scheduler->NowTicks();
 
   {
     WebScopedVirtualTimePauser virtual_time_pauser =
@@ -803,7 +840,7 @@ void PauseAndUnpauseVirtualTime(MainThreadSchedulerImpl* scheduler,
     virtual_time_pauser.PauseVirtualTime();
   }
 
-  *unpaused = scheduler->GetVirtualTimeDomain()->Now();
+  *unpaused = scheduler->NowTicks();
 }
 
 }  // namespace
@@ -814,19 +851,19 @@ TEST_F(PageSchedulerImplTest,
   // after each task.
   scheduler_->GetSchedulerHelperForTesting()->SetWorkBatchSizeForTesting(1);
 
-  page_scheduler_->EnableVirtualTime();
-  page_scheduler_->SetVirtualTimePolicy(
-      VirtualTimePolicy::kDeterministicLoading);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kDeterministicLoading);
 
-  base::TimeTicks initial_virtual_time =
-      scheduler_->GetVirtualTimeDomain()->Now();
+  base::TimeTicks initial_virtual_time = scheduler_->NowTicks();
 
   base::TimeTicks time_paused;
   base::TimeTicks time_unpaused;
   base::TimeTicks time_second_task;
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+      CreateFrameScheduler(page_scheduler_.get(), nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
   // Pauses and unpauses virtual time, thereby advancing virtual time by an
@@ -837,32 +874,31 @@ TEST_F(PageSchedulerImplTest,
           &PauseAndUnpauseVirtualTime, base::Unretained(scheduler_.get()),
           base::Unretained(frame_scheduler.get()),
           base::Unretained(&time_paused), base::Unretained(&time_unpaused)),
-      base::TimeDelta::FromMilliseconds(3));
+      base::Milliseconds(3));
 
   // Will run after the first task has advanced virtual time past 5ms.
   ThrottleableTaskRunner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&RecordVirtualTime, base::Unretained(scheduler_.get()),
                      base::Unretained(&time_second_task)),
-      base::TimeDelta::FromMilliseconds(5));
+      base::Milliseconds(5));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
-  EXPECT_EQ(time_paused,
-            initial_virtual_time + base::TimeDelta::FromMilliseconds(3));
-  EXPECT_EQ(time_unpaused,
-            initial_virtual_time + base::TimeDelta::FromMilliseconds(13));
-  EXPECT_EQ(time_second_task,
-            initial_virtual_time + base::TimeDelta::FromMilliseconds(13));
+  EXPECT_EQ(time_paused, initial_virtual_time + base::Milliseconds(3));
+  EXPECT_EQ(time_unpaused, initial_virtual_time + base::Milliseconds(13));
+  EXPECT_EQ(time_second_task, initial_virtual_time + base::Milliseconds(13));
 }
 
 TEST_F(PageSchedulerImplTest,
        MultipleWebScopedVirtualTimePausers_DETERMINISTIC_LOADING) {
-  page_scheduler_->SetVirtualTimePolicy(
-      VirtualTimePolicy::kDeterministicLoading);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kDeterministicLoading);
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+      CreateFrameScheduler(page_scheduler_.get(), nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
   WebScopedVirtualTimePauser virtual_time_pauser1 =
@@ -886,22 +922,23 @@ TEST_F(PageSchedulerImplTest,
 }
 
 TEST_F(PageSchedulerImplTest, NestedMessageLoop_DETERMINISTIC_LOADING) {
-  page_scheduler_->SetVirtualTimePolicy(
-      VirtualTimePolicy::kDeterministicLoading);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kDeterministicLoading);
   EXPECT_TRUE(scheduler_->VirtualTimeAllowedToAdvance());
 
   FakeTask fake_task;
   fake_task.set_enqueue_order(
       base::sequence_manager::EnqueueOrder::FromIntForTesting(42));
-  const base::TimeTicks start = scheduler_->real_time_domain()->Now();
+  const base::TimeTicks start = scheduler_->NowTicks();
   scheduler_->OnTaskStarted(nullptr, fake_task,
                             FakeTaskTiming(start, base::TimeTicks()));
-  scheduler_->OnBeginNestedRunLoop();
+  scheduler_->GetSchedulerHelperForTesting()->OnBeginNestedRunLoop();
   EXPECT_FALSE(scheduler_->VirtualTimeAllowedToAdvance());
 
-  scheduler_->OnExitNestedRunLoop();
+  scheduler_->GetSchedulerHelperForTesting()->OnExitNestedRunLoop();
   EXPECT_TRUE(scheduler_->VirtualTimeAllowedToAdvance());
-  FakeTaskTiming task_timing(start, scheduler_->real_time_domain()->Now());
+  FakeTaskTiming task_timing(start, scheduler_->NowTicks());
   scheduler_->OnTaskCompleted(nullptr, fake_task, &task_timing, nullptr);
 }
 
@@ -909,10 +946,12 @@ TEST_F(PageSchedulerImplTest, PauseTimersWhileVirtualTimeIsPaused) {
   Vector<int> run_order;
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler =
-      CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
+      CreateFrameScheduler(page_scheduler_.get(), nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
-  page_scheduler_->EnableVirtualTime();
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
 
   ThrottleableTaskQueueForScheduler(frame_scheduler.get())
       ->GetTaskRunnerWithDefaultTaskType()
@@ -920,9 +959,9 @@ TEST_F(PageSchedulerImplTest, PauseTimersWhileVirtualTimeIsPaused) {
                                            base::Unretained(&run_order)));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
-  EXPECT_TRUE(run_order.IsEmpty());
+  EXPECT_TRUE(run_order.empty());
 
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
   EXPECT_THAT(run_order, ElementsAre(1));
@@ -932,59 +971,54 @@ TEST_F(PageSchedulerImplTest, VirtualTimeBudgetExhaustedCallback) {
   Vector<base::TimeTicks> real_times;
   Vector<base::TimeTicks> virtual_times;
 
-  page_scheduler_->EnableVirtualTime();
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
 
-  base::TimeTicks initial_real_time = scheduler_->tick_clock()->NowTicks();
-  base::TimeTicks initial_virtual_time =
-      scheduler_->GetVirtualTimeDomain()->Now();
-
-  ThrottleableTaskRunner()->PostDelayedTask(
-      FROM_HERE,
-      MakeVirtualTimeRecorderTask(test_task_runner_->GetMockTickClock(),
-                                  scheduler_.get(), &real_times,
-                                  &virtual_times),
-      base::TimeDelta::FromMilliseconds(1));
+  base::TimeTicks initial_real_time = scheduler_->NowTicks();
+  base::TimeTicks initial_virtual_time = scheduler_->NowTicks();
 
   ThrottleableTaskRunner()->PostDelayedTask(
       FROM_HERE,
       MakeVirtualTimeRecorderTask(test_task_runner_->GetMockTickClock(),
                                   scheduler_.get(), &real_times,
                                   &virtual_times),
-      base::TimeDelta::FromMilliseconds(2));
+      base::Milliseconds(1));
 
   ThrottleableTaskRunner()->PostDelayedTask(
       FROM_HERE,
       MakeVirtualTimeRecorderTask(test_task_runner_->GetMockTickClock(),
                                   scheduler_.get(), &real_times,
                                   &virtual_times),
-      base::TimeDelta::FromMilliseconds(5));
+      base::Milliseconds(2));
 
   ThrottleableTaskRunner()->PostDelayedTask(
       FROM_HERE,
       MakeVirtualTimeRecorderTask(test_task_runner_->GetMockTickClock(),
                                   scheduler_.get(), &real_times,
                                   &virtual_times),
-      base::TimeDelta::FromMilliseconds(7));
+      base::Milliseconds(5));
 
-  page_scheduler_->GrantVirtualTimeBudget(
-      base::TimeDelta::FromMilliseconds(5),
-      base::BindOnce(
-          [](PageScheduler* scheduler) {
-            scheduler->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
-          },
-          base::Unretained(page_scheduler_.get())));
+  ThrottleableTaskRunner()->PostDelayedTask(
+      FROM_HERE,
+      MakeVirtualTimeRecorderTask(test_task_runner_->GetMockTickClock(),
+                                  scheduler_.get(), &real_times,
+                                  &virtual_times),
+      base::Milliseconds(7));
 
+  vtc->GrantVirtualTimeBudget(
+      base::Milliseconds(5),
+      base::BindOnce(&VirtualTimeController::SetVirtualTimePolicy,
+                     base::Unretained(vtc), VirtualTimePolicy::kPause));
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
   // The timer that is scheduled for the exact point in time when virtual time
   // expires will not run.
   EXPECT_THAT(real_times, ElementsAre(initial_real_time, initial_real_time,
                                       initial_real_time));
-  EXPECT_THAT(
-      virtual_times,
-      ElementsAre(initial_virtual_time + base::TimeDelta::FromMilliseconds(1),
-                  initial_virtual_time + base::TimeDelta::FromMilliseconds(2),
-                  initial_virtual_time + base::TimeDelta::FromMilliseconds(5)));
+  EXPECT_THAT(virtual_times,
+              ElementsAre(initial_virtual_time + base::Milliseconds(1),
+                          initial_virtual_time + base::Milliseconds(2),
+                          initial_virtual_time + base::Milliseconds(5)));
 }
 
 namespace {
@@ -1006,9 +1040,11 @@ void DelayedTask(int* count_in, int* count_out) {
 }  // namespace
 
 TEST_F(PageSchedulerImplTest, MaxVirtualTimeTaskStarvationCountOneHundred) {
-  page_scheduler_->EnableVirtualTime();
-  page_scheduler_->SetMaxVirtualTimeTaskStarvationCount(100);
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetMaxVirtualTimeTaskStarvationCount(100);
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
 
   int count = 0;
   int delayed_task_run_at_count = 0;
@@ -1018,15 +1054,12 @@ TEST_F(PageSchedulerImplTest, MaxVirtualTimeTaskStarvationCountOneHundred) {
       FROM_HERE,
       base::BindOnce(DelayedTask, base::Unretained(&count),
                      base::Unretained(&delayed_task_run_at_count)),
-      base::TimeDelta::FromMilliseconds(10));
+      base::Milliseconds(10));
 
-  page_scheduler_->GrantVirtualTimeBudget(
-      base::TimeDelta::FromMilliseconds(1000),
-      base::BindOnce(
-          [](PageScheduler* scheduler) {
-            scheduler->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
-          },
-          base::Unretained(page_scheduler_.get())));
+  vtc->GrantVirtualTimeBudget(
+      base::Milliseconds(1000),
+      base::BindOnce(&VirtualTimeController::SetVirtualTimePolicy,
+                     base::Unretained(vtc), VirtualTimePolicy::kPause));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
@@ -1037,17 +1070,18 @@ TEST_F(PageSchedulerImplTest, MaxVirtualTimeTaskStarvationCountOneHundred) {
 
 TEST_F(PageSchedulerImplTest,
        MaxVirtualTimeTaskStarvationCountOneHundredNestedMessageLoop) {
-  page_scheduler_->EnableVirtualTime();
-  page_scheduler_->SetMaxVirtualTimeTaskStarvationCount(100);
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetMaxVirtualTimeTaskStarvationCount(100);
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
 
   FakeTask fake_task;
   fake_task.set_enqueue_order(
       base::sequence_manager::EnqueueOrder::FromIntForTesting(42));
-  const base::TimeTicks start = scheduler_->real_time_domain()->Now();
+  const base::TimeTicks start = scheduler_->NowTicks();
   scheduler_->OnTaskStarted(nullptr, fake_task,
                             FakeTaskTiming(start, base::TimeTicks()));
-  scheduler_->OnBeginNestedRunLoop();
+  scheduler_->GetSchedulerHelperForTesting()->OnBeginNestedRunLoop();
 
   int count = 0;
   int delayed_task_run_at_count = 0;
@@ -1057,15 +1091,12 @@ TEST_F(PageSchedulerImplTest,
       FROM_HERE,
       base::BindOnce(DelayedTask, base::Unretained(&count),
                      base::Unretained(&delayed_task_run_at_count)),
-      base::TimeDelta::FromMilliseconds(10));
+      base::Milliseconds(10));
 
-  page_scheduler_->GrantVirtualTimeBudget(
-      base::TimeDelta::FromMilliseconds(1000),
-      base::BindOnce(
-          [](PageScheduler* scheduler) {
-            scheduler->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
-          },
-          base::Unretained(page_scheduler_.get())));
+  vtc->GrantVirtualTimeBudget(
+      base::Milliseconds(1000),
+      base::BindOnce(&VirtualTimeController::SetVirtualTimePolicy,
+                     base::Unretained(vtc), VirtualTimePolicy::kPause));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
@@ -1074,9 +1105,10 @@ TEST_F(PageSchedulerImplTest,
 }
 
 TEST_F(PageSchedulerImplTest, MaxVirtualTimeTaskStarvationCountZero) {
-  page_scheduler_->EnableVirtualTime();
-  page_scheduler_->SetMaxVirtualTimeTaskStarvationCount(0);
-  page_scheduler_->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
+  VirtualTimeController* vtc = page_scheduler_->GetVirtualTimeController();
+  vtc->EnableVirtualTime(base::Time());
+  vtc->SetMaxVirtualTimeTaskStarvationCount(0);
+  vtc->SetVirtualTimePolicy(VirtualTimePolicy::kAdvance);
 
   int count = 0;
   int delayed_task_run_at_count = 0;
@@ -1086,15 +1118,12 @@ TEST_F(PageSchedulerImplTest, MaxVirtualTimeTaskStarvationCountZero) {
       FROM_HERE,
       base::BindOnce(DelayedTask, base::Unretained(&count),
                      base::Unretained(&delayed_task_run_at_count)),
-      base::TimeDelta::FromMilliseconds(10));
+      base::Milliseconds(10));
 
-  page_scheduler_->GrantVirtualTimeBudget(
-      base::TimeDelta::FromMilliseconds(1000),
-      base::BindOnce(
-          [](PageScheduler* scheduler) {
-            scheduler->SetVirtualTimePolicy(VirtualTimePolicy::kPause);
-          },
-          base::Unretained(page_scheduler_.get())));
+  vtc->GrantVirtualTimeBudget(
+      base::Milliseconds(1000),
+      base::BindOnce(&VirtualTimeController::SetVirtualTimePolicy,
+                     base::Unretained(vtc), VirtualTimePolicy::kPause));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
@@ -1109,7 +1138,7 @@ namespace {
 void ExpensiveTestTask(scoped_refptr<base::TestMockTimeTaskRunner> task_runner,
                        Vector<base::TimeTicks>* run_times) {
   run_times->push_back(task_runner->GetMockTickClock()->NowTicks());
-  task_runner->AdvanceMockTickClock(base::TimeDelta::FromMilliseconds(250));
+  task_runner->AdvanceMockTickClock(base::Milliseconds(250));
 }
 
 void InitializeTrialParams() {
@@ -1130,90 +1159,85 @@ void InitializeTrialParams() {
 }  // namespace
 
 TEST_F(PageSchedulerImplTest, BackgroundTimerThrottling) {
-  ScopedExpensiveBackgroundTimerThrottlingForTest
-      budget_background_throttling_enabler(true);
-
   InitializeTrialParams();
   page_scheduler_ =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
   EXPECT_FALSE(page_scheduler_->IsCPUTimeThrottled());
+  base::TimeTicks start_time = test_task_runner_->NowTicks();
 
   Vector<base::TimeTicks> run_times;
-  frame_scheduler_ =
-      CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
-                           FrameScheduler::FrameType::kSubframe);
+  frame_scheduler_ = CreateFrameScheduler(page_scheduler_.get(), nullptr,
+                                          /*is_in_embedded_frame_tree=*/false,
+                                          FrameScheduler::FrameType::kSubframe);
   page_scheduler_->SetPageVisible(true);
   EXPECT_FALSE(page_scheduler_->IsCPUTimeThrottled());
 
-  FastForwardTo(base::TimeTicks() + base::TimeDelta::FromMilliseconds(2500));
+  FastForwardTo(base::TimeTicks() + base::Milliseconds(2500));
 
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ExpensiveTestTask, test_task_runner_, &run_times),
-      base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ExpensiveTestTask, test_task_runner_, &run_times),
-      base::TimeDelta::FromMilliseconds(1));
+      base::Milliseconds(1));
 
-  FastForwardTo(base::TimeTicks() + base::TimeDelta::FromMilliseconds(3500));
+  FastForwardTo(base::TimeTicks() + base::Milliseconds(3500));
 
   // Check that these tasks are aligned, but are not subject to budget-based
   // throttling.
-  EXPECT_THAT(
-      run_times,
-      ElementsAre(base::TimeTicks() + base::TimeDelta::FromMilliseconds(2501),
-                  base::TimeTicks() + base::TimeDelta::FromMilliseconds(2751)));
+  EXPECT_THAT(run_times,
+              ElementsAre(base::TimeTicks() + base::Milliseconds(2501),
+                          base::TimeTicks() + base::Milliseconds(2751)));
   run_times.clear();
 
   page_scheduler_->SetPageVisible(false);
   EXPECT_FALSE(page_scheduler_->IsCPUTimeThrottled());
 
   // Ensure that the page is fully throttled.
-  FastForwardTo(base::TimeTicks() + base::TimeDelta::FromSeconds(15));
+  FastForwardTo(base::TimeTicks() + base::Seconds(15));
   EXPECT_TRUE(page_scheduler_->IsCPUTimeThrottled());
 
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ExpensiveTestTask, test_task_runner_, &run_times),
-      base::TimeDelta::FromMicroseconds(1));
+      base::Microseconds(1));
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ExpensiveTestTask, test_task_runner_, &run_times),
-      base::TimeDelta::FromMicroseconds(1));
+      base::Microseconds(1));
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
   // Check that tasks are aligned and throttled.
-  EXPECT_THAT(
-      run_times,
-      ElementsAre(base::TimeTicks() + base::TimeDelta::FromSeconds(16),
-                  base::TimeTicks() + base::TimeDelta::FromSeconds(26)));
+  EXPECT_THAT(run_times, ElementsAre(base::TimeTicks() + base::Seconds(16),
+                                     start_time + base::Seconds(25)));
 
   base::FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
 }
 
 TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
-  ScopedExpensiveBackgroundTimerThrottlingForTest
-      budget_background_throttling_enabler(true);
-
   InitializeTrialParams();
   std::unique_ptr<PageSchedulerImpl> page_scheduler =
       CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
+  base::TimeTicks start_time = test_task_runner_->NowTicks();
 
   Vector<base::TimeTicks> run_times;
 
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler1 =
-      CreateFrameScheduler(page_scheduler.get(), nullptr, nullptr,
+      CreateFrameScheduler(page_scheduler.get(), nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
   std::unique_ptr<FrameSchedulerImpl> frame_scheduler2 =
-      CreateFrameScheduler(page_scheduler.get(), nullptr, nullptr,
+      CreateFrameScheduler(page_scheduler.get(), nullptr,
+                           /*is_in_embedded_frame_tree=*/false,
                            FrameScheduler::FrameType::kSubframe);
 
   page_scheduler->SetPageVisible(false);
 
   // Wait for 20s to avoid initial throttling delay.
-  FastForwardTo(base::TimeTicks() + base::TimeDelta::FromMilliseconds(20500));
+  FastForwardTo(base::TimeTicks() + base::Milliseconds(20500));
 
   for (size_t i = 0; i < 3; ++i) {
     ThrottleableTaskQueueForScheduler(frame_scheduler1.get())
@@ -1221,17 +1245,15 @@ TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
         ->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(&ExpensiveTestTask, test_task_runner_, &run_times),
-            base::TimeDelta::FromMilliseconds(1));
+            base::Milliseconds(1));
   }
 
-  FastForwardTo(base::TimeTicks() + base::TimeDelta::FromMilliseconds(55500));
+  FastForwardTo(base::TimeTicks() + base::Milliseconds(55500));
 
   // Check that tasks are throttled.
-  EXPECT_THAT(
-      run_times,
-      ElementsAre(base::TimeTicks() + base::TimeDelta::FromSeconds(21),
-                  base::TimeTicks() + base::TimeDelta::FromSeconds(26),
-                  base::TimeTicks() + base::TimeDelta::FromSeconds(51)));
+  EXPECT_THAT(run_times, ElementsAre(base::TimeTicks() + base::Seconds(21),
+                                     start_time + base::Seconds(25),
+                                     start_time + base::Seconds(50)));
   run_times.clear();
 
   FrameScheduler::SchedulingAffectingFeatureHandle websocket_feature =
@@ -1245,19 +1267,17 @@ TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
         ->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(&ExpensiveTestTask, test_task_runner_, &run_times),
-            base::TimeDelta::FromMilliseconds(1));
+            base::Milliseconds(1));
   }
 
-  FastForwardTo(base::TimeTicks() + base::TimeDelta::FromMilliseconds(58500));
+  FastForwardTo(base::TimeTicks() + base::Milliseconds(58500));
 
   // Check that the timer task queue from the first frame is aligned,
   // but not throttled.
-  EXPECT_THAT(
-      run_times,
-      ElementsAre(
-          base::TimeTicks() + base::TimeDelta::FromMilliseconds(56000),
-          base::TimeTicks() + base::TimeDelta::FromMilliseconds(56250),
-          base::TimeTicks() + base::TimeDelta::FromMilliseconds(56500)));
+  EXPECT_THAT(run_times,
+              ElementsAre(base::TimeTicks() + base::Milliseconds(56000),
+                          base::TimeTicks() + base::Milliseconds(56250),
+                          base::TimeTicks() + base::Milliseconds(56500)));
   run_times.clear();
 
   for (size_t i = 0; i < 3; ++i) {
@@ -1266,24 +1286,22 @@ TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
         ->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(&ExpensiveTestTask, test_task_runner_, &run_times),
-            base::TimeDelta::FromMilliseconds(1));
+            base::Milliseconds(1));
   }
 
-  FastForwardTo(base::TimeTicks() + base::TimeDelta::FromMilliseconds(59500));
+  FastForwardTo(base::TimeTicks() + base::Milliseconds(59500));
 
   // Check that the second frame scheduler becomes unthrottled.
-  EXPECT_THAT(
-      run_times,
-      ElementsAre(
-          base::TimeTicks() + base::TimeDelta::FromMilliseconds(59000),
-          base::TimeTicks() + base::TimeDelta::FromMilliseconds(59250),
-          base::TimeTicks() + base::TimeDelta::FromMilliseconds(59500)));
+  EXPECT_THAT(run_times,
+              ElementsAre(base::TimeTicks() + base::Milliseconds(59000),
+                          base::TimeTicks() + base::Milliseconds(59250),
+                          base::TimeTicks() + base::Milliseconds(59500)));
   run_times.clear();
 
   websocket_feature.reset();
 
   // Wait for 10s to enable throttling back.
-  FastForwardTo(base::TimeTicks() + base::TimeDelta::FromMilliseconds(70500));
+  FastForwardTo(base::TimeTicks() + base::Milliseconds(70500));
 
   for (size_t i = 0; i < 3; ++i) {
     ThrottleableTaskQueueForScheduler(frame_scheduler1.get())
@@ -1291,17 +1309,16 @@ TEST_F(PageSchedulerImplTest, OpenWebSocketExemptsFromBudgetThrottling) {
         ->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(&ExpensiveTestTask, test_task_runner_, &run_times),
-            base::TimeDelta::FromMilliseconds(1));
+            base::Milliseconds(1));
   }
 
   test_task_runner_->FastForwardUntilNoTasksRemain();
 
   // WebSocket is closed, budget-based throttling now applies.
-  EXPECT_THAT(
-      run_times,
-      ElementsAre(base::TimeTicks() + base::TimeDelta::FromSeconds(84),
-                  base::TimeTicks() + base::TimeDelta::FromSeconds(109),
-                  base::TimeTicks() + base::TimeDelta::FromSeconds(134)));
+  EXPECT_THAT(run_times,
+              ElementsAre(base::TimeTicks() + base::Milliseconds(84500),
+                          base::TimeTicks() + base::Milliseconds(109500),
+                          base::TimeTicks() + base::Milliseconds(134500)));
 
   base::FieldTrialParamAssociator::GetInstance()->ClearAllParamsForTesting();
 }
@@ -1371,16 +1388,6 @@ TEST_F(PageSchedulerImplTest, BudgetBasedThrottlingForPageScheduler) {
   page_scheduler_->SetPageVisible(false);
 }
 
-TEST_F(PageSchedulerImplTest, KeepActiveSetForNewPages) {
-  scheduler_->SetSchedulerKeepActive(true);
-
-  std::unique_ptr<PageSchedulerImpl> page_scheduler2 =
-      CreatePageScheduler(nullptr, scheduler_.get(), *agent_group_scheduler_);
-
-  EXPECT_TRUE(page_scheduler_->KeepActive());
-  EXPECT_TRUE(page_scheduler2->KeepActive());
-}
-
 TEST_F(PageSchedulerImplTest, TestPageBackgroundedTimerSuspension) {
   int counter = 0;
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
@@ -1390,21 +1397,21 @@ TEST_F(PageSchedulerImplTest, TestPageBackgroundedTimerSuspension) {
 
   // The background signal will not immediately suspend the timer queue.
   page_scheduler_->SetPageVisible(false);
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(1100));
+  test_task_runner_->FastForwardBy(base::Milliseconds(1100));
   EXPECT_FALSE(page_scheduler_->IsFrozen());
   EXPECT_EQ(2, counter);
 
   counter = 0;
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_FALSE(page_scheduler_->IsFrozen());
   EXPECT_EQ(1, counter);
 
   // Advance the time until after the scheduled timer queue suspension.
   counter = 0;
   test_task_runner_->FastForwardBy(delay_for_background_tab_freezing() +
-                                   base::TimeDelta::FromMilliseconds(10));
+                                   base::Milliseconds(10));
   EXPECT_TRUE(page_scheduler_->IsFrozen());
   EXPECT_EQ(0, counter);
 
@@ -1415,20 +1422,20 @@ TEST_F(PageSchedulerImplTest, TestPageBackgroundedTimerSuspension) {
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
   UnpausableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(10));
+  test_task_runner_->FastForwardBy(base::Seconds(10));
   EXPECT_EQ(1, counter);
 
   counter = 0;
   page_scheduler_->SetPageVisible(true);
   EXPECT_FALSE(page_scheduler_->IsFrozen());
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(2, counter);
 
   // Subsequent timer tasks should fire as usual.
   counter = 0;
   ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostTask(
       FROM_HERE, base::BindOnce(&IncrementCounter, base::Unretained(&counter)));
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  test_task_runner_->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(1, counter);
 }
 
@@ -1446,14 +1453,14 @@ TEST_F(PageSchedulerImplTest, PageFrozenOnlyWhileAudioSilent) {
   EXPECT_FALSE(ShouldFreezePage());
 
   test_task_runner_->FastForwardBy(recent_audio_delay() +
-                                   base::TimeDelta::FromMilliseconds(100));
+                                   base::Milliseconds(100));
   // Audio is finally silent. The page should be eligible for freezing.
   EXPECT_FALSE(page_scheduler_->IsAudioPlaying());
   EXPECT_TRUE(ShouldFreezePage());
   EXPECT_FALSE(page_scheduler_->IsFrozen());
 
   test_task_runner_->FastForwardBy(delay_for_background_tab_freezing() +
-                                   base::TimeDelta::FromMilliseconds(100));
+                                   base::Milliseconds(100));
   EXPECT_TRUE(page_scheduler_->IsFrozen());
 
   // Page should unfreeze if audio starts playing.
@@ -1470,7 +1477,7 @@ TEST_F(PageSchedulerImplTest, PageFrozenOnlyWhileNotVisible) {
   page_scheduler_->SetPageVisible(false);
   EXPECT_TRUE(ShouldFreezePage());
   test_task_runner_->FastForwardBy(delay_for_background_tab_freezing() +
-                                   base::TimeDelta::FromMilliseconds(100));
+                                   base::Milliseconds(100));
   EXPECT_TRUE(page_scheduler_->IsFrozen());
 
   // Page should unfreeze when it becomes visible.
@@ -1482,351 +1489,12 @@ TEST_F(PageSchedulerImplTest, PageFrozenOnlyWhileNotVisible) {
   page_scheduler_->SetPageVisible(false);
   EXPECT_TRUE(ShouldFreezePage());
   test_task_runner_->FastForwardBy(delay_for_background_tab_freezing() -
-                                   base::TimeDelta::FromMilliseconds(100));
+                                   base::Milliseconds(100));
   EXPECT_FALSE(page_scheduler_->IsFrozen());
   page_scheduler_->SetPageVisible(true);
   test_task_runner_->FastForwardBy(delay_for_background_tab_freezing() +
-                                   base::TimeDelta::FromMilliseconds(100));
+                                   base::Milliseconds(100));
   EXPECT_FALSE(page_scheduler_->IsFrozen());
-}
-
-class PageSchedulerImplFreezeBackgroundTabOnNetworkIdleEnabledTest
-    : public PageSchedulerImplTest {
- public:
-  PageSchedulerImplFreezeBackgroundTabOnNetworkIdleEnabledTest()
-      : PageSchedulerImplTest(
-            {blink::features::kStopInBackground,
-             blink::features::kFreezeBackgroundTabOnNetworkIdle},
-            {}) {}
-};
-
-TEST_F(PageSchedulerImplFreezeBackgroundTabOnNetworkIdleEnabledTest,
-       PageFrozenOnlyOnLocalMainFrameNetworkIdle) {
-  page_scheduler_->SetPageVisible(true);
-  EXPECT_FALSE(ShouldFreezePage());
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-  EXPECT_FALSE(NetworkIsAlmostIdle());
-
-  // After network is idle, page should freeze after delay for quick
-  // background tab freezing.
-  NotifyLocalMainFrameNetworkIsAlmostIdle();
-  EXPECT_TRUE(NetworkIsAlmostIdle());
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-  page_scheduler_->SetPageVisible(false);
-  test_task_runner_->FastForwardBy(
-      delay_for_background_and_network_idle_tab_freezing() +
-      base::TimeDelta::FromMilliseconds(100));
-  EXPECT_TRUE(page_scheduler_->IsFrozen());
-}
-
-TEST_F(PageSchedulerImplFreezeBackgroundTabOnNetworkIdleEnabledTest,
-       PageFrozenOnlyOnLocalMainFrameNetworkAlmostIdleNoRegress) {
-  page_scheduler_->SetPageVisible(true);
-  EXPECT_FALSE(ShouldFreezePage());
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-  EXPECT_FALSE(NetworkIsAlmostIdle());
-
-  // Page should freeze after delay for background tab freezing.
-  page_scheduler_->SetPageVisible(false);
-  EXPECT_TRUE(ShouldFreezePage());
-  test_task_runner_->FastForwardBy(delay_for_background_tab_freezing() +
-                                   base::TimeDelta::FromMilliseconds(100));
-  EXPECT_TRUE(page_scheduler_->IsFrozen());
-}
-
-TEST_F(PageSchedulerImplFreezeBackgroundTabOnNetworkIdleEnabledTest,
-       PageFrozenWhenNetworkIdleAfterQuickFreezingDelay) {
-  page_scheduler_->SetPageVisible(true);
-  EXPECT_FALSE(ShouldFreezePage());
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-  EXPECT_FALSE(NetworkIsAlmostIdle());
-
-  page_scheduler_->SetPageVisible(false);
-  EXPECT_TRUE(ShouldFreezePage());
-  test_task_runner_->FastForwardBy(
-      delay_for_background_and_network_idle_tab_freezing() +
-      base::TimeDelta::FromMilliseconds(100));
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-
-  NotifyLocalMainFrameNetworkIsAlmostIdle();
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromMilliseconds(100));
-  EXPECT_TRUE(page_scheduler_->IsFrozen());
-}
-
-TEST_F(PageSchedulerImplFreezeBackgroundTabOnNetworkIdleEnabledTest,
-       PageNotFrozenWhenVisibleBeforeNetworkIdle) {
-  page_scheduler_->SetPageVisible(true);
-  EXPECT_FALSE(ShouldFreezePage());
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-  EXPECT_FALSE(NetworkIsAlmostIdle());
-
-  page_scheduler_->SetPageVisible(false);
-  EXPECT_TRUE(ShouldFreezePage());
-  test_task_runner_->FastForwardBy(
-      delay_for_background_and_network_idle_tab_freezing() +
-      base::TimeDelta::FromMilliseconds(100));
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-
-  // Page should not freeze after delay for background tab freezing, because
-  // the page is visible.
-  page_scheduler_->SetPageVisible(true);
-  EXPECT_FALSE(ShouldFreezePage());
-  test_task_runner_->FastForwardBy(delay_for_background_tab_freezing());
-  EXPECT_FALSE(page_scheduler_->IsFrozen());
-}
-
-class PageSchedulerImplPageTransitionTest : public PageSchedulerImplTest {
- public:
-  typedef PageSchedulerImpl::PageLifecycleStateTransition Transition;
-
-  PageSchedulerImplPageTransitionTest() {
-    for (int i = 0; i <= static_cast<int>(Transition::kMaxValue); i++)
-      transition_counts_.push_back(0);
-  }
-
-  ~PageSchedulerImplPageTransitionTest() override = default;
-
-  void IncrementPageTransition(Transition transition) {
-    transition_counts_[static_cast<int>(transition)] += 1;
-  }
-
-  Vector<Bucket> GetExpectedBuckets() {
-    Vector<Bucket> buckets;
-    for (int i = 0; i <= static_cast<int>(Transition::kMaxValue); i++) {
-      if (transition_counts_[i] > 0)
-        buckets.push_back(Bucket(i, transition_counts_[i]));
-    }
-    return buckets;
-  }
-
-  void WaitForFreezingDelay() {
-    test_task_runner_->FastForwardBy(delay_for_background_tab_freezing() +
-                                     base::TimeDelta::FromMilliseconds(100));
-  }
-
-  void DisableAudioAndWaitForSilent() {
-    page_scheduler_->AudioStateChanged(false);
-    test_task_runner_->FastForwardBy(recent_audio_delay() +
-                                     base::TimeDelta::FromMilliseconds(100));
-  }
-
- protected:
-  Vector<int> transition_counts_;
-};
-
-TEST_F(PageSchedulerImplPageTransitionTest,
-       PageLifecycleStateTransitionMetric) {
-  typedef PageSchedulerImpl::PageLifecycleStateTransition Transition;
-
-  base::HistogramTester histogram_tester_;
-
-  if (kDefaultPageVisibility == PageVisibilityState::kHidden) {
-    page_scheduler_->SetPageVisible(true);
-    IncrementPageTransition(Transition::kHiddenBackgroundedToActive);
-    EXPECT_THAT(histogram_tester_.GetAllSamples(
-                    PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-                UnorderedElementsAreArray(GetExpectedBuckets()));
-  }
-
-  // Visible w/o audio -> hidden/backgrounded -> frozen.
-  page_scheduler_->SetPageVisible(false);
-  IncrementPageTransition(Transition::kActiveToHiddenBackgrounded);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  WaitForFreezingDelay();
-  IncrementPageTransition(Transition::kHiddenBackgroundedToFrozen);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-
-  // Visible w/ audio -> hidden/not backgrouneded -> hidden/backgrounded ->
-  // frozen.
-  page_scheduler_->SetPageVisible(true);
-  IncrementPageTransition(Transition::kFrozenToActive);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  page_scheduler_->AudioStateChanged(true);
-  // No transition when audio state changes in the foreground.
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  page_scheduler_->SetPageVisible(false);
-  IncrementPageTransition(Transition::kActiveToHiddenForegrounded);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  DisableAudioAndWaitForSilent();
-  IncrementPageTransition(Transition::kHiddenForegroundedToHiddenBackgrounded);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  WaitForFreezingDelay();
-  IncrementPageTransition(Transition::kHiddenBackgroundedToFrozen);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-
-  // When freezing from outside the renderer, it's possible to have transitions
-  // to frozen from hidden/foregrounded and hidden/backgrounded.
-  //
-  // Visible w/o audio -> hidden/backgrounded -> frozen from outside the
-  // renderer.
-  page_scheduler_->SetPageVisible(true);
-  IncrementPageTransition(Transition::kFrozenToActive);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  page_scheduler_->SetPageVisible(false);
-  IncrementPageTransition(Transition::kActiveToHiddenBackgrounded);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  page_scheduler_->SetPageFrozen(true);
-  IncrementPageTransition(Transition::kHiddenBackgroundedToFrozen);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  // Unfreezing from outside the renderer should return to hidden/backgrounded.
-  page_scheduler_->SetPageFrozen(false);
-  IncrementPageTransition(Transition::kFrozenToHiddenBackgrounded);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-
-  // Hidden/backgrounded -> hidden/not backgrouneded -> frozen from outside the
-  // renderer.
-  page_scheduler_->AudioStateChanged(true);
-  IncrementPageTransition(Transition::kHiddenBackgroundedToHiddenForegrounded);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  page_scheduler_->SetPageFrozen(true);
-  IncrementPageTransition(Transition::kHiddenForegroundedToFrozen);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  // Unfreezing from outside the renderer should return to hidden/foregrounded.
-  page_scheduler_->SetPageFrozen(false);
-  IncrementPageTransition(Transition::kFrozenToHiddenForegrounded);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-
-  // Visible -> hidden* -> hidden* -> visible.
-  page_scheduler_->SetPageVisible(true);
-  IncrementPageTransition(Transition::kHiddenForegroundedToActive);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  page_scheduler_->SetPageVisible(false);
-  IncrementPageTransition(Transition::kActiveToHiddenForegrounded);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  DisableAudioAndWaitForSilent();
-  IncrementPageTransition(Transition::kHiddenForegroundedToHiddenBackgrounded);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  page_scheduler_->AudioStateChanged(true);
-  IncrementPageTransition(Transition::kHiddenBackgroundedToHiddenForegrounded);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  DisableAudioAndWaitForSilent();
-  IncrementPageTransition(Transition::kHiddenForegroundedToHiddenBackgrounded);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-  page_scheduler_->SetPageVisible(true);
-  IncrementPageTransition(Transition::kHiddenBackgroundedToActive);
-  EXPECT_THAT(histogram_tester_.GetAllSamples(
-                  PageSchedulerImpl::kHistogramPageLifecycleStateTransition),
-              UnorderedElementsAreArray(GetExpectedBuckets()));
-}
-
-class PageSchedulerImplThrottleVisibleNotFocusedTimersEnabledTest
-    : public PageSchedulerImplTest {
- public:
-  PageSchedulerImplThrottleVisibleNotFocusedTimersEnabledTest()
-      : PageSchedulerImplTest(
-            {blink::features::kStopInBackground,
-             blink::scheduler::kThrottleVisibleNotFocusedTimers},
-            {}) {}
-};
-
-TEST_F(PageSchedulerImplThrottleVisibleNotFocusedTimersEnabledTest,
-       PageVisibleWithFocus) {
-  page_scheduler_->SetPageVisible(true);
-  if (!page_scheduler_->IsPageFocused())
-    page_scheduler_->OnFocusChanged(true);
-
-  int run_count = 0;
-  ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
-      FROM_HERE,
-      MakeRepeatingTask(
-          ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType(),
-          &run_count, base::TimeDelta::FromMilliseconds(20)),
-      base::TimeDelta::FromMilliseconds(20));
-
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
-  EXPECT_EQ(50, run_count);
-
-  // Create a new frame when the page has focus
-  int frame_run_count = 0;
-  std::unique_ptr<FrameSchedulerImpl> frame_scheduler2 =
-      CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
-                           FrameScheduler::FrameType::kSubframe);
-  ThrottleableTaskQueueForScheduler(frame_scheduler2.get())
-      ->GetTaskRunnerWithDefaultTaskType()
-      ->PostDelayedTask(
-          FROM_HERE,
-          MakeRepeatingTask(
-              ThrottleableTaskQueueForScheduler(frame_scheduler2.get())
-                  ->GetTaskRunnerWithDefaultTaskType(),
-              &frame_run_count, base::TimeDelta::FromMilliseconds(20)),
-          base::TimeDelta::FromMilliseconds(20));
-
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
-  EXPECT_EQ(50, frame_run_count);
-}
-
-TEST_F(PageSchedulerImplThrottleVisibleNotFocusedTimersEnabledTest,
-       PageVisibleWithoutFocus) {
-  page_scheduler_->SetPageVisible(true);
-  if (page_scheduler_->IsPageFocused())
-    page_scheduler_->OnFocusChanged(false);
-
-  int run_count = 0;
-  ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType()->PostDelayedTask(
-      FROM_HERE,
-      MakeRepeatingTask(
-          ThrottleableTaskQueue()->GetTaskRunnerWithDefaultTaskType(),
-          &run_count, base::TimeDelta::FromMilliseconds(20)),
-      base::TimeDelta::FromMilliseconds(20));
-
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
-  EXPECT_EQ(1, run_count);
-
-  // Create a new frame when the page doesn't have focus
-  int frame_run_count = 0;
-  std::unique_ptr<FrameSchedulerImpl> frame_scheduler2 =
-      CreateFrameScheduler(page_scheduler_.get(), nullptr, nullptr,
-                           FrameScheduler::FrameType::kSubframe);
-  ThrottleableTaskQueueForScheduler(frame_scheduler2.get())
-      ->GetTaskRunnerWithDefaultTaskType()
-      ->PostDelayedTask(
-          FROM_HERE,
-          MakeRepeatingTask(
-              ThrottleableTaskQueueForScheduler(frame_scheduler2.get())
-                  ->GetTaskRunnerWithDefaultTaskType(),
-              &frame_run_count, base::TimeDelta::FromMilliseconds(20)),
-          base::TimeDelta::FromMilliseconds(20));
-
-  test_task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
-  EXPECT_EQ(1, frame_run_count);
 }
 
 }  // namespace page_scheduler_impl_unittest

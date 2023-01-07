@@ -1,17 +1,25 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_UTILS_H_
 #define CHROME_BROWSER_UI_WEB_APPLICATIONS_WEB_APP_LAUNCH_UTILS_H_
 
+#include <stdint.h>
+#include <memory>
 #include <string>
 
-#include "base/optional.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "extensions/common/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect.h"
 
+class Profile;
 class Browser;
 class GURL;
+enum class WindowOpenDisposition;
+struct NavigateParams;
 
 namespace content {
 class WebContents;
@@ -19,7 +27,9 @@ class WebContents;
 
 namespace web_app {
 
-base::Optional<AppId> GetWebAppForActiveTab(Browser* browser);
+class AppBrowserController;
+
+absl::optional<AppId> GetWebAppForActiveTab(Browser* browser);
 
 // Clears navigation history prior to user entering app scope.
 void PrunePreScopeNavigationHistory(const GURL& scope,
@@ -35,14 +45,57 @@ Browser* ReparentWebAppForActiveTab(Browser* browser);
 Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            const AppId& app_id);
 
-// Reparents contents to a new app browser when entering the Focus Mode.
-Browser* ReparentWebContentsForFocusMode(content::WebContents* contents);
+// Tags `contents` with the given app id and marks it as an app. This
+// differentiates it from a `WebContents` which happens to be hosting a page
+// that is part of an app.
+void SetWebContentsActingAsApp(content::WebContents* contents,
+                               const AppId& app_id);
+
+// Marks the web contents as being the pinned home tab of a tabbed web app.
+void SetWebContentsIsPinnedHomeTab(content::WebContents* contents);
 
 // Set preferences that are unique to app windows.
 void SetAppPrefsForWebContents(content::WebContents* web_contents);
 
 // Clear preferences that are unique to app windows.
 void ClearAppPrefsForWebContents(content::WebContents* web_contents);
+
+std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
+    Browser* browser);
+
+void MaybeAddPinnedHomeTab(Browser* browser, const std::string& app_id);
+
+Browser* CreateWebApplicationWindow(Profile* profile,
+                                    const std::string& app_id,
+                                    WindowOpenDisposition disposition,
+                                    int32_t restore_id,
+                                    bool omit_from_session_restore = false,
+                                    bool can_resize = true,
+                                    bool can_maximize = true,
+                                    gfx::Rect initial_bounds = gfx::Rect());
+
+content::WebContents* NavigateWebApplicationWindow(
+    Browser* browser,
+    const std::string& app_id,
+    const GURL& url,
+    WindowOpenDisposition disposition);
+
+content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
+                                                NavigateParams& nav_params);
+
+// RecordLaunchMetrics methods report UMA metrics. It shouldn't have other
+// side-effects (e.g. updating app launch time).
+void RecordLaunchMetrics(const AppId& app_id,
+                         apps::LaunchContainer container,
+                         extensions::AppLaunchSource launch_source,
+                         const GURL& launch_url,
+                         content::WebContents* web_contents);
+
+// Updates statistics about web app launch. For example, app's last launch time
+// (populates recently launched app list) and site engagement stats.
+void UpdateLaunchStats(content::WebContents* web_contents,
+                       const AppId& app_id,
+                       const GURL& launch_url);
 
 }  // namespace web_app
 

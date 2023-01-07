@@ -1,0 +1,16 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+// ExtraMojoJsFeatures describes a set of features that can be enabled with
+// MojoJs. These features help MojoJs to better work with Web API objects in
+// Blink.
+struct ExtraMojoJsFeatures {
+  // Whether MojoJSFileSystemAccessHelper is enabled. This feature exposes a
+  // Mojo.getFileSystemAccessTransferToken() method, which allows JavaScript
+  // to retrieve a MojoHandle of FileSystemAccessTransferToken that can be
+  // sent via Mojo to, for example, the browser process.
+  bool file_system_access = false;
+};

@@ -129,12 +129,12 @@ later adding an OWNERS file upstream also works.
 It is sometimes desirable to write WPT tests that either test Chromium-specific
 behaviors, or that cannot yet be upstreamed to WPT (e.g. because the spec is
 very nascent). For these cases, we maintain a separate directory,
-[wpt_internal](../third_party/blink/web_tests/wpt_internal) that runs under the
+[wpt_internal](../../third_party/blink/web_tests/wpt_internal) that runs under the
 WPT testing infrastructure (e.g. uses wptserve, etc), but which is not
 upstreamed to WPT.
 
 Please see the `wpt_internal`
-[README](../third_party/blink/web_tests/wpt_internal/README) for more details.
+[README](../../third_party/blink/web_tests/wpt_internal/README.md) for more details.
 
 **Note**: A significant downside of `wpt_internal` is that your tests may be
 broken by upstream changes to the resources scripts (e.g. `testharness.js`), as
@@ -223,7 +223,7 @@ wpt {
 
 When a test under `external/wpt/css/css-grid/` newly fails in a WPT import, the
 importer will automatically file a bug against the Blink>Layout>Grid component
-in [crbug.com][https://crbug.com], with details of which test failed and the
+in [crbug.com](https://crbug.com), with details of which test failed and the
 output.
 
 Note that we are considering making the notifications opt-out instead of
@@ -321,7 +321,7 @@ resolve the conflict.
 
 To allow the importer to land CLs without human intervention, it utilizes the
 [Rubber-Stamper
-bot](https://chromium.googlesource.com/infra/infra/+/refs/heads/master/go/src/infra/appengine/rubber-stamper/README.md)
+bot](https://chromium.googlesource.com/infra/infra/+/refs/heads/main/go/src/infra/appengine/rubber-stamper/README.md)
 to approve import CLs.
 
 Adding the Rubber-Stamper as a reviewer is one of the last steps the importer
@@ -387,3 +387,64 @@ unauthenticated requests, so it is recommended that you let `wpt-export` and
        and `GH_TOKEN`, the access token you have just generated. After that,
        pass `--credentials-json <path-to-json>` to `wpt-export` and
        `wpt-import`.
+
+### Debugging failed web platform tests
+
+This section explains the way to debug web platform tests.
+Please build `blink_tests` before running commands below.
+It is explained in [Running Web Tests](./web_tests.md#running-web-tests).
+
+#### Running test(s)
+
+The way to run web tests is explained in [Running the
+Tests](./web_tests.md#running-the-tests).
+
+Assume that you are writing the test named `wpt_internal/fake/foobar.html`.
+You may want to run only the tests and you do not want to run all tests under
+`wpt_internal/fake`.  The following command narrows down the test to only
+`wpt_internal/fake/foobar.html`.
+
+```bash
+third_party/blink/tools/run_web_tests.py -t Default \
+third_party/blink/web_tests/wpt_internal/fake/foobar.html
+```
+
+#### Logging
+
+During the debug, you may want to log what happens during the test.
+You can use `console.log` in JavaScript to log arbitrary strings.
+
+```
+e.g.
+console.log('fake has been executed.');
+console.log('foo=' + foo);
+```
+
+Logs are written under `$root_build_dir/layout-test-results`.
+If you have tested `wpt_internal/fake/foobar.html`, the log will be stored in
+`$root_build_dir/layout-test-results/wpt_internal/fake/foobar-stderr.txt`.
+You can change output directory with `--results-directory=<output directory>`.
+
+#### Checking HTTP servers
+
+For some test cases, you may use .headers file to set arbitrary HTTP headers.
+To verify what is set to headers, you can run an HTTP server used for WPT
+by yourself. The following command starts the HTTP server for you:
+
+```bash
+third_party/blink/tools/run_blink_wptserve.py
+```
+
+To see headers returned by the server, you can use `curl -v`.
+`curl` will show headers in stderr. You may want to use `|& less` to
+see output if it is too long.
+
+```bash
+curl -v http://localhost:8081/wpt_internal/fake/foobar.html |& less
+```
+
+#### Debugging with a debugger
+
+You are able to debug the inside of Chromium with a debugger for particular
+WPT tests. Refer to [Running web tests using the content shell](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/testing/web_tests_in_content_shell.md)
+for details.

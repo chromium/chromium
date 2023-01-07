@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -21,12 +20,16 @@ struct TestInfo {
   TestInfo(const GURL& url,
            const std::string& expected_pixel_hash,
            const base::FilePath& current_working_directory,
+           bool wpt_print_mode,
            bool protocol_mode);
   ~TestInfo();
 
   GURL url;
   std::string expected_pixel_hash;
   base::FilePath current_working_directory;
+
+  // Forces the default printing format required by WPT print reftests.
+  bool wpt_print_mode;
 
   // If true, the input and output of content_shell are assumed to follow the
   // run_web_tests protocol through pipes that connect stdin and stdout of
@@ -66,6 +69,10 @@ struct TestInfo {
 class TestInfoExtractor {
  public:
   explicit TestInfoExtractor(const base::CommandLine& cmd_line);
+
+  TestInfoExtractor(const TestInfoExtractor&) = delete;
+  TestInfoExtractor& operator=(const TestInfoExtractor&) = delete;
+
   ~TestInfoExtractor();
 
   std::unique_ptr<TestInfo> GetNextTest();
@@ -73,8 +80,6 @@ class TestInfoExtractor {
  private:
   base::CommandLine::StringVector cmdline_args_;
   size_t cmdline_position_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestInfoExtractor);
 };
 
 }  // namespace content

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<body style="margin: 0">
+<div id="composited" style="position: absolute; will-change: transform; width: 300px; height: 300px"></div>
+<div id="non-opaque" style="position: absolute; width: 200px; height: 100px; padding: 10px">NON-OPAQUE</div>
+<div id="opaque" style="position: absolute; top: 50px; width: 200px; height: 200px; padding: 10px; background: yellow">OPAQUE</div>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.setCustomTextOutput(internals.layerTreeAsText(document));
+}
+</script>
+</body>

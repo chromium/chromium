@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,11 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 
@@ -72,7 +73,7 @@ class CRYPTO_EXPORT Encryptor {
   // TODO(albertb): Support streaming encryption.
 
  private:
-  const SymmetricKey* key_;
+  raw_ptr<const SymmetricKey> key_;
   Mode mode_;
 
   bool CryptString(bool do_encrypt,
@@ -85,10 +86,10 @@ class CRYPTO_EXPORT Encryptor {
   // On success, these helper functions return the number of bytes written to
   // |output|.
   size_t MaxOutput(bool do_encrypt, size_t length);
-  base::Optional<size_t> Crypt(bool do_encrypt,
+  absl::optional<size_t> Crypt(bool do_encrypt,
                                base::span<const uint8_t> input,
                                base::span<uint8_t> output);
-  base::Optional<size_t> CryptCTR(bool do_encrypt,
+  absl::optional<size_t> CryptCTR(bool do_encrypt,
                                   base::span<const uint8_t> input,
                                   base::span<uint8_t> output);
 

@@ -1,0 +1,6 @@
+grabbed.accessibilityAttributeNames.has(AXGrabbed)='yes'
+grabbed.accessibilityAttributeValue(AXGrabbed)=1
+notgrabbed.accessibilityAttributeNames.has(AXGrabbed)='yes'
+notgrabbed.accessibilityAttributeValue(AXGrabbed)=0
+not_applicable.accessibilityAttributeNames.has(AXGrabbed)='no'
+not_applicable.accessibilityAttributeValue(AXGrabbed)=0

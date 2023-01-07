@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,12 +6,14 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 namespace {
@@ -85,14 +87,14 @@ class DisrupterT : public Foo {
     if (remove_self_)
       list_->RemoveObserver(this);
     if (doomed_)
-      list_->RemoveObserver(doomed_);
+      list_->RemoveObserver(doomed_.get());
   }
 
   void SetDoomed(Foo* doomed) { doomed_ = doomed; }
 
  private:
-  ObserverListType* list_;
-  Foo* doomed_;
+  raw_ptr<ObserverListType> list_;
+  raw_ptr<Foo> doomed_;
   bool remove_self_;
 };
 
@@ -107,20 +109,20 @@ class AddInObserve : public Foo {
 
   void Observe(int x) override {
     if (to_add_) {
-      observer_list->AddObserver(to_add_);
+      observer_list->AddObserver(to_add_.get());
       to_add_ = nullptr;
     }
   }
 
-  ObserverListType* observer_list;
-  Foo* to_add_;
+  raw_ptr<ObserverListType> observer_list;
+  raw_ptr<Foo> to_add_;
 };
 
 template <class ObserverListType>
 class ObserverListCreator : public DelegateSimpleThread::Delegate {
  public:
   std::unique_ptr<ObserverListType> Create(
-      base::Optional<base::ObserverListPolicy> policy = nullopt) {
+      absl::optional<base::ObserverListPolicy> policy = absl::nullopt) {
     policy_ = policy;
     DelegateSimpleThread thread(this, "ListCreator");
     thread.Start();
@@ -138,7 +140,7 @@ class ObserverListCreator : public DelegateSimpleThread::Delegate {
   }
 
   std::unique_ptr<ObserverListType> observer_list_;
-  base::Optional<base::ObserverListPolicy> policy_;
+  absl::optional<base::ObserverListPolicy> policy_;
 };
 
 }  // namespace
@@ -510,7 +512,7 @@ class AddInClearObserve : public Foo {
   const AdderT<Foo>& adder() const { return adder_; }
 
  private:
-  ObserverListType* const list_;
+  const raw_ptr<ObserverListType> list_;
 
   bool added_;
   AdderT<Foo> adder_;
@@ -554,7 +556,7 @@ class ListDestructor : public Foo {
   void Observe(int x) override { delete list_; }
 
  private:
-  ObserverListType* list_;
+  raw_ptr<ObserverListType> list_;
 };
 
 TYPED_TEST(ObserverListTest, IteratorOutlivesList) {
@@ -956,7 +958,7 @@ class TestCheckedObserver : public CheckedObserver {
   void Observe() { ++(*count_); }
 
  private:
-  int* count_;
+  raw_ptr<int> count_;
 };
 
 // A second, identical observer, used to test multiple inheritance.
@@ -969,7 +971,7 @@ class TestCheckedObserver2 : public CheckedObserver {
   void Observe() { ++(*count_); }
 
  private:
-  int* count_;
+  raw_ptr<int> count_;
 };
 
 using CheckedObserverListTest = ::testing::Test;

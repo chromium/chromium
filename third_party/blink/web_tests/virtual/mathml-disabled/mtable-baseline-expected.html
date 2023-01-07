@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script src="../../resources/ahem.js"></script>
+<html>
+  <head>
+    <title>mtable baseline with MathML disabled (reference)</title>
+    <meta charset="utf-8"/>
+    <style>
+      math {
+          font: 25px/1 Ahem;
+          display: block;
+      }
+      mtext {
+          display: inline-block;
+      }
+      mtable {
+          display: inline-block;
+      }
+      mtr {
+          display: inline-block;
+      }
+      mtd {
+          display: inline-block;
+          padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <p>When MathML is disabled, these three squares should be aligned:</p>
+    <math><mtext>X</mtext><mtable><mtr><mtd><mtext>X</mtext></mtd></mtr></mtable><mtext>X</mtext></math>
+  </body>
+</html>

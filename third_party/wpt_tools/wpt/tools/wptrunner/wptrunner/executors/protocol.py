@@ -1,9 +1,25 @@
+# mypy: allow-untyped-defs
+
 import traceback
+from http.client import HTTPConnection
 
 from abc import ABCMeta, abstractmethod
+from typing import ClassVar, List, Type
 
 
-class Protocol(object):
+def merge_dicts(target, source):
+    if not (isinstance(target, dict) and isinstance(source, dict)):
+        raise TypeError
+    for (key, source_value) in source.items():
+        if key not in target:
+            target[key] = source_value
+        else:
+            if isinstance(source_value, dict) and isinstance(target[key], dict):
+                merge_dicts(target[key], source_value)
+            else:
+                target[key] = source_value
+
+class Protocol:
     """Backend for a specific browser-control protocol.
 
     Each Protocol is composed of a set of ProtocolParts that implement
@@ -16,7 +32,7 @@ class Protocol(object):
     :param Browser browser: The Browser using this protocol"""
     __metaclass__ = ABCMeta
 
-    implements = []
+    implements = []  # type: ClassVar[List[Type[ProtocolPart]]]
 
     def __init__(self, executor, browser):
         self.executor = executor
@@ -76,13 +92,13 @@ class Protocol(object):
             getattr(self, cls.name).teardown()
 
 
-class ProtocolPart(object):
+class ProtocolPart:
     """Base class  for all ProtocolParts.
 
     :param Protocol parent: The parent protocol"""
     __metaclass__ = ABCMeta
 
-    name = None
+    name = None  # type: ClassVar[str]
 
     def __init__(self, parent):
         self.parent = parent
@@ -128,7 +144,9 @@ class BaseProtocolPart(ProtocolPart):
 
     @abstractmethod
     def wait(self):
-        """Wait indefinitely for the browser to close"""
+        """Wait indefinitely for the browser to close.
+
+        :returns: True to re-run the test, or False to continue with the next test"""
         pass
 
     @property
@@ -253,9 +271,9 @@ class SelectorProtocolPart(ProtocolPart):
     def element_by_selector(self, element_selector):
         elements = self.elements_by_selector(element_selector)
         if len(elements) == 0:
-            raise ValueError("Selector '%s' matches no elements" % (element_selector,))
+            raise ValueError(f"Selector '{element_selector}' matches no elements")
         elif len(elements) > 1:
-            raise ValueError("Selector '%s' matches multiple elements" % (element_selector,))
+            raise ValueError(f"Selector '{element_selector}' matches multiple elements")
         return elements[0]
 
     @abstractmethod
@@ -307,6 +325,21 @@ class SendKeysProtocolPart(ProtocolPart):
         :param keys: A protocol-specific handle to a string of input keys."""
         pass
 
+class WindowProtocolPart(ProtocolPart):
+    """Protocol part for manipulating the window"""
+    __metaclass__ = ABCMeta
+
+    name = "window"
+
+    @abstractmethod
+    def set_rect(self, rect):
+        """Restores the window to the given rect."""
+        pass
+
+    @abstractmethod
+    def minimize(self):
+        """Minimizes the window and returns the previous rect."""
+        pass
 
 class GenerateTestReportProtocolPart(ProtocolPart):
     """Protocol part for generating test reports"""
@@ -351,6 +384,9 @@ class ActionSequenceProtocolPart(ProtocolPart):
         :param actions: A protocol-specific handle to an array of actions."""
         pass
 
+    def release(self):
+        pass
+
 
 class TestDriverProtocolPart(ProtocolPart):
     """Protocol part that implements the basic functionality required for
@@ -370,43 +406,72 @@ class TestDriverProtocolPart(ProtocolPart):
         :param str message: Additional data to add to the message."""
         pass
 
-    def switch_to_window(self, wptrunner_id):
+    def switch_to_window(self, wptrunner_id, initial_window=None):
         """Switch to a window given a wptrunner window id
 
-        :param str wptrunner_id: window id"""
+        :param str wptrunner_id: Testdriver-specific id for the target window
+        :param str initial_window: WebDriver window id for the test window"""
         if wptrunner_id is None:
             return
 
+        if initial_window is None:
+            initial_window = self.parent.base.current_window
+
         stack = [str(item) for item in self.parent.base.window_handles()]
+        first = True
         while stack:
             item = stack.pop()
+
             if item is None:
+                assert first is False
                 self._switch_to_parent_frame()
                 continue
-            elif isinstance(item, str):
-                self.parent.base.set_window(item)
+
+            if isinstance(item, str):
+                if not first or item != initial_window:
+                    self.parent.base.set_window(item)
+                first = False
             else:
-                self._switch_to_frame(item)
+                assert first is False
+                try:
+                    self._switch_to_frame(item)
+                except ValueError:
+                    # The frame no longer exists, or doesn't have a nested browsing context, so continue
+                    continue
 
             try:
-                handle_window_id = self.parent.base.execute_script("return window.__wptrunner_id")
-                if str(handle_window_id) == wptrunner_id:
-                    return
+                # Get the window id and a list of elements containing nested browsing contexts.
+                # For embed we can't tell fpr sure if there's a nested browsing context, so always return it
+                # and fail later if there isn't
+                result = self.parent.base.execute_script("""
+                let contextParents = Array.from(document.querySelectorAll("frame, iframe, embed, object"))
+                    .filter(elem => elem.localName !== "embed" ? (elem.contentWindow !== null) : true);
+                return [window.__wptrunner_id, contextParents]""")
             except Exception:
-                pass
-            frame_count = self.parent.base.execute_script("return window.length")
-            # None here makes us switch back to the parent after we've processed all the subframes
-            stack.append(None)
-            if frame_count:
-                stack.extend(reversed(range(0, frame_count)))
+                continue
+
+            if result is None:
+                # With marionette at least this is possible if the content process crashed. Not quite
+                # sure how we want to handle that case.
+                continue
+
+            handle_window_id, nested_context_containers = result
+
+            if handle_window_id and str(handle_window_id) == wptrunner_id:
+                return
+
+            for elem in reversed(nested_context_containers):
+                # None here makes us switch back to the parent after we've processed the frame
+                stack.append(None)
+                stack.append(elem)
 
         raise Exception("Window with id %s not found" % wptrunner_id)
 
     @abstractmethod
-    def _switch_to_frame(self, index):
+    def _switch_to_frame(self, index_or_elem):
         """Switch to a frame in the current window
 
-        :param int index: Frame id"""
+        :param int index_or_elem: Frame id or container element"""
         pass
 
     @abstractmethod
@@ -505,6 +570,20 @@ class VirtualAuthenticatorProtocolPart(ProtocolPart):
         pass
 
 
+class SPCTransactionsProtocolPart(ProtocolPart):
+    """Protocol part for Secure Payment Confirmation transactions"""
+    __metaclass__ = ABCMeta
+
+    name = "spc_transactions"
+
+    @abstractmethod
+    def set_spc_transaction_mode(self, mode):
+        """Set the SPC transaction automation mode
+
+        :param str mode: The automation mode to set"""
+        pass
+
+
 class PrintProtocolPart(ProtocolPart):
     """Protocol part for rendering to a PDF."""
     __metaclass__ = ABCMeta
@@ -544,3 +623,56 @@ class DebugProtocolPart(ProtocolPart):
         self.parent.base.load(urljoin(self.parent.executor.server_url("https"),
                               "/common/third_party/reftest-analyzer.xhtml#log=%s" %
                                quote(output.getvalue())))
+
+
+class ConnectionlessBaseProtocolPart(BaseProtocolPart):
+    def load(self, url):
+        pass
+
+    def execute_script(self, script, asynchronous=False):
+        pass
+
+    def set_timeout(self, timeout):
+        pass
+
+    def wait(self):
+        return False
+
+    def set_window(self, handle):
+        pass
+
+    def window_handles(self):
+        return []
+
+
+class ConnectionlessProtocol(Protocol):
+    implements = [ConnectionlessBaseProtocolPart]
+
+    def connect(self):
+        pass
+
+    def after_connect(self):
+        pass
+
+
+class WdspecProtocol(ConnectionlessProtocol):
+    implements = [ConnectionlessBaseProtocolPart]
+
+    def __init__(self, executor, browser):
+        super().__init__(executor, browser)
+
+    def is_alive(self):
+        """Test that the connection is still alive.
+
+        Because the remote communication happens over HTTP we need to
+        make an explicit request to the remote.  It is allowed for
+        WebDriver spec tests to not have a WebDriver session, since this
+        may be what is tested.
+
+        An HTTP request to an invalid path that results in a 404 is
+        proof enough to us that the server is alive and kicking.
+        """
+        conn = HTTPConnection(self.browser.host, self.browser.port)
+        conn.request("HEAD", "/invalid")
+        res = conn.getresponse()
+        return res.status == 404

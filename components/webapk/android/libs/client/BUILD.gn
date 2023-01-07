@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,23 +17,19 @@ android_library("java") {
   ]
 }
 
-java_library("junit") {
-  # Skip platform checks since Robolectric depends on requires_android targets.
-  bypass_platform_checks = true
-  testonly = true
+robolectric_library("junit") {
   sources = [
     "src/org/chromium/components/webapk/lib/client/WebApkValidatorTest.java",
     "src/org/chromium/components/webapk/lib/client/WebApkVerifySignatureTest.java",
   ]
+  data = [ "//chrome/test/data/webapks/" ]
   deps = [
     ":java",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base/test:test_support_java",
     "//components/webapk/android/libs/common:java",
     "//testing/android/junit:junit_test_support",
-    "//third_party/android_deps:robolectric_all_java",
     "//third_party/junit",
   ]
 }

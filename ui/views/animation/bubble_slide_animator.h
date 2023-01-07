@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
@@ -67,6 +68,16 @@ class VIEWS_EXPORT BubbleSlideAnimator : public AnimationDelegateViews,
   // bounds.
   void SnapToAnchorView(View* desired_anchor_view);
 
+  // Retargets the current animation or snaps the bubble to its correct size
+  // and position if there is no current animation.
+  //
+  // Call if the bubble contents change size in a way that would require the
+  // bubble to be resized/repositioned. If you would like a new animation to
+  // always play to the new bounds, call AnimateToAnchorView() instead.
+  //
+  // Note: This method expects the bubble to have a valid anchor view.
+  void UpdateTargetBounds();
+
   // Stops the animation without snapping the widget to a particular anchor
   // view.
   void StopAnimation();
@@ -91,13 +102,13 @@ class VIEWS_EXPORT BubbleSlideAnimator : public AnimationDelegateViews,
   // Determines where to animate the bubble to during an animation.
   gfx::Rect CalculateTargetBounds(const View* desired_anchor_view) const;
 
-  BubbleDialogDelegateView* const bubble_delegate_;
+  const raw_ptr<BubbleDialogDelegateView> bubble_delegate_;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
   gfx::LinearAnimation slide_animation_{this};
 
   // The desired anchor view, which is valid during a slide animation. When not
   // animating, this value is null.
-  View* desired_anchor_view_ = nullptr;
+  raw_ptr<View> desired_anchor_view_ = nullptr;
 
   // The tween type to use when animating. The default should be aesthetically
   // pleasing for most applications.

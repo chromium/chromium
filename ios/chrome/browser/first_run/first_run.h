@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #define IOS_CHROME_BROWSER_FIRST_RUN_FIRST_RUN_H_
 
 #include "base/files/file.h"
-#include "base/macros.h"
 
 namespace base {
 class FilePath;
@@ -39,12 +38,16 @@ class FirstRun {
     SENTINEL_RESULT_MAX,
   };
 
+  FirstRun() = delete;
+  FirstRun(const FirstRun&) = delete;
+  FirstRun& operator=(const FirstRun&) = delete;
+
   // Returns true if this is the first time chrome is run for this user.
   static bool IsChromeFirstRun();
 
   // Creates the sentinel file that signals that chrome has been configured if
   // the file does not exist yet. Returns SENTINEL_RESULT_SUCCESS if the file
-  // was created. If SENTINEL_RESULT_FILE_ERROR is returned, |error| is set to
+  // was created. If SENTINEL_RESULT_FILE_ERROR is returned, `error` is set to
   // the file system error, if non-nil.
   static SentinelResult CreateSentinel(base::File::Error* error);
 
@@ -70,8 +73,6 @@ class FirstRun {
 
   // This variable should only be accessed through IsChromeFirstRun().
   static FirstRunState first_run_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(FirstRun);
 };
 
 #endif  // IOS_CHROME_BROWSER_FIRST_RUN_FIRST_RUN_H_

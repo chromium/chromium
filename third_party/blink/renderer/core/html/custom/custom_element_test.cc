@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_element_definition_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_test_helpers.h"
@@ -117,7 +118,8 @@ TEST(CustomElementTest, TestIsValidNamePotentialCustomElementName8BitChar) {
     EXPECT_EQ(Character::IsPotentialCustomElementName8BitChar(ch),
               Character::IsPotentialCustomElementNameChar(ch))
         << "isPotentialCustomElementName8BitChar must agree with "
-        << "isPotentialCustomElementNameChar: 0x" << std::hex << ch;
+        << "isPotentialCustomElementNameChar: 0x" << std::hex
+        << static_cast<uint16_t>(ch);
   }
 }
 

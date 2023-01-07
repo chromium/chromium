@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,13 +50,14 @@ const puppeteer = require('puppeteer');
 
   const browser = await puppeteer.launch({
     headless: !program.debug,
-    args: [...args]
+    args: [...args],
   });
 
   const page = await browser.newPage();
 
   await page.setViewport({
-    width: 1200, height: 800
+    width: 1200,
+    height: 800,
   });
 
   if (program.debug) {
@@ -74,7 +75,7 @@ const puppeteer = require('puppeteer');
   });
 
   await page.goto('http://localhost:8123/' + process.argv[2], {
-    waitUntil: 'networkidle2'
+    waitUntil: 'networkidle2',
   });
 
   await page.mainFrame().waitForFunction('document.title == "READY"');

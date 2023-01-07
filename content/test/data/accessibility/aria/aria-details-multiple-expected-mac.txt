@@ -1,0 +1,11 @@
+AXWebArea
+++AXStaticText AXValue='Some '
+++AXGroup AXDetailsElements=[:6, :8, :10]
+++++AXStaticText AXValue='highlighted text'
+++AXStaticText AXValue=' example.'
+++AXGroup
+++++AXStaticText AXValue='Good job!'
+++AXGroup
+++++AXStaticText AXValue='Some footnote.'
+++AXGroup AXSubrole=AXDefinition
+++++AXStaticText AXValue='The meaning is.'

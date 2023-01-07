@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,18 +7,16 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/chromeos_buildflags.h"
+#include "build/config/chromebox_for_meetings/buildflags.h"
 #include "components/feedback/feedback_uploader.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"
 #if BUILDFLAG(PLATFORM_CFM)
 #include "components/invalidation/public/identity_provider.h"
-#endif  // BUILDFLAG(PLATFORM_CFM)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif
 
 namespace content {
 class BrowserContext;
@@ -35,6 +33,10 @@ namespace feedback {
 class FeedbackUploaderChrome : public FeedbackUploader {
  public:
   explicit FeedbackUploaderChrome(content::BrowserContext* context);
+
+  FeedbackUploaderChrome(const FeedbackUploaderChrome&) = delete;
+  FeedbackUploaderChrome& operator=(const FeedbackUploaderChrome&) = delete;
+
   ~FeedbackUploaderChrome() override;
 
   class Delegate {
@@ -62,7 +64,6 @@ class FeedbackUploaderChrome : public FeedbackUploader {
 
   void AccessTokenAvailable(GoogleServiceAuthError error, std::string token);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(PLATFORM_CFM)
   void ActiveAccountAccessTokenAvailable(GoogleServiceAuthError error,
                                          std::string token);
@@ -70,18 +71,15 @@ class FeedbackUploaderChrome : public FeedbackUploader {
   std::unique_ptr<invalidation::ActiveAccountAccessTokenFetcher>
       active_account_token_fetcher_;
 #endif  // BUILDFLAG(PLATFORM_CFM)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
       primary_account_token_fetcher_;
 
   std::string access_token_;
 
-  Delegate* delegate_ = nullptr;  // Not owned.
+  raw_ptr<Delegate> delegate_ = nullptr;  // Not owned.
 
-  content::BrowserContext* context_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FeedbackUploaderChrome);
+  raw_ptr<content::BrowserContext> context_ = nullptr;
 };
 
 }  // namespace feedback

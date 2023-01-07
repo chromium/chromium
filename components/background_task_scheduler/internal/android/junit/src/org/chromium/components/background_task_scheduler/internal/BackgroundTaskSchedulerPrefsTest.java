@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.util.ReflectionHelpers;
 
 import org.chromium.base.ContextUtils;
@@ -34,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 /** Unit tests for {@link BackgroundTaskSchedulerPrefs}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class BackgroundTaskSchedulerPrefsTest {
     private TaskInfo mTask1;
     private TaskInfo mTask2;

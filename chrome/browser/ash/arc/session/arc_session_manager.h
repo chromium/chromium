@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,39 +10,43 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
+#include "ash/components/arc/session/arc_session_runner.h"
+#include "ash/components/arc/session/arc_stop_reason.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/arc_support_host.h"
+#include "chrome/browser/ash/arc/policy/arc_android_management_checker.h"
 #include "chrome/browser/ash/arc/session/adb_sideloading_availability_delegate_impl.h"
 #include "chrome/browser/ash/arc/session/arc_app_id_provider_impl.h"
+#include "chrome/browser/ash/arc/session/arc_requirement_checker.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "chrome/browser/chromeos/policy/android_management_client.h"
-#include "chromeos/dbus/concierge_client.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "components/arc/mojom/auth.mojom.h"
-#include "components/arc/session/arc_session_runner.h"
-#include "components/arc/session/arc_stop_reason.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
+#include "chrome/browser/ash/policy/arc/android_management_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class ArcAppLauncher;
-class PrefService;
 class Profile;
 
 namespace arc {
 
-constexpr const char kGeneratedPropertyFilesPath[] = "/run/arc/host_generated";
-constexpr const char kGeneratedPropertyFilesPathVm[] =
-    "/run/arcvm/host_generated";
+// The file exists only when ARC container is in use.
+constexpr const char kGeneratedBuildPropertyFilePath[] =
+    "/run/arc/host_generated/build.prop";
 
-class ArcAndroidManagementChecker;
+// The file exists only when ARCVM is in use.
+constexpr const char kGeneratedCombinedPropertyFilePathVm[] =
+    "/run/arcvm/host_generated/combined.prop";
+
 class ArcDataRemover;
+class ArcDlcInstaller;
 class ArcFastAppReinstallStarter;
 class ArcPaiStarter;
 class ArcProvisioningResult;
-class ArcTermsOfServiceNegotiator;
 class ArcUiAvailabilityReporter;
 
 enum class ProvisioningStatus;
@@ -51,29 +55,31 @@ enum class ArcStopReason;
 // This class is responsible for handing stages of ARC life-cycle.
 class ArcSessionManager : public ArcSessionRunner::Observer,
                           public ArcSupportHost::ErrorDelegate,
-                          public chromeos::SessionManagerClient::Observer,
-                          public chromeos::ConciergeClient::VmObserver {
+                          public ash::SessionManagerClient::Observer,
+                          public ash::ConciergeClient::VmObserver,
+                          public ArcRequirementChecker::Observer {
  public:
   // Represents each State of ARC session.
   // NOT_INITIALIZED: represents the state that the Profile is not yet ready
   //   so that this service is not yet initialized, or Chrome is being shut
   //   down so that this is destroyed.
   // STOPPED: ARC session is not running, or being terminated.
-  // NEGOTIATING_TERMS_OF_SERVICE: Negotiating Google Play Store "Terms of
-  //   Service" with a user. There are several ways for the negotiation,
-  //   including opt-in flow, which shows "Terms of Service" page on ARC
-  //   support app, and OOBE flow, which shows "Terms of Service" page as a
-  //   part of Chrome OOBE flow.
-  //   If user does not accept the Terms of Service, disables Google Play
-  //   Store, which triggers RequestDisable() and the state will be set to
-  //   STOPPED, then.
-  // CHECKING_ANDROID_MANAGEMENT: Checking Android management status. Note that
-  //   the status is checked for each ARC session starting, but this is the
-  //   state only for the first boot case (= opt-in case). The second time and
-  //   later the management check is running in parallel with ARC session
-  //   starting, and in such a case, State is ACTIVE, instead.
+  // CHECKING_REQUIREMENTS: Checking requirements before starting ARC.
+  //   First, negotiates Google Play Store "Terms of Service" with a user. There
+  //   are several ways for the negotiation, including opt-in flow, which shows
+  //   "Terms of Service" page on ARC support app, and OOBE flow, which shows
+  //   "Terms of Service" page as a part of Chrome OOBE flow. If user does not
+  //   accept the Terms of Service, disables Google Play Store, which triggers
+  //   RequestDisable() and the state will be set to STOPPED, then.
+  //   Second, checks Android management status. Note that the status is checked
+  //   for each ARC session starting, but this is the state only for the first
+  //   boot case (= opt-in case). The second time and later the management check
+  //   is running in parallel with ARC session starting, and in such a case,
+  //   State is ACTIVE, instead.
   // REMOVING_DATA_DIR: When ARC is disabled, the data directory is removed.
   //   While removing is processed, ARC cannot be started. This is the state.
+  // READY: ARC is ready to run, but not running yet. This state is skipped on
+  //   the first boot case.
   // ACTIVE: ARC is running.
   // STOPPING: ARC is being shut down.
   //
@@ -84,19 +90,18 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // ...(any)... -> STOPPED: on error.
   //
   // In the first boot case:
-  //   STOPPED -> NEGOTIATING_TERMS_OF_SERVICE: On request to enable.
-  //   NEGOTIATING_TERMS_OF_SERVICE -> CHECKING_ANDROID_MANAGEMENT: when a user
-  //     accepts "Terms Of Service"
-  //   CHECKING_ANDROID_MANAGEMENT -> ACTIVE: when the auth token is
-  //     successfully fetched.
+  //   STOPPED -> CHECKING_REQUIREMENTS: On request to enable.
+  //   CHECKING_REQUIREMENTS -> ACTIVE: when a user accepts "Terms Of Service"
+  //     and the auth token is successfully fetched.
   //
   // In the second (or later) boot case:
-  //   STOPPED -> ACTIVE: when arc.enabled preference is checked that it is
-  //     true. Practically, this is when the primary Profile gets ready.
+  //   STOPPED -> READY: when arc.enabled preference is checked that it is true.
+  //     Practically, this is when the primary Profile gets ready.
+  //   READY -> ACTIVE: when activation is allowed.
   //
   // In the disabling case:
-  //   NEGOTIATING_TERMS_OF_SERVICE -> STOPPED
-  //   CHECKING_ANDROID_MANAGEMENT -> STOPPED
+  //   CHECKING_REQUIREMENTS -> STOPPED
+  //   READY -> STOPPED
   //   ACTIVE -> STOPPING -> (maybe REMOVING_DATA_DIR ->) STOPPED
   //   STOPPING: Eventually change the state to STOPPED. Do nothing
   //     immediately.
@@ -108,9 +113,9 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   enum class State {
     NOT_INITIALIZED,
     STOPPED,
-    NEGOTIATING_TERMS_OF_SERVICE,
-    CHECKING_ANDROID_MANAGEMENT,
+    CHECKING_REQUIREMENTS,
     REMOVING_DATA_DIR,
+    READY,
     ACTIVE,
     STOPPING,
   };
@@ -121,6 +126,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   ArcSessionManager(std::unique_ptr<ArcSessionRunner> arc_session_runner,
                     std::unique_ptr<AdbSideloadingAvailabilityDelegateImpl>
                         adb_sideloading_availability_delegate);
+
+  ArcSessionManager(const ArcSessionManager&) = delete;
+  ArcSessionManager& operator=(const ArcSessionManager&) = delete;
+
   ~ArcSessionManager() override;
 
   static ArcSessionManager* Get();
@@ -128,15 +137,6 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   static void SetUiEnabledForTesting(bool enabled);
   static void SetArcTermsOfServiceOobeNegotiatorEnabledForTesting(bool enabled);
   static void EnableCheckAndroidManagementForTesting(bool enable);
-  static std::string GenerateFakeSerialNumberForTesting(
-      const std::string& chromeos_user,
-      const std::string& salt);
-  static std::string GetOrCreateSerialNumberForTesting(
-      PrefService* local_state,
-      const std::string& chromeos_user,
-      const std::string& arc_salt_on_disk);
-  static bool ReadSaltOnDiskForTesting(const base::FilePath& salt_path,
-                                       std::string* out_salt);
 
   // Returns true if ARC is allowed to run for the current session.
   // TODO(hidehiko): The name is very close to IsArcAllowedForProfile(), but
@@ -151,6 +151,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Initializes ArcSessionManager. Before this runs, Profile must be set
   // via SetProfile().
   void Initialize();
+
+  // Set the device scale factor used to start the arc. This must be called
+  // before staring mini-ARC.
+  void SetDefaultDeviceScaleFactor(float default_device_scale_factor);
 
   void Shutdown();
 
@@ -184,12 +188,20 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // SetArcPlayStoreEnabledForProfile().
   void RequestEnable();
 
+  // Allows changing the state from READY to ACTIVE. If the state is already
+  // READY, calling this method changes the state to ACTIVE.
+  void AllowActivation();
+
   // Requests to disable ARC session. This stops ARC instance, or quits Terms
   // Of Service negotiation if it is the middle of the process (e.g. closing
   // UI for manual negotiation if it is shown). This does not remove user ARC
   // data.
   // If it is already requested to disable, no-op.
   void RequestDisable();
+
+  // Requests to disable ARC session and remove ARC data.
+  // If it is already requested to disable, no-op.
+  void RequestDisableWithArcDataRemoval();
 
   // Requests to remove the ARC data.
   // If ARC is stopped, triggers to remove the data. Otherwise, queues to
@@ -198,10 +210,21 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // this.
   void RequestArcDataRemoval();
 
+  // Stops ARC instance without removing user ARC data.
+  // Unlike RequestDisable(), this doesn't clear user ARC prefs, and ARC is not
+  // supposed to restart within the same user session.
+  // NOTE: This method should be used only for the purpose of stopping ARC
+  //       under low disk space.
+  // TODO(b/236325019): Remove this once ArcSessionManager officially supports
+  //       a method to stop ARC without clearing user ARC prefs, or when we
+  //       remove ArcDiskSpaceMonitor after Storage Balloon is ready.
+  void RequestStopOnLowDiskSpace();
+
   // ArcSupportHost:::ErrorDelegate:
   void OnWindowClosed() override;
   void OnRetryClicked() override;
   void OnSendFeedbackClicked() override;
+  void OnRunNetworkTestsClicked() override;
 
   // StopArc(), then restart. Between them data clear may happens.
   // This is a special method to support enterprise device lost case.
@@ -221,6 +244,12 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // A helper function that calls ArcSessionRunner's SetUserInfo.
   void SetUserInfo();
+
+  // Trims VM's memory by moving it to zram.
+  // When the operation is done |callback| is called.
+  // If nonzero, |page_limit| defines the max number of pages to reclaim.
+  using TrimVmMemoryCallback = ArcSessionRunner::TrimVmMemoryCallback;
+  void TrimVmMemory(TrimVmMemoryCallback callback, int page_limit);
 
   // Returns the time when ARC was pre-started (mini-ARC start), or a null time
   // if ARC has not been pre-started yet.
@@ -251,9 +280,13 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // negotiation, because the user had accepted already or policy does not
   // require ToS acceptance. Returns false in other cases, including one when
   // ARC is not currently running.
-  bool is_directly_started() const { return directly_started_; }
-  void set_directly_started_for_testing(bool directly_started) {
-    directly_started_ = directly_started;
+  bool skipped_terms_of_service_negotiation() const {
+    return skipped_terms_of_service_negotiation_;
+  }
+  void set_skipped_terms_of_service_negotiation_for_testing(
+      bool skipped_terms_of_service_negotiation) {
+    skipped_terms_of_service_negotiation_ =
+        skipped_terms_of_service_negotiation;
   }
 
   // Injectors for testing.
@@ -269,11 +302,12 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // Invoking StartArc() only for testing, e.g., to emulate accepting Terms of
   // Service then passing Android management check successfully.
-  void StartArcForTesting() { StartArc(); }
+  void StartArcForTesting();
 
-  // Invokes OnTermsOfServiceNegotiated as if negotiation is done for testing.
-  void OnTermsOfServiceNegotiatedForTesting(bool accepted) {
-    OnTermsOfServiceNegotiated(accepted);
+  // Invokes functions as if requirement checks are completed for testing.
+  void EmulateRequirementCheckCompletionForTesting() {
+    DCHECK(requirement_checker_);
+    requirement_checker_->EmulateRequirementCheckCompletionForTesting();
   }
 
   // Invokes OnExpandPropertyFilesAndReadSalt as if the expansion is done.
@@ -281,19 +315,23 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
     OnExpandPropertyFilesAndReadSalt(ExpansionResult{{}, result});
   }
 
+  // Invokes OnBackgroundAndroidManagementChecked as if the check is done.
+  void OnBackgroundAndroidManagementCheckedForTesting(
+      ArcAndroidManagementChecker::CheckResult result);
+
   void reset_property_files_expansion_result() {
     property_files_expansion_result_.reset();
   }
 
-  // chromeos::ConciergeClient::VmObserver overrides.
+  // ash::ConciergeClient::VmObserver overrides.
   void OnVmStarted(
       const vm_tools::concierge::VmStartedSignal& vm_signal) override;
   void OnVmStopped(
       const vm_tools::concierge::VmStoppedSignal& vm_signal) override;
 
   // Getter for |vm_info_|.
-  // If ARCVM is not running, return base::nullopt.
-  const base::Optional<vm_tools::concierge::VmInfo>& GetVmInfo() const;
+  // If ARCVM is not running, return absl::nullopt.
+  const absl::optional<vm_tools::concierge::VmInfo>& GetVmInfo() const;
 
   // Getter for |serialno|.
   std::string GetSerialNumber() const;
@@ -305,6 +343,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Reports statuses of OptIn flow to UMA.
   class ScopedOptInFlowTracker;
 
+  // Requests to disable ARC session and allows to optionally remove ARC data.
+  // If ARC is already disabled, no-op.
+  void RequestDisable(bool remove_arc_data);
+
   // RequestEnable() has a check in order not to trigger starting procedure
   // twice. This method can be called to bypass that check when restarting.
   // Returns true if ARC is started directly.
@@ -313,39 +355,37 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Negotiates the terms of service to user, if necessary.
   // Otherwise, move to StartAndroidManagementCheck().
   void MaybeStartTermsOfServiceNegotiation();
-  void OnTermsOfServiceNegotiated(bool accepted);
+
+  // ArcRequirementChecker::Observer override:
+  void OnArcOptInManagementCheckStarted() override;
+
+  // Called when requirement checks are done.
+  void OnRequirementChecksDone(
+      ArcRequirementChecker::RequirementCheckResult result);
 
   void ShutdownSession();
   void ResetArcState();
   void OnArcSignInTimeout();
 
-  // Starts Android management check. This is for first boot case (= Opt-in
-  // or OOBE flow case). In secondary or later ARC enabling, the check should
-  // run in background.
-  void StartAndroidManagementCheck();
-
-  // Called when the Android management check is done in opt-in flow or
-  // OOBE flow.
-  void OnAndroidManagementChecked(
-      policy::AndroidManagementClient::Result result);
-
-  // Starts Android management check in background (in parallel with starting
+  // Starts requirement checks in background (in parallel with starting
   // ARC). This is for secondary or later ARC enabling.
   // The reason running them in parallel is for performance. The secondary or
   // later ARC enabling is typically on "logging into Chrome" for the user who
   // already opted in to use Google Play Store. In such a case, network is
   // typically not yet ready. Thus, if we block ARC boot, it delays several
   // seconds, which is not very user friendly.
-  void StartBackgroundAndroidManagementCheck();
+  void StartBackgroundRequirementChecks();
 
-  // Called when the background Android management check is done. It is
-  // triggered when the second or later ARC boot timing.
-  void OnBackgroundAndroidManagementChecked(
-      policy::AndroidManagementClient::Result result);
+  // Called when the background requirement checks are done.
+  void OnBackgroundRequirementChecksDone(
+      ArcRequirementChecker::BackgroundCheckResult result);
 
   // Requests to start ARC instance. Also, updates the internal state to
   // ACTIVE.
   void StartArc();
+
+  // Calls StartArc() and starts background requirement checks.
+  void StartArcForRegularBoot();
 
   // Requests to stop ARC instance. This resets two persistent flags:
   // kArcSignedIn and kArcTermsAccepted, so that, in next enabling,
@@ -363,7 +403,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // If not requested, just skipping the data removal, and moves to
   // MaybeReenableArc() directly.
   void MaybeStartArcDataRemoval();
-  void OnArcDataRemoved(base::Optional<bool> success);
+  void OnArcDataRemoved(absl::optional<bool> success);
 
   // On ARC session stopped and/or data removal completion, this is called
   // so that, if necessary, ARC session is restarted.
@@ -382,9 +422,10 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   // Requests the support host (if it exists) to show the error, and notifies
   // the observers.
   void ShowArcSupportHostError(ArcSupportHost::ErrorInfo error_info,
-                               bool should_show_send_feedback);
+                               bool should_show_send_feedback,
+                               bool should_show_run_network_tests);
 
-  // chromeos::SessionManagerClient::Observer:
+  // ash::SessionManagerClient::Observer:
   void EmitLoginPromptVisibleCalled() override;
 
   // Called when the first part of ExpandPropertyFilesAndReadSalt is done.
@@ -411,15 +452,14 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   std::unique_ptr<ArcAppLauncher> playstore_launcher_;
   bool reenable_arc_ = false;
   bool provisioning_reported_ = false;
-  bool directly_started_ = false;
+  bool skipped_terms_of_service_negotiation_ = false;
+  bool activation_is_allowed_ = false;
   base::OneShotTimer arc_sign_in_timer_;
 
   std::unique_ptr<ArcSupportHost> support_host_;
   std::unique_ptr<ArcDataRemover> data_remover_;
 
-  std::unique_ptr<ArcTermsOfServiceNegotiator> terms_of_service_negotiator_;
-
-  std::unique_ptr<ArcAndroidManagementChecker> android_management_checker_;
+  std::unique_ptr<ArcRequirementChecker> requirement_checker_;
 
   std::unique_ptr<ScopedOptInFlowTracker> scoped_opt_in_tracker_;
   std::unique_ptr<ArcPaiStarter> pai_starter_;
@@ -438,16 +478,19 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
   ArcAppIdProviderImpl app_id_provider_;
 
   // The content of /var/lib/misc/arc_salt. Empty if the file doesn't exist.
-  base::Optional<std::string> arc_salt_on_disk_;
+  absl::optional<std::string> arc_salt_on_disk_;
 
-  base::Optional<bool> property_files_expansion_result_;
+  absl::optional<bool> property_files_expansion_result_;
 
-  base::Optional<vm_tools::concierge::VmInfo> vm_info_;
+  absl::optional<vm_tools::concierge::VmInfo> vm_info_;
+
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
+
+  absl::optional<guest_os::GuestOsMountProviderRegistry::Id>
+      arcvm_mount_provider_id_;
 
   // Must be the last member.
   base::WeakPtrFactory<ArcSessionManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionManager);
 };
 
 // Outputs the stringified |state| to |os|. This is only for logging purposes.

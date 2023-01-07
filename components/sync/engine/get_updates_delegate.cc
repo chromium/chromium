@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,42 +9,17 @@
 #include "components/sync/engine/events/poll_get_updates_request_event.h"
 #include "components/sync/engine/get_updates_processor.h"
 #include "components/sync/engine/update_handler.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
+#include "components/sync/protocol/get_updates_caller_info.pb.h"
+#include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
-
-namespace {
-
-void NonPassiveApplyUpdates(const ModelTypeSet& gu_types,
-                            StatusController* status_controller,
-                            UpdateHandlerMap* update_handler_map) {
-  for (const auto& kv : *update_handler_map) {
-    if (gu_types.Has(kv.first)) {
-      kv.second->ApplyUpdates(status_controller);
-    }
-  }
-}
-
-void PassiveApplyUpdates(const ModelTypeSet& gu_types,
-                         StatusController* status_controller,
-                         UpdateHandlerMap* update_handler_map) {
-  for (const auto& kv : *update_handler_map) {
-    if (gu_types.Has(kv.first)) {
-      kv.second->PassiveApplyUpdates(status_controller);
-    }
-  }
-}
-
-}  // namespace
-
-GetUpdatesDelegate::GetUpdatesDelegate() {}
-
-GetUpdatesDelegate::~GetUpdatesDelegate() {}
 
 NormalGetUpdatesDelegate::NormalGetUpdatesDelegate(
     const NudgeTracker& nudge_tracker)
     : nudge_tracker_(nudge_tracker) {}
 
-NormalGetUpdatesDelegate::~NormalGetUpdatesDelegate() {}
+NormalGetUpdatesDelegate::~NormalGetUpdatesDelegate() = default;
 
 // This function assumes the progress markers have already been populated.
 void NormalGetUpdatesDelegate::HelpPopulateGuMessage(
@@ -73,17 +48,9 @@ void NormalGetUpdatesDelegate::HelpPopulateGuMessage(
     DCHECK(!nudge_tracker_.IsTypeBlocked(type))
         << "Throttled types should have been removed from the request_types.";
 
-    nudge_tracker_.SetLegacyNotificationHint(type, progress_marker);
     nudge_tracker_.FillProtoMessage(
         type, progress_marker->mutable_get_update_triggers());
   }
-}
-
-void NormalGetUpdatesDelegate::ApplyUpdates(
-    const ModelTypeSet& gu_types,
-    StatusController* status_controller,
-    UpdateHandlerMap* update_handler_map) const {
-  NonPassiveApplyUpdates(gu_types, status_controller, update_handler_map);
 }
 
 std::unique_ptr<ProtocolEvent> NormalGetUpdatesDelegate::GetNetworkRequestEvent(
@@ -97,7 +64,7 @@ ConfigureGetUpdatesDelegate::ConfigureGetUpdatesDelegate(
     sync_pb::SyncEnums::GetUpdatesOrigin origin)
     : origin_(origin) {}
 
-ConfigureGetUpdatesDelegate::~ConfigureGetUpdatesDelegate() {}
+ConfigureGetUpdatesDelegate::~ConfigureGetUpdatesDelegate() = default;
 
 void ConfigureGetUpdatesDelegate::HelpPopulateGuMessage(
     sync_pb::GetUpdatesMessage* get_updates) const {
@@ -109,13 +76,6 @@ void ConfigureGetUpdatesDelegate::HelpPopulateGuMessage(
   get_updates->set_get_updates_origin(origin_);
 }
 
-void ConfigureGetUpdatesDelegate::ApplyUpdates(
-    const ModelTypeSet& gu_types,
-    StatusController* status_controller,
-    UpdateHandlerMap* update_handler_map) const {
-  PassiveApplyUpdates(gu_types, status_controller, update_handler_map);
-}
-
 std::unique_ptr<ProtocolEvent>
 ConfigureGetUpdatesDelegate::GetNetworkRequestEvent(
     base::Time timestamp,
@@ -124,9 +84,9 @@ ConfigureGetUpdatesDelegate::GetNetworkRequestEvent(
                                                            request);
 }
 
-PollGetUpdatesDelegate::PollGetUpdatesDelegate() {}
+PollGetUpdatesDelegate::PollGetUpdatesDelegate() = default;
 
-PollGetUpdatesDelegate::~PollGetUpdatesDelegate() {}
+PollGetUpdatesDelegate::~PollGetUpdatesDelegate() = default;
 
 void PollGetUpdatesDelegate::HelpPopulateGuMessage(
     sync_pb::GetUpdatesMessage* get_updates) const {
@@ -136,13 +96,6 @@ void PollGetUpdatesDelegate::HelpPopulateGuMessage(
       sync_pb::GetUpdatesCallerInfo::UNKNOWN);
 
   get_updates->set_get_updates_origin(sync_pb::SyncEnums::PERIODIC);
-}
-
-void PollGetUpdatesDelegate::ApplyUpdates(
-    const ModelTypeSet& gu_types,
-    StatusController* status_controller,
-    UpdateHandlerMap* update_handler_map) const {
-  NonPassiveApplyUpdates(gu_types, status_controller, update_handler_map);
 }
 
 std::unique_ptr<ProtocolEvent> PollGetUpdatesDelegate::GetNetworkRequestEvent(

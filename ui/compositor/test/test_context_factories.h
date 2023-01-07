@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,19 +28,16 @@ class ContextFactory;
 // |enable_pixel_output|. Most unit tests should pass false.
 class TestContextFactories {
  public:
-  explicit TestContextFactories(bool enable_pixel_output);
-  TestContextFactories(bool enable_pixel_output, bool use_skia_renderer);
+  // The default for |output_to_window| will create an OutputSurface that does
+  // not display anything. Set to true if you want to see results on the screen.
+  explicit TestContextFactories(bool enable_pixel_output,
+                                bool output_to_window = false);
   ~TestContextFactories();
 
   TestContextFactories(const TestContextFactories&) = delete;
   TestContextFactories& operator=(const TestContextFactories&) = delete;
 
   ContextFactory* GetContextFactory() const;
-
-  // See InProcessContextFactory::set_use_test_surface().
-  // If true (the default) an OutputSurface is created that does not display
-  // anything. Set to false if you want to see results on the screen.
-  void SetUseTestSurface(bool use_test_surface);
 
  private:
   std::unique_ptr<gl::DisableNullDrawGLBindings> disable_null_draw_;

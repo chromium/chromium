@@ -1,19 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-import {oneGoogleBarApi} from './one_google_bar_api.js';
 
 /**
  * The following |messageType|'s are sent to the parent frame:
  *  - loaded: sent on initial load.
  *  - overlaysUpdated: sent when an overlay is updated. The overlay bounding
  *        rects are included in the |data|.
- *  - activate/deactivate: When an overlay is open, 'activate' is sent to the
- *        to ntp-app so it can layer the OneGoogleBar over the NTP content. When
- *        no overlays are open, 'deactivate' is sent to ntp-app so the NTP
- *        content can be on top. The top bar of the OneGoogleBar is always on
- *        top.
+ *  - click: sent when the OGB was clicked.
  * @param {string} messageType
  * @param {Object} data
  */
@@ -26,6 +20,88 @@ function postMessage(messageType, data) {
       'chrome://new-tab-page');
 }
 
+const oneGoogleBarApi = (() => {
+  /**
+   * @param {string} apiName
+   * @param {string} fnName
+   * @param {...*} args
+   * @return {!Promise}
+   */
+  const callApi = async (apiName, fnName, ...args) => {
+    const {gbar} = /** @type {!{gbar}} */ (window);
+    if (!gbar) {
+      return;
+    }
+    const api = await gbar.a[apiName]();
+    return api[fnName].apply(api, args);
+  };
+
+  /**
+   * @type {!{
+   *   bar: !{
+   *     setForegroundStyle: function(number): !Promise,
+   *     setBackgroundColor: function(string): !Promise,
+   *     setDarkMode: function(boolean): !Promise,
+   *   },
+   * }}
+   */
+  const api = [{
+                name: 'bar',
+                apiName: 'bf',
+                fns: [
+                  ['setForegroundStyle', 'pc'],
+                  ['setBackgroundColor', 'pd'],
+                  ['setDarkMode', 'pp'],
+                ],
+              }].reduce((topLevelApi, def) => {
+    topLevelApi[def.name] = def.fns.reduce((apiPart, [name, fnName]) => {
+      apiPart[name] = callApi.bind(null, def.apiName, fnName);
+      return apiPart;
+    }, {});
+    return topLevelApi;
+  }, {});
+
+  /** @return {!Promise} */
+  const updateDarkMode = async () => {
+    await api.bar.setDarkMode(
+        window.matchMedia('(prefers-color-scheme: dark)').matches);
+    // |setDarkMode(toggle)| updates the background color and foreground style.
+    // The background color should always be 'transparent'.
+    api.bar.setBackgroundColor('transparent');
+    // The foreground style is set based on NTP theme and not dark mode.
+    api.bar.setForegroundStyle(foregroundLight ? 1 : 0);
+  };
+
+  /** @type {boolean} */
+  let foregroundLight = false;
+
+  return {
+    /**
+     * Updates the foreground on the OneGoogleBar to provide contrast against
+     * the background.
+     * @param {boolean} enabled
+     */
+    setForegroundLight: enabled => {
+      if (foregroundLight !== enabled) {
+        foregroundLight = enabled;
+        api.bar.setForegroundStyle(foregroundLight ? 1 : 0);
+      }
+    },
+
+    /**
+     * Updates the OneGoogleBar dark mode when called as well as any time dark
+     * mode is updated.
+     * @return {!Promise}
+     */
+    trackDarkModeChanges: async () => {
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(() => {
+        updateDarkMode();
+      });
+      await updateDarkMode();
+    },
+  };
+})();
+
 /**
  * Object that exposes:
  *  - |track()|: sets up MutationObserver to track element visibility changes.
@@ -37,9 +113,6 @@ function postMessage(messageType, data) {
  * }}
  */
 const overlayUpdater = (() => {
-  const modalOverlays = document.documentElement.hasAttribute('modal-overlays');
-  let shouldUndoDarkTheme = false;
-
   /** @type {!Set<!Element>} */
   const overlays = new Set();
   /** @type {!Array<!DOMRect>} */
@@ -92,16 +165,14 @@ const overlayUpdater = (() => {
         el.target = '_top';
       }
     });
-    if (!modalOverlays) {
-      const {transition} = getComputedStyle(overlay);
-      const opacityTransition = 'opacity 0.1s ease 0.02s';
-      // Check if the transition is the default computed transition style. If it
-      // is not, append to the existing transitions.
-      if (transition === 'all 0s ease 0s') {
-        overlay.style.transition = opacityTransition;
-      } else if (!transition.includes('opacity')) {
-        overlay.style.transition = transition + ', ' + opacityTransition;
-      }
+    const {transition} = getComputedStyle(overlay);
+    const opacityTransition = 'opacity 0.1s ease 0.02s';
+    // Check if the transition is the default computed transition style. If it
+    // is not, append to the existing transitions.
+    if (transition === 'all 0s ease 0s') {
+      overlay.style.transition = opacityTransition;
+    } else if (!transition.includes('opacity')) {
+      overlay.style.transition = transition + ', ' + opacityTransition;
     }
     // The element has an initial opacity of 1. If the element is being added to
     // |overlays| and shown in the same |update()| call, the opacity transition
@@ -114,7 +185,11 @@ const overlayUpdater = (() => {
 
   /** @param {!Array<!Element>} potentialNewOverlays */
   const update = potentialNewOverlays => {
-    const barRect = document.body.querySelector('#gb').getBoundingClientRect();
+    const gbElement = document.body.querySelector('#gb');
+    if (!gbElement) {
+      return;
+    }
+    const barRect = gbElement.getBoundingClientRect();
     if (barRect.bottom === 0) {
       return;
     }
@@ -122,7 +197,7 @@ const overlayUpdater = (() => {
     // mutated. Add all elements that could be an overlay. The children of the
     // actual overlay element are removed before sending any overlay update
     // message.
-    if (!modalOverlays && !initialElementsAdded) {
+    if (!initialElementsAdded) {
       initialElementsAdded = true;
       Array.from(document.body.querySelectorAll('*')).forEach(el => {
         potentialNewOverlays.push(el);
@@ -151,40 +226,21 @@ const overlayUpdater = (() => {
       if (shown) {
         overlayRects.push(rect);
       }
-      if (!modalOverlays) {
-        // Setting the style here avoids triggering the mutation observer.
-        overlay.style.opacity = shown ? '1' : '0';
-      }
+      // Setting the style here avoids triggering the mutation observer.
+      overlay.style.opacity = shown ? '1' : '0';
     });
-    if (!modalOverlays) {
-      overlayRects.push(barRect);
-      const noChange = overlayRects.length === lastOverlayRects.length &&
-          lastOverlayRects.every((rect, i) => {
-            const newRect = overlayRects[i];
-            return newRect.left === rect.left && newRect.top === rect.top &&
-                newRect.right === rect.right && newRect.bottom === rect.bottom;
-          });
-      lastOverlayRects = overlayRects;
-      if (noChange) {
-        return;
-      }
-      postMessage('overlaysUpdated', overlayRects);
+    overlayRects.push(barRect);
+    const noChange = overlayRects.length === lastOverlayRects.length &&
+        lastOverlayRects.every((rect, i) => {
+          const newRect = overlayRects[i];
+          return newRect.left === rect.left && newRect.top === rect.top &&
+              newRect.right === rect.right && newRect.bottom === rect.bottom;
+        });
+    lastOverlayRects = overlayRects;
+    if (noChange) {
       return;
     }
-    const overlayShown = overlayRects.length > 0;
-    postMessage(overlayShown ? 'activate' : 'deactivate');
-    // If the overlays are modal, a dark backdrop is displayed below the
-    // OneGoogleBar iframe. The dark theme for the OneGoogleBar is then enabled
-    // for better visibility.
-    if (overlayShown) {
-      if (!oneGoogleBarApi.isForegroundLight()) {
-        shouldUndoDarkTheme = true;
-        oneGoogleBarApi.setForegroundLight(true);
-      }
-    } else if (shouldUndoDarkTheme) {
-      shouldUndoDarkTheme = false;
-      oneGoogleBarApi.setForegroundLight(false);
-    }
+    postMessage('overlaysUpdated', overlayRects);
   };
 
   const track = () => {
@@ -193,11 +249,6 @@ const overlayUpdater = (() => {
       // Add any mutated element that is an overlay to |overlays|.
       mutations.forEach(({target}) => {
         if (overlays.has(target) || !target.parentElement) {
-          return;
-        }
-        // When overlays are modal, the tooltips should not be treated like an
-        // overlay.
-        if (modalOverlays && target.parentElement.tagName === 'BODY') {
           return;
         }
         potentialNewOverlays.push(target);
@@ -215,8 +266,10 @@ const overlayUpdater = (() => {
 })();
 
 window.addEventListener('message', ({data}) => {
-  if (data.type === 'enableDarkTheme') {
-    oneGoogleBarApi.setForegroundLight(data.enabled);
+  if (data.type === 'updateAppearance') {
+    oneGoogleBarApi.setForegroundLight(data.applyLightTheme);
+    document.body.toggleAttribute(
+        'apply-background-protection_', data.applyBackgroundProtection);
   }
 });
 
@@ -228,9 +281,15 @@ window.addEventListener('resize', () => {
 
 // When the account overlay is shown, it does not close on blur. It does close
 // when clicking the body.
-window.addEventListener('blur', () => {
-  document.body.click();
+window.addEventListener('blur', e => {
+  if (e.target === window && document.activeElement === document.body) {
+    document.body.click();
+  }
 });
+
+window.addEventListener('click', () => {
+  postMessage('click');
+}, /*useCapture=*/ true);
 
 document.addEventListener('DOMContentLoaded', () => {
   // TODO(crbug.com/1039913): remove after OneGoogleBar links are updated.

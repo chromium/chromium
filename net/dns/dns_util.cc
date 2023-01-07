@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,32 +13,30 @@
 #include <vector>
 
 #include "base/big_endian.h"
+#include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
-#include "net/base/address_list.h"
 #include "net/base/url_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/util.h"
 #include "net/third_party/uri_template/uri_template.h"
-#include "url/url_canon.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <netinet/in.h>
-#if !defined(OS_NACL)
 #include <net/if.h>
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include <ifaddrs.h>
-#endif  // !defined(OS_ANDROID)
-#endif  // !defined(OS_NACL)
-#endif  // defined(OS_POSIX)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_library.h"
 #endif
 
@@ -103,18 +101,15 @@ bool DNSDomainFromDot(const base::StringPiece& dotted,
 }
 
 DohProviderEntry::List GetDohProviderEntriesFromNameservers(
-    const std::vector<IPEndPoint>& dns_servers,
-    const std::vector<std::string>& excluded_providers) {
+    const std::vector<IPEndPoint>& dns_servers) {
   const DohProviderEntry::List& providers = DohProviderEntry::GetList();
   DohProviderEntry::List entries;
 
   for (const auto& server : dns_servers) {
     for (const auto* entry : providers) {
-      if (base::Contains(excluded_providers, entry->provider))
-        continue;
-
       // DoH servers should only be added once.
-      if (base::Contains(entry->ip_addresses, server.address()) &&
+      if (base::FeatureList::IsEnabled(entry->feature) &&
+          base::Contains(entry->ip_addresses, server.address()) &&
           !base::Contains(entries, entry)) {
         entries.push_back(entry);
       }
@@ -149,13 +144,13 @@ bool IsValidHostLabelCharacter(char c, bool is_first_char) {
          (c >= '0' && c <= '9') || (!is_first_char && c == '-') || c == '_';
 }
 
-base::Optional<std::string> DnsDomainToString(base::StringPiece dns_name,
+absl::optional<std::string> DnsDomainToString(base::StringPiece dns_name,
                                               bool require_complete) {
-  base::BigEndianReader reader(dns_name.data(), dns_name.length());
+  auto reader = base::BigEndianReader::FromStringPiece(dns_name);
   return DnsDomainToString(reader, require_complete);
 }
 
-base::Optional<std::string> DnsDomainToString(base::BigEndianReader& reader,
+absl::optional<std::string> DnsDomainToString(base::BigEndianReader& reader,
                                               bool require_complete) {
   std::string ret;
   size_t octets_read = 0;
@@ -164,17 +159,20 @@ base::Optional<std::string> DnsDomainToString(base::BigEndianReader& reader,
     // the context of a full DNS message.
     if ((*reader.ptr() & dns_protocol::kLabelMask) ==
         dns_protocol::kLabelPointer)
-      return base::nullopt;
+      return absl::nullopt;
 
     base::StringPiece label;
     if (!reader.ReadU8LengthPrefixed(&label))
-      return base::nullopt;
-    octets_read += label.size() + 1;
+      return absl::nullopt;
+
+    // Final zero-length label not included in size enforcement.
+    if (label.size() != 0)
+      octets_read += label.size() + 1;
 
     if (label.size() > dns_protocol::kMaxLabelLength)
-      return base::nullopt;
+      return absl::nullopt;
     if (octets_read > dns_protocol::kMaxNameLength)
-      return base::nullopt;
+      return absl::nullopt;
 
     if (label.size() == 0)
       return ret;
@@ -186,12 +184,11 @@ base::Optional<std::string> DnsDomainToString(base::BigEndianReader& reader,
   }
 
   if (require_complete)
-    return base::nullopt;
+    return absl::nullopt;
 
-  // If terminating zero-length label was not included in the input, it still
-  // counts against the max name length.
-  if (octets_read + 1 > dns_protocol::kMaxNameLength)
-    return base::nullopt;
+  // If terminating zero-length label was not included in the input, no need to
+  // recheck against max name length because terminating zero-length label does
+  // not count against the limit.
 
   return ret;
 }
@@ -203,7 +200,6 @@ std::string GetURLFromTemplateWithoutParameters(const string& server_template) {
   return url_string;
 }
 
-#if !defined(OS_NACL)
 namespace {
 
 bool GetTimeDeltaForConnectionTypeFromFieldTrial(
@@ -223,7 +219,7 @@ bool GetTimeDeltaForConnectionTypeFromFieldTrial(
   int64_t ms;
   if (!base::StringToInt64(group_parts[type_size], &ms))
     return false;
-  *out = base::TimeDelta::FromMilliseconds(ms);
+  *out = base::Milliseconds(ms);
   return true;
 }
 
@@ -237,47 +233,6 @@ base::TimeDelta GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
   if (!GetTimeDeltaForConnectionTypeFromFieldTrial(field_trial, type, &out))
     out = default_delta;
   return out;
-}
-#endif  // !defined(OS_NACL)
-
-AddressListDeltaType FindAddressListDeltaType(const AddressList& a,
-                                              const AddressList& b) {
-  bool pairwise_mismatch = false;
-  bool any_match = false;
-  bool any_missing = false;
-  bool same_size = a.size() == b.size();
-
-  for (size_t i = 0; i < a.size(); ++i) {
-    bool this_match = false;
-    for (size_t j = 0; j < b.size(); ++j) {
-      if (a[i] == b[j]) {
-        any_match = true;
-        this_match = true;
-        // If there is no match before, and the current match, this means
-        // DELTA_OVERLAP.
-        if (any_missing)
-          return DELTA_OVERLAP;
-      } else if (i == j) {
-        pairwise_mismatch = true;
-      }
-    }
-    if (!this_match) {
-      any_missing = true;
-      // If any match has occurred before, then there is no need to compare the
-      // remaining addresses. This means DELTA_OVERLAP.
-      if (any_match)
-        return DELTA_OVERLAP;
-    }
-  }
-
-  if (same_size && !pairwise_mismatch)
-    return DELTA_IDENTICAL;
-  else if (same_size && !any_missing)
-    return DELTA_REORDERED;
-  else if (any_match)
-    return DELTA_OVERLAP;
-  else
-    return DELTA_DISJOINT;
 }
 
 std::string CreateNamePointer(uint16_t offset) {
@@ -303,8 +258,6 @@ uint16_t DnsQueryTypeToQtype(DnsQueryType dns_query_type) {
       return dns_protocol::kTypePTR;
     case DnsQueryType::SRV:
       return dns_protocol::kTypeSRV;
-    case DnsQueryType::INTEGRITY:
-      return dns_protocol::kExperimentalTypeIntegrity;
     case DnsQueryType::HTTPS:
       return dns_protocol::kTypeHttps;
   }
@@ -325,59 +278,43 @@ DnsQueryType AddressFamilyToDnsQueryType(AddressFamily address_family) {
 }
 
 std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromDotHostname(
-    const std::string& dot_server,
-    const std::vector<std::string>& excluded_providers) {
+    const std::string& dot_server) {
   std::vector<DnsOverHttpsServerConfig> doh_servers;
 
   if (dot_server.empty())
     return doh_servers;
 
   for (const auto* entry : DohProviderEntry::GetList()) {
-    if (base::Contains(excluded_providers, entry->provider))
-      continue;
-
-    if (base::Contains(entry->dns_over_tls_hostnames, dot_server)) {
-      std::string server_method;
-      CHECK(dns_util::IsValidDohTemplate(entry->dns_over_https_template,
-                                         &server_method));
-      doh_servers.emplace_back(entry->dns_over_https_template,
-                               server_method == "POST");
+    if (base::FeatureList::IsEnabled(entry->feature) &&
+        base::Contains(entry->dns_over_tls_hostnames, dot_server)) {
+      doh_servers.push_back(entry->doh_server_config);
     }
   }
   return doh_servers;
 }
 
 std::vector<DnsOverHttpsServerConfig> GetDohUpgradeServersFromNameservers(
-    const std::vector<IPEndPoint>& dns_servers,
-    const std::vector<std::string>& excluded_providers) {
-  const auto entries =
-      GetDohProviderEntriesFromNameservers(dns_servers, excluded_providers);
+    const std::vector<IPEndPoint>& dns_servers) {
+  const auto entries = GetDohProviderEntriesFromNameservers(dns_servers);
   std::vector<DnsOverHttpsServerConfig> doh_servers;
   doh_servers.reserve(entries.size());
   std::transform(entries.begin(), entries.end(),
-                 std::back_inserter(doh_servers), [](const auto* entry) {
-                   std::string server_method;
-                   CHECK(dns_util::IsValidDohTemplate(
-                       entry->dns_over_https_template, &server_method));
-                   return DnsOverHttpsServerConfig(
-                       entry->dns_over_https_template, server_method == "POST");
-                 });
+                 std::back_inserter(doh_servers),
+                 [](const auto* entry) { return entry->doh_server_config; });
   return doh_servers;
 }
 
-std::string GetDohProviderIdForHistogramFromDohConfig(
+std::string GetDohProviderIdForHistogramFromServerConfig(
     const DnsOverHttpsServerConfig& doh_server) {
   const auto& entries = DohProviderEntry::GetList();
-  const auto it =
-      std::find_if(entries.begin(), entries.end(), [&](const auto* entry) {
-        return entry->dns_over_https_template == doh_server.server_template;
-      });
+  const auto it = base::ranges::find(entries, doh_server,
+                                     &DohProviderEntry::doh_server_config);
   return it != entries.end() ? (*it)->provider : "Other";
 }
 
 std::string GetDohProviderIdForHistogramFromNameserver(
     const IPEndPoint& nameserver) {
-  const auto entries = GetDohProviderEntriesFromNameservers({nameserver}, {});
+  const auto entries = GetDohProviderEntriesFromNameservers({nameserver});
   return entries.empty() ? "Other" : entries[0]->provider;
 }
 

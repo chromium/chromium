@@ -11,9 +11,9 @@
 
 #include "../common/platform.h"
 #include <brotli/types.h>
-#include "./command.h"
-#include "./memory.h"
-#include "./quality.h"
+#include "command.h"
+#include "memory.h"
+#include "quality.h"
 
 #if defined(__cplusplus) || defined(c_plusplus)
 extern "C" {

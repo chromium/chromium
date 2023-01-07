@@ -1,0 +1,21 @@
+{
+  "subgraph_metadata": [
+    {
+      "input_tensor_metadata": [
+        {
+          "name": "input text",
+          "description": "The input string.",
+          "content": {
+            "content_properties_type": "AudioProperties",
+            "content_properties": {
+              "sample_rate": 10,
+              "channels": 2
+            }
+          },
+          "stats": {
+          }
+        }
+      ]
+    }
+  ]
+}

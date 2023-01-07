@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/macros.h"
+#include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -14,6 +14,7 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -27,6 +28,11 @@
 class TestingDownloadCoreService : public DownloadCoreService {
  public:
   TestingDownloadCoreService() : download_count_(0) {}
+
+  TestingDownloadCoreService(const TestingDownloadCoreService&) = delete;
+  TestingDownloadCoreService& operator=(const TestingDownloadCoreService&) =
+      delete;
+
   ~TestingDownloadCoreService() override {}
 
   // All methods that aren't expected to be called in the execution of
@@ -41,6 +47,11 @@ class TestingDownloadCoreService : public DownloadCoreService {
 
   // DownloadCoreService
   ChromeDownloadManagerDelegate* GetDownloadManagerDelegate() override {
+    ADD_FAILURE();
+    return nullptr;
+  }
+
+  DownloadUIController* GetDownloadUIController() override {
     ADD_FAILURE();
     return nullptr;
   }
@@ -68,15 +79,15 @@ class TestingDownloadCoreService : public DownloadCoreService {
     ADD_FAILURE();
   }
 
-  bool IsShelfEnabled() override { return true; }
+  bool IsDownloadUiEnabled() override { return true; }
+
+  bool IsDownloadObservedByExtension() override { return false; }
 
   // KeyedService
   void Shutdown() override {}
 
  private:
   int download_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingDownloadCoreService);
 };
 
 static std::unique_ptr<KeyedService> CreateTestingDownloadCoreService(
@@ -87,7 +98,9 @@ static std::unique_ptr<KeyedService> CreateTestingDownloadCoreService(
 class BrowserCloseTest : public testing::Test {
  public:
   BrowserCloseTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()), name_index_(0) {}
+      : profile_manager_(TestingBrowserProcess::GetGlobal()), name_index_(0) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
+  }
 
   ~BrowserCloseTest() override {}
 
@@ -124,8 +137,18 @@ class BrowserCloseTest : public testing::Test {
   Profile* CreateIncognitoProfile(Profile* profile,
                                   int windows,
                                   int downloads) {
-    Profile* otr_profile = profile->GetPrimaryOTRProfile();
+    Profile* otr_profile =
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
+    ConfigureCreatedProfile(otr_profile, windows, downloads);
+
+    return otr_profile;
+  }
+
+  Profile* CreateGuestProfile(int windows, int downloads) {
+    TestingProfile* profile = profile_manager_.CreateGuestProfile();
+    Profile* otr_profile =
+        profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     ConfigureCreatedProfile(otr_profile, windows, downloads);
 
     return otr_profile;
@@ -138,9 +161,7 @@ class BrowserCloseTest : public testing::Test {
     return browsers_[profile][index];
   }
 
-  TestingProfileManager* profile_manager() { return &profile_manager_; }
-
- protected:
+ private:
   void ConfigureCreatedProfile(Profile* profile,
                                int num_windows,
                                int num_downloads) {
@@ -172,7 +193,6 @@ class BrowserCloseTest : public testing::Test {
     browsers_[profile] = browsers;
   }
 
- private:
   // Note that the vector elements are all owned by this class and must be
   // cleaned up.
   std::map<Profile*, std::vector<TestBrowserWindow*>> browser_windows_;
@@ -265,7 +285,7 @@ TEST_F(BrowserCloseTest, LastRegular) {
   EXPECT_EQ(Browser::DownloadCloseType::kBrowserShutdown,
             browser->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
   EXPECT_EQ(num_downloads_blocking, 1);
-#if defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(true, browser->CanCloseWithInProgressDownloads());
 #else
   EXPECT_EQ(false, browser->CanCloseWithInProgressDownloads());
@@ -360,32 +380,8 @@ TEST_F(BrowserCloseTest, PluralIncognito) {
   EXPECT_EQ(2, num_downloads_blocking);
 }
 
-class GuestBrowserCloseTest : public BrowserCloseTest,
-                              public testing::WithParamInterface<bool> {
- public:
-  GuestBrowserCloseTest() : is_ephemeral_(GetParam()) {
-    // Change the value if Ephemeral is not supported.
-    is_ephemeral_ &=
-        TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-            scoped_feature_list_, is_ephemeral_);
-  }
-
-  Profile* CreateGuestProfile(int windows, int downloads) {
-    TestingProfile* profile = profile_manager()->CreateGuestProfile();
-    Profile* guest_profile =
-        is_ephemeral_ ? profile : profile->GetPrimaryOTRProfile();
-    ConfigureCreatedProfile(guest_profile, windows, downloads);
-
-    return guest_profile;
-  }
-
- private:
-  bool is_ephemeral_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Last window close (guest window) will trigger warning.
-TEST_P(GuestBrowserCloseTest, LastWindowGuest) {
+TEST_F(BrowserCloseTest, LastWindowGuest) {
   Profile* guest_profile = CreateGuestProfile(1, 1);
   Browser* browser = GetProfileBrowser(guest_profile, 0);
 
@@ -396,7 +392,7 @@ TEST_P(GuestBrowserCloseTest, LastWindowGuest) {
 }
 
 // Last guest window close triggers download warning.
-TEST_P(GuestBrowserCloseTest, LastGuest) {
+TEST_F(BrowserCloseTest, LastGuest) {
   CreateProfile(1, 0);
   Profile* profile = CreateGuestProfile(1, 1);
   Browser* browser(GetProfileBrowser(profile, 0));
@@ -410,7 +406,7 @@ TEST_P(GuestBrowserCloseTest, LastGuest) {
 }
 
 // Last guest window close with no downloads => no warning.
-TEST_P(GuestBrowserCloseTest, LastGuestNoDownloads) {
+TEST_F(BrowserCloseTest, LastGuestNoDownloads) {
   Profile* profile = CreateGuestProfile(1, 0);
   Browser* browser = GetProfileBrowser(profile, 0);
 
@@ -420,7 +416,7 @@ TEST_P(GuestBrowserCloseTest, LastGuestNoDownloads) {
 }
 
 // Non-last guest window => no warning.
-TEST_P(GuestBrowserCloseTest, NonLastGuest) {
+TEST_F(BrowserCloseTest, NonLastGuest) {
   Profile* profile = CreateGuestProfile(2, 1);
   Browser* browser = GetProfileBrowser(profile, 0);
 
@@ -428,7 +424,3 @@ TEST_P(GuestBrowserCloseTest, NonLastGuest) {
   EXPECT_EQ(Browser::DownloadCloseType::kOk,
             browser->OkToCloseWithInProgressDownloads(&num_downloads_blocking));
 }
-
-INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
-                         GuestBrowserCloseTest,
-                         /*is_ephemeral=*/testing::Bool());

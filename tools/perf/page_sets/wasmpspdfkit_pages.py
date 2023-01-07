@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 from telemetry import story
@@ -14,7 +14,7 @@ class WasmPsPdfKitStory(press_story.PressStory):
 
   def ParseTestResults(self, action_runner):
     self.AddJavaScriptMeasurement(
-        'Total', 'score', """
+        'Total', 'ms', """
         parseInt(document.querySelector(
           '#root > div > div:nth-child(10) > div.Result >' +
           'div.Result-score > div > div.Score-value'

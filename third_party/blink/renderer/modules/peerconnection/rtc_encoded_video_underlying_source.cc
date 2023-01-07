@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,8 +53,20 @@ void RTCEncodedVideoUnderlyingSource::OnFrameFromSource(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // If the source is canceled or there are too many queued frames,
   // drop the new frame.
-  if (!disconnect_callback_ || !Controller() ||
-      Controller()->DesiredSize() <= kMinQueueDesiredSize) {
+  if (!disconnect_callback_ || !GetExecutionContext()) {
+    return;
+  }
+  if (!Controller()) {
+    // TODO(ricea): Maybe avoid dropping frames during transfer?
+    DVLOG(1) << "Dropped frame due to null Controller(). This can happen "
+                "during transfer.";
+    return;
+  }
+  if (Controller()->DesiredSize() <= kMinQueueDesiredSize) {
+    dropped_frames_++;
+    VLOG_IF(2, (dropped_frames_ % 20 == 0))
+        << "Dropped total of " << dropped_frames_
+        << " encoded video frames due to too many already being queued.";
     return;
   }
 
@@ -68,8 +80,7 @@ void RTCEncodedVideoUnderlyingSource::Close() {
   if (disconnect_callback_)
     std::move(disconnect_callback_).Run();
 
-  if (Controller())
-    Controller()->Close();
+  Controller()->Close();
 }
 
 }  // namespace blink

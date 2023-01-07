@@ -1,10 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/mathml/layout_ng_mathml_block.h"
 
-#include "third_party/blink/renderer/core/layout/layout_analyzer.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/mathml/mathml_element.h"
 #include "third_party/blink/renderer/core/mathml/mathml_under_over_element.h"
@@ -16,8 +15,6 @@ LayoutNGMathMLBlock::LayoutNGMathMLBlock(Element* element)
 }
 
 void LayoutNGMathMLBlock::UpdateBlockLayout(bool relayout_children) {
-  LayoutAnalyzer::BlockScope analyzer(*this);
-
   if (IsOutOfFlowPositioned()) {
     UpdateOutOfFlowBlockLayout();
     return;

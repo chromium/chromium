@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,8 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/invalidation/public/invalidation_export.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace invalidation {
 
@@ -26,8 +23,8 @@ class INVALIDATION_EXPORT AckHandle {
 
   bool Equals(const AckHandle& other) const;
 
-  std::unique_ptr<base::DictionaryValue> ToValue() const;
-  bool ResetFromValue(const base::DictionaryValue& value);
+  base::Value::Dict ToValue() const;
+  bool ResetFromValue(const base::Value::Dict& value);
 
   bool IsValid() const;
 

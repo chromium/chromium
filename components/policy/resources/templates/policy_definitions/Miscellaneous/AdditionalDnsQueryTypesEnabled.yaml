@@ -1,0 +1,32 @@
+caption: Allow DNS queries for additional DNS record types
+default: true
+desc: |-
+  This policy controls whether <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> may query additional DNS record types when making insecure DNS requests. This policy has no effect on DNS queries made via Secure DNS, which may always query additional DNS types.
+
+        If this policy is unset or set to Enabled, additional types such as <ph name="DNS_TYPE_HTTPS">HTTPS</ph> (DNS type 65) may be queried in addition to <ph name="DNS_TYPE_A">A</ph> (DNS type 1) and <ph name="DNS_TYPE_AAAA">AAAA</ph> (DNS type 28).
+
+        If this policy is set to Disabled, DNS will only be queried for <ph name="DNS_TYPE_A">A</ph> (DNS type 1) and/or <ph name="DNS_TYPE_AAAA">AAAA</ph> (DNS type 28).
+
+        This policy is a temporary measure and will be removed in future versions of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>. After removal of the policy, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will always be able to query additional DNS types.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- fuchsia
+items:
+- caption: Allow additional DNS query types
+  value: true
+- caption: Prevent additional DNS query types
+  value: false
+owners:
+- ericorth@chromium.org
+- file://net/OWNERS
+schema:
+  type: boolean
+supported_on:
+- android:92-
+- chrome.*:92-
+- chrome_os:92-
+tags: []
+type: main

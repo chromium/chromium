@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,31 +7,57 @@
  * sent to a remote device. The data might be some plain text, a URL or a file.
  */
 
-Polymer({
-  is: 'nearby-preview',
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_icons.css.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './nearby_shared_icons.html.js';
+import './nearby_shared_share_type_icons.html.js';
 
-  behaviors: [I18nBehavior],
+import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  properties: {
-    /**
-     * Preview info for the file(s) to send. Expected to start
-     * as null, then change to a valid object before this component is shown.
-     * @type {?nearbyShare.mojom.PayloadPreview}
-     */
-    payloadPreview: {
-      type: Object,
-      value: null,
-    },
+import {getTemplate} from './nearby_preview.html.js';
 
-    /**
-     * Controls whether the icon should be greyed out.
-     * @type {boolean}
-     */
-    disabled: {
-      type: Boolean,
-      value: false,
-    },
-  },
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const NearbyPreviewElementBase = mixinBehaviors([I18nBehavior], PolymerElement);
+
+/** @polymer */
+export class NearbyPreviewElement extends NearbyPreviewElementBase {
+  static get is() {
+    return 'nearby-preview';
+  }
+
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      /**
+       * Preview info for the file(s) to send. Expected to start
+       * as null, then change to a valid object before this component is shown.
+       * @type {?nearbyShare.mojom.PayloadPreview}
+       */
+      payloadPreview: {
+        type: Object,
+        value: null,
+      },
+
+      /**
+       * Controls whether the icon should be greyed out.
+       * @type {boolean}
+       */
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /**
    * @return {string} the preview text to display
@@ -50,7 +76,7 @@ Polymer({
     } else {
       return '';
     }
-  },
+  }
 
   /**
    * @return {string} the identifier for the iron icon
@@ -88,12 +114,14 @@ Polymer({
         return 'nearbysharetype68:address';
       case nearbyShare.mojom.ShareType.kPhone:
         return 'nearbysharetype68:phone';
+      case nearbyShare.mojom.ShareType.kWifiCredentials:
+        return 'nearbysharetype68:wifi-credentials';
       default:
         assertNotReached(
             'No icon defined for share type ' + this.payloadPreview.shareType);
         return 'nearbysharetype68:unknown-file';
     }
-  },
+  }
 
   /**
    * @return {string} The css class to be applied to the icon.
@@ -104,5 +132,7 @@ Polymer({
       return 'disabled';
     }
     return '';
-  },
-});
+  }
+}
+
+customElements.define(NearbyPreviewElement.is, NearbyPreviewElement);

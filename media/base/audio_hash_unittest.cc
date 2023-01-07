@@ -1,10 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
-#include "base/macros.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_hash.h"
 #include "media/base/fake_audio_render_callback.h"
@@ -41,14 +40,15 @@ class AudioHashTest : public testing::Test {
     }
   }
 
+  AudioHashTest(const AudioHashTest&) = delete;
+  AudioHashTest& operator=(const AudioHashTest&) = delete;
+
   ~AudioHashTest() override = default;
 
  protected:
   std::unique_ptr<AudioBus> bus_one_;
   std::unique_ptr<AudioBus> bus_two_;
   FakeAudioRenderCallback fake_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioHashTest);
 };
 
 // Ensure the same data hashes the same.

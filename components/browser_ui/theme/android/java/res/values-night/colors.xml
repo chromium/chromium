@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!-- This points to a system color resource in API 31+. However, it's unclear what its value is
+         on devices that don't support dynamic colors. -->
+    <color name="splash_screen_bg">@color/system_neutral1_900</color>
+</resources>

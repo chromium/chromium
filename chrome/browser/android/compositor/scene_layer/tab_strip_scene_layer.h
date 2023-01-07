@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/ui_resource_layer.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
@@ -30,6 +30,10 @@ class TabHandleLayer;
 class TabStripSceneLayer : public SceneLayer {
  public:
   TabStripSceneLayer(JNIEnv* env, const base::android::JavaRef<jobject>& jobj);
+
+  TabStripSceneLayer(const TabStripSceneLayer&) = delete;
+  TabStripSceneLayer& operator=(const TabStripSceneLayer&) = delete;
+
   ~TabStripSceneLayer() override;
 
   void SetContentTree(
@@ -49,9 +53,16 @@ class TabStripSceneLayer : public SceneLayer {
                            jfloat width,
                            jfloat height,
                            jfloat y_offset,
-                           jfloat background_tab_brightness,
-                           jfloat brightness,
                            jboolean should_readd_background);
+
+  void UpdateStripScrim(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& jobj,
+                        jfloat x,
+                        jfloat y,
+                        jfloat width,
+                        jfloat height,
+                        jint color,
+                        jfloat alpha);
 
   void UpdateNewTabButton(
       JNIEnv* env,
@@ -61,7 +72,10 @@ class TabStripSceneLayer : public SceneLayer {
       jfloat y,
       jfloat width,
       jfloat height,
+      jfloat touch_target_offset,
       jboolean visible,
+      jint tint,
+      jfloat button_alpha,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
   void UpdateModelSelectorButton(
@@ -111,6 +125,7 @@ class TabStripSceneLayer : public SceneLayer {
       jfloat close_button_alpha,
       jboolean is_loading,
       jfloat spinner_rotation,
+      jfloat brightness,
       const base::android::JavaParamRef<jobject>& jlayer_title_cache,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
@@ -125,18 +140,15 @@ class TabStripSceneLayer : public SceneLayer {
 
   scoped_refptr<cc::SolidColorLayer> tab_strip_layer_;
   scoped_refptr<cc::Layer> scrollable_strip_layer_;
+  scoped_refptr<cc::SolidColorLayer> scrim_layer_;
   scoped_refptr<cc::UIResourceLayer> new_tab_button_;
   scoped_refptr<cc::UIResourceLayer> left_fade_;
   scoped_refptr<cc::UIResourceLayer> right_fade_;
   scoped_refptr<cc::UIResourceLayer> model_selector_button_;
 
-  float background_tab_brightness_;
-  float brightness_;
   unsigned write_index_;
   TabHandleLayerList tab_handle_layers_;
-  SceneLayer* content_tree_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabStripSceneLayer);
+  raw_ptr<SceneLayer> content_tree_;
 };
 
 }  // namespace android

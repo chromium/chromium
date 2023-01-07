@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,10 @@
   {
     "namespace": "accessibilityPrivate",
     "compiler_options": {
-      "implemented_in": "chrome/browser/accessibility/accessibility_extension_api.h"
+      "implemented_in": "chrome/browser/accessibility/accessibility_extension_api_chromeos.h"
     },
     "description": "none",
+    "platforms": ["chromeos"],
     "types": [
       {
         "id": "AlertInfo",
@@ -30,6 +31,15 @@
           "top": {"type": "integer", "description": "Top coordinate in global screen coordinates."},
           "width": {"type": "integer", "description": "Width in pixels."},
           "height": {"type": "integer", "description": "Height in pixels."}
+        }
+      },
+      {
+        "id": "ScreenPoint",
+        "type": "object",
+        "description": "Point in global screen coordinates.",
+        "properties": {
+          "x": {"type": "integer", "description": "X coordinate in global screen coordinates."},
+          "y": {"type": "integer", "description": "Y coordinate in global screen coordinates."}
         }
       },
       {
@@ -80,7 +90,7 @@
         "id": "SwitchAccessMenuAction",
         "type": "string",
         "enum": [ "copy", "cut", "decrement", "dictation", "endTextSelection", "increment", "itemScan", "jumpToBeginningOfText", "jumpToEndOfText", "keyboard", "leftClick", "moveBackwardOneCharOfText", "moveBackwardOneWordOfText", "moveCursor", "moveDownOneLineOfText", "moveForwardOneCharOfText", "moveForwardOneWordOfText", "moveUpOneLineOfText", "paste", "pointScan", "rightClick", "scrollDown", "scrollLeft", "scrollRight", "scrollUp", "select", "settings", "startTextSelection" ],
-        "description": "Available actions to be shown in the Switch Access menu. Must be kept in sync with the strings in ash/system/accessibility/switch_access_menu_view.cc"
+        "description": "Available actions to be shown in the Switch Access menu. Must be kept in sync with the strings in ash/system/accessibility/switch_access/switch_access_menu_view.cc"
       },
       {
         "id": "SyntheticKeyboardEventType",
@@ -224,7 +234,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": [ "selectToSpeakNavigationControl" ],
+        "enum": [ "enhancedNetworkVoices", "googleTtsLanguagePacks", "dictationPumpkinParsing"],
         "description": "Subset of accessibility features."
       },
       {
@@ -232,6 +242,113 @@
         "type": "string",
         "enum": [ "previousParagraph", "previousSentence", "pause", "resume", "nextSentence", "nextParagraph", "exit", "changeSpeed" ],
         "description": "Actions that can be performed in the Select-to-speak panel."
+      },
+      {
+        "id": "SetNativeChromeVoxResponse",
+        "type": "string",
+        "enum": [ "success", "talkbackNotInstalled", "windowNotFound", "failure" , "needDeprecationConfirmation" ],
+        "description": "Response code for onNativeChromeVoxArcSupportResult"
+      },
+      {
+        "id": "DictationBubbleIconType",
+        "type": "string",
+        "enum": [ "hidden", "standby", "macroSuccess", "macroFail" ],
+        "description": "The icon shown in the Dictation bubble UI."
+      },
+      {
+        "id": "DictationBubbleHintType",
+        "type": "string",
+        "enum": ["trySaying", "type", "delete", "selectAll", "undo", "help", "unselect", "copy"],
+        "description": "Types of hints displayed in the Dictation bubble UI."
+      },
+      {
+        "id": "DictationBubbleProperties",
+        "type": "object",
+        "properties": {
+          "visible": {
+            "type": "boolean",
+            "description": "Whether or not the UI should be visible."
+          },
+          "icon": {
+            "$ref": "DictationBubbleIconType",
+            "description": "The icon to show in the Dictation bubble UI."
+          },
+          "text": {
+            "type": "string",
+            "description": "The text to be displayed in the bubble UI. If `text` is undefined, the bubble will clear its current text.",
+            "optional": true
+          },
+          "hints": {
+            "type": "array",
+            "items": { "$ref": "DictationBubbleHintType" },
+            "description": "Array of hints to show in the UI.",
+            "optional": true
+          }
+        }
+      },
+      {
+        "id": "DlcType",
+        "type": "string",
+        "enum": ["ttsEsUs"],
+        "description": "Types of accessibility-specific DLCs."
+      },
+      {
+        "id": "PumpkinData",
+        "type": "object",
+        "properties": {
+          "js_pumpkin_tagger_bin_js": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "tagger_wasm_main_js": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "tagger_wasm_main_wasm": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "en_us_action_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "en_us_pumpkin_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "fr_fr_action_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "fr_fr_pumpkin_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "it_it_action_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "it_it_pumpkin_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "de_de_action_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "de_de_pumpkin_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "es_es_action_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          },
+          "es_es_pumpkin_config_binarypb": {
+            "type": "binary",
+            "description": "The contents of the file as a Uint8Array."
+          }
+        }
       }
     ],
     "properties": {
@@ -260,27 +377,39 @@
         "returns": {
           "type": "string",
           "description": "The human-readable locale string in the provided locale."
-        },
-        "platforms": ["chromeos"]
+        }
       },
       {
         "name": "getBatteryDescription",
         "type": "function",
         "description": "Called to request battery status from Chrome OS system.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Returns battery description as a string.",
-            "parameters": [
-              {
-                "name": "batteryDescription",
-                "type": "string"
-              }
-            ]
-          }
-        ],
-        "platforms": ["chromeos"]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Returns battery description as a string.",
+          "parameters": [
+            {
+              "name": "batteryDescription",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      {
+        "name": "installPumpkinForDictation",
+        "type": "function",
+        "description": "Called to request an install of the Pumpkin semantic parser for Dictation.",
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Runs when Pumpkin download finishes.",
+          "parameters": [
+            {
+              "name": "data",
+              "$ref": "PumpkinData"
+            }
+          ]
+        }
       },
       {
         "name": "setNativeAccessibilityEnabled",
@@ -337,7 +466,6 @@
           },
           {
             "type": "boolean",
-
             "name": "capture",
             "description": "True if key events should be swallowed natively and not propagated if preventDefault() gets called by the extension's background page."
           }
@@ -364,8 +492,7 @@
             "name": "shouldForward",
             "type": "boolean"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "updateSwitchAccessBubble",
@@ -395,8 +522,7 @@
             "description": "The actions to be shown in the menu.",
             "optional": true
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "setPointScanState",
@@ -408,8 +534,7 @@
             "$ref": "PointScanState",
             "description": "The point scanning state to set."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "setNativeChromeVoxArcSupportForCurrentApp",
@@ -422,7 +547,17 @@
             "description": "True for ChromeVox (native), false for TalkBack."
           }
         ],
-        "platforms": ["chromeos"]
+	"returns_async": {
+	  "name": "callback",
+	  "desctiprion": "Callback function.",
+	  "parameters": [
+            {
+	      "name": "response",
+	      "$ref": "SetNativeChromeVoxResponse",
+	      "description": "Return Success if successfully toggled. Return error description otherwise."
+	    }
+	  ]
+	}
       },
       {
         "name": "sendSyntheticKeyEvent",
@@ -434,8 +569,7 @@
             "$ref": "SyntheticKeyboardEvent",
             "description": "The event to send."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "enableMouseEvents",
@@ -447,8 +581,7 @@
             "type": "boolean",
             "description": "True if accessibility component extensions should receive mouse events."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "sendSyntheticMouseEvent",
@@ -460,8 +593,7 @@
             "$ref": "SyntheticMouseEvent",
             "description": "The event to send."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "setSelectToSpeakState",
@@ -472,8 +604,7 @@
             "name": "state",
             "$ref": "SelectToSpeakState"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "handleScrollableBoundsForPointFound",
@@ -484,8 +615,7 @@
             "name": "rect",
             "$ref": "ScreenRect"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "moveMagnifierToRect",
@@ -497,15 +627,24 @@
             "$ref": "ScreenRect",
             "description": "Rect to ensure visible in the magnified viewport."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
+      },
+      {
+        "name": "magnifierCenterOnPoint",
+        "type": "function",
+        "description": "Called by the Accessibility Common extension to center magnifier at |point|.",
+        "parameters": [
+          {
+            "name": "point",
+            "$ref": "ScreenPoint"
+          }
+        ]
       },
       {
         "name": "toggleDictation",
         "type": "function",
         "description": "Toggles dictation between active and inactive states.",
-        "parameters": [],
-        "platforms": ["chromeos"]
+        "parameters": []
       },
       {
         "name": "setVirtualKeyboardVisible",
@@ -516,8 +655,7 @@
             "name": "isVisible",
             "type": "boolean"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "openSettingsSubpage",
@@ -528,8 +666,7 @@
             "name": "subpage",
             "type": "string"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "performAcceleratorAction",
@@ -540,8 +677,7 @@
             "name": "acceleratorAction",
             "$ref": "AcceleratorAction"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "isFeatureEnabled",
@@ -551,20 +687,18 @@
           {
             "name": "feature",
             "$ref": "AccessibilityFeature"
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Returns whether feature is enabled.",
-            "parameters": [
-              {
-                "name": "featureEnabled",
-                "type": "boolean"
-              }
-            ]
           }
         ],
-        "platforms": ["chromeos"]
+        "returns_async": {
+          "name": "callback",
+          "description": "Returns whether feature is enabled.",
+          "parameters": [
+            {
+              "name": "featureEnabled",
+              "type": "boolean"
+            }
+          ]
+        }
       },
       {
         "name": "updateSelectToSpeakPanel",
@@ -594,8 +728,7 @@
             "description": "Current reading speed (TTS speech rate).",
             "optional": true
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "showConfirmationDialog",
@@ -611,21 +744,82 @@
             "name": "description",
             "type": "string",
             "description": "The description to show within the confirmation dialog."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when the dialog is confirmed or cancelled.",
-            "parameters": [
-              {
-                "type": "boolean",
-                "name": "confirmed",
-                "description": "True if the dialog was confirmed, false if it was canceled or closed."
-              }
-            ]
           }
         ],
-        "platforms": ["chromeos"]
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when the dialog is confirmed or cancelled.",
+          "parameters": [
+            {
+              "type": "boolean",
+              "name": "confirmed",
+              "description": "True if the dialog was confirmed, false if it was canceled or closed."
+            }
+          ]
+        }
+      },
+      {
+        "name": "getLocalizedDomKeyStringForKeyCode",
+        "type": "function",
+        "description": "Gets the DOM key string for the given key code, taking into account the current input method locale, and assuming the key code is for U.S. input. For example, the key code for '/' would return the string '!' if the current input method is French.",
+        "parameters": [
+          {
+            "name": "keyCode",
+            "type": "integer"
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called with the resulting Dom key string.",
+          "parameters": [
+            {
+              "type": "string",
+              "name": "domKeyString",
+              "description": "The dom key string localized for the current input method."
+            }
+          ]
+        }
+      },
+      {
+        "name": "updateDictationBubble",
+        "type": "function",
+        "description": "Updates Dictation's bubble UI.",
+        "parameters": [
+          {
+            "name": "properties",
+            "$ref": "DictationBubbleProperties",
+            "description": "Properties for the updated Dictation bubble UI."
+          }
+        ]
+      },
+      {
+        "name": "silenceSpokenFeedback",
+        "type": "function",
+        "description": "Cancels the current and queued speech from ChromeVox.",
+        "parameters": []
+      },
+      {
+        "name": "getDlcContents",
+        "type": "function",
+        "description": "Returns the contents of a DLC.",
+        "parameters": [
+          {
+            "name": "dlc",
+            "$ref": "DlcType",
+            "description": "The DLC of interest."
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "A callback that is run when the contents are returned.",
+          "parameters": [
+            {
+              "name": "contents",
+              "type": "binary",
+              "description": "The contents of the DLC as a Uint8Array."
+            }
+          ]
+        }
       }
     ],
     "events": [
@@ -669,8 +863,7 @@
         "name": "onSelectToSpeakStateChangeRequested",
         "type": "function",
         "description": "Fired when Chrome OS wants to change the Select-to-Speak state, between selecting with the mouse, speaking, and inactive.",
-        "parameters": [],
-        "platforms": ["chromeos"]
+        "parameters": []
       },
       {
         "name": "onSelectToSpeakPanelAction",
@@ -686,8 +879,7 @@
             "type": "number",
             "optional": true
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onSwitchAccessCommand",
@@ -698,8 +890,7 @@
             "name": "command",
             "$ref": "SwitchAccessCommand"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onPointScanSet",
@@ -710,8 +901,7 @@
             "name": "point",
             "$ref": "PointScanPoint"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onMagnifierCommand",
@@ -722,8 +912,7 @@
             "name": "command",
             "$ref": "MagnifierCommand"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onAnnounceForAccessibility",
@@ -736,8 +925,7 @@
             "items": { "type": "string" },
             "description": "Text to be announced."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onScrollableBoundsForPointRequested",
@@ -754,8 +942,7 @@
             "type": "number",
             "description": "Y screen coordinate of the point."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onMagnifierBoundsChanged",
@@ -767,8 +954,7 @@
             "$ref": "ScreenRect",
             "description": "Updated bounds of magnifier viewport."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "onCustomSpokenFeedbackToggled",
@@ -780,8 +966,25 @@
             "type": "boolean",
             "description": "True if the active window implements custom spoken feedback features."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
+      },
+      {
+        "name": "onShowChromeVoxTutorial",
+        "type": "function",
+        "description": "Fired when ChromeVox should show its tutorial.",
+        "parameters": []
+      },
+      {
+        "name": "onToggleDictation",
+        "type": "function",
+        "description": "Fired when Dictation is activated or deactivated using a keyboard shortcut, the button in the tray, or after a call from accessibilityPrivate.toggleDictation",
+        "parameters": [
+          {
+            "name": "activated",
+            "type": "boolean",
+            "description": "True if Dictation was activated, false if it was deactivated."
+          }
+        ]
       }
     ]
   }

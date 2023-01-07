@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,21 +10,23 @@
 
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/default_style.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
@@ -33,7 +35,6 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -52,8 +53,8 @@ Tab::Tab(TabbedPane* tabbed_pane, const std::u16string& title, View* contents)
 
     const bool is_highlight_style =
         tabbed_pane_->GetStyle() == TabbedPane::TabStripStyle::kHighlight;
-    constexpr auto kTabPadding = gfx::Insets(5, 10);
-    constexpr auto kTabPaddingHighlight = gfx::Insets(8, 32, 8, 0);
+    constexpr auto kTabPadding = gfx::Insets::VH(5, 10);
+    constexpr auto kTabPaddingHighlight = gfx::Insets::TLBR(8, 32, 8, 0);
     SetBorder(CreateEmptyBorder(is_highlight_style ? kTabPaddingHighlight
                                                    : kTabPadding));
   } else {
@@ -78,7 +79,7 @@ void Tab::SetSelected(bool selected) {
   contents_->SetVisible(selected);
   contents_->parent()->InvalidateLayout();
   SetState(selected ? State::kActive : State::kInactive);
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_MAC)
   SetFocusBehavior(selected ? FocusBehavior::ACCESSIBLE_ONLY
                             : FocusBehavior::NEVER);
 #else
@@ -137,6 +138,7 @@ gfx::Size Tab::CalculatePreferredSize() const {
 void Tab::GetAccessibleNodeData(ui::AXNodeData* data) {
   data->role = ax::mojom::Role::kTab;
   data->SetName(title_->GetText());
+  data->SetNameFrom(ax::mojom::NameFrom::kContents);
   data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected());
 }
 
@@ -155,18 +157,11 @@ void Tab::OnFocus() {
     // Maintain the current Insets with CreatePaddedBorder.
     int border_size = 2;
     SetBorder(CreatePaddedBorder(
-        CreateSolidBorder(border_size,
-                          GetNativeTheme()->GetSystemColor(
-                              ui::NativeTheme::kColorId_FocusedBorderColor)),
+        CreateSolidBorder(border_size, GetColorProvider()->GetColor(
+                                           ui::kColorFocusableBorderFocused)),
         GetInsets() - gfx::Insets(border_size)));
   }
 
-  // When the tab gains focus, send an accessibility event indicating that the
-  // contents are focused. When the tab loses focus, whichever new View ends up
-  // with focus will send an ax::mojom::Event::kFocus of its own, so there's no
-  // need to send one in OnBlur().
-  if (contents())
-    contents()->NotifyAccessibilityEvent(ax::mojom::Event::kFocus, true);
   SchedulePaint();
 }
 
@@ -189,6 +184,11 @@ bool Tab::OnKeyPressed(const ui::KeyEvent& event) {
          tabbed_pane_->MoveSelectionBy(key == ui::VKEY_DOWN ? 1 : -1);
 }
 
+void Tab::OnThemeChanged() {
+  View::OnThemeChanged();
+  UpdateTitleColor();
+}
+
 void Tab::SetState(State state) {
   if (state == state_)
     return;
@@ -198,15 +198,13 @@ void Tab::SetState(State state) {
 }
 
 void Tab::OnStateChanged() {
-  const SkColor font_color = GetNativeTheme()->GetSystemColor(
-      state_ == State::kActive
-          ? ui::NativeTheme::kColorId_TabTitleColorActive
-          : ui::NativeTheme::kColorId_TabTitleColorInactive);
-  title_->SetEnabledColor(font_color);
+  // Update colors that depend on state if present in a Widget hierarchy.
+  if (GetWidget())
+    UpdateTitleColor();
 
   // Tab design spec dictates special handling of font weight for the windows
   // platform when dealing with border style tabs.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gfx::Font::Weight font_weight = gfx::Font::Weight::BOLD;
 #else
   gfx::Font::Weight font_weight = gfx::Font::Weight::MEDIUM;
@@ -254,9 +252,9 @@ void Tab::OnPaint(gfx::Canvas* canvas) {
 
   cc::PaintFlags fill_flags;
   fill_flags.setAntiAlias(true);
-  fill_flags.setColor(GetNativeTheme()->GetSystemColor(
-      HasFocus() ? ui::NativeTheme::kColorId_TabHighlightFocusedBackground
-                 : ui::NativeTheme::kColorId_TabHighlightBackground));
+  fill_flags.setColor(GetColorProvider()->GetColor(
+      HasFocus() ? ui::kColorTabBackgroundHighlightedFocused
+                 : ui::kColorTabBackgroundHighlighted));
   canvas->DrawPath(path, fill_flags);
 }
 
@@ -270,6 +268,14 @@ void Tab::UpdatePreferredTitleWidth() {
   preferred_title_width_ =
       std::max(preferred_title_width_, title_->GetPreferredSize().width());
   SetState(old_state);
+}
+
+void Tab::UpdateTitleColor() {
+  DCHECK(GetWidget());
+  const SkColor font_color = GetColorProvider()->GetColor(
+      state_ == State::kActive ? ui::kColorTabForegroundSelected
+                               : ui::kColorTabForeground);
+  title_->SetEnabledColor(font_color);
 }
 
 BEGIN_METADATA(Tab, View)
@@ -288,7 +294,7 @@ TabStrip::TabStrip(TabbedPane::Orientation orientation,
     layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
     layout->SetDefaultFlex(1);
   } else {
-    constexpr auto kEdgePadding = gfx::Insets(8, 0, 0, 0);
+    constexpr auto kEdgePadding = gfx::Insets::TLBR(8, 0, 0, 0);
     constexpr int kTabSpacing = 8;
     layout = std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical,
                                          kEdgePadding, kTabSpacing);
@@ -298,13 +304,13 @@ TabStrip::TabStrip(TabbedPane::Orientation orientation,
   }
   SetLayoutManager(std::move(layout));
 
-  GetViewAccessibility().OverrideRole(ax::mojom::Role::kIgnored);
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kNone);
 
   // These durations are taken from the Paper Tabs source:
   // https://github.com/PolymerElements/paper-tabs/blob/master/paper-tabs.html
   // See |selectionBar.expand| and |selectionBar.contract|.
-  expand_animation_->SetDuration(base::TimeDelta::FromMilliseconds(150));
-  contract_animation_->SetDuration(base::TimeDelta::FromMilliseconds(180));
+  expand_animation_->SetDuration(base::Milliseconds(150));
+  contract_animation_->SetDuration(base::Milliseconds(180));
 }
 
 TabStrip::~TabStrip() = default;
@@ -321,19 +327,19 @@ void TabStrip::AnimationEnded(const gfx::Animation* animation) {
 void TabStrip::OnSelectedTabChanged(Tab* from_tab, Tab* to_tab, bool animate) {
   DCHECK(!from_tab->selected());
   DCHECK(to_tab->selected());
-  if (!animate)
+  if (!animate || !GetWidget())
     return;
 
   if (GetOrientation() == TabbedPane::Orientation::kHorizontal) {
-    animating_from_ = gfx::Range(from_tab->GetMirroredX(),
-                                 from_tab->GetMirroredX() + from_tab->width());
-    animating_to_ = gfx::Range(to_tab->GetMirroredX(),
-                               to_tab->GetMirroredX() + to_tab->width());
+    animating_from_ = {from_tab->GetMirroredX(),
+                       from_tab->GetMirroredX() + from_tab->width()};
+    animating_to_ = {to_tab->GetMirroredX(),
+                     to_tab->GetMirroredX() + to_tab->width()};
   } else {
-    animating_from_ = gfx::Range(from_tab->bounds().y(),
-                                 from_tab->bounds().y() + from_tab->height());
-    animating_to_ = gfx::Range(to_tab->bounds().y(),
-                               to_tab->bounds().y() + to_tab->height());
+    animating_from_ = {from_tab->bounds().y(),
+                       from_tab->bounds().y() + from_tab->height()};
+    animating_to_ = {to_tab->bounds().y(),
+                     to_tab->bounds().y() + to_tab->height()};
   }
 
   contract_animation_->Stop();
@@ -349,10 +355,11 @@ Tab* TabStrip::GetTabAtDeltaFromSelected(int delta) const {
   const size_t selected_tab_index = GetSelectedTabIndex();
   DCHECK_NE(kNoSelectedTab, selected_tab_index);
   const size_t num_children = children().size();
-  // Clamping |delta| here ensures that even a large negative |delta| will not
-  // cause the addition in the next statement to wrap below 0.
-  delta %= static_cast<int>(num_children);
-  return GetTabAtIndex((selected_tab_index + num_children + delta) %
+  // Clamping |delta| here ensures that even a large negative |delta| will be
+  // positive after the addition in the next statement.
+  delta %= base::checked_cast<int>(num_children);
+  delta += static_cast<int>(num_children);
+  return GetTabAtIndex((selected_tab_index + static_cast<size_t>(delta)) %
                        num_children);
 }
 
@@ -413,8 +420,8 @@ void TabStrip::OnPaintBorder(gfx::Canvas* canvas) {
     rect = gfx::Rect(max_cross_axis - kUnselectedBorderThickness, 0,
                      kUnselectedBorderThickness, height());
   }
-  canvas->FillRect(rect, GetNativeTheme()->GetSystemColor(
-                             ui::NativeTheme::kColorId_TabBottomBorder));
+  canvas->FillRect(rect,
+                   GetColorProvider()->GetColor(ui::kColorTabContentSeparator));
 
   Tab* tab = GetSelectedTab();
   if (!tab)
@@ -432,30 +439,30 @@ void TabStrip::OnPaintBorder(gfx::Canvas* canvas) {
   int min_main_axis = 0;
   int max_main_axis = 0;
   if (expand_animation_->is_animating()) {
-    bool animating_leading = animating_to_.start() < animating_from_.start();
+    bool animating_leading = animating_to_.start < animating_from_.start;
     double anim_value = gfx::Tween::CalculateValue(
         gfx::Tween::FAST_OUT_LINEAR_IN, expand_animation_->GetCurrentValue());
     if (animating_leading) {
       min_main_axis = gfx::Tween::IntValueBetween(
-          anim_value, animating_from_.start(), animating_to_.start());
-      max_main_axis = animating_from_.end();
+          anim_value, animating_from_.start, animating_to_.start);
+      max_main_axis = animating_from_.end;
     } else {
-      min_main_axis = animating_from_.start();
+      min_main_axis = animating_from_.start;
       max_main_axis = gfx::Tween::IntValueBetween(
-          anim_value, animating_from_.end(), animating_to_.end());
+          anim_value, animating_from_.end, animating_to_.end);
     }
   } else if (contract_animation_->is_animating()) {
-    bool animating_leading = animating_to_.start() < animating_from_.start();
+    bool animating_leading = animating_to_.start < animating_from_.start;
     double anim_value = gfx::Tween::CalculateValue(
         gfx::Tween::LINEAR_OUT_SLOW_IN, contract_animation_->GetCurrentValue());
     if (animating_leading) {
-      min_main_axis = animating_to_.start();
+      min_main_axis = animating_to_.start;
       max_main_axis = gfx::Tween::IntValueBetween(
-          anim_value, animating_from_.end(), animating_to_.end());
+          anim_value, animating_from_.end, animating_to_.end);
     } else {
       min_main_axis = gfx::Tween::IntValueBetween(
-          anim_value, animating_from_.start(), animating_to_.start());
-      max_main_axis = animating_to_.end();
+          anim_value, animating_from_.start, animating_to_.start);
+      max_main_axis = animating_to_.end;
     }
   } else if (is_horizontal) {
     min_main_axis = tab->GetMirroredX();
@@ -472,20 +479,12 @@ void TabStrip::OnPaintBorder(gfx::Canvas* canvas) {
                    max_main_axis - min_main_axis, kSelectedBorderThickness);
   if (!is_horizontal)
     rect.Transpose();
-  canvas->FillRect(rect, GetNativeTheme()->GetSystemColor(
-                             ui::NativeTheme::kColorId_TabSelectedBorderColor));
+  canvas->FillRect(rect,
+                   GetColorProvider()->GetColor(ui::kColorTabBorderSelected));
 }
 
-DEFINE_ENUM_CONVERTERS(TabbedPane::Orientation,
-                       {TabbedPane::Orientation::kHorizontal, u"HORIZONTAL"},
-                       {TabbedPane::Orientation::kVertical, u"VERTICAL"})
-
-DEFINE_ENUM_CONVERTERS(TabbedPane::TabStripStyle,
-                       {TabbedPane::TabStripStyle::kBorder, u"BORDER"},
-                       {TabbedPane::TabStripStyle::kHighlight, u"HIGHLIGHT"})
-
 BEGIN_METADATA(TabStrip, View)
-ADD_READONLY_PROPERTY_METADATA(int, SelectedTabIndex)
+ADD_READONLY_PROPERTY_METADATA(size_t, SelectedTabIndex)
 ADD_READONLY_PROPERTY_METADATA(TabbedPane::Orientation, Orientation)
 ADD_READONLY_PROPERTY_METADATA(TabbedPane::TabStripStyle, Style)
 END_METADATA
@@ -527,12 +526,13 @@ void TabbedPane::AddTabInternal(size_t index,
                                 std::unique_ptr<View> contents) {
   DCHECK_LE(index, GetTabCount());
   contents->SetVisible(false);
-  contents->GetViewAccessibility().OverrideName(title);
-  contents->GetViewAccessibility().OverrideRole(ax::mojom::Role::kTab);
+  contents->GetViewAccessibility().OverrideRole(ax::mojom::Role::kTabPanel);
+  if (!title.empty())
+    contents->GetViewAccessibility().OverrideName(title);
 
   tab_strip_->AddChildViewAt(std::make_unique<Tab>(this, title, contents.get()),
-                             static_cast<int>(index));
-  contents_->AddChildViewAt(std::move(contents), static_cast<int>(index));
+                             index);
+  contents_->AddChildViewAt(std::move(contents), index);
   if (!GetSelectedTab())
     SelectTabAt(index);
 
@@ -551,6 +551,10 @@ void TabbedPane::SelectTab(Tab* new_selected_tab, bool animate) {
     old_selected_tab->SetSelected(false);
     tab_strip_->OnSelectedTabChanged(old_selected_tab, new_selected_tab,
                                      animate);
+
+    new_selected_tab->NotifyAccessibilityEvent(ax::mojom::Event::kSelection,
+                                               true);
+    NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
   }
   tab_strip_->SchedulePaint();
 
@@ -562,8 +566,10 @@ void TabbedPane::SelectTab(Tab* new_selected_tab, bool animate) {
       focus_manager->SetFocusedView(new_selected_tab->contents());
   }
 
-  if (listener())
-    listener()->TabSelectedAt(tab_strip_->GetIndexOf(new_selected_tab));
+  if (listener()) {
+    listener()->TabSelectedAt(base::checked_cast<int>(
+        tab_strip_->GetIndexOf(new_selected_tab).value()));
+  }
 }
 
 void TabbedPane::SelectTabAt(size_t index, bool animate) {
@@ -616,3 +622,13 @@ BEGIN_METADATA(TabbedPane, View)
 END_METADATA
 
 }  // namespace views
+
+DEFINE_ENUM_CONVERTERS(views::TabbedPane::Orientation,
+                       {views::TabbedPane::Orientation::kHorizontal,
+                        u"HORIZONTAL"},
+                       {views::TabbedPane::Orientation::kVertical, u"VERTICAL"})
+
+DEFINE_ENUM_CONVERTERS(views::TabbedPane::TabStripStyle,
+                       {views::TabbedPane::TabStripStyle::kBorder, u"BORDER"},
+                       {views::TabbedPane::TabStripStyle::kHighlight,
+                        u"HIGHLIGHT"})

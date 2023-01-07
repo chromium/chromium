@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,17 @@ void TellAction::InternalProcessAction(ProcessActionCallback callback) {
 
   if (proto_.tell().needs_ui())
     delegate_->RequireUI();
+
+  if (proto_.tell().has_text_to_speech()) {
+    if (proto_.tell().text_to_speech().has_tts_message()) {
+      delegate_->SetTtsMessage(proto_.tell().text_to_speech().tts_message());
+    }
+
+    if (proto_.tell().text_to_speech().play_now() &&
+        delegate_->GetTtsButtonState() != TtsButtonState::DISABLED) {
+      delegate_->MaybePlayTtsMessage();
+    }
+  }
 
   UpdateProcessedAction(ACTION_APPLIED);
   std::move(callback).Run(std::move(processed_action_proto_));

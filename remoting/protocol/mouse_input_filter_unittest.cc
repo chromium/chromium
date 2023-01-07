@@ -1,10 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "remoting/protocol/mouse_input_filter.h"
 
-#include "base/stl_util.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/test_event_matchers.h"
@@ -15,8 +14,7 @@
 using ::testing::_;
 using ::testing::InSequence;
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 using test::EqualsMouseMoveEvent;
 
@@ -94,7 +92,7 @@ class MouseInputFilterTest : public testing::Test {
 };
 
 // Verify that no events get through if we don't set either dimensions.
-TEST_F(MouseInputFilterTest, BothDimensionsZero) {
+TEST_F(MouseInputFilterTest, NoDimensionsSet) {
   ExpectNoMouse();
   InjectMouse({10, 10});
 }
@@ -115,6 +113,46 @@ TEST_F(MouseInputFilterTest, OutputDimensionsZero) {
   InjectMouse({10, 10});
 }
 
+// Verify that no events get through when input and output are both set to zero.
+TEST_F(MouseInputFilterTest, BothDimensionsZero) {
+  SetClientSize(0, 0);
+  SetHostDesktop(0, 0);
+
+  ExpectNoMouse();
+  InjectMouse({10, 10});
+}
+
+// Verify that no events get through if the input and output are both set to
+// one.  This is an edge case as a 1x1 desktop is nonsensical but it's good to
+// have a test to exercise the code path in case of errant values being set.
+TEST_F(MouseInputFilterTest, BothDimensionsOne) {
+  SetClientSize(1, 1);
+  SetHostDesktop(1, 1);
+
+  ExpectNoMouse();
+  InjectMouse({10, 10});
+}
+
+// Verify that a min-size desktop (2x2) is handled. This is an edge case test,
+// not something we'd expect to need to handle in the real world.
+TEST_F(MouseInputFilterTest, BothDimensionsTwo) {
+  SetClientSize(2, 2);
+  SetHostDesktop(2, 2);
+
+  const Point injected[] = {{1, 1}};
+  const Point expected[] = {{1, 1}};
+  RunMouseTests(std::size(expected), injected, expected, true);
+}
+
+// Verify that no events get through if negative dimensions are provided.
+TEST_F(MouseInputFilterTest, NegativeDimensionsHandled) {
+  SetClientSize(-42, -42);
+  SetHostDesktop(-84, -84);
+
+  ExpectNoMouse();
+  InjectMouse({10, 10});
+}
+
 // Verify that all events get through, clamped to the output.
 TEST_F(MouseInputFilterTest, NoScalingOrClipping) {
   SetClientSize(40, 40);
@@ -125,7 +163,7 @@ TEST_F(MouseInputFilterTest, NoScalingOrClipping) {
   const Point expected[] = {{0, 10},  {0, 10},  {0, 10}, {15, 39},
                             {15, 39}, {15, 39}, {15, 25}};
 
-  RunMouseTests(base::size(expected), injected, expected, true);
+  RunMouseTests(std::size(expected), injected, expected, true);
 }
 
 // Verify that we can up-scale with clamping.
@@ -138,7 +176,7 @@ TEST_F(MouseInputFilterTest, UpScalingAndClamping) {
   const Point expected[] = {{0, 20},  {0, 20},  {0, 20}, {30, 79},
                             {30, 79}, {30, 79}, {30, 51}};
 
-  RunMouseTests(base::size(expected), injected, expected, true);
+  RunMouseTests(std::size(expected), injected, expected, true);
 }
 
 // Verify that we can down-scale with clamping.
@@ -151,7 +189,7 @@ TEST_F(MouseInputFilterTest, DownScalingAndClamping) {
   const Point expected[] = {{0, 7},   {0, 7},   {0, 7},  {11, 29},
                             {11, 29}, {11, 29}, {11, 19}};
 
-  RunMouseTests(base::size(expected), injected, expected, true);
+  RunMouseTests(std::size(expected), injected, expected, true);
 }
 
 // Multimon tests
@@ -174,7 +212,7 @@ TEST_F(MouseInputFilterTest, MultimonLeftDefault_FullDesktop) {
   const Point expected[] = {
       {11, 13}, {1949, 465}, {3816, 2078}, {5209, 124}, {6366, 1111}};
 
-  RunMouseTests(base::size(expected), injected, expected);
+  RunMouseTests(std::size(expected), injected, expected);
 }
 
 TEST_F(MouseInputFilterTest, MultimonLeftDefault_ShowLeftDisplay) {
@@ -184,7 +222,7 @@ TEST_F(MouseInputFilterTest, MultimonLeftDefault_ShowLeftDisplay) {
   const Point injected[] = {{12, 25}, {2011, 1099}};
   const Point expected[] = {{15, 31}, {2514, 1374}};
 
-  RunMouseTests(base::size(expected), injected, expected);
+  RunMouseTests(std::size(expected), injected, expected);
 }
 
 TEST_F(MouseInputFilterTest, MultimonLeftDefault_ShowRightDisplay) {
@@ -194,7 +232,7 @@ TEST_F(MouseInputFilterTest, MultimonLeftDefault_ShowRightDisplay) {
   const Point injected[] = {{175, 165}, {2948, 1532}};
   const Point expected[] = {{2779, 206}, {6245, 1915}};
 
-  RunMouseTests(base::size(expected), injected, expected);
+  RunMouseTests(std::size(expected), injected, expected);
 }
 
 // Default display = Right (A)
@@ -213,7 +251,7 @@ TEST_F(MouseInputFilterTest, MultimonRightDefault_ShowLeftDisplay) {
   const Point injected[] = {{64, 61}, {3029, 1649}};
   const Point expected[] = {{80, 76}, {3786, 2061}};
 
-  RunMouseTests(base::size(expected), injected, expected);
+  RunMouseTests(std::size(expected), injected, expected);
 }
 
 TEST_F(MouseInputFilterTest, MultimonRightDefault_ShowRightDisplay) {
@@ -223,8 +261,7 @@ TEST_F(MouseInputFilterTest, MultimonRightDefault_ShowRightDisplay) {
   const Point injected[] = {{19, 20}, {2014, 1095}};
   const Point expected[] = {{3864, 25}, {6358, 1369}};
 
-  RunMouseTests(base::size(expected), injected, expected);
+  RunMouseTests(std::size(expected), injected, expected);
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

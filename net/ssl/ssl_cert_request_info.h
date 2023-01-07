@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,7 +44,7 @@ class NET_EXPORT SSLCertRequestInfo
 
   // True if the server that issues this request was the HTTPS proxy used in
   // the request.  False, if the server was the origin server.
-  bool is_proxy;
+  bool is_proxy = false;
 
   // List of DER-encoded X.509 DistinguishedName of certificate authorities
   // allowed by the server.

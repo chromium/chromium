@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,12 @@
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -60,55 +62,11 @@ TEST_F(CSSLazyParsingTest, LazyParseBeforeAfter) {
   EXPECT_FALSE(HasParsedProperties(RuleAt(style_sheet, 1)));
 }
 
-// Test for crbug.com/664115 where |shouldConsiderForMatchingRules| would flip
-// from returning false to true if the lazy property was parsed. This is a
-// dangerous API because callers will expect the set of matching rules to be
-// identical if the stylesheet is not mutated.
-TEST_F(CSSLazyParsingTest, ShouldConsiderForMatchingRulesDoesntChange1) {
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
-
-  String sheet_text = "p::first-letter { ,badness, } ";
-  CSSParser::ParseSheet(context, style_sheet, sheet_text,
-                        CSSDeferPropertyParsing::kYes);
-
-  StyleRule* rule = RuleAt(style_sheet, 0);
-  EXPECT_FALSE(HasParsedProperties(rule));
-  EXPECT_TRUE(
-      rule->ShouldConsiderForMatchingRules(false /* includeEmptyRules */));
-
-  // Parse the rule.
-  rule->Properties();
-
-  // Now, we should still consider this for matching rules even if it is empty.
-  EXPECT_TRUE(HasParsedProperties(rule));
-  EXPECT_TRUE(
-      rule->ShouldConsiderForMatchingRules(false /* includeEmptyRules */));
-}
-
-// Test the same thing as above with lazy parsing off to ensure that we perform
-// the optimization where possible.
-TEST_F(CSSLazyParsingTest, ShouldConsiderForMatchingRulesSimple) {
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(context);
-
-  String sheet_text = "p::before { ,badness, } ";
-  CSSParser::ParseSheet(context, style_sheet, sheet_text,
-                        CSSDeferPropertyParsing::kNo);
-
-  StyleRule* rule = RuleAt(style_sheet, 0);
-  EXPECT_TRUE(HasParsedProperties(rule));
-  EXPECT_FALSE(
-      rule->ShouldConsiderForMatchingRules(false /* includeEmptyRules */));
-}
-
 // Regression test for crbug.com/660290 where we change the underlying owning
 // document from the StyleSheetContents without changing the UseCounter. This
 // test ensures that the new UseCounter is used when doing new parsing work.
 TEST_F(CSSLazyParsingTest, ChangeDocuments) {
-  auto dummy_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+  auto dummy_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   Page::InsertOrdinaryPageForTesting(&dummy_holder->GetPage());
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -147,7 +105,7 @@ TEST_F(CSSLazyParsingTest, ChangeDocuments) {
   // Ensure no stack references to oilpan objects.
   ThreadState::Current()->CollectAllGarbageForTesting();
 
-  auto dummy_holder2 = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+  auto dummy_holder2 = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   Page::InsertOrdinaryPageForTesting(&dummy_holder2->GetPage());
   auto* sheet2 = MakeGarbageCollected<CSSStyleSheet>(
       cached_contents_, dummy_holder2->GetDocument());

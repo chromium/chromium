@@ -1,0 +1,23 @@
+{
+  "GUID":"{77db0089-0bc8-4358-929c-123xcv}",
+  "IPAddressConfigType":"DHCP",
+  "Name":"",
+  "NameServersConfigType":"DHCP",
+  "ProxySettings": {
+      "Type": "PAC",
+      "PAC": "https://proxycfg.my.domain.com/proxy.dat"
+  },
+  "Type":"WiFi",
+  "WiFi":{
+    "EAP": {
+      "Identity": "abc ${LOGIN_ID}@my.domain.com",
+      "Outer": "EAP-TLS",
+      "SaveCredentials": true,
+      "UseProactiveKeyCaching": true,
+      "UseSystemCAs": true
+    },
+    "HexSSID":"4F70656E577274", // "OpenWrt"
+    "SSID":"OpenWrt",
+    "Security":"WEP-8021X"
+  }
+}

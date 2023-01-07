@@ -1,5 +1,5 @@
-CONSOLE ERROR: line 17: Uncaught PASS: toString called on exception value thrown from event handler
-CONSOLE ERROR: line 23: Uncaught PASS: toString called on exception value thrown from sql transaction callback
-CONSOLE ERROR: line 33: Uncaught PASS: toString called on exception value thrown from sql error callback
-CONSOLE ERROR: line 41: Uncaught PASS: toString called on exception value thrown from timer
+CONSOLE ERROR: Uncaught PASS: toString called on exception value thrown from event handler
+CONSOLE ERROR: Uncaught PASS: toString called on exception value thrown from sql transaction callback
+CONSOLE ERROR: Uncaught PASS: toString called on exception value thrown from sql error callback
+CONSOLE ERROR: Uncaught PASS: toString called on exception value thrown from timer
 This test ensures that exceptions are handled correctly by the various callback mechanisms present in WebCore.

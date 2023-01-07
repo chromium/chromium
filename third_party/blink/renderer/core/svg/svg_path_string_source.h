@@ -21,7 +21,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_STRING_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_STRING_SOURCE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
@@ -34,6 +33,8 @@ class CORE_EXPORT SVGPathStringSource {
 
  public:
   explicit SVGPathStringSource(StringView);
+  SVGPathStringSource(const SVGPathStringSource&) = delete;
+  SVGPathStringSource& operator=(const SVGPathStringSource&) = delete;
 
   bool HasMoreData() const {
     if (is_8bit_source_)
@@ -64,8 +65,6 @@ class CORE_EXPORT SVGPathStringSource {
   SVGPathSegType previous_command_;
   SVGParsingError error_;
   StringView source_;
-
-  DISALLOW_COPY_AND_ASSIGN(SVGPathStringSource);
 };
 
 }  // namespace blink

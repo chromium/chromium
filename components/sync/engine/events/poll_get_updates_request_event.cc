@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ PollGetUpdatesRequestEvent::PollGetUpdatesRequestEvent(
     const sync_pb::ClientToServerMessage& request)
     : timestamp_(timestamp), request_(request) {}
 
-PollGetUpdatesRequestEvent::~PollGetUpdatesRequestEvent() {}
+PollGetUpdatesRequestEvent::~PollGetUpdatesRequestEvent() = default;
 
 std::unique_ptr<ProtocolEvent> PollGetUpdatesRequestEvent::Clone() const {
   return std::make_unique<PollGetUpdatesRequestEvent>(timestamp_, request_);
@@ -33,7 +33,9 @@ std::string PollGetUpdatesRequestEvent::GetDetails() const {
 
 std::unique_ptr<base::DictionaryValue>
 PollGetUpdatesRequestEvent::GetProtoMessage(bool include_specifics) const {
-  return ClientToServerMessageToValue(request_, include_specifics);
+  return ClientToServerMessageToValue(
+      request_, {.include_specifics = include_specifics,
+                 .include_full_get_update_triggers = false});
 }
 
 }  // namespace syncer

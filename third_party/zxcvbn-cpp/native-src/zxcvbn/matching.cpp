@@ -122,13 +122,8 @@ std::string dict_normalize(const std::string & str) {
   return util::ascii_lower(str);
 }
 
-std::vector<Match> omnimatch(const std::string & password,
-                             const std::vector<std::string> & ordered_list) {
-  auto ranked_dictionaries = default_ranked_dicts();
-
-  auto ranked_dict = build_ranked_dict(ordered_list);
-  ranked_dictionaries.insert(
-      std::make_pair(DictionaryTag::USER_INPUTS, &ranked_dict));
+std::vector<Match> omnimatch(const std::string& password) {
+  RankedDicts& ranked_dictionaries = default_ranked_dicts();
 
   std::vector<Match> matches;
   std::function<std::vector<Match>(const std::string&)> matchers[] = {
@@ -158,29 +153,22 @@ std::vector<Match> omnimatch(const std::string & password,
 std::vector<Match> dictionary_match(const std::string & password,
                                     const RankedDicts & ranked_dictionaries) {
   std::vector<Match> matches;
-  auto len = password.length();
-  auto password_lower = dict_normalize(password);
-  for (const auto & item : ranked_dictionaries) {
-    auto dictionary_tag = item.first;
-    auto& ranked_dict = *item.second;
-    for (decltype(len) i = 0, idx = 0; idx < len; util::utf8_decode(password, idx), ++i) {
-      for (decltype(len) j = i, jdx = idx; jdx < len; ++j) {
-        // j is inclusive, but jdx is not so eagerly iterate jdx
-        util::utf8_decode(password, jdx);
+  size_t len = password.length();
+  std::string password_lower = dict_normalize(password);
+  for (size_t i = 0, idx = 0; idx < len;
+       util::utf8_decode(password, idx), ++i) {
+    for (size_t j = i, jdx = idx; jdx < len; ++j) {
+      // j is inclusive, but jdx is not so eagerly iterate jdx
+      util::utf8_decode(password, jdx);
 
-        auto word = password_lower.substr(idx, jdx - idx);
-        auto it = ranked_dict.find(word);
-        if (it != ranked_dict.end()) {
-          auto rank = it->second;
-          matches.push_back(Match(i, j, password.substr(idx, jdx - idx),
-                                  DictionaryMatch{
-                                      dictionary_tag,
-                                      word, rank,
-                                      false,
-                                      false, {}, ""}));
-          matches.back().idx = idx;
-          matches.back().jdx = jdx;
-        }
+      std::string word = password_lower.substr(idx, jdx - idx);
+      absl::optional<rank_t> result = ranked_dictionaries.Find(word);
+      if (result.has_value()) {
+        rank_t rank = *result;
+        matches.emplace_back(i, j, password.substr(idx, jdx - idx),
+                             DictionaryMatch{word, rank, false, false, {}, ""});
+        matches.back().idx = idx;
+        matches.back().jdx = jdx;
       }
     }
   }

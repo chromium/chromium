@@ -1,18 +1,22 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'chrome://diagnostics/memory_card.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 
-import {MemoryUsage} from 'chrome://diagnostics/diagnostics_types.js';
 import {convertKibToGibDecimalString} from 'chrome://diagnostics/diagnostics_utils.js';
-import {fakeMemoryUsage} from 'chrome://diagnostics/fake_data.js';
+import {fakeMemoryUsage, fakeMemoryUsageLowAvailableMemory} from 'chrome://diagnostics/fake_data.js';
 import {FakeSystemDataProvider} from 'chrome://diagnostics/fake_system_data_provider.js';
+import {MemoryCardElement} from 'chrome://diagnostics/memory_card.js';
 import {setSystemDataProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
+import {RoutineSectionElement} from 'chrome://diagnostics/routine_section.js';
+import {MemoryUsage} from 'chrome://diagnostics/system_data_provider.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isChildVisible} from '../../test_util.m.js';
+import {isChildVisible, isVisible} from '../../test_util.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
 
@@ -65,7 +69,7 @@ export function memoryCardTestSuite() {
    */
   function getRoutineSection() {
     const routineSection = /** @type {!RoutineSectionElement} */ (
-        memoryElement.$$('routine-section'));
+        memoryElement.shadowRoot.querySelector('routine-section'));
     assertTrue(!!routineSection);
     return routineSection;
   }
@@ -110,6 +114,18 @@ export function memoryCardTestSuite() {
       // Verify that the data points container is not visible.
       const diagnosticsCard = dx_utils.getDiagnosticsCard(memoryElement);
       assertFalse(isChildVisible(diagnosticsCard, '.data-points'));
+    });
+  });
+
+  test('TestDisabledWhenAvailableMemoryLessThan500MB', () => {
+    return initializeMemoryCard(fakeMemoryUsageLowAvailableMemory).then(() => {
+      const routineSectionElement = getRoutineSection();
+      assertEquals(
+          routineSectionElement.additionalMessage,
+          loadTimeData.getString('notEnoughAvailableMemoryMessage'));
+      assertTrue(isRunTestsButtonDisabled());
+      assertTrue(isVisible(/** @type {!HTMLElement} */ (
+          routineSectionElement.shadowRoot.querySelector('#messageIcon'))));
     });
   });
 }

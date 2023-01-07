@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,8 @@ namespace {
 namespace proto = url_pattern_index::proto;
 using FindRuleStrategy =
     url_pattern_index::UrlPatternIndexMatcher::FindRuleStrategy;
+using EmbedderConditionsMatcher =
+    url_pattern_index::UrlPatternIndexMatcher::EmbedderConditionsMatcher;
 
 // A helper function to get the checksum on a data buffer.
 int LocalGetChecksum(const uint8_t* data, size_t size) {
@@ -52,12 +54,12 @@ VerifyStatus GetVerifyStatus(const uint8_t* buffer,
 
 // RulesetIndexer --------------------------------------------------------------
 
-const int RulesetIndexer::kIndexedFormatVersion = 28;
+const int RulesetIndexer::kIndexedFormatVersion = 35;
 
 // This static assert is meant to catch cases where
 // url_pattern_index::kUrlPatternIndexFormatVersion is incremented without
 // updating RulesetIndexer::kIndexedFormatVersion.
-static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 7,
+static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 14,
               "kUrlPatternIndexFormatVersion has changed, make sure you've "
               "also updated RulesetIndexer::kIndexedFormatVersion above.");
 
@@ -136,7 +138,7 @@ bool IndexedRulesetMatcher::ShouldDisableFilteringForDocument(
       document_url, parent_document_origin, proto::ELEMENT_TYPE_UNSPECIFIED,
       activation_type,
       FirstPartyOrigin::IsThirdParty(document_url, parent_document_origin),
-      false, FindRuleStrategy::kAny);
+      false, EmbedderConditionsMatcher(), FindRuleStrategy::kAny);
 }
 
 LoadPolicy IndexedRulesetMatcher::GetLoadPolicyForResourceLoad(
@@ -161,20 +163,39 @@ const url_pattern_index::flat::UrlRule* IndexedRulesetMatcher::MatchedUrlRule(
     url_pattern_index::proto::ElementType element_type,
     bool disable_generic_rules) const {
   const bool is_third_party = first_party.IsThirdParty(url);
+  const EmbedderConditionsMatcher embedder_conditions_matcher;
 
-  const url_pattern_index::flat::UrlRule* blocklist_rule =
-      blocklist_.FindMatch(url, first_party.origin(), element_type,
-                           proto::ACTIVATION_TYPE_UNSPECIFIED, is_third_party,
-                           disable_generic_rules, FindRuleStrategy::kAny);
-  const url_pattern_index::flat::UrlRule* allowlist_rule = nullptr;
-  if (blocklist_rule) {
-    allowlist_rule =
-        allowlist_.FindMatch(url, first_party.origin(), element_type,
-                             proto::ACTIVATION_TYPE_UNSPECIFIED, is_third_party,
-                             disable_generic_rules, FindRuleStrategy::kAny);
-    return allowlist_rule ? allowlist_rule : blocklist_rule;
+  auto find_match =
+      [&](const url_pattern_index::UrlPatternIndexMatcher& matcher) {
+        return matcher.FindMatch(url, first_party.origin(), element_type,
+                                 proto::ACTIVATION_TYPE_UNSPECIFIED,
+                                 is_third_party, disable_generic_rules,
+                                 embedder_conditions_matcher,
+                                 FindRuleStrategy::kAny);
+      };
+
+  // Always check the allowlist for subdocuments. For other forms of resources,
+  // it is not necessary to differentiate between the resource not matching a
+  // blocklist rule and matching an allowlist rule. For subdocuments, matching
+  // an allowlist rule can still override ad tagging decisions even if the
+  // subdocument url did not match a blocklist rule.
+  //
+  // To optimize the subdocument case, we only check the blocklist if an
+  // allowlist rule was not matched.
+  if (element_type == proto::ELEMENT_TYPE_SUBDOCUMENT) {
+    auto* allowlist_rule = find_match(allowlist_);
+    if (allowlist_rule)
+      return allowlist_rule;
+    return find_match(blocklist_);
   }
-  return nullptr;
+
+  // For non-subdocument elements, only check the allowlist if there is a
+  // matched blocklist rule to prevent unnecessary lookups.
+  auto* blocklist_rule = find_match(blocklist_);
+  if (!blocklist_rule)
+    return nullptr;
+  auto* allowlist_rule = find_match(allowlist_);
+  return allowlist_rule ? allowlist_rule : blocklist_rule;
 }
 
 }  // namespace subresource_filter

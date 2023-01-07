@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_DOWNLOAD_CONTENT_PUBLIC_DOWNLOAD_NAVIGATION_OBSERVER_H_
 #define COMPONENTS_DOWNLOAD_CONTENT_PUBLIC_DOWNLOAD_NAVIGATION_OBSERVER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/download/public/background_service/navigation_monitor.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -20,6 +20,11 @@ class DownloadNavigationObserver
  public:
   DownloadNavigationObserver(content::WebContents* web_contents,
                              NavigationMonitor* navigation_monitor);
+
+  DownloadNavigationObserver(const DownloadNavigationObserver&) = delete;
+  DownloadNavigationObserver& operator=(const DownloadNavigationObserver&) =
+      delete;
+
   ~DownloadNavigationObserver() override;
 
  private:
@@ -33,11 +38,9 @@ class DownloadNavigationObserver
   void NotifyNavigationEvent(NavigationEvent navigation_event);
 
   // Used to inform the navigation events to download systems.
-  NavigationMonitor* navigation_monitor_;
+  raw_ptr<NavigationMonitor> navigation_monitor_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadNavigationObserver);
 };
 
 }  // namespace download

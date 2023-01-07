@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,10 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/report_body.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
 
 namespace blink {
 
@@ -18,14 +19,14 @@ class CORE_EXPORT LocationReportBody : public ReportBody {
  private:
   struct ReportLocation {
     String file;
-    base::Optional<uint32_t> line_number;
-    base::Optional<uint32_t> column_number;
+    absl::optional<uint32_t> line_number;
+    absl::optional<uint32_t> column_number;
   };
 
   static ReportLocation CreateReportLocation(
       const String& file,
-      base::Optional<uint32_t> line_number,
-      base::Optional<uint32_t> column_number);
+      absl::optional<uint32_t> line_number,
+      absl::optional<uint32_t> column_number);
 
   static ReportLocation CreateReportLocation(
       std::unique_ptr<SourceLocation> location);
@@ -41,8 +42,8 @@ class CORE_EXPORT LocationReportBody : public ReportBody {
 
   explicit LocationReportBody(
       const String& source_file = g_empty_string,
-      base::Optional<uint32_t> line_number = base::nullopt,
-      base::Optional<uint32_t> column_number = base::nullopt)
+      absl::optional<uint32_t> line_number = absl::nullopt,
+      absl::optional<uint32_t> column_number = absl::nullopt)
       : LocationReportBody(
             CreateReportLocation(source_file, line_number, column_number)) {}
 
@@ -51,8 +52,8 @@ class CORE_EXPORT LocationReportBody : public ReportBody {
 
   const String& sourceFile() const { return source_file_; }
 
-  base::Optional<uint32_t> lineNumber() const { return line_number_; }
-  base::Optional<uint32_t> columnNumber() const { return column_number_; }
+  absl::optional<uint32_t> lineNumber() const { return line_number_; }
+  absl::optional<uint32_t> columnNumber() const { return column_number_; }
 
   void BuildJSONValue(V8ObjectBuilder& builder) const override;
 
@@ -60,8 +61,8 @@ class CORE_EXPORT LocationReportBody : public ReportBody {
 
  protected:
   const String source_file_;
-  const base::Optional<uint32_t> line_number_;
-  const base::Optional<uint32_t> column_number_;
+  const absl::optional<uint32_t> line_number_;
+  const absl::optional<uint32_t> column_number_;
 };
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,24 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_sync_data.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
+#include "chrome/browser/sync/test/integration/apps_sync_test_base.h"
 #include "chrome/browser/sync/test/integration/sync_app_helper.h"
+#include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/browser/web_applications/user_display_mode.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "chrome/common/extensions/manifest_handlers/app_theme_color_info.h"
 #include "components/sync/model/string_ordinal.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/test/browser_test.h"
@@ -30,13 +33,12 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/constants.h"
 
 using apps_helper::AllProfilesHaveSameApps;
-using apps_helper::CopyNTPOrdinals;
 using apps_helper::DisableApp;
 using apps_helper::EnableApp;
-using apps_helper::FixNTPOrdinalCollisions;
 using apps_helper::GetAppLaunchOrdinalForApp;
 using apps_helper::IncognitoDisableApp;
 using apps_helper::IncognitoEnableApp;
@@ -54,14 +56,16 @@ extensions::ExtensionRegistry* GetExtensionRegistry(Profile* profile) {
 
 }  // namespace
 
-class TwoClientExtensionAppsSyncTest : public SyncTest {
+class TwoClientExtensionAppsSyncTest : public AppsSyncTestBase {
  public:
-  TwoClientExtensionAppsSyncTest() : SyncTest(TWO_CLIENT) {}
+  TwoClientExtensionAppsSyncTest() : AppsSyncTestBase(TWO_CLIENT) {}
+
+  TwoClientExtensionAppsSyncTest(const TwoClientExtensionAppsSyncTest&) =
+      delete;
+  TwoClientExtensionAppsSyncTest& operator=(
+      const TwoClientExtensionAppsSyncTest&) = delete;
 
   ~TwoClientExtensionAppsSyncTest() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TwoClientExtensionAppsSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
@@ -192,7 +196,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
   ASSERT_TRUE(AppsMatchChecker().Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ENABLED(Merge)) {
+// TODO(https://crbug.com/1265969): Change back to E2E_ENABLED when flakiness is
+// fixed.
+IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, E2E_ONLY(Merge)) {
   ResetSyncForPrimaryAccount();
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(AppsMatchChecker().Wait());
@@ -376,6 +382,69 @@ IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest, UnexpectedLaunchType) {
 
   // The launch type should remain the same.
   ASSERT_TRUE(AppsMatchChecker().Wait());
+}
+
+namespace {
+constexpr char kHostedAppId0[] = "afbaddhaooeepnpckmnneeficocjkjlg";
+constexpr char kHostedAppId1[] = "gommgmjfjblhnpfknedcgjfphgkfcpip";
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(TwoClientExtensionAppsSyncTest,
+                       DefaultWebAppMigratedChromeAppSyncBlocked) {
+  base::HistogramTester histogram_tester;
+
+  // Inject web app migration for kHostedApp0.
+  web_app::ScopedTestingPreinstalledAppData preinstalled_app_data;
+  {
+    const GURL kStartUrl = GURL("https://www.example.com/start_url");
+    const web_app::AppId kWebAppId =
+        web_app::GenerateAppId(absl::nullopt, kStartUrl);
+    web_app::ExternalInstallOptions options(
+        GURL("https://www.example.com/install_url"),
+        web_app::UserDisplayMode::kStandalone,
+        web_app::ExternalInstallSource::kExternalDefault);
+    options.user_type_allowlist = {"unmanaged"};
+    options.uninstall_and_replace = {kHostedAppId0};
+    options.only_use_app_info_factory = true;
+    options.app_info_factory = base::BindRepeating(
+        [](GURL start_url) {
+          auto info = std::make_unique<WebAppInstallInfo>();
+          info->title = u"Test app";
+          info->start_url = start_url;
+          return info;
+        },
+        kStartUrl);
+    options.expected_app_id = kWebAppId;
+    preinstalled_app_data.apps = {std::move(options)};
+  }
+
+  // Profiles must be created after test migration config is set.
+  ASSERT_TRUE(SetupSync());
+
+  // Add kHostedApp0 to sync profile and let it sync across.
+  ASSERT_EQ(InstallHostedApp(GetProfile(0), 0), kHostedAppId0);
+  ASSERT_TRUE(AwaitQuiescence());
+
+  // kHostedApp0 should be blocked by the web app migration config.
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.SyncBlockedByDefaultWebAppMigration", true, 1);
+
+  // Add kHostedApp1 and let it sync install. This should give kHostedApp0
+  // enough time to install in case it wasn't actually blocked. This is
+  // technically racy as the installs could complete in any order but it's
+  // unlikely given the headstart kHostedApp0 got.
+  ASSERT_EQ(InstallHostedApp(GetProfile(0), 1), kHostedAppId1);
+  struct HostedApp1Installed : public AppsStatusChangeChecker {
+    bool IsExitConditionSatisfied(std::ostream* os) override {
+      return GetExtensionRegistry(sync_datatype_helper::test()->GetProfile(1))
+          ->enabled_extensions()
+          .Contains(kHostedAppId1);
+    }
+  };
+  ASSERT_TRUE(HostedApp1Installed().Wait());
+  EXPECT_FALSE(GetExtensionRegistry(GetProfile(1))
+                   ->enabled_extensions()
+                   .Contains(kHostedAppId0));
 }
 
 // TODO(akalin): Add tests exercising:

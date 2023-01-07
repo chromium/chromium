@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/assist_ranker/fake_ranker_model_loader.h"
 #include "components/assist_ranker/proto/ranker_model.pb.h"
@@ -60,8 +61,9 @@ BinaryClassifierPredictorTest::InitPredictor(
   return predictor;
 }
 
-const base::Feature kTestRankerQuery{"TestRankerQuery",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
+BASE_FEATURE(kTestRankerQuery,
+             "TestRankerQuery",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<std::string> kTestRankerUrl{
     &kTestRankerQuery, "url-param-name", "https://default.model.url"};

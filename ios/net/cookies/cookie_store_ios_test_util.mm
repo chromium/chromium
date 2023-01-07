@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -18,6 +17,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -38,9 +38,9 @@ TestPersistentCookieStore::~TestPersistentCookieStore() = default;
 
 void TestPersistentCookieStore::RunLoadedCallback() {
   std::vector<std::unique_ptr<net::CanonicalCookie>> cookies;
-  std::unique_ptr<net::CanonicalCookie> cookie(
-      net::CanonicalCookie::Create(kTestCookieURL, "a=b", base::Time::Now(),
-                                   base::nullopt /* server_time */));
+  std::unique_ptr<net::CanonicalCookie> cookie(net::CanonicalCookie::Create(
+      kTestCookieURL, "a=b", base::Time::Now(), /*server_time=*/absl::nullopt,
+      /*cookie_partition_key=*/absl::nullopt));
   cookies.push_back(std::move(cookie));
 
   std::unique_ptr<net::CanonicalCookie> bad_canonical_cookie =
@@ -49,6 +49,7 @@ void TestPersistentCookieStore::RunLoadedCallback() {
           base::Time(),  // creation
           base::Time(),  // expires
           base::Time(),  // last accessed
+          base::Time(),  // last updated
           false,         // secure
           false,         // httponly
           net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
@@ -135,7 +136,8 @@ void SetCookie(const std::string& cookie_line,
   net::CookieOptions options;
   options.set_include_httponly();
   auto canonical_cookie = net::CanonicalCookie::Create(
-      url, cookie_line, base::Time::Now(), base::nullopt /* server_time */);
+      url, cookie_line, base::Time::Now(), /*server_time=*/absl::nullopt,
+      /*cookie_partition_key=*/absl::nullopt);
   ASSERT_TRUE(canonical_cookie);
   store->SetCanonicalCookieAsync(std::move(canonical_cookie), url, options,
                                  base::DoNothing());

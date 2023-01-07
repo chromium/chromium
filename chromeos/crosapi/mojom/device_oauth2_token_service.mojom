@@ -1,0 +1,17 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/account_manager.mojom";
+
+// This API allows lacros-chrome to access the device oauth2 token service that
+// lives in ash, in particular to fetch access tokens for the device (robot)
+// account.
+[Stable, Uuid="8a5c7a88-ac87-4625-a314-19fa56f01678"]
+interface DeviceOAuth2TokenService {
+  // Returns an access token for the ChromeOS device account.
+  FetchAccessTokenForDeviceAccount@0(array<string> scopes) =>
+      (AccessTokenResult result);
+};

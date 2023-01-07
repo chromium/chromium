@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -116,22 +116,22 @@ void SettingsProviderGSettings::ParseAndStoreMiddleClickValue(
   GtkUi::WindowFrameAction action;
 
   if (click_action == "none") {
-    action = views::LinuxUI::WindowFrameAction::kNone;
+    action = ui::LinuxUiTheme::WindowFrameAction::kNone;
   } else if (click_action == "lower") {
-    action = views::LinuxUI::WindowFrameAction::kLower;
+    action = ui::LinuxUiTheme::WindowFrameAction::kLower;
   } else if (click_action == "minimize") {
-    action = views::LinuxUI::WindowFrameAction::kMinimize;
+    action = ui::LinuxUiTheme::WindowFrameAction::kMinimize;
   } else if (click_action == "toggle-maximize") {
-    action = views::LinuxUI::WindowFrameAction::kToggleMaximize;
+    action = ui::LinuxUiTheme::WindowFrameAction::kToggleMaximize;
   } else {
     // While we want to have the default state be lower if there isn't a
     // value, we want to default to no action if the user has explicitly
     // chose an action that we don't implement.
-    action = views::LinuxUI::WindowFrameAction::kNone;
+    action = ui::LinuxUiTheme::WindowFrameAction::kNone;
   }
 
   delegate_->SetWindowFrameAction(
-      views::LinuxUI::WindowFrameActionSource::kMiddleClick, action);
+      ui::LinuxUiTheme::WindowFrameActionSource::kMiddleClick, action);
 }
 
 }  // namespace gtk

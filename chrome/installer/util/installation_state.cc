@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/installer/util/installation_state.h"
+
+#include <memory>
 
 #include "base/check.h"
 #include "base/strings/string_util.h"
@@ -61,7 +63,8 @@ bool ProductState::Initialize(bool system_install) {
     std::wstring version_str;
     if (key.ReadValue(google_update::kRegVersionField, &version_str) ==
         ERROR_SUCCESS) {
-      version_.reset(new base::Version(base::WideToASCII(version_str)));
+      version_ =
+          std::make_unique<base::Version>(base::WideToASCII(version_str));
       if (!version_->IsValid())
         version_.reset();
     }
@@ -71,7 +74,8 @@ bool ProductState::Initialize(bool system_install) {
     // only be accessible via InstallationState::GetNonVersionedProductState.
     if (key.ReadValue(google_update::kRegOldVersionField, &version_str) ==
         ERROR_SUCCESS) {
-      old_version_.reset(new base::Version(base::WideToASCII(version_str)));
+      old_version_ =
+          std::make_unique<base::Version>(base::WideToASCII(version_str));
       if (!old_version_->IsValid())
         old_version_.reset();
     }
@@ -85,8 +89,6 @@ bool ProductState::Initialize(bool system_install) {
   if (key.Open(root_key, state_key.c_str(), kAccess) == ERROR_SUCCESS) {
     std::wstring setup_path;
     std::wstring uninstall_arguments;
-    // "ap" will be absent if not managed by Google Update.
-    channel_.Initialize(key);
 
     // Read in the brand code, it may be absent
     key.ReadValue(google_update::kRegBrandField, &brand_);
@@ -147,7 +149,6 @@ const base::Version& ProductState::version() const {
 }
 
 ProductState& ProductState::CopyFrom(const ProductState& other) {
-  channel_.set_value(other.channel_.value());
   version_.reset(other.version_.get() ? new base::Version(*other.version_)
                                       : nullptr);
   old_version_.reset(other.old_version_.get()
@@ -169,7 +170,6 @@ ProductState& ProductState::CopyFrom(const ProductState& other) {
 }
 
 void ProductState::Clear() {
-  channel_.set_value(std::wstring());
   version_.reset();
   old_version_.reset();
   brand_.clear();

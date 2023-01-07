@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,10 +20,12 @@ CastActivityUrlFilterManager::UrlFilterReceiver::UrlFilterReceiver(
       on_removed_callback_(std::move(on_removed_callback)),
       weak_factory_(this) {
   weak_this_ = weak_factory_.GetWeakPtr();
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&CastActivityUrlFilterManager::UrlFilterReceiver::
-                              OnActivityUrlFilterConfigurationAssociatedRequest,
-                          weak_this_));
+  render_frame->GetAssociatedInterfaceRegistry()
+      ->AddInterface<chromecast::mojom::ActivityUrlFilterConfiguration>(
+          base::BindRepeating(
+              &CastActivityUrlFilterManager::UrlFilterReceiver::
+                  OnActivityUrlFilterConfigurationAssociatedRequest,
+              weak_this_));
 }
 
 CastActivityUrlFilterManager::UrlFilterReceiver::~UrlFilterReceiver() {

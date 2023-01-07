@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,4 +20,4 @@ enum IsolatedWorldIDs : int32_t {
 
 }  // namespace content
 
-#endif  // COTENT_PUBLIC_COMMON_ISOLATED_WORLD_IDS_H_
+#endif  // CONTENT_PUBLIC_COMMON_ISOLATED_WORLD_IDS_H_

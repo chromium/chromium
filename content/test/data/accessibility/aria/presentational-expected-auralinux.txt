@@ -1,0 +1,9 @@
+[document web]
+++[section]
+++++[heading] name='Heading with link'
+++++++[static] name='Heading '
+++++++[link] name='with link'
+++++++++[static] name='with link'
+++++[static] name='Presentational heading '
+++++[link] name='with link'
+++++++[static] name='with link'

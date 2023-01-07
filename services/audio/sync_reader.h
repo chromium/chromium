@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,18 +12,14 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process.h"
 #include "base/sync_socket.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_latency.h"
 #include "services/audio/output_controller.h"
-
-#if defined(OS_POSIX)
-#include "base/file_descriptor_posix.h"
-#endif
 
 namespace audio {
 
@@ -40,6 +36,9 @@ class SyncReader : public OutputController::SyncReader {
              const media::AudioParameters& params,
              base::CancelableSyncSocket* foreign_socket);
 
+  SyncReader(const SyncReader&) = delete;
+  SyncReader& operator=(const SyncReader&) = delete;
+
   ~SyncReader() override;
 
   // Returns true if the SyncReader initialized successfully, and
@@ -52,24 +51,27 @@ class SyncReader : public OutputController::SyncReader {
 
   void set_max_wait_timeout_for_test(base::TimeDelta time) {
     maximum_wait_time_ = time;
+    maximum_wait_time_for_mixing_ = time;
   }
 
   // OutputController::SyncReader implementation.
   void RequestMoreData(base::TimeDelta delay,
                        base::TimeTicks delay_timestamp,
                        int prior_frames_skipped) override;
-  void Read(media::AudioBus* dest) override;
+  void Read(media::AudioBus* dest, bool is_mixing) override;
   void Close() override;
 
  private:
   // Blocks until data is ready for reading or a timeout expires.  Returns false
   // if an error or timeout occurs.
-  bool WaitUntilDataIsReady();
+  bool WaitUntilDataIsReady(bool is_mixing);
 
   const base::RepeatingCallback<void(const std::string&)> log_callback_;
 
   base::UnsafeSharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
+
+  const media::AudioLatency::LatencyType latency_tag_;
 
   // Mutes all incoming samples. This is used to prevent audible sound
   // during automated testing.
@@ -77,7 +79,7 @@ class SyncReader : public OutputController::SyncReader {
 
   // Denotes that the most recent socket error has been logged. Used to avoid
   // log spam.
-  bool had_socket_error_;
+  bool had_socket_error_{false};
 
   // Socket for transmitting audio data.
   base::CancelableSyncSocket socket_;
@@ -89,19 +91,21 @@ class SyncReader : public OutputController::SyncReader {
 
   // Track the number of times the renderer missed its real-time deadline and
   // report a UMA stat during destruction.
-  size_t renderer_callback_count_;
-  size_t renderer_missed_callback_count_;
-  size_t trailing_renderer_missed_callback_count_;
+  size_t renderer_callback_count_{0};
+  size_t renderer_missed_callback_count_{0};
+  size_t trailing_renderer_missed_callback_count_{0};
+  size_t mixing_renderer_callback_count_{0};
+  size_t mixing_renderer_missed_callback_count_{0};
+  size_t mixing_trailing_renderer_missed_callback_count_{0};
 
   // The maximum amount of time to wait for data from the renderer.  Calculated
   // from the parameters given at construction.
   base::TimeDelta maximum_wait_time_;
+  base::TimeDelta maximum_wait_time_for_mixing_;
 
   // The index of the audio buffer we're expecting to be sent from the renderer;
   // used to block with timeout for audio data.
-  uint32_t buffer_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncReader);
+  uint32_t buffer_index_{0};
 };
 
 }  // namespace audio

@@ -33,6 +33,8 @@
 
 namespace blink {
 class Frame;
+class KURL;
+class LocalDOMWindow;
 class LocalFrame;
 struct FrameLoadRequest;
 
@@ -40,7 +42,10 @@ Frame* CreateNewWindow(LocalFrame& opener_frame,
                        FrameLoadRequest&,
                        const AtomicString& name);
 
-CORE_EXPORT WebWindowFeatures GetWindowFeaturesFromString(const String&);
+CORE_EXPORT WebWindowFeatures
+GetWindowFeaturesFromString(const String& feature_string,
+                            LocalDOMWindow* dom_window,
+                            const KURL& url);
 
 }  // namespace blink
 

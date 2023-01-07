@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
  */
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "build/build_config.h"');
 GEN('#include "chrome/browser/ui/webui/bookmarks/bookmarks_browsertest.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -22,7 +23,6 @@ const BookmarksBrowserTest = class extends PolymerTest {
   }
 };
 
-// eslint-disable-next-line no-var
 var BookmarksActionsTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -34,7 +34,6 @@ TEST_F('BookmarksActionsTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksAppTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -46,7 +45,6 @@ TEST_F('BookmarksAppTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksCommandManagerTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -59,7 +57,6 @@ TEST_F('BookmarksCommandManagerTest', 'DISABLED_All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksDNDManagerTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -68,7 +65,7 @@ var BookmarksDNDManagerTest = class extends BookmarksBrowserTest {
 };
 
 // http://crbug.com/803570 : Flaky on Win 7 (dbg)
-GEN('#if defined(OS_WIN) && !defined(NDEBUG)');
+GEN('#if BUILDFLAG(IS_WIN) && !defined(NDEBUG)');
 GEN('#define MAYBE_All DISABLED_All');
 GEN('#else');
 GEN('#define MAYBE_All All');
@@ -78,7 +75,6 @@ TEST_F('BookmarksDNDManagerTest', 'MAYBE_All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksEditDialogTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -90,7 +86,6 @@ TEST_F('BookmarksEditDialogTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksItemTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -102,7 +97,6 @@ TEST_F('BookmarksItemTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksListTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -114,7 +108,6 @@ TEST_F('BookmarksListTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksReducersTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -126,7 +119,6 @@ TEST_F('BookmarksReducersTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksRouterTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -138,7 +130,6 @@ TEST_F('BookmarksRouterTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksFolderNodeTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -150,7 +141,6 @@ TEST_F('BookmarksFolderNodeTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksPolicyTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -162,7 +152,6 @@ TEST_F('BookmarksPolicyTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksStoreTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -174,7 +163,6 @@ TEST_F('BookmarksStoreTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksToolbarTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -186,7 +174,6 @@ TEST_F('BookmarksToolbarTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksUtilTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -198,7 +185,6 @@ TEST_F('BookmarksUtilTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksExtensionAPITest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {
@@ -215,7 +201,6 @@ TEST_F('BookmarksExtensionAPITest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksExtensionAPIEditDisabledTest = class extends BookmarksBrowserTest {
   /** @override */
   get browsePreload() {

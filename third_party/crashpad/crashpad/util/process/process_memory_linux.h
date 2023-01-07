@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,41 +17,37 @@
 
 #include <sys/types.h>
 
+#include <functional>
 #include <string>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "util/misc/address_types.h"
-#include "util/misc/initialization_state_dcheck.h"
 #include "util/process/process_memory.h"
 
 namespace crashpad {
 
+class PtraceConnection;
+
 //! \brief Accesses the memory of another Linux process.
 class ProcessMemoryLinux final : public ProcessMemory {
  public:
-  ProcessMemoryLinux();
+  explicit ProcessMemoryLinux(PtraceConnection* connection);
+
+  ProcessMemoryLinux(const ProcessMemoryLinux&) = delete;
+  ProcessMemoryLinux& operator=(const ProcessMemoryLinux&) = delete;
+
   ~ProcessMemoryLinux();
 
-  //! \brief Initializes this object to read the memory of a process whose ID
-  //!     is \a pid.
-  //!
-  //! This method must be called successfully prior to calling any other method
-  //! in this class.
-  //!
-  //! \param[in] pid The process ID of a target process.
-  //!
-  //! \return `true` on success, `false` on failure with a message logged.
-  bool Initialize(pid_t pid);
+  //! \brief Returns the input pointer with any non-addressing bits, such as
+  //!     tags removed.
+  VMAddress PointerToAddress(VMAddress address) const;
 
  private:
   ssize_t ReadUpTo(VMAddress address, size_t size, void* buffer) const override;
 
+  std::function<ssize_t(VMAddress, size_t, void*)> read_up_to_;
   base::ScopedFD mem_fd_;
-  pid_t pid_;
-  InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessMemoryLinux);
+  bool ignore_top_byte_;
 };
 
 }  // namespace crashpad

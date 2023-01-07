@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/menu/menu_config.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/dpi.h"
 #endif
 
@@ -41,11 +41,12 @@ void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
 
   gfx::Rect paint_rect(0, pos, width(), separator_thickness);
   if (type_ == ui::PADDED_SEPARATOR)
-    paint_rect.Inset(menu_config.padded_separator_left_margin, 0, 0, 0);
+    paint_rect.Inset(
+        gfx::Insets::TLBR(0, menu_config.padded_separator_left_margin, 0, 0));
   else if (menu_config.use_outer_border)
-    paint_rect.Inset(1, 0);
+    paint_rect.Inset(gfx::Insets::VH(0, 1));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Hack to get the separator to display correctly on Windows where we may
   // have fractional scales. We move the separator 1 pixel down to ensure that
   // it falls within the clipping rect which is scaled up.
@@ -59,7 +60,7 @@ void MenuSeparator::OnPaint(gfx::Canvas* canvas) {
   ui::NativeTheme::ExtraParams params;
   params.menu_separator.paint_rect = &paint_rect;
   params.menu_separator.type = type_;
-  GetNativeTheme()->Paint(canvas->sk_canvas(),
+  GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
                           ui::NativeTheme::kMenuPopupSeparator,
                           ui::NativeTheme::kNormal, GetLocalBounds(), params);
 }

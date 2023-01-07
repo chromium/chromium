@@ -1,14 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_NACL_RENDERER_TRUSTED_PLUGIN_CHANNEL_H_
 #define COMPONENTS_NACL_RENDERER_TRUSTED_PLUGIN_CHANNEL_H_
 
-#include <memory>
-
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/nacl/common/nacl.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -25,6 +22,10 @@ class TrustedPluginChannel : public mojom::NaClRendererHost {
   TrustedPluginChannel(NexeLoadManager* nexe_load_manager,
                        mojo::PendingReceiver<mojom::NaClRendererHost> receiver,
                        bool is_helper_nexe);
+
+  TrustedPluginChannel(const TrustedPluginChannel&) = delete;
+  TrustedPluginChannel& operator=(const TrustedPluginChannel&) = delete;
+
   ~TrustedPluginChannel() override;
 
  private:
@@ -44,8 +45,6 @@ class TrustedPluginChannel : public mojom::NaClRendererHost {
   mojo::Receiver<mojom::NaClRendererHost> receiver_;
   mojo::Remote<mojom::NaClExitControl> exit_control_;
   const bool is_helper_nexe_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrustedPluginChannel);
 };
 
 }  // namespace nacl

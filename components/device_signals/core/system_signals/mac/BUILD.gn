@@ -1,0 +1,42 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("mac") {
+  public = [ "mac_platform_delegate.h" ]
+
+  sources = [ "mac_platform_delegate.mm" ]
+
+  public_deps = [
+    "//components/device_signals/core/system_signals",
+    "//components/device_signals/core/system_signals/posix",
+  ]
+
+  deps = [
+    "//base",
+    "//components/device_signals/core/common",
+    "//crypto",
+    "//net",
+  ]
+
+  frameworks = [
+    "CoreFoundation.framework",
+    "Foundation.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "mac_platform_delegate_unittest.mm" ]
+
+  deps = [
+    ":mac",
+    "//base",
+    "//components/device_signals/core/common",
+    "//components/device_signals/core/system_signals",
+    "//components/device_signals/core/system_signals:test_support",
+    "//components/device_signals/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

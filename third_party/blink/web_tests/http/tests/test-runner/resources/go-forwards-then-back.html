@@ -1,0 +1,38 @@
+URL : <span id="url"></span><br>
+sessionStorage.name : <span id="name"></span>
+
+<form name=loopback action="" method=GET>
+<input name=page value=last></input>
+</form>
+
+<script>
+  // Regression test for https://crbug.com/1311546.
+  // This test consists of following 3 pages in its history.
+  //   a. back-forward.html
+  //   b. go-forwards-then-back.html
+  //   c. go-forwards-then-back.html?page=last
+  // It expects to navigate a.->b.->c.-(back)->b. and test-runner
+  // dumps the HTML of b.
+  window.addEventListener('pageshow', (e) => {
+    document.getElementById("url").innerText = document.URL;
+    sessionStorage.setItem("name", parseInt(sessionStorage.getItem("name")) + 1);
+    document.getElementById("name").innerText = sessionStorage.getItem("name");
+
+    setTimeout(function() {
+      const name = sessionStorage.getItem("name");
+      if (name == 1) {
+        // Showing b. for the first time.
+        // Navigate foward to c.
+        document.loopback.submit();
+      } else if (name == 2) {
+        // Showing c.
+        // Go back to b.
+        history.back();
+      } else {
+        // Showing b. for the second time, should dump b.
+        if (window.testRunner)
+          testRunner.notifyDone();
+      }
+    }, 0);
+  });
+</script>

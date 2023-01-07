@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,6 +99,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
     private final int mTrafficStatsTag;
     private final boolean mTrafficStatsUidSet;
     private final int mTrafficStatsUid;
+    private final long mNetworkHandle;
     private CronetException mException;
 
     /*
@@ -241,7 +242,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             String httpMethod, List<Map.Entry<String, String>> requestHeaders,
             boolean delayRequestHeadersUntilNextFlush, Collection<Object> requestAnnotations,
             boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
-            int trafficStatsUid) {
+            int trafficStatsUid, long networkHandle) {
         mRequestContext = requestContext;
         mInitialUrl = url;
         mInitialPriority = convertStreamPriority(priority);
@@ -257,6 +258,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
         mTrafficStatsTag = trafficStatsTag;
         mTrafficStatsUidSet = trafficStatsUidSet;
         mTrafficStatsUid = trafficStatsUid;
+        mNetworkHandle = networkHandle;
     }
 
     @Override
@@ -269,9 +271,8 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                 mNativeStream = CronetBidirectionalStreamJni.get().createBidirectionalStream(
                         CronetBidirectionalStream.this,
                         mRequestContext.getUrlRequestContextAdapter(),
-                        !mDelayRequestHeadersUntilFirstFlush,
-                        mRequestContext.hasRequestFinishedListener(), mTrafficStatsTagSet,
-                        mTrafficStatsTag, mTrafficStatsUidSet, mTrafficStatsUid);
+                        !mDelayRequestHeadersUntilFirstFlush, mTrafficStatsTagSet, mTrafficStatsTag,
+                        mTrafficStatsUidSet, mTrafficStatsUid, mNetworkHandle);
                 mRequestContext.onRequestStarted();
                 // Non-zero startResult means an argument error.
                 int startResult = CronetBidirectionalStreamJni.get().start(mNativeStream,
@@ -826,8 +827,8 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
         // Native methods are implemented in cronet_bidirectional_stream_adapter.cc.
         long createBidirectionalStream(CronetBidirectionalStream caller,
                 long urlRequestContextAdapter, boolean sendRequestHeadersAutomatically,
-                boolean enableMetricsCollection, boolean trafficStatsTagSet, int trafficStatsTag,
-                boolean trafficStatsUidSet, int trafficStatsUid);
+                boolean trafficStatsTagSet, int trafficStatsTag, boolean trafficStatsUidSet,
+                int trafficStatsUid, long networkHandle);
 
         @NativeClassQualifiedName("CronetBidirectionalStreamAdapter")
         int start(long nativePtr, CronetBidirectionalStream caller, String url, int priority,

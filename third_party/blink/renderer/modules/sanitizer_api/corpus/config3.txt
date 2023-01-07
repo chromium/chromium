@@ -1,0 +1,9 @@
+allow_elements: "div"
+allow_elements: "p"
+allow_elements: "span"
+allow_elements: "em"
+allow_elements: "b"
+allow_elements: "h1"
+allow_elements: "h2"
+allow_elements: "h3"
+allow_comments: true

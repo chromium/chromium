@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,17 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_auth_handler.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "url/gurl.h"
+
+namespace url {
+class SchemeHostPort;
+}
 
 namespace net {
 
@@ -36,7 +42,8 @@ class HttpAuthHandlerMock : public HttpAuthHandler {
     Factory();
     ~Factory() override;
 
-    void AddMockHandler(HttpAuthHandler* handler, HttpAuth::Target target);
+    void AddMockHandler(std::unique_ptr<HttpAuthHandler> handler,
+                        HttpAuth::Target target);
 
     void set_do_init_from_challenge(bool do_init_from_challenge) {
       do_init_from_challenge_ = do_init_from_challenge;
@@ -46,8 +53,8 @@ class HttpAuthHandlerMock : public HttpAuthHandler {
     int CreateAuthHandler(HttpAuthChallengeTokenizer* challenge,
                           HttpAuth::Target target,
                           const SSLInfo& ssl_info,
-                          const NetworkIsolationKey& network_isolation_key,
-                          const GURL& origin,
+                          const NetworkAnonymizationKey& network_isolation_key,
+                          const url::SchemeHostPort& scheme_host_port,
                           CreateReason reason,
                           int nonce_count,
                           const NetLogWithSource& net_log,
@@ -57,7 +64,7 @@ class HttpAuthHandlerMock : public HttpAuthHandler {
    private:
     std::vector<std::unique_ptr<HttpAuthHandler>>
         handlers_[HttpAuth::AUTH_NUM_TARGETS];
-    bool do_init_from_challenge_;
+    bool do_init_from_challenge_ = false;
   };
 
   HttpAuthHandlerMock();
@@ -92,7 +99,7 @@ class HttpAuthHandlerMock : public HttpAuthHandler {
   bool AllowsExplicitCredentials() override;
   bool Init(HttpAuthChallengeTokenizer* challenge,
             const SSLInfo& ssl_info,
-            const NetworkIsolationKey& network_isolation_key) override;
+            const NetworkAnonymizationKey& network_isolation_key) override;
   int GenerateAuthTokenImpl(const AuthCredentials* credentials,
                             const HttpRequestInfo* request,
                             CompletionOnceCallback callback,
@@ -103,15 +110,15 @@ class HttpAuthHandlerMock : public HttpAuthHandler {
  private:
   void OnGenerateAuthToken();
 
-  State state_;
+  State state_ = State::WAIT_FOR_INIT;
   CompletionOnceCallback callback_;
-  bool generate_async_;
-  int generate_rv_;
-  std::string* auth_token_;
-  bool first_round_;
-  bool connection_based_;
-  bool allows_default_credentials_;
-  bool allows_explicit_credentials_;
+  bool generate_async_ = false;
+  int generate_rv_ = OK;
+  raw_ptr<std::string> auth_token_ = nullptr;
+  bool first_round_ = true;
+  bool connection_based_ = false;
+  bool allows_default_credentials_ = false;
+  bool allows_explicit_credentials_ = true;
   GURL request_url_;
   base::WeakPtrFactory<HttpAuthHandlerMock> weak_factory_{this};
 };

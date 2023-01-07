@@ -30,74 +30,66 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_IMAGE_DATA_H_
 
 #include "base/numerics/checked_math.h"
-#include "third_party/blink/renderer/bindings/core/v8/uint8_clamped_array_or_uint16_array_or_float32_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_data_settings.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
-#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkPixmap.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
 class ExceptionState;
 class ImageBitmapOptions;
 
-typedef Uint8ClampedArrayOrUint16ArrayOrFloat32Array ImageDataArray;
-
-constexpr const char* kUint8ClampedArrayStorageFormatName = "uint8";
-constexpr const char* kUint16ArrayStorageFormatName = "uint16";
-constexpr const char* kFloat32ArrayStorageFormatName = "float32";
-
 class CORE_EXPORT ImageData final : public ScriptWrappable,
                                     public ImageBitmapSource {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // Constructor that takes width, height, and an optional ImageDataSettings.
+  // Constructors that take width, height, and an optional ImageDataSettings.
   static ImageData* Create(unsigned width,
                            unsigned height,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, height, base::nullopt, nullptr,
-                             exception_state);
+    return ValidateAndCreate(width, height, absl::nullopt, /*settings=*/nullptr,
+                             ValidateAndCreateParams(), exception_state);
   }
   static ImageData* Create(unsigned width,
                            unsigned height,
                            const ImageDataSettings* settings,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, height, base::nullopt, settings,
-                             exception_state, RequireCanvasColorManagement);
+    return ValidateAndCreate(width, height, absl::nullopt, settings,
+                             ValidateAndCreateParams(), exception_state);
   }
 
-  // Constructor that takes Uint8ClampedArray, width, optional height, and
+  // Constructors that take Uint8ClampedArray, width, optional height, and
   // optional ImageDataSettings.
   static ImageData* Create(NotShared<DOMUint8ClampedArray> data,
                            unsigned width,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, base::nullopt, data, nullptr,
-                             exception_state);
+    return ValidateAndCreate(width, absl::nullopt, data, nullptr,
+                             ValidateAndCreateParams(), exception_state);
   }
   static ImageData* Create(NotShared<DOMUint8ClampedArray> data,
                            unsigned width,
                            unsigned height,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, height, data, nullptr, exception_state);
+    return ValidateAndCreate(width, height, data, /*settings=*/nullptr,
+                             ValidateAndCreateParams(), exception_state);
   }
   static ImageData* Create(NotShared<DOMUint8ClampedArray> data,
                            unsigned width,
                            unsigned height,
                            const ImageDataSettings* settings,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, height, data, settings, exception_state,
-                             RequireCanvasColorManagement);
+    return ValidateAndCreate(width, height, data, settings,
+                             ValidateAndCreateParams(), exception_state);
   }
 
   // Constructor that takes DOMUint16Array, width, optional height, and optional
@@ -105,23 +97,20 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static ImageData* Create(NotShared<DOMUint16Array> data,
                            unsigned width,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, base::nullopt, data, nullptr,
-                             exception_state, RequireCanvasColorManagement);
-  }
-  static ImageData* Create(NotShared<DOMUint16Array> data,
-                           unsigned width,
-                           unsigned height,
-                           ExceptionState& exception_state) {
-    return ValidateAndCreate(width, height, data, nullptr, exception_state,
-                             RequireCanvasColorManagement);
+    ValidateAndCreateParams params;
+    params.require_canvas_color_management_v2 = true;
+    return ValidateAndCreate(width, absl::nullopt, data, nullptr, params,
+                             exception_state);
   }
   static ImageData* Create(NotShared<DOMUint16Array> data,
                            unsigned width,
                            unsigned height,
                            const ImageDataSettings* settings,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, height, data, settings, exception_state,
-                             RequireCanvasColorManagement);
+    ValidateAndCreateParams params;
+    params.require_canvas_color_management_v2 = true;
+    return ValidateAndCreate(width, height, data, settings, params,
+                             exception_state);
   }
 
   // Constructor that takes DOMFloat32Array, width, optional height, and
@@ -129,105 +118,112 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   static ImageData* Create(NotShared<DOMFloat32Array> data,
                            unsigned width,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, base::nullopt, data, nullptr,
-                             exception_state, RequireCanvasColorManagement);
-  }
-  static ImageData* Create(NotShared<DOMFloat32Array> data,
-                           unsigned width,
-                           unsigned height,
-                           ExceptionState& exception_state) {
-    return ValidateAndCreate(width, height, data, nullptr, exception_state,
-                             RequireCanvasColorManagement);
+    ValidateAndCreateParams params;
+    params.require_canvas_color_management_v2 = true;
+    return ValidateAndCreate(width, absl::nullopt, data, nullptr, params,
+                             exception_state);
   }
   static ImageData* Create(NotShared<DOMFloat32Array> data,
                            unsigned width,
                            unsigned height,
                            const ImageDataSettings* settings,
                            ExceptionState& exception_state) {
-    return ValidateAndCreate(width, height, data, settings, exception_state,
-                             RequireCanvasColorManagement);
+    ValidateAndCreateParams params;
+    params.require_canvas_color_management_v2 = true;
+    return ValidateAndCreate(width, height, data, settings, params,
+                             exception_state);
   }
 
   // ValidateAndCreate is the common path that all ImageData creation code
   // should call directly. The other Create functions are to be called only by
   // generated code.
-  enum ValidateAndCreateFlags {
-    None = 0x0,
+  struct ValidateAndCreateParams {
     // When a too-large ImageData is created using a constructor, it has
     // historically thrown an IndexSizeError. When created through a 2D
     // canvas, it has historically thrown a RangeError. This flag will
     // trigger the RangeError path.
-    Context2DErrorMode = 0x1,
+    bool context_2d_error_mode = false;
     // Constructors in IDL files cannot specify RuntimeEnabled restrictions.
     // This argument is passed by Create functions that should require that the
-    // CanvasColorManagement feature be enabled.
-    RequireCanvasColorManagement = 0x2,
+    // CanvasColorManagementV2 feature be enabled.
+    bool require_canvas_color_management_v2 = false;
+    // If the caller is guaranteed to write over the result in its entirety,
+    // then this flag may be used to skip initialization of the result's
+    // data.
+    bool zero_initialize = true;
+    // If no color space is specified, then use this value for the resulting
+    // ImageData.
+    PredefinedColorSpace default_color_space = PredefinedColorSpace::kSRGB;
   };
   static ImageData* ValidateAndCreate(
       unsigned width,
-      base::Optional<unsigned> height,
-      base::Optional<NotShared<DOMArrayBufferView>> data,
+      absl::optional<unsigned> height,
+      absl::optional<NotShared<DOMArrayBufferView>> data,
       const ImageDataSettings* settings,
-      ExceptionState& exception_state,
-      uint32_t flags = 0);
-
+      ValidateAndCreateParams params,
+      ExceptionState& exception_state);
+  // TODO(https://crbug.com/1198606): Remove this.
   ImageDataSettings* getSettings() { return settings_; }
 
-  static ImageData* CreateForTest(const IntSize&);
-  static ImageData* CreateForTest(const IntSize&,
+  static ImageData* CreateForTest(const gfx::Size&);
+  static ImageData* CreateForTest(const gfx::Size&,
                                   NotShared<DOMArrayBufferView>,
-                                  const ImageDataSettings* = nullptr);
+                                  PredefinedColorSpace,
+                                  ImageDataStorageFormat);
 
-  ImageData(const IntSize&,
+  ImageData(const gfx::Size&,
             NotShared<DOMArrayBufferView>,
-            const ImageDataSettings* = nullptr);
+            PredefinedColorSpace,
+            ImageDataStorageFormat);
 
-  static String CanvasColorSpaceName(CanvasColorSpace);
-  static ImageDataStorageFormat GetImageDataStorageFormat(const String&);
-  static unsigned StorageFormatBytesPerPixel(const String&);
-  static unsigned StorageFormatBytesPerPixel(ImageDataStorageFormat);
+  gfx::Size Size() const { return size_; }
+  int width() const { return size_.width(); }
+  int height() const { return size_.height(); }
+  String colorSpace() const;
+  String storageFormat() const;
 
-  IntSize Size() const { return size_; }
-  int width() const { return size_.Width(); }
-  int height() const { return size_.Height(); }
+  // TODO(https://crbug.com/1198606): Remove this.
+  ImageDataSettings* getSettings() const;
 
-  ImageDataArray& data() { return data_; }
-  const ImageDataArray& data() const { return data_; }
-  void data(ImageDataArray& result) { result = data_; }
+  const V8ImageDataArray* data() const { return data_; }
 
   bool IsBufferBaseDetached() const;
-  CanvasColorSpace GetCanvasColorSpace() const;
+  PredefinedColorSpace GetPredefinedColorSpace() const;
   ImageDataStorageFormat GetImageDataStorageFormat() const;
 
   // Return an SkPixmap that references this data directly.
   SkPixmap GetSkPixmap() const;
 
   // ImageBitmapSource implementation
-  IntSize BitmapSourceSize() const override { return size_; }
+  gfx::Size BitmapSourceSize() const override { return size_; }
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  base::Optional<IntRect> crop_rect,
+                                  absl::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 
   void Trace(Visitor*) const override;
 
-  WARN_UNUSED_RESULT v8::Local<v8::Object> AssociateWithWrapper(
+  [[nodiscard]] v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate* isolate,
       const WrapperTypeInfo* wrapper_type_info,
       v8::Local<v8::Object> wrapper) override;
 
  private:
-  IntSize size_;
+  gfx::Size size_;
+  // TODO(https://crbug.com/1198606): Remove this.
   Member<ImageDataSettings> settings_;
-  ImageDataArray data_;
+  Member<V8ImageDataArray> data_;
   NotShared<DOMUint8ClampedArray> data_u8_;
   NotShared<DOMUint16Array> data_u16_;
   NotShared<DOMFloat32Array> data_f32_;
+  PredefinedColorSpace color_space_ = PredefinedColorSpace::kSRGB;
+  ImageDataStorageFormat storage_format_ = ImageDataStorageFormat::kUint8;
 
   static NotShared<DOMArrayBufferView> AllocateAndValidateDataArray(
       const unsigned&,
       ImageDataStorageFormat,
-      ExceptionState* = nullptr);
+      bool initialize,
+      ExceptionState&);
 };
 
 }  // namespace blink

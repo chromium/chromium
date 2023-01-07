@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "storage/browser/file_system/file_system_file_util.h"
 
 namespace base {
@@ -35,11 +34,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) NativeFileUtil {
  public:
   enum CopyOrMoveMode { COPY_NOSYNC, COPY_SYNC, MOVE };
 
+  NativeFileUtil() = delete;
+  NativeFileUtil(const NativeFileUtil&) = delete;
+  NativeFileUtil& operator=(const NativeFileUtil&) = delete;
+
   static CopyOrMoveMode CopyOrMoveModeForDestination(
       const FileSystemURL& dest_url,
       bool copy);
 
-  static base::File CreateOrOpen(const base::FilePath& path, int file_flags);
+  static base::File CreateOrOpen(const base::FilePath& path,
+                                 uint32_t file_flags);
   static base::File::Error EnsureFileExists(const base::FilePath& path,
                                             bool* created);
   static base::File::Error CreateDirectory(const base::FilePath& path,
@@ -58,13 +62,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) NativeFileUtil {
   static base::File::Error CopyOrMoveFile(
       const base::FilePath& src_path,
       const base::FilePath& dest_path,
-      FileSystemOperation::CopyOrMoveOption option,
+      FileSystemOperation::CopyOrMoveOptionSet options,
       CopyOrMoveMode mode);
   static base::File::Error DeleteFile(const base::FilePath& path);
   static base::File::Error DeleteDirectory(const base::FilePath& path);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(NativeFileUtil);
 };
 
 }  // namespace storage

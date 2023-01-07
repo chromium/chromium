@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -181,7 +181,7 @@ bool ParseResponseMap(const cbor::Value& value,
       signed_exchange_utils::ReportErrorAndTraceEvent(
           devtools_proxy,
           base::StringPrintf("Invalid header name. header_name: %s",
-                             name_str.as_string().c_str()));
+                             std::string(name_str).c_str()));
       return false;
     }
 
@@ -195,7 +195,7 @@ bool ParseResponseMap(const cbor::Value& value,
           devtools_proxy,
           base::StringPrintf(
               "Response header name should be lower-cased. header_name: %s",
-              name_str.as_string().c_str()));
+              std::string(name_str).c_str()));
       return false;
     }
 
@@ -206,7 +206,7 @@ bool ParseResponseMap(const cbor::Value& value,
           devtools_proxy,
           base::StringPrintf(
               "Exchange contains stateful response header. header_name: %s",
-              name_str.as_string().c_str()));
+              std::string(name_str).c_str()));
       return false;
     }
 
@@ -220,7 +220,7 @@ bool ParseResponseMap(const cbor::Value& value,
       signed_exchange_utils::ReportErrorAndTraceEvent(
           devtools_proxy,
           base::StringPrintf("Duplicate header value. header_name: %s",
-                             name_str.as_string().c_str()));
+                             std::string(name_str).c_str()));
       return false;
     }
   }
@@ -285,7 +285,7 @@ bool ParseResponseMap(const cbor::Value& value,
 }  // namespace
 
 // static
-base::Optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
+absl::optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
     SignedExchangeVersion version,
     const signed_exchange_utils::URLWithRawString& fallback_url,
     base::StringPiece signature_header_field,
@@ -297,13 +297,13 @@ base::Optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
   const auto& request_url = fallback_url;
 
   cbor::Reader::DecoderError error;
-  base::Optional<cbor::Value> value = cbor::Reader::Read(cbor_header, &error);
+  absl::optional<cbor::Value> value = cbor::Reader::Read(cbor_header, &error);
   if (!value.has_value()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy,
         base::StringPrintf("Failed to decode Value. CBOR error: %s",
                            cbor::Reader::ErrorCodeToString(error)));
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   SignedExchangeEnvelope ret;
@@ -313,16 +313,16 @@ base::Optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
   if (!ParseResponseMap(*value, &ret, devtools_proxy)) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy, "Failed to parse response map.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  base::Optional<std::vector<SignedExchangeSignatureHeaderField::Signature>>
+  absl::optional<std::vector<SignedExchangeSignatureHeaderField::Signature>>
       signatures = SignedExchangeSignatureHeaderField::ParseSignature(
           signature_header_field, devtools_proxy);
   if (!signatures || signatures->empty()) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy, "Failed to parse signature header field.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // TODO(https://crbug.com/850475): Support multiple signatures.
@@ -336,7 +336,7 @@ base::Optional<SignedExchangeEnvelope> SignedExchangeEnvelope::Parse(
   if (!url::IsSameOriginWith(request_url.url, validity_url)) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy, "Validity URL must be same-origin with request URL.");
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return std::move(ret);
@@ -353,22 +353,22 @@ SignedExchangeEnvelope& SignedExchangeEnvelope::operator=(
 
 bool SignedExchangeEnvelope::AddResponseHeader(base::StringPiece name,
                                                base::StringPiece value) {
-  std::string name_str = name.as_string();
+  std::string name_str(name);
   DCHECK_EQ(name_str, base::ToLowerASCII(name))
       << "Response header names should be always lower-cased.";
   if (response_headers_.find(name_str) != response_headers_.end())
     return false;
 
-  response_headers_.emplace(std::move(name_str), value.as_string());
+  response_headers_.emplace(std::move(name_str), std::string(value));
   return true;
 }
 
 void SignedExchangeEnvelope::SetResponseHeader(base::StringPiece name,
                                                base::StringPiece value) {
-  std::string name_str = name.as_string();
+  std::string name_str(name);
   DCHECK_EQ(name_str, base::ToLowerASCII(name))
       << "Response header names should be always lower-cased.";
-  response_headers_[name_str] = value.as_string();
+  response_headers_[name_str] = std::string(value);
 }
 
 scoped_refptr<net::HttpResponseHeaders>

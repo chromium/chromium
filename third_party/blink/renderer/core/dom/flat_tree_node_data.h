@@ -1,12 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FLAT_TREE_NODE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FLAT_TREE_NODE_DATA_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -42,20 +43,32 @@ class FlatTreeNodeData final : public GarbageCollected<FlatTreeNodeData> {
   }
   void SetNextInAssignedNodes(Node* next) { next_in_assigned_nodes_ = next; }
 
+  void SetManuallyAssignedSlot(HTMLSlotElement* slot) {
+    manually_assigned_slot_ = slot;
+  }
+
   HTMLSlotElement* AssignedSlot() { return assigned_slot_; }
   Node* PreviousInAssignedNodes() { return previous_in_assigned_nodes_; }
   Node* NextInAssignedNodes() { return next_in_assigned_nodes_; }
+
+  HTMLSlotElement* ManuallyAssignedSlot() const {
+    return manually_assigned_slot_;
+  }
 
   friend class FlatTreeTraversal;
   friend class HTMLSlotElement;
   friend HTMLSlotElement* Node::AssignedSlot() const;
   friend HTMLSlotElement* Node::AssignedSlotWithoutRecalc() const;
   friend void Node::ClearFlatTreeNodeDataIfHostChanged(const ContainerNode&);
+  friend void Node::SetManuallyAssignedSlot(HTMLSlotElement* slot);
+  friend HTMLSlotElement* Node::ManuallyAssignedSlot();
   friend Element* Node::FlatTreeParentForChildDirty() const;
 
   WeakMember<HTMLSlotElement> assigned_slot_;
   WeakMember<Node> previous_in_assigned_nodes_;
   WeakMember<Node> next_in_assigned_nodes_;
+  // Used by the imperative slot distribution API (not cleared by Clear()).
+  WeakMember<HTMLSlotElement> manually_assigned_slot_;
 };
 
 }  // namespace blink

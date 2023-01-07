@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 namespace {
 
 constexpr base::TimeDelta kDefaultSeekTimeSeconds =
-    base::TimeDelta::FromSeconds(media_session::mojom::kDefaultSeekTimeSeconds);
+    base::Seconds(media_session::mojom::kDefaultSeekTimeSeconds);
 
 bool IsPlaying(const media_router::mojom::MediaStatusPtr& media_status) {
   return media_status &&
@@ -67,6 +67,8 @@ void CastMediaSessionController::Send(
     case media_session::mojom::MediaSessionAction::kToggleMicrophone:
     case media_session::mojom::MediaSessionAction::kToggleCamera:
     case media_session::mojom::MediaSessionAction::kHangUp:
+    case media_session::mojom::MediaSessionAction::kRaise:
+    case media_session::mojom::MediaSessionAction::kSetMute:
       NOTREACHED();
       return;
   }
@@ -84,13 +86,36 @@ void CastMediaSessionController::OnMediaStatusUpdated(
     IncrementCurrentTimeAfterOneSecond();
 }
 
+void CastMediaSessionController::SeekTo(base::TimeDelta time) {
+  if (!media_status_)
+    return;
+  route_controller_->Seek(time);
+}
+
+void CastMediaSessionController::SetMute(bool mute) {
+  if (!media_status_)
+    return;
+  route_controller_->SetMute(mute);
+}
+
+void CastMediaSessionController::SetVolume(float volume) {
+  if (!media_status_)
+    return;
+  route_controller_->SetVolume(volume);
+}
+
 void CastMediaSessionController::FlushForTesting() {
   route_controller_.FlushForTesting();
 }
 
+media_router::mojom::MediaStatusPtr
+CastMediaSessionController::GetMediaStatusForTesting() {
+  return media_status_.Clone();
+}
+
 base::TimeDelta CastMediaSessionController::PutWithinBounds(
     const base::TimeDelta& time) {
-  if (time < base::TimeDelta() || !media_status_)
+  if (time.is_negative() || !media_status_)
     return base::TimeDelta();
   if (time > media_status_->duration)
     return media_status_->duration;
@@ -105,8 +130,7 @@ void CastMediaSessionController::IncrementCurrentTimeAfterOneSecond() {
   // TODO(crbug.com/1052156): If the playback rate is not 1, we must increment
   // at a different rate.
   content::GetUIThreadTaskRunner({})->PostDelayedTask(
-      FROM_HERE, increment_current_time_callback_.callback(),
-      base::TimeDelta::FromSeconds(1));
+      FROM_HERE, increment_current_time_callback_.callback(), base::Seconds(1));
 }
 
 void CastMediaSessionController::IncrementCurrentTime() {
@@ -115,6 +139,6 @@ void CastMediaSessionController::IncrementCurrentTime() {
 
   if (media_status_->current_time < media_status_->duration)
     IncrementCurrentTimeAfterOneSecond();
-  media_status_->current_time = PutWithinBounds(
-      media_status_->current_time + base::TimeDelta::FromSeconds(1));
+  media_status_->current_time =
+      PutWithinBounds(media_status_->current_time + base::Seconds(1));
 }

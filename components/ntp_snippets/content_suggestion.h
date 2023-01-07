@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,9 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/category.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace ntp_snippets {
@@ -66,6 +64,8 @@ class ContentSuggestion {
                     const GURL& url);
   ContentSuggestion(ContentSuggestion&&);
   ContentSuggestion& operator=(ContentSuggestion&&);
+  ContentSuggestion(const ContentSuggestion&) = delete;
+  ContentSuggestion& operator=(const ContentSuggestion&) = delete;
 
   ~ContentSuggestion();
 
@@ -155,11 +155,11 @@ class ContentSuggestion {
     fetch_date_ = fetch_date;
   }
 
-  const base::Optional<uint32_t>& optional_image_dominant_color() const {
+  const absl::optional<uint32_t>& optional_image_dominant_color() const {
     return image_dominant_color_;
   }
   void set_optional_image_dominant_color(
-      const base::Optional<uint32_t>& optional_color_int) {
+      const absl::optional<uint32_t>& optional_color_int) {
     image_dominant_color_ = optional_color_int;
   }
 
@@ -184,9 +184,7 @@ class ContentSuggestion {
   bool is_video_suggestion_;
 
   // Encoded as an Android @ColorInt.
-  base::Optional<uint32_t> image_dominant_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSuggestion);
+  absl::optional<uint32_t> image_dominant_color_;
 };
 
 std::ostream& operator<<(std::ostream& os, const ContentSuggestion::ID& id);

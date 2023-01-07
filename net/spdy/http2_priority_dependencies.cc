@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -172,12 +172,6 @@ void Http2PriorityDependencies::OnStreamDestruction(spdy::SpdyStreamId id) {
   auto it = emit->second;
   id_priority_lists_[it->second].erase(it);
   entry_by_stream_id_.erase(emit);
-}
-
-size_t Http2PriorityDependencies::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(id_priority_lists_);
-  // TODO(xunjieli): https://crbug.com/690015. Include |entry_by_stream_id_|
-  // when memory_usage_estimator.h supports std::list::iterator.
 }
 
 }  // namespace net

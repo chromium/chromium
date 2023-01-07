@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,14 @@
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 
 namespace app_list {
 
 // A search provider implementation serving results from Assistant.
 // This is currently only used to provide a single search result that runs an
-// Assistant query of the search text. This is displayed when
-// kEnableAssistantSearch feature is enabled. This search result does not go
+// Assistant query of the search text. This search result does not go
 // through normal ranking procedures, but is instead appended to an existing
 // list of search results.
 class AssistantTextSearchProvider : public SearchProvider,
@@ -34,14 +33,14 @@ class AssistantTextSearchProvider : public SearchProvider,
 
  private:
   // SearchProvider:
-  ash::AppListSearchResultType ResultType() override;
+  ash::AppListSearchResultType ResultType() const override;
 
   // ash::AssistantControllerObserver:
   void OnAssistantControllerDestroying() override;
 
   // ash::AssistantStateObserver:
   void OnAssistantFeatureAllowedChanged(
-      chromeos::assistant::AssistantAllowedState allowed_state) override;
+      ash::assistant::AssistantAllowedState allowed_state) override;
   void OnAssistantSettingsEnabled(bool enabled) override;
 
   // Invoke to update results based on current state.
@@ -49,11 +48,12 @@ class AssistantTextSearchProvider : public SearchProvider,
 
   std::u16string query_;
 
-  ScopedObserver<ash::AssistantController, ash::AssistantControllerObserver>
-      assistant_controller_observer_{this};
+  base::ScopedObservation<ash::AssistantController,
+                          ash::AssistantControllerObserver>
+      assistant_controller_observation_{this};
 
-  ScopedObserver<ash::AssistantStateBase, ash::AssistantStateObserver>
-      assistant_state_observer_{this};
+  base::ScopedObservation<ash::AssistantStateBase, ash::AssistantStateObserver>
+      assistant_state_observation_{this};
 };
 
 }  // namespace app_list

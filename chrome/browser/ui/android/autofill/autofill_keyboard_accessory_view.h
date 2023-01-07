@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/autofill_keyboard_accessory_adapter.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 
@@ -26,7 +26,13 @@ class AutofillPopupController;
 class AutofillKeyboardAccessoryView
     : public AutofillKeyboardAccessoryAdapter::AccessoryView {
  public:
-  explicit AutofillKeyboardAccessoryView(AutofillPopupController* controller);
+  explicit AutofillKeyboardAccessoryView(
+      base::WeakPtr<AutofillPopupController> controller);
+
+  AutofillKeyboardAccessoryView(const AutofillKeyboardAccessoryView&) = delete;
+  AutofillKeyboardAccessoryView& operator=(
+      const AutofillKeyboardAccessoryView&) = delete;
+
   ~AutofillKeyboardAccessoryView() override;
 
   // Implementation of AutofillKeyboardAccessoryAdapter::AccessoryView.
@@ -61,15 +67,13 @@ class AutofillKeyboardAccessoryView
 
  private:
   // Weak reference to owner of this class. Always outlives this view.
-  AutofillPopupController* controller_;
+  base::WeakPtr<AutofillPopupController> controller_;
 
   // Call to confirm a requested deletion.
   base::OnceClosure confirm_deletion_;
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillKeyboardAccessoryView);
 };
 
 }  // namespace autofill

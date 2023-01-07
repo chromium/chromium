@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,9 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "content/public/common/sandbox_init.h"
 #include "content/public/renderer/render_thread.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_platform_file.h"

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,15 @@
 
 #include <algorithm>
 
+#include "base/types/token_type.h"
 #include "base/unguessable_token.h"
-#include "base/util/type_safety/token_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
 
-using FooToken = util::TokenType<class FooTokenTag>;
-using BarToken = util::TokenType<class BarTokenTag>;
-using BazToken = util::TokenType<class BazTokenTag>;
+using FooToken = base::TokenType<class FooTokenTag>;
+using BarToken = base::TokenType<class BarTokenTag>;
+using BazToken = base::TokenType<class BazTokenTag>;
 
 // Test MultiTokenVariantCount.
 static_assert(internal::MultiTokenVariantCount<FooToken, BarToken>::kValue == 2,

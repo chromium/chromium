@@ -1,9 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_LOCATION_BAR_URL_LOADER_H_
-#define IOS_CHROME_BROWSER_UI_OMNIBOX_LOCATION_BAR_URL_LOADER_H_
+#ifndef IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_URL_LOADER_H_
+#define IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_URL_LOADER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -16,9 +16,12 @@ class GURL;
 // A means of loading URLs for the location bar.
 @protocol LocationBarURLLoader
 - (void)loadGURLFromLocationBar:(const GURL&)url
-                    postContent:(TemplateURLRef::PostContent*)postContent
-                     transition:(ui::PageTransition)transition
-                    disposition:(WindowOpenDisposition)disposition;
+                               postContent:
+                                   (TemplateURLRef::PostContent*)postContent
+                                transition:(ui::PageTransition)transition
+                               disposition:(WindowOpenDisposition)disposition
+    destination_url_entered_without_scheme:
+        (bool)destination_url_entered_without_scheme;
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_LOCATION_BAR_URL_LOADER_H_
+#endif  // IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_URL_LOADER_H_

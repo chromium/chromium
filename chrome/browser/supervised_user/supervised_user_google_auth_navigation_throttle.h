@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
 #include "content/public/browser/navigation_throttle.h"
 
@@ -24,6 +24,11 @@ class SupervisedUserGoogleAuthNavigationThrottle
   // throttling is required.
   static std::unique_ptr<SupervisedUserGoogleAuthNavigationThrottle>
   MaybeCreate(content::NavigationHandle* navigation_handle);
+
+  SupervisedUserGoogleAuthNavigationThrottle(
+      const SupervisedUserGoogleAuthNavigationThrottle&) = delete;
+  SupervisedUserGoogleAuthNavigationThrottle& operator=(
+      const SupervisedUserGoogleAuthNavigationThrottle&) = delete;
 
   ~SupervisedUserGoogleAuthNavigationThrottle() override;
 
@@ -44,17 +49,15 @@ class SupervisedUserGoogleAuthNavigationThrottle
 
   void OnReauthenticationFailed();
 
-  ChildAccountService* child_account_service_;
+  raw_ptr<ChildAccountService> child_account_service_;
   base::CallbackListSubscription google_auth_state_subscription_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool has_shown_reauth_;
 #endif
 
   base::WeakPtrFactory<SupervisedUserGoogleAuthNavigationThrottle>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserGoogleAuthNavigationThrottle);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_GOOGLE_AUTH_NAVIGATION_THROTTLE_H_

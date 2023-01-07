@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ class GURL;
 
 namespace web {
 
-// Returns a formatted version of |url| that would be used as the fallback title
+// Returns a formatted version of `url` that would be used as the fallback title
 // for a page with that URL.
 std::u16string GetDisplayTitleForUrl(const GURL& url);
 

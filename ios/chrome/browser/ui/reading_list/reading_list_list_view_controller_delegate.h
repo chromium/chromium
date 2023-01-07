@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,22 +19,16 @@
 - (void)dismissReadingListListViewController:
     (UIViewController*)readingListCollectionViewController;
 
-// Displays the context menu for the |item|. |menuLocation| is used as the
-// anchor of the context menu in the |viewController.view|'s coordinates.
-- (void)readingListListViewController:(UIViewController*)viewController
-            displayContextMenuForItem:(id<ReadingListListItem>)item
-                              atPoint:(CGPoint)menuLocation;
-
-// Opens |item.entryURL|.
+// Opens `item.entryURL`.
 - (void)readingListListViewController:(UIViewController*)viewController
                              openItem:(id<ReadingListListItem>)item;
 
-// Opens the entry corresponding to the |item| in a new tab, |incognito| or not.
+// Opens the entry corresponding to the `item` in a new tab, `incognito` or not.
 - (void)readingListListViewController:(UIViewController*)viewController
                      openItemInNewTab:(id<ReadingListListItem>)item
                             incognito:(BOOL)incognito;
 
-// Opens the offline version of the entry corresponding to the |item| in a new
+// Opens the offline version of the entry corresponding to the `item` in a new
 // tab, if available.
 - (void)readingListListViewController:(UIViewController*)viewController
               openItemOfflineInNewTab:(id<ReadingListListItem>)item;

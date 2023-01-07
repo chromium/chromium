@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,18 @@ namespace prefs {
 // machine. Attached to metrics reports forever thereafter.
 // Note: the 'uninstall_metrics' name is a legacy name and doesn't mean much.
 const char kInstallDate[] = "uninstall_metrics.installation_date2";
+
+// A provisional metrics client GUID used for field trial group assignments
+// before metrics reporting consent is known (i.e., during first run). This GUID
+// is never reported directly. However, if the user enables UMA, this
+// provisional client GUID becomes the metrics client GUID (see
+// |kMetricsClientID|), and this pref is cleared. In that case, the GUID may
+// be reported.
+// Note: This GUID is stored in prefs because it is possible that the user
+// closes Chrome during the FRE. We re-use this GUID in subsequent FRE runs
+// until metrics reporting consent is truly known.
+const char kMetricsProvisionalClientID[] =
+    "user_experience_metrics.provisional_client_id";
 
 // The metrics client GUID.
 // Note: The name client_id2 is a result of creating
@@ -41,11 +53,15 @@ const char kMetricsInitialLogsMetadata[] =
 // avoid reshuffling experiments using high entropy, but use the new source for
 // experiments requiring low entropy. Newer clients only have the new source,
 // and use it both for low entropy experiments to to incorporate into the high
-// entropy source for high entropy experiments.
+// entropy source for high entropy experiments. The pseudo low entropy source
+// is not used for trial assignment, but only for statistical validation. It
+// should be assigned in the same way as the new source (with suffix "3").
 const char kMetricsLowEntropySource[] =
     "user_experience_metrics.low_entropy_source3";
 const char kMetricsOldLowEntropySource[] =
     "user_experience_metrics.low_entropy_source2";
+const char kMetricsPseudoLowEntropySource[] =
+    "user_experience_metrics.pseudo_low_entropy_source";
 
 // A machine ID used to detect when underlying hardware changes. It is only
 // stored locally and never transmitted in metrics reports.
@@ -66,6 +82,21 @@ const char kMetricsOngoingLogsMetadata[] =
 // client id and low entropy source should be reset.
 const char kMetricsResetIds[] = "user_experience_metrics.reset_metrics_ids";
 
+#if BUILDFLAG(IS_ANDROID)
+// Boolean that determines whether to use the new sampling trial
+// "PostFREFixMetricsAndCrashSampling" and feature "PostFREFixMetricsReporting"
+// to control sampling on Android Chrome. This is set to true when disabling
+// metrics reporting, or on start up if metrics reporting is not consented to
+// (including new users going through their first run). As a result, all new UMA
+// users should have this pref set to true.
+// Note: This exists due to a bug in which the old sampling rate was not being
+// applied correctly. In order for the fix to not affect the overall sampling
+// rate, this pref controls what trial/feature to use to determine whether the
+// client is sampled. See crbug/1306481.
+const char kUsePostFREFixSamplingTrial[] =
+    "user_experience_metrics.use_post_fre_fix_sampling_trial";
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Boolean that specifies whether or not crash reporting and metrics reporting
 // are sent over the network for analysis.
 const char kMetricsReportingEnabled[] =
@@ -81,13 +112,22 @@ const char kMetricsSessionID[] = "user_experience_metrics.session_id";
 
 // The prefix of the last-seen timestamp for persistent histogram files.
 // Values are named for the files themselves.
-const char kMetricsLastSeenPrefix[] =
-    "user_experience_metrics.last_seen.";
+const char kMetricsLastSeenPrefix[] = "user_experience_metrics.last_seen.";
 
 // Array of the number of samples in the memory mapped file.
 const char kMetricsFileMetricsMetadata[] =
     "user_experience_metrics.file_metrics_metadata";
 
+// The number of times the client has been reset due to cloned install.
+const char kClonedResetCount[] = "cloned_install.count";
+
+// The first timestamp when we reset a cloned client’s client id. This is only
+// set once. Attached to metrics reports forever thereafter.
+const char kFirstClonedResetTimestamp[] = "cloned_install.first_timestamp";
+
+// The last timestamp the client is reset due to cloned install. This will be
+// updated every time we reset the client due to cloned install.
+const char kLastClonedResetTimestamp[] = "cloned_install.last_timestamp";
 
 // A time stamp at which time the browser was known to be alive. Used to
 // evaluate whether the browser crash was due to a whole system crash.
@@ -96,40 +136,14 @@ const char kMetricsFileMetricsMetadata[] =
 const char kStabilityBrowserLastLiveTimeStamp[] =
     "user_experience_metrics.stability.browser_last_live_timestamp";
 
-// Total number of child process crashes (other than renderer / extension
-// renderer ones, and plugin children, which are counted separately) since the
-// last report.
-const char kStabilityChildProcessCrashCount[] =
-    "user_experience_metrics.stability.child_process_crash_count";
-
-// Number of times the application exited uncleanly since the last report.
-// On Android this does not count the ones due to Gms Core updates (below).
-const char kStabilityCrashCount[] =
-    "user_experience_metrics.stability.crash_count";
-
 // Number of times the application exited uncleanly since the last report
 // due to a gms core update.
 const char kStabilityCrashCountDueToGmsCoreUpdate[] =
     "user_experience_metrics.stability.crash_count_due_to_gms_core_update";
 
-
 // True if the previous run of the program exited cleanly.
 const char kStabilityExitedCleanly[] =
     "user_experience_metrics.stability.exited_cleanly";
-
-// Number of times an extension renderer process crashed since the last report.
-const char kStabilityExtensionRendererCrashCount[] =
-    "user_experience_metrics.stability.extension_renderer_crash_count";
-
-// Number of times an extension renderer process failed to launch since the last
-// report.
-const char kStabilityExtensionRendererFailedLaunchCount[] =
-    "user_experience_metrics.stability.extension_renderer_failed_launch_count";
-
-// Number of times an extension renderer process successfully launched since the
-// last report.
-const char kStabilityExtensionRendererLaunchCount[] =
-    "user_experience_metrics.stability.extension_renderer_launch_count";
 
 // The total number of samples that will be lost if ASSOCIATE_INTERNAL_PROFILE
 // isn't enabled since the previous stability recorded, this is different than
@@ -146,16 +160,9 @@ const char kStabilityFileMetricsUnsentFilesCount[] =
 const char kStabilityGmsCoreVersion[] =
     "user_experience_metrics.stability.gms_core_version";
 
-// Number of times a gpu process crashed since the last report. Currently only
-// recorded on Android.
-const char kStabilityGpuCrashCount[] =
-    "user_experience_metrics.stability.gpu_crash_count";
-
-// Number of times the session end did not complete.
-const char kStabilityIncompleteSessionEndCount[] =
-    "user_experience_metrics.stability.incomplete_session_end_count";
-
-// Number of times the application was launched since last report.
+#if BUILDFLAG(IS_ANDROID)
+// Number of times the application was launched since last report. Used on
+// Android platforms as WebView may still be interested in this metric.
 const char kStabilityLaunchCount[] =
     "user_experience_metrics.stability.launch_count";
 
@@ -163,23 +170,12 @@ const char kStabilityLaunchCount[] =
 const char kStabilityPageLoadCount[] =
     "user_experience_metrics.stability.page_load_count";
 
-// Number of times a renderer process crashed since the last report.
-const char kStabilityRendererCrashCount[] =
-    "user_experience_metrics.stability.renderer_crash_count";
-
-// Number of times a renderer process failed to launch since the last report.
-const char kStabilityRendererFailedLaunchCount[] =
-    "user_experience_metrics.stability.renderer_failed_launch_count";
-
-// Number of times the renderer has become non-responsive since the last
-// report.
-const char kStabilityRendererHangCount[] =
-    "user_experience_metrics.stability.renderer_hang_count";
-
 // Number of times a renderer process successfully launched since the last
-// report.
+// report. Used on Android platforms as WebView may still be interested in this
+// metric.
 const char kStabilityRendererLaunchCount[] =
     "user_experience_metrics.stability.renderer_launch_count";
+#endif
 
 // Base64 encoded serialized UMA system profile proto from the previous session.
 const char kStabilitySavedSystemProfile[] =
@@ -188,11 +184,6 @@ const char kStabilitySavedSystemProfile[] =
 // SHA-1 hash of the serialized UMA system profile proto (hex encoded).
 const char kStabilitySavedSystemProfileHash[] =
     "user_experience_metrics.stability.saved_system_profile_hash";
-
-// False if we received a session end and either we crashed during processing
-// the session end or ran out of time and windows terminated us.
-const char kStabilitySessionEndCompleted[] =
-    "user_experience_metrics.stability.session_end_completed";
 
 // Build time, in seconds since an epoch, which is used to assure that stability
 // metrics reported reflect stability of the same build.
@@ -221,6 +212,11 @@ const char kUmaCellDataUse[] = "user_experience_metrics.uma_cell_datause";
 // Dictionary for measuring cellular data used by user including chrome services
 // per day.
 const char kUserCellDataUse[] = "user_experience_metrics.user_call_datause";
+
+// String for holding user ID associated with the current ongoing UMA
+// log. This pref will be used to determine whether to send metrics in case
+// of a crash.
+const char kMetricsCurrentUserId[] = "metrics.current_user_id";
 
 }  // namespace prefs
 }  // namespace metrics

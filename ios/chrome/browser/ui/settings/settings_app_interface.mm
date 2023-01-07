@@ -1,21 +1,21 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/browsing_data/core/pref_names.h"
-#include "components/metrics/metrics_pref_names.h"
-#include "components/metrics/metrics_service.h"
-#include "components/prefs/pref_member.h"
-#include "components/prefs/pref_service.h"
-#include "components/search_engines/template_url_service.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/browsing_data/core/pref_names.h"
+#import "components/metrics/metrics_pref_names.h"
+#import "components/metrics/metrics_service.h"
+#import "components/prefs/pref_member.h"
+#import "components/prefs/pref_service.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/app/main_controller.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "ios/chrome/browser/pref_names.h"
-#include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
+#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -70,45 +70,14 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
 + (void)setMetricsReportingEnabled:(BOOL)reportingEnabled {
   chrome_test_util::SetBooleanLocalStatePref(
       metrics::prefs::kMetricsReportingEnabled, reportingEnabled);
-  // Breakpad uses dispatch_async to update its state. Wait to get to a
-  // consistent state.
-  chrome_test_util::WaitForBreakpadQueue();
 }
 
-// TODO(crbug.com/953862): Remove as part of feature flag cleanup.
-+ (void)setMetricsReportingEnabled:(BOOL)reportingEnabled
-                          wifiOnly:(BOOL)wifiOnly {
-  chrome_test_util::SetBooleanLocalStatePref(
-      metrics::prefs::kMetricsReportingEnabled, reportingEnabled);
-  chrome_test_util::SetBooleanLocalStatePref(prefs::kMetricsReportingWifiOnly,
-                                             wifiOnly);
-  // Breakpad uses dispatch_async to update its state. Wait to get to a
-  // consistent state.
-  chrome_test_util::WaitForBreakpadQueue();
++ (BOOL)isCrashpadEnabled {
+  return chrome_test_util::IsCrashpadEnabled();
 }
 
-+ (void)setCellularNetworkEnabled:(BOOL)cellularNetworkEnabled {
-  chrome_test_util::SetWWANStateTo(cellularNetworkEnabled);
-  // Breakpad uses dispatch_async to update its state. Wait to get to a
-  // consistent state.
-  chrome_test_util::WaitForBreakpadQueue();
-}
-
-+ (BOOL)isBreakpadEnabled {
-  return chrome_test_util::IsBreakpadEnabled();
-}
-
-+ (BOOL)isBreakpadReportingEnabled {
-  return chrome_test_util::IsBreakpadReportingEnabled();
-}
-
-+ (void)resetFirstLaunchState {
-  chrome_test_util::SetFirstLaunchStateTo(
-      chrome_test_util::IsFirstLaunchAfterUpgrade());
-}
-
-+ (void)setFirstLunchState:(BOOL)firstLaunch {
-  chrome_test_util::SetFirstLaunchStateTo(NO);
++ (BOOL)isCrashpadReportingEnabled {
+  return chrome_test_util::IsCrashpadReportingEnabled();
 }
 
 + (BOOL)settingsRegisteredKeyboardCommands {
@@ -116,6 +85,20 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
       chrome_test_util::GetMainController()
           .interfaceProvider.mainInterface.viewController;
   return viewController.presentedViewController.keyCommands != nil;
+}
+
++ (void)overrideSearchEngineURL:(NSString*)searchEngineURL {
+  TemplateURLData templateURLData;
+  templateURLData.SetURL(base::SysNSStringToUTF8(searchEngineURL));
+
+  auto defaultSearchProvider = std::make_unique<TemplateURL>(templateURLData);
+  TemplateURL* defaultSearchProviderPtr = defaultSearchProvider.get();
+
+  TemplateURLService* service =
+      ios::TemplateURLServiceFactory::GetForBrowserState(
+          chrome_test_util::GetOriginalBrowserState());
+  service->Add(std::move(defaultSearchProvider));
+  service->SetUserSelectedDefaultSearchProvider(defaultSearchProviderPtr);
 }
 
 + (void)resetSearchEngine {

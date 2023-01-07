@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,11 @@
 
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/variations/hashing.h"
@@ -19,20 +23,6 @@ namespace variations {
 namespace {
 
 base::LazyInstance<std::string>::Leaky g_seed_version;
-
-// Populates |name_group_ids| based on |active_groups|. Field trial names are
-// suffixed with |suffix| before hashing is executed.
-void GetFieldTrialActiveGroupIdsForActiveGroups(
-    base::StringPiece suffix,
-    const base::FieldTrial::ActiveGroups& active_groups,
-    std::vector<ActiveGroupId>* name_group_ids) {
-  DCHECK(name_group_ids->empty());
-  for (auto it = active_groups.begin(); it != active_groups.end(); ++it) {
-    name_group_ids->push_back(
-        MakeActiveGroupId(it->trial_name + suffix.as_string(),
-                          it->group_name + suffix.as_string()));
-  }
-}
 
 void AppendActiveGroupIdsAsStrings(
     const std::vector<ActiveGroupId> name_group_ids,
@@ -51,6 +41,18 @@ ActiveGroupId MakeActiveGroupId(base::StringPiece trial_name,
   id.name = HashName(trial_name);
   id.group = HashName(group_name);
   return id;
+}
+
+void GetFieldTrialActiveGroupIdsForActiveGroups(
+    base::StringPiece suffix,
+    const base::FieldTrial::ActiveGroups& active_groups,
+    std::vector<ActiveGroupId>* name_group_ids) {
+  DCHECK(name_group_ids->empty());
+  for (const auto& active_group : active_groups) {
+    name_group_ids->push_back(
+        MakeActiveGroupId(active_group.trial_name + std::string(suffix),
+                          active_group.group_name + std::string(suffix)));
+  }
 }
 
 void GetFieldTrialActiveGroupIds(base::StringPiece suffix,
@@ -78,6 +80,26 @@ void GetSyntheticTrialGroupIdsAsString(std::vector<std::string>* output) {
   SyntheticTrialsActiveGroupIdProvider::GetInstance()->GetActiveGroupIds(
       &name_group_ids);
   AppendActiveGroupIdsAsStrings(name_group_ids, output);
+}
+
+bool HasSyntheticTrial(const std::string& trial_name) {
+  std::vector<std::string> synthetic_trials;
+  variations::GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
+  std::string trial_hash =
+      base::StringPrintf("%x", variations::HashName(trial_name));
+  return base::ranges::any_of(synthetic_trials, [trial_hash](
+                                                    const auto& trial) {
+    return base::StartsWith(trial, trial_hash, base::CompareCase::SENSITIVE);
+  });
+}
+
+bool IsInSyntheticTrialGroup(const std::string& trial_name,
+                             const std::string& trial_group) {
+  std::vector<std::string> synthetic_trials;
+  GetSyntheticTrialGroupIdsAsString(&synthetic_trials);
+  return base::Contains(
+      synthetic_trials,
+      base::StringPrintf("%x-%x", HashName(trial_name), HashName(trial_group)));
 }
 
 void SetSeedVersion(const std::string& seed_version) {

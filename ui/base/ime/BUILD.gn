@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,6 +21,8 @@ component("ime_types") {
     "candidate_window.h",
     "composition_text.cc",
     "composition_text.h",
+    "grammar_fragment.cc",
+    "grammar_fragment.h",
     "ime_text_span.cc",
     "ime_text_span.h",
     "infolist_entry.cc",
@@ -57,15 +59,17 @@ component("ime") {
   sources = [
     "constants.cc",
     "constants.h",
+    "ime_key_event_dispatcher.h",
     "input_method.h",
     "input_method_base.cc",
     "input_method_base.h",
-    "input_method_delegate.h",
     "input_method_minimal.cc",
     "input_method_minimal.h",
     "input_method_observer.h",
     "mock_input_method.cc",
     "mock_input_method.h",
+    "surrounding_text_tracker.cc",
+    "surrounding_text_tracker.h",
     "text_edit_commands.h",
     "text_input_client.cc",
     "text_input_client.h",

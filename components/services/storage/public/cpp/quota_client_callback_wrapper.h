@@ -1,15 +1,18 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_QUOTA_CLIENT_CALLBACK_WRAPPER_H_
 #define COMPONENTS_SERVICES_STORAGE_PUBLIC_CPP_QUOTA_CLIENT_CALLBACK_WRAPPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 
 namespace storage {
+
+struct BucketLocator;
 
 // Stopgap for QuotaClients in systems with an unclear ownership graph.
 //
@@ -49,24 +52,19 @@ class COMPONENT_EXPORT(STORAGE_SERVICE_PUBLIC) QuotaClientCallbackWrapper
   ~QuotaClientCallbackWrapper() override;
 
   // mojom::QuotaClient.
-  void GetOriginUsage(const url::Origin& origin,
-                      blink::mojom::StorageType type,
-                      GetOriginUsageCallback callback) override;
-  void GetOriginsForType(blink::mojom::StorageType type,
-                         GetOriginsForTypeCallback callback) override;
-  void GetOriginsForHost(blink::mojom::StorageType type,
-                         const std::string& host,
-                         GetOriginsForHostCallback callback) override;
-  void DeleteOriginData(const url::Origin& origin,
-                        blink::mojom::StorageType type,
-                        DeleteOriginDataCallback callback) override;
+  void GetBucketUsage(const BucketLocator& bucket,
+                      GetBucketUsageCallback callback) override;
+  void GetStorageKeysForType(blink::mojom::StorageType type,
+                             GetStorageKeysForTypeCallback callback) override;
+  void DeleteBucketData(const BucketLocator& bucket,
+                        DeleteBucketDataCallback callback) override;
   void PerformStorageCleanup(blink::mojom::StorageType type,
                              PerformStorageCleanupCallback callback) override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 
-  mojom::QuotaClient* const wrapped_client_
+  const raw_ptr<mojom::QuotaClient> wrapped_client_
       GUARDED_BY_CONTEXT(sequence_checker_);
 };
 

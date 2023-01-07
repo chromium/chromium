@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,14 +12,13 @@
 #include "base/location.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -27,6 +26,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
 #include "components/nacl/common/buildflags.h"
@@ -47,6 +47,7 @@
 #include "ppapi/shared_impl/ppapi_switches.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/gl/gl_switches.h"
 
 using content::RenderViewHost;
@@ -82,11 +83,8 @@ void PPAPITestMessageHandler::Reset() {
 }
 
 PPAPITestBase::InfoBarObserver::InfoBarObserver(PPAPITestBase* test_base)
-    : test_base_(test_base),
-      expecting_infobar_(false),
-      should_accept_(false),
-      infobar_observer_(this) {
-  infobar_observer_.Add(GetInfoBarService());
+    : test_base_(test_base), expecting_infobar_(false), should_accept_(false) {
+  infobar_observation_.Observe(GetInfoBarManager());
 }
 
 PPAPITestBase::InfoBarObserver::~InfoBarObserver() {
@@ -112,36 +110,38 @@ void PPAPITestBase::InfoBarObserver::OnInfoBarAdded(
 
 void PPAPITestBase::InfoBarObserver::OnManagerShuttingDown(
     infobars::InfoBarManager* manager) {
-  infobar_observer_.Remove(manager);
+  ASSERT_TRUE(infobar_observation_.IsObservingSource(manager));
+  infobar_observation_.Reset();
 }
 
 void PPAPITestBase::InfoBarObserver::VerifyInfoBarState() {
-  InfoBarService* infobar_service = GetInfoBarService();
-  EXPECT_EQ(expecting_infobar_ ? 1U : 0U, infobar_service->infobar_count());
+  infobars::ContentInfoBarManager* infobar_manager = GetInfoBarManager();
+  EXPECT_EQ(expecting_infobar_ ? 1U : 0U, infobar_manager->infobar_count());
   if (!expecting_infobar_)
     return;
   expecting_infobar_ = false;
 
-  infobars::InfoBar* infobar = infobar_service->infobar_at(0);
+  infobars::InfoBar* infobar = infobar_manager->infobar_at(0);
   ConfirmInfoBarDelegate* delegate =
       infobar->delegate()->AsConfirmInfoBarDelegate();
-  ASSERT_TRUE(delegate != NULL);
+  ASSERT_TRUE(delegate != nullptr);
   if (should_accept_)
     delegate->Accept();
   else
     delegate->Cancel();
 
-  infobar_service->RemoveInfoBar(infobar);
+  infobar_manager->RemoveInfoBar(infobar);
 }
 
-InfoBarService* PPAPITestBase::InfoBarObserver::GetInfoBarService() {
+infobars::ContentInfoBarManager*
+PPAPITestBase::InfoBarObserver::GetInfoBarManager() {
   content::WebContents* web_contents =
       test_base_->browser()->tab_strip_model()->GetActiveWebContents();
-  return InfoBarService::FromWebContents(web_contents);
+  return infobars::ContentInfoBarManager::FromWebContents(web_contents);
 }
 
 PPAPITestBase::PPAPITestBase() {
-  // These are needed to test that the right NetworkIsolationKey is used.
+  // These are needed to test that the right NetworkAnonymizationKey is used.
   scoped_feature_list_.InitWithFeatures(
       // enabled_features
       {net::features::kSplitHostCacheByNetworkIsolationKey,
@@ -173,15 +173,6 @@ void PPAPITestBase::SetUpOnMainThread() {
   host_resolver()->AddRuleWithFlags(
       "host_resolver.test", embedded_test_server()->host_port_pair().host(),
       net::HOST_RESOLVER_CANONNAME);
-
-  SetUpPPAPIBroker();
-}
-
-void PPAPITestBase::SetUpPPAPIBroker() {
-  // Always allow access to the PPAPI broker.
-  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetDefaultContentSetting(ContentSettingsType::PPAPI_BROKER,
-                                 CONTENT_SETTING_ALLOW);
 }
 
 GURL PPAPITestBase::GetTestFileUrl(const std::string& test_case) {
@@ -199,7 +190,7 @@ GURL PPAPITestBase::GetTestFileUrl(const std::string& test_case) {
 
   GURL::Replacements replacements;
   std::string query = BuildQuery(std::string(), test_case);
-  replacements.SetQuery(query.c_str(), url::Component(0, query.size()));
+  replacements.SetQueryStr(query);
   return test_url.ReplaceComponents(replacements);
 }
 
@@ -260,7 +251,7 @@ void PPAPITestBase::RunTestURL(const GURL& test_url) {
       browser()->tab_strip_model()->GetActiveWebContents(),
       &handler);
 
-  ui_test_utils::NavigateToURL(browser(), test_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
 
   ASSERT_TRUE(observer.Run()) << handler.error_message();
   EXPECT_STREQ("PASS", handler.message().c_str());
@@ -294,6 +285,10 @@ void PPAPITest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitchASCII(switches::kAllowNaClSocketAPI, "127.0.0.1");
   if (in_process_)
     command_line->AppendSwitch(switches::kPpapiInProcess);
+
+  // TODO(https://crbug.com/1172495): Remove once NaCl code can be deleted.
+  command_line->AppendSwitchASCII(blink::switches::kBlinkSettings,
+                                  "allowNonEmptyNavigatorPlugins=true");
 }
 
 std::string PPAPITest::BuildQuery(const std::string& base,
@@ -315,6 +310,16 @@ void OutOfProcessPPAPITest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
 }
 
+void OutOfProcessPPAPITest::RunTest(const std::string& test_case) {
+#if BUILDFLAG(IS_WIN)
+  // See crbug.com/1231528 for context.
+  if (test_case == "Printing")
+    return;
+#endif
+
+  PPAPITestBase::RunTest(test_case);
+}
+
 // Send touch events to a plugin and expect the events to reach the renderer
 void OutOfProcessPPAPITest::RunTouchEventTest(const std::string& test_case) {
   RunTest(test_case);
@@ -323,7 +328,7 @@ void OutOfProcessPPAPITest::RunTouchEventTest(const std::string& test_case) {
   RenderViewHost* rvh = browser()
                             ->tab_strip_model()
                             ->GetActiveWebContents()
-                            ->GetMainFrame()
+                            ->GetPrimaryMainFrame()
                             ->GetRenderViewHost();
   auto watcher = content::RenderViewHostTester::CreateInputWatcher(
       rvh, blink::WebInputEvent::Type::kTouchStart);
@@ -334,7 +339,7 @@ void OutOfProcessPPAPITest::RunTouchEventTest(const std::string& test_case) {
   browser()
       ->tab_strip_model()
       ->GetActiveWebContents()
-      ->GetMainFrame()
+      ->GetPrimaryMainFrame()
       ->InsertVisualStateCallback(base::BindOnce(
           [](base::OnceClosure quit_closure, bool result) {
             EXPECT_TRUE(result);
@@ -376,8 +381,6 @@ void PPAPINaClTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
 #endif
 }
-
-void PPAPINaClTest::SetUpPPAPIBroker() {}
 
 void PPAPINaClTest::RunTest(const std::string& test_case) {
 #if BUILDFLAG(ENABLE_NACL)
@@ -456,27 +459,6 @@ void PPAPIPrivateNaClPNaClTest::SetUpCommandLine(
   AddPrivateSwitches(command_line);
 }
 
-void PPAPINaClPNaClNonSfiTest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  PPAPINaClTest::SetUpCommandLine(command_line);
-#if BUILDFLAG(ENABLE_NACL)
-  command_line->AppendSwitch(switches::kEnableNaClNonSfiMode);
-#endif
-}
-
-std::string PPAPINaClPNaClNonSfiTest::BuildQuery(
-    const std::string& base,
-    const std::string& test_case) {
-  return base::StringPrintf("%smode=nacl_pnacl_nonsfi&testcase=%s",
-                            base.c_str(), test_case.c_str());
-}
-
-void PPAPIPrivateNaClPNaClNonSfiTest::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  PPAPINaClPNaClNonSfiTest::SetUpCommandLine(command_line);
-  AddPrivateSwitches(command_line);
-}
-
 void PPAPINaClTestDisallowedSockets::SetUpCommandLine(
     base::CommandLine* command_line) {
   PPAPITestBase::SetUpCommandLine(command_line);
@@ -491,9 +473,4 @@ std::string PPAPINaClTestDisallowedSockets::BuildQuery(
     const std::string& test_case) {
   return base::StringPrintf("%smode=nacl_newlib&testcase=%s", base.c_str(),
                             test_case.c_str());
-}
-
-void PPAPIBrokerInfoBarTest::SetUpPPAPIBroker() {
-  // The default content setting for the PPAPI broker is ASK. We purposefully
-  // don't call PPAPITestBase::SetUpPPAPIBroker() to keep it that way.
 }

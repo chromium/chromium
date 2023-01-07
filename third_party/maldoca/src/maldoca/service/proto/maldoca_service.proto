@@ -1,0 +1,69 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// For expedience, we are borrowing file ops in the protobuf/testing.
+// In the long run this should be replaced by either using better
+// libraries or rewrite.
+
+// Protos for the maldoca server
+
+syntax = "proto2";
+
+package maldoca;
+
+option optimize_for = LITE_RUNTIME;
+
+option java_multiple_files = true;
+
+// Expected usage:
+//
+// 1) Frontend retrieves document (either the user uploads the document, or the
+//    user provides a hash that the frontend then uses to retrieve the
+//    document).
+// 2) Frontend sends the document to the backend.
+// 3) Backend performs analysis.
+// 4) Backend returns response with analysis data.
+
+import "maldoca/base/status_proto.proto";
+import "maldoca/service/proto/doc_type.proto";
+import "maldoca/service/proto/document_features.proto";
+import "maldoca/service/proto/exported_features.proto";
+import "maldoca/service/proto/parsed_document.proto";
+
+// ProcessDocument represents a request from the frontend to the backend for
+// retrieving document analysis data.
+message ProcessDocumentRequest {
+  // optional, the server will try to figure out the type anyway but if set,
+  // will assume this is correct.
+  optional DocType doc_type = 1;
+  // optional, may help identify file type
+  optional string file_name = 2;
+  // File content; required.
+  optional bytes doc_content = 3;
+}
+
+// ProcessDocumentResponse represents a response to ProcessDocumentRequest. It
+// contains document analysis data for a requested document.
+message ProcessDocumentResponse {
+  optional ParsedDocument parsed_document = 1;
+  optional DocumentFeatures document_features = 2;
+  optional ExportedFeatures exported_features = 3;
+  // Record errors from the backend.
+  repeated StatusProto errors = 4;
+}
+
+service Maldoca {
+  // Sending a document to the maldoca sever to be analyzed.
+  rpc SendProcessingRequest(ProcessDocumentRequest)
+      returns (ProcessDocumentResponse) {}
+}

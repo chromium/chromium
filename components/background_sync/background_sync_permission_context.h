@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 #define COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "components/permissions/permission_context_base.h"
 
 // Manages user permissions for background sync. The context is scoped to the
@@ -19,20 +18,22 @@ class BackgroundSyncPermissionContext
  public:
   explicit BackgroundSyncPermissionContext(
       content::BrowserContext* browser_context);
+
+  BackgroundSyncPermissionContext(const BackgroundSyncPermissionContext&) =
+      delete;
+  BackgroundSyncPermissionContext& operator=(
+      const BackgroundSyncPermissionContext&) = delete;
+
   ~BackgroundSyncPermissionContext() override = default;
 
  private:
   // PermissionContextBase:
   void DecidePermission(
-      content::WebContents* web_contents,
       const permissions::PermissionRequestID& id,
       const GURL& requesting_origin,
       const GURL& embedding_origin,
       bool user_gesture,
       permissions::BrowserPermissionCallback callback) override;
-  bool IsRestrictedToSecureOrigins() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncPermissionContext);
 };
 
 #endif  // COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_PERMISSION_CONTEXT_H_

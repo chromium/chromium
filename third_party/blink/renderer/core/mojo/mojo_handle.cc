@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/system/message_pipe.h"
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_create_shared_buffer_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_discard_data_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_duplicate_buffer_handle_options.h"
@@ -19,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_read_message_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_write_data_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_write_data_result.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/mojo/mojo_watcher.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -51,10 +51,10 @@ MojoWatcher* MojoHandle::watch(ScriptState* script_state,
 }
 
 MojoResult MojoHandle::writeMessage(
-    ArrayBufferOrArrayBufferView& buffer,
+    const V8BufferSource* buffer,
     const HeapVector<Member<MojoHandle>>& handles) {
   Vector<mojo::ScopedHandle, kHandleVectorInlineCapacity> scoped_handles;
-  scoped_handles.ReserveCapacity(handles.size());
+  scoped_handles.reserve(handles.size());
   bool has_invalid_handles = false;
   for (auto& handle : handles) {
     if (!handle->handle_.is_valid())
@@ -67,14 +67,19 @@ MojoResult MojoHandle::writeMessage(
 
   const void* bytes = nullptr;
   size_t num_bytes = 0;
-  if (buffer.IsArrayBuffer()) {
-    DOMArrayBuffer* array = buffer.GetAsArrayBuffer();
-    bytes = array->Data();
-    num_bytes = array->ByteLength();
-  } else {
-    DOMArrayBufferView* view = buffer.GetAsArrayBufferView().Get();
-    bytes = view->BaseAddress();
-    num_bytes = view->byteLength();
+  switch (buffer->GetContentType()) {
+    case V8BufferSource::ContentType::kArrayBuffer: {
+      DOMArrayBuffer* array = buffer->GetAsArrayBuffer();
+      bytes = array->Data();
+      num_bytes = array->ByteLength();
+      break;
+    }
+    case V8BufferSource::ContentType::kArrayBufferView: {
+      const auto& view = buffer->GetAsArrayBufferView();
+      bytes = view->BaseAddress();
+      num_bytes = view->byteLength();
+      break;
+    }
   }
 
   auto message = mojo::Message(
@@ -141,7 +146,7 @@ MojoReadMessageResult* MojoHandle::readMessage(
 }
 
 MojoWriteDataResult* MojoHandle::writeData(
-    const ArrayBufferOrArrayBufferView& buffer,
+    const V8BufferSource* buffer,
     const MojoWriteDataOptions* options_dict) {
   MojoWriteDataResult* result_dict = MojoWriteDataResult::Create();
 
@@ -151,14 +156,19 @@ MojoWriteDataResult* MojoHandle::writeData(
 
   const void* elements = nullptr;
   base::CheckedNumeric<uint32_t> checked_num_bytes;
-  if (buffer.IsArrayBuffer()) {
-    DOMArrayBuffer* array = buffer.GetAsArrayBuffer();
-    elements = array->Data();
-    checked_num_bytes = array->ByteLength();
-  } else {
-    DOMArrayBufferView* view = buffer.GetAsArrayBufferView().Get();
-    elements = view->BaseAddress();
-    checked_num_bytes = view->byteLength();
+  switch (buffer->GetContentType()) {
+    case V8BufferSource::ContentType::kArrayBuffer: {
+      DOMArrayBuffer* array = buffer->GetAsArrayBuffer();
+      elements = array->Data();
+      checked_num_bytes = array->ByteLength();
+      break;
+    }
+    case V8BufferSource::ContentType::kArrayBufferView: {
+      const auto& view = buffer->GetAsArrayBufferView();
+      elements = view->BaseAddress();
+      checked_num_bytes = view->byteLength();
+      break;
+    }
   }
 
   ::MojoWriteDataOptions options;
@@ -206,7 +216,7 @@ MojoReadDataResult* MojoHandle::discardData(
 }
 
 MojoReadDataResult* MojoHandle::readData(
-    ArrayBufferOrArrayBufferView& buffer,
+    const V8BufferSource* buffer,
     const MojoReadDataOptions* options_dict) const {
   MojoReadDataResult* result_dict = MojoReadDataResult::Create();
   MojoReadDataFlags flags = MOJO_READ_DATA_FLAG_NONE;
@@ -217,14 +227,19 @@ MojoReadDataResult* MojoHandle::readData(
 
   void* elements = nullptr;
   base::CheckedNumeric<uint32_t> checked_num_bytes;
-  if (buffer.IsArrayBuffer()) {
-    DOMArrayBuffer* array = buffer.GetAsArrayBuffer();
-    elements = array->Data();
-    checked_num_bytes = array->ByteLength();
-  } else {
-    DOMArrayBufferView* view = buffer.GetAsArrayBufferView().Get();
-    elements = view->BaseAddress();
-    checked_num_bytes = view->byteLength();
+  switch (buffer->GetContentType()) {
+    case V8BufferSource::ContentType::kArrayBuffer: {
+      DOMArrayBuffer* array = buffer->GetAsArrayBuffer();
+      elements = array->Data();
+      checked_num_bytes = array->ByteLength();
+      break;
+    }
+    case V8BufferSource::ContentType::kArrayBufferView: {
+      const auto& view = buffer->GetAsArrayBufferView();
+      elements = view->BaseAddress();
+      checked_num_bytes = view->byteLength();
+      break;
+    }
   }
 
   ::MojoReadDataOptions options;
@@ -244,18 +259,31 @@ MojoReadDataResult* MojoHandle::readData(
 MojoMapBufferResult* MojoHandle::mapBuffer(unsigned offset,
                                            unsigned num_bytes) {
   MojoMapBufferResult* result_dict = MojoMapBufferResult::Create();
-  void* data = nullptr;
-  MojoResult result =
-      MojoMapBuffer(handle_.get().value(), offset, num_bytes, nullptr, &data);
-  result_dict->setResult(result);
-  if (result == MOJO_RESULT_OK) {
-    ArrayBufferContents contents(
-        data, num_bytes, [](void* buffer, size_t length, void* alloc_data) {
-          MojoResult result = MojoUnmapBuffer(buffer);
-          DCHECK_EQ(result, MOJO_RESULT_OK);
-        });
+
+  // We need to extract the underlying shared memory region to map it as array
+  // buffer contents. However, as we don't know what kind of shared memory
+  // region is currently backing the buffer, we unwrap it to the underlying
+  // platform shared memory region. We also don't want to duplicate the region,
+  // and so need to perform a small dance here to first unwrap, and later
+  // re-wrap the MojoSharedBuffer to/from a //base shared memory region.
+  mojo::SharedBufferHandle buffer_handle(handle_.release().value());
+  auto region = mojo::UnwrapPlatformSharedMemoryRegion(
+      mojo::ScopedSharedBufferHandle(buffer_handle));
+
+  if (region.IsValid()) {
+    ArrayBufferContents contents(region, offset, num_bytes);
+    result_dict->setResult(MOJO_RESULT_OK);
     result_dict->setBuffer(DOMArrayBuffer::Create(contents));
+  } else {
+    result_dict->setResult(MOJO_RESULT_UNKNOWN);
   }
+
+  // 2nd part of the dance: we now need to wrap the shared memory region into a
+  // mojo handle again.
+  mojo::ScopedSharedBufferHandle mojo_buffer =
+      mojo::WrapPlatformSharedMemoryRegion(std::move(region));
+  handle_.reset(mojo::Handle(mojo_buffer.release().value()));
+
   return result_dict;
 }
 

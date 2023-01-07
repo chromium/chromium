@@ -1,0 +1,44 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module system_extensions_test.mojom;
+
+enum TestHarnessStatus {
+  kOk,
+  kError,
+  kTimeout,
+  kPreconditionFailed,
+};
+
+struct TestHarnessResult {
+  string? message;
+  string? stack;
+  TestHarnessStatus status;
+};
+
+enum TestStatus {
+  kPass,
+  kFail,
+  kTimeout,
+  kNotRun,
+  kPreconditionFailed,
+};
+
+struct TestResult {
+  string name;
+  string? message;
+  string? stack;
+  TestStatus status;
+};
+
+// Interface used by the test harness to communicate with the browser.
+interface TestRunner {
+  // Called by the testharness when all tests finish running.
+  OnCompletion(array<TestResult> tests_results,
+               TestHarnessResult testharness_result);
+
+  // Called by testharnessreport.js to get the name of the current run.
+  // Returns null if this is not a multi run test.
+  GetCurrentRunName() => (string? run_name);
+};

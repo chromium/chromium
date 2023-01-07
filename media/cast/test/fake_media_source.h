@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,21 +15,23 @@
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_util.h"
 #include "media/cast/cast_config.h"
+#include "media/ffmpeg/scoped_av_packet.h"
 #include "media/filters/audio_renderer_algorithm.h"
-#include "media/filters/ffmpeg_demuxer.h"
 
 struct AVCodecContext;
 struct AVFormatContext;
 struct AVFrame;
+struct AVStream;
 
 namespace media {
 
@@ -62,6 +64,10 @@ class FakeMediaSource final : public media::AudioConverter::InputCallback {
                   const FrameSenderConfig& audio_config,
                   const FrameSenderConfig& video_config,
                   bool keep_frames);
+
+  FakeMediaSource(const FakeMediaSource&) = delete;
+  FakeMediaSource& operator=(const FakeMediaSource&) = delete;
+
   ~FakeMediaSource() final;
 
   // Transcode this file as the source of video and audio frames.
@@ -130,7 +136,7 @@ class FakeMediaSource final : public media::AudioConverter::InputCallback {
   scoped_refptr<AudioFrameInput> audio_frame_input_;
   scoped_refptr<VideoFrameInput> video_frame_input_;
   uint8_t synthetic_count_;
-  const base::TickClock* const clock_;  // Not owned by this class.
+  const raw_ptr<const base::TickClock> clock_;  // Not owned by this class.
 
   // Time when the stream starts.
   base::TimeTicks start_time_;
@@ -143,7 +149,7 @@ class FakeMediaSource final : public media::AudioConverter::InputCallback {
   base::MemoryMappedFile file_data_;
   std::unique_ptr<InMemoryUrlProtocol> protocol_;
   std::unique_ptr<FFmpegGlue> glue_;
-  AVFormatContext* av_format_context_;
+  raw_ptr<AVFormatContext> av_format_context_;
 
   int audio_stream_index_;
   std::unique_ptr<AVCodecContext, ScopedPtrAVFreeContext> av_audio_context_;
@@ -177,8 +183,6 @@ class FakeMediaSource final : public media::AudioConverter::InputCallback {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<FakeMediaSource> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeMediaSource);
 };
 
 }  // namespace cast

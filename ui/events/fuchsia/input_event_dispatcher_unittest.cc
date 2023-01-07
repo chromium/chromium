@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <fuchsia/ui/input/cpp/fidl.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/fuchsia/input_event_sink.h"
@@ -23,11 +22,15 @@ namespace {
 class InputEventDispatcherTest : public testing::Test, public InputEventSink {
  public:
   InputEventDispatcherTest() : dispatcher_(this) {}
+
+  InputEventDispatcherTest(const InputEventDispatcherTest&) = delete;
+  InputEventDispatcherTest& operator=(const InputEventDispatcherTest&) = delete;
+
   ~InputEventDispatcherTest() override = default;
 
   void DispatchEvent(Event* event) override {
     DCHECK(!captured_event_);
-    captured_event_ = Event::Clone(*event);
+    captured_event_ = event->Clone();
   }
 
  protected:
@@ -38,9 +41,6 @@ class InputEventDispatcherTest : public testing::Test, public InputEventSink {
     DCHECK(captured_event_);
     captured_event_.reset();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputEventDispatcherTest);
 };
 
 TEST_F(InputEventDispatcherTest, MouseEventButtons) {

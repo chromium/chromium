@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,14 +28,14 @@ IN_PROC_BROWSER_TEST_F(TipMarqueeViewBrowserTest, MarqueeStartsInvisibile) {
 
 IN_PROC_BROWSER_TEST_F(TipMarqueeViewBrowserTest,
                        VisibilityChangesOnSetAndClearTip) {
-  tip_marquee_view()->SetTip(u"Tip Text");
+  tip_marquee_view()->SetAndShowTip(u"Tip Text");
   EXPECT_TRUE(tip_marquee_view()->GetVisible());
-  tip_marquee_view()->ClearTip();
+  tip_marquee_view()->ClearAndHideTip();
   EXPECT_FALSE(tip_marquee_view()->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(TipMarqueeViewBrowserTest, TipStartsExpanded) {
-  tip_marquee_view()->SetTip(u"Tip Text");
-  tab_strip_region_view()->Layout();
+  tip_marquee_view()->SetAndShowTip(u"Tip Text");
+  RunScheduledLayouts();
   EXPECT_EQ(tip_marquee_view()->GetPreferredSize(), tip_marquee_view()->size());
 }

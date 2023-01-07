@@ -1,4 +1,4 @@
-// Copyright 2017 The Crashpad Authors. All rights reserved.
+// Copyright 2017 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@
 #include "util/process/process_memory_linux.h"
 #include "util/process/process_memory_range.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/api-level.h>
 #endif
 
@@ -83,8 +83,7 @@ void TestAgainstTarget(PtraceConnection* connection) {
   ASSERT_EQ(exe_mappings->Count(), 1u);
   LinuxVMAddress elf_address = exe_mappings->Next()->range.Base();
 
-  ProcessMemoryLinux memory;
-  ASSERT_TRUE(memory.Initialize(connection->GetProcessID()));
+  ProcessMemoryLinux memory(connection);
   ProcessMemoryRange range;
   ASSERT_TRUE(range.Initialize(&memory, connection->Is64Bit()));
 
@@ -104,7 +103,7 @@ void TestAgainstTarget(PtraceConnection* connection) {
   DebugRendezvous debug;
   ASSERT_TRUE(debug.Initialize(range, debug_address));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const int android_runtime_api = android_get_device_api_level();
   ASSERT_GE(android_runtime_api, 1);
 
@@ -126,7 +125,7 @@ void TestAgainstTarget(PtraceConnection* connection) {
   // glibc's loader does not set the name for the executable.
   EXPECT_TRUE(debug.Executable()->name.empty());
   EXPECT_EQ(debug.Executable()->dynamic_array, exe_dynamic_address);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Android's loader doesn't set the load bias until Android 4.3 (API 18).
   if (android_runtime_api >= 18) {
@@ -163,7 +162,9 @@ void TestAgainstTarget(PtraceConnection* connection) {
     ASSERT_GE(possible_mappings->Count(), 1u);
 
     std::unique_ptr<ElfImageReader> module_reader;
+#if !BUILDFLAG(IS_ANDROID)
     const MemoryMap::Mapping* module_mapping = nullptr;
+#endif
     const MemoryMap::Mapping* mapping = nullptr;
     while ((mapping = possible_mappings->Next())) {
       auto parsed_module = std::make_unique<ElfImageReader>();
@@ -173,13 +174,15 @@ void TestAgainstTarget(PtraceConnection* connection) {
           parsed_module->GetDynamicArrayAddress(&dynamic_address) &&
           dynamic_address == module.dynamic_array) {
         module_reader = std::move(parsed_module);
+#if !BUILDFLAG(IS_ANDROID)
         module_mapping = mapping;
+#endif
         break;
       }
     }
     ASSERT_TRUE(module_reader.get());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_FALSE(module.name.empty());
 #else
     // glibc's loader doesn't always set the name in the link map for the vdso.
@@ -203,7 +206,7 @@ void TestAgainstTarget(PtraceConnection* connection) {
         module_mapping->device,
         module_mapping->inode,
         module.name);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // Android's loader stops setting its own load bias after Android 4.4.4
     // (API 20) until Android 6.0 (API 23).
@@ -240,6 +243,10 @@ TEST(DebugRendezvous, Self) {
 class ChildTest : public Multiprocess {
  public:
   ChildTest() {}
+
+  ChildTest(const ChildTest&) = delete;
+  ChildTest& operator=(const ChildTest&) = delete;
+
   ~ChildTest() {}
 
  private:
@@ -251,8 +258,6 @@ class ChildTest : public Multiprocess {
   }
 
   void MultiprocessChild() { CheckedReadFileAtEOF(ReadPipeHandle()); }
-
-  DISALLOW_COPY_AND_ASSIGN(ChildTest);
 };
 
 TEST(DebugRendezvous, Child) {

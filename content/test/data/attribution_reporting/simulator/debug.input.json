@@ -1,0 +1,50 @@
+{
+  "sources": [
+    {
+      "timestamp": "1643235573000",
+      "source_origin": "https://s.test",
+      "reporting_origin": "https://r.test",
+      "source_type": "navigation",
+      "Attribution-Reporting-Register-Source": {
+        "destination": "https://d.test",
+        "source_event_id": "123",
+        "debug_key": "222"
+      }
+    }
+  ],
+  "triggers": [
+    {
+      "timestamp": "1643235574000",
+      "reporting_origin": "https://r.test",
+      "destination_origin": "https://d.test",
+      "Attribution-Reporting-Register-Trigger": {
+        "event_trigger_data": [
+          {
+            "trigger_data": "7"
+          }
+        ],
+        "debug_key": "333"
+      }
+    },
+    {
+      "timestamp": "1643235575000",
+      "reporting_origin": "https://r.test",
+      "destination_origin": "https://d.test",
+      "Attribution-Reporting-Register-Trigger": {
+        "event_trigger_data": [
+          {
+            "trigger_data": "6"
+          }
+        ],
+        "debug_key": "444"
+      }
+    }
+  ],
+  "cookies": [
+    {
+      "timestamp": "1643235571000",
+      "url": "https://r.test/cookie",
+      "Set-Cookie": "ar_debug=1; SameSite=None; Secure; HttpOnly; Max-Age=4"
+    }
+  ]
+}

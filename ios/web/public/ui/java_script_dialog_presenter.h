@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,14 +20,14 @@ class JavaScriptDialogPresenter {
   virtual ~JavaScriptDialogPresenter() = default;
 
   // Requests presentation of a JavaScript dialog. Clients must always call
-  // |callback| even if they choose not to present the dialog.
+  // `callback` even if they choose not to present the dialog.
   virtual void RunJavaScriptDialog(WebState* web_state,
                                    const GURL& origin_url,
                                    JavaScriptDialogType dialog_type,
                                    NSString* message_text,
                                    NSString* default_prompt_text,
                                    DialogClosedCallback callback) = 0;
-  // Informs clients that all requested dialogs associated with |web_state|
+  // Informs clients that all requested dialogs associated with `web_state`
   // should be dismissed.
   virtual void CancelDialogs(WebState* web_state) = 0;
 };

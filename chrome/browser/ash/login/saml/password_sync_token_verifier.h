@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ namespace user_manager {
 class User;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Verifies local copy of the password sync token by executing API call. If
 // token is invalid calls InSessionPasswordSyncManager to request online re-auth
@@ -75,6 +75,6 @@ class PasswordSyncTokenVerifier : public KeyedService,
   friend class PasswordSyncTokenVerifierTest;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SAML_PASSWORD_SYNC_TOKEN_VERIFIER_H_

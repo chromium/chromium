@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,18 +23,21 @@ class CanonicalCookie {
     private final long mCreation;
     private final long mExpiration;
     private final long mLastAccess;
+    private final long mLastUpdate;
     private final boolean mSecure;
     private final boolean mHttpOnly;
     private final int mSameSite;
     private final int mPriority;
     private final boolean mSameParty;
+    private final String mPartitionKey;
     private final int mSourceScheme;
     private final int mSourcePort;
 
     /** Constructs a CanonicalCookie */
     CanonicalCookie(String name, String value, String domain, String path, long creation,
-            long expiration, long lastAccess, boolean secure, boolean httpOnly, int sameSite,
-            int priority, boolean sameParty, int sourceScheme, int sourcePort) {
+            long expiration, long lastAccess, long lastUpdate, boolean secure, boolean httpOnly,
+            int sameSite, int priority, boolean sameParty, String partitionKey, int sourceScheme,
+            int sourcePort) {
         mName = name;
         mValue = value;
         mDomain = domain;
@@ -42,11 +45,13 @@ class CanonicalCookie {
         mCreation = creation;
         mExpiration = expiration;
         mLastAccess = lastAccess;
+        mLastUpdate = lastUpdate;
         mSecure = secure;
         mHttpOnly = httpOnly;
         mSameSite = sameSite;
         mPriority = priority;
         mSameParty = sameParty;
+        mPartitionKey = partitionKey;
         mSourceScheme = sourceScheme;
         mSourcePort = sourcePort;
     }
@@ -81,6 +86,11 @@ class CanonicalCookie {
         return mLastAccess;
     }
 
+    /** @return Last updated time. */
+    long getLastUpdateDate() {
+        return mLastUpdate;
+    }
+
     /** @return Expiration time. */
     long getExpirationDate() {
         return mExpiration;
@@ -111,6 +121,11 @@ class CanonicalCookie {
         return mValue;
     }
 
+    /** @return Cookie partition key. */
+    String getPartitionKey() {
+        return mPartitionKey;
+    }
+
     /** @return Source scheme of the cookie. */
     int sourceScheme() {
         return mSourceScheme;
@@ -124,7 +139,7 @@ class CanonicalCookie {
     // Note incognito state cannot persist across app installs since the encryption key is stored
     // in the activity state bundle. So the version here is more of a guard than a real version
     // used for format migrations.
-    private static final int SERIALIZATION_VERSION = 20201111;
+    private static final int SERIALIZATION_VERSION = 20210712;
 
     static void saveListToStream(DataOutputStream out, CanonicalCookie[] cookies)
             throws IOException {
@@ -185,11 +200,13 @@ class CanonicalCookie {
         out.writeLong(mCreation);
         out.writeLong(mExpiration);
         out.writeLong(mLastAccess);
+        out.writeLong(mLastUpdate);
         out.writeBoolean(mSecure);
         out.writeBoolean(mHttpOnly);
         out.writeInt(mSameSite);
         out.writeInt(mPriority);
         out.writeBoolean(mSameParty);
+        out.writeUTF(mPartitionKey);
         out.writeInt(mSourceScheme);
         out.writeInt(mSourcePort);
     }
@@ -202,11 +219,13 @@ class CanonicalCookie {
                 in.readLong(), // creation
                 in.readLong(), // expiration
                 in.readLong(), // last access
+                in.readLong(), // last update
                 in.readBoolean(), // secure
                 in.readBoolean(), // httponly
                 in.readInt(), // samesite
                 in.readInt(), // priority
                 in.readBoolean(), // sameparty
+                in.readUTF(), // partition key
                 in.readInt(), // source scheme
                 in.readInt()); // source port
     }

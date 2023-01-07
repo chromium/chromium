@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ NGMathSpaceLayoutAlgorithm::NGMathSpaceLayoutAlgorithm(
   DCHECK(params.space.IsNewFormattingContext());
 }
 
-scoped_refptr<const NGLayoutResult> NGMathSpaceLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGMathSpaceLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   LayoutUnit intrinsic_block_size = BorderScrollbarPadding().BlockSum();
@@ -27,14 +27,14 @@ scoped_refptr<const NGLayoutResult> NGMathSpaceLayoutAlgorithm::Layout() {
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  container_builder_.SetBaseline(
+  container_builder_.SetBaselines(
       BorderScrollbarPadding().block_start +
       ValueForLength(Style().GetMathBaseline(), LayoutUnit()));
   return container_builder_.ToBoxFragment();
 }
 
 MinMaxSizesResult NGMathSpaceLayoutAlgorithm::ComputeMinMaxSizes(
-    const MinMaxSizesFloatInput&) const {
+    const MinMaxSizesFloatInput&) {
   if (auto result = CalculateMinMaxSizesIgnoringChildren(
           Node(), BorderScrollbarPadding()))
     return *result;

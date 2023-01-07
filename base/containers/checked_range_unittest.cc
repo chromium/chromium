@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -39,15 +40,15 @@ TEST(CheckedContiguousRange, Constructor_String) {
 TEST(CheckedContiguousRange, Constructor_Array) {
   static constexpr int array[] = {1, 2, 3, 4, 5};
   constexpr CheckedContiguousRange<const int[5]> range(array);
-  static_assert(data(array) == range.data(), "");
-  static_assert(size(array) == range.size(), "");
+  static_assert(std::data(array) == range.data(), "");
+  static_assert(std::size(array) == range.size(), "");
 }
 
 TEST(CheckedContiguousRange, Constructor_StdArray) {
   static constexpr std::array<int, 5> array = {1, 2, 3, 4, 5};
   constexpr CheckedContiguousRange<const std::array<int, 5>> range(array);
   static_assert(data(array) == range.data(), "");
-  static_assert(base::size(array) == range.size(), "");
+  static_assert(std::size(array) == range.size(), "");
 }
 
 TEST(CheckedContiguousRange, Constructor_StringPiece) {
@@ -60,8 +61,8 @@ TEST(CheckedContiguousRange, Constructor_StringPiece) {
 TEST(CheckedContiguousRange, Constructor_InitializerList) {
   static constexpr std::initializer_list<int> il = {1, 2, 3, 4, 5};
   constexpr CheckedContiguousRange<const std::initializer_list<int>> range(il);
-  static_assert(base::data(il) == range.data(), "");
-  static_assert(base::size(il) == range.size(), "");
+  static_assert(std::data(il) == range.data(), "");
+  static_assert(std::size(il) == range.size(), "");
 }
 
 TEST(CheckedContiguousRange, Constructor_Copy) {
@@ -162,7 +163,7 @@ TEST(CheckedContiguousRange, DataSizeEmpty_Constexpr) {
   constexpr CheckedContiguousRange<const std::array<int, 0>> range(array);
   static_assert(data(array) == range.data(), "");
   static_assert(data(array) == range.cdata(), "");
-  static_assert(base::size(array) == range.size(), "");
+  static_assert(std::size(array) == range.size(), "");
   static_assert(range.empty(), "");
 }
 
@@ -233,16 +234,21 @@ TEST(CheckedContiguousRange, Conversions) {
       "");
 }
 
-TEST(CheckedContiguousRange, OutOfBoundsDeath) {
+TEST(CheckedContiguousRangeDeathTest, OutOfBounds) {
   std::vector<int> empty_vector;
   CheckedContiguousRange<std::vector<int>> empty_range(empty_vector);
-  ASSERT_DEATH_IF_SUPPORTED(empty_range[0], "");
-  ASSERT_DEATH_IF_SUPPORTED(empty_range.front(), "");
-  ASSERT_DEATH_IF_SUPPORTED(empty_range.back(), "");
+  EXPECT_CHECK_DEATH(empty_range[0]);
+  EXPECT_CHECK_DEATH(empty_range.front());
+  EXPECT_CHECK_DEATH(empty_range.back());
 
   static constexpr int array[] = {0, 1, 2};
   constexpr CheckedContiguousRange<const int[3]> range(array);
-  ASSERT_DEATH_IF_SUPPORTED(range[3], "");
+  EXPECT_CHECK_DEATH(range[3]);
+
+  CheckedContiguousRange<std::vector<int>> default_range;
+  EXPECT_CHECK_DEATH(default_range[0]);
+  EXPECT_CHECK_DEATH(default_range.front());
+  EXPECT_CHECK_DEATH(default_range.back());
 }
 
 }  // namespace base

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,55 +16,92 @@
  * a disabled toggle and the task continuation localized string component that
  * is a special case containing two links.
  */
-Polymer({
-  is: 'settings-multidevice-task-continuation-item',
 
-  behaviors: [
-    MultiDeviceFeatureBehavior,
-    WebUIListenerBehavior,
-  ],
+import './multidevice_feature_item.js';
+import './multidevice_task_continuation_disabled_link.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
+import '../../settings_shared.css.js';
 
-  properties: {
-    /** @private */
-    isChromeTabsSyncEnabled_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  /** @private {?settings.SyncBrowserProxy} */
-  syncBrowserProxy_: null,
+import {SyncBrowserProxyImpl} from '../../people_page/sync_browser_proxy.js';
+
+import {MultiDeviceFeatureBehavior, MultiDeviceFeatureBehaviorInterface} from './multidevice_feature_behavior.js';
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {MultiDeviceFeatureBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsMultideviceTaskContinuationItemElementBase = mixinBehaviors(
+    [
+      MultiDeviceFeatureBehavior,
+      WebUIListenerBehavior,
+    ],
+    PolymerElement);
+
+/** @polymer */
+class SettingsMultideviceTaskContinuationItemElement extends
+    SettingsMultideviceTaskContinuationItemElementBase {
+  static get is() {
+    return 'settings-multidevice-task-continuation-item';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /** @private */
+      isChromeTabsSyncEnabled_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /** @override */
-  created() {
-    this.syncBrowserProxy_ = settings.SyncBrowserProxyImpl.getInstance();
-  },
+  constructor() {
+    super();
+
+    /** @private {!SyncBrowserProxy} */
+    this.syncBrowserProxy_ = SyncBrowserProxyImpl.getInstance();
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.addWebUIListener(
         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
 
     // Cause handleSyncPrefsChanged_() to be called when the element is first
     // attached so that the state of |syncPrefs.tabsSynced| is known.
     this.syncBrowserProxy_.sendSyncPrefsChanged();
-  },
+  }
 
   /** @override */
   focus() {
     if (!this.isChromeTabsSyncEnabled_) {
-      this.$$('cr-toggle').focus();
+      this.shadowRoot.querySelector('cr-toggle').focus();
     } else {
       this.$.phoneHubTaskContinuationItem.focus();
     }
-  },
+  }
 
   /**
    * Handler for when the sync preferences are updated.
-   * @param {!settings.SyncPrefs} syncPrefs
+   * @param {!SyncPrefs} syncPrefs
    * @private
    */
   handleSyncPrefsChanged_(syncPrefs) {
     this.isChromeTabsSyncEnabled_ = !!syncPrefs && syncPrefs.tabsSynced;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsMultideviceTaskContinuationItemElement.is,
+    SettingsMultideviceTaskContinuationItemElement);

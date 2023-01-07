@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/common/api/messaging/message.h"
+#include "extensions/common/api/messaging/serialization_format.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/renderer/bindings/api_binding_test.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
@@ -31,8 +31,8 @@ TEST_F(MessagingUtilTest, TestMaximumMessageSize) {
   v8::Local<v8::Value> long_message =
       V8ValueFromScriptSource(context, "'a'.repeat(1024 *1024 * 65)");
   std::string error;
-  std::unique_ptr<Message> message =
-      messaging_util::MessageFromV8(context, long_message, &error);
+  std::unique_ptr<Message> message = messaging_util::MessageFromV8(
+      context, long_message, SerializationFormat::kJson, &error);
   EXPECT_FALSE(message);
   EXPECT_EQ(kMessageTooLongError, error);
 }
@@ -99,7 +99,7 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromExtensionContext) {
       {gin::StringToV8(isolate(), "invalid id"), base::StringPiece(), false},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Test Case: %d", static_cast<int>(i)));
     const auto& test_case = test_cases[i];
     std::string target;
@@ -134,7 +134,7 @@ TEST_F(MessagingUtilWithSystemTest, TestGetTargetIdFromWebContext) {
       {gin::StringToV8(isolate(), "invalid id"), base::StringPiece(), false},
   };
 
-  for (size_t i = 0; i < base::size(test_cases); ++i) {
+  for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(base::StringPrintf("Test Case: %d", static_cast<int>(i)));
     const auto& test_case = test_cases[i];
     std::string target;

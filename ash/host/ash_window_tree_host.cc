@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,11 @@
 
 #include <memory>
 
+#include "ash/constants/ash_switches.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
 #include "ash/host/ash_window_tree_host_mirroring_unified.h"
 #include "ash/host/ash_window_tree_host_platform.h"
 #include "ash/host/ash_window_tree_host_unified.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -69,16 +69,19 @@ std::unique_ptr<AshWindowTreeHost> AshWindowTreeHost::Create(
   if (init_params.mirroring_unified) {
     return std::make_unique<AshWindowTreeHostMirroringUnified>(
         init_params.initial_bounds, init_params.display_id,
-        init_params.mirroring_delegate);
+        init_params.delegate);
   }
   if (init_params.offscreen) {
     return std::make_unique<AshWindowTreeHostUnified>(
-        init_params.initial_bounds, init_params.mirroring_delegate);
+        init_params.initial_bounds, init_params.delegate,
+        init_params.compositor_memory_limit_mb);
   }
-  return std::make_unique<AshWindowTreeHostPlatform>(
-      ui::PlatformWindowInitProperties{
-          init_params.initial_bounds,
-          switches::IsCompositingBasedThrottlingEnabled()});
+  ui::PlatformWindowInitProperties properties{init_params.initial_bounds};
+  properties.enable_compositing_based_throttling = true;
+  properties.compositor_memory_limit_mb =
+      init_params.compositor_memory_limit_mb;
+  return std::make_unique<AshWindowTreeHostPlatform>(std::move(properties),
+                                                     init_params.delegate);
 }
 
 }  // namespace ash

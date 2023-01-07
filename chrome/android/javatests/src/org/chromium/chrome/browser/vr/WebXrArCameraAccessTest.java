@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.ArPlaybackFile;
@@ -74,7 +73,7 @@ public class WebXrArCameraAccessTest {
     testCameraAccessImageTextureNotNull() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail();
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
         mWebXrArTestFramework.runJavaScriptOrFail(
                 "stepStartStoringCameraTexture(1)", POLL_TIMEOUT_SHORT_MS);
         mWebXrArTestFramework.waitOnJavaScriptStep();
@@ -94,7 +93,7 @@ public class WebXrArCameraAccessTest {
     testConsecutiveCameraAccessImageTexturesNotNull() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail();
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
         mWebXrArTestFramework.runJavaScriptOrFail(
                 "stepStartStoringCameraTexture(3)", POLL_TIMEOUT_SHORT_MS);
         mWebXrArTestFramework.waitOnJavaScriptStep();
@@ -115,7 +114,7 @@ public class WebXrArCameraAccessTest {
     testCameraAccessImageTextureCanBeDeleted() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail();
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
         mWebXrArTestFramework.runJavaScriptOrFail(
                 "stepStartStoreAndDeleteCameraTexture()", POLL_TIMEOUT_SHORT_MS);
         mWebXrArTestFramework.waitOnJavaScriptStep();
@@ -127,7 +126,6 @@ public class WebXrArCameraAccessTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://www.crbug.com/1115167")
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
             "enable-features=WebXRIncubations,LogJsConsoleMessages"})
@@ -136,9 +134,29 @@ public class WebXrArCameraAccessTest {
     testCameraAccessImageTextureLifetime() {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
-        mWebXrArTestFramework.enterSessionWithUserGestureOrFail();
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
         mWebXrArTestFramework.runJavaScriptOrFail(
                 "stepCheckCameraTextureLifetimeLimitedToOneFrame()", POLL_TIMEOUT_SHORT_MS);
+        mWebXrArTestFramework.waitOnJavaScriptStep();
+        mWebXrArTestFramework.endTest();
+    }
+
+    /**
+     * Test whether opaque texture enforcements work fine.
+     */
+    @Test
+    @MediumTest
+    @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+            "enable-features=WebXRIncubations,LogJsConsoleMessages"})
+    @ArPlaybackFile("chrome/test/data/xr/ar_playback_datasets/floor_session_12s_30fps.mp4")
+    public void
+    testOpaqueTextures() {
+        mWebXrArTestFramework.loadFileAndAwaitInitialization(
+                "webxr_test_camera_access", PAGE_LOAD_TIMEOUT_S);
+        mWebXrArTestFramework.enterSessionWithUserGestureOrFail(/*needsCameraPermission=*/true);
+        mWebXrArTestFramework.runJavaScriptOrFail(
+                "stepCheckOpaqueTextures()", POLL_TIMEOUT_SHORT_MS);
         mWebXrArTestFramework.waitOnJavaScriptStep();
         mWebXrArTestFramework.endTest();
     }

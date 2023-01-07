@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,31 +6,34 @@
 
 #import <QuartzCore/QuartzCore.h>
 
-#include "base/check.h"
-#include "base/ios/block_types.h"
-#include "base/numerics/math_constants.h"
+#import "base/check.h"
+#import "base/ios/block_types.h"
+#import "base/numerics/math_constants.h"
+#import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
-#include "ios/chrome/browser/ui/util/rtl_geometry.h"
-#include "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui/colors/dynamic_color_util.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
+#import "ios/chrome/browser/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/chrome/grit/ios_theme_resources.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_theme_resources.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
+
 // Actions images.
 NSString* const kNewTabActionImage = @"ptr_new_tab";
-NSString* const kNewTabActionActiveImage = @"ptr_new_tab_active";
 NSString* const kReloadActionImage = @"ptr_reload";
-NSString* const kReloadActionActiveImage = @"ptr_reload_active";
 NSString* const kCloseActionImage = @"ptr_close";
-NSString* const kCloseActionActiveImage = @"ptr_close_active";
+
+// The size of overscroll symbol images.
+const CGFloat kOverScrollSymbolPointSize = 17.;
 
 // Represents a simple min/max range.
 typedef struct {
@@ -116,10 +119,9 @@ enum class OverscrollViewState {
   PREPARE,  // The actions are starting to be displayed.
   READY     // Actions are fully displayed.
 };
+
 }  // namespace
 
-// Minimum delay to perform the transition to the ready state.
-const CFTimeInterval kMinimumPullDurationToTransitionToReadyInSeconds = 0.25;
 // The brightness of the actions view background color for non incognito mode.
 const CGFloat kActionViewBackgroundColorBrightnessNonIncognito = 242.0 / 256.0;
 // The brightness of the actions view background color for incognito mode.
@@ -147,8 +149,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   // The last vertical offset.
   CGFloat _lastVerticalOffset;
   // Last recorded pull start absolute time.
-  // Unit is in seconds.
-  CFTimeInterval _pullStartTimeInSeconds;
+  base::TimeTicks _pullStartTime;
   // Tap gesture recognizer that allow the user to tap on an action to activate
   // it.
   UITapGestureRecognizer* _tapGesture;
@@ -223,7 +224,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 // Returns a newly allocated and configured selection circle shape.
 - (CAShapeLayer*)newSelectionCircleLayer;
 // Returns an autoreleased circular bezier path horizontally deformed according
-// to |dx|.
+// to `dx`.
 - (UIBezierPath*)circlePath:(CGFloat)dx;
 // Returns the action at the given location in the view.
 - (OverscrollAction)actionAtLocation:(CGPoint)location;
@@ -232,9 +233,9 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 // Clear the direct touch interaction after a small delay to prevent graphic
 // glitch with pan gesture selection deformation animations.
 - (void)clearDirectTouchInteraction;
-// Returns the tooltip label for |action|.
+// Returns the tooltip label for `action`.
 - (UILabel*)labelForAction:(OverscrollAction)action;
-// Fades out |previousLabel| and fades in |actionLabel|.
+// Fades out `previousLabel` and fades in `actionLabel`.
 - (void)fadeInActionLabel:(UILabel*)actionLabel
       previousActionLabel:(UILabel*)previousLabel;
 @end
@@ -257,22 +258,34 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     [_selectionCircleCroppingLayer addSublayer:_selectionCircleLayer];
 
     _addTabActionImageView = [[UIImageView alloc] init];
-    _addTabActionImageView.image = [[UIImage imageNamed:kNewTabActionImage]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _addTabActionImageView.image =
+        UseSymbols()
+            ? DefaultSymbolTemplateWithPointSize(kPlusSymbol,
+                                                 kOverScrollSymbolPointSize)
+            : [[UIImage imageNamed:kNewTabActionImage]
+                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _addTabActionImageView.tintColor = [UIColor colorNamed:kToolbarButtonColor];
     [_addTabActionImageView sizeToFit];
     [self addSubview:_addTabActionImageView];
     _reloadActionImageView = [[UIImageView alloc] init];
-    _reloadActionImageView.image = [[UIImage imageNamed:kReloadActionImage]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _reloadActionImageView.image =
+        UseSymbols()
+            ? CustomSymbolTemplateWithPointSize(kArrowClockWiseSymbol,
+                                                kOverScrollSymbolPointSize)
+            : [[UIImage imageNamed:kReloadActionImage]
+                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _reloadActionImageView.tintColor = [UIColor colorNamed:kToolbarButtonColor];
     [_reloadActionImageView sizeToFit];
     if (UseRTLLayout())
       [_reloadActionImageView setTransform:CGAffineTransformMakeScale(-1, 1)];
     [self addSubview:_reloadActionImageView];
     _closeTabActionImageView = [[UIImageView alloc] init];
-    _closeTabActionImageView.image = [[UIImage imageNamed:kCloseActionImage]
-        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _closeTabActionImageView.image =
+        UseSymbols()
+            ? DefaultSymbolTemplateWithPointSize(kXMarkSymbol,
+                                                 kOverScrollSymbolPointSize)
+            : [[UIImage imageNamed:kCloseActionImage]
+                  imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     _closeTabActionImageView.tintColor =
         [UIColor colorNamed:kToolbarButtonColor];
     [_closeTabActionImageView sizeToFit];
@@ -320,7 +333,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
     if (UseRTLLayout()) {
       // Handle RTL using transforms since this class is CALayer-based.
       [self setTransform:CGAffineTransformMakeScale(-1, 1)];
-      // Reverse labels again because they are subview of |self|, otherwise they
+      // Reverse labels again because they are subview of `self`, otherwise they
       // will be rendered backwards.
       [_addTabLabel setTransform:CGAffineTransformMakeScale(-1, 1)];
       [_reloadLabel setTransform:CGAffineTransformMakeScale(-1, 1)];
@@ -338,7 +351,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 
 - (void)dealloc {
   [self.snapshotView removeFromSuperview];
-  ;
 }
 
 - (BOOL)selectionCroppingEnabled {
@@ -363,16 +375,15 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 
 - (void)pullStarted {
   _didTransitionToReadyState = NO;
-  _pullStartTimeInSeconds = CACurrentMediaTime();
+  _pullStartTime = base::TimeTicks::Now();
   // Ensure we will update the state after time threshold even without offset
   // change.
-  dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW,
-                    (kMinimumPullDurationToTransitionToReadyInSeconds + 0.01) *
-                        NSEC_PER_SEC),
-      dispatch_get_main_queue(), ^{
-        [self updateState];
-      });
+  __weak OverscrollActionsView* weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf updateState];
+      }),
+      kMinimumPullDurationToTransitionToReady + base::Milliseconds(10));
 }
 
 - (void)updateWithVerticalOffset:(CGFloat)offset {
@@ -395,18 +406,11 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 }
 
 - (void)displayActionAnimation {
+  __weak OverscrollActionsView* weakSelf = self;
   _animatingActionTrigger = YES;
   [CATransaction begin];
   [CATransaction setCompletionBlock:^{
-    _animatingActionTrigger = NO;
-    [CATransaction begin];
-    [CATransaction setDisableActions:YES];
-    // See comment below for why we manually set opacity to 0 and remove
-    // the animation.
-    self.selectionCircleLayer.opacity = 0;
-    [self.selectionCircleLayer removeAnimationForKey:@"opacity"];
-    [self onStateChange];
-    [CATransaction commit];
+    [weakSelf completionForDisplayActionAnimation];
   }];
 
   CABasicAnimation* scaleAnimation =
@@ -433,6 +437,18 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   opacityAnimation.removedOnCompletion = NO;
   [self.selectionCircleLayer addAnimation:opacityAnimation forKey:@"opacity"];
 
+  [CATransaction commit];
+}
+
+- (void)completionForDisplayActionAnimation {
+  _animatingActionTrigger = NO;
+  [CATransaction begin];
+  [CATransaction setDisableActions:YES];
+  // See comment below for why we manually set opacity to 0 and remove
+  // the animation.
+  self.selectionCircleLayer.opacity = 0;
+  [self.selectionCircleLayer removeAnimationForKey:@"opacity"];
+  [self onStateChange];
   [CATransaction commit];
 }
 
@@ -542,8 +558,8 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   CGSize boundingSize = self.bounds.size;
   boundingSize.width /= 2.0;
 
-  // The UILabels in |labels| are laid out according to the location of their
-  // corresponding UIImageView in |images|.
+  // The UILabels in `labels` are laid out according to the location of their
+  // corresponding UIImageView in `images`.
   NSArray* labels = @[ self.addTabLabel, self.reloadLabel, self.closeTabLabel ];
   NSArray* images = @[
     self.addTabActionImageView, self.reloadActionImageView,
@@ -730,25 +746,29 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
       _animatingActionTrigger)
     return;
 
+  __weak OverscrollActionsView* weakSelf = self;
   [UIView animateWithDuration:kSelectionSnappingAnimationDuration
                    animations:^{
-                     if (self.selectedAction == OverscrollAction::NONE) {
-                       if (!_deformationBehaviorEnabled) {
-                         // Scale selection down.
-                         self.selectionCircleLayer.transform =
-                             CATransform3DMakeScale(kSelectionDownScale,
-                                                    kSelectionDownScale, 1);
-                       }
-                     } else {
-                       // Scale selection up.
-                       self.selectionCircleLayer.transform =
-                           CATransform3DMakeScale(1, 1, 1);
-                     }
+                     [weakSelf animateSelectedActionChanged];
                    }
                    completion:nil];
 
   [self.delegate overscrollActionsView:self
                selectedActionDidChange:self.selectedAction];
+}
+
+// Animation handler for onSelectedActionChangedFromAction
+- (void)animateSelectedActionChanged {
+  if (self.selectedAction == OverscrollAction::NONE) {
+    if (!_deformationBehaviorEnabled) {
+      // Scale selection down.
+      self.selectionCircleLayer.transform =
+          CATransform3DMakeScale(kSelectionDownScale, kSelectionDownScale, 1);
+    }
+  } else {
+    // Scale selection up.
+    self.selectionCircleLayer.transform = CATransform3DMakeScale(1, 1, 1);
+  }
 }
 
 - (NSArray*)layersToCenterVertically {
@@ -775,10 +795,10 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 
 - (void)updateState {
   if (self.verticalOffset > 1) {
-    const CFTimeInterval elapsedTime =
-        CACurrentMediaTime() - _pullStartTimeInSeconds;
+    const base::TimeDelta elapsedTime =
+        base::TimeTicks::Now() - _pullStartTime;
     const BOOL isMinimumTimeElapsed =
-        elapsedTime >= kMinimumPullDurationToTransitionToReadyInSeconds;
+        elapsedTime >= kMinimumPullDurationToTransitionToReady;
     const BOOL isPullingDownOrAlreadyTriggeredOnce =
         _lastVerticalOffset <= self.verticalOffset ||
         _didTransitionToReadyState;
@@ -898,7 +918,7 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
   _style = style;
   switch (self.style) {
     case OverscrollStyle::NTP_NON_INCOGNITO:
-      self.backgroundColor = ntp_home::kNTPBackgroundColor();
+      self.backgroundColor = ntp_home::NTPBackgroundColor();
       break;
     case OverscrollStyle::NTP_INCOGNITO:
       self.backgroundColor = [UIColor colorWithWhite:0 alpha:0];
@@ -907,41 +927,20 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
       self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
       break;
     case OverscrollStyle::REGULAR_PAGE_INCOGNITO:
-      self.backgroundColor = color::DarkModeDynamicColor(
-          [UIColor colorNamed:kBackgroundColor], true,
-          [UIColor colorNamed:kBackgroundDarkColor]);
+      self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
       break;
   }
 
   [self updateLayerColors];
 }
 
-// CGColor doesn't support iOS 13 dynamic colors, so those must be resolved
-// more often.
+// Updates the colors based on the current trait collection. CGColor doesn't
+// support iOS 13 dynamic colors, so those must be resolved more often.
 - (void)updateLayerColors {
-  if (@available(iOS 13, *)) {
-    [self.traitCollection performAsCurrentTraitCollection:^{
-      _selectionCircleLayer.fillColor =
-          [UIColor colorNamed:kTextfieldBackgroundColor].CGColor;
-    }];
-    return;
-  }
-
-  // Fallback for iOS 12.
-  if (self.incognito) {
-    UIColor* buttonColor = [UIColor colorNamed:kToolbarButtonDarkColor];
-    _addTabActionImageView.tintColor = buttonColor;
-    _reloadActionImageView.tintColor = buttonColor;
-    _closeTabActionImageView.tintColor = buttonColor;
-    _addTabLabel.textColor = buttonColor;
-    _reloadLabel.textColor = buttonColor;
-    _closeTabLabel.textColor = buttonColor;
-    _selectionCircleLayer.fillColor =
-        [UIColor colorNamed:kTextfieldBackgroundDarkColor].CGColor;
-  } else {
+  [self.traitCollection performAsCurrentTraitCollection:^{
     _selectionCircleLayer.fillColor =
         [UIColor colorNamed:kTextfieldBackgroundColor].CGColor;
-  }
+  }];
 }
 
 - (OverscrollAction)actionAtLocation:(CGPoint)location {
@@ -978,7 +977,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
       break;
     case OverscrollAction::NONE:
       return;
-      break;
   }
 }
 
@@ -987,12 +985,17 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 - (void)clearDirectTouchInteraction {
   if (!_viewTouched)
     return;
-  dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
-      dispatch_get_main_queue(), ^{
-        _deformationBehaviorEnabled = YES;
-        _viewTouched = NO;
-      });
+  __weak OverscrollActionsView* weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf clearDirectTouchInteractionAfterDelay];
+      }),
+      base::Milliseconds(100));
+}
+
+- (void)clearDirectTouchInteractionAfterDelay {
+  _deformationBehaviorEnabled = YES;
+  _viewTouched = NO;
 }
 
 - (UILabel*)labelForAction:(OverscrollAction)action {

@@ -24,7 +24,7 @@
     Exposed=Window
 ] interface CSSStyleDeclaration {
     [CEReactions, RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString cssText;
-    [Affects=Nothing] readonly attribute unsigned long length;
+    readonly attribute unsigned long length;
     [Affects=Nothing] getter DOMString item(unsigned long index);
     DOMString getPropertyValue(DOMString property);
     DOMString getPropertyPriority(DOMString property);
@@ -34,4 +34,13 @@
     [CEReactions, RaisesException] DOMString removeProperty(DOMString property);
     readonly attribute CSSRule? parentRule;
     [CEReactions, SetterCallWith=ExecutionContext, RaisesException=Setter] attribute [TreatNullAs=EmptyString] DOMString cssFloat;
+
+    // The camel-cased and dashed attribute getters have custom bindings.
+    // https://drafts.csswg.org/cssom/#dom-cssstyledeclaration-camel-cased-attribute
+    // https://drafts.csswg.org/cssom/#dom-cssstyledeclaration-dashed-attribute
+    [Affects=Nothing] getter DOMString (DOMString name);
+    // The type of `propertyValue` is `any` in order not to perform any type
+    // conversion which may have side effect (c.f. https://crbug.com/1310062 ).
+    [CEReactions, CallWith=ScriptState] setter void (DOMString property, any propertyValue);
+    deleter void (DOMString property);
 };

@@ -1,0 +1,74 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/url.mojom";
+
+enum SubAppsServiceResult {
+  kSuccess,
+  kFailure,
+};
+
+// `unhashed_app_id` is the sub app id generated according to
+// https://www.w3.org/TR/appmanifest/#dfn-identity.
+// `install_url` is a fully qualified URL to a page hosting or
+// containing a link to the app's manifest.
+struct SubAppsServiceAddInfo {
+  string unhashed_app_id;
+  url.mojom.Url install_url;
+};
+
+enum SubAppsServiceAddResultCode {
+  // Success category:
+  kSuccessNewInstall,
+  kSuccessAlreadyInstalled,
+
+  // Failure category:
+  kUserInstallDeclined,
+  kExpectedAppIdCheckFailed,
+  kParentAppUninstalled,
+  kInstallUrlInvalid,
+  kNotValidManifestForWebApp,
+  kFailure,
+};
+
+// `unhashed_app_id` is the sub app id generated according to
+// https://www.w3.org/TR/appmanifest/#dfn-identity.
+// `result_code` specifies the type of success or failure of the installation.
+struct SubAppsServiceAddResult {
+  string unhashed_app_id;
+  SubAppsServiceAddResultCode result_code;
+};
+
+struct SubAppsServiceListResult {
+  SubAppsServiceResult code;
+  array<string> sub_app_ids;
+};
+
+// Sub Apps APIs allow installed PWAs to install shortcuts to their various
+// sub-parts by means of installing the sub-component.  Example: main app hosted
+// at https://office.org/ which provides a full set of office productivity tools
+// creates a new shortcut to itself with `spreadsheet` as the install_path
+// effectively adding the Spreadsheet app to the launcher surface.
+// NOTE: This Mojo interface is per-frame, there is one logical instance per
+// frame, and it's main-frame only. It is only valid for already-installed apps,
+// and has an origin associated with it.
+interface SubAppsService {
+  // Installs one or more sub-apps of an already-installed app corresponding to
+  // this instance of SubAppsService.
+  Add(array<SubAppsServiceAddInfo> sub_apps) => (array<SubAppsServiceAddResult> result);
+
+  // List all sub-app `app_ids` installed by the app making the API call. The
+  // `app_id` format is the same as the `web_app::GenerateAppIdUnhashed`
+  // function which returns app identity according to the specification:
+  // https://www.w3.org/TR/appmanifest/#dfn-identity.
+  List() => (SubAppsServiceListResult result);
+
+  // Uninstalls the sub-app represented by the given `unhashed_app_id`
+  // previously installed via the `Add` method by the same app making the
+  // current API call. Format of the `unhashed_app_id` argument is the same as
+  // the return of the `List` method.
+  Remove(string unhashed_app_id) => (SubAppsServiceResult result);
+};

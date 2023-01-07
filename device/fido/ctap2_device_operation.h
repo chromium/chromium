@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cbor/diagnostic_writer.h"
 #include "components/cbor/reader.h"
@@ -27,6 +25,7 @@
 #include "device/fido/device_response_converter.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -43,12 +42,12 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
   // |nullopt|.
   using DeviceResponseCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
-                              base::Optional<Response>)>;
+                              absl::optional<Response>)>;
   // DeviceResponseParser converts a generic CBOR structure into an
   // operation-specific response. If the response didn't have a payload then the
   // argument will be |nullopt|. The parser should return |nullopt| on error.
-  using DeviceResponseParser = base::OnceCallback<base::Optional<Response>(
-      const base::Optional<cbor::Value>&)>;
+  using DeviceResponseParser = base::OnceCallback<absl::optional<Response>(
+      const absl::optional<cbor::Value>&)>;
   // CBORPathPredicate takes a vector of CBOR |Value|s that are map keys and
   // returns true if the string at that location may validly be truncated.
   // For example, the path of the string "bar" in {"x": {"y": "foo",
@@ -71,10 +70,13 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
         device_response_parser_(std::move(device_response_parser)),
         string_fixup_predicate_(string_fixup_predicate) {}
 
+  Ctap2DeviceOperation(const Ctap2DeviceOperation&) = delete;
+  Ctap2DeviceOperation& operator=(const Ctap2DeviceOperation&) = delete;
+
   ~Ctap2DeviceOperation() override = default;
 
   void Start() override {
-    std::pair<CtapRequestCommand, base::Optional<cbor::Value>> request(
+    std::pair<CtapRequestCommand, absl::optional<cbor::Value>> request(
         AsCTAPRequestValuePair(this->request()));
     std::vector<uint8_t> request_bytes;
 
@@ -84,7 +86,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
     if (request.second) {
       FIDO_LOG(DEBUG) << "<- " << static_cast<int>(request.first) << " "
                       << cbor::DiagnosticWriter::Write(*request.second);
-      base::Optional<std::vector<uint8_t>> cbor_bytes =
+      absl::optional<std::vector<uint8_t>> cbor_bytes =
           cbor::Writer::Write(*request.second);
       DCHECK(cbor_bytes);
       request_bytes = std::move(*cbor_bytes);
@@ -116,7 +118,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
   }
 
   void OnResponseReceived(
-      base::Optional<std::vector<uint8_t>> device_response) {
+      absl::optional<std::vector<uint8_t>> device_response) {
     this->token_.reset();
 
     // TODO: it would be nice to see which device each response is coming from,
@@ -125,7 +127,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
     if (!device_response || device_response->empty()) {
       FIDO_LOG(ERROR) << "-> (error reading)";
       std::move(this->callback())
-          .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
+          .Run(CtapDeviceResponseCode::kCtap2ErrOther, absl::nullopt);
       return;
     }
 
@@ -133,13 +135,13 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
     if (response_code != CtapDeviceResponseCode::kSuccess) {
       FIDO_LOG(DEBUG) << "-> (CTAP2 error code " << +device_response->at(0)
                       << ")";
-      std::move(this->callback()).Run(response_code, base::nullopt);
+      std::move(this->callback()).Run(response_code, absl::nullopt);
       return;
     }
     DCHECK(!device_response->empty());
 
-    base::Optional<cbor::Value> cbor;
-    base::Optional<Response> response;
+    absl::optional<cbor::Value> cbor;
+    absl::optional<Response> response;
     base::span<const uint8_t> cbor_bytes(*device_response);
     cbor_bytes = cbor_bytes.subspan(1);
 
@@ -160,7 +162,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
                                            device_response->size())
                         << ")";
         std::move(this->callback())
-            .Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, base::nullopt);
+            .Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, absl::nullopt);
         return;
       }
 
@@ -173,7 +175,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
                                  device_response->size())
               << ")";
           std::move(this->callback())
-              .Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, base::nullopt);
+              .Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, absl::nullopt);
           return;
         }
       }
@@ -187,7 +189,7 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
       }
     } else {
       response =
-          std::move(std::move(device_response_parser_).Run(base::nullopt));
+          std::move(std::move(device_response_parser_).Run(absl::nullopt));
       if (response) {
         FIDO_LOG(DEBUG) << "-> (empty payload)";
       } else {
@@ -205,8 +207,6 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
   DeviceResponseParser device_response_parser_;
   const CBORPathPredicate string_fixup_predicate_;
   base::WeakPtrFactory<Ctap2DeviceOperation> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Ctap2DeviceOperation);
 };
 
 }  // namespace device

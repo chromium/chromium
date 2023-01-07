@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/ranking_item_util.h"
+#include "chrome/browser/ui/app_list/search/ranking/ranking_item_util.h"
 
 namespace app_list {
 
@@ -95,8 +94,6 @@ void LogJsonConfigConversionStatus(const std::string& suffix,
                                    JsonConfigConversionStatus status);
 
 void LogZeroStateLaunchType(RankingItemType type);
-
-void LogChipUsageMetrics(const AppLaunchData& app_launch_data);
 
 }  // namespace app_list
 

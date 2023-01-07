@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,15 @@
 #include <memory>
 #include <utility>
 
+#include "components/sync/protocol/entity_metadata.pb.h"
+
 namespace syncer {
 
-MetadataBatch::MetadataBatch() {}
+MetadataBatch::MetadataBatch() = default;
 
-MetadataBatch::MetadataBatch(MetadataBatch&& other)
-    : metadata_map_(std::move(other.metadata_map_)) {
-  other.state_.Swap(&state_);
-}
+MetadataBatch::MetadataBatch(MetadataBatch&& other) = default;
 
-MetadataBatch::~MetadataBatch() {}
+MetadataBatch::~MetadataBatch() = default;
 
 const EntityMetadataMap& MetadataBatch::GetAllMetadata() const {
   return metadata_map_;

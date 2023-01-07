@@ -1,0 +1,49 @@
+{% from 'templates/macros.tmpl' import license, source_files_for_generated_file %}
+{{license()}}
+
+{{source_files_for_generated_file(template_file, input_files)}}
+
+#include "third_party/blink/public/common/permissions_policy/policy_helper_public.h"
+
+#include "base/no_destructor.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+
+namespace blink {
+
+// Unlike the private version (which lives in
+// blink/renderer/core/permissions_policy/), these maps will include all
+// features, regardless of whether or not they depend on a blink runtime enabled
+// feature that is enabled/disabled. Features which are shipping as part of an
+// origin trial add their feature names to this map unconditionally, as the
+// trial token could be added after the HTTP header needs to be parsed. This
+// also means that top-level documents which simply want to embed another page
+// which uses an origin trial feature, without using the feature themselves, can
+// use permissions policy to allow use of the feature in subframes (The framed
+// document will still require a valid origin trial token to use the feature in
+// this scenario).
+
+const PermissionsPolicyNameToFeatureMap&
+GetPermissionsPolicyNameToFeatureMap() {
+  static const PermissionsPolicyNameToFeatureMap default_feature_name_map = {
+    {% for feature in permissions_policy_features %}
+    {"{{feature.permissions_policy_name}}",
+        mojom::PermissionsPolicyFeature::k{{feature.name}}},
+    {% endfor %}
+  };
+
+  return default_feature_name_map;
+}
+
+const PermissionsPolicyFeatureToNameMap&
+GetPermissionsPolicyFeatureToNameMap() {
+  static const PermissionsPolicyFeatureToNameMap default_feature_to_name_map = {
+    {% for feature in permissions_policy_features %}
+    {mojom::PermissionsPolicyFeature::k{{feature.name}},
+        "{{feature.permissions_policy_name}}"},
+    {% endfor %}
+  };
+  return default_feature_to_name_map;
+}
+
+}  // namespace blink

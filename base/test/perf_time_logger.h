@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/timer/elapsed_timer.h"
 
 namespace base {
@@ -20,6 +19,10 @@ namespace base {
 class PerfTimeLogger {
  public:
   explicit PerfTimeLogger(const char* test_name);
+
+  PerfTimeLogger(const PerfTimeLogger&) = delete;
+  PerfTimeLogger& operator=(const PerfTimeLogger&) = delete;
+
   ~PerfTimeLogger();
 
   void Done();
@@ -28,8 +31,6 @@ class PerfTimeLogger {
   bool logged_;
   std::string test_name_;
   ElapsedTimer timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerfTimeLogger);
 };
 
 }  // namespace base

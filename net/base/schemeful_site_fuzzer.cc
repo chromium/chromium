@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,10 @@
 #include <iostream>
 #include <string>
 
-#include "base/optional.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "testing/libfuzzer/proto/url.pb.h"
 #include "testing/libfuzzer/proto/url_proto_converter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -23,9 +23,15 @@ DEFINE_PROTO_FUZZER(const url_proto::Url& url_message) {
 
   url::Origin origin = url::Origin::Create((GURL(native_input)));
 
+  // We don't run the fuzzer on inputs whose hosts will contain "..". The ".."
+  // causes SchemefulSite to consider the registrable domain to start with the
+  // second ".".
+  if (origin.host().find("..") != std::string::npos)
+    return;
+
   net::SchemefulSite site(origin);
 
-  base::Optional<net::SchemefulSite> site_with_registrable_domain =
+  absl::optional<net::SchemefulSite> site_with_registrable_domain =
       net::SchemefulSite::CreateIfHasRegisterableDomain(origin);
 
   if (site_with_registrable_domain) {

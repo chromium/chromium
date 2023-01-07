@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ class MockPrelauncher : public RendererPrelauncher {
                   const GURL& page_url)
       : RendererPrelauncher(browser_context,
                             page_url) {}
-  virtual ~MockPrelauncher() { Destroy(); }
+  ~MockPrelauncher() override { Destroy(); }
 
   MOCK_METHOD0(Prelaunch, void());
   MOCK_METHOD0(Destroy, void());

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,15 +18,15 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 
-#if defined(OS_ASMJS)
+#if BUILDFLAG(IS_ASMJS)
 // Optimized safe math instructions are incompatible with asmjs.
 #define BASE_HAS_OPTIMIZED_SAFE_MATH (0)
 // Where available use builtin math overflow support on Clang and GCC.
-#elif !defined(__native_client__) &&                         \
-      ((defined(__clang__) &&                                \
-        ((__clang_major__ > 3) ||                            \
-         (__clang_major__ == 3 && __clang_minor__ >= 4))) || \
-       (defined(__GNUC__) && __GNUC__ >= 5))
+#elif !defined(__native_client__) &&                       \
+    ((defined(__clang__) &&                                \
+      ((__clang_major__ > 3) ||                            \
+       (__clang_major__ == 3 && __clang_minor__ >= 4))) || \
+     (defined(__GNUC__) && __GNUC__ >= 5))
 #include "base/numerics/safe_math_clang_gcc_impl.h"
 #define BASE_HAS_OPTIMIZED_SAFE_MATH (1)
 #else
@@ -132,7 +132,7 @@ struct UnsignedOrFloatForSize<Numeric, false, true> {
 // Wrap the unary operations to allow SFINAE when instantiating integrals versus
 // floating points. These don't perform any overflow checking. Rather, they
 // exhibit well-defined overflow semantics and rely on the caller to detect
-// if an overflow occured.
+// if an overflow occurred.
 
 template <typename T,
           typename std::enable_if<std::is_integral<T>::value>::type* = nullptr>

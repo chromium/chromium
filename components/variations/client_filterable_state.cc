@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,21 +14,21 @@ namespace variations {
 
 // static
 Study::Platform ClientFilterableState::GetCurrentPlatform() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return Study::PLATFORM_WINDOWS;
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   return Study::PLATFORM_IOS;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_MAC)
   return Study::PLATFORM_MAC;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return Study::PLATFORM_CHROMEOS;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return Study::PLATFORM_CHROMEOS_LACROS;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return Study::PLATFORM_ANDROID;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   return Study::PLATFORM_FUCHSIA;
-#elif defined(OS_LINUX) || defined(OS_BSD) || defined(OS_SOLARIS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_BSD) || BUILDFLAG(IS_SOLARIS)
   // Default BSD and SOLARIS to Linux to not break those builds, although these
   // platforms are not officially supported by Chrome.
   return Study::PLATFORM_LINUX;
@@ -45,7 +45,7 @@ Study::Platform ClientFilterableState::GetCurrentPlatform() {
 base::Version ClientFilterableState::GetOSVersion() {
   base::Version ret;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::string win_version = base::SysInfo::OperatingSystemVersion();
   base::ReplaceSubstringsAfterOffset(&win_version, 0, " SP", ".");
   ret = base::Version(win_version);
@@ -63,8 +63,13 @@ base::Version ClientFilterableState::GetOSVersion() {
 
 ClientFilterableState::ClientFilterableState(
     IsEnterpriseFunction is_enterprise_function)
-    : is_enterprise_function_(std::move(is_enterprise_function)) {}
-ClientFilterableState::~ClientFilterableState() {}
+    : is_enterprise_function_(std::move(is_enterprise_function)) {
+  // The callback is only used when processing a study that uses the
+  // is_enterprise filter. If you're building a client that isn't expecting that
+  // filter, you should use a callback that always returns false.
+  DCHECK(is_enterprise_function_);
+}
+ClientFilterableState::~ClientFilterableState() = default;
 
 bool ClientFilterableState::IsEnterprise() const {
   if (!is_enterprise_.has_value())

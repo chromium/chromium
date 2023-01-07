@@ -1,0 +1,27 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("common") {
+  output_name = "chromeos_dbus_common"
+  defines = [ "IS_CHROMEOS_DBUS_COMMON_IMPL" ]
+
+  all_dependent_configs =
+      [ "//chromeos/dbus/config:use_real_dbus_clients_config" ]
+  public_deps = [ "//chromeos/dbus/constants" ]
+
+  deps = [
+    "//base",
+    "//dbus",
+    "//net",
+  ]
+
+  sources = [
+    "blocking_method_caller.cc",
+    "blocking_method_caller.h",
+    "dbus_client.h",
+    "dbus_method_call_status.h",
+    "pipe_reader.cc",
+    "pipe_reader.h",
+  ]
+}

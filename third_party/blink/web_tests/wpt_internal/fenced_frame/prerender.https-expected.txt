@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Fenced Frame must not load prerendered page. assert_implements: <script type="speculationrules"> is not supported undefined
+Harness: the test ran to completion.
+

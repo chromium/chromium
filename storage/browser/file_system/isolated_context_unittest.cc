@@ -1,16 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "storage/browser/file_system/isolated_context.h"
 
 #include <stddef.h>
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "storage/browser/file_system/isolated_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #define FPL(x) FILE_PATH_LITERAL(x)
 
@@ -50,6 +50,9 @@ class IsolatedContextTest : public testing::Test {
       fileset_.insert(path.NormalizePathSeparators());
   }
 
+  IsolatedContextTest(const IsolatedContextTest&) = delete;
+  IsolatedContextTest& operator=(const IsolatedContextTest&) = delete;
+
   void SetUp() override {
     IsolatedContext::FileInfoSet files;
     for (const auto& path : kTestPaths) {
@@ -74,9 +77,6 @@ class IsolatedContextTest : public testing::Test {
   std::string id_;
   std::multiset<base::FilePath> fileset_;
   std::vector<std::string> names_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IsolatedContextTest);
 };
 
 TEST_F(IsolatedContextTest, RegisterAndRevokeTest) {
@@ -91,7 +91,7 @@ TEST_F(IsolatedContextTest, RegisterAndRevokeTest) {
   // See if the name of each registered kTestPaths (that is what we
   // register in SetUp() by RegisterDraggedFileSystem) is properly cracked as
   // a valid virtual path in the isolated filesystem.
-  for (size_t i = 0; i < base::size(kTestPaths); ++i) {
+  for (size_t i = 0; i < std::size(kTestPaths); ++i) {
     base::FilePath virtual_path =
         isolated_context()->CreateVirtualRootPath(id_).AppendASCII(names_[i]);
     std::string cracked_id;
@@ -191,8 +191,8 @@ TEST_F(IsolatedContextTest, CrackWithRelativePaths) {
     {FPL("foo/..\\baz"), SHOULD_FAIL_WITH_WIN_SEPARATORS},
   };
 
-  for (size_t i = 0; i < base::size(kTestPaths); ++i) {
-    for (size_t j = 0; j < base::size(relatives); ++j) {
+  for (size_t i = 0; i < std::size(kTestPaths); ++i) {
+    for (size_t j = 0; j < std::size(relatives); ++j) {
       SCOPED_TRACE(testing::Message() << "Testing " << kTestPaths[i].value()
                                       << " " << relatives[j].path);
       base::FilePath virtual_path = isolated_context()
@@ -244,8 +244,8 @@ TEST_F(IsolatedContextTest, CrackURLWithRelativePaths) {
     {FPL("foo/..\\baz"), SHOULD_FAIL_WITH_WIN_SEPARATORS},
   };
 
-  for (size_t i = 0; i < base::size(kTestPaths); ++i) {
-    for (size_t j = 0; j < base::size(relatives); ++j) {
+  for (size_t i = 0; i < std::size(kTestPaths); ++i) {
+    for (size_t j = 0; j < std::size(relatives); ++j) {
       SCOPED_TRACE(testing::Message() << "Testing " << kTestPaths[i].value()
                                       << " " << relatives[j].path);
       base::FilePath virtual_path = isolated_context()
@@ -254,7 +254,7 @@ TEST_F(IsolatedContextTest, CrackURLWithRelativePaths) {
                                         .Append(relatives[j].path);
 
       FileSystemURL cracked = isolated_context()->CreateCrackedFileSystemURL(
-          url::Origin::Create(GURL("http://chromium.org")),
+          blink::StorageKey::CreateFromStringForTesting("http://chromium.org"),
           kFileSystemTypeIsolated, virtual_path);
 
       ASSERT_EQ(relatives[j].valid, cracked.is_valid());

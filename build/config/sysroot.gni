@@ -1,11 +1,9 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 # This header file defines the "sysroot" variable which is the absolute path
 # of the sysroot. If no sysroot applies, the variable will be an empty string.
-
-import("//build/config/chrome_build.gni")
 
 declare_args() {
   # The path of the sysroot that is applied when compiling using the target
@@ -39,17 +37,17 @@ if (sysroot == "") {
     # By default build against a sysroot image downloaded from Cloud Storage
     # during gclient runhooks.
     if (current_cpu == "x64") {
-      sysroot = "$target_sysroot_dir/debian_sid_amd64-sysroot"
+      sysroot = "$target_sysroot_dir/debian_bullseye_amd64-sysroot"
     } else if (current_cpu == "x86") {
-      sysroot = "$target_sysroot_dir/debian_sid_i386-sysroot"
+      sysroot = "$target_sysroot_dir/debian_bullseye_i386-sysroot"
     } else if (current_cpu == "mipsel") {
-      sysroot = "$target_sysroot_dir/debian_sid_mips-sysroot"
+      sysroot = "$target_sysroot_dir/debian_bullseye_mips-sysroot"
     } else if (current_cpu == "mips64el") {
-      sysroot = "$target_sysroot_dir/debian_sid_mips64el-sysroot"
+      sysroot = "$target_sysroot_dir/debian_bullseye_mips64el-sysroot"
     } else if (current_cpu == "arm") {
-      sysroot = "$target_sysroot_dir/debian_sid_arm-sysroot"
+      sysroot = "$target_sysroot_dir/debian_bullseye_arm-sysroot"
     } else if (current_cpu == "arm64") {
-      sysroot = "$target_sysroot_dir/debian_sid_arm64-sysroot"
+      sysroot = "$target_sysroot_dir/debian_bullseye_arm64-sysroot"
     } else {
       assert(false, "No linux sysroot for cpu: $target_cpu")
     }

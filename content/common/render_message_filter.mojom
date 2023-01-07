@@ -1,10 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 module content.mojom;
 
-import "mojo/public/mojom/base/thread_priority.mojom";
+import "mojo/public/mojom/base/thread_type.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 
@@ -12,18 +12,19 @@ interface RenderMessageFilter {
   // Synchronously generates a new routing ID for the caller.
   [Sync] GenerateRoutingID() => (int32 routing_id);
 
-  // Similar to GenerateRoutingID but also generates a frame token and
-  // devtools_frame_token. A subsequent call to FrameHost::CreateChildFrame
-  // is expected after this call.
+  // Similar to GenerateRoutingID but also generates a `frame token`,
+  // `devtools_frame_token`, and `document_token`. A subsequent call to
+  // `FrameHost::CreateChildFrame` is expected after this call.
   [Sync] GenerateFrameRoutingID() => (int32 routing_id,
                    blink.mojom.LocalFrameToken frame_token,
-                   mojo_base.mojom.UnguessableToken devtools_frame_token);
+                   mojo_base.mojom.UnguessableToken devtools_frame_token,
+                   blink.mojom.DocumentToken document_token);
 
   // A renderer sends this when it wants to know whether a gpu process exists.
   [Sync] HasGpuProcess() => (bool has_gpu_process);
 
-  // Asks the browser to change the priority of thread.
-  [EnableIf=supports_thread_priorities]
-  SetThreadPriority(int32 platform_thread_id,
-                    mojo_base.mojom.ThreadPriority thread_priority);
+  // Asks the browser to change the type of thread.
+  [EnableIf=supports_thread_types]
+  SetThreadType(int32 platform_thread_id,
+                mojo_base.mojom.ThreadType thread_type);
 };

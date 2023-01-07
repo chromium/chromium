@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <utility>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -218,6 +217,27 @@ TEST(VersionTest, LeadingZeros) {
   // Similarly, since leading zeros are ignored, v1.02 > v1.1 (because
   // v1.02 is translated to 1.2).
   EXPECT_GT(base::Version("1.02"), base::Version("1.1"));
+}
+
+TEST(VersionTest, GetString) {
+  static const struct version_compare {
+    const char* version;
+    bool valid;
+    const char* string;
+  } cases[] = {
+      {"", false, "invalid"},
+      {"1", true, "1"},
+      {"1.0", true, "1.0"},
+      {"0.0.1.0", true, "0.0.1.0"},
+      {"1.2.3.4.5.6", true, "1.2.3.4.5.6"},
+      {"1.*.3", false, "invalid"},
+  };
+
+  for (const auto& i : cases) {
+    base::Version v(i.version);
+    EXPECT_EQ(v.IsValid(), i.valid);
+    EXPECT_EQ(v.GetString(), i.string);
+  }
 }
 
 }  // namespace

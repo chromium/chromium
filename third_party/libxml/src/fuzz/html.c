@@ -6,12 +6,16 @@
 
 #include <libxml/HTMLparser.h>
 #include <libxml/HTMLtree.h>
+#include <libxml/catalog.h>
 #include "fuzz.h"
 
 int
 LLVMFuzzerInitialize(int *argc ATTRIBUTE_UNUSED,
                      char ***argv ATTRIBUTE_UNUSED) {
     xmlInitParser();
+#ifdef LIBXML_CATALOG_ENABLED
+    xmlInitializeCatalog();
+#endif
     xmlSetGenericErrorFunc(NULL, xmlFuzzErrorFunc);
 
     return 0;
@@ -22,7 +26,7 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     static const size_t maxChunkSize = 128;
     htmlDocPtr doc;
     htmlParserCtxtPtr ctxt;
-    xmlChar *out;
+    xmlOutputBufferPtr out;
     const char *docBuffer;
     size_t docSize, consumed, chunkSize;
     int opts, outSize;
@@ -39,9 +43,16 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     /* Pull parser */
 
     doc = htmlReadMemory(docBuffer, docSize, NULL, NULL, opts);
-    /* Also test the serializer. */
-    htmlDocDumpMemory(doc, &out, &outSize);
-    xmlFree(out);
+
+    /*
+     * Also test the serializer. Call htmlDocContentDumpOutput with our
+     * own buffer to avoid encoding the output. The HTML encoding is
+     * excruciatingly slow (see htmlEntityValueLookup).
+     */
+    out = xmlAllocOutputBuffer(NULL);
+    htmlDocContentDumpOutput(out, doc, NULL);
+    xmlOutputBufferClose(out);
+
     xmlFreeDoc(doc);
 
     /* Push parser */
@@ -64,6 +75,7 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
     /* Cleanup */
 
     xmlFuzzDataCleanup();
+    xmlResetLastError();
 
     return(0);
 }

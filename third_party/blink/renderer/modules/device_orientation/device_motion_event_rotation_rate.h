@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_MOTION_EVENT_ROTATION_RATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_MOTION_EVENT_ROTATION_RATE_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -48,9 +49,9 @@ class MODULES_EXPORT DeviceMotionEventRotationRate final
 
   bool HasRotationData() const;
 
-  base::Optional<double> alpha() const;
-  base::Optional<double> beta() const;
-  base::Optional<double> gamma() const;
+  absl::optional<double> alpha() const;
+  absl::optional<double> beta() const;
+  absl::optional<double> gamma() const;
 
  private:
   const double alpha_;

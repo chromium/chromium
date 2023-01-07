@@ -1,4 +1,4 @@
-# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,6 +11,13 @@ declare_args() {
   # and also enabling symbol_level = 2, you can get much more detailed stack
   # traces with file names and line numbers, even in non-ASAN builds.
   print_unsymbolized_stack_traces = is_asan || is_lsan || is_msan || is_tsan
+}
+
+config("symbolize_config") {
+  defines = [
+    # Only built for Linux and ChromeOS so no special export magic needed.
+    "GLOG_EXPORT=",
+  ]
 }
 
 static_library("symbolize") {
@@ -27,10 +34,13 @@ static_library("symbolize") {
   ]
 
   defines = []
+
   if (print_unsymbolized_stack_traces) {
     defines += [ "PRINT_UNSYMBOLIZED_STACK_TRACES" ]
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":symbolize_config" ]
 }

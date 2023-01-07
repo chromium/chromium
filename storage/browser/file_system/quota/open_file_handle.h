@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 
@@ -27,6 +26,9 @@ class QuotaReservationBuffer;
 // deleted when the plugin closes the file.
 class COMPONENT_EXPORT(STORAGE_BROWSER) OpenFileHandle {
  public:
+  OpenFileHandle(const OpenFileHandle&) = delete;
+  OpenFileHandle& operator=(const OpenFileHandle&) = delete;
+
   ~OpenFileHandle();
 
   // Updates cached file size and consumes quota for that.
@@ -61,9 +63,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) OpenFileHandle {
   scoped_refptr<QuotaReservation> reservation_;
   scoped_refptr<OpenFileHandleContext> context_;
 
-  base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(OpenFileHandle);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace storage

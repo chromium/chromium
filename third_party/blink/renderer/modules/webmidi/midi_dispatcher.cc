@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
@@ -136,7 +137,7 @@ void MIDIDispatcher::DataReceived(uint32_t port,
                                   base::TimeTicks timestamp) {
   DCHECK(client_);
   TRACE_EVENT0("midi", "MIDIDispatcher::DataReceived");
-  DCHECK(!data.IsEmpty());
+  DCHECK(!data.empty());
 
   if (initialized_)
     client_->DidReceiveMIDIData(port, &data[0], data.size(), timestamp);

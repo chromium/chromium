@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/cancelable_callback.h"
 #include "base/mac/scoped_cftyperef.h"
 #import "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -124,7 +123,7 @@ TEST(MessagePumpMacTest, QuitWithModalWindow) {
       test::SingleThreadTaskEnvironment::MainThreadType::UI);
   NSWindow* window =
       [[[NSWindow alloc] initWithContentRect:NSMakeRect(0, 0, 100, 100)
-                                   styleMask:NSBorderlessWindowMask
+                                   styleMask:NSWindowStyleMaskBorderless
                                      backing:NSBackingStoreBuffered
                                        defer:NO] autorelease];
 

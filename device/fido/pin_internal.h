@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,10 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "components/cbor/values.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace device {
@@ -67,7 +67,7 @@ enum class ResponseKey : int {
 // PointFromKeyAgreementResponse returns an |EC_POINT| that represents the same
 // P-256 point as |response|. It returns |nullopt| if |response| encodes an
 // invalid point.
-base::Optional<bssl::UniquePtr<EC_POINT>> PointFromKeyAgreementResponse(
+absl::optional<bssl::UniquePtr<EC_POINT>> PointFromKeyAgreementResponse(
     const EC_GROUP* group,
     const KeyAgreementResponse& response);
 

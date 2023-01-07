@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,7 +76,7 @@ TEST(MixedContentCheckerTest, IsMixedContent) {
 }
 
 TEST(MixedContentCheckerTest, ContextTypeForInspector) {
-  auto dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(1, 1));
+  auto dummy_page_holder = std::make_unique<DummyPageHolder>(gfx::Size(1, 1));
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
       WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), KURL("http://example.test")),
@@ -118,7 +117,7 @@ TEST(MixedContentCheckerTest, ContextTypeForInspector) {
 
 TEST(MixedContentCheckerTest, HandleCertificateError) {
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      IntSize(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
+      gfx::Size(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
 
   KURL main_resource_url(NullURL(), "https://example.test");
   KURL displayed_url(NullURL(), "https://example-displayed.test");
@@ -156,7 +155,7 @@ TEST(MixedContentCheckerTest, HandleCertificateError) {
 TEST(MixedContentCheckerTest, DetectMixedForm) {
   KURL main_resource_url(NullURL(), "https://example.test/");
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      IntSize(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
+      gfx::Size(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
       WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), main_resource_url),
@@ -186,7 +185,7 @@ TEST(MixedContentCheckerTest, DetectMixedForm) {
 TEST(MixedContentCheckerTest, DetectMixedFavicon) {
   KURL main_resource_url("https://example.test/");
   auto dummy_page_holder = std::make_unique<DummyPageHolder>(
-      IntSize(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
+      gfx::Size(1, 1), nullptr, MakeGarbageCollected<EmptyLocalFrameClient>());
   dummy_page_holder->GetFrame().Loader().CommitNavigation(
       WebNavigationParams::CreateWithHTMLBufferForTesting(
           SharedBuffer::Create(), main_resource_url),
@@ -206,16 +205,18 @@ TEST(MixedContentCheckerTest, DetectMixedFavicon) {
   // Test that a mixed content favicon is correctly blocked.
   EXPECT_TRUE(MixedContentChecker::ShouldBlockFetch(
       &dummy_page_holder->GetFrame(), mojom::blink::RequestContextType::FAVICON,
-      http_favicon_url, ResourceRequest::RedirectStatus::kNoRedirect,
-      http_favicon_url, base::Optional<String>(),
-      ReportingDisposition::kSuppressReporting, *notifier_remote));
+      network::mojom::blink::IPAddressSpace::kPublic, http_favicon_url,
+      ResourceRequest::RedirectStatus::kNoRedirect, http_favicon_url,
+      absl::optional<String>(), ReportingDisposition::kSuppressReporting,
+      *notifier_remote));
 
   // Test that a secure favicon is not blocked.
   EXPECT_FALSE(MixedContentChecker::ShouldBlockFetch(
       &dummy_page_holder->GetFrame(), mojom::blink::RequestContextType::FAVICON,
-      https_favicon_url, ResourceRequest::RedirectStatus::kNoRedirect,
-      https_favicon_url, base::Optional<String>(),
-      ReportingDisposition::kSuppressReporting, *notifier_remote));
+      network::mojom::blink::IPAddressSpace::kPublic, https_favicon_url,
+      ResourceRequest::RedirectStatus::kNoRedirect, https_favicon_url,
+      absl::optional<String>(), ReportingDisposition::kSuppressReporting,
+      *notifier_remote));
 }
 
 class TestFetchClientSettingsObject : public FetchClientSettingsObject {
@@ -238,9 +239,6 @@ class TestFetchClientSettingsObject : public FetchClientSettingsObject {
   AllowedByNosniff::MimeTypeCheck MimeTypeCheckForClassicWorkerScript()
       const override {
     return AllowedByNosniff::MimeTypeCheck::kStrict;
-  }
-  network::mojom::IPAddressSpace GetAddressSpace() const override {
-    return network::mojom::IPAddressSpace::kLocal;
   }
   const InsecureNavigationsSet& GetUpgradeInsecureNavigationsSet()
       const override {

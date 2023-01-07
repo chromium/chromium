@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,4 +36,4 @@ class CONTENT_EXPORT RenderWidgetHostObserver : public base::CheckedObserver {
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_RENDER_PROCESS_HOST_OBSERVER_H_
+#endif  // CONTENT_PUBLIC_BROWSER_RENDER_WIDGET_HOST_OBSERVER_H_

@@ -127,7 +127,7 @@ called `TrichromeWebView.apk`, `TrichromeChrome.aab`, and
 ### Choosing a WebView version
 
 WebView follows the same branching and release model as the rest of the Chromium
-project: a beta version is branched from the master branch approximately every
+project: a beta version is branched from the main branch approximately every
 six weeks, and after approximately six weeks of beta testing it is released to
 stable. If critical security or functionality issues are discovered after the
 stable release, a new version may be released from the same stable branch at any
@@ -144,7 +144,7 @@ to check out the desired release tag.
 
 If you're intending to build WebView just in order to develop, modify, or
 customise it, it's usually best to work directly on the latest version of the
-master branch. Chromium's master branch is covered by a large number of
+main branch. Chromium's main branch is covered by a large number of
 automated build and test systems that ensure it is sufficiently stable for
 development purposes at almost all times.
 
@@ -190,7 +190,7 @@ is_official_build = true
 
 # Use the default production settings for field trials, instead of the testing
 # defaults.
-fieldtrial_testing_like_official_build = true
+disable_fieldtrial_testing_config = true
 
 # WebView's efficient native library loading mechanism is not compatible with
 # component builds of Chromium.
@@ -369,6 +369,19 @@ one provider is defined, they will be considered in the order listed in the
 file, and the first valid provider chosen by default. A menu is provided in the
 Android developer settings UI to allow the user to choose a different provider.
 
+You can print the base64-encoded signature of a compiled APK with the following
+(look for `Full Signature:` in the output):
+
+```shell
+# For an APK or Bundle target compiled from chromium (replace
+# "system_webview_apk" with your build target):
+$ out/Default/bin/system_webview_apk print-certs --full-cert
+
+# For a pre-compiled APK or Bundle:
+$ build/android/apk_operations.py print-certs --full-cert \
+  --apk-path /path/to/AndroidWebview.apk
+```
+
 *** note
 On `userdebug` and `eng` builds of Android, the WebView's signature,
 preinstallation, and version code checks are not performed, to simplify
@@ -408,7 +421,9 @@ Here's a commented example XML file:
       signatures.
 
       Each signature tag contains the entire public certificate corresponding
-      to the private key used to sign the APK, encoded as base64. -->
+      to the private key used to sign the APK, encoded as base64. See the
+      documentation above for instructions to print the signature of an APK in
+      the correct format. -->
 
 
   <!-- This provider is listed first and has "availableByDefault" set to true,

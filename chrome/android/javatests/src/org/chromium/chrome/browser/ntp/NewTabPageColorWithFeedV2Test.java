@@ -1,10 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.ntp;
 
-import android.content.res.Resources;
+import android.content.Context;
 import android.graphics.Color;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,12 +16,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.feed.v2.FeedStreamSurface;
 import org.chromium.chrome.browser.feed.v2.FeedV2TestHelper;
 import org.chromium.chrome.browser.feed.v2.TestFeedServer;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
@@ -65,7 +63,6 @@ public class NewTabPageColorWithFeedV2Test {
         mActivityTestRule.startMainActivityWithURL("about:blank");
 
         // Allow rendering external items without the external renderer.
-        FeedStreamSurface.sRequestContentWithoutRendererForTesting = true;
 
         // EULA must be accepted, and internet connectivity is required, or the Feed will not
         // attempt to load.
@@ -89,29 +86,26 @@ public class NewTabPageColorWithFeedV2Test {
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @Feature({"NewTabPage", "FeedNewTabPage"})
-    @Features.EnableFeatures({ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO})
-    @Features.DisableFeatures({
-            ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD})
     public void testTextBoxBackgroundColor() throws Exception {
         // clang-format on
-        RecyclerView recycleView =
-                (RecyclerView) mNtp.getCoordinatorForTesting().getStreamForTesting().getView();
+        RecyclerView recycleView = (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView();
 
-        Resources resources = mActivityTestRule.getActivity().getResources();
-        Assert.assertEquals(ChromeColors.getPrimaryBackgroundColor(resources, false),
+        Context context = mActivityTestRule.getActivity();
+        Assert.assertEquals(ChromeColors.getPrimaryBackgroundColor(context, false),
                 mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
 
         // Wait for the test feed items to be available in the feed.
         FeedV2TestHelper.waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD,
-                (RecyclerView) mNtp.getCoordinatorForTesting().getStreamForTesting().getView());
+                (RecyclerView) mNtp.getCoordinatorForTesting().getRecyclerView());
 
         // Scroll to the bottom.
         RecyclerViewTestUtils.scrollToBottom(recycleView);
         RecyclerViewTestUtils.waitForStableRecyclerView(recycleView);
 
         Assert.assertTrue(mNtp.isLocationBarScrolledToTopInNtp());
+        final int expectedTextBoxBackground =
+                ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_2);
         Assert.assertEquals(
-                ApiCompatibilityUtils.getColor(resources, R.color.toolbar_text_box_background),
-                mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
+                expectedTextBoxBackground, mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
     }
 }

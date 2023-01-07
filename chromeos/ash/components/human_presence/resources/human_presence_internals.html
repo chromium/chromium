@@ -1,0 +1,350 @@
+﻿<!doctype html>
+<html dir="ltr" lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>HPS Internals</title>
+  <meta name="viewport" content="width=device-width">
+  <link rel="icon" href="human_presence_internals_icon.svg">
+  <link rel="import" href="chrome://resources/html/polymer.html">
+  <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
+  <link rel="stylesheet" href="human_presence_internals.css">
+  <script type="module" src="human_presence_internals.js"></script>
+</head>
+
+<body id="root">
+  <h1>HPS Internals <a id="show-info">ⓘ</a></h1>
+
+  <div id="connection-error" style="display: none">
+    Unable to connect to HPS. Are the screen privacy settings enabled?
+  </div>
+
+  <div id="enable-error" style="display: none">
+    Failed to enable feature.
+  </div>
+
+  <dialog id="info-dialog">
+    <label for="manifest">Firmware manifest</label>
+    <pre id="manifest"></pre>
+    <form method="dialog">
+      <button>Close</button>
+    </form>
+  </dialog>
+
+  <div class="flexbar flexbar-wrap">
+    <div class="feature-panel">
+      <h2>👤 Sense feature</h2>
+      <div class="flexbar">
+        <div class="flexbar">
+          <button id="enable-sense">Enable</button>
+          <button id="disable-sense">Disable</button>
+        </div>
+        <div class="spacer"></div>
+        <div id="sense-state" class="unknown"></div>
+      </div>
+      <div class="history" id="sense-history"></div>
+      <h3>Inference score</h3>
+      <div class="flexbar">
+        <div class="history inference-history" id="sense-inference-history"></div>
+        <div id="sense-inference-result"></div>
+      </div>
+      <div class="flexbar select_panel">
+        <select id="select-sense">
+          <option> -----------Select Filter----------- </option>
+          <option> default </option>
+          <option> consecutive_results_filter_config </option>
+          <option> average_filter_config </option>
+        </select>
+        <button
+          class="apply-button"
+          id="apply-select-sense">
+          Apply
+        </button>
+        <label
+          class="apply-label"
+          id="apply-select-sense-complete">
+          New HpsSense filter config is sent to hpsd.
+        </label>
+      </div>
+      <div class="flexbar">
+        <form
+          class="filter_config_panel"
+          id="select-sense-average_filter_config">
+          <div>
+            <label
+              for="sense-average_filter_config-average_window_size">
+              average_window_size(1 to 10)
+            </label>
+            <input
+              id="sense-average_filter_config-average_window_size"
+              type="number"
+              min="1"
+              max="10">
+            </input>
+          </div>
+          <div>
+            <label
+              for="sense-average_filter_config-positive_score_threshold">
+              positive_score_threshold(-127 to +127)
+            </label>
+            <input
+              id="sense-average_filter_config-positive_score_threshold"
+              type="number"
+              min="-127"
+              max="127">
+            </input>
+          </div>
+          <div>
+            <label
+              for="sense-average_filter_config-negative_score_threshold">
+              negative_score_threshold(-127 to +127)
+            </label>
+            <input
+              id="sense-average_filter_config-negative_score_threshold"
+              type="number"
+              min="-127"
+              max="127">
+            </input>
+          </div>
+          <div>
+            <label
+              for="sense-average_filter_config-default_uncertain_score">
+                default_uncertain_score(-127 to +127)
+            </label>
+            <input
+              id="sense-average_filter_config-default_uncertain_score"
+              type="number"
+              min="-127"
+              max="127">
+            </input>
+          </div>
+        </form>
+
+        <form
+          class="filter_config_panel"
+          id="select-sense-consecutive_results_filter_config">
+          <div>
+            <label
+              for="sense-consecutive_results_filter_config-positive_score_threshold">
+              positive_score_threshold(-127 to +127)
+            </label>
+            <input
+              id="sense-consecutive_results_filter_config-positive_score_threshold"
+              type="number"
+              min="-127"
+              max="127">
+            </input>
+          </div>
+          <div>
+            <label
+              for="sense-consecutive_results_filter_config-negative_score_threshold">
+              negative_score_threshold(-127 to +127)
+            </label>
+            <input
+              id="sense-consecutive_results_filter_config-negative_score_threshold"
+              type="number"
+              min="-127"
+              max="127">
+            </input>
+          </div>
+          <div>
+            <label
+              for="sense-consecutive_results_filter_config-positive_count_threshold">
+              positive_count_threshold(1 to 10)
+            </label>
+            <input
+              id="sense-consecutive_results_filter_config-positive_count_threshold"
+              type="number"
+              min="1"
+              max="10">
+            </input>
+          </div>
+          <div>
+            <label
+              for="sense-consecutive_results_filter_config-negative_count_threshold">
+              negative_count_threshold(1 to 10)
+            </label>
+            <input
+              id="sense-consecutive_results_filter_config-negative_count_threshold"
+              type="number"
+              min="1"
+              max="10">
+            </input>
+          </div>
+          <div>
+            <label
+              for="sense-consecutive_results_filter_config-uncertain_count_threshold">
+              uncertain_count_threshold(1 to 10)
+            </label>
+            <input
+              id="sense-consecutive_results_filter_config-uncertain_count_threshold"
+              type="number"
+              min="1"
+              max="10">
+            </input>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="feature-panel">
+      <h2>👥 Notify feature</h2>
+      <div class="flexbar">
+        <div class="flexbar">
+          <button id="enable-notify">Enable</button>
+          <button id="disable-notify">Disable</button>
+        </div>
+        <div class="spacer"></div>
+        <div id="notify-state" class="unknown"></div>
+      </div>
+      <div class="history" id="notify-history"></div>
+      <h3>Inference score</h3>
+      <div class="flexbar">
+        <div class="history inference-history" id="notify-inference-history"></div>
+        <div id="notify-inference-result"></div>
+      </div>
+      <div class="flexbar select_panel">
+        <select id="select-notify">
+          <option> -----------Select Filter----------- </option>
+          <option> default </option>
+          <option> consecutive_results_filter_config </option>
+          <option> average_filter_config </option>
+        </select>
+        <button
+          class="apply-button"
+          id="apply-select-notify">
+          Apply
+        </button>
+        <label
+          class="apply-label"
+          id="apply-select-notify-complete">
+          New HpsNotify filter config is sent to hpsd.
+        </label>
+      </div>
+      <div class="flexbar">
+        <form
+          class="filter_config_panel"
+          id="select-notify-average_filter_config">
+          <div>
+            <label
+              for="notify-average_filter_config-average_window_size">
+              average_window_size(1 to 10)
+            </label>
+            <input
+              id="notify-average_filter_config-average_window_size"
+              type="number"
+              min="1"
+              max="10">
+            </input>
+          </div>
+          <div>
+            <label
+              for="notify-average_filter_config-positive_score_threshold">
+              positive_score_threshold(-127 to +127)
+            </label>
+            <input
+              id="notify-average_filter_config-positive_score_threshold"
+              type="number"
+              min="-127"
+              max="127">
+            </input>
+          </div>
+          <div>
+            <label
+              for="notify-average_filter_config-negative_score_threshold">
+              negative_score_threshold(-127 to +127)
+            </label>
+            <input
+              id="notify-average_filter_config-negative_score_threshold"
+              type="number"
+              min="-127"
+              max="127">
+            </input>
+          </div>
+          <div>
+            <label
+              for="notify-average_filter_config-default_uncertain_score">
+                default_uncertain_score(-127 to +127)
+            </label>
+            <input
+              id="notify-average_filter_config-default_uncertain_score"
+              type="number"
+              min="-127"
+              max="127">
+            </input>
+          </div>
+        </form>
+
+        <form
+          class="filter_config_panel"
+          id="select-notify-consecutive_results_filter_config">
+          <div>
+            <label
+              for="notify-consecutive_results_filter_config-positive_score_threshold">
+              positive_score_threshold(-127 to +127)
+            </label>
+            <input
+              id="notify-consecutive_results_filter_config-positive_score_threshold"
+              type="number"
+              min="-127"
+              max="127">
+            </input>
+          </div>
+          <div>
+            <label
+              for="notify-consecutive_results_filter_config-negative_score_threshold">
+              negative_score_threshold(-127 to +127)
+            </label>
+            <input
+              id="notify-consecutive_results_filter_config-negative_score_threshold"
+              type="number"
+              min="-127"
+              max="127">
+            </input>
+          </div>
+          <div>
+            <label
+              for="notify-consecutive_results_filter_config-positive_count_threshold">
+              positive_count_threshold(1 to 10)
+            </label>
+            <input
+              id="notify-consecutive_results_filter_config-positive_count_threshold"
+              type="number"
+              min="1"
+              max="10">
+            </input>
+          </div>
+          <div>
+            <label
+              for="notify-consecutive_results_filter_config-negative_count_threshold">
+              negative_count_threshold(1 to 10)
+            </label>
+            <input
+              id="notify-consecutive_results_filter_config-negative_count_threshold"
+              type="number"
+              min="1"
+              max="10">
+            </input>
+          </div>
+          <div>
+            <label
+              for="notify-consecutive_results_filter_config-uncertain_count_threshold">
+              uncertain_count_threshold(1 to 10)
+            </label>
+            <input
+              id="notify-consecutive_results_filter_config-uncertain_count_threshold"
+              type="number"
+              min="1"
+              max="10">
+            </input>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class ScriptContext;
@@ -21,6 +20,10 @@ class SafeBuiltins {
   static std::unique_ptr<v8::Extension> CreateV8Extension();
 
   explicit SafeBuiltins(ScriptContext* context);
+
+  SafeBuiltins(const SafeBuiltins&) = delete;
+  SafeBuiltins& operator=(const SafeBuiltins&) = delete;
+
   ~SafeBuiltins();
 
   // Each method returns an object with methods taken from their respective
@@ -43,8 +46,6 @@ class SafeBuiltins {
 
  private:
   ScriptContext* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBuiltins);
 };
 
 }  //  namespace extensions

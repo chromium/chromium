@@ -1,0 +1,5 @@
+monorail {
+  component: "UI>Browser>Offline"
+}
+
+team_email: "offline-dev@chromium.org"

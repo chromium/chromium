@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 // These tests just test end to end calls for RasterDarkModeFilterImpl. For
 // detailed tests check dark mode module tests.
 namespace blink {
-namespace {
 
 TEST(RasterDarkModeFilterImplTest, ApplyToImageAPI) {
   DarkModeSettings settings;
@@ -21,5 +20,4 @@ TEST(RasterDarkModeFilterImplTest, ApplyToImageAPI) {
   EXPECT_EQ(filter.ApplyToImage(pixmap, SkIRect::MakeWH(50, 50)), nullptr);
 }
 
-}  // namespace
 }  // namespace blink

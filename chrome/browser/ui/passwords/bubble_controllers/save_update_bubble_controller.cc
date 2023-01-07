@@ -1,30 +1,38 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 
-#include "base/feature_list.h"
+#include "base/containers/contains.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
+#include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
+#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/password_manager/core/browser/password_bubble_experiment.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
+#include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/browser/password_store.h"
-#include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/browser/smart_bubble_stats_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace {
 
@@ -60,11 +68,14 @@ password_manager::metrics_util::UIDisplayDisposition ComputeDisplayDisposition(
 
 void CleanStatisticsForSite(Profile* profile, const url::Origin& origin) {
   DCHECK(profile);
-  password_manager::PasswordStore* password_store =
+  password_manager::PasswordStoreInterface* password_store =
       PasswordStoreFactory::GetForProfile(profile,
                                           ServiceAccessType::IMPLICIT_ACCESS)
           .get();
-  password_store->RemoveSiteStats(origin.GetURL());
+  password_manager::SmartBubbleStatsStore* stats_store =
+      password_store->GetSmartBubbleStatsStore();
+  if (stats_store)
+    stats_store->RemoveSiteStats(origin.GetURL());
 }
 
 std::vector<password_manager::PasswordForm> DeepCopyForms(
@@ -81,8 +92,12 @@ std::vector<password_manager::PasswordForm> DeepCopyForms(
 
 bool IsSyncUser(Profile* profile) {
   const syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
-  return password_bubble_experiment::IsSmartLockUser(sync_service);
+      SyncServiceFactory::GetForProfile(profile);
+  password_manager::SyncState sync_state =
+      password_manager_util::GetPasswordSyncState(sync_service);
+  return sync_state == password_manager::SyncState::kSyncingNormalEncryption ||
+         sync_state ==
+             password_manager::SyncState::kSyncingWithCustomPassphrase;
 }
 
 }  // namespace
@@ -99,18 +114,12 @@ SaveUpdateBubbleController::SaveUpdateBubbleController(
       enable_editing_(false),
       dismissal_reason_(metrics_util::NO_DIRECT_INTERACTION),
       clock_(base::DefaultClock::GetInstance()) {
-  // If kEnablePasswordsAccountStorage is enabled, then
-  // SaveUpdateWithAccountStoreBubbleController should be used instead of this
-  // class.
-  DCHECK(!base::FeatureList::IsEnabled(
-      password_manager::features::kEnablePasswordsAccountStorage));
-
   state_ = delegate_->GetState();
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_STATE ||
          state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE);
   origin_ = delegate_->GetOrigin();
   pending_password_ = delegate_->GetPendingPassword();
-  local_credentials_ = DeepCopyForms(delegate_->GetCurrentForms());
+  existing_credentials_ = DeepCopyForms(delegate_->GetCurrentForms());
   if (state_ == password_manager::ui::PENDING_PASSWORD_STATE) {
     interaction_stats_.origin_domain = origin_.GetURL();
     interaction_stats_.username_value = pending_password_.username_value;
@@ -122,31 +131,30 @@ SaveUpdateBubbleController::SaveUpdateBubbleController(
       interaction_stats_.dismissal_count = stats->dismissal_count;
     }
   }
-
   if (are_passwords_revealed_when_bubble_is_opened_) {
     delegate_->OnPasswordsRevealed();
   }
   // The condition for the password reauth:
-  // If the bubble opened after reauth -> no more reauth necessary, otherwise
-  // If a password was autofilled -> require reauth to view it, otherwise
-  // Require reauth iff the user opened the bubble manually and it's not the
-  // manual saving state. The manual saving state as well as automatic prompt
-  // are temporary states, therefore, it's better for the sake of convenience
-  // for the user not to break the UX with the reauth prompt.
+  // If the bubble opened after reauth -> no more reauth necessary.
+  // If the bubble opened after successful submission -> no reauth because it's
+  // a temporary state and we should not complicate that UX flow.
+  // If a password was autofilled -> require reauth to view it.
+  // If the bubble opened manually and not a manual fallback -> require reauth.
+  // The manual fallback is a temporary state and it's better for the sake of
+  // convenience for the user not to break the UX with the reauth prompt.
   password_revealing_requires_reauth_ =
       !are_passwords_revealed_when_bubble_is_opened_ &&
+      display_reason ==
+          PasswordBubbleControllerBase::DisplayReason::kUserAction &&
       (pending_password_.form_has_autofilled_value ||
-       (!delegate_->BubbleIsManualFallbackForSaving() &&
-        display_reason ==
-            PasswordBubbleControllerBase::DisplayReason::kUserAction));
+       !delegate_->BubbleIsManualFallbackForSaving());
   enable_editing_ = delegate_->GetCredentialSource() !=
                     password_manager::metrics_util::CredentialSourceType::
                         kCredentialManagementAPI;
 }
 
 SaveUpdateBubbleController::~SaveUpdateBubbleController() {
-  if (!interaction_reported_)
-    OnBubbleClosing();
+  OnBubbleClosing();
 }
 
 void SaveUpdateBubbleController::OnSaveClicked() {
@@ -155,8 +163,19 @@ void SaveUpdateBubbleController::OnSaveClicked() {
   dismissal_reason_ = metrics_util::CLICKED_ACCEPT;
   if (delegate_) {
     CleanStatisticsForSite(GetProfile(), origin_);
-    delegate_->SavePassword(pending_password_.username_value,
-                            pending_password_.password_value);
+    if (IsAccountStorageOptInRequiredBeforeSave()) {
+      delegate_->AuthenticateUserForAccountStoreOptInAndSavePassword(
+          pending_password_.username_value, pending_password_.password_value);
+    } else {
+      delegate_->SavePassword(pending_password_.username_value,
+                              pending_password_.password_value);
+      if (!IsCurrentStateUpdate() &&
+          delegate_->GetPasswordFeatureManager()
+              ->ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()) {
+        delegate_
+            ->AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword();
+      }
+    }
   }
 }
 
@@ -185,14 +204,18 @@ void SaveUpdateBubbleController::OnCredentialEdited(
   pending_password_.password_value = std::move(new_password);
 }
 
+void SaveUpdateBubbleController::OnGooglePasswordManagerLinkClicked() {
+  if (delegate_) {
+    delegate_->NavigateToPasswordManagerSettingsPage(
+        password_manager::ManagePasswordsReferrer::kSaveUpdateBubble);
+  }
+}
+
 bool SaveUpdateBubbleController::IsCurrentStateUpdate() const {
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
          state_ == password_manager::ui::PENDING_PASSWORD_STATE);
-  return std::any_of(local_credentials_.begin(), local_credentials_.end(),
-                     [this](const password_manager::PasswordForm& form) {
-                       return form.username_value ==
-                              pending_password_.username_value;
-                     });
+  return base::Contains(existing_credentials_, pending_password_.username_value,
+                        &password_manager::PasswordForm::username_value);
 }
 
 bool SaveUpdateBubbleController::ShouldShowFooter() const {
@@ -201,26 +224,28 @@ bool SaveUpdateBubbleController::ShouldShowFooter() const {
          IsSyncUser(GetProfile());
 }
 
-bool SaveUpdateBubbleController::ReplaceToShowPromotionIfNeeded() {
-  Profile* profile = GetProfile();
-  if (!profile)
-    return false;
-  PrefService* prefs = profile->GetPrefs();
-  const syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForProfile(profile);
-  // Signin promotion.
-  if (password_bubble_experiment::ShouldShowChromeSignInPasswordPromo(
-          prefs, sync_service)) {
-    ReportInteractions();
-    state_ = password_manager::ui::CHROME_SIGN_IN_PROMO_STATE;
-    int show_count = prefs->GetInteger(
-        password_manager::prefs::kNumberSignInPasswordPromoShown);
-    show_count++;
-    prefs->SetInteger(password_manager::prefs::kNumberSignInPasswordPromoShown,
-                      show_count);
+bool SaveUpdateBubbleController::
+    IsCurrentStateAffectingPasswordsStoredInTheGoogleAccount() {
+  DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
+         state_ == password_manager::ui::PENDING_PASSWORD_STATE);
+
+  if (IsSyncUser(GetProfile()))
     return true;
+
+  bool is_update = false;
+  bool is_update_in_account_store = false;
+  for (const password_manager::PasswordForm& form : existing_credentials_) {
+    if (form.username_value == pending_password_.username_value) {
+      is_update = true;
+      if (form.IsUsingAccountStore())
+        is_update_in_account_store = true;
+    }
   }
-  return false;
+
+  if (!is_update)
+    return IsUsingAccountStore();
+
+  return is_update_in_account_store;
 }
 
 bool SaveUpdateBubbleController::RevealPasswords() {
@@ -231,10 +256,89 @@ bool SaveUpdateBubbleController::RevealPasswords() {
   return reveal_immediately;
 }
 
-std::u16string SaveUpdateBubbleController::GetTitle() const {
-  if (state_ == password_manager::ui::CHROME_SIGN_IN_PROMO_STATE)
-    return l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_SYNC_PROMO_TITLE);
+bool SaveUpdateBubbleController::ShouldShowPasswordStorePicker() const {
+  if (!delegate_->GetPasswordFeatureManager()
+           ->ShouldShowAccountStorageBubbleUi()) {
+    return false;
+  }
+  if (delegate_->GetPasswordFeatureManager()
+          ->ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()) {
+    // If the user will be asked to opt-in *after* saving the current password
+    // locally, then do not show the destination picker yet.
+    DCHECK_EQ(delegate_->GetPasswordFeatureManager()->GetDefaultPasswordStore(),
+              Store::kProfileStore);
+    return false;
+  }
+  return true;
+}
 
+void SaveUpdateBubbleController::OnToggleAccountStore(
+    bool is_account_store_selected) {
+  delegate_->GetPasswordFeatureManager()->SetDefaultPasswordStore(
+      is_account_store_selected ? Store::kAccountStore : Store::kProfileStore);
+}
+
+bool SaveUpdateBubbleController::IsUsingAccountStore() {
+  return delegate_->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
+         Store::kAccountStore;
+}
+
+bool SaveUpdateBubbleController::IsAccountStorageOptInRequiredBeforeSave() {
+  // If this is an update, either a) the password only exists in the profile
+  // store, so the opt-in shouldn't be offered because the account storage won't
+  // be used, or b) there is a copy in the account store, which means the user
+  // already opted in. Either way, the opt-in shouldn't be offered.
+  if (IsCurrentStateUpdate())
+    return false;
+  // If saving to the profile store, then no need to ask for opt-in.
+  if (!IsUsingAccountStore())
+    return false;
+  // If already opted in, no need to ask again.
+  if (delegate_->GetPasswordFeatureManager()->IsOptedInForAccountStorage())
+    return false;
+
+  return true;
+}
+
+std::u16string SaveUpdateBubbleController::GetPrimaryAccountEmail() {
+  Profile* profile = GetProfile();
+  if (!profile)
+    return std::u16string();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager)
+    return std::u16string();
+  return base::UTF8ToUTF16(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .email);
+}
+
+ui::ImageModel SaveUpdateBubbleController::GetPrimaryAccountAvatar(
+    int icon_size_dip) {
+  Profile* profile = GetProfile();
+  if (!profile)
+    return ui::ImageModel();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager)
+    return ui::ImageModel();
+  AccountInfo primary_account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  DCHECK(!primary_account_info.IsEmpty());
+  gfx::Image account_icon = primary_account_info.account_image;
+  if (account_icon.IsEmpty()) {
+    account_icon = ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+        profiles::GetPlaceholderAvatarIconResourceID());
+  }
+  return ui::ImageModel::FromImage(profiles::GetSizedAvatarIcon(
+      account_icon, icon_size_dip, icon_size_dip, profiles::SHAPE_CIRCLE));
+}
+
+bool SaveUpdateBubbleController::DidAuthForAccountStoreOptInFail() const {
+  return delegate_->DidAuthForAccountStoreOptInFail();
+}
+
+std::u16string SaveUpdateBubbleController::GetTitle() const {
   PasswordTitleType type = IsCurrentStateUpdate()
                                ? PasswordTitleType::UPDATE_PASSWORD
                                : (pending_password_.federation_origin.opaque()
@@ -245,8 +349,6 @@ std::u16string SaveUpdateBubbleController::GetTitle() const {
 }
 
 void SaveUpdateBubbleController::ReportInteractions() {
-  if (state_ == password_manager::ui::CHROME_SIGN_IN_PROMO_STATE)
-    return;
   DCHECK(state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE ||
          state_ == password_manager::ui::PENDING_PASSWORD_STATE);
   if (state_ == password_manager::ui::PENDING_PASSWORD_STATE) {
@@ -261,29 +363,33 @@ void SaveUpdateBubbleController::ReportInteractions() {
                 interaction_stats_.dismissal_count)>::max())
           interaction_stats_.dismissal_count++;
         interaction_stats_.update_time = clock_->Now();
-        password_manager::PasswordStore* password_store =
+        password_manager::PasswordStoreInterface* password_store =
             PasswordStoreFactory::GetForProfile(
                 profile, ServiceAccessType::IMPLICIT_ACCESS)
                 .get();
-        password_store->AddSiteStats(interaction_stats_);
+        password_manager::SmartBubbleStatsStore* stats_store =
+            password_store->GetSmartBubbleStatsStore();
+        if (stats_store)
+          stats_store->AddSiteStats(interaction_stats_);
       }
     }
   }
 
   // Log UMA histograms.
   if (state_ == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE) {
-    metrics_util::LogUpdateUIDismissalReason(dismissal_reason_);
+    metrics_util::LogUpdateUIDismissalReason(
+        dismissal_reason_, pending_password_.submission_event);
   } else if (state_ == password_manager::ui::PENDING_PASSWORD_STATE) {
-    base::Optional<metrics_util::PasswordAccountStorageUserState> user_state =
-        base::nullopt;
+    absl::optional<metrics_util::PasswordAccountStorageUserState> user_state =
+        absl::nullopt;
     Profile* profile = GetProfile();
     if (profile) {
       user_state = password_manager::features_util::
           ComputePasswordAccountStorageUserState(
-              profile->GetPrefs(),
-              ProfileSyncServiceFactory::GetForProfile(profile));
+              profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
     }
-    metrics_util::LogSaveUIDismissalReason(dismissal_reason_, user_state);
+    metrics_util::LogSaveUIDismissalReason(
+        dismissal_reason_, pending_password_.submission_event, user_state);
   }
 
   // Update the delegate so that it can send votes to the server.

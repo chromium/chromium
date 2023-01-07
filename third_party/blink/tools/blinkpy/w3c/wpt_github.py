@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,8 +7,12 @@ import datetime
 import json
 import logging
 import re
-import urllib2
+import six
+
 from collections import namedtuple
+from requests.exceptions import HTTPError
+from requests.exceptions import InvalidURL
+from six.moves.urllib.parse import quote
 
 from blinkpy.common.memoized import memoized
 from blinkpy.w3c.common import WPT_GH_ORG, WPT_GH_REPO_NAME, EXPORT_PR_LABEL
@@ -46,7 +50,8 @@ class WPTGitHub(object):
 
     def auth_token(self):
         assert self.has_credentials()
-        return base64.b64encode('{}:{}'.format(self.user, self.token))
+        data = '{}:{}'.format(self.user, self.token).encode('utf-8')
+        return base64.b64encode(data).decode('utf-8')
 
     def request(self, path, method, body=None, accept_header=None):
         """Sends a request to GitHub API and deserializes the response.
@@ -63,7 +68,10 @@ class WPTGitHub(object):
         assert path.startswith('/')
 
         if body:
-            body = json.dumps(body)
+            if six.PY3:
+                body = json.dumps(body).encode("utf-8")
+            else:
+                body = json.dumps(body)
 
         if accept_header:
             headers = {'Accept': accept_header}
@@ -128,14 +136,18 @@ class WPTGitHub(object):
         }
         try:
             response = self.request(path, method='POST', body=body)
-        except urllib2.HTTPError as e:
-            _log.error(e.reason)
-            if e.code == 422:
-                _log.error('Please check if branch already exists; If so, '
-                           'please remove the PR description and '
-                           'delete the branch')
-            raise GitHubError(201, e.code,
-                              'create PR branch %s' % remote_branch_name)
+        except HTTPError as e:
+            if hasattr(e, 'response'):
+                _log.error(e.response.reason)
+                if e.response.status_code == 422:
+                    _log.error('Please check if branch already exists; If so, '
+                               'please remove the PR description and '
+                               'delete the branch')
+                raise GitHubError(201, e.response.status_code,
+                                  'create PR branch %s' % remote_branch_name)
+            else:
+                raise GitHubError(201, e,
+                                  'create PR branch %s' % remote_branch_name)
 
         if response.status_code != 201:
             raise GitHubError(201, response.status_code, 'create PR')
@@ -185,7 +197,7 @@ class WPTGitHub(object):
             WPT_GH_ORG,
             WPT_GH_REPO_NAME,
             number,
-            urllib2.quote(label),
+            quote(label),
         )
         response = self.request(path, method='DELETE')
 
@@ -366,18 +378,27 @@ class WPTGitHub(object):
         """
         path = '/repos/%s/%s/pulls/%d/merge' % (WPT_GH_ORG, WPT_GH_REPO_NAME,
                                                 pr_number)
-        try:
-            response = self.request(path, method='GET')
-            if response.status_code == 204:
-                return True
-            else:
-                raise GitHubError(204, response.status_code,
-                                  'check if PR %d is merged' % pr_number)
-        except urllib2.HTTPError as e:
-            if e.code == 404:
-                return False
-            else:
-                raise
+        cached_error = None
+        for i in range(5):
+            try:
+                response = self.request(path, method='GET')
+                if response.status_code == 204:
+                    return True
+                else:
+                    raise GitHubError(204, response.status_code,
+                                      'check if PR %d is merged' % pr_number)
+            except HTTPError as e:
+                if hasattr(e, 'response') and e.response.status_code == 404:
+                    return False
+                else:
+                    raise
+            except InvalidURL as e:
+                # After migrate to py3 we met random timeout issue here,
+                # Retry this request in this case
+                _log.warning("Meet URLError...")
+                cached_error = e
+        else:
+            raise cached_error
 
     def merge_pr(self, pr_number):
         """Merges a PR.
@@ -395,8 +416,8 @@ class WPTGitHub(object):
 
         try:
             response = self.request(path, method='PUT', body=body)
-        except urllib2.HTTPError as e:
-            if e.code == 405:
+        except HTTPError as e:
+            if hasattr(e, 'response') and e.response.status_code == 405:
                 raise MergeError(pr_number)
             else:
                 raise
@@ -455,20 +476,20 @@ class JSONResponse(object):
         """Initializes a JSONResponse instance.
 
         Args:
-            raw_response: a response object returned by open methods in urllib2.
+            raw_response: a response object returned by requests.
         """
         self._raw_response = raw_response
-        self.status_code = raw_response.getcode()
+        self.status_code = raw_response.status_code
         try:
-            self.data = json.load(raw_response)
+            self.data = raw_response.json()
         except ValueError:
             self.data = None
 
     def getheader(self, header):
         """Gets the value of the header with the given name.
 
-        Delegates to HTTPMessage.getheader(), which is case-insensitive."""
-        return self._raw_response.info().getheader(header)
+        Delegates to request.Response.headers, which is case-insensitive."""
+        return self._raw_response.headers.get(header)
 
 
 class GitHubError(Exception):

@@ -1,17 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_ACCESSORY_CONTROLLER_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_ACCESSORY_CONTROLLER_H_
 
-#include <map>
-#include <memory>
-#include <string>
-#include <utility>
-
-#include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/accessory_controller.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
@@ -33,6 +26,11 @@ class PasswordAccessoryController
       public AccessoryController {
  public:
   PasswordAccessoryController() = default;
+
+  PasswordAccessoryController(const PasswordAccessoryController&) = delete;
+  PasswordAccessoryController& operator=(const PasswordAccessoryController&) =
+      delete;
+
   ~PasswordAccessoryController() override = default;
 
   // Returns true if the accessory controller may exist for |web_contents|.
@@ -67,9 +65,6 @@ class PasswordAccessoryController
   // the automatically provided button.
   virtual void OnGenerationRequested(
       autofill::password_generation::PasswordGenerationType type) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PasswordAccessoryController);
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_ACCESSORY_CONTROLLER_H_

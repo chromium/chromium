@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,28 +10,29 @@
 
 #include <limits>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/string_piece.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
 #include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace mojo {
 
 class AssociatedGroupController;
 
 using ReportBadMessageCallback =
-    base::OnceCallback<void(const std::string& error)>;
+    base::OnceCallback<void(base::StringPiece error)>;
 
 // Message is a holder for the data and handles to be sent over a MessagePipe.
 // Message owns its data and handles, but a consumer of Message is free to
@@ -42,6 +43,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   static const uint32_t kFlagExpectsResponse = 1 << 0;
   static const uint32_t kFlagIsResponse = 1 << 1;
   static const uint32_t kFlagIsSync = 1 << 2;
+  static const uint32_t kFlagNoInterrupt = 1 << 3;
 
   // Constructs an uninitialized Message object.
   Message();
@@ -102,6 +104,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   // |*handle| remains unchanged and the returned Message will be null (i.e.
   // calling IsNull() on it will return |true|).
   static Message CreateFromMessageHandle(ScopedMessageHandle* message_handle);
+
+  Message(const Message&) = delete;
+  Message& operator=(const Message&) = delete;
 
   ~Message();
 
@@ -177,6 +182,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
     header_v1()->request_id = request_id;
   }
 
+  void set_trace_nonce(uint32_t trace_nonce) {
+    header()->trace_nonce = trace_nonce;
+  }
+
   // Access the payload.
   const uint8_t* payload() const;
   uint8_t* mutable_payload() { return const_cast<uint8_t*>(payload()); }
@@ -219,7 +228,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
 
   // Notifies the system that this message is "bad," in this case meaning it was
   // rejected by bindings validation code.
-  void NotifyBadMessage(const std::string& error);
+  void NotifyBadMessage(base::StringPiece error);
 
   // Serializes and attaches Mojo handles and associated endpoint handles from
   // |handles_| and |associated_endpoint_handles_| respectively.
@@ -253,6 +262,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
     heap_profiler_tag_ = heap_profiler_tag;
   }
 
+  // Get a global trace id identifying this message. Used for connecting the
+  // sender and the receiver in traces.
+  uint64_t GetTraceId() const;
+
+  // Write a representation of this object into a trace.
+  void WriteIntoTrace(perfetto::TracedValue ctx) const;
+
 #if defined(ENABLE_IPC_FUZZER)
   const char* interface_name() const { return interface_name_; }
   void set_interface_name(const char* interface_name) {
@@ -280,7 +296,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
 
   std::vector<ScopedHandle> handles_;
   std::vector<ScopedInterfaceEndpointHandle> associated_endpoint_handles_;
-  const ConnectionGroup::Ref* receiver_connection_group_ = nullptr;
+  raw_ptr<const ConnectionGroup::Ref, DanglingUntriaged>
+      receiver_connection_group_ = nullptr;
 
   // Indicates whether this Message object is transferable, i.e. can be sent
   // elsewhere. In general this is true unless |handle_| is invalid or
@@ -296,8 +313,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   const char* interface_name_ = nullptr;
   const char* method_name_ = nullptr;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(Message);
 };
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageFilter {
@@ -308,7 +323,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageFilter {
   // the message is dispatched to the associated MessageReceiver. Returns true
   // if the message was accepted and false otherwise, indicating that the
   // message was invalid or malformed.
-  virtual bool WillDispatch(Message* message) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool WillDispatch(Message* message) = 0;
 
   // The filter receives notification that the message was dispatched or
   // rejected. Since the message filter is owned by the receiver it will not be
@@ -326,7 +341,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageReceiver {
   // The receiver may mutate the given message.  Returns true if the message
   // was accepted and false otherwise, indicating that the message was invalid
   // or malformed.
-  virtual bool Accept(Message* message) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool Accept(Message* message) = 0;
 };
 
 class MessageReceiverWithResponder : public MessageReceiver {
@@ -337,9 +352,9 @@ class MessageReceiverWithResponder : public MessageReceiver {
   // responder) to handle the response message generated from the given
   // message. The responder's Accept method may be called during
   // AcceptWithResponder or some time after its return.
-  virtual bool AcceptWithResponder(Message* message,
-                                   std::unique_ptr<MessageReceiver> responder)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool AcceptWithResponder(
+      Message* message,
+      std::unique_ptr<MessageReceiver> responder) = 0;
 };
 
 // A MessageReceiver that is also able to provide status about the state
@@ -371,59 +386,23 @@ class MessageReceiverWithResponderStatus : public MessageReceiver {
   // the responder) to handle the response message generated from the given
   // message. Any of the responder's methods (Accept or IsValid) may be called
   // during  AcceptWithResponder or some time after its return.
-  virtual bool AcceptWithResponder(Message* message,
-                                   std::unique_ptr<MessageReceiverWithStatus>
-                                       responder) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool AcceptWithResponder(
+      Message* message,
+      std::unique_ptr<MessageReceiverWithStatus> responder) = 0;
 };
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) PassThroughFilter
     : public MessageReceiver {
  public:
   PassThroughFilter();
+
+  PassThroughFilter(const PassThroughFilter&) = delete;
+  PassThroughFilter& operator=(const PassThroughFilter&) = delete;
+
   ~PassThroughFilter() override;
 
   // MessageReceiver:
   bool Accept(Message* message) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PassThroughFilter);
-};
-
-namespace internal {
-class SyncMessageResponseSetup;
-}
-
-// An object which should be constructed on the stack immediately before making
-// a sync request for which the caller wishes to perform custom validation of
-// the response value(s). It is illegal to make more than one sync call during
-// the lifetime of the topmost SyncMessageResponseContext, but it is legal to
-// nest contexts to support reentrancy.
-//
-// Usage should look something like:
-//
-//     SyncMessageResponseContext response_context;
-//     foo_interface->SomeSyncCall(&response_value);
-//     if (response_value.IsBad())
-//       response_context.ReportBadMessage("Bad response_value!");
-//
-class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) SyncMessageResponseContext {
- public:
-  SyncMessageResponseContext();
-  ~SyncMessageResponseContext();
-
-  static SyncMessageResponseContext* current();
-
-  void ReportBadMessage(const std::string& error);
-
-  ReportBadMessageCallback GetBadMessageCallback();
-
- private:
-  friend class internal::SyncMessageResponseSetup;
-
-  SyncMessageResponseContext* outer_context_;
-  Message response_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncMessageResponseContext);
 };
 
 // Reports the currently dispatching Message as bad. Note that this is only
@@ -432,7 +411,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) SyncMessageResponseContext {
 // a message, use GetBadMessageCallback() and retain its result until you're
 // ready to invoke or discard it.
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
-void ReportBadMessage(const std::string& error);
+void ReportBadMessage(base::StringPiece error);
 
 // Acquires a callback which may be run to report the currently dispatching
 // Message as bad. Note that this is only legal to call from directly within the
@@ -441,6 +420,11 @@ void ReportBadMessage(const std::string& error);
 // be called once per message.
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 ReportBadMessageCallback GetBadMessageCallback();
+
+// Returns true if called directly within the stack frame of a message dispatch.
+// Unlike GetBadMessageCallback(), this can be called multiple times.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool IsInMessageDispatch();
 
 }  // namespace mojo
 

@@ -1,5 +1,7 @@
 // META: global=window,worker
 
+"use strict";
+
 var log = [];
 function clearLog() {
   log = [];
@@ -47,7 +49,7 @@ test(function() {
   // we're a sequence, during overload resolution.
   assert_array_equals(log[0], ["get", record, Symbol.iterator, proxy]);
   // Then we have the [[OwnPropertyKeys]] from
-  // https://heycam.github.io/webidl/#es-to-record step 4.
+  // https://webidl.spec.whatwg.org/#es-to-record step 4.
   assert_array_equals(log[1], ["ownKeys", record]);
   // Then the [[GetOwnProperty]] from step 5.1.
   assert_array_equals(log[2], ["getOwnPropertyDescriptor", record, "a"]);
@@ -73,7 +75,7 @@ test(function() {
   // we're a sequence, during overload resolution.
   assert_array_equals(log[0], ["get", record, Symbol.iterator, proxy]);
   // Then we have the [[OwnPropertyKeys]] from
-  // https://heycam.github.io/webidl/#es-to-record step 4.
+  // https://webidl.spec.whatwg.org/#es-to-record step 4.
   assert_array_equals(log[1], ["ownKeys", record]);
   // Then the [[GetOwnProperty]] from step 5.1.
   assert_array_equals(log[2], ["getOwnPropertyDescriptor", record, "a"]);
@@ -98,7 +100,7 @@ test(function() {
   // we're a sequence, during overload resolution.
   assert_array_equals(log[0], ["get", record, Symbol.iterator, proxy]);
   // Then we have the [[OwnPropertyKeys]] from
-  // https://heycam.github.io/webidl/#es-to-record step 4.
+  // https://webidl.spec.whatwg.org/#es-to-record step 4.
   assert_array_equals(log[1], ["ownKeys", record]);
   // Then the [[GetOwnProperty]] from step 5.1.
   assert_array_equals(log[2], ["getOwnPropertyDescriptor", record, "a"]);
@@ -131,7 +133,7 @@ test(function() {
   // we're a sequence, during overload resolution.
   assert_array_equals(log[0], ["get", record, Symbol.iterator, proxy]);
   // Then we have the [[OwnPropertyKeys]] from
-  // https://heycam.github.io/webidl/#es-to-record step 4.
+  // https://webidl.spec.whatwg.org/#es-to-record step 4.
   assert_array_equals(log[1], ["ownKeys", record]);
   // Then the [[GetOwnProperty]] from step 5.1.
   assert_array_equals(log[2], ["getOwnPropertyDescriptor", record, "a"]);
@@ -156,7 +158,7 @@ test(function() {
   // we're a sequence, during overload resolution.
   assert_array_equals(log[0], ["get", record, Symbol.iterator, proxy]);
   // Then we have the [[OwnPropertyKeys]] from
-  // https://heycam.github.io/webidl/#es-to-record step 4.
+  // https://webidl.spec.whatwg.org/#es-to-record step 4.
   assert_array_equals(log[1], ["ownKeys", record]);
   // Then the [[GetOwnProperty]] from step 5.1.
   assert_array_equals(log[2], ["getOwnPropertyDescriptor", record, "a"]);
@@ -180,7 +182,7 @@ test(function() {
   // we're a sequence, during overload resolution.
   assert_array_equals(log[0], ["get", record, Symbol.iterator, proxy]);
   // Then we have the [[OwnPropertyKeys]] from
-  // https://heycam.github.io/webidl/#es-to-record step 4.
+  // https://webidl.spec.whatwg.org/#es-to-record step 4.
   assert_array_equals(log[1], ["ownKeys", record]);
   // Then the [[GetOwnProperty]] from step 5.1.
   assert_array_equals(log[2], ["getOwnPropertyDescriptor", record, "a"]);
@@ -220,7 +222,7 @@ test(function() {
   // we're a sequence, during overload resolution.
   assert_array_equals(log[0], ["get", lyingProxy, Symbol.iterator, proxy]);
   // Then we have the [[OwnPropertyKeys]] from
-  // https://heycam.github.io/webidl/#es-to-record step 4.
+  // https://webidl.spec.whatwg.org/#es-to-record step 4.
   assert_array_equals(log[1], ["ownKeys", lyingProxy]);
   // Then the [[GetOwnProperty]] from step 5.1.
   assert_array_equals(log[2], ["getOwnPropertyDescriptor", lyingProxy, "a"]);
@@ -260,7 +262,7 @@ test(function() {
   // we're a sequence, during overload resolution.
   assert_array_equals(log[0], ["get", lyingProxy, Symbol.iterator, proxy]);
   // Then we have the [[OwnPropertyKeys]] from
-  // https://heycam.github.io/webidl/#es-to-record step 4.
+  // https://webidl.spec.whatwg.org/#es-to-record step 4.
   assert_array_equals(log[1], ["ownKeys", lyingProxy]);
 }, "Correct operation ordering with repeated keys");
 
@@ -283,7 +285,7 @@ test(function() {
   // we're a sequence, during overload resolution.
   assert_array_equals(log[0], ["get", record, Symbol.iterator, proxy]);
   // Then we have the [[OwnPropertyKeys]] from
-  // https://heycam.github.io/webidl/#es-to-record step 4.
+  // https://webidl.spec.whatwg.org/#es-to-record step 4.
   assert_array_equals(log[1], ["ownKeys", record]);
   // Then the [[GetOwnProperty]] from step 5.1.
   assert_array_equals(log[2], ["getOwnPropertyDescriptor", record, "a"]);
@@ -326,7 +328,7 @@ test(function() {
   // we're a sequence, during overload resolution.
   assert_array_equals(log[0], ["get", record, Symbol.iterator, proxy]);
   // Then we have the [[OwnPropertyKeys]] from
-  // https://heycam.github.io/webidl/#es-to-record step 4.
+  // https://webidl.spec.whatwg.org/#es-to-record step 4.
   assert_array_equals(log[1], ["ownKeys", record]);
   // Then the [[GetOwnProperty]] from step 5.1.
   assert_array_equals(log[2], ["getOwnPropertyDescriptor", record, "a"]);

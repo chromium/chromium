@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,8 @@ bool GLSurfaceStub::IsOffscreen() {
   return false;
 }
 
-gfx::SwapResult GLSurfaceStub::SwapBuffers(PresentationCallback callback) {
+gfx::SwapResult GLSurfaceStub::SwapBuffers(PresentationCallback callback,
+                                           FrameData data) {
   gfx::PresentationFeedback feedback(base::TimeTicks::Now(), base::TimeDelta(),
                                      0 /* flags */);
   base::ThreadTaskRunnerHandle::Get()->PostTask(

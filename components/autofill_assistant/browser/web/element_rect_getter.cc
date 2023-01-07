@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
-#include "components/autofill_assistant/browser/rectf.h"
-#include "components/autofill_assistant/browser/web/element_finder.h"
+#include "components/autofill_assistant/browser/public/rectf.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
 
 namespace autofill_assistant {
@@ -34,13 +35,13 @@ ElementRectGetter::ElementRectGetter(DevtoolsClient* devtools_client)
 
 ElementRectGetter::~ElementRectGetter() = default;
 
-void ElementRectGetter::Start(std::unique_ptr<ElementFinder::Result> element,
+void ElementRectGetter::Start(std::unique_ptr<ElementFinderResult> element,
                               ElementRectCallback callback) {
   GetBoundingClientRect(std::move(element), 0, RectF(), std::move(callback));
 }
 
 void ElementRectGetter::GetBoundingClientRect(
-    std::unique_ptr<ElementFinder::Result> element,
+    std::unique_ptr<ElementFinderResult> element,
     size_t index,
     const RectF& stacked_rect,
     ElementRectCallback callback) {
@@ -75,7 +76,7 @@ void ElementRectGetter::GetBoundingClientRect(
 
 void ElementRectGetter::OnGetClientRectResult(
     ElementRectCallback callback,
-    std::unique_ptr<ElementFinder::Result> element,
+    std::unique_ptr<ElementFinderResult> element,
     size_t index,
     const RectF& stacked_rect,
     const DevtoolsClient::ReplyStatus& reply_status,

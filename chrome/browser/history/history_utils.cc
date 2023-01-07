@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,7 @@ bool CanAddURLToHistory(const GURL& url) {
       url.SchemeIs(url::kContentScheme) ||
       url.SchemeIs(content::kChromeDevToolsScheme) ||
       url.SchemeIs(content::kChromeUIScheme) ||
+      url.SchemeIs(content::kChromeUIUntrustedScheme) ||
       url.SchemeIs(content::kViewSourceScheme) ||
       url.SchemeIs(chrome::kChromeNativeScheme) ||
       url.SchemeIs(chrome::kChromeSearchScheme) ||

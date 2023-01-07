@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,6 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #import "third_party/google_toolbox_for_mac/src/AppKit/GTMUILocalizerAndLayoutTweaker.h"
-#include "ui/base/cocoa/controls/button_utils.h"
-#include "ui/base/cocoa/controls/textfield_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -87,14 +85,11 @@ void CenterVertically(NSView* view) {
   NSView* _view;
 
   BOOL _statsCheckboxInitiallyChecked;
-  BOOL _defaultBrowserCheckboxVisible;
 }
 
-- (instancetype)initWithStatsCheckboxInitiallyChecked:(BOOL)checked
-                        defaultBrowserCheckboxVisible:(BOOL)visible {
+- (instancetype)initWithStatsCheckboxInitiallyChecked:(BOOL)checked {
   if ((self = [super init])) {
     _statsCheckboxInitiallyChecked = checked;
-    _defaultBrowserCheckboxVisible = visible;
   }
   return self;
 }
@@ -129,32 +124,33 @@ void CenterVertically(NSView* view) {
   std::u16string completeInstallationString =
       String16WithProductName(IDS_FIRSTRUN_DLG_MAC_COMPLETE_INSTALLATION_LABEL);
   base::i18n::AdjustStringForLocaleDirection(&completeInstallationString);
-  NSTextField* completionLabel = [TextFieldUtils
+  NSTextField* completionLabel = [NSTextField
       labelWithString:base::SysUTF16ToNSString(completeInstallationString)];
   [completionLabel setFrame:NSMakeRect(13, 25, kDialogWidth - 2 * 13, 17)];
 
-  _defaultBrowserCheckbox = [ButtonUtils
+  _defaultBrowserCheckbox = [NSButton
       checkboxWithTitle:l10n_util::GetNSString(
-                            IDS_FIRSTRUN_DLG_MAC_SET_DEFAULT_BROWSER_LABEL)];
+                            IDS_FIRSTRUN_DLG_MAC_SET_DEFAULT_BROWSER_LABEL)
+                 target:nil
+                 action:nil];
   [_defaultBrowserCheckbox
       setFrame:NSMakeRect(45, 107, kDialogWidth - 2 * 45, 18)];
   [_defaultBrowserCheckbox setState:NSOnState];
-  if (!_defaultBrowserCheckboxVisible)
-    [_defaultBrowserCheckbox setHidden:YES];
 
-  _statsCheckbox = [ButtonUtils
-      checkboxWithTitle:
-          NSStringWithProductName(
-              IDS_FIRSTRUN_DLG_MAC_OPTIONS_SEND_USAGE_STATS_LABEL)];
+  _statsCheckbox = [NSButton
+      checkboxWithTitle:NSStringWithProductName(
+                            IDS_FIRSTRUN_DLG_MAC_OPTIONS_SEND_USAGE_STATS_LABEL)
+                 target:nil
+                 action:nil];
   [_statsCheckbox setFrame:NSMakeRect(45, 82, kDialogWidth - 2 * 45, 19)];
   if (_statsCheckboxInitiallyChecked)
     [_statsCheckbox setState:NSOnState];
 
   NSButton* startChromeButton =
-      [ButtonUtils buttonWithTitle:NSStringWithProductName(
-                                       IDS_FIRSTRUN_DLG_MAC_START_CHROME_BUTTON)
-                            action:@selector(ok:)
-                            target:self];
+      [NSButton buttonWithTitle:NSStringWithProductName(
+                                    IDS_FIRSTRUN_DLG_MAC_START_CHROME_BUTTON)
+                         target:self
+                         action:@selector(ok:)];
   [startChromeButton setFrame:NSMakeRect(161, 12, 306, 32)];
   [startChromeButton setKeyEquivalent:kKeyEquivalentReturn];
 
@@ -214,23 +210,10 @@ void CenterVertically(NSView* view) {
   if (base::i18n::IsRTL())
     frame.origin.x = kDialogWidth - NSMaxX(frame);
   [startChromeButton setFrame:frame];
-
-  // Lastly, if the default browser checkbox is actually invisible, move the
-  // views above it downward so that there's not a big open space in the content
-  // view, and resize the content view itself so there isn't extra space.
-  if (!_defaultBrowserCheckboxVisible) {
-    CGFloat delta = NSHeight([_defaultBrowserCheckbox frame]);
-    MoveViewsVertically(@[ topBox, topSeparator ], -delta);
-    NSRect frame = [self.view frame];
-    frame.size.height -= delta;
-    [self.view setAutoresizesSubviews:NO];
-    [self.view setFrame:frame];
-    [self.view setAutoresizesSubviews:YES];
-  }
 }
 
 - (NSString*)windowTitle {
-  return NSStringWithProductName(IDS_FIRSTRUN_DLG_MAC_WINDOW_TITLE);
+  return l10n_util::GetNSString(IDS_FIRST_RUN_DIALOG_WINDOW_TITLE);
 }
 
 - (BOOL)isStatsReportingEnabled {

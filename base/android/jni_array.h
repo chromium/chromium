@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,6 +69,12 @@ BASE_EXPORT ScopedJavaLocalRef<jdoubleArray> ToJavaDoubleArray(
     JNIEnv* env,
     base::span<const double> doubles);
 
+// Returns a new clazz[] with the content of |v|.
+BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
+    JNIEnv* env,
+    ScopedJavaLocalRef<jclass> clazz,
+    base::span<const ScopedJavaLocalRef<jobject>> v);
+
 // Returns a new Object[] with the content of |v|.
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
     JNIEnv* env,
@@ -76,6 +82,16 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfObjects(
     JNIEnv* env,
     base::span<const ScopedJavaGlobalRef<jobject>> v);
+
+// Returns a new Type[] with the content of |v|.
+BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToTypedJavaArrayOfObjects(
+    JNIEnv* env,
+    base::span<const ScopedJavaLocalRef<jobject>> v,
+    ScopedJavaLocalRef<jclass> type);
+BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToTypedJavaArrayOfObjects(
+    JNIEnv* env,
+    base::span<const ScopedJavaGlobalRef<jobject>> v,
+    ScopedJavaLocalRef<jclass> type);
 
 // Returns a array of Java byte array converted from |v|.
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfByteArray(
@@ -93,6 +109,10 @@ BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStrings(
     JNIEnv* env,
     base::span<const std::u16string> v);
+
+BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStringArray(
+    JNIEnv* env,
+    base::span<const std::vector<std::string>> v);
 
 BASE_EXPORT ScopedJavaLocalRef<jobjectArray> ToJavaArrayOfStringArray(
     JNIEnv* env,
@@ -177,6 +197,13 @@ BASE_EXPORT void JavaArrayOfByteArrayToBytesVector(
     JNIEnv* env,
     const JavaRef<jobjectArray>& array,
     std::vector<std::vector<uint8_t>>* out);
+
+// Assuming |array| is an String[][] (array of String arrays), replaces the
+// content of |out| with the corresponding vector of string vectors.
+BASE_EXPORT void Java2dStringArrayTo2dStringVector(
+    JNIEnv* env,
+    const JavaRef<jobjectArray>& array,
+    std::vector<std::vector<std::string>>* out);
 
 // Assuming |array| is an String[][] (array of String arrays), replaces the
 // content of |out| with the corresponding vector of string vectors. No UTF-8

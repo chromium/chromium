@@ -23,7 +23,7 @@
     if (self.testRunner) {
         testRunner.dumpAsText();
         testRunner.waitUntilDone();
-        testRunner.setCanOpenWindows();
+        testRunner.setPopupBlockingEnabled(false);
         testRunner.setDumpJavaScriptDialogs(false);
 
         // Some tests intentionally load mixed content in order to test the

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,8 @@ MockIndexedDBFactory::MockIndexedDBFactory() {
 MockIndexedDBFactory::~MockIndexedDBFactory() {
 }
 
-std::vector<IndexedDBDatabase*> MockIndexedDBFactory::GetOpenDatabasesForOrigin(
-    const url::Origin& origin) const {
+std::vector<IndexedDBDatabase*> MockIndexedDBFactory::GetOpenDatabasesForBucket(
+    const storage::BucketLocator& bucket_locator) const {
   return std::vector<IndexedDBDatabase*>();
 }
 

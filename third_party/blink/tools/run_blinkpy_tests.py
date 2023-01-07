@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright (c) 2011 Google Inc. All rights reserved.
 # Copyright (C) 2010 Chris Jerdonek (cjerdonek@webkit.org)
 #
@@ -32,16 +32,34 @@ import os
 import sys
 
 from blinkpy.common import path_finder
+from blinkpy.common.system.filesystem import FileSystem
 path_finder.add_typ_dir_to_sys_path()
 
 import typ
 
 
 def main():
+    finder = path_finder.PathFinder(FileSystem())
+    os.environ['COVERAGE_RCFILE'] = finder.path_from_blink_tools('.coveragerc')
     return typ.main(
+        coverage_source=[
+            # Do not measure coverage of executables under `blink/tools`.
+            finder.path_from_blink_tools('blinkpy'),
+        ],
+        coverage_omit=[
+            '*/blinkpy/third_party/*',
+            # Exclude non-production code.
+            '*/PRESUBMIT.py',
+            '*/blinkpy/web_tests/lint_test_expectations_presubmit.py',
+            '*_unittest.py',
+            '*mock*.py',
+            # Temporarily exclude python2 code that Coverage.py cannot import in
+            # python3.
+            '*/blinkpy/style/*',
+        ],
         top_level_dirs=[
             path_finder.get_blink_tools_dir(),
-            os.path.join(path_finder.get_source_dir(), 'build', 'scripts')
+            path_finder.get_build_scripts_dir(),
         ],
         path=[path_finder.get_blinkpy_thirdparty_dir()])
 

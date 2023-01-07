@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,10 +13,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.internal.R;
@@ -93,8 +93,8 @@ public class GenericViewHolder extends OfflineItemViewHolder {
             mThumbnail.setBackground(null);
         } else if (mThumbnail.getBackground() == null) {
             Resources resources = itemView.getResources();
-            Drawable background = ApiCompatibilityUtils.getDrawable(
-                    resources, R.drawable.list_item_icon_modern_bg);
+            Drawable background = AppCompatResources.getDrawable(
+                    itemView.getContext(), R.drawable.list_item_icon_modern_bg);
             background.setLevel(resources.getInteger(R.integer.list_item_level_default));
             mThumbnail.setBackground(background);
         }

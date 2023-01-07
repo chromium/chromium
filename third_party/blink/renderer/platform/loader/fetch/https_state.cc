@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 namespace blink {
 
 HttpsState CalculateHttpsState(const SecurityOrigin* security_origin,
-                               base::Optional<HttpsState> parent_https_state) {
+                               absl::optional<HttpsState> parent_https_state) {
   if (security_origin && security_origin->Protocol() == "https")
     return HttpsState::kModern;
 

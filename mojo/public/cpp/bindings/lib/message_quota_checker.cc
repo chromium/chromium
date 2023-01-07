@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,11 @@
 #include "base/debug/activity_tracker.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/synchronization/lock.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/c/system/quota.h"
 #include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
@@ -39,7 +40,7 @@ const base::FeatureParam<int> kMojoRecordUnreadMessageCountCrashThreshold = {
 
 NOINLINE void MaybeDumpWithoutCrashing(
     size_t total_quota_used,
-    base::Optional<size_t> message_pipe_quota_used,
+    absl::optional<size_t> message_pipe_quota_used,
     int64_t seconds_since_construction,
     double average_write_rate,
     uint64_t messages_enqueued,
@@ -160,7 +161,7 @@ void MessageQuotaChecker::SetMessagePipe(MessagePipeHandle message_pipe) {
 size_t MessageQuotaChecker::GetCurrentQuotaStatusForTesting() {
   base::AutoLock hold(lock_);
   size_t quota_used = consumed_quota_;
-  base::Optional<size_t> message_pipe_quota_used = GetCurrentMessagePipeQuota();
+  absl::optional<size_t> message_pipe_quota_used = GetCurrentMessagePipeQuota();
   if (message_pipe_quota_used.has_value())
     quota_used += message_pipe_quota_used.value();
 
@@ -179,7 +180,8 @@ scoped_refptr<MessageQuotaChecker> MessageQuotaChecker::MaybeCreateForTesting(
   return MaybeCreateImpl(config);
 }
 
-MessageQuotaChecker::MessageQuotaChecker(const Configuration* config)
+MessageQuotaChecker::MessageQuotaChecker(const Configuration* config,
+                                         base::PassKey<MessageQuotaChecker>)
     : config_(config), creation_time_(base::TimeTicks::Now()) {}
 MessageQuotaChecker::~MessageQuotaChecker() = default;
 
@@ -210,14 +212,15 @@ scoped_refptr<MessageQuotaChecker> MessageQuotaChecker::MaybeCreateImpl(
   if (base::RandInt(0, config.sample_rate - 1) != 0)
     return nullptr;
 
-  return new MessageQuotaChecker(&config);
+  return base::MakeRefCounted<MessageQuotaChecker>(
+      &config, base::PassKey<MessageQuotaChecker>());
 }
 
-base::Optional<size_t> MessageQuotaChecker::GetCurrentMessagePipeQuota() {
+absl::optional<size_t> MessageQuotaChecker::GetCurrentMessagePipeQuota() {
   lock_.AssertAcquired();
 
   if (!message_pipe_)
-    return base::nullopt;
+    return absl::nullopt;
 
   uint64_t limit = 0;
   uint64_t usage = 0;
@@ -239,7 +242,7 @@ void MessageQuotaChecker::QuotaCheckImpl(size_t num_enqueued) {
   size_t total_quota_used = 0u;
   base::TimeTicks now;
   double average_write_rate = 0.0;
-  base::Optional<size_t> message_pipe_quota_used;
+  absl::optional<size_t> message_pipe_quota_used;
   {
     base::AutoLock hold(lock_);
 

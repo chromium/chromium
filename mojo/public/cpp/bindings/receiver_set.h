@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,8 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -61,10 +60,13 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
    public:
     virtual ~ReceiverState() = default;
     virtual const void* GetContext() const = 0;
+    virtual void* GetContext() = 0;
     virtual void InstallDispatchHooks(
         std::unique_ptr<MessageFilter> filter,
         RepeatingConnectionErrorWithReasonCallback disconnect_handler) = 0;
     virtual void FlushForTesting() = 0;
+    virtual void ResetWithReason(uint32_t custom_reason_code,
+                                 const std::string& description) = 0;
   };
 
   class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) Entry {
@@ -80,6 +82,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
     class DispatchFilter;
 
     void WillDispatch();
+    void DidDispatchOrReject();
     void OnDisconnect(uint32_t custom_reason_code,
                       const std::string& description);
 
@@ -103,6 +106,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
     return current_context_;
   }
 
+  void* current_context() {
+    DCHECK(current_context_);
+    return current_context_;
+  }
+
   ReceiverId current_receiver() const {
     DCHECK(current_context_);
     return current_receiver_;
@@ -115,8 +123,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
   ReportBadMessageCallback GetBadMessageCallback();
   ReceiverId Add(std::unique_ptr<ReceiverState> receiver);
   bool Remove(ReceiverId id);
+  bool RemoveWithReason(ReceiverId id,
+                        uint32_t custom_reason_code,
+                        const std::string& description);
   void FlushForTesting();
-  void SetDispatchContext(const void* context, ReceiverId receiver_id);
+  void SetDispatchContext(void* context, ReceiverId receiver_id);
   void OnDisconnect(ReceiverId id,
                     uint32_t custom_reason_code,
                     const std::string& description);
@@ -126,7 +137,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
   RepeatingConnectionErrorWithReasonCallback disconnect_with_reason_handler_;
   ReceiverId next_receiver_id_ = 0;
   EntryMap entries_;
-  const void* current_context_ = nullptr;
+  void* current_context_ = nullptr;
   ReceiverId current_receiver_;
   base::WeakPtrFactory<ReceiverSetState> weak_ptr_factory_{this};
 };
@@ -231,6 +242,12 @@ class ReceiverSetBase {
   // disconnected. No further messages or disconnection notifications will be
   // scheduled or executed for the removed receiver.
   bool Remove(ReceiverId id) { return state_.Remove(id); }
+  // Similar to the method above, but also specifies a disconnect reason.
+  bool RemoveWithReason(ReceiverId id,
+                        uint32_t custom_reason_code,
+                        const std::string& description) {
+    return state_.RemoveWithReason(id, custom_reason_code, description);
+  }
 
   // Unbinds and takes all receivers in this set.
   std::vector<PendingType> TakeReceivers() {
@@ -249,6 +266,14 @@ class ReceiverSetBase {
   // ReceiverSet will not schedule or execute any further method invocations or
   // disconnection notifications until a new receiver is added to the set.
   void Clear() { state_.entries().clear(); }
+  // Similar to the method above, but also specifies a disconnect reason.
+  void ClearWithReason(uint32_t custom_reason_code,
+                       const std::string& description) {
+    for (auto& entry : state_.entries())
+      entry.second->receiver().ResetWithReason(custom_reason_code, description);
+
+    Clear();
+  }
 
   // Predicate to test if a receiver exists in the set.
   //
@@ -279,6 +304,14 @@ class ReceiverSetBase {
     static_assert(ContextTraits::SupportsContext(),
                   "current_context() requires non-void context type.");
     return *static_cast<const Context*>(state_.current_context());
+  }
+
+  // Like `current_context() const`, but returns non-const reference to the
+  // context value.
+  Context& current_context() {
+    static_assert(ContextTraits::SupportsContext(),
+                  "current_context() requires non-void context type.");
+    return *static_cast<Context*>(state_.current_context());
   }
 
   // Implementations may call this when processing a received method call or
@@ -315,13 +348,20 @@ class ReceiverSetBase {
   // to modify behavior.
   //
   // Returns the existing interface implementation to the caller.
-  ImplPointerType SwapImplForTesting(ReceiverId id, ImplPointerType new_impl) {
+  //
+  // The caller needs to guarantee that `new_impl` will live longer than
+  // `this` ReceiverSet.  One way to achieve this is to store the returned
+  // `old_impl` and swap it back in when `new_impl` is getting destroyed.
+  // Test code should prefer using `mojo::test::ScopedSwapImplForTesting` if
+  // possible.
+  [[nodiscard]] ImplPointerType SwapImplForTesting(ReceiverId id,
+                                                   ImplPointerType new_impl) {
     auto it = state_.entries().find(id);
     if (it == state_.entries().end())
       return nullptr;
 
     ReceiverEntry& entry = static_cast<ReceiverEntry&>(it->second->receiver());
-    return entry.SwapImplForTesting(new_impl);
+    return entry.SwapImplForTesting(std::move(new_impl));
   }
 
  private:
@@ -343,6 +383,7 @@ class ReceiverSetBase {
 
     // ReceiverSetState::ReceiverState:
     const void* GetContext() const override { return &context_; }
+    void* GetContext() override { return &context_; }
 
     void InstallDispatchHooks(std::unique_ptr<MessageFilter> filter,
                               RepeatingConnectionErrorWithReasonCallback
@@ -354,15 +395,20 @@ class ReceiverSetBase {
 
     void FlushForTesting() override { receiver_.FlushForTesting(); }
 
+    void ResetWithReason(uint32_t custom_reason_code,
+                         const std::string& description) override {
+      receiver_.ResetWithReason(custom_reason_code, description);
+    }
+
     ImplPointerType SwapImplForTesting(ImplPointerType new_impl) {
-      return receiver_.SwapImplForTesting(new_impl);
+      return receiver_.SwapImplForTesting(std::move(new_impl));
     }
 
     PendingType Unbind() { return receiver_.Unbind(); }
 
    private:
     ReceiverType receiver_;
-    Context const context_;
+    Context context_;
   };
 
   ReceiverId AddImpl(ImplPointerType impl,

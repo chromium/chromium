@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "google_apis/gcm/engine/connection_factory.h"
 
 namespace gcm {
@@ -19,6 +19,10 @@ class FakeConnectionHandler;
 class FakeConnectionFactory : public ConnectionFactory {
  public:
   FakeConnectionFactory();
+
+  FakeConnectionFactory(const FakeConnectionFactory&) = delete;
+  FakeConnectionFactory& operator=(const FakeConnectionFactory&) = delete;
+
   ~FakeConnectionFactory() override;
 
   // ConnectionFactory implementation.
@@ -52,9 +56,7 @@ class FakeConnectionFactory : public ConnectionFactory {
   bool reconnect_pending_;
   bool delay_reconnect_;
 
-  ConnectionListener* connection_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectionFactory);
+  raw_ptr<ConnectionListener> connection_listener_;
 };
 
 }  // namespace gcm

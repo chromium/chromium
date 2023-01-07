@@ -1,21 +1,26 @@
-CONSOLE WARNING: line 148: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
-Tests property access on a cached DOMWindow after the associated frame is no longer in a web page. Test should not crash and properties should be set to sane defaults.
+Tests property access on a cached DOMWindow after the associated frame is no longer in a web page. Test should not crash and properties should be set to reasonable defaults as appropriate.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS childWindow.closed is true
+FAIL childWindow.closed should be false. Was true.
 PASS childWindow.crossOriginIsolated is false
-PASS childWindow.defaultStatus is ''
-PASS childWindow.defaultstatus is ''
 PASS childWindow.devicePixelRatio is 0
 PASS childWindow.innerHeight is 0
 PASS childWindow.innerWidth is 0
-PASS childWindow.isSecureContext is false
+PASS childWindow.isSecureContext is true
 PASS childWindow.length is 0
-FAIL childWindow.location.href should be about:blank (of type string). Was undefined (of type undefined).
+PASS childWindow.location.href is undefined
 PASS childWindow.locationbar.visible is false
 PASS childWindow.menubar.visible is false
 PASS childWindow.name is ''
+PASS childWindow.navigation.canGoBack is false
+PASS childWindow.navigation.canGoForward is false
+PASS childWindow.navigation.currentEntry is null
+PASS childWindow.navigation.oncurrententrychange is null
+PASS childWindow.navigation.onnavigate is null
+PASS childWindow.navigation.onnavigateerror is null
+PASS childWindow.navigation.onnavigatesuccess is null
+PASS childWindow.navigation.transition is null
 PASS childWindow.navigator.appCodeName is window.navigator.appCodeName
 PASS childWindow.navigator.appName is window.navigator.appName
 PASS childWindow.navigator.appVersion is ''
@@ -25,6 +30,7 @@ PASS childWindow.navigator.hardwareConcurrency is window.navigator.hardwareConcu
 PASS childWindow.navigator.language is window.navigator.language
 PASS childWindow.navigator.maxTouchPoints is 0
 PASS childWindow.navigator.onLine is window.navigator.onLine
+PASS childWindow.navigator.pdfViewerEnabled is false
 PASS childWindow.navigator.platform is window.navigator.platform
 PASS childWindow.navigator.product is window.navigator.product
 PASS childWindow.navigator.productSub is window.navigator.productSub
@@ -41,7 +47,9 @@ PASS childWindow.onanimationiteration is null
 PASS childWindow.onanimationstart is null
 PASS childWindow.onappinstalled is null
 PASS childWindow.onauxclick is null
+PASS childWindow.onbeforeinput is null
 PASS childWindow.onbeforeinstallprompt is null
+PASS childWindow.onbeforematch is null
 PASS childWindow.onbeforeprint is null
 PASS childWindow.onbeforeunload is null
 PASS childWindow.onbeforexrselect is null
@@ -52,7 +60,10 @@ PASS childWindow.oncanplaythrough is null
 PASS childWindow.onchange is null
 PASS childWindow.onclick is null
 PASS childWindow.onclose is null
+PASS childWindow.oncontentvisibilityautostatechanged is null
+PASS childWindow.oncontextlost is null
 PASS childWindow.oncontextmenu is null
+PASS childWindow.oncontextrestored is null
 PASS childWindow.oncuechange is null
 PASS childWindow.ondblclick is null
 PASS childWindow.ondevicemotion is null
@@ -118,11 +129,13 @@ PASS childWindow.onreset is null
 PASS childWindow.onresize is null
 PASS childWindow.onscroll is null
 PASS childWindow.onsearch is null
+PASS childWindow.onsecuritypolicyviolation is null
 PASS childWindow.onseeked is null
 PASS childWindow.onseeking is null
 PASS childWindow.onselect is null
 PASS childWindow.onselectionchange is null
 PASS childWindow.onselectstart is null
+PASS childWindow.onslotchange is null
 PASS childWindow.onstalled is null
 PASS childWindow.onstorage is null
 PASS childWindow.onsubmit is null

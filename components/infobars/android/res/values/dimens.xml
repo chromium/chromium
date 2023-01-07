@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Infobar dimensions -->
     <!-- Maximum width of an infobar. -->
@@ -40,4 +42,7 @@
     <!-- Vertical margin applied between groups of controls. -->
     <dimen name="infobar_margin_above_control_groups">24dp</dimen>
     <dimen name="infobar_margin_above_button_row">32dp</dimen>
+
+    <!-- Used for the surface color of infobar, theme specific. -->
+    <dimen name="infobar_elevation">@dimen/default_elevation_0</dimen>
 </resources>

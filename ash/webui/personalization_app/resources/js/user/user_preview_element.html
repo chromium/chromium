@@ -1,0 +1,190 @@
+<style include="wallpaper">
+  #container {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-areas:
+      '. .     . .'
+      '. image . text';
+    grid-template-columns: 8px 82px 16px minmax(0, 1fr);
+    grid-template-rows: 12px 82px;
+    height: 100%;
+  }
+
+  #imageContainer {
+    grid-area: image;
+    position: relative;
+  }
+
+  #imageContainer img {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 50%;
+    height: 80px;
+    width: 80px;
+  }
+
+  #imageContainer img.clickable {
+    cursor: pointer;
+  }
+
+  #imageContainer img.clickable:hover,
+  #iconContainer:hover ~ img {
+    filter: brightness(0.94);
+  }
+
+  #infoContainer {
+    display: flex;
+    flex-flow: column nowrap;
+    grid-area: text;
+    justify-content: center;
+    margin: 0;
+  }
+
+  #infoContainer > * {
+    margin: 0;
+  }
+
+  #infoContainer > h2 {
+    color: var(--cros-text-color-primary);
+    font: 400 22px/28px var(--cros-font-family-google-sans);
+  }
+
+  .avatar-link {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    flex-flow: row nowrap;
+    padding-top: 4px;
+    text-decoration: none;
+    width: fit-content;
+  }
+
+  .avatar-link:focus-visible {
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
+
+  .avatar-link > span {
+    color: var(--cros-link-color);
+    font: var(--cros-body-2-font);
+    margin: 0;
+  }
+
+  iron-icon[icon='cr:open-in-new'] {
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    --iron-icon-fill-color: var(--cros-link-color);
+    margin-inline-start: 6px;
+  }
+
+  paper-ripple {
+    color: rgba(var(--cros-ripple-color-rgb), 1);
+    --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
+  }
+
+  #iconContainer,
+  #enterpriseIconContainer {
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 50%;
+    bottom: 0;
+    box-shadow: var(--cros-elevation-1-shadow);
+    display: inline-block;
+    height: 24px;
+    line-height: 24px;
+    position: absolute;
+    right: 2px;
+    text-align: center;
+    vertical-align: middle;
+    width: 24px;
+  }
+
+  #iconContainer {
+    align-items: center;
+    background-color: var(--cros-icon-color-prominent);
+    cursor: pointer;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  #iconContainer > svg {
+    fill: var(--cros-button-label-color-primary);
+  }
+
+  #enterpriseIconContainer {
+    --iron-icon-fill-color: var(--google-grey-800);
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    background-color: var(--cros-button-background-color-primary-disabled);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #enterpriseIconContainer {
+      --iron-icon-fill-color: var(--google-grey-300);
+    }
+  }
+
+  #avatar:focus-visible {
+    outline: 2px solid var(--cros-focus-ring-color);
+  }
+</style>
+<div id="container">
+  <div id="imageContainer"
+      class="tast-open-subpage"
+      aria-label$="[[getImageContainerAriaLabel_(path, imageIsEnterpriseManaged_)]]">
+    <template is="dom-if" if="[[imageUrl_]]">
+      <template is="dom-if" if="[[imageIsEnterpriseManaged_]]">
+        <img id="avatar" class="managed" src$="[[imageUrl_.url]]"
+            alt="$i18n{managedSetting}" title="$i18n{managedSetting}">
+        <div id="enterpriseIconContainer">
+          <iron-icon icon="personalization:managed">
+          </iron-icon>
+        </div>
+      </template>
+      <template is="dom-if"
+          if="[[shouldShowMainPageView_(path, imageIsEnterpriseManaged_)]]">
+        <div id="iconContainer"
+            on-click="onClickUserSubpageLink_"
+            on-keypress="onClickUserSubpageLink_">
+          <svg viewBox="0 0 16 16" width="16" height="16">
+            <path fill-rule="evenodd" clip-rule="evenodd"
+                d="M13.5575 3.45125L12.545 2.43875C11.96 1.85375 11.0075 1.85375 10.4225 2.43875L8.3 4.55375L2 10.8612V13.9962H5.135L13.5575 5.57375C14.15 4.98875 14.15 4.03625 13.5575 3.45125ZM3.5 12.4963V11.4763L9.365 5.61125L10.4225 6.66875L4.5575 12.5413L3.5 12.4963Z">
+            </path>
+          </svg>
+        </div>
+        <paper-ripple class="circle"></paper-ripple>
+        <img tabindex="0" id="avatar" class="clickable" src$="[[imageUrl_.url]]"
+            alt$="[[getImageAlt_(image_)]]"
+            role="button"
+            on-click="onClickUserSubpageLink_"
+            on-keypress="onClickUserSubpageLink_">
+      </template>
+      <template is="dom-if"
+          if="[[shouldShowSubpageView_(path, imageIsEnterpriseManaged_)]]">
+        <img id="avatar2" src$="[[imageUrl_.url]]"
+            alt$="[[getImageAlt_(image_)]]">
+      </template>
+    </template>
+  </div>
+  <div id="infoContainer">
+    <template is="dom-if" if="[[info_]]">
+      <h2 id="name">[[info_.name]]</h2>
+      <template is="dom-if" if="[[info_.email]]">
+        <a id="emailContainer"
+            class="avatar-link"
+            href="chrome://os-settings/accountManager"
+            target="_blank"
+            aria-description="$i18n{ariaLabelGoToAccountSettings}">
+          <span id="email">[[info_.email]]</span>
+          <iron-icon icon="cr:open-in-new"></iron-icon>
+        </a>
+      </template>
+    </template>
+    <template is="dom-if" if="[[shouldShowDeprecatedImageSourceInfo_(image_)]]">
+      <a id="sourceInfo" class="avatar-link" href$="[[getDeprecatedWebsite_(image_)]]"
+          target="_blank">
+        <span>[[getDeprecatedAuthor_(image_)]]</span>
+        <iron-icon icon="cr:open-in-new"></iron-icon>
+      </a>
+    </template>
+  </div>
+</div>

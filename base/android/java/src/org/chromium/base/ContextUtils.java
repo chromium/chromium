@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,15 @@ package org.chromium.base;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.os.Build;
+import android.os.Handler;
 import android.os.Process;
 import android.preference.PreferenceManager;
 
@@ -18,8 +22,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.compat.ApiHelperForM;
+import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.build.BuildConfig;
 
 /**
@@ -29,6 +33,15 @@ import org.chromium.build.BuildConfig;
 public class ContextUtils {
     private static final String TAG = "ContextUtils";
     private static Context sApplicationContext;
+
+    /**
+     * Flag for {@link Context#registerReceiver}: The receiver can receive broadcasts from other
+     * Apps. Has the same behavior as marking a statically registered receiver with "exported=true".
+     *
+     * TODO(mthiesse): Move to ApiHelperForT when we build against T SDK.
+     */
+    public static final int RECEIVER_EXPORTED = 0x2;
+    public static final int RECEIVER_NOT_EXPORTED = 0x4;
 
     /**
      * Initialization-on-demand holder. This exists for thread-safe lazy initialization.
@@ -62,7 +75,6 @@ public class ContextUtils {
      *
      * @param appContext The application context.
      */
-    @MainDex // TODO(agrieve): Could add to whole class if not for ApplicationStatus.initialize().
     public static void initApplicationContext(Context appContext) {
         // Conceding that occasionally in tests, native is loaded before the browser process is
         // started, in which case the browser process re-sets the application context.
@@ -109,6 +121,16 @@ public class ContextUtils {
         Holder.sSharedPreferences = fetchAppSharedPreferences();
     }
 
+    /**
+     * Tests that use the applicationContext may unintentionally use the Context
+     * set by a previously run test.
+     */
+    @VisibleForTesting
+    public static void clearApplicationContextForTests() {
+        sApplicationContext = null;
+        Holder.sSharedPreferences = null;
+    }
+
     private static void initJavaSideApplicationContext(Context appContext) {
         assert appContext != null;
         // Guard against anyone trying to downcast.
@@ -144,6 +166,17 @@ public class ContextUtils {
         return Process.isIsolated();
     }
 
+    /**
+     * @return if current process is SdkSandbox process.
+     */
+    public static boolean isSdkSandboxProcess() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            return Process.isSdkSandbox();
+        } else {
+            return false;
+        }
+    }
+
     /** @return The name of the current process. E.g. "org.chromium.chrome:privileged_process0". */
     public static String getProcessName() {
         return ApiCompatibilityUtils.getProcessName();
@@ -177,5 +210,37 @@ public class ContextUtils {
         }
 
         return null;
+    }
+
+    /**
+     * As to Exported V.S. NonExported receiver, please refer to
+     * https://developer.android.com/reference/android/content/Context#registerReceiver(android.content.BroadcastReceiver,%20android.content.IntentFilter,%20int)
+     */
+    public static Intent registerExportedBroadcastReceiver(
+            Context context, BroadcastReceiver receiver, IntentFilter filter, String permission) {
+        return registerBroadcastReceiver(
+                context, receiver, filter, permission, /*scheduler=*/null, RECEIVER_EXPORTED);
+    }
+
+    public static Intent registerNonExportedBroadcastReceiver(
+            Context context, BroadcastReceiver receiver, IntentFilter filter) {
+        return registerBroadcastReceiver(context, receiver, filter, /*permission=*/null,
+                /*scheduler=*/null, RECEIVER_NOT_EXPORTED);
+    }
+
+    public static Intent registerNonExportedBroadcastReceiver(
+            Context context, BroadcastReceiver receiver, IntentFilter filter, Handler scheduler) {
+        return registerBroadcastReceiver(
+                context, receiver, filter, /*permission=*/null, scheduler, RECEIVER_NOT_EXPORTED);
+    }
+
+    private static Intent registerBroadcastReceiver(Context context, BroadcastReceiver receiver,
+            IntentFilter filter, String permission, Handler scheduler, int flags) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return ApiHelperForO.registerReceiver(
+                    context, receiver, filter, permission, scheduler, flags);
+        } else {
+            return context.registerReceiver(receiver, filter, permission, scheduler);
+        }
     }
 }

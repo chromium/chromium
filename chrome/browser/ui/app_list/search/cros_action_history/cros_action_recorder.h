@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action.pb.h"
 
@@ -36,6 +36,10 @@ class CrOSActionRecorder {
   using CrOSAction = std::tuple<CrOSActionName>;
 
   CrOSActionRecorder();
+
+  CrOSActionRecorder(const CrOSActionRecorder&) = delete;
+  CrOSActionRecorder& operator=(const CrOSActionRecorder&) = delete;
+
   ~CrOSActionRecorder();
   // Get the pointer of the singleton.
   static CrOSActionRecorder* GetCrosActionRecorder();
@@ -65,8 +69,7 @@ class CrOSActionRecorder {
   friend class CrOSActionRecorderTabTrackerTest;
 
   // kSaveInternal controls how often we save the action history to disk.
-  static constexpr base::TimeDelta kSaveInternal =
-      base::TimeDelta::FromHours(1);
+  static constexpr base::TimeDelta kSaveInternal = base::Hours(1);
 
   // Private constructor used for testing purpose. Which basically calls the
   // Init function.
@@ -110,8 +113,6 @@ class CrOSActionRecorder {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(CrOSActionRecorder);
 };
 
 }  // namespace app_list

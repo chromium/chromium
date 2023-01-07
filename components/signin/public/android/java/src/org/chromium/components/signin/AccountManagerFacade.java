@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Promise;
+import org.chromium.components.signin.base.AccountCapabilities;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,13 +25,19 @@ import java.util.List;
  */
 public interface AccountManagerFacade {
     /**
-     * Listener for {@link ChildAccountStatus.Status}.
+     * Listener for whether the account is a child one.
      */
     interface ChildAccountStatusListener {
         /**
-         * The method is called when child account status is ready.
+         * The method is called when the status of the account (whether it is a child one) is ready.
+         *
+         * @param isChild If account is a child account.
+         * @param childAccount The child account if isChild != false; null
+         *         otherwise.
+         *
+         * TODO(crbug.com/1258563): consider refactoring this interface to use Promises.
          */
-        void onStatusReady(@ChildAccountStatus.Status int status);
+        void onStatusReady(boolean isChild, @Nullable Account childAccount);
     }
 
     /**
@@ -48,60 +55,17 @@ public interface AccountManagerFacade {
     void removeObserver(AccountsChangeObserver observer);
 
     /**
-     * Runs a callback after the account list cache is populated. In the callback
-     * {@link #getGoogleAccounts()} and similar methods are guaranteed to return instantly
-     * (without blocking and waiting for the cache to be populated). If the cache has already
-     * been populated, the callback will be posted on UI thread.
-     * @param runnable The callback to call after cache is populated. Invoked on the main
-     *         thread.
-     */
-    @MainThread
-    void runAfterCacheIsPopulated(Runnable runnable);
-
-    /**
-     * Returns whether the account cache has already been populated. {@link #getGoogleAccounts()}
-     * and similar methods will return instantly if the cache has been populated, otherwise these
-     * methods may block waiting for the cache to be populated.
-     */
-    @AnyThread
-    boolean isCachePopulated();
-
-    /**
-     * Gets Google account names asynchronously.
-     * Retrieves all Google accounts on the device.
+     * Retrieves all the accounts on the device.
+     * The {@link Promise} will be fulfilled once the accounts cache will be populated.
+     * If an error occurs while getting account list, the returned {@link Promise} will wrap an
+     * empty array.
      *
-     * @throws AccountManagerDelegateException if Google Play Services are out of date,
-     *         Chrome lacks necessary permissions, etc.
-     */
-    @AnyThread
-    List<Account> getGoogleAccounts() throws AccountManagerDelegateException;
-
-    /**
-     * Asynchronous version of {@link #getGoogleAccounts()}.
+     * Since a different {@link Promise} will be returned every time the accounts get updated,
+     * this makes it a bad candidate for end users to cache the {@link Promise} locally unless
+     * the end users are awaiting the current list of accounts only.
      */
     @MainThread
-    void getGoogleAccounts(Callback<AccountManagerResult<List<Account>>> callback);
-
-    /**
-     * Retrieves all Google accounts on the device.
-     * Returns an empty array if an error occurs while getting account list.
-     */
-    @AnyThread
-    default List<Account> tryGetGoogleAccounts() {
-        try {
-            return getGoogleAccounts();
-        } catch (AccountManagerDelegateException e) {
-            return Collections.emptyList();
-        }
-    }
-
-    /**
-     * Asynchronous version of {@link #tryGetGoogleAccounts()}.
-     */
-    @MainThread
-    default void tryGetGoogleAccounts(final Callback<List<Account>> callback) {
-        runAfterCacheIsPopulated(() -> callback.onResult(tryGetGoogleAccounts()));
-    }
+    Promise<List<Account>> getAccounts();
 
     /**
      * @return Whether or not there is an account authenticator for Google accounts.
@@ -131,10 +95,18 @@ public interface AccountManagerFacade {
      * Checks the child account status of the given account.
      *
      * @param account The account to check the child account status.
-     * @param listener The listener is called when the {@link ChildAccountStatus.Status} is ready.
+     * @param listener The listener is called when the status of the account
+     *                 (whether it is a child one) is ready.
      */
     @MainThread
     void checkChildAccountStatus(Account account, ChildAccountStatusListener listener);
+
+    /**
+     * @param account The account used to look up capabilities.
+     * @return account capabilities for the given account.
+     */
+    @MainThread
+    Promise<AccountCapabilities> getAccountCapabilities(Account account);
 
     /**
      * Creates an intent that will ask the user to add a new account to the device. See
@@ -155,22 +127,6 @@ public interface AccountManagerFacade {
             Account account, Activity activity, @Nullable Callback<Boolean> callback);
 
     /**
-     * Gets profile data source.
-     * @return {@link ProfileDataSource} if it is supported by implementation, null otherwise.
-     */
-    @MainThread
-    @Nullable
-    ProfileDataSource getProfileDataSource();
-
-    /**
-     * Executes the callback after all pending account list updates finish. If there are no
-     * pending account list updates, executes the callback right away.
-     * @param callback the callback to be executed
-     */
-    @MainThread
-    void waitForPendingUpdates(Runnable callback);
-
-    /**
      * Returns the Gaia id for the account associated with the given email address.
      * If an account with the given email address is not installed on the device
      * then null is returned.
@@ -182,10 +138,4 @@ public interface AccountManagerFacade {
     @WorkerThread
     @Nullable
     String getAccountGaiaId(String accountEmail);
-
-    /**
-     * Checks whether Google Play services is available.
-     */
-    @AnyThread
-    boolean isGooglePlayServicesAvailable();
 }

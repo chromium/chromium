@@ -1,6 +1,8 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "media/ffmpeg/ffmpeg_common.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -10,13 +12,11 @@
 #include "base/bind.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media.h"
 #include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_decoder_config.h"
-#include "media/ffmpeg/ffmpeg_common.h"
 #include "media/filters/ffmpeg_glue.h"
 #include "media/filters/in_memory_url_protocol.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,7 +53,7 @@ void TestConfigConvertExtraData(
 
   // Valid combination: extra_data = non-nullptr && size > 0.
   codec_parameters->extradata = &kExtraData[0];
-  codec_parameters->extradata_size = base::size(kExtraData);
+  codec_parameters->extradata_size = std::size(kExtraData);
   EXPECT_TRUE(converter_fn.Run(stream, decoder_config));
   EXPECT_EQ(static_cast<size_t>(codec_parameters->extradata_size),
             decoder_config->extra_data().size());
@@ -143,7 +143,7 @@ TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig_OpusAmbisonics_4ch) {
   AudioDecoderConfig audio_config;
   ASSERT_TRUE(AVStreamToAudioDecoderConfig(stream, &audio_config));
 
-  EXPECT_EQ(kCodecOpus, audio_config.codec());
+  EXPECT_EQ(AudioCodec::kOpus, audio_config.codec());
   EXPECT_EQ(CHANNEL_LAYOUT_QUAD, audio_config.channel_layout());
   EXPECT_EQ(4, audio_config.channels());
 }
@@ -166,7 +166,7 @@ TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig_OpusAmbisonics_11ch) {
   AudioDecoderConfig audio_config;
   ASSERT_TRUE(AVStreamToAudioDecoderConfig(stream, &audio_config));
 
-  EXPECT_EQ(kCodecOpus, audio_config.codec());
+  EXPECT_EQ(AudioCodec::kOpus, audio_config.codec());
   EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, audio_config.channel_layout());
   EXPECT_EQ(11, audio_config.channels());
 }
@@ -188,7 +188,7 @@ TEST_F(FFmpegCommonTest, AVStreamToAudioDecoderConfig_9ch_wav) {
   AudioDecoderConfig audio_config;
   ASSERT_TRUE(AVStreamToAudioDecoderConfig(stream, &audio_config));
 
-  EXPECT_EQ(kCodecPCM, audio_config.codec());
+  EXPECT_EQ(AudioCodec::kPCM, audio_config.codec());
   EXPECT_EQ(CHANNEL_LAYOUT_DISCRETE, audio_config.channel_layout());
   EXPECT_EQ(9, audio_config.channels());
 }
@@ -198,7 +198,7 @@ TEST_F(FFmpegCommonTest, TimeBaseConversions) {
       {1, 2, 1, 500000, 1}, {1, 3, 1, 333333, 1}, {1, 3, 2, 666667, 2},
   };
 
-  for (size_t i = 0; i < base::size(test_data); ++i) {
+  for (size_t i = 0; i < std::size(test_data); ++i) {
     SCOPED_TRACE(i);
 
     AVRational time_base;
@@ -323,7 +323,58 @@ TEST_F(FFmpegCommonTest, VerifyH264Profile) {
     }
   }
 }
-#endif
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+TEST_F(FFmpegCommonTest, VerifyH265MainProfile) {
+  // Open a file to get a real AVStreams from FFmpeg.
+  base::MemoryMappedFile file;
+  ASSERT_TRUE(file.Initialize(GetTestDataFilePath("bear-1280x720-hevc.mp4")));
+  InMemoryUrlProtocol protocol(file.data(), file.length(), false);
+  FFmpegGlue glue(&protocol);
+  ASSERT_TRUE(glue.OpenContext());
+  AVFormatContext* format_context = glue.format_context();
+
+  for (size_t i = 0; i < format_context->nb_streams; ++i) {
+    AVStream* stream = format_context->streams[i];
+    AVCodecParameters* codec_parameters = stream->codecpar;
+    AVMediaType codec_type = codec_parameters->codec_type;
+
+    if (codec_type == AVMEDIA_TYPE_VIDEO) {
+      VideoDecoderConfig video_config;
+      EXPECT_TRUE(AVStreamToVideoDecoderConfig(stream, &video_config));
+      EXPECT_EQ(HEVCPROFILE_MAIN, video_config.profile());
+    } else {
+      // Only process video.
+      continue;
+    }
+  }
+}
+TEST_F(FFmpegCommonTest, VerifyH265Main10Profile) {
+  // Open a file to get a real AVStreams from FFmpeg.
+  base::MemoryMappedFile file;
+  ASSERT_TRUE(
+      file.Initialize(GetTestDataFilePath("bear-1280x720-hevc-10bit.mp4")));
+  InMemoryUrlProtocol protocol(file.data(), file.length(), false);
+  FFmpegGlue glue(&protocol);
+  ASSERT_TRUE(glue.OpenContext());
+  AVFormatContext* format_context = glue.format_context();
+
+  for (size_t i = 0; i < format_context->nb_streams; ++i) {
+    AVStream* stream = format_context->streams[i];
+    AVCodecParameters* codec_parameters = stream->codecpar;
+    AVMediaType codec_type = codec_parameters->codec_type;
+
+    if (codec_type == AVMEDIA_TYPE_VIDEO) {
+      VideoDecoderConfig video_config;
+      EXPECT_TRUE(AVStreamToVideoDecoderConfig(stream, &video_config));
+      EXPECT_EQ(HEVCPROFILE_MAIN10, video_config.profile());
+    } else {
+      // Only process video.
+      continue;
+    }
+  }
+}
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
 // Verifies that the HDR Metadata and VideoColorSpace are correctly parsed.
 TEST_F(FFmpegCommonTest, VerifyHDRMetadataAndColorSpaceInfo) {
@@ -345,17 +396,17 @@ TEST_F(FFmpegCommonTest, VerifyHDRMetadataAndColorSpaceInfo) {
   EXPECT_TRUE(AVStreamToVideoDecoderConfig(stream, &video_config));
   ASSERT_TRUE(video_config.hdr_metadata().has_value());
   EXPECT_EQ(30.0,
-            video_config.hdr_metadata()->mastering_metadata.luminance_min);
+            video_config.hdr_metadata()->color_volume_metadata.luminance_min);
   EXPECT_EQ(40.0,
-            video_config.hdr_metadata()->mastering_metadata.luminance_max);
+            video_config.hdr_metadata()->color_volume_metadata.luminance_max);
   EXPECT_EQ(gfx::PointF(0.1, 0.2),
-            video_config.hdr_metadata()->mastering_metadata.primary_r);
+            video_config.hdr_metadata()->color_volume_metadata.primary_r);
   EXPECT_EQ(gfx::PointF(0.1, 0.2),
-            video_config.hdr_metadata()->mastering_metadata.primary_g);
+            video_config.hdr_metadata()->color_volume_metadata.primary_g);
   EXPECT_EQ(gfx::PointF(0.1, 0.2),
-            video_config.hdr_metadata()->mastering_metadata.primary_b);
+            video_config.hdr_metadata()->color_volume_metadata.primary_b);
   EXPECT_EQ(gfx::PointF(0.1, 0.2),
-            video_config.hdr_metadata()->mastering_metadata.white_point);
+            video_config.hdr_metadata()->color_volume_metadata.white_point);
 
   EXPECT_EQ(VideoColorSpace(VideoColorSpace::PrimaryID::SMPTEST428_1,
                             VideoColorSpace::TransferID::LOG,

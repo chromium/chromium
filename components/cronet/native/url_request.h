@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,12 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
+#include "components/cronet/cronet_context.h"
 #include "components/cronet/cronet_url_request.h"
-#include "components/cronet/cronet_url_request_context.h"
 #include "components/cronet/native/generated/cronet.idl_impl_interface.h"
 
 namespace net {
@@ -26,10 +26,14 @@ namespace cronet {
 class Cronet_EngineImpl;
 class Cronet_UploadDataSinkImpl;
 
-// Implementation of Cronet_UrlRequest that uses CronetURLRequestContext.
+// Implementation of Cronet_UrlRequest that uses CronetContext.
 class Cronet_UrlRequestImpl : public Cronet_UrlRequest {
  public:
   Cronet_UrlRequestImpl();
+
+  Cronet_UrlRequestImpl(const Cronet_UrlRequestImpl&) = delete;
+  Cronet_UrlRequestImpl& operator=(const Cronet_UrlRequestImpl&) = delete;
+
   ~Cronet_UrlRequestImpl() override;
 
   // Cronet_UrlRequest
@@ -108,9 +112,9 @@ class Cronet_UrlRequestImpl : public Cronet_UrlRequest {
   base::Lock lock_;
   // NetworkTask object lives on the network thread. Owned by |request_|.
   // Outlives this.
-  NetworkTasks* network_tasks_ GUARDED_BY(lock_) = nullptr;
+  raw_ptr<NetworkTasks> network_tasks_ GUARDED_BY(lock_) = nullptr;
   // Cronet URLRequest used for this operation.
-  CronetURLRequest* request_ GUARDED_BY(lock_) = nullptr;
+  raw_ptr<CronetURLRequest> request_ GUARDED_BY(lock_) = nullptr;
   bool started_ GUARDED_BY(lock_) = false;
   bool waiting_on_redirect_ GUARDED_BY(lock_) = false;
   bool waiting_on_read_ GUARDED_BY(lock_) = false;
@@ -192,14 +196,12 @@ class Cronet_UrlRequestImpl : public Cronet_UrlRequest {
 
   // Cronet Engine used to run network operations. Not owned, accessed from
   // client thread. Must outlive this request.
-  Cronet_EngineImpl* engine_ = nullptr;
+  raw_ptr<Cronet_EngineImpl> engine_ = nullptr;
 
 #if DCHECK_IS_ON()
   // Event indicating Executor is properly destroying Runnables.
   base::WaitableEvent runnable_destroyed_;
 #endif  // DCHECK_IS_ON()
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_UrlRequestImpl);
 };
 
 }  // namespace cronet

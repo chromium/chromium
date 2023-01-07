@@ -1,3 +1,5 @@
+import pytest
+
 from tests.support.asserts import assert_error, assert_success
 
 
@@ -23,6 +25,14 @@ def test_no_top_browsing_context(session, closed_window):
 def test_no_browsing_context(session, closed_frame):
     response = get_element_text(session, "foo")
     assert_error(response, "no such window")
+
+
+@pytest.mark.parametrize("as_frame", [False, True], ids=["top_context", "child_context"])
+def test_stale_element_reference(session, stale_element, as_frame):
+    element = stale_element("<input>", "input", as_frame=as_frame)
+
+    response = get_element_text(session, element.id)
+    assert_error(response, "stale element reference")
 
 
 def test_getting_text_of_a_non_existant_element_is_an_error(session, inline):

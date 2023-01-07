@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,9 +16,6 @@ component("content") {
     "refcounted_browser_context_keyed_service_factory.cc",
     "refcounted_browser_context_keyed_service_factory.h",
   ]
-
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
   defines = [ "KEYED_SERVICE_IMPLEMENTATION" ]
 

@@ -1,0 +1,121 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("./side_panel.gni")
+
+preprocess_folder = "preprocessed"
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/side_panel_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/side_panel_resources.h",
+    "grit/side_panel_resources_map.cc",
+    "grit/side_panel_resources_map.h",
+    "side_panel_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+preprocess_if_expr("preprocess_src") {
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = ts_files
+}
+
+preprocess_if_expr("preprocess_gen") {
+  deps = [ ":html_wrapper_files" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = html_wrapper_files
+}
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files + icons_html_files
+}
+
+mojo_root_folder =
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/side_panel"
+
+copy("copy_mojo_bookmarks") {
+  deps = [
+    "//chrome/browser/ui/webui/side_panel/bookmarks:mojo_bindings_webui_js",
+  ]
+  sources = [ "$mojo_root_folder/bookmarks/bookmarks.mojom-webui.js" ]
+  outputs =
+      [ "$target_gen_dir/$preprocess_folder/bookmarks/{{source_file_part}}" ]
+}
+
+copy("copy_mojo_reading_list") {
+  deps = [
+    "//chrome/browser/ui/webui/side_panel/reading_list:mojo_bindings_webui_js",
+  ]
+  sources = [ "$mojo_root_folder/reading_list/reading_list.mojom-webui.js" ]
+  outputs =
+      [ "$target_gen_dir/$preprocess_folder/reading_list/{{source_file_part}}" ]
+}
+
+copy("copy_mojo_shopping_list") {
+  deps = [ "//components/commerce/core/mojom:mojo_bindings_webui_js" ]
+  sources = [ "$root_gen_dir/mojom-webui/components/commerce/core/mojom/shopping_list.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/bookmarks/commerce/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  tsconfig_base = "tsconfig_base.json"
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  in_files = ts_files + html_wrapper_files + mojo_files
+  definitions = [
+    "read_anything/read_anything.d.ts",
+    "//tools/typescript/definitions/bookmark_manager_private.d.ts",
+    "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/history_clusters:build_ts",
+    "//ui/webui/resources/mojo:library",
+  ]
+  extra_deps = [
+    ":copy_mojo_bookmarks",
+    ":copy_mojo_reading_list",
+    ":copy_mojo_shopping_list",
+    ":preprocess_gen",
+    ":preprocess_src",
+  ]
+}
+
+generate_grd("build_grd") {
+  input_files = [
+    "history_clusters/history_clusters.html",
+    "images/bookmarks_icon_tracked.svg",
+    "images/read_later_empty_dark.svg",
+    "images/read_later_empty.svg",
+    "reading_list/reading_list.html",
+    "bookmarks/bookmarks.html",
+    "bookmarks/power_bookmarks.html",
+    "read_anything/read_anything.html",
+    "side_panel.html",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  grd_prefix = "side_panel"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}

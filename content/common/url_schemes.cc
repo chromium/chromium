@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,9 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "url/url_util.h"
 
 namespace content {
@@ -26,7 +28,6 @@ const char* const kDefaultSavableSchemes[] = {
   url::kHttpsScheme,
   url::kFileScheme,
   url::kFileSystemScheme,
-  url::kFtpScheme,
   kChromeDevToolsScheme,
   kChromeUIScheme,
   url::kDataScheme
@@ -49,7 +50,7 @@ std::vector<std::string>& GetMutableServiceWorkerSchemes() {
 
 }  // namespace
 
-void RegisterContentSchemes() {
+void RegisterContentSchemes(bool should_lock_registry) {
   // On Android and in tests, schemes may have been registered already.
   if (g_registered_url_schemes)
     return;
@@ -62,7 +63,6 @@ void RegisterContentSchemes() {
   url::AddStandardScheme(kChromeUIUntrustedScheme, url::SCHEME_WITH_HOST);
   url::AddStandardScheme(kGuestScheme, url::SCHEME_WITH_HOST);
   url::AddStandardScheme(kChromeErrorScheme, url::SCHEME_WITH_HOST);
-
   for (auto& scheme : schemes.standard_schemes)
     url::AddStandardScheme(scheme.c_str(), url::SCHEME_WITH_HOST);
 
@@ -78,6 +78,9 @@ void RegisterContentSchemes() {
 
   for (auto& scheme : schemes.local_schemes)
     url::AddLocalScheme(scheme.c_str());
+
+  for (auto& scheme : schemes.extension_schemes)
+    blink::CommonSchemeRegistry::RegisterURLSchemeAsExtension(scheme.c_str());
 
   schemes.no_access_schemes.push_back(kChromeErrorScheme);
   for (auto& scheme : schemes.no_access_schemes)
@@ -96,17 +99,29 @@ void RegisterContentSchemes() {
   for (auto& scheme : schemes.empty_document_schemes)
     url::AddEmptyDocumentScheme(scheme.c_str());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (schemes.allow_non_standard_schemes_in_origins)
     url::EnableNonStandardSchemesForAndroidWebView();
 #endif
+
+  for (auto& [scheme, handler] : schemes.predefined_handler_schemes)
+    url::AddPredefinedHandlerScheme(scheme.c_str(), handler.c_str());
+
+  // This should only be registered if the
+  // kEnableServiceWorkerForChromeUntrusted feature is enabled but checking
+  // it here causes a crash when --no-sandbox is enabled. See crbug.com/1313812
+  // There are other render side checks and browser side checks that ensure
+  // service workers don't work for chrome-untrusted:// when the flag is not
+  // enabled.
+  schemes.service_worker_schemes.push_back(kChromeUIUntrustedScheme);
 
   // Prevent future modification of the scheme lists. This is to prevent
   // accidental creation of data races in the program. Add*Scheme aren't
   // threadsafe so must be called when GURL isn't used on any other thread. This
   // is really easy to mess up, so we say that all calls to Add*Scheme in Chrome
   // must be inside this function.
-  url::LockSchemeRegistries();
+  if (should_lock_registry)
+    url::LockSchemeRegistries();
 
   // Combine the default savable schemes with the additional ones given.
   GetMutableSavableSchemes().assign(std::begin(kDefaultSavableSchemes),

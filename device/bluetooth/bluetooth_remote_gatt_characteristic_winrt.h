@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
@@ -34,6 +34,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWinrt
       Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::
                                  GenericAttributeProfile::IGattCharacteristic>
           characteristic);
+
+  BluetoothRemoteGattCharacteristicWinrt(
+      const BluetoothRemoteGattCharacteristicWinrt&) = delete;
+  BluetoothRemoteGattCharacteristicWinrt& operator=(
+      const BluetoothRemoteGattCharacteristicWinrt&) = delete;
+
   ~BluetoothRemoteGattCharacteristicWinrt() override;
 
   // BluetoothGattCharacteristic:
@@ -45,8 +51,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWinrt
   // BluetoothRemoteGattCharacteristic:
   const std::vector<uint8_t>& GetValue() const override;
   BluetoothRemoteGattService* GetService() const override;
-  void ReadRemoteCharacteristic(ValueCallback callback,
-                                ErrorCallback error_callback) override;
+  void ReadRemoteCharacteristic(ValueCallback callback) override;
   void WriteRemoteCharacteristic(const std::vector<uint8_t>& value,
                                  WriteType write_type,
                                  base::OnceClosure callback,
@@ -73,14 +78,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWinrt
       ErrorCallback error_callback) override;
 
  private:
-  struct PendingReadCallbacks {
-    PendingReadCallbacks(ValueCallback callback, ErrorCallback error_callback);
-    ~PendingReadCallbacks();
-
-    ValueCallback callback;
-    ErrorCallback error_callback;
-  };
-
   struct PendingWriteCallbacks {
     PendingWriteCallbacks(base::OnceClosure callback,
                           ErrorCallback error_callback);
@@ -135,7 +132,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWinrt
 
   bool RemoveValueChangedHandler();
 
-  BluetoothRemoteGattService* service_;
+  raw_ptr<BluetoothRemoteGattService> service_;
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::
                              GenericAttributeProfile::IGattCharacteristic>
       characteristic_;
@@ -144,15 +141,16 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicWinrt
   uint16_t attribute_handle_;
   std::string identifier_;
   std::vector<uint8_t> value_;
-  std::unique_ptr<PendingReadCallbacks> pending_read_callbacks_;
+  ValueCallback pending_read_callback_;
   std::unique_ptr<PendingWriteCallbacks> pending_write_callbacks_;
   std::unique_ptr<PendingNotificationCallbacks> pending_notification_callbacks_;
-  base::Optional<EventRegistrationToken> value_changed_token_;
+  absl::optional<EventRegistrationToken> value_changed_token_;
+  // The destructor runs callbacks. Methods can use |destructor_called_| to
+  // protect against reentrant calls to a partially deleted instance.
+  bool destructor_called_ = false;
 
   base::WeakPtrFactory<BluetoothRemoteGattCharacteristicWinrt>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattCharacteristicWinrt);
 };
 
 }  // namespace device

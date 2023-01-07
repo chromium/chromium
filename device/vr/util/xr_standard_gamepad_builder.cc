@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "device/vr/util/xr_standard_gamepad_builder.h"
@@ -28,9 +28,9 @@ void XRStandardGamepadBuilder::AddOptionalButtonData(
   AddOptionalButtonData(data);
 }
 
-base::Optional<Gamepad> XRStandardGamepadBuilder::GetGamepad() const {
+absl::optional<Gamepad> XRStandardGamepadBuilder::GetGamepad() const {
   if (!primary_button_) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   GamepadBuilder builder("", GamepadMapping::kXrStandard, handedness_);

@@ -1,0 +1,29 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+executable("aggregation_service_tool") {
+  testonly = true
+
+  sources = [
+    "aggregation_service_tool.cc",
+    "aggregation_service_tool.h",
+    "aggregation_service_tool_main.cc",
+    "aggregation_service_tool_network_initializer.cc",
+    "aggregation_service_tool_network_initializer.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/test:test_support",
+    "//mojo/core/embedder:embedder",
+    "//net",
+    "//services/cert_verifier:lib",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:network_service",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//third_party/abseil-cpp:absl",
+    "//url",
+  ]
+}

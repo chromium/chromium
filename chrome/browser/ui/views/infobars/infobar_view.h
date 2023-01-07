@@ -1,18 +1,18 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_INFOBARS_INFOBAR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_INFOBARS_INFOBAR_VIEW_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_container.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/focus/external_focus_tracker.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -52,11 +52,11 @@ class InfoBarView : public infobars::InfoBar,
   using Labels = std::vector<views::Label*>;
 
   // Creates a label with the appropriate font and color for an infobar.
-  views::Label* CreateLabel(const std::u16string& text) const;
+  std::unique_ptr<views::Label> CreateLabel(const std::u16string& text) const;
 
   // Creates a link with the appropriate font and color for an infobar.
   // NOTE: Subclasses must ignore link clicks if we're unowned.
-  views::Link* CreateLink(const std::u16string& text);
+  std::unique_ptr<views::Link> CreateLink(const std::u16string& text);
 
   // Given |views| and the total |available_width| to display them in, sets
   // each view's size so that the longest view shrinks until it reaches the
@@ -91,17 +91,6 @@ class InfoBarView : public infobars::InfoBar,
   // decreasing preferred width.
   static void AssignWidthsSorted(Views* views, int available_width);
 
-  // Returns whether this infobar should draw a 1 px separator at its top.
-  bool GetDrawSeparator() const;
-
-  // Returns how much space the container should reserve for a separator between
-  // infobars, in addition to the height of the infobars themselves.
-  int GetSeparatorHeight() const;
-
-  // Returns the current color for the theme property |id|.  Will return the
-  // wrong value if no theme provider is available.
-  SkColor GetColor(int id) const;
-
   // Sets various attributes on |label| that are common to all child links and
   // labels.
   void SetLabelDetails(views::Label* label) const;
@@ -112,10 +101,10 @@ class InfoBarView : public infobars::InfoBar,
   void CloseButtonPressed();
 
   // The optional icon at the left edge of the InfoBar.
-  views::ImageView* icon_ = nullptr;
+  raw_ptr<views::ImageView> icon_ = nullptr;
 
   // The close button at the right edge of the InfoBar.
-  views::ImageButton* close_button_ = nullptr;
+  raw_ptr<views::ImageButton> close_button_ = nullptr;
 
   // Used to run the menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;

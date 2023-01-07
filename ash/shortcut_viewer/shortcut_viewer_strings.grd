@@ -6,12 +6,18 @@
     <output filename="grit/shortcut_viewer_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
     </output>
+    <output filename="shortcut_viewer_strings_af.pak" type="data_package" lang="af" />
     <output filename="shortcut_viewer_strings_am.pak" type="data_package" lang="am" />
     <output filename="shortcut_viewer_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="shortcut_viewer_strings_as.pak" type="data_package" lang="as" />
+    <output filename="shortcut_viewer_strings_az.pak" type="data_package" lang="az" />
+    <output filename="shortcut_viewer_strings_be.pak" type="data_package" lang="be" />
     <output filename="shortcut_viewer_strings_bg.pak" type="data_package" lang="bg" />
     <output filename="shortcut_viewer_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="shortcut_viewer_strings_bs.pak" type="data_package" lang="bs" />
     <output filename="shortcut_viewer_strings_ca.pak" type="data_package" lang="ca" />
     <output filename="shortcut_viewer_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="shortcut_viewer_strings_cy.pak" type="data_package" lang="cy" />
     <output filename="shortcut_viewer_strings_da.pak" type="data_package" lang="da" />
     <output filename="shortcut_viewer_strings_de.pak" type="data_package" lang="de" />
     <output filename="shortcut_viewer_strings_el.pak" type="data_package" lang="el" />
@@ -20,37 +26,55 @@
     <output filename="shortcut_viewer_strings_es.pak" type="data_package" lang="es" />
     <output filename="shortcut_viewer_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="shortcut_viewer_strings_et.pak" type="data_package" lang="et" />
+    <output filename="shortcut_viewer_strings_eu.pak" type="data_package" lang="eu" />
     <output filename="shortcut_viewer_strings_fa.pak" type="data_package" lang="fa" />
     <output filename="shortcut_viewer_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="shortcut_viewer_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="shortcut_viewer_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
     <output filename="shortcut_viewer_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="shortcut_viewer_strings_gl.pak" type="data_package" lang="gl" />
     <output filename="shortcut_viewer_strings_gu.pak" type="data_package" lang="gu" />
     <output filename="shortcut_viewer_strings_he.pak" type="data_package" lang="he" />
     <output filename="shortcut_viewer_strings_hi.pak" type="data_package" lang="hi" />
     <output filename="shortcut_viewer_strings_hr.pak" type="data_package" lang="hr" />
     <output filename="shortcut_viewer_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="shortcut_viewer_strings_hy.pak" type="data_package" lang="hy" />
     <output filename="shortcut_viewer_strings_id.pak" type="data_package" lang="id" />
     <output filename="shortcut_viewer_strings_is.pak" type="data_package" lang="is" />
     <output filename="shortcut_viewer_strings_it.pak" type="data_package" lang="it" />
     <output filename="shortcut_viewer_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="shortcut_viewer_strings_ka.pak" type="data_package" lang="ka" />
+    <output filename="shortcut_viewer_strings_kk.pak" type="data_package" lang="kk" />
+    <output filename="shortcut_viewer_strings_km.pak" type="data_package" lang="km" />
     <output filename="shortcut_viewer_strings_kn.pak" type="data_package" lang="kn" />
     <output filename="shortcut_viewer_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="shortcut_viewer_strings_ky.pak" type="data_package" lang="ky" />
+    <output filename="shortcut_viewer_strings_lo.pak" type="data_package" lang="lo" />
     <output filename="shortcut_viewer_strings_lt.pak" type="data_package" lang="lt" />
     <output filename="shortcut_viewer_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="shortcut_viewer_strings_mk.pak" type="data_package" lang="mk" />
     <output filename="shortcut_viewer_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="shortcut_viewer_strings_mn.pak" type="data_package" lang="mn" />
     <output filename="shortcut_viewer_strings_mr.pak" type="data_package" lang="mr" />
     <output filename="shortcut_viewer_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="shortcut_viewer_strings_my.pak" type="data_package" lang="my" />
+    <output filename="shortcut_viewer_strings_ne.pak" type="data_package" lang="ne" />
     <output filename="shortcut_viewer_strings_nl.pak" type="data_package" lang="nl" />
     <!-- The translation console uses 'no' for Norwegian Bokmål. It should
          be 'nb'. -->
     <output filename="shortcut_viewer_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="shortcut_viewer_strings_pa.pak" type="data_package" lang="pa" />
     <output filename="shortcut_viewer_strings_pl.pak" type="data_package" lang="pl" />
     <output filename="shortcut_viewer_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
     <output filename="shortcut_viewer_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="shortcut_viewer_strings_or.pak" type="data_package" lang="or" />
     <output filename="shortcut_viewer_strings_ro.pak" type="data_package" lang="ro" />
     <output filename="shortcut_viewer_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="shortcut_viewer_strings_si.pak" type="data_package" lang="si" />
     <output filename="shortcut_viewer_strings_sk.pak" type="data_package" lang="sk" />
     <output filename="shortcut_viewer_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="shortcut_viewer_strings_sq.pak" type="data_package" lang="sq" />
+    <output filename="shortcut_viewer_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
     <output filename="shortcut_viewer_strings_sr.pak" type="data_package" lang="sr" />
     <output filename="shortcut_viewer_strings_sv.pak" type="data_package" lang="sv" />
     <output filename="shortcut_viewer_strings_sw.pak" type="data_package" lang="sw" />
@@ -59,10 +83,13 @@
     <output filename="shortcut_viewer_strings_th.pak" type="data_package" lang="th" />
     <output filename="shortcut_viewer_strings_tr.pak" type="data_package" lang="tr" />
     <output filename="shortcut_viewer_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="shortcut_viewer_strings_ur.pak" type="data_package" lang="ur" />
+    <output filename="shortcut_viewer_strings_uz.pak" type="data_package" lang="uz" />
     <output filename="shortcut_viewer_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="shortcut_viewer_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="shortcut_viewer_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
     <output filename="shortcut_viewer_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
-
+    <output filename="shortcut_viewer_strings_zu.pak" type="data_package" lang="zu" />
     <!-- Pseudolocales -->
     <output filename="shortcut_viewer_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
     <output filename="shortcut_viewer_strings_en-XA.pak" type="data_package" lang="en-XA" />
@@ -79,6 +106,7 @@
     <file path="strings/shortcut_viewer_strings_bs.xtb" lang="bs" />
     <file path="strings/shortcut_viewer_strings_ca.xtb" lang="ca" />
     <file path="strings/shortcut_viewer_strings_cs.xtb" lang="cs" />
+    <file path="strings/shortcut_viewer_strings_cy.xtb" lang="cy" />
     <file path="strings/shortcut_viewer_strings_da.xtb" lang="da" />
     <file path="strings/shortcut_viewer_strings_de.xtb" lang="de" />
     <file path="strings/shortcut_viewer_strings_el.xtb" lang="el" />
@@ -160,9 +188,6 @@
   <!-- Accessibility -->
   <message name="IDS_KSV_SEARCH_BOX_ACCESSIBILITY_NAME" desc="Accessibility name for the search box.">
     Search for keyboard shortcuts
-  </message>
-  <message name="IDS_KSV_BACK_ACCESSIBILITY_NAME" desc="Accessibility name for the button that exits search mode.">
-    Exit search mode
   </message>
   <message name="IDS_KSV_CLEAR_SEARCHBOX_ACCESSIBILITY_NAME" desc="Accessibility name for the button that clears all text from the search box.">
     Clear searchbox text
@@ -311,6 +336,9 @@
   <message name="IDS_KSV_DESCRIPTION_TOGGLE_OVERVIEW" desc="Description of the command in keyboard shortcut viewer.">
     Overview mode
   </message>
+  <message name="IDS_KSV_DESCRIPTION_TOGGLE_RESIZE_LOCK_MENU" desc="Description of the command in keyboard shortcut viewer.">
+    Toggle the menu for resize lock mode
+  </message>
   <message name="IDS_KSV_DESCRIPTION_KEYBOARD_BRIGHTNESS_DOWN" desc="Description of the command in keyboard shortcut viewer.">
     Dim keyboard (for backlit keyboards only)
   </message>
@@ -320,23 +348,17 @@
   <message name="IDS_KSV_DESCRIPTION_TAKE_SCREENSHOT" desc="Description of the command in keyboard shortcut viewer.">
     Take screenshot/recording
   </message>
-  <message name="IDS_KSV_DESCRIPTION_TAKE_SCREENSHOT_OLD" desc="Description of the command in keyboard shortcut viewer when capture mode is disabled.">
-    Take screenshot
-  </message>
   <message name="IDS_KSV_DESCRIPTION_TAKE_FULLSCREEN_SCREENSHOT" desc="Description of the command in keyboard shortcut viewer.">
     Take fullscreen screenshot
   </message>
   <message name="IDS_KSV_DESCRIPTION_TAKE_PARTIAL_SCREENSHOT" desc="Description of the command in keyboard shortcut viewer.">
     Take partial screenshot/recording
   </message>
-  <message name="IDS_KSV_DESCRIPTION_TAKE_PARTIAL_SCREENSHOT_OLD" desc="Description of the command in keyboard shortcut viewer if the capture mode is disabled.">
-    Take partial screenshot
-  </message>
   <message name="IDS_KSV_DESCRIPTION_OPEN_FILE_MANAGER" desc="Description of the command in keyboard shortcut viewer.">
     Open the Files app
   </message>
   <message name="IDS_KSV_DESCRIPTION_TOGGLE_HIGH_CONTRAST" desc="Description of the command in keyboard shortcut viewer.">
-    Turn on high contrast mode
+    Turn on color inversion mode
   </message>
   <message name="IDS_KSV_DESCRIPTION_TOGGLE_SPOKEN_FEEDBACK" desc="Description of the command in keyboard shortcut viewer.">
     Turn ChromeVox (spoken feedback) on or off
@@ -368,11 +390,17 @@
   <message name="IDS_KSV_DESCRIPTION_FOCUS_SHELF" desc="Description of the command in keyboard shortcut viewer.">
     Highlight the launcher button on your shelf
   </message>
+  <message name="IDS_KSV_DESCRIPTION_FOCUS_PIP" desc="Description of the command in keyboard shortcut viewer.">
+    Focus the picture-in-picture window
+  </message>
   <message name="IDS_KSV_DESCRIPTION_TOGGLE_MESSAGE_CENTER_BUBBLE" desc="Description of the command in keyboard shortcut viewer.">
     See your notifications
   </message>
   <message name="IDS_KSV_DESCRIPTION_TOGGLE_SYSTEM_TRAY_BUBBLE" desc="Description of the command in keyboard shortcut viewer.">
     Open the status area (where your account picture appears)
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_TOGGLE_CALENDAR" desc="Toggle to show/hide calendar widget.">
+    Open or close the calendar widget.
   </message>
   <message name="IDS_KSV_DESCRIPTION_LAUNCH_LAST_APP" desc="Description of the command in keyboard shortcut viewer.">
     Click the last icon on your shelf
@@ -437,6 +465,9 @@
   <message name="IDS_KSV_DESCRIPTION_IDC_SAVE_PAGE" desc="Description of the command in keyboard shortcut viewer.">
     Save your current page
   </message>
+  <message name="IDS_KSV_DESCRIPTION_IDC_SEARCH_TABS" desc="Search for open and recently closed tabs.">
+    Search tabs
+  </message>
   <message name="IDS_KSV_DESCRIPTION_IDC_SELECT_LAST_TAB" desc="Description of the command in keyboard shortcut viewer.">
     Go to the last tab in the window
   </message>
@@ -459,7 +490,7 @@
     Zoom in on the page
   </message>
   <message name="IDS_KSV_DESCRIPTION_IDC_NEW_INCOGNITO_WINDOW" desc="Description of the command in keyboard shortcut viewer.">
-    Open a new window in incognito mode
+    Open a new window in Incognito mode
   </message>
   <message name="IDS_KSV_DESCRIPTION_IDC_RESTORE_TAB" desc="Description of the command in keyboard shortcut viewer.">
     Reopen the last tab or window you closed
@@ -678,7 +709,7 @@
     <ph name="shift">$1<ex>Shift</ex></ph><ph name="separator1">$2<ex>+</ex></ph><ph name="alt">$3<ex>Alt</ex></ph><ph name="separator2">$4<ex>+</ex></ph><ph name="l">$5<ex>v</ex></ph>, then <ph name="esc">$6<ex>v</ex></ph>
   </message>
   <message name="IDS_KSV_DESCRIPTION_SWITCH_FOCUS" desc="Description of the command in keyboard shortcut viewer.">
-    Switch focus between: Status area (where your account picture appears), Launcher, Address bar, Bookmarks bar (if visible), The webpage that's open, and Downloads bar (if visible).
+    Switch focus between: Status area (where your account picture appears), Launcher, Address bar, Bookmarks bar (if visible), The webpage that's open, and Downloads bar (if visible). If a focusable dialog is displayed, move focus there instead.
   </message>
   <message name="IDS_KSV_SHORTCUT_SWITCH_FOCUS" desc="Human readable version of the keyboard shortcut.">
     <ph name="ctrl1">$1<ex>Ctrl</ex></ph><ph name="separator1">$2<ex>+</ex></ph><ph name="back1">$3<ex>v</ex></ph> or <ph name="ctrl2">$4<ex>Ctrl</ex></ph><ph name="separator2">$5<ex>+</ex></ph><ph name="shift">$6<ex>Shift</ex></ph><ph name="separator3">$7<ex>+</ex></ph><ph name="back2">$8<ex>v</ex></ph>
@@ -728,6 +759,9 @@
   <message name="IDS_KSV_DESCRIPTION_FOCUS_PREVIOUS_PANE" desc="Description of the command in keyboard shortcut viewer.">
     Previous pane
   </message>
+  <message name="IDS_KSV_DESCRIPTION_FOCUS_WEB_CONTENTS_PANE" desc="Description of the command in keyboard shortcut viewer.">
+    Focus web content in the browser
+  </message>
   <message name="IDS_KSV_DESCRIPTION_MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS" desc="Description of the command in keyboard shortcut viewer.">
     Move active window between displays
   </message>
@@ -739,9 +773,6 @@
   </message>
   <message name="IDS_KSV_DESCRIPTION_TAKE_WINDOW_SCREENSHOT" desc="Description of the command in keyboard shortcut viewer.">
     Take window screenshot/recording
-  </message>
-  <message name="IDS_KSV_DESCRIPTION_TAKE_WINDOW_SCREENSHOT_OLD" desc="Description of the command in keyboard shortcut viewer when capture mode is disabled.">
-    Take window screenshot
   </message>
   <message name="IDS_KSV_DESCRIPTION_SUSPEND" desc="Description of the command in keyboard shortcut viewer.">
     Put device in sleep mode (suspend)
@@ -812,11 +843,23 @@
   <message name="IDS_KSV_DESCRIPTION_DESKS_ACTIVATE_RIGHT_DESK" desc="Description of the command in keyboard shortcut viewer.">
     Activate the desk on the right
   </message>
+  <message name="IDS_KSV_DESCRIPTION_DESKS_ACTIVATE_INDEXED_DESK" desc="Description of the command in keyboard shortcut viewer.">
+    Go to desk 1 to 8
+  </message>
+  <message name="IDS_KSV_SHORTCUT_DESKS_ACTIVATE_INDEXED_DESK" desc="Description of the command in keyboard shortcut viewer.">
+    <ph name="shift">$1<ex>Shift</ex></ph><ph name="separator1">$2<ex>+</ex></ph><ph name="search">$3<ex>Search</ex></ph><ph name="separator2">$4<ex>+</ex></ph> 1 through 8
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_DESKS_TOGGLE_WINDOW_ASSIGNED_TO_ALL_DESKS" desc="Description of the command in keyboard shortcut viewer.">
+    Assign active window to all desks
+  </message>
   <message name="IDS_KSV_DESCRIPTION_DESKS_MOVE_ACTIVE_ITEM_LEFT_DESK" desc="Description of the command in keyboard shortcut viewer.">
     Move active window to the desk on the left
   </message>
   <message name="IDS_KSV_DESCRIPTION_DESKS_MOVE_ACTIVE_ITEM_RIGHT_DESK" desc="Description of the command in keyboard shortcut viewer.">
     Move active window to the desk on the right
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_FLOAT" desc="Description of the command in keyboard shortcut viewer.">
+    Float active window on top
   </message>
   <message name="IDS_KSV_DESCRIPTION_OPEN_GOOGLE_ASSISTANT" desc="Description of the command in keyboard shortcut viewer.">
     Open Google Assistant

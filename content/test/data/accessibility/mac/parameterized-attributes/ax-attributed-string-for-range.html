@@ -1,0 +1,10 @@
+<!--
+@SCRIPT:
+  input.accessibilityParameterizedAttributeNames.has(AXAttributedStringForRange)
+  input.accessibilityAttributeValue(AXAttributedStringForRange, {loc: 0, len: 8})
+  not_applicable.accessibilityParameterizedAttributeNames.has(AXAttributedStringForRange)
+  not_applicable.accessibilityAttributeValue(AXAttributedStringForRange, {loc: 0, len: 8})
+-->
+<!DOCTYPE html>
+<input id="input" value="mispeled">
+<div id="not_applicable">foobar</div>

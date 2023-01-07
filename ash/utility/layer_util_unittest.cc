@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/test_compositor_host.h"
 #include "ui/compositor/test/test_context_factories.h"
 #include "ui/gfx/geometry/rect.h"
@@ -63,8 +64,10 @@ class LayerUtilTest : public testing::Test {
 
 }  // namespace
 
-// TODO(crbug.com/1177129) Re-enable test
-TEST_F(LayerUtilTest, DISABLED_CopyContentToExistingLayer) {
+TEST_F(LayerUtilTest, CopyContentToExistingLayer) {
+  ui::ScopedAnimationDurationScaleMode non_zero(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
   ui::Layer layer1;
   layer1.SetBounds(gfx::Rect(100, 100));
   root_layer()->Add(&layer1);
@@ -83,7 +86,7 @@ TEST_F(LayerUtilTest, DISABLED_CopyContentToExistingLayer) {
     CopyLayerContentToLayer(&layer1, cancelable.callback());
 
     GenerateOneFrame();
-    Advance(base::TimeDelta::FromMilliseconds(16));
+    Advance(base::Milliseconds(1000));
     EXPECT_TRUE(called);
   }
 
@@ -100,7 +103,7 @@ TEST_F(LayerUtilTest, DISABLED_CopyContentToExistingLayer) {
     cancelable.Cancel();
 
     GenerateOneFrame();
-    Advance(base::TimeDelta::FromMilliseconds(16));
+    Advance(base::Milliseconds(1000));
     EXPECT_FALSE(called);
   }
 }

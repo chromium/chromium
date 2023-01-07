@@ -1,0 +1,10 @@
+Tests that Page.addScriptToEvaluateOnLoad has access to command line APIs
+Without an isolated world:
+1 function monitorEvents(object, [types]) { [Command Line API] }
+2 function monitorEvents(object, [types]) { [Command Line API] }
+3 undefined
+With an isolated world:
+1 function monitorEvents(object, [types]) { [Command Line API] }
+2 function monitorEvents(object, [types]) { [Command Line API] }
+3 undefined
+

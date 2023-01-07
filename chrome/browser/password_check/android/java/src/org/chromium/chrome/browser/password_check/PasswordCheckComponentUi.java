@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,10 +17,30 @@ public interface PasswordCheckComponentUi {
      */
     interface Delegate {
         /**
+         * Launch the UI allowing the user to edit the given credential.
+         *
+         * @param credential A {@link CompromisedCredential} to be edited.
+         * @param context The context to launch the editing UI from.
+         */
+        void onEditCredential(CompromisedCredential credential, Context context);
+
+        /**
          * Remove the given credential from the password store.
          * @param credential A {@link CompromisedCredential}.
          */
         void removeCredential(CompromisedCredential credential);
+
+        /**
+         * Register the start of an automated password change flow.
+         * @param credential A {@link CompromisedCredential} for which a flow was started.
+         */
+        void onAutomatedPasswordChangeStarted(CompromisedCredential credential);
+
+        /**
+         * Register the start of a manual password change flow.
+         * @param credential A {@link CompromisedCredential} for which a flow was started.
+         */
+        void onManualPasswordChangeStarted(CompromisedCredential credential);
     }
 
     /**
@@ -37,11 +57,11 @@ public interface PasswordCheckComponentUi {
 
     /**
      * Functional interface to append trusted extras to the given intent, e.g. by using
-     * {@link org.chromium.chrome.browser.IntentHandler#addTrustedIntentExtras(Intent)}.
+     * {@link org.chromium.chrome.browser.IntentUtils.addTrustedIntentExtras(Intent)}.
      * TODO(crbug.com/1092444): Remove this when the IntentHandler is available in a module.
      */
     interface TrustedIntentHelper {
-        /** @see org.chromium.chrome.browser.IntentHandler#addTrustedIntentExtras(Intent) */
+        /** @see org.chromium.chrome.browser.IntentUtils.addTrustedIntentExtras(Intent) */
         void addTrustedIntentExtras(Intent intent);
     }
 

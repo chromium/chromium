@@ -1,8 +1,0 @@
-Check the console message printed on a QuicTransport handshake failure.
-Log Enabled
-Instantiate QuicTransport.
-Log.onEntryAdded
-source: network
-level: error
-text: Failed to establish a connection to quic-transport://localhost/: [net error].
-

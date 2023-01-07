@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/certificate_reporting_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/safe_browsing/core/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace {
@@ -76,13 +75,13 @@ void CertificateReportingServiceFactory::SetURLLoaderFactoryForTesting(
 }
 
 CertificateReportingServiceFactory::CertificateReportingServiceFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "cert_reporting::Factory",
-          BrowserContextDependencyManager::GetInstance()),
+          ProfileSelections::BuildForRegularAndIncognito()),
       server_public_key_(nullptr),
       server_public_key_version_(0),
       clock_(base::DefaultClock::GetInstance()),
-      queued_report_ttl_(base::TimeDelta::FromSeconds(kMaxReportAgeInSeconds)),
+      queued_report_ttl_(base::Seconds(kMaxReportAgeInSeconds)),
       max_queued_report_count_(kMaxReportCountInQueue),
       service_reset_callback_(base::DoNothing()) {}
 
@@ -100,20 +99,11 @@ KeyedService* CertificateReportingServiceFactory::BuildServiceInstanceFor(
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
   if (test_url_loader_factory_.get()) {
     url_loader_factory = test_url_loader_factory_;
-  } else if (base::FeatureList::IsEnabled(
-                 safe_browsing::kSafeBrowsingRemoveCookies)) {
-    url_loader_factory = profile->GetURLLoaderFactory();
   } else {
-    url_loader_factory = safe_browsing_service->GetURLLoaderFactory();
+    url_loader_factory = profile->GetURLLoaderFactory();
   }
   return new CertificateReportingService(
       safe_browsing_service, url_loader_factory, static_cast<Profile*>(profile),
       server_public_key_, server_public_key_version_, max_queued_report_count_,
       queued_report_ttl_, clock_, service_reset_callback_);
-}
-
-content::BrowserContext*
-CertificateReportingServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  return context;
 }

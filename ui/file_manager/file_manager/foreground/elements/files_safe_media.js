@@ -1,32 +1,37 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const FILES_APP_ORIGIN = 'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {toSandboxedURL} from '../../common/js/url_constants.js';
 
 /**
- * Polymer element to render a media securely inside webview.
- * When tapped, files-safe-media-tap-inside or
+ * Polymer element to render a media securely inside a webview or a
+ * chrome-untrusted:// iframe. When tapped, files-safe-media-tap-inside or
  * files-safe-media-tap-outside events are fired depending on the position
  * of the tap.
  */
 const FilesSafeMedia = Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'files-safe-media',
 
   properties: {
-    // URL accessible from webview.
+    // Source content accessible from the sandboxed environment.
     src: {
-      type: String,
+      type: Object,
       observer: 'onSrcChange_',
-      reflectToAttribute: true
+      reflectToAttribute: true,
     },
     type: {
       type: String,
       readonly: true,
-    }
+    },
   },
 
-  listeners: {'src-changed': 'onSrcChange_'},
+  listeners: {
+    'src-changed': 'onSrcChange_',
+  },
 
   /**
    * @return {string}
@@ -34,50 +39,67 @@ const FilesSafeMedia = Polymer({
   sourceFile_: function() {
     switch (this.type) {
       case 'image':
-         return 'foreground/elements/files_safe_img_webview_content.html';
+        return toSandboxedURL('untrusted_resources/files_img_content.html')
+            .toString();
       case 'audio':
-         return 'foreground/elements/files_safe_audio_webview_content.html';
+        return toSandboxedURL('untrusted_resources/files_audio_content.html')
+            .toString();
       case 'video':
-         return 'foreground/elements/files_safe_video_webview_content.html';
+        return toSandboxedURL('untrusted_resources/files_video_content.html')
+            .toString();
       case 'html':
-        return 'foreground/elements/files_safe_text_webview_content.html';
+        return toSandboxedURL('untrusted_resources/files_text_content.html')
+            .toString();
       default:
-        console.error('Unsupported type: ' + this.type);
+        console.warn('Unsupported type: ' + this.type);
         return '';
     }
   },
 
   onSrcChange_: function() {
-    if (!this.src && this.webview_) {
-      // Remove webview to clean up unnecessary processes.
-      this.$.content.removeChild(this.webview_);
-      this.webview_ = null;
-    } else if (this.src && !this.webview_) {
-      // Create webview node only if src exists to save resources.
-      const webview =
-          /** @type {!HTMLElement} */ (document.createElement('webview'));
-      this.webview_ = webview;
-      webview.partition = 'trusted';
-      webview.allowtransparency = 'true';
-      this.$.content.appendChild(webview);
-      webview.addEventListener(
-          'contentload', this.onSrcChange_.bind(this));
-      webview.src = this.sourceFile_();
-    } else if (this.src && this.webview_.contentWindow) {
-      const data = {};
-      data.type = this.type;
-      data.src = this.src;
+    const hasContent = this.src.dataType !== '';
+    if (!hasContent && this.contentsNode_) {
+      // Remove webview or iframe to clean up unnecessary processes.
+      this.$.content.removeChild(this.contentsNode_);
+      this.contentsNode_ = null;
+    } else if (hasContent && !this.contentsNode_) {
+      // Create node only if src exists to save resources.
+      this.createUntrustedContents_();
+    } else if (hasContent && this.contentsNode_.contentWindow) {
+      /** @type {!UntrustedPreviewData} */
+      const data = {
+        type: this.type,
+        sourceContent: /** @type {!FilePreviewContent} */ (this.src),
+      };
       window.setTimeout(() => {
-        this.webview_.contentWindow.postMessage(data, FILES_APP_ORIGIN);
+        this.contentsNode_.contentWindow.postMessage(
+            data, toSandboxedURL().origin);
       });
     }
   },
 
+  createUntrustedContents_: function() {
+    const node =
+        /** @type {!HTMLElement} */ (document.createElement('iframe'));
+    this.contentsNode_ = node;
+    node.style.width = '100%';
+    node.style.height = '100%';
+    node.style.border = '0px';
+    // Allow autoplay for audio files.
+    if (this.type === 'audio') {
+      node.setAttribute('allow', 'autoplay');
+    }
+    this.$.content.appendChild(node);
+    node.addEventListener('load', () => this.onSrcChange_());
+    node.src = this.sourceFile_();
+  },
+
   created: function() {
     /**
-     * @type {HTMLElement}
+     * @private {?HTMLElement} Holds the untrusted frame when a source to
+     *     preview is set. Set to null otherwise.
      */
-    this.webview_ = null;
+    this.contentsNode_ = null;
   },
 
   ready: function() {
@@ -85,14 +107,14 @@ const FilesSafeMedia = Polymer({
       if (this.type === 'audio' || this.type === 'video') {
         // Avoid setting the focus on the files-safe-media itself, rather sends
         // it down to its webview element.
-        if (this.webview_) {
-          this.webview_.focus();
+        if (this.contentsNode_) {
+          this.contentsNode_.focus();
         }
       }
     });
     window.addEventListener('message', event => {
-      if (event.origin !== FILES_APP_ORIGIN) {
-        console.log('Unknown origin.');
+      if (event.origin !== toSandboxedURL().origin) {
+        console.warn('Unknown origin: ' + event.origin);
         return;
       }
       if (event.data === 'tap-inside') {
@@ -100,18 +122,18 @@ const FilesSafeMedia = Polymer({
       } else if (event.data === 'tap-outside') {
         this.fire('files-safe-media-tap-outside');
       } else if (event.data === 'webview-loaded') {
-        if (this.webview_) {
-          this.webview_.setAttribute('loaded', '');
+        if (this.contentsNode_) {
+          this.contentsNode_.setAttribute('loaded', '');
         }
       } else if (event.data === 'webview-cleared') {
-        if (this.webview_) {
-          this.webview_.removeAttribute('loaded');
+        if (this.contentsNode_) {
+          this.contentsNode_.removeAttribute('loaded');
         }
       } else if (event.data === 'content-decode-failed') {
         this.fire('files-safe-media-load-error');
       }
     });
-  }
+  },
 });
 
 //# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_safe_media.js

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,12 +26,13 @@ autofill::AutofillProfile CreateProfileWithPartialAddress() {
   return profile;
 }
 
-class PaymentRequestProfileListTest : public PaymentRequestBrowserTestBase {
- protected:
-  PaymentRequestProfileListTest() = default;
-};
+using PaymentRequestProfileListTest = PaymentRequestBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestProfileListTest, PrioritizeCompleteness) {
+  std::string payment_method_name;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js",
+                    &payment_method_name);
+
   NavigateTo("/payment_request_free_shipping_test.html");
   autofill::AutofillProfile complete = autofill::test::GetFullProfile();
   autofill::AutofillProfile partial = CreateProfileWithPartialAddress();
@@ -50,9 +51,10 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestProfileListTest, PrioritizeCompleteness) {
   EXPECT_EQ(partial, *profiles[0]);
   EXPECT_EQ(complete, *profiles[1]);
 
-  InvokePaymentRequestUI();
+  InvokePaymentRequestUIWithJs("buyWithMethods([{supportedMethods:'" +
+                               payment_method_name + "'}]);");
 
-  PaymentRequest* request = GetPaymentRequests(GetActiveWebContents()).front();
+  PaymentRequest* request = GetPaymentRequests().front();
 
   // The complete profile should be selected.
   ASSERT_TRUE(request->state()->selected_shipping_profile());

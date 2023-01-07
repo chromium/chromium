@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,8 +32,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace base {
 class MessageLoop;
 }  // namespace base
@@ -58,6 +56,9 @@ class WebTaskEnvironment : public base::test::TaskEnvironment {
       base::test::TaskEnvironment::TimeSource time_source =
           base::test::TaskEnvironment::TimeSource::DEFAULT);
 
+  WebTaskEnvironment(const WebTaskEnvironment&) = delete;
+  WebTaskEnvironment& operator=(const WebTaskEnvironment&) = delete;
+
   ~WebTaskEnvironment() override;
 
  private:
@@ -65,8 +66,6 @@ class WebTaskEnvironment : public base::test::TaskEnvironment {
 
   std::unique_ptr<TestWebThread> ui_thread_;
   std::unique_ptr<TestWebThread> io_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTaskEnvironment);
 };
 
 }  // namespace web

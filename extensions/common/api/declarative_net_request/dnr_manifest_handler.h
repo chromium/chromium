@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,10 @@ namespace declarative_net_request {
 class DNRManifestHandler : public ManifestHandler {
  public:
   DNRManifestHandler();
+
+  DNRManifestHandler(const DNRManifestHandler&) = delete;
+  DNRManifestHandler& operator=(const DNRManifestHandler&) = delete;
+
   ~DNRManifestHandler() override;
 
  private:
@@ -22,8 +26,6 @@ class DNRManifestHandler : public ManifestHandler {
                 std::string* error,
                 std::vector<InstallWarning>* warnings) const override;
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(DNRManifestHandler);
 };
 
 }  // namespace declarative_net_request

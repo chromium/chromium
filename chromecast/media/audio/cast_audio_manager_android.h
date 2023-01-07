@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,29 +8,23 @@
 #include <memory>
 #include <string>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/media/audio/cast_audio_manager_helper.h"
 #include "media/audio/android/audio_manager_android.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace chromecast {
 namespace media {
 
 class CastAudioManagerAndroid : public ::media::AudioManagerAndroid {
  public:
-  // Callback to get whether the session is audio-only for the provided session
-  // ID.
-  using GetApplicationCapabilityCallback =
-      base::RepeatingCallback<bool(const std::string&)>;
-
   CastAudioManagerAndroid(
       std::unique_ptr<::media::AudioThread> audio_thread,
       ::media::AudioLogFactory* audio_log_factory,
+      CastAudioManagerHelper::Delegate* delegate,
       base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter,
-      CastAudioManagerHelper::GetSessionIdCallback get_session_id_callback,
-      GetApplicationCapabilityCallback get_application_capability_callback,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
-      mojo::PendingRemote<chromecast::mojom::ServiceConnector> connector);
+      external_service_support::ExternalConnector* connector);
   ~CastAudioManagerAndroid() override;
 
   // AudioManager implementation.
@@ -69,7 +63,6 @@ class CastAudioManagerAndroid : public ::media::AudioManagerAndroid {
       const ::media::AudioManager::LogCallback& log_callback) override;
 
   CastAudioManagerHelper helper_;
-  GetApplicationCapabilityCallback get_application_capability_callback_;
 
   CastAudioManagerAndroid(const CastAudioManagerAndroid&) = delete;
   CastAudioManagerAndroid& operator=(const CastAudioManagerAndroid&) = delete;

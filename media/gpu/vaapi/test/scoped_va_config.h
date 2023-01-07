@@ -1,14 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_GPU_VAAPI_TEST_SCOPED_VA_CONFIG_H_
 #define MEDIA_GPU_VAAPI_TEST_SCOPED_VA_CONFIG_H_
 
-#include "media/gpu/vaapi/test/vaapi_device.h"
+#include <va/va.h>
 
 namespace media {
 namespace vaapi_test {
+
+class VaapiDevice;
 
 // This class holds configuration information for a VaapiDevice. The VaapiDevice
 // must be externally guaranteed to outlive the ScopedVAConfig.

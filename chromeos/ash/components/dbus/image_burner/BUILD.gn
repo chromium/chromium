@@ -1,0 +1,24 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Non-Chrome-OS builds must not depend on //chromeos/ash")
+
+component("image_burner") {
+  output_name = "ash_image_burner"
+  defines = [ "IS_ASH_DBUS_IMAGE_BURNER_IMPL" ]
+  deps = [
+    "//base",
+    "//chromeos/dbus/common",
+    "//dbus",
+  ]
+  sources = [
+    "fake_image_burner_client.cc",
+    "fake_image_burner_client.h",
+    "image_burner_client.cc",
+    "image_burner_client.h",
+  ]
+}

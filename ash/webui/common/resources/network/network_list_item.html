@@ -1,0 +1,211 @@
+<style include="cr-shared-style internet-shared iron-flex">
+  :host {
+    display: inline-flex;
+    outline: none;
+    --network-list-item-disabled-opacity: 0.4;
+  }
+
+  #divOuter {
+    height: var(--cr-network-row-height, 48px);
+    overflow: auto;
+    padding-inline-end: var(--cr-icon-ripple-padding);
+  }
+
+  :host([disabled_]) {
+    cursor: auto;
+    pointer-events: none;
+  }
+
+  :host([disabled_]) cr-policy-indicator,
+  :host([disabled_]) #networkIconContainer,
+  :host([disabled_]) #networkStateText,
+  :host([disabled_]) #divText,
+  :host([is-e-sim-pending-profile_]) #divText,
+  :host([is-e-sim-pending-profile_]) #divIcon,
+  :host([is-p-sim-unactivated-network_]) #divText,
+  :host([is-p-sim-unactivated-network_]) #networkIconContainer,
+  :host([is-p-sim-activating-network_]) #divText,
+  :host([is-p-sim-activating-network_]) #networkIconContainer,
+  :host([is-blocked-network_]) #divText,
+  :host([is-blocked-network_]) #networkIconContainer {
+    opacity: var(--network-list-item-disabled-opacity);
+  }
+
+  :host(:not([is-e-sim-pending-profile_])
+      :not([is-e-sim-installing-profile_])) #divIcon {
+    height: 24px;
+    width: 24px;
+  }
+
+  :host([is-e-sim-pending-profile_]) #divIcon,
+  :host([is-e-sim-installing-profile_]) #divIcon {
+    height: 20px;
+    padding-inline-end: 20px;
+    width: 20px;
+  }
+
+  #divDetail {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: row;
+  }
+
+  #divText {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+    justify-content: center;
+    margin-inline-start: 20px;
+  }
+
+  #networkStateText {
+    font-size: inherit;
+  }
+
+  #networkStateText[active] {
+    color: var(--cros-text-color-positive);
+  }
+
+  .warning {
+    color: var(--cros-text-color-warning);
+  }
+
+  cr-policy-indicator {
+    padding: 0 var(--cr-controlled-by-spacing);
+  }
+
+  #wrapper {
+    height: 100%;
+  }
+
+  cr-button iron-icon {
+    margin-inline-end: 8px;
+  }
+
+  :host(:not([disabled_])) cr-button iron-icon {
+    --iron-icon-fill-color: var(--cros-tab-icon-color-active);
+  }
+
+  :host([disabled_]) cr-button iron-icon {
+    --iron-icon-fill-color: var(--cros-icon-color-disabled);
+  }
+
+  paper-spinner-lite {
+    height: 20px;
+    margin-inline-end: 16px;
+    width: 20px;
+  }
+
+  .separator {
+    margin: 0 0 0 32px;
+  }
+</style>
+<div id="wrapper" focus-row-container
+      class="layout horizontal center flex">
+  <div id="divOuter"
+        class="layout horizontal center flex"
+        actionable
+        focus-row-control
+        selectable
+        aria-label$="[[rowLabel]]"
+        aria-live="[[getLiveStatus_(isFocused)]]"
+        focus-type="rowWrapper"
+        on-keydown="onKeydown_"
+        on-click="onSelected_">
+    <div id="networkIconContainer">
+      <template is="dom-if" if="[[networkState]]">
+        <network-icon is-list-item
+            show-technology-badge="[[showTechnologyBadge]]"
+            network-state="[[networkState]]">
+        </network-icon>
+      </template>
+    </div>
+    <template is="dom-if" if="[[item.polymerIcon]]">
+      <iron-icon id="divIcon" icon="[[item.polymerIcon]]"></iron-icon>
+    </template>
+    <div id="divText" class="layout horizontal flex">
+      <div id="itemTitle" aria-hidden="true">
+        [[itemTitle_]]
+      </div>
+      <div id="networkStateText"
+          class$="[[getNetworkStateTextClass_(networkState.*,
+              isPSimUnavailableNetwork_, isESimUnactivatedProfile_)]]"
+          hidden$="[[!isStateTextVisible_(networkState.*,
+              isPSimUnavailableNetwork_, isESimUnactivatedProfile_)]]"
+          active$="[[isStateTextActive_(networkState.*,
+                        activationUnavailable, isESimUnactivatedProfile_)]]">
+        [[getNetworkStateText_(networkState.*, activationUnavailable,
+            deviceState.*, isPSimUnavailableNetwork_,
+            isESimUnactivatedProfile_)]]
+      </div>
+    </div>
+    <template is="dom-if" if="[[isPolicySource(networkState.source)]]">
+      <cr-policy-indicator indicator-type="[[getIndicatorTypeForSource(
+          networkState.source)]]">
+      </cr-policy-indicator>
+    </template>
+    <template is="dom-if"
+        if="[[shouldShowActivateButton_(isPSimPendingActivationNetwork_,
+          showButtons)]]" restamp>
+      <cr-button id="activateButton"
+          aria-label$="[[getActivateBtnA11yLabel_(item)]]"
+          on-click="onActivateButtonClick_"
+          disabled="[[disabled_]]">
+        [[i18n('networkListItemActivate')]]
+      </cr-button>
+      <div class="separator"></div>
+    </template>
+    <template is="dom-if" if="[[isPSimActivatingNetwork_]]" restamp>
+      <paper-spinner-lite id="activatingPSimSpinner" active>
+      </paper-spinner-lite>
+      [[i18n('networkListItemActivating')]]
+      <div class="separator" hidden$="[[!showButtons]]"></div>
+    </template>
+    <template is="dom-if"
+        if="[[isSubpageButtonVisible_(networkState, showButtons, disabled_,
+          networkState.typeState.cellular.simLocked,
+          isPSimPendingActivationNetwork_, isPSimActivatingNetwork_)]]" restamp>
+      <div>
+        <cr-icon-button class="subpage-arrow"
+            id="subpageButton"
+            on-click="onSubpageArrowClick_"
+            tabindex$="[[tabindex]]"
+            aria-label$="[[buttonLabel]]"
+            focus-row-control
+            focus-type="subpageButton">
+        </cr-icon-button>
+      </div>
+    </template>
+    <template is="dom-if" if="[[shouldShowUnlockButton_(networkState,
+      networkState.typeState.cellular.simLocked, showButtons)]]" restamp>
+      <cr-button id="unlockButton"
+          aria-label$="[[getUnlockBtnA11yLabel_(item)]]"
+          on-click="onUnlockButtonClick_"
+          disabled="[[disabled_]]">
+          [[i18n('networkListItemUnlock')]]
+      </cr-button>
+    </template>
+    <template is="dom-if" if="[[shouldShowInstallButton_(
+        isESimPendingProfile_, showButtons)]]" restamp>
+      <cr-button id="installButton"
+          aria-label$="[[getInstallBtnA11yLabel_(item)]]"
+          on-click="onInstallButtonClick_"
+          disabled="[[disabled_]]">
+        <iron-icon icon="network:download"></iron-icon>
+        [[i18n('networkListItemDownload')]]
+      </cr-button>
+    </template>
+    <template is="dom-if" if="[[isESimInstallingProfile_]]" restamp>
+      <paper-spinner-lite id="installingESimSpinner" active>
+      </paper-spinner-lite>
+      [[i18n('networkListItemAddingProfile')]]
+    </template>
+  </div>
+</div>
+<template is="dom-if" if="[[isCellularUnlockDialogOpen_]]" restamp>
+  <sim-lock-dialogs
+      global-policy="[[globalPolicy]]"
+      is-dialog-open="{{isCellularUnlockDialogOpen_}}"
+      device-state="[[deviceState]]">
+  </sim-lock-dialogs>
+</template>

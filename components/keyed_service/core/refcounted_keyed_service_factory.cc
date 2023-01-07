@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,22 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
+#include "base/no_destructor.h"
 #include "components/keyed_service/core/dependency_manager.h"
 #include "components/keyed_service/core/refcounted_keyed_service.h"
+
+namespace {
+
+base::flat_map<void*, int>& GetRefcountedKeyedServicesCount() {
+  // A static map to keep the count of currently active RefcountedKeyedServices
+  // per context.
+  static base::NoDestructor<base::flat_map<void*, int>>
+      refcounted_keyed_services_count_;
+  return *refcounted_keyed_services_count_;
+}
+
+}  // namespace
 
 RefcountedKeyedServiceFactory::RefcountedKeyedServiceFactory(
     const char* name,
@@ -83,6 +97,9 @@ scoped_refptr<RefcountedKeyedService> RefcountedKeyedServiceFactory::Associate(
     void* context,
     scoped_refptr<RefcountedKeyedService> service) {
   DCHECK(!base::Contains(mapping_, context));
+  // Only count non-null services
+  if (service)
+    GetRefcountedKeyedServicesCount()[context]++;
   auto iterator = mapping_.emplace(context, std::move(service)).first;
   return iterator->second;
 }
@@ -91,8 +108,12 @@ void RefcountedKeyedServiceFactory::Disassociate(void* context) {
   // We "merely" drop our reference to the service. Hopefully this will cause
   // the service to be destroyed. If not, oh well.
   auto iterator = mapping_.find(context);
-  if (iterator != mapping_.end())
+  if (iterator != mapping_.end()) {
+    // if a service was null, it is not considered in the count.
+    if (iterator->second && --GetRefcountedKeyedServicesCount()[context] == 0)
+      GetRefcountedKeyedServicesCount().erase(context);
     mapping_.erase(iterator);
+  }
 }
 
 void RefcountedKeyedServiceFactory::ContextShutdown(void* context) {
@@ -123,4 +144,15 @@ bool RefcountedKeyedServiceFactory::HasTestingFactory(void* context) {
 
 void RefcountedKeyedServiceFactory::CreateServiceNow(void* context) {
   GetServiceForContext(context, true);
+}
+
+bool RefcountedKeyedServiceFactory::IsServiceCreated(void* context) const {
+  auto it = mapping_.find(context);
+  return it != mapping_.end() && it->second != nullptr;
+}
+
+// static
+int RefcountedKeyedServiceFactory::GetServicesCount(void* context) {
+  auto it = GetRefcountedKeyedServicesCount().find(context);
+  return it != GetRefcountedKeyedServicesCount().end() ? it->second : 0;
 }

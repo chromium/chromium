@@ -60,10 +60,11 @@
       }
 
       cr-link-row {
-        padding-inline-end: 8px;
+        padding-inline-end: 0;
         padding-inline-start: 0;
       }
     </style>
+
     <template is="dom-if" if="[[shouldShowSyncAccountControl_(
         syncStatus.syncSystemEnabled)]]">
       <settings-sync-account-control embedded-in-subpage
@@ -82,15 +83,24 @@
       </div>
     </div>
 
-    <template is="dom-if" if="[[shouldShowExistingPassphraseBelowAccount_(
-        syncPrefs.passphraseRequired)]]"
+<if expr="is_chromeos">
+    <!-- TODO(crbug.com/1231500): Remove this warning after Lacros side-by-side
+      rollout stage. -->
+    <template is="dom-if" if="[[shouldShowLacrosSideBySideWarning_()]]">
+      <div class="cr-row first cr-padded-text">
+        $i18n{syncSettingsLacrosSideBySideWarning}
+      </div>
+    </template>
+</if>
+
+    <template is="dom-if" if="[[showExistingPassphraseBelowAccount_]]"
         on-dom-change="focusPassphraseInput_">
       <div id="existingPassphrase" class="list-frame">
         <div id="existingPassphraseTitle" class="list-item">
             <div class="start cr-padded-text">
               <div>$i18n{existingPassphraseTitle}</div>
               <div class="secondary"
-                  inner-h-t-m-l="[[syncPrefs.enterPassphraseBody]]">
+                  inner-h-t-m-l="[[existingPassphraseLabel_]]">
               </div>
             </div>
         </div>
@@ -120,12 +130,12 @@
         <h2 class="cr-title-text">$i18n{sync}</h2>
       </div>
 
-      <div id="[[pages_.SPINNER]]" class="cr-row first cr-padded-text"
-          hidden$="[[!isStatus_(pages_.SPINNER, pageStatus_)]]">
+      <div id="[[pageStatusEnum_.SPINNER]]" class="cr-row first cr-padded-text"
+          hidden$="[[!isStatus_(pageStatusEnum_.SPINNER, pageStatus_)]]">
         $i18n{syncLoading}
       </div>
-      <div id="[[pages_.CONFIGURE]]"
-          hidden$="[[!isStatus_(pages_.CONFIGURE, pageStatus_)]]">
+      <div id="[[pageStatusEnum_.CONFIGURE]]"
+          hidden$="[[!isStatus_(pageStatusEnum_.CONFIGURE, pageStatus_)]]">
         <div id="other-sync-items" class="list-frame">
           <cr-link-row id="sync-advanced-row"
               label="$i18n{syncAdvancedPageTitle}"
@@ -134,6 +144,7 @@
 
           <cr-link-row class="hr"
               label="$i18n{personalizeGoogleServicesTitle}"
+              hidden="[[!showActivityControls_()]]"
               on-click="onActivityControlsClick_" external></cr-link-row>
 
           <cr-link-row id="syncDashboardLink" class="hr"
@@ -162,6 +173,7 @@
               opened="[[encryptionExpanded_]]">
             <settings-sync-encryption-options
                 sync-status="[[syncStatus]]" sync-prefs="{{syncPrefs}}"
+                existing-passphrase-label="[[existingPassphraseLabel_]]"
                 on-passphrase-changed="onPassphraseChanged_">
             </settings-sync-encryption-options>
           </iron-collapse>
@@ -179,7 +191,7 @@
         page-visibility="[[pageVisibility]]" sync-status="[[syncStatus]]">
     </settings-personalization-options>
 
-<if expr="not chromeos">
+<if expr="not chromeos_ash">
     <template is="dom-if" if="[[showSetupCancelDialog_]]" restamp>
       <cr-dialog id="setupCancelDialog" on-close="onSetupCancelDialogClose_"
           ignore-popstate>

@@ -1,21 +1,22 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_mediator.h"
 
-#include <vector>
+#import <vector>
 
-#include "base/metrics/user_metrics.h"
-#include "base/strings/sys_string_conversions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
-#include "components/autofill/ios/form_util/form_activity_params.h"
-#include "components/password_manager/core/browser/password_store.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#import "components/password_manager/ios/password_generation_provider.h"
+#import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/password_manager/core/browser/password_manager_client.h"
+#import "components/password_manager/core/browser/password_store_interface.h"
+#import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 #import "ios/chrome/browser/favicon/favicon_loader.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/passwords/password_tab_helper.h"
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_action_cell.h"
@@ -27,11 +28,12 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_list_navigator.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state_observer_bridge.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "ui/gfx/favicon_size.h"
-#include "url/gurl.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "ui/gfx/favicon_size.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -66,7 +68,7 @@ BOOL AreCredentialsAtIndexesConnected(
                                           ManualFillContentInjector,
                                           PasswordFetcherDelegate> {
   // The interface for getting and manipulating a user's saved passwords.
-  scoped_refptr<password_manager::PasswordStore> _passwordStore;
+  scoped_refptr<password_manager::PasswordStoreInterface> _passwordStore;
 }
 
 // The password fetcher to query the user profile.
@@ -97,17 +99,21 @@ BOOL AreCredentialsAtIndexesConnected(
   // Bridge to observe the web state from Objective-C.
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
 
-  // Bridge to observe form activity in |_webState|.
+  // Bridge to observe form activity in `_webState`.
   std::unique_ptr<autofill::FormActivityObserverBridge>
       _formActivityObserverBridge;
+
+  // Origin to fetch passwords for.
+  GURL _URL;
 }
 
 - (instancetype)initWithPasswordStore:
-                    (scoped_refptr<password_manager::PasswordStore>)
+                    (scoped_refptr<password_manager::PasswordStoreInterface>)
                         passwordStore
                         faviconLoader:(FaviconLoader*)faviconLoader
                              webState:(web::WebState*)webState
                           syncService:(SyncSetupService*)syncService
+                                  URL:(const GURL&)URL
                invokedOnPasswordField:(BOOL)invokedOnPasswordField {
   self = [super init];
   if (self) {
@@ -116,6 +122,7 @@ BOOL AreCredentialsAtIndexesConnected(
     _faviconLoader = faviconLoader;
     _webState = webState;
     _syncService = syncService;
+    _URL = URL;
     _activeFieldIsPassword = invokedOnPasswordField;
     _webStateObserverBridge =
         std::make_unique<web::WebStateObserverBridge>(self);
@@ -132,12 +139,12 @@ BOOL AreCredentialsAtIndexesConnected(
   }
 }
 
-- (void)fetchPasswordsForURL:(const GURL&)URL {
+- (void)fetchPasswords {
   self.credentials = @[];
   self.passwordFetcher =
       [[PasswordFetcher alloc] initWithPasswordStore:_passwordStore
                                             delegate:self
-                                                 URL:URL];
+                                                 URL:_URL];
 }
 
 #pragma mark - PasswordFetcherDelegate
@@ -191,7 +198,7 @@ BOOL AreCredentialsAtIndexesConnected(
   }
 }
 
-// Posts the credentials to the consumer. If filtered is |YES| it only post the
+// Posts the credentials to the consumer. If filtered is `YES` it only post the
 // ones associated with the active web state.
 - (void)postCredentialsToConsumer {
   if (!self.consumer) {
@@ -231,8 +238,37 @@ BOOL AreCredentialsAtIndexesConnected(
         [[NSMutableArray alloc] init];
     __weak __typeof(self) weakSelf = self;
 
+    bool useUpdatedStrings = base::FeatureList::IsEnabled(
+        password_manager::features::kIOSPasswordUISplit);
+
+    password_manager::PasswordManagerClient* passwordManagerClient =
+        _webState ? PasswordTabHelper::FromWebState(_webState)
+                        ->GetPasswordManagerClient()
+                  : nullptr;
+    if (_syncService && _syncService->CanSyncFeatureStart() &&
+        passwordManagerClient &&
+        passwordManagerClient->IsSavingAndFillingEnabled(_URL) &&
+        _activeFieldIsPassword) {
+      NSString* suggestPasswordTitleString = l10n_util::GetNSString(
+          useUpdatedStrings
+              ? IDS_IOS_MANUAL_FALLBACK_SUGGEST_STRONG_PASSWORD_WITH_DOTS
+              : IDS_IOS_MANUAL_FALLBACK_SUGGEST_PASSWORD_WITH_DOTS);
+      auto suggestPasswordItem = [[ManualFillActionItem alloc]
+          initWithTitle:suggestPasswordTitleString
+                 action:^{
+                   base::RecordAction(base::UserMetricsAction(
+                       "ManualFallback_Password_OpenSuggestPassword"));
+                   [weakSelf.navigator openPasswordSuggestion];
+                 }];
+      suggestPasswordItem.accessibilityIdentifier =
+          manual_fill::SuggestPasswordAccessibilityIdentifier;
+      [actions addObject:suggestPasswordItem];
+    }
+
     NSString* otherPasswordsTitleString = l10n_util::GetNSString(
-        IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS);
+        useUpdatedStrings
+            ? IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_WITH_DOTS
+            : IDS_IOS_MANUAL_FALLBACK_USE_OTHER_PASSWORD_WITH_DOTS);
     auto otherPasswordsItem = [[ManualFillActionItem alloc]
         initWithTitle:otherPasswordsTitleString
                action:^{
@@ -244,25 +280,11 @@ BOOL AreCredentialsAtIndexesConnected(
         manual_fill::OtherPasswordsAccessibilityIdentifier;
     [actions addObject:otherPasswordsItem];
 
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kEnableManualPasswordGeneration) &&
-        _syncService->IsSyncEnabled() && _activeFieldIsPassword) {
-      NSString* suggestPasswordTitleString = l10n_util::GetNSString(
-          IDS_IOS_MANUAL_FALLBACK_SUGGEST_PASSWORD_WITH_DOTS);
-      auto suggestPasswordItem = [[ManualFillActionItem alloc]
-          initWithTitle:suggestPasswordTitleString
-                 action:^{
-                   base::RecordAction(base::UserMetricsAction(
-                       "ManualFallback_Password_OpenSuggestPassword"));
-                   [weakSelf suggestPassword];
-                 }];
-      suggestPasswordItem.accessibilityIdentifier =
-          manual_fill::SuggestPasswordAccessibilityIdentifier;
-      [actions addObject:suggestPasswordItem];
-    }
-
-    NSString* managePasswordsTitle =
-        l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS);
+    // TODO(crbug.com/1361357) Remove IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS
+    // after kIOSPasswordUISplit is on by default.
+    NSString* managePasswordsTitle = l10n_util::GetNSString(
+        useUpdatedStrings ? IDS_IOS_MANUAL_FALLBACK_MANAGE_SETTINGS
+                          : IDS_IOS_MANUAL_FALLBACK_MANAGE_PASSWORDS);
     auto managePasswordsItem = [[ManualFillActionItem alloc]
         initWithTitle:managePasswordsTitle
                action:^{
@@ -275,17 +297,6 @@ BOOL AreCredentialsAtIndexesConnected(
     [actions addObject:managePasswordsItem];
 
     [self.consumer presentActions:actions];
-  }
-}
-
-- (void)suggestPassword {
-  if ([self canUserInjectInPasswordField:YES requiresHTTPS:NO]) {
-    DCHECK(_webState);
-    id<PasswordGenerationProvider> generationProvider =
-        PasswordTabHelper::FromWebState(_webState)
-            ->GetPasswordGenerationProvider();
-    if (generationProvider)
-      [generationProvider triggerPasswordGeneration];
   }
 }
 
@@ -318,10 +329,10 @@ BOOL AreCredentialsAtIndexesConnected(
 
 #pragma mark - TableViewFaviconDataSource
 
-- (void)faviconForURL:(const GURL&)URL
+- (void)faviconForURL:(CrURL*)URL
            completion:(void (^)(FaviconAttributes*))completion {
   DCHECK(completion);
-  self.faviconLoader->FaviconForPageUrlOrHost(URL, gfx::kFaviconSize,
+  self.faviconLoader->FaviconForPageUrlOrHost(URL.gurl, gfx::kFaviconSize,
                                               completion);
 }
 

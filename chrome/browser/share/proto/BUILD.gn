@@ -1,0 +1,19 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  sources = [
+    "share_history_message.proto",
+    "share_ranking_message.proto",
+    "share_target.proto",
+  ]
+  cc_generator_options = "lite=true:"
+}
+
+proto_library("crow_proto") {
+  sources = [ "crow_configuration.proto" ]
+  cc_generator_options = "lite=true:"
+}

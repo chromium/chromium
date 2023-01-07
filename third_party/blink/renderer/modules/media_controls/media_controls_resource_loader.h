@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,14 +42,17 @@ class MediaControlsResourceLoader
   String GetUAStyleSheet() override;
 
   MediaControlsResourceLoader();
+
+  MediaControlsResourceLoader(const MediaControlsResourceLoader&) = delete;
+  MediaControlsResourceLoader& operator=(const MediaControlsResourceLoader&) =
+      delete;
+
   ~MediaControlsResourceLoader() override;
 
  private:
   String GetMediaControlsCSS() const;
 
   String GetMediaControlsAndroidCSS() const;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControlsResourceLoader);
 };
 
 }  // namespace blink

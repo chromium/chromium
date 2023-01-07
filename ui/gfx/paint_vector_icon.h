@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,10 +80,6 @@ GFX_EXPORT ImageSkia CreateVectorIconFromSource(const std::string& source,
                                                 int dip_size,
                                                 SkColor color);
 #endif
-
-// Calculates the size that will be default for |icon|, in dip. This will be the
-// smallest icon size |icon| contains.
-GFX_EXPORT int GetDefaultSizeOfVectorIcon(const gfx::VectorIcon& icon);
 
 }  // namespace gfx
 

@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_METRICS_FIRST_USER_ACTION_RECORDER_H_
 #define IOS_CHROME_BROWSER_METRICS_FIRST_USER_ACTION_RECORDER_H_
 
+#include <string>
 #include <vector>
 
 #include "base/cancelable_callback.h"
@@ -26,7 +27,7 @@ extern const char* kFirstUserActionContinuationHistogramName[];
 extern const char* kFirstUserActionExpirationHistogramName[];
 
 // The name of the histogram to plot the type of first user action (see
-// |FirstUserActionType|).
+// `FirstUserActionType`).
 extern const char* kFirstUserActionTypeHistogramName[];
 
 // Since it logs user actions while it exists, it should only be instantiated
@@ -46,6 +47,10 @@ class FirstUserActionRecorder {
   };
 
   explicit FirstUserActionRecorder(base::TimeDelta background_duration);
+
+  FirstUserActionRecorder(const FirstUserActionRecorder&) = delete;
+  FirstUserActionRecorder& operator=(const FirstUserActionRecorder&) = delete;
+
   virtual ~FirstUserActionRecorder();
 
   // Records that no applicable user action occurred.
@@ -55,7 +60,7 @@ class FirstUserActionRecorder {
   void RecordStartOnNTP();
 
  private:
-  // Records metrics if |action_name| indicates the start of a new task or the
+  // Records metrics if `action_name` indicates the start of a new task or the
   // continuation of an existing task.
   void OnUserAction(const std::string& action_name,
                     base::TimeTicks action_time);
@@ -94,8 +99,6 @@ class FirstUserActionRecorder {
   // A potential action that needs to be confirmed if there is no other relevant
   // action.
   base::CancelableOnceClosure rethrow_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FirstUserActionRecorder);
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_FIRST_USER_ACTION_RECORDER_H_

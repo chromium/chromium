@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_SANDBOX_SUPPORT_MAC_IMPL_H_
 #define CONTENT_BROWSER_SANDBOX_SUPPORT_MAC_IMPL_H_
 
-#include "base/macros.h"
 #include "content/common/sandbox_support_mac.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -20,6 +19,10 @@ namespace content {
 class SandboxSupportMacImpl : public mojom::SandboxSupportMac {
  public:
   SandboxSupportMacImpl();
+
+  SandboxSupportMacImpl(const SandboxSupportMacImpl&) = delete;
+  SandboxSupportMacImpl& operator=(const SandboxSupportMacImpl&) = delete;
+
   ~SandboxSupportMacImpl() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::SandboxSupportMac> receiver);
@@ -32,8 +35,6 @@ class SandboxSupportMacImpl : public mojom::SandboxSupportMac {
 
  private:
   mojo::ReceiverSet<mojom::SandboxSupportMac> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxSupportMacImpl);
 };
 
 }  // namespace content

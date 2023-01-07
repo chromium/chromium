@@ -69,4 +69,4 @@ inline void PrintTo(const CSSPrimitiveValue& cssValue,
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_TEST_HELPER_H_

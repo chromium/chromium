@@ -1,0 +1,17 @@
+caption: Allow Google Assistant to listen for the voice activation phrase
+desc: |-
+  Setting the policy to Enabled lets Google Assistant listen for the voice activation phrase. Setting the policy to Disabled keeps Google Assistant from listening for the phrase.
+
+        Leaving the policy unset lets users decide to turn this feature on or off.
+example_value: true
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- yanxiao@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:74-
+tags: []
+type: main

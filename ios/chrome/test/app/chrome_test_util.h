@@ -1,14 +1,13 @@
-
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_TEST_APP_CHROME_TEST_UTIL_H_
 #define IOS_CHROME_TEST_APP_CHROME_TEST_UTIL_H_
 
-#include "base/compiler_specific.h"
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 
 @protocol ApplicationCommands;
 class Browser;
@@ -48,12 +47,13 @@ Browser* GetMainBrowser();
 UIViewController* GetActiveViewController();
 
 // Returns the dispatcher for the active Browser.
-id<ApplicationCommands, BrowserCommands> HandlerForActiveBrowser();
+id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands>
+HandlerForActiveBrowser();
 
 // Removes all presented infobars.
 void RemoveAllInfoBars();
 
-// Dismisses all presented views and modal dialogs. |completion| is invoked when
+// Dismisses all presented views and modal dialogs. `completion` is invoked when
 // all the views are dismissed.
 void ClearPresentedState(ProceduralBlock completion);
 
@@ -66,11 +66,10 @@ void SetBooleanUserPref(ChromeBrowserState* browser_state,
                         const char* pref_name,
                         bool value);
 
-// Sets the state of using cellular network.
-void SetWWANStateTo(bool value);
-
-// Sets the state of first launch.
-void SetFirstLaunchStateTo(bool value);
+// Sets the value of an integer user pref in the given browser state.
+void SetIntegerUserPref(ChromeBrowserState* browser_state,
+                        const char* pref_name,
+                        int value);
 
 // Checks whether metrics recording is enabled or not.
 bool IsMetricsRecordingEnabled();
@@ -78,17 +77,11 @@ bool IsMetricsRecordingEnabled();
 // Checks whether metrics reporting is enabled or not.
 bool IsMetricsReportingEnabled();
 
-// Checks whether breakpad recording is enabled or not.
-bool IsBreakpadEnabled();
+// Checks whether crashpad recording is enabled or not.
+bool IsCrashpadEnabled();
 
-// Checks whether breakpad reporting is enabled or not.
-bool IsBreakpadReportingEnabled();
-
-// Checks whether this is the first launch after upgrade or not.
-bool IsFirstLaunchAfterUpgrade();
-
-// Waits for Breakpad to process the queued updates.
-void WaitForBreakpadQueue();
+// Checks whether crashpad reporting is enabled or not.
+bool IsCrashpadReportingEnabled();
 
 // Simulates launching Chrome from another application.
 void OpenChromeFromExternalApp(const GURL& url);
@@ -97,7 +90,7 @@ void OpenChromeFromExternalApp(const GURL& url);
 // cached page. Browsers don't have to use fresh version for back forward
 // navigation for HTTP pages and may serve version from the cache even if
 // Cache-Control response header says otherwise.
-bool PurgeCachedWebViewPages() WARN_UNUSED_RESULT;
+[[nodiscard]] bool PurgeCachedWebViewPages();
 
 }  // namespace chrome_test_util
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 
 //! \file
 
+#include <tuple>
+
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "util/misc/initialization_state.h"
 
@@ -65,6 +65,10 @@ class InitializationStateDcheck : public InitializationState {
  public:
   InitializationStateDcheck() : InitializationState() {}
 
+  InitializationStateDcheck(const InitializationStateDcheck&) = delete;
+  InitializationStateDcheck& operator=(const InitializationStateDcheck&) =
+      delete;
+
   //! \brief Returns the object’s state.
   //!
   //! Consumers of this class should not call this method. Use the
@@ -99,9 +103,6 @@ class InitializationStateDcheck : public InitializationState {
   //! Consumers of this class should not call this method. Use the
   //! INITIALIZATION_STATE_SET_VALID() macro instead.
   State SetValid();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InitializationStateDcheck);
 };
 
 // Using macros enables the non-DCHECK no-op implementation below to be more
@@ -175,11 +176,17 @@ using InitializationStateDcheck = bool[0];
 // Avoid triggering warnings by repurposing these macros when DCHECKs are
 // disabled.
 #define INITIALIZATION_STATE_SET_INITIALIZING(initialization_state_dcheck) \
-  ALLOW_UNUSED_LOCAL(initialization_state_dcheck)
+  do {                                                                     \
+    std::ignore = initialization_state_dcheck;                             \
+  } while (false)
 #define INITIALIZATION_STATE_SET_VALID(initialization_state_dcheck) \
-  ALLOW_UNUSED_LOCAL(initialization_state_dcheck)
+  do {                                                              \
+    std::ignore = initialization_state_dcheck;                      \
+  } while (false)
 #define INITIALIZATION_STATE_DCHECK_VALID(initialization_state_dcheck) \
-  ALLOW_UNUSED_LOCAL(initialization_state_dcheck)
+  do {                                                                 \
+    std::ignore = initialization_state_dcheck;                         \
+  } while (false)
 
 #endif
 

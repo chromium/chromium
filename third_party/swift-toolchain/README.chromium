@@ -1,0 +1,18 @@
+Name: Swift toolchain
+Short Name: swift-toolchain
+URL: https://www.swift.org/download/
+Version: 5.7
+Date: 2022 September 12
+License: Apache 2.0
+License File: LICENSE
+Security Critical: no
+
+Description:
+Compile all Swift with a consistent toolchain
+
+This represents the latest release toolchain from swift.org. Any bugs
+should be reported via their github. 
+
+The mac distribution is a universal binary for arm and x86. The linux
+distribution is for goma. 
+

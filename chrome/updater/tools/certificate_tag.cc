@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ static constexpr uint16_t kAttributeCertificateRevision = 0x200;
 static constexpr uint16_t kAttributeCertificateTypePKCS7SignedData = 2;
 
 // static
-base::Optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
+absl::optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
   // Parse establishes some offsets into |binary| for structures that |GetTag|
   // and |SetTag| will both need.
 
@@ -84,7 +84,7 @@ base::Optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
       !CBS_get_bytes(&bin_for_header, &optional_header,
                      size_of_optional_header) ||
       !CBS_get_u16le(&optional_header, &optional_header_magic)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   size_t address_size = 0, extra_header_bytes = 0;
@@ -98,7 +98,7 @@ base::Optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
       extra_header_bytes = 4;
       break;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 
   // Skip the Windows-specific header section up until the number of data
@@ -120,14 +120,14 @@ base::Optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
       !CBS_get_u32le(&optional_header, &cert_entry_size) ||
       size_t{cert_entry_virtual_addr} + cert_entry_size < cert_entry_size ||
       size_t{cert_entry_virtual_addr} + cert_entry_size != CBS_len(&bin)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   CBS bin_for_certs = bin;
   CBS certs;
   if (!CBS_skip(&bin_for_certs, cert_entry_virtual_addr) ||
       !CBS_get_bytes(&bin_for_certs, &certs, cert_entry_size)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // See the WIN_CERTIFICATE structure from
@@ -142,7 +142,7 @@ base::Optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
       !CBS_get_u16le(&certs, &certs_type) ||
       certs_type != kAttributeCertificateTypePKCS7SignedData ||
       !CBS_get_asn1_element(&certs, &signed_data, CBS_ASN1_SEQUENCE)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   Binary ret;
@@ -158,7 +158,7 @@ base::Optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
       !CBS_get_u32le(&bin_for_check, &cert_entry_size_duplicate) ||
       cert_entry_size_duplicate != cert_entry_size) {
     NOTREACHED();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   ret.binary_ = binary;
@@ -166,12 +166,12 @@ base::Optional<Binary> Binary::Parse(base::span<const uint8_t> binary) {
   ret.attr_cert_offset_ = cert_entry_virtual_addr;
 
   if (!ret.ParseTag())
-    return base::nullopt;
+    return absl::nullopt;
 
   return ret;
 }
 
-const base::Optional<base::span<const uint8_t>>& Binary::tag() const {
+const absl::optional<base::span<const uint8_t>>& Binary::tag() const {
   return tag_;
 }
 
@@ -204,7 +204,7 @@ static bool CopyASN1(CBB* out, CBS* in) {
          CBB_add_bytes(out, CBS_data(&element), CBS_len(&element)) == 1;
 }
 
-base::Optional<std::vector<uint8_t>> Binary::SetTag(
+absl::optional<std::vector<uint8_t>> Binary::SetTag(
     base::span<const uint8_t> tag) const {
   bssl::ScopedCBB cbb;
   if (!CBB_init(cbb.get(), binary_.size() + 1024) ||
@@ -216,7 +216,7 @@ base::Optional<std::vector<uint8_t>> Binary::SetTag(
       !CBB_add_u32(cbb.get(), 0 /* Length. Filled in later. */) ||
       !CBB_add_u16le(cbb.get(), kAttributeCertificateRevision) ||
       !CBB_add_u16le(cbb.get(), kAttributeCertificateTypePKCS7SignedData)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Walk the PKCS SignedData structure from the input and copy elements to the
@@ -246,7 +246,7 @@ base::Optional<std::vector<uint8_t>> Binary::SetTag(
                     0 | CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC) ||
       !CBB_add_asn1(&pkcs7_cbb, &certs_cbb,
                     0 | CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Copy the certificates from the input to the output, potentially omitting
@@ -258,7 +258,7 @@ base::Optional<std::vector<uint8_t>> Binary::SetTag(
     if ((have_last_cert && !CBB_add_bytes(&certs_cbb, CBS_data(&last_cert),
                                           CBS_len(&last_cert))) ||
         !CBS_get_asn1_element(&certs, &last_cert, CBS_ASN1_SEQUENCE)) {
-      return base::nullopt;
+      return absl::nullopt;
     }
     have_last_cert = true;
   }
@@ -268,7 +268,7 @@ base::Optional<std::vector<uint8_t>> Binary::SetTag(
   // it.
   if (!tag_.has_value() &&
       !CBB_add_bytes(&certs_cbb, CBS_data(&last_cert), CBS_len(&last_cert))) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // These values are DER-encoded OIDs needed in the X.509 certificate that's
@@ -359,17 +359,19 @@ base::Optional<std::vector<uint8_t>> Binary::SetTag(
       // Copy signerInfos from the input PKCS#7 structure.
       !CopyASN1(&pkcs7_cbb, &pkcs7) || CBS_len(&pkcs7) != 0 ||
       !CBB_finish(cbb.get(), &cbb_data, &cbb_len)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
-  // Copy the CBB result into a std::vector.
+  // Copy the CBB result into a std::vector, padding to 8-byte alignment.
   std::vector<uint8_t> ret;
-  ret.reserve(cbb_len);
+  const size_t padding = (8 - cbb_len % 8) % 8;
+  ret.reserve(cbb_len + padding);
   ret.insert(ret.begin(), cbb_data, cbb_data + cbb_len);
+  ret.insert(ret.end(), padding, 0);
   OPENSSL_free(cbb_data);
 
   // Inject the updated length in a couple of places:
-  const uint32_t certs_size = cbb_len - attr_cert_offset_;
+  const uint32_t certs_size = cbb_len + padding - attr_cert_offset_;
   //   1) The |IMAGE_DATA_DIRECTORY| structure that delineates the
   //      |WIN_CERTIFICATE| structure.
   memcpy(&ret[certs_size_offset_], &certs_size, sizeof(certs_size));
@@ -442,13 +444,11 @@ bool Binary::ParseTag() {
       // subjectPublicKeyInfo
       !CBS_get_asn1(&tbs_cert, nullptr, CBS_ASN1_SEQUENCE) ||
       // issuerUniqueID
-      !CBS_get_optional_asn1(
-          &tbs_cert, nullptr, nullptr,
-          CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 1) ||
+      !CBS_get_optional_asn1(&tbs_cert, nullptr, nullptr,
+                             CBS_ASN1_CONTEXT_SPECIFIC | 1) ||
       // subjectUniqueID
-      !CBS_get_optional_asn1(
-          &tbs_cert, nullptr, nullptr,
-          CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 2) ||
+      !CBS_get_optional_asn1(&tbs_cert, nullptr, nullptr,
+                             CBS_ASN1_CONTEXT_SPECIFIC | 2) ||
       !CBS_get_optional_asn1(
           &tbs_cert, &outer_extensions, &has_extensions,
           CBS_ASN1_CONSTRUCTED | CBS_ASN1_CONTEXT_SPECIFIC | 3)) {

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,14 @@ class AppSourceUrlRecorderTest : public testing::Test {
   }
 
  protected:
+  SourceId GetSourceIdForChromeApp(const std::string& app_id) {
+    return AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
+  }
+
+  SourceId GetSourceIdForArcPackageName(const std::string& package_name) {
+    return AppSourceUrlRecorder::GetSourceIdForArcPackageName(package_name);
+  }
+
   SourceId GetSourceIdForArc(const std::string& package_name) {
     return AppSourceUrlRecorder::GetSourceIdForArc(package_name);
   }
@@ -28,10 +36,49 @@ class AppSourceUrlRecorderTest : public testing::Test {
     return AppSourceUrlRecorder::GetSourceIdForPWA(url);
   }
 
+  SourceId GetSourceIdForBorealis(const std::string& app) {
+    return AppSourceUrlRecorder::GetSourceIdForBorealis(app);
+  }
+
+  SourceId GetSourceIdForCrostini(const std::string& desktop_id,
+                                  const std::string& app_name) {
+    return AppSourceUrlRecorder::GetSourceIdForCrostini(desktop_id, app_name);
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   TestAutoSetUkmRecorder test_ukm_recorder_;
 };
+
+TEST_F(AppSourceUrlRecorderTest, CheckChromeApp) {
+  const std::string app_id = "unique_app_id";
+  SourceId id = GetSourceIdForChromeApp(app_id);
+  GURL expected_url("app://" + app_id);
+
+  const auto& sources = test_ukm_recorder_.GetSources();
+  ASSERT_EQ(1ul, sources.size());
+
+  ASSERT_NE(kInvalidSourceId, id);
+  auto it = sources.find(id);
+  ASSERT_NE(sources.end(), it);
+  EXPECT_EQ(expected_url, it->second->url());
+  EXPECT_EQ(1u, it->second->urls().size());
+}
+
+TEST_F(AppSourceUrlRecorderTest, CheckArcPackageName) {
+  const std::string package_name = "com.google.play";
+  SourceId id = GetSourceIdForArcPackageName(package_name);
+  GURL expected_url("app://" + package_name);
+
+  const auto& sources = test_ukm_recorder_.GetSources();
+  ASSERT_EQ(1ul, sources.size());
+
+  ASSERT_NE(kInvalidSourceId, id);
+  auto it = sources.find(id);
+  ASSERT_NE(sources.end(), it);
+  EXPECT_EQ(expected_url, it->second->url());
+  EXPECT_EQ(1u, it->second->urls().size());
+}
 
 TEST_F(AppSourceUrlRecorderTest, CheckArc) {
   SourceId id = GetSourceIdForArc("com.google.play");
@@ -60,6 +107,37 @@ TEST_F(AppSourceUrlRecorderTest, CheckPWA) {
   auto it = sources.find(id);
   ASSERT_NE(sources.end(), it);
   EXPECT_EQ(url, it->second->url());
+  EXPECT_EQ(1u, it->second->urls().size());
+}
+
+TEST_F(AppSourceUrlRecorderTest, CheckBorealis) {
+  GURL expected_url("app://borealis/123");
+  SourceId id = GetSourceIdForBorealis("123");
+
+  const auto& sources = test_ukm_recorder_.GetSources();
+  ASSERT_EQ(1ul, sources.size());
+
+  ASSERT_NE(kInvalidSourceId, id);
+  auto it = sources.find(id);
+  ASSERT_NE(sources.end(), it);
+  EXPECT_EQ(expected_url, it->second->url());
+  EXPECT_EQ(1u, it->second->urls().size());
+}
+
+TEST_F(AppSourceUrlRecorderTest, CheckCrostini) {
+  // Typically a desktop ID won't use much besides [a-zA-Z0-9.-] but it's
+  // untrusted user-supplied data so make sure it's all escaped anyway.
+  std::string desktop_id("I-💖.unicode!\nUnd der Eisbär?");
+  GURL expected_url("app://I-💖.unicode!\nUnd der Eisbär?/Name");
+  SourceId id = GetSourceIdForCrostini(desktop_id, "Name");
+
+  const auto& sources = test_ukm_recorder_.GetSources();
+  ASSERT_EQ(1ul, sources.size());
+
+  ASSERT_NE(kInvalidSourceId, id);
+  auto it = sources.find(id);
+  ASSERT_NE(sources.end(), it);
+  EXPECT_EQ(expected_url, it->second->url());
   EXPECT_EQ(1u, it->second->urls().size());
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ Vector<String> InternalsFetch::getInternalResponseURLList(Internals& internals,
   if (!response)
     return Vector<String>();
   Vector<String> url_list;
-  url_list.ReserveCapacity(response->InternalURLList().size());
+  url_list.reserve(response->InternalURLList().size());
   for (const auto& url : response->InternalURLList())
     url_list.push_back(url);
   return url_list;

@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2017 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,8 +22,8 @@ SRC_DIR = os.path.normpath(os.path.join(THIS_DIR, '..', '..', '..', '..'))
 ROOT_CERT_LIST_PATH = 'net/cert/root_cert_list_generated.h'
 ROOT_STORE_FILE_PATH = 'net/data/ssl/root_stores/root_stores.json'
 
-LICENSE_AND_HEADER = """\
-// Copyright 2017 The Chromium Authors. All rights reserved.
+LICENSE_AND_HEADER = b"""\
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -57,7 +57,7 @@ const struct RootCertData {
 } kRootCerts[] = {
 """
 
-FOOTER = """\
+FOOTER = b"""\
 
 };
 
@@ -93,8 +93,9 @@ def main():
       cpp_str = ''.join('0x{:02X}, '.format(x) for x in bytearray.fromhex(spki))
       log_id = int(data['id'])
       legacy = 'legacy' in data and data['legacy']
-      header_file.write('{ { %s },\n%d, %s }, ' %
-                        (cpp_str, log_id, "true" if legacy else "false"))
+      header_file.write(
+          ('{ { %s },\n%d, %s }, ' %
+           (cpp_str, log_id, "true" if legacy else "false")).encode('utf-8'))
 
     header_file.write(FOOTER)
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,11 +20,11 @@ using base::sequence_manager::FakeTask;
 using base::sequence_manager::FakeTaskTiming;
 
 base::TimeTicks Seconds(int seconds) {
-  return base::TimeTicks() + base::TimeDelta::FromSeconds(seconds);
+  return base::TimeTicks() + base::Seconds(seconds);
 }
 
 base::ThreadTicks ThreadSeconds(int seconds) {
-  return base::ThreadTicks() + base::TimeDelta::FromSeconds(seconds);
+  return base::ThreadTicks() + base::Seconds(seconds);
 }
 
 }  // namespace

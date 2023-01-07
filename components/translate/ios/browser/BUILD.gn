@@ -1,30 +1,38 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/web/js_compile.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("browser") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "ios_translate_driver.h",
     "ios_translate_driver.mm",
-    "js_translate_manager.h",
-    "js_translate_manager.mm",
+    "js_translate_web_frame_manager.h",
+    "js_translate_web_frame_manager.mm",
+    "js_translate_web_frame_manager_factory.h",
+    "js_translate_web_frame_manager_factory.mm",
     "language_detection_controller.h",
     "language_detection_controller.mm",
+    "language_detection_model_service.h",
+    "language_detection_model_service.mm",
     "string_clipping_util.cc",
     "string_clipping_util.h",
     "translate_controller.h",
     "translate_controller.mm",
+    "translate_java_script_feature.h",
+    "translate_java_script_feature.mm",
   ]
 
   deps = [
     ":injected_js",
     "//base",
+    "//components/keyed_service/core",
     "//components/language/ios/browser",
     "//components/prefs",
     "//components/translate/core/browser",
+    "//components/translate/core/browser:translate_model_service",
     "//components/translate/core/common",
     "//components/translate/core/language_detection",
     "//components/ukm/ios:ukm_url_recorder",
@@ -39,14 +47,14 @@ source_set("browser") {
   ]
 }
 
-js_compile_checked("injected_js") {
+optimize_js("injected_js") {
   visibility = [ ":browser" ]
+  primary_script = "resources/translate_ios.js"
   sources = [ "resources/translate_ios.js" ]
 
-  js_modules = [
-    "//ios/web/web_state/js/resources/base.js",
-    "//ios/web/web_state/js/resources/common.js",
-    "//ios/web/js_messaging/resources/message.js",
+  deps = [
+    "//ios/web/public/js_messaging:gcrweb",
+    "//ios/web/public/js_messaging:util_scripts",
   ]
 }
 
@@ -54,7 +62,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "js_translate_manager_unittest.mm",
+    "js_translate_web_frame_manager_unittest.mm",
     "string_clipping_util_unittest.cc",
     "translate_controller_unittest.mm",
   ]
@@ -65,7 +73,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/language/ios/browser",
     "//components/resources",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//testing/gtest",
     "//ui/base",
     "//url",

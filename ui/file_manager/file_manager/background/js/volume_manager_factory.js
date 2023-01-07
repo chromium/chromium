@@ -1,17 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @fileoverview
- * @suppress {uselessCode} Temporary suppress because of the line exporting.
- */
+import {VolumeManager} from '../../externs/volume_manager.js';
 
-// #import {VolumeManagerImpl} from './volume_manager_impl.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
+import {VolumeManagerImpl} from './volume_manager_impl.js';
 
-// eslint-disable-next-line no-var
-var volumeManagerFactory = (() => {
+const volumeManagerFactory = (() => {
   /**
    * The singleton instance of VolumeManager. Initialized by the first
    * invocation of getInstance().
@@ -61,9 +56,8 @@ var volumeManagerFactory = (() => {
   return {
     getInstance: getInstance,
     getInstanceForDebug: getInstanceForDebug,
-    revokeInstanceForTesting: revokeInstanceForTesting
+    revokeInstanceForTesting: revokeInstanceForTesting,
   };
 })();
 
-// eslint-disable-next-line semi,no-extra-semi
-/* #export */ {volumeManagerFactory};
+export {volumeManagerFactory};

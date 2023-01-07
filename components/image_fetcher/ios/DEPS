@@ -3,5 +3,5 @@ include_rules = [
   "+ui/gfx",
 
   # Only WebP decoding is allowed (no encoding).
-  "+third_party/libwebp/src/webp/decode.h",
+  "+third_party/libwebp/src/src/webp/decode.h",
 ]

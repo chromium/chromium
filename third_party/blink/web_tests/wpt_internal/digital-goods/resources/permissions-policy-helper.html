@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <script type="module">
+    import './mock-digital-goods-service.js';
+
+    window.addEventListener('load', async () => {
+      try {
+        await window.getDigitalGoodsService('https://example.com/billing');
+        window.parent.postMessage({ type: 'availability-result', enabled: true }, '*');
+      } catch (error) {
+        window.parent.postMessage({ type: 'availability-result', enabled: false }, '*');
+      }
+    }, { once: true });
+  </script>
+</body>
+</html>

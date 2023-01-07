@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/locks/lock_manager.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -21,35 +23,26 @@ const char* kLockModeNameExclusive = "exclusive";
 const char* kLockModeNameShared = "shared";
 }  // namespace
 
-class Lock::ThenFunction final : public ScriptFunction {
+class Lock::ThenFunction final : public ScriptFunction::Callable {
  public:
   enum ResolveType {
-    Fulfilled,
-    Rejected,
+    kFulfilled,
+    kRejected,
   };
 
-  static v8::Local<v8::Function> CreateFunction(ScriptState* script_state,
-                                                Lock* lock,
-                                                ResolveType type) {
-    ThenFunction* self =
-        MakeGarbageCollected<ThenFunction>(script_state, lock, type);
-    return self->BindToV8Function();
-  }
-
-  ThenFunction(ScriptState* script_state, Lock* lock, ResolveType type)
-      : ScriptFunction(script_state), lock_(lock), resolve_type_(type) {}
+  ThenFunction(Lock* lock, ResolveType type)
+      : lock_(lock), resolve_type_(type) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(lock_);
-    ScriptFunction::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
   }
 
- private:
-  ScriptValue Call(ScriptValue value) override {
+  ScriptValue Call(ScriptState*, ScriptValue value) override {
     DCHECK(lock_);
-    DCHECK(resolve_type_ == Fulfilled || resolve_type_ == Rejected);
+    DCHECK(resolve_type_ == kFulfilled || resolve_type_ == kRejected);
     lock_->ReleaseIfHeld();
-    if (resolve_type_ == Fulfilled)
+    if (resolve_type_ == kFulfilled)
       lock_->resolver_->Resolve(value);
     else
       lock_->resolver_->Reject(value);
@@ -57,6 +50,7 @@ class Lock::ThenFunction final : public ScriptFunction {
     return value;
   }
 
+ private:
   Member<Lock> lock_;
   ResolveType resolve_type_;
 };
@@ -78,7 +72,7 @@ Lock::Lock(ScriptState* script_state,
   handle_.Bind(std::move(handle), task_runner);
   lock_lifetime_.Bind(std::move(lock_lifetime), task_runner);
   handle_.set_disconnect_handler(
-      WTF::Bind(&Lock::OnConnectionError, WrapWeakPersistent(this)));
+      WTF::BindOnce(&Lock::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 Lock::~Lock() = default;
@@ -88,14 +82,22 @@ String Lock::mode() const {
 }
 
 void Lock::HoldUntil(ScriptPromise promise, ScriptPromiseResolver* resolver) {
-  DCHECK(handle_.is_bound());
   DCHECK(!resolver_);
+
+  // Note that it is possible for the ExecutionContext that this Lock lives in
+  // to have already been destroyed by the time this method is called. In that
+  // case `handle_` will have been reset, and the lock would have already been
+  // released. This is harmless, as nothing in this class uses `handle_` without
+  // first making sure it is still bound.
 
   ScriptState* script_state = resolver->GetScriptState();
   resolver_ = resolver;
-  promise.Then(
-      ThenFunction::CreateFunction(script_state, this, ThenFunction::Fulfilled),
-      ThenFunction::CreateFunction(script_state, this, ThenFunction::Rejected));
+  promise.Then(MakeGarbageCollected<ScriptFunction>(
+                   script_state, MakeGarbageCollected<ThenFunction>(
+                                     this, ThenFunction::kFulfilled)),
+               MakeGarbageCollected<ScriptFunction>(
+                   script_state, MakeGarbageCollected<ThenFunction>(
+                                     this, ThenFunction::kRejected)));
 }
 
 // static
@@ -121,6 +123,9 @@ String Lock::ModeToString(mojom::blink::LockMode mode) {
 }
 
 void Lock::ContextDestroyed() {
+  // This is kind of redundant, as `handle_` will reset itself as well when the
+  // context is destroyed, thereby releasing the lock. Explicitly releasing here
+  // as well doesn't hurt though.
   ReleaseIfHeld();
 }
 
@@ -146,9 +151,21 @@ void Lock::ReleaseIfHeld() {
 }
 
 void Lock::OnConnectionError() {
+  DCHECK(resolver_);
+
   ReleaseIfHeld();
-  resolver_->Reject(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kAbortError,
+
+  ScriptState* const script_state = resolver_->GetScriptState();
+
+  if (!IsInParallelAlgorithmRunnable(resolver_->GetExecutionContext(),
+                                     script_state)) {
+    return;
+  }
+
+  ScriptState::Scope script_state_scope(script_state);
+
+  resolver_->Reject(V8ThrowDOMException::CreateOrDie(
+      script_state->GetIsolate(), DOMExceptionCode::kAbortError,
       "Lock broken by another request with the 'steal' option."));
 }
 

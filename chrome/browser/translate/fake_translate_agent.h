@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,13 @@
 #include <utility>
 #include <vector>
 
-#include "base/optional.h"
 #include "build/build_config.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/translate/translate_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "components/translate/content/browser/content_translate_driver.h"
@@ -39,11 +38,16 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class FakeTranslateAgent : public translate::mojom::TranslateAgent {
  public:
   FakeTranslateAgent();
+
+  FakeTranslateAgent(const FakeTranslateAgent&) = delete;
+  FakeTranslateAgent& operator=(const FakeTranslateAgent&) = delete;
+
   ~FakeTranslateAgent() override;
 
   // TODO(crbug.com/1064974) Remove with subframe translation launch.
@@ -63,13 +67,13 @@ class FakeTranslateAgent : public translate::mojom::TranslateAgent {
   void PageTranslated(bool cancelled,
                       const std::string& source_lang,
                       const std::string& target_lang,
-                      translate::TranslateErrors::Type error);
+                      translate::TranslateErrors error);
 
   void BindRequest(mojo::ScopedInterfaceEndpointHandle handle);
 
   bool called_translate_;
-  base::Optional<std::string> source_lang_;
-  base::Optional<std::string> target_lang_;
+  absl::optional<std::string> source_lang_;
+  absl::optional<std::string> target_lang_;
   bool called_revert_translation_;
   std::string next_page_lang_;
   bool next_page_translatable_;
@@ -80,7 +84,6 @@ class FakeTranslateAgent : public translate::mojom::TranslateAgent {
   mojo::Receiver<translate::mojom::TranslateAgent> receiver_{this};
   mojo::AssociatedReceiverSet<translate::mojom::TranslateAgent>
       per_frame_translate_agent_receivers_;
-  DISALLOW_COPY_AND_ASSIGN(FakeTranslateAgent);
 };
 
 #endif  // CHROME_BROWSER_TRANSLATE_FAKE_TRANSLATE_AGENT_H_

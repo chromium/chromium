@@ -1,33 +1,119 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/viz/service/frame_sinks/compositor_frame_sink_impl.h"
 
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/flat_set.h"
+#include "base/threading/platform_thread.h"
+#include "build/build_config.h"
+#include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "ui/gfx/overlay_transform.h"
 
 namespace viz {
 
+namespace {
+
+// Helper class which implements the CompositorFrameSinkClient interface so it
+// can route CompositorFrameSinkSupport client messages to a local
+// FrameSinkBundleImpl for batching, rather than having them go directly to the
+// remote client.
+class BundleClientProxy : public mojom::CompositorFrameSinkClient {
+ public:
+  BundleClientProxy(FrameSinkManagerImpl& manager,
+                    FrameSinkId frame_sink_id,
+                    FrameSinkBundleId bundle_id)
+      : manager_(manager),
+        frame_sink_id_(frame_sink_id),
+        bundle_id_(bundle_id) {}
+
+  BundleClientProxy(const BundleClientProxy&) = delete;
+  BundleClientProxy& operator=(const BundleClientProxy&) = delete;
+  ~BundleClientProxy() override = default;
+
+  // mojom::CompositorFrameSinkClient implementation:
+  void DidReceiveCompositorFrameAck(
+      std::vector<ReturnedResource> resources) override {
+    if (auto* bundle = GetBundle()) {
+      bundle->EnqueueDidReceiveCompositorFrameAck(frame_sink_id_.sink_id(),
+                                                  std::move(resources));
+    }
+  }
+
+  void OnBeginFrame(const BeginFrameArgs& args,
+                    const FrameTimingDetailsMap& timing_details) override {
+    if (auto* bundle = GetBundle()) {
+      bundle->EnqueueOnBeginFrame(frame_sink_id_.sink_id(), args,
+                                  timing_details);
+    }
+  }
+
+  void ReclaimResources(std::vector<ReturnedResource> resources) override {
+    if (auto* bundle = GetBundle()) {
+      bundle->EnqueueReclaimResources(frame_sink_id_.sink_id(),
+                                      std::move(resources));
+    }
+  }
+
+  void OnBeginFramePausedChanged(bool paused) override {
+    if (auto* bundle = GetBundle()) {
+      bundle->SendOnBeginFramePausedChanged(frame_sink_id_.sink_id(), paused);
+    }
+  }
+
+  void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) override {
+    if (auto* bundle = GetBundle()) {
+      bundle->SendOnCompositorFrameTransitionDirectiveProcessed(
+          frame_sink_id_.sink_id(), sequence_id);
+    }
+  }
+
+ private:
+  FrameSinkBundleImpl* GetBundle() {
+    return manager_.GetFrameSinkBundle(bundle_id_);
+  }
+
+  FrameSinkManagerImpl& manager_;
+  const FrameSinkId frame_sink_id_;
+  const FrameSinkBundleId bundle_id_;
+};
+
+}  // namespace
+
 CompositorFrameSinkImpl::CompositorFrameSinkImpl(
     FrameSinkManagerImpl* frame_sink_manager,
     const FrameSinkId& frame_sink_id,
+    absl::optional<FrameSinkBundleId> bundle_id,
     mojo::PendingReceiver<mojom::CompositorFrameSink> receiver,
     mojo::PendingRemote<mojom::CompositorFrameSinkClient> client)
     : compositor_frame_sink_client_(std::move(client)),
+      proxying_client_(
+          bundle_id.has_value()
+              ? std::make_unique<BundleClientProxy>(*frame_sink_manager,
+                                                    frame_sink_id,
+                                                    *bundle_id)
+              : nullptr),
       compositor_frame_sink_receiver_(this, std::move(receiver)),
       support_(std::make_unique<CompositorFrameSinkSupport>(
-          compositor_frame_sink_client_.get(),
+          proxying_client_ ? proxying_client_.get()
+                           : compositor_frame_sink_client_.get(),
           frame_sink_manager,
           frame_sink_id,
           false /* is_root */)) {
   compositor_frame_sink_receiver_.set_disconnect_handler(
       base::BindOnce(&CompositorFrameSinkImpl::OnClientConnectionLost,
                      base::Unretained(this)));
+  if (bundle_id.has_value()) {
+    support_->SetBundle(*bundle_id);
+  }
 }
 
 CompositorFrameSinkImpl::~CompositorFrameSinkImpl() = default;
@@ -43,7 +129,7 @@ void CompositorFrameSinkImpl::SetWantsAnimateOnlyBeginFrames() {
 void CompositorFrameSinkImpl::SubmitCompositorFrame(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    base::Optional<HitTestRegionList> hit_test_region_list,
+    absl::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time) {
   // Non-root surface frames should not have display transform hint.
   DCHECK_EQ(gfx::OVERLAY_TRANSFORM_NONE, frame.metadata.display_transform_hint);
@@ -55,7 +141,7 @@ void CompositorFrameSinkImpl::SubmitCompositorFrame(
 void CompositorFrameSinkImpl::SubmitCompositorFrameSync(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    base::Optional<HitTestRegionList> hit_test_region_list,
+    absl::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time,
     SubmitCompositorFrameSyncCallback callback) {
   SubmitCompositorFrameInternal(local_surface_id, std::move(frame),
@@ -66,7 +152,7 @@ void CompositorFrameSinkImpl::SubmitCompositorFrameSync(
 void CompositorFrameSinkImpl::SubmitCompositorFrameInternal(
     const LocalSurfaceId& local_surface_id,
     CompositorFrame frame,
-    base::Optional<HitTestRegionList> hit_test_region_list,
+    absl::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time,
     mojom::CompositorFrameSink::SubmitCompositorFrameSyncCallback callback) {
   const auto result = support_->MaybeSubmitCompositorFrame(
@@ -108,6 +194,14 @@ void CompositorFrameSinkImpl::InitializeCompositorFrameSinkType(
     mojom::CompositorFrameSinkType type) {
   support_->InitializeCompositorFrameSinkType(type);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void CompositorFrameSinkImpl::SetThreadIds(
+    const std::vector<int32_t>& thread_ids) {
+  support_->SetThreadIds(/*from_untrusted_client=*/true,
+                         base::MakeFlatSet<base::PlatformThreadId>(thread_ids));
+}
+#endif
 
 void CompositorFrameSinkImpl::OnClientConnectionLost() {
   // The client that owns this CompositorFrameSink is either shutting down or

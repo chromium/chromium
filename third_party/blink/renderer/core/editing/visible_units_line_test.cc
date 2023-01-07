@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -1052,7 +1052,7 @@ TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithZeroWidthSpace) {
       "p { font: 10px/1 Ahem; }"
       "p { width: 4ch; }");
   const SelectionInDOMTree& selection =
-      SetSelectionTextToBody(u8"<p id=t>abcd^\u200B|wxyz</p>");
+      SetSelectionTextToBody("<p id=t>abcd^\u200B|wxyz</p>");
 
   const Position& after_zws = selection.Extent();
   const PositionWithAffinity after_zws_down =
@@ -1076,6 +1076,26 @@ TEST_P(ParameterizedVisibleUnitsLineTest, InSameLineWithZeroWidthSpace) {
   EXPECT_EQ(after_zws_up, EndOfLine(before_zws_down));
   EXPECT_EQ(after_zws_up, EndOfLine(before_zws_up));
   EXPECT_TRUE(InSameLine(before_zws_up, before_zws_down));
+}
+
+// http://crbug.com/1358235
+TEST_P(ParameterizedVisibleUnitsLineTest, StartOfLineBeforeEmptyLine) {
+  LoadAhem();
+  InsertStyleElement("p { font: 30px/3 Ahem; }");
+
+  EXPECT_EQ("<p dir=\"ltr\">abc<br>|<br>xyz<br></p>",
+            TestStartOfLine("<p dir=\"ltr\">abc<br>|<br>xyz<br></p>"));
+  EXPECT_EQ("<p dir=\"ltr\">abc<br><br>|<br>xyz<br></p>",
+            TestStartOfLine("<p dir=\"ltr\">abc<br><br>|<br>xyz<br></p>"));
+  EXPECT_EQ("<p dir=\"ltr\">abc<br>|<br><br>xyz<br></p>",
+            TestStartOfLine("<p dir=\"ltr\">abc<br>|<br><br>xyz<br></p>"));
+
+  EXPECT_EQ("<p dir=\"rtl\">abc<br>|<br>xyz<br></p>",
+            TestStartOfLine("<p dir=\"rtl\">abc<br>|<br>xyz<br></p>"));
+  EXPECT_EQ("<p dir=\"rtl\">abc<br>|<br><br>xyz<br></p>",
+            TestStartOfLine("<p dir=\"rtl\">abc<br>|<br><br>xyz<br></p>"));
+  EXPECT_EQ("<p dir=\"rtl\">abc<br><br>|<br>xyz<br></p>",
+            TestStartOfLine("<p dir=\"rtl\">abc<br><br>|<br>xyz<br></p>"));
 }
 
 TEST_P(ParameterizedVisibleUnitsLineTest, StartOfLineWithBidi) {

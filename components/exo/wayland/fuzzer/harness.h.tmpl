@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <map>
 
 #include <wayland-util.h>
-#include "base/macros.h"
+
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "components/exo/wayland/fuzzer/actions.pb.h"
 
@@ -28,6 +28,9 @@ namespace wayland_fuzzer {
 class Harness {
  public:
   Harness();
+
+  Harness(const Harness&) = delete;
+  Harness& operator=(const Harness&) = delete;
 
   ~Harness();
 
@@ -61,8 +64,6 @@ class Harness {
 
  private:
   std::map<int, base::UnsafeSharedMemoryRegion> shared_memory_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(Harness);
 };
 
 }  // namespace wayland_fuzzer

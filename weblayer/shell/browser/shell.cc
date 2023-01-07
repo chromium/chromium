@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -21,6 +20,7 @@
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/tab_impl.h"
 #include "weblayer/public/navigation_controller.h"
+#include "weblayer/public/prerender_controller.h"
 
 namespace weblayer {
 
@@ -38,7 +38,7 @@ Shell::Shell(std::unique_ptr<Browser> browser)
   if (tab()) {
     tab()->AddObserver(this);
     tab()->GetNavigationController()->AddObserver(this);
-#if !defined(OS_ANDROID)  // Android does this in Java.
+#if !BUILDFLAG(IS_ANDROID)  // Android does this in Java.
     static_cast<TabImpl*>(tab())->profile()->SetDownloadDelegate(this);
 #endif
   }
@@ -48,7 +48,7 @@ Shell::~Shell() {
   if (tab()) {
     tab()->GetNavigationController()->RemoveObserver(this);
     tab()->RemoveObserver(this);
-#if !defined(OS_ANDROID)  // Android does this in Java.
+#if !BUILDFLAG(IS_ANDROID)  // Android does this in Java.
     static_cast<TabImpl*>(tab())->profile()->SetDownloadDelegate(nullptr);
 #endif
   }
@@ -64,6 +64,10 @@ Shell::~Shell() {
   // Always destroy WebContents before calling PlatformExit(). WebContents
   // destruction sequence may depend on the resources destroyed in
   // PlatformExit() (e.g. the display::Screen singleton).
+  if (tab()) {
+    auto* const profile = static_cast<TabImpl*>(tab())->profile();
+    profile->GetPrerenderController()->DestroyAllContents();
+  }
   browser_.reset();
 
   if (windows_.empty()) {
@@ -108,7 +112,7 @@ Tab* Shell::tab() {
 }
 
 Browser* Shell::browser() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(jam): this won't work if we need more than one Shell in a test.
   const auto& browsers = BrowserList::GetInstance()->browsers();
   if (browsers.empty())
@@ -127,11 +131,11 @@ void Shell::DisplayedUrlChanged(const GURL& url) {
   PlatformSetAddressBarURL(url);
 }
 
-void Shell::LoadStateChanged(bool is_loading, bool to_different_document) {
+void Shell::LoadStateChanged(bool is_loading, bool should_show_loading_ui) {
   NavigationController* navigation_controller =
       tab()->GetNavigationController();
 
-  PlatformEnableUIControl(STOP_BUTTON, is_loading && to_different_document);
+  PlatformEnableUIControl(STOP_BUTTON, is_loading && should_show_loading_ui);
 
   // TODO(estade): These should be updated in callbacks that correspond to the
   // back/forward list changing, such as NavigationEntriesDeleted.
@@ -155,7 +159,7 @@ bool Shell::InterceptDownload(const GURL& url,
 void Shell::AllowDownload(Tab* tab,
                           const GURL& url,
                           const std::string& request_method,
-                          base::Optional<url::Origin> request_initiator,
+                          absl::optional<url::Origin> request_initiator,
                           AllowDownloadCallback callback) {
   std::move(callback).Run(true);
 }
@@ -166,7 +170,7 @@ gfx::Size Shell::AdjustWindowSize(const gfx::Size& initial_size) {
   return GetShellDefaultSize();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 Shell* Shell::CreateNewWindow(const GURL& url, const gfx::Size& initial_size) {
   // On Android, the browser is owned by the Java side.
   return CreateNewWindowWithBrowser(nullptr, url, initial_size);

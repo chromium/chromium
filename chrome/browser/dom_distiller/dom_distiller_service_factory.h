@@ -1,16 +1,15 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_DOM_DISTILLER_DOM_DISTILLER_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_DOM_DISTILLER_DOM_DISTILLER_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/distiller_ui_handle.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -29,13 +28,16 @@ class DomDistillerContextKeyedService : public KeyedService,
       std::unique_ptr<DistillerPageFactory> distiller_page_factory,
       std::unique_ptr<DistilledPagePrefs> distilled_page_prefs,
       std::unique_ptr<DistillerUIHandle> distiller_ui_handle);
-  ~DomDistillerContextKeyedService() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DomDistillerContextKeyedService);
+  DomDistillerContextKeyedService(const DomDistillerContextKeyedService&) =
+      delete;
+  DomDistillerContextKeyedService& operator=(
+      const DomDistillerContextKeyedService&) = delete;
+
+  ~DomDistillerContextKeyedService() override {}
 };
 
-class DomDistillerServiceFactory : public BrowserContextKeyedServiceFactory {
+class DomDistillerServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static DomDistillerServiceFactory* GetInstance();
   static DomDistillerContextKeyedService* GetForBrowserContext(
@@ -48,9 +50,6 @@ class DomDistillerServiceFactory : public BrowserContextKeyedServiceFactory {
   ~DomDistillerServiceFactory() override;
 
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

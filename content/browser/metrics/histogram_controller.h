@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "content/common/histogram_fetcher.mojom.h"
@@ -33,6 +33,10 @@ class HistogramController {
   // Normally instantiated when the child process is launched. Only one instance
   // should be created per process.
   HistogramController();
+
+  HistogramController(const HistogramController&) = delete;
+  HistogramController& operator=(const HistogramController&) = delete;
+
   virtual ~HistogramController();
 
   // Register the subscriber so that it will be called when for example
@@ -47,13 +51,6 @@ class HistogramController {
 
   // Contact all processes and get their histogram data.
   void GetHistogramData(int sequence_number);
-
-  // Notify the |subscriber_| that it should expect at least |pending_processes|
-  // additional calls to OnHistogramDataCollected().  OnPendingProcess() may be
-  // called repeatedly; the last call will have |end| set to true, indicating
-  // that there is no longer a possibility for the count of pending processes to
-  // increase.  This is called on the UI thread.
-  void OnPendingProcesses(int sequence_number, int pending_processes, bool end);
 
   // Send the |histogram| back to the |subscriber_|.
   // This can be called from any thread.
@@ -72,12 +69,7 @@ class HistogramController {
  private:
   friend struct base::LeakySingletonTraits<HistogramController>;
 
-  // Contact PLUGIN and GPU child processes and get their histogram data.
-  // TODO(rtenneti): Enable getting histogram data for other processes like
-  // PPAPI and NACL.
-  void GetHistogramDataFromChildProcesses(int sequence_number);
-
-  HistogramSubscriber* subscriber_;
+  raw_ptr<HistogramSubscriber> subscriber_;
 
   template <class T>
   using ChildHistogramFetcherMap =
@@ -102,8 +94,6 @@ class HistogramController {
 
   ChildHistogramFetcherMap<RenderProcessHost> renderer_histogram_fetchers_;
   ChildHistogramFetcherMap<ChildProcessHost> child_histogram_fetchers_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramController);
 };
 
 }  // namespace content

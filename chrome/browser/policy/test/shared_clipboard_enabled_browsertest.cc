@@ -1,12 +1,12 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
@@ -27,7 +27,7 @@ class SharedClipboardPolicyTest : public PolicyTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SharedClipboardPolicyTest, SharedClipboardEnabled) {
-  PrefService* prefs = browser()->profile()->GetPrefs();
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
   EXPECT_TRUE(prefs->IsManagedPreference(prefs::kSharedClipboardEnabled));
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSharedClipboardEnabled));
 }

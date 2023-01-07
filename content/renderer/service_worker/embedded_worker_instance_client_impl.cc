@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,18 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "content/child/child_thread_impl.h"
 #include "content/child/scoped_child_process_reference.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/common/content_client.h"
+#include "content/renderer/policy_container_util.h"
 #include "content/renderer/service_worker/service_worker_context_client.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_console_message.h"
@@ -41,16 +43,6 @@ void EmbeddedWorkerInstanceClientImpl::Create(
   new EmbeddedWorkerInstanceClientImpl(std::move(receiver),
                                        std::move(initiator_thread_task_runner),
                                        cors_exempt_header_list);
-}
-
-void EmbeddedWorkerInstanceClientImpl::CreateForRequest(
-    scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner,
-    const std::vector<std::string>& cors_exempt_header_list,
-    mojo::PendingReceiver<blink::mojom::EmbeddedWorkerInstanceClient>
-        receiver) {
-  EmbeddedWorkerInstanceClientImpl::Create(
-      std::move(initiator_thread_task_runner), cors_exempt_header_list,
-      std::move(receiver));
 }
 
 void EmbeddedWorkerInstanceClientImpl::WorkerContextDestroyed() {
@@ -87,6 +79,12 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
     start_data->main_script_load_params->url_loader_client_endpoints =
         std::move(params->main_script_load_params->url_loader_client_endpoints);
   }
+  start_data->policy_container =
+      ToWebPolicyContainer(std::move(params->policy_container));
+
+  for (const auto& feature : params->forced_enabled_runtime_features) {
+    blink::WebRuntimeFeatures::EnableFeatureFromString(feature, true);
+  }
 
   DCHECK(!params->provider_info->cache_storage ||
          base::FeatureList::IsEnabled(
@@ -103,7 +101,8 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
       std::move(params->renderer_preferences),
       std::move(params->service_worker_receiver),
       std::move(params->controller_receiver), std::move(params->instance_host),
-      std::move(params->provider_info), this, std::move(start_timing),
+      std::move(params->interface_provider), std::move(params->provider_info),
+      this, std::move(start_timing),
       std::move(params->preference_watcher_receiver),
       std::move(params->subresource_loader_factories),
       std::move(params->subresource_loader_updater),

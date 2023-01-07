@@ -1,0 +1,40 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=./cr_shared_vars.css.js
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  align-self: stretch;
+  display: flex;
+  margin: 0;
+  outline: none;
+}
+
+/* [effectively-disabled_] is a private attribute to allow custom elements
+ * to toggle the attribute based on state, such as whether or not the
+ * internal control element is disabled, without affecting any public
+ * attributes or properties. */
+:host(:not([effectively-disabled_])) {
+  cursor: pointer;
+}
+
+:host(:not([no-hover], [effectively-disabled_]):hover) {
+  background-color: var(--cr-hover-background-color);
+}
+
+:host(:not([no-hover], [effectively-disabled_]):active) {
+  background-color: var(--cr-active-background-color);
+}
+
+/* Do not show hover or active states for cr-icon-buttons that are
+ * embedded within the row to avoid showing multiple layers of
+ * backgrounds. */
+:host(:not([no-hover], [effectively-disabled_])) cr-icon-button {
+  --cr-icon-button-hover-background-color: transparent;
+  --cr-icon-button-active-background-color: transparent;
+}

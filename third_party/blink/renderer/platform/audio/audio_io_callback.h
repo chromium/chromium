@@ -41,6 +41,8 @@ struct AudioIOPosition {
   // System timestamp in seconds corresponding to the contained |position|
   // value.
   double timestamp;
+  // The audio hardware output latency reported by the infrastructure.
+  double hardware_output_latency;
 };
 
 // Abstract base-class for isochronous audio I/O client.

@@ -1,10 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -39,18 +38,22 @@ class MockDownloadFileObserver : public ui::DownloadFileObserver {
  public:
   MockDownloadFileObserver() {}
 
+  MockDownloadFileObserver(const MockDownloadFileObserver&) = delete;
+  MockDownloadFileObserver& operator=(const MockDownloadFileObserver&) = delete;
+
   MOCK_METHOD1(OnDownloadCompleted, void(const base::FilePath& file_path));
   MOCK_METHOD0(OnDownloadAborted, void());
 
  private:
   ~MockDownloadFileObserver() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(MockDownloadFileObserver);
 };
 
 class DragDownloadFileTest : public ContentBrowserTest {
  public:
   DragDownloadFileTest() = default;
+
+  DragDownloadFileTest(const DragDownloadFileTest&) = delete;
+  DragDownloadFileTest& operator=(const DragDownloadFileTest&) = delete;
 
   void Succeed() {
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(quit_closure_));
@@ -87,8 +90,6 @@ class DragDownloadFileTest : public ContentBrowserTest {
  private:
   base::ScopedTempDir downloads_directory_;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(DragDownloadFileTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_NetError) {
@@ -143,8 +144,8 @@ IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_ClosePage) {
       new MockDownloadFileObserver());
   ON_CALL(*observer.get(), OnDownloadAborted())
       .WillByDefault(InvokeWithoutArgs(this, &DragDownloadFileTest::FailFast));
-  DownloadManager* manager = BrowserContext::GetDownloadManager(
-      shell()->web_contents()->GetBrowserContext());
+  DownloadManager* manager =
+      shell()->web_contents()->GetBrowserContext()->GetDownloadManager();
   file->Start(observer.get());
   shell()->web_contents()->Close();
   RunAllTasksUntilIdle();

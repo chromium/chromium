@@ -1,0 +1,6 @@
+AXWebArea
+++AXGroup
+++++AXStaticText AXValue='This text contains '
+++++AXGroup AXSubrole=AXSuperscriptStyleGroup
+++++++AXStaticText AXValue='superscript'
+++++AXStaticText AXValue=' text.'

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ Tile::Tile(TileManager* tile_manager,
            int source_frame_number,
            int flags)
     : tile_manager_(tile_manager),
-      tiling_(info.tiling),
+      tiling_(info.tiling.get()),
       content_rect_(info.content_rect),
       enclosing_layer_rect_(info.enclosing_layer_rect),
       raster_transform_(info.raster_transform),
@@ -58,11 +58,16 @@ void Tile::AsValueInto(base::trace_event::TracedValue* value) const {
       TRACE_DISABLED_BY_DEFAULT("cc.debug"), value, "cc::Tile", this);
   value->SetDouble("contents_scale", contents_scale_key());
 
-  value->BeginArray("raster_transform");
-  value->AppendDouble(raster_transform_.scale());
+  value->BeginDictionary("raster_transform");
+  value->BeginArray("scale");
+  value->AppendDouble(raster_transform_.scale().x());
+  value->AppendDouble(raster_transform_.scale().y());
+  value->EndArray();
+  value->BeginArray("translation");
   value->AppendDouble(raster_transform_.translation().x());
   value->AppendDouble(raster_transform_.translation().y());
   value->EndArray();
+  value->EndDictionary();
 
   MathUtil::AddToTracedValue("content_rect", content_rect_, value);
 
@@ -79,6 +84,10 @@ void Tile::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetBoolean("use_picture_analysis", use_picture_analysis());
   value->SetInteger("gpu_memory_usage",
                     base::saturated_cast<int>(GPUMemoryUsageInBytes()));
+}
+
+bool Tile::HasMissingLCPCandidateImages() const {
+  return HasRasterTask() && raster_task_->TaskContainsLCPCandidateImages();
 }
 
 size_t Tile::GPUMemoryUsageInBytes() const {

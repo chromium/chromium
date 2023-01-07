@@ -1,0 +1,23 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+component("hammerd") {
+  defines = [ "IS_HAMMERD_IMPL" ]
+
+  deps = [
+    "//base",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_hammerd_client.cc",
+    "fake_hammerd_client.h",
+    "hammerd_client.cc",
+    "hammerd_client.h",
+  ]
+}

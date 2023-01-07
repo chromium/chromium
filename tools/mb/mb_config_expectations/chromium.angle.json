@@ -1,21 +1,9 @@
 {
-  "android-angle-arm64-builder": {
-    "gn_args": {
-      "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
-      "dcheck_always_on": true,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_goma": true
-    }
-  },
   "android-angle-chromium-arm64-builder": {
     "gn_args": {
+      "android_static_analysis": "off",
       "dcheck_always_on": true,
-      "disable_android_lint": true,
+      "debuggable_apks": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -23,68 +11,14 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
-      "use_errorprone_java_compiler": false,
-      "use_goma": true,
+      "use_remoteexec": true,
       "use_static_angle": true
-    }
-  },
-  "android-angle-perf-arm64-builder": {
-    "gn_args": {
-      "android32_ndk_api_level": 29,
-      "android64_ndk_api_level": 29,
-      "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "dcheck_always_on": false,
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_goma": true
-    }
-  },
-  "android-angle-vk-arm-builder": {
-    "gn_args": {
-      "android32_ndk_api_level": 29,
-      "android64_ndk_api_level": 29,
-      "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_os": "android",
-      "use_goma": true
-    }
-  },
-  "android-angle-vk-arm64-builder": {
-    "gn_args": {
-      "android32_ndk_api_level": 29,
-      "android64_ndk_api_level": 29,
-      "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "arm64",
-      "target_os": "android",
-      "use_goma": true
     }
   },
   "fuchsia-angle-builder": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
-      "enable_nacl": false,
       "is_component_build": true,
       "is_debug": false,
       "symbol_level": 1,
@@ -95,10 +29,7 @@
   "ios-angle-builder": {
     "gn_args": {
       "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
       "dcheck_always_on": true,
-      "enable_nacl": false,
       "enable_run_ios_unittests_with_xctest": true,
       "ios_set_attributes_for_xcode_project_generation": false,
       "is_component_build": false,
@@ -107,20 +38,7 @@
       "target_cpu": "x64",
       "target_environment": "simulator",
       "target_os": "ios",
-      "use_goma": true
-    }
-  },
-  "linux-angle-builder": {
-    "gn_args": {
-      "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "linux-angle-chromium-builder": {
@@ -131,40 +49,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "linux-ozone-angle-builder": {
-    "gn_args": {
-      "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": false,
-      "ozone_platform": "headless",
-      "ozone_platform_gbm": true,
-      "symbol_level": 1,
-      "use_bundled_weston": true,
-      "use_goma": true,
-      "use_ozone": true,
-      "use_system_libdrm": true,
-      "use_system_minigbm": true,
-      "use_x11": false
-    }
-  },
-  "mac-angle-builder": {
-    "gn_args": {
-      "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "mac-angle-chromium-builder": {
@@ -173,10 +58,9 @@
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
-      "mac_deterministic_build": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win-angle-chromium-x64-builder": {
@@ -187,7 +71,7 @@
       "is_debug": false,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_goma": true
+      "use_remoteexec": true
     }
   },
   "win-angle-chromium-x86-builder": {
@@ -199,34 +83,7 @@
       "proprietary_codecs": true,
       "symbol_level": 1,
       "target_cpu": "x86",
-      "use_goma": true
-    }
-  },
-  "win-angle-x64-builder": {
-    "gn_args": {
-      "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
-      "use_goma": true
-    }
-  },
-  "win-angle-x86-builder": {
-    "gn_args": {
-      "build_angle_deqp_tests": true,
-      "build_angle_gles1_conform_tests": true,
-      "build_angle_trace_perf_tests": true,
-      "dcheck_always_on": true,
-      "enable_nacl": false,
-      "is_component_build": true,
-      "is_debug": false,
-      "symbol_level": 1,
-      "target_cpu": "x86",
-      "use_goma": true
+      "use_remoteexec": true
     }
   }
 }

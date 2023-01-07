@@ -23,17 +23,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_OBSERVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_OBSERVER_H_
 
-#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_priority.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
+#include "base/record_replay.h"
+
 namespace blink {
 
 class ImageResourceContent;
 
-class CORE_EXPORT ImageResourceObserver {
+class CORE_EXPORT ImageResourceObserver : public GarbageCollectedMixin {
  public:
   // Used to notify the observers whether the invalidation resulting from an
   // image change notification can be deferred. In cases where the image is
@@ -95,8 +97,10 @@ class CORE_EXPORT ImageResourceObserver {
   virtual String DebugName() const = 0;
 
   static bool IsExpectedType(ImageResourceObserver*) { return true; }
+
+  void Trace(Visitor*) const override {}
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_OBSERVER_H_

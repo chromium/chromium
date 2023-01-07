@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,12 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
@@ -80,11 +82,22 @@ struct CONTENT_EXPORT MediaStreamRequest {
   // audio being played out locally.
   bool disable_local_echo;
 
+  // If audio is requested, |exclude_system_audio| can indicate that
+  // system-audio should nevertheless not be offered to the user.
+  bool exclude_system_audio = false;
+
+  // Flag to indicate that the current tab should be excluded from the list of
+  // tabs offered to the user.
+  bool exclude_self_browser_surface = false;
+
+  // Flag to indicate a preference for which display surface type (screen,
+  // windows, or tabs) should be most prominently offered to the user. The
+  // browser may disregard this preference.
+  blink::mojom::PreferredDisplaySurface preferred_display_surface =
+      blink::mojom::PreferredDisplaySurface::NO_PREFERENCE;
+
   // Flag to indicate whether the request is for PTZ use.
   bool request_pan_tilt_zoom_permission;
-
-  // True if all ancestors of the requesting frame have the same origin.
-  bool all_ancestors_have_same_origin;
 };
 
 // Interface used by the content layer to notify chrome about changes in the
@@ -98,29 +111,65 @@ class MediaStreamUI {
       const DesktopMediaID& media_id,
       blink::mojom::MediaStreamStateChange new_state)>;
 
-  virtual ~MediaStreamUI() {}
+  virtual ~MediaStreamUI() = default;
 
   // Called when MediaStream capturing is started. Chrome layer can call |stop|
   // to stop the stream, or |source| to change the source of the stream, or
   // |state_change| to pause/unpause the stream.
-  // Returns the platform-dependent window ID for the UI, or 0 if not
-  // applicable.
+  // |stop| is a callback that, once invoked, will stop the stream.
+  // Stopping a stream is irreversible, so only the first invocation
+  // will have an effect. |stop| is defined as RepeatingClosure so as
+  // to allow its duplication upstream, thereby enabling multiple
+  // potential sources for the stop invocation. (For example, allow
+  // multiple UX elements that would stop the capture.)
+  // Returns the platform-dependent window ID for the UI, or 0
+  // if not applicable.
   virtual gfx::NativeViewId OnStarted(
-      base::OnceClosure stop,
+      base::RepeatingClosure stop,
       SourceCallback source,
       const std::string& label,
       std::vector<DesktopMediaID> screen_capture_ids,
       StateChangeCallback state_change) = 0;
 
+  // Called when the device is stopped because desktop capture identified by
+  // |label| source is about to be changed from |old_media_id| to
+  // |new_media_id|. Note that the switch is not necessarily completed.
+  virtual void OnDeviceStoppedForSourceChange(
+      const std::string& label,
+      const DesktopMediaID& old_media_id,
+      const DesktopMediaID& new_media_id) = 0;
+
   virtual void OnDeviceStopped(const std::string& label,
                                const DesktopMediaID& media_id) = 0;
+
+  // Called when Region Capture starts/stops, or when the cropped area changes.
+  // * A non-empty rect indicates the region which was cropped-to.
+  // * An empty rect indicates that Region Capture was employed,
+  //   but the cropped-to region ended up having zero pixels.
+  // * Nullopt indicates that cropping stopped.
+  virtual void OnRegionCaptureRectChanged(
+      const absl::optional<gfx::Rect>& region_capture_rect) {}
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Focuses the display surface represented by |media_id|.
+  //
+  // |is_from_microtask| and |is_from_timer| are used to distinguish:
+  // a. Explicit calls from the Web-application.
+  // b. Implicit calls resulting from the focusability-window-closing microtask.
+  // c. The browser-side timer.
+  // This distinction is reflected by UMA.
+  virtual void SetFocus(const DesktopMediaID& media_id,
+                        bool focus,
+                        bool is_from_microtask,
+                        bool is_from_timer) {}
+#endif
 };
 
 // Callback used return results of media access requests.
-using MediaResponseCallback =
-    base::OnceCallback<void(const blink::MediaStreamDevices& devices,
-                            blink::mojom::MediaStreamRequestResult result,
-                            std::unique_ptr<MediaStreamUI> ui)>;
+using MediaResponseCallback = base::OnceCallback<void(
+    const blink::mojom::StreamDevicesSet& stream_devices_set,
+    blink::mojom::MediaStreamRequestResult result,
+    std::unique_ptr<MediaStreamUI> ui)>;
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_MEDIA_STREAM_REQUEST_H_

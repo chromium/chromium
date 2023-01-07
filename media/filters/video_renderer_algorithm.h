@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
@@ -51,6 +51,10 @@ class MEDIA_EXPORT VideoRendererAlgorithm {
  public:
   VideoRendererAlgorithm(const TimeSource::WallClockTimeCB& wall_clock_time_cb,
                          MediaLog* media_log);
+
+  VideoRendererAlgorithm(const VideoRendererAlgorithm&) = delete;
+  VideoRendererAlgorithm& operator=(const VideoRendererAlgorithm&) = delete;
+
   ~VideoRendererAlgorithm();
 
   // Chooses the best frame for the interval [deadline_min, deadline_max] based
@@ -280,7 +284,7 @@ class MEDIA_EXPORT VideoRendererAlgorithm {
   // UpdateEffectiveFramesQueued().
   size_t CountEffectiveFramesQueued() const;
 
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
   int out_of_order_frame_logs_ = 0;
 
   // Queue of incoming frames waiting for rendering.
@@ -345,8 +349,6 @@ class MEDIA_EXPORT VideoRendererAlgorithm {
   // Current number of effective frames in the |frame_queue_|.  Updated by calls
   // to UpdateEffectiveFramesQueued() whenever the |frame_queue_| is changed.
   size_t effective_frames_queued_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoRendererAlgorithm);
 };
 
 }  // namespace media

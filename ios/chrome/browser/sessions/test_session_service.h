@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 // Testing subclass of SessionService that immediately consumes session windows
 // passed to -saveSessionWindow:sessionPath:immediately: is consumed immediately
-// but only saved to disk if |performIO| is set to YES. Also it keeps track of
+// but only saved to disk if `performIO` is set to YES. Also it keeps track of
 // how many calls to saveSessionWindow have been done.
 @interface TestSessionService : SessionServiceIOS
 

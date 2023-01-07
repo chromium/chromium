@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -184,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(BrailleDisplayPrivateApiTest, WriteDots) {
   connection_data_.display_columns = 11;
   connection_data_.display_rows = 1;
   connection_data_.cell_size = 6;
-  ASSERT_TRUE(RunExtensionTest({.name = "braille_display_private/write_dots",
-                                .load_as_component = true}))
+  ASSERT_TRUE(RunExtensionTest("braille_display_private/write_dots", {},
+                               {.load_as_component = true}))
       << message_;
   ASSERT_EQ(3U, connection_data_.written_content.size());
   const std::string expected_content(
@@ -261,8 +261,8 @@ IN_PROC_BROWSER_TEST_F(BrailleDisplayPrivateApiTest, KeyEvents) {
                                             BRLAPI_KEY_CMD_PASSDOTS | i);
   }
 
-  ASSERT_TRUE(RunExtensionTest({.name = "braille_display_private/key_events",
-                                .load_as_component = true}));
+  ASSERT_TRUE(RunExtensionTest("braille_display_private/key_events", {},
+                               {.load_as_component = true}));
 }
 
 IN_PROC_BROWSER_TEST_F(BrailleDisplayPrivateApiTest, DisplayStateChanges) {
@@ -271,9 +271,8 @@ IN_PROC_BROWSER_TEST_F(BrailleDisplayPrivateApiTest, DisplayStateChanges) {
   connection_data_.cell_size = 6;
   connection_data_.pending_keys.push_back(kErrorKeyCode);
   connection_data_.reappear_on_disconnect = true;
-  ASSERT_TRUE(
-      RunExtensionTest({.name = "braille_display_private/display_state_changes",
-                        .load_as_component = true}));
+  ASSERT_TRUE(RunExtensionTest("braille_display_private/display_state_changes",
+                               {}, {.load_as_component = true}));
 }
 
 class BrailleDisplayPrivateAPIUserTest : public BrailleDisplayPrivateApiTest {
@@ -329,10 +328,10 @@ class BrailleDisplayPrivateAPIUserTest : public BrailleDisplayPrivateApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(BrailleDisplayPrivateAPIUserTest, KeyEventOnLockScreen) {
-  chromeos::ScreenLockerTester tester;
+  ash::ScreenLockerTester tester;
 
   // Make sure the signin profile and active profile are different.
-  Profile* signin_profile = chromeos::ProfileHelper::GetSigninProfile();
+  Profile* signin_profile = ash::ProfileHelper::GetSigninProfile();
   Profile* user_profile = ProfileManager::GetActiveUserProfile();
   ASSERT_FALSE(signin_profile->IsSameOrParent(user_profile))
       << signin_profile->GetDebugName() << " vs "

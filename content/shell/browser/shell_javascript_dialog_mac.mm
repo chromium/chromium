@@ -1,8 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/shell/browser/shell_javascript_dialog.h"
+
+#include "base/memory/raw_ptr.h"
 
 #import <Cocoa/Cocoa.h>
 
@@ -18,7 +20,7 @@
   NSTextField* _textField;  // WEAK; owned by alert_
 
   // Copies of the fields in ShellJavaScriptDialog because they're private.
-  content::ShellJavaScriptDialogManager* _manager;
+  raw_ptr<content::ShellJavaScriptDialogManager> _manager;
   content::JavaScriptDialogManager::DialogClosedCallback _callback;
 }
 

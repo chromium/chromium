@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,8 @@
 #include "base/i18n/rtl.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/pending_task.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -40,16 +40,19 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
+#include "third_party/icu/source/common/unicode/unistr.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/webrtc_overrides/init_webrtc.h"  // nogncheck
 #include "ui/base/ui_base_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/library_loader/library_loader_hooks.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <Carbon/Carbon.h>
 #include <signal.h>
 #include <unistd.h>
@@ -57,14 +60,19 @@
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/message_loop/message_pump_mac.h"
 #include "third_party/blink/public/web/web_view.h"
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/memory/userspace_swap/userspace_swap_renderer_initialization_impl.h"
-#include "chromeos/system/core_scheduling.h"
-#endif  // IS_CHROMEOS_ASH
+#if defined(ARCH_CPU_X86_64)
+#include "chromeos/ash/components/memory/userspace_swap/userspace_swap_renderer_initialization_impl.h"
+#endif  // defined(X86_64)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/system/core_scheduling.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_PPAPI)
 #include "content/renderer/pepper/pepper_plugin_registry.h"
 #endif
 
@@ -77,8 +85,7 @@ namespace {
 
 // This function provides some ways to test crash and assertion handling
 // behavior of the renderer.
-static void HandleRendererErrorTestParameters(
-    const base::CommandLine& command_line) {
+void HandleRendererErrorTestParameters(const base::CommandLine& command_line) {
   if (command_line.HasSwitch(switches::kWaitForDebugger))
     base::debug::WaitForDebugger(60, true);
 
@@ -87,12 +94,12 @@ static void HandleRendererErrorTestParameters(
 }
 
 std::unique_ptr<base::MessagePump> CreateMainThreadMessagePump() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // As long as scrollbars on Mac are painted with Cocoa, the message pump
   // needs to be backed by a Foundation-level loop to process NSTimers. See
   // http://crbug.com/306348#c24 for details.
   return base::MessagePump::Create(base::MessagePumpType::NS_RUNLOOP);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // Allow FIDL APIs on renderer main thread.
   return base::MessagePump::Create(base::MessagePumpType::IO);
 #else
@@ -100,50 +107,88 @@ std::unique_ptr<base::MessagePump> CreateMainThreadMessagePump() {
 #endif
 }
 
+void LogTimeToStartRunLoop(const base::CommandLine& command_line,
+                           base::TimeTicks run_loop_start_time) {
+  if (!command_line.HasSwitch(switches::kRendererProcessLaunchTimeTicks))
+    return;
+
+  const std::string launch_time_delta_micro_as_string =
+      command_line.GetSwitchValueASCII(
+          switches::kRendererProcessLaunchTimeTicks);
+  int64_t launch_time_delta_micro;
+  if (!base::StringToInt64(launch_time_delta_micro_as_string,
+                           &launch_time_delta_micro)) {
+    return;
+  }
+  const base::TimeDelta delta = run_loop_start_time.since_origin() -
+                                base::Microseconds(launch_time_delta_micro);
+  base::UmaHistogramTimes("Renderer.BrowserLaunchToRunLoopStart", delta);
+}
+
 }  // namespace
 
 // mainline routine for running as the Renderer process
-int RendererMain(const MainFunctionParams& parameters) {
+int RendererMain(MainFunctionParams parameters) {
   // Don't use the TRACE_EVENT0 macro because the tracing infrastructure doesn't
   // expect synchronous events around the main loop of a thread.
-  TRACE_EVENT_ASYNC_BEGIN1("startup", "RendererMain", 0, "zygote_child", false);
+  TRACE_EVENT_INSTANT0("startup", "RendererMain", TRACE_EVENT_SCOPE_THREAD);
 
   base::trace_event::TraceLog::GetInstance()->set_process_name("Renderer");
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
       kTraceEventRendererProcessSortIndex);
 
-  const base::CommandLine& command_line = parameters.command_line;
+  const base::CommandLine& command_line = *parameters.command_line;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::ScopedNSAutoreleasePool* pool = parameters.autorelease_pool;
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // As Zygote process starts up earlier than browser process gets its own
-  // locale (at login time for Chrome OS), we have to set the ICU default
-  // locale for renderer process here.
-  // ICU locale will be used for fallback font selection etc.
+  // As the Zygote process starts up earlier than the browser process, it gets
+  // its own locale (at login time for Chrome OS). So we have to set the ICU
+  // default locale for the renderer process here.
+  // ICU locale will be used for fallback font selection, etc.
   if (command_line.HasSwitch(switches::kLang)) {
     const std::string locale =
         command_line.GetSwitchValueASCII(switches::kLang);
     base::i18n::SetICUDefaultLocale(locale);
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // When we start the renderer on ChromeOS if the system has core scheduling
-  // available we want to turn it on.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Turn on core scheduling for ash renderers only if kLacrosOnly is not
+  // enabled. If kLacrosOnly is enabled, ash renderers don't run user code. This
+  // means they don't need core scheduling. Lacros renderers will get core
+  // scheduling in this case.
+  if (!command_line.HasSwitch(switches::kAshWebBrowserDisabled)) {
+    chromeos::system::EnableCoreSchedulingIfAvailable();
+  }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Turn on core scheduling for lacros renderers since they run user code in
+  // most cases.
   chromeos::system::EnableCoreSchedulingIfAvailable();
+#endif
 
-  using chromeos::memory::userspace_swap::
-      UserspaceSwapRendererInitializationImpl;
-  base::Optional<UserspaceSwapRendererInitializationImpl> swap_init;
-  if (UserspaceSwapRendererInitializationImpl::
-          UserspaceSwapSupportedAndEnabled()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(ARCH_CPU_X86_64)
+  using UserspaceSwapInit =
+      ash::memory::userspace_swap::UserspaceSwapRendererInitializationImpl;
+  absl::optional<UserspaceSwapInit> swap_init;
+  if (UserspaceSwapInit::UserspaceSwapSupportedAndEnabled()) {
     swap_init.emplace();
 
     PLOG_IF(ERROR, !swap_init->PreSandboxSetup())
         << "Unable to complete presandbox userspace swap initialization";
   }
-#endif
+#endif  // defined(ARCH_CPU_X86_64)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (command_line.HasSwitch(switches::kTimeZoneForTesting)) {
+    std::string time_zone =
+        command_line.GetSwitchValueASCII(switches::kTimeZoneForTesting);
+    icu::TimeZone::adoptDefault(
+        icu::TimeZone::createTimeZone(icu::UnicodeString(time_zone.c_str())));
+  }
 
   InitializeSkia();
 
@@ -161,29 +206,14 @@ int RendererMain(const MainFunctionParams& parameters) {
   // better means of determining which is the main thread, remove.
   RenderThread::IsMainThread();
 
-#if defined(OS_ANDROID)
-  // If we have any pending LibraryLoader histograms, record them.
-  base::android::RecordLibraryLoaderRendererHistograms();
-#endif
-
-  base::Optional<base::Time> initial_virtual_time;
-  if (command_line.HasSwitch(switches::kInitialVirtualTime)) {
-    double initial_time;
-    if (base::StringToDouble(
-            command_line.GetSwitchValueASCII(switches::kInitialVirtualTime),
-            &initial_time)) {
-      initial_virtual_time = base::Time::FromDoubleT(initial_time);
-    }
-  }
-
   blink::Platform::InitializeBlink();
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler =
       blink::scheduler::WebThreadScheduler::CreateMainThreadScheduler(
-          CreateMainThreadMessagePump(), initial_virtual_time);
+          CreateMainThreadMessagePump());
 
   platform.PlatformInitialize();
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
   // Load pepper plugins before engaging the sandbox.
   PepperPluginRegistry::GetInstance();
 #endif
@@ -194,17 +224,28 @@ int RendererMain(const MainFunctionParams& parameters) {
   InitializeWebRtcModule();
 
   {
+    content::ContentRendererClient* client = GetContentClient()->renderer();
     bool should_run_loop = true;
     bool need_sandbox =
         !command_line.HasSwitch(sandbox::policy::switches::kNoSandbox);
 
-#if !defined(OS_WIN) && !defined(OS_MAC)
+    if (!need_sandbox) {
+      // The post-sandbox actions still need to happen at some point.
+      if (client) {
+        client->PostSandboxInitialized();
+      }
+    }
+
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
     // Sandbox is enabled before RenderProcess initialization on all platforms,
     // except Windows and Mac.
     // TODO(markus): Check if it is OK to remove ifdefs for Windows and Mac.
     if (need_sandbox) {
       should_run_loop = platform.EnableSandbox();
       need_sandbox = false;
+      if (client) {
+        client->PostSandboxInitialized();
+      }
     }
 #endif
 
@@ -215,7 +256,7 @@ int RendererMain(const MainFunctionParams& parameters) {
     new RenderThreadImpl(run_loop.QuitClosure(),
                          std::move(main_thread_scheduler));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_X86_64)
     // Once the sandbox has been entered and initialization of render threads
     // complete we will transfer FDs to the browser, or close them on failure.
     // This should always be called because it will also transfer the errno that
@@ -231,20 +272,24 @@ int RendererMain(const MainFunctionParams& parameters) {
     }
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
     // Startup tracing is usually enabled earlier, but if we forked from a
     // zygote, we can only enable it after mojo IPC support is brought up
     // initialized by RenderThreadImpl, because the mojo broker has to create
     // the tracing SMB on our behalf due to the zygote sandbox.
     if (parameters.zygote_child) {
       tracing::EnableStartupTracingIfNeeded();
-      TRACE_EVENT_ASYNC_BEGIN1("startup", "RendererMain", 0, "zygote_child",
-                               true);
+      TRACE_EVENT_INSTANT1("startup", "RendererMain", TRACE_EVENT_SCOPE_THREAD,
+                           "zygote_child", true);
     }
-#endif  // OS_POSIX && !OS_ANDROID && !OS_MAC
+#endif
 
-    if (need_sandbox)
+    if (need_sandbox) {
       should_run_loop = platform.EnableSandbox();
+      if (client) {
+        client->PostSandboxInitialized();
+      }
+    }
 
 #if BUILDFLAG(MOJO_RANDOM_DELAYS_ENABLED)
     mojo::BeginRandomMojoDelays();
@@ -256,13 +301,16 @@ int RendererMain(const MainFunctionParams& parameters) {
     base::HighResolutionTimerManager hi_res_timer_manager;
 
     if (should_run_loop) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       if (pool)
         pool->Recycle();
 #endif
-      TRACE_EVENT_ASYNC_BEGIN0("toplevel", "RendererMain.START_MSG_LOOP", 0);
+      TRACE_EVENT_INSTANT0("toplevel", "RendererMain.START_MSG_LOOP",
+                           TRACE_EVENT_SCOPE_THREAD);
+      const base::TimeTicks run_loop_start_time = base::TimeTicks::Now();
+      RenderThreadImpl::current()->set_run_loop_start_time(run_loop_start_time);
+      LogTimeToStartRunLoop(command_line, run_loop_start_time);
       run_loop.Run();
-      TRACE_EVENT_ASYNC_END0("toplevel", "RendererMain.START_MSG_LOOP", 0);
     }
 
 #if defined(LEAK_SANITIZER)
@@ -272,7 +320,6 @@ int RendererMain(const MainFunctionParams& parameters) {
 #endif
   }
   platform.PlatformUninitialize();
-  TRACE_EVENT_ASYNC_END0("startup", "RendererMain", 0);
   return 0;
 }
 

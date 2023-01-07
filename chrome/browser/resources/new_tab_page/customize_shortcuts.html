@@ -13,7 +13,7 @@
   }
 
   .option-image {
-    border: 1px solid var(--ntp-border-color);
+    border: 1px solid var(--color-new-tab-page-border);
     border-radius: 4px;
     box-sizing: border-box;
     cursor: pointer;
@@ -27,13 +27,13 @@
   }
 
   .selected .option-image {
-    background-color: var(--ntp-selected-background-color);
-    border-color: var(--ntp-selected-border-color);
+    background-color: var(--color-new-tab-page-selected-background);
+    border-color: var(--color-new-tab-page-selected-border);
   }
 
   .option-mini {
-    background-color: var(--ntp-background-override-color);
-    border: 1px solid var(--ntp-border-color);
+    background-color: var(--color-new-tab-page-background-override);
+    border: 1px solid var(--color-new-tab-page-border);
     border-radius: 4px;
     box-sizing: border-box;
     height: 144px;
@@ -62,17 +62,17 @@
   }
 
   ntp-mini-page {
-    --ntp-mini-page-shortcut-color: var(--google-grey-refresh-500);
+    --ntp-mini-page-shortcut-color: var(--google-grey-500);
   }
 
   .selected ntp-mini-page {
-    --ntp-mini-page-shortcut-color: var(--ntp-selected-border-color);
+    --ntp-mini-page-shortcut-color: var(--color-new-tab-page-selected-border);
   }
 
   .option-icon {
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background: 96px 96px var(--ntp-border-color);
+    background: 96px 96px var(--color-new-tab-page-border);
     height: 96px;
     left: 16px;
     position: absolute;
@@ -93,12 +93,12 @@
   }
 
   .selected .option-icon {
-    background-color: var(--ntp-selected-light-background-color);
+    background-color: var(--color-new-tab-page-control-background-selected);
   }
 
   @media (prefers-color-scheme: dark) {
     .selected .option-icon {
-      background-color: var(--ntp-selected-border-color);
+      background-color: var(--color-new-tab-page-selected-border);
     }
   }
 
@@ -129,20 +129,21 @@
 
   .option-title {
     font-weight: bold;
-    margin: 8px 0;
+    margin-bottom: 4px;
+    margin-top: 12px;
   }
 
   .option-description {
-    color: var(--cr-secondary-text-color);
+    color: var(--color-new-tab-page-secondary-foreground);
   }
 
   .selected #hideDescription {
-    color: var(--ntp-selected-border-color);
+    color: var(--color-new-tab-page-selected-border);
   }
 
   #hide {
     align-items: center;
-    border: 1px solid var(--ntp-border-color);
+    border: 1px solid var(--color-new-tab-page-border);
     border-radius: 4px;
     box-sizing: border-box;
     display: flex;
@@ -153,9 +154,9 @@
   }
 
   #hide.selected {
-    background-color: var(--ntp-selected-background-color);
-    border-color: var(--ntp-selected-border-color);
-    color: var(--ntp-selected-border-color);
+    background-color: var(--color-new-tab-page-selected-background);
+    border-color: var(--color-new-tab-page-selected-border);
+    color: var(--color-new-tab-page-selected-border);
   }
 
   #hideIcon {
@@ -164,7 +165,7 @@
   }
 
   .selected #hideIcon {
-    background-color: var(--ntp-selected-border-color);
+    background-color: var(--color-new-tab-page-selected-border);
   }
 
   #hideTitleContainer {
@@ -180,7 +181,7 @@
   }
 
   .selected-circle {
-    background: var(--ntp-background-override-color) no-repeat center;
+    background: var(--color-new-tab-page-background-override) no-repeat center;
     border-radius: 50%;
     display: none;
     height: 22px;
@@ -227,7 +228,7 @@
       -webkit-mask-image: url(icons/check_circle.svg);
       -webkit-mask-repeat: no-repeat;
       -webkit-mask-size: 28px;
-      background-color: var(--google-blue-refresh-300);
+      background-color: var(--google-blue-300);
       content: '';
       display: block;
       height: 28px;
@@ -235,6 +236,16 @@
       position: absolute;
       top: 0;
       width: 28px;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .option-icon {
+      background-color: ButtonText;
+    }
+
+    .selected .option-icon {
+      background-color: SelectedItem;
     }
   }
 </style>
@@ -281,6 +292,6 @@
       $i18n{hideShortcutsDesc}
     </div>
   </div>
-  <cr-toggle id="hideToggle" title="$i18n{hideShortcuts}" checked="[[hide_]]"
-      on-change="onHideChange_"></cr-toggle>
+  <cr-toggle id="hideToggle" title="$i18n{hideShortcuts}"
+      checked="[[hide_]]" on-change="onHideChange_"></cr-toggle>
 </div>

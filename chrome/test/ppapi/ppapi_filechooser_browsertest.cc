@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "chrome/test/ppapi/ppapi_test_select_file_dialog_factory.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/services/quarantine/test_support.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_test.h"
 #include "ppapi/shared_impl/test_utils.h"
 
@@ -26,7 +27,7 @@
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
-#include "components/safe_browsing/core/db/test_database_manager.h"
+#include "components/safe_browsing/core/browser/db/test_database_manager.h"
 
 using safe_browsing::DownloadProtectionService;
 using safe_browsing::SafeBrowsingService;
@@ -53,16 +54,15 @@ class FakeDownloadProtectionService : public DownloadProtectionService {
 
   void CheckPPAPIDownloadRequest(
       const GURL& requestor_url,
-      const GURL& initiating_frame_url_unused,
-      content::WebContents* web_contents_unused,
+      content::RenderFrameHost* unused_initiating_frame,
       const base::FilePath& default_file_path,
       const std::vector<base::FilePath::StringType>& alternate_extensions,
       Profile* /* profile */,
       safe_browsing::CheckDownloadCallback callback) override {
-    const auto iter =
+    const auto it =
         test_configuration_->result_map.find(default_file_path.Extension());
-    if (iter != test_configuration_->result_map.end()) {
-      std::move(callback).Run(iter->second);
+    if (it != test_configuration_->result_map.end()) {
+      std::move(callback).Run(it->second);
       return;
     }
 
@@ -237,19 +237,12 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTest, FileChooser_SaveAs_Cancel) {
   RunTestViaHTTP("FileChooser_SaveAsCancel");
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // On Windows, tests that a file downloaded via PPAPI FileChooser API has the
 // mark-of-the-web. The PPAPI FileChooser implementation invokes QuarantineFile
 // in order to mark the file as being downloaded from the web as soon as the
 // file is created. This MotW prevents the file being opened without due
 // security warnings if the file is executable.
-//
-// This test is disabled on Mac even though quarantine support is implemented on
-// Mac. New files created on Mac only receive the MOTW if the process creating
-// them comes from an app with LSFileQuarantineEnabled in its Info.plist. Since
-// PPAPI delegates file creation to the browser process, which in browser_tests
-// is not part of an app, files downloaded by them do not receive the MOTW and
-// this test fails.
 IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTest, FileChooser_Quarantine) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
@@ -269,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(PPAPIFileChooserTest, FileChooser_Quarantine) {
   ASSERT_TRUE(base::PathExists(actual_filename));
   EXPECT_TRUE(quarantine::IsFileQuarantined(actual_filename, GURL(), GURL()));
 }
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 // These tests only make sense when SafeBrowsing is enabled. They verify

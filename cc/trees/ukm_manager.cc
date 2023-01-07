@@ -1,12 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/trees/ukm_manager.h"
 
-#include <algorithm>
 #include <utility>
 
+#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "cc/metrics/compositor_frame_reporter.h"
 #include "cc/metrics/throughput_ukm_reporter.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -20,89 +22,19 @@ UkmManager::UkmManager(std::unique_ptr<ukm::UkmRecorder> recorder)
   DCHECK(recorder_);
 }
 
-UkmManager::~UkmManager() {
-  RecordCheckerboardUkm();
-  RecordRenderingUkm();
-}
+UkmManager::~UkmManager() = default;
 
 void UkmManager::SetSourceId(ukm::SourceId source_id) {
-  // If we accumulated any metrics, record them before resetting the source.
-  RecordCheckerboardUkm();
-  RecordRenderingUkm();
-
   source_id_ = source_id;
-}
-
-void UkmManager::SetUserInteractionInProgress(bool in_progress) {
-  if (user_interaction_in_progress_ == in_progress)
-    return;
-
-  user_interaction_in_progress_ = in_progress;
-  if (!user_interaction_in_progress_)
-    RecordCheckerboardUkm();
-}
-
-void UkmManager::AddCheckerboardStatsForFrame(int64_t checkerboard_area,
-                                              int64_t num_missing_tiles,
-                                              int64_t total_visible_area) {
-  DCHECK_GE(total_visible_area, checkerboard_area);
-  if (source_id_ == ukm::kInvalidSourceId || !user_interaction_in_progress_)
-    return;
-
-  checkerboarded_content_area_ += checkerboard_area;
-  num_missing_tiles_ += num_missing_tiles;
-  total_visible_area_ += total_visible_area;
-  num_of_frames_++;
-}
-
-void UkmManager::AddCheckerboardedImages(int num_of_checkerboarded_images) {
-  if (user_interaction_in_progress_) {
-    num_of_images_checkerboarded_during_interaction_ +=
-        num_of_checkerboarded_images;
-  }
-  total_num_of_checkerboarded_images_ += num_of_checkerboarded_images;
-}
-
-void UkmManager::RecordCheckerboardUkm() {
-  // Only make a recording if there was any visible area from PictureLayers,
-  // which can be checkerboarded.
-  if (num_of_frames_ > 0 && total_visible_area_ > 0) {
-    DCHECK_NE(source_id_, ukm::kInvalidSourceId);
-    ukm::builders::Compositor_UserInteraction(source_id_)
-        .SetCheckerboardedContentArea(checkerboarded_content_area_ /
-                                      num_of_frames_)
-        .SetNumMissingTiles(num_missing_tiles_ / num_of_frames_)
-        .SetCheckerboardedContentAreaRatio(
-            (checkerboarded_content_area_ * 100) / total_visible_area_)
-        .SetCheckerboardedImagesCount(
-            num_of_images_checkerboarded_during_interaction_)
-        .Record(recorder_.get());
-  }
-
-  checkerboarded_content_area_ = 0;
-  num_missing_tiles_ = 0;
-  num_of_frames_ = 0;
-  total_visible_area_ = 0;
-  num_of_images_checkerboarded_during_interaction_ = 0;
-}
-
-void UkmManager::RecordRenderingUkm() {
-  if (source_id_ == ukm::kInvalidSourceId)
-    return;
-
-  ukm::builders::Compositor_Rendering(source_id_)
-      .SetCheckerboardedImagesCount(total_num_of_checkerboarded_images_)
-      .Record(recorder_.get());
-  total_num_of_checkerboarded_images_ = 0;
 }
 
 void UkmManager::RecordThroughputUKM(
     FrameSequenceTrackerType tracker_type,
-    FrameSequenceMetrics::ThreadType thread_type,
+    FrameInfo::SmoothEffectDrivingThread thread_type,
     int64_t throughput) const {
   ukm::builders::Graphics_Smoothness_PercentDroppedFrames builder(source_id_);
   switch (thread_type) {
-    case FrameSequenceMetrics::ThreadType::kMain: {
+    case FrameInfo::SmoothEffectDrivingThread::kMain: {
       switch (tracker_type) {
 #define CASE_FOR_MAIN_THREAD_TRACKER(name)    \
   case FrameSequenceTrackerType::k##name:     \
@@ -119,7 +51,11 @@ void UkmManager::RecordThroughputUKM(
         CASE_FOR_MAIN_THREAD_TRACKER(CanvasAnimation);
         CASE_FOR_MAIN_THREAD_TRACKER(JSAnimation);
 #undef CASE_FOR_MAIN_THREAD_TRACKER
-        default:
+        case FrameSequenceTrackerType::kSETCompositorAnimation:
+        case FrameSequenceTrackerType::kSETMainThreadAnimation:
+          break;
+        case FrameSequenceTrackerType::kCustom:
+        case FrameSequenceTrackerType::kMaxType:
           NOTREACHED();
           break;
       }
@@ -127,7 +63,7 @@ void UkmManager::RecordThroughputUKM(
       break;
     }
 
-    case FrameSequenceMetrics::ThreadType::kCompositor: {
+    case FrameInfo::SmoothEffectDrivingThread::kCompositor: {
       switch (tracker_type) {
 #define CASE_FOR_COMPOSITOR_THREAD_TRACKER(name)    \
   case FrameSequenceTrackerType::k##name:           \
@@ -142,14 +78,20 @@ void UkmManager::RecordThroughputUKM(
         CASE_FOR_COMPOSITOR_THREAD_TRACKER(Video);
         CASE_FOR_COMPOSITOR_THREAD_TRACKER(WheelScroll);
 #undef CASE_FOR_COMPOSITOR_THREAD_TRACKER
-        default:
+        case FrameSequenceTrackerType::kCanvasAnimation:
+        case FrameSequenceTrackerType::kJSAnimation:
+        case FrameSequenceTrackerType::kSETCompositorAnimation:
+        case FrameSequenceTrackerType::kSETMainThreadAnimation:
+          break;
+        case FrameSequenceTrackerType::kCustom:
+        case FrameSequenceTrackerType::kMaxType:
           NOTREACHED();
           break;
       }
       break;
     }
 
-    case FrameSequenceMetrics::ThreadType::kUnknown:
+    case FrameInfo::SmoothEffectDrivingThread::kUnknown:
       NOTREACHED();
       break;
   }
@@ -174,9 +116,9 @@ void UkmManager::RecordAggregateThroughput(AggregationType aggregation_type,
 }
 
 void UkmManager::RecordCompositorLatencyUKM(
-    CompositorFrameReporter::FrameReportType report_type,
+    const CompositorFrameReporter::FrameReportTypes& report_types,
     const std::vector<CompositorFrameReporter::StageData>& stage_history,
-    const CompositorFrameReporter::ActiveTrackers& active_trackers,
+    const ActiveTrackers& active_trackers,
     const CompositorFrameReporter::ProcessedBlinkBreakdown&
         processed_blink_breakdown,
     const CompositorFrameReporter::ProcessedVizBreakdown&
@@ -185,7 +127,8 @@ void UkmManager::RecordCompositorLatencyUKM(
 
   ukm::builders::Graphics_Smoothness_Latency builder(source_id_);
 
-  if (report_type == CompositorFrameReporter::FrameReportType::kDroppedFrame) {
+  if (report_types.test(static_cast<size_t>(
+          CompositorFrameReporter::FrameReportType::kDroppedFrame))) {
     builder.SetMissedFrame(true);
   }
 
@@ -205,7 +148,7 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame);
       CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
-      default:
+      case StageType::kStageTypeCount:
         NOTREACHED();
         break;
     }
@@ -224,15 +167,15 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_BLINK_BREAKDOWN(Animate);
       CASE_FOR_BLINK_BREAKDOWN(StyleUpdate);
       CASE_FOR_BLINK_BREAKDOWN(LayoutUpdate);
+      CASE_FOR_BLINK_BREAKDOWN(Accessibility);
       CASE_FOR_BLINK_BREAKDOWN(Prepaint);
       CASE_FOR_BLINK_BREAKDOWN(CompositingInputs);
-      CASE_FOR_BLINK_BREAKDOWN(CompositingAssignments);
       CASE_FOR_BLINK_BREAKDOWN(Paint);
       CASE_FOR_BLINK_BREAKDOWN(CompositeCommit);
       CASE_FOR_BLINK_BREAKDOWN(UpdateLayers);
       CASE_FOR_BLINK_BREAKDOWN(BeginMainSentToStarted);
 #undef CASE_FOR_BLINK_BREAKDOWN
-      default:
+      case CompositorFrameReporter::BlinkBreakdown::kBreakdownCount:
         NOTREACHED();
         break;
     }
@@ -257,7 +200,7 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_VIZ_BREAKDOWN(BufferReadyToLatch);
       CASE_FOR_VIZ_BREAKDOWN(LatchToSwapEnd);
 #undef CASE_FOR_VIZ_BREAKDOWN
-      default:
+      case CompositorFrameReporter::VizBreakdown::kBreakdownCount:
         NOTREACHED();
         break;
     }
@@ -285,7 +228,11 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_TRACKER(CanvasAnimation);
       CASE_FOR_TRACKER(JSAnimation);
 #undef CASE_FOR_TRACKER
-      default:
+      case FrameSequenceTrackerType::kSETCompositorAnimation:
+      case FrameSequenceTrackerType::kSETMainThreadAnimation:
+        break;
+      case FrameSequenceTrackerType::kCustom:
+      case FrameSequenceTrackerType::kMaxType:
         NOTREACHED();
         break;
     }
@@ -312,16 +259,12 @@ void UkmManager::RecordEventLatencyUKM(
         event_metrics->GetDispatchStageTimestamp(
             EventMetrics::DispatchStage::kGenerated);
 
-    if (event_metrics->scroll_type()) {
+    if (ScrollEventMetrics* scroll_metrics = event_metrics->AsScroll()) {
       builder.SetScrollInputType(
-          static_cast<int64_t>(*event_metrics->scroll_type()));
-
-      if (event_metrics->ShouldReportScrollingTotalLatency() &&
-          !processed_viz_breakdown.swap_start().is_null()) {
-        builder.SetTotalLatencyToSwapBegin(
-            (processed_viz_breakdown.swap_start() - generated_timestamp)
-                .InMicroseconds());
-      }
+          static_cast<int64_t>(scroll_metrics->scroll_type()));
+    } else if (PinchEventMetrics* pinch_metrics = event_metrics->AsPinch()) {
+      builder.SetPinchInputType(
+          static_cast<int64_t>(pinch_metrics->pinch_type()));
     }
 
     // Record event dispatch metrics.
@@ -350,9 +293,26 @@ void UkmManager::RecordEventLatencyUKM(
           (end_timestamp - dispatch_timestamp).InMicroseconds();
       switch (dispatch_stage) {
         case EventMetrics::DispatchStage::kGenerated:
+          switch (end_stage) {
+            case EventMetrics::DispatchStage::kArrivedInBrowserMain:
+              // Will build the `GenerationToRendererCompositor` metric on the
+              // `kArrivedInBrowserMain` stage.
+              break;
+            case EventMetrics::DispatchStage::kArrivedInRendererCompositor:
+              builder.SetGenerationToRendererCompositor(dispatch_latency);
+              break;
+            default:
+              NOTREACHED();
+              break;
+          }
+          break;
+        case EventMetrics::DispatchStage::kArrivedInBrowserMain:
           DCHECK_EQ(end_stage,
                     EventMetrics::DispatchStage::kArrivedInRendererCompositor);
-          builder.SetGenerationToRendererCompositor(dispatch_latency);
+          // TODO(b/224960731): Add new UKM metrics and then split kGenerated
+          // with kArrivedInBrowserMain breakdown.
+          builder.SetGenerationToRendererCompositor(
+              (end_timestamp - generated_timestamp).InMicroseconds());
           break;
         case EventMetrics::DispatchStage::kArrivedInRendererCompositor:
           switch (end_stage) {
@@ -396,18 +356,14 @@ void UkmManager::RecordEventLatencyUKM(
     // a begin-impl, and the event was handled on the renderer before that frame
     // ended). To handle such cases, find the first stage that happens after the
     // event's processing finished on the renderer.
-    auto stage_it = std::find_if(
-        stage_history.begin(), stage_history.end(),
-        [dispatch_timestamp](const CompositorFrameReporter::StageData& stage) {
-          return stage.start_time > dispatch_timestamp;
-        });
-    // TODO(crbug.com/1079116): Ideally, at least the start time of
+    auto stage_it = base::ranges::lower_bound(
+        stage_history, dispatch_timestamp, {},
+        &CompositorFrameReporter::StageData::start_time);
+    // TODO(crbug.com/1330903): Ideally, at least the start time of
     // SubmitCompositorFrameToPresentationCompositorFrame stage should be
-    // greater than the final event dispatch timestamp, but apparently, this is
-    // not always the case (see crbug.com/1093698). For now, skip to the next
-    // event in such cases. Hopefully, the work to reduce discrepancies between
-    // the new EventLatency and the old Event.Latency metrics would fix this
-    // issue. If not, we need to reconsider investigating this issue.
+    // greater than or equal to the final event dispatch timestamp, but
+    // apparently, this is not always the case (see crbug.com/1330903). Skip
+    // recording compositor stages for now until we investigate the issue.
     if (stage_it == stage_history.end())
       continue;
 
@@ -428,7 +384,8 @@ void UkmManager::RecordEventLatencyUKM(
           CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame,
                          SubmitCompositorFrame);
 #undef CASE_FOR_STAGE
-          default:
+          case StageType::kTotalLatency:
+          case StageType::kStageTypeCount:
             NOTREACHED();
             break;
         }
@@ -449,7 +406,8 @@ void UkmManager::RecordEventLatencyUKM(
           CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame,
                          SubmitCompositorFrame);
 #undef CASE_FOR_STAGE
-          default:
+          case StageType::kTotalLatency:
+          case StageType::kStageTypeCount:
             NOTREACHED();
             break;
         }
@@ -458,7 +416,6 @@ void UkmManager::RecordEventLatencyUKM(
         NOTREACHED();
         break;
     }
-
     for (; stage_it != stage_history.end(); ++stage_it) {
       // Total latency is calculated since the event timestamp.
       const base::TimeTicks start_time =
@@ -480,7 +437,7 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_STAGE(SubmitCompositorFrameToPresentationCompositorFrame);
         CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
-        default:
+        case StageType::kStageTypeCount:
           NOTREACHED();
           break;
       }
@@ -499,15 +456,15 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_BLINK_BREAKDOWN(Animate);
         CASE_FOR_BLINK_BREAKDOWN(StyleUpdate);
         CASE_FOR_BLINK_BREAKDOWN(LayoutUpdate);
+        CASE_FOR_BLINK_BREAKDOWN(Accessibility);
         CASE_FOR_BLINK_BREAKDOWN(Prepaint);
         CASE_FOR_BLINK_BREAKDOWN(CompositingInputs);
-        CASE_FOR_BLINK_BREAKDOWN(CompositingAssignments);
         CASE_FOR_BLINK_BREAKDOWN(Paint);
         CASE_FOR_BLINK_BREAKDOWN(CompositeCommit);
         CASE_FOR_BLINK_BREAKDOWN(UpdateLayers);
         CASE_FOR_BLINK_BREAKDOWN(BeginMainSentToStarted);
 #undef CASE_FOR_BLINK_BREAKDOWN
-        default:
+        case CompositorFrameReporter::BlinkBreakdown::kBreakdownCount:
           NOTREACHED();
           break;
       }
@@ -532,7 +489,7 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_VIZ_BREAKDOWN(BufferReadyToLatch);
         CASE_FOR_VIZ_BREAKDOWN(LatchToSwapEnd);
 #undef CASE_FOR_VIZ_BREAKDOWN
-        default:
+        case CompositorFrameReporter::VizBreakdown::kBreakdownCount:
           NOTREACHED();
           break;
       }

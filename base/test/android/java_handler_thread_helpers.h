@@ -1,9 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_ANDROID_JAVA_HANDLER_THREAD_FOR_TESTING_H_
-#define BASE_ANDROID_JAVA_HANDLER_THREAD_FOR_TESTING_H_
+#ifndef BASE_TEST_ANDROID_JAVA_HANDLER_THREAD_HELPERS_H_
+#define BASE_TEST_ANDROID_JAVA_HANDLER_THREAD_HELPERS_H_
 
 #include <jni.h>
 
@@ -39,4 +39,4 @@ class JavaHandlerThreadHelpers {
 }  // namespace android
 }  // namespace base
 
-#endif  // BASE_ANDROID_JAVA_HANDLER_THREAD_FOR_TESTING_H_
+#endif  // BASE_TEST_ANDROID_JAVA_HANDLER_THREAD_HELPERS_H_

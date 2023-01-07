@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,22 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/user_population.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
+#include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
-#include "components/safe_browsing/core/verdict_cache_manager.h"
-#include "components/sync/driver/test_sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -27,6 +32,9 @@
 #include "testing/platform_test.h"
 
 using ::testing::_;
+using testing::DoAll;
+using testing::Return;
+using testing::SetArgPointee;
 
 namespace safe_browsing {
 
@@ -34,6 +42,27 @@ namespace {
 constexpr char kRealTimeLookupUrl[] =
     "https://enterprise-safebrowsing.googleapis.com/safebrowsing/clientreport/"
     "realtime";
+
+class MockReferrerChainProvider : public ReferrerChainProvider {
+ public:
+  virtual ~MockReferrerChainProvider() = default;
+  MOCK_METHOD3(IdentifyReferrerChainByRenderFrameHost,
+               AttributionResult(content::RenderFrameHost* rfh,
+                                 int user_gesture_count_limit,
+                                 ReferrerChain* out_referrer_chain));
+  MOCK_METHOD5(IdentifyReferrerChainByEventURL,
+               AttributionResult(const GURL& event_url,
+                                 SessionID event_tab_id,
+                                 const content::GlobalRenderFrameHostId&
+                                     event_outermost_main_frame_id,
+                                 int user_gesture_count_limit,
+                                 ReferrerChain* out_referrer_chain));
+  MOCK_METHOD3(IdentifyReferrerChainByPendingEventURL,
+               AttributionResult(const GURL& event_url,
+                                 int user_gesture_count_limit,
+                                 ReferrerChain* out_referrer_chain));
+};
+
 }  // namespace
 
 class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
@@ -52,7 +81,10 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         false /* store_last_modified */,
         false /* restore_session */);
     cache_manager_ = std::make_unique<VerdictCacheManager>(
-        nullptr, content_setting_map_.get());
+        /*history_service=*/nullptr, content_setting_map_.get(),
+        &test_pref_service_,
+        /*sync_observer=*/nullptr);
+    referrer_chain_provider_ = std::make_unique<MockReferrerChainProvider>();
 
     TestingProfile::Builder builder;
     test_profile_ = builder.Build();
@@ -62,7 +94,8 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
         test_shared_loader_factory_, cache_manager_.get(), test_profile_.get(),
         base::BindRepeating(
             [](Profile* profile, syncer::TestSyncService* test_sync_service) {
-              ChromeUserPopulation population = GetUserPopulation(profile);
+              ChromeUserPopulation population =
+                  GetUserPopulationForProfile(profile);
               population.set_is_history_sync_enabled(
                   safe_browsing::SyncUtils::IsHistorySyncEnabled(
                       test_sync_service));
@@ -73,7 +106,8 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
             },
             test_profile_.get(), &test_sync_service_),
         enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-            test_profile_.get()));
+            test_profile_.get()),
+        referrer_chain_provider_.get());
 
     test_profile_->GetPrefs()->SetInteger(
         prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
@@ -148,6 +182,9 @@ class ChromeEnterpriseRealTimeUrlLookupServiceTest : public PlatformTest {
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   std::unique_ptr<TestingProfile> test_profile_;
   syncer::TestSyncService test_sync_service_;
+  std::unique_ptr<MockReferrerChainProvider> referrer_chain_provider_;
+  GURL last_committed_url_ = GURL("http://lastcommitted.test");
+  bool is_mainframe_ = true;
 };
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
@@ -161,8 +198,9 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 
   base::MockCallback<RTLookupRequestCallback> request_callback;
   base::MockCallback<RTLookupResponseCallback> response_callback;
-  enterprise_rt_service()->StartLookup(url, request_callback.Get(),
-                                       response_callback.Get());
+  enterprise_rt_service()->StartLookup(
+      url, last_committed_url_, is_mainframe_, request_callback.Get(),
+      response_callback.Get(), content::GetIOThreadTaskRunner({}));
 
   // |request_callback| should not be called if the verdict is already cached.
   EXPECT_CALL(request_callback, Run(_, _)).Times(0);
@@ -180,10 +218,15 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
                         "example.test/",
                         RTLookupResponse::ThreatInfo::COVERING_MATCH);
   SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting("dm_token"));
+  ReferrerChain returned_referrer_chain;
+  EXPECT_CALL(*referrer_chain_provider_,
+              IdentifyReferrerChainByPendingEventURL(_, _, _))
+      .WillOnce(DoAll(SetArgPointee<2>(returned_referrer_chain),
+                      Return(ReferrerChainProvider::SUCCESS)));
 
   base::MockCallback<RTLookupResponseCallback> response_callback;
   enterprise_rt_service()->StartLookup(
-      url,
+      url, last_committed_url_, is_mainframe_,
       base::BindOnce(
           [](std::unique_ptr<RTLookupRequest> request, std::string token) {
             EXPECT_EQ("http://example.test/", request->url());
@@ -196,7 +239,7 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
             EXPECT_TRUE(request->population().is_under_advanced_protection());
             EXPECT_EQ("", token);
           }),
-      response_callback.Get());
+      response_callback.Get(), content::GetIOThreadTaskRunner({}));
 
   EXPECT_CALL(response_callback, Run(/* is_rt_lookup_successful */ true,
                                      /* is_cached_response */ false, _));
@@ -205,6 +248,46 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 
   // Check the response is cached.
   EXPECT_NE(nullptr, GetCachedRealTimeUrlVerdict(url));
+}
+
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
+       TestCanCheckSafeBrowsingHighConfidenceAllowlist_BypassAllowlistFeature) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {safe_browsing::kRealTimeUrlLookupForEnterpriseAllowlistBypass}, {});
+  test_profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting("dm_token"));
+
+  // Can check allowlist if SafeBrowsingEnterpriseRealTimeUrlCheckMode is
+  // disabled.
+  test_profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      REAL_TIME_CHECK_DISABLED);
+  EXPECT_TRUE(
+      enterprise_rt_service()->CanCheckSafeBrowsingHighConfidenceAllowlist());
+
+  // Bypass allowlist if the SafeBrowsingEnterpriseRealTimeUrlCheckMode pref is
+  // set.
+  test_profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  EXPECT_FALSE(
+      enterprise_rt_service()->CanCheckSafeBrowsingHighConfidenceAllowlist());
+}
+
+TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
+       TestCanCheckSafeBrowsingHighConfidenceAllowlist_CheckAllowlist) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {}, {safe_browsing::kRealTimeUrlLookupForEnterpriseAllowlistBypass});
+  test_profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
+  SetDMTokenForTesting(policy::DMToken::CreateValidTokenForTesting("dm_token"));
+
+  test_profile_->GetPrefs()->SetInteger(
+      prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
+      REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED);
+  EXPECT_TRUE(
+      enterprise_rt_service()->CanCheckSafeBrowsingHighConfidenceAllowlist());
 }
 
 }  // namespace safe_browsing

@@ -70,7 +70,7 @@ function checkImageBitmap(bitmap)
     var canvas = document.createElement("canvas");
     canvas.width = 100;
     canvas.height = 100;
-    var ctx = canvas.getContext('2d');
+    var ctx = canvas.getContext('2d', {willReadFrequently: true});
     ctx.clearRect(0, 0, 100, 100);
     ctx.drawImage(bitmap, 0, 0);
     shouldBeClear(ctx, 0, 0);

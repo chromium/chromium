@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,15 @@ module printing.mojom;
 
 import "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 import "url/mojom/url.mojom";
 
 [EnableIf=enable_tagged_pdf]
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 
+[ServiceSandbox=sandbox.mojom.Sandbox.kPrintCompositor]
 interface PrintCompositor {
   // The status of composition and conversion execution.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
   enum Status {
     kSuccess = 0,
     kHandleMapError = 1,

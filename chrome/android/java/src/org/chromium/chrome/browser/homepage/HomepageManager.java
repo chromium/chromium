@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.url.GURL;
 
 /**
  * Provides information regarding homepage enabled states and URI.
@@ -147,8 +148,22 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
      */
     public static String getDefaultHomepageUri() {
         if (PartnerBrowserCustomizations.getInstance().isHomepageProviderAvailableAndEnabled()) {
-            return PartnerBrowserCustomizations.getInstance().getHomePageUrl();
+            return PartnerBrowserCustomizations.getInstance().getHomePageUrl().getSpec();
         }
+
+        String homepagePartnerDefaultUri;
+        String homepagePartnerDefaultGurlSerialized =
+                SharedPreferencesManager.getInstance().readString(
+                        ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_GURL, "");
+        if (!homepagePartnerDefaultGurlSerialized.equals("")) {
+            homepagePartnerDefaultUri =
+                    GURL.deserialize(homepagePartnerDefaultGurlSerialized).getSpec();
+        } else {
+            homepagePartnerDefaultUri = SharedPreferencesManager.getInstance().readString(
+                    ChromePreferenceKeys.HOMEPAGE_PARTNER_CUSTOMIZED_DEFAULT_URI, "");
+        }
+        if (!homepagePartnerDefaultUri.equals("")) return homepagePartnerDefaultUri;
+
         return UrlConstants.NTP_NON_NATIVE_URL;
     }
 
@@ -165,12 +180,25 @@ public class HomepageManager implements HomepagePolicyManager.HomepagePolicyStat
     }
 
     /**
+     * Determines whether the homepage is set to something other than the NTP or empty/null. This is
+     * the same as {@link #isHomepageNonNtp()}, but uses {@link UrlUtilities#isCanonicalizedNTPUrl}
+     * instead of {@link UrlUtilities#isNTPUrl} to make it possible to use before native is loaded.
+     * Prefer {@link #isHomepageNonNtp()} if possible.
+     * @return Whether the current homepage is something other than the NTP.
+     */
+    public static boolean isHomepageNonNtpPreNative() {
+        String currentHomepage = getHomepageUri();
+        return !TextUtils.isEmpty(currentHomepage)
+                && !UrlUtilities.isCanonicalizedNTPUrl(currentHomepage);
+    }
+
+    /**
      * Get homepage URI without checking if the homepage is enabled.
      * @return Homepage URI based on policy and shared preference settings.
      */
     private @NonNull String getHomepageUriIgnoringEnabledState() {
         if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
-            return HomepagePolicyManager.getHomepageUrl();
+            return HomepagePolicyManager.getHomepageUrl().getSpec();
         }
         if (getPrefHomepageUseChromeNTP()) {
             return UrlConstants.NTP_NON_NATIVE_URL;

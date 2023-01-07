@@ -1,0 +1,21 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+declare_args() {
+  # Whether the browser provides a speech recognition service
+  # (//media/mojo/mojom/speech_recognition_service.mojom) to the renderer.
+  enable_speech_service = is_chromeos || is_linux || is_mac || is_win
+
+  # Whether the speech service is implemented in the browser as a hosted service
+  # possibly running in a utility process.
+  #
+  # On other platforms, that service is either
+  # * implemented some other way (e.g. ChromeOS, where ML Service provides the
+  #   implementation); or
+  # * not implemented, and corresponding features don't exist as part of Chrome
+  #   (e.g. Android, where Live Caption is instead a system feature).
+  enable_browser_speech_service = is_linux || is_mac || is_win
+}

@@ -1,0 +1,17 @@
+include_rules = [
+  "+content/public/browser",
+  "+mojo/public/cpp/bindings",
+  "+net/http",
+  "+services/network/public",
+  "+third_party/blink/public/common",
+  "+url",
+]
+
+specific_include_rules = {
+  "url_request_rewrite_rules_manager_browsertest\.cc": [
+    "+content/public/test",
+    "+content/shell/browser/shell.h",
+    "+net/dns",
+    "+net/test",
+  ]
+}

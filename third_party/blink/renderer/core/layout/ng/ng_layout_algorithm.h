@@ -1,21 +1,22 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_ALGORITHM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_ALGORITHM_H_
 
-#include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class ComputedStyle;
+class NGColumnSpannerPath;
 class NGEarlyBreak;
 class NGLayoutResult;
 
@@ -26,13 +27,13 @@ class NGLayoutAlgorithmOperations {
   // constraints given by the NGConstraintSpace. Returns a layout result with
   // the resulting layout information.
   // TODO(layout-dev): attempt to make this function const.
-  virtual scoped_refptr<const NGLayoutResult> Layout() = 0;
+  virtual const NGLayoutResult* Layout() = 0;
 
   // Computes the min-content and max-content intrinsic sizes for the given box.
   // The result will not take any min-width, max-width or width properties into
   // account.
   virtual MinMaxSizesResult ComputeMinMaxSizes(
-      const MinMaxSizesFloatInput&) const = 0;
+      const MinMaxSizesFloatInput&) = 0;
 };
 
 // Parameters to pass when creating a layout algorithm for a block node.
@@ -40,23 +41,28 @@ struct NGLayoutAlgorithmParams {
   STACK_ALLOCATED();
 
  public:
-  NGLayoutAlgorithmParams(NGBlockNode node,
-                          const NGFragmentGeometry& fragment_geometry,
-                          const NGConstraintSpace& space,
-                          const NGBlockBreakToken* break_token = nullptr,
-                          const NGEarlyBreak* early_break = nullptr)
+  NGLayoutAlgorithmParams(
+      NGBlockNode node,
+      const NGFragmentGeometry& fragment_geometry,
+      const NGConstraintSpace& space,
+      const NGBlockBreakToken* break_token = nullptr,
+      const NGEarlyBreak* early_break = nullptr,
+      const HeapVector<Member<NGEarlyBreak>>* additional_early_breaks = nullptr)
       : node(node),
         fragment_geometry(fragment_geometry),
         space(space),
         break_token(break_token),
-        early_break(early_break) {}
+        early_break(early_break),
+        additional_early_breaks(additional_early_breaks) {}
 
   NGBlockNode node;
   const NGFragmentGeometry& fragment_geometry;
   const NGConstraintSpace& space;
   const NGBlockBreakToken* break_token;
   const NGEarlyBreak* early_break;
+  const NGColumnSpannerPath* column_spanner_path = nullptr;
   const NGLayoutResult* previous_result = nullptr;
+  const HeapVector<Member<NGEarlyBreak>>* additional_early_breaks;
 };
 
 // Base class for all LayoutNG algorithms.
@@ -75,7 +81,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
         break_token_(break_token),
         container_builder_(node,
                            style,
-                           &space,
+                           space,
                            {space.GetWritingMode(), direction}) {}
 
   // Constructor for algorithms that use NGBoxFragmentBuilder and
@@ -87,15 +93,16 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
         container_builder_(
             params.node,
             &params.node.Style(),
-            &params.space,
-            {params.space.GetWritingMode(), params.space.Direction()}) {
+            params.space,
+            {params.space.GetWritingMode(), params.space.Direction()}),
+        additional_early_breaks_(params.additional_early_breaks) {
     container_builder_.SetIsNewFormattingContext(
         params.space.IsNewFormattingContext());
     container_builder_.SetInitialFragmentGeometry(params.fragment_geometry);
-    if (UNLIKELY(params.space.HasBlockFragmentation())) {
-      DCHECK(params.space.IsAnonymous() || !params.node.IsMonolithic());
-      SetupFragmentBuilderForFragmentation(params.space, params.break_token,
-                                           &container_builder_);
+    if (UNLIKELY(params.space.HasBlockFragmentation() ||
+                 IsResumingLayout(params.break_token))) {
+      SetupFragmentBuilderForFragmentation(
+          params.space, params.node, params.break_token, &container_builder_);
     }
   }
 
@@ -103,8 +110,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
 
  protected:
   const NGConstraintSpace& ConstraintSpace() const {
-    DCHECK(container_builder_.ConstraintSpace());
-    return *container_builder_.ConstraintSpace();
+    return container_builder_.ConstraintSpace();
   }
 
   const ComputedStyle& Style() const { return node_.Style(); }
@@ -115,18 +121,27 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
             *container_builder_.BfcBlockOffset()};
   }
 
-  NGInputNodeType Node() const { return node_; }
+  const NGInputNodeType& Node() const { return node_; }
 
-  const NGBreakTokenType* BreakToken() const { return break_token_.get(); }
+  const NGBreakTokenType* BreakToken() const { return break_token_; }
 
+  const NGBoxStrut& Borders() const { return container_builder_.Borders(); }
+  const NGBoxStrut& Padding() const { return container_builder_.Padding(); }
   const NGBoxStrut& BorderPadding() const {
     return container_builder_.BorderPadding();
   }
   const NGBoxStrut& BorderScrollbarPadding() const {
     return container_builder_.BorderScrollbarPadding();
   }
+  LayoutUnit OriginalBorderScrollbarPaddingBlockStart() const {
+    return container_builder_.OriginalBorderScrollbarPaddingBlockStart();
+  }
   const LogicalSize& ChildAvailableSize() const {
     return container_builder_.ChildAvailableSize();
+  }
+
+  NGExclusionSpace& ExclusionSpace() {
+    return container_builder_.ExclusionSpace();
   }
 
   // Lay out again, this time with a predefined good breakpoint that we
@@ -134,23 +149,57 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
   // fragmentainer at an less-than-ideal location, due to breaking restrictions,
   // such as orphans, widows, break-before:avoid or break-after:avoid.
   template <typename Algorithm>
-  scoped_refptr<const NGLayoutResult> RelayoutAndBreakEarlier(
-      const NGEarlyBreak& breakpoint) {
+  const NGLayoutResult* RelayoutAndBreakEarlier(
+      const NGEarlyBreak& breakpoint,
+      const HeapVector<Member<NGEarlyBreak>>* additional_early_breaks =
+          nullptr) {
     // Not allowed to recurse!
     DCHECK(!early_break_);
+    DCHECK(!additional_early_breaks_ || additional_early_breaks_->empty());
 
     NGLayoutAlgorithmParams params(
         Node(), container_builder_.InitialFragmentGeometry(), ConstraintSpace(),
-        BreakToken(), &breakpoint);
+        BreakToken(), &breakpoint, additional_early_breaks);
     Algorithm algorithm_with_break(params);
-    auto& new_builder = algorithm_with_break.container_builder_;
+    return RelayoutAndBreakEarlier(&algorithm_with_break);
+  }
+
+  template <typename Algorithm>
+  const NGLayoutResult* RelayoutAndBreakEarlier(Algorithm* new_algorithm) {
+    DCHECK(new_algorithm);
+    auto& new_builder = new_algorithm->container_builder_;
     new_builder.SetBoxType(container_builder_.BoxType());
     // We're not going to run out of space in the next layout pass, since we're
     // breaking earlier, so no space shortage will be detected. Repeat what we
     // found in this pass.
     new_builder.PropagateSpaceShortage(
         container_builder_.MinimalSpaceShortage());
-    return algorithm_with_break.Layout();
+    return new_algorithm->Layout();
+  }
+
+  // Lay out again, this time without block fragmentation. This happens when a
+  // block-axis clipped node reaches the end, but still has content inside that
+  // wants to break. We don't want any zero-sized clipped fragments that
+  // contribute to superfluous fragmentainers.
+  template <typename Algorithm>
+  const NGLayoutResult* RelayoutWithoutFragmentation() {
+    DCHECK(ConstraintSpace().HasBlockFragmentation());
+    // We'll relayout with a special cloned constraint space that disables
+    // further fragmentation (but rather lets clipped child content "overflow"
+    // past the fragmentation line). This means that the cached constraint space
+    // will still be set up to do block fragmentation, but that should be the
+    // right thing, since, as far as input is concerned, this node is meant to
+    // perform block fragmentation (and it may already have produced multiple
+    // fragment, but this one will be the last).
+    NGConstraintSpace new_space = ConstraintSpace().CloneWithoutFragmentation();
+
+    NGLayoutAlgorithmParams params(Node(),
+                                   container_builder_.InitialFragmentGeometry(),
+                                   new_space, BreakToken());
+    Algorithm algorithm_without_fragmentation(params);
+    auto& new_builder = algorithm_without_fragmentation.container_builder_;
+    new_builder.SetBoxType(container_builder_.BoxType());
+    return algorithm_without_fragmentation.Layout();
   }
 
   NGInputNodeType node_;
@@ -160,9 +209,14 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
   const NGEarlyBreak* early_break_ = nullptr;
 
   // The break token from which we are currently resuming layout.
-  scoped_refptr<const NGBreakTokenType> break_token_;
+  const NGBreakTokenType* break_token_;
 
   NGBoxFragmentBuilderType container_builder_;
+
+  // There are cases where we may need more than one early break per fragment.
+  // For example, there may be an early break within multiple flex columns. This
+  // can be used to pass additional early breaks to the next layout pass.
+  const HeapVector<Member<NGEarlyBreak>>* additional_early_breaks_ = nullptr;
 };
 
 }  // namespace blink

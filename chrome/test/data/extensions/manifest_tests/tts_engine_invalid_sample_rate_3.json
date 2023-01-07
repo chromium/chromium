@@ -1,0 +1,10 @@
+{
+  "name": "test",
+  "manifest_version": 2,
+  "version": "1",
+  "tts_engine": {
+    "voices": [],
+    "sample_rate": 1000000,
+    "buffer_size": 128
+  }
+}

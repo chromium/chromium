@@ -1,10 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 
+#include <atomic>
+#include <ostream>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "ash/public/ash_interfaces.h"
@@ -12,33 +15,48 @@
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/command_line.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/feature_list.h"
+#include "base/files/file_path.h"
+#include "base/logging.h"
+#include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_internal.h"
 #include "base/path_service.h"
 #include "base/time/default_tick_clock.h"
+#include "chrome/browser/ash/lock_screen_apps/app_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager_impl.h"
 #include "chrome/browser/ash/lock_screen_apps/app_window_metrics_tracker.h"
 #include "chrome/browser/ash/lock_screen_apps/first_app_run_toast_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/focus_cycler_delegate.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
+#include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator_impl.h"
+#include "chrome/browser/ash/lock_screen_apps/state_observer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
+#include "content/public/browser/lock_screen_storage.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "crypto/symmetric_key.h"
 #include "extensions/browser/api/lock_screen_data/lock_screen_item_storage.h"
 #include "extensions/browser/app_window/app_delegate.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/aura/window.h"
+#include "ui/events/devices/device_data_manager.h"
 #include "ui/wm/core/window_animations.h"
+#include "ui/wm/core/window_properties.h"
 
 using ash::mojom::CloseLockScreenNoteReason;
 using ash::mojom::LockScreenNoteOrigin;
@@ -125,7 +143,7 @@ void StateController::Initialize() {
     tick_clock_ = base::DefaultTickClock::GetInstance();
 
   // The tray action ptr might be set previously if the client was being created
-  // for testing.
+
   if (!tray_action_)
     ash::BindTrayAction(tray_action_.BindNewPipeAndPassReceiver());
   mojo::PendingRemote<ash::mojom::TrayActionClient> client;
@@ -135,7 +153,7 @@ void StateController::Initialize() {
 
 void StateController::SetPrimaryProfile(Profile* profile) {
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user || !user->HasGaiaAccount()) {
     if (!ready_callback_.is_null())
       std::move(ready_callback_).Run();
@@ -149,10 +167,18 @@ void StateController::SetPrimaryProfile(Profile* profile) {
   }
 
   InitializeWithCryptoKey(profile, key);
+  if (base::FeatureList::IsEnabled(features::kWebLockScreenApi)) {
+    base::FilePath base_path;
+    base::PathService::Get(chrome::DIR_USER_DATA, &base_path);
+    base_path = base_path.AppendASCII("web_lock_screen_api_data");
+    base_path =
+        base_path.Append(ash::ProfileHelper::GetUserIdHashFromProfile(profile));
+    content::LockScreenStorage::GetInstance()->Init(profile, base_path);
+  }
 }
 
 void StateController::Shutdown() {
-  session_observer_.RemoveAll();
+  session_observation_.Reset();
   lock_screen_data_.reset();
   if (app_manager_) {
     app_manager_->Stop();
@@ -163,8 +189,8 @@ void StateController::Shutdown() {
   first_app_run_toast_manager_.reset();
   lock_screen_profile_creator_.reset();
   focus_cycler_delegate_ = nullptr;
-  power_manager_client_observer_.RemoveAll();
-  input_devices_observer_.RemoveAll();
+  power_manager_client_observation_.Reset();
+  input_devices_observation_.Reset();
   receiver_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -201,8 +227,8 @@ void StateController::InitializeWithCryptoKey(Profile* profile,
           base_path.AppendASCII("lock_screen_app_data_v2"));
   lock_screen_data_->SetSessionLocked(false);
 
-  chromeos::NoteTakingHelper::Get()->SetProfileWithEnabledLockScreenApps(
-      profile);
+  // Initialize a LockScreenApps instance.
+  ash::LockScreenAppsFactory::GetInstance()->Get(profile);
 
   // Lock screen profile creator might have been set by a test.
   if (!lock_screen_profile_creator_) {
@@ -219,7 +245,7 @@ void StateController::InitializeWithCryptoKey(Profile* profile,
   first_app_run_toast_manager_ =
       std::make_unique<FirstAppRunToastManager>(profile);
 
-  input_devices_observer_.Add(ui::DeviceDataManager::GetInstance());
+  input_devices_observation_.Observe(ui::DeviceDataManager::GetInstance());
 
   // Do not start state controller if stylus input is not present as lock
   // screen notes apps are geared towards stylus.
@@ -239,8 +265,9 @@ void StateController::InitializeWithCryptoKey(Profile* profile,
 void StateController::InitializeWithStylusInputPresent() {
   stylus_input_missing_ = false;
 
-  power_manager_client_observer_.Add(chromeos::PowerManagerClient::Get());
-  session_observer_.Add(session_manager::SessionManager::Get());
+  power_manager_client_observation_.Observe(
+      chromeos::PowerManagerClient::Get());
+  session_observation_.Observe(session_manager::SessionManager::Get());
   OnSessionStateChanged();
 
   // SessionController is fully initialized at this point.
@@ -330,7 +357,8 @@ void StateController::OnWindowVisibilityChanged(aura::Window* window,
   if (window != note_app_window_->GetNativeWindow() || !window->IsVisible())
     return;
 
-  note_window_observer_.Remove(window);
+  DCHECK(note_window_observation_.IsObservingSource(window));
+  note_window_observation_.Reset();
 
   UpdateLockScreenNoteState(TrayActionState::kActive);
   if (focus_cycler_delegate_) {
@@ -350,7 +378,7 @@ void StateController::OnWindowDestroying(aura::Window* window) {
 void StateController::OnAppWindowAdded(extensions::AppWindow* app_window) {
   if (note_app_window_ != app_window)
     return;
-  note_window_observer_.Add(note_app_window_->GetNativeWindow());
+  note_window_observation_.Observe(note_app_window_->GetNativeWindow());
   first_app_run_toast_manager_->RunForAppWindow(note_app_window_);
   note_app_window_metrics_->AppWindowCreated(app_window);
 }
@@ -408,8 +436,8 @@ extensions::AppWindow* StateController::CreateAppWindowForLockScreenAction(
 
   // The ownership of the window is passed to the caller of this method.
   note_app_window_ =
-      new extensions::AppWindow(context, app_delegate.release(), extension);
-  app_window_observer_.Add(extensions::AppWindowRegistry::Get(
+      new extensions::AppWindow(context, std::move(app_delegate), extension);
+  app_window_observation_.Observe(extensions::AppWindowRegistry::Get(
       lock_screen_profile_creator_->lock_screen_profile()));
   return note_app_window_;
 }
@@ -455,8 +483,8 @@ void StateController::FocusAppWindow(bool reverse) {
 void StateController::ResetNoteTakingWindowAndMoveToNextState(
     bool close_window,
     CloseLockScreenNoteReason reason) {
-  note_window_observer_.RemoveAll();
-  app_window_observer_.RemoveAll();
+  note_window_observation_.Reset();
+  app_window_observation_.Reset();
   if (first_app_run_toast_manager_)
     first_app_run_toast_manager_->Reset();
 

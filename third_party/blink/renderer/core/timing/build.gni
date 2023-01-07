@@ -1,10 +1,13 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 blink_core_sources_timing = [
+  "back_forward_cache_restoration.h",
+  "back_forward_cache_restoration.cc",
   "dom_window_performance.cc",
   "dom_window_performance.h",
+  "epoch_time_stamp.h",
   "event_counts.cc",
   "event_counts.h",
   "event_timing.cc",
@@ -15,6 +18,8 @@ blink_core_sources_timing = [
   "layout_shift.h",
   "layout_shift_attribution.cc",
   "layout_shift_attribution.h",
+  "measure_memory/local_web_memory_measurer.cc",
+  "measure_memory/local_web_memory_measurer.h",
   "measure_memory/measure_memory_controller.cc",
   "measure_memory/measure_memory_controller.h",
   "memory_info.cc",
@@ -37,6 +42,8 @@ blink_core_sources_timing = [
   "performance_navigation.h",
   "performance_navigation_timing.cc",
   "performance_navigation_timing.h",
+  "performance_navigation_timing_activation_start.cc",
+  "performance_navigation_timing_activation_start.h",
   "performance_observer.cc",
   "performance_observer.h",
   "performance_observer_entry_list.cc",
@@ -57,6 +64,12 @@ blink_core_sources_timing = [
   "profiler_group.h",
   "background_tracing_helper.cc",
   "background_tracing_helper.h",
+  "responsiveness_metrics.cc",
+  "responsiveness_metrics.h",
+  "soft_navigation_heuristics.cc",
+  "soft_navigation_heuristics.h",
+  "soft_navigation_entry.cc",
+  "soft_navigation_entry.h",
   "task_attribution_timing.cc",
   "task_attribution_timing.h",
   "time_clamper.cc",
@@ -69,4 +82,18 @@ blink_core_sources_timing = [
   "worker_global_scope_performance.h",
   "worker_performance.cc",
   "worker_performance.h",
+]
+
+blink_core_tests_timing = [
+  "background_tracing_helper_test.cc",
+  "memory_info_test.cc",
+  "performance_entry_test.cc",
+  "performance_mark_test.cc",
+  "performance_navigation_timing_test.cc",
+  "performance_observer_test.cc",
+  "performance_resource_timing_test.cc",
+  "performance_test.cc",
+  "profiler_group_test.cc",
+  "time_clamper_test.cc",
+  "window_performance_test.cc",
 ]

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -45,6 +45,11 @@ class ContextMenuMatcher {
                      ui::SimpleMenuModel::Delegate* delegate,
                      ui::SimpleMenuModel* menu_model,
                      base::RepeatingCallback<bool(const MenuItem*)> filter);
+
+  ContextMenuMatcher(const ContextMenuMatcher&) = delete;
+  ContextMenuMatcher& operator=(const ContextMenuMatcher&) = delete;
+
+  ~ContextMenuMatcher();
 
   // This is a helper function to append items for one particular extension.
   // The |index| parameter is used for assigning id's, and is incremented for
@@ -109,9 +114,9 @@ class ContextMenuMatcher {
   // This will set the icon on the most recently-added item in the menu_model_.
   void SetExtensionIcon(const std::string& extension_id);
 
-  content::BrowserContext* browser_context_;
-  ui::SimpleMenuModel* menu_model_;
-  ui::SimpleMenuModel::Delegate* delegate_;
+  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<ui::SimpleMenuModel> menu_model_;
+  raw_ptr<ui::SimpleMenuModel::Delegate> delegate_;
 
   base::RepeatingCallback<bool(const MenuItem*)> filter_;
 
@@ -122,8 +127,6 @@ class ContextMenuMatcher {
 
   // Keep track of and clean up menu models for submenus.
   std::vector<std::unique_ptr<ui::SimpleMenuModel>> extension_menu_models_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextMenuMatcher);
 };
 
 }  // namespace extensions

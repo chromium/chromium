@@ -1,0 +1,1 @@
+AXTitleChanged on AXStaticText AXValue='After'

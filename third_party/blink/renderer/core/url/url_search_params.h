@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,29 +7,33 @@
 
 #include <utility>
 
+#include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
-#include "third_party/blink/renderer/bindings/core/v8/usv_string_sequence_sequence_or_usv_string_usv_string_record_or_usv_string.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
-class ExceptionState;
 class DOMURL;
+class ExceptionState;
+class V8UnionUSVStringOrUSVStringSequenceSequenceOrUSVStringUSVStringRecord;
 
-typedef USVStringSequenceSequenceOrUSVStringUSVStringRecordOrUSVString
-    URLSearchParamsInit;
+using URLSearchParamsInit =
+    V8UnionUSVStringOrUSVStringSequenceSequenceOrUSVStringUSVStringRecord;
 
-class CORE_EXPORT URLSearchParams final : public ScriptWrappable,
-                                          public PairIterable<String, String> {
+class CORE_EXPORT URLSearchParams final
+    : public ScriptWrappable,
+      public PairIterable<String, IDLString, String, IDLString> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static URLSearchParams* Create(const URLSearchParamsInit&, ExceptionState&);
+  static URLSearchParams* Create(const URLSearchParamsInit* init,
+                                 ExceptionState& exception_state);
   static URLSearchParams* Create(const Vector<std::pair<String, String>>&,
                                  ExceptionState&);
   static URLSearchParams* Create(const Vector<Vector<String>>&,

@@ -1,0 +1,48 @@
+/* Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================*/
+
+syntax = "proto2";
+
+package tflite.task.vision;
+
+// Defines a dense feature vector. Only one of the two fields is ever present.
+// Feature vectors are assumed to be one-dimensional and L2-normalized.
+message FeatureVector {
+  // Raw output of the embedding layer. Only provided if `quantize` is set to
+  // false in the ImageEmbedderOptions, which is the case by default.
+  repeated float value_float = 1 [packed = true];
+  // Scalar-quantized embedding. Only provided if `quantize` is set to true in
+  // the ImageEmbedderOptions.
+  optional bytes value_string = 2;
+}
+
+// Result produced by one of the embedder model output layers.
+message Embedding {
+  // The output feature vector.
+  optional FeatureVector feature_vector = 1;
+  // The index of the model output layer that produced this feature vector.
+  optional int32 output_index = 2;
+}
+
+// Embeddings produced by the ImageEmbedder.
+message EmbeddingResult {
+  // The embeddings produced by each of the model output layers.
+  //
+  // Except in advanced cases, the embedding model has a single output layer,
+  // and this list is thus made of a single element.
+  repeated Embedding embeddings = 1;
+  // Reserved tags.
+  reserved 2;
+}

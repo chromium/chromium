@@ -1,17 +1,20 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_SESSIONS_IOS_CHROME_SESSION_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_SESSIONS_IOS_CHROME_SESSION_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "components/sessions/core/session_id.h"
 #import "ios/web/public/web_state_user_data.h"
 
 class IOSChromeSessionTabHelper
     : public web::WebStateUserData<IOSChromeSessionTabHelper> {
  public:
+  IOSChromeSessionTabHelper(const IOSChromeSessionTabHelper&) = delete;
+  IOSChromeSessionTabHelper& operator=(const IOSChromeSessionTabHelper&) =
+      delete;
+
   ~IOSChromeSessionTabHelper() override;
 
   // Returns the identifier used by session restore for this tab.
@@ -34,8 +37,6 @@ class IOSChromeSessionTabHelper
   SessionID window_id_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeSessionTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_IOS_CHROME_SESSION_TAB_HELPER_H_

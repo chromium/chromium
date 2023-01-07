@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/table_model.h"
 #include "ui/views/views_export.h"
 
@@ -49,8 +50,16 @@ VIEWS_EXPORT std::vector<int> CalculateTableColumnSizes(
 int TableColumnAlignmentToCanvasAlignment(ui::TableColumn::Alignment alignment);
 
 // Returns the index of the closest visible column index to |x|. Return value is
-// in terms of table->visible_columns().
-int GetClosestVisibleColumnIndex(const TableView* table, int x);
+// in terms of table->visible_columns(). Returns nullopt if there are no visible
+// columns.
+absl::optional<size_t> GetClosestVisibleColumnIndex(const TableView* table,
+                                                    int x);
+
+// Returns the mirror of the table column alignment if the layout is
+// right-to-left. If the layout is left-to-right, the same alignment is
+// returned.
+ui::TableColumn::Alignment GetMirroredTableColumnAlignment(
+    ui::TableColumn::Alignment alignment);
 
 }  // namespace views
 

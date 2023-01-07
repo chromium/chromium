@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/common/stack_frame.h"
 
+#include <memory>
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
@@ -12,7 +13,7 @@
 namespace extensions {
 
 namespace {
-const char kAnonymousFunction[] = "(anonymous function)";
+const char16_t kAnonymousFunction[] = u"(anonymous function)";
 }
 
 StackFrame::StackFrame() : line_number(1), column_number(1) {
@@ -32,8 +33,7 @@ StackFrame::StackFrame(uint32_t line_number,
     : line_number(line_number),
       column_number(column_number),
       source(source),
-      function(function.empty() ? base::UTF8ToUTF16(kAnonymousFunction)
-                                : function) {}
+      function(function.empty() ? kAnonymousFunction : function) {}
 
 StackFrame::~StackFrame() {
 }
@@ -60,11 +60,11 @@ std::unique_ptr<StackFrame> StackFrame::CreateFromText(
       !re2::RE2::FullMatch(text,
                            "([^\\(\\)]+):(\\d+):(\\d+)",
                            &source, &line, &column)) {
-    return std::unique_ptr<StackFrame>();
+    return nullptr;
   }
 
-  return std::unique_ptr<StackFrame>(new StackFrame(
-      line, column, base::UTF8ToUTF16(source), base::UTF8ToUTF16(function)));
+  return std::make_unique<StackFrame>(line, column, base::UTF8ToUTF16(source),
+                                      base::UTF8ToUTF16(function));
 }
 
 bool StackFrame::operator==(const StackFrame& rhs) const {

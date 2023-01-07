@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 
 namespace blink {
 
-class WebMemoryPressureListener {
+class BLINK_PLATFORM_EXPORT WebMemoryPressureListener {
  public:
   // Called when a memory pressure notification is received.
-  BLINK_PLATFORM_EXPORT static void OnMemoryPressure(
+  static void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel);
 
-  BLINK_PLATFORM_EXPORT static void OnPurgeMemory();
+  static void OnPurgeMemory();
 };
 
 }  // namespace blink

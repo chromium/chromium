@@ -1,28 +1,27 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/passwords/password_infobar_modal_overlay_mediator.h"
 
 #import "base/bind.h"
-#include "base/strings/sys_string_conversions.h"
-#include "ios/chrome/browser/infobars/infobar_ios.h"
+#import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/infobar_modal_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/password_infobar_modal_overlay_responses.h"
-#include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #import "ios/chrome/browser/passwords/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
 #import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_password_modal_consumer.h"
-#import "ios/chrome/browser/ui/infobars/test/fake_infobar_ui_delegate.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
-#include "url/gurl.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -45,7 +44,7 @@ class PasswordInfobarModalOverlayMediatorTest : public PlatformTest {
  public:
   PasswordInfobarModalOverlayMediatorTest()
       : url_(kUrlSpec),
-        infobar_([[FakeInfobarUIDelegate alloc] init],
+        infobar_(InfobarType::kInfobarTypePasswordSave,
                  MockIOSChromeSavePasswordInfoBarDelegate::Create(kUsername,
                                                                   kPassword,
                                                                   url_)),
@@ -105,7 +104,7 @@ TEST_F(PasswordInfobarModalOverlayMediatorTest, SetUpConsumer) {
             consumer.currentCredentialsSaved);
 }
 
-// Tests that |-updateCredentialsWithUsername:password:| dispatches an
+// Tests that `-updateCredentialsWithUsername:password:` dispatches an
 // UpdateCredentials response before accepting the infobar and dismissing the
 // overlay.
 TEST_F(PasswordInfobarModalOverlayMediatorTest, UpdateCredentials) {
@@ -137,7 +136,7 @@ TEST_F(PasswordInfobarModalOverlayMediatorTest, UpdateCredentials) {
   EXPECT_NSEQ(kPassword, password);
 }
 
-// Tests that |-neverSaveCredentialsForCurrentSite| dispatches a
+// Tests that `-neverSaveCredentialsForCurrentSite` dispatches a
 // NeverSaveCredentials response then stops the overlay.
 TEST_F(PasswordInfobarModalOverlayMediatorTest, NeverSaveCredentials) {
   EXPECT_CALL(callback_receiver_,
@@ -147,7 +146,7 @@ TEST_F(PasswordInfobarModalOverlayMediatorTest, NeverSaveCredentials) {
   [mediator_ neverSaveCredentialsForCurrentSite];
 }
 
-// Tests that |-presentPasswordSettings| dispatches a PresentPasswordSettings
+// Tests that `-presentPasswordSettings` dispatches a PresentPasswordSettings
 // response then stops the overlay.
 TEST_F(PasswordInfobarModalOverlayMediatorTest, PresentPasswordSettings) {
   EXPECT_CALL(callback_receiver_,

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
@@ -30,6 +29,10 @@ class TestChildModalParent : public views::WidgetDelegateView,
   static TestChildModalParent* Show(aura::Window* context);
 
   explicit TestChildModalParent(aura::Window* context);
+
+  TestChildModalParent(const TestChildModalParent&) = delete;
+  TestChildModalParent& operator=(const TestChildModalParent&) = delete;
+
   ~TestChildModalParent() override;
 
   // Returns the modal parent window hosted within the top-level window.
@@ -63,8 +66,6 @@ class TestChildModalParent : public views::WidgetDelegateView,
 
   // The modal child widget.
   views::Widget* modal_child_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestChildModalParent);
 };
 
 }  // namespace ash

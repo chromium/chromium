@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/renderer/mock_agent_scheduling_group.h"
 
-#include "base/no_destructor.h"
+#include <tuple>
+
 #include "content/renderer/render_thread_impl.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 
@@ -57,14 +58,14 @@ MockAgentSchedulingGroup::MockAgentSchedulingGroup(
 void MockAgentSchedulingGroup::Init() {
   mojo::AssociatedRemote<mojom::AgentSchedulingGroupHost>
       agent_scheduling_group_host;
-  ignore_result(
-      agent_scheduling_group_host.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore =
+      agent_scheduling_group_host.BindNewEndpointAndPassDedicatedReceiver();
   mojo::AssociatedRemote<mojom::RouteProvider> browser_route_provider;
-  ignore_result(
-      browser_route_provider.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore =
+      browser_route_provider.BindNewEndpointAndPassDedicatedReceiver();
 
   BindAssociatedInterfaces(
-      agent_scheduling_group_host.Unbind(), browser_route_provider.Unbind(),
+      agent_scheduling_group_host.Unbind(),
       mojo::PendingAssociatedReceiver<mojom::RouteProvider>());
 }
 

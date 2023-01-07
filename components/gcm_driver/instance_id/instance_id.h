@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 
@@ -30,7 +30,7 @@ extern const char kGCMScope[];
 class InstanceID {
  public:
   // Used in UMA. Can add enum values, but never renumber or delete and reuse.
-  enum Result {
+  enum Result : uint8_t {
     // Successful operation.
     SUCCESS = 0,
     // Invalid parameter.
@@ -84,6 +84,9 @@ class InstanceID {
   //            Must outlive this class. On Android, this can be null instead.
   static std::unique_ptr<InstanceID> CreateInternal(const std::string& app_id,
                                                     gcm::GCMDriver* gcm_driver);
+
+  InstanceID(const InstanceID&) = delete;
+  InstanceID& operator=(const InstanceID&) = delete;
 
   virtual ~InstanceID();
 
@@ -167,13 +170,11 @@ class InstanceID {
 
   // Owned by GCMProfileServiceFactory, which is a dependency of
   // InstanceIDProfileServiceFactory, which owns this.
-  gcm::GCMDriver* gcm_driver_;
+  raw_ptr<gcm::GCMDriver> gcm_driver_;
 
   std::string app_id_;
 
   base::WeakPtrFactory<InstanceID> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InstanceID);
 };
 
 }  // namespace instance_id

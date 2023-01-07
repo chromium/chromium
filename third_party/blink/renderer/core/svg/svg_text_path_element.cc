@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text_path.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -113,7 +113,7 @@ void SVGTextPathElement::SvgAttributeChanged(
 
 LayoutObject* SVGTextPathElement::CreateLayoutObject(const ComputedStyle&,
                                                      LegacyLayout) {
-  return new LayoutSVGTextPath(this);
+  return MakeGarbageCollected<LayoutSVGTextPath>(this);
 }
 
 bool SVGTextPathElement::LayoutObjectIsNeeded(

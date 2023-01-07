@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ const GURL kBaseUrl = GURL("https://example.com/foo?bar=baz");
 
 TEST(LinkHeaderParserTest, NoLinkHeader) {
   auto headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK\n");
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
 
   std::vector<mojom::LinkHeaderPtr> parsed_headers =
       ParseLinkHeaders(*headers, kBaseUrl);
@@ -28,7 +28,7 @@ TEST(LinkHeaderParserTest, NoLinkHeader) {
 
 TEST(LinkHeaderParserTest, InvalidValue) {
   auto headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK\n");
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
   // The value is invalid because it misses a semicolon after `rel=preload`.
   headers->AddHeader("link", "</script.js>; rel=preload as=script");
 
@@ -39,10 +39,10 @@ TEST(LinkHeaderParserTest, InvalidValue) {
 
 TEST(LinkHeaderParserTest, UndefinedAttribute) {
   auto headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK\n");
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
   // `unknownattr` is not pre-defined.
   headers->AddHeader("link",
-                     "</style.css>; rel=preload; as=stylesheet; unknownattr");
+                     "</style.css>; rel=preload; as=style; unknownattr");
 
   std::vector<mojom::LinkHeaderPtr> parsed_headers =
       ParseLinkHeaders(*headers, kBaseUrl);
@@ -51,7 +51,7 @@ TEST(LinkHeaderParserTest, UndefinedAttribute) {
 
 TEST(LinkHeaderParserTest, UndefinedAttributeValue) {
   auto headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK\n");
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
   headers->AddHeader("link", "</foo>; rel=preload; as=unknown-as");
 
   std::vector<mojom::LinkHeaderPtr> parsed_headers =
@@ -61,7 +61,7 @@ TEST(LinkHeaderParserTest, UndefinedAttributeValue) {
 
 TEST(LinkHeaderParserTest, UnknownMimeType) {
   auto headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK\n");
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
   headers->AddHeader("link", "</foo>; rel=preload; type=unknown-type");
 
   std::vector<mojom::LinkHeaderPtr> parsed_headers =
@@ -71,7 +71,7 @@ TEST(LinkHeaderParserTest, UnknownMimeType) {
 
 TEST(LinkHeaderParserTest, NoRelAttribute) {
   auto headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK\n");
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
   // `rel` must be present.
   headers->AddHeader("link", "</foo>");
 
@@ -82,7 +82,7 @@ TEST(LinkHeaderParserTest, NoRelAttribute) {
 
 TEST(LinkHeaderParserTest, AttributesAppearTwice) {
   auto headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK\n");
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
   headers->AddHeader("link", "</foo>; rel=preload; rel=prefetch");
 
   std::vector<mojom::LinkHeaderPtr> parsed_headers =
@@ -95,14 +95,46 @@ TEST(LinkHeaderParserTest, AttributesAppearTwice) {
   // reasonable.
 }
 
+TEST(LinkHeaderParserTest, RelAttributeModulePreload) {
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  headers->AddHeader("link", "</foo.mjs>; rel=modulepreload");
+  std::vector<mojom::LinkHeaderPtr> parsed_headers =
+      ParseLinkHeaders(*headers, kBaseUrl);
+  ASSERT_EQ(parsed_headers.size(), 1UL);
+  EXPECT_EQ(parsed_headers[0]->rel, mojom::LinkRelAttribute::kModulePreload);
+}
+
+TEST(LinkHeaderParserTest, RelAttributeDnsPrefetch) {
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  headers->AddHeader("link", "<https://cdn.example.com>; rel=dns-prefetch");
+  std::vector<mojom::LinkHeaderPtr> parsed_headers =
+      ParseLinkHeaders(*headers, kBaseUrl);
+  ASSERT_EQ(parsed_headers.size(), 1UL);
+  EXPECT_EQ(parsed_headers[0]->href, GURL("https://cdn.example.com"));
+  EXPECT_EQ(parsed_headers[0]->rel, mojom::LinkRelAttribute::kDnsPrefetch);
+}
+
+TEST(LinkHeaderParserTest, RelAttributePreconnect) {
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  headers->AddHeader("link", "<https://cdn.example.com>; rel=preconnect");
+  std::vector<mojom::LinkHeaderPtr> parsed_headers =
+      ParseLinkHeaders(*headers, kBaseUrl);
+  ASSERT_EQ(parsed_headers.size(), 1UL);
+  EXPECT_EQ(parsed_headers[0]->href, GURL("https://cdn.example.com"));
+  EXPECT_EQ(parsed_headers[0]->rel, mojom::LinkRelAttribute::kPreconnect);
+}
+
 TEST(LinkHeaderParserTest, LinkAsAttribute) {
   auto headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK\n");
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
   headers->AddHeader("link", "</foo>; rel=preload");
   headers->AddHeader("link", "</font.woff2>; rel=preload; as=font");
   headers->AddHeader("link", "</image.jpg>; rel=preload; as=image");
   headers->AddHeader("link", "</script.js>; rel=preload; as=script");
-  headers->AddHeader("link", "</style.css>; rel=preload; as=stylesheet");
+  headers->AddHeader("link", "</style.css>; rel=preload; as=style");
 
   std::vector<mojom::LinkHeaderPtr> parsed_headers =
       ParseLinkHeaders(*headers, kBaseUrl);
@@ -116,7 +148,7 @@ TEST(LinkHeaderParserTest, LinkAsAttribute) {
 
 TEST(LinkHeaderParserTest, CrossOriginAttribute) {
   auto headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK\n");
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
   headers->AddHeader("link", "<https://cross.example.com/>; rel=preload");
   headers->AddHeader("link",
                      "<https://cross.example.com/>; rel=preload; crossorigin");
@@ -142,7 +174,7 @@ TEST(LinkHeaderParserTest, CrossOriginAttribute) {
 
 TEST(LinkHeaderParserTest, TwoHeaders) {
   auto headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK\n");
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
   headers->AddHeader("link", "</image.jpg>; rel=preload; as=image");
   headers->AddHeader("link",
                      "<https://cross.example.com/font.woff2>; rel=preload; "
@@ -170,7 +202,7 @@ TEST(LinkHeaderParserTest, TwoHeaders) {
 
 TEST(LinkHeaderParserTest, UpperCaseCharacters) {
   auto headers =
-      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK\n");
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
   headers->AddHeader("link", "</image.jpg>; REL=preload; as=IMAGE");
   headers->AddHeader("link",
                      "<https://cross.example.com/font.woff2>; rel=PRELOAD; "

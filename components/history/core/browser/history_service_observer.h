@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_SERVICE_OBSERVER_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_SERVICE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
 
@@ -13,66 +12,82 @@ namespace history {
 
 class HistoryService;
 
+// Used by components external to History to observe `HistoryService` and
+// process tasks on the main thread.
+//
+// The notifications roughly correspond to the ones in `HistoryBackendObserver`,
+// although there are some differences.
 class HistoryServiceObserver {
  public:
-  HistoryServiceObserver() {}
-  virtual ~HistoryServiceObserver() {}
+  HistoryServiceObserver() = default;
 
-  // Called when user visits an URL.
+  HistoryServiceObserver(const HistoryServiceObserver&) = delete;
+  HistoryServiceObserver& operator=(const HistoryServiceObserver&) = delete;
+
+  virtual ~HistoryServiceObserver() = default;
+
+  // Called when a `new_visit` is added to History. This happens in two
+  // scenarios:
+  //  1. User makes a new visit on the local device.
+  //  2. Sync brings a visit from a different device onto the local device.
+  //     Notably, this is called for each visit brought over.
   //
-  // The |row| ID will be set to the value that is currently in effect in the
-  // main history database. |redirects| is the list of redirects leading up to
-  // the URL. If we have a redirect chain A -> B -> C and user is visiting C,
-  // then |redirects[0]=B| and |redirects[1]=A|. If there are no redirects,
-  // |redirects| is an empty vector.
+  // The values in `url_row` and `new_visit` are set to what is currently in the
+  // history database.
   virtual void OnURLVisited(HistoryService* history_service,
-                            ui::PageTransition transition,
-                            const URLRow& row,
-                            const RedirectList& redirects,
-                            base::Time visit_time) {}
+                            const URLRow& url_row,
+                            const VisitRow& new_visit) {}
 
-  // Called when a URL has been added or modified.
+  // Called when a URL has a metadata-only update. In situations where a URL has
+  // a metadata-only update AND new visits, both `OnURLsModified` and
+  // `OnURLVisited` will be called. Therefore observers that only care about new
+  // visits should only override `OnURLVisited`.
   //
-  // |changed_urls| lists the information for each of the URLs affected. The
+  // These metadata-only updates happen in these scenarios:
+  //  1. When the Page Title is updated shortly after the page loads.
+  //  2. When `TypedURLSyncBridge` updates the `URLRow` data. This often happens
+  //     in addition to adding new visits, so `OnURLVisited` will be called too.
+  //  3. When History expiration expires some, but not all visits related to
+  //     a URL. In that case, the URL's metadata is updated.
+  //
+  // `changed_urls` lists the information for each of the URLs affected. The
   // rows will have the IDs that are currently in effect in the main history
   // database.
   virtual void OnURLsModified(HistoryService* history_service,
                               const URLRows& changed_urls) {}
 
-  // TODO(https://crbug.com/1141501): this is for an experiment, and will be
-  // removed once data is collected from experiment.
-  virtual void OnURLsModified(HistoryService* history_service,
-                              const URLRows& changed_urls,
-                              UrlsModifiedReason reason);
-
   // Called when one or more URLs are deleted.
   //
-  // |deletion_info| describes the urls that have been removed from history.
+  // `deletion_info` describes the urls that have been removed from history.
   virtual void OnURLsDeleted(HistoryService* history_service,
                              const DeletionInfo& deletion_info) {}
 
-  // Is called to notify when |history_service| has finished loading.
+  // Is called to notify when `history_service` has finished loading.
   virtual void OnHistoryServiceLoaded(HistoryService* history_service) {}
 
-  // Is called to notify when |history_service| is being deleted.
+  // Is called to notify when `history_service` is being deleted.
   virtual void HistoryServiceBeingDeleted(HistoryService* history_service) {}
 
   // Sent when a keyword search term is updated.
   //
-  // |row| contains the URL information for search |term|.
-  // |keyword_id| associated with a URL and search term.
+  // `row` contains the URL information for search `term`.
+  // `keyword_id` associated with a URL and search term.
   virtual void OnKeywordSearchTermUpdated(HistoryService* history_service,
                                           const URLRow& row,
                                           KeywordID keyword_id,
                                           const std::u16string& term) {}
 
   // Sent when a keyword search term is deleted.
-  // |url_id| is the id of the url row.
+  // `url_id` is the id of the url row.
   virtual void OnKeywordSearchTermDeleted(HistoryService* history_service,
                                           URLID url_id) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HistoryServiceObserver);
+  // Called when content model annotation is modified for a url.
+  // `url_id` is the id of the url row.
+  virtual void OnContentModelAnnotationModified(
+      HistoryService* history_service,
+      const URLRow& row,
+      const VisitContentModelAnnotations& model_annotations) {}
 };
 
 }  // namespace history

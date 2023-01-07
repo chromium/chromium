@@ -1,0 +1,2 @@
+Tests that waitForDebuggerOnStart doesn't crash for canceled navigations.
+

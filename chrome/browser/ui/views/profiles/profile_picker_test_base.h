@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TEST_BASE_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TEST_BASE_H_
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 namespace content {
@@ -34,22 +33,23 @@ class ProfilePickerTestBase : public InProcessBrowserTest {
   // Returns the internal web view for the profile picker.
   views::WebView* web_view();
 
-  // Waits until a relayout of the main view has been performed. This implies
-  // the appropriate web_contents() is attached to the layout.
-  void WaitForLayoutWithToolbar();
-  void WaitForLayoutWithoutToolbar();
+  // Forwards to `profiles::testing::WaitForPickerWidgetCreated()`.
+  void WaitForPickerWidgetCreated();
 
-  // Waits until the web contents does the first non-empty paint for `url`.
-  void WaitForFirstPaint(content::WebContents* contents, const GURL& url);
+  // Waits until `target` WebContents stops loading `url`. If no `target` is
+  // provided, it checks for the current `web_contents()` to stop loading `url`.
+  // This also works if `web_contents()` changes throughout the waiting as it is
+  // technically observing all web contents.
+  void WaitForLoadStop(const GURL& url, content::WebContents* target = nullptr);
 
   // Waits until the picker gets closed.
   void WaitForPickerClosed();
 
+  // Waits until the picker gets closed and asserts it reopens immediately.
+  void WaitForPickerClosedAndReopenedImmediately();
+
   // Gets the picker's web contents.
   content::WebContents* web_contents();
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_TEST_BASE_H_

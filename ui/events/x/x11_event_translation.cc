@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,19 +9,17 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion_x.h"
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
 #include "ui/events/x/events_x_utils.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/xproto.h"
-
-#if defined(USE_OZONE)
-#include "ui/base/ui_base_features.h"
-#endif
 
 namespace ui {
 
@@ -48,6 +46,11 @@ class TouchEventX11 : public ui::TouchEvent {
     if (type() == ET_TOUCH_RELEASED || type() == ET_TOUCH_CANCELLED)
       TouchFactory::GetInstance()->ReleaseSlot(pointer_details().id);
   }
+
+  // Event:
+  std::unique_ptr<Event> Clone() const override {
+    return std::make_unique<TouchEventX11>(*this);
+  }
 };
 
 Event::Properties GetEventPropertiesFromXEvent(EventType type,
@@ -59,6 +62,14 @@ Event::Properties GetEventPropertiesFromXEvent(EventType type,
 
     // Keyboard group
     auto state = static_cast<uint32_t>(key->state);
+    properties.emplace(kPropertyKeyboardState,
+                       Values{
+                           static_cast<uint8_t>(state),
+                           static_cast<uint8_t>(state >> 8),
+                           static_cast<uint8_t>(state >> 16),
+                           static_cast<uint8_t>(state >> 24),
+                       });
+
     uint8_t group = XkbGroupForCoreState(state);
     properties.emplace(kPropertyKeyboardGroup, Values{group});
 
@@ -66,11 +77,11 @@ Event::Properties GetEventPropertiesFromXEvent(EventType type,
     uint8_t hw_keycode = static_cast<uint8_t>(key->detail);
     properties.emplace(kPropertyKeyboardHwKeyCode, Values{hw_keycode});
 
-    // IBus-gtk specific flags
-    uint8_t ibus_flags = (state >> kPropertyKeyboardIBusFlagOffset) &
-                         kPropertyKeyboardIBusFlagMask;
-    if (ibus_flags)
-      properties.emplace(kPropertyKeyboardIBusFlag, Values{ibus_flags});
+    // IBus-/fctix-GTK specific flags
+    uint8_t ime_flags = (state >> kPropertyKeyboardImeFlagOffset) &
+                        kPropertyKeyboardImeFlagMask;
+    if (ime_flags)
+      properties.emplace(kPropertyKeyboardImeFlag, Values{ime_flags});
 
   } else if (type == ET_MOUSE_EXITED) {
     // NotifyVirtual events are created for intermediate windows that the
@@ -95,19 +106,14 @@ std::unique_ptr<KeyEvent> CreateKeyEvent(EventType event_type,
   // In Ozone builds, keep DomCode/DomKey unset, so they are extracted lazily
   // in KeyEvent::ApplyLayout() which makes it possible for CrOS/Linux, for
   // example, to support host system keyboard layouts.
-  std::unique_ptr<KeyEvent> event;
-#if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
-    event = std::make_unique<KeyEvent>(event_type, key_code, event_flags,
-                                       EventTimeFromXEvent(x11_event));
-  }
-#endif
-#if defined(USE_X11)
-  if (!event) {
-    event = std::make_unique<KeyEvent>(
-        event_type, key_code, CodeFromXEvent(x11_event), event_flags,
-        GetDomKeyFromXEvent(x11_event), EventTimeFromXEvent(x11_event));
-  }
+  std::unique_ptr<KeyEvent> event =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      std::make_unique<KeyEvent>(event_type, key_code, event_flags,
+                                 EventTimeFromXEvent(x11_event));
+#else
+      std::make_unique<KeyEvent>(
+          event_type, key_code, CodeFromXEvent(x11_event), event_flags,
+          GetDomKeyFromXEvent(x11_event), EventTimeFromXEvent(x11_event));
 #endif
 
   DCHECK(event);
@@ -131,7 +137,7 @@ std::unique_ptr<MouseEvent> CreateMouseEvent(EventType type,
   if (crossing && crossing->detail == x11::NotifyDetail::Inferior)
     return nullptr;
 
-  PointerDetails details{EventPointerType::kMouse};
+  PointerDetails details = GetStylusPointerDetailsFromXEvent(x11_event);
   auto event = std::make_unique<MouseEvent>(
       type, EventLocationFromXEvent(x11_event),
       EventSystemLocationFromXEvent(x11_event), EventTimeFromXEvent(x11_event),
@@ -167,12 +173,10 @@ std::unique_ptr<TouchEvent> CreateTouchEvent(EventType type,
       type, EventLocationFromXEvent(xev), EventTimeFromXEvent(xev),
       GetTouchPointerDetailsFromXEvent(xev));
 #if defined(USE_OZONE)
-  if (features::IsUsingOzonePlatform()) {
     // Touch events don't usually have |root_location| set differently than
     // |location|, since there is a touch device to display association, but
     // this doesn't happen in Ozone X11.
     event->set_root_location(EventSystemLocationFromXEvent(xev));
-  }
 #endif
   return event;
 }

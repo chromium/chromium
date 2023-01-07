@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+PASS CloseWatchers created without user activation, but close()d via user activation, fires cancel
+PASS CloseWatchers created without user activation, but close()d via user activation, fires cancel, which can be preventDefault()ed
+PASS CloseWatchers created without user activation, but closed via a close signal after user activation, fires cancel
+PASS CloseWatchers created without user activation, but closed via a close signal after user activation, fires cancel, which can be preventDefault()ed
+PASS Multiple CloseWatchers created without user activation close together (with no cancel)
+PASS Creating a CloseWatcher from user activation keeps it separate from the free CloseWatcher, but they don't fire cancel
+PASS Creating a CloseWatcher from user activation, and close()ing CloseWatchers with user activation, fires cancel
+PASS Creating a CloseWatcher from user activation, and closing CloseWatchers with a close signal after user activation, fires cancel
+PASS Multiple CloseWatchers created with user activation close in reverse order
+PASS 3 user activations let you have 3 + 1 = 4 ungrouped close watchers/0 cancel events
+PASS 3 user activations let you have 2 close watchers with 1 cancel event, even if the first cancel event is prevented
+PASS destroy()ing the free CloseWatcher allows a new free one to be created without user activation, and it receives the close signal
+PASS close()ing the free CloseWatcher allows a new free one to be created without user activation, and it receives the close signal
+PASS closing the free CloseWatcher via a close signal allows a new free one to be created without user activation, and it receives a second close signal
+PASS The second watcher can be the free watcher, if the first is created with user activation
+PASS The third watcher can be the free watcher, if the first two are created with user activation
+Harness: the test ran to completion.
+

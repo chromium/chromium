@@ -18,14 +18,13 @@
 				<string>Icon-180.png</string>
 				<string>Icon-29.png</string>
 				<string>Icon-58.png</string>
-				<string>Icon-76.png</string>
 				<string>Icon-80.png</string>
 				<string>Icon-87.png</string>
 			</array>
 		</dict>
 	</dict>
 	<key>CFBundleIdentifier</key>
-	<string>${IOS_BUNDLE_ID_PREFIX}.${PRODUCT_NAME:rfc1034identifier}</string>
+	<string>${BUNDLE_IDENTIFIER}</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

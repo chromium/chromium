@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.chromium.base.annotations.RemovableInRelease;
+import org.chromium.build.BuildConfig;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 
@@ -82,11 +82,12 @@ public class ChosenObjectSettings extends SiteSettingsPreferenceFragment {
      * returns the same value. This must be true because this activity is displaying permissions
      * for a single object. Each instance varies only in which site it represents.
      */
-    @RemovableInRelease
     private void checkObjectConsistency() {
-        String exampleObject = mObjectInfos.get(0).getObject();
-        for (ChosenObjectInfo info : mObjectInfos) {
-            assert info.getObject().equals(exampleObject);
+        if (BuildConfig.ENABLE_ASSERTS) {
+            String exampleObject = mObjectInfos.get(0).getObject();
+            for (ChosenObjectInfo info : mObjectInfos) {
+                assert info.getObject().equals(exampleObject);
+            }
         }
     }
 
@@ -238,7 +239,8 @@ public class ChosenObjectSettings extends SiteSettingsPreferenceFragment {
         header.setTitle(titleText);
         header.setImageView(R.drawable.ic_delete_white_24dp,
                 R.string.website_settings_revoke_all_permissions_for_device, (View view) -> {
-                    new AlertDialog.Builder(getContext(), R.style.Theme_Chromium_AlertDialog)
+                    new AlertDialog
+                            .Builder(getContext(), R.style.ThemeOverlay_BrowserUI_AlertDialog)
                             .setTitle(R.string.reset)
                             .setMessage(dialogMsg)
                             .setPositiveButton(R.string.reset,

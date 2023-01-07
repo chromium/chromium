@@ -1,18 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_EXTENSION_ICON_IMAGE_H_
 #define EXTENSIONS_BROWSER_EXTENSION_ICON_IMAGE_H_
 
-#include <map>
-#include <string>
-
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
+#include "base/scoped_observation.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_icon_set.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -47,7 +45,7 @@ namespace extensions {
 // synchronously create (when |GetRepresentation| is called on it)
 // representations for all the scale factors supported by the current platform.
 // Note that |IconImage| is not thread safe.
-class IconImage : public content::NotificationObserver {
+class IconImage : public ExtensionRegistryObserver {
  public:
   class Observer {
    public:
@@ -83,6 +81,10 @@ class IconImage : public content::NotificationObserver {
             int resource_size_in_dip,
             const gfx::ImageSkia& default_icon,
             Observer* observer);
+
+  IconImage(const IconImage&) = delete;
+  IconImage& operator=(const IconImage&) = delete;
+
   ~IconImage() override;
 
   gfx::Image image() const { return image_; }
@@ -106,12 +108,13 @@ class IconImage : public content::NotificationObserver {
   void OnImageLoaded(float scale, const gfx::Image& image);
   void OnImageRepLoaded(const gfx::ImageSkiaRep& rep);
 
-  // content::NotificationObserver overrides:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ExtensionRegistryObserver:
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const Extension* extension,
+                           UnloadedExtensionReason reason) override;
+  void OnShutdown(ExtensionRegistry* extension_registry) override;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<const Extension> extension_;
   ExtensionIconSet icon_set_;
   const int resource_size_in_dip_;
@@ -124,7 +127,7 @@ class IconImage : public content::NotificationObserver {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  Source* source_;  // Owned by ImageSkia storage.
+  raw_ptr<Source> source_;  // Owned by ImageSkia storage.
   gfx::ImageSkia image_skia_;
   // The icon with whose representation |image_skia_| should be updated if
   // its own representation load fails.
@@ -134,11 +137,10 @@ class IconImage : public content::NotificationObserver {
   // Note: this is reset each time a new representation is loaded.
   gfx::Image image_;
 
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   base::WeakPtrFactory<IconImage> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IconImage);
 };
 
 }  // namespace extensions

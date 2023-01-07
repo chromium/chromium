@@ -1,6 +1,4 @@
-#!/usr/bin/env python
-
-# NOTE: This script requires python 3.
+#!/usr/bin/env python3
 
 """Script to generate Chromium's Abseil .def files at roll time.
 
@@ -14,9 +12,9 @@ is needed.
 
 Unless you are on a Windows machine, you need to set up your Chromium
 checkout for cross-compilation by following the instructions at
-https://chromium.googlesource.com/chromium/src.git/+/master/docs/win_cross.md.
+https://chromium.googlesource.com/chromium/src.git/+/main/docs/win_cross.md.
 If you are on Windows, you may need to tweak this script to run, e.g. by
-changing "gn" to "gn.bat", changing "llvm-nm-9" to the name of your copy of
+changing "gn" to "gn.bat", changing "llvm-nm" to the name of your copy of
 llvm-nm, etc.
 """
 
@@ -71,7 +69,7 @@ def _GenerateDefFile(cpu, is_debug, extra_gn_args=[], suffix=None):
 
   gn = 'gn'
   autoninja = 'autoninja'
-  symbol_dumper = ['llvm-nm-9']
+  symbol_dumper = ['third_party/llvm-build/Release+Asserts/bin/llvm-nm']
   if sys.platform == 'win32':
     gn = 'gn.bat'
     autoninja = 'autoninja.bat'
@@ -131,6 +129,11 @@ def _GenerateDefFile(cpu, is_debug, extra_gn_args=[], suffix=None):
           # "lld-link: error: duplicate /export option" on symbols such as:
           # ?kHexChar@numbers_internal@absl@@3QBDB
           if symbol in dll_exports:
+            continue
+          # Avoid to export deleting dtors since they trigger
+          # "lld-link: error: export of deleting dtor" linker errors, see
+          # crbug.com/1201277.
+          if symbol.startswith('??_G'):
             continue
           absl_symbols.add(symbol)
 

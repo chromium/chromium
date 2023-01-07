@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,7 +110,7 @@ class FakeVideoCaptureDeviceTestBase : public ::testing::Test {
   }
 
   void WaitForCapturedFrame() {
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -278,7 +278,7 @@ TEST_F(FakeVideoCaptureDeviceTest, GetAndSetCapabilities) {
 
   EXPECT_CALL(*image_capture_client_.get(), OnCorrectGetPhotoState()).Times(1);
   device->GetPhotoState(std::move(scoped_get_callback));
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
   const mojom::PhotoState* state = image_capture_client_->state();
@@ -358,6 +358,16 @@ TEST_F(FakeVideoCaptureDeviceTest, GetAndSetCapabilities) {
   EXPECT_GE(state->zoom->max, state->zoom->current);
   EXPECT_TRUE(state->fill_light_mode.empty());
 
+  ASSERT_TRUE(state->supported_background_blur_modes);
+  EXPECT_EQ(2u, state->supported_background_blur_modes->size());
+  EXPECT_EQ(1, std::count(state->supported_background_blur_modes->begin(),
+                          state->supported_background_blur_modes->end(),
+                          mojom::BackgroundBlurMode::OFF));
+  EXPECT_EQ(1, std::count(state->supported_background_blur_modes->begin(),
+                          state->supported_background_blur_modes->end(),
+                          mojom::BackgroundBlurMode::BLUR));
+  EXPECT_EQ(mojom::BackgroundBlurMode::OFF, state->background_blur_mode);
+
   // Set options: zoom to the maximum value.
   const int max_zoom_value = state->zoom->max;
   VideoCaptureDevice::SetPhotoOptionsCallback scoped_set_callback =
@@ -371,7 +381,7 @@ TEST_F(FakeVideoCaptureDeviceTest, GetAndSetCapabilities) {
   EXPECT_CALL(*image_capture_client_.get(), OnCorrectSetPhotoOptions(true))
       .Times(1);
   device->SetPhotoOptions(std::move(settings), std::move(scoped_set_callback));
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
   // Retrieve Capabilities again and check against the set values.
@@ -381,7 +391,7 @@ TEST_F(FakeVideoCaptureDeviceTest, GetAndSetCapabilities) {
 
   EXPECT_CALL(*image_capture_client_.get(), OnCorrectGetPhotoState()).Times(1);
   device->GetPhotoState(std::move(scoped_get_callback2));
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   EXPECT_EQ(max_zoom_value, image_capture_client_->state()->zoom->current);
 
@@ -408,7 +418,7 @@ TEST_F(FakeVideoCaptureDeviceTest, TakePhoto) {
   EXPECT_CALL(*image_capture_client_.get(), OnCorrectPhotoTaken()).Times(1);
   device->TakePhoto(std::move(scoped_callback));
 
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   device->StopAndDeAllocate();
 }
@@ -436,9 +446,11 @@ TEST_F(FakeVideoCaptureDeviceFactoryTest, DeviceWithNoSupportedFormats) {
   EXPECT_EQ(1u, devices_info_.size());
   VideoCaptureFormats& supported_formats = devices_info_[0].supported_formats;
   EXPECT_EQ(0u, supported_formats.size());
-  auto device =
+
+  VideoCaptureErrorOrDevice device_status =
       video_capture_device_factory_->CreateDevice(devices_info_[0].descriptor);
-  EXPECT_TRUE(device.get());
+  ASSERT_TRUE(device_status.ok());
+  auto device = device_status.ReleaseDevice();
 
   auto client = CreateClient();
   EXPECT_CALL(*client, OnError(_, _, _));
@@ -474,9 +486,10 @@ TEST_P(FakeVideoCaptureDeviceFactoryTest,
                 supported_formats_entry.pixel_format);
     }
 
-    std::unique_ptr<VideoCaptureDevice> device =
+    VideoCaptureErrorOrDevice device_status =
         video_capture_device_factory_->CreateDevice(device_info.descriptor);
-    ASSERT_TRUE(device);
+    ASSERT_TRUE(device_status.ok());
+    std::unique_ptr<VideoCaptureDevice> device = device_status.ReleaseDevice();
 
     VideoCaptureParams capture_params;
     capture_params.requested_format.frame_size.SetSize(1280, 720);

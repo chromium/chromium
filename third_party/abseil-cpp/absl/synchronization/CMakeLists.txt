@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     graphcycles_internal
@@ -32,6 +33,7 @@ absl_cc_library(
     absl::raw_logging_internal
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     kernel_timeout_internal
@@ -95,7 +97,7 @@ absl_cc_test(
   DEPS
     absl::synchronization
     absl::time
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -108,7 +110,7 @@ absl_cc_test(
   DEPS
     absl::synchronization
     absl::time
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -122,9 +124,10 @@ absl_cc_test(
     absl::graphcycles_internal
     absl::core_headers
     absl::raw_logging_internal
-    gmock_main
+    GTest::gmock_main
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     thread_pool
@@ -154,7 +157,7 @@ absl_cc_test(
     absl::memory
     absl::raw_logging_internal
     absl::time
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(
@@ -167,9 +170,10 @@ absl_cc_test(
   DEPS
     absl::synchronization
     absl::time
-    gmock_main
+    GTest::gmock_main
 )
 
+# Internal-only target, do not depend on directly.
 absl_cc_library(
   NAME
     per_thread_sem_test_common
@@ -183,7 +187,7 @@ absl_cc_library(
     absl::config
     absl::strings
     absl::time
-    gmock
+    GTest::gmock
   TESTONLY
 )
 
@@ -199,7 +203,7 @@ absl_cc_test(
     absl::synchronization
     absl::strings
     absl::time
-    gmock_main
+    GTest::gmock_main
 )
 
 absl_cc_test(

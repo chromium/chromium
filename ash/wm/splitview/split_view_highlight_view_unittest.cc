@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,11 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/icu_test_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
 
@@ -30,8 +33,13 @@ class SplitViewHighlightViewTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    left_highlight_ = std::make_unique<SplitViewHighlightView>(false);
-    right_highlight_ = std::make_unique<SplitViewHighlightView>(true);
+    widget_ = CreateTestWidget();
+    left_highlight_ =
+        widget_->widget_delegate()->GetContentsView()->AddChildView(
+            std::make_unique<SplitViewHighlightView>(false));
+    right_highlight_ =
+        widget_->widget_delegate()->GetContentsView()->AddChildView(
+            std::make_unique<SplitViewHighlightView>(true));
   }
 
   void SetLeftBounds(const gfx::Rect& bounds, bool animate) {
@@ -43,18 +51,18 @@ class SplitViewHighlightViewTest : public AshTestBase {
   }
 
  protected:
-  std::unique_ptr<SplitViewHighlightView> left_highlight_;
-  std::unique_ptr<SplitViewHighlightView> right_highlight_;
+  SplitViewHighlightView* left_highlight_;
+  SplitViewHighlightView* right_highlight_;
+  std::unique_ptr<views::Widget> widget_;
 
  private:
   void SetBounds(const gfx::Rect& bounds, bool is_left, bool animate) {
     // The animation type only determines the duration and tween. For testing,
     // any valid animation type would work.
     auto animation_type =
-        animate ? base::make_optional(SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_IN)
-                : base::nullopt;
-    auto* highlight_view =
-        is_left ? left_highlight_.get() : right_highlight_.get();
+        animate ? absl::make_optional(SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_IN)
+                : absl::nullopt;
+    auto* highlight_view = is_left ? left_highlight_ : right_highlight_;
     highlight_view->SetBounds(bounds, animation_type);
   }
 };

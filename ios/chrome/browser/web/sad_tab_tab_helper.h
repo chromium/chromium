@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -19,40 +19,34 @@
 class SadTabTabHelper : public web::WebStateUserData<SadTabTabHelper>,
                         public web::WebStateObserver {
  public:
-  // Creates a SadTabTabHelper and attaches it to a specific web_state object.
-  // Uses a default repeat_failure_interval.
-  static void CreateForWebState(web::WebState* web_state);
-
-  // Creates a SadTabTabHelper and attaches it to a specific web_state object,
-  // |repeat_failure_interval| sets the corresponding instance variable used for
-  // determining repeat failures.
-  static void CreateForWebState(web::WebState* web_state,
-                                double repeat_failure_interval);
+  SadTabTabHelper(const SadTabTabHelper&) = delete;
+  SadTabTabHelper& operator=(const SadTabTabHelper&) = delete;
 
   ~SadTabTabHelper() override;
 
-  // Sets the SadTabHelper delegate. |delegate| will be in charge of presenting
-  // the SadTabView. |delegate| is not retained by TabHelper.
+  // Sets the SadTabHelper delegate. `delegate` will be in charge of presenting
+  // the SadTabView. `delegate` is not retained by TabHelper.
   void SetDelegate(id<SadTabTabHelperDelegate> delegate);
 
   // true if Sad Tab has currently being shown.
   bool is_showing_sad_tab() const { return showing_sad_tab_; }
 
+  // The default window of time a failure of the same URL needs to occur
+  // to be considered a repeat failure.
+  static constexpr base::TimeDelta kDefaultRepeatFailureInterval =
+      base::Seconds(60);
+
  private:
   friend class web::WebStateUserData<SadTabTabHelper>;
 
-  // Constructs a SadTabTabHelper, assigning the helper to a web_state. A
-  // default repeat_failure_interval will be used.
-  explicit SadTabTabHelper(web::WebState* web_state);
+  // Constructs a SadTabTabHelper. `repeat_failure_interval` represents
+  // a timeout period during which a second failure will be considered a
+  // 'repeated' crash rather than an initial event.
+  SadTabTabHelper(web::WebState* web_state,
+                  base::TimeDelta repeat_failure_interval);
 
-  // Constructs a SadTabTabHelper allowing an optional |repeat_failure_interval|
-  // value to be passed in, representing a timeout period in seconds during
-  // which a second failure will be considered a 'repeated' crash rather than an
-  // initial event.
-  SadTabTabHelper(web::WebState* web_state, double repeat_failure_interval);
-
-  // Registers that a visible crash occurred for |url_causing_failure|. Updates
-  // |repeated_failure_|.
+  // Registers that a visible crash occurred for `url_causing_failure`. Updates
+  // `repeated_failure_`.
   void OnVisibleCrash(const GURL& url_causing_failure);
 
   // Presents a new SadTabView via the web_state object.
@@ -86,10 +80,6 @@ class SadTabTabHelper : public web::WebStateUserData<SadTabTabHelper>,
                            web::NavigationContext* navigation_context) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
-  // The default window of time a failure of the same URL needs to occur
-  // to be considered a repeat failure.
-  static const double kDefaultRepeatFailureInterval;
-
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
   web::WebState* web_state_ = nullptr;
@@ -102,7 +92,7 @@ class SadTabTabHelper : public web::WebStateUserData<SadTabTabHelper>,
   // used to determine time window for repeated crashes.
   std::unique_ptr<base::ElapsedTimer> last_failed_timer_;
 
-  // Whether a Sad Tab is being shown over |web_state_|'s content area.
+  // Whether a Sad Tab is being shown over `web_state_`'s content area.
   bool showing_sad_tab_ = false;
 
   // true if Sad Tab is presented and presented for repeated load failure.
@@ -110,7 +100,7 @@ class SadTabTabHelper : public web::WebStateUserData<SadTabTabHelper>,
 
   // Stores the interval window in seconds during which a second
   // RenderProcessGone failure will be considered a repeat failure.
-  double repeat_failure_interval_ = kDefaultRepeatFailureInterval;
+  base::TimeDelta repeat_failure_interval_;
 
   // true if the WebState needs to be reloaded after web state becomes visible.
   bool requires_reload_on_becoming_visible_ = false;
@@ -125,8 +115,6 @@ class SadTabTabHelper : public web::WebStateUserData<SadTabTabHelper>,
   __strong id<NSObject> application_did_become_active_observer_ = nil;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SadTabTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_SAD_TAB_TAB_HELPER_H_

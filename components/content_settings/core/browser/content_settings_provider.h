@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #define COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_PROVIDER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
@@ -23,7 +22,7 @@ class RuleIterator;
 
 class ProviderInterface {
  public:
-  virtual ~ProviderInterface() {}
+  virtual ~ProviderInterface() = default;
 
   // Returns a |RuleIterator| over the content setting rules stored by this
   // provider. If |incognito| is true, the iterator returns only the content
@@ -33,6 +32,9 @@ class ProviderInterface {
   // (including |GetRuleIterator|) for the same provider until the
   // |RuleIterator| is destroyed.
   // Returns nullptr to indicate the RuleIterator is empty.
+  //
+  // This method needs to be thread-safe and continue to work after
+  // |ShutdownOnUIThread| has been called.
   virtual std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
       bool incognito) const = 0;
@@ -49,7 +51,7 @@ class ProviderInterface {
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      std::unique_ptr<base::Value>&& value,
+      base::Value&& value,
       const ContentSettingConstraints& constraints) = 0;
 
   // Resets all content settings for the given |content_type| and empty resource

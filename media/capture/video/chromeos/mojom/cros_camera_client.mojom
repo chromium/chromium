@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next min version: 1
+
+module cros.mojom;
+
+import "media/capture/video/chromeos/mojom/camera_common.mojom";
+
+// The CrOS camera HAL v3 Mojo client.
+//
+// Next method ID: 1
+interface CameraHalClient {
+  // A caller calls SetUpChannel to dispatch the established Mojo channel
+  // |camera_module| to the client.  The CameraHalClient can create a Mojo
+  // channel to the camera HAL v3 adapter process with |camera_module|.
+  // SetUpChannel may be called multiple times.  In cases such as the
+  // CameraHalServer which holds the original Mojo channel crashes,
+  // CameraHalDispatcher will call SetUpChannel again once a new CameraHalServer
+  // reconnects.
+  SetUpChannel@0(pending_remote<CameraModule> camera_module);
+};

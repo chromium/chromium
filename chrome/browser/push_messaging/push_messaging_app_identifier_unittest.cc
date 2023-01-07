@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ void ExpectAppIdentifiersEqual(const PushMessagingAppIdentifier& a,
 }
 
 base::Time kExpirationTime =
-    base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromSeconds(1));
+    base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(1));
 
 }  // namespace
 
@@ -54,7 +54,7 @@ class PushMessagingAppIdentifierTest : public testing::Test {
         GURL("https://www.example.com/"), 1, kExpirationTime);
     different_et_ = PushMessagingAppIdentifier::Generate(
         GURL("https://www.example.com/"), 1,
-        kExpirationTime + base::TimeDelta::FromSeconds(100));
+        kExpirationTime + base::Seconds(100));
   }
 
   Profile* profile() { return &profile_; }
@@ -142,7 +142,7 @@ TEST_F(PushMessagingAppIdentifierTest, FindLegacy) {
 
   // Create a legacy preferences entry (the test happens to use PersistToPrefs
   // since that currently works, but it's ok to change the behavior of
-  // PersistToPrefs; if so, this test can just do a raw DictionaryPrefUpdate).
+  // PersistToPrefs; if so, this test can just do a raw ScopedDictPrefUpdate).
   original_.app_id_ = legacy_app_id;
   original_.PersistToPrefs(profile());
 

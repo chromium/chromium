@@ -1,0 +1,3 @@
+monorail {
+  component: "UI>Browser>WebAppInstalls>Desktop"
+}

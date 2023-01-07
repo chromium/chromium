@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,5 @@ extern NSString* const kSettingsAccountsTableViewId;
 extern NSString* const kSettingsAccountsTableViewAddAccountCellId;
 // The accessibility identifier of the signout cell.
 extern NSString* const kSettingsAccountsTableViewSignoutCellId;
-// The accessibility identifier of the signout and clear data cell.
-extern NSString* const kSettingsAccountsTableViewSignoutAndClearDataCellId;
-// The accessibility identifier of the sync account cell.
-extern NSString* const kSettingsAccountsTableViewSyncCellId;
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_ACCOUNTS_TABLE_VIEW_CONTROLLER_CONSTANTS_H_

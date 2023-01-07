@@ -1,5 +1,2 @@
-monorail {
-  component: "Blink>Storage"
-}
+mixins: "//content/browser/locks/COMMON_METADATA"
 
-team_email: "storage-dev@chromium.org"

@@ -1,12 +1,12 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/feature_list.h"
-#include "base/ios/ios_util.h"
-#include "base/mac/foundation_util.h"
-#include "ios/chrome/browser/ui/safe_mode/safe_mode_app_interface.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
+#import "base/feature_list.h"
+#import "base/ios/ios_util.h"
+#import "base/mac/foundation_util.h"
+#import "ios/chrome/browser/ui/safe_mode/safe_mode_app_interface.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -20,13 +20,11 @@
 #error "This file requires ARC support."
 #endif
 
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(SafeModeAppInterface)
-
 using chrome_test_util::ButtonWithAccessibilityLabel;
 
 namespace {
 
-// Verifies that |message| is displayed.
+// Verifies that `message` is displayed.
 void AssertMessageOnPage(NSString* message) {
   id<GREYMatcher> messageMatcher =
       grey_allOf(grey_text(message), grey_kindOfClass([UILabel class]), nil);
@@ -34,7 +32,7 @@ void AssertMessageOnPage(NSString* message) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Verifies that |message| is not displayed.
+// Verifies that `message` is not displayed.
 void AssertMessageNotOnPage(NSString* message) {
   id<GREYMatcher> messageMatcher =
       grey_allOf(grey_text(message), grey_kindOfClass([UILabel class]),
@@ -66,7 +64,6 @@ void AssertTryAgainButtonOnPage() {
 - (void)testSafeModeSendingCrashReport {
   // Mocks the +hasReportToUpload method by swizzling to return positively that
   // there are crash reports to upload.
-  // TODO(crbug.com/1015272): Consider moving from swizzling to a delegate.
   EarlGreyScopedBlockSwizzler hasReport(@"SafeModeViewController",
                                         @"hasReportToUpload", ^{
                                           return YES;
@@ -87,7 +84,6 @@ void AssertTryAgainButtonOnPage() {
 - (void)testSafeModeDetectedThirdPartyMods {
   // Mocks the +detectedThirdPartyMods method by swizzling to return positively
   // that device appears to be jailbroken and contains third party mods.
-  // TODO(crbug.com/1015272): Consider moving from swizzling to a delegate.
   EarlGreyScopedBlockSwizzler thirdParty(@"SafeModeViewController",
                                          @"detectedThirdPartyMods", ^{
                                            return YES;
@@ -114,7 +110,6 @@ void AssertTryAgainButtonOnPage() {
 - (void)testSafeModeBothThirdPartyModsAndHasReport {
   // Mocks the +detectedThirdPartyMods method by swizzling to return positively
   // that device appears to be jailbroken and contains third party mods.
-  // TODO(crbug.com/1015272): Consider moving from swizzling to a delegate.
   EarlGreyScopedBlockSwizzler thirdParty(@"SafeModeViewController",
                                          @"detectedThirdPartyMods", ^{
                                            return YES;
@@ -133,7 +128,7 @@ void AssertTryAgainButtonOnPage() {
   // Verifies screen content that does not show crash report being uploaded.
   // When devices are jailbroken, the crash reports are not very useful.
   AssertMessageOnPage(NSLocalizedString(@"IDS_IOS_SAFE_MODE_AW_SNAP", @""));
-  // Constructs the list of bad mods based on |badModulesList| above.
+  // Constructs the list of bad mods based on `badModulesList` above.
   NSString* message =
       [NSLocalizedString(@"IDS_IOS_SAFE_MODE_NAMED_TWEAKS_FOUND", @"")
           stringByAppendingString:@"\n\n    iAmBad\n    MJackson"];

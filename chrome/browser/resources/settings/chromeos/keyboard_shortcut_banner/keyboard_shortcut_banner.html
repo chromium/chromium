@@ -1,0 +1,95 @@
+<style>
+  :host {
+    align-items: center;
+    border: 1px solid var(--cr-separator-color);
+    border-radius: 8px;
+    column-gap: 12px;
+    display: flex;
+    flex-shrink: 0;
+    font-family: Roboto, sans-serif;
+    font-size: 13px;
+    margin: 4px;
+    outline-width: 0;
+    padding: 12px;
+  }
+
+  #icon {
+    background: center / cover no-repeat;
+    background-image: url(chrome://os-settings/images/keyboard_shortcut.svg);
+    flex-shrink: 0;
+    height: 48px;
+    width: 48px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #icon {
+      background-image:
+        url(chrome://os-settings/images/keyboard_shortcut_dark.svg);
+    }
+  }
+
+  #text {
+    flex: 1;
+  }
+
+  h2 {
+    color: var(--cr-primary-text-color);
+    font-family: 'Google Sans', Roboto, sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .reminder-message {
+    color: var(--cr-secondary-text-color);
+    margin-top: 4px;
+  }
+
+  kbd {
+    font-family: Roboto, sans-serif;
+    font-weight: 500;
+  }
+
+  /* Shortcut pods */
+  kbd > kbd {
+    background-color: var(--cros-shortcut-background-color);
+    background-image: linear-gradient(
+      var(--cros-shortcut-background-gradient-color),
+      var(--cros-shortcut-background-gradient-color));
+    border-radius: 18px;
+    box-shadow: var(--cr-elevation-1);
+    color: var(--cr-secondary-text-color);
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    margin: 0 4px;
+    padding: 0 6px;
+  }
+
+  /* Blue + icon between shortcut pods */
+  :not(kbd) > kbd {
+    color: var(--cros-text-color-prominent);
+  }
+
+  cr-button {
+    --border-color: transparent;
+    --hover-border-color: transparent;
+    --disabled-border-color: transparent;
+  }
+</style>
+
+<div id="icon"></div>
+
+<div id="text">
+  <h2>[[header]]</h2>
+  <template is="dom-repeat" items="[[body]]" as="message">
+    <div id="[[getIdForIndex_(index)]]" aria-hidden="true"
+        class="reminder-message" inner-h-t-m-l="[[message]]">
+    </div>
+  </template>
+</div>
+
+<cr-button on-click="onDismissClick_" id="dismiss" aria-describedby="dismiss"
+    aria-labelledby$="[[getBodyIds_(body)]]">
+  $i18n{dismiss}
+</cr-button>

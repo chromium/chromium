@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/chrome_views_export.h"
 #include "chrome/browser/ui/views/dropdown_bar_host_delegate.h"
 #include "ui/views/controls/button/button.h"
@@ -49,6 +48,10 @@ class FindBarView : public views::BoxLayoutView,
   METADATA_HEADER(FindBarView);
 
   explicit FindBarView(FindBarHost* host = nullptr);
+
+  FindBarView(const FindBarView&) = delete;
+  FindBarView& operator=(const FindBarView&) = delete;
+
   ~FindBarView() override;
 
   void SetHost(FindBarHost* host);
@@ -105,7 +108,7 @@ class FindBarView : public views::BoxLayoutView,
 
   // The OS-specific view for the find bar that acts as an intermediary
   // between us and the WebContentsView.
-  FindBarHost* find_bar_host_;
+  raw_ptr<FindBarHost> find_bar_host_;
 
   // Used to detect if the input text, not including the IME composition text,
   // has changed or not.
@@ -119,8 +122,6 @@ class FindBarView : public views::BoxLayoutView,
   views::ImageButton* find_previous_button_;
   views::ImageButton* find_next_button_;
   views::ImageButton* close_button_;
-
-  DISALLOW_COPY_AND_ASSIGN(FindBarView);
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, FindBarView, views::BoxLayoutView)

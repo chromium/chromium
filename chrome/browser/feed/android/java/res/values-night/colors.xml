@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <color name="post_follow_illustration_device_outline">@color/modern_grey_600</color>
+
+    <!-- Footer chip -->
+    <color name="menu_footer_chip_background_color_baseline">@color/menu_footer_chip_background_color_light</color>
+    <color name="menu_footer_chip_background_color_disabled">@color/menu_footer_chip_background_color_disabled_light</color>
+</resources>

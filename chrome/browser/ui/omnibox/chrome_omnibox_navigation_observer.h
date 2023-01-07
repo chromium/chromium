@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
@@ -20,13 +20,6 @@
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 class Profile;
-class ShortcutsBackend;
-class TemplateURLService;
-
-namespace network {
-class SharedURLLoaderFactory;
-class SimpleURLLoader;
-}
 
 // Monitors omnibox navigations in order to trigger behaviors that depend on
 // successful navigations.
@@ -44,103 +37,73 @@ class SimpleURLLoader;
 //
 // Please see the class comment on the base class for important information
 // about the memory management of this object.
-class ChromeOmniboxNavigationObserver : public OmniboxNavigationObserver,
-                                        public content::NotificationObserver,
-                                        public content::WebContentsObserver {
+class ChromeOmniboxNavigationObserver
+    : public base::RefCounted<ChromeOmniboxNavigationObserver>,
+      public content::WebContentsObserver {
  public:
-  enum LoadState {
-    LOAD_NOT_SEEN,
-    LOAD_PENDING,
-    LOAD_COMMITTED,
+  enum class AlternativeFetchState {
+    kFetchNotComplete,
+    kFetchSucceeded,
+    kFetchFailed,
   };
 
-  ChromeOmniboxNavigationObserver(Profile* profile,
-                                  const std::u16string& text,
-                                  const AutocompleteMatch& match,
-                                  const AutocompleteMatch& alternate_nav_match);
-  ~ChromeOmniboxNavigationObserver() override;
+  using ShowInfobarCallback =
+      base::OnceCallback<void(ChromeOmniboxNavigationObserver*)>;
 
-  LoadState load_state() const { return load_state_; }
+  static void Create(content::NavigationHandle* navigation,
+                     Profile* profile,
+                     const std::u16string& text,
+                     const AutocompleteMatch& match,
+                     const AutocompleteMatch& alternative_nav_match);
 
-  // Called directly by ChromeOmniboxClient when an extension-related navigation
-  // occurs.  Such navigations don't trigger an immediate NAV_ENTRY_PENDING and
-  // must be handled separately.
-  void OnSuccessfulNavigation();
+  static void CreateForTesting(content::NavigationHandle* navigation,
+                               Profile* profile,
+                               const std::u16string& text,
+                               const AutocompleteMatch& match,
+                               const AutocompleteMatch& alternative_nav_match,
+                               network::mojom::URLLoaderFactory* loader_factory,
+                               ShowInfobarCallback show_infobar);
 
-  // Called when a navigation that yields a 404 ("Not Found") occurs.  If this
-  // navigation was an omnibox search that invoked an auto-generated custom
-  // search engine, delete the engine.  This will prevent the user from using
-  // the broken engine again.
-  void On404();
-
-  // Test-only method to override how loading happens. Normally this is
-  // extracted from the profile passed to the constructor.
-  void SetURLLoaderFactoryForTesting(
-      scoped_refptr<network::SharedURLLoaderFactory> testing_loader_factory);
-
- protected:
-  // Creates/displays the alternate nav infobar.  Overridden in tests.
-  virtual void CreateAlternateNavInfoBar();
-
- private:
-  FRIEND_TEST_ALL_PREFIXES(ChromeOmniboxNavigationObserverTest,
-                           DeleteBrokenCustomSearchEngines);
-  FRIEND_TEST_ALL_PREFIXES(ChromeOmniboxNavigationObserverTest,
-                           AlternateNavInfoBar);
-
-  enum FetchState {
-    FETCH_NOT_COMPLETE,
-    FETCH_SUCCEEDED,
-    FETCH_FAILED,
-  };
-
-  // OmniboxNavigationObserver:
-  bool HasSeenPendingLoad() const override;
-
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
-  // content::WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void NavigationEntryCommitted(
-      const content::LoadCommittedDetails& load_details) override;
-  void WebContentsDestroyed() override;
 
-  // Used as callbacks from |loader_|.
-  void OnURLLoadComplete(std::unique_ptr<std::string> body);
+  void On404();
 
-  // See SimpleURLLoader::OnRedirectCallback for info on the signature.
-  void OnURLRedirect(const net::RedirectInfo& redirect_info,
-                     const network::mojom::URLResponseHead& response_head,
-                     std::vector<std::string>* to_be_removed_headers);
+  void OnAlternativeLoaderDone(bool success);
 
-  // Called from either OnURLLoadComplete or OnURLRedirect.
-  void OnDoneWithURL(bool success);
+  void CreateAlternativeNavInfoBar();
 
-  // Once the load has committed and any URL fetch has completed, this displays
-  // the alternate nav infobar if necessary, and deletes |this|.
-  void OnAllLoadingFinished();
+ private:
+  ChromeOmniboxNavigationObserver(
+      content::NavigationHandle& navigation,
+      Profile* profile,
+      const std::u16string& text,
+      const AutocompleteMatch& match,
+      const AutocompleteMatch& alternative_nav_match,
+      network::mojom::URLLoaderFactory* loader_factory,
+      ShowInfobarCallback show_infobar);
 
-  // Creates a URL loader for |destination_url| and stores it in |loader_|.
-  // Does not start the loader.
-  void CreateLoader(const GURL& destination_url);
+  ~ChromeOmniboxNavigationObserver() override;
+
+  friend class base::RefCounted<ChromeOmniboxNavigationObserver>;
+
+  class AlternativeNavigationURLLoader;
+
+  void ShowAlternativeNavInfoBar();
 
   const std::u16string text_;
   const AutocompleteMatch match_;
-  const AutocompleteMatch alternate_nav_match_;
-  TemplateURLService* template_url_service_;
-  scoped_refptr<ShortcutsBackend> shortcuts_backend_;  // NULL in incognito.
-  std::unique_ptr<network::SimpleURLLoader> loader_;
-  scoped_refptr<network::SharedURLLoaderFactory> loader_factory_for_testing_;
-  LoadState load_state_;
-  FetchState fetch_state_;
+  const AutocompleteMatch alternative_nav_match_;
+  const int64_t navigation_id_;
+  const raw_ptr<Profile> profile_;
 
-  content::NotificationRegistrar registrar_;
+  // Callback to allow tests to inject custom behaviour.
+  ShowInfobarCallback show_infobar_;
 
-  DISALLOW_COPY_AND_ASSIGN(ChromeOmniboxNavigationObserver);
+  // URLLoader responsible for fetching the alternative match and showing the
+  // infobar if it succeeds.
+  std::unique_ptr<AlternativeNavigationURLLoader> loader_;
+  AlternativeFetchState fetch_state_ = AlternativeFetchState::kFetchNotComplete;
 };
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_CHROME_OMNIBOX_NAVIGATION_OBSERVER_H_

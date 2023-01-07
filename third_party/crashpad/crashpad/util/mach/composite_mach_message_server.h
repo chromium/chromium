@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 #include <map>
 #include <set>
 
-#include "base/macros.h"
 #include "util/mach/mach_message_server.h"
 
 namespace crashpad {
@@ -41,6 +40,11 @@ namespace crashpad {
 class CompositeMachMessageServer : public MachMessageServer::Interface {
  public:
   CompositeMachMessageServer();
+
+  CompositeMachMessageServer(const CompositeMachMessageServer&) = delete;
+  CompositeMachMessageServer& operator=(const CompositeMachMessageServer&) =
+      delete;
+
   ~CompositeMachMessageServer();
 
   //! \brief Adds a handler that messages can be dispatched to based on request
@@ -94,8 +98,6 @@ class CompositeMachMessageServer : public MachMessageServer::Interface {
   HandlerMap handler_map_;  // weak
   mach_msg_size_t request_size_;
   mach_msg_size_t reply_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositeMachMessageServer);
 };
 
 }  // namespace crashpad

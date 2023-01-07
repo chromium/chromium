@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ function showAuthDialog(key, url, mode, partition) {
       'scope_approval_dialog.html', options, function(win) {
         win.contentWindow.addEventListener('load', function(event) {
           let windowParam;
-          if (mode == 'interactive') {
+          if (mode === 'interactive') {
             windowParam = win;
           }
           win.contentWindow.loadAuthUrlAndShowWindow(

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -89,8 +89,8 @@ TEST_F(InterventionPolicyDatabaseTest, EndToEnd) {
                                                 OriginInterventions::DEFAULT));
   WriteProtoToFile(proto_path, policy_map);
 
-  GetDatabase()->InitializeDatabaseWithProtoFile(proto_path, base::Version(),
-                                                 nullptr);
+  GetDatabase()->InitializeDatabaseWithProtoFile(
+      proto_path, base::Version(), base::Value(base::Value::Type::DICTIONARY));
 
   WaitForDatabaseToBeInitialized();
 

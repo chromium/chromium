@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/audio_service.h"
@@ -80,6 +80,7 @@ void ForwardingAudioStreamFactory::Core::CreateInputStream(
     const media::AudioParameters& params,
     uint32_t shared_memory_count,
     bool enable_agc,
+    media::mojom::AudioProcessingConfigPtr processing_config,
     mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
         renderer_factory_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -89,6 +90,7 @@ void ForwardingAudioStreamFactory::Core::CreateInputStream(
       .insert(broker_factory_->CreateAudioInputStreamBroker(
           render_process_id, render_frame_id, device_id, params,
           shared_memory_count, user_input_monitor_, enable_agc,
+          std::move(processing_config),
           base::BindOnce(&ForwardingAudioStreamFactory::Core::RemoveInput,
                          base::Unretained(this)),
           std::move(renderer_factory_client)))
@@ -243,12 +245,14 @@ ForwardingAudioStreamFactory::~ForwardingAudioStreamFactory() {
 
 void ForwardingAudioStreamFactory::LoopbackStreamStarted() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  web_contents()->IncrementCapturerCount(gfx::Size(), /* stay_hidden */ false);
+  capture_handle_ =
+      web_contents()->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
+                                             /*stay_awake=*/true);
 }
 
 void ForwardingAudioStreamFactory::LoopbackStreamStopped() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  web_contents()->DecrementCapturerCount(/* stay_hidden */ false);
+  capture_handle_.RunAndReset();
 }
 
 void ForwardingAudioStreamFactory::SetMuted(bool muted) {

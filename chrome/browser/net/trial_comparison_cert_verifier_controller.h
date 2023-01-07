@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -32,6 +32,12 @@ class TrialComparisonCertVerifierController
   // preferences and reporting.
   // |profile| must outlive the TrialComparisonCertVerifierController.
   explicit TrialComparisonCertVerifierController(Profile* profile);
+
+  TrialComparisonCertVerifierController(
+      const TrialComparisonCertVerifierController&) = delete;
+  TrialComparisonCertVerifierController& operator=(
+      const TrialComparisonCertVerifierController&) = delete;
+
   ~TrialComparisonCertVerifierController() override;
 
   // Returns true if the trial could potentially be enabled for |profile|;
@@ -70,7 +76,7 @@ class TrialComparisonCertVerifierController
  private:
   void RefreshState();
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   PrefChangeRegistrar pref_change_registrar_;
 
   mojo::ReceiverSet<
@@ -79,8 +85,6 @@ class TrialComparisonCertVerifierController
 
   mojo::RemoteSet<cert_verifier::mojom::TrialComparisonCertVerifierConfigClient>
       config_client_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(TrialComparisonCertVerifierController);
 };
 
 #endif  // CHROME_BROWSER_NET_TRIAL_COMPARISON_CERT_VERIFIER_CONTROLLER_H_

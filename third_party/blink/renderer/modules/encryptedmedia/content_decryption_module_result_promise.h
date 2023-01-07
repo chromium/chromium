@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,9 @@ class ContentDecryptionModuleResultPromise
 
  protected:
   // |interface_name| and |property_name| must have static life time.
-  ContentDecryptionModuleResultPromise(ScriptState*, EmeApiType type);
+  ContentDecryptionModuleResultPromise(ScriptState*,
+                                       const MediaKeysConfig&,
+                                       EmeApiType api_type);
 
   // Resolves the promise with |value|. Used by subclasses to resolve the
   // promise.
@@ -74,9 +76,13 @@ class ContentDecryptionModuleResultPromise
   // Determine if it's OK to resolve/reject this promise.
   bool IsValidToFulfillPromise();
 
+  // Returns |config_|.
+  MediaKeysConfig GetMediaKeysConfig();
+
  private:
   Member<ScriptPromiseResolver> resolver_;
-  const EmeApiType type_;
+  const MediaKeysConfig config_;
+  const EmeApiType api_type_;
 };
 
 }  // namespace blink

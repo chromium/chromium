@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ void MockUsbMojoDevice::IsochronousTransferIn(
 
 void MockUsbMojoDevice::IsochronousTransferOut(
     uint8_t endpoint_number,
-    const std::vector<uint8_t>& data,
+    base::span<const uint8_t> data,
     const std::vector<uint32_t>& packet_lengths,
     uint32_t timeout,
     IsochronousTransferOutCallback callback) {

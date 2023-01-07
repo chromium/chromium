@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@ package org.chromium.components.query_tiles;
 import android.text.TextUtils;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class TileUmaLogger {
         if (mTopLevelTiles != null) return;
         mTopLevelTiles = tiles;
 
-        RecordHistogram.recordCountHistogram(
+        RecordHistogram.recordCount1MHistogram(
                 "Search." + mHistogramPrefix + ".TileCount", mTopLevelTiles.size());
     }
 
@@ -49,16 +48,6 @@ public class TileUmaLogger {
         int tileUmaId = getTileUmaId(tile.id);
         RecordHistogram.recordSparseHistogram(
                 "Search." + mHistogramPrefix + ".Tile.Clicked", tileUmaId);
-    }
-
-    public void recordSearchButtonClicked(QueryTile tile) {
-        int tileUmaId = getTileUmaId(tile.id);
-        RecordHistogram.recordSparseHistogram(
-                "Search.QueryTiles.NTP.Chip.SearchClicked", tileUmaId);
-    }
-
-    public void recordChipCleared() {
-        RecordUserAction.record("Search.QueryTiles.NTP.FakeSearchBox.Chip.Cleared");
     }
 
     private boolean isTopLevelTile(String id) {

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ namespace {
 // Threadsafe singleton for tracking the process-wide count of UDP sockets.
 class GlobalUDPSocketCounts {
  public:
-  GlobalUDPSocketCounts() : count_(0) {}
+  GlobalUDPSocketCounts() = default;
 
   ~GlobalUDPSocketCounts() = delete;
 
@@ -25,7 +25,7 @@ class GlobalUDPSocketCounts {
     return *singleton;
   }
 
-  bool TryAcquireSocket() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool TryAcquireSocket() {
     int previous = count_.Increment(1);
     if (previous >= GetMax()) {
       count_.Increment(-1);
@@ -47,7 +47,7 @@ class GlobalUDPSocketCounts {
   int GetCountForTesting() { return count_.SubtleRefCountForDebug(); }
 
  private:
-  base::AtomicRefCount count_;
+  base::AtomicRefCount count_{0};
 };
 
 }  // namespace

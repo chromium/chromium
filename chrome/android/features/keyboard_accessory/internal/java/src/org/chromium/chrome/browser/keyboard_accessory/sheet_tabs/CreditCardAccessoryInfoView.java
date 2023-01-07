@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.keyboard_accessory.R;
-import org.chromium.ui.widget.ChipView;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 /**
  * This view represents a section of user credit card details in the payment method tab of the
@@ -28,6 +28,7 @@ class CreditCardAccessoryInfoView extends LinearLayout {
     private ChipView mExpMonth;
     private ChipView mExpYear;
     private ChipView mCardholder;
+    private ChipView mCvc;
 
     /**
      * Constructor for inflating from XML.
@@ -46,6 +47,7 @@ class CreditCardAccessoryInfoView extends LinearLayout {
         mExpMonth = findViewById(R.id.exp_month);
         mExpYear = findViewById(R.id.exp_year);
         mCardholder = findViewById(R.id.cardholder);
+        mCvc = findViewById(R.id.cvc);
     }
 
     public void setIcon(@Nullable Drawable drawable) {
@@ -75,5 +77,9 @@ class CreditCardAccessoryInfoView extends LinearLayout {
 
     public LinearLayout getExpiryGroup() {
         return mExpiryGroup;
+    }
+
+    public ChipView getCvc() {
+        return mCvc;
     }
 }

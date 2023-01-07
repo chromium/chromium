@@ -1,0 +1,644 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
+import {OptInStatus} from '../new_tab_page.mojom-webui.js';
+import {NewTabPageProxy} from '../new_tab_page_proxy.js';
+
+import {Module, ModuleHeight} from './module_descriptor.js';
+import {ModuleRegistry} from './module_registry.js';
+import {ModuleWrapperElement} from './module_wrapper.js';
+import {getTemplate} from './modules.html.js';
+
+
+export type DismissModuleEvent =
+    CustomEvent<{message: string, restoreCallback: () => void}>;
+export type DisableModuleEvent = DismissModuleEvent;
+
+declare global {
+  interface HTMLElementEventMap {
+    'dismiss-module': DismissModuleEvent;
+    'disable-module': DisableModuleEvent;
+  }
+}
+
+export interface ModulesElement {
+  $: {
+    modules: HTMLElement,
+    removeModuleToast: CrToastElement,
+    removeModuleToastMessage: HTMLElement,
+    undoRemoveModuleButton: HTMLElement,
+    removeModuleFreToast: CrToastElement,
+    removeModuleFreToastMessage: HTMLElement,
+    undoRemoveModuleFreButton: HTMLElement,
+  };
+}
+
+const SHORT_CLASS_NAME: string = 'short';
+const TALL_CLASS_NAME: string = 'tall';
+
+// When a pair of short module containers are by each other, they are considered
+// siblings and wrapped in another container.
+const SHORT_MODULE_SIBLING_1: string = 'short-module-sibling-one';
+const SHORT_MODULE_SIBLING_2: string = 'short-module-sibling-two';
+
+/** Container for the NTP modules. */
+export class ModulesElement extends PolymerElement {
+  static get is() {
+    return 'ntp-modules';
+  }
+
+  static get template() {
+    return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      disabledModules_: {
+        type: Object,
+        value: () => ({all: true, ids: []}),
+      },
+
+      dismissedModules_: {
+        type: Array,
+        value: () => [],
+      },
+
+      dragEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('modulesDragAndDropEnabled'),
+        reflectToAttribute: true,
+      },
+
+      moduleImpressionDetected_: Boolean,
+
+      modulesFreRemoved_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * When the first run experience (FRE) is disabled and modules are
+       * enabled, we show the modules without a FRE.
+       */
+      modulesFreShown: {
+        type: Boolean,
+        computed:
+            `computeModulesFreShown_(modulesLoaded_, modulesFreVisible_, modulesShownToUser)`,
+        observer: 'onModulesFreShownChange_',
+        notify: true,
+        reflectToAttribute: true,
+      },
+
+      modulesFreVisible_: {
+        type: Boolean,
+        value: false,
+      },
+
+      modulesLoaded_: Boolean,
+
+      modulesLoadedAndVisibilityDetermined_: {
+        type: Boolean,
+        computed: `computeModulesLoadedAndVisibilityDetermined_(
+          modulesLoaded_,
+          modulesVisibilityDetermined_)`,
+        observer: 'onModulesLoadedAndVisibilityDeterminedChange_',
+      },
+
+      modulesRedesignedLayoutEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('modulesRedesignedLayoutEnabled'),
+        reflectToAttribute: true,
+      },
+
+      modulesShownToUser: {
+        type: Boolean,
+        notify: true,
+      },
+
+      modulesVisibilityDetermined_: Boolean,
+
+      /** Data about the most recently removed module. */
+      removedModuleData_: {
+        type: Object,
+        value: null,
+      },
+    };
+  }
+
+  static get observers() {
+    return ['onRemovedModulesChange_(dismissedModules_.*, disabledModules_)'];
+  }
+
+  private dismissedModules_: string[];
+  private disabledModules_: {all: boolean, ids: string[]};
+  private dragEnabled_: boolean;
+  private moduleImpressionDetected_: boolean;
+  private modulesFreRemoved_: boolean;
+  private modulesFreShown: boolean;
+  private modulesFreVisible_: boolean;
+  private modulesLoaded_: boolean;
+  private modulesLoadedAndVisibilityDetermined_: boolean;
+  private modulesRedesignedLayoutEnabled_: boolean;
+  private modulesShownToUser: boolean;
+  private modulesVisibilityDetermined_: boolean;
+  private removedModuleData_: {message: string, undo: () => void}|null;
+
+  private setDisabledModulesListenerId_: number|null = null;
+  private setModulesFreVisibilityListenerId_: number|null = null;
+  private eventTracker_: EventTracker = new EventTracker();
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.setDisabledModulesListenerId_ =
+        NewTabPageProxy.getInstance()
+            .callbackRouter.setDisabledModules.addListener(
+                (all: boolean, ids: string[]) => {
+                  this.disabledModules_ = {all, ids};
+                  this.modulesVisibilityDetermined_ = true;
+                });
+    this.setModulesFreVisibilityListenerId_ =
+        NewTabPageProxy.getInstance()
+            .callbackRouter.setModulesFreVisibility.addListener(
+                (visible: boolean) => {
+                  this.modulesFreVisible_ = visible;
+                });
+    NewTabPageProxy.getInstance().handler.updateDisabledModules();
+    NewTabPageProxy.getInstance().handler.updateModulesFreVisibility();
+    this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    NewTabPageProxy.getInstance().callbackRouter.removeListener(
+        assert(this.setDisabledModulesListenerId_!));
+    NewTabPageProxy.getInstance().callbackRouter.removeListener(
+        assert(this.setModulesFreVisibilityListenerId_!));
+    this.eventTracker_.removeAll();
+  }
+
+  override ready() {
+    super.ready();
+    this.renderModules_();
+  }
+
+  private appendModuleContainers_(moduleContainers: HTMLElement[]) {
+    this.$.modules.innerHTML = '';
+    let shortModuleSiblingsContainer: HTMLElement|null = null;
+    this.modulesShownToUser = false;
+    moduleContainers.forEach((moduleContainer: HTMLElement, index: number) => {
+      let moduleContainerParent = this.$.modules;
+      if (!moduleContainer.hidden) {
+        this.modulesShownToUser = !moduleContainer.hidden;
+      }
+      if (this.modulesRedesignedLayoutEnabled_) {
+        // Remove short module sibling container class name from short modules
+        // that were in a sibling container before.
+        moduleContainer.classList.toggle(SHORT_MODULE_SIBLING_1, false);
+        moduleContainer.classList.toggle(SHORT_MODULE_SIBLING_2, false);
+        // Wrap pairs of sibling short modules in a container. All other
+        // modules will be placed in a container of their own.
+        if ((moduleContainer.classList.contains(SHORT_CLASS_NAME) ||
+             moduleContainer.hidden) &&
+            shortModuleSiblingsContainer) {
+          // Add current sibling short module or hidden module to sibling
+          // container which already contains one or more other modules, by
+          // setting its parent to be 'shortModuleSiblingsContainer'. We add
+          // hidden modules to the sibling container, so if a user reverts a
+          // module from its hidden state, the module assumes its original
+          // position.
+          moduleContainer.classList.toggle(SHORT_MODULE_SIBLING_2, true);
+          moduleContainerParent = shortModuleSiblingsContainer;
+          this.$.modules.appendChild(shortModuleSiblingsContainer);
+          // If another visible short module is added, a visible tall module is
+          // next, or we've reached the end of our container list we stop adding
+          // to the container.
+          if (!moduleContainer.hidden ||
+              index + 1 !== moduleContainers.length &&
+                  moduleContainers[index + 1].classList.contains(
+                      TALL_CLASS_NAME) &&
+                  !moduleContainers[index + 1].hidden ||
+              index + 1 === moduleContainers.length) {
+            shortModuleSiblingsContainer = null;
+          }
+        } else if (
+            !moduleContainer.hidden &&
+            moduleContainer.classList.contains(SHORT_CLASS_NAME) &&
+            index + 1 !== moduleContainers.length &&
+            (moduleContainers[index + 1].classList.contains(SHORT_CLASS_NAME) ||
+             moduleContainers[index + 1].hidden)) {
+          // Add current short module to a new container since the next one is
+          // short as well by setting its parent to be
+          // 'shortModuleSiblingsContainer'.
+          moduleContainer.classList.toggle(SHORT_MODULE_SIBLING_1, true);
+          shortModuleSiblingsContainer =
+              this.ownerDocument.createElement('div');
+          shortModuleSiblingsContainer.classList.add(
+              'short-module-siblings-container');
+          moduleContainerParent = shortModuleSiblingsContainer;
+        }
+      }
+      moduleContainerParent.appendChild(moduleContainer);
+    });
+  }
+
+  private async renderModules_(): Promise<void> {
+    this.moduleImpressionDetected_ = false;
+    const modules = await ModuleRegistry.getInstance().initializeModules(
+        loadTimeData.getInteger('modulesLoadTimeout'));
+    if (modules) {
+      NewTabPageProxy.getInstance().handler.onModulesLoadedWithData(
+          modules.map(module => module.descriptor.id));
+      const moduleContainers = modules.map(module => {
+        const moduleWrapper = new ModuleWrapperElement();
+        moduleWrapper.module = module;
+        if (this.dragEnabled_) {
+          moduleWrapper.addEventListener(
+              'mousedown', e => this.onDragStart_(e));
+        }
+        if (!loadTimeData.getBoolean('modulesRedesignedEnabled')) {
+          moduleWrapper.addEventListener(
+              'dismiss-module', e => this.onDismissModule_(e));
+        }
+        moduleWrapper.addEventListener(
+            'disable-module', e => this.onDisableModule_(e));
+        moduleWrapper.addEventListener('detect-impression', () => {
+          if (!this.moduleImpressionDetected_) {
+            // Executed the first time a module impression is detected.
+            NewTabPageProxy.getInstance().handler.incrementModulesShownCount();
+            if (this.modulesFreShown) {
+              chrome.metricsPrivate.recordBoolean(
+                  `NewTabPage.Modules.FreImpression`, this.modulesFreShown);
+            }
+          }
+          this.moduleImpressionDetected_ = true;
+        });
+        const moduleContainer = this.ownerDocument.createElement('div');
+        moduleContainer.classList.add('module-container');
+        if (this.modulesRedesignedLayoutEnabled_) {
+          if (module.descriptor.height === ModuleHeight.SHORT) {
+            moduleContainer.classList.add(SHORT_CLASS_NAME);
+          }
+          if (module.descriptor.height === ModuleHeight.TALL) {
+            moduleContainer.classList.add(TALL_CLASS_NAME);
+          }
+        }
+        moduleContainer.hidden = this.moduleDisabled_(module.descriptor.id);
+        moduleContainer.appendChild(moduleWrapper);
+        return moduleContainer;
+      });
+
+      chrome.metricsPrivate.recordSmallCount(
+          'NewTabPage.Modules.LoadedModulesCount', modules.length);
+
+      this.logModuleLoadedWithModules_(modules);
+      this.appendModuleContainers_(moduleContainers);
+      this.onModulesLoaded_();
+    }
+  }
+
+  private logModuleLoadedWithModules_(modules: Module[]) {
+    const moduleDescriptorIds = modules.map(m => m.descriptor.id);
+
+    for (const moduleDescriptorId of moduleDescriptorIds) {
+      moduleDescriptorIds.forEach(id => {
+        if (id !== moduleDescriptorId) {
+          chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+              `NewTabPage.Modules.LoadedWith.${moduleDescriptorId}`, id);
+        }
+      });
+    }
+  }
+
+  private onWindowKeydown_(e: KeyboardEvent) {
+    let ctrlKeyPressed = e.ctrlKey;
+    // <if expr="is_macosx">
+    ctrlKeyPressed = ctrlKeyPressed || e.metaKey;
+    // </if>
+    if (ctrlKeyPressed && e.key === 'z') {
+      this.onUndoRemoveModuleButtonClick_();
+      this.onUndoRemoveModuleFreButtonClick_();
+    }
+  }
+
+  private onModulesLoaded_() {
+    this.modulesLoaded_ = true;
+  }
+
+  private computeModulesLoadedAndVisibilityDetermined_(): boolean {
+    return this.modulesLoaded_ && this.modulesVisibilityDetermined_;
+  }
+
+  private onModulesLoadedAndVisibilityDeterminedChange_() {
+    if (this.modulesLoadedAndVisibilityDetermined_) {
+      ModuleRegistry.getInstance().getDescriptors().forEach(({id}) => {
+        chrome.metricsPrivate.recordBoolean(
+            `NewTabPage.Modules.EnabledOnNTPLoad.${id}`,
+            !this.disabledModules_.all &&
+                !this.disabledModules_.ids.includes(id));
+      });
+      chrome.metricsPrivate.recordBoolean(
+          'NewTabPage.Modules.VisibleOnNTPLoad', !this.disabledModules_.all);
+      this.dispatchEvent(new Event('modules-loaded'));
+    }
+  }
+
+  /**
+   * @param e Event notifying a module was dismissed. Contains the message to
+   *     show in the toast.
+   */
+  private onDismissModule_(e: DismissModuleEvent) {
+    const id = (e.target as ModuleWrapperElement).module.descriptor.id;
+    const restoreCallback = e.detail.restoreCallback;
+    this.removedModuleData_ = {
+      message: e.detail.message,
+      undo: () => {
+        this.splice('dismissedModules_', this.dismissedModules_.indexOf(id), 1);
+        restoreCallback();
+        NewTabPageProxy.getInstance().handler.onRestoreModule(id);
+      },
+    };
+    if (!this.dismissedModules_.includes(id)) {
+      this.push('dismissedModules_', id);
+    }
+
+    // Notify the user.
+    this.$.removeModuleToast.show();
+    // Notify the backend.
+    NewTabPageProxy.getInstance().handler.onDismissModule(id);
+  }
+
+  /**
+   * @param e Event notifying a module was disabled. Contains the message to
+   *     show in the toast.
+   */
+  private onDisableModule_(e: DisableModuleEvent) {
+    const id = (e.target as ModuleWrapperElement).module.descriptor.id;
+    const restoreCallback = e.detail.restoreCallback;
+    this.removedModuleData_ = {
+      message: e.detail.message,
+      undo: () => {
+        if (restoreCallback) {
+          restoreCallback();
+        }
+        NewTabPageProxy.getInstance().handler.setModuleDisabled(id, false);
+        chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+            'NewTabPage.Modules.Enabled', id);
+        chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+            'NewTabPage.Modules.Enabled.Toast', id);
+      },
+    };
+
+    NewTabPageProxy.getInstance().handler.setModuleDisabled(id, true);
+    this.$.removeModuleToast.show();
+    chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+        'NewTabPage.Modules.Disabled', id);
+    chrome.metricsPrivate.recordSparseValueWithPersistentHash(
+        'NewTabPage.Modules.Disabled.ModuleRequest', id);
+  }
+
+  private moduleDisabled_(id: string): boolean {
+    return this.disabledModules_.all || this.dismissedModules_.includes(id) ||
+        this.disabledModules_.ids.includes(id);
+  }
+
+  private onUndoRemoveModuleButtonClick_() {
+    if (!this.removedModuleData_) {
+      return;
+    }
+
+    // Restore the module.
+    this.removedModuleData_.undo();
+
+    // Notify the user.
+    this.$.removeModuleToast.hide();
+
+    this.removedModuleData_ = null;
+
+    // Prevent user from resurfacing FRE when they are undoing removal of
+    // module.
+    this.modulesFreRemoved_ = false;
+  }
+
+  /**
+   * Hides and reveals modules depending on removed status.
+   */
+  private onRemovedModulesChange_() {
+    this.shadowRoot!.querySelectorAll('ntp-module-wrapper')
+        .forEach(moduleWrapper => {
+          moduleWrapper.parentElement!.hidden =
+              this.moduleDisabled_(moduleWrapper.module.descriptor.id);
+        });
+    // Append modules again to accommodate for empty space from removed module.
+    const moduleContainers = [...this.shadowRoot!.querySelectorAll<HTMLElement>(
+        '.module-container')];
+    this.appendModuleContainers_(moduleContainers);
+  }
+
+  private computeModulesFreShown_(): boolean {
+    return loadTimeData.getBoolean('modulesFirstRunExperienceEnabled') &&
+        this.modulesLoaded_ && this.modulesFreVisible_ &&
+        this.modulesShownToUser;
+  }
+
+  private onModulesFreShownChange_() {
+    chrome.metricsPrivate.recordBoolean(
+        `NewTabPage.Modules.FreLoaded`, this.modulesFreShown);
+  }
+
+  private onCustomizeModuleFre_() {
+    this.dispatchEvent(
+        new Event('customize-module', {bubbles: true, composed: true}));
+  }
+
+  private hideFre_() {
+    NewTabPageProxy.getInstance().handler.setModulesFreVisible(false);
+  }
+
+  private onModulesFreOptIn_() {
+    this.hideFre_();
+
+    NewTabPageProxy.getInstance().handler.logModulesFreOptInStatus(
+        OptInStatus.kExplicitOptIn);
+  }
+
+  private onModulesFreOptOut_() {
+    this.hideFre_();
+    NewTabPageProxy.getInstance().handler.setModulesVisible(false);
+
+    // Hide remove module toast in case user removed a module before opting out
+    // of fre.
+    this.$.removeModuleToast.hide();
+
+    // Any module the user removed before opting out of the FRE should not be
+    // restored if FRE opt out is undone.
+    this.removedModuleData_ = null;
+
+    this.modulesFreRemoved_ = true;
+
+    // Notify the user
+    this.$.removeModuleFreToast.show();
+
+    NewTabPageProxy.getInstance().handler.logModulesFreOptInStatus(
+        OptInStatus.kOptOut);
+  }
+
+  private onUndoRemoveModuleFreButtonClick_() {
+    if (!this.modulesFreRemoved_) {
+      return;
+    }
+
+    NewTabPageProxy.getInstance().handler.setModulesFreVisible(true);
+    NewTabPageProxy.getInstance().handler.setModulesVisible(true);
+    this.$.removeModuleFreToast.hide();
+    this.modulesFreRemoved_ = false;
+  }
+
+  /**
+   * Module is dragged by updating the module position based on the
+   * position of the pointer.
+   */
+  private onDragStart_(e: MouseEvent) {
+    assert(loadTimeData.getBoolean('modulesDragAndDropEnabled'));
+
+    const dragElement = e.target as HTMLElement;
+    const dragElementRect = dragElement.getBoundingClientRect();
+    // This is the offset between the pointer and module so that the
+    // module isn't dragged by the top-left corner.
+    const dragOffset = {
+      x: e.x - dragElementRect.x,
+      y: e.y - dragElementRect.y,
+    };
+
+    dragElement.parentElement!.style.width = `${dragElementRect.width}px`;
+    dragElement.parentElement!.style.height = `${dragElementRect.height}px`;
+
+    const undraggedModuleWrappers =
+        [...this.shadowRoot!.querySelectorAll('ntp-module-wrapper')].filter(
+            moduleWrapper => moduleWrapper !== dragElement);
+
+    const dragOver = (e: MouseEvent) => {
+      e.preventDefault();
+
+      dragElement.setAttribute('dragging', '');
+      dragElement.style.left = `${e.x - dragOffset.x}px`;
+      dragElement.style.top = `${e.y - dragOffset.y}px`;
+    };
+
+    const dragEnter = (e: MouseEvent) => {
+      // Move hidden module containers to end of list to ensure user's new
+      // layout stays intact.
+      const moduleContainers = [
+        ...this.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.module-container:not([hidden])'),
+        ...this.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.module-container[hidden]'),
+      ];
+      const dragIndex = moduleContainers.indexOf(dragElement.parentElement!);
+      const dropIndex =
+          moduleContainers.indexOf((e.target as HTMLElement).parentElement!);
+
+      const dragContainer = moduleContainers[dragIndex];
+      const dropContainer = moduleContainers[dropIndex];
+
+      // To animate the modules as they are reordered we use the FLIP
+      // (First, Last, Invert, Play) animation approach by @paullewis.
+      // https://aerotwist.com/blog/flip-your-animations/
+
+      // The first and last positions of the modules are used to
+      // calculate how the modules have changed.
+      const firstRects = undraggedModuleWrappers.map(moduleWrapper => {
+        return moduleWrapper.getBoundingClientRect();
+      });
+
+      // If a tall module is dragged to a short module sibling container, the
+      // modules in the sibling container should move together.
+      // We add or subtract 1, from the drop index, to make sure the tall module
+      // moves behind or in front of the first module in the sibling container.
+      if (dragContainer.classList.contains(TALL_CLASS_NAME) &&
+          dropContainer.classList.contains(SHORT_MODULE_SIBLING_1) &&
+          dragIndex < dropIndex) {
+        moduleContainers.splice(dragIndex, 1);
+        moduleContainers.splice(dropIndex + 1, 0, dragContainer);
+      } else if (
+          dragContainer.classList.contains(TALL_CLASS_NAME) &&
+          dropContainer.classList.contains(SHORT_MODULE_SIBLING_2) &&
+          dragIndex > dropIndex) {
+        moduleContainers.splice(dragIndex, 1);
+        moduleContainers.splice(dropIndex - 1, 0, dragContainer);
+      } else {
+        moduleContainers.splice(dragIndex, 1);
+        moduleContainers.splice(dropIndex, 0, dragContainer);
+      }
+      this.appendModuleContainers_(moduleContainers);
+
+      undraggedModuleWrappers.forEach((moduleWrapper, i) => {
+        const lastRect = moduleWrapper.getBoundingClientRect();
+        const invertX = firstRects[i].left - lastRect.left;
+        const invertY = firstRects[i].top - lastRect.top;
+        moduleWrapper.animate(
+            [
+              // A translation is applied to invert the module and make it
+              // appear to be in its first position when it actually is in its
+              // final position already.
+              {transform: `translate(${invertX}px, ${invertY}px)`, zIndex: 0},
+              // Removing the inversion translation animates the module from
+              // the fake first position to its current (final) position.
+              {transform: 'translate(0)', zIndex: 0},
+            ],
+            {duration: 800, easing: 'ease'});
+      });
+    };
+
+    undraggedModuleWrappers.forEach(moduleWrapper => {
+      moduleWrapper.addEventListener('mouseover', dragEnter);
+    });
+
+    this.ownerDocument.addEventListener('mousemove', dragOver);
+    this.ownerDocument.addEventListener('mouseup', () => {
+      this.ownerDocument.removeEventListener('mousemove', dragOver);
+
+      undraggedModuleWrappers.forEach(moduleWrapper => {
+        moduleWrapper.removeEventListener('mouseover', dragEnter);
+      });
+
+      // The FLIP approach is also used for the dropping animation
+      // of the dragged module because of the position changes caused
+      // by removing the dragging styles. (Removing the styles after
+      // the animation causes the animation to be fixed.)
+      const firstRect = dragElement.getBoundingClientRect();
+
+      dragElement.removeAttribute('dragging');
+      dragElement.style.removeProperty('left');
+      dragElement.style.removeProperty('top');
+
+      const lastRect = dragElement.getBoundingClientRect();
+      const invertX = firstRect.left - lastRect.left;
+      const invertY = firstRect.top - lastRect.top;
+
+      dragElement.animate(
+          [
+            {transform: `translate(${invertX}px, ${invertY}px)`, zIndex: 2},
+            {transform: 'translate(0)', zIndex: 2},
+          ],
+          {duration: 800, easing: 'ease'});
+
+      const moduleIds =
+          [...this.shadowRoot!.querySelectorAll('ntp-module-wrapper')].map(
+              moduleWrapper => moduleWrapper.module.descriptor.id);
+      NewTabPageProxy.getInstance().handler.setModulesOrder(moduleIds);
+    }, {once: true});
+  }
+}
+
+customElements.define(ModulesElement.is, ModulesElement);

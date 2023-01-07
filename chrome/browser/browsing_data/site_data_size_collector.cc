@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
@@ -28,23 +27,21 @@ int64_t GetFileSizeBlocking(const base::FilePath& file_path) {
 
 SiteDataSizeCollector::SiteDataSizeCollector(
     const base::FilePath& default_storage_partition_path,
-    browsing_data::CookieHelper* cookie_helper,
-    browsing_data::DatabaseHelper* database_helper,
-    browsing_data::LocalStorageHelper* local_storage_helper,
-    browsing_data::AppCacheHelper* appcache_helper,
-    browsing_data::IndexedDBHelper* indexed_db_helper,
-    browsing_data::FileSystemHelper* file_system_helper,
-    browsing_data::ServiceWorkerHelper* service_worker_helper,
-    browsing_data::CacheStorageHelper* cache_storage_helper)
+    scoped_refptr<browsing_data::CookieHelper> cookie_helper,
+    scoped_refptr<browsing_data::DatabaseHelper> database_helper,
+    scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
+    scoped_refptr<browsing_data::IndexedDBHelper> indexed_db_helper,
+    scoped_refptr<browsing_data::FileSystemHelper> file_system_helper,
+    scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
+    scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper)
     : default_storage_partition_path_(default_storage_partition_path),
-      appcache_helper_(appcache_helper),
-      cookie_helper_(cookie_helper),
-      database_helper_(database_helper),
-      local_storage_helper_(local_storage_helper),
-      indexed_db_helper_(indexed_db_helper),
-      file_system_helper_(file_system_helper),
-      service_worker_helper_(service_worker_helper),
-      cache_storage_helper_(cache_storage_helper),
+      cookie_helper_(std::move(cookie_helper)),
+      database_helper_(std::move(database_helper)),
+      local_storage_helper_(std::move(local_storage_helper)),
+      indexed_db_helper_(std::move(indexed_db_helper)),
+      file_system_helper_(std::move(file_system_helper)),
+      service_worker_helper_(std::move(service_worker_helper)),
+      cache_storage_helper_(std::move(cache_storage_helper)),
       in_flight_operations_(0),
       total_bytes_(0) {}
 
@@ -59,12 +56,6 @@ void SiteDataSizeCollector::Fetch(FetchCallback callback) {
   total_bytes_ = 0;
   in_flight_operations_ = 0;
 
-  if (appcache_helper_.get()) {
-    appcache_helper_->StartFetching(
-        base::BindOnce(&SiteDataSizeCollector::OnAppCacheModelInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-    in_flight_operations_++;
-  }
   if (cookie_helper_.get()) {
     cookie_helper_->StartFetching(
         base::BindOnce(&SiteDataSizeCollector::OnCookiesModelInfoLoaded,
@@ -109,15 +100,6 @@ void SiteDataSizeCollector::Fetch(FetchCallback callback) {
   }
   // TODO(fukino): SITE_USAGE_DATA and WEB_APP_DATA should be counted too.
   // All data types included in REMOVE_SITE_USAGE_DATA should be counted.
-}
-
-void SiteDataSizeCollector::OnAppCacheModelInfoLoaded(
-    const std::list<content::StorageUsageInfo>& info_list) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  int64_t total_size = 0;
-  for (const auto& info : info_list)
-    total_size += info.total_size_bytes;
-  OnStorageSizeFetched(total_size);
 }
 
 void SiteDataSizeCollector::OnCookiesModelInfoLoaded(

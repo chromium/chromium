@@ -1,12 +1,13 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_WM_CORE_SHADOW_TYPES_H_
 #define UI_WM_CORE_SHADOW_TYPES_H_
 
+#include "base/component_export.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/aura/window.h"
-#include "ui/wm/core/wm_core_export.h"
 
 namespace wm {
 
@@ -20,25 +21,32 @@ constexpr int kShadowElevationNone = 0;
 
 // Standard shadow elevations used by the the aura window manager. The value is
 // used to initialize an instance of wm::Shadow and controls the offset and blur
-// of the shadow style created by gfx::ShadowValue::MakeMdShadowValues().
+// of the shadow style created by gfx::ShadowValue::MakeMdShadowValues() or
+// gfx::ShadowValue::MakeChromeOSSystemUIShadowValues().
 constexpr int kShadowElevationMenuOrTooltip = 6;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr int kShadowElevationInactiveWindow = 12;
+#else
 constexpr int kShadowElevationInactiveWindow = 8;
+#endif
 constexpr int kShadowElevationActiveWindow = 24;
 
-WM_CORE_EXPORT void SetShadowElevation(aura::Window* window, int elevation);
+COMPONENT_EXPORT(UI_WM)
+void SetShadowElevation(aura::Window* window, int elevation);
 
 // Returns the default shadow elevaltion value for |window|.
-WM_CORE_EXPORT int GetDefaultShadowElevationForWindow(
-    const aura::Window* window);
+COMPONENT_EXPORT(UI_WM)
+int GetDefaultShadowElevationForWindow(const aura::Window* window);
 
 // Returns the shadow elevation property value for |window|, converting
 // |kShadowElevationDefault| to the appropriate value.
-WM_CORE_EXPORT int GetShadowElevationConvertDefault(const aura::Window* window);
+COMPONENT_EXPORT(UI_WM)
+int GetShadowElevationConvertDefault(const aura::Window* window);
 
 // A property key describing the drop shadow that should be displayed under the
 // window. A null value is interpreted as using the default.
-WM_CORE_EXPORT extern const aura::WindowProperty<int>* const
-    kShadowElevationKey;
+COMPONENT_EXPORT(UI_WM)
+extern const aura::WindowProperty<int>* const kShadowElevationKey;
 
 }  // namespace wm
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,8 @@
 
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/observer_list.h"
 #include "components/autofill/core/browser/autofill_observer.h"
-
-using NotificationType = autofill::AutofillObserver::NotificationType;
 
 namespace autofill {
 

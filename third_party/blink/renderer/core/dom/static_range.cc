@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,19 +6,14 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_static_range_init.h"
 #include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
-
-StaticRange::StaticRange(Document& document)
-    : owner_document_(document),
-      start_container_(document),
-      start_offset_(0u),
-      end_container_(document),
-      end_offset_(0u) {}
 
 StaticRange::StaticRange(Document& document,
                          Node* start_container,
@@ -62,14 +57,28 @@ StaticRange* StaticRange::Create(Document& document,
       static_range_init->endOffset());
 }
 
-void StaticRange::setStart(Node* container, unsigned offset) {
-  start_container_ = container;
-  start_offset_ = offset;
-}
+bool StaticRange::IsValid() const {
+  if (dom_tree_version_for_is_valid_ == owner_document_->DomTreeVersion())
+    return is_valid_;
+  dom_tree_version_for_is_valid_ = owner_document_->DomTreeVersion();
 
-void StaticRange::setEnd(Node* container, unsigned offset) {
-  end_container_ = container;
-  end_offset_ = offset;
+  // The full list of checks is:
+  //  1) The start offset is between 0 and the start container’s node length
+  //     (inclusive).
+  //  2) The end offset is between 0 and the end container’s node length
+  //     (inclusive).
+  //  3) The start and end containers of the static range are in the same DOM
+  //     tree.
+  //  4) The position of the start boundary point is before or equal to the
+  //     position of the end boundary point.
+  is_valid_ =
+      start_offset_ <= AbstractRange::LengthOfContents(start_container_) &&
+      end_offset_ <= AbstractRange::LengthOfContents(end_container_) &&
+      !HasDifferentRootContainer(start_container_, end_container_) &&
+      ComparePositionsInDOMTree(start_container_, start_offset_, end_container_,
+                                end_offset_) <= 0;
+
+  return is_valid_;
 }
 
 Range* StaticRange::toRange(ExceptionState& exception_state) const {

@@ -1,0 +1,27 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module feed.mojom;
+
+// Interface for setting up connection to allow calls between the side panel
+// feed web page and native code.
+interface FeedSidePanelHandlerFactory {
+  // Called from side panel feed JS to set up native handler.
+  CreateFeedSidePanelHandler(pending_receiver<FeedSidePanelHandler> handler,
+                    pending_remote<FeedSidePanel> side_panel);
+};
+
+// Interface for calls from feed side panel JS into the native handler.
+interface FeedSidePanelHandler {
+  // Example method, will be removed. Simply provides a demo of
+  // roundtripping via Mojo.
+  DoSomething();
+};
+
+// Interface for calls from native code into feed side panel JS.
+interface FeedSidePanel {
+  // Example method, will be removed. Simply provides a demo of
+  // roundtripping via Mojo.
+  OnEventOccurred(string name);
+};

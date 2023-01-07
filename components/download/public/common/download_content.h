@@ -1,9 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_DOWNLOAD_DOWNLOAD_CONTENT_H_
-#define COMPONENTS_DOWNLOAD_DOWNLOAD_CONTENT_H_
+#ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_CONTENT_H_
+#define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_CONTENT_H_
+
+#include <string>
+
+#include "components/download/public/common/download_export.h"
 
 // The type of download based on mimetype.
 // This is used by UMA and UKM metrics.
@@ -33,6 +37,11 @@ enum class DownloadContent {
   MAX = 18,
 };
 
+// Converts DownloadContent into their corresponding string, used only
+// for metrics.
+COMPONENTS_DOWNLOAD_EXPORT
+std::string GetDownloadContentString(const DownloadContent& download_content);
+
 }  // namespace download
 
-#endif  // COMPONENTS_DOWNLOAD_DOWNLOAD_CONTENT_H_
+#endif  // COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_CONTENT_H_

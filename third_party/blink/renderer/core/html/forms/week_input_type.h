@@ -38,7 +38,7 @@ namespace blink {
 class WeekInputType final : public BaseTemporalInputType {
  public:
   explicit WeekInputType(HTMLInputElement& element)
-      : BaseTemporalInputType(element) {}
+      : BaseTemporalInputType(Type::kWeek, element) {}
 
  private:
   void CountUsage() override;
@@ -61,7 +61,14 @@ class WeekInputType final : public BaseTemporalInputType {
                      bool has_hour,
                      bool has_minute,
                      bool has_second) const override;
-  String AriaRoleForPickerIndicator() const override;
+  String AriaLabelForPickerIndicator() const override;
+};
+
+template <>
+struct DowncastTraits<WeekInputType> {
+  static bool AllowFrom(const InputType& type) {
+    return type.IsWeekInputType();
+  }
 };
 
 }  // namespace blink

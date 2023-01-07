@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "ui/events/gesture_detection/gesture_listeners.h"
@@ -43,6 +43,10 @@ class CONTENT_EXPORT StylusTextSelectorClient {
 class CONTENT_EXPORT StylusTextSelector : public ui::SimpleGestureListener {
  public:
   explicit StylusTextSelector(StylusTextSelectorClient* client);
+
+  StylusTextSelector(const StylusTextSelector&) = delete;
+  StylusTextSelector& operator=(const StylusTextSelector&) = delete;
+
   ~StylusTextSelector() override;
 
   // This should be called before |event| is seen by the platform gesture
@@ -68,15 +72,13 @@ class CONTENT_EXPORT StylusTextSelector : public ui::SimpleGestureListener {
 
   static bool ShouldStartTextSelection(const ui::MotionEvent& event);
 
-  StylusTextSelectorClient* client_;
+  raw_ptr<StylusTextSelectorClient> client_;
   bool text_selection_triggered_;
   bool secondary_button_pressed_;
   DragState drag_state_;
   float anchor_x_;
   float anchor_y_;
   std::unique_ptr<ui::GestureDetector> gesture_detector_;
-
-  DISALLOW_COPY_AND_ASSIGN(StylusTextSelector);
 };
 
 }  // namespace content

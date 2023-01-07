@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,26 +36,28 @@ public class SadTabRule extends ExternalResource {
         assert mTab != null;
 
         if (mSadTab == null) {
-            mSadTab = new SadTab(mTab) {
-                private boolean mShowing;
+            TestThreadUtils.runOnUiThreadBlocking(() -> {
+                mSadTab = new SadTab(mTab) {
+                    private boolean mShowing;
 
-                @Override
-                public void show(
-                        Context context, Runnable suggestionAction, Runnable buttonAction) {
-                    mShowing = true;
-                }
+                    @Override
+                    public void show(
+                            Context context, Runnable suggestionAction, Runnable buttonAction) {
+                        mShowing = true;
+                    }
 
-                @Override
-                public void removeIfPresent() {
-                    mShowing = false;
-                }
+                    @Override
+                    public void removeIfPresent() {
+                        mShowing = false;
+                    }
 
-                @Override
-                public boolean isShowing() {
-                    return mShowing;
-                }
-            };
-            TestThreadUtils.runOnUiThreadBlocking(() -> SadTab.initForTesting(mTab, mSadTab));
+                    @Override
+                    public boolean isShowing() {
+                        return mShowing;
+                    }
+                };
+                SadTab.initForTesting(mTab, mSadTab);
+            });
         }
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             if (show) {

@@ -1,14 +1,12 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SEARCH_ENGINES_ANDROID_TEMPLATE_URL_SERVICE_ANDROID_H_
 #define COMPONENTS_SEARCH_ENGINES_ANDROID_TEMPLATE_URL_SERVICE_ANDROID_H_
 
-#include <memory>
-
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
 
@@ -18,6 +16,11 @@
 class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
  public:
   explicit TemplateUrlServiceAndroid(TemplateURLService* template_url_service);
+
+  TemplateUrlServiceAndroid(const TemplateUrlServiceAndroid&) = delete;
+  TemplateUrlServiceAndroid& operator=(const TemplateUrlServiceAndroid&) =
+      delete;
+
   ~TemplateUrlServiceAndroid() override;
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
@@ -32,6 +35,9 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
   jboolean IsSearchByImageAvailable(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+  jboolean DoesDefaultSearchEngineHaveLogo(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
   jboolean IsDefaultSearchEngineGoogle(
@@ -112,6 +118,8 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
       const base::android::JavaParamRef<jobject>& obj);
 
  private:
+  bool IsDefaultSearchEngineGoogle();
+
   void OnTemplateURLServiceLoaded();
 
   // TemplateUrlServiceObserver:
@@ -120,11 +128,9 @@ class TemplateUrlServiceAndroid : public TemplateURLServiceObserver {
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 
   // Pointer to the TemplateUrlService for the main profile.
-  TemplateURLService* template_url_service_;
+  raw_ptr<TemplateURLService> template_url_service_;
 
   base::CallbackListSubscription template_url_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateUrlServiceAndroid);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_ANDROID_TEMPLATE_URL_SERVICE_ANDROID_H_

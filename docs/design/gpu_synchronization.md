@@ -39,7 +39,7 @@ native GL fence, usable for cross-process synchronization.
 
 ## Use case overview
 
-The core scenario is synchronizing read and write access to a shared resorce,
+The core scenario is synchronizing read and write access to a shared resource,
 for example drawing an image into an offscreen texture and compositing the
 result into a final image. The drawing operations need to be completed before
 reading to ensure correct output. A typical effect of wrong synchronization is
@@ -167,7 +167,7 @@ Render1(glA);
 glA->GenUnverifiedSyncTokenCHROMIUM(out_sync_token);
 
 // stream B
-glB->WaitSyncTokenCHROMIUM();
+glB->WaitSyncTokenCHROMIUM(sync_token);
 Render2(glB);  // will happen after Render1.
 ```
 
@@ -183,7 +183,7 @@ Render1(glX);
 glX->GenSyncTokenCHROMIUM(out_sync_token);
 
 // IPC channel in process Y
-glY->WaitSyncTokenCHROMIUM();
+glY->WaitSyncTokenCHROMIUM(sync_token);
 Render2(glY);  // will happen after Render1.
 ```
 
@@ -380,5 +380,5 @@ buffer context in the GPU process, the sequence is as follows:
 
 It is legal to create the GpuFence on a separate command buffer context instead
 of on the command buffer channel that did the drawing operations, but in that
-case gl->WaitSyncTokenCHROMIUM() or equivalent must be used to sequence the
+case `gl->WaitSyncTokenCHROMIUM()` or equivalent must be used to sequence the
 operations between the distinct command buffer contexts as usual.

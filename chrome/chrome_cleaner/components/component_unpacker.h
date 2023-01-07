@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 // Stolen from chrome/browser/component_updater/component_unpacker.h
@@ -8,11 +8,9 @@
 
 #include <stdint.h>
 
-#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace chrome_cleaner {
 
@@ -31,6 +29,10 @@ class ComponentUnpacker {
   // location of the CRX.
   ComponentUnpacker(const std::vector<uint8_t>& pk_hash,
                     const base::FilePath& path);
+
+  ComponentUnpacker(const ComponentUnpacker&) = delete;
+  ComponentUnpacker& operator=(const ComponentUnpacker&) = delete;
+
   virtual ~ComponentUnpacker();
 
   // Unpack the file to the provided folder. Return true on success.
@@ -44,8 +46,6 @@ class ComponentUnpacker {
 
   std::vector<uint8_t> pk_hash_;
   base::FilePath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentUnpacker);
 };
 
 }  // namespace chrome_cleaner

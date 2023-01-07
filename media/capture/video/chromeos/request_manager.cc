@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,15 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
+#include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
+#include "media/capture/video/chromeos/camera_trace_utils.h"
 #include "media/capture/video/chromeos/video_capture_features_chromeos.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
@@ -32,6 +35,50 @@ constexpr uint32_t kUndefinedFrameNumber = 0xFFFFFFFF;
 
 constexpr std::initializer_list<StreamType> kYUVReprocessStreams = {
     StreamType::kYUVInput, StreamType::kJpegOutput};
+
+// Choose a JPEG thumbnail size for the JPEG output stream size from the
+// JPEG_AVAILABLE_THUMBNAIL_SIZES static metadata. Note that [0, 0] indicates no
+// thumbnail should be generated, and can be returned by this function if
+// there's no non-zero JPEG thumbnail size available.
+gfx::Size GetJpegThumbnailSize(
+    const cros::mojom::CameraMetadataPtr& static_metadata,
+    const std::vector<cros::mojom::Camera3StreamPtr>& streams) {
+  gfx::Size jpeg_size;
+  for (auto& stream : streams) {
+    const StreamType stream_type = StreamIdToStreamType(stream->id);
+    if (stream_type == StreamType::kJpegOutput)
+      jpeg_size = gfx::Size(base::checked_cast<int>(stream->width),
+                            base::checked_cast<int>(stream->height));
+  }
+  if (jpeg_size.IsEmpty())
+    return gfx::Size();
+
+  const auto available_sizes = GetMetadataEntryAsSpan<int32_t>(
+      static_metadata,
+      cros::mojom::CameraMetadataTag::ANDROID_JPEG_AVAILABLE_THUMBNAIL_SIZES);
+  DCHECK_EQ(available_sizes.size() % 2, 0u);
+
+  // Choose the thumbnail size with the closest aspect ratio to the JPEG size.
+  // If there are multiple options, choose the smallest one.
+  constexpr int kPrecisionFactor = 1000;
+  const int target_aspect_ratio =
+      kPrecisionFactor * jpeg_size.width() / jpeg_size.height();
+  std::vector<std::tuple<int, int, int>> items;
+  for (size_t i = 0; i < available_sizes.size(); i += 2) {
+    const gfx::Size size(base::strict_cast<int>(available_sizes[i]),
+                         base::strict_cast<int>(available_sizes[i + 1]));
+    if (size.IsEmpty())
+      continue;
+    const int aspect_ratio = kPrecisionFactor * size.width() / size.height();
+    items.emplace_back(std::abs(aspect_ratio - target_aspect_ratio),
+                       size.width(), size.height());
+  }
+  const auto iter = std::min_element(items.begin(), items.end());
+  if (iter == items.end())
+    return gfx::Size();
+  return gfx::Size(std::get<1>(*iter), std::get<2>(*iter));
+}
+
 }  // namespace
 
 RequestManager::RequestManager(
@@ -43,7 +90,8 @@ RequestManager::RequestManager(
     VideoCaptureBufferType buffer_type,
     std::unique_ptr<CameraBufferFactory> camera_buffer_factory,
     BlobifyCallback blobify_callback,
-    scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
+    uint32_t device_api_version)
     : device_id_(device_id),
       callback_ops_(this, std::move(callback_ops_receiver)),
       capture_interface_(std::move(capture_interface)),
@@ -58,7 +106,8 @@ RequestManager::RequestManager(
       ipc_task_runner_(std::move(ipc_task_runner)),
       capturing_(false),
       partial_result_count_(1),
-      first_frame_shutter_time_(base::TimeTicks()) {
+      first_frame_shutter_time_(base::TimeTicks()),
+      device_api_version_(device_api_version) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   DCHECK(callback_ops_.is_bound());
   DCHECK(device_context_);
@@ -113,6 +162,8 @@ void RequestManager::SetUpStreamsAndBuffers(
     StreamType stream_type = StreamIdToStreamType(stream->id);
     last_received_frame_number_map_[stream_type] = kUndefinedFrameNumber;
   }
+
+  jpeg_thumbnail_size_ = GetJpegThumbnailSize(static_metadata, streams);
 
   stream_buffer_manager_->SetUpStreamsAndBuffers(
       capture_params, static_metadata, std::move(streams));
@@ -245,6 +296,21 @@ void RequestManager::SetJpegOrientation(
   AddOrUpdateMetadataEntry(settings, std::move(e));
 }
 
+void RequestManager::SetJpegThumbnailSize(
+    cros::mojom::CameraMetadataPtr* settings) const {
+  std::vector<uint8_t> data(sizeof(int32_t) * 2);
+  auto* data_i32 = reinterpret_cast<int32_t*>(data.data());
+  data_i32[0] = base::checked_cast<int32_t>(jpeg_thumbnail_size_.width());
+  data_i32[1] = base::checked_cast<int32_t>(jpeg_thumbnail_size_.height());
+  cros::mojom::CameraMetadataEntryPtr e =
+      cros::mojom::CameraMetadataEntry::New();
+  e->tag = cros::mojom::CameraMetadataTag::ANDROID_JPEG_THUMBNAIL_SIZE;
+  e->type = cros::mojom::EntryType::TYPE_INT32;
+  e->count = data.size() / sizeof(int32_t);
+  e->data = std::move(data);
+  AddOrUpdateMetadataEntry(settings, std::move(e));
+}
+
 void RequestManager::SetSensorTimestamp(
     cros::mojom::CameraMetadataPtr* settings,
     uint64_t shutter_timestamp) {
@@ -287,7 +353,7 @@ void RequestManager::PrepareCaptureRequest() {
   std::set<StreamType> stream_types;
   cros::mojom::CameraMetadataPtr settings;
   TakePhotoCallback callback = base::NullCallback();
-  base::Optional<uint64_t> input_buffer_id;
+  absl::optional<uint64_t> input_buffer_id;
   cros::mojom::Effect reprocess_effect = cros::mojom::Effect::NO_EFFECT;
 
   bool is_reprocess_request = false;
@@ -369,6 +435,10 @@ void RequestManager::PrepareCaptureRequest() {
   if (!is_reprocess_request) {
     UpdateCaptureSettings(&capture_request->settings);
   }
+  if (device_api_version_ >= cros::mojom::CAMERA_DEVICE_API_VERSION_3_5) {
+    capture_request->physcam_settings =
+        std::vector<cros::mojom::Camera3PhyscamMetadataPtr>();
+  }
   capture_interface_->ProcessCaptureRequest(
       std::move(capture_request),
       base::BindOnce(&RequestManager::OnProcessedCaptureRequest, GetWeakPtr()));
@@ -378,7 +448,7 @@ bool RequestManager::TryPrepareReprocessRequest(
     std::set<StreamType>* stream_types,
     cros::mojom::CameraMetadataPtr* settings,
     TakePhotoCallback* callback,
-    base::Optional<uint64_t>* input_buffer_id,
+    absl::optional<uint64_t>* input_buffer_id,
     cros::mojom::Effect* reprocess_effect) {
   if (buffer_id_reprocess_job_info_map_.empty() ||
       !stream_buffer_manager_->HasFreeBuffers(kYUVReprocessStreams)) {
@@ -387,10 +457,10 @@ bool RequestManager::TryPrepareReprocessRequest(
 
   // Consume reprocess task.
   ReprocessJobInfo* reprocess_job_info;
-  for (auto& it : buffer_id_reprocess_job_info_map_) {
-    if (processing_buffer_ids_.count(it.first) == 0) {
-      *input_buffer_id = it.first;
-      reprocess_job_info = &it.second;
+  for (auto& [buffer_id, job_info] : buffer_id_reprocess_job_info_map_) {
+    if (processing_buffer_ids_.count(buffer_id) == 0) {
+      *input_buffer_id = buffer_id;
+      reprocess_job_info = &job_info;
       break;
     }
   }
@@ -408,6 +478,7 @@ bool RequestManager::TryPrepareReprocessRequest(
   *settings = reprocess_job_info->metadata.Clone();
   SetSensorTimestamp(settings, reprocess_job_info->shutter_timestamp);
   SetJpegOrientation(settings, reprocess_job_info->orientation);
+  SetJpegThumbnailSize(settings);
   for (auto& metadata : task.extra_metadata) {
     AddOrUpdateMetadataEntry(settings, std::move(metadata));
   }
@@ -471,6 +542,7 @@ bool RequestManager::TryPrepareOneShotRequest(
 
     *settings = std::move(take_photo_settings_queue_.front());
     SetJpegOrientation(settings, device_context_->GetCameraFrameRotation());
+    SetJpegThumbnailSize(settings);
   }
   SetZeroShutterLag(settings, true);
   take_photo_settings_queue_.pop();
@@ -479,9 +551,20 @@ bool RequestManager::TryPrepareOneShotRequest(
 
 bool RequestManager::TryPrepareRecordingRequest(
     std::set<StreamType>* stream_types) {
-  if (!stream_buffer_manager_->IsRecordingSupported() ||
-      !stream_buffer_manager_->HasFreeBuffers({StreamType::kRecordingOutput})) {
+  if (!stream_buffer_manager_->IsRecordingSupported()) {
     return false;
+  }
+
+  if (!stream_buffer_manager_->HasFreeBuffers({StreamType::kRecordingOutput})) {
+    // Try our best to reserve an usable buffer.  If the reservation still
+    // fails, then we'd have to drop the camera frame.
+    DLOG(WARNING) << "Late request for reserving recording buffer";
+    stream_buffer_manager_->ReserveBuffer(StreamType::kRecordingOutput);
+    if (!stream_buffer_manager_->HasFreeBuffers(
+            {StreamType::kRecordingOutput})) {
+      DLOG(WARNING) << "No free buffer for recording stream";
+      return false;
+    }
   }
 
   stream_types->insert({StreamType::kRecordingOutput});
@@ -511,10 +594,20 @@ void RequestManager::ProcessCaptureResult(
     cros::mojom::Camera3CaptureResultPtr result) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
 
+  uint32_t frame_number = result->frame_number;
   if (!capturing_) {
+    if (result->output_buffers) {
+      for (auto& stream_buffer : result->output_buffers.value()) {
+        TRACE_EVENT_END("camera",
+                        GetTraceTrack(CameraTraceEvent::kCaptureStream,
+                                      frame_number, stream_buffer->stream_id));
+      }
+    }
+    TRACE_EVENT("camera", "Capture Result", "frame_number", frame_number);
+    TRACE_EVENT_END("camera", GetTraceTrack(CameraTraceEvent::kCaptureRequest,
+                                            frame_number));
     return;
   }
-  uint32_t frame_number = result->frame_number;
   // A new partial result may be created in either ProcessCaptureResult or
   // Notify.
   CaptureResult& pending_result = pending_results_[frame_number];
@@ -559,16 +652,17 @@ void RequestManager::ProcessCaptureResult(
     }
 
     for (auto& stream_buffer : result->output_buffers.value()) {
+      auto stream_id = stream_buffer->stream_id;
       DVLOG(2) << "Received capture result for frame " << frame_number
-               << " stream_id: " << stream_buffer->stream_id;
-      StreamType stream_type = StreamIdToStreamType(stream_buffer->stream_id);
+               << " stream_id: " << stream_id;
+      StreamType stream_type = StreamIdToStreamType(stream_id);
       if (stream_type == StreamType::kUnknown) {
         device_context_->SetErrorState(
             media::VideoCaptureError::
                 kCrosHalV3BufferManagerInvalidTypeOfOutputBuffersReceived,
             FROM_HERE,
             std::string("Invalid type of output buffers received: ") +
-                base::NumberToString(stream_buffer->stream_id));
+                base::NumberToString(stream_id));
         return;
       }
 
@@ -586,7 +680,7 @@ void RequestManager::ProcessCaptureResult(
               std::string("Received multiple result buffers for frame ") +
                   base::NumberToString(frame_number) +
                   std::string(" for stream ") +
-                  base::NumberToString(stream_buffer->stream_id));
+                  base::NumberToString(stream_id));
           return;
         } else if (last_received_frame_number_map_[stream_type] >
                    frame_number) {
@@ -615,10 +709,12 @@ void RequestManager::ProcessCaptureResult(
       } else {
         pending_result.buffers[stream_type] = std::move(stream_buffer);
       }
+      TRACE_EVENT_END("camera", GetTraceTrack(CameraTraceEvent::kCaptureStream,
+                                              frame_number, stream_id));
     }
   }
 
-  TRACE_EVENT1("camera", "Capture Result", "frame_number", frame_number);
+  TRACE_EVENT("camera", "Capture Result", "frame_number", frame_number);
   TrySubmitPendingBuffers(frame_number);
 }
 
@@ -650,6 +746,8 @@ void RequestManager::TrySubmitPendingBuffers(uint32_t frame_number) {
       SubmitCaptureResult(frame_number, it.first, std::move(it.second));
     }
   }
+  TRACE_EVENT_END(
+      "camera", GetTraceTrack(CameraTraceEvent::kCaptureRequest, frame_number));
 }
 
 void RequestManager::Notify(cros::mojom::Camera3NotifyMsgPtr message) {
@@ -693,8 +791,7 @@ void RequestManager::Notify(cros::mojom::Camera3NotifyMsgPtr message) {
     pending_result.shutter_timestamp = shutter_time;
     // Shutter timestamp is in ns.
     base::TimeTicks reference_time =
-        base::TimeTicks() +
-        base::TimeDelta::FromMicroseconds(shutter_time / 1000);
+        base::TimeTicks() + base::Microseconds(shutter_time / 1000);
     pending_result.reference_time = reference_time;
     if (first_frame_shutter_time_.is_null()) {
       // Record the shutter time of the first frame for calculating the
@@ -880,9 +977,10 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
     StreamType stream_type) {
   const CaptureResult& pending_result = pending_results_[frame_number];
   auto client_type = kStreamClientTypeMap[static_cast<int>(stream_type)];
+
   if (video_capture_use_gmb_) {
     VideoCaptureFormat format;
-    base::Optional<VideoCaptureDevice::Client::Buffer> buffer =
+    absl::optional<VideoCaptureDevice::Client::Buffer> buffer =
         stream_buffer_manager_->AcquireBufferForClientById(
             stream_type, buffer_ipc_id, &format);
     CHECK(buffer);
@@ -914,6 +1012,18 @@ void RequestManager::SubmitCapturedPreviewRecordingBuffer(
       // All frames are pre-rotated to the display orientation.
       metadata.transformation = VIDEO_ROTATION_0;
     }
+
+    auto camera_app_device =
+        CameraAppDeviceBridgeImpl::GetInstance()->GetWeakCameraAppDevice(
+            device_id_);
+    if (camera_app_device && stream_type == StreamType::kPreviewOutput) {
+      camera_app_device->MaybeDetectDocumentCorners(
+          stream_buffer_manager_->CreateGpuMemoryBuffer(
+              buffer->handle_provider->GetGpuMemoryBufferHandle(), format,
+              gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE),
+          metadata.transformation->rotation);
+    }
+
     device_context_->SubmitCapturedVideoCaptureBuffer(
         client_type, std::move(*buffer), format, pending_result.reference_time,
         pending_result.timestamp, metadata);

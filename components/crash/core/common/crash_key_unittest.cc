@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,7 +37,7 @@ TEST_F(CrashKeyStringTest, FormatStackTrace) {
       0x0badbeef, 0x77778888, 0xabc, 0x000ddeeff, 0x12345678,
   };
   base::debug::StackTrace trace(reinterpret_cast<const void* const*>(addresses),
-                                base::size(addresses));
+                                std::size(addresses));
 
   std::string too_small = internal::FormatStackTrace(trace, 3);
   EXPECT_EQ(0u, too_small.size());
@@ -59,7 +58,7 @@ TEST_F(CrashKeyStringTest, FormatStackTrace64) {
       0xbaaaabaaaaba, 0x1000000000000000,
   };
   base::debug::StackTrace trace(reinterpret_cast<const void* const*>(addresses),
-                                base::size(addresses));
+                                std::size(addresses));
 
   std::string too_small = internal::FormatStackTrace(trace, 8);
   EXPECT_EQ(0u, too_small.size());

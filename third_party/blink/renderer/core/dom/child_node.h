@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,21 +14,24 @@ class ChildNode {
   STATIC_ONLY(ChildNode);
 
  public:
-  static void before(Node& node,
-                     const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-                     ExceptionState& exception_state) {
+  static void before(
+      Node& node,
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+      ExceptionState& exception_state) {
     return node.Before(nodes, exception_state);
   }
 
-  static void after(Node& node,
-                    const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-                    ExceptionState& exception_state) {
+  static void after(
+      Node& node,
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+      ExceptionState& exception_state) {
     return node.After(nodes, exception_state);
   }
 
-  static void replaceWith(Node& node,
-                          const HeapVector<NodeOrStringOrTrustedScript>& nodes,
-                          ExceptionState& exception_state) {
+  static void replaceWith(
+      Node& node,
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& nodes,
+      ExceptionState& exception_state) {
     return node.ReplaceWith(nodes, exception_state);
   }
 

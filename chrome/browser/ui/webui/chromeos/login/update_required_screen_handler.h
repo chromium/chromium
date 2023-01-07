@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,19 +7,19 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "chrome/browser/ash/login/screens/update_required_screen.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class UpdateRequiredScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between UpdateRequiredScreen and its
 // WebUI representation.
 
-class UpdateRequiredView {
+class UpdateRequiredView : public base::SupportsWeakPtr<UpdateRequiredView> {
  public:
   enum UIState {
     UPDATE_REQUIRED_MESSAGE = 0,   // 'System update required' message.
@@ -32,21 +32,13 @@ class UpdateRequiredView {
     UPDATE_NO_NETWORK              // No network available to update
   };
 
-  constexpr static StaticOobeScreenId kScreenId{"update-required"};
+  inline constexpr static StaticOobeScreenId kScreenId{"update-required",
+                                                       "UpdateRequiredScreen"};
 
-  virtual ~UpdateRequiredView() {}
+  virtual ~UpdateRequiredView() = default;
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
-
-  // Hides the contents of the screen.
-  virtual void Hide() = 0;
-
-  // Binds `screen` to the view.
-  virtual void Bind(UpdateRequiredScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
 
   // Is device connected to some network?
   virtual void SetIsConnected(bool connected) = 0;
@@ -74,14 +66,16 @@ class UpdateRequiredScreenHandler : public UpdateRequiredView,
  public:
   using TView = UpdateRequiredView;
 
-  explicit UpdateRequiredScreenHandler(JSCallsContainer* js_calls_container);
+  UpdateRequiredScreenHandler();
+
+  UpdateRequiredScreenHandler(const UpdateRequiredScreenHandler&) = delete;
+  UpdateRequiredScreenHandler& operator=(const UpdateRequiredScreenHandler&) =
+      delete;
+
   ~UpdateRequiredScreenHandler() override;
 
  private:
   void Show() override;
-  void Hide() override;
-  void Bind(UpdateRequiredScreen* screen) override;
-  void Unbind() override;
 
   void SetIsConnected(bool connected) override;
   void SetUpdateProgressUnavailable(bool unavailable) override;
@@ -98,19 +92,18 @@ class UpdateRequiredScreenHandler : public UpdateRequiredView,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
-
-  UpdateRequiredScreen* screen_ = nullptr;
-
-  // If true, Initialize() will call Show().
-  bool show_on_init_ = false;
 
   // The domain name for which update required screen is being shown.
   std::string domain_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateRequiredScreenHandler);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::UpdateRequiredScreenHandler;
+using ::chromeos::UpdateRequiredView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_UPDATE_REQUIRED_SCREEN_HANDLER_H_

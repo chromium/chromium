@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include <xdg-shell-server-protocol.h>
 #include <xdg-shell-unstable-v6-server-protocol.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_positioner.h"
 
@@ -27,6 +28,9 @@ class TestXdgPopup : public ServerObject {
   TestXdgPopup& operator=(const TestXdgPopup&) = delete;
   ~TestXdgPopup() override;
 
+  struct TestPositioner::PopupPosition position() const {
+    return position_;
+  }
   void set_position(struct TestPositioner::PopupPosition position) {
     position_ = std::move(position);
   }
@@ -47,7 +51,7 @@ class TestXdgPopup : public ServerObject {
   struct TestPositioner::PopupPosition position_;
 
   // Ground surface for this popup.
-  wl_resource* surface_ = nullptr;
+  raw_ptr<wl_resource> surface_ = nullptr;
 
   uint32_t grab_serial_ = 0;
 };

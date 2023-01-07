@@ -39,12 +39,13 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_array_buffer.h"
 #include "third_party/blink/public/web/web_document.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/websockets/web_pepper_socket_channel_client_proxy.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel.h"
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_impl.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -68,7 +69,7 @@ WebPepperSocketImpl::WebPepperSocketImpl(const WebDocument& document,
   Document* core_document = document;
   private_ = WebSocketChannelImpl::Create(core_document->GetExecutionContext(),
                                           channel_proxy_.Get(),
-                                          SourceLocation::Capture());
+                                          CaptureSourceLocation());
   DCHECK(private_);
 }
 
@@ -128,8 +129,9 @@ void WebPepperSocketImpl::Close(int code, const WebString& reason) {
 }
 
 void WebPepperSocketImpl::Fail(const WebString& reason) {
-  private_->Fail(reason, mojom::ConsoleMessageLevel::kError,
-                 std::make_unique<SourceLocation>(String(), 0, 0, nullptr));
+  private_->Fail(
+      reason, mojom::ConsoleMessageLevel::kError,
+      std::make_unique<SourceLocation>(String(), String(), 0, 0, nullptr));
 }
 
 void WebPepperSocketImpl::Disconnect() {

@@ -1,17 +1,17 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -40,19 +40,19 @@ bool TransformHelper::DependsOnReferenceBox(const ComputedStyle& style) {
   return false;
 }
 
-FloatRect TransformHelper::ComputeReferenceBox(
+gfx::RectF TransformHelper::ComputeReferenceBox(
     const LayoutObject& layout_object) {
   const ComputedStyle& style = layout_object.StyleRef();
-  FloatRect reference_box;
+  gfx::RectF reference_box;
   if (style.TransformBox() == ETransformBox::kFillBox) {
     reference_box = layout_object.ObjectBoundingBox();
   } else {
     DCHECK_EQ(style.TransformBox(), ETransformBox::kViewBox);
     SVGLengthContext length_context(
         DynamicTo<SVGElement>(layout_object.GetNode()));
-    FloatSize viewport_size;
+    gfx::SizeF viewport_size;
     length_context.DetermineViewport(viewport_size);
-    reference_box.SetSize(viewport_size);
+    reference_box.set_size(viewport_size);
   }
   const float zoom = style.EffectiveZoom();
   if (zoom != 1)
@@ -81,10 +81,11 @@ AffineTransform TransformHelper::ComputeTransform(
   // clipPath. See
   // https://svgwg.org/svg2-draft/coords.html#ObjectBoundingBoxUnits
   TransformationMatrix transform;
-  FloatRect reference_box = ComputeReferenceBox(layout_object);
-  style.ApplyTransform(transform, reference_box, apply_transform_origin,
-                       ComputedStyle::kIncludeMotionPath,
-                       ComputedStyle::kIncludeIndependentTransformProperties);
+  gfx::RectF reference_box = ComputeReferenceBox(layout_object);
+  style.ApplyTransform(
+      transform, reference_box, ComputedStyle::kIncludeTransformOperations,
+      apply_transform_origin, ComputedStyle::kIncludeMotionPath,
+      ComputedStyle::kIncludeIndependentTransformProperties);
   const float zoom = style.EffectiveZoom();
   if (zoom != 1)
     transform.Zoom(1 / zoom);
@@ -92,17 +93,17 @@ AffineTransform TransformHelper::ComputeTransform(
   return transform.ToAffineTransform();
 }
 
-FloatPoint TransformHelper::ComputeTransformOrigin(
+gfx::PointF TransformHelper::ComputeTransformOrigin(
     const LayoutObject& layout_object) {
   const auto& style = layout_object.StyleRef();
-  FloatRect reference_box = ComputeReferenceBox(layout_object);
-  FloatPoint origin(
-      FloatValueForLength(style.TransformOriginX(), reference_box.Width()) +
-          reference_box.X(),
-      FloatValueForLength(style.TransformOriginY(), reference_box.Height()) +
-          reference_box.Y());
+  gfx::RectF reference_box = ComputeReferenceBox(layout_object);
+  gfx::PointF origin(
+      FloatValueForLength(style.TransformOriginX(), reference_box.width()) +
+          reference_box.x(),
+      FloatValueForLength(style.TransformOriginY(), reference_box.height()) +
+          reference_box.y());
   // See the comment in ComputeTransform() for the reason of scaling by 1/zoom.
-  return origin.ScaledBy(1 / style.EffectiveZoom());
+  return gfx::ScalePoint(origin, style.EffectiveZoom());
 }
 
 }  // namespace blink

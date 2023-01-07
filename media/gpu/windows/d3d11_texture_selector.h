@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,8 @@ class MEDIA_GPU_EXPORT TextureSelector {
   TextureSelector(VideoPixelFormat pixfmt,
                   DXGI_FORMAT output_dxgifmt,
                   ComD3D11VideoDevice video_device,
-                  ComD3D11DeviceContext d3d11_device_context);
+                  ComD3D11DeviceContext d3d11_device_context,
+                  bool use_shared_handle);
   virtual ~TextureSelector();
 
   static std::unique_ptr<TextureSelector> Create(
@@ -44,14 +45,21 @@ class MEDIA_GPU_EXPORT TextureSelector {
       const FormatSupportChecker* format_checker,
       ComD3D11VideoDevice video_device,
       ComD3D11DeviceContext device_context,
-      MediaLog* media_log);
+      MediaLog* media_log,
+      gfx::ColorSpace input_color_space,
+      bool shared_image_use_shared_handle = false);
 
   virtual std::unique_ptr<Texture2DWrapper> CreateTextureWrapper(
       ComD3D11Device device,
       gfx::Size size);
 
+  virtual bool DoesDecoderOutputUseSharedHandle() const;
+
   VideoPixelFormat PixelFormat() const { return pixel_format_; }
   DXGI_FORMAT OutputDXGIFormat() const { return output_dxgifmt_; }
+  bool DoesSharedImageUseSharedHandle() const {
+    return shared_image_use_shared_handle_;
+  }
 
   virtual bool WillCopyForTesting() const;
 
@@ -70,6 +78,8 @@ class MEDIA_GPU_EXPORT TextureSelector {
 
   ComD3D11VideoDevice video_device_;
   ComD3D11DeviceContext device_context_;
+
+  bool shared_image_use_shared_handle_;
 };
 
 class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
@@ -78,19 +88,22 @@ class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
   CopyTextureSelector(VideoPixelFormat pixfmt,
                       DXGI_FORMAT input_dxgifmt,
                       DXGI_FORMAT output_dxgifmt,
-                      base::Optional<gfx::ColorSpace> output_color_space,
+                      absl::optional<gfx::ColorSpace> output_color_space,
                       ComD3D11VideoDevice video_device,
-                      ComD3D11DeviceContext d3d11_device_context);
+                      ComD3D11DeviceContext d3d11_device_context,
+                      bool use_shared_handle);
   ~CopyTextureSelector() override;
 
   std::unique_ptr<Texture2DWrapper> CreateTextureWrapper(
       ComD3D11Device device,
       gfx::Size size) override;
 
+  bool DoesDecoderOutputUseSharedHandle() const override;
+
   bool WillCopyForTesting() const override;
 
  private:
-  base::Optional<gfx::ColorSpace> output_color_space_;
+  absl::optional<gfx::ColorSpace> output_color_space_;
   scoped_refptr<VideoProcessorProxy> video_processor_proxy_;
 };
 

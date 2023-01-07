@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,6 +19,9 @@ class FileSystemUsageCacheTest : public testing::Test,
                                  public ::testing::WithParamInterface<bool> {
  public:
   FileSystemUsageCacheTest() : usage_cache_(is_incognito()) {}
+
+  FileSystemUsageCacheTest(const FileSystemUsageCacheTest&) = delete;
+  FileSystemUsageCacheTest& operator=(const FileSystemUsageCacheTest&) = delete;
 
   void SetUp() override { ASSERT_TRUE(data_dir_.CreateUniqueTempDir()); }
 
@@ -36,8 +38,6 @@ class FileSystemUsageCacheTest : public testing::Test,
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
   FileSystemUsageCache usage_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemUsageCacheTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(All, FileSystemUsageCacheTest, testing::Bool());

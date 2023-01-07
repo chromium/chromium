@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -60,13 +61,13 @@
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/browsing_data_remover.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -102,6 +103,13 @@ const char kEncodedApplicationServerKey[] =
     "BFVSaqVujqpHlzYQwWY8HmW_oXvuSMnGu78CGFNyHQx7qeMRtwNSIdNxkBOowc_tIPcf0X_ydr"
     "YBINg1pdk8Q_0";
 
+// From chrome/browser/push_messaging/push_messaging_manager.cc
+const char* kIncognitoWarningPattern =
+    "Chrome currently does not support the Push API in incognito mode "
+    "(https://crbug.com/401439). There is deliberately no way to "
+    "feature-detect this, since incognito mode needs to be undetectable by "
+    "websites.";
+
 std::string GetTestApplicationServerKey(bool base64_url_encoded = false) {
   std::string application_server_key;
 
@@ -112,7 +120,7 @@ std::string GetTestApplicationServerKey(bool base64_url_encoded = false) {
   } else {
     application_server_key =
         std::string(kApplicationServerKey,
-                    kApplicationServerKey + base::size(kApplicationServerKey));
+                    kApplicationServerKey + std::size(kApplicationServerKey));
   }
 
   return application_server_key;
@@ -133,7 +141,7 @@ void LegacyRegisterCallback(base::OnceClosure done_callback,
 void DidRegister(base::OnceClosure done_callback,
                  const std::string& registration_id,
                  const GURL& endpoint,
-                 const base::Optional<base::Time>& expiration_time,
+                 const absl::optional<base::Time>& expiration_time,
                  const std::vector<uint8_t>& p256dh,
                  const std::vector<uint8_t>& auth,
                  blink::mojom::PushRegistrationStatus status) {
@@ -152,31 +160,36 @@ void InstanceIDResultCallback(base::OnceClosure done_callback,
 
 }  // namespace
 
-class PushMessagingBrowserTest : public InProcessBrowserTest {
+class PushMessagingBrowserTestBase : public InProcessBrowserTest {
  public:
-  PushMessagingBrowserTest()
+  PushMessagingBrowserTestBase()
       : scoped_testing_factory_installer_(
             base::BindRepeating(&gcm::FakeGCMProfileService::Build)),
         gcm_service_(nullptr),
         gcm_driver_(nullptr) {}
 
-  ~PushMessagingBrowserTest() override = default;
+  ~PushMessagingBrowserTestBase() override = default;
+
+  PushMessagingBrowserTestBase(const PushMessagingBrowserTestBase&) = delete;
+  PushMessagingBrowserTestBase& operator=(const PushMessagingBrowserTestBase&) =
+      delete;
 
   // InProcessBrowserTest:
   void SetUp() override {
-    https_server_.reset(
-        new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     content::SetupCrossSiteRedirector(https_server_.get());
-    ASSERT_TRUE(https_server_->Start());
 
     site_engagement::SiteEngagementScore::SetParamValuesForTesting();
     InProcessBrowserTest::SetUp();
   }
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Enable experimental features for subscription restrictions.
-    command_line->AppendSwitch(
-        switches::kEnableExperimentalWebPlatformFeatures);
+    if (exp_web_platform_features_enabled_) {
+      // Enable experimental features for subscription restrictions.
+      command_line->AppendSwitch(
+          switches::kEnableExperimentalWebPlatformFeatures);
+    }
 
     // HTTPS server only serves a valid cert for localhost, so this is needed to
     // load webby domains like "embedded.com" without an interstitial.
@@ -186,6 +199,7 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(https_server_->Start());
 
     KeyedService* keyed_service =
         gcm::GCMProfileServiceFactory::GetForProfile(GetBrowser()->profile());
@@ -236,7 +250,8 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
   }
 
   void LoadTestPage(const std::string& path) {
-    ui_test_utils::NavigateToURL(GetBrowser(), https_server_->GetURL(path));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(),
+                                             https_server_->GetURL(path)));
   }
 
   void LoadTestPage() { LoadTestPage(GetTestURL()); }
@@ -251,8 +266,8 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
                  content::WebContents* web_contents) {
     if (!web_contents)
       web_contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
-    return content::ExecuteScriptAndExtractString(web_contents->GetMainFrame(),
-                                                  script, result);
+    return content::ExecuteScriptAndExtractString(
+        web_contents->GetPrimaryMainFrame(), script, result);
   }
 
   gcm::GCMAppHandler* GetAppHandler() {
@@ -376,20 +391,19 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
       scoped_testing_factory_installer_;
 
-  gcm::FakeGCMProfileService* gcm_service_;
-  instance_id::FakeGCMDriverForInstanceID* gcm_driver_;
+  raw_ptr<gcm::FakeGCMProfileService> gcm_service_;
+  raw_ptr<instance_id::FakeGCMDriverForInstanceID> gcm_driver_;
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
+  bool exp_web_platform_features_enabled_ = true;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  PushMessagingServiceImpl* push_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingBrowserTest);
+  raw_ptr<PushMessagingServiceImpl> push_service_;
 };
 
-void PushMessagingBrowserTest::RequestAndAcceptPermission() {
+void PushMessagingBrowserTestBase::RequestAndAcceptPermission() {
   std::string script_result;
   GetPermissionRequestManager()->set_auto_response_for_test(
       permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -397,7 +411,7 @@ void PushMessagingBrowserTest::RequestAndAcceptPermission() {
   ASSERT_EQ("permission status - granted", script_result);
 }
 
-void PushMessagingBrowserTest::RequestAndDenyPermission() {
+void PushMessagingBrowserTestBase::RequestAndDenyPermission() {
   std::string script_result;
   GetPermissionRequestManager()->set_auto_response_for_test(
       permissions::PermissionRequestManager::DENY_ALL);
@@ -405,7 +419,7 @@ void PushMessagingBrowserTest::RequestAndDenyPermission() {
   ASSERT_EQ("permission status - denied", script_result);
 }
 
-void PushMessagingBrowserTest::SubscribeSuccessfully(
+void PushMessagingBrowserTestBase::SubscribeSuccessfully(
     PushSubscriptionKeyFormat key_format,
     std::string* out_token) {
   std::string script_result;
@@ -442,10 +456,11 @@ void PushMessagingBrowserTest::SubscribeSuccessfully(
   }
 }
 
-void PushMessagingBrowserTest::SetupOrphanedPushSubscription(
+void PushMessagingBrowserTestBase::SetupOrphanedPushSubscription(
     std::string* out_app_id) {
   ASSERT_NO_FATAL_FAILURE(RequestAndAcceptPermission());
-  GURL requesting_origin = https_server()->GetURL("/").GetOrigin();
+  GURL requesting_origin =
+      https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   // Use 1234LL as it's unlikely to collide with an active service worker
   // registration id (they increment from 0).
   const int64_t service_worker_registration_id = 1234LL;
@@ -459,7 +474,8 @@ void PushMessagingBrowserTest::SetupOrphanedPushSubscription(
 
   base::RunLoop run_loop;
   push_service()->SubscribeFromWorker(
-      requesting_origin, service_worker_registration_id, std::move(options),
+      requesting_origin, service_worker_registration_id,
+      /*render_process_id=*/-1, std::move(options),
       base::BindOnce(&DidRegister, run_loop.QuitClosure()));
   run_loop.Run();
 
@@ -471,7 +487,7 @@ void PushMessagingBrowserTest::SetupOrphanedPushSubscription(
   *out_app_id = app_identifier.app_id();
 }
 
-void PushMessagingBrowserTest::LegacySubscribeSuccessfully(
+void PushMessagingBrowserTestBase::LegacySubscribeSuccessfully(
     std::string* out_subscription_id) {
   // Create a non-InstanceID GCM registration. Have to directly access
   // GCMDriver, since this codepath has been deleted from Push.
@@ -482,7 +498,8 @@ void PushMessagingBrowserTest::LegacySubscribeSuccessfully(
 
   ASSERT_NO_FATAL_FAILURE(RequestAndAcceptPermission());
 
-  GURL requesting_origin = https_server()->GetURL("/").GetOrigin();
+  GURL requesting_origin =
+      https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   int64_t service_worker_registration_id = 0LL;
   PushMessagingAppIdentifier app_identifier =
       PushMessagingAppIdentifier::LegacyGenerateForTesting(
@@ -518,9 +535,9 @@ void PushMessagingBrowserTest::LegacySubscribeSuccessfully(
     *out_subscription_id = subscription_id;
 }
 
-void PushMessagingBrowserTest::EndpointToToken(const std::string& endpoint,
-                                               bool standard_protocol,
-                                               std::string* out_token) {
+void PushMessagingBrowserTestBase::EndpointToToken(const std::string& endpoint,
+                                                   bool standard_protocol,
+                                                   std::string* out_token) {
   size_t last_slash = endpoint.rfind('/');
 
   ASSERT_EQ(kPushMessagingGcmEndpoint, endpoint.substr(0, last_slash + 1));
@@ -532,9 +549,9 @@ void PushMessagingBrowserTest::EndpointToToken(const std::string& endpoint,
 }
 
 PushMessagingAppIdentifier
-PushMessagingBrowserTest::GetAppIdentifierForServiceWorkerRegistration(
+PushMessagingBrowserTestBase::GetAppIdentifierForServiceWorkerRegistration(
     int64_t service_worker_registration_id) {
-  GURL origin = https_server()->GetURL("/").GetOrigin();
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   PushMessagingAppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), origin, service_worker_registration_id);
@@ -542,7 +559,7 @@ PushMessagingBrowserTest::GetAppIdentifierForServiceWorkerRegistration(
   return app_identifier;
 }
 
-void PushMessagingBrowserTest::DeleteInstanceIDAsIfGCMStoreReset(
+void PushMessagingBrowserTestBase::DeleteInstanceIDAsIfGCMStoreReset(
     const std::string& app_id) {
   // Delete the Instance ID directly, keeping the push subscription stored in
   // the PushMessagingAppIdentifier map and the Service Worker database. This
@@ -567,7 +584,7 @@ void PushMessagingBrowserTest::DeleteInstanceIDAsIfGCMStoreReset(
   ASSERT_EQ(instance_id::InstanceID::SUCCESS, delete_result);
 }
 
-void PushMessagingBrowserTest::SendMessageAndWaitUntilHandled(
+void PushMessagingBrowserTestBase::SendMessageAndWaitUntilHandled(
     const PushMessagingAppIdentifier& app_identifier,
     const gcm::IncomingMessage& message) {
   base::RunLoop run_loop;
@@ -575,6 +592,32 @@ void PushMessagingBrowserTest::SendMessageAndWaitUntilHandled(
   push_service()->OnMessage(app_identifier.app_id(), message);
   run_loop.Run();
 }
+
+class PushMessagingBrowserTest : public PushMessagingBrowserTestBase {
+ public:
+  PushMessagingBrowserTest() {
+    feature_list_.InitAndDisableFeature(
+        features::kPushMessagingDisallowSenderIDs);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// This class is used to execute PushMessagingBrowserTest tests with
+// experimental web platform features both enabled/disabled.
+class PushMessagingExpWebFeaturesBrowserTest
+    : public PushMessagingBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  PushMessagingExpWebFeaturesBrowserTest() {
+    exp_web_platform_features_enabled_ = GetParam();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(PushMessagingExpWebFeaturesBrowserTest,
+                         PushMessagingExpWebFeaturesBrowserTest,
+                         testing::Values(true, false));
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
                        SubscribeWithoutKeySuccessNotificationsGranted) {
@@ -698,7 +741,8 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, SubscribeWithInvalidation) {
 
   PushMessagingAppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(
-          GetBrowser()->profile(), https_server()->GetURL("/").GetOrigin(),
+          GetBrowser()->profile(),
+          https_server()->GetURL("/").DeprecatedGetOriginAsURL(),
           0LL /* service_worker_registration_id */);
 
   ASSERT_FALSE(app_identifier.is_null());
@@ -1252,9 +1296,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventOnShutdown) {
   message.sender_id = GetTestApplicationServerKey();
   message.raw_data = "testdata";
   message.decrypted = true;
-  push_service()->Observe(chrome::NOTIFICATION_APP_TERMINATING,
-                          content::NotificationService::AllSources(),
-                          content::NotificationService::NoDetails());
+  push_service()->OnAppTerminating();
   push_service()->OnMessage(app_identifier.app_id(), message);
   EXPECT_TRUE(IsRegisteredKeepAliveEqualTo(false));
 }
@@ -1442,7 +1484,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PushEventWithoutPermission) {
   EXPECT_EQ(app_identifier.app_id(), gcm_driver_->last_deletetoken_app_id());
   ASSERT_TRUE(RunScript("hasSubscription()", &script_result));
   EXPECT_EQ("false - not subscribed", script_result);
-  GURL origin = https_server()->GetURL("/").GetOrigin();
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   PushMessagingAppIdentifier app_identifier_afterwards =
       PushMessagingAppIdentifier::FindByServiceWorker(GetBrowser()->profile(),
                                                       origin, 0LL);
@@ -1482,7 +1524,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   // Set the site engagement score for the site. Setting it to 10 means it
   // should have a budget of 4, enough for two non-shown notification, which
   // cost 2 each.
-  SetSiteEngagementScore(web_contents->GetURL(), 10.0);
+  SetSiteEngagementScore(web_contents->GetLastCommittedURL(), 10.0);
 
   // If the site is visible in an active tab, we should not force a notification
   // to be shown. Try it twice, since we allow one mistake per 10 push events.
@@ -1585,7 +1627,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   content::WebContents* web_contents =
       GetBrowser()->tab_strip_model()->GetActiveWebContents();
 
-  SetSiteEngagementScore(web_contents->GetURL(), 5.0);
+  SetSiteEngagementScore(web_contents->GetLastCommittedURL(), 5.0);
 
   ui_test_utils::NavigateToURLWithDisposition(
       GetBrowser(), GURL("about:blank"),
@@ -1637,18 +1679,15 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
 }
 
 class PushMessagingBrowserTestWithAbusiveOriginPermissionRevocation
-    : public PushMessagingBrowserTest {
+    : public PushMessagingBrowserTestBase {
  public:
-  PushMessagingBrowserTestWithAbusiveOriginPermissionRevocation() {
-    feature_list_.InitAndEnableFeature(
-        features::kAbusiveNotificationPermissionRevocation);
-  }
+  PushMessagingBrowserTestWithAbusiveOriginPermissionRevocation() = default;
 
   using SiteReputation = CrowdDenyPreloadData::SiteReputation;
 
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
-    PushMessagingBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+    PushMessagingBrowserTestBase::CreatedBrowserMainParts(browser_main_parts);
 
     testing_preload_data_.emplace();
     fake_database_manager_ =
@@ -1679,7 +1718,7 @@ class PushMessagingBrowserTestWithAbusiveOriginPermissionRevocation
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  base::Optional<testing::ScopedCrowdDenyPreloadDataOverride>
+  absl::optional<testing::ScopedCrowdDenyPreloadDataOverride>
       testing_preload_data_;
   scoped_refptr<CrowdDenyFakeSafeBrowsingDatabaseManager>
       fake_database_manager_;
@@ -1700,9 +1739,11 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ("true - is controlled", script_result);
 
   // Add an origin to blocking lists after service worker is registered.
-  AddToPreloadDataBlocklist(https_server()->GetURL("/").GetOrigin(),
-                            SiteReputation::ABUSIVE_CONTENT);
-  AddToSafeBrowsingBlocklist(https_server()->GetURL("/").GetOrigin());
+  AddToPreloadDataBlocklist(
+      https_server()->GetURL("/").DeprecatedGetOriginAsURL(),
+      SiteReputation::ABUSIVE_CONTENT);
+  AddToSafeBrowsingBlocklist(
+      https_server()->GetURL("/").DeprecatedGetOriginAsURL());
 
   gcm::IncomingMessage message;
   message.sender_id = GetTestApplicationServerKey();
@@ -1729,7 +1770,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(app_identifier.app_id(), gcm_driver_->last_deletetoken_app_id());
   ASSERT_TRUE(RunScript("hasSubscription()", &script_result));
   EXPECT_EQ("false - not subscribed", script_result);
-  GURL origin = https_server()->GetURL("/").GetOrigin();
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   PushMessagingAppIdentifier app_identifier_afterwards =
       PushMessagingAppIdentifier::FindByServiceWorker(GetBrowser()->profile(),
                                                       origin, 0LL);
@@ -1757,8 +1798,9 @@ IN_PROC_BROWSER_TEST_F(
 
   // The origin should be marked as |ABUSIVE_CONTENT| on |CrowdDenyPreloadData|
   // otherwise the permission revocation logic will not be triggered.
-  AddToPreloadDataBlocklist(https_server()->GetURL("/").GetOrigin(),
-                            SiteReputation::ABUSIVE_CONTENT);
+  AddToPreloadDataBlocklist(
+      https_server()->GetURL("/").DeprecatedGetOriginAsURL(),
+      SiteReputation::ABUSIVE_CONTENT);
 
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
   PushMessagingAppIdentifier app_identifier =
@@ -1793,7 +1835,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class PushMessagingBrowserTestWithNotificationTriggersEnabled
-    : public PushMessagingBrowserTest {
+    : public PushMessagingBrowserTestBase {
  public:
   PushMessagingBrowserTestWithNotificationTriggersEnabled() {
     feature_list_.InitAndEnableFeature(features::kNotificationTriggers);
@@ -1821,7 +1863,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTestWithNotificationTriggersEnabled,
       GetBrowser()->tab_strip_model()->GetActiveWebContents();
 
   // Initialize site engagement score to have no budget for silent pushes.
-  SetSiteEngagementScore(web_contents->GetURL(), 0);
+  SetSiteEngagementScore(web_contents->GetLastCommittedURL(), 0);
 
   ui_test_utils::NavigateToURLWithDisposition(
       GetBrowser(), GURL("about:blank"),
@@ -1880,8 +1922,8 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   {
     base::RunLoop run_loop;
     push_service()->SetMessageCallbackForTesting(base::BindRepeating(
-        &PushMessagingBrowserTest::OnDeliveryFinished, base::Unretained(this),
-        &number_of_notifications_shown,
+        &PushMessagingBrowserTestBase::OnDeliveryFinished,
+        base::Unretained(this), &number_of_notifications_shown,
         base::BarrierClosure(2 /* num_closures */, run_loop.QuitClosure())));
 
     message.raw_data = "testdata";
@@ -1984,16 +2026,20 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, PermissionStateSaysDenied) {
   EXPECT_EQ("permission status - denied", script_result);
 }
 
-IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, CrossOriginFrame) {
+IN_PROC_BROWSER_TEST_P(PushMessagingExpWebFeaturesBrowserTest,
+                       CrossOriginFrame) {
+  bool storage_partitioned = base::FeatureList::IsEnabled(
+      net::features::kThirdPartyStoragePartitioning);
   const GURL kEmbedderURL = https_server()->GetURL(
       "embedder.com", "/push_messaging/framed_test.html");
   const GURL kRequesterURL = https_server()->GetURL("requester.com", "/");
 
-  ui_test_utils::NavigateToURL(GetBrowser(), kEmbedderURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), kEmbedderURL));
 
   auto* web_contents = GetBrowser()->tab_strip_model()->GetActiveWebContents();
   LOG(ERROR) << web_contents->GetLastCommittedURL();
-  auto* subframe = content::ChildFrameAt(web_contents->GetMainFrame(), 0u);
+  auto* subframe =
+      content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0u);
   ASSERT_TRUE(subframe);
 
   // A cross-origin subframe that had not been granted the NOTIFICATIONS
@@ -2061,7 +2107,12 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, CrossOriginFrame) {
 
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
       subframe, "documentSubscribePush()", &script_result));
-  ASSERT_NO_FATAL_FAILURE(EndpointToToken(script_result));
+  if (storage_partitioned) {
+    EXPECT_EQ("AbortError - Registration failed - storage error",
+              script_result);
+  } else {
+    ASSERT_NO_FATAL_FAILURE(EndpointToToken(script_result));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, UnsubscribeSuccess) {
@@ -2146,7 +2197,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, UnsubscribeSuccess) {
 // Push subscriptions used to be non-InstanceID GCM registrations. Still need
 // to be able to unsubscribe these, even though new ones are no longer created.
 // Flaky on some Win and Linux buildbots.  See crbug.com/835382.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_LegacyUnsubscribeSuccess DISABLED_LegacyUnsubscribeSuccess
 #else
 #define MAYBE_LegacyUnsubscribeSuccess LegacyUnsubscribeSuccess
@@ -2313,7 +2364,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
       1);
 
   // We should not be able to look up the app id.
-  GURL origin = https_server()->GetURL("/").GetOrigin();
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   PushMessagingAppIdentifier app_identifier =
       PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), origin,
@@ -2356,7 +2407,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
 
   ASSERT_NO_FATAL_FAILURE(SubscribeSuccessfully());
 
-  GURL origin = https_server()->GetURL("/").GetOrigin();
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   PushMessagingAppIdentifier app_identifier1 =
       PushMessagingAppIdentifier::FindByServiceWorker(
           GetBrowser()->profile(), origin,
@@ -2446,7 +2497,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   push_service()->SetContentSettingChangedCallbackForTesting(
       base::BarrierClosure(1, message_loop_runner->QuitClosure()));
 
-  GURL origin = https_server()->GetURL("/").GetOrigin();
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetContentSettingDefaultScope(origin, origin,
                                       ContentSettingsType::NOTIFICATIONS,
@@ -2484,7 +2535,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   push_service()->SetContentSettingChangedCallbackForTesting(
       base::BarrierClosure(1, message_loop_runner->QuitClosure()));
 
-  GURL origin = https_server()->GetURL("/").GetOrigin();
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetContentSettingDefaultScope(origin, origin,
                                       ContentSettingsType::NOTIFICATIONS,
@@ -2557,7 +2608,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   push_service()->SetContentSettingChangedCallbackForTesting(
       base::BarrierClosure(1, message_loop_runner->QuitClosure()));
 
-  GURL origin = https_server()->GetURL("/").GetOrigin();
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetContentSettingDefaultScope(origin, GURL(),
                                       ContentSettingsType::NOTIFICATIONS,
@@ -2595,7 +2646,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   push_service()->SetContentSettingChangedCallbackForTesting(
       base::BarrierClosure(1, message_loop_runner->QuitClosure()));
 
-  GURL origin = https_server()->GetURL("/").GetOrigin();
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetContentSettingDefaultScope(origin, GURL(),
                                       ContentSettingsType::NOTIFICATIONS,
@@ -2633,7 +2684,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   push_service()->SetContentSettingChangedCallbackForTesting(
       base::BarrierClosure(1, message_loop_runner->QuitClosure()));
 
-  GURL origin = https_server()->GetURL("/").GetOrigin();
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetContentSettingDefaultScope(origin, GURL(),
                                       ContentSettingsType::NOTIFICATIONS,
@@ -2671,7 +2722,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   push_service()->SetContentSettingChangedCallbackForTesting(
       base::BarrierClosure(2, message_loop_runner->QuitClosure()));
 
-  GURL origin = https_server()->GetURL("/").GetOrigin();
+  GURL origin = https_server()->GetURL("/").DeprecatedGetOriginAsURL();
   HostContentSettingsMapFactory::GetForProfile(GetBrowser()->profile())
       ->SetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
                                  CONTENT_SETTING_ALLOW);
@@ -2707,7 +2758,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Simulate a user clearing site data (including Service Workers, crucially).
   content::BrowsingDataRemover* remover =
-      content::BrowserContext::GetBrowsingDataRemover(GetBrowser()->profile());
+      GetBrowser()->profile()->GetBrowsingDataRemover();
   content::BrowsingDataRemoverCompletionObserver observer(remover);
   remover->RemoveAndReply(
       base::Time(), base::Time::Max(),
@@ -2769,20 +2820,31 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, EncryptionKeyUniqueness) {
   EXPECT_NE(first_public_key, second_public_key);
 }
 
-class PushMessagingIncognitoBrowserTest : public PushMessagingBrowserTest {
+class PushMessagingIncognitoBrowserTest : public PushMessagingBrowserTestBase {
  public:
+  PushMessagingIncognitoBrowserTest()
+      : prerender_helper_(base::BindRepeating(
+            &PushMessagingIncognitoBrowserTest::web_contents,
+            base::Unretained(this))) {}
   ~PushMessagingIncognitoBrowserTest() override = default;
 
   // PushMessagingBrowserTest:
   void SetUpOnMainThread() override {
     incognito_browser_ = CreateIncognitoBrowser();
-    PushMessagingBrowserTest::SetUpOnMainThread();
+    // We SetUp here rather than in SetUp since the https_server isn't yet
+    // created at that time.
+    prerender_helper_.SetUp(https_server());
+    PushMessagingBrowserTestBase::SetUpOnMainThread();
   }
-
   Browser* GetBrowser() const override { return incognito_browser_; }
 
- private:
-  Browser* incognito_browser_ = nullptr;
+  content::WebContents* web_contents() {
+    return GetBrowser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+ protected:
+  content::test::PrerenderTestHelper prerender_helper_;
+  raw_ptr<Browser> incognito_browser_ = nullptr;
 };
 
 // Regression test for https://crbug.com/476474
@@ -2801,8 +2863,92 @@ IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest,
   ASSERT_EQ("false - not subscribed", script_result);
 }
 
+IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest, WarningToCorrectRFH) {
+  ASSERT_TRUE(GetBrowser()->profile()->IsOffTheRecord());
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kIncognitoWarningPattern);
+
+  // Filter out the main frame host of the currently active page.
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
+  console_observer.SetFilter(base::BindLambdaForTesting(
+      [&](const content::WebContentsConsoleObserver::Message& message) {
+        return message.source_frame == rfh;
+      }));
+
+  std::string script_result;
+
+  ASSERT_TRUE(RunScript("registerServiceWorker()", &script_result));
+  ASSERT_EQ("ok - service worker registered", script_result);
+
+  ASSERT_TRUE(RunScript("documentSubscribePush()", &script_result));
+  ASSERT_EQ("AbortError - Registration failed - permission denied",
+            script_result);
+
+  console_observer.Wait();
+  EXPECT_EQ(1u, console_observer.messages().size());
+}
+
+// TODO(https://crbug.com/1268294): This test hits the issue. Re-enable after it
+// is fixed.
+IN_PROC_BROWSER_TEST_F(PushMessagingIncognitoBrowserTest,
+                       DISABLED_WarningToCorrectRFH_Prerender) {
+  ASSERT_TRUE(GetBrowser()->profile()->IsOffTheRecord());
+
+  // Load an initial page.
+  const GURL initial_url(https_server()->GetURL(GetTestURL()));
+  prerender_helper_.NavigatePrimaryPage(initial_url);
+
+  // Register a service worker. This must be done in the primary page as the
+  // service worker registration in a prerendered page is deferred until
+  // prerender page activation.
+  std::string script_result;
+  ASSERT_TRUE(content::ExecuteScriptAndExtractString(
+      web_contents()->GetPrimaryMainFrame(), "registerServiceWorker()",
+      &script_result));
+  ASSERT_EQ("ok - service worker registered", script_result);
+
+  // Start a prerender with the push messaging test URL.
+  const GURL prerendering_url(
+      https_server()->GetURL(GetTestURL() + "?prerendering"));
+  int host_id = prerender_helper_.AddPrerender(prerendering_url);
+  content::test::PrerenderHostObserver prerender_observer(*web_contents(),
+                                                          host_id);
+  ASSERT_NE(prerender_helper_.GetHostForUrl(prerendering_url),
+            content::RenderFrameHost::kNoFrameTreeNodeId);
+
+  content::WebContentsConsoleObserver console_observer(web_contents());
+  console_observer.SetPattern(kIncognitoWarningPattern);
+
+  // Filter out the main frame host of the prerendered page.
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(host_id);
+  console_observer.SetFilter(base::BindLambdaForTesting(
+      [&](const content::WebContentsConsoleObserver::Message& message) {
+        return message.source_frame == prerender_rfh;
+      }));
+
+  // Use ExecuteScriptAsync because binding of blink::mojom::PushMessaging
+  // is deferred for the prerendered page. Script execution will finish after
+  // the activation.
+  ExecuteScriptAsync(prerender_rfh, "documentSubscribePush()");
+
+  // Activate the prerendered page and wait for a response of script execution.
+  content::DOMMessageQueue message_queue(web_contents());
+  prerender_helper_.NavigatePrimaryPage(prerendering_url);
+  // Make sure that the prerender was activated.
+  ASSERT_TRUE(prerender_observer.was_activated());
+  do {
+    ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  } while (script_result !=
+           "\"AbortError - Registration failed - permission denied\"");
+
+  console_observer.Wait();
+  EXPECT_EQ(1u, console_observer.messages().size());
+}
+
 class PushMessagingDisallowSenderIdsBrowserTest
-    : public PushMessagingBrowserTest {
+    : public PushMessagingBrowserTestBase {
  public:
   PushMessagingDisallowSenderIdsBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -2840,7 +2986,8 @@ IN_PROC_BROWSER_TEST_F(PushMessagingDisallowSenderIdsBrowserTest,
       script_result);
 }
 
-class PushSubscriptionWithExpirationTimeTest : public PushMessagingBrowserTest {
+class PushSubscriptionWithExpirationTimeTest
+    : public PushMessagingBrowserTestBase {
  public:
   PushSubscriptionWithExpirationTimeTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -2910,7 +3057,7 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionWithExpirationTimeTest,
 }
 
 class PushSubscriptionWithoutExpirationTimeTest
-    : public PushMessagingBrowserTest {
+    : public PushMessagingBrowserTestBase {
  public:
   PushSubscriptionWithoutExpirationTimeTest() {
     // Override current feature list to ensure having
@@ -2946,7 +3093,7 @@ IN_PROC_BROWSER_TEST_F(PushSubscriptionWithoutExpirationTimeTest,
   EXPECT_EQ("null", script_result);
 }
 
-class PushSubscriptionChangeEventTest : public PushMessagingBrowserTest {
+class PushSubscriptionChangeEventTest : public PushMessagingBrowserTestBase {
  public:
   PushSubscriptionChangeEventTest() {
     scoped_feature_list_.InitWithFeatures(

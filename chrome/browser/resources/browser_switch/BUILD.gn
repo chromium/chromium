@@ -1,31 +1,30 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
+import("//chrome/common/features.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  deps = [
-    ":app",
-    ":browser_switch_proxy",
-    "internals:browser_switch_internals",
+assert(is_win || is_mac || is_linux || is_chromeos_lacros || is_fuchsia)
+
+build_webui("build") {
+  grd_prefix = "browser_switch"
+  static_files = [
+    "browser_switch.html",
+    "internals/browser_switch_internals.html",
   ]
-}
-
-js_library("app") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
+  web_component_files = [
+    "app.ts",
+    "internals/app.ts",
   ]
-}
+  non_web_component_files = [
+    "browser_switch_proxy.ts",
+    "internals/browser_switch_internals_proxy.ts",
+  ]
 
-js_library("browser_switch_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-}
-
-html_to_js("web_components") {
-  js_files = [ "app.js" ]
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
 }

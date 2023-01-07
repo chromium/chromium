@@ -1,0 +1,28 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 2
+module arc.mojom;
+
+import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
+
+// Chrome implements this interface to handle requests from ARC
+// to iioservice.
+// Next method ID: 1
+interface IioSensorHost {
+  // Registers Sensor HAL client.
+  RegisterSensorHalClient@0(
+      pending_remote<chromeos.sensors.mojom.SensorHalClient> client);
+};
+
+// ARC implements this interface to interact with chrome.
+// Next method ID: 2
+interface IioSensorInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(pending_remote<IioSensorHost> host_remote) => ();
+
+  // Called when the device enters or leaves the tablet mode.
+  // ARC uses this info to adjust the direction of sensor measurements.
+  [MinVersion=1] OnTabletModeChanged@1(bool is_tablet_mode_on);
+};

@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -40,20 +40,24 @@ aggregate_vector_icons("chromeos_ui_vector_icons") {
     "filetype_tini.icon",
     "filetype_video.icon",
     "filetype_word.icon",
+    "float_button.icon",
+    "float_window.icon",
+    "keyboard_shortcuts.icon",
     "notification_assistant.icon",
     "notification_supervised_user.icon",
-    "notification_warning.icon",
     "person_pin_circle.icon",
     "screenshot.icon",
     "sentiment_very_satisfied.icon",
     "straighten.icon",
     "timer.icon",
     "translate.icon",
+    "unfloat_button.icon",
     "window_control_back.icon",
+    "window_control_bottom_snapped.icon",
     "window_control_dezoom.icon",
     "window_control_left_snapped.icon",
-    "window_control_menu.icon",
     "window_control_right_snapped.icon",
+    "window_control_top_snapped.icon",
     "window_control_zoom.icon",
   ]
 }

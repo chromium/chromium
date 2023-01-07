@@ -1,13 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/metrics/data_use_tracker.h"
 
+#include <memory>
 #include <string>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -36,8 +38,8 @@ std::unique_ptr<DataUseTracker> DataUseTracker::Create(
   std::unique_ptr<DataUseTracker> data_use_tracker;
 // Instantiate DataUseTracker only on Android. UpdateMetricsUsagePrefs() honors
 // this rule too.
-#if defined(OS_ANDROID)
-  data_use_tracker.reset(new DataUseTracker(local_state));
+#if BUILDFLAG(IS_ANDROID)
+  data_use_tracker = std::make_unique<DataUseTracker>(local_state);
 #endif
   return data_use_tracker;
 }
@@ -54,11 +56,11 @@ void DataUseTracker::UpdateMetricsUsagePrefs(int message_size,
                                              bool is_metrics_service_usage,
                                              PrefService* local_state) {
 // Instantiate DataUseTracker only on Android. Create() honors this rule too.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   metrics::DataUseTracker tracker(local_state);
   tracker.UpdateMetricsUsagePrefsInternal(message_size, is_cellular,
                                           is_metrics_service_usage);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void DataUseTracker::UpdateMetricsUsagePrefsInternal(
@@ -108,14 +110,12 @@ void DataUseTracker::UpdateUsagePref(const std::string& pref_name,
                                      int message_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DictionaryPrefUpdate pref_updater(local_state_, pref_name);
-  int todays_traffic = 0;
+  ScopedDictPrefUpdate pref_updater(local_state_, pref_name);
   std::string todays_key = GetCurrentMeasurementDateAsString();
 
-  const base::DictionaryValue* user_pref_dict =
-      local_state_->GetDictionary(pref_name);
-  user_pref_dict->GetInteger(todays_key, &todays_traffic);
-  pref_updater->SetInteger(todays_key, todays_traffic + message_size);
+  const base::Value::Dict& user_pref_dict = local_state_->GetDict(pref_name);
+  int todays_traffic = user_pref_dict.FindInt(todays_key).value_or(0);
+  pref_updater->Set(todays_key, todays_traffic + message_size);
 }
 
 void DataUseTracker::RemoveExpiredEntries() {
@@ -127,18 +127,16 @@ void DataUseTracker::RemoveExpiredEntries() {
 void DataUseTracker::RemoveExpiredEntriesForPref(const std::string& pref_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const base::DictionaryValue* user_pref_dict =
-      local_state_->GetDictionary(pref_name);
+  const base::Value::Dict& user_pref_dict = local_state_->GetDict(pref_name);
   const base::Time current_date = GetCurrentMeasurementDate();
-  const base::Time week_ago = current_date - base::TimeDelta::FromDays(7);
+  const base::Time week_ago = current_date - base::Days(7);
 
-  base::DictionaryValue user_pref_new_dict;
-  for (base::DictionaryValue::Iterator it(*user_pref_dict); !it.IsAtEnd();
-       it.Advance()) {
+  base::Value user_pref_new_dict{base::Value::Type::DICTIONARY};
+  for (const auto it : user_pref_dict) {
     base::Time key_date;
-    if (base::Time::FromUTCString(it.key().c_str(), &key_date) &&
+    if (base::Time::FromUTCString(it.first.c_str(), &key_date) &&
         key_date > week_ago)
-      user_pref_new_dict.Set(it.key(), it.value().CreateDeepCopy());
+      user_pref_new_dict.SetPath(it.first, it.second.Clone());
   }
   local_state_->Set(pref_name, user_pref_new_dict);
 }
@@ -151,13 +149,9 @@ int DataUseTracker::ComputeTotalDataUse(const std::string& pref_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   int total_data_use = 0;
-  const base::DictionaryValue* pref_dict =
-      local_state_->GetDictionary(pref_name);
-  for (base::DictionaryValue::Iterator it(*pref_dict); !it.IsAtEnd();
-       it.Advance()) {
-    int value = 0;
-    it.value().GetAsInteger(&value);
-    total_data_use += value;
+  const base::Value::Dict& pref_dict = local_state_->GetDict(pref_name);
+  for (const auto it : pref_dict) {
+    total_data_use += it.second.GetIfInt().value_or(0);
   }
   return total_data_use;
 }

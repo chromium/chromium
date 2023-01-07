@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,11 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/search/one_google_bar/one_google_bar_service.h"
-#include "chrome/browser/search/one_google_bar/one_google_bar_service_observer.h"
+#include "base/time/time.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_observer.h"
 #include "content/public/browser/url_data_source.h"
 
 class Profile;
@@ -54,7 +56,7 @@ class UntrustedSource : public content::URLDataSource,
       const GURL& url,
       const content::WebContents::Getter& wc_getter,
       content::URLDataSource::GotDataCallback callback) override;
-  std::string GetMimeType(const std::string& path) override;
+  std::string GetMimeType(const GURL& url) override;
   bool AllowCaching() override;
   bool ShouldReplaceExistingSource() override;
   bool ShouldServeMimeTypeAsContentTypeHeader() override;
@@ -74,15 +76,16 @@ class UntrustedSource : public content::URLDataSource,
                             const std::string& repeat_y,
                             const std::string& position_x,
                             const std::string& position_y,
+                            const std::string& scrim_display,
                             content::URLDataSource::GotDataCallback callback);
 
   std::vector<content::URLDataSource::GotDataCallback>
       one_google_bar_callbacks_;
-  OneGoogleBarService* one_google_bar_service_;
+  raw_ptr<OneGoogleBarService> one_google_bar_service_;
   base::ScopedObservation<OneGoogleBarService, OneGoogleBarServiceObserver>
       one_google_bar_service_observation_{this};
-  base::Optional<base::TimeTicks> one_google_bar_load_start_time_;
-  Profile* profile_;
+  absl::optional<base::TimeTicks> one_google_bar_load_start_time_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_UNTRUSTED_SOURCE_H_

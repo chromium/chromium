@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -52,7 +52,7 @@ testing::AssertionResult WriteThenReadComputedHashes(
            << "Failed to write computed_hashes.json";
   }
   extensions::ComputedHashes::Status computed_hashes_status;
-  base::Optional<extensions::ComputedHashes> computed_hashes =
+  absl::optional<extensions::ComputedHashes> computed_hashes =
       extensions::ComputedHashes::CreateFromFile(computed_hashes_path,
                                                  &computed_hashes_status);
   if (!computed_hashes)
@@ -179,7 +179,6 @@ TEST(ComputedHashesTest, DotSpaceSuffix) {
            {hash_value}},
       },
       &computed_hashes));
-  std::vector<std::string> read_hashes;
 
   struct TestCase {
     const char* path;

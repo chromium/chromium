@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ NearbyConnectionImpl::~NearbyConnectionImpl() {
     std::move(disconnect_listener_).Run();
 
   if (read_callback_)
-    std::move(read_callback_).Run(base::nullopt);
+    std::move(read_callback_).Run(absl::nullopt);
 }
 
 void NearbyConnectionImpl::Read(ReadCallback callback) {

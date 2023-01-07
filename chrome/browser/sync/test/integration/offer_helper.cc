@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,9 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_util.h"
+#include "components/sync/protocol/autofill_offer_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 
 using autofill::AutofillOfferData;
 using autofill::SetAutofillOfferSpecificsFromOfferData;
@@ -23,8 +26,8 @@ SyncEntity CreateDefaultSyncCardLinkedOffer() {
 
 SyncEntity CreateSyncCardLinkedOffer(const AutofillOfferData& offer_data) {
   SyncEntity entity;
-  entity.set_name(base::NumberToString(offer_data.offer_id));
-  entity.set_id_string(base::NumberToString(offer_data.offer_id));
+  entity.set_name(base::NumberToString(offer_data.GetOfferId()));
+  entity.set_id_string(base::NumberToString(offer_data.GetOfferId()));
   entity.set_version(0);  // Will be overridden by the fake server.
   entity.set_ctime(12345);
   entity.set_mtime(12345);

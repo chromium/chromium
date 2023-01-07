@@ -28,3 +28,15 @@ rootWebArea
 ++++++++++++cell name='WebKit'
 ++++++++++++++staticText name='WebKit'
 ++++++++++++++++inlineTextBox name='WebKit'
+++++++table description='Description' name='Name' descriptionFrom=tableCaption
+++++++++caption
+++++++++++staticText name='Description'
+++++++++++++inlineTextBox name='Description'
+++++++++rowGroup ignored
+++++++++++row
+++++++++++++cell name='A'
+++++++++++++++staticText name='A'
+++++++++++++++++inlineTextBox name='A'
+++++++++++++cell name='B'
+++++++++++++++staticText name='B'
+++++++++++++++++inlineTextBox name='B'

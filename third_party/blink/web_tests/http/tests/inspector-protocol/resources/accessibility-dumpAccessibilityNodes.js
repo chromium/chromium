@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -282,7 +282,7 @@ function dumpNode(msg)
         return;
     }
     delete msg.result.nodes[0]['selected'];
-    testRunner.log(msg.result.nodes[0], null, ["id", "backendDOMNodeId", "nodeId", "parentId"]);
+    testRunner.log(msg.result.nodes[0], null, ["id", "backendDOMNodeId", "nodeId", "parentId", "childIds"]);
 }
 
 function dumpTreeStructure(msg)

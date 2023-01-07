@@ -1,0 +1,38 @@
+<!doctype html>
+PASS if no errors are reported.
+<iframe id="i" src="resources/success.html"></iframe>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.queueLoadingScript("i.contentWindow.navigation.navigate('about:blank');");
+  testRunner.queueBackNavigation(1);
+}
+
+function assert_equals(actual, expected) {
+  if (!Object.is(actual, expected))
+    throw Error(message + ': expected: ' + expected + ', actual: ' + actual);
+}
+function assert_true(expected) { assert_equals(true, expected); }
+function assert_false(expected) { assert_equals(false, expected); }
+
+i.onload = () => {
+  let target_key = i.contentWindow.navigation.currentEntry.key;
+  let target_id = i.contentWindow.navigation.currentEntry.id;
+  i.onload = () => {
+    i.contentWindow.navigation.onnavigate = e => {
+      assert_equals(e.navigationType, "traverse");
+      assert_false(e.cancelable);
+      assert_false(e.canTransition);
+      assert_true(e.userInitiated);
+      assert_false(e.hashChange);
+      assert_equals(new URL(e.destination.url).pathname, "/misc/resources/success.html");
+      assert_false(e.destination.sameDocument);
+      assert_equals(e.destination.key, target_key);
+      assert_equals(e.destination.id, target_id);
+      assert_equals(e.destination.index, 0);
+      assert_equals(e.formData, null);
+      assert_equals(e.info, undefined);
+    };
+  };
+};
+</script>

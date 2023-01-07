@@ -1,6 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+// <if expr="is_ios">
+import 'chrome://resources/js/ios/web_ui.js';
+// </if>
+
+import 'chrome://resources/js/action_link.js';
+import './strings.m.js';
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {$, appendParam} from 'chrome://resources/js/util.js';
 
 /* Id for tracking automatic refresh of crash list.  */
 let refreshCrashListId = undefined;
@@ -14,17 +24,24 @@ function requestCrashes() {
 
 /**
  * Callback from backend with the list of crashes. Builds the UI.
- * @param {boolean} enabled Whether or not crash reporting is enabled.
- * @param {boolean} dynamicBackend Whether the crash backend is dynamic.
- * @param {boolean} manualUploads Whether the manual uploads are supported.
- * @param {array} crashes The list of crashes.
- * @param {string} version The browser version.
- * @param {string} os The OS name and version.
- * @param {boolean} isGoogleAccount whether primary account is internal.
+ * @param {!{enabled: boolean,
+ *           dynamicBackend: boolean,
+ *           manualUploads: boolean,
+ *           crashes: !Array,
+ *           version: string,
+ *           os: string,
+ *           isGoogleAccount: boolean,
+ *           }} result
  */
-function updateCrashList(
-    enabled, dynamicBackend, manualUploads,
-    crashes, version, os, isGoogleAccount) {
+function updateCrashList({
+  enabled,
+  dynamicBackend,
+  manualUploads,
+  crashes,
+  version,
+  os,
+  isGoogleAccount,
+}) {
   $('crashesCount').textContent = loadTimeData.getStringF(
       'crashCountFormat', crashes.length.toLocaleString());
 
@@ -36,7 +53,7 @@ function updateCrashList(
   const template = crashList.getElementsByTagName('template')[0];
 
   // Clear any previous list.
-  crashList.querySelectorAll('.crashRow').forEach((elm) => elm.remove());
+  crashList.querySelectorAll('.crash-row').forEach((elm) => elm.remove());
 
   const productName = loadTimeData.getString('shortProductName');
 
@@ -48,18 +65,18 @@ function updateCrashList(
 
     const crashRow = template.content.cloneNode(true);
     if (crash.state !== 'uploaded') {
-      crashRow.querySelector('.crashRow').classList.add('notUploaded');
+      crashRow.querySelector('.crash-row').classList.add('not-uploaded');
     }
 
     const uploaded = crash.state === 'uploaded';
 
     // Some clients do not distinguish between capture time and upload time,
     // so use the latter if the former is not available.
-    crashRow.querySelector('.captureTime').textContent =
+    crashRow.querySelector('.capture-time').textContent =
         loadTimeData.getStringF(
             'crashCaptureTimeFormat',
             crash.capture_time || crash.upload_time || '');
-    crashRow.querySelector('.localId .value').textContent = crash.local_id;
+    crashRow.querySelector('.local-id .value').textContent = crash.local_id;
 
     let stateText = '';
     switch (crash.state) {
@@ -80,10 +97,10 @@ function updateCrashList(
     }
     crashRow.querySelector('.status .value').textContent = stateText;
 
-    const uploadId = crashRow.querySelector('.uploadId');
-    const uploadTime = crashRow.querySelector('.uploadTime');
-    const sendNowButton = crashRow.querySelector('.sendNow');
-    const fileBugButton = crashRow.querySelector('.fileBug');
+    const uploadId = crashRow.querySelector('.upload-id');
+    const uploadTime = crashRow.querySelector('.upload-time');
+    const sendNowButton = crashRow.querySelector('.send-now');
+    const fileBugButton = crashRow.querySelector('.file-bug');
     if (uploaded) {
       const uploadIdValue = uploadId.querySelector('.value');
       if (isGoogleAccount) {
@@ -115,7 +132,7 @@ function updateCrashList(
       };
     }
 
-    const fileSize = crashRow.querySelector('.fileSize');
+    const fileSize = crashRow.querySelector('.file-size');
     if (crash.file_size === '') {
       fileSize.remove();
     } else {
@@ -137,8 +154,8 @@ function updateCrashList(
 function fileBug(crashId, os, version) {
   const commentLines = [
     'IMPORTANT: Your crash has already been automatically reported ' +
-    'to our crash system. Please file this bug only if you can provide ' +
-    'more information about it.',
+        'to our crash system. Please file this bug only if you can provide ' +
+        'more information about it.',
     '',
     '',
     'Chrome Version: ' + version,
@@ -149,11 +166,13 @@ function fileBug(crashId, os, version) {
     'Can you reproduce this crash?',
     '',
     'What steps will reproduce this crash? (If it\'s not ' +
-    'reproducible, what were you doing just before the crash?)',
-    '1.', '2.', '3.',
+        'reproducible, what were you doing just before the crash?)',
+    '1.',
+    '2.',
+    '3.',
     '',
     '****DO NOT CHANGE BELOW THIS LINE****',
-    'Crash ID: crash/' + crashId
+    'Crash ID: crash/' + crashId,
   ];
   const params = {
     template: 'Crash Report',
@@ -161,7 +180,7 @@ function fileBug(crashId, os, version) {
     // TODO(scottmg): Use add_labels to add 'User-Submitted' rather than
     // duplicating the template's labels (the first two) once
     // https://bugs.chromium.org/p/monorail/issues/detail?id=1488 is done.
-    labels: 'Restrict-View-EditIssue,Stability-Crash,User-Submitted',
+    labels: 'Restrict-View-EditIssue,Stability-Crash,User-Submitted,Pri-3,Type-Bug',
   };
   let href = 'https://bugs.chromium.org/p/chromium/issues/entry';
   for (const param in params) {
@@ -190,10 +209,11 @@ function requestCrashUpload() {
  * @param {Event} The DOM event for onclick.
  */
 function toggleDevDetails(e) {
-  $('crashList').classList.toggle('showingDevDetails', e.target.checked);
+  $('crashList').classList.toggle('showing-dev-details', e.target.checked);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  addWebUIListener('update-crash-list', updateCrashList);
   $('uploadCrashes').onclick = requestCrashUpload;
   $('showDevDetails').onclick = toggleDevDetails;
   requestCrashes();

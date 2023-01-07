@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,24 @@ module crosapi.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "ui/accessibility/mojom/ax_action_data.mojom";
+import "ui/accessibility/mojom/ax_event.mojom";
+import "ui/accessibility/mojom/ax_relative_bounds.mojom";
+import "ui/accessibility/mojom/ax_tree_update.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Interface for automation clients. Implemented by lacros-chrome. Used by
 // ash-chrome to enable automation and to perform actions.
-// Next version: 1
-// Next method id: 3
+// Next version: 3
+// Next method id: 7
 [Stable, Uuid="8dd5f2a7-c24b-47c3-a096-a5d28c4764bb"]
 interface AutomationClient {
+  // Deprecated.
+  PerformActionDeprecated@2(
+      mojo_base.mojom.UnguessableToken tree_id, int32 automation_node_id,
+      string action_type, int32 request_id,
+      mojo_base.mojom.DeprecatedDictionaryValue optional_args);
+
   // Enables automation for the client. This will result in the client
   // repeatedly calling ReceiveEventPrototype() on the Automation interface.
   Enable@0();
@@ -22,51 +33,72 @@ interface AutomationClient {
   // Automation interface.
   EnableTree@1(mojo_base.mojom.UnguessableToken token);
 
-  // All actions are forwarded to all clients. If the client has no matching
-  // |tree_id|, then it should do nothing. If |request_id| is -1, then there is
-  // no corresponding request_id -- mojo does not support optional primitives,
-  // and the underlying a11y code uses the same semantics for -1.
-  //
-  // This method is purely for prototyping and should not be called on
-  // production devices. The main problem is that |optional_args| should be a
-  // stable mojom struct, but we're not sure yet exactly what interface to
-  // stabilize for a11y.
-  PerformActionPrototype@2(
-      mojo_base.mojom.UnguessableToken tree_id, int32 automation_node_id,
-      string action_type, int32 request_id,
-      mojo_base.mojom.DictionaryValue optional_args);
+  // Disables automation in the client. This has the effect of turning off
+  // accessibility within Lacros' instance of AutomationManagerAura.  Calling
+  // this method without calling Enable or calling it multiple times has no
+  // adverse effects.
+  [MinVersion=1] Disable@3();
+
+  // Forwards the action described by AXActionData to all clients. Actions are
+  // resolved by each client based on tree id, action type and other action data
+  // fields.
+  [MinVersion=1] PerformAction@4(ax.mojom.AXActionData action_data);
+
+  // Notifies Lacros when all Ash automation extensions have been unloaded.
+  [MinVersion=2] NotifyAllAutomationExtensionsGone@5();
+
+  // Notifies Lacros when a new automation extension has added a listener.
+  [MinVersion=2] NotifyExtensionListenerAdded@6();
 };
 
 // Interface for automation. Implemented by ash-chrome.
-// Next version: 1
-// Next method id: 2
+// Next version: 5
+// Next method id: 6
 [Stable, Uuid="356a895e-b41a-4c45-9336-d8dc6d332f98"]
 interface Automation {
-  // A crosapi client can register itself as a automation client. This
-  // provides ash a mechanism to enable automation and send actions to the
-  // client. The client is uniquely identified by |token|.
-  RegisterAutomationClient@0(
+  // Deprecated.
+  RegisterAutomationClientDeprecated@0(
       pending_remote<AutomationClient> client,
       mojo_base.mojom.UnguessableToken token);
 
-  // |event_bundle| is a serialized instance of
-  // |ExtensionMsg_AutomationEventBundleParams|. This is potentially not
-  // compatible across lacros/ash version skew. https://crbug.com/1182926.
-  // |root| refers to whether the associated accessibility tree is the root
-  // accessibility tree for Lacros. Ash needs this information so as to
-  // appropriately glue in Lacros's accessibility trees with the rest of ash's
-  // accessibility trees.
-  // |token| uniquely identifies the client.
-  // |window_id| is a short-term placeholder that identifies a lacros window in
-  // which to glue the entire a11y tree (which may contain the contents of more
-  // than 1 lacros window). This relies on the assumption that lacros has a
-  // window open.
-  //
-  // This method is purely for prototyping and should not be called on
-  // production devices. The main problem is we're not sure yet what interface
-  // to stabilize for a11y.
-  ReceiveEventPrototype@1(
+  // Deprecated.
+  ReceiveEventPrototypeDeprecated@1(
       string event_bundle, bool root, mojo_base.mojom.UnguessableToken token,
       string window_id);
+
+  // Forwards an accessibility tree destroyed event from any accessibility tree
+  // in Lacros to Ash.
+  [MinVersion=1] DispatchTreeDestroyedEvent@2(
+      mojo_base.mojom.UnguessableToken tree_id);
+
+  // Forwards an action result from any accessibility tree in Lacros to Ash.
+  [MinVersion=2] DispatchActionResult@3(
+      ax.mojom.AXActionData data, bool result);
+
+  // Forwards an event from any accessibility tree in Lacros to Ash.
+  [MinVersion=3] DispatchAccessibilityEvents@4(
+      mojo_base.mojom.UnguessableToken tree_id,
+      array<ax.mojom.AXTreeUpdate> updates,
+      gfx.mojom.Point mouse_location,
+      array<ax.mojom.AXEvent> events);
+
+  // Dispatches a location change for a specific node. Currently used by Blink
+  // in RenderAccessibilityHost::HandleAXLocationChanges.
+  [MinVersion=4] DispatchAccessibilityLocationChange@5(
+      mojo_base.mojom.UnguessableToken tree_id,
+      int32 node_id,
+      ax.mojom.AXRelativeBounds bounds);
 };
 
+// A factory living in the Ash process which brokers connections to other
+// processes for automation.
+// Next version: 1
+// Next method id: 1
+[Stable, Uuid="87004779-69b3-4f35-980b-be259f002ac7"]
+interface AutomationFactory {
+  // A binder which sends accessibility data, and receives accessibility actions
+  // (e.g. Lacros).
+  BindAutomation@0(
+      pending_remote<AutomationClient> automation_client,
+      pending_receiver<Automation> automation);
+};

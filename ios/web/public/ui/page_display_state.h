@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ class PageScrollState {
   bool IsValid() const;
 
   // Returns the content offset that produces an equivalent scroll offset when
-  // applied to a UIScrollView whose contentInset is |content_inset|.
+  // applied to a UIScrollView whose contentInset is `content_inset`.
   CGPoint GetEffectiveContentOffsetForContentInset(
       UIEdgeInsets content_inset) const;
 

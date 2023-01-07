@@ -1,0 +1,49 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/code_coverage/merge_js_source_maps/merge_js_source_maps.gni")
+import("//tools/typescript/ts_library.gni")
+
+template("ts_library_sourcemaps") {
+  _out_dir = target_gen_dir
+  if (defined(invoker.out_dir)) {
+    _out_dir = invoker.out_dir
+  }
+
+  if (enable_webui_inline_sourcemaps) {
+    _ts_library_target_name = "${target_name}__ts_library"
+    _ts_library_out_dir = "$_out_dir/ts_library"
+  } else {
+    _ts_library_target_name = target_name
+    _ts_library_out_dir = _out_dir
+  }
+
+  ts_library(_ts_library_target_name) {
+    forward_variables_from(invoker, "*", [ "out_dir" ])
+    out_dir = _ts_library_out_dir
+  }
+
+  if (enable_webui_inline_sourcemaps) {
+    merge_js_source_maps(target_name) {
+      deps = [ ":$_ts_library_target_name" ]
+      manifest_files = []
+      sources = []
+      outputs = []
+      foreach(_output, get_target_outputs(":$_ts_library_target_name")) {
+        if (get_path_info(_output, "extension") == "manifest") {
+          manifest_files += [ _output ]
+        } else if (get_path_info(_output, "extension") == "ts" ||
+                   get_path_info(_output, "extension") == "js") {
+          sources += [ _output ]
+          outputs += [ string_replace(_output, _ts_library_out_dir, _out_dir) ]
+        } else {
+          _ts_config = "$target_gen_dir/tsconfig_$_ts_library_target_name.json"
+          assert(_output == _ts_config)
+          sources += [ _ts_config ]
+          outputs += [ "$target_gen_dir/tsconfig_$target_name.json" ]
+        }
+      }
+    }
+  }
+}

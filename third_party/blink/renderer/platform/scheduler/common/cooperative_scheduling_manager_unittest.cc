@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,10 +59,10 @@ TEST(CooperativeSchedulingManager, SafePoint) {
     EXPECT_CALL(*manager, RunNestedLoop()).Times(2);
     // Should run nested loop
     manager->Safepoint();
-    test_task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(14));
+    test_task_runner->FastForwardBy(base::Milliseconds(14));
     // Should not run nested loop because called too soon
     manager->Safepoint();
-    test_task_runner->FastForwardBy(base::TimeDelta::FromMilliseconds(2));
+    test_task_runner->FastForwardBy(base::Milliseconds(2));
     // Should run nested loop
     manager->Safepoint();
   }

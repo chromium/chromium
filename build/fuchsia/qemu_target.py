@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 import boot_data
 import common
 import emu_target
+import hashlib
 import logging
-import md5
 import os
 import platform
 import qemu_image
@@ -24,13 +24,11 @@ from target import FuchsiaTargetException
 
 
 # Virtual networking configuration data for QEMU.
-GUEST_NET = '192.168.3.0/24'
-GUEST_IP_ADDRESS = '192.168.3.9'
-HOST_IP_ADDRESS = '192.168.3.2'
+HOST_IP_ADDRESS = '10.0.2.2'
 GUEST_MAC_ADDRESS = '52:54:00:63:5e:7b'
 
 # Capacity of the system's blobstore volume.
-EXTENDED_BLOBSTORE_SIZE = 1073741824  # 1GB
+EXTENDED_BLOBSTORE_SIZE = 2147483648  # 2GB
 
 
 def GetTargetType():
@@ -40,25 +38,18 @@ def GetTargetType():
 class QemuTarget(emu_target.EmuTarget):
   EMULATOR_NAME = 'qemu'
 
-  def __init__(self,
-               out_dir,
-               target_cpu,
-               system_log_file,
-               cpu_cores,
-               require_kvm,
-               ram_size_mb,
-               fuchsia_out_dir=None):
-    super(QemuTarget, self).__init__(out_dir, target_cpu, system_log_file,
-                                     fuchsia_out_dir)
+  def __init__(self, out_dir, target_cpu, cpu_cores, require_kvm, ram_size_mb,
+               logs_dir):
+    super(QemuTarget, self).__init__(out_dir, target_cpu, logs_dir)
     self._cpu_cores=cpu_cores
     self._require_kvm=require_kvm
     self._ram_size_mb=ram_size_mb
+    self._host_ssh_port = None
 
   @staticmethod
   def CreateFromArgs(args):
-    return QemuTarget(args.out_dir, args.target_cpu, args.system_log_file,
-                      args.cpu_cores, args.require_kvm, args.ram_size_mb,
-                      args.fuchsia_out_dir)
+    return QemuTarget(args.out_dir, args.target_cpu, args.cpu_cores,
+                      args.require_kvm, args.ram_size_mb, args.logs_dir)
 
   def _IsKvmEnabled(self):
     kvm_supported = sys.platform.startswith('linux') and \
@@ -106,11 +97,13 @@ class QemuTarget(emu_target.EmuTarget):
         # any changes.
         '-snapshot',
         '-drive',
-        'file=%s,format=qcow2,if=none,id=blobstore,snapshot=on' %
+        'file=%s,format=qcow2,if=none,id=blobstore,snapshot=on,cache=unsafe' %
         _EnsureBlobstoreQcowAndReturnPath(self._out_dir,
                                           self._GetTargetSdkArch()),
+        '-object',
+        'iothread,id=iothread0',
         '-device',
-        'virtio-blk-pci,drive=blobstore',
+        'virtio-blk-pci,drive=blobstore,iothread=iothread0',
 
         # Use stdio for the guest OS only; don't attach the QEMU interactive
         # monitor.
@@ -123,18 +116,17 @@ class QemuTarget(emu_target.EmuTarget):
     # Configure the machine to emulate, based on the target architecture.
     if self._target_cpu == 'arm64':
       emu_command.extend([
-          '-machine','virt,gic_version=3',
+          '-machine',
+          'virt-2.12,gic-version=host',
       ])
     else:
       emu_command.extend([
           '-machine', 'q35',
       ])
 
-    # Configure virtual network. It is used in the tests to connect to
-    # testserver running on the host.
+    # Configure virtual network.
     netdev_type = 'virtio-net-pci'
-    netdev_config = 'user,id=net0,net=%s,dhcpstart=%s,host=%s' % \
-            (GUEST_NET, GUEST_IP_ADDRESS, HOST_IP_ADDRESS)
+    netdev_config = 'type=user,id=net0,restrict=off'
 
     self._host_ssh_port = common.GetAvailableTcpPort()
     netdev_config += ",hostfwd=tcp::%s-:22" % self._host_ssh_port
@@ -162,7 +154,7 @@ class QemuTarget(emu_target.EmuTarget):
 
     emu_command.extend(kvm_command)
 
-    kernel_args = boot_data.GetKernelArgs(self._out_dir)
+    kernel_args = boot_data.GetKernelArgs()
 
     # TERM=dumb tells the guest OS to not emit ANSI commands that trigger
     # noisy ANSI spew from the user's terminal emulator.
@@ -194,8 +186,39 @@ class QemuTarget(emu_target.EmuTarget):
     qemu_command.append('-nographic')
     return qemu_command
 
+  def _Shutdown(self):
+    if not self._emu_process:
+      logging.error('%s did not start' % (self.EMULATOR_NAME))
+      return
+    returncode = self._emu_process.poll()
+    if returncode == None:
+      logging.info('Shutting down %s' % (self.EMULATOR_NAME))
+      self._emu_process.kill()
+    elif returncode == 0:
+      logging.info('%s quit unexpectedly without errors' % self.EMULATOR_NAME)
+    elif returncode < 0:
+      logging.error('%s was terminated by signal %d' %
+                    (self.EMULATOR_NAME, -returncode))
+    else:
+      logging.error('%s quit unexpectedly with exit code %d' %
+                    (self.EMULATOR_NAME, returncode))
+
+  def _HasNetworking(self):
+    return False
+
+  def _IsEmuStillRunning(self):
+    if not self._emu_process:
+      return False
+    return os.waitpid(self._emu_process.pid, os.WNOHANG)[0] == 0
+
+  def _GetEndpoint(self):
+    if not self._IsEmuStillRunning():
+      raise Exception('%s quit unexpectedly.' % (self.EMULATOR_NAME))
+    return (self.LOCAL_ADDRESS, self._host_ssh_port)
+
+
 def _ComputeFileHash(filename):
-  hasher = md5.new()
+  hasher = hashlib.md5()
   with open(filename, 'rb') as f:
     buf = f.read(4096)
     while buf:

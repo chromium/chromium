@@ -1,26 +1,28 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_WIN_FALLBACK_FAMILY_STYLE_CACHE_WIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_WIN_FALLBACK_FAMILY_STYLE_CACHE_WIN_H_
 
+#include "base/containers/lru_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
-#include "third_party/blink/renderer/platform/wtf/lru_cache.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
 
 using TypefaceVector = Vector<sk_sp<SkTypeface>>;
-using FallbackLruCache = WTF::LruCache<String, TypefaceVector>;
+using FallbackLruCache = base::HashingLRUCache<String, TypefaceVector>;
 
 class FallbackFamilyStyleCache {
   USING_FAST_MALLOC(FallbackFamilyStyleCache);
 
  public:
   FallbackFamilyStyleCache();
+  FallbackFamilyStyleCache(const FallbackFamilyStyleCache&) = delete;
+  FallbackFamilyStyleCache& operator=(const FallbackFamilyStyleCache&) = delete;
 
   // Places a SkTypeface object in the cache for specified language tag and
   // fallback priority, taking a reference on SkTypeface. Adds the |SkTypeface|
@@ -49,8 +51,6 @@ class FallbackFamilyStyleCache {
   void Clear();
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(FallbackFamilyStyleCache);
-
   FallbackLruCache recent_fallback_fonts_;
 };
 

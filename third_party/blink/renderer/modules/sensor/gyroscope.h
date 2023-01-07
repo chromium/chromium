@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,9 +21,9 @@ class Gyroscope final : public Sensor {
 
   Gyroscope(ExecutionContext*, const SpatialSensorOptions*, ExceptionState&);
 
-  base::Optional<double> x() const;
-  base::Optional<double> y() const;
-  base::Optional<double> z() const;
+  absl::optional<double> x() const;
+  absl::optional<double> y() const;
+  absl::optional<double> z() const;
 
   void Trace(Visitor*) const override;
 };

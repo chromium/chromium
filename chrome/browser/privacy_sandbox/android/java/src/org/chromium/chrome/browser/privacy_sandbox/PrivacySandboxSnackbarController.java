@@ -1,11 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
@@ -56,11 +55,8 @@ public class PrivacySandboxSnackbarController implements SnackbarManager.Snackba
     // Implement SnackbarController.
     @Override
     public void onAction(Object actionData) {
-        Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putInt(PrivacySandboxSettingsFragment.PRIVACY_SANDBOX_REFERRER,
-                PrivacySandboxReferrer.COOKIES_SNACKBAR);
-        mSettingsLauncher.launchSettingsActivity(
-                mContext, PrivacySandboxSettingsFragment.class, fragmentArgs);
+        PrivacySandboxSettingsFragmentV3.launchPrivacySandboxSettings(
+                mContext, mSettingsLauncher, PrivacySandboxReferrer.COOKIES_SNACKBAR);
     }
 
     @Override

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ TEST(LeakyBucketTest, LargeTimeDelta_BucketIsEmpty) {
   // The amount of drainage is 3000 * rate = 3e9, which overflows a signed
   // 32-bit int. This would be subtracted from the current level, under the
   // old implementation.
-  now += base::TimeDelta::FromSeconds(3000);
+  now += base::Seconds(3000);
   bucket.UpdateRate(rate, now);
 
   auto empty_time = bucket.GetEmptyTime();

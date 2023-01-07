@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,17 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 
 /**
  * Stubbed class for getting version numbers from the rest of Chrome.  Override the functions for
  * unit tests.
  */
 public class VersionNumberGetter {
+    private static final String MIN_SDK_VERSION_PARAM = "min_sdk_version";
+    public static final IntCachedFieldTrialParameter MIN_SDK_VERSION =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.OMAHA_MIN_SDK_VERSION_ANDROID,
+                    MIN_SDK_VERSION_PARAM, Build.VERSION_CODES.M);
 
     private static final class LazyHolder {
         private static final VersionNumberGetter INSTANCE = new VersionNumberGetter();
@@ -97,13 +102,7 @@ public class VersionNumberGetter {
      * @return Whether the current Android OS version is supported.
      */
     public static boolean isCurrentOsVersionSupported() {
-        // By default, only Android Lollipop and above is supported.
-        int oldestSupportedVersion = Build.VERSION_CODES.LOLLIPOP;
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.KITKAT_SUPPORTED)) {
-            oldestSupportedVersion = Build.VERSION_CODES.KITKAT;
-        }
-        return Build.VERSION.SDK_INT >= oldestSupportedVersion;
+        return Build.VERSION.SDK_INT >= MIN_SDK_VERSION.getValue();
     }
 
     /**

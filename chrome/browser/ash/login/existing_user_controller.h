@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,51 +10,45 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
-#include "base/scoped_observer.h"
-#include "base/time/time.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-// TODO(https://crbug.com/1164001): move KioskAppId to forward declaration
-// when moved to chrome/browser/ash/.
-#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_mode.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
-// TODO(https://crbug.com/1164001): move CrosSettings to forward declaration
-// when moved to chrome/browser/ash/.
-#include "chrome/browser/ash/settings/cros_settings.h"
-#include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chromeos/login/auth/login_performer.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chromeos/ash/components/login/auth/login_performer.h"
+#include "chromeos/ash/components/login/auth/public/auth_failure.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
-#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 namespace base {
 class ElapsedTimer;
-class ListValue;
-}
+}  // namespace base
 
-namespace chromeos {
-class LoginDisplay;
+namespace ash {
+class CrosSettings;
+class KioskAppId;
 class OAuth2TokenInitializer;
+enum class SigninError;
 
 namespace login {
 class NetworkStateHelper;
+}
+
+namespace quick_unlock {
+class PinSaltStorage;
 }
 
 // ExistingUserController is used to handle login when someone has already
@@ -72,6 +66,10 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   // All UI initialization is deferred till Init() call.
   ExistingUserController();
+
+  ExistingUserController(const ExistingUserController&) = delete;
+  ExistingUserController& operator=(const ExistingUserController&) = delete;
+
   ~ExistingUserController() override;
 
   // Creates and shows login UI for known users.
@@ -94,15 +92,13 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // user data.
   void ResyncUserData();
 
+  // Returns name of the currently connected network, for error message,
+  std::u16string GetConnectedNetworkName() const;
+
   // LoginDisplay::Delegate: implementation
-  std::u16string GetConnectedNetworkName() override;
-  bool IsSigninInProgress() const override;
   void Login(const UserContext& user_context,
              const SigninSpecifics& specifics) override;
-  void OnSigninScreenReady() override;
-  void OnStartEnterpriseEnrollment() override;
   void OnStartKioskEnableScreen() override;
-  void OnStartKioskAutolaunchScreen() override;
   void ResetAutoLoginTimer() override;
 
   void CompleteLogin(const UserContext& user_context);
@@ -112,7 +108,11 @@ class ExistingUserController : public LoginDisplay::Delegate,
                               const std::string& given_name);
   bool IsUserAllowlisted(
       const AccountId& account_id,
-      const base::Optional<user_manager::UserType>& user_type);
+      const absl::optional<user_manager::UserType>& user_type);
+
+  // This is virtual to be mocked in unit tests.
+  virtual bool IsSigninInProgress() const;
+  bool IsUserSigninCompleted() const;
 
   // user_manager::UserManager::Observer:
   void LocalStateChanged(user_manager::UserManager* user_manager) override;
@@ -139,6 +139,9 @@ class ExistingUserController : public LoginDisplay::Delegate,
     return auto_login_timer_ && auto_login_timer_->IsRunning();
   }
 
+  // Get account id used in last login attempt.
+  AccountId GetLastLoginAttemptAccountId() const;
+
   // Extracts out users allowed on login screen.
   static user_manager::UserList ExtractLoginUsers(
       const user_manager::UserList& users);
@@ -152,7 +155,7 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   FRIEND_TEST_ALL_PREFIXES(ExistingUserControllerTest, ExistingUserLogin);
 
-  class PolicyStoreLoadWaiter;
+  class DeviceLocalAccountPolicyWaiter;
 
   void LoginAsGuest();
   void LoginAsPublicSession(const UserContext& user_context);
@@ -174,38 +177,42 @@ class ExistingUserController : public LoginDisplay::Delegate,
   void AllowlistCheckFailed(const std::string& email) override;
   void PolicyLoadFailed() override;
 
+  // Callback called in response to calling WaitForServiceToBeAvailable() on the
+  // hibernate service. This is initiated in the OnAuthSuccess() flow to make a
+  // blocking call to resume from hibernate before releasing other usual login
+  // activities.
+  void OnHibernateServiceAvailable(const UserContext& user_context,
+                                   bool service_is_available);
+
+  // Handles the continuation of successful login after an attempt has been made
+  // to divert to a hibernate resume flow. The execution of this method means
+  // that the diversion to a resume flow did not occur, indicating either no
+  // hibernation image was present, the resume was cancelled/aborted, or
+  // hibernate is simply not supported.
+  void ContinueAuthSuccessAfterResumeAttempt(const UserContext& user_context,
+                                             bool resume_call_success);
+
   // UserSessionManagerDelegate implementation:
   void OnProfilePrepared(Profile* profile, bool browser_launched) override;
 
   // Called when device settings change.
   void DeviceSettingsChanged();
 
-  // Show error message. `error_id` error message ID in resources.
-  // If `details` string is not empty, it specify additional error text
-  // provided by authenticator, it is not localized.
-  void ShowError(int error_id, const std::string& details);
-
-  // Handles result of ownership check and starts enterprise or kiosk enrollment
-  // if applicable.
-  void OnEnrollmentOwnershipCheckCompleted(
-      DeviceSettingsService::OwnershipStatus status);
+  // Show error message corresponding to `error`. If `details` string is not
+  // empty, it specify additional error text provided by authenticator, it is
+  // not localized.
+  void ShowError(SigninError error, const std::string& details);
 
   // Handles result of consumer kiosk configurability check and starts
   // enable kiosk screen if applicable.
   void OnConsumerKioskAutoLaunchCheckCompleted(
       KioskAppManager::ConsumerKioskAutoLaunchStatus status);
 
-  // Enters the enterprise enrollment screen.
-  void ShowEnrollmentScreen();
-
   // Shows privacy notification in case of auto lunch managed guest session.
   void ShowAutoLaunchManagedGuestSessionNotification();
 
   // Shows kiosk feature enable screen.
   void ShowKioskEnableScreen();
-
-  // Shows "kiosk auto-launch permission" screen.
-  void ShowKioskAutolaunchScreen();
 
   // Shows "filesystem encryption migration" screen.
   void ShowEncryptionMigrationScreen(const UserContext& user_context,
@@ -240,20 +247,18 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Sends an accessibility alert event to extension listeners.
   void SendAccessibilityAlert(const std::string& alert_text);
 
-  // Continues public session login if the associated user cloud policy store is
-  // loaded.
+  // Continues public session login if the public session policy is loaded.
   // This is intended to delay public session login if the login is requested
-  // before the policy store is initialized (in which case the login attempt
-  // would fail).
-  void LoginAsPublicSessionWithPolicyStoreReady(
-      const UserContext& user_context);
+  // before the policy is available (in which case the login attempt would
+  // fail).
+  void LoginAsPublicSessionWhenPolicyAvailable(const UserContext& user_context);
 
   // Callback invoked when the keyboard layouts available for a public session
   // have been retrieved. Selects the first layout from the list and continues
   // login.
   void SetPublicSessionKeyboardLayoutAndLogin(
       const UserContext& user_context,
-      std::unique_ptr<base::ListValue> keyboard_layouts);
+      base::Value::List keyboard_layouts);
 
   // Starts the actual login process for a public session. Invoked when all
   // preconditions have been verified.
@@ -350,6 +355,9 @@ class ExistingUserController : public LoginDisplay::Delegate,
   // Whether login attempt is running.
   bool is_login_in_progress_ = false;
 
+  // Whether user signin is completed.
+  bool is_signin_completed_ = false;
+
   // True if password has been changed for user who is completing sign in.
   // Set in OnLoginSuccess. Before that use LoginPerformer::password_changed().
   bool password_changed_ = false;
@@ -373,7 +381,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
   std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
 
   base::CallbackListSubscription show_user_names_subscription_;
-  base::CallbackListSubscription allow_new_user_subscription_;
   base::CallbackListSubscription allow_guest_subscription_;
   base::CallbackListSubscription users_subscription_;
   base::CallbackListSubscription local_account_auto_login_id_subscription_;
@@ -382,24 +389,27 @@ class ExistingUserController : public LoginDisplay::Delegate,
 
   std::unique_ptr<OAuth2TokenInitializer> oauth2_token_initializer_;
 
-  // Used to wait for cloud policy store load during public session login, if
-  // the store is not yet initialized when the login is attempted.
-  std::unique_ptr<PolicyStoreLoadWaiter> policy_store_waiter_;
+  // Used to wait for local account policy during session login, if policy is
+  // not yet available when the login is attempted.
+  std::unique_ptr<DeviceLocalAccountPolicyWaiter> policy_waiter_;
 
-  ScopedObserver<user_manager::UserManager, user_manager::UserManager::Observer>
+  // The source of PIN salts. Used to retrieve PIN during TransformPinKey.
+  std::unique_ptr<quick_unlock::PinSaltStorage> pin_salt_storage_;
+
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
       observed_user_manager_{this};
 
   // Factory of callbacks.
   base::WeakPtrFactory<ExistingUserController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExistingUserController);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when moved to ash.
-namespace ash {
-using ::chromeos::ExistingUserController;
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::ExistingUserController;
 }
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EXISTING_USER_CONTROLLER_H_

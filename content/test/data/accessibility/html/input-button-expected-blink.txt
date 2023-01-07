@@ -4,3 +4,6 @@ rootWebArea
 ++++++button inputType='button' name='Button'
 ++++++++staticText name='Button'
 ++++++++++inlineTextBox name='Button'
+++++++button description='Description' inputType='button' name='Name' descriptionFrom=buttonLabel
+++++++++staticText name='Description'
+++++++++++inlineTextBox name='Description'

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,12 +11,11 @@
 #include "base/values.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/pref_names.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const char kPersistentDataKeyPrefix[] = "persistent_data_";
@@ -48,7 +47,7 @@ void LoginScreenExtensionsStorageCleaner::
   if (pref && pref->IsManaged() &&
       pref->GetType() == base::Value::Type::DICTIONARY) {
     // Each `item` contains a pair of extension ID and update URL.
-    for (const auto& item : pref->GetValue()->DictItems())
+    for (const auto item : pref->GetValue()->DictItems())
       installed_extension_ids.push_back(item.first);
   }
   SessionManagerClient::Get()->LoginScreenStorageListKeys(base::BindOnce(
@@ -61,7 +60,7 @@ void LoginScreenExtensionsStorageCleaner::
     ClearPersistentDataForUninstalledExtensionsImpl(
         const std::vector<std::string>& installed_extension_ids,
         std::vector<std::string> keys,
-        base::Optional<std::string> error) {
+        absl::optional<std::string> error) {
   if (error)
     return;
 
@@ -84,4 +83,4 @@ void LoginScreenExtensionsStorageCleaner::
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

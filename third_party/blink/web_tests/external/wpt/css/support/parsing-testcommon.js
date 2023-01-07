@@ -95,3 +95,72 @@ function test_invalid_selector(selector) {
           stringifiedSelector + " should throw in insertRule");
     }, stringifiedSelector + " should be an invalid selector");
 }
+
+// serialized can be the expected serialization of rule, or an array of
+// permitted serializations, or omitted if value should serialize as rule.
+function test_valid_rule(rule, serialized) {
+    if (serialized === undefined)
+        serialized = rule;
+
+    test(function(){
+        const style = document.createElement("style");
+        document.head.append(style);
+        const {sheet} = style;
+        document.head.removeChild(style);
+        const {cssRules} = sheet;
+
+        assert_equals(cssRules.length, 0, "Sheet should have no rules");
+        sheet.insertRule(rule);
+        assert_equals(cssRules.length, 1, "Sheet should have 1 rule");
+
+        const serialization = cssRules[0].cssText;
+        if (Array.isArray(serialized))
+            assert_in_array(serialization, serialized, "serialization should be sound");
+        else
+            assert_equals(serialization, serialized, "serialization should be canonical");
+
+        sheet.deleteRule(0);
+        assert_equals(cssRules.length, 0, "Sheet should have no rule");
+        sheet.insertRule(serialization);
+        assert_equals(cssRules.length, 1, "Sheet should have 1 rule");
+
+        assert_equals(cssRules[0].cssText, serialization, "serialization should round-trip");
+    }, rule + " should be a valid rule");
+}
+
+function test_invalid_rule(rule) {
+    test(function(){
+        const style = document.createElement("style");
+        document.head.append(style);
+        const {sheet} = style;
+        document.head.removeChild(style);
+
+        assert_throws_dom(
+          DOMException.SYNTAX_ERR,
+          () => sheet.insertRule(rule),
+          rule + " should throw in insertRule");
+    }, rule + " should be an invalid rule");
+}
+
+function _set_style(rule) {
+    const style = document.createElement('style');
+    style.innerText = rule;
+    document.head.append(style);
+    const { sheet } = style;
+    document.head.removeChild(style);
+    return sheet;
+}
+
+function test_keyframes_name_valid(keyframes_name) {
+    test(t => {
+        const sheet = _set_style(`@keyframes ${keyframes_name} {}`);
+        assert_equals(sheet.cssRules.length, 1);
+    }, `valid: @keyframes ${keyframes_name} { }`);
+}
+
+function test_keyframes_name_invalid(keyframes_name) {
+    test(t => {
+        const sheet = _set_style(`@keyframes ${keyframes_name} {}`);
+        assert_equals(sheet.cssRules.length, 0);
+    }, `invalid: @keyframes ${keyframes_name} { }`);
+}

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ const char kDeviceName2[] = "DeviceName2";
 const char kNearbySharingServiceName[] = "NearbySharing";
 const device::BluetoothUUID kNearbySharingServiceUuid =
     device::BluetoothUUID("a82efa21-ae5c-3dde-9bbc-f16da7b16c5a");
-const base::TimeDelta kStaleDeviceTimeout = base::TimeDelta::FromSeconds(20);
+const base::TimeDelta kStaleDeviceTimeout = base::Seconds(20);
 }  // namespace
 
 class BluetoothClassicMediumTest : public testing::Test {

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_params.h"
 
@@ -19,15 +18,17 @@ struct InstallableTask {
   InstallableTask();
   InstallableTask(const InstallableParams& params,
                   InstallableCallback callback);
-  InstallableTask(InstallableTask&& other);
-  ~InstallableTask();
 
+  InstallableTask(const InstallableTask&) = delete;
+  InstallableTask& operator=(const InstallableTask&) = delete;
+
+  InstallableTask(InstallableTask&& other);
   InstallableTask& operator=(InstallableTask&& other);
+
+  ~InstallableTask();
 
   InstallableParams params;
   InstallableCallback callback;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallableTask);
 };
 
 // InstallableTaskQueue keeps track of pending tasks.
@@ -56,9 +57,6 @@ class InstallableTaskQueue {
 
   // Advances to the next task.
   void Next();
-
-  // Clears all tasks from the main and paused list.
-  void Reset();
 
   // Clears all tasks from the main and paused list, and then calls the callback
   // on all of them with the given status code.

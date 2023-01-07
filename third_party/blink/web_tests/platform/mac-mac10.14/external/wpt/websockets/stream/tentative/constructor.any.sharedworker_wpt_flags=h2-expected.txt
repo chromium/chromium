@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS constructing with no URL should throw
+PASS constructing with an invalid URL should throw
+PASS constructing with invalid options should throw
+PASS protocols should be required to be a list
+PASS constructing with a valid URL should work
+PASS setting a protocol in the constructor should work
+PASS connection failure should reject the promises
+PASS wss.connection should resolve to the right types
+Harness: the test ran to completion.
+

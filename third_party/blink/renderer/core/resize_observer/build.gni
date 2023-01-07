@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,3 +17,5 @@ blink_core_sources_resize_observer = [
   "resize_observer_utilities.cc",
   "resize_observer_utilities.h",
 ]
+
+blink_core_tests_resize_observer = [ "resize_observer_test.cc" ]

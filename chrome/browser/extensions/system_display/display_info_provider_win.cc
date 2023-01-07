@@ -1,8 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/system_display/display_info_provider_win.h"
+
+#include <memory>
+#include <utility>
 
 #include <stddef.h>
 #include <windows.h>
@@ -15,6 +18,7 @@
 #include "extensions/common/api/system_display.h"
 #include "ui/display/display.h"
 #include "ui/display/win/dpi.h"
+#include "ui/display/win/screen_win.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace extensions {
@@ -27,9 +31,9 @@ BOOL CALLBACK EnumMonitorCallback(HMONITOR monitor,
                                   HDC hdc,
                                   LPRECT rect,
                                   LPARAM data) {
-  DisplayInfoProvider::DisplayUnitInfoList* all_displays =
-      reinterpret_cast<DisplayInfoProvider::DisplayUnitInfoList*>(data);
-  DCHECK(all_displays);
+  base::flat_map<std::string, std::string>* device_id_to_name =
+      reinterpret_cast<base::flat_map<std::string, std::string>*>(data);
+  DCHECK(device_id_to_name);
 
   DisplayUnitInfo unit;
 
@@ -42,11 +46,9 @@ BOOL CALLBACK EnumMonitorCallback(HMONITOR monitor,
   if (!EnumDisplayDevices(monitor_info.szDevice, 0, &device, 0))
     return FALSE;
 
-  unit.id = base::NumberToString(
-      base::PersistentHash(base::WideToUTF8(monitor_info.szDevice)));
-  unit.name = base::WideToUTF8(device.DeviceString);
-  all_displays->push_back(std::move(unit));
-
+  std::string id = base::NumberToString(
+      display::win::ScreenWin::DeviceIdFromDeviceName(monitor_info.szDevice));
+  (*device_id_to_name)[id] = base::WideToUTF8(device.DeviceString);
   return TRUE;
 }
 
@@ -55,19 +57,22 @@ BOOL CALLBACK EnumMonitorCallback(HMONITOR monitor,
 DisplayInfoProviderWin::DisplayInfoProviderWin() = default;
 
 void DisplayInfoProviderWin::UpdateDisplayUnitInfoForPlatform(
-    const display::Display& display,
-    extensions::api::system_display::DisplayUnitInfo* unit) {
-  DisplayUnitInfoList all_displays;
-  EnumDisplayMonitors(NULL, NULL, EnumMonitorCallback,
-                      reinterpret_cast<LPARAM>(&all_displays));
-  for (size_t i = 0; i < all_displays.size(); ++i) {
-    if (unit->id == all_displays[i].id) {
-      unit->name = all_displays[i].name;
-      float device_scale_factor = display.device_scale_factor();
+    const std::vector<display::Display>& displays,
+    DisplayUnitInfoList& units) const {
+  base::flat_map<std::string, std::string> device_id_to_name;
+  EnumDisplayMonitors(nullptr, nullptr, EnumMonitorCallback,
+                      reinterpret_cast<LPARAM>(&device_id_to_name));
+  // `displays` and `units` are in the same order. Each unit has an id
+  // which is the string representation of the corresponding display's id.
+  for (size_t display_index = 0; display_index < displays.size();
+       display_index++) {
+    auto it = device_id_to_name.find(units[display_index].id);
+    if (it != device_id_to_name.end()) {
+      units[display_index].name = it->second;
+      float device_scale_factor = displays[display_index].device_scale_factor();
       int dpi = display::win::GetDPIFromScalingFactor(device_scale_factor);
-      unit->dpi_x = dpi;
-      unit->dpi_y = dpi;
-      break;
+      units[display_index].dpi_x = dpi;
+      units[display_index].dpi_y = dpi;
     }
   }
 }

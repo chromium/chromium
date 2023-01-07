@@ -53,6 +53,8 @@ PASS number_ar.value is "1.1"
 Arabic number with two decimal separators is a badInput.
 PASS number_ar.validity.badInput is true
 PASS number_ar.value is ""
+Croatian number with negative decimal value is valid.
+PASS croatianInput.checkValidity() is true
 PASS successfullyParsed is true
 
 TEST COMPLETE

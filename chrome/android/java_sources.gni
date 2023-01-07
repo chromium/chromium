@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,17 +8,20 @@ import("//chrome/android/chrome_junit_test_java_sources.gni")
 import("//chrome/android/chrome_test_java_sources.gni")
 import("//chrome/android/features/autofill_assistant/public/java_sources.gni")
 import(
-    "//chrome/android/features/start_surface/internal/javatests/start_surface_test_java_sources.gni")
+    "//chrome/android/features/start_surface/javatests/start_surface_test_java_sources.gni")
 import(
-    "//chrome/android/features/start_surface/internal/junit/start_surface_junit_java_sources.gni")
+    "//chrome/android/features/start_surface/junit/start_surface_junit_java_sources.gni")
 import("//chrome/android/features/tab_ui/tab_management_java_sources.gni")
 import("//chrome/android/feed/feed_java_sources.gni")
+import(
+    "//chrome/browser/commerce/merchant_viewer/android/test_java_sources.gni")
 import("//chrome/browser/commerce/price_tracking/android/test_java_sources.gni")
+import(
+    "//chrome/browser/commerce/subscriptions/test/android/test_java_sources.gni")
 import("//chrome/browser/share/android/test_java_sources.gni")
 import("//chrome/common/features.gni")
 import("//components/feed/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
-import("//components/omnibox/browser/test_java_sources.gni")
 import("//device/vr/buildflags/buildflags.gni")
 
 chrome_java_sources += public_autofill_assistant_java_sources
@@ -38,13 +41,17 @@ chrome_test_java_sources += feed_test_java_sources
 chrome_test_java_sources += start_surface_test_java_sources
 chrome_junit_test_java_sources += start_surface_junit_java_sources
 chrome_junit_test_java_sources += tab_management_junit_java_sources
-chrome_test_java_sources += omnibox_test_java_sources
+chrome_junit_test_java_sources += price_tracking_junit_test_java_sources
 chrome_test_java_sources += price_tracking_test_java_sources
 chrome_test_java_sources += tab_management_test_java_sources
 chrome_test_java_sources += share_test_java_sources
 chrome_junit_test_java_sources += share_junit_test_java_sources
 chrome_junit_test_java_deps = share_junit_test_java_deps
 chrome_junit_test_java_deps += feed_test_deps
+chrome_junit_test_java_sources += commerce_subscriptions_junit_test_sources
+chrome_junit_test_java_deps += commerce_subscriptions_junit_test_deps
+chrome_test_java_sources += commerce_subscriptions_java_test_sources
+chrome_test_java_sources += commerce_merchant_viewer_java_test_sources
 
 if (enable_arcore) {
   chrome_java_sources += [

@@ -1,0 +1,50 @@
+/* Copyright 2022 The TensorFlow Authors. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================*/
+
+syntax = "proto2";
+
+package tflite.python.task.core;
+
+option java_multiple_files = true;
+option java_package = "org.tensorflow.lite.task.core.proto";
+
+// Base options for python task libraries that contains a subset of the C++
+// base options that are useful in Python.
+// See C++ base options at:
+// https://github.com/tensorflow/tflite-support/blob/master/tensorflow_lite_support/cc/task/core/proto/base_options.proto
+// Next Id: 5
+message BaseOptions {
+  // Represents external files used by the Task APIs (e.g. TF Lite FlatBuffer or
+  // plain-text labels file). The files can be specified by one of the following
+  // two ways:
+  //
+  // (1) file contents loaded in `file_content`.
+  // (2) file path in `file_name`.
+  //
+  // If more than one field of these fields is provided, they are used in this
+  // precedence order.
+  //
+  // The path to the file to open and mmap in memory.
+  optional string file_name = 1;
+  // The file contents as a byte array.
+  optional bytes file_content = 2;
+
+  // Number of thread, the defaule value is -1 which means Interpreter will
+  // decide what is the most appropriate num_threads.
+  optional int32 num_threads = 3 [default = -1];
+
+  // If true, inference will be delegated to a connected Coral Edge TPU device.
+  optional bool use_coral = 4;
+}

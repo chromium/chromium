@@ -1,0 +1,44 @@
+<style include="shortcut-customization-shared">
+  #container {
+    border-bottom: var(--cr-separator-line);
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 12px;
+    padding-top: 12px;
+  }
+
+  #acceleratorViewList {
+    display: grid;
+    flex: 1;
+    row-gap: 5px;
+  }
+
+  #descriptionText {
+    align-items: center;
+    display: flex;
+    width: 320px;
+  }
+
+  #lockIconContainer {
+    align-items: center;
+    display: flex;
+  }
+
+  #lockIconContainer[hidden] {
+    display: none;  /* Required for flexbox hidden. */
+  }
+</style>
+
+<div id="container">
+  <div id="descriptionText">[[description]]</div>
+  <div id="acceleratorViewList">
+    <template is="dom-repeat" items=[[acceleratorInfos]]>
+      <accelerator-view class="acceleratorItem" accelerator-info=[[item]]
+          action=[[action]] source=[[source]]>
+      </accelerator-view>
+    </template>
+  </div>
+  <div id="lockIconContainer" hidden="[[!shouldShowLockIcon_(isLocked_)]]">
+    <iron-icon icon="shortcut-customization:lock"></iron-icon>
+  </div>
+</div>

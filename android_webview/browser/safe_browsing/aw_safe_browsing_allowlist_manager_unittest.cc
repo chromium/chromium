@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,9 +23,9 @@ class AwSafeBrowsingAllowlistManagerTest : public testing::Test {
   AwSafeBrowsingAllowlistManagerTest() {}
 
   void SetUp() override {
-    wm_.reset(new AwSafeBrowsingAllowlistManager(
+    wm_ = std::make_unique<AwSafeBrowsingAllowlistManager>(
         base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get()));
+        base::ThreadTaskRunnerHandle::Get());
   }
 
   void TearDown() override { wm_.reset(); }

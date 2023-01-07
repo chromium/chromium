@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,14 +15,14 @@
 
 namespace media {
 
-constexpr base::TimeDelta kPauseDelay = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kPauseDelay = base::Seconds(10);
 
 AudioRendererMixer::AudioRendererMixer(const AudioParameters& output_params,
                                        scoped_refptr<AudioRendererSink> sink)
     : output_params_(output_params),
       audio_sink_(std::move(sink)),
       lock_("AudioRendererMixer.lock_"),
-      master_converter_(output_params, output_params, true),
+      aggregate_converter_(output_params, output_params, true),
       pause_delay_(kPauseDelay),
       last_play_time_(base::TimeTicks::Now()),
       // Initialize |playing_| to true since Start() results in an auto-play.
@@ -41,7 +41,7 @@ AudioRendererMixer::~AudioRendererMixer() {
   audio_sink_->Stop();
 
   // Ensure that all mixer inputs have removed themselves prior to destruction.
-  DCHECK(master_converter_.empty());
+  DCHECK(aggregate_converter_.empty());
   DCHECK(converters_.empty());
   DCHECK(error_callbacks_.empty());
 }
@@ -56,8 +56,8 @@ void AudioRendererMixer::AddMixerInput(const AudioParameters& input_params,
   }
 
   int input_sample_rate = input_params.sample_rate();
-  if (is_master_sample_rate(input_sample_rate)) {
-    master_converter_.AddInput(input);
+  if (can_passthrough(input_sample_rate)) {
+    aggregate_converter_.AddInput(input);
   } else {
     auto converter = converters_.find(input_sample_rate);
     if (converter == converters_.end()) {
@@ -70,8 +70,8 @@ void AudioRendererMixer::AddMixerInput(const AudioParameters& input_params,
                                      input_params, output_params_, true)));
       converter = result.first;
 
-      // Add newly-created resampler as an input to the master mixer.
-      master_converter_.AddInput(converter->second.get());
+      // Add newly-created resampler as an input to the aggregate mixer.
+      aggregate_converter_.AddInput(converter->second.get());
     }
     converter->second->AddInput(input);
   }
@@ -83,15 +83,15 @@ void AudioRendererMixer::RemoveMixerInput(
   base::AutoLock auto_lock(lock_);
 
   int input_sample_rate = input_params.sample_rate();
-  if (is_master_sample_rate(input_sample_rate)) {
-    master_converter_.RemoveInput(input);
+  if (can_passthrough(input_sample_rate)) {
+    aggregate_converter_.RemoveInput(input);
   } else {
     auto converter = converters_.find(input_sample_rate);
     DCHECK(converter != converters_.end());
     converter->second->RemoveInput(input);
     if (converter->second->empty()) {
       // Remove converter when it's empty.
-      master_converter_.RemoveInput(converter->second.get());
+      aggregate_converter_.RemoveInput(converter->second.get());
       converters_.erase(converter);
     }
   }
@@ -127,7 +127,7 @@ int AudioRendererMixer::Render(base::TimeDelta delay,
   // sink to avoid wasting resources when media elements are present but remain
   // in the pause state.
   const base::TimeTicks now = base::TimeTicks::Now();
-  if (!master_converter_.empty()) {
+  if (!aggregate_converter_.empty()) {
     last_play_time_ = now;
   } else if (now - last_play_time_ >= pause_delay_ && playing_) {
     audio_sink_->Pause();
@@ -136,12 +136,12 @@ int AudioRendererMixer::Render(base::TimeDelta delay,
 
   // Since AudioConverter uses uint32_t for delay calculations, we must drop
   // negative delay values (which are incorrect anyways).
-  if (delay < base::TimeDelta())
+  if (delay.is_negative())
     delay = base::TimeDelta();
 
   uint32_t frames_delayed =
       AudioTimestampHelper::TimeToFrames(delay, output_params_.sample_rate());
-  master_converter_.ConvertWithDelay(frames_delayed, audio_bus);
+  aggregate_converter_.ConvertWithDelay(frames_delayed, audio_bus);
   return audio_bus->frames();
 }
 

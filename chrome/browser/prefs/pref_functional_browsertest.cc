@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/net/prediction_options.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -43,7 +43,7 @@ class PrefsFunctionalTest : public InProcessBrowserTest {
       Browser* browser,
       int num_downloads) {
     DownloadManager* download_manager =
-        BrowserContext::GetDownloadManager(browser->profile());
+        browser->profile()->GetDownloadManager();
 
     content::DownloadTestObserver* downloads_observer =
          new content::DownloadTestObserverTerminal(
@@ -69,8 +69,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestDownloadDirPref) {
   // Create a downloads observer.
   std::unique_ptr<content::DownloadTestObserver> downloads_observer(
       CreateWaiter(browser(), 1));
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/downloads/a_zip_file.zip"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/downloads/a_zip_file.zip")));
   // Waits for the download to complete.
   downloads_observer->WaitForFinished();
 
@@ -82,8 +82,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestDownloadDirPref) {
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImageContentSettings) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/settings/image_page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/settings/image_page.html")));
 
   bool result = false;
   std::string script =
@@ -106,8 +106,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImageContentSettings) {
           ->default_value_pref_name(),
       CONTENT_SETTING_BLOCK);
 
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/settings/image_page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/settings/image_page.html")));
 
   result = false;
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
@@ -123,14 +123,14 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestJavascriptEnableDisable) {
 
   EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kWebKitJavascriptEnabled));
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/javaScriptTitle.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/javaScriptTitle.html")));
   EXPECT_EQ(u"Title from script javascript enabled",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kWebKitJavascriptEnabled,
                                                false);
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/javaScriptTitle.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/javaScriptTitle.html")));
   EXPECT_EQ(u"This is html title",
             browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
 }
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestImagesNotBlockedInIncognito) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/settings/image_page.html");
   Browser* incognito_browser = CreateIncognitoBrowser();
-  ui_test_utils::NavigateToURL(incognito_browser, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser, url));
 
   bool result = false;
   std::string script =
@@ -211,14 +211,14 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestHomepagePrefs) {
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, PRE_TestPrivacySecurityPrefs) {
   PrefService* prefs = browser()->profile()->GetPrefs();
 
-  static_assert(chrome_browser_net::NETWORK_PREDICTION_DEFAULT !=
-                    chrome_browser_net::NETWORK_PREDICTION_NEVER,
+  static_assert(prefetch::NetworkPredictionOptions::kDefault !=
+                    prefetch::NetworkPredictionOptions::kDisabled,
                 "PrefsFunctionalTest.TestPrivacySecurityPrefs relies on "
                 "predictive network actions being enabled by default.");
-  EXPECT_EQ(chrome_browser_net::NETWORK_PREDICTION_DEFAULT,
-            prefs->GetInteger(prefs::kNetworkPredictionOptions));
-  prefs->SetInteger(prefs::kNetworkPredictionOptions,
-                    chrome_browser_net::NETWORK_PREDICTION_NEVER);
+  EXPECT_EQ(prefetch::PreloadPagesState::kStandardPreloading,
+            prefetch::GetPreloadPagesState(*prefs));
+  prefetch::SetPreloadPagesState(prefs,
+                                 prefetch::PreloadPagesState::kNoPreloading);
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kSafeBrowsingEnabled));
   prefs->SetBoolean(prefs::kSafeBrowsingEnabled, false);
@@ -234,8 +234,8 @@ IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, PRE_TestPrivacySecurityPrefs) {
 IN_PROC_BROWSER_TEST_F(PrefsFunctionalTest, TestPrivacySecurityPrefs) {
   PrefService* prefs = browser()->profile()->GetPrefs();
 
-  EXPECT_EQ(chrome_browser_net::NETWORK_PREDICTION_NEVER,
-            prefs->GetInteger(prefs::kNetworkPredictionOptions));
+  EXPECT_EQ(prefetch::PreloadPagesState::kNoPreloading,
+            prefetch::GetPreloadPagesState(*prefs));
   EXPECT_FALSE(prefs->GetBoolean(prefs::kSafeBrowsingEnabled));
   EXPECT_FALSE(
       prefs->GetBoolean(embedder_support::kAlternateErrorPagesEnabled));

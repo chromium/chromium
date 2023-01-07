@@ -1,94 +1,87 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_SHELL_POPUP_WRAPPER_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_SHELL_POPUP_WRAPPER_H_
 
+#include <cstdint>
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/owned_window_anchor.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {
 
 class WaylandConnection;
 class WaylandWindow;
 
-enum class MenuType {
-  TYPE_RIGHT_CLICK,
-  TYPE_3DOT_PARENT_MENU,
-  TYPE_3DOT_CHILD_MENU,
-  TYPE_UNKNOWN,
+struct ShellPopupParams {
+  ShellPopupParams();
+  ShellPopupParams(const ShellPopupParams&);
+  ShellPopupParams& operator=(const ShellPopupParams&);
+  ~ShellPopupParams();
+
+  gfx::Rect bounds;
+  MenuType menu_type = MenuType::kRootContextMenu;
+
+  // This parameter is temporarily optional. Later, when all the clients
+  // start to pass these parameters, absl::optional type will be removed.
+  absl::optional<OwnedWindowAnchor> anchor;
 };
-
-enum class WlAnchor {
-  None,
-  Top,
-  Bottom,
-  Left,
-  Right,
-  TopLeft,
-  BottomLeft,
-  TopRight,
-  BottomRight,
-};
-
-enum class WlGravity {
-  None,
-  Top,
-  Bottom,
-  Left,
-  Right,
-  TopLeft,
-  BottomLeft,
-  TopRight,
-  BottomRight,
-};
-
-enum class WlConstraintAdjustment : uint32_t {
-  None = 0,
-  SlideX = 1,
-  SlideY = 2,
-  FlipX = 4,
-  FlipY = 8,
-  ResizeX = 16,
-  ResizeY = 32,
-};
-
-inline WlConstraintAdjustment operator|(WlConstraintAdjustment a,
-                                        WlConstraintAdjustment b) {
-  return static_cast<WlConstraintAdjustment>(static_cast<uint32_t>(a) |
-                                             static_cast<uint32_t>(b));
-}
-
-inline WlConstraintAdjustment operator&(WlConstraintAdjustment a,
-                                        WlConstraintAdjustment b) {
-  return static_cast<WlConstraintAdjustment>(static_cast<uint32_t>(a) &
-                                             static_cast<uint32_t>(b));
-}
 
 // A wrapper around different versions of xdg popups.
 class ShellPopupWrapper {
  public:
-  virtual ~ShellPopupWrapper() {}
+  virtual ~ShellPopupWrapper() = default;
 
   // Initializes the popup surface.
-  virtual bool Initialize(WaylandConnection* connection,
-                          const gfx::Rect& bounds) = 0;
+  virtual bool Initialize(const ShellPopupParams& params) = 0;
 
   // Sends acknowledge configure event back to wayland.
   virtual void AckConfigure(uint32_t serial) = 0;
 
-  MenuType GetMenuTypeForPositioner(WaylandConnection* connection,
-                                    WaylandWindow* parent_window) const;
-  bool CanGrabPopup(WaylandConnection* connection) const;
-};
+  // Tells if the surface has been AckConfigured at least once.
+  virtual bool IsConfigured() = 0;
 
-gfx::Rect GetAnchorRect(MenuType menu_type,
-                        const gfx::Rect& menu_bounds,
-                        const gfx::Rect& parent_window_bounds);
-WlAnchor GetAnchor(MenuType menu_type, const gfx::Rect& bounds);
-WlGravity GetGravity(MenuType menu_type, const gfx::Rect& bounds);
-WlConstraintAdjustment GetConstraintAdjustment(MenuType menu_type);
+  // Changes bounds of the popup window. If changing bounds is not supported,
+  // false is returned and the client should recreate the shell popup instead
+  // if it still wants to reposition the popup.
+  virtual bool SetBounds(const gfx::Rect& new_bounds) = 0;
+
+  // Sets and gets the window geometry.
+  virtual void SetWindowGeometry(const gfx::Rect& bounds) = 0;
+  // Fills anchor data either from params.anchor or with default anchor
+  // parameters if params.anchor is empty.
+  void FillAnchorData(const ShellPopupParams& params,
+                      gfx::Rect* anchor_rect,
+                      OwnedWindowAnchorPosition* anchor_position,
+                      OwnedWindowAnchorGravity* anchor_gravity,
+                      OwnedWindowConstraintAdjustment* constraints) const;
+
+  // Whether the protocol supports surface decoration.
+  virtual bool SupportsDecoration() = 0;
+
+  // Must only be called if SupportsDecoration() returns true.
+  // Decorates the surface with a drop shadow.
+  virtual void Decorate() = 0;
+
+ protected:
+  // Asks the compositor to take explicit-grab for this popup.
+  virtual void Grab(uint32_t serial) = 0;
+
+  // Returns the serial value for a popup grab, if there is one available.
+  void GrabIfPossible(WaylandConnection* connection,
+                      WaylandWindow* parent_window);
+
+ private:
+  // Tells if explicit grab was taken for this popup. As per
+  // https://wayland.app/protocols/xdg-shell#xdg_popup:request:grab
+  bool has_grab_ = false;
+};
 
 }  // namespace ui
 

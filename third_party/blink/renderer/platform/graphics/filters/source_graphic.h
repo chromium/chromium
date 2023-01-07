@@ -22,8 +22,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_SOURCE_GRAPHIC_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_FILTERS_SOURCE_GRAPHIC_H_
 
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -35,16 +35,16 @@ class PLATFORM_EXPORT SourceGraphic final : public FilterEffect {
   WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
                                           int indention) const override;
 
-  void SetSourceRectForTests(const IntRect&);
+  void SetSourceRectForTests(const gfx::Rect&);
 
  private:
   FilterEffectType GetFilterEffectType() const override {
     return kFilterEffectTypeSourceInput;
   }
 
-  FloatRect MapInputs(const FloatRect&) const override;
+  gfx::RectF MapInputs(const gfx::RectF&) const override;
 
-  IntRect source_rect_;
+  gfx::Rect source_rect_;
 };
 
 }  // namespace blink

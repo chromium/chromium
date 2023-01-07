@@ -2,33 +2,42 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="1001534784610492198">설치 프로그램 보관 파일이 손상되었거나 올바르지 않습니다. Chrome을 다시 다운로드하세요.</translation>
+<translation id="1026101648481255140">설치 다시 시작</translation>
 <translation id="102763973188675173">Chrome을 맞춤설정하고 제어하세요. 업데이트가 출시되었습니다.</translation>
 <translation id="1051826050538111504">컴퓨터에 유해한 소프트웨어가 있습니다. Chrome에서 유해한 소프트웨어를 삭제하고, 설정을 복원하고, 확장 프로그램을 사용 중지하여 브라우저가 다시 정상적으로 작동하도록 할 수 있습니다.</translation>
 <translation id="1065672644894730302">환경설정을 읽을 수 없습니다.
 
 일부 기능을 사용할 수 없으며 환경설정의 변경사항이 저장되지 않습니다.</translation>
 <translation id="1088300314857992706"><ph name="USER_EMAIL_ADDRESS" />에서 이전에 Chrome을 사용한 적이 있음</translation>
-<translation id="1097330777386562916">Chrome을 종료할 때 쿠키 및 사이트 데이터 삭제</translation>
 <translation id="110877069173485804">나만의 Chrome</translation>
 <translation id="1125124144982679672">Chrome 사용자 선택</translation>
 <translation id="1142745911746664600">Chrome을 업데이트할 수 없음</translation>
+<translation id="1152920704813762236">ChromeOS 정보</translation>
 <translation id="1154147086299354128">Chrome에서 열기(&amp;O)</translation>
-<translation id="1293325835983155583">기기를 사용하기 전에 <ph name="MANAGER" />에서 다음 서비스 약관을 읽고 이에 동의해야 합니다. 이 약관은 Chrome OS 약관을 확대, 수정 또는 제한하지 않습니다.</translation>
+<translation id="1203500561924088507">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 브라우저를 다시 시작해야 합니다.</translation>
+<translation id="1278833599417554002">다시 실행하여 Chrome 업데이트</translation>
 <translation id="1302523850133262269">Chrome에서 최신 시스템 업데이트를 설치하는 동안 잠시 기다려 주세요.</translation>
+<translation id="1335640173511558774"><ph name="MANAGER" />에서는 기기를 사용하기 전에 다음 서비스 약관을 읽고 이에 동의하도록 하고 있습니다. 이 약관은 Google ChromeOS Flex 약관을 확대하거나 수정 또는 제한하지 않습니다.</translation>
+<translation id="1363996462118479832">로그인 중 오류가 발생하여 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="137466361146087520">Chrome 베타</translation>
 <translation id="1399397803214730675">컴퓨터에 Chrome 최신 버전이 설치되어 있습니다. 실행되지 않는 경우 제거한 후 다시 시도하세요.</translation>
-<translation id="1434626383986940139">Chrome 카나리아 앱</translation>
-<translation id="147727933880789532">이 확장 프로그램은 향상된 세이프 브라우징 표준을 충족하지 않으므로 확장 프로그램을 사용 중지하시기 바랍니다.</translation>
+<translation id="139993653570221430">언제든지 Chrome 설정에서 선택을 변경할 수 있습니다. 시험 버전은 현재의 광고 게재 방식을 기반으로 실행되므로 변경사항이 당장 적용되는 것은 아닙니다.</translation>
+<translation id="1434626383986940139">Chrome Canary 앱</translation>
+<translation id="1507198376417198979">새로운 Chrome 프로필 맞춤설정</translation>
 <translation id="1516530951338665275">페어링을 계속하려면 Chrome에서 블루투스 액세스 권한이
 필요합니다. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
+<translation id="1547295885616600893">ChromeOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="1553358976309200471">Chrome 업데이트</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" />님이 이미 Chrome 프로필에 로그인되어 있습니다. <ph name="USER_EMAIL_ADDRESS" />님을 위한 새 Chrome 프로필이 생성됩니다.</translation>
 <translation id="1587223624401073077">Chrome에서 카메라를 사용 중입니다.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" />은(는) 위험하므로 Chrome에서 차단했습니다.</translation>
 <translation id="1597911401261118146">암호가 정보 유출 및 다른 보안 문제로부터 안전한지 확인하려면 <ph name="BEGIN_LINK" />Chrome에 로그인<ph name="END_LINK" />하세요.</translation>
+<translation id="1599904803480101533">멀웨어가 숨겨져 있을 수 있어 Chrome에서 이 보관 파일을 차단했습니다.</translation>
 <translation id="1619887657840448962">Google에서는 Chrome의 보안을 강화하기 위해 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않고 사용자가 모르게 추가되었을 수 있는 다음 확장 프로그램의 사용을 중지했습니다.</translation>
+<translation id="1627304841979541023"><ph name="BEGIN_BOLD" />데이터 관리 방법:<ph name="END_BOLD" /> 개인 정보를 보호하기 위해 Chrome에서는 4주가 지난 관심분야를 자동 삭제합니다. 인터넷 사용에 따라 특정 관심분야가 목록에 다시 표시될 수 있습니다. Chrome에서 고려하지 않았으면 하는 관심분야가 있으면 직접 삭제하세요.</translation>
 <translation id="1628000112320670027">Chrome 도움말 보기</translation>
-<translation id="1666409074978194368">업데이트가 거의 완료되었습니다. 업데이트를 마치려면 Chrome을 다시 실행하세요. 시크릿 창은 다시 열리지 않습니다.</translation>
+<translation id="1640672724030957280">다운로드 중...</translation>
+<translation id="1662146548738125461">ChromeOS Flex 정보</translation>
 <translation id="1674870198290878346">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="1682634494516646069">Chrome에서 다음 데이터 디렉터리를 읽고 쓸 수 없습니다.
 
@@ -36,43 +45,57 @@
 <translation id="1698376642261615901">Chrome은 웹페이지와 애플리케이션을 빠르게 실행하는 웹 브라우저입니다. 또한 빠르고 안정적이며 사용하기 쉽습니다. Chrome에 기본적으로 제공되는 악성코드 및 피싱 방지 기능으로 웹을 더 안전하게 탐색하세요.</translation>
 <translation id="1713301662689114961">{0,plural, =1{1시간 후 Chrome이 다시 시작됩니다}other{#시간 후 Chrome이 다시 시작됩니다}}</translation>
 <translation id="1734234790201236882">Chrome에서 내 Google 계정에 이 비밀번호를 저장하므로 기억하지 않아도 됩니다.</translation>
-<translation id="174539241580958092">로그인 중 오류가 발생하여 Chrome에서 데이터를 동기화하지 못했습니다.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" />에서 Chrome에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>
-<translation id="1807517590912578995">Chrome 프로필을 분리하시겠습니까?</translation>
 <translation id="1812689907177901597">이 기능을 사용 중지하면 Chrome에 로그인하지 않고도 Gmail 등의 Google 사이트에 로그인할 수 있습니다.</translation>
 <translation id="1860536484129686729">이 사이트에서 카메라에 액세스하려면 Chrome에 권한이 필요합니다</translation>
 <translation id="1873233029667955273">Chrome이 기본 브라우저로 설정되어 있지 않습니다</translation>
 <translation id="1874309113135274312">Chrome 베타(mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome이 이전 버전임</translation>
 <translation id="1919130412786645364">Chrome 로그인 허용</translation>
+<translation id="1952239763774043237">향후 Chrome 업데이트를 받으려면 macOS 10.13 이상이 필요합니다. 이 컴퓨터에서는 macOS X 10.12를 사용하고 있습니다.</translation>
+<translation id="1953553007165777902">다운로드 중... <ph name="MINUTE" />분 남음</translation>
 <translation id="2018528049276128029">각 프로필에는 북마크, 방문 기록, 비밀번호 등과 같은 Chrome 정보가 보관됩니다.</translation>
-<translation id="2063848847527508675">업데이트를 적용하려면 Chrome OS를 다시 시작해야 합니다.</translation>
+<translation id="2018879682492276940">설치할 수 없습니다. 다시 시도해 보세요.</translation>
+<translation id="2071318482926839249">이미 다른 계정으로 로그인되어 있습니다. 인터넷 사용 기록을 별도로 보관하기 위해 Chrome에서 나만의 프로필을 만들 수 있습니다.</translation>
+<translation id="207902854391093810">무료 체험을 사용 설정한 경우 방문하는 사이트에서는 Ad measurement를 활용해 광고의 실적을 측정하는 데 도움이 되는 정보를 Chrome에 요청할 수 있습니다. Ad measurement는 사이트 간에 최소한의 정보만 전송함으로써 크로스 사이트 추적을 제한합니다.</translation>
+<translation id="2094648590148273905">ChromeOS Flex 약관</translation>
 <translation id="2094919256425865063">Chrome을 종료하시겠습니까?</translation>
+<translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromeOS Flex는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="2120620239521071941">항목 <ph name="ITEMS_COUNT" />개가 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
+<translation id="2121284319307530122">다시 실행하여 Chrome 업데이트</translation>
 <translation id="2123055963409958220"><ph name="BEGIN_LINK" />현재 설정<ph name="END_LINK" />을 보고하여 Chrome 개선에 참여</translation>
+<translation id="2131230230468101642">개인 정보를 보호하기 위해 Chrome에서는 4주가 지난 관심분야를 자동 삭제합니다. 인터넷 사용에 따라 특정 관심분야가 목록에 다시 표시될 수 있습니다. Chrome에서 고려하지 않았으면 하는 관심분야가 있으면 직접 삭제하세요.</translation>
+<translation id="2139300032719313227">ChromeOS 다시 시작</translation>
 <translation id="2151406531797534936">지금 Chrome을 다시 시작하세요</translation>
-<translation id="2246246234298806438">기본 제공되는 PDF 뷰어가 없는 경우 Chrome에서 인쇄 미리보기를 표시할 수 없습니다.</translation>
+<translation id="2174917724755363426">설치가 완료되지 않았습니다. 취소하시겠습니까?</translation>
+<translation id="223889379102603431">Chrome의 루트 인증서 관리 방식에 관한 정보</translation>
+<translation id="2258103955319320201">모든 기기에서 Chrome 브라우저 데이터에 액세스하려면 로그인한 후 동기화를 사용 설정하세요</translation>
 <translation id="2290014774651636340">Google API 키가 누락되었습니다. Chrome의 일부 기능이 사용 중지됩니다.</translation>
 <translation id="2290095356545025170">Chrome을 제거하시겠습니까?</translation>
 <translation id="2309047409763057870">Chrome의 보조 설치이며 기본 브라우저로 설정할 수 없습니다.</translation>
+<translation id="2345992953227471816">Chrome에서 다음 확장 프로그램에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="2348335408836342058">이 사이트에서 카메라와 마이크에 액세스하려면 Chrome에 권한이 필요합니다</translation>
 <translation id="234869673307233423">Chrome에서 비밀번호를 확인할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="235650106824528204">북마크, 방문 기록, 비밀번호, 기타 설정 생성 등 이 프로필을 사용하는 동안 생성된 모든 Chrome 데이터는 직장 프로필 관리자가 삭제할 수 있습니다. <ph name="LEARN_MORE" /></translation>
-<translation id="2429317896000329049">도메인에서 동기화를 사용할 수 없어 Chrome에서 데이터를 동기화하지 못했습니다.</translation>
-<translation id="245659736593643560"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경(베타)<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, Chrome OS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
+<translation id="2359808026110333948">계속</translation>
+<translation id="2401189691232800402">ChromeOS 시스템</translation>
 <translation id="2467438592969358367">Chrome에서 비밀번호를 내보내려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="2485422356828889247">제거</translation>
+<translation id="2494974097748878569">Chrome의 Google 어시스턴트</translation>
 <translation id="2534507159460261402">Google Pay(Chrome에 복사됨)</translation>
+<translation id="2559253115192232574">이후 방문한 사이트에서 광고 개인 최적화를 위해 내 관심분야를 알려달라고 Chrome에 요청할 수 있습니다. Chrome은 최대 3개의 관심분야를 공유할 수 있습니다.</translation>
+<translation id="2563121210305478421">Chrome을 다시 시작하시겠습니까?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" />님이 이미 Chrome 프로필에 로그인되어 있습니다. 인터넷 사용 기록을 별도로 보관하기 위해 Chrome에서 나만의 프로필을 만들 수 있습니다.</translation>
 <translation id="2580411288591421699">현재 실행 중인 Chrome과 동일한 버전은 설치할 수 없습니다. Chrome을 닫고 다시 시도하세요.</translation>
 <translation id="2586406160782125153">인터넷 사용 기록이 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
-<translation id="2588634262982826227">Chrome OS를 재부팅할 때마다 사용자에게 묻지 않고도 앱 및 페이지를 복원하도록 설정하세요.</translation>
+<translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" />에서 Chrome 브라우저 기능을 이용해 보세요</translation>
 <translation id="2622559029861875898">Chrome에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
-<translation id="2644798301485385923">Chrome OS 시스템</translation>
+<translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2652691236519827073">새 Chrome 탭에서 링크 열기(&amp;T)</translation>
 <translation id="2665296953892887393">비정상 종료 보고서와 <ph name="UMA_LINK" />을(를) Google로 전송하여 Chrome 개선에 참여합니다.</translation>
 <translation id="2689103672227170538">Chrome을 시작하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
+<translation id="2742320827292110288">경고: Chrome에서는 확장 프로그램에 인터넷 사용 기록이 저장될 수 있습니다. 시크릿 모드에서 이 확장 프로그램을 사용 중지하려면 옵션을 선택 해제하세요.</translation>
 <translation id="2765403129283291972">이 사이트에서 마이크에 액세스하려면 Chrome에 권한이 필요합니다</translation>
 <translation id="2770231113462710648">다음으로 기본 브라우저 변경:</translation>
 <translation id="2775140325783767197">Chrome에서 비밀번호를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
@@ -80,28 +103,42 @@
 <translation id="2847461019998147611">이 언어로 Chrome 표시</translation>
 <translation id="2857540653560290388">Chrome 실행 중...</translation>
 <translation id="2857972467023607093">이 계정을 사용하는 Chrome 프로필이 이미 존재합니다.</translation>
+<translation id="2861074815332034794">Chrome 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">Chrome에 로그인되어 있습니다.</translation>
 <translation id="2885378588091291677">작업 관리자</translation>
 <translation id="2888126860611144412">Chrome 정보</translation>
+<translation id="2915996080311180594">나중에 다시 시작</translation>
 <translation id="2926676257163822632">취약한 비밀번호는 추측하기 쉽습니다. Chrome에서 <ph name="BEGIN_LINK" />안전한 비밀번호를 생성하고 기억하도록 설정<ph name="END_LINK" />하세요.</translation>
+<translation id="2926952073016206995">Chrome에서 사이트에 대한 카메라 권한이 필요합니다.</translation>
+<translation id="2928420929544864228">설치가 완료되었습니다.</translation>
 <translation id="2929907241665500097">문제가 발생하여 Chromium을 업데이트할 수 없습니다. <ph name="BEGIN_LINK" />Chrome 업데이트 문제 및 업데이트 실패 문제 해결하기<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 네트워크 로그인 - Chrome</translation>
+<translation id="3019382870990049182">다시 실행하여 ChromeOS Flex 업데이트(&amp;C)</translation>
+<translation id="303514781271618814">Chrome은 사용자의 데이터를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다.</translation>
 <translation id="3037838751736561277">Chrome이 백그라운드 모드로 실행 중입니다.</translation>
+<translation id="3038232873781883849">설치 대기 중...</translation>
 <translation id="3059710691562604940">세이프 브라우징이 사용 중지되어 있습니다. 사용 설정하는 것이 좋습니다.</translation>
 <translation id="3065168410429928842">Chrome 탭</translation>
+<translation id="3069821012350118710">내가 방문한 사이트에서는 Chrome을 종료할 때까지 내 정보를 기억합니다.</translation>
 <translation id="3080151273017101988">Chrome 종료 후에도 백그라운드 앱을 계속 실행</translation>
 <translation id="3089968997497233615">새롭고 안전한 Chrome의 새 버전을 사용할 수 있습니다.</translation>
 <translation id="3100998948628680988">Chrome 프로필 이름 지정</translation>
 <translation id="3114643501466072395">다른 암호가 정보 유출 및 다른 보안 문제로부터 안전한지 확인하려면 <ph name="BEGIN_LINK" />Chrome에 로그인<ph name="END_LINK" />하세요.</translation>
 <translation id="3140883423282498090">Chrome을 다시 시작하면 변경사항이 적용됩니다.</translation>
 <translation id="3149510190863420837">Chrome 앱</translation>
+<translation id="3169523567916669830">시험 기간 중에는 사이트에서 광고 표시를 위해 사용하는 관심분야의 주제를 내가 확인하고 삭제할 수 있습니다. Chrome에서는 사용자의 최근 방문 기록을 기반으로 관심분야를 추정합니다.</translation>
+<translation id="3245429137663807393">Chrome 사용 보고서를 공유하면, 내가 방문한 URL이 이 보고서에 포함됩니다.</translation>
+<translation id="3282568296779691940">Chrome에 로그인</translation>
+<translation id="3286538390144397061">지금 다시 시작</translation>
 <translation id="3360895254066713204">Chrome 도우미</translation>
 <translation id="3379938682270551431">{0,plural, =0{지금 Chrome이 다시 시작됩니다}=1{1초 후 Chrome이 다시 시작됩니다}other{#초 후 Chrome이 다시 시작됩니다}}</translation>
-<translation id="3395323229510056640">Chrome OS 도움말 보기</translation>
 <translation id="3396977131400919238">설치 중 운영체제 오류가 발생했습니다. Chrome을 다시 다운로드하세요.</translation>
+<translation id="3426646014273736870">메모리 절약 모드로 더 빨라진 Chrome</translation>
+<translation id="3428747202529429621">로그인 상태일 때 Chrome에서 사용자를 보호하고 기타 Google 앱에서 사용자의 보안을 개선하는 데 사용될 수 있습니다.</translation>
 <translation id="3434246496373299699">Google 계정으로 로그인하면 Chrome에서 비밀번호를 확인할 수 있습니다.</translation>
 <translation id="3451115285585441894">Chrome에 추가하는 중...</translation>
 <translation id="345171907106878721">Chrome에 본인 추가</translation>
+<translation id="3453763134178591239">ChromeOS 약관</translation>
 <translation id="34857402635545079">Chrome(<ph name="URL" />)에서도 데이터 삭제</translation>
 <translation id="3503306920980160878">이 사이트와 위치를 공유하려면 Chrome에 내 위치 액세스 권한이 있어야 합니다</translation>
 <translation id="3533694711092285624">저장된 비밀번호가 없습니다. 비밀번호를 저장하면 Chrome에서 확인할 수 있습니다.</translation>
@@ -110,192 +147,274 @@
 <translation id="3582972582564653026">모든 기기에서 Chrome을 동기화하고 맞춤설정하세요.</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="3622797965165704966">이제 Google 계정으로 공유 컴퓨터에서 Chrome을 손쉽게 사용할 수 있습니다.</translation>
+<translation id="3673813398384385993">Chrome에서 "<ph name="EXTENSION_NAME" />"에 멀웨어가 포함된 것을 발견했습니다.</translation>
+<translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromeOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
+<translation id="3716540481907974026">ChromeOS Flex 버전</translation>
 <translation id="3718181793972440140">항목 1개가 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="3735758079232443276">Chrome을 시작하면 표시되는 페이지가 '<ph name="EXTENSION_NAME" />' 확장 프로그램으로 인해 변경되었습니다.</translation>
-<translation id="3779473566290487688">향후 Google Chrome 업데이트를 받으려면 OS X 10.11 이상이 필요합니다. 이 컴퓨터에서는 OS X 10.10을 사용하고 있습니다.</translation>
+<translation id="3744202345691150878">ChromeOS 도움말 보기</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
+<translation id="3785324443014631273">로그인 중 오류가 발생하여 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
+<translation id="3795971588916395511">ChromeOS</translation>
 <translation id="3835168907083856002"><ph name="USER_EMAIL_ADDRESS" />님을 위한 새 Chrome 프로필이 생성됩니다.</translation>
 <translation id="386202838227397562">Chrome 창을 모두 닫고 다시 시도해 보세요.</translation>
 <translation id="3865754807470779944">Chrome <ph name="PRODUCT_VERSION" /> 버전이 설치됩니다.</translation>
 <translation id="3873044882194371212">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="3889417619312448367">Chrome 제거</translation>
+<translation id="3999683152997576765">사이트에서 광고 표시를 위해 사용하는 관심분야의 주제를 내가 확인하고 삭제할 수 있습니다. Chrome에서는 사용자의 최근 방문 기록을 기반으로 관심분야를 추정합니다.</translation>
+<translation id="4035053306113201399">업데이트를 적용하려면 ChromeOS를 다시 시작해야 합니다.</translation>
 <translation id="4050175100176540509">최신 버전에는 중요한 보안 개선사항 및 새로운 기능이 포함되어 있습니다.</translation>
 <translation id="4053720452172726777">Chrome 맞춤설정 및 제어</translation>
+<translation id="4106587138345390261">Chrome은 사용자의 정보를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다</translation>
 <translation id="4110895483821904099">새 Chrome 프로필 설정</translation>
 <translation id="4147555960264124640">관리 계정으로 로그인하여 관리자에게 Chrome 프로필에 대한 제어권을 부여하려고 합니다. 앱, 북마크, 방문 기록, 비밀번호 및 기타 설정과 같은 Chrome 데이터가 <ph name="USER_NAME" /> 계정에 영구적으로 연결됩니다. 이후 이 데이터를 Google 계정 대시보드에서 삭제할 수는 있지만 다른 계정에 연결할 수는 없습니다. <ph name="LEARN_MORE" /></translation>
+<translation id="4148957013307229264">설치 중...</translation>
 <translation id="4149882025268051530">설치 프로그램이 보관 파일 압축 풀기에 실패했습니다. Chrome을 다시 다운로드하세요.</translation>
 <translation id="4191857738314598978">{0,plural, =1{1일 이내로 Chrome을 다시 시작해 주세요}other{#일 이내로 Chrome을 다시 시작해 주세요}}</translation>
 <translation id="4205939740494406371">Chrome에서 비밀번호를 확인할 수 없습니다. 24시간 후에 다시 시도해 보거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
+<translation id="4222932583846282852">취소 중...</translation>
+<translation id="4242034826641750751">Chrome에서 사이트에 대한 카메라 및 마이크 권한이 필요합니다.</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
 <translation id="4251615635259297716">Chrome 데이터를 이 계정에 연결하시겠습니까?</translation>
+<translation id="4262915912852657291"><ph name="BEGIN_BOLD" />사용되는 데이터:<ph name="END_BOLD" /> 이 기기에서 Chrome으로 방문한 사이트 기록인 방문 기록이 사용됩니다.</translation>
 <translation id="4281844954008187215">서비스 약관</translation>
 <translation id="4293420128516039005">로그인하여 모든 기기에서 Chrome을 동기화하고 맞춤설정하세요.</translation>
-<translation id="4325083532956419387">Chrome OS 버전</translation>
+<translation id="430327780270213103">확장 프로그램이 Chrome 툴바에 액세스 요청을 표시하도록 허용</translation>
 <translation id="4328355335528187361">Chrome 개발자(mDNS-In)</translation>
-<translation id="4331809312908958774">크롬 OS</translation>
+<translation id="4334294535648607276">다운로드가 완료되었습니다.</translation>
 <translation id="4335235004908507846">Chrome이 정보 유출, 유해한 확장 프로그램 등으로부터 사용자를 보호해 줍니다.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" />이(가) Chrome에 추가됨</translation>
 <translation id="4384570495110188418">로그인되어 있지 않으므로 Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
-<translation id="4407807842708586359">Chrome OS</translation>
+<translation id="4427306783828095590">향상된 보호 기능이 피싱 및 멀웨어를 더욱 효과적으로 차단합니다.</translation>
 <translation id="4450664632294415862">Chrome - 네트워크 로그인 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Chrome에서 다른 작업이 진행 중입니다. 나중에 다시 시도해 주세요.</translation>
-<translation id="4480040274068703980">로그인 중 오류가 발생하여 Chrome OS에서 데이터를 동기화하지 못했습니다.</translation>
-<translation id="4521185804071812304">선택사항: 진단 및 사용 데이터를 Google에 자동으로 전송하여 Chrome OS의 기능 및 성능 개선에 참여합니다.</translation>
+<translation id="4459234553906210702">방문하는 사이트에서는 Ad measurement를 활용해 광고의 실적을 측정하는 데 도움이 되는 정보를 Chrome에 요청할 수 있습니다. Ad measurement는 사이트 간에 최소한의 정보만 전송함으로써 크로스 사이트 추적을 제한합니다.</translation>
 <translation id="4561051373932531560">Chrome을 사용하면 웹에서 전화번호를 클릭하여 Skype로 통화할 수 있습니다.</translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" />(으)로 로그인되어 있습니다. 이제 로그인한 모든 기기에서 북마크, 방문 기록 및 기타 설정에 액세스할 수 있습니다.</translation>
 <translation id="4571503333518166079">Chrome 알림 설정으로 이동</translation>
 <translation id="459622048091363950">Chrome에 액세스 권한을 부여하면 웹사이트에서 액세스 권한을 요청할 수 있게 됩니다.</translation>
 <translation id="4600710005438004015">Chrome을 최신 버전으로 업데이트하지 못했기 때문에 새로운 기능과 보안 수정 사항이 적용되지 않았습니다.</translation>
+<translation id="4627412468266359539">선택사항: 진단 및 사용 데이터를 Google에 자동으로 전송하여 ChromeOS Flex의 기능과 성능을 개선할 수 있도록 도와주세요.</translation>
 <translation id="4633000520311261472">Google에서는 Chrome의 보안을 강화하기 위해 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />에 표시되지 않고 사용자 모르게 추가되었을 수 있는 일부 확장 프로그램의 사용을 중지했습니다.</translation>
-<translation id="4666328473657283332">모든 기기에서 Chrome 콘텐츠에 액세스하려면 로그인하여 동기화하세요.</translation>
+<translation id="4680828127924988555">설치 취소</translation>
+<translation id="469553575393225953">알 수 없는 소스의 확장 프로그램, 앱, 테마는 기기를 손상시킬 수 있습니다. Chrome 웹 스토어에서 다운로드한 확장 프로그램, 앱, 테마만 설치하는 것이 좋습니다</translation>
 <translation id="4728575227883772061">확인되지 않은 오류로 설치에 실패했습니다. Chrome이 실행 중인 경우 종료한 후 다시 실행하세요.</translation>
+<translation id="4747730611090640388">Chrome에서 내 관심분야를 예측할 수 있습니다.  나중에 사이트를 방문하면 사이트에서 광고 개인 최적화를 위해 내 관심분야를 알려달라고 Chrome에 요청할 수 있습니다.</translation>
 <translation id="4754614261631455953">Chrome Canary(mDNS-In)</translation>
 <translation id="4771048833395599659">이 파일은 위험할 수있으므로 Chrome에서 차단했습니다.</translation>
 <translation id="479167709087336770">Google 검색과 동일한 맞춤법 검사기가 사용됩니다. 브라우저에 입력되는 텍스트는 Google로 전송됩니다. 설정에서 언제든지 이 동작을 변경할 수 있습니다.</translation>
+<translation id="4842397268809523050">도메인에 대한 동기화가 허용되지 않아 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
+<translation id="4873783916118289636">Chrome의 주요 개인 정보 보호 및 보안 제어 기능을 검토합니다.</translation>
 <translation id="4891791193823137474">백그라운드에서 Chrome을 실행</translation>
 <translation id="4895437082222824641">새 Chrome 탭에서 링크 열기(&amp;T)</translation>
 <translation id="4953650215774548573">Chrome을 기본 브라우저로 설정</translation>
 <translation id="495931528404527476">Chrome</translation>
+<translation id="4969674060580488087">계정의 로그인 세부정보가 오래되어 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="4970761609246024540">Chrome 프로필에 오신 것을 환영합니다</translation>
-<translation id="4990567037958725628">Chrome 카나리아</translation>
-<translation id="5062123544085870375">Chrome OS 다시 시작</translation>
+<translation id="4970880042055371251">ChromeOS 버전</translation>
+<translation id="4970947549776831107">위험한 유형의 파일이기 때문에 Chrome에서 파일을 차단했습니다.</translation>
+<translation id="4990567037958725628">Chrome Canary</translation>
+<translation id="5037581483200764584">향후 Chrome 업데이트를 받으려면 macOS 10.13 이상이 필요합니다. 이 컴퓨터에서는 OS X 10.11을 사용하고 있습니다.</translation>
+<translation id="5098668839038261629">사용하게 되면 Chrome에서도 로그아웃됩니다.</translation>
 <translation id="5132929315877954718">Chrome에 사용할 유용한 애플리케이션, 게임, 확장 프로그램 및 테마를 찾아보세요.</translation>
 <translation id="5139423532931106058">Chrome 프로필 맞춤설정</translation>
 <translation id="5163087008893166964">Chrome에 오신 것을 환영합니다. 새 브라우저 창이 열렸습니다</translation>
 <translation id="5170938038195470297">최신 버전의 Chrome에서 가져온 사용자 프로필이기 때문에 사용할 수 없습니다.
 
 일부 기능은 사용하지 못할 수 있습니다. 다른 프로필 디렉터리를 지정하거나 최신 버전의 Chrome을 사용하세요.</translation>
-<translation id="5193136243808726294">Chrome OS에서 이 페이지를 열 수 없음</translation>
 <translation id="521447420733633466">기기를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chrome을 설정할 수 있습니다.</translation>
 <translation id="5251420635869119124">게스트로 사용 기록을 남기지 않고 Chrome을 사용할 수 있습니다.</translation>
-<translation id="532046782124376502">경고: Chrome에서는 확장 프로그램에 인터넷 사용 기록이 저장될 수 있습니다. 시크릿 모드에서 이 확장 프로그램을 사용 중지하려면 옵션을 선택 취소하세요.</translation>
+<translation id="5334309298019785904">내 도메인에서 동기화를 사용할 수 없으므로 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
+<translation id="5334487786912937552">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 필요합니다.</translation>
+<translation id="5337648990166757586">선택사항: 진단 및 사용 데이터를 Google에 자동으로 전송하여 ChromeOS의 기능 및 성능 개선에 참여합니다.</translation>
+<translation id="5357889879764279201">ChromeOS Flex 도움말 확인</translation>
 <translation id="5386244825306882791">또한 Chrome을 시작하거나 검색주소창에서 검색할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="5394833366792865639">Chrome 탭 공유</translation>
+<translation id="5412485296464121825">사이트에서는 Chrome에 내 관심분야에 관한 정보를 저장할 수 있습니다. 예를 들어 마라톤화를 구매하려고 사이트를 방문하면 사이트에서 내 관심분야를 마라톤으로 정의할 수 있습니다. 나중에 마라톤 대회에 등록하기 위해 다른 사이트에 방문하면 관심분야를 토대로 마라톤화 광고가 표시될 수 있습니다.</translation>
 <translation id="5430073640787465221">환경설정 파일이 손상되었거나 잘못되었습니다.
 
 Chrome에서 설정을 복구할 수 없습니다.</translation>
-<translation id="5434383153637353914">이 페이지에서는 로그인된 Google 계정을 관리할 수 있습니다. Gmail, Drive, YouTube 등의 서비스와 Chrome 브라우저, Play 스토어 앱에서 계정을 사용할 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
+<translation id="5524761631371622910">무료 체험이 사용 설정되어 있으며 Chrome에서 임의로 나에게 현재 진행 중인 무료 체험을 적용한 경우, 표시되는 광고 및 아래의 예측 관심분야에 방문 기록이 영향을 미칩니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 삭제합니다.</translation>
+<translation id="5530733413481476019">Chrome의 속도를 높여보세요</translation>
 <translation id="556024056938947818">Chrome에서 비밀번호를 표시하려고 합니다.</translation>
 <translation id="5566025111015594046">Chrome(mDNS-In)</translation>
-<translation id="5657226924540934362">페이지에 표시되지 않는 설정이 있다면 <ph name="LINK_BEGIN" />
-      Chrome OS 설정<ph name="LINK_END" />을 확인해 보세요.</translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" />은(는) 위험할 수 있으므로 Chrome에서 차단했습니다.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="5686916850681061684">Chrome을 맞춤설정 및 제어합니다. 확인이 필요한 항목이 있습니다. 클릭하여 세부정보를 보세요.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{1초 후에 Chrome이 다시 시작됩니다}other{#초 후에 Chrome이 다시 시작됩니다}}</translation>
-<translation id="573759479754913123">Chrome OS 정보</translation>
+<translation id="5727531838415286053">Chrome에서 임의로 나에게 현재 진행 중인 무료 체험을 적용한 경우, 표시되는 광고 및 아래의 예측 관심분야에 방문 기록이 영향을 미칩니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침됩니다.</translation>
+<translation id="5736850870166430177">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="5756509061973259733">이 계정을 사용하는 Chrome 프로필이 기기에 이미 존재합니다.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome을 실행할 수 없습니다. 다시 시도해 보세요.</translation>
 <translation id="5867197326698922595">Chrome에서 비밀번호를 수정하려고 합니다.</translation>
 <translation id="5895138241574237353">다시 시작</translation>
+<translation id="5901850848447342934">Chrome을 종료하면 <ph name="BEGIN_BOLD" />대부분의 사이트에서 로그아웃<ph name="END_BOLD" />됩니다. 동기화를 사용 중지하면 <ph name="BEGIN_BOLD" />Google 서비스 및 Chrome에서도 로그아웃<ph name="END_BOLD" />됩니다.</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 네트워크 로그인</translation>
+<translation id="5924017743176219022">인터넷에 연결 중...</translation>
 <translation id="5940385492829620908">웹, 북마크 및 기타 Chrome 콘텐츠가 여기에 저장됩니다.</translation>
+<translation id="5941711191222866238">최소화</translation>
 <translation id="5941830788786076944">Chrome을 기본 브라우저로</translation>
+<translation id="6003112304606738118">다운로드 중... <ph name="HOURS" />시간 남음</translation>
+<translation id="6040143037577758943">닫기</translation>
 <translation id="6070348360322141662">보안 강화를 위해 Chrome에서 사용자 데이터를 암호화합니다.</translation>
 <translation id="608006075545470555">이 브라우저에 직장 프로필 추가</translation>
 <translation id="6113794647360055231">더욱 업그레이드된 Chrome</translation>
+<translation id="6145313976051292476">Chrome에서 PDF 열기</translation>
+<translation id="6155960517327665396">메모리 절약 모드로 더 빨라진 Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Chrome 베타</translation>
-<translation id="61852838583753520">Chrome OS 업데이트(&amp;C)</translation>
 <translation id="6235018212288296708">Chrome이 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
+<translation id="6247557882553405851">Google 비밀번호 관리자</translation>
+<translation id="6273793429163604305">준비하세요...</translation>
 <translation id="6291089322031436445">Chrome 개발자 앱</translation>
 <translation id="6291549208091401781">컴퓨터에 Chrome이 이미 설치되어 있으며 모든 사용자가 사용할 수 있습니다.</translation>
-<translation id="6338556085225130112">Chrome 업데이트 중</translation>
-<translation id="6368958679917195344">Chrome OS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용했습니다.</translation>
+<translation id="6326175484149238433">Chrome에서 삭제</translation>
+<translation id="6327105987658262776">사용 가능한 업데이트가 없습니다.</translation>
+<translation id="6412673304250309937">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="6418662306461808273">기존 Chrome 프로필로 전환하시겠습니까?</translation>
+<translation id="6506909944137591434">Chrome에서 주변의 3D 지도를 만들려면 카메라 권한이 필요합니다.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - 개발자용 Chrome</translation>
-<translation id="6566149418543181476">Chrome 업데이트 중(<ph name="PROGRESS_PERCENT" />)</translation>
-<translation id="6568793831116033768">Chrome OS 시스템</translation>
-<translation id="6650333065969705433">Rosetta를 사용하여 보호된 미디어를 재생하려면 Chrome을 다시 시작해야 합니다</translation>
+<translation id="659498884637196217">이 기기의 Google 비밀번호 관리자에서</translation>
+<translation id="6632473616050862500">ChromeOS Flex는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="6676384891291319759">인터넷 연결</translation>
 <translation id="6679975945624592337">백그라운드에서 Chrome을 실행</translation>
+<translation id="6696915334902295848">Chrome에서 사이트에 대한 마이크 권한이 필요합니다.</translation>
+<translation id="6718739135284199302">Chrome의 속도를 높여보세요</translation>
+<translation id="6735387454586646204">ChromeOS Flex 시스템</translation>
 <translation id="6739177684496155661">새 Chrome 프로필에서 계속하시겠습니까?</translation>
 <translation id="6750954913813541382">맞춤법 오류를 바로잡기 위해 Chrome에서 브라우저에 입력된 텍스트를 Google로 전송합니다.</translation>
-<translation id="6755885556185485672">Chrome OS가 제대로 종료되지 않았습니다.</translation>
 <translation id="677276454032249905">Chrome을 종료하시겠습니까?</translation>
+<translation id="6785872064505734160">Chrome의 Google 어시스턴트가 사용자를 위해 여러 웹사이트에서 작업을 완료할 수 있습니다.</translation>
 <translation id="683440813066116847">Chrome Canary가 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
+<translation id="6881299373831449287">Chrome 업데이트 중</translation>
 <translation id="6885412569789873916">Chrome 베타 앱</translation>
+<translation id="6933858244219479645">ChromeOS 시스템</translation>
 <translation id="6943584222992551122">선택한 사용자의 인터넷 사용 기록이 이 기기에서 삭제됩니다. 데이터를 복원하려면 <ph name="USER_EMAIL" />(으)로 Chrome에 로그인하세요.</translation>
 <translation id="6967962315388095737">Chrome 베타에서 mDNS 트래픽을 허용하는 인바운드 규칙입니다.</translation>
 <translation id="6989339256997917931">Chrome이 업데이트되었지만, 최소 30일 동안 사용하지 않았습니다.</translation>
+<translation id="7025789849649390912">설치가 중단되었습니다.</translation>
+<translation id="7025800014283535195">여기에서 Chrome 프로필 간에 전환할 수 있습니다.</translation>
+<translation id="7036251913954633326">이 계정을 한 번만 사용하려면 Chrome 브라우저에서 <ph name="GUEST_LINK_BEGIN" />게스트 모드<ph name="GUEST_LINK_END" />를 사용하세요. 다른 사용자를 위해 계정을 추가하려면 <ph name="DEVICE_TYPE" />에 <ph name="LINK_BEGIN" />새 사용자를 추가<ph name="LINK_END" />하세요.
+
+이 계정에는 웹사이트와 앱에 이미 부여한 권한이 적용될 수 있습니다. <ph name="SETTINGS_LINK_BEGIN" />설정<ph name="SETTINGS_LINK_END" />에서 Google 계정을 관리할 수 있습니다.</translation>
 <translation id="7062128746136194023">부모님이 Chrome의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지하셨습니다. 이 <ph name="EXTENSION_TYPE_PARAMETER" /> 추가가 허용되지 않습니다.</translation>
+<translation id="7085332316435785646">보다 맞춤설정된 Google 서비스 환경을 사용하기 위해 Chrome 방문 기록을 포함할지 선택하세요.</translation>
+<translation id="7088681679121566888">Chrome이 최신 버전입니다.</translation>
 <translation id="7098166902387133879">Chrome에서 마이크를 사용 중입니다.</translation>
+<translation id="7099479769133613710">다시 실행하여 ChromeOS 업데이트</translation>
 <translation id="7106741999175697885">작업 관리자 - Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다.}=1{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창이 다시 열리지 않습니다.}other{새 Chrome 업데이트가 있습니다. Chrome을 다시 실행하면 업데이트가 바로 적용됩니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="7155997830309522122">그렇다면 Chrome에 저장된 비밀번호가 새로운 비밀번호와 일치하도록 수정해 주세요.</translation>
+<translation id="7161904924553537242">신개념 브라우저 - Chrome</translation>
+<translation id="7177959540995930968">Chrome 설정에서 이러한 기능에 관해 자세히 알아볼 수 있습니다.</translation>
 <translation id="7242029209006116544">관리 계정으로 로그인하고 관리자에게 Chrome 프로필에 대한 제어권을 부여하려고 합니다. 앱, 북마크, 방문 기록, 비밀번호 및 기타 설정과 같은 Chrome 데이터가 <ph name="USER_NAME" /> 계정에 영구적으로 연결됩니다. 이후 이 데이터를 Google 계정 대시보드에서 삭제할 수는 있지만 다른 계정에 연결할 수는 없습니다. 기존 Chrome 데이터를 유지하려면 새 프로필을 만드는 방법이 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">Chrome UI가 이 언어로 표시됩니다.</translation>
 <translation id="7296210096911315575">사용 및 안전 관련 주요 정보</translation>
-<translation id="7303916856901595720">계정을 새 Chrome 프로필로 이동하시겠습니까?</translation>
 <translation id="7308322188646931570">파일을 다운로드하려면 Chrome에 저장소 액세스 권한이 있어야 합니다</translation>
 <translation id="7339898014177206373">새 창</translation>
+<translation id="7388770099345495132">이 계정을 한 번만 사용하려면 Chrome 브라우저에서 게스트 모드를 사용하세요. 다른 사용자를 위해 계정을 추가하려면 <ph name="DEVICE_TYPE" />에 <ph name="LINK_BEGIN" />새 사용자를 추가<ph name="LINK_END" />하세요.
+
+이 계정에는 웹사이트와 앱에 이미 부여한 권한이 적용될 수 있습니다. <ph name="SETTINGS_LINK_BEGIN" />설정<ph name="SETTINGS_LINK_END" />에서 Google 계정을 관리할 수 있습니다.</translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" />(으)로 Chrome에 로그인되어 있습니다. 같은 계정으로 다시 로그인해 주세요.</translation>
-<translation id="7408085963519505752">Chrome OS 이용약관</translation>
-<translation id="7419046106786626209">내 도메인에서 동기화를 사용할 수 없으므로 Chrome OS에서 데이터를 동기화하지 못했습니다.</translation>
+<translation id="7410958280246779049">위험한 파일이므로 Chrome에서 차단했습니다.</translation>
+<translation id="7426611252293106642">이 Linux 배포판에서 더 이상 Chrome을 지원하지 않으므로 Chrome이 올바르게 작동하지 않을 수 있습니다.</translation>
+<translation id="7481213027396403996">Chrome의 가장 강력한 보안 기능을 이용하세요</translation>
 <translation id="7486227612705979895">Chrome에서 내 드라이브에 액세스하여 주소 표시줄에 추천 검색어를 표시합니다.</translation>
 <translation id="7535429826459677826">Chrome 개발자</translation>
-<translation id="7573289029918943991">기기가 최신 버전인지 확인하려면 <ph name="LINK_BEGIN" />Chrome OS 설정<ph name="LINK_END" />으로 이동하세요.</translation>
-<translation id="7592736734348559088">계정의 로그인 세부정보가 오래되어 Chrome에서 데이터를 동기화하지 못했습니다.</translation>
+<translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 설치 프로그램</translation>
+<translation id="7606334485649076285">Google ChromeOS Flex</translation>
 <translation id="7626032353295482388">Chrome에 오신 것을 환영합니다</translation>
+<translation id="7626072681686626474">기기를 사용하기 전에 <ph name="MANAGER" />의 정책에 따라 다음 서비스 약관을 읽고 이에 동의해야 합니다. 이 약관은 ChromeOS 약관을 확대, 수정 또는 제한하지 않습니다</translation>
 <translation id="7629695634924605473">비밀번호가 유출되면 Chrome에서 알려줍니다.</translation>
 <translation id="7641148173327520642">시스템 관리자가 <ph name="TARGET_URL_HOSTNAME" /> 액세스를 위해 <ph name="ALTERNATIVE_BROWSER_NAME" />을(를) 열도록 Chrome을 구성했습니다.</translation>
+<translation id="7649070708921625228">도움말</translation>
 <translation id="7651907282515937834">Chrome Enterprise 로고</translation>
+<translation id="7655455401911432608">이 기기에서 Chrome을 사용해 방문한 사이트의 기록인 방문 기록이 사용됩니다.</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
 <translation id="7761834446675418963">Chrome을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
 <translation id="7777080907402804672">이미지에 유용한 설명이 없으면 Chrome에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다. 이 기능은 언제든지 설정에서 사용 중지할 수 있습니다.</translation>
 <translation id="7781002470561365167">Chrome의 새 버전이 출시되었습니다.</translation>
+<translation id="778331955594035129">Chrome에서 사이트에 대한 위치 정보 액세스 권한이 필요합니다.</translation>
 <translation id="7787950393032327779">다른 컴퓨터(<ph name="HOST_NAME" />)의 다른 Chrome 프로세스(<ph name="PROCESS_ID" />)에서 프로필을 사용 중인 것 같습니다. 프로필이 손상되지 않도록 Chrome에서 잠금 설정했습니다. 다른 프로세스에서 프로필을 사용 중이지 않은 것이 확실한 경우 프로필을 잠금 해제하고 Chrome을 다시 시작하세요.</translation>
 <translation id="7801699035218095297">Chrome에서 비밀번호를 복사하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="7808348361785373670">Chrome에서 삭제...</translation>
 <translation id="7825851276765848807">알 수 없는 오류로 인해 설치에 실패했습니다. Chrome을 다시 다운로드하세요.</translation>
-<translation id="7855730255114109580">Chrome이 최신 버전입니다.</translation>
+<translation id="7845233973568007926">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 컴퓨터를 다시 시작해야 합니다.</translation>
+<translation id="7872446069773932638">다운로드 중... <ph name="SECONDS" />초 남았습니다.</translation>
+<translation id="7880591377632733558"><ph name="ACCOUNT_FIRST_NAME" />님, Chrome에 오신 것을 환영합니다</translation>
 <translation id="7890208801193284374">컴퓨터를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chrome을 설정할 수 있습니다.</translation>
 <translation id="7896673875602241923">다른 사용자가 이전에 이 컴퓨터에서 <ph name="ACCOUNT_EMAIL_LAST" />(으)로 Chrome에 로그인했습니다. 새 Chrome 사용자를 만들어 정보를 별도로 관리하세요.</translation>
-<translation id="7905891027772979035">Chrome에서 확장 프로그램을 확인할 수 없습니다. 나중에 다시 시도하세요.</translation>
+<translation id="7917876797003313048">로그인된 Google 계정을 관리할 수 있습니다. Google 계정은 Chrome 브라우저, Play 스토어, Gmail 등에서 사용됩니다. 가족 구성원 등 다른 사람을 위해 계정을 추가하고 싶다면 대신 <ph name="DEVICE_TYPE" />에 새 사용자를 추가하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="7930071585467473040">Chrome에서 비밀번호를 복사하려고 합니다.</translation>
+<translation id="7951272445806340501">업데이트를 적용하려면 ChromeOS Flex를 다시 시작해야 합니다.</translation>
 <translation id="7962410387636238736">Windows XP와 Windows Vista가 더 이상 지원되지 않으므로 이 컴퓨터에서 Chrome 업데이트를 받을 수 없게 됩니다</translation>
+<translation id="8005666035647241369">이 기기의 Google 비밀번호 관리자에서</translation>
 <translation id="8008534537613507642">Chrome 재설치</translation>
 <translation id="8013993649590906847">이미지에 유용한 설명이 없으면 Chrome에서 자동으로 설명을 제공하려고 시도합니다. 설명을 생성하기 위해 이미지가 Google로 전송됩니다.</translation>
+<translation id="80471789339884597">설치해 주셔서 감사합니다. <ph name="BUNDLE_NAME" />을(를) 사용하려면 모든 브라우저를 다시 시작해야 합니다.</translation>
+<translation id="8064015586118426197">ChromeOS Flex</translation>
+<translation id="808089508890593134">Google</translation>
 <translation id="8129812357326543296">Chrome 정보(&amp;G)</translation>
+<translation id="813913629614996137">초기화 중...</translation>
 <translation id="8255190535488645436">Chrome에서 카메라와 마이크를 사용 중입니다.</translation>
+<translation id="8270775718612349140">Chrome이 관리하는 인증서</translation>
 <translation id="8286862437124483331">Chrome에서 비밀번호를 표시하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="828798499196665338">부모님이 Chrome의 ‘사이트, 앱, 확장 프로그램에 대한 권한’을 사용 중지하셨습니다. 이 <ph name="EXTENSION_TYPE_PARAMETER" /> 사용은 허용되지 않습니다.</translation>
 <translation id="8290100596633877290">Chrome이 다운되었습니다. 다시 시작하시겠습니까?</translation>
+<translation id="8341646175450781745">메모리 절약 모드를 사용 설정하면 Chrome이 비활성 탭에서 메모리를 확보합니다. 이에 따라 활성 탭과 기타 앱에 더 많은 컴퓨터 리소스가 제공되고 Chrome의 빠른 속도가 유지됩니다. 비활성 탭으로 돌아가면 탭이 자동으로 다시 활성화됩니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /> 또는 <ph name="BEGIN_LINK_2" />의견 보내기<ph name="END_LINK_2" /></translation>
 <translation id="8342675569599923794">이 파일은 위험하므로 Chrome에서 차단했습니다.</translation>
+<translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Chrome의 데이터 사용 방식:<ph name="END_BOLD" /> 사이트에서는 Chrome에 내 관심분야에 관한 정보를 저장할 수 있습니다. 예를 들어 마라톤화를 구매하려고 사이트를 방문하면 사이트에서 내 관심분야를 마라톤으로 정의할 수 있습니다. 나중에 마라톤 대회에 등록하기 위해 다른 사이트에 방문하면 관심분야를 토대로 마라톤화 광고가 표시될 수 있습니다.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
+<translation id="8383226135083126309"><ph name="BEGIN_BOLD" />Google의 데이터 사용 방식:<ph name="END_BOLD" /> Chrome은 관심분야를 예측할 수 있습니다. 방문하는 사이트에서 광고 개인 최적화를 위해 내 관심분야를 보여달라고 Chrome에 요청할 수 있습니다.</translation>
+<translation id="8394720698884623075">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다.</translation>
 <translation id="840084489713044809">Chrome에서 비밀번호를 내보내려고 합니다.</translation>
+<translation id="8416347857511542594">Chrome의 광고 개인 최적화에 관해 자세히 알아보기</translation>
+<translation id="8418845734693287262">계정의 로그인 세부정보가 오래되어 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="8433638294851456451">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
+<translation id="8451192282033883849">내 계정은 <ph name="MANAGER_NAME" />에서 관리합니다. 관리자가 이 Chrome 브라우저 프로필과 북마크, 방문 기록, 비밀번호 등의 데이터를 보고 수정할 수 있습니다.</translation>
 <translation id="8498858610309223613">Chrome 특별 보안 업데이트를 방금 적용했습니다. 다시 시작하면 탭이 복원됩니다.</translation>
+<translation id="8504220326736535258">파일에 멀웨어가 포함되어 있기 때문에 Chrome에서 파일을 차단했습니다</translation>
+<translation id="8516431725144212809">Chrome에서 예측한 관심분야</translation>
 <translation id="8521348052903287641">Chrome 개발자에서 mDNS 트래픽을 허용할 때 사용되는 인바운드 규칙입니다.</translation>
 <translation id="8540666473246803645">Chrome</translation>
 <translation id="8550334526674375523">이 직장 프로필은 개인 프로필과 완전히 분리됩니다.</translation>
 <translation id="8556340503434111824">이전보다 더 빨라진 Chrome 새 버전을 사용할 수 있습니다.</translation>
-<translation id="861359755029082151">Chrome에서는 Rosetta를 통해 이 페이지에서 보호된 미디어를 재생할 수 있습니다.</translation>
+<translation id="8571790202382503603">Chrome 프로필을 사용하면 모든 Chrome 데이터를 분리할 수 있습니다. 업무용 데이터와 개인용 데이터를 더 쉽게 분리해 보세요.</translation>
 <translation id="8614913330719544658">Chrome이 응답하지 않습니다. 다시 시작하시겠습니까?</translation>
 <translation id="861702415419836452">Chrome에서 주변 3D 지도를 만들려면 카메라 액세스 권한이 필요합니다.</translation>
 <translation id="8625237574518804553">{0,plural, =1{1분 후 Chrome이 다시 시작됩니다}other{#분 후 Chrome이 다시 시작됩니다}}</translation>
+<translation id="8629311577791198377">모든 Chrome 창을 닫으면 쿠키와 사이트 데이터가 자동으로 삭제됩니다.</translation>
 <translation id="8641606876632989680">유출된 비밀번호로 로그인하면 Chrome에서 알림을 표시함</translation>
+<translation id="8649026945479135076">방문하는 사이트에서는 일반적으로 사용 경험을 개인화하기 위해 내가 관심을 보인 항목을 기억합니다. 또한 사이트에서는 내 관심분야에 관한 정보를 Chrome에 저장할 수 있습니다.</translation>
 <translation id="8669527147644353129">Chrome 도우미</translation>
 <translation id="8679801911857917785">또한 Chrome을 시작할 때 표시되는 페이지를 설정합니다.</translation>
+<translation id="8684875378076460854">위험할 수 있는 파일이므로 검사하는 것이 좋습니다.</translation>
 <translation id="8686817260976772516">Chrome 프로필을 사용하면 모든 Chrome 데이터를 분리할 수 있습니다. 친구와 가족을 위한 프로필을 만들거나 업무용과 개인용 프로필을 구분하세요.</translation>
-<translation id="870251953148363156">Chrome 업데이트(&amp;G)</translation>
+<translation id="8712767363896337380">업데이트가 거의 완료되었습니다. 업데이트를 마치려면 Chrome을 다시 실행하세요.</translation>
 <translation id="873133009373065397">Chrome에서 기본 브라우저를 확인하거나 설정할 수 없습니다.</translation>
 <translation id="8823341990149967727">Chrome이 이전 버전임</translation>
+<translation id="8825634023950448068">개인 정보를 보호하기 위해 Chrome에서는 4주가 지난 관심분야를 자동 삭제합니다. 인터넷 사용에 따라 특정 관심분야가 목록에 다시 표시될 수 있습니다. Chrome에서 관심분야를 잘못 예측했거나 특정 광고를 보고 싶지 않다면 직접 관심분야를 삭제하세요.</translation>
 <translation id="8834965163890861871">Chrome에서 비밀번호를 수정하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="884296878221830158">또한 Chrome을 시작하거나 홈 버튼을 클릭할 때 표시되는 페이지를 설정합니다.</translation>
 <translation id="8862326446509486874">시스템 수준의 설치 권한이 없습니다. 관리자 권한으로 설치 프로그램을 다시 실행해 보세요.</translation>
-<translation id="8907709077090383765">Chrome에서 보호된 미디어를 재생하려면 Rosetta를 설치해야 합니다. 지금 설치하시겠습니까?</translation>
 <translation id="8914504000324227558">Chrome 다시 시작</translation>
 <translation id="8922193594870374009"><ph name="ORIGIN" />에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
+<translation id="8983720963221508955">계정에서 향상된 세이프 브라우징을 사용 설정했습니다. Chrome에서도 사용하세요.</translation>
 <translation id="8986207147630327271">직장 프로필을 이 브라우저에 추가하고 직장 프로필 제어 권한을 관리자에게 부여합니다.</translation>
+<translation id="8989968390305463310">방문 기록에 따라 표시되는 광고 및 아래의 예측 관심분야가 달라집니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 자동 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침될 수 있습니다.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome 업데이트 출시}=1{Chrome 업데이트 출시}other{Chrome 업데이트가 출시된 지 #일 지남}}</translation>
-<translation id="9026991721384951619">계정의 로그인 세부정보가 오래되어 Chrome OS에서 데이터를 동기화하지 못했습니다.</translation>
+<translation id="9003498785844995646">Chrome에서는 백그라운드 활동 및 부드러운 스크롤과 동영상 프레임 속도 같은 시각적 효과를 제한하여 배터리 전원을 절약합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /> 또는 <ph name="BEGIN_LINK_2" />의견 보내기<ph name="END_LINK_2" /></translation>
+<translation id="9053892488859122171">ChromeOS Flex 시스템</translation>
 <translation id="9067395829937117663">Chrome은 Windows 7 이상 버전에서 사용할 수 있습니다.</translation>
 <translation id="911206726377975832">인터넷 사용 기록도 삭제하시겠습니까?</translation>
 <translation id="9138603949443464873">변경사항을 적용하려면 Chrome을 다시 실행하세요.</translation>
+<translation id="9195993889682885387">Chrome은 지난 몇 주간의 방문 기록을 토대로 관심분야를 예측할 수 있습니다. 예측 정보는 기기 외부로 전송되지 않습니다.</translation>
 <translation id="919706545465235479">동기화를 시작하려면 Chrome을 업데이트하세요.</translation>
+<translation id="922152298093051471">Chrome 맞춤설정</translation>
+<translation id="93760716455950538">ChromeOS Flex 다시 시작</translation>
 <translation id="940313311831216333">모든 기기에서 Chrome 콘텐츠에 액세스하려면 로그인한 후 동기화를 사용 설정하세요.</translation>
 <translation id="989369509083708165">Chrome이 기본 브라우저로 설정되어 있습니다.</translation>
+<translation id="989816563149873169"><ph name="SHORTCUT" /> 바로가기를 사용하여 Chrome 프로필 간에 전환하세요</translation>
 </translationbundle>

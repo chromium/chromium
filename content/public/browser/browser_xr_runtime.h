@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,12 @@
 
 #include "base/observer_list_types.h"
 #include "content/common/content_export.h"
-#include "device/vr/public/mojom/vr_service.mojom-forward.h"
+#include "device/vr/public/mojom/vr_service.mojom.h"
 
 namespace content {
+
 class WebContents;
-}
 
-namespace content {
 // This interface allows observing the state of the XR service for a particular
 // runtime.  In particular, observers may currently know when the browser
 // considers a WebContents presenting to an immersive headset.  Implementers of
@@ -23,15 +22,25 @@ class CONTENT_EXPORT BrowserXRRuntime {
  public:
   class Observer : public base::CheckedObserver {
    public:
-    virtual void SetVRDisplayInfo(
-        device::mojom::VRDisplayInfoPtr display_info) {}
+    // Called when a page starts or ends an immersive WebXR session. When a
+    // session was started, |web_contents| will be non-null. There can only be
+    // at most one active immersive session for the XRRuntime. When there is no
+    // active immersive session, this method will be called with |web_contents|
+    // set to null.
+    virtual void WebXRWebContentsChanged(WebContents* web_contents) {}
 
-    // The parameter |contents| is set when a page starts an immersive WebXR
-    // session. There can only be at most one active immersive session for the
-    // XRRuntime. Set to null when there is no active immersive session.
-    virtual void SetWebXRWebContents(content::WebContents* contents) {}
+    // Called when the currently active immersive WebXR session has its frames
+    // [un/]throttled by the compositor.
+    virtual void WebXRFramesThrottledChanged(bool throttled) {}
 
-    virtual void SetFramesThrottled(bool throttled) {}
+    // Called when the observed runtime's camera in use state changes for the
+    // currently active immersive WebXR session. When |in_use| is true,
+    // |web_contents| will not be null.
+    virtual void WebXRCameraInUseChanged(WebContents* web_contents,
+                                         bool in_use) {}
+
+    virtual void SetDefaultXrViews(
+        const std::vector<device::mojom::XRViewPtr>& views) {}
   };
 
   virtual void AddObserver(Observer* observer) = 0;

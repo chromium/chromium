@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define COMPONENTS_SQLITE_PROTO_TABLE_MANAGER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/atomic_flag.h"
 
@@ -49,7 +49,11 @@ class TableManager : public base::RefCountedThreadSafe<TableManager> {
   virtual ~TableManager();
 
   // DB sequence functions.
-  virtual void CreateTablesIfNonExistent() = 0;
+  //
+  // Creates tables if nonexistent, first clearing them if necessary, for
+  // instance if this database has a versioned schema and the version has
+  // changed since the tables were last written.
+  virtual void CreateOrClearTablesIfNecessary() = 0;
   virtual void LogDatabaseStats() = 0;
   void Initialize(sql::Database* db);
   void SetCancelled();
@@ -65,7 +69,7 @@ class TableManager : public base::RefCountedThreadSafe<TableManager> {
   friend class base::RefCountedThreadSafe<TableManager>;
 
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
-  sql::Database* db_;
+  raw_ptr<sql::Database, DanglingUntriaged> db_;
 };
 
 }  // namespace sqlite_proto

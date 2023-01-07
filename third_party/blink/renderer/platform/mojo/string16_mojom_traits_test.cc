@@ -1,10 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <cstdint>
 
-#include "base/macros.h"
 #include "base/rand_util.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"

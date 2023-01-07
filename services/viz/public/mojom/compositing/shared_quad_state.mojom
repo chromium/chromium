@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,9 +27,7 @@ struct SharedQuadState {
   gfx.mojom.MaskFilterInfo mask_filter_info;
 
   // This rect lives in the target content space.
-  gfx.mojom.Rect clip_rect;
-
-  bool is_clipped;
+  gfx.mojom.Rect? clip_rect;
 
   // Indicates whether the quads share this sqs contains opaque content.
   bool are_contents_opaque;
@@ -46,8 +44,4 @@ struct SharedQuadState {
   // de-jelly effect.
   float de_jelly_delta_y;
 
-  // If true, indicates that the quads do not contribute damage to their
-  // render pass's damage; if false, whether or not the quads contribute
-  // damage is unknown.
-  bool no_damage;
 };

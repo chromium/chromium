@@ -1,0 +1,34 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("device_posture") {
+  visibility = [ "//services/device:*" ]
+
+  sources = [
+    "device_posture_platform_provider.cc",
+    "device_posture_platform_provider.h",
+    "device_posture_provider_impl.cc",
+    "device_posture_provider_impl.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
+  ]
+
+  if (is_win) {
+    sources += [
+      "device_posture_platform_provider_win.cc",
+      "device_posture_platform_provider_win.h",
+    ]
+  }
+
+  if (is_android) {
+    sources += [
+      "device_posture_platform_provider_android.cc",
+      "device_posture_platform_provider_android.h",
+    ]
+  }
+}

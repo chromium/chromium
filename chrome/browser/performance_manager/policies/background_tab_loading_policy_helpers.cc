@@ -1,10 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy_helpers.h"
 
 #include <math.h>
+
+#include <algorithm>
 #include <limits>
 
 #include "base/check_op.h"

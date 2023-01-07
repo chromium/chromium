@@ -1,9 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "weblayer/test/weblayer_browser_test.h"
 
+#include "base/command_line.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/public/test/network_connection_change_simulator.h"
 #include "net/dns/mock_host_resolver.h"
@@ -73,7 +76,8 @@ class WebLayerVariationsHttpBrowserTest : public WebLayerBrowserTest {
 
   // Returns whether a given |header| has been received for a |url|. If
   // |url| has not been observed, fails an EXPECT and returns false.
-  bool HasReceivedHeader(const GURL& url, const std::string& header) const {
+  bool HasReceivedHeader(const GURL& url, const std::string& header) {
+    base::AutoLock lock(received_headers_lock_);
     auto it = received_headers_.find(url);
     EXPECT_TRUE(it != received_headers_.end());
     if (it == received_headers_.end())
@@ -93,12 +97,15 @@ class WebLayerVariationsHttpBrowserTest : public WebLayerBrowserTest {
     // Recover the original URL of the request by replacing the host name in
     // request.GetURL() (which is 127.0.0.1) with the host name from the request
     // headers.
-    url::Replacements<char> replacements;
-    replacements.SetHost(host.c_str(), url::Component(0, host.length()));
+    GURL::Replacements replacements;
+    replacements.SetHostStr(host);
     GURL original_url = request.GetURL().ReplaceComponents(replacements);
 
-    // Memorize the request headers for this URL for later verification.
-    received_headers_[original_url] = request.headers;
+    {
+      base::AutoLock lock(received_headers_lock_);
+      // Memorize the request headers for this URL for later verification.
+      received_headers_[original_url] = request.headers;
+    }
 
     // Set up a test server that redirects according to the
     // following redirect chain:
@@ -128,22 +135,17 @@ class WebLayerVariationsHttpBrowserTest : public WebLayerBrowserTest {
  protected:
   net::EmbeddedTestServer https_server_;
 
+  base::Lock received_headers_lock_;
+
   // Stores the observed HTTP Request headers.
-  std::map<GURL, net::test_server::HttpRequest::HeaderMap> received_headers_;
+  std::map<GURL, net::test_server::HttpRequest::HeaderMap> received_headers_
+      GUARDED_BY(received_headers_lock_);
 };
 
-// Fails flakily in TSAN: https://crbug.com/1192437
-#if defined(THREAD_SANITIZER)
-#define MAYBE_TestStrippingHeadersFromResourceRequest \
-  DISABLED_TestStrippingHeadersFromResourceRequest
-#else
-#define MAYBE_TestStrippingHeadersFromResourceRequest \
-  TestStrippingHeadersFromResourceRequest
-#endif
 // Verify in an integration test that the variations header (X-Client-Data) is
 // attached to network requests to Google but stripped on redirects.
 IN_PROC_BROWSER_TEST_F(WebLayerVariationsHttpBrowserTest,
-                       MAYBE_TestStrippingHeadersFromResourceRequest) {
+                       TestStrippingHeadersFromResourceRequest) {
   OneShotNavigationObserver observer(shell());
   shell()->tab()->GetNavigationController()->Navigate(GetGoogleRedirectUrl1());
   observer.WaitForNavigation();

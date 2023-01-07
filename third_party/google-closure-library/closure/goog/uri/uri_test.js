@@ -1,16 +1,8 @@
-// Copyright 2006 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /** @fileoverview Unit tests for Uri. */
 
@@ -105,8 +97,7 @@ testSuite({
 
     const createdUri = Uri.create(
         'http', null, 'www.google.com', null, '/search path',
-        new Uri.QueryData(null, null, true).set('Q', 'what to eat+drink?'),
-        null);
+        new Uri.QueryData(null, true).set('Q', 'what to eat+drink?'), null);
 
     assertEquals(
         'http://www.google.com/search%20path?q=what%20to%20eat%2Bdrink%3F',
@@ -391,7 +382,7 @@ testSuite({
             .toString());
 
     assertEquals(
-        '/path?a=b&key=1&key=2&key=3&c=d&keywithsuffix=v3',
+        '/path?a=b&c=d&keywithsuffix=v3&key=1&key=2&key=3',
         Uri.parse('/path?a=b&key=v1&c=d&key=v2&keywithsuffix=v3')
             .setParameterValues('key', ['1', '2', '3'])
             .toString());
@@ -410,7 +401,7 @@ testSuite({
             .toString());
 
     assertEquals(
-        '/path?a=b&key=1&key=2&key=3&c=d&keywithsuffix=v3',
+        '/path?a=b&c=d&keywithsuffix=v3&key=1&key=2&key=3',
         Uri.parse('/path?a=b&key=v1&c=d&key=v2&keywithsuffix=v3', true)
             .setParameterValues('kEY', ['1', '2', '3'])
             .toString());
@@ -768,7 +759,7 @@ testSuite({
     assertFalse(qd.containsKey('c'));
 
     // Test case-insensitive
-    qd = new Uri.QueryData('aaa=A&bbb=B&aaa=A2&bbbb=B2&ccc=C', null, true);
+    qd = new Uri.QueryData('aaa=A&bbb=B&aaa=A2&bbbb=B2&ccc=C', true);
     assertTrue(qd.containsKey('aaa'));
     assertTrue(qd.containsKey('bBb'));
     assertTrue(qd.containsKey('CCC'));
@@ -830,7 +821,7 @@ testSuite({
     assertEquals('bbcdd', qd.getKeys().join(''));
 
     // Test case-insensitive
-    qd = new Uri.QueryData('A=A&B=B&a=A2&b=B2&C=C=extra', null, true);
+    qd = new Uri.QueryData('A=A&B=B&a=A2&b=B2&C=C=extra', true);
 
     assertEquals('aabbc', qd.getKeys().join(''));
     qd.remove('a');
@@ -898,7 +889,7 @@ testSuite({
     assertEquals('C=extra', qd.get('c'));
     assertEquals('Default', qd.get('d', 'Default'));
 
-    qd = new Uri.QueryData('a=A&b=B&a=A2&b=B2&c=C=extra', null, true);
+    qd = new Uri.QueryData('a=A&b=B&a=A2&b=B2&c=C=extra', true);
 
     assertEquals('A', qd.get('A'));
     assertEquals('B', qd.get('b'));
@@ -908,18 +899,18 @@ testSuite({
     // Some unit tests pass undefined to get method (even though the type
     // for key is {string}). This is not caught by JsCompiler as
     // tests aren't typically compiled.
-    assertUndefined(qd.get(undefined));
+    assertUndefined(qd.get(/** @type {?} */ (undefined)));
   },
 
   testQueryDataSetValues() {
     const qd = new Uri.QueryData('a=A&b=B&a=A2&b=B2&c=C');
 
     qd.setValues('a', ['A3', 'A4', 'A5']);
-    assertEquals('a=A3&a=A4&a=A5&b=B&b=B2&c=C', String(qd));
+    assertEquals('b=B&b=B2&c=C&a=A3&a=A4&a=A5', String(qd));
     qd.setValues('d', ['D']);
-    assertEquals('a=A3&a=A4&a=A5&b=B&b=B2&c=C&d=D', String(qd));
+    assertEquals('b=B&b=B2&c=C&a=A3&a=A4&a=A5&d=D', String(qd));
     qd.setValues('e', []);
-    assertEquals('a=A3&a=A4&a=A5&b=B&b=B2&c=C&d=D', String(qd));
+    assertEquals('b=B&b=B2&c=C&a=A3&a=A4&a=A5&d=D', String(qd));
   },
 
   testQueryDataSetIgnoreCase() {
@@ -1040,7 +1031,7 @@ testSuite({
   },
 
   testComponentsAfterUriCreate() {
-    const createdUri = new Uri.create(
+    const createdUri = Uri.create(
         '%40',   // scheme
         '%41',   // user info
         '%42',   // domain

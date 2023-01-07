@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SYSTEM_AUDIO_DISPLAY_SPEAKER_CONTROLLER_H_
 #define ASH_SYSTEM_AUDIO_DISPLAY_SPEAKER_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "ui/display/display.h"
 #include "ui/display/display_observer.h"
 
 namespace ash {
@@ -16,6 +16,10 @@ class DisplaySpeakerController : public display::DisplayObserver,
                                  public chromeos::PowerManagerClient::Observer {
  public:
   DisplaySpeakerController();
+
+  DisplaySpeakerController(const DisplaySpeakerController&) = delete;
+  DisplaySpeakerController& operator=(const DisplaySpeakerController&) = delete;
+
   ~DisplaySpeakerController() override;
 
   // display::DisplayObserver.
@@ -28,10 +32,10 @@ class DisplaySpeakerController : public display::DisplayObserver,
   void SuspendDone(base::TimeDelta sleep_duration) override;
 
  private:
-  // Swaps the left and right channels on yoga devices based on orientation.
-  void ChangeInternalSpeakerChannelMode();
+  // Update the state of internal speakers based on orientation.
+  void UpdateInternalSpeakerForDisplayRotation();
 
-  DISALLOW_COPY_AND_ASSIGN(DisplaySpeakerController);
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

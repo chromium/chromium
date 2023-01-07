@@ -1,14 +1,13 @@
-// Copyright (c) 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SMOOTH_SCROLL_SEQUENCER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SMOOTH_SCROLL_SEQUENCER_H_
 
-#include <utility>
-
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -60,6 +59,11 @@ class CORE_EXPORT SmoothScrollSequencer final
   // Given the incoming scroll's scroll type, returns whether to filter the
   // incoming scroll. It may also abort the current sequenced scroll.
   bool FilterNewScrollOrAbortCurrent(mojom::blink::ScrollType incoming_type);
+
+  // Returns the size of the scroll sequence queue.
+  // TODO(bokan): Temporary, to track cross-origin scroll-into-view prevalence.
+  // https://crbug.com/1339003.
+  wtf_size_t GetCount() const;
 
   void DidDisposeScrollableArea(const ScrollableArea&);
 

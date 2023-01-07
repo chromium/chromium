@@ -1,0 +1,50 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<meta name=variant content="?method=a&expected=navigation-source">
+<meta name=variant content="?method=img&expected=event-source, trigger">
+<meta name=variant content="?method=img&eligible&expected=event-source, trigger">
+<meta name=variant content="?method=open&expected=navigation-source">
+<meta name=variant content="?method=script&expected=event-source, trigger">
+<meta name=variant content="?method=script&eligible&expected=event-source, trigger">
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script src="resources/helpers.js"></script>
+<script>
+const expected = (new URLSearchParams(location.search)).get('expected');
+
+promise_test(async t => {
+  const reg = await navigator.serviceWorker.register(
+    'resources/attributionsrc-worker.js', {scope: './'});
+  t.add_cleanup(() => reg.unregister());
+
+  const sw = reg.installing || reg.waiting || reg.active;
+  await wait_for_state(t, sw, 'activated');
+
+  const p = new Promise(resolve => {
+    navigator.serviceWorker.addEventListener('message',
+      e => resolve(e.data), {once: true});
+  });
+
+  // Set mixed-case query params to ensure that they are propagated correctly.
+  await registerAttributionSrc(t, {
+    method: 'variant',
+    extraQueryParams: {'aB': 'Cd'},
+  });
+
+  const message = await p;
+  assert_equals(message.method, 'GET');
+  assert_equals(message.headers['attribution-reporting-eligible'], expected);
+  assert_equals(message.referrer, location.toString());
+
+  // TODO(apaseltiner): Test various referrer policies.
+  // TODO(apaseltiner): Test cookie propagation.
+
+  const expectedURL = blankURL();
+  expectedURL.searchParams.set('aB', 'Cd');
+  assert_equals(message.url, expectedURL.toString());
+}, 'attributionsrc request has the proper format.');
+</script>

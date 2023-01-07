@@ -1,0 +1,21 @@
+{
+    "ref_tokens": [
+        {
+            "token_name": "google_grey_900",
+            "css_variable": "--google-grey-900"
+        },
+        {
+            "token_name": "text_color_primary",
+            "css_variable": "--cros-text-color-primary"
+        },
+        {
+            "token_name": "toggle_color",
+            "css_variable": "--cros-toggle-color"
+        },
+        {
+            "token_name": "bg_color_elevation_1",
+            "css_variable": "--cros-bg-color-elevation-1"
+        }
+    ],
+    "sys_tokens": []
+}

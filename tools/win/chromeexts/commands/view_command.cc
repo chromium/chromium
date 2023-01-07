@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -157,7 +157,7 @@ class VirtualViewDebugWrapper : public views::debug::ViewDebugWrapper {
     return buffer;
   }
 
-  base::Optional<intptr_t> GetAddress() override {
+  absl::optional<intptr_t> GetAddress() override {
     return view_block_.address();
   }
 

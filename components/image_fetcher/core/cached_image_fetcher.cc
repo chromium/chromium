@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,15 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/image_fetcher/core/cache/image_cache.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/image_fetcher/core/image_fetcher_metrics_reporter.h"
 #include "components/image_fetcher/core/request_metadata.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -149,8 +150,9 @@ void CachedImageFetcher::OnImageFetchedFromCache(
     if (!image_callback.is_null() ||
         (cache_result_needs_transcoding &&
          !request.params.allow_needs_transcoding_file())) {
+      auto* data_decoder = request.params.data_decoder();
       GetImageDecoder()->DecodeImage(
-          image_data, gfx::Size(),
+          image_data, gfx::Size(), data_decoder,
           base::BindOnce(&CachedImageFetcher::OnImageDecodedFromCache,
                          weak_ptr_factory_.GetWeakPtr(), std::move(request),
                          ImageDataFetcherCallback(), std::move(image_callback),

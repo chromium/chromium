@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,12 @@ class RelaunchNotificationControllerPlatformImpl : public views::WidgetObserver,
                                                    public BrowserListObserver {
  public:
   RelaunchNotificationControllerPlatformImpl();
+
+  RelaunchNotificationControllerPlatformImpl(
+      const RelaunchNotificationControllerPlatformImpl&) = delete;
+  RelaunchNotificationControllerPlatformImpl& operator=(
+      const RelaunchNotificationControllerPlatformImpl&) = delete;
+
   ~RelaunchNotificationControllerPlatformImpl() override;
 
   // Shows the relaunch recommended notification if it is not already open.
@@ -40,9 +46,10 @@ class RelaunchNotificationControllerPlatformImpl : public views::WidgetObserver,
   // Checks whether the required dialog is shown or not.
   bool IsRequiredNotificationShown() const;
 
+  views::Widget* GetWidgetForTesting() { return widget_; }
+
  protected:
   // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // BrowserListObserver:
@@ -67,8 +74,6 @@ class RelaunchNotificationControllerPlatformImpl : public views::WidgetObserver,
 
   // The last relaunch deadline if the relaunch notification has_shown_.
   base::Time last_relaunch_deadline_;
-
-  DISALLOW_COPY_AND_ASSIGN(RelaunchNotificationControllerPlatformImpl);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_NOTIFICATION_CONTROLLER_PLATFORM_IMPL_DESKTOP_H_

@@ -1,21 +1,25 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_DEVICE_SERIAL_BLUETOOTH_SERIAL_PORT_IMPL_H_
 #define SERVICES_DEVICE_SERIAL_BLUETOOTH_SERIAL_PORT_IMPL_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/containers/span.h"
+#include "base/sequence_checker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "device/bluetooth/bluetooth_adapter.h"
-#include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_socket.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "services/device/serial/serial_io_handler.h"
 #include "services/device/serial/serial_port_impl.h"
 
 namespace device {
+
+class BluetoothUUID;
 
 // This class is intended to allow serial communication using a Bluetooth
 // SPP device. The Bluetooth device is used to create a Bluetooth socket
@@ -31,6 +35,7 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   static void Open(
       scoped_refptr<BluetoothAdapter> adapter,
       const std::string& address,
+      const BluetoothUUID& service_class_id,
       mojom::SerialConnectionOptionsPtr options,
       mojo::PendingRemote<mojom::SerialPortClient> client,
       mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
@@ -58,12 +63,15 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   void ConfigurePort(mojom::SerialConnectionOptionsPtr options,
                      ConfigurePortCallback callback) override;
   void GetPortInfo(GetPortInfoCallback callback) override;
-  void Close(CloseCallback callback) override;
+  void Close(bool flush, CloseCallback callback) override;
 
-  void OpenSocket(OpenCallback callback);
+  void OpenSocket(const BluetoothUUID& service_class_id, OpenCallback callback);
   void WriteToSocket(MojoResult result, const mojo::HandleSignalsState& state);
   void ReadFromSocketAndWriteOut(MojoResult result,
                                  const mojo::HandleSignalsState& state);
+
+  void ResetPendingWriteBuffer();
+  void ResetReceiveBuffer();
 
   void ReadMore();
   void WriteMore();
@@ -73,9 +81,8 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   void OnSocketConnectedError(OpenCallback callback,
                               const std::string& message);
 
-  void OnBluetoothSocketReceive(base::span<char> pending_write_buffer,
-                                int num_bytes_received,
-                                scoped_refptr<net::IOBuffer> io_buffer);
+  void OnBluetoothSocketReceive(int num_bytes_received,
+                                scoped_refptr<net::IOBuffer> receive_buffer);
   void OnBluetoothSocketReceiveError(
       device::BluetoothSocket::ErrorReason error_reason,
       const std::string& error_message);
@@ -93,10 +100,12 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   mojo::ScopedDataPipeProducerHandle out_stream_;
   mojo::SimpleWatcher out_stream_watcher_;
 
-  // Holds the callback for a flush or drain until pending operations have been
+  // Used for pending writes to |out_stream_|. When empty this indicates that
+  // |out_stream_| has been closed (and possibly replaced).
+  base::span<char> pending_write_buffer_;
+
+  // Holds the callback for a drain until pending operations have been
   // completed.
-  FlushCallback read_flush_callback_;
-  FlushCallback write_flush_callback_;
   DrainCallback drain_callback_;
 
   scoped_refptr<BluetoothSocket> bluetooth_socket_;
@@ -106,7 +115,19 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   bool read_pending_ = false;
   bool write_pending_ = false;
 
+  // Field to track whether the a write had a Flush call.
+  bool flush_next_write_ = false;
+
+  // |receive_buffer_| is used to temporarily hold larger than expected
+  // BluetoothSocket::Receive() responses, or responses received on a replaced
+  // |out_stream_|.
+  size_t receive_buffer_size_ = 0;
+  size_t receive_buffer_next_byte_pos_ = 0;
+  scoped_refptr<net::IOBuffer> receive_buffer_;
+
   mojom::SerialConnectionOptionsPtr options_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BluetoothSerialPortImpl> weak_ptr_factory_{this};
 };

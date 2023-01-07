@@ -1,0 +1,222 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module recording.mojom;
+
+import "media/mojo/mojom/audio_stream_factory.mojom";
+import "mojo/public/mojom/base/big_string.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+import "services/viz/privileged/mojom/compositing/frame_sink_video_capture.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "services/viz/public/mojom/compositing/subtree_capture_id.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/image/mojom/image.mojom";
+
+// Defines the status of recording to be provided to the client at the end of
+// recording.
+enum RecordingStatus {
+  // Ended successfully with no errors.
+  kSuccess,
+  // Ended due to the recording service process was being terminated while
+  // recording is still in progress (which is considered a failure).
+  kServiceClosing,
+  // Ended due to a failure when the mojo pipe to the video capturer on Viz was
+  // disconnected.
+  kVizVideoCapturerDisconnected,
+  // Ended due to a failure to initialize the audio encoder.
+  kAudioEncoderInitializationFailure,
+  // Ended due to a failure to initialize the video encoder.
+  kVideoEncoderInitializationFailure,
+  // Ended due to an error occurring while encoding audio.
+  kAudioEncodingError,
+  // Ended due to an error occurring while encoding video.
+  kVideoEncodingError,
+  // Ended due to an IO error causing a failure to write to the webm file.
+  kIoError,
+  // Ended due to reaching a critically low disk space.
+  kLowDiskSpace,
+  // Ended due to reaching a critically low DriveFS quota.
+  kLowDriveFsQuota,
+};
+
+// Defines the interface for retrieving the remaining amount of DriveFS free
+// space. The implementation of this interface lives in ash, and a remote end
+// point to it will be provided to the recording service only when the video
+// file is being written to a path on DriveFS. The implementation of this
+// delegate lives in ash-chrome (DriveFS integration lives in Chrome and cannot
+// be used directly by the recording service).
+interface DriveFsQuotaDelegate {
+  // Gets the free space available in Drive (see
+  // `drivefs.mojom.QuotaUsage.free_cloud_bytes`). `free_remaining_bytes` will
+  // be set to -1 if there's an error in computing the DriveFS quota.
+  GetDriveFsFreeSpaceBytes() => (int64 free_remaining_bytes);
+};
+
+// Defines the interface for the recording service client (e.g. ash), which
+// lives in a remote process other than that of the recording service itself.
+// The recording service consumes this interface to communicate with the client.
+interface RecordingServiceClient {
+  // Called by the service to inform the client that an in-progress video
+  // recording ended. If |status| is anything other than |kSuccess|, then
+  // recording is being terminated by the service itself due to an internal
+  // failure. The service can provide an RGB image |thumbnail| representing
+  // the recorded video. It can be empty in case of a failure.
+  OnRecordingEnded(RecordingStatus status, gfx.mojom.ImageSkia? thumbnail);
+};
+
+// Defines the interface of the recording service which is implemented by
+// |recording::RecordingService| and runs in its own utility process. It is
+// launched by Ash on which the |RecordingServiceClient| resides, and is used to
+// perform audio/video recording of the whole screen, a partial region of it, or
+// an individual window. The service captures, encodes, and muxes the audio and
+// video frames, and writes the WebM muxed video chunks to directly to a file
+// whose path was given to the Record*() functions.
+// Note that a maximum of one screen recording can be done at any time.
+// TODO(https://crbug.com/1147991) Explore alternative sandboxing.
+[ServiceSandbox=sandbox.mojom.Sandbox.kNoSandbox]
+interface RecordingService {
+  // All the below Record*() interfaces, take a pending remote to a client (e.g.
+  // Ash) which will be notified when recording finishes and all the webm
+  // chuncks are written to the file, a pending remote bound to the video
+  // capturer on Viz on the GPU process, another *optional* pending remote
+  // to the audio stream factory on the Audio Service, which if not provided,
+  // the service will not record audio, and a path to the webm file where the
+  // video content should be saved.
+  //
+  // The *optional* pending_remote `drive_fs_quota_delegate`, if provided, that
+  // means that the given `webm_file_path` lives on DriveFS, and the remaining
+  // free space calculations has to be done through this delegate.
+  //
+  // Note that we pass a FilePath rather than a File, since:
+  // - Passing a File means the caller has to create and open the file itself,
+  //   which has to be done asynchronously on the ash UI side, resulting in a
+  //   longer delay before recording can start. However, this wasn't a major
+  //   concern.
+  // - The recording service process is not sandboxed, so it can create and open
+  //   the file itself.
+  // - Since the recording service will be writing to the file directly, it's
+  //   easier to poll the remaining disk space after write operations, rather
+  //   than relying on the caller to repeatedly do this polling.
+  // TODO(https://crbug.com/1211480): Explore a different architecture if
+  // possible.
+
+  // Starts a fullscreen recording of a root window which has the given
+  // |frame_sink_id|. Using the given |frame_sink_size_dip| and
+  // |device_scale_factor|, the resulting video will have a resolution equal to
+  // the pixel size of the recorded frame sink. Note that calling
+  // OnFrameSinkSizeChanged() will do nothing in this recording mode, and the
+  // output video will maintain the same size as the initial pixel size of the
+  // frame sink. The content of the video will letterbox within that size as
+  // needed. This is desired in Fullscreen recording, as it makes it clear when
+  // the recorded display changes its rotation.
+  // |frame_sink_id| must be valid.
+  RecordFullscreen(
+      pending_remote<RecordingServiceClient> client,
+      pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
+      pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
+      pending_remote<DriveFsQuotaDelegate>? drive_fs_quota_delegate,
+      mojo_base.mojom.FilePath webm_file_path,
+      viz.mojom.FrameSinkId frame_sink_id,
+      gfx.mojom.Size frame_sink_size_dip,
+      float device_scale_factor);
+
+  // Starts a recording of a window. If this window has a valid |frame_sink_id|,
+  // and submits its own compositor frames independently, then
+  // |subtree_capture_id| can be default-constructed and won't be used.
+  // Otherwise, for windows that don't submit compositor frames (e.g. non-root
+  // windows), the given |frame_sink_id| must be of the root window they're
+  // descendant from, and they must be made capturable by tagging the them with
+  // a valid |subtree_capture_id| before calling this (see
+  // aura::Window::MakeWindowCapturable()).
+  // |window_size_dip| is the initial size of the recorded window, and can be
+  // updated by calling OnRecordedWindowSizeChanged() when the window gets
+  // resized by the user (e.g. resized, maximized, fullscreened, ... etc.).
+  // Unlike fullscreen recording, updating the window size will update the
+  // output video size, since it is desired for the video dimensions to always
+  // match those of the window in pixels without letterboxing. Hence, the
+  // current |device_scale_factor| is provided to perform the dip-to-pixel
+  // conversion. |frame_sink_size_dip| is the current size of the frame sink
+  // whose |frame_sink_id| was given. This can be updated by calling
+  // OnFrameSinkSizeChanged() which will update the resolution constraints on
+  // the capturer to avoid letterboxing, so the resulting video frames are sharp
+  // and crisp, and their size match that of the window in pixels.
+  RecordWindow(
+      pending_remote<RecordingServiceClient> client,
+      pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
+      pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
+      pending_remote<DriveFsQuotaDelegate>? drive_fs_quota_delegate,
+      mojo_base.mojom.FilePath webm_file_path,
+      viz.mojom.FrameSinkId frame_sink_id,
+      gfx.mojom.Size frame_sink_size_dip,
+      float device_scale_factor,
+      viz.mojom.SubtreeCaptureId subtree_capture_id,
+      gfx.mojom.Size window_size_dip);
+
+  // Starts a recording of a partial region of a root window which has the given
+  // |frame_sink_id|. Using the given |frame_sink_size_dip| and
+  // |device_scale_factor|, the video will be captured at a resolution equal to
+  // the size of the frame sink in pixels, but the resulting video frames will
+  // be cropped to the pixel bounds that corresponds to the given
+  // |crop_region_dip|.
+  // If the root window gets resized (due to e.g. rotation, device scale factor
+  // change ... etc.) OnFrameSinkSizeChanged() must be called to update the
+  // resolution constraints on the capturer in order to avoid letterboxing.
+  // Letterboxing breaks the relation between the crop region bounds and
+  // generated video frame sizes, which results in the wrong region being shown
+  // in the video.
+  // |frame_sink_id| must be valid.
+  RecordRegion(
+      pending_remote<RecordingServiceClient> client,
+      pending_remote<viz.mojom.FrameSinkVideoCapturer> video_capturer,
+      pending_remote<media.mojom.AudioStreamFactory>? audio_stream_factory,
+      pending_remote<DriveFsQuotaDelegate>? drive_fs_quota_delegate,
+      mojo_base.mojom.FilePath webm_file_path,
+      viz.mojom.FrameSinkId frame_sink_id,
+      gfx.mojom.Size frame_sink_size_dip,
+      float device_scale_factor,
+      gfx.mojom.Rect crop_region_dip);
+
+  // Stops an on-going video recording. The remaining frames will continue to be
+  // written to the webm file until OnRecordingEnded() is called on the client.
+  StopRecording();
+
+  // Called by the client to let the service know that a window being recorded
+  // is about to move to a different display (i.e a different root window),
+  // giving it the |new_frame_sink_id| of that new root window. It also provides
+  // the |new_frame_sink_size_dip| and |new_device_scale_factor| (since the new
+  // display may have different bounds).
+  // Note that changing the window's root doesn't affect the window's
+  // SubtreeCaptureId, and therefore it doesn't need to be reprovided.
+  // This can *only* be called when the service is already recording a window
+  // (i.e. RecordWindow() has already been called to start the recording of a
+  // window).
+  OnRecordedWindowChangingRoot(
+      viz.mojom.FrameSinkId new_frame_sink_id,
+      gfx.mojom.Size new_frame_sink_size_dip,
+      float new_device_scale_factor);
+
+  // Called by the client to let the service know that a window being recorded
+  // has been resized (e.g. due to snapping, maximizing, user resizing, ...
+  // etc.). |new_window_size_dip| is the new size in DIPs which will be used to
+  // change the dimensions of the output video to match the new size in pixels
+  // according to the current value of the device scale factor. Therefore, it's
+  // better to throttle such changes to avoid having to change the size of the
+  // video repeatedly.
+  // This can *only* be called when the service is already recording a window
+  // (i.e. RecordWindow() has already been called to start the recording of a
+  // window).
+  OnRecordedWindowSizeChanged(gfx.mojom.Size new_window_size_dip);
+
+  // Called by the client to let the service know that the frame sink being
+  // recorded (whose |frame_sink_id| was provided to the above functions) has
+  // changed its size to or its device scale factor to |new_frame_sink_size_dip|
+  // or |new_device_scale_factor| respectively, resulting in a potential change
+  // in the resolution of the output video.
+  // This does nothing when recording a fullscreen display, as the capturer
+  // already takes care of centering and letter-boxing the video content within
+  // the initial requested video resolution.
+  OnFrameSinkSizeChanged(gfx.mojom.Size new_frame_sink_size_dip,
+      float new_device_scale_factor);
+};

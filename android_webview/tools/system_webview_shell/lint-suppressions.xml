@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+Please refer to the lint doc for how to use this file and what should go in it:
+https://chromium.googlesource.com/chromium/src/+/main/build/android/docs/lint.md
+-->
+<lint>
+  <issue id="SetJavaScriptEnabled" severity="ignore"/>
+  <issue id="AcceptsUserCertificates" severity="ignore"/>
+  <issue id="InsecureBaseConfiguration" severity="ignore"/>
+  <issue id="ScopedStorage" severity="ignore"/>
+</lint>

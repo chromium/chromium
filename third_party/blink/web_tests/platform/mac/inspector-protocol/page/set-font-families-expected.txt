@@ -1,0 +1,42 @@
+Tests Page.setFontFamilies.
+.inherited_font
+[
+    [0] : {
+        familyName : Ahem
+        glyphCount : 9
+        isCustomFont : true
+    }
+]
+.standard_font
+[
+    [0] : {
+        familyName : Courier
+        glyphCount : 8
+        isCustomFont : false
+    }
+]
+.sans_serif_font
+[
+    [0] : {
+        familyName : Ahem
+        glyphCount : 9
+        isCustomFont : false
+    }
+]
+.fixed_font
+[
+    [0] : {
+        familyName : Ahem
+        glyphCount : 5
+        isCustomFont : false
+    }
+]
+.notgeneric_font
+[
+    [0] : {
+        familyName : Courier
+        glyphCount : 10
+        isCustomFont : false
+    }
+]
+

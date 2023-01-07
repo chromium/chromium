@@ -1,0 +1,99 @@
+<html>
+  <base href="/gen/third_party/webgpu-cts/src/webgpu/web_platform/reftests/ref/" />
+  <title>WebGPU canvas_back_buffer_different_size (ref)</title>
+  <meta charset="utf-8" />
+  <link rel="help" href="https://gpuweb.github.io/gpuweb/" />
+  <canvas id="cvs_larger_than_back_buffer_ref" width="3" height="4" style="width: 6px; height: 8px;"></canvas>
+  <canvas id="cvs_same_as_back_buffer_ref" width="3" height="4"></canvas>
+  <canvas id="cvs_smaller_than_back_buffer_ref" width="6" height="8" style="width: 3px; height: 4px;"></canvas>
+  <canvas id="cvs_change_size_after_configure_ref" width="3" height="4" style="width: 6px; height: 8px;"></canvas>
+  <canvas id="cvs_change_size_and_reconfigure_ref" width="6" height="8"></canvas>
+  <canvas id="back_buffer_smaller_than_cvs_and_css_ref" width="3" height="4" style="width: 12px; height: 16px;"></canvas>
+  <canvas id="cvs_smaller_than_back_buffer_and_css" width="6" height="8" style="width: 12px; height: 16px;"></canvas>
+  <script>
+  {
+    const context = cvs_larger_than_back_buffer_ref.getContext('2d');
+    context.fillStyle = "#FF0000";
+    context.fillRect(0, 0, 2, 2);
+    context.fillStyle = "#00FF00";
+    context.fillRect(2, 0, 1, 2);
+    context.fillStyle = "#0000FF";
+    context.fillRect(0, 2, 2, 2);
+    context.fillStyle = "#FFFF00";
+    context.fillRect(2, 2, 1, 2);
+    }
+
+    {
+    const context = cvs_same_as_back_buffer_ref.getContext('2d');
+    context.fillStyle = "#FF0000";
+    context.fillRect(0, 0, 2, 2);
+    context.fillStyle = "#00FF00";
+    context.fillRect(2, 0, 1, 2);
+    context.fillStyle = "#0000FF";
+    context.fillRect(0, 2, 2, 2);
+    context.fillStyle = "#FFFF00";
+    context.fillRect(2, 2, 1, 2);
+    }
+
+    {
+    const context = cvs_smaller_than_back_buffer_ref.getContext('2d');
+    context.fillStyle = "#FF0000";
+    context.fillRect(0, 0, 4, 4);
+    context.fillStyle = "#00FF00";
+    context.fillRect(4, 0, 2, 4);
+    context.fillStyle = "#0000FF";
+    context.fillRect(0, 4, 4, 4);
+    context.fillStyle = "#FFFF00";
+    context.fillRect(4, 4, 2, 4);
+    }
+
+    {
+    const context = cvs_change_size_after_configure_ref.getContext('2d');
+    context.fillStyle = "#FF0000";
+    context.fillRect(0, 0, 2, 2);
+    context.fillStyle = "#00FF00";
+    context.fillRect(2, 0, 1, 2);
+    context.fillStyle = "#0000FF";
+    context.fillRect(0, 2, 2, 2);
+    context.fillStyle = "#FFFF00";
+    context.fillRect(2, 2, 1, 2);
+    }
+
+    {
+    const context = cvs_change_size_and_reconfigure_ref.getContext('2d');
+    context.fillStyle = "#FF0000";
+    context.fillRect(0, 0, 4, 4);
+    context.fillStyle = "#00FF00";
+    context.fillRect(4, 0, 2, 4);
+    context.fillStyle = "#0000FF";
+    context.fillRect(0, 4, 4, 4);
+    context.fillStyle = "#FFFF00";
+    context.fillRect(4, 4, 2, 4);
+    }
+
+    {
+    const context = back_buffer_smaller_than_cvs_and_css_ref.getContext('2d');
+    context.fillStyle = "#FF0000";
+    context.fillRect(0, 0, 2, 2);
+    context.fillStyle = "#00FF00";
+    context.fillRect(2, 0, 1, 2);
+    context.fillStyle = "#0000FF";
+    context.fillRect(0, 2, 2, 2);
+    context.fillStyle = "#FFFF00";
+    context.fillRect(2, 2, 1, 2);
+    }
+
+    {
+    const context = cvs_smaller_than_back_buffer_and_css.getContext('2d');
+    context.fillStyle = "#FF0000";
+    context.fillRect(0, 0, 4, 4);
+    context.fillStyle = "#00FF00";
+    context.fillRect(4, 0, 2, 4);
+    context.fillRect(2, 1, 1, 1);
+    context.fillStyle = "#0000FF";
+    context.fillRect(0, 4, 4, 4);
+    context.fillStyle = "#FFFF00";
+    context.fillRect(4, 4, 2, 4);
+    }
+  </script>
+</html>

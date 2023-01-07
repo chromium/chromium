@@ -1,0 +1,7 @@
+Attestation:
+  caption: Attestation
+  policies:
+  - AttestationEnabledForDevice
+  - AttestationEnabledForUser
+  - AttestationExtensionAllowlist
+  - AttestationForContentProtectionEnabled

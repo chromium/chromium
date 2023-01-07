@@ -1,17 +1,16 @@
 <?xml version="1.0" ?>
 <manifest
-    package="org.chromium.trichromelibrary"
-    platformBuildVersionCode="30"
-    platformBuildVersionName="11"
-    tools:ignore="MissingVersion,MissingLeanbackLauncher"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    package="org.chromium.trichromelibrary"
+    platformBuildVersionCode="33"
+    platformBuildVersionName="13">
+  <uses-feature android:glEsVersion="0x00020000"/>
   <uses-feature android:name="android.hardware.touchscreen" android:required="false"/>
   <uses-feature android:name="android.software.leanback" android:required="false"/>
-  <uses-feature android:glEsVersion="0x00020000"/>
-  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="30"/>
+  <uses-sdk android:minSdkVersion="29" android:targetSdkVersion="33"/>
   <application
       android:extractNativeLibs="false"
+      android:hasCode="false"
       android:icon="@drawable/icon_webview"
       android:label="Trichrome Library"
       android:multiArch="true"

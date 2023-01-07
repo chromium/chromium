@@ -1,0 +1,33 @@
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+  Blue header for New Gaia UI, contains blue avatar logo and user email.
+
+  Example:
+    <gaia-header email="user@example.com">
+    </gaia-header>
+
+  Attributes:
+   'email' - displayed email.
+-->
+
+<style include="oobe-common-styles">
+  :host {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 0;
+  }
+
+  #email {
+    font-size: 20px;
+  }
+</style>
+<img src="chrome://theme/IDR_LOGO_AVATAR_CIRCLE_BLUE_COLOR" alt
+    class="self-start">
+<div id="email"><span>[[email]]<span></div>
+

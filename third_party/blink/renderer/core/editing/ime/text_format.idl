@@ -1,0 +1,23 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TextFormat describes how the text in a composition should be styled.
+
+// Spec draft:
+// https://w3c.github.io/editing/docs/EditContext/index.html#textformatupdateevent
+
+[
+    Exposed=Window,
+    RuntimeEnabled=EditContext
+] interface TextFormat {
+    constructor(optional TextFormatInit options = {});
+
+    readonly attribute unsigned long rangeStart;
+    readonly attribute unsigned long rangeEnd;
+    readonly attribute DOMString textColor;
+    readonly attribute DOMString backgroundColor;
+    readonly attribute DOMString underlineColor;
+    readonly attribute DOMString underlineStyle;
+    readonly attribute DOMString underlineThickness;
+};

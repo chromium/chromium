@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,9 @@
 
 #import <AppKit/AppKit.h>
 
+#include <vector>
+
+#include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/free_deleter.h"
@@ -14,6 +17,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
+#include "ui/gfx/codec/png_codec.h"
 
 @interface RedView : NSView
 @end
@@ -39,7 +43,7 @@ void CreateImageBufferReleaser(void* info, const void* data, size_t size) {
 
 class ClipboardMacTest : public PlatformTest {
  public:
-  ClipboardMacTest() { }
+  ClipboardMacTest() = default;
 
   base::scoped_nsobject<NSImage> CreateImage(int32_t width,
                                              int32_t height,
@@ -79,8 +83,10 @@ TEST_F(ClipboardMacTest, ReadImageRetina) {
   Clipboard* clipboard = Clipboard::GetForCurrentThread();
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
-  SkBitmap bitmap = clipboard_mac->ReadImageInternal(
+  std::vector<uint8_t> png_data = clipboard_mac->ReadPngInternal(
       ClipboardBuffer::kCopyPaste, pasteboard->get());
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
   EXPECT_EQ(2 * width, bitmap.width());
   EXPECT_EQ(2 * height, bitmap.height());
 }
@@ -95,8 +101,10 @@ TEST_F(ClipboardMacTest, ReadImageNonRetina) {
   Clipboard* clipboard = Clipboard::GetForCurrentThread();
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
-  SkBitmap bitmap = clipboard_mac->ReadImageInternal(
+  std::vector<uint8_t> png_data = clipboard_mac->ReadPngInternal(
       ClipboardBuffer::kCopyPaste, pasteboard->get());
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
   EXPECT_EQ(width, bitmap.width());
   EXPECT_EQ(height, bitmap.height());
 }
@@ -109,8 +117,10 @@ TEST_F(ClipboardMacTest, EmptyImage) {
   Clipboard* clipboard = Clipboard::GetForCurrentThread();
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
-  SkBitmap bitmap = clipboard_mac->ReadImageInternal(
+  std::vector<uint8_t> png_data = clipboard_mac->ReadPngInternal(
       ClipboardBuffer::kCopyPaste, pasteboard->get());
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
   EXPECT_EQ(0, bitmap.width());
   EXPECT_EQ(0, bitmap.height());
 }
@@ -132,8 +142,10 @@ TEST_F(ClipboardMacTest, PDFImage) {
   Clipboard* clipboard = Clipboard::GetForCurrentThread();
   ClipboardMac* clipboard_mac = static_cast<ClipboardMac*>(clipboard);
 
-  SkBitmap bitmap = clipboard_mac->ReadImageInternal(
+  std::vector<uint8_t> png_data = clipboard_mac->ReadPngInternal(
       ClipboardBuffer::kCopyPaste, pasteboard->get());
+  SkBitmap bitmap;
+  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
   EXPECT_EQ(width, bitmap.width());
   EXPECT_EQ(height, bitmap.height());
 }

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-FAIL Add ICE candidate before setting remote description should reject with InvalidStateError promise_rejects_dom: function "function() { throw e }" threw object "OperationError: Failed to execute 'addIceCandidate' on 'RTCPeerConnection': Error processing ICE candidate" that is not a DOMException InvalidStateError: property "code" is equal to 0, expected 11
+PASS Add ICE candidate before setting remote description should reject with InvalidStateError
 PASS addIceCandidate({"candidate":"","sdpMid":null,"sdpMLineIndex":null}) works
 FAIL addIceCandidate({"candidate":"","sdpMid":null,"sdpMLineIndex":null}) adds a=end-of-candidates to both m-sections assert_true: Expect candidate line to be found between media lines m=audio and m=video expected true got false
 PASS addIceCandidate(undefined) works

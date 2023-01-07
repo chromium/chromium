@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "third_party/nearby/src/cpp/platform/api/bluetooth_adapter.h"
+#include "third_party/nearby/src/internal/platform/implementation/bluetooth_adapter.h"
 
 namespace location {
 namespace nearby {
@@ -33,6 +33,7 @@ class BluetoothAdapter : public api::BluetoothAdapter {
   ScanMode GetScanMode() const override;
   bool SetScanMode(ScanMode scan_mode) override;
   std::string GetName() const override;
+  bool SetName(absl::string_view name, bool persist) override;
   bool SetName(absl::string_view name) override;
   std::string GetMacAddress() const override;
 

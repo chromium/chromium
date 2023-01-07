@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,25 +19,27 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
-#include "base/record_replay.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
-#include "net/base/escape.h"
 #include "net/base/parse_number.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_log_util.h"
+#include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_values.h"
 
+#include "base/record_replay.h"
+
 using base::Time;
-using base::TimeDelta;
 
 namespace net {
 
@@ -111,13 +113,12 @@ const char* const kNonUpdatedHeaderPrefixes[] = {
 };
 
 bool ShouldUpdateHeader(base::StringPiece name) {
-  for (size_t i = 0; i < base::size(kNonUpdatedHeaders); ++i) {
-    if (base::LowerCaseEqualsASCII(name, kNonUpdatedHeaders[i]))
+  for (const auto* header : kNonUpdatedHeaders) {
+    if (base::EqualsCaseInsensitiveASCII(name, header))
       return false;
   }
-  for (size_t i = 0; i < base::size(kNonUpdatedHeaderPrefixes); ++i) {
-    if (base::StartsWith(name, kNonUpdatedHeaderPrefixes[i],
-                         base::CompareCase::INSENSITIVE_ASCII))
+  for (const auto* prefix : kNonUpdatedHeaderPrefixes) {
+    if (base::StartsWith(name, prefix, base::CompareCase::INSENSITIVE_ASCII))
       return false;
   }
   return true;
@@ -141,6 +142,8 @@ void CheckDoesNotHaveEmbeddedNulls(base::StringPiece str) {
 }  // namespace
 
 const char HttpResponseHeaders::kContentRange[] = "Content-Range";
+const char HttpResponseHeaders::kLastModified[] = "Last-Modified";
+const char HttpResponseHeaders::kVary[] = "Vary";
 
 struct HttpResponseHeaders::ParsedHeader {
   // A header "continuation" contains only a subsequent value for the
@@ -151,6 +154,13 @@ struct HttpResponseHeaders::ParsedHeader {
   std::string::const_iterator name_end;
   std::string::const_iterator value_begin;
   std::string::const_iterator value_end;
+
+  // Write a representation of this object into a tracing proto.
+  void WriteIntoTrace(perfetto::TracedValue context) const {
+    auto dict = std::move(context).WriteDictionary();
+    dict.Add("name", base::MakeStringPiece(name_begin, name_end));
+    dict.Add("value", base::MakeStringPiece(value_begin, value_end));
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -257,8 +267,8 @@ void HttpResponseHeaders::Persist(base::Pickle* pickle,
 }
 
 void HttpResponseHeaders::Update(const HttpResponseHeaders& new_headers) {
-  DCHECK(new_headers.response_code() == 304 ||
-         new_headers.response_code() == 206);
+  DCHECK(new_headers.response_code() == net::HTTP_NOT_MODIFIED ||
+         new_headers.response_code() == net::HTTP_PARTIAL_CONTENT);
 
   // Copy up to the null byte.  This just copies the status line.
   std::string new_raw_headers(raw_headers_.c_str());
@@ -453,8 +463,7 @@ void HttpResponseHeaders::Parse(const std::string& raw_input) {
 
   // ParseStatusLine adds a normalized status line to raw_headers_
   std::string::const_iterator line_begin = raw_input.begin();
-  std::string::const_iterator line_end =
-      std::find(line_begin, raw_input.end(), '\0');
+  std::string::const_iterator line_end = base::ranges::find(raw_input, '\0');
   // has_headers = true, if there is any data following the status line.
   // Used by ParseStatusLine() to decide if a HTTP/0.9 is really a HTTP/1.0.
   bool has_headers =
@@ -538,10 +547,9 @@ std::string HttpResponseHeaders::GetStatusText() const {
   // '<http_version> SP <response_code>' or
   // '<http_version> SP <response_code> SP <status_text>'.
   std::string status_text = GetStatusLine();
-  std::string::const_iterator begin = status_text.begin();
-  std::string::const_iterator end = status_text.end();
   // Seek to beginning of <response_code>.
-  begin = std::find(begin, end, ' ');
+  std::string::const_iterator begin = base::ranges::find(status_text, ' ');
+  std::string::const_iterator end = status_text.end();
   CHECK(begin != end);
   ++begin;
   CHECK(begin != end);
@@ -629,9 +637,9 @@ HttpVersion HttpResponseHeaders::ParseVersion(
     std::string::const_iterator line_end) {
   std::string::const_iterator p = line_begin;
 
-  // RFC2616 sec 3.1: HTTP-Version   = "HTTP" "/" 1*DIGIT "." 1*DIGIT
-  // TODO: (1*DIGIT apparently means one or more digits, but we only handle 1).
-  // TODO: handle leading zeros, which is allowed by the rfc1616 sec 3.1.
+  // RFC9112 Section 2.3:
+  // HTTP-version  = HTTP-name "/" DIGIT "." DIGIT
+  // HTTP-name     = %s"HTTP"
 
   if (!base::StartsWith(base::MakeStringPiece(line_begin, line_end), "http",
                         base::CompareCase::INSENSITIVE_ASCII)) {
@@ -701,7 +709,7 @@ void HttpResponseHeaders::ParseStatusLine(
   if (p == line_end) {
     DVLOG(1) << "missing response status; assuming 200 OK";
     raw_headers_.append(" 200 OK");
-    response_code_ = 200;
+    response_code_ = net::HTTP_OK;
     return;
   }
 
@@ -716,7 +724,7 @@ void HttpResponseHeaders::ParseStatusLine(
   if (p == code) {
     DVLOG(1) << "missing response status number; assuming 200";
     raw_headers_.append(" 200");
-    response_code_ = 200;
+    response_code_ = net::HTTP_OK;
     return;
   }
   raw_headers_.push_back(' ');
@@ -759,26 +767,46 @@ size_t HttpResponseHeaders::FindHeader(size_t from,
   return std::string::npos;
 }
 
-bool HttpResponseHeaders::GetCacheControlDirective(base::StringPiece directive,
-                                                   TimeDelta* result) const {
-  base::StringPiece name("cache-control");
+bool HttpResponseHeaders::GetCacheControlDirective(
+    base::StringPiece directive,
+    base::TimeDelta* result) const {
+  static constexpr base::StringPiece name("cache-control");
   std::string value;
 
   size_t directive_size = directive.size();
 
   size_t iter = 0;
   while (EnumerateHeader(&iter, name, &value)) {
-    if (value.size() > directive_size + 1 &&
-        base::StartsWith(value, directive,
-                         base::CompareCase::INSENSITIVE_ASCII) &&
-        value[directive_size] == '=') {
-      int64_t seconds;
-      base::StringToInt64(base::MakeStringPiece(
-                              value.begin() + directive_size + 1, value.end()),
-                          &seconds);
-      *result = TimeDelta::FromSeconds(seconds);
-      return true;
+    if (!base::StartsWith(value, directive,
+                          base::CompareCase::INSENSITIVE_ASCII)) {
+      continue;
     }
+    if (value.size() == directive_size || value[directive_size] != '=')
+      continue;
+    // 1*DIGIT with leading and trailing spaces, as described at
+    // https://datatracker.ietf.org/doc/html/rfc7234#section-1.2.1.
+    auto start = value.cbegin() + directive_size + 1;
+    auto end = value.cend();
+    while (start < end && *start == ' ') {
+      // leading spaces
+      ++start;
+    }
+    while (start < end - 1 && *(end - 1) == ' ') {
+      // trailing spaces
+      --end;
+    }
+    if (start == end ||
+        !std::all_of(start, end, [](char c) { return '0' <= c && c <= '9'; })) {
+      continue;
+    }
+    int64_t seconds = 0;
+    base::StringToInt64(base::MakeStringPiece(start, end), &seconds);
+    // We ignore the return value because we've already checked the input
+    // string. For the overflow case we use
+    // base::TimeDelta::FiniteMax().InSeconds().
+    seconds = std::min(seconds, base::TimeDelta::FiniteMax().InSeconds());
+    *result = base::Seconds(seconds);
+    return true;
   }
 
   return false;
@@ -867,18 +895,18 @@ void HttpResponseHeaders::AddNonCacheableHeaders(HeaderSet* result) const {
 }
 
 void HttpResponseHeaders::AddHopByHopHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < base::size(kHopByHopResponseHeaders); ++i)
-    result->insert(std::string(kHopByHopResponseHeaders[i]));
+  for (const auto* header : kHopByHopResponseHeaders)
+    result->insert(std::string(header));
 }
 
 void HttpResponseHeaders::AddCookieHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < base::size(kCookieResponseHeaders); ++i)
-    result->insert(std::string(kCookieResponseHeaders[i]));
+  for (const auto* header : kCookieResponseHeaders)
+    result->insert(std::string(header));
 }
 
 void HttpResponseHeaders::AddChallengeHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < base::size(kChallengeResponseHeaders); ++i)
-    result->insert(std::string(kChallengeResponseHeaders[i]));
+  for (const auto* header : kChallengeResponseHeaders)
+    result->insert(std::string(header));
 }
 
 void HttpResponseHeaders::AddHopContentRangeHeaders(HeaderSet* result) {
@@ -886,8 +914,8 @@ void HttpResponseHeaders::AddHopContentRangeHeaders(HeaderSet* result) {
 }
 
 void HttpResponseHeaders::AddSecurityStateHeaders(HeaderSet* result) {
-  for (size_t i = 0; i < base::size(kSecurityStateHeaders); ++i)
-    result->insert(std::string(kSecurityStateHeaders[i]));
+  for (const auto* header : kSecurityStateHeaders)
+    result->insert(std::string(header));
 }
 
 void HttpResponseHeaders::GetMimeTypeAndCharset(std::string* mime_type,
@@ -943,7 +971,7 @@ bool HttpResponseHeaders::IsRedirect(std::string* location) const {
     // valid UTF-8, so encoding errors turn into replacement characters before
     // escaping. Escaping here preserves the bytes as-is. See
     // https://crbug.com/942073#c14.
-    *location = EscapeNonASCII(location_strpiece);
+    *location = base::EscapeNonASCII(location_strpiece);
   }
 
   return true;
@@ -953,8 +981,11 @@ bool HttpResponseHeaders::IsRedirect(std::string* location) const {
 bool HttpResponseHeaders::IsRedirectResponseCode(int response_code) {
   // Users probably want to see 300 (multiple choice) pages, so we don't count
   // them as redirects that need to be followed.
-  return (response_code == 301 || response_code == 302 ||
-          response_code == 303 || response_code == 307 || response_code == 308);
+  return (response_code == net::HTTP_MOVED_PERMANENTLY ||
+          response_code == net::HTTP_FOUND ||
+          response_code == net::HTTP_SEE_OTHER ||
+          response_code == net::HTTP_TEMPORARY_REDIRECT ||
+          response_code == net::HTTP_PERMANENT_REDIRECT);
 }
 
 // From RFC 2616 section 13.2.4:
@@ -979,7 +1010,8 @@ ValidationType HttpResponseHeaders::RequiresValidation(
   if (lifetimes.freshness.is_zero() && lifetimes.staleness.is_zero())
     return VALIDATION_SYNCHRONOUS;
 
-  TimeDelta age = GetCurrentAge(request_time, response_time, current_time);
+  base::TimeDelta age =
+      GetCurrentAge(request_time, response_time, current_time);
 
   if (lifetimes.freshness > age)
     return VALIDATION_NONE;
@@ -1029,7 +1061,7 @@ HttpResponseHeaders::GetFreshnessLifetimes(const Time& response_time) const {
   bool must_revalidate = HasHeaderValue("cache-control", "must-revalidate");
 
   if (must_revalidate || !GetStaleWhileRevalidateValue(&lifetimes.staleness)) {
-    DCHECK_EQ(TimeDelta(), lifetimes.staleness);
+    DCHECK_EQ(base::TimeDelta(), lifetimes.staleness);
   }
 
   // NOTE: "Cache-Control: max-age" overrides Expires, so we only check the
@@ -1053,7 +1085,7 @@ HttpResponseHeaders::GetFreshnessLifetimes(const Time& response_time) const {
       return lifetimes;
     }
 
-    DCHECK_EQ(TimeDelta(), lifetimes.freshness);
+    DCHECK_EQ(base::TimeDelta(), lifetimes.freshness);
     return lifetimes;
   }
 
@@ -1081,8 +1113,9 @@ HttpResponseHeaders::GetFreshnessLifetimes(const Time& response_time) const {
   // https://datatracker.ietf.org/doc/draft-reschke-http-status-308/ is an
   // experimental RFC that adds 308 permanent redirect as well, for which "any
   // future references ... SHOULD use one of the returned URIs."
-  if ((response_code_ == 200 || response_code_ == 203 ||
-       response_code_ == 206) &&
+  if ((response_code_ == net::HTTP_OK ||
+       response_code_ == net::HTTP_NON_AUTHORITATIVE_INFORMATION ||
+       response_code_ == net::HTTP_PARTIAL_CONTENT) &&
       !must_revalidate) {
     // TODO(darin): Implement a smarter heuristic.
     Time last_modified_value;
@@ -1096,17 +1129,19 @@ HttpResponseHeaders::GetFreshnessLifetimes(const Time& response_time) const {
   }
 
   // These responses are implicitly fresh (unless otherwise overruled):
-  if (response_code_ == 300 || response_code_ == 301 || response_code_ == 308 ||
-      response_code_ == 410) {
-    lifetimes.freshness = TimeDelta::Max();
-    lifetimes.staleness = TimeDelta();  // It should never be stale.
+  if (response_code_ == net::HTTP_MULTIPLE_CHOICES ||
+      response_code_ == net::HTTP_MOVED_PERMANENTLY ||
+      response_code_ == net::HTTP_PERMANENT_REDIRECT ||
+      response_code_ == net::HTTP_GONE) {
+    lifetimes.freshness = base::TimeDelta::Max();
+    lifetimes.staleness = base::TimeDelta();  // It should never be stale.
     return lifetimes;
   }
 
   // Our heuristic freshness estimate for this resource is 0 seconds, in
   // accordance with common browser behaviour. However, stale-while-revalidate
   // may still apply.
-  DCHECK_EQ(TimeDelta(), lifetimes.freshness);
+  DCHECK_EQ(base::TimeDelta(), lifetimes.freshness);
   return lifetimes;
 }
 
@@ -1153,9 +1188,10 @@ HttpResponseHeaders::GetFreshnessLifetimes(const Time& response_time) const {
 //     resident_time = now - response_time;
 //     current_age = corrected_initial_age + resident_time;
 //
-TimeDelta HttpResponseHeaders::GetCurrentAge(const Time& request_time,
-                                             const Time& response_time,
-                                             const Time& current_time) const {
+base::TimeDelta HttpResponseHeaders::GetCurrentAge(
+    const Time& request_time,
+    const Time& response_time,
+    const Time& current_time) const {
   // If there is no Date header, then assume that the server response was
   // generated at the time when we received the response.
   Time date_value;
@@ -1164,24 +1200,26 @@ TimeDelta HttpResponseHeaders::GetCurrentAge(const Time& request_time,
 
   // If there is no Age header, then assume age is zero.  GetAgeValue does not
   // modify its out param if the value does not exist.
-  TimeDelta age_value;
+  base::TimeDelta age_value;
   GetAgeValue(&age_value);
 
-  TimeDelta apparent_age = std::max(TimeDelta(), response_time - date_value);
-  TimeDelta response_delay = response_time - request_time;
-  TimeDelta corrected_age_value = age_value + response_delay;
-  TimeDelta corrected_initial_age = std::max(apparent_age, corrected_age_value);
-  TimeDelta resident_time = current_time - response_time;
-  TimeDelta current_age = corrected_initial_age + resident_time;
+  base::TimeDelta apparent_age =
+      std::max(base::TimeDelta(), response_time - date_value);
+  base::TimeDelta response_delay = response_time - request_time;
+  base::TimeDelta corrected_age_value = age_value + response_delay;
+  base::TimeDelta corrected_initial_age =
+      std::max(apparent_age, corrected_age_value);
+  base::TimeDelta resident_time = current_time - response_time;
+  base::TimeDelta current_age = corrected_initial_age + resident_time;
 
   return current_age;
 }
 
-bool HttpResponseHeaders::GetMaxAgeValue(TimeDelta* result) const {
+bool HttpResponseHeaders::GetMaxAgeValue(base::TimeDelta* result) const {
   return GetCacheControlDirective("max-age", result);
 }
 
-bool HttpResponseHeaders::GetAgeValue(TimeDelta* result) const {
+bool HttpResponseHeaders::GetAgeValue(base::TimeDelta* result) const {
   std::string value;
   if (!EnumerateHeader(nullptr, "Age", &value))
     return false;
@@ -1200,7 +1238,7 @@ bool HttpResponseHeaders::GetAgeValue(TimeDelta* result) const {
     }
   }
 
-  *result = TimeDelta::FromSeconds(seconds);
+  *result = base::Seconds(seconds);
   return true;
 }
 
@@ -1217,7 +1255,7 @@ bool HttpResponseHeaders::GetExpiresValue(Time* result) const {
 }
 
 bool HttpResponseHeaders::GetStaleWhileRevalidateValue(
-    TimeDelta* result) const {
+    base::TimeDelta* result) const {
   return GetCacheControlDirective("stale-while-revalidate", result);
 }
 
@@ -1270,7 +1308,7 @@ bool HttpResponseHeaders::IsKeepAlive() const {
     std::string token;
     while (EnumerateHeader(&iterator, header, &token)) {
       for (const KeepAliveToken& keep_alive_token : kKeepAliveTokens) {
-        if (base::LowerCaseEqualsASCII(token, keep_alive_token.token))
+        if (base::EqualsCaseInsensitiveASCII(token, keep_alive_token.token))
           return keep_alive_token.keep_alive;
       }
     }
@@ -1343,8 +1381,8 @@ bool HttpResponseHeaders::GetContentRangeFor206(
 
 base::Value HttpResponseHeaders::NetLogParams(
     NetLogCaptureMode capture_mode) const {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  base::Value headers(base::Value::Type::LIST);
+  base::Value::Dict dict;
+  base::Value::List headers;
   headers.Append(NetLogStringValue(GetStatusLine()));
   size_t iterator = 0;
   std::string name;
@@ -1354,8 +1392,8 @@ base::Value HttpResponseHeaders::NetLogParams(
         ElideHeaderValueForNetLog(capture_mode, name, value);
     headers.Append(NetLogStringValue(base::StrCat({name, ": ", log_value})));
   }
-  dict.SetKey("headers", std::move(headers));
-  return dict;
+  dict.Set("headers", std::move(headers));
+  return base::Value(std::move(dict));
 }
 
 bool HttpResponseHeaders::IsChunkEncoded() const {
@@ -1370,6 +1408,12 @@ bool HttpResponseHeaders::IsCookieResponseHeader(base::StringPiece name) {
       return true;
   }
   return false;
+}
+
+void HttpResponseHeaders::WriteIntoTrace(perfetto::TracedValue context) const {
+  perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
+  dict.Add("response_code", response_code_);
+  dict.Add("headers", parsed_);
 }
 
 }  // namespace net

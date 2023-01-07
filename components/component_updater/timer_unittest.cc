@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,7 +55,7 @@ TEST_F(ComponentUpdaterTimerTest, Start) {
   EXPECT_EQ(0, timer_client_fake.count());
 
   Timer timer;
-  const base::TimeDelta delay(base::TimeDelta::FromMilliseconds(1));
+  const base::TimeDelta delay(base::Milliseconds(1));
   timer.Start(delay, delay,
               base::BindRepeating(&TimerClientMock::OnTimerEvent,
                                   base::Unretained(&timer_client_fake)));

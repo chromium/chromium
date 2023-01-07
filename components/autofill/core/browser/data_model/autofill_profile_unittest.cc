@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,6 @@
 
 #include "base/format_macros.h"
 #include "base/guid.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -26,9 +24,9 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ASCIIToUTF16;
 using base::UTF8ToUTF16;
 
 namespace autofill {
@@ -38,7 +36,7 @@ constexpr VerificationStatus kObserved = VerificationStatus::kObserved;
 
 namespace {
 
-std::u16string GetLabel(AutofillProfile* profile) {
+std::u16string GetSuggestionLabel(AutofillProfile* profile) {
   std::vector<AutofillProfile*> profiles;
   profiles.push_back(profile);
   std::vector<std::u16string> labels;
@@ -46,14 +44,12 @@ std::u16string GetLabel(AutofillProfile* profile) {
   return labels[0];
 }
 
-void SetupValidatedTestProfile(AutofillProfile& profile) {
+void SetupTestProfile(AutofillProfile& profile) {
   profile.set_guid(base::GenerateGUID());
   profile.set_origin(kSettingsOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "marion@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
-  profile.SetClientValidityFromBitfieldValue(1984);
-  profile.set_is_client_validity_states_updated(true);
 }
 
 std::vector<AutofillProfile*> ToRawPointerVector(
@@ -66,36 +62,13 @@ std::vector<AutofillProfile*> ToRawPointerVector(
 
 }  // namespace
 
-class AutofillProfileTest : public testing::Test,
-                            public testing::WithParamInterface<bool> {
- protected:
-  void SetUp() override { InitializeFeatures(); }
-
-  void InitializeFeatures() {
-    structured_names_enabled_ = GetParam();
-    if (structured_names_enabled_) {
-      scoped_features_.InitAndEnableFeature(
-          features::kAutofillEnableSupportForMoreStructureInNames);
-    } else {
-      scoped_features_.InitAndDisableFeature(
-          features::kAutofillEnableSupportForMoreStructureInNames);
-    }
-  }
-
-  bool StructuredNames() const { return structured_names_enabled_; }
-
- private:
-  bool structured_names_enabled_;
-  base::test::ScopedFeatureList scoped_features_;
-};
-
 // Tests different possibilities for summary string generation.
 // Based on existence of first name, last name, and address line 1.
-TEST_P(AutofillProfileTest, PreviewSummaryString) {
+TEST(AutofillProfileTest, PreviewSummaryString) {
   // Case 0/null: ""
   AutofillProfile profile0(base::GenerateGUID(), test::kEmptyOrigin);
   // Empty profile - nothing to update.
-  std::u16string summary0 = GetLabel(&profile0);
+  std::u16string summary0 = GetSuggestionLabel(&profile0);
   EXPECT_EQ(std::u16string(), summary0);
 
   // Case 0a/empty name and address, so the first two fields of the rest of the
@@ -103,7 +76,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   AutofillProfile profile00(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile00, "", "", "", "johnwayne@me.xyz", "Fox", "",
                        "", "Hollywood", "CA", "91601", "US", "16505678910");
-  std::u16string summary00 = GetLabel(&profile00);
+  std::u16string summary00 = GetSuggestionLabel(&profile00);
   EXPECT_EQ(u"Hollywood, CA", summary00);
 
   // Case 1: "<address>" without line 2.
@@ -111,7 +84,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile1, "", "", "", "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.", "", "Hollywood", "CA", "91601", "US",
                        "16505678910");
-  std::u16string summary1 = GetLabel(&profile1);
+  std::u16string summary1 = GetSuggestionLabel(&profile1);
   EXPECT_EQ(u"123 Zoo St., Hollywood", summary1);
 
   // Case 1a: "<address>" with line 2.
@@ -119,7 +92,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile1a, "", "", "", "johnwayne@me.xyz", "Fox",
                        "123 Zoo St.", "unit 5", "Hollywood", "CA", "91601",
                        "US", "16505678910");
-  std::u16string summary1a = GetLabel(&profile1a);
+  std::u16string summary1a = GetSuggestionLabel(&profile1a);
   EXPECT_EQ(u"123 Zoo St., unit 5", summary1a);
 
   // Case 2: "<lastname>"
@@ -127,7 +100,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile2, "", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "", "", "Hollywood", "CA",
                        "91601", "US", "16505678910");
-  std::u16string summary2 = GetLabel(&profile2);
+  std::u16string summary2 = GetSuggestionLabel(&profile2);
   // Summary includes full name, to the maximal extent available.
   EXPECT_EQ(u"Mitchell Morrison, Hollywood", summary2);
 
@@ -136,7 +109,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile3, "", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "",
                        "Hollywood", "CA", "91601", "US", "16505678910");
-  std::u16string summary3 = GetLabel(&profile3);
+  std::u16string summary3 = GetSuggestionLabel(&profile3);
   EXPECT_EQ(u"Mitchell Morrison, 123 Zoo St.", summary3);
 
   // Case 4: "<firstname>"
@@ -144,7 +117,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile4, "Marion", "Mitchell", "", "johnwayne@me.xyz",
                        "Fox", "", "", "Hollywood", "CA", "91601", "US",
                        "16505678910");
-  std::u16string summary4 = GetLabel(&profile4);
+  std::u16string summary4 = GetSuggestionLabel(&profile4);
   EXPECT_EQ(u"Marion Mitchell, Hollywood", summary4);
 
   // Case 5: "<firstname>, <address>"
@@ -152,7 +125,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile5, "Marion", "Mitchell", "", "johnwayne@me.xyz",
                        "Fox", "123 Zoo St.", "unit 5", "Hollywood", "CA",
                        "91601", "US", "16505678910");
-  std::u16string summary5 = GetLabel(&profile5);
+  std::u16string summary5 = GetSuggestionLabel(&profile5);
   EXPECT_EQ(u"Marion Mitchell, 123 Zoo St.", summary5);
 
   // Case 6: "<firstname> <lastname>"
@@ -160,7 +133,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile6, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "", "", "Hollywood", "CA",
                        "91601", "US", "16505678910");
-  std::u16string summary6 = GetLabel(&profile6);
+  std::u16string summary6 = GetSuggestionLabel(&profile6);
   EXPECT_EQ(u"Marion Mitchell Morrison, Hollywood", summary6);
 
   // Case 7: "<firstname> <lastname>, <address>"
@@ -168,7 +141,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   test::SetProfileInfo(&profile7, "Marion", "Mitchell", "Morrison",
                        "johnwayne@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "16505678910");
-  std::u16string summary7 = GetLabel(&profile7);
+  std::u16string summary7 = GetSuggestionLabel(&profile7);
   EXPECT_EQ(u"Marion Mitchell Morrison, 123 Zoo St.", summary7);
 
   // Case 7a: "<firstname> <lastname>, <address>" - same as #7, except for
@@ -190,7 +163,7 @@ TEST_P(AutofillProfileTest, PreviewSummaryString) {
   EXPECT_EQ(u"Marion Mitchell Morrison, 123 Zoo St., marion@me.xyz", summary7a);
 }
 
-TEST_P(AutofillProfileTest, AdjustInferredLabels) {
+TEST(AutofillProfileTest, AdjustInferredLabels) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateGUID(),
                                                        test::kEmptyOrigin));
@@ -277,18 +250,16 @@ TEST_P(AutofillProfileTest, AdjustInferredLabels) {
   ASSERT_EQ(5U, labels.size());
   EXPECT_EQ(u"John Doe, 666 Erebus St., CA", labels[0]);
   EXPECT_EQ(u"Jane Doe, 123 Letha Shore.", labels[1]);
-  EXPECT_EQ(ASCIIToUTF16("John Doe, 666 Erebus St., CO, johndoe@hades.com,"
-                         " 16502111111"),
+  EXPECT_EQ(u"John Doe, 666 Erebus St., CO, johndoe@hades.com, 16502111111",
             labels[2]);
-  EXPECT_EQ(ASCIIToUTF16("John Doe, 666 Erebus St., CO, johndoe@hades.com,"
-                         " 16504444444"),
+  EXPECT_EQ(u"John Doe, 666 Erebus St., CO, johndoe@hades.com, 16504444444",
             labels[3]);
   // This one differs from other ones by unique e-mail, so no need for extra
   // information.
   EXPECT_EQ(u"John Doe, 666 Erebus St., CO, johndoe@styx.com", labels[4]);
 }
 
-TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_CH) {
+TEST(AutofillProfileTest, CreateInferredLabelsI18n_CH) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateGUID(),
                                                        test::kEmptyOrigin));
@@ -313,7 +284,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_CH) {
   };
 
   std::vector<std::u16string> labels;
-  for (size_t i = 0; i < base::size(kExpectedLabels); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles), nullptr,
                                           UNKNOWN_TYPE, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
@@ -321,7 +292,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_CH) {
   }
 }
 
-TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_FR) {
+TEST(AutofillProfileTest, CreateInferredLabelsI18n_FR) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateGUID(),
                                                        test::kEmptyOrigin));
@@ -347,7 +318,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_FR) {
   };
 
   std::vector<std::u16string> labels;
-  for (size_t i = 0; i < base::size(kExpectedLabels); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles), nullptr,
                                           UNKNOWN_TYPE, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
@@ -355,7 +326,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_FR) {
   }
 }
 
-TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_KR) {
+TEST(AutofillProfileTest, CreateInferredLabelsI18n_KR) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateGUID(),
                                                        test::kEmptyOrigin));
@@ -391,7 +362,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_KR) {
   };
 
   std::vector<std::u16string> labels;
-  for (size_t i = 0; i < base::size(kExpectedLabels); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles), nullptr,
                                           UNKNOWN_TYPE, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
@@ -399,7 +370,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_KR) {
   }
 }
 
-TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_JP_Latn) {
+TEST(AutofillProfileTest, CreateInferredLabelsI18n_JP_Latn) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateGUID(),
                                                        test::kEmptyOrigin));
@@ -428,7 +399,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_JP_Latn) {
   };
 
   std::vector<std::u16string> labels;
-  for (size_t i = 0; i < base::size(kExpectedLabels); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles), nullptr,
                                           UNKNOWN_TYPE, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
@@ -436,7 +407,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_JP_Latn) {
   }
 }
 
-TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_JP_ja) {
+TEST(AutofillProfileTest, CreateInferredLabelsI18n_JP_ja) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateGUID(),
                                                        test::kEmptyOrigin));
@@ -461,7 +432,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_JP_ja) {
   };
 
   std::vector<std::u16string> labels;
-  for (size_t i = 0; i < base::size(kExpectedLabels); ++i) {
+  for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
     AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles), nullptr,
                                           UNKNOWN_TYPE, i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
@@ -469,7 +440,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsI18n_JP_ja) {
   }
 }
 
-TEST_P(AutofillProfileTest, CreateInferredLabels) {
+TEST(AutofillProfileTest, CreateInferredLabels) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateGUID(),
                                                        test::kEmptyOrigin));
@@ -570,7 +541,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabels) {
 
 // Test that we fall back to using the full name if there are no other
 // distinguishing fields, but only if it makes sense given the suggested fields.
-TEST_P(AutofillProfileTest, CreateInferredLabelsFallsBackToFullName) {
+TEST(AutofillProfileTest, CreateInferredLabelsFallsBackToFullName) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateGUID(),
                                                        test::kEmptyOrigin));
@@ -607,7 +578,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsFallsBackToFullName) {
 }
 
 // Test that we do not show duplicate fields in the labels.
-TEST_P(AutofillProfileTest, CreateInferredLabelsNoDuplicatedFields) {
+TEST(AutofillProfileTest, CreateInferredLabelsNoDuplicatedFields) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateGUID(),
                                                        test::kEmptyOrigin));
@@ -622,7 +593,6 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsNoDuplicatedFields) {
   // should not fall back to the full name as a distinguishing field.
   std::vector<ServerFieldType> suggested_fields;
   suggested_fields.push_back(ADDRESS_HOME_LINE1);
-  suggested_fields.push_back(ADDRESS_BILLING_LINE1);
   suggested_fields.push_back(EMAIL_ADDRESS);
   std::vector<std::u16string> labels;
   AutofillProfile::CreateInferredLabels(ToRawPointerVector(profiles),
@@ -634,7 +604,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsNoDuplicatedFields) {
 }
 
 // Make sure that empty fields are not treated as distinguishing fields.
-TEST_P(AutofillProfileTest, CreateInferredLabelsSkipsEmptyFields) {
+TEST(AutofillProfileTest, CreateInferredLabelsSkipsEmptyFields) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateGUID(),
                                                        test::kEmptyOrigin));
@@ -671,7 +641,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsSkipsEmptyFields) {
 }
 
 // Test that labels that would otherwise have multiline values are flattened.
-TEST_P(AutofillProfileTest, CreateInferredLabelsFlattensMultiLineValues) {
+TEST(AutofillProfileTest, CreateInferredLabelsFlattensMultiLineValues) {
   std::vector<std::unique_ptr<AutofillProfile>> profiles;
   profiles.push_back(std::make_unique<AutofillProfile>(base::GenerateGUID(),
                                                        test::kEmptyOrigin));
@@ -691,7 +661,7 @@ TEST_P(AutofillProfileTest, CreateInferredLabelsFlattensMultiLineValues) {
   EXPECT_EQ(u"88 Nowhere Ave., Apt. 42", labels[0]);
 }
 
-TEST_P(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentMiddleNames) {
+TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentMiddleNames) {
   AutofillProfile profile1 =
       AutofillProfile(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Genevieve", "", "Fox", "", "", "", "", "",
@@ -742,7 +712,7 @@ TEST_P(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentMiddleNames) {
                                               {NAME_MIDDLE}));
 }
 
-TEST_P(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentFirstNames) {
+TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentFirstNames) {
   AutofillProfile profile1 =
       AutofillProfile(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Cynthia", "", "Fox", "", "", "", "", "", "",
@@ -765,7 +735,7 @@ TEST_P(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentFirstNames) {
                                               {NAME_FIRST}));
 }
 
-TEST_P(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentLastNames) {
+TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentLastNames) {
   AutofillProfile profile1 =
       AutofillProfile(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Genevieve", "", "Fuller", "", "", "", "", "",
@@ -808,7 +778,7 @@ TEST(AutofillProfileTest,
       comparator, profile1, "en-US", {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS}));
 }
 
-TEST_P(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentNonStreetAddresses) {
+TEST(AutofillProfileTest, IsSubsetOfForFieldSet_DifferentNonStreetAddresses) {
   AutofillProfile profile1 =
       AutofillProfile(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile1, "Genevieve", "", "Fox", "", "", "274 Main St",
@@ -971,11 +941,7 @@ TEST(AutofillProfileTest,
       comparator, profile2, "pt-BR", {NAME_FULL, PHONE_HOME_CITY_AND_NUMBER}));
 }
 
-TEST_P(AutofillProfileTest, TestFinalizeAfterImport) {
-  base::test::ScopedFeatureList structured_addresses_feature;
-  structured_addresses_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
+TEST(AutofillProfileTest, TestFinalizeAfterImport) {
   // A profile with just a full name should be finalizeable.
   {
     AutofillProfile profile;
@@ -1004,11 +970,7 @@ TEST_P(AutofillProfileTest, TestFinalizeAfterImport) {
   }
 }
 
-TEST_P(AutofillProfileTest, SetAndGetRawInfoWithValidationStatus) {
-  base::test::ScopedFeatureList structured_addresses_feature;
-  structured_addresses_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
+TEST(AutofillProfileTest, SetAndGetRawInfoWithValidationStatus) {
   AutofillProfile profile;
   // An unsupported type should return |kNoStatus|.
   EXPECT_EQ(profile.GetVerificationStatus(UNKNOWN_TYPE),
@@ -1033,11 +995,7 @@ TEST_P(AutofillProfileTest, SetAndGetRawInfoWithValidationStatus) {
   EXPECT_EQ(profile.GetVerificationStatusInt(NAME_FULL), 2);
 }
 
-TEST_P(AutofillProfileTest, SetAndGetInfoWithValidationStatus) {
-  base::test::ScopedFeatureList structured_addresses_feature;
-  structured_addresses_feature.InitAndEnableFeature(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-
+TEST(AutofillProfileTest, SetAndGetInfoWithValidationStatus) {
   AutofillProfile profile;
   // An unsupported type should return |kNoStatus|.
   EXPECT_EQ(profile.GetVerificationStatus(UNKNOWN_TYPE),
@@ -1079,25 +1037,9 @@ TEST_P(AutofillProfileTest, SetAndGetInfoWithValidationStatus) {
   EXPECT_EQ(profile.GetRawInfo(NAME_MIDDLE_INITIAL), u"CS");
 }
 
-TEST_P(AutofillProfileTest, SetRawInfo_UpdateValidityFlag) {
+TEST(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
   AutofillProfile a;
-  SetupValidatedTestProfile(a);
-  EXPECT_TRUE(a.is_client_validity_states_updated());
-
-  a.SetRawInfo(NAME_FULL, u"Alice Munro");
-  // NAME_FULL is NOT validated through the client API (not supported),
-  // therefore it should not change the validity flag.
-  EXPECT_TRUE(a.is_client_validity_states_updated());
-
-  a.SetRawInfo(ADDRESS_HOME_CITY, u"Ooz");
-  // ADDRESS_HOME_CITY IS validated through the client API, therefore it should
-  // change the flag to false.
-  EXPECT_FALSE(a.is_client_validity_states_updated());
-}
-
-TEST_P(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
-  AutofillProfile a;
-  SetupValidatedTestProfile(a);
+  SetupTestProfile(a);
 
   // Create an identical profile except that the new profile:
   //   (1) Has a different origin,
@@ -1123,7 +1065,6 @@ TEST_P(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
 
   EXPECT_TRUE(a.MergeDataFrom(b, "en-US"));
   // Merge has modified profile a, the validation is not updated.
-  EXPECT_FALSE(a.is_client_validity_states_updated());
   EXPECT_EQ(kSettingsOrigin, a.origin());
   EXPECT_EQ("Unit 5, area 51",
             base::UTF16ToUTF8(a.GetRawInfo(ADDRESS_HOME_LINE2)));
@@ -1133,27 +1074,21 @@ TEST_P(AutofillProfileTest, MergeDataFrom_DifferentProfile) {
   EXPECT_EQ("en", a.language_code());
 }
 
-TEST_P(AutofillProfileTest, MergeDataFrom_SameProfile) {
+TEST(AutofillProfileTest, MergeDataFrom_SameProfile) {
   AutofillProfile a;
-  SetupValidatedTestProfile(a);
+  SetupTestProfile(a);
 
   // The profile has no full name yet. Merge will add it.
   AutofillProfile b = a;
   // For the new structured profiles, the profile must be altered for the
   // merging to have an effect. The verification status of the full name is set
   // to user verified.
-  if (StructuredNames()) {
-    b.SetRawInfoWithVerificationStatus(NAME_FULL, b.GetRawInfo(NAME_FULL),
-                                       VerificationStatus::kUserVerified);
-  }
+  b.SetRawInfoWithVerificationStatus(NAME_FULL, b.GetRawInfo(NAME_FULL),
+                                     VerificationStatus::kUserVerified);
   b.set_guid(base::GenerateGUID());
   EXPECT_TRUE(a.MergeDataFrom(b, "en-US"));
   // Merge has modified profile a, the validation is not updated.
-  EXPECT_FALSE(a.is_client_validity_states_updated());
   EXPECT_EQ(1u, a.use_count());
-
-  // pretend that the profile is re-validated.
-  a.set_is_client_validity_states_updated(true);
 
   // Now the profile is fully populated. Merging it again has no effect (except
   // for usage statistics).
@@ -1161,12 +1096,11 @@ TEST_P(AutofillProfileTest, MergeDataFrom_SameProfile) {
   c.set_guid(base::GenerateGUID());
   c.set_use_count(3);
   EXPECT_FALSE(a.MergeDataFrom(c, "en-US"));
-  // Merge has not modified anything, the validation should not changed.
-  EXPECT_TRUE(a.is_client_validity_states_updated());
+  // Merge has not modified anything.
   EXPECT_EQ(3u, a.use_count());
 }
 
-TEST_P(AutofillProfileTest, OverwriteName_AddNameFull) {
+TEST(AutofillProfileTest, OverwriteName_AddNameFull) {
   AutofillProfile a;
 
   a.SetRawInfo(NAME_FIRST, u"Marion");
@@ -1190,7 +1124,7 @@ TEST_P(AutofillProfileTest, OverwriteName_AddNameFull) {
 
 // Tests that OverwriteName overwrites the name parts if they have different
 // case.
-TEST_P(AutofillProfileTest, OverwriteName_DifferentCase) {
+TEST(AutofillProfileTest, OverwriteName_DifferentCase) {
   AutofillProfile a;
   AutofillProfile b = a;
 
@@ -1217,7 +1151,7 @@ TEST_P(AutofillProfileTest, OverwriteName_DifferentCase) {
   EXPECT_EQ(u"Morrison", a.GetRawInfo(NAME_LAST));
 }
 
-TEST_P(AutofillProfileTest, AssignmentOperator) {
+TEST(AutofillProfileTest, AssignmentOperator) {
   AutofillProfile a(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&a, "Marion", "Mitchell", "Morrison", "marion@me.xyz",
                        "Fox", "123 Zoo St.", "unit 5", "Hollywood", "CA",
@@ -1233,7 +1167,7 @@ TEST_P(AutofillProfileTest, AssignmentOperator) {
   EXPECT_TRUE(a == b);
 }
 
-TEST_P(AutofillProfileTest, Copy) {
+TEST(AutofillProfileTest, Copy) {
   AutofillProfile a(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&a, "Marion", "Mitchell", "Morrison", "marion@me.xyz",
                        "Fox", "123 Zoo St.", "unit 5", "Hollywood", "CA",
@@ -1244,7 +1178,7 @@ TEST_P(AutofillProfileTest, Copy) {
   EXPECT_TRUE(a == b);
 }
 
-TEST_P(AutofillProfileTest, Compare) {
+TEST(AutofillProfileTest, Compare) {
   AutofillProfile a(base::GenerateGUID(), std::string());
   AutofillProfile b(base::GenerateGUID(), std::string());
 
@@ -1292,7 +1226,68 @@ TEST_P(AutofillProfileTest, Compare) {
   EXPECT_LT(0, b.Compare(a));
 }
 
-TEST_P(AutofillProfileTest, IsPresentButInvalid) {
+// For each structured profile tokens, test the comparison operator for both the
+// value and the status.
+TEST(AutofillProfileTest, Compare_StructuredTypes) {
+  // Those types do store a verification status.
+  ServerFieldTypeSet structured_types{
+      NAME_FULL,
+      NAME_FIRST,
+      NAME_MIDDLE,
+      NAME_LAST,
+      NAME_LAST_FIRST,
+      NAME_LAST_SECOND,
+      NAME_LAST_CONJUNCTION,
+      ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_DEPENDENT_LOCALITY,
+      ADDRESS_HOME_CITY,
+      ADDRESS_HOME_STATE,
+      ADDRESS_HOME_ZIP,
+      ADDRESS_HOME_SORTING_CODE,
+      ADDRESS_HOME_COUNTRY,
+      ADDRESS_HOME_HOUSE_NUMBER,
+      ADDRESS_HOME_STREET_NAME,
+      ADDRESS_HOME_DEPENDENT_STREET_NAME,
+      ADDRESS_HOME_PREMISE_NAME,
+      ADDRESS_HOME_SUBPREMISE,
+  };
+
+  // Those values are legal for all tokens.
+  const std::u16string value1 = u"DE";
+  const std::u16string value2 = u"US";
+
+  const VerificationStatus status1 = VerificationStatus::kObserved;
+  const VerificationStatus status2 = VerificationStatus::kParsed;
+
+  ASSERT_NE(value1, value2);
+  ASSERT_NE(status1, status2);
+
+  for (auto type : structured_types) {
+    // Create two empty profiles to test the tokens individually.
+    AutofillProfile profile1;
+    AutofillProfile profile2;
+
+    SCOPED_TRACE(testing::Message()
+                 << "Testing the Compare method for the type: "
+                 << AutofillType(type).ToString());
+
+    SCOPED_TRACE(testing::Message()
+                 << "Verify the corrext result for identical values");
+    profile1.SetRawInfoWithVerificationStatus(type, value1, status1);
+    profile2.SetRawInfoWithVerificationStatus(type, value1, status1);
+    EXPECT_EQ(profile1.Compare(profile2), 0);
+
+    SCOPED_TRACE(testing::Message() << "Verify the sensitivity to the value");
+    profile2.SetRawInfoWithVerificationStatus(type, value2, status1);
+    EXPECT_NE(profile1.Compare(profile2), 0);
+
+    SCOPED_TRACE(testing::Message() << "Verify the sensitivity to the status");
+    profile2.SetRawInfoWithVerificationStatus(type, value1, status2);
+    EXPECT_NE(profile1.Compare(profile2), 0);
+  }
+}
+
+TEST(AutofillProfileTest, IsPresentButInvalid) {
   AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
   EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_STATE));
   EXPECT_FALSE(profile.IsPresentButInvalid(ADDRESS_HOME_ZIP));
@@ -1322,55 +1317,58 @@ TEST_P(AutofillProfileTest, IsPresentButInvalid) {
   EXPECT_FALSE(profile.IsPresentButInvalid(PHONE_HOME_WHOLE_NUMBER));
 }
 
-TEST_P(AutofillProfileTest, SetRawInfoPreservesLineBreaks) {
+TEST(AutofillProfileTest, SetRawInfoPreservesLineBreaks) {
   AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
 
-  profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, ASCIIToUTF16("123 Super St.\n"
-                                                               "Apt. #42"));
-  EXPECT_EQ(ASCIIToUTF16("123 Super St.\n"
-                         "Apt. #42"),
-            profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
+  profile.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS,
+                     u"123 Super St.\n"
+                     u"Apt. #42");
+  EXPECT_EQ(
+      u"123 Super St.\n"
+      u"Apt. #42",
+      profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
 
-TEST_P(AutofillProfileTest, SetInfoPreservesLineBreaks) {
+TEST(AutofillProfileTest, SetInfoPreservesLineBreaks) {
   AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
 
   profile.SetInfo(ADDRESS_HOME_STREET_ADDRESS,
-                  ASCIIToUTF16("123 Super St.\n"
-                               "Apt. #42"),
+                  u"123 Super St.\n"
+                  u"Apt. #42",
                   "en-US");
-  EXPECT_EQ(ASCIIToUTF16("123 Super St.\n"
-                         "Apt. #42"),
-            profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
+  EXPECT_EQ(
+      u"123 Super St.\n"
+      u"Apt. #42",
+      profile.GetRawInfo(ADDRESS_HOME_STREET_ADDRESS));
 }
 
-TEST_P(AutofillProfileTest, SetRawInfoDoesntTrimWhitespace) {
+TEST(AutofillProfileTest, SetRawInfoDoesntTrimWhitespace) {
   AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
 
   profile.SetRawInfo(EMAIL_ADDRESS, u"\tuser@example.com    ");
   EXPECT_EQ(u"\tuser@example.com    ", profile.GetRawInfo(EMAIL_ADDRESS));
 }
 
-TEST_P(AutofillProfileTest, SetInfoTrimsWhitespace) {
+TEST(AutofillProfileTest, SetInfoTrimsWhitespace) {
   AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
 
   profile.SetInfo(EMAIL_ADDRESS, u"\tuser@example.com    ", "en-US");
   EXPECT_EQ(u"user@example.com", profile.GetRawInfo(EMAIL_ADDRESS));
 }
 
-TEST_P(AutofillProfileTest, FullAddress) {
+TEST(AutofillProfileTest, FullAddress) {
   AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
   test::SetProfileInfo(&profile, "Marion", "Mitchell", "Morrison",
                        "marion@me.xyz", "Fox", "123 Zoo St.", "unit 5",
                        "Hollywood", "CA", "91601", "US", "12345678910");
 
-  AutofillType full_address(HTML_TYPE_FULL_ADDRESS, HTML_MODE_NONE);
+  AutofillType full_address(HtmlFieldType::kFullAddress, HtmlFieldMode::kNone);
   std::u16string formatted_address(
-      ASCIIToUTF16("Marion Mitchell Morrison\n"
-                   "Fox\n"
-                   "123 Zoo St.\n"
-                   "unit 5\n"
-                   "Hollywood, CA 91601"));
+      u"Marion Mitchell Morrison\n"
+      u"Fox\n"
+      u"123 Zoo St.\n"
+      u"unit 5\n"
+      u"Hollywood, CA 91601");
   EXPECT_EQ(formatted_address, profile.GetInfo(full_address, "en-US"));
   // This should fail and leave the profile unchanged.
   EXPECT_FALSE(profile.SetInfo(full_address, u"foobar", "en-US"));
@@ -1379,11 +1377,12 @@ TEST_P(AutofillProfileTest, FullAddress) {
   // Some things can be missing...
   profile.SetInfo(ADDRESS_HOME_LINE2, std::u16string(), "en-US");
   profile.SetInfo(EMAIL_ADDRESS, std::u16string(), "en-US");
-  EXPECT_EQ(ASCIIToUTF16("Marion Mitchell Morrison\n"
-                         "Fox\n"
-                         "123 Zoo St.\n"
-                         "Hollywood, CA 91601"),
-            profile.GetInfo(full_address, "en-US"));
+  EXPECT_EQ(
+      u"Marion Mitchell Morrison\n"
+      u"Fox\n"
+      u"123 Zoo St.\n"
+      u"Hollywood, CA 91601",
+      profile.GetInfo(full_address, "en-US"));
 
   // ...but nothing comes out if a required field is missing.
   profile.SetInfo(ADDRESS_HOME_STATE, std::u16string(), "en-US");
@@ -1396,11 +1395,7 @@ TEST_P(AutofillProfileTest, FullAddress) {
   EXPECT_TRUE(profile.GetInfo(full_address, "en-US").empty());
 }
 
-TEST_P(AutofillProfileTest, SaveAdditionalInfo_Verified_MergeStructure) {
-  // This test is only applicable for structured names.
-  if (!StructuredNames())
-    return;
-
+TEST(AutofillProfileTest, SaveAdditionalInfo_Verified_MergeStructure) {
   AutofillProfile a;
   a.SetRawInfoWithVerificationStatus(NAME_FULL, u"Marion Mitchell Morrison",
                                      VerificationStatus::kUserVerified);
@@ -1443,7 +1438,7 @@ TEST_P(AutofillProfileTest, SaveAdditionalInfo_Verified_MergeStructure) {
   EXPECT_EQ(a.GetRawInfo(NAME_LAST), u"Morrison");
 }
 
-TEST_P(AutofillProfileTest, SaveAdditionalInfo_Name_AddingNameFull) {
+TEST(AutofillProfileTest, SaveAdditionalInfo_Name_AddingNameFull) {
   AutofillProfile a;
 
   a.SetRawInfo(NAME_FIRST, u"Marion");
@@ -1464,7 +1459,7 @@ TEST_P(AutofillProfileTest, SaveAdditionalInfo_Name_AddingNameFull) {
   EXPECT_EQ(u"Marion Mitchell Morrison", a.GetRawInfo(NAME_FULL));
 }
 
-TEST_P(AutofillProfileTest, SaveAdditionalInfo_Name_KeepNameFull) {
+TEST(AutofillProfileTest, SaveAdditionalInfo_Name_KeepNameFull) {
   AutofillProfile a;
 
   a.SetRawInfo(NAME_FIRST, u"Marion");
@@ -1485,8 +1480,8 @@ TEST_P(AutofillProfileTest, SaveAdditionalInfo_Name_KeepNameFull) {
 
 // Tests the merging of two similar profiles results in the second profile's
 // non-empty fields overwriting the initial profiles values.
-TEST_P(AutofillProfileTest,
-       SaveAdditionalInfo_Name_DifferentCaseAndDiacriticsNoNameFull) {
+TEST(AutofillProfileTest,
+     SaveAdditionalInfo_Name_DifferentCaseAndDiacriticsNoNameFull) {
   AutofillProfile a;
 
   a.SetRawInfoWithVerificationStatus(NAME_FIRST, u"marion", kObserved);
@@ -1511,18 +1506,14 @@ TEST_P(AutofillProfileTest,
   EXPECT_EQ(u"Märion", a.GetRawInfo(NAME_FIRST));
   EXPECT_EQ(u"Mitchéll", a.GetRawInfo(NAME_MIDDLE));
   EXPECT_EQ(u"Morrison", a.GetRawInfo(NAME_LAST));
-  if (!StructuredNames()) {
-    EXPECT_EQ(u"Märion Mitchéll Morrison", a.GetRawInfo(NAME_FULL));
-  } else {
-    // In the new merging logic the observed lower-case value should remain
-    // because the upper-case-diacritic version is only formatted.
-    EXPECT_EQ(u"marion mitchell morrison", a.GetRawInfo(NAME_FULL));
-  }
+  // In the merging logic the observed lower-case value should remain
+  // because the upper-case-diacritic version is only formatted.
+  EXPECT_EQ(u"marion mitchell morrison", a.GetRawInfo(NAME_FULL));
 }
 
 // Tests that no loss of information happens when SavingAdditionalInfo with a
 // profile with an empty name part.
-TEST_P(AutofillProfileTest, SaveAdditionalInfo_Name_LossOfInformation) {
+TEST(AutofillProfileTest, SaveAdditionalInfo_Name_LossOfInformation) {
   AutofillProfile a;
 
   a.SetRawInfo(NAME_FIRST, u"Marion");
@@ -1541,7 +1532,7 @@ TEST_P(AutofillProfileTest, SaveAdditionalInfo_Name_LossOfInformation) {
 
 // Tests that merging two complementary profiles for names results in a profile
 // with a complete name.
-TEST_P(AutofillProfileTest, SaveAdditionalInfo_Name_ComplementaryInformation) {
+TEST(AutofillProfileTest, SaveAdditionalInfo_Name_ComplementaryInformation) {
   AutofillProfile a;
 
   a.SetRawInfo(NAME_FIRST, u"Marion");
@@ -1563,643 +1554,61 @@ TEST_P(AutofillProfileTest, SaveAdditionalInfo_Name_ComplementaryInformation) {
   EXPECT_EQ(u"Marion Mitchell Morrison", a.GetRawInfo(NAME_FULL));
 }
 
-TEST_P(AutofillProfileTest, IsAnInvalidPhoneNumber) {
-  {
-    AutofillProfile profile;
-    // When all fields are unvalidated, none of them is an invalid phone type.
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(NAME_FULL));
+// Test that the label is correctly set and retrieved from the profile.
+TEST(AutofillProfileTest, SetAndGetProfileLabels) {
+  AutofillProfile p;
+  EXPECT_EQ(p.profile_label(), std::string());
 
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_HOME_NUMBER));
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_HOME_WHOLE_NUMBER));
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_BILLING_NUMBER));
-    EXPECT_EQ(false,
-              profile.IsAnInvalidPhoneNumber(PHONE_BILLING_WHOLE_NUMBER));
-  }
-
-  {
-    AutofillProfile profile;
-    profile.SetValidityState(PHONE_HOME_CITY_AND_NUMBER,
-                             AutofillDataModel::INVALID,
-                             AutofillDataModel::CLIENT);
-
-    // It's based on the server side validation.
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(ADDRESS_HOME_LINE1));
-
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_HOME_NUMBER));
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_HOME_WHOLE_NUMBER));
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_BILLING_NUMBER));
-    EXPECT_EQ(false,
-              profile.IsAnInvalidPhoneNumber(PHONE_BILLING_WHOLE_NUMBER));
-  }
-
-  {
-    AutofillProfile profile;
-    profile.SetValidityState(PHONE_HOME_CITY_CODE, AutofillDataModel::INVALID,
-                             AutofillDataModel::SERVER);
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(ADDRESS_HOME_LINE2));
-
-    EXPECT_EQ(true, profile.IsAnInvalidPhoneNumber(PHONE_HOME_NUMBER));
-    EXPECT_EQ(true, profile.IsAnInvalidPhoneNumber(PHONE_HOME_WHOLE_NUMBER));
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_BILLING_NUMBER));
-    EXPECT_EQ(false,
-              profile.IsAnInvalidPhoneNumber(PHONE_BILLING_WHOLE_NUMBER));
-  }
-  {
-    AutofillProfile profile;
-    profile.SetValidityState(PHONE_BILLING_COUNTRY_CODE,
-                             AutofillDataModel::INVALID,
-                             AutofillDataModel::SERVER);
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(ADDRESS_HOME_LINE2));
-
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_HOME_NUMBER));
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_HOME_WHOLE_NUMBER));
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_BILLING_NUMBER));
-    EXPECT_EQ(true, profile.IsAnInvalidPhoneNumber(PHONE_BILLING_WHOLE_NUMBER));
-  }
-  {
-    AutofillProfile profile;
-    profile.SetValidityState(PHONE_BILLING_NUMBER, AutofillDataModel::EMPTY,
-                             AutofillDataModel::SERVER);
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_HOME_CITY_CODE));
-
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_HOME_NUMBER));
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_HOME_WHOLE_NUMBER));
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_BILLING_NUMBER));
-    EXPECT_EQ(false,
-              profile.IsAnInvalidPhoneNumber(PHONE_BILLING_WHOLE_NUMBER));
-  }
-  {
-    AutofillProfile profile;
-    profile.SetValidityState(PHONE_BILLING_WHOLE_NUMBER,
-                             AutofillDataModel::VALID,
-                             AutofillDataModel::SERVER);
-    EXPECT_EQ(false,
-              profile.IsAnInvalidPhoneNumber(PHONE_BILLING_COUNTRY_CODE));
-
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_HOME_NUMBER));
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_HOME_WHOLE_NUMBER));
-    EXPECT_EQ(false, profile.IsAnInvalidPhoneNumber(PHONE_BILLING_NUMBER));
-    EXPECT_EQ(false,
-              profile.IsAnInvalidPhoneNumber(PHONE_BILLING_WHOLE_NUMBER));
-  }
+  p.set_profile_label("my label");
+  EXPECT_EQ(p.profile_label(), "my label");
 }
 
-TEST_P(AutofillProfileTest, ValidityStatesClients) {
-  AutofillProfile profile;
+TEST(AutofillProfileTest, LabelsInAssignmentAndComparisonOperator) {
+  AutofillProfile p1;
+  p1.set_profile_label("my label");
 
-  // The default validity state should be UNVALIDATED.
-  EXPECT_EQ(AutofillDataModel::UNVALIDATED,
-            profile.GetValidityState(ADDRESS_HOME_COUNTRY,
-                                     AutofillDataModel::CLIENT));
+  AutofillProfile p2;
+  p2 = p1;
 
-  // Make sure setting the validity state works.
-  profile.SetValidityState(ADDRESS_HOME_COUNTRY, AutofillDataModel::VALID,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::INVALID,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::EMPTY,
-                           AutofillDataModel::CLIENT);
-  EXPECT_EQ(AutofillDataModel::VALID,
-            profile.GetValidityState(ADDRESS_HOME_COUNTRY,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_EQ(
-      AutofillDataModel::INVALID,
-      profile.GetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::CLIENT));
-  EXPECT_EQ(
-      AutofillDataModel::EMPTY,
-      profile.GetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::CLIENT));
-  EXPECT_FALSE(profile.IsValidByClient());
+  // Check that the label was assigned correctly to p2.
+  EXPECT_EQ(p2.profile_label(), "my label");
+
+  // Now test that the comparison returns false if the label is not the same.
+  ASSERT_EQ(p1, p2);
+  p2.set_profile_label("another label");
+  EXPECT_NE(p1, p2);
 }
 
-TEST_P(AutofillProfileTest, ValidityStatesServer) {
-  AutofillProfile profile;
-  EXPECT_TRUE(test::GetFullProfile().IsValidByServer());
+// Test that the state to disallow confirmable merges is correctly set and
+// retrieved from the profile.
+TEST(AutofillProfileTest, SetAndGetProfileDisallowConfirmableMergestate) {
+  AutofillProfile p;
+  EXPECT_EQ(p.disallow_settings_visible_updates(), false);
 
-  // The default validity state should be UNVALIDATED.
-  EXPECT_EQ(AutofillDataModel::UNVALIDATED,
-            profile.GetValidityState(ADDRESS_HOME_COUNTRY,
-                                     AutofillDataModel::SERVER));
-
-  // Make sure setting the validity state works.
-  profile.SetValidityState(ADDRESS_HOME_COUNTRY, AutofillDataModel::VALID,
-                           AutofillDataModel::SERVER);
-  profile.SetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::INVALID,
-                           AutofillDataModel::SERVER);
-  profile.SetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::EMPTY,
-                           AutofillDataModel::SERVER);
-  EXPECT_EQ(AutofillDataModel::VALID,
-            profile.GetValidityState(ADDRESS_HOME_COUNTRY,
-                                     AutofillDataModel::SERVER));
-  EXPECT_EQ(
-      AutofillDataModel::INVALID,
-      profile.GetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::SERVER));
-  EXPECT_EQ(
-      AutofillDataModel::EMPTY,
-      profile.GetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::SERVER));
-  EXPECT_FALSE(profile.IsValidByServer());
+  p.set_disallow_settings_visible_updates(true);
+  EXPECT_EQ(p.disallow_settings_visible_updates(), true);
 }
 
-TEST_P(AutofillProfileTest, ValidityStates_ClientUnsupportedTypes) {
-  AutofillProfile profile;
+TEST(AutofillProfileTest, LockStateInAssignmentAndComparisonOperator) {
+  AutofillProfile p1;
+  p1.set_disallow_settings_visible_updates(true);
 
-  // The validity state of unsupported types should be UNSUPPORTED.
-  EXPECT_EQ(
-      AutofillDataModel::UNSUPPORTED,
-      profile.GetValidityState(ADDRESS_HOME_LINE1, AutofillDataModel::CLIENT));
+  AutofillProfile p2;
+  EXPECT_EQ(p2.disallow_settings_visible_updates(), false);
 
-  // Make sure setting the validity state of an unsupported type does nothing.
-  profile.SetValidityState(ADDRESS_HOME_LINE1, AutofillDataModel::VALID,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(ADDRESS_HOME_LINE2, AutofillDataModel::INVALID,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(PHONE_HOME_CITY_AND_NUMBER,
-                           AutofillDataModel::UNVALIDATED,
-                           AutofillDataModel::CLIENT);
-  EXPECT_EQ(
-      AutofillDataModel::UNSUPPORTED,
-      profile.GetValidityState(ADDRESS_HOME_LINE1, AutofillDataModel::CLIENT));
-  EXPECT_EQ(
-      AutofillDataModel::UNSUPPORTED,
-      profile.GetValidityState(ADDRESS_HOME_LINE2, AutofillDataModel::CLIENT));
-  EXPECT_EQ(AutofillDataModel::UNVALIDATED,
-            profile.GetValidityState(PHONE_HOME_CITY_AND_NUMBER,
-                                     AutofillDataModel::CLIENT));
+  p2 = p1;
+
+  // Check that the lock state was assigned correctly to p2.
+  EXPECT_EQ(p2.disallow_settings_visible_updates(), true);
+
+  // Now test that the comparison returns false if the lock state is not the
+  // same.
+  ASSERT_EQ(p1, p2);
+  p2.set_disallow_settings_visible_updates(false);
+  EXPECT_NE(p1, p2);
 }
 
-TEST_P(AutofillProfileTest, GetClientValidityBitfieldValue_Country) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_COUNTRY, AutofillDataModel::EMPTY,
-                           AutofillDataModel::CLIENT);
-  // 0b01
-  EXPECT_EQ(1, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_COUNTRY, AutofillDataModel::VALID,
-                           AutofillDataModel::CLIENT);
-  // 0b10
-  EXPECT_EQ(2, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_COUNTRY, AutofillDataModel::INVALID,
-                           AutofillDataModel::CLIENT);
-  // 0b11
-  EXPECT_EQ(3, profile.GetClientValidityBitfieldValue());
-}
-
-TEST_P(AutofillProfileTest, GetClientValidityBitfieldValue_State) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::EMPTY,
-                           AutofillDataModel::CLIENT);
-  // 0b0100
-  EXPECT_EQ(4, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::VALID,
-                           AutofillDataModel::CLIENT);
-  // 0b1000
-  EXPECT_EQ(8, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::INVALID,
-                           AutofillDataModel::CLIENT);
-  // 0b1100
-  EXPECT_EQ(12, profile.GetClientValidityBitfieldValue());
-}
-
-TEST_P(AutofillProfileTest, GetClientValidityBitfieldValue_Zip) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_ZIP, AutofillDataModel::EMPTY,
-                           AutofillDataModel::CLIENT);
-  // 0b010000
-  EXPECT_EQ(16, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_ZIP, AutofillDataModel::VALID,
-                           AutofillDataModel::CLIENT);
-  // 0b100000
-  EXPECT_EQ(32, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_ZIP, AutofillDataModel::INVALID,
-                           AutofillDataModel::CLIENT);
-  // 0b110000
-  EXPECT_EQ(48, profile.GetClientValidityBitfieldValue());
-}
-
-TEST_P(AutofillProfileTest, GetClientValidityBitfieldValue_City) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::EMPTY,
-                           AutofillDataModel::CLIENT);
-  // 0b01000000
-  EXPECT_EQ(64, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::VALID,
-                           AutofillDataModel::CLIENT);
-  // 0b10000000
-  EXPECT_EQ(128, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::INVALID,
-                           AutofillDataModel::CLIENT);
-  // 0b11000000
-  EXPECT_EQ(192, profile.GetClientValidityBitfieldValue());
-}
-
-TEST_P(AutofillProfileTest, GetClientValidityBitfieldValue_DependentLocality) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                           AutofillDataModel::EMPTY, AutofillDataModel::CLIENT);
-  // 0b0100000000
-  EXPECT_EQ(256, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                           AutofillDataModel::VALID, AutofillDataModel::CLIENT);
-  // 0b1000000000
-  EXPECT_EQ(512, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                           AutofillDataModel::INVALID,
-                           AutofillDataModel::CLIENT);
-  // 0b1100000000
-  EXPECT_EQ(768, profile.GetClientValidityBitfieldValue());
-}
-
-TEST_P(AutofillProfileTest, GetClientValidityBitfieldValue_Email) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(EMAIL_ADDRESS, AutofillDataModel::EMPTY,
-                           AutofillDataModel::CLIENT);
-  // 0b010000000000
-  EXPECT_EQ(1024, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(EMAIL_ADDRESS, AutofillDataModel::VALID,
-                           AutofillDataModel::CLIENT);
-  // 0b100000000000
-  EXPECT_EQ(2048, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(EMAIL_ADDRESS, AutofillDataModel::INVALID,
-                           AutofillDataModel::CLIENT);
-  // 0b110000000000
-  EXPECT_EQ(3072, profile.GetClientValidityBitfieldValue());
-}
-
-TEST_P(AutofillProfileTest, GetClientValidityBitfieldValue_Phone) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(PHONE_HOME_WHOLE_NUMBER, AutofillDataModel::EMPTY,
-                           AutofillDataModel::CLIENT);
-  // 0b01000000000000
-  EXPECT_EQ(4096, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(PHONE_HOME_WHOLE_NUMBER, AutofillDataModel::VALID,
-                           AutofillDataModel::CLIENT);
-  // 0b10000000000000
-  EXPECT_EQ(8192, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(PHONE_HOME_WHOLE_NUMBER, AutofillDataModel::INVALID,
-                           AutofillDataModel::CLIENT);
-  // 0b11000000000000
-  EXPECT_EQ(12288, profile.GetClientValidityBitfieldValue());
-}
-
-TEST_P(AutofillProfileTest, GetClientValidityBitfieldValue_Mixed) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_COUNTRY, AutofillDataModel::VALID,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::UNVALIDATED,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(ADDRESS_HOME_ZIP, AutofillDataModel::EMPTY,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::INVALID,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                           AutofillDataModel::UNVALIDATED,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(EMAIL_ADDRESS, AutofillDataModel::INVALID,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(PHONE_HOME_WHOLE_NUMBER, AutofillDataModel::EMPTY,
-                           AutofillDataModel::CLIENT);
-  EXPECT_FALSE(profile.IsValidByClient());
-  // 0b01110011010010
-  EXPECT_EQ(7378, profile.GetClientValidityBitfieldValue());
-
-  profile.SetValidityState(ADDRESS_HOME_COUNTRY, AutofillDataModel::EMPTY,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::INVALID,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(ADDRESS_HOME_ZIP, AutofillDataModel::VALID,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::VALID,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                           AutofillDataModel::INVALID,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(EMAIL_ADDRESS, AutofillDataModel::UNVALIDATED,
-                           AutofillDataModel::CLIENT);
-  profile.SetValidityState(PHONE_HOME_WHOLE_NUMBER, AutofillDataModel::INVALID,
-                           AutofillDataModel::CLIENT);
-  EXPECT_FALSE(profile.IsValidByClient());
-  // 0b11001110101101
-  EXPECT_EQ(13229, profile.GetClientValidityBitfieldValue());
-}
-
-TEST_P(AutofillProfileTest, SetClientValidityFromBitfieldValue_Country) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b01
-  profile.SetClientValidityFromBitfieldValue(1);
-  EXPECT_EQ(AutofillDataModel::EMPTY,
-            profile.GetValidityState(ADDRESS_HOME_COUNTRY,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b10
-  profile.SetClientValidityFromBitfieldValue(2);
-  EXPECT_EQ(AutofillDataModel::VALID,
-            profile.GetValidityState(ADDRESS_HOME_COUNTRY,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b11
-  profile.SetClientValidityFromBitfieldValue(3);
-  EXPECT_EQ(AutofillDataModel::INVALID,
-            profile.GetValidityState(ADDRESS_HOME_COUNTRY,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_FALSE(profile.IsValidByClient());
-}
-
-TEST_P(AutofillProfileTest, SetClientValidityFromBitfieldValue_State) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b0100
-  profile.SetClientValidityFromBitfieldValue(4);
-  EXPECT_EQ(
-      AutofillDataModel::EMPTY,
-      profile.GetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::CLIENT));
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b1000
-  profile.SetClientValidityFromBitfieldValue(8);
-  EXPECT_EQ(
-      AutofillDataModel::VALID,
-      profile.GetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::CLIENT));
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b1100
-  profile.SetClientValidityFromBitfieldValue(12);
-  EXPECT_EQ(
-      AutofillDataModel::INVALID,
-      profile.GetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::CLIENT));
-  EXPECT_FALSE(profile.IsValidByClient());
-}
-
-TEST_P(AutofillProfileTest, SetClientValidityFromBitfieldValue_Zip) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b010000
-  profile.SetClientValidityFromBitfieldValue(16);
-  EXPECT_EQ(
-      AutofillDataModel::EMPTY,
-      profile.GetValidityState(ADDRESS_HOME_ZIP, AutofillDataModel::CLIENT));
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b100000
-  profile.SetClientValidityFromBitfieldValue(32);
-  EXPECT_EQ(
-      AutofillDataModel::VALID,
-      profile.GetValidityState(ADDRESS_HOME_ZIP, AutofillDataModel::CLIENT));
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b110000
-  profile.SetClientValidityFromBitfieldValue(48);
-  EXPECT_EQ(
-      AutofillDataModel::INVALID,
-      profile.GetValidityState(ADDRESS_HOME_ZIP, AutofillDataModel::CLIENT));
-  EXPECT_FALSE(profile.IsValidByClient());
-}
-
-TEST_P(AutofillProfileTest, SetClientValidityFromBitfieldValue_City) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b01000000
-  profile.SetClientValidityFromBitfieldValue(64);
-  EXPECT_EQ(
-      AutofillDataModel::EMPTY,
-      profile.GetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::CLIENT));
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b10000000
-  profile.SetClientValidityFromBitfieldValue(128);
-  EXPECT_EQ(
-      AutofillDataModel::VALID,
-      profile.GetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::CLIENT));
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b11000000
-  profile.SetClientValidityFromBitfieldValue(192);
-  EXPECT_EQ(
-      AutofillDataModel::INVALID,
-      profile.GetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::CLIENT));
-  EXPECT_FALSE(profile.IsValidByClient());
-}
-
-TEST(AutofillProfileTest,
-     SetClientValidityFromBitfieldValue_DependentLocality) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b0100000000
-  profile.SetClientValidityFromBitfieldValue(256);
-  EXPECT_EQ(AutofillDataModel::EMPTY,
-            profile.GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b1000000000
-  profile.SetClientValidityFromBitfieldValue(512);
-  EXPECT_EQ(AutofillDataModel::VALID,
-            profile.GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b1100000000
-  profile.SetClientValidityFromBitfieldValue(768);
-  EXPECT_EQ(AutofillDataModel::INVALID,
-            profile.GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_FALSE(profile.IsValidByClient());
-}
-
-TEST_P(AutofillProfileTest, SetClientValidityFromBitfieldValue_Email) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b010000000000
-  profile.SetClientValidityFromBitfieldValue(1024);
-  EXPECT_EQ(AutofillDataModel::EMPTY,
-            profile.GetValidityState(EMAIL_ADDRESS, AutofillDataModel::CLIENT));
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b100000000000
-  profile.SetClientValidityFromBitfieldValue(2048);
-  EXPECT_EQ(AutofillDataModel::VALID,
-            profile.GetValidityState(EMAIL_ADDRESS, AutofillDataModel::CLIENT));
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b110000000000
-  profile.SetClientValidityFromBitfieldValue(3072);
-  EXPECT_EQ(AutofillDataModel::INVALID,
-            profile.GetValidityState(EMAIL_ADDRESS, AutofillDataModel::CLIENT));
-  EXPECT_FALSE(profile.IsValidByClient());
-}
-
-TEST_P(AutofillProfileTest, SetClientValidityFromBitfieldValue_Phone) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b01000000000000
-  profile.SetClientValidityFromBitfieldValue(4096);
-  EXPECT_EQ(AutofillDataModel::EMPTY,
-            profile.GetValidityState(PHONE_HOME_WHOLE_NUMBER,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b10000000000000
-  profile.SetClientValidityFromBitfieldValue(8192);
-  EXPECT_EQ(AutofillDataModel::VALID,
-            profile.GetValidityState(PHONE_HOME_WHOLE_NUMBER,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_TRUE(profile.IsValidByClient());
-
-  // 0b11000000000000
-  profile.SetClientValidityFromBitfieldValue(12288);
-  EXPECT_EQ(AutofillDataModel::INVALID,
-            profile.GetValidityState(PHONE_HOME_WHOLE_NUMBER,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_FALSE(profile.IsValidByClient());
-}
-
-TEST_P(AutofillProfileTest, SetClientValidityFromBitfieldValue_Mixed) {
-  AutofillProfile profile;
-
-  // By default all validity statuses should be set to UNVALIDATED, thus the
-  // bitfield value should be empty.
-  EXPECT_EQ(0, profile.GetClientValidityBitfieldValue());
-
-  // 0b01110011010010
-  profile.SetClientValidityFromBitfieldValue(7378);
-  EXPECT_EQ(AutofillDataModel::VALID,
-            profile.GetValidityState(ADDRESS_HOME_COUNTRY,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_EQ(
-      AutofillDataModel::UNVALIDATED,
-      profile.GetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::CLIENT));
-  EXPECT_EQ(
-      AutofillDataModel::EMPTY,
-      profile.GetValidityState(ADDRESS_HOME_ZIP, AutofillDataModel::CLIENT));
-  EXPECT_EQ(
-      AutofillDataModel::INVALID,
-      profile.GetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::CLIENT));
-  EXPECT_EQ(AutofillDataModel::UNVALIDATED,
-            profile.GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_EQ(AutofillDataModel::INVALID,
-            profile.GetValidityState(EMAIL_ADDRESS, AutofillDataModel::CLIENT));
-  EXPECT_EQ(AutofillDataModel::EMPTY,
-            profile.GetValidityState(PHONE_HOME_WHOLE_NUMBER,
-                                     AutofillDataModel::CLIENT));
-
-  EXPECT_FALSE(profile.IsValidByClient());
-
-  // 0b11001110101101
-  profile.SetClientValidityFromBitfieldValue(13229);
-  EXPECT_EQ(AutofillDataModel::EMPTY,
-            profile.GetValidityState(ADDRESS_HOME_COUNTRY,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_EQ(
-      AutofillDataModel::INVALID,
-      profile.GetValidityState(ADDRESS_HOME_STATE, AutofillDataModel::CLIENT));
-  EXPECT_EQ(
-      AutofillDataModel::VALID,
-      profile.GetValidityState(ADDRESS_HOME_ZIP, AutofillDataModel::CLIENT));
-  EXPECT_EQ(
-      AutofillDataModel::VALID,
-      profile.GetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::CLIENT));
-  EXPECT_EQ(AutofillDataModel::INVALID,
-            profile.GetValidityState(ADDRESS_HOME_DEPENDENT_LOCALITY,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_EQ(AutofillDataModel::UNVALIDATED,
-            profile.GetValidityState(EMAIL_ADDRESS, AutofillDataModel::CLIENT));
-  EXPECT_EQ(AutofillDataModel::INVALID,
-            profile.GetValidityState(PHONE_HOME_WHOLE_NUMBER,
-                                     AutofillDataModel::CLIENT));
-  EXPECT_FALSE(profile.IsValidByClient());
-}
-
-TEST_P(AutofillProfileTest, GetMetadata) {
+TEST(AutofillProfileTest, GetMetadata) {
   AutofillProfile local_profile = test::GetFullProfile();
   local_profile.set_use_count(2);
   local_profile.set_use_date(base::Time::FromDoubleT(25));
@@ -2221,7 +1630,7 @@ TEST_P(AutofillProfileTest, GetMetadata) {
   EXPECT_EQ(server_profile.use_date(), server_metadata.use_date);
 }
 
-TEST_P(AutofillProfileTest, SetMetadata_MatchingId) {
+TEST(AutofillProfileTest, SetMetadata_MatchingId) {
   AutofillProfile local_profile = test::GetFullProfile();
   AutofillMetadata local_metadata;
   local_metadata.id = local_profile.guid();
@@ -2247,7 +1656,7 @@ TEST_P(AutofillProfileTest, SetMetadata_MatchingId) {
   EXPECT_EQ(server_metadata.use_date, server_profile.use_date());
 }
 
-TEST_P(AutofillProfileTest, SetMetadata_NotMatchingId) {
+TEST(AutofillProfileTest, SetMetadata_NotMatchingId) {
   AutofillProfile local_profile = test::GetFullProfile();
   AutofillMetadata local_metadata;
   local_metadata.id = "WrongId";
@@ -2274,13 +1683,13 @@ TEST_P(AutofillProfileTest, SetMetadata_NotMatchingId) {
 }
 
 // Tests that the profile is only deletable if it is not verified.
-TEST_P(AutofillProfileTest, IsDeletable) {
+TEST(AutofillProfileTest, IsDeletable) {
   // Set up an arbitrary time, as setup the current time to just above the
   // threshold later than that time.
   const base::Time kArbitraryTime = base::Time::FromDoubleT(25000000000);
   TestAutofillClock test_clock;
   test_clock.SetNow(kArbitraryTime + kDisusedDataModelDeletionTimeDelta +
-                    base::TimeDelta::FromDays(1));
+                    base::Days(1));
 
   // Created a profile that has not been used since over the deletion threshold.
   AutofillProfile profile = test::GetFullProfile();
@@ -2297,214 +1706,85 @@ TEST_P(AutofillProfileTest, IsDeletable) {
   EXPECT_FALSE(profile.IsDeletable());
 }
 
-// Tests that the two profiles can be compared for validation purposes.
-TEST_P(AutofillProfileTest, EqualsForClientValidationPurpose) {
-  AutofillProfile profile = test::GetFullProfile();
+// Tests that the |HasStructuredData| returns whether the profile has structured
+// data or not.
+TEST(AutofillProfileTest, HasStructuredData) {
+  AutofillProfile profile;
+  profile.SetRawInfoWithVerificationStatus(
+      NAME_FULL, u"marion mitchell morrison", kObserved);
+  EXPECT_FALSE(profile.HasStructuredData());
 
-  AutofillProfile profile2(profile);
-  profile2.SetRawInfo(EMAIL_ADDRESS, u"different@email.com");
-
-  AutofillProfile profile3(profile);
-  profile3.SetRawInfo(NAME_FULL, u"Alice Munro");
-
-  // For client validation purposes,
-  // profile2 != profile, because they differ in the email, which is validated
-  // by the client.
-  // profile3 == profile, because they only differ in name, and name is not
-  // validated by the client.
-  EXPECT_FALSE(profile.EqualsForClientValidationPurpose(profile2));
-  EXPECT_TRUE(profile.EqualsForClientValidationPurpose(profile3));
+  profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"marion", kObserved);
+  profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"mitchell", kObserved);
+  profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"morrison", kObserved);
+  EXPECT_TRUE(profile.HasStructuredData());
 }
 
-// Tests that the skip decision is made correctly.
-TEST_P(AutofillProfileTest, ShouldSkipFillingOrSuggesting) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{features::kAutofillProfileServerValidation,
-                            features::kAutofillProfileClientValidation},
-      /*disabled_features=*/{});
+TEST(AutofillProfileTest, RemoveInaccessibleProfileValues) {
+  // Returns true if at least one field was removed.
+  auto RemoveInaccessibleProfileValues = [](AutofillProfile& profile) {
+    const ServerFieldTypeSet inaccessible_fields =
+        profile.FindInaccessibleProfileValues();
+    profile.ClearFields(inaccessible_fields);
+    return !inaccessible_fields.empty();
+  };
 
-  AutofillProfile profile = test::GetFullProfile();
-  profile.SetValidityState(ADDRESS_HOME_STATE, AutofillProfile::VALID,
-                           AutofillProfile::SERVER);
-  profile.SetValidityState(ADDRESS_HOME_CITY, AutofillProfile::VALID,
-                           AutofillProfile::CLIENT);
-  profile.SetValidityState(ADDRESS_HOME_LINE1, AutofillProfile::UNSUPPORTED,
-                           AutofillProfile::CLIENT);
+  AutofillProfile actual_profile;
+  actual_profile.SetRawInfo(NAME_FIRST, u"Florian");
 
-  EXPECT_FALSE(profile.ShouldSkipFillingOrSuggesting(ADDRESS_HOME_CITY));
-  EXPECT_FALSE(profile.ShouldSkipFillingOrSuggesting(ADDRESS_HOME_STATE));
-  EXPECT_FALSE(profile.ShouldSkipFillingOrSuggesting(ADDRESS_HOME_COUNTRY));
-  EXPECT_FALSE(profile.ShouldSkipFillingOrSuggesting(ADDRESS_HOME_LINE1));
-  EXPECT_FALSE(profile.ShouldSkipFillingOrSuggesting(EMAIL_ADDRESS));
+  // State is uncommon in Germany and inaccessible in the settings. Expect it
+  // to be removed.
+  actual_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"DE");
+  AutofillProfile expected_profile = actual_profile;
+  actual_profile.SetRawInfo(ADDRESS_HOME_STATE, u"Bayern");
+  EXPECT_TRUE(RemoveInaccessibleProfileValues(actual_profile));
+  EXPECT_EQ(actual_profile.Compare(expected_profile), 0);
 
-  profile.SetValidityState(EMAIL_ADDRESS, AutofillProfile::INVALID,
-                           AutofillProfile::CLIENT);
-  profile.SetValidityState(ADDRESS_HOME_STATE, AutofillProfile::INVALID,
-                           AutofillProfile::SERVER);
-  profile.SetValidityState(ADDRESS_HOME_CITY, AutofillProfile::INVALID,
-                           AutofillProfile::CLIENT);
+  // There are no ZIP codes in Angola.
+  actual_profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"AO");
+  expected_profile = actual_profile;
+  actual_profile.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
+  EXPECT_TRUE(RemoveInaccessibleProfileValues(actual_profile));
+  EXPECT_EQ(actual_profile.Compare(expected_profile), 0);
 
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"");
-  EXPECT_FALSE(profile.ShouldSkipFillingOrSuggesting(ADDRESS_HOME_CITY));
-  EXPECT_TRUE(profile.ShouldSkipFillingOrSuggesting(ADDRESS_HOME_STATE));
-  EXPECT_FALSE(profile.ShouldSkipFillingOrSuggesting(ADDRESS_HOME_COUNTRY));
-  EXPECT_FALSE(profile.ShouldSkipFillingOrSuggesting(ADDRESS_HOME_LINE1));
-  EXPECT_TRUE(profile.ShouldSkipFillingOrSuggesting(EMAIL_ADDRESS));
+  // If no country is set, the US requirements are used.
+  // The US uses both ZIP codes and states.
+  actual_profile.ClearFields({ADDRESS_HOME_COUNTRY});
+  actual_profile.SetRawInfo(ADDRESS_HOME_STATE, u"CA");
+  actual_profile.SetRawInfo(ADDRESS_HOME_ZIP, u"12345");
+  expected_profile = actual_profile;
+  EXPECT_FALSE(RemoveInaccessibleProfileValues(actual_profile));
+  EXPECT_EQ(actual_profile.Compare(expected_profile), 0);
+}
 
-  profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
-  EXPECT_TRUE(profile.ShouldSkipFillingOrSuggesting(ADDRESS_HOME_CITY));
-  EXPECT_TRUE(profile.ShouldSkipFillingOrSuggesting(ADDRESS_HOME_STATE));
-  EXPECT_FALSE(profile.ShouldSkipFillingOrSuggesting(ADDRESS_HOME_COUNTRY));
-  EXPECT_FALSE(profile.ShouldSkipFillingOrSuggesting(ADDRESS_HOME_LINE1));
-  EXPECT_TRUE(profile.ShouldSkipFillingOrSuggesting(EMAIL_ADDRESS));
+TEST(AutofillProfileTest, GetNonEmptyRawTypes) {
+  AutofillProfile profile(base::GenerateGUID(), test::kEmptyOrigin);
+  test::SetProfileInfo(&profile, "Marion", nullptr, "Morrison",
+                       "johnwayne@me.xyz", nullptr, "123 Zoo St.", nullptr,
+                       "Hollywood", "CA", "91601", "US", "14155678910");
+
+  std::vector<ServerFieldType> expected_raw_types{NAME_FIRST,
+                                                  NAME_LAST,
+                                                  NAME_FULL,
+                                                  EMAIL_ADDRESS,
+                                                  PHONE_HOME_WHOLE_NUMBER,
+                                                  ADDRESS_HOME_LINE1,
+                                                  ADDRESS_HOME_CITY,
+                                                  ADDRESS_HOME_STATE,
+                                                  ADDRESS_HOME_ZIP,
+                                                  ADDRESS_HOME_COUNTRY,
+                                                  ADDRESS_HOME_STREET_ADDRESS,
+                                                  ADDRESS_HOME_STREET_NAME,
+                                                  ADDRESS_HOME_HOUSE_NUMBER,
+                                                  NAME_LAST_SECOND};
+
+  ServerFieldTypeSet non_empty_raw_types;
+  profile.GetNonEmptyRawTypes(&non_empty_raw_types);
+
+  EXPECT_THAT(non_empty_raw_types,
+              testing::UnorderedElementsAreArray(expected_raw_types));
 }
 
 enum Expectation { GREATER, LESS, EQUAL };
-
-struct HasGreaterFrescocencyTestCase {
-  const AutofillDataModel::ValidityState client_validity_state_a;
-  const AutofillDataModel::ValidityState server_validity_state_a;
-  const AutofillDataModel::ValidityState client_validity_state_b;
-  const AutofillDataModel::ValidityState server_validity_state_b;
-
-  const bool use_client_validation;
-  const bool use_server_validation;
-  Expectation expectation;
-};
-
-class HasGreaterFrescocencyTest
-    : public testing::TestWithParam<HasGreaterFrescocencyTestCase> {};
-
-TEST_P(HasGreaterFrescocencyTest, HasGreaterFrescocency) {
-  auto test_case = GetParam();
-  AutofillProfile profile_a("00000000-0000-0000-0000-000000000001", "");
-  AutofillProfile profile_b("00000000-0000-0000-0000-000000000002", "");
-
-  profile_a.SetValidityState(EMAIL_ADDRESS, test_case.client_validity_state_a,
-                             AutofillDataModel::CLIENT);
-  profile_a.SetValidityState(ADDRESS_HOME_ZIP,
-                             test_case.server_validity_state_a,
-                             AutofillDataModel::SERVER);
-
-  profile_b.SetValidityState(ADDRESS_HOME_CITY,
-                             test_case.client_validity_state_b,
-                             AutofillDataModel::CLIENT);
-  profile_b.SetValidityState(PHONE_HOME_NUMBER,
-                             test_case.server_validity_state_b,
-                             AutofillDataModel::SERVER);
-
-  const base::Time now = AutofillClock::Now();
-
-  if (test_case.expectation == EQUAL) {
-    EXPECT_EQ(profile_a.HasGreaterFrecencyThan(&profile_b, now),
-              profile_a.HasGreaterFrescocencyThan(
-                  &profile_b, now, test_case.use_client_validation,
-                  test_case.use_server_validation));
-    return;
-  }
-
-  EXPECT_EQ(test_case.expectation == GREATER,
-            profile_a.HasGreaterFrescocencyThan(
-                &profile_b, now, test_case.use_client_validation,
-                test_case.use_server_validation));
-  EXPECT_NE(test_case.expectation == GREATER,
-            profile_b.HasGreaterFrescocencyThan(
-                &profile_a, now, test_case.use_client_validation,
-                test_case.use_server_validation));
-}
-
-// Validity is only checked in case of tie in frecency. Frecency has greater
-// priority than validity in frescocency.
-TEST_P(HasGreaterFrescocencyTest, PriorityCheck) {
-  AutofillProfile profile_invalid("00000000-0000-0000-0000-000000000001", "");
-  AutofillProfile profile_valid("00000000-0000-0000-0000-000000000002", "");
-
-  profile_invalid.SetValidityState(EMAIL_ADDRESS, AutofillDataModel::INVALID,
-                                   AutofillDataModel::CLIENT);
-  profile_valid.SetValidityState(ADDRESS_HOME_ZIP, AutofillDataModel::INVALID,
-                                 AutofillDataModel::SERVER);
-
-  profile_valid.SetValidityState(ADDRESS_HOME_CITY, AutofillDataModel::VALID,
-                                 AutofillDataModel::CLIENT);
-  profile_valid.SetValidityState(PHONE_HOME_NUMBER, AutofillDataModel::VALID,
-                                 AutofillDataModel::SERVER);
-
-  profile_invalid.set_use_count(100);
-  profile_valid.set_use_count(10);
-
-  const base::Time now = AutofillClock::Now();
-  const base::Time past = now - base::TimeDelta::FromDays(1);
-
-  profile_invalid.set_use_date(now);
-  profile_valid.set_use_date(past);
-
-  EXPECT_TRUE(profile_invalid.HasGreaterFrecencyThan(&profile_valid, now));
-  EXPECT_TRUE(profile_invalid.HasGreaterFrescocencyThan(&profile_valid, now,
-                                                        true, true));
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    AutofillProfileTest,
-    HasGreaterFrescocencyTest,
-    testing::Values(
-        HasGreaterFrescocencyTestCase{
-            AutofillDataModel::VALID, AutofillDataModel::INVALID,
-            AutofillDataModel::VALID, AutofillDataModel::UNVALIDATED, false,
-            false, EQUAL},
-        HasGreaterFrescocencyTestCase{
-            AutofillDataModel::INVALID, AutofillDataModel::VALID,
-            AutofillDataModel::VALID, AutofillDataModel::INVALID, false, false,
-            EQUAL},
-        HasGreaterFrescocencyTestCase{
-            AutofillDataModel::INVALID, AutofillDataModel::VALID,
-            AutofillDataModel::VALID, AutofillDataModel::INVALID, false, true,
-            GREATER},
-        HasGreaterFrescocencyTestCase{
-            AutofillDataModel::INVALID, AutofillDataModel::INVALID,
-            AutofillDataModel::VALID, AutofillDataModel::INVALID, false, true,
-            EQUAL},
-        HasGreaterFrescocencyTestCase{
-            AutofillDataModel::INVALID, AutofillDataModel::VALID,
-            AutofillDataModel::VALID, AutofillDataModel::VALID, false, true,
-            EQUAL},
-        HasGreaterFrescocencyTestCase{
-            AutofillDataModel::INVALID, AutofillDataModel::INVALID,
-            AutofillDataModel::VALID, AutofillDataModel::UNVALIDATED, false,
-            true, LESS},
-        HasGreaterFrescocencyTestCase{
-            AutofillDataModel::INVALID, AutofillDataModel::VALID,
-            AutofillDataModel::VALID, AutofillDataModel::INVALID, true, true,
-            EQUAL},
-        HasGreaterFrescocencyTestCase{
-            AutofillDataModel::INVALID, AutofillDataModel::INVALID,
-            AutofillDataModel::UNVALIDATED, AutofillDataModel::VALID, true,
-            true, LESS},
-        HasGreaterFrescocencyTestCase{
-            AutofillDataModel::VALID, AutofillDataModel::VALID,
-            AutofillDataModel::VALID, AutofillDataModel::VALID, true, true,
-            EQUAL},
-        HasGreaterFrescocencyTestCase{
-            AutofillDataModel::VALID, AutofillDataModel::UNVALIDATED,
-            AutofillDataModel::VALID, AutofillDataModel::INVALID, true, true,
-            GREATER},
-        HasGreaterFrescocencyTestCase{
-            AutofillDataModel::VALID, AutofillDataModel::INVALID,
-            AutofillDataModel::INVALID, AutofillDataModel::VALID, true, false,
-            GREATER},
-        HasGreaterFrescocencyTestCase{
-            AutofillDataModel::INVALID, AutofillDataModel::INVALID,
-            AutofillDataModel::UNVALIDATED, AutofillDataModel::VALID, true,
-            false, LESS},
-        HasGreaterFrescocencyTestCase{
-            AutofillDataModel::VALID, AutofillDataModel::INVALID,
-            AutofillDataModel::VALID, AutofillDataModel::VALID, true, false,
-            EQUAL},
-        HasGreaterFrescocencyTestCase{
-            AutofillDataModel::VALID, AutofillDataModel::UNVALIDATED,
-            AutofillDataModel::INVALID, AutofillDataModel::INVALID, true, false,
-            GREATER}));
-
-INSTANTIATE_TEST_SUITE_P(All, AutofillProfileTest, testing::Bool());
 
 }  // namespace autofill

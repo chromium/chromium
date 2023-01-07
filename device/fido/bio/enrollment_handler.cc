@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,21 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "components/device_event_log/device_event_log.h"
+#include "device/fido/bio/enrollment.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
 
 namespace device {
 
+BioEnrollmentHandler::SensorInfo::SensorInfo() = default;
+BioEnrollmentHandler::SensorInfo::SensorInfo(SensorInfo&&) = default;
+BioEnrollmentHandler::SensorInfo& BioEnrollmentHandler::SensorInfo::operator=(
+    SensorInfo&&) = default;
+
 BioEnrollmentHandler::BioEnrollmentHandler(
     const base::flat_set<FidoTransportProtocol>& supported_transports,
-    base::OnceClosure ready_callback,
+    ReadyCallback ready_callback,
     ErrorCallback error_callback,
     GetPINCallback get_pin_callback,
     FidoDiscoveryFactory* factory)
@@ -32,12 +38,12 @@ BioEnrollmentHandler::~BioEnrollmentHandler() {
 
 void BioEnrollmentHandler::EnrollTemplate(
     SampleCallback sample_callback,
-    CompletionCallback completion_callback) {
+    EnrollmentCallback enrollment_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kReady);
   state_ = State::kEnrolling;
   sample_callback_ = std::move(sample_callback);
-  enrollment_callback_ = std::move(completion_callback);
+  enrollment_callback_ = std::move(enrollment_callback);
   bio_enroller_ =
       std::make_unique<BioEnroller>(this, authenticator_, *pin_token_response_);
 }
@@ -103,7 +109,7 @@ void BioEnrollmentHandler::AuthenticatorRemoved(
   }
 
   authenticator_ = nullptr;
-  Finish(BioEnrollmentStatus::kSuccess);
+  RunErrorCallback(Error::kAuthenticatorRemoved);
 }
 
 void BioEnrollmentHandler::OnSampleCollected(BioEnrollmentSampleStatus status,
@@ -114,7 +120,7 @@ void BioEnrollmentHandler::OnSampleCollected(BioEnrollmentSampleStatus status,
 }
 
 void BioEnrollmentHandler::OnEnrollmentDone(
-    base::Optional<std::vector<uint8_t>> template_id) {
+    absl::optional<std::vector<uint8_t>> template_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bio_enroller_.reset();
@@ -154,19 +160,19 @@ void BioEnrollmentHandler::OnTouch(FidoAuthenticator* authenticator) {
        authenticator->Options()->bio_enrollment_availability_preview ==
            AuthenticatorSupportedOptions::BioEnrollmentAvailability::
                kNotSupported)) {
-    Finish(BioEnrollmentStatus::kAuthenticatorMissingBioEnrollment);
+    RunErrorCallback(Error::kAuthenticatorMissingBioEnrollment);
     return;
   }
 
   if (authenticator->Options()->client_pin_availability !=
       AuthenticatorSupportedOptions::ClientPinAvailability::
           kSupportedAndPinSet) {
-    Finish(BioEnrollmentStatus::kNoPINSet);
+    RunErrorCallback(Error::kNoPINSet);
     return;
   }
 
   if (authenticator->ForcePINChange()) {
-    Finish(BioEnrollmentStatus::kForcePINChange);
+    RunErrorCallback(Error::kForcePINChange);
     return;
   }
 
@@ -178,16 +184,16 @@ void BioEnrollmentHandler::OnTouch(FidoAuthenticator* authenticator) {
 
 void BioEnrollmentHandler::OnRetriesResponse(
     CtapDeviceResponseCode status,
-    base::Optional<pin::RetriesResponse> response) {
+    absl::optional<pin::RetriesResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kGettingRetries);
   if (!response || status != CtapDeviceResponseCode::kSuccess) {
-    Finish(BioEnrollmentStatus::kAuthenticatorResponseInvalid);
+    RunErrorCallback(Error::kAuthenticatorResponseInvalid);
     return;
   }
 
   if (response->retries == 0) {
-    Finish(BioEnrollmentStatus::kHardPINBlock);
+    RunErrorCallback(Error::kHardPINBlock);
     return;
   }
 
@@ -204,14 +210,14 @@ void BioEnrollmentHandler::OnHavePIN(std::string pin) {
   state_ = State::kGettingPINToken;
   authenticator_->GetPINToken(
       std::move(pin), {pin::Permissions::kBioEnrollment},
-      /*rp_id=*/base::nullopt,
+      /*rp_id=*/absl::nullopt,
       base::BindOnce(&BioEnrollmentHandler::OnHavePINToken,
                      weak_factory_.GetWeakPtr()));
 }
 
 void BioEnrollmentHandler::OnHavePINToken(
     CtapDeviceResponseCode status,
-    base::Optional<pin::TokenResponse> response) {
+    absl::optional<pin::TokenResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kGettingPINToken);
 
@@ -224,38 +230,57 @@ void BioEnrollmentHandler::OnHavePINToken(
                            weak_factory_.GetWeakPtr()));
         return;
       case CtapDeviceResponseCode::kCtap2ErrPinAuthBlocked:
-        Finish(BioEnrollmentStatus::kSoftPINBlock);
+        RunErrorCallback(Error::kSoftPINBlock);
         return;
       case CtapDeviceResponseCode::kCtap2ErrPinBlocked:
-        Finish(BioEnrollmentStatus::kHardPINBlock);
+        RunErrorCallback(Error::kHardPINBlock);
         return;
       default:
-        Finish(BioEnrollmentStatus::kAuthenticatorResponseInvalid);
+        RunErrorCallback(Error::kAuthenticatorResponseInvalid);
         return;
     }
   }
 
-  state_ = State::kReady;
   pin_token_response_ = std::move(response);
-  std::move(ready_callback_).Run();
+  state_ = State::kGettingSensorInfo;
+  authenticator_->GetSensorInfo(base::BindOnce(
+      &BioEnrollmentHandler::OnGetSensorInfo, weak_factory_.GetWeakPtr()));
+}
+
+void BioEnrollmentHandler::OnGetSensorInfo(
+    CtapDeviceResponseCode status,
+    absl::optional<BioEnrollmentResponse> response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(state_, State::kGettingSensorInfo);
+  if (status != CtapDeviceResponseCode::kSuccess) {
+    RunErrorCallback(Error::kAuthenticatorResponseInvalid);
+    return;
+  }
+  state_ = State::kReady;
+  SensorInfo sensor_info;
+  sensor_info.max_samples_for_enroll = response->max_samples_for_enroll;
+  sensor_info.max_template_friendly_name =
+      response->max_template_friendly_name.value_or(
+          kDefaultMaxTemplateFriendlyName);
+  std::move(ready_callback_).Run(std::move(sensor_info));
 }
 
 void BioEnrollmentHandler::OnEnumerateTemplates(
     EnumerationCallback callback,
     CtapDeviceResponseCode status,
-    base::Optional<BioEnrollmentResponse> response) {
+    absl::optional<BioEnrollmentResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kEnumerating);
 
   state_ = State::kReady;
 
   if (status != CtapDeviceResponseCode::kSuccess) {
-    std::move(callback).Run(status, base::nullopt);
+    std::move(callback).Run(status, absl::nullopt);
     return;
   }
 
   if (!response || !response->template_infos) {
-    Finish(BioEnrollmentStatus::kAuthenticatorResponseInvalid);
+    RunErrorCallback(Error::kAuthenticatorResponseInvalid);
     return;
   }
 
@@ -265,7 +290,7 @@ void BioEnrollmentHandler::OnEnumerateTemplates(
 void BioEnrollmentHandler::OnRenameTemplate(
     StatusCallback callback,
     CtapDeviceResponseCode status,
-    base::Optional<BioEnrollmentResponse> response) {
+    absl::optional<BioEnrollmentResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kRenaming);
   state_ = State::kReady;
@@ -275,18 +300,18 @@ void BioEnrollmentHandler::OnRenameTemplate(
 void BioEnrollmentHandler::OnDeleteTemplate(
     StatusCallback callback,
     CtapDeviceResponseCode status,
-    base::Optional<BioEnrollmentResponse> response) {
+    absl::optional<BioEnrollmentResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(state_, State::kDeleting);
   state_ = State::kReady;
   std::move(callback).Run(status);
 }
 
-void BioEnrollmentHandler::Finish(BioEnrollmentStatus status) {
+void BioEnrollmentHandler::RunErrorCallback(Error error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(state_, State::kFinished);
   state_ = State::kFinished;
-  std::move(error_callback_).Run(status);
+  std::move(error_callback_).Run(error);
 }
 
 }  // namespace device

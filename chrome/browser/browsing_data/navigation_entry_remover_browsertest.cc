@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,6 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -64,9 +62,7 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
   }
 
   void GoBack(content::WebContents* web_contents) {
-    content::WindowedNotificationObserver load_stop_observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
+    content::LoadStopObserver load_stop_observer(web_contents);
     web_contents->GetController().GoBack();
     load_stop_observer.Wait();
   }
@@ -88,7 +84,7 @@ class NavigationEntryRemoverTest : public InProcessBrowserTest {
                                   base::Time to,
                                   std::set<GURL> restrict_urls = {}) {
     return DeletionInfo(history::DeletionTimeRange(from, to), false, {}, {},
-                        restrict_urls.empty() ? base::Optional<std::set<GURL>>()
+                        restrict_urls.empty() ? absl::optional<std::set<GURL>>()
                                               : restrict_urls);
   }
 

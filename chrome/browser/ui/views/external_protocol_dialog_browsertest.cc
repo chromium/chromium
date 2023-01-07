@@ -1,12 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -14,11 +15,16 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/external_protocol_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "url/gurl.h"
 
@@ -29,17 +35,48 @@ class ExternalProtocolDialogTestApi {
   explicit ExternalProtocolDialogTestApi(ExternalProtocolDialog* dialog)
       : dialog_(dialog) {}
 
+  ExternalProtocolDialogTestApi(const ExternalProtocolDialogTestApi&) = delete;
+  ExternalProtocolDialogTestApi& operator=(
+      const ExternalProtocolDialogTestApi&) = delete;
+
   void SetCheckBoxSelected(bool checked) {
     dialog_->SetRememberSelectionCheckboxCheckedForTesting(checked);
   }
 
  private:
-  ExternalProtocolDialog* dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalProtocolDialogTestApi);
+  raw_ptr<ExternalProtocolDialog> dialog_;
 };
 
 }  // namespace test
+
+namespace {
+constexpr char kInitiatingOrigin[] = "a.test";
+constexpr char kRedirectingOrigin[] = "b.test";
+
+class FakeDefaultProtocolClientWorker
+    : public shell_integration::DefaultProtocolClientWorker {
+ public:
+  explicit FakeDefaultProtocolClientWorker(const GURL& url)
+      : DefaultProtocolClientWorker(url) {}
+  FakeDefaultProtocolClientWorker(const FakeDefaultProtocolClientWorker&) =
+      delete;
+  FakeDefaultProtocolClientWorker& operator=(
+      const FakeDefaultProtocolClientWorker&) = delete;
+
+ private:
+  ~FakeDefaultProtocolClientWorker() override = default;
+  shell_integration::DefaultWebClientState CheckIsDefaultImpl() override {
+    return shell_integration::DefaultWebClientState::NOT_DEFAULT;
+  }
+
+  std::u16string GetDefaultClientNameImpl() override { return u"TestApp"; }
+
+  void SetAsDefaultImpl(base::OnceClosure on_finished_callback) override {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, std::move(on_finished_callback));
+  }
+};
+}  // namespace
 
 class ExternalProtocolDialogBrowserTest
     : public DialogBrowserTest,
@@ -51,6 +88,11 @@ class ExternalProtocolDialogBrowserTest
     ExternalProtocolHandler::SetDelegateForTesting(this);
   }
 
+  ExternalProtocolDialogBrowserTest(const ExternalProtocolDialogBrowserTest&) =
+      delete;
+  ExternalProtocolDialogBrowserTest& operator=(
+      const ExternalProtocolDialogBrowserTest&) = delete;
+
   ~ExternalProtocolDialogBrowserTest() override {
     ExternalProtocolHandler::SetDelegateForTesting(nullptr);
   }
@@ -61,21 +103,23 @@ class ExternalProtocolDialogBrowserTest
         browser()->tab_strip_model()->GetActiveWebContents();
     dialog_ = new ExternalProtocolDialog(
         web_contents, GURL("telnet://12345"), u"/usr/bin/telnet",
-        url::Origin::Create(GURL(initiating_origin)));
+        url::Origin::Create(GURL(initiating_origin)),
+        web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
   }
 
   void SetChecked(bool checked) {
     test::ExternalProtocolDialogTestApi(dialog_).SetCheckBoxSelected(checked);
   }
 
-  // ExternalProtocolHander::Delegate:
+  // ExternalProtocolHandler::Delegate:
   scoped_refptr<shell_integration::DefaultProtocolClientWorker>
-  CreateShellWorker(const std::string& protocol) override {
-    return nullptr;
+  CreateShellWorker(const GURL& url) override {
+    return base::MakeRefCounted<FakeDefaultProtocolClientWorker>(url);
   }
+
   ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,
                                                     Profile* profile) override {
-    return ExternalProtocolHandler::DONT_BLOCK;
+    return ExternalProtocolHandler::UNKNOWN;
   }
   void BlockRequest() override {}
   void RunExternalProtocolDialog(
@@ -83,7 +127,14 @@ class ExternalProtocolDialogBrowserTest
       content::WebContents* web_contents,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const base::Optional<url::Origin>& initiating_origin) override {}
+      const absl::optional<url::Origin>& initiating_origin,
+      const std::u16string& program_name) override {
+    EXPECT_EQ(program_name, u"TestApp");
+    url_did_launch_ = true;
+    launch_url_ = initiating_origin->host();
+    if (launch_url_run_loop_)
+      launch_url_run_loop_->Quit();
+  }
   void LaunchUrlWithoutSecurityCheck(
       const GURL& url,
       content::WebContents* web_contents) override {
@@ -98,17 +149,31 @@ class ExternalProtocolDialogBrowserTest
     blocked_state_ = state;
   }
 
+  void SetUpOnMainThread() override {
+    DialogBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule(kInitiatingOrigin, "127.0.0.1");
+    host_resolver()->AddRule(kRedirectingOrigin, "127.0.0.1");
+  }
+
+  void WaitForLaunchUrl() {
+    if (url_did_launch_)
+      return;
+    launch_url_run_loop_ = std::make_unique<base::RunLoop>();
+    launch_url_run_loop_->Run();
+  }
+
   base::HistogramTester histogram_tester_;
 
  protected:
-  ExternalProtocolDialog* dialog_ = nullptr;
+  raw_ptr<ExternalProtocolDialog> dialog_ = nullptr;
   std::string blocked_scheme_;
   url::Origin blocked_origin_;
   BlockState blocked_state_ = BlockState::UNKNOWN;
   bool url_did_launch_ = false;
+  std::string launch_url_;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ExternalProtocolDialogBrowserTest);
+  std::unique_ptr<base::RunLoop> launch_url_run_loop_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestAccept) {
@@ -221,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestFocus) {
   gfx::NativeWindow window = browser()->window()->GetNativeWindow();
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(window);
   views::FocusManager* focus_manager = widget->GetFocusManager();
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // This dialog's default focused control is the Cancel button, but on Mac,
   // the cancel button cannot have initial keyboard focus. Advance focus once
   // on Mac to test whether keyboard focus advancement works there rather than
@@ -230,4 +295,22 @@ IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, TestFocus) {
 #endif
   const views::View* focused_view = focus_manager->GetFocusedView();
   EXPECT_TRUE(focused_view);
+}
+
+IN_PROC_BROWSER_TEST_F(ExternalProtocolDialogBrowserTest, OriginNameTest) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.test", "/empty.html")));
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      content::JsReplace("location.href = $1",
+                         embedded_test_server()->GetURL(
+                             "b.test", "/server-redirect?ms-calc:"))));
+  WaitForLaunchUrl();
+  EXPECT_TRUE(url_did_launch_);
+  // The url should be the url of the last redirecting server and not of the
+  // request initiator
+  EXPECT_EQ(launch_url_, "b.test");
 }

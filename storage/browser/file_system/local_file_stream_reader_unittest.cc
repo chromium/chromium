@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,20 +17,54 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
+#include "build/build_config.h"
+#include "components/file_access/scoped_file_access_delegate.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "storage/browser/file_system/file_stream_reader_test.h"
 #include "storage/browser/file_system/file_stream_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#include "base/files/scoped_file.h"
+#endif
+
 namespace storage {
+
+namespace {
+
+using ::testing::_;
+
+class MockScopedFileAccessDelegate
+    : public file_access::ScopedFileAccessDelegate {
+ public:
+  MOCK_METHOD3(
+      RequestFilesAccess,
+      void(const std::vector<base::FilePath>& files,
+           const GURL& destination_url,
+           base::OnceCallback<void(file_access::ScopedFileAccess)> callback));
+  MOCK_METHOD2(
+      RequestFilesAccessForSystem,
+      void(const std::vector<base::FilePath>& files,
+           base::OnceCallback<void(file_access::ScopedFileAccess)> callback));
+};
+
+file_access::ScopedFileAccess CreateScopedFileAccess(bool allowed) {
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  return file_access::ScopedFileAccess(allowed, base::ScopedFD());
+#else
+  return file_access::ScopedFileAccess(allowed);
+#endif
+}
+
+}  // namespace
 
 class LocalFileStreamReaderTest : public FileStreamReaderTest {
  public:
@@ -100,5 +134,53 @@ class LocalFileStreamReaderTest : public FileStreamReaderTest {
 INSTANTIATE_TYPED_TEST_SUITE_P(Local,
                                FileStreamReaderTypedTest,
                                LocalFileStreamReaderTest);
+
+// TODO(crbug.com/1354502): Use RequestFileAccess() instead of
+// RequestFileAccessForSystem() when destionion URLs can be obtained in
+// //storage/.
+TEST_F(LocalFileStreamReaderTest, ReadAllowedByDataLeakPrevention) {
+  this->WriteTestFile();
+  std::unique_ptr<FileStreamReader> reader(
+      this->CreateFileReader(std::string(this->kTestFileName), 0,
+                             this->test_file_modification_time()));
+
+  MockScopedFileAccessDelegate scoped_file_access_delegate;
+  EXPECT_CALL(scoped_file_access_delegate, RequestFilesAccessForSystem(_, _))
+      .WillOnce([&](const std::vector<base::FilePath>& files,
+                    base::OnceCallback<void(file_access::ScopedFileAccess)>
+                        callback) {
+        std::move(callback).Run(CreateScopedFileAccess(true));
+      });
+
+  int result = 0;
+  std::string data;
+  ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
+  ASSERT_EQ(net::OK, result);
+  ASSERT_EQ(this->kTestData, data);
+}
+
+// TODO(crbug.com/1354502): Use RequestFileAccess() instead of
+// RequestFileAccessForSystem() when destionion URLs can be obtained in
+// //storage/.
+TEST_F(LocalFileStreamReaderTest, ReadBlockedByDataLeakPrevention) {
+  this->WriteTestFile();
+  std::unique_ptr<FileStreamReader> reader(
+      this->CreateFileReader(std::string(this->kTestFileName), 0,
+                             this->test_file_modification_time()));
+
+  MockScopedFileAccessDelegate scoped_file_access_delegate;
+  EXPECT_CALL(scoped_file_access_delegate, RequestFilesAccessForSystem(_, _))
+      .WillOnce([&](const std::vector<base::FilePath>& files,
+                    base::OnceCallback<void(file_access::ScopedFileAccess)>
+                        callback) {
+        std::move(callback).Run(CreateScopedFileAccess(false));
+      });
+
+  int result = 0;
+  std::string data;
+  ReadFromReader(reader.get(), &data, this->kTestData.size(), &result);
+  ASSERT_EQ(net::ERR_ACCESS_DENIED, result);
+  ASSERT_EQ("", data);
+}
 
 }  // namespace storage

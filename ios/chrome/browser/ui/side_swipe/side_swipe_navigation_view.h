@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@
                         image:(UIImage*)image;
 
 // Update views for latest gesture, and call completion blocks whether
-// |threshold| is met.
+// `threshold` is met.
 - (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture
      onOverThresholdCompletion:(void (^)(void))onOverThresholdCompletion
     onUnderThresholdCompletion:(void (^)(void))onUnderThresholdCompletion;

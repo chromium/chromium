@@ -1,4 +1,5 @@
 <!--
+@WAIT-FOR:Kettle
 -->
 <!DOCTYPE html>
 <!-- saved from url=(0072)https://design-systems.pages.booking.com/dev-tools/component-viewer/#bui -->
@@ -13,7 +14,22 @@
             </defs>
 	  </svg> <!-- svg -->
 	</span>
-	<span class="label">Kettle</span>
+	<span class="label"></span>
 </button>
-    </div>
-</body></html>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        // Make sure that nothing inside of an SVG element is exposed.
+        const circle = document.createElementNS("http://www.w3.org/2000/svg", 'circle');
+        document.querySelector('style').appendChild(circle);
+        const foreignObject = document.createElementNS("http://www.w3.org/2000/svg", 'foreignObject');
+        document.querySelector('style').appendChild(foreignObject);
+        const input = document.createElementNS("http://www.w3.org/1999/xhtml", 'input');
+        foreignObject.appendChild(input);
+        document.querySelector('.label').innerText = 'Kettle';
+    }, 300);
+});
+</script>
+</body>
+</html>

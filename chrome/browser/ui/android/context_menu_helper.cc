@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "chrome/android/chrome_jni_headers/ContextMenuHelper_jni.h"
-#include "chrome/browser/performance_hints/performance_hints_observer.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "components/embedder_support/android/contextmenu/context_menu_builder.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
@@ -29,14 +27,13 @@
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;
-using optimization_guide::proto::PerformanceClass;
 
 ContextMenuHelper::ContextMenuHelper(content::WebContents* web_contents)
-    : web_contents_(web_contents) {
+    : content::WebContentsUserData<ContextMenuHelper>(*web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_obj_.Reset(
       env, Java_ContextMenuHelper_create(env, reinterpret_cast<int64_t>(this),
-                                         web_contents_->GetJavaWebContents())
+                                         web_contents->GetJavaWebContents())
                .obj());
   DCHECK(!java_obj_.is_null());
 }
@@ -47,32 +44,33 @@ ContextMenuHelper::~ContextMenuHelper() {
 }
 
 void ContextMenuHelper::ShowContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // TODO(crbug.com/851495): support context menu in VR.
   if (vr::VrTabHelper::IsUiSuppressedInVr(
-          web_contents_, vr::UiSuppressedElement::kContextMenu)) {
-    web_contents_->NotifyContextMenuClosed(params.link_followed);
+          &GetWebContents(), vr::UiSuppressedElement::kContextMenu)) {
+    GetWebContents().NotifyContextMenuClosed(params.link_followed);
     return;
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   context_menu_params_ = params;
-  gfx::NativeView view = web_contents_->GetNativeView();
-  if (!params.link_url.is_empty()) {
-    performance_hints::PerformanceHintsObserver::RecordPerformanceUMAForURL(
-        web_contents_, params.link_url);
-  }
+  gfx::NativeView view = GetWebContents().GetNativeView();
   Java_ContextMenuHelper_showContextMenu(
       env, java_obj_,
       context_menu::BuildJavaContextMenuParams(context_menu_params_),
-      render_frame_host->GetJavaRenderFrameHost(), view->GetContainerView(),
+      render_frame_host.GetJavaRenderFrameHost(), view->GetContainerView(),
       view->content_offset() * view->GetDipScale());
+}
+
+void ContextMenuHelper::DismissContextMenu() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_ContextMenuHelper_dismissContextMenu(env, java_obj_);
 }
 
 void ContextMenuHelper::OnContextMenuClosed(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  web_contents_->NotifyContextMenuClosed(context_menu_params_.link_followed);
+  GetWebContents().NotifyContextMenuClosed(context_menu_params_.link_followed);
 }
 
 void ContextMenuHelper::SetPopulatorFactory(
@@ -82,4 +80,4 @@ void ContextMenuHelper::SetPopulatorFactory(
                                              jpopulator_factory);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextMenuHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ContextMenuHelper);

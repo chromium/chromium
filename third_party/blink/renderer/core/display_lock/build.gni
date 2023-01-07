@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,4 +9,11 @@ blink_core_sources_display_lock = [
   "display_lock_document_state.h",
   "display_lock_utilities.cc",
   "display_lock_utilities.h",
+  "content_visibility_auto_state_changed_event.cc",
+  "content_visibility_auto_state_changed_event.h",
+]
+
+blink_core_tests_display_lock = [
+  "display_lock_context_test.cc",
+  "display_lock_utilities_test.cc",
 ]

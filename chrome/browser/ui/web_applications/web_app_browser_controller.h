@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,24 +9,37 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/web_applications/components/app_registrar.h"
-#include "chrome/browser/web_applications/components/app_registrar_observer.h"
-#include "chrome/browser/web_applications/components/web_app_id.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "chrome/browser/web_applications/app_registrar_observer.h"
+#include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/image/image_skia.h"
+#include "ui/base/models/image_model.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/digital_asset_links/digital_asset_links_handler.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/web_app_service.mojom-forward.h"
 #endif
 
 class Browser;
 class SkBitmap;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace ash {
+class SystemWebAppDelegate;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace digital_asset_links {
 class DigitalAssetLinksHandler;
@@ -34,85 +47,124 @@ class DigitalAssetLinksHandler;
 
 namespace web_app {
 
-class AppRegistrar;
+class WebAppRegistrar;
 class WebAppProvider;
 
 // Class to encapsulate logic to control the browser UI for
 // web apps.
-// App information is obtained from the AppRegistrar.
-// Icon information is obtained from the AppIconManager.
+// App information is obtained from the WebAppRegistrar.
+// Icon information is obtained from the WebAppIconManager.
 // Note: Much of the functionality in HostedAppBrowserController
 // will move to this class.
 class WebAppBrowserController : public AppBrowserController,
-                                public AppRegistrarObserver {
+                                public WebAppInstallManagerObserver {
  public:
-  explicit WebAppBrowserController(Browser* browser);
+  WebAppBrowserController(WebAppProvider& provider,
+                          Browser* browser,
+                          AppId app_id,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                          const ash::SystemWebAppDelegate* system_app,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+                          bool has_tab_strip);
   WebAppBrowserController(const WebAppBrowserController&) = delete;
   WebAppBrowserController& operator=(const WebAppBrowserController&) = delete;
   ~WebAppBrowserController() override;
 
   // AppBrowserController:
   bool HasMinimalUiButtons() const override;
-  gfx::ImageSkia GetWindowAppIcon() const override;
-  gfx::ImageSkia GetWindowIcon() const override;
-  base::Optional<SkColor> GetThemeColor() const override;
-  base::Optional<SkColor> GetBackgroundColor() const override;
+  ui::ImageModel GetWindowAppIcon() const override;
+  ui::ImageModel GetWindowIcon() const override;
+  absl::optional<SkColor> GetThemeColor() const override;
+  absl::optional<SkColor> GetBackgroundColor() const override;
   std::u16string GetTitle() const override;
   std::u16string GetAppShortName() const override;
   std::u16string GetFormattedUrlOrigin() const override;
   GURL GetAppStartUrl() const override;
+  GURL GetAppNewTabUrl() const override;
   bool IsUrlInAppScope(const GURL& url) const override;
   WebAppBrowserController* AsWebAppBrowserController() override;
-  bool CanUninstall() const override;
-  void Uninstall() override;
+  bool CanUserUninstall() const override;
+  void Uninstall(
+      webapps::WebappUninstallSource webapp_uninstall_source) override;
   bool IsInstalled() const override;
   bool IsHostedApp() const override;
+  std::unique_ptr<TabMenuModelFactory> GetTabMenuModelFactory() const override;
+  bool AppUsesWindowControlsOverlay() const override;
   bool IsWindowControlsOverlayEnabled() const override;
-
+  void ToggleWindowControlsOverlayEnabled() override;
+  bool AppUsesBorderlessMode() const override;
+  bool IsIsolatedWebApp() const override;
+  gfx::Rect GetDefaultBounds() const override;
+  bool HasReloadButton() const override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  const ash::SystemWebAppDelegate* system_app() const override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
   bool ShouldShowCustomTabBar() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // AppRegistrarObserver:
+#if BUILDFLAG(IS_MAC)
+  bool AlwaysShowToolbarInFullscreen() const override;
+  void ToggleAlwaysShowToolbarInFullscreen() override;
+#endif
+
+  // WebAppInstallManagerObserver:
   void OnWebAppUninstalled(const AppId& app_id) override;
-  void OnAppRegistrarDestroyed() override;
+  void OnWebAppInstallManagerDestroyed() override;
 
   void SetReadIconCallbackForTesting(base::OnceClosure callback);
 
  protected:
-  // web_app::AppBrowserController:
+  // AppBrowserController:
   void OnTabInserted(content::WebContents* contents) override;
   void OnTabRemoved(content::WebContents* contents) override;
 
  private:
-  const AppRegistrar& registrar() const;
+  const WebAppRegistrar& registrar() const;
+  const WebAppInstallManager& install_manager() const;
 
   // Helper function to call AppServiceProxy to load icon.
   void LoadAppIcon(bool allow_placeholder_icon) const;
   // Invoked when the icon is loaded.
-  void OnLoadIcon(apps::mojom::IconValuePtr icon_value);
+  void OnLoadIcon(apps::IconValuePtr icon_value);
 
-  void OnReadIcon(const SkBitmap& bitmap);
+  void OnReadIcon(SkBitmap bitmap);
   void PerformDigitalAssetLinkVerification(Browser* browser);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+  void CheckDigitalAssetLinkRelationshipForAndroidApp(
+      const std::string& package_name,
+      const std::string& fingerprint);
   void OnRelationshipCheckComplete(
       digital_asset_links::RelationshipCheckResult result);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnGetAssociatedAndroidPackage(crosapi::mojom::WebAppAndroidPackagePtr);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Helper function to return the resolved background color from the manifest
+  // given the current state of dark/light mode.
+  absl::optional<SkColor> GetResolvedManifestBackgroundColor() const;
 
   WebAppProvider& provider_;
-  mutable base::Optional<gfx::ImageSkia> app_icon_;
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  raw_ptr<const ash::SystemWebAppDelegate> system_app_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  mutable absl::optional<ui::ImageModel> app_icon_;
+
+#if BUILDFLAG(IS_CHROMEOS)
   // The result of digital asset link verification of the web app.
   // Only used for web-only TWAs installed through the Play Store.
-  base::Optional<bool> is_verified_;
+  absl::optional<bool> is_verified_;
 
   std::unique_ptr<digital_asset_links::DigitalAssetLinksHandler>
       asset_link_handler_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-  ScopedObserver<AppRegistrar, AppRegistrarObserver> registrar_observer_{this};
+  base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   base::OnceClosure callback_for_testing_;
   mutable base::WeakPtrFactory<WebAppBrowserController> weak_ptr_factory_{this};

@@ -1,0 +1,82 @@
+Test sharing SharedArrayBuffers between dedicated workers.
+
+Running SharedArrayBuffer test case
+PASS: Passing SharedArrayBuffer in the transfer list threw.
+PASS: SharedArrayBuffer not neutered during transfer.
+PASS: Original data not changed during transfer.
+PASS: Transferred data is OK.
+PASS: Transferred data is OK.
+Running Int8Array test case
+PASS: Passing SharedArrayBuffer in the transfer list threw.
+PASS: SharedArrayBuffer not neutered during transfer.
+PASS: Original data not changed during transfer.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+Running Uint8Array test case
+PASS: Passing SharedArrayBuffer in the transfer list threw.
+PASS: SharedArrayBuffer not neutered during transfer.
+PASS: Original data not changed during transfer.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+Running Uint8ClampedArray test case
+PASS: Passing SharedArrayBuffer in the transfer list threw.
+PASS: SharedArrayBuffer not neutered during transfer.
+PASS: Original data not changed during transfer.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+Running Int16Array test case
+PASS: Passing SharedArrayBuffer in the transfer list threw.
+PASS: SharedArrayBuffer not neutered during transfer.
+PASS: Original data not changed during transfer.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+Running Uint16Array test case
+PASS: Passing SharedArrayBuffer in the transfer list threw.
+PASS: SharedArrayBuffer not neutered during transfer.
+PASS: Original data not changed during transfer.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+Running Int32Array test case
+PASS: Passing SharedArrayBuffer in the transfer list threw.
+PASS: SharedArrayBuffer not neutered during transfer.
+PASS: Original data not changed during transfer.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+Running Uint32Array test case
+PASS: Passing SharedArrayBuffer in the transfer list threw.
+PASS: SharedArrayBuffer not neutered during transfer.
+PASS: Original data not changed during transfer.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+Running Float32Array test case
+PASS: Passing SharedArrayBuffer in the transfer list threw.
+PASS: SharedArrayBuffer not neutered during transfer.
+PASS: Original data not changed during transfer.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+Running Float64Array test case
+PASS: Passing SharedArrayBuffer in the transfer list threw.
+PASS: SharedArrayBuffer not neutered during transfer.
+PASS: Original data not changed during transfer.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+PASS: Transferred array type is OK.
+PASS: Transferred data is OK.
+DONE
+

@@ -1,0 +1,60 @@
+{
+  "name": "Site With Screenshots",
+  "icons": [
+    {
+      "src": "48x48-green.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "128x128-green.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "192x192-green.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "256x256-green.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }
+  ],
+  "screenshots":[
+    {
+      "src":"screenshot1.png",
+      "sizes":"1024×1380",
+      "form_factor": "wide",
+      "type":"image/png"
+    },
+    {
+      "src":"screenshot1-copy.png",
+      "sizes":"1024×1380",
+      "form_factor": "wide",
+      "type":"image/png"
+    },
+    {
+      "src":"half-screenshot1-size.png",
+      "sizes":"512x690",
+      "form_factor": "wide",
+      "type":"image/png"
+    },
+    {
+      "src":"screenshot2.png",
+      "sizes":"1614×728",
+      "form_factor": "wide",
+      "type":"image/png"
+    },
+    {
+      "src":"screenshot3.png",
+      "sizes":"1208×1020",
+      "form_factor": "wide",
+      "type":"image/png"
+    }
+  ],
+  "start_url": "/webapps_integration/screenshots/basic.html",
+  "scope": "/webapps_integration/screenshots/",
+  "display": "standalone"
+}

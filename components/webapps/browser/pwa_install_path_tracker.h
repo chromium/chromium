@@ -1,13 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_WEBAPPS_BROWSER_PWA_INSTALL_PATH_TRACKER_H_
 #define COMPONENTS_WEBAPPS_BROWSER_PWA_INSTALL_PATH_TRACKER_H_
 
-#include <string>
-
-#include "base/optional.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 
 namespace webapps {

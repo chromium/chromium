@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,9 @@ class CastAudioMixer::MixerProxyStream
     DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
   }
 
+  MixerProxyStream(const MixerProxyStream&) = delete;
+  MixerProxyStream& operator=(const MixerProxyStream&) = delete;
+
   ~MixerProxyStream() override {
     DCHECK_CALLED_ON_VALID_THREAD(audio_thread_checker_);
   }
@@ -61,6 +64,9 @@ class CastAudioMixer::MixerProxyStream
       DETACH_FROM_THREAD(backend_thread_checker_);
     }
 
+    ResamplerProxy(const ResamplerProxy&) = delete;
+    ResamplerProxy& operator=(const ResamplerProxy&) = delete;
+
     ~ResamplerProxy() override {}
 
    private:
@@ -76,7 +82,6 @@ class CastAudioMixer::MixerProxyStream
     std::unique_ptr<::media::AudioConverter> resampler_;
 
     THREAD_CHECKER(backend_thread_checker_);
-    DISALLOW_COPY_AND_ASSIGN(ResamplerProxy);
   };
 
   // ::media::AudioOutputStream implementation
@@ -179,14 +184,13 @@ class CastAudioMixer::MixerProxyStream
   std::unique_ptr<ResamplerProxy> proxy_;
 
   THREAD_CHECKER(audio_thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(MixerProxyStream);
 };
 
 CastAudioMixer::CastAudioMixer(CastAudioManager* audio_manager)
     : audio_manager_(audio_manager), error_(false), output_stream_(nullptr) {
   output_params_ = ::media::AudioParameters(
       ::media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
-      ::media::CHANNEL_LAYOUT_STEREO, kSampleRate, kFramesPerBuffer);
+      ::media::ChannelLayoutConfig::Stereo(), kSampleRate, kFramesPerBuffer);
   mixer_.reset(
       new ::media::AudioConverter(output_params_, output_params_, false));
   DETACH_FROM_THREAD(audio_thread_checker_);

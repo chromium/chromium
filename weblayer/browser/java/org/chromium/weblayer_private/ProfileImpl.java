@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,15 +18,18 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
+import org.chromium.components.browser_ui.accessibility.FontSizePrefs;
 import org.chromium.components.content_capture.PlatformContentCaptureController;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.BrowsingDataType;
+import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.ICookieManager;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IGoogleAccountAccessTokenFetcherClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.IOpenUrlCallbackClient;
 import org.chromium.weblayer_private.interfaces.IPrerenderController;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IProfileClient;
@@ -58,6 +61,7 @@ public final class ProfileImpl
     private DownloadCallbackProxy mDownloadCallbackProxy;
     private GoogleAccountAccessTokenFetcherProxy mAccessTokenFetcherProxy;
     private IUserIdentityCallbackClient mUserIdentityCallbackClient;
+    private IOpenUrlCallbackClient mOpenUrlCallbackClient;
     private List<Intent> mDownloadNotificationIntents = new ArrayList<>();
 
     private IProfileClient mClient;
@@ -75,13 +79,13 @@ public final class ProfileImpl
         // Normal profiles have restrictions on the name.
         if (!isIncognito && !name.matches("^\\w+$")) {
             throw new IllegalArgumentException(
-                    "Non-incongito profiles names can only contain words: " + name);
+                    "Non-incognito profiles names can only contain words: " + name);
         }
         mIsIncognito = isIncognito;
         mName = name;
         mNativeProfile = ProfileImplJni.get().createProfile(name, ProfileImpl.this, mIsIncognito);
-        mCookieManager =
-                new CookieManagerImpl(ProfileImplJni.get().getCookieManager(mNativeProfile));
+        mCookieManager = new CookieManagerImpl(
+                ProfileImplJni.get().getCookieManager(mNativeProfile), ProfileImpl.this);
         mPrerenderController = new PrerenderControllerImpl(
                 ProfileImplJni.get().getPrerenderController(mNativeProfile));
         mOnDestroyCallback = onDestroyCallback;
@@ -109,6 +113,7 @@ public final class ProfileImpl
             mPrerenderController.destroy();
             mPrerenderController = null;
         }
+        FontSizePrefs.destroyInstance();
     }
 
     @Override
@@ -229,6 +234,12 @@ public final class ProfileImpl
     }
 
     @Override
+    public void setTablessOpenUrlCallbackClient(IOpenUrlCallbackClient client) {
+        StrictModeWorkaround.apply();
+        mOpenUrlCallbackClient = client;
+    }
+
+    @Override
     public boolean isIncognito() {
         return mIsIncognito;
     }
@@ -263,6 +274,8 @@ public final class ProfileImpl
             long toMillis, @NonNull IObjectWrapper completionCallback) {
         StrictModeWorkaround.apply();
         checkNotDestroyed();
+        // `toMillis` should be greater than `fromMillis`
+        assert fromMillis < toMillis;
         // Handle ContentCapture data clearing.
         PlatformContentCaptureController controller =
                 PlatformContentCaptureController.getInstance();
@@ -391,6 +404,23 @@ public final class ProfileImpl
         mDownloadNotificationIntents.clear();
     }
 
+    @CalledByNative
+    public long getBrowserForNewTab() throws RemoteException {
+        if (mOpenUrlCallbackClient == null) return 0;
+
+        IBrowser browser = mOpenUrlCallbackClient.getBrowserForNewTab();
+        if (browser == null) return 0;
+
+        return ((BrowserImpl) browser).getNativeBrowser();
+    }
+
+    @CalledByNative
+    public void onTabAdded(TabImpl tab) throws RemoteException {
+        if (mOpenUrlCallbackClient == null) return;
+
+        mOpenUrlCallbackClient.onTabAdded(tab.getId());
+    }
+
     @Override
     public void setBooleanSetting(@SettingType int type, boolean value) {
         ProfileImplJni.get().setBooleanSetting(mNativeProfile, type, value);
@@ -405,6 +435,13 @@ public final class ProfileImpl
             IObjectWrapper onTokenFetchedWrapper) throws RemoteException {
         mAccessTokenFetcherProxy.fetchAccessToken(ObjectWrapper.unwrap(scopesWrapper, Set.class),
                 ObjectWrapper.unwrap(onTokenFetchedWrapper, ValueCallback.class));
+    }
+
+    public void fireOnAccessTokenIdentifiedAsInvalidForTesting(
+            IObjectWrapper scopesWrapper, IObjectWrapper tokenWrapper) throws RemoteException {
+        mAccessTokenFetcherProxy.onAccessTokenIdentifiedAsInvalid(
+                ObjectWrapper.unwrap(scopesWrapper, Set.class),
+                ObjectWrapper.unwrap(tokenWrapper, String.class));
     }
 
     @NativeMethods

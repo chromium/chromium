@@ -31,16 +31,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_WRAPPABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_WRAPPABLE_H_
 
-#include "base/macros.h"
-#include "base/record_replay.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "v8/include/v8.h"
+
+#include "base/record_replay.h"
 
 namespace blink {
 
@@ -56,25 +56,95 @@ class PLATFORM_EXPORT ScriptWrappable
     : public GarbageCollected<ScriptWrappable>,
       public NameClient {
  public:
-  virtual ~ScriptWrappable() {}
+  // This is a type dispatcher from ScriptWrappable* to a subtype, optimized for
+  // use cases that perform downcasts multiple times. If you perform a downcast
+  // only once, ScriptWrappable::DowncastTo or ScriptWrappable::ToMostDerived
+  // would be a better choice.
+  class TypeDispatcher final {
+    STACK_ALLOCATED();
+
+   public:
+    // The input parameter `script_wrappable` must not be null.
+    explicit TypeDispatcher(ScriptWrappable* script_wrappable)
+        : script_wrappable_(script_wrappable),
+          wrapper_type_info_(script_wrappable->GetWrapperTypeInfo()) {}
+    ~TypeDispatcher() = default;
+
+    TypeDispatcher(const TypeDispatcher&) = delete;
+    TypeDispatcher& operator=(const TypeDispatcher&) = delete;
+
+    // Downcasts the ScriptWrappable to the given template parameter type or
+    // nullptr if the ScriptWrappable doesn't implement the given type. The
+    // inheritance is checked with WrapperTypeInfo, i.e. the check is based on
+    // the IDL definitions in *.idl files, not based on C++ class inheritance.
+    template <typename T>
+    T* DowncastTo() {
+      if (wrapper_type_info_->IsSubclass(T::GetStaticWrapperTypeInfo()))
+        return static_cast<T*>(script_wrappable_);
+      return nullptr;
+    }
+
+    // Downcasts the ScriptWrappable to the given template parameter type iff
+    // the ScriptWrappable implements the type as the most derived class (i.e.
+    // the ScriptWrappable does _not_ implement a subtype of the given type).
+    // Otherwise, returns nullptr. The inheritance is checked with
+    // WrapperTypeInfo, i.e. the check is based on the IDL definitions in *.idl
+    // files, not based on C++ class inheritance.
+    template <typename T>
+    T* ToMostDerived() {
+      if (wrapper_type_info_ == T::GetStaticWrapperTypeInfo())
+        return static_cast<T*>(script_wrappable_);
+      return nullptr;
+    }
+
+   private:
+    ScriptWrappable* script_wrappable_ = nullptr;
+    const WrapperTypeInfo* wrapper_type_info_ = nullptr;
+  };
+
+  ScriptWrappable(const ScriptWrappable&) = delete;
+  ScriptWrappable& operator=(const ScriptWrappable&) = delete;
+  ~ScriptWrappable() override = default;
 
   // The following methods may override lifetime of ScriptWrappable objects when
-  // needed. In particular if |HasPendingActivity| or |HasEventListeners|
-  // returns true *and* the child type also inherits from
-  // |ActiveScriptWrappable|, the objects will not be reclaimed by the GC, even
-  // if they are otherwise unreachable.
+  // needed. In particular if `HasPendingActivity()` returns true *and* the
+  // child type also inherits from `ActiveScriptWrappable`, the objects will not
+  // be reclaimed by the GC, even if they are otherwise unreachable.
   //
   // Note: These methods are queried during garbage collection and *must not*
   // allocate any new objects.
   virtual bool HasPendingActivity() const { return false; }
-  virtual bool HasEventListeners() const { return false; }
 
   const char* NameInHeapSnapshot() const override;
 
   virtual void Trace(Visitor*) const;
 
+  // Downcasts this instance to the given template parameter type or nullptr if
+  // this instance doesn't implement the given type. The inheritance is checked
+  // with WrapperTypeInfo, i.e. the check is based on the IDL definitions in
+  // *.idl files, not based on C++ class inheritance.
   template <typename T>
-  T* ToImpl() {
+  T* DowncastTo() {
+    if (GetWrapperTypeInfo()->IsSubclass(T::GetStaticWrapperTypeInfo()))
+      return static_cast<T*>(this);
+    return nullptr;
+  }
+
+  // Downcasts this instance to the given template parameter type iff this
+  // instance implements the type as the most derived class (i.e. this instance
+  // does _not_ implement a subtype of the given type). Otherwise, returns
+  // nullptr. The inheritance is checked with WrapperTypeInfo, i.e. the check is
+  // based on the IDL definitions in *.idl files, not based on C++ class
+  // inheritance.
+  template <typename T>
+  T* ToMostDerived() {
+    if (GetWrapperTypeInfo() == T::GetStaticWrapperTypeInfo())
+      return static_cast<T*>(this);
+    return nullptr;
+  }
+
+  template <typename T>
+  T* ToImpl() {  // DEPRECATED
     // All ScriptWrappables are managed by the Blink GC heap; check that
     // |T| is a garbage collected type.
     static_assert(
@@ -98,18 +168,13 @@ class PLATFORM_EXPORT ScriptWrappable
   virtual const WrapperTypeInfo* GetWrapperTypeInfo() const = 0;
 
   // Creates and returns a new wrapper object.
-  virtual v8::Local<v8::Value> Wrap(v8::Isolate*,
-                                    v8::Local<v8::Object> creation_context);
-  // This is another version of Wrap which returns v8::MaybeLocal value
-  // in order to throw an exception.
-  // TODO(canonmukai): We should replace current Wrap with this WrapV2.
-  virtual v8::MaybeLocal<v8::Value> WrapV2(ScriptState*);
+  virtual v8::MaybeLocal<v8::Value> Wrap(ScriptState*);
 
   // Associates the instance with the given |wrapper| if this instance is not
   // yet associated with any wrapper.  Returns the wrapper already associated
   // or |wrapper| if not yet associated.
   // The caller should always use the returned value rather than |wrapper|.
-  WARN_UNUSED_RESULT virtual v8::Local<v8::Object> AssociateWithWrapper(
+  [[nodiscard]] virtual v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate*,
       const WrapperTypeInfo*,
       v8::Local<v8::Object> wrapper);
@@ -119,26 +184,26 @@ class PLATFORM_EXPORT ScriptWrappable
   // associated with this instance, or false if this instance is already
   // associated with a wrapper.  In the latter case, |wrapper| will be updated
   // to the existing wrapper.
-  WARN_UNUSED_RESULT bool SetWrapper(v8::Isolate* isolate,
-                                     const WrapperTypeInfo* wrapper_type_info,
-                                     v8::Local<v8::Object>& wrapper) {
+  [[nodiscard]] bool SetWrapper(v8::Isolate* isolate,
+                                const WrapperTypeInfo* wrapper_type_info,
+                                v8::Local<v8::Object>& wrapper) {
     DCHECK(!wrapper.IsEmpty());
     if (UNLIKELY(ContainsWrapper())) {
       wrapper = MainWorldWrapper(isolate);
       return false;
     }
-    main_world_wrapper_.Set(isolate, wrapper);
+    main_world_wrapper_.Reset(isolate, wrapper);
     DCHECK(ContainsWrapper());
-    wrapper_type_info->ConfigureWrapper(&main_world_wrapper_.Get());
+    wrapper_type_info->ConfigureWrapper(&main_world_wrapper_);
     return true;
   }
 
   bool IsEqualTo(const v8::Local<v8::Object>& other) const {
-    return main_world_wrapper_.Get() == other;
+    return main_world_wrapper_ == other;
   }
 
   bool SetReturnValue(v8::ReturnValue<v8::Value> return_value) {
-    return_value.Set(main_world_wrapper_.Get());
+    return_value.Set(main_world_wrapper_);
     return ContainsWrapper();
   }
 
@@ -153,7 +218,7 @@ class PLATFORM_EXPORT ScriptWrappable
 
  private:
   v8::Local<v8::Object> MainWorldWrapper(v8::Isolate* isolate) const {
-    return main_world_wrapper_.NewLocal(isolate);
+    return main_world_wrapper_.Get(isolate);
   }
 
   // Clear the main world wrapper if it is set to |handle|.
@@ -176,16 +241,12 @@ class PLATFORM_EXPORT ScriptWrappable
   friend class DOMDataStore;
   friend class DOMWrapperWorld;
   friend class HeapSnaphotWrapperVisitor;
-  friend class V8HiddenValue;
-  friend class V8PrivateProperty;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptWrappable);
 };
 
 inline bool ScriptWrappable::UnsetMainWorldWrapperIfSet(
     const v8::TracedReference<v8::Object>& handle) {
-  if (main_world_wrapper_.Get() == handle) {
-    main_world_wrapper_.Clear();
+  if (main_world_wrapper_ == handle) {
+    main_world_wrapper_.Reset();
     return true;
   }
   return false;
@@ -209,24 +270,6 @@ inline bool ScriptWrappable::UnsetMainWorldWrapperIfSet(
                                                                \
  private:                                                      \
   static const WrapperTypeInfo& wrapper_type_info_
-
-// Declares |GetWrapperTypeInfo| method without definition.
-//
-// This macro is used for template classes. e.g. DOMTypedArray<>.
-// To export such a template class X, we need to instantiate X with EXPORT_API,
-// i.e. "extern template class EXPORT_API X;"
-// However, once we instantiate X, we cannot specialize X after
-// the instantiation. i.e. we will see "error: explicit specialization of ...
-// after instantiation". So we cannot define X's s_wrapper_type_info in
-// generated code by using specialization. Instead, we need to implement
-// wrapper_type_info in X's cpp code, and instantiate X, i.e. "template class
-// X;".
-#define DECLARE_WRAPPERTYPEINFO()                             \
- public:                                                      \
-  const WrapperTypeInfo* GetWrapperTypeInfo() const override; \
-                                                              \
- private:                                                     \
-  typedef void end_of_declare_wrappertypeinfo_t
 
 }  // namespace blink
 

@@ -1,0 +1,25 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gfx.mojom;
+
+import "ui/gfx/mojom/delegated_ink_point.mojom";
+
+// This interface is used to connect the browser process to viz to support
+// delegated ink trails. A delegated ink point will be produced in the
+// browser process and sent to viz to be held until DrawAndSwap occurs, at
+// which point any delegated ink points that arrived may be used to draw the
+// ink trail. When the browser detects the end of the trail, it will call
+// ResetPrediction() so that viz does not predict any points further than what
+// the user is expecting.
+interface DelegatedInkPointRenderer {
+  // Used to send the DelegatedInkPoint that was created in the browser process
+  // to viz in order to be drawn as part of the delegated ink trail.
+  StoreDelegatedInkPoint(DelegatedInkPoint point);
+
+  // Used to reset prediction and prediction metrics that have been generated
+  // by previously received points. Used by the browser process when a delegated
+  // ink trail should end.
+  ResetPrediction();
+};

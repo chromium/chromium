@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_cancel_handler.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/overlays/translate_overlay_tab_helper.h"
 
@@ -22,7 +22,7 @@ namespace translate_infobar_overlays {
 class PlaceholderRequestCancelHandler
     : public InfobarOverlayRequestCancelHandler {
  public:
-  // Constructor for a handler that cancels |request| of |translate_infobar|.
+  // Constructor for a handler that cancels `request` of `translate_infobar`.
   PlaceholderRequestCancelHandler(OverlayRequest* request,
                                   OverlayRequestQueue* queue,
                                   TranslateOverlayTabHelper* tab_helper,
@@ -49,9 +49,9 @@ class PlaceholderRequestCancelHandler
 
     PlaceholderRequestCancelHandler* cancel_handler_;
 
-    ScopedObserver<TranslateOverlayTabHelper,
-                   TranslateOverlayTabHelper::Observer>
-        scoped_observer_;
+    base::ScopedObservation<TranslateOverlayTabHelper,
+                            TranslateOverlayTabHelper::Observer>
+        scoped_observation_{this};
   };
 
   // Indicates to the cancel handler that the translation has finished.

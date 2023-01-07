@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,13 +24,12 @@ InterfaceProviderSpec& InterfaceProviderSpec::operator=(
 
 bool InterfaceProviderSpec::operator==(
     const InterfaceProviderSpec& other) const {
-  return other.provides == provides && other.requires == requires;
+  return other.provides == provides && other.needs == needs;
 }
 
 bool InterfaceProviderSpec::operator<(
     const InterfaceProviderSpec& other) const {
-  return std::tie(provides, requires) <
-         std::tie(other.provides, other.requires);
+  return std::tie(provides, needs) < std::tie(other.provides, other.needs);
 }
 
 bool GetInterfaceProviderSpec(const std::string& spec_name,

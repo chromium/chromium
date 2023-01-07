@@ -1,14 +1,16 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/sync_event_watcher.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/stack_container.h"
-#include "base/record_replay.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/synchronization/waitable_event.h"
 
 namespace mojo {
 
@@ -17,7 +19,7 @@ SyncEventWatcher::SyncEventWatcher(base::WaitableEvent* event,
     : event_(event),
       callback_(std::move(callback)),
       registry_(SyncHandleRegistry::current()),
-      destroyed_(new base::RefCountedData<bool>(false)) {}
+      destroyed_(base::MakeRefCounted<base::RefCountedData<bool>>(false)) {}
 
 SyncEventWatcher::~SyncEventWatcher() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ const int kMaxCountForUkm = 50;
 ClickInputTracker::ClickInputTracker() {
   // Set thresholds per Feature parameters as appropriate.
   time_delta_threshold_ =
-      base::TimeDelta::FromMilliseconds(base::GetFieldTrialParamByFeatureAsInt(
+      base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
           kClickInputTracker, "time_delta_threshold_ms", 500));
   position_delta_threshold_ = base::GetFieldTrialParamByFeatureAsInt(
       kClickInputTracker, "position_delta_threshold", 10);

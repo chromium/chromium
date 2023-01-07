@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,11 +11,14 @@ mojom_component("base") {
     "big_buffer.mojom",
     "big_string.mojom",
     "binder.mojom",
+    "byte_string.mojom",
     "file.mojom",
     "file_error.mojom",
     "file_info.mojom",
     "file_path.mojom",
+    "generic_pending_associated_receiver.mojom",
     "generic_pending_receiver.mojom",
+    "int128.mojom",
     "memory_allocator_dump_cross_process_uid.mojom",
     "memory_pressure_level.mojom",
     "message_pump_type.mojom",
@@ -23,10 +26,11 @@ mojom_component("base") {
     "read_only_buffer.mojom",
     "read_only_file.mojom",
     "ref_counted_memory.mojom",
+    "safe_base_name.mojom",
     "shared_memory.mojom",
     "string16.mojom",
     "text_direction.mojom",
-    "thread_priority.mojom",
+    "thread_type.mojom",
     "time.mojom",
     "token.mojom",
     "unguessable_token.mojom",
@@ -34,7 +38,10 @@ mojom_component("base") {
   ]
 
   if (is_win) {
-    sources += [ "logfont_win.mojom" ]
+    sources += [
+      "logfont_win.mojom",
+      "wstring.mojom",
+    ]
   }
   enabled_features = []
   if (is_win) {
@@ -52,6 +59,21 @@ mojom_component("base") {
     {
       types = [
         {
+          mojom = "mojo_base.mojom.SafeBaseName"
+          cpp = "::base::SafeBaseName"
+        },
+      ]
+      traits_headers =
+          [ "//mojo/public/cpp/base/safe_base_name_mojom_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//mojo/public/cpp/base",
+        "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
           mojom = "mojo_base.mojom.BigBuffer"
           cpp = "::mojo_base::BigBuffer"
           move_only = true
@@ -62,6 +84,16 @@ mojom_component("base") {
         "//mojo/public/cpp/base",
         "//mojo/public/cpp/base:shared_typemap_traits",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.ByteString"
+          cpp = "std::string"
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/byte_string_mojom_traits.h" ]
+      traits_public_deps = [ "//mojo/public/cpp/base:shared_typemap_traits" ]
     },
     {
       types = [
@@ -137,6 +169,21 @@ mojom_component("base") {
         "//base",
         "//mojo/public/cpp/base",
         "//mojo/public/cpp/base:shared_typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.GenericPendingAssociatedReceiver"
+          cpp = "::mojo::GenericPendingAssociatedReceiver"
+          move_only = true
+          nullable_is_same_type = true
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/generic_pending_associated_receiver_mojom_traits.h" ]
+      traits_public_deps = [
+        "//mojo/public/cpp/base:shared_typemap_traits",
+        "//mojo/public/cpp/bindings",
       ]
     },
     {
@@ -269,12 +316,22 @@ mojom_component("base") {
           move_only = true
         },
         {
+          mojom = "mojo_base.mojom.DictionaryValue"
+          cpp = "::base::Value::Dict"
+          move_only = true
+        },
+        {
           mojom = "mojo_base.mojom.ListValue"
+          cpp = "::base::Value::List"
+          move_only = true
+        },
+        {
+          mojom = "mojo_base.mojom.DeprecatedDictionaryValue"
           cpp = "::base::Value"
           move_only = true
         },
         {
-          mojom = "mojo_base.mojom.DictionaryValue"
+          mojom = "mojo_base.mojom.DeprecatedListValue"
           cpp = "::base::Value"
           move_only = true
         },
@@ -298,6 +355,23 @@ mojom_component("base") {
       traits_public_deps = [
         "//base:i18n",
         "//mojo/public/cpp/base:typemap_traits",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "mojo_base.mojom.Int128"
+          cpp = "::absl::int128"
+        },
+        {
+          mojom = "mojo_base.mojom.Uint128"
+          cpp = "::absl::uint128"
+        },
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/int128_mojom_traits.h" ]
+      traits_public_deps = [
+        "//mojo/public/cpp/base:shared_typemap_traits",
+        "//third_party/abseil-cpp:absl",
       ]
     },
   ]
@@ -408,12 +482,11 @@ mojom_component("base") {
     {
       types = [
         {
-          mojom = "mojo_base.mojom.ThreadPriority"
-          cpp = "::base::ThreadPriority"
+          mojom = "mojo_base.mojom.ThreadType"
+          cpp = "::base::ThreadType"
         },
       ]
-      traits_headers =
-          [ "//mojo/public/cpp/base/thread_priority_mojom_traits.h" ]
+      traits_headers = [ "//mojo/public/cpp/base/thread_type_mojom_traits.h" ]
       traits_public_deps = [
         "//base",
         "//mojo/public/cpp/base:typemap_traits",
@@ -455,6 +528,20 @@ mojom_component("base") {
         ]
         traits_public_deps = [
           "//base",
+          "//mojo/public/cpp/base:typemap_traits",
+        ]
+      },
+      {
+        types = [
+          {
+            mojom = "mojo_base.mojom.WString"
+            cpp = "::std::wstring"
+          },
+        ]
+        traits_headers = [ "//mojo/public/cpp/base/wstring_mojom_traits.h" ]
+        traits_public_deps = [
+          "//base",
+          "//mojo/public/cpp/base",
           "//mojo/public/cpp/base:typemap_traits",
         ]
       },

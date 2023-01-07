@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,142 +70,142 @@ TEST_F(ManagementPolicyTest, UserMayLoad) {
   std::u16string error;
   // The extension and location are irrelevant to the
   // TestManagementPolicyProviders.
-  EXPECT_TRUE(policy_.UserMayLoad(NULL, &error));
+  EXPECT_TRUE(policy_.UserMayLoad(nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // One provider, no relevant restriction.
   policy_.RegisterProvider(&no_modify_status_);
-  EXPECT_TRUE(policy_.UserMayLoad(NULL, &error));
+  EXPECT_TRUE(policy_.UserMayLoad(nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // Two providers, no relevant restrictions.
   policy_.RegisterProvider(&must_remain_enabled_);
-  EXPECT_TRUE(policy_.UserMayLoad(NULL, &error));
+  EXPECT_TRUE(policy_.UserMayLoad(nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // Three providers, one with a relevant restriction.
   policy_.RegisterProvider(&no_load_);
-  EXPECT_FALSE(policy_.UserMayLoad(NULL, &error));
+  EXPECT_FALSE(policy_.UserMayLoad(nullptr, &error));
   EXPECT_FALSE(error.empty());
 
   // Remove the restriction.
   policy_.UnregisterProvider(&no_load_);
   error.clear();
-  EXPECT_TRUE(policy_.UserMayLoad(NULL, &error));
+  EXPECT_TRUE(policy_.UserMayLoad(nullptr, &error));
   EXPECT_TRUE(error.empty());
 }
 TEST_F(ManagementPolicyTest, UserMayModifySettings) {
   // No providers registered.
   std::u16string error;
-  EXPECT_TRUE(policy_.UserMayModifySettings(NULL, &error));
+  EXPECT_TRUE(policy_.UserMayModifySettings(nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // One provider, no relevant restriction.
   policy_.RegisterProvider(&allow_all_);
-  EXPECT_TRUE(policy_.UserMayModifySettings(NULL, &error));
+  EXPECT_TRUE(policy_.UserMayModifySettings(nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // Two providers, no relevant restrictions.
   policy_.RegisterProvider(&no_load_);
-  EXPECT_TRUE(policy_.UserMayModifySettings(NULL, &error));
+  EXPECT_TRUE(policy_.UserMayModifySettings(nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // Three providers, one with a relevant restriction.
   policy_.RegisterProvider(&no_modify_status_);
-  EXPECT_FALSE(policy_.UserMayModifySettings(NULL, &error));
+  EXPECT_FALSE(policy_.UserMayModifySettings(nullptr, &error));
   EXPECT_FALSE(error.empty());
 
   // Remove the restriction.
   policy_.UnregisterProvider(&no_modify_status_);
   error.clear();
-  EXPECT_TRUE(policy_.UserMayModifySettings(NULL, &error));
+  EXPECT_TRUE(policy_.UserMayModifySettings(nullptr, &error));
   EXPECT_TRUE(error.empty());
 }
 
 TEST_F(ManagementPolicyTest, MustRemainEnabled) {
   // No providers registered.
   std::u16string error;
-  EXPECT_FALSE(policy_.MustRemainEnabled(NULL, &error));
+  EXPECT_FALSE(policy_.MustRemainEnabled(nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // One provider, no relevant restriction.
   policy_.RegisterProvider(&allow_all_);
-  EXPECT_FALSE(policy_.MustRemainEnabled(NULL, &error));
+  EXPECT_FALSE(policy_.MustRemainEnabled(nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // Two providers, no relevant restrictions.
   policy_.RegisterProvider(&no_modify_status_);
-  EXPECT_FALSE(policy_.MustRemainEnabled(NULL, &error));
+  EXPECT_FALSE(policy_.MustRemainEnabled(nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // Three providers, one with a relevant restriction.
   policy_.RegisterProvider(&must_remain_enabled_);
-  EXPECT_TRUE(policy_.MustRemainEnabled(NULL, &error));
+  EXPECT_TRUE(policy_.MustRemainEnabled(nullptr, &error));
   EXPECT_FALSE(error.empty());
 
   // Remove the restriction.
   policy_.UnregisterProvider(&must_remain_enabled_);
   error.clear();
-  EXPECT_FALSE(policy_.MustRemainEnabled(NULL, &error));
+  EXPECT_FALSE(policy_.MustRemainEnabled(nullptr, &error));
   EXPECT_TRUE(error.empty());
 }
 
 TEST_F(ManagementPolicyTest, MustRemainDisabled) {
   // No providers registered.
   std::u16string error;
-  EXPECT_FALSE(policy_.MustRemainDisabled(NULL, NULL, &error));
+  EXPECT_FALSE(policy_.MustRemainDisabled(nullptr, nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // One provider, no relevant restriction.
   policy_.RegisterProvider(&allow_all_);
-  EXPECT_FALSE(policy_.MustRemainDisabled(NULL, NULL, &error));
+  EXPECT_FALSE(policy_.MustRemainDisabled(nullptr, nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // Two providers, no relevant restrictions.
   policy_.RegisterProvider(&no_modify_status_);
-  EXPECT_FALSE(policy_.MustRemainDisabled(NULL, NULL, &error));
+  EXPECT_FALSE(policy_.MustRemainDisabled(nullptr, nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // Three providers, one with a relevant restriction.
   extensions::disable_reason::DisableReason reason =
       extensions::disable_reason::DISABLE_NONE;
   policy_.RegisterProvider(&must_remain_disabled_);
-  EXPECT_TRUE(policy_.MustRemainDisabled(NULL, &reason, &error));
+  EXPECT_TRUE(policy_.MustRemainDisabled(nullptr, &reason, &error));
   EXPECT_FALSE(error.empty());
   EXPECT_EQ(extensions::disable_reason::DISABLE_SIDELOAD_WIPEOUT, reason);
 
   // Remove the restriction.
   policy_.UnregisterProvider(&must_remain_disabled_);
   error.clear();
-  EXPECT_FALSE(policy_.MustRemainDisabled(NULL, NULL, &error));
+  EXPECT_FALSE(policy_.MustRemainDisabled(nullptr, nullptr, &error));
   EXPECT_TRUE(error.empty());
 }
 
 TEST_F(ManagementPolicyTest, MustRemainInstalled) {
   // No providers registered.
   std::u16string error;
-  EXPECT_FALSE(policy_.MustRemainInstalled(NULL, &error));
+  EXPECT_FALSE(policy_.MustRemainInstalled(nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // One provider, no relevant restriction.
   policy_.RegisterProvider(&allow_all_);
-  EXPECT_FALSE(policy_.MustRemainInstalled(NULL, &error));
+  EXPECT_FALSE(policy_.MustRemainInstalled(nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // Two providers, no relevant restrictions.
   policy_.RegisterProvider(&no_modify_status_);
-  EXPECT_FALSE(policy_.MustRemainInstalled(NULL, &error));
+  EXPECT_FALSE(policy_.MustRemainInstalled(nullptr, &error));
   EXPECT_TRUE(error.empty());
 
   // Three providers, one with a relevant restriction.
   policy_.RegisterProvider(&must_remain_installed_);
-  EXPECT_TRUE(policy_.MustRemainInstalled(NULL, &error));
+  EXPECT_TRUE(policy_.MustRemainInstalled(nullptr, &error));
   EXPECT_FALSE(error.empty());
 
   // Remove the restriction.
   policy_.UnregisterProvider(&must_remain_installed_);
   error.clear();
-  EXPECT_FALSE(policy_.MustRemainInstalled(NULL, &error));
+  EXPECT_FALSE(policy_.MustRemainInstalled(nullptr, &error));
   EXPECT_TRUE(error.empty());
 }
 
@@ -215,30 +215,30 @@ TEST_F(ManagementPolicyTest, ErrorHandling) {
   std::string original_error = "Ceci est en effet une erreur.";
   std::u16string original_error16 = base::UTF8ToUTF16(original_error);
   std::u16string error = original_error16;
-  EXPECT_TRUE(policy_.UserMayLoad(NULL, &error));
+  EXPECT_TRUE(policy_.UserMayLoad(nullptr, &error));
   EXPECT_EQ(original_error, base::UTF16ToUTF8(error));
-  EXPECT_TRUE(policy_.UserMayModifySettings(NULL, &error));
+  EXPECT_TRUE(policy_.UserMayModifySettings(nullptr, &error));
   EXPECT_EQ(original_error, base::UTF16ToUTF8(error));
-  EXPECT_FALSE(policy_.MustRemainEnabled(NULL, &error));
+  EXPECT_FALSE(policy_.MustRemainEnabled(nullptr, &error));
   EXPECT_EQ(original_error, base::UTF16ToUTF8(error));
 
   // Ensure no crashes if no error message was requested.
-  EXPECT_TRUE(policy_.UserMayLoad(NULL, NULL));
-  EXPECT_TRUE(policy_.UserMayModifySettings(NULL, NULL));
-  EXPECT_FALSE(policy_.MustRemainEnabled(NULL, NULL));
+  EXPECT_TRUE(policy_.UserMayLoad(nullptr, nullptr));
+  EXPECT_TRUE(policy_.UserMayModifySettings(nullptr, nullptr));
+  EXPECT_FALSE(policy_.MustRemainEnabled(nullptr, nullptr));
   policy_.RegisterProvider(&restrict_all_);
-  EXPECT_FALSE(policy_.UserMayLoad(NULL, NULL));
-  EXPECT_FALSE(policy_.UserMayModifySettings(NULL, NULL));
-  EXPECT_TRUE(policy_.MustRemainEnabled(NULL, NULL));
+  EXPECT_FALSE(policy_.UserMayLoad(nullptr, nullptr));
+  EXPECT_FALSE(policy_.UserMayModifySettings(nullptr, nullptr));
+  EXPECT_TRUE(policy_.MustRemainEnabled(nullptr, nullptr));
 
   // Make sure returned error is correct.
   error = original_error16;
-  EXPECT_FALSE(policy_.UserMayLoad(NULL, &error));
+  EXPECT_FALSE(policy_.UserMayLoad(nullptr, &error));
   EXPECT_EQ(base::UTF8ToUTF16(TestProvider::expected_error()), error);
   error = original_error16;
-  EXPECT_FALSE(policy_.UserMayModifySettings(NULL, &error));
+  EXPECT_FALSE(policy_.UserMayModifySettings(nullptr, &error));
   EXPECT_EQ(base::UTF8ToUTF16(TestProvider::expected_error()), error);
   error = original_error16;
-  EXPECT_TRUE(policy_.MustRemainEnabled(NULL, &error));
+  EXPECT_TRUE(policy_.MustRemainEnabled(nullptr, &error));
   EXPECT_EQ(base::UTF8ToUTF16(TestProvider::expected_error()), error);
 }

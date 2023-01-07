@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,32 +8,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
-
-// Helper class to respond to WebContents lifecycle events we can't
-// trigger/simulate.
-class TabActivitySimulator::TestWebContentsObserver
-    : public content::WebContentsObserver {
- public:
-  explicit TestWebContentsObserver(content::WebContents* web_contents);
-  TestWebContentsObserver(const TestWebContentsObserver&) = delete;
-  TestWebContentsObserver& operator=(const TestWebContentsObserver&) = delete;
-
-  // content::WebContentsObserver:
-  void WebContentsDestroyed() override;
-};
-
-TabActivitySimulator::TestWebContentsObserver::TestWebContentsObserver(
-    content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
-
-void TabActivitySimulator::TestWebContentsObserver::WebContentsDestroyed() {
-  // Simulate the WebContents hiding during destruction. This lets tests
-  // validate what is logged when a tab is destroyed.
-  web_contents()->WasHidden();
-}
 
 TabActivitySimulator::TabActivitySimulator() = default;
 TabActivitySimulator::~TabActivitySimulator() = default;
@@ -51,15 +27,11 @@ void TabActivitySimulator::Navigate(content::WebContents* web_contents,
 std::unique_ptr<content::WebContents> TabActivitySimulator::CreateWebContents(
     content::BrowserContext* browser_context,
     bool initially_visible) {
-  content::WebContents::CreateParams params(browser_context, nullptr);
+  content::WebContents::CreateParams params(browser_context);
   params.initially_hidden = !initially_visible;
   std::unique_ptr<content::WebContents> test_contents(
       content::WebContentsTester::CreateTestWebContents(params));
 
-  // Create the TestWebContentsObserver to observe |test_contents|. When the
-  // WebContents is destroyed, the observer will be reset automatically.
-  observers_.push_back(
-      std::make_unique<TestWebContentsObserver>(test_contents.get()));
   return test_contents;
 }
 
@@ -94,8 +66,9 @@ void TabActivitySimulator::SwitchToTabAt(TabStripModel* tab_strip_model,
   // which is what actually triggers TabActivityWatcher to log the change. For
   // a TestWebContents, we must manually call WasHidden(), and do the reverse
   // for the newly activated tab.
-  tab_strip_model->ActivateTabAt(new_index,
-                                 {TabStripModel::GestureType::kOther});
+  tab_strip_model->ActivateTabAt(
+      new_index, TabStripUserGestureDetails(
+                     TabStripUserGestureDetails::GestureType::kOther));
   active_contents->WasHidden();
   new_contents->WasShown();
 }

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,18 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "extensions/renderer/script_context.h"
 #include "gin/data_object_builder.h"
 #include "skia/public/mojom/bitmap.mojom.h"
 #include "third_party/blink/public/web/web_array_buffer_converter.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 // TODO(devlin): Looks like there are lots of opportunities to use gin helpers
 // like gin::Dictionary and gin::DataObjectBuilder here.

@@ -1,0 +1,44 @@
+<style include="cr-shared-style">
+</style>
+<template is="dom-if" if="[[!showMultipleBatteries_]]" restamp>
+  <bluetooth-battery-icon-percentage
+      id="defaultBattery"
+      device="[[device]]"
+      battery-type="[[BatteryType.DEFAULT]]"
+      is-type-labeled>
+  </bluetooth-battery-icon-percentage>
+</template>
+
+<template is="dom-if" if="[[showMultipleBatteries_]]" restamp>
+  <div>
+    <template is="dom-if"
+        if="[[shouldShowBattery_(device, BatteryType.LEFT_BUD)]]" restamp>
+      <bluetooth-battery-icon-percentage
+          id="leftBudBattery"
+          device="[[device]]"
+          battery-type="[[BatteryType.LEFT_BUD]]"
+          is-type-labeled>
+      </bluetooth-battery-icon-percentage>
+    </template>
+
+    <template is="dom-if"
+        if="[[shouldShowBattery_(device, BatteryType.CASE)]]" restamp>
+      <bluetooth-battery-icon-percentage
+          id="caseBattery"
+          device="[[device]]"
+          battery-type="[[BatteryType.CASE]]"
+          is-type-labeled>
+      </bluetooth-battery-icon-percentage>
+    </template>
+
+    <template is="dom-if"
+        if="[[shouldShowBattery_(device, BatteryType.RIGHT_BUD)]]" restamp>
+      <bluetooth-battery-icon-percentage
+          id="rightBudBattery"
+          device="[[device]]"
+          battery-type="[[BatteryType.RIGHT_BUD]]"
+          is-type-labeled>
+      </bluetooth-battery-icon-percentage>
+    </template>
+  </div>
+</template>

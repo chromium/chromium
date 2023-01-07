@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
-@class ChromeIdentity;
+@protocol SystemIdentity;
 
 typedef NS_ENUM(NSInteger, TableViewAccountMode) {
   // The cell can be tappable, and the colors are not dimmed.
@@ -27,7 +27,7 @@ typedef NS_ENUM(NSInteger, TableViewAccountMode) {
 @property(nonatomic, copy) NSString* text;
 @property(nonatomic, copy) NSString* detailText;
 @property(nonatomic, assign) BOOL shouldDisplayError;
-@property(nonatomic, strong) ChromeIdentity* chromeIdentity;
+@property(nonatomic, strong) id<SystemIdentity> identity;
 // The default value is TableViewAccountModeEnabled.
 @property(nonatomic, assign) TableViewAccountMode mode;
 

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,8 +19,8 @@ using VerdictCacheManagerFactoryTest = PlatformTest;
 TEST_F(VerdictCacheManagerFactoryTest, OffTheRecordUsesDifferentInstance) {
   web::WebTaskEnvironment task_environment;
 
-  TestChromeBrowserState::Builder builder;
-  std::unique_ptr<TestChromeBrowserState> browser_state = builder.Build();
+  std::unique_ptr<TestChromeBrowserState> browser_state =
+      TestChromeBrowserState::Builder().Build();
 
   // There should be a non-null instance for an off-the-record browser state.
   EXPECT_TRUE(VerdictCacheManagerFactory::GetForBrowserState(

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,22 @@
 #include <memory>
 #include <utility>
 
-#include "base/bind.h"
-#include "base/macros.h"
-#include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gtest_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/supervised_user/permission_request_creator.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
@@ -53,6 +55,9 @@ namespace {
 // are balanced with Wait() calls.
 class AsyncTestHelper {
  public:
+  AsyncTestHelper(const AsyncTestHelper&) = delete;
+  AsyncTestHelper& operator=(const AsyncTestHelper&) = delete;
+
   void Wait() {
     run_loop_->Run();
     Reset();
@@ -78,24 +83,28 @@ class AsyncTestHelper {
  private:
   void Reset() {
     quit_called_ = false;
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;
   bool quit_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncTestHelper);
 };
 
 class SupervisedUserURLFilterObserver
     : public AsyncTestHelper,
       public SupervisedUserURLFilter::Observer {
  public:
-  SupervisedUserURLFilterObserver() : scoped_observer_(this) {}
+  SupervisedUserURLFilterObserver() {}
+
+  SupervisedUserURLFilterObserver(const SupervisedUserURLFilterObserver&) =
+      delete;
+  SupervisedUserURLFilterObserver& operator=(
+      const SupervisedUserURLFilterObserver&) = delete;
+
   ~SupervisedUserURLFilterObserver() {}
 
   void Init(SupervisedUserURLFilter* url_filter) {
-    scoped_observer_.Add(url_filter);
+    scoped_observation_.Observe(url_filter);
   }
 
   // SupervisedUserURLFilter::Observer
@@ -104,192 +113,48 @@ class SupervisedUserURLFilterObserver
   }
 
  private:
-  ScopedObserver<SupervisedUserURLFilter, SupervisedUserURLFilter::Observer>
-      scoped_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserURLFilterObserver);
+  base::ScopedObservation<SupervisedUserURLFilter,
+                          SupervisedUserURLFilter::Observer>
+      scoped_observation_{this};
 };
 
-class AsyncResultHolder {
- public:
-  AsyncResultHolder() : result_(false) {}
-  ~AsyncResultHolder() {}
-
-  void SetResult(bool result) {
-    result_ = result;
-    run_loop_.Quit();
-  }
-
-  bool GetResult() {
-    run_loop_.Run();
-    return result_;
-  }
-
- private:
-  base::RunLoop run_loop_;
-  bool result_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncResultHolder);
-};
+}  // namespace
 
 class SupervisedUserServiceTest : public ::testing::Test {
  public:
-  SupervisedUserServiceTest() {}
+  SupervisedUserServiceTest() {
+    // The testing browser process may be deleted following a crash.
+    // Re-instantiate it before its use in testing profile creation.
+    if (!g_browser_process) {
+      TestingBrowserProcess::CreateInstance();
+    }
 
-  void SetUp() override {
-    profile_ = IdentityTestEnvironmentProfileAdaptor::
-        CreateProfileForIdentityTestEnvironment({});
-    identity_test_environment_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
-    supervised_user_service_ =
+    // Build supervised profile.
+    TestingProfile::Builder builder;
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              SyncServiceFactory::GetDefaultFactory());
+    builder.SetIsSupervisedProfile();
+    profile_ = builder.Build();
+
+    SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile_.get());
+    service->Init();
   }
-
-  void TearDown() override {
-    identity_test_environment_adaptor_.reset();
-    profile_.reset();
-  }
-
-  ~SupervisedUserServiceTest() override {}
 
  protected:
-  void AddURLAccessRequest(const GURL& url, AsyncResultHolder* result_holder) {
-    supervised_user_service_->AddURLAccessRequest(
-        url, base::BindOnce(&AsyncResultHolder::SetResult,
-                            base::Unretained(result_holder)));
-  }
-
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_environment_adaptor_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  SupervisedUserService* supervised_user_service_;
 };
 
-}  // namespace
+// TODO(crbug.com/1364589): Failing consistently
+TEST_F(SupervisedUserServiceTest, DISABLED_DeprecatedFilterPolicy) {
+  PrefService* prefs = profile_->GetPrefs();
+  EXPECT_EQ(prefs->GetInteger(prefs::kDefaultSupervisedUserFilteringBehavior),
+            SupervisedUserURLFilter::ALLOW);
 
-namespace {
-
-class MockPermissionRequestCreator : public PermissionRequestCreator {
- public:
-  MockPermissionRequestCreator() : enabled_(false) {}
-  ~MockPermissionRequestCreator() override {}
-
-  void set_enabled(bool enabled) {
-    enabled_ = enabled;
-  }
-
-  const std::vector<GURL>& requested_urls() const {
-    return requested_urls_;
-  }
-
-  void AnswerRequest(size_t index, bool result) {
-    ASSERT_LT(index, requested_urls_.size());
-    std::move(callbacks_[index]).Run(result);
-    callbacks_.erase(callbacks_.begin() + index);
-    requested_urls_.erase(requested_urls_.begin() + index);
-  }
-
- private:
-  // PermissionRequestCreator:
-  bool IsEnabled() const override { return enabled_; }
-
-  void CreateURLAccessRequest(const GURL& url_requested,
-                              SuccessCallback callback) override {
-    ASSERT_TRUE(enabled_);
-    requested_urls_.push_back(url_requested);
-    callbacks_.push_back(std::move(callback));
-  }
-
-  bool enabled_;
-  std::vector<GURL> requested_urls_;
-  std::vector<SuccessCallback> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockPermissionRequestCreator);
-};
-
-}  // namespace
-
-TEST_F(SupervisedUserServiceTest, CreatePermissionRequest) {
-  GURL url("http://www.example.com");
-
-  // Without any permission request creators, it should be disabled, and any
-  // AddURLAccessRequest() calls should fail.
-  EXPECT_FALSE(supervised_user_service_->AccessRequestsEnabled());
-  {
-    AsyncResultHolder result_holder;
-    AddURLAccessRequest(url, &result_holder);
-    EXPECT_FALSE(result_holder.GetResult());
-  }
-
-  // Add a disabled permission request creator. This should not change anything.
-  MockPermissionRequestCreator* creator = new MockPermissionRequestCreator;
-  supervised_user_service_->AddPermissionRequestCreator(
-      base::WrapUnique(creator));
-
-  EXPECT_FALSE(supervised_user_service_->AccessRequestsEnabled());
-  {
-    AsyncResultHolder result_holder;
-    AddURLAccessRequest(url, &result_holder);
-    EXPECT_FALSE(result_holder.GetResult());
-  }
-
-  // Enable the permission request creator. This should enable permission
-  // requests and queue them up.
-  creator->set_enabled(true);
-  EXPECT_TRUE(supervised_user_service_->AccessRequestsEnabled());
-  {
-    AsyncResultHolder result_holder;
-    AddURLAccessRequest(url, &result_holder);
-    ASSERT_EQ(1u, creator->requested_urls().size());
-    EXPECT_EQ(url.spec(), creator->requested_urls()[0].spec());
-
-    creator->AnswerRequest(0, true);
-    EXPECT_TRUE(result_holder.GetResult());
-  }
-
-  {
-    AsyncResultHolder result_holder;
-    AddURLAccessRequest(url, &result_holder);
-    ASSERT_EQ(1u, creator->requested_urls().size());
-    EXPECT_EQ(url.spec(), creator->requested_urls()[0].spec());
-
-    creator->AnswerRequest(0, false);
-    EXPECT_FALSE(result_holder.GetResult());
-  }
-
-  // Add a second permission request creator.
-  MockPermissionRequestCreator* creator_2 = new MockPermissionRequestCreator;
-  creator_2->set_enabled(true);
-  supervised_user_service_->AddPermissionRequestCreator(
-      base::WrapUnique(creator_2));
-
-  {
-    AsyncResultHolder result_holder;
-    AddURLAccessRequest(url, &result_holder);
-    ASSERT_EQ(1u, creator->requested_urls().size());
-    EXPECT_EQ(url.spec(), creator->requested_urls()[0].spec());
-
-    // Make the first creator succeed. This should make the whole thing succeed.
-    creator->AnswerRequest(0, true);
-    EXPECT_TRUE(result_holder.GetResult());
-  }
-
-  {
-    AsyncResultHolder result_holder;
-    AddURLAccessRequest(url, &result_holder);
-    ASSERT_EQ(1u, creator->requested_urls().size());
-    EXPECT_EQ(url.spec(), creator->requested_urls()[0].spec());
-
-    // Make the first creator fail. This should fall back to the second one.
-    creator->AnswerRequest(0, false);
-    ASSERT_EQ(1u, creator_2->requested_urls().size());
-    EXPECT_EQ(url.spec(), creator_2->requested_urls()[0].spec());
-
-    // Make the second creator succeed, which will make the whole thing succeed.
-    creator_2->AnswerRequest(0, true);
-    EXPECT_TRUE(result_holder.GetResult());
-  }
+  ASSERT_DCHECK_DEATH(
+      prefs->SetInteger(prefs::kDefaultSupervisedUserFilteringBehavior,
+                        /* SupervisedUserURLFilter::WARN */ 1));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -329,10 +194,9 @@ class SupervisedUserServiceExtensionTestBase
  protected:
   scoped_refptr<const extensions::Extension> MakeThemeExtension() {
     std::unique_ptr<base::DictionaryValue> source(new base::DictionaryValue());
-    source->SetString(extensions::manifest_keys::kName, "Theme");
-    source->Set(extensions::manifest_keys::kTheme,
-                std::make_unique<base::DictionaryValue>());
-    source->SetString(extensions::manifest_keys::kVersion, "1.0");
+    source->SetStringKey(extensions::manifest_keys::kName, "Theme");
+    source->SetKey(extensions::manifest_keys::kTheme, base::DictionaryValue());
+    source->SetStringKey(extensions::manifest_keys::kVersion, "1.0");
     extensions::ExtensionBuilder builder;
     scoped_refptr<const extensions::Extension> extension =
         builder.SetManifest(std::move(source)).Build();
@@ -372,7 +236,7 @@ TEST_F(SupervisedUserServiceExtensionTest,
       ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(false);
   EXPECT_FALSE(supervised_user_service
                    ->GetSupervisedUserExtensionsMayRequestPermissionsPref());
-  EXPECT_TRUE(profile_->IsSupervised());
+  EXPECT_TRUE(profile_->IsChild());
 
   // Check that a supervised user can install and uninstall a theme even if
   // they are not allowed to install extensions.
@@ -425,7 +289,7 @@ TEST_F(SupervisedUserServiceExtensionTest,
       ->SetSupervisedUserExtensionsMayRequestPermissionsPrefForTesting(true);
   EXPECT_TRUE(supervised_user_service
                   ->GetSupervisedUserExtensionsMayRequestPermissionsPref());
-  EXPECT_TRUE(profile_->IsSupervised());
+  EXPECT_TRUE(profile_->IsChild());
 
   // The supervised user should be able to load and uninstall the extensions
   // they install.

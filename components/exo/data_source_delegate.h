@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <string>
 
 #include "base/files/scoped_file.h"
+#include "components/exo/data_device.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace exo {
 
@@ -21,7 +23,7 @@ class DataSourceDelegate {
   virtual void OnDataSourceDestroying(DataSource* source) = 0;
 
   // Called when a client accepts a |mime_type|.
-  virtual void OnTarget(const base::Optional<std::string>& mime_type) = 0;
+  virtual void OnTarget(const absl::optional<std::string>& mime_type) = 0;
 
   // Called when the data is requested.
   virtual void OnSend(const std::string& mime_type, base::ScopedFD fd) = 0;

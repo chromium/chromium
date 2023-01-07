@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,8 +15,9 @@ mojom("mojom") {
 
   public_deps = [
     ":share_type",
-    "//chromeos/services/nearby/public/mojom:nearby_share_target_types",
+    "//chromeos/ash/services/nearby/public/mojom:nearby_share_target_types",
     "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
   ]
 
   cpp_typemaps = [

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Helper function for writing system logs used in Feedback reports. Currently
 // used by chrome://net-internals#chromeos for manual uploading of system logs.
@@ -23,7 +22,7 @@ namespace system_logs_writer {
 void WriteSystemLogs(
     const base::FilePath& dest_dir,
     bool scrub_data,
-    base::OnceCallback<void(base::Optional<base::FilePath>)> callback);
+    base::OnceCallback<void(absl::optional<base::FilePath>)> callback);
 
 }  // namespace system_logs_writer
 }  // namespace ash

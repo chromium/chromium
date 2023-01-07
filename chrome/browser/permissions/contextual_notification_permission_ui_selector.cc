@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/task/post_task.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
@@ -20,7 +19,8 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/chrome_features.h"
 #include "components/permissions/permission_request.h"
-#include "components/safe_browsing/core/db/database_manager.h"
+#include "components/permissions/request_type.h"
+#include "components/safe_browsing/core/browser/db/database_manager.h"
 
 namespace {
 
@@ -48,14 +48,14 @@ void RecordWarningOnlyState(bool value) {
 }
 
 // Attempts to decide which UI to use based on preloaded site reputation data,
-// or returns base::nullopt if not possible. |site_reputation| can be nullptr.
-base::Optional<Decision> GetDecisionBasedOnSiteReputation(
+// or returns absl::nullopt if not possible. |site_reputation| can be nullptr.
+absl::optional<Decision> GetDecisionBasedOnSiteReputation(
     const CrowdDenyPreloadData::SiteReputation* site_reputation) {
   using Config = QuietNotificationPermissionUiConfig;
   if (!site_reputation) {
     RecordNotificationUserExperienceQuality(
         CrowdDenyPreloadData::SiteReputation::UNKNOWN);
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   RecordNotificationUserExperienceQuality(
@@ -70,7 +70,7 @@ base::Optional<Decision> GetDecisionBasedOnSiteReputation(
       if (site_reputation->warning_only())
         return Decision::UseNormalUiAndShowNoWarning();
       if (!Config::IsCrowdDenyTriggeringEnabled())
-        return base::nullopt;
+        return absl::nullopt;
       return Decision(QuietUiReason::kTriggeredByCrowdDeny,
                       Decision::ShowNoWarning());
     }
@@ -82,7 +82,7 @@ base::Optional<Decision> GetDecisionBasedOnSiteReputation(
                         WarningReason::kAbusiveRequests);
       }
       if (!Config::IsAbusiveRequestBlockingEnabled())
-        return base::nullopt;
+        return absl::nullopt;
       return Decision(QuietUiReason::kTriggeredDueToAbusiveRequests,
                       Decision::ShowNoWarning());
     }
@@ -94,17 +94,25 @@ base::Optional<Decision> GetDecisionBasedOnSiteReputation(
                         WarningReason::kAbusiveContent);
       }
       if (!Config::IsAbusiveContentTriggeredRequestBlockingEnabled())
-        return base::nullopt;
+        return absl::nullopt;
       return Decision(QuietUiReason::kTriggeredDueToAbusiveContent,
                       Decision::ShowNoWarning());
     }
+    case CrowdDenyPreloadData::SiteReputation::DISRUPTIVE_BEHAVIOR: {
+      DCHECK(!site_reputation->warning_only());
+
+      if (!Config::IsDisruptiveBehaviorRequestBlockingEnabled())
+        return absl::nullopt;
+      return Decision(QuietUiReason::kTriggeredDueToDisruptiveBehavior,
+                      Decision::ShowNoWarning());
+    }
     case CrowdDenyPreloadData::SiteReputation::UNKNOWN: {
-      return base::nullopt;
+      return absl::nullopt;
     }
   }
 
   NOTREACHED();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Roll the dice to decide whether to use the normal UI even when the preload
@@ -143,16 +151,22 @@ void ContextualNotificationPermissionUiSelector::SelectUiToUse(
     return;
   }
 
-  // Even if the quiet UI is enabled on all sites, the crowd deny and abuse
-  // trigger conditions must be evaluated first, so that the corresponding,
-  // less prominent UI and the strings are shown on blocklisted origins.
-  EvaluatePerSiteTriggers(url::Origin::Create(request->GetOrigin()));
+  // Even if the quiet UI is enabled on all sites, the crowd deny, abuse and
+  // disruption trigger conditions must be evaluated first, so that the
+  // corresponding, less prominent UI and the strings are shown on blocklisted
+  // origins.
+  EvaluatePerSiteTriggers(url::Origin::Create(request->requesting_origin()));
 }
 
 void ContextualNotificationPermissionUiSelector::Cancel() {
   // The computation either finishes synchronously above, or is waiting on the
   // Safe Browsing check.
   safe_browsing_request_.reset();
+}
+
+bool ContextualNotificationPermissionUiSelector::IsPermissionRequestSupported(
+    permissions::RequestType request_type) {
+  return request_type == permissions::RequestType::kNotifications;
 }
 
 ContextualNotificationPermissionUiSelector::
@@ -170,7 +184,7 @@ void ContextualNotificationPermissionUiSelector::EvaluatePerSiteTriggers(
 void ContextualNotificationPermissionUiSelector::OnSiteReputationReady(
     const url::Origin& origin,
     const CrowdDenyPreloadData::SiteReputation* reputation) {
-  base::Optional<Decision> decision =
+  absl::optional<Decision> decision =
       GetDecisionBasedOnSiteReputation(reputation);
 
   // If the PreloadData suggests this is an unacceptable site, ping Safe

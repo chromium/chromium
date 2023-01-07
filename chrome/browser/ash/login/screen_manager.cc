@@ -1,29 +1,39 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screen_manager.h"
 
+#include <iostream>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 
-namespace chromeos {
+namespace ash {
 
 ScreenManager::ScreenManager() = default;
 
 ScreenManager::~ScreenManager() = default;
 
-void ScreenManager::Init(std::vector<std::unique_ptr<BaseScreen>> screens) {
-  for (auto&& screen : screens)
-    screens_[screen->screen_id()] = std::move(screen);
+void ScreenManager::Init(
+    std::vector<std::pair<OobeScreenId, std::unique_ptr<BaseScreen>>> screens) {
+  screens_ = decltype(screens_)(std::move(screens));
 }
 
 BaseScreen* ScreenManager::GetScreen(OobeScreenId screen) {
   auto iter = screens_.find(screen);
-  DCHECK(iter != screens_.end()) << "Failed to find screen " << screen;
+  CHECK(iter != screens_.end()) << "Failed to find screen " << screen;
   return iter->second.get();
+}
+
+OobeScreenId ScreenManager::GetScreenByName(const std::string& screen_name) {
+  OobeScreenId screen = OobeScreenId(screen_name);
+  auto iter = screens_.find(screen);
+  CHECK(iter != screens_.end()) << "Failed to find screen " << screen;
+  return iter->first;
 }
 
 bool ScreenManager::HasScreen(OobeScreenId screen) {
@@ -41,4 +51,8 @@ void ScreenManager::DeleteScreenForTesting(OobeScreenId screen) {
   screens_[screen] = nullptr;
 }
 
-}  // namespace chromeos
+void ScreenManager::Shutdown() {
+  screens_.clear();
+}
+
+}  // namespace ash

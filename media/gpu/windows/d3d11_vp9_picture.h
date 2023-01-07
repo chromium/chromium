@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_GPU_WINDOWS_D3D11_VP9_PICTURE_H_
 #define MEDIA_GPU_WINDOWS_D3D11_VP9_PICTURE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "media/gpu/vp9_picture.h"
 
 #include "media/gpu/windows/d3d11_picture_buffer.h"
@@ -29,8 +30,8 @@ class D3D11VP9Picture : public VP9Picture {
   scoped_refptr<VP9Picture> CreateDuplicate() override;
 
  private:
-  D3D11PictureBuffer* picture_buffer_;
-  D3D11VideoDecoderClient* client_;
+  raw_ptr<D3D11PictureBuffer> picture_buffer_;
+  raw_ptr<D3D11VideoDecoderClient> client_;
   size_t picture_index_;
 };
 

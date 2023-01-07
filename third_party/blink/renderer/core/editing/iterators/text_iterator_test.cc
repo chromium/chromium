@@ -387,6 +387,20 @@ TEST_P(TextIteratorTest, FullyClipsContents) {
   EXPECT_EQ("", Iterate<FlatTree>());
 }
 
+// http://crbug.com/1194349
+// See also CachedTextInputInfoTest.PlaceholderBRInTextArea
+TEST_P(TextIteratorTest, PlaceholderBRInTextArea) {
+  SetBodyContent("<textarea id=target>abc\n</textarea>");
+  auto& target = *To<TextControlElement>(GetElementById("target"));
+
+  // innerEditor is "<div>abc\n<br></div>"
+  const auto& range =
+      EphemeralRange::RangeOfContents(*target.InnerEditorElement());
+  EXPECT_EQ("[abc\n][\n]",
+            IteratePartial<DOMTree>(range.StartPosition(), range.EndPosition()))
+      << "The placeholder <br> emits [\\n].";
+}
+
 TEST_P(TextIteratorTest, IgnoresContainerClip) {
   static const char* body_content =
       "<div style='overflow: hidden; width: 200px; height: 0;'>"
@@ -489,7 +503,7 @@ TEST_P(TextIteratorTest, RangeLengthInMultilineSpan) {
 
   const EphemeralRange range(Position(text_node, 4), Position(text_node, 7));
 
-  EXPECT_EQ(LayoutNGEnabled() ? 3 : 4, TextIterator::RangeLength(range));
+  EXPECT_EQ(3, TextIterator::RangeLength(range));
   EXPECT_EQ(3, TextIterator::RangeLength(
                    range,
                    TextIteratorBehavior::NoTrailingSpaceRangeLengthBehavior()));
@@ -550,8 +564,7 @@ TEST_P(TextIteratorTest, TrainlingSpace) {
   // Note: InlineTextBox has trailing spaces which we should get rid from
   // inline layout tree as LayoutNG.
   SetBodyContent("ab  <br>  cd");
-  EXPECT_EQ(LayoutNGEnabled() ? "[ab][\n][cd]" : "[ab ][\n][cd]",
-            Iterate<DOMTree>());
+  EXPECT_EQ("[ab][\n][cd]", Iterate<DOMTree>());
 }
 
 TEST_P(TextIteratorTest, WhitespaceCollapseForReplacedElements) {
@@ -567,14 +580,9 @@ TEST_P(TextIteratorTest, WhitespaceCollapseForReplacedElements) {
   //   [3] I DOM:0-14 TC:11-25 "Some more text"
   // Note: InlineTextBox has a collapsed space which we should get rid from
   // inline layout tree as LayoutNG.
-  EXPECT_EQ(LayoutNGEnabled() ? "[Some text ][][Some more text]"
-                              : "[Some text ][ ][][Some more text]",
-            Iterate<DOMTree>());
+  EXPECT_EQ("[Some text ][][Some more text]", Iterate<DOMTree>());
   // <input type=button> is not text control element
-  EXPECT_EQ(LayoutNGEnabled()
-                ? "[Some text ][][Button text][Some more text]"
-                : "[Some text ][ ][][Button text][Some more text]",
-            Iterate<FlatTree>());
+  EXPECT_EQ("[Some text ][][Button text][Some more text]", Iterate<FlatTree>());
 }
 
 TEST_P(TextIteratorTest, characterAt) {
@@ -1072,6 +1080,16 @@ TEST_P(TextIteratorTest, IterateWithLockedSubtree) {
   const Position start_position = Position::FirstPositionInNode(*parent);
   const Position end_position = Position::LastPositionInNode(*parent);
   EXPECT_EQ(6, TextIterator::RangeLength(start_position, end_position));
+}
+
+// http://crbug.com/1203786
+TEST_P(TextIteratorTest, RangeLengthWithSoftLineWrap) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 20px/30px Ahem; }"
+      "#sample { width: 3ch; }");
+  EXPECT_EQ(3, TestRangeLength("<div id=sample>^<input>  A|</div>"));
+  EXPECT_EQ(2, TestRangeLength("<div id=sample><input>^  A|</div>"));
 }
 
 }  // namespace text_iterator_test

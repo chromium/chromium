@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/public/cpp/login_accelerators.h"
 
-#include "base/stl_util.h"
+#include <string>
 
 namespace ash {
 
@@ -25,11 +25,11 @@ const LoginAcceleratorData kLoginAcceleratorData[] = {
     }, {
        kAppLaunchBailout,
        ui::VKEY_S, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-       false, kScopeOobe | kScopeLogin,
+       true, kScopeOobe | kScopeLogin,
     }, {
        kAppLaunchNetworkConfig,
        ui::VKEY_N, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
-       false, kScopeOobe | kScopeLogin,
+       true, kScopeOobe | kScopeLogin,
     }, {
        kCancelScreenAction,
        ui::VKEY_ESCAPE, ui::EF_NONE,
@@ -37,6 +37,10 @@ const LoginAcceleratorData kLoginAcceleratorData[] = {
     }, {
        kStartEnrollment,
        ui::VKEY_E, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+       false, kScopeOobe,
+    }, {
+       kStartKioskEnrollment,
+       ui::VKEY_K, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
        false, kScopeOobe,
     }, {
        kStartDemoMode,
@@ -56,7 +60,7 @@ const LoginAcceleratorData kLoginAcceleratorData[] = {
        false, kScopeOobe,
     }, {
        kEnableConsumerKiosk,
-       ui::VKEY_K, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN,
+       ui::VKEY_K, ui::EF_CONTROL_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
        false, kScopeOobe,
     }, {
        kLaunchDiagnostics,
@@ -66,6 +70,6 @@ const LoginAcceleratorData kLoginAcceleratorData[] = {
 };
 // clang-format on
 
-const size_t kLoginAcceleratorDataLength = base::size(kLoginAcceleratorData);
+const size_t kLoginAcceleratorDataLength = std::size(kLoginAcceleratorData);
 
 }  // namespace ash

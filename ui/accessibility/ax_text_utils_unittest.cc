@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,7 @@
 namespace ui {
 
 TEST(AXTextUtils, FindAccessibleTextBoundaryWord) {
-  const std::u16string text =
-      base::UTF8ToUTF16("Hello there.This/is\ntesting.");
+  const std::u16string text = u"Hello there.This/is\ntesting.";
   const size_t text_length = text.length();
   std::vector<int> line_start_offsets;
   line_start_offsets.push_back(19);
@@ -74,7 +73,7 @@ TEST(AXTextUtils, FindAccessibleTextBoundaryWord) {
 }
 
 TEST(AXTextUtils, FindAccessibleTextBoundaryLine) {
-  const std::u16string text = base::UTF8ToUTF16("Line 1.\nLine 2\n\t");
+  const std::u16string text = u"Line 1.\nLine 2\n\t";
   const size_t text_length = text.length();
   std::vector<int> line_start_offsets;
   line_start_offsets.push_back(8);
@@ -158,7 +157,7 @@ TEST(AXTextUtils, FindAccessibleTextBoundarySentence) {
   };
 
   const std::u16string text =
-      base::UTF8ToUTF16("Sentence 1. Sentence 2...\n\tSentence 3! Sentence 4");
+      u"Sentence 1. Sentence 2...\n\tSentence 3! Sentence 4";
   std::pair<size_t, size_t> boundaries =
       find_sentence_boundaries_at_offset(text, 5);
   EXPECT_EQ(0UL, boundaries.first);
@@ -190,7 +189,7 @@ TEST(AXTextUtils, FindAccessibleTextBoundarySentence) {
 
   // The sentence should include whitespace all the way until the end of the
   // string.
-  const std::u16string text2 = base::UTF8ToUTF16("A sentence . \n\n\t\t\n");
+  const std::u16string text2 = u"A sentence . \n\n\t\t\n";
   boundaries = find_sentence_boundaries_at_offset(text2, 10);
   EXPECT_EQ(0UL, boundaries.first);
   EXPECT_EQ(18UL, boundaries.second);
@@ -291,14 +290,14 @@ TEST(AXTextUtils, GetWordStartOffsetsMalformedInputTest) {
 }
 
 TEST(AXTextUtils, GetSentenceStartOffsetsBasicTest) {
-  const std::u16string text = base::UTF8ToUTF16(
-      "This is the first sentence. This is the second sentence");
+  const std::u16string text =
+      u"This is the first sentence. This is the second sentence";
   EXPECT_THAT(GetSentenceStartOffsets(text), testing::ElementsAre(0, 28));
 }
 
 TEST(AXTextUtils, GetSentenceEndOffsetsBasicTest) {
-  const std::u16string text = base::UTF8ToUTF16(
-      "This is the first sentence. This is the second sentence");
+  const std::u16string text =
+      u"This is the first sentence. This is the second sentence";
   EXPECT_THAT(GetSentenceEndOffsets(text), testing::ElementsAre(28, 55));
 }
 

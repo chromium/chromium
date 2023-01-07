@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
@@ -17,7 +18,7 @@ import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.WindowAndroid;
-
+import org.chromium.url.GURL;
 /**
  * JNI call glue for AutofillExternalDelagate C++ and Java objects.
  * This provides an alternative UI for Autofill suggestions, and replaces AutofillPopupBridge when
@@ -31,6 +32,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     private @Nullable Context mContext;
     private final PropertyProvider<AutofillSuggestion[]> mChipProvider =
             new PropertyProvider<>(AccessoryAction.AUTOFILL_SUGGESTION);
+    private final Callback<ManualFillingComponent> mFillingComponentObserver =
+            this::connectToFillingComponent;
 
     private AutofillKeyboardAccessoryViewBridge() {}
 
@@ -86,7 +89,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
         mManualFillingComponentSupplier = ManualFillingComponentSupplier.from(windowAndroid);
         if (mManualFillingComponentSupplier != null) {
             ManualFillingComponent currentFillingComponent =
-                    mManualFillingComponentSupplier.addObserver(this::connectToFillingComponent);
+                    mManualFillingComponentSupplier.addObserver(mFillingComponentObserver);
             connectToFillingComponent(currentFillingComponent);
         }
 
@@ -107,9 +110,10 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     @CalledByNative
     private void dismiss() {
         if (mManualFillingComponentSupplier != null) {
-            mManualFillingComponentSupplier.removeObserver(this::connectToFillingComponent);
+            mChipProvider.notifyObservers(new AutofillSuggestion[0]);
+            mManualFillingComponentSupplier.removeObserver(mFillingComponentObserver);
         }
-        mChipProvider.notifyObservers(new AutofillSuggestion[0]);
+        dismissed();
         mContext = null;
     }
 
@@ -147,19 +151,31 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      * @param sublabel Hint for the suggested text. The text that's going to be filled in the
      *                 unfocused fields of the form. If {@see label} is empty, then this must be
      *                 empty too.
-     * @param itemTag Tag for the autofill suggestion. This text will be displayed as an IPH Bubble.
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
      * @param suggestionId Identifier for the suggestion type.
      * @param isDeletable Whether the item can be deleted by the user.
+     * @param featureForIPH The In-Product-Help feature used for displaying the bubble for the
+     *         suggestion.
+     * @param customIconUrl The url used to fetch the custom icon to be displayed in the autofill
+     *         suggestion chip.
      */
     @CalledByNative
     private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
-            String label, String sublabel, String itemTag, int iconId, int suggestionId,
-            boolean isDeletable) {
+            String label, String sublabel, int iconId, int suggestionId, boolean isDeletable,
+            String featureForIPH, GURL customIconUrl) {
         int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
-        array[index] = new AutofillSuggestion(label, sublabel, itemTag, drawableId,
-                false /* isIconAtStart */, suggestionId, isDeletable, false /* isMultilineLabel */,
-                false /* isBoldLabel */);
+        array[index] = new AutofillSuggestion.Builder()
+                               .setLabel(label)
+                               .setSubLabel(sublabel)
+                               .setIconId(drawableId)
+                               .setIsIconAtStart(false)
+                               .setSuggestionId(suggestionId)
+                               .setIsDeletable(isDeletable)
+                               .setIsMultiLineLabel(false)
+                               .setIsBoldLabel(false)
+                               .setFeatureForIPH(featureForIPH)
+                               .setCustomIconUrl(customIconUrl)
+                               .build();
     }
 
     /**

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -25,17 +24,19 @@ namespace diagnostics {
 
 // This is the count of diagnostic tests on each platform.  This should
 // only be used by testing code.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const int DiagnosticsModel::kDiagnosticsTestCount = 17;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 const int DiagnosticsModel::kDiagnosticsTestCount = 14;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const int DiagnosticsModel::kDiagnosticsTestCount = 18;
 #else
 const int DiagnosticsModel::kDiagnosticsTestCount = 16;
-#endif
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_FUCHSIA)
+const int DiagnosticsModel::kDiagnosticsTestCount = 16;
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -50,6 +51,9 @@ namespace {
 class DiagnosticsModelImpl : public DiagnosticsModel {
  public:
   DiagnosticsModelImpl() : tests_run_(0) {}
+
+  DiagnosticsModelImpl(const DiagnosticsModelImpl&) = delete;
+  DiagnosticsModelImpl& operator=(const DiagnosticsModelImpl&) = delete;
 
   ~DiagnosticsModelImpl() override {}
 
@@ -139,14 +143,11 @@ class DiagnosticsModelImpl : public DiagnosticsModel {
 
   std::vector<std::unique_ptr<DiagnosticsTest>> tests_;
   int tests_run_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiagnosticsModelImpl);
 };
 
 // Each platform can have their own tests. For the time being there is only
 // one test that works on all platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class DiagnosticsModelWin : public DiagnosticsModelImpl {
  public:
   DiagnosticsModelWin() {
@@ -169,11 +170,11 @@ class DiagnosticsModelWin : public DiagnosticsModelImpl {
     tests_.push_back(MakeSqliteWebDatabaseTrackerDbTest());
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiagnosticsModelWin);
+  DiagnosticsModelWin(const DiagnosticsModelWin&) = delete;
+  DiagnosticsModelWin& operator=(const DiagnosticsModelWin&) = delete;
 };
 
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 class DiagnosticsModelMac : public DiagnosticsModelImpl {
  public:
   DiagnosticsModelMac() {
@@ -193,11 +194,11 @@ class DiagnosticsModelMac : public DiagnosticsModelImpl {
     tests_.push_back(MakeSqliteWebDatabaseTrackerDbTest());
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiagnosticsModelMac);
+  DiagnosticsModelMac(const DiagnosticsModelMac&) = delete;
+  DiagnosticsModelMac& operator=(const DiagnosticsModelMac&) = delete;
 };
 
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 class DiagnosticsModelPosix : public DiagnosticsModelImpl {
  public:
   DiagnosticsModelPosix() {
@@ -223,8 +224,32 @@ class DiagnosticsModelPosix : public DiagnosticsModelImpl {
 #endif
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DiagnosticsModelPosix);
+  DiagnosticsModelPosix(const DiagnosticsModelPosix&) = delete;
+  DiagnosticsModelPosix& operator=(const DiagnosticsModelPosix&) = delete;
+};
+
+#elif BUILDFLAG(IS_FUCHSIA)
+class DiagnosticsModelFuchsia : public DiagnosticsModelImpl {
+ public:
+  DiagnosticsModelFuchsia() {
+    // TODO(crbug.com/1234737) Check that the list of diagnostic is correct.
+    tests_.push_back(MakeInstallTypeTest());
+    tests_.push_back(MakeVersionTest());
+    tests_.push_back(MakeUserDirTest());
+    tests_.push_back(MakeLocalStateFileTest());
+    tests_.push_back(MakeDictonaryDirTest());
+    tests_.push_back(MakeResourcesFileTest());
+    tests_.push_back(MakeDiskSpaceTest());
+    tests_.push_back(MakePreferencesTest());
+    tests_.push_back(MakeLocalStateTest());
+    tests_.push_back(MakeBookMarksTest());
+    tests_.push_back(MakeSqliteWebDataDbTest());
+    tests_.push_back(MakeSqliteCookiesDbTest());
+    tests_.push_back(MakeSqliteFaviconsDbTest());
+    tests_.push_back(MakeSqliteHistoryDbTest());
+    tests_.push_back(MakeSqliteTopSitesDbTest());
+    tests_.push_back(MakeSqliteWebDatabaseTrackerDbTest());
+  }
 };
 
 #endif
@@ -236,12 +261,14 @@ DiagnosticsModel* MakeDiagnosticsModel(const base::CommandLine& cmdline) {
       cmdline.GetSwitchValuePath(switches::kUserDataDir);
   if (!user_data_dir.empty())
     base::PathService::Override(chrome::DIR_USER_DATA, user_data_dir);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return new DiagnosticsModelWin();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return new DiagnosticsModelMac();
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   return new DiagnosticsModelPosix();
+#elif BUILDFLAG(IS_FUCHSIA)
+  return new DiagnosticsModelFuchsia();
 #endif
 }
 

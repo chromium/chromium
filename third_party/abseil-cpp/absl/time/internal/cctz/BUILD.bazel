@@ -12,8 +12,6 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-load("@rules_cc//cc:defs.bzl", "cc_library", "cc_test")
-
 package(features = ["-parse_headers"])
 
 licenses(["notice"])
@@ -26,14 +24,14 @@ filegroup(
 config_setting(
     name = "osx",
     constraint_values = [
-        "@bazel_tools//platforms:osx",
+        "@platforms//os:osx",
     ],
 )
 
 config_setting(
     name = "ios",
     constraint_values = [
-        "@bazel_tools//platforms:ios",
+        "@platforms//os:ios",
     ],
 )
 
@@ -87,7 +85,11 @@ cc_library(
     deps = [
         ":civil_time",
         "//absl/base:config",
-    ],
+    ] + select(
+        {
+            "//conditions:default": [],
+        },
+    ),
 )
 
 ### tests
@@ -117,6 +119,7 @@ cc_test(
         "no_test_android_arm",
         "no_test_android_arm64",
         "no_test_android_x86",
+        "no_test_wasm",
     ],
     deps = [
         ":civil_time",
@@ -136,6 +139,7 @@ cc_test(
         "no_test_android_arm",
         "no_test_android_arm64",
         "no_test_android_x86",
+        "no_test_wasm",
     ],
     deps = [
         ":civil_time",

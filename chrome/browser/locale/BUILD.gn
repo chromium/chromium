@@ -1,0 +1,90 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//chrome/browser/buildflags.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/locale/LocaleManager.java" ]
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//chrome/browser/contextmenu:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/search_engines/android:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/search_engines/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+  ]
+
+  public_deps = [
+    ":delegate_java",
+    ":util_java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.locale"
+}
+
+android_library("delegate_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/locale/LocaleManagerDelegate.java",
+    "java/src/org/chromium/chrome/browser/locale/LocaleManagerDelegateImpl.java",
+  ]
+
+  deps = [
+    ":util_java",
+    "//base:base_java",
+    "//chrome/browser/contextmenu:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/search_engines/android:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/widget/android:java",
+    "//components/search_engines/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.locale"
+
+  # Add the actual implementation where necessary so that downstream targets
+  # can provide their own implementations.
+  jar_excluded_patterns = [ "*/LocaleManagerDelegateImpl.class" ]
+}
+
+android_library("delegate_public_impl_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/locale/LocaleManagerDelegateImpl.java" ]
+
+  deps = [
+    ":delegate_java",
+    ":util_java",
+  ]
+}
+
+android_library("util_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/locale/LocaleTemplateUrlLoader.java",
+  ]
+  deps = [
+    "//base:jni_java",
+    "//build/android:build_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.chrome.browser.locale"
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/locale/LocaleManager.java",
+    "java/src/org/chromium/chrome/browser/locale/LocaleTemplateUrlLoader.java",
+  ]
+}

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,16 @@
 #include <string>
 
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_manager_observer.h"
-#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -63,12 +63,16 @@ class ExtensionDialog : public views::DialogDelegate,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // |title_color| customizes the color of the window title.
-    base::Optional<SkColor> title_color;
+    absl::optional<ui::ColorId> title_color;
     // |title_inactive_color| customizes the color of the window title when
     // window is inactive.
-    base::Optional<SkColor> title_inactive_color;
+    absl::optional<ui::ColorId> title_inactive_color;
 #endif
   };
+
+  ExtensionDialog(const ExtensionDialog&) = delete;
+  ExtensionDialog& operator=(const ExtensionDialog&) = delete;
+
   // Create and show a dialog with |url| centered over the provided window.
   // |parent_window| is the parent window to which the pop-up will be attached.
   // |profile| is the profile that the extension is registered with.
@@ -95,7 +99,6 @@ class ExtensionDialog : public views::DialogDelegate,
   // extensions::ExtensionHostObserver:
   void OnExtensionHostDidStopFirstLoad(
       const extensions::ExtensionHost* host) override;
-  void OnExtensionHostShouldClose(extensions::ExtensionHost* host) override;
 
   // extensions::ProcessManagerObserver:
   void OnExtensionProcessTerminated(
@@ -116,13 +119,16 @@ class ExtensionDialog : public views::DialogDelegate,
 
   void OnWindowClosing();
 
+  // Handles a signal from the `host` to close.
+  void HandleCloseExtensionHost(extensions::ExtensionHost* host);
+
   // Window Title
   std::u16string window_title_;
 
   // The contained host for the view.
   std::unique_ptr<extensions::ExtensionViewHost> host_;
 
-  ExtensionViewViews* extension_view_ = nullptr;
+  raw_ptr<ExtensionViewViews> extension_view_ = nullptr;
 
   base::ScopedObservation<extensions::ExtensionHost,
                           extensions::ExtensionHostObserver>
@@ -133,9 +139,7 @@ class ExtensionDialog : public views::DialogDelegate,
       process_manager_observation_{this};
 
   // The observer of this popup.
-  ExtensionDialogObserver* observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDialog);
+  raw_ptr<ExtensionDialogObserver> observer_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_DIALOG_H_

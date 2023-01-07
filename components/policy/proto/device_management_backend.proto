@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,14 @@ option optimize_for = LITE_RUNTIME;
 
 package enterprise_management;
 
+option go_package="chromium/policy/enterprise_management_proto";
+
 import "private_membership_rlwe.proto";
 
 // Everything below this comment will be synchronized between client and server
 // repos ( go/cros-proto-sync ).
 
-// DEPRECATED: This enum needs to be shared between DeviceRegisterRequest and
+// This enum needs to be shared between DeviceRegisterRequest and
 // LicenseAvailability protos. With java_api_version 1, this means that enum
 // needs to be wrapped into a message.
 message LicenseType {
@@ -27,9 +29,11 @@ message LicenseType {
     CDM_ANNUAL = 2;
     // Chrome Kiosk
     KIOSK = 3;
+    // Chrome Enterprise bundled license
+    CDM_PACKAGED = 4;
   }
 
-  optional LicenseTypeEnum license_type_deprecated = 1 [deprecated = true];
+  optional LicenseTypeEnum license_type = 1;
 }
 
 // Data along with a cryptographic signature verifying their authenticity.
@@ -71,6 +75,7 @@ message DeviceRegisterRequest {
     DEVICE = 2;           // Register for Chrome OS device policies.
     BROWSER = 3;          // Register for desktop Chrome browser user policies.
     ANDROID_BROWSER = 4;  // Register for Android Chrome browser user policies.
+    IOS_BROWSER = 6;      // Register for iOS Chrome browser user policies.
   }
   // NOTE: we also use this field to detect client version.  If this
   // field is missing, then the request comes from TT.  We will remove
@@ -98,6 +103,8 @@ message DeviceRegisterRequest {
 
   // Enumerates different flavors of registration.
   enum Flavor {
+    reserved 12;
+
     // User manually enrolls a device for device management.
     FLAVOR_ENROLLMENT_MANUAL = 0;
     // User re-starts enrollment manually to recover from loss of policy.
@@ -133,8 +140,6 @@ message DeviceRegisterRequest {
     // mandatory, but it failed and we are doing a fallback to manual
     // enrollment.
     FLAVOR_ENROLLMENT_ATTESTATION_MANUAL_FALLBACK = 11;
-    // Enrollment triggered by USB pre-configuration
-    FLAVOR_ENROLLMENT_ATTESTATION_USB_ENROLLMENT = 12;
     // Device state downloaded from the server during OOBE indicates that
     // initial enrollment is mandatory.
     FLAVOR_ENROLLMENT_INITIAL_SERVER_FORCED = 13;
@@ -145,6 +150,14 @@ message DeviceRegisterRequest {
     // is mandatory, but it failed and we are doing a fallback to manual
     // enrollment.
     FLAVOR_ENROLLMENT_ATTESTATION_INITIAL_MANUAL_FALLBACK = 15;
+    // An enterprise rollback just took place and the device was wiped.
+    // Attempt to re-enroll with attestation. This is forced from the
+    // client side.
+    FLAVOR_ENROLLMENT_ATTESTATION_ROLLBACK_FORCED = 16;
+    // An enterprise rollback just took place and the device was wiped.
+    // Attestation re-enrollment just failed, attempt manual enrollment as
+    // fallback.
+    FLAVOR_ENROLLMENT_ATTESTATION_ROLLBACK_MANUAL_FALLBACK = 17;
   }
 
   // Indicates the registration flavor. This is passed to the server FYI when
@@ -197,7 +210,31 @@ message DeviceRegisterRequest {
   // Identification of the device that is not already available.
   optional DeviceRegisterIdentification device_register_identification = 18;
 
-  // Next id: 19.
+  // Indicates all possible PSM (Private Set Membership) protocol final results
+  // without specifying the root cause in case of an error.
+  enum PsmExecutionResult {
+    // PSM protocol started and it neither finished successfully nor
+    // terminated due to a protocol's error.
+    PSM_RESULT_UNKNOWN = 0;
+
+    // PSM finished successfully and there was server-backed state for the
+    // device.
+    PSM_RESULT_SUCCESSFUL_WITH_STATE = 1;
+
+    // PSM finished successfully and there was no server-backed state for the
+    // device.
+    PSM_RESULT_SUCCESSFUL_WITHOUT_STATE = 2;
+
+    // PSM terminated due to an error.
+    PSM_RESULT_ERROR = 3;
+  }
+  optional PsmExecutionResult psm_execution_result = 19;
+
+  // Timestamp of PSM retrieving the device's determination successfully in
+  // milliseconds since Epoch in UTC timezone (Java time).
+  optional int64 psm_determination_timestamp_ms = 20;
+
+  // Next id: 21.
 }
 
 // Identification of a device used during its registration.
@@ -345,6 +382,8 @@ message DeviceServiceApiAccessResponse {
 
 // Device Identifier for non-Chrome OS platform.
 message BrowserDeviceIdentifier {
+  reserved 3;
+
   // Name of the computer.
   optional string computer_name = 1;
   // Device serial number (definition depending on the platform).
@@ -475,7 +514,12 @@ message CustomerLogo {
 // This message is included in serialized form in PolicyFetchResponse below. It
 // may also be signed, with the signature being created for the serialized form.
 message PolicyData {
-  reserved 10;
+  reserved 10, 13, 14, 18, 19;
+  reserved "command_invalidation_name";
+  reserved "command_invalidation_source";
+  reserved "invalidation_name";
+  reserved "invalidation_source";
+  reserved "valid_serial_number_missing";
 
   // See PolicyFetchRequest.policy_type.
   optional string policy_type = 1;
@@ -546,18 +590,6 @@ message PolicyData {
   // This is only sent as part of device policy fetch.
   optional string service_account_identity = 12;
 
-  // TODO(crbug/1073504): Clean up after legacy Tango shutdown.
-  // The object source which hosts policy objects within the invalidation
-  // service. This value is combined with invalidation_name to form the object
-  // id used to register for invalidations to this policy.
-  optional int32 invalidation_source = 13;
-
-  // TODO(crbug/1073504): Clean up after legacy Tango shutdown.
-  // The name which uniquely identifies this policy within the invalidation
-  // service object source. This value is combined with invalidation_source to
-  // form the object id used to register for invalidations to this policy.
-  optional bytes invalidation_name = 14;
-
   // Server-provided identifier of the fetched policy. This is to be used
   // by the client when requesting Policy Posture assertion through an API
   // call or SAML flow. For details, see http://go/chrome-nac-server-design.
@@ -581,20 +613,6 @@ message PolicyData {
 
   // Indicates the state that the device should be in.
   optional DeviceState device_state = 17;
-
-  // TODO(crbug/1073504): Clean up after legacy Tango shutdown.
-  // The object source which hosts command queue objects within the
-  // invalidation service. This value is combined with
-  // command_invalidation_name to form the object ID used to
-  // register for invalidations to the command queue.
-  optional int32 command_invalidation_source = 18;
-
-  // TODO(crbug/1073504): Clean up after legacy Tango shutdown.
-  // The name which uniquely identifies this device’s queue within
-  // the invalidation service object source. This value is combined
-  // with command_invalidation_source to form the object ID used to
-  // register for invalidations to the command queue.
-  optional bytes command_invalidation_name = 19;
 
   // The free-text location info the admin enters to associate the device
   // with a location.
@@ -703,6 +721,11 @@ message PolicyData {
   // device's managing OU's SSO profile. Currently, this points to the OU's
   // SAML settings. May support OIDC in the future.
   optional string sso_profile = 37;
+
+  // Indicates which kind of licenses this device is using, so that chrome OS
+  // can check that. The value is from ChromeOsDeviceInfo
+  // http://google3/ccc/hosted/devices/services/chromeos/common.proto;rcl=436571779;l=549
+  optional string license_sku = 38;
 }
 
 message ClientActionRequired {
@@ -748,7 +771,7 @@ message PolicyFetchResponse {
   // Please note that |new_public_key| is also included inside this data
   // field. Thus we have new public key signed with old version of private key
   // (if client indicated to us that it has old key version), and
-  // new public key data signed by master verification key (if client told
+  // new public key data signed by primary verification key (if client told
   // us that it has public verification key - see |verification_key_id| field
   // of |PolicyFetchRequest|). In most cases, both signatures will be provided.
   // However, client might not have old policy signing key - for example, when
@@ -844,6 +867,17 @@ message ActiveTimePeriod {
   // Email address of the active user. Present only if the user type is managed
   // and affiliated.
   optional string user_email = 3;
+
+  enum SessionType {
+    SESSION_UNKNOWN = 0;
+    SESSION_AFFILIATED_USER = 1;
+    SESSION_MANAGED_GUEST = 2;
+    SESSION_KIOSK = 3;
+    SESSION_ARC_KIOSK = 4;
+    SESSION_WEB_KIOSK = 5;
+  }
+
+  optional SessionType session_type = 4;
 }
 
 // Details about a network interface.
@@ -875,6 +909,17 @@ message NetworkInterface {
 
   // The device path associated with this network interface.
   optional string device_path = 5;
+
+  // The integrated circuit card ID associated with the device's sim card.
+  optional string iccid = 6;
+
+  // The mobile directory number associated with the device's sim card.
+  optional string mdn = 7;
+
+  // List of EID (EUICC Identifier) of all cellular EUICCs
+  // (Embedded Universal Integrated Circuit Cards) on the device.
+  // 32 decimal digits encoded as ASCII string. e.g.
+  repeated string eids = 8;
 }
 
 // Information about configured/visible networks - this is separate from
@@ -974,9 +1019,13 @@ message CPUTempInfo {
 // device.
 message StatefulPartitionInfo {
   // Available space for user data storage in the device in bytes.
-  optional int64 available_space = 1;
+  optional uint64 available_space = 1;
   // Total space for user data storage in the device in bytes.
-  optional int64 total_space = 2;
+  optional uint64 total_space = 2;
+  // File system on stateful partition. e.g. ext4.
+  optional string filesystem = 3;
+  // Source of stateful partition. e.g. /dev/mmcblk0p1.
+  optional string mount_source = 4;
 }
 
 // Chrome release channel, shared for different reports.
@@ -1049,7 +1098,7 @@ message DiskLifetimeEstimation {
 }
 
 // Status of the single storage device
-// Next id: 27
+// Next id: 29
 message DiskInfo {
   optional string serial = 1;
   optional string manufacturer = 2;
@@ -1082,6 +1131,7 @@ message DiskInfo {
     // https://screenshot.googleplex.com/eZWNnV8qGnc
     uint32 emmc_oemid = 15;
     uint32 other_vendor = 16;
+    uint32 jedec_manfid = 27;
   }
 
   // The manufacturer-specific product identifier.
@@ -1103,6 +1153,7 @@ message DiskInfo {
     uint64 nvme_firmware_rev = 23;
     uint64 emmc_firmware_rev = 24;
     uint32 other_firmware_rev = 25;
+    uint32 ufs_firmware_rev = 28;
   }
 
   // The purpose of the device on the system.
@@ -1184,7 +1235,7 @@ message LogicalCpuInfo {
   // Current frequency the CPU is running at.
   optional uint32 scaling_current_frequency_khz = 2;
   // Idle time since last boot.
-  optional uint32 idle_time_seconds = 3;
+  optional uint64 idle_time_seconds = 3;
   // Information about the logical CPU's time in various C-states.
   repeated CpuCStateInfo c_states = 4;
 }
@@ -1289,7 +1340,7 @@ message MemoryInfo {
   // Available memory, in KiB.
   optional uint32 available_memory_kib = 3;
   // Number of page faults since the last boot.
-  optional uint32 page_faults_since_last_boot = 4;
+  optional uint64 page_faults_since_last_boot = 4;
 }
 
 // Information about the device's backlights.
@@ -1320,6 +1371,88 @@ message BluetoothAdapterInfo {
   optional bool powered = 3;
   // The number of devices connected to this adapter.
   optional uint32 num_connected_devices = 4;
+}
+
+// Information from the device's SMBIOS. This is used to determine
+// info such as the device's vendor and product name/version.
+message SmbiosInfo {
+  optional string sys_vendor = 1;
+  optional string product_name = 2;
+  optional string product_version = 3;
+  optional string bios_version = 4;
+}
+
+// Information about the parameters passed to the kernel.
+message KernelParameters {
+  // True if cros_efi was passed to the kernel.
+  // Used to know if the device was booted via EFI.
+  optional bool cros_efi = 1;
+}
+
+// Information about the device's EFI Variables from efivarfs.
+message EFIVars {
+  // True if Secure Boot is enabled on the device.
+  optional bool secure_boot = 1;
+}
+
+// Information about how the OS was booted. This is information
+// such as boot method and other bios settings
+message BootInfo {
+  enum BootMethod {
+    UNKNOWN = 0;
+    CROS_SECURE = 1;
+    // This field maps to kCrosEfi from cros_healthd.
+    CROS_UEFI = 2;
+    CROS_LEGACY = 3;
+    CROS_EFI_SECURE = 4;
+  }
+  optional BootMethod boot_method = 1;
+
+  // DEPRECATED: secure_boot is deprecated in favor of the
+  // CROS_EFI_SECURE BootMethod value.
+  optional bool secure_boot = 2 [deprecated = true];
+}
+
+// Hardware component bus device classes.
+// Maps to BusDeviceClass from cros_healthd.
+enum BusDeviceClass {
+  DEVICE_CLASS_UNSPECIFIED = 0;
+  DISPLAY_CONTROLLER = 1;
+  ETHERNET_CONTROLLER = 2;
+  WIRELESS_CONTROLLER = 3;
+  BLUETOOTH_ADAPTER = 4;
+  THUNDERBOLT_CONTROLLER = 5;
+}
+
+// Hardware component buses.
+// Maps to BusInfo types from cros_healthd.
+enum BusType {
+  BUS_TYPE_UNSPECIFIED = 0;
+  PCI_BUS = 1;
+  USB_BUS = 2;
+  THUNDERBOLT_BUS = 3;
+}
+
+// Information about a device's network hardware.
+message NetworkAdapterInfo {
+  optional BusDeviceClass device_class = 1;
+  optional BusType bus_type = 2;
+  optional int32 vendor_id = 3;
+  optional string vendor_name = 4;
+  optional int32 device_id = 5;
+  optional string device_name = 6;
+  repeated string driver = 7;
+}
+
+// Information about the list of browsers and profiles that are
+// running and installed on the device in the DeviceStatusReport
+message LaCrOsBrowserReport {
+  // Limited to one user since LaCrosBrowserReport is repeated based on each
+  // user. If multiple lacros user profiles exist, each LaCrOsBrowserReport
+  // message (one per lacros user profile) will contain the same |device_user|.
+  optional DeviceUser device_user = 1;
+  // Group of data regarding the browser and user profile.
+  optional BrowserReport browser_report = 2;
 }
 
 // Report device level status.
@@ -1355,15 +1488,16 @@ message DeviceStatusReportRequest {
   repeated NetworkState network_states = 11;
 
   // Samples of CPU utilization (0-100), sampled once every 120 seconds.
-  // To deprecate: Use CpuUtilizationInfo instead.
-  repeated int32 cpu_utilization_pct_samples = 12;
+  // Deprecated: Use CpuUtilizationInfo instead.
+  repeated int32 cpu_utilization_pct_samples = 12 [deprecated = true];
 
   // Total RAM on the device.
   // To deprecate: Use SystemFreeRamInfo instead.
   optional int64 system_ram_total = 14;
 
   // Samples of free RAM [in bytes] (unreliable due to GC).
-  repeated int64 system_ram_free_samples = 15;
+  // Deprecated: Use SystemRamFreeInfo instead.
+  repeated int64 system_ram_free_samples = 15 [deprecated = true];
 
   // Samples of CPU temperatures in Celsius, plus associated labels
   // identifying which CPU produced the temperature measurement.
@@ -1441,6 +1575,30 @@ message DeviceStatusReportRequest {
 
   // Information about the device's Bluetooth adapters.
   repeated BluetoothAdapterInfo bluetooth_adapter_info = 40;
+
+  // Information from the device's SMBIOS.
+  optional SmbiosInfo smbios_info = 41;
+
+  // Information about the parameters passed to the kernel.
+  optional KernelParameters kernel_parameters = 42;
+
+  // Information about the device's EFI Variables from efivarfs.
+  optional EFIVars efi_vars = 43;
+
+  // KernelParameters(42) and EFIVars(43) are deprecated
+  // and rolled into BootInfo(44)
+
+  // Information about how the os was booted.
+  optional BootInfo boot_info = 44;
+
+  // Information about the device's network hardware.
+  repeated NetworkAdapterInfo network_adapter_info = 45;
+
+  // Information about LaCrOs
+  repeated LaCrOsBrowserReport lacros_browser_report = 46;
+
+  // Root device size as displayed in the device UI.
+  optional int64 root_device_total_storage_bytes = 47;
 }
 
 message OsUpdateStatus {
@@ -1644,6 +1802,9 @@ message ExtensionRequest {
   // [request_timestamp] is milliseconds since Epoch in UTC timezone
   // (Java time).
   optional int64 request_timestamp = 2;
+
+  // User justification describing why the extension is being requested.
+  optional string justification = 3;
 }
 
 // Extension information.
@@ -1670,6 +1831,7 @@ message Extension {
     TYPE_USER_SCRIPT = 6;
     TYPE_PLATFORM_APP = 7;
     TYPE_LOGIN_SCREEN_EXTENSION = 8;
+    TYPE_CHROMEOS_SYSTEM_EXTENSION = 9;
   }
   optional ExtensionType app_type = 5;
 
@@ -1705,6 +1867,9 @@ message Extension {
 
   // True if the extension comes from web store.
   optional bool from_webstore = 13;
+
+  // Manifest version of the extension.
+  optional int32 manifest_version = 14;
 }
 
 // Plugin information.
@@ -1768,20 +1933,27 @@ message Policy {
 
     // A policy is overridden by ChromeOS if it's running in a public session or
     // kiosk mode.
-    SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE = 4;
+    SOURCE_DEVICE_LOCAL_ACCOUNT_OVERRIDE_DEPRECATED = 4;
 
     // A policy is set by OS built-in tool on desktop.
     SOURCE_PLATFORM = 5;
 
     // A policy is set by Google's cloud management tool but has higher
     // priority.
-    SOURCE_PRIORITY_CLOUD = 6;
+    SOURCE_PRIORITY_CLOUD_DEPRECATED = 6;
 
     // A policy is set by multiple sources and value has been merged.
     SOURCE_MERGED = 7;
 
     // A policy is set by command line switch for testing purpose.
     SOURCE_COMMAND_LINE = 8;
+
+    // A policy is set by Google's cloud management tool in Ash and piped to
+    // Lacros.
+    SOURCE_CLOUD_FROM_ASH = 9;
+
+    // A policy that is set by the restricted managed guest session override.
+    SOURCE_RESTRICTED_MANAGED_GUEST_SESSION_OVERRIDE = 10;
   }
   optional PolicySource source = 4;
 
@@ -1908,8 +2080,9 @@ message ChromeDesktopReportRequest {
   // The name of the machine within its local network. The string is a JSON
   // encoded structure with a single computername field.
   // This field is replaced by computer_name and only used by old Chrome
-  // browser.
-  optional string machine_name = 1;
+  // browser using the JSON legacy browser.
+  // TODO(b/189584065): Remove when usage goes to zero.
+  optional string machine_name = 1 [deprecated = true];
   // OS info. The string is a an encoded JSON object as returned by
   // chrome.runtime.getPlatformInfo.
   // This field is replaced by OSReport and only used by old Chrome browser.
@@ -1921,10 +2094,14 @@ message ChromeDesktopReportRequest {
   // Browser related info.
   optional BrowserReport browser_report = 4;
   // The device serial number (this might differ with the client ID, depending
-  // on the platform)
-  optional string serial_number = 5;
-  // A string represents the name of computer.
-  optional string computer_name = 6;
+  // on the platform). Deprecated: Please use
+  // ChromeDesktopReportProtoProcessor.getBrowserDeviceIdentifier().getSerialNumber
+  // to extract the Serial Number from the Report Request.
+  optional string serial_number = 5 [deprecated = true];
+  // A string represents the name of computer. Deprecated: Please use
+  // ChromeDesktopReportProtoProcessor.getBrowserDeviceIdentifier().getSerialNumber
+  // to extract the Computer Name from the Report Request.
+  optional string computer_name = 6 [deprecated = true];
   // Operating system related information.
   optional OSReport os_report = 7;
   // A string contains OS user name.
@@ -1933,8 +2110,8 @@ message ChromeDesktopReportRequest {
   // TODO(crbug.com/1105938): This will also replace the computer_name and
   // serial_number fields.
   optional BrowserDeviceIdentifier browser_device_identifier = 9;
-  // A list of flags indicates that the report only contains particular
-  // information. When list is empty or unset, the report should contains all
+  // A list of flags indicating that the report only contains particular
+  // information. When the list is empty or unset, the report should contain all
   // information.
   repeated PartialReportType partial_report_types = 10;
   // Public key that can be used for attesting the machine.
@@ -1956,6 +2133,16 @@ message ChromeOsUserReportRequest {
   // information. When list is empty or unset, the report should contains all
   // information.
   repeated PartialReportType partial_report_types = 3;
+}
+
+// Report user level status on all platforms. It includes the information of the
+// profile that user has signed in plus some basic browser and OS information.
+message ChromeProfileReportRequest {
+  // Browser related info
+  optional BrowserReport browser_report = 1;
+
+  // Basic OS information
+  optional OSReport os_report = 2;
 }
 
 // A validation issue from validating a policy value that was contained in
@@ -2175,13 +2362,18 @@ message DeviceStatusReportResponse {
 
 // Response from DMServer to a Chrome desktop report request. The report
 // upload errors will be set in the containing DeviceManagementResponse or
-// eventually at the HTTP level as mentioned in a TODO.
+// eventually at the HTTP level.
 message ChromeDesktopReportResponse {}
 
 // Response from DMServer to a ChromeOS user report request. The report
 // upload errors will be set in the containing DeviceManagementResponse or
-// eventually at the HTTP level as mentioned in a TODO.
+// eventually at the HTTP level.
 message ChromeOsUserReportResponse {}
+
+// Response from DMServer to a profile report request. The report
+// upload errors will be set in the containing DeviceManagementResponse or
+// eventually at the HTTP level.
+message ChromeProfileReportResponse {}
 
 // Response from DMServer to update user devices' status.
 // It is possible that status report fails but policy request succeed.  In such
@@ -2341,6 +2533,9 @@ message DeviceStateRetrievalResponse {
 
   // Initial device state if |restore_mode| is |RESTORE_MODE_NONE|.
   optional DeviceInitialEnrollmentStateResponse initial_state_response = 4;
+
+  // license type the device used in last enrollment
+  optional LicenseType license_type = 5;
 }
 
 // Request from device to server to retrieve the enrollment mode and domain for
@@ -2395,6 +2590,8 @@ message DeviceInitialEnrollmentStateResponse {
     CHROME_ENTERPRISE = 1;
     // Education SKU.
     CHROME_EDUCATION = 2;
+    // Terminal SKU
+    CHROME_TERMINAL = 3;
   }
   // LINT.ThenChange(//depot/google3/google/chrome/licensepackaging/v1/service.proto)
 
@@ -2490,7 +2687,8 @@ message RemoteCommand {
   // the names should also be updated:
   // - components/policy/core/common/cloud/enterprise_metrics.cc;
   // - components/policy/core/common/remote_commands/remote_commands_service.cc;
-  // - Enterprise.RemoteCommandType in tools/metrics/histograms/histograms.xml;
+  // - Enterprise.RemoteCommandType in
+  //     tools/metrics/histograms/metadata/enterprise/histograms.xml;
   enum Type {
     // Simple echo command for testing, will be ignored in production code.
     COMMAND_ECHO_TEST = -1;
@@ -2535,6 +2733,13 @@ message RemoteCommand {
     // Clear the cache and cookies associated with a given profile.
     BROWSER_CLEAR_BROWSING_DATA = 12;
 
+    // Reset the cellular EUICC (Embedded Universal Integrated Circuit Card) on
+    // the device.
+    DEVICE_RESET_EUICC = 13;
+
+    // Rotates the attestation credentials associated with a browser device.
+    BROWSER_ROTATE_ATTESTATION_CREDENTIAL = 14;
+
     // Please update metrics after adding a new item - see the comment above.
   }
 
@@ -2559,7 +2764,7 @@ message RemoteCommand {
   // params_dict}, where params_dict varies by routine.
   // |DEVICE_GET_DIAGNOSTIC_ROUTINE_UPDATE|: {"id" : id_integer, "command" :
   // command, "includeOutput" : include_output_bool}, where command must be a
-  // valid chromeos::cros_healthd::mojom::DiagnosticRoutineCommandEnum.
+  // valid `ash::cros_healthd::mojom::DiagnosticRoutineCommandEnum`.
   optional string payload = 4;
 
   // An identifier for the target this command is for. This is the same as
@@ -2862,12 +3067,22 @@ message ActiveDirectoryUserSigninResponse {
 
 // Contains information about the TPM used on the device.
 message TpmVersionInfo {
+  enum GscVersion {
+    GSC_VERSION_UNSPECIFIED = 0;
+    GSC_VERSION_NOT_GSC = 1;
+    GSC_VERSION_CR50 = 2;
+    GSC_VERSION_TI50 = 3;
+  }
   optional uint32 family = 1;
   optional uint64 spec_level = 2;
   optional uint32 manufacturer = 3;
   optional uint32 tpm_model = 4;
   optional uint64 firmware_version = 5;
   optional string vendor_specific = 6;
+  optional GscVersion gsc_version = 7;
+  // This field represents the tpm device id and vendor id
+  // which is a combined value as declared in the TPM spec.
+  optional string did_vid = 8;
 }
 
 // Contains status of the TPM unit.
@@ -2885,7 +3100,18 @@ message TpmStatusInfo {
   optional int32 dictionary_attack_threshold = 7;
   optional bool dictionary_attack_lockout_in_effect = 8;
   optional int32 dictionary_attack_lockout_seconds_remaining = 9;
-  optional bool boot_lockbox_finalized = 10;
+  // DEPRECATED: Not filled by the client anymore (since b/172748724).
+  optional bool boot_lockbox_finalized = 10 [deprecated = true];
+  optional bool owner_password_is_present = 11;
+  optional TpmSupportedFeatures tpm_supported_features = 12;
+}
+
+// Contains information about specific features of the TPM unit.
+message TpmSupportedFeatures {
+  optional bool is_allowed = 1;
+  optional bool support_pinweaver = 2;
+  optional bool support_runtime_selection = 3;
+  optional bool support_u2f = 4;
 }
 
 // System state included with some log events.
@@ -2984,7 +3210,7 @@ message ExtensionInstallReportLogEvent {
     USER_TYPE_REGULAR = 1;
     USER_TYPE_GUEST = 2;
     USER_TYPE_PUBLIC_ACCOUNT = 3;
-    USER_TYPE_SUPERVISED_DEPRECATED = 4;
+    USER_TYPE_SUPERVISED_DEPRECATED = 4 [deprecated = true];
     USER_TYPE_KIOSK_APP = 5;
     USER_TYPE_CHILD = 6;
     USER_TYPE_ARC_KIOSK_APP = 7;
@@ -3249,6 +3475,8 @@ message AppInstallReportLogEvent {
     DIRECT_INSTALL = 13;
     // No more regular attempts to install
     CLOUDDPC_MAIN_LOOP_FAILED = 14;
+    // PlayStore local policy was set
+    PLAYSTORE_LOCAL_POLICY_SET = 15;
   }
 
   // Enumerates the possible changes in session state.
@@ -3373,6 +3601,43 @@ message RsuLookupKeyUploadResponse {
   optional bool rsu_lookup_key_updated = 1;
 }
 
+// Information about an eSIM profile installed on an EUICC (Embedded Universal
+// Integrated Circuit Card).
+message ESimProfileInfo {
+  // ICCID of the eSIM profile. Upto 22 decimal digits encoded
+  // as ASCII string.
+  // Example: 3554020401587593554020.
+  optional string iccid = 1;
+
+  // SMDP (Subscription Management - Data Preparation) server address
+  // that was used to install this eSIM profile. Upto 255 characters
+  // encoded as UTF8 string.
+  // Example: LPA:1$esim.example.com$
+  optional string smdp_address = 2;
+}
+
+// Request from device to server to update information about EUICCs
+// on the device.
+message UploadEuiccInfoRequest {
+  // Number of EUICCs on the device.
+  optional uint32 euicc_count = 1;
+
+  // List of policy provisioned eSIM profiles on the device.
+  repeated ESimProfileInfo esim_profiles = 2;
+
+  // A boolean flag which indicates that the list of eSim profiles was cleared.
+  // We use this differentiate between intentionally empty profile list(after
+  // cleanup) or not yet provisioned one.
+  // On the server, we would ignore requests where |esim_profiles| is empty
+  // if |clear_profile_list| is not set to |true| to not accidentally clear the
+  // values previously stored for this device(which can happen in a case of
+  // device being in after-powerwash state, for example).
+  optional bool clear_profile_list = 3;
+}
+
+// Response from server to device for EUICC status update.
+message UploadEuiccInfoResponse {}
+
 // An event used for reporting when a new print job has completed.
 message PrintJobEvent {
   message PrintJobConfiguration {
@@ -3386,11 +3651,11 @@ message PrintJobEvent {
     // The final status of the job.
     optional int32 status = 3;
 
-    // The time the print job was created.
-    optional int64 creation_time = 4;
+    // The time the print job was created in milliseconds since epoch.
+    optional int64 creation_timestamp_ms = 4;
 
-    // The time the print job was completed.
-    optional int64 completion_time = 5;
+    // The time the print job was completed in milliseconds since epoch.
+    optional int64 completion_timestamp_ms = 5;
 
     // The number of pages in the document.
     optional int32 number_of_pages = 6;
@@ -3400,7 +3665,7 @@ message PrintJobEvent {
   }
 
   enum UserType {
-    UNKNOWN = 0;
+    UNKNOWN_USER_TYPE = 0;
     REGULAR = 1;
     GUEST = 2;
     KIOSK = 3;
@@ -3412,6 +3677,9 @@ message PrintJobEvent {
 
     // URI of the printer, which serves as a unique identifier.
     optional string uri = 2;
+
+    // Printer ID.
+    optional string id = 3;
   }
 
   // The finishing settings of the print job.
@@ -3733,6 +4001,61 @@ message ClientCertificateProvisioningResponse {
   }
 }
 
+// Request from browser to server to upload public key.
+// GoogleDMToken MUST be in HTTP Authorization header.
+message BrowserPublicKeyUploadRequest {
+  enum KeyTrustLevel {
+    // UNSPECIFIED.
+    KEY_TRUST_LEVEL_UNSPECIFIED = 0;
+    // Chrome Browser with the key stored in the device hardware.
+    CHROME_BROWSER_HW_KEY = 1;
+    // Chrome Browser with the key stored at OS level.
+    CHROME_BROWSER_OS_KEY = 2;
+  }
+
+  enum KeyType {
+    KEY_TYPE_UNSPECIFIED = 0;
+    RSA_KEY = 1;
+    EC_KEY = 2;
+  }
+
+  // Public key in EC_NID_X9_62_PRIME256V1_PUBLIC_DER format.
+  optional bytes public_key = 1;
+  // Signature of the new public key signed using the existing key, empty for
+  // initial upload.
+  optional bytes signature = 2;
+  // Trust Level of the key.
+  optional KeyTrustLevel key_trust_level = 3;
+  // Type of the key.
+  optional KeyType key_type = 4;
+}
+
+// Response from server to device for cert upload request.
+message BrowserPublicKeyUploadResponse {
+  enum ResponseCode {
+    UNDEFINED = 0;
+    // The new key is uploaded successfully.
+    SUCCESS = 1;
+    // The signature could not be verified.
+    INVALID_SIGNATURE = 2;
+  }
+  optional ResponseCode response_code = 1;
+}
+
+// Additional detail about the error which can be used to clarify user messaging
+// around the error or to influence Chrome's error-handling behavior.
+enum DeviceManagementErrorDetail {
+  NO_ERROR_DETAIL = 0;
+
+  // Only valid for CBCM browser DEVICE_NOT_FOUND errors. Indicates that the
+  // DMToken should be deleted entirely from its storage location.
+  CBCM_DELETION_POLICY_PREFERENCE_DELETE_TOKEN = 1;
+
+  // Only valid for CBCM browser DEVICE_NOT_FOUND errors. Indicates that the
+  // DMToken should be invalidated, preventing device re-enrollment.
+  CBCM_DELETION_POLICY_PREFERENCE_INVALIDATE_TOKEN = 2;
+}
+
 // Request from the DMAgent on the device to the DMServer.  This is
 // container for all requests from device to server.  The overall HTTP
 // request MUST be in the following format:
@@ -3751,7 +4074,6 @@ message ClientCertificateProvisioningResponse {
 //     * enterprise_psm_check
 //     * chrome_desktop_report
 //     * chrome_os_user_report
-//     * ping
 //     * policy
 //     * register
 //     * status_upload
@@ -3770,16 +4092,14 @@ message ClientCertificateProvisioningResponse {
 //     * device_initial_enrollment_state
 //     * refresh_account
 //     * client_cert_provisioning
+//     * browser_public_key_upload
+//     * upload_euicc_info
 //   * devicetype: MUST BE "1" for Android, "2" for Chrome OS or "3" for Chrome
 //     browser.
 //   * apptype: MUST BE Android or Chrome.
 //   * deviceid: MUST BE no more than 64-char in [\x21-\x7E].
 //   * agent: MUST BE no more than 64-char long.
 // * HTTP Authorization header MUST be in the following formats:
-//   * For register, ping, check_android_management
-//     requests with user authentication
-//     Authorization: GoogleLogin auth=<auth cookie for Mobile Sync>
-//
 //   * For register for Chrome browsers
 //     Authorization: GoogleEnrollmentToken token=<enrollment token>
 //
@@ -3792,106 +4112,99 @@ message ClientCertificateProvisioningResponse {
 //
 //   * The Authorization header isn't used for enterprise_check,
 //     enterprise_psm_check, device_initial_enrollment_state or
-//     certificate_based_register requests, nor for register
-//     requests using OAuth. In the latter case, the OAuth
-//     token is passed in the "oauth" parameter.
+//     certificate_based_register requests.
+//     It is also not used for register requests and check_android_management
+//     requests - for these requests, the OAuth token is passed in the "oauth"
+//     HTTP query parameter.
 //
 // DeviceManagementRequest should only contain one request which matches the
-// HTTP query parameter - request, as listed below. Other requests within the
-// container will be ignored.
-//   chrome_desktop_report: chrome_desktop_report_request
-//   chrome_os_user_report: chrome_os_user_report_request
-//   cert_upload: cert_upload_request
-//   check_device_pairing: check_device_pairing_request
-//   device_pairing: device_pairing_request
-//   device_state_retrieval: device_state_retrieval_request
-//   enterprise_check: auto_enrollment_request
-//   ping: policy_request
-//   policy: policy_request
-//   register: register_request
-//   status: device_status_report_request or session_status_report_request or
-//       child_status_report_request
-//   unregister: unregister_request
-//   remote_commands: remote_command_request
-//   attribute_update_permission: device_attribute_update_permission_request
-//   attribute_update: device_attribute_update_request
-//   gcm_id_update: gcm_id_update_request
-//   check_android_management: check_android_management_request
-//   certificate_based_register: certificate_based_register_request
-//   active_directory_enroll_play_user:
-//       active_directory_enroll_play_user_request
-//   active_directory_play_activity: active_directory_play_activity_request
-//   active_directory_user_signin: active_directory_user_signin_request
-//   register_browser: register_browser_request
-//   app_install_report: app_install_report_request
-//   policy_validation_report: policy_validation_report_request
-//   device_initial_enrollment_state: device_initial_enrollment_state_request
-//   refresh_account: refresh_account_request
-//   client_cert_provisioning: client_certificate_provisioning_request
+// HTTP query parameter - request, as mentioned in comments on the fields of the
+// message. Other requests within the container will be ignored.
 message DeviceManagementRequest {
   reserved 24;  // unused previous version of chrome_desktop_report_request.
 
   // Register request.
+  // HTTP query parameter 'request': 'register'
   optional DeviceRegisterRequest register_request = 1;
 
   // Unregister request.
+  // HTTP query parameter 'request': 'unregister'
   optional DeviceUnregisterRequest unregister_request = 2;
 
   // Policy request.
+  // HTTP query parameter 'request': 'policy'
   optional DevicePolicyRequest policy_request = 3;
 
   // Update status.
+  // HTTP query parameter 'request': 'status'
+  // (this applies to all of the following three fields, and they can all be
+  // present in the same request).
   optional DeviceStatusReportRequest device_status_report_request = 4;
   optional SessionStatusReportRequest session_status_report_request = 5;
   optional ChildStatusReportRequest child_status_report_request = 30;
 
   // Auto-enrollment detection.
+  // HTTP query parameter 'request': 'enterprise_check'
   optional DeviceAutoEnrollmentRequest auto_enrollment_request = 6;
 
   // EMCert upload (for remote attestation)
+  // HTTP query parameter 'request': 'cert_upload'
   optional DeviceCertUploadRequest cert_upload_request = 7;
 
   // Request for OAuth2 authorization codes to access Google services.
+  // HTTP query parameter 'request': 'api_authorization'
   optional DeviceServiceApiAccessRequest service_api_access_request = 8;
 
   // Device-state retrieval.
+  // HTTP query parameter 'request': 'device_state_retrieval'
   optional DeviceStateRetrievalRequest device_state_retrieval_request = 9;
 
   // Device state key update.
+  // HTTP query parameter 'request': 'policy'
   optional DeviceStateKeyUpdateRequest device_state_key_update_request = 10;
 
   // Pair two devices.
+  // HTTP query parameter 'request': 'device_pairing'
   optional DevicePairingRequest device_pairing_request = 11;
 
   // Check if two devices are paired.
+  // HTTP query parameter 'request': 'check_device_pairing'
   optional CheckDevicePairingRequest check_device_pairing_request = 12;
 
   // Remote command fetching.
+  // HTTP query parameter 'request': 'remote_commands'
   optional DeviceRemoteCommandRequest remote_command_request = 13;
 
   // Check permission for updating device attribute.
+  // HTTP query parameter 'request': 'attribute_update_permission'
   optional DeviceAttributeUpdatePermissionRequest
       device_attribute_update_permission_request = 14;
 
   // Update device attribute.
+  // HTTP query parameter 'request': 'attribute_update'
   optional DeviceAttributeUpdateRequest device_attribute_update_request = 15;
 
   // Update the GCM id to device_id mapping.
+  // HTTP query parameter 'request': 'gcm_id_update'
   optional GcmIdUpdateRequest gcm_id_update_request = 16;
 
   // Check if user is a managed Android-for-Work user with DPC enforcement.
+  // HTTP query parameter 'request': 'check_android_management'
   optional CheckAndroidManagementRequest check_android_management_request = 17;
 
   // Request to register with a registration certificate.
+  // HTTP query parameter 'request': 'certificate_based_register'
   optional CertificateBasedDeviceRegisterRequest
       certificate_based_register_request = 18;
 
   // Gets an enrollment token to a Managed Google Play Account for using it with
   // Active Directory.
+  // HTTP query parameter 'request': 'active_directory_enroll_play_user'
   optional ActiveDirectoryEnrollPlayUserRequest
       active_directory_enroll_play_user_request = 19;
 
   // Reports that a Play account is used.
+  // HTTP query parameter 'request': 'active_directory_play_activity'
   optional ActiveDirectoryPlayActivityRequest
       active_directory_play_activity_request = 20;
 
@@ -3900,52 +4213,78 @@ message DeviceManagementRequest {
       21 [deprecated = true];
 
   // Initiate an Active Directory user signin.
+  // HTTP query parameter 'request': 'active_directory_user_signin'
   optional ActiveDirectoryUserSigninRequest
       active_directory_user_signin_request = 22;
 
   // Request to register a browser independently of its users.
+  // HTTP query parameter 'request': 'register_browser'
   optional RegisterBrowserRequest register_browser_request = 23;
 
   // A report on the status of app push-installs.
+  // HTTP query parameter 'request': 'app_install_report'
   optional AppInstallReportRequest app_install_report_request = 25;
 
   // A Chrome desktop report request.
+  // HTTP query parameter 'request': 'chrome_desktop_report'
   optional ChromeDesktopReportRequest chrome_desktop_report_request = 26;
 
   // Result of validating fetched policy on the client.
+  // HTTP query parameter 'request': 'policy_validation_report'
   optional PolicyValidationReportRequest policy_validation_report_request = 27;
 
   // Query for initial enrollment details.
+  // HTTP query parameter 'request': 'device_initial_enrollment_state'
   optional DeviceInitialEnrollmentStateRequest
       device_initial_enrollment_state_request = 28;
 
   // Request from device to wipe an old account and get a new account.
+  // HTTP query parameter 'request': 'refresh_account'
   optional RefreshAccountRequest refresh_account_request = 29;
 
   // Request from device to upload RSU lookup key.
+  // TODO(crbug/1284656): seems unused
   optional RsuLookupKeyUploadRequest rsu_lookup_key_upload_request = 31;
 
   // Request from device for SAML IdP URL address.
+  // HTTP query parameter 'request': 'public_saml_user_request'
   optional PublicSamlUserRequest public_saml_user_request = 32;
 
   // A ChromeOS user report request.
+  // HTTP query parameter 'request': 'chrome_os_user_report'
   optional ChromeOsUserReportRequest chrome_os_user_report_request = 33;
 
   // Request to start / continue client certificate provisioning process.
+  // HTTP query parameter 'request': 'client_cert_provisioning'
   optional ClientCertificateProvisioningRequest
       client_certificate_provisioning_request = 34;
 
   // A report on the status of extension install process.
+  // TODO(crbug/1284656): seems unused.
   optional ExtensionInstallReportRequest extension_install_report_request = 35;
 
   // Request to check user account for smart enrollment.
+  // HTTP query parameter 'request': 'check_user_account'
   optional CheckUserAccountRequest check_user_account_request = 36;
 
   // Request from device to check the state stored in PSM. Currently, it is used
   // for ZTE/LP device initial enrollment state check.
+  // HTTP query parameter 'request': 'enterprise_psm_check'
   optional PrivateSetMembershipRequest private_set_membership_request = 37;
 
-  // Next id: 38.
+  // Request from browser to upload public key.
+  // HTTP query parameter 'request': 'browser_public_key_upload'
+  optional BrowserPublicKeyUploadRequest browser_public_key_upload_request = 38;
+
+  // Request to upload info about eSIM provisioning.
+  // HTTP query parameter 'request': 'upload_euicc_info'
+  optional UploadEuiccInfoRequest upload_euicc_info_request = 39;
+
+  // Request to upload profile usage information.
+  // HTTP query parameter 'request': 'chrome_profile_report'
+  optional ChromeProfileReportRequest chrome_profile_report_request = 40;
+
+  // Next id: 41.
 }
 
 // Response from server to device.
@@ -3955,30 +4294,39 @@ message DeviceManagementRequest {
 // to perform log analysis and customer support since HTTP Status Code is easily
 // visible in the logs.
 //
-// The following list defines the error code returned by this API:
-//
+// Possible HTTP status codes:
 // 200 OK: valid response is returned to client.
-// 400 Bad Request: invalid argument.
-// 401 Unauthorized: invalid auth cookie or DM token.
-// 402 Missing licenses.
-// 403 Forbidden: device management is not allowed.
+// 400 Bad Request: invalid argument or payload.
+// 401 Unauthorized: invalid auth cookie/OAuth token or DM token.
+// 402 Missing license.
+// 403 Forbidden: device management is not allowed (e.g. user may not enroll).
 // 404 Not Found: the request URL is invalid.
 // 405 Invalid serial number.
+// 406 Domain mismatch (e.g. device is enrolling into the wrong domain, should
+//     force-re-enroll into another domain).
 // 409 Device id conflict.
 // 410 Device Not Found: the device id is not found.
-// 412 Pending approval.
-// 417 Consumer account with packaged license.
-// 491 Request Pending: the request is pending approval.
+// 412 Pending approval. Used with ClientCertificateProvisioningRequest to
+//     indicate that a certificate has not been issued yet.
+// 413 Request payload too large.
+// 417 Consumer (non-dasher) account can not enroll with packaged license.
+// 429 Too many requests.
 // 500 Internal Server Error: most likely a bug in DM server.
 // 503 Service Unavailable: most likely a backend error.
 // 902 Policy Not Found: the policy is not found.
 // 903 Deprovisioned: the device has been deprovisioned.
 // 904 Arc Disabled: ARC is not enabled on the domain.
+// 905 Can not enroll packaged license device to domainless customer.
+// 906 TOS has not been accepted by customer.
+// 907 Illegal account for packaged EDU license.
 message DeviceManagementResponse {
   reserved 1, 24;
 
   // Error message.
   optional string error_message = 2;
+
+  // Additional details about the error message.
+  repeated DeviceManagementErrorDetail error_detail = 39;
 
   // Register response
   optional DeviceRegisterResponse register_response = 3;
@@ -4081,7 +4429,17 @@ message DeviceManagementResponse {
   // Response to a client private set membership request.
   optional PrivateSetMembershipResponse private_set_membership_response = 35;
 
-  // Next id: 36.
+  // Response to browser public key upload request.
+  optional BrowserPublicKeyUploadResponse browser_public_key_upload_response =
+      36;
+
+  // Response to EUICC info upload request.
+  optional UploadEuiccInfoResponse upload_euicc_info_response = 37;
+
+  // Response to a Chrome Profile report request.
+  optional ChromeProfileReportResponse chrome_profile_report_response = 38;
+
+  // Next id: 40.
 }
 
 // Device State Information stored in the server is retrieval at

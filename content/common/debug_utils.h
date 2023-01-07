@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,9 +27,42 @@ namespace content {
 enum class DebugScenario {
   kDebugSameDocNavigationDocIdMismatch = 1,
 
+  // A non-main frame navigation with old_page_info set was detected.
+  kDebugNonMainFrameWithOldPageInfo = 2,
+
+  // Metrics and the bfcache situations do not match.
+  kDebugBackForwardCacheMetricsMismatch = 3,
+
+  // Detected a mismatch between the origin to commit as calculated on 1) the
+  // browser-side VS 2) the renderer-side.
+  kDebugBrowserVsRendererOriginToCommit = 4,
+
+  // Evict-Restore race in Back Forward Cache - Renderer requested a frame be
+  // evicted from cache, but the frame is no longer in the cache.
+  kDebugBackForwardCacheEvictRestoreRace = 5,
+
+  // HTTP response_head was unexpectedly nullptr even for HTTP or HTTPS schemes.
+  kDebugNoResponseHeadForHttpOrHttps = 6,
+
+  // RenderViewHost is not present when trying to create a new subframe's
+  // RenderFrameProxyHost.
+  kDebugSubframeProxyCreationWithNoRVH = 7,
+
+  // BackForwardCacheEntry exists for a subframe history navigation.
+  kDebugBackForwardCacheEntryExistsOnSubframeHistoryNav = 8,
+
+  // RenderFrameProxyHost does not exist when trying to call
+  // RenderFrameProxyHost::SetFocusedFrame().
+  // 9: kDebugNoRenderFrameProxyHostOnSetFocusedFrame was removed.
+
+  // The RenderFrameHost to be restored from the back/forward cache no longer
+  // exists for a navigation that is not marked as being restarted.
+  // See https://crbug.com/1258523.
+  kDebugNoRestoredRFHOnNonRestartedNavigation = 10,
+
   // After making changes, you MUST update the histograms xml by running:
   // "python tools/metrics/histograms/update_debug_scenarios.py"
-  kMaxValue = kDebugSameDocNavigationDocIdMismatch
+  kMaxValue = kDebugNoRestoredRFHOnNonRestartedNavigation,
 };
 
 // The tracing categories enabled for debugging navigation scenarios can be

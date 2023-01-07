@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,8 @@ bool IsDataValid(base::Time not_before,
 }
 
 // Attempts to decrypt |encrypted_metadata_key| using the |secret_key|.
-// Return base::nullopt if the decryption was unsuccessful.
-base::Optional<std::vector<uint8_t>> DecryptMetadataKey(
+// Return absl::nullopt if the decryption was unsuccessful.
+absl::optional<std::vector<uint8_t>> DecryptMetadataKey(
     const NearbyShareEncryptedMetadataKey& encrypted_metadata_key,
     const crypto::SymmetricKey* secret_key) {
   std::unique_ptr<crypto::Encryptor> encryptor =
@@ -42,23 +42,23 @@ base::Optional<std::vector<uint8_t>> DecryptMetadataKey(
   if (!encryptor) {
     NS_LOG(ERROR)
         << "Cannot decrypt metadata key: Could not create CTR encryptor.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::vector<uint8_t> decrypted_metadata_key;
   if (!encryptor->Decrypt(base::as_bytes(base::make_span(
                               encrypted_metadata_key.encrypted_key())),
                           &decrypted_metadata_key)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return decrypted_metadata_key;
 }
 
 // Attempts to decrypt |encrypted_metadata| with |metadata_encryption_key|,
-// using |authentication_key| as the IV. Returns base::nullopt if the decryption
+// using |authentication_key| as the IV. Returns absl::nullopt if the decryption
 // was unsuccessful.
-base::Optional<std::vector<uint8_t>> DecryptMetadataPayload(
+absl::optional<std::vector<uint8_t>> DecryptMetadataPayload(
     base::span<const uint8_t> encrypted_metadata,
     base::span<const uint8_t> metadata_encryption_key,
     const crypto::SymmetricKey* secret_key) {
@@ -95,7 +95,7 @@ bool VerifyMetadataEncryptionKeyTag(
 }  // namespace
 
 // static
-base::Optional<NearbyShareDecryptedPublicCertificate>
+absl::optional<NearbyShareDecryptedPublicCertificate>
 NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
     const nearbyshare::proto::PublicCertificate& public_certificate,
     const NearbyShareEncryptedMetadataKey& encrypted_metadata_key) {
@@ -122,7 +122,7 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
 
   if (!IsDataValid(not_before, not_after, public_key, secret_key.get(), id,
                    encrypted_metadata, metadata_encryption_key_tag)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // Note: Failure to decrypt the metadata key or failure to confirm that the
@@ -132,23 +132,23 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
   // potentially be calling DecryptPublicCertificate() on all of our public
   // certificates with the same encrypted metadata key until we find the correct
   // one.
-  base::Optional<std::vector<uint8_t>> decrypted_metadata_key =
+  absl::optional<std::vector<uint8_t>> decrypted_metadata_key =
       DecryptMetadataKey(encrypted_metadata_key, secret_key.get());
   if (!decrypted_metadata_key ||
       !VerifyMetadataEncryptionKeyTag(*decrypted_metadata_key,
                                       metadata_encryption_key_tag)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // If the key was able to be decrypted, we expect the metadata to be able to
   // be decrypted.
-  base::Optional<std::vector<uint8_t>> decrypted_metadata_bytes =
+  absl::optional<std::vector<uint8_t>> decrypted_metadata_bytes =
       DecryptMetadataPayload(encrypted_metadata, *decrypted_metadata_key,
                              secret_key.get());
   if (!decrypted_metadata_bytes) {
     NS_LOG(ERROR) << "Metadata decryption failed: Failed to decrypt metadata "
                   << "payload.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   nearbyshare::proto::EncryptedMetadata unencrypted_metadata;
@@ -156,12 +156,13 @@ NearbyShareDecryptedPublicCertificate::DecryptPublicCertificate(
                                            decrypted_metadata_bytes->size())) {
     NS_LOG(ERROR) << "Metadata decryption failed: Failed to parse decrypted "
                   << "metadata payload.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return NearbyShareDecryptedPublicCertificate(
       not_before, not_after, std::move(secret_key), std::move(public_key),
-      std::move(id), std::move(unencrypted_metadata));
+      std::move(id), std::move(unencrypted_metadata),
+      public_certificate.for_self_share());
 }
 
 NearbyShareDecryptedPublicCertificate::NearbyShareDecryptedPublicCertificate(
@@ -170,13 +171,15 @@ NearbyShareDecryptedPublicCertificate::NearbyShareDecryptedPublicCertificate(
     std::unique_ptr<crypto::SymmetricKey> secret_key,
     std::vector<uint8_t> public_key,
     std::vector<uint8_t> id,
-    nearbyshare::proto::EncryptedMetadata unencrypted_metadata)
+    nearbyshare::proto::EncryptedMetadata unencrypted_metadata,
+    bool for_self_share)
     : not_before_(not_before),
       not_after_(not_after),
       secret_key_(std::move(secret_key)),
       public_key_(std::move(public_key)),
       id_(std::move(id)),
-      unencrypted_metadata_(std::move(unencrypted_metadata)) {}
+      unencrypted_metadata_(std::move(unencrypted_metadata)),
+      for_self_share_(for_self_share) {}
 
 NearbyShareDecryptedPublicCertificate::NearbyShareDecryptedPublicCertificate(
     const NearbyShareDecryptedPublicCertificate& other) {
@@ -196,6 +199,7 @@ NearbyShareDecryptedPublicCertificate::operator=(
   public_key_ = other.public_key_;
   id_ = other.id_;
   unencrypted_metadata_ = other.unencrypted_metadata_;
+  for_self_share_ = other.for_self_share_;
   return *this;
 }
 

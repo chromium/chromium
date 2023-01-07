@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 #include "url/gurl.h"
 
@@ -36,7 +36,7 @@ class CONTENT_EXPORT PushMessagingService {
   using RegisterCallback =
       base::OnceCallback<void(const std::string& registration_id,
                               const GURL& endpoint,
-                              const base::Optional<base::Time>& expiration_time,
+                              const absl::optional<base::Time>& expiration_time,
                               const std::vector<uint8_t>& p256dh,
                               const std::vector<uint8_t>& auth,
                               blink::mojom::PushRegistrationStatus status)>;
@@ -45,7 +45,7 @@ class CONTENT_EXPORT PushMessagingService {
   using SubscriptionInfoCallback =
       base::OnceCallback<void(bool is_valid,
                               const GURL& endpoint,
-                              const base::Optional<base::Time>& expiration_time,
+                              const absl::optional<base::Time>& expiration_time,
                               const std::vector<uint8_t>& p256dh,
                               const std::vector<uint8_t>& auth)>;
   using RegistrationUserDataCallback =
@@ -82,6 +82,7 @@ class CONTENT_EXPORT PushMessagingService {
   virtual void SubscribeFromWorker(
       const GURL& requesting_origin,
       int64_t service_worker_registration_id,
+      int render_process_id,
       blink::mojom::PushSubscriptionOptionsPtr options,
       RegisterCallback callback) = 0;
 

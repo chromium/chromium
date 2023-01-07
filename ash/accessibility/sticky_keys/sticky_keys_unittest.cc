@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,10 @@
 namespace ash {
 
 class StickyKeysTest : public AshTestBase {
+ public:
+  StickyKeysTest(const StickyKeysTest&) = delete;
+  StickyKeysTest& operator=(const StickyKeysTest&) = delete;
+
  protected:
   StickyKeysTest() : target_(NULL), root_window_(NULL) {}
 
@@ -163,8 +167,6 @@ class StickyKeysTest : public AshTestBase {
   aura::Window* target_;
   // The root window of |target_|. Not owned.
   aura::Window* root_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(StickyKeysTest);
 };
 
 TEST_F(StickyKeysTest, BasicOneshotScenarioTest) {

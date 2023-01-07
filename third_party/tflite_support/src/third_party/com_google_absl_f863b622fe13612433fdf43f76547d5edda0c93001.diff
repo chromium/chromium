@@ -1,0 +1,14 @@
+diff --git a/absl/time/internal/cctz/BUILD.bazel b/absl/time/internal/cctz/BUILD.bazel
+index 45a9529..461164d 100644
+--- a/absl/time/internal/cctz/BUILD.bazel
++++ b/absl/time/internal/cctz/BUILD.bazel
+@@ -75,9 +75,6 @@ cc_library(
+         "include/cctz/zone_info_source.h",
+     ],
+     linkopts = select({
+-        ":osx": [
+-            "-framework Foundation",
+-        ],
+         ":ios": [
+             "-framework Foundation",
+         ],

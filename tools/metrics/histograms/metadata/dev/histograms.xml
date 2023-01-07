@@ -1,0 +1,438 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Dev histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="DevTools.ActionTaken" enum="DevToolsAction"
+    expires_after="2023-02-12">
+  <owner>alph@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>Specified DevTools action has been taken.</summary>
+</histogram>
+
+<histogram name="DevTools.BackgroundService.ClearEvents"
+    enum="ServiceWorkerStatusCode" expires_after="M99">
+  <owner>yangguo@chromium.org</owner>
+  <owner>rayankans@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    The result of clearing all stored events for a Background Service feature.
+    This is called if a developer clicks on a delete button in a Background
+    Service DevTools panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.BackgroundService.GetEvents"
+    enum="ServiceWorkerStatusCode" expires_after="M99">
+  <owner>rayankans@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    The result of loading all stored events for a Background Service feature.
+    This is called when the a Bakground Service DevTools panel is opened.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.BackgroundService.LogEvent"
+    enum="ServiceWorkerStatusCode" expires_after="M99">
+  <owner>rayankans@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    The result of logging a Background Service event. An event is logged if
+    `Recording` mode is on and a relevant Background Service event is taking
+    place.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.BackgroundService.StartRecording"
+    enum="DevToolsBackgroundService" expires_after="2022-07-09">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>rayankans@chromium.org</owner>
+  <summary>
+    Records the Background Service for which `Recording` mode was enabled. This
+    is called if the developer toggles the record button in the relevant
+    Bakground Service DevTools panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.CDPCommandFrom{ClientType}" enum="CDPCommands"
+    expires_after="2022-12-16">
+  <owner>wolfi@chromium.org</owner>
+  <owner>dsv@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    Records CDP command usage originating from {ClientType}. This is recorded
+    whenever a CDP session receives and handles a command from a CDP client.
+  </summary>
+  <token key="ClientType">
+    <variant name="DevTools"/>
+    <variant name="Extension" summary="an extension"/>
+    <variant name="Other" summary="other sources"/>
+    <variant name="RemoteDebugger" summary="remote debugging"/>
+  </token>
+</histogram>
+
+<histogram name="DevTools.ConsoleShowsCorsErrors"
+    enum="DevToolsConsoleShowsCorsErrors" expires_after="2022-12-01">
+  <owner>dsv@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    Records if showing CORS erros in DevTools Console is enabled.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.CSSHintShown" enum="DevToolsCSSHintShown"
+    expires_after="2023-08-12">
+  <owner>changhaohan@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    Records how many times different CSS hint types were shown in the Styles
+    panel in DevTools. It's recorded when a hint icon is shown in the Styles
+    panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.DeveloperResourceLoaded"
+    enum="DevToolsDeveloperResourceLoaded" expires_after="2023-02-12">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    Records for each developer resource load that the DevTools front-end issues
+    (e.g. to load a source map) several enum values encoding which load method
+    was used, whether a fallback was used (and why), and whether the method
+    succeeded or not.
+
+    Some explanations to make sense of the enum values:
+
+    LoadsThroughPage = LoadThroughPageViaTarget + LoadThroughPageViaFrame
+
+    SuccessfulLoadsThroughPage = LoadsThroughPage - LoadThroughPageFailure
+
+    LoadThroughPageFallback is the number of loads that can in principle be
+    loaded through the page, but had to use the fallback because either loading
+    through the page failed (LoadThroughPageFailure), or there was insufficient
+    information to dispatch the load through the page; the number of such loads
+    can be computed as LoadThroughPageFallback - LoadThroughPageFailure.
+
+    The number of loads not eligible for loading through the page can be
+    computed as FallbackPerOverride + FallbackPerProtocol, where
+    FallbackPerOverride indicates loads where the DevTools user disabled loading
+    through the page via an override, and FallbackPerProtocol indicates loads
+    where DevTools could not load the resource via the page due to the
+    resource's protocol scheme.
+
+    The total number of loads that used the fallback can be computed as
+    LoadThroughPageFallback + FallbackPerOverride + FallbackPerProtocol. Adding
+    SuccessfulLoadsThroughPage to that number gives the total number of loads.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.DeveloperResourceScheme"
+    enum="DevToolsDeveloperResourceScheme" expires_after="2023-02-12">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    Records for each developer resource load that the DevTools front-end issues
+    (e.g. to load a source map) one enum value that records the scheme of the
+    resource's URL. For HTTP and HTTPS schemes, there are two enums each: One
+    that signifies that the host was localhost, and one that signifies that it
+    wasn't, i.e. to get the total number of resource loads using a HTTP scheme
+    one must add the numbers of SchemeHttp and SchemeHttpLocalhost.
+
+    The value SchemeUnknown signifies that parsing the scheme from the URL
+    failed (note that at the point the enum is recorded, only absolute URLs
+    arrive).
+  </summary>
+</histogram>
+
+<histogram name="DevTools.ExperimentDisabled" enum="DevtoolsExperiments"
+    expires_after="2023-02-12">
+  <owner>yangguo@chromium.org</owner>
+  <owner>changhao@chromium.org</owner>
+  <summary>
+    Fired when a devtools experiment is disabled from the experiments tab.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.ExperimentEnabled" enum="DevtoolsExperiments"
+    expires_after="2023-02-12">
+  <owner>yangguo@chromium.org</owner>
+  <owner>changhao@chromium.org</owner>
+  <summary>
+    Fired when a devtools experiment is enabled from the experiments tab.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.ExperimentEnabledAtLaunch" enum="DevtoolsExperiments"
+    expires_after="2023-02-12">
+  <owner>yangguo@chromium.org</owner>
+  <owner>changhao@chromium.org</owner>
+  <summary>
+    Fires for each experiment that is enabled at the time of Devtools Launch.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.InspectElement" units="ms" expires_after="2022-12-01">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    Time to load Developer Tools when user clicks Inspect Element in the context
+    menu.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.IssueCreated" enum="DevToolsIssueCreated"
+    expires_after="2023-02-12">
+  <owner>yangguo@chromium.org</owner>
+  <owner>dsv@chromium.org</owner>
+  <summary>
+    Records the issue type when an issue is created for the Issues Panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.IssuesPanelIssueExpanded"
+    enum="DevToolsIssuesPanelIssueExpanded" expires_after="2023-02-12">
+  <owner>yangguo@chromium.org</owner>
+  <owner>dsv@chromium.org</owner>
+  <summary>
+    Records which type of issue is expanded in the issues panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.IssuesPanelOpenedFrom"
+    enum="DevToolsIssuesPanelOpenedFrom" expires_after="2022-12-01">
+  <owner>yangguo@chromium.org</owner>
+  <owner>dsv@chromium.org</owner>
+  <summary>
+    Records which UI element is being used to open the Issues Panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.IssuesPanelResourceOpened"
+    enum="DevToolsIssuesPanelResourceOpened" expires_after="2023-03-05">
+  <owner>yangguo@chromium.org</owner>
+  <owner>dsv@chromium.org</owner>
+  <summary>
+    Records which resource from what issue category is opened in the issue
+    panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.KeybindSetSettingChanged" enum="DevToolsKeybindSets"
+    expires_after="2023-02-12">
+  <owner>yangguo@chromium.org</owner>
+  <owner>jalyn@microsoft.com</owner>
+  <owner>leo.lee@microsoft.com</owner>
+  <summary>
+    Recorded when the user changes which keyboard shortcut presets they are
+    using in the DevTools.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.KeyboardShortcutFired"
+    enum="DevToolsKeyboardShortcutAction" expires_after="2023-02-12">
+  <owner>yangguo@chromium.org</owner>
+  <owner>jalyn@microsoft.com</owner>
+  <owner>leo.lee@microsoft.com</owner>
+  <summary>
+    Recorded when a DevTools keyboard shortcut has been processed and
+    successfully executed its action.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.Language" enum="DevToolsLanguage"
+    expires_after="2022-12-01">
+  <owner>bmeurer@chromium.org</owner>
+  <owner>szuend@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    The actual display language used for the DevTools UI. Logged once per
+    DevTools session when DevTools is booted up.
+  </summary>
+</histogram>
+
+<histogram base="true" name="DevTools.Launch" units="ms"
+    expires_after="2023-02-12">
+<!-- Name completed by histogram_suffixes name="DevToolsLaunchPanels" -->
+
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    Measures the time until a given tool is interactive during a cold start of
+    DevTools.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.LinearMemoryInspector.RevealedFrom"
+    enum="DevToolsLinearMemoryInspectorRevealedFrom" expires_after="2023-03-19">
+  <owner>yangguo@chromium.org</owner>
+  <owner>kimanh@chromium.org</owner>
+  <summary>
+    Records the ways in which the Memory Inspector panel was opened.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.LinearMemoryInspector.Target"
+    enum="DevToolsLinearMemoryInspectorTarget" expires_after="2023-03-19">
+  <owner>yangguo@chromium.org</owner>
+  <owner>kimanh@chromium.org</owner>
+  <summary>
+    Records the inspection target via which the Memory Inspector was opened.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.ManifestSectionSelected"
+    enum="DevToolsManifestSection" expires_after="2022-12-01">
+  <owner>yangguo@chromium.org</owner>
+  <owner>edgedevtools@microsoft.com</owner>
+  <summary>
+    Records when certain items of the Manifest dropdown submenu in the
+    Application Tool are selected.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.MutatingHttpAction"
+    enum="DevToolsMutatingHttpActionVerb" expires_after="2023-03-05">
+  <owner>dsv@chromium.org</owner>
+  <owner>caseq@chromium.org</owner>
+  <summary>
+    Records the invocation of actions like /json/new on the HTTP server exposed
+    with running with --remote-debugging-port.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.OpenedByAction" enum="DevToolsOpenedByAction"
+    expires_after="2022-12-01">
+  <owner>changhaohan@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <summary>
+    Recorded when a particular action was taken to launch DevTools.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.PanelClosed" enum="DevToolsPanel"
+    expires_after="2023-02-12">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>
+    Specified DevTools panel was closed. Fires immediately after closing a panel
+    using the &quot;x&quot; button in the panel title.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.PanelShown" enum="DevToolsPanel"
+    expires_after="2023-04-09">
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>Specified DevTools panel was shown.</summary>
+</histogram>
+
+<histogram name="DevTools.RecordingEdited" enum="DevToolsRecordingEdited"
+    expires_after="2023-02-12">
+  <owner>alexrudenko@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Recorded when a recording is being edited by the user.</summary>
+</histogram>
+
+<histogram name="DevTools.RecordingExported" enum="DevToolsRecordingExported"
+    expires_after="2023-02-12">
+  <owner>alexrudenko@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Recorded when a recording is exported.</summary>
+</histogram>
+
+<histogram name="DevTools.RecordingReplayFinished"
+    enum="DevToolsRecordingReplayFinished" expires_after="2023-02-12">
+  <owner>alexrudenko@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Recorded when a replay is over.</summary>
+</histogram>
+
+<histogram name="DevTools.RecordingReplaySpeed"
+    enum="DevToolsRecordingReplaySpeed" expires_after="2023-05-03">
+  <owner>ergunsh@chromium.org</owner>
+  <owner>alexrudenko@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    Recorded when a recording is being replayed. Used to count number of times
+    replay started with which speed.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.RecordingReplayStarted"
+    enum="DevToolsRecordingReplayStarted" expires_after="2023-02-12">
+  <owner>alexrudenko@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Recorded when a recording is being replayed.</summary>
+</histogram>
+
+<histogram name="DevTools.RecordingToggled" enum="DevToolsRecordingToggled"
+    expires_after="2023-02-12">
+  <owner>alexrudenko@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    Recorded when a recording is started or finished in the Recorder panel.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.SidebarPaneShown" enum="DevToolsSidebarPane"
+    expires_after="2023-03-19">
+  <owner>changhaohan@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>Specified DevTools sidebar pane was shown.</summary>
+</histogram>
+
+<histogram name="DevTools.StyleTextCopied" enum="DevToolsStyleTextCopied"
+    expires_after="2023-02-12">
+  <owner>changhaohan@chromium.org</owner>
+  <owner>mathias@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>Recorded when certain style text is copied in DevTools.</summary>
+</histogram>
+
+<histogram name="DevTools.SyncSetting" enum="DevToolsSyncSetting"
+    expires_after="2022-12-01">
+  <owner>bmeurer@chromium.org</owner>
+  <owner>szuend@chromium.org</owner>
+  <owner>yangguo@chromium.org</owner>
+  <summary>
+    Records whether syncing DevTools settings via Chrome Sync is enabled or why
+    it's disabled. Logged once per DevTools session when DevTools is booted up.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,27 +8,15 @@
 #include "build/build_config.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/background_fetch_delegate.h"
+#include "weblayer/browser/background_download_service_factory.h"
 #include "weblayer/browser/background_fetch/background_fetch_delegate_impl.h"
-#include "weblayer/browser/download_service_factory.h"
 #include "weblayer/browser/host_content_settings_map_factory.h"
 
-#if defined(OS_ANDROID)
-#include "base/android/jni_android.h"
-#include "weblayer/browser/java/jni/BackgroundFetchHelper_jni.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "weblayer/browser/android/application_info_helper.h"
 #endif
 
 namespace weblayer {
-
-// static
-bool BackgroundFetchDelegateFactory::IsEnabled() {
-#if defined(OS_ANDROID)
-  static bool enabled = Java_BackgroundFetchHelper_isEnabled(
-      base::android::AttachCurrentThread());
-  return enabled;
-#else
-  return true;
-#endif
-}
 
 // static
 BackgroundFetchDelegateImpl*
@@ -47,7 +35,7 @@ BackgroundFetchDelegateFactory::BackgroundFetchDelegateFactory()
     : BrowserContextKeyedServiceFactory(
           "BackgroundFetchService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(DownloadServiceFactory::GetInstance());
+  DependsOn(BackgroundDownloadServiceFactory::GetInstance());
   DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 

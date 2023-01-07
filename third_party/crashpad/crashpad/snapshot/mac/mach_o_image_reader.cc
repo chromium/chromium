@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@
 #include <mach-o/nlist.h>
 #include <string.h>
 
+#include <iterator>
 #include <limits>
 #include <utility>
 
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "client/crashpad_info.h"
 #include "snapshot/mac/mach_o_image_segment_reader.h"
@@ -183,7 +183,7 @@ bool MachOImageReader::Initialize(ProcessReaderMac* process_reader,
   // This vector is parallel to the kLoadCommandReaders array, and tracks
   // whether a singleton load command matching the |command| field has been
   // found yet.
-  std::vector<uint32_t> singleton_indices(base::size(kLoadCommandReaders),
+  std::vector<uint32_t> singleton_indices(std::size(kLoadCommandReaders),
                                           kInvalidSegmentIndex);
 
   size_t offset = mach_header.Size();
@@ -236,8 +236,7 @@ bool MachOImageReader::Initialize(ProcessReaderMac* process_reader,
       return false;
     }
 
-    for (size_t reader_index = 0;
-         reader_index < base::size(kLoadCommandReaders);
+    for (size_t reader_index = 0; reader_index < std::size(kLoadCommandReaders);
          ++reader_index) {
       if (load_command.cmd != kLoadCommandReaders[reader_index].command) {
         continue;

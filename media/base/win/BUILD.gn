@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -14,21 +14,18 @@ config("delay_load_mf") {
 }
 
 component("media_foundation_util") {
-  defines = [ "MF_INITIALIZER_IMPLEMENTATION" ]
+  defines = [ "IS_MF_UTIL_IMPL" ]
   sources = [
     "dxgi_device_manager.cc",
     "dxgi_device_manager.h",
+    "hresults.h",
     "mf_helpers.cc",
     "mf_helpers.h",
     "mf_initializer.cc",
     "mf_initializer.h",
-    "mf_initializer_export.h",
+    "mf_util_export.h",
   ]
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//media:media_config",
-  ]
+  configs += [ "//media:media_config" ]
   deps = [
     "//base",
     "//media:shared_memory_support",
@@ -39,22 +36,28 @@ component("media_foundation_util") {
     "mfplat.lib",
     "mfreadwrite.lib",
     "dxguid.lib",
+    "dxgi.lib",
   ]
 
   # MediaFoundation is not available on Windows N, so must be delay loaded.
   all_dependent_configs = [ ":delay_load_mf" ]
 }
 
-source_set("hresult_status_helper") {
-  sources = [
-    "hresult_status_helper.cc",
-    "hresult_status_helper.h",
-  ]
-  deps = [ "//media" ]
+source_set("mf_cdm_proxy") {
+  sources = [ "media_foundation_cdm_proxy.h" ]
+  deps = [ "//base" ]
 }
 
-source_set("mf_cdm_proxy") {
-  sources = [ "mf_cdm_proxy.h" ]
+source_set("dcomp_texture_wrapper") {
+  sources = [ "dcomp_texture_wrapper.h" ]
+  deps = [
+    "//base",
+    "//ui/gfx:memory_buffer",
+  ]
+}
+
+source_set("overlay_state_observer_subscription") {
+  sources = [ "overlay_state_observer_subscription.h" ]
   deps = [ "//base" ]
 }
 

@@ -332,5 +332,3 @@ xmlIsPubidChar(unsigned int ch) {
     return(xmlIsPubidCharQ(ch));
 }
 
-#define bottom_chvalid
-#include "elfgcchack.h"

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,10 @@
 
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/thread_annotations.h"
 #include "chrome/services/sharing/nearby/platform/atomic_boolean.h"
-#include "third_party/nearby/src/cpp/platform/api/submittable_executor.h"
+#include "third_party/nearby/src/internal/platform/implementation/submittable_executor.h"
 
 namespace location {
 namespace nearby {
@@ -30,7 +30,6 @@ class SubmittableExecutor : public api::SubmittableExecutor {
   bool DoSubmit(Runnable&& runnable) override;
   void Execute(Runnable&& runnable) override;
   void Shutdown() override;
-  int GetTid(int index) const override;
 
  private:
   // Directly calls run() on |runnable|. This is only meant to be posted as an

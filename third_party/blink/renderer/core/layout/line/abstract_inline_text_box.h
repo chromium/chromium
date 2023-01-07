@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_text.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
 namespace blink {
@@ -57,6 +56,8 @@ class CORE_EXPORT AbstractInlineTextBox
   };
 
   enum Direction { kLeftToRight, kRightToLeft, kTopToBottom, kBottomToTop };
+
+  static void GetWordBoundariesForText(Vector<WordBoundaries>&, const String&);
 
   virtual ~AbstractInlineTextBox();
 
@@ -132,12 +133,7 @@ class CORE_EXPORT LegacyAbstractInlineTextBox final
   bool IsLineBreak() const final;
   bool NeedsTrailingSpace() const final;
 
-  InlineTextBox* inline_text_box_;
-
-  typedef HashMap<InlineTextBox*, scoped_refptr<AbstractInlineTextBox>>
-      InlineToLegacyAbstractInlineTextBoxHashMap;
-  static InlineToLegacyAbstractInlineTextBoxHashMap*
-      g_abstract_inline_text_box_map_;
+  Persistent<InlineTextBox> inline_text_box_;
 };
 
 }  // namespace blink

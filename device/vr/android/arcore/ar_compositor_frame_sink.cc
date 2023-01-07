@@ -1,19 +1,23 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/vr/android/arcore/ar_compositor_frame_sink.h"
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/bind_post_task.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "components/viz/common/quads/surface_draw_quad.h"
+#include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/host/host_display_client.h"
 #include "components/viz/host/renderer_settings_creation.h"
 #include "device/vr/android/arcore/ar_image_transport.h"
 #include "device/vr/android/web_xr_presentation_state.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "ui/android/window_android.h"
+#include "ui/gfx/video_types.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace {
@@ -22,7 +26,8 @@ class ArCoreHostDisplayClient : public viz::HostDisplayClient {
   explicit ArCoreHostDisplayClient(ui::WindowAndroid* root_window)
       : HostDisplayClient(gfx::kNullAcceleratedWidget),
         root_window_(root_window) {
-    DCHECK(root_window_);
+    // TODO(https://crbug.com/1194775): Ideally, we'd DCHECK here, but the UTs
+    // don't create a root_window.
   }
 
   ~ArCoreHostDisplayClient() override = default;
@@ -32,15 +37,19 @@ class ArCoreHostDisplayClient : public viz::HostDisplayClient {
   void OnContextCreationResult(gpu::ContextResult context_result) override {}
 
   void SetWideColorEnabled(bool enabled) override {
-    root_window_->SetWideColorEnabled(enabled);
+    if (root_window_) {
+      root_window_->SetWideColorEnabled(enabled);
+    }
   }
 
   void SetPreferredRefreshRate(float refresh_rate) override {
-    root_window_->SetPreferredRefreshRate(refresh_rate);
+    if (root_window_) {
+      root_window_->SetPreferredRefreshRate(refresh_rate);
+    }
   }
 
  private:
-  ui::WindowAndroid* root_window_;
+  raw_ptr<ui::WindowAndroid> root_window_;
 };
 }  // namespace
 
@@ -61,10 +70,19 @@ ArCompositorFrameSink::ArCompositorFrameSink(
   DCHECK(gl_thread_task_runner_);
 }
 
-ArCompositorFrameSink::~ArCompositorFrameSink() = default;
+ArCompositorFrameSink::~ArCompositorFrameSink() {
+  DCHECK(IsOnGlThread());
+  CloseBindingsIfOpen();
+}
 
 bool ArCompositorFrameSink::IsOnGlThread() const {
   return gl_thread_task_runner_->BelongsToCurrentThread();
+}
+
+viz::FrameSinkId ArCompositorFrameSink::FrameSinkId() {
+  if (!is_initialized_)
+    return {};
+  return xr_frame_sink_client_->FrameSinkId();
 }
 
 void ArCompositorFrameSink::Initialize(
@@ -72,7 +90,8 @@ void ArCompositorFrameSink::Initialize(
     ui::WindowAndroid* root_window,
     const gfx::Size& frame_size,
     device::XrFrameSinkClient* xr_frame_sink_client,
-    base::OnceClosure on_initialized,
+    DomOverlaySetup dom_setup,
+    base::OnceCallback<void(bool)> on_initialized,
     base::OnceClosure on_bindings_disconnect) {
   DCHECK(IsOnGlThread());
   DCHECK(!is_initialized_);
@@ -113,11 +132,11 @@ void ArCompositorFrameSink::Initialize(
   allocator_.GenerateId();
 
   xr_frame_sink_client_->InitializeRootCompositorFrameSink(
-      std::move(root_params),
+      std::move(root_params), dom_setup,
       base::BindPostTask(
           gl_thread_task_runner_,
           base::BindOnce(&ArCompositorFrameSink::OnRootCompositorFrameSinkReady,
-                         weak_ptr_factory_.GetWeakPtr())));
+                         weak_ptr_factory_.GetWeakPtr(), dom_setup)));
 
   // Note that since we own these remotes, Unretained(this) is okay, since they
   // will be destroyed (and thus unable to call the disconnect handler), before
@@ -132,17 +151,32 @@ void ArCompositorFrameSink::Initialize(
       &ArCompositorFrameSink::OnBindingsDisconnect, base::Unretained(this)));
 }
 
-void ArCompositorFrameSink::OnRootCompositorFrameSinkReady() {
+void ArCompositorFrameSink::OnRootCompositorFrameSinkReady(
+    DomOverlaySetup dom_setup) {
   DVLOG(1) << __func__;
   DCHECK(IsOnGlThread());
   DCHECK(!is_initialized_);
+
+  if (dom_setup != DomOverlaySetup::kNone) {
+    // If the frame sink client doesn't have a valid SurfaceId at this point,
+    // then the compositor hierarchy did not get set up, which means that we'll
+    // be unable to composite DOM content.
+    absl::optional<viz::SurfaceId> dom_surface =
+        xr_frame_sink_client_->GetDOMSurface();
+    if (dom_surface && dom_surface->is_valid()) {
+      should_composite_dom_overlay_ = true;
+    } else if (dom_setup == DomOverlaySetup::kRequired) {
+      std::move(on_initialized_).Run(false);
+      return;
+    }
+  }
 
   display_private_->Resize(frame_size_);
   display_private_->SetDisplayVisible(true);
   sink_remote_->SetNeedsBeginFrame(true);
 
   is_initialized_ = true;
-  std::move(on_initialized_).Run();
+  std::move(on_initialized_).Run(true);
 }
 
 void ArCompositorFrameSink::RequestBeginFrame(base::TimeDelta interval,
@@ -171,16 +205,18 @@ void ArCompositorFrameSink::RequestBeginFrame(base::TimeDelta interval,
 
 void ArCompositorFrameSink::SubmitFrame(WebXrFrame* xr_frame,
                                         FrameType frame_type) {
+  DVLOG(3) << __func__;
   DCHECK(IsOnGlThread());
   DCHECK(is_initialized_);
   DCHECK(xr_frame);
   sink_remote_->SubmitCompositorFrame(allocator_.GetCurrentLocalSurfaceId(),
                                       CreateFrame(xr_frame, frame_type),
-                                      base::Optional<viz::HitTestRegionList>(),
+                                      absl::optional<viz::HitTestRegionList>(),
                                       /*trace_time=*/0);
 }
 
 void ArCompositorFrameSink::DidNotProduceFrame(WebXrFrame* xr_frame) {
+  DVLOG(3) << __func__;
   DCHECK(IsOnGlThread());
   DCHECK(is_initialized_);
   DCHECK(xr_frame);
@@ -190,7 +226,7 @@ void ArCompositorFrameSink::DidNotProduceFrame(WebXrFrame* xr_frame) {
 }
 
 void ArCompositorFrameSink::DidReceiveCompositorFrameAck(
-    const std::vector<viz::ReturnedResource>& resources) {
+    std::vector<viz::ReturnedResource> resources) {
   DVLOG(3) << __func__;
   // Notify that we've received the Ack for this frame first. It may be that the
   // most recently submitted frame is also dropped, so updating the parent that
@@ -203,11 +239,11 @@ void ArCompositorFrameSink::DidReceiveCompositorFrameAck(
   // resources. However, it's all timing dependent as to which one gets called
   // with the actual freed resources.
   DVLOG(3) << __func__ << " Reclaiming Resources";
-  ReclaimResources(resources);
+  ReclaimResources(std::move(resources));
 }
 
 void ArCompositorFrameSink::ReclaimResources(
-    const std::vector<viz::ReturnedResource>& resources) {
+    std::vector<viz::ReturnedResource> resources) {
   DVLOG(3) << __func__ << " resources.size()=" << resources.size();
   for (const auto& resource : resources) {
     DVLOG(3) << __func__ << " Reclaimed: " << resource.id;
@@ -257,10 +293,11 @@ void ArCompositorFrameSink::ReclaimResources(
 void ArCompositorFrameSink::OnBeginFrame(
     const viz::BeginFrameArgs& args,
     const viz::FrameTimingDetailsMap& timing_details) {
-  on_begin_frame_.Run(args);
+  on_begin_frame_.Run(args, timing_details);
 }
 
 void ArCompositorFrameSink::OnFrameSubmitAck(const viz::BeginFrameAck& ack) {
+  DVLOG(3) << __func__;
   can_issue_new_begin_frame_ = true;
   on_can_issue_new_frame_.Run();
 }
@@ -286,12 +323,13 @@ void ArCompositorFrameSink::OnBindingsDisconnect() {
 
 viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
                                                         FrameType frame_type) {
-  DVLOG(3) << __func__;
   DCHECK(IsOnGlThread());
   DCHECK(is_initialized_);
   DCHECK(xr_frame);
   DCHECK(xr_frame->begin_frame_args)
       << "Never received a BeginFrame for this frame";
+  DVLOG(3) << __func__ << " frame_id=" << xr_frame->index
+           << " frame_type=" << frame_type;
 
   viz::CompositorFrame frame;
   frame.metadata.begin_frame_ack =
@@ -320,9 +358,34 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
   // 2) The GL(WebXr) content from the renderer
   // 3) The camera image
 
-  // TODO(https://crbug.com/1182864): Integrate the DOM content with the
-  // viz::Compositor code directly, rather than relying on it's SurfaceView
-  // overlaying ours.
+  // First the DOM, if it's enabled
+  if (should_composite_dom_overlay_) {
+    auto dom_surface_id = xr_frame_sink_client_->GetDOMSurface();
+    bool can_composite_dom_overlay =
+        dom_surface_id && dom_surface_id->is_valid();
+    DVLOG(3)
+        << __func__
+        << " Attempting to composite DOMOverlay, can_composite_dom_overlay="
+        << can_composite_dom_overlay;
+    if (can_composite_dom_overlay) {
+      viz::SharedQuadState* dom_quad_state =
+          render_pass->CreateAndAppendSharedQuadState();
+      dom_quad_state->SetAll(
+          gfx::Transform(),
+          /*quad_layer_rect=*/output_rect,
+          /*visible_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
+          /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/false,
+          /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+
+      viz::SurfaceDrawQuad* dom_quad =
+          render_pass->CreateAndAppendDrawQuad<viz::SurfaceDrawQuad>();
+      dom_quad->SetNew(dom_quad_state, gfx::Rect(output_rect.size()),
+                       gfx::Rect(output_rect.size()),
+                       viz::SurfaceRange(*dom_surface_id),
+                       SkColors::kTransparent,
+                       /*stretch_content_to_fill_bounds=*/true);
+    }
+  }
 
   // Setup some variables for the SharedQuadState that are the same for the
   // Camera/Renderer
@@ -339,10 +402,9 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
     xr_content_quad_state->SetAll(
         gfx::Transform(),
         /*quad_layer_rect=*/output_rect,
-        /*visible_quad_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
-        /*clip_rect=*/gfx::Rect(),
-        /*is_clipped=*/false, /*are_contents_opaque=*/false, /*opacity=*/1.f,
-        SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+        /*visible_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
+        /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/false,
+        /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 
     viz::TextureDrawQuad* xr_content_quad =
         render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
@@ -354,15 +416,16 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
         /*premultiplied_alpha=*/true,
         /*uv_top_left=*/xr_frame->bounds_left.origin(),
         /*uv_bottom_right=*/xr_frame->bounds_left.bottom_right(),
-        /*background_color=*/SK_ColorTRANSPARENT, opacity,
+        /*background_color=*/SkColors::kTransparent, opacity,
         /*y_flipped=*/true,
         /*nearest_neighbor=*/false,
         /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
 
-    auto renderer_resource = viz::TransferableResource::MakeGL(
+    auto renderer_resource = viz::TransferableResource::MakeGpu(
         renderer_buffer->mailbox_holder.mailbox,
         /*filter=*/GL_LINEAR, renderer_buffer->mailbox_holder.texture_target,
         renderer_buffer->mailbox_holder.sync_token, renderer_buffer->size,
+        viz::RGBA_8888,
         /*is_overlay_candidate=*/false);
 
     renderer_resource.id = renderer_buffer->id;
@@ -379,10 +442,9 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
   camera_quad_state->SetAll(
       gfx::Transform(),
       /*quad_layer_rect=*/output_rect,
-      /*visible_quad_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
-      /*clip_rect=*/gfx::Rect(),
-      /*is_clipped=*/false, /*are_contents_opaque=*/true, /*opacity=*/1.f,
-      SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
+      /*visible_layer_rect=*/output_rect, gfx::MaskFilterInfo(),
+      /*clip_rect=*/absl::nullopt, /*are_contents_opaque=*/true,
+      /*opacity=*/1.f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
 
   viz::TextureDrawQuad* camera_quad =
       render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
@@ -394,17 +456,18 @@ viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
                       /*premultiplied_alpha=*/true,
                       /*uv_top_left=*/gfx::PointF(0.f, 0.f),
                       /*uv_bottom_right=*/gfx::PointF(1.f, 1.f),
-                      /*background_color=*/SK_ColorTRANSPARENT, opacity,
+                      /*background_color=*/SkColors::kTransparent, opacity,
                       /*y_flipped=*/true,
                       /*nearest_neighbor=*/false,
                       /*secure_output_only=*/false,
                       gfx::ProtectedVideoType::kClear);
 
   // Additionally append to the resource_list
-  auto camera_resource = viz::TransferableResource::MakeGL(
+  auto camera_resource = viz::TransferableResource::MakeGpu(
       camera_buffer->mailbox_holder.mailbox,
       /*filter=*/GL_LINEAR, camera_buffer->mailbox_holder.texture_target,
       camera_buffer->mailbox_holder.sync_token, camera_buffer->size,
+      viz::RGBA_8888,
       /*is_overlay_candidate=*/false);
 
   camera_resource.id = camera_buffer->id;

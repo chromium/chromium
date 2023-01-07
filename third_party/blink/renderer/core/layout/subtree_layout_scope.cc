@@ -45,7 +45,16 @@ SubtreeLayoutScope::~SubtreeLayoutScope() {
   CHECK(!root_.NeedsLayout() || root_.ChildLayoutBlockedByDisplayLock());
 
 #if DCHECK_IS_ON()
-  for (auto* layout_object : layout_objects_to_layout_) {
+  for (const auto& layout_object : layout_objects_to_layout_) {
+    // When CSS Container Queries are enabled, style recalc and layout tree
+    // rebuild for a container during layout may detach LayoutObjects which
+    // have been marked for layout. Skip such LayoutObject to avoid that
+    // NOT_DESTROYED() triggers a DCHECK failure in AssertLaidOut() or
+    // AssertFragmentTree().
+    if (layout_object->is_destroyed_) {
+      DCHECK(RuntimeEnabledFeatures::CSSContainerQueriesEnabled());
+      continue;
+    }
     // There are situations where the object to layout was never laid out, such
     // as if there was a display-locked descendant of the root and ancestor of
     // the object which prevented layout. This can happen in quirks mode, where
@@ -55,6 +64,7 @@ SubtreeLayoutScope::~SubtreeLayoutScope() {
     // these objects to be dirty.
     if (!DisplayLockUtilities::LockedAncestorPreventingLayout(*layout_object))
       layout_object->AssertLaidOut();
+    layout_object->AssertFragmentTree();
   }
 #endif
 }

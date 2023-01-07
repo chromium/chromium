@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -101,7 +101,7 @@ public class ClearBrowsingDataCheckBoxPreference extends ChromeBaseCheckBoxPrefe
         // Linkify <link></link> span.
         final SpannableString summaryWithLink = SpanApplier.applySpans(summaryString,
                 new SpanApplier.SpanInfo("<link>", "</link>",
-                        new NoUnderlineClickableSpan(getContext().getResources(), (widget) -> {
+                        new NoUnderlineClickableSpan(getContext(), (widget) -> {
                             if (mLinkClickDelegate != null) mLinkClickDelegate.run();
                         })));
 

@@ -1,13 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/renderer/mhtml_handle_writer.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "content/common/download/mhtml_file_writer.mojom.h"
 #include "content/public/renderer/render_thread.h"
 #include "third_party/blink/public/platform/web_thread_safe_data.h"
@@ -24,8 +24,9 @@ MHTMLHandleWriter::~MHTMLHandleWriter() {}
 
 void MHTMLHandleWriter::WriteContents(
     std::vector<blink::WebThreadSafeData> mhtml_contents) {
-  TRACE_EVENT_ASYNC_BEGIN0("page-serialization",
-                           "Writing MHTML contents to handle", this);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("page-serialization",
+                                    "Writing MHTML contents to handle",
+                                    TRACE_ID_LOCAL(this));
   DCHECK(mhtml_write_start_time_.is_null());
   mhtml_write_start_time_ = base::TimeTicks::Now();
 
@@ -38,8 +39,9 @@ void MHTMLHandleWriter::Finish(mojom::MhtmlSaveStatus save_status) {
 
   // Only record UMA if WriteContents has been called.
   if (!mhtml_write_start_time_.is_null()) {
-    TRACE_EVENT_ASYNC_END0("page-serialization",
-                           "WriteContentsImpl (MHTMLHandleWriter)", this);
+    TRACE_EVENT_NESTABLE_ASYNC_END0("page-serialization",
+                                    "WriteContentsImpl (MHTMLHandleWriter)",
+                                    TRACE_ID_LOCAL(this));
     base::TimeDelta mhtml_write_time =
         base::TimeTicks::Now() - mhtml_write_start_time_;
     UMA_HISTOGRAM_TIMES(
@@ -60,7 +62,15 @@ MHTMLFileHandleWriter::MHTMLFileHandleWriter(
     base::File file)
     : MHTMLHandleWriter(std::move(main_thread_task_runner),
                         std::move(callback)),
-      file_(std::move(file)) {}
+      file_(std::move(file)) {
+#if BUILDFLAG(IS_FUCHSIA)
+  // TODO(crbug.com/1288816): Remove the Seek call.
+  // On fuchsia, fds do not share state. As the fd has been duped and sent from
+  // the browser process, it must be seeked to the end to ensure the data is
+  // appended.
+  file_.Seek(base::File::FROM_END, 0);
+#endif  // BUILDFLAG(IS_FUCHSIA)
+}
 
 MHTMLFileHandleWriter::~MHTMLFileHandleWriter() {}
 

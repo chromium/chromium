@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 
 #include <windows.h>
 #include <tlhelp32.h>
+
+#include <ostream>
 
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
@@ -37,11 +39,11 @@ ProcessId GetParentProcessId(ProcessHandle process) {
       process_entry.dwSize = sizeof(PROCESSENTRY32);
 
   win::ScopedHandle snapshot(CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0));
-  if (snapshot.IsValid() && Process32First(snapshot.Get(), &process_entry)) {
+  if (snapshot.is_valid() && Process32First(snapshot.get(), &process_entry)) {
     do {
       if (process_entry.th32ProcessID == child_pid)
         return process_entry.th32ParentProcessID;
-    } while (Process32Next(snapshot.Get(), &process_entry));
+    } while (Process32Next(snapshot.get(), &process_entry));
   }
 
   // TODO(zijiehe): To match other platforms, -1 (UINT32_MAX) should be returned

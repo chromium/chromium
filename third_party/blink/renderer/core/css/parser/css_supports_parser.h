@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_SUPPORTS_PARSER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -24,13 +24,6 @@ class CORE_EXPORT CSSSupportsParser {
     // don't support the feature.
     kUnsupported,
     kSupported,
-    // kUnknown is a special value used for productions that only match
-    // <general-enclosed> [1]. See note regarding Kleene 3-valued logic [2]
-    // for explanation of how this is different from kUnsupported.
-    //
-    // [1] https://drafts.csswg.org/css-conditional-3/#at-supports
-    // [2] https://drafts.csswg.org/mediaqueries-4/#evaluating
-    kUnknown,
     // This is used to signal parse failure in the @supports syntax itself.
     // This means that for a production like:
     //
@@ -53,14 +46,6 @@ class CORE_EXPORT CSSSupportsParser {
 
   CSSSupportsParser(CSSParserImpl& parser) : parser_(parser) {}
 
-  // True if the given token is a kIdentToken with the specified value
-  // (case-insensitive).
-  static bool AtIdent(const CSSParserToken&, const char*);
-
-  // If the current token is a kIdentToken with the specified value (case
-  // insensitive), consumes the token and returns true.
-  static bool ConsumeIfIdent(CSSParserTokenStream&, const char*);
-
   // Parsing functions follow, as defined by:
   // https://drafts.csswg.org/css-conditional-3/#typedef-supports-condition
 
@@ -81,6 +66,14 @@ class CORE_EXPORT CSSSupportsParser {
   Result ConsumeSupportsSelectorFn(const CSSParserToken&,
                                    CSSParserTokenStream&);
 
+  // <supports-font-tech-fn> = font-tech( <font-tech> )
+  Result ConsumeFontTechFn(const CSSParserToken& first_token,
+                           CSSParserTokenStream& stream);
+
+  // <supports-font-format-fn> = font-format( <font-format> )
+  Result ConsumeFontFormatFn(const CSSParserToken& first_token,
+                             CSSParserTokenStream& stream);
+
   // <supports-decl> = ( <declaration> )
   Result ConsumeSupportsDecl(const CSSParserToken&, CSSParserTokenStream&);
 
@@ -93,6 +86,8 @@ class CORE_EXPORT CSSSupportsParser {
                                           const CSSParserToken&);
   static bool IsSupportsSelectorFn(const CSSParserToken&,
                                    const CSSParserToken&);
+  static bool IsFontTechFn(const CSSParserToken&, const CSSParserToken&);
+  static bool IsFontFormatFn(const CSSParserToken&, const CSSParserToken&);
   static bool IsSupportsDecl(const CSSParserToken&, const CSSParserToken&);
   static bool IsSupportsFeature(const CSSParserToken&, const CSSParserToken&);
   static bool IsGeneralEnclosed(const CSSParserToken&);
@@ -114,8 +109,6 @@ inline CSSSupportsParser::Result operator&(CSSSupportsParser::Result a,
   using Result = CSSSupportsParser::Result;
   if (a == Result::kParseFailure || b == Result::kParseFailure)
     return Result::kParseFailure;
-  if (a == Result::kUnknown && b == Result::kUnknown)
-    return Result::kUnknown;
   if (a != Result::kSupported || b != Result::kSupported)
     return Result::kUnsupported;
   return Result::kSupported;
@@ -128,8 +121,6 @@ inline CSSSupportsParser::Result operator|(CSSSupportsParser::Result a,
     return Result::kParseFailure;
   if (a == Result::kSupported || b == Result::kSupported)
     return Result::kSupported;
-  if (a == Result::kUnknown || b == Result::kUnknown)
-    return Result::kUnknown;
   return Result::kUnsupported;
 }
 

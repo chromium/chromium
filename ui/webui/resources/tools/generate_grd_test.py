@@ -1,11 +1,12 @@
 #!/usr/bin/env python
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import generate_grd
 import os
 import shutil
+import sys
 import tempfile
 import unittest
 
@@ -40,6 +41,7 @@ EXPECTED_GRD_WITH_GRDP_FILES = '''<?xml version="1.0" encoding="UTF-8"?>
 
 class GenerateGrdTest(unittest.TestCase):
   def setUp(self):
+    self.maxDiff = None
     self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
 
   def tearDown(self):
@@ -47,13 +49,16 @@ class GenerateGrdTest(unittest.TestCase):
 
   def _read_out_file(self, file_name):
     assert self._out_folder
-    return open(os.path.join(self._out_folder, file_name), 'rb').read()
+    file_path = os.path.join(self._out_folder, file_name)
+    with open(file_path, 'r', newline='') as f:
+      return f.read()
 
   def _run_test_(self, grd_expected,
                  out_grd='test_resources.grd',
                  manifest_files=None, input_files=None,
-                 input_files_base_dir=None, grdp_files=None,
-                 resource_path_rewrites=None, resource_path_prefix=None):
+                 input_files_base_dir=None, output_files_base_dir=None,
+                 grdp_files=None, resource_path_rewrites=None,
+                 resource_path_prefix=None):
     args = [
       '--out-grd', os.path.join(self._out_folder, out_grd),
       '--grd-prefix', 'test',
@@ -77,6 +82,12 @@ class GenerateGrdTest(unittest.TestCase):
         '--input-files',
       ] + input_files
 
+    if (output_files_base_dir):
+      args += [
+        '--output-files-base-dir',
+        output_files_base_dir,
+      ]
+
     if (resource_path_rewrites):
       args += [ '--resource-path-rewrites' ] + resource_path_rewrites
 
@@ -87,11 +98,12 @@ class GenerateGrdTest(unittest.TestCase):
 
     actual_grd = self._read_out_file(out_grd)
     if (grd_expected.endswith('.grd') or grd_expected.endswith('.grdp')):
-      expected_grd_content = open(
-          os.path.join(_HERE_DIR, 'tests', grd_expected), 'rb').read()
-      self.assertEquals(expected_grd_content, actual_grd)
+      expected_grd_path = os.path.join(_HERE_DIR, 'tests', grd_expected)
+      with open(expected_grd_path, 'r', newline='') as f:
+        expected_grd_content = f.read()
+      self.assertMultiLineEqual(expected_grd_content, actual_grd)
     else:
-      self.assertEquals(grd_expected, actual_grd)
+      self.assertMultiLineEqual(grd_expected, actual_grd)
 
   def testSuccess(self):
     self._run_test_(
@@ -154,6 +166,13 @@ class GenerateGrdTest(unittest.TestCase):
         'test.rollup.js|test.js',
         'dir/another_element_in_dir.js|dir2/another_element_in_dir_renamed.js',
       ])
+
+  def testSuccessWithOutputFilesBaseDir(self):
+    self._run_test_(
+      'expected_grd_with_output_files_base_dir.grd',
+      input_files = [ 'images/test_svg.svg' ],
+      input_files_base_dir = 'test_src_dir',
+      output_files_base_dir = 'foo/bar')
 
 
 if __name__ == '__main__':

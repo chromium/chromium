@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 #include <set>
-#include <string>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -89,7 +88,6 @@ class PageTextObserver : public content::WebContentsObserver,
   size_t outstanding_requests() const { return outstanding_requests_; }
 
   // content::WebContentsObserver:
-  void DidStartNavigation(content::NavigationHandle* handle) override;
   void DidFinishNavigation(content::NavigationHandle* handle) override;
   void RenderFrameCreated(content::RenderFrameHost* rfh) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
@@ -108,7 +106,7 @@ class PageTextObserver : public content::WebContentsObserver,
   friend class content::WebContentsUserData<PageTextObserver>;
 
   void OnFrameTextDumpCompleted(
-      base::Optional<FrameTextDumpResult> frame_result);
+      absl::optional<FrameTextDumpResult> frame_result);
 
   void DispatchResponses();
 

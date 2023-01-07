@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,38 +13,33 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/model_type_test_util.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/cycle/sync_cycle.h"
 #include "components/sync/engine/events/protocol_event.h"
+#include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
-#include "components/sync/engine/net/http_post_provider_interface.h"
+#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/sync_scheduler.h"
-#include "components/sync/js/js_event_handler.h"
-#include "components/sync/js/js_test_util.h"
-#include "components/sync/protocol/bookmark_specifics.pb.h"
 #include "components/sync/protocol/encryption.pb.h"
-#include "components/sync/protocol/extension_specifics.pb.h"
-#include "components/sync/protocol/password_specifics.pb.h"
-#include "components/sync/protocol/preference_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
-#include "components/sync/protocol/sync.pb.h"
-#include "components/sync/test/callback_counter.h"
-#include "components/sync/test/engine/fake_sync_scheduler.h"
-#include "components/sync/test/engine/test_engine_components_factory.h"
+#include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/test/fake_sync_encryption_handler.h"
+#include "components/sync/test/fake_sync_scheduler.h"
+#include "components/sync/test/model_type_test_util.h"
+#include "components/sync/test/test_engine_components_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,25 +47,21 @@
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl_lite.h"
 #include "url/gurl.h"
 
-using base::ExpectDictStringValue;
 using testing::_;
-using testing::DoAll;
-using testing::InSequence;
-using testing::Return;
-using testing::SaveArg;
 using testing::StrictMock;
 
 namespace syncer {
 
 namespace {
 
-class TestHttpPostProviderInterface : public HttpPostProviderInterface {
+class TestHttpPostProvider : public HttpPostProvider {
  public:
   void SetExtraRequestHeaders(const char* headers) override {}
   void SetURL(const GURL& url) override {}
   void SetPostPayload(const char* content_type,
                       int content_length,
                       const char* content) override {}
+  void SetAllowBatching(bool allow_batching) override {}
   bool MakeSynchronousPost(int* net_error_code,
                            int* http_status_code) override {
     return false;
@@ -84,14 +75,14 @@ class TestHttpPostProviderInterface : public HttpPostProviderInterface {
   void Abort() override {}
 
  private:
-  ~TestHttpPostProviderInterface() override = default;
+  ~TestHttpPostProvider() override = default;
 };
 
 class TestHttpPostProviderFactory : public HttpPostProviderFactory {
  public:
   ~TestHttpPostProviderFactory() override = default;
-  scoped_refptr<HttpPostProviderInterface> Create() override {
-    return new TestHttpPostProviderInterface();
+  scoped_refptr<HttpPostProvider> Create() override {
+    return new TestHttpPostProvider();
   }
 };
 
@@ -101,22 +92,11 @@ class SyncManagerObserverMock : public SyncManager::Observer {
               OnSyncCycleCompleted,
               (const SyncCycleSnapshot&),
               (override));
-  // NOLINT
-  MOCK_METHOD(void,
-              OnInitializationComplete,
-              (const WeakHandle<JsBackend>&,
-               const WeakHandle<DataTypeDebugInfoListener>&,
-               bool),
-              (override));
-  // NOLINT
   MOCK_METHOD(void, OnConnectionStatusChange, (ConnectionStatus), (override));
-  // NOLINT
   MOCK_METHOD(void, OnActionableError, (const SyncProtocolError&), (override));
-  // NOLINT
   MOCK_METHOD(void, OnMigrationRequested, (ModelTypeSet), (override));
-  // NOLINT
   MOCK_METHOD(void, OnProtocolEvent, (const ProtocolEvent&), (override));
-  // NOLINT
+  MOCK_METHOD(void, OnSyncStatusChanged, (const SyncStatus&), (override));
 };
 
 class SyncEncryptionHandlerObserverMock
@@ -126,57 +106,76 @@ class SyncEncryptionHandlerObserverMock
               OnPassphraseRequired,
               (const KeyDerivationParams&, const sync_pb::EncryptedData&),
               (override));
-  // NOLINT
   MOCK_METHOD(void, OnPassphraseAccepted, (), (override));
-  // NOLINT
   MOCK_METHOD(void, OnTrustedVaultKeyRequired, (), (override));
-  // NOLINT
   MOCK_METHOD(void, OnTrustedVaultKeyAccepted, (), (override));
-  // NOLINT
-  MOCK_METHOD(void,
-              OnBootstrapTokenUpdated,
-              (const std::string&, BootstrapTokenType type),
-              (override));
-  // NOLINT
   MOCK_METHOD(void, OnEncryptedTypesChanged, (ModelTypeSet, bool), (override));
-  // NOLINT
   MOCK_METHOD(void,
               OnCryptographerStateChanged,
               (Cryptographer*, bool),
               (override));
-  // NOLINT
   MOCK_METHOD(void,
               OnPassphraseTypeChanged,
               (PassphraseType, base::Time),
               (override));
-  // NOLINT
 };
 
-}  // namespace
+class MockSyncScheduler : public FakeSyncScheduler {
+ public:
+  MockSyncScheduler() = default;
+  ~MockSyncScheduler() override = default;
+  MOCK_METHOD(void, Start, (SyncScheduler::Mode, base::Time), (override));
+  MOCK_METHOD(void,
+              ScheduleConfiguration,
+              (sync_pb::SyncEnums::GetUpdatesOrigin origin,
+               ModelTypeSet types_to_download,
+               base::OnceClosure ready_task),
+              (override));
+};
 
-class SyncManagerTest : public testing::Test {
+class ComponentsFactory : public TestEngineComponentsFactory {
+ public:
+  explicit ComponentsFactory(std::unique_ptr<SyncScheduler> scheduler_to_use)
+      : scheduler_to_use_(std::move(scheduler_to_use)) {}
+  ~ComponentsFactory() override = default;
+
+  std::unique_ptr<SyncScheduler> BuildScheduler(
+      const std::string& name,
+      SyncCycleContext* context,
+      CancelationSignal* stop_handle,
+      bool local_sync_backend_enabled) override {
+    DCHECK(scheduler_to_use_);
+    return std::move(scheduler_to_use_);
+  }
+
+ private:
+  std::unique_ptr<SyncScheduler> scheduler_to_use_;
+};
+
+class SyncManagerImplTest : public testing::Test {
  protected:
-  SyncManagerTest()
+  SyncManagerImplTest()
       : sync_manager_("Test sync manager",
                       network::TestNetworkConnectionTracker::GetInstance()) {}
 
-  ~SyncManagerTest() override {}
+  ~SyncManagerImplTest() override = default;
 
-  virtual void DoSetUp(bool enable_local_sync_backend) {
+  void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     extensions_activity_ = new ExtensionsActivity();
 
     sync_manager_.AddObserver(&manager_observer_);
-    EXPECT_CALL(manager_observer_, OnInitializationComplete)
-        .WillOnce(DoAll(SaveArg<0>(&js_backend_),
-                        SaveArg<2>(&initialization_succeeded_)));
 
-    EXPECT_FALSE(js_backend_.IsInitialized());
-
+    // Save raw pointers to the objects that won't be owned by the fixture.
     auto encryption_observer =
         std::make_unique<StrictMock<SyncEncryptionHandlerObserverMock>>();
     encryption_observer_ = encryption_observer.get();
+    auto scheduler = std::make_unique<MockSyncScheduler>();
+    scheduler_ = scheduler.get();
+
+    // This should be the only method called by the Init() in the observer.
+    EXPECT_CALL(manager_observer_, OnSyncStatusChanged).Times(3);
 
     SyncManager::InitArgs args;
     args.service_url = GURL("https://example.com/");
@@ -185,143 +184,58 @@ class SyncManagerTest : public testing::Test {
     args.extensions_activity = extensions_activity_.get();
     args.cache_guid = "fake_cache_guid";
     args.invalidator_client_id = "fake_invalidator_client_id";
-    args.enable_local_sync_backend = enable_local_sync_backend;
+    args.enable_local_sync_backend = false;
     args.local_sync_backend_folder = temp_dir_.GetPath();
-    args.engine_components_factory.reset(GetFactory());
+    args.engine_components_factory =
+        std::make_unique<ComponentsFactory>(std::move(scheduler));
     args.encryption_handler = &encryption_handler_;
     args.cancelation_signal = &cancelation_signal_;
-    args.poll_interval = base::TimeDelta::FromMinutes(60);
+    args.poll_interval = base::Minutes(60);
     sync_manager_.Init(&args);
 
-    EXPECT_TRUE(js_backend_.IsInitialized());
-
-    PumpLoop();
+    base::RunLoop().RunUntilIdle();
   }
-
-  // Test implementation.
-  void SetUp() override { DoSetUp(false); }
 
   void TearDown() override {
     sync_manager_.RemoveObserver(&manager_observer_);
     sync_manager_.ShutdownOnSyncThread();
-    PumpLoop();
+    base::RunLoop().RunUntilIdle();
   }
 
-  ModelTypeSet GetEnabledTypes() {
-    ModelTypeSet enabled_types;
-    enabled_types.Put(NIGORI);
-    enabled_types.Put(DEVICE_INFO);
-    enabled_types.Put(BOOKMARKS);
-    enabled_types.Put(THEMES);
-    enabled_types.Put(SESSIONS);
-    enabled_types.Put(PASSWORDS);
-    enabled_types.Put(PREFERENCES);
-    enabled_types.Put(PRIORITY_PREFERENCES);
-
-    return enabled_types;
-  }
-
-  void PumpLoop() { base::RunLoop().RunUntilIdle(); }
-
-  void SetJsEventHandler(const WeakHandle<JsEventHandler>& event_handler) {
-    js_backend_.Call(FROM_HERE, &JsBackend::SetJsEventHandler, event_handler);
-    PumpLoop();
-  }
-
-  virtual EngineComponentsFactory* GetFactory() {
-    return new TestEngineComponentsFactory();
-  }
+  SyncManagerImpl* sync_manager() { return &sync_manager_; }
+  MockSyncScheduler* scheduler() { return scheduler_; }
 
  private:
-  // Needed by |sync_manager_|.
-  base::test::TaskEnvironment task_environment_;
-  // Needed by |sync_manager_|.
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   scoped_refptr<ExtensionsActivity> extensions_activity_;
 
- protected:
   FakeSyncEncryptionHandler encryption_handler_;
   SyncManagerImpl sync_manager_;
   CancelationSignal cancelation_signal_;
-  WeakHandle<JsBackend> js_backend_;
-  bool initialization_succeeded_;
   StrictMock<SyncManagerObserverMock> manager_observer_;
   // Owned by |sync_manager_|.
-  StrictMock<SyncEncryptionHandlerObserverMock>* encryption_observer_;
-};
-
-class SyncManagerWithLocalBackendTest : public SyncManagerTest {
- protected:
-  void SetUp() override { DoSetUp(true); }
-};
-
-class MockSyncScheduler : public FakeSyncScheduler {
- public:
-  MockSyncScheduler() = default;
-  ~MockSyncScheduler() override = default;
-  MOCK_METHOD(void, Start, (SyncScheduler::Mode, base::Time), (override));
-  void ScheduleConfiguration(ConfigurationParams params) override {
-    ScheduleConfiguration_(params);
-  }
-  MOCK_METHOD(void, ScheduleConfiguration_, (ConfigurationParams&), ());
-};
-
-class ComponentsFactory : public TestEngineComponentsFactory {
- public:
-  ComponentsFactory(SyncScheduler* scheduler_to_use,
-                    SyncCycleContext** cycle_context)
-      : scheduler_to_use_(scheduler_to_use), cycle_context_(cycle_context) {}
-  ~ComponentsFactory() override {}
-
-  std::unique_ptr<SyncScheduler> BuildScheduler(
-      const std::string& name,
-      SyncCycleContext* context,
-      CancelationSignal* stop_handle,
-      bool local_sync_backend_enabled) override {
-    *cycle_context_ = context;
-    return std::move(scheduler_to_use_);
-  }
-
- private:
-  std::unique_ptr<SyncScheduler> scheduler_to_use_;
-  SyncCycleContext** cycle_context_;
-};
-
-class SyncManagerTestWithMockScheduler : public SyncManagerTest {
- public:
-  SyncManagerTestWithMockScheduler() : scheduler_(nullptr) {}
-  EngineComponentsFactory* GetFactory() override {
-    scheduler_ = new MockSyncScheduler();
-    return new ComponentsFactory(scheduler_, &cycle_context_);
-  }
-
-  MockSyncScheduler* scheduler() { return scheduler_; }
-  SyncCycleContext* cycle_context() { return cycle_context_; }
-
- private:
-  MockSyncScheduler* scheduler_;
-  SyncCycleContext* cycle_context_;
+  raw_ptr<StrictMock<SyncEncryptionHandlerObserverMock>> encryption_observer_ =
+      nullptr;
+  raw_ptr<MockSyncScheduler> scheduler_ = nullptr;
 };
 
 // Test that the configuration params are properly created and sent to
 // ScheduleConfigure. No callback should be invoked.
-TEST_F(SyncManagerTestWithMockScheduler, BasicConfiguration) {
-  ConfigureReason reason = CONFIGURE_REASON_RECONFIGURATION;
+TEST_F(SyncManagerImplTest, BasicConfiguration) {
   ModelTypeSet types_to_download(BOOKMARKS, PREFERENCES);
-
-  ConfigurationParams params;
+  base::MockOnceClosure ready_task;
   EXPECT_CALL(*scheduler(), Start(SyncScheduler::CONFIGURATION_MODE, _));
-  EXPECT_CALL(*scheduler(), ScheduleConfiguration_)
-      .WillOnce(MoveArg<0>(&params));
+  EXPECT_CALL(*scheduler(),
+              ScheduleConfiguration(sync_pb::SyncEnums::RECONFIGURATION,
+                                    types_to_download, _));
+  EXPECT_CALL(ready_task, Run).Times(0);
 
-  CallbackCounter ready_task_counter;
-  sync_manager_.ConfigureSyncer(
-      reason, types_to_download, SyncManager::SyncFeatureState::ON,
-      base::BindOnce(&CallbackCounter::Callback,
-                     base::Unretained(&ready_task_counter)));
-  EXPECT_EQ(0, ready_task_counter.times_called());
-  EXPECT_EQ(sync_pb::SyncEnums::RECONFIGURATION, params.origin);
-  EXPECT_EQ(types_to_download, params.types_to_download);
+  sync_manager()->ConfigureSyncer(
+      CONFIGURE_REASON_RECONFIGURATION, types_to_download,
+      SyncManager::SyncFeatureState::ON, ready_task.Get());
 }
+
+}  // namespace
 
 }  // namespace syncer

@@ -1,0 +1,64 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("core") {
+  sources = [
+    "cross_otr_observer.cc",
+    "cross_otr_observer.h",
+    "features.cc",
+    "features.h",
+    "url_param_classifications_loader.cc",
+    "url_param_classifications_loader.h",
+    "url_param_filterer.cc",
+    "url_param_filterer.h",
+  ]
+  deps = [ ":url_param_filter_classification_proto" ]
+  public_deps = [
+    "//base",
+    "//net",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/zlib/google:compression_utils",
+    "//url",
+  ]
+}
+
+proto_library("url_param_filter_classification_proto") {
+  sources = [ "url_param_filter_classification.proto" ]
+  proto_out_dir = "components/url_param_filter/core"
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "url_param_filter_test_helper.cc",
+    "url_param_filter_test_helper.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//skia",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/zlib/google:compression_utils",
+  ]
+
+  deps = [ ":core" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "url_param_classifications_loader_unittest.cc",
+    "url_param_filterer_unittest.cc",
+  ]
+
+  deps = [
+    ":core",
+    ":test_support",
+    ":url_param_filter_classification_proto",
+    "//base/test:test_support",
+  ]
+}

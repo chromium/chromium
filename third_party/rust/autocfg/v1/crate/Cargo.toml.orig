@@ -1,0 +1,13 @@
+[package]
+name = "autocfg"
+version = "1.1.0"
+authors = ["Josh Stone <cuviper@gmail.com>"]
+license = "Apache-2.0 OR MIT"
+repository = "https://github.com/cuviper/autocfg"
+description = "Automatic cfg for Rust compiler features"
+readme = "README.md"
+keywords = ["rustc", "build", "autoconf"]
+categories = ["development-tools::build-utils"]
+exclude = ["/.github/**", "/bors.toml"]
+
+[dependencies]

@@ -2,11 +2,12 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
-  <link
-    rel="webbundle"
-    href="../resources/wbn/empty-resource.wbn"
-    resources="http://127.0.0.1:8000/loading/wbn/resources/wbn/empty.js"
-  />
+  <script type="webbundle">
+    {
+      "source": "../resources/wbn/empty-resource.wbn",
+      "resources": ["http://127.0.0.1:8000/loading/wbn/resources/wbn/empty.js"]
+    }
+  </script>
   <script>
     promise_test(async () => {
       const response = await fetch(

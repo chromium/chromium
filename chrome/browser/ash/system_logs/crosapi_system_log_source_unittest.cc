@@ -1,11 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/system_logs/crosapi_system_log_source.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/crosapi/fake_browser_manager.h"
 #include "content/public/test/browser_task_environment.h"

@@ -1,8 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/services/isolated_xr_device/xr_test_hook_wrapper.h"
+
+#include "base/threading/thread_task_runner_handle.h"
 
 namespace device {
 
@@ -27,32 +29,40 @@ PoseFrameData MojoToDevicePoseFrameData(
     device_test::mojom::PoseFrameDataPtr& pose) {
   PoseFrameData ret = {};
   ret.is_valid = !!pose->device_to_origin;
-  if (ret.is_valid) {
-    pose->device_to_origin->matrix().asColMajorf(ret.device_to_origin);
-  }
+  if (ret.is_valid)
+    pose->device_to_origin->GetColMajorF(ret.device_to_origin);
 
   return ret;
+}
+
+device_test::mojom::Eye XrEyeToMojoEye(XrEye eye) {
+  switch (eye) {
+    case XrEye::kLeft:
+      return device_test::mojom::Eye::LEFT;
+    case XrEye::kRight:
+      return device_test::mojom::Eye::RIGHT;
+    case XrEye::kNone:
+      return device_test::mojom::Eye::NONE;
+  }
 }
 
 XRTestHookWrapper::XRTestHookWrapper(
     mojo::PendingRemote<device_test::mojom::XRTestHook> pending_hook)
     : pending_hook_(std::move(pending_hook)) {}
 
-void XRTestHookWrapper::OnFrameSubmitted(SubmittedFrameData frame_data) {
+void XRTestHookWrapper::OnFrameSubmitted(const std::vector<ViewData>& views) {
   if (hook_) {
-    auto submitted = device_test::mojom::SubmittedFrameData::New();
-    submitted->color =
-        device_test::mojom::Color::New(frame_data.color.r, frame_data.color.g,
-                                       frame_data.color.b, frame_data.color.a);
-
-    submitted->image_size =
-        gfx::Size(frame_data.image_width, frame_data.image_height);
-    submitted->eye = frame_data.left_eye ? device_test::mojom::Eye::LEFT
-                                         : device_test::mojom::Eye::RIGHT;
-    submitted->viewport =
-        gfx::Rect(frame_data.viewport.left, frame_data.viewport.right,
-                  frame_data.viewport.top, frame_data.viewport.bottom);
-    hook_->OnFrameSubmitted(std::move(submitted));
+    std::vector<device_test::mojom::ViewDataPtr> submitted_views;
+    for (const ViewData& view : views) {
+      device_test::mojom::ViewDataPtr view_data =
+          device_test::mojom::ViewData::New();
+      view_data->color = device_test::mojom::Color::New(
+          view.color.r, view.color.g, view.color.b, view.color.a);
+      view_data->viewport = view.viewport;
+      view_data->eye = XrEyeToMojoEye(view.eye);
+      submitted_views.push_back(std::move(view_data));
+    }
+    hook_->OnFrameSubmitted(std::move(submitted_views));
   }
 }
 
@@ -176,6 +186,19 @@ device_test::mojom::EventData XRTestHookWrapper::WaitGetEventData() {
     }
   }
   return ret;
+}
+
+bool XRTestHookWrapper::WaitGetCanCreateSession() {
+  if (hook_) {
+    bool can_create_session;
+    hook_->WaitGetCanCreateSession(&can_create_session);
+    return can_create_session;
+  }
+
+  // In the absence of a test hook telling us that we can't create a session;
+  // assume that we can, there's often enough default behavior to do so, and
+  // some tests expect to be able to get a session without creating a test hook.
+  return true;
 }
 
 void XRTestHookWrapper::AttachCurrentThread() {

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "chrome/browser/android/feed/v2/feed_service_factory.h"
+#include "chrome/browser/feed/feed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/feed_internals/feed_internals.mojom.h"
 #include "chrome/common/url_constants.h"
@@ -28,7 +28,7 @@ FeedInternalsUI::FeedInternalsUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUISnippetsInternalsHost);
 
   source->AddResourcePath("feed_internals.js", IDR_FEED_INTERNALS_JS);
-  source->AddResourcePath("feed_internals.mojom-lite.js",
+  source->AddResourcePath("feed_internals.mojom-webui.js",
                           IDR_FEED_INTERNALS_MOJO_JS);
   source->AddResourcePath("feed_internals.css", IDR_FEED_INTERNALS_CSS);
   source->SetDefaultResource(IDR_FEED_INTERNALS_HTML);

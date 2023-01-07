@@ -1,1 +1,0 @@
-logScript("external")

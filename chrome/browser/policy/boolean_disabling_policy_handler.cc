@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,8 @@ void BooleanDisablingPolicyHandler::ApplyPolicySettings(
   if (!pref_path_)
     return;
 
-  const base::Value* value = policies.GetValue(policy_name());
+  const base::Value* value =
+      policies.GetValue(policy_name(), base::Value::Type::BOOLEAN);
 
   if (value && value->GetBool() == false) {
     // Only apply the policy to the pref if the policy value is false.

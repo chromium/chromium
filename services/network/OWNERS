@@ -4,16 +4,12 @@
 
 cduvall@chromium.org
 ericorth@chromium.org
-falken@chromium.org
 jam@chromium.org
 kinuko@chromium.org
 mmenke@chromium.org
 morlovich@chromium.org
 reillyg@chromium.org
-rmcelrath@chromium.org
 toyoshim@chromium.org
-tsepez@chromium.org
-yhirano@chromium.org
 
 # Files and features related to component:Internals>Sandbox>SiteIsolation:
 per-file cross_origin_read_blocking*=creis@chromium.org
@@ -24,7 +20,7 @@ per-file sec_header_helpers*=mkwst@chromium.org
 
 per-file expect_ct_reporter*=estark@chromium.org
 
-per-file cert_verifier_with_trust_anchors*=file://chromeos/policy/OWNERS
+per-file cert_verifier_with_trust_anchors*=file://chromeos/ash/components/policy/OWNERS
 
 per-file *_type_converter*.*=set noparent
 per-file *_type_converter*.*=file://ipc/SECURITY_OWNERS
@@ -38,8 +34,12 @@ per-file BUILD.gn=file://services/network/resource_scheduler/OWNERS
 per-file BUILD.gn=file://services/network/sct_auditing/OWNERS
 
 # Content Security Policy
-per-file content_security_policy*=lfg@chromium.org
+per-file content_security_policy*=arthursonzogni@chromium.org
 per-file content_security_policy*=nasko@chromium.org
 
 # Cookies
 per-file *cookie*=file://net/cookies/OWNERS
+
+# Private Network Access
+per-file private_network_access*=titouan@chromium.org
+per-file private_network_access*=lyf@chromium.org

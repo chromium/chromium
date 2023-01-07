@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Disattiva tutte le animazioni.</translation>
 <translation id="1703735871906654364">Navigazione con cursore</translation>
 <translation id="1791496371305830581">Consenti tutte le immagini animate.</translation>
+<translation id="1974060860693918893">Avanzate</translation>
 <translation id="1996252509865389616">Attivare?</translation>
 <translation id="2079545284768500474">Annulla</translation>
 <translation id="2179565792157161713">Apri descrizione dettagliata in una nuova scheda</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Color Enhancer</translation>
 <translation id="633394792577263429">Tieni premuto &lt;span class='key'&gt;Ctrl&lt;/span&gt; per spostarti per parole.</translation>
 <translation id="6550675742724504774">Opzioni</translation>
+<translation id="6699630355767768222">Passaggio 3: esegui l'override dell'asse del colore per la correzione.</translation>
 <translation id="6838518108677880446">Configurazione:</translation>
 <translation id="690628312087070417">Quando il cursore salta a un'altra parte lontana:</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -64,5 +66,6 @@
 <translation id="8321034316479930120">Norme relative alle animazioni</translation>
 <translation id="8480209185614411573">Contrasto elevato</translation>
 <translation id="8609925175482059018">Premi &lt;span class='key'&gt;F7&lt;/span&gt; per attivare la funzione di navigazione con cursore. Premi di nuovo il tasto per disattivarla.</translation>
+<translation id="8798099450830957504">Predefinito</translation>
 <translation id="894241283505723656">Descrizioni dettagliate nel menu contestuale</translation>
 </translationbundle>

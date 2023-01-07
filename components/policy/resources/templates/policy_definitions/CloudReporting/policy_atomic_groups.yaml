@@ -1,0 +1,12 @@
+CloudReporting:
+  caption: Cloud Reporting
+  policies:
+  - ReportVersionData
+  - ReportPolicyData
+  - ReportMachineIDData
+  - ReportUserIDData
+  - ReportExtensionsAndPluginsData
+  - CloudExtensionRequestEnabled
+  - CloudReportingEnabled
+  - CloudProfileReportingEnabled
+  - CloudReportingUploadFrequency

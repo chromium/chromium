@@ -72,7 +72,7 @@ class PLATFORM_EXPORT FEComposite final : public FilterEffect {
   }
 
  private:
-  FloatRect MapInputs(const FloatRect&) const override;
+  gfx::RectF MapInputs(const gfx::RectF&) const override;
 
   bool AffectsTransparentPixels() const override;
 

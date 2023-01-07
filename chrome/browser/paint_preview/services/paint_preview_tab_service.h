@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PAINT_PREVIEW_SERVICES_PAINT_PREVIEW_TAB_SERVICE_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -14,18 +13,19 @@
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/browser/paint_preview_policy.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
+#include "content/public/browser/global_routing_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(os_android)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#endif  // defined(os_android)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 class WebContents;
@@ -64,6 +64,9 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
   void CaptureTab(int tab_id,
                   content::WebContents* contents,
                   bool accessibility_enabled,
+                  float page_scale_factor,
+                  int scroll_offset_x,
+                  int scroll_offset_y,
                   FinishedCallback callback);
 
   // Destroys the Paint Preview associated with |tab_id|. This MUST be called
@@ -80,13 +83,16 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
   // occurred.
   void AuditArtifacts(const std::vector<int>& active_tab_ids);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // JNI wrapped versions of the above methods
   void CaptureTabAndroid(
       JNIEnv* env,
       jint j_tab_id,
       const base::android::JavaParamRef<jobject>& j_web_contents,
-      jboolean accessibility_enabled,
+      jboolean j_accessibility_enabled,
+      jfloat j_page_scale_factor,
+      jint j_x,
+      jint j_y,
       const base::android::JavaParamRef<jobject>& j_callback);
   void TabClosedAndroid(JNIEnv* env, jint j_tab_id);
   jboolean HasCaptureForTabAndroid(JNIEnv* env, jint j_tab_id);
@@ -97,7 +103,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
   base::android::ScopedJavaLocalRef<jstring> GetPathAndroid(JNIEnv* env);
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaRef() { return java_ref_; }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   class TabServiceTask {
@@ -107,7 +113,11 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
     TabServiceTask(int tab_id,
                    const DirectoryKey& key,
                    int frame_tree_node_id,
-                   content::GlobalFrameRoutingId frame_routing_id);
+                   content::GlobalRenderFrameHostId frame_routing_id,
+                   float page_scale_factor,
+                   int x,
+                   int y,
+                   base::ScopedClosureRunner capture_handle);
     ~TabServiceTask();
 
     TabServiceTask(const TabServiceTask& other) = delete;
@@ -116,9 +126,12 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
     int tab_id() const { return tab_id_; }
     const DirectoryKey& key() const { return key_; }
     int frame_tree_node_id() const { return frame_tree_node_id_; }
-    content::GlobalFrameRoutingId frame_routing_id() const {
+    content::GlobalRenderFrameHostId frame_routing_id() const {
       return frame_routing_id_;
     }
+    float page_scale_factor() const { return page_scale_factor_; }
+    int scroll_offset_x() const { return scroll_offset_x_; }
+    int scroll_offset_y() const { return scroll_offset_y_; }
 
     void SetWaitForAccessibility() { wait_for_accessibility_ = true; }
 
@@ -144,14 +157,21 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
       return weak_ptr_factory_.GetWeakPtr();
     }
 
+    void ReleaseCaptureHandle() { capture_handle_.RunAndReset(); }
+
    private:
     int tab_id_;
     DirectoryKey key_;
     int frame_tree_node_id_;
-    content::GlobalFrameRoutingId frame_routing_id_;
+    content::GlobalRenderFrameHostId frame_routing_id_;
+    float page_scale_factor_;
+    int scroll_offset_x_;
+    int scroll_offset_y_;
 
     bool wait_for_accessibility_{false};
     Status status_{kInvalid};
+
+    base::ScopedClosureRunner capture_handle_;
 
     FinishedCallback finished_callback_;
     base::WeakPtrFactory<TabServiceTask> weak_ptr_factory_{this};
@@ -166,7 +186,7 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
   // The FTN ID is to look-up the content::WebContents.
   void CaptureTabInternal(base::WeakPtr<TabServiceTask> task,
                           bool accessibility_enabled,
-                          const base::Optional<base::FilePath>& file_path);
+                          const absl::optional<base::FilePath>& file_path);
 
   void OnAXTreeWritten(base::WeakPtr<TabServiceTask> task, bool result);
 
@@ -184,9 +204,9 @@ class PaintPreviewTabService : public PaintPreviewBaseService {
   bool cache_ready_;
   base::flat_set<int> captured_tab_ids_;
   base::flat_map<int, std::unique_ptr<TabServiceTask>> tasks_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<PaintPreviewTabService> weak_ptr_factory_{this};
 };

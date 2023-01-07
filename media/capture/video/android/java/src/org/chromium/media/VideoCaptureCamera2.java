@@ -1,10 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.media;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.ImageFormat;
 import android.graphics.Rect;
@@ -53,7 +52,6 @@ import java.util.List;
  * and their capabilities, using android.hardware.camera2.CameraManager.
  **/
 @JNINamespace("media")
-@TargetApi(Build.VERSION_CODES.M)
 public class VideoCaptureCamera2 extends VideoCapture {
     // Inner class to extend a CameraDevice state change listener.
     private class CrStateListener extends CameraDevice.StateCallback {
@@ -367,7 +365,11 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
             final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
             PhotoCapabilities.Builder builder = new PhotoCapabilities.Builder();
-
+            if (cameraCharacteristics == null) {
+                VideoCaptureJni.get().onGetPhotoCapabilitiesReply(mNativeVideoCaptureDeviceAndroid,
+                        VideoCaptureCamera2.this, mCallbackId, builder.build());
+                return;
+            }
             int minIso = 0;
             int maxIso = 0;
             final Range<Integer> iso_range =
@@ -753,6 +755,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
             assert mCameraThreadHandler.getLooper() == Looper.myLooper() : "called on wrong thread";
 
             final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
+            if (cameraCharacteristics == null) return;
             final Rect canvas =
                     cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE);
 
@@ -775,7 +778,12 @@ public class VideoCaptureCamera2 extends VideoCapture {
             if (mOptions.exposureMode != AndroidMeteringMode.NOT_SET) {
                 mExposureMode = mOptions.exposureMode;
             }
-            if (mOptions.exposureTime != 0) mLastExposureTimeNs = (long) mOptions.exposureTime;
+            if (mOptions.exposureTime != 0) {
+                // The web API (https://w3c.github.io/mediacapture-image/#exposure-time) provides
+                // exposureTime in 100 microsecond units.
+                mLastExposureTimeNs =
+                        (long) (mOptions.exposureTime * kNanosecondsPer100Microsecond);
+            }
             if (mOptions.whiteBalanceMode != AndroidMeteringMode.NOT_SET) {
                 mWhiteBalanceMode = mOptions.whiteBalanceMode;
             }
@@ -851,6 +859,12 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 // have to do with preview, e.g. the ImageReader and its associated Surface.
                 configureCommonCaptureSettings(mPreviewRequestBuilder);
 
+                if (mOptions.fillLightMode != AndroidFillLightMode.NOT_SET) {
+                    // Run the precapture sequence for capturing a still image.
+                    mPreviewRequestBuilder.set(CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER,
+                            CaptureRequest.CONTROL_AE_PRECAPTURE_TRIGGER_START);
+                }
+
                 mPreviewRequest = mPreviewRequestBuilder.build();
 
                 try {
@@ -883,6 +897,11 @@ public class VideoCaptureCamera2 extends VideoCapture {
             }
 
             final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
+            if (cameraCharacteristics == null) {
+                Log.e(TAG, "cameraCharacteristics error");
+                notifyTakePhotoError(mCallbackId);
+                return;
+            }
             final StreamConfigurationMap streamMap = cameraCharacteristics.get(
                     CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             final Size[] supportedSizes = streamMap.getOutputSizes(ImageFormat.JPEG);
@@ -1024,7 +1043,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
         try {
             final String str_id = String.valueOf(id);
             return manager.getCameraCharacteristics(str_id);
-        } catch (CameraAccessException | IllegalArgumentException | AssertionError ex) {
+        } catch (CameraAccessException | IllegalArgumentException | AssertionError
+                | NullPointerException ex) {
             Log.e(TAG, "getCameraCharacteristics: ", ex);
         }
         return null;
@@ -1082,6 +1102,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
             // available, see https://crbug.com/718387.
             // https://developer.android.com/reference/android/hardware/camera2/CaptureRequest.html#CONTROL_VIDEO_STABILIZATION_MODE
             final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
+            if (cameraCharacteristics == null) return false;
             final int[] stabilizationModes = cameraCharacteristics.get(
                     CameraCharacteristics.CONTROL_AVAILABLE_VIDEO_STABILIZATION_MODES);
             for (int mode : stabilizationModes) {
@@ -1154,18 +1175,14 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 // We need to configure by hand the exposure time when AE mode is off.  Set it to
                 // the last known exposure interval if known, otherwise set it to the middle of the
                 // allowed range. Further tuning will be done via |mIso| and
-                // |mExposureCompensation|. mLastExposureTimeNs and range are in nanoseconds (from
-                // Android platform), but spec expects exposureTime to be in 100 microsecond units.
-                // https://w3c.github.io/mediacapture-image/#exposure-time
+                // |mExposureCompensation|.
                 if (mLastExposureTimeNs != 0) {
-                    requestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME,
-                            mLastExposureTimeNs / kNanosecondsPer100Microsecond);
-                } else {
+                    requestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, mLastExposureTimeNs);
+                } else if (cameraCharacteristics != null) {
                     Range<Long> range = cameraCharacteristics.get(
                             CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
                     requestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME,
-                            (range.getLower() + (range.getUpper() + range.getLower()) / 2)
-                                    / kNanosecondsPer100Microsecond);
+                            range.getLower() + (range.getUpper() + range.getLower()) / 2);
                 }
 
             } else {
@@ -1228,9 +1245,12 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 requestBuilder.set(CaptureRequest.CONTROL_AWB_LOCK, true);
             }
             if (mColorTemperature > 0) {
-                final int colorSetting = getClosestWhiteBalance(mColorTemperature,
-                        cameraCharacteristics.get(
-                                CameraCharacteristics.CONTROL_AWB_AVAILABLE_MODES));
+                int colorSetting = -1;
+                if (cameraCharacteristics != null) {
+                    colorSetting = getClosestWhiteBalance(mColorTemperature,
+                            cameraCharacteristics.get(
+                                    CameraCharacteristics.CONTROL_AWB_AVAILABLE_MODES));
+                }
                 Log.d(TAG, " Color temperature (%d ==> %d)", mColorTemperature, colorSetting);
                 if (colorSetting != -1) {
                     requestBuilder.set(CaptureRequest.CONTROL_AWB_MODE, colorSetting);
@@ -1563,6 +1583,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
             }
         }
         final CameraCharacteristics cameraCharacteristics = getCameraCharacteristics(mId);
+        if (cameraCharacteristics == null) return false;
         final StreamConfigurationMap streamMap =
                 cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
 

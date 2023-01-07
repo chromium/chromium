@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/pinned_tab_codec.h"
@@ -46,7 +47,7 @@ class PinnedTabServiceTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  PinnedTabService* pinned_tab_service_;
+  raw_ptr<PinnedTabService> pinned_tab_service_;
 };
 
 // Makes sure closing a popup triggers writing pinned tabs.
@@ -69,7 +70,7 @@ TEST_F(PinnedTabServiceTest, Popup) {
 
   // Close the popup. This shouldn't reset the saved state.
   popup->tab_strip_model()->CloseAllTabs();
-  popup.reset(NULL);
+  popup.reset();
 
   // Check the state to make sure it hasn't changed.
   result = PinnedTabTestUtils::TabsToString(

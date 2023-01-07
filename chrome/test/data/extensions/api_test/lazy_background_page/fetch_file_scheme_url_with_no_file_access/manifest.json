@@ -1,0 +1,10 @@
+{
+  "name": "Lazy BG fetch test",
+  "description": "Test that fetching a file scheme with no file access fails",
+  "version": "1",
+  "manifest_version": 2,
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  }
+}

@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_CRASH_UPLOAD_LIST_CRASH_UPLOAD_LIST_ANDROID_H_
 #define CHROME_BROWSER_CRASH_UPLOAD_LIST_CRASH_UPLOAD_LIST_ANDROID_H_
 
-#include "base/macros.h"
 #include "components/upload_list/text_log_upload_list.h"
 
 namespace base {
@@ -18,6 +17,9 @@ class FilePath;
 class CrashUploadListAndroid : public TextLogUploadList {
  public:
   explicit CrashUploadListAndroid(const base::FilePath& upload_log_path);
+
+  CrashUploadListAndroid(const CrashUploadListAndroid&) = delete;
+  CrashUploadListAndroid& operator=(const CrashUploadListAndroid&) = delete;
 
   // Returns true if the browser crash metrics were initialized, only happens
   // when minidump service is started.
@@ -35,8 +37,6 @@ class CrashUploadListAndroid : public TextLogUploadList {
 
  private:
   void LoadUnsuccessfulUploadList(std::vector<UploadInfo>* uploads);
-
-  DISALLOW_COPY_AND_ASSIGN(CrashUploadListAndroid);
 };
 
 #endif  // CHROME_BROWSER_CRASH_UPLOAD_LIST_CRASH_UPLOAD_LIST_ANDROID_H_

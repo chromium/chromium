@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,10 @@
 #include "ash/detachable_base/detachable_base_observer.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
 #include "ash/public/cpp/session/user_info.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/hammerd/fake_hammerd_client.h"
+#include "chromeos/ash/components/dbus/hammerd/fake_hammerd_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/testing_pref_service.h"
@@ -41,6 +40,10 @@ UserInfo CreateUser(const std::string& email,
 class TestBaseObserver : public DetachableBaseObserver {
  public:
   TestBaseObserver() = default;
+
+  TestBaseObserver(const TestBaseObserver&) = delete;
+  TestBaseObserver& operator=(const TestBaseObserver&) = delete;
+
   ~TestBaseObserver() override = default;
 
   int pairing_status_changed_count() const {
@@ -72,8 +75,6 @@ class TestBaseObserver : public DetachableBaseObserver {
   int pairing_status_changed_count_ = 0;
   int update_required_changed_count_ = 0;
   bool requires_update_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBaseObserver);
 };
 
 }  // namespace
@@ -81,12 +82,17 @@ class TestBaseObserver : public DetachableBaseObserver {
 class DetachableBaseHandlerTest : public testing::Test {
  public:
   DetachableBaseHandlerTest() = default;
+
+  DetachableBaseHandlerTest(const DetachableBaseHandlerTest&) = delete;
+  DetachableBaseHandlerTest& operator=(const DetachableBaseHandlerTest&) =
+      delete;
+
   ~DetachableBaseHandlerTest() override = default;
 
   // testing::Test:
   void SetUp() override {
-    chromeos::HammerdClient::InitializeFake();
-    hammerd_client_ = chromeos::FakeHammerdClient::Get();
+    HammerdClient::InitializeFake();
+    hammerd_client_ = FakeHammerdClient::Get();
 
     chromeos::PowerManagerClient::InitializeFake();
     chromeos::FakePowerManagerClient::Get()->SetTabletMode(
@@ -104,7 +110,7 @@ class DetachableBaseHandlerTest : public testing::Test {
     handler_.reset();
     hammerd_client_ = nullptr;
     chromeos::PowerManagerClient::Shutdown();
-    chromeos::HammerdClient::Shutdown();
+    HammerdClient::Shutdown();
   }
 
  protected:
@@ -125,7 +131,7 @@ class DetachableBaseHandlerTest : public testing::Test {
     handler_->AddObserver(&detachable_base_observer_);
   }
 
-  chromeos::FakeHammerdClient* hammerd_client_ = nullptr;
+  FakeHammerdClient* hammerd_client_ = nullptr;
 
   TestBaseObserver detachable_base_observer_;
 
@@ -137,8 +143,6 @@ class DetachableBaseHandlerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   TestingPrefServiceSimple local_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(DetachableBaseHandlerTest);
 };
 
 TEST_F(DetachableBaseHandlerTest, NoDetachableBase) {

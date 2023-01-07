@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,6 +43,14 @@ class FakeAgentGroupScheduler : public AgentGroupScheduler {
 
   void BindInterfaceBroker(
       mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker>) override {}
+
+  v8::Isolate* Isolate() override {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  void AddAgent(Agent* agent) override {}
+  void RemoveAgent(Agent* agent) override {}
 
  private:
   WebThreadScheduler& web_thread_scheduler_;

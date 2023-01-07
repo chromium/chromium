@@ -1,0 +1,31 @@
+caption: Allow Desktop, Window, and Tab capture by these origins
+desc: |-
+  Setting the policy lets you set a list of URL patterns that can use Desktop, Window, and Tab Capture.
+
+        Leaving the policy unset means that sites will not be considered for an override at this level of Capture.
+
+        This policy is not considered if a site matches a URL pattern in any of the following policies: <ph name="WINDOW_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">WindowCaptureAllowedByOrigins</ph>, <ph name="TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">TabCaptureAllowedByOrigins</ph>, <ph name="SAME_ORIGIN_TAB_CAPTURE_ALLOWED_BY_ORIGINS_POLICY_NAME">SameOriginTabCaptureAllowedByOrigins</ph>.
+
+        If a site matches a URL pattern in this policy, the <ph name="SCREEN_CAPTURE_ALLOWED_POLICY_NAME">ScreenCaptureAllowed</ph> will not be considered.
+
+        For detailed information on valid <ph name="URL_LABEL">url</ph> patterns, please see https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  This policy only matches based on origin, so any path in the URL pattern is ignored.
+example_value:
+- https://www.example.com
+- '[*.]example.edu'
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- alcooper@chromium.org
+- mfoltz@chromium.org
+schema:
+  items:
+    type: string
+  type: array
+supported_on:
+- chrome_os:94-
+- chrome.*:95-
+tags: []
+type: list

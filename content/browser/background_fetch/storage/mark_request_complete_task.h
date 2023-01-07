@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,6 +27,9 @@ class MarkRequestCompleteTask : public DatabaseTask {
       const BackgroundFetchRegistrationId& registration_id,
       scoped_refptr<BackgroundFetchRequestInfo> request_info,
       MarkRequestCompleteCallback callback);
+
+  MarkRequestCompleteTask(const MarkRequestCompleteTask&) = delete;
+  MarkRequestCompleteTask& operator=(const MarkRequestCompleteTask&) = delete;
 
   ~MarkRequestCompleteTask() override;
 
@@ -81,8 +84,6 @@ class MarkRequestCompleteTask : public DatabaseTask {
 
   base::WeakPtrFactory<MarkRequestCompleteTask> weak_factory_{
       this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(MarkRequestCompleteTask);
 };
 
 }  // namespace background_fetch

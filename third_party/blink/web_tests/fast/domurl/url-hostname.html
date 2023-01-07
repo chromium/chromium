@@ -14,7 +14,7 @@ test(function() {
 test(function() {
     var url = new URL('https://www.mydomain.com/path/?key=value');
     url.hostname = 'www.other?domain.com';
-    assert_equals(url.href, 'https://www.other%3Fdomain.com/path/?key=value');
+    assert_equals(url.href, 'https://www.other/path/?key=value');
 }, 'Set hostname with ? in it');
 
 test(function() {
@@ -39,7 +39,7 @@ test(function() {
 test(function() {
     var url = new URL('https://www.mydomain.com/path/');
     url.hostname = 'www.other\\dom/ain.com';
-    assert_equals(url.href, 'https://www.other%5Cdom%2Fain.com/path/');
+    assert_equals(url.href, 'https://www.other/path/');
 }, 'Set hostname containing slashes in it');
 
 test(function() {
@@ -64,11 +64,15 @@ test(function() {
 
 test(function() {
     var url = new URL('http://abc.de/path/file?query#fragment');
-    url.href = 'invalid';
-    assert_equals(url.hostname, '');
-    url.host = 'changed';
-    assert_equals(url.hostname, '');
-    assert_equals(url.href, 'invalid');
+    var expected = 'abc.de';
+    assert_equals(url.hostname, expected);
+
+    assert_throws_js(TypeError, () => { url.href = 'invalid'; });
+    assert_equals(url.hostname, expected);
+
+    url.hostname = 'changed';
+    assert_equals(url.hostname, 'changed');
+    assert_equals(url.href, 'http://changed/path/file?query#fragment');
 }, 'hostname property invalid URL');
 
 </script>

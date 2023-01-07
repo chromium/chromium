@@ -1,0 +1,42 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos_ash, "Only ChromeOS components belong here.")
+
+# JS type check for Polymer 3
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+
+  closure_flags = default_closure_args + mojom_js_args +
+                  [ "js_module_root=" + rebase_path(".", root_build_dir) ]
+
+  deps = [
+    ":traffic_counters",
+    ":traffic_counters_adapter",
+  ]
+}
+
+js_library("traffic_counters") {
+  deps = [
+    ":traffic_counters_adapter",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources/network:onc_mojo",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
+    "//chromeos/services/network_config/public/mojom:network_types_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("traffic_counters_adapter") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources/network:mojo_interface_provider",
+    "//ash/webui/common/resources/network:onc_mojo",
+    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
+    "//chromeos/services/network_config/public/mojom:network_types_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}

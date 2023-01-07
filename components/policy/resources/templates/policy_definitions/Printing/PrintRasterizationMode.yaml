@@ -1,0 +1,35 @@
+caption: Print Rasterization Mode
+default: 0
+desc: |-
+  Controls how <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> prints on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>.
+
+        When printing to a non-PostScript printer on <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, sometimes print jobs need to be rasterized to print correctly.
+
+        When this policy is set to Full, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will do full page rasterization if necessary.
+
+        When this policy is set to Fast, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will avoid rasterization if possible, reducing the amount of rasterization can help reduce print job sizes and increase printing speed.
+
+        When this policy is not set, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will be in Full mode.
+example_value: 1
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Full
+  name: Full
+  value: 0
+- caption: Fast
+  name: Fast
+  value: 1
+owners:
+- thestig@chromium.org
+- file://printing/OWNERS
+schema:
+  enum:
+  - 0
+  - 1
+  type: integer
+supported_on:
+- chrome.win:84-
+tags: []
+type: int-enum

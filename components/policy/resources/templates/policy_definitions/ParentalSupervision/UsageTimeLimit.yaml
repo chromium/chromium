@@ -1,0 +1,122 @@
+caption: Time Limit
+desc: |-
+  Allows you to lock the user's session based on the client time or the usage quota of the day.
+
+            The |time_window_limit| specifies a daily window in which the user's session should be locked. We only support one rule for each day of the week, therefore the |entries| array may vary from 0-7 in size. |starts_at| and |ends_at| are the beginning and the end of the window limit, when |ends_at| is smaller than |starts_at| it means that the |time_limit_window| ends on the following day. |last_updated_millis| is the UTC timestamp for the last time this entry was updated, it is sent as a string because the timestamp wouldn't fit in an integer.
+
+            The |time_usage_limit| specifies a daily screen quota, so when the user reaches it, the user's session is locked. There is a property for each day of the week, and it should be set only if there is an active quota for that day. |usage_quota_mins| is the amount of time that the managed device can be use in a day and |reset_at| is the time when the usage quota is renewed. The default value for |reset_at| is midnight ({'hour': 0, 'minute': 0}). |last_updated_millis| is the UTC timestamp for the last time this entry was updated, it is sent as a string because the timestamp wouldn't fit in an integer.
+
+            |overrides| is provided to invalidate temporarily one or more of the previous rules.
+            * If neither time_window_limit nor time_usage_limit is active |LOCK| can be used to lock the device.
+            * |LOCK| temporarily locks a user session until the next time_window_limit or time_usage_limit starts.
+            * |UNLOCK| unlocks a user's session locked by time_window_limit or time_usage_limit.
+            |created_time_millis| is the UTC timestamp for the override creation, it is sent as a String because the timestamp wouldn't fit in an integer It is used to determine whether this override should still be applied. If the current active time limit feature (time usage limit or time window limit) started after the override was created, it should not take action. Also if the override was created before the last change of the active time_window_limit or time_usage_window it should not be applied.
+
+            Multiple overrides may be sent, the newest valid entry is the one that is going to be applied.
+example_value:
+  overrides:
+  - action: UNLOCK
+    action_specific_data:
+      duration_mins: 30
+    created_at_millis: '1250000'
+  time_usage_limit:
+    friday:
+      last_updated_millis: '1200000'
+      usage_quota_mins: 120
+    monday:
+      last_updated_millis: '1200000'
+      usage_quota_mins: 120
+    reset_at:
+      hour: 6
+      minute: 0
+    saturday:
+      last_updated_millis: '1200000'
+      usage_quota_mins: 120
+    sunday:
+      last_updated_millis: '1200000'
+      usage_quota_mins: 120
+    thursday:
+      last_updated_millis: '1200000'
+      usage_quota_mins: 120
+    tuesday:
+      last_updated_millis: '1200000'
+      usage_quota_mins: 120
+    wednesday:
+      last_updated_millis: '1200000'
+      usage_quota_mins: 120
+  time_window_limit:
+    entries:
+    - effective_day: WEDNESDAY
+      ends_at:
+        hour: 7
+        minute: 30
+      last_updated_millis: '1000000'
+      starts_at:
+        hour: 21
+        minute: 0
+features:
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- hgrandinetti@chromium.org
+- vtrmc@chromium.org
+schema:
+  properties:
+    overrides:
+      items:
+        properties:
+          action:
+            enum:
+            - LOCK
+            - UNLOCK
+            type: string
+          action_specific_data:
+            properties:
+              duration_mins:
+                minimum: 0
+                type: integer
+            type: object
+          created_at_millis:
+            type: string
+        type: object
+      type: array
+    time_usage_limit:
+      properties:
+        friday:
+          $ref: TimeUsageLimitEntry
+        monday:
+          $ref: TimeUsageLimitEntry
+        reset_at:
+          $ref: Time
+        saturday:
+          $ref: TimeUsageLimitEntry
+        sunday:
+          $ref: TimeUsageLimitEntry
+        thursday:
+          $ref: TimeUsageLimitEntry
+        tuesday:
+          $ref: TimeUsageLimitEntry
+        wednesday:
+          $ref: TimeUsageLimitEntry
+      type: object
+    time_window_limit:
+      properties:
+        entries:
+          items:
+            properties:
+              effective_day:
+                $ref: WeekDay
+              ends_at:
+                $ref: Time
+              last_updated_millis:
+                type: string
+              starts_at:
+                $ref: Time
+            type: object
+          type: array
+      type: object
+  type: object
+supported_on:
+- chrome_os:69-
+tags: []
+type: dict

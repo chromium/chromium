@@ -1,11 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_IDENTITY_PROVIDER_H_
 #define CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_IDENTITY_PROVIDER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/invalidation/public/identity_provider.h"
 
 class DeviceOAuth2TokenService;
@@ -14,6 +14,10 @@ class DeviceOAuth2TokenService;
 class DeviceIdentityProvider : public invalidation::IdentityProvider {
  public:
   explicit DeviceIdentityProvider(DeviceOAuth2TokenService* token_service);
+
+  DeviceIdentityProvider(const DeviceIdentityProvider&) = delete;
+  DeviceIdentityProvider& operator=(const DeviceIdentityProvider&) = delete;
+
   ~DeviceIdentityProvider() override;
 
   // IdentityProvider:
@@ -30,9 +34,7 @@ class DeviceIdentityProvider : public invalidation::IdentityProvider {
  private:
   void OnRefreshTokenAvailable();
 
-  DeviceOAuth2TokenService* token_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceIdentityProvider);
+  raw_ptr<DeviceOAuth2TokenService> token_service_;
 };
 
 #endif  // CHROME_BROWSER_DEVICE_IDENTITY_DEVICE_IDENTITY_PROVIDER_H_

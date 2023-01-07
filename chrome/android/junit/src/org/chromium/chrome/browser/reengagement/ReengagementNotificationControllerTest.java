@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,11 +29,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowNotificationManager;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
-import org.chromium.base.metrics.test.ShadowRecordHistogram;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DefaultBrowserInfo2;
@@ -46,7 +48,8 @@ import java.util.Collections;
 
 /** Unit tests for {@link ReengagementNotificationController}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowNotificationManager.class, ShadowRecordHistogram.class})
+@Config(shadows = {ShadowNotificationManager.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class ReengagementNotificationControllerTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -79,12 +82,12 @@ public class ReengagementNotificationControllerTest {
         mContext = ApplicationProvider.getApplicationContext();
         mShadowNotificationManager = Shadows.shadowOf(
                 (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE));
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     @After
     public void tearDown() {
-        ShadowRecordHistogram.reset();
+        UmaRecorderHolder.resetForTesting();
     }
 
     @Test
@@ -206,7 +209,7 @@ public class ReengagementNotificationControllerTest {
 
     private void testFeatureShowed(String feature) {
         Assert.assertEquals(1,
-                ShadowRecordHistogram.getHistogramValueCountForTesting(
+                RecordHistogram.getHistogramValueCountForTesting(
                         "Mobile.SystemNotification.Shown", getNotificationType(feature)));
 
         verify(mTracker, times(1)).shouldTriggerHelpUI(feature);

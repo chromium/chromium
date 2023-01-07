@@ -1,11 +1,14 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_TEST_MOCK_SSL_HOST_STATE_DELEGATE_H_
-#define CONTENT_PUBLIC_TEST_MOCK_SSL_HOST_STATE_DELEGATE_H_
+#ifndef CONTENT_TEST_MOCK_SSL_HOST_STATE_DELEGATE_H_
+#define CONTENT_TEST_MOCK_SSL_HOST_STATE_DELEGATE_H_
 
 #include "content/public/browser/ssl_host_state_delegate.h"
+
+#include <set>
+#include <string>
 
 namespace content {
 
@@ -17,7 +20,7 @@ class MockSSLHostStateDelegate : public SSLHostStateDelegate {
   void AllowCert(const std::string& host,
                  const net::X509Certificate& cert,
                  int error,
-                 WebContents* web_contents) override;
+                 StoragePartition* storage_partition) override;
 
   void Clear(
       base::RepeatingCallback<bool(const std::string&)> host_filter) override;
@@ -25,7 +28,7 @@ class MockSSLHostStateDelegate : public SSLHostStateDelegate {
   CertJudgment QueryPolicy(const std::string& host,
                            const net::X509Certificate& cert,
                            int error,
-                           WebContents* web_contents) override;
+                           StoragePartition* storage_partition) override;
 
   void HostRanInsecureContent(const std::string& host,
                               int child_id,
@@ -35,16 +38,23 @@ class MockSSLHostStateDelegate : public SSLHostStateDelegate {
                                  int child_id,
                                  InsecureContentType content_type) override;
 
+  void AllowHttpForHost(const std::string& host,
+                        StoragePartition* storage_partition) override;
+
+  bool IsHttpAllowedForHost(const std::string& host,
+                            StoragePartition* storage_partition) override;
+
   void RevokeUserAllowExceptions(const std::string& host) override;
 
   bool HasAllowException(const std::string& host,
-                         WebContents* web_contents) override;
+                         StoragePartition* storage_partition) override;
 
  private:
   std::set<std::string> exceptions_;
   std::set<std::string> hosts_ran_insecure_content_;
+  std::set<std::string> allow_http_hosts_;
 };
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_TEST_MOCK_SSL_HOST_STATE_DELEGATE_H_
+#endif  // CONTENT_TEST_MOCK_SSL_HOST_STATE_DELEGATE_H_

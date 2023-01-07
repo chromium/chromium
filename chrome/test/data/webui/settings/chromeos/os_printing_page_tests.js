@@ -1,17 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/lazy_load.js';
+import 'chrome://os-settings/chromeos/lazy_load.js';
 
-// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-// #import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.m.js';
-// clang-format on
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+
+import {assertEquals, assertTrue} from '../../chai_assert.js';
 
 suite('PrintingPageTests', function() {
   /** @type {SettingsPrintingPageElement} */
@@ -23,58 +21,51 @@ suite('PrintingPageTests', function() {
 
   teardown(function() {
     printingPage.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   /**
    * Set up printing page with loadTimeData overrides
-   * @param {Object} overrides Dictionary of objects to override.
    * @return {!Promise}
    */
-  function initializePrintingPage(overrides) {
-    loadTimeData.overrideValues(overrides);
+  function initializePrintingPage() {
     printingPage = /** @type {!SettingsPrintingPageElement} */ (
         document.createElement('os-settings-printing-page'));
     assertTrue(!!printingPage);
     document.body.appendChild(printingPage);
-    return test_util.flushTasks();
+    return flushTasks();
   }
 
   test('Deep link to print jobs', async () => {
-    await initializePrintingPage({
-      isDeepLinkingEnabled: true,
-    });
-
-    const params = new URLSearchParams;
+    await initializePrintingPage();
+    const params = new URLSearchParams();
     params.append('settingId', '1402');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.OS_PRINTING, params);
+    Router.getInstance().navigateTo(routes.OS_PRINTING, params);
 
-    Polymer.dom.flush();
+    flush();
 
     const deepLinkElement =
-        printingPage.$$('#printManagement').$$('cr-icon-button');
-    await test_util.waitAfterNextRender(deepLinkElement);
+        printingPage.shadowRoot.querySelector('#printManagement')
+            .shadowRoot.querySelector('cr-icon-button');
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Print jobs button should be focused for settingId=1402.');
   });
 
   test('Deep link to scanning app', async () => {
-    await initializePrintingPage({
-      isDeepLinkingEnabled: true,
-    });
+    await initializePrintingPage();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '1403');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.OS_PRINTING, params);
+    Router.getInstance().navigateTo(routes.OS_PRINTING, params);
 
-    Polymer.dom.flush();
+    flush();
 
     const deepLinkElement =
-        printingPage.$$('#scanningApp').$$('cr-icon-button');
-    await test_util.waitAfterNextRender(deepLinkElement);
+        printingPage.shadowRoot.querySelector('#scanningApp')
+            .shadowRoot.querySelector('cr-icon-button');
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Scanning app button should be focused for settingId=1403.');

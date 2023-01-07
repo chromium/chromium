@@ -78,8 +78,7 @@ base::TimeTicks GetTimeOrigin(ExecutionContext* context) {
   }
 
   DCHECK(performance);
-  return base::TimeTicks() +
-         base::TimeDelta::FromSecondsD(performance->GetTimeOrigin());
+  return performance->GetTimeOriginInternal();
 }
 
 class MessageValidator {
@@ -243,7 +242,13 @@ MIDIOutput::MIDIOutput(MIDIAccess* access,
                        const String& name,
                        const String& version,
                        PortState state)
-    : MIDIPort(access, id, manufacturer, name, kTypeOutput, version, state),
+    : MIDIPort(access,
+               id,
+               manufacturer,
+               name,
+               MIDIPortType::kOutput,
+               version,
+               state),
       port_index_(port_index) {}
 
 MIDIOutput::~MIDIOutput() = default;
@@ -259,8 +264,8 @@ void MIDIOutput::send(NotShared<DOMUint8Array> array,
   if (timestamp_in_milliseconds == 0.0) {
     timestamp = base::TimeTicks::Now();
   } else {
-    timestamp = GetTimeOrigin(context) +
-                base::TimeDelta::FromMillisecondsD(timestamp_in_milliseconds);
+    timestamp =
+        GetTimeOrigin(context) + base::Milliseconds(timestamp_in_milliseconds);
   }
   SendInternal(array.Get(), timestamp, exception_state);
 }
@@ -318,7 +323,7 @@ void MIDIOutput::DidOpen(bool opened) {
         base::checked_cast<wtf_size_t>(data.first->length()), data.second);
   }
   queued_data.clear();
-  DCHECK(pending_data_.IsEmpty());
+  DCHECK(pending_data_.empty());
 }
 
 void MIDIOutput::Trace(Visitor* visitor) const {

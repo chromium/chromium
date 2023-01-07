@@ -1,0 +1,17 @@
+<style include="shortcut-customization-shared">
+  #container {
+    width: var(--container-max-width-nav);
+  }
+
+  #container accelerator-subsection:not(:first-child)::part(container) {
+    margin-top: 40px;
+  }
+</style>
+
+<div id="container">
+  <template id="subsections" is="dom-repeat" items="[[subcategories_]]">
+    <accelerator-subsection category="[[initialData.category]]"
+        subcategory="[[item]]">
+    </accelerator-subsection>
+  </template>
+</div>

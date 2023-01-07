@@ -1,0 +1,110 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+source_set("android") {
+  sources = [
+    "password_edit_dialog_bridge.cc",
+    "password_edit_dialog_bridge.h",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//content/public/browser",
+    "//ui/android:android",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/NoFilterArrayAdapter.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogBridge.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogCoordinator.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogMediator.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogProperties.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogView.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogViewBinder.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogWithDetailsView.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/UsernameSelectionConfirmationView.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/password_manager/android:java",
+    "//chrome/browser/password_manager/android:java_resources",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.chrome.browser.password_edit_dialog"
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogBridge.java" ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/dropdown_arrow_down.xml",
+    "java/res/layout/password_edit_dialog.xml",
+    "java/res/layout/password_edit_dialog_dropdown_item.xml",
+    "java/res/layout/password_edit_dialog_with_details.xml",
+    "java/res/values/dimens.xml",
+  ]
+
+  deps = [
+    "//chrome/app:java_strings_grd",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [ "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogControllerTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+android_library("unit_device_javatests") {
+  testonly = true
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/PasswordEditDialogWithDetailsViewTest.java",
+    "java/src/org/chromium/chrome/browser/password_edit_dialog/UsernameSelectionConfirmationViewTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+  ]
+}

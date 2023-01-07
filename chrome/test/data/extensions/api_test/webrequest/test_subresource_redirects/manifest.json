@@ -1,0 +1,15 @@
+{
+  "name": "test_subresource_redirects",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Tests the webRequest API.",
+  "permissions": ["webRequest", "webRequestBlocking", "declarativeWebRequest",
+                  "tabs", "<all_urls>"],
+  "background": {
+    "scripts": ["test_subresource_redirects.js"],
+    "persistent": true
+  },
+  "web_accessible_resources": [
+    "simpleLoad/a.html"
+  ]
+}

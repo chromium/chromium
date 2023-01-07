@@ -1,0 +1,5 @@
+AXWebArea
+++AXGroup
+++++AXButton AXKeyShortcutsValue='Ctrl+X' AXTitle='Cut'
+++++AXButton AXKeyShortcutsValue='Ctrl+C' AXTitle='Copy'
+++++AXButton AXKeyShortcutsValue='Ctrl+V' AXTitle='Paste'

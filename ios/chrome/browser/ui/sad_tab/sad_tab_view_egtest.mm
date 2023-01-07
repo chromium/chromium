@@ -1,8 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/strings/grit/components_strings.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -10,8 +10,8 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -48,11 +48,8 @@ id<GREYMatcher> incognitoHelpContainsText() {
 // visited within 60 seconds, for this reason this one test can not
 // be easily split up across multiple tests
 // as visiting Sad Tab may not be idempotent.
-- (void)testSadTabView {
-  // TODO(crbug.com/1047238): Test fails when run on iOS 13.
-  if (@available(iOS 13, *)) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 13.");
-  }
+// TODO(crbug.com/1047238): Test fails when run on iOS 13.
+- (void)DISABLED_testSadTabView {
   // Prepare a simple but known URL to avoid testing from the NTP.
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL simple_URL = self.testServer->GetURL("/destination.html");

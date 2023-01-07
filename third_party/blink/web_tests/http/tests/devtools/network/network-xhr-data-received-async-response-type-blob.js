@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,9 @@
   NetworkTestRunner.makeXHR(
       'GET', 'resources/resource.php', true, undefined, undefined, [], false, undefined, 'blob', function() {});
 
-  function dataReceived(requestId, time, dataLength, encodedDataLength) {
-    var request = SDK.NetworkLog.instance().requestByManagerAndId(TestRunner.networkManager, requestId);
+  function dataReceived(event) {
+    var request = NetworkTestRunner.networkLog().requestByManagerAndId(
+        TestRunner.networkManager, event.requestId);
     if (/resource\.php/.exec(request.url())) {
       TestRunner.addResult('Received data for resource.php');
       TestRunner.addResult('SUCCESS');

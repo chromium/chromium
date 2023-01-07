@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,25 +21,6 @@ enum CaptivePortalResult {
   // a valid HTTP response with a 2xx other than 204, 3xx, or 511 status code.
   RESULT_BEHIND_CAPTIVE_PORTAL,
   RESULT_COUNT
-};
-
-// Possible causes of a captive portal probe. These values are persisted to
-// logs. Entries should not be renumbered and numeric values should never be
-// reused. Please keep in sync with "CaptivePortalProbeReason" in
-// src/tools/metrics/histograms/enums.xml.
-enum class CaptivePortalProbeReason {
-  kUnspecified = 0,
-  // Timeout
-  kTimeout = 1,
-  // Certificate error
-  kCertificateError = 2,
-  // SSL protocol error
-  kSslProtocolError = 3,
-  // First load of login tab
-  kLoginTabLoad = 4,
-  // Secure DNS error
-  kSecureDnsError = 5,
-  kMaxValue = kSecureDnsError,
 };
 
 CAPTIVE_PORTAL_EXPORT extern std::string CaptivePortalResultToString(

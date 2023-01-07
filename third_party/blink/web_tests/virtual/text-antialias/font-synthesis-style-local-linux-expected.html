@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>CSS Test: font-synthesis-style: none disables fake italic/oblique</title>
+<!--Garuda is only available in Regular style in the Linux set of test fonts that are used as system fonts in Linux testing -->
+<style>
+    @font-face {
+        font-family: "Garuda local";
+        src: local("Garuda");
+    }
+    .test {
+        font-family: "Garuda local";
+        font-size: 3em;
+    }
+</style>
+
+<p>Test passes if the two lines below are identical (the second line is <em>not obliqued</em>), and there is no red.</p>
+<section class="test">
+    <p>ข้อความฟิลเลอร์</p>
+    <p class="nosynth">ข้อความฟิลเลอร์</p>
+</section>

@@ -1,0 +1,9 @@
+per-file OWNERS=file://tools/metrics/histograms/metadata/METRIC_REVIEWER_OWNERS
+
+# For Browser.PaintPreview.* histograms:
+ckitagawa@chromium.org
+
+# For Browser.Tabs.* histograms:
+joenotcharles@google.com
+
+# For other histograms use chromium-metrics-reviews@google.com.

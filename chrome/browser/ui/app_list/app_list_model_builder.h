@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
+#include "components/sync/protocol/app_list_specifics.pb.h"
 
 class AppListControllerDelegate;
 class ChromeAppListItem;
@@ -19,12 +20,31 @@ class Profile;
 // information from |profile| for the specific item type.
 class AppListModelBuilder {
  public:
+  using AppPositionInitCallback =
+      base::RepeatingCallback<void(ChromeAppListItem*)>;
+
+  // Sets and resets the callback to initialize a new app's position in tests.
+  class ScopedAppPositionInitCallbackForTest {
+   public:
+    ScopedAppPositionInitCallbackForTest(AppListModelBuilder* builder,
+                                         AppPositionInitCallback callback);
+    ScopedAppPositionInitCallbackForTest(
+        const ScopedAppPositionInitCallbackForTest&) = delete;
+    ScopedAppPositionInitCallbackForTest& operator=(
+        const ScopedAppPositionInitCallbackForTest) = delete;
+    ~ScopedAppPositionInitCallbackForTest();
+
+   private:
+    AppListModelBuilder* const builder_;
+    AppPositionInitCallback callback_;
+  };
+
   // |controller| is owned by implementation of AppListService.
   AppListModelBuilder(AppListControllerDelegate* controller,
                       const char* item_type);
   AppListModelBuilder(const AppListModelBuilder&) = delete;
   AppListModelBuilder& operator=(const AppListModelBuilder&) = delete;
-  virtual ~AppListModelBuilder() = default;
+  virtual ~AppListModelBuilder();
 
   // Initialize to use app-list sync and sets |service_| to |service|.
   // |service| is the owner of this instance.
@@ -72,6 +92,9 @@ class AppListModelBuilder {
 
   // Global constant defined for each item type.
   const char* item_type_;
+
+  // The callback to initialize an app's position in tests.
+  AppPositionInitCallback* position_setter_for_test_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_LIST_MODEL_BUILDER_H_

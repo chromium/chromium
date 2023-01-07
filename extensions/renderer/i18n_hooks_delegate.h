@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "extensions/renderer/bindings/api_binding_hooks_delegate.h"
-#include "v8/include/v8.h"
+#include "extensions/renderer/bindings/api_signature.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class ScriptContext;
@@ -18,6 +18,10 @@ class ScriptContext;
 class I18nHooksDelegate : public APIBindingHooksDelegate {
  public:
   I18nHooksDelegate();
+
+  I18nHooksDelegate(const I18nHooksDelegate&) = delete;
+  I18nHooksDelegate& operator=(const I18nHooksDelegate&) = delete;
+
   ~I18nHooksDelegate() override;
 
   // APIBindingHooksDelegate:
@@ -32,15 +36,13 @@ class I18nHooksDelegate : public APIBindingHooksDelegate {
   // Method handlers:
   APIBindingHooks::RequestResult HandleGetMessage(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& parsed_arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleGetUILanguage(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& parsed_arguments);
+      const APISignature::V8ParseResult& parse_result);
   APIBindingHooks::RequestResult HandleDetectLanguage(
       ScriptContext* script_context,
-      const std::vector<v8::Local<v8::Value>>& parsed_arguments);
-
-  DISALLOW_COPY_AND_ASSIGN(I18nHooksDelegate);
+      const APISignature::V8ParseResult& parse_result);
 };
 
 }  // namespace extensions

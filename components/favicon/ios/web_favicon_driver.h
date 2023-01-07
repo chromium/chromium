@@ -1,17 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_FAVICON_IOS_WEB_FAVICON_DRIVER_H_
 #define COMPONENTS_FAVICON_IOS_WEB_FAVICON_DRIVER_H_
 
-#include "base/macros.h"
 #include "components/favicon/core/favicon_driver_impl.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 namespace web {
+struct FaviconStatus;
 class WebState;
 }
 
@@ -26,10 +26,10 @@ class WebFaviconDriver : public web::WebStateObserver,
                          public web::WebStateUserData<WebFaviconDriver>,
                          public FaviconDriverImpl {
  public:
-  ~WebFaviconDriver() override;
+  WebFaviconDriver(const WebFaviconDriver&) = delete;
+  WebFaviconDriver& operator=(const WebFaviconDriver&) = delete;
 
-  static void CreateForWebState(web::WebState* web_state,
-                                CoreFaviconService* favicon_service);
+  ~WebFaviconDriver() override;
 
   // FaviconDriver implementation.
   gfx::Image GetFavicon() const override;
@@ -71,6 +71,13 @@ class WebFaviconDriver : public web::WebStateObserver,
   void FaviconUrlUpdatedInternal(
       const std::vector<favicon::FaviconURL>& candidates);
 
+  // Invoked to set the WebState's favicon and notify the observers.
+  void SetFaviconStatus(
+      const GURL& page_url,
+      const web::FaviconStatus& favicon_status,
+      FaviconDriverObserver::NotificationIconType notification_icon_type,
+      bool icon_url_changed);
+
   // Image Fetcher used to fetch favicon.
   image_fetcher::IOSImageDataFetcherWrapper image_fetcher_;
 
@@ -79,8 +86,6 @@ class WebFaviconDriver : public web::WebStateObserver,
   web::WebState* web_state_ = nullptr;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebFaviconDriver);
 };
 
 }  // namespace favicon

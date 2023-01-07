@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,43 +9,29 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/discardable_shared_memory.h"
+#include "base/memory/page_size.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/memory.h"
-#include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 
 namespace discardable_memory {
-
-// This controls whether unlocked memory is released when |ReleaseFreeMemory| is
-// called. Enabling this causes |ReleaseFreeMemory| to release all
-// unlocked memory instances, as well as release all free memory (as opposed to
-// merely releasing all free memory).
-const base::Feature kPurgeUnlockedMemory{"PurgeUnlockedMemory",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
-// This controls whether unlocked memory is periodically purged from the
-// foreground process. Enabling this causes a task to be scheduled at regular
-// intervals to purge unlocked memory that hasn't been touched in a while. This
-// task is stopped if no discardable memory is left, and restarted at the next
-// allocation.
-const base::Feature kSchedulePeriodicPurge{"SchedulePeriodicPurge",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
 namespace {
+
+BASE_FEATURE(kShorterPeriodicPurge,
+             "ShorterPeriodicPurge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Global atomic to generate unique discardable shared memory IDs.
 base::AtomicSequenceNumber g_next_discardable_shared_memory_id;
@@ -57,23 +43,26 @@ size_t GetDefaultAllocationSize() {
   // memory usage overhead. 4MB is measured as the ideal size according to the
   // usage statistics. For low-end devices, we care about lowering the memory
   // usage and 1MB is good for the most basic cases.
-  const size_t kDefaultAllocationSize = 4 * kOneMegabyteInBytes;
-  const size_t kDefaultLowEndDeviceAllocationSize = kOneMegabyteInBytes;
+  [[maybe_unused]] const size_t kDefaultAllocationSize =
+      4 * kOneMegabyteInBytes;
+  [[maybe_unused]] const size_t kDefaultLowEndDeviceAllocationSize =
+      kOneMegabyteInBytes;
 
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
-  // On Windows 32 bit, use a smaller chunk, as address space fragmentation may
-  // make a 4MiB allocation impossible to fulfill in the browser process.
-  // See crbug.com/983348 for details.
-  ALLOW_UNUSED_LOCAL(kDefaultAllocationSize);
+#if defined(ARCH_CPU_32_BITS) && !BUILDFLAG(IS_ANDROID)
+  // On 32 bit architectures, use a smaller chunk, as address space
+  // fragmentation may make a 4MiB allocation impossible to fulfill in the
+  // browser process.  See crbug.com/983348 for details.
+  //
+  // Not on Android, since on this platform total number of file descriptors is
+  // also a concern.
   return kDefaultLowEndDeviceAllocationSize;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // Low end Fuchsia devices may be very constrained, so use smaller allocations
   // to save memory. See https://fxbug.dev/55760.
   return base::SysInfo::IsLowEndDevice() ? kDefaultLowEndDeviceAllocationSize
                                          : kDefaultAllocationSize;
 
 #else
-  ALLOW_UNUSED_LOCAL(kDefaultLowEndDeviceAllocationSize);
   return kDefaultAllocationSize;
 #endif
 }
@@ -183,6 +172,7 @@ base::trace_event::MemoryAllocatorDump* ClientDiscardableSharedMemoryManager::
     DiscardableMemoryImpl::CreateMemoryAllocatorDump(
         const char* name,
         base::trace_event::ProcessMemoryDump* pmd) const {
+  base::AutoLock lock(manager_->lock_);
   return manager_->CreateMemoryAllocatorDump(span_.get(), name, pmd);
 }
 
@@ -205,9 +195,7 @@ ClientDiscardableSharedMemoryManager::ClientDiscardableSharedMemoryManager(
       lock_("ClientDiscardableSharedMemoryManager.lock_"),
       heap_(std::make_unique<DiscardableSharedMemoryHeap>()),
       io_task_runner_(std::move(io_task_runner)),
-      manager_mojo_(nullptr),
-      may_schedule_periodic_purge_(
-          base::FeatureList::IsEnabled(kSchedulePeriodicPurge)) {
+      manager_mojo_(nullptr) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "ClientDiscardableSharedMemoryManager",
       base::ThreadTaskRunnerHandle::Get());
@@ -252,7 +240,7 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     size_t size) {
   base::AutoLock lock(lock_);
 
-  if (may_schedule_periodic_purge_ && !is_purge_scheduled_) {
+  if (!is_purge_scheduled_) {
     task_runner_->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ClientDiscardableSharedMemoryManager::ScheduledPurge,
@@ -322,6 +310,9 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     // at least one span from the free lists.
     MemoryUsageChanged(heap_->GetSize(), heap_->GetFreelistSize());
 
+    // Memory in this span is no longer held in the freelist, so we don't want
+    // to count it towards the total of dirty freelist memory.
+    heap_->dirty_freed_memory_page_count_ -= free_span->MarkAsClean();
     auto discardable_memory =
         std::make_unique<DiscardableMemoryImpl>(this, std::move(free_span));
     allocated_memory_.insert(discardable_memory.get());
@@ -374,7 +365,7 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
             reinterpret_cast<size_t>(leftover->shared_memory()->memory()),
         leftover->length() * base::GetPageSize());
     leftover->set_is_locked(false);
-    heap_->MergeIntoFreeLists(std::move(leftover));
+    heap_->MergeIntoFreeListsClean(std::move(leftover));
   }
 
   if (pages >= allocation_pages) {
@@ -406,6 +397,11 @@ bool ClientDiscardableSharedMemoryManager::OnMemoryDump(
     base::UmaHistogramCounts1M("Memory.Discardable.Size.Foreground",
                                total_size - freelist_size);
   }
+
+  base::UmaHistogramCounts1M(
+      "Memory.Discardable.FreelistSize.Dirty",
+      heap_->dirty_freed_memory_page_count_ * base::GetPageSize() / 1024);
+
   return heap_->OnMemoryDump(args, pmd);
 }
 
@@ -429,8 +425,13 @@ void ClientDiscardableSharedMemoryManager::ScheduledPurge() {
   // recover the memory without adverse latency effects.
   // TODO(crbug.com/1123679): Determine if |kMinAgeForScheduledPurge| and the
   // constant from |ScheduledPurge| need to be tuned.
-  PurgeUnlockedMemory(
-      ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge);
+  if (base::FeatureList::IsEnabled(kShorterPeriodicPurge)) {
+    PurgeUnlockedMemory(
+        ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge / 2);
+  } else {
+    PurgeUnlockedMemory(
+        ClientDiscardableSharedMemoryManager::kMinAgeForScheduledPurge);
+  }
 
   bool should_schedule = false;
   {
@@ -476,17 +477,10 @@ void ClientDiscardableSharedMemoryManager::PurgeUnlockedMemory(
     }
   }
 
-  ReleaseFreeMemoryImpl();
+  ReleaseFreeMemory();
 }
 
 void ClientDiscardableSharedMemoryManager::ReleaseFreeMemory() {
-  if (base::FeatureList::IsEnabled(kPurgeUnlockedMemory))
-    BackgroundPurge();
-  else
-    ReleaseFreeMemoryImpl();
-}
-
-void ClientDiscardableSharedMemoryManager::ReleaseFreeMemoryImpl() {
   TRACE_EVENT0("blink",
                "ClientDiscardableSharedMemoryManager::ReleaseFreeMemory()");
   base::AutoLock lock(lock_);
@@ -570,7 +564,6 @@ ClientDiscardableSharedMemoryManager::CreateMemoryAllocatorDump(
     DiscardableSharedMemoryHeap::Span* span,
     const char* name,
     base::trace_event::ProcessMemoryDump* pmd) const {
-  base::AutoLock lock(lock_);
   return heap_->CreateMemoryAllocatorDump(span, name, pmd);
 }
 
@@ -582,6 +575,11 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableSharedMemory(
                "ClientDiscardableSharedMemoryManager::"
                "AllocateLockedDiscardableSharedMemory",
                "size", size, "id", id);
+  static crash_reporter::CrashKeyString<24>
+      discardable_memory_ipc_requested_size(
+          "discardable-memory-ipc-requested-size");
+  static crash_reporter::CrashKeyString<24> discardable_memory_ipc_error_cause(
+      "discardable-memory-ipc-error-cause");
 
   base::UnsafeSharedMemoryRegion region;
   base::WaitableEvent event(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -599,14 +597,22 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableSharedMemory(
   // This is likely address space exhaustion in the the browser process. We
   // don't want to crash the browser process for that, which is why the check
   // is here, and not there.
-  if (!region.IsValid())
+  if (!region.IsValid()) {
+    discardable_memory_ipc_error_cause.Set("browser side");
+    discardable_memory_ipc_requested_size.Set(base::NumberToString(size));
     return nullptr;
+  }
 
   auto memory =
       std::make_unique<base::DiscardableSharedMemory>(std::move(region));
-  if (!memory->Map(size))
+  if (!memory->Map(size)) {
+    discardable_memory_ipc_error_cause.Set("client side");
+    discardable_memory_ipc_requested_size.Set(base::NumberToString(size));
     return nullptr;
+  }
 
+  discardable_memory_ipc_error_cause.Clear();
+  discardable_memory_ipc_requested_size.Clear();
   return memory;
 }
 

@@ -1,6 +1,6 @@
 /* cpu_features.c -- Processor features detection.
  *
- * Copyright 2018 The Chromium Authors. All rights reserved.
+ * Copyright 2018 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the Chromium source repository LICENSE file.
  */
@@ -18,13 +18,16 @@
 /* TODO(cavalcantii): remove checks for x86_flags on deflate.
  */
 #if defined(ARMV8_OS_MACOS)
-/* crc32 is a baseline feature in ARMv8.1-A, and macOS running on arm64 is new
- * enough that this can be assumed without runtime detection. */
+/* Crypto extensions (crc32/pmull) are a baseline feature in ARMv8.1-A, and
+ * OSX running on arm64 is new enough that these can be assumed without
+ * runtime detection.
+ */
 int ZLIB_INTERNAL arm_cpu_enable_crc32 = 1;
+int ZLIB_INTERNAL arm_cpu_enable_pmull = 1;
 #else
 int ZLIB_INTERNAL arm_cpu_enable_crc32 = 0;
-#endif
 int ZLIB_INTERNAL arm_cpu_enable_pmull = 0;
+#endif
 int ZLIB_INTERNAL x86_cpu_enable_sse2 = 0;
 int ZLIB_INTERNAL x86_cpu_enable_ssse3 = 0;
 int ZLIB_INTERNAL x86_cpu_enable_simd = 0;

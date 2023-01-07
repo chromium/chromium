@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/simple_combobox_model.h"
 
@@ -17,6 +16,8 @@ namespace autofill {
 class MonthComboboxModel : public ui::ComboboxModel {
  public:
   MonthComboboxModel();
+  MonthComboboxModel(const MonthComboboxModel&) = delete;
+  MonthComboboxModel& operator=(const MonthComboboxModel&) = delete;
   ~MonthComboboxModel() override;
 
   // Set |default_index_| to the given |month| before user interaction. There is
@@ -24,16 +25,14 @@ class MonthComboboxModel : public ui::ComboboxModel {
   void SetDefaultIndexByMonth(int month);
 
   // ui::Combobox implementation:
-  int GetItemCount() const override;
-  std::u16string GetItemAt(int index) const override;
-  int GetDefaultIndex() const override;
+  size_t GetItemCount() const override;
+  std::u16string GetItemAt(size_t index) const override;
+  absl::optional<size_t> GetDefaultIndex() const override;
 
  private:
   // The index of the item that is selected by default (before user
   // interaction).
-  int default_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MonthComboboxModel);
+  size_t default_index_ = 0;
 };
 
 // A model for years between now and a decade hence.
@@ -43,6 +42,8 @@ class YearComboboxModel : public ui::SimpleComboboxModel {
   // [current year, current year + 9], this will add |additional_year| to the
   // model. Passing 0 has no effect.
   explicit YearComboboxModel(int additional_year = 0);
+  YearComboboxModel(const YearComboboxModel&) = delete;
+  YearComboboxModel& operator=(const YearComboboxModel&) = delete;
   ~YearComboboxModel() override;
 
   // Set |default_index_| to the given |year| before user interaction. There is
@@ -50,14 +51,12 @@ class YearComboboxModel : public ui::SimpleComboboxModel {
   void SetDefaultIndexByYear(int year);
 
   // ui::Combobox implementation:
-  int GetDefaultIndex() const override;
+  absl::optional<size_t> GetDefaultIndex() const override;
 
  private:
   // The index of the item that is selected by default (before user
   // interaction).
-  int default_index_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(YearComboboxModel);
+  size_t default_index_ = 0;
 };
 
 }  // namespace autofill

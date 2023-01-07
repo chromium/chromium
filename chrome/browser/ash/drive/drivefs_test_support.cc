@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ FakeDriveFsHelper::FakeDriveFsHelper(Profile* profile,
       drive::FakeDriveFsHelper::kPredefinedProfileSalt);
   fake_drivefs_.RegisterMountingForAccountId(
       base::BindLambdaForTesting([profile]() {
-        auto* user = chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+        auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
         if (!user)
           return std::string();
 
@@ -49,15 +49,15 @@ FakeDriveFsHelper::CreateFakeDriveFsListenerFactory() {
 }
 
 bool SetUpUserDataDirectoryForDriveFsTest() {
-  auto known_users_list = std::make_unique<base::ListValue>();
-  auto user_dict = std::make_unique<base::DictionaryValue>();
-  user_dict->SetString("account_type", "google");
-  user_dict->SetString("email", "testuser@gmail.com");
-  user_dict->SetString("gaia_id", "123456");
-  known_users_list->Append(std::move(user_dict));
+  base::Value::List known_users_list;
+  base::Value::Dict user_dict;
+  user_dict.Set("account_type", "google");
+  user_dict.Set("email", "testuser@gmail.com");
+  user_dict.Set("gaia_id", "123456");
+  known_users_list.Append(std::move(user_dict));
 
-  base::DictionaryValue local_state;
-  local_state.SetList("KnownUsers", std::move(known_users_list));
+  base::Value::Dict local_state;
+  local_state.Set("KnownUsers", std::move(known_users_list));
 
   std::string local_state_json;
   if (!base::JSONWriter::Write(local_state, &local_state_json))
@@ -67,8 +67,7 @@ bool SetUpUserDataDirectoryForDriveFsTest() {
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &local_state_file))
     return false;
   local_state_file = local_state_file.Append(chrome::kLocalStateFilename);
-  return base::WriteFile(local_state_file, local_state_json.data(),
-                         local_state_json.size()) != -1;
+  return base::WriteFile(local_state_file, local_state_json);
 }
 
 }  // namespace drive

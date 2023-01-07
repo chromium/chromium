@@ -39,7 +39,7 @@ function roundTripToBrowser() {
     frame.src = "http://localhost:8080/resources/blank.html";
     frame.addEventListener('load', () => {
       document.body.removeChild(frame);
-      resolve();
+      requestAnimationFrame(() => resolve());
     });
     document.body.appendChild(frame);
   });

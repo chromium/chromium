@@ -13,6 +13,7 @@ include_rules = [
     "+gpu/command_buffer/common/shared_image_usage.h",
     "+gpu/config/gpu_driver_bug_workaround_type.h",
     "+gpu/config/gpu_feature_info.h",
+    "+gpu/webgpu/callback.h",
     "+ui/gfx/gpu_fence.h",
     "+ui/gl/gpu_preference.h",
 ]

@@ -1,2 +1,2 @@
-CONSOLE ERROR: line 27: Uncaught NotFoundError: Failed to execute 'appendChild' on 'Node': The node to be removed is no longer a child of this node. Perhaps it was moved in response to a mutation?
+CONSOLE ERROR: Uncaught NotFoundError: Failed to execute 'appendChild' on 'Node': The node to be removed is no longer a child of this node. Perhaps it was moved in response to a mutation?
 Test passes if it does not crash.

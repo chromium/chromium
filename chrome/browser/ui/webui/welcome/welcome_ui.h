@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,10 @@
 class WelcomeUI : public content::WebUIController {
  public:
   WelcomeUI(content::WebUI* web_ui, const GURL& url);
+
+  WelcomeUI(const WelcomeUI&) = delete;
+  WelcomeUI& operator=(const WelcomeUI&) = delete;
+
   ~WelcomeUI() override;
 
   void CreateBackgroundFetcher(
@@ -36,8 +40,6 @@ class WelcomeUI : public content::WebUIController {
   void StorePageSeen(Profile* profile);
   std::unique_ptr<welcome::NtpBackgroundFetcher> background_fetcher_;
   base::WeakPtrFactory<WelcomeUI> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WelcomeUI);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WELCOME_WELCOME_UI_H_

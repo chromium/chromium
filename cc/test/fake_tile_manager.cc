@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,12 +43,10 @@ FakeTileManager::FakeTileManager(TileManagerClient* client,
                   TileManagerSettings()),
       image_decode_cache_(
           kN32_SkColorType,
-          LayerTreeSettings().decoded_image_working_set_budget_bytes,
-          PaintImage::kDefaultGeneratorClientId) {
+          LayerTreeSettings().decoded_image_working_set_budget_bytes) {
   SetResources(resource_pool, &image_decode_cache_, GetGlobalTaskGraphRunner(),
                GetGlobalRasterBufferProvider(),
-               false /* use_gpu_rasterization */,
-               false /* use_oop_rasterization */, nullptr);
+               /*use_gpu_rasterization=*/false, nullptr);
   SetTileTaskManagerForTesting(std::make_unique<FakeTileTaskManagerImpl>());
 }
 

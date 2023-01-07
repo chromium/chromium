@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "content/common/font_list.h"
 #include "content/public/browser/browser_ppapi_host.h"
@@ -24,6 +23,9 @@ class FontMessageFilter : public ppapi::host::ResourceMessageFilter {
  public:
   FontMessageFilter();
 
+  FontMessageFilter(const FontMessageFilter&) = delete;
+  FontMessageFilter& operator=(const FontMessageFilter&) = delete;
+
   // ppapi::host::ResourceMessageFilter implementation.
   scoped_refptr<base::SequencedTaskRunner> OverrideTaskRunnerForMessage(
       const IPC::Message& msg) override;
@@ -36,8 +38,6 @@ class FontMessageFilter : public ppapi::host::ResourceMessageFilter {
 
   // Message handler.
   int32_t OnHostMsgGetFontFamilies(ppapi::host::HostMessageContext* context);
-
-  DISALLOW_COPY_AND_ASSIGN(FontMessageFilter);
 };
 
 FontMessageFilter::FontMessageFilter() {}
@@ -66,19 +66,20 @@ int32_t FontMessageFilter::OnResourceMessageReceived(
 int32_t FontMessageFilter::OnHostMsgGetFontFamilies(
     ppapi::host::HostMessageContext* context) {
   // OK to use "slow blocking" version since we're on the blocking pool.
-  std::unique_ptr<base::ListValue> list(GetFontList_SlowBlocking());
+  base::Value::List list(GetFontList_SlowBlocking());
 
   std::string output;
-  for (size_t i = 0; i < list->GetSize(); i++) {
-    base::ListValue* cur_font;
-    if (!list->GetList(i, &cur_font))
+  for (const auto& i : list) {
+    if (!i.is_list())
       continue;
+
+    const base::Value::List& cur_font = i.GetList();
 
     // Each entry is actually a list of (font name, localized name).
     // We only care about the regular name.
-    std::string font_name;
-    if (!cur_font->GetString(0, &font_name))
+    if (cur_font.empty() || !cur_font[0].is_string())
       continue;
+    std::string font_name = cur_font[0].GetString();
 
     // Font names are separated with nulls. We also want an explicit null at
     // the end of the string (Pepper strings aren't null terminated so since

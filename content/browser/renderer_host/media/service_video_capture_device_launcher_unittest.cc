@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,6 +50,12 @@ class MockVideoCaptureDeviceLauncherCallbacks
 class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
  public:
   ServiceVideoCaptureDeviceLauncherTest() {}
+
+  ServiceVideoCaptureDeviceLauncherTest(
+      const ServiceVideoCaptureDeviceLauncherTest&) = delete;
+  ServiceVideoCaptureDeviceLauncherTest& operator=(
+      const ServiceVideoCaptureDeviceLauncherTest&) = delete;
+
   ~ServiceVideoCaptureDeviceLauncherTest() override {}
 
   void CloseSourceReceiver() { source_receiver_.reset(); }
@@ -62,8 +68,7 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
         mojo::Receiver<video_capture::mojom::VideoSourceProvider>>(
         &mock_source_provider_, source_provider_.BindNewPipeAndPassReceiver());
     service_connection_ = base::MakeRefCounted<RefCountedVideoSourceProvider>(
-        std::move(source_provider_),
-        release_connection_cb_.Get());
+        std::move(source_provider_), release_connection_cb_.Get());
 
     launcher_ = std::make_unique<ServiceVideoCaptureDeviceLauncher>(
         connect_to_device_factory_cb_.Get());
@@ -108,7 +113,9 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
                                           std::move(subscription));
               std::move(callback).Run(
                   video_capture::mojom::CreatePushSubscriptionResultCode::
-                      kCreatedWithRequestedSettings,
+                      NewSuccessCode(video_capture::mojom::
+                                         CreatePushSubscriptionSuccessCode::
+                                             kCreatedWithRequestedSettings),
                   requested_settings);
             }));
   }
@@ -116,7 +123,7 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
   void TearDown() override {}
 
   void RunLaunchingDeviceIsAbortedTest(
-      video_capture::mojom::CreatePushSubscriptionResultCode
+      video_capture::mojom::CreatePushSubscriptionResultCodePtr
           service_result_code);
   void RunConnectionLostAfterSuccessfulStartTest(
       base::OnceClosure close_connection_cb);
@@ -146,9 +153,6 @@ class ServiceVideoCaptureDeviceLauncherTest : public testing::Test {
   bool launcher_has_connected_to_source_provider_;
   bool launcher_has_released_source_provider_;
   base::RunLoop wait_for_release_connection_cb_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceVideoCaptureDeviceLauncherTest);
 };
 
 TEST_F(ServiceVideoCaptureDeviceLauncherTest, LaunchingDeviceSucceeds) {
@@ -178,25 +182,28 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest, LaunchingDeviceSucceeds) {
 TEST_F(ServiceVideoCaptureDeviceLauncherTest,
        LaunchingDeviceIsAbortedBeforeServiceRespondsWithSuccess) {
   RunLaunchingDeviceIsAbortedTest(
-      video_capture::mojom::CreatePushSubscriptionResultCode::
-          kCreatedWithRequestedSettings);
+      video_capture::mojom::CreatePushSubscriptionResultCode::NewSuccessCode(
+          video_capture::mojom::CreatePushSubscriptionSuccessCode::
+              kCreatedWithRequestedSettings));
 }
 
 TEST_F(ServiceVideoCaptureDeviceLauncherTest,
        LaunchingDeviceIsAbortedBeforeServiceRespondsWithNotFound) {
   RunLaunchingDeviceIsAbortedTest(
-      video_capture::mojom::CreatePushSubscriptionResultCode::
-          kCreatedWithDifferentSettings);
+      video_capture::mojom::CreatePushSubscriptionResultCode::NewSuccessCode(
+          video_capture::mojom::CreatePushSubscriptionSuccessCode::
+              kCreatedWithDifferentSettings));
 }
 
 TEST_F(ServiceVideoCaptureDeviceLauncherTest,
        LaunchingDeviceIsAbortedBeforeServiceRespondsWithNotInitialized) {
   RunLaunchingDeviceIsAbortedTest(
-      video_capture::mojom::CreatePushSubscriptionResultCode::kFailed);
+      video_capture::mojom::CreatePushSubscriptionResultCode::NewErrorCode(
+          media::VideoCaptureError::kIntentionalErrorRaisedByUnitTest));
 }
 
 void ServiceVideoCaptureDeviceLauncherTest::RunLaunchingDeviceIsAbortedTest(
-    video_capture::mojom::CreatePushSubscriptionResultCode
+    video_capture::mojom::CreatePushSubscriptionResultCodePtr
         service_result_code) {
   base::RunLoop step_1_run_loop;
   base::RunLoop step_2_run_loop;
@@ -205,7 +212,7 @@ void ServiceVideoCaptureDeviceLauncherTest::RunLaunchingDeviceIsAbortedTest(
   EXPECT_CALL(mock_source_, DoCreatePushSubscription(_, _, _, _, _))
       .WillOnce(Invoke(
           [&create_push_subscription_success_answer_cb, &step_1_run_loop,
-           service_result_code](
+           &service_result_code](
               mojo::PendingRemote<video_capture::mojom::VideoFrameHandler>
                   subscriber,
               const media::VideoCaptureParams& requested_settings,
@@ -223,13 +230,13 @@ void ServiceVideoCaptureDeviceLauncherTest::RunLaunchingDeviceIsAbortedTest(
                        subscription,
                    video_capture::mojom::VideoSource::
                        CreatePushSubscriptionCallback callback,
-                   video_capture::mojom::CreatePushSubscriptionResultCode
+                   video_capture::mojom::CreatePushSubscriptionResultCodePtr
                        service_result_code) {
-                  std::move(callback).Run(service_result_code,
+                  std::move(callback).Run(std::move(service_result_code),
                                           requested_settings);
                 },
                 requested_settings, std::move(subscription),
-                std::move(callback), service_result_code);
+                std::move(callback), std::move(service_result_code));
             step_1_run_loop.Quit();
           }));
   EXPECT_CALL(mock_callbacks_, DoOnDeviceLaunched(_)).Times(0);
@@ -287,7 +294,9 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
                            CreatePushSubscriptionCallback callback) {
                       std::move(callback).Run(
                           video_capture::mojom::
-                              CreatePushSubscriptionResultCode::kFailed,
+                              CreatePushSubscriptionResultCode::NewErrorCode(
+                                  media::VideoCaptureError::
+                                      kIntentionalErrorRaisedByUnitTest),
                           requested_settings);
                     },
                     std::move(subscriber), requested_settings,
@@ -297,8 +306,7 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   EXPECT_CALL(mock_callbacks_, OnDeviceLaunchAborted()).Times(0);
   EXPECT_CALL(mock_callbacks_,
               OnDeviceLaunchFailed(
-                  media::VideoCaptureError::
-                      kServiceDeviceLauncherServiceRespondedWithDeviceNotFound))
+                  media::VideoCaptureError::kIntentionalErrorRaisedByUnitTest))
       .Times(1);
   EXPECT_CALL(connection_lost_cb_, Run()).Times(0);
   EXPECT_CALL(done_cb_, Run()).WillOnce(InvokeWithoutArgs([&run_loop]() {
@@ -382,11 +390,12 @@ TEST_F(ServiceVideoCaptureDeviceLauncherTest,
   // |create_subscription_cb| will be dropped when we invoke it below.
   source_receiver_.reset();
   // We have to invoke the callback, because not doing so triggers a DCHECK.
-  const video_capture::mojom::CreatePushSubscriptionResultCode
-      arbitrary_result_code = video_capture::mojom::
-          CreatePushSubscriptionResultCode::kCreatedWithRequestedSettings;
   std::move(create_subscription_cb)
-      .Run(arbitrary_result_code, kArbitraryParams);
+      .Run(video_capture::mojom::CreatePushSubscriptionResultCode::
+               NewSuccessCode(
+                   video_capture::mojom::CreatePushSubscriptionSuccessCode::
+                       kCreatedWithRequestedSettings),
+           kArbitraryParams);
 }
 
 TEST_F(ServiceVideoCaptureDeviceLauncherTest,

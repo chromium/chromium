@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,11 +6,17 @@
 
 #include <drm_fourcc.h>
 #include <drm_mode.h>
+#include <string>
 
 #include "base/logging.h"
+#include "base/notreached.h"
+#include "base/strings/string_util.h"
+#include "base/trace_event/traced_value.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
+#include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
 
 namespace ui {
 
@@ -34,14 +40,48 @@ void ParseSupportedFormatsAndModifiers(
     supported_format_modifiers->push_back(modifiers[k]);
 }
 
+std::string IdSetToString(const base::flat_set<uint32_t>& ids) {
+  std::vector<std::string> string_ids;
+  for (auto id : ids)
+    string_ids.push_back(std::to_string(id));
+  return "[" + base::JoinString(string_ids, ", ") + "]";
+}
+
 }  // namespace
+HardwareDisplayPlane::Properties::Properties() = default;
+HardwareDisplayPlane::Properties::~Properties() = default;
 
 HardwareDisplayPlane::HardwareDisplayPlane(uint32_t id) : id_(id) {}
 
 HardwareDisplayPlane::~HardwareDisplayPlane() {}
 
-bool HardwareDisplayPlane::CanUseForCrtc(uint32_t crtc_index) const {
-  return crtc_mask_ & (1 << crtc_index);
+bool HardwareDisplayPlane::CanUseForCrtcId(uint32_t crtc_id) const {
+  return possible_crtc_ids_.contains(crtc_id);
+}
+
+void HardwareDisplayPlane::WriteIntoTrace(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+
+  dict.Add("plane_id", id_);
+  dict.Add("owning_crtc", owning_crtc_);
+  dict.Add("in_use", in_use_);
+
+  dict.Add("possible_crtc_ids", possible_crtc_ids_);
+
+  auto type = dict.AddItem("type");
+  switch (properties_.type.value) {
+    case DRM_PLANE_TYPE_OVERLAY:
+      std::move(type).WriteString("DRM_PLANE_TYPE_OVERLAY");
+      break;
+    case DRM_PLANE_TYPE_PRIMARY:
+      std::move(type).WriteString("DRM_PLANE_TYPE_PRIMARY");
+      break;
+    case DRM_PLANE_TYPE_CURSOR:
+      std::move(type).WriteString("DRM_PLANE_TYPE_CURSOR");
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 bool HardwareDisplayPlane::Initialize(DrmDevice* drm) {
@@ -50,7 +90,9 @@ bool HardwareDisplayPlane::Initialize(DrmDevice* drm) {
   ScopedDrmPlanePtr drm_plane(drm->GetPlane(id_));
   DCHECK(drm_plane);
 
-  crtc_mask_ = drm_plane->possible_crtcs;
+  possible_crtc_ids_ =
+      drm->plane_manager()->CrtcMaskToCrtcIds(drm_plane->possible_crtcs);
+
   if (properties_.in_formats.id) {
     ScopedDrmPropertyBlobPtr blob(
         drm->GetPropertyBlob(properties_.in_formats.value));
@@ -75,8 +117,8 @@ bool HardwareDisplayPlane::Initialize(DrmDevice* drm) {
         drm->get_fd(), properties_.plane_color_range.id, "YCbCr limited range");
   }
 
-  VLOG(3) << "Initialized plane=" << id_ << " crtc_mask=" << std::hex << "0x"
-          << crtc_mask_ << std::dec
+  VLOG(3) << "Initialized plane=" << id_
+          << " possible_crtc_ids=" << IdSetToString(possible_crtc_ids_)
           << " supported_formats_count=" << supported_formats_.size()
           << " supported_modifiers_count="
           << supported_format_modifiers_.size();

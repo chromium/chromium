@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,23 +24,23 @@ JSONFileValueSerializer::JSONFileValueSerializer(
 
 JSONFileValueSerializer::~JSONFileValueSerializer() = default;
 
-bool JSONFileValueSerializer::Serialize(const base::Value& root) {
+bool JSONFileValueSerializer::Serialize(base::ValueView root) {
   return SerializeInternal(root, false);
 }
 
 bool JSONFileValueSerializer::SerializeAndOmitBinaryValues(
-    const base::Value& root) {
+    base::ValueView root) {
   return SerializeInternal(root, true);
 }
 
-bool JSONFileValueSerializer::SerializeInternal(const base::Value& root,
+bool JSONFileValueSerializer::SerializeInternal(base::ValueView root,
                                                 bool omit_binary_values) {
   std::string json_string;
   JSONStringValueSerializer serializer(&json_string);
   serializer.set_pretty_print(true);
-  bool result = omit_binary_values ?
-      serializer.SerializeAndOmitBinaryValues(root) :
-      serializer.Serialize(root);
+  bool result = omit_binary_values
+                    ? serializer.SerializeAndOmitBinaryValues(root)
+                    : serializer.Serialize(root);
   if (!result)
     return false;
 
@@ -63,8 +63,8 @@ int JSONFileValueDeserializer::ReadFileToString(std::string* json_string) {
   DCHECK(json_string);
   last_read_size_ = 0u;
   if (!base::ReadFileToString(json_file_path_, json_string)) {
-#if defined(OS_WIN)
-    int error = ::GetLastError();
+#if BUILDFLAG(IS_WIN)
+    DWORD error = ::GetLastError();
     if (error == ERROR_SHARING_VIOLATION || error == ERROR_LOCK_VIOLATION) {
       return JSON_FILE_LOCKED;
     } else if (error == ERROR_ACCESS_DENIED) {

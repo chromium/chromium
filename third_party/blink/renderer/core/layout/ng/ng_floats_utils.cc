@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,7 +60,8 @@ NGLayoutOpportunity FindLayoutOpportunityForFloat(
 // should only be set when we want to fragmentation to occur.
 NGConstraintSpace CreateConstraintSpaceForFloat(
     const NGUnpositionedFloat& unpositioned_float,
-    base::Optional<LayoutUnit> origin_block_offset = base::nullopt) {
+    absl::optional<LayoutUnit> origin_block_offset = absl::nullopt,
+    absl::optional<NGBoxStrut> margins = absl::nullopt) {
   const ComputedStyle& style = unpositioned_float.node.Style();
   const NGConstraintSpace& parent_space = unpositioned_float.parent_space;
   NGConstraintSpaceBuilder builder(parent_space, style.GetWritingDirection(),
@@ -70,12 +71,22 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
   builder.SetIsPaintedAtomically(true);
 
   if (origin_block_offset) {
+    DCHECK(margins);
     DCHECK(parent_space.HasBlockFragmentation());
     DCHECK_EQ(style.GetWritingMode(), parent_space.GetWritingMode());
 
-    SetupSpaceBuilderForFragmentation(parent_space, unpositioned_float.node,
-                                      *origin_block_offset, &builder,
-                                      /* is_new_fc */ true);
+    SetupSpaceBuilderForFragmentation(
+        parent_space, unpositioned_float.node, *origin_block_offset, &builder,
+        /* is_new_fc */ true, /* requires_content_before_breaking */ false);
+
+    // For other node types, what matters is whether the block-start border edge
+    // is at the fragmentainer start, but for floats, it's the block start
+    // *margin* edge, since float margins are unbreakable and are never
+    // truncated.
+    LayoutUnit margin_edge_offset = parent_space.FragmentainerOffset() +
+                                    *origin_block_offset - margins->block_start;
+    if (margin_edge_offset <= LayoutUnit())
+      builder.SetIsAtFragmentainerStart();
   } else {
     builder.SetFragmentationType(NGFragmentationType::kFragmentNone);
   }
@@ -83,7 +94,7 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
   // If we're resuming layout of this float after a fragmentainer break, the
   // margins of its children may be adjoining with the fragmentainer
   // block-start, in which case they may get truncated.
-  if (IsResumingLayout(unpositioned_float.token.get()))
+  if (IsResumingLayout(unpositioned_float.token))
     builder.SetDiscardingMarginStrut();
 
   builder.SetAvailableSize(unpositioned_float.available_size);
@@ -93,7 +104,7 @@ NGConstraintSpace CreateConstraintSpaceForFloat(
   return builder.ToConstraintSpace();
 }
 
-std::unique_ptr<NGExclusionShapeData> CreateExclusionShapeData(
+NGExclusionShapeData* CreateExclusionShapeData(
     const NGBoxStrut& margins,
     const NGUnpositionedFloat& unpositioned_float) {
   const LayoutBox* layout_box = unpositioned_float.node.GetLayoutBox();
@@ -129,13 +140,13 @@ std::unique_ptr<NGExclusionShapeData> CreateExclusionShapeData(
       break;
   }
 
-  return std::make_unique<NGExclusionShapeData>(layout_box, new_margins,
-                                                shape_insets);
+  return MakeGarbageCollected<NGExclusionShapeData>(layout_box, new_margins,
+                                                    shape_insets);
 }
 
 // Creates an exclusion from the fragment that will be placed in the provided
 // layout opportunity.
-scoped_refptr<const NGExclusion> CreateExclusion(
+const NGExclusion* CreateExclusion(
     const NGFragment& fragment,
     const NGBfcOffset& float_margin_bfc_offset,
     const NGBoxStrut& margins,
@@ -148,7 +159,7 @@ scoped_refptr<const NGExclusion> CreateExclusion(
       start_offset.block_offset +
           (fragment.BlockSize() + margins.BlockSum()).ClampNegativeToZero());
 
-  std::unique_ptr<NGExclusionShapeData> shape_data =
+  NGExclusionShapeData* shape_data =
       unpositioned_float.node.GetLayoutBox()->GetShapeOutsideInfo()
           ? CreateExclusionShapeData(margins, unpositioned_float)
           : nullptr;
@@ -166,7 +177,12 @@ void LayoutFloatWithoutFragmentation(NGUnpositionedFloat* unpositioned_float) {
   const NGConstraintSpace space =
       CreateConstraintSpaceForFloat(*unpositioned_float);
 
-  unpositioned_float->layout_result = unpositioned_float->node.Layout(space);
+  // Pass in the break token if one exists. This can happen when we relayout
+  // without fragmentation to handle clipping. We still want to look at the
+  // break token so that layout is resumed correctly. See
+  // NGFragmentationUtils::InvolvedInBlockFragmentation() for more details.
+  unpositioned_float->layout_result =
+      unpositioned_float->node.Layout(space, unpositioned_float->token);
   unpositioned_float->margins =
       ComputeMarginsFor(space, unpositioned_float->node.Style(),
                         unpositioned_float->parent_space);
@@ -203,7 +219,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
   bool is_fragmentable =
       is_same_writing_mode && parent_space.HasBlockFragmentation();
 
-  scoped_refptr<const NGLayoutResult> layout_result;
+  const NGLayoutResult* layout_result = nullptr;
   NGBoxStrut fragment_margins;
   NGLayoutOpportunity opportunity;
   bool need_break_before = false;
@@ -226,8 +242,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
     fragment_margins = ComputeMarginsFor(
         node.Style(), unpositioned_float->percentage_size.inline_size,
         parent_space.GetWritingDirection());
-    AdjustMarginsForFragmentation(unpositioned_float->token.get(),
-                                  &fragment_margins);
+    AdjustMarginsForFragmentation(unpositioned_float->token, &fragment_margins);
 
     // When fragmenting, we need to set the block-offset of the node before
     // laying it out. This is a float, and in order to calculate its offset, we
@@ -257,17 +272,22 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
       optimistically_placed = true;
     }
 
+    bool is_at_fragmentainer_start;
     do {
       NGConstraintSpace space = CreateConstraintSpaceForFloat(
-          *unpositioned_float, fragmentainer_delta);
+          *unpositioned_float,
+          fragmentainer_delta - parent_space.ExpectedBfcBlockOffset(),
+          fragment_margins);
 
-      layout_result = node.Layout(space, unpositioned_float->token.get());
+      is_at_fragmentainer_start = space.IsAtFragmentainerStart();
+
+      layout_result = node.Layout(space, unpositioned_float->token);
 
       if (layout_result->Status() != NGLayoutResult::kSuccess) {
         DCHECK_EQ(layout_result->Status(),
                   NGLayoutResult::kOutOfFragmentainerSpace);
         need_break_before = true;
-        return NGPositionedFloat(std::move(layout_result), NGBfcOffset(),
+        return NGPositionedFloat(layout_result, NGBfcOffset(),
                                  need_break_before);
       }
 
@@ -300,10 +320,6 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
       break;
     } while (true);
 
-    LayoutUnit fragmentainer_margin_edge_block_offset =
-        parent_space.FragmentainerOffsetAtBfc() +
-        opportunity.rect.start_offset.block_offset;
-
     // Note that we don't check if we're at a valid class A, B or C breakpoint
     // (we only check that we're not at the start of the fragmentainer (in which
     // case breaking typically wouldn't eliminate the unappealing break inside
@@ -323,9 +339,11 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
     // Should we always split them if they occur at fragmentainer boundaries? Or
     // even allow them to collapse with the fragmentainer boundary? Exact
     // behavior is currently unspecified.
-    if (fragmentainer_margin_edge_block_offset > LayoutUnit()) {
+    if (!is_at_fragmentainer_start) {
       LayoutUnit fragmentainer_block_offset =
-          fragmentainer_margin_edge_block_offset + fragment_margins.block_start;
+          FragmentainerOffsetAtBfc(parent_space) +
+          opportunity.rect.start_offset.block_offset +
+          fragment_margins.block_start;
       if (!MovePastBreakpoint(parent_space, node, *layout_result,
                               fragmentainer_block_offset, kBreakAppealPerfect,
                               /* builder */ nullptr)) {
@@ -350,26 +368,42 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
         (opportunity.rect.InlineSize() - float_margin_box_inline_size);
   }
 
+  if (parent_space.HasBlockFragmentation() && !need_break_before &&
+      !IsResumingLayout(unpositioned_float->token) &&
+      exclusion_space->NeedsBreakBeforeFloat(
+          unpositioned_float->ClearType(parent_space.Direction())))
+    need_break_before = true;
+
   // Add the float as an exclusion.
+  const auto float_type = node.Style().Floating(parent_space.Direction());
   if (need_break_before) {
-    // Create a special exclusion past everything. This will prevent us from
-    // adding any more floats in this formatting context to the current
-    // fragmentainer, and also make clearance behave correctly (e.g. an in-flow
-    // block with clear:left after a float:left that got pushed to the next
-    // fragmentainer means that the in-flow block also needs to be pushed, while
-    // if the in-flow block has clear:right, it may still be allowed in the
-    // current fragmentainer).
+    // Create a special exclusion past everything, so that the container(s) may
+    // grow to encompass the floats, if appropriate.
     NGBfcOffset past_everything(LayoutUnit(),
-                                FragmentainerSpaceAtBfcStart(parent_space));
-    scoped_refptr<const NGExclusion> exclusion =
-        NGExclusion::Create(NGBfcRect(past_everything, past_everything),
-                            node.Style().Floating(parent_space.Direction()));
+                                FragmentainerSpaceLeft(parent_space));
+    const NGExclusion* exclusion = NGExclusion::Create(
+        NGBfcRect(past_everything, past_everything), float_type);
     exclusion_space->Add(std::move(exclusion));
+
+    // Also specify that there will be a fragmentainer break before this
+    // float. This means that we cannot add any more floats to the current
+    // fragmentainer (a float cannot start above any preceding float), and it
+    // may also affect clearance.
+    exclusion_space->SetHasBreakBeforeFloat(float_type);
   } else {
-    scoped_refptr<const NGExclusion> exclusion = CreateExclusion(
-        float_fragment, float_margin_bfc_offset, fragment_margins,
-        *unpositioned_float, node.Style().Floating(parent_space.Direction()));
+    const NGExclusion* exclusion =
+        CreateExclusion(float_fragment, float_margin_bfc_offset,
+                        fragment_margins, *unpositioned_float, float_type);
     exclusion_space->Add(std::move(exclusion));
+
+    // If the float broke inside and will continue to take up layout space in
+    // the next fragmentainer, it means that we cannot fit any subsequent
+    // content that wants clearance past this float.
+    if (const auto* break_token = To<NGBlockBreakToken>(
+            layout_result->PhysicalFragment().BreakToken())) {
+      if (!break_token->IsAtBlockEnd())
+        exclusion_space->SetHasBreakInsideFloat(float_type);
+    }
   }
 
   // Adjust the float's bfc_offset to its border-box (instead of margin-box).
@@ -378,8 +412,7 @@ NGPositionedFloat PositionFloat(NGUnpositionedFloat* unpositioned_float,
           fragment_margins.LineLeft(parent_space.Direction()),
       float_margin_bfc_offset.block_offset + fragment_margins.block_start);
 
-  return NGPositionedFloat(std::move(layout_result), float_bfc_offset,
-                           need_break_before);
+  return NGPositionedFloat(layout_result, float_bfc_offset, need_break_before);
 }
 
 }  // namespace blink

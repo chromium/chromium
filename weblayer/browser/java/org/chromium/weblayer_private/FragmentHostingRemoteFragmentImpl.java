@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -167,7 +167,9 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
         // within an AppCompatActivity, it will be from the embedder's ClassLoader, so in WebLayer's
         // ClassLoader the initialization hasn't occurred. Creating an AppCompatDelegate manually
         // here will perform the necessary initialization.
-        AppCompatDelegate.create(getActivity(), null);
+        if (getActivity() != null) {
+            AppCompatDelegate.create(getActivity(), null);
+        }
     }
 
     @Override
@@ -197,7 +199,7 @@ public abstract class FragmentHostingRemoteFragmentImpl extends RemoteFragmentIm
         super.onDetach();
         mContext = null;
 
-        // If the Fragment is retained, onDestory won't be called during configuration changes. We
+        // If the Fragment is retained, onDestroy won't be called during configuration changes. We
         // have to create a new FragmentController that's attached to the correct Context when
         // reattaching this Fragment, so destroy the existing one here.
         if (!mFragmentController.getSupportFragmentManager().isDestroyed()) {

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 
 #include <ostream>
 
-#include "components/arc/mojom/app.mojom-forward.h"
-#include "components/arc/mojom/auth.mojom-forward.h"
+#include "ash/components/arc/mojom/app.mojom-forward.h"
+#include "ash/components/arc/mojom/auth.mojom-forward.h"
 
 class Profile;
 
@@ -23,6 +23,8 @@ class ArcProvisioningResult;
 // These enums are used to define the buckets for an enumerated UMA histogram
 // and need to be synced with tools/metrics/histograms/enums.xml. Note that
 // values 0, 1, 2, 3 and 4 are now deprecated.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class OptInActionType : int {
   // User asked to retry OptIn.
   RETRY = 5,
@@ -71,6 +73,26 @@ enum class OptInCancelReason {
   kMaxValue = SESSION_BUSY,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OptInNetworkErrorActionType {
+  // User closed the optin dialog.
+  WINDOW_CLOSED = 0,
+
+  // User asked to retry optin.
+  RETRY = 1,
+
+  // User asked to send feedback.
+  SEND_FEEDBACK = 2,
+
+  // User wants to diagnose network.
+  CHECK_NETWORK = 3,
+
+  kMaxValue = CHECK_NETWORK,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class OptInSilentAuthCode {
   // Silent auth code feature is disabled.
   DISABLED = 0,
@@ -99,7 +121,11 @@ enum class OptInSilentAuthCode {
   // No Auth code in response.
   NO_AUTH_CODE_IN_RESPONSE = 8,
 
-  kMaxValue = NO_AUTH_CODE_IN_RESPONSE,
+  // The network was configured with a mandatory PAC script that could not be
+  // fetched, parsed or executed.
+  MANDATORY_PROXY_CONFIGURATION_FAILED = 9,
+
+  kMaxValue = MANDATORY_PROXY_CONFIGURATION_FAILED,
 };
 
 // The values should be listed in ascending order. They are also persisted to
@@ -153,6 +179,8 @@ enum class ProvisioningStatus {
   kMaxValue = CHROME_ACCOUNT_NOT_FOUND,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class OptInFlowResult : int {
   // OptIn has started.
   STARTED = 0,
@@ -172,6 +200,8 @@ enum class OptInFlowResult : int {
   kMaxValue = CANCELED_AFTER_ERROR,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class ArcEnabledState {
   // ARC++ is enabled for non-managed case.
   ENABLED_NOT_MANAGED = 0,
@@ -210,6 +240,7 @@ void UpdateEnabledStateByUserTypeUMA();
 void UpdateOptInActionUMA(OptInActionType type);
 void UpdateOptInCancelUMA(OptInCancelReason reason);
 void UpdateOptInFlowResultUMA(OptInFlowResult result);
+void UpdateOptInNetworkErrorActionUMA(OptInNetworkErrorActionType type);
 void UpdateProvisioningStatusUMA(ProvisioningStatus status,
                                  const Profile* profile);
 void UpdateCloudProvisionFlowErrorUMA(mojom::CloudProvisionFlowError error,
@@ -232,13 +263,9 @@ void UpdateArcUiAvailableTime(const base::TimeDelta& elapsed_time,
                               const std::string& mode,
                               const Profile* profile);
 void UpdatePlayStoreLaunchTime(const base::TimeDelta& elapsed_time);
-// TODO(khmel): Remove this in favor of UpdateArcUiAvailableTime once it is
-// rolled and has confirmed usability.
-void UpdatePlayStoreShownTimeDeprecated(const base::TimeDelta& elapsed_time,
-                                        const Profile* profile);
+void UpdateDeferredLaunchTime(const base::TimeDelta& elapsed_time);
 void UpdateSilentAuthCodeUMA(OptInSilentAuthCode state);
-void UpdateSupervisionTransitionResultUMA(
-    mojom::SupervisionChangeStatus result);
+void UpdateSupervisionTransitionResultUMA(mojom::ManagementChangeStatus result);
 void UpdateReauthorizationSilentAuthCodeUMA(OptInSilentAuthCode state);
 void UpdateSecondaryAccountSilentAuthCodeUMA(OptInSilentAuthCode state);
 void UpdateAuthTiming(const char* histogram_name,
@@ -247,6 +274,10 @@ void UpdateAuthTiming(const char* histogram_name,
 void UpdateAuthCheckinAttempts(int32_t num_attempts, const Profile* profile);
 void UpdateAuthAccountCheckStatus(mojom::AccountCheckStatus status,
                                   const Profile* profile);
+void UpdateAuthCodeFetcherProxyBypassUMA(bool proxy_bypassed,
+                                         const Profile* profile);
+void UpdateAccountReauthReason(mojom::ReauthReason reason,
+                               const Profile* profile);
 void UpdateMainAccountResolutionStatus(
     const Profile* profile,
     mojom::MainAccountResolutionStatus status);

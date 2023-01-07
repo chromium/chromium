@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,14 @@
 
 #include <windows.foundation.h>
 
+#include <utility>
+
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
 #include "base/win/scoped_hstring.h"
+#include "base/win/scoped_winrt_initializer.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -234,7 +238,7 @@ class FakeMapChangedEventHandler
  private:
   ComPtr<IObservableMap<K, V>> map_;
   EventRegistrationToken token_;
-  IObservableMap<K, V>* sender_ = nullptr;
+  raw_ptr<IObservableMap<K, V>> sender_ = nullptr;
   CollectionChange change_ = CollectionChange_Reset;
   K key_ = 0;
 };
@@ -509,7 +513,8 @@ TEST(MapTest, Properties) {
     return;
 
   ASSERT_TRUE(ResolveCoreWinRT());
-  ASSERT_HRESULT_SUCCEEDED(base::win::RoInitialize(RO_INIT_MULTITHREADED));
+  ScopedWinrtInitializer winrt_initializer;
+  ASSERT_TRUE(winrt_initializer.Succeeded());
 
   auto map = Make<Map<HSTRING, IInspectable*>>();
 

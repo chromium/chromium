@@ -1,0 +1,7 @@
+# TODO(crbug.com/1367390)
+-org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorMenuTest.testSingleActionView_Enabled
+-org.chromium.chrome.browser.tasks.tab_management.TabSelectionEditorMenuTest.testTwoActionView_OneActionDisabled
+
+# TODO(crbug.com/1367394)
+-org.chromium.components.browser_ui.widget.promo.PromoCardViewRenderTest.testCompact_Stack__NightModeEnabled
+-org.chromium.components.browser_ui.widget.promo.PromoCardViewRenderTest.testSlim__NightModeDisabled

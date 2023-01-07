@@ -1,0 +1,31 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("first_run") {
+  sources = [
+    "sc_first_run_default_screen_coordinator.h",
+    "sc_first_run_default_screen_coordinator.mm",
+    "sc_first_run_default_screen_view_controller.h",
+    "sc_first_run_default_screen_view_controller.mm",
+    "sc_first_run_hero_screen_coordinator.h",
+    "sc_first_run_hero_screen_coordinator.mm",
+    "sc_first_run_hero_screen_view_controller.h",
+    "sc_first_run_hero_screen_view_controller.mm",
+    "sc_first_run_scrolling_screen_coordinator.h",
+    "sc_first_run_scrolling_screen_coordinator.mm",
+    "sc_first_run_scrolling_screen_view_controller.h",
+    "sc_first_run_scrolling_screen_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/first_run/welcome:welcome_ui",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
+    "//ios/showcase/common",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

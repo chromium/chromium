@@ -1,12 +1,13 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/one_shot_event.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,7 +36,7 @@ class RefCountedClass : public base::RefCounted<RefCountedClass> {
 
   ~RefCountedClass() { *did_delete_instance_ = true; }
 
-  bool* const did_delete_instance_;  // Not owned.
+  const raw_ptr<bool> did_delete_instance_;  // Not owned.
 
   bool did_perform_task_ = false;
 };

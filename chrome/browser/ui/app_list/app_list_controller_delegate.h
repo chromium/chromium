@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,12 +9,15 @@
 
 #include <string>
 
-#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "extensions/common/constants.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 class Profile;
 
@@ -58,7 +61,10 @@ class AppListControllerDelegate {
 
   // Handle the "create window" context menu items of Chrome App.
   // |incognito| is true to create an incognito window.
-  virtual void CreateNewWindow(bool incognito) = 0;
+  // |should_trigger_session_restore| is true to restore the session for a
+  // browser window.
+  virtual void CreateNewWindow(bool incognito,
+                               bool should_trigger_session_restore) = 0;
 
   // Opens the URL.
   virtual void OpenURL(Profile* profile,

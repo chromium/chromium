@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,16 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "net/base/net_export.h"
+#include "net/base/network_handle.h"
+#include "net/base/network_isolation_key.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/host_resolver_system_task.h"
+#include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
 
 namespace base {
 class TickClock;
@@ -22,7 +28,6 @@ namespace net {
 
 class HostCache;
 class HostResolverManager;
-struct ProcTaskParams;
 class ResolveContext;
 class URLRequestContext;
 
@@ -40,15 +45,24 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
   // Same except the created resolver will own its own HostResolverManager.
   ContextHostResolver(std::unique_ptr<HostResolverManager> owned_manager,
                       std::unique_ptr<ResolveContext> resolve_context);
+
+  ContextHostResolver(const ContextHostResolver&) = delete;
+  ContextHostResolver& operator=(const ContextHostResolver&) = delete;
+
   ~ContextHostResolver() override;
 
   // HostResolver methods:
   void OnShutdown() override;
   std::unique_ptr<ResolveHostRequest> CreateRequest(
+      url::SchemeHostPort host,
+      NetworkAnonymizationKey network_anonymization_key,
+      NetLogWithSource net_log,
+      absl::optional<ResolveHostParameters> optional_parameters) override;
+  std::unique_ptr<ResolveHostRequest> CreateRequest(
       const HostPortPair& host,
-      const NetworkIsolationKey& network_isolation_key,
+      const NetworkAnonymizationKey& network_anonymization_key,
       const NetLogWithSource& net_log,
-      const base::Optional<ResolveHostParameters>& optional_parameters)
+      const absl::optional<ResolveHostParameters>& optional_parameters)
       override;
   std::unique_ptr<ProbeRequest> CreateDohProbeRequest() override;
   std::unique_ptr<MdnsListener> CreateMdnsListener(
@@ -59,6 +73,7 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
   void SetRequestContext(URLRequestContext* request_context) override;
   HostResolverManager* GetManagerForTesting() override;
   const URLRequestContext* GetContextForTesting() const override;
+  handles::NetworkHandle GetTargetNetworkForTesting() const override;
 
   // Returns the number of host cache entries that were restored, or 0 if there
   // is no cache.
@@ -66,27 +81,18 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
   // Returns the number of entries in the host cache, or 0 if there is no cache.
   size_t CacheSize() const;
 
-  void SetProcParamsForTesting(const ProcTaskParams& proc_params);
+  void SetHostResolverSystemParamsForTest(
+      const HostResolverSystemTask::Params& host_resolver_system_params);
   void SetTickClockForTesting(const base::TickClock* tick_clock);
-
-  size_t GetNumActiveRequestsForTesting() const {
-    return handed_out_requests_.size();
+  ResolveContext* resolve_context_for_testing() {
+    return resolve_context_.get();
   }
 
  private:
-  class WrappedRequest;
-  class WrappedResolveHostRequest;
-  class WrappedProbeRequest;
-
-  HostResolverManager* const manager_;
   std::unique_ptr<HostResolverManager> owned_manager_;
-
-  // Requests are expected to clear themselves from this set on destruction or
-  // cancellation.  Requests in an early shutdown state (from
-  // HostResolver::OnShutdown()) are still in this set, so they can be notified
-  // on resolver destruction.
-  std::unordered_set<WrappedRequest*> handed_out_requests_;
-
+  // `manager_` might point to `owned_manager_`. It must be declared last and
+  // cleared first.
+  const raw_ptr<HostResolverManager> manager_;
   std::unique_ptr<ResolveContext> resolve_context_;
 
   // If true, the context is shutting down. Subsequent request Start() calls
@@ -94,8 +100,6 @@ class NET_EXPORT ContextHostResolver : public HostResolver {
   bool shutting_down_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ContextHostResolver);
 };
 
 }  // namespace net

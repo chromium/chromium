@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ class TrackGroup {
 };
 
 static int TextTrackLanguageSelectionScore(const TextTrack& track) {
-  if (track.language().IsEmpty())
+  if (track.language().empty())
     return 0;
 
   Vector<AtomicString> languages = UserPreferredLanguages();
@@ -77,7 +77,7 @@ void AutomaticTrackSelection::PerformAutomaticTextTrackSelection(
 
   for (const auto& text_track : group.tracks) {
     if (configuration_.disable_currently_enabled_tracks &&
-        text_track->mode() == TextTrack::ShowingKeyword())
+        text_track->mode() == TextTrackMode::kShowing)
       currently_enabled_tracks.push_back(text_track);
 
     int track_score = TextTrackSelectionScore(*text_track);
@@ -129,12 +129,12 @@ void AutomaticTrackSelection::PerformAutomaticTextTrackSelection(
   if (currently_enabled_tracks.size()) {
     for (const auto& text_track : currently_enabled_tracks) {
       if (text_track != track_to_enable)
-        text_track->setMode(TextTrack::DisabledKeyword());
+        text_track->SetModeEnum(TextTrackMode::kDisabled);
     }
   }
 
   if (track_to_enable)
-    track_to_enable->setMode(TextTrack::ShowingKeyword());
+    track_to_enable->SetModeEnum(TextTrackMode::kShowing);
 }
 
 void AutomaticTrackSelection::EnableDefaultMetadataTextTracks(
@@ -148,11 +148,11 @@ void AutomaticTrackSelection::EnableDefaultMetadataTextTracks(
   // elements with a default attribute set whose text track mode is set to
   // disabled, then set the text track mode of all such tracks to hidden
   for (auto& text_track : group.tracks) {
-    if (text_track->mode() != TextTrack::DisabledKeyword())
+    if (text_track->mode() != TextTrackMode::kDisabled)
       continue;
     if (!text_track->IsDefault())
       continue;
-    text_track->setMode(TextTrack::HiddenKeyword());
+    text_track->SetModeEnum(TextTrackMode::kHidden);
   }
 }
 
@@ -182,7 +182,7 @@ void AutomaticTrackSelection::Perform(TextTrackList& text_tracks) {
     }
 
     if (!current_group->visible_track &&
-        text_track->mode() == TextTrack::ShowingKeyword())
+        text_track->mode() == TextTrackMode::kShowing)
       current_group->visible_track = text_track;
     if (!current_group->default_track && text_track->IsDefault())
       current_group->default_track = text_track;

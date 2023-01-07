@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 
+import org.chromium.chrome.browser.tab.TabUtils;
+import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 
 /**
@@ -17,19 +19,8 @@ import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
  * behavior of this Class is the same as the RoundedCornerImageView.
  */
 public class TabGridThumbnailView extends RoundedCornerImageView {
-    private static final float DEFAULT_RATIO = 1.0f;
-    private float mRatio = DEFAULT_RATIO;
-
     public TabGridThumbnailView(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
-
-    /**
-     * Set width and height aspect ratio.
-     * @param ratio The width and height aspect ratio, width over height.
-     */
-    public void setAspectRatio(float ratio) {
-        mRatio = ratio;
     }
 
     @Override
@@ -39,12 +30,48 @@ public class TabGridThumbnailView extends RoundedCornerImageView {
         int measuredWidth = getMeasuredWidth();
         int measureHeight = getMeasuredHeight();
 
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()
-                && (getDrawable() == null
-                        || (mRatio != DEFAULT_RATIO && getDrawable() instanceof ColorDrawable))) {
-            measureHeight = (int) (measuredWidth * 1.0 / mRatio);
+        int expectedHeight =
+                (int) (measuredWidth * 1.0 / TabUtils.getTabThumbnailAspectRatio(getContext()));
+        if ((TabUiFeatureUtilities.isLaunchPolishEnabled()
+                    || ReturnToChromeUtil.isStartSurfaceEnabled(getContext()))
+                && isPlaceHolder()) {
+            measureHeight = expectedHeight;
         }
 
         setMeasuredDimension(measuredWidth, measureHeight);
+    }
+
+    /** Return whether the image drawable is null or a {@link ColorDrawable}. */
+    boolean isPlaceHolder() {
+        return getDrawable() == null || (getDrawable() instanceof ColorDrawable);
+    }
+
+    /**
+     * Set the thumbnail placeholder base on whether it is used for an incognito / selected tab.
+     * @param isIncognito Whether the thumbnail is on an incognito tab.
+     * @param isSelected Whether the thumbnail is on a selected tab.
+     */
+    void setColorThumbnailPlaceHolder(boolean isIncognito, boolean isSelected) {
+        ColorDrawable placeHolder =
+                new ColorDrawable(TabUiThemeProvider.getMiniThumbnailPlaceHolderColor(
+                        getContext(), isIncognito, isSelected));
+        setImageDrawable(placeHolder);
+    }
+
+    /**
+     * Adjust the thumbnail height according to tab ui features.
+     */
+    void maybeAdjustThumbnailHeight() {
+        if (TabUiFeatureUtilities.isLaunchPolishEnabled()) {
+            return;
+        }
+
+        if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
+            float expectedThumbnailAspectRatio = TabUtils.getTabThumbnailAspectRatio(getContext());
+            int height = (int) (getWidth() * 1.0 / expectedThumbnailAspectRatio);
+            setMinimumHeight(Math.min(getHeight(), height));
+        } else {
+            setMinimumHeight(getHeight());
+        }
     }
 }

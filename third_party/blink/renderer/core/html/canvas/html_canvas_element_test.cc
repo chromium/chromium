@@ -1,40 +1,62 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 
 namespace blink {
 
-class HTMLCanvasElementTest : public RenderingTest {
+class HTMLCanvasElementTest : public RenderingTest,
+                              public PaintTestConfigurations {
  public:
   HTMLCanvasElementTest()
       : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
+
+ protected:
+  void TearDown() override;
 };
 
-TEST_F(HTMLCanvasElementTest, CreateLayerUpdatesCompositing) {
+INSTANTIATE_PAINT_TEST_SUITE_P(HTMLCanvasElementTest);
+
+void HTMLCanvasElementTest::TearDown() {
+  RenderingTest::TearDown();
+  CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting();
+}
+
+TEST_P(HTMLCanvasElementTest, CreateLayerUpdatesCompositing) {
   // Enable script so that the canvas will create a LayoutHTMLCanvas.
   GetDocument().GetSettings()->SetScriptEnabled(true);
 
   SetBodyInnerHTML("<canvas id='canvas'></canvas>");
   auto* canvas = To<HTMLCanvasElement>(GetDocument().getElementById("canvas"));
-  auto* layer = GetPaintLayerByElementId("canvas");
-  ASSERT_TRUE(layer);
-  EXPECT_EQ(CompositingReason::kNone, layer->DirectCompositingReasons());
+  EXPECT_FALSE(canvas->GetLayoutObject()
+                   ->FirstFragment()
+                   .PaintProperties()
+                   ->PaintOffsetTranslation());
 
-  EXPECT_FALSE(layer->NeedsCompositingInputsUpdate());
+  EXPECT_FALSE(canvas->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  auto* painting_layer = GetLayoutObjectByElementId("canvas")->PaintingLayer();
+  EXPECT_FALSE(painting_layer->SelfNeedsRepaint());
   canvas->CreateLayer();
-  EXPECT_TRUE(layer->NeedsCompositingInputsUpdate());
+  EXPECT_FALSE(canvas->GetLayoutObject()->NeedsPaintPropertyUpdate());
+  EXPECT_TRUE(painting_layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
-  ASSERT_EQ(layer,
-            To<LayoutBoxModelObject>(canvas->GetLayoutObject())->Layer());
-  EXPECT_EQ(CompositingReason::kCanvas, layer->DirectCompositingReasons());
+  ASSERT_EQ(
+      painting_layer,
+      To<LayoutBoxModelObject>(canvas->GetLayoutObject())->PaintingLayer());
+  EXPECT_FALSE(canvas->GetLayoutObject()
+                   ->FirstFragment()
+                   .PaintProperties()
+                   ->PaintOffsetTranslation());
 }
 
-TEST_F(HTMLCanvasElementTest, CanvasInvalidation) {
+TEST_P(HTMLCanvasElementTest, CanvasInvalidation) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
 
   SetBodyInnerHTML("<canvas id='canvas' width='10px' height='10px'></canvas>");
@@ -55,7 +77,7 @@ TEST_F(HTMLCanvasElementTest, CanvasInvalidation) {
       GetDocument().GetPage()->Animator().has_canvas_invalidation_for_test());
 }
 
-TEST_F(HTMLCanvasElementTest, CanvasNotInvalidatedOnFirstFrameInDOM) {
+TEST_P(HTMLCanvasElementTest, CanvasNotInvalidatedOnFirstFrameInDOM) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
   EXPECT_FALSE(
       GetDocument().GetPage()->Animator().has_canvas_invalidation_for_test());
@@ -72,7 +94,7 @@ TEST_F(HTMLCanvasElementTest, CanvasNotInvalidatedOnFirstFrameInDOM) {
       GetDocument().GetPage()->Animator().has_canvas_invalidation_for_test());
 }
 
-TEST_F(HTMLCanvasElementTest, CanvasNotInvalidatedOnFirstPaint) {
+TEST_P(HTMLCanvasElementTest, CanvasNotInvalidatedOnFirstPaint) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
   SetBodyInnerHTML("<canvas id='canvas' style='display:none'></canvas>");
   EXPECT_FALSE(
@@ -91,7 +113,7 @@ TEST_F(HTMLCanvasElementTest, CanvasNotInvalidatedOnFirstPaint) {
       GetDocument().GetPage()->Animator().has_canvas_invalidation_for_test());
 }
 
-TEST_F(HTMLCanvasElementTest, CanvasInvalidationInFrame) {
+TEST_P(HTMLCanvasElementTest, CanvasInvalidationInFrame) {
   SetBodyInnerHTML(R"HTML(
     <iframe id='iframe'></iframe>
   )HTML");
@@ -114,6 +136,13 @@ TEST_F(HTMLCanvasElementTest, CanvasInvalidationInFrame) {
   ChildDocument().body()->appendChild(script);
   EXPECT_TRUE(
       GetDocument().GetPage()->Animator().has_canvas_invalidation_for_test());
+}
+
+TEST_P(HTMLCanvasElementTest, BrokenCanvasHighRes) {
+  EXPECT_NE(HTMLCanvasElement::BrokenCanvas(2.0).first,
+            HTMLCanvasElement::BrokenCanvas(1.0).first);
+  EXPECT_EQ(HTMLCanvasElement::BrokenCanvas(2.0).second, 2.0);
+  EXPECT_EQ(HTMLCanvasElement::BrokenCanvas(1.0).second, 1.0);
 }
 
 }  // namespace blink

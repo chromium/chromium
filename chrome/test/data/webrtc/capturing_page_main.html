@@ -1,0 +1,116 @@
+<html>
+  <head>
+    <title>Capture Handle Test - Main Capturing Page</title>
+    <link rel="icon" href="data:," />
+    <script>
+      "use strict";
+
+      let capturedStream;
+      let capturedVideoTrack;
+
+      function captureOtherTab() {
+        navigator.mediaDevices
+          .getDisplayMedia({ video: true })
+          .then(handleCaptureSuccess)
+          .catch(handleCaptureError);
+      }
+
+      function readLastEvent() {
+        // Blocks until onCaptureHandleChange() unblocks.
+      }
+
+      function readLastEmbeddedEvent() {
+        // Blocks until the embedded frame's onCaptureHandleChange() unblocks.
+      }
+
+      function readCaptureHandle() {
+        if (!capturedVideoTrack) {
+          window.domAutomationController.send("error-no-video-track");
+          return;
+        }
+
+        let captureHandle = capturedVideoTrack.getCaptureHandle();
+        if (captureHandle === null || captureHandle === undefined) {
+          window.domAutomationController.send(String(captureHandle));
+          return;
+        } else if (!captureHandle) {
+          window.domAutomationController.send("error-unknown-capture-handle");
+          return;
+        }
+
+        window.domAutomationController.send(
+          JSON.stringify(captureHandle)
+        );
+      }
+
+      function startEmbeddingFrame(url) {
+        document.getElementById("embedded_frame").src = url;
+        // window.domAutomationController.send() called by embedded page.
+      }
+
+      function captureOtherTabFromEmbeddedFrame() {
+        document
+          .getElementById("embedded_frame")
+          .contentWindow.postMessage("start-capture", "*");
+        // window.domAutomationController.send() called by embedded page.
+      }
+
+      function readCaptureHandleInEmbeddedFrame() {
+        document
+          .getElementById("embedded_frame")
+          .contentWindow.postMessage("read-capture-handle", "*");
+        // window.domAutomationController.send() called by embedded page.
+      }
+
+      function handleCaptureSuccess(stream) {
+        if (capturedStream) {
+          window.domAutomationController.send("error-multiple-captures");
+          return;
+        }
+
+        capturedStream = stream;
+        capturedVideoTrack = stream.getVideoTracks()[0];
+
+        capturedVideoTrack.oncapturehandlechange = onCaptureHandleChange;
+
+        window.domAutomationController.send("capture-success");
+      }
+
+      function handleCaptureError(error) {
+        window.domAutomationController.send("capture-failure");
+      }
+
+      function onCaptureHandleChange(event) {
+        // Note that JSON.stringify(null) yields 'null'. On the other hand,
+        // JSON.stringify(undefined) yields undefined (not the string).
+        window.domAutomationController.send(
+          JSON.stringify(event.target.getCaptureHandle())
+        );
+      }
+
+      function setTitle(title) {
+        document.title = title;
+        window.domAutomationController.send("title-changed");
+      }
+
+      // Duplicated from the captured-page in order to test self-capture.
+      function callSetCaptureHandleConfig(
+        exposeOrigin,
+        handle,
+        permittedOrigins
+      ) {
+        navigator.mediaDevices.setCaptureHandleConfig({
+          exposeOrigin: exposeOrigin,
+          handle: handle,
+          permittedOrigins: permittedOrigins,
+        });
+        window.domAutomationController.send("capture-handle-set");
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Capture Handle Test - Main Capturing Page</h1>
+    <br/>
+    <iframe id="embedded_frame" allow="display-capture *"></iframe>
+  </body>
+</html>

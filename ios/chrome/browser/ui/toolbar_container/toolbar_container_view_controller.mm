@@ -1,20 +1,20 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_view_controller.h"
 
-#include <vector>
+#import <vector>
 
-#include "base/check_op.h"
-#include "base/mac/foundation_util.h"
+#import "base/check_op.h"
+#import "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/toolbar_container/collapsing_toolbar_height_constraint.h"
 #import "ios/chrome/browser/ui/toolbar_container/collapsing_toolbar_height_constraint_delegate.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_view.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_height_range.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -111,7 +111,7 @@ using toolbar_container::HeightRange;
   for (NSUInteger i = 0; i < self.toolbars.count; ++i) {
     CollapsingToolbarHeightConstraint* constraint =
         self.toolbarHeightConstraints[i];
-    // Calculate the progress range for the toolbar.  |startProgress| is pre-
+    // Calculate the progress range for the toolbar.  `startProgress` is pre-
     // calculated and stored in self.toolbarExpansionStartProgresses.  The end
     // progress is calculated by adding the proportion of the overall stack
     // height delta created by this toolbar.
@@ -119,10 +119,10 @@ using toolbar_container::HeightRange;
     CGFloat endProgress =
         startProgress + constraint.heightRange.delta() / stackHeightDelta;
     // CollapsingToolbarHeightConstraint clamps its progress value between 0.0
-    // and 1.0, so |constraint|'s progress value will be set:
-    // -  0.0 when |progress| <= |startProgress|,
-    // -  1.0 when |progress| >= |endProgress|, and
-    // -  scaled linearly from 0.0 to 1.0 for |progress| values within that
+    // and 1.0, so `constraint`'s progress value will be set:
+    // -  0.0 when `progress` <= `startProgress`,
+    // -  1.0 when `progress` >= `endProgress`, and
+    // -  scaled linearly from 0.0 to 1.0 for `progress` values within that
     //    range.
     constraint.progress =
         (progress - startProgress) / (endProgress - startProgress);
@@ -230,7 +230,7 @@ using toolbar_container::HeightRange;
   [self resetToolbarHeightConstraints];
 }
 
-// Adds the toolbar at |index| to the view.
+// Adds the toolbar at `index` to the view.
 - (void)addToolbarAtIndex:(NSUInteger)index {
   DCHECK_LT(index, self.toolbars.count);
   UIViewController* toolbar = self.toolbars[index];
@@ -307,7 +307,7 @@ using toolbar_container::HeightRange;
   [self updateHeightRangeWithRange:heightRange];
 }
 
-// Updates the height range of the stack with |range|.
+// Updates the height range of the stack with `range`.
 - (void)updateHeightRangeWithRange:(const HeightRange&)range {
   if (_heightRange == range)
     return;

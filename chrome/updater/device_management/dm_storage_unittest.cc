@@ -1,7 +1,8 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -10,7 +11,6 @@
 #include "chrome/updater/constants.h"
 #include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_storage.h"
-#include "chrome/updater/policy_manager.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "chrome/updater/unittest_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -20,14 +20,18 @@ namespace updater {
 
 namespace {
 
+constexpr char kTestDmToken[] = "TestDMToken";
+
 class TestTokenService : public TokenServiceInterface {
  public:
   TestTokenService()
-      : enrollment_token_("TestEnrollmentToken"), dm_token_("TestDMToken") {}
+      : enrollment_token_("TestEnrollmentToken"), dm_token_(kTestDmToken) {}
   ~TestTokenService() override = default;
 
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override { return "TestDeviceID"; }
+
+  bool IsEnrollmentMandatory() const override { return false; }
 
   bool StoreEnrollmentToken(const std::string& enrollment_token) override {
     enrollment_token_ = enrollment_token;
@@ -40,6 +44,12 @@ class TestTokenService : public TokenServiceInterface {
     dm_token_ = dm_token;
     return true;
   }
+
+  bool DeleteDmToken() override {
+    dm_token_.clear();
+    return true;
+  }
+
   std::string GetDmToken() const override { return dm_token_; }
 
  private:
@@ -64,7 +74,7 @@ std::string CannedOmahaPolicyFetchResponse() {
       ::wireless_android_enterprise_devicemanagement::MANUAL_UPDATES_ONLY);
 
   ::wireless_android_enterprise_devicemanagement::ApplicationSettings app;
-  app.set_app_guid(kChromeAppId);
+  app.set_app_guid(test::kChromeAppId);
 
   app.set_install(
       ::wireless_android_enterprise_devicemanagement::INSTALL_DISABLED);
@@ -87,7 +97,7 @@ std::string CannedOmahaPolicyFetchResponse() {
 
 }  // namespace
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 TEST(DMStorage, LoadDeviceID) {
   auto storage = base::MakeRefCounted<DMStorage>(
@@ -95,7 +105,37 @@ TEST(DMStorage, LoadDeviceID) {
   EXPECT_FALSE(storage->GetDeviceID().empty());
 }
 
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
+
+TEST(DMStorage, DMToken) {
+  base::ScopedTempDir cache_root;
+  ASSERT_TRUE(cache_root.CreateUniqueTempDir());
+  auto storage = base::MakeRefCounted<DMStorage>(
+      cache_root.GetPath(), std::make_unique<TestTokenService>());
+  EXPECT_TRUE(storage->IsValidDMToken());
+  EXPECT_FALSE(storage->GetDmToken().empty());
+  EXPECT_FALSE(storage->IsDeviceDeregistered());
+
+  // Deregister using DM token invalidation.
+  storage->InvalidateDMToken();
+  EXPECT_FALSE(storage->IsValidDMToken());
+  EXPECT_FALSE(storage->GetDmToken().empty());
+  EXPECT_TRUE(storage->IsDeviceDeregistered());
+
+  storage->StoreDmToken(kTestDmToken);
+  EXPECT_TRUE(storage->IsValidDMToken());
+  EXPECT_FALSE(storage->GetDmToken().empty());
+  EXPECT_FALSE(storage->IsDeviceDeregistered());
+
+  // Deregister using DM token deletion.
+  storage->DeleteDMToken();
+  EXPECT_FALSE(storage->IsValidDMToken());
+  EXPECT_TRUE(storage->GetDmToken().empty());
+  // Although the device is deregistered, it is not treated as deregistered due
+  // to potential re-registration. Instead, it is treated as having an empty DM
+  // token.
+  EXPECT_FALSE(storage->IsDeviceDeregistered());
+}
 
 TEST(DMStorage, PersistPolicies) {
   DMPolicyMap policies({
@@ -112,6 +152,7 @@ TEST(DMStorage, PersistPolicies) {
   EXPECT_TRUE(base::DirectoryExists(stale_poliy));
 
   auto storage = base::MakeRefCounted<DMStorage>(cache_root.GetPath());
+  EXPECT_TRUE(storage->CanPersistPolicies());
   EXPECT_TRUE(storage->PersistPolicies(policies));
   base::FilePath policy_info_file =
       cache_root.GetPath().AppendASCII("CachedPolicyInfo");
@@ -142,10 +183,10 @@ TEST(DMStorage, GetCachedPolicyInfo) {
   enterprise_management::PolicyData policy_data;
   policy_data.set_policy_value("SerializedProtobufDataFromPolicy");
   policy_data.set_policy_type("TestPolicyType1");
-  policy_data.set_request_token("TestDMToken");
+  policy_data.set_request_token(kTestDmToken);
   policy_data.set_timestamp(12340000);
-  policy_data.set_device_id("TestDMToken");
-  policy_data.set_request_token("TestDMToken");
+  policy_data.set_device_id(kTestDmToken);
+  policy_data.set_request_token(kTestDmToken);
 
   std::string new_public_key = "SampleNewPublicKeyData";
   enterprise_management::PublicKeyVerificationData key_verif_data;
@@ -162,6 +203,7 @@ TEST(DMStorage, GetCachedPolicyInfo) {
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
   auto storage = base::MakeRefCounted<DMStorage>(
       cache_root.GetPath(), std::make_unique<TestTokenService>());
+  EXPECT_TRUE(storage->CanPersistPolicies());
   EXPECT_TRUE(storage->PersistPolicies({
       {"sample-policy-type", response.SerializeAsString()},
   }));
@@ -182,82 +224,42 @@ TEST(DMStorage, ReadCachedOmahaPolicy) {
   ASSERT_TRUE(cache_root.CreateUniqueTempDir());
   auto storage = base::MakeRefCounted<DMStorage>(
       cache_root.GetPath(), std::make_unique<TestTokenService>());
+  EXPECT_TRUE(storage->CanPersistPolicies());
   EXPECT_TRUE(storage->PersistPolicies(policies));
 
-  auto policy_manager = storage->GetOmahaPolicyManager();
-  ASSERT_NE(policy_manager, nullptr);
+  std::unique_ptr<
+      ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>
+      omaha_settings = storage->GetOmahaPolicySettings();
+  ASSERT_NE(omaha_settings, nullptr);
+  EXPECT_EQ(omaha_settings->auto_update_check_period_minutes(), 111);
 
-  int check_interval = 0;
-  EXPECT_TRUE(policy_manager->GetLastCheckPeriodMinutes(&check_interval));
-  EXPECT_EQ(check_interval, 111);
+  EXPECT_EQ(omaha_settings->updates_suppressed().start_hour(), 8);
+  EXPECT_EQ(omaha_settings->updates_suppressed().start_minute(), 8);
+  EXPECT_EQ(omaha_settings->updates_suppressed().duration_min(), 47);
 
-  UpdatesSuppressedTimes suppressed_times;
-  EXPECT_TRUE(policy_manager->GetUpdatesSuppressedTimes(&suppressed_times));
-  EXPECT_EQ(suppressed_times.start_hour, 8);
-  EXPECT_EQ(suppressed_times.start_minute, 8);
-  EXPECT_EQ(suppressed_times.duration_minute, 47);
+  EXPECT_EQ(omaha_settings->proxy_mode(), "proxy_pac_script");
+  EXPECT_EQ(omaha_settings->proxy_pac_url(), "foo.c/proxy.pa");
+  EXPECT_FALSE(omaha_settings->has_proxy_server());
 
-  // Proxy policies.
-  std::string proxy_mode;
-  EXPECT_TRUE(policy_manager->GetProxyMode(&proxy_mode));
-  EXPECT_EQ(proxy_mode, "proxy_pac_script");
-  std::string proxy_pac_url;
-  EXPECT_TRUE(policy_manager->GetProxyPacUrl(&proxy_pac_url));
-  EXPECT_EQ(proxy_pac_url, "foo.c/proxy.pa");
-  std::string proxy_server;
-  EXPECT_FALSE(policy_manager->GetProxyServer(&proxy_server));
-
-  // Download preference.
-  std::string download_preference;
-  EXPECT_TRUE(
-      policy_manager->GetDownloadPreferenceGroupPolicy(&download_preference));
-  EXPECT_EQ(download_preference, "cacheable");
-
-  // Cache policies.
-  int cache_size = 0;
-  EXPECT_FALSE(policy_manager->GetPackageCacheSizeLimitMBytes(&cache_size));
-  int cache_life = 0;
-  EXPECT_FALSE(policy_manager->GetPackageCacheExpirationTimeDays(&cache_life));
+  EXPECT_EQ(omaha_settings->download_preference(), "cacheable");
 
   // Chrome policies.
-  int chrome_install_policy = -1;
-  EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppInstalls(
-      kChromeAppId, &chrome_install_policy));
-  EXPECT_EQ(chrome_install_policy, kPolicyDisabled);
-  int chrome_update_policy = -1;
-  EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppUpdates(
-      kChromeAppId, &chrome_update_policy));
-  EXPECT_EQ(chrome_update_policy, kPolicyAutomaticUpdatesOnly);
-  std::string target_version_prefix;
-  EXPECT_TRUE(policy_manager->GetTargetVersionPrefix(kChromeAppId,
-                                                     &target_version_prefix));
-  EXPECT_EQ(target_version_prefix, "3.6.55");
-  bool rollback_allowed = false;
-  EXPECT_TRUE(policy_manager->IsRollbackToTargetVersionAllowed(
-      kChromeAppId, &rollback_allowed));
-  EXPECT_TRUE(rollback_allowed);
+  const auto& chrome_settings = omaha_settings->application_settings()[0];
+  EXPECT_EQ(chrome_settings.install(),
+            ::wireless_android_enterprise_devicemanagement::INSTALL_DISABLED);
+  EXPECT_EQ(
+      chrome_settings.update(),
+      ::wireless_android_enterprise_devicemanagement::AUTOMATIC_UPDATES_ONLY);
+  EXPECT_EQ(chrome_settings.target_version_prefix(), "3.6.55");
+  EXPECT_EQ(chrome_settings.rollback_to_target_version(),
+            ::wireless_android_enterprise_devicemanagement::
+                ROLLBACK_TO_TARGET_VERSION_ENABLED);
 
-  // No app-specific policy should fallback to global.
-  const std::string non_exist_appid = "{00000000-1111-2222-3333-444444444444}";
-  int app_install_policy = -1;
-  EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppInstalls(
-      non_exist_appid, &app_install_policy));
-  EXPECT_EQ(app_install_policy, kPolicyDisabled);
-  int app_update_policy = -1;
-  EXPECT_TRUE(policy_manager->GetEffectivePolicyForAppUpdates(
-      non_exist_appid, &app_update_policy));
-  EXPECT_EQ(app_update_policy, kPolicyManualUpdatesOnly);
-  std::string app_target_version_prefix;
-  EXPECT_FALSE(policy_manager->GetTargetVersionPrefix(
-      non_exist_appid, &app_target_version_prefix));
-  bool app_rollback_allowed = false;
-  EXPECT_FALSE(policy_manager->IsRollbackToTargetVersionAllowed(
-      non_exist_appid, &app_rollback_allowed));
-
-  // Verify no policy manager once device is deregistered.
-  EXPECT_TRUE(storage->DeregisterDevice());
+  // Verify no policy settings once device is de-registered.
+  EXPECT_TRUE(storage->InvalidateDMToken());
+  EXPECT_TRUE(storage->IsDeviceDeregistered());
   EXPECT_FALSE(storage->IsValidDMToken());
-  ASSERT_EQ(storage->GetOmahaPolicyManager(), nullptr);
+  ASSERT_EQ(storage->GetOmahaPolicySettings(), nullptr);
 }
 
 }  // namespace updater

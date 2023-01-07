@@ -1,35 +1,13 @@
 <!DOCTYPE html>
-<html>
-<head>
-<head>
-<script>
-testRunner.dumpAsText();
-testRunner.waitUntilDone();
-</script>
-<script src='../resources/picker-common.js'></script>
-</head>
-<body>
-<input type='color' id='color' value='#ff0000' list>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
 
-<p id='description' style='opacity: 0'></p>
-<div id='console' style='opacity: 0'></div>
+<input type='color' value='#ff0000' list>
 
 <script>
-let descriptionContainer = document.getElementById('description');
-var colorControl = document.getElementById('color');
-openPickerAppearanceOnly(colorControl, openPickerCallback);
-
-function openPickerCallback() {
-  // The color suggestion picker popup should close when the input type changes.
-  colorControl.type = 'text';
-  if (internals.pagePopupWindow) {
-    descriptionContainer.append('Popup did not close when the input type changed.');
-  } else {
-    descriptionContainer.append('Popup closed when the input type changed.');
-  }
-  descriptionContainer.append(document.createElement('br'), 'TEST COMPLETE');
-  testRunner.notifyDone();
-}
+  window.onload = openPickerAppearanceOnly(document.querySelector('input'),() => {
+    // The color suggestion picker popup should close when the input type changes.
+    document.querySelector('input').type = 'text';
+  });
 </script>
-</body>
-</html>

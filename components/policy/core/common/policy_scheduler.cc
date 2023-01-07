@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,6 +58,7 @@ void PolicyScheduler::RunScheduledTask() {
 
   overlap_ = false;
   task_in_progress_ = true;
+  last_refresh_attempt_ = base::Time::Now();
   task_.Run(base::BindOnce(&PolicyScheduler::OnTaskDone,
                            weak_ptr_factory_.GetWeakPtr()));
 }

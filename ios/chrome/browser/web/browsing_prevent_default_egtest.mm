@@ -1,15 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/sys_string_conversions.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#include "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
+#import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "url/url_constants.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "url/url_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

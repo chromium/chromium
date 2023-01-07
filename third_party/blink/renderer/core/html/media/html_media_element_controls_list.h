@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
@@ -20,7 +19,10 @@ class CORE_EXPORT HTMLMediaElementControlsList final : public DOMTokenList {
   // Whether the list dictates to hide a certain control.
   bool ShouldHideDownload() const;
   bool ShouldHideFullscreen() const;
+  bool ShouldHidePlaybackRate() const;
   bool ShouldHideRemotePlayback() const;
+
+  bool CanShowAllControls() const;
 
  private:
   bool ValidateTokenValue(const AtomicString&, ExceptionState&) const override;
@@ -28,4 +30,4 @@ class CORE_EXPORT HTMLMediaElementControlsList final : public DOMTokenList {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_HTML_MEDIA_ELEMENT_CONTROLS_LIST_H_

@@ -1,25 +1,29 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/translate/translate_app_interface.h"
 
-#include "base/command_line.h"
-#include "base/memory/singleton.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/translate/core/browser/translate_infobar_delegate.h"
-#include "components/translate/core/browser/translate_manager.h"
-#include "components/translate/core/browser/translate_prefs.h"
-#include "components/translate/core/common/language_detection_details.h"
-#include "components/translate/core/common/translate_switches.h"
-#import "components/translate/ios/browser/js_translate_manager.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "base/command_line.h"
+#import "base/memory/singleton.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/translate/core/browser/translate_infobar_delegate.h"
+#import "components/translate/core/browser/translate_manager.h"
+#import "components/translate/core/browser/translate_prefs.h"
+#import "components/translate/core/common/language_detection_details.h"
+#import "components/translate/core/common/translate_switches.h"
+#import "components/translate/core/common/translate_util.h"
+#import "components/translate/ios/browser/js_translate_web_frame_manager.h"
+#import "components/translate/ios/browser/js_translate_web_frame_manager_factory.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/chrome/test/fakes/fake_language_detection_tab_helper_observer.h"
-#include "net/base/network_change_notifier.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
+#import "net/base/network_change_notifier.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -36,6 +40,10 @@ class FakeNetworkChangeNotifier : public net::NetworkChangeNotifier {
       net::NetworkChangeNotifier::ConnectionType connection_type_to_return)
       : connection_type_to_return_(connection_type_to_return) {}
 
+  FakeNetworkChangeNotifier(const FakeNetworkChangeNotifier&) = delete;
+  FakeNetworkChangeNotifier& operator=(const FakeNetworkChangeNotifier&) =
+      delete;
+
  private:
   ConnectionType GetCurrentConnectionType() const override {
     return connection_type_to_return_;
@@ -45,8 +53,6 @@ class FakeNetworkChangeNotifier : public net::NetworkChangeNotifier {
   // CONNECTION_NONE, then NetworkChangeNotifier::IsOffline will return true.
   net::NetworkChangeNotifier::ConnectionType connection_type_to_return_ =
       net::NetworkChangeNotifier::CONNECTION_UNKNOWN;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNetworkChangeNotifier);
 };
 
 // Helper singleton object to hold states for fake objects to facility testing.
@@ -92,67 +98,89 @@ class TranslateAppInterfaceHelper {
   std::unique_ptr<FakeNetworkChangeNotifier> network_change_notifier_;
 };
 
-}  // namespace
+class FakeJSTranslateWebFrameManager : public JSTranslateWebFrameManager {
+ public:
+  FakeJSTranslateWebFrameManager(web::WebFrame* web_frame)
+      : JSTranslateWebFrameManager(web_frame) {}
+  ~FakeJSTranslateWebFrameManager() override = default;
 
-#pragma mark - FakeJSTranslateManager
+  void InjectTranslateScript(const std::string& script) override {
+    // No need to set the `translate_script` JavaScript since it will never be
+    // used by this fake object. Instead just invoke host with 'translate.ready'
+    // followed by 'translate.status'.
+    base::Value translate_ready_dict(base::Value::Type::DICTIONARY);
+    translate_ready_dict.SetKey("command", base::Value("ready"));
+    translate_ready_dict.SetKey("errorCode", base::Value(0));
+    translate_ready_dict.SetKey("loadTime", base::Value(0));
+    translate_ready_dict.SetKey("readyTime", base::Value(0));
 
-// Fake translate manager to be used in tests so no network is needed.
-// Translating the page just adds a 'Translated' button to the page, without
-// changing the text.
-@interface FakeJSTranslateManager : JsTranslateManager {
-  web::WebState* _webState;
-}
+    std::vector<base::Value> translate_ready_params;
+    translate_ready_params.push_back(base::Value("TranslateMessage"));
+    translate_ready_params.push_back(std::move(translate_ready_dict));
+    web_frame_->CallJavaScriptFunction("common.sendWebKitMessage",
+                                       translate_ready_params);
 
-- (instancetype)initWithWebState:(web::WebState*)webState;
+    base::Value translate_status_dict(base::Value::Type::DICTIONARY);
+    translate_status_dict.SetKey("command", base::Value("status"));
+    translate_status_dict.SetKey("errorCode", base::Value(0));
+    translate_status_dict.SetKey("pageSourceLanguage", base::Value("fr"));
+    translate_status_dict.SetKey("translationTime", base::Value(0));
 
-@end
-
-@implementation FakeJSTranslateManager
-
-- (instancetype)initWithWebState:(web::WebState*)webState {
-  if ((self = [super initWithWebState:webState])) {
-    _webState = webState;
+    std::vector<base::Value> translate_status_params;
+    translate_status_params.push_back(base::Value("TranslateMessage"));
+    translate_status_params.push_back(std::move(translate_status_dict));
+    web_frame_->CallJavaScriptFunction("common.sendWebKitMessage",
+                                       translate_status_params);
   }
-  return self;
-}
 
-- (void)startTranslationFrom:(const std::string&)source
-                          to:(const std::string&)target {
-  // Add a button with the 'Translated' label to the web page.
-  // The test can check it to determine if this method has been called.
-  _webState->ExecuteJavaScript(base::UTF8ToUTF16(
-      "myButton = document.createElement('button');"
-      "myButton.setAttribute('id', 'translated-button');"
-      "myButton.appendChild(document.createTextNode('Translated'));"
-      "document.body.prepend(myButton);"));
-}
+  void StartTranslation(const std::string& source,
+                        const std::string& target) override {
+    // Add a button with the 'Translated' label to the web page.
+    // The test can check it to determine if this method has been called.
+    web_frame_->ExecuteJavaScript(
+        u"myButton = document.createElement('button');"
+        u"myButton.setAttribute('id', 'translated-button');"
+        u"myButton.appendChild(document.createTextNode('Translated'));"
+        u"document.body.prepend(myButton);");
+  }
 
-- (void)revertTranslation {
-  // Removes the button with 'translated-button' id from the web page, if any.
-  _webState->ExecuteJavaScript(base::UTF8ToUTF16(
-      "myButton = document.getElementById('translated-button');"
-      "myButton.remove();"));
-}
+  void RevertTranslation() override {
+    // Removes the button with 'translated-button' id from the web page, if any.
+    web_frame_->ExecuteJavaScript(
+        u"myButton = document.getElementById('translated-button');"
+        u"myButton.remove();");
+  }
+};
 
-- (void)injectWithTranslateScript:(const std::string&)translate_script {
-  // No need to set the |translate_script| JavaScript since it will never be
-  // used by this fake object. Instead just invoke host with 'translate.ready'
-  // followed by 'translate.status'.
-  _webState->ExecuteJavaScript(
-      base::UTF8ToUTF16("__gCrWeb.message.invokeOnHost({"
-                        "  'command': 'translate.ready',"
-                        "  'errorCode': 0,"
-                        "  'loadTime': 0,"
-                        "  'readyTime': 0});"));
-  _webState->ExecuteJavaScript(
-      base::UTF8ToUTF16("__gCrWeb.message.invokeOnHost({"
-                        "  'command': 'translate.status',"
-                        "  'errorCode': 0,"
-                        "  'originalPageLanguage': 'fr',"
-                        "  'translationTime': 0});"));
-}
+class FakeJSTranslateWebFrameManagerFactory
+    : public JSTranslateWebFrameManagerFactory {
+ public:
+  FakeJSTranslateWebFrameManagerFactory() {}
+  ~FakeJSTranslateWebFrameManagerFactory() {}
 
-@end
+  static FakeJSTranslateWebFrameManagerFactory* GetInstance() {
+    static base::NoDestructor<FakeJSTranslateWebFrameManagerFactory> instance;
+    return instance.get();
+  }
+
+  JSTranslateWebFrameManager* FromWebFrame(web::WebFrame* web_frame) override {
+    if (managers_.find(web_frame->GetFrameId()) == managers_.end()) {
+      managers_[web_frame->GetFrameId()] =
+          std::make_unique<FakeJSTranslateWebFrameManager>(web_frame);
+    }
+    return managers_[web_frame->GetFrameId()].get();
+  }
+
+  void CreateForWebFrame(web::WebFrame* web_frame) override {
+    // no-op, managers are created lazily in FromWebState
+  }
+
+ private:
+  std::map<std::string, std::unique_ptr<FakeJSTranslateWebFrameManager>>
+      managers_;
+};
+
+}  // namespace
 
 #pragma mark - TranslateAppInterface
 
@@ -232,15 +260,11 @@ class TranslateAppInterfaceHelper {
 }
 
 + (void)setUpFakeJSTranslateManagerInCurrentTab {
-  ChromeIOSTranslateClient* client = ChromeIOSTranslateClient::FromWebState(
-      chrome_test_util::GetCurrentWebState());
-  translate::IOSTranslateDriver* driver =
-      static_cast<translate::IOSTranslateDriver*>(client->GetTranslateDriver());
-  FakeJSTranslateManager* fakeJSTranslateManager =
-      [[FakeJSTranslateManager alloc]
-          initWithWebState:chrome_test_util::GetCurrentWebState()];
-  driver->translate_controller()->SetJsTranslateManagerForTesting(
-      fakeJSTranslateManager);
+  translate::TranslateController* translate_controller =
+      translate::TranslateController::FromWebState(
+          chrome_test_util::GetCurrentWebState());
+  translate_controller->SetJsTranslateWebFrameManagerFactoryForTesting(
+      FakeJSTranslateWebFrameManagerFactory::GetInstance());
 }
 
 + (BOOL)shouldAutoTranslateFromLanguage:(NSString*)source
@@ -267,19 +291,19 @@ class TranslateAppInterfaceHelper {
 }
 
 + (int)infobarAutoAlwaysThreshold {
-  return translate::TranslateInfoBarDelegate::GetAutoAlwaysThreshold();
+  return translate::GetAutoAlwaysThreshold();
 }
 
 + (int)infobarAutoNeverThreshold {
-  return translate::TranslateInfoBarDelegate::GetAutoNeverThreshold();
+  return translate::GetAutoNeverThreshold();
 }
 
 + (int)infobarMaximumNumberOfAutoAlways {
-  return translate::TranslateInfoBarDelegate::GetMaximumNumberOfAutoAlways();
+  return translate::GetMaximumNumberOfAutoAlways();
 }
 
 + (int)infobarMaximumNumberOfAutoNever {
-  return translate::TranslateInfoBarDelegate::GetMaximumNumberOfAutoNever();
+  return translate::GetMaximumNumberOfAutoNever();
 }
 
 #pragma mark private methods

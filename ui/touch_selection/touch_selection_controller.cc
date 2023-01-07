@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/touch_selection/touch_selection_controller.h"
+
+#include <memory>
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
@@ -42,16 +44,6 @@ TouchHandleOrientation ToTouchHandleOrientation(
 }
 
 }  // namespace
-
-TouchSelectionController::Config::Config()
-    : max_tap_duration(base::TimeDelta::FromMilliseconds(300)),
-      tap_slop(8),
-      enable_adaptive_handle_orientation(false),
-      enable_longpress_drag_selection(false),
-      hide_active_handle(false) {}
-
-TouchSelectionController::Config::~Config() {
-}
 
 TouchSelectionController::TouchSelectionController(
     TouchSelectionControllerClient* client,
@@ -562,8 +554,8 @@ bool TouchSelectionController::ActivateInsertionIfNecessary() {
   DCHECK_NE(SELECTION_ACTIVE, active_status_);
 
   if (!insertion_handle_) {
-    insertion_handle_.reset(
-        new TouchHandle(this, TouchHandleOrientation::CENTER, viewport_rect_));
+    insertion_handle_ = std::make_unique<TouchHandle>(
+        this, TouchHandleOrientation::CENTER, viewport_rect_);
   }
 
   if (active_status_ == INACTIVE || response_pending_input_event_ == TAP ||
@@ -590,16 +582,16 @@ bool TouchSelectionController::ActivateSelectionIfNecessary() {
   DCHECK_NE(INSERTION_ACTIVE, active_status_);
 
   if (!start_selection_handle_) {
-    start_selection_handle_.reset(
-        new TouchHandle(this, start_orientation_, viewport_rect_));
+    start_selection_handle_ =
+        std::make_unique<TouchHandle>(this, start_orientation_, viewport_rect_);
   } else {
     start_selection_handle_->SetEnabled(true);
     start_selection_handle_->SetViewportRect(viewport_rect_);
   }
 
   if (!end_selection_handle_) {
-    end_selection_handle_.reset(
-        new TouchHandle(this, end_orientation_, viewport_rect_));
+    end_selection_handle_ =
+        std::make_unique<TouchHandle>(this, end_orientation_, viewport_rect_);
   } else {
     end_selection_handle_->SetEnabled(true);
     end_selection_handle_->SetViewportRect(viewport_rect_);
@@ -701,10 +693,8 @@ void TouchSelectionController::LogSelectionEnd() {
   if (selection_handle_dragged_) {
     base::TimeDelta duration = base::TimeTicks::Now() - selection_start_time_;
     UMA_HISTOGRAM_CUSTOM_TIMES("Event.TouchSelection.WasDraggedDuration",
-                               duration,
-                               base::TimeDelta::FromMilliseconds(500),
-                               base::TimeDelta::FromSeconds(60),
-                               60);
+                               duration, base::Milliseconds(500),
+                               base::Seconds(60), 60);
   }
 }
 

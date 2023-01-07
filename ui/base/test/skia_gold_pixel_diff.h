@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace base {
 class CommandLine;
@@ -24,6 +23,10 @@ class SkiaGoldMatchingAlgorithm;
 class SkiaGoldPixelDiff {
  public:
   SkiaGoldPixelDiff();
+
+  SkiaGoldPixelDiff(const SkiaGoldPixelDiff&) = delete;
+  SkiaGoldPixelDiff& operator=(const SkiaGoldPixelDiff&) = delete;
+
   virtual ~SkiaGoldPixelDiff();
 
   // Returns the platform used to generate this image. It is appended to the
@@ -85,8 +88,6 @@ class SkiaGoldPixelDiff {
   std::string code_review_system_;
   // The working dir for goldctl. It's the dir for storing temporary files.
   base::FilePath working_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaGoldPixelDiff);
 };
 
 }  // namespace test

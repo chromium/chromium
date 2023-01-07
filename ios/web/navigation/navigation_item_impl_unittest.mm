@@ -1,16 +1,16 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/navigation/navigation_item_impl.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/strings/utf_string_conversions.h"
-#include "ios/web/navigation/wk_navigation_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#import "base/strings/utf_string_conversions.h"
+#import "ios/web/navigation/wk_navigation_util.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -58,11 +58,10 @@ TEST_F(NavigationItemTest, Description) {
   EXPECT_TRUE([description containsString:@"title:Title"]);
   EXPECT_TRUE([description containsString:@"transition:2"]);
   EXPECT_TRUE([description containsString:@"userAgent:NONE"]);
-  EXPECT_TRUE([description containsString:@"is_create_from_push_state: false"]);
-  EXPECT_TRUE([description containsString:@"has_state_been_replaced: false"]);
   EXPECT_TRUE(
       [description containsString:@"is_created_from_hash_change: false"]);
   EXPECT_TRUE([description containsString:@"navigation_initiation_type: 0"]);
+  EXPECT_TRUE([description containsString:@"https_upgrade_type: None"]);
 }
 #endif
 
@@ -87,7 +86,7 @@ TEST_F(NavigationItemTest, Copy) {
   NSString* state1 = @"state1";
   [mutableState setString:state1];
 
-  // Check that changes occurred in |item_|, but not in |copy|.
+  // Check that changes occurred in `item_`, but not in `copy`.
   EXPECT_NSEQ([postData1 dataUsingEncoding:NSUTF8StringEncoding],
               item_->GetPostData());
   EXPECT_NSEQ(state1, item_->GetSerializedStateObject());
@@ -99,7 +98,7 @@ TEST_F(NavigationItemTest, Copy) {
   copy.AddHttpRequestHeaders(@{});
 }
 
-// Tests whether |NavigationItem::AddHttpRequestHeaders()| adds the passed
+// Tests whether `NavigationItem::AddHttpRequestHeaders()` adds the passed
 // headers to the item's request http headers.
 TEST_F(NavigationItemTest, AddHttpRequestHeaders) {
   EXPECT_NSEQ(@{kHTTPHeaderKey1 : kHTTPHeaderValue1},
@@ -117,7 +116,7 @@ TEST_F(NavigationItemTest, AddHttpRequestHeaders) {
   EXPECT_NSEQ(expected, item_->GetHttpRequestHeaders());
 }
 
-// Tests whether |NavigationItem::AddHttpRequestHeaders()| removes the header
+// Tests whether `NavigationItem::AddHttpRequestHeaders()` removes the header
 // value associated with the passed key from the item's request http headers.
 TEST_F(NavigationItemTest, RemoveHttpRequestHeaderForKey) {
   NSDictionary* httpHeaders = @{

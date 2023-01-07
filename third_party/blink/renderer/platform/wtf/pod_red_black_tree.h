@@ -72,10 +72,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_RED_BLACK_TREE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_POD_RED_BLACK_TREE_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/pod_free_list_arena.h"
 #ifndef NDEBUG
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -249,6 +247,9 @@ class PODRedBlackTree {
           color_(kRed),
           data_(data) {}
 
+    Node(const Node&) = delete;
+    Node& operator=(const Node&) = delete;
+
     virtual ~Node() = default;
 
     NodeColor GetColor() const { return color_; }
@@ -284,8 +285,6 @@ class PODRedBlackTree {
     Node* parent_;
     NodeColor color_;
     T data_;
-
-    DISALLOW_COPY_AND_ASSIGN(Node);
   };
 
  protected:
@@ -711,14 +710,14 @@ class PODRedBlackTree {
 
    public:
     Counter() : count_(0) {}
+    Counter(const Counter&) = delete;
+    Counter& operator=(const Counter&) = delete;
 
     void Visit(const T&) override { ++count_; }
     int Count() const { return count_; }
 
    private:
     int count_;
-
-    DISALLOW_COPY_AND_ASSIGN(Counter);
   };
 
   //----------------------------------------------------------------------

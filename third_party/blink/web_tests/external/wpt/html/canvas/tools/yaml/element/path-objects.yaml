@@ -1779,6 +1779,18 @@
     ctx.moveTo(0, 0);
     ctx.lineTo(100, 0);
     @nonfinite ctx.roundRect(<0 Infinity -Infinity NaN>, <50 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <[0] [Infinity] [-Infinity] [NaN] [Infinity,0] [-Infinity,0] [NaN,0] [0,Infinity] [0,-Infinity] [0,NaN] [Infinity,0,0] [-Infinity,0,0] [NaN,0,0] [0,Infinity,0] [0,-Infinity,0] [0,NaN,0] [0,0,Infinity] [0,0,-Infinity] [0,0,NaN] [Infinity,0,0,0] [-Infinity,0,0,0] [NaN,0,0,0] [0,Infinity,0,0] [0,-Infinity,0,0] [0,NaN,0,0] [0,0,Infinity,0] [0,0,-Infinity,0] [0,0,NaN,0] [0,0,0,Infinity] [0,0,0,-Infinity] [0,0,0,NaN]>);
+    ctx.roundRect(0, 0, 100, 100, [new DOMPoint(10, Infinity)]);
+    ctx.roundRect(0, 0, 100, 100, [new DOMPoint(10, -Infinity)]);
+    ctx.roundRect(0, 0, 100, 100, [new DOMPoint(10, NaN)]);
+    ctx.roundRect(0, 0, 100, 100, [new DOMPoint(Infinity, 10)]);
+    ctx.roundRect(0, 0, 100, 100, [new DOMPoint(-Infinity, 10)]);
+    ctx.roundRect(0, 0, 100, 100, [new DOMPoint(NaN, 10)]);
+    ctx.roundRect(0, 0, 100, 100, [{x: 10, y: Infinity}]);
+    ctx.roundRect(0, 0, 100, 100, [{x: 10, y: -Infinity}]);
+    ctx.roundRect(0, 0, 100, 100, [{x: 10, y: NaN}]);
+    ctx.roundRect(0, 0, 100, 100, [{x: Infinity, y: 10}]);
+    ctx.roundRect(0, 0, 100, 100, [{x: -Infinity, y: 10}]);
+    ctx.roundRect(0, 0, 100, 100, [{x: NaN, y: 10}]);
     ctx.lineTo(100, 50);
     ctx.lineTo(0, 50);
     ctx.fillStyle = '#0f0';
@@ -1806,6 +1818,26 @@
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
     ctx.roundRect(0, 0, 100, 50, [new DOMPoint(40, 20), 0, 0, 0]);
+    ctx.fillStyle = '#0f0';
+    ctx.fill();
+
+    // top-left corner
+    @assert pixel 20,1 == 255,0,0,255;
+    @assert pixel 41,1 == 0,255,0,255;
+    @assert pixel 1,10 == 255,0,0,255;
+    @assert pixel 1,21 == 0,255,0,255;
+
+    // other corners
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+
+- name: 2d.path.roundrect.4.radii.1.dompointinit
+  desc: Verify that when four radii are given to roundRect(), the first radius, specified as a DOMPointInit, applies to the top-left corner.
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.roundRect(0, 0, 100, 50, [{x: 40, y: 20}, 0, 0, 0]);
     ctx.fillStyle = '#0f0';
     ctx.fill();
 
@@ -1853,6 +1885,26 @@
     @assert pixel 98,48 == 0,255,0,255;
     @assert pixel 1,48 == 0,255,0,255;
 
+- name: 2d.path.roundrect.4.radii.2.dompointinit
+  desc: Verify that when four radii are given to roundRect(), the second radius, specified as a DOMPointInit, applies to the top-right corner.
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.roundRect(0, 0, 100, 50, [0, {x: 40, y: 20}, 0, 0]);
+    ctx.fillStyle = '#0f0';
+    ctx.fill();
+
+    // top-right corner
+    @assert pixel 79,1 == 255,0,0,255;
+    @assert pixel 58,1 == 0,255,0,255;
+    @assert pixel 98,10 == 255,0,0,255;
+    @assert pixel 98,21 == 0,255,0,255;
+
+    // other corners
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+
 - name: 2d.path.roundrect.4.radii.3.double
   desc: Verify that when four radii are given to roundRect(), the third radius, specified as a double, applies to the bottom-right corner.
   code: |
@@ -1872,6 +1924,26 @@
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
     ctx.roundRect(0, 0, 100, 50, [0, 0, new DOMPoint(40, 20), 0]);
+    ctx.fillStyle = '#0f0';
+    ctx.fill();
+
+    // bottom-right corner
+    @assert pixel 79,48 == 255,0,0,255;
+    @assert pixel 58,48 == 0,255,0,255;
+    @assert pixel 98,39 == 255,0,0,255;
+    @assert pixel 98,28 == 0,255,0,255;
+
+    // other corners
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+
+- name: 2d.path.roundrect.4.radii.3.dompointinit
+  desc: Verify that when four radii are given to roundRect(), the third radius, specified as a DOMPointInit, applies to the bottom-right corner.
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.roundRect(0, 0, 100, 50, [0, 0, {x: 40, y: 20}, 0]);
     ctx.fillStyle = '#0f0';
     ctx.fill();
 
@@ -1919,6 +1991,26 @@
     @assert pixel 98,1 == 0,255,0,255;
     @assert pixel 98,48 == 0,255,0,255;
 
+- name: 2d.path.roundrect.4.radii.4.dompointinit
+  desc: Verify that when four radii are given to roundRect(), the fourth radius, specified as a DOMPointInit, applies to the bottom-left corner.
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.roundRect(0, 0, 100, 50, [0, 0, 0, {x: 40, y: 20}]);
+    ctx.fillStyle = '#0f0';
+    ctx.fill();
+
+    // bottom-left corner
+    @assert pixel 20,48 == 255,0,0,255;
+    @assert pixel 41,48 == 0,255,0,255;
+    @assert pixel 1,39 == 255,0,0,255;
+    @assert pixel 1,28 == 0,255,0,255;
+
+    // other corners
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
+
 - name: 2d.path.roundrect.3.radii.1.double
   desc: Verify that when three radii are given to roundRect(), the first radius, specified as a double, applies to the top-left corner.
   code: |
@@ -1938,6 +2030,26 @@
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
     ctx.roundRect(0, 0, 100, 50, [new DOMPoint(40, 20), 0, 0]);
+    ctx.fillStyle = '#0f0';
+    ctx.fill();
+
+    // top-left corner
+    @assert pixel 20,1 == 255,0,0,255;
+    @assert pixel 41,1 == 0,255,0,255;
+    @assert pixel 1,10 == 255,0,0,255;
+    @assert pixel 1,21 == 0,255,0,255;
+
+    // other corners
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+
+- name: 2d.path.roundrect.3.radii.1.dompointinit
+  desc: Verify that when three radii are given to roundRect(), the first radius, specified as a DOMPointInit, applies to the top-left corner.
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.roundRect(0, 0, 100, 50, [{x: 40, y: 20}, 0, 0]);
     ctx.fillStyle = '#0f0';
     ctx.fill();
 
@@ -1990,6 +2102,31 @@
     @assert pixel 1,1 == 0,255,0,255;
     @assert pixel 98,48 == 0,255,0,255;
 
+- name: 2d.path.roundrect.3.radii.2.dompointinit
+  desc: Verify that when three radii are given to roundRect(), the second radius, specified as a DOMPoint, applies to the top-right and bottom-left corners.
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.roundRect(0, 0, 100, 50, [0, {x: 40, y: 20}, 0]);
+    ctx.fillStyle = '#0f0';
+    ctx.fill();
+
+    // top-right corner
+    @assert pixel 79,1 == 255,0,0,255;
+    @assert pixel 58,1 == 0,255,0,255;
+    @assert pixel 98,10 == 255,0,0,255;
+    @assert pixel 98,21 == 0,255,0,255;
+
+    // bottom-left corner
+    @assert pixel 20,48 == 255,0,0,255;
+    @assert pixel 41,48 == 0,255,0,255;
+    @assert pixel 1,39 == 255,0,0,255;
+    @assert pixel 1,28 == 0,255,0,255;
+
+    // other corners
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
+
 - name: 2d.path.roundrect.3.radii.3.double
   desc: Verify that when three radii are given to roundRect(), the third radius, specified as a double, applies to the bottom-right corner.
   code: |
@@ -2023,6 +2160,26 @@
     @assert pixel 98,1 == 0,255,0,255;
     @assert pixel 1,48 == 0,255,0,255;
 
+- name: 2d.path.roundrect.3.radii.3.dompointinit
+  desc: Verify that when three radii are given to roundRect(), the third radius, specified as a DOMPointInit, applies to the bottom-right corner.
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.roundRect(0, 0, 100, 50, [0, 0, {x: 40, y: 20}]);
+    ctx.fillStyle = '#0f0';
+    ctx.fill();
+
+    // bottom-right corner
+    @assert pixel 79,48 == 255,0,0,255;
+    @assert pixel 58,48 == 0,255,0,255;
+    @assert pixel 98,39 == 255,0,0,255;
+    @assert pixel 98,28 == 0,255,0,255;
+
+    // other corners
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+
 - name: 2d.path.roundrect.2.radii.1.double
   desc: Verify that when two radii are given to roundRect(), the first radius, specified as a double, applies to the top-left and bottom-right corners.
   code: |
@@ -2042,6 +2199,31 @@
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
     ctx.roundRect(0, 0, 100, 50, [new DOMPoint(40, 20), 0]);
+    ctx.fillStyle = '#0f0';
+    ctx.fill();
+
+    // top-left corner
+    @assert pixel 20,1 == 255,0,0,255;
+    @assert pixel 41,1 == 0,255,0,255;
+    @assert pixel 1,10 == 255,0,0,255;
+    @assert pixel 1,21 == 0,255,0,255;
+
+    // bottom-right corner
+    @assert pixel 79,48 == 255,0,0,255;
+    @assert pixel 58,48 == 0,255,0,255;
+    @assert pixel 98,39 == 255,0,0,255;
+    @assert pixel 98,28 == 0,255,0,255;
+
+    // other corners
+    @assert pixel 98,1 == 0,255,0,255;
+    @assert pixel 1,48 == 0,255,0,255;
+
+- name: 2d.path.roundrect.2.radii.1.dompointinit
+  desc: Verify that when two radii are given to roundRect(), the first radius, specified as a DOMPointInit, applies to the top-left and bottom-right corners.
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.roundRect(0, 0, 100, 50, [{x: 40, y: 20}, 0]);
     ctx.fillStyle = '#0f0';
     ctx.fill();
 
@@ -2099,6 +2281,31 @@
     @assert pixel 1,1 == 0,255,0,255;
     @assert pixel 98,48 == 0,255,0,255;
 
+- name: 2d.path.roundrect.2.radii.2.dompointinit
+  desc: Verify that when two radii are given to roundRect(), the second radius, specified as a DOMPointInit, applies to the top-right and bottom-left corners.
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.roundRect(0, 0, 100, 50, [0, {x: 40, y: 20}]);
+    ctx.fillStyle = '#0f0';
+    ctx.fill();
+
+    // top-right corner
+    @assert pixel 79,1 == 255,0,0,255;
+    @assert pixel 58,1 == 0,255,0,255;
+    @assert pixel 98,10 == 255,0,0,255;
+    @assert pixel 98,21 == 0,255,0,255;
+
+    // bottom-left corner
+    @assert pixel 20,48 == 255,0,0,255;
+    @assert pixel 41,48 == 0,255,0,255;
+    @assert pixel 1,39 == 255,0,0,255;
+    @assert pixel 1,28 == 0,255,0,255;
+
+    // other corners
+    @assert pixel 1,1 == 0,255,0,255;
+    @assert pixel 98,48 == 0,255,0,255;
+
 - name: 2d.path.roundrect.1.radius.double
   desc: Verify that when one radius is given to roundRect(), specified as a double, it applies to all corners.
   code: |
@@ -2112,12 +2319,124 @@
     @assert pixel 98,48 == 255,0,0,255;
     @assert pixel 1,48 == 255,0,0,255;
 
+- name: 2d.path.roundrect.1.radius.double.single.argument
+  desc: Verify that when one radius is given to roundRect() as a non-array argument, specified as a double, it applies to all corners.
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.roundRect(0, 0, 100, 50, 20);
+    ctx.fillStyle = '#0f0';
+    ctx.fill();
+    @assert pixel 1,1 == 255,0,0,255;
+    @assert pixel 98,1 == 255,0,0,255;
+    @assert pixel 98,48 == 255,0,0,255;
+    @assert pixel 1,48 == 255,0,0,255;
+
 - name: 2d.path.roundrect.1.radius.dompoint
-  desc: Verify that when two radii are given to roundRect(), the first radius, specified as a DOMPoint, applies to the top-left and bottom-left corners.
+  desc: Verify that when one radius is given to roundRect(), specified as a DOMPoint, it applies to all corners.
   code: |
     ctx.fillStyle = '#f00';
     ctx.fillRect(0, 0, 100, 50);
     ctx.roundRect(0, 0, 100, 50, [new DOMPoint(40, 20)]);
+    ctx.fillStyle = '#0f0';
+    ctx.fill();
+
+    // top-left corner
+    @assert pixel 20,1 == 255,0,0,255;
+    @assert pixel 41,1 == 0,255,0,255;
+    @assert pixel 1,10 == 255,0,0,255;
+    @assert pixel 1,21 == 0,255,0,255;
+
+    // top-right corner
+    @assert pixel 79,1 == 255,0,0,255;
+    @assert pixel 58,1 == 0,255,0,255;
+    @assert pixel 98,10 == 255,0,0,255;
+    @assert pixel 98,21 == 0,255,0,255;
+
+    // bottom-right corner
+    @assert pixel 79,48 == 255,0,0,255;
+    @assert pixel 58,48 == 0,255,0,255;
+    @assert pixel 98,39 == 255,0,0,255;
+    @assert pixel 98,28 == 0,255,0,255;
+
+    // bottom-left corner
+    @assert pixel 20,48 == 255,0,0,255;
+    @assert pixel 41,48 == 0,255,0,255;
+    @assert pixel 1,39 == 255,0,0,255;
+    @assert pixel 1,28 == 0,255,0,255;
+
+- name: 2d.path.roundrect.1.radius.dompoint.single argument
+  desc: Verify that when one radius is given to roundRect() as a non-array argument, specified as a DOMPoint, it applies to all corners.
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.roundRect(0, 0, 100, 50, new DOMPoint(40, 20));
+    ctx.fillStyle = '#0f0';
+    ctx.fill();
+
+    // top-left corner
+    @assert pixel 20,1 == 255,0,0,255;
+    @assert pixel 41,1 == 0,255,0,255;
+    @assert pixel 1,10 == 255,0,0,255;
+    @assert pixel 1,21 == 0,255,0,255;
+
+    // top-right corner
+    @assert pixel 79,1 == 255,0,0,255;
+    @assert pixel 58,1 == 0,255,0,255;
+    @assert pixel 98,10 == 255,0,0,255;
+    @assert pixel 98,21 == 0,255,0,255;
+
+    // bottom-right corner
+    @assert pixel 79,48 == 255,0,0,255;
+    @assert pixel 58,48 == 0,255,0,255;
+    @assert pixel 98,39 == 255,0,0,255;
+    @assert pixel 98,28 == 0,255,0,255;
+
+    // bottom-left corner
+    @assert pixel 20,48 == 255,0,0,255;
+    @assert pixel 41,48 == 0,255,0,255;
+    @assert pixel 1,39 == 255,0,0,255;
+    @assert pixel 1,28 == 0,255,0,255;
+
+- name: 2d.path.roundrect.1.radius.dompointinit
+  desc: Verify that when one radius is given to roundRect(), specified as a DOMPointInit, applies to all corners.
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.roundRect(0, 0, 100, 50, [{x: 40, y: 20}]);
+    ctx.fillStyle = '#0f0';
+    ctx.fill();
+
+    // top-left corner
+    @assert pixel 20,1 == 255,0,0,255;
+    @assert pixel 41,1 == 0,255,0,255;
+    @assert pixel 1,10 == 255,0,0,255;
+    @assert pixel 1,21 == 0,255,0,255;
+
+    // top-right corner
+    @assert pixel 79,1 == 255,0,0,255;
+    @assert pixel 58,1 == 0,255,0,255;
+    @assert pixel 98,10 == 255,0,0,255;
+    @assert pixel 98,21 == 0,255,0,255;
+
+    // bottom-right corner
+    @assert pixel 79,48 == 255,0,0,255;
+    @assert pixel 58,48 == 0,255,0,255;
+    @assert pixel 98,39 == 255,0,0,255;
+    @assert pixel 98,28 == 0,255,0,255;
+
+    // bottom-left corner
+    @assert pixel 20,48 == 255,0,0,255;
+    @assert pixel 41,48 == 0,255,0,255;
+    @assert pixel 1,39 == 255,0,0,255;
+    @assert pixel 1,28 == 0,255,0,255;
+
+- name: 2d.path.roundrect.1.radius.dompointinit.single.argument
+  desc: Verify that when one radius is given to roundRect() as a non-array argument, specified as a DOMPointInit, applies to all corners.
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.roundRect(0, 0, 100, 50, {x: 40, y: 20});
     ctx.fillStyle = '#0f0';
     ctx.fill();
 
@@ -2182,14 +2501,64 @@
     @assert pixel 98,48 == 255,0,0,255;
 
 - name: 2d.path.roundrect.radius.none
-  desc: Check that roundRect throws an IndexSizeError if radii is an empty array.
+  desc: Check that roundRect throws an RangeError if radii is an empty array.
   code: |
-    @assert throws INDEX_SIZE_ERR ctx.roundRect(0, 0, 100, 50, []);
+    assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 100, 50, [])});
+
+- name: 2d.path.roundrect.radius.noargument
+  desc: Check that roundRect draws a rectangle when no radii are provided.
+  code: |
+    ctx.fillStyle = '#f00';
+    ctx.fillRect(0, 0, 100, 50);
+    ctx.roundRect(10, 10, 80, 30);
+    ctx.fillStyle = '#0f0';
+    ctx.fill();
+    // upper left corner (10, 10)
+    @assert pixel 10,9 == 255,0,0,255;
+    @assert pixel 9,10 == 255,0,0,255;
+    @assert pixel 10,10 == 0,255,0,255;
+
+    // upper right corner (89, 10)
+    @assert pixel 90,10 == 255,0,0,255;
+    @assert pixel 89,9 == 255,0,0,255;
+    @assert pixel 89,10 == 0,255,0,255;
+
+    // lower right corner (89, 39)
+    @assert pixel 89,40 == 255,0,0,255;
+    @assert pixel 90,39 == 255,0,0,255;
+    @assert pixel 89,39 == 0,255,0,255;
+
+    // lower left corner (10, 30)
+    @assert pixel 9,39 == 255,0,0,255;
+    @assert pixel 10,40 == 255,0,0,255;
+    @assert pixel 10,39 == 0,255,0,255;
 
 - name: 2d.path.roundrect.radius.toomany
   desc: Check that roundRect throws an IndeSizeError if radii has more than four items.
   code: |
-    @assert throws INDEX_SIZE_ERR ctx.roundRect(0, 0, 100, 50, [0, 0, 0, 0, 0]);
+    assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 100, 50, [0, 0, 0, 0, 0])});
+
+- name: 2d.path.roundrect.radius.negative
+  desc: roundRect() with negative radius throws an exception
+  code: |
+    assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [-1])});
+    assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [1, -1])});
+    assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [new DOMPoint(-1, 1), 1])});
+    assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [new DOMPoint(1, -1)])});
+    assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [{x: -1, y: 1}, 1])});
+    assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [{x: 1, y: -1}])});
+
+- name: 2d.path.roundrect.badinput
+  desc: roundRect() throws or does not throw errors given the strange inputs.
+  code: |
+    ctx.roundRect(0, 0, 100, 100, { foo: "bar" });  //=> DOMPointInit
+    ctx.roundRect(0, 0, 100, 100, undefined);       //=> "missing" -> 0
+    ctx.roundRect(0, 0, 100, 100, [[]]);            //=> « DOMPointInit »
+    ctx.roundRect(0, 0, 100, 100, [[25]]);          //=> « DOMPointInit »
+    ctx.roundRect(0, 0, 100, 100, [undefined]);     //=> « DOMPointInit »
+    @assert throws TypeError ctx.roundRect(0, 0, 100, 100, 0n);
+    @assert throws TypeError ctx.roundRect(0, 0, 100, 100, { x: 0n });
+    @assert throws TypeError ctx.roundRect(0, 0, 100, 100, [{ x: 0n }]);
 
 - name: 2d.path.ellipse.basics
   desc: Verify canvas throws error when drawing ellipse with negative radii.

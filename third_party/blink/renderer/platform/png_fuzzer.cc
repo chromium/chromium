@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@
 // testcases will go into ~/another_dir_to_store_corpus
 //
 // For more details, see
-// https://chromium.googlesource.com/chromium/src/+/master/testing/libfuzzer/README.md
+// https://chromium.googlesource.com/chromium/src/+/main/testing/libfuzzer/README.md
 
 #include <memory>
 

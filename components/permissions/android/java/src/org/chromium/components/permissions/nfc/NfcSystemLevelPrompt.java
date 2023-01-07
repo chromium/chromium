@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,7 +61,7 @@ public class NfcSystemLevelPrompt implements ModalDialogProperties.Controller {
         TextView messageTextView = customView.findViewById(R.id.text);
         messageTextView.setText(R.string.nfc_disabled_on_device_message);
         TextViewCompat.setCompoundDrawablesRelativeWithIntrinsicBounds(
-                messageTextView, R.drawable.settings_nfc, 0, 0, 0);
+                messageTextView, R.drawable.gm_filled_nfc_24, 0, 0, 0);
 
         Resources resources = activity.getResources();
         PropertyModel model = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -94,8 +94,7 @@ public class NfcSystemLevelPrompt implements ModalDialogProperties.Controller {
             try {
                 mWindowAndroid.showIntent(intent, new WindowAndroid.IntentCallback() {
                     @Override
-                    public void onIntentCompleted(
-                            WindowAndroid window, int resultCode, Intent data) {
+                    public void onIntentCompleted(int resultCode, Intent data) {
                         mModalDialogManager.dismissDialog(
                                 model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
                     }

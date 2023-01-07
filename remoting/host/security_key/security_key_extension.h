@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/host/host_extension.h"
 
@@ -26,6 +25,10 @@ class SecurityKeyExtension : public HostExtension {
  public:
   explicit SecurityKeyExtension(
       scoped_refptr<base::SingleThreadTaskRunner> file_task_runner);
+
+  SecurityKeyExtension(const SecurityKeyExtension&) = delete;
+  SecurityKeyExtension& operator=(const SecurityKeyExtension&) = delete;
+
   ~SecurityKeyExtension() override;
 
   // HostExtension interface.
@@ -37,8 +40,6 @@ class SecurityKeyExtension : public HostExtension {
  private:
   // Allows underlying auth handler to perform blocking file IO.
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyExtension);
 };
 
 }  // namespace remoting

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ class UsbBlocklistTest : public testing::Test {
     params_manager_.ClearAllVariationParams();
 
     std::map<std::string, std::string> params;
-    params["blocklist_additions"] = list.as_string();
+    params["blocklist_additions"] = std::string(list);
     params_manager_.SetVariationParams("WebUSBBlocklist", params);
 
     blocklist_.ResetToDefaultValuesForTest();

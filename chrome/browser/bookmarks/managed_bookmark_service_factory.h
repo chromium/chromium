@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -23,13 +22,18 @@ class ManagedBookmarkService;
 
 // Singleton that owns all ManagedBookmarkServices and associates them with
 // Profile.
-class ManagedBookmarkServiceFactory : public BrowserContextKeyedServiceFactory {
+class ManagedBookmarkServiceFactory : public ProfileKeyedServiceFactory {
  public:
   static bookmarks::ManagedBookmarkService* GetForProfile(Profile* profile);
   static ManagedBookmarkServiceFactory* GetInstance();
+
+  ManagedBookmarkServiceFactory(const ManagedBookmarkServiceFactory&) = delete;
+  ManagedBookmarkServiceFactory& operator=(
+      const ManagedBookmarkServiceFactory&) = delete;
+
   static TestingFactory GetDefaultFactory();
 
-  static std::string GetManagedBookmarksDomain(Profile* profile);
+  static std::string GetManagedBookmarksManager(Profile* profile);
 
  private:
   friend struct base::DefaultSingletonTraits<ManagedBookmarkServiceFactory>;
@@ -40,11 +44,7 @@ class ManagedBookmarkServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagedBookmarkServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_MANAGED_BOOKMARK_SERVICE_FACTORY_H_

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.FileProviderHelper;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -88,11 +87,11 @@ public class OfflinePageUtils {
     private static Internal sInstance;
 
     /**
-     * Tracks the observers of ChromeActivity's TabModelSelectors. This is weak so the activity can
+     * Tracks the observers of each Activity's TabModelSelectors. This is weak so the activity can
      * be garbage collected without worrying about this map.  The RecentTabTracker is held here so
-     * that it can be destroyed when the ChromeActivity gets a new TabModelSelector.
+     * that it can be destroyed when the Activity gets a new TabModelSelector.
      */
-    private static Map<ChromeActivity, RecentTabTracker> sTabModelObservers = new HashMap<>();
+    private static Map<Activity, RecentTabTracker> sTabModelObservers = new HashMap<>();
 
     /**
      * Interface for implementation of offline page utilities, that can be implemented for testing.
@@ -443,7 +442,7 @@ public class OfflinePageUtils {
         boolean isPageTemporary =
                 offlinePageBridge.isTemporaryNamespace(offlinePage.getClientId().getNamespace());
         String tabTitle = tab.getTitle();
-        getOfflinePageUriForSharing(tab.getUrlString(), isPageTemporary, offlinePath,
+        getOfflinePageUriForSharing(tab.getUrl().getSpec(), isPageTemporary, offlinePath,
                 (Uri uri)
                         -> maybeShareOfflinePageWithUri(tabTitle, webContents, offlinePageBridge,
                                 offlinePage, isPageTemporary, shareCallback, uri));
@@ -813,7 +812,7 @@ public class OfflinePageUtils {
         }
 
         @Override
-        public void willCloseTab(Tab tab, boolean animate) {
+        public void willCloseTab(Tab tab, boolean animate, boolean didCloseAlone) {
             Profile profile = mTabModelSelector.getModel(tab.isIncognito()).getProfile();
             OfflinePageBridge bridge = OfflinePageBridge.getForProfile(profile);
             if (bridge == null) return;
@@ -823,8 +822,8 @@ public class OfflinePageUtils {
         }
 
         @Override
-        public void didCloseTab(int tabId, boolean incognito) {
-            Profile profile = mTabModelSelector.getModel(incognito).getProfile();
+        public void onFinishingTabClosure(Tab tab) {
+            Profile profile = mTabModelSelector.getModel(tab.isIncognito()).getProfile();
             OfflinePageBridge bridge = OfflinePageBridge.getForProfile(profile);
             if (bridge == null) return;
 
@@ -832,7 +831,7 @@ public class OfflinePageUtils {
             // the UI will no longer show the page, and the page would also be cleaned up by GC
             // given enough time.
             ClientId clientId =
-                    new ClientId(OfflinePageBridge.LAST_N_NAMESPACE, Integer.toString(tabId));
+                    new ClientId(OfflinePageBridge.LAST_N_NAMESPACE, Integer.toString(tab.getId()));
             List<ClientId> clientIds = new ArrayList<>();
             clientIds.add(clientId);
 
@@ -850,7 +849,7 @@ public class OfflinePageUtils {
      * destroying obsolete observers as necessary.
      */
     public static void observeTabModelSelector(
-            ChromeActivity activity, TabModelSelector tabModelSelector) {
+            Activity activity, TabModelSelector tabModelSelector) {
         RecentTabTracker previousObserver =
                 sTabModelObservers.put(activity, new RecentTabTracker(tabModelSelector));
         if (previousObserver != null) {
@@ -889,7 +888,7 @@ public class OfflinePageUtils {
                 if (page.getClientId().getNamespace().equals(OfflinePageBridge.LAST_N_NAMESPACE)) {
                     tabRestoreContext |= BIT_LAST_N;
                 }
-            } else if (!OfflinePageBridge.canSavePage(tab.getUrlString()) || tab.isIncognito()) {
+            } else if (!OfflinePageBridge.canSavePage(tab.getUrl()) || tab.isIncognito()) {
                 tabRestoreContext |= BIT_CANT_SAVE_OFFLINE;
             }
 
@@ -924,7 +923,7 @@ public class OfflinePageUtils {
                     assert false;
                     return;
             }
-            recordTabRestoreHistogram(tabRestoreType, tab.getUrlString());
+            recordTabRestoreHistogram(tabRestoreType, tab.getUrl().getSpec());
         }
 
         /**

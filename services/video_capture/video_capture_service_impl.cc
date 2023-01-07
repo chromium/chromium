@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -28,7 +27,7 @@
 #include "services/video_capture/virtual_device_enabled_device_factory.h"
 #include "services/viz/public/cpp/gpu/gpu.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 #endif
 
@@ -38,7 +37,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "services/video_capture/lacros/device_factory_adapter_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -150,7 +149,7 @@ void VideoCaptureServiceImpl::ConnectToVideoSourceProvider(
 }
 
 void VideoCaptureServiceImpl::SetRetryCount(int32_t count) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   media::VideoCaptureDeviceFactoryMac::SetGetDevicesInfoRetryCount(count);
 #endif
 }
@@ -191,13 +190,16 @@ void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
               gpu_dependencies_context_->GetWeakPtr()),
           gpu_dependencies_context_->GetTaskRunner()));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // LacrosChromeServiceImpl might be null in unit tests.
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  if (lacros_chrome_service &&
-      lacros_chrome_service->IsVideoCaptureDeviceFactoryAvailable()) {
+  // LacrosService might be null in unit tests.
+  auto* lacros_service = chromeos::LacrosService::Get();
+
+  // For requests for fake (including file) video capture device factory, we
+  // don't need to forward the request to Ash-Chrome.
+  if (!media::ShouldUseFakeVideoCaptureDeviceFactory() && lacros_service &&
+      lacros_service->IsVideoCaptureDeviceFactoryAvailable()) {
     mojo::PendingRemote<crosapi::mojom::VideoCaptureDeviceFactory>
         device_factory_ash;
-    lacros_chrome_service->BindVideoCaptureDeviceFactory(
+    lacros_service->BindVideoCaptureDeviceFactory(
         device_factory_ash.InitWithNewPipeAndPassReceiver());
     device_factory_ = std::make_unique<VirtualDeviceEnabledDeviceFactory>(
         std::make_unique<DeviceFactoryAdapterLacros>(
@@ -232,5 +234,12 @@ void VideoCaptureServiceImpl::LazyInitializeVideoSourceProvider() {
 void VideoCaptureServiceImpl::OnLastSourceProviderClientDisconnected() {
   video_source_provider_.reset();
 }
+
+#if BUILDFLAG(IS_WIN)
+void VideoCaptureServiceImpl::OnGpuInfoUpdate(const CHROME_LUID& luid) {
+  LazyInitializeDeviceFactory();
+  device_factory_->OnGpuInfoUpdate(luid);
+}
+#endif
 
 }  // namespace video_capture

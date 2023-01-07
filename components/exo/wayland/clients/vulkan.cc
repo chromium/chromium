@@ -1,11 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/stl_util.h"
 #include "base/task/single_thread_task_executor.h"
 #include "components/exo/wayland/clients/client_base.h"
 #include "components/exo/wayland/clients/client_helper.h"
@@ -30,12 +29,13 @@ class VulkanClient : ClientBase {
  public:
   VulkanClient() {}
 
+  VulkanClient(const VulkanClient&) = delete;
+  VulkanClient& operator=(const VulkanClient&) = delete;
+
   void Run(const ClientBase::InitParams& params);
 
  private:
   friend class ScopedVulkanRenderFrame;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanClient);
 };
 
 // ScopedVulkanRenderFrame class helps setting up all the state needed to begin
@@ -86,8 +86,9 @@ class ScopedVulkanRenderFrame {
         .renderArea =
             (VkRect2D){
                 .offset = {0, 0},
-                .extent = {client_->surface_size_.width(),
-                           client_->surface_size_.height()},
+                .extent =
+                    {static_cast<uint32_t>(client_->surface_size_.width()),
+                     static_cast<uint32_t>(client_->surface_size_.height())},
             },
         .clearValueCount = 1,
         .pClearValues = &clear_value,
@@ -95,6 +96,10 @@ class ScopedVulkanRenderFrame {
     vkCmdBeginRenderPass(command_buffer_, &render_pass_begin_info,
                          VK_SUBPASS_CONTENTS_INLINE);
   }
+
+  ScopedVulkanRenderFrame(const ScopedVulkanRenderFrame&) = delete;
+  ScopedVulkanRenderFrame& operator=(const ScopedVulkanRenderFrame&) = delete;
+
   ~ScopedVulkanRenderFrame() {
     vkCmdEndRenderPass(command_buffer_);
 
@@ -115,8 +120,6 @@ class ScopedVulkanRenderFrame {
  private:
   VulkanClient* const client_;
   VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedVulkanRenderFrame);
 };
 
 void VulkanClient::Run(const ClientBase::InitParams& params) {
@@ -142,7 +145,7 @@ void VulkanClient::Run(const ClientBase::InitParams& params) {
 
       ScopedVulkanRenderFrame vulkan_frame(
           this, buffer->vk_framebuffer->get(),
-          kColors[++frame_count % base::size(kColors)]);
+          kColors[++frame_count % std::size(kColors)]);
 
       // This is where the drawing code would go.
       // This client is not drawing anything. Just clearing the fb.

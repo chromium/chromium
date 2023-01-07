@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,7 @@ base::ScopedFD GetDataReadPipe(const std::string& data) {
   base::ScopedFD pipe_read_end(pipe_fds[0]);
   base::ScopedFD pipe_write_end(pipe_fds[1]);
 
-  if (!base::WriteFileDescriptor(pipe_write_end.get(), data.c_str(),
-                                 data.size())) {
+  if (!base::WriteFileDescriptor(pipe_write_end.get(), data)) {
     DLOG(ERROR) << "Failed to write to pipe";
     return base::ScopedFD();
   }

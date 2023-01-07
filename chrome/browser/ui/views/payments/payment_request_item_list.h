@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_row_view.h"
 
 namespace views {
@@ -41,6 +41,10 @@ class PaymentRequestItemList {
          bool selected,
          bool clickable,
          bool show_edit_button);
+
+    Item(const Item&) = delete;
+    Item& operator=(const Item&) = delete;
+
     ~Item() override;
 
     bool selected() const { return selected_; }
@@ -110,16 +114,18 @@ class PaymentRequestItemList {
 
     base::WeakPtr<PaymentRequestSpec> spec_;
     base::WeakPtr<PaymentRequestState> state_;
-    PaymentRequestItemList* list_;
+    raw_ptr<PaymentRequestItemList> list_;
     std::u16string accessible_item_description_;
     bool selected_;
     bool show_edit_button_;
-
-    DISALLOW_COPY_AND_ASSIGN(Item);
   };
 
   explicit PaymentRequestItemList(
       base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  PaymentRequestItemList(const PaymentRequestItemList&) = delete;
+  PaymentRequestItemList& operator=(const PaymentRequestItemList&) = delete;
+
   virtual ~PaymentRequestItemList();
 
   // Adds an item to this list. |item->list()| should return this object.
@@ -145,10 +151,8 @@ class PaymentRequestItemList {
   void UnselectSelectedItem();
 
   std::vector<std::unique_ptr<Item>> items_;
-  Item* selected_item_;
+  raw_ptr<Item> selected_item_;
   base::WeakPtr<PaymentRequestDialogView> dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestItemList);
 };
 
 }  // namespace payments

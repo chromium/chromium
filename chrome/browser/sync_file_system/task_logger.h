@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -35,17 +34,21 @@ class TaskLogger : public base::SupportsWeakPtr<TaskLogger> {
 
   class Observer {
    public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual void OnLogRecorded(const TaskLog& task_log) = 0;
 
    protected:
     Observer() {}
     virtual ~Observer() {}
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   TaskLogger();
+
+  TaskLogger(const TaskLogger&) = delete;
+  TaskLogger& operator=(const TaskLogger&) = delete;
+
   ~TaskLogger();
 
   void RecordLog(std::unique_ptr<TaskLog> log);
@@ -60,8 +63,6 @@ class TaskLogger : public base::SupportsWeakPtr<TaskLogger> {
   LogList log_history_;
 
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskLogger);
 };
 
 }  // namespace sync_file_system

@@ -19,11 +19,11 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <!-- There should be no selection on the document because the textboxes are
-      not content editable. -->
-  <!-- There should be no single/multi-line state on the textboxes because
-      they are not content editable -->
-  <div role="textbox">TextBox1</div>
-  <div role="textbox" aria-multiline="true">TextBox2</div>
+  <div role="textbox" contenteditable="plaintext-only">
+    TextBox1
+  </div>
+  <div role="textbox" contenteditable="plaintext-only" aria-multiline="true">
+    TextBox2
+  </div>
 </body>
 </html>

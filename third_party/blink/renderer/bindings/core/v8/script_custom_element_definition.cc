@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,11 +23,13 @@
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
+#include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
 
@@ -156,22 +158,7 @@ HTMLElement* ScriptCustomElementDefinition::CreateAutonomousCustomElementSync(
   Element* element = nullptr;
   {
     v8::TryCatch try_catch(script_state_->GetIsolate());
-
-    if (document.IsHTMLImport()) {
-      // V8HTMLElement::constructorCustom() can only refer to
-      // window.document() which is not the import document. Create
-      // elements in import documents ahead of time so they end up in
-      // the right document. This subtly violates recursive
-      // construction semantics, but only in import documents.
-      element = CreateElementForConstructor(document);
-      DCHECK(!try_catch.HasCaught());
-
-      ConstructionStackScope construction_stack_scope(*this, *element);
-      element = CallConstructor();
-    } else {
-      element = CallConstructor();
-    }
-
+    element = CallConstructor();
     if (try_catch.HasCaught()) {
       exception_state.RethrowV8Exception(try_catch.Exception());
       return HandleCreateElementSyncException(document, tag_name, isolate,
@@ -344,16 +331,12 @@ void ScriptCustomElementDefinition::RunFormDisabledCallback(Element& element,
 
 void ScriptCustomElementDefinition::RunFormStateRestoreCallback(
     Element& element,
-    const FileOrUSVStringOrFormData& value,
+    const V8ControlValue* value,
     const String& mode) {
   if (!form_state_restore_callback_)
     return;
-#if defined(USE_BLINK_V8_BINDING_NEW_IDL_CALLBACK_FUNCTION)
   form_state_restore_callback_->InvokeAndReportException(
       &element, value, V8FormStateRestoreMode::Create(mode).value());
-#else
-  form_state_restore_callback_->InvokeAndReportException(&element, value, mode);
-#endif
 }
 
 }  // namespace blink

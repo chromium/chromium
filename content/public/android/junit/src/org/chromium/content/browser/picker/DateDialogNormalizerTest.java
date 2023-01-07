@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ import java.util.TimeZone;
  * Tests for DateDialogNormalizer.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE, sdk = 21)
+@Config(manifest = Config.NONE)
 public class DateDialogNormalizerTest {
     private static final long MILLIS_PER_MINUTE = 60 * 1000;
     private static final long MILLIS_PER_HOUR = 60 * 60 * 1000;

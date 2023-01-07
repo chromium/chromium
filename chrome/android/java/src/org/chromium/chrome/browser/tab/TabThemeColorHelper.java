@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@ import org.chromium.base.Callback;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.net.NetError;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.url.GURL;
 
 /**
  * Monitor changes that indicate a theme color change may be needed from tab contents.
@@ -47,13 +46,15 @@ public class TabThemeColorHelper extends EmptyTabObserver {
     }
 
     @Override
-    public void onDidFailLoad(Tab tab, boolean isMainFrame, int errorCode, GURL failingUrl) {
-        updateIfNeeded(tab, true);
+    public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
+        if (navigation.errorCode() != NetError.OK) updateIfNeeded(tab, true);
     }
 
     @Override
-    public void onDidFinishNavigation(Tab tab, NavigationHandle navigation) {
-        if (navigation.errorCode() != NetError.OK) updateIfNeeded(tab, true);
+    public void onDidFinishNavigationNoop(Tab tab, NavigationHandle navigation) {
+        // In case something goes wrong, we can enable NotifyJavaSpuriouslyToMeasurePerf so
+        // didFinishNavigation has the same behavior as before.
+        onDidFinishNavigationInPrimaryMainFrame(tab, navigation);
     }
 
     @Override

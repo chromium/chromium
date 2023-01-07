@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:alpha="@dimen/icon_animated_faded_alpha" android:color="@macro/default_icon_color_accent1" />
+</selector>

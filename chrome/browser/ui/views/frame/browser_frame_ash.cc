@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,26 @@
 
 #include <memory>
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
+#include "ash/shell_delegate.h"
 #include "ash/wm/window_properties.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
 #include "ash/wm/window_util.h"
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
-#include "components/full_restore/full_restore_info.h"
-#include "components/full_restore/full_restore_utils.h"
+#include "components/app_restore/app_restore_info.h"
+#include "components/app_restore/app_restore_utils.h"
+#include "components/app_restore/full_restore_utils.h"
+#include "components/app_restore/window_properties.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -32,10 +37,14 @@ namespace {
 // request (Shift+F4/F4).
 class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
  public:
-  explicit BrowserWindowStateDelegate(Browser* browser)
-      : browser_(browser) {
+  explicit BrowserWindowStateDelegate(Browser* browser) : browser_(browser) {
     DCHECK(browser_);
   }
+
+  BrowserWindowStateDelegate(const BrowserWindowStateDelegate&) = delete;
+  BrowserWindowStateDelegate& operator=(const BrowserWindowStateDelegate&) =
+      delete;
+
   ~BrowserWindowStateDelegate() override {}
 
   // Overridden from ash::WindowStateDelegate.
@@ -48,10 +57,14 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
     return true;
   }
 
+  // Overridden from ash::WindowStateDelegate.
+  void ToggleLockedFullscreen(ash::WindowState* window_state) override {
+    ash::Shell::Get()->shell_delegate()->SetUpEnvironmentForLockedFullscreen(
+        window_state->IsPinned());
+  }
+
  private:
   Browser* browser_;  // not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserWindowStateDelegate);
 };
 
 }  // namespace
@@ -61,10 +74,11 @@ class BrowserWindowStateDelegate : public ash::WindowStateDelegate {
 
 BrowserFrameAsh::BrowserFrameAsh(BrowserFrame* browser_frame,
                                  BrowserView* browser_view)
-    : views::NativeWidgetAura(browser_frame),
-      browser_view_(browser_view) {
+    : views::NativeWidgetAura(browser_frame), browser_view_(browser_view) {
   GetNativeWindow()->SetName("BrowserFrameAsh");
   Browser* browser = browser_view->browser();
+
+  created_from_drag_ = browser_frame->tab_drag_kind() != TabDragKind::kNone;
 
   // Turn on auto window management if we don't need an explicit bounds.
   // This way the requested bounds are honored.
@@ -85,10 +99,10 @@ void BrowserFrameAsh::OnWidgetInitDone() {
   // For legacy reasons v1 apps (like Secure Shell) are allowed to consume keys
   // like brightness, volume, etc. Otherwise these keys are handled by the
   // Ash window manager.
-  window_state->SetCanConsumeSystemKeys(browser->deprecated_is_app());
+  window_state->SetCanConsumeSystemKeys(browser->is_type_app() ||
+                                        browser->is_type_app_popup());
 
-  full_restore::FullRestoreInfo::GetInstance()->OnWidgetInitialized(
-      GetWidget());
+  app_restore::AppRestoreInfo::GetInstance()->OnWidgetInitialized(GetWidget());
 }
 
 void BrowserFrameAsh::OnWindowTargetVisibilityChanged(bool visible) {
@@ -111,17 +125,35 @@ bool BrowserFrameAsh::ShouldSaveWindowPlacement() const {
 void BrowserFrameAsh::GetWindowPlacement(
     gfx::Rect* bounds,
     ui::WindowShowState* show_state) const {
-  gfx::Rect* override_bounds = GetWidget()->GetNativeWindow()->GetProperty(
-                                   ash::kRestoreBoundsOverrideKey);
+  aura::Window* window = GetWidget()->GetNativeWindow();
+  gfx::Rect* override_bounds =
+      window->GetProperty(ash::kRestoreBoundsOverrideKey);
   if (override_bounds && !override_bounds->IsEmpty()) {
     *bounds = *override_bounds;
-    *show_state =
-        chromeos::ToWindowShowState(GetWidget()->GetNativeWindow()->GetProperty(
-            ash::kRestoreWindowStateTypeOverrideKey));
+    *show_state = chromeos::ToWindowShowState(
+        window->GetProperty(ash::kRestoreWindowStateTypeOverrideKey));
   } else {
-    *bounds = GetWidget()->GetRestoredBounds();
-    *show_state = GetWidget()->GetNativeWindow()->GetProperty(
-                      aura::client::kShowStateKey);
+    // Snapped state is a ash only state which is normally not restored except
+    // when the full restore feature is turned on. `Widget::GetRestoreBounds()`
+    // will not return the restore bounds for a snapped window because to
+    // Widget/NativeWidgetAura the window is a normal window, so get the restore
+    // bounds directly from the ash window state.
+    bool used_window_state_restore_bounds = false;
+    auto* window_state = ash::WindowState::Get(window);
+    if (window_state->IsSnapped() && window_state->HasRestoreBounds()) {
+      // Additionally, if the window is closed, and not from logging out we
+      // want to use the regular restore bounds, otherwise the next time the
+      // user opens a window it will be in a different place than closed,
+      // since session restore does not restore ash snapped state.
+      if (browser_shutdown::IsTryingToQuit() || !GetWidget()->IsClosed()) {
+        used_window_state_restore_bounds = true;
+        *bounds = window_state->GetRestoreBoundsInScreen();
+      }
+    }
+
+    if (!used_window_state_restore_bounds)
+      *bounds = GetWidget()->GetRestoredBounds();
+    *show_state = window->GetProperty(aura::client::kShowStateKey);
   }
 
   // Session restore might be unable to correctly restore other states.
@@ -149,19 +181,32 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
 
   Browser* browser = browser_view_->browser();
   const int32_t restore_id = browser->create_params().restore_id;
-  params.init_properties_container.SetProperty(full_restore::kWindowIdKey,
+  params.init_properties_container.SetProperty(app_restore::kWindowIdKey,
                                                browser->session_id().id());
+  params.init_properties_container.SetProperty(app_restore::kRestoreWindowIdKey,
+                                               restore_id);
+
   params.init_properties_container.SetProperty(
-      full_restore::kRestoreWindowIdKey, restore_id);
+      app_restore::kAppTypeBrowser,
+      (browser->is_type_app() || browser->is_type_app_popup()));
+
+  params.init_properties_container.SetProperty(app_restore::kBrowserAppNameKey,
+                                               browser->app_name());
+  params.init_properties_container.SetProperty(
+      chromeos::kShouldHaveHighlightBorderOverlay, true);
 
   // This is only needed for ash. For lacros, Exo tags the associated
   // ShellSurface as being of AppType::LACROS.
+  bool is_app = browser->is_type_app() || browser->is_type_app_popup();
   params.init_properties_container.SetProperty(
-      aura::client::kAppType,
-      static_cast<int>(browser->deprecated_is_app() ? ash::AppType::CHROME_APP
-                                                    : ash::AppType::BROWSER));
+      aura::client::kAppType, static_cast<int>(is_app ? ash::AppType::CHROME_APP
+                                                      : ash::AppType::BROWSER));
 
-  full_restore::ModifyWidgetParams(restore_id, &params);
+  app_restore::ModifyWidgetParams(restore_id, &params);
+  // Override session restore bounds with Full Restore bounds if they exist.
+  if (!params.bounds.IsEmpty())
+    browser->set_override_bounds(params.bounds);
+
   return params;
 }
 
@@ -182,7 +227,11 @@ bool BrowserFrameAsh::ShouldRestorePreviousBrowserWidgetState() const {
   // restore.
   const int32_t restore_id =
       browser_view_->browser()->create_params().restore_id;
-  return !full_restore::HasWindowInfo(restore_id);
+  return !app_restore::HasWindowInfo(restore_id);
+}
+
+bool BrowserFrameAsh::ShouldUseInitialVisibleOnAllWorkspaces() const {
+  return !created_from_drag_;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

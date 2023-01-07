@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,14 @@
 #import "ios/chrome/browser/ui/overlays/overlay_request_mediator+subclassing.h"
 
 #import "base/bind.h"
-#include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
-#include "ios/chrome/browser/overlays/public/overlay_response_support.h"
-#include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
-#include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/platform_test.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/public/overlay_response_support.h"
+#import "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
+#import "ios/chrome/browser/overlays/test/overlay_test_macros.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
@@ -56,7 +56,7 @@ class OverlayRequestMediatorTest : public PlatformTest {
     EXPECT_OCMOCK_VERIFY(delegate_);
   }
 
-  // Destroys |request_|, expecting that the completion callback is executed.
+  // Destroys `request_`, expecting that the completion callback is executed.
   void ResetRequest() {
     if (!request_)
       return;
@@ -79,7 +79,7 @@ TEST_F(OverlayRequestMediatorTest, ResetRequestAfterDestruction) {
   EXPECT_EQ(nullptr, mediator_.request);
 }
 
-// Tests that |-dispatchResponse:| correctly dispatches the response.
+// Tests that `-dispatchResponse:` correctly dispatches the response.
 TEST_F(OverlayRequestMediatorTest, DispatchResponse) {
   EXPECT_CALL(
       callback_receiver_,
@@ -87,7 +87,7 @@ TEST_F(OverlayRequestMediatorTest, DispatchResponse) {
   [mediator_ dispatchResponse:OverlayResponse::CreateWithInfo<DispatchInfo>()];
 }
 
-// Tests that |-dismissOverlay| stops the overlay.
+// Tests that `-dismissOverlay` stops the overlay.
 TEST_F(OverlayRequestMediatorTest, DismissOverlay) {
   OCMExpect([delegate_ stopOverlayForMediator:mediator_]);
   [mediator_ dismissOverlay];

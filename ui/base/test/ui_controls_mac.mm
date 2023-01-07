@@ -1,17 +1,17 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/base/test/ui_controls.h"
 
 #import <Cocoa/Cocoa.h>
+
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
-#include "base/stl_util.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/base/cocoa/cocoa_base_utils.h"
@@ -75,25 +75,25 @@ void SynthesizeKeyEventsSequence(NSWindow* window,
   NSEvent* event = nil;
   NSUInteger flags = 0;
   if (control) {
-    flags |= NSControlKeyMask;
+    flags |= NSEventModifierFlagControl;
     event = SynthesizeKeyEvent(window, true, ui::VKEY_CONTROL, flags);
     DCHECK(event);
     events->push_back(event);
   }
   if (shift) {
-    flags |= NSShiftKeyMask;
+    flags |= NSEventModifierFlagShift;
     event = SynthesizeKeyEvent(window, true, ui::VKEY_SHIFT, flags);
     DCHECK(event);
     events->push_back(event);
   }
   if (alt) {
-    flags |= NSAlternateKeyMask;
+    flags |= NSEventModifierFlagOption;
     event = SynthesizeKeyEvent(window, true, ui::VKEY_MENU, flags);
     DCHECK(event);
     events->push_back(event);
   }
   if (command) {
-    flags |= NSCommandKeyMask;
+    flags |= NSEventModifierFlagCommand;
     event = SynthesizeKeyEvent(window, true, ui::VKEY_COMMAND, flags);
     DCHECK(event);
     events->push_back(event);
@@ -107,25 +107,25 @@ void SynthesizeKeyEventsSequence(NSWindow* window,
   events->push_back(event);
 
   if (command) {
-    flags &= ~NSCommandKeyMask;
+    flags &= ~NSEventModifierFlagCommand;
     event = SynthesizeKeyEvent(window, false, ui::VKEY_COMMAND, flags);
     DCHECK(event);
     events->push_back(event);
   }
   if (alt) {
-    flags &= ~NSAlternateKeyMask;
+    flags &= ~NSEventModifierFlagOption;
     event = SynthesizeKeyEvent(window, false, ui::VKEY_MENU, flags);
     DCHECK(event);
     events->push_back(event);
   }
   if (shift) {
-    flags &= ~NSShiftKeyMask;
+    flags &= ~NSEventModifierFlagShift;
     event = SynthesizeKeyEvent(window, false, ui::VKEY_SHIFT, flags);
     DCHECK(event);
     events->push_back(event);
   }
   if (control) {
-    flags &= ~NSControlKeyMask;
+    flags &= ~NSEventModifierFlagControl;
     event = SynthesizeKeyEvent(window, false, ui::VKEY_CONTROL, flags);
     DCHECK(event);
     events->push_back(event);
@@ -135,7 +135,7 @@ void SynthesizeKeyEventsSequence(NSWindow* window,
 // A helper function to watch for the event queue. The specific task will be
 // fired when there is no more event in the queue.
 void EventQueueWatcher(base::OnceClosure task) {
-  NSEvent* event = [NSApp nextEventMatchingMask:NSAnyEventMask
+  NSEvent* event = [NSApp nextEventMatchingMask:NSEventMaskAny
                                       untilDate:nil
                                          inMode:NSDefaultRunLoopMode
                                         dequeue:NO];
@@ -195,7 +195,7 @@ NSWindow* WindowAtCurrentMouseLocation() {
   NSUInteger result = 0;
   const int buttons[3] = {
       ui_controls::LEFT, ui_controls::RIGHT, ui_controls::MIDDLE};
-  for (size_t i = 0; i < base::size(buttons); ++i) {
+  for (size_t i = 0; i < std::size(buttons); ++i) {
     if (g_mouse_button_down[buttons[i]])
       result |= (1 << i);
   }
@@ -217,6 +217,9 @@ class MockNSEventClassMethods {
     }
   }
 
+  MockNSEventClassMethods(const MockNSEventClassMethods&) = delete;
+  MockNSEventClassMethods& operator=(const MockNSEventClassMethods&) = delete;
+
  private:
   MockNSEventClassMethods()
       : mouse_location_swizzler_([NSEvent class],
@@ -228,8 +231,6 @@ class MockNSEventClassMethods {
 
   base::mac::ScopedObjCClassSwizzler mouse_location_swizzler_;
   base::mac::ScopedObjCClassSwizzler pressed_mouse_buttons_swizzler_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockNSEventClassMethods);
 };
 
 }  // namespace
@@ -294,7 +295,7 @@ bool SendMouseMove(int x, int y) {
   return SendMouseMoveNotifyWhenDone(x, y, base::OnceClosure());
 }
 
-// Input position is in screen coordinates.  However, NSMouseMoved
+// Input position is in screen coordinates.  However, NSEventTypeMouseMoved
 // events require them window-relative, so we adjust.  We *DO* flip
 // the coordinate space, so input events can be the same for all
 // platforms.  E.g. (0,0) is upper-left.
@@ -309,25 +310,25 @@ bool SendMouseMoveNotifyWhenDone(int x, int y, base::OnceClosure task) {
     pointInWindow = ui::ConvertPointFromScreenToWindow(window, pointInWindow);
   NSTimeInterval timestamp = TimeIntervalSinceSystemStartup();
 
-  NSEventType event_type = NSMouseMoved;
+  NSEventType event_type = NSEventTypeMouseMoved;
   if (g_mouse_button_down[LEFT]) {
-    event_type = NSLeftMouseDragged;
+    event_type = NSEventTypeLeftMouseDragged;
   } else if (g_mouse_button_down[RIGHT]) {
-    event_type = NSRightMouseDragged;
+    event_type = NSEventTypeRightMouseDragged;
   } else if (g_mouse_button_down[MIDDLE]) {
-    event_type = NSOtherMouseDragged;
+    event_type = NSEventTypeOtherMouseDragged;
   }
 
-  NSEvent* event =
-      [NSEvent mouseEventWithType:event_type
-                         location:pointInWindow
-                    modifierFlags:0
-                        timestamp:timestamp
-                     windowNumber:[window windowNumber]
-                          context:nil
-                      eventNumber:0
-                       clickCount:event_type == NSMouseMoved ? 0 : 1
-                         pressure:event_type == NSMouseMoved ? 0.0 : 1.0];
+  NSEvent* event = [NSEvent
+      mouseEventWithType:event_type
+                location:pointInWindow
+           modifierFlags:0
+               timestamp:timestamp
+            windowNumber:[window windowNumber]
+                 context:nil
+             eventNumber:0
+              clickCount:event_type == NSEventTypeMouseMoved ? 0 : 1
+                pressure:event_type == NSEventTypeMouseMoved ? 0.0 : 1.0];
   [[NSApplication sharedApplication] postEvent:event atStart:NO];
 
   if (!task.is_null()) {
@@ -358,24 +359,24 @@ bool SendMouseEventsNotifyWhenDone(MouseButton type,
             SendMouseEventsNotifyWhenDone(type, UP, std::move(task),
                                           accelerator_state));
   }
-  NSEventType event_type = NSLeftMouseDown;
+  NSEventType event_type = NSEventTypeLeftMouseDown;
   if (type == LEFT) {
     if (button_state == UP) {
-      event_type = NSLeftMouseUp;
+      event_type = NSEventTypeLeftMouseUp;
     } else {
-      event_type = NSLeftMouseDown;
+      event_type = NSEventTypeLeftMouseDown;
     }
   } else if (type == MIDDLE) {
     if (button_state == UP) {
-      event_type = NSOtherMouseUp;
+      event_type = NSEventTypeOtherMouseUp;
     } else {
-      event_type = NSOtherMouseDown;
+      event_type = NSEventTypeOtherMouseDown;
     }
   } else if (type == RIGHT) {
     if (button_state == UP) {
-      event_type = NSRightMouseUp;
+      event_type = NSEventTypeRightMouseUp;
     } else {
-      event_type = NSRightMouseDown;
+      event_type = NSEventTypeRightMouseDown;
     }
   } else {
     NOTREACHED();

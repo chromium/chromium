@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "web_engine_url_loader_throttle.*": [
+    "+services/network/public/cpp/resource_request.h",
+    "+third_party/blink/public/common/loader",
+  ],
+}

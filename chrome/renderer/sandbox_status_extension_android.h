@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "chrome/common/sandbox_status_extension_android.mojom.h"
@@ -31,12 +30,15 @@ class SandboxStatusExtension
   // Creates a new SandboxStatusExtension for the |frame|.
   static void Create(content::RenderFrame* frame);
 
+  SandboxStatusExtension(const SandboxStatusExtension&) = delete;
+  SandboxStatusExtension& operator=(const SandboxStatusExtension&) = delete;
+
   // content::RenderFrameObserver:
   void OnDestruct() override;
   void DidClearWindowObject() override;
 
  protected:
-  friend class RefCountedThreadSafe<SandboxStatusExtension>;
+  friend class base::RefCountedThreadSafe<SandboxStatusExtension>;
   ~SandboxStatusExtension() override;
 
  private:
@@ -57,22 +59,20 @@ class SandboxStatusExtension
   void GetSandboxStatus(gin::Arguments* args);
 
   // Called on the blocking pool, this gets the sandbox status of the current
-  // renderer process and returns a status object as a base::Value.
-  std::unique_ptr<base::Value> ReadSandboxStatus();
+  // renderer process and returns a status object as a base::Value::Dict.
+  base::Value::Dict ReadSandboxStatus();
 
   // Runs the callback argument provided to GetSandboxStatus() with the status
   // object computed by ReadSandboxStatus(). This is called back on the thread
   // on which GetSandboxStatus() was called originally.
   void RunCallback(std::unique_ptr<v8::Global<v8::Function>> callback,
-                   std::unique_ptr<base::Value> status);
+                   base::Value::Dict status);
 
   // Set to true by AddSandboxStatusExtension().
   bool should_install_ = false;
 
   mojo::AssociatedReceiver<chrome::mojom::SandboxStatusExtension> receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxStatusExtension);
 };
 
 #endif  // CHROME_RENDERER_SANDBOX_STATUS_EXTENSION_ANDROID_H_

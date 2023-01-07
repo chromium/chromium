@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- Copyright (c) 2012 The Chromium Authors. All rights reserved.
-
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
- -->
+<!--
+Copyright 2012 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="{{ manifest_package }}">
@@ -24,14 +24,15 @@
 
     <application android:name="org.chromium.content_shell_apk.ContentShellApplication"
             android:icon="@mipmap/app_icon"
-            android:zygotePreloadName="org.chromium.content.app.ZygotePreload"
+            android:zygotePreloadName="org.chromium.content_public.app.ZygotePreload"
             android:label="{% block application_label %}Content Shell{% endblock %}">
         <activity android:name="org.chromium.content_shell_apk.ContentShellActivity"
                   android:launchMode="singleTask"
                   android:theme="@android:style/Theme.Holo.Light.NoActionBar"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
                   android:windowSoftInputMode="adjustResize"
-                  android:hardwareAccelerated="true">
+                  android:hardwareAccelerated="true"
+                  android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

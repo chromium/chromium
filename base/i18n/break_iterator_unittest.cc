@@ -1,14 +1,14 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/i18n/break_iterator.h"
 
 #include <stddef.h>
+
 #include <vector>
 
 #include "base/ranges/algorithm.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -31,7 +31,7 @@ TEST(BreakIteratorTest, BreakWordEmpty) {
 
 TEST(BreakIteratorTest, BreakWord) {
   std::u16string space(u" ");
-  std::u16string str(UTF8ToUTF16(" foo bar! \npouet boom"));
+  std::u16string str(u" foo bar! \npouet boom");
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -54,7 +54,7 @@ TEST(BreakIteratorTest, BreakWord) {
   EXPECT_EQ(space, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("\n"), iter.GetString());
+  EXPECT_EQ(u"\n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
   EXPECT_EQ(u"pouet", iter.GetString());
@@ -95,10 +95,7 @@ TEST(BreakIteratorTest, BreakWordWide16) {
 }
 
 TEST(BreakIteratorTest, BreakWordWide32) {
-  // U+1D49C MATHEMATICAL SCRIPT CAPITAL A
-  const char very_wide_char[] = "\xF0\x9D\x92\x9C";
-  const std::u16string str(
-      UTF8ToUTF16(base::StringPrintf("%s a", very_wide_char)));
+  const std::u16string str = u"\U0001d49c a";
   const std::u16string very_wide_word(str.substr(0, 2));
 
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
@@ -120,23 +117,22 @@ TEST(BreakIteratorTest, BreakWordWide32) {
 
 TEST(BreakIteratorTest, BreakWordThai) {
   // Terms in Thai, without spaces in between.
-  const char term1[] = "พิมพ์";
-  const char term2[] = "น้อย";
-  const char term3[] = "ลง";
-  const std::u16string str(
-      UTF8ToUTF16(base::JoinString({term1, term2, term3}, "")));
+  const char16_t term1[] = u"พิมพ์";
+  const char16_t term2[] = u"น้อย";
+  const char16_t term3[] = u"ลง";
+  const std::u16string str(base::JoinString({term1, term2, term3}, u""));
 
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(term1), iter.GetString());
+  EXPECT_EQ(term1, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(term2), iter.GetString());
+  EXPECT_EQ(term2, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(term3), iter.GetString());
+  EXPECT_EQ(term3, iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
 }
@@ -145,45 +141,44 @@ TEST(BreakIteratorTest, BreakWordThai) {
 // dictionary to detect word boundaries in Thai, Chinese, Japanese, Burmese,
 // and Khmer. Due to the size of such a table, the part for Chinese and
 // Japanese is not shipped on mobile.
-#if !(defined(OS_IOS) || defined(OS_ANDROID))
+#if !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
 
 TEST(BreakIteratorTest, BreakWordChinese) {
   // Terms in Traditional Chinese, without spaces in between.
-  const char term1[] = "瀏覽";
-  const char term2[] = "速度";
-  const char term3[] = "飛快";
-  const std::u16string str(
-      UTF8ToUTF16(base::JoinString({term1, term2, term3}, "")));
+  const char16_t term1[] = u"瀏覽";
+  const char16_t term2[] = u"速度";
+  const char16_t term3[] = u"飛快";
+  const std::u16string str(base::JoinString({term1, term2, term3}, u""));
 
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(term1), iter.GetString());
+  EXPECT_EQ(term1, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(term2), iter.GetString());
+  EXPECT_EQ(term2, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(term3), iter.GetString());
+  EXPECT_EQ(term3, iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
 }
 
 TEST(BreakIteratorTest, BreakWordJapanese) {
   // Terms in Japanese, without spaces in between.
-  const char term1[] = "モバイル";
-  const char term2[] = "でも";
-  const std::u16string str(UTF8ToUTF16(base::JoinString({term1, term2}, "")));
+  const char16_t term1[] = u"モバイル";
+  const char16_t term2[] = u"でも";
+  const std::u16string str(base::JoinString({term1, term2}, u""));
 
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(term1), iter.GetString());
+  EXPECT_EQ(term1, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(term2), iter.GetString());
+  EXPECT_EQ(term2, iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
 }
@@ -191,21 +186,21 @@ TEST(BreakIteratorTest, BreakWordJapanese) {
 TEST(BreakIteratorTest, BreakWordChineseEnglish) {
   // Terms in Simplified Chinese mixed with English and wide punctuations.
   std::u16string space(u" ");
-  const char token1[] = "下载";
-  const char token2[] = "Chrome";
-  const char token3[] = "（";
-  const char token4[] = "Mac";
-  const char token5[] = "版";
-  const char token6[] = "）";
-  const std::u16string str(UTF8ToUTF16(base::JoinString(
-      {token1, " ", token2, token3, token4, " ", token5, token6}, "")));
+  const char16_t token1[] = u"下载";
+  const char16_t token2[] = u"Chrome";
+  const char16_t token3[] = u"（";
+  const char16_t token4[] = u"Mac";
+  const char16_t token5[] = u"版";
+  const char16_t token6[] = u"）";
+  const std::u16string str(base::JoinString(
+      {token1, u" ", token2, token3, token4, u" ", token5, token6}, u""));
 
   BreakIterator iter(str, BreakIterator::BREAK_WORD);
   ASSERT_TRUE(iter.Init());
 
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(token1), iter.GetString());
+  EXPECT_EQ(token1, iter.GetString());
 
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
@@ -213,15 +208,15 @@ TEST(BreakIteratorTest, BreakWordChineseEnglish) {
 
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(token2), iter.GetString());
+  EXPECT_EQ(token2, iter.GetString());
 
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(token3), iter.GetString());
+  EXPECT_EQ(token3, iter.GetString());
 
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(token4), iter.GetString());
+  EXPECT_EQ(token4, iter.GetString());
 
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
@@ -229,17 +224,17 @@ TEST(BreakIteratorTest, BreakWordChineseEnglish) {
 
   EXPECT_TRUE(iter.Advance());
   EXPECT_TRUE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(token5), iter.GetString());
+  EXPECT_EQ(token5, iter.GetString());
 
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16(token6), iter.GetString());
+  EXPECT_EQ(token6, iter.GetString());
 
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
 }
 
-#endif  // !(defined(OS_IOS) || defined(OS_ANDROID))
+#endif  // !(BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID))
 
 TEST(BreakIteratorTest, BreakSpaceEmpty) {
   std::u16string empty;
@@ -252,7 +247,7 @@ TEST(BreakIteratorTest, BreakSpaceEmpty) {
 }
 
 TEST(BreakIteratorTest, BreakSpace) {
-  std::u16string str(UTF8ToUTF16(" foo bar! \npouet boom"));
+  std::u16string str(u" foo bar! \npouet boom");
   BreakIterator iter(str, BreakIterator::BREAK_SPACE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -263,7 +258,7 @@ TEST(BreakIteratorTest, BreakSpace) {
   EXPECT_EQ(u"foo ", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("bar! \n"), iter.GetString());
+  EXPECT_EQ(u"bar! \n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(u"pouet ", iter.GetString());
@@ -277,7 +272,7 @@ TEST(BreakIteratorTest, BreakSpace) {
 }
 
 TEST(BreakIteratorTest, BreakSpaceSP) {
-  std::u16string str(UTF8ToUTF16(" foo bar! \npouet boom "));
+  std::u16string str(u" foo bar! \npouet boom ");
   BreakIterator iter(str, BreakIterator::BREAK_SPACE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -288,7 +283,7 @@ TEST(BreakIteratorTest, BreakSpaceSP) {
   EXPECT_EQ(u"foo ", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("bar! \n"), iter.GetString());
+  EXPECT_EQ(u"bar! \n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(u"pouet ", iter.GetString());
@@ -323,10 +318,7 @@ TEST(BreakIteratorTest, BreakSpacekWide16) {
 }
 
 TEST(BreakIteratorTest, BreakSpaceWide32) {
-  // U+1D49C MATHEMATICAL SCRIPT CAPITAL A
-  const char very_wide_char[] = "\xF0\x9D\x92\x9C";
-  const std::u16string str(
-      UTF8ToUTF16(base::StringPrintf("%s a", very_wide_char)));
+  const std::u16string str = u"\U0001d49c a";
   const std::u16string very_wide_word(str.substr(0, 3));
 
   BreakIterator iter(str, BreakIterator::BREAK_SPACE);
@@ -354,8 +346,8 @@ TEST(BreakIteratorTest, BreakLineEmpty) {
 }
 
 TEST(BreakIteratorTest, BreakLine) {
-  std::u16string nl(UTF8ToUTF16("\n"));
-  std::u16string str(UTF8ToUTF16("\nfoo bar!\n\npouet boom"));
+  std::u16string nl(u"\n");
+  std::u16string str(u"\nfoo bar!\n\npouet boom");
   BreakIterator iter(str, BreakIterator::BREAK_NEWLINE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -363,7 +355,7 @@ TEST(BreakIteratorTest, BreakLine) {
   EXPECT_EQ(nl, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("foo bar!\n"), iter.GetString());
+  EXPECT_EQ(u"foo bar!\n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(nl, iter.GetString());
@@ -377,9 +369,9 @@ TEST(BreakIteratorTest, BreakLine) {
 }
 
 TEST(BreakIteratorTest, BreakSentence) {
-  std::u16string nl(UTF8ToUTF16("\n"));
-  std::u16string str(UTF8ToUTF16(
-      "\nFoo bar!\nOne sentence.\n\n\tAnother sentence?One more thing"));
+  std::u16string nl(u"\n");
+  std::u16string str(
+      u"\nFoo bar!\nOne sentence.\n\n\tAnother sentence?One more thing");
   BreakIterator iter(str, BreakIterator::BREAK_SENTENCE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -387,16 +379,16 @@ TEST(BreakIteratorTest, BreakSentence) {
   EXPECT_EQ(nl, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("Foo bar!\n"), iter.GetString());
+  EXPECT_EQ(u"Foo bar!\n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("One sentence.\n"), iter.GetString());
+  EXPECT_EQ(u"One sentence.\n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(nl, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("\tAnother sentence?"), iter.GetString());
+  EXPECT_EQ(u"\tAnother sentence?", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(u"One more thing", iter.GetString());
@@ -405,8 +397,8 @@ TEST(BreakIteratorTest, BreakSentence) {
 }
 
 TEST(BreakIteratorTest, IsSentenceBoundary) {
-  std::u16string str(UTF8ToUTF16(
-      "Foo bar!\nOne sentence.\n\n\tAnother sentence?One more thing"));
+  std::u16string str(
+      u"Foo bar!\nOne sentence.\n\n\tAnother sentence?One more thing");
   BreakIterator iter(str, BreakIterator::BREAK_SENTENCE);
   ASSERT_TRUE(iter.Init());
 
@@ -426,8 +418,8 @@ TEST(BreakIteratorTest, IsSentenceBoundary) {
 }
 
 TEST(BreakIteratorTest, BreakLineNL) {
-  std::u16string nl(UTF8ToUTF16("\n"));
-  std::u16string str(UTF8ToUTF16("\nfoo bar!\n\npouet boom\n"));
+  std::u16string nl(u"\n");
+  std::u16string str(u"\nfoo bar!\n\npouet boom\n");
   BreakIterator iter(str, BreakIterator::BREAK_NEWLINE);
   ASSERT_TRUE(iter.Init());
   EXPECT_TRUE(iter.Advance());
@@ -435,13 +427,13 @@ TEST(BreakIteratorTest, BreakLineNL) {
   EXPECT_EQ(nl, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("foo bar!\n"), iter.GetString());
+  EXPECT_EQ(u"foo bar!\n", iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_EQ(nl, iter.GetString());
   EXPECT_TRUE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
-  EXPECT_EQ(UTF8ToUTF16("pouet boom\n"), iter.GetString());
+  EXPECT_EQ(u"pouet boom\n", iter.GetString());
   EXPECT_FALSE(iter.Advance());
   EXPECT_FALSE(iter.IsWord());
   EXPECT_FALSE(iter.Advance());   // Test unexpected advance after end.
@@ -470,10 +462,7 @@ TEST(BreakIteratorTest, BreakLineWide16) {
 }
 
 TEST(BreakIteratorTest, BreakLineWide32) {
-  // U+1D49C MATHEMATICAL SCRIPT CAPITAL A
-  const char very_wide_char[] = "\xF0\x9D\x92\x9C";
-  const std::u16string str(
-      UTF8ToUTF16(base::StringPrintf("%s\na", very_wide_char)));
+  const std::u16string str = u"\U0001d49c\na";
   const std::u16string very_wide_line(str.substr(0, 3));
   BreakIterator iter(str, BreakIterator::BREAK_NEWLINE);
   ASSERT_TRUE(iter.Init());
@@ -490,34 +479,34 @@ TEST(BreakIteratorTest, BreakLineWide32) {
 }
 
 TEST(BreakIteratorTest, BreakCharacter) {
-  static const char* kCharacters[] = {
+  static const char16_t* const kCharacters[] = {
       // An English word consisting of four ASCII characters.
-      "w",
-      "o",
-      "r",
-      "d",
-      " ",
+      u"w",
+      u"o",
+      u"r",
+      u"d",
+      u" ",
       // A Hindi word (which means "Hindi") consisting of two Devanagari
       // grapheme clusters.
-      "\u0939\u093F",
-      "\u0928\u094D\u0926\u0940",
-      " ",
+      u"हि",
+      u"न्दी",
+      u" ",
       // A Thai word (which means "feel") consisting of three Thai grapheme
       // clusters.
-      "\u0E23\u0E39\u0E49",
-      "\u0E2A\u0E36",
-      "\u0E01",
-      " ",
+      u"รู้",
+      u"สึ",
+      u"ก",
+      u" ",
   };
   std::vector<std::u16string> characters;
   std::u16string text;
-  for (auto*& i : kCharacters) {
-    characters.push_back(base::UTF8ToUTF16(i));
+  for (const auto* i : kCharacters) {
+    characters.push_back(i);
     text.append(characters.back());
   }
   BreakIterator iter(text, BreakIterator::BREAK_CHARACTER);
   ASSERT_TRUE(iter.Init());
-  for (size_t i = 0; i < base::size(kCharacters); ++i) {
+  for (size_t i = 0; i < std::size(kCharacters); ++i) {
     EXPECT_TRUE(iter.Advance());
     EXPECT_EQ(characters[i], iter.GetString());
   }
@@ -615,7 +604,7 @@ TEST(BreakIteratorTest, GetWordBreakStatusBreakWord) {
   EXPECT_EQ(u" ", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
-  EXPECT_EQ(base::UTF8ToUTF16("\n"), iter.GetString());
+  EXPECT_EQ(u"\n", iter.GetString());
   EXPECT_EQ(iter.GetWordBreakStatus(), BreakIterator::IS_SKIPPABLE_WORD);
   EXPECT_TRUE(iter.Advance());
   // Finds "Can".

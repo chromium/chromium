@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "ios/web/public/webui/web_ui_ios.h"
 #include "ios/web/public/webui/web_ui_ios_controller_factory.h"
@@ -27,6 +26,11 @@ class WebViewWebUIIOSControllerFactory : public web::WebUIIOSControllerFactory {
  public:
   static WebViewWebUIIOSControllerFactory* GetInstance();
 
+  WebViewWebUIIOSControllerFactory(const WebViewWebUIIOSControllerFactory&) =
+      delete;
+  WebViewWebUIIOSControllerFactory& operator=(
+      const WebViewWebUIIOSControllerFactory&) = delete;
+
  protected:
   WebViewWebUIIOSControllerFactory();
   ~WebViewWebUIIOSControllerFactory() override;
@@ -39,8 +43,6 @@ class WebViewWebUIIOSControllerFactory : public web::WebUIIOSControllerFactory {
 
  private:
   friend class base::NoDestructor<WebViewWebUIIOSControllerFactory>;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewWebUIIOSControllerFactory);
 };
 
 }  // namespace ios_web_view

@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,9 +11,11 @@ import sys
 from pylib import constants
 from pylib.utils import decorators
 
-sys.path.insert(0, os.path.abspath(os.path.join(
-    constants.DIR_SOURCE_ROOT, 'tools', 'swarming_client')))
-from libs.logdog import bootstrap # pylint: disable=import-error
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(constants.DIR_SOURCE_ROOT, 'third_party', 'logdog')))
+from logdog import bootstrap  # pylint: disable=import-error
 
 
 @decorators.NoRaiseException(default_return_value='',

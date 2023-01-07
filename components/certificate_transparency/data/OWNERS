@@ -1,0 +1,5 @@
+# For bot updates to log_list.json
+# TODO(crbug.com/1342998): Remove mdb.chrome-pki-metadata@google.com once the
+# pod batch migration is complete.
+per-file log_list.json=mdb.chrome-pki-metadata@google.com
+per-file log_list.json=mdb.chrome-pki-metadata-release-jobs@google.com

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,13 +27,6 @@ public class AwPermissionRequest {
 
     // Responsible for deleting native peer.
     private CleanupReference mCleanupReference;
-
-    // This should be same as corresponding definition in PermissionRequest.
-    // We duplicate definition because it is used in Android L and afterwards, but is only
-    // defined in M.
-    // TODO(michaelbai) : Replace "android.webkit.resource.MIDI_SYSEX" with
-    // PermissionRequest.RESOURCE_MIDI_SYSEX once Android M SDK is used.
-    public static final String RESOURCE_MIDI_SYSEX = "android.webkit.resource.MIDI_SYSEX";
 
     private static final class DestroyRunnable implements Runnable {
         private final long mNativeAwPermissionRequest;

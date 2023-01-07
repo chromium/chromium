@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_position.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -219,11 +219,11 @@ class AXSelectionDeserializer final {
         << "There should be an equal number of '^'s and '|'s in the HTML that "
            "is being deserialized, or if caret placement is required, only a "
            "single '|'.";
-    if (foci_->IsEmpty())
+    if (foci_->empty())
       return {};
 
     Vector<AXSelection> ax_selections;
-    if (anchors_->IsEmpty()) {
+    if (anchors_->empty()) {
       // Handle the case when there is just a single '|' marker representing the
       // position of the caret.
       DCHECK(foci_->at(0).first);
@@ -235,7 +235,7 @@ class AXSelectionDeserializer final {
       return ax_selections;
     }
 
-    for (size_t i = 0; i < foci_->size(); ++i) {
+    for (wtf_size_t i = 0; i < foci_->size(); ++i) {
       DCHECK(anchors_->at(i).first);
       const Position base(*anchors_->at(i).first, anchors_->at(i).second);
       const auto ax_base = AXPosition::FromPosition(base);
@@ -275,7 +275,7 @@ class AXSelectionDeserializer final {
       builder.Append(character);
     }
 
-    if (base_offsets.IsEmpty() && extent_offsets.IsEmpty())
+    if (base_offsets.empty() && extent_offsets.empty())
       return;
 
     // Remove the markers, otherwise they would be duplicated if the AXSelection
@@ -379,7 +379,7 @@ AXSelection AccessibilitySelectionTest::SetSelectionText(
   const Vector<AXSelection> ax_selections =
       AXSelectionDeserializer(GetAXObjectCache())
           .Deserialize(selection_text, *body);
-  if (ax_selections.IsEmpty())
+  if (ax_selections.empty())
     return AXSelection::Builder().Build();
   return ax_selections.front();
 }
@@ -390,7 +390,7 @@ AXSelection AccessibilitySelectionTest::SetSelectionText(
   const Vector<AXSelection> ax_selections =
       AXSelectionDeserializer(GetAXObjectCache())
           .Deserialize(selection_text, element);
-  if (ax_selections.IsEmpty())
+  if (ax_selections.empty())
     return AXSelection::Builder().Build();
   return ax_selections.front();
 }

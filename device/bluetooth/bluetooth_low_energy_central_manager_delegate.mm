@@ -1,9 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/bluetooth/bluetooth_low_energy_central_manager_delegate.h"
 
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 #include "device/bluetooth/bluetooth_low_energy_discovery_manager_mac.h"
 
@@ -50,20 +53,21 @@ class BluetoothLowEnergyCentralManagerBridge {
   }
 
  private:
-  BluetoothLowEnergyDiscoveryManagerMac* discovery_manager_;
-  BluetoothAdapterMac* adapter_;
+  raw_ptr<BluetoothLowEnergyDiscoveryManagerMac> discovery_manager_;
+  raw_ptr<BluetoothAdapterMac> adapter_;
 };
 
 }  // namespace device
 
 @implementation BluetoothLowEnergyCentralManagerDelegate
 
-- (id)initWithDiscoveryManager:
-          (device::BluetoothLowEnergyDiscoveryManagerMac*)discovery_manager
-                    andAdapter:(device::BluetoothAdapterMac*)adapter {
+- (instancetype)initWithDiscoveryManager:
+                    (device::BluetoothLowEnergyDiscoveryManagerMac*)
+                        discovery_manager
+                              andAdapter:(device::BluetoothAdapterMac*)adapter {
   if ((self = [super init])) {
-    _bridge.reset(new device::BluetoothLowEnergyCentralManagerBridge(
-        discovery_manager, adapter));
+    _bridge = std::make_unique<device::BluetoothLowEnergyCentralManagerBridge>(
+        discovery_manager, adapter);
   }
   return self;
 }

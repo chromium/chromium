@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"    // nogncheck
 #include "chrome/browser/profiles/profile_attributes_storage.h"  // nogncheck
@@ -76,6 +78,11 @@ class AnnouncementNotificationServiceImpl
     if (!success)
       skip_first_run_after_ = base::Time();
   }
+
+  AnnouncementNotificationServiceImpl(
+      const AnnouncementNotificationServiceImpl&) = delete;
+  AnnouncementNotificationServiceImpl& operator=(
+      const AnnouncementNotificationServiceImpl&) = delete;
 
   ~AnnouncementNotificationServiceImpl() override = default;
 
@@ -186,10 +193,10 @@ class AnnouncementNotificationServiceImpl
     return entry && entry->GetSigninState() != SigninState::kNotSignedIn;
   }
 
-  Profile* profile_;
-  PrefService* pref_service_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<Delegate> delegate_;
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // Whether to skip first Chrome launch. Parsed from Finch.
   bool skip_first_run_;
@@ -219,12 +226,11 @@ class AnnouncementNotificationServiceImpl
 
   base::WeakPtrFactory<AnnouncementNotificationServiceImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AnnouncementNotificationServiceImpl);
 };
 
-const base::Feature kAnnouncementNotification{
-    "AnnouncementNotificationService", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kAnnouncementNotification,
+             "AnnouncementNotificationService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // static
 void AnnouncementNotificationService::RegisterProfilePrefs(
@@ -261,8 +267,7 @@ bool AnnouncementNotificationService::CanOpenAnnouncement(Profile* profile) {
   if (!profile)
     return false;
 
-  return !(profile->IsGuestSession() || profile->IsEphemeralGuestProfile() ||
-           profile->IsSystemProfile());
+  return !profile->IsGuestSession() && !profile->IsSystemProfile();
 }
 
 AnnouncementNotificationService::AnnouncementNotificationService() = default;

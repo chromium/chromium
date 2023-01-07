@@ -1,0 +1,103 @@
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
+
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+
+<dom-module id="smart-privacy-protection-element">
+  <template>
+    <style include="oobe-dialog-host-styles">
+      .overview-list-item {
+        border-bottom: 1px solid var(--google-grey-200);
+        padding: 16px;
+      }
+
+      .overview-list-item-title {
+        color: var(--oobe-header-text-color);
+        font-size: 14px;
+        font-weight: 500; /* roboto-medium */
+        line-height: 24px;
+        margin-bottom: 4px;
+      }
+
+      .overview-list-item-icon {
+        --iron-icon-fill-color: var(--google-blue-600);
+        padding-inline-end: 16px;
+      }
+
+      .overview-list-item-description {
+        padding-inline-end: 16px;
+      }
+
+      .content-footer {
+        padding-top: 16px;
+      }
+
+      .subtitle-illustration {
+        max-height: 250px;
+      }
+    </style>
+      <oobe-adaptive-dialog role="dialog"
+          aria-label$="[[i18nDynamic(locale,
+              'smartPrivacyProtectionScreenTitle')]]">
+        <iron-icon slot="icon" icon="cr:security"></iron-icon>
+        <h1 slot="title">
+          [[i18nDynamic(locale, 'smartPrivacyProtectionScreenTitle')]]
+        </h1>
+        <img slot="subtitle" src="images/smart_privacy.svg"
+            class="oobe-illustration subtitle-illustration" aria-hidden="true">
+        <div slot="content" class="landscape-header-aligned">
+          <div id="quickDimSection" class="overview-list-item layout horizontal"
+              hidden="[[!isQuickDimEnabled_]]">
+            <iron-icon class="overview-list-item-icon" icon="oobe-24:lock">
+            </iron-icon>
+            <div class="flex layout vertical center-justified">
+              <div role="heading" aria-level="2"
+                  class="overview-list-item-title">
+                [[i18nDynamic(locale, 'smartPrivacyProtectionScreenLock')]]
+              </div>
+              <div class="overview-list-item-description">
+                [[i18nDynamic(locale, 'smartPrivacyProtectionScreenLockDesc')]]
+              </div>
+            </div>
+          </div>
+          <div class="content-footer">
+            [[i18nDynamic(locale, 'smartPrivacyProtectionContent')]]
+          </div>
+        </div>
+        <div slot="bottom-buttons">
+          <oobe-text-button id="noThanksButton"
+              on-click="onNoThanksButtonClicked_"
+              label-for-aria="[[i18nDynamic(locale,
+                  'smartPrivacyProtectionTurnOffButton')]]">
+            <div slot="text">
+              [[i18nDynamic(locale, 'smartPrivacyProtectionTurnOffButton')]]
+            </div>
+          </oobe-text-button>
+          <oobe-text-button id="turnOnButton" inverse="[[!isMinorMode_]]"
+              class="focus-on-show" on-click="onTurnOnButtonClicked_"
+              label-for-aria="[[i18nDynamic(locale,
+                  'smartPrivacyProtectionTurnOnButton')]]">
+            <div slot="text">
+              [[i18nDynamic(locale, 'smartPrivacyProtectionTurnOnButton')]]
+            </div>
+          </oobe-text-button>
+        </div>
+      </oobe-adaptive-dialog>
+  </template>
+  <script src="smart_privacy_protection.js"></script>
+</dom-module>

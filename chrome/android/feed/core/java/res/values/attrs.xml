@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2020 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <resources>
-  <declare-styleable name="FeedSharedStream">
-    <!-- Sets which drawable to use for the text ripple pre-v21. -->
-    <attr name="feedTextRippleDrawable" format="reference" />
-    <!-- Sets the color of the no content card title text. -->
-    <attr name="feedPrimaryTextColor" format="reference" />
-    <!--Sets the color of the no content card subtitle text. -->
-    <attr name="feedSecondaryTextColor" format="reference" />
     <!-- Sets the color of the spinner. -->
     <attr name="feedSpinnerColor" format="reference" />
-  </declare-styleable>
 </resources>

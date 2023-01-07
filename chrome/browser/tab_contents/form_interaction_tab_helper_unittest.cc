@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "chrome/browser/performance_manager/test_support/page_aggregator.h"
@@ -25,6 +24,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 
 class FormInteractionTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -62,29 +62,17 @@ class FormInteractionTabHelperTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
- private:
-  performance_manager::PerformanceManagerTestHarnessHelper pm_harness_;
-};
-
-TEST_F(FormInteractionTabHelperTest, HadFormInteractionSingleFrame) {
-  std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
-  auto* helper = FormInteractionTabHelper::FromWebContents(contents.get());
-
-  EXPECT_FALSE(helper->had_form_interaction());
-
-  // Indicates that a form on the main frame has been interacted with.
-  {
+  void SetHadFormInteraction(content::RenderFrameHost* rfh) {
     base::RunLoop run_loop;
     // Use a |QuitWhenIdleClosure| as the task posted to the UI thread by
     // PerformanceManager will have a lower priority (USER_VISIBLE) than the one
     // of a QuitClosure's task runner (USER_BLOCKING).
     auto graph_callback = base::BindLambdaForTesting(
         [quit_loop = run_loop.QuitWhenIdleClosure(),
-         page_node =
-             performance_manager::PerformanceManager::GetPageNodeForWebContents(
-                 contents.get())]() {
-          auto* frame_node = performance_manager::FrameNodeImpl::FromNode(
-              page_node->GetMainFrameNode());
+         node = performance_manager::PerformanceManager::
+             GetFrameNodeForRenderFrameHost(rfh)]() {
+          auto* frame_node =
+              performance_manager::FrameNodeImpl::FromNode(node.get());
           frame_node->SetIsCurrent(true);
           frame_node->SetHadFormInteraction();
           std::move(quit_loop).Run();
@@ -94,6 +82,16 @@ TEST_F(FormInteractionTabHelperTest, HadFormInteractionSingleFrame) {
     run_loop.Run();
   }
 
+ private:
+  performance_manager::PerformanceManagerTestHarnessHelper pm_harness_;
+};
+
+TEST_F(FormInteractionTabHelperTest, HadFormInteractionSingleFrame) {
+  std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
+  auto* helper = FormInteractionTabHelper::FromWebContents(contents.get());
+
+  EXPECT_FALSE(helper->had_form_interaction());
+  SetHadFormInteraction(contents->GetPrimaryMainFrame());
   EXPECT_TRUE(helper->had_form_interaction());
 
   // A navigation event should reset the |had_form_interaction| for this page.
@@ -106,41 +104,62 @@ TEST_F(FormInteractionTabHelperTest, HadFormInteractionSingleFrame) {
   EXPECT_FALSE(helper->had_form_interaction());
 }
 
-TEST_F(FormInteractionTabHelperTest, HadFormInteractionWithChildFrames) {
+enum class ChildFrameType {
+  kIFrame,
+  kFencedFrame,
+};
+
+class FormInteractionTabHelperWithChildTest
+    : public FormInteractionTabHelperTest,
+      public testing::WithParamInterface<ChildFrameType> {
+ public:
+  FormInteractionTabHelperWithChildTest() {
+    std::vector<base::test::ScopedFeatureList::FeatureAndParams> enabled;
+    enabled.push_back(
+        {blink::features::kFencedFrames, {{"implementation_type", "mparch"}}});
+    enabled.push_back({blink::features::kInitialNavigationEntry, {}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        enabled, std::vector<base::test::FeatureRef>());
+  }
+  ~FormInteractionTabHelperWithChildTest() override = default;
+
+  FormInteractionTabHelperWithChildTest(
+      const FormInteractionTabHelperWithChildTest&) = delete;
+  FormInteractionTabHelperWithChildTest& operator=(
+      const FormInteractionTabHelperWithChildTest&) = delete;
+
+  content::RenderFrameHost* AppendChild(content::WebContents* contents) {
+    auto* parent_tester =
+        content::RenderFrameHostTester::For(contents->GetPrimaryMainFrame());
+    switch (GetParam()) {
+      case ChildFrameType::kIFrame:
+        return parent_tester->AppendChild("child");
+
+      case ChildFrameType::kFencedFrame:
+        return parent_tester->AppendFencedFrame();
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FormInteractionTabHelperWithChildTest,
+                         ::testing::Values(ChildFrameType::kIFrame,
+                                           ChildFrameType::kFencedFrame));
+
+TEST_P(FormInteractionTabHelperWithChildTest, HadFormInteractionInChildFrame) {
   std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
   auto* helper = FormInteractionTabHelper::FromWebContents(contents.get());
 
   EXPECT_FALSE(helper->had_form_interaction());
 
-  auto* parent_tester =
-      content::RenderFrameHostTester::For(contents->GetMainFrame());
-  auto* child = content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("https://foochild.com"), parent_tester->AppendChild("child"));
+  content::RenderFrameHost* child =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://foochild.com"), AppendChild(contents.get()));
 
-  // Indicates that a form on the child frame has been interacted with.
-  {
-    base::RunLoop run_loop;
-    // Use a |QuitWhenIdleClosure| as the task posted to the UI thread by
-    // PerformanceManager will have a lower priority (USER_VISIBLE) than the one
-    // of a QuitClosure's task runner (USER_BLOCKING).
-    auto graph_callback = base::BindLambdaForTesting(
-        [quit_loop = run_loop.QuitWhenIdleClosure(),
-         page_node =
-             performance_manager::PerformanceManager::GetPageNodeForWebContents(
-                 contents.get())]() {
-          auto children = page_node->GetMainFrameNode()->GetChildFrameNodes();
-          EXPECT_EQ(1U, children.size());
-          auto* frame_node =
-              performance_manager::FrameNodeImpl::FromNode(*children.begin());
-          frame_node->SetIsCurrent(true);
-          frame_node->SetHadFormInteraction();
-          std::move(quit_loop).Run();
-        });
-    performance_manager::PerformanceManagerImpl::CallOnGraph(
-        FROM_HERE, std::move(graph_callback));
-    run_loop.Run();
-  }
-
+  SetHadFormInteraction(child);
   EXPECT_TRUE(helper->had_form_interaction());
 
   // A navigation event should reset the |had_form_interaction| for this page.
@@ -152,4 +171,34 @@ TEST_F(FormInteractionTabHelperTest, HadFormInteractionWithChildFrames) {
   task_environment()->RunUntilIdle();
 
   EXPECT_FALSE(helper->had_form_interaction());
+}
+
+TEST_P(FormInteractionTabHelperWithChildTest,
+       HadFormInteractionInBothMainAndChild) {
+  std::unique_ptr<content::WebContents> contents = CreateTestWebContents();
+  auto* helper = FormInteractionTabHelper::FromWebContents(contents.get());
+
+  EXPECT_FALSE(helper->had_form_interaction());
+
+  SetHadFormInteraction(contents->GetPrimaryMainFrame());
+  EXPECT_TRUE(helper->had_form_interaction());
+
+  content::RenderFrameHost* child =
+      content::NavigationSimulator::NavigateAndCommitFromDocument(
+          GURL("https://foochild.com"), AppendChild(contents.get()));
+
+  SetHadFormInteraction(child);
+  EXPECT_TRUE(helper->had_form_interaction());
+
+  // The |had_form_interaction| for this page should be still true even though
+  // the navigation happens on the child frame, since the main frame have had an
+  // interaction.
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://barchild.com"), child);
+
+  // Some task are posted to the graph after a navigation event, wait for them
+  // to complete.
+  task_environment()->RunUntilIdle();
+
+  EXPECT_TRUE(helper->had_form_interaction());
 }

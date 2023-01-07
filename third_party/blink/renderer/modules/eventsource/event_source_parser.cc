@@ -1,13 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/eventsource/event_source_parser.h"
 
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/modules/eventsource/event_source.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -31,10 +29,10 @@ void EventSourceParser::AddBytes(const char* bytes, uint32_t size) {
   for (uint32_t i = 0; i < size && !is_stopped_; ++i) {
     // As kBOM contains neither CR nor LF, we can think BOM and the line
     // break separately.
-    if (is_recognizing_bom_ && line_.size() + (i - start) == base::size(kBOM)) {
+    if (is_recognizing_bom_ && line_.size() + (i - start) == std::size(kBOM)) {
       Vector<char> line = line_;
       line.Append(&bytes[start], i - start);
-      DCHECK_EQ(line.size(), base::size(kBOM));
+      DCHECK_EQ(line.size(), std::size(kBOM));
       is_recognizing_bom_ = false;
       if (memcmp(line.data(), kBOM, sizeof(kBOM)) == 0) {
         start = i;
@@ -67,12 +65,12 @@ void EventSourceParser::ParseLine() {
   if (line_.size() == 0) {
     last_event_id_ = id_;
     // We dispatch an event when seeing an empty line.
-    if (!data_.IsEmpty()) {
+    if (!data_.empty()) {
       DCHECK_EQ(data_[data_.size() - 1], '\n');
       String data = FromUTF8(data_.data(), data_.size() - 1);
       client_->OnMessageEvent(
-          event_type_.IsEmpty() ? event_type_names::kMessage : event_type_,
-          data, last_event_id_);
+          event_type_.empty() ? event_type_names::kMessage : event_type_, data,
+          last_event_id_);
       data_.clear();
     }
     event_type_ = g_null_atom;

@@ -1,21 +1,25 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/media/session/media_session_service_impl.h"
 
+#include <memory>
+
+#include "base/memory/ptr_util.h"
 #include "content/browser/media/session/media_metadata_sanitizer.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
 
 MediaSessionServiceImpl::MediaSessionServiceImpl(
     RenderFrameHost* render_frame_host)
-    : render_frame_host_id_(render_frame_host->GetGlobalFrameRoutingId()),
+    : render_frame_host_id_(render_frame_host->GetGlobalId()),
       playback_state_(blink::mojom::MediaSessionPlaybackState::NONE) {
   MediaSessionImpl* session = GetMediaSession();
   if (session)
@@ -32,12 +36,13 @@ MediaSessionServiceImpl::~MediaSessionServiceImpl() {
 void MediaSessionServiceImpl::Create(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::MediaSessionService> receiver) {
-  MediaSessionServiceImpl* impl =
-      new MediaSessionServiceImpl(render_frame_host);
-  impl->Bind(std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(
+      base::WrapUnique<MediaSessionServiceImpl>(
+          new MediaSessionServiceImpl(render_frame_host)),
+      std::move(receiver));
 }
 
-GlobalFrameRoutingId MediaSessionServiceImpl::GetRenderFrameHostId() const {
+GlobalRenderFrameHostId MediaSessionServiceImpl::GetRenderFrameHostId() const {
   return render_frame_host_id_;
 }
 
@@ -71,7 +76,7 @@ void MediaSessionServiceImpl::SetPlaybackState(
 }
 
 void MediaSessionServiceImpl::SetPositionState(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   position_ = position;
   MediaSessionImpl* session = GetMediaSession();
   if (session)
@@ -152,12 +157,6 @@ MediaSessionImpl* MediaSessionServiceImpl::GetMediaSession() {
     return nullptr;
 
   return MediaSessionImpl::Get(contents);
-}
-
-void MediaSessionServiceImpl::Bind(
-    mojo::PendingReceiver<blink::mojom::MediaSessionService> receiver) {
-  receiver_.reset(new mojo::Receiver<blink::mojom::MediaSessionService>(
-      this, std::move(receiver)));
 }
 
 }  // namespace content

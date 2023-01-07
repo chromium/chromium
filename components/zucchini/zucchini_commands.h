@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,9 @@ zucchini::status::Code MainGen(MainParams params);
 
 // Command Function: Patch application.
 zucchini::status::Code MainApply(MainParams params);
+
+// Command Function: Verify patch format and compatibility.
+zucchini::status::Code MainVerify(MainParams params);
 
 // Command Function: Read and dump references from an executable.
 zucchini::status::Code MainRead(MainParams params);

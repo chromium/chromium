@@ -14,7 +14,7 @@ Linked url: http://www.chromium.org/
 Text: string http://www.chromium.org/
 Linked url: http://www.chromium.org/
 
-Text: 123 "http://www.chromium.org/"
+Text: 123 'http://www.chromium.org/'
 Linked url: http://www.chromium.org/
 
 Text: http://www.chromium.org/some?v=114:56:57

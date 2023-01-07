@@ -1,21 +1,21 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.ntp.search;
 
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.widget.ChipView;
 
 /**
  * Responsible for building and setting properties on the search box on new tab page.
@@ -26,13 +26,9 @@ class SearchBoxViewBinder
     public final void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         ImageView voiceSearchButton =
                 view.findViewById(org.chromium.chrome.R.id.voice_search_button);
-        ImageView lensButton =
-                LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH.getValue()
-                ? view.findViewById(org.chromium.chrome.R.id.lens_camera_button_start)
-                : view.findViewById(org.chromium.chrome.R.id.lens_camera_button_end);
+        ImageView lensButton = view.findViewById(org.chromium.chrome.R.id.lens_camera_button);
         View searchBoxContainer = view;
         final TextView searchBoxTextView = searchBoxContainer.findViewById(R.id.search_box_text);
-        final ChipView chipView = searchBoxContainer.findViewById(R.id.query_tiles_chip);
 
         if (SearchBoxProperties.VISIBILITY == propertyKey) {
             searchBoxContainer.setVisibility(
@@ -47,6 +43,8 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST == propertyKey) {
             ApiCompatibilityUtils.setImageTintList(voiceSearchButton,
                     model.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
+            ApiCompatibilityUtils.setImageTintList(
+                    lensButton, model.get(SearchBoxProperties.VOICE_SEARCH_COLOR_STATE_LIST));
         } else if (SearchBoxProperties.VOICE_SEARCH_DRAWABLE == propertyKey) {
             voiceSearchButton.setImageDrawable(
                     model.get(SearchBoxProperties.VOICE_SEARCH_DRAWABLE));
@@ -66,7 +64,7 @@ class SearchBoxViewBinder
             searchBoxTextView.addTextChangedListener(
                     model.get(SearchBoxProperties.SEARCH_BOX_TEXT_WATCHER));
         } else if (SearchBoxProperties.SEARCH_TEXT == propertyKey) {
-            searchBoxTextView.setText(model.get(SearchBoxProperties.SEARCH_TEXT).first);
+            searchBoxTextView.setText(model.get(SearchBoxProperties.SEARCH_TEXT));
         } else if (SearchBoxProperties.SEARCH_HINT_VISIBILITY == propertyKey) {
             boolean isHintVisible = model.get(SearchBoxProperties.SEARCH_HINT_VISIBILITY);
             searchBoxTextView.setHint(isHintVisible
@@ -79,19 +77,57 @@ class SearchBoxViewBinder
         } else if (SearchBoxProperties.SEARCH_BOX_HINT_COLOR == propertyKey) {
             searchBoxTextView.setHintTextColor(
                     model.get(SearchBoxProperties.SEARCH_BOX_HINT_COLOR));
-        } else if (SearchBoxProperties.CHIP_TEXT == propertyKey) {
-            chipView.getPrimaryTextView().setText(model.get(SearchBoxProperties.CHIP_TEXT));
-        } else if (SearchBoxProperties.CHIP_VISIBILITY == propertyKey) {
-            chipView.setVisibility(
-                    model.get(SearchBoxProperties.CHIP_VISIBILITY) ? View.VISIBLE : View.GONE);
-        } else if (SearchBoxProperties.CHIP_DRAWABLE == propertyKey) {
-            chipView.setIcon(model.get(SearchBoxProperties.CHIP_DRAWABLE), true);
-        } else if (SearchBoxProperties.CHIP_CLICK_CALLBACK == propertyKey) {
-            chipView.setOnClickListener(model.get(SearchBoxProperties.CHIP_CLICK_CALLBACK));
-        } else if (SearchBoxProperties.CHIP_CANCEL_CALLBACK == propertyKey) {
-            chipView.addRemoveIcon();
-            chipView.setRemoveIconClickListener(
-                    model.get(SearchBoxProperties.CHIP_CANCEL_CALLBACK));
+        } else if (SearchBoxProperties.SEARCH_BOX_HEIGHT == propertyKey) {
+            ViewGroup.LayoutParams lp = searchBoxContainer.getLayoutParams();
+            lp.height = model.get(SearchBoxProperties.SEARCH_BOX_HEIGHT);
+            searchBoxContainer.setLayoutParams(lp);
+        } else if (SearchBoxProperties.SEARCH_BOX_TOP_MARGIN == propertyKey) {
+            MarginLayoutParams marginLayoutParams =
+                    (MarginLayoutParams) searchBoxContainer.getLayoutParams();
+            marginLayoutParams.topMargin = model.get(SearchBoxProperties.SEARCH_BOX_TOP_MARGIN);
+        } else if (SearchBoxProperties.SEARCH_BOX_END_PADDING == propertyKey) {
+            searchBoxContainer.setPadding(searchBoxContainer.getPaddingLeft(),
+                    searchBoxContainer.getPaddingTop(),
+                    model.get(SearchBoxProperties.SEARCH_BOX_END_PADDING),
+                    searchBoxContainer.getPaddingBottom());
+        } else if (SearchBoxProperties.SEARCH_TEXT_TRANSLATION_X == propertyKey) {
+            searchBoxTextView.setTranslationX(
+                    model.get(SearchBoxProperties.SEARCH_TEXT_TRANSLATION_X));
+        } else if (SearchBoxProperties.BUTTONS_HEIGHT == propertyKey) {
+            int height = model.get(SearchBoxProperties.BUTTONS_HEIGHT);
+            ViewGroup.LayoutParams layoutParams = voiceSearchButton.getLayoutParams();
+            if (layoutParams != null) {
+                layoutParams.height = height;
+                voiceSearchButton.setLayoutParams(layoutParams);
+            }
+
+            layoutParams = lensButton.getLayoutParams();
+            if (layoutParams != null) {
+                layoutParams.height = height;
+                lensButton.setLayoutParams(layoutParams);
+            }
+
+        } else if (SearchBoxProperties.BUTTONS_WIDTH == propertyKey) {
+            int width = model.get(SearchBoxProperties.BUTTONS_WIDTH);
+            ViewGroup.LayoutParams layoutParams = voiceSearchButton.getLayoutParams();
+            if (layoutParams != null) {
+                layoutParams.width = width;
+                voiceSearchButton.setLayoutParams(layoutParams);
+            }
+
+            layoutParams = lensButton.getLayoutParams();
+            if (layoutParams != null) {
+                layoutParams.width = width;
+                lensButton.setLayoutParams(layoutParams);
+            }
+
+        } else if (SearchBoxProperties.LENS_BUTTON_LEFT_MARGIN == propertyKey) {
+            MarginLayoutParams marginLayoutParams =
+                    (MarginLayoutParams) lensButton.getLayoutParams();
+            if (marginLayoutParams != null) {
+                marginLayoutParams.leftMargin =
+                        model.get(SearchBoxProperties.LENS_BUTTON_LEFT_MARGIN);
+            }
         } else {
             assert false : "Unhandled property detected in SearchBoxViewBinder!";
         }

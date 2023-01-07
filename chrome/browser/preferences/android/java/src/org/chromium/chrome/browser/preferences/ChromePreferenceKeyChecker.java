@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.annotations.CheckDiscard;
+import org.chromium.build.annotations.CheckDiscard;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -109,5 +109,19 @@ class ChromePreferenceKeyChecker extends BaseChromePreferenceKeyChecker {
             // Just check if it is in [keys in use].
             return mKeysInUse.contains(key);
         }
+    }
+
+    @Override
+    void checkIsPrefixInUse(KeyPrefix prefix) {
+        if (mLegacyPrefixes.contains(prefix)) {
+            return;
+        }
+
+        if (mKeysInUse.contains(prefix.pattern())) {
+            return;
+        }
+
+        throw new RuntimeException("SharedPreferences KeyPrefix \"" + prefix.pattern()
+                + "\" is not registered in ChromePreferenceKeys.createKeysInUse()");
     }
 }

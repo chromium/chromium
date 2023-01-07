@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,11 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/statistics_recorder.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
-
-namespace base {
-class SequencedTaskRunner;
-}
 
 namespace tracing {
 
@@ -27,6 +23,11 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingAgentImpl
  public:
   explicit BackgroundTracingAgentImpl(
       mojo::PendingRemote<mojom::BackgroundTracingAgentClient> client);
+
+  BackgroundTracingAgentImpl(const BackgroundTracingAgentImpl&) = delete;
+  BackgroundTracingAgentImpl& operator=(const BackgroundTracingAgentImpl&) =
+      delete;
+
   ~BackgroundTracingAgentImpl() override;
 
   // mojom::BackgroundTracingAgent methods:
@@ -39,7 +40,6 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingAgentImpl
  private:
   static void OnHistogramChanged(
       base::WeakPtr<BackgroundTracingAgentImpl> weak_self,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
       base::Histogram::Sample reference_lower_value,
       base::Histogram::Sample reference_upper_value,
       bool repeat,
@@ -51,10 +51,13 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingAgentImpl
 
   mojo::Remote<mojom::BackgroundTracingAgentClient> client_;
   base::Time histogram_last_changed_;
+  // Tracks histogram names and corresponding registered callbacks.
+  std::map<
+      std::string,
+      std::unique_ptr<base::StatisticsRecorder::ScopedHistogramSampleObserver>>
+      histogram_callback_map_;
 
   base::WeakPtrFactory<BackgroundTracingAgentImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTracingAgentImpl);
 };
 
 }  // namespace tracing

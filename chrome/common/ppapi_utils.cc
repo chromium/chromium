@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "chrome/common/ppapi_utils.h"
@@ -73,11 +73,8 @@
 #include "ppapi/c/private/ppb_ext_crx_file_system_private.h"
 #include "ppapi/c/private/ppb_file_io_private.h"
 #include "ppapi/c/private/ppb_file_ref_private.h"
-#include "ppapi/c/private/ppb_find_private.h"
-#include "ppapi/c/private/ppb_flash_font_file.h"
 #include "ppapi/c/private/ppb_host_resolver_private.h"
 #include "ppapi/c/private/ppb_isolated_file_system_private.h"
-#include "ppapi/c/private/ppb_pdf.h"
 #include "ppapi/c/private/ppb_proxy_private.h"
 #include "ppapi/c/private/ppb_tcp_server_socket_private.h"
 #include "ppapi/c/private/ppb_tcp_socket_private.h"
@@ -98,9 +95,7 @@ bool IsSupportedPepperInterface(const char* name) {
     return true;
 
 #include "ppapi/thunk/interfaces_ppb_private.h"
-#include "ppapi/thunk/interfaces_ppb_private_flash.h"
 #include "ppapi/thunk/interfaces_ppb_private_no_permissions.h"
-#include "ppapi/thunk/interfaces_ppb_private_pdf.h"
 #include "ppapi/thunk/interfaces_ppb_public_dev.h"
 #include "ppapi/thunk/interfaces_ppb_public_dev_channel.h"
 #include "ppapi/thunk/interfaces_ppb_public_socket.h"

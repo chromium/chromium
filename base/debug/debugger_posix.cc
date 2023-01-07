@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,12 +15,9 @@
 #include <unistd.h>
 
 #include <memory>
-#include <vector>
 
 #include "base/check_op.h"
-#include "base/clang_profiling_buildflags.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -30,21 +27,16 @@
 #include <cxxabi.h>
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <AvailabilityMacros.h>
 #endif
 
-#if defined(OS_APPLE) || defined(OS_BSD)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_BSD)
 #include <sys/sysctl.h>
 #endif
 
-#if defined(OS_FREEBSD)
+#if BUILDFLAG(IS_FREEBSD)
 #include <sys/user.h>
-#endif
-
-#if defined(OS_FUCHSIA)
-#include <zircon/process.h>
-#include <zircon/syscalls.h>
 #endif
 
 #include <ostream>
@@ -59,10 +51,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 
-#if BUILDFLAG(CLANG_PROFILING)
-#include "base/test/clang_profiling.h"
-#endif
-
 #if defined(USE_SYMBOLIZE)
 #include "base/third_party/symbolize/symbolize.h"
 #endif
@@ -70,7 +58,7 @@
 namespace base {
 namespace debug {
 
-#if defined(OS_APPLE) || defined(OS_BSD)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_BSD)
 
 // Based on Apple's recommended method as described in
 // http://developer.apple.com/qa/qa2004/qa1361.html
@@ -98,8 +86,9 @@ bool BeingDebugged() {
     KERN_PROC,
     KERN_PROC_PID,
     getpid()
-#if defined(OS_OPENBSD)
-    , sizeof(struct kinfo_proc),
+#if BUILDFLAG(IS_OPENBSD)
+        ,
+    sizeof(struct kinfo_proc),
     0
 #endif
   };
@@ -109,14 +98,14 @@ bool BeingDebugged() {
   struct kinfo_proc info;
   size_t info_size = sizeof(info);
 
-#if defined(OS_OPENBSD)
-  if (sysctl(mib, base::size(mib), NULL, &info_size, NULL, 0) < 0)
+#if BUILDFLAG(IS_OPENBSD)
+  if (sysctl(mib, std::size(mib), NULL, &info_size, NULL, 0) < 0)
     return -1;
 
   mib[5] = (info_size / sizeof(struct kinfo_proc));
 #endif
 
-  int sysctl_result = sysctl(mib, base::size(mib), &info, &info_size, NULL, 0);
+  int sysctl_result = sysctl(mib, std::size(mib), &info, &info_size, NULL, 0);
   DCHECK_EQ(sysctl_result, 0);
   if (sysctl_result != 0) {
     is_set = true;
@@ -126,9 +115,9 @@ bool BeingDebugged() {
 
   // This process is being debugged if the P_TRACED flag is set.
   is_set = true;
-#if defined(OS_FREEBSD)
+#if BUILDFLAG(IS_FREEBSD)
   being_debugged = (info.ki_flag & P_TRACED) != 0;
-#elif defined(OS_BSD)
+#elif BUILDFLAG(IS_BSD)
   being_debugged = (info.p_flag & P_TRACED) != 0;
 #else
   being_debugged = (info.kp_proc.p_flag & P_TRACED) != 0;
@@ -148,7 +137,7 @@ void VerifyDebugger() {
       << "Detected lldb without sourcing //tools/lldb/lldbinit.py. lldb may "
          "not be able to find debug symbols. Please see debug instructions for "
          "using //tools/lldb/lldbinit.py:\n"
-         "https://chromium.googlesource.com/chromium/src/+/master/docs/"
+         "https://chromium.googlesource.com/chromium/src/+/main/docs/"
          "lldbinit.md\n"
          "To continue anyway, type 'continue' in lldb. To always skip this "
          "check, define an environment variable CHROMIUM_LLDBINIT_SOURCED=1";
@@ -156,8 +145,8 @@ void VerifyDebugger() {
   */
 }
 
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_AIX)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_AIX)
 
 // We can look in /proc/self/status for TracerPid.  We are likely used in crash
 // handling, so we are careful not to use the heap or have side effects.
@@ -184,7 +173,7 @@ Process GetDebuggerProcess() {
   if (num_read <= 0)
     return Process();
 
-  StringPiece status(buf, num_read);
+  StringPiece status(buf, static_cast<size_t>(num_read));
   StringPiece tracer("TracerPid:\t");
 
   StringPiece::size_type pid_index = status.find(tracer);
@@ -232,25 +221,12 @@ void VerifyDebugger() {
       << "Detected gdb without sourcing //tools/gdb/gdbinit.  gdb may not be "
          "able to find debug symbols, and pretty-printing of STL types may not "
          "work.  Please see debug instructions for using //tools/gdb/gdbinit:\n"
-         "https://chromium.googlesource.com/chromium/src/+/master/docs/"
+         "https://chromium.googlesource.com/chromium/src/+/main/docs/"
          "gdbinit.md\n"
          "To continue anyway, type 'continue' in gdb.  To always skip this "
          "check, define an environment variable CHROMIUM_GDBINIT_SOURCED=1";
 #endif
 }
-
-#elif defined(OS_FUCHSIA)
-
-bool BeingDebugged() {
-  zx_info_process_t info = {};
-  // Ignore failures. The 0-initialization above will result in "false" for
-  // error cases.
-  zx_object_get_info(zx_process_self(), ZX_INFO_PROCESS, &info, sizeof(info),
-                     nullptr, nullptr);
-  return info.debugger_attached;
-}
-
-void VerifyDebugger() {}
 
 #else
 
@@ -288,14 +264,14 @@ void VerifyDebugger() {}
 #define DEBUG_BREAK_ASM() asm("int3")
 #endif
 
-#if defined(NDEBUG) && !defined(OS_APPLE) && !defined(OS_ANDROID)
+#if defined(NDEBUG) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 #define DEBUG_BREAK() abort()
-#elif defined(OS_NACL)
+#elif BUILDFLAG(IS_NACL)
 // The NaCl verifier doesn't let use use int3.  For now, we call abort().  We
 // should ask for advice from some NaCl experts about the optimum thing here.
 // http://code.google.com/p/nativeclient/issues/detail?id=645
 #define DEBUG_BREAK() abort()
-#elif !defined(OS_APPLE)
+#elif !BUILDFLAG(IS_APPLE)
 // Though Android has a "helpful" process called debuggerd to catch native
 // signals on the general assumption that they are fatal errors. If no debugger
 // is attached, we call abort since Breakpad needs SIGABRT to create a dump.
@@ -318,7 +294,7 @@ void DebugBreak() {
 #else
     volatile int go = 0;
     while (!go)
-      PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
+      PlatformThread::Sleep(Milliseconds(100));
 #endif
   }
 }
@@ -330,11 +306,7 @@ void DebugBreak() {
 #error "Don't know how to debug break on this architecture/OS"
 #endif
 
-void BreakDebugger() {
-#if BUILDFLAG(CLANG_PROFILING)
-  WriteClangProfilingProfile();
-#endif
-
+void BreakDebuggerAsyncSafe() {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
@@ -345,7 +317,7 @@ void BreakDebugger() {
   Alias(&static_variable_to_make_this_function_unique);
 
   DEBUG_BREAK();
-#if defined(OS_ANDROID) && !defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_ANDROID) && !defined(OFFICIAL_BUILD)
   // For Android development we always build release (debug builds are
   // unmanageably large), so the unofficial build is used for debugging. It is
   // helpful to be able to insert BreakDebugger() statements in the source,

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import android.os.ParcelFileDescriptor;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +26,8 @@ import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.minidump_uploader.CrashTestRule;
 import org.chromium.components.minidump_uploader.CrashTestRule.MockCrashReportingPermissionManager;
@@ -32,6 +35,7 @@ import org.chromium.components.minidump_uploader.MinidumpUploadJob;
 import org.chromium.components.minidump_uploader.MinidumpUploadJobImpl;
 import org.chromium.components.minidump_uploader.MinidumpUploadTestUtility;
 import org.chromium.components.minidump_uploader.MinidumpUploaderDelegate;
+import org.chromium.components.minidump_uploader.MinidumpUploaderTestConstants;
 import org.chromium.components.minidump_uploader.TestMinidumpUploadJobImpl;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
 import org.chromium.components.version_info.Channel;
@@ -58,8 +62,6 @@ public class MinidumpUploadJobTest {
             return SystemWideCrashDirectories.getOrCreateWebViewCrashDir();
         }
     };
-
-    private static final String BOUNDARY = "TESTBOUNDARY";
 
     private static class TestPlatformServiceBridge extends PlatformServiceBridge {
         private final boolean mEnabled;
@@ -98,6 +100,12 @@ public class MinidumpUploadJobTest {
         public int getRandomSample() {
             return mRandomSampling;
         }
+    }
+
+    @Before
+    public void setUp() {
+        LibraryLoader.getInstance().setLibraryProcessType(LibraryProcessType.PROCESS_WEBVIEW);
+        LibraryLoader.getInstance().ensureInitialized();
     }
 
     // randomSampl < CRASH_DUMP_PERCENTAGE_FOR_STABLE to always sample-in crashes.
@@ -151,7 +159,8 @@ public class MinidumpUploadJobTest {
         // crash dir. This is to ensure the CrashFileManager doesn't see these minidumps without us
         // first copying them.
         File minidumpToCopy = new File(mTestRule.getExistingCacheDir(), "toCopy.dmp.try0");
-        CrashTestRule.setUpMinidumpFile(minidumpToCopy, BOUNDARY, "browser");
+        CrashTestRule.setUpMinidumpFile(
+                minidumpToCopy, MinidumpUploaderTestConstants.BOUNDARY, "browser");
         final String expectedFileContent = readEntireFile(minidumpToCopy);
 
         File[] uploadedFiles = copyAndUploadMinidumpsSync(
@@ -242,7 +251,7 @@ public class MinidumpUploadJobTest {
 
     /**
      * MinidumpUploaderDelegate sub-class that uses MinidumpUploaderDelegate's implementation of
-     * CrashReportingPermissionManager.isUsageAndCrashReportingPermittedByUser().
+     * {@see CrashReportingPermissionManager#isUsageAndCrashReportingPermitted()}.
      */
     private static class TestCrashSamplingMinidumpUploaderDelegate
             extends AwMinidumpUploaderDelegate {
@@ -320,7 +329,7 @@ public class MinidumpUploadJobTest {
 
     /**
      * MinidumpUploaderDelegate sub-class that uses MinidumpUploaderDelegate's implementation of
-     * CrashReportingPermissionManager.isUsageAndCrashReportingPermittedByUser().
+     * {@see CrashReportingPermissionManager#isUsageAndCrashReportingPermitted()}.
      */
     private static class WebViewUserConsentMinidumpUploaderDelegate
             extends AwMinidumpUploaderDelegate {
@@ -336,17 +345,17 @@ public class MinidumpUploadJobTest {
             return new MockCrashReportingPermissionManager() {
                 {
                     // This setup ensures we depend on
-                    // isUsageAndCrashReportingPermittedByUser().
+                    // isUsageAndCrashReportingPermitted().
                     mIsInSample = true;
                     mIsNetworkAvailable = true;
                     mIsEnabledForTests = false;
                 }
                 @Override
-                public boolean isUsageAndCrashReportingPermittedByUser() {
+                public boolean isUsageAndCrashReportingPermitted() {
                     // Ensure that we use the real implementation of
-                    // isUsageAndCrashReportingPermittedByUser.
+                    // isUsageAndCrashReportingPermitted.
                     boolean userPermitted =
-                            realPermissionManager.isUsageAndCrashReportingPermittedByUser();
+                            realPermissionManager.isUsageAndCrashReportingPermitted();
                     Assert.assertEquals(mUserConsent, userPermitted);
                     return userPermitted;
                 }
@@ -400,8 +409,10 @@ public class MinidumpUploadJobTest {
                 new File(mTestRule.getExistingCacheDir(), "firstToCopy.dmp.try0");
         File secondMinidumpToCopy =
                 new File(mTestRule.getExistingCacheDir(), "secondToCopy.dmp.try0");
-        CrashTestRule.setUpMinidumpFile(firstMinidumpToCopy, BOUNDARY, "browser");
-        CrashTestRule.setUpMinidumpFile(secondMinidumpToCopy, BOUNDARY, "renderer");
+        CrashTestRule.setUpMinidumpFile(
+                firstMinidumpToCopy, MinidumpUploaderTestConstants.BOUNDARY, "browser");
+        CrashTestRule.setUpMinidumpFile(
+                secondMinidumpToCopy, MinidumpUploaderTestConstants.BOUNDARY, "renderer");
         final String expectedFirstFileContent = readEntireFile(firstMinidumpToCopy);
         final String expectedSecondFileContent = readEntireFile(secondMinidumpToCopy);
 
@@ -489,7 +500,7 @@ public class MinidumpUploadJobTest {
 
     private File createMinidumpFileInCrashDir(String name) throws IOException {
         File minidumpFile = new File(mTestRule.getCrashDir(), name);
-        CrashTestRule.setUpMinidumpFile(minidumpFile, BOUNDARY);
+        CrashTestRule.setUpMinidumpFile(minidumpFile, MinidumpUploaderTestConstants.BOUNDARY);
         return minidumpFile;
     }
 }

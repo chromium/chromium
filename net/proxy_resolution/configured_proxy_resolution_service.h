@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,13 +13,13 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/log/net_log_with_source.h"
@@ -30,10 +30,10 @@
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_resolver.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace base {
-class SequencedTaskRunner;
 class TimeDelta;
 }  // namespace base
 
@@ -87,7 +87,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
       MODE_START_AFTER_ACTIVITY,
     };
 
-    virtual ~PacPollPolicy() {}
+    virtual ~PacPollPolicy() = default;
 
     // Decides the next poll delay. |current_delay| is the delay used
     // by the preceding poll, or a negative TimeDelta value if determining
@@ -108,6 +108,11 @@ class NET_EXPORT ConfiguredProxyResolutionService
       NetLog* net_log,
       bool quick_check_enabled);
 
+  ConfiguredProxyResolutionService(const ConfiguredProxyResolutionService&) =
+      delete;
+  ConfiguredProxyResolutionService& operator=(
+      const ConfiguredProxyResolutionService&) = delete;
+
   ~ConfiguredProxyResolutionService() override;
 
   // ProxyResolutionService
@@ -120,7 +125,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
   //   3.  named proxy
   int ResolveProxy(const GURL& url,
                    const std::string& method,
-                   const NetworkIsolationKey& network_isolation_key,
+                   const NetworkAnonymizationKey& network_anonymization_key,
                    ProxyInfo* results,
                    CompletionOnceCallback callback,
                    std::unique_ptr<ProxyResolutionRequest>* request,
@@ -150,12 +155,12 @@ class NET_EXPORT ConfiguredProxyResolutionService
   void OnShutdown() override;
 
   // Returns the last configuration fetched from ProxyConfigService.
-  const base::Optional<ProxyConfigWithAnnotation>& fetched_config() const {
+  const absl::optional<ProxyConfigWithAnnotation>& fetched_config() const {
     return fetched_config_;
   }
 
   // Returns the current configuration being used by ProxyConfigService.
-  const base::Optional<ProxyConfigWithAnnotation>& config() const {
+  const absl::optional<ProxyConfigWithAnnotation>& config() const {
     return config_;
   }
 
@@ -171,12 +176,12 @@ class NET_EXPORT ConfiguredProxyResolutionService
   void ForceReloadProxyConfig();
 
   // ProxyResolutionService
-  base::Value GetProxyNetLogValues() override;
+  base::Value::Dict GetProxyNetLogValues() override;
 
   // ProxyResolutionService
-  bool CastToConfiguredProxyResolutionService(
+  [[nodiscard]] bool CastToConfiguredProxyResolutionService(
       ConfiguredProxyResolutionService** configured_proxy_resolution_service)
-      override WARN_UNUSED_RESULT;
+      override;
 
   // Same as CreateProxyResolutionServiceUsingV8ProxyResolver, except it uses
   // system libraries for evaluating the PAC script if available, otherwise
@@ -196,9 +201,9 @@ class NET_EXPORT ConfiguredProxyResolutionService
 
   // Convenience methods that creates a proxy service using the
   // specified fixed settings.
-  static std::unique_ptr<ConfiguredProxyResolutionService> CreateFixed(
+  static std::unique_ptr<ConfiguredProxyResolutionService> CreateFixedForTest(
       const ProxyConfigWithAnnotation& pc);
-  static std::unique_ptr<ConfiguredProxyResolutionService> CreateFixed(
+  static std::unique_ptr<ConfiguredProxyResolutionService> CreateFixedForTest(
       const std::string& proxy,
       const NetworkTrafficAnnotationTag& traffic_annotation);
 
@@ -211,26 +216,16 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // |pac_string| is a list of proxy servers, in the format that a PAC script
   // would return it. For example, "PROXY foobar:99; SOCKS fml:2; DIRECT"
   static std::unique_ptr<ConfiguredProxyResolutionService>
-  CreateFixedFromPacResult(
+  CreateFixedFromPacResultForTest(
       const std::string& pac_string,
       const NetworkTrafficAnnotationTag& traffic_annotation);
 
-  // Same as CreateFixedFromPacResult(), except the resulting ProxyInfo from
-  // resolutions will be tagged as having been auto-detected.
+  // Same as CreateFixedFromPacResultForTest(), except the resulting ProxyInfo
+  // from resolutions will be tagged as having been auto-detected.
   static std::unique_ptr<ConfiguredProxyResolutionService>
-  CreateFixedFromAutoDetectedPacResult(
+  CreateFixedFromAutoDetectedPacResultForTest(
       const std::string& pac_string,
       const NetworkTrafficAnnotationTag& traffic_annotation);
-
-  // Creates a config service appropriate for this platform that fetches the
-  // system proxy settings. |main_task_runner| is the thread where the consumer
-  // of the ProxyConfigService will live.
-  //
-  // TODO(mmenke): Should this be a member of ProxyConfigService?
-  // The ConfiguredProxyResolutionService may not even be in the same process as
-  // the system ProxyConfigService.
-  static std::unique_ptr<ProxyConfigService> CreateSystemProxyConfigService(
-      const scoped_refptr<base::SequencedTaskRunner>& main_task_runner);
 
   // This method should only be used by unit tests.
   void set_stall_proxy_auto_config_delay(base::TimeDelta delay) {
@@ -359,8 +354,8 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // and custom PAC url).
   //
   // These are "optional" as their value remains unset while being calculated.
-  base::Optional<ProxyConfigWithAnnotation> fetched_config_;
-  base::Optional<ProxyConfigWithAnnotation> config_;
+  absl::optional<ProxyConfigWithAnnotation> fetched_config_;
+  absl::optional<ProxyConfigWithAnnotation> config_;
 
   // Map of the known bad proxies and the information about the retry time.
   ProxyRetryInfoMap proxy_retry_info_;
@@ -387,15 +382,15 @@ class NET_EXPORT ConfiguredProxyResolutionService
   // Helper to poll the PAC script for changes.
   std::unique_ptr<PacFileDeciderPoller> script_poller_;
 
-  State current_state_;
+  State current_state_ = STATE_NONE;
 
   // Either OK or an ERR_* value indicating that a permanent error (e.g.
   // failed to fetch the PAC script) prevents proxy resolution.
-  int permanent_error_;
+  int permanent_error_ = OK;
 
   // This is the log where any events generated by |init_proxy_resolver_| are
   // sent to.
-  NetLog* net_log_;
+  raw_ptr<NetLog> net_log_;
 
   // The earliest time at which we should run any proxy auto-config. (Used to
   // stall re-configuration following an IP address change).
@@ -409,14 +404,12 @@ class NET_EXPORT ConfiguredProxyResolutionService
 
   THREAD_CHECKER(thread_checker_);
 
-  ProxyDelegate* proxy_delegate_ = nullptr;
+  raw_ptr<ProxyDelegate> proxy_delegate_ = nullptr;
 
   // Flag used by |SetReady()| to check if |this| has been deleted by a
   // synchronous callback.
   base::WeakPtrFactory<ConfiguredProxyResolutionService> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConfiguredProxyResolutionService);
 };
 
 }  // namespace net

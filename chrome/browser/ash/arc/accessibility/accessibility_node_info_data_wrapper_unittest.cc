@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -31,7 +31,6 @@ using AXIntListProperty = mojom::AccessibilityIntListProperty;
 using AXIntProperty = mojom::AccessibilityIntProperty;
 using AXNodeInfoData = mojom::AccessibilityNodeInfoData;
 using AXRangeInfoData = mojom::AccessibilityRangeInfoData;
-using AXStringListProperty = mojom::AccessibilityStringListProperty;
 using AXStringProperty = mojom::AccessibilityStringProperty;
 
 class AccessibilityNodeInfoDataWrapperTest : public testing::Test,
@@ -40,7 +39,7 @@ class AccessibilityNodeInfoDataWrapperTest : public testing::Test,
   class TestAXTreeSourceArc : public AXTreeSourceArc {
    public:
     explicit TestAXTreeSourceArc(AXTreeSourceArc::Delegate* delegate)
-        : AXTreeSourceArc(delegate) {}
+        : AXTreeSourceArc(delegate, /*window=*/nullptr) {}
 
     // AXTreeSourceArc overrides.
     bool IsRootOfNodeTree(int32_t id) const override {
@@ -313,6 +312,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromTextProperties) {
   SetProperty(child1, AXStringProperty::CONTENT_DESCRIPTION,
               "content_description");
   SetProperty(child1, AXStringProperty::STATE_DESCRIPTION, "state_description");
+  SetProperty(child1, AXBooleanProperty::IMPORTANCE, true);
 
   AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &root);
 
@@ -338,6 +338,14 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, NameFromTextProperties) {
   ASSERT_TRUE(
       data.GetStringAttribute(ax::mojom::StringAttribute::kName, &name));
   ASSERT_EQ("state_description", name);
+
+  // Don't use any text if the node doesn't have importance.
+  SetProperty(child1, AXBooleanProperty::IMPORTANCE, false);
+  SetProperty(child1, AXStringProperty::TEXT, "text");
+  SetProperty(child1, AXStringProperty::CONTENT_DESCRIPTION,
+              "content_description");
+  data = CallSerialize(wrapper);
+  ASSERT_FALSE(data.HasStringAttribute(ax::mojom::StringAttribute::kName));
 }
 
 TEST_F(AccessibilityNodeInfoDataWrapperTest, TextFieldNameAndValue) {
@@ -463,16 +471,15 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, States) {
   EXPECT_EQ(ax::mojom::CheckedState::kTrue, data.GetCheckedState());
 
   // Make the node expandable (i.e. collapsed).
-  SetProperty(node, AXIntListProperty::STANDARD_ACTION_IDS,
-              std::vector<int>({static_cast<int>(AXActionType::EXPAND)}));
+  AddStandardAction(&node, AXActionType::EXPAND);
 
   data = CallSerialize(wrapper);
   EXPECT_TRUE(data.HasState(ax::mojom::State::kCollapsed));
   EXPECT_FALSE(data.HasState(ax::mojom::State::kExpanded));
 
   // Make the node collapsible (i.e. expanded).
-  SetProperty(node, AXIntListProperty::STANDARD_ACTION_IDS,
-              std::vector<int>({static_cast<int>(AXActionType::COLLAPSE)}));
+  node.standard_actions = absl::nullopt;
+  AddStandardAction(&node, AXActionType::COLLAPSE);
 
   data = CallSerialize(wrapper);
   EXPECT_FALSE(data.HasState(ax::mojom::State::kCollapsed));
@@ -532,6 +539,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, SelectedState) {
 
 TEST_F(AccessibilityNodeInfoDataWrapperTest, EditTextRole) {
   AXNodeInfoData node;
+  node.id = 1;
   AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &node);
 
   // Editable node is textField.
@@ -554,8 +562,9 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, EditTextRole) {
   SetProperty(node, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({2}));
   AXNodeInfoData child;
   child.id = 2;
-  AccessibilityNodeInfoDataWrapper child_wrapper(tree_source(), &node);
+  AccessibilityNodeInfoDataWrapper child_wrapper(tree_source(), &child);
   SetIdToWrapper(&child_wrapper);
+  SetParentId(child.id, node.id);
 
   data = CallSerialize(wrapper);
   EXPECT_EQ(ax::mojom::Role::kGenericContainer, data.role);
@@ -737,9 +746,8 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, FocusAndClickAction) {
 
   // Set click and focus action to child1. child1 will be clickable and
   // focusable, and gets ax name from descendants.
-  SetProperty(child1, AXIntListProperty::STANDARD_ACTION_IDS,
-              std::vector<int>({static_cast<int>(AXActionType::CLICK),
-                                static_cast<int>(AXActionType::FOCUS)}));
+  AddStandardAction(&child1, AXActionType::CLICK);
+  AddStandardAction(&child1, AXActionType::FOCUS);
 
   data = CallSerialize(root_wrapper);
   ASSERT_FALSE(
@@ -755,9 +763,9 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, FocusAndClickAction) {
   EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
 
   // Same for clear_focus action instead of focus action.
-  SetProperty(child1, AXIntListProperty::STANDARD_ACTION_IDS,
-              std::vector<int>({static_cast<int>(AXActionType::CLICK),
-                                static_cast<int>(AXActionType::CLEAR_FOCUS)}));
+  child1.standard_actions = absl::nullopt;
+  AddStandardAction(&child1, AXActionType::CLICK);
+  AddStandardAction(&child1, AXActionType::CLEAR_FOCUS);
 
   data = CallSerialize(root_wrapper);
   ASSERT_FALSE(
@@ -773,4 +781,64 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, FocusAndClickAction) {
   EXPECT_TRUE(data.HasState(ax::mojom::State::kFocusable));
 }
 
+TEST_F(AccessibilityNodeInfoDataWrapperTest, LiveRegionStatus) {
+  AXNodeInfoData root;
+  root.id = 1;
+  mojom::AccessibilityLiveRegionType politeLiveRegion =
+      mojom::AccessibilityLiveRegionType::POLITE;
+  SetProperty(root, AXIntProperty::LIVE_REGION,
+              static_cast<int32_t>(politeLiveRegion));
+  AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &root);
+
+  // Check that live region status was set on node.
+  ui::AXNodeData data = CallSerialize(wrapper);
+  std::string val;
+  ASSERT_TRUE(
+      data.GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus, &val));
+  ASSERT_EQ("polite", val);
+
+  ASSERT_TRUE(data.GetStringAttribute(
+      ax::mojom::StringAttribute::kContainerLiveStatus, &val));
+  ASSERT_EQ("polite", val);
+}
+
+TEST_F(AccessibilityNodeInfoDataWrapperTest, CustomActions) {
+  AXNodeInfoData node;
+  AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &node);
+
+  // Check if a custom action is properly serialized.
+  AddCustomAction(&node, 300, "This is label");
+
+  ui::AXNodeData data = CallSerialize(wrapper);
+  std::vector<int> result_ids;
+  std::vector<std::string> result_labels;
+  EXPECT_TRUE(data.HasAction(ax::mojom::Action::kCustomAction));
+  EXPECT_TRUE(data.GetIntListAttribute(
+      ax::mojom::IntListAttribute::kCustomActionIds, &result_ids));
+  EXPECT_EQ(std::vector<int>({300}), result_ids);
+  EXPECT_TRUE(data.GetStringListAttribute(
+      ax::mojom::StringListAttribute::kCustomActionDescriptions,
+      &result_labels));
+  EXPECT_EQ(std::vector<std::string>({"This is label"}), result_labels);
+}
+
+TEST_F(AccessibilityNodeInfoDataWrapperTest, ActionLabel) {
+  AXNodeInfoData root;
+  root.id = 1;
+  AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &root);
+
+  // Check if labels for click and long click are serialized as kDoDefaultLabel
+  // and kLongClickLabel.
+  AddStandardAction(&root, AXActionType::CLICK, "click label");
+  AddStandardAction(&root, AXActionType::LONG_CLICK, "long click label");
+
+  ui::AXNodeData data = CallSerialize(wrapper);
+  std::string val;
+  EXPECT_TRUE(data.GetStringAttribute(
+      ax::mojom::StringAttribute::kDoDefaultLabel, &val));
+  EXPECT_EQ("click label", val);
+  EXPECT_TRUE(data.GetStringAttribute(
+      ax::mojom::StringAttribute::kLongClickLabel, &val));
+  EXPECT_EQ("long click label", val);
+}
 }  // namespace arc

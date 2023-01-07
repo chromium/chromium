@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
@@ -37,6 +36,7 @@
 #include "chrome/installer/util/installer_util_strings.h"
 #include "chrome/installer/util/l10n_string_util.h"
 #include "chrome/installer/util/shell_util.h"
+#include "chrome/installer/util/taskbar_util.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,6 +56,11 @@ class CreateVisualElementsManifestTest
         start_menu_override_(base::DIR_START_MENU),
         expected_manifest_(std::get<1>(GetParam())),
         version_("0.0.0.0") {}
+
+  CreateVisualElementsManifestTest(const CreateVisualElementsManifestTest&) =
+      delete;
+  CreateVisualElementsManifestTest& operator=(
+      const CreateVisualElementsManifestTest&) = delete;
 
   void SetUp() override {
     // Create a temp directory for testing.
@@ -82,8 +87,8 @@ class CreateVisualElementsManifestTest
   // Creates a dummy test file at |path|.
   void CreateTestFile(const base::FilePath& path) {
     static constexpr char kBlah[] = "blah";
-    ASSERT_EQ(static_cast<int>(base::size(kBlah) - 1),
-              base::WriteFile(path, &kBlah[0], base::size(kBlah) - 1));
+    ASSERT_EQ(static_cast<int>(std::size(kBlah) - 1),
+              base::WriteFile(path, &kBlah[0], std::size(kBlah) - 1));
   }
 
   // Creates the VisualElements directory and a light asset, if testing such.
@@ -125,9 +130,6 @@ class CreateVisualElementsManifestTest
 
   // The path to the Start Menu shortcut.
   base::FilePath start_menu_shortcut_path_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CreateVisualElementsManifestTest);
 };
 
 constexpr char kExpectedPrimaryManifest[] =
@@ -230,16 +232,16 @@ class InstallShortcutTest : public testing::Test {
     ASSERT_TRUE(fake_user_quick_launch_.CreateUniqueTempDir());
     ASSERT_TRUE(fake_start_menu_.CreateUniqueTempDir());
     ASSERT_TRUE(fake_common_start_menu_.CreateUniqueTempDir());
-    user_desktop_override_.reset(new base::ScopedPathOverride(
-        base::DIR_USER_DESKTOP, fake_user_desktop_.GetPath()));
-    common_desktop_override_.reset(new base::ScopedPathOverride(
-        base::DIR_COMMON_DESKTOP, fake_common_desktop_.GetPath()));
-    user_quick_launch_override_.reset(new base::ScopedPathOverride(
-        base::DIR_USER_QUICK_LAUNCH, fake_user_quick_launch_.GetPath()));
-    start_menu_override_.reset(new base::ScopedPathOverride(
-        base::DIR_START_MENU, fake_start_menu_.GetPath()));
-    common_start_menu_override_.reset(new base::ScopedPathOverride(
-        base::DIR_COMMON_START_MENU, fake_common_start_menu_.GetPath()));
+    user_desktop_override_ = std::make_unique<base::ScopedPathOverride>(
+        base::DIR_USER_DESKTOP, fake_user_desktop_.GetPath());
+    common_desktop_override_ = std::make_unique<base::ScopedPathOverride>(
+        base::DIR_COMMON_DESKTOP, fake_common_desktop_.GetPath());
+    user_quick_launch_override_ = std::make_unique<base::ScopedPathOverride>(
+        base::DIR_USER_QUICK_LAUNCH, fake_user_quick_launch_.GetPath());
+    start_menu_override_ = std::make_unique<base::ScopedPathOverride>(
+        base::DIR_START_MENU, fake_start_menu_.GetPath());
+    common_start_menu_override_ = std::make_unique<base::ScopedPathOverride>(
+        base::DIR_COMMON_START_MENU, fake_common_start_menu_.GetPath());
 
     std::wstring shortcut_name(InstallUtil::GetShortcutName() +
                                installer::kLnkExt);
@@ -266,10 +268,10 @@ class InstallShortcutTest : public testing::Test {
   void TearDown() override {
     // Try to unpin potentially pinned shortcuts (although pinning isn't tested,
     // the call itself might still have pinned the Start Menu shortcuts).
-    base::win::UnpinShortcutFromTaskbar(user_start_menu_shortcut_);
-    base::win::UnpinShortcutFromTaskbar(user_start_menu_subdir_shortcut_);
-    base::win::UnpinShortcutFromTaskbar(system_start_menu_shortcut_);
-    base::win::UnpinShortcutFromTaskbar(system_start_menu_subdir_shortcut_);
+    UnpinShortcutFromTaskbar(user_start_menu_shortcut_);
+    UnpinShortcutFromTaskbar(user_start_menu_subdir_shortcut_);
+    UnpinShortcutFromTaskbar(system_start_menu_shortcut_);
+    UnpinShortcutFromTaskbar(system_start_menu_subdir_shortcut_);
   }
 
   installer::InitialPreferences* GetFakeMasterPrefs(
@@ -286,7 +288,7 @@ class InstallShortcutTest : public testing::Test {
     };
 
     std::string initial_prefs("{\"distribution\":{");
-    for (size_t i = 0; i < base::size(desired_prefs); ++i) {
+    for (size_t i = 0; i < std::size(desired_prefs); ++i) {
       initial_prefs += (i == 0 ? "\"" : ",\"");
       initial_prefs += desired_prefs[i].pref_name;
       initial_prefs += "\":";
@@ -410,14 +412,14 @@ TEST_F(InstallShortcutTest, ReplaceAll) {
 
   ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
       user_desktop_shortcut_, dummy_properties,
-      base::win::SHORTCUT_CREATE_ALWAYS));
+      base::win::ShortcutOperation::kCreateAlways));
   ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
       user_quick_launch_shortcut_, dummy_properties,
-      base::win::SHORTCUT_CREATE_ALWAYS));
+      base::win::ShortcutOperation::kCreateAlways));
   ASSERT_TRUE(base::CreateDirectory(user_start_menu_shortcut_.DirName()));
   ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
       user_start_menu_shortcut_, dummy_properties,
-      base::win::SHORTCUT_CREATE_ALWAYS));
+      base::win::ShortcutOperation::kCreateAlways));
 
   installer::CreateOrUpdateShortcuts(
       chrome_exe_, *prefs_, installer::CURRENT_USER,
@@ -441,7 +443,7 @@ TEST_F(InstallShortcutTest, ReplaceExisting) {
 
   ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
       user_desktop_shortcut_, dummy_properties,
-      base::win::SHORTCUT_CREATE_ALWAYS));
+      base::win::ShortcutOperation::kCreateAlways));
   ASSERT_TRUE(base::CreateDirectory(user_start_menu_shortcut_.DirName()));
 
   installer::CreateOrUpdateShortcuts(
@@ -462,12 +464,12 @@ class MigrateShortcutTest
       : shortcut_operation_(testing::get<0>(GetParam())),
         shortcut_level_(testing::get<1>(GetParam())) {}
 
+  MigrateShortcutTest(const MigrateShortcutTest&) = delete;
+  MigrateShortcutTest& operator=(const MigrateShortcutTest&) = delete;
+
  protected:
   const installer::InstallShortcutOperation shortcut_operation_;
   const installer::InstallShortcutLevel shortcut_level_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MigrateShortcutTest);
 };
 
 TEST_P(MigrateShortcutTest, MigrateAwayFromDeprecatedStartMenuTest) {
@@ -494,7 +496,7 @@ TEST_P(MigrateShortcutTest, MigrateAwayFromDeprecatedStartMenuTest) {
   ASSERT_FALSE(base::PathExists(start_menu_subdir_shortcut));
   ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
       start_menu_subdir_shortcut, dummy_properties,
-      base::win::SHORTCUT_CREATE_ALWAYS));
+      base::win::ShortcutOperation::kCreateAlways));
   ASSERT_TRUE(base::PathExists(start_menu_subdir_shortcut));
   ASSERT_FALSE(base::PathExists(start_menu_shortcut));
 
@@ -525,11 +527,11 @@ TEST_F(InstallShortcutTest, CreateIfNoSystemLevelAllSystemShortcutsExist) {
 
   ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
       system_desktop_shortcut_, dummy_properties,
-      base::win::SHORTCUT_CREATE_ALWAYS));
+      base::win::ShortcutOperation::kCreateAlways));
   ASSERT_TRUE(base::CreateDirectory(system_start_menu_shortcut_.DirName()));
   ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
       system_start_menu_shortcut_, dummy_properties,
-      base::win::SHORTCUT_CREATE_ALWAYS));
+      base::win::ShortcutOperation::kCreateAlways));
 
   installer::CreateOrUpdateShortcuts(
       chrome_exe_, *prefs_, installer::CURRENT_USER,
@@ -561,7 +563,7 @@ TEST_F(InstallShortcutTest, CreateIfNoSystemLevelSomeSystemShortcutsExist) {
 
   ASSERT_TRUE(base::win::CreateOrUpdateShortcutLink(
       system_desktop_shortcut_, dummy_properties,
-      base::win::SHORTCUT_CREATE_ALWAYS));
+      base::win::ShortcutOperation::kCreateAlways));
 
   installer::CreateOrUpdateShortcuts(
       chrome_exe_, *prefs_, installer::CURRENT_USER,

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,6 +33,10 @@ bool NoKeyboardLayoutEngine::Lookup(DomCode dom_code,
                                     DomKey* dom_key,
                                     KeyboardCode* key_code) const {
   return false;
+}
+
+void NoKeyboardLayoutEngine::SetInitCallbackForTest(base::OnceClosure closure) {
+  std::move(closure).Run();
 }
 
 }  // namespace ui

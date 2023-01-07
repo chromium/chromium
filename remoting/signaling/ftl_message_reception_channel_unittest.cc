@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/scoped_protobuf_http_request.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
@@ -50,7 +51,12 @@ class MockSignalingTracker : public SignalingTracker {
 class FakeScopedProtobufHttpRequest : public ScopedProtobufHttpRequest {
  public:
   FakeScopedProtobufHttpRequest()
-      : ScopedProtobufHttpRequest(base::DoNothing::Once()) {}
+      : ScopedProtobufHttpRequest(base::DoNothing()) {}
+
+  FakeScopedProtobufHttpRequest(const FakeScopedProtobufHttpRequest&) = delete;
+  FakeScopedProtobufHttpRequest& operator=(
+      const FakeScopedProtobufHttpRequest&) = delete;
+
   ~FakeScopedProtobufHttpRequest() override = default;
 
   base::WeakPtr<FakeScopedProtobufHttpRequest> GetWeakPtr() {
@@ -59,7 +65,6 @@ class FakeScopedProtobufHttpRequest : public ScopedProtobufHttpRequest {
 
  private:
   base::WeakPtrFactory<FakeScopedProtobufHttpRequest> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(FakeScopedProtobufHttpRequest);
 };
 
 std::unique_ptr<FakeScopedProtobufHttpRequest> CreateFakeServerStream() {
@@ -472,8 +477,7 @@ TEST_F(FtlMessageReceptionChannelTest, TimeoutIncreasesToMaximum) {
                 time_until_retry - FtlServicesContext::kBackoffMaxDelay;
 
             // Adjust for fuzziness.
-            if (max_delay_diff.magnitude() <
-                base::TimeDelta::FromMilliseconds(500)) {
+            if (max_delay_diff.magnitude() < base::Milliseconds(500)) {
               hitting_max_delay_count++;
             }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,14 +17,42 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/scoped_make_current.h"
 
 namespace gpu {
+namespace {
+
+// Makes |texture_owner|'s context current if it isn't already.
+std::unique_ptr<ui::ScopedMakeCurrent> MakeCurrentIfNeeded(
+    gpu::TextureOwner* texture_owner) {
+  gl::GLContext* context = texture_owner->GetContext();
+  // Note: this works for virtual contexts too, because IsCurrent() returns true
+  // if their shared platform context is current, regardless of which virtual
+  // context is current.
+  if (context->IsCurrent(nullptr))
+    return nullptr;
+
+  auto scoped_current = std::make_unique<ui::ScopedMakeCurrent>(
+      context, texture_owner->GetSurface());
+  // Log an error if ScopedMakeCurrent failed for debugging
+  // https://crbug.com/878042.
+  // TODO(ericrk): Remove this once debugging is completed.
+  if (!context->IsCurrent(nullptr)) {
+    LOG(ERROR) << "Failed to make context current in CodecImage. Subsequent "
+                  "UpdateTexImage may fail.";
+  }
+  return scoped_current;
+}
+}  // namespace
 
 SurfaceTextureGLOwner::SurfaceTextureGLOwner(
-    std::unique_ptr<gles2::AbstractTexture> texture)
-    : TextureOwner(true /*binds_texture_on_update */, std::move(texture)),
+    std::unique_ptr<gles2::AbstractTexture> texture,
+    scoped_refptr<SharedContextState> context_state)
+    : TextureOwner(true /*binds_texture_on_update */,
+                   std::move(texture),
+                   std::move(context_state)),
       surface_texture_(gl::SurfaceTexture::Create(GetTextureId())),
       context_(gl::GLContext::GetCurrent()),
       surface_(gl::GLSurface::GetCurrent()) {
@@ -35,12 +63,12 @@ SurfaceTextureGLOwner::SurfaceTextureGLOwner(
 SurfaceTextureGLOwner::~SurfaceTextureGLOwner() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  // Clear the texture before we return, so that it can OnTextureDestroyed() if
-  // it hasn't already.
-  ClearAbstractTexture();
+  // Do ReleaseResources() if it hasn't already. This will do nothing if it
+  // has already been destroyed.
+  ReleaseResources();
 }
 
-void SurfaceTextureGLOwner::OnTextureDestroyed(gles2::AbstractTexture*) {
+void SurfaceTextureGLOwner::ReleaseResources() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Make sure that the SurfaceTexture isn't using the GL objects.
@@ -70,12 +98,24 @@ gl::ScopedJavaSurface SurfaceTextureGLOwner::CreateJavaSurface() const {
 
 void SurfaceTextureGLOwner::UpdateTexImage() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (surface_texture_)
+  if (surface_texture_) {
+    // UpdateTexImage bounds texture to the SurfaceTexture context, so make it
+    // current.
+    auto scoped_make_current = MakeCurrentIfNeeded(this);
+    if (scoped_make_current && !scoped_make_current->IsContextCurrent())
+      return;
+
+    // UpdateTexImage might change gl binding and we never should alter gl
+    // binding without updating state tracking, which we can't do here, so
+    // restore previous after we done.
+    ScopedRestoreTextureBinding scoped_restore_texture;
     surface_texture_->UpdateTexImage();
+  }
 }
 
-void SurfaceTextureGLOwner::EnsureTexImageBound() {
-  NOTREACHED();
+void SurfaceTextureGLOwner::EnsureTexImageBound(GLuint service_id) {
+  // We can't bind SurfaceTexture to different ids.
+  DCHECK_EQ(service_id, GetTextureId());
 }
 
 void SurfaceTextureGLOwner::ReleaseBackBuffers() {

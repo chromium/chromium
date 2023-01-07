@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/line_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        app:leading="@dimen/text_size_large_leading"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textAlignment="viewStart" />
+
+    <TextView
+        android:id="@+id/line_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:maxLines="1"
+        android:visibility="gone"
+        android:ellipsize="end"
+        android:textAlignment="viewStart" />
+
+</LinearLayout>

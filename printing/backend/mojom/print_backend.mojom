@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@ import "printing/mojom/print.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Basic information for a specific printer.
+// Corresponds to `printing::PrinterBasicInfo` in
+// printing/backend/print_backend.h.
 struct PrinterBasicInfo {
   string printer_name;
   string display_name;
@@ -18,6 +20,9 @@ struct PrinterBasicInfo {
 };
 
 // Paper used by printer semantic capabilities and defaults.
+// Corresponds to `printing::PrinterSemanticCapsAndDefaults::Paper` in
+// printing/backend/print_backend.h.
+[Stable]
 struct Paper {
   string display_name;
   string vendor_id;
@@ -25,23 +30,30 @@ struct Paper {
 };
 
 // An advanced capability value for ChromeOS printing.
-[EnableIf=is_chromeos]
+// Paper used by printer semantic capabilities and defaults.
+// Corresponds to `printing::AdvancedCapabilityValue` in
+// printing/backend/print_backend.h.
+[Stable, EnableIf=is_chromeos]
 struct AdvancedCapabilityValue {
   string name;
   string display_name;
 };
 
 // The type of the values for advanced capabilities.
-[EnableIf=is_chromeos]
+// Corresponds to `printing::AdvancedCapability::Type` in
+// printing/backend/print_backend.h.
+[Stable, Extensible, EnableIf=is_chromeos]
 enum AdvancedCapabilityType {
+  [Default] kString,
   kBoolean,
   kFloat,
   kInteger,
-  kString
 };
 
 // An advanced capability for ChromeOS printing.
-[EnableIf=is_chromeos]
+// Corresponds to `printing::AdvancedCapability` in
+// printing/backend/print_backend.h.
+[Stable, EnableIf=is_chromeos]
 struct AdvancedCapability {
   string name;
   string display_name;
@@ -50,7 +62,28 @@ struct AdvancedCapability {
   array<AdvancedCapabilityValue> values;
 };
 
+// Attributes of a Page Output Quality of XPS printer for Windows printing.
+// Corresponds to `printing::PageOutpuQualityAttribute` in
+// printing/backend/print_backend.h.
+[Stable, EnableIf=is_win]
+struct PageOutputQualityAttribute {
+  string display_name;
+  string name;
+};
+
+// Page Output Quality from XPS printer for Windows printing. Corresponds to
+// `printing::PageOutputQuality` in printing/backend/print_backend.h.
+[Stable, EnableIf=is_win]
+struct PageOutputQuality {
+  array<PageOutputQualityAttribute> qualities;  // No duplicates.
+  string? default_quality;  // Default selection of `qualities`.
+                            // Null if no default.
+};
+
 // The semantic capabilities and defaults used for a printer.
+// Corresponds to `printing::PrinterSemanticCapsAndDefaults` in
+// printing/backend/print_backend.h.
+[Stable]
 struct PrinterSemanticCapsAndDefaults {
   bool collate_capable = false;
   bool collate_default = false;
@@ -61,14 +94,19 @@ struct PrinterSemanticCapsAndDefaults {
   bool color_default = false;
   ColorModel color_model = kUnknownColorModel;
   ColorModel bw_model = kUnknownColorModel;
-  array<Paper> papers;
+  array<Paper> papers;  // Empty and duplicates allowed.
   array<Paper> user_defined_papers;
   Paper default_paper;
-  array<gfx.mojom.Size> dpis;
+  array<gfx.mojom.Size> dpis;  // Duplicates allowed.
   gfx.mojom.Size default_dpi;
 
   [EnableIf=is_chromeos]
   bool pin_supported = false;
   [EnableIf=is_chromeos]
   array<AdvancedCapability> advanced_capabilities;
+
+  // Null if feature flag `kReadPrinterCapabilitiesWithXps` is disabled.
+  // Null if printer doesn't have this capability.
+  [EnableIf=is_win, MinVersion=1]
+  PageOutputQuality? page_output_quality;
 };

@@ -1,10 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/system/palette/tools/magnifier_mode.h"
 
-#include "ash/accessibility/magnifier/partial_magnification_controller.h"
+#include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -27,18 +27,18 @@ PaletteToolId MagnifierMode::GetToolId() const {
 }
 
 const gfx::VectorIcon& MagnifierMode::GetActiveTrayIcon() const {
-  return kPaletteTrayIconMagnifyIcon;
+  return kPaletteModeMagnifyIcon;
 }
 
 void MagnifierMode::OnEnable() {
   CommonPaletteTool::OnEnable();
-  Shell::Get()->partial_magnification_controller()->SetEnabled(true);
+  Shell::Get()->partial_magnifier_controller()->SetEnabled(true);
   delegate()->HidePalette();
 }
 
 void MagnifierMode::OnDisable() {
   CommonPaletteTool::OnDisable();
-  Shell::Get()->partial_magnification_controller()->SetEnabled(false);
+  Shell::Get()->partial_magnifier_controller()->SetEnabled(false);
 }
 
 views::View* MagnifierMode::CreateView() {

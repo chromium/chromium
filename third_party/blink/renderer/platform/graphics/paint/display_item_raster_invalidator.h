@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,26 +34,27 @@ class DisplayItemRasterInvalidator {
   static const auto kClientIsOld = RasterInvalidator::kClientIsOld;
   static const auto kClientIsNew = RasterInvalidator::kClientIsNew;
 
-  ALWAYS_INLINE void AddRasterInvalidation(const DisplayItemClient&,
-                                           const IntRect&,
+  ALWAYS_INLINE void AddRasterInvalidation(DisplayItemClientId,
+                                           const gfx::Rect&,
                                            PaintInvalidationReason,
                                            RasterInvalidator::ClientIsOldOrNew,
                                            const char* why);
   ALWAYS_INLINE DisplayItemIterator
   MatchNewDisplayItemInOldChunk(const DisplayItem& new_item,
                                 DisplayItemIterator& next_old_item_to_match);
-  ALWAYS_INLINE void GenerateRasterInvalidation(const DisplayItemClient&,
-                                                const IntRect& old_visual_rect,
-                                                const IntRect& new_visual_rect,
-                                                PaintInvalidationReason);
+  ALWAYS_INLINE void GenerateRasterInvalidation(
+      DisplayItemClientId,
+      const gfx::Rect& old_visual_rect,
+      const gfx::Rect& new_visual_rect,
+      PaintInvalidationReason);
   ALWAYS_INLINE void GenerateIncrementalRasterInvalidation(
-      const DisplayItemClient&,
-      const IntRect& old_visual_rect,
-      const IntRect& new_visual_rect);
+      DisplayItemClientId,
+      const gfx::Rect& old_visual_rect,
+      const gfx::Rect& new_visual_rect);
   ALWAYS_INLINE void GenerateFullRasterInvalidation(
-      const DisplayItemClient&,
-      const IntRect& old_visual_rect,
-      const IntRect& new_visual_rect,
+      DisplayItemClientId,
+      const gfx::Rect& old_visual_rect,
+      const gfx::Rect& new_visual_rect,
       PaintInvalidationReason reason);
 
   RasterInvalidator& invalidator_;
@@ -61,11 +62,11 @@ class DisplayItemRasterInvalidator {
   const DisplayItemRange& old_display_items_;
   const DisplayItemRange& new_display_items_;
   const ChunkToLayerMapper& mapper_;
-  // Maps clients keys to indices of display items in old_display_items_.
-  HashMap<uintptr_t, Vector<DisplayItemIterator>>
+  // Maps clients to indices of display items in old_display_items_.
+  HashMap<DisplayItemClientId, Vector<DisplayItemIterator>>
       old_display_items_index_;
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_DISPLAY_ITEM_PAINT_RASTER_INVALIDATOR_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_RASTER_INVALIDATOR_H_

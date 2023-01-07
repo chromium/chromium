@@ -1,16 +1,17 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CAST_TOOLBAR_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_CAST_TOOLBAR_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/toolbar/media_router_action_controller.h"
 #include "chrome/browser/ui/toolbar/media_router_contextual_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "components/media_router/browser/issues_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 class Browser;
 
@@ -52,14 +53,14 @@ class CastToolbarButton : public ToolbarButton,
   void OnIssuesCleared() override;
 
   // media_router::MediaRoutesObserver:
-  void OnRoutesUpdated(const std::vector<media_router::MediaRoute>& routes,
-                       const std::vector<media_router::MediaRoute::Id>&
-                           joinable_route_ids) override;
+  void OnRoutesUpdated(
+      const std::vector<media_router::MediaRoute>& routes) override;
 
   // ToolbarButton:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnThemeChanged() override;
   void UpdateIcon() override;
 
   MediaRouterContextualMenu* context_menu_for_test() {
@@ -76,19 +77,19 @@ class CastToolbarButton : public ToolbarButton,
 
   void LogIconChange(const gfx::VectorIcon* icon);
 
-  Browser* const browser_;
-  Profile* const profile_;
+  const raw_ptr<Browser> browser_;
+  const raw_ptr<Profile> profile_;
 
   // This value is set only when there is an outstanding issue.
   std::unique_ptr<media_router::IssueInfo> current_issue_;
 
   std::unique_ptr<MediaRouterContextualMenu> context_menu_;
 
-  bool has_local_display_route_ = false;
+  bool has_local_route_ = false;
 
-  const gfx::VectorIcon* icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
 
-  LoggerImpl* const logger_;
+  const raw_ptr<LoggerImpl> logger_;
 };
 
 }  // namespace media_router

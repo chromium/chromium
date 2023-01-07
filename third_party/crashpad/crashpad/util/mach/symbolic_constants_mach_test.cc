@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,8 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "base/stl_util.h"
+#include <iterator>
+
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
@@ -26,7 +27,7 @@
 #include "util/misc/implicit_cast.h"
 
 #define NUL_TEST_DATA(string) \
-  { string, base::size(string) - 1 }
+  { string, std::size(string) - 1 }
 
 namespace crashpad {
 namespace test {
@@ -160,7 +161,7 @@ void TestExceptionToString(exception_type_t value,
 }
 
 TEST(SymbolicConstantsMach, ExceptionToString) {
-  for (size_t index = 0; index < base::size(kExceptionTestData); ++index) {
+  for (size_t index = 0; index < std::size(kExceptionTestData); ++index) {
     SCOPED_TRACE(base::StringPrintf("index %zu", index));
     TestExceptionToString(kExceptionTestData[index].exception,
                           kExceptionTestData[index].full_name,
@@ -188,11 +189,11 @@ void TestStringToException(const base::StringPiece& string,
 }
 
 TEST(SymbolicConstantsMach, StringToException) {
-  for (size_t option_index = 0; option_index < base::size(kNormalOptions);
+  for (size_t option_index = 0; option_index < std::size(kNormalOptions);
        ++option_index) {
     SCOPED_TRACE(base::StringPrintf("option_index %zu", option_index));
     StringToSymbolicConstantOptions options = kNormalOptions[option_index];
-    for (size_t index = 0; index < base::size(kExceptionTestData); ++index) {
+    for (size_t index = 0; index < std::size(kExceptionTestData); ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       exception_type_t exception = kExceptionTestData[index].exception;
       {
@@ -230,7 +231,7 @@ TEST(SymbolicConstantsMach, StringToException) {
         "",
     };
 
-    for (size_t index = 0; index < base::size(kNegativeTestData); ++index) {
+    for (size_t index = 0; index < std::size(kNegativeTestData); ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       TestStringToException(kNegativeTestData[index], options, false, 0);
     }
@@ -251,7 +252,7 @@ TEST(SymbolicConstantsMach, StringToException) {
         NUL_TEST_DATA("1\0002"),
     };
 
-    for (size_t index = 0; index < base::size(kNULTestData); ++index) {
+    for (size_t index = 0; index < std::size(kNULTestData); ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       base::StringPiece string(kNULTestData[index].string,
                                kNULTestData[index].length);
@@ -334,7 +335,7 @@ void TestExceptionMaskToString(exception_mask_t value,
 }
 
 TEST(SymbolicConstantsMach, ExceptionMaskToString) {
-  for (size_t index = 0; index < base::size(kExceptionMaskTestData); ++index) {
+  for (size_t index = 0; index < std::size(kExceptionMaskTestData); ++index) {
     SCOPED_TRACE(base::StringPrintf("index %zu", index));
     TestExceptionMaskToString(kExceptionMaskTestData[index].exception_mask,
                               kExceptionMaskTestData[index].full_name,
@@ -389,12 +390,11 @@ TEST(SymbolicConstantsMach, StringToExceptionMask) {
       kAllowFullName | kAllowShortName | kAllowNumber | kAllowOr,
   };
 
-  for (size_t option_index = 0; option_index < base::size(kOptions);
+  for (size_t option_index = 0; option_index < std::size(kOptions);
        ++option_index) {
     SCOPED_TRACE(base::StringPrintf("option_index %zu", option_index));
     StringToSymbolicConstantOptions options = kOptions[option_index];
-    for (size_t index = 0; index < base::size(kExceptionMaskTestData);
-         ++index) {
+    for (size_t index = 0; index < std::size(kExceptionMaskTestData); ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       exception_mask_t exception_mask =
           kExceptionMaskTestData[index].exception_mask;
@@ -445,7 +445,7 @@ TEST(SymbolicConstantsMach, StringToExceptionMask) {
         "",
     };
 
-    for (size_t index = 0; index < base::size(kNegativeTestData); ++index) {
+    for (size_t index = 0; index < std::size(kNegativeTestData); ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       TestStringToExceptionMask(kNegativeTestData[index], options, false, 0);
     }
@@ -471,7 +471,7 @@ TEST(SymbolicConstantsMach, StringToExceptionMask) {
         NUL_TEST_DATA("ARITHMETIC|\0EMULATION"),
     };
 
-    for (size_t index = 0; index < base::size(kNULTestData); ++index) {
+    for (size_t index = 0; index < std::size(kNULTestData); ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       base::StringPiece string(kNULTestData[index].string,
                                kNULTestData[index].length);
@@ -506,7 +506,7 @@ TEST(SymbolicConstantsMach, StringToExceptionMask) {
        EXC_MASK_SYSCALL | 0x100},
     };
 
-  for (size_t index = 0; index < base::size(kNonCanonicalTestData); ++index) {
+  for (size_t index = 0; index < std::size(kNonCanonicalTestData); ++index) {
     SCOPED_TRACE(base::StringPrintf("index %zu", index));
     TestStringToExceptionMask(kNonCanonicalTestData[index].string,
                               kNonCanonicalTestData[index].options,
@@ -577,7 +577,7 @@ void TestExceptionBehaviorToString(exception_behavior_t value,
 }
 
 TEST(SymbolicConstantsMach, ExceptionBehaviorToString) {
-  for (size_t index = 0; index < base::size(kExceptionBehaviorTestData);
+  for (size_t index = 0; index < std::size(kExceptionBehaviorTestData);
        ++index) {
     SCOPED_TRACE(base::StringPrintf("index %zu", index));
     TestExceptionBehaviorToString(kExceptionBehaviorTestData[index].behavior,
@@ -607,11 +607,11 @@ void TestStringToExceptionBehavior(const base::StringPiece& string,
 }
 
 TEST(SymbolicConstantsMach, StringToExceptionBehavior) {
-  for (size_t option_index = 0; option_index < base::size(kNormalOptions);
+  for (size_t option_index = 0; option_index < std::size(kNormalOptions);
        ++option_index) {
     SCOPED_TRACE(base::StringPrintf("option_index %zu", option_index));
     StringToSymbolicConstantOptions options = kNormalOptions[option_index];
-    for (size_t index = 0; index < base::size(kExceptionBehaviorTestData);
+    for (size_t index = 0; index < std::size(kExceptionBehaviorTestData);
          ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       exception_behavior_t behavior =
@@ -657,7 +657,7 @@ TEST(SymbolicConstantsMach, StringToExceptionBehavior) {
         "",
     };
 
-    for (size_t index = 0; index < base::size(kNegativeTestData); ++index) {
+    for (size_t index = 0; index < std::size(kNegativeTestData); ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       TestStringToExceptionBehavior(
           kNegativeTestData[index], options, false, 0);
@@ -683,7 +683,7 @@ TEST(SymbolicConstantsMach, StringToExceptionBehavior) {
         NUL_TEST_DATA("STATE_IDENTITY|\0MACH"),
     };
 
-    for (size_t index = 0; index < base::size(kNULTestData); ++index) {
+    for (size_t index = 0; index < std::size(kNULTestData); ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       base::StringPiece string(kNULTestData[index].string,
                                kNULTestData[index].length);
@@ -720,7 +720,7 @@ TEST(SymbolicConstantsMach, StringToExceptionBehavior) {
        implicit_cast<exception_behavior_t>(MACH_EXCEPTION_CODES | 0x2)},
   };
 
-  for (size_t index = 0; index < base::size(kNonCanonicalTestData); ++index) {
+  for (size_t index = 0; index < std::size(kNonCanonicalTestData); ++index) {
     SCOPED_TRACE(base::StringPrintf("index %zu", index));
     TestStringToExceptionBehavior(kNonCanonicalTestData[index].string,
                                   kNonCanonicalTestData[index].options,
@@ -837,7 +837,7 @@ void TestThreadStateFlavorToString(exception_type_t value,
 }
 
 TEST(SymbolicConstantsMach, ThreadStateFlavorToString) {
-  for (size_t index = 0; index < base::size(kThreadStateFlavorTestData);
+  for (size_t index = 0; index < std::size(kThreadStateFlavorTestData);
        ++index) {
     SCOPED_TRACE(base::StringPrintf("index %zu", index));
     TestThreadStateFlavorToString(kThreadStateFlavorTestData[index].flavor,
@@ -879,11 +879,11 @@ void TestStringToThreadStateFlavor(const base::StringPiece& string,
 }
 
 TEST(SymbolicConstantsMach, StringToThreadStateFlavor) {
-  for (size_t option_index = 0; option_index < base::size(kNormalOptions);
+  for (size_t option_index = 0; option_index < std::size(kNormalOptions);
        ++option_index) {
     SCOPED_TRACE(base::StringPrintf("option_index %zu", option_index));
     StringToSymbolicConstantOptions options = kNormalOptions[option_index];
-    for (size_t index = 0; index < base::size(kThreadStateFlavorTestData);
+    for (size_t index = 0; index < std::size(kThreadStateFlavorTestData);
          ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       thread_state_flavor_t flavor = kThreadStateFlavorTestData[index].flavor;
@@ -953,7 +953,7 @@ TEST(SymbolicConstantsMach, StringToThreadStateFlavor) {
 #endif
     };
 
-    for (size_t index = 0; index < base::size(kNegativeTestData); ++index) {
+    for (size_t index = 0; index < std::size(kNegativeTestData); ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       TestStringToThreadStateFlavor(
           kNegativeTestData[index], options, false, 0);
@@ -1019,7 +1019,7 @@ TEST(SymbolicConstantsMach, StringToThreadStateFlavor) {
 #endif
     };
 
-    for (size_t index = 0; index < base::size(kNULTestData); ++index) {
+    for (size_t index = 0; index < std::size(kNULTestData); ++index) {
       SCOPED_TRACE(base::StringPrintf("index %zu", index));
       base::StringPiece string(kNULTestData[index].string,
                                kNULTestData[index].length);

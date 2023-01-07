@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@ import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -22,42 +22,49 @@ import org.chromium.base.Callback;
 import org.chromium.base.Consumer;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
+import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController;
+import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
 import org.chromium.chrome.browser.offlinepages.OfflinePageItem;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils.OfflinePageLoadUrlDelegate;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
-import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver;
-import org.chromium.chrome.browser.performance_hints.PerformanceHintsObserver.PerformanceClass;
-import org.chromium.chrome.browser.previews.PreviewsAndroidBridge;
-import org.chromium.chrome.browser.previews.PreviewsUma;
+import org.chromium.chrome.browser.privacy_sandbox.AdPersonalizationFragment;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsDelegate;
+import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsObserver;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.page_info.PageInfoAdPersonalizationController;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
+import org.chromium.components.page_info.PageInfoFeatures;
 import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
-import org.chromium.components.page_info.PageInfoView.PageInfoViewParams;
+import org.chromium.components.page_info.PageInfoView;
+import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -67,15 +74,21 @@ import java.util.Date;
  */
 public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate {
     private final WebContents mWebContents;
-    private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final Context mContext;
     private final Profile mProfile;
+    private final Supplier<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier;
+    private final ChromePageInfoHighlight mPageInfoHighlight;
+    private final OfflinePageLoadUrlDelegate mOfflinePageLoadUrlDelegate;
     private String mOfflinePageCreationDate;
-    private OfflinePageLoadUrlDelegate mOfflinePageLoadUrlDelegate;
 
     public ChromePageInfoControllerDelegate(Context context, WebContents webContents,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            OfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate) {
+            OfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate,
+            @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
+            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            ChromePageInfoHighlight pageInfoHighlight) {
         super(new ChromeAutocompleteSchemeClassifier(Profile.fromWebContents(webContents)),
                 VrModuleProvider.getDelegate(),
                 /** isSiteSettingsAvailable= */
@@ -85,11 +98,13 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         mContext = context;
         mWebContents = webContents;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
         mProfile = Profile.fromWebContents(mWebContents);
+        mStoreInfoActionHandlerSupplier = storeInfoActionHandlerSupplier;
+        mPageInfoHighlight = pageInfoHighlight;
 
         initOfflinePageParams();
         mOfflinePageLoadUrlDelegate = offlinePageLoadUrlDelegate;
-        initHttpsImageCompressionStateAndRecordUMA();
 
         TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
                 .notifyEvent(EventConstants.PAGE_INFO_OPENED);
@@ -114,14 +129,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
                 DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM);
                 mOfflinePageCreationDate = df.format(creationDate);
             }
-        }
-    }
-
-    private void initHttpsImageCompressionStateAndRecordUMA() {
-        mIsHttpsImageCompressionApplied =
-                PreviewsAndroidBridge.getInstance().isHttpsImageCompressionApplied(mWebContents);
-        if (mIsHttpsImageCompressionApplied) {
-            PreviewsUma.recordHttpsImageCompressionPageInfoOpened();
         }
     }
 
@@ -157,7 +164,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
      */
     @Override
     public void initOfflinePageUiParams(
-            PageInfoViewParams viewParams, Consumer<Runnable> runAfterDismiss) {
+            PageInfoView.Params viewParams, Consumer<Runnable> runAfterDismiss) {
         if (isShowingOfflinePage() && OfflinePageUtils.isConnected()) {
             viewParams.openOnlineButtonClickCallback = () -> {
                 runAfterDismiss.accept(() -> {
@@ -214,37 +221,55 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         return mContext.getString(R.string.page_info_connection_paint_preview);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean shouldShowPerformanceBadge(GURL url) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PAGE_INFO_PERFORMANCE_HINTS)) {
-            return false;
-        }
-        @PerformanceClass
-        int pagePerformanceClass =
-                PerformanceHintsObserver.getPerformanceClassForURL(mWebContents, url);
-        return pagePerformanceClass == PerformanceClass.PERFORMANCE_FAST;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void showSiteSettings(String url) {
-        SiteSettingsHelper.showSiteSettings(mContext, url);
-    }
-
     @Override
     public void showCookieSettings() {
         SiteSettingsHelper.showCategorySettings(mContext, SiteSettingsCategory.Type.COOKIES);
     }
 
     @Override
-    public PageInfoSubpageController createHistoryController(
-            PageInfoMainController mainController, PageInfoRowView rowView, String url) {
-        return new PageInfoHistoryController(mainController, rowView, this, url);
+    public void showAdPersonalizationSettings() {
+        SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
+        settingsLauncher.launchSettingsActivity(mContext, AdPersonalizationFragment.class);
+    }
+
+    @NonNull
+    @Override
+    public Collection<PageInfoSubpageController> createAdditionalRowViews(
+            PageInfoMainController mainController, ViewGroup rowWrapper) {
+        Collection<PageInfoSubpageController> controllers = new ArrayList<>();
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)) {
+            final PageInfoRowView adPersonalizationRow =
+                    new PageInfoRowView(rowWrapper.getContext(), null);
+            adPersonalizationRow.setId(PageInfoAdPersonalizationController.ROW_ID);
+            rowWrapper.addView(adPersonalizationRow);
+            controllers.add(new PageInfoAdPersonalizationController(
+                    mainController, adPersonalizationRow, this));
+        }
+        if (PageInfoFeatures.PAGE_INFO_HISTORY.isEnabled()) {
+            final Tab tab = TabUtils.fromWebContents(mWebContents);
+            final PageInfoRowView historyRow = new PageInfoRowView(rowWrapper.getContext(), null);
+            historyRow.setId(PageInfoHistoryController.HISTORY_ROW_ID);
+            rowWrapper.addView(historyRow);
+            controllers.add(new PageInfoHistoryController(
+                    mainController, historyRow, this, () -> { return tab; }));
+        }
+        if (PageInfoAboutThisSiteController.isFeatureEnabled()) {
+            final PageInfoRowView aboutThisSiteRow =
+                    new PageInfoRowView(rowWrapper.getContext(), null);
+            aboutThisSiteRow.setId(PageInfoAboutThisSiteController.ROW_ID);
+            rowWrapper.addView(aboutThisSiteRow);
+            controllers.add(new PageInfoAboutThisSiteController(mainController,
+                    mEphemeralTabCoordinatorSupplier, aboutThisSiteRow, this, mWebContents));
+        }
+        if (PageInfoFeatures.PAGE_INFO_STORE_INFO.isEnabled() && !isIncognito()) {
+            final PageInfoRowView storeInfoRow = new PageInfoRowView(rowWrapper.getContext(), null);
+            storeInfoRow.setId(PageInfoStoreInfoController.STORE_INFO_ROW_ID);
+            rowWrapper.addView(storeInfoRow);
+            controllers.add(new PageInfoStoreInfoController(mainController, storeInfoRow,
+                    mStoreInfoActionHandlerSupplier, mPageInfoHighlight.shouldHighlightStoreInfo(),
+                    mWebContents, mProfile));
+        }
+        return controllers;
     }
 
     /**
@@ -272,20 +297,20 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
     @Override
     @NonNull
     public SiteSettingsDelegate getSiteSettingsDelegate() {
-        return new ChromeSiteSettingsDelegate(mContext, getBrowserContext());
+        return new ChromeSiteSettingsDelegate(mContext, mProfile);
     }
 
     @NonNull
     @Override
-    public void getFavicon(String url, Callback<Drawable> callback) {
+    public void getFavicon(GURL url, Callback<Drawable> callback) {
         Resources resources = mContext.getResources();
         int size = resources.getDimensionPixelSize(R.dimen.page_info_favicon_size);
         new FaviconHelper().getLocalFaviconImageForURL(mProfile, url, size, (image, iconUrl) -> {
             if (image != null) {
                 callback.onResult(new BitmapDrawable(resources, image));
-            } else if (UrlUtilities.isInternalScheme(new GURL(url))) {
+            } else if (UrlUtilities.isInternalScheme(url)) {
                 callback.onResult(
-                        AppCompatResources.getDrawable(mContext, R.drawable.chromelogo16));
+                        TintedDrawable.constructTintedDrawable(mContext, R.drawable.chromelogo16));
             } else {
                 callback.onResult(null);
             }
@@ -307,5 +332,13 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         FragmentActivity activity = ((FragmentActivity) mContext);
         if (activity.isFinishing()) return null;
         return activity.getSupportFragmentManager();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isIncognito() {
+        return mProfile.isOffTheRecord();
     }
 }

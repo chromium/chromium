@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Default font-family on <math> is not inherited assert_not_equals: got disallowed value "BB2F7F3E9FEE11EA96DF67A737751C2F"
-FAIL Default font-family on <math> is 'math' assert_equals: expected "math" but got "BB2F7F3E9FEE11EA96DF67A737751C2F"
-Harness: the test ran to completion.
-

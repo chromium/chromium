@@ -1,0 +1,68 @@
+<!--
+  -- Copyright 2022 The Chromium Authors
+  -- Use of this source code is governed by a BSD-style license that can be
+  -- found in the LICENSE file.
+  -->
+<style>
+  #select-folders {
+    border: 1px solid var(--cros-separator-color);
+    border-radius: 8px;
+    margin-bottom: 28px;
+    margin-inline: 48px;
+    margin-top: 22px;
+    max-height: 168px;
+    overflow-y: auto;
+    padding-bottom: 16px;
+  }
+
+  #select-folders ul {
+    list-style-type: none;
+    margin: 0;
+    padding-inline-start: 16px;
+  }
+
+  /* When a folder is not expanded, hide it's children */
+  #select-folders li:not([expanded]) + ul {
+    display: none;
+  }
+
+  #select-folders li > .expand-icon {
+    -webkit-mask-image: url(/images/expand_arrow.svg);
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    background-color: var(--cros-text-color-primary);
+    display: inline-block;
+    height: 8px;
+    transform: rotate(-90deg);
+    transition: all 150ms;
+    vertical-align: middle;
+    width: 8px;
+  }
+
+  #select-folders li[expanded] > .expand-icon {
+    transform: rotate(0);
+  }
+
+  #select-folders li {
+    padding-top: 16px;
+  }
+</style>
+<template id="folder-selector-template">
+  <li>
+    <span class="expand-icon"></span>
+    <input type="checkbox" name="folders">
+  </li>
+  <ul>
+  </ul>
+</template>
+<div id="select-folders">
+  <ul>
+    <li expanded>
+      <span class="expand-icon"></span>
+      <input type="checkbox" name="folders" data-full-path="/">
+      <!-- TODO(b/237066325): Use the i18n version of this. -->
+      My files
+    </li>
+    <ul></ul>
+  </ul>
+</div>

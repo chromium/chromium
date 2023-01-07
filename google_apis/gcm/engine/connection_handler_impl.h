@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -44,6 +43,10 @@ class GCM_EXPORT ConnectionHandlerImpl : public ConnectionHandler {
                         const ProtoReceivedCallback& read_callback,
                         const ProtoSentCallback& write_callback,
                         const ConnectionChangedCallback& connection_callback);
+
+  ConnectionHandlerImpl(const ConnectionHandlerImpl&) = delete;
+  ConnectionHandlerImpl& operator=(const ConnectionHandlerImpl&) = delete;
+
   ~ConnectionHandlerImpl() override;
 
   // ConnectionHandler implementation.
@@ -107,8 +110,7 @@ class GCM_EXPORT ConnectionHandlerImpl : public ConnectionHandler {
   // only stopped when a full message is processed.
   // TODO(zea): consider enforcing a separate timeout when waiting for
   // a message to send.
-  const base::TimeDelta read_timeout_;
-  base::OneShotTimer read_timeout_timer_;
+  base::RetainingOneShotTimer read_timeout_timer_;
 
   // This connection's input/output streams.
   std::unique_ptr<SocketInputStream> input_stream_;
@@ -136,8 +138,6 @@ class GCM_EXPORT ConnectionHandlerImpl : public ConnectionHandler {
   std::vector<uint8_t> payload_input_buffer_;
 
   base::WeakPtrFactory<ConnectionHandlerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionHandlerImpl);
 };
 
 }  // namespace gcm

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -50,7 +50,7 @@ void RejectCacheStorageWithError(ScriptPromiseResolver* resolver,
                                  const String& message) {
   String final_message =
 
-      !message.IsEmpty() ? message : GetDefaultMessage(web_error);
+      !message.empty() ? message : GetDefaultMessage(web_error);
   switch (web_error) {
     case mojom::CacheStorageError::kSuccess:
       // This function should only be called with an error.

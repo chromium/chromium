@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
@@ -27,6 +26,10 @@ class AboutSigninInternalsFactory : public BrowserStateKeyedServiceFactory {
   // Returns an instance of the AboutSigninInternalsFactory singleton.
   static AboutSigninInternalsFactory* GetInstance();
 
+  AboutSigninInternalsFactory(const AboutSigninInternalsFactory&) = delete;
+  AboutSigninInternalsFactory& operator=(const AboutSigninInternalsFactory&) =
+      delete;
+
  private:
   friend class base::NoDestructor<AboutSigninInternalsFactory>;
 
@@ -38,8 +41,6 @@ class AboutSigninInternalsFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(AboutSigninInternalsFactory);
 };
 
 }  // namespace ios

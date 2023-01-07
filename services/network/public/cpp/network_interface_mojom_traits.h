@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,6 +41,10 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE)
   }
   static int64_t ip_address_attributes(const net::NetworkInterface& network) {
     return network.ip_address_attributes;
+  }
+  static const absl::optional<net::Eui48MacAddress>& mac_address(
+      const net::NetworkInterface& network) {
+    return network.mac_address;
   }
 
   static bool Read(network::mojom::NetworkInterfaceDataView network,

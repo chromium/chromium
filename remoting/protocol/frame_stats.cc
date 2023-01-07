@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 #include "remoting/proto/video.pb.h"
 #include "remoting/proto/video_stats.pb.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 ClientFrameStats::ClientFrameStats() = default;
 ClientFrameStats::ClientFrameStats(const ClientFrameStats&) = default;
@@ -29,28 +28,26 @@ HostFrameStats HostFrameStats::GetForVideoPacket(const VideoPacket& packet) {
         base::TimeTicks::FromInternalValue(packet.latest_event_timestamp());
   }
   if (packet.has_capture_time_ms()) {
-    result.capture_delay =
-        base::TimeDelta::FromMilliseconds(packet.capture_time_ms());
+    result.capture_delay = base::Milliseconds(packet.capture_time_ms());
   }
   if (packet.has_encode_time_ms()) {
-    result.encode_delay =
-        base::TimeDelta::FromMilliseconds(packet.encode_time_ms());
+    result.encode_delay = base::Milliseconds(packet.encode_time_ms());
   }
   if (packet.has_capture_pending_time_ms()) {
     result.capture_pending_delay =
-        base::TimeDelta::FromMilliseconds(packet.capture_pending_time_ms());
+        base::Milliseconds(packet.capture_pending_time_ms());
   }
   if (packet.has_capture_overhead_time_ms()) {
     result.capture_overhead_delay =
-        base::TimeDelta::FromMilliseconds(packet.capture_overhead_time_ms());
+        base::Milliseconds(packet.capture_overhead_time_ms());
   }
   if (packet.has_encode_pending_time_ms()) {
     result.encode_pending_delay =
-        base::TimeDelta::FromMilliseconds(packet.encode_pending_time_ms());
+        base::Milliseconds(packet.encode_pending_time_ms());
   }
   if (packet.has_send_pending_time_ms()) {
     result.send_pending_delay =
-        base::TimeDelta::FromMilliseconds(packet.send_pending_time_ms());
+        base::Milliseconds(packet.send_pending_time_ms());
   }
   return result;
 }
@@ -65,32 +62,29 @@ HostFrameStats HostFrameStats::FromFrameStatsMessage(
         base::TimeTicks::FromInternalValue(message.latest_event_timestamp());
   }
   if (message.has_capture_time_ms()) {
-    result.capture_delay =
-        base::TimeDelta::FromMilliseconds(message.capture_time_ms());
+    result.capture_delay = base::Milliseconds(message.capture_time_ms());
   }
   if (message.has_encode_time_ms()) {
-    result.encode_delay =
-        base::TimeDelta::FromMilliseconds(message.encode_time_ms());
+    result.encode_delay = base::Milliseconds(message.encode_time_ms());
   }
   if (message.has_capture_pending_time_ms()) {
     result.capture_pending_delay =
-        base::TimeDelta::FromMilliseconds(message.capture_pending_time_ms());
+        base::Milliseconds(message.capture_pending_time_ms());
   }
   if (message.has_capture_overhead_time_ms()) {
     result.capture_overhead_delay =
-        base::TimeDelta::FromMilliseconds(message.capture_overhead_time_ms());
+        base::Milliseconds(message.capture_overhead_time_ms());
   }
   if (message.has_encode_pending_time_ms()) {
     result.encode_pending_delay =
-        base::TimeDelta::FromMilliseconds(message.encode_pending_time_ms());
+        base::Milliseconds(message.encode_pending_time_ms());
   }
   if (message.has_send_pending_time_ms()) {
     result.send_pending_delay =
-        base::TimeDelta::FromMilliseconds(message.send_pending_time_ms());
+        base::Milliseconds(message.send_pending_time_ms());
   }
   if (message.has_rtt_estimate_ms()) {
-    result.rtt_estimate =
-        base::TimeDelta::FromMilliseconds(message.rtt_estimate_ms());
+    result.rtt_estimate = base::Milliseconds(message.rtt_estimate_ms());
   }
   if (message.has_bandwidth_estimate_kbps()) {
     result.bandwidth_estimate_kbps = message.bandwidth_estimate_kbps();
@@ -100,6 +94,9 @@ HostFrameStats HostFrameStats::FromFrameStatsMessage(
   }
   if (message.has_frame_quality()) {
     result.frame_quality = message.frame_quality();
+  }
+  if (message.has_screen_id()) {
+    result.screen_id = message.screen_id();
   }
 
   return result;
@@ -145,11 +142,13 @@ void HostFrameStats::ToFrameStatsMessage(FrameStatsMessage* message_out) const {
   if (frame_quality != -1) {
     message_out->set_frame_quality(frame_quality);
   }
+  if (screen_id != webrtc::kInvalidScreenId) {
+    message_out->set_screen_id(screen_id);
+  }
 }
 
 FrameStats::FrameStats() = default;
 FrameStats::FrameStats(const FrameStats&) = default;
 FrameStats::~FrameStats() = default;
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

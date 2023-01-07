@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,6 +102,10 @@ struct StructTraits<media_session::mojom::MediaPositionDataView,
   static base::TimeTicks last_updated_time(
       const media_session::MediaPosition& media_position) {
     return media_position.last_updated_time_;
+  }
+
+  static bool end_of_media(const media_session::MediaPosition& media_position) {
+    return media_position.end_of_media_;
   }
 
   static bool Read(media_session::mojom::MediaPositionDataView data,

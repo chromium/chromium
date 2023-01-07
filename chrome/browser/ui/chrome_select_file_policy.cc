@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
-#include "components/infobars/core/simple_alert_infobar_delegate.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -30,11 +30,11 @@ void ChromeSelectFilePolicy::SelectFileDenied() {
   // If the WebContents is in a browser window, show an infobar saying that
   // file selection dialogs are disabled.
   if (source_contents_) {
-    InfoBarService* infobar_service =
-        InfoBarService::FromWebContents(source_contents_);
-    if (infobar_service) {
-      SimpleAlertInfoBarDelegate::Create(
-          infobar_service,
+    infobars::ContentInfoBarManager* infobar_manager =
+        infobars::ContentInfoBarManager::FromWebContents(source_contents_);
+    if (infobar_manager) {
+      CreateSimpleAlertInfoBar(
+          infobar_manager,
           infobars::InfoBarDelegate::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE,
           nullptr,
           l10n_util::GetStringUTF16(IDS_FILE_SELECTION_DIALOG_INFOBAR));

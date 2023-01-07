@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ const char kPeerConnectionHtml[] = "/media/peerconnection-call.html";
 
 // Disable these test cases for Android since in some bots, there exists only
 // the loopback interface.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_WebRtcIPPermissionGrantedTest \
   DISABLED_WebRtcIPPermissionGrantedTest
 #define MAYBE_WebRtcIPPermissionDeniedTest DISABLED_WebRtcIPPermissionDeniedTest

@@ -1,4 +1,5 @@
 This is a testharness.js-based test.
+PASS Test that screen.orientation.unlock() doesn't throw when there is no lock with fullscreen
 PASS Test that screen.orientation.unlock() doesn't throw when there is no lock
 PASS Test that screen.orientation.unlock() returns a void value
 PASS Test that screen.orientation.lock returns a promise which will be fulfilled with a void value.

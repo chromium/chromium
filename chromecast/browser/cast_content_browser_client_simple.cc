@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "chromecast/browser/cast_content_browser_client.h"
-
+#include "chromecast/common/cors_exempt_headers.h"
 
 namespace chromecast {
 namespace shell {
@@ -20,7 +20,8 @@ std::unique_ptr<CastContentBrowserClient> CastContentBrowserClient::Create(
 
 // static
 std::vector<std::string> CastContentBrowserClient::GetCorsExemptHeadersList() {
-  return std::vector<std::string>();
+  const base::span<const char*> headers = GetLegacyCorsExemptHeaders();
+  return std::vector<std::string>(headers.begin(), headers.end());
 }
 
 }  // namespace shell

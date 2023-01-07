@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,11 +23,11 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.FlakyTest;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivity;
 
 import java.util.concurrent.TimeoutException;
 
@@ -41,8 +41,8 @@ public class PromoCardImpressionTest {
     @ClassRule
     public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
     @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;
     private static FrameLayout sContent;
@@ -112,7 +112,7 @@ public class PromoCardImpressionTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "https://crbug.com/1181859")
+    @DisabledTest(message = "https://crbug.com/1181859")
     public void testImpression_Card_Hide() throws TimeoutException {
         int initCount = mPromoSeenCallback.getCallCount();
         setUpPromoCard(false, true);

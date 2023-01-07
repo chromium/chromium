@@ -1,0 +1,124 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+# Creates a stub .apk suitable for use with compressed system APKs.
+#
+# Variables:
+#   package_name: Package name to use for the stub.
+#   package_name_from_target: Use the package name from this apk/bundle target.
+#   stub_output: Path to output stub apk (default: do not create a stub).
+#
+# package_name and package_name_from_target are mutually exclusive.
+template("system_image_stub_apk") {
+  # Android requires stubs end with -Stub.apk.
+  assert(filter_exclude([ invoker.stub_output ], [ "*-Stub.apk" ]) == [],
+         "stub_output \"${invoker.stub_output}\" must end with \"-Stub.apk\"")
+
+  _resource_apk_path = "${target_out_dir}/$target_name.ap_"
+  _resource_apk_target_name = "${target_name}__compile_resources"
+  action_with_pydeps(_resource_apk_target_name) {
+    _manifest_path = "//build/android/AndroidManifest.xml"
+    script = "//build/android/gyp/compile_resources.py"
+    inputs = [
+      _manifest_path,
+      android_sdk_jar,
+    ]
+    outputs = [ _resource_apk_path ]
+    args = [
+      "--aapt2-path",
+      rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
+      "--min-sdk-version=$default_min_sdk_version",
+      "--target-sdk-version=$default_min_sdk_version",
+      "--android-manifest",
+      rebase_path(_manifest_path, root_build_dir),
+      "--arsc-path",
+      rebase_path(_resource_apk_path, root_build_dir),
+    ]
+    if (defined(invoker.package_name)) {
+      _package_name = invoker.package_name
+    } else {
+      _target = invoker.package_name_from_target
+      deps = [ "${_target}$build_config_target_suffix" ]
+      _build_config = get_label_info(_target, "target_gen_dir") + "/" +
+                      get_label_info(_target, "name") + ".build_config.json"
+      inputs += [ _build_config ]
+      _rebased_build_config = rebase_path(_build_config, root_build_dir)
+      _package_name = "@FileArg($_rebased_build_config:deps_info:package_name)"
+    }
+    args += [
+      "--rename-manifest-package=$_package_name",
+      "--arsc-package-name=$_package_name",
+      "--include-resources",
+      rebase_path(android_sdk_jar, root_build_dir),
+    ]
+  }
+
+  package_apk(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "keystore_name",
+                             "keystore_path",
+                             "keystore_password",
+                           ])
+    min_sdk_version = default_min_sdk_version
+    deps = [ ":$_resource_apk_target_name" ]
+
+    packaged_resources_path = _resource_apk_path
+    output_apk_path = invoker.stub_output
+  }
+}
+
+# Generates artifacts for system APKs.
+#
+# Variables:
+#   apk_or_bundle_target: Target that creates input bundle or apk.
+#   input_apk_or_bundle: Path to input .apk or .aab.
+#   output: Path to the output system .apk or .zip.
+#   fuse_apk: Fuse all apk splits into a single .apk (default: false).
+#   stub_output: Path to output stub apk (default: do not create a stub).
+#
+template("system_image_apks") {
+  if (defined(invoker.stub_output)) {
+    _stub_apk_target_name = "${target_name}__stub"
+    system_image_stub_apk(_stub_apk_target_name) {
+      package_name_from_target = invoker.apk_or_bundle_target
+      stub_output = invoker.stub_output
+    }
+  }
+
+  action_with_pydeps(target_name) {
+    script = "//build/android/gyp/system_image_apks.py"
+    deps = [ invoker.apk_or_bundle_target ]
+    inputs = [ invoker.input_apk_or_bundle ]
+    if (defined(invoker.stub_output)) {
+      public_deps = [ ":$_stub_apk_target_name" ]
+    }
+    outputs = [ invoker.output ]
+    args = [
+      "--input",
+      rebase_path(invoker.input_apk_or_bundle, root_out_dir),
+      "--output",
+      rebase_path(invoker.output, root_out_dir),
+    ]
+
+    _is_bundle =
+        filter_exclude([ invoker.input_apk_or_bundle ], [ "*.aab" ]) == []
+
+    if (_is_bundle) {
+      _wrapper_path = "$root_out_dir/bin/" +
+                      get_label_info(invoker.apk_or_bundle_target, "name")
+      args += [
+        "--bundle-wrapper",
+        rebase_path(_wrapper_path, root_out_dir),
+      ]
+      inputs += [ _wrapper_path ]
+      deps += [ "//build/android:apk_operations_py" ]
+      if (defined(invoker.fuse_apk) && invoker.fuse_apk) {
+        args += [ "--fuse-apk" ]
+      }
+    }
+  }
+}

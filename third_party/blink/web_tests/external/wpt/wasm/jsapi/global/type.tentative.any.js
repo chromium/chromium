@@ -43,11 +43,11 @@ test(() => {
 
 test(() => {
     assert_type({"value": "externref", "mutable": true})
-}, "anyref, mutable")
+}, "externref, mutable")
 
 test(() => {
     assert_type({"value": "externref", "mutable": false})
-}, "anyref, immutable")
+}, "externref, immutable")
 
 test(() => {
     assert_type({"value": "funcref", "mutable": true})

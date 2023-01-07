@@ -1,0 +1,14 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# nacl_target_cpu is the CPU architecture to use for the NaCl sandbox.
+#
+# On ARM64 builds of Chromium where NaCl is enabled, we use the 32-bit ARM
+# NaCl sandbox (ARM32/AArch32).  (There is no NaCl sandbox implemented for
+# ARM64.)
+if (target_cpu == "arm64") {
+  nacl_target_cpu = "arm"
+} else {
+  nacl_target_cpu = target_cpu
+}

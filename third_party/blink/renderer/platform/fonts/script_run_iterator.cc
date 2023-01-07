@@ -1,11 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 
 #include <algorithm>
+
+#include "base/containers/contains.h"
+#include "base/logging.h"
+#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
@@ -26,6 +32,82 @@ inline UScriptCode getScriptForOpenType(UChar32 ch, UErrorCode* status) {
     return USCRIPT_HIRAGANA;
   }
   return script;
+}
+
+inline bool IsHanScript(UScriptCode script) {
+  return script == USCRIPT_HAN || script == USCRIPT_HIRAGANA ||
+         script == USCRIPT_BOPOMOFO;
+}
+
+inline UScriptCode FirstHanScript(
+    const ScriptRunIterator::UScriptCodeList& list) {
+  const auto* const result = base::ranges::find_if(list, IsHanScript);
+  if (result != list.end())
+    return *result;
+  return USCRIPT_INVALID_CODE;
+}
+
+ScriptRunIterator::UScriptCodeList GetHanScriptExtensions() {
+  ICUError status;
+  ScriptRunIterator::UScriptCodeList list;
+  list.resize(ScriptRunIterator::kMaxScriptCount - 1);
+  // Get the list from one of the CJK punctuation in the CJK Symbols and
+  // Punctuation block.
+  int count = uscript_getScriptExtensions(kLeftCornerBracket, &list[0],
+                                          list.size(), &status);
+  if (U_SUCCESS(status)) {
+    DCHECK_GT(count, 0);
+    list.resize(count);
+    return list;
+  }
+  NOTREACHED();
+  return ScriptRunIterator::UScriptCodeList();
+}
+
+// This function updates the script list to the Han ideographic-based scripts if
+// the East Asian Width property[1] indicates it is an East Asian character.
+//
+// Most East Asian punctuation characters have East Asian scripts in the script
+// extensions. However, not all of them are so. For example, when they are
+// halfwidth/fullwidth forms, they must have the same properties as their
+// canonical equivalent[2] code points that are not East Asian. Such code points
+// can split runs in the middle of consecutive CJK punctuation characters when
+// they are preceded by non-CJK characters, and prevent applying font features
+// to consecutive CJK punctuation characters.
+//
+// TODO(crbug.com/1273998): This function is not needed if Unicode changes the
+// script extension for these code points.
+//
+// [1]: https://www.unicode.org/reports/tr11/
+// [2]: https://unicode.org/reports/tr15/#Canon_Compat_Equivalence
+void FixScriptsByEastAsianWidth(UChar32 ch,
+                                ScriptRunIterator::UScriptCodeList* set) {
+  // Replace the list only if it is the `COMMON` script. If `COMMON`, there
+  // should be only one entry.
+  DCHECK(!set->empty());
+  if (set->size() > 1 || set->front() != USCRIPT_COMMON) {
+    DCHECK(!set->Contains(USCRIPT_COMMON));
+    return;
+  }
+
+  // It's an East Asian character when the EAW property is W, F, or H.
+  // https://www.unicode.org/reports/tr11/#Set_Relations
+  const auto eaw = static_cast<UEastAsianWidth>(
+      u_getIntPropertyValue(ch, UCHAR_EAST_ASIAN_WIDTH));
+  if (eaw == U_EA_WIDE || eaw == U_EA_FULLWIDTH || eaw == U_EA_HALFWIDTH) {
+    // Replace the list with the list of Han ideographic scripts, as seen for
+    // U+300C in https://www.unicode.org/Public/UNIDATA/ScriptExtensions.txt.
+    DEFINE_STATIC_LOCAL(ScriptRunIterator::UScriptCodeList, han_scripts,
+                        (GetHanScriptExtensions()));
+    if (UNLIKELY(han_scripts.empty())) {
+      // When |GetHanScriptExtensions| returns an empty list, replacing with it
+      // will crash later, which makes the analysis complicated.
+      NOTREACHED();
+      return;
+    }
+    set->Shrink(0);
+    set->AppendVector(han_scripts);
+  }
 }
 
 }  // namespace
@@ -169,7 +251,7 @@ ScriptRunIterator::ScriptRunIterator(const UChar* text, wtf_size_t length)
     : ScriptRunIterator(text, length, ICUScriptData::Instance()) {}
 
 bool ScriptRunIterator::Consume(unsigned* limit, UScriptCode* script) {
-  if (current_set_.IsEmpty()) {
+  if (current_set_.empty()) {
     return false;
   }
 
@@ -213,6 +295,7 @@ void ScriptRunIterator::OpenBracket(UChar32 ch) {
       --brackets_fixup_depth_;
     }
   }
+  FixScriptsByEastAsianWidth(ch, next_set_.get());
   brackets_.push_back(BracketRec({ch, USCRIPT_COMMON}));
   ++brackets_fixup_depth_;
 }
@@ -224,6 +307,17 @@ void ScriptRunIterator::CloseBracket(UChar32 ch) {
       if (it->ch == target) {
         // Have a match, use open paren's resolved script.
         UScriptCode script = it->script;
+        // Han languages are multi-scripts, and there are font features that
+        // apply to consecutive punctuation characters.
+        // When encountering a closing bracket do not insist on the closing
+        // bracket getting assigned the same script as the opening bracket if
+        // current_set_ provides an option to resolve to any other possible Han
+        // script as well, which avoids breaking the run.
+        if (IsHanScript(script)) {
+          const UScriptCode current_han_script = FirstHanScript(current_set_);
+          if (current_han_script != USCRIPT_INVALID_CODE)
+            script = current_han_script;
+        }
         if (script != USCRIPT_COMMON) {
           next_set_->clear();
           next_set_->push_back(script);
@@ -255,7 +349,7 @@ void ScriptRunIterator::CloseBracket(UChar32 ch) {
 // common, and there is no common preferred script and next has a preferred
 // script, set the common preferred script to that of next.
 bool ScriptRunIterator::MergeSets() {
-  if (next_set_->IsEmpty() || current_set_.IsEmpty()) {
+  if (next_set_->empty() || current_set_.empty()) {
     return false;
   }
 
@@ -283,16 +377,15 @@ bool ScriptRunIterator::MergeSets() {
 
   // Neither is common or inherited. If current is a singleton,
   // just see if it exists in the next set. This is the common case.
-  auto* next_it = next_set_->begin();
-  auto* next_end = next_set_->end();
+  bool have_priority = base::Contains(*next_set_, priority_script);
   if (current_set_it == current_end) {
-    return std::find(next_it, next_end, priority_script) != next_end;
+    return have_priority;
   }
 
   // Establish the priority script, if we have one.
   // First try current priority script.
-  bool have_priority =
-      std::find(next_it, next_end, priority_script) != next_end;
+  auto* next_it = next_set_->begin();
+  auto* next_end = next_set_->end();
   if (!have_priority) {
     // So try next priority script.
     // Skip the first current script, we already know it's not there.
@@ -379,7 +472,7 @@ bool ScriptRunIterator::Fetch(wtf_size_t* pos, UChar32* ch) {
 
   U16_NEXT(text_, ahead_pos_, length_, ahead_character_);
   script_data_->GetScripts(ahead_character_, *ahead_set_);
-  if (ahead_set_->IsEmpty()) {
+  if (ahead_set_->empty()) {
     // No scripts for this character. This has already been logged, so
     // we just terminate processing this text.
     return false;

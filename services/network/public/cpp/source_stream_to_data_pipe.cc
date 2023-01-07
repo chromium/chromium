@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/source_stream_to_data_pipe.h"
 
 #include "base/bind.h"
+#include "base/numerics/checked_math.h"
 #include "net/filter/source_stream.h"
 
 namespace network {

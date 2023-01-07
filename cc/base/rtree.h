@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/clamped_math.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -93,8 +94,8 @@ class RTree {
  private:
   // These values were empirically determined to produce reasonable performance
   // in most cases.
-  enum { kMinChildren = 6 };
-  enum { kMaxChildren = 11 };
+  static constexpr int kMinChildren = 6;
+  static constexpr int kMaxChildren = 11;
 
   template <typename U>
   struct Node;
@@ -105,7 +106,7 @@ class RTree {
     // valid index pointing to an element in the vector that was used to build
     // this rtree. When the level is not 0, it's an internal node and it has a
     // valid subtree pointer.
-    Node<U>* subtree;
+    raw_ptr<Node<U>> subtree;
     U payload;
 
     gfx::Rect bounds;
@@ -151,8 +152,8 @@ class RTree {
 
   // This is the count of data elements (rather than total nodes in the tree)
   size_t num_data_elements_ = 0u;
-  Branch<T> root_;
   std::vector<Node<T>> nodes_;
+  Branch<T> root_;
 
   // If false, the rtree encountered overflow does not have reliable bounds.
   bool has_valid_bounds_ = true;
@@ -240,11 +241,9 @@ auto RTree<T>::BuildRecursive(std::vector<Branch<T>>* branches, int level)
   // We might sort our branches here, but we expect Blink gives us a reasonable
   // x,y order. Skipping a call to sort (in Y) here resulted in a 17% win for
   // recording with negligible difference in playback speed.
-  int num_branches = static_cast<int>(branches->size() / kMaxChildren);
   int remainder = static_cast<int>(branches->size() % kMaxChildren);
 
   if (remainder > 0) {
-    ++num_branches;
     // If the remainder isn't enough to fill a node, we'll add fewer nodes to
     // other branches.
     if (remainder >= kMinChildren)
@@ -319,9 +318,9 @@ void RTree<T>::Search(const gfx::Rect& query,
   if (num_data_elements_ == 0)
     return;
   if (!has_valid_bounds_) {
-    SearchRecursiveFallback(root_.subtree, query, results, rects);
+    SearchRecursiveFallback(root_.subtree.get(), query, results, rects);
   } else if (query.Intersects(root_.bounds)) {
-    SearchRecursive(root_.subtree, query, results, rects);
+    SearchRecursive(root_.subtree.get(), query, results, rects);
   }
 }
 
@@ -332,9 +331,9 @@ void RTree<T>::SearchRefs(const gfx::Rect& query,
   if (num_data_elements_ == 0)
     return;
   if (!has_valid_bounds_) {
-    SearchRefsRecursiveFallback(root_.subtree, query, results);
+    SearchRefsRecursiveFallback(root_.subtree.get(), query, results);
   } else if (query.Intersects(root_.bounds)) {
-    SearchRefsRecursive(root_.subtree, query, results);
+    SearchRefsRecursive(root_.subtree.get(), query, results);
   }
 }
 
@@ -350,7 +349,7 @@ void RTree<T>::SearchRecursive(Node<T>* node,
         if (rects)
           rects->push_back(node->children[i].bounds);
       } else {
-        SearchRecursive(node->children[i].subtree, query, results, rects);
+        SearchRecursive(node->children[i].subtree.get(), query, results, rects);
       }
     }
   }
@@ -365,7 +364,7 @@ void RTree<T>::SearchRefsRecursive(Node<T>* node,
       if (node->level == 0)
         results->push_back(&node->children[i].payload);
       else
-        SearchRefsRecursive(node->children[i].subtree, query, results);
+        SearchRefsRecursive(node->children[i].subtree.get(), query, results);
     }
   }
 }
@@ -385,7 +384,7 @@ void RTree<T>::SearchRecursiveFallback(Node<T>* node,
           rects->push_back(node->children[i].bounds);
       }
     } else {
-      SearchRecursive(node->children[i].subtree, query, results, rects);
+      SearchRecursive(node->children[i].subtree.get(), query, results, rects);
     }
   }
 }
@@ -400,7 +399,7 @@ void RTree<T>::SearchRefsRecursiveFallback(
       if (query.Intersects(node->children[i].bounds))
         results->push_back(&node->children[i].payload);
     } else {
-      SearchRefsRecursive(node->children[i].subtree, query, results);
+      SearchRefsRecursive(node->children[i].subtree.get(), query, results);
     }
   }
 }
@@ -415,7 +414,7 @@ template <typename T>
 std::map<T, gfx::Rect> RTree<T>::GetAllBoundsForTracing() const {
   std::map<T, gfx::Rect> results;
   if (num_data_elements_ > 0)
-    GetAllBoundsRecursive(root_.subtree, &results);
+    GetAllBoundsRecursive(root_.subtree.get(), &results);
   return results;
 }
 
@@ -426,13 +425,14 @@ void RTree<T>::GetAllBoundsRecursive(Node<T>* node,
     if (node->level == 0)
       (*results)[node->children[i].payload] = node->children[i].bounds;
     else
-      GetAllBoundsRecursive(node->children[i].subtree, results);
+      GetAllBoundsRecursive(node->children[i].subtree.get(), results);
   }
 }
 
 template <typename T>
 void RTree<T>::Reset() {
   num_data_elements_ = 0;
+  root_.subtree = nullptr;
   nodes_.clear();
   root_.bounds = gfx::Rect();
   has_valid_bounds_ = true;

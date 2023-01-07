@@ -1,16 +1,8 @@
-// Copyright 2013 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Utilities for string newlines.
@@ -23,7 +15,6 @@
 goog.provide('goog.string.newlines');
 goog.provide('goog.string.newlines.Line');
 
-goog.require('goog.array');
 
 
 /**
@@ -34,8 +25,10 @@ goog.require('goog.array');
  * @return {!Array<string>} String split into lines.
  */
 goog.string.newlines.splitLines = function(str, opt_keepNewlines) {
-  var lines = goog.string.newlines.getLines(str);
-  return goog.array.map(lines, function(line) {
+  'use strict';
+  const lines = goog.string.newlines.getLines(str);
+  return lines.map(function(line) {
+    'use strict';
     return opt_keepNewlines ? line.getFullLine() : line.getContent();
   });
 };
@@ -64,6 +57,7 @@ goog.string.newlines.splitLines = function(str, opt_keepNewlines) {
  */
 goog.string.newlines.Line = function(
     string, startLineIndex, endContentIndex, endLineIndex) {
+  'use strict';
   /**
    * The original string.
    * @type {string}
@@ -99,6 +93,7 @@ goog.string.newlines.Line = function(
  * @return {string} The content of the line, excluding any newline characters.
  */
 goog.string.newlines.Line.prototype.getContent = function() {
+  'use strict';
   return this.string.substring(this.startLineIndex, this.endContentIndex);
 };
 
@@ -107,6 +102,7 @@ goog.string.newlines.Line.prototype.getContent = function() {
  * @return {string} The full line, including any newline characters.
  */
 goog.string.newlines.Line.prototype.getFullLine = function() {
+  'use strict';
   return this.string.substring(this.startLineIndex, this.endLineIndex);
 };
 
@@ -115,6 +111,7 @@ goog.string.newlines.Line.prototype.getFullLine = function() {
  * @return {string} The newline characters, if any ('\n', \r', '\r\n', '', etc).
  */
 goog.string.newlines.Line.prototype.getNewline = function() {
+  'use strict';
   return this.string.substring(this.endContentIndex, this.endLineIndex);
 };
 
@@ -125,16 +122,17 @@ goog.string.newlines.Line.prototype.getNewline = function() {
  * @return {!Array<!goog.string.newlines.Line>} Array of line metadata.
  */
 goog.string.newlines.getLines = function(str) {
+  'use strict';
   // We use the constructor because literals are evaluated only once in
   // < ES 3.1.
   // See http://www.mail-archive.com/es-discuss@mozilla.org/msg01796.html
-  var re = RegExp('\r\n|\r|\n', 'g');
-  var sliceIndex = 0;
-  var result;
-  var lines = [];
+  const re = RegExp('\r\n|\r|\n', 'g');
+  let sliceIndex = 0;
+  let result;
+  const lines = [];
 
   while (result = re.exec(str)) {
-    var line = new goog.string.newlines.Line(
+    const line = new goog.string.newlines.Line(
         str, sliceIndex, result.index, result.index + result[0].length);
     lines.push(line);
 
@@ -144,7 +142,7 @@ goog.string.newlines.getLines = function(str) {
 
   // If the string does not end with a newline, add the last line.
   if (sliceIndex < str.length) {
-    var line =
+    const line =
         new goog.string.newlines.Line(str, sliceIndex, str.length, str.length);
     lines.push(line);
   }

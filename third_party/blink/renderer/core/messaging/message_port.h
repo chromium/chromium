@@ -29,7 +29,7 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/connector.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -141,7 +141,7 @@ class CORE_EXPORT MessagePort : public EventTargetWithInlineData,
   std::unique_ptr<mojo::Connector> connector_;
 
   bool started_ = false;
-  bool closed_ = false;
+  bool closed_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

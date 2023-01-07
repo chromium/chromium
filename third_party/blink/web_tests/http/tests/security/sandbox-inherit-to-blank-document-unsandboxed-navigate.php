@@ -10,7 +10,7 @@ header("Content-Security-Policy: sandbox allow-scripts allow-popups allow-popups
 <body>
     <script>
         if (window.testRunner) {
-            testRunner.setCanOpenWindows();
+            testRunner.setPopupBlockingEnabled(false);
         }
 
         var test = async_test("Testing that popups opened when 'allow-popups-to-escape-sandbox' present can be navigated");

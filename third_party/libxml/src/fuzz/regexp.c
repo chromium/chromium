@@ -40,6 +40,7 @@ LLVMFuzzerTestOneInput(const char *data, size_t size) {
 
     xmlFree(str[0]);
     xmlFree(str[1]);
+    xmlResetLastError();
 
     return 0;
 }

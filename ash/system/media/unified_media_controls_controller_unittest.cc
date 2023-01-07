@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "ash/system/media/unified_media_controls_view.h"
 #include "ash/test/ash_test_base.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_switches.h"
@@ -130,12 +131,11 @@ class UnifiedMediaControlsControllerTest : public AshTestBase {
   }
 
   views::Button* GetActionButton(MediaSessionAction action) {
-    const auto it = std::find_if(
-        button_row()->children().begin(), button_row()->children().end(),
-        [action](views::View* child) {
-          return static_cast<views::Button*>(child)->tag() ==
-                 static_cast<int>(action);
-        });
+    const auto it =
+        base::ranges::find(button_row()->children(), static_cast<int>(action),
+                           [](views::View* child) {
+                             return static_cast<views::Button*>(child)->tag();
+                           });
 
     if (it == button_row()->children().end())
       return nullptr;
@@ -265,6 +265,7 @@ TEST_F(UnifiedMediaControlsControllerTest, MetadataUpdate) {
 }
 
 TEST_F(UnifiedMediaControlsControllerTest, UpdateArtworkConvertColor) {
+  CreateWidget();
   SkBitmap artwork;
   SkImageInfo image_info =
       SkImageInfo::Make(200, 200, kAlpha_8_SkColorType, kOpaque_SkAlphaType);
@@ -323,8 +324,7 @@ TEST_F(UnifiedMediaControlsControllerTest, UpdateArtwork) {
   artwork.reset();
   controller()->MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, artwork);
-  task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kHideArtworkDelay));
+  task_environment()->FastForwardBy(base::Milliseconds(kHideArtworkDelay));
   EXPECT_FALSE(artwork_view()->GetVisible());
 }
 
@@ -349,8 +349,7 @@ TEST_F(UnifiedMediaControlsControllerTest, HideArtwork) {
 
   // Artwork should still be visible if we are within hide artwork delay
   // time frame.
-  task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kHideArtworkDelay - 1));
+  task_environment()->FastForwardBy(base::Milliseconds(kHideArtworkDelay - 1));
   EXPECT_TRUE(artwork_view()->GetVisible());
 
   // Artwork should be visible after getting an artwork update and the
@@ -361,8 +360,7 @@ TEST_F(UnifiedMediaControlsControllerTest, HideArtwork) {
   EXPECT_TRUE(artwork_view()->GetVisible());
 
   // Artwork should stay visible.
-  task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kHideArtworkDelay));
+  task_environment()->FastForwardBy(base::Milliseconds(kHideArtworkDelay));
   EXPECT_TRUE(artwork_view()->GetVisible());
 
   // Wait for |kHideartworkDelay| ms after getting an empty artwork,
@@ -370,8 +368,7 @@ TEST_F(UnifiedMediaControlsControllerTest, HideArtwork) {
   artwork.reset();
   controller()->MediaControllerImageChanged(
       media_session::mojom::MediaSessionImageType::kArtwork, artwork);
-  task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kHideArtworkDelay));
+  task_environment()->FastForwardBy(base::Milliseconds(kHideArtworkDelay));
   EXPECT_FALSE(artwork_view()->GetVisible());
 }
 
@@ -405,23 +402,22 @@ TEST_F(UnifiedMediaControlsControllerTest,
   EXPECT_TRUE(delegate()->IsControlsVisible());
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
-  controller()->MediaSessionChanged(base::nullopt);
+  controller()->MediaSessionChanged(absl::nullopt);
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
   // Still in normal state since we are within waiting delay time frame.
   task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kFreezeControlsTime - 1));
+      base::Milliseconds(kFreezeControlsTime - 1));
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
   // Session resumes, controls should still be in normal state.
   SimulateNewMediaSessionWithData(request_id);
-  task_environment()->FastForwardBy(base::TimeDelta::FromMilliseconds(1));
+  task_environment()->FastForwardBy(base::Milliseconds(1));
   EXPECT_FALSE(IsMediaControlsInEmptyState());
 
   // Hide controls timer expired, controls should be in empty state.
-  controller()->MediaSessionChanged(base::nullopt);
-  task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kFreezeControlsTime));
+  controller()->MediaSessionChanged(absl::nullopt);
+  task_environment()->FastForwardBy(base::Milliseconds(kFreezeControlsTime));
   EXPECT_TRUE(IsMediaControlsInEmptyState());
   EXPECT_TRUE(delegate()->IsControlsVisible());
 }
@@ -451,9 +447,8 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyState) {
     EXPECT_TRUE(button->GetEnabled());
 
   // Media controls should be in empty state after getting empty session.
-  controller()->MediaSessionChanged(base::nullopt);
-  task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kFreezeControlsTime));
+  controller()->MediaSessionChanged(absl::nullopt);
+  task_environment()->FastForwardBy(base::Milliseconds(kFreezeControlsTime));
 
   EXPECT_TRUE(IsMediaControlsInEmptyState());
 
@@ -503,9 +498,8 @@ TEST_F(UnifiedMediaControlsControllerTest, MediaControlsEmptyStateWithArtwork) {
   EXPECT_TRUE(artwork_view()->GetVisible());
   EXPECT_EQ(artwork_view()->background(), nullptr);
 
-  controller()->MediaSessionChanged(base::nullopt);
-  task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kFreezeControlsTime));
+  controller()->MediaSessionChanged(absl::nullopt);
+  task_environment()->FastForwardBy(base::Milliseconds(kFreezeControlsTime));
 
   // Artwork view should still be visible and have an background in empty state.
   EXPECT_TRUE(IsMediaControlsInEmptyState());
@@ -541,7 +535,7 @@ TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsWhenUpdateSession) {
   EXPECT_EQ(artist_label()->GetText(), init_metadata.artist);
   EXPECT_FALSE(artwork_view()->GetVisible());
 
-  controller()->MediaSessionChanged(base::nullopt);
+  controller()->MediaSessionChanged(absl::nullopt);
 
   // Test that metadata update is ignored when we waiting for new session.
   media_session::MediaMetadata metadata;
@@ -636,7 +630,7 @@ TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsBetweenSessions) {
 
   // Session resumes within freezing timeout.
   task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kFreezeControlsTime - 1));
+      base::Milliseconds(kFreezeControlsTime - 1));
   controller()->MediaSessionChanged(request_id);
 
   // Media controls should not be updated.
@@ -657,8 +651,7 @@ TEST_F(UnifiedMediaControlsControllerTest, FreezeControlsBetweenSessions) {
       media_session::mojom::MediaSessionImageType::kArtwork, artwork);
 
   // Controls should be updated after freeze timeout.
-  task_environment()->FastForwardBy(
-      base::TimeDelta::FromMilliseconds(kFreezeControlsTime));
+  task_environment()->FastForwardBy(base::Milliseconds(kFreezeControlsTime));
   EXPECT_FALSE(
       GetActionButton(MediaSessionAction::kPreviousTrack)->GetVisible());
   EXPECT_EQ(GetActionButton(MediaSessionAction::kPause), nullptr);

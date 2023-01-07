@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,8 @@ for more details about the presubmit API built into depot_tools.
 """
 
 import re
+
+USE_PYTHON3 = True
 
 SYNC_SESSIONS_SOURCE_FILES = (r'^components[\\/]sync_sessions[\\/].*\.(cc|h)$',)
 

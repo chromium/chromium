@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {
+
+struct NativePixmapHandle;
 
 // This represents a buffer that can be written to directly by regular CPU code,
 // but can also be read by the GPU.
@@ -21,8 +23,10 @@ class GFX_EXPORT ClientNativePixmap {
   virtual bool Map() = 0;
   virtual void Unmap() = 0;
 
+  virtual size_t GetNumberOfPlanes() const = 0;
   virtual void* GetMemoryAddress(size_t plane) const = 0;
   virtual int GetStride(size_t plane) const = 0;
+  virtual NativePixmapHandle CloneHandleForIPC() const = 0;
 };
 
 }  // namespace gfx

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
+#include "components/variations/net/variations_flags.h"
 #include "components/variations/variations.mojom.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
@@ -26,7 +27,7 @@ namespace {
 // Returns a ResourceRequest created from the given values.
 network::ResourceRequest CreateResourceRequest(
     const std::string& request_initiator_url,
-    bool is_main_frame,
+    bool is_outermost_main_frame,
     bool has_trusted_params,
     const std::string& isolation_info_top_frame_origin_url,
     const std::string& isolation_info_frame_origin_url) {
@@ -35,7 +36,7 @@ network::ResourceRequest CreateResourceRequest(
     return request;
 
   request.request_initiator = url::Origin::Create(GURL(request_initiator_url));
-  request.is_main_frame = is_main_frame;
+  request.is_outermost_main_frame = is_outermost_main_frame;
   if (!has_trusted_params)
     return request;
 
@@ -203,19 +204,48 @@ TEST(VariationsHttpHeadersTest, ShouldAppendVariationsHeader) {
       {"https://litepages.googlezip.net", false},
       {"https://a.litepages.googlezip.net", true},
       {"https://a.b.litepages.googlezip.net", true},
+
+      {"https://127.0.0.1", false},
+      {"http://127.0.0.1", false},
+      {"https://127.0.0.1:12345", false},
+      {"http://127.0.0.1:12345", false},
   };
 
-  for (size_t i = 0; i < base::size(cases); ++i) {
-    const GURL url(cases[i].url);
-    EXPECT_EQ(cases[i].should_append_headers,
+  for (const auto& c : cases) {
+    const GURL url(c.url);
+    EXPECT_EQ(c.should_append_headers,
               ShouldAppendVariationsHeaderForTesting(url, "Append"))
         << url;
   }
 }
 
+#if BUILDFLAG(IS_IOS)
+TEST(VariationsHttpHeadersTest, ShouldAppendVariationsHeaderLocalhost) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      variations::kAppendVariationsHeadersToLocalhostForTesting);
+  struct {
+    const char* url;
+    bool should_append_headers;
+  } cases[] = {
+      {"https://127.0.0.1", true},
+      {"http://127.0.0.1", true},
+      {"https://127.0.0.1:12345", true},
+      {"http://127.0.0.1:12345", true},
+  };
+
+  for (const auto& c : cases) {
+    const GURL url(c.url);
+    EXPECT_EQ(c.should_append_headers,
+              ShouldAppendVariationsHeaderForTesting(url, "Append"))
+        << url;
+  }
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 struct PopulateRequestContextHistogramData {
   const char* request_initiator_url;
-  bool is_main_frame;
+  bool is_outermost_main_frame;
   bool has_trusted_params;
   const char* isolation_info_top_frame_origin_url;
   const char* isolation_info_frame_origin_url;
@@ -306,7 +336,7 @@ TEST(VariationsHttpHeadersTest, PopulateDomainOwnerHistogram) {
   const GURL destination("https://fonts.googleapis.com/foo");
   network::ResourceRequest request = CreateResourceRequest(
       /*request_initiator_url=*/"https://docs.google.com/",
-      /*is_main_frame=*/false,
+      /*is_outermost_main_frame=*/false,
       /*has_trusted_params=*/false,
       /*isolation_info_top_frame_origin_url=*/"",
       /*isolation_info_frame_origin_url=*/"");
@@ -331,8 +361,8 @@ TEST_P(PopulateRequestContextHistogramTest, PopulateRequestContextHistogram) {
   SCOPED_TRACE(data.name);
 
   network::ResourceRequest request = CreateResourceRequest(
-      data.request_initiator_url, data.is_main_frame, data.has_trusted_params,
-      data.isolation_info_top_frame_origin_url,
+      data.request_initiator_url, data.is_outermost_main_frame,
+      data.has_trusted_params, data.isolation_info_top_frame_origin_url,
       data.isolation_info_frame_origin_url);
 
   base::HistogramTester tester;

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/waitable_event.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/scheduler/web_resource_loading_task_runner_handle.h"
@@ -58,7 +60,7 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderFactory {
  protected:
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
   WebVector<WebString> cors_exempt_header_list_;
-  base::WaitableEvent* terminate_sync_load_event_ = nullptr;
+  raw_ptr<base::WaitableEvent> terminate_sync_load_event_ = nullptr;
 };
 
 // A test version of the above factory interface, which supports cloning the

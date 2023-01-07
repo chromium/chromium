@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/url/dom_url_utils_read_only.h"
@@ -102,8 +103,9 @@ DOMStringList* Location::ancestorOrigins() const {
   auto* origins = MakeGarbageCollected<DOMStringList>();
   if (!IsAttached())
     return origins;
-  for (Frame* frame = dom_window_->GetFrame()->Tree().Parent(); frame;
-       frame = frame->Tree().Parent()) {
+  for (Frame* frame =
+           dom_window_->GetFrame()->Tree().Parent(FrameTreeBoundary::kFenced);
+       frame; frame = frame->Tree().Parent(FrameTreeBoundary::kFenced)) {
     origins->Append(
         frame->GetSecurityContext()->GetSecurityOrigin()->ToString());
   }
@@ -266,23 +268,6 @@ void Location::SetLocation(const String& url,
     exception_state->ThrowDOMException(DOMExceptionCode::kSyntaxError,
                                        "'" + url + "' is not a valid URL.");
     return;
-  }
-
-  // Check the source browsing context's CSP to fulfill the CSP check
-  // requirement of https://html.spec.whatwg.org/C/#navigate for javascript
-  // URLs. Although the spec states we should perform this check on task
-  // execution, there are concerns about the correctness of that statement,
-  // see http://github.com/whatwg/html/issues/2591.
-  if (completed_url.ProtocolIsJavaScript()) {
-    String script_source = DecodeURLEscapeSequences(
-        completed_url.GetString(), DecodeURLMode::kUTF8OrIsomorphic);
-    if (!incumbent_window->GetContentSecurityPolicyForCurrentWorld()
-             ->AllowInline(ContentSecurityPolicy::InlineType::kNavigation,
-                           nullptr /* element */, script_source,
-                           String() /* nonce */, incumbent_window->Url(),
-                           OrdinalNumber::First())) {
-      return;
-    }
   }
 
   V8DOMActivityLogger* activity_logger =

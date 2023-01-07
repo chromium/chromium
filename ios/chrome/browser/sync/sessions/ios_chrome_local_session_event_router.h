@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "components/sync/model/syncable_service.h"
 #include "components/sync_sessions/local_session_event_router.h"
 #include "ios/chrome/browser/web_state_list/web_state_list_observer.h"
@@ -33,6 +32,12 @@ class IOSChromeLocalSessionEventRouter
       ChromeBrowserState* browser_state,
       sync_sessions::SyncSessionsClient* sessions_client_,
       const syncer::SyncableService::StartSyncFlare& flare);
+
+  IOSChromeLocalSessionEventRouter(const IOSChromeLocalSessionEventRouter&) =
+      delete;
+  IOSChromeLocalSessionEventRouter& operator=(
+      const IOSChromeLocalSessionEventRouter&) = delete;
+
   ~IOSChromeLocalSessionEventRouter() override;
 
   // LocalEventRouter:
@@ -92,7 +97,7 @@ class IOSChromeLocalSessionEventRouter
   // Called when a tab is parented.
   void OnTabParented(web::WebState* web_state);
 
-  // Called on observation of a change in |web_state|.
+  // Called on observation of a change in `web_state`.
   void OnWebStateChange(web::WebState* web_state);
 
   sync_sessions::LocalSessionEventHandler* handler_;
@@ -104,8 +109,6 @@ class IOSChromeLocalSessionEventRouter
   // Track the number of WebStateList we are observing that are in a batch
   // operation.
   int batch_in_progress_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeLocalSessionEventRouter);
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_SESSIONS_IOS_CHROME_LOCAL_SESSION_EVENT_ROUTER_H_

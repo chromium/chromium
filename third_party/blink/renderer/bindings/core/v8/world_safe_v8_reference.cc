@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,13 +19,13 @@ v8::Local<v8::Value> WorldSafeV8ReferenceInternal::ToWorldSafeValue(
   v8::Isolate* isolate = target_script_state->GetIsolate();
 
   if (&v8_reference_world == &target_script_state->World())
-    return v8_reference.NewLocal(isolate);
+    return v8_reference.Get(isolate);
 
   // If |v8_reference| is a v8::Object, clones |v8_reference| in the context of
   // |target_script_state| and returns it.  Otherwise returns |v8_reference|
   // itself that is already safe to access in |target_script_state|.
 
-  v8::Local<v8::Value> value = v8_reference.NewLocal(isolate);
+  v8::Local<v8::Value> value = v8_reference.Get(isolate);
   if (!value->IsObject())
     return value;
 
@@ -41,9 +41,9 @@ void WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(
   if (!value->IsObject())
     return;
 
-  v8::Local<v8::Context> context = value.As<v8::Object>()->CreationContext();
+  v8::Local<v8::Context> context;
   // Creation context is null if the value is a remote object.
-  if (context.IsEmpty())
+  if (!value.As<v8::Object>()->GetCreationContext().ToLocal(&context))
     return;
 
   ScriptState* script_state = ScriptState::From(context);

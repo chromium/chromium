@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,41 +33,27 @@ const char kURL[] = "http://example.com";
 }  // namespace
 
 // Test fixture that enables (if param is true) and disables (if param is false)
-// SameSite-by-default, Cookies-without-SameSite-must-be-Secure, and Schemeful
-// Same-Site to test the policies that override those features, under both
-// conditions.
+// Schemeful Same-Site to test the Legacy SameSite cookie policy, which controls
+// behavior of SameSite-by-default, Cookies-without-SameSite-must-be-Secure, and
+// Schemeful Same-Site.
 class SameSiteCookiesPolicyTest : public PolicyTest,
                                   public ::testing::WithParamInterface<bool> {
  public:
-  SameSiteCookiesPolicyTest() {
-    std::vector<base::Feature> samesite_features = {
-        net::features::kSameSiteByDefaultCookies,
-        net::features::kCookiesWithoutSameSiteMustBeSecure,
-        net::features::kSchemefulSameSite};
-    if (AreSameSiteFeaturesEnabled()) {
-      feature_list_.InitWithFeatures(samesite_features /* enabled */, {});
+  SameSiteCookiesPolicyTest()
+      : http_server_(net::EmbeddedTestServer::TYPE_HTTP),
+        https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    if (IsSchemefulSameSiteEnabled()) {
+      // No need to explicitly enable, since it's enabled by default.
+      feature_list_.Init();
     } else {
-      feature_list_.InitWithFeatures({}, samesite_features /* disabled */);
+      feature_list_.InitAndDisableFeature(net::features::kSchemefulSameSite);
     }
   }
 
-  ~SameSiteCookiesPolicyTest() = default;
-
- protected:
-  bool AreSameSiteFeaturesEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class SchemefulSameSiteCookiesPolicyIntegrationTest
-    : public policy::PolicyTest {
- protected:
-  SchemefulSameSiteCookiesPolicyIntegrationTest()
-      : http_server_(net::EmbeddedTestServer::TYPE_HTTP),
-        https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
+  ~SameSiteCookiesPolicyTest() override = default;
 
   void SetUpOnMainThread() override {
+    PolicyTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
@@ -90,18 +76,18 @@ class SchemefulSameSiteCookiesPolicyIntegrationTest
   content::RenderFrameHost* GetChildFrame() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    return ChildFrameAt(web_contents->GetMainFrame(), 0);
+    return ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
   }
 
-  content::RenderFrameHost* GetMainFrame() {
+  content::RenderFrameHost* GetPrimaryMainFrame() {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    return web_contents->GetMainFrame();
+    return web_contents->GetPrimaryMainFrame();
   }
 
   void NavigateToHttpPageWithFrame(const std::string& host) {
     GURL main_url(http_server_.GetURL(host, "/iframe.html"));
-    ui_test_utils::NavigateToURL(browser(), main_url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
   }
 
   void NavigateFrameToHttps(const std::string& host, const std::string& path) {
@@ -111,161 +97,17 @@ class SchemefulSameSiteCookiesPolicyIntegrationTest
     EXPECT_TRUE(NavigateIframeToURL(web_contents, "test", page));
   }
 
-  void ExpectFrameContent(content::RenderFrameHost* frame,
-                          const std::string& expected) {
-    storage::test::ExpectFrameContent(frame, expected);
+  std::string GetFrameContent(content::RenderFrameHost* frame) {
+    return storage::test::GetFrameContent(frame);
   }
 
-  net::test_server::EmbeddedTestServer http_server_;
-  net::test_server::EmbeddedTestServer https_server_;
+  bool IsSchemefulSameSiteEnabled() { return GetParam(); }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(SchemefulSameSiteCookiesPolicyIntegrationTest);
+  base::test::ScopedFeatureList feature_list_;
+  net::test_server::EmbeddedTestServer http_server_;
+  net::test_server::EmbeddedTestServer https_server_;
 };
-
-IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
-                       DefaultLegacyCookieAccessSettingIsAllow) {
-  PolicyMap policies;
-  // Set a policy to allow Legacy access for all cookies.
-  SetPolicy(&policies, key::kLegacySameSiteCookieBehaviorEnabled,
-            base::Value(1));
-  UpdateProviderPolicy(policies);
-
-  GURL url(kURL);
-  Profile* profile = browser()->profile();
-
-  // No cookies at startup
-  ASSERT_TRUE(content::GetCookies(profile, url).empty());
-
-  // Set a cookie from a same-site context. The cookie does not specify
-  // SameSite, so it may default to Lax if the SameSite features are enabled.
-  // Since the context used is same-site, it should always work.
-  EXPECT_TRUE(content::SetCookie(profile, url, "samesite-unspecified=1",
-                                 net::CookieOptions::SameSiteCookieContext(
-                                     net::CookieOptions::SameSiteCookieContext::
-                                         ContextType::SAME_SITE_LAX)));
-  EXPECT_EQ("samesite-unspecified=1", content::GetCookies(profile, url));
-
-  // Overwrite the cookie from a cross-site context. Because we have a policy
-  // that allows Legacy access for all domains, this will work even if the
-  // SameSite features are enabled. (It works regardless, if they are disabled.)
-  EXPECT_TRUE(content::SetCookie(
-      profile, url, "samesite-unspecified=2",
-      net::CookieOptions::SameSiteCookieContext(
-          net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE)));
-  // Cookie has the new value because we were able to successfully overwrite it.
-  EXPECT_EQ("samesite-unspecified=2", content::GetCookies(profile, url));
-  // Fetching the cookies from a cross-site context also works because of the
-  // policy.
-  EXPECT_EQ("samesite-unspecified=2",
-            content::GetCookies(profile, url,
-                                net::CookieOptions::SameSiteCookieContext(
-                                    net::CookieOptions::SameSiteCookieContext::
-                                        ContextType::CROSS_SITE)));
-
-  // When Schemeful Same-Site is enabled a context downgrade to an insufficient
-  // context should still be allowed with legacy access. This'll always work if
-  // Schemeful Same-Site is disabled because the schemeless context is Lax
-  // which is sufficient.
-  EXPECT_TRUE(content::SetCookie(
-      profile, url, "samesite-lax=1; SameSite=Lax",
-      net::CookieOptions::SameSiteCookieContext(
-          net::CookieOptions::SameSiteCookieContext::ContextType::SAME_SITE_LAX,
-          net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE)));
-  // Similarly when we try to get the cookie.
-  EXPECT_THAT(
-      content::GetCookies(profile, url,
-                          net::CookieOptions::SameSiteCookieContext(
-                              net::CookieOptions::SameSiteCookieContext::
-                                  ContextType::SAME_SITE_LAX,
-                              net::CookieOptions::SameSiteCookieContext::
-                                  ContextType::CROSS_SITE)),
-      testing::HasSubstr("samesite-lax=1"));
-}
-
-IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
-                       DefaultLegacyCookieAccessSettingIsBlock) {
-  PolicyMap policies;
-  // Set a policy to block Legacy access for all cookies.
-  SetPolicy(&policies, key::kLegacySameSiteCookieBehaviorEnabled,
-            base::Value(2));
-  UpdateProviderPolicy(policies);
-
-  GURL url(kURL);
-  Profile* profile = browser()->profile();
-
-  // No cookies at startup
-  ASSERT_TRUE(content::GetCookies(profile, url).empty());
-
-  // Set a cookie from a same-site context. The cookie does not specify
-  // SameSite, so it may default to Lax if the SameSite features are enabled.
-  // Since the context used is same-site, it should always work.
-  EXPECT_TRUE(content::SetCookie(profile, url, "samesite-unspecified=1",
-                                 net::CookieOptions::SameSiteCookieContext(
-                                     net::CookieOptions::SameSiteCookieContext::
-                                         ContextType::SAME_SITE_LAX)));
-  EXPECT_EQ("samesite-unspecified=1", content::GetCookies(profile, url));
-
-  // Overwrite the cookie from a cross-site context. Because we have a policy
-  // that blocks Legacy access for all domains, this will not work even if the
-  // SameSite features are disabled. (It doesn't work regardless, if they are
-  // enabled.)
-  EXPECT_FALSE(content::SetCookie(
-      profile, url, "samesite-unspecified=2",
-      net::CookieOptions::SameSiteCookieContext(
-          net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE)));
-  // Cookie still has the previous value because re-setting it failed.
-  EXPECT_EQ("samesite-unspecified=1", content::GetCookies(profile, url));
-  // Fetching the unspecified-samesite cookie from a cross-site context does not
-  // work because of the policy.
-  EXPECT_EQ("",
-            content::GetCookies(profile, url,
-                                net::CookieOptions::SameSiteCookieContext(
-                                    net::CookieOptions::SameSiteCookieContext::
-                                        ContextType::CROSS_SITE)));
-
-  // When Schemeful Same-Site is enabled a context downgrade to an insufficient
-  // context should always be blocked. If Schemeful Same-Site is disabled then
-  // this shouldn't be blocked.
-  // Similarly when we try to get the cookie.
-  if (AreSameSiteFeaturesEnabled()) {
-    EXPECT_FALSE(
-        content::SetCookie(profile, url, "samesite-lax=1; SameSite=Lax",
-                           net::CookieOptions::SameSiteCookieContext(
-                               net::CookieOptions::SameSiteCookieContext::
-                                   ContextType::SAME_SITE_LAX,
-                               net::CookieOptions::SameSiteCookieContext::
-                                   ContextType::CROSS_SITE)));
-    // We should be able to get the cookie which was previously added.
-    EXPECT_EQ("samesite-unspecified=1", content::GetCookies(profile, url));
-    // But no cookies should be returned for a downgrade to an insufficient
-    // context, since SameSite-by-default is active which requires a minimum of
-    // a Lax context.
-    EXPECT_EQ(
-        "", content::GetCookies(profile, url,
-                                net::CookieOptions::SameSiteCookieContext(
-                                    net::CookieOptions::SameSiteCookieContext::
-                                        ContextType::SAME_SITE_LAX,
-                                    net::CookieOptions::SameSiteCookieContext::
-                                        ContextType::CROSS_SITE)));
-  } else {
-    EXPECT_TRUE(
-        content::SetCookie(profile, url, "samesite-lax=1; SameSite=Lax",
-                           net::CookieOptions::SameSiteCookieContext(
-                               net::CookieOptions::SameSiteCookieContext::
-                                   ContextType::SAME_SITE_LAX,
-                               net::CookieOptions::SameSiteCookieContext::
-                                   ContextType::CROSS_SITE)));
-    EXPECT_THAT(
-        content::GetCookies(profile, url,
-                            net::CookieOptions::SameSiteCookieContext(
-                                net::CookieOptions::SameSiteCookieContext::
-                                    ContextType::SAME_SITE_LAX,
-                                net::CookieOptions::SameSiteCookieContext::
-                                    ContextType::CROSS_SITE)),
-        testing::HasSubstr("samesite-lax=1"));
-  }
-}
 
 IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
                        AllowLegacyCookieAccessForDomain) {
@@ -342,85 +184,60 @@ IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
                                   ContextType::CROSS_SITE)),
       testing::HasSubstr("samesite-lax=1"));
 
-  // For the domain that is not Legacy by policy, we expect it to work only if
-  // the SameSite features are disabled.
-  if (AreSameSiteFeaturesEnabled()) {
-    EXPECT_FALSE(
-        content::SetCookie(profile, other_domain_url, "samesite-unspecified=2",
-                           net::CookieOptions::SameSiteCookieContext(
-                               net::CookieOptions::SameSiteCookieContext::
-                                   ContextType::CROSS_SITE)));
-    EXPECT_EQ("samesite-unspecified=1",
-              content::GetCookies(profile, other_domain_url));
-    EXPECT_EQ(
-        "", content::GetCookies(profile, other_domain_url,
+  // Setting the cookie from a cross-site context on the domain without the
+  // policy does not work, because it defaults to Lax.
+  EXPECT_FALSE(content::SetCookie(
+      profile, other_domain_url, "samesite-unspecified=2",
+      net::CookieOptions::SameSiteCookieContext(
+          net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE)));
+  // If we get the cookie from a same-site context, the old value is still
+  // present.
+  EXPECT_EQ("samesite-unspecified=1",
+            content::GetCookies(profile, other_domain_url));
+  // The cookie cannot be accessed at all from a cross-site context.
+  EXPECT_EQ("",
+            content::GetCookies(profile, other_domain_url,
                                 net::CookieOptions::SameSiteCookieContext(
                                     net::CookieOptions::SameSiteCookieContext::
                                         ContextType::CROSS_SITE)));
-    EXPECT_FALSE(content::SetCookie(
-        profile, other_domain_url, "samesite-lax=1; SameSite=Lax",
-        net::CookieOptions::SameSiteCookieContext(
-            net::CookieOptions::SameSiteCookieContext::ContextType::
-                SAME_SITE_LAX,
-            net::CookieOptions::SameSiteCookieContext::ContextType::
-                CROSS_SITE)));
-    // We should be able to get the cookie which was previously added.
-    EXPECT_EQ("samesite-unspecified=1",
-              content::GetCookies(profile, other_domain_url));
-    // But no cookies should be returned for a downgrade to an insufficient
-    // context, since SameSite-by-default is active which requires a minimum of
-    // a Lax context.
-    EXPECT_EQ(
-        "", content::GetCookies(profile, other_domain_url,
+
+  // Setting a Lax cookie from a downgraded context only works if Schemeful
+  // Same-Site is not enabled.
+  EXPECT_EQ(!IsSchemefulSameSiteEnabled(),
+            content::SetCookie(profile, other_domain_url,
+                               "samesite-lax=1; SameSite=Lax",
+                               net::CookieOptions::SameSiteCookieContext(
+                                   net::CookieOptions::SameSiteCookieContext::
+                                       ContextType::SAME_SITE_LAX,
+                                   net::CookieOptions::SameSiteCookieContext::
+                                       ContextType::CROSS_SITE)));
+  // We should be able to get the cookie which was previously added.
+  EXPECT_EQ(IsSchemefulSameSiteEnabled()
+                ? "samesite-unspecified=1"
+                : "samesite-unspecified=1; samesite-lax=1",
+            content::GetCookies(profile, other_domain_url));
+  // But no cookies should be returned for a downgrade to an insufficient
+  // context, since SameSite-by-default is active which requires a minimum of
+  // a Lax context.
+  EXPECT_EQ(IsSchemefulSameSiteEnabled()
+                ? ""
+                : "samesite-unspecified=1; samesite-lax=1",
+            content::GetCookies(profile, other_domain_url,
                                 net::CookieOptions::SameSiteCookieContext(
                                     net::CookieOptions::SameSiteCookieContext::
                                         ContextType::SAME_SITE_LAX,
                                     net::CookieOptions::SameSiteCookieContext::
                                         ContextType::CROSS_SITE)));
-  } else {
-    EXPECT_TRUE(
-        content::SetCookie(profile, other_domain_url, "samesite-unspecified=2",
-                           net::CookieOptions::SameSiteCookieContext(
-                               net::CookieOptions::SameSiteCookieContext::
-                                   ContextType::CROSS_SITE)));
-    EXPECT_EQ("samesite-unspecified=2",
-              content::GetCookies(profile, other_domain_url));
-    EXPECT_EQ(
-        "samesite-unspecified=2",
-        content::GetCookies(profile, other_domain_url,
-                            net::CookieOptions::SameSiteCookieContext(
-                                net::CookieOptions::SameSiteCookieContext::
-                                    ContextType::CROSS_SITE)));
-
-    EXPECT_TRUE(content::SetCookie(
-        profile, other_domain_url, "samesite-lax=1; SameSite=Lax",
-        net::CookieOptions::SameSiteCookieContext(
-            net::CookieOptions::SameSiteCookieContext::ContextType::
-                SAME_SITE_LAX,
-            net::CookieOptions::SameSiteCookieContext::ContextType::
-                CROSS_SITE)));
-    EXPECT_THAT(
-        content::GetCookies(profile, other_domain_url,
-                            net::CookieOptions::SameSiteCookieContext(
-                                net::CookieOptions::SameSiteCookieContext::
-                                    ContextType::SAME_SITE_LAX,
-                                net::CookieOptions::SameSiteCookieContext::
-                                    ContextType::CROSS_SITE)),
-        testing::HasSubstr("samesite-lax=1"));
-  }
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         SameSiteCookiesPolicyTest,
-                         ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_F(SchemefulSameSiteCookiesPolicyIntegrationTest,
+IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
                        AllowCrossSchemeFrameLegacyCookies) {
   PolicyMap policies;
-  // Set a policy to force legacy access for all cookies.
-  PolicyTest::SetPolicy(&policies,
-                        policy::key::kLegacySameSiteCookieBehaviorEnabled,
-                        base::Value(1));
+  // Set a policy to force legacy access for our cookies.
+  base::Value policy_value(base::Value::Type::LIST);
+  policy_value.Append(GURL("http://a.test").host());
+  SetPolicy(&policies, key::kLegacySameSiteCookieBehaviorEnabledForDomainList,
+            std::move(policy_value));
   PolicyTest::UpdateProviderPolicy(policies);
 
   // Set a cookie that will only be sent with legacy behavior.
@@ -432,25 +249,21 @@ IN_PROC_BROWSER_TEST_F(SchemefulSameSiteCookiesPolicyIntegrationTest,
   //
   // Start by navigating to an insecure page with an iframe.
   NavigateToHttpPageWithFrame("a.test");
-  storage::test::ExpectCookiesOnHost(browser()->profile(),
-                                     GetURL("a.test", false /* secure */),
-                                     "strictcookie=1");
+  EXPECT_EQ(content::GetCookies(browser()->profile(),
+                                GetURL("a.test", false /* secure */)),
+            "strictcookie=1");
 
   // Then navigate the frame to a secure page and check to see if the cookie is
   // sent.
   NavigateFrameToHttps("a.test", "/echoheader?cookie");
   // The legacy cookie should have been sent.
-  ExpectFrameContent(GetChildFrame(), "strictcookie=1");
+  EXPECT_EQ(GetFrameContent(GetChildFrame()), "strictcookie=1");
 }
 
-IN_PROC_BROWSER_TEST_F(SchemefulSameSiteCookiesPolicyIntegrationTest,
+IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
                        DisallowCrossSchemeFrameNonLegacyCookies) {
-  PolicyMap policies;
-  // Set a policy to force non-legacy access for all cookies.
-  PolicyTest::SetPolicy(&policies,
-                        policy::key::kLegacySameSiteCookieBehaviorEnabled,
-                        base::Value(2));
-  PolicyTest::UpdateProviderPolicy(policies);
+  // Don't set a policy, this results in the cookies having behavior dependent
+  // on the base::Feature state.
 
   // Set a cookie that will only be sent with legacy behavior.
   content::SetCookie(browser()->profile(), GetURL("a.test", false),
@@ -459,26 +272,29 @@ IN_PROC_BROWSER_TEST_F(SchemefulSameSiteCookiesPolicyIntegrationTest,
   // Construct a cross-scheme same domain iframe (Main frame http://a.test,
   // iframe https://a.test).
   //
-  // Start by navigating to an insecure page with an iframe.
+  // Start by navigating to an insecure page with an iframe. The cookie will
+  // always be present because it is a same-schemeful-site context.
   NavigateToHttpPageWithFrame("a.test");
-  storage::test::ExpectCookiesOnHost(browser()->profile(),
-                                     GetURL("a.test", false /* secure */),
-                                     "strictcookie=1");
+  EXPECT_EQ(content::GetCookies(browser()->profile(),
+                                GetURL("a.test", false /* secure */)),
+            "strictcookie=1");
 
   // Then navigate the frame to a secure page and check to see if the cookie is
   // sent.
   NavigateFrameToHttps("a.test", "/echoheader?cookie");
-  // The non-legacy cookie should not have been sent.
-  ExpectFrameContent(GetChildFrame(), "None");
+  // The cookie will be sent only if Schemeful Same-Site is not active.
+  EXPECT_EQ(GetFrameContent(GetChildFrame()),
+            IsSchemefulSameSiteEnabled() ? "None" : "strictcookie=1");
 }
 
-IN_PROC_BROWSER_TEST_F(SchemefulSameSiteCookiesPolicyIntegrationTest,
+IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
                        AllowStrictOnCrossSchemeNavigation) {
   PolicyMap policies;
-  // Set a policy to force legacy access for all cookies.
-  PolicyTest::SetPolicy(&policies,
-                        policy::key::kLegacySameSiteCookieBehaviorEnabled,
-                        base::Value(1));
+  // Set a policy to force legacy access for our cookies.
+  base::Value policy_value(base::Value::Type::LIST);
+  policy_value.Append(GURL("http://a.test").host());
+  SetPolicy(&policies, key::kLegacySameSiteCookieBehaviorEnabledForDomainList,
+            std::move(policy_value));
   PolicyTest::UpdateProviderPolicy(policies);
 
   // Set a cookie that will only be sent with legacy behavior.
@@ -489,19 +305,16 @@ IN_PROC_BROWSER_TEST_F(SchemefulSameSiteCookiesPolicyIntegrationTest,
   NavigateToHttpPageWithFrame("a.test");
 
   GURL secure_echo_url = GetURL("a.test", "/echoheader?cookie", true);
-  ASSERT_TRUE(NavigateToURLFromRenderer(GetMainFrame(), secure_echo_url));
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(GetPrimaryMainFrame(), secure_echo_url));
 
-  ExpectFrameContent(GetMainFrame(), "strictcookie=1");
+  EXPECT_EQ(GetFrameContent(GetPrimaryMainFrame()), "strictcookie=1");
 }
 
-IN_PROC_BROWSER_TEST_F(SchemefulSameSiteCookiesPolicyIntegrationTest,
+IN_PROC_BROWSER_TEST_P(SameSiteCookiesPolicyTest,
                        DisallowStrictOnCrossSchemeNavigation) {
-  PolicyMap policies;
-  // Set a policy to force non-legacy access for all cookies.
-  PolicyTest::SetPolicy(&policies,
-                        policy::key::kLegacySameSiteCookieBehaviorEnabled,
-                        base::Value(2));
-  PolicyTest::UpdateProviderPolicy(policies);
+  // Don't set a policy, this results in the cookies having behavior dependent
+  // on the base::Feature state.
 
   // Set a cookie that will only be sent with legacy behavior.
   content::SetCookie(browser()->profile(), GetURL("a.test", false),
@@ -511,9 +324,13 @@ IN_PROC_BROWSER_TEST_F(SchemefulSameSiteCookiesPolicyIntegrationTest,
   NavigateToHttpPageWithFrame("a.test");
 
   GURL secure_echo_url = GetURL("a.test", "/echoheader?cookie", true);
-  ASSERT_TRUE(NavigateToURLFromRenderer(GetMainFrame(), secure_echo_url));
+  ASSERT_TRUE(
+      NavigateToURLFromRenderer(GetPrimaryMainFrame(), secure_echo_url));
 
-  ExpectFrameContent(GetMainFrame(), "None");
+  EXPECT_EQ(GetFrameContent(GetPrimaryMainFrame()),
+            IsSchemefulSameSiteEnabled() ? "None" : "strictcookie=1");
 }
+
+INSTANTIATE_TEST_SUITE_P(All, SameSiteCookiesPolicyTest, ::testing::Bool());
 
 }  // namespace policy

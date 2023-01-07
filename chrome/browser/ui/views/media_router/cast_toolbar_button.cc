@@ -1,11 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 
+#include "base/bind.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/grit/generated_resources.h"
@@ -15,15 +18,18 @@
 #include "components/media_router/browser/media_router_metrics.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/native_theme/native_theme.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/button_controller.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace media_router {
 
@@ -92,11 +98,13 @@ void CastToolbarButton::HideIcon() {
 }
 
 void CastToolbarButton::ActivateIcon() {
-  AnimateInkDrop(views::InkDropState::ACTIVATED, nullptr);
+  views::InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTIVATED,
+                                            nullptr);
 }
 
 void CastToolbarButton::DeactivateIcon() {
-  AnimateInkDrop(views::InkDropState::DEACTIVATED, nullptr);
+  views::InkDrop::Get(this)->AnimateToState(views::InkDropState::DEACTIVATED,
+                                            nullptr);
 }
 
 void CastToolbarButton::OnIssue(const media_router::Issue& issue) {
@@ -111,13 +119,9 @@ void CastToolbarButton::OnIssuesCleared() {
 }
 
 void CastToolbarButton::OnRoutesUpdated(
-    const std::vector<media_router::MediaRoute>& routes,
-    const std::vector<media_router::MediaRoute::Id>& joinable_route_ids) {
-  has_local_display_route_ =
-      std::find_if(routes.begin(), routes.end(),
-                   [](const media_router::MediaRoute& route) {
-                     return route.is_local() && route.for_display();
-                   }) != routes.end();
+    const std::vector<media_router::MediaRoute>& routes) {
+  has_local_route_ =
+      base::Contains(routes, true, &media_router::MediaRoute::is_local);
   UpdateIcon();
 }
 
@@ -148,27 +152,30 @@ void CastToolbarButton::OnGestureEvent(ui::GestureEvent* event) {
   ToolbarButton::OnGestureEvent(event);
 }
 
+void CastToolbarButton::OnThemeChanged() {
+  ToolbarButton::OnThemeChanged();
+  UpdateIcon();
+}
+
 void CastToolbarButton::UpdateIcon() {
+  if (!GetWidget())
+    return;
   using Severity = media_router::IssueInfo::Severity;
   const auto severity =
       current_issue_ ? current_issue_->severity : Severity::NOTIFICATION;
   const gfx::VectorIcon* new_icon = nullptr;
   SkColor icon_color;
 
-  if (severity == Severity::NOTIFICATION && !has_local_display_route_) {
+  const auto* const color_provider = GetColorProvider();
+  if (severity == Severity::NOTIFICATION && !has_local_route_) {
     new_icon = &vector_icons::kMediaRouterIdleIcon;
     icon_color = gfx::kPlaceholderColor;
-  } else if (severity == Severity::FATAL) {
-    new_icon = &vector_icons::kMediaRouterErrorIcon;
-    icon_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_AlertSeverityHigh);
   } else if (severity == Severity::WARNING) {
     new_icon = &vector_icons::kMediaRouterWarningIcon;
-    icon_color = GetNativeTheme()->GetSystemColor(
-        ui::NativeTheme::kColorId_AlertSeverityMedium);
+    icon_color = color_provider->GetColor(kColorMediaRouterIconWarning);
   } else {
     new_icon = &vector_icons::kMediaRouterActiveIcon;
-    icon_color = gfx::kGoogleBlue500;
+    icon_color = color_provider->GetColor(kColorMediaRouterIconActive);
   }
 
   // This function is called when system theme changes. If an idle icon is
@@ -207,9 +214,7 @@ void CastToolbarButton::ButtonPressed() {
     dialog_controller->HideMediaRouterDialog();
   } else {
     dialog_controller->ShowMediaRouterDialog(
-        MediaRouterDialogOpenOrigin::TOOLBAR);
-    MediaRouterMetrics::RecordMediaRouterDialogOrigin(
-        MediaRouterDialogOpenOrigin::TOOLBAR);
+        MediaRouterDialogActivationLocation::TOOLBAR);
   }
 }
 

@@ -24,7 +24,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,7 +41,8 @@ namespace {
 
 bool NodeIsUserSelectAll(const Node* node) {
   return node && node->GetLayoutObject() &&
-         node->GetLayoutObject()->Style()->UserSelect() == EUserSelect::kAll;
+         node->GetLayoutObject()->Style()->UsedUserSelect() ==
+             EUserSelect::kAll;
 }
 
 template <typename Strategy>
@@ -60,7 +61,7 @@ PositionTemplate<Strategy> StartOfParagraphAlgorithm(
       PositionTemplate<Strategy>::FirstPositionInOrBeforeNode(*start_node),
       kCannotCrossEditingBoundary);
   ContainerNode* const highest_root = HighestEditableRoot(position);
-  const bool start_node_is_editable = HasEditableStyle(*start_node);
+  const bool start_node_is_editable = IsEditable(*start_node);
 
   Node* candidate_node = start_node;
   PositionAnchorType candidate_type = position.AnchorType();
@@ -95,12 +96,11 @@ PositionTemplate<Strategy> StartOfParagraphAlgorithm(
   while (previous_node_iterator) {
     if (boundary_crossing_rule == kCannotCrossEditingBoundary &&
         !NodeIsUserSelectAll(previous_node_iterator) &&
-        HasEditableStyle(*previous_node_iterator) != start_node_is_editable)
+        IsEditable(*previous_node_iterator) != start_node_is_editable)
       break;
     if (boundary_crossing_rule == kCanSkipOverEditingBoundary) {
       while (previous_node_iterator &&
-             HasEditableStyle(*previous_node_iterator) !=
-                 start_node_is_editable) {
+             IsEditable(*previous_node_iterator) != start_node_is_editable) {
         previous_node_iterator = previousNode();
       }
       if (!previous_node_iterator ||
@@ -187,7 +187,7 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
       PositionTemplate<Strategy>::FirstPositionInOrBeforeNode(*start_node),
       kCannotCrossEditingBoundary);
   ContainerNode* const highest_root = HighestEditableRoot(position);
-  const bool start_node_is_editable = HasEditableStyle(*start_node);
+  const bool start_node_is_editable = IsEditable(*start_node);
 
   Node* candidate_node = start_node;
   PositionAnchorType candidate_type = position.AnchorType();
@@ -210,11 +210,11 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
   while (next_node_iterator) {
     if (boundary_crossing_rule == kCannotCrossEditingBoundary &&
         !NodeIsUserSelectAll(next_node_iterator) &&
-        HasEditableStyle(*next_node_iterator) != start_node_is_editable)
+        IsEditable(*next_node_iterator) != start_node_is_editable)
       break;
     if (boundary_crossing_rule == kCanSkipOverEditingBoundary) {
       while (next_node_iterator &&
-             HasEditableStyle(*next_node_iterator) != start_node_is_editable)
+             IsEditable(*next_node_iterator) != start_node_is_editable)
         next_node_iterator = nextNode();
       if (!next_node_iterator ||
           !next_node_iterator->IsDescendantOf(highest_root))
@@ -327,6 +327,11 @@ VisiblePosition EndOfParagraph(
   return EndOfParagraphAlgorithm<EditingStrategy>(c, boundary_crossing_rule);
 }
 
+Position EndOfParagraph(const Position& c,
+                        EditingBoundaryCrossingRule boundary_crossing_rule) {
+  return EndOfParagraphAlgorithm<EditingStrategy>(c, boundary_crossing_rule);
+}
+
 VisiblePositionInFlatTree EndOfParagraph(
     const VisiblePositionInFlatTree& c,
     EditingBoundaryCrossingRule boundary_crossing_rule) {
@@ -338,16 +343,26 @@ VisiblePositionInFlatTree EndOfParagraph(
 // always true
 VisiblePosition StartOfNextParagraph(const VisiblePosition& visible_position) {
   DCHECK(visible_position.IsValid()) << visible_position;
-  VisiblePosition paragraph_end(
-      EndOfParagraph(visible_position, kCanSkipOverEditingBoundary));
+  Position paragraph_end(EndOfParagraph(visible_position.DeepEquivalent(),
+                                        kCanSkipOverEditingBoundary));
+  // EndOfParagraph preserves the candidate_type, so if we are already at the
+  // end node we must ensure we get the next position to avoid infinite loops.
+  if (paragraph_end == visible_position.DeepEquivalent()) {
+    paragraph_end =
+        Position::AfterNode(*visible_position.DeepEquivalent().AnchorNode());
+  }
+  DCHECK(!paragraph_end.IsBeforeAnchor());
+  DCHECK(visible_position.DeepEquivalent() < paragraph_end ||
+         visible_position.DeepEquivalent() == paragraph_end &&
+             paragraph_end.IsAfterAnchor());
   VisiblePosition after_paragraph_end(
       NextPositionOf(paragraph_end, kCannotCrossEditingBoundary));
   // It may happen that an element's next visually equivalent candidate is set
   // to such element when creating the VisualPosition. This may cause infinite
   // loops when we are iterating over parapgrahs.
-  if (after_paragraph_end.DeepEquivalent() == paragraph_end.DeepEquivalent()) {
-    after_paragraph_end = VisiblePosition::AfterNode(
-        *paragraph_end.DeepEquivalent().AnchorNode());
+  if (after_paragraph_end.DeepEquivalent() == paragraph_end) {
+    after_paragraph_end =
+        VisiblePosition::AfterNode(*paragraph_end.AnchorNode());
   }
   // The position after the last position in the last cell of a table
   // is not the start of the next paragraph.

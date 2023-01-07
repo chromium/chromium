@@ -1,17 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_CHROME_VARIATIONS_CONFIGURATION_H_
 #define COMPONENTS_FEATURE_ENGAGEMENT_INTERNAL_CHROME_VARIATIONS_CONFIGURATION_H_
 
-#include "base/macros.h"
+#include "base/feature_list.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_list.h"
-
-namespace base {
-struct Feature;
-}  // namespace base
 
 namespace feature_engagement {
 
@@ -21,6 +17,11 @@ namespace feature_engagement {
 class ChromeVariationsConfiguration : public Configuration {
  public:
   ChromeVariationsConfiguration();
+
+  ChromeVariationsConfiguration(const ChromeVariationsConfiguration&) = delete;
+  ChromeVariationsConfiguration& operator=(
+      const ChromeVariationsConfiguration&) = delete;
+
   ~ChromeVariationsConfiguration() override;
 
   // Configuration implementation.
@@ -44,8 +45,6 @@ class ChromeVariationsConfiguration : public Configuration {
 
   // The current configurations.
   ConfigMap configs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeVariationsConfiguration);
 };
 
 }  // namespace feature_engagement

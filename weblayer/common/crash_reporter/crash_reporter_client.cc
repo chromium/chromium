@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,6 +28,9 @@ namespace {
 class CrashReporterClientImpl : public crash_reporter::CrashReporterClient {
  public:
   CrashReporterClientImpl() = default;
+
+  CrashReporterClientImpl(const CrashReporterClientImpl&) = delete;
+  CrashReporterClientImpl& operator=(const CrashReporterClientImpl&) = delete;
 
   // crash_reporter::CrashReporterClient implementation.
   bool IsRunningUnattended() override { return false; }
@@ -62,9 +65,6 @@ class CrashReporterClientImpl : public crash_reporter::CrashReporterClient {
     static base::NoDestructor<CrashReporterClientImpl> crash_reporter_client;
     return crash_reporter_client.get();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrashReporterClientImpl);
 };
 
 }  // namespace

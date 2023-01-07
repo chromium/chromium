@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,19 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/post_task.h"
-#include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/broadcast_channel/broadcast_channel_provider.h"
+#include "content/browser/broadcast_channel/broadcast_channel_service.h"
+#include "content/browser/buckets/bucket_manager.h"
+#include "content/browser/code_cache/generated_code_cache_context.h"
+#include "content/browser/renderer_host/code_cache_host_impl.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/browser/webtransport/quic_transport_connector_impl.h"
+#include "content/browser/webtransport/web_transport_connector_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/child_process_host.h"
@@ -23,29 +28,10 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_client.mojom.h"
 
 namespace content {
-
-namespace {
-
-void CreateQuicTransportConnectorImpl(
-    int process_id,
-    const url::Origin& origin,
-    const net::NetworkIsolationKey& network_isolation_key,
-    mojo::PendingReceiver<blink::mojom::QuicTransportConnector> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto* process = RenderProcessHost::FromID(process_id);
-  if (!process)
-    return;
-
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<QuicTransportConnectorImpl>(
-          process_id, /*frame=*/nullptr, origin, network_isolation_key),
-      std::move(receiver));
-}
-
-}  // anonymous namespace
 
 ServiceWorkerHost::ServiceWorkerHost(
     mojo::PendingAssociatedReceiver<blink::mojom::ServiceWorkerContainerHost>
@@ -53,20 +39,22 @@ ServiceWorkerHost::ServiceWorkerHost(
     ServiceWorkerVersion* version,
     base::WeakPtr<ServiceWorkerContextCore> context)
     : version_(version),
+      broker_(this),
       container_host_(std::make_unique<content::ServiceWorkerContainerHost>(
           std::move(context))),
       host_receiver_(container_host_.get(), std::move(host_receiver)) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(version_);
 
   container_host_->set_service_worker_host(this);
   container_host_->UpdateUrls(
       version_->script_url(),
-      net::SiteForCookies::FromUrl(version_->script_url()), version_->origin());
+      url::Origin::Create(version_->key().top_level_site().GetURL()),
+      version_->key());
 }
 
 ServiceWorkerHost::~ServiceWorkerHost() {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Explicitly destroy the ServiceWorkerContainerHost to release
   // ServiceWorkerObjectHosts and ServiceWorkerRegistrationObjectHosts owned by
@@ -80,31 +68,49 @@ ServiceWorkerHost::~ServiceWorkerHost() {
 
 void ServiceWorkerHost::CompleteStartWorkerPreparation(
     int process_id,
-    mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
-        broker_receiver) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+    mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> broker_receiver,
+    mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
+        interface_provider_remote) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(ChildProcessHost::kInvalidUniqueID, worker_process_id_);
   DCHECK_NE(ChildProcessHost::kInvalidUniqueID, process_id);
   worker_process_id_ = process_id;
   broker_receiver_.Bind(std::move(broker_receiver));
+  remote_interfaces_.Bind(std::move(interface_provider_remote));
 }
 
-void ServiceWorkerHost::CreateQuicTransportConnector(
-    mojo::PendingReceiver<blink::mojom::QuicTransportConnector> receiver) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  RunOrPostTaskOnThread(
-      FROM_HERE, BrowserThread::UI,
-      base::BindOnce(&CreateQuicTransportConnectorImpl, worker_process_id_,
-                     version_->origin(), GetNetworkIsolationKey(),
-                     std::move(receiver)));
+void ServiceWorkerHost::CreateWebTransportConnector(
+    mojo::PendingReceiver<blink::mojom::WebTransportConnector> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<WebTransportConnectorImpl>(
+          worker_process_id_, /*frame=*/nullptr, version_->key().origin(),
+          GetNetworkAnonymizationKey()),
+      std::move(receiver));
 }
 
 void ServiceWorkerHost::BindCacheStorage(
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  DCHECK(!base::FeatureList::IsEnabled(
-      blink::features::kEagerCacheStorageSetupForServiceWorkers));
-  version_->embedded_worker()->BindCacheStorage(std::move(receiver));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  version_->embedded_worker()->BindCacheStorage(
+      std::move(receiver),
+      storage::BucketLocator::ForDefaultBucket(version_->key()));
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+void ServiceWorkerHost::BindHidService(
+    mojo::PendingReceiver<blink::mojom::HidService> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  version_->embedded_worker()->BindHidService(version_->key().origin(),
+                                              std::move(receiver));
+}
+#endif
+
+void ServiceWorkerHost::BindUsbService(
+    mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  version_->embedded_worker()->BindUsbService(version_->key().origin(),
+                                              std::move(receiver));
 }
 
 net::NetworkIsolationKey ServiceWorkerHost::GetNetworkIsolationKey() const {
@@ -112,16 +118,115 @@ net::NetworkIsolationKey ServiceWorkerHost::GetNetworkIsolationKey() const {
   // top-level browsing context, which shouldn't be use for ServiceWorkers used
   // in iframes.
   return net::NetworkIsolationKey::ToDoUseTopFrameOriginAsWell(
-      version_->origin());
+      version_->key().origin());
+}
+
+net::NetworkAnonymizationKey ServiceWorkerHost::GetNetworkAnonymizationKey()
+    const {
+  return net::NetworkAnonymizationKey::ToDoUseTopFrameOriginAsWell(
+      version_->key().origin());
+}
+
+const base::UnguessableToken& ServiceWorkerHost::GetReportingSource() const {
+  return version_->reporting_source();
+}
+
+StoragePartition* ServiceWorkerHost::GetStoragePartition() const {
+  // It is possible that the RenderProcessHost is gone but we receive a request
+  // before we had the opportunity to Detach because the disconnect handler
+  // wasn't run yet. In such cases it is is safe to ignore these messages since
+  // we are about to stop the service worker.
+  auto* process =
+      RenderProcessHost::FromID(version_->embedded_worker()->process_id());
+  if (process == nullptr)
+    return nullptr;
+
+  return process->GetStoragePartition();
+}
+
+void ServiceWorkerHost::CreateCodeCacheHost(
+    mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
+  auto embedded_worker_status = version_->embedded_worker()->status();
+  // Due to IPC races it is possible that we receive code cache host requests
+  // when the worker is stopping. For ex:
+  // 1) Browser starts trying to stop, sends the Stop() IPC.
+  // 2) Renderer sends a CreateCodeCacheHost() IPC.
+  // 3) Renderer gets the Stop() IPC and realize it should try to stop the
+  // worker.
+  // Given the worker is stopping it is safe to ignore these messages.
+  if (embedded_worker_status == EmbeddedWorkerStatus::STOPPING)
+    return;
+
+  // Create a new CodeCacheHostImpl and bind it to the given receiver.
+  StoragePartition* storage_partition = GetStoragePartition();
+  if (!storage_partition) {
+    return;
+  }
+  if (!code_cache_host_receivers_) {
+    code_cache_host_receivers_ =
+        std::make_unique<CodeCacheHostImpl::ReceiverSet>(
+            storage_partition->GetGeneratedCodeCacheContext());
+  }
+  code_cache_host_receivers_->Add(version_->embedded_worker()->process_id(),
+                                  GetNetworkIsolationKey(),
+                                  std::move(receiver));
+}
+
+void ServiceWorkerHost::CreateBroadcastChannelProvider(
+    mojo::PendingReceiver<blink::mojom::BroadcastChannelProvider> receiver) {
+  auto* storage_partition_impl =
+      static_cast<StoragePartitionImpl*>(GetStoragePartition());
+  if (!storage_partition_impl) {
+    return;
+  }
+
+  auto* broadcast_channel_service =
+      storage_partition_impl->GetBroadcastChannelService();
+  broadcast_channel_service->AddReceiver(
+      std::make_unique<BroadcastChannelProvider>(broadcast_channel_service,
+                                                 version()->key()),
+      std::move(receiver));
+}
+
+void ServiceWorkerHost::CreateBucketManagerHost(
+    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
+  static_cast<StoragePartitionImpl*>(GetStoragePartition())
+      ->GetBucketManager()
+      ->BindReceiver(GetWeakPtr(), std::move(receiver),
+                     mojo::GetBadMessageCallback());
 }
 
 base::WeakPtr<ServiceWorkerHost> ServiceWorkerHost::GetWeakPtr() {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return weak_factory_.GetWeakPtr();
 }
 
 void ServiceWorkerHost::ReportNoBinderForInterface(const std::string& error) {
   broker_receiver_.ReportBadMessage(error + " for the service worker scope");
+}
+
+blink::StorageKey ServiceWorkerHost::GetBucketStorageKey() {
+  return version_->key();
+}
+
+blink::mojom::PermissionStatus ServiceWorkerHost::GetPermissionStatus(
+    blink::PermissionType permission_type) {
+  auto* process =
+      RenderProcessHost::FromID(version_->embedded_worker()->process_id());
+  if (!process)
+    return blink::mojom::PermissionStatus::DENIED;
+
+  return process->GetBrowserContext()
+      ->GetPermissionController()
+      ->GetPermissionStatusForWorker(permission_type, process,
+                                     GetBucketStorageKey().origin());
+}
+
+void ServiceWorkerHost::BindCacheStorageForBucket(
+    const storage::BucketInfo& bucket,
+    mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
+  version_->embedded_worker()->BindCacheStorage(std::move(receiver),
+                                                bucket.ToBucketLocator());
 }
 
 }  // namespace content

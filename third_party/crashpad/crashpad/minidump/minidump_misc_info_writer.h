@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "minidump/minidump_stream_writer.h"
 #include "minidump/minidump_writable.h"
@@ -60,6 +59,10 @@ std::string MinidumpMiscInfoDebugBuildString();
 class MinidumpMiscInfoWriter final : public internal::MinidumpStreamWriter {
  public:
   MinidumpMiscInfoWriter();
+
+  MinidumpMiscInfoWriter(const MinidumpMiscInfoWriter&) = delete;
+  MinidumpMiscInfoWriter& operator=(const MinidumpMiscInfoWriter&) = delete;
+
   ~MinidumpMiscInfoWriter() override;
 
   //! \brief Initializes MINIDUMP_MISC_INFO_N based on \a process_snapshot.
@@ -115,6 +118,9 @@ class MinidumpMiscInfoWriter final : public internal::MinidumpStreamWriter {
   //! \brief Sets MINIDUMP_MISC_INFO_5::XStateData.
   void SetXStateData(const XSTATE_CONFIG_FEATURE_MSC_INFO& xstate_data);
 
+  //! \brief Will this write extended context information?
+  bool HasXStateData() const;
+
   //! \brief Sets the field referenced by #MINIDUMP_MISC5_PROCESS_COOKIE.
   void SetProcessCookie(uint32_t process_cookie);
 
@@ -135,8 +141,6 @@ class MinidumpMiscInfoWriter final : public internal::MinidumpStreamWriter {
 
   MINIDUMP_MISC_INFO_N misc_info_;
   bool has_xstate_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpMiscInfoWriter);
 };
 
 //! \brief Conversion functions from a native UTF16 C-string to a char16_t

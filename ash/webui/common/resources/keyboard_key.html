@@ -1,0 +1,172 @@
+<style>
+  :root {
+    --background-color-pressed: hsl(214deg 82% 51%);
+    --background-color-unpressed: hsl(218deg 92% 95%);
+    --background-color-tested: hsl(214deg 82% 85%);
+    --border-color: hsl(214deg 82% 51%);
+    --border-radius:
+        var(--keyboard-key-top-radii, 3px)
+        var(--keyboard-key-top-radii, 3px)
+        var(--keyboard-key-bottom-right-radius, 3px)
+        3px;
+    --icon-size: var(--keyboard-key-icon-size, 100%);
+    --travel: var(--keyboard-key-travel, 3px);
+    --foreground-color-unpressed: hsl(214deg 82% 51%);
+    --foreground-color-pressed: hsl(213deg 23% 91%);
+  }
+
+  :host {
+    position: relative;
+  }
+
+  #foreground {
+    background-color: var(--background-color-unpressed);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    border-top-width: var(--keyboard-key-border-top-width, 1px);
+    bottom: var(--travel);
+    color: var(--foreground-color-unpressed);
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-auto-flow: column;
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(2, 1fr);
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transition: all 150ms ease-in-out;
+  }
+
+  iron-icon {
+    --iron-icon-fill-color: var(--foreground-color-unpressed);
+    --iron-icon-height: var(--icon-size);
+    --iron-icon-width: var(--icon-size);
+    align-self: center;
+    grid-row: span 2;
+    justify-self: center;
+  }
+
+  :host(.left) iron-icon,
+  :host(.right) iron-icon {
+    --iron-icon-width: 24px;
+    padding: 0 5px;
+  }
+
+  :host(.left) iron-icon {
+    justify-self: left;
+  }
+
+  :host(.right) iron-icon {
+    justify-self: right;
+  }
+
+  #mainGlyph {
+    left: 0;
+    overflow: hidden;
+    position: absolute;
+    right: 0;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #mainGlyph:not(:empty) {
+    padding: 0 5px;
+  }
+
+  /* Key labels won't change sides in RTL locales, so disable lint warning. */
+  :host(.left) #mainGlyph {
+    text-align: left;  /* csschecker-disable-line left-right */
+  }
+
+  :host(.right) #mainGlyph {
+    text-align: right;  /* csschecker-disable-line left-right */
+  }
+
+  span {
+    align-self: center;
+    text-align: center;
+  }
+
+  /*
+   * TODO(crbug.com/1207678): Apply this styling when the key is pressed,
+   * instead of on hover.
+   */
+  :host([state='pressed']) #foreground {
+    background-color: var(--background-color-pressed);
+    bottom: 0;
+    color: var(--foreground-color-pressed);
+    top: var(--travel);
+  }
+
+  :host([state='pressed']) iron-icon {
+    --iron-icon-fill-color: var(--foreground-color-pressed);
+  }
+
+  :host([state='tested']) #foreground {
+    background-color: var(--background-color-tested);
+  }
+
+  #background {
+    background-color: var(--border-color);
+    border-radius: var(--border-radius);
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: var(--travel);
+  }
+
+  :host(.disabled) #foreground {
+    background-color: var(--google-grey-200);
+    border-color: var(--google-grey-700);
+    color: var(--google-grey-600);
+  }
+
+  :host(.disabled) #background {
+    background-color: hsl(0deg 0% 59%);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --background-color-pressed: hsl(217deg 87% 76%);
+      --background-color-unpressed: hsl(218deg 20% 32%);
+      --border-color: hsl(217deg 87% 76%);
+      --foreground-color-pressed: hsl(225deg 6% 13%);
+      --foreground-color-unpressed: hsl(217deg 87% 76%);
+    }
+
+    :host(.disabled) #foreground {
+      --foreground-color-unpressed: var(--cros-button-label-color-primary-disabled);
+      background-color: var(--cros-button-background-color-primary-disabled);
+      border-color: var(--cros-button-background-color-primary-disabled);
+      color: var(--foreground-color-unpressed);
+    }
+
+    :host(.disabled) #background {
+      background-color: hsl(192deg 4% 25%);
+    }
+  }
+</style>
+<div id="background"></div>
+<div id="foreground" aria-label="[[ariaLabel_]]">
+  <!--
+    Child elements are aria-hidden to make ChromeVox treat the whole key as
+    one unit with an aria-label, rather than individual labels that don't
+    reflect the key's state.
+  -->
+  <template is="dom-if" if="[[icon]]">
+    <iron-icon aria-hidden="true" icon="[[icon]]"></iron-icon>
+  </template>
+  <template is="dom-if" if="[[mainGlyph]]">
+    <span aria-hidden="true" id="mainGlyph">[[mainGlyph]]</span>
+  </template>
+  <template is="dom-if" if="[[showCornerGlyphs_]]">
+    <span aria-hidden="true">[[topLeftGlyph]]</span>
+    <span aria-hidden="true">[[bottomLeftGlyph]]</span>
+    <template is="dom-if" if="[[showSecondColumn_]]">
+      <span aria-hidden="true">[[topRightGlyph]]</span>
+      <span aria-hidden="true">[[bottomRightGlyph]]</span>
+    </template>
+  </template>
+</div>

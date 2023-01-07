@@ -7,7 +7,7 @@
 /* at a redacted point in time
  */
 /* Compiler settings for ../../third_party/iaccessible2/ia2_api_all.idl:
-    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0622 
+    Oicf, W1, Zp8, env=Win64 (32b run), target_arch=ARM64 8.01.0626 
     protocol : dce , ms_ext, c_ext, robust
     error checks: allocation ref bounds_check enum stub_data 
     VC __declspec() decoration level: 
@@ -41,6 +41,14 @@
 
 #if defined(_MSC_VER) && (_MSC_VER >= 1020)
 #pragma once
+#endif
+
+#ifndef DECLSPEC_XFGVIRT
+#if _CONTROL_FLOW_GUARD_XFG
+#define DECLSPEC_XFGVIRT(base, func) __declspec(xfg_virtual(base, func))
+#else
+#define DECLSPEC_XFGVIRT(base, func)
+#endif
 #endif
 
 /* Forward Declarations */ 
@@ -115,6 +123,13 @@ typedef interface IAccessibleText2 IAccessibleText2;
 #endif 	/* __IAccessibleText2_FWD_DEFINED__ */
 
 
+#ifndef __IAccessibleTextSelectionContainer_FWD_DEFINED__
+#define __IAccessibleTextSelectionContainer_FWD_DEFINED__
+typedef interface IAccessibleTextSelectionContainer IAccessibleTextSelectionContainer;
+
+#endif 	/* __IAccessibleTextSelectionContainer_FWD_DEFINED__ */
+
+
 #ifndef __IAccessibleEditableText_FWD_DEFINED__
 #define __IAccessibleEditableText_FWD_DEFINED__
 typedef interface IAccessibleEditableText IAccessibleEditableText;
@@ -309,6 +324,13 @@ typedef interface IAccessibleTableCell IAccessibleTableCell;
 typedef interface IAccessibleText2 IAccessibleText2;
 
 #endif 	/* __IAccessibleText2_FWD_DEFINED__ */
+
+
+#ifndef __IAccessibleTextSelectionContainer_FWD_DEFINED__
+#define __IAccessibleTextSelectionContainer_FWD_DEFINED__
+typedef interface IAccessibleTextSelectionContainer IAccessibleTextSelectionContainer;
+
+#endif 	/* __IAccessibleTextSelectionContainer_FWD_DEFINED__ */
 
 
 #ifndef __IAccessibleValue_FWD_DEFINED__
@@ -471,35 +493,43 @@ EXTERN_C const IID IID_IAccessibleRelation;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleRelation * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleRelation * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleRelation * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleRelation, get_relationType)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_relationType )( 
             IAccessibleRelation * This,
             /* [retval][out] */ BSTR *relationType);
         
+        DECLSPEC_XFGVIRT(IAccessibleRelation, get_localizedRelationType)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_localizedRelationType )( 
             IAccessibleRelation * This,
             /* [retval][out] */ BSTR *localizedRelationType);
         
+        DECLSPEC_XFGVIRT(IAccessibleRelation, get_nTargets)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nTargets )( 
             IAccessibleRelation * This,
             /* [retval][out] */ long *nTargets);
         
+        DECLSPEC_XFGVIRT(IAccessibleRelation, get_target)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_target )( 
             IAccessibleRelation * This,
             /* [in] */ long targetIndex,
             /* [retval][out] */ IUnknown **target);
         
+        DECLSPEC_XFGVIRT(IAccessibleRelation, get_targets)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_targets )( 
             IAccessibleRelation * This,
             /* [in] */ long maxTargets,
@@ -618,31 +648,38 @@ EXTERN_C const IID IID_IAccessibleAction;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleAction * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleAction * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleAction * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleAction, nActions)
         HRESULT ( STDMETHODCALLTYPE *nActions )( 
             IAccessibleAction * This,
             /* [retval][out] */ long *nActions);
         
+        DECLSPEC_XFGVIRT(IAccessibleAction, doAction)
         HRESULT ( STDMETHODCALLTYPE *doAction )( 
             IAccessibleAction * This,
             /* [in] */ long actionIndex);
         
+        DECLSPEC_XFGVIRT(IAccessibleAction, get_description)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_description )( 
             IAccessibleAction * This,
             /* [in] */ long actionIndex,
             /* [retval][out] */ BSTR *description);
         
+        DECLSPEC_XFGVIRT(IAccessibleAction, get_keyBinding)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_keyBinding )( 
             IAccessibleAction * This,
             /* [in] */ long actionIndex,
@@ -650,11 +687,13 @@ EXTERN_C const IID IID_IAccessibleAction;
             /* [length_is][length_is][size_is][size_is][out] */ BSTR **keyBindings,
             /* [retval][out] */ long *nBindings);
         
+        DECLSPEC_XFGVIRT(IAccessibleAction, get_name)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_name )( 
             IAccessibleAction * This,
             /* [in] */ long actionIndex,
             /* [retval][out] */ BSTR *name);
         
+        DECLSPEC_XFGVIRT(IAccessibleAction, get_localizedName)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_localizedName )( 
             IAccessibleAction * This,
             /* [in] */ long actionIndex,
@@ -899,28 +938,34 @@ EXTERN_C const IID IID_IAccessible2;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessible2 * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessible2 * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessible2 * This);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfoCount)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
             IAccessible2 * This,
             /* [out] */ UINT *pctinfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfo)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
             IAccessible2 * This,
             /* [in] */ UINT iTInfo,
             /* [in] */ LCID lcid,
             /* [out] */ ITypeInfo **ppTInfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetIDsOfNames)
         HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
             IAccessible2 * This,
             /* [in] */ REFIID riid,
@@ -929,6 +974,7 @@ EXTERN_C const IID IID_IAccessible2;
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
+        DECLSPEC_XFGVIRT(IDispatch, Invoke)
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IAccessible2 * This,
             /* [annotation][in] */ 
@@ -948,78 +994,94 @@ EXTERN_C const IID IID_IAccessible2;
             /* [annotation][out] */ 
             _Out_opt_  UINT *puArgErr);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accParent)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accParent )( 
             IAccessible2 * This,
             /* [retval][out] */ IDispatch **ppdispParent);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accChildCount)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accChildCount )( 
             IAccessible2 * This,
             /* [retval][out] */ long *pcountChildren);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accChild)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accChild )( 
             IAccessible2 * This,
             /* [in] */ VARIANT varChild,
             /* [retval][out] */ IDispatch **ppdispChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accName)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accName )( 
             IAccessible2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszName);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accValue)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accValue )( 
             IAccessible2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszValue);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accDescription)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accDescription )( 
             IAccessible2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszDescription);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accRole)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accRole )( 
             IAccessible2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ VARIANT *pvarRole);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accState)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accState )( 
             IAccessible2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ VARIANT *pvarState);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accHelp)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accHelp )( 
             IAccessible2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszHelp);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accHelpTopic)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accHelpTopic )( 
             IAccessible2 * This,
             /* [out] */ BSTR *pszHelpFile,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ long *pidTopic);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accKeyboardShortcut)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accKeyboardShortcut )( 
             IAccessible2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszKeyboardShortcut);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accFocus)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accFocus )( 
             IAccessible2 * This,
             /* [retval][out] */ VARIANT *pvarChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accSelection)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accSelection )( 
             IAccessible2 * This,
             /* [retval][out] */ VARIANT *pvarChildren);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accDefaultAction)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accDefaultAction )( 
             IAccessible2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszDefaultAction);
         
+        DECLSPEC_XFGVIRT(IAccessible, accSelect)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accSelect )( 
             IAccessible2 * This,
             /* [in] */ long flagsSelect,
             /* [optional][in] */ VARIANT varChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, accLocation)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accLocation )( 
             IAccessible2 * This,
             /* [out] */ long *pxLeft,
@@ -1028,111 +1090,134 @@ EXTERN_C const IID IID_IAccessible2;
             /* [out] */ long *pcyHeight,
             /* [optional][in] */ VARIANT varChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, accNavigate)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accNavigate )( 
             IAccessible2 * This,
             /* [in] */ long navDir,
             /* [optional][in] */ VARIANT varStart,
             /* [retval][out] */ VARIANT *pvarEndUpAt);
         
+        DECLSPEC_XFGVIRT(IAccessible, accHitTest)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accHitTest )( 
             IAccessible2 * This,
             /* [in] */ long xLeft,
             /* [in] */ long yTop,
             /* [retval][out] */ VARIANT *pvarChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, accDoDefaultAction)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accDoDefaultAction )( 
             IAccessible2 * This,
             /* [optional][in] */ VARIANT varChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, put_accName)
         /* [id][propput][hidden] */ HRESULT ( STDMETHODCALLTYPE *put_accName )( 
             IAccessible2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [in] */ BSTR szName);
         
+        DECLSPEC_XFGVIRT(IAccessible, put_accValue)
         /* [id][propput][hidden] */ HRESULT ( STDMETHODCALLTYPE *put_accValue )( 
             IAccessible2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [in] */ BSTR szValue);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_nRelations)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nRelations )( 
             IAccessible2 * This,
             /* [retval][out] */ long *nRelations);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_relation)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_relation )( 
             IAccessible2 * This,
             /* [in] */ long relationIndex,
             /* [retval][out] */ IAccessibleRelation **relation);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_relations)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_relations )( 
             IAccessible2 * This,
             /* [in] */ long maxRelations,
             /* [length_is][size_is][out] */ IAccessibleRelation **relations,
             /* [retval][out] */ long *nRelations);
         
+        DECLSPEC_XFGVIRT(IAccessible2, role)
         HRESULT ( STDMETHODCALLTYPE *role )( 
             IAccessible2 * This,
             /* [retval][out] */ long *role);
         
+        DECLSPEC_XFGVIRT(IAccessible2, scrollTo)
         HRESULT ( STDMETHODCALLTYPE *scrollTo )( 
             IAccessible2 * This,
             /* [in] */ enum IA2ScrollType scrollType);
         
+        DECLSPEC_XFGVIRT(IAccessible2, scrollToPoint)
         HRESULT ( STDMETHODCALLTYPE *scrollToPoint )( 
             IAccessible2 * This,
             /* [in] */ enum IA2CoordinateType coordinateType,
             /* [in] */ long x,
             /* [in] */ long y);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_groupPosition)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_groupPosition )( 
             IAccessible2 * This,
             /* [out] */ long *groupLevel,
             /* [out] */ long *similarItemsInGroup,
             /* [retval][out] */ long *positionInGroup);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_states)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_states )( 
             IAccessible2 * This,
             /* [retval][out] */ AccessibleStates *states);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_extendedRole)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_extendedRole )( 
             IAccessible2 * This,
             /* [retval][out] */ BSTR *extendedRole);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_localizedExtendedRole)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_localizedExtendedRole )( 
             IAccessible2 * This,
             /* [retval][out] */ BSTR *localizedExtendedRole);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_nExtendedStates)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nExtendedStates )( 
             IAccessible2 * This,
             /* [retval][out] */ long *nExtendedStates);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_extendedStates)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_extendedStates )( 
             IAccessible2 * This,
             /* [in] */ long maxExtendedStates,
             /* [length_is][length_is][size_is][size_is][out] */ BSTR **extendedStates,
             /* [retval][out] */ long *nExtendedStates);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_localizedExtendedStates)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_localizedExtendedStates )( 
             IAccessible2 * This,
             /* [in] */ long maxLocalizedExtendedStates,
             /* [length_is][length_is][size_is][size_is][out] */ BSTR **localizedExtendedStates,
             /* [retval][out] */ long *nLocalizedExtendedStates);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_uniqueID)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_uniqueID )( 
             IAccessible2 * This,
             /* [retval][out] */ long *uniqueID);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_windowHandle)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_windowHandle )( 
             IAccessible2 * This,
             /* [retval][out] */ HWND *windowHandle);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_indexInParent)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_indexInParent )( 
             IAccessible2 * This,
             /* [retval][out] */ long *indexInParent);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_locale)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_locale )( 
             IAccessible2 * This,
             /* [retval][out] */ IA2Locale *locale);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_attributes)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_attributes )( 
             IAccessible2 * This,
             /* [retval][out] */ BSTR *attributes);
@@ -1340,28 +1425,34 @@ EXTERN_C const IID IID_IAccessible2_2;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessible2_2 * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessible2_2 * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessible2_2 * This);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfoCount)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
             IAccessible2_2 * This,
             /* [out] */ UINT *pctinfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfo)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
             IAccessible2_2 * This,
             /* [in] */ UINT iTInfo,
             /* [in] */ LCID lcid,
             /* [out] */ ITypeInfo **ppTInfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetIDsOfNames)
         HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
             IAccessible2_2 * This,
             /* [in] */ REFIID riid,
@@ -1370,6 +1461,7 @@ EXTERN_C const IID IID_IAccessible2_2;
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
+        DECLSPEC_XFGVIRT(IDispatch, Invoke)
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IAccessible2_2 * This,
             /* [annotation][in] */ 
@@ -1389,78 +1481,94 @@ EXTERN_C const IID IID_IAccessible2_2;
             /* [annotation][out] */ 
             _Out_opt_  UINT *puArgErr);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accParent)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accParent )( 
             IAccessible2_2 * This,
             /* [retval][out] */ IDispatch **ppdispParent);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accChildCount)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accChildCount )( 
             IAccessible2_2 * This,
             /* [retval][out] */ long *pcountChildren);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accChild)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accChild )( 
             IAccessible2_2 * This,
             /* [in] */ VARIANT varChild,
             /* [retval][out] */ IDispatch **ppdispChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accName)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accName )( 
             IAccessible2_2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszName);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accValue)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accValue )( 
             IAccessible2_2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszValue);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accDescription)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accDescription )( 
             IAccessible2_2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszDescription);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accRole)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accRole )( 
             IAccessible2_2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ VARIANT *pvarRole);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accState)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accState )( 
             IAccessible2_2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ VARIANT *pvarState);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accHelp)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accHelp )( 
             IAccessible2_2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszHelp);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accHelpTopic)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accHelpTopic )( 
             IAccessible2_2 * This,
             /* [out] */ BSTR *pszHelpFile,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ long *pidTopic);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accKeyboardShortcut)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accKeyboardShortcut )( 
             IAccessible2_2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszKeyboardShortcut);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accFocus)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accFocus )( 
             IAccessible2_2 * This,
             /* [retval][out] */ VARIANT *pvarChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accSelection)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accSelection )( 
             IAccessible2_2 * This,
             /* [retval][out] */ VARIANT *pvarChildren);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accDefaultAction)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accDefaultAction )( 
             IAccessible2_2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszDefaultAction);
         
+        DECLSPEC_XFGVIRT(IAccessible, accSelect)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accSelect )( 
             IAccessible2_2 * This,
             /* [in] */ long flagsSelect,
             /* [optional][in] */ VARIANT varChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, accLocation)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accLocation )( 
             IAccessible2_2 * This,
             /* [out] */ long *pxLeft,
@@ -1469,125 +1577,151 @@ EXTERN_C const IID IID_IAccessible2_2;
             /* [out] */ long *pcyHeight,
             /* [optional][in] */ VARIANT varChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, accNavigate)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accNavigate )( 
             IAccessible2_2 * This,
             /* [in] */ long navDir,
             /* [optional][in] */ VARIANT varStart,
             /* [retval][out] */ VARIANT *pvarEndUpAt);
         
+        DECLSPEC_XFGVIRT(IAccessible, accHitTest)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accHitTest )( 
             IAccessible2_2 * This,
             /* [in] */ long xLeft,
             /* [in] */ long yTop,
             /* [retval][out] */ VARIANT *pvarChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, accDoDefaultAction)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accDoDefaultAction )( 
             IAccessible2_2 * This,
             /* [optional][in] */ VARIANT varChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, put_accName)
         /* [id][propput][hidden] */ HRESULT ( STDMETHODCALLTYPE *put_accName )( 
             IAccessible2_2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [in] */ BSTR szName);
         
+        DECLSPEC_XFGVIRT(IAccessible, put_accValue)
         /* [id][propput][hidden] */ HRESULT ( STDMETHODCALLTYPE *put_accValue )( 
             IAccessible2_2 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [in] */ BSTR szValue);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_nRelations)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nRelations )( 
             IAccessible2_2 * This,
             /* [retval][out] */ long *nRelations);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_relation)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_relation )( 
             IAccessible2_2 * This,
             /* [in] */ long relationIndex,
             /* [retval][out] */ IAccessibleRelation **relation);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_relations)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_relations )( 
             IAccessible2_2 * This,
             /* [in] */ long maxRelations,
             /* [length_is][size_is][out] */ IAccessibleRelation **relations,
             /* [retval][out] */ long *nRelations);
         
+        DECLSPEC_XFGVIRT(IAccessible2, role)
         HRESULT ( STDMETHODCALLTYPE *role )( 
             IAccessible2_2 * This,
             /* [retval][out] */ long *role);
         
+        DECLSPEC_XFGVIRT(IAccessible2, scrollTo)
         HRESULT ( STDMETHODCALLTYPE *scrollTo )( 
             IAccessible2_2 * This,
             /* [in] */ enum IA2ScrollType scrollType);
         
+        DECLSPEC_XFGVIRT(IAccessible2, scrollToPoint)
         HRESULT ( STDMETHODCALLTYPE *scrollToPoint )( 
             IAccessible2_2 * This,
             /* [in] */ enum IA2CoordinateType coordinateType,
             /* [in] */ long x,
             /* [in] */ long y);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_groupPosition)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_groupPosition )( 
             IAccessible2_2 * This,
             /* [out] */ long *groupLevel,
             /* [out] */ long *similarItemsInGroup,
             /* [retval][out] */ long *positionInGroup);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_states)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_states )( 
             IAccessible2_2 * This,
             /* [retval][out] */ AccessibleStates *states);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_extendedRole)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_extendedRole )( 
             IAccessible2_2 * This,
             /* [retval][out] */ BSTR *extendedRole);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_localizedExtendedRole)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_localizedExtendedRole )( 
             IAccessible2_2 * This,
             /* [retval][out] */ BSTR *localizedExtendedRole);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_nExtendedStates)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nExtendedStates )( 
             IAccessible2_2 * This,
             /* [retval][out] */ long *nExtendedStates);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_extendedStates)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_extendedStates )( 
             IAccessible2_2 * This,
             /* [in] */ long maxExtendedStates,
             /* [length_is][length_is][size_is][size_is][out] */ BSTR **extendedStates,
             /* [retval][out] */ long *nExtendedStates);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_localizedExtendedStates)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_localizedExtendedStates )( 
             IAccessible2_2 * This,
             /* [in] */ long maxLocalizedExtendedStates,
             /* [length_is][length_is][size_is][size_is][out] */ BSTR **localizedExtendedStates,
             /* [retval][out] */ long *nLocalizedExtendedStates);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_uniqueID)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_uniqueID )( 
             IAccessible2_2 * This,
             /* [retval][out] */ long *uniqueID);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_windowHandle)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_windowHandle )( 
             IAccessible2_2 * This,
             /* [retval][out] */ HWND *windowHandle);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_indexInParent)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_indexInParent )( 
             IAccessible2_2 * This,
             /* [retval][out] */ long *indexInParent);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_locale)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_locale )( 
             IAccessible2_2 * This,
             /* [retval][out] */ IA2Locale *locale);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_attributes)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_attributes )( 
             IAccessible2_2 * This,
             /* [retval][out] */ BSTR *attributes);
         
+        DECLSPEC_XFGVIRT(IAccessible2_2, get_attribute)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_attribute )( 
             IAccessible2_2 * This,
             /* [in] */ BSTR name,
             /* [retval][out] */ VARIANT *attribute);
         
+        DECLSPEC_XFGVIRT(IAccessible2_2, get_accessibleWithCaret)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_accessibleWithCaret )( 
             IAccessible2_2 * This,
             /* [out] */ IUnknown **accessible,
             /* [retval][out] */ long *caretOffset);
         
+        DECLSPEC_XFGVIRT(IAccessible2_2, get_relationTargetsOfType)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_relationTargetsOfType )( 
             IAccessible2_2 * This,
             /* [in] */ BSTR type,
@@ -1814,28 +1948,34 @@ EXTERN_C const IID IID_IAccessible2_3;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessible2_3 * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessible2_3 * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessible2_3 * This);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfoCount)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
             IAccessible2_3 * This,
             /* [out] */ UINT *pctinfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfo)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
             IAccessible2_3 * This,
             /* [in] */ UINT iTInfo,
             /* [in] */ LCID lcid,
             /* [out] */ ITypeInfo **ppTInfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetIDsOfNames)
         HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
             IAccessible2_3 * This,
             /* [in] */ REFIID riid,
@@ -1844,6 +1984,7 @@ EXTERN_C const IID IID_IAccessible2_3;
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
+        DECLSPEC_XFGVIRT(IDispatch, Invoke)
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IAccessible2_3 * This,
             /* [annotation][in] */ 
@@ -1863,78 +2004,94 @@ EXTERN_C const IID IID_IAccessible2_3;
             /* [annotation][out] */ 
             _Out_opt_  UINT *puArgErr);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accParent)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accParent )( 
             IAccessible2_3 * This,
             /* [retval][out] */ IDispatch **ppdispParent);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accChildCount)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accChildCount )( 
             IAccessible2_3 * This,
             /* [retval][out] */ long *pcountChildren);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accChild)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accChild )( 
             IAccessible2_3 * This,
             /* [in] */ VARIANT varChild,
             /* [retval][out] */ IDispatch **ppdispChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accName)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accName )( 
             IAccessible2_3 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszName);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accValue)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accValue )( 
             IAccessible2_3 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszValue);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accDescription)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accDescription )( 
             IAccessible2_3 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszDescription);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accRole)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accRole )( 
             IAccessible2_3 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ VARIANT *pvarRole);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accState)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accState )( 
             IAccessible2_3 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ VARIANT *pvarState);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accHelp)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accHelp )( 
             IAccessible2_3 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszHelp);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accHelpTopic)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accHelpTopic )( 
             IAccessible2_3 * This,
             /* [out] */ BSTR *pszHelpFile,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ long *pidTopic);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accKeyboardShortcut)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accKeyboardShortcut )( 
             IAccessible2_3 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszKeyboardShortcut);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accFocus)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accFocus )( 
             IAccessible2_3 * This,
             /* [retval][out] */ VARIANT *pvarChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accSelection)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accSelection )( 
             IAccessible2_3 * This,
             /* [retval][out] */ VARIANT *pvarChildren);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accDefaultAction)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accDefaultAction )( 
             IAccessible2_3 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszDefaultAction);
         
+        DECLSPEC_XFGVIRT(IAccessible, accSelect)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accSelect )( 
             IAccessible2_3 * This,
             /* [in] */ long flagsSelect,
             /* [optional][in] */ VARIANT varChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, accLocation)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accLocation )( 
             IAccessible2_3 * This,
             /* [out] */ long *pxLeft,
@@ -1943,125 +2100,151 @@ EXTERN_C const IID IID_IAccessible2_3;
             /* [out] */ long *pcyHeight,
             /* [optional][in] */ VARIANT varChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, accNavigate)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accNavigate )( 
             IAccessible2_3 * This,
             /* [in] */ long navDir,
             /* [optional][in] */ VARIANT varStart,
             /* [retval][out] */ VARIANT *pvarEndUpAt);
         
+        DECLSPEC_XFGVIRT(IAccessible, accHitTest)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accHitTest )( 
             IAccessible2_3 * This,
             /* [in] */ long xLeft,
             /* [in] */ long yTop,
             /* [retval][out] */ VARIANT *pvarChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, accDoDefaultAction)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accDoDefaultAction )( 
             IAccessible2_3 * This,
             /* [optional][in] */ VARIANT varChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, put_accName)
         /* [id][propput][hidden] */ HRESULT ( STDMETHODCALLTYPE *put_accName )( 
             IAccessible2_3 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [in] */ BSTR szName);
         
+        DECLSPEC_XFGVIRT(IAccessible, put_accValue)
         /* [id][propput][hidden] */ HRESULT ( STDMETHODCALLTYPE *put_accValue )( 
             IAccessible2_3 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [in] */ BSTR szValue);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_nRelations)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nRelations )( 
             IAccessible2_3 * This,
             /* [retval][out] */ long *nRelations);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_relation)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_relation )( 
             IAccessible2_3 * This,
             /* [in] */ long relationIndex,
             /* [retval][out] */ IAccessibleRelation **relation);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_relations)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_relations )( 
             IAccessible2_3 * This,
             /* [in] */ long maxRelations,
             /* [length_is][size_is][out] */ IAccessibleRelation **relations,
             /* [retval][out] */ long *nRelations);
         
+        DECLSPEC_XFGVIRT(IAccessible2, role)
         HRESULT ( STDMETHODCALLTYPE *role )( 
             IAccessible2_3 * This,
             /* [retval][out] */ long *role);
         
+        DECLSPEC_XFGVIRT(IAccessible2, scrollTo)
         HRESULT ( STDMETHODCALLTYPE *scrollTo )( 
             IAccessible2_3 * This,
             /* [in] */ enum IA2ScrollType scrollType);
         
+        DECLSPEC_XFGVIRT(IAccessible2, scrollToPoint)
         HRESULT ( STDMETHODCALLTYPE *scrollToPoint )( 
             IAccessible2_3 * This,
             /* [in] */ enum IA2CoordinateType coordinateType,
             /* [in] */ long x,
             /* [in] */ long y);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_groupPosition)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_groupPosition )( 
             IAccessible2_3 * This,
             /* [out] */ long *groupLevel,
             /* [out] */ long *similarItemsInGroup,
             /* [retval][out] */ long *positionInGroup);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_states)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_states )( 
             IAccessible2_3 * This,
             /* [retval][out] */ AccessibleStates *states);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_extendedRole)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_extendedRole )( 
             IAccessible2_3 * This,
             /* [retval][out] */ BSTR *extendedRole);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_localizedExtendedRole)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_localizedExtendedRole )( 
             IAccessible2_3 * This,
             /* [retval][out] */ BSTR *localizedExtendedRole);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_nExtendedStates)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nExtendedStates )( 
             IAccessible2_3 * This,
             /* [retval][out] */ long *nExtendedStates);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_extendedStates)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_extendedStates )( 
             IAccessible2_3 * This,
             /* [in] */ long maxExtendedStates,
             /* [length_is][length_is][size_is][size_is][out] */ BSTR **extendedStates,
             /* [retval][out] */ long *nExtendedStates);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_localizedExtendedStates)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_localizedExtendedStates )( 
             IAccessible2_3 * This,
             /* [in] */ long maxLocalizedExtendedStates,
             /* [length_is][length_is][size_is][size_is][out] */ BSTR **localizedExtendedStates,
             /* [retval][out] */ long *nLocalizedExtendedStates);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_uniqueID)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_uniqueID )( 
             IAccessible2_3 * This,
             /* [retval][out] */ long *uniqueID);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_windowHandle)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_windowHandle )( 
             IAccessible2_3 * This,
             /* [retval][out] */ HWND *windowHandle);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_indexInParent)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_indexInParent )( 
             IAccessible2_3 * This,
             /* [retval][out] */ long *indexInParent);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_locale)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_locale )( 
             IAccessible2_3 * This,
             /* [retval][out] */ IA2Locale *locale);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_attributes)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_attributes )( 
             IAccessible2_3 * This,
             /* [retval][out] */ BSTR *attributes);
         
+        DECLSPEC_XFGVIRT(IAccessible2_2, get_attribute)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_attribute )( 
             IAccessible2_3 * This,
             /* [in] */ BSTR name,
             /* [retval][out] */ VARIANT *attribute);
         
+        DECLSPEC_XFGVIRT(IAccessible2_2, get_accessibleWithCaret)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_accessibleWithCaret )( 
             IAccessible2_3 * This,
             /* [out] */ IUnknown **accessible,
             /* [retval][out] */ long *caretOffset);
         
+        DECLSPEC_XFGVIRT(IAccessible2_2, get_relationTargetsOfType)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_relationTargetsOfType )( 
             IAccessible2_3 * This,
             /* [in] */ BSTR type,
@@ -2069,6 +2252,7 @@ EXTERN_C const IID IID_IAccessible2_3;
             /* [size_is][size_is][out] */ IUnknown ***targets,
             /* [retval][out] */ long *nTargets);
         
+        DECLSPEC_XFGVIRT(IAccessible2_3, get_selectionRanges)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_selectionRanges )( 
             IAccessible2_3 * This,
             /* [size_is][size_is][out] */ IA2Range **ranges,
@@ -2281,28 +2465,34 @@ EXTERN_C const IID IID_IAccessible2_4;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessible2_4 * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessible2_4 * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessible2_4 * This);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfoCount)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfoCount )( 
             IAccessible2_4 * This,
             /* [out] */ UINT *pctinfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetTypeInfo)
         HRESULT ( STDMETHODCALLTYPE *GetTypeInfo )( 
             IAccessible2_4 * This,
             /* [in] */ UINT iTInfo,
             /* [in] */ LCID lcid,
             /* [out] */ ITypeInfo **ppTInfo);
         
+        DECLSPEC_XFGVIRT(IDispatch, GetIDsOfNames)
         HRESULT ( STDMETHODCALLTYPE *GetIDsOfNames )( 
             IAccessible2_4 * This,
             /* [in] */ REFIID riid,
@@ -2311,6 +2501,7 @@ EXTERN_C const IID IID_IAccessible2_4;
             /* [in] */ LCID lcid,
             /* [size_is][out] */ DISPID *rgDispId);
         
+        DECLSPEC_XFGVIRT(IDispatch, Invoke)
         /* [local] */ HRESULT ( STDMETHODCALLTYPE *Invoke )( 
             IAccessible2_4 * This,
             /* [annotation][in] */ 
@@ -2330,78 +2521,94 @@ EXTERN_C const IID IID_IAccessible2_4;
             /* [annotation][out] */ 
             _Out_opt_  UINT *puArgErr);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accParent)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accParent )( 
             IAccessible2_4 * This,
             /* [retval][out] */ IDispatch **ppdispParent);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accChildCount)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accChildCount )( 
             IAccessible2_4 * This,
             /* [retval][out] */ long *pcountChildren);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accChild)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accChild )( 
             IAccessible2_4 * This,
             /* [in] */ VARIANT varChild,
             /* [retval][out] */ IDispatch **ppdispChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accName)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accName )( 
             IAccessible2_4 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszName);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accValue)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accValue )( 
             IAccessible2_4 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszValue);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accDescription)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accDescription )( 
             IAccessible2_4 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszDescription);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accRole)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accRole )( 
             IAccessible2_4 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ VARIANT *pvarRole);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accState)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accState )( 
             IAccessible2_4 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ VARIANT *pvarState);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accHelp)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accHelp )( 
             IAccessible2_4 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszHelp);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accHelpTopic)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accHelpTopic )( 
             IAccessible2_4 * This,
             /* [out] */ BSTR *pszHelpFile,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ long *pidTopic);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accKeyboardShortcut)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accKeyboardShortcut )( 
             IAccessible2_4 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszKeyboardShortcut);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accFocus)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accFocus )( 
             IAccessible2_4 * This,
             /* [retval][out] */ VARIANT *pvarChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accSelection)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accSelection )( 
             IAccessible2_4 * This,
             /* [retval][out] */ VARIANT *pvarChildren);
         
+        DECLSPEC_XFGVIRT(IAccessible, get_accDefaultAction)
         /* [id][propget][hidden] */ HRESULT ( STDMETHODCALLTYPE *get_accDefaultAction )( 
             IAccessible2_4 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [retval][out] */ BSTR *pszDefaultAction);
         
+        DECLSPEC_XFGVIRT(IAccessible, accSelect)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accSelect )( 
             IAccessible2_4 * This,
             /* [in] */ long flagsSelect,
             /* [optional][in] */ VARIANT varChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, accLocation)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accLocation )( 
             IAccessible2_4 * This,
             /* [out] */ long *pxLeft,
@@ -2410,125 +2617,151 @@ EXTERN_C const IID IID_IAccessible2_4;
             /* [out] */ long *pcyHeight,
             /* [optional][in] */ VARIANT varChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, accNavigate)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accNavigate )( 
             IAccessible2_4 * This,
             /* [in] */ long navDir,
             /* [optional][in] */ VARIANT varStart,
             /* [retval][out] */ VARIANT *pvarEndUpAt);
         
+        DECLSPEC_XFGVIRT(IAccessible, accHitTest)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accHitTest )( 
             IAccessible2_4 * This,
             /* [in] */ long xLeft,
             /* [in] */ long yTop,
             /* [retval][out] */ VARIANT *pvarChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, accDoDefaultAction)
         /* [id][hidden] */ HRESULT ( STDMETHODCALLTYPE *accDoDefaultAction )( 
             IAccessible2_4 * This,
             /* [optional][in] */ VARIANT varChild);
         
+        DECLSPEC_XFGVIRT(IAccessible, put_accName)
         /* [id][propput][hidden] */ HRESULT ( STDMETHODCALLTYPE *put_accName )( 
             IAccessible2_4 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [in] */ BSTR szName);
         
+        DECLSPEC_XFGVIRT(IAccessible, put_accValue)
         /* [id][propput][hidden] */ HRESULT ( STDMETHODCALLTYPE *put_accValue )( 
             IAccessible2_4 * This,
             /* [optional][in] */ VARIANT varChild,
             /* [in] */ BSTR szValue);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_nRelations)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nRelations )( 
             IAccessible2_4 * This,
             /* [retval][out] */ long *nRelations);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_relation)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_relation )( 
             IAccessible2_4 * This,
             /* [in] */ long relationIndex,
             /* [retval][out] */ IAccessibleRelation **relation);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_relations)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_relations )( 
             IAccessible2_4 * This,
             /* [in] */ long maxRelations,
             /* [length_is][size_is][out] */ IAccessibleRelation **relations,
             /* [retval][out] */ long *nRelations);
         
+        DECLSPEC_XFGVIRT(IAccessible2, role)
         HRESULT ( STDMETHODCALLTYPE *role )( 
             IAccessible2_4 * This,
             /* [retval][out] */ long *role);
         
+        DECLSPEC_XFGVIRT(IAccessible2, scrollTo)
         HRESULT ( STDMETHODCALLTYPE *scrollTo )( 
             IAccessible2_4 * This,
             /* [in] */ enum IA2ScrollType scrollType);
         
+        DECLSPEC_XFGVIRT(IAccessible2, scrollToPoint)
         HRESULT ( STDMETHODCALLTYPE *scrollToPoint )( 
             IAccessible2_4 * This,
             /* [in] */ enum IA2CoordinateType coordinateType,
             /* [in] */ long x,
             /* [in] */ long y);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_groupPosition)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_groupPosition )( 
             IAccessible2_4 * This,
             /* [out] */ long *groupLevel,
             /* [out] */ long *similarItemsInGroup,
             /* [retval][out] */ long *positionInGroup);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_states)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_states )( 
             IAccessible2_4 * This,
             /* [retval][out] */ AccessibleStates *states);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_extendedRole)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_extendedRole )( 
             IAccessible2_4 * This,
             /* [retval][out] */ BSTR *extendedRole);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_localizedExtendedRole)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_localizedExtendedRole )( 
             IAccessible2_4 * This,
             /* [retval][out] */ BSTR *localizedExtendedRole);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_nExtendedStates)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nExtendedStates )( 
             IAccessible2_4 * This,
             /* [retval][out] */ long *nExtendedStates);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_extendedStates)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_extendedStates )( 
             IAccessible2_4 * This,
             /* [in] */ long maxExtendedStates,
             /* [length_is][length_is][size_is][size_is][out] */ BSTR **extendedStates,
             /* [retval][out] */ long *nExtendedStates);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_localizedExtendedStates)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_localizedExtendedStates )( 
             IAccessible2_4 * This,
             /* [in] */ long maxLocalizedExtendedStates,
             /* [length_is][length_is][size_is][size_is][out] */ BSTR **localizedExtendedStates,
             /* [retval][out] */ long *nLocalizedExtendedStates);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_uniqueID)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_uniqueID )( 
             IAccessible2_4 * This,
             /* [retval][out] */ long *uniqueID);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_windowHandle)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_windowHandle )( 
             IAccessible2_4 * This,
             /* [retval][out] */ HWND *windowHandle);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_indexInParent)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_indexInParent )( 
             IAccessible2_4 * This,
             /* [retval][out] */ long *indexInParent);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_locale)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_locale )( 
             IAccessible2_4 * This,
             /* [retval][out] */ IA2Locale *locale);
         
+        DECLSPEC_XFGVIRT(IAccessible2, get_attributes)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_attributes )( 
             IAccessible2_4 * This,
             /* [retval][out] */ BSTR *attributes);
         
+        DECLSPEC_XFGVIRT(IAccessible2_2, get_attribute)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_attribute )( 
             IAccessible2_4 * This,
             /* [in] */ BSTR name,
             /* [retval][out] */ VARIANT *attribute);
         
+        DECLSPEC_XFGVIRT(IAccessible2_2, get_accessibleWithCaret)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_accessibleWithCaret )( 
             IAccessible2_4 * This,
             /* [out] */ IUnknown **accessible,
             /* [retval][out] */ long *caretOffset);
         
+        DECLSPEC_XFGVIRT(IAccessible2_2, get_relationTargetsOfType)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_relationTargetsOfType )( 
             IAccessible2_4 * This,
             /* [in] */ BSTR type,
@@ -2536,11 +2769,13 @@ EXTERN_C const IID IID_IAccessible2_4;
             /* [size_is][size_is][out] */ IUnknown ***targets,
             /* [retval][out] */ long *nTargets);
         
+        DECLSPEC_XFGVIRT(IAccessible2_3, get_selectionRanges)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_selectionRanges )( 
             IAccessible2_4 * This,
             /* [size_is][size_is][out] */ IA2Range **ranges,
             /* [retval][out] */ long *nRanges);
         
+        DECLSPEC_XFGVIRT(IAccessible2_4, setSelectionRanges)
         HRESULT ( STDMETHODCALLTYPE *setSelectionRanges )( 
             IAccessible2_4 * This,
             /* [in] */ long nRanges,
@@ -2773,27 +3008,33 @@ EXTERN_C const IID IID_IAccessibleComponent;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleComponent * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleComponent * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleComponent * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleComponent, get_locationInParent)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_locationInParent )( 
             IAccessibleComponent * This,
             /* [out] */ long *x,
             /* [retval][out] */ long *y);
         
+        DECLSPEC_XFGVIRT(IAccessibleComponent, get_foreground)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_foreground )( 
             IAccessibleComponent * This,
             /* [retval][out] */ IA2Color *foreground);
         
+        DECLSPEC_XFGVIRT(IAccessibleComponent, get_background)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_background )( 
             IAccessibleComponent * This,
             /* [retval][out] */ IA2Color *background);
@@ -2877,30 +3118,37 @@ EXTERN_C const IID IID_IAccessibleValue;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleValue * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleValue * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleValue * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleValue, get_currentValue)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_currentValue )( 
             IAccessibleValue * This,
             /* [retval][out] */ VARIANT *currentValue);
         
+        DECLSPEC_XFGVIRT(IAccessibleValue, setCurrentValue)
         HRESULT ( STDMETHODCALLTYPE *setCurrentValue )( 
             IAccessibleValue * This,
             /* [in] */ VARIANT value);
         
+        DECLSPEC_XFGVIRT(IAccessibleValue, get_maximumValue)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_maximumValue )( 
             IAccessibleValue * This,
             /* [retval][out] */ VARIANT *maximumValue);
         
+        DECLSPEC_XFGVIRT(IAccessibleValue, get_minimumValue)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_minimumValue )( 
             IAccessibleValue * This,
             /* [retval][out] */ VARIANT *minimumValue);
@@ -3093,23 +3341,28 @@ EXTERN_C const IID IID_IAccessibleText;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleText * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleText * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleText * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, addSelection)
         HRESULT ( STDMETHODCALLTYPE *addSelection )( 
             IAccessibleText * This,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_attributes)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_attributes )( 
             IAccessibleText * This,
             /* [in] */ long offset,
@@ -3117,10 +3370,12 @@ EXTERN_C const IID IID_IAccessibleText;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *textAttributes);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_caretOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_caretOffset )( 
             IAccessibleText * This,
             /* [retval][out] */ long *offset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_characterExtents)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_characterExtents )( 
             IAccessibleText * This,
             /* [in] */ long offset,
@@ -3130,10 +3385,12 @@ EXTERN_C const IID IID_IAccessibleText;
             /* [out] */ long *width,
             /* [retval][out] */ long *height);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_nSelections)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nSelections )( 
             IAccessibleText * This,
             /* [retval][out] */ long *nSelections);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_offsetAtPoint)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_offsetAtPoint )( 
             IAccessibleText * This,
             /* [in] */ long x,
@@ -3141,18 +3398,21 @@ EXTERN_C const IID IID_IAccessibleText;
             /* [in] */ enum IA2CoordinateType coordType,
             /* [retval][out] */ long *offset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_selection)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_selection )( 
             IAccessibleText * This,
             /* [in] */ long selectionIndex,
             /* [out] */ long *startOffset,
             /* [retval][out] */ long *endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_text)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_text )( 
             IAccessibleText * This,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_textBeforeOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_textBeforeOffset )( 
             IAccessibleText * This,
             /* [in] */ long offset,
@@ -3161,6 +3421,7 @@ EXTERN_C const IID IID_IAccessibleText;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_textAfterOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_textAfterOffset )( 
             IAccessibleText * This,
             /* [in] */ long offset,
@@ -3169,6 +3430,7 @@ EXTERN_C const IID IID_IAccessibleText;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_textAtOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_textAtOffset )( 
             IAccessibleText * This,
             /* [in] */ long offset,
@@ -3177,30 +3439,36 @@ EXTERN_C const IID IID_IAccessibleText;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, removeSelection)
         HRESULT ( STDMETHODCALLTYPE *removeSelection )( 
             IAccessibleText * This,
             /* [in] */ long selectionIndex);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, setCaretOffset)
         HRESULT ( STDMETHODCALLTYPE *setCaretOffset )( 
             IAccessibleText * This,
             /* [in] */ long offset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, setSelection)
         HRESULT ( STDMETHODCALLTYPE *setSelection )( 
             IAccessibleText * This,
             /* [in] */ long selectionIndex,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_nCharacters)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nCharacters )( 
             IAccessibleText * This,
             /* [retval][out] */ long *nCharacters);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, scrollSubstringTo)
         HRESULT ( STDMETHODCALLTYPE *scrollSubstringTo )( 
             IAccessibleText * This,
             /* [in] */ long startIndex,
             /* [in] */ long endIndex,
             /* [in] */ enum IA2ScrollType scrollType);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, scrollSubstringToPoint)
         HRESULT ( STDMETHODCALLTYPE *scrollSubstringToPoint )( 
             IAccessibleText * This,
             /* [in] */ long startIndex,
@@ -3209,10 +3477,12 @@ EXTERN_C const IID IID_IAccessibleText;
             /* [in] */ long x,
             /* [in] */ long y);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_newText)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_newText )( 
             IAccessibleText * This,
             /* [retval][out] */ IA2TextSegment *newText);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_oldText)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_oldText )( 
             IAccessibleText * This,
             /* [retval][out] */ IA2TextSegment *oldText);
@@ -3339,23 +3609,28 @@ EXTERN_C const IID IID_IAccessibleText2;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleText2 * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleText2 * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleText2 * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, addSelection)
         HRESULT ( STDMETHODCALLTYPE *addSelection )( 
             IAccessibleText2 * This,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_attributes)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_attributes )( 
             IAccessibleText2 * This,
             /* [in] */ long offset,
@@ -3363,10 +3638,12 @@ EXTERN_C const IID IID_IAccessibleText2;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *textAttributes);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_caretOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_caretOffset )( 
             IAccessibleText2 * This,
             /* [retval][out] */ long *offset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_characterExtents)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_characterExtents )( 
             IAccessibleText2 * This,
             /* [in] */ long offset,
@@ -3376,10 +3653,12 @@ EXTERN_C const IID IID_IAccessibleText2;
             /* [out] */ long *width,
             /* [retval][out] */ long *height);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_nSelections)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nSelections )( 
             IAccessibleText2 * This,
             /* [retval][out] */ long *nSelections);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_offsetAtPoint)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_offsetAtPoint )( 
             IAccessibleText2 * This,
             /* [in] */ long x,
@@ -3387,18 +3666,21 @@ EXTERN_C const IID IID_IAccessibleText2;
             /* [in] */ enum IA2CoordinateType coordType,
             /* [retval][out] */ long *offset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_selection)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_selection )( 
             IAccessibleText2 * This,
             /* [in] */ long selectionIndex,
             /* [out] */ long *startOffset,
             /* [retval][out] */ long *endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_text)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_text )( 
             IAccessibleText2 * This,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_textBeforeOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_textBeforeOffset )( 
             IAccessibleText2 * This,
             /* [in] */ long offset,
@@ -3407,6 +3689,7 @@ EXTERN_C const IID IID_IAccessibleText2;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_textAfterOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_textAfterOffset )( 
             IAccessibleText2 * This,
             /* [in] */ long offset,
@@ -3415,6 +3698,7 @@ EXTERN_C const IID IID_IAccessibleText2;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_textAtOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_textAtOffset )( 
             IAccessibleText2 * This,
             /* [in] */ long offset,
@@ -3423,30 +3707,36 @@ EXTERN_C const IID IID_IAccessibleText2;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, removeSelection)
         HRESULT ( STDMETHODCALLTYPE *removeSelection )( 
             IAccessibleText2 * This,
             /* [in] */ long selectionIndex);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, setCaretOffset)
         HRESULT ( STDMETHODCALLTYPE *setCaretOffset )( 
             IAccessibleText2 * This,
             /* [in] */ long offset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, setSelection)
         HRESULT ( STDMETHODCALLTYPE *setSelection )( 
             IAccessibleText2 * This,
             /* [in] */ long selectionIndex,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_nCharacters)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nCharacters )( 
             IAccessibleText2 * This,
             /* [retval][out] */ long *nCharacters);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, scrollSubstringTo)
         HRESULT ( STDMETHODCALLTYPE *scrollSubstringTo )( 
             IAccessibleText2 * This,
             /* [in] */ long startIndex,
             /* [in] */ long endIndex,
             /* [in] */ enum IA2ScrollType scrollType);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, scrollSubstringToPoint)
         HRESULT ( STDMETHODCALLTYPE *scrollSubstringToPoint )( 
             IAccessibleText2 * This,
             /* [in] */ long startIndex,
@@ -3455,14 +3745,17 @@ EXTERN_C const IID IID_IAccessibleText2;
             /* [in] */ long x,
             /* [in] */ long y);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_newText)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_newText )( 
             IAccessibleText2 * This,
             /* [retval][out] */ IA2TextSegment *newText);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_oldText)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_oldText )( 
             IAccessibleText2 * This,
             /* [retval][out] */ IA2TextSegment *oldText);
         
+        DECLSPEC_XFGVIRT(IAccessibleText2, get_attributeRange)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_attributeRange )( 
             IAccessibleText2 * This,
             /* [in] */ long offset,
@@ -3566,6 +3859,122 @@ EXTERN_C const IID IID_IAccessibleText2;
 #endif 	/* __IAccessibleText2_INTERFACE_DEFINED__ */
 
 
+/* interface __MIDL_itf_ia2_api_all_0000_0010 */
+/* [local] */ 
+
+typedef struct IA2TextSelection
+    {
+    IAccessibleText *startObj;
+    long startOffset;
+    IAccessibleText *endObj;
+    long endOffset;
+    boolean startIsActive;
+    } 	IA2TextSelection;
+
+
+
+extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0010_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0010_v0_0_s_ifspec;
+
+#ifndef __IAccessibleTextSelectionContainer_INTERFACE_DEFINED__
+#define __IAccessibleTextSelectionContainer_INTERFACE_DEFINED__
+
+/* interface IAccessibleTextSelectionContainer */
+/* [uuid][object] */ 
+
+
+EXTERN_C const IID IID_IAccessibleTextSelectionContainer;
+
+#if defined(__cplusplus) && !defined(CINTERFACE)
+    
+    MIDL_INTERFACE("2118B599-733F-43D0-A569-0B31D125ED9A")
+    IAccessibleTextSelectionContainer : public IUnknown
+    {
+    public:
+        virtual /* [propget] */ HRESULT STDMETHODCALLTYPE get_selections( 
+            /* [size_is][size_is][out] */ IA2TextSelection **selections,
+            /* [retval][out] */ long *nSelections) = 0;
+        
+        virtual HRESULT STDMETHODCALLTYPE setSelections( 
+            /* [in] */ long nSelections,
+            /* [size_is][in] */ IA2TextSelection *selections) = 0;
+        
+    };
+    
+    
+#else 	/* C style interface */
+
+    typedef struct IAccessibleTextSelectionContainerVtbl
+    {
+        BEGIN_INTERFACE
+        
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
+        HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
+            IAccessibleTextSelectionContainer * This,
+            /* [in] */ REFIID riid,
+            /* [annotation][iid_is][out] */ 
+            _COM_Outptr_  void **ppvObject);
+        
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
+        ULONG ( STDMETHODCALLTYPE *AddRef )( 
+            IAccessibleTextSelectionContainer * This);
+        
+        DECLSPEC_XFGVIRT(IUnknown, Release)
+        ULONG ( STDMETHODCALLTYPE *Release )( 
+            IAccessibleTextSelectionContainer * This);
+        
+        DECLSPEC_XFGVIRT(IAccessibleTextSelectionContainer, get_selections)
+        /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_selections )( 
+            IAccessibleTextSelectionContainer * This,
+            /* [size_is][size_is][out] */ IA2TextSelection **selections,
+            /* [retval][out] */ long *nSelections);
+        
+        DECLSPEC_XFGVIRT(IAccessibleTextSelectionContainer, setSelections)
+        HRESULT ( STDMETHODCALLTYPE *setSelections )( 
+            IAccessibleTextSelectionContainer * This,
+            /* [in] */ long nSelections,
+            /* [size_is][in] */ IA2TextSelection *selections);
+        
+        END_INTERFACE
+    } IAccessibleTextSelectionContainerVtbl;
+
+    interface IAccessibleTextSelectionContainer
+    {
+        CONST_VTBL struct IAccessibleTextSelectionContainerVtbl *lpVtbl;
+    };
+
+    
+
+#ifdef COBJMACROS
+
+
+#define IAccessibleTextSelectionContainer_QueryInterface(This,riid,ppvObject)	\
+    ( (This)->lpVtbl -> QueryInterface(This,riid,ppvObject) ) 
+
+#define IAccessibleTextSelectionContainer_AddRef(This)	\
+    ( (This)->lpVtbl -> AddRef(This) ) 
+
+#define IAccessibleTextSelectionContainer_Release(This)	\
+    ( (This)->lpVtbl -> Release(This) ) 
+
+
+#define IAccessibleTextSelectionContainer_get_selections(This,selections,nSelections)	\
+    ( (This)->lpVtbl -> get_selections(This,selections,nSelections) ) 
+
+#define IAccessibleTextSelectionContainer_setSelections(This,nSelections,selections)	\
+    ( (This)->lpVtbl -> setSelections(This,nSelections,selections) ) 
+
+#endif /* COBJMACROS */
+
+
+#endif 	/* C style interface */
+
+
+
+
+#endif 	/* __IAccessibleTextSelectionContainer_INTERFACE_DEFINED__ */
+
+
 #ifndef __IAccessibleEditableText_INTERFACE_DEFINED__
 #define __IAccessibleEditableText_INTERFACE_DEFINED__
 
@@ -3619,48 +4028,58 @@ EXTERN_C const IID IID_IAccessibleEditableText;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleEditableText * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleEditableText * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleEditableText * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleEditableText, copyText)
         HRESULT ( STDMETHODCALLTYPE *copyText )( 
             IAccessibleEditableText * This,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleEditableText, deleteText)
         HRESULT ( STDMETHODCALLTYPE *deleteText )( 
             IAccessibleEditableText * This,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleEditableText, insertText)
         HRESULT ( STDMETHODCALLTYPE *insertText )( 
             IAccessibleEditableText * This,
             /* [in] */ long offset,
             /* [in] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleEditableText, cutText)
         HRESULT ( STDMETHODCALLTYPE *cutText )( 
             IAccessibleEditableText * This,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleEditableText, pasteText)
         HRESULT ( STDMETHODCALLTYPE *pasteText )( 
             IAccessibleEditableText * This,
             /* [in] */ long offset);
         
+        DECLSPEC_XFGVIRT(IAccessibleEditableText, replaceText)
         HRESULT ( STDMETHODCALLTYPE *replaceText )( 
             IAccessibleEditableText * This,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset,
             /* [in] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleEditableText, setAttributes)
         HRESULT ( STDMETHODCALLTYPE *setAttributes )( 
             IAccessibleEditableText * This,
             /* [in] */ long startOffset,
@@ -3763,31 +4182,38 @@ EXTERN_C const IID IID_IAccessibleHyperlink;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleHyperlink * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleHyperlink * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleHyperlink * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleAction, nActions)
         HRESULT ( STDMETHODCALLTYPE *nActions )( 
             IAccessibleHyperlink * This,
             /* [retval][out] */ long *nActions);
         
+        DECLSPEC_XFGVIRT(IAccessibleAction, doAction)
         HRESULT ( STDMETHODCALLTYPE *doAction )( 
             IAccessibleHyperlink * This,
             /* [in] */ long actionIndex);
         
+        DECLSPEC_XFGVIRT(IAccessibleAction, get_description)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_description )( 
             IAccessibleHyperlink * This,
             /* [in] */ long actionIndex,
             /* [retval][out] */ BSTR *description);
         
+        DECLSPEC_XFGVIRT(IAccessibleAction, get_keyBinding)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_keyBinding )( 
             IAccessibleHyperlink * This,
             /* [in] */ long actionIndex,
@@ -3795,34 +4221,41 @@ EXTERN_C const IID IID_IAccessibleHyperlink;
             /* [length_is][length_is][size_is][size_is][out] */ BSTR **keyBindings,
             /* [retval][out] */ long *nBindings);
         
+        DECLSPEC_XFGVIRT(IAccessibleAction, get_name)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_name )( 
             IAccessibleHyperlink * This,
             /* [in] */ long actionIndex,
             /* [retval][out] */ BSTR *name);
         
+        DECLSPEC_XFGVIRT(IAccessibleAction, get_localizedName)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_localizedName )( 
             IAccessibleHyperlink * This,
             /* [in] */ long actionIndex,
             /* [retval][out] */ BSTR *localizedName);
         
+        DECLSPEC_XFGVIRT(IAccessibleHyperlink, get_anchor)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_anchor )( 
             IAccessibleHyperlink * This,
             /* [in] */ long index,
             /* [retval][out] */ VARIANT *anchor);
         
+        DECLSPEC_XFGVIRT(IAccessibleHyperlink, get_anchorTarget)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_anchorTarget )( 
             IAccessibleHyperlink * This,
             /* [in] */ long index,
             /* [retval][out] */ VARIANT *anchorTarget);
         
+        DECLSPEC_XFGVIRT(IAccessibleHyperlink, get_startIndex)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_startIndex )( 
             IAccessibleHyperlink * This,
             /* [retval][out] */ long *index);
         
+        DECLSPEC_XFGVIRT(IAccessibleHyperlink, get_endIndex)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_endIndex )( 
             IAccessibleHyperlink * This,
             /* [retval][out] */ long *index);
         
+        DECLSPEC_XFGVIRT(IAccessibleHyperlink, get_valid)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_valid )( 
             IAccessibleHyperlink * This,
             /* [retval][out] */ boolean *valid);
@@ -3930,23 +4363,28 @@ EXTERN_C const IID IID_IAccessibleHypertext;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleHypertext * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleHypertext * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleHypertext * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, addSelection)
         HRESULT ( STDMETHODCALLTYPE *addSelection )( 
             IAccessibleHypertext * This,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_attributes)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_attributes )( 
             IAccessibleHypertext * This,
             /* [in] */ long offset,
@@ -3954,10 +4392,12 @@ EXTERN_C const IID IID_IAccessibleHypertext;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *textAttributes);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_caretOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_caretOffset )( 
             IAccessibleHypertext * This,
             /* [retval][out] */ long *offset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_characterExtents)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_characterExtents )( 
             IAccessibleHypertext * This,
             /* [in] */ long offset,
@@ -3967,10 +4407,12 @@ EXTERN_C const IID IID_IAccessibleHypertext;
             /* [out] */ long *width,
             /* [retval][out] */ long *height);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_nSelections)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nSelections )( 
             IAccessibleHypertext * This,
             /* [retval][out] */ long *nSelections);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_offsetAtPoint)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_offsetAtPoint )( 
             IAccessibleHypertext * This,
             /* [in] */ long x,
@@ -3978,18 +4420,21 @@ EXTERN_C const IID IID_IAccessibleHypertext;
             /* [in] */ enum IA2CoordinateType coordType,
             /* [retval][out] */ long *offset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_selection)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_selection )( 
             IAccessibleHypertext * This,
             /* [in] */ long selectionIndex,
             /* [out] */ long *startOffset,
             /* [retval][out] */ long *endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_text)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_text )( 
             IAccessibleHypertext * This,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_textBeforeOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_textBeforeOffset )( 
             IAccessibleHypertext * This,
             /* [in] */ long offset,
@@ -3998,6 +4443,7 @@ EXTERN_C const IID IID_IAccessibleHypertext;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_textAfterOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_textAfterOffset )( 
             IAccessibleHypertext * This,
             /* [in] */ long offset,
@@ -4006,6 +4452,7 @@ EXTERN_C const IID IID_IAccessibleHypertext;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_textAtOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_textAtOffset )( 
             IAccessibleHypertext * This,
             /* [in] */ long offset,
@@ -4014,30 +4461,36 @@ EXTERN_C const IID IID_IAccessibleHypertext;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, removeSelection)
         HRESULT ( STDMETHODCALLTYPE *removeSelection )( 
             IAccessibleHypertext * This,
             /* [in] */ long selectionIndex);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, setCaretOffset)
         HRESULT ( STDMETHODCALLTYPE *setCaretOffset )( 
             IAccessibleHypertext * This,
             /* [in] */ long offset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, setSelection)
         HRESULT ( STDMETHODCALLTYPE *setSelection )( 
             IAccessibleHypertext * This,
             /* [in] */ long selectionIndex,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_nCharacters)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nCharacters )( 
             IAccessibleHypertext * This,
             /* [retval][out] */ long *nCharacters);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, scrollSubstringTo)
         HRESULT ( STDMETHODCALLTYPE *scrollSubstringTo )( 
             IAccessibleHypertext * This,
             /* [in] */ long startIndex,
             /* [in] */ long endIndex,
             /* [in] */ enum IA2ScrollType scrollType);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, scrollSubstringToPoint)
         HRESULT ( STDMETHODCALLTYPE *scrollSubstringToPoint )( 
             IAccessibleHypertext * This,
             /* [in] */ long startIndex,
@@ -4046,23 +4499,28 @@ EXTERN_C const IID IID_IAccessibleHypertext;
             /* [in] */ long x,
             /* [in] */ long y);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_newText)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_newText )( 
             IAccessibleHypertext * This,
             /* [retval][out] */ IA2TextSegment *newText);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_oldText)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_oldText )( 
             IAccessibleHypertext * This,
             /* [retval][out] */ IA2TextSegment *oldText);
         
+        DECLSPEC_XFGVIRT(IAccessibleHypertext, get_nHyperlinks)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nHyperlinks )( 
             IAccessibleHypertext * This,
             /* [retval][out] */ long *hyperlinkCount);
         
+        DECLSPEC_XFGVIRT(IAccessibleHypertext, get_hyperlink)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_hyperlink )( 
             IAccessibleHypertext * This,
             /* [in] */ long index,
             /* [retval][out] */ IAccessibleHyperlink **hyperlink);
         
+        DECLSPEC_XFGVIRT(IAccessibleHypertext, get_hyperlinkIndex)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_hyperlinkIndex )( 
             IAccessibleHypertext * This,
             /* [in] */ long charIndex,
@@ -4197,23 +4655,28 @@ EXTERN_C const IID IID_IAccessibleHypertext2;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleHypertext2 * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleHypertext2 * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleHypertext2 * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, addSelection)
         HRESULT ( STDMETHODCALLTYPE *addSelection )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_attributes)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_attributes )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long offset,
@@ -4221,10 +4684,12 @@ EXTERN_C const IID IID_IAccessibleHypertext2;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *textAttributes);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_caretOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_caretOffset )( 
             IAccessibleHypertext2 * This,
             /* [retval][out] */ long *offset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_characterExtents)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_characterExtents )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long offset,
@@ -4234,10 +4699,12 @@ EXTERN_C const IID IID_IAccessibleHypertext2;
             /* [out] */ long *width,
             /* [retval][out] */ long *height);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_nSelections)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nSelections )( 
             IAccessibleHypertext2 * This,
             /* [retval][out] */ long *nSelections);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_offsetAtPoint)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_offsetAtPoint )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long x,
@@ -4245,18 +4712,21 @@ EXTERN_C const IID IID_IAccessibleHypertext2;
             /* [in] */ enum IA2CoordinateType coordType,
             /* [retval][out] */ long *offset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_selection)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_selection )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long selectionIndex,
             /* [out] */ long *startOffset,
             /* [retval][out] */ long *endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_text)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_text )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_textBeforeOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_textBeforeOffset )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long offset,
@@ -4265,6 +4735,7 @@ EXTERN_C const IID IID_IAccessibleHypertext2;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_textAfterOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_textAfterOffset )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long offset,
@@ -4273,6 +4744,7 @@ EXTERN_C const IID IID_IAccessibleHypertext2;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_textAtOffset)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_textAtOffset )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long offset,
@@ -4281,30 +4753,36 @@ EXTERN_C const IID IID_IAccessibleHypertext2;
             /* [out] */ long *endOffset,
             /* [retval][out] */ BSTR *text);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, removeSelection)
         HRESULT ( STDMETHODCALLTYPE *removeSelection )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long selectionIndex);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, setCaretOffset)
         HRESULT ( STDMETHODCALLTYPE *setCaretOffset )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long offset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, setSelection)
         HRESULT ( STDMETHODCALLTYPE *setSelection )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long selectionIndex,
             /* [in] */ long startOffset,
             /* [in] */ long endOffset);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_nCharacters)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nCharacters )( 
             IAccessibleHypertext2 * This,
             /* [retval][out] */ long *nCharacters);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, scrollSubstringTo)
         HRESULT ( STDMETHODCALLTYPE *scrollSubstringTo )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long startIndex,
             /* [in] */ long endIndex,
             /* [in] */ enum IA2ScrollType scrollType);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, scrollSubstringToPoint)
         HRESULT ( STDMETHODCALLTYPE *scrollSubstringToPoint )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long startIndex,
@@ -4313,28 +4791,34 @@ EXTERN_C const IID IID_IAccessibleHypertext2;
             /* [in] */ long x,
             /* [in] */ long y);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_newText)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_newText )( 
             IAccessibleHypertext2 * This,
             /* [retval][out] */ IA2TextSegment *newText);
         
+        DECLSPEC_XFGVIRT(IAccessibleText, get_oldText)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_oldText )( 
             IAccessibleHypertext2 * This,
             /* [retval][out] */ IA2TextSegment *oldText);
         
+        DECLSPEC_XFGVIRT(IAccessibleHypertext, get_nHyperlinks)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nHyperlinks )( 
             IAccessibleHypertext2 * This,
             /* [retval][out] */ long *hyperlinkCount);
         
+        DECLSPEC_XFGVIRT(IAccessibleHypertext, get_hyperlink)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_hyperlink )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long index,
             /* [retval][out] */ IAccessibleHyperlink **hyperlink);
         
+        DECLSPEC_XFGVIRT(IAccessibleHypertext, get_hyperlinkIndex)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_hyperlinkIndex )( 
             IAccessibleHypertext2 * This,
             /* [in] */ long charIndex,
             /* [retval][out] */ long *hyperlinkIndex);
         
+        DECLSPEC_XFGVIRT(IAccessibleHypertext2, get_hyperlinks)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_hyperlinks )( 
             IAccessibleHypertext2 * This,
             /* [size_is][size_is][out] */ IAccessibleHyperlink ***hyperlinks,
@@ -4585,150 +5069,181 @@ EXTERN_C const IID IID_IAccessibleTable;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleTable * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleTable * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleTable * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_accessibleAt)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_accessibleAt )( 
             IAccessibleTable * This,
             /* [in] */ long row,
             /* [in] */ long column,
             /* [retval][out] */ IUnknown **accessible);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_caption)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_caption )( 
             IAccessibleTable * This,
             /* [retval][out] */ IUnknown **accessible);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_childIndex)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_childIndex )( 
             IAccessibleTable * This,
             /* [in] */ long rowIndex,
             /* [in] */ long columnIndex,
             /* [retval][out] */ long *cellIndex);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_columnDescription)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_columnDescription )( 
             IAccessibleTable * This,
             /* [in] */ long column,
             /* [retval][out] */ BSTR *description);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_columnExtentAt)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_columnExtentAt )( 
             IAccessibleTable * This,
             /* [in] */ long row,
             /* [in] */ long column,
             /* [retval][out] */ long *nColumnsSpanned);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_columnHeader)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_columnHeader )( 
             IAccessibleTable * This,
             /* [out] */ IAccessibleTable **accessibleTable,
             /* [retval][out] */ long *startingRowIndex);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_columnIndex)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_columnIndex )( 
             IAccessibleTable * This,
             /* [in] */ long cellIndex,
             /* [retval][out] */ long *columnIndex);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_nColumns)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nColumns )( 
             IAccessibleTable * This,
             /* [retval][out] */ long *columnCount);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_nRows)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nRows )( 
             IAccessibleTable * This,
             /* [retval][out] */ long *rowCount);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_nSelectedChildren)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nSelectedChildren )( 
             IAccessibleTable * This,
             /* [retval][out] */ long *cellCount);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_nSelectedColumns)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nSelectedColumns )( 
             IAccessibleTable * This,
             /* [retval][out] */ long *columnCount);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_nSelectedRows)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nSelectedRows )( 
             IAccessibleTable * This,
             /* [retval][out] */ long *rowCount);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_rowDescription)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_rowDescription )( 
             IAccessibleTable * This,
             /* [in] */ long row,
             /* [retval][out] */ BSTR *description);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_rowExtentAt)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_rowExtentAt )( 
             IAccessibleTable * This,
             /* [in] */ long row,
             /* [in] */ long column,
             /* [retval][out] */ long *nRowsSpanned);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_rowHeader)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_rowHeader )( 
             IAccessibleTable * This,
             /* [out] */ IAccessibleTable **accessibleTable,
             /* [retval][out] */ long *startingColumnIndex);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_rowIndex)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_rowIndex )( 
             IAccessibleTable * This,
             /* [in] */ long cellIndex,
             /* [retval][out] */ long *rowIndex);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_selectedChildren)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_selectedChildren )( 
             IAccessibleTable * This,
             /* [in] */ long maxChildren,
             /* [length_is][length_is][size_is][size_is][out] */ long **children,
             /* [retval][out] */ long *nChildren);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_selectedColumns)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_selectedColumns )( 
             IAccessibleTable * This,
             /* [in] */ long maxColumns,
             /* [length_is][length_is][size_is][size_is][out] */ long **columns,
             /* [retval][out] */ long *nColumns);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_selectedRows)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_selectedRows )( 
             IAccessibleTable * This,
             /* [in] */ long maxRows,
             /* [length_is][length_is][size_is][size_is][out] */ long **rows,
             /* [retval][out] */ long *nRows);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_summary)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_summary )( 
             IAccessibleTable * This,
             /* [retval][out] */ IUnknown **accessible);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_isColumnSelected)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_isColumnSelected )( 
             IAccessibleTable * This,
             /* [in] */ long column,
             /* [retval][out] */ boolean *isSelected);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_isRowSelected)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_isRowSelected )( 
             IAccessibleTable * This,
             /* [in] */ long row,
             /* [retval][out] */ boolean *isSelected);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_isSelected)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_isSelected )( 
             IAccessibleTable * This,
             /* [in] */ long row,
             /* [in] */ long column,
             /* [retval][out] */ boolean *isSelected);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, selectRow)
         HRESULT ( STDMETHODCALLTYPE *selectRow )( 
             IAccessibleTable * This,
             /* [in] */ long row);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, selectColumn)
         HRESULT ( STDMETHODCALLTYPE *selectColumn )( 
             IAccessibleTable * This,
             /* [in] */ long column);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, unselectRow)
         HRESULT ( STDMETHODCALLTYPE *unselectRow )( 
             IAccessibleTable * This,
             /* [in] */ long row);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, unselectColumn)
         HRESULT ( STDMETHODCALLTYPE *unselectColumn )( 
             IAccessibleTable * This,
             /* [in] */ long column);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_rowColumnExtentsAtIndex)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_rowColumnExtentsAtIndex )( 
             IAccessibleTable * This,
             /* [in] */ long index,
@@ -4738,6 +5253,7 @@ EXTERN_C const IID IID_IAccessibleTable;
             /* [out] */ long *columnExtents,
             /* [retval][out] */ boolean *isSelected);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable, get_modelChange)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_modelChange )( 
             IAccessibleTable * This,
             /* [retval][out] */ IA2TableModelChange *modelChange);
@@ -4956,103 +5472,126 @@ EXTERN_C const IID IID_IAccessibleTable2;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleTable2 * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleTable2 * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleTable2 * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_cellAt)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_cellAt )( 
             IAccessibleTable2 * This,
             /* [in] */ long row,
             /* [in] */ long column,
             /* [retval][out] */ IUnknown **cell);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_caption)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_caption )( 
             IAccessibleTable2 * This,
             /* [retval][out] */ IUnknown **accessible);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_columnDescription)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_columnDescription )( 
             IAccessibleTable2 * This,
             /* [in] */ long column,
             /* [retval][out] */ BSTR *description);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_nColumns)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nColumns )( 
             IAccessibleTable2 * This,
             /* [retval][out] */ long *columnCount);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_nRows)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nRows )( 
             IAccessibleTable2 * This,
             /* [retval][out] */ long *rowCount);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_nSelectedCells)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nSelectedCells )( 
             IAccessibleTable2 * This,
             /* [retval][out] */ long *cellCount);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_nSelectedColumns)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nSelectedColumns )( 
             IAccessibleTable2 * This,
             /* [retval][out] */ long *columnCount);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_nSelectedRows)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_nSelectedRows )( 
             IAccessibleTable2 * This,
             /* [retval][out] */ long *rowCount);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_rowDescription)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_rowDescription )( 
             IAccessibleTable2 * This,
             /* [in] */ long row,
             /* [retval][out] */ BSTR *description);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_selectedCells)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_selectedCells )( 
             IAccessibleTable2 * This,
             /* [size_is][size_is][out] */ IUnknown ***cells,
             /* [retval][out] */ long *nSelectedCells);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_selectedColumns)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_selectedColumns )( 
             IAccessibleTable2 * This,
             /* [size_is][size_is][out] */ long **selectedColumns,
             /* [retval][out] */ long *nColumns);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_selectedRows)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_selectedRows )( 
             IAccessibleTable2 * This,
             /* [size_is][size_is][out] */ long **selectedRows,
             /* [retval][out] */ long *nRows);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_summary)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_summary )( 
             IAccessibleTable2 * This,
             /* [retval][out] */ IUnknown **accessible);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_isColumnSelected)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_isColumnSelected )( 
             IAccessibleTable2 * This,
             /* [in] */ long column,
             /* [retval][out] */ boolean *isSelected);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_isRowSelected)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_isRowSelected )( 
             IAccessibleTable2 * This,
             /* [in] */ long row,
             /* [retval][out] */ boolean *isSelected);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, selectRow)
         HRESULT ( STDMETHODCALLTYPE *selectRow )( 
             IAccessibleTable2 * This,
             /* [in] */ long row);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, selectColumn)
         HRESULT ( STDMETHODCALLTYPE *selectColumn )( 
             IAccessibleTable2 * This,
             /* [in] */ long column);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, unselectRow)
         HRESULT ( STDMETHODCALLTYPE *unselectRow )( 
             IAccessibleTable2 * This,
             /* [in] */ long row);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, unselectColumn)
         HRESULT ( STDMETHODCALLTYPE *unselectColumn )( 
             IAccessibleTable2 * This,
             /* [in] */ long column);
         
+        DECLSPEC_XFGVIRT(IAccessibleTable2, get_modelChange)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_modelChange )( 
             IAccessibleTable2 * This,
             /* [retval][out] */ IA2TableModelChange *modelChange);
@@ -5208,48 +5747,59 @@ EXTERN_C const IID IID_IAccessibleTableCell;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleTableCell * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleTableCell * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleTableCell * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleTableCell, get_columnExtent)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_columnExtent )( 
             IAccessibleTableCell * This,
             /* [retval][out] */ long *nColumnsSpanned);
         
+        DECLSPEC_XFGVIRT(IAccessibleTableCell, get_columnHeaderCells)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_columnHeaderCells )( 
             IAccessibleTableCell * This,
             /* [size_is][size_is][out] */ IUnknown ***cellAccessibles,
             /* [retval][out] */ long *nColumnHeaderCells);
         
+        DECLSPEC_XFGVIRT(IAccessibleTableCell, get_columnIndex)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_columnIndex )( 
             IAccessibleTableCell * This,
             /* [retval][out] */ long *columnIndex);
         
+        DECLSPEC_XFGVIRT(IAccessibleTableCell, get_rowExtent)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_rowExtent )( 
             IAccessibleTableCell * This,
             /* [retval][out] */ long *nRowsSpanned);
         
+        DECLSPEC_XFGVIRT(IAccessibleTableCell, get_rowHeaderCells)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_rowHeaderCells )( 
             IAccessibleTableCell * This,
             /* [size_is][size_is][out] */ IUnknown ***cellAccessibles,
             /* [retval][out] */ long *nRowHeaderCells);
         
+        DECLSPEC_XFGVIRT(IAccessibleTableCell, get_rowIndex)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_rowIndex )( 
             IAccessibleTableCell * This,
             /* [retval][out] */ long *rowIndex);
         
+        DECLSPEC_XFGVIRT(IAccessibleTableCell, get_isSelected)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_isSelected )( 
             IAccessibleTableCell * This,
             /* [retval][out] */ boolean *isSelected);
         
+        DECLSPEC_XFGVIRT(IAccessibleTableCell, get_rowColumnExtents)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_rowColumnExtents )( 
             IAccessibleTableCell * This,
             /* [out] */ long *row,
@@ -5258,6 +5808,7 @@ EXTERN_C const IID IID_IAccessibleTableCell;
             /* [out] */ long *columnExtents,
             /* [retval][out] */ boolean *isSelected);
         
+        DECLSPEC_XFGVIRT(IAccessibleTableCell, get_table)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_table )( 
             IAccessibleTableCell * This,
             /* [retval][out] */ IUnknown **table);
@@ -5359,28 +5910,34 @@ EXTERN_C const IID IID_IAccessibleImage;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleImage * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleImage * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleImage * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleImage, get_description)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_description )( 
             IAccessibleImage * This,
             /* [retval][out] */ BSTR *description);
         
+        DECLSPEC_XFGVIRT(IAccessibleImage, get_imagePosition)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_imagePosition )( 
             IAccessibleImage * This,
             /* [in] */ enum IA2CoordinateType coordinateType,
             /* [out] */ long *x,
             /* [retval][out] */ long *y);
         
+        DECLSPEC_XFGVIRT(IAccessibleImage, get_imageSize)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_imageSize )( 
             IAccessibleImage * This,
             /* [out] */ long *height,
@@ -5429,7 +5986,7 @@ EXTERN_C const IID IID_IAccessibleImage;
 #endif 	/* __IAccessibleImage_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_ia2_api_all_0000_0018 */
+/* interface __MIDL_itf_ia2_api_all_0000_0019 */
 /* [local] */ 
 
 
@@ -5474,8 +6031,8 @@ enum IA2EventID
     } ;
 
 
-extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0018_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0018_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0019_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0019_v0_0_s_ifspec;
 
 #ifndef __IAccessibleApplication_INTERFACE_DEFINED__
 #define __IAccessibleApplication_INTERFACE_DEFINED__
@@ -5513,30 +6070,37 @@ EXTERN_C const IID IID_IAccessibleApplication;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleApplication * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleApplication * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleApplication * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleApplication, get_appName)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_appName )( 
             IAccessibleApplication * This,
             /* [retval][out] */ BSTR *name);
         
+        DECLSPEC_XFGVIRT(IAccessibleApplication, get_appVersion)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_appVersion )( 
             IAccessibleApplication * This,
             /* [retval][out] */ BSTR *version);
         
+        DECLSPEC_XFGVIRT(IAccessibleApplication, get_toolkitName)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_toolkitName )( 
             IAccessibleApplication * This,
             /* [retval][out] */ BSTR *name);
         
+        DECLSPEC_XFGVIRT(IAccessibleApplication, get_toolkitVersion)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_toolkitVersion )( 
             IAccessibleApplication * This,
             /* [retval][out] */ BSTR *version);
@@ -5614,18 +6178,22 @@ EXTERN_C const IID IID_IAccessibleDocument;
     {
         BEGIN_INTERFACE
         
+        DECLSPEC_XFGVIRT(IUnknown, QueryInterface)
         HRESULT ( STDMETHODCALLTYPE *QueryInterface )( 
             IAccessibleDocument * This,
             /* [in] */ REFIID riid,
             /* [annotation][iid_is][out] */ 
             _COM_Outptr_  void **ppvObject);
         
+        DECLSPEC_XFGVIRT(IUnknown, AddRef)
         ULONG ( STDMETHODCALLTYPE *AddRef )( 
             IAccessibleDocument * This);
         
+        DECLSPEC_XFGVIRT(IUnknown, Release)
         ULONG ( STDMETHODCALLTYPE *Release )( 
             IAccessibleDocument * This);
         
+        DECLSPEC_XFGVIRT(IAccessibleDocument, get_anchorTarget)
         /* [propget] */ HRESULT ( STDMETHODCALLTYPE *get_anchorTarget )( 
             IAccessibleDocument * This,
             /* [retval][out] */ IUnknown **accessible);
@@ -5667,7 +6235,7 @@ EXTERN_C const IID IID_IAccessibleDocument;
 #endif 	/* __IAccessibleDocument_INTERFACE_DEFINED__ */
 
 
-/* interface __MIDL_itf_ia2_api_all_0000_0020 */
+/* interface __MIDL_itf_ia2_api_all_0000_0021 */
 /* [local] */ 
 
 
@@ -5675,8 +6243,8 @@ EXTERN_C const IID IID_IAccessibleDocument;
 
 
 
-extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0020_v0_0_c_ifspec;
-extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0020_v0_0_s_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0021_v0_0_c_ifspec;
+extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0021_v0_0_s_ifspec;
 
 
 #ifndef __IAccessible2Lib_LIBRARY_DEFINED__
@@ -5684,6 +6252,7 @@ extern RPC_IF_HANDLE __MIDL_itf_ia2_api_all_0000_0020_v0_0_s_ifspec;
 
 /* library IAccessible2Lib */
 /* [hidden][version][helpstring][uuid] */ 
+
 
 
 

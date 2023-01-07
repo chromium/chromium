@@ -1,11 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_BROWSER_SCOPED_IGNORE_CONTENT_VERIFIER_FOR_TEST_H_
 #define EXTENSIONS_BROWSER_SCOPED_IGNORE_CONTENT_VERIFIER_FOR_TEST_H_
-
-#include "base/macros.h"
 
 namespace extensions {
 
@@ -15,10 +13,13 @@ namespace extensions {
 class ScopedIgnoreContentVerifierForTest {
  public:
   ScopedIgnoreContentVerifierForTest();
-  ~ScopedIgnoreContentVerifierForTest();
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedIgnoreContentVerifierForTest);
+  ScopedIgnoreContentVerifierForTest(
+      const ScopedIgnoreContentVerifierForTest&) = delete;
+  ScopedIgnoreContentVerifierForTest& operator=(
+      const ScopedIgnoreContentVerifierForTest&) = delete;
+
+  ~ScopedIgnoreContentVerifierForTest();
 };
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,9 @@
 #include <cstddef>
 #include <functional>
 #include <tuple>
+#include <algorithm>
 
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 
 namespace blink {
@@ -95,14 +97,10 @@ class IdentifiableSurface {
     //     IdentifiableSurface = { mojom::WebFeature, kWebFeature }
     //     Value = IdentifiableToken( $(output of the attribute or method) )
     //
-    // [1]: //blink/public/mojom/web_feature/web_feature.mojom
+    // [1]: //blink/public/mojom/use_counter/metrics/web_feature.mojom
     kWebFeature = 1,
 
-    // Represents a readback of a canvas. Input is the
-    // CanvasRenderingContextType.
-    //
-    // Was 2 before change to paint op serialization.
-    kCanvasReadback = 33,
+    // Reserved 2.
 
     // Represents loading a font locally based on a name lookup that is allowed
     // to match either a unique name or a family name. This occurs when a
@@ -216,7 +214,7 @@ class IdentifiableSurface {
 
     // Represents a media query being tested. Input is combination of property
     // name and the target value. Output is the result --- true or false.
-    kMediaQuery = 28,
+    kMediaQuery_DEPRECATED = 28,
 
     // Represents loading a font locally. Input is the PostScript name.
     kLocalFontLoadPostScriptName = 29,
@@ -229,6 +227,8 @@ class IdentifiableSurface {
     // (audio or video).
     kRtcRtpReceiverGetCapabilities = 32,
 
+    // Reserved 33.
+
     // Metadata that is not reported by the client. Different from
     // kReservedInternal in that the inputs are not required to be defined in
     // `ukm.xml`.
@@ -238,9 +238,49 @@ class IdentifiableSurface {
     // analysis.
     kReservedMetadata = 34,
 
+    // Represents a readback of a canvas. Input is the
+    // CanvasRenderingContextType.
+    //
+    // Was 2 before change to paint op serialization, then 33 before removing
+    // paint op serialization and using only direct canvas2d instrumentation.
+    kCanvasReadback = 35,
+
+    // Represents a media feature being tested. Input is the feature name.
+    // Output is the feature value
+    kMediaFeature = 36,
+
+    // Type for synthetic surfaces used for reporting data with the goal of
+    // estimating the Reid score of set of surfaces. This type does not
+    // correspond to any Web APIs specifically.
+    kReidScoreEstimator = 37,
+
+    // Type for binary surfaces telling whether a font family is available or
+    // not in the system. The key of the surface is the name of the font family,
+    // the value is a boolean. These surfaces are currently only actively
+    // sampled in the browser.
+    kFontFamilyAvailable = 38,
+
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1
   };
+
+  // These are metrics names of type 0 and are always reported when the study is
+  // enabled.
+  enum class ReservedSurfaceMetrics : uint64_t {
+    kDocumentCreated_IsCrossOriginFrame = 0,
+    kDocumentCreated_IsCrossSiteFrame = 1,
+    kDocumentCreated_IsMainFrame = 2,
+    kDocumentCreated_NavigationSourceId = 3,
+    kMax = kDocumentCreated_NavigationSourceId
+  };
+  static_assert(
+      static_cast<uint64_t>(ReservedSurfaceMetrics::kMax) <
+          std::min(
+              ukm::builders::Identifiability::kGeneratorVersion_926NameHash,
+              ukm::builders::Identifiability::kStudyGeneration_626NameHash),
+      "All the ReservedSurfaceMetrics enum values should be strictly smaller "
+      "than kGeneratorVersion_926NameHash and kStudyGeneration_626NameHash to "
+      "avoid collisions.");
 
   // HTML canvas readback -- bits [0-3] of the 64-bit input are the context type
   // (Type::kCanvasReadback), bits [4-6] are skipped ops, sensitive ops, and
@@ -248,7 +288,7 @@ class IdentifiableSurface {
   // operations digest. If the digest wasn't calculated (there's no digest for
   // WebGL, for instance), the digest field is 0.
   enum CanvasTaintBit : uint64_t {
-    // At least one drawing operation didn't update the digest -- this is ether
+    // At least one drawing operation didn't update the digest -- this is either
     // due to performance or resource consumption reasons.
     kSkipped = UINT64_C(0x10),
 
@@ -268,6 +308,42 @@ class IdentifiableSurface {
     kElemScrollbarWidth = 2,
     kElemScrollbarHeight = 3,
   };
+
+  // Possible inputs for Type::kMediaFeature.
+  enum class MediaFeatureName : uint64_t {
+    kAnyHover = 0,
+    kAnyPointer = 1,
+    kColorGamut = 2,
+    kForcedColors = 3,
+    kGrid = 4,
+    kHover = 5,
+    kOrientation = 6,
+    kDynamicRange = 7,
+    kDisplayMode = 8,
+    kNavigationControls = 9,
+    kPointer = 10,
+    kPrefersColorScheme = 11,
+    kPrefersContrast = 12,
+    kPrefersReducedMotion = 13,
+    kPrefersReducedData = 14,
+    kTransform3d = 15,
+    kScan = 16,
+    kDevicePosture = 17,
+    kColor = 18,
+    kColorIndex = 19,
+    kMonochrome = 20,
+    kAspectRatio_DEPRECATED = 21,
+    kResolution = 22,
+    kHorizontalViewportSegments = 23,
+    kVerticalViewportSegments = 24,
+    kAspectRatioNormalized = 25,
+    // We can use enum values up to and including 63, see static_assert below.
+    kMax = kAspectRatioNormalized
+  };
+  static_assert(static_cast<int>(MediaFeatureName::kMax) < 64,
+                "MediaFeatureName only allows values < 64 since we use it in "
+                "a uint64_t bitfield inside document.h to track if a media "
+                "feature has already been sampled");
 
   // Default constructor is invalid.
   IdentifiableSurface() : IdentifiableSurface(kInvalidHash) {}

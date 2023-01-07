@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,14 +13,14 @@ import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
-import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.ui.base.WindowAndroid;
+
 /**
  * Coordinator for displaying the screenshot share sheet dialog.
  */
 public class ScreenshotShareSheetDialogCoordinator {
     private final ScreenshotShareSheetDialog mDialog;
     private final FragmentManager mFragmentManager;
-    private final Bitmap mScreenshot;
 
     /**
      * Constructs a new Screenshot Dialog.
@@ -28,17 +28,18 @@ public class ScreenshotShareSheetDialogCoordinator {
      * @param activity The parent activity.
      * @param dialog The Share Sheet dialog to use as fallback.
      * @param screenshot The Bitmap of the screenshot to share.
-     * @param tab The Tab which contains the content to share.
+     * @param windowAndroid The {@link WindowAndroid} which contains the content to share.
+     * @param shareUrl The URL associated with the screenshot.
      * @param shareCallback Callback called when falling back to the share sheet.
      * @param installCallback Callback called when the image editor is installed and run.
      */
     public ScreenshotShareSheetDialogCoordinator(Activity activity,
-            ScreenshotShareSheetDialog dialog, Bitmap screenshot, Tab tab,
-            ChromeOptionShareCallback shareCallback, Callback<Runnable> installCallback) {
+            ScreenshotShareSheetDialog dialog, Bitmap screenshot, WindowAndroid windowAndroid,
+            String shareUrl, ChromeOptionShareCallback shareCallback,
+            Callback<Runnable> installCallback) {
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
         mDialog = dialog;
-        mScreenshot = screenshot;
-        mDialog.init(mScreenshot, tab, shareCallback, installCallback);
+        mDialog.init(screenshot, windowAndroid, shareUrl, shareCallback, installCallback);
     }
 
     /**

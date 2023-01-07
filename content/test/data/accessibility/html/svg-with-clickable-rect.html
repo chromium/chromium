@@ -1,0 +1,16 @@
+<!--
+@AURALINUX-ALLOW:class:*
+@AURALINUX-ALLOW:id:*
+@AURALINUX-ALLOW:tag:*
+@BLINK-ALLOW:className*
+@BLINK-ALLOW:htmlTag*
+-->
+<svg>
+  <style>
+    rect { cursor: pointer }
+    .round { rx: 5px; fill: green; }
+  </style>
+  <rect id="clickable" width="10" height="10">
+    <set attributeName="class" to="round" begin="clickable.click" dur="2s" />
+  </rect>
+</svg>

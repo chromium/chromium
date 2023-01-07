@@ -1,25 +1,25 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/selector.h"
 
-#include "base/macros.h"
+#include "base/containers/flat_set.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
-using ::testing::UnorderedElementsAre;
 
 namespace autofill_assistant {
 namespace {
 
-TEST(SelectorTest, Constructor_Simple) {
+using ::testing::UnorderedElementsAre;
+
+TEST(SelectorTest, ConstructorSimple) {
   Selector selector({"#test"});
   ASSERT_EQ(1, selector.proto.filters().size());
   EXPECT_EQ("#test", selector.proto.filters(0).css_selector());
 }
 
-TEST(SelectorTest, Constructor_WithIframe) {
+TEST(SelectorTest, ConstructorWithIframe) {
   Selector selector({"#frame", "#test"});
   ASSERT_EQ(4, selector.proto.filters().size());
   EXPECT_EQ("#frame", selector.proto.filters(0).css_selector());
@@ -38,6 +38,32 @@ TEST(SelectorTest, FromProto) {
   EXPECT_EQ(Selector({"#test"}), Selector(proto));
 }
 
+TEST(SelectorTest, ValidateCssSelector) {
+  EXPECT_TRUE(Selector().empty());
+  EXPECT_FALSE(Selector({"#test"}).empty());
+}
+
+TEST(SelectorTest, ValidateSemanticSelector) {
+  SelectorProto semantic_only_proto;
+  semantic_only_proto.add_filters()->mutable_semantic();
+  EXPECT_FALSE(Selector(semantic_only_proto).empty());
+
+  SelectorProto semantic_and_css_proto;
+  semantic_and_css_proto.add_filters()->mutable_semantic();
+  semantic_and_css_proto.add_filters()->set_css_selector("#id");
+  EXPECT_FALSE(Selector(semantic_and_css_proto).empty());
+
+  SelectorProto css_and_semantic_proto;
+  css_and_semantic_proto.add_filters()->set_css_selector("#id");
+  css_and_semantic_proto.add_filters()->mutable_semantic();
+  EXPECT_TRUE(Selector(css_and_semantic_proto).empty());
+
+  SelectorProto semantic_and_semantic_proto;
+  semantic_and_semantic_proto.add_filters()->mutable_semantic();
+  semantic_and_semantic_proto.add_filters()->mutable_semantic();
+  EXPECT_TRUE(Selector(semantic_and_semantic_proto).empty());
+}
+
 TEST(SelectorTest, Comparison) {
   // Note that comparison tests cover < indirectly through ==, since a == b is
   // defined as !(a < b) && !(b < a). This makes sense, as what matters is that
@@ -48,7 +74,7 @@ TEST(SelectorTest, Comparison) {
 }
 
 TEST(SelectorTest, SelectorInSet) {
-  std::set<Selector> selectors;
+  base::flat_set<Selector> selectors;
   selectors.insert(Selector({"a"}));
   selectors.insert(Selector({"a"}));
   selectors.insert(Selector({"b"}));
@@ -57,7 +83,7 @@ TEST(SelectorTest, SelectorInSet) {
                                               Selector({"c"})));
 }
 
-TEST(SelectorTest, Comparison_PseudoType) {
+TEST(SelectorTest, ComparisonPseudoType) {
   EXPECT_FALSE(Selector({"a"}).SetPseudoType(PseudoType::BEFORE) ==
                Selector({"a"}).SetPseudoType(PseudoType::AFTER));
   EXPECT_FALSE(Selector({"a"}).SetPseudoType(PseudoType::BEFORE) ==
@@ -70,13 +96,13 @@ TEST(SelectorTest, Comparison_PseudoType) {
               Selector({"a"}).SetPseudoType(PseudoType::BEFORE));
 }
 
-TEST(SelectorTest, Comparison_Visibility) {
+TEST(SelectorTest, ComparisonVisibility) {
   EXPECT_FALSE(Selector({"a"}) == Selector({"a"}).MustBeVisible());
   EXPECT_TRUE(Selector({"a"}).MustBeVisible() ==
               Selector({"a"}).MustBeVisible());
 }
 
-TEST(SelectorTest, Comparison_NonEmptyBoundingBox) {
+TEST(SelectorTest, ComparisonNonEmptyBoundingBox) {
   Selector has_bounding_box_default = Selector({"a"});
   has_bounding_box_default.proto.add_filters()->mutable_bounding_box();
 
@@ -95,7 +121,7 @@ TEST(SelectorTest, Comparison_NonEmptyBoundingBox) {
   EXPECT_TRUE(has_bounding_box_default == has_bounding_box_explicit);
 }
 
-TEST(SelectorTest, Comparison_InnerText) {
+TEST(SelectorTest, ComparisonInnerText) {
   EXPECT_FALSE(Selector({"a"}).MatchingInnerText("a") ==
                Selector({"a"}).MatchingInnerText("b"));
   EXPECT_TRUE(Selector({"a"}).MatchingInnerText("a") ==
@@ -107,7 +133,7 @@ TEST(SelectorTest, Comparison_InnerText) {
               Selector({"a"}).MatchingInnerText("a", true));
 }
 
-TEST(SelectorTest, Comparison_Value) {
+TEST(SelectorTest, ComparisonValue) {
   EXPECT_FALSE(Selector({"a"}).MatchingValue("a") ==
                Selector({"a"}).MatchingValue("b"));
   EXPECT_TRUE(Selector({"a"}).MatchingValue("a") ==
@@ -119,7 +145,7 @@ TEST(SelectorTest, Comparison_Value) {
               Selector({"a"}).MatchingValue("a", true));
 }
 
-TEST(SelectorTest, Comparison_MatchCssSelector) {
+TEST(SelectorTest, ComparisonMatchCssSelector) {
   Selector a = Selector({"button"});
   a.proto.add_filters()->set_match_css_selector(".class1");
   Selector b = Selector({"button"});
@@ -129,7 +155,7 @@ TEST(SelectorTest, Comparison_MatchCssSelector) {
   EXPECT_TRUE(a == a);
 }
 
-TEST(SelectorTest, Comparison_OnTop) {
+TEST(SelectorTest, ComparisonOnTop) {
   Selector a = Selector({"button"});
   a.proto.add_filters()->mutable_on_top();
   Selector b = Selector({"button"});
@@ -138,7 +164,7 @@ TEST(SelectorTest, Comparison_OnTop) {
   EXPECT_TRUE(a == a);
 }
 
-TEST(SelectorTest, Comparison_Frames) {
+TEST(SelectorTest, ComparisonFrames) {
   Selector ab({"a", "b"});
   EXPECT_EQ(ab, ab);
 
@@ -151,7 +177,7 @@ TEST(SelectorTest, Comparison_Frames) {
   EXPECT_FALSE(ab == b);
 }
 
-TEST(SelectorTest, Comparison_MultipleFilters) {
+TEST(SelectorTest, ComparisonMultipleFilters) {
   Selector abcdef;
   abcdef.proto.add_filters()->set_css_selector("abc");
   abcdef.proto.add_filters()->set_css_selector("def");
@@ -171,6 +197,112 @@ TEST(SelectorTest, Comparison_MultipleFilters) {
   abc.proto.add_filters()->set_css_selector("abc");
   EXPECT_TRUE(abc == abc);
   EXPECT_FALSE(abcdef == abc);
+}
+
+TEST(SelectorTest, ComparisonPropertyFilterTextFilter) {
+  Selector text_filter;
+  auto* filter = text_filter.proto.add_filters();
+  filter->mutable_property()->set_property("innerText");
+  filter->mutable_property()->mutable_text_filter()->set_case_sensitive(true);
+  filter->mutable_property()->mutable_text_filter()->set_re2(".*");
+
+  Selector text_filter_copy(text_filter.proto);
+  EXPECT_TRUE(text_filter == text_filter_copy);
+
+  Selector text_filter_property = text_filter;
+  text_filter_property.proto.mutable_filters(0)
+      ->mutable_property()
+      ->set_property("value");
+  EXPECT_FALSE(text_filter == text_filter_property);
+
+  Selector text_filter_case = text_filter;
+  text_filter_case.proto.mutable_filters(0)
+      ->mutable_property()
+      ->mutable_text_filter()
+      ->set_case_sensitive(false);
+  EXPECT_FALSE(text_filter == text_filter_case);
+
+  Selector text_filter_re2 = text_filter;
+  text_filter_re2.proto.mutable_filters(0)
+      ->mutable_property()
+      ->mutable_text_filter()
+      ->set_re2("^$");
+  EXPECT_FALSE(text_filter == text_filter_re2);
+}
+
+TEST(SelectorTest, ComparisonPropertyFilterAutofillValueRegexp) {
+  Selector autofill_filter;
+  auto* filter = autofill_filter.proto.add_filters();
+  filter->mutable_property()->set_property("innerText");
+  filter->mutable_property()
+      ->mutable_autofill_value_regexp()
+      ->mutable_profile()
+      ->set_identifier("profile");
+  filter->mutable_property()
+      ->mutable_autofill_value_regexp()
+      ->mutable_value_expression_re2()
+      ->set_case_sensitive(true);
+  filter->mutable_property()
+      ->mutable_autofill_value_regexp()
+      ->mutable_value_expression_re2()
+      ->mutable_value_expression()
+      ->add_chunk()
+      ->set_text("chunk");
+
+  Selector autofill_filter_copy(autofill_filter.proto);
+  EXPECT_TRUE(autofill_filter == autofill_filter_copy);
+
+  Selector autofill_filter_property = autofill_filter;
+  autofill_filter_property.proto.mutable_filters(0)
+      ->mutable_property()
+      ->set_property("value");
+  EXPECT_FALSE(autofill_filter == autofill_filter_property);
+
+  Selector autofill_filter_profile = autofill_filter;
+  autofill_filter_profile.proto.mutable_filters(0)
+      ->mutable_property()
+      ->mutable_autofill_value_regexp()
+      ->mutable_profile()
+      ->set_identifier("other");
+  EXPECT_FALSE(autofill_filter == autofill_filter_profile);
+
+  Selector autofill_filter_case = autofill_filter;
+  autofill_filter_case.proto.mutable_filters(0)
+      ->mutable_property()
+      ->mutable_autofill_value_regexp()
+      ->mutable_value_expression_re2()
+      ->set_case_sensitive(false);
+  EXPECT_FALSE(autofill_filter == autofill_filter_case);
+
+  Selector autofill_filter_chunk = autofill_filter;
+  autofill_filter_chunk.proto.mutable_filters(0)
+      ->mutable_property()
+      ->mutable_autofill_value_regexp()
+      ->mutable_value_expression_re2()
+      ->mutable_value_expression()
+      ->mutable_chunk(0)
+      ->set_text("text");
+  EXPECT_FALSE(autofill_filter == autofill_filter_chunk);
+}
+
+TEST(SelectorTest, ComparisonSemanticFilters) {
+  Selector semantic_selector;
+  auto* filter = semantic_selector.proto.add_filters();
+  filter->mutable_semantic()->set_objective(1);
+  filter->mutable_semantic()->set_role(2);
+
+  Selector semantic_selector_copy(semantic_selector.proto);
+  EXPECT_TRUE(semantic_selector == semantic_selector_copy);
+
+  Selector ignored_objective_selector;
+  filter = ignored_objective_selector.proto.add_filters();
+  filter->mutable_semantic()->set_ignore_objective(true);
+  filter->mutable_semantic()->set_role(2);
+
+  Selector ignored_objective_selector_copy(ignored_objective_selector.proto);
+  EXPECT_TRUE(ignored_objective_selector == ignored_objective_selector_copy);
+
+  EXPECT_FALSE(semantic_selector == ignored_objective_selector);
 }
 
 }  // namespace

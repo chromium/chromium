@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/web-locks/#callbackdef-lockgrantedcallback
+// https://w3c.github.io/web-locks/#callbackdef-lockgrantedcallback
 callback LockGrantedCallback = any (Lock? lock);
 
-// https://wicg.github.io/web-locks/#lockmanager
+// https://w3c.github.io/web-locks/#lockmanager
 [
     SecureContext,
     Exposed=(Window,Worker)

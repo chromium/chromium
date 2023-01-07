@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,47 +22,33 @@
 #include "extensions/shell/renderer/shell_content_renderer_client.h"
 #include "ui/base/resource/resource_bundle.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/dbus/constants/dbus_paths.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_paths.h"
-#include "chromeos/dbus/constants/dbus_paths.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
 #include "components/nacl/common/nacl_switches.h"  // nogncheck
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/nacl/common/nacl_paths.h"  // nogncheck
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
-#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 #include "components/nacl/zygote/nacl_fork_delegate_linux.h"
-#endif  // OS_POSIX && !OS_MAC && !OS_ANDROID
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_NACL)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/nix/xdg_util.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "base/base_paths_mac.h"
 #endif
 
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "components/crash/core/app/breakpad_linux.h"         // nogncheck
-#include "components/crash/core/app/crash_reporter_client.h"  // nogncheck
-#include "extensions/shell/app/shell_crash_reporter_client.h"
-#endif
-
 namespace {
-
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-extensions::ShellCrashReporterClient* GetCrashReporterClient() {
-  static base::NoDestructor<extensions::ShellCrashReporterClient> instance;
-  return instance.get();
-}
-#endif
 
 // Returns the same directory that the browser context will later be
 // initialized with.
@@ -75,13 +61,13 @@ base::FilePath GetDataPath() {
     return cmd_line->GetSwitchValuePath(switches::kContentShellDataPath);
 
   base::FilePath data_dir;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   data_dir = base::nix::GetXDGDirectory(
       env.get(), base::nix::kXdgConfigHomeEnvVar, base::nix::kDotConfigDir);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   CHECK(base::PathService::Get(base::DIR_LOCAL_APP_DATA, &data_dir));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   CHECK(base::PathService::Get(base::DIR_APP_DATA, &data_dir));
 #else
   NOTIMPLEMENTED();
@@ -120,7 +106,7 @@ void InitLogging() {
 // Returns the path to the extensions_shell_and_test.pak file.
 base::FilePath GetResourcesPakFilePath() {
   base::FilePath extensions_shell_and_test_pak_path;
-  base::PathService::Get(base::DIR_MODULE, &extensions_shell_and_test_pak_path);
+  base::PathService::Get(base::DIR_ASSETS, &extensions_shell_and_test_pak_path);
   extensions_shell_and_test_pak_path =
       extensions_shell_and_test_pak_path.AppendASCII(
           "extensions_shell_and_test.pak");
@@ -137,33 +123,26 @@ ShellMainDelegate::ShellMainDelegate() {
 ShellMainDelegate::~ShellMainDelegate() {
 }
 
-bool ShellMainDelegate::BasicStartupComplete(int* exit_code) {
+absl::optional<int> ShellMainDelegate::BasicStartupComplete() {
   InitLogging();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::RegisterPathProvider();
+  ash::RegisterPathProvider();
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::dbus_paths::RegisterPathProvider();
 #endif
-#if BUILDFLAG(ENABLE_NACL) && (defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if BUILDFLAG(ENABLE_NACL) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
   nacl::RegisterPathProvider();
 #endif
   extensions::RegisterPathProvider();
-  return false;
+  return absl::nullopt;
 }
 
 void ShellMainDelegate::PreSandboxStartup() {
   std::string process_type =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kProcessType);
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  crash_reporter::SetCrashReporterClient(GetCrashReporterClient());
-  // Reporting for sub-processes will be initialized in ZygoteForked.
-  if (process_type != switches::kZygoteProcess)
-    breakpad::InitCrashReporter(process_type);
-#endif
-
   if (ProcessNeedsResourceBundle(process_type))
     ui::ResourceBundle::InitSharedInstanceWithPakPath(
         GetResourcesPakFilePath());
@@ -190,25 +169,14 @@ void ShellMainDelegate::ProcessExiting(const std::string& process_type) {
   logging::CloseLogFile();
 }
 
-#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 void ShellMainDelegate::ZygoteStarting(
     std::vector<std::unique_ptr<content::ZygoteForkDelegate>>* delegates) {
 #if BUILDFLAG(ENABLE_NACL)
   nacl::AddNaClZygoteForkDelegates(delegates);
 #endif  // BUILDFLAG(ENABLE_NACL)
 }
-#endif  // OS_POSIX && !OS_MAC && !OS_ANDROID
-
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-void ShellMainDelegate::ZygoteForked() {
-  std::string process_type =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kProcessType);
-  breakpad::InitCrashReporter(process_type);
-}
-#endif
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
 
 // static
 bool ShellMainDelegate::ProcessNeedsResourceBundle(
@@ -220,7 +188,7 @@ bool ShellMainDelegate::ProcessNeedsResourceBundle(
 #if BUILDFLAG(ENABLE_NACL)
          process_type == switches::kNaClLoaderProcess ||
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
          process_type == switches::kGpuProcess ||
 #endif
          process_type == switches::kUtilityProcess;

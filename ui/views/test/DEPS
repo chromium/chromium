@@ -7,4 +7,7 @@ specific_include_rules = {
     "+mojo/core/embedder",
     "+ui/gl",
   ],
+  "view_skia_gold_pixel_diff.cc" : [
+    "+ui/snapshot",
+  ],
 }

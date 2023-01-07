@@ -50,6 +50,7 @@ from blinkpy.tool.commands.queries import PrintExpectations
 from blinkpy.tool.commands.rebaseline import Rebaseline
 from blinkpy.tool.commands.rebaseline_cl import RebaselineCL
 from blinkpy.tool.commands.rebaseline_test import RebaselineTest
+from blinkpy.tool.commands.update_metadata import UpdateMetadata
 
 _log = logging.getLogger(__name__)
 
@@ -66,12 +67,6 @@ class BlinkTool(Host):
             dest='verbose',
             default=False,
             help='enable all logging'),
-        optparse.make_option(
-            '-d',
-            '--directory',
-            action='append',
-            default=[],
-            help='Directory to look at for changed files'),
     ]
 
     def __init__(self, path):
@@ -89,6 +84,7 @@ class BlinkTool(Host):
             Rebaseline(),
             RebaselineCL(),
             RebaselineTest(),
+            UpdateMetadata(self),
         ]
         self.help_command = HelpCommand(tool=self)
         self.commands.append(self.help_command)
@@ -102,7 +98,8 @@ class BlinkTool(Host):
 
         command = self.command_by_name(command_name) or self.help_command
         if not command:
-            option_parser.error('%s is not a recognized command', command_name)
+            option_parser.error('%s is not a recognized command' %
+                                command_name)
 
         command.set_option_parser(option_parser)
         (options, args) = command.parse_args(args)

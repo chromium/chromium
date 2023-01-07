@@ -1,0 +1,128 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+static_library("backend") {
+  sources = [
+    "cpu_usage_data.cc",
+    "cpu_usage_data.h",
+    "cros_healthd_helpers.cc",
+    "cros_healthd_helpers.h",
+    "diagnostics_manager.cc",
+    "diagnostics_manager.h",
+    "histogram_util.cc",
+    "histogram_util.h",
+    "input_data_provider.cc",
+    "input_data_provider.h",
+    "input_data_provider_keyboard.cc",
+    "input_data_provider_keyboard.h",
+    "input_data_provider_touch.cc",
+    "input_data_provider_touch.h",
+    "network_health_provider.cc",
+    "network_health_provider.h",
+    "power_manager_client_conversions.cc",
+    "power_manager_client_conversions.h",
+    "routine_properties.cc",
+    "routine_properties.h",
+    "session_log_async_helper.cc",
+    "session_log_async_helper.h",
+    "session_log_handler.cc",
+    "session_log_handler.h",
+    "system_data_provider.cc",
+    "system_data_provider.h",
+    "system_routine_controller.cc",
+    "system_routine_controller.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants:constants",
+    "//ash/public/cpp",
+    "//ash/webui/diagnostics_ui/mojom",
+    "//base",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/services/network_config:in_process_instance",
+    "//chromeos/services/network_config/public/cpp",
+    "//chromeos/services/network_health/public/mojom",
+    "//chromeos/strings/",
+    "//chromeos/system",
+    "//content/public/browser",
+    "//services/data_decoder/public/cpp",
+    "//services/device/public/mojom",
+    "//ui/base",
+    "//ui/base/ime/ash",
+    "//ui/chromeos/events",
+    "//ui/events/devices",
+    "//ui/events/ozone",
+    "//ui/events/ozone/evdev:event_device_info",
+    "//ui/events/ozone/layout",
+    "//ui/gfx",
+    "//ui/shell_dialogs",
+    "//ui/web_dialogs",
+    "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "cpu_usage_data_unittest.cc",
+    "input_data_provider_keyboard_unittest.cc",
+    "input_data_provider_unittest.cc",
+    "network_health_provider_unittest.cc",
+    "power_manager_client_conversions_unittest.cc",
+    "routine_properties_unittest.cc",
+    "session_log_async_helper_unittest.cc",
+    "session_log_handler_unittest.cc",
+    "system_data_provider_unittest.cc",
+    "system_routine_controller_unittest.cc",
+  ]
+
+  deps = [
+    ":backend",
+    "//ash",
+    "//ash:test_support",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//ash/public/cpp/holding_space:test_support",
+    "//ash/webui/diagnostics_ui/mojom",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus:test_support",
+    "//chromeos/ash/components/dbus/shill",
+    "//chromeos/ash/services/cros_healthd/public/cpp",
+    "//chromeos/ash/services/cros_healthd/public/mojom",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//chromeos/login/login_state:login_state",
+    "//chromeos/services/network_config:in_process_instance",
+    "//chromeos/services/network_config:network_config",
+    "//chromeos/services/network_config/public/cpp:test_support",
+    "//chromeos/services/network_config/public/mojom",
+    "//chromeos/system",
+    "//components/onc",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//dbus",
+    "//device/udev_linux:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/device/public/cpp:test_support",
+    "//testing/gtest",
+    "//ui/chromeos/events",
+    "//ui/events/ozone",
+    "//ui/events/ozone/evdev:event_device_info_test_utils",
+    "//ui/gfx",
+    "//ui/shell_dialogs",
+    "//ui/views:test_support",
+    "//ui/webui",
+  ]
+}

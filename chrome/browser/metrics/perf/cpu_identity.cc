@@ -1,17 +1,19 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/perf/cpu_identity.h"
 
-#include <algorithm>  // for std::lower_bound()
 #include <string.h>
 
+#include <algorithm>  // for std::lower_bound()
+
 #include "base/cpu.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace metrics {
 
@@ -21,6 +23,7 @@ const CpuUarchTableEntry kCpuUarchTable[] = {
     // These were found on various sources on the Internet. Main ones are:
     // http://instlatx64.atw.hu/ for CPUID to model name and
     // http://www.cpu-world.com for model name to microarchitecture
+    // clang-format off
     {"06_09", "Banias"},
     {"06_0D", "Dothan"},
     {"06_0F", "Merom"},
@@ -59,15 +62,17 @@ const CpuUarchTableEntry kCpuUarchTable[] = {
     {"06_7A", "GoldmontPlus"},
     {"06_8C", "Tigerlake"},
     {"06_8E", "Kabylake"},
+    {"06_9C", "Tremont"},     // Jasperlake
     {"06_9E", "Kabylake"},
     {"0F_03", "Prescott"},
     {"0F_04", "Prescott"},
     {"0F_06", "Presler"},
     {"15_70", "Excavator"},   // AMD Stoney Ridge
+    // clang-format on
 };
 
 const CpuUarchTableEntry* kCpuUarchTableEnd =
-    kCpuUarchTable + base::size(kCpuUarchTable);
+    kCpuUarchTable + std::size(kCpuUarchTable);
 
 bool CpuUarchTableCmp(const CpuUarchTableEntry& a,
                       const CpuUarchTableEntry& b) {
@@ -101,7 +106,14 @@ std::string GetCpuUarch(const CPUIdentity& cpuid) {
 CPUIdentity GetCPUIdentity() {
   CPUIdentity result = {};
   result.arch = base::SysInfo::OperatingSystemArchitecture();
-  result.release = base::SysInfo::OperatingSystemVersion();
+  result.release =
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      base::SysInfo::KernelVersion();
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+      base::SysInfo::OperatingSystemVersion();
+#else
+#error "Unsupported configuration"
+#endif
   base::CPU cpuid;
   result.vendor = cpuid.vendor_name();
   result.family = cpuid.family();

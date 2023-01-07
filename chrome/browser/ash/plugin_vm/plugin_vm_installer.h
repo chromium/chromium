@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,19 +8,19 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_license_checker.h"
-#include "chromeos/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/concierge_client.h"
-#include "chromeos/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_service.pb.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 
 namespace download {
-class DownloadService;
+class BackgroundDownloadService;
 struct CompletionInfo;
 }  // namespace download
 
@@ -43,7 +43,7 @@ class PluginVmDriveImageDownloadService;
 // depending on whether an .iso (new VM) or archive (prepared VM) is
 // downloaded.
 class PluginVmInstaller : public KeyedService,
-                          public chromeos::ConciergeClient::DiskImageObserver {
+                          public ash::ConciergeClient::DiskImageObserver {
  public:
   // FailureReasons values are logged to UMA and shown to users. Do not change
   // or re-use enum values.
@@ -75,9 +75,14 @@ class PluginVmInstaller : public KeyedService,
     INVALID_LICENSE = 24,
     OFFLINE = 25,
     LIST_VM_DISKS_FAILED = 26,
-    OUT_OF_DISK_SPACE = 27,  // Hard error, we actually ran out of space.
+    OUT_OF_DISK_SPACE = 27,    // Hard error, we actually ran out of space.
+    DOWNLOAD_FAILED_401 = 28,  // Common HTTP status codes for errors.
+    DOWNLOAD_FAILED_403 = 29,
+    DOWNLOAD_FAILED_404 = 30,
+    // Download appeared to succeed but downloaded image size was unexpected
+    DOWNLOAD_SIZE_MISMATCH = 31,
 
-    kMaxValue = OUT_OF_DISK_SPACE,
+    kMaxValue = DOWNLOAD_SIZE_MISMATCH,
   };
 
   enum class InstallingState {
@@ -90,6 +95,9 @@ class PluginVmInstaller : public KeyedService,
     kDownloadingImage,
     kImporting,
   };
+
+  static constexpr int64_t kImageSizeUnknown = -1;
+  static constexpr int64_t kImageSizeError = -2;
 
   // Observer for installation progress.
   class Observer {
@@ -115,9 +123,12 @@ class PluginVmInstaller : public KeyedService,
 
   explicit PluginVmInstaller(Profile* profile);
 
+  PluginVmInstaller(const PluginVmInstaller&) = delete;
+  PluginVmInstaller& operator=(const PluginVmInstaller&) = delete;
+
   // Start the installation. Progress updates will be sent to the observer.
   // Returns a FailureReason if the installation couldn't be started.
-  base::Optional<FailureReason> Start();
+  absl::optional<FailureReason> Start();
   // Cancel the installation, and calls OnCancelFinished() when done. Some steps
   // cannot be directly cancelled, in which case we wait for the step to
   // complete and then abort the installation.
@@ -152,11 +163,12 @@ class PluginVmInstaller : public KeyedService,
   // Returns free disk space required to install Plugin VM in bytes.
   int64_t RequiredFreeDiskSpace();
 
+  void SkipLicenseCheckForTesting() { skip_license_check_for_testing_ = true; }
   void SetFreeDiskSpaceForTesting(int64_t bytes) {
     free_disk_space_for_testing_ = bytes;
   }
   void SetDownloadServiceForTesting(
-      download::DownloadService* download_service);
+      download::BackgroundDownloadService* download_service);
   void SetDownloadedImageForTesting(const base::FilePath& downloaded_image);
   void SetDriveDownloadServiceForTesting(
       std::unique_ptr<PluginVmDriveImageDownloadService>
@@ -179,7 +191,7 @@ class PluginVmInstaller : public KeyedService,
   void CheckForExistingVm();
   void OnConciergeAvailable(bool success);
   void OnListVmDisks(
-      base::Optional<vm_tools::concierge::ListVmDisksResponse> response);
+      absl::optional<vm_tools::concierge::ListVmDisksResponse> response);
 
   void CheckDiskSpace();
   void OnAvailableDiskSpace(int64_t bytes);
@@ -188,7 +200,7 @@ class PluginVmInstaller : public KeyedService,
   // Called repeatedly.
   void OnDlcDownloadProgressUpdated(double progress);
   void OnDlcDownloadCompleted(
-      const chromeos::DlcserviceClient::InstallResult& install_result);
+      const ash::DlcserviceClient::InstallResult& install_result);
 
   void StartDispatcher();
   void OnDispatcherStarted(bool success);
@@ -203,23 +215,23 @@ class PluginVmInstaller : public KeyedService,
   void DetectImageType();
   void OnImageTypeDetected();
   // Ran as a blocking task preparing the FD for the ImportDiskImage call.
-  base::Optional<base::ScopedFD> PrepareFD();
+  absl::optional<base::ScopedFD> PrepareFD();
   // Calls CreateDiskImage or ImportDiskImage, depending on whether we are
   // creating a new VM from an ISO, or importing a prepared VM image.
-  void OnFDPrepared(base::Optional<base::ScopedFD> maybe_fd);
+  void OnFDPrepared(absl::optional<base::ScopedFD> maybe_fd);
   // Callback for the concierge CreateDiskImage/ImportDiskImage calls. The
   // import has just started (unless that failed).
   template <typename ReplyType>
-  void OnImportDiskImage(base::Optional<ReplyType> reply);
+  void OnImportDiskImage(absl::optional<ReplyType> reply);
   // Progress updates are sent to OnDiskImageProgress(). After we get a signal
   // that the import is finished successfully, we make one final call to
   // concierge's DiskImageStatus method to get a final resolution.
   void RequestFinalStatus();
   void OnFinalDiskImageStatus(
-      base::Optional<vm_tools::concierge::DiskImageStatusResponse> response);
+      absl::optional<vm_tools::concierge::DiskImageStatusResponse> response);
   // Finishes the processing of installation. If |failure_reason| has a value,
   // then the import has failed, otherwise it was successful.
-  void OnImported(base::Optional<FailureReason> failure_reason);
+  void OnImported(absl::optional<FailureReason> failure_reason);
 
   // End of the install flow!
 
@@ -242,7 +254,7 @@ class PluginVmInstaller : public KeyedService,
   void CancelImport();
   // Callback for the concierge CancelDiskImageOperation call.
   void OnImportDiskImageCancelled(
-      base::Optional<vm_tools::concierge::CancelDiskImageResponse> response);
+      absl::optional<vm_tools::concierge::CancelDiskImageResponse> response);
   // Called once cancel is completed, firing the OnCancelFinished() observer
   // event.
   void CancelFinished();
@@ -261,7 +273,7 @@ class PluginVmInstaller : public KeyedService,
 
   Profile* profile_ = nullptr;
   Observer* observer_ = nullptr;
-  download::DownloadService* download_service_ = nullptr;
+  download::BackgroundDownloadService* download_service_ = nullptr;
   State state_ = State::kIdle;
   InstallingState installing_state_ = InstallingState::kInactive;
   base::TimeTicks setup_start_tick_;
@@ -269,24 +281,23 @@ class PluginVmInstaller : public KeyedService,
   base::FilePath downloaded_image_;
   // Used to identify our running import with concierge.
   std::string current_import_command_uuid_;
-  // -1 when is not yet determined.
-  int64_t downloaded_image_size_ = -1;
+  int64_t expected_image_size_;
+  int64_t downloaded_image_size_;
   bool creating_new_vm_ = false;
   double progress_ = 0;
   std::unique_ptr<PluginVmDriveImageDownloadService> drive_download_service_;
   std::unique_ptr<PluginVmLicenseChecker> license_checker_;
   bool using_drive_download_service_ = false;
 
+  bool skip_license_check_for_testing_ = false;
   // -1 indicates not set
   int64_t free_disk_space_for_testing_ = -1;
-  base::Optional<base::FilePath> downloaded_image_for_testing_;
+  absl::optional<base::FilePath> downloaded_image_for_testing_;
 
   // Keep the system awake during installation.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
   base::WeakPtrFactory<PluginVmInstaller> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmInstaller);
 };
 
 }  // namespace plugin_vm

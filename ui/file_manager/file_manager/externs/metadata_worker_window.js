@@ -1,11 +1,11 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @interface
  */
-/* #export */ class MetadataParserLogger {
+export class MetadataParserLogger {
   constructor() {
     /**
      * Verbose logging for the dispatcher.
@@ -43,5 +43,5 @@
  * @param {function(!Entry)} successCallback
  * @param {function(!FileError)=} opt_errorCallback
  */
-/* #export */ const webkitResolveLocalFileSystemURL = function(
+export const webkitResolveLocalFileSystemURL = function(
     url, successCallback, opt_errorCallback) {};

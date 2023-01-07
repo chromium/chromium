@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -24,6 +23,7 @@ GpuServiceFactory::GpuServiceFactory(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     const gpu::GpuFeatureInfo& gpu_feature_info,
+    const gpu::GPUInfo& gpu_info,
     base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager,
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     media::AndroidOverlayMojoFactoryCB android_overlay_factory_cb) {
@@ -31,6 +31,7 @@ GpuServiceFactory::GpuServiceFactory(
   gpu_preferences_ = gpu_preferences;
   gpu_workarounds_ = gpu_workarounds;
   gpu_feature_info_ = gpu_feature_info;
+  gpu_info_ = gpu_info;
   task_runner_ = base::ThreadTaskRunnerHandle::Get();
   media_gpu_channel_manager_ = std::move(media_gpu_channel_manager);
   gpu_memory_buffer_factory_ = gpu_memory_buffer_factory;
@@ -47,21 +48,22 @@ void GpuServiceFactory::RunMediaService(
   // operations are blocked, user may hear audio glitch or see video freezing,
   // hence "user blocking".
   scoped_refptr<base::SingleThreadTaskRunner> task_runner;
-#if defined(OS_WIN)
-  // Run everything on the gpu main thread, since that's where the CDM runs.
+#if BUILDFLAG(IS_WIN)
+  // Run everything on the gpu main thread, since it's required for decode swap
+  // chains. See SwapChainPresenter::TryPresentToDecodeSwapChain().
   task_runner = task_runner_;
 #else
   // TODO(crbug.com/786169): Check whether this needs to be single threaded.
   task_runner = base::ThreadPool::CreateSingleThreadTaskRunner(
       {base::TaskPriority::USER_BLOCKING});
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   using FactoryCallback =
       base::OnceCallback<std::unique_ptr<media::MediaService>()>;
   FactoryCallback factory =
       base::BindOnce(&media::CreateGpuMediaService, std::move(receiver),
                      gpu_preferences_, gpu_workarounds_, gpu_feature_info_,
-                     task_runner_, media_gpu_channel_manager_,
+                     gpu_info_, task_runner_, media_gpu_channel_manager_,
                      gpu_memory_buffer_factory_, android_overlay_factory_cb_);
   task_runner->PostTask(
       FROM_HERE,

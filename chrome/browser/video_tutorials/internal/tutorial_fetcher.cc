@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace video_tutorials {
 namespace {
@@ -68,6 +69,8 @@ class TutorialFetcherImpl : public TutorialFetcher {
   // TutorialFetcher implementation.
   void StartFetchForTutorials(FinishedCallback callback) override {
     auto resource_request = BuildGetRequest();
+    if (!resource_request)
+      return;
     url_loader_ = network::SimpleURLLoader::Create(
         std::move(resource_request), kVideoTutorialFetcherTrafficAnnotation);
     url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
@@ -76,8 +79,14 @@ class TutorialFetcherImpl : public TutorialFetcher {
                        weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void OnAcceptLanguagesChanged(const std::string& accept_languages) override {
+    accept_languages_ = accept_languages;
+  }
+
   // Build the request to get tutorial info.
   std::unique_ptr<network::ResourceRequest> BuildGetRequest() {
+    if (url_.is_empty() && g_override_url_for_testing.Get().is_empty())
+      return nullptr;
     auto request = std::make_unique<network::ResourceRequest>();
     request->method = net::HttpRequestHeaders::kGetMethod;
     request->headers.SetHeader("x-goog-api-key", api_key_);

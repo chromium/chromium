@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,17 +15,16 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/numerics/ranges.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/condition_variable.h"
-#include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chromecast/base/chromecast_switches.h"
-#include "chromecast/base/serializers.h"
 #include "chromecast/base/thread_health_checker.h"
 #include "chromecast/media/audio/audio_io_thread.h"
 #include "chromecast/media/audio/audio_log.h"
@@ -75,10 +74,8 @@ const int kMediaDuckFadeMs = 150;
 const int kMediaUnduckFadeMs = 700;
 const int kDefaultFilterFrameAlignment = 64;
 
-constexpr base::TimeDelta kMixerThreadCheckTimeout =
-    base::TimeDelta::FromSeconds(10);
-constexpr base::TimeDelta kHealthCheckInterval =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kMixerThreadCheckTimeout = base::Seconds(10);
+constexpr base::TimeDelta kHealthCheckInterval = base::Seconds(5);
 
 int GetFixedOutputSampleRate() {
   int fixed_sample_rate = GetSwitchValueNonNegativeInt(
@@ -103,11 +100,11 @@ base::TimeDelta GetNoInputCloseTimeout() {
   if (close_timeout_ms < 0) {
     return base::TimeDelta::Max();
   }
-  return base::TimeDelta::FromMilliseconds(close_timeout_ms);
+  return base::Milliseconds(close_timeout_ms);
 }
 
 void UseHighPriority() {
-#if (!defined(OS_FUCHSIA) && !defined(OS_ANDROID))
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
   struct sched_param params;
   params.sched_priority = sched_get_priority_max(SCHED_FIFO);
   pthread_setschedparam(pthread_self(), SCHED_FIFO, &params);
@@ -158,8 +155,8 @@ class StreamMixer::MixerThread : public base::PlatformThread::Delegate,
     tasks_.reserve(64);
     swapped_tasks_.reserve(64);
 
-    CHECK(base::PlatformThread::CreateWithPriority(
-        256 * 1024, this, &thread_, base::ThreadPriority::REALTIME_AUDIO));
+    CHECK(base::PlatformThread::CreateWithType(
+        256 * 1024, this, &thread_, base::ThreadType::kRealtimeAudio));
   }
 
   void Stop() {
@@ -298,9 +295,11 @@ StreamMixer::StreamMixer(
     LOG(INFO) << "Setting fixed sample rate to " << fixed_output_sample_rate_;
   }
 
-  CreatePostProcessors([](bool, const std::string&) {}, pipeline_json,
-                       kDefaultInputChannels);
-  mixer_pipeline_->SetPlayoutChannel(playout_channel_);
+  {
+    base::AutoLock lock(input_creation_lock_);
+    CreatePostProcessors([](bool, const std::string&) {}, pipeline_json,
+                         kDefaultInputChannels);
+  }
 
   // TODO(jyw): command line flag for filter frame alignment.
   DCHECK_EQ(filter_frame_alignment_ & (filter_frame_alignment_ - 1), 0)
@@ -333,20 +332,23 @@ void StreamMixer::ResetPostProcessorsOnThread(
     const std::string& override_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mixer_sequence_checker_);
 
-  // Detach inputs.
-  for (const auto& input : inputs_) {
-    input.second->SetFilterGroup(nullptr);
-  }
-
-  int expected_input_channels = kDefaultInputChannels;
-  for (const auto& input : inputs_) {
-    if (input.second->primary()) {
-      expected_input_channels =
-          std::max(expected_input_channels, input.second->num_channels());
+  {
+    base::AutoLock lock(input_creation_lock_);
+    // Detach inputs.
+    for (const auto& input : inputs_) {
+      input.second->SetFilterGroup(nullptr);
     }
+
+    int expected_input_channels = kDefaultInputChannels;
+    for (const auto& input : inputs_) {
+      if (input.second->primary()) {
+        expected_input_channels =
+            std::max(expected_input_channels, input.second->num_channels());
+      }
+    }
+    CreatePostProcessors(std::move(callback), override_config,
+                         expected_input_channels);
   }
-  CreatePostProcessors(std::move(callback), override_config,
-                       expected_input_channels);
 
   // Re-attach inputs.
   for (const auto& input : inputs_) {
@@ -355,7 +357,6 @@ void StreamMixer::ResetPostProcessorsOnThread(
     DCHECK(input_group) << "No input group for input.first->device_id()";
     input.second->SetFilterGroup(input_group);
   }
-  UpdatePlayoutChannel();
 }
 
 // May be called on mixer_task_runner_ or from ctor
@@ -366,8 +367,9 @@ void StreamMixer::CreatePostProcessors(CastMediaShlib::ResultCallback callback,
   mixer_pipeline_.reset();
 
   if (!override_config.empty()) {
-    PostProcessingPipelineParser parser(
-        base::DictionaryValue::From(DeserializeFromJson(override_config)));
+    auto value = base::JSONReader::Read(override_config);
+    CHECK(value) << "Invalid JSON";
+    PostProcessingPipelineParser parser(std::move(*value));
     mixer_pipeline_ = MixerPipeline::CreateMixerPipeline(
         &parser, post_processing_pipeline_factory_.get(),
         expected_input_channels);
@@ -461,7 +463,10 @@ StreamMixer::~StreamMixer() {
 
 void StreamMixer::FinalizeOnMixerThread() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mixer_sequence_checker_);
-  Stop(LoopbackInterruptReason::kOutputStopped);
+  {
+    base::AutoLock lock(input_creation_lock_);
+    Stop(LoopbackInterruptReason::kOutputStopped);
+  }
 
   inputs_.clear();
   ignored_inputs_.clear();
@@ -477,7 +482,10 @@ void StreamMixer::SetNumOutputChannelsOnThread(int num_channels) {
   fixed_num_output_channels_ = num_channels;
 
   if (state_ == kStateRunning && num_channels != num_output_channels_) {
-    Stop(LoopbackInterruptReason::kConfigChange);
+    {
+      base::AutoLock lock(input_creation_lock_);
+      Stop(LoopbackInterruptReason::kConfigChange);
+    }
     Start();
   }
 }
@@ -487,114 +495,119 @@ void StreamMixer::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mixer_sequence_checker_);
   DCHECK(state_ == kStateStopped);
 
-  // Detach inputs.
-  for (const auto& input : inputs_) {
-    input.second->SetFilterGroup(nullptr);
-  }
-
-  if (post_processor_input_channels_ != requested_input_channels_) {
-    CreatePostProcessors([](bool, const std::string&) {},
-                         "" /* override_config */, requested_input_channels_);
-  }
-
-  if (!output_) {
-    if (external_audio_pipeline_supported_) {
-      output_ = ExternalAudioPipelineShlib::CreateMixerOutputStream();
-    } else {
-      output_ = MixerOutputStream::Create();
+  {
+    base::AutoLock lock(input_creation_lock_);
+    // Detach inputs.
+    for (const auto& input : inputs_) {
+      input.second->SetFilterGroup(nullptr);
     }
+
+    if (post_processor_input_channels_ != requested_input_channels_) {
+      CreatePostProcessors([](bool, const std::string&) {},
+                           "" /* override_config */, requested_input_channels_);
+    }
+
+    if (!output_) {
+      if (external_audio_pipeline_supported_) {
+        output_ = ExternalAudioPipelineShlib::CreateMixerOutputStream();
+      } else {
+        output_ = MixerOutputStream::Create();
+      }
+    }
+    DCHECK(output_);
+
+    int requested_output_channels;
+    if (fixed_num_output_channels_ != kInvalidNumChannels) {
+      requested_output_channels = fixed_num_output_channels_;
+    } else {
+      requested_output_channels = mixer_pipeline_->GetOutputChannelCount();
+    }
+
+    int requested_sample_rate;
+    if (fixed_output_sample_rate_ != MixerOutputStream::kInvalidSampleRate) {
+      requested_sample_rate = fixed_output_sample_rate_;
+    } else if (low_sample_rate_cutoff_ !=
+                   MixerOutputStream::kInvalidSampleRate &&
+               requested_output_samples_per_second_ < low_sample_rate_cutoff_) {
+      requested_sample_rate =
+          output_samples_per_second_ != MixerOutputStream::kInvalidSampleRate
+              ? output_samples_per_second_
+              : kLowSampleRateFallback;
+    } else {
+      requested_sample_rate = requested_output_samples_per_second_;
+    }
+
+    if (!output_->Start(requested_sample_rate, requested_output_channels)) {
+      Stop(LoopbackInterruptReason::kOutputStopped);
+      return;
+    }
+
+    num_output_channels_ = output_->GetNumChannels();
+    output_samples_per_second_ = output_->GetSampleRate();
+    AUDIO_LOG(INFO) << "Output " << num_output_channels_ << " "
+                    << ChannelString(num_output_channels_) << " at "
+                    << output_samples_per_second_ << " samples per second";
+    // Make sure the number of frames meets the filter alignment requirements.
+    frames_per_write_ =
+        output_->OptimalWriteFramesCount() & ~(filter_frame_alignment_ - 1);
+    CHECK_GT(frames_per_write_, 0);
+
+    output_channel_mixer_ = std::make_unique<InterleavedChannelMixer>(
+        mixer::GuessChannelLayout(mixer_pipeline_->GetOutputChannelCount()),
+        mixer_pipeline_->GetOutputChannelCount(),
+        mixer::GuessChannelLayout(num_output_channels_), num_output_channels_,
+        frames_per_write_);
+
+    int num_loopback_channels = mixer_pipeline_->GetLoopbackChannelCount();
+    if (!enable_dynamic_channel_count_ && num_output_channels_ == 1) {
+      num_loopback_channels = 1;
+    }
+    AUDIO_LOG(INFO) << "Using " << num_loopback_channels << " loopback "
+                    << ChannelString(num_loopback_channels);
+    loopback_channel_mixer_ = std::make_unique<InterleavedChannelMixer>(
+        mixer::GuessChannelLayout(mixer_pipeline_->GetLoopbackChannelCount()),
+        mixer_pipeline_->GetLoopbackChannelCount(),
+        mixer::GuessChannelLayout(num_loopback_channels), num_loopback_channels,
+        frames_per_write_);
+
+    loopback_handler_->SetDataSize(frames_per_write_ *
+                                   mixer_pipeline_->GetLoopbackChannelCount() *
+                                   sizeof(float));
+
+    // Initialize filters.
+    mixer_pipeline_->Initialize(output_samples_per_second_, frames_per_write_);
+
+    // Determine the appropriate sample rate for the redirector. If a product
+    // needs to have these be different and support redirecting, then we will
+    // need to add/update the per-input resamplers before redirecting.
+    redirector_samples_per_second_ = GetSampleRateForDeviceId(
+        ::media::AudioDeviceDescription::kDefaultDeviceId);
+
+    const std::vector<const char*> redirectable_device_ids = {
+        kPlatformAudioDeviceId, kAlarmAudioDeviceId, kTtsAudioDeviceId,
+        ::media::AudioDeviceDescription::kDefaultDeviceId,
+        ::media::AudioDeviceDescription::kCommunicationsDeviceId};
+
+    for (const char* device_id : redirectable_device_ids) {
+      DCHECK_EQ(redirector_samples_per_second_,
+                GetSampleRateForDeviceId(device_id));
+    }
+
+    redirector_frames_per_write_ = redirector_samples_per_second_ *
+                                   frames_per_write_ /
+                                   output_samples_per_second_;
+    for (auto& redirector : audio_output_redirectors_) {
+      redirector.second->SetSampleRate(redirector_samples_per_second_);
+    }
+
+    state_ = kStateRunning;
+    playback_loop_task_ = base::BindRepeating(&StreamMixer::PlaybackLoop,
+                                              weak_factory_.GetWeakPtr());
+
+    // Write one buffer of silence to get correct rendering delay in the
+    // postprocessors.
+    WriteOneBuffer();
   }
-  DCHECK(output_);
-
-  int requested_output_channels;
-  if (fixed_num_output_channels_ != kInvalidNumChannels) {
-    requested_output_channels = fixed_num_output_channels_;
-  } else {
-    requested_output_channels = mixer_pipeline_->GetOutputChannelCount();
-  }
-
-  int requested_sample_rate;
-  if (fixed_output_sample_rate_ != MixerOutputStream::kInvalidSampleRate) {
-    requested_sample_rate = fixed_output_sample_rate_;
-  } else if (low_sample_rate_cutoff_ != MixerOutputStream::kInvalidSampleRate &&
-             requested_output_samples_per_second_ < low_sample_rate_cutoff_) {
-    requested_sample_rate =
-        output_samples_per_second_ != MixerOutputStream::kInvalidSampleRate
-            ? output_samples_per_second_
-            : kLowSampleRateFallback;
-  } else {
-    requested_sample_rate = requested_output_samples_per_second_;
-  }
-
-  if (!output_->Start(requested_sample_rate, requested_output_channels)) {
-    Stop(LoopbackInterruptReason::kOutputStopped);
-    return;
-  }
-
-  num_output_channels_ = output_->GetNumChannels();
-  output_samples_per_second_ = output_->GetSampleRate();
-  AUDIO_LOG(INFO) << "Output " << num_output_channels_ << " "
-                  << ChannelString(num_output_channels_) << " at "
-                  << output_samples_per_second_ << " samples per second";
-  // Make sure the number of frames meets the filter alignment requirements.
-  frames_per_write_ =
-      output_->OptimalWriteFramesCount() & ~(filter_frame_alignment_ - 1);
-  CHECK_GT(frames_per_write_, 0);
-
-  output_channel_mixer_ = std::make_unique<InterleavedChannelMixer>(
-      mixer::GuessChannelLayout(mixer_pipeline_->GetOutputChannelCount()),
-      mixer_pipeline_->GetOutputChannelCount(),
-      mixer::GuessChannelLayout(num_output_channels_), num_output_channels_,
-      frames_per_write_);
-
-  int num_loopback_channels = mixer_pipeline_->GetLoopbackChannelCount();
-  if (!enable_dynamic_channel_count_ && num_output_channels_ == 1) {
-    num_loopback_channels = 1;
-  }
-  AUDIO_LOG(INFO) << "Using " << num_loopback_channels << " loopback "
-                  << ChannelString(num_loopback_channels);
-  loopback_channel_mixer_ = std::make_unique<InterleavedChannelMixer>(
-      mixer::GuessChannelLayout(mixer_pipeline_->GetLoopbackChannelCount()),
-      mixer_pipeline_->GetLoopbackChannelCount(),
-      mixer::GuessChannelLayout(num_loopback_channels), num_loopback_channels,
-      frames_per_write_);
-
-  loopback_handler_->SetDataSize(frames_per_write_ *
-                                 mixer_pipeline_->GetLoopbackChannelCount() *
-                                 sizeof(float));
-
-  // Initialize filters.
-  mixer_pipeline_->Initialize(output_samples_per_second_, frames_per_write_);
-
-  // Determine the appropriate sample rate for the redirector. If a product
-  // needs to have these be different and support redirecting, then we will
-  // need to add/update the per-input resamplers before redirecting.
-  redirector_samples_per_second_ = GetSampleRateForDeviceId(
-      ::media::AudioDeviceDescription::kDefaultDeviceId);
-
-  const std::vector<const char*> redirectable_device_ids = {
-      kPlatformAudioDeviceId, kAlarmAudioDeviceId, kTtsAudioDeviceId,
-      ::media::AudioDeviceDescription::kDefaultDeviceId,
-      ::media::AudioDeviceDescription::kCommunicationsDeviceId};
-
-  for (const char* device_id : redirectable_device_ids) {
-    DCHECK_EQ(redirector_samples_per_second_,
-              GetSampleRateForDeviceId(device_id));
-  }
-
-  redirector_frames_per_write_ = redirector_samples_per_second_ *
-                                 frames_per_write_ / output_samples_per_second_;
-  for (auto& redirector : audio_output_redirectors_) {
-    redirector.second->SetSampleRate(redirector_samples_per_second_);
-  }
-
-  state_ = kStateRunning;
-  playback_loop_task_ = base::BindRepeating(&StreamMixer::PlaybackLoop,
-                                            weak_factory_.GetWeakPtr());
-
-  // Write one buffer of silence to get correct rendering delay in the
-  // postprocessors.
-  WriteOneBuffer();
 
   // Re-attach inputs.
   for (const auto& input : inputs_) {
@@ -655,7 +668,10 @@ void StreamMixer::CheckChangeOutputParams(int num_input_channels,
   requested_output_samples_per_second_ = input_samples_per_second;
 
   // Restart the output so that the new output params take effect.
-  Stop(LoopbackInterruptReason::kConfigChange);
+  {
+    base::AutoLock lock(input_creation_lock_);
+    Stop(LoopbackInterruptReason::kConfigChange);
+  }
   Start();
 }
 
@@ -685,10 +701,34 @@ int StreamMixer::GetEffectiveChannelCount(MixerInput::Source* input_source) {
 }
 
 void StreamMixer::AddInput(MixerInput::Source* input_source) {
-  RUN_ON_MIXER_THREAD(AddInputOnThread, input_source);
+  std::unique_ptr<MixerInput> input;
+  {
+    base::AutoLock lock(input_creation_lock_);
+    if (state_ == kStateRunning) {
+      input = CreateInput(input_source);
+    }
+  }
+  RUN_ON_MIXER_THREAD(AddInputOnThread, input_source, std::move(input));
 }
 
-void StreamMixer::AddInputOnThread(MixerInput::Source* input_source) {
+std::unique_ptr<MixerInput> StreamMixer::CreateInput(
+    MixerInput::Source* input_source) {
+  FilterGroup* input_group =
+      mixer_pipeline_->GetInputGroup(input_source->device_id());
+  DCHECK(input_group) << "Could not find a processor for "
+                      << input_source->device_id();
+
+  AUDIO_LOG(INFO) << "Add input " << input_source << " to "
+                  << input_group->name() << " @ "
+                  << input_group->GetInputSampleRate()
+                  << " samples per second. Is primary source? = "
+                  << input_source->primary();
+
+  return std::make_unique<MixerInput>(input_source, input_group);
+}
+
+void StreamMixer::AddInputOnThread(MixerInput::Source* input_source,
+                                   std::unique_ptr<MixerInput> input) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(mixer_sequence_checker_);
   DCHECK(input_source);
 
@@ -706,18 +746,19 @@ void StreamMixer::AddInputOnThread(MixerInput::Source* input_source) {
     Start();
   }
 
-  FilterGroup* input_group =
-      mixer_pipeline_->GetInputGroup(input_source->device_id());
-  DCHECK(input_group) << "Could not find a processor for "
-                      << input_source->device_id();
-
-  AUDIO_LOG(INFO) << "Add input " << input_source << " to "
-                  << input_group->name() << " @ "
-                  << input_group->GetInputSampleRate()
-                  << " samples per second. Is primary source? = "
-                  << input_source->primary();
-
-  auto input = std::make_unique<MixerInput>(input_source, input_group);
+  if (!input) {
+    input = CreateInput(input_source);
+  } else {
+    // Make sure the input is using the right filter group (since config could
+    // have been changed since the input was created).
+    FilterGroup* input_group =
+        mixer_pipeline_->GetInputGroup(input_source->device_id());
+    DCHECK(input_group) << "Could not find a processor for "
+                        << input_source->device_id();
+    input->SetFilterGroup(input_group);
+  }
+  DCHECK(input);
+  input->Initialize();
   if (state_ != kStateRunning) {
     // Mixer error occurred, signal error.
     MixerInput* input_ptr = input.get();
@@ -741,7 +782,6 @@ void StreamMixer::AddInputOnThread(MixerInput::Source* input_source) {
   }
 
   inputs_[input_source] = std::move(input);
-  UpdatePlayoutChannel();
   UpdateStreamCountsOnThread();
 }
 
@@ -756,16 +796,26 @@ void StreamMixer::RemoveInputOnThread(MixerInput::Source* input_source) {
 
   AUDIO_LOG(INFO) << "Remove input " << input_source;
 
+  std::unique_ptr<MixerInput> input;
   auto it = inputs_.find(input_source);
   if (it != inputs_.end()) {
     for (auto& redirector : audio_output_redirectors_) {
       redirector.second->RemoveInput(it->second.get());
     }
+    input = std::move(it->second);
     inputs_.erase(it);
+  } else {
+    it = ignored_inputs_.find(input_source);
+    if (it != ignored_inputs_.end()) {
+      input = std::move(it->second);
+      ignored_inputs_.erase(it);
+    }
   }
 
-  ignored_inputs_.erase(input_source);
-  UpdatePlayoutChannel();
+  if (input) {
+    input->Destroy();
+    io_task_runner_->DeleteSoon(FROM_HERE, std::move(input));
+  }
   UpdateStreamCountsOnThread();
 
   if (inputs_.empty()) {
@@ -777,32 +827,6 @@ void StreamMixer::SetCloseTimeout() {
   close_timestamp_ = (no_input_close_timeout_.is_max()
                           ? base::TimeTicks::Max()
                           : base::TimeTicks::Now() + no_input_close_timeout_);
-}
-
-void StreamMixer::UpdatePlayoutChannel() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(mixer_sequence_checker_);
-
-  int playout_channel;
-  if (inputs_.empty()) {
-    playout_channel = kChannelAll;
-  } else {
-    // Prefer kChannelAll even when there are some streams with a selected
-    // channel. This makes it so we use kChannelAll in postprocessors when
-    // TTS is playing out over channel-selected music.
-    playout_channel = std::numeric_limits<int>::max();
-    for (const auto& it : inputs_) {
-      playout_channel =
-          std::min(it.second->source()->playout_channel(), playout_channel);
-    }
-  }
-  if (playout_channel == playout_channel_) {
-    return;
-  }
-
-  DCHECK(playout_channel == kChannelAll || playout_channel >= 0);
-  AUDIO_LOG(INFO) << "Update playout channel: " << playout_channel;
-  playout_channel_ = playout_channel;
-  mixer_pipeline_->SetPlayoutChannel(playout_channel_);
 }
 
 void StreamMixer::UpdateStreamCounts() {
@@ -849,6 +873,7 @@ void StreamMixer::PlaybackLoop() {
   if (inputs_.empty() && base::TimeTicks::Now() >= close_timestamp_ &&
       !mixer_pipeline_->IsRinging()) {
     AUDIO_LOG(INFO) << "Close timeout";
+    base::AutoLock lock(input_creation_lock_);
     Stop(LoopbackInterruptReason::kOutputStopped);
     return;
   }
@@ -896,7 +921,7 @@ void StreamMixer::WriteMixedPcm(int frames, int64_t expected_playback_time) {
   // Hard limit to [1.0, -1.0]
   for (int i = 0; i < frames * loopback_channel_count; ++i) {
     // TODO(bshaya): Warn about clipping here.
-    loopback_data[i] = base::ClampToRange(loopback_data[i], -1.0f, 1.0f);
+    loopback_data[i] = base::clamp(loopback_data[i], -1.0f, 1.0f);
   }
 
   loopback_handler_->SendData(expected_playback_time,
@@ -908,7 +933,7 @@ void StreamMixer::WriteMixedPcm(int frames, int64_t expected_playback_time) {
 
   // Hard limit to [1.0, -1.0].
   for (int i = 0; i < frames * num_output_channels_; ++i) {
-    linearized_data[i] = base::ClampToRange(linearized_data[i], -1.0f, 1.0f);
+    linearized_data[i] = base::clamp(linearized_data[i], -1.0f, 1.0f);
   }
 
   bool playback_interrupted = false;
@@ -1045,6 +1070,20 @@ void StreamMixer::SetVolumeMultiplierOnThread(MixerInput::Source* source,
     it->second->SetVolumeMultiplier(multiplier);
   }
   UpdateStreamCountsOnThread();
+}
+
+void StreamMixer::SetSimulatedClockRate(MixerInput::Source* source,
+                                        double new_clock_rate) {
+  RUN_ON_MIXER_THREAD(SetSimulatedClockRateOnThread, source, new_clock_rate);
+}
+
+void StreamMixer::SetSimulatedClockRateOnThread(MixerInput::Source* source,
+                                                double new_clock_rate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(mixer_sequence_checker_);
+  auto it = inputs_.find(source);
+  if (it != inputs_.end()) {
+    it->second->SetSimulatedClockRate(new_clock_rate);
+  }
 }
 
 void StreamMixer::SetPostProcessorConfig(std::string name, std::string config) {

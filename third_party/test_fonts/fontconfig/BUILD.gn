@@ -1,0 +1,50 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/compiled_action.gni")
+
+if (is_linux || is_chromeos) {
+  group("test_support") {
+    testonly = true
+    public_deps = [ ":fontconfig_util_linux" ]
+    data_deps = [ "//third_party/test_fonts" ]
+    if (current_toolchain == host_toolchain) {
+      data_deps += [ ":do_generate_fontconfig_caches" ]
+    }
+  }
+
+  source_set("fontconfig_util_linux") {
+    testonly = true
+    sources = [
+      "fontconfig_util_linux.cc",
+      "fontconfig_util_linux.h",
+    ]
+    data_deps = [ ":fonts_conf" ]
+    deps = [ "//third_party/fontconfig" ]
+  }
+
+  copy("fonts_conf") {
+    sources = [ "fonts.conf" ]
+    outputs = [ "$root_out_dir/etc/fonts/{{source_file_part}}" ]
+  }
+
+  if (current_toolchain == host_toolchain) {
+    executable("generate_fontconfig_caches") {
+      testonly = true
+      sources = [ "generate_fontconfig_caches.cc" ]
+      deps = [ ":fontconfig_util_linux" ]
+    }
+
+    compiled_action("do_generate_fontconfig_caches") {
+      testonly = true
+      tool = ":generate_fontconfig_caches"
+
+      # The copied test fonts are inputs to generate_fontconfig_caches, so must
+      # be listed in deps, not data_deps (https://crbug.com/919422).
+      deps = [ "//third_party/test_fonts" ]
+      args = []
+      outputs = [ "$root_out_dir/fontconfig_caches/fb5c91b2895aa445d23aebf7f9e2189c-le64.cache-7" ]
+    }
+  }
+}

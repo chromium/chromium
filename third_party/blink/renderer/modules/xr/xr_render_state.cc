@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,9 +55,9 @@ HTMLCanvasElement* XRRenderState::output_canvas() const {
   return nullptr;
 }
 
-base::Optional<double> XRRenderState::inlineVerticalFieldOfView() const {
+absl::optional<double> XRRenderState::inlineVerticalFieldOfView() const {
   if (immersive_)
-    return base::nullopt;
+    return absl::nullopt;
   return inline_vertical_fov_;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,11 +28,11 @@ std::unique_ptr<base::DictionaryValue> CreateMessage(
   std::unique_ptr<base::DictionaryValue> sms =
       std::make_unique<base::DictionaryValue>();
   if (kDefaultNumber)
-    sms->SetString("number", kDefaultNumber);
+    sms->SetStringKey("number", kDefaultNumber);
   if (kDefaultMessage)
-    sms->SetString("text", kDefaultMessage);
+    sms->SetStringKey("text", kDefaultMessage);
   if (kDefaultTimestamp)
-    sms->SetString("timestamp", kDefaultMessage);
+    sms->SetStringKey("timestamp", kDefaultMessage);
   return sms;
 }
 
@@ -42,12 +41,13 @@ std::unique_ptr<base::DictionaryValue> CreateMessage(
 class SmsObserverTest : public AshTestBase {
  public:
   SmsObserverTest() = default;
+
+  SmsObserverTest(const SmsObserverTest&) = delete;
+  SmsObserverTest& operator=(const SmsObserverTest&) = delete;
+
   ~SmsObserverTest() override = default;
 
   SmsObserver* GetSmsObserver() { return Shell::Get()->sms_observer_.get(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SmsObserverTest);
 };
 
 // Verify if notification is received after receiving a sms message with
@@ -64,8 +64,7 @@ TEST_F(SmsObserverTest, SendTextMessage) {
   EXPECT_EQ(1u, notifications.size());
 
   EXPECT_EQ(u"000-000-0000", (*notifications.begin())->title());
-  EXPECT_EQ(base::UTF8ToUTF16("FakeSMSClient: \xF0\x9F\x98\x8A"),
-            (*notifications.begin())->message());
+  EXPECT_EQ(u"FakeSMSClient: 😊", (*notifications.begin())->message());
   MessageCenter::Get()->RemoveAllNotifications(false /* by_user */,
                                                MessageCenter::RemoveType::ALL);
   EXPECT_EQ(0u, MessageCenter::Get()->GetVisibleNotifications().size());

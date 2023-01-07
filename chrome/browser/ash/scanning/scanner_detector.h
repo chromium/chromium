@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "chromeos/scanning/scanner.h"
+#include "chromeos/ash/components/scanning/scanner.h"
+#include "chromeos/chromeos_export.h"
 
 namespace ash {
 
@@ -32,12 +33,12 @@ class CHROMEOS_EXPORT ScannerDetector {
   // Registers the callback used to provide notifications when scanners are
   // detected.
   using OnScannersDetectedCallback =
-      base::RepeatingCallback<void(std::vector<chromeos::Scanner> scanners)>;
+      base::RepeatingCallback<void(std::vector<Scanner> scanners)>;
   virtual void RegisterScannersDetectedCallback(
       OnScannersDetectedCallback callback) = 0;
 
   // Returns the detected scanners.
-  virtual std::vector<chromeos::Scanner> GetScanners() = 0;
+  virtual std::vector<Scanner> GetScanners() = 0;
 };
 
 }  // namespace ash

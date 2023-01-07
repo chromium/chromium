@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ public class InstalledWebappBridge {
      * relevant for.
      *
      * It would make more sense for this to be a subclass of
-     * {@link TrustedWebActivityPermissionManager} or a top level class. Unfortunately for the JNI
+     * {@link InstalledWebappPermissionManager} or a top level class. Unfortunately for the JNI
      * tool to be able to handle passing a class over the JNI boundary the class either needs to be
      * in this file or imported explicitly. Our presubmits don't like explicitly importing classes
      * that we don't need to, so it's easier to just let the class live here.
@@ -50,10 +50,11 @@ public class InstalledWebappBridge {
                 sNativeInstalledWebappProvider, type);
     }
 
-    public static void onGetPermissionResult(long callback, boolean allow) {
+    public static void runPermissionCallback(
+            long callback, @ContentSettingValues int settingValue) {
         if (callback == 0) return;
 
-        InstalledWebappBridgeJni.get().notifyPermissionResult(callback, allow);
+        InstalledWebappBridgeJni.get().runPermissionCallback(callback, settingValue);
     }
 
     @CalledByNative
@@ -63,7 +64,14 @@ public class InstalledWebappBridge {
 
     @CalledByNative
     private static Permission[] getPermissions(@ContentSettingsType int type) {
-        return TrustedWebActivityPermissionManager.get().getPermissions(type);
+        return InstalledWebappPermissionManager.get().getPermissions(type);
+    }
+
+    @CalledByNative
+    @ContentSettingValues
+    private static int getPermission(@ContentSettingsType int type, String origin) {
+        return InstalledWebappPermissionManager.get().getPermission(
+                type, Origin.create(Uri.parse(origin)));
     }
 
     @CalledByNative
@@ -77,18 +85,29 @@ public class InstalledWebappBridge {
     }
 
     @CalledByNative
-    private static void decidePermission(String url, long callback) {
-        Origin origin = Origin.create(Uri.parse(url));
+    private static void decidePermission(@ContentSettingsType int type, String originUrl,
+            String lastCommittedUrl, long callback) {
+        Origin origin = Origin.create(Uri.parse(originUrl));
         if (origin == null) {
-            onGetPermissionResult(callback, false);
+            runPermissionCallback(callback, ContentSettingValues.BLOCK);
             return;
         }
-        PermissionUpdater.get().getLocationPermission(origin, callback);
+        switch (type) {
+            case ContentSettingsType.GEOLOCATION:
+                PermissionUpdater.get().getLocationPermission(origin, lastCommittedUrl, callback);
+                break;
+            case ContentSettingsType.NOTIFICATIONS:
+                PermissionUpdater.get().requestNotificationPermission(
+                        origin, lastCommittedUrl, callback);
+                break;
+            default:
+                throw new IllegalStateException("Unsupported permission type.");
+        }
     }
 
     @NativeMethods
     interface Natives {
         void notifyPermissionsChange(long provider, int type);
-        void notifyPermissionResult(long callback, boolean allow);
+        void runPermissionCallback(long callback, @ContentSettingValues int settingValue);
     }
 }

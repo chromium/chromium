@@ -21,7 +21,16 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
   ctx.fillStyle = color_style;
   ctx.fillRect(0, 0, 10, 10);
 
-  var pixel = ctx.getImageData(5, 5, 1, 1, {colorSpace: data_color_space, storageFormat:data_storage_format}).data;
+  var data;
+  if (data_color_space) {
+    data = ctx.getImageData(5, 5, 1, 1, {colorSpace: data_color_space, storageFormat:data_storage_format});
+  } else {
+    // If no color space is specified, then getImageData should default to the canvas' color space.
+    data = ctx.getImageData(5, 5, 1, 1, {storageFormat:data_storage_format});
+    data_color_space = canvas_color_space;
+  }
+  assert_true(data_color_space === data.colorSpace);
+  var pixel = data.data;
 
   var epsilon = epsilon_f32;
   var pixel_expected;
@@ -63,13 +72,13 @@ function run_test(canvas_color_space, canvas_pixel_format, data_color_space, dat
 }
 
 function drawThenGetImageData() {
-  color_spaces = ['srgb', 'display-p3', 'rec2020'];
+  color_spaces = ['srgb', 'display-p3', 'rec2020', null];
   canvas_pixel_formats = ['uint8', 'float16'];
   image_data_pixel_formats = ['uint8', 'uint16', 'float32'];
   var passed = true;
   for (var i = 0; i < 3; ++i) {
     for (var j = 0; j < 2; ++j) {
-      for (var k = 0; k < 3; ++k) {
+      for (var k = 0; k < 4; ++k) {
         for (var l = 0; l < 3; ++l) {
           if (!run_test(color_spaces[i],
                         canvas_pixel_formats[j],

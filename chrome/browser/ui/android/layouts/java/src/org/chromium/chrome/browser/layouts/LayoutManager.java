@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,4 +28,11 @@ public interface LayoutManager extends LayoutStateProvider {
     <V extends SceneLayer> CompositorModelChangeProcessor<V> createCompositorMCP(
             PropertyModel model, V view,
             PropertyModelChangeProcessor.ViewBinder<PropertyModel, V, PropertyKey> viewBinder);
+
+    /**
+     * Start hiding the currently visible layout and show the one provided.
+     * @param layoutType The type of the next layout to show.
+     * @param animate Whether the transition should be animated if the layout supports it.
+     */
+    void showLayout(@LayoutType int layoutType, boolean animate);
 }

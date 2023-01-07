@@ -2,7 +2,7 @@
   "configuration_format_version": 3,
   "group_id" : "com.tools.android",
   "artifact_id" : "desugar_jdk_libs",
-  "version": "1.1.1",
+  "version": "1.1.5",
   "required_compilation_api_level": 26,
   "synthesized_library_classes_package_prefix": "j$.",
   "support_all_callbacks_from_library": true,
@@ -10,7 +10,6 @@
     {
       "api_level_below_or_equal": 25,
       "wrapper_conversion": [
-        "java.time.Clock"
       ]
     },
     {
@@ -73,28 +72,11 @@
     {
       "api_level_below_or_equal": 25,
       "rewrite_prefix": {
-        "j$.time.": "java.time.",
-        "java.time.": "j$.time.",
         "java.util.Desugar": "j$.util.Desugar"
       },
-      "backport": {
-        "java.lang.Double8": "java.lang.Double",
-        "java.lang.Integer8": "java.lang.Integer",
-        "java.lang.Long8": "java.lang.Long",
-        "java.lang.Math8": "java.lang.Math"
-      },
       "retarget_lib_member": {
-        "java.util.Date#toInstant": "java.util.DesugarDate",
-        "java.util.GregorianCalendar#toZonedDateTime": "java.util.DesugarGregorianCalendar",
-        "java.util.TimeZone#toZoneId": "java.util.DesugarTimeZone"
       },
       "custom_conversion": {
-        "java.time.ZonedDateTime": "java.time.TimeConversions",
-        "java.time.LocalDate": "java.time.TimeConversions",
-        "java.time.Duration": "java.time.TimeConversions",
-        "java.time.ZoneId": "java.time.TimeConversions",
-        "java.time.MonthDay": "java.time.TimeConversions",
-        "java.time.Instant": "java.time.TimeConversions"
       }
     },
     {
@@ -118,7 +100,6 @@
         "java.util.StringJoiner": "j$.util.StringJoiner",
         "java.util.Tripwire": "j$.util.Tripwire",
         "java.util.concurrent.DesugarUnsafe": "j$.util.concurrent.DesugarUnsafe",
-        "java.util.concurrent.ThreadLocalRandom": "j$.util.concurrent.ThreadLocalRandom",
         "java.util.concurrent.atomic.DesugarAtomic": "j$.util.concurrent.atomic.DesugarAtomic"
       },
       "retarget_lib_member": {
@@ -156,24 +137,11 @@
     {
       "api_level_below_or_equal": 25,
       "rewrite_prefix": {
-        "java.time.": "j$.time.",
         "java.util.Desugar": "j$.util.Desugar"
       },
       "retarget_lib_member": {
-        "java.util.Calendar#toInstant": "java.util.DesugarCalendar",
-        "java.util.Date#from": "java.util.DesugarDate",
-        "java.util.Date#toInstant": "java.util.DesugarDate",
-        "java.util.GregorianCalendar#from": "java.util.DesugarGregorianCalendar",
-        "java.util.GregorianCalendar#toZonedDateTime": "java.util.DesugarGregorianCalendar",
-        "java.util.TimeZone#toZoneId": "java.util.DesugarTimeZone"
       },
       "custom_conversion": {
-        "java.time.ZonedDateTime": "java.time.TimeConversions",
-        "java.time.LocalDate": "java.time.TimeConversions",
-        "java.time.Duration": "java.time.TimeConversions",
-        "java.time.ZoneId": "java.time.TimeConversions",
-        "java.time.MonthDay": "java.time.TimeConversions",
-        "java.time.Instant": "java.time.TimeConversions"
       }
     },
     {
@@ -188,7 +156,6 @@
         "java.util.PrimitiveIterator": "j$.util.PrimitiveIterator",
         "java.util.Spliterator": "j$.util.Spliterator",
         "java.util.StringJoiner": "j$.util.StringJoiner",
-        "java.util.concurrent.ThreadLocalRandom": "j$.util.concurrent.ThreadLocalRandom",
         "java.util.concurrent.atomic.DesugarAtomic": "j$.util.concurrent.atomic.DesugarAtomic"
       },
       "retarget_lib_member": {
@@ -206,9 +173,7 @@
         "java.util.concurrent.atomic.AtomicReference#getAndUpdate": "java.util.concurrent.atomic.DesugarAtomicReference",
         "java.util.concurrent.atomic.AtomicReference#updateAndGet": "java.util.concurrent.atomic.DesugarAtomicReference",
         "java.util.concurrent.atomic.AtomicReference#getAndAccumulate": "java.util.concurrent.atomic.DesugarAtomicReference",
-        "java.util.concurrent.atomic.AtomicReference#accumulateAndGet": "java.util.concurrent.atomic.DesugarAtomicReference",
-        "java.util.Collections#synchronizedMap": "java.util.DesugarCollections",
-        "java.util.Collections#synchronizedSortedMap": "java.util.DesugarCollections"
+        "java.util.concurrent.atomic.AtomicReference#accumulateAndGet": "java.util.concurrent.atomic.DesugarAtomicReference"
       },
       "dont_rewrite": [
         "java.util.Iterator#remove"
@@ -238,12 +203,13 @@
   ],
   "shrinker_config": [
     "-keepclassmembers enum * { public static **[] values(); public static ** valueOf(java.lang.String); public static final !synthetic <fields>; }",
-    "-keeppackagenames j$",
+    "-keeppackagenames j$.**",
     "-keepclassmembers class j$.util.IntSummaryStatistics { long count; long sum; int min; int max; }",
     "-keepclassmembers class j$.util.LongSummaryStatistics { long count; long sum; long min; long max; }",
     "-keepclassmembers class j$.util.DoubleSummaryStatistics { long count; double sum; double min; double max; }",
     "-keepattributes Signature",
     "-keepattributes EnclosingMethod",
-    "-keepattributes InnerClasses"
+    "-keepattributes InnerClasses",
+    "-dontwarn sun.misc.Unsafe"
   ]
 }

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "pdf/document_layout.h"
-#include "pdf/ppapi_migration/url_loader.h"
+#include "pdf/loader/url_loader.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
@@ -72,8 +72,8 @@ void PreviewModeClient::NotifyNumberOfFindResultsChanged(int total,
   NOTREACHED();
 }
 
-void PreviewModeClient::NotifySelectedFindResultChanged(
-    int current_find_index) {
+void PreviewModeClient::NotifySelectedFindResultChanged(int current_find_index,
+                                                        bool final_result) {
   NOTREACHED();
 }
 
@@ -141,24 +141,20 @@ void PreviewModeClient::DocumentLoadFailed() {
   client_->PreviewDocumentLoadFailed();
 }
 
-pp::Instance* PreviewModeClient::GetPluginInstance() {
-  return nullptr;
-}
-
 void PreviewModeClient::DocumentHasUnsupportedFeature(
     const std::string& feature) {
   NOTREACHED();
 }
 
-void PreviewModeClient::FormTextFieldFocusChange(bool in_focus) {
+void PreviewModeClient::FormFieldFocusChange(PDFEngine::FocusFieldType type) {
   NOTREACHED();
 }
 
-bool PreviewModeClient::IsPrintPreview() {
+bool PreviewModeClient::IsPrintPreview() const {
   return true;
 }
 
-SkColor PreviewModeClient::GetBackgroundColor() {
+SkColor PreviewModeClient::GetBackgroundColor() const {
   NOTREACHED();
   return SK_ColorTRANSPARENT;
 }
@@ -175,14 +171,6 @@ void PreviewModeClient::SetLinkUnderCursor(
 bool PreviewModeClient::IsValidLink(const std::string& url) {
   NOTREACHED();
   return false;
-}
-
-void PreviewModeClient::ScheduleTaskOnMainThread(
-    const base::Location& from_here,
-    ResultCallback callback,
-    int32_t result,
-    base::TimeDelta delay) {
-  NOTREACHED();
 }
 
 }  // namespace chrome_pdf

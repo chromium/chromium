@@ -1,18 +1,17 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_SIGNALING_FAKE_SIGNAL_STRATEGY_H_
 #define REMOTING_SIGNALING_FAKE_SIGNAL_STRATEGY_H_
 
-#include <list>
 #include <queue>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "remoting/signaling/iq_sender.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
@@ -28,11 +27,15 @@ class FakeSignalStrategy : public SignalStrategy {
   using PeerCallback = base::RepeatingCallback<void(
       std::unique_ptr<jingle_xmpp::XmlElement> message)>;
 
-  // Calls ConenctTo() to connect |peer1| and |peer2|. Both |peer1| and |peer2|
+  // Calls ConnectTo() to connect |peer1| and |peer2|. Both |peer1| and |peer2|
   // must belong to the current thread.
   static void Connect(FakeSignalStrategy* peer1, FakeSignalStrategy* peer2);
 
   FakeSignalStrategy(const SignalingAddress& address);
+
+  FakeSignalStrategy(const FakeSignalStrategy&) = delete;
+  FakeSignalStrategy& operator=(const FakeSignalStrategy&) = delete;
+
   ~FakeSignalStrategy() override;
 
   const std::vector<std::unique_ptr<jingle_xmpp::XmlElement>>& received_messages() {
@@ -114,8 +117,6 @@ class FakeSignalStrategy : public SignalStrategy {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<FakeSignalStrategy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSignalStrategy);
 };
 
 }  // namespace remoting

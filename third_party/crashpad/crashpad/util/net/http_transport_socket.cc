@@ -1,4 +1,4 @@
-// Copyright 2018 The Crashpad Authors. All rights reserved.
+// Copyright 2018 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,24 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "util/net/http_transport.h"
-
 #include <fcntl.h>
 #include <netdb.h>
 #include <poll.h>
 #include <string.h>
 #include <sys/socket.h>
 
+#include <iterator>
+
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/scoped_generic.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "util/file/file_io.h"
 #include "util/net/http_body.h"
+#include "util/net/http_transport.h"
 #include "util/net/url.h"
 #include "util/stdlib/string_number_conversion.h"
 #include "util/string/split_string.h"
@@ -47,12 +47,13 @@ constexpr const char kCRLFTerminator[] = "\r\n";
 class HTTPTransportSocket final : public HTTPTransport {
  public:
   HTTPTransportSocket() = default;
+
+  HTTPTransportSocket(const HTTPTransportSocket&) = delete;
+  HTTPTransportSocket& operator=(const HTTPTransportSocket&) = delete;
+
   ~HTTPTransportSocket() override = default;
 
   bool ExecuteSynchronously(std::string* response_body) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HTTPTransportSocket);
 };
 
 struct ScopedAddrinfoTraits {
@@ -74,6 +75,9 @@ class FdStream : public Stream {
  public:
   explicit FdStream(int fd) : fd_(fd) { CHECK(fd_ >= 0); }
 
+  FdStream(const FdStream&) = delete;
+  FdStream& operator=(const FdStream&) = delete;
+
   bool LoggingWrite(const void* data, size_t size) override {
     return LoggingWriteFile(fd_, data, size);
   }
@@ -88,14 +92,15 @@ class FdStream : public Stream {
 
  private:
   int fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(FdStream);
 };
 
 #if defined(CRASHPAD_USE_BORINGSSL)
 class SSLStream : public Stream {
  public:
   SSLStream() = default;
+
+  SSLStream(const SSLStream&) = delete;
+  SSLStream& operator=(const SSLStream&) = delete;
 
   bool Initialize(const base::FilePath& root_cert_path,
                   int sock,
@@ -123,13 +128,13 @@ class SSLStream : public Stream {
         return false;
       }
     } else {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       if (SSL_CTX_load_verify_locations(
               ctx_.get(), nullptr, "/etc/ssl/certs") <= 0) {
         LOG(ERROR) << "SSL_CTX_load_verify_locations";
         return false;
       }
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
       if (SSL_CTX_load_verify_locations(
               ctx_.get(), "/config/ssl/cert.pem", nullptr) <= 0) {
         LOG(ERROR) << "SSL_CTX_load_verify_locations";
@@ -210,8 +215,6 @@ class SSLStream : public Stream {
 
   ScopedSSLCTX ctx_;
   ScopedSSL ssl_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLStream);
 };
 #endif
 
@@ -262,6 +265,9 @@ class ScopedSetNonblocking {
     }
   }
 
+  ScopedSetNonblocking(const ScopedSetNonblocking&) = delete;
+  ScopedSetNonblocking& operator=(const ScopedSetNonblocking&) = delete;
+
   ~ScopedSetNonblocking() {
     if (sock_ >= 0) {
       int flags = fcntl(sock_, F_GETFL, 0);
@@ -278,8 +284,6 @@ class ScopedSetNonblocking {
 
  private:
   int sock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSetNonblocking);
 };
 
 base::ScopedFD CreateSocket(const std::string& hostname,
@@ -367,7 +371,7 @@ bool WriteRequest(Stream* stream,
 
   FileOperationResult data_bytes;
   do {
-    constexpr size_t kCRLFSize = base::size(kCRLFTerminator) - 1;
+    constexpr size_t kCRLFSize = std::size(kCRLFTerminator) - 1;
     struct __attribute__((packed)) {
       char size[8];
       char crlf[2];

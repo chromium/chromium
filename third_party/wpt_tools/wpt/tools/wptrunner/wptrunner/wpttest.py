@@ -1,7 +1,10 @@
+# mypy: allow-untyped-defs
+
 import os
 import subprocess
 import sys
 from collections import defaultdict
+from typing import Any, ClassVar, Dict, Type
 from urllib.parse import urljoin
 
 from .wptmanifest.parser import atoms
@@ -10,7 +13,7 @@ atom_reset = atoms["Reset"]
 enabled_tests = {"testharness", "reftest", "wdspec", "crashtest", "print-reftest"}
 
 
-class Result(object):
+class Result:
     def __init__(self,
                  status,
                  message,
@@ -28,10 +31,10 @@ class Result(object):
         self.stack = stack
 
     def __repr__(self):
-        return "<%s.%s %s>" % (self.__module__, self.__class__.__name__, self.status)
+        return f"<{self.__module__}.{self.__class__.__name__} {self.status}>"
 
 
-class SubtestResult(object):
+class SubtestResult:
     def __init__(self, name, status, message, stack=None, expected=None, known_intermittent=None):
         self.name = name
         if status not in self.statuses:
@@ -43,7 +46,7 @@ class SubtestResult(object):
         self.known_intermittent = known_intermittent if known_intermittent is not None else []
 
     def __repr__(self):
-        return "<%s.%s %s %s>" % (self.__module__, self.__class__.__name__, self.name, self.status)
+        return f"<{self.__module__}.{self.__class__.__name__} {self.name} {self.status}>"
 
 
 class TestharnessResult(Result):
@@ -82,13 +85,14 @@ def get_run_info(metadata_root, product, **kwargs):
     return RunInfo(metadata_root, product, **kwargs)
 
 
-class RunInfo(dict):
+class RunInfo(Dict[str, Any]):
     def __init__(self, metadata_root, product, debug,
                  browser_version=None,
                  browser_channel=None,
                  verify=None,
                  extras=None,
-                 enable_webrender=False):
+                 device_serials=None,
+                 adb_binary=None):
         import mozinfo
         self._update_mozinfo(metadata_root)
         self.update(mozinfo.info)
@@ -119,9 +123,61 @@ class RunInfo(dict):
             self["wasm"] = False
         if extras is not None:
             self.update(extras)
+        if "headless" not in self:
+            self["headless"] = False
 
-        self["headless"] = extras.get("headless", False)
-        self["webrender"] = enable_webrender
+        if adb_binary:
+            self["adb_binary"] = adb_binary
+        if device_serials:
+            # Assume all emulators are identical, so query an arbitrary one.
+            self._update_with_emulator_info(device_serials[0])
+            self.pop("linux_distro", None)
+
+    def _adb_run(self, device_serial, args, **kwargs):
+        adb_binary = self.get("adb_binary", "adb")
+        cmd = [adb_binary, "-s", device_serial, *args]
+        return subprocess.check_output(cmd, **kwargs)
+
+    def _adb_get_property(self, device_serial, prop, **kwargs):
+        args = ["shell", "getprop", prop]
+        value = self._adb_run(device_serial, args, **kwargs)
+        return value.strip()
+
+    def _update_with_emulator_info(self, device_serial):
+        """Override system info taken from the host if using an Android
+        emulator."""
+        try:
+            self._adb_run(device_serial, ["wait-for-device"])
+            emulator_info = {
+                "os": "android",
+                "os_version": self._adb_get_property(
+                    device_serial,
+                    "ro.build.version.release",
+                    encoding="utf-8",
+                ),
+            }
+            emulator_info["version"] = emulator_info["os_version"]
+
+            # Detect CPU info (https://developer.android.com/ndk/guides/abis#sa)
+            abi64, *_ = self._adb_get_property(
+                device_serial,
+                "ro.product.cpu.abilist64",
+                encoding="utf-8",
+            ).split(',')
+            if abi64:
+                emulator_info["processor"] = abi64
+                emulator_info["bits"] = 64
+            else:
+                emulator_info["processor"], *_ = self._adb_get_property(
+                    device_serial,
+                    "ro.product.cpu.abilist32",
+                    encoding="utf-8",
+                ).split(',')
+                emulator_info["bits"] = 32
+
+            self.update(emulator_info)
+        except (OSError, subprocess.CalledProcessError):
+            pass
 
     def _update_mozinfo(self, metadata_root):
         """Add extra build information from a mozinfo.json file in a parent
@@ -147,18 +203,18 @@ def server_protocol(manifest_item):
     return "http"
 
 
-class Test(object):
+class Test:
 
-    result_cls = None
-    subtest_result_cls = None
-    test_type = None
+    result_cls = None  # type: ClassVar[Type[Result]]
+    subtest_result_cls = None  # type: ClassVar[Type[SubtestResult]]
+    test_type = None  # type: ClassVar[str]
+    pac = None
 
     default_timeout = 10  # seconds
     long_timeout = 60  # seconds
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
-                 timeout=None, path=None, protocol="http", subdomain=False,
-                 quic=False):
+                 timeout=None, path=None, protocol="http", subdomain=False, pac=None):
         self.url_base = url_base
         self.tests_root = tests_root
         self.url = url
@@ -169,8 +225,10 @@ class Test(object):
         self.subdomain = subdomain
         self.environment = {"url_base": url_base,
                             "protocol": protocol,
-                            "prefs": self.prefs,
-                            "quic": quic}
+                            "prefs": self.prefs}
+
+        if pac is not None:
+            self.environment["pac"] = urljoin(self.url, pac)
 
     def __eq__(self, other):
         if not isinstance(other, Test):
@@ -224,8 +282,7 @@ class Test(object):
                 if subtest_meta is not None:
                     yield subtest_meta
             yield self._get_metadata()
-        for metadata in reversed(self._inherit_metadata):
-            yield metadata
+        yield from reversed(self._inherit_metadata)
 
     def disabled(self, subtest=None):
         for meta in self.itermeta(subtest):
@@ -392,7 +449,7 @@ class Test(object):
             return False
 
     def __repr__(self):
-        return "<%s.%s %s>" % (self.__module__, self.__class__.__name__, self.id)
+        return f"<{self.__module__}.{self.__class__.__name__} {self.id}>"
 
 
 class TestharnessTest(Test):
@@ -402,9 +459,9 @@ class TestharnessTest(Test):
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata,
                  timeout=None, path=None, protocol="http", testdriver=False,
-                 jsshell=False, scripts=None, subdomain=False, quic=False):
+                 jsshell=False, scripts=None, subdomain=False, pac=None):
         Test.__init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, timeout,
-                      path, protocol, subdomain, quic)
+                      path, protocol, subdomain, pac)
 
         self.testdriver = testdriver
         self.jsshell = jsshell
@@ -413,9 +470,9 @@ class TestharnessTest(Test):
     @classmethod
     def from_manifest(cls, manifest_file, manifest_item, inherit_metadata, test_metadata):
         timeout = cls.long_timeout if manifest_item.timeout == "long" else cls.default_timeout
+        pac = manifest_item.pac
         testdriver = manifest_item.testdriver if hasattr(manifest_item, "testdriver") else False
         jsshell = manifest_item.jsshell if hasattr(manifest_item, "jsshell") else False
-        quic = manifest_item.quic if hasattr(manifest_item, "quic") else False
         script_metadata = manifest_item.script_metadata or []
         scripts = [v for (k, v) in script_metadata
                    if k == "script"]
@@ -425,13 +482,13 @@ class TestharnessTest(Test):
                    inherit_metadata,
                    test_metadata,
                    timeout=timeout,
+                   pac=pac,
                    path=os.path.join(manifest_file.tests_root, manifest_item.path),
                    protocol=server_protocol(manifest_item),
                    testdriver=testdriver,
                    jsshell=jsshell,
                    scripts=scripts,
-                   subdomain=manifest_item.subdomain,
-                   quic=quic)
+                   subdomain=manifest_item.subdomain)
 
     @property
     def id(self):
@@ -463,9 +520,9 @@ class ReftestTest(Test):
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, references,
                  timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None,
-                 protocol="http", subdomain=False, quic=False):
+                 protocol="http", subdomain=False):
         Test.__init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, timeout,
-                      path, protocol, subdomain, quic)
+                      path, protocol, subdomain)
 
         for _, ref_type in references:
             if ref_type not in ("==", "!="):
@@ -491,7 +548,6 @@ class ReftestTest(Test):
                       test_metadata):
 
         timeout = cls.long_timeout if manifest_test.timeout == "long" else cls.default_timeout
-        quic = manifest_test.quic if hasattr(manifest_test, "quic") else False
 
         url = manifest_test.url
 
@@ -504,7 +560,6 @@ class ReftestTest(Test):
                    timeout=timeout,
                    path=manifest_test.path,
                    subdomain=manifest_test.subdomain,
-                   quic=quic,
                    **cls.cls_kwargs(manifest_test))
 
         refs_by_type = defaultdict(list)
@@ -622,15 +677,15 @@ class PrintReftestTest(ReftestTest):
 
     def __init__(self, url_base, tests_root, url, inherit_metadata, test_metadata, references,
                  timeout=None, path=None, viewport_size=None, dpi=None, fuzzy=None,
-                 page_ranges=None, protocol="http", subdomain=False, quic=False):
-        super(PrintReftestTest, self).__init__(url_base, tests_root, url, inherit_metadata, test_metadata,
-                                               references, timeout, path, viewport_size, dpi,
-                                               fuzzy, protocol, subdomain=subdomain, quic=quic)
+                 page_ranges=None, protocol="http", subdomain=False):
+        super().__init__(url_base, tests_root, url, inherit_metadata, test_metadata,
+                         references, timeout, path, viewport_size, dpi,
+                         fuzzy, protocol, subdomain=subdomain)
         self._page_ranges = page_ranges
 
     @classmethod
     def cls_kwargs(cls, manifest_test):
-        rv = super(PrintReftestTest, cls).cls_kwargs(manifest_test)
+        rv = super().cls_kwargs(manifest_test)
         rv["page_ranges"] = manifest_test.page_ranges
         return rv
 

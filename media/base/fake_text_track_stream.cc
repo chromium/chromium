@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/webvtt_util.h"
@@ -63,8 +63,8 @@ void FakeTextTrackStream::SatisfyPendingRead(
   const uint8_t* const sd_buf = &side_data[0];
   const int sd_len = static_cast<int>(side_data.size());
 
-  scoped_refptr<DecoderBuffer> buffer;
-  buffer = DecoderBuffer::CopyFrom(data_buf, data_len, sd_buf, sd_len);
+  scoped_refptr<DecoderBuffer> buffer =
+      DecoderBuffer::CopyFrom(data_buf, data_len, sd_buf, sd_len);
 
   buffer->set_timestamp(start);
   buffer->set_duration(duration);

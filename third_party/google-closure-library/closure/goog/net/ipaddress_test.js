@@ -1,26 +1,15 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.net.IpAddressTest');
 goog.setTestOnly();
 
 const Integer = goog.require('goog.math.Integer');
-const IpAddress = goog.require('goog.net.IpAddress');
-const Ipv4Address = goog.require('goog.net.Ipv4Address');
-const Ipv6Address = goog.require('goog.net.Ipv6Address');
-const googArray = goog.require('goog.array');
 const testSuite = goog.require('goog.testing.testSuite');
+const {IpAddress, Ipv4Address, Ipv6Address} = goog.require('goog.net.ipaddress');
 
 testSuite({
   testInvalidStrings() {
@@ -172,6 +161,7 @@ testSuite({
     new Ipv6Address('7::0.128.128.127');
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testMappedIpv4Address() {
     const testAddresses = ['::ffff:1.2.3.4', '::FFFF:102:304'];
     const ipv4Str = '1.2.3.4';
@@ -187,6 +177,7 @@ testSuite({
     assertTrue(ipv4.equals(ip2.getMappedIpv4Address()));
   },
 
+  /** @suppress {checkTypes} suppression added to enable type checking */
   testUriString() {
     const ip4Str = '192.168.1.1';
     const ip4Uri = IpAddress.fromUriString(ip4Str);
@@ -214,7 +205,7 @@ testSuite({
       'fd00::',
       'fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff',
     ];
-    googArray.forEach(siteLocalAddresses, (siteLocalAddress) => {
+    siteLocalAddresses.forEach(siteLocalAddress => {
       assertTrue(IpAddress.fromString(siteLocalAddress).isSiteLocal());
     });
 
@@ -228,7 +219,7 @@ testSuite({
       'fcff:ffff:ffff:ffff:ffff:ffff:ffff:ffff',
       'fe00::',
     ];
-    googArray.forEach(nonSiteLocalAddresses, (nonSiteLocalAddress) => {
+    nonSiteLocalAddresses.forEach(nonSiteLocalAddress => {
       assertFalse(IpAddress.fromString(nonSiteLocalAddress).isSiteLocal());
     });
   },
@@ -240,7 +231,7 @@ testSuite({
       'fe80::',
       'febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff',
     ];
-    googArray.forEach(linkLocalAddresses, (linkLocalAddress) => {
+    linkLocalAddresses.forEach(linkLocalAddress => {
       assertTrue(IpAddress.fromString(linkLocalAddress).isLinkLocal());
     });
 
@@ -250,7 +241,7 @@ testSuite({
       'fe7f:ffff:ffff:ffff:ffff:ffff:ffff:ffff',
       'fec0::',
     ];
-    googArray.forEach(nonLinkLocalAddresses, (nonLinkLocalAddress) => {
+    nonLinkLocalAddresses.forEach(nonLinkLocalAddress => {
       assertFalse(IpAddress.fromString(nonLinkLocalAddress).isLinkLocal());
     });
   },

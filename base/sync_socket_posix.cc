@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,14 +14,16 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#if defined(OS_SOLARIS)
-#include <sys/filio.h>
-#endif
-
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(IS_SOLARIS)
+#include <sys/filio.h>
+#endif
 
 namespace base {
 
@@ -38,9 +40,9 @@ size_t SendHelper(SyncSocket::Handle handle,
   DCHECK_GT(length, 0u);
   DCHECK_LE(length, kMaxMessageLength);
   DCHECK_NE(handle, SyncSocket::kInvalidHandle);
-  const char* charbuffer = static_cast<const char*>(buffer);
-  return WriteFileDescriptor(handle, charbuffer, length)
-             ? static_cast<size_t>(length)
+  return WriteFileDescriptor(
+             handle, make_span(static_cast<const uint8_t*>(buffer), length))
+             ? length
              : 0;
 }
 
@@ -52,9 +54,9 @@ bool SyncSocket::CreatePair(SyncSocket* socket_a, SyncSocket* socket_b) {
   DCHECK(!socket_a->IsValid());
   DCHECK(!socket_b->IsValid());
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   int nosigpipe = 1;
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
   ScopedHandle handles[2];
 
@@ -67,7 +69,7 @@ bool SyncSocket::CreatePair(SyncSocket* socket_a, SyncSocket* socket_b) {
     handles[1].reset(raw_handles[1]);
   }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // On OSX an attempt to read or write to a closed socket may generate a
   // SIGPIPE rather than returning -1.  setsockopt will shut this off.
   if (0 != setsockopt(handles[0].get(), SOL_SOCKET, SO_NOSIGPIPE, &nosigpipe,
@@ -115,8 +117,7 @@ size_t SyncSocket::ReceiveWithTimeout(void* buffer,
 
   // Only timeouts greater than zero and less than one second are allowed.
   DCHECK_GT(timeout.InMicroseconds(), 0);
-  DCHECK_LT(timeout.InMicroseconds(),
-            TimeDelta::FromSeconds(1).InMicroseconds());
+  DCHECK_LT(timeout.InMicroseconds(), Seconds(1).InMicroseconds());
 
   // Track the start time so we can reduce the timeout as data is read.
   TimeTicks start_time = TimeTicks::Now();
@@ -172,8 +173,7 @@ size_t SyncSocket::Peek() {
     // If there is an error in ioctl, signal that the channel would block.
     return 0;
   }
-  DCHECK_GE(number_chars, 0);
-  return number_chars;
+  return checked_cast<size_t>(number_chars);
 }
 
 bool SyncSocket::IsValid() const {

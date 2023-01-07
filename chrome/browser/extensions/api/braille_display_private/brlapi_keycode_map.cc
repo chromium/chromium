@@ -1,10 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/api/braille_display_private/brlapi_keycode_map.h"
 
 #include <stdint.h>
+
+#include <memory>
 
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -33,11 +35,11 @@ const brlapi_keyCode_t kMaxFunctionKey = BRLAPI_KEY_SYM_FUNCTION + 23;
 // |KeyEvent|.
 void MapModifierFlags(brlapi_keyCode_t code, KeyEvent* event) {
   if (code & BRLAPI_KEY_FLG_CONTROL)
-    event->ctrl_key.reset(new bool(true));
+    event->ctrl_key = true;
   if (code & BRLAPI_KEY_FLG_META)
-    event->alt_key.reset(new bool(true));
+    event->alt_key = true;
   if (code & BRLAPI_KEY_FLG_SHIFT)
-    event->shift_key.reset(new bool(true));
+    event->shift_key = true;
 }
 
 // Maps a brlapi keysym, which is similar to an X keysym into the
@@ -48,17 +50,16 @@ void MapKeySym(brlapi_keyCode_t code, KeyEvent* event) {
   brlapi_keyCode_t key_sym = code & BRLAPI_KEY_CODE_MASK;
   if (key_sym < kMaxLatin1KeySym ||
       (key_sym & BRLAPI_KEY_SYM_UNICODE) != 0) {
-    uint32_t code_point = key_sym & ~BRLAPI_KEY_SYM_UNICODE;
+    base_icu::UChar32 code_point = key_sym & ~BRLAPI_KEY_SYM_UNICODE;
     if (!base::IsValidCharacter(code_point))
       return;
-    event->standard_key_char.reset(new std::string);
-    base::WriteUnicodeCharacter(code_point, event->standard_key_char.get());
+    event->standard_key_char.emplace();
+    base::WriteUnicodeCharacter(code_point, &*event->standard_key_char);
   } else if (key_sym >= kMinFunctionKey && key_sym <= kMaxFunctionKey) {
     // Function keys are 0-based here, so we need to add one to get e.g.
     // 'F1' for the first key.
     int function_key_number = key_sym - kMinFunctionKey + 1;
-    event->standard_key_code.reset(
-        new std::string(base::StringPrintf("F%d", function_key_number)));
+    event->standard_key_code = base::StringPrintf("F%d", function_key_number);
   } else {
     // Explicitly map the keys that brlapi provides.
     const char* code_string;
@@ -108,7 +109,7 @@ void MapKeySym(brlapi_keyCode_t code, KeyEvent* event) {
       default:
         return;
     }
-    event->standard_key_code.reset(new std::string(code_string));
+    event->standard_key_code = code_string;
   }
   MapModifierFlags(code, event);
   event->command = KEY_COMMAND_STANDARD_KEY;
@@ -139,11 +140,11 @@ void MapCommand(brlapi_keyCode_t code, KeyEvent* event) {
       switch (code & BRLAPI_KEY_CMD_BLK_MASK) {
         case BRLAPI_KEY_CMD_ROUTE:
           event->command = KEY_COMMAND_ROUTING;
-          event->display_position.reset(new int(argument));
+          event->display_position = argument;
           break;
         case BRLAPI_KEY_CMD_PASSDOTS:
           unsigned int dots = argument & kAllDots;
-          event->braille_dots.reset(new int(dots));
+          event->braille_dots = dots;
 
           // BRLAPI_DOTC represents when the braille space key is pressed.
           if (dots && (argument & BRLAPI_DOTC))

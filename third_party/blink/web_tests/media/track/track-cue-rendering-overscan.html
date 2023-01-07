@@ -29,9 +29,11 @@
         assert_equals(track.track.activeCues.length, 1, "activeCues.length");
         assert_equals(track.track.activeCues[0].text, expectedText, "activeCues[0].text");
         assert_equals(testCueDisplayBox.innerText, expectedText, "testCueDisplayBox.innerText");
-
-        marginAssertFunc(testCueDisplayBox, video);
-        t.done();
+        requestAnimationFrame(t.step_func(() => {
+          requestAnimationFrame(t.step_func_done(() => {
+            marginAssertFunc(testCueDisplayBox, video);
+          }));
+        }));
       });
     });
   };

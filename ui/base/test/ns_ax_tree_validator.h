@@ -1,11 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_BASE_TEST_NS_AX_TREE_VALIDATOR_H_
 #define UI_BASE_TEST_NS_AX_TREE_VALIDATOR_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 @protocol NSAccessibility;
 
@@ -43,8 +43,8 @@ struct NSAXTreeProblemDetails {
 
 // Validates the accessibility tree rooted at |root|. If at least one problem is
 // found, returns an |AXTreeProblemDetails| as described above; if not, returns
-// base::nullopt.
-base::Optional<NSAXTreeProblemDetails> ValidateNSAXTree(
+// absl::nullopt.
+absl::optional<NSAXTreeProblemDetails> ValidateNSAXTree(
     id<NSAccessibility> root,
     size_t* nodes_visited);
 

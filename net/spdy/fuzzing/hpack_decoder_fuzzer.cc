@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include <list>
 #include <vector>
 
-#include "net/third_party/quiche/src/http2/hpack/decoder/hpack_decoder.h"
+#include "net/third_party/quiche/src/quiche/http2/hpack/decoder/hpack_decoder.h"
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {

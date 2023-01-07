@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,25 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 class ScrollableArea;
 class Scrollbar;
+
+// This class stores the state for an individual scrollbar (in contrast with
+// MacScrollbarAnimator which has state for the full ScrollableArea).
+class CORE_EXPORT MacScrollbar {
+ public:
+  static MacScrollbar* GetForScrollbar(const Scrollbar&);
+  virtual ~MacScrollbar() = default;
+
+  virtual void SetEnabled(bool) = 0;
+  virtual void SetOverlayColorTheme(ScrollbarOverlayColorTheme) = 0;
+  virtual float GetKnobAlpha() = 0;
+  virtual float GetTrackAlpha() = 0;
+  virtual int GetTrackBoxWidth() = 0;
+};
 
 // This is a base class for MacScrollbarAnimatorImpl. This is required because
 // mac_scrollbar_animator_impl.h has some #include that can't be included in

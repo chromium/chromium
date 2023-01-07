@@ -1,0 +1,77 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<script>
+promise_test(async t => {
+  navigation.addEventListener("navigate", e => {
+    e.intercept();
+  }, { once: true });
+
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ scroll: "after-transition" });
+  }, { once: true });
+
+  await navigation.navigate("#1").finished;
+}, "(not provided) + after-transition");
+
+promise_test(async t => {
+  navigation.addEventListener("navigate", e => {
+    e.intercept();
+  }, { once: true });
+
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ scroll: "manual" });
+  }, { once: true });
+
+  await navigation.navigate("#2").finished;
+}, "(not provided) + manual");
+
+promise_test(async t => {
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ scroll: "after-transition" });
+  }, { once: true });
+
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ scroll: "manual" });
+  }, { once: true });
+
+  await navigation.navigate("#3").finished;
+}, "after-transition + manual");
+
+promise_test(async t => {
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ scroll: "after-transition" });
+  }, { once: true });
+
+  navigation.addEventListener("navigate", e => {
+    e.intercept();
+  }, { once: true });
+
+  await navigation.navigate("#4").finished;
+}, "after-transition + (not provided)");
+
+promise_test(async t => {
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ scroll: "manual" });
+  }, { once: true });
+
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ scroll: "after-transition" });
+  }, { once: true });
+
+  await navigation.navigate("#5").finished;
+}, "manual + after-transition");
+
+promise_test(async t => {
+  navigation.addEventListener("navigate", e => {
+    e.intercept({ scroll: "manual" });
+  }, { once: true });
+
+  navigation.addEventListener("navigate", e => {
+    e.intercept();
+  }, { once: true });
+
+  await navigation.navigate("#6").finished;
+}, "manual + (not provided)");
+</script>

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/base64.h"
+#include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/rand_util.h"
 #include "components/os_crypt/key_storage_config_linux.h"
@@ -20,7 +21,7 @@ std::unique_ptr<KeyStorageLinux> CreateNewMock() {
 
 }
 
-base::Optional<std::string> OSCryptMockerLinux::GetKeyImpl() {
+absl::optional<std::string> OSCryptMockerLinux::GetKeyImpl() {
   return key_;
 }
 
@@ -30,15 +31,13 @@ std::string* OSCryptMockerLinux::GetKeyPtr() {
 
 // static
 void OSCryptMockerLinux::SetUp() {
-  UseMockKeyStorageForTesting(
-      &CreateNewMock, nullptr /* get the key from the provider above */);
-  OSCrypt::SetConfig(std::make_unique<os_crypt::Config>());
+  OSCrypt::UseMockKeyStorageForTesting(base::BindOnce(&CreateNewMock));
 }
 
 // static
 void OSCryptMockerLinux::TearDown() {
-  UseMockKeyStorageForTesting(nullptr, nullptr);
-  ClearCacheForTesting();
+  OSCrypt::UseMockKeyStorageForTesting(base::NullCallback());
+  OSCrypt::ClearCacheForTesting();
 }
 
 bool OSCryptMockerLinux::Init() {

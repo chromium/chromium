@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_SYSTEM_NODE_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_GRAPH_SYSTEM_NODE_H_
 
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "components/performance_manager/public/graph/node.h"
 
@@ -13,8 +12,8 @@ namespace performance_manager {
 
 class SystemNodeObserver;
 
-// The SystemNode represents system-wide state. There is at most one system node
-// in a graph.
+// The SystemNode represents system-wide state. Each graph owns exactly one
+// system node. This node has the same lifetime has the graph that owns it.
 class SystemNode : public Node {
  public:
   using Observer = SystemNodeObserver;
@@ -22,10 +21,11 @@ class SystemNode : public Node {
   class ObserverDefaultImpl;
 
   SystemNode();
-  ~SystemNode() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemNode);
+  SystemNode(const SystemNode&) = delete;
+  SystemNode& operator=(const SystemNode&) = delete;
+
+  ~SystemNode() override;
 };
 
 // Pure virtual observer interface. Derive from this if you want to be forced to
@@ -33,22 +33,17 @@ class SystemNode : public Node {
 class SystemNodeObserver {
  public:
   SystemNodeObserver();
+
+  SystemNodeObserver(const SystemNodeObserver&) = delete;
+  SystemNodeObserver& operator=(const SystemNodeObserver&) = delete;
+
   virtual ~SystemNodeObserver();
 
-  // Node lifetime notifications.
-
-  // Called when the |system_node| is added to the graph. Observers must not
-  // make any property changes or cause re-entrant notifications during the
-  // scope of this call. Instead, make property changes via a separate posted
-  // task.
-  virtual void OnSystemNodeAdded(const SystemNode* system_node) = 0;
-
-  // Called before the |system_node| is removed from the graph. Observers must
-  // not make any property changes or cause re-entrant notifications during the
-  // scope of this call.
-  virtual void OnBeforeSystemNodeRemoved(const SystemNode* system_node) = 0;
-
   // Called when a new set of process memory metrics is available.
+  //
+  // Note: This is only valid if at least one component has expressed interest
+  // for process memory metrics by calling
+  // ProcessMetricsDecorator::RegisterInterestForProcessMetrics.
   virtual void OnProcessMemoryMetricsAvailable(
       const SystemNode* system_node) = 0;
 
@@ -69,9 +64,6 @@ class SystemNodeObserver {
   // the response to these notifications should be stateless.
   virtual void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel new_level) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemNodeObserver);
 };
 
 // Default implementation of observer that provides dummy versions of each
@@ -80,20 +72,19 @@ class SystemNodeObserver {
 class SystemNode::ObserverDefaultImpl : public SystemNodeObserver {
  public:
   ObserverDefaultImpl();
+
+  ObserverDefaultImpl(const ObserverDefaultImpl&) = delete;
+  ObserverDefaultImpl& operator=(const ObserverDefaultImpl&) = delete;
+
   ~ObserverDefaultImpl() override;
 
   // SystemNodeObserver implementation:
-  void OnSystemNodeAdded(const SystemNode* system_node) override {}
-  void OnBeforeSystemNodeRemoved(const SystemNode* system_node) override {}
   void OnProcessMemoryMetricsAvailable(const SystemNode* system_node) override {
   }
   void OnBeforeMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel new_level) override {}
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel new_level) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ObserverDefaultImpl);
 };
 
 }  // namespace performance_manager

@@ -37,7 +37,7 @@ extern "C" {
 /**
  * LIBEXSLT_VERSION_EXTRA:
  *
- * extra version information, used to show a CVS compilation
+ * extra version information, used to show a Git commit description
  */
 #define	LIBEXSLT_VERSION_EXTRA ""
 

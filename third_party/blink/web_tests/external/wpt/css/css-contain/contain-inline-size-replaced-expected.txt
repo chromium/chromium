@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+PASS .inline-contained 1
+PASS .inline-contained 2
+PASS .inline-contained 3
+PASS .inline-contained 4
+PASS .inline-contained 5
+PASS .inline-contained 6
+FAIL .inline-contained 7 assert_equals: 
+<audio class="inline-contained" data-expected-width="0" data-expected-height="40" controls=""></audio>
+height expected 40 but got 0
+PASS .inline-contained 8
+PASS .inline-contained 9
+PASS .inline-contained 10
+PASS .inline-contained 11
+PASS .inline-contained 12
+PASS .inline-contained 13
+PASS .inline-contained 14
+PASS .inline-contained 15
+PASS .inline-contained 16
+PASS .inline-contained 17
+PASS .inline-contained 18
+PASS .inline-contained 19
+PASS .inline-contained 20
+PASS .inline-contained 21
+PASS .inline-contained 22
+FAIL .inline-contained 23 assert_equals: 
+<audio class="inline-contained" data-expected-width="300" data-expected-height="0" controls=""></audio>
+width expected 300 but got 0
+PASS .inline-contained 24
+PASS .inline-contained 25
+PASS .inline-contained 26
+PASS .inline-contained 27
+PASS .inline-contained 28
+PASS .inline-contained 29
+PASS .inline-contained 30
+PASS .inline-contained 31
+PASS .inline-contained 32
+Harness: the test ran to completion.
+

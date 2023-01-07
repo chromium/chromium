@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,18 +64,18 @@ enum class MobileMessagesPasswordsModalPresent {
 @interface IOSChromePasswordInfobarMetricsRecorder : NSObject
 
 // Designated initializer. IOSChromePasswordInfobarMetricsRecorder will record
-// metrics for |passwordInfobarType|.
+// metrics for `passwordInfobarType`.
 - (instancetype)initWithType:(PasswordInfobarType)passwordInfobarType
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Records histogram for Modal |event|.
+// Records histogram for Modal `event`.
 - (void)recordModalEvent:(MobileMessagesPasswordsModalEvent)event;
 
-// Records histogram for Modal |dismissType|.
+// Records histogram for Modal `dismissType`.
 - (void)recordModalDismiss:(MobileMessagesPasswordsModalDismiss)dismissType;
 
-// Records histogram for Modal |presentContext|.
+// Records histogram for Modal `presentContext`.
 - (void)recordModalPresent:(MobileMessagesPasswordsModalPresent)presentContext;
 
 @end

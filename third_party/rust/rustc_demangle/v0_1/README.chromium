@@ -1,0 +1,6 @@
+Name: rustc-demangle
+URL: https://crates.io/crates/rustc-demangle
+Description: Rust compiler symbol demangling.
+Version: 0.1.21
+Security Critical: yes
+License: Apache 2.0

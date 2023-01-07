@@ -1,26 +1,32 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/cookie_store/cookie_store_manager.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
+#include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "content/browser/cookie_store/cookie_change_subscriptions.pb.h"
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_process_host.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom.h"
 #include "url/gurl.h"
 
@@ -45,7 +51,7 @@ CookieStoreManager::~CookieStoreManager() {
   service_worker_context_->RemoveObserver(this);
 }
 
-void CookieStoreManager::CreateService(
+void CookieStoreManager::BindReceiver(
     mojo::PendingReceiver<blink::mojom::CookieStore> receiver,
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -72,14 +78,18 @@ void CookieStoreManager::LoadAllSubscriptions(
 }
 
 void CookieStoreManager::ListenToCookieChanges(
-    mojo::PendingRemote<::network::mojom::CookieManager> cookie_manager,
+    network::mojom::NetworkContext* network_context,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   DCHECK(!cookie_manager_) << __func__ << " already called";
-  cookie_manager_.Bind(std::move(cookie_manager));
+  DCHECK(!cookie_change_listener_receiver_.is_bound())
+      << __func__ << " already called";
 
-  DCHECK(!cookie_change_listener_receiver_.is_bound());
+  mojo::PendingRemote<::network::mojom::CookieManager> cookie_manager_remote;
+  network_context->GetCookieManager(
+      cookie_manager_remote.InitWithNewPipeAndPassReceiver());
+  cookie_manager_.Bind(std::move(cookie_manager_remote));
+
   // TODO(pwnall): Switch to an API with subscription confirmation.
   cookie_manager_->AddGlobalChangeListener(
       cookie_change_listener_receiver_.BindNewPipeAndPassRemote());
@@ -128,6 +138,7 @@ void CookieStoreManager::ProcessOnDiskSubscriptions(
 void CookieStoreManager::DidLoadAllSubscriptions(
     bool succeeded,
     base::OnceCallback<void(bool)> load_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(done_loading_subscriptions_);
   succeeded_loading_subscriptions_ = succeeded;
 
@@ -166,7 +177,7 @@ void CookieStoreManager::AddSubscriptions(
   // async call completes. blink::CookieStoreManager hangs onto the Blink side
   // of the Service Worker's registration. So, the registration will be live if
   // the call's result is received.
-  ServiceWorkerRegistration* service_worker_registration =
+  scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
       service_worker_context_->GetLiveRegistration(
           service_worker_registration_id);
   // If the calling blink::CookieStoreManager instance goes away (for example,
@@ -178,8 +189,7 @@ void CookieStoreManager::AddSubscriptions(
     return;
   }
 
-  if (!origin.IsSameOriginWith(
-          url::Origin::Create(service_worker_registration->scope()))) {
+  if (!origin.IsSameOriginWith(service_worker_registration->key().origin())) {
     std::move(bad_message_callback).Run("Invalid service worker");
     std::move(callback).Run(false);
     return;
@@ -193,6 +203,8 @@ void CookieStoreManager::AddSubscriptions(
   }
 
   for (const auto& mojo_subscription : mojo_subscriptions) {
+    // TODO(crbug.com/1246549): This validation step should consider the storage
+    // key.
     if (!blink::ServiceWorkerScopeMatches(service_worker_registration->scope(),
                                           mojo_subscription->url)) {
       // Blink should have validated subscription URLs against the service
@@ -219,11 +231,9 @@ void CookieStoreManager::AddSubscriptions(
     auto new_subscription = std::make_unique<CookieChangeSubscription>(
         std::move(mojo_subscription), service_worker_registration->id());
 
-    auto existing_subscription_it = std::find_if(
-        subscriptions.begin(), subscriptions.end(),
-        [&](const std::unique_ptr<CookieChangeSubscription>& other) -> bool {
-          return *new_subscription == *other;
-        });
+    auto existing_subscription_it = base::ranges::find(
+        subscriptions, *new_subscription,
+        &std::unique_ptr<CookieChangeSubscription>::operator*);
     if (existing_subscription_it == subscriptions.end())
       subscriptions.push_back(std::move(new_subscription));
   }
@@ -262,7 +272,7 @@ void CookieStoreManager::RemoveSubscriptions(
   // async call completes. blink::CookieStoreManager hangs onto the Blink side
   // of the Service Worker's registration. So, the registration will be live if
   // the call's result is received.
-  ServiceWorkerRegistration* service_worker_registration =
+  scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
       service_worker_context_->GetLiveRegistration(
           service_worker_registration_id);
   // If the calling blink::CookieStoreManager instance goes away (for example,
@@ -274,8 +284,7 @@ void CookieStoreManager::RemoveSubscriptions(
     return;
   }
 
-  if (!origin.IsSameOriginWith(
-          url::Origin::Create(service_worker_registration->scope()))) {
+  if (!origin.IsSameOriginWith(service_worker_registration->key().origin())) {
     std::move(bad_message_callback).Run("Invalid service worker");
     std::move(callback).Run(false);
     return;
@@ -319,11 +328,9 @@ void CookieStoreManager::RemoveSubscriptions(
   }
 
   for (auto& subscription : all_subscriptions) {
-    auto target_subscription_it = std::find_if(
-        target_subscriptions.begin(), target_subscriptions.end(),
-        [&](const std::unique_ptr<CookieChangeSubscription>& other) -> bool {
-          return *subscription == *other;
-        });
+    auto target_subscription_it = base::ranges::find(
+        target_subscriptions, *subscription,
+        &std::unique_ptr<CookieChangeSubscription>::operator*);
     if (target_subscription_it == target_subscriptions.end()) {
       // The subscription is not marked for deletion.
       live_subscriptions.push_back(std::move(subscription));
@@ -374,16 +381,15 @@ void CookieStoreManager::GetSubscriptions(
     return;
   }
 
-  const url::Origin first_origin = url::Origin::Create(it->second[0]->url());
+  const GURL& first_url = it->second[0]->url();
 #if DCHECK_IS_ON()
   for (const auto& subscription : it->second) {
-    DCHECK(
-        first_origin.IsSameOriginWith(url::Origin::Create(subscription->url())))
+    DCHECK(url::IsSameOriginWith(first_url, subscription->url()))
         << "Service worker's change subscriptions don't have the same origin";
   }
 #endif  // DCHECK_IS_ON()
 
-  if (!origin.IsSameOriginWith(first_origin)) {
+  if (!origin.IsSameOriginWith(first_url)) {
     std::move(bad_message_callback).Run("Invalid service worker");
     std::move(callback).Run(
         std::vector<blink::mojom::CookieChangeSubscriptionPtr>(), false);
@@ -399,6 +405,8 @@ void CookieStoreManager::StoreSubscriptions(
     const GURL& service_worker_origin,
     const std::vector<std::unique_ptr<CookieChangeSubscription>>& subscriptions,
     base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (subscriptions.empty()) {
     service_worker_context_->ClearRegistrationUserData(
         service_worker_registration_id, {registration_user_data_key_},
@@ -417,9 +425,11 @@ void CookieStoreManager::StoreSubscriptions(
   DCHECK(!subscriptions_data.empty())
       << "Failed to create cookie change subscriptions protobuf";
 
+  // TODO(crbug.com/1199077): Update this when CookieStoreManager
+  // implements StorageKey.
   service_worker_context_->StoreRegistrationUserData(
       service_worker_registration_id,
-      url::Origin::Create(service_worker_origin),
+      blink::StorageKey(url::Origin::Create(service_worker_origin)),
       std::vector<std::pair<std::string, std::string>>(
           {{registration_user_data_key_, subscriptions_data}}),
       base::BindOnce(
@@ -433,7 +443,8 @@ void CookieStoreManager::StoreSubscriptions(
 
 void CookieStoreManager::OnRegistrationDeleted(
     int64_t service_worker_registration_id,
-    const GURL& pattern) {
+    const GURL& pattern,
+    const blink::StorageKey& key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Waiting for the on-disk subscriptions to be loaded ensures that the
@@ -443,7 +454,7 @@ void CookieStoreManager::OnRegistrationDeleted(
   if (!done_loading_subscriptions_) {
     subscriptions_loaded_callbacks_.push_back(base::BindOnce(
         &CookieStoreManager::OnRegistrationDeleted, weak_factory_.GetWeakPtr(),
-        service_worker_registration_id, pattern));
+        service_worker_registration_id, pattern, key));
     return;
   }
 
@@ -457,6 +468,8 @@ void CookieStoreManager::OnRegistrationDeleted(
 
 void CookieStoreManager::ActivateSubscriptions(
     base::span<const std::unique_ptr<CookieChangeSubscription>> subscriptions) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (subscriptions.empty())
     return;
 
@@ -487,6 +500,8 @@ void CookieStoreManager::ActivateSubscriptions(
 
 void CookieStoreManager::DeactivateSubscriptions(
     base::span<const std::unique_ptr<CookieChangeSubscription>> subscriptions) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (subscriptions.empty())
     return;
 
@@ -534,6 +549,8 @@ void CookieStoreManager::OnStorageWiped() {
 }
 
 void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Waiting for on-disk subscriptions to be loaded ensures that changes are
   // delivered to all service workers that subscribed to them in previous
   // browser sessions. Without waiting, workers might miss cookie changes.
@@ -598,9 +615,42 @@ void CookieStoreManager::OnCookieChange(const net::CookieChangeInfo& change) {
   }
 }
 
+// static
+void CookieStoreManager::BindReceiverForFrame(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::CookieStore> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(render_frame_host);
+  RenderProcessHost* render_process_host = render_frame_host->GetProcess();
+  DCHECK(render_process_host);
+
+  StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
+      render_process_host->GetStoragePartition());
+  storage_partition->GetCookieStoreManager()->BindReceiver(
+      std::move(receiver), render_frame_host->GetLastCommittedOrigin());
+}
+
+// static
+void CookieStoreManager::BindReceiverForWorker(
+    const ServiceWorkerVersionBaseInfo& info,
+    mojo::PendingReceiver<blink::mojom::CookieStore> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderProcessHost* render_process_host =
+      RenderProcessHost::FromID(info.process_id);
+  if (render_process_host == nullptr)
+    return;
+
+  StoragePartitionImpl* storage_partition = static_cast<StoragePartitionImpl*>(
+      render_process_host->GetStoragePartition());
+  storage_partition->GetCookieStoreManager()->BindReceiver(
+      std::move(receiver), info.storage_key.origin());
+}
+
 void CookieStoreManager::DispatchChangeEvent(
     scoped_refptr<ServiceWorkerRegistration> registration,
     const net::CookieChangeInfo& change) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   scoped_refptr<ServiceWorkerVersion> active_version =
       registration->active_version();
   if (active_version->running_status() != EmbeddedWorkerStatus::RUNNING) {

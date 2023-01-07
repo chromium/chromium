@@ -1,64 +1,81 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 
-#include "ash/public/cpp/ash_features.h"
+#include <functional>
+
+#include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/json/json_writer.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/values.h"
+#include "base/test/mock_callback.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_test_utils.h"
-#include "chrome/browser/chromeos/policy/login_policy_test_base.h"
-#include "chrome/browser/chromeos/policy/user_policy_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/browser/policy/policy_test_utils.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/chrome_capture_mode_delegate.h"
-#include "chrome/browser/ui/ash/screenshot_area.h"
+#include "chrome/browser/printing/print_view_manager.h"
+#include "chrome/browser/printing/print_view_manager_common.h"
+#include "chrome/browser/printing/test_print_preview_dialog_cloned_observer.h"
+#include "chrome/browser/printing/test_print_view_manager_for_request_preview.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/policy_constants.h"
-#include "content/public/browser/desktop_media_id.h"
+#include "components/reporting/client/report_queue_impl.h"
+#include "components/reporting/storage/test_storage_module.h"
+#include "components/reporting/util/test_support_callbacks.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/aura/window.h"
-#include "ui/gfx/geometry/rect.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+using testing::_;
 
 namespace policy {
 
 namespace {
+
 const DlpContentRestrictionSet kEmptyRestrictionSet;
 const DlpContentRestrictionSet kScreenshotRestricted(
-    DlpContentRestriction::kScreenshot);
-const DlpContentRestrictionSet kPrivacyScreenEnforced(
-    DlpContentRestriction::kPrivacyScreen);
-const DlpContentRestrictionSet kPrintRestricted(DlpContentRestriction::kPrint);
-const DlpContentRestrictionSet kVideoCaptureRestricted(
-    DlpContentRestriction::kVideoCapture);
-const DlpContentRestrictionSet kScreenShareRestricted(
-    DlpContentRestriction::kScreenShare);
+    DlpContentRestriction::kScreenshot,
+    DlpRulesManager::Level::kBlock);
+const DlpContentRestrictionSet kScreenshotWarned(
+    DlpContentRestriction::kScreenshot,
+    DlpRulesManager::Level::kWarn);
+const DlpContentRestrictionSet kScreenshotReported(
+    DlpContentRestriction::kScreenshot,
+    DlpRulesManager::Level::kReport);
+const DlpContentRestrictionSet kPrintAllowed(DlpContentRestriction::kPrint,
+                                             DlpRulesManager::Level::kAllow);
+const DlpContentRestrictionSet kPrintRestricted(DlpContentRestriction::kPrint,
+                                                DlpRulesManager::Level::kBlock);
+const DlpContentRestrictionSet kPrintReported(DlpContentRestriction::kPrint,
+                                              DlpRulesManager::Level::kReport);
+const DlpContentRestrictionSet kPrintWarned(DlpContentRestriction::kPrint,
+                                            DlpRulesManager::Level::kWarn);
+const DlpContentRestrictionSet kScreenShareWarned(
+    DlpContentRestriction::kScreenShare,
+    DlpRulesManager::Level::kWarn);
 
-constexpr char kScreenCapturePausedNotificationId[] =
-    "screen_capture_dlp_paused-label";
-constexpr char kScreenCaptureResumedNotificationId[] =
-    "screen_capture_dlp_resumed-label";
+constexpr char kPrintBlockedNotificationId[] = "print_dlp_blocked";
 
-constexpr char kAllowedUrl[] = "https://example.com";
-constexpr char kUrl1[] = "https://example1.com";
-constexpr char kUrl2[] = "https://example2.com";
-constexpr char kUrl3[] = "https://example3.com";
-constexpr char kUrl4[] = "https://example4.com";
+constexpr char kExampleUrl[] = "https://example.com";
+constexpr char kSrcPattern[] = "example.com";
+constexpr char kLabel[] = "label";
+const std::u16string kApplicationTitle = u"example.com";
 }  // namespace
 
 class DlpContentManagerBrowserTest : public InProcessBrowserTest {
@@ -66,366 +83,597 @@ class DlpContentManagerBrowserTest : public InProcessBrowserTest {
   DlpContentManagerBrowserTest() = default;
   ~DlpContentManagerBrowserTest() override = default;
 
-  // InProcessBrowserTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(ash::features::kCaptureMode);
-    InProcessBrowserTest::SetUp();
+  std::unique_ptr<KeyedService> SetDlpRulesManager(
+      content::BrowserContext* context) {
+    auto dlp_rules_manager = std::make_unique<MockDlpRulesManager>();
+    mock_rules_manager_ = dlp_rules_manager.get();
+    return dlp_rules_manager;
+  }
+
+  void SetUpOnMainThread() override {
+    // Instantiate |DlpContentManagerTestHelper| after main thread has been
+    // set up cause |DlpReportingManager| needs a sequenced task runner handle
+    // to set up the report queue.
+    helper_ = std::make_unique<DlpContentManagerTestHelper>();
+  }
+
+  void TearDownOnMainThread() override { helper_.reset(); }
+
+  // Sets up mock rules manager.
+  void SetupDlpRulesManager() {
+    DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindRepeating(&DlpContentManagerBrowserTest::SetDlpRulesManager,
+                            base::Unretained(this)));
+    ASSERT_TRUE(DlpRulesManagerFactory::GetForPrimaryProfile());
+
+    EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
+        .WillRepeatedly(testing::Return(kSrcPattern));
+    EXPECT_CALL(*mock_rules_manager_, IsRestricted)
+        .WillRepeatedly(testing::Return(DlpRulesManager::Level::kAllow));
+  }
+
+  void SetupReporting() {
+    SetupDlpRulesManager();
+    // Set up mock report queue.
+    SetReportQueueForReportingManager(helper_->GetReportingManager(), events_,
+                                      base::SequencedTaskRunnerHandle::Get());
+  }
+
+  void CheckEvents(DlpRulesManager::Restriction restriction,
+                   DlpRulesManager::Level level,
+                   size_t count) {
+    EXPECT_EQ(events_.size(), count);
+    for (size_t i = 0; i < count; ++i) {
+      EXPECT_THAT(events_[i], IsDlpPolicyEvent(CreateDlpPolicyEvent(
+                                  kSrcPattern, restriction, level)));
+    }
   }
 
  protected:
-  DlpContentManagerTestHelper helper_;
+  std::unique_ptr<DlpContentManagerTestHelper> helper_;
   base::HistogramTester histogram_tester_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<MockDlpRulesManager> mock_rules_manager_;
+  std::vector<DlpPolicyEvent> events_;
 };
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
-  DlpContentManager* manager = DlpContentManager::Get();
-  ui_test_utils::NavigateToURL(browser(), GURL("https://example.com"));
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, PrintingNotRestricted) {
+  // Set up mock report queue and mock rules manager.
+  SetupReporting();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  aura::Window* root_window =
-      browser()->window()->GetNativeWindow()->GetRootWindow();
-  ScreenshotArea fullscreen = ScreenshotArea::CreateForAllRootWindows();
-  ScreenshotArea window =
-      ScreenshotArea::CreateForWindow(web_contents->GetNativeView());
-  const gfx::Rect web_contents_rect = web_contents->GetContainerBounds();
-  gfx::Rect out_rect(web_contents_rect);
-  out_rect.Offset(web_contents_rect.width(), web_contents_rect.height());
-  gfx::Rect in_rect(web_contents_rect);
-  in_rect.Offset(web_contents_rect.width() / 2, web_contents_rect.height() / 2);
-  ScreenshotArea partial_out =
-      ScreenshotArea::CreateForPartialWindow(root_window, out_rect);
-  ScreenshotArea partial_in =
-      ScreenshotArea::CreateForPartialWindow(root_window, in_rect);
 
-  EXPECT_FALSE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(window));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+
+  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  EXPECT_CALL(cb, Run(true)).Times(1);
+
+  helper_->GetContentManager()->CheckPrintingRestriction(
+      web_contents, web_contents->GetPrimaryMainFrame()->GetGlobalId(),
+      cb.Get());
+
+  // Start printing and check that there is no notification when printing is not
+  // restricted.
+  printing::StartPrint(web_contents,
+                       /*print_renderer=*/mojo::NullAssociatedRemote(),
+                       /*print_preview_disabled=*/false,
+                       /*has_selection=*/false);
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kPrintBlockedNotificationId));
+  CheckEvents(DlpRulesManager::Restriction::kPrinting,
+              DlpRulesManager::Level::kBlock, 0u);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsRestricted) {
+  SetupReporting();
+  DlpContentManager* manager = helper_->GetContentManager();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(web_contents));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 0);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 0u);
+
+  helper_->ChangeConfidentiality(web_contents, kScreenshotRestricted);
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(web_contents));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 1u);
+
+  web_contents->WasHidden();
+  helper_->ChangeVisibility(web_contents);
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(web_contents));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 2);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 2u);
+
+  web_contents->WasShown();
+  helper_->ChangeVisibility(web_contents);
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(web_contents));
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 3);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 3u);
+
+  helper_->DestroyWebContents(web_contents);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 3);
+  histogram_tester_.ExpectBucketCount(
+      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kBlock, 3u);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsWarned) {
+  SetupReporting();
+  DlpContentManager* manager = helper_->GetContentManager();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 0u);
+
+  helper_->ChangeConfidentiality(web_contents, kScreenshotWarned);
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 1u);
+
+  web_contents->WasHidden();
+  helper_->ChangeVisibility(web_contents);
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 2u);
+
+  web_contents->WasShown();
+  helper_->ChangeVisibility(web_contents);
+  EXPECT_TRUE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 3u);
+
+  helper_->DestroyWebContents(web_contents);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kWarn, 3u);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest, ScreenshotsReported) {
+  SetupReporting();
+  DlpContentManager* manager = helper_->GetContentManager();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kReport, 0u);
+
+  helper_->ChangeConfidentiality(web_contents, kScreenshotReported);
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kReport, 1u);
+
+  web_contents->WasHidden();
+  helper_->ChangeVisibility(web_contents);
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kReport, 2u);
+
+  web_contents->WasShown();
+  helper_->ChangeVisibility(web_contents);
+  EXPECT_FALSE(manager->IsScreenshotApiRestricted(web_contents));
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kReport, 3u);
+
+  helper_->DestroyWebContents(web_contents);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 0);
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 4);
-
-  helper_.ChangeConfidentiality(web_contents, kScreenshotRestricted);
-  EXPECT_TRUE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_TRUE(manager->IsScreenshotRestricted(window));
-  EXPECT_TRUE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 3);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 5);
-
-  web_contents->WasHidden();
-  helper_.ChangeVisibility(web_contents);
-  EXPECT_FALSE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_TRUE(manager->IsScreenshotRestricted(window));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 4);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 8);
-
-  web_contents->WasShown();
-  helper_.ChangeVisibility(web_contents);
-  EXPECT_TRUE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_TRUE(manager->IsScreenshotRestricted(window));
-  EXPECT_TRUE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 7);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 9);
-
-  helper_.DestroyWebContents(web_contents);
-  EXPECT_FALSE(manager->IsScreenshotRestricted(fullscreen));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_in));
-  EXPECT_FALSE(manager->IsScreenshotRestricted(partial_out));
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, true, 7);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenshotBlockedUMA, false, 12);
+  CheckEvents(DlpRulesManager::Restriction::kScreenshot,
+              DlpRulesManager::Level::kReport, 3u);
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
-                       VideoCaptureStoppedWhenConfidentialWindowResized) {
-  aura::Window* root_window =
-      browser()->window()->GetNativeWindow()->GetRootWindow();
-
-  // Open first browser window.
-  Browser* browser1 = browser();
-  chrome::NewTab(browser1);
-  ui_test_utils::NavigateToURL(browser1, GURL("https://example.com"));
-  content::WebContents* web_contents1 =
-      browser1->tab_strip_model()->GetActiveWebContents();
-
-  // Open second browser window.
-  Browser* browser2 =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
-  chrome::NewTab(browser2);
-  ui_test_utils::NavigateToURL(browser2, GURL("https://google.com"));
-
-  // Resize browsers so that second window covers the first one.
-  // Browser window can't have width less than 500.
-  browser1->window()->SetBounds(gfx::Rect(100, 100, 500, 500));
-  browser2->window()->SetBounds(gfx::Rect(0, 0, 700, 700));
-
-  // Make first window content as confidential.
-  helper_.ChangeConfidentiality(web_contents1, kVideoCaptureRestricted);
-
-  // Start capture of the whole screen.
-  base::RunLoop run_loop;
-  auto* capture_mode_delegate = ChromeCaptureModeDelegate::Get();
-  capture_mode_delegate->StartObservingRestrictedContent(
-      root_window, root_window->bounds(), run_loop.QuitClosure());
-
-  // Move first window with confidential content to make it visible.
-  browser1->window()->SetBounds(gfx::Rect(100, 100, 700, 700));
-
-  // Check that capture was requested to be stopped via callback.
-  run_loop.Run();
-
-  capture_mode_delegate->StopObservingRestrictedContent();
-  browser2->window()->Close();
-  histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
-                       VideoCaptureStoppedWhenNonConfidentialWindowResized) {
-  aura::Window* root_window =
-      browser()->window()->GetNativeWindow()->GetRootWindow();
-
-  // Open first browser window.
-  Browser* browser1 = browser();
-  chrome::NewTab(browser1);
-  ui_test_utils::NavigateToURL(browser1, GURL("https://example.com"));
-  content::WebContents* web_contents1 =
-      browser1->tab_strip_model()->GetActiveWebContents();
-
-  // Open second browser window.
-  Browser* browser2 =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
-  chrome::NewTab(browser2);
-  ui_test_utils::NavigateToURL(browser2, GURL("https://google.com"));
-
-  // Resize browsers so that second window covers the first one.
-  // Browser window can't have width less than 500.
-  browser1->window()->SetBounds(gfx::Rect(100, 100, 500, 500));
-  browser2->window()->SetBounds(gfx::Rect(0, 0, 700, 700));
-
-  // Make first window content as confidential.
-  helper_.ChangeConfidentiality(web_contents1, kVideoCaptureRestricted);
-
-  // Start capture of the whole screen.
-  base::RunLoop run_loop;
-  auto* capture_mode_delegate = ChromeCaptureModeDelegate::Get();
-  capture_mode_delegate->StartObservingRestrictedContent(
-      root_window, root_window->bounds(), run_loop.QuitClosure());
-
-  // Move second window to make first window with confidential content visible.
-  browser2->window()->SetBounds(gfx::Rect(150, 150, 700, 700));
-
-  // Check that capture was requested to be stopped via callback.
-  run_loop.Run();
-
-  capture_mode_delegate->StopObservingRestrictedContent();
-  browser2->window()->Close();
-  histogram_tester_.ExpectUniqueSample(
-      GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
-                       VideoCaptureNotStoppedWhenConfidentialWindowHidden) {
-  aura::Window* root_window =
-      browser()->window()->GetNativeWindow()->GetRootWindow();
-
-  // Open first browser window.
-  Browser* browser1 = browser();
-  chrome::NewTab(browser1);
-  ui_test_utils::NavigateToURL(browser1, GURL("https://example.com"));
-  content::WebContents* web_contents1 =
-      browser1->tab_strip_model()->GetActiveWebContents();
-
-  // Open second browser window.
-  Browser* browser2 =
-      Browser::Create(Browser::CreateParams(browser()->profile(), true));
-  chrome::NewTab(browser2);
-  ui_test_utils::NavigateToURL(browser2, GURL("https://google.com"));
-
-  // Resize browsers so that second window covers the first one.
-  // Browser window can't have width less than 500.
-  browser1->window()->SetBounds(gfx::Rect(100, 100, 500, 500));
-  browser2->window()->SetBounds(gfx::Rect(0, 0, 700, 700));
-
-  // Make first window content as confidential.
-  helper_.ChangeConfidentiality(web_contents1, kVideoCaptureRestricted);
-
-  // Start capture of the whole screen.
-  base::RunLoop run_loop;
-  auto* capture_mode_delegate = ChromeCaptureModeDelegate::Get();
-  capture_mode_delegate->StartObservingRestrictedContent(
-      root_window, root_window->bounds(), base::BindOnce([] {
-        FAIL() << "Video capture stop callback shouldn't be called";
-      }));
-
-  // Move first window, but keep confidential content hidden.
-  browser1->window()->SetBounds(gfx::Rect(150, 150, 500, 500));
-
-  // Check that capture was not requested to be stopped via callback.
-  run_loop.RunUntilIdle();
-  capture_mode_delegate->StopObservingRestrictedContent();
-
-  browser2->window()->Close();
-  histogram_tester_.ExpectTotalCount(
-      GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, 0);
-}
-
-IN_PROC_BROWSER_TEST_F(DlpContentManagerBrowserTest,
-                       ScreenCaptureNotification) {
-  NotificationDisplayServiceTester display_service_tester(browser()->profile());
-  DlpContentManager* manager = DlpContentManager::Get();
-  ui_test_utils::NavigateToURL(browser(), GURL("https://example.com"));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  aura::Window* root_window =
-      browser()->window()->GetNativeWindow()->GetRootWindow();
-  const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
-      content::DesktopMediaID::TYPE_SCREEN, root_window);
-  manager->OnScreenCaptureStarted("label", {media_id}, u"example.com",
-                                  base::DoNothing());
-
-  EXPECT_FALSE(display_service_tester.GetNotification(
-      kScreenCapturePausedNotificationId));
-  EXPECT_FALSE(display_service_tester.GetNotification(
-      kScreenCaptureResumedNotificationId));
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 0);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 0);
-
-  helper_.ChangeConfidentiality(web_contents, kScreenShareRestricted);
-
-  EXPECT_TRUE(display_service_tester.GetNotification(
-      kScreenCapturePausedNotificationId));
-  EXPECT_FALSE(display_service_tester.GetNotification(
-      kScreenCaptureResumedNotificationId));
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 0);
-
-  helper_.ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
-
-  EXPECT_FALSE(display_service_tester.GetNotification(
-      kScreenCapturePausedNotificationId));
-  EXPECT_TRUE(display_service_tester.GetNotification(
-      kScreenCaptureResumedNotificationId));
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 1);
-
-  manager->OnScreenCaptureStopped("label", media_id);
-
-  EXPECT_FALSE(display_service_tester.GetNotification(
-      kScreenCapturePausedNotificationId));
-  EXPECT_FALSE(display_service_tester.GetNotification(
-      kScreenCaptureResumedNotificationId));
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, true, 1);
-  histogram_tester_.ExpectBucketCount(
-      GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 1);
-}
-
-class DlpContentManagerPolicyBrowserTest : public LoginPolicyTestBase {
+class DlpContentManagerReportingBrowserTest
+    : public DlpContentManagerBrowserTest {
  public:
-  DlpContentManagerPolicyBrowserTest() = default;
+  void SetUpOnMainThread() override {
+    DlpContentManagerBrowserTest::SetUpOnMainThread();
+    content::WebContents* first_tab =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(first_tab);
 
-  void SetDlpRulesPolicy(const base::Value& rules) {
-    std::string json;
-    base::JSONWriter::Write(rules, &json);
+    // Open a new tab so |cloned_tab_observer_| can see it and create a
+    // TestPrintViewManagerForRequestPreview for it before the real
+    // PrintViewManager gets created.
+    // Since TestPrintViewManagerForRequestPreview is created with
+    // PrintViewManager::UserDataKey(), the real PrintViewManager is not created
+    // and TestPrintViewManagerForRequestPreview gets mojo messages for the
+    // purposes of this test.
+    cloned_tab_observer_ =
+        std::make_unique<printing::TestPrintPreviewDialogClonedObserver>(
+            first_tab);
+    chrome::DuplicateTab(browser());
+  }
 
-    base::DictionaryValue policy;
-    policy.SetKey(key::kDataLeakPreventionRulesList, base::Value(json));
-    user_policy_helper()->SetPolicyAndWait(
-        policy, /*recommended=*/base::DictionaryValue(),
-        ProfileManager::GetActiveUserProfile());
+  void TearDownOnMainThread() override {
+    DlpContentManagerBrowserTest::TearDownOnMainThread();
+    cloned_tab_observer_.reset();
+  }
+
+  // Sets up real report queue together with TestStorageModule
+  void SetupReportQueue() {
+    const reporting::Destination destination_ =
+        reporting::Destination::UPLOAD_EVENTS;
+
+    storage_module_ =
+        base::MakeRefCounted<reporting::test::TestStorageModule>();
+
+    policy_check_callback_ =
+        base::BindRepeating(&testing::MockFunction<reporting::Status()>::Call,
+                            base::Unretained(&mocked_policy_check_));
+
+    ON_CALL(mocked_policy_check_, Call())
+        .WillByDefault(testing::Return(reporting::Status::StatusOK()));
+
+    auto config_result = ::reporting::ReportQueueConfiguration::Create(
+        ::reporting::EventType::kDevice, destination_, policy_check_callback_);
+
+    ASSERT_TRUE(config_result.ok());
+
+    // Create a report queue with the test storage module, and attach it
+    // to an actual speculative report queue so we can override the one used in
+    // |DlpReportingManager| by default.
+    reporting::test::TestEvent<
+        reporting::StatusOr<std::unique_ptr<reporting::ReportQueue>>>
+        report_queue_event;
+    reporting::ReportQueueImpl::Create(std::move(config_result.ValueOrDie()),
+                                       storage_module_,
+                                       report_queue_event.cb());
+    auto report_queue_result = report_queue_event.result();
+
+    ASSERT_TRUE(report_queue_result.ok());
+
+    auto speculative_report_queue =
+        ::reporting::SpeculativeReportQueueImpl::Create();
+    auto attach_queue_cb =
+        speculative_report_queue->PrepareToAttachActualQueue();
+
+    helper_->GetReportingManager()->SetReportQueueForTest(
+        std::move(speculative_report_queue));
+    std::move(attach_queue_cb).Run(std::move(report_queue_result.ValueOrDie()));
+
+    // Wait until the speculative report queue is initialized with the stubbed
+    // report queue posted to its internal task runner
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+  }
+
+  reporting::test::TestStorageModule* test_storage_module() const {
+    reporting::test::TestStorageModule* test_storage_module =
+        google::protobuf::down_cast<reporting::test::TestStorageModule*>(
+            storage_module_.get());
+    DCHECK(test_storage_module);
+    return test_storage_module;
+  }
+
+  void CheckRecord(DlpPolicyEvent expectedEvent, reporting::Record record) {
+    DlpPolicyEvent event;
+    EXPECT_TRUE(event.ParseFromString(record.data()));
+    EXPECT_EQ(event.source().url(), kSrcPattern);
+    EXPECT_THAT(event, IsDlpPolicyEvent(expectedEvent));
+  }
+
+  // Sets an action to execute when an event arrives to the report queue storage
+  // module.
+  void SetAddRecordCheck(DlpPolicyEvent expectedEvent, int times) {
+    // TODO(1290312): Change to [=, this] when chrome code base is updated to
+    // C++20.
+    EXPECT_CALL(*test_storage_module(), AddRecord)
+        .Times(times)
+        .WillRepeatedly(testing::WithArgs<1, 2>(testing::Invoke(
+            [=](reporting::Record record,
+                base::OnceCallback<void(reporting::Status)> callback) {
+              content::GetUIThreadTaskRunner({})->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(
+                      &DlpContentManagerReportingBrowserTest::CheckRecord,
+                      base::Unretained(this), std::move(expectedEvent),
+                      std::move(record)));
+              std::move(callback).Run(reporting::Status::StatusOK());
+            })));
+  }
+
+  // Start printing and wait for the end of
+  // printing::PrintViewManager::RequestPrintPreview(). StartPrint() is an
+  // asynchronous function, which initializes mojo communication with a renderer
+  // process. We need to wait for the DLP restriction check in
+  // RequestPrintPreview(), which happens after the renderer process
+  // communicates back to the browser process.
+  void StartPrint(
+      printing::TestPrintViewManagerForRequestPreview* print_manager,
+      content::WebContents* web_contents) {
+    base::RunLoop run_loop;
+    print_manager->set_quit_closure(run_loop.QuitClosure());
+
+    printing::StartPrint(web_contents,
+                         /*print_renderer=*/mojo::NullAssociatedRemote(),
+                         /*print_preview_disabled=*/false,
+                         /*has_selection=*/false);
+    run_loop.Run();
   }
 
  protected:
-  DlpContentManagerTestHelper helper_;
+  // Helper class to enable asserting that printing was accepted or rejected.
+  class MockPrintManager
+      : public printing::TestPrintViewManagerForRequestPreview {
+   public:
+    MOCK_METHOD(void, PrintPreviewAllowedForTesting, (), (override));
+    MOCK_METHOD(void, PrintPreviewRejectedForTesting, (), (override));
+
+    static void CreateForWebContents(content::WebContents* web_contents) {
+      web_contents->SetUserData(
+          PrintViewManager::UserDataKey(),
+          std::make_unique<MockPrintManager>(web_contents));
+    }
+
+    static MockPrintManager* FromWebContents(
+        content::WebContents* web_contents) {
+      return static_cast<MockPrintManager*>(
+          printing::TestPrintViewManagerForRequestPreview::FromWebContents(
+              web_contents));
+    }
+
+    explicit MockPrintManager(content::WebContents* web_contents)
+        : printing::TestPrintViewManagerForRequestPreview(web_contents) {}
+    ~MockPrintManager() override = default;
+  };
+
+  MockPrintManager* GetPrintManager(content::WebContents* web_contents) {
+    MockPrintManager::CreateForWebContents(web_contents);
+    return MockPrintManager::FromWebContents(web_contents);
+  }
+
+  scoped_refptr<reporting::StorageModuleInterface> storage_module_;
+  testing::NiceMock<testing::MockFunction<reporting::Status()>>
+      mocked_policy_check_;
+  reporting::ReportQueueConfiguration::PolicyCheckCallback
+      policy_check_callback_;
+  std::unique_ptr<printing::TestPrintPreviewDialogClonedObserver>
+      cloned_tab_observer_;
 };
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerPolicyBrowserTest,
-                       GetRestrictionSetForURL) {
-  SkipToLoginScreen();
-  LogIn(kAccountId, kAccountPassword, kEmptyServices);
+// TODO(crbug.com/1291074): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PrintingRestricted DISABLED_PrintingRestricted
+#else
+#define MAYBE_PrintingRestricted PrintingRestricted
+#endif
+IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
+                       MAYBE_PrintingRestricted) {
+  // Set up mock rules manager.
+  SetupDlpRulesManager();
+  // Set up real report queue.
+  SetupReportQueue();
+  // Sets an action to execute when an event arrives to a storage module.
+  SetAddRecordCheck(
+      CreateDlpPolicyEvent(kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                           DlpRulesManager::Level::kBlock),
+      /*times=*/2);
 
-  base::Value rules(base::Value::Type::LIST);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
 
-  base::Value src_urls1(base::Value::Type::LIST);
-  src_urls1.Append(kUrl1);
-  base::Value restrictions1(base::Value::Type::LIST);
-  restrictions1.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kScreenshotRestriction, dlp::kBlockLevel));
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #1", "Block", std::move(src_urls1),
-      /*dst_urls=*/base::Value(base::Value::Type::LIST),
-      /*dst_components=*/base::Value(base::Value::Type::LIST),
-      std::move(restrictions1)));
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
-  base::Value src_urls2(base::Value::Type::LIST);
-  src_urls2.Append(kUrl2);
-  base::Value restrictions2(base::Value::Type::LIST);
-  restrictions2.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kPrivacyScreenRestriction, dlp::kBlockLevel));
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #2", "Block", std::move(src_urls2),
-      /*dst_urls=*/base::Value(base::Value::Type::LIST),
-      /*dst_components=*/base::Value(base::Value::Type::LIST),
-      std::move(restrictions2)));
+  // Set up the mocks for directly calling CheckPrintingRestriction().
+  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  testing::InSequence s;
+  EXPECT_CALL(cb, Run(true)).Times(1);
+  EXPECT_CALL(cb, Run(false)).Times(1);
 
-  base::Value src_urls3(base::Value::Type::LIST);
-  src_urls3.Append(kUrl3);
-  base::Value restrictions3(base::Value::Type::LIST);
-  restrictions3.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kPrintingRestriction, dlp::kBlockLevel));
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #3", "Block", std::move(src_urls3),
-      /*dst_urls=*/base::Value(base::Value::Type::LIST),
-      /*dst_components=*/base::Value(base::Value::Type::LIST),
-      std::move(restrictions3)));
+  content::GlobalRenderFrameHostId rfh_id =
+      web_contents->GetPrimaryMainFrame()->GetGlobalId();
+  // Printing should first be allowed.
+  helper_->GetContentManager()->CheckPrintingRestriction(web_contents, rfh_id,
+                                                         cb.Get());
 
-  base::Value src_urls4(base::Value::Type::LIST);
-  src_urls4.Append(kUrl4);
-  base::Value restrictions4(base::Value::Type::LIST);
-  restrictions4.Append(dlp_test_util::CreateRestrictionWithLevel(
-      dlp::kScreenShareRestriction, dlp::kBlockLevel));
-  rules.Append(dlp_test_util::CreateRule(
-      "rule #4", "Block", std::move(src_urls4),
-      /*dst_urls=*/base::Value(base::Value::Type::LIST),
-      /*dst_components=*/base::Value(base::Value::Type::LIST),
-      std::move(restrictions4)));
+  // Set up printing restriction.
+  helper_->ChangeConfidentiality(web_contents, kPrintRestricted);
+  helper_->GetContentManager()->CheckPrintingRestriction(web_contents, rfh_id,
+                                                         cb.Get());
 
-  SetDlpRulesPolicy(rules);
+  // Setup the mock for the printing manager to invoke
+  // CheckPrintingRestriction() indirectly.
+  MockPrintManager* print_manager = GetPrintManager(web_contents);
+  EXPECT_CALL(*print_manager, PrintPreviewAllowedForTesting).Times(0);
+  EXPECT_CALL(*print_manager, PrintPreviewRejectedForTesting).Times(1);
+  StartPrint(print_manager, web_contents);
 
-  DlpContentRestrictionSet screenshot_and_videocapture(kScreenshotRestricted);
-  screenshot_and_videocapture.SetRestriction(
-      DlpContentRestriction::kVideoCapture);
-  EXPECT_EQ(screenshot_and_videocapture,
-            helper_.GetRestrictionSetForURL(GURL(kUrl1)));
-  EXPECT_EQ(kPrivacyScreenEnforced,
-            helper_.GetRestrictionSetForURL(GURL(kUrl2)));
-  EXPECT_EQ(kPrintRestricted, helper_.GetRestrictionSetForURL(GURL(kUrl3)));
-  EXPECT_EQ(kScreenShareRestricted,
-            helper_.GetRestrictionSetForURL(GURL(kUrl4)));
-  EXPECT_EQ(DlpContentRestrictionSet(),
-            helper_.GetRestrictionSetForURL(GURL(kAllowedUrl)));
+  // Check for notification about printing restriction.
+  EXPECT_TRUE(
+      display_service_tester.GetNotification(kPrintBlockedNotificationId));
+}
+
+// TODO(crbug.com/1291074): Flaky on ChromeOS Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PrintingReported DISABLED_PrintingReported
+#else
+#define MAYBE_PrintingReported PrintingReported
+#endif
+IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
+                       MAYBE_PrintingReported) {
+  SetupDlpRulesManager();
+  SetupReportQueue();
+  SetAddRecordCheck(
+      CreateDlpPolicyEvent(kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                           DlpRulesManager::Level::kReport),
+      /*times=*/2);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+
+  // Set up printing restriction.
+  helper_->ChangeConfidentiality(web_contents, kPrintReported);
+  // Printing should be reported, but still allowed whether we call
+  // CheckPrintingRestriction() directly or indirectly.
+  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  EXPECT_CALL(cb, Run(true)).Times(1);
+  helper_->GetContentManager()->CheckPrintingRestriction(
+      web_contents, web_contents->GetPrimaryMainFrame()->GetGlobalId(),
+      cb.Get());
+
+  MockPrintManager* print_manager = GetPrintManager(web_contents);
+  EXPECT_CALL(*print_manager, PrintPreviewAllowedForTesting).Times(1);
+  EXPECT_CALL(*print_manager, PrintPreviewRejectedForTesting).Times(0);
+  StartPrint(print_manager, web_contents);
+
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kPrintBlockedNotificationId));
+}
+
+// Test is flaky on Lacros: https://crbug.com/1344827
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_PrintingWarned DISABLED_PrintingWarned
+#else
+#define MAYBE_PrintingWarned PrintingWarned
+#endif
+IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
+                       MAYBE_PrintingWarned) {
+  SetupDlpRulesManager();
+  SetupReportQueue();
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Set up printing restriction.
+  helper_->ChangeConfidentiality(web_contents, kPrintWarned);
+
+  SetAddRecordCheck(
+      CreateDlpPolicyEvent(kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                           DlpRulesManager::Level::kWarn),
+      /*times=*/1);
+
+  MockPrintManager* print_manager = GetPrintManager(web_contents);
+  testing::InSequence s;
+  EXPECT_CALL(*print_manager, PrintPreviewRejectedForTesting()).Times(1);
+
+  StartPrint(print_manager, web_contents);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+  // Hit Esc to "Cancel".
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
+                                              false, false, false));
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  // There should be no notification about printing restriction.
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kPrintBlockedNotificationId));
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(test_storage_module()));
+
+  SetAddRecordCheck(
+      CreateDlpPolicyEvent(kSrcPattern, DlpRulesManager::Restriction::kPrinting,
+                           DlpRulesManager::Level::kWarn),
+      /*times=*/1);
+
+  // Attempt to print again.
+  StartPrint(print_manager, web_contents);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+  EXPECT_TRUE(testing::Mock::VerifyAndClearExpectations(test_storage_module()));
+
+  SetAddRecordCheck(CreateDlpPolicyWarningProceededEvent(
+                        kSrcPattern, DlpRulesManager::Restriction::kPrinting),
+                    /*times=*/1);
+  EXPECT_CALL(*print_manager, PrintPreviewAllowedForTesting()).Times(1);
+
+  // Hit Enter to "Print anyway".
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN, false,
+                                              false, false, false));
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+}
+
+// Test is flaky on Lacros: https://crbug.com/1344827
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_TabShareWarnedDuringAllowed DISABLED_TabShareWarnedDuringAllowed
+#else
+#define MAYBE_TabShareWarnedDuringAllowed TabShareWarnedDuringAllowed
+#endif
+IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
+                       MAYBE_TabShareWarnedDuringAllowed) {
+  SetupReporting();
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  const content::DesktopMediaID media_id(
+      content::DesktopMediaID::TYPE_WEB_CONTENTS,
+      content::DesktopMediaID::kNullId,
+      content::WebContentsMediaCaptureId(
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetRoutingID()));
+
+  DlpContentManager* manager = helper_->GetContentManager();
+  base::MockCallback<content::MediaStreamUI::StateChangeCallback>
+      state_change_cb;
+  base::MockCallback<base::RepeatingClosure> stop_cb;
+  base::MockCallback<content::MediaStreamUI::SourceCallback> source_cb;
+  // Explicitly specify that the stop callback should never be invoked.
+  EXPECT_CALL(stop_cb, Run()).Times(0);
+  testing::InSequence s;
+  EXPECT_CALL(state_change_cb,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
+      .Times(1);
+  EXPECT_CALL(source_cb, Run).Times(1);
+  // Although the share should be paused and resumed, DLP will only call
+  // state_change_cb_ once to pause it. When it's supposed to be resumed, it
+  // will call source_cb which also resumes the share after a successful source
+  // change.
+  EXPECT_CALL(state_change_cb,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PLAY))
+      .Times(0);
+
+  manager->OnScreenShareStarted(kLabel, {media_id}, kApplicationTitle,
+                                stop_cb.Get(), state_change_cb.Get(),
+                                source_cb.Get());
+
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+  CheckEvents(DlpRulesManager::Restriction::kScreenShare,
+              DlpRulesManager::Level::kWarn, 1u);
+
+  // Hit Enter to "Share anyway".
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_RETURN, /*control=*/false,
+      /*shift=*/false, /*alt=*/false, /*command=*/false));
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  EXPECT_EQ(events_.size(), 2u);
+  EXPECT_THAT(events_[1],
+              IsDlpPolicyEvent(CreateDlpPolicyWarningProceededEvent(
+                  kSrcPattern, DlpRulesManager::Restriction::kScreenShare)));
+
+  // The contents should already be cached as allowed by the user, so this
+  // should not trigger a new warning.
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  EXPECT_EQ(events_.size(), 2u);
 }
 
 }  // namespace policy

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,12 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chromeos/network/network_connection_observer.h"
-#include "chromeos/network/network_state_handler_observer.h"
+#include "chromeos/ash/components/network/network_connection_observer.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 
@@ -30,17 +31,22 @@ class User;
 // network is about to change to  a non-cellular network. We introduce a delay
 // in operations that we think might run into this issue.
 class MobileDataNotifications
-    : public chromeos::NetworkStateHandlerObserver,
-      public chromeos::NetworkConnectionObserver,
+    : public ash::NetworkStateHandlerObserver,
+      public ash::NetworkConnectionObserver,
       public user_manager::UserManager::UserSessionStateObserver,
       public session_manager::SessionManagerObserver {
  public:
   MobileDataNotifications();
+
+  MobileDataNotifications(const MobileDataNotifications&) = delete;
+  MobileDataNotifications& operator=(const MobileDataNotifications&) = delete;
+
   ~MobileDataNotifications() override;
 
   // NetworkStateHandlerObserver:
-  void ActiveNetworksChanged(const std::vector<const chromeos::NetworkState*>&
-                                 active_networks) override;
+  void ActiveNetworksChanged(
+      const std::vector<const ash::NetworkState*>& active_networks) override;
+  void OnShuttingDown() override;
 
   // NetworkConnectionObserver:
   void ConnectSucceeded(const std::string& service_path) override;
@@ -65,7 +71,7 @@ class MobileDataNotifications
   //   from triggering the notification).
   // * First time notification is shown according to user prefs.
   void ShowOptionalMobileDataNotificationImpl(
-      const std::vector<const chromeos::NetworkState*>& active_networks);
+      const std::vector<const ash::NetworkState*>& active_networks);
 
   // Adds a delay before calling |ShowOptionalMobileDataNotification|. Delay is
   // introduced because in some cases we might be notified through an observer
@@ -76,9 +82,11 @@ class MobileDataNotifications
 
   base::OneShotTimer one_shot_notification_check_delay_;
 
-  base::WeakPtrFactory<MobileDataNotifications> weak_factory_{this};
+  base::ScopedObservation<ash::NetworkStateHandler,
+                          ash::NetworkStateHandlerObserver>
+      network_state_handler_observer_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(MobileDataNotifications);
+  base::WeakPtrFactory<MobileDataNotifications> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_NETWORK_MOBILE_DATA_NOTIFICATIONS_H_

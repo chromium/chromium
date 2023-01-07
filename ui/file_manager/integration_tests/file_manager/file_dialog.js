@@ -1,8 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {addEntries, ENTRIES, getCaller, pending, repeatUntil, sendBrowserTestCommand, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {navigateWithDirectoryTree, openAndWaitForClosingDialog, openEntryChoosingWindow, pollForChosenEntry, remoteCall} from './background.js';
+import {BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
  * Sends a key event to an open file dialog, after selecting the file |name|
@@ -14,7 +18,7 @@
  * @return {!Promise} Promise to be fulfilled on success.
  */
 async function sendOpenFileDialogKey(name, key, dialog) {
-  await remoteCall.callRemoteTestUtil('selectFile', dialog, [name]);
+  await remoteCall.waitUntilSelected(dialog, name);
   await remoteCall.callRemoteTestUtil('fakeKeyDown', dialog, key);
 }
 
@@ -28,7 +32,7 @@ async function sendOpenFileDialogKey(name, key, dialog) {
  * @return {!Promise} Promise to be fulfilled on success.
  */
 async function clickOpenFileDialogButton(name, button, dialog) {
-  await remoteCall.callRemoteTestUtil('selectFile', dialog, [name]);
+  await remoteCall.waitUntilSelected(dialog, name);
   await remoteCall.waitForElement(dialog, button);
   const event = [button, 'click'];
   await remoteCall.callRemoteTestUtil('fakeEvent', dialog, event);
@@ -61,12 +65,14 @@ async function unloadOpenFileDialog(
  */
 async function setUpFileEntrySet(volume) {
   const localEntryPromise = addEntries(['local'], BASIC_LOCAL_ENTRY_SET);
-  const driveEntryPromise = addEntries(
-      ['drive'], [ENTRIES.hello, ENTRIES.pinned, ENTRIES.testDocument]);
+
+  const driveEntries =
+      [ENTRIES.hello, ENTRIES.pinned, ENTRIES.testDocument, ENTRIES.docxFile];
+  const driveEntryPromise = addEntries(['drive'], driveEntries);
 
   await Promise.all([localEntryPromise, driveEntryPromise]);
   if (volume == 'drive') {
-    return [ENTRIES.hello, ENTRIES.pinned, ENTRIES.testDocument];
+    return driveEntries;
   }
   return BASIC_LOCAL_ENTRY_SET;
 }
@@ -128,7 +134,7 @@ async function saveFileDialogClickOkButton(volume, name) {
   const caller = getCaller();
 
   const closer = async (appId) => {
-    await remoteCall.callRemoteTestUtil('selectFile', appId, [name]);
+    await remoteCall.waitUntilSelected(appId, name);
     await repeatUntil(async () => {
       const element =
           await remoteCall.waitForElement(appId, '#filename-input-textbox');
@@ -171,9 +177,9 @@ async function openFileDialogExpectOkButtonDisabled(
   const disabledOkButton = '.button-panel button.ok:disabled';
   const cancelButton = '.button-panel button.cancel';
   const closer = async (dialog) => {
-    await remoteCall.callRemoteTestUtil('selectFile', dialog, [enabledName]);
+    await remoteCall.waitUntilSelected(dialog, enabledName);
     await remoteCall.waitForElement(dialog, okButton);
-    await remoteCall.callRemoteTestUtil('selectFile', dialog, [name]);
+    await remoteCall.waitUntilSelected(dialog, name);
     await remoteCall.waitForElement(dialog, disabledOkButton);
     clickOpenFileDialogButton(name, cancelButton, dialog);
   };
@@ -228,7 +234,7 @@ async function openFileDialogSendEscapeKey(volume, name) {
  * Waits for the dialog window and waits it to fully load.
  * @returns {!Promise<string>} dialog's id.
  */
-async function waitForDialog() {
+export async function waitForDialog() {
   const dialog = await remoteCall.waitForWindow('dialog#');
 
   // Wait for Files app to finish loading.
@@ -244,7 +250,7 @@ async function waitForDialog() {
  */
 async function checkFeedbackDisplayHidden(type) {
   // Open dialog of the specified 'type'.
-  chrome.fileSystem.chooseEntry({type: type}, (entry) => {});
+  await openEntryChoosingWindow({type: type});
   const appId = await waitForDialog();
 
   // Wait to finish initial load.
@@ -258,15 +264,19 @@ async function checkFeedbackDisplayHidden(type) {
 
 /**
  * Test file present in Downloads.
- * @const {!string}
+ * @return {!string}
  */
-const TEST_LOCAL_FILE = BASIC_LOCAL_ENTRY_SET[0].targetPath;
+function getTestFileName() {
+  // Type TestEntryInfo's targetPath can be undefined, but the first item
+  // from BASIC_LOCAL_ENTRY_SET has value, we need to do type casting here.
+  return /** @type {!string} */ (BASIC_LOCAL_ENTRY_SET[0].targetPath);
+}
 
 /**
  * Tests opening file dialog on Downloads and closing it with Ok button.
  */
 testcase.openFileDialogDownloads = () => {
-  return openFileDialogClickOkButton('downloads', TEST_LOCAL_FILE);
+  return openFileDialogClickOkButton('downloads', getTestFileName());
 };
 
 /**
@@ -274,7 +284,7 @@ testcase.openFileDialogDownloads = () => {
  */
 testcase.openFileDialogAriaMultipleSelect = async () => {
   // Open File dialog.
-  chrome.fileSystem.chooseEntry({type: 'openFile'}, (entry) => {});
+  await openEntryChoosingWindow({type: 'openFile'});
   const appId = await waitForDialog();
 
   // Wait to finish initial load.
@@ -294,7 +304,7 @@ testcase.openFileDialogAriaMultipleSelect = async () => {
  */
 testcase.saveFileDialogAriaSingleSelect = async () => {
   // Open Save as dialog.
-  chrome.fileSystem.chooseEntry({type: 'saveFile'}, (entry) => {});
+  await openEntryChoosingWindow({type: 'saveFile'});
   const appId = await waitForDialog();
 
   // Wait to finish initial load.
@@ -314,7 +324,7 @@ testcase.saveFileDialogAriaSingleSelect = async () => {
  * with Ok button.
  */
 testcase.saveFileDialogDownloads = () => {
-  return saveFileDialogClickOkButton('downloads', TEST_LOCAL_FILE);
+  return saveFileDialogClickOkButton('downloads', getTestFileName());
 };
 
 /**
@@ -322,7 +332,7 @@ testcase.saveFileDialogDownloads = () => {
  */
 testcase.saveFileDialogDownloadsNewFolderButton = async () => {
   // Open Save as dialog.
-  chrome.fileSystem.chooseEntry({type: 'saveFile'}, (entry) => {});
+  await openEntryChoosingWindow({type: 'saveFile'});
   const appId = await waitForDialog();
 
   // Wait to finish initial load.
@@ -342,14 +352,14 @@ testcase.saveFileDialogDownloadsNewFolderButton = async () => {
  * Tests opening file dialog on Downloads and closing it with Cancel button.
  */
 testcase.openFileDialogCancelDownloads = () => {
-  return openFileDialogClickCancelButton('downloads', TEST_LOCAL_FILE);
+  return openFileDialogClickCancelButton('downloads', getTestFileName());
 };
 
 /**
  * Tests opening file dialog on Downloads and closing it with ESC key.
  */
 testcase.openFileDialogEscapeDownloads = () => {
-  return openFileDialogSendEscapeKey('downloads', TEST_LOCAL_FILE);
+  return openFileDialogSendEscapeKey('downloads', getTestFileName());
 };
 
 /**
@@ -467,6 +477,49 @@ testcase.saveFileDialogDriveHostedNeedsFile = () => {
 };
 
 /**
+ * Tests opening file dialog on Drive and selecting an office file.
+ */
+testcase.openFileDialogDriveOfficeFile = () => {
+  return openFileDialogClickOkButton('drive', ENTRIES.docxFile.nameText);
+};
+
+/**
+ * Tests opening file dialog on Drive and selecting multiple files including an
+ * office file.
+ */
+testcase.openMultiFileDialogDriveOfficeFile = async () => {
+  await setUpFileEntrySet('drive');
+  await openEntryChoosingWindow({type: 'openFile', acceptsMultiple: true});
+  const appId = await waitForDialog();
+
+  // Wait for initial load to finish.
+  await remoteCall.waitFor('isFileManagerLoaded', appId, true);
+
+  await navigateWithDirectoryTree(appId, '/My Drive');
+
+  // Sort the file names so we can compare the array directly with the entries
+  // returned from pollForChosenEntry() without worrying about order.
+  const selectFileNames = [
+    ENTRIES.hello.nameText,
+    ENTRIES.docxFile.nameText,
+  ].sort();
+
+  // Select both files with the dialog.
+  await remoteCall.waitAndClickElement(
+      appId, `#file-list [file-name="${selectFileNames[0]}"]`);
+  await remoteCall.waitAndClickElement(
+      appId, `#file-list [file-name="${selectFileNames[1]}"]`, {ctrl: true});
+  await sendTestMessage(
+      {name: 'expectFileTask', fileNames: selectFileNames, openType: 'open'});
+  const okButton = '.button-panel button.ok:enabled';
+  await remoteCall.waitAndClickElement(appId, okButton);
+
+  const chosenEntries =
+      (await pollForChosenEntry(getCaller())).map(entry => entry.name).sort();
+  chrome.test.assertEq(selectFileNames, chosenEntries);
+};
+
+/**
  * Tests opening file dialog on Drive and closing it with Cancel button.
  */
 testcase.openFileDialogCancelDrive = () => {
@@ -484,7 +537,7 @@ testcase.openFileDialogEscapeDrive = () => {
  * Tests opening file dialog, then closing it with an 'unload' event.
  */
 testcase.openFileDialogUnload = async () => {
-  chrome.fileSystem.chooseEntry({type: 'openFile'}, (entry) => {});
+  await openEntryChoosingWindow({type: 'openFile'});
   const dialog = await waitForDialog();
   await unloadOpenFileDialog(dialog);
 };
@@ -499,7 +552,7 @@ testcase.openFileDialogDefaultFilter = async () => {
     accepts: [{extensions: ['jpg']}],
     acceptsAllTypes: true,
   };
-  chrome.fileSystem.chooseEntry(params, (entry) => {});
+  await openEntryChoosingWindow(params);
   const dialog = await waitForDialog();
 
   // Check: 'JPEG image' should be selected.
@@ -518,7 +571,7 @@ testcase.saveFileDialogDefaultFilter = async () => {
     accepts: [{extensions: ['jpg']}],
     acceptsAllTypes: true,
   };
-  chrome.fileSystem.chooseEntry(params, (entry) => {});
+  await openEntryChoosingWindow(params);
   const dialog = await waitForDialog();
 
   // Check: 'All files' should be selected.
@@ -538,7 +591,7 @@ testcase.saveFileDialogDefaultFilterKeyNavigation = async () => {
     accepts: [{extensions: ['jpg']}],
     acceptsAllTypes: true,
   };
-  chrome.fileSystem.chooseEntry(params, (entry) => {});
+  await openEntryChoosingWindow(params);
   const dialog = await waitForDialog();
 
   // Check: 'All files' should be selected.
@@ -698,7 +751,7 @@ testcase.saveFileDialogSingleFilterNoAcceptAll = async () => {
     accepts: [{extensions: ['jpg']}],
     acceptsAllTypes: false,
   };
-  chrome.fileSystem.chooseEntry(params, (entry) => {});
+  await openEntryChoosingWindow(params);
   const dialog = await waitForDialog();
 
   // Check: 'JPEG image' should be selected.
@@ -717,20 +770,21 @@ testcase.saveFileDialogSingleFilterNoAcceptAll = async () => {
  * @return {!Promise<string>} The name of the entry from chooseEntry().
  */
 async function showSaveAndConfirmExpecting(extraParams, expectName) {
+  const caller = getCaller();
+
   const params = {
     type: 'saveFile',
     accepts: [{extensions: ['jpg']}],
   };
-  const result = new Promise(resolve => {
-    chrome.fileSystem.chooseEntry(Object.assign(params, extraParams), resolve);
-  });
+  await openEntryChoosingWindow(Object.assign(params, extraParams));
   const dialog = await waitForDialog();
 
   // Ensure the input field is ready.
   await remoteCall.waitForElement(dialog, '#filename-input-textbox');
 
   await clickOkButtonExpectName(dialog, expectName, 'saveAs');
-  return (await result).name;
+  const entry = await pollForChosenEntry(caller);
+  return entry.name;
 }
 
 /**
@@ -784,7 +838,7 @@ testcase.openFileDialogFileListShowContextMenu = async () => {
   await addEntries(['local'], BASIC_LOCAL_ENTRY_SET);
 
   // Open file picker dialog.
-  chrome.fileSystem.chooseEntry({type: 'openFile'}, (entry) => {});
+  await openEntryChoosingWindow({type: 'openFile'});
   const appId = await waitForDialog();
 
   // Wait to finish initial load.
@@ -804,7 +858,7 @@ testcase.openFileDialogFileListShowContextMenu = async () => {
       appId, expectedRows, {ignoreLastModifiedTime: true});
 
   // Navigate to Downloads folder.
-  await remoteCall.navigateWithDirectoryTree(appId, '/Downloads', 'My files');
+  await navigateWithDirectoryTree(appId, '/My files/Downloads');
 
   // Right-click "photos" folder to show context menu.
   await remoteCall.waitAndRightClick(appId, '#file-list [file-name="photos"]');
@@ -836,7 +890,7 @@ testcase.openFileDialogFileListShowContextMenu = async () => {
  */
 testcase.openFileDialogSelectAllDisabled = async () => {
   // Open file picker dialog.
-  chrome.fileSystem.chooseEntry({type: 'openFile'}, (entry) => {});
+  await openEntryChoosingWindow({type: 'openFile'});
   const appId = await waitForDialog();
 
   // Wait to finish initial load.
@@ -864,8 +918,7 @@ testcase.openMultiFileDialogSelectAllEnabled = async () => {
   sendBrowserTestCommand({name: 'setLastDownloadDir'}, () => {});
 
   // Open file picker dialog with support for selecting multiple files.
-  chrome.fileSystem.chooseEntry(
-      {type: 'openFile', acceptsMultiple: true}, (entry) => {});
+  await openEntryChoosingWindow({type: 'openFile', acceptsMultiple: true});
   const appId = await waitForDialog();
 
   // Wait to finish initial load.
@@ -882,4 +935,68 @@ testcase.openMultiFileDialogSelectAllEnabled = async () => {
       appId,
       '#gear-menu ' +
           'cr-menu-item[command="#select-all"]:not([disabled]):not([hidden])');
+};
+
+/**
+ * Tests open file dialog on a GuestOS volume. Check that the placeholder is
+ * shown in the dialog and that clicking on it mounts the volume. We don't
+ * bother actually opening a file since once it's mounted it works like any
+ * other local FUSE volume.
+ */
+testcase.openFileDialogGuestOs = async () => {
+  // Register a fake GuestOs guest.
+  const _ = await sendTestMessage({
+    name: 'registerMountableGuest',
+    displayName: 'Bluejohn',
+    canMount: true,
+    vmType: 'bruschetta',
+  });
+
+  // Open the open file dialog.
+  await openEntryChoosingWindow({type: 'openFile'});
+
+  // Wait for the dialog to be fully loaded.
+  const appId = await remoteCall.waitForWindow('dialog#');
+  await remoteCall.waitForElement(appId, '#file-list');
+  await remoteCall.waitFor('isFileManagerLoaded', appId, true);
+
+  // Click the Guest OS placeholder.
+  await remoteCall.waitAndClickElement(
+      appId, `#directory-tree [root-type-icon="bruschetta"]`);
+
+  // Wait for the actual volume to appear.
+  await remoteCall.waitForElement(
+      appId, '#directory-tree [volume-type-icon=bruschetta]');
+};
+
+/**
+ * Tests save file dialog on a GuestOS volume. Check that the placeholder is
+ * shown in the dialog and that clicking on it mounts the volume. We don't
+ * bother actually saving a file since once it's mounted it works like any other
+ * local FUSE volume.
+ */
+testcase.saveFileDialogGuestOs = async () => {
+  // Register a fake GuestOs guest.
+  const _ = await sendTestMessage({
+    name: 'registerMountableGuest',
+    displayName: 'Bluejohn',
+    canMount: true,
+    vmType: 'bruschetta',
+  });
+
+  // Open the save file dialog.
+  await openEntryChoosingWindow({type: 'saveFile'});
+
+  // Wait for the dialog to be fully loaded.
+  const appId = await remoteCall.waitForWindow('dialog#');
+  await remoteCall.waitForElement(appId, '#file-list');
+  await remoteCall.waitFor('isFileManagerLoaded', appId, true);
+
+  // Click the Guest OS placeholder.
+  await remoteCall.waitAndClickElement(
+      appId, `#directory-tree [root-type-icon="bruschetta"]`);
+
+  // Wait for the actual volume to appear.
+  await remoteCall.waitForElement(
+      appId, '#directory-tree [volume-type-icon=bruschetta]');
 };

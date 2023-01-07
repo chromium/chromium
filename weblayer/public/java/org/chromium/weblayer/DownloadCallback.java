@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 /**
  * An interface that allows clients to handle download requests originating in the browser.
  */
-public abstract class DownloadCallback {
+abstract class DownloadCallback {
     /**
      * A download of has been requested with the specified details. If it returns true the download
      * will be considered intercepted and WebLayer won't proceed with it. Note that there are many

@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Main world dynamic content script test extension",
+  "version": "0.1",
+  "description": "Tests that dynamic scripts can be injected into the main world",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "permissions": ["scripting", "tabs"],
+  "host_permissions": ["*://hostperms.com/*"]
+}

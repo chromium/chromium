@@ -1,0 +1,9 @@
+Document
+++Group IsControlElement=false
+++++Group IsControlElement=false
+++++++ComboBox ExpandCollapse.ExpandCollapseState='Expanded' Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Value.Value='Custom selectmenu button'
+++++++++Text Name='Custom selectmenu button'
+++++++List Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++++ListItem Name='Option 1' SelectionItem.IsSelected=true
+++++++++ListItem Name='Option 2' SelectionItem.IsSelected=false
+++++++++ListItem Name='Option 3' SelectionItem.IsSelected=false

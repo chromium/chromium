@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,31 +8,22 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/printing_context.h"
 
 namespace printing {
 
 class MetafilePlayer;
-class PrintDialogGtkInterface;
+class PrintDialogLinuxInterface;
 
 // PrintingContext with optional native UI for print dialog and pdf_paper_size.
-class PRINTING_EXPORT PrintingContextLinux : public PrintingContext {
+class COMPONENT_EXPORT(PRINTING) PrintingContextLinux : public PrintingContext {
  public:
   explicit PrintingContextLinux(Delegate* delegate);
   PrintingContextLinux(const PrintingContextLinux&) = delete;
   PrintingContextLinux& operator=(const PrintingContextLinux&) = delete;
   ~PrintingContextLinux() override;
-
-  // Sets the function that creates the print dialog.
-  static void SetCreatePrintDialogFunction(PrintDialogGtkInterface* (
-      *create_dialog_func)(PrintingContextLinux* context));
-
-  // Sets the function that returns pdf paper size through the native API.
-  static void SetPdfPaperSizeFunction(
-      gfx::Size (*get_pdf_paper_size)(PrintingContextLinux* context));
-
-  // Prints the document contained in |metafile|.
-  void PrintDocument(const MetafilePlayer& metafile);
 
   // Initializes with predefined settings.
   void InitWithSettings(std::unique_ptr<PrintSettings> settings);
@@ -43,21 +34,21 @@ class PRINTING_EXPORT PrintingContextLinux : public PrintingContext {
                           bool is_scripted,
                           PrintSettingsCallback callback) override;
   gfx::Size GetPdfPaperSizeDeviceUnits() override;
-  Result UseDefaultSettings() override;
-  Result UpdatePrinterSettings(bool external_preview,
-                               bool show_system_dialog,
-                               int page_count) override;
-  Result NewDocument(const std::u16string& document_name) override;
-  Result NewPage() override;
-  Result PageDone() override;
-  Result DocumentDone() override;
+  mojom::ResultCode UseDefaultSettings() override;
+  mojom::ResultCode UpdatePrinterSettings(
+      const PrinterSettings& printer_settings) override;
+  mojom::ResultCode NewDocument(const std::u16string& document_name) override;
+  mojom::ResultCode PrintDocument(const MetafilePlayer& metafile,
+                                  const PrintSettings& settings,
+                                  uint32_t num_pages) override;
+  mojom::ResultCode DocumentDone() override;
   void Cancel() override;
   void ReleaseContext() override;
   printing::NativeDrawingContext context() const override;
 
  private:
   std::u16string document_name_;
-  PrintDialogGtkInterface* print_dialog_;
+  raw_ptr<PrintDialogLinuxInterface> print_dialog_;
 };
 
 }  // namespace printing

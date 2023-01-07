@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,11 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/gfx_export.h"
-#include "ui/gfx/image/image_skia_rep.h"
+
+class SkBitmap;
 
 namespace gfx {
+class ImageSkiaRep;
 class ImageSkiaSource;
 class Size;
 
@@ -52,6 +54,10 @@ class GFX_EXPORT ImageSkia {
   // Creates an instance that uses the |source|. The constructor loads the image
   // at |scale| and uses its dimensions to calculate the size in DIP.
   ImageSkia(std::unique_ptr<ImageSkiaSource> source, float scale);
+
+  // This constructor is explicitly deleted to ensure callers don't accidentally
+  // pass an int and have it converted to float.
+  ImageSkia(std::unique_ptr<ImageSkiaSource> source, int dont_use) = delete;
 
   explicit ImageSkia(const gfx::ImageSkiaRep& image_rep);
 

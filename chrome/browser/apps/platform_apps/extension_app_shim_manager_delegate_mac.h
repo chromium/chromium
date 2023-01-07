@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,8 @@ class ExtensionAppShimManagerDelegate : public AppShimManager::Delegate {
   void LaunchApp(Profile* profile,
                  const web_app::AppId& app_id,
                  const std::vector<base::FilePath>& files,
+                 const std::vector<GURL>& urls,
+                 const GURL& override_url,
                  chrome::mojom::AppShimLoginItemRestoreState
                      login_item_restore_state) override;
   void LaunchShim(Profile* profile,
@@ -37,6 +39,9 @@ class ExtensionAppShimManagerDelegate : public AppShimManager::Delegate {
                   ShimLaunchedCallback launched_callback,
                   ShimTerminatedCallback terminated_callback) override;
   bool HasNonBookmarkAppWindowsOpen() override;
+  std::vector<chrome::mojom::ApplicationDockMenuItemPtr>
+  GetAppShortcutsMenuItemInfos(Profile* profile,
+                               const web_app::AppId& app_id) override;
 };
 
 }  // namespace apps

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,8 @@ SequenceManager::MetricRecordingSettings::MetricRecordingSettings(
 SequenceManager::Settings::Settings() = default;
 
 SequenceManager::Settings::Settings(Settings&& move_from) noexcept = default;
+
+SequenceManager::Settings::~Settings() = default;
 
 SequenceManager::Settings::Builder::Builder() = default;
 
@@ -51,6 +53,13 @@ SequenceManager::Settings::Builder::SetAddQueueTimeToTasks(
 }
 
 #if DCHECK_IS_ON()
+
+SequenceManager::Settings::Builder&
+SequenceManager::Settings::Builder::SetRandomTaskSelectionSeed(
+    uint64_t random_task_selection_seed_val) {
+  settings_.random_task_selection_seed = random_task_selection_seed_val;
+  return *this;
+}
 
 SequenceManager::Settings::Builder&
 SequenceManager::Settings::Builder::SetTaskLogging(
@@ -89,14 +98,6 @@ SequenceManager::Settings::Builder::SetPerPrioritySameThreadTaskDelay(
       per_priority_same_thread_task_delay_val;
   return *this;
 }
-
-SequenceManager::Settings::Builder&
-SequenceManager::Settings::Builder::SetRandomTaskSelectionSeed(
-    int random_task_selection_seed_val) {
-  settings_.random_task_selection_seed = random_task_selection_seed_val;
-  return *this;
-}
-
 #endif  // DCHECK_IS_ON()
 
 SequenceManager::Settings SequenceManager::Settings::Builder::Build() {

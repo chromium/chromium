@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -64,6 +64,11 @@ class KidsChromeManagementClientForTesting : public KidsChromeManagementClient {
       content::BrowserContext* context)
       : KidsChromeManagementClient(static_cast<Profile*>(context)) {}
 
+  KidsChromeManagementClientForTesting(
+      const KidsChromeManagementClientForTesting&) = delete;
+  KidsChromeManagementClientForTesting& operator=(
+      const KidsChromeManagementClientForTesting&) = delete;
+
   ~KidsChromeManagementClientForTesting() override = default;
 
   void ClassifyURL(
@@ -84,8 +89,6 @@ class KidsChromeManagementClientForTesting : public KidsChromeManagementClient {
  private:
   std::unique_ptr<ClassifyUrlResponse> response_proto_;
   KidsChromeManagementClient::ErrorCode error_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(KidsChromeManagementClientForTesting);
 };
 
 std::unique_ptr<KeyedService> CreateKidsChromeManagementClient(
@@ -98,9 +101,15 @@ std::unique_ptr<KeyedService> CreateKidsChromeManagementClient(
 class KidsManagementURLCheckerClientTest : public testing::Test {
  public:
   KidsManagementURLCheckerClientTest() = default;
+
+  KidsManagementURLCheckerClientTest(
+      const KidsManagementURLCheckerClientTest&) = delete;
+  KidsManagementURLCheckerClientTest& operator=(
+      const KidsManagementURLCheckerClientTest&) = delete;
+
   void SetUp() override {
-    test_profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    test_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(test_profile_manager_->SetUp());
 
 // ChromeOS requires an ash::FakeChromeUserManager for the tests to work.
@@ -152,7 +161,7 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
                     safe_search_api::ClientClassification classification));
 
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile* test_profile_;
+  raw_ptr<TestingProfile> test_profile_;
   std::unique_ptr<TestingProfileManager> test_profile_manager_;
   std::unique_ptr<KidsManagementURLCheckerClient> url_classifier_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -166,8 +175,6 @@ class KidsManagementURLCheckerClientTest : public testing::Test {
         url, base::BindOnce(&KidsManagementURLCheckerClientTest::OnCheckDone,
                             base::Unretained(this)));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(KidsManagementURLCheckerClientTest);
 };
 
 TEST_F(KidsManagementURLCheckerClientTest, Simple) {

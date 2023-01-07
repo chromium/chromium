@@ -5,7 +5,7 @@
  *
  * Other contributors:
  *   Robert O'Callahan <roc+@cs.cmu.edu>
- *   David Baron <dbaron@fas.harvard.edu>
+ *   David Baron <dbaron@dbaron.org>
  *   Christian Biesinger <cbiesinger@web.de>
  *   Randall Jesup <rjesup@wgate.com>
  *   Roland Mainz <roland.mainz@informatik.med.uni-giessen.de>
@@ -44,13 +44,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLL_ALIGNMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLL_ALIGNMENT_H_
 
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
+class ComputedStyle;
 struct PhysicalRect;
+class ScrollIntoViewOptions;
 
 class CORE_EXPORT ScrollAlignment {
  public:
@@ -87,7 +90,11 @@ class CORE_EXPORT ScrollAlignment {
       mojom::blink::ScrollBehavior scroll_behavior =
           mojom::blink::ScrollBehavior::kAuto,
       bool is_for_scroll_sequence = false,
-      bool zoom_into_rect = false);
+      bool cross_origin_boundaries = true);
+
+  static mojom::blink::ScrollIntoViewParamsPtr CreateScrollIntoViewParams(
+      const ScrollIntoViewOptions& options,
+      const ComputedStyle& computed_style);
 };
 
 }  // namespace blink

@@ -1,18 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "cc/paint/solid_color_analyzer.h"
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/record_paint_canvas.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/skia_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 namespace {
@@ -50,12 +49,12 @@ class SolidColorAnalyzerTest : public testing::Test {
     return !!color;
   }
 
-  SkColor GetColor(int max_ops_to_analyze = 1) {
+  SkColor4f GetColor(int max_ops_to_analyze = 1) {
     Finalize();
     auto color = SolidColorAnalyzer::DetermineIfSolidColor(
         buffer_.get(), rect_, max_ops_to_analyze, nullptr);
     EXPECT_TRUE(color);
-    return color ? *color : SK_ColorTRANSPARENT;
+    return color ? *color : SkColors::kTransparent;
   }
 
  private:
@@ -70,45 +69,45 @@ class SolidColorAnalyzerTest : public testing::Test {
   gfx::Rect rect_;
   scoped_refptr<DisplayItemList> display_item_list_;
   sk_sp<PaintOpBuffer> buffer_;
-  base::Optional<RecordPaintCanvas> canvas_;
-  base::Optional<SolidColorAnalyzer> analyzer_;
+  absl::optional<RecordPaintCanvas> canvas_;
+  absl::optional<SolidColorAnalyzer> analyzer_;
 };
 
 TEST_F(SolidColorAnalyzerTest, Empty) {
   Initialize();
-  EXPECT_EQ(SK_ColorTRANSPARENT, GetColor());
+  EXPECT_EQ(SkColors::kTransparent, GetColor());
 }
 
 TEST_F(SolidColorAnalyzerTest, ClearTransparent) {
   Initialize();
-  SkColor color = SkColorSetARGB(0, 12, 34, 56);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(0, 12, 34, 56));
   canvas()->clear(color);
-  EXPECT_EQ(SK_ColorTRANSPARENT, GetColor());
+  EXPECT_EQ(SkColors::kTransparent, GetColor());
 }
 
 TEST_F(SolidColorAnalyzerTest, ClearSolid) {
   Initialize();
-  SkColor color = SkColorSetARGB(255, 65, 43, 21);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 65, 43, 21));
   canvas()->clear(color);
   EXPECT_EQ(color, GetColor());
 }
 
 TEST_F(SolidColorAnalyzerTest, ClearTranslucent) {
   Initialize();
-  SkColor color = SkColorSetARGB(128, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(128, 11, 22, 33));
   canvas()->clear(color);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(andrescj): remove the special treatment of OS_MAC once
   // https://crbug.com/922899 is fixed.
   EXPECT_FALSE(IsSolidColor());
 #else
   EXPECT_EQ(color, GetColor());
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 TEST_F(SolidColorAnalyzerTest, DrawColor) {
   Initialize();
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   canvas()->drawColor(color);
   EXPECT_EQ(color, GetColor());
 }
@@ -116,7 +115,7 @@ TEST_F(SolidColorAnalyzerTest, DrawColor) {
 TEST_F(SolidColorAnalyzerTest, DrawOval) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
   canvas()->drawOval(SkRect::MakeWH(100, 100), flags);
   EXPECT_FALSE(IsSolidColor());
@@ -125,7 +124,7 @@ TEST_F(SolidColorAnalyzerTest, DrawOval) {
 TEST_F(SolidColorAnalyzerTest, DrawRect) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
   SkRect rect = SkRect::MakeWH(200, 200);
   canvas()->clipRect(rect, SkClipOp::kIntersect, false);
@@ -142,7 +141,7 @@ TEST_F(SolidColorAnalyzerTest, DrawRRect) {
   gfx::Rect canvas_rect(5, 5, 190, 190);
   Initialize(canvas_rect);
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
   canvas()->drawRRect(rrect, flags);
   EXPECT_EQ(color, GetColor());
@@ -151,7 +150,7 @@ TEST_F(SolidColorAnalyzerTest, DrawRRect) {
 TEST_F(SolidColorAnalyzerTest, DrawRectClipped) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
   SkRect rect = SkRect::MakeWH(200, 200);
   canvas()->clipRect(SkRect::MakeWH(50, 50), SkClipOp::kIntersect, false);
@@ -162,7 +161,7 @@ TEST_F(SolidColorAnalyzerTest, DrawRectClipped) {
 TEST_F(SolidColorAnalyzerTest, DrawRectClippedDifference) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
   SkRect drawRect = SkRect::MakeWH(200, 200);
   canvas()->clipRect(drawRect, SkClipOp::kIntersect, false);
@@ -176,7 +175,7 @@ TEST_F(SolidColorAnalyzerTest, DrawRectClippedDifference) {
 TEST_F(SolidColorAnalyzerTest, DrawRectWithTranslateNotSolid) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
   SkRect rect = SkRect::MakeWH(100, 100);
   canvas()->translate(1, 1);
@@ -187,7 +186,7 @@ TEST_F(SolidColorAnalyzerTest, DrawRectWithTranslateNotSolid) {
 TEST_F(SolidColorAnalyzerTest, DrawRectWithTranslateSolid) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
   SkRect rect = SkRect::MakeWH(101, 101);
   canvas()->translate(1, 1);
@@ -197,7 +196,7 @@ TEST_F(SolidColorAnalyzerTest, DrawRectWithTranslateSolid) {
 
 TEST_F(SolidColorAnalyzerTest, TwoOpsNotSolid) {
   Initialize();
-  SkColor color = SkColorSetARGB(255, 65, 43, 21);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 65, 43, 21));
   canvas()->clear(color);
   canvas()->clear(color);
   EXPECT_FALSE(IsSolidColor());
@@ -206,18 +205,18 @@ TEST_F(SolidColorAnalyzerTest, TwoOpsNotSolid) {
 TEST_F(SolidColorAnalyzerTest, DrawRectBlendModeClear) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
   flags.setBlendMode(SkBlendMode::kClear);
   SkRect rect = SkRect::MakeWH(200, 200);
   canvas()->drawRect(rect, flags);
-  EXPECT_EQ(SK_ColorTRANSPARENT, GetColor());
+  EXPECT_EQ(SkColors::kTransparent, GetColor());
 }
 
 TEST_F(SolidColorAnalyzerTest, DrawRectBlendModeSrcOver) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
   flags.setBlendMode(SkBlendMode::kSrcOver);
   SkRect rect = SkRect::MakeWH(200, 200);
@@ -228,7 +227,7 @@ TEST_F(SolidColorAnalyzerTest, DrawRectBlendModeSrcOver) {
 TEST_F(SolidColorAnalyzerTest, DrawRectRotated) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
   SkRect rect = SkRect::MakeWH(200, 200);
   canvas()->rotate(50);
@@ -239,7 +238,7 @@ TEST_F(SolidColorAnalyzerTest, DrawRectRotated) {
 TEST_F(SolidColorAnalyzerTest, DrawRectScaledNotSolid) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
   SkRect rect = SkRect::MakeWH(200, 200);
   canvas()->scale(0.1f, 0.1f);
@@ -250,7 +249,7 @@ TEST_F(SolidColorAnalyzerTest, DrawRectScaledNotSolid) {
 TEST_F(SolidColorAnalyzerTest, DrawRectScaledSolid) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
   SkRect rect = SkRect::MakeWH(10, 10);
   canvas()->scale(10, 10);
@@ -261,7 +260,7 @@ TEST_F(SolidColorAnalyzerTest, DrawRectScaledSolid) {
 TEST_F(SolidColorAnalyzerTest, DrawRectFilterPaint) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
   flags.setImageFilter(sk_make_sp<OffsetPaintFilter>(10, 10, nullptr));
   SkRect rect = SkRect::MakeWH(200, 200);
@@ -272,7 +271,7 @@ TEST_F(SolidColorAnalyzerTest, DrawRectFilterPaint) {
 TEST_F(SolidColorAnalyzerTest, DrawRectClipPath) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
 
   SkPath path;
@@ -291,27 +290,27 @@ TEST_F(SolidColorAnalyzerTest, DrawRectClipPath) {
 TEST_F(SolidColorAnalyzerTest, DrawRectTranslucent) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(128, 128, 0, 0);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(128, 128, 0, 0));
   flags.setColor(color);
   SkRect rect = SkRect::MakeWH(100, 100);
   canvas()->drawRect(rect, flags);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(andrescj): remove the special treatment of OS_MAC once
   // https://crbug.com/922899 is fixed.
   EXPECT_FALSE(IsSolidColor());
 #else
   EXPECT_EQ(color, GetColor());
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 TEST_F(SolidColorAnalyzerTest, DrawRectTranslucentOverNonSolid) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 128, 0, 0);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 128, 0, 0));
   flags.setColor(color);
   SkRect rect = SkRect::MakeWH(100, 50);
   canvas()->drawRect(rect, flags);
-  color = SkColorSetARGB(128, 0, 128, 0);
+  color = SkColor4f::FromColor(SkColorSetARGB(128, 0, 128, 0));
   flags.setColor(color);
   rect = SkRect::MakeWH(100, 100);
   canvas()->drawRect(rect, flags);
@@ -321,11 +320,11 @@ TEST_F(SolidColorAnalyzerTest, DrawRectTranslucentOverNonSolid) {
 TEST_F(SolidColorAnalyzerTest, DrawRectOpaqueOccludesNonSolid) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 128, 0, 0);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 128, 0, 0));
   flags.setColor(color);
   SkRect rect = SkRect::MakeWH(100, 50);
   canvas()->drawRect(rect, flags);
-  color = SkColorSetARGB(255, 0, 128, 0);
+  color = SkColor4f::FromColor(SkColorSetARGB(255, 0, 128, 0));
   flags.setColor(color);
   rect = SkRect::MakeWH(100, 100);
   canvas()->drawRect(rect, flags);
@@ -335,28 +334,29 @@ TEST_F(SolidColorAnalyzerTest, DrawRectOpaqueOccludesNonSolid) {
 TEST_F(SolidColorAnalyzerTest, DrawRectSolidWithSrcOverBlending) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(64, 40, 50, 60);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(64, 40, 50, 60));
   flags.setColor(color);
   SkRect rect = SkRect::MakeWH(100, 100);
   canvas()->drawRect(rect, flags);
-  color = SkColorSetARGB(128, 10, 20, 30);
+  color = SkColor4f::FromColor(SkColorSetARGB(128, 10, 20, 30));
   flags.setColor(color);
   rect = SkRect::MakeWH(100, 100);
   canvas()->drawRect(rect, flags);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(andrescj): remove the special treatment of OS_MAC once
   // https://crbug.com/922899 is fixed.
   EXPECT_FALSE(IsSolidColor());
 #else
-  EXPECT_EQ(SkColorSetARGB(159, 15, 25, 35),
-            GetColor(2 /* max_ops_to_analyze */));
-#endif  // OS_MAC
+  // Float precision makes testing for equality a pain, so we'll just use ints
+  EXPECT_EQ(SkColorSetARGB(160, 16, 26, 36),
+            GetColor(2 /* max_ops_to_analyze */).toSkColor());
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 TEST_F(SolidColorAnalyzerTest, SaveLayer) {
   Initialize();
   PaintFlags flags;
-  SkColor color = SkColorSetARGB(255, 11, 22, 33);
+  SkColor4f color = SkColor4f::FromColor(SkColorSetARGB(255, 11, 22, 33));
   flags.setColor(color);
 
   SkRect rect = SkRect::MakeWH(200, 200);
@@ -379,7 +379,7 @@ TEST_F(SolidColorAnalyzerTest, ClipRRectCoversCanvas) {
   int canvas_size = 255;
   gfx::Rect canvas_rect(canvas_size, canvas_size);
   PaintFlags flags;
-  flags.setColor(SK_ColorWHITE);
+  flags.setColor(SkColors::kWhite);
 
   struct {
     SkVector offset;
@@ -424,7 +424,7 @@ TEST_F(SolidColorAnalyzerTest, ClipRRectCoversCanvas) {
 
   for (int case_scale = 0; case_scale < 2; ++case_scale) {
     bool scaled = case_scale > 0;
-    for (size_t i = 0; i < base::size(cases); ++i) {
+    for (size_t i = 0; i < std::size(cases); ++i) {
       Reset();
       Initialize(canvas_rect);
 

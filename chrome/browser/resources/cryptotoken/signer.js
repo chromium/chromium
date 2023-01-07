@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@ function handleU2fSignRequest(messageSender, request, sendResponse) {
     sendErrorResponse({errorCode: ErrorCodes.BAD_REQUEST});
     return null;
   }
-  if (sender.origin.indexOf('http://') == 0 && !HTTP_ORIGINS_ALLOWED) {
+  if (sender.origin.indexOf('http://') === 0 && !HTTP_ORIGINS_ALLOWED) {
     sendErrorResponse({errorCode: ErrorCodes.BAD_REQUEST});
     return null;
   }
@@ -227,9 +227,9 @@ QueuedSignRequest.prototype.close = function() {
   }
   if (this.token_) {
     if (hadBegunSigning) {
-      console.log(UTIL_fmt('closing in-progress request'));
+      console.info(UTIL_fmt('closing in-progress request'));
     } else {
-      console.log(UTIL_fmt('closing timed-out request before processing'));
+      console.info(UTIL_fmt('closing timed-out request before processing'));
     }
     this.token_.complete();
   }
@@ -250,7 +250,7 @@ QueuedSignRequest.prototype.setToken = function(token) {
  */
 QueuedSignRequest.prototype.begin = function(token) {
   if (this.timer_.expired()) {
-    console.log(UTIL_fmt('Queued request begun after timeout'));
+    console.info(UTIL_fmt('Queued request begun after timeout'));
     this.close();
     this.errorCb_({errorCode: ErrorCodes.TIMEOUT});
     return;
@@ -326,8 +326,9 @@ function Signer(timer, sender, errorCb, successCb, opt_logMsgUrl) {
   // Allow http appIds for http origins. (Broken, but the caller deserves
   // what they get.)
   /** @private {boolean} */
-  this.allowHttp_ =
-      this.sender_.origin ? this.sender_.origin.indexOf('http://') == 0 : false;
+  this.allowHttp_ = this.sender_.origin ?
+      this.sender_.origin.indexOf('http://') === 0 :
+      false;
   /** @private {RequestHandler} */
   this.handler_ = null;
 }
@@ -374,7 +375,7 @@ Signer.prototype.checkAppIds_ = function() {
   if (!appIds || !appIds.length) {
     var error = {
       errorCode: ErrorCodes.BAD_REQUEST,
-      errorMessage: 'missing appId'
+      errorMessage: 'missing appId',
     };
     this.notifyError_(error);
     return;
@@ -459,7 +460,7 @@ Signer.prototype.doSign_ = async function() {
 
   var timeoutSeconds = this.timer_.millisecondsUntilExpired() / 1000.0;
 
-  console.log('Proxying sign request to WebAuthn');
+  console.info('Proxying sign request to WebAuthn');
   return this.doSignWebAuthn_(encodedChallenges, challengeVal);
 };
 
@@ -478,7 +479,7 @@ Signer.prototype.doSignWebAuthn_ = function(encodedChallenges, challengeVal) {
   }
 
   const decodedChallenge = B64_decode(challengeVal);
-  if (decodedChallenge.length == 0) {
+  if (decodedChallenge.length === 0) {
     this.notifyError_({
       errorCode: ErrorCodes.BAD_REQUEST,
       errorMessage: 'challenge must be base64url encoded',
@@ -489,7 +490,7 @@ Signer.prototype.doSignWebAuthn_ = function(encodedChallenges, challengeVal) {
   const credentialList = [];
   for (let i = 0; i < encodedChallenges.length; i++) {
     const decodedKeyHandle = B64_decode(encodedChallenges[i]['keyHandle']);
-    if (decodedKeyHandle.length == 0) {
+    if (decodedKeyHandle.length === 0) {
       this.notifyError_({
         errorCode: ErrorCodes.BAD_REQUEST,
         errorMessage: 'keyHandle must be base64url encoded',
@@ -506,6 +507,33 @@ Signer.prototype.doSignWebAuthn_ = function(encodedChallenges, challengeVal) {
       this.signChallenges_[0]['appId'] :
       this.appId_;
 
+  if (!chrome.cryptotokenPrivate) {
+    this.doSignWebAuthnContinue_(decodedChallenge, credentialList, appid);
+  } else {
+    chrome.cryptotokenPrivate.canMakeU2fApiRequest(
+        {
+          tabId: this.sender_.tabId,
+          frameId: this.sender_.frameId,
+          origin: this.sender_.origin,
+          appId: appid,
+        },
+        (result) => {
+          if (!result) {
+            this.notifyError_({
+              errorCode: ErrorCodes.DEVICE_INELIGIBLE,
+              errorMessage: 'The operation was not allowed',
+            });
+            return;
+          }
+          this.doSignWebAuthnContinue_(decodedChallenge, credentialList, appid);
+        });
+  }
+
+  return true;
+};
+
+Signer.prototype.doSignWebAuthnContinue_ = function(
+    decodedChallenge, credentialList, appid) {
   const request = {
     publicKey: {
       challenge: new Uint8Array(decodedChallenge).buffer,
@@ -525,8 +553,6 @@ Signer.prototype.doSignWebAuthn_ = function(encodedChallenges, challengeVal) {
       .catch(exception => {
         this.handleWebAuthnError_(exception);
       });
-
-  return true;
 };
 
 /**
@@ -683,7 +709,7 @@ Signer.prototype.notifySuccess_ = function(challenge, info, browserData) {
  * @private
  */
 Signer.prototype.helperComplete_ = function(helperReply, opt_source) {
-  if (helperReply.type != 'sign_helper_reply') {
+  if (helperReply.type !== 'sign_helper_reply') {
     this.notifyError_({errorCode: ErrorCodes.OTHER_ERROR});
     return;
   }
@@ -691,11 +717,11 @@ Signer.prototype.helperComplete_ = function(helperReply, opt_source) {
 
   if (reply.code) {
     var reportedError = mapDeviceStatusCodeToU2fError(reply.code);
-    console.log(UTIL_fmt(
+    console.info(UTIL_fmt(
         'helper reported ' + reply.code.toString(16) + ', returning ' +
         reportedError.errorCode));
     // Log non-expected reply codes if we have an url to send them
-    if ((reportedError.errorCode == ErrorCodes.OTHER_ERROR) &&
+    if ((reportedError.errorCode === ErrorCodes.OTHER_ERROR) &&
         this.logMsgUrl_) {
       logMessage('log=u2fsign&rc=' + reply.code.toString(16), this.logMsgUrl_);
     }

@@ -1,16 +1,8 @@
-// Copyright 2011 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Provides a convenient API for data with attached metadata
@@ -23,9 +15,9 @@
 goog.provide('goog.storage.RichStorage');
 goog.provide('goog.storage.RichStorage.Wrapper');
 
-goog.forwardDeclare('goog.storage.mechanism.Mechanism');
 goog.require('goog.storage.ErrorCode');
 goog.require('goog.storage.Storage');
+goog.requireType('goog.storage.mechanism.Mechanism');
 
 
 
@@ -39,6 +31,7 @@ goog.require('goog.storage.Storage');
  * @extends {goog.storage.Storage}
  */
 goog.storage.RichStorage = function(mechanism) {
+  'use strict';
   goog.storage.RichStorage.base(this, 'constructor', mechanism);
 };
 goog.inherits(goog.storage.RichStorage, goog.storage.Storage);
@@ -64,6 +57,7 @@ goog.storage.RichStorage.DATA_KEY = 'data';
  * @final
  */
 goog.storage.RichStorage.Wrapper = function(value) {
+  'use strict';
   this[goog.storage.RichStorage.DATA_KEY] = value;
 };
 
@@ -76,6 +70,7 @@ goog.storage.RichStorage.Wrapper = function(value) {
  * @return {(!goog.storage.RichStorage.Wrapper|undefined)} The wrapper.
  */
 goog.storage.RichStorage.Wrapper.wrapIfNecessary = function(value) {
+  'use strict';
   if (value === undefined ||
       value instanceof goog.storage.RichStorage.Wrapper) {
     return /** @type {(!goog.storage.RichStorage.Wrapper|undefined)} */ (value);
@@ -93,7 +88,8 @@ goog.storage.RichStorage.Wrapper.wrapIfNecessary = function(value) {
  * @return {*} The wrapped value.
  */
 goog.storage.RichStorage.Wrapper.unwrap = function(wrapper) {
-  var value = wrapper[goog.storage.RichStorage.DATA_KEY];
+  'use strict';
+  const value = wrapper[goog.storage.RichStorage.DATA_KEY];
   if (value === undefined) {
     throw goog.storage.ErrorCode.INVALID_VALUE;
   }
@@ -109,6 +105,7 @@ goog.storage.RichStorage.Wrapper.unwrap = function(wrapper) {
  * @return {*} The wrapped value or undefined.
  */
 goog.storage.RichStorage.Wrapper.unwrapIfPossible = function(wrapper) {
+  'use strict';
   if (!wrapper) {
     return undefined;
   }
@@ -118,6 +115,7 @@ goog.storage.RichStorage.Wrapper.unwrapIfPossible = function(wrapper) {
 
 /** @override */
 goog.storage.RichStorage.prototype.set = function(key, value) {
+  'use strict';
   goog.storage.RichStorage.base(
       this, 'set', key,
       goog.storage.RichStorage.Wrapper.wrapIfNecessary(value));
@@ -137,7 +135,8 @@ goog.storage.RichStorage.prototype.set = function(key, value) {
  * @return {(!Object|undefined)} The wrapper, or undefined if not found.
  */
 goog.storage.RichStorage.prototype.getWrapper = function(key) {
-  var wrapper = goog.storage.RichStorage.superClass_.get.call(this, key);
+  'use strict';
+  const wrapper = goog.storage.RichStorage.superClass_.get.call(this, key);
   if (wrapper === undefined || wrapper instanceof Object) {
     return /** @type {(!Object|undefined)} */ (wrapper);
   }
@@ -147,6 +146,7 @@ goog.storage.RichStorage.prototype.getWrapper = function(key) {
 
 /** @override */
 goog.storage.RichStorage.prototype.get = function(key) {
+  'use strict';
   return goog.storage.RichStorage.Wrapper.unwrapIfPossible(
       this.getWrapper(key));
 };

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,41 +10,49 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/optional.h"
+#include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/lifetime/browser_close_manager.h"
-#include "chrome/browser/sharing/sharing_dialog_data.h"
+#include "chrome/browser/share/share_attempt.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/bookmarks/bookmark_bar.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
+#include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
-#include "chrome/browser/ui/user_education/in_product_help.h"
+#include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/common/buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/translate/core/common/translate_errors.h"
+#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo_specification.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/base_window.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error This file should only be included on desktop.
 #endif
 
 class Browser;
 class SharingDialog;
+struct SharingDialogData;
 class DownloadShelf;
 class ExclusiveAccessContext;
 class ExtensionsContainer;
-class FeaturePromoController;
 class FindBar;
 class GURL;
 class LocationBar;
 class StatusBubble;
+class DownloadBubbleUIController;
 
 namespace autofill {
 class AutofillBubbleHandler;
@@ -61,7 +69,6 @@ class Size;
 }
 
 namespace qrcode_generator {
-class QRCodeGeneratorBubbleController;
 class QRCodeGeneratorBubbleView;
 }  // namespace qrcode_generator
 
@@ -70,23 +77,34 @@ enum class AccessPoint;
 }
 
 namespace send_tab_to_self {
-class SendTabToSelfBubbleController;
 class SendTabToSelfBubbleView;
 }  // namespace send_tab_to_self
 
+namespace sharing_hub {
+class ScreenshotCapturedBubble;
+class SharingHubBubbleView;
+}  // namespace sharing_hub
+
 namespace ui {
+class ColorProvider;
 class NativeTheme;
+class ThemeProvider;
 }
+
+namespace views {
+class Button;
+}  // namespace views
 
 namespace web_modal {
 class WebContentsModalDialogHost;
 }
 
 enum class ShowTranslateBubbleResult {
-  // The translate bubble was successfully shown.
+  // The Full Page Translate bubble was successfully shown.
   SUCCESS,
 
-  // The various reasons for which the translate bubble could fail to be shown.
+  // The various reasons for which the Full Page Translate bubble could fail to
+  // be shown.
   BROWSER_WINDOW_NOT_VALID,
   BROWSER_WINDOW_MINIMIZED,
   BROWSER_WINDOW_NOT_ACTIVE,
@@ -132,6 +150,11 @@ class BrowserWindow : public ui::BaseWindow {
 
   //////////////////////////////////////////////////////////////////////////////
   // Browser specific methods:
+
+  // Returns the browser window currently hosting `web_contents`. If no browser
+  // window exists this returns null.
+  static BrowserWindow* FindBrowserWindowWithWebContents(
+      content::WebContents* web_contents);
 
   // Returns true if the browser window is on the current workspace (a.k.a.
   // virtual desktop) or if we can't tell. False otherwise.
@@ -180,6 +203,15 @@ class BrowserWindow : public ui::BaseWindow {
   // Returns the native theme associated with the frame.
   virtual ui::NativeTheme* GetNativeTheme() = 0;
 
+  // Returns the ThemeProvider associated with the frame.
+  virtual const ui::ThemeProvider* GetThemeProvider() const = 0;
+
+  // Returns the ColorProvider associated with the frame.
+  virtual const ui::ColorProvider* GetColorProvider() const = 0;
+
+  // Returns the context for use with ElementTracker, InteractionSequence, etc.
+  virtual ui::ElementContext GetElementContext() = 0;
+
   // Returns the height of the browser's top controls. This height doesn't
   // change with the current shown ratio above. Renderers will call this to
   // calculate the top-chrome shown ratio from the gesture scroll offset.
@@ -212,10 +244,9 @@ class BrowserWindow : public ui::BaseWindow {
   // changed.
   virtual void UpdateDevTools() = 0;
 
-  // Update any loading animations running in the window. |should_animate| is
-  // true if there are tabs loading and the animations should continue, false
-  // if there are no active loads and the animations should end.
-  virtual void UpdateLoadingAnimations(bool should_animate) = 0;
+  // Update any loading animations running in the window. |is_visible| is true
+  // if the window is visible.
+  virtual void UpdateLoadingAnimations(bool is_visible) = 0;
 
   // Sets the starred state for the current tab.
   virtual void SetStarredState(bool is_starred) = 0;
@@ -254,6 +285,11 @@ class BrowserWindow : public ui::BaseWindow {
 
   // Returns true if the fullscreen bubble is visible.
   virtual bool IsFullscreenBubbleVisible() const = 0;
+
+  // True when we do not want to allow exiting fullscreen, e.g. in Chrome OS
+  // Kiosk session.
+  virtual bool IsForceFullscreen() const = 0;
+  virtual void SetForceFullscreen(bool force_fullscreen) = 0;
 
   // Returns the size of WebContents in the browser. This may be called before
   // the TabStripModel has an active tab.
@@ -327,6 +363,9 @@ class BrowserWindow : public ui::BaseWindow {
   // Moves keyboard focus to the next pane.
   virtual void RotatePaneFocus(bool forwards) = 0;
 
+  // Moves keyboard focus directly to the web contents pane.
+  virtual void FocusWebContentsPane() = 0;
+
   // Returns whether the bookmark bar is visible or not.
   virtual bool IsBookmarkBarVisible() const = 0;
 
@@ -349,6 +388,9 @@ class BrowserWindow : public ui::BaseWindow {
   // Visible() functions are renamed to Available().
   virtual bool IsToolbarShowing() const = 0;
 
+  // Returns whether the location bar is visible.
+  virtual bool IsLocationBarVisible() const = 0;
+
   // Shows the dialog for a sharing feature.
   virtual SharingDialog* ShowSharingDialog(content::WebContents* contents,
                                            SharingDialogData data) = 0;
@@ -367,28 +409,47 @@ class BrowserWindow : public ui::BaseWindow {
       std::vector<apps::IntentPickerAppInfo> app_info,
       bool show_stay_in_chrome,
       bool show_remember_selection,
-      PageActionIconType icon_type,
-      const base::Optional<url::Origin>& initiating_origin,
+      apps::IntentPickerBubbleType bubble_type,
+      const absl::optional<url::Origin>& initiating_origin,
       IntentPickerResponse callback) = 0;
 
   // Shows the Bookmark bubble. |url| is the URL being bookmarked,
   // |already_bookmarked| is true if the url is already bookmarked.
   virtual void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) = 0;
 
+  // Shows the Screenshot bubble.
+  virtual sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(
+      content::WebContents* contents,
+      const gfx::Image& image) = 0;
+
   // Shows the QR Code generator bubble. |url| is the URL for the initial code.
   virtual qrcode_generator::QRCodeGeneratorBubbleView*
-  ShowQRCodeGeneratorBubble(
-      content::WebContents* contents,
-      qrcode_generator::QRCodeGeneratorBubbleController* controller,
-      const GURL& url) = 0;
+  ShowQRCodeGeneratorBubble(content::WebContents* contents,
+                            const GURL& url,
+                            bool show_back_button) = 0;
 
-  // Shows the "send tab to self" bubble.
-  virtual send_tab_to_self::SendTabToSelfBubbleView* ShowSendTabToSelfBubble(
-      content::WebContents* contents,
-      send_tab_to_self::SendTabToSelfBubbleController* controller,
-      bool is_user_gesture) = 0;
+  // Shows the "send tab to self" device picker bubble. This must only be called
+  // as a direct result of user action.
+  virtual send_tab_to_self::SendTabToSelfBubbleView*
+  ShowSendTabToSelfDevicePickerBubble(content::WebContents* contents) = 0;
 
-  // Shows the translate bubble.
+  // Shows the "send tab to self" promo bubble. This must only be called as a
+  // direct result of user action.
+  virtual send_tab_to_self::SendTabToSelfBubbleView*
+  ShowSendTabToSelfPromoBubble(content::WebContents* contents,
+                               bool show_signin_button) = 0;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Returns the PageActionIconView for the Sharing Hub.
+  virtual views::Button* GetSharingHubIconButton() = 0;
+#else
+  // Shows the Sharing Hub bubble. This must only be called as a direct result
+  // of user action.
+  virtual sharing_hub::SharingHubBubbleView* ShowSharingHubBubble(
+      share::ShareAttempt attempt) = 0;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  // Shows the Full Page Translate bubble.
   //
   // |is_user_gesture| is true when the bubble is shown on the user's deliberate
   // action.
@@ -397,22 +458,30 @@ class BrowserWindow : public ui::BaseWindow {
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
-      translate::TranslateErrors::Type error_type,
+      translate::TranslateErrors error_type,
       bool is_user_gesture) = 0;
 
-#if BUILDFLAG(ENABLE_ONE_CLICK_SIGNIN)
+  // Shows the Partial Translate bubble.
+  virtual void StartPartialTranslate(const std::string& source_language,
+                                     const std::string& target_language,
+                                     const std::u16string& text_selection) = 0;
+
   // Shows the one-click sign in confirmation UI. |email| holds the full email
   // address of the account that has signed in.
   virtual void ShowOneClickSigninConfirmation(
       const std::u16string& email,
       base::OnceCallback<void(bool)> confirmed_callback) = 0;
-#endif
 
   // Whether or not the shelf view is visible.
   virtual bool IsDownloadShelfVisible() const = 0;
 
-  // Returns the DownloadShelf.
+  // Returns the DownloadShelf. Returns null if download shelf is disabled. This
+  // can happen if the new download bubble UI is enabled.
   virtual DownloadShelf* GetDownloadShelf() = 0;
+
+  // Returns the DownloadBubbleUIController. Returns null if Download Bubble
+  // UI is not enabled, or if the download toolbar button does not exist.
+  virtual DownloadBubbleUIController* GetDownloadBubbleUIController() = 0;
 
   // Shows the confirmation dialog box warning that the browser is closing with
   // in-progress downloads.
@@ -456,39 +525,28 @@ class BrowserWindow : public ui::BaseWindow {
                                             bool user_gesture,
                                             bool in_tab_dragging);
 
-  // Shows the avatar bubble on the window frame off of the avatar button with
-  // the given mode. The Service Type specified by GAIA is provided as well.
-  // |access_point| indicates the access point used to open the Gaia sign in
-  // page.
-  enum AvatarBubbleMode {
-    AVATAR_BUBBLE_MODE_DEFAULT,
-    AVATAR_BUBBLE_MODE_SIGNIN,
-    AVATAR_BUBBLE_MODE_ADD_ACCOUNT,
-    AVATAR_BUBBLE_MODE_REAUTH,
-    AVATAR_BUBBLE_MODE_CONFIRM_SIGNIN
-  };
-  virtual void ShowAvatarBubbleFromAvatarButton(
-      AvatarBubbleMode mode,
-      signin_metrics::AccessPoint access_point,
-      bool is_source_keyboard) = 0;
+  virtual void ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) = 0;
+
+  // Attempts showing the In-Produce-Help for profile Switching. This is called
+  // after creating a new profile or opening an existing profile. If the profile
+  // customization bubble is shown, the IPH should be shown after.
+  virtual void MaybeShowProfileSwitchIPH() = 0;
 
   // Shows User Happiness Tracking Survey's dialog after the survey associated
   // with |site_id| has been successfully loaded. Failure to load the survey
-  // will result in the dialog not being shown. |product_specific_data| should
-  // contain key-value pairs where the keys match the field names set for
-  // the survey in hats_service.cc, and the values are those which will be
-  // associated with the survey response.
+  // will result in the dialog not being shown. |product_specific_bits_data| and
+  // |product_specific_string_data| should contain key-value pairs where the
+  // keys match the field names set for the survey in hats_service.cc, and the
+  // values are those which will be associated with the survey response.
   virtual void ShowHatsDialog(
       const std::string& site_id,
       base::OnceClosure success_callback,
       base::OnceClosure failure_callback,
-      const std::map<std::string, bool>& product_specific_data) = 0;
+      const SurveyBitsData& product_specific_bits_data,
+      const SurveyStringData& product_specific_string_data) = 0;
 
   // Returns object implementing ExclusiveAccessContext interface.
   virtual ExclusiveAccessContext* GetExclusiveAccessContext() = 0;
-
-  // Shows in-product help for the given feature.
-  virtual void ShowInProductHelpPromo(InProductHelpFeature iph_feature) = 0;
 
   // Returns the platform-specific ID of the workspace the browser window
   // currently resides in.
@@ -512,8 +570,78 @@ class BrowserWindow : public ui::BaseWindow {
   virtual void CloseTabSearchBubble() = 0;
 
   // Gets the windows's FeaturePromoController which manages display of
-  // in-product help.
-  virtual FeaturePromoController* GetFeaturePromoController() = 0;
+  // in-product help. Will return null in incognito and guest profiles.
+  virtual user_education::FeaturePromoController*
+  GetFeaturePromoController() = 0;
+
+  // Returns whether the promo associated with `iph_feature` is running.
+  //
+  // Includes promos with visible bubbles and those which have been continued
+  // with CloseFeaturePromoAndContinue() and are still running in the
+  // background.
+  virtual bool IsFeaturePromoActive(const base::Feature& iph_feature) const = 0;
+
+  // Maybe shows an in-product help promo. Returns true if the promo is shown.
+  // In cases where there is no promo controller, immediately returns false.
+  //
+  // If this feature promo is likely to be shown at browser startup, prefer
+  // calling MaybeShowStartupFeaturePromo() instead.
+  virtual bool MaybeShowFeaturePromo(
+      const base::Feature& iph_feature,
+      user_education::FeaturePromoSpecification::StringReplacements
+          body_text_replacements = {},
+      user_education::FeaturePromoController::BubbleCloseCallback
+          close_callback = base::DoNothing()) = 0;
+
+  // Maybe shows an in-product help promo at startup, whenever the Feature
+  // Engagement system is fully initialized. If the promo cannot be queued for
+  // whatever reason, fails and returns false. The promo may still not run if it
+  // is excluded for other reasons (e.g. another promo starts first; its Feature
+  // Engagement conditions are not satisfied).
+  //
+  // On success, when the FE system is initialized (which might be immediately),
+  // `promo_callback` is called with the result of whether the promo was
+  // actually shown. Since `promo_callback` could be called any time, make sure
+  // that you will not experience any race conditions or UAFs if the calling
+  // object goes out of scope.
+  //
+  // If your promo is not likely to be shown at browser startup, prefer using
+  // MaybeShowFeaturePromo() - which always runs synchronously - instead.
+  virtual bool MaybeShowStartupFeaturePromo(
+      const base::Feature& iph_feature,
+      user_education::FeaturePromoSpecification::StringReplacements
+          body_text_replacements = {},
+      user_education::FeaturePromoController::StartupPromoCallback
+          promo_callback = base::DoNothing(),
+      user_education::FeaturePromoController::BubbleCloseCallback
+          close_callback = base::DoNothing()) = 0;
+
+  // Closes the in-product help promo for `iph_feature` if it is showing or
+  // cancels a pending startup promo; returns true if a promo bubble was
+  // actually closed.
+  virtual bool CloseFeaturePromo(const base::Feature& iph_feature) = 0;
+
+  // Closes the bubble for a feature promo but continues the promo; returns a
+  // handle that can be used to end the promo when it is destructed. The handle
+  // will be valid (i.e. have a true boolean value) if the promo was showing,
+  // invalid otherwise.
+  virtual user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
+      const base::Feature& iph_feature) = 0;
+
+  // Records that the user has engaged with a particular feature that has an
+  // associated promo; this information is used to determine whether to show
+  // specific promos in the future.
+  virtual void NotifyFeatureEngagementEvent(const char* event_name) = 0;
+
+  // Shows an Incognito clear browsing data dialog.
+  virtual void ShowIncognitoClearBrowsingDataDialog() = 0;
+
+  // Shows an Incognito history disclaimer dialog.
+  virtual void ShowIncognitoHistoryDisclaimerDialog() = 0;
+
+  // Returns true when the borderless mode should be displayed instead
+  // of a full titlebar. This is only supported for desktop web apps.
+  virtual bool IsBorderlessModeEnabled() const = 0;
 
  protected:
   friend class BrowserCloseManager;

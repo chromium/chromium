@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<meta name=help href="https://privacycg.github.io/storage-partitioning/">
+<title>Partitioned webkitStorageInfo persistent quota request and usage details test</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helper.js"></script>
+
+<body>
+  <script>
+    const testPath = () => location.pathname.split("/").slice(0, -1).join("/");
+    const type = PERSISTENT;
+    let alt_origin = "http://{{hosts[alt][]}}:{{ports[http][0]}}";
+    let details = {};
+
+    const iframe = document.createElement("iframe");
+    iframe.src = `http://{{host}}:{{ports[http][0]}}${testPath()}/resources/` +
+      `partitioned-webkitStorageInfo-quota-usage-details-helper-frame.html` +
+      `?type=${type}`;
+    document.body.appendChild(iframe);
+
+    async_test(test => {
+      if (location.origin === alt_origin)
+        return;
+
+      test.step(async () => {
+        details.init = await usageDetails(type);
+        await requestQuota(1024 /*1024B*/);
+        await requestFileSystemAndWriteDummyFile(type);
+        details.after = await usageDetails(type);
+        assert_greater_than(details.after.usage, details.init.usage);
+
+        iframe.contentWindow.postMessage("get-details", iframe.origin);
+      });
+
+      window.addEventListener("message", test.step_func(event => {
+        if (event.data.source === "same-site") {
+          details.same_site = event.data;
+
+          const cross_site_window = window
+            .open(`${alt_origin}${location.pathname}`, "", "noopener=false");
+          test.add_cleanup(() => cross_site_window.close());
+        }
+        if (event.data.source === "cross-site") {
+          details.cross_site = event.data;
+          test.step(() => {
+            assert_true(details.cross_site.init.usage == 0,
+              "Usage should be 0");
+            assert_equals(details.same_site.init.usage, details.after.usage);
+            assert_equals(details.same_site.init.quota, details.after.quota);
+          });
+
+          test.done();
+        }
+      }));
+    }, "Partitioned webkitStorageInfo persistent quota request and usage" +
+    " details test.");
+  </script>
+</body>

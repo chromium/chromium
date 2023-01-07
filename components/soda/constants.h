@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,21 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "components/soda/pref_names.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace speech {
 
+extern const char kUsEnglishLocale[];
+
+// Metrics names for keeping track of SODA installation.
+extern const char kSodaBinaryInstallationResult[];
+extern const char kSodaBinaryInstallationSuccessTimeTaken[];
+extern const char kSodaBinaryInstallationFailureTimeTaken[];
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class LanguageCode {
   kNone = 0,
   kEnUs = 1,
@@ -22,6 +31,7 @@ enum class LanguageCode {
   kEsEs = 4,
   kFrFr = 5,
   kItIt = 6,
+  kMaxValue = kItIt,
 };
 
 // Describes all metadata needed to dynamically install SODA language pack
@@ -93,12 +103,18 @@ constexpr SodaLanguagePackComponentConfig kLanguageComponentConfigs[] = {
 // Location of the libsoda binary within the SODA installation directory.
 extern const base::FilePath::CharType kSodaBinaryRelativePath[];
 
+// Name of the of the libsoda binary used in browser tests.
+extern const base::FilePath::CharType kSodaTestBinaryRelativePath[];
+
 // Location of the SODA component relative to the components directory.
 extern const base::FilePath::CharType kSodaInstallationRelativePath[];
 
 // Location of the SODA language packs relative to the components
 // directory.
 extern const base::FilePath::CharType kSodaLanguagePacksRelativePath[];
+
+// Location of the SODA files used in browser tests.
+extern const base::FilePath::CharType kSodaTestResourcesRelativePath[];
 
 // Location of the SODA models directory relative to the language pack
 // installation directory.
@@ -109,6 +125,15 @@ const base::FilePath GetSodaDirectory();
 
 // Get the absolute path of the SODA directory containing the language packs.
 const base::FilePath GetSodaLanguagePacksDirectory();
+
+// Get the absolute path of the SODA directory containing the language packs
+// used in browser tests.
+const base::FilePath GetSodaTestResourcesDirectory();
+
+// Get the absolute path of the latest SODA language pack for a given language
+// (e.g. en-US).
+const base::FilePath GetLatestSodaLanguagePackDirectory(
+    const std::string& language);
 
 // Get the directory containing the latest version of SODA. In most cases
 // there will only be one version of SODA, but it is possible for there to be
@@ -121,11 +146,38 @@ const base::FilePath GetLatestSodaDirectory();
 // installed.
 const base::FilePath GetSodaBinaryPath();
 
-base::Optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
+// Get the path to the SODA binary used in browser tests. Returns an empty path
+// if SODA is not installed.
+const base::FilePath GetSodaTestBinaryPath();
+
+absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     LanguageCode language_code);
 
-base::Optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
+absl::optional<SodaLanguagePackComponentConfig> GetLanguageComponentConfig(
     const std::string& language_name);
+
+LanguageCode GetLanguageCodeByComponentId(const std::string& component_id);
+
+std::string GetLanguageName(LanguageCode language_code);
+
+LanguageCode GetLanguageCode(const std::string& language_name);
+
+int GetLanguageDisplayName(const std::string& language_name);
+
+// Returns the `SodaInstaller.Language.{language}.InstallationSuccessTime` uma
+// metric string for the language code.
+const std::string GetInstallationSuccessTimeMetricForLanguagePack(
+    const LanguageCode& language_code);
+
+// Returns the `SodaInstaller.Language.{language}.InstallationFailureTime` uma
+// metric string for the language code.
+const std::string GetInstallationFailureTimeMetricForLanguagePack(
+    const LanguageCode& language_code);
+
+// Returns the `SodaInstaller.Language.{language}.InstallationResult` uma
+// metric string for the language code..
+const std::string GetInstallationResultMetricForLanguagePack(
+    const LanguageCode& language_code);
 
 }  // namespace speech
 

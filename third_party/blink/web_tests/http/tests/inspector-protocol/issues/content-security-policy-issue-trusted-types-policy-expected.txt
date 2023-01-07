@@ -16,6 +16,7 @@ Inspector issue: {
                 violatedDirective : trusted-types
             }
         }
+        issueId : <string>
     }
 }
 

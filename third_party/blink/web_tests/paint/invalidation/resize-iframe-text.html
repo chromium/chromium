@@ -6,19 +6,23 @@
 // otherwise be promoted to rootScroller which changes painting and
 // invalidation.
 if (window.internals)
-  internals.runtimeFlags.implicitRootScrollerEnabled = false;
-if (window.testRunner)
-  testRunner.useUnfortunateSynchronousResizeMode();
+    internals.runtimeFlags.implicitRootScrollerEnabled = false;
+window.testIsAsync = true;
 onload = function() {
-  runAfterLayoutAndPaint(function() {
+  runAfterLayoutAndPaint(async function() {
     // Use smaller size because window.resizeTo/By() will fail if the size is
     // bigger than the screen size.
+    var resizePromise = new Promise(resolve => window.onresize = resolve);
     window.resizeTo(500, 200);
+    await resizePromise;
     runRepaintAndPixelTest();
   });
 };
-function repaintTest() {
+async function repaintTest() {
+  var resizePromise = new Promise(resolve => window.onresize = resolve);
   window.resizeBy(0, 200);
+  await resizePromise;
+  finishRepaintTest();
 }
 </script>
 Test passes if you see "Success" after window resizes.

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,21 +13,20 @@
 
 namespace {
 
-std::unique_ptr<base::DictionaryValue> CreateCommandValue(
-    const extensions::Command& command,
-    bool active) {
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
-  result->SetString("name", command.command_name());
-  result->SetString("description", command.description());
-  result->SetString("shortcut", active ? command.accelerator().GetShortcutText()
-                                       : std::u16string());
+base::Value::Dict CreateCommandValue(const extensions::Command& command,
+                                     bool active) {
+  base::Value::Dict result;
+  result.Set("name", command.command_name());
+  result.Set("description", command.description());
+  result.Set("shortcut", active ? command.accelerator().GetShortcutText()
+                                : std::u16string());
   return result;
 }
 
 }  // namespace
 
 ExtensionFunction::ResponseAction GetAllCommandsFunction::Run() {
-  std::unique_ptr<base::ListValue> command_list(new base::ListValue());
+  base::Value::List command_list;
 
   extensions::CommandService* command_service =
       extensions::CommandService::Get(browser_context());
@@ -40,14 +39,14 @@ ExtensionFunction::ResponseAction GetAllCommandsFunction::Run() {
   if (command_service->GetExtensionActionCommand(
           extension_->id(), extensions::ActionInfo::TYPE_BROWSER,
           extensions::CommandService::ALL, &browser_action, &active)) {
-    command_list->Append(CreateCommandValue(browser_action, active));
+    command_list.Append(CreateCommandValue(browser_action, active));
   }
 
   extensions::Command page_action;
   if (command_service->GetExtensionActionCommand(
           extension_->id(), extensions::ActionInfo::TYPE_PAGE,
           extensions::CommandService::ALL, &page_action, &active)) {
-    command_list->Append(CreateCommandValue(page_action, active));
+    command_list.Append(CreateCommandValue(page_action, active));
   }
 
   extensions::CommandMap named_commands;
@@ -63,9 +62,8 @@ ExtensionFunction::ResponseAction GetAllCommandsFunction::Run() {
     ui::Accelerator shortcut_assigned = command.accelerator();
     active = (shortcut_assigned.key_code() != ui::VKEY_UNKNOWN);
 
-    command_list->Append(CreateCommandValue(iter->second, active));
+    command_list.Append(CreateCommandValue(iter->second, active));
   }
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(command_list))));
+  return RespondNow(WithArguments(std::move(command_list)));
 }

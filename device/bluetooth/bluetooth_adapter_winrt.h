@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,6 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -33,6 +32,9 @@ class BluetoothDeviceWinrt;
 
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWinrt : public BluetoothAdapter {
  public:
+  BluetoothAdapterWinrt(const BluetoothAdapterWinrt&) = delete;
+  BluetoothAdapterWinrt& operator=(const BluetoothAdapterWinrt&) = delete;
+
   // BluetoothAdapter:
   std::string GetAddress() const override;
   std::string GetName() const override;
@@ -228,21 +230,21 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWinrt : public BluetoothAdapter {
       adapter_;
 
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Radios::IRadio> radio_;
-  base::Optional<EventRegistrationToken> radio_state_changed_token_;
+  absl::optional<EventRegistrationToken> radio_state_changed_token_;
 
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Enumeration::IDeviceWatcher>
       powered_radio_watcher_;
-  base::Optional<EventRegistrationToken> powered_radio_added_token_;
-  base::Optional<EventRegistrationToken> powered_radio_removed_token_;
-  base::Optional<EventRegistrationToken> powered_radios_enumerated_token_;
+  absl::optional<EventRegistrationToken> powered_radio_added_token_;
+  absl::optional<EventRegistrationToken> powered_radio_removed_token_;
+  absl::optional<EventRegistrationToken> powered_radios_enumerated_token_;
   size_t num_powered_radios_ = 0;
 
   bool radio_was_powered_ = false;
 
   std::vector<scoped_refptr<BluetoothAdvertisement>> pending_advertisements_;
 
-  base::Optional<EventRegistrationToken> advertisement_received_token_;
-  base::Optional<EventRegistrationToken> advertisement_watcher_stopped_token_;
+  absl::optional<EventRegistrationToken> advertisement_received_token_;
+  absl::optional<EventRegistrationToken> advertisement_watcher_stopped_token_;
   Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::Advertisement::
                              IBluetoothLEAdvertisementWatcher>
       ble_advertisement_watcher_;
@@ -261,8 +263,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterWinrt : public BluetoothAdapter {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdapterWinrt> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterWinrt);
 };
 
 }  // namespace device

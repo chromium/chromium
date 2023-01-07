@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 DeviceAttributes --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial" content="A7keXbY/X3Z58ZDJLORovQtTQDWDpzTG7XW47QSFjBUf5DXQslvOP8FOMDgqdQTniJKeNeT2IpHO6pBxwl6nMQsAAABYeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRGV2aWNlQXR0cmlidXRlcyIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ==" />
+<title>Device Attributes API - interfaces exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+'use strict'
+test(t => {
+  assert_true('managed' in navigator, 'managed object exists on navigator scope');
+  assert_not_equals(navigator.managed, undefined, 'managed object can be accessed on navigator');
+  assert_true('getAnnotatedAssetId' in navigator.managed, 'getAnnotatedAssetId method exists on managed scope');
+  assert_true('getAnnotatedLocation' in navigator.managed, 'getAnnotatedLocation method exists on managed scope');
+  assert_true('getDirectoryId' in navigator.managed, 'getDirectoryId method exists on managed scope');
+  assert_true('getHostname' in navigator.managed, 'getHostname method exists on managed scope');
+  assert_true('getSerialNumber' in navigator.managed, 'getSerialNumber method exists on managed scope');
+}, 'Device Attributes API entry point in Origin-Trial enabled document.');
+</script>
+

@@ -1,14 +1,13 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/chromeos/lazy_load.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
-// clang-format on
+import 'chrome://os-settings/chromeos/lazy_load.js';
+
+import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 let smartInputsPage;
 
@@ -16,13 +15,13 @@ function createSmartInputsPage() {
   PolymerTest.clearBody();
   smartInputsPage = document.createElement('os-settings-smart-inputs-page');
   document.body.appendChild(smartInputsPage);
-  Polymer.dom.flush();
+  flush();
 }
 
 suite('SmartInputsPage', function() {
   teardown(function() {
     smartInputsPage.remove();
-    settings.Router.getInstance().resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   test(
@@ -30,7 +29,8 @@ suite('SmartInputsPage', function() {
       function() {
         loadTimeData.overrideValues({allowAssistivePersonalInfo: true});
         createSmartInputsPage();
-        assertTrue(!!smartInputsPage.$$('#assistPersonalInfo'));
+        assertTrue(
+            !!smartInputsPage.shadowRoot.querySelector('#assistPersonalInfo'));
       });
 
   test(
@@ -38,38 +38,39 @@ suite('SmartInputsPage', function() {
       function() {
         loadTimeData.overrideValues({allowAssistivePersonalInfo: false});
         createSmartInputsPage();
-        assertFalse(!!smartInputsPage.$$('#assistPersonalInfo'));
+        assertFalse(
+            !!smartInputsPage.shadowRoot.querySelector('#assistPersonalInfo'));
       });
 
   test('emojiSuggestAdditionNotNullWhenAllowEmojiSuggestionIsTrue', function() {
     loadTimeData.overrideValues({allowEmojiSuggestion: true});
     createSmartInputsPage();
-    assertTrue(!!smartInputsPage.$$('#emojiSuggestion'));
+    assertTrue(!!smartInputsPage.shadowRoot.querySelector('#emojiSuggestion'));
   });
 
   test('emojiSuggestAdditionNullWhenAllowEmojiSuggestionIsFalse', function() {
     loadTimeData.overrideValues({allowEmojiSuggestion: false});
     createSmartInputsPage();
-    assertFalse(!!smartInputsPage.$$('#emojiSuggestion'));
+    assertFalse(!!smartInputsPage.shadowRoot.querySelector('#emojiSuggestion'));
   });
 
   test('Deep link to emoji suggestion toggle', async () => {
     loadTimeData.overrideValues({
-      isDeepLinkingEnabled: true,
       allowEmojiSuggestion: true,
     });
     createSmartInputsPage();
 
-    const params = new URLSearchParams;
+    const params = new URLSearchParams();
     params.append('settingId', '1203');
-    settings.Router.getInstance().navigateTo(
-        settings.routes.OS_LANGUAGES_SMART_INPUTS, params);
+    Router.getInstance().navigateTo(
+        routes.OS_LANGUAGES_SMART_INPUTS, params);
 
-    Polymer.dom.flush();
+    flush();
 
     const deepLinkElement =
-        smartInputsPage.$$('#emojiSuggestion').$$('cr-toggle');
-    await test_util.waitAfterNextRender(deepLinkElement);
+        smartInputsPage.shadowRoot.querySelector('#emojiSuggestion')
+            .shadowRoot.querySelector('cr-toggle');
+    await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
         'Emoji suggestion toggle should be focused for settingId=1203.');

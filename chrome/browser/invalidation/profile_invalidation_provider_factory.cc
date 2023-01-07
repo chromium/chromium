@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,6 @@
 #include "components/invalidation/impl/profile_identity_provider.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation_service.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
 #include "content/public/browser/storage_partition.h"
@@ -34,8 +33,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/device_identity/device_identity_provider.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "components/user_manager/user_manager.h"
@@ -58,9 +57,8 @@ std::unique_ptr<InvalidationService> CreateInvalidationServiceForSenderId(
       base::BindRepeating(
           &PerUserTopicSubscriptionManager::Create, identity_provider,
           profile->GetPrefs(),
-          base::RetainedRef(
-              content::BrowserContext::GetDefaultStoragePartition(profile)
-                  ->GetURLLoaderFactoryForBrowserProcess())),
+          base::RetainedRef(profile->GetDefaultStoragePartition()
+                                ->GetURLLoaderFactoryForBrowserProcess())),
       instance_id::InstanceIDProfileServiceFactory::GetForProfile(profile)
           ->driver(),
       profile->GetPrefs(), sender_id);
@@ -78,12 +76,12 @@ ProfileInvalidationProvider* ProfileInvalidationProviderFactory::GetForProfile(
   // when this method is called during the creation of the sign-in profile
   // itself. Using ProfileHelper::GetSigninProfileDir() is safe because it does
   // not try to access the sign-in profile.
-  if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+  if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
       (user_manager::UserManager::IsInitialized() &&
        user_manager::UserManager::Get()->IsLoggedInAsGuest())) {
     // The Chrome OS login and Chrome OS guest profiles do not have GAIA
     // credentials and do not support invalidation.
-    return NULL;
+    return nullptr;
   }
 #endif
   return static_cast<ProfileInvalidationProvider*>(
@@ -97,9 +95,7 @@ ProfileInvalidationProviderFactory::GetInstance() {
 }
 
 ProfileInvalidationProviderFactory::ProfileInvalidationProviderFactory()
-    : BrowserContextKeyedServiceFactory(
-          "InvalidationService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("InvalidationService") {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(gcm::GCMProfileServiceFactory::GetInstance());
 }
@@ -120,11 +116,11 @@ KeyedService* ProfileInvalidationProviderFactory::BuildServiceInstanceFor(
   std::unique_ptr<IdentityProvider> identity_provider;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
+  policy::BrowserPolicyConnectorAsh* connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
   if (user_manager::UserManager::IsInitialized() &&
       user_manager::UserManager::Get()->IsLoggedInAsKioskApp() &&
-      connector->IsEnterpriseManaged()) {
+      connector->IsDeviceEnterpriseManaged()) {
     identity_provider = std::make_unique<DeviceIdentityProvider>(
         DeviceOAuth2TokenServiceFactory::Get());
   }
@@ -133,8 +129,8 @@ KeyedService* ProfileInvalidationProviderFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
 
   if (!identity_provider) {
-    identity_provider.reset(new ProfileIdentityProvider(
-        IdentityManagerFactory::GetForProfile(profile)));
+    identity_provider = std::make_unique<ProfileIdentityProvider>(
+        IdentityManagerFactory::GetForProfile(profile));
   }
   auto service =
       CreateInvalidationServiceForSenderId(profile, identity_provider.get(),

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,11 +13,10 @@ source_set("elements") {
     "gray_highlight_button.mm",
     "home_waiting_view.h",
     "home_waiting_view.mm",
-    "selector_picker_presentation_controller.h",
-    "selector_picker_presentation_controller.mm",
-    "selector_picker_view_controller.h",
-    "selector_picker_view_controller.mm",
-    "selector_view_controller_delegate.h",
+    "instruction_view.h",
+    "instruction_view.mm",
+    "self_sizing_table_view.h",
+    "self_sizing_table_view.mm",
     "text_field_configuration.h",
     "text_field_configuration.mm",
     "text_view_selection_disabled.h",
@@ -30,27 +29,36 @@ source_set("elements") {
   deps = [
     "//base",
     "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/colors",
-    "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common:string_util",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
+    "//ios/third_party/material_components_ios",
   ]
 }
 
-source_set("selector_coordinator") {
+source_set("activity_overlay") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "selector_coordinator.h",
-    "selector_coordinator.mm",
+    "activity_overlay_coordinator.h",
+    "activity_overlay_coordinator.mm",
   ]
   deps = [
-    ":elements",
+    ":elements_internal",
     "//base",
-    "//ios/chrome/browser",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
   ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "elements_constants.h",
+    "elements_constants.mm",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -59,17 +67,16 @@ source_set("unit_tests") {
   sources = [
     "activity_overlay_coordinator_unittest.mm",
     "chrome_activity_overlay_coordinator_unittest.mm",
-    "selector_coordinator_unittest.mm",
-    "selector_picker_view_controller_unittest.mm",
     "text_field_configuration_unittest.mm",
     "windowed_container_view_unittest.mm",
   ]
   deps = [
+    ":activity_overlay",
     ":elements",
     ":elements_internal",
-    ":selector_coordinator",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/test:test_support",
     "//testing/gtest",
@@ -80,8 +87,8 @@ source_set("unit_tests") {
 source_set("elements_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "activity_overlay_coordinator.h",
-    "activity_overlay_coordinator.mm",
+    "activity_overlay_view.h",
+    "activity_overlay_view.mm",
     "activity_overlay_view_controller.h",
     "activity_overlay_view_controller.mm",
     "chrome_activity_overlay_coordinator.h",
@@ -90,11 +97,11 @@ source_set("elements_internal") {
     "chrome_activity_overlay_view_controller.mm",
   ]
   deps = [
+    ":constants",
     "//base",
     "//ios/chrome/browser",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/main:scene_state_header",
-    "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/browser/ui/scoped_ui_blocker:scoped_ui_blocker",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common/ui/colors",
@@ -102,4 +109,23 @@ source_set("elements_internal") {
     "//ios/third_party/material_components_ios",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "activity_overlay_egtest_util.h",
+    "activity_overlay_egtest_util.mm",
+  ]
+  deps = [
+    "//base/test:test_support",
+    "//ios/chrome/browser/ui/elements:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ui/base",
+  ]
 }

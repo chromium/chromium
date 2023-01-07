@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
 
@@ -93,8 +94,8 @@ class WindowController {
   void NotifyWindowBoundsChanged();
 
  private:
-  ui::BaseWindow* window_;
-  Profile* profile_;
+  raw_ptr<ui::BaseWindow> window_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace extensions

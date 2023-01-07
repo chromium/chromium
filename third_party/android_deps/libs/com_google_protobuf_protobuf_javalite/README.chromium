@@ -1,9 +1,10 @@
 Name: Protocol Buffers [Lite]
 Short Name: protobuf-javalite
 URL: https://github.com/protocolbuffers/protobuf/blob/master/java/lite.md
-Version: 3.13.0
+Version: 3.21.1
 License: BSD
 License File: LICENSE
+CPEPrefix: unknown
 Security Critical: yes
 
 Description:

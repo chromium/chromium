@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -93,11 +93,6 @@ OnceCallback<void()> BindOnce(Functor, Args&&...) {
 template <typename Functor, typename... Args>
 RepeatingCallback<void()> BindRepeating(Functor, Args&&...) {
   return RepeatingCallback<void()>();
-}
-
-RepeatingCallback<void()> AdaptCallbackForRepeating(
-    OnceCallback<void()> callback) {
-  return Callback<void()>();
 }
 
 }  // namespace base

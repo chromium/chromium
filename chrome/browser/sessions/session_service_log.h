@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,8 +40,15 @@ enum class SessionServiceEventLogType {
   // done to ensure lots of write error don't spam the event log).
   kWriteError = 3,
 
+  // Restore stopped because the Browser restore was going to restore to closed.
+  kRestoreCanceled = 4,
+
+  // A restore was initiated, meaning the browser will ask SessionService for
+  // the data to restore asynchronously.
+  kRestoreInitiated = 5,
+
   kMinValue = kStart,
-  kMaxValue = kWriteError,
+  kMaxValue = kRestoreInitiated,
 };
 
 struct StartData {
@@ -66,6 +73,13 @@ struct ExitData {
 
   // The total number of tabs open at the time of exit.
   int tab_count;
+
+  // True if this the first SessionService created for the Profile. False
+  // means the first SessionService was destroyed and a new one created.
+  bool is_first_session_service;
+
+  // True if at least one command was scheduled
+  bool did_schedule_command;
 };
 
 struct WriteErrorData {
@@ -76,11 +90,17 @@ struct WriteErrorData {
   int unrecoverable_error_count;
 };
 
+struct RestoreInitiatedData {
+  bool synchronous;
+  bool restore_browser;
+};
+
 union EventData {
   StartData start;
   RestoreData restore;
   ExitData exit;
   WriteErrorData write_error;
+  RestoreInitiatedData restore_initiated;
 };
 
 struct SessionServiceEvent {
@@ -91,17 +111,23 @@ struct SessionServiceEvent {
 
 // Returns the most recent events, ordered with oldest event first. In general
 // the times shouldn't be compared, as it's possible for bad clocks and/or
-// timezone changse to cause an earlier event to have a later time.
+// timezone changes to cause an earlier event to have a later time.
 std::list<SessionServiceEvent> GetSessionServiceEvents(Profile* profile);
 
 void LogSessionServiceStartEvent(Profile* profile, bool after_crash);
 void LogSessionServiceExitEvent(Profile* profile,
                                 int window_count,
-                                int tab_count);
+                                int tab_count,
+                                bool is_first_session_service,
+                                bool did_schedule_command);
+void LogSessionServiceRestoreInitiatedEvent(Profile* profile,
+                                            bool synchronous,
+                                            bool restore_browser);
 void LogSessionServiceRestoreEvent(Profile* profile,
                                    int window_count,
                                    int tab_count,
                                    bool encountered_error_reading);
+void LogSessionServiceRestoreCanceledEvent(Profile* profile);
 void LogSessionServiceWriteErrorEvent(Profile* profile,
                                       bool unrecoverable_write_error);
 void RemoveLastSessionServiceEventOfType(Profile* profile,

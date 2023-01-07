@@ -1,28 +1,34 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_HOST_IT2ME_IT2ME_CONSTANTS_H_
 #define REMOTING_HOST_IT2ME_IT2ME_CONSTANTS_H_
 
+#include "remoting/host/native_messaging/native_messaging_constants.h"
+
 namespace remoting {
 
-// ID used to identify the current message. Must be included in the response if
-// the sender includes it.
-extern const char kMessageId[];
+// These state values are defined in the website client as well.  Remember to
+// update both enums when making changes.
+enum class It2MeHostState {
+  kDisconnected,
+  kStarting,
+  kRequestedAccessCode,
+  kReceivedAccessCode,
+  kConnecting,
+  kConnected,
+  kError,
+  kInvalidDomainError,
+};
 
-// The type of the message received. The type is used to retrieve and validate
-// the message payload.
-extern const char kMessageType[];
+// Indicates that an OAuth access token can be provided to the host which will
+// use it for service requests (e.g. ICE config, signaling, host registration).
+extern const char kFeatureAccessTokenAuth[];
 
-// Initial message sent from the client to the host to request the host's
-// version and supported features. It has no parameters.
-extern const char kHelloMessage[];
-// Hello response parameters.
-extern const char kHostVersion[];
-extern const char kSupportedFeatures[];
-// Response sent back to the client after the Hello message has been handled.
-extern const char kHelloResponse[];
+// Indicates that the host supports delegated signaling (i.e. allow the client
+// to act as a signaling proxy).
+extern const char kFeatureDelegatedSignaling[];
 
 // Sent from the client to the host to begin the connection process.
 extern const char kConnectMessage[];
@@ -31,14 +37,16 @@ extern const char kUserName[];
 extern const char kAuthServiceWithToken[];
 extern const char kLocalJid[];
 extern const char kDirectoryBotJidValue[];
+extern const char kIsEnterpriseAdminUser[];
 extern const char kSuppressUserDialogs[];
 extern const char kSuppressNotifications[];
+extern const char kCurtainLocalUserSession[];
 extern const char kTerminateUponInput[];
 extern const char kUseElevatedHost[];
 extern const char kUseSignalingProxy[];
 extern const char kIceConfig[];
 // Response sent back to the client after the Connect message has been handled.
-extern const char kConnectResponseConnect[];
+extern const char kConnectResponse[];
 
 // Message sent from the host to the client when the connection state changes.
 // No response from the client is returned for this message.
@@ -55,11 +63,13 @@ extern const char kHostStateReceivedAccessCode[];
 extern const char kHostStateDisconnected[];
 extern const char kHostStateConnecting[];
 extern const char kHostStateConnected[];
-// Included in the message sent for ReceivedAccessCode state.
+// Included in the message sent for the ReceivedAccessCode state.
 extern const char kAccessCode[];
 extern const char kAccessCodeLifetime[];
-// Included in the message sent for Connected state.
+// Included in the message sent for the Connected state.
 extern const char kClient[];
+// Included in the message sent for the Disconnected state.
+extern const char kDisconnectReason[];
 
 // Sent from the client to the host to disconnect the current connection.
 extern const char kDisconnectMessage[];

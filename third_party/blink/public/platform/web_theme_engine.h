@@ -31,13 +31,15 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_THEME_ENGINE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_THEME_ENGINE_H_
 
-#include "base/optional.h"
+#include <map>
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-shared.h"
 #include "third_party/blink/public/platform/web_scrollbar_overlay_color_theme.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/color/color_provider_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -179,7 +181,14 @@ class WebThemeEngine {
     bool right_to_left;
   };
 
-#if defined(OS_MAC)
+  // Represents ui::NativeTheme System Info
+  struct SystemColorInfoState {
+    bool is_dark_mode;
+    bool forced_colors;
+    std::map<SystemThemeColor, uint32_t> colors;
+  };
+
+#if BUILDFLAG(IS_MAC)
   enum ScrollbarOrientation {
     // Vertical scrollbar on the right side of content.
     kVerticalOnRight,
@@ -194,6 +203,7 @@ class WebThemeEngine {
     bool is_overlay;
     mojom::ColorScheme scrollbar_theme;
     ScrollbarOrientation orientation;
+    float scale_from_dip;
   };
 #endif
 
@@ -207,7 +217,7 @@ class WebThemeEngine {
     ProgressBarExtraParams progress_bar;
     ScrollbarThumbExtraParams scrollbar_thumb;
     ScrollbarButtonExtraParams scrollbar_button;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     ScrollbarExtraParams scrollbar_extra;
 #endif
   };
@@ -226,6 +236,8 @@ class WebThemeEngine {
   struct ScrollbarStyle {
     int thumb_thickness;
     int scrollbar_margin;
+    int thumb_thickness_thin;
+    int scrollbar_margin_thin;
     SkColor color;
     base::TimeDelta fade_out_delay;
     base::TimeDelta fade_out_duration;
@@ -251,17 +263,32 @@ class WebThemeEngine {
       const gfx::Rect&,
       const ExtraParams*,
       blink::mojom::ColorScheme,
-      const base::Optional<SkColor>& accent_color = base::nullopt) {}
+      const absl::optional<SkColor>& accent_color = absl::nullopt) {}
 
-  virtual base::Optional<SkColor> GetSystemColor(
+  virtual absl::optional<SkColor> GetSystemColor(
       SystemThemeColor system_theme) const {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   virtual ForcedColors GetForcedColors() const { return ForcedColors::kNone; }
+  virtual void OverrideForcedColorsTheme(bool is_dark_theme) {}
   virtual void SetForcedColors(const blink::ForcedColors forced_colors) {}
+  virtual void ResetToSystemColors(
+      SystemColorInfoState system_color_info_state) {}
+  virtual SystemColorInfoState GetSystemColorInfo() {
+    SystemColorInfoState state;
+    return state;
+  }
+
+  // Updates the WebThemeEngine's global light and dark ColorProvider instances
+  // using the RendererColorMaps provided. Returns true if new ColorProviders
+  // were created, returns false otherwise.
+  virtual bool UpdateColorProviders(const ui::RendererColorMap& light_colors,
+                                    const ui::RendererColorMap& dark_colors) {
+    return false;
+  }
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_THEME_ENGINE_H_

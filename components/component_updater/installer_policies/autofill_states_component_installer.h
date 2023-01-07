@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 #include "components/prefs/pref_service.h"
@@ -33,15 +34,14 @@ class AutofillStatesComponentInstallerPolicy : public ComponentInstallerPolicy {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
 #if defined(UNIT_TEST)
-  bool VerifyInstallationForTesting(const base::DictionaryValue& manifest,
+  bool VerifyInstallationForTesting(const base::Value& manifest,
                                     const base::FilePath& install_dir) {
     return VerifyInstallation(manifest, install_dir);
   }
 
-  void ComponentReadyForTesting(
-      const base::Version& version,
-      const base::FilePath& install_dir,
-      std::unique_ptr<base::DictionaryValue> manifest) {
+  void ComponentReadyForTesting(const base::Version& version,
+                                const base::FilePath& install_dir,
+                                base::Value manifest) {
     ComponentReady(version, install_dir, std::move(manifest));
   }
 #endif
@@ -51,20 +51,20 @@ class AutofillStatesComponentInstallerPolicy : public ComponentInstallerPolicy {
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
+      const base::Value& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::DictionaryValue& manifest,
+  bool VerifyInstallation(const base::Value& manifest,
                           const base::FilePath& install_dir) const override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      std::unique_ptr<base::DictionaryValue> manifest) override;
+                      base::Value manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 };
 
 // Call once during startup to make the component update service aware of

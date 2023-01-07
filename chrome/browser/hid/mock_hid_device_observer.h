@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,7 @@ class MockHidDeviceObserver : public HidChooserContext::DeviceObserver {
 
   MOCK_METHOD1(OnDeviceAdded, void(const device::mojom::HidDeviceInfo&));
   MOCK_METHOD1(OnDeviceRemoved, void(const device::mojom::HidDeviceInfo&));
+  MOCK_METHOD1(OnDeviceChanged, void(const device::mojom::HidDeviceInfo&));
   MOCK_METHOD0(OnHidManagerConnectionError, void());
   MOCK_METHOD0(OnHidChooserContextShutdown, void());
 };

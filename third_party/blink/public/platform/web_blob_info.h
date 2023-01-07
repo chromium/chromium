@@ -1,10 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_BLOB_INFO_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_BLOB_INFO_H_
 
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-shared.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_common.h"
@@ -26,7 +28,7 @@ class WebBlobInfo {
   BLINK_EXPORT WebBlobInfo(const WebString& uuid,
                            const WebString& file_name,
                            const WebString& type,
-                           const base::Optional<base::Time>& last_modified,
+                           const absl::optional<base::Time>& last_modified,
                            uint64_t size,
                            CrossVariantMojoRemote<mojom::BlobInterfaceBase>);
 
@@ -51,7 +53,7 @@ class WebBlobInfo {
   const WebString& GetType() const { return type_; }
   uint64_t size() const { return size_; }
   const WebString& FileName() const { return file_name_; }
-  base::Optional<base::Time> LastModified() const { return last_modified_; }
+  absl::optional<base::Time> LastModified() const { return last_modified_; }
   BLINK_EXPORT CrossVariantMojoRemote<mojom::BlobInterfaceBase>
   CloneBlobRemote() const;
 
@@ -59,7 +61,7 @@ class WebBlobInfo {
   BLINK_EXPORT WebBlobInfo(scoped_refptr<BlobDataHandle>);
   BLINK_EXPORT WebBlobInfo(scoped_refptr<BlobDataHandle>,
                            const WebString& file_name,
-                           const base::Optional<base::Time>& last_modified);
+                           const absl::optional<base::Time>& last_modified);
   // TODO(mek): Get rid of these constructors after ensuring that the
   // BlobDataHandle always has the correct type and size.
   BLINK_EXPORT WebBlobInfo(scoped_refptr<BlobDataHandle>,
@@ -68,7 +70,7 @@ class WebBlobInfo {
   BLINK_EXPORT WebBlobInfo(scoped_refptr<BlobDataHandle>,
                            const WebString& file_name,
                            const WebString& type,
-                           const base::Optional<base::Time>& last_modified,
+                           const absl::optional<base::Time>& last_modified,
                            uint64_t size);
   BLINK_EXPORT scoped_refptr<BlobDataHandle> GetBlobHandle() const;
 #endif
@@ -80,9 +82,9 @@ class WebBlobInfo {
   uint64_t size_;
   WebPrivatePtr<BlobDataHandle> blob_handle_;
   WebString file_name_;   // Only for File
-  base::Optional<base::Time> last_modified_;  // Only for File
+  absl::optional<base::Time> last_modified_;  // Only for File
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_BLOB_INFO_H_

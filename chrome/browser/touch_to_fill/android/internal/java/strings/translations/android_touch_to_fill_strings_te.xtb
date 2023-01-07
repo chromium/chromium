@@ -1,12 +1,17 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
-<translation id="1717486229951421299">'టచ్ చేసి నింపాల్సిన ఆధారాల జాబితా' సగం ఎత్తులో తెరవబడింది.</translation>
-<translation id="207576718733492531">'టచ్ చేసి నింపాల్సిన ఆధారాల జాబితా' మూసివేయబడింది.</translation>
+<translation id="1220509181886849806">సేవ్ చేసిన పాస్‌వర్డ్‌ను ఉపయోగించాలా?</translation>
+<translation id="1717486229951421299">'టచ్ చేసి నింపాల్సిన ఆధారాల లిస్ట్‌' సగం ఎత్తులో తెరవబడింది.</translation>
+<translation id="207576718733492531">'టచ్ చేసి నింపాల్సిన ఆధారాల లిస్ట్‌' మూసివేయబడింది.</translation>
 <translation id="2359808026110333948">కొనసాగించు</translation>
 <translation id="2410754283952462441">ఖాతాను ఎంచుకోండి</translation>
-<translation id="3399357656427473483">'ట‌చ్ చేసి నింపాల్సిన ఆధారాల జాబితా'.</translation>
-<translation id="5441504010984421144">'ట‌చ్ చేసి నింపాల్సిన ఆధారాల జాబితా' పూర్తి ఎత్తులో తెరవబడింది.</translation>
+<translation id="3399357656427473483">'ట‌చ్ చేసి నింపాల్సిన ఆధారాల లిస్ట్‌'.</translation>
+<translation id="3653689374478248324">మీరు <ph name="SITE_NAME" />‌కు సైన్ ఇన్ చేయబోతున్నారు</translation>
+<translation id="3950820424414687140">సైన్ ఇన్</translation>
+<translation id="4598345735110653698">పాస్-కీలను మేనేజ్ చేయండి</translation>
+<translation id="4907224763885298217">మీ స్క్రీన్ లాక్‌ను ఉపయోగించండి</translation>
+<translation id="5441504010984421144">'ట‌చ్ చేసి నింపాల్సిన ఆధారాల లిస్ట్‌' పూర్తి ఎత్తులో తెరవబడింది.</translation>
 <translation id="5624120631404540903">పాస్‌వర్డ్‌లను నిర్వహించండి</translation>
 <translation id="804577341878669140">ఖాతాతో కొనసాగించండి</translation>
 </translationbundle>

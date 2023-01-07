@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/media/media_keys_listener_manager_impl.h"
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
@@ -35,6 +36,10 @@ class MockMediaKeysListener : public ui::MediaKeysListener {
  public:
   explicit MockMediaKeysListener(ui::MediaKeysListener::Delegate* delegate)
       : delegate_(delegate) {}
+
+  MockMediaKeysListener(const MockMediaKeysListener&) = delete;
+  MockMediaKeysListener& operator=(const MockMediaKeysListener&) = delete;
+
   ~MockMediaKeysListener() override = default;
 
   // MediaKeysListener implementation.
@@ -56,15 +61,18 @@ class MockMediaKeysListener : public ui::MediaKeysListener {
   }
 
  private:
-  ui::MediaKeysListener::Delegate* delegate_;
+  raw_ptr<ui::MediaKeysListener::Delegate> delegate_;
   base::flat_set<ui::KeyboardCode> key_codes_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaKeysListener);
 };
 
 class MockMediaKeysListenerDelegate : public ui::MediaKeysListener::Delegate {
  public:
   MockMediaKeysListenerDelegate() = default;
+
+  MockMediaKeysListenerDelegate(const MockMediaKeysListenerDelegate&) = delete;
+  MockMediaKeysListenerDelegate& operator=(
+      const MockMediaKeysListenerDelegate&) = delete;
+
   ~MockMediaKeysListenerDelegate() override = default;
 
   // MediaKeysListener::Delegate implementation.
@@ -85,8 +93,6 @@ class MockMediaKeysListenerDelegate : public ui::MediaKeysListener::Delegate {
 
  private:
   std::vector<ui::KeyboardCode> received_keys_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaKeysListenerDelegate);
 };
 
 }  // anonymous namespace
@@ -94,6 +100,12 @@ class MockMediaKeysListenerDelegate : public ui::MediaKeysListener::Delegate {
 class MediaKeysListenerManagerImplTest : public ContentBrowserTest {
  public:
   MediaKeysListenerManagerImplTest() = default;
+
+  MediaKeysListenerManagerImplTest(const MediaKeysListenerManagerImplTest&) =
+      delete;
+  MediaKeysListenerManagerImplTest& operator=(
+      const MediaKeysListenerManagerImplTest&) = delete;
+
   ~MediaKeysListenerManagerImplTest() override = default;
 
  protected:
@@ -142,11 +154,10 @@ class MediaKeysListenerManagerImplTest : public ContentBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  MediaKeysListenerManagerImpl* media_keys_listener_manager_;
-  MockMediaKeysListener* media_keys_listener_;
+  raw_ptr<MediaKeysListenerManagerImpl, DanglingUntriaged>
+      media_keys_listener_manager_;
+  raw_ptr<MockMediaKeysListener, DanglingUntriaged> media_keys_listener_;
   std::unique_ptr<TestMediaController> media_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaKeysListenerManagerImplTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MediaKeysListenerManagerImplTest, PressPlayPauseKey) {

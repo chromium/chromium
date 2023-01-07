@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,6 +66,9 @@ static const PageAddressInfo
 class LocalNetworkRequestsPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness {
  protected:
+  LocalNetworkRequestsPageLoadMetricsObserverTest()
+      : page_load_metrics::PageLoadMetricsObserverTestHarness(
+            content::BrowserTaskEnvironment::REAL_IO_THREAD) {}
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
     tracker->AddObserver(
         std::make_unique<LocalNetworkRequestsPageLoadMetricsObserver>());
@@ -103,12 +106,11 @@ class LocalNetworkRequestsPageLoadMetricsObserverTest
     net::IPAddress address;
     ASSERT_TRUE(address.AssignFromIPLiteral(resource.host_ip));
     page_load_metrics::ExtraRequestCompleteInfo request_info(
-        url::Origin::Create(GURL(resource.url)),
+        url::SchemeHostPort(GURL(resource.url)),
         net::IPEndPoint(address, resource.port), -1 /* frame_tree_node_id */,
         !net_error /* was_cached */,
         (net_error ? 1024 * 20 : 0) /* raw_body_bytes */,
         0 /* original_network_content_length */,
-        nullptr /* data_reduction_proxy_data */,
         network::mojom::RequestDestination::kDocument, net_error,
         {} /* load_timing_info */);
 
@@ -781,10 +783,9 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
   // Load a resource that has the IP address in the URL but returned an empty
   // socket address for some reason.
   PageLoadMetricsObserverTestHarness::tester()->SimulateLoadedResource(
-      {url::Origin::Create(GURL(internal::kDiffSubnetRequest2.url)),
+      {url::SchemeHostPort(GURL(internal::kDiffSubnetRequest2.url)),
        net::IPEndPoint(), -1 /* frame_tree_node_id */, true /* was_cached */,
        1024 * 20 /* raw_body_bytes */, 0 /* original_network_content_length */,
-       nullptr /* data_reduction_proxy_data */,
        network::mojom::RequestDestination::kDocument, 0,
        nullptr /* load_timing_info */},
       GetGlobalRequestID());
@@ -809,10 +810,9 @@ TEST_F(LocalNetworkRequestsPageLoadMetricsObserverTest,
   // Load a resource that doesn't have the IP address in the URL and returned an
   // empty socket address (e.g., failed DNS resolution).
   PageLoadMetricsObserverTestHarness::tester()->SimulateLoadedResource(
-      {url::Origin::Create(GURL(internal::kPrivatePage.url)), net::IPEndPoint(),
+      {url::SchemeHostPort(GURL(internal::kPrivatePage.url)), net::IPEndPoint(),
        -1 /* frame_tree_node_id */, false /* was_cached */,
        0 /* raw_body_bytes */, 0 /* original_network_content_length */,
-       nullptr /* data_reduction_proxy_data */,
        network::mojom::RequestDestination::kDocument, -20,
        nullptr /* load_timing_info */},
       GetGlobalRequestID());

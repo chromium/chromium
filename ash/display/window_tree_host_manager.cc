@@ -1,17 +1,16 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/display/window_tree_host_manager.h"
 
-#include <algorithm>
 #include <cmath>
 #include <map>
 #include <memory>
 #include <utility>
 
-#include "ash/accessibility/magnifier/magnification_controller.h"
-#include "ash/accessibility/magnifier/partial_magnification_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
+#include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/mirror_window_controller.h"
 #include "ash/display/root_window_transformers.h"
@@ -19,7 +18,6 @@
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
 #include "ash/host/root_window_transformer.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
 #include "ash/session/session_controller_impl.h"
@@ -27,9 +25,11 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/wm/window_util.h"
-#include "base/command_line.h"
+#include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -45,8 +45,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
-#include "ui/compositor/compositor_switches.h"
+#include "ui/compositor/layer.h"
 #include "ui/display/display.h"
+#include "ui/display/display_features.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_transform.h"
 #include "ui/display/manager/display_configurator.h"
@@ -54,6 +55,8 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/display/util/display_util.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -67,14 +70,17 @@ namespace {
 // This is initialized in the constructor, and then in CreatePrimaryHost().
 int64_t primary_display_id = -1;
 
-// The default memory limit: 512mb.
-const char kUICompositorDefaultMemoryLimitMB[] = "512";
+// The compositor memory limit when display size is larger than a threshold.
+constexpr int kUICompositorLargeMemoryLimitMB = 1024;
+// The display size threshold, above which the larger memory limit is used.
+// Pixel size was chosen to trigger for 4K+ displays. See: crbug.com/1261776
+constexpr int kUICompositorMemoryLimitDisplaySizeThreshold = 3500;
 
 // An UMA signal for the current effective resolution is sent at this rate. This
 // keeps track of the effective resolution most used on internal display by the
 // user.
 constexpr base::TimeDelta kEffectiveResolutionRepeatingDelay =
-    base::TimeDelta::FromMinutes(30);
+    base::Minutes(30);
 
 display::DisplayManager* GetDisplayManager() {
   return Shell::Get()->display_manager();
@@ -85,13 +91,25 @@ void SetDisplayPropertiesOnHost(AshWindowTreeHost* ash_host,
   const display::Display::Rotation effective_rotation =
       display.panel_rotation();
   aura::WindowTreeHost* host = ash_host->AsWindowTreeHost();
-  ash_host->SetCursorConfig(display, effective_rotation);
-  std::unique_ptr<RootWindowTransformer> transformer(
+  ash_host->UpdateCursorConfig();
+  ash_host->SetRootWindowTransformer(
       CreateRootWindowTransformerForDisplay(display));
-  ash_host->SetRootWindowTransformer(std::move(transformer));
 
   host->SetDisplayTransformHint(
       display::DisplayRotationToOverlayTransform(effective_rotation));
+
+  const display::ManagedDisplayInfo& display_info =
+      GetDisplayManager()->GetDisplayInfo(display.id());
+  if (display::features::IsRoundedDisplayEnabled()) {
+    // Set/Update rounded corners on the display.
+    ui::Layer* root_layer = host->window()->layer();
+    DCHECK(root_layer);
+    root_layer->SetRoundedCornerRadius(display_info.rounded_corners_radii());
+    // If root_layer does not have rounded corners, setting the fast rounded
+    // corner optimization on does not have any effect.
+    root_layer->SetIsFastRoundedCorner(
+        !display_info.rounded_corners_radii().IsEmpty());
+  }
 
   // Just moving the display requires the full redraw.
   // chrome-os-partner:33558.
@@ -127,7 +145,7 @@ void RepeatingEffectiveResolutionUMA(base::RepeatingTimer* timer,
 
   // Record the UMA only when this is an active user session and the
   // internal display is present.
-  if (display::Display::HasInternalDisplay() &&
+  if (display::HasInternalDisplay() &&
       display::Screen::GetScreen()->GetDisplayWithDisplayId(
           display::Display::InternalDisplayId(), &internal_display) &&
       session_controller->IsActiveUserSessionStarted() &&
@@ -160,6 +178,9 @@ class FocusActivationStore {
         focus_client_(nullptr),
         focused_(nullptr),
         active_(nullptr) {}
+
+  FocusActivationStore(const FocusActivationStore&) = delete;
+  FocusActivationStore& operator=(const FocusActivationStore&) = delete;
 
   void Store(bool clear_focus) {
     if (!activation_client_) {
@@ -214,8 +235,6 @@ class FocusActivationStore {
   aura::WindowTracker tracker_;
   aura::Window* focused_;
   aura::Window* active_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusActivationStore);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -235,7 +254,7 @@ WindowTreeHostManager::WindowTreeHostManager()
 WindowTreeHostManager::~WindowTreeHostManager() = default;
 
 void WindowTreeHostManager::Start() {
-  display::Screen::GetScreen()->AddObserver(this);
+  display_observer_.emplace(this);
   Shell::Get()
       ->display_configurator()
       ->content_protection_manager()
@@ -269,7 +288,7 @@ void WindowTreeHostManager::Shutdown() {
       ->display_configurator()
       ->content_protection_manager()
       ->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display_observer_.reset();
 
   int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
 
@@ -297,14 +316,6 @@ void WindowTreeHostManager::Shutdown() {
 
 void WindowTreeHostManager::CreatePrimaryHost(
     const AshWindowTreeHostInitParams& init_params) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(
-          switches::kUiCompositorMemoryLimitWhenVisibleMB)) {
-    command_line->AppendSwitchASCII(
-        switches::kUiCompositorMemoryLimitWhenVisibleMB,
-        kUICompositorDefaultMemoryLimitMB);
-  }
-
   const display::Display& primary_candidate =
       GetDisplayManager()->GetPrimaryDisplayCandidate();
   primary_display_id = primary_candidate.id();
@@ -450,7 +461,6 @@ void WindowTreeHostManager::UpdateMouseLocationAfterDisplayChange() {
     int64_t distance_squared = (center - point_in_screen).LengthSquared();
     if (closest_distance_squared < 0 ||
         closest_distance_squared > distance_squared) {
-      aura::Window* root_window = GetRootWindowForDisplayId(display.id());
       ::wm::ConvertPointFromScreen(root_window, &center);
       root_window->GetHost()->ConvertDIPToScreenInPixels(&center);
       dst_root_window = root_window;
@@ -536,10 +546,10 @@ void WindowTreeHostManager::OnDisplayAdded(const display::Display& display) {
 
     // Magnifier controllers keep pointers to the current root window.
     // Update them here to avoid accessing them later.
-    Shell::Get()->magnification_controller()->SwitchTargetRootWindow(
+    Shell::Get()->fullscreen_magnifier_controller()->SwitchTargetRootWindow(
         ash_host->AsWindowTreeHost()->window(), false);
     Shell::Get()
-        ->partial_magnification_controller()
+        ->partial_magnifier_controller()
         ->SwitchTargetRootWindowIfNeeded(
             ash_host->AsWindowTreeHost()->window());
 
@@ -562,11 +572,8 @@ void WindowTreeHostManager::OnDisplayAdded(const display::Display& display) {
     }
 
     // |to_delete| has already been removed from |window_tree_hosts_|.
-    DCHECK(std::none_of(
-        window_tree_hosts_.cbegin(), window_tree_hosts_.cend(),
-        [to_delete](const std::pair<int64_t, AshWindowTreeHost*>& pair) {
-          return pair.second == to_delete;
-        }));
+    DCHECK(!base::Contains(window_tree_hosts_, to_delete,
+                           &WindowTreeHostMap::value_type::second));
 
     DeleteHost(to_delete);
     DCHECK(!primary_tree_host_for_replace_);
@@ -601,6 +608,8 @@ void WindowTreeHostManager::DeleteHost(AshWindowTreeHost* host_to_delete) {
   RootWindowController* controller =
       RootWindowController::ForWindow(root_being_deleted);
   DCHECK(controller);
+  // Some code relies on this being called before MoveWindowsTo().
+  Shell::Get()->OnRootWindowWillShutdown(root_being_deleted);
   aura::Window* primary_root_after_host_deletion =
       GetRootWindowForDisplayId(GetPrimaryDisplayId());
   controller->MoveWindowsTo(primary_root_after_host_deletion);
@@ -791,6 +800,14 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
   GetRootWindowSettings(non_primary_window)->display_id =
       old_primary_display.id();
 
+  // Ensure that color spaces for the root windows reflect those of their new
+  // displays. If these go out of sync, we can lose the ability to composite HDR
+  // content.
+  primary_host->AsWindowTreeHost()->compositor()->SetDisplayColorSpaces(
+      new_primary_display.color_spaces());
+  non_primary_host->AsWindowTreeHost()->compositor()->SetDisplayColorSpaces(
+      old_primary_display.color_spaces());
+
   std::u16string old_primary_title = primary_window->GetTitle();
   primary_window->SetTitle(non_primary_window->GetTitle());
   non_primary_window->SetTitle(old_primary_title);
@@ -803,7 +820,7 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
   if (layout.primary_id != new_primary_display.id()) {
     std::unique_ptr<display::DisplayLayout> swapped_layout = layout.Copy();
     swapped_layout->SwapPrimaryDisplay(new_primary_display.id());
-    display::DisplayIdList list = display_manager->GetCurrentDisplayIdList();
+    display::DisplayIdList list = display_manager->GetConnectedDisplayIdList();
     GetDisplayManager()->layout_store()->RegisterLayoutForDisplayIdList(
         list, std::move(swapped_layout));
   }
@@ -850,6 +867,18 @@ ui::EventDispatchDetails WindowTreeHostManager::DispatchKeyEventPostIME(
   return root_window->GetHost()->DispatchKeyEventPostIME(event);
 }
 
+const display::Display* WindowTreeHostManager::GetDisplayById(
+    int64_t display_id) const {
+  const display::Display& display =
+      GetDisplayManager()->GetDisplayForId(display_id);
+  return display.is_valid() ? &display : nullptr;
+}
+
+void WindowTreeHostManager::SetCurrentEventTargeterSourceHost(
+    aura::WindowTreeHost* targeter_src_host) {
+  NOTIMPLEMENTED();
+}
+
 AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
     const display::Display& display,
     const AshWindowTreeHostInitParams& init_params) {
@@ -860,10 +889,23 @@ AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
   params_with_bounds.initial_bounds = display_info.bounds_in_native();
   if (display.id() == display::kUnifiedDisplayId) {
     params_with_bounds.offscreen = true;
-    params_with_bounds.mirroring_delegate = mirror_window_controller();
+    params_with_bounds.delegate = mirror_window_controller();
+  } else {
+    params_with_bounds.delegate = this;
   }
   params_with_bounds.display_id = display.id();
   params_with_bounds.device_scale_factor = display.device_scale_factor();
+
+  // TODO(crbug/1261776): Temporarily increase compositor memory limit for
+  // 4K+ displays to avoid rendering corruption.
+  // Check both width and height in case of rotated display.
+  if (std::max(display.GetSizeInPixel().width(),
+               display.GetSizeInPixel().height()) >
+      kUICompositorMemoryLimitDisplaySizeThreshold) {
+    params_with_bounds.compositor_memory_limit_mb =
+        kUICompositorLargeMemoryLimitMB;
+  }
+
   // The AshWindowTreeHost ends up owned by the RootWindowControllers created
   // by this class.
   AshWindowTreeHost* ash_host =

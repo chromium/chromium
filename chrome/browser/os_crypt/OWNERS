@@ -1,0 +1,5 @@
+# Default sending any reviews to these owners:
+wfh@chromium.org
+
+# As a backup, a review can also be obtained from a reviewer in this file.
+file://chrome/elevation_service/OWNERS

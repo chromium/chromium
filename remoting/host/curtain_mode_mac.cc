@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,8 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/protocol/errors.h"
 
@@ -68,7 +67,7 @@ bool IsRunningHeadless() {
 }
 
 // Used to detach the current session from the local console and disconnect
-// the connnection if it gets re-attached.
+// the connection if it gets re-attached.
 //
 // Because the switch-in handler can only called on the main (UI) thread, this
 // class installs the handler and detaches the current session from the console
@@ -79,6 +78,9 @@ class SessionWatcher : public base::RefCountedThreadSafe<SessionWatcher> {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       base::WeakPtr<ClientSessionControl> client_session_control);
+
+  SessionWatcher(const SessionWatcher&) = delete;
+  SessionWatcher& operator=(const SessionWatcher&) = delete;
 
   void Start();
   void Stop();
@@ -115,8 +117,6 @@ class SessionWatcher : public base::RefCountedThreadSafe<SessionWatcher> {
   base::WeakPtr<ClientSessionControl> client_session_control_;
 
   EventHandlerRef event_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionWatcher);
 };
 
 SessionWatcher::SessionWatcher(
@@ -135,7 +135,7 @@ void SessionWatcher::Start() {
   // Activate curtain asynchronously since it has to be done on the UI thread.
   // Because the curtain activation is asynchronous, it is possible that
   // the connection will not be curtained for a brief moment. This seems to be
-  // unaviodable as long as the curtain enforcement depends on processing of
+  // unavoidable as long as the curtain enforcement depends on processing of
   // the switch-in notifications.
   ui_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SessionWatcher::ActivateCurtain, this));
@@ -290,6 +290,10 @@ class CurtainModeMac : public CurtainMode {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
       base::WeakPtr<ClientSessionControl> client_session_control);
+
+  CurtainModeMac(const CurtainModeMac&) = delete;
+  CurtainModeMac& operator=(const CurtainModeMac&) = delete;
+
   ~CurtainModeMac() override;
 
   // Overriden from CurtainMode.
@@ -297,8 +301,6 @@ class CurtainModeMac : public CurtainMode {
 
  private:
   scoped_refptr<SessionWatcher> session_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(CurtainModeMac);
 };
 
 CurtainModeMac::CurtainModeMac(

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/importer/profile_writer.h"
@@ -27,6 +26,9 @@ class InProcessImporterBridge : public ImporterBridge {
  public:
   InProcessImporterBridge(ProfileWriter* writer,
                           base::WeakPtr<ExternalProcessImporterHost> host);
+
+  InProcessImporterBridge(const InProcessImporterBridge&) = delete;
+  InProcessImporterBridge& operator=(const InProcessImporterBridge&) = delete;
 
   // Begin ImporterBridge implementation:
   void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
@@ -59,10 +61,8 @@ class InProcessImporterBridge : public ImporterBridge {
  private:
   ~InProcessImporterBridge() override;
 
-  ProfileWriter* const writer_;  // weak
+  const raw_ptr<ProfileWriter> writer_;  // weak
   const base::WeakPtr<ExternalProcessImporterHost> host_;
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessImporterBridge);
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_IN_PROCESS_IMPORTER_BRIDGE_H_

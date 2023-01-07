@@ -1,4 +1,4 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
@@ -19,6 +19,10 @@
 class MouseLockController : public ExclusiveAccessControllerBase {
  public:
   explicit MouseLockController(ExclusiveAccessManager* manager);
+
+  MouseLockController(const MouseLockController&) = delete;
+  MouseLockController& operator=(const MouseLockController&) = delete;
+
   ~MouseLockController() override;
 
   // Returns true if the mouse is locked.
@@ -66,14 +70,16 @@ class MouseLockController : public ExclusiveAccessControllerBase {
 
   void OnBubbleHidden(content::WebContents*, ExclusiveAccessBubbleHideReason);
 
+  bool ShouldSuppressBubbleReshowForStateChange();
+
   MouseLockState mouse_lock_state_;
 
   // Optionally a WebContents instance that is granted permission to silently
   // lock the mouse. This is granted only if the WebContents instance has
   // previously locked and displayed the permission bubble until the bubble
   // time out has expired. https://crbug.com/725370
-  content::WebContents* web_contents_granted_silent_mouse_lock_permission_ =
-      nullptr;
+  raw_ptr<content::WebContents>
+      web_contents_granted_silent_mouse_lock_permission_ = nullptr;
 
   // If true, does not call into the WebContents to lock the mouse. Just assumes
   // that it works. This may be necessary when calling
@@ -92,8 +98,6 @@ class MouseLockController : public ExclusiveAccessControllerBase {
   base::TimeTicks last_user_escape_time_;
 
   base::WeakPtrFactory<MouseLockController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MouseLockController);
 };
 
 #endif  //  CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_MOUSE_LOCK_CONTROLLER_H_

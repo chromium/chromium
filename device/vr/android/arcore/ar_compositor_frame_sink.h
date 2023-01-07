@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,16 +9,20 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/frame_timing_details_map.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/host/host_display_client.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
+#include "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "ui/gfx/geometry/size.h"
@@ -55,7 +59,8 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   // Used when the compositor acknowledges that it is ready to begin processing
   // or working on the frame that previously requested to Begin.
   using BeginFrameCallback =
-      base::RepeatingCallback<void(const viz::BeginFrameArgs& args)>;
+      base::RepeatingCallback<void(const viz::BeginFrameArgs& args,
+                                   const viz::FrameTimingDetailsMap&)>;
 
   using CompositorReceivedFrameCallback = base::RepeatingClosure;
 
@@ -85,12 +90,14 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
 
   bool IsInitialized() { return is_initialized_; }
   bool CanIssueBeginFrame() { return can_issue_new_begin_frame_; }
+  viz::FrameSinkId FrameSinkId();
 
   void Initialize(gpu::SurfaceHandle surface_handle,
                   ui::WindowAndroid* root_window,
                   const gfx::Size& frame_size,
-                  device::XrFrameSinkClient* xr_frame_sink_client,
-                  base::OnceClosure on_initialized,
+                  XrFrameSinkClient* xr_frame_sink_client,
+                  DomOverlaySetup dom_setup,
+                  base::OnceCallback<void(bool)> on_initialized,
                   base::OnceClosure on_bindings_disconnect);
 
   // This will tick the ExternalBeginFrameController to start a frame in the viz
@@ -105,21 +112,25 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   void SubmitFrame(WebXrFrame* xr_frame, FrameType frame_type);
   void DidNotProduceFrame(WebXrFrame* xr_frame);
 
+  // For the purposes of our callers we *can* composite DOM content as long as
+  // we think we *should* try to do so. This prevents issues with this check if
+  // we temporarily have an invalid surface id for some reason.
+  bool CanCompositeDomContent() { return should_composite_dom_overlay_; }
+
  private:
   bool IsOnGlThread() const;
 
-  void OnRootCompositorFrameSinkReady();
+  void OnRootCompositorFrameSinkReady(DomOverlaySetup dom_setup);
 
   viz::CompositorFrame CreateFrame(WebXrFrame* xr_frame, FrameType frame_type);
 
   // viz::mojom::CompositorFrameSinkClient:
   void OnBeginFramePausedChanged(bool paused) override {}
-  void ReclaimResources(
-      const std::vector<viz::ReturnedResource>& resources) override;
+  void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
   void OnCompositorFrameTransitionDirectiveProcessed(
       uint32_t sequence_id) override {}
   void DidReceiveCompositorFrameAck(
-      const std::vector<viz::ReturnedResource>& resources) override;
+      std::vector<viz::ReturnedResource> resources) override;
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const viz::FrameTimingDetailsMap& timing_details) override;
 
@@ -131,7 +142,7 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   void CloseBindingsIfOpen();
 
   scoped_refptr<base::SingleThreadTaskRunner> gl_thread_task_runner_;
-  device::XrFrameSinkClient* xr_frame_sink_client_;
+  raw_ptr<XrFrameSinkClient> xr_frame_sink_client_;
   gfx::Size frame_size_;
   bool can_issue_new_begin_frame_ = true;
   bool is_initialized_ = false;
@@ -142,7 +153,7 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   // it could be 2*Swapchain size in a worst case.
   base::flat_map<viz::ResourceId, WebXrFrame*> id_to_frame_map_;
 
-  base::OnceClosure on_initialized_;
+  base::OnceCallback<void(bool)> on_initialized_;
   BeginFrameCallback on_begin_frame_;
   CompositorReceivedFrameCallback on_compositor_received_frame_;
   RenderingFinishedCallback on_rendering_finished_;
@@ -154,6 +165,7 @@ class ArCompositorFrameSink : public viz::mojom::CompositorFrameSinkClient {
   viz::FrameTokenGenerator next_frame_token_;
   viz::ResourceIdGenerator resource_id_generator_;
   uint64_t next_begin_frame_id_ = 1;
+  bool should_composite_dom_overlay_ = false;
 
   // Mojom remotes and helpers
   mojo::AssociatedRemote<viz::mojom::DisplayPrivate> display_private_;

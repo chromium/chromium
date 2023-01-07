@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,11 +15,6 @@
 // Init with JavaScript evaluator.
 - (id)initWithEvaluator:(id<CRWJSInjectionEvaluator>)evaluator;
 
-@end
-
-@interface CRWJSInjectionReceiver (Testing)
-// Returns a dictionary of instantiated managers keyed by class.
-- (NSDictionary*)managers;
 @end
 
 #endif  // IOS_WEB_PUBLIC_DEPRECATED_CRW_JS_INJECTION_RECEIVER_H_

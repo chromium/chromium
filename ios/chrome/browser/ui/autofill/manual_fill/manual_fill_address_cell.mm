@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_address_cell.h"
 
-#include "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
@@ -326,10 +326,10 @@
 
 #pragma mark - Private
 
-// Dynamically lay givens |views| on |guide|, adding first view of every
-// generated line to |addFirstLineViewTo|. If |largeTypes| is true, fields are
+// Dynamically lay givens `views` on `guide`, adding first view of every
+// generated line to `addFirstLineViewTo`. If `largeTypes` is true, fields are
 // laid out vertically one per line, otherwise horizontally on one line.
-// Constraints are added to |self.dynamicConstraints| property.
+// Constraints are added to `self.dynamicConstraints` property.
 - (void)layMultipleViews:(NSArray<UIView*>*)views
           withLargeTypes:(BOOL)largeTypes
                  onGuide:(UIView*)guide

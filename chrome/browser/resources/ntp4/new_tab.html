@@ -45,6 +45,11 @@ document.getElementById('themecss').href = 'chrome://theme/css/new_tab_theme.css
     </div>
   </div>
 
+  <div id="deprecated-apps-link-container" hidden>
+    <img src="images/error_yellow900.svg">
+    <a is="action-link" id="deprecated-apps-link" href="#"></a>
+  </div>
+
   <div id="footer">
     <div id="footer-border"></div>
     <div id="footer-content">
@@ -68,13 +73,6 @@ document.getElementById('themecss').href = 'chrome://theme/css/new_tab_theme.css
       </div>
     </div>
   </div>
-
-  <div id="login-container" hidden>
-    <div id="login-status-header-container" class="login-status-row">
-      <div id="login-status-header"></div>
-    </div>
-    <div id="login-status-sub-header"></div>
-  </div>
 </body>
 
 <!-- A div to hold all the templates, and in the darkness bind them. -->
@@ -85,7 +83,9 @@ document.getElementById('themecss').href = 'chrome://theme/css/new_tab_theme.css
   <div class="app-img-container" aria-hidden="true">
     <img class="invisible" alt="">
   </div>
-  <span class="title"></span>
+  <div class="app-title-container">
+    <span class="title"></span>
+  </div>
 </div>
 
 <!-- App Contents w/ Small Icon -->
@@ -96,7 +96,9 @@ document.getElementById('themecss').href = 'chrome://theme/css/new_tab_theme.css
     </div>
     <div class="color-stripe"></div>
   </div>
-  <span class="title"></span>
+  <div class="app-title-container">
+    <span class="title"></span>
+  </div>
 </div>
 
 </div>

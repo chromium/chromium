@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,14 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/android/view_android.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace device {
 
@@ -35,9 +35,13 @@ class PowerSaveBlocker {
       const std::string& description,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner);
+
+  PowerSaveBlocker(const PowerSaveBlocker&) = delete;
+  PowerSaveBlocker& operator=(const PowerSaveBlocker&) = delete;
+
   virtual ~PowerSaveBlocker();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, the mojom::WakeLockType::kPreventDisplaySleep type of
   // PowerSaveBlocker should associated with a View, so the blocker can be
   // removed by the platform. Note that |view_android| is guaranteed to be
@@ -63,8 +67,6 @@ class PowerSaveBlocker {
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerSaveBlocker);
 };
 
 }  // namespace device

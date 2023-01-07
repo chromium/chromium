@@ -1,0 +1,2 @@
+div.accessibilityAttributeNames.has(AXARIALive)='yes'
+div.accessibilityAttributeValue(AXARIALive)='polite'

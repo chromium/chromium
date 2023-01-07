@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,6 +66,8 @@ ScopedJavaLocalRef<jobjectArray> JniPaymentApp::GetInstrumentMethodNames(
                                     payment_app_->GetAppMethodNames().end()));
 }
 
+// TODO(crbug.com/1209835): Remove jdata_byte_buffer here, as it is no longer
+// used.
 bool JniPaymentApp::IsValidForPaymentMethodData(
     JNIEnv* env,
     const JavaParamRef<jstring>& jmethod,
@@ -84,9 +86,7 @@ bool JniPaymentApp::IsValidForPaymentMethodData(
 
   PaymentMethodData data = ConvertPaymentMethodData(mojo_data);
   return payment_app_->IsValidForModifier(
-      ConvertJavaStringToUTF8(env, jmethod), !data.supported_networks.empty(),
-      std::set<std::string>(data.supported_networks.begin(),
-                            data.supported_networks.end()));
+      ConvertJavaStringToUTF8(env, jmethod));
 }
 
 bool JniPaymentApp::HandlesShippingAddress(JNIEnv* env) {
@@ -105,12 +105,7 @@ bool JniPaymentApp::HandlesPayerPhone(JNIEnv* env) {
   return payment_app_->HandlesPayerPhone();
 }
 
-ScopedJavaLocalRef<jstring> JniPaymentApp::GetCountryCode(JNIEnv* env) {
-  // Only autofill payment apps have country code.
-  return nullptr;
-}
-
-bool JniPaymentApp::CanMakePayment(JNIEnv* env) {
+bool JniPaymentApp::HasEnrolledInstrument(JNIEnv* env) {
   // ChromePaymentRequestService.java uses this value to determine whether
   // PaymentRequest.hasEnrolledInstrument() should return true.
   return payment_app_->HasEnrolledInstrument();
@@ -118,11 +113,6 @@ bool JniPaymentApp::CanMakePayment(JNIEnv* env) {
 
 bool JniPaymentApp::CanPreselect(JNIEnv* env) {
   return payment_app_->CanPreselect();
-}
-
-bool JniPaymentApp::IsUserGestureRequiredToSkipUi(JNIEnv* env) {
-  // All payment apps require a user gesture to skip UI by default.
-  return true;
 }
 
 void JniPaymentApp::InvokePaymentApp(JNIEnv* env,
@@ -156,18 +146,6 @@ void JniPaymentApp::AbortPaymentApp(JNIEnv* env,
       base::android::ScopedJavaGlobalRef<jobject>(env, jcallback)));
 }
 
-bool JniPaymentApp::IsReadyForMinimalUI(JNIEnv* env) {
-  return payment_app_->IsReadyForMinimalUI();
-}
-
-ScopedJavaLocalRef<jstring> JniPaymentApp::AccountBalance(JNIEnv* env) {
-  return ConvertUTF8ToJavaString(env, payment_app_->GetAccountBalance());
-}
-
-void JniPaymentApp::DisableShowingOwnUI(JNIEnv* env) {
-  payment_app_->DisableShowingOwnUI();
-}
-
 ScopedJavaLocalRef<jstring> JniPaymentApp::GetApplicationIdentifierToHide(
     JNIEnv* env) {
   return ConvertUTF8ToJavaString(
@@ -192,6 +170,20 @@ void JniPaymentApp::SetPaymentHandlerHost(
   payment_app_->SetPaymentHandlerHost(
       android::PaymentHandlerHost::FromJavaPaymentHandlerHost(
           env, jpayment_handler_host));
+}
+
+base::android::ScopedJavaLocalRef<jbyteArray>
+JniPaymentApp::SetAppSpecificResponseFields(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jpayment_response) {
+  mojom::PaymentResponsePtr response;
+  bool success =
+      android::DeserializeFromJavaByteBuffer(env, jpayment_response, &response);
+  DCHECK(success);
+  mojom::PaymentResponsePtr result =
+      payment_app_->SetAppSpecificResponseFields(std::move(response));
+  return base::android::ToJavaByteArray(
+      env, mojom::PaymentResponse::Serialize(&result));
 }
 
 void JniPaymentApp::FreeNativeObject(JNIEnv* env) {

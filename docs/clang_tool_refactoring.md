@@ -129,6 +129,10 @@ $gen_targets = $(ninja -C out/Debug -t targets all \
 ninja -C out/Debug $gen_targets
 ```
 
+Note that running the clang tool with precompiled headers enabled currently
+produces errors. This can be avoided by setting
+`enable_precompiled_headers = false` in the build's gn args.
+
 Then run the actual clang tool to generate a list of edits:
 
 ```shell
@@ -140,13 +144,17 @@ tools/clang/scripts/run_tool.py --tool <path to tool> \
 `--generate-compdb` can be omitted if the compile DB was already generated and
 the list of build flags and source files has not changed since generation.
 
+If cross-compiling, specify `--target_os`. See `gn help target_os` for
+possible values. For example, when cross-compiling a Windows build on
+Linux/Mac, use `--target_os=win`.
+
 `<path 1>`, `<path 2>`, etc are optional arguments to filter the files to run
 the tool against. This is helpful when sharding global refactorings into smaller
 chunks. For example, the following command will run the `empty_string` tool
 against just the `.c`, `.cc`, `.cpp`, `.m`, `.mm` files in `//net`.  Note that
 the filtering is not applied to the *output* of the tool - the tool can emit
-edits that apply to files outside of `//cc` (i.e. edits that apply to headers
-from `//base` that got included by source files in `//cc`).
+edits that apply to files outside of `//net` (i.e. edits that apply to headers
+from `//base` that got included by source files in `//net`).
 
 ```shell
 tools/clang/scripts/run_tool.py --tool empty_string  \
@@ -220,7 +228,7 @@ When `--apply-edits` switch is not presented, tool outputs are compared to
 `*-expected.txt` and if different, the result is saved in `*-actual.txt`. Note
 that in this case, only one test file is expected.
 
-[//tools/clang]: https://chromium.googlesource.com/chromium/src/+/master/tools/clang/
+[//tools/clang]: https://chromium.googlesource.com/chromium/src/+/main/tools/clang/
 [clang-docs-match-finder]: http://clang.llvm.org/doxygen/classclang_1_1ast__matchers_1_1MatchFinder.html
 [clang-docs-match-callback]: http://clang.llvm.org/doxygen/classclang_1_1ast__matchers_1_1MatchFinder_1_1MatchCallback.html
 [matcher-reference]: http://clang.llvm.org/docs/LibASTMatchersReference.html
@@ -228,7 +236,7 @@ that in this case, only one test file is expected.
 [clang-docs-replacement]: http://clang.llvm.org/doxygen/classclang_1_1tooling_1_1Replacement.html
 [clang-docs]: http://clang.llvm.org/doxygen/index.html
 [clang-tooling-tutorial]: http://clang.llvm.org/docs/LibASTMatchersTutorial.html
-[//tools/clang/blink_gc_plugin]: https://chromium.googlesource.com/chromium/src/+/master/tools/clang/blink_gc_plugin/
-[//tools/clang/plugins]: https://chromium.googlesource.com/chromium/src/+/master/tools/clang/plugins/
-[//tools/clang/rewrite_to_chrome_style]: https://chromium.googlesource.com/chromium/src/+/master/tools/clang/rewrite_to_chrome_style/
+[//tools/clang/blink_gc_plugin]: https://chromium.googlesource.com/chromium/src/+/main/tools/clang/blink_gc_plugin/
+[//tools/clang/plugins]: https://chromium.googlesource.com/chromium/src/+/main/tools/clang/plugins/
+[//tools/clang/rewrite_to_chrome_style]: https://chromium.googlesource.com/chromium/src/+/main/tools/clang/rewrite_to_chrome_style/
 [clang-tools-extra]: (https://github.com/llvm-mirror/clang-tools-extra)

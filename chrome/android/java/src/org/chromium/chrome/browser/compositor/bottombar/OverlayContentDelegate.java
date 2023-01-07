@@ -1,11 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.compositor.bottombar;
 
 import org.chromium.components.external_intents.ExternalNavigationHandler;
-import org.chromium.components.navigation_interception.NavigationParams;
+import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.url.GURL;
 
 /**
  * An base class for tracking events on the overlay panel.
@@ -48,11 +49,11 @@ public class OverlayContentDelegate {
     /**
      * Determine if a particular navigation should be intercepted.
      * @param externalNavHandler External navigation handler for the activity the panel is in.
-     * @param navigationParams The navigation params for the current navigation.
+     * @param navigationHandle The NavigationHandle for the current navigation.
      * @return True if the navigation should be intercepted.
      */
     public boolean shouldInterceptNavigation(ExternalNavigationHandler externalNavHandler,
-            NavigationParams navigationParams) {
+            NavigationHandle navigationHandle, GURL escapedUrl) {
         return true;
     }
 
@@ -81,4 +82,9 @@ public class OverlayContentDelegate {
      * Called once the WebContents has been created and set up completely.
      */
     public void onContentViewCreated() {}
+
+    /**
+     * Notifies that the document has been loaded and painting started in the content view.
+     */
+    public void onFirstNonEmptyPaint() {}
 }

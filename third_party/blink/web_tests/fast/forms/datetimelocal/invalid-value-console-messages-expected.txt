@@ -1,0 +1,6 @@
+CONSOLE MESSAGE: These values should not generate console warnings.
+CONSOLE MESSAGE: These values should generate console warnings.
+CONSOLE WARNING: The specified value "asdf" does not conform to the required format.  The format is "yyyy-MM-ddThh:mm" followed by optional ":ss" or ":ss.SSS".
+CONSOLE WARNING: The specified value "2022-07-22T06:44:3" does not conform to the required format.  The format is "yyyy-MM-ddThh:mm" followed by optional ":ss" or ":ss.SSS".
+CONSOLE WARNING: The specified value "2022-07-22T06:4" does not conform to the required format.  The format is "yyyy-MM-ddThh:mm" followed by optional ":ss" or ":ss.SSS".
+

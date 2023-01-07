@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "url/gurl.h"
 
 namespace ui {
 
@@ -60,7 +61,8 @@ void FakeSelectFileDialog::SelectFileImpl(
     int file_type_index,
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
-    void* params) {
+    void* params,
+    const GURL* caller) {
   title_ = title;
   params_ = params;
   if (file_types)
@@ -82,6 +84,11 @@ bool FakeSelectFileDialog::CallFileSelected(const base::FilePath& file_path,
     }
   }
   return false;
+}
+
+void FakeSelectFileDialog::CallMultiFilesSelected(
+    const std::vector<base::FilePath>& files) {
+  listener_->MultiFilesSelected(files, params_);
 }
 
 }  // namespace ui

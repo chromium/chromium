@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<title>Makes sure that the ad iframe with loading="lazy" loading are not triggered</title>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="../../../../../http/tests/resources/get-host-info.js"></script>
+<script src="./resources/lazyload-helper.js"></script>
+
+<body>
+  <div id="atf_div"></div>
+  <div style="height:1000vh;"></div>
+  <div id="btf_div"></div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const checkElementLoadedAfterTimeout = async (t, timeoutMs = 1000) => {
+        return new Promise(resolve => {
+          t.step_timeout(() => {
+            resolve(isElementLoaded('btf'));
+          }, timeoutMs);
+        });
+      }
+
+      promise_test(async t => {
+        const btf = document.querySelector('#btf_div');
+        appendAdFrame('btf', btf, 'lazy');
+
+        // Set 1.5x longer timeout to ensure not trigger loading.
+        const timeoutMs = 1500;
+        let result = await checkElementLoadedAfterTimeout(t, timeoutMs)
+        assert_false(result, "iframe is not loaded after the timeout");
+
+        // Then scroll to below the fold.
+        btf.scrollIntoView();
+
+        // If viewport is close to the frame, then start loading.
+        result = await waitForElementLoad("btf");
+        assert_true(result, "iframe below the fold is loaded when close to the element");
+      }, "Timeout doen't trigger if loading=lazy is specified");
+    })
+  </script>
+</body>

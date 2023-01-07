@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,13 +51,11 @@ TEST_F(WebUITabStripContainerViewTest, TouchModeTransition) {
   EXPECT_FALSE(browser_view()->GetTabStripVisible());
 
   ui::TouchUiController::TouchUiScoperForTesting disable_touch_mode(false);
-  browser_view()->Layout();
   EXPECT_FALSE(WebUITabStripContainerView::UseTouchableTabStrip(
       browser_view()->browser()));
   EXPECT_TRUE(browser_view()->GetTabStripVisible());
 
   ui::TouchUiController::TouchUiScoperForTesting reenable_touch_mode(true);
-  browser_view()->Layout();
   EXPECT_TRUE(WebUITabStripContainerView::UseTouchableTabStrip(
       browser_view()->browser()));
   EXPECT_FALSE(browser_view()->GetTabStripVisible());
@@ -65,75 +63,22 @@ TEST_F(WebUITabStripContainerViewTest, TouchModeTransition) {
 }
 
 TEST_F(WebUITabStripContainerViewTest, ButtonsPresentInToolbar) {
+  ASSERT_NE(nullptr,
+            browser_view()->webui_tab_strip()->new_tab_button_for_testing());
+  EXPECT_TRUE(browser_view()->toolbar()->Contains(
+      browser_view()->webui_tab_strip()->new_tab_button_for_testing()));
   ASSERT_NE(nullptr, browser_view()->webui_tab_strip()->tab_counter());
   EXPECT_TRUE(browser_view()->toolbar()->Contains(
       browser_view()->webui_tab_strip()->tab_counter()));
 }
 
-TEST_F(WebUITabStripContainerViewTest, PreventsInvalidTabDrags) {
-  content::DropData empty_drop_data;
-  EXPECT_FALSE(
-      browser_view()->webui_tab_strip()->web_view_for_testing()->CanDragEnter(
-          nullptr, empty_drop_data, blink::kDragOperationMove));
-
-  content::DropData invalid_drop_data;
-  invalid_drop_data.custom_data.insert(
-      std::make_pair(base::ASCIIToUTF16(kWebUITabIdDataType), u"3000"));
-  EXPECT_FALSE(
-      browser_view()->webui_tab_strip()->web_view_for_testing()->CanDragEnter(
-          nullptr, invalid_drop_data, blink::kDragOperationMove));
-
-  AddTab(browser(), GURL("http://foo"));
-  int valid_tab_id = extensions::ExtensionTabUtil::GetTabId(
-      browser()->tab_strip_model()->GetWebContentsAt(0));
-  content::DropData valid_drop_data;
-  valid_drop_data.custom_data.insert(
-      std::make_pair(base::ASCIIToUTF16(kWebUITabIdDataType),
-                     base::NumberToString16(valid_tab_id)));
-  EXPECT_TRUE(
-      browser_view()->webui_tab_strip()->web_view_for_testing()->CanDragEnter(
-          nullptr, valid_drop_data, blink::kDragOperationMove));
-}
-
-TEST_F(WebUITabStripContainerViewTest, PreventsInvalidGroupDrags) {
-  content::DropData invalid_drop_data;
-  invalid_drop_data.custom_data.insert(std::make_pair(
-      base::ASCIIToUTF16(kWebUITabGroupIdDataType), u"not a real group"));
-  EXPECT_FALSE(
-      browser_view()->webui_tab_strip()->web_view_for_testing()->CanDragEnter(
-          nullptr, invalid_drop_data, blink::kDragOperationMove));
-
-  AddTab(browser(), GURL("http://foo"));
-  tab_groups::TabGroupId group_id =
-      browser()->tab_strip_model()->AddToNewGroup({0});
-  content::DropData valid_drop_data;
-  valid_drop_data.custom_data.insert(
-      std::make_pair(base::ASCIIToUTF16(kWebUITabGroupIdDataType),
-                     base::ASCIIToUTF16(group_id.ToString())));
-  EXPECT_TRUE(
-      browser_view()->webui_tab_strip()->web_view_for_testing()->CanDragEnter(
-          nullptr, valid_drop_data, blink::kDragOperationMove));
-
-  // Another group from a different profile.
-  std::unique_ptr<BrowserWindow> new_window(
-      std::make_unique<TestBrowserWindow>());
-  std::unique_ptr<Browser> new_browser =
-      CreateBrowser(browser()->profile()->GetPrimaryOTRProfile(),
-                    browser()->type(), false, new_window.get());
-  AddTab(new_browser.get(), GURL("http://foo"));
-
-  tab_groups::TabGroupId new_group_id =
-      new_browser.get()->tab_strip_model()->AddToNewGroup({0});
-  content::DropData different_profile_drop_data;
-  different_profile_drop_data.custom_data.insert(
-      std::make_pair(base::ASCIIToUTF16(kWebUITabGroupIdDataType),
-                     base::ASCIIToUTF16(new_group_id.ToString())));
-  EXPECT_FALSE(
-      browser_view()->webui_tab_strip()->web_view_for_testing()->CanDragEnter(
-          nullptr, different_profile_drop_data, blink::kDragOperationMove));
-
-  // Close all tabs before destructing.
-  new_browser.get()->tab_strip_model()->CloseAllTabs();
+TEST_F(WebUITabStripContainerViewTest, CloseContainerOnRendererCrash) {
+  auto* webui_tab_strip = browser_view()->webui_tab_strip();
+  webui_tab_strip->PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus::TERMINATION_STATUS_PROCESS_CRASHED);
+  EXPECT_EQ(false, webui_tab_strip->GetVisible());
+  webui_tab_strip->SetVisibleForTesting(true);
+  EXPECT_EQ(true, webui_tab_strip->GetVisible());
 }
 
 class WebUITabStripDevToolsTest : public WebUITabStripContainerViewTest {

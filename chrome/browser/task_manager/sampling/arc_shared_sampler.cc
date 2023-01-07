@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -88,7 +88,7 @@ void ArcSharedSampler::OnReceiveMemoryDump(
     if (it == callbacks_.end())
       continue;
     const MemoryFootprintBytes result = proc->private_footprint_kb * 1024;
-    it->second.Run(base::make_optional<MemoryFootprintBytes>(result));
+    it->second.Run(absl::make_optional<MemoryFootprintBytes>(result));
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/kill.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -17,13 +18,16 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/value_builder.h"
 #endif
@@ -36,12 +40,17 @@ class MetricsWebContentsObserverTest : public ChromeRenderViewHostTestHarness {
  public:
   MetricsWebContentsObserverTest() = default;
 
+  MetricsWebContentsObserverTest(const MetricsWebContentsObserverTest&) =
+      delete;
+  MetricsWebContentsObserverTest& operator=(
+      const MetricsWebContentsObserverTest&) = delete;
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     AttachObserver();
   }
 
-  const std::vector<mojom::PageLoadFeatures>& observed_features() const {
+  const std::vector<blink::UseCounterFeature>& observed_features() const {
     return embedder_interface_->observed_features();
   }
 
@@ -61,9 +70,7 @@ class MetricsWebContentsObserverTest : public ChromeRenderViewHostTestHarness {
     observer->OnVisibilityChanged(content::Visibility::VISIBLE);
   }
 
-  TestMetricsWebContentsObserverEmbedder* embedder_interface_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsWebContentsObserverTest);
+  raw_ptr<TestMetricsWebContentsObserverEmbedder> embedder_interface_ = nullptr;
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -71,22 +78,26 @@ TEST_F(MetricsWebContentsObserverTest,
        RecordFeatureUsageIgnoresChromeExtensionUpdates) {
   // Register our fake extension. The URL we access must be part of the
   // 'web_accessible_resources' for the network commit to work.
-  base::DictionaryValue manifest;
-  manifest.SetString(extensions::manifest_keys::kVersion, "1.0.0.0");
-  manifest.SetString(extensions::manifest_keys::kName, "TestExtension");
-  manifest.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
-  manifest.Set("web_accessible_resources",
-               extensions::ListBuilder().Append("main.html").Build());
-  std::string error;
-  scoped_refptr<extensions::Extension> extension =
-      extensions::Extension::Create(
-          base::FilePath(FILE_PATH_LITERAL("//no-such-file")),
-          extensions::mojom::ManifestLocation::kInvalidLocation, manifest,
-          extensions::Extension::NO_FLAGS, "mbflcebpggnecokmikipoihdbecnjfoj",
-          &error);
-  ASSERT_TRUE(error.empty());
-  extensions::ExtensionRegistry::Get(web_contents()->GetBrowserContext())
-      ->AddEnabled(extension);
+  extensions::DictionaryBuilder manifest;
+  manifest.Set(extensions::manifest_keys::kVersion, "1.0.0.0")
+      .Set(extensions::manifest_keys::kName, "TestExtension")
+      .Set(extensions::manifest_keys::kManifestVersion, 2)
+      .Set("web_accessible_resources",
+           extensions::ListBuilder().Append("main.html").Build());
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder()
+          .SetManifest(manifest.Build())
+          .SetID("mbflcebpggnecokmikipoihdbecnjfoj")
+          .Build();
+  ASSERT_TRUE(extension);
+
+  extensions::TestExtensionSystem* extension_system =
+      static_cast<extensions::TestExtensionSystem*>(
+          extensions::ExtensionSystem::Get(profile()));
+  extensions::ExtensionService* extension_service =
+      extension_system->CreateExtensionService(
+          base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
+  extension_service->AddExtension(extension.get());
 
   content::WebContentsTester* web_contents_tester =
       content::WebContentsTester::For(web_contents());
@@ -96,11 +107,9 @@ TEST_F(MetricsWebContentsObserverTest,
   ASSERT_EQ(main_rfh()->GetLastCommittedURL().spec(),
             GURL(chrome_extension_url));
 
-  std::vector<blink::mojom::WebFeature> web_features;
-  web_features.push_back(blink::mojom::WebFeature::kHTMLMarqueeElement);
-  web_features.push_back(blink::mojom::WebFeature::kFormAttribute);
-  mojom::PageLoadFeatures features(web_features, {}, {});
-  MetricsWebContentsObserver::RecordFeatureUsage(main_rfh(), features);
+  MetricsWebContentsObserver::RecordFeatureUsage(
+      main_rfh(), {blink::mojom::WebFeature::kHTMLMarqueeElement,
+                   blink::mojom::WebFeature::kFormAttribute});
 
   // The features come from an extension source, so shouldn't be counted.
   EXPECT_EQ(observed_features().size(), 0ul);

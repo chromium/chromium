@@ -37,7 +37,7 @@ bool SVGZoomAndPan::ParseAttribute(const QualifiedName& name,
   if (name != svg_names::kZoomAndPanAttr)
     return false;
   zoom_and_pan_ = kSVGZoomAndPanUnknown;
-  if (!value.IsEmpty()) {
+  if (!value.empty()) {
     zoom_and_pan_ =
         WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
           return Parse(chars, chars + length);

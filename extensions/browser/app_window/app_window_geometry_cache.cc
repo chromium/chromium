@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_prefs.h"
@@ -29,8 +30,7 @@ namespace extensions {
 
 AppWindowGeometryCache::AppWindowGeometryCache(content::BrowserContext* context,
                                                ExtensionPrefs* prefs)
-    : prefs_(prefs),
-      sync_delay_(base::TimeDelta::FromMilliseconds(kSyncTimeoutMilliseconds)) {
+    : prefs_(prefs), sync_delay_(base::Milliseconds(kSyncTimeoutMilliseconds)) {
   extension_registry_observation_.Observe(ExtensionRegistry::Get(context));
 }
 
@@ -95,35 +95,39 @@ void AppWindowGeometryCache::SaveGeometry(const std::string& extension_id,
 void AppWindowGeometryCache::SyncToStorage() {
   std::set<std::string> tosync;
   tosync.swap(unsynced_extensions_);
-  for (auto it = tosync.cbegin(), eit = tosync.cend(); it != eit; ++it) {
-    const std::string& extension_id = *it;
+  for (auto sync_it = tosync.cbegin(), sync_eit = tosync.cend();
+       sync_it != sync_eit; ++sync_it) {
+    const std::string& extension_id = *sync_it;
     const ExtensionData& extension_data = cache_[extension_id];
 
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-    for (auto it = extension_data.cbegin(), eit = extension_data.cend();
-         it != eit; ++it) {
+    for (auto data_it = extension_data.cbegin(),
+              data_eit = extension_data.cend();
+         data_it != data_eit; ++data_it) {
       std::unique_ptr<base::DictionaryValue> value =
           std::make_unique<base::DictionaryValue>();
-      const gfx::Rect& bounds = it->second.bounds;
-      const gfx::Rect& screen_bounds = it->second.screen_bounds;
+      const gfx::Rect& bounds = data_it->second.bounds;
+      const gfx::Rect& screen_bounds = data_it->second.screen_bounds;
       DCHECK(!bounds.IsEmpty());
       DCHECK(!screen_bounds.IsEmpty());
-      DCHECK(it->second.window_state != ui::SHOW_STATE_DEFAULT);
-      value->SetInteger("x", bounds.x());
-      value->SetInteger("y", bounds.y());
-      value->SetInteger("w", bounds.width());
-      value->SetInteger("h", bounds.height());
-      value->SetInteger("screen_bounds_x", screen_bounds.x());
-      value->SetInteger("screen_bounds_y", screen_bounds.y());
-      value->SetInteger("screen_bounds_w", screen_bounds.width());
-      value->SetInteger("screen_bounds_h", screen_bounds.height());
-      value->SetInteger("state", it->second.window_state);
-      value->SetString(
-          "ts", base::NumberToString(it->second.last_change.ToInternalValue()));
-      dict->SetWithoutPathExpansion(it->first, std::move(value));
+      DCHECK(data_it->second.window_state != ui::SHOW_STATE_DEFAULT);
+      value->SetIntKey("x", bounds.x());
+      value->SetIntKey("y", bounds.y());
+      value->SetIntKey("w", bounds.width());
+      value->SetIntKey("h", bounds.height());
+      value->SetIntKey("screen_bounds_x", screen_bounds.x());
+      value->SetIntKey("screen_bounds_y", screen_bounds.y());
+      value->SetIntKey("screen_bounds_w", screen_bounds.width());
+      value->SetIntKey("screen_bounds_h", screen_bounds.height());
+      value->SetIntKey("state", data_it->second.window_state);
+      value->SetStringKey(
+          "ts",
+          base::NumberToString(data_it->second.last_change.ToInternalValue()));
+      dict->SetKey(data_it->first,
+                   base::Value::FromUniquePtrValue(std::move(value)));
 
       for (auto& observer : observers_)
-        observer.OnGeometryCacheChanged(extension_id, it->first, bounds);
+        observer.OnGeometryCacheChanged(extension_id, data_it->first, bounds);
     }
 
     prefs_->SetGeometryCache(extension_id, std::move(dict));
@@ -191,7 +195,7 @@ void AppWindowGeometryCache::OnExtensionUnloaded(
 }
 
 void AppWindowGeometryCache::SetSyncDelayForTests(int timeout_ms) {
-  sync_delay_ = base::TimeDelta::FromMilliseconds(timeout_ms);
+  sync_delay_ = base::Milliseconds(timeout_ms);
 }
 
 void AppWindowGeometryCache::LoadGeometryFromStorage(
@@ -203,42 +207,48 @@ void AppWindowGeometryCache::LoadGeometryFromStorage(
   if (!stored_windows)
     return;
 
-  for (base::DictionaryValue::Iterator it(*stored_windows); !it.IsAtEnd();
-       it.Advance()) {
+  for (const auto item : stored_windows->GetDict()) {
     // If the cache already contains geometry for this window, don't
     // overwrite that information since it is probably the result of an
     // application starting up very quickly.
-    const std::string& window_id = it.key();
+    const std::string& window_id = item.first;
     auto cached_window = extension_data.find(window_id);
     if (cached_window == extension_data.end()) {
       const base::DictionaryValue* stored_window;
-      if (it.value().GetAsDictionary(&stored_window)) {
-        WindowData& window_data = extension_data[it.key()];
+      if (item.second.GetAsDictionary(&stored_window)) {
+        WindowData& window_data = extension_data[window_id];
 
-        int i;
-        if (stored_window->GetInteger("x", &i))
-          window_data.bounds.set_x(i);
-        if (stored_window->GetInteger("y", &i))
-          window_data.bounds.set_y(i);
-        if (stored_window->GetInteger("w", &i))
-          window_data.bounds.set_width(i);
-        if (stored_window->GetInteger("h", &i))
-          window_data.bounds.set_height(i);
-        if (stored_window->GetInteger("screen_bounds_x", &i))
-          window_data.screen_bounds.set_x(i);
-        if (stored_window->GetInteger("screen_bounds_y", &i))
-          window_data.screen_bounds.set_y(i);
-        if (stored_window->GetInteger("screen_bounds_w", &i))
-          window_data.screen_bounds.set_width(i);
-        if (stored_window->GetInteger("screen_bounds_h", &i))
-          window_data.screen_bounds.set_height(i);
-        if (stored_window->GetInteger("state", &i)) {
-          window_data.window_state = static_cast<ui::WindowShowState>(i);
+        if (absl::optional<int> i = stored_window->FindIntKey("x"))
+          window_data.bounds.set_x(*i);
+        if (absl::optional<int> i = stored_window->FindIntKey("y"))
+          window_data.bounds.set_y(*i);
+        if (absl::optional<int> i = stored_window->FindIntKey("w"))
+          window_data.bounds.set_width(*i);
+        if (absl::optional<int> i = stored_window->FindIntKey("h"))
+          window_data.bounds.set_height(*i);
+        if (absl::optional<int> i =
+                stored_window->FindIntKey("screen_bounds_x")) {
+          window_data.screen_bounds.set_x(*i);
         }
-        std::string ts_as_string;
-        if (stored_window->GetString("ts", &ts_as_string)) {
+        if (absl::optional<int> i =
+                stored_window->FindIntKey("screen_bounds_y")) {
+          window_data.screen_bounds.set_y(*i);
+        }
+        if (absl::optional<int> i =
+                stored_window->FindIntKey("screen_bounds_w")) {
+          window_data.screen_bounds.set_width(*i);
+        }
+        if (absl::optional<int> i =
+                stored_window->FindIntKey("screen_bounds_h")) {
+          window_data.screen_bounds.set_height(*i);
+        }
+        if (absl::optional<int> i = stored_window->FindIntKey("state")) {
+          window_data.window_state = static_cast<ui::WindowShowState>(*i);
+        }
+        if (const std::string* ts_as_string =
+                stored_window->FindStringKey("ts")) {
           int64_t ts;
-          if (base::StringToInt64(ts_as_string, &ts)) {
+          if (base::StringToInt64(*ts_as_string, &ts)) {
             window_data.last_change = base::Time::FromInternalValue(ts);
           }
         }

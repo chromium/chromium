@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 64: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 This test verifies handling of text encoding in workers. The behavior matches FF3.1b2 with a single exclusion (see below).
 This is what's tested:
 - If http header 'Content-Type' with 'charset' specified is on response with worker script or XHR payload, that encoding is used.

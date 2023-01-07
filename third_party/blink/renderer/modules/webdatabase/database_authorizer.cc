@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
@@ -65,25 +65,63 @@ const FunctionNameList& AllowedFunctions() {
       ({
           // SQLite functions used to help implement some operations
           // ALTER TABLE helpers
-          "sqlite_rename_column", "sqlite_rename_table", "sqlite_rename_test",
+          "sqlite_rename_column",
+          "sqlite_rename_table",
+          "sqlite_rename_test",
+          "sqlite_rename_quotefix",
           // GLOB helpers
           "glob",
           // SQLite core functions
-          "abs", "changes", "coalesce", "glob", "ifnull", "hex",
-          "last_insert_rowid", "length", "like", "lower", "ltrim", "max", "min",
-          "nullif", "quote", "replace", "round", "rtrim", "soundex",
-          "sqlite_source_id", "sqlite_version", "substr", "total_changes",
-          "trim", "typeof", "upper", "zeroblob",
+          "abs",
+          "changes",
+          "coalesce",
+          "glob",
+          "ifnull",
+          "hex",
+          "last_insert_rowid",
+          "length",
+          "like",
+          "lower",
+          "ltrim",
+          "max",
+          "min",
+          "nullif",
+          "quote",
+          "replace",
+          "round",
+          "rtrim",
+          "soundex",
+          "sqlite_source_id",
+          "sqlite_version",
+          "substr",
+          "total_changes",
+          "trim",
+          "typeof",
+          "upper",
+          "zeroblob",
           // SQLite date and time functions
-          "date", "time", "datetime", "julianday", "strftime",
+          "date",
+          "time",
+          "datetime",
+          "julianday",
+          "strftime",
           // SQLite aggregate functions
           // max() and min() are already in the list
-          "avg", "count", "group_concat", "sum", "total",
+          "avg",
+          "count",
+          "group_concat",
+          "sum",
+          "total",
           // SQLite FTS functions
-          "match", "snippet", "offsets", "optimize",
+          "match",
+          "snippet",
+          "offsets",
+          "optimize",
           // SQLite ICU functions
           // like(), lower() and upper() are already in the list
           "regexp",
+          // Used internally by ALTER TABLE ADD COLUMN.
+          "printf",
       }));
   return list;
 }

@@ -3,6 +3,9 @@
 <!-- crbug.com/1160433 -->
 <title>Test that popup, its owner element unassigned under a shadow root, is cleanup when the page is shutdown. </title>
 <script src="../resources/picker-common.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+
 <canvas>
 <video>
 <select>
@@ -17,17 +20,14 @@ if (window.testRunner) {
     testRunner.waitUntilDone();
     testRunner.dumpAsText();
 }
-
-function openCallback() {
+window.onload = () => {
+  openPicker(document.querySelector('input'))
+  .then(() => {
     form1.submit();
-}
-
-function errorCallback() {
+  })
+  .catch(e => {
     testRunner.notifyDone();
-}
-
-window.onload = function () {
-    openPicker(color, openCallback, errorCallback);
+  });
 }
 </script>
 </body>

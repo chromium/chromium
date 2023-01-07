@@ -200,8 +200,8 @@ v8::Local<v8::String> StringCache::CreateStringAndInsertIntoCache(
   DCHECK(!string_cache_.Contains(string_impl));
   DCHECK(string_impl->length());
 
-  v8::Local<v8::String> new_string =
-      MakeExternalString(isolate, String(string_impl));
+  String blink_string(string_impl);
+  v8::Local<v8::String> new_string = MakeExternalString(isolate, blink_string);
   DCHECK(!new_string.IsEmpty());
   DCHECK(new_string->Length());
 
@@ -209,7 +209,7 @@ v8::Local<v8::String> StringCache::CreateStringAndInsertIntoCache(
 
   string_impl->AddRef();
   string_cache_.Set(string_impl, std::move(wrapper), &last_v8_string_);
-  last_string_impl_ = string_impl;
+  last_string_impl_ = blink_string.ReleaseImpl();
 
   return new_string;
 }

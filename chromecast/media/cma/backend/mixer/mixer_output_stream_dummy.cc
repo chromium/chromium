@@ -1,45 +1,44 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
-#include "base/macros.h"
-#include "chromecast/public/media/mixer_output_stream.h"
+#include "chromecast/media/cma/backend/mixer/mixer_output_stream_dummy.h"
 
 namespace chromecast {
 namespace media {
 
-// Dummy MixerOutputStream implementation.
-class MixerOutputStreamDummy : public MixerOutputStream {
- public:
-  MixerOutputStreamDummy() = default;
+MixerOutputStreamDummy::MixerOutputStreamDummy() = default;
 
-  // MixerOutputStream implementation:
-  bool Start(int requested_sample_rate, int channels) override { return true; }
+MixerOutputStreamDummy::~MixerOutputStreamDummy() = default;
 
-  int GetNumChannels() override { return 2; }
+bool MixerOutputStreamDummy::Start(int requested_sample_rate, int channels) {
+  return true;
+}
 
-  int GetSampleRate() override { return 48000; }
+int MixerOutputStreamDummy::GetNumChannels() {
+  return 2;
+}
 
-  MediaPipelineBackend::AudioDecoder::RenderingDelay GetRenderingDelay()
-      override {
-    return MediaPipelineBackend::AudioDecoder::RenderingDelay();
-  }
+int MixerOutputStreamDummy::GetSampleRate() {
+  return 48000;
+}
 
-  int OptimalWriteFramesCount() override { return 256; }
+MediaPipelineBackend::AudioDecoder::RenderingDelay
+MixerOutputStreamDummy::GetRenderingDelay() {
+  return MediaPipelineBackend::AudioDecoder::RenderingDelay();
+}
 
-  bool Write(const float* data,
-             int data_size,
-             bool* out_playback_interrupted) override {
-    return true;
-  }
+int MixerOutputStreamDummy::OptimalWriteFramesCount() {
+  return 256;
+}
 
-  void Stop() override {}
+bool MixerOutputStreamDummy::Write(const float* data,
+                                   int data_size,
+                                   bool* out_playback_interrupted) {
+  return true;
+}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MixerOutputStreamDummy);
-};
+void MixerOutputStreamDummy::Stop() {}
 
 // static
 std::unique_ptr<MixerOutputStream> MixerOutputStream::Create() {

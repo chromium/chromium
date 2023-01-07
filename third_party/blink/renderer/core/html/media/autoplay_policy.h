@@ -1,14 +1,15 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_AUTOPLAY_POLICY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_AUTOPLAY_POLICY_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -57,6 +58,8 @@ class CORE_EXPORT AutoplayPolicy final
   static bool DocumentIsCapturingUserMedia(const Document&);
 
   explicit AutoplayPolicy(HTMLMediaElement*);
+  AutoplayPolicy(const AutoplayPolicy&) = delete;
+  AutoplayPolicy& operator=(const AutoplayPolicy&) = delete;
 
   void VideoWillBeDrawnToCanvas() const;
 
@@ -75,7 +78,7 @@ class CORE_EXPORT AutoplayPolicy final
   // Request the playback via play() method. This method will check the autoplay
   // restrictions and record metrics. This method can only be called once
   // per call of play().
-  base::Optional<DOMExceptionCode> RequestPlay();
+  absl::optional<DOMExceptionCode> RequestPlay();
 
   // Returns whether an umute action should pause an autoplaying element. The
   // method will check autoplay restrictions and record metrics. This method can
@@ -152,9 +155,7 @@ class CORE_EXPORT AutoplayPolicy final
 
   Member<AutoplayUmaHelper> autoplay_uma_helper_;
 
-  base::Optional<bool> autoplay_initiated_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoplayPolicy);
+  absl::optional<bool> autoplay_initiated_;
 };
 
 }  // namespace blink

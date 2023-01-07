@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -104,8 +104,8 @@ public class DateOrderedListMutator implements OfflineItemFilterObserver {
         // If the update changed the creation time or filter type, remove and add the element to get
         // it positioned.
         if (oldItem.creationTimeMs != item.creationTimeMs || oldItem.filter != item.filter
-                || mJustNowProvider.isJustNowItem(oldItem) != mJustNowProvider.isJustNowItem((item))
-                || offlineItemScheduleDiffer(item, oldItem)) {
+                || mJustNowProvider.isJustNowItem(oldItem)
+                        != mJustNowProvider.isJustNowItem(item)) {
             // TODO(shaktisahu): Collect UMA when this happens.
             onItemsRemoved(Collections.singletonList(oldItem));
             onItemsAdded(Collections.singletonList(item));
@@ -133,10 +133,5 @@ public class DateOrderedListMutator implements OfflineItemFilterObserver {
                 break;
             }
         }
-    }
-
-    private static boolean offlineItemScheduleDiffer(OfflineItem item, OfflineItem oldItem) {
-        return (item.schedule == null && oldItem.schedule != null)
-                || (item.schedule != null && oldItem.schedule == null);
     }
 }

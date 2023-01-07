@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 // Example: A backwards-compatible mojom change (and corresponding
 // implementation change) can be made in Chrome OS first, then replicated to the
 // clients (Chromium, other downstream repos) later.
-// Use //chromeos/services/machine_learning/public/mojom/roll_mojom.sh to help
+// Use //chromeos/services/machine_learning/public/mojom/roll_mojoms.sh to help
 // replicate Chrome OS-side changes over to Chromium.
 
 module chromeos.machine_learning.mojom;

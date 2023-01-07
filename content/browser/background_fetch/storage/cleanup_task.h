@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,9 @@ class CleanupTask : public background_fetch::DatabaseTask {
  public:
   explicit CleanupTask(DatabaseTaskHost* host);
 
+  CleanupTask(const CleanupTask&) = delete;
+  CleanupTask& operator=(const CleanupTask&) = delete;
+
   ~CleanupTask() override;
 
   void Start() override;
@@ -39,8 +42,6 @@ class CleanupTask : public background_fetch::DatabaseTask {
   std::string HistogramName() const override;
 
   base::WeakPtrFactory<CleanupTask> weak_factory_{this};  // Keep as last.
-
-  DISALLOW_COPY_AND_ASSIGN(CleanupTask);
 };
 
 }  // namespace background_fetch

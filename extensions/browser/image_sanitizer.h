@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,8 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/values.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 
@@ -39,47 +38,59 @@ class ImageSanitizer {
     kDecodingError,
     kEncodingError,
     kFileWriteError,
-    kServiceError,  // The data-decoder service crashed.
   };
 
-  // Callback invoked when the image sanitization is is done. If status is an
-  // error, |path| points to the file that caused the error.
-  using SanitizationDoneCallback =
-      base::OnceCallback<void(Status status, const base::FilePath& path)>;
+  class Client : public base::RefCountedThreadSafe<Client> {
+   public:
+    // Asks the client for a DataDecoder.  Pushing the ownership of the
+    // DataDecoder to Client implementations help ensure that the same decoder
+    // can be reused across different decoding kinds (including non-image
+    // decoding).
+    virtual data_decoder::DataDecoder* GetDataDecoder() = 0;
 
-  // Called on a background thread when an image has been decoded.
-  using ImageDecodedCallback =
-      base::RepeatingCallback<void(const base::FilePath& path, SkBitmap image)>;
+    // Callback invoked exactly once - when the image sanitization is done. If
+    // status is an error, |path| points to the file that caused the error.
+    virtual void OnImageSanitizationDone(Status status,
+                                         const base::FilePath& path) = 0;
+
+    // Callback invoked on a background thread 0..N times (once per image from
+    // `image_relative_paths`) whenever an image has been successfully decoded.
+    virtual void OnImageDecoded(const base::FilePath& path, SkBitmap image) = 0;
+
+   protected:
+    friend class base::RefCountedThreadSafe<Client>;
+    virtual ~Client();
+  };
 
   // Creates an ImageSanitizer and starts the sanitization of the images in
   // |image_relative_paths|. These paths should be relative and not reference
   // their parent dir or an kImagePathError will be reported to |done_callback|.
   // These relative paths are resolved against |image_dir|.
-  // |decoder| should be a DataDecoder instance to use for image decoding.
-  // |done_callback| is invoked asynchronously when all images have been
-  // sanitized or if an error occurred.
-  // If the returned ImageSanitizer instance is deleted, |done_callback| and
-  // |image_decoded_callback| are not called and the sanitization stops promptly
-  // (some background tasks may still run).
+  //
+  // |client| provides the DataDecoder to use for image decoding.  |client|'s
+  // OnImageDecoded and OnImageSanitizationDone methods will be called with
+  // sanitization results (if the returned ImageSanitizer instance is deleted
+  // then these callback methods are not called and the sanitization stops
+  // promptly (some background tasks may still run)).
   static std::unique_ptr<ImageSanitizer> CreateAndStart(
-      data_decoder::DataDecoder* decoder,
+      scoped_refptr<Client> client,
       const base::FilePath& image_dir,
       const std::set<base::FilePath>& image_relative_paths,
-      ImageDecodedCallback image_decoded_callback,
-      SanitizationDoneCallback done_callback,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  ImageSanitizer(const ImageSanitizer&) = delete;
+  ImageSanitizer& operator=(const ImageSanitizer&) = delete;
 
   ~ImageSanitizer();
 
  private:
   ImageSanitizer(
+      scoped_refptr<Client> client,
       const base::FilePath& image_dir,
       const std::set<base::FilePath>& image_relative_paths,
-      ImageDecodedCallback image_decoded_callback,
-      SanitizationDoneCallback done_callback,
       const scoped_refptr<base::SequencedTaskRunner>& io_task_runner);
 
-  void Start(data_decoder::DataDecoder* decoder);
+  void Start();
 
   void ImageFileRead(
       const base::FilePath& image_path,
@@ -102,13 +113,9 @@ class ImageSanitizer {
 
   base::FilePath image_dir_;
   std::set<base::FilePath> image_paths_;
-  ImageDecodedCallback image_decoded_callback_;
-  SanitizationDoneCallback done_callback_;
+  scoped_refptr<Client> client_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
-  mojo::Remote<data_decoder::mojom::ImageDecoder> image_decoder_;
   base::WeakPtrFactory<ImageSanitizer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageSanitizer);
 };
 
 }  // namespace extensions

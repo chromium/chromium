@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,6 +94,23 @@ class CHROMECAST_EXPORT RebootShlib {
     // bugs. In that case, business logic can't proceed and busy references
     // can't be trusted, so a dirty reboot will be executed.
     MULTI_SERVICE_BUG = 17,
+
+    // Intentional shutdown by power manager of battery powered devices.
+    POWER_MANAGER_SHUTDOWN = 18,
+
+    // Restart of the Cast component to apply changes due to an experiment flag
+    // value change. This is only used to handle flag changes that would be more
+    // risky to attempt without a full process restart. Very few experiments
+    // trigger this path.
+    EXPERIMENT_CHANGE = 19,
+
+    // A reboot is triggered when the anomaly detection service detects a
+    // system-level anomaly and needs to recover from it with restarting the
+    // Cast component.
+    ANOMALY = 20,
+
+    // A reboot is triggered when the kernel panics.
+    KERNEL_PANIC = 21,
   };
 
   // Initializes any platform-specific reboot systems.
@@ -154,6 +171,15 @@ class CHROMECAST_EXPORT RebootShlib {
   // must result in any available OTA update getting applied upon the next
   // reboot (regardless of the RebootSource or cause of reboot).
   static void SetOtaForNextReboot();
+
+  // If IsClearOtaFromNextRebootSupported() returns true and
+  // ClearOtaForNextReboot() has been called, then the device will cancel any
+  // pending OTA waiting to be applied.
+  static bool IsClearOtaForNextRebootSupported();
+
+  // If IsClearOtaForNextRebootSupported() returns true then calling
+  // ClearOtaForNextReboot voids any prior call to SetOtaForNextReboot.
+  static void ClearOtaForNextReboot();
 };
 
 }  // namespace chromecast

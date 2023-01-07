@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/native_library.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_export.h"
@@ -33,8 +34,9 @@ enum GLImplementation {
   kGLImplementationNone = 0,
   kGLImplementationDesktopGL = 1,
   kGLImplementationDesktopGLCoreProfile = 2,
-  kGLImplementationSwiftShaderGL = 3,
-  kGLImplementationAppleGL = 4,
+  // Note: 3 and 4 are skipped and should not be reused.
+  // 3 used to be legacy SwiftShader.
+  // 4 used to be Apple's software GL.
   kGLImplementationEGLGLES2 = 5,  // Native EGL/GLES2
   kGLImplementationMockGL = 6,
   kGLImplementationStubGL = 7,
@@ -58,8 +60,14 @@ enum class ANGLEImplementation {
 };
 
 struct GL_EXPORT GLImplementationParts {
-  explicit GLImplementationParts(const ANGLEImplementation angle_impl);
-  explicit GLImplementationParts(const GLImplementation gl_impl);
+  constexpr explicit GLImplementationParts(const ANGLEImplementation angle_impl)
+      : gl(kGLImplementationEGLANGLE),
+        angle(MakeANGLEImplementation(kGLImplementationEGLANGLE, angle_impl)) {}
+
+  constexpr explicit GLImplementationParts(const GLImplementation gl_impl)
+      : gl(gl_impl),
+        angle(MakeANGLEImplementation(gl_impl, ANGLEImplementation::kDefault)) {
+  }
 
   GLImplementation gl = kGLImplementationNone;
   ANGLEImplementation angle = ANGLEImplementation::kNone;
@@ -68,7 +76,32 @@ struct GL_EXPORT GLImplementationParts {
     return (gl == other.gl && angle == other.angle);
   }
 
+  constexpr bool operator==(const ANGLEImplementation angle_impl) const {
+    return operator==(GLImplementationParts(angle_impl));
+  }
+
+  constexpr bool operator==(const GLImplementation gl_impl) const {
+    return operator==(GLImplementationParts(gl_impl));
+  }
+
   bool IsValid() const;
+  bool IsAllowed(const std::vector<GLImplementationParts>& allowed_impls) const;
+  std::string ToString() const;
+
+ private:
+  static constexpr ANGLEImplementation MakeANGLEImplementation(
+      const GLImplementation gl_impl,
+      const ANGLEImplementation angle_impl) {
+    if (gl_impl == kGLImplementationEGLANGLE) {
+      if (angle_impl == ANGLEImplementation::kNone) {
+        return ANGLEImplementation::kDefault;
+      } else {
+        return angle_impl;
+      }
+    } else {
+      return ANGLEImplementation::kNone;
+    }
+  }
 };
 
 struct GL_EXPORT GLWindowSystemBindingInfo {
@@ -81,7 +114,7 @@ struct GL_EXPORT GLWindowSystemBindingInfo {
 };
 
 using GLFunctionPointerType = void (*)();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef GLFunctionPointerType(WINAPI* GLGetProcAddressProc)(const char* name);
 #else
 typedef GLFunctionPointerType (*GLGetProcAddressProc)(const char* name);
@@ -132,13 +165,22 @@ GL_EXPORT void SetANGLEImplementation(ANGLEImplementation implementation);
 GL_EXPORT ANGLEImplementation GetANGLEImplementation();
 
 // Get the software GL implementation
-GL_EXPORT GLImplementationParts GetLegacySoftwareGLImplementation();
 GL_EXPORT GLImplementationParts GetSoftwareGLImplementation();
-GL_EXPORT GLImplementationParts GetSoftwareGLForTestsImplementation();
 
 // Set the software GL implementation on the provided command line
-GL_EXPORT void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line,
-                                                bool legacy_software_gl);
+GL_EXPORT void SetSoftwareGLCommandLineSwitches(
+    base::CommandLine* command_line);
+
+// Set the software WebGL implementation on the provided command line
+GL_EXPORT void SetSoftwareWebGLCommandLineSwitches(
+    base::CommandLine* command_line);
+
+// Return requested GL implementation by checking commandline. If there isn't
+// gl related argument, nullopt is returned.
+GL_EXPORT absl::optional<GLImplementationParts>
+GetRequestedGLImplementationFromCommandLine(
+    const base::CommandLine* command_line,
+    bool* fallback_to_software_gl);
 
 // Whether the implementation is one of the software GL implementations
 GL_EXPORT bool IsSoftwareGLImplementation(GLImplementationParts implementation);

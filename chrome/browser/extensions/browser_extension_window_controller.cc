@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -61,9 +60,11 @@ Browser* BrowserExtensionWindowController::GetBrowser() const {
 bool BrowserExtensionWindowController::IsVisibleToTabsAPIForExtension(
     const Extension* extension,
     bool allow_dev_tools_windows) const {
-  DCHECK(extension);
+  // TODO(joelhockey): We are assuming that the caller is webui when |extension|
+  // is null and allowing access to all windows. It would be better if we could
+  // pass in Feature::Context or some way to detect caller type.
   // Platform apps can only see their own windows.
-  if (extension->is_platform_app())
+  if (extension && extension->is_platform_app())
     return false;
 
   return !browser_->is_type_devtools() || allow_dev_tools_windows;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "net/base/network_config_watcher_mac.h"
@@ -29,6 +29,10 @@ class ProxyConfigServiceMac : public ProxyConfigService {
   explicit ProxyConfigServiceMac(
       const scoped_refptr<base::SequencedTaskRunner>& sequenced_task_runner,
       const NetworkTrafficAnnotationTag& traffic_annotation);
+
+  ProxyConfigServiceMac(const ProxyConfigServiceMac&) = delete;
+  ProxyConfigServiceMac& operator=(const ProxyConfigServiceMac&) = delete;
+
   ~ProxyConfigServiceMac() override;
 
  public:
@@ -48,14 +52,16 @@ class ProxyConfigServiceMac : public ProxyConfigService {
     explicit Forwarder(ProxyConfigServiceMac* proxy_config_service)
         : proxy_config_service_(proxy_config_service) {}
 
+    Forwarder(const Forwarder&) = delete;
+    Forwarder& operator=(const Forwarder&) = delete;
+
     // NetworkConfigWatcherMac::Delegate implementation:
     void StartReachabilityNotifications() override {}
     void SetDynamicStoreNotificationKeys(SCDynamicStoreRef store) override;
     void OnNetworkConfigChange(CFArrayRef changed_keys) override;
 
    private:
-    ProxyConfigServiceMac* const proxy_config_service_;
-    DISALLOW_COPY_AND_ASSIGN(Forwarder);
+    const raw_ptr<ProxyConfigServiceMac> proxy_config_service_;
   };
 
   // Methods directly called by the NetworkConfigWatcherMac::Delegate:
@@ -71,7 +77,7 @@ class ProxyConfigServiceMac : public ProxyConfigService {
   base::ObserverList<Observer>::Unchecked observers_;
 
   // Holds the last system proxy settings that we fetched.
-  bool has_fetched_config_;
+  bool has_fetched_config_ = false;
   ProxyConfigWithAnnotation last_config_fetched_;
 
   scoped_refptr<Helper> helper_;
@@ -80,8 +86,6 @@ class ProxyConfigServiceMac : public ProxyConfigService {
   const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
   const NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyConfigServiceMac);
 };
 
 }  // namespace net

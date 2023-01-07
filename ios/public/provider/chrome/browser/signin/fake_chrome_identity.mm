@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 
-#include "base/mac/foundation_util.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -18,12 +19,56 @@ NSString* const kCoderUserGivenNameKey = @"UserGivenName";
 NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
 }  // namespace
 
-@implementation FakeChromeIdentity {
-  NSString* _userEmail;
-  NSString* _gaiaID;
-  NSString* _userFullName;
-  NSString* _userGivenName;
-  NSString* _hashedGaiaID;
+@implementation FakeChromeIdentity
+
+@synthesize userEmail = _userEmail;
+@synthesize gaiaID = _gaiaID;
+@synthesize userFullName = _userFullName;
+@synthesize userGivenName = _userGivenName;
+@synthesize hashedGaiaID = _hashedGaiaID;
+
++ (std::string)encodeIdentitiesToBase64:
+    (NSArray<FakeChromeIdentity*>*)identities {
+  NSError* error = nil;
+  NSData* data = [NSKeyedArchiver archivedDataWithRootObject:identities
+                                       requiringSecureCoding:NO
+                                                       error:&error];
+  DCHECK(!error);
+  NSString* string = [data base64EncodedStringWithOptions:
+                               NSDataBase64EncodingEndLineWithCarriageReturn];
+  return base::SysNSStringToUTF8(string);
+}
+
++ (NSArray<FakeChromeIdentity*>*)identitiesFromBase64String:
+    (const std::string&)string {
+  NSData* data = [[NSData alloc]
+      initWithBase64EncodedString:base::SysUTF8ToNSString(string)
+                          options:NSDataBase64DecodingIgnoreUnknownCharacters];
+  NSSet* classes =
+      [NSSet setWithArray:@[ [NSArray class], [FakeChromeIdentity class] ]];
+  NSError* error = nil;
+  NSArray* identities = [NSKeyedUnarchiver unarchivedObjectOfClasses:classes
+                                                            fromData:data
+                                                               error:&error];
+  return identities;
+}
+
++ (FakeChromeIdentity*)fakeIdentity1 {
+  return [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
+                                        gaiaID:@"foo1ID"
+                                          name:@"Fake Foo 1"];
+}
+
++ (FakeChromeIdentity*)fakeIdentity2 {
+  return [FakeChromeIdentity identityWithEmail:@"foo2@gmail.com"
+                                        gaiaID:@"foo2ID"
+                                          name:@"Fake Foo 2"];
+}
+
++ (FakeChromeIdentity*)fakeManagedIdentity {
+  return [FakeChromeIdentity identityWithEmail:@"foo@google.com"
+                                        gaiaID:@"fooManagedID"
+                                          name:@"Fake Managed"];
 }
 
 + (FakeChromeIdentity*)identityWithEmail:(NSString*)email
@@ -74,7 +119,7 @@ NSString* const kCoderHashedGaiaIDKey = @"HashedGaiaID";
   return YES;
 }
 
-// Overrides |isEqual| and |hash| methods to compare objects by values. This is
+// Overrides `isEqual` and `hash` methods to compare objects by values. This is
 // useful when the object is passed by value between processes in EG2.
 - (BOOL)isEqual:(id)object {
   if (self == object) {

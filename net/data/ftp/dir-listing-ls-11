@@ -1,8 +1,0 @@
-total 14
-drwxr-xr-x   2 other        512 Feb 25  2009 beid
-lrwxrwxrwx   1 bin            9 May  1  2007 bin -> ./usr/bin
-d--x--x--x   2 sys          512 May  1  2007 dev
-d--x--x--x   5 sys          512 May  1  2007 etc
-drwxr-xr-x   2 sys          512 Mar 27  2009 pub
-drwxr-xr-x   3 other        512 Apr 11  2007 tigerd1
-d--x--x--x   6 sys          512 May  1  2007 usr

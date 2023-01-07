@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/variations/variations_seed_processor.h"
 
@@ -19,7 +20,7 @@ namespace {
 
 // Converts |date_time| in Study date format to base::Time.
 base::Time ConvertStudyDateToBaseTime(int64_t date_time) {
-  return base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(date_time);
+  return base::Time::UnixEpoch() + base::Seconds(date_time);
 }
 
 // Similar to base::Contains(), but specifically for ASCII strings and
@@ -27,10 +28,9 @@ base::Time ConvertStudyDateToBaseTime(int64_t date_time) {
 template <typename Collection>
 bool ContainsStringIgnoreCaseASCII(const Collection& collection,
                                    const std::string& value) {
-  return std::find_if(std::begin(collection), std::end(collection),
-                      [&value](const std::string& s) -> bool {
-                        return base::EqualsCaseInsensitiveASCII(s, value);
-                      }) != std::end(collection);
+  return base::ranges::any_of(collection, [&value](const std::string& s) {
+    return base::EqualsCaseInsensitiveASCII(s, value);
+  });
 }
 
 }  // namespace
@@ -42,52 +42,46 @@ bool CheckStudyChannel(const Study::Filter& filter, Study::Channel channel) {
   if (filter.channel_size() == 0)
     return true;
 
-  for (int i = 0; i < filter.channel_size(); ++i) {
-    if (filter.channel(i) == channel)
-      return true;
-  }
-  return false;
+  return base::Contains(filter.channel(), channel);
 }
 
 bool CheckStudyFormFactor(const Study::Filter& filter,
                           Study::FormFactor form_factor) {
-  // Empty whitelist and blacklist signifies matching any form factor.
+  // If both filters are empty, match all values.
   if (filter.form_factor_size() == 0 && filter.exclude_form_factor_size() == 0)
     return true;
 
-  // Allow the form_factor if it matches the whitelist.
-  // Note if both a whitelist and blacklist are specified, the blacklist is
-  // ignored. We do not expect both to be present for Chrome due to server-side
-  // checks.
+  // Allow the |form_factor| if it's in the allowlist.
+  // Note if both are specified, the excludelist is ignored. We do not expect
+  // both to be present for Chrome due to server-side checks.
   if (filter.form_factor_size() > 0)
     return base::Contains(filter.form_factor(), form_factor);
 
-  // Omit if we match the blacklist.
+  // Omit if there is a matching excludelist entry.
   return !base::Contains(filter.exclude_form_factor(), form_factor);
 }
 
 bool CheckStudyCpuArchitecture(const Study::Filter& filter,
                                Study::CpuArchitecture cpu_architecture) {
-  // Empty allowlist and denylist signifies matching any CPU architecture.
+  // If both filters are empty, match all values.
   if (filter.cpu_architecture_size() == 0 &&
       filter.exclude_cpu_architecture_size() == 0) {
     return true;
   }
 
-  // Allow the cpu_architecture if it matches the allowlist.
-  // Note if both a allowlist and denylist are specified, the denylist is
-  // ignored. We do not expect both to be present for Chrome due to server-side
-  // checks.
+  // Allow the |cpu_architecture| if it's in the allowlist.
+  // Note if both are specified, the excludelist is ignored. We do not expect
+  // both to be present for Chrome due to server-side checks.
   if (filter.cpu_architecture_size() > 0)
     return base::Contains(filter.cpu_architecture(), cpu_architecture);
 
-  // Omit if we match the denylist.
+  // Omit if there is a matching excludelist entry.
   return !base::Contains(filter.exclude_cpu_architecture(), cpu_architecture);
 }
 
 bool CheckStudyHardwareClass(const Study::Filter& filter,
                              const std::string& hardware_class) {
-  // Empty hardware_class and exclude_hardware_class matches all.
+  // If both filters are empty, match all values.
   if (filter.hardware_class_size() == 0 &&
       filter.exclude_hardware_class_size() == 0) {
     return true;
@@ -97,32 +91,48 @@ bool CheckStudyHardwareClass(const Study::Filter& filter,
   // comparison logic to match hardware classes. In M66, it was made consistent
   // with other filters.
 
-  // Checks if we are supposed to filter for a specified set of
-  // hardware_classes. Note that this means this overrides the
-  // exclude_hardware_class in case that ever occurs (which it shouldn't).
+  // Allow the |hardware_class| if it's in the allowlist.
+  // Note if both are specified, the excludelist is ignored. We do not expect
+  // both to be present for Chrome due to server-side checks.
   if (filter.hardware_class_size() > 0) {
     return ContainsStringIgnoreCaseASCII(filter.hardware_class(),
                                          hardware_class);
   }
 
-  // Omit if we match the blacklist.
+  // Omit if there is a matching excludelist entry.
   return !ContainsStringIgnoreCaseASCII(filter.exclude_hardware_class(),
                                         hardware_class);
 }
 
 bool CheckStudyLocale(const Study::Filter& filter, const std::string& locale) {
-  // Empty locale and exclude_locale lists matches all locales.
+  // If both filters are empty, match all values.
   if (filter.locale_size() == 0 && filter.exclude_locale_size() == 0)
     return true;
 
-  // Check if we are supposed to filter for a specified set of countries. Note
-  // that this means this overrides the exclude_locale in case that ever occurs
-  // (which it shouldn't).
+  // Allow the |locale| if it's in the allowlist.
+  // Note if both are specified, the excludelist is ignored. We do not expect
+  // both to be present for Chrome due to server-side checks.
   if (filter.locale_size() > 0)
     return base::Contains(filter.locale(), locale);
 
-  // Omit if matches any of the exclude entries.
+  // Omit if there is a matching excludelist entry.
   return !base::Contains(filter.exclude_locale(), locale);
+}
+
+bool CheckStudyCountry(const Study::Filter& filter,
+                       const std::string& country) {
+  // If both filters are empty, match all values.
+  if (filter.country_size() == 0 && filter.exclude_country_size() == 0)
+    return true;
+
+  // Allow the |country| if it's in the allowlist.
+  // Note if both are specified, the excludelist is ignored. We do not expect
+  // both to be present for Chrome due to server-side checks.
+  if (filter.country_size() > 0)
+    return base::Contains(filter.country(), country);
+
+  // Omit if there is a matching excludelist entry.
+  return !base::Contains(filter.exclude_country(), country);
 }
 
 bool CheckStudyPlatform(const Study::Filter& filter, Study::Platform platform) {
@@ -212,22 +222,6 @@ bool CheckStudyOSVersion(const Study::Filter& filter,
   return true;
 }
 
-bool CheckStudyCountry(const Study::Filter& filter,
-                       const std::string& country) {
-  // Empty country and exclude_country matches all.
-  if (filter.country_size() == 0 && filter.exclude_country_size() == 0)
-    return true;
-
-  // Checks if we are supposed to filter for a specified set of countries. Note
-  // that this means this overrides the exclude_country in case that ever occurs
-  // (which it shouldn't).
-  if (filter.country_size() > 0)
-    return base::Contains(filter.country(), country);
-
-  // Omit if matches any of the exclude entries.
-  return !base::Contains(filter.exclude_country(), country);
-}
-
 bool CheckStudyEnterprise(const Study::Filter& filter,
                           const ClientFilterableState& client_state) {
   return !filter.has_is_enterprise() ||
@@ -255,19 +249,16 @@ const std::string& GetClientCountryForStudy(
   return base::EmptyString();
 }
 
-bool IsStudyExpired(const Study& study, const base::Time& date_time) {
-  if (study.has_expiry_date()) {
-    const base::Time expiry_date =
-        ConvertStudyDateToBaseTime(study.expiry_date());
-    return date_time >= expiry_date;
-  }
-
-  return false;
-}
-
-bool ShouldAddStudy(const Study& study,
+bool ShouldAddStudy(const ProcessedStudy& processed_study,
                     const ClientFilterableState& client_state,
                     const VariationsLayers& layers) {
+  const Study& study = *processed_study.study();
+  if (study.has_expiry_date()) {
+    DVLOG(1) << "Filtered out study " << study.name()
+             << " due to unsupported expiry_date field.";
+    return false;
+  }
+
   if (study.has_layer()) {
     if (!layers.IsLayerMemberActive(study.layer().layer_id(),
                                     study.layer().layer_member_id())) {
@@ -276,8 +267,9 @@ bool ShouldAddStudy(const Study& study,
       return false;
     }
 
-    if (VariationsSeedProcessor::ShouldStudyUseLowEntropy(study) &&
-        layers.IsLayerUsingDefaultEntropy(study.layer().layer_id())) {
+    if (processed_study.ShouldStudyUseLowEntropy() &&
+        layers.ActiveLayerMemberDependsOnHighEntropy(
+            study.layer().layer_id())) {
       DVLOG(1) << "Filtered out study " << study.name()
                << " due to requiring a low entropy source yet being a member "
                   "of a layer using the default entropy source.";
@@ -377,38 +369,32 @@ bool ShouldAddStudy(const Study& study,
 
 }  // namespace internal
 
-void FilterAndValidateStudies(const VariationsSeed& seed,
-                              const ClientFilterableState& client_state,
-                              const VariationsLayers& layers,
-                              std::vector<ProcessedStudy>* filtered_studies) {
+std::vector<ProcessedStudy> FilterAndValidateStudies(
+    const VariationsSeed& seed,
+    const ClientFilterableState& client_state,
+    const VariationsLayers& layers) {
   DCHECK(client_state.version.IsValid());
 
-  // Add expired studies (in a disabled state) only after all the non-expired
-  // studies have been added (and do not add an expired study if a corresponding
-  // non-expired study got added). This way, if there's both an expired and a
-  // non-expired study that applies, the non-expired study takes priority.
+  std::vector<ProcessedStudy> filtered_studies;
+
+  // Don't create two studies with the same name.
   std::set<std::string> created_studies;
-  std::vector<const Study*> expired_studies;
 
   for (int i = 0; i < seed.study_size(); ++i) {
     const Study& study = seed.study(i);
-    if (!internal::ShouldAddStudy(study, client_state, layers))
+    ProcessedStudy processed_study;
+    if (!processed_study.Init(&study))
       continue;
 
-    if (internal::IsStudyExpired(study, client_state.reference_date)) {
-      expired_studies.push_back(&study);
-    } else if (!base::Contains(created_studies, study.name())) {
-      ProcessedStudy::ValidateAndAppendStudy(&study, false, filtered_studies);
-      created_studies.insert(study.name());
-    }
-  }
+    if (!internal::ShouldAddStudy(processed_study, client_state, layers))
+      continue;
 
-  for (size_t i = 0; i < expired_studies.size(); ++i) {
-    if (!base::Contains(created_studies, expired_studies[i]->name())) {
-      ProcessedStudy::ValidateAndAppendStudy(expired_studies[i], true,
-                                             filtered_studies);
+    if (!base::Contains(created_studies, processed_study.study()->name())) {
+      filtered_studies.push_back(processed_study);
+      created_studies.insert(processed_study.study()->name());
     }
   }
+  return filtered_studies;
 }
 
 }  // namespace variations

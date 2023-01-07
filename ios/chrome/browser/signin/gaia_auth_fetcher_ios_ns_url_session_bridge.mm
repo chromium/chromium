@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,14 +6,16 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/mac/foundation_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/signin/core/browser/chrome_connected_header_helper.h"
-#include "ios/net/cookies/system_cookie_util.h"
-#include "ios/web/public/browser_state.h"
+#import "base/bind.h"
+#import "base/callback_helpers.h"
+#import "base/mac/foundation_util.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/signin/core/browser/chrome_connected_header_helper.h"
+#import "ios/net/cookies/system_cookie_util.h"
+#import "ios/web/public/browser_state.h"
+#import "ios/web/public/web_client.h"
 #import "net/base/mac/url_conversions.h"
+#import "net/http/http_request_headers.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -122,7 +124,7 @@ void GaiaAuthFetcherIOSNSURLSessionBridge::Fetch(
   options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
   cookie_manager->GetCookieList(
-      request_.url, options,
+      request_.url, options, net::CookiePartitionKeyCollection::Todo(),
       base::BindOnce(
           &GaiaAuthFetcherIOSNSURLSessionBridge::FetchPendingRequestWithCookies,
           base::Unretained(this)));
@@ -219,7 +221,7 @@ void GaiaAuthFetcherIOSNSURLSessionBridge::FetchPendingRequestWithCookies(
   NSMutableArray* http_cookies = [[NSMutableArray alloc]
       initWithCapacity:cookies_with_access_results.size()];
   for (const auto& cookie_with_access_result : cookies_with_access_results) {
-    // |CHROME_CONNECTED| cookie is attached to all web requests to Google web
+    // `CHROME_CONNECTED` cookie is attached to all web requests to Google web
     // properties. Requests initiated from the browser services (e.g.
     // GaiaCookieManagerService) must not include this cookie.
     if (cookie_with_access_result.cookie.Name() ==
@@ -248,6 +250,12 @@ NSURLSession* GaiaAuthFetcherIOSNSURLSessionBridge::CreateNSURLSession(
   NSURLSessionConfiguration* session_configuration =
       NSURLSessionConfiguration.ephemeralSessionConfiguration;
   session_configuration.HTTPShouldSetCookies = YES;
+  std::string user_agent =
+      web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE);
+  session_configuration.HTTPAdditionalHeaders = @{
+    base::SysUTF8ToNSString(net::HttpRequestHeaders::kUserAgent) :
+        base::SysUTF8ToNSString(user_agent),
+  };
   return [NSURLSession sessionWithConfiguration:session_configuration
                                        delegate:url_session_delegate
                                   delegateQueue:NSOperationQueue.mainQueue];

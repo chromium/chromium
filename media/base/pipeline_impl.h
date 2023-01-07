@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,16 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline.h"
 #include "media/base/renderer.h"
 #include "media/base/renderer_factory_selector.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -25,13 +26,13 @@ namespace media {
 
 class MediaLog;
 
-// Callbacks used for Renderer creation. When the FactoryType is nullopt, the
+// Callbacks used for Renderer creation. When the RendererType is nullopt, the
 // current base one will be created.
 using CreateRendererCB = base::RepeatingCallback<std::unique_ptr<Renderer>(
-    base::Optional<RendererFactoryType>)>;
+    absl::optional<RendererType>)>;
 using RendererCreatedCB = base::OnceCallback<void(std::unique_ptr<Renderer>)>;
 using AsyncCreateRendererCB =
-    base::RepeatingCallback<void(base::Optional<RendererFactoryType>,
+    base::RepeatingCallback<void(absl::optional<RendererType>,
                                  RendererCreatedCB)>;
 
 // Pipeline runs the media pipeline.  Filters are created and called on the
@@ -86,6 +87,10 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
                scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
                CreateRendererCB create_renderer_cb,
                MediaLog* media_log);
+
+  PipelineImpl(const PipelineImpl&) = delete;
+  PipelineImpl& operator=(const PipelineImpl&) = delete;
+
   ~PipelineImpl() override;
 
   // Pipeline implementation.
@@ -103,9 +108,10 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   void SetPlaybackRate(double playback_rate) override;
   float GetVolume() const override;
   void SetVolume(float volume) override;
-  void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) override;
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
-  void SetAutoplayInitiated(bool autoplay_initiated) override;
+  void SetWasPlayedWithUserActivation(
+      bool was_played_with_user_activation) override;
   base::TimeDelta GetMediaTime() const override;
   Ranges<base::TimeDelta> GetBufferedTimeRanges() const override;
   base::TimeDelta GetMediaDuration() const override;
@@ -121,8 +127,10 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   // |selected_track_id| is either empty, which means no video track is
   // selected, or contains the selected video track id.
   void OnSelectedVideoTrackChanged(
-      base::Optional<MediaTrack::Id> selected_track_id,
+      absl::optional<MediaTrack::Id> selected_track_id,
       base::OnceClosure change_completed_cb) override;
+
+  void OnExternalVideoFrameRequest() override;
 
  private:
   friend class MediaLog;
@@ -146,11 +154,12 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
 
   // Create a Renderer asynchronously. Must be called on the main task runner
   // and the callback will be called on the main task runner as well.
-  void AsyncCreateRenderer(base::Optional<RendererFactoryType> factory_type,
+  void AsyncCreateRenderer(absl::optional<RendererType> renderer_type,
                            RendererCreatedCB renderer_created_cb);
 
   // Notifications from RendererWrapper.
   void OnError(PipelineStatus error);
+  void OnFallback(PipelineStatus fallback);
   void OnEnded();
   void OnMetadata(const PipelineMetadata& metadata);
   void OnBufferingStateChange(BufferingState state,
@@ -162,10 +171,10 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   void OnVideoNaturalSizeChange(const gfx::Size& size);
   void OnVideoOpacityChange(bool opaque);
   void OnVideoAverageKeyframeDistanceUpdate();
-  void OnAudioDecoderChange(const AudioDecoderInfo& info);
-  void OnVideoDecoderChange(const VideoDecoderInfo& info);
+  void OnAudioPipelineInfoChange(const AudioPipelineInfo& info);
+  void OnVideoPipelineInfoChange(const VideoPipelineInfo& info);
   void OnRemotePlayStateChange(MediaStatus::State state);
-  void OnVideoFrameRateChange(base::Optional<int> fps);
+  void OnVideoFrameRateChange(absl::optional<int> fps);
 
   // Task completion callbacks from RendererWrapper.
   void OnSeekDone(bool is_suspended);
@@ -174,10 +183,10 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   // Parameters passed in the constructor.
   const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
   CreateRendererCB create_renderer_cb_;
-  MediaLog* const media_log_;
+  const raw_ptr<MediaLog> media_log_;
 
   // Pipeline client. Valid only while the pipeline is running.
-  Client* client_;
+  raw_ptr<Client> client_;
 
   // RendererWrapper instance that runs on the media thread.
   std::unique_ptr<RendererWrapper> renderer_wrapper_;
@@ -213,10 +222,15 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   // Cached suspension state for the RendererWrapper.
   bool is_suspended_;
 
+  // 'external_video_frame_request_signaled_' tracks whether we've called
+  // OnExternalVideoFrameRequest on the current renderer. Calls which may
+  // create a new renderer in the RendererWrapper (Start, Resume, SetCdm) will
+  // reset this member. There is no guarantee to the client that
+  // OnExternalVideoFrameRequest will be called only once.
+  bool external_video_frame_request_signaled_ = false;
+
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<PipelineImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PipelineImpl);
 };
 
 }  // namespace media

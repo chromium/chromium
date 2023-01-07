@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,7 @@
 
 #include "base/strings/string_number_conversions.h"
 
-namespace net {
-namespace ct {
+namespace net::ct {
 
 SignedTreeHead::SignedTreeHead() = default;
 
@@ -59,5 +58,4 @@ bool operator!=(const SignedTreeHead& lhs, const SignedTreeHead& rhs) {
   return !(lhs == rhs);
 }
 
-}  // namespace ct
-}  // namespace net
+}  // namespace net::ct

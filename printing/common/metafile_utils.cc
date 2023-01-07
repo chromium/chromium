@@ -1,19 +1,20 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "printing/common/metafile_utils.h"
 
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
+#include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTime.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "ui/accessibility/ax_node.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -96,7 +97,7 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
   bool valid = false;
 
   tag->fNodeId = ax_node->GetIntAttribute(ax::mojom::IntAttribute::kDOMNodeId);
-  switch (ax_node->data().role) {
+  switch (ax_node->GetRole()) {
     case ax::mojom::Role::kRootWebArea:
       tag->fTypeString = kPDFStructureTypeDocument;
       break;
@@ -158,8 +159,13 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
           kPDFTableAttributeOwner, kPDFTableCellHeadersAttribute, header_ids);
       break;
     }
-    case ax::mojom::Role::kFigure:
-    case ax::mojom::Role::kImage: {
+    case ax::mojom::Role::kImage:
+      // TODO(thestig): Figure out if the `ax::mojom::Role::kFigure` case should
+      // share code with the `ax::mojom::Role::kImage` case, and if `valid`
+      // should be set.
+      valid = true;
+      [[fallthrough]];
+    case ax::mojom::Role::kFigure: {
       tag->fTypeString = kPDFStructureTypeFigure;
       std::string alt =
           ax_node->GetStringAttribute(ax::mojom::StringAttribute::kName);
@@ -167,24 +173,22 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
       break;
     }
     case ax::mojom::Role::kStaticText:
-      // Currently we're only marking text content, so we can't generate
-      // a nonempty structure tree unless we have at least one kStaticText
-      // node in the tree.
       tag->fTypeString = kPDFStructureTypeNonStruct;
       valid = true;
       break;
     default:
       tag->fTypeString = kPDFStructureTypeNonStruct;
+      break;
   }
 
-  if (ui::IsCellOrTableHeader(ax_node->data().role)) {
-    base::Optional<int> row_span = ax_node->GetTableCellRowSpan();
+  if (ui::IsCellOrTableHeader(ax_node->GetRole())) {
+    absl::optional<int> row_span = ax_node->GetTableCellRowSpan();
     if (row_span.has_value()) {
       tag->fAttributes.appendInt(kPDFTableAttributeOwner,
                                  kPDFTableCellRowSpanAttribute,
                                  row_span.value());
     }
-    base::Optional<int> col_span = ax_node->GetTableCellColSpan();
+    absl::optional<int> col_span = ax_node->GetTableCellColSpan();
     if (col_span.has_value()) {
       tag->fAttributes.appendInt(kPDFTableAttributeOwner,
                                  kPDFTableCellColSpanAttribute,
@@ -198,15 +202,11 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
   if (!lang.empty() && lang != parent_lang)
     tag->fLang = lang.c_str();
 
-  size_t children_count = ax_node->GetUnignoredChildCount();
-  tag->fChildVector.resize(children_count);
-  for (size_t i = 0; i < children_count; i++) {
+  tag->fChildVector.resize(ax_node->GetUnignoredChildCount());
+  for (size_t i = 0; i < tag->fChildVector.size(); i++) {
     tag->fChildVector[i] = std::make_unique<SkPDF::StructureElementNode>();
-    bool success = RecursiveBuildStructureTree(
-        ax_node->GetUnignoredChildAtIndex(i), tag->fChildVector[i].get());
-
-    if (success)
-      valid = true;
+    valid |= RecursiveBuildStructureTree(ax_node->GetUnignoredChildAtIndex(i),
+                                         tag->fChildVector[i].get());
   }
 
   return valid;
@@ -219,16 +219,18 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
 
 namespace printing {
 
-sk_sp<SkDocument> MakePdfDocument(const std::string& creator,
+sk_sp<SkDocument> MakePdfDocument(base::StringPiece creator,
                                   const ui::AXTreeUpdate& accessibility_tree,
                                   SkWStream* stream) {
   SkPDF::Metadata metadata;
   SkTime::DateTime now = TimeToSkTime(base::Time::Now());
   metadata.fCreation = now;
   metadata.fModified = now;
+  // TODO(crbug.com/691162): Switch to SkString's string_view constructor when
+  // possible.
   metadata.fCreator = creator.empty()
                           ? SkString("Chromium")
-                          : SkString(creator.c_str(), creator.size());
+                          : SkString(creator.data(), creator.size());
   metadata.fRasterDPI = 300.0f;
 
   SkPDF::StructureElementNode tag_root = {};

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,7 +68,7 @@ v8::Local<v8::Object> WebCryptoAlgorithmToV8Value(
             rsa_hashed_key_gen->PublicExponent();
         v8::Local<v8::ArrayBuffer> buffer =
             v8::ArrayBuffer::New(isolate, public_exponent.size());
-        memcpy(buffer->GetBackingStore()->Data(), public_exponent.Data(),
+        memcpy(buffer->GetBackingStore()->Data(), public_exponent.data(),
                public_exponent.size());
         builder.Set("publicExponent", buffer);
 

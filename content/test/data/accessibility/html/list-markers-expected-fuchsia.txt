@@ -1,0 +1,31 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++LIST list_size=3
+++++++++LIST_ELEMENT list_element_index=1
+++++++++++LIST_ELEMENT_MARKER label='%E2%80%A2 '
+++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='First item properly groups itself despite '
+++++++++++++UNKNOWN label='First item properly groups itself despite '
+++++++++++STATIC_TEXT label='bolded'
+++++++++++++UNKNOWN label='bolded'
+++++++++++STATIC_TEXT label=' text.'
+++++++++++++UNKNOWN label=' text.'
+++++++++LIST_ELEMENT list_element_index=2
+++++++++++LIST_ELEMENT_MARKER label='%E2%80%A2 '
+++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='This should also be '
+++++++++++++UNKNOWN label='This should also be '
+++++++++++STATIC_TEXT label='seen'
+++++++++++++UNKNOWN label='seen'
+++++++++++STATIC_TEXT label=' as a group.'
+++++++++++++UNKNOWN label=' as a group.'
+++++++++LIST_ELEMENT list_element_index=3
+++++++++++LIST_ELEMENT_MARKER label='%E2%80%A2 '
+++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Some '
+++++++++++++UNKNOWN label='Some '
+++++++++++STATIC_TEXT label='more'
+++++++++++++UNKNOWN label='more'
+++++++++++STATIC_TEXT label=' text.'
+++++++++++++UNKNOWN label=' text.'

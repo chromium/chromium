@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -64,6 +63,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) SecureOriginAllowlist {
  public:
   static SecureOriginAllowlist& GetInstance();
 
+  SecureOriginAllowlist(const SecureOriginAllowlist&) = delete;
+  SecureOriginAllowlist& operator=(const SecureOriginAllowlist&) = delete;
+
   // Returns true if |origin| has a match in the secure origin allowlist.
   bool IsOriginAllowlisted(const url::Origin& origin);
 
@@ -111,8 +113,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) SecureOriginAllowlist {
   bool has_cmdline_been_parsed_ GUARDED_BY(lock_) = false;
 
   std::vector<std::string> auxiliary_allowlist_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(SecureOriginAllowlist);
 };
 
 }  // namespace network

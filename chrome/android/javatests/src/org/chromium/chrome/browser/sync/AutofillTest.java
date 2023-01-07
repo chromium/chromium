@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.sync.protocol.AutofillProfileSpecifics;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 
@@ -150,7 +151,7 @@ public class AutofillTest {
     @Feature({"Sync"})
     public void testDisabledNoDownloadAutofill() throws Exception {
         // The AUTOFILL type here controls both AUTOFILL and AUTOFILL_PROFILE.
-        mSyncTestRule.disableDataType(ModelType.AUTOFILL);
+        mSyncTestRule.disableDataType(UserSelectableType.AUTOFILL);
         addServerAutofillProfile(getServerAutofillProfile(STREET, CITY, STATE, ZIP));
         SyncTestUtil.triggerSyncAndWaitForCompletion();
         assertClientAutofillProfileCount(0);

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,6 +38,11 @@ class SubprocessMetricsProvider
       public content::RenderProcessHostObserver {
  public:
   SubprocessMetricsProvider();
+
+  SubprocessMetricsProvider(const SubprocessMetricsProvider&) = delete;
+  SubprocessMetricsProvider& operator=(const SubprocessMetricsProvider&) =
+      delete;
+
   ~SubprocessMetricsProvider() override;
 
   // Merge histograms for all subprocesses. This is used by tests that don't
@@ -74,7 +79,7 @@ class SubprocessMetricsProvider
   void MergeHistogramDeltas() override;
 
   // content::BrowserChildProcessObserver:
-  void BrowserChildProcessHostConnected(
+  void BrowserChildProcessLaunchedAndConnected(
       const content::ChildProcessData& data) override;
   void BrowserChildProcessHostDisconnected(
       const content::ChildProcessData& data) override;
@@ -96,11 +101,6 @@ class SubprocessMetricsProvider
       const content::ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
-  // Gets a histogram allocator from a subprocess. This must be called on
-  // the IO thread.
-  static std::unique_ptr<base::PersistentHistogramAllocator>
-  GetSubprocessHistogramAllocatorOnIOThread(int id);
-
   THREAD_CHECKER(thread_checker_);
 
   // All of the shared-persistent-allocators for known sub-processes.
@@ -114,8 +114,6 @@ class SubprocessMetricsProvider
       scoped_observations_{this};
 
   base::WeakPtrFactory<SubprocessMetricsProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SubprocessMetricsProvider);
 };
 
 }  // namespace metrics

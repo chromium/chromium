@@ -19,14 +19,12 @@ Before using CBCM Takeout API you will need to do some initial setup:
     settings -> Manage API client access. On this page, the Client ID
     corresponds to the Unique ID of your service account. You will need to
     authorize the client ID for the scope:
-    *   https://www.googleapis.com/auth/admin.directory.device.chromebrowsers.readonly
+    * https://www.googleapis.com/auth/admin.directory.device.chromebrowsers.readonly
 
 ## Running the Script
 
-You can download the scripts
-[here](https://chromium.googlesource.com/chromium/src/+/refs/heads/master/docs/enterprise/extension_query.py)
-or here [here](https://chromium.googlesource.com/chromium/src/+/refs/heads/master/docs/enterprise/extension_query_py2.py)
-for a python 2.7 compatible version.
+You can download the scripts [here](extension_query.py) (or [here](extension_query_py2.py)
+for a python 2.7 compatible version).
 
 With the service account keys, you can now run the script which uses Google API
 Client Libraries to make the necessary queries to the API. The script requires
@@ -34,10 +32,14 @@ that both the service account keys you downloaded from the developers console as
 well as the e-mail of an admin user in your domain that is allowed to access the
 data you wish to query.
 
-You can run the script from the command-line: python extension_query.py
---service_account_key_path <service_account_key_file> --admin_email
-<admin_email> (also: `python extension_query.py --help` for a reminder of the
+You can run the script from the command-line:
+``` sh
+python extension_query.py --service_account_key_path <service_account_key_file> --admin_email <admin_email>
+```
+(also: `python extension_query.py --help` for a reminder of the
 argument names)
 
-Example Data output Here is an example of what that data will look like:
-![Sample Results](https://chromium.googlesource.com/chromium/src/+/refs/heads/master/docs/enterprise/extension_query_sample.png)
+## Example Data output
+
+Here is an example of what that data will look like:
+![Sample Results](extension_query_sample.png)

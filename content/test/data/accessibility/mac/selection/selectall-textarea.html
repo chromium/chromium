@@ -1,0 +1,13 @@
+<!--
+@SCRIPT:
+  textarea_range:= textarea.AXTextMarkerRangeForUIElement(textarea)
+  textarea.AXSelectedTextMarkerRange = textarea_range
+  wait for AXSelectedTextChanged on AXTextArea
+  textarea.AXSelectedTextMarkerRange
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<textarea id="textarea">The quick brown fox</textarea>
+</body>
+</html>

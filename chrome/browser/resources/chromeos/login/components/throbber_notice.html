@@ -1,0 +1,47 @@
+<!--
+Copyright 2015 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+<link rel="import" href="chrome://resources/cr_elements/chromeos/cros_color_overrides.css.html">
+
+<link rel="import" href="./behaviors/oobe_i18n_behavior.html">
+
+<!-- TODO(http://crbug.com/1172980): Delete once oobe-loading-dialog replaces throbber-notice -->
+<dom-module id="throbber-notice">
+  <template>
+    <style include="cros-color-overrides">
+      :host {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 0;
+      }
+
+      paper-spinner-lite {
+        height: 38px;
+        margin-bottom: 28px;
+        width: 38px;
+      }
+
+      #comment {
+        @apply --oobe-default-font;
+        color: var(--cros-text-color-secondary);
+      }
+    </style>
+    <paper-spinner-lite dir="ltr" active></paper-spinner-lite>
+    <div id="comment" aria-live="polite"
+        aria-label$="[[getAriaLabel(locale, textKey)]]">
+      <template is="dom-if" if="[[textKey]]">
+        [[i18nDynamic(locale, textKey)]]
+      </template>
+    </div>
+  </template>
+  <script src="throbber_notice.js"></script>
+</dom-module>

@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into depot_tools.
 """
+
+USE_PYTHON3 = True
 
 import os.path
 
@@ -37,7 +39,7 @@ def CommonChecks(input_api, output_api):
     commands = []
     if generating_files:
       commands.append(input_api.Command(name='generate_vulkan_types',
-                                        cmd=[input_api.python_executable,
+                                        cmd=[input_api.python3_executable,
                                              'generate_vulkan_types.py',
                                              '--check',
                                              '--output-dir=' + temp_dir],

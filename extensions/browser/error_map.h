@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "extensions/browser/extension_error.h"
 
 namespace extensions {
@@ -25,6 +24,10 @@ using ErrorList = base::circular_deque<std::unique_ptr<ExtensionError>>;
 class ErrorMap {
  public:
   ErrorMap();
+
+  ErrorMap(const ErrorMap&) = delete;
+  ErrorMap& operator=(const ErrorMap&) = delete;
+
   ~ErrorMap();
 
   struct Filter {
@@ -79,8 +82,6 @@ class ErrorMap {
 
   // The mapping between Extension IDs and their corresponding Entries.
   std::map<std::string, std::unique_ptr<ExtensionEntry>> map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorMap);
 };
 
 }  // namespace extensions

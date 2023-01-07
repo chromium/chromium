@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,4 +31,4 @@ class PamAuthorizationFactory : public protocol::AuthenticatorFactory {
 
 }  // namespace remoting
 
-#endif
+#endif  // REMOTING_HOST_PAM_AUTHORIZATION_FACTORY_POSIX_H_

@@ -1,7 +1,26 @@
-from __future__ import unicode_literals
-from __future__ import absolute_import
+"""
+Python Markdown
+
+A Python implementation of John Gruber's Markdown.
+
+Documentation: https://python-markdown.github.io/
+GitHub: https://github.com/Python-Markdown/markdown/
+PyPI: https://pypi.org/project/Markdown/
+
+Started by Manfred Stienstra (http://www.dwerg.net/).
+Maintained for a few years by Yuri Takhteyev (http://www.freewisdom.org).
+Currently maintained by Waylan Limberg (https://github.com/waylan),
+Dmitry Shachnev (https://github.com/mitya57) and Isaac Muse (https://github.com/facelessuser).
+
+Copyright 2007-2018 The Python Markdown Project (v. 1.7 and later)
+Copyright 2004, 2005, 2006 Yuri Takhteyev (v. 0.2-1.6b)
+Copyright 2004 Manfred Stienstra (the original version)
+
+License: BSD (see LICENSE.md for details).
+"""
+
+import xml.etree.ElementTree as etree
 from . import util
-from . import odict
 
 
 class State(list):
@@ -45,10 +64,16 @@ class BlockParser:
     looping through them and creating an ElementTree object.
     """
 
-    def __init__(self, markdown):
-        self.blockprocessors = odict.OrderedDict()
+    def __init__(self, md):
+        self.blockprocessors = util.Registry()
         self.state = State()
-        self.markdown = markdown
+        self.md = md
+
+    @property
+    @util.deprecated("Use 'md' instead.")
+    def markdown(self):
+        # TODO: remove this later
+        return self.md
 
     def parseDocument(self, lines):
         """ Parse a markdown document into an ElementTree.
@@ -61,9 +86,9 @@ class BlockParser:
 
         """
         # Create a ElementTree from the lines
-        self.root = util.etree.Element(self.markdown.doc_tag)
+        self.root = etree.Element(self.md.doc_tag)
         self.parseChunk(self.root, '\n'.join(lines))
-        return util.etree.ElementTree(self.root)
+        return etree.ElementTree(self.root)
 
     def parseChunk(self, parent, text):
         """ Parse a chunk of markdown text and attach to given etree node.
@@ -93,7 +118,7 @@ class BlockParser:
 
         """
         while blocks:
-            for processor in self.blockprocessors.values():
+            for processor in self.blockprocessors:
                 if processor.test(parent, blocks[0]):
                     if processor.run(parent, blocks) is not False:
                         # run returns True or None

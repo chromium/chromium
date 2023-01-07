@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,17 @@
 
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "media/base/timestamp_constants.h"
 
 namespace media {
+
+namespace {
+
+// Input buffers are allocate once per decoder, the |buffer_lifetime_ordinal| is
+// always the same.
+constexpr uint64_t kInputBufferLifetimeOrdinal = 1;
+
+}  // namespace
 
 StreamProcessorHelper::IoPacket::IoPacket(size_t index,
                                           size_t offset,
@@ -19,36 +28,23 @@ StreamProcessorHelper::IoPacket::IoPacket(size_t index,
       offset_(offset),
       size_(size),
       timestamp_(timestamp),
-      unit_end_(unit_end),
-      destroy_cb_(std::move(destroy_cb)) {}
+      unit_end_(unit_end) {
+  destroy_callbacks_.push_front(std::move(destroy_cb));
+}
 
-StreamProcessorHelper::IoPacket::~IoPacket() = default;
+StreamProcessorHelper::IoPacket::~IoPacket() {
+  for (auto& cb : destroy_callbacks_) {
+    std::move(cb).Run();
+  }
+}
 
 StreamProcessorHelper::IoPacket::IoPacket(IoPacket&&) = default;
 StreamProcessorHelper::IoPacket& StreamProcessorHelper::IoPacket::operator=(
     IoPacket&&) = default;
 
-// static
-StreamProcessorHelper::IoPacket StreamProcessorHelper::IoPacket::CreateInput(
-    size_t index,
-    size_t size,
-    base::TimeDelta timestamp,
-    bool unit_end,
-    base::OnceClosure destroy_cb) {
-  return IoPacket(index, 0 /* offset */, size, timestamp, unit_end,
-                  std::move(destroy_cb));
-}
-
-// static
-StreamProcessorHelper::IoPacket StreamProcessorHelper::IoPacket::CreateOutput(
-    size_t index,
-    size_t offset,
-    size_t size,
-    base::TimeDelta timestamp,
-    bool unit_end,
-    base::OnceClosure destroy_cb) {
-  return IoPacket(index, offset, size, timestamp, unit_end,
-                  std::move(destroy_cb));
+void StreamProcessorHelper::IoPacket::AddOnDestroyClosure(
+    base::OnceClosure closure) {
+  destroy_callbacks_.push_front(std::move(closure));
 }
 
 StreamProcessorHelper::StreamProcessorHelper(
@@ -68,8 +64,6 @@ StreamProcessorHelper::StreamProcessorHelper(
 
   processor_.events().OnStreamFailed =
       fit::bind_member(this, &StreamProcessorHelper::OnStreamFailed);
-  processor_.events().OnInputConstraints =
-      fit::bind_member(this, &StreamProcessorHelper::OnInputConstraints);
   processor_.events().OnFreeInputPacket =
       fit::bind_member(this, &StreamProcessorHelper::OnFreeInputPacket);
   processor_.events().OnOutputConstraints =
@@ -94,7 +88,7 @@ void StreamProcessorHelper::Process(IoPacket input) {
 
   fuchsia::media::Packet packet;
   packet.mutable_header()->set_buffer_lifetime_ordinal(
-      input_buffer_lifetime_ordinal_);
+      kInputBufferLifetimeOrdinal);
   packet.mutable_header()->set_packet_index(input.buffer_index());
   packet.set_buffer_index(packet.header().packet_index());
   packet.set_timestamp_ish(input.timestamp().InNanoseconds());
@@ -110,7 +104,7 @@ void StreamProcessorHelper::Process(IoPacket input) {
                                         fidl::Clone(input.format()));
   }
 
-  DCHECK(input_packets_.find(input.buffer_index()) == input_packets_.end());
+  DCHECK(!input_packets_.contains(input.buffer_index()));
   input_packets_.insert_or_assign(input.buffer_index(), std::move(input));
   processor_->QueueInputPacket(std::move(packet));
 }
@@ -154,40 +148,20 @@ void StreamProcessorHelper::OnStreamFailed(uint64_t stream_lifetime_ordinal,
     // Always reset the stream since the current one has failed.
     Reset();
 
-    client_->OnNoKey();
+    client_->OnStreamProcessorNoKey();
     return;
   }
 
   OnError();
 }
 
-void StreamProcessorHelper::OnInputConstraints(
-    fuchsia::media::StreamBufferConstraints constraints) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  // Buffer lifetime ordinal is an odd number incremented by 2 for each buffer
-  // generation as required by StreamProcessor.
-  input_buffer_lifetime_ordinal_ += 2;
-
-  DCHECK(input_packets_.empty());
-  input_buffer_constraints_ = std::move(constraints);
-
-  client_->AllocateInputBuffers(input_buffer_constraints_);
-}
-
 void StreamProcessorHelper::OnFreeInputPacket(
     fuchsia::media::PacketHeader free_input_packet) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!free_input_packet.has_buffer_lifetime_ordinal() ||
-      !free_input_packet.has_packet_index()) {
+  if (!free_input_packet.has_packet_index()) {
     DLOG(ERROR) << "Received OnFreeInputPacket() with missing required fields.";
     OnError();
-    return;
-  }
-
-  if (free_input_packet.buffer_lifetime_ordinal() !=
-      input_buffer_lifetime_ordinal_) {
     return;
   }
 
@@ -240,7 +214,7 @@ void StreamProcessorHelper::OnOutputConstraints(
   output_buffer_constraints_ =
       std::move(*output_constraints.mutable_buffer_constraints());
 
-  client_->AllocateOutputBuffers(output_buffer_constraints_);
+  client_->OnStreamProcessorAllocateOutputBuffers(output_buffer_constraints_);
 }
 
 void StreamProcessorHelper::OnOutputFormat(
@@ -258,7 +232,7 @@ void StreamProcessorHelper::OnOutputFormat(
     return;
   }
 
-  client_->OnOutputFormat(std::move(output_format));
+  client_->OnStreamProcessorOutputFormat(std::move(output_format));
 }
 
 void StreamProcessorHelper::OnOutputPacket(fuchsia::media::Packet output_packet,
@@ -290,12 +264,12 @@ void StreamProcessorHelper::OnOutputPacket(fuchsia::media::Packet output_packet,
 
   auto buffer_index = output_packet.buffer_index();
   auto packet_index = output_packet.header().packet_index();
-  base::TimeDelta timestamp;
-  if (output_packet.has_timestamp_ish()) {
-    timestamp = base::TimeDelta::FromNanoseconds(output_packet.timestamp_ish());
-  }
+  base::TimeDelta timestamp =
+      output_packet.has_timestamp_ish()
+          ? base::Nanoseconds(output_packet.timestamp_ish())
+          : kNoTimestamp;
 
-  client_->OnOutputPacket(IoPacket::CreateOutput(
+  client_->OnStreamProcessorOutputPacket(IoPacket(
       buffer_index, output_packet.start_offset(),
       output_packet.valid_length_bytes(), timestamp,
       output_packet.known_end_access_unit(),
@@ -315,22 +289,21 @@ void StreamProcessorHelper::OnOutputEndOfStream(
   stream_lifetime_ordinal_ += 2;
   active_stream_ = false;
 
-  client_->OnProcessEos();
+  client_->OnStreamProcessorEndOfStream();
 }
 
 void StreamProcessorHelper::OnError() {
   processor_.Unbind();
-  client_->OnError();
+  client_->OnStreamProcessorError();
 }
 
-void StreamProcessorHelper::CompleteInputBuffersAllocation(
+void StreamProcessorHelper::SetInputBufferCollectionToken(
     fuchsia::sysmem::BufferCollectionTokenPtr sysmem_token) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!input_buffer_constraints_.IsEmpty());
+
   fuchsia::media::StreamBufferPartialSettings settings;
-  settings.set_buffer_lifetime_ordinal(input_buffer_lifetime_ordinal_);
-  settings.set_buffer_constraints_version_ordinal(
-      input_buffer_constraints_.buffer_constraints_version_ordinal());
+  settings.set_buffer_lifetime_ordinal(kInputBufferLifetimeOrdinal);
+  settings.set_buffer_constraints_version_ordinal(0);
   settings.set_sysmem_token(std::move(sysmem_token));
   processor_->SetInputBufferPartialSettings(std::move(settings));
 }

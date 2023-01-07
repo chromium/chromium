@@ -1,23 +1,26 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {MetadataItem} from './metadata/metadata_item.m.js';
-// #import {VolumeManager} from '../../externs/volume_manager.m.js';
-// #import {FileMetadataFormatter} from './ui/file_metadata_formatter.m.js';
-// #import {QuickViewModel} from './quick_view_model.m.js';
-// #import {MetadataModel} from './metadata/metadata_model.m.js';
-// #import {PathComponent} from './path_component.m.js';
-// #import {FileType} from '../../common/js/file_type.m.js';
-// #import {util} from '../../common/js/util.m.js';
-// #import {FilesQuickView} from '../elements/files_quick_view.m.js';
-// #import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+
+import {FileType} from '../../common/js/file_type.js';
+import {TrashEntry} from '../../common/js/trash.js';
+import {util} from '../../common/js/util.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+import {FilesQuickView} from '../elements/files_quick_view.js';
+
+import {MetadataItem} from './metadata/metadata_item.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {PathComponent} from './path_component.js';
+import {QuickViewModel} from './quick_view_model.js';
+import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
 
 /**
  * Controller of metadata box.
  * This should be initialized with |init| method.
  */
-/* #export */ class MetadataBoxController {
+export class MetadataBoxController {
   /**
    * @param {!MetadataModel} metadataModel
    * @param {!QuickViewModel} quickViewModel
@@ -84,9 +87,6 @@
   /**
    * Initialize the controller with quick view which will be lazily loaded.
    *
-   * TODO(oka): store quickViewModel_.metadataBoxActive state to persistent
-   * storage using FilesApp window.appState?
-   *
    * @param{!FilesQuickView} quickView
    */
   init(quickView) {
@@ -104,9 +104,7 @@
     this.metadataBox_ = this.quickView_.getFilesMetadataBox();
     this.metadataBox_.clear(false);
 
-    if (util.isFilesNg()) {
-      this.metadataBox_.setAttribute('files-ng', '');
-    }
+    this.metadataBox_.setAttribute('files-ng', '');
   }
 
   /**
@@ -166,6 +164,12 @@
       this.metadataBox_.size =
           this.fileMetadataFormatter_.formatSize(item.size, item.hosted, true);
       this.metadataBox_.metadataRendered('size');
+    }
+
+    if (entry.restoreEntry) {
+      this.metadataBox_.originalLocation =
+          this.getFileLocationLabel_(entry.restoreEntry);
+      this.metadataBox_.metadataRendered('originalLocation');
     }
 
     this.updateModificationTime_(entry, items);
@@ -244,12 +248,8 @@
   updateModificationTime_(entry, items) {
     const item = items[0];
 
-    if (item.modificationTime) {
-      this.metadataBox_.modificationTime =
-          this.fileMetadataFormatter_.formatModDate(item.modificationTime);
-    } else {
-      this.metadataBox_.modificationTime = '';
-    }
+    this.metadataBox_.modificationTime =
+        this.fileMetadataFormatter_.formatModDate(item.modificationTime);
   }
 
   /**
@@ -305,7 +305,7 @@
       }
 
       if (chrome.runtime.lastError) {
-        console.error(chrome.runtime.lastError);
+        console.warn(chrome.runtime.lastError);
         size = undefined;
       }
 

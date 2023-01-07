@@ -1,0 +1,20 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// A client implemented by lacros-chrome.
+[Stable]
+interface FullscreenControllerClient {
+  // Returns whether full screen mode should be exited on session lock/unlock.
+  ShouldExitFullscreenBeforeLock@0() => (bool should_exit_fullscreen);
+};
+
+// This interface lets ash query lacros whether it should exit full screen mode.
+// Implemented by ash-chrome.
+[Stable, Uuid="49d56ccf-d93f-4fea-a9cd-ce84bc8ea4f5"]
+interface FullscreenController {
+  // Registers the client that lives in lacros-chrome.
+  AddClient@0(pending_remote<FullscreenControllerClient> client);
+};

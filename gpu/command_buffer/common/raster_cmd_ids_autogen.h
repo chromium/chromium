@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,32 +11,34 @@
 #ifndef GPU_COMMAND_BUFFER_COMMON_RASTER_CMD_IDS_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_COMMON_RASTER_CMD_IDS_AUTOGEN_H_
 
-#define RASTER_COMMAND_LIST(OP)                            \
-  OP(Finish)                                     /* 256 */ \
-  OP(Flush)                                      /* 257 */ \
-  OP(GetError)                                   /* 258 */ \
-  OP(GenQueriesEXTImmediate)                     /* 259 */ \
-  OP(DeleteQueriesEXTImmediate)                  /* 260 */ \
-  OP(QueryCounterEXT)                            /* 261 */ \
-  OP(BeginQueryEXT)                              /* 262 */ \
-  OP(EndQueryEXT)                                /* 263 */ \
-  OP(LoseContextCHROMIUM)                        /* 264 */ \
-  OP(BeginRasterCHROMIUMImmediate)               /* 265 */ \
-  OP(RasterCHROMIUM)                             /* 266 */ \
-  OP(EndRasterCHROMIUM)                          /* 267 */ \
-  OP(CreateTransferCacheEntryINTERNAL)           /* 268 */ \
-  OP(DeleteTransferCacheEntryINTERNAL)           /* 269 */ \
-  OP(UnlockTransferCacheEntryINTERNAL)           /* 270 */ \
-  OP(DeletePaintCacheTextBlobsINTERNALImmediate) /* 271 */ \
-  OP(DeletePaintCachePathsINTERNALImmediate)     /* 272 */ \
-  OP(ClearPaintCacheINTERNAL)                    /* 273 */ \
-  OP(CopySubTextureINTERNALImmediate)            /* 274 */ \
-  OP(WritePixelsINTERNALImmediate)               /* 275 */ \
-  OP(ReadbackImagePixelsINTERNALImmediate)       /* 276 */ \
-  OP(ConvertYUVAMailboxesToRGBINTERNALImmediate) /* 277 */ \
-  OP(TraceBeginCHROMIUM)                         /* 278 */ \
-  OP(TraceEndCHROMIUM)                           /* 279 */ \
-  OP(SetActiveURLCHROMIUM)                       /* 280 */
+#define RASTER_COMMAND_LIST(OP)                             \
+  OP(Finish)                                      /* 256 */ \
+  OP(Flush)                                       /* 257 */ \
+  OP(GetError)                                    /* 258 */ \
+  OP(GenQueriesEXTImmediate)                      /* 259 */ \
+  OP(DeleteQueriesEXTImmediate)                   /* 260 */ \
+  OP(QueryCounterEXT)                             /* 261 */ \
+  OP(BeginQueryEXT)                               /* 262 */ \
+  OP(EndQueryEXT)                                 /* 263 */ \
+  OP(LoseContextCHROMIUM)                         /* 264 */ \
+  OP(BeginRasterCHROMIUMImmediate)                /* 265 */ \
+  OP(RasterCHROMIUM)                              /* 266 */ \
+  OP(EndRasterCHROMIUM)                           /* 267 */ \
+  OP(CreateTransferCacheEntryINTERNAL)            /* 268 */ \
+  OP(DeleteTransferCacheEntryINTERNAL)            /* 269 */ \
+  OP(UnlockTransferCacheEntryINTERNAL)            /* 270 */ \
+  OP(DeletePaintCachePathsINTERNALImmediate)      /* 271 */ \
+  OP(DeletePaintCachePathsINTERNAL)               /* 272 */ \
+  OP(ClearPaintCacheINTERNAL)                     /* 273 */ \
+  OP(CopySubTextureINTERNALImmediate)             /* 274 */ \
+  OP(WritePixelsINTERNALImmediate)                /* 275 */ \
+  OP(ReadbackARGBImagePixelsINTERNALImmediate)    /* 276 */ \
+  OP(ReadbackYUVImagePixelsINTERNALImmediate)     /* 277 */ \
+  OP(ConvertYUVAMailboxesToRGBINTERNALImmediate)  /* 278 */ \
+  OP(ConvertRGBAToYUVAMailboxesINTERNALImmediate) /* 279 */ \
+  OP(TraceBeginCHROMIUM)                          /* 280 */ \
+  OP(TraceEndCHROMIUM)                            /* 281 */ \
+  OP(SetActiveURLCHROMIUM)                        /* 282 */
 
 enum CommandId {
   kOneBeforeStartPoint =

@@ -1,30 +1,20 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.content_capture;
 
 import org.chromium.base.Log;
-import org.chromium.content_public.browser.WebContents;
 
 /**
  * This class is used to trigger ContentCapture unconditionally for the experiment. It doesn't
  * consume any content, but is necessary to keep capturing content.
  */
-public class ExperimentContentCaptureConsumer extends ContentCaptureConsumer {
+public class ExperimentContentCaptureConsumer implements ContentCaptureConsumer {
     private static final String TAG = "ContentCapture";
     private static boolean sDump;
 
-    public static ContentCaptureConsumer create(WebContents webContents) {
-        if (ContentCaptureFeatures.shouldTriggerContentCaptureForExperiment()) {
-            return new ExperimentContentCaptureConsumer(webContents);
-        }
-        return null;
-    }
-
-    private ExperimentContentCaptureConsumer(WebContents webContents) {
-        super(webContents);
-    }
+    public ExperimentContentCaptureConsumer() {}
 
     @Override
     public void onContentCaptured(
@@ -51,5 +41,15 @@ public class ExperimentContentCaptureConsumer extends ContentCaptureConsumer {
     @Override
     public void onTitleUpdated(ContentCaptureFrame contentCaptureFrame) {
         if (sDump) Log.d(TAG, "onTitleUpdated");
+    }
+
+    @Override
+    public void onFaviconUpdated(ContentCaptureFrame mainFrame) {
+        if (sDump) Log.d(TAG, "onFaviconUpdated");
+    }
+
+    @Override
+    public boolean shouldCapture(String[] urls) {
+        return true;
     }
 }

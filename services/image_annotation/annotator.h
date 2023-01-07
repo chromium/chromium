@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -66,6 +66,17 @@ class Annotator : public mojom::Annotator {
   // The maximum aspect ratio permitted to request description annotations.
   static constexpr double kDescMaxAspectRatio = 2.5;
 
+  // The minimum side length needed to request icon annotations.
+  static constexpr int32_t kIconMinDimension = 16;
+
+  // The maximum side length needed to request icon annotations.
+  static constexpr int32_t kIconMaxDimension = 256;
+
+  // The maximum aspect ratio permitted to request icon annotations.
+  // (Most icons are square, but something like an ellipsis / "more" menu
+  // can have a long aspect ratio.)
+  static constexpr double kIconMaxAspectRatio = 5.0;
+
   // Constructs an annotator.
   //  |pixels_server_url| : the URL to use when the annotator sends image
   //                        pixel data to get back annotations. The
@@ -91,6 +102,10 @@ class Annotator : public mojom::Annotator {
             double min_ocr_confidence,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
             std::unique_ptr<Client> client);
+
+  Annotator(const Annotator&) = delete;
+  Annotator& operator=(const Annotator&) = delete;
+
   ~Annotator() override;
 
   // Start providing behavior for the given Mojo receiver.
@@ -129,6 +144,7 @@ class Annotator : public mojom::Annotator {
   struct ServerRequestInfo {
     ServerRequestInfo(const std::string& source_id,
                       bool desc_requested,
+                      bool icon_requested,
                       const std::string& desc_lang_tag,
                       const std::vector<uint8_t>& image_bytes);
     ServerRequestInfo(const ServerRequestInfo& other) = delete;
@@ -141,6 +157,7 @@ class Annotator : public mojom::Annotator {
     std::string source_id;  // The URL or hashed data URI for the image.
 
     bool desc_requested;  // Whether or not descriptions have been requested.
+    bool icon_requested;  // Whether or not icons have been requested.
     std::string desc_lang_tag;  // The language in which descriptions have been
                                 // requested.
 
@@ -161,6 +178,11 @@ class Annotator : public mojom::Annotator {
   // backend (i.e. the image has size / shape on which it is acceptable to run
   // the description model).
   static bool IsWithinDescPolicy(int32_t width, int32_t height);
+
+  // Returns true if the given dimensions fit the policy of the icon
+  // backend (i.e. the image has size / shape on which it is acceptable to run
+  // the icon model).
+  static bool IsWithinIconPolicy(int32_t width, int32_t height);
 
   // Constructs and returns a JSON object containing an request for the
   // given images.
@@ -205,8 +227,8 @@ class Annotator : public mojom::Annotator {
   // Called when the data decoder service provides parsed JSON data for a server
   // response.
   void OnResponseJsonParsed(const std::set<RequestKey>& request_keys,
-                            base::Optional<base::Value> json_data,
-                            const base::Optional<std::string>& error);
+                            absl::optional<base::Value> json_data,
+                            const absl::optional<std::string>& error);
 
   // Adds the given results to the cache (if successful) and notifies clients.
   void ProcessResults(
@@ -224,8 +246,8 @@ class Annotator : public mojom::Annotator {
 
   // Parse the JSON from the reply with server languages.
   void OnServerLangsResponseJsonParsed(
-      base::Optional<base::Value> json_data,
-      const base::Optional<std::string>& error);
+      absl::optional<base::Value> json_data,
+      const absl::optional<std::string>& error);
 
   const std::unique_ptr<Client> client_;
 
@@ -290,8 +312,6 @@ class Annotator : public mojom::Annotator {
 
   // Used for all callbacks.
   base::WeakPtrFactory<Annotator> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Annotator);
 };
 
 }  // namespace image_annotation

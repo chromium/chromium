@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,20 +9,21 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page_state/page_state_serialization.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
 namespace {
 
-base::FilePath ToFilePath(const base::Optional<std::u16string>& s) {
+base::FilePath ToFilePath(const absl::optional<std::u16string>& s) {
   return s ? base::FilePath::FromUTF16Unsafe(*s) : base::FilePath();
 }
 
-void ToFilePathVector(const std::vector<base::Optional<std::u16string>>& input,
+void ToFilePathVector(const std::vector<absl::optional<std::u16string>>& input,
                       std::vector<base::FilePath>* output) {
   output->clear();
   output->reserve(input.size());
@@ -178,6 +179,11 @@ PageState::PageState(const std::string& data) : data_(data) {
   // TODO(darin): Enable this DCHECK once tests have been fixed up to not pass
   // bogus encoded data to CreateFromEncodedData.
   // DCHECK(IsValid());
+}
+
+void PageState::WriteIntoTrace(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("data", data_);
 }
 
 }  // namespace blink

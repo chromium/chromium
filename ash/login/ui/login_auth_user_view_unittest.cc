@@ -1,25 +1,31 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/login/ui/login_auth_user_view.h"
 
-#include "ash/constants/ash_features.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/login/mock_login_screen_client.h"
+#include "ash/login/ui/auth_factor_model.h"
+#include "ash/login/ui/fake_smart_lock_auth_factor_model.h"
+#include "ash/login/ui/fingerprint_auth_factor_model.h"
+#include "ash/login/ui/login_auth_factors_view.h"
 #include "ash/login/ui/login_password_view.h"
 #include "ash/login/ui/login_pin_input_view.h"
 #include "ash/login/ui/login_pin_view.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/login/ui/login_test_utils.h"
 #include "ash/login/ui/login_user_view.h"
+#include "ash/login/ui/smart_lock_auth_factor_model.h"
+#include "ash/shell.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
@@ -28,6 +34,7 @@
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 using testing::_;
@@ -57,54 +64,18 @@ const std::map<LoginAuthUserView::InputFieldMode, InputFieldVisibility>
 
 }  // namespace
 
-class LoginAuthUserViewUnittest : public LoginTestBase,
-                                  /*autosubmit_feature*/
-                                  public ::testing::WithParamInterface<bool> {
+class LoginAuthUserViewTestBase : public LoginTestBase {
  public:
-  static std::string ParamInfoToString(
-      testing::TestParamInfo<LoginAuthUserViewUnittest::ParamType> info) {
-    return base::StrCat(
-        {info.param ? "AutosubmitEnabled" : "AutosubmitDisabled"});
-  }
+  LoginAuthUserViewTestBase(const LoginAuthUserViewTestBase&) = delete;
+  LoginAuthUserViewTestBase& operator=(const LoginAuthUserViewTestBase&) =
+      delete;
 
  protected:
-  LoginAuthUserViewUnittest() = default;
-  ~LoginAuthUserViewUnittest() override = default;
+  LoginAuthUserViewTestBase() = default;
+  ~LoginAuthUserViewTestBase() override = default;
 
   // LoginTestBase:
-  void SetUp() override {
-    LoginTestBase::SetUp();
-    SetUpFeatures();
-    user_ = CreateUser("user@domain.com");
-
-    LoginAuthUserView::Callbacks auth_callbacks;
-    auth_callbacks.on_auth = base::DoNothing();
-    auth_callbacks.on_easy_unlock_icon_hovered = base::DoNothing();
-    auth_callbacks.on_easy_unlock_icon_tapped =
-        views::Button::PressedCallback();
-    auth_callbacks.on_tap = base::DoNothing();
-    auth_callbacks.on_remove_warning_shown = base::DoNothing();
-    auth_callbacks.on_remove = base::DoNothing();
-    view_ = new LoginAuthUserView(user_, auth_callbacks);
-
-    // We proxy |view_| inside of |container_| so we can control layout.
-    container_ = new views::View();
-    container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical));
-    container_->AddChildView(view_);
-    SetWidget(CreateWidgetWithContent(container_));
-  }
-
-  void SetUpFeatures() {
-    autosubmit_feature_enabled_ = GetParam();
-    if (autosubmit_feature_enabled_) {
-      feature_list_.InitWithFeatures(
-          {chromeos::features::kQuickUnlockPinAutosubmit}, {});
-    } else {
-      feature_list_.InitWithFeatures(
-          {}, {chromeos::features::kQuickUnlockPinAutosubmit});
-    }
-  }
+  void SetUp() override { LoginTestBase::SetUp(); }
 
   void SetAuthMethods(uint32_t auth_methods,
                       bool show_pinpad_for_pw = false,
@@ -138,16 +109,91 @@ class LoginAuthUserViewUnittest : public LoginTestBase,
     EXPECT_EQ(test.pin_password_toggle()->GetVisible(), visibility.toggle);
   }
 
-  // Initialized by test parameter in `SetUpFeatures`
-  bool autosubmit_feature_enabled_ = false;
+  void InitializeViewForUser(LoginUserInfo user) {
+    user_ = user;
+    LoginAuthUserView::Callbacks auth_callbacks;
+    auth_callbacks.on_auth = base::DoNothing();
+    auth_callbacks.on_easy_unlock_icon_hovered = base::DoNothing();
+    auth_callbacks.on_easy_unlock_icon_tapped =
+        views::Button::PressedCallback();
+    auth_callbacks.on_tap = base::DoNothing();
+    auth_callbacks.on_remove_warning_shown = base::DoNothing();
+    auth_callbacks.on_remove = base::DoNothing();
+    auth_callbacks.on_auth_factor_is_hiding_password_changed =
+        base::DoNothing();
+    view_ = new LoginAuthUserView(user_, auth_callbacks);
+
+    // We proxy |view_| inside of |container_| so we can control layout.
+    container_ = new views::View();
+    container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical));
+    container_->AddChildView(view_);
+    SetWidget(CreateWidgetWithContent(container_));
+  }
 
   base::test::ScopedFeatureList feature_list_;
   LoginUserInfo user_;
   views::View* container_ = nullptr;   // Owned by test widget view hierarchy.
   LoginAuthUserView* view_ = nullptr;  // Owned by test widget view hierarchy.
+};
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginAuthUserViewUnittest);
+class LoginAuthUserViewUnittest : public LoginAuthUserViewTestBase,
+                                  /*autosubmit_feature*/
+                                  public ::testing::WithParamInterface<bool> {
+ public:
+  LoginAuthUserViewUnittest(const LoginAuthUserViewUnittest&) = delete;
+  LoginAuthUserViewUnittest& operator=(const LoginAuthUserViewUnittest&) =
+      delete;
+
+  static std::string ParamInfoToString(
+      testing::TestParamInfo<LoginAuthUserViewUnittest::ParamType> info) {
+    return info.param ? "AutosubmitEnabled" : "AutosubmitDisabled";
+  }
+
+ protected:
+  LoginAuthUserViewUnittest() = default;
+  ~LoginAuthUserViewUnittest() override = default;
+
+  // LoginTestBase:
+  void SetUp() override {
+    LoginAuthUserViewTestBase::SetUp();
+    SetUpFeatures();
+    InitializeViewForUser(CreateUser("user@domain.com"));
+  }
+
+  void SetUpFeatures() {
+    autosubmit_feature_enabled_ = GetParam();
+    if (autosubmit_feature_enabled_) {
+      feature_list_.InitWithFeatures(
+          {chromeos::features::kQuickUnlockPinAutosubmit}, {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {chromeos::features::kQuickUnlockPinAutosubmit});
+    }
+  }
+
+  // Initialized by test parameter in `SetUpFeatures`
+  bool autosubmit_feature_enabled_ = false;
+};
+
+class LoginAuthUserViewAutosumbitUnittest : public LoginAuthUserViewTestBase {
+ public:
+  LoginAuthUserViewAutosumbitUnittest(
+      const LoginAuthUserViewAutosumbitUnittest&) = delete;
+  LoginAuthUserViewAutosumbitUnittest& operator=(
+      const LoginAuthUserViewAutosumbitUnittest&) = delete;
+
+ protected:
+  LoginAuthUserViewAutosumbitUnittest() = default;
+  ~LoginAuthUserViewAutosumbitUnittest() override = default;
+
+  // LoginTestBase:
+  void SetUp() override {
+    LoginAuthUserViewTestBase::SetUp();
+    feature_list_.InitAndEnableFeature(
+        chromeos::features::kQuickUnlockPinAutosubmit);
+    InitializeViewForUser(CreateUser("user@domain.com"));
+  }
 };
 
 // Verifies showing the PIN keyboard makes the user view grow.
@@ -155,7 +201,7 @@ TEST_P(LoginAuthUserViewUnittest, ShowingPinExpandsView) {
   gfx::Size start_size = view_->size();
   SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
                  LoginAuthUserView::AUTH_PIN);
-  container_->Layout();
+  views::test::RunScheduledLayout(container_);
   gfx::Size expanded_size = view_->size();
   EXPECT_GT(expanded_size.height(), start_size.height());
 }
@@ -200,7 +246,7 @@ TEST_P(LoginAuthUserViewUnittest, PressReturnWithTapToUnlockEnabled) {
                   user_view->current_user().basic_user_info.account_id));
   SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
                  LoginAuthUserView::AUTH_TAP);
-  password_view->Clear();
+  password_view->Reset();
 
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, 0);
   base::RunLoop().RunUntilIdle();
@@ -281,7 +327,7 @@ TEST_P(LoginAuthUserViewUnittest,
 
   // Set a password.
   SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD);
-  password_test.textfield()->SetText(base::ASCIIToUTF16("Hello"));
+  password_test.textfield()->SetText(u"Hello");
 
   // Enable some other auth method (PIN), password is not cleared.
   EXPECT_TRUE(has_password());
@@ -299,7 +345,7 @@ TEST_P(LoginAuthUserViewUnittest, PasswordFieldChangeOnUpdateUser) {
   LoginAuthUserView::TestApi auth_test(view_);
   LoginPasswordView::TestApi password_test(auth_test.password_view());
 
-  const auto password = base::ASCIIToUTF16("abc1");
+  const std::u16string password = u"abc1";
   password_test.textfield()->SetText(password);
   view_->UpdateForUser(user_);
   EXPECT_EQ(password_test.textfield()->GetText(), password);
@@ -316,6 +362,28 @@ TEST_P(LoginAuthUserViewUnittest, PasswordFieldChangeOnUpdateUser) {
   view_->UpdateForUser(user_);
   EXPECT_EQ(password_test.textfield()->GetTextInputType(),
             ui::TEXT_INPUT_TYPE_PASSWORD);
+}
+
+TEST_F(LoginAuthUserViewAutosumbitUnittest, ResetPinFieldOnUpdateUser) {
+  LoginAuthUserView::TestApi auth_test(view_);
+  LoginPinInputView* pin_input(auth_test.pin_input_view());
+  LoginPinInputView::TestApi pin_input_test_api(auth_test.pin_input_view());
+
+  // Set up PIN with auto submit.
+  SetUserCount(1);
+  SetAuthPin(/*autosubmit_length*/ 6);
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PIN_WITH_TOGGLE);
+
+  // Insert some random digits.
+  pin_input->InsertDigit(1);
+  pin_input->InsertDigit(2);
+  pin_input->InsertDigit(3);
+  EXPECT_FALSE(pin_input_test_api.IsEmpty());
+
+  // Verify PIN field gets reset when user is updated.
+  auto another_user = CreateUser("user2@domain.com");
+  view_->UpdateForUser(another_user);
+  EXPECT_TRUE(pin_input_test_api.IsEmpty());
 }
 
 // Tests that the appropriate InputFieldMode is used based on the exposed
@@ -364,7 +432,7 @@ TEST_P(LoginAuthUserViewUnittest, PasswordOnlyFieldMode) {
   SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD);
   ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PASSWORD_ONLY);
 
-  password_test.textfield()->SetText(base::ASCIIToUTF16("test_password"));
+  password_test.textfield()->SetText(u"test_password");
 
   EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
                            user_view->current_user().basic_user_info.account_id,
@@ -427,10 +495,7 @@ TEST_P(LoginAuthUserViewUnittest, PinAndPasswordFieldModeCorrectness) {
  * - Digits are correctly ignored when the field is set to read-only
  * - Submitting the last digit triggers the correct auth call
  */
-TEST_P(LoginAuthUserViewUnittest, PinWithToggleFieldModeCorrectness) {
-  if (!autosubmit_feature_enabled_)
-    return;
-
+TEST_F(LoginAuthUserViewAutosumbitUnittest, PinWithToggleFieldModeCorrectness) {
   LoginAuthUserView::TestApi auth_test(view_);
   auto client = std::make_unique<MockLoginScreenClient>();
   LoginUserView* user_view(auth_test.user_view());
@@ -471,10 +536,7 @@ TEST_P(LoginAuthUserViewUnittest, PinWithToggleFieldModeCorrectness) {
  * mode that shows just the password field with the option to switch to PIN.
  * It is only available when the user has auto submit enabled.
  */
-TEST_P(LoginAuthUserViewUnittest, PwdWithToggleFieldModeCorrectness) {
-  if (!autosubmit_feature_enabled_)
-    return;
-
+TEST_F(LoginAuthUserViewAutosumbitUnittest, PwdWithToggleFieldModeCorrectness) {
   LoginAuthUserView::TestApi auth_test(view_);
   ui::test::EventGenerator* generator = GetEventGenerator();
   auto client = std::make_unique<MockLoginScreenClient>();
@@ -494,7 +556,7 @@ TEST_P(LoginAuthUserViewUnittest, PwdWithToggleFieldModeCorrectness) {
 
   // Insert a password consisting of numbers only and expect it to be treated
   // as a password, not a PIN. This means 'authenticated_by_pin' must be false.
-  password_test.textfield()->SetText(base::ASCIIToUTF16("12345678"));
+  password_test.textfield()->SetText(u"12345678");
 
   EXPECT_CALL(*client, AuthenticateUserWithPasswordOrPin_(
                            user_view->current_user().basic_user_info.account_id,
@@ -510,5 +572,173 @@ INSTANTIATE_TEST_SUITE_P(LoginAuthUserViewTests,
                          LoginAuthUserViewUnittest,
                          testing::Bool(),  // PIN autosubmit feature
                          LoginAuthUserViewUnittest::ParamInfoToString);
+
+/**
+ * This subclass is a test fixture for tests validating logic with auth factors.
+ * The test requires passing a custom user object per test to initialize the
+ * view to test.
+ */
+class LoginAuthUserViewAuthFactorsUnittest : public LoginAuthUserViewUnittest {
+ public:
+  LoginAuthUserViewAuthFactorsUnittest(
+      const LoginAuthUserViewAuthFactorsUnittest&) = delete;
+  LoginAuthUserViewAuthFactorsUnittest& operator=(
+      const LoginAuthUserViewAuthFactorsUnittest&) = delete;
+
+ protected:
+  LoginAuthUserViewAuthFactorsUnittest() = default;
+  ~LoginAuthUserViewAuthFactorsUnittest() override = default;
+
+  void SetUp() override {
+    LoginTestBase::SetUp();
+    fake_smart_lock_auth_factor_model_factory_ =
+        std::make_unique<FakeSmartLockAuthFactorModelFactory>();
+    SmartLockAuthFactorModel::Factory::SetFactoryForTesting(
+        fake_smart_lock_auth_factor_model_factory_.get());
+  }
+
+  std::unique_ptr<FakeSmartLockAuthFactorModelFactory>
+      fake_smart_lock_auth_factor_model_factory_;
+};
+
+TEST_F(LoginAuthUserViewAuthFactorsUnittest, ShowFingerprintIfAvailable) {
+  auto user = CreateUser("user@domain.com");
+  user.fingerprint_state = FingerprintState::AVAILABLE_DEFAULT;
+  InitializeViewForUser(user);
+  SetAuthMethods(LoginAuthUserView::AuthMethods::AUTH_FINGERPRINT);
+  LoginAuthUserView::TestApi auth_test(view_);
+  AuthFactorModel* fingerprint_auth_factor =
+      auth_test.fingerprint_auth_factor_model();
+  EXPECT_EQ(fingerprint_auth_factor->GetAuthFactorState(),
+            AuthFactorModel::AuthFactorState::kReady);
+}
+
+TEST_F(LoginAuthUserViewAuthFactorsUnittest, NotShowFingerprintIfUnavaialble) {
+  auto user = CreateUser("user@domain.com");
+  user.fingerprint_state = FingerprintState::UNAVAILABLE;
+  InitializeViewForUser(user);
+  SetAuthMethods(LoginAuthUserView::AuthMethods::AUTH_FINGERPRINT);
+  LoginAuthUserView::TestApi auth_test(view_);
+  AuthFactorModel* fingerprint_auth_factor =
+      auth_test.fingerprint_auth_factor_model();
+  EXPECT_EQ(fingerprint_auth_factor->GetAuthFactorState(),
+            AuthFactorModel::AuthFactorState::kUnavailable);
+}
+
+TEST_F(LoginAuthUserViewAuthFactorsUnittest, SmartLockInitialState) {
+  auto user = CreateUser("user@domain.com");
+  user.smart_lock_state = SmartLockState::kConnectingToPhone;
+  InitializeViewForUser(user);
+
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  Shell::Get()->login_screen_controller()->ShowLockScreen();
+  LoginAuthUserView::TestApi auth_test(view_);
+
+  EXPECT_EQ(SmartLockState::kConnectingToPhone,
+            fake_smart_lock_auth_factor_model_factory_->GetLastCreatedModel()
+                ->GetSmartLockState());
+}
+
+TEST_F(LoginAuthUserViewAuthFactorsUnittest, VerifySmartLockArrowTapCallback) {
+  auto user = CreateUser("user@domain.com");
+  InitializeViewForUser(user);
+  ui::ScopedAnimationDurationScaleMode non_zero_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOCKED);
+  Shell::Get()->login_screen_controller()->ShowLockScreen();
+  LoginAuthUserView::TestApi auth_test(view_);
+  auth_test.SetSmartLockState(SmartLockState::kPhoneAuthenticated);
+  auto client = std::make_unique<MockLoginScreenClient>();
+  EXPECT_CALL(*client,
+              AuthenticateUserWithEasyUnlock(user.basic_user_info.account_id));
+  auth_test.smart_lock_auth_factor_model()->OnArrowButtonTapOrClickEvent();
+}
+
+// Regression test for b/215630674. The transform applied to
+// LoginAuthFactorsView was getting applied multiple times on suspend/wake,
+// causing the auth factors to slide up farther than they should. This checks
+// that multiple calls to SetAuthMethods() has no further effect on the
+// y-offset.
+TEST_F(LoginAuthUserViewAuthFactorsUnittest,
+       SmartLockPasswordCollapseAnimationAppliedOnce) {
+  auto user = CreateUser("user@domain.com");
+  InitializeViewForUser(user);
+  LoginAuthUserView::TestApi auth_test(view_);
+  auto* auth_factors_view = auth_test.auth_factors_view();
+
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
+                 LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD);
+  views::test::RunScheduledLayout(container_);
+
+  int auth_factors_y_offset_1 =
+      auth_factors_view
+          ->ConvertRectToWidget(auth_factors_view->GetLocalBounds())
+          .y();
+
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
+                 LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD);
+  views::test::RunScheduledLayout(container_);
+
+  int auth_factors_y_offset_2 =
+      auth_factors_view
+          ->ConvertRectToWidget(auth_factors_view->GetLocalBounds())
+          .y();
+
+  EXPECT_EQ(auth_factors_y_offset_1, auth_factors_y_offset_2);
+}
+
+// Check that LoginAuthUserView hides/shows elements appropriately when the
+// AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD bit is set/unset.
+TEST_F(LoginAuthUserViewAuthFactorsUnittest,
+       SmartLockPasswordPinHiddenWhenAuthFactorIsHidingPasswordBitSet) {
+  auto user = CreateUser("user@domain.com");
+  InitializeViewForUser(user);
+
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD);
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PASSWORD_ONLY);
+
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
+                 LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD);
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::NONE);
+
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
+                 LoginAuthUserView::AUTH_PIN);
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::PIN_AND_PASSWORD);
+
+  SetAuthMethods(LoginAuthUserView::AUTH_PASSWORD |
+                 LoginAuthUserView::AUTH_PIN |
+                 LoginAuthUserView::AUTH_AUTH_FACTOR_IS_HIDING_PASSWORD);
+  ExpectModeVisibility(LoginAuthUserView::InputFieldMode::NONE);
+}
+
+// Regression test for b/217385675.
+// LoginAuthFactorsView should only be shown when auth methods are available.
+TEST_F(LoginAuthUserViewAuthFactorsUnittest,
+       AuthFactorsViewNotShownWhenNoAuthFactors) {
+  auto user = CreateUser("user@domain.com");
+  InitializeViewForUser(user);
+  LoginAuthUserView::TestApi auth_test(view_);
+  auto* auth_factors_view = auth_test.auth_factors_view();
+
+  EXPECT_TRUE(auth_factors_view);
+  EXPECT_FALSE(auth_factors_view->GetVisible());
+
+  SetAuthMethods(LoginAuthUserView::AuthMethods::AUTH_SMART_LOCK);
+  EXPECT_TRUE(auth_factors_view->GetVisible());
+
+  SetAuthMethods(LoginAuthUserView::AuthMethods::AUTH_FINGERPRINT);
+  EXPECT_TRUE(auth_factors_view->GetVisible());
+
+  SetAuthMethods(LoginAuthUserView::AuthMethods::AUTH_SMART_LOCK |
+                 LoginAuthUserView::AuthMethods::AUTH_FINGERPRINT);
+  EXPECT_TRUE(auth_factors_view->GetVisible());
+
+  SetAuthMethods(LoginAuthUserView::AUTH_NONE);
+  EXPECT_FALSE(auth_factors_view->GetVisible());
+}
 
 }  // namespace ash

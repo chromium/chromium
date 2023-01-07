@@ -1,11 +1,11 @@
 /*
- * Copyright (c) 2013 The Chromium Authors. All rights reserved.
+ * Copyright 2013 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
 
-#ifndef ERROR_HANDLING_ERROR_HANDLING_H_
-#define ERROR_HANDLING_ERROR_HANDLING_H_
+#ifndef LIBRARIES_ERROR_HANDLING_ERROR_HANDLING_H_
+#define LIBRARIES_ERROR_HANDLING_ERROR_HANDLING_H_
 
 #include "error_handling/string_stream.h"
 #include "sdk_util/macros.h"
@@ -82,5 +82,5 @@ int EHUnwindFrame(EHFrame* frame);
 
 EXTERN_C_END
 
-#endif  // ERROR_HANDLING_ERROR_HANDLING_H_
+#endif  // LIBRARIES_ERROR_HANDLING_ERROR_HANDLING_H_
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/web_test/renderer/web_ax_object_proxy.h"
 #include "third_party/blink/public/web/web_ax_object.h"
@@ -33,6 +32,10 @@ class WebFrameTestProxy;
 class AccessibilityController {
  public:
   explicit AccessibilityController(WebFrameTestProxy* web_frame_test_proxy);
+
+  AccessibilityController(const AccessibilityController&) = delete;
+  AccessibilityController& operator=(const AccessibilityController&) = delete;
+
   ~AccessibilityController();
 
   void Reset();
@@ -57,12 +60,13 @@ class AccessibilityController {
   v8::Local<v8::Object> FocusedElement();
   v8::Local<v8::Object> RootElement();
   v8::Local<v8::Object> AccessibleElementById(const std::string& id);
+  bool CanCallAOMEventListeners() const;
 
   v8::Local<v8::Object> FindAccessibleElementByIdRecursive(
       const blink::WebAXObject&,
       const blink::WebString& id);
 
-  blink::WebAXObject GetAccessibilityObjectForMainFrame();
+  blink::WebAXObject GetAccessibilityObjectForMainFrame() const;
 
   // If true, will log all accessibility notifications.
   bool log_accessibility_events_;
@@ -71,14 +75,12 @@ class AccessibilityController {
 
   v8::Persistent<v8::Function> notification_callback_;
 
-  blink::WebView* web_view();
+  blink::WebView* web_view() const;
   WebFrameTestProxy* web_frame_test_proxy_;
 
   std::unique_ptr<blink::WebAXContext> ax_context_;
 
   base::WeakPtrFactory<AccessibilityController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityController);
 };
 
 }  // namespace content

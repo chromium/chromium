@@ -1,12 +1,22 @@
-/* Copyright 2014 The Chromium Authors. All rights reserved.
+/* Copyright 2014 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
+
+:root {
+  color-scheme: light dark;
+}
 
 div.header {
     border-bottom: 2px solid black;
     padding-bottom: 5px;
     margin: 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  div.header {
+    border-bottom: 2px solid white;
+  }
 }
 
 div.folder > div.hidden {
@@ -37,7 +47,7 @@ div.folder > span.hidden {
 }
 
 .folder-button {
-    -webkit-user-select: none;
+    user-select: none;
     cursor: pointer;
     display: inline-block;
     margin-left: -10px;

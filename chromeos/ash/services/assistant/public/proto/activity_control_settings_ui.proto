@@ -1,0 +1,21 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package ash.assistant;
+
+message ActivityControlSettingsUiSelector {
+  // An ID that uniquely identifies a single consent screen / client integration
+  // with consent flow.
+  // Required.
+  enum FlowId {
+    UNKNOWN = 0;
+    // FlowId for onboarding for the setup wizard on Chrome OS.
+    ASSISTANT_SUW_ONBOARDING_ON_CHROME_OS = 16;
+  }
+  optional FlowId flow_id = 1;
+}

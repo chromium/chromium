@@ -1,38 +1,38 @@
 <!DOCTYPE html>
-<html>
-<head>
 <script>
 testRunner.dumpAsText();
 testRunner.waitUntilDone();
 </script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src='../../../fast/forms/resources/picker-common.js'></script>
-</head>
-<body>
+
 <input type='color' id='color' value='#7EFFC9'>
 
 <p id='description' style='opacity: 0'></p>
 <div id='console' style='opacity: 0'></div>
 
 <script>
-let descriptionContainer = document.getElementById('description');
-openPicker(document.getElementById('color'), openPickerCallback, openPickerCallback);
-
-function openPickerCallback() {
-  if (internals.pagePopupWindow) {
+window.onload = () => {
+  let descriptionContainer = document.getElementById('description');
+  openPicker(document.getElementById('color'))
+  .then(() => {
     descriptionContainer.append('Popup opened.', document.createElement('br'));
-    popupWindow.focus();
-    const popupDocument = popupWindow.document;
+    internals.pagePopupWindow.focus();
+    const popupDocument = internals.pagePopupWindow.document;
     const formatToggler = popupDocument.querySelector('format-toggler');
     const formatLabels = formatToggler.colorFormatLabels_;
     formatToggler.focus();
     toggleFormatsAndLogFormatLabels(formatLabels, 'ArrowDown');
     toggleFormatsAndLogFormatLabels(formatLabels, 'ArrowUp');
     toggleFormatsAndLogFormatLabels(formatLabels, ' ');
-  } else {
-    descriptionContainer.append('Popup did not open.', document.createElement('br'));
-  }
-  descriptionContainer.append('TEST COMPLETE');
-  testRunner.notifyDone();
+    descriptionContainer.append('TEST COMPLETE');
+    testRunner.notifyDone();
+  })
+  .catch((e) => {
+    descriptionContainer.append('Popup did not open.' + e, document.createElement('br'));
+    testRunner.notifyDone();
+  });
 }
 
 function toggleFormatsAndLogFormatLabels(formatLabels, keyDownString) {
@@ -41,9 +41,7 @@ function toggleFormatsAndLogFormatLabels(formatLabels, keyDownString) {
     let currentFormatLabel = formatLabels.filter((formatLabel) => {
       return !formatLabel.classList.contains('hidden-format-label');
     })[0];
-    descriptionContainer.append(currentFormatLabel.textContent, document.createElement('br'));
+    document.getElementById('description').append(currentFormatLabel.textContent, document.createElement('br'));
   }
 }
 </script>
-</body>
-</html>

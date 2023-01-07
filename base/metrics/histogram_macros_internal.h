@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include <memory>
 #include <type_traits>
 
-#include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/time/time.h"
@@ -42,6 +42,10 @@ struct EnumSizeTraits<
     Enum,
     std::enable_if_t<std::is_enum<decltype(Enum::kMaxValue)>::value>> {
   static constexpr Enum Count() {
+    // If you're getting
+    //   note: integer value X is outside the valid range of values [0, X] for
+    //         this enumeration type
+    // Then you need to give your enum a fixed underlying type.
     return static_cast<Enum>(
         static_cast<std::underlying_type_t<Enum>>(Enum::kMaxValue) + 1);
   }
@@ -242,29 +246,28 @@ struct EnumSizeTraits<
   INTERNAL_SCOPED_UMA_HISTOGRAM_TIMER_UNIQUE(name, timing, key)
 
 // This is a helper macro used by other macros and shouldn't be used directly.
-#define INTERNAL_SCOPED_UMA_HISTOGRAM_TIMER_UNIQUE(name, timing, key)     \
-  class ScopedHistogramTimer##key {                                       \
-   public:                                                                \
-    ScopedHistogramTimer##key() : constructed_(base::TimeTicks::Now()) {} \
-    ~ScopedHistogramTimer##key() {                                        \
-      base::TimeDelta elapsed = base::TimeTicks::Now() - constructed_;    \
-      switch (timing) {                                                   \
-        case ScopedHistogramTiming::kMicrosecondTimes:                    \
-          UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(                        \
-              name, elapsed, base::TimeDelta::FromMicroseconds(1),        \
-              base::TimeDelta::FromSeconds(1), 50);                       \
-          break;                                                          \
-        case ScopedHistogramTiming::kMediumTimes:                         \
-          UMA_HISTOGRAM_TIMES(name, elapsed);                             \
-          break;                                                          \
-        case ScopedHistogramTiming::kLongTimes:                           \
-          UMA_HISTOGRAM_LONG_TIMES_100(name, elapsed);                    \
-          break;                                                          \
-      }                                                                   \
-    }                                                                     \
-                                                                          \
-   private:                                                               \
-    base::TimeTicks constructed_;                                         \
+#define INTERNAL_SCOPED_UMA_HISTOGRAM_TIMER_UNIQUE(name, timing, key)      \
+  class ScopedHistogramTimer##key {                                        \
+   public:                                                                 \
+    ScopedHistogramTimer##key() : constructed_(base::TimeTicks::Now()) {}  \
+    ~ScopedHistogramTimer##key() {                                         \
+      base::TimeDelta elapsed = base::TimeTicks::Now() - constructed_;     \
+      switch (timing) {                                                    \
+        case ScopedHistogramTiming::kMicrosecondTimes:                     \
+          UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(                         \
+              name, elapsed, base::Microseconds(1), base::Seconds(1), 50); \
+          break;                                                           \
+        case ScopedHistogramTiming::kMediumTimes:                          \
+          UMA_HISTOGRAM_TIMES(name, elapsed);                              \
+          break;                                                           \
+        case ScopedHistogramTiming::kLongTimes:                            \
+          UMA_HISTOGRAM_LONG_TIMES_100(name, elapsed);                     \
+          break;                                                           \
+      }                                                                    \
+    }                                                                      \
+                                                                           \
+   private:                                                                \
+    base::TimeTicks constructed_;                                          \
   } scoped_histogram_timer_##key
 
 #endif  // BASE_METRICS_HISTOGRAM_MACROS_INTERNAL_H_

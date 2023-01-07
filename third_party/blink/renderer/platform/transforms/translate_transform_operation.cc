@@ -37,7 +37,7 @@ Length AddLengths(const Length& lhs, const Length& rhs) {
     return Length(result.pixels, Length::kFixed);
   if (result.pixels == 0)
     return Length(result.percent, Length::kPercent);
-  return Length(CalculationValue::Create(result, kValueRangeAll));
+  return Length(CalculationValue::Create(result, Length::ValueRange::kAll));
 }
 
 TransformOperation::OperationType GetTypeForTranslate(const Length& x,
@@ -79,8 +79,8 @@ scoped_refptr<TransformOperation> TranslateTransformOperation::Blend(
   const Length zero_length = Length::Fixed(0);
   if (blend_to_identity) {
     return TranslateTransformOperation::Create(
-        zero_length.Blend(x_, progress, kValueRangeAll),
-        zero_length.Blend(y_, progress, kValueRangeAll),
+        zero_length.Blend(x_, progress, Length::ValueRange::kAll),
+        zero_length.Blend(y_, progress, Length::ValueRange::kAll),
         blink::Blend(z_, 0., progress), type_);
   }
 
@@ -88,17 +88,35 @@ scoped_refptr<TransformOperation> TranslateTransformOperation::Blend(
   const Length& from_x = from_op ? from_op->x_ : zero_length;
   const Length& from_y = from_op ? from_op->y_ : zero_length;
   double from_z = from_op ? from_op->z_ : 0;
+  OperationType type;
 
-  bool is_3d = Is3DOperation() || (from && from->Is3DOperation());
+  CommonPrimitiveForInterpolation(from, type);
+
   return TranslateTransformOperation::Create(
-      x_.Blend(from_x, progress, kValueRangeAll),
-      y_.Blend(from_y, progress, kValueRangeAll),
-      blink::Blend(from_z, z_, progress), is_3d ? kTranslate3D : kTranslate);
+      x_.Blend(from_x, progress, Length::ValueRange::kAll),
+      y_.Blend(from_y, progress, Length::ValueRange::kAll),
+      blink::Blend(from_z, z_, progress), type);
 }
 
 scoped_refptr<TranslateTransformOperation>
 TranslateTransformOperation::ZoomTranslate(double factor) {
   return Create(x_.Zoom(factor), y_.Zoom(factor), z_ * factor, type_);
+}
+
+void TranslateTransformOperation::CommonPrimitiveForInterpolation(
+    const TransformOperation* from,
+    TransformOperation::OperationType& common_type) const {
+  bool is_3d = Is3DOperation() || (from && from->Is3DOperation());
+  const auto* from_op = To<TranslateTransformOperation>(from);
+  TransformOperation::OperationType from_type =
+      from_op ? from_op->type_ : type_;
+  if (type_ == from_type) {
+    common_type = type_;
+  } else if (is_3d) {
+    common_type = kTranslate3D;
+  } else {
+    common_type = kTranslate;
+  }
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,6 @@
 #import <Foundation/Foundation.h>
 
 namespace web {
-enum class CookieBlockingMode;
-
-// Creates the rules json as a string for cookie blocking following the format
-// expected by the Content Blocker API.
-NSString* CreateCookieBlockingJsonRuleList(CookieBlockingMode block_mode);
 
 // Creates the rules json as a string for blocking all online resources loaded
 // from file:// or application specific scheme:// pages.

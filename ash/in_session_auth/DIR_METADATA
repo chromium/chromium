@@ -1,0 +1,5 @@
+team_email: "cros-lurs@google.com"
+os: CHROME_OS
+monorail {
+  component: "UI>Shell>LockScreen"
+}

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,14 @@ import "services/network/public/mojom/ssl_config.mojom";
 import "services/network/public/mojom/tls_socket.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
+
+struct TCPKeepAliveOptions {
+  // Enable/disable TCP Keep-Alive.
+  bool enable = false;
+
+  // Keep-Alive delay in seconds.
+  uint16 delay = 0;
+};
 
 struct TCPConnectedSocketOptions {
   // Sets the OS send buffer size (in bytes) for the socket. This is the
@@ -29,6 +37,11 @@ struct TCPConnectedSocketOptions {
   // false. See TCP_NODELAY in `man 7 tcp`. On Windows, the Nagle implementation
   // is governed by RFC 896.
   bool no_delay = true;
+
+  // This entry enables/disables the TCP Keep-Alive and sets SO_KEEPALIVE on the
+  // socket to the specified delay in seconds. If not supplied, then default
+  // socket settings will be applied, which may vary by platform.
+  TCPKeepAliveOptions? keep_alive_options;
 };
 
 // Represents a bound TCP socket. Once a call succeeds, cannot be reused.

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Regression test for crbug.com/1281185</title>
+</head>
+<body>
+</body>
+<script>
+
+if (window.testRunner) {
+    testRunner.waitUntilDone();
+}
+const w = 100;
+
+const canvas1 = document.createElement('canvas');
+canvas1.width = canvas1.height = w;
+// Specifiy willReadyFrequently to ensure continued test coverage after
+// GPU fallback heuristic changes.
+const ctx1 = canvas1.getContext('2d', {willReadFrequently: true});
+
+const canvas2 = document.createElement('canvas');
+canvas2.width = canvas2.height = w;
+const ctx2 = canvas2.getContext('2d');
+document.body.appendChild(canvas2);
+
+ctx1.fillStyle = '#f00';
+ctx1.fillRect(0, 0, w, w);
+
+// Triggers heuristic to fallback from GPU-acceleration
+let data = ctx1.getImageData(0, 0, 1, 1);
+
+// without this it behaves correctly (in chrome)
+ctx2.drawImage(canvas1, 0, 0);
+
+requestAnimationFrame(() => {
+    ctx1.globalCompositeOperation = 'source-in';
+    ctx1.fillStyle = "#0f0";
+    ctx1.fillRect(0, 0, w, w);
+    data = ctx1.getImageData(0, 0, w, w);
+    ctx2.drawImage(canvas1, 0, 0);
+
+    if (window.testRunner) {
+        testRunner.notifyDone();
+    }
+});
+
+</script>
+</html>

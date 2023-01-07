@@ -1,9 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "extensions/shell/browser/shell_extensions_browser_client.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -83,11 +84,34 @@ bool ShellExtensionsBrowserClient::HasOffTheRecordContext(
 BrowserContext* ShellExtensionsBrowserClient::GetOffTheRecordContext(
     BrowserContext* context) {
   // app_shell only supports a single context.
-  return NULL;
+  return nullptr;
 }
 
 BrowserContext* ShellExtensionsBrowserClient::GetOriginalContext(
     BrowserContext* context) {
+  return context;
+}
+
+content::BrowserContext*
+ShellExtensionsBrowserClient::GetRedirectedContextInIncognito(
+    content::BrowserContext* context,
+    bool force_guest_profile,
+    bool force_system_profile) {
+  return context;
+}
+
+content::BrowserContext*
+ShellExtensionsBrowserClient::GetContextForRegularAndIncognito(
+    content::BrowserContext* context,
+    bool force_guest_profile,
+    bool force_system_profile) {
+  return context;
+}
+
+content::BrowserContext* ShellExtensionsBrowserClient::GetRegularProfile(
+    content::BrowserContext* context,
+    bool force_guest_profile,
+    bool force_system_profile) {
   return context;
 }
 
@@ -97,6 +121,14 @@ std::string ShellExtensionsBrowserClient::GetUserIdHashFromContext(
   if (!chromeos::LoginState::IsInitialized())
     return "";
   return chromeos::LoginState::Get()->primary_user_hash();
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+bool ShellExtensionsBrowserClient::IsFromMainProfile(
+    content::BrowserContext* context) {
+  // AppShell only supports single context.
+  return true;
 }
 #endif
 
@@ -130,9 +162,8 @@ void ShellExtensionsBrowserClient::LoadResourceFromResourceBundle(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
     const base::FilePath& resource_relative_path,
     int resource_id,
-    const std::string& content_security_policy,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-    bool send_cors_header) {
+    scoped_refptr<net::HttpResponseHeaders> headers,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   NOTREACHED() << "Load resources from bundles not supported.";
 }
 
@@ -168,7 +199,7 @@ void ShellExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(
 
 ProcessManagerDelegate*
 ShellExtensionsBrowserClient::GetProcessManagerDelegate() const {
-  return NULL;
+  return nullptr;
 }
 
 std::unique_ptr<ExtensionHostDelegate>
@@ -226,13 +257,13 @@ ShellExtensionsBrowserClient::CreateRuntimeAPIDelegate(
 
 const ComponentExtensionResourceManager*
 ShellExtensionsBrowserClient::GetComponentExtensionResourceManager() {
-  return NULL;
+  return nullptr;
 }
 
 void ShellExtensionsBrowserClient::BroadcastEventToRenderers(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    std::unique_ptr<base::ListValue> args,
+    base::Value::List args,
     bool dispatch_to_off_the_record_profiles) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     content::GetUIThreadTaskRunner({})->PostTask(
@@ -243,8 +274,8 @@ void ShellExtensionsBrowserClient::BroadcastEventToRenderers(
     return;
   }
 
-  std::unique_ptr<Event> event(
-      new Event(histogram_value, event_name, std::move(args)));
+  auto event =
+      std::make_unique<Event>(histogram_value, event_name, std::move(args));
   EventRouter::Get(browser_context_)->BroadcastEvent(std::move(event));
 }
 
@@ -274,7 +305,7 @@ ShellExtensionsBrowserClient::GetExtensionWebContentsObserver(
 
 KioskDelegate* ShellExtensionsBrowserClient::GetKioskDelegate() {
   if (!kiosk_delegate_)
-    kiosk_delegate_.reset(new ShellKioskDelegate());
+    kiosk_delegate_ = std::make_unique<ShellKioskDelegate>();
   return kiosk_delegate_.get();
 }
 

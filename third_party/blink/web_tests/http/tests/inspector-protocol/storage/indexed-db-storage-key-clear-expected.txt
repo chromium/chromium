@@ -1,0 +1,8 @@
+Tests that clearing object store works for IndexedDB with storageKey
+
+Open database, object store and set value
+data value equals: "test-data"
+
+Clear object store for storage key
+data value after clear equals: undefined
+

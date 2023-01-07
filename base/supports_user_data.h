@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/base_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 
 namespace base {
@@ -67,7 +67,7 @@ class BASE_EXPORT SupportsUserData {
   // Externally-defined data accessible by key.
   DataMap user_data_;
   // Guards usage of |user_data_|
-  SequenceChecker sequence_checker_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 // Adapter class that releases a refcounted object when the

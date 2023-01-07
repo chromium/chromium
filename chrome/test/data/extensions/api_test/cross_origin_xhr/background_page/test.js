@@ -1,13 +1,11 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 chrome.test.getConfig(function(config) {
 
   function rewriteURL(url) {
-    var isFtp = /^ftp:/i.test(url);
-    var port = isFtp ? config.ftpServer.port : config.testServer.port;
-    return url.replace(/PORT/, port);
+    return url.replace(/PORT/, config.testServer.port);
   }
 
   function doReq(domain, expectSuccess) {
@@ -77,12 +75,6 @@ chrome.test.getConfig(function(config) {
     // TODO(asargent): Explicitly create SSL test server and enable the test.
     // function disallowedSSL() {
     //   doReq("https://a.com", false);
-    // },
-    function allowedFtpHostDisallowed() {
-      doReq('ftp://127.0.0.1', false);
-    },
-    function disallowedFtpHostDisallowed() {
-      doReq('ftp://this.host.is.not.whitelisted', false);
-    }
+    // }
   ]);
 });

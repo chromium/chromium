@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
-<!-- Please update R.dimens.touch_to_fill_sheet_height_single_credential
-     when modifying the margins image or text sizes. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -14,17 +14,18 @@
     android:orientation="vertical">
 
     <ImageView
+        android:id="@+id/touch_to_fill_sheet_header_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:importantForAccessibility="no"
-        app:srcCompat="@drawable/touch_to_fill_header_image" />
+        android:importantForAccessibility="no" />
 
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/touch_to_fill_sheet_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
     <org.chromium.ui.widget.TextViewWithLeading

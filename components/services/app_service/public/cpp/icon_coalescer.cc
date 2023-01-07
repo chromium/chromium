@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,8 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/callback_helpers.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 
 namespace apps {
 
@@ -20,14 +21,15 @@ class IconCoalescer::RefCountedReleaser
  public:
   explicit RefCountedReleaser(std::unique_ptr<IconLoader::Releaser> releaser);
 
+  RefCountedReleaser(const RefCountedReleaser&) = delete;
+  RefCountedReleaser& operator=(const RefCountedReleaser&) = delete;
+
  private:
   friend class base::RefCounted<RefCountedReleaser>;
 
   virtual ~RefCountedReleaser();
 
   std::unique_ptr<IconLoader::Releaser> releaser_;
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedReleaser);
 };
 
 IconCoalescer::RefCountedReleaser::RefCountedReleaser(
@@ -41,30 +43,29 @@ IconCoalescer::IconCoalescer(IconLoader* wrapped_loader)
 
 IconCoalescer::~IconCoalescer() = default;
 
-apps::mojom::IconKeyPtr IconCoalescer::GetIconKey(const std::string& app_id) {
+absl::optional<IconKey> IconCoalescer::GetIconKey(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return wrapped_loader_ ? wrapped_loader_->GetIconKey(app_id)
-                         : apps::mojom::IconKey::New();
+  return wrapped_loader_ ? wrapped_loader_->GetIconKey(app_id) : absl::nullopt;
 }
 
 std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
-    apps::mojom::AppType app_type,
+    AppType app_type,
     const std::string& app_id,
-    apps::mojom::IconKeyPtr icon_key,
-    apps::mojom::IconType icon_type,
+    const IconKey& icon_key,
+    IconType icon_type,
     int32_t size_hint_in_dip,
     bool allow_placeholder_icon,
-    apps::mojom::Publisher::LoadIconCallback callback) {
+    apps::LoadIconCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!wrapped_loader_) {
-    std::move(callback).Run(apps::mojom::IconValue::New());
+    std::move(callback).Run(std::make_unique<IconValue>());
     return nullptr;
   }
 
-  if (icon_type != apps::mojom::IconType::kUncompressed &&
-      icon_type != apps::mojom::IconType::kStandard) {
+  if (icon_type != IconType::kUncompressed &&
+      icon_type != IconType::kStandard) {
     return wrapped_loader_->LoadIconFromIconKey(
-        app_type, app_id, std::move(icon_key), icon_type, size_hint_in_dip,
+        app_type, app_id, icon_key, icon_type, size_hint_in_dip,
         allow_placeholder_icon, std::move(callback));
   }
 
@@ -115,7 +116,7 @@ std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
 
     std::unique_ptr<IconLoader::Releaser> unique_releaser =
         wrapped_loader_->LoadIconFromIconKey(
-            app_type, app_id, std::move(icon_key), icon_type, size_hint_in_dip,
+            app_type, app_id, icon_key, icon_type, size_hint_in_dip,
             allow_placeholder_icon,
             base::BindOnce(&IconCoalescer::OnLoadIcon,
                            weak_ptr_factory_.GetWeakPtr(), key, seq_num));
@@ -124,7 +125,7 @@ std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
 
     auto iv_iter = immediate_responses_.find(seq_num);
     if (iv_iter != immediate_responses_.end()) {
-      apps::mojom::IconValuePtr iv = std::move(iv_iter->second);
+      IconValuePtr iv = std::move(iv_iter->second);
       immediate_responses_.erase(iv_iter);
       std::move(callback).Run(std::move(iv));
       return unique_releaser;
@@ -139,16 +140,16 @@ std::unique_ptr<IconLoader::Releaser> IconCoalescer::LoadIconFromIconKey(
 
   return std::make_unique<IconLoader::Releaser>(
       nullptr,
-      // The DoNothing callback does nothiing explicitly, but after it runs, it
-      // implicitly decrements the scoped_refptr's shared reference count, and
-      // therefore possibly deletes the underlying IconLoader::Releaser.
-      base::BindOnce(base::DoNothing::Once<scoped_refptr<RefCountedReleaser>>(),
+      // The callback does nothing explicitly, but after it runs, it implicitly
+      // decrements the scoped_refptr's shared reference count, and therefore
+      // possibly deletes the underlying IconLoader::Releaser.
+      base::BindOnce([](scoped_refptr<RefCountedReleaser>) {},
                      std::move(shared_releaser)));
 }
 
 void IconCoalescer::OnLoadIcon(IconLoader::Key key,
                                uint64_t sequence_number,
-                               apps::mojom::IconValuePtr icon_value) {
+                               IconValuePtr icon_value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (possibly_immediate_requests_.find(sequence_number) !=
@@ -186,7 +187,7 @@ void IconCoalescer::OnLoadIcon(IconLoader::Key key,
   // Synchronous invocation keep the call stack's "how did I get here"
   // information, which is useful when debugging.
 
-  std::vector<apps::mojom::Publisher::LoadIconCallback> callbacks;
+  std::vector<apps::LoadIconCallback> callbacks;
   callbacks.reserve(count);
   for (auto iter = range.first; iter != range.second; ++iter) {
     // |iter->second| is a CallbackAndReleaser. |iter->second.first| is a
@@ -197,11 +198,11 @@ void IconCoalescer::OnLoadIcon(IconLoader::Key key,
   non_immediate_requests_.erase(range.first, range.second);
 
   for (auto& callback : callbacks) {
-    apps::mojom::IconValuePtr iv;
+    IconValuePtr iv;
     if (--count == 0) {
       iv = std::move(icon_value);
     } else {
-      iv = apps::mojom::IconValue::New();
+      iv = std::make_unique<IconValue>();
       iv->icon_type = icon_value->icon_type;
       iv->uncompressed = icon_value->uncompressed;
       iv->is_placeholder_icon = icon_value->is_placeholder_icon;

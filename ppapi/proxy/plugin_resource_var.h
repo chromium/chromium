@@ -1,11 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef PPAPI_PROXY_PLUGIN_RESOURCE_VAR_H_
 #define PPAPI_PROXY_PLUGIN_RESOURCE_VAR_H_
 
-#include "base/macros.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/proxy/ppapi_proxy_export.h"
 #include "ppapi/shared_impl/resource.h"
@@ -22,6 +21,9 @@ class PPAPI_PROXY_EXPORT PluginResourceVar : public ppapi::ResourceVar {
   // Takes one reference to the given resource.
   explicit PluginResourceVar(ppapi::Resource* resource);
 
+  PluginResourceVar(const PluginResourceVar&) = delete;
+  PluginResourceVar& operator=(const PluginResourceVar&) = delete;
+
   // ResourceVar override.
   PP_Resource GetPPResource() const override;
   bool IsPending() const override;
@@ -34,8 +36,6 @@ class PPAPI_PROXY_EXPORT PluginResourceVar : public ppapi::ResourceVar {
  private:
   // If NULL, this represents the PP_Resource 0.
   scoped_refptr<ppapi::Resource> resource_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginResourceVar);
 };
 
-#endif
+#endif  // PPAPI_PROXY_PLUGIN_RESOURCE_VAR_H_

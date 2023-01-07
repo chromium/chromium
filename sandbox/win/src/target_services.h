@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_TARGET_SERVICES_H__
-#define SANDBOX_SRC_TARGET_SERVICES_H__
+#ifndef SANDBOX_WIN_SRC_TARGET_SERVICES_H_
+#define SANDBOX_WIN_SRC_TARGET_SERVICES_H_
 
-#include "base/macros.h"
 #include "sandbox/win/src/sandbox.h"
 #include "sandbox/win/src/win_utils.h"
 
@@ -14,6 +13,10 @@ namespace sandbox {
 class ProcessState {
  public:
   ProcessState();
+
+  ProcessState(const ProcessState&) = delete;
+  ProcessState& operator=(const ProcessState&) = delete;
+
   // Returns true if main has been called.
   bool InitCalled() const;
   // Returns true if LowerToken has been called.
@@ -30,7 +33,6 @@ class ProcessState {
 
   ProcessStateInternal process_state_;
   bool csrss_connected_;
-  DISALLOW_COPY_AND_ASSIGN(ProcessState);
 };
 
 // This class is an implementation of the  TargetServices.
@@ -41,7 +43,10 @@ class TargetServicesBase : public TargetServices {
  public:
   TargetServicesBase();
 
-  // Public interface of TargetServices.
+  TargetServicesBase(const TargetServicesBase&) = delete;
+  TargetServicesBase& operator=(const TargetServicesBase&) = delete;
+
+  // Public interface of TargetServices. See comments in sandbox.h.
   ResultCode Init() override;
   void LowerToken() override;
   ProcessState* GetState() override;
@@ -58,9 +63,8 @@ class TargetServicesBase : public TargetServices {
  private:
   ~TargetServicesBase() {}
   ProcessState process_state_;
-  DISALLOW_COPY_AND_ASSIGN(TargetServicesBase);
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_TARGET_SERVICES_H__
+#endif  // SANDBOX_WIN_SRC_TARGET_SERVICES_H_

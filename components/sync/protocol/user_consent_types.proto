@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -135,6 +135,23 @@ message UserConsentTypes {
     // The status of the Assistant activity control consent. This specifies
     // whether the consent was given or not given.
     optional ConsentStatus status = 2;
+
+    // Enum denoting different Assistant activity control setting type.
+    enum SettingType {
+      // Legacy clients (< M93) did not set a SettingType; for those,
+      // UNSPECIFIED should be interpreted as ALL. Newer clients should always
+      // set it explicitly.
+      SETTING_TYPE_UNSPECIFIED = 0;
+      // All Settings.
+      ALL = 1;
+      WEB_AND_APP_ACTIVITY = 2;
+      DEVICE_APPS = 3;
+    }
+
+    // The activity control setting which the consent was given or not given to.
+    // Clients before M93 did not set this field. Such consents should be
+    // treated as applying to ALL.
+    optional SettingType setting_type = 3;
   }
 
   // The User Consent for downloading and using passwords stored in the user's
@@ -149,6 +166,20 @@ message UserConsentTypes {
 
     // The status of the consent. This specifies whether the consent was given
     // or not given/revoked.
+    optional ConsentStatus status = 3;
+  }
+
+  // The User Consent for Autofill Assistant (i.e. Duplex technology) used for
+  // performing automated flows on the web.
+  message AutofillAssistantConsent {
+    // Ids of the strings of the consent text presented to the user.
+    repeated int32 description_grd_ids = 1 [packed = true];
+
+    // Id of the string of the UI element the user clicked in order to confirm
+    // the consent dialog.
+    optional int32 confirmation_grd_id = 2;
+
+    // The status of the consent.
     optional ConsentStatus status = 3;
   }
 }

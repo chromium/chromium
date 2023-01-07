@@ -36,40 +36,38 @@
 
 #include "SigProc_FIX.h"
 #include "pitch.h"
+#include "celt/x86/x86cpu.h"
 
-opus_int64 silk_inner_prod16_aligned_64_sse4_1(
+opus_int64 silk_inner_prod16_sse4_1(
     const opus_int16            *inVec1,            /*    I input vector 1                                              */
     const opus_int16            *inVec2,            /*    I input vector 2                                              */
     const opus_int              len                 /*    I vector lengths                                              */
 )
 {
-    opus_int  i, dataSize8;
+    opus_int  i, dataSize4;
     opus_int64 sum;
 
-    __m128i xmm_tempa;
-    __m128i inVec1_76543210, acc1;
-    __m128i inVec2_76543210, acc2;
+    __m128i xmm_prod_20, xmm_prod_31;
+    __m128i inVec1_3210, acc1;
+    __m128i inVec2_3210, acc2;
 
     sum = 0;
-    dataSize8 = len & ~7;
+    dataSize4 = len & ~3;
 
     acc1 = _mm_setzero_si128();
     acc2 = _mm_setzero_si128();
 
-    for( i = 0; i < dataSize8; i += 8 ) {
-        inVec1_76543210 = _mm_loadu_si128( (__m128i *)(&inVec1[i + 0] ) );
-        inVec2_76543210 = _mm_loadu_si128( (__m128i *)(&inVec2[i + 0] ) );
+    for( i = 0; i < dataSize4; i += 4 ) {
+        inVec1_3210 = OP_CVTEPI16_EPI32_M64( &inVec1[i + 0] );
+        inVec2_3210 = OP_CVTEPI16_EPI32_M64( &inVec2[i + 0] );
+        xmm_prod_20 = _mm_mul_epi32( inVec1_3210, inVec2_3210 );
 
-        /* only when all 4 operands are -32768 (0x8000), this results in wrap around */
-        inVec1_76543210 = _mm_madd_epi16( inVec1_76543210, inVec2_76543210 );
+        inVec1_3210 = _mm_shuffle_epi32( inVec1_3210, _MM_SHUFFLE( 0, 3, 2, 1 ) );
+        inVec2_3210 = _mm_shuffle_epi32( inVec2_3210, _MM_SHUFFLE( 0, 3, 2, 1 ) );
+        xmm_prod_31 = _mm_mul_epi32( inVec1_3210, inVec2_3210 );
 
-        xmm_tempa       = _mm_cvtepi32_epi64( inVec1_76543210 );
-        /* equal shift right 8 bytes */
-        inVec1_76543210 = _mm_shuffle_epi32( inVec1_76543210, _MM_SHUFFLE( 0, 0, 3, 2 ) );
-        inVec1_76543210 = _mm_cvtepi32_epi64( inVec1_76543210 );
-
-        acc1 = _mm_add_epi64( acc1, xmm_tempa );
-        acc2 = _mm_add_epi64( acc2, inVec1_76543210 );
+        acc1 = _mm_add_epi64( acc1, xmm_prod_20 );
+        acc2 = _mm_add_epi64( acc2, xmm_prod_31 );
     }
 
     acc1 = _mm_add_epi64( acc1, acc2 );
@@ -81,8 +79,15 @@ opus_int64 silk_inner_prod16_aligned_64_sse4_1(
     _mm_storel_epi64( (__m128i *)&sum, acc1 );
 
     for( ; i < len; i++ ) {
-        sum = silk_SMLABB( sum, inVec1[ i ], inVec2[ i ] );
+        sum = silk_SMLALBB( sum, inVec1[ i ], inVec2[ i ] );
     }
+
+#ifdef OPUS_CHECK_ASM
+    {
+        opus_int64 sum_c = silk_inner_prod16_c( inVec1, inVec2, len );
+        silk_assert( sum == sum_c );
+    }
+#endif
 
     return sum;
 }

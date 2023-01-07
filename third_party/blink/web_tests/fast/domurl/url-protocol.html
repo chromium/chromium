@@ -20,12 +20,15 @@ test(function() {
 
 test(function() {
     var url = new URL('http://www.domain.com');
-    url.href = 'invalid';
-    assert_equals(url.protocol, ':');
+    var expected = 'http:';
+    assert_equals(url.protocol, expected);
 
-    url.protocol = 'http';
-    assert_equals(url.protocol, ':');
-    assert_equals(url.href, 'invalid');
+    assert_throws_js(TypeError, () => { url.href = 'invalid'; });
+    assert_equals(url.protocol, expected);
+
+    url.protocol = 'https';
+    assert_equals(url.protocol, 'https:');
+    assert_equals(url.href, 'https://www.domain.com/');
 }, 'protocol property invalid URL');
 
 </script>

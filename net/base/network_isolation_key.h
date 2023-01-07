@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,14 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/values.h"
+#include "base/unguessable_token.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace network {
-namespace mojom {
-class NetworkIsolationKeyDataView;
-}  // namespace mojom
-}  // namespace network
-
-namespace mojo {
-template <typename DataViewType, typename T>
-struct StructTraits;
-}  // namespace mojo
+namespace base {
+class Value;
+}
 
 namespace url {
 class Origin;
@@ -38,11 +30,13 @@ class NET_EXPORT NetworkIsolationKey {
   // Full constructor.  When a request is initiated by the top frame, it must
   // also populate the |frame_site| parameter when calling this constructor.
   NetworkIsolationKey(const SchemefulSite& top_frame_site,
-                      const SchemefulSite& frame_site);
+                      const SchemefulSite& frame_site,
+                      const base::UnguessableToken* nonce = nullptr);
 
   // Alternative constructor that takes ownership of arguments, to save copies.
   NetworkIsolationKey(SchemefulSite&& top_frame_site,
-                      SchemefulSite&& frame_site);
+                      SchemefulSite&& frame_site,
+                      const base::UnguessableToken* nonce = nullptr);
 
   // Legacy constructor.
   // TODO(https://crbug.com/1145294):  Remove this in favor of above
@@ -68,26 +62,9 @@ class NET_EXPORT NetworkIsolationKey {
   // persisted to disk.
   static NetworkIsolationKey CreateTransient();
 
-  // Creates a non-empty NetworkIsolationKey with an opaque origin that is not
-  // considered transient. The returned NetworkIsolationKey will be cross-origin
-  // with all other keys and associated data is able to be persisted to disk.
-  static NetworkIsolationKey CreateOpaqueAndNonTransient();
-
   // Creates a new key using |top_frame_site_| and |new_frame_site|.
   NetworkIsolationKey CreateWithNewFrameSite(
       const SchemefulSite& new_frame_site) const;
-
-  // Creates a new key using |top_frame_site_| and |new_frame_origin|.
-  // TODO(https://crbug.com/1145294):  Remove this in favor of above method.
-  NetworkIsolationKey CreateWithNewFrameOrigin(
-      const url::Origin& new_frame_origin) const;
-
-  // Intended for temporary use in locations that should be using a non-empty
-  // NetworkIsolationKey(), but are not yet. This both reduces the chance of
-  // accidentally copying the lack of a NIK where one should be used, and
-  // provides a reasonable way of locating callsites that need to have their
-  // NetworkIsolationKey filled in.
-  static NetworkIsolationKey Todo() { return NetworkIsolationKey(); }
 
   // Intended for temporary use in locations that should be using main frame and
   // frame origin, but are currently only using frame origin, because the
@@ -102,9 +79,8 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Compare keys for equality, true if all enabled fields are equal.
   bool operator==(const NetworkIsolationKey& other) const {
-    return std::tie(top_frame_site_, frame_site_, opaque_and_non_transient_) ==
-           std::tie(other.top_frame_site_, other.frame_site_,
-                    other.opaque_and_non_transient_);
+    return std::tie(top_frame_site_, frame_site_, nonce_) ==
+           std::tie(other.top_frame_site_, other.frame_site_, other.nonce_);
   }
 
   // Compare keys for inequality, true if any enabled field varies.
@@ -114,14 +90,15 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Provide an ordering for keys based on all enabled fields.
   bool operator<(const NetworkIsolationKey& other) const {
-    return std::tie(top_frame_site_, frame_site_, opaque_and_non_transient_) <
-           std::tie(other.top_frame_site_, other.frame_site_,
-                    other.opaque_and_non_transient_);
+    return std::tie(top_frame_site_, frame_site_, nonce_) <
+           std::tie(other.top_frame_site_, other.frame_site_, other.nonce_);
   }
 
-  // Returns the string representation of the key, which is the string
-  // representation of each piece of the key separated by spaces.
-  std::string ToString() const;
+  // Returns the string representation of the key for use in string-keyed disk
+  // cache. This is the string representation of each piece of the key separated
+  // by spaces. Returns nullopt if the network isolation key is transient, in
+  // which case, nothing should typically be saved to disk using the key.
+  absl::optional<std::string> ToCacheKeyString() const;
 
   // Returns string for debugging. Difference from ToString() is that transient
   // entries may be distinguishable from each other.
@@ -138,55 +115,62 @@ class NET_EXPORT NetworkIsolationKey {
   // Getters for the top frame and frame sites. These accessors are primarily
   // intended for IPC calls, and to be able to create an IsolationInfo from a
   // NetworkIsolationKey.
-  const base::Optional<SchemefulSite>& GetTopFrameSite() const {
+  const absl::optional<SchemefulSite>& GetTopFrameSite() const {
     return top_frame_site_;
   }
-  const base::Optional<SchemefulSite>& GetFrameSite() const {
+
+  const absl::optional<SchemefulSite>& GetFrameSite() const;
+
+  // Do not use outside of testing. Returns the `frame_site_` if
+  // `kForceIsolationInfoFrameOriginToTopLevelFrame` is disabled. Else it
+  // returns nullopt.
+  const absl::optional<SchemefulSite>& GetFrameSiteForTesting() const {
     return frame_site_;
+  }
+
+  // Getter for the nonce.
+  const absl::optional<base::UnguessableToken>& GetNonce() const {
+    return nonce_;
   }
 
   // Returns true if all parts of the key are empty.
   bool IsEmpty() const;
 
+  // Returns true if the NetworkIsolationKey has a triple keyed scheme. This
+  // means both `frame_site_` and `top_frame_site_` are populated.
+  static bool IsFrameSiteEnabled();
+
   // Returns a representation of |this| as a base::Value. Returns false on
   // failure. Succeeds if either IsEmpty() or !IsTransient().
-  bool ToValue(base::Value* out_value) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ToValue(base::Value* out_value) const;
 
   // Inverse of ToValue(). Writes the result to |network_isolation_key|. Returns
   // false on failure. Fails on values that could not have been produced by
   // ToValue(), like transient origins. If the value of
   // net::features::kAppendFrameOriginToNetworkIsolationKey has changed between
   // saving and loading the data, fails.
-  static bool FromValue(const base::Value& value,
-                        NetworkIsolationKey* out_network_isolation_key)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool FromValue(
+      const base::Value& value,
+      NetworkIsolationKey* out_network_isolation_key);
 
  private:
-  // These classes need to be able to set |opaque_and_non_transient_|
-  friend class IsolationInfo;
-  friend struct mojo::StructTraits<network::mojom::NetworkIsolationKeyDataView,
-                                   net::NetworkIsolationKey>;
-
-  NetworkIsolationKey(SchemefulSite&& top_frame_site,
-                      SchemefulSite&& frame_site,
-                      bool opaque_and_non_transient);
-
+  // Whether this key has opaque origins or a nonce.
   bool IsOpaque() const;
 
   // SchemefulSite::Serialize() is not const, as it may initialize the nonce.
   // Need this to call it on a const |site|.
-  static base::Optional<std::string> SerializeSiteWithNonce(
+  static absl::optional<std::string> SerializeSiteWithNonce(
       const SchemefulSite& site);
 
-  // Whether opaque origins cause the key to be transient. Always false, unless
-  // created with |CreateOpaqueAndNonTransient|.
-  bool opaque_and_non_transient_ = false;
-
   // The origin/etld+1 of the top frame of the page making the request.
-  base::Optional<SchemefulSite> top_frame_site_;
+  absl::optional<SchemefulSite> top_frame_site_;
 
   // The origin/etld+1 of the frame that initiates the request.
-  base::Optional<SchemefulSite> frame_site_;
+  absl::optional<SchemefulSite> frame_site_;
+
+  // Having a nonce is a way to force a transient opaque `NetworkIsolationKey`
+  // for non-opaque origins.
+  absl::optional<base::UnguessableToken> nonce_;
 };
 
 }  // namespace net

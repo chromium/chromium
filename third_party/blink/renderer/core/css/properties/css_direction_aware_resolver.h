@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,6 +76,7 @@ class CSSDirectionAwareResolver {
   static PhysicalMapping<4> PhysicalBorderRadiusMapping();
   static PhysicalMapping<4> PhysicalBorderStyleMapping();
   static PhysicalMapping<4> PhysicalBorderWidthMapping();
+  static PhysicalMapping<2> PhysicalContainIntrinsicSizeMapping();
   static PhysicalMapping<4> PhysicalInsetMapping();
   static PhysicalMapping<4> PhysicalMarginMapping();
   static PhysicalMapping<2> PhysicalMaxSizeMapping();

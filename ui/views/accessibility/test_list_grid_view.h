@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,10 +28,10 @@ class TestListGridView : public View {
   void UnsetTableSize();
 
  private:
-  base::Optional<int> aria_row_count = base::nullopt;
-  base::Optional<int> aria_column_count = base::nullopt;
-  base::Optional<int> table_row_count = base::nullopt;
-  base::Optional<int> table_column_count = base::nullopt;
+  absl::optional<int> aria_row_count = absl::nullopt;
+  absl::optional<int> aria_column_count = absl::nullopt;
+  absl::optional<int> table_row_count = absl::nullopt;
+  absl::optional<int> table_column_count = absl::nullopt;
 };
 
 }  // namespace test

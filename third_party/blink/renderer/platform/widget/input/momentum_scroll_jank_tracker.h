@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,8 +29,7 @@ class MomentumScrollJankTracker {
   // The amount of time elapsed between coalescing an event and dispatching the
   // event for which we consider the coalescing to be "recent" for the purposes
   // of https://crbug.com/952930.
-  static constexpr base::TimeDelta kRecentEventCutoff =
-      base::TimeDelta::FromMilliseconds(2);
+  static constexpr base::TimeDelta kRecentEventCutoff = base::Milliseconds(2);
 
   // |jank_count_| is the number of coalesced momentum input events above
   // kExptectedMomentumEventsPerFrame.

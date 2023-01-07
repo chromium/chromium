@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@
 #include "net/ssl/ssl_info.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_library.h"
 #endif
 
@@ -101,16 +101,16 @@ std::string CaptivePortalBlockingPage::GetWiFiSSID() const {
   // currently associated WiFi access point. |WiFiService| isn't available on
   // Linux so |net::GetWifiSSID| is used instead.
   std::string ssid;
-#if defined(OS_WIN) || defined(OS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   std::unique_ptr<wifi::WiFiService> wifi_service(wifi::WiFiService::Create());
   wifi_service->Initialize(nullptr);
   std::string error;
   wifi_service->GetConnectedNetworkSSID(&ssid, &error);
   if (!error.empty())
     return std::string();
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ssid = net::GetWifiSSID();
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   ssid = net::android::GetWifiSSID();
 #endif
   // TODO(meacer): Handle non UTF8 SSIDs.
@@ -120,26 +120,26 @@ std::string CaptivePortalBlockingPage::GetWiFiSSID() const {
 }
 
 void CaptivePortalBlockingPage::PopulateInterstitialStrings(
-    base::DictionaryValue* load_time_data) {
-  load_time_data->SetString("iconClass", "icon-offline");
-  load_time_data->SetString("type", "CAPTIVE_PORTAL");
-  load_time_data->SetBoolean("overridable", false);
-  load_time_data->SetBoolean("hide_primary_button", false);
+    base::Value::Dict& load_time_data) {
+  load_time_data.Set("iconClass", "icon-offline");
+  load_time_data.Set("type", "CAPTIVE_PORTAL");
+  load_time_data.Set("overridable", false);
+  load_time_data.Set("hide_primary_button", false);
 
   // |IsWifiConnection| isn't accurate on some platforms, so always try to get
   // the Wi-Fi SSID even if |IsWifiConnection| is false.
   std::string wifi_ssid = GetWiFiSSID();
   bool is_wifi = !wifi_ssid.empty() || IsWifiConnection();
 
-  load_time_data->SetString(
+  load_time_data.Set(
       "primaryButtonText",
       l10n_util::GetStringUTF16(IDS_CAPTIVE_PORTAL_BUTTON_OPEN_LOGIN_PAGE));
 
   std::u16string tab_title =
       l10n_util::GetStringUTF16(is_wifi ? IDS_CAPTIVE_PORTAL_HEADING_WIFI
                                         : IDS_CAPTIVE_PORTAL_HEADING_WIRED);
-  load_time_data->SetString("tabTitle", tab_title);
-  load_time_data->SetString("heading", tab_title);
+  load_time_data.Set("tabTitle", tab_title);
+  load_time_data.Set("heading", tab_title);
 
   std::u16string paragraph;
   if (login_url_.is_empty() ||
@@ -158,7 +158,7 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
     } else {
       paragraph = l10n_util::GetStringFUTF16(
           IDS_CAPTIVE_PORTAL_PRIMARY_PARAGRAPH_NO_LOGIN_URL_WIFI_SSID,
-          net::EscapeForHTML(base::UTF8ToUTF16(wifi_ssid)));
+          base::EscapeForHTML(base::UTF8ToUTF16(wifi_ssid)));
     }
   } else {
     // Portal redirection was done with HTTP redirects, so show the login URL.
@@ -175,30 +175,29 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
     } else {
       paragraph = l10n_util::GetStringFUTF16(
           IDS_CAPTIVE_PORTAL_PRIMARY_PARAGRAPH_WIFI_SSID,
-          net::EscapeForHTML(base::UTF8ToUTF16(wifi_ssid)), login_host);
+          base::EscapeForHTML(base::UTF8ToUTF16(wifi_ssid)), login_host);
     }
   }
-  load_time_data->SetString("primaryParagraph", paragraph);
-  load_time_data->SetString(
-      "optInLink",
-      l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
-  load_time_data->SetString(
+  load_time_data.Set("primaryParagraph", std::move(paragraph));
+  load_time_data.Set("optInLink", l10n_util::GetStringUTF16(
+                                      IDS_SAFE_BROWSING_SCOUT_REPORTING_AGREE));
+  load_time_data.Set(
       "enhancedProtectionMessage",
       l10n_util::GetStringUTF16(IDS_SAFE_BROWSING_ENHANCED_PROTECTION_MESSAGE));
   // Explicitly specify other expected fields to empty.
-  load_time_data->SetString("openDetails", "");
-  load_time_data->SetString("closeDetails", "");
-  load_time_data->SetString("explanationParagraph", "");
-  load_time_data->SetString("finalParagraph", "");
-  load_time_data->SetString("recurrentErrorParagraph", "");
-  load_time_data->SetBoolean("show_recurrent_error_paragraph", false);
+  load_time_data.Set("openDetails", "");
+  load_time_data.Set("closeDetails", "");
+  load_time_data.Set("explanationParagraph", "");
+  load_time_data.Set("finalParagraph", "");
+  load_time_data.Set("recurrentErrorParagraph", "");
+  load_time_data.Set("show_recurrent_error_paragraph", false);
 
   if (cert_report_helper()) {
     cert_report_helper()->PopulateExtendedReportingOption(load_time_data);
     cert_report_helper()->PopulateEnhancedProtectionMessage(load_time_data);
   } else {
-    load_time_data->SetBoolean(security_interstitials::kDisplayCheckBox, false);
-    load_time_data->SetBoolean(
+    load_time_data.Set(security_interstitials::kDisplayCheckBox, false);
+    load_time_data.Set(
         security_interstitials::kDisplayEnhancedProtectionMessage, false);
   }
 }

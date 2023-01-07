@@ -13,10 +13,10 @@ PASS trans.mode is "readwrite"
 trans.objectStore('a').put({'a': 0})
 Expecting TypeError exception from db.createObjectStore('d', 'bar');
 PASS Exception was thrown.
-PASS db.createObjectStore('d', 'bar'); threw TypeError: Failed to execute 'createObjectStore' on 'IDBDatabase': cannot convert to dictionary.
+PASS db.createObjectStore('d', 'bar'); threw TypeError: Failed to execute 'createObjectStore' on 'IDBDatabase': The provided value is not of type 'IDBObjectStoreParameters'.
 Expecting TypeError exception from db.createObjectStore('e', false);
 PASS Exception was thrown.
-PASS db.createObjectStore('e', false); threw TypeError: Failed to execute 'createObjectStore' on 'IDBDatabase': cannot convert to dictionary.
+PASS db.createObjectStore('e', false); threw TypeError: Failed to execute 'createObjectStore' on 'IDBDatabase': The provided value is not of type 'IDBObjectStoreParameters'.
 trans.objectStore('b').put({'a': 0}, 0)
 trans.objectStore('a').get(0)
 PASS event.target.result.a is {a: 0}

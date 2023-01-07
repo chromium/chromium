@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,13 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/common/lazy_now.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/time_domain.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/request_priority.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/throttling/task_queue_throttler.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/agent_group_scheduler_impl.h"
@@ -35,19 +37,12 @@ namespace main_thread_scheduler_impl_unittest {
 class MainThreadSchedulerImplTest;
 }
 
-namespace agent_interference_recorder_test {
-class AgentInterferenceRecorderTest;
-}
-
-namespace task_queue_throttler_unittest {
-class TaskQueueThrottlerTest;
-}
-
 class FrameSchedulerImpl;
 class MainThreadSchedulerImpl;
+class WakeUpBudgetPool;
 
-// TODO(kdillon): Remove ref-counting of MainThreadTaskQueues as it's no longer
-// needed.
+// TODO(crbug.com/1143007): Remove ref-counting of MainThreadTaskQueues as it's
+// no longer needed.
 class PLATFORM_EXPORT MainThreadTaskQueue
     : public base::RefCountedThreadSafe<MainThreadTaskQueue> {
  public:
@@ -104,34 +99,31 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // the queue will remain throttled as long as the handle is alive.
   class ThrottleHandle {
    public:
-    ThrottleHandle(base::WeakPtr<TaskQueue> task_queue,
-                   base::WeakPtr<TaskQueueThrottler> throttler)
-        : task_queue_(std::move(task_queue)), throttler_(std::move(throttler)) {
-      if (task_queue_ && throttler_)
-        throttler_->IncreaseThrottleRefCount(task_queue_.get());
+    explicit ThrottleHandle(base::WeakPtr<MainThreadTaskQueue> task_queue)
+        : task_queue_(std::move(task_queue)) {
+      if (task_queue_)
+        task_queue_->throttler_->IncreaseThrottleRefCount();
     }
     ~ThrottleHandle() {
-      if (task_queue_ && throttler_)
-        throttler_->DecreaseThrottleRefCount(task_queue_.get());
+      if (task_queue_)
+        task_queue_->throttler_->DecreaseThrottleRefCount();
     }
 
     // Move-only.
     ThrottleHandle(ThrottleHandle&& other)
-        : task_queue_(std::move(other.task_queue_)),
-          throttler_(std::move(other.throttler_)) {
+        : task_queue_(std::move(other.task_queue_)) {
       other.task_queue_ = nullptr;
-      other.throttler_ = nullptr;
     }
     ThrottleHandle& operator=(ThrottleHandle&&);
 
    private:
-    base::WeakPtr<TaskQueue> task_queue_;
-    base::WeakPtr<TaskQueueThrottler> throttler_;
+    base::WeakPtr<MainThreadTaskQueue> task_queue_;
   };
 
   // Returns name of the given queue type. Returned string has application
   // lifetime.
-  static const char* NameForQueueType(QueueType queue_type);
+  static base::sequence_manager::QueueName NameForQueueType(
+      QueueType queue_type);
 
   // Returns true if task queues of the given queue type can be created on a
   // per-frame basis, and false if they are only created on a shared basis for
@@ -169,8 +161,10 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       kHighPriorityLocalFrame = 8,
       kCompositor = 9,  // Main-thread only.
       kInput = 10,
+      kPostMessageForwarding = 11,
+      kInternalNavigationCancellation = 12,
 
-      kCount = 11
+      kCount = 13
     };
 
     // kPrioritisationTypeWidthBits is the number of bits required
@@ -185,6 +179,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
                   "Wrong Instanstiation for kPrioritisationTypeWidthBits");
 
     QueueTraits(const QueueTraits&) = default;
+    QueueTraits& operator=(const QueueTraits&) = default;
 
     QueueTraits SetCanBeDeferred(bool value) {
       can_be_deferred = value;
@@ -265,7 +260,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       return key;
     }
 
-    void WriteIntoTracedValue(perfetto::TracedValue context) const;
+    void WriteIntoTrace(perfetto::TracedValue context) const;
 
     bool can_be_deferred : 1;
     bool can_be_throttled : 1;
@@ -283,16 +278,10 @@ class PLATFORM_EXPORT MainThreadTaskQueue
         : queue_type(queue_type),
           spec(NameForQueueType(queue_type)),
           agent_group_scheduler(nullptr),
-          frame_scheduler(nullptr),
-          freeze_when_keep_active(false) {}
-
-    QueueCreationParams SetFreezeWhenKeepActive(bool value) {
-      freeze_when_keep_active = value;
-      return *this;
-    }
+          frame_scheduler(nullptr) {}
 
     QueueCreationParams SetWebSchedulingPriority(
-        base::Optional<WebSchedulingPriority> priority) {
+        absl::optional<WebSchedulingPriority> priority) {
       web_scheduling_priority = priority;
       return *this;
     }
@@ -371,9 +360,8 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       return *this;
     }
 
-    QueueCreationParams SetTimeDomain(
-        base::sequence_manager::TimeDomain* domain) {
-      spec = spec.SetTimeDomain(domain);
+    QueueCreationParams SetNonWaking(bool non_waking) {
+      spec = spec.SetNonWaking(non_waking);
       return *this;
     }
 
@@ -382,8 +370,7 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     AgentGroupSchedulerImpl* agent_group_scheduler;
     FrameSchedulerImpl* frame_scheduler;
     QueueTraits queue_traits;
-    bool freeze_when_keep_active;
-    base::Optional<WebSchedulingPriority> web_scheduling_priority;
+    absl::optional<WebSchedulingPriority> web_scheduling_priority;
 
    private:
     void ApplyQueueTraitsToSpec() {
@@ -423,24 +410,21 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     return queue_traits_.can_run_when_virtual_time_paused;
   }
 
-  bool FreezeWhenKeepActive() const { return freeze_when_keep_active_; }
-
   QueueTraits GetQueueTraits() const { return queue_traits_; }
 
   QueueTraits::PrioritisationType GetPrioritisationType() const {
     return queue_traits_.prioritisation_type;
   }
 
-  void OnTaskReady(const void* frame_scheduler,
-                   const base::sequence_manager::Task& task,
-                   base::sequence_manager::LazyNow* lazy_now);
-
   void OnTaskStarted(const base::sequence_manager::Task& task,
                      const TaskQueue::TaskTiming& task_timing);
 
   void OnTaskCompleted(const base::sequence_manager::Task& task,
                        TaskQueue::TaskTiming* task_timing,
-                       base::sequence_manager::LazyNow* lazy_now);
+                       base::LazyNow* lazy_now);
+
+  void LogTaskExecution(perfetto::EventContext& ctx,
+                        const base::sequence_manager::Task& task);
 
   void SetOnIPCTaskPosted(
       base::RepeatingCallback<void(const base::sequence_manager::Task&)>
@@ -460,13 +444,12 @@ class PLATFORM_EXPORT MainThreadTaskQueue
     return task_queue_->CreateTaskRunner(static_cast<int>(task_type));
   }
 
-  void SetNetRequestPriority(net::RequestPriority net_request_priority);
-  base::Optional<net::RequestPriority> net_request_priority() const;
-
   void SetWebSchedulingPriority(WebSchedulingPriority priority);
-  base::Optional<WebSchedulingPriority> web_scheduling_priority() const;
+  absl::optional<WebSchedulingPriority> web_scheduling_priority() const;
 
-  // TODO(kdillon): Improve MTTQ API surface so that we no longer
+  void OnWebSchedulingTaskQueueDestroyed();
+
+  // TODO(crbug.com/1143007): Improve MTTQ API surface so that we no longer
   // need to expose the raw pointer to the queue.
   TaskQueue* GetTaskQueue() { return task_queue_.get(); }
 
@@ -493,31 +476,57 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   void AddToBudgetPool(base::TimeTicks now, BudgetPool* pool);
   void RemoveFromBudgetPool(base::TimeTicks now, BudgetPool* pool);
 
-  // This method is only used for tests. If this queue is throttled it will
-  // notify the throttler that this queue should wake immediately.
-  void SetImmediateWakeUpForTest();
+  void SetWakeUpBudgetPool(WakeUpBudgetPool* wake_up_budget_pool);
+  WakeUpBudgetPool* GetWakeUpBudgetPool() const { return wake_up_budget_pool_; }
+
+  void SetQueuePriority(TaskQueue::QueuePriority priority) {
+    task_queue_->SetQueuePriority(priority);
+  }
+  TaskQueue::QueuePriority GetQueuePriority() const {
+    return task_queue_->GetQueuePriority();
+  }
+
+  bool IsQueueEnabled() const { return task_queue_->IsQueueEnabled(); }
+  bool IsEmpty() const { return task_queue_->IsEmpty(); }
+
+  bool HasTaskToRunImmediatelyOrReadyDelayedTask() const {
+    return task_queue_->HasTaskToRunImmediatelyOrReadyDelayedTask();
+  }
+
+  void SetShouldReportPostedTasksWhenDisabled(bool should_report) {
+    task_queue_->SetShouldReportPostedTasksWhenDisabled(should_report);
+  }
+
+  std::unique_ptr<TaskQueue::QueueEnabledVoter> CreateQueueEnabledVoter() {
+    return task_queue_->CreateQueueEnabledVoter();
+  }
+
+  void AddTaskObserver(base::TaskObserver* task_observer) {
+    task_queue_->AddTaskObserver(task_observer);
+  }
+  void RemoveTaskObserver(base::TaskObserver* task_observer) {
+    task_queue_->RemoveTaskObserver(task_observer);
+  }
 
   base::WeakPtr<MainThreadTaskQueue> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  void WriteIntoTracedValue(perfetto::TracedValue context) const;
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  protected:
   void SetFrameSchedulerForTest(FrameSchedulerImpl* frame_scheduler);
 
-  // Returns the underlying task queue. Only to be used for tests that need to
-  // test functionality of the task queue specifically without the wrapping
-  // MainThreadTaskQueue (ex TaskQueueThrottlerTest).
-  TaskQueue* GetTaskQueueForTest() { return task_queue_.get(); }
-
-  // TODO(kdillon): Remove references to TaskQueueImpl once TaskQueueImpl
-  // inherits from TaskQueue.
+  // TODO(crbug.com/1143007): Remove references to TaskQueueImpl once
+  // TaskQueueImpl inherits from TaskQueue.
   MainThreadTaskQueue(
       std::unique_ptr<base::sequence_manager::internal::TaskQueueImpl> impl,
       const TaskQueue::Spec& spec,
       const QueueCreationParams& params,
       MainThreadSchedulerImpl* main_thread_scheduler);
+
+  MainThreadTaskQueue(const MainThreadTaskQueue&) = delete;
+  MainThreadTaskQueue& operator=(const MainThreadTaskQueue&) = delete;
 
   ~MainThreadTaskQueue();
 
@@ -526,9 +535,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   friend class base::sequence_manager::SequenceManager;
   friend class blink::scheduler::main_thread_scheduler_impl_unittest::
       MainThreadSchedulerImplTest;
-  friend class agent_interference_recorder_test::AgentInterferenceRecorderTest;
-  friend class blink::scheduler::task_queue_throttler_unittest::
-      TaskQueueThrottlerTest;
 
   // Clear references to main thread scheduler and frame scheduler and dispatch
   // appropriate notifications. This is the common part of ShutdownTaskQueue and
@@ -536,22 +542,15 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   void ClearReferencesToSchedulers();
 
   scoped_refptr<TaskQueue> task_queue_;
+  absl::optional<TaskQueueThrottler> throttler_;
 
   const QueueType queue_type_;
   const QueueTraits queue_traits_;
-  const bool freeze_when_keep_active_;
-
-  // Warning: net_request_priority is not the same as the priority of the queue.
-  // It is the priority (at the loading stack level) of the resource associated
-  // to the queue, if one exists.
-  //
-  // Used to track UMA metrics for resource loading tasks split by net priority.
-  base::Optional<net::RequestPriority> net_request_priority_;
 
   // |web_scheduling_priority_| is the priority of the task queue within the web
   // scheduling API. This priority is used in conjunction with the frame
   // scheduling policy to determine the task queue priority.
-  base::Optional<WebSchedulingPriority> web_scheduling_priority_;
+  absl::optional<WebSchedulingPriority> web_scheduling_priority_;
 
   // Needed to notify renderer scheduler about completed tasks.
   MainThreadSchedulerImpl* main_thread_scheduler_;  // NOT OWNED
@@ -562,9 +561,13 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   // be set to a different value afterwards (except in tests).
   FrameSchedulerImpl* frame_scheduler_;  // NOT OWNED
 
-  base::WeakPtrFactory<MainThreadTaskQueue> weak_ptr_factory_{this};
+  // The WakeUpBudgetPool for this TaskQueue, if any.
+  WakeUpBudgetPool* wake_up_budget_pool_{nullptr};  // NOT OWNED
 
-  DISALLOW_COPY_AND_ASSIGN(MainThreadTaskQueue);
+  std::unique_ptr<TaskQueue::OnTaskPostedCallbackHandle>
+      on_ipc_task_posted_callback_handle_;
+
+  base::WeakPtrFactory<MainThreadTaskQueue> weak_ptr_factory_{this};
 };
 
 }  // namespace scheduler

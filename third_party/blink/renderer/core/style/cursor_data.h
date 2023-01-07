@@ -25,9 +25,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_CURSOR_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_CURSOR_DATA_H_
 
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
 
@@ -37,13 +37,13 @@ class CursorData {
  public:
   CursorData(StyleImage* image,
              bool hot_spot_specified,
-             const IntPoint& hot_spot)
+             const gfx::Point& hot_spot)
       : image_(image),
         hot_spot_specified_(hot_spot_specified),
         hot_spot_(hot_spot) {}
 
   bool operator==(const CursorData& o) const {
-    return hot_spot_ == o.hot_spot_ && DataEquivalent(image_, o.image_);
+    return hot_spot_ == o.hot_spot_ && base::ValuesEquivalent(image_, o.image_);
   }
 
   bool operator!=(const CursorData& o) const { return !(*this == o); }
@@ -54,14 +54,14 @@ class CursorData {
   bool HotSpotSpecified() const { return hot_spot_specified_; }
 
   // Hot spot in the image in logical pixels.
-  const IntPoint& HotSpot() const { return hot_spot_; }
+  const gfx::Point& HotSpot() const { return hot_spot_; }
 
   void Trace(Visitor* visitor) const { visitor->Trace(image_); }
 
  private:
   Member<StyleImage> image_;
   bool hot_spot_specified_;
-  IntPoint hot_spot_;  // for CSS3 support
+  gfx::Point hot_spot_;  // for CSS3 support
 };
 
 }  // namespace blink

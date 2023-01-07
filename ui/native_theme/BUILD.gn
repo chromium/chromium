@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,7 +15,6 @@ component("native_theme") {
     "native_theme.h",
     "native_theme_base.cc",
     "native_theme_base.h",
-    "native_theme_color_id.h",
     "native_theme_export.h",
     "native_theme_features.cc",
     "native_theme_features.h",
@@ -23,8 +22,6 @@ component("native_theme") {
     "native_theme_observer.h",
     "native_theme_utils.cc",
     "native_theme_utils.h",
-    "themed_vector_icon.cc",
-    "themed_vector_icon.h",
   ]
 
   if (is_android) {
@@ -44,6 +41,8 @@ component("native_theme") {
       "caption_style_mac.mm",
       "native_theme_mac.h",
       "native_theme_mac.mm",
+      "scrollbar_animator_mac.cc",
+      "scrollbar_animator_mac.h",
     ]
   }
 
@@ -55,6 +54,9 @@ component("native_theme") {
     sources += [
       "native_theme_aura.cc",
       "native_theme_aura.h",
+      "native_theme_constants_fluent.h",
+      "native_theme_fluent.cc",
+      "native_theme_fluent.h",
       "overlay_scrollbar_constants_aura.h",
     ]
   }
@@ -75,6 +77,7 @@ component("native_theme") {
     "//ui/color:mixers",
     "//ui/display",
     "//ui/gfx",
+    "//ui/gfx/animation/keyframe",
     "//ui/gfx/geometry",
     "//ui/resources",
   ]
@@ -95,6 +98,7 @@ if (is_win) {
       "//base",
       "//cc/paint",
       "//ui/base",
+      "//ui/color",
       "//ui/display",
       "//ui/gfx",
     ]
@@ -115,8 +119,6 @@ source_set("test_support") {
   ]
 
   sources = [
-    "test/color_utils.cc",
-    "test/color_utils.h",
     "test_native_theme.cc",
     "test_native_theme.h",
   ]
@@ -125,13 +127,13 @@ source_set("test_support") {
 test("native_theme_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
-  sources = [
-    "native_theme_unittest.cc",
-    "themed_vector_icon_unittest.cc",
-  ]
+  sources = []
 
   if (use_aura) {
-    sources += [ "native_theme_aura_unittest.cc" ]
+    sources += [
+      "native_theme_aura_unittest.cc",
+      "native_theme_fluent_unittest.cc",
+    ]
   }
 
   if (is_win) {
@@ -150,11 +152,18 @@ test("native_theme_unittests") {
     "//skia",
     "//testing/gtest",
     "//ui/base",
+    "//ui/gfx:test_support",
     "//ui/gfx/geometry:geometry",
   ]
 
   if (is_mac) {
-    sources += [ "native_theme_mac_unittest.mm" ]
-    deps += [ "//ui/color" ]
+    sources += [
+      "native_theme_mac_unittest.mm",
+      "scrollbar_animator_mac_unittest.cc",
+    ]
+    deps += [
+      "//ui/color",
+      "//ui/gfx:test_support",
+    ]
   }
 }

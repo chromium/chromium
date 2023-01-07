@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@ namespace printing {
 // static
 void PolicySettings::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(prefs::kForceEnablePrivetPrinting, false);
   registry->RegisterListPref(prefs::kPrinterTypeDenyList);
   registry->RegisterBooleanPref(prefs::kPrintHeaderFooter, true);
   registry->RegisterIntegerPref(prefs::kPrintingAllowedBackgroundGraphicsModes,

@@ -1,0 +1,43 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+assert(is_chromeos_ash, "Only ChromeOS components belong here.")
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":lock_screen_constants",
+    ":pin_keyboard",
+    ":setup_pin_keyboard",
+  ]
+}
+
+js_library("lock_screen_constants") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("pin_keyboard") {
+  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js" ]
+}
+
+js_library("setup_pin_keyboard") {
+  deps = [
+    ":lock_screen_constants",
+    ":pin_keyboard",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [ "$externs_path/quick_unlock_private.js" ]
+  extra_sources = [ "$interfaces_path/quick_unlock_private_interface.js" ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.ExitCause;
+import org.chromium.chrome.browser.paint_preview.StartupPaintPreviewMetrics.PaintPreviewMetricsObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
@@ -91,8 +92,7 @@ public class StartupPaintPreview implements PlayerManager.Listener {
 
     public StartupPaintPreview(Tab tab,
             BrowserStateBrowserControlsVisibilityDelegate visibilityDelegate,
-            Runnable progressSimulatorCallback, Callback<Boolean> progressPreventionCallback,
-            Callback<Long> visibleContentCallback) {
+            Runnable progressSimulatorCallback, Callback<Boolean> progressPreventionCallback) {
         mTab = tab;
         mMetricsHelper = new StartupPaintPreviewMetrics();
         mTabbedPaintPreview = TabbedPaintPreview.get(mTab);
@@ -102,7 +102,6 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         mStartupTabObserver = new StartupPaintPreviewTabObserver();
         mState = State.READY;
         mTab.addObserver(mStartupTabObserver);
-        mVisibleContentCallback = visibleContentCallback;
     }
 
     /**
@@ -139,6 +138,10 @@ public class StartupPaintPreview implements PlayerManager.Listener {
 
     public void setIsOfflinePage(Supplier<Boolean> isOfflinePage) {
         mIsOfflinePage = isOfflinePage;
+    }
+
+    public void addMetricsObserver(PaintPreviewMetricsObserver observer) {
+        mMetricsHelper.addMetricsObserver(observer);
     }
 
     private void remove(@ExitCause int exitCause) {
@@ -260,8 +263,7 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     public void onFirstPaint() {
         if (mState != State.SHOWING) return;
 
-        mMetricsHelper.onFirstPaint(
-                mActivityCreationTimestampMs, mShouldRecordFirstPaint, mVisibleContentCallback);
+        mMetricsHelper.onFirstPaint(mActivityCreationTimestampMs, mShouldRecordFirstPaint);
     }
 
     @Override
@@ -290,6 +292,14 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         return ChromeAccessibilityUtil.get().isAccessibilityEnabled();
     }
 
+    @Override
+    public void onAccessibilityNotSupported() {
+        // Ignore accessibility failures if accessibility is not enabled.
+        if (!isAccessibilityEnabled()) return;
+
+        remove(ExitCause.ACCESSIBILITY_NOT_SUPPORTED);
+    }
+
     @VisibleForTesting
     TabObserver getTabObserverForTesting() {
         return mStartupTabObserver;
@@ -313,16 +323,18 @@ public class StartupPaintPreview implements PlayerManager.Listener {
         }
 
         @Override
-        public void onDidStartNavigation(Tab tab, NavigationHandle navigationHandle) {
-            // Ignore navigations from subframes. We should only remove the paint preview
-            // player when the user navigates to a new page.
-            if (!navigationHandle.isInMainFrame()) return;
-
+        public void onDidStartNavigationInPrimaryMainFrame(
+                Tab tab, NavigationHandle navigationHandle) {
             // If we haven't started to restore, this is the navigation call to start the
             // restoration. We shouldn't remove the paint preview player.
             if (!mDidStartRestore) return;
 
             remove(ExitCause.NAVIGATION_STARTED);
+        }
+
+        @Override
+        public void onDidStartNavigationNoop(Tab tab, NavigationHandle navigationHandle) {
+            if (!navigationHandle.isInPrimaryMainFrame()) return;
         }
 
         @Override

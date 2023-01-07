@@ -27,7 +27,6 @@
 
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -44,7 +43,7 @@ RemoveNodePreservingChildrenCommand::RemoveNodePreservingChildrenCommand(
 
 void RemoveNodePreservingChildrenCommand::DoApply(EditingState* editing_state) {
   ABORT_EDITING_COMMAND_IF(!node_->parentNode());
-  ABORT_EDITING_COMMAND_IF(!HasEditableStyle(*node_->parentNode()));
+  ABORT_EDITING_COMMAND_IF(!IsEditable(*node_->parentNode()));
   auto* container_node = DynamicTo<ContainerNode>(node_.Get());
   if (container_node) {
     NodeVector children;

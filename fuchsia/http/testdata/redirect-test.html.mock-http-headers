@@ -1,3 +1,0 @@
-HTTP/1.1 302 Redirect
-Location: with-headers.html
-Cache-Control: max-age=10000

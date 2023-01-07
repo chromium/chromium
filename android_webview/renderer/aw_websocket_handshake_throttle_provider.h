@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -24,6 +23,10 @@ class AwWebSocketHandshakeThrottleProvider final
  public:
   explicit AwWebSocketHandshakeThrottleProvider(
       blink::ThreadSafeBrowserInterfaceBrokerProxy* broker);
+
+  AwWebSocketHandshakeThrottleProvider& operator=(
+      const AwWebSocketHandshakeThrottleProvider&) = delete;
+
   ~AwWebSocketHandshakeThrottleProvider() override;
 
   // Implements blink::WebSocketHandshakeThrottleProvider.
@@ -43,8 +46,6 @@ class AwWebSocketHandshakeThrottleProvider final
   mojo::Remote<safe_browsing::mojom::SafeBrowsing> safe_browsing_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_ASSIGN(AwWebSocketHandshakeThrottleProvider);
 };
 
 }  // namespace android_webview

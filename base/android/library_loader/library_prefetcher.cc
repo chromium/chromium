@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,6 @@
 #include "base/files/file.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_util.h"
@@ -116,8 +115,8 @@ bool CollectResidency(size_t start,
     PLOG(ERROR) << "Cannot get the time.";
     return false;
   }
-  uint64_t now =
-      static_cast<uint64_t>(ts.tv_sec) * 1000 * 1000 * 1000 + ts.tv_nsec;
+  uint64_t now = static_cast<uint64_t>(ts.tv_sec) * 1000 * 1000 * 1000 +
+                 static_cast<uint64_t>(ts.tv_nsec);
   std::vector<unsigned char> residency;
   if (!Mincore(start, end, &residency))
     return false;
@@ -146,19 +145,20 @@ void DumpResidency(size_t start,
   CHECK_LE(kEndOfText, end);
   auto start_end = base::StringPrintf("%" PRIuS " %" PRIuS "\n",
                                       kStartOfText - start, kEndOfText - start);
-  file.WriteAtCurrentPos(start_end.c_str(), start_end.size());
+  file.WriteAtCurrentPos(start_end.c_str(), static_cast<int>(start_end.size()));
 
   for (const auto& data_point : *data) {
     auto timestamp =
         base::StringPrintf("%" PRIu64 " ", data_point.timestamp_nanos);
-    file.WriteAtCurrentPos(timestamp.c_str(), timestamp.size());
+    file.WriteAtCurrentPos(timestamp.c_str(),
+                           static_cast<int>(timestamp.size()));
 
     std::vector<char> dump;
     dump.reserve(data_point.residency.size() + 1);
     for (auto c : data_point.residency)
       dump.push_back(c ? '1' : '0');
     dump[dump.size() - 1] = '\n';
-    file.WriteAtCurrentPos(&dump[0], dump.size());
+    file.WriteAtCurrentPos(&dump[0], checked_cast<int>(dump.size()));
   }
 }
 
@@ -178,7 +178,7 @@ __attribute__((no_sanitize_address))
 void Prefetch(size_t start, size_t end) {
   unsigned char* start_ptr = reinterpret_cast<unsigned char*>(start);
   unsigned char* end_ptr = reinterpret_cast<unsigned char*>(end);
-  unsigned char dummy = 0;
+  [[maybe_unused]] unsigned char dummy = 0;
   for (unsigned char* ptr = start_ptr; ptr < end_ptr; ptr += kPageSize) {
     // Volatile is required to prevent the compiler from eliminating this
     // loop.
@@ -241,7 +241,6 @@ PrefetchStatus ForkAndPrefetch(bool ordered_only) {
           case SIGSEGV:
           case SIGBUS:
             return PrefetchStatus::kChildProcessCrashed;
-            break;
           case SIGKILL:
           case SIGTERM:
           default:
@@ -286,8 +285,9 @@ int NativeLibraryPrefetcher::PercentageOfResidentCode(size_t start,
   if (!ok)
     return -1;
   total_pages += residency.size();
-  resident_pages += std::count_if(residency.begin(), residency.end(),
-                                  [](unsigned char x) { return x & 1; });
+  resident_pages +=
+      static_cast<size_t>(std::count_if(residency.begin(), residency.end(),
+                                        [](unsigned char x) { return x & 1; }));
   if (total_pages == 0)
     return -1;
   return static_cast<int>((100 * resident_pages) / total_pages);

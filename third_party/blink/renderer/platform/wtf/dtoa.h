@@ -24,7 +24,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/third_party/double_conversion/double-conversion/double-conversion.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace WTF {

@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,10 +19,16 @@ source_set("download") {
     "download_manager_state_view.mm",
     "download_manager_view_controller.h",
     "download_manager_view_controller.mm",
+    "legacy_download_manager_state_view.h",
+    "legacy_download_manager_state_view.mm",
     "pass_kit_coordinator.h",
     "pass_kit_coordinator.mm",
     "radial_progress_view.h",
     "radial_progress_view.mm",
+    "safari_download_coordinator.h",
+    "safari_download_coordinator.mm",
+    "vcard_coordinator.h",
+    "vcard_coordinator.mm",
   ]
   deps = [
     "resources:background_compact",
@@ -43,18 +49,17 @@ source_set("download") {
     "//ios/chrome/browser/store_kit",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/alert_coordinator",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/download/activities",
+    "//ios/chrome/browser/ui/icons:download_icons",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/presenters",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web:web_internal",
     "//ios/chrome/browser/web_state_list:web_state_list",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/images",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ios/third_party/material_components_ios",
     "//ios/web",
     "//ios/web:core",
@@ -64,6 +69,9 @@ source_set("download") {
     "//ui/gfx",
   ]
   frameworks = [
+    "ContactsUI.framework",
+    "Contacts.framework",
+    "SafariServices.framework",
     "ARKit.framework",
     "StoreKit.framework",
     "UIKit.framework",
@@ -79,13 +87,17 @@ source_set("unit_tests") {
     "download_manager_mediator_unittest.mm",
     "download_manager_view_controller_unittest.mm",
     "pass_kit_coordinator_unittest.mm",
+    "safari_download_coordinator_unittest.mm",
+    "vcard_coordinator_unittest.mm",
   ]
   deps = [
     ":download",
+    ":features",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/download",
     "//ios/chrome/browser/download:test_support",
     "//ios/chrome/browser/infobars",
@@ -93,8 +105,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",
     "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/web:test_support",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/browser/web_state_list:web_state_list",
     "//ios/chrome/test:test_support",
@@ -116,7 +126,6 @@ source_set("unit_tests") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -127,15 +136,17 @@ source_set("eg2_tests") {
     "ar_quick_look_egtest.mm",
     "download_manager_egtest.mm",
     "pass_kit_egtest.mm",
+    "safari_download_egtest.mm",
   ]
 
   deps = [
-    "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser:chrome_url_constants",
+    ":features",
+    "//components/strings",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/download:mime_types",
     "//ios/chrome/browser/download:test_support",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/browser/url:constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing:embedded_test_server_support",
@@ -148,4 +159,13 @@ source_set("eg2_tests") {
   ]
 
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("features") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [ "//base" ]
 }

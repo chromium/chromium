@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include "components/download/public/common/download_url_parameters.h"
 #include "components/download/public/common/download_utils.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 
 namespace download {
 
@@ -58,6 +60,7 @@ DownloadResponseHandler::DownloadResponseHandler(
     const DownloadUrlParameters::RequestHeadersType& request_headers,
     const std::string& request_origin,
     DownloadSource download_source,
+    bool require_safety_checks,
     std::vector<GURL> url_chain,
     bool is_background_mode)
     : delegate_(delegate),
@@ -75,8 +78,10 @@ DownloadResponseHandler::DownloadResponseHandler(
       request_origin_(request_origin),
       download_source_(download_source),
       has_strong_validators_(false),
+      credentials_mode_(resource_request->credentials_mode),
       is_partial_request_(save_info_->offset > 0),
       completed_(false),
+      require_safety_checks_(require_safety_checks),
       abort_reason_(DOWNLOAD_INTERRUPT_REASON_NONE),
       is_background_mode_(is_background_mode) {
   if (!is_parallel_request) {
@@ -84,6 +89,9 @@ DownloadResponseHandler::DownloadResponseHandler(
   }
   if (resource_request->request_initiator.has_value())
     request_initiator_ = resource_request->request_initiator;
+
+  if (resource_request->trusted_params)
+    isolation_info_ = resource_request->trusted_params->isolation_info;
 }
 
 DownloadResponseHandler::~DownloadResponseHandler() = default;
@@ -92,7 +100,9 @@ void DownloadResponseHandler::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void DownloadResponseHandler::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   create_info_ = CreateDownloadCreateInfo(*head);
   cert_status_ = head->cert_status;
 
@@ -118,6 +128,15 @@ void DownloadResponseHandler::OnReceiveResponse(
 
   if (create_info_->result != DOWNLOAD_INTERRUPT_REASON_NONE)
     OnResponseStarted(mojom::DownloadStreamHandlePtr());
+
+  if (started_)
+    return;
+
+  mojom::DownloadStreamHandlePtr stream_handle =
+      mojom::DownloadStreamHandle::New();
+  stream_handle->stream = std::move(body);
+  stream_handle->client_receiver = client_remote_.BindNewPipeAndPassReceiver();
+  OnResponseStarted(std::move(stream_handle));
 }
 
 std::unique_ptr<DownloadCreateInfo>
@@ -150,6 +169,9 @@ DownloadResponseHandler::CreateDownloadCreateInfo(
   create_info->request_origin = request_origin_;
   create_info->download_source = download_source_;
   create_info->request_initiator = request_initiator_;
+  create_info->credentials_mode = credentials_mode_;
+  create_info->isolation_info = isolation_info_;
+  create_info->require_safety_checks = require_safety_checks_;
 
   HandleResponseHeaders(head.headers.get(), create_info.get());
   return create_info;
@@ -165,8 +187,7 @@ void DownloadResponseHandler::OnReceiveRedirect(
     return;
   }
 
-  if (!first_origin_.IsSameOriginWith(
-          url::Origin::Create(redirect_info.new_url))) {
+  if (!first_origin_.IsSameOriginWith(redirect_info.new_url)) {
     // Cross-origin redirect.
     switch (cross_origin_redirects_) {
       case network::mojom::RedirectMode::kFollow:
@@ -211,23 +232,8 @@ void DownloadResponseHandler::OnUploadProgress(
   std::move(callback).Run();
 }
 
-void DownloadResponseHandler::OnReceiveCachedMetadata(
-    mojo_base::BigBuffer data) {}
-
 void DownloadResponseHandler::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {}
-
-void DownloadResponseHandler::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  if (started_)
-    return;
-
-  mojom::DownloadStreamHandlePtr stream_handle =
-      mojom::DownloadStreamHandle::New();
-  stream_handle->stream = std::move(body);
-  stream_handle->client_receiver = client_remote_.BindNewPipeAndPassReceiver();
-  OnResponseStarted(std::move(stream_handle));
-}
 
 void DownloadResponseHandler::OnComplete(
     const network::URLLoaderCompletionStatus& status) {

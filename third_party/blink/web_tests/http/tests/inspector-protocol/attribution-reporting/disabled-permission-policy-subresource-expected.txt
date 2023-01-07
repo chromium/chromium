@@ -1,0 +1,11 @@
+Test that registering a trigger using a subresource request triggers an issue when the attribution-reporting Permissions Policy is disabled.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            request : <object>
+            violationType : PermissionPolicyDisabled
+        }
+    }
+}
+

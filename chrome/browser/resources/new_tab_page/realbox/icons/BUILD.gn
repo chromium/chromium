@@ -1,0 +1,44 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+generate_grd("build_grdp") {
+  grd_prefix = "realbox"
+  resource_path_prefix = "realbox/icons"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files = [
+    "calculator.svg",
+    "calendar.svg",
+    "currency.svg",
+    "default.svg",
+    "definition.svg",
+    "dino.svg",
+    "drive_docs.svg",
+    "drive_folder.svg",
+    "drive_form.svg",
+    "drive_image.svg",
+    "drive_pdf.svg",
+    "drive_sheets.svg",
+    "drive_slides.svg",
+    "drive_video.svg",
+    "extension_app.svg",
+    "finance.svg",
+    "google_g.svg",
+    "google_g_transparent.svg",
+    "journeys.svg",
+    "incognito.svg",
+    "mac_share.svg",
+    "note.svg",
+    "page.svg",
+    "share.svg",
+    "sites.svg",
+    "sunrise.svg",
+    "translation.svg",
+    "trending_up.svg",
+    "when_is.svg",
+    "win_share.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+}

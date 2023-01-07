@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -28,6 +28,26 @@ generate_jni("jni_headers") {
   ]
 }
 
+android_library("unit_device_javatests") {
+  testonly = true
+
+  sources = [ "javatests/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutViewTest.java" ]
+  deps = [
+    "internal:internal_java",
+    "public:public_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//components/autofill/android:main_autofill_java",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
 android_library("test_java") {
   testonly = true
 
@@ -52,11 +72,11 @@ android_library("test_java") {
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessoryIntegrationTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetModernViewTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetViewTest.java",
-    "javatests/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutViewTest.java",
     "javatests/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabTestHelper.java",
   ]
 
   deps = [
+    ":test_resources",
     "internal:internal_java",
     "public:public_java",
     "//base:base_java",
@@ -66,10 +86,14 @@ android_library("test_java") {
     "//chrome/android:chrome_test_util_java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/password_manager/android:java",
+    "//chrome/browser/password_manager/android:test_support_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/layouts/test:java",
     "//chrome/browser/ui/messages/android:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
     "//components/autofill/android:autofill_java",
     "//components/autofill/core/common/mojom:mojo_types_java",
     "//components/browser_ui/bottomsheet/android:java",
@@ -78,6 +102,8 @@ android_library("test_java") {
     "//components/browser_ui/widget/android:test_support_java",
     "//components/feature_engagement/public:public_java",
     "//components/infobars/core:infobar_enums_java",
+    "//components/messages/android/test:test_support_java",
+    "//components/signin/public/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//net/android:net_java_test_support",
@@ -94,10 +120,21 @@ android_library("test_java") {
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_utils_java",
+    "//url:gurl_java",
   ]
+
+  resources_package = "org.chromium.chrome.browser.keyboard_accessory"
 }
 
-junit_binary("keyboard_accessory_junit_tests") {
+android_resources("test_resources") {
+  testonly = true
+
+  sources = [ "javatests/res/layout/test_main.xml" ]
+
+  deps = [ "internal:java_resources" ]
+}
+
+robolectric_binary("keyboard_accessory_junit_tests") {
   testonly = true
 
   sources = [
@@ -119,13 +156,15 @@ junit_binary("keyboard_accessory_junit_tests") {
     "//chrome/android:chrome_java",
     "//chrome/android:chrome_test_util_java",
     "//chrome/android/features/keyboard_accessory/public:public_java",
+    "//chrome/browser/back_press/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
     "//components/autofill/android:autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:content_view_java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement/public:public_java",

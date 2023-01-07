@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/supports_user_data.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/safe_browsing/download_protection/download_feedback.h"
 #include "components/download/public/common/download_item.h"
@@ -139,7 +139,7 @@ void DownloadFeedbackService::BeginFeedbackForDownload(
                      pings->ping_request(), pings->ping_response()));
   if (download_command == DownloadCommands::KEEP) {
     DownloadItemModel model(download);
-    DownloadCommands(&model).ExecuteCommand(download_command);
+    DownloadCommands(model.GetWeakPtr()).ExecuteCommand(download_command);
   }
 }
 
@@ -156,8 +156,7 @@ void DownloadFeedbackService::BeginFeedbackOrDeleteFile(
       return;
     service->BeginFeedback(profile, ping_request, ping_response, path);
   } else {
-    file_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(base::GetDeleteFileCallback(), path));
+    file_task_runner->PostTask(FROM_HERE, base::GetDeleteFileCallback(path));
   }
 }
 

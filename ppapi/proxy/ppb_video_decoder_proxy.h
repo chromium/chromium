@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/proxy/interface_proxy.h"
 #include "ppapi/proxy/proxy_completion_callback_factory.h"
@@ -21,6 +20,10 @@ namespace proxy {
 class PPB_VideoDecoder_Proxy : public InterfaceProxy {
  public:
   explicit PPB_VideoDecoder_Proxy(Dispatcher* dispatcher);
+
+  PPB_VideoDecoder_Proxy(const PPB_VideoDecoder_Proxy&) = delete;
+  PPB_VideoDecoder_Proxy& operator=(const PPB_VideoDecoder_Proxy&) = delete;
+
   ~PPB_VideoDecoder_Proxy() override;
 
   // Creates a VideoDecoder object in the plugin process.
@@ -72,8 +75,6 @@ class PPB_VideoDecoder_Proxy : public InterfaceProxy {
   void OnMsgResetACK(const ppapi::HostResource& decoder, int32_t result);
 
   ProxyCompletionCallbackFactory<PPB_VideoDecoder_Proxy> callback_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(PPB_VideoDecoder_Proxy);
 };
 
 }  // namespace proxy

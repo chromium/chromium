@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -230,6 +230,12 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
                 () -> awContents.getSettings().setJavaScriptEnabled(true));
     }
 
+    public static boolean getJavaScriptEnabledOnUiThread(final AwContents awContents)
+            throws ExecutionException {
+        return TestThreadUtils.runOnUiThreadBlocking(
+                () -> awContents.getSettings().getJavaScriptEnabled());
+    }
+
     public static void setNetworkAvailableOnUiThread(
             final AwContents awContents, final boolean networkUp) {
         TestThreadUtils.runOnUiThreadBlocking(() -> awContents.setNetworkAvailable(networkUp));
@@ -254,11 +260,11 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
     public void loadUrlSyncAndExpectError(final AwContents awContents,
             CallbackHelper onPageFinishedHelper, CallbackHelper onReceivedErrorHelper,
             final String url) throws Exception {
-        int onErrorCallCount = onReceivedErrorHelper.getCallCount();
+        int onReceivedErrorCount = onReceivedErrorHelper.getCallCount();
         int onFinishedCallCount = onPageFinishedHelper.getCallCount();
         loadUrlAsync(awContents, url);
         onReceivedErrorHelper.waitForCallback(
-                onErrorCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+                onReceivedErrorCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         onPageFinishedHelper.waitForCallback(
                 onFinishedCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
     }
@@ -504,9 +510,33 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
      */
     public String executeJavaScriptAndWaitForResult(final AwContents awContents,
             TestAwContentsClient viewClient, final String code) throws Exception {
+        return executeJavaScriptAndWaitForResult(
+                awContents, viewClient, code, /*shouldCheckSettings=*/true);
+    }
+
+    /**
+     * Like {@link #executeJavaScriptAndWaitForResult} but with a parameter to skip the call to
+     * {@link checkJavaScriptEnabled}. This is useful if your test expects JavaScript to be disabled
+     * (in which case the underlying executeJavaScriptAndWaitForResult() is expected to be a NOOP).
+     */
+    public String executeJavaScriptAndWaitForResult(final AwContents awContents,
+            TestAwContentsClient viewClient, final String code, boolean shouldCheckSettings)
+            throws Exception {
+        if (shouldCheckSettings) {
+            checkJavaScriptEnabled(awContents);
+        }
         return JSUtils.executeJavaScriptAndWaitForResult(
                 InstrumentationRegistry.getInstrumentation(), awContents,
                 viewClient.getOnEvaluateJavaScriptResultHelper(), code);
+    }
+
+    public static void checkJavaScriptEnabled(AwContents awContents) throws Exception {
+        boolean javaScriptEnabled = AwActivityTestRule.getJavaScriptEnabledOnUiThread(awContents);
+        if (!javaScriptEnabled) {
+            throw new IllegalStateException(
+                    "JavaScript is disabled in this AwContents; did you forget to call "
+                    + "AwActivityTestRule.enableJavaScriptOnUiThread()?");
+        }
     }
 
     /**
@@ -532,7 +562,8 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
      *        JavaScript code.
      */
     public static void addJavascriptInterfaceOnUiThread(final AwContents awContents,
-            final Object objectToInject, final String javascriptIdentifier) {
+            final Object objectToInject, final String javascriptIdentifier) throws Exception {
+        checkJavaScriptEnabled(awContents);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> awContents.addJavascriptInterface(objectToInject, javascriptIdentifier));
     }

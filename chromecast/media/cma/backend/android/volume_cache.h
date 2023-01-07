@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chromecast/public/volume_control.h"
 
 namespace chromecast {
@@ -28,6 +27,10 @@ class SystemVolumeTableAccessApi {
 class VolumeCache {
  public:
   VolumeCache(AudioContentType type, SystemVolumeTableAccessApi* api);
+
+  VolumeCache(const VolumeCache&) = delete;
+  VolumeCache& operator=(const VolumeCache&) = delete;
+
   ~VolumeCache();
 
   // Returns the mapped and interpolated dBFS value for the given volume level,
@@ -42,8 +45,6 @@ class VolumeCache {
   const int kMaxVolumeIndex;
 
   std::vector<float> cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(VolumeCache);
 };
 
 }  // namespace media

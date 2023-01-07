@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,11 @@ class ReadingListModelFactory : public BrowserStateKeyedServiceFactory {
  public:
   static ReadingListModel* GetForBrowserState(
       ChromeBrowserState* browser_state);
-  static ReadingListModel* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
   static ReadingListModelFactory* GetInstance();
+
+  ReadingListModelFactory(const ReadingListModelFactory&) = delete;
+  ReadingListModelFactory& operator=(const ReadingListModelFactory&) = delete;
+
   void RegisterBrowserStatePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
 
@@ -36,8 +38,6 @@ class ReadingListModelFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListModelFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_READING_LIST_MODEL_FACTORY_H_

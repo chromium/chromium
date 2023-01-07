@@ -13,11 +13,9 @@ div {
 <div id="first"></div>
 <!-- The geometries below matches the imperfect subpixel painting after
      the composited layers are moved in subpixels. -->
-<!-- The missing border-bottom is because of crbug.com/1102886 which we won't
-     fix in pre-CompositeAfterPaint. -->
-<div style="height: 51px; border-bottom: none"></div>
-<div></div>
+<div style="height: 51px"></div>
+<div style="margin-top: 1px"></div>
 <div style="margin-top: 3px"></div>
 <div></div>
 <div></div>
-<div style="height: 51px; border-bottom: none"></div>
+<div style="height: 51px"></div>

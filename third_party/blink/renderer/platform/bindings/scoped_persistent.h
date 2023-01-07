@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCOPED_PERSISTENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCOPED_PERSISTENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
 
@@ -47,9 +46,10 @@ class ScopedPersistent {
 
  public:
   ScopedPersistent() = default;
-
   ScopedPersistent(v8::Isolate* isolate, v8::Local<T> handle)
       : handle_(isolate, handle) {}
+  ScopedPersistent(const ScopedPersistent&) = delete;
+  ScopedPersistent& operator=(const ScopedPersistent&) = delete;
 
   ~ScopedPersistent() { Clear(); }
 
@@ -95,8 +95,6 @@ class ScopedPersistent {
 
  private:
   v8::Persistent<T> handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedPersistent);
 };
 
 }  // namespace blink

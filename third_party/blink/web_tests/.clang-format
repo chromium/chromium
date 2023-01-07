@@ -1,0 +1,4 @@
+BasedOnStyle: InheritParentConfig
+Language: JavaScript
+# Don't reformat the '// META: ...' lines
+CommentPragmas: '^ META:'

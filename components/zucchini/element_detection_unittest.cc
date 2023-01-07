@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ class ElementDetectionTest : public ::testing::Test {
         image,
         base::BindRepeating(
             [](ExeTypeMap exe_map, ConstBufferView image,
-               ConstBufferView region) -> base::Optional<Element> {
+               ConstBufferView region) -> absl::optional<Element> {
               EXPECT_GE(region.begin(), image.begin());
               EXPECT_LE(region.end(), image.end());
               EXPECT_GE(region.size(), 0U);
@@ -56,7 +56,7 @@ class ElementDetectionTest : public ::testing::Test {
                   ++length;
                 return Element{{0, length}, exe_map[region[0]]};
               }
-              return base::nullopt;
+              return absl::nullopt;
             },
             exe_map_, image));
     std::vector<Element> elements;
@@ -74,10 +74,10 @@ TEST_F(ElementDetectionTest, ElementFinderEmpty) {
   std::vector<uint8_t> buffer(10, 0);
   ElementFinder finder(
       ConstBufferView(buffer.data(), buffer.size()),
-      base::BindRepeating([](ConstBufferView image) -> base::Optional<Element> {
-        return base::nullopt;
+      base::BindRepeating([](ConstBufferView image) -> absl::optional<Element> {
+        return absl::nullopt;
       }));
-  EXPECT_EQ(base::nullopt, finder.GetNext());
+  EXPECT_EQ(absl::nullopt, finder.GetNext());
 }
 
 TEST_F(ElementDetectionTest, ElementFinder) {

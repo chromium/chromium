@@ -1,0 +1,8 @@
+Test that accessibility tree changes triggers events
+
+Running test: expectEventFiresForAppendedNodes
+Nodes updated includes node ID equal to childrenAddRemoveTarget ID? true
+
+Running test: expectEventFiredWhenDataModified
+Received update for textnode? true
+

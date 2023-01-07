@@ -1,11 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GL_SURFACE_MOCK_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GL_SURFACE_MOCK_H_
 
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_surface.h"
@@ -16,6 +15,9 @@ class GLSurfaceMock : public gl::GLSurface {
  public:
   GLSurfaceMock();
 
+  GLSurfaceMock(const GLSurfaceMock&) = delete;
+  GLSurfaceMock& operator=(const GLSurfaceMock&) = delete;
+
   MOCK_METHOD1(Initialize, bool(gl::GLSurfaceFormat format));
   MOCK_METHOD0(Destroy, void());
   MOCK_METHOD4(Resize,
@@ -24,13 +26,16 @@ class GLSurfaceMock : public gl::GLSurface {
                     const gfx::ColorSpace& color_space,
                     bool alpha));
   MOCK_METHOD0(IsOffscreen, bool());
-  MOCK_METHOD1(SwapBuffers, gfx::SwapResult(PresentationCallback callback));
-  MOCK_METHOD5(PostSubBuffer,
+  MOCK_METHOD2(SwapBuffers,
+               gfx::SwapResult(PresentationCallback callback,
+                               gl::FrameData data));
+  MOCK_METHOD6(PostSubBuffer,
                gfx::SwapResult(int x,
                                int y,
                                int width,
                                int height,
-                               PresentationCallback callback));
+                               PresentationCallback callback,
+                               gl::FrameData data));
   MOCK_METHOD0(SupportsPostSubBuffer, bool());
   MOCK_METHOD0(GetSize, gfx::Size());
   MOCK_METHOD0(GetHandle, void*());
@@ -45,9 +50,6 @@ class GLSurfaceMock : public gl::GLSurface {
 
  protected:
   ~GLSurfaceMock() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GLSurfaceMock);
 };
 
 }  // namespace gpu

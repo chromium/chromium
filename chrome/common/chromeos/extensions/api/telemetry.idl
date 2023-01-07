@@ -1,0 +1,247 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Use the <code>chrome.os.telemetry</code> API to get telemetry data.
+[implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api.h"]
+namespace os.telemetry {
+  dictionary BatteryInfo {
+    double? cycleCount;
+    double? voltageNow;
+    DOMString? vendor;
+    DOMString? serialNumber;
+    double? chargeFullDesign;
+    double? chargeFull;
+    double? voltageMinDesign;
+    DOMString? modelName;
+    double? chargeNow;
+    double? currentNow;
+    DOMString? technology;
+    DOMString? status;
+    DOMString? manufactureDate;
+    double? temperature;
+  };
+
+  callback BatteryInfoCallback = void (BatteryInfo batteryInfo);
+
+  dictionary NonRemovableBlockDeviceInfo {
+    DOMString? name;
+    DOMString? type;
+    double? size;
+  };
+
+  dictionary NonRemovableBlockDeviceInfoResponse {
+    NonRemovableBlockDeviceInfo[] deviceInfos;
+  };
+
+  callback NonRemovableBlockDevicesInfoCallback = void (NonRemovableBlockDeviceInfoResponse deviceInfoResponse);
+
+  enum CpuArchitectureEnum {
+    unknown,
+    x86_64,
+    aarch64,
+    armv7l
+  };
+
+  dictionary CpuCStateInfo {
+    // Name of the state.
+    DOMString? name;
+    // Time spent in the state since the last reboot, in microseconds.
+    double? timeInStateSinceLastBootUs;
+  };
+
+  dictionary LogicalCpuInfo {
+    // The max CPU clock speed in kHz.
+    long? maxClockSpeedKhz;
+    // Maximum frequency the CPU is allowed to run at, by policy.
+    long? scalingMaxFrequencyKhz;
+    // Current frequency the CPU is running at.
+    long? scalingCurrentFrequencyKhz;
+    // Idle time since last boot, in milliseconds.
+    double? idleTimeMs;
+    // Information about the logical CPU's time in various C-states.
+    CpuCStateInfo[] cStates;
+  };
+
+  dictionary PhysicalCpuInfo {
+    DOMString? modelName;
+    LogicalCpuInfo[] logicalCpus;
+  };
+
+  dictionary CpuInfo {
+    long? numTotalThreads;
+    CpuArchitectureEnum architecture;
+    PhysicalCpuInfo[] physicalCpus;
+  };
+
+  callback CpuInfoCallback = void (CpuInfo cpuInfo);
+
+  dictionary MemoryInfo {
+    long? totalMemoryKiB;
+    long? freeMemoryKiB;
+    long? availableMemoryKiB;
+    double? pageFaultsSinceLastBoot;
+  };
+
+  callback MemoryInfoCallback = void (MemoryInfo cpuInfo);
+
+  enum NetworkType {
+    cellular,
+    ethernet,
+    tether,
+    vpn,
+    wifi
+  };
+
+  enum NetworkState {
+    // The network type is available but not yet initialized.
+    uninitialized,
+    // The network type is available but disabled or disabling.
+    disabled,
+    // The network type is prohibited by policy.
+    prohibited,
+    // The network type is available and enabled or enabling, but no network
+    // connection has been established.
+    not_connected,
+    // The network type is available and enabled, and a network connection is
+    // in progress.
+    connecting,
+    // The network is in a portal state.
+    portal,
+    // The network is in a connected state, but connectivity is limited.
+    connected,
+    // The network is connected and online.
+    online
+  };
+
+  dictionary NetworkInfo {
+    NetworkType? type;
+    NetworkState? state;
+    DOMString? ipv4Address;
+    DOMString[] ipv6Addresses;
+    double? signalStrength;
+  };
+
+  dictionary InternetConnectivityInfo {
+    NetworkInfo[] networks;
+  };
+
+  callback InternetConnectivityInfoCallback = void (InternetConnectivityInfo networkInfo);
+
+  dictionary OemData {
+    // OEM data. This field used to store battery serial number by some OEMs.
+    DOMString? oemData;
+  };
+
+  callback OemDataCallback = void (OemData oemData);
+
+  dictionary OsVersionInfo {
+    DOMString? releaseMilestone;
+    DOMString? buildNumber;
+    DOMString? patchNumber;
+    DOMString? releaseChannel;
+  };
+
+  callback OsVersionInfoCallback = void (OsVersionInfo osVersionInfo);
+
+  dictionary VpdInfo {
+    // Device activate date. Format: YYYY-WW.
+    DOMString? activateDate;
+
+    // Device model name.
+    DOMString? modelName;
+
+    // Device serial number.
+    DOMString? serialNumber;
+
+    // Device SKU number, a.k.a. model number.
+    DOMString? skuNumber;
+  };
+
+  callback VpdInfoCallback = void (VpdInfo vpdInfo);
+
+  dictionary StatefulPartitionInfo {
+    double? availableSpace;
+    double? totalSpace;
+  };
+
+  callback StatefulPartitionInfoCallback = void (StatefulPartitionInfo statefulPartitionInfo);
+
+  enum TpmGSCVersion {
+    not_gsc,
+    cr50,
+    ti50
+  };
+
+  dictionary TpmVersion {
+    // GSC version.
+    TpmGSCVersion? gscVersion;
+    // TPM family. We use the TPM 2.0 style encoding, e.g.:
+    //  * TPM 1.2: "1.2" -> 0x312e3200
+    //  * TPM 2.0: "2.0" -> 0x322e3000
+    long? family;
+    // TPM spec level.
+    double? specLevel;
+    // Manufacturer code.
+    long? manufacturer;
+    // TPM model number.
+    long? tpmModel;
+    // Firmware version.
+    double? firmwareVersion;
+    // Vendor specific information.
+    DOMString? vendorSpecific;
+  };
+
+  dictionary TpmStatus {
+    // Whether a TPM is enabled on the system.
+    boolean? enabled;
+    // Whether the TPM has been owned.
+    boolean? owned;
+    // Whether the owner password is still retained.
+    boolean? ownerPasswordIsPresent;
+  };
+
+  dictionary TpmDictionaryAttack {
+    // The current dictionary attack counter value.
+    long? counter;
+    // The current dictionary attack counter threshold.
+    long? threshold;
+    // Whether the TPM is in some form of dictionary attack lockout.
+    boolean? lockoutInEffect;
+    // The number of seconds remaining in the lockout.
+    long? lockoutSecondsRemaining;
+  };
+
+  dictionary TpmInfo {
+    // TPM version related information.
+    TpmVersion version;
+    // TPM status related information.
+    TpmStatus status;
+    // TPM dictionary attack (DA) related information.
+    TpmDictionaryAttack dictionaryAttack;
+  };
+
+  callback TpmInfoCallback = void (TpmInfo tpmInfo);
+
+  interface Functions {
+    [supportsPromises] static void getBatteryInfo(BatteryInfoCallback callback);
+
+    [supportsPromises] static void getNonRemovableBlockDevicesInfo(NonRemovableBlockDevicesInfoCallback callback);
+
+    [supportsPromises] static void getCpuInfo(CpuInfoCallback callback);
+
+    [supportsPromises] static void getInternetConnectivityInfo(InternetConnectivityInfoCallback callback);
+
+    [supportsPromises] static void getMemoryInfo(MemoryInfoCallback callback);
+
+    [supportsPromises] static void getOemData(OemDataCallback callback);
+
+    [supportsPromises] static void getOsVersionInfo(OsVersionInfoCallback callback);
+
+    [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);
+
+    [supportsPromises] static void getStatefulPartitionInfo(StatefulPartitionInfoCallback callback);
+
+    [supportsPromises] static void getTpmInfo(TpmInfoCallback callback);
+  };
+};

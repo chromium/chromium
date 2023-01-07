@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
-<translation id="1287053896835709737">Դեղինը սևի վրա</translation>
+<translation id="1287053896835709737">Դեղին՝ սևի վրա</translation>
 <translation id="1408730541890277710">Փոխարինել պատկերները այլընտրանքային տեքստով</translation>
 <translation id="145360476452865422">Շարժապատկերների քաղաքականություն՝</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
@@ -9,6 +9,7 @@
 <translation id="1591070050619849194">Անջատել բոլոր շարժապատկերները:</translation>
 <translation id="1703735871906654364">Ստեղնային դիտարկում</translation>
 <translation id="1791496371305830581">Թույլատրել բոլոր շարժապատկերները:</translation>
+<translation id="1974060860693918893">Լրացուցիչ</translation>
 <translation id="1996252509865389616">Միացնե՞լ</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="2179565792157161713">Բացել Երկար նկարագրությունը նոր ներդիրում</translation>
@@ -51,6 +52,7 @@
 <translation id="6170146920149900756">Գույնի կատարելագործիչ</translation>
 <translation id="633394792577263429">Բառերի միջև անցնելու համար սեղմած պահեք &lt;span class='key'&gt;&lt;/span&gt; ստեղնը:</translation>
 <translation id="6550675742724504774">Ընտրանքներ</translation>
+<translation id="6699630355767768222">Քայլ 3․ Կարգավորեք գունային առանցքն այնպես, ինչպես ուզում եք։</translation>
 <translation id="6838518108677880446">Կարգավորում</translation>
 <translation id="690628312087070417">Երբ մուտքագրման նշանը ցատկում է էջի մի հատվածից մյուսը՝</translation>
 <translation id="6965382102122355670">Եղավ</translation>
@@ -65,5 +67,6 @@
 <translation id="8321034316479930120">Շարժապատկերների քաղաքականություն</translation>
 <translation id="8480209185614411573">Բարձր ցայտունություն</translation>
 <translation id="8609925175482059018">Ստեղնային դիտարկումը միացնելու համար սեղմեք &lt;span class='key'&gt;F7&lt;/span&gt;: Անջատելու համար սեղմեք այն կրկին:</translation>
+<translation id="8798099450830957504">Կանխադրված</translation>
 <translation id="894241283505723656">Երկար նկարագրություններ համատեքստի ընտրացանկում</translation>
 </translationbundle>

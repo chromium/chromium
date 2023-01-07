@@ -1,13 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/process/process_handle.h"
 
+#include <lib/zx/process.h>
 #include <zircon/process.h>
-#include <zircon/status.h>
-#include <zircon/syscalls.h>
 
+#include "base/fuchsia/koid.h"
 #include "base/logging.h"
 
 namespace base {
@@ -23,15 +23,7 @@ ProcessHandle GetCurrentProcessHandle() {
 }
 
 ProcessId GetProcId(ProcessHandle process) {
-  zx_info_handle_basic_t basic;
-  zx_status_t status = zx_object_get_info(process, ZX_INFO_HANDLE_BASIC, &basic,
-                                          sizeof(basic), nullptr, nullptr);
-  if (status != ZX_OK) {
-    DLOG(ERROR) << "zx_object_get_info failed: "
-                << zx_status_get_string(status);
-    return ZX_KOID_INVALID;
-  }
-  return basic.koid;
+  return GetKoid(*zx::unowned_process(process)).value_or(ZX_KOID_INVALID);
 }
 
 }  // namespace base

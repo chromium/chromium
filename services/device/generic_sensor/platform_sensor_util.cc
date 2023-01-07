@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,19 @@
 
 #include <cmath>
 
+#include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 
 namespace device {
 
 namespace {
 
+// Check that each rounding multiple is positive number.
 static_assert(kAccelerometerRoundingMultiple > 0.0,
+              "Rounding multiple must be positive.");
+
+static_assert(kAlsRoundingMultiple > 0,
               "Rounding multiple must be positive.");
 
 static_assert(kGyroscopeRoundingMultiple > 0.0,
@@ -23,6 +29,10 @@ static_assert(kOrientationEulerRoundingMultiple > 0.0,
 
 static_assert(kOrientationQuaternionRoundingMultiple > 0.0,
               "Rounding multiple must be positive.");
+
+// Check that threshold value is at least half of rounding multiple.
+static_assert(kAlsSignificanceThreshold >= (kAlsRoundingMultiple / 2),
+              "Threshold must be at least half of rounding multiple.");
 
 template <typename T>
 T square(T x) {
@@ -51,6 +61,10 @@ void RoundGyroscopeReading(SensorReadingXYZ* reading) {
   reading->x = RoundToMultiple(reading->x, kGyroscopeRoundingMultiple);
   reading->y = RoundToMultiple(reading->y, kGyroscopeRoundingMultiple);
   reading->z = RoundToMultiple(reading->z, kGyroscopeRoundingMultiple);
+}
+
+void RoundIlluminanceReading(SensorReadingSingle* reading) {
+  reading->value = RoundToMultiple(reading->value, kAlsRoundingMultiple);
 }
 
 void RoundOrientationQuaternionReading(SensorReadingQuat* reading) {
@@ -121,6 +135,9 @@ void RoundSensorReading(SensorReading* reading, mojom::SensorType sensor_type) {
       break;
 
     case mojom::SensorType::AMBIENT_LIGHT:
+      RoundIlluminanceReading(&reading->als);
+      break;
+
     case mojom::SensorType::MAGNETOMETER:
     case mojom::SensorType::PRESSURE:
     case mojom::SensorType::PROXIMITY:

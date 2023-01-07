@@ -1,21 +1,21 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <utility>
 
+#include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
+#include "chrome/browser/ash/file_system_provider/request_manager.h"
+#include "chrome/browser/ash/file_system_provider/request_value.h"
+#include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/file_system_provider_api.h"
-#include "chrome/browser/chromeos/file_system_provider/provided_file_system_interface.h"
-#include "chrome/browser/chromeos/file_system_provider/request_manager.h"
-#include "chrome/browser/chromeos/file_system_provider/request_value.h"
-#include "chrome/browser/chromeos/file_system_provider/service.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
 
-using chromeos::file_system_provider::ProvidedFileSystemInterface;
-using chromeos::file_system_provider::ProviderId;
-using chromeos::file_system_provider::RequestManager;
-using chromeos::file_system_provider::RequestValue;
-using chromeos::file_system_provider::Service;
+using ash::file_system_provider::ProvidedFileSystemInterface;
+using ash::file_system_provider::ProviderId;
+using ash::file_system_provider::RequestManager;
+using ash::file_system_provider::RequestValue;
+using ash::file_system_provider::Service;
 
 namespace {
 
@@ -119,58 +119,6 @@ base::File::Error ProviderErrorToFileError(
 std::string FileErrorToString(base::File::Error error) {
   return extensions::api::file_system_provider::ToString(
       FileErrorToProviderError(error));
-}
-
-FileSystemProviderInternalFunction::FileSystemProviderInternalFunction()
-    : request_id_(0), request_manager_(NULL) {
-}
-
-ExtensionFunction::ResponseAction
-FileSystemProviderInternalFunction::RejectRequest(
-    std::unique_ptr<chromeos::file_system_provider::RequestValue> value,
-    base::File::Error error) {
-  const base::File::Error result =
-      request_manager_->RejectRequest(request_id_, std::move(value), error);
-  if (result != base::File::FILE_OK)
-    return RespondNow(Error(FileErrorToString(result)));
-  return RespondNow(NoArguments());
-}
-
-ExtensionFunction::ResponseAction
-FileSystemProviderInternalFunction::FulfillRequest(
-    std::unique_ptr<RequestValue> value,
-    bool has_more) {
-  const base::File::Error result =
-      request_manager_->FulfillRequest(request_id_, std::move(value), has_more);
-  if (result != base::File::FILE_OK)
-    return RespondNow(Error(FileErrorToString(result)));
-  return RespondNow(NoArguments());
-}
-
-bool FileSystemProviderInternalFunction::PreRunValidation(std::string* error) {
-  if (!ExtensionFunction::PreRunValidation(error))
-    return false;
-
-  std::string file_system_id;
-
-  EXTENSION_FUNCTION_PRERUN_VALIDATE(args_->GetString(0, &file_system_id));
-  EXTENSION_FUNCTION_PRERUN_VALIDATE(args_->GetInteger(1, &request_id_));
-
-  Service* service = Service::Get(browser_context());
-  if (!service) {
-    *error = "File system provider service not found.";
-    return false;
-  }
-
-  ProvidedFileSystemInterface* file_system = service->GetProvidedFileSystem(
-      ProviderId::CreateFromExtensionId(extension_id()), file_system_id);
-  if (!file_system) {
-    *error = FileErrorToString(base::File::FILE_ERROR_NOT_FOUND);
-    return false;
-  }
-
-  request_manager_ = file_system->GetRequestManager();
-  return true;
 }
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -140,6 +140,17 @@ void OSExchangeDataProviderMac::MarkOriginatedFromRenderer() {
 }
 
 bool OSExchangeDataProviderMac::DidOriginateFromRenderer() const {
+  // TODO(crbug.com/1288599): Implement this method.
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void OSExchangeDataProviderMac::MarkAsFromPrivileged() {
+  NOTIMPLEMENTED();
+}
+
+bool OSExchangeDataProviderMac::IsFromPrivileged() const {
+  // TODO(crbug.com/1288601): Implement this method.
   NOTIMPLEMENTED();
   return false;
 }
@@ -285,6 +296,24 @@ bool OSExchangeDataProviderMac::HasFile() const {
 bool OSExchangeDataProviderMac::HasCustomFormat(
     const ClipboardFormatType& format) const {
   return [[GetPasteboard() types] containsObject:format.ToNSString()];
+}
+
+void OSExchangeDataProviderMac::SetFileContents(
+    const base::FilePath& filename,
+    const std::string& file_contents) {
+  NOTIMPLEMENTED();
+}
+
+bool OSExchangeDataProviderMac::GetFileContents(
+    base::FilePath* filename,
+    std::string* file_contents) const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool OSExchangeDataProviderMac::HasFileContents() const {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 void OSExchangeDataProviderMac::SetDragImage(

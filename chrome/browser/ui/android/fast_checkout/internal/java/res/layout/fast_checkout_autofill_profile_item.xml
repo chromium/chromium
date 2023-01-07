@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    android:id="@+id/fast_checkout_autofill_profile_item"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:orientation="horizontal"
+    android:paddingTop="@dimen/fast_checkout_detail_sheet_padding_vertical"
+    android:paddingBottom="@dimen/fast_checkout_detail_sheet_padding_vertical">
+
+    <ImageView
+        android:layout_width="@dimen/fast_checkout_address_icon"
+        android:layout_height="@dimen/fast_checkout_address_icon"
+        android:background="@null"
+        android:layout_marginStart="@dimen/fast_checkout_address_icon_margin_horizontal"
+        android:layout_marginEnd="@dimen/fast_checkout_address_icon_margin_horizontal"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/gm_filled_location_on_24" />
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <TextView
+          android:id="@+id/fast_checkout_autofill_profile_item_name"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        <TextView
+          android:id="@+id/fast_checkout_autofill_profile_item_street_address"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        <TextView
+          android:id="@+id/fast_checkout_autofill_profile_item_city_and_postal_code"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        <TextView
+          android:id="@+id/fast_checkout_autofill_profile_item_country"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        <LinearLayout
+          android:id="@+id/fast_checkout_autofill_profile_sub_section"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="vertical"
+          android:layout_marginTop="@dimen/fast_checkout_address_item_email_margin_top">
+            <TextView
+              android:id="@+id/fast_checkout_autofill_profile_item_email"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+            <TextView
+              android:id="@+id/fast_checkout_autofill_profile_item_phone_number"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+        </LinearLayout>
+    </LinearLayout>
+    <ImageView
+        android:id="@+id/fast_checkout_autofill_profile_item_selected_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/fast_checkout_detail_sheet_selected_icon_margin_start"
+        android:layout_marginEnd="@dimen/fast_checkout_detail_sheet_selected_icon_margin_end"
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@null"
+        app:tint="?attr/colorPrimary"
+        app:srcCompat="@drawable/ic_check_circle_filled_green_24dp" />
+</LinearLayout>

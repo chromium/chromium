@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -171,4 +171,4 @@ class PaintAggregator {
 
 }  // namespace pp
 
-#endif  // PPAPI_UTILITY_PAINT_AGGREGATOR_H_
+#endif  // PPAPI_UTILITY_GRAPHICS_PAINT_AGGREGATOR_H_

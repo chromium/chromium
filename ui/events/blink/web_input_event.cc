@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/events/blink/web_input_event.h"
 
+#include "build/build_config.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
@@ -13,20 +14,13 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/events/blink/web_input_event_builders_win.h"
-#endif
-
-#if defined(USE_X11)
 #endif
 
 namespace ui {
 
 namespace {
-
-// The scroll percentage per mousewheel tick. Used to determine scroll delta
-// if percent based scrolling is enabled.
-const float kScrollPercentPerLineOrChar = 0.05;
 
 gfx::PointF GetScreenLocationFromEvent(const LocatedEvent& event) {
   return event.target() ? event.target()->GetScreenLocationF(event)
@@ -45,7 +39,7 @@ blink::WebGestureEvent MakeWebGestureEventFromUIEvent(
 
 }  // namespace
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // On Windows, we can just use the builtin WebKit factory methods to fully
 // construct our pre-translated events.
 
@@ -66,7 +60,7 @@ blink::WebMouseWheelEvent MakeUntranslatedWebMouseWheelEventFromNativeEvent(
       native_event.hwnd, native_event.message, native_event.wParam,
       native_event.lParam, time_stamp, pointer_type);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 blink::WebKeyboardEvent MakeWebKeyboardEventFromUiEvent(const KeyEvent& event) {
   blink::WebInputEvent::Type type = blink::WebInputEvent::Type::kUndefined;
@@ -227,9 +221,9 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
 blink::WebMouseEvent MakeWebMouseEvent(const MouseEvent& event) {
   // Construct an untranslated event from the platform event data.
   blink::WebMouseEvent webkit_event =
-#if defined(OS_WIN)
-      // On Windows we have WM_ events comming from desktop and pure Events
-      // comming from metro mode.
+#if BUILDFLAG(IS_WIN)
+      // On Windows we have WM_ events coming from desktop and pure Events
+      // coming from metro mode.
       event.native_event().message && (event.type() != ET_MOUSE_EXITED)
           ? MakeUntranslatedWebMouseEventFromNativeEvent(
                 event.native_event(), event.time_stamp(),
@@ -247,7 +241,7 @@ blink::WebMouseEvent MakeWebMouseEvent(const MouseEvent& event) {
     webkit_event.is_raw_movement_event = true;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (event.native_event().message && event.type() != ET_MOUSE_EXITED)
     return webkit_event;
 #endif
@@ -259,7 +253,7 @@ blink::WebMouseEvent MakeWebMouseEvent(const MouseEvent& event) {
 }
 
 blink::WebMouseWheelEvent MakeWebMouseWheelEvent(const MouseWheelEvent& event) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Construct an untranslated event from the platform event data.
   blink::WebMouseWheelEvent webkit_event =
       event.native_event().message
@@ -283,7 +277,7 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEvent(const MouseWheelEvent& event) {
 }
 
 blink::WebMouseWheelEvent MakeWebMouseWheelEvent(const ScrollEvent& event) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Construct an untranslated event from the platform event data.
   blink::WebMouseWheelEvent webkit_event =
       event.native_event().message
@@ -315,7 +309,7 @@ blink::WebKeyboardEvent MakeWebKeyboardEvent(const KeyEvent& event) {
   // is_char() == true. We need to pass the KeyEvent to the X11 function
   // to detect this case so the right event type can be constructed.
   blink::WebKeyboardEvent webkit_event = MakeWebKeyboardEventFromUiEvent(event);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (event.HasNativeEvent()) {
     const PlatformEvent& native_event = event.native_event();
 
@@ -473,7 +467,15 @@ blink::WebMouseWheelEvent MakeWebMouseWheelEventFromUiEvent(
   // mousewheel events are built in the Windows web input event builder.
   // Percent based scrolling is not supported on Mac because the current
   // roadmap for scroll personality work is reserved for Windows and Linux.
-  if (base::FeatureList::IsEnabled(features::kPercentBasedScrolling)) {
+  // Page based scrolling isn't specified in terms of pixels so we don't convert
+  // deltas to a percentage here - it's resolved into percent, then pixels,
+  // in the renderer.
+  // TODO(yshalivskyy) Currently, for page based scrolling we always scroll
+  // by one page dismissing delta_y/delta_x values. https://crbug.com/1196092
+  if (features::IsPercentBasedScrollingEnabled() &&
+      webkit_event.delta_units != ui::ScrollGranularity::kScrollByPage &&
+      webkit_event.delta_units !=
+          ui::ScrollGranularity::kScrollByPrecisePixel) {
     webkit_event.delta_units = ui::ScrollGranularity::kScrollByPercentage;
     webkit_event.delta_y *=
         (kScrollPercentPerLineOrChar / MouseWheelEvent::kWheelDelta);

@@ -1,0 +1,78 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "android/java/src/org/chromium/components/image_fetcher/CachedImageFetcher.java",
+    "android/java/src/org/chromium/components/image_fetcher/ImageFetcher.java",
+    "android/java/src/org/chromium/components/image_fetcher/ImageFetcherBridge.java",
+    "android/java/src/org/chromium/components/image_fetcher/ImageFetcherFactory.java",
+    "android/java/src/org/chromium/components/image_fetcher/InMemoryCachedImageFetcher.java",
+    "android/java/src/org/chromium/components/image_fetcher/NetworkImageFetcher.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//components/browser_ui/util/android:java",
+    "//components/embedder_support/android:simple_factory_key_java",
+    "//content/public/android:content_main_dex_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/gif_player:gif_player_java",
+    "//url:gurl_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [ "//components/image_fetcher/core:java_enums_srcjar" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "android/java/src/org/chromium/components/image_fetcher/ImageFetcherBridge.java" ]
+}
+
+source_set("android") {
+  sources = [
+    "image_fetcher_bridge.cc",
+    "image_fetcher_bridge.h",
+    "image_fetcher_service_provider.cc",
+    "image_fetcher_service_provider.h",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//components/embedder_support/android:simple_factory_key",
+    "//components/image_fetcher/core",
+    "//components/image_fetcher/core:metrics",
+    "//services/data_decoder/public/cpp",
+    "//ui/gfx",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [
+    "android/junit/src/org/chromium/components/image_fetcher/CachedImageFetcherTest.java",
+    "android/junit/src/org/chromium/components/image_fetcher/ImageFetcherBridgeTest.java",
+    "android/junit/src/org/chromium/components/image_fetcher/ImageFetcherFactoryTest.java",
+    "android/junit/src/org/chromium/components/image_fetcher/ImageFetcherTest.java",
+    "android/junit/src/org/chromium/components/image_fetcher/InMemoryCachedImageFetcherTest.java",
+    "android/junit/src/org/chromium/components/image_fetcher/NetworkImageFetcherTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_junit_test_support",
+    "//base:jni_java",
+    "//components/browser_ui/util/android:java",
+    "//components/embedder_support/android:simple_factory_key_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/gif_player:gif_player_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_shadows",
+    "//url:gurl_junit_test_support",
+  ]
+}

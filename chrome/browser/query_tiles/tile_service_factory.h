@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/keyed_service/core/simple_keyed_service_factory.h"
 #include "components/query_tiles/tile_service.h"
 
@@ -26,6 +25,9 @@ class TileServiceFactory : public SimpleKeyedServiceFactory {
   static TileServiceFactory* GetInstance();
   static TileService* GetForKey(SimpleFactoryKey* key);
 
+  TileServiceFactory(const TileServiceFactory&) = delete;
+  TileServiceFactory& operator=(const TileServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<TileServiceFactory>;
 
@@ -34,8 +36,6 @@ class TileServiceFactory : public SimpleKeyedServiceFactory {
 
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       SimpleFactoryKey* key) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TileServiceFactory);
 };
 
 }  // namespace query_tiles

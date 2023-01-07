@@ -1,4 +1,4 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,18 +33,17 @@ const struct {
     {kTroyCard, IDR_AUTOFILL_CC_TROY},
     {kUnionPay, IDR_AUTOFILL_CC_UNIONPAY},
     {kVisaCard, IDR_AUTOFILL_CC_VISA},
-    {kGoogleIssuedCard, IDR_AUTOFILL_GOOGLE_ISSUED_CARD},
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     {"httpWarning", IDR_ANDROID_AUTOFILL_HTTP_WARNING},
     {"httpsInvalid", IDR_ANDROID_AUTOFILL_HTTPS_INVALID_WARNING},
     {"scanCreditCardIcon", IDR_ANDROID_AUTOFILL_CC_SCAN_NEW},
     {"settings", IDR_ANDROID_AUTOFILL_SETTINGS},
     {"create", IDR_ANDROID_AUTOFILL_CREATE},
     {"offerTag", IDR_ANDROID_AUTOFILL_OFFER_TAG_GREEN},
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"googlePay", IDR_AUTOFILL_GOOGLE_PAY},
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     {"googlePayDark", IDR_AUTOFILL_GOOGLE_PAY_DARK},
 #endif  // NOT OS_ANDROID
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

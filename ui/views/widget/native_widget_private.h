@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -160,6 +160,8 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   // app switching UI.
   virtual void SetWindowIcons(const gfx::ImageSkia& window_icon,
                               const gfx::ImageSkia& app_icon) = 0;
+  virtual const gfx::ImageSkia* GetWindowIcon() = 0;
+  virtual const gfx::ImageSkia* GetWindowAppIcon() = 0;
 
   // Initializes the modal type of the window to |modal_type|. Called from
   // NativeWidgetDelegate::OnNativeWidgetCreated() before the widget is
@@ -176,6 +178,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   virtual void SetSize(const gfx::Size& size) = 0;
   virtual void StackAbove(gfx::NativeView native_view) = 0;
   virtual void StackAtTop() = 0;
+  virtual bool IsStackedAbove(gfx::NativeView native_view) = 0;
   virtual void SetShape(std::unique_ptr<Widget::ShapeRects> shape) = 0;
   virtual void Close() = 0;
   virtual void CloseNow() = 0;
@@ -195,7 +198,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
   virtual bool IsMaximized() const = 0;
   virtual bool IsMinimized() const = 0;
   virtual void Restore() = 0;
-  virtual void SetFullscreen(bool fullscreen) = 0;
+  virtual void SetFullscreen(bool fullscreen, int64_t target_display_id) = 0;
   virtual bool IsFullscreen() const = 0;
   virtual void SetCanAppearInExistingFullscreenSpaces(
       bool can_appear_in_existing_fullscreen_spaces) = 0;
@@ -209,13 +212,14 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
                             ui::mojom::DragEventSource source) = 0;
   virtual void SchedulePaintInRect(const gfx::Rect& rect) = 0;
   virtual void ScheduleLayout() = 0;
-  virtual void SetCursor(gfx::NativeCursor cursor) = 0;
+  virtual void SetCursor(const ui::Cursor& cursor) = 0;
   virtual void ShowEmojiPanel();
   virtual bool IsMouseEventsEnabled() const = 0;
   // Returns true if any mouse button is currently down.
   virtual bool IsMouseButtonDown() const = 0;
   virtual void ClearNativeFocus() = 0;
   virtual gfx::Rect GetWorkAreaBoundsInScreen() const = 0;
+  virtual bool IsMoveLoopSupported() const;
   virtual Widget::MoveLoopResult RunMoveLoop(
       const gfx::Vector2d& drag_offset,
       Widget::MoveLoopSource source,
@@ -228,6 +232,7 @@ class VIEWS_EXPORT NativeWidgetPrivate : public NativeWidget {
       Widget::VisibilityTransition transition) = 0;
   virtual bool IsTranslucentWindowOpacitySupported() const = 0;
   virtual ui::GestureRecognizer* GetGestureRecognizer() = 0;
+  virtual ui::GestureConsumer* GetGestureConsumer() = 0;
   virtual void OnSizeConstraintsChanged() = 0;
   // Called before and after re-parenting of this or an ancestor widget.
   virtual void OnNativeViewHierarchyWillChange() = 0;

@@ -1,29 +1,31 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/ssl/ios_ssl_blocking_page.h"
+#import "ios/chrome/browser/ssl/ios_ssl_blocking_page.h"
 
-#include <utility>
+#import <utility>
 
-#include "base/memory/ptr_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/utf_string_conversions.h"
-#include "components/security_interstitials/core/metrics_helper.h"
-#include "components/security_interstitials/core/ssl_error_options_mask.h"
-#include "components/security_interstitials/core/ssl_error_ui.h"
-#include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
+#import "base/memory/ptr_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/utf_string_conversions.h"
+#import "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
+#import "components/security_interstitials/core/metrics_helper.h"
+#import "components/security_interstitials/core/ssl_error_options_mask.h"
+#import "components/security_interstitials/core/ssl_error_ui.h"
+#import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
+#import "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
-#include "ios/web/public/security/ssl_status.h"
-#include "ios/web/public/session/session_certificate_policy_cache.h"
+#import "ios/web/public/security/ssl_status.h"
+#import "ios/web/public/session/session_certificate_policy_cache.h"
 #import "ios/web/public/web_state.h"
-#include "net/base/net_errors.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "net/base/net_errors.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -41,12 +43,10 @@ IOSSSLBlockingPage::IOSSSLBlockingPage(
     const GURL& request_url,
     int options_mask,
     const base::Time& time_triggered,
-    base::OnceCallback<void(bool)> callback,
     std::unique_ptr<security_interstitials::IOSBlockingPageControllerClient>
         client)
     : IOSSecurityInterstitialPage(web_state, request_url, client.get()),
       web_state_(web_state),
-      callback_(std::move(callback)),
       ssl_info_(ssl_info),
       overridable_(IsOverridable(options_mask)),
       controller_(std::move(client)) {
@@ -61,6 +61,16 @@ IOSSSLBlockingPage::IOSSSLBlockingPage(
                                      options_mask, time_triggered, GURL(),
                                      controller_.get()));
 
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  safe_browsing::SafeBrowsingMetricsCollector* metrics_collector =
+      SafeBrowsingMetricsCollectorFactory::GetForBrowserState(browser_state);
+  if (metrics_collector) {
+    metrics_collector->AddSafeBrowsingEventToPref(
+        safe_browsing::SafeBrowsingMetricsCollector::EventType::
+            SECURITY_SENSITIVE_SSL_INTERSTITIAL);
+  }
+
   // Creating an interstitial without showing (e.g. from chrome://interstitials)
   // it leaks memory, so don't create it here.
 }
@@ -70,67 +80,11 @@ bool IOSSSLBlockingPage::ShouldCreateNewNavigation() const {
 }
 
 IOSSSLBlockingPage::~IOSSSLBlockingPage() {
-  if (!callback_.is_null()) {
-    // The page is closed without the user having chosen what to do, default to
-    // deny.
-    NotifyDenyCertificate();
-  }
-}
-
-void IOSSSLBlockingPage::AfterShow() {
-  controller_->SetWebInterstitial(web_interstitial());
 }
 
 void IOSSSLBlockingPage::PopulateInterstitialStrings(
-    base::DictionaryValue* load_time_data) const {
+    base::Value::Dict& load_time_data) const {
   ssl_error_ui_->PopulateStringsForHTML(load_time_data);
-}
-
-// This handles the commands sent from the interstitial JavaScript.
-void IOSSSLBlockingPage::CommandReceived(const std::string& command) {
-  if (command == "\"pageLoadComplete\"") {
-    // content::WaitForRenderFrameReady sends this message when the page
-    // load completes. Ignore it.
-    return;
-  }
-
-  int cmd = 0;
-  bool retval = base::StringToInt(command, &cmd);
-  DCHECK(retval);
-  ssl_error_ui_->HandleCommand(
-      static_cast<security_interstitials::SecurityInterstitialCommand>(cmd));
-}
-
-void IOSSSLBlockingPage::OnProceed() {
-  // Accepting the certificate resumes the loading of the page.
-  DCHECK(!callback_.is_null());
-  std::move(callback_).Run(true);
-}
-
-void IOSSSLBlockingPage::OnDontProceed() {
-  NotifyDenyCertificate();
-}
-
-void IOSSSLBlockingPage::OverrideItem(web::NavigationItem* item) {
-  item->SetTitle(l10n_util::GetStringUTF16(IDS_SSL_V2_TITLE));
-
-  item->GetSSL().security_style = web::SECURITY_STYLE_AUTHENTICATION_BROKEN;
-  item->GetSSL().cert_status = ssl_info_.cert_status;
-  // On iOS cert may be null when it is not provided by API callback or can not
-  // be parsed.
-  if (ssl_info_.cert) {
-    item->GetSSL().certificate = ssl_info_.cert;
-  }
-}
-
-void IOSSSLBlockingPage::NotifyDenyCertificate() {
-  // It's possible that callback_ may not exist if the user clicks "Proceed"
-  // followed by pressing the back button before the interstitial is hidden.
-  // In that case the certificate will still be treated as allowed.
-  if (callback_.is_null())
-    return;
-
-  std::move(callback_).Run(false);
 }
 
 // static
@@ -139,31 +93,14 @@ bool IOSSSLBlockingPage::IsOverridable(int options_mask) {
          !(options_mask & SSLErrorOptionsMask::STRICT_ENFORCEMENT);
 }
 
-void IOSSSLBlockingPage::HandleScriptCommand(
-    const base::DictionaryValue& message,
+void IOSSSLBlockingPage::HandleCommand(
+    security_interstitials::SecurityInterstitialCommand command,
     const GURL& origin_url,
     bool user_is_interacting,
     web::WebFrame* sender_frame) {
-  std::string command;
-  if (!message.GetString("command", &command)) {
-    LOG(ERROR) << "JS message parameter not found: command";
-    return;
-  }
-
-  // Remove the command prefix so that the string value can be converted to a
-  // SecurityInterstitialCommand enum value.
-  std::size_t delimiter = command.find(".");
-  if (delimiter == std::string::npos) {
-    return;
-  }
-  std::string command_str = command.substr(delimiter + 1);
-  int command_num = 0;
-  bool command_is_num = base::StringToInt(command_str, &command_num);
-  DCHECK(command_is_num) << command_str;
-
   // If a proceed command is received, allowlist the certificate and reload
   // the page to re-initiate the original navigation.
-  if (command_num == security_interstitials::CMD_PROCEED) {
+  if (command == security_interstitials::CMD_PROCEED) {
     web_state_->GetSessionCertificatePolicyCache()->RegisterAllowedCertificate(
         ssl_info_.cert, request_url().host(), ssl_info_.cert_status);
     web_state_->GetNavigationManager()->Reload(web::ReloadType::NORMAL,
@@ -171,7 +108,5 @@ void IOSSSLBlockingPage::HandleScriptCommand(
     return;
   }
 
-  // Non-proceed commands are handled the same between committed and
-  // non-committed interstitials, so the CommandReceived method can be used.
-  IOSSSLBlockingPage::CommandReceived(command_str);
+  ssl_error_ui_->HandleCommand(command);
 }

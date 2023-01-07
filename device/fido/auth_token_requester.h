@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,11 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -49,7 +50,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
     std::set<pin::Permissions> token_permissions;
 
     // rp_id is the permissions RP ID for the token to be requested.
-    base::Optional<std::string> rp_id;
+    absl::optional<std::string> rp_id;
 
     // skip_pin_touch indicates whether not to request a touch before attempting
     // to obtain a token using a PIN.
@@ -71,13 +72,15 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
     // AuthenticatorSelectedForPINUVAuthToken is invoked to indicate that the
     // user has interacted with this authenticator (i.e. tapped its button).
     // The Delegate typically uses this signal to cancel outstanding requests to
-    // other authenticators.
+    // other authenticators. It returns false if another authenticator has
+    // already been chosen, and true otherwise. In the former case, no further
+    // methods will be called.
     //
     // This method is guaranteed to be called first and at exactly once
     // throughout the handler's lifetime, *unless*
     // HavePINUVAuthTokenResultForAuthenticator() is invoked first with one of
     // the Result codes starting with `kPreTouch`.
-    virtual void AuthenticatorSelectedForPINUVAuthToken(
+    virtual bool AuthenticatorSelectedForPINUVAuthToken(
         FidoAuthenticator* authenticator) = 0;
 
     // CollectNewPIN is invoked to prompt the user to enter a PIN for an
@@ -103,12 +106,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
     virtual void PromptForInternalUVRetry(int attempts) = 0;
 
     // HavePINUVAuthTokenResultForAuthenticator notifies the delegate of the
-    // outcome of ObtainPINUVAuthToken(). |response| is `base::nullopt`, unless
+    // outcome of ObtainPINUVAuthToken(). |response| is `absl::nullopt`, unless
     // |result| is |Result::kSuccess|.
     virtual void HavePINUVAuthTokenResultForAuthenticator(
         FidoAuthenticator* authenticator,
         Result result,
-        base::Optional<pin::TokenResponse> response) = 0;
+        absl::optional<pin::TokenResponse> response) = 0;
   };
 
   // Instantiates a new AuthTokenRequester. |delegate| and |authenticator| must
@@ -131,35 +134,35 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthTokenRequester {
  private:
   void ObtainTokenFromInternalUV();
   void OnGetUVRetries(CtapDeviceResponseCode status,
-                      base::Optional<pin::RetriesResponse> response);
+                      absl::optional<pin::RetriesResponse> response);
   void OnGetUVToken(CtapDeviceResponseCode status,
-                    base::Optional<pin::TokenResponse> response);
+                    absl::optional<pin::TokenResponse> response);
 
   void ObtainTokenFromPIN();
   void OnGetPINRetries(CtapDeviceResponseCode status,
-                       base::Optional<pin::RetriesResponse> response);
+                       absl::optional<pin::RetriesResponse> response);
   void HavePIN(std::u16string pin);
   void OnGetPINToken(std::string pin,
                      CtapDeviceResponseCode status,
-                     base::Optional<pin::TokenResponse> response);
+                     absl::optional<pin::TokenResponse> response);
 
   void ObtainTokenFromNewPIN();
   void HaveNewPIN(std::u16string pin);
   void OnSetPIN(std::string pin,
                 CtapDeviceResponseCode status,
-                base::Optional<pin::EmptyResponse> response);
+                absl::optional<pin::EmptyResponse> response);
 
-  void NotifyAuthenticatorSelected();
+  bool NotifyAuthenticatorSelected();
   void NotifyAuthenticatorSelectedAndFailWithResult(Result result);
 
-  Delegate* delegate_;
-  FidoAuthenticator* authenticator_;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<FidoAuthenticator> authenticator_;
 
   Options options_;
 
-  bool authenticator_was_selected_ = false;
+  absl::optional<bool> authenticator_selected_result_;
   bool is_internal_uv_retry_ = false;
-  base::Optional<std::string> current_pin_;
+  absl::optional<std::string> current_pin_;
   bool internal_uv_locked_ = false;
   bool pin_invalid_ = false;
   int pin_retries_ = 0;

@@ -1,27 +1,34 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
 
-#include <stddef.h>
+#include <string>
+#include <tuple>
 
-#include <utility>
-#include <vector>
+#include <stddef.h>
 
 #include "base/base_paths.h"
 #include "base/base_switches.h"
+#include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_param_associator.h"
+#include "base/metrics/field_trial_params.h"
+#include "base/metrics/persistent_memory_allocator.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/pickle.h"
+#include "base/rand_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequence_manager/work_queue.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -36,6 +43,17 @@ FeatureList* g_feature_list_instance = nullptr;
 // Tracks whether the FeatureList instance was initialized via an accessor, and
 // which Feature that accessor was for, if so.
 const Feature* g_initialized_from_accessor = nullptr;
+
+// Controls whether a feature's override state will be cached in
+// `base::Feature::cached_value`. This field and the associated `base::Feature`
+// only exist to measure the impact of the caching on different performance
+// metrics.
+// TODO(crbug.com/1341292): Remove this global and this feature once the gains
+// are measured.
+bool g_cache_override_state = false;
+BASE_FEATURE(kCacheFeatureOverrideState,
+             "CacheFeatureOverrideState",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if DCHECK_IS_ON()
 // Tracks whether the use of base::Feature is allowed for this module.
@@ -56,17 +74,21 @@ void DCheckOverridesAllowed() {}
 // followed by a base::Pickle object that contains the feature and trial name.
 struct FeatureEntry {
   // SHA1(FeatureEntry): Increment this if structure changes!
-  static constexpr uint32_t kPersistentTypeId = 0x06567CA6 + 1;
+  static constexpr uint32_t kPersistentTypeId = 0x06567CA6 + 2;
 
   // Expected size for 32/64-bit check.
-  static constexpr size_t kExpectedInstanceSize = 8;
+  static constexpr size_t kExpectedInstanceSize = 16;
 
   // Specifies whether a feature override enables or disables the feature. Same
   // values as the OverrideState enum in feature_list.h
   uint32_t override_state;
 
+  // On e.g. x86, alignof(uint64_t) is 4.  Ensure consistent size and alignment
+  // of `pickle_size` across platforms.
+  uint32_t padding;
+
   // Size of the pickled structure, NOT the total size of this entry.
-  uint32_t pickle_size;
+  uint64_t pickle_size;
 
   // Reads the feature and trial name from the pickle. Calling this is only
   // valid on an initialized entry that's in shared memory.
@@ -75,15 +97,14 @@ struct FeatureEntry {
     const char* src =
         reinterpret_cast<const char*>(this) + sizeof(FeatureEntry);
 
-    Pickle pickle(src, pickle_size);
+    Pickle pickle(src, checked_cast<size_t>(pickle_size));
     PickleIterator pickle_iter(pickle);
 
     if (!pickle_iter.ReadStringPiece(feature_name))
       return false;
 
     // Return true because we are not guaranteed to have a trial name anyways.
-    auto sink = pickle_iter.ReadStringPiece(trial_name);
-    ALLOW_UNUSED_LOCAL(sink);
+    std::ignore = pickle_iter.ReadStringPiece(trial_name);
     return true;
   }
 };
@@ -94,21 +115,22 @@ struct FeatureEntry {
 // are used in command-line API functions that require ASCII) and whether there
 // are any reserved characters present, returning true if the string is valid.
 // Only called in DCHECKs.
-bool IsValidFeatureOrFieldTrialName(const std::string& name) {
+bool IsValidFeatureOrFieldTrialName(StringPiece name) {
   return IsStringASCII(name) && name.find_first_of(",<*") == std::string::npos;
 }
 
-// Splits |first| into two parts by the |separator| where the first part will be
+// Splits |text| into two parts by the |separator| where the first part will be
 // returned updated in |first| and the second part will be returned as |second|.
 // This function returns false if there is more than one |separator| in |first|.
 // If there is no |separator| presented in |first|, this function will not
 // modify |first| and |second|. It's used for splitting the |enable_features|
 // flag into feature name, field trial name and feature parameters.
-bool SplitIntoTwo(const std::string& separator,
+bool SplitIntoTwo(StringPiece text,
+                  StringPiece separator,
                   StringPiece* first,
                   std::string* second) {
   std::vector<StringPiece> parts =
-      SplitStringPiece(*first, separator, TRIM_WHITESPACE, SPLIT_WANT_ALL);
+      SplitStringPiece(text, separator, TRIM_WHITESPACE, SPLIT_WANT_ALL);
   if (parts.size() == 2) {
     *second = std::string(parts[1]);
   } else if (parts.size() > 2) {
@@ -133,31 +155,21 @@ bool ParseEnableFeatures(const std::string& enable_features,
   std::vector<std::string> enable_features_list;
   std::vector<std::string> force_fieldtrials_list;
   std::vector<std::string> force_fieldtrial_params_list;
-  for (auto& enable_feature :
+  for (const auto& enable_feature :
        FeatureList::SplitFeatureListString(enable_features)) {
-    // First, check whether ":" is present. If true, feature parameters were
-    // set for this feature.
-    std::string feature_params;
-    if (!SplitIntoTwo(":", &enable_feature, &feature_params))
-      return false;
-    // Then, check whether "." is present. If true, a group was specified for
-    // this feature.
-    std::string group;
-    if (!SplitIntoTwo(".", &enable_feature, &group))
-      return false;
-    // Finally, check whether "<" is present. If true, a study was specified for
-    // this feature.
+    std::string feature_name;
     std::string study;
-    if (!SplitIntoTwo("<", &enable_feature, &study))
+    std::string group;
+    std::string feature_params;
+    if (!FeatureList::ParseEnableFeatureString(
+            enable_feature, &feature_name, &study, &group, &feature_params)) {
       return false;
+    }
 
-    const std::string feature_name(enable_feature);
     // If feature params were set but group and study weren't, associate the
     // feature and its feature params to a synthetic field trial as the
     // feature params only make sense when it's combined with a field trial.
     if (!feature_params.empty()) {
-      study = study.empty() ? "Study" + feature_name : study;
-      group = group.empty() ? "Group" + feature_name : group;
       force_fieldtrials_list.push_back(study + "/" + group);
       force_fieldtrial_params_list.push_back(study + "." + group + ":" +
                                              feature_params);
@@ -174,12 +186,26 @@ bool ParseEnableFeatures(const std::string& enable_features,
   return true;
 }
 
+std::pair<FeatureList::OverrideState, uint16_t> UnpackFeatureCache(
+    uint32_t packed_cache_value) {
+  return std::make_pair(
+      static_cast<FeatureList::OverrideState>(packed_cache_value >> 24),
+      packed_cache_value & 0xFFFF);
+}
+
+uint32_t PackFeatureCache(FeatureList::OverrideState override_state,
+                          uint32_t caching_context) {
+  return (static_cast<uint32_t>(override_state) << 24) |
+         (caching_context & 0xFFFF);
+}
+
 }  // namespace
 
-#if defined(DCHECK_IS_CONFIGURABLE)
-const Feature kDCheckIsFatalFeature{"DcheckIsFatal",
-                                    FEATURE_DISABLED_BY_DEFAULT};
-#endif  // defined(DCHECK_IS_CONFIGURABLE)
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
+BASE_FEATURE(kDCheckIsFatalFeature,
+             "DcheckIsFatal",
+             FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 
 FeatureList::FeatureList() = default;
 
@@ -306,15 +332,14 @@ void FeatureList::RegisterFieldTrialOverride(const std::string& feature_name,
                                              OverrideState override_state,
                                              FieldTrial* field_trial) {
   DCHECK(field_trial);
-  DCHECK(!Contains(overrides_, feature_name) ||
-         !overrides_.find(feature_name)->second.field_trial)
-      << "Feature " << feature_name
-      << " has conflicting field trial overrides: "
+  DCHECK(!HasAssociatedFieldTrialByFeatureName(feature_name))
+      << "Feature " << feature_name << " is overriden multiple times in these "
+      << "trials: "
       << overrides_.find(feature_name)->second.field_trial->trial_name()
-      << " / " << field_trial->trial_name()
-      << ". Please make sure that the trial (study) name is consistent across:"
-      << " (1)The server config, (2)The fieldtrial_testing_config, and"
-      << " (3) The about_flags.cc";
+      << " and " << field_trial->trial_name() << ". "
+      << "Check the trial (study) in (1) the server config, "
+      << "(2) fieldtrial_testing_config.json, (3) about_flags.cc, and "
+      << "(4) client-side field trials.";
 
   RegisterOverride(feature_name, override_state, field_trial);
 }
@@ -352,13 +377,15 @@ void FeatureList::AddFeaturesToAllocator(PersistentMemoryAllocator* allocator) {
 }
 
 void FeatureList::GetFeatureOverrides(std::string* enable_overrides,
-                                      std::string* disable_overrides) {
-  GetFeatureOverridesImpl(enable_overrides, disable_overrides, false);
+                                      std::string* disable_overrides,
+                                      bool include_group_name) const {
+  GetFeatureOverridesImpl(enable_overrides, disable_overrides, false,
+                          include_group_name);
 }
 
 void FeatureList::GetCommandLineFeatureOverrides(
     std::string* enable_overrides,
-    std::string* disable_overrides) {
+    std::string* disable_overrides) const {
   GetFeatureOverridesImpl(enable_overrides, disable_overrides, true);
 }
 
@@ -372,6 +399,19 @@ bool FeatureList::IsEnabled(const Feature& feature) {
     return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
   }
   return g_feature_list_instance->IsFeatureEnabled(feature);
+}
+
+// static
+absl::optional<bool> FeatureList::GetStateIfOverridden(const Feature& feature) {
+#if DCHECK_IS_ON()
+  CHECK(g_use_allowed) << "base::Feature not permitted for this module.";
+#endif
+  if (!g_feature_list_instance) {
+    g_initialized_from_accessor = &feature;
+    // If there is no feature list, there can be no overrides.
+    return absl::nullopt;
+  }
+  return g_feature_list_instance->IsFeatureEnabledIfOverridden(feature);
 }
 
 // static
@@ -391,6 +431,45 @@ FieldTrial* FeatureList::GetFieldTrial(const Feature& feature) {
 std::vector<StringPiece> FeatureList::SplitFeatureListString(
     StringPiece input) {
   return SplitStringPiece(input, ",", TRIM_WHITESPACE, SPLIT_WANT_NONEMPTY);
+}
+
+// static
+bool FeatureList::ParseEnableFeatureString(StringPiece enable_feature,
+                                           std::string* feature_name,
+                                           std::string* study_name,
+                                           std::string* group_name,
+                                           std::string* params) {
+  StringPiece first;
+  // First, check whether ":" is present. If true, feature parameters were
+  // set for this feature.
+  std::string feature_params;
+  if (!SplitIntoTwo(enable_feature, ":", &first, &feature_params))
+    return false;
+  // Then, check whether "." is present. If true, a group was specified for
+  // this feature.
+  std::string group;
+  if (!SplitIntoTwo(first, ".", &first, &group))
+    return false;
+  // Finally, check whether "<" is present. If true, a study was specified for
+  // this feature.
+  std::string study;
+  if (!SplitIntoTwo(first, "<", &first, &study))
+    return false;
+
+  std::string enable_feature_name(first);
+  // If feature params were set but group and study weren't, associate the
+  // feature and its feature params to a synthetic field trial as the
+  // feature params only make sense when it's combined with a field trial.
+  if (!feature_params.empty()) {
+    study = study.empty() ? "Study" + enable_feature_name : study;
+    group = group.empty() ? "Group" + enable_feature_name : group;
+  }
+
+  feature_name->swap(enable_feature_name);
+  study_name->swap(study);
+  group_name->swap(group);
+  params->swap(feature_params);
+  return true;
 }
 
 // static
@@ -450,7 +529,20 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
   // Note: Intentional leak of global singleton.
   g_feature_list_instance = instance.release();
 
-#if defined(DCHECK_IS_CONFIGURABLE)
+#if !BUILDFLAG(IS_NACL)
+  // Configured first because it takes precedence over the getrandom() trial.
+  internal::ConfigureBoringSSLBackedRandBytesFieldTrial();
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  internal::ConfigureRandBytesFieldTrial();
+#endif
+
+  g_cache_override_state =
+      base::FeatureList::IsEnabled(kCacheFeatureOverrideState);
+
+  base::sequence_manager::internal::WorkQueue::ConfigureCapacityFieldTrial();
+
+#if BUILDFLAG(DCHECK_IS_CONFIGURABLE)
   // Update the behaviour of LOGGING_DCHECK to match the Feature configuration.
   // DCHECK is also forced to be FATAL if we are running a death-test.
   // TODO(crbug.com/1057995#c11): --gtest_internal_run_death_test doesn't
@@ -465,7 +557,7 @@ void FeatureList::SetInstance(std::unique_ptr<FeatureList> instance) {
   } else {
     logging::LOGGING_DCHECK = logging::LOG_INFO;
   }
-#endif  // defined(DCHECK_IS_CONFIGURABLE)
+#endif  // BUILDFLAG(DCHECK_IS_CONFIGURABLE)
 }
 
 // static
@@ -493,6 +585,10 @@ void FeatureList::ForbidUseForCurrentModule() {
 #endif  // DCHECK_IS_ON()
 }
 
+void FeatureList::SetCachingContextForTesting(uint16_t caching_context) {
+  caching_context_ = caching_context;
+}
+
 void FeatureList::FinalizeInitialization() {
   DCHECK(!initialized_);
   // Store the field trial list pointer for DCHECKing.
@@ -500,41 +596,142 @@ void FeatureList::FinalizeInitialization() {
   initialized_ = true;
 }
 
-bool FeatureList::IsFeatureEnabled(const Feature& feature) {
+bool FeatureList::IsFeatureEnabled(const Feature& feature) const {
+  OverrideState overridden_state = GetOverrideState(feature);
+
+  // If marked as OVERRIDE_USE_DEFAULT, simply return the default state below.
+  if (overridden_state != OVERRIDE_USE_DEFAULT)
+    return overridden_state == OVERRIDE_ENABLE_FEATURE;
+
+  return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
+}
+
+absl::optional<bool> FeatureList::IsFeatureEnabledIfOverridden(
+    const Feature& feature) const {
+  OverrideState overridden_state = GetOverrideState(feature);
+
+  // If marked as OVERRIDE_USE_DEFAULT, fall through to returning empty.
+  if (overridden_state != OVERRIDE_USE_DEFAULT)
+    return overridden_state == OVERRIDE_ENABLE_FEATURE;
+
+  return absl::nullopt;
+}
+
+FeatureList::OverrideState FeatureList::GetOverrideState(
+    const Feature& feature) const {
   DCHECK(initialized_);
   DCHECK(IsValidFeatureOrFieldTrialName(feature.name)) << feature.name;
   DCHECK(CheckFeatureIdentity(feature)) << feature.name;
 
-  auto it = overrides_.find(feature.name);
+  // If caching is disabled, always perform the full lookup.
+  if (!g_cache_override_state)
+    return GetOverrideStateByFeatureName(feature.name);
+
+  uint32_t current_cache_value =
+      feature.cached_value.load(std::memory_order_relaxed);
+
+  auto unpacked = UnpackFeatureCache(current_cache_value);
+
+  if (unpacked.second == caching_context_)
+    return unpacked.first;
+
+  OverrideState state = GetOverrideStateByFeatureName(feature.name);
+  uint32_t new_cache_value = PackFeatureCache(state, caching_context_);
+
+  // Update the cache with the new value.
+  // In non-test code, this value can be in one of 2 states: either it's unset,
+  // or another thread has updated it to the same value we're about to write.
+  // Because of this, a plain `store` yields the correct result in all cases.
+  // In test code, it's possible for a different thread to have installed a new
+  // `ScopedFeatureList` and written a value that's different than the one we're
+  // about to write, although that would be a thread safety violation already
+  // and such tests should be fixed.
+  feature.cached_value.store(new_cache_value, std::memory_order_relaxed);
+
+  return state;
+}
+
+FeatureList::OverrideState FeatureList::GetOverrideStateByFeatureName(
+    StringPiece feature_name) const {
+  DCHECK(initialized_);
+  DCHECK(IsValidFeatureOrFieldTrialName(feature_name)) << feature_name;
+
+  auto it = overrides_.find(feature_name);
   if (it != overrides_.end()) {
     const OverrideEntry& entry = it->second;
 
     // Activate the corresponding field trial, if necessary.
     if (entry.field_trial)
-      entry.field_trial->group();
+      entry.field_trial->Activate();
 
     // TODO(asvitkine) Expand this section as more support is added.
 
-    // If marked as OVERRIDE_USE_DEFAULT, simply return the default state below.
-    if (entry.overridden_state != OVERRIDE_USE_DEFAULT)
-      return entry.overridden_state == OVERRIDE_ENABLE_FEATURE;
+    return entry.overridden_state;
   }
-  // Otherwise, return the default state.
-  return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
+  // Otherwise, report that we want to use the default state.
+  return OVERRIDE_USE_DEFAULT;
 }
 
-FieldTrial* FeatureList::GetAssociatedFieldTrial(const Feature& feature) {
+FieldTrial* FeatureList::GetAssociatedFieldTrial(const Feature& feature) const {
   DCHECK(initialized_);
-  DCHECK(IsValidFeatureOrFieldTrialName(feature.name)) << feature.name;
   DCHECK(CheckFeatureIdentity(feature)) << feature.name;
 
-  auto it = overrides_.find(feature.name);
+  return GetAssociatedFieldTrialByFeatureName(feature.name);
+}
+
+const base::FeatureList::OverrideEntry*
+FeatureList::GetOverrideEntryByFeatureName(StringPiece name) const {
+  DCHECK(initialized_);
+  DCHECK(IsValidFeatureOrFieldTrialName(name)) << name;
+
+  auto it = overrides_.find(name);
   if (it != overrides_.end()) {
     const OverrideEntry& entry = it->second;
-    return entry.field_trial;
+    return &entry;
   }
-
   return nullptr;
+}
+
+FieldTrial* FeatureList::GetAssociatedFieldTrialByFeatureName(
+    StringPiece name) const {
+  DCHECK(initialized_);
+
+  const base::FeatureList::OverrideEntry* entry =
+      GetOverrideEntryByFeatureName(name);
+  if (entry) {
+    return entry->field_trial;
+  }
+  return nullptr;
+}
+
+bool FeatureList::HasAssociatedFieldTrialByFeatureName(StringPiece name) const {
+  DCHECK(!initialized_);
+  auto entry = overrides_.find(name);
+  return entry != overrides_.end() && entry->second.field_trial != nullptr;
+}
+
+FieldTrial* FeatureList::GetEnabledFieldTrialByFeatureName(
+    StringPiece name) const {
+  DCHECK(initialized_);
+
+  const base::FeatureList::OverrideEntry* entry =
+      GetOverrideEntryByFeatureName(name);
+  if (entry &&
+      entry->overridden_state == base::FeatureList::OVERRIDE_ENABLE_FEATURE) {
+    return entry->field_trial;
+  }
+  return nullptr;
+}
+
+std::unique_ptr<FeatureList::Accessor> FeatureList::ConstructAccessor() {
+  if (initialized_) {
+    // This function shouldn't be called after initialization.
+    NOTREACHED();
+    return nullptr;
+  }
+  // Use new and WrapUnique because we want to restrict access to the Accessor's
+  // constructor.
+  return base::WrapUnique(new Accessor(this));
 }
 
 void FeatureList::RegisterOverridesFromCommandLine(
@@ -550,11 +747,11 @@ void FeatureList::RegisterOverridesFromCommandLine(
     if (pos != std::string::npos) {
       feature_name = StringPiece(value.data(), pos);
       trial = FieldTrialList::Find(value.substr(pos + 1));
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
       // If the below DCHECK fires, it means a non-existent trial name was
       // specified via the "Feature<Trial" command-line syntax.
       DCHECK(trial) << "trial='" << value.substr(pos + 1) << "' does not exist";
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
     }
 
     RegisterOverride(feature_name, overridden_state, trial);
@@ -584,7 +781,8 @@ void FeatureList::RegisterOverride(StringPiece feature_name,
 
 void FeatureList::GetFeatureOverridesImpl(std::string* enable_overrides,
                                           std::string* disable_overrides,
-                                          bool command_line_only) {
+                                          bool command_line_only,
+                                          bool include_group_name) const {
   DCHECK(initialized_);
 
   // Check that the FieldTrialList this is associated with, if any, is the
@@ -624,13 +822,18 @@ void FeatureList::GetFeatureOverridesImpl(std::string* enable_overrides,
       target_list->push_back('*');
     target_list->append(entry.first);
     if (entry.second.field_trial) {
+      auto* const field_trial = entry.second.field_trial;
       target_list->push_back('<');
-      target_list->append(entry.second.field_trial->trial_name());
+      target_list->append(field_trial->trial_name());
+      if (include_group_name) {
+        target_list->push_back('.');
+        target_list->append(field_trial->GetGroupNameWithoutActivation());
+      }
     }
   }
 }
 
-bool FeatureList::CheckFeatureIdentity(const Feature& feature) {
+bool FeatureList::CheckFeatureIdentity(const Feature& feature) const {
   AutoLock auto_lock(feature_identity_tracker_lock_);
 
   auto it = feature_identity_tracker_.find(feature.name);
@@ -648,5 +851,22 @@ FeatureList::OverrideEntry::OverrideEntry(OverrideState overridden_state,
     : overridden_state(overridden_state),
       field_trial(field_trial),
       overridden_by_field_trial(field_trial != nullptr) {}
+
+FeatureList::Accessor::Accessor(FeatureList* feature_list)
+    : feature_list_(feature_list) {}
+
+FeatureList::OverrideState FeatureList::Accessor::GetOverrideStateByFeatureName(
+    StringPiece feature_name) {
+  return feature_list_->GetOverrideStateByFeatureName(feature_name);
+}
+
+bool FeatureList::Accessor::GetParamsByFeatureName(
+    StringPiece feature_name,
+    std::map<std::string, std::string>* params) {
+  base::FieldTrial* trial =
+      feature_list_->GetAssociatedFieldTrialByFeatureName(feature_name);
+  return FieldTrialParamAssociator::GetInstance()->GetFieldTrialParams(trial,
+                                                                       params);
+}
 
 }  // namespace base

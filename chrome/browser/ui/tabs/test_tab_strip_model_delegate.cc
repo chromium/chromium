@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,13 +18,13 @@ void TestTabStripModelDelegate::AddTabAt(
     const GURL& url,
     int index,
     bool foreground,
-    base::Optional<tab_groups::TabGroupId> group) {}
+    absl::optional<tab_groups::TabGroupId> group) {}
 
 Browser* TestTabStripModelDelegate::CreateNewStripWithContents(
     std::vector<NewStripContents> contentses,
     const gfx::Rect& window_bounds,
     bool maximize) {
-  return NULL;
+  return nullptr;
 }
 
 void TestTabStripModelDelegate::WillAddWebContents(
@@ -43,18 +43,16 @@ bool TestTabStripModelDelegate::CanDuplicateContentsAt(int index) {
   return false;
 }
 
+bool TestTabStripModelDelegate::IsTabStripEditable() {
+  return true;
+}
+
 void TestTabStripModelDelegate::DuplicateContentsAt(int index) {
 }
 
 void TestTabStripModelDelegate::MoveToExistingWindow(
     const std::vector<int>& indices,
     int browser_index) {}
-
-std::vector<std::u16string>
-TestTabStripModelDelegate::GetExistingWindowsForMoveMenu() {
-  std::vector<std::u16string> existing_windows;
-  return existing_windows;
-}
 
 bool TestTabStripModelDelegate::CanMoveTabsToWindow(
     const std::vector<int>& indices) {
@@ -67,10 +65,16 @@ void TestTabStripModelDelegate::MoveTabsToNewWindow(
 void TestTabStripModelDelegate::MoveGroupToNewWindow(
     const tab_groups::TabGroupId& group) {}
 
-base::Optional<SessionID> TestTabStripModelDelegate::CreateHistoricalTab(
+absl::optional<SessionID> TestTabStripModelDelegate::CreateHistoricalTab(
     content::WebContents* contents) {
-  return base::nullopt;
+  return absl::nullopt;
 }
+
+void TestTabStripModelDelegate::CreateHistoricalGroup(
+    const tab_groups::TabGroupId& group) {}
+
+void TestTabStripModelDelegate::GroupCloseStopped(
+    const tab_groups::TabGroupId& group) {}
 
 bool TestTabStripModelDelegate::ShouldRunUnloadListenerBeforeClosing(
     content::WebContents* contents) {
@@ -86,3 +90,30 @@ bool TestTabStripModelDelegate::ShouldDisplayFavicon(
     content::WebContents* web_contents) const {
   return true;
 }
+
+bool TestTabStripModelDelegate::CanReload() const {
+  return true;
+}
+
+void TestTabStripModelDelegate::AddToReadLater(
+    content::WebContents* web_contents) {}
+
+bool TestTabStripModelDelegate::SupportsReadLater() {
+  return true;
+}
+
+void TestTabStripModelDelegate::CacheWebContents(
+    const std::vector<std::unique_ptr<TabStripModel::DetachedWebContents>>&
+        web_contents) {}
+
+void TestTabStripModelDelegate::FollowSite(content::WebContents* web_contents) {
+}
+
+void TestTabStripModelDelegate::UnfollowSite(
+    content::WebContents* web_contents) {}
+
+bool TestTabStripModelDelegate::IsForWebApp() {
+  return false;
+}
+
+void TestTabStripModelDelegate::CopyURL(content::WebContents* web_contents) {}

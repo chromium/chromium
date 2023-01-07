@@ -1,10 +1,11 @@
-// Copyright 2017 the Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_DECLARED_STYLE_PROPERTY_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_DECLARED_STYLE_PROPERTY_MAP_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/style_property_map.h"
 
 namespace blink {
@@ -35,8 +36,8 @@ class CORE_EXPORT DeclaredStylePropertyMap final : public StylePropertyMap {
 
  protected:
   const CSSValue* GetProperty(CSSPropertyID) const override;
-  const CSSValue* GetCustomProperty(AtomicString) const override;
-  void ForEachProperty(const IterationCallback&) override;
+  const CSSValue* GetCustomProperty(const AtomicString&) const override;
+  void ForEachProperty(IterationFunction visitor) override;
   void SetProperty(CSSPropertyID, const CSSValue&) override;
   bool SetShorthandProperty(CSSPropertyID,
                             const String&,
@@ -56,4 +57,4 @@ class CORE_EXPORT DeclaredStylePropertyMap final : public StylePropertyMap {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_DECLARED_STYLE_PROPERTY_MAP_H_

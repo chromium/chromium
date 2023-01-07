@@ -1,12 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_RENDERER_CONTEXT_MENU_SPELLING_BUBBLE_MODEL_H_
 #define CHROME_BROWSER_RENDERER_CONTEXT_MENU_SPELLING_BUBBLE_MODEL_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/confirm_bubble_model.h"
 
 class Profile;
@@ -21,6 +21,8 @@ class SpellingBubbleModel : public ConfirmBubbleModel {
  public:
   SpellingBubbleModel(Profile* profile, content::WebContents* web_contents);
   ~SpellingBubbleModel() override;
+  SpellingBubbleModel(const SpellingBubbleModel&) = delete;
+  SpellingBubbleModel& operator=(const SpellingBubbleModel&) = delete;
 
   // ConfirmBubbleModel implementation.
   std::u16string GetTitle() const override;
@@ -36,10 +38,10 @@ class SpellingBubbleModel : public ConfirmBubbleModel {
   // Set the profile preferences to enable or disable the feature.
   void SetPref(bool enabled);
 
-  Profile* profile_;
-  content::WebContents* web_contents_;
+  // Unowned.
+  raw_ptr<Profile> profile_;
 
-  DISALLOW_COPY_AND_ASSIGN(SpellingBubbleModel);
+  base::WeakPtr<content::WebContents> web_contents_;
 };
 
 #endif  // CHROME_BROWSER_RENDERER_CONTEXT_MENU_SPELLING_BUBBLE_MODEL_H_

@@ -45,8 +45,8 @@ longhands_custom.cc).
 ### Aliases
 
 Aliases are properties that share most of their logic with another property,
-somtimes with the exception of some minor differences in parsing logic due to
-legacy reasons. Many aliases are -webit prefixed properties that have since
+sometimes with the exception of some minor differences in parsing logic due to
+legacy reasons. Many aliases are -webkit prefixed properties that have since
 been implemented without the prefix. Aliases define the alias_for member in
 [css_properties.json5](https://cs.chromium.org/chromium/src/third_party/blink/renderer/core/css/css_properties.json5)).
 

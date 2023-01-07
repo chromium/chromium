@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,8 +23,9 @@ extern const char kEncodeBinary[];
 extern const char kStableReleaseMode[];
 extern const char kDisableHeadlessMode[];
 extern const char kDisableAutoWPTOriginIsolation[];
+extern const char kResetBrowsingInstanceBetweenTests[];
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 extern const char kRegisterFontFiles[];
 
 // Returns list of extra font files to be made accessible to the renderer, that

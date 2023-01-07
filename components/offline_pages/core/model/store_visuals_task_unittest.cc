@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,7 +77,7 @@ TEST_F(StoreVisualsTaskTest, AlreadyExists) {
 
   EXPECT_EQ(visuals, MustReadVisuals(visuals.offline_id));
 
-  test_clock.Advance(base::TimeDelta::FromDays(1));
+  test_clock.Advance(base::Days(1));
   visuals.thumbnail += "_extradata";
   visuals.expiration = OfflineTimeNow() + kVisualsExpirationDelta;
   EXPECT_CALL(callback, Run(true, visuals.thumbnail));

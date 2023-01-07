@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/js_messaging/web_view_web_state_map.h"
 
 #import <WebKit/WebKit.h>
-#include <memory>
+#import <memory>
 
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_test.h"

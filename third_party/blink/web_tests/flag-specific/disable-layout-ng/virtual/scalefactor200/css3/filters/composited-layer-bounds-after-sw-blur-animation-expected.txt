@@ -1,13 +1,13 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1600, 1200],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV id='composited-layer' class='final-drop-shadow'",
+      "name": "LayoutBlockFlow (positioned) DIV id='composited-layer' class='initial-drop-shadow'",
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

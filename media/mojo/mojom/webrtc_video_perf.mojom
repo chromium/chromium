@@ -1,0 +1,43 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+
+// WebRTC prediction features that represent a video configuration.
+struct WebrtcPredictionFeatures {
+  bool is_decode_stats = true;
+  // Not possible to have a default initialization for native enums.
+  VideoCodecProfile profile;
+  int32 video_pixels = 0;
+  bool hardware_accelerated = false;
+};
+
+// WebRTC video stats that are collected and stored for for MediaCapabilities
+// smoothness predictions.
+struct WebrtcVideoStats {
+  uint32 frames_processed = 0;
+  uint32 key_frames_processed = 0;
+  // The 99 percentile of the processing time.
+  float p99_processing_time_ms = 0;
+};
+
+// This interface allows forwarding WebRTC encode and decode statistics to the
+// browser process where they are stored in a local database.
+interface WebrtcVideoPerfRecorder {
+  // Update stats values for the specified features. Each update overrides the
+  // previous values.
+  UpdateRecord(
+    WebrtcPredictionFeatures features, WebrtcVideoStats video_stats);
+};
+
+// This interface allows retrieving a smoothness prediction based on historical
+// performance for the specified video configuration.
+interface WebrtcVideoPerfHistory {
+  // Get a performance prediction `is_smooth` based on the specified `features`
+  // and `frames_per_second`.
+  GetPerfInfo(WebrtcPredictionFeatures features, int32 frames_per_second)
+    => (bool is_smooth);
+};

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ public class LearnMorePreference extends Preference {
     public void onBindViewHolder(PreferenceViewHolder holder) {
         super.onBindViewHolder(holder);
         TextView titleView = (TextView) holder.findViewById(android.R.id.title);
-        ApiCompatibilityUtils.setTextAppearance(titleView, R.style.TextAppearance_TextLarge_Blue);
+        ApiCompatibilityUtils.setTextAppearance(titleView, R.style.TextAppearance_TextLarge_Link);
         titleView.setClickable(true);
         titleView.setOnClickListener(v -> getOnPreferenceClickListener().onPreferenceClick(this));
     }

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,23 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <netinet/in.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <ws2tcpip.h>
 #endif
 
 #include "base/check_op.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "net/base/escape.h"
 #include "net/base/ip_address.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 #include "url/url_canon.h"
 #include "url/url_canon_ip.h"
 #include "url/url_constants.h"
@@ -67,8 +69,8 @@ GURL AppendQueryParameter(const GURL& url,
   if (!query.empty())
     query += "&";
 
-  query += (EscapeQueryParamValue(name, true) + "=" +
-            EscapeQueryParamValue(value, true));
+  query += (base::EscapeQueryParamValue(name, true) + "=" +
+            base::EscapeQueryParamValue(value, true));
   GURL::Replacements replacements;
   replacements.SetQueryStr(query);
   return url.ReplaceComponents(replacements);
@@ -76,10 +78,14 @@ GURL AppendQueryParameter(const GURL& url,
 
 GURL AppendOrReplaceQueryParameter(const GURL& url,
                                    const std::string& name,
-                                   const std::string& value) {
+                                   absl::optional<base::StringPiece> value) {
   bool replaced = false;
-  std::string param_name = EscapeQueryParamValue(name, true);
-  std::string param_value = EscapeQueryParamValue(value, true);
+  std::string param_name = base::EscapeQueryParamValue(name, true);
+  bool should_keep_param = value.has_value();
+
+  std::string param_value;
+  if (should_keep_param)
+    param_value = base::EscapeQueryParamValue(value.value(), true);
 
   const std::string input = url.query();
   url::Component cursor(0, input.size());
@@ -93,7 +99,11 @@ GURL AppendOrReplaceQueryParameter(const GURL& url,
     // Check |replaced| as only the first pair should be replaced.
     if (!replaced && key == param_name) {
       replaced = true;
+      if (!should_keep_param)
+        continue;
+
       key_value_pair = (param_name + "=" + param_value);
+
     } else {
       key_value_pair.assign(input, key_range.begin,
                             value_range.end() - key_range.begin);
@@ -103,7 +113,7 @@ GURL AppendOrReplaceQueryParameter(const GURL& url,
 
     output += key_value_pair;
   }
-  if (!replaced) {
+  if (!replaced && should_keep_param) {
     if (!output.empty())
       output += "&";
 
@@ -125,27 +135,28 @@ QueryIterator::QueryIterator(const GURL& url)
 
 QueryIterator::~QueryIterator() = default;
 
-std::string QueryIterator::GetKey() const {
+base::StringPiece QueryIterator::GetKey() const {
   DCHECK(!at_end_);
   if (key_.is_nonempty())
-    return url_.spec().substr(key_.begin, key_.len);
-  return std::string();
+    return base::StringPiece(&url_.spec()[key_.begin], key_.len);
+  return base::StringPiece();
 }
 
-std::string QueryIterator::GetValue() const {
+base::StringPiece QueryIterator::GetValue() const {
   DCHECK(!at_end_);
   if (value_.is_nonempty())
-    return url_.spec().substr(value_.begin, value_.len);
-  return std::string();
+    return base::StringPiece(&url_.spec()[value_.begin], value_.len);
+  return base::StringPiece();
 }
 
 const std::string& QueryIterator::GetUnescapedValue() {
   DCHECK(!at_end_);
   if (value_.is_nonempty() && unescaped_value_.empty()) {
     unescaped_value_ = base::UnescapeURLComponent(
-        GetValue(), UnescapeRule::SPACES | UnescapeRule::PATH_SEPARATORS |
-                        UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
-                        UnescapeRule::REPLACE_PLUS_WITH_SPACE);
+        GetValue(),
+        base::UnescapeRule::SPACES | base::UnescapeRule::PATH_SEPARATORS |
+            base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
+            base::UnescapeRule::REPLACE_PLUS_WITH_SPACE);
   }
   return unescaped_value_;
 }
@@ -248,6 +259,18 @@ std::string GetHostAndOptionalPort(const GURL& url) {
   return url.host();
 }
 
+NET_EXPORT std::string GetHostAndOptionalPort(
+    const url::SchemeHostPort& scheme_host_port) {
+  int default_port = url::DefaultPortForScheme(
+      scheme_host_port.scheme().data(),
+      static_cast<int>(scheme_host_port.scheme().length()));
+  if (default_port != scheme_host_port.port()) {
+    return base::StringPrintf("%s:%i", scheme_host_port.host().c_str(),
+                              scheme_host_port.port());
+  }
+  return scheme_host_port.host();
+}
+
 std::string TrimEndingDot(base::StringPiece host) {
   base::StringPiece host_trimmed = host;
   size_t len = host_trimmed.length();
@@ -288,6 +311,17 @@ std::string CanonicalizeHost(base::StringPiece host,
   const url::Component raw_host_component(0, static_cast<int>(host.length()));
   std::string canon_host;
   url::StdStringCanonOutput canon_host_output(&canon_host);
+  // A url::StdStringCanonOutput starts off with a zero length buffer. The
+  // first time through Grow() immediately resizes it to 32 bytes, incurring
+  // a malloc. With libcxx a 22 byte or smaller request can be accommodated
+  // within the std::string itself (i.e. no malloc occurs). Start the buffer
+  // off at the max size to avoid a malloc on short strings.
+  // NOTE: To ensure the final size is correctly reflected, it's necessary
+  // to call Complete() which will adjust the size to the actual bytes written.
+  // This is handled below for success cases, while failure cases discard all
+  // the output.
+  const int kCxxMaxStringBufferSizeWithoutMalloc = 22;
+  canon_host_output.Resize(kCxxMaxStringBufferSizeWithoutMalloc);
   url::CanonicalizeHostVerbose(host.data(), raw_host_component,
                                &canon_host_output, host_info);
 
@@ -311,8 +345,7 @@ bool IsCanonicalizedHostCompliant(const std::string& host) {
   bool in_component = false;
   bool most_recent_component_started_alphanumeric = false;
 
-  for (std::string::const_iterator i(host.begin()); i != host.end(); ++i) {
-    const char c = *i;
+  for (char c : host) {
     if (!in_component) {
       most_recent_component_started_alphanumeric = IsHostCharAlphanumeric(c);
       if (!most_recent_component_started_alphanumeric && (c != '-') &&
@@ -453,11 +486,6 @@ bool IsGoogleHost(base::StringPiece host) {
       return true;
   }
   return false;
-}
-
-bool IsTLS13ExperimentHost(base::StringPiece host) {
-  return host == "inbox.google.com" || host == "mail.google.com" ||
-         host == "gmail.com";
 }
 
 bool IsLocalHostname(base::StringPiece host) {

@@ -1,0 +1,79 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.cfm.mojom;
+
+// Indicates the upload priority of the enqueued payload.
+[Extensible]
+enum EnqueuePriority {
+  // |kHigh| priority indicates the payload requires immediate upload
+  // Ex: Security Events, Failed Installation, High Disc Usage
+  kHigh = 0,
+  // |kMedium| priority indicates the payload does not require immediate upload
+  // Ex: telemetry such as uptime, power usage, etc
+  kMedium = 1,
+  // |kLow| priority indicates the payload can be large and can be uploaded with
+  // a slower frequency.
+  // Ex: Logs, Feedback
+  kLow = 2,
+};
+
+// A error code that matches values defined in google/rpc/code.proto
+[Extensible]
+enum LoggerErrorCode {
+  kOk = 0,
+  kCancelled = 1,
+  kUnknown = 2,
+  kInvalidArgument = 3,
+  kDeadlineExceeded = 4,
+  kNotFound = 5,
+  kAlreadyExists = 6,
+  kPermissionDenied = 7,
+  kUnauthenticated = 16,
+  kResourceExhausted = 8,
+  kFailedPrecondition = 9,
+  kAborted = 10,
+  kOutOfRange = 11,
+  kUnimplemented = 12,
+  kInternal = 13,
+  kUnavailable = 14,
+  kDataloss = 15,
+};
+
+// Provides information regarding the logger error status.
+struct LoggerStatus {
+  LoggerErrorCode code@0;
+
+  // A debug message with more information about the error. This string is not
+  // intended to be shown to the user.
+  string message@1;
+};
+
+// Indicates the current state of the |MeetDevicesLogger| service.
+[Extensible]
+enum LoggerState {
+  // |kDisabled| state indicates the service has been disabled
+  kDisabled = 0,
+  // |kReadyForRequests| state indicates the service can enqueue records.
+  kReadyForRequests = 1,
+  // |kUninitialized| state indicates the service has yet to be fully configured
+  kUninitialized = 2,
+};
+
+// Allows clients to be notified of changes in |MeetDevicesLogger|
+interface LoggerStateObserver {
+  // Called when this observer is first added to |MeetDevicesLogger| service
+  // as well as whenever the status of |LoggerState| is updated.
+  OnNotifyState@0(LoggerState state);
+};
+
+// Interface used to enqueue CfM Telemetry data, using the Chrome Reporting API
+interface MeetDevicesLogger {
+  // Allows a user to |Enqueue| a serialised message for delivery, using the,
+  // report handler specified by |Destination::MEET_DEVICE_TELEMETRY|.
+  Enqueue@0(string record, EnqueuePriority priority)=>(LoggerStatus status);
+
+  // Adds a |LoggerStateObserver| to monitor |MeetDevicesLogger|'s state.
+  AddStateObserver@1(pending_remote<LoggerStateObserver> pending_observer);
+};

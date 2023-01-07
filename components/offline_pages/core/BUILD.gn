@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -166,7 +166,6 @@ source_set("unit_tests") {
     "model/visuals_availability_task_unittest.cc",
     "offline_event_logger_unittest.cc",
     "offline_page_client_policy_unittest.cc",
-    "offline_page_feature_unittest.cc",
     "offline_page_item_utils_unittest.cc",
     "offline_page_metadata_store_unittest.cc",
     "offline_page_model_event_logger_unittest.cc",

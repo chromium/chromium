@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,40 +6,32 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "components/reporting/proto/record.pb.h"
-#include "components/reporting/proto/record_constants.pb.h"
-#include "components/reporting/storage/missive_storage_module.h"
-#include "components/reporting/storage/missive_storage_module_delegate_impl.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 
 namespace chromeos {
-
-using reporting::MissiveStorageModule;
-using reporting::MissiveStorageModuleDelegateImpl;
 
 FakeMissiveClient::FakeMissiveClient() = default;
 
 FakeMissiveClient::~FakeMissiveClient() = default;
 
 void FakeMissiveClient::Init() {
-  auto missive_storage_module_delegate =
-      std::make_unique<MissiveStorageModuleDelegateImpl>(
-          base::BindRepeating(&FakeMissiveClient::AddRecord,
-                              weak_ptr_factory_.GetWeakPtr()),
-          base::BindRepeating(&FakeMissiveClient::Flush,
-                              weak_ptr_factory_.GetWeakPtr()),
-          base::BindRepeating(&FakeMissiveClient::ReportSuccess,
-                              weak_ptr_factory_.GetWeakPtr()),
-          base::BindRepeating(&FakeMissiveClient::UpdateEncryptionKey,
-                              weak_ptr_factory_.GetWeakPtr()));
-  missive_storage_module_ =
-      MissiveStorageModule::Create(std::move(missive_storage_module_delegate));
+  DCHECK(base::SequencedTaskRunnerHandle::IsSet());
+  origin_task_runner_ = base::SequencedTaskRunnerHandle::Get();
 }
 
-void FakeMissiveClient::AddRecord(
+void FakeMissiveClient::EnqueueRecord(
     const reporting::Priority priority,
-    const reporting::Record& record,
+    reporting::Record record,
     base::OnceCallback<void(reporting::Status)> completion_callback) {
+  for (auto& observer : observer_list_) {
+    observer.OnRecordEnqueued(priority, record);
+  }
+  enqueued_records_[priority].push_back(std::move(record));
   std::move(completion_callback).Run(reporting::Status::StatusOK());
 }
 
@@ -50,7 +42,7 @@ void FakeMissiveClient::Flush(
 }
 
 void FakeMissiveClient::ReportSuccess(
-    const reporting::SequencingInformation& sequencing_information,
+    const reporting::SequenceInformation& sequence_information,
     bool force_confirm) {
   return;
 }
@@ -58,6 +50,27 @@ void FakeMissiveClient::ReportSuccess(
 void FakeMissiveClient::UpdateEncryptionKey(
     const reporting::SignedEncryptionInfo& encryption_info) {
   return;
+}
+
+MissiveClient::TestInterface* FakeMissiveClient::GetTestInterface() {
+  return this;
+}
+
+base::WeakPtr<MissiveClient> FakeMissiveClient::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+const std::vector<::reporting::Record>& FakeMissiveClient::GetEnqueuedRecords(
+    ::reporting::Priority priority) {
+  return enqueued_records_[priority];
+}
+
+void FakeMissiveClient::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+
+void FakeMissiveClient::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 }  // namespace chromeos

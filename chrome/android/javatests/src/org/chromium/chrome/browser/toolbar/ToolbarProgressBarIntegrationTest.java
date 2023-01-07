@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -62,13 +63,15 @@ public class ToolbarProgressBarIntegrationTest {
     @Test
     @Feature({"Android-Progress-Bar"})
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/1269029")
     public void testProgressBarTraversesScreenOnce() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
 
         final WebContents webContents = mActivityTestRule.getWebContents();
 
-        TestWebContentsObserver observer = new TestWebContentsObserver(webContents);
+        TestWebContentsObserver observer = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> new TestWebContentsObserver(webContents));
         // Start and stop load events are carefully tracked; there should be two start-stop pairs
         // that do not overlap.
         OnPageStartedHelper startHelper = observer.getOnPageStartedHelper();

@@ -1,18 +1,26 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
 
-#include "base/format_macros.h"
-#include "base/stl_util.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/autofill_constants.h"
-#include "ios/chrome/browser/web/chrome_web_client.h"
-#include "ios/chrome/browser/web/chrome_web_test.h"
-#import "ios/web/public/test/web_js_test.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
+#import "base/format_macros.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
+#import "components/autofill/core/common/autofill_constants.h"
+#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
+#import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/web/chrome_web_client.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/test/scoped_testing_web_client.h"
+#import "ios/web/public/test/web_state_test_util.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/test/web_view_interaction_test_util.h"
+#import "ios/web/public/web_state.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -21,11 +29,14 @@
 // Unit tests for ios/chrome/browser/web/resources/autofill_controller.js
 namespace {
 
+using base::test::ios::WaitUntilConditionOrTimeout;
+using base::test::ios::kWaitForJSCompletionTimeout;
+
 // Structure for getting element by name using JavaScripts.
 struct ElementByName {
   // The name of the element.
   const char* element_name;
-  // The index in the elements that have |element_name|.
+  // The index in the elements that have `element_name`.
   const int index;
   // The option index if the element is a select, -1 otherwise.
   const int option_index;
@@ -51,7 +62,7 @@ NSString* GetElementByNameJavaScript(ElementByName element) {
   return query;
 }
 
-// Generates an array of JavaScripts that get each element in |elements| by
+// Generates an array of JavaScripts that get each element in `elements` by
 // name.
 NSArray* GetElementsByNameJavaScripts(const ElementByName elements[],
                                       size_t elements_size) {
@@ -119,7 +130,7 @@ enum ExtractMask {
   EXTRACT_VALUE = 1 << 0,        // Extract value from WebFormControlElement.
   EXTRACT_OPTION_TEXT = 1 << 1,  // Extract option text from
                                  // WebFormSelectElement. Only valid when
-                                 // |EXTRACT_VALUE| is set.
+                                 // `EXTRACT_VALUE` is set.
                                  // This is used for form submission where
                                  // human readable value is captured.
   EXTRACT_OPTIONS = 1 << 2,      // Extract options from
@@ -130,7 +141,7 @@ const ExtractMask kFormExtractMasks[] = {
     EXTRACT_NONE, EXTRACT_VALUE, EXTRACT_OPTION_TEXT, EXTRACT_OPTIONS,
 };
 
-// Gets the attributes to check for a mask in |kFormExtractMasks|.
+// Gets the attributes to check for a mask in `kFormExtractMasks`.
 NSArray* GetFormFieldAttributeListsToCheck(NSUInteger mask) {
   if (!(mask & EXTRACT_VALUE)) {
     return @[
@@ -725,14 +736,14 @@ NSArray* GetTestFormSelectElementWithOptgroup() {
 
 // clang-format on
 
-// Generates JavaScripts to check a JavaScripts object |results| with the
-// expected values given in |expected|, which is a dictionary with string
+// Generates JavaScripts to check a JavaScripts object `results` with the
+// expected values given in `expected`, which is a dictionary with string
 // values for all the keys other than @"option_vaues" and @"option_contents";
 // the values of @"option_vaues" and @"option_contents" are arrays of
-// strings or undefined. Only attributes in |attributes_to_check| are checked.
-// A different expected value is chosen in |expected| for different
-// |extract_mask|.
-// |index| is the index of the control element in the form. If it is >0, it will
+// strings or undefined. Only attributes in `attributes_to_check` are checked.
+// A different expected value is chosen in `expected` for different
+// `extract_mask`.
+// `index` is the index of the control element in the form. If it is >0, it will
 // be used to generate a name for nameless elements.
 NSString* GenerateElementItemVerifyingJavaScripts(NSString* results,
                                                   NSUInteger extract_mask,
@@ -778,11 +789,11 @@ NSString* GenerateElementItemVerifyingJavaScripts(NSString* results,
   return [verifying_javascripts componentsJoinedByString:@"&&"];
 }
 
-// Generates JavaScripts to check a JavaScripts array |results| with the
-// expected values given in |expected|, which is an array of dictionaries; each
-// dictionary is the expected values of the corresponding item in |results|.
-// Only attributes in |attributes_to_check| are checked. A different expected
-// value is chosen in |expected| for different |extract_mask|.
+// Generates JavaScripts to check a JavaScripts array `results` with the
+// expected values given in `expected`, which is an array of dictionaries; each
+// dictionary is the expected values of the corresponding item in `results`.
+// Only attributes in `attributes_to_check` are checked. A different expected
+// value is chosen in `expected` for different `extract_mask`.
 NSString* GenerateTestItemVerifyingJavaScripts(NSString* results,
                                                NSUInteger extract_mask,
                                                NSArray* expected,
@@ -794,12 +805,12 @@ NSString* GenerateTestItemVerifyingJavaScripts(NSString* results,
        ++indexOfTestData) {
     NSArray* expectedData = [expected objectAtIndex:indexOfTestData];
     for (NSUInteger i = 1; i < [expectedData count]; ++i, ++controlCount) {
-      NSDictionary* expected = [expectedData objectAtIndex:i];
+      NSDictionary* expectedDict = [expectedData objectAtIndex:i];
       NSString* itemVerifyingJavaScripts =
           GenerateElementItemVerifyingJavaScripts(
               [NSString stringWithFormat:@"%@['fields'][%" PRIuNS "]", results,
                                          controlCount],
-              extract_mask, expected, attributed_to_check, controlCount);
+              extract_mask, expectedDict, attributed_to_check, controlCount);
       [verifying_javascripts addObject:itemVerifyingJavaScripts];
     }
   }
@@ -807,59 +818,99 @@ NSString* GenerateTestItemVerifyingJavaScripts(NSString* results,
 }
 
 // Test fixture to test autofill controller.
-class AutofillControllerJsTest : public web::WebJsTest<ChromeWebTest> {
+class AutofillControllerJsTest : public PlatformTest {
  public:
   AutofillControllerJsTest()
-      : web::WebJsTest<ChromeWebTest>(std::make_unique<ChromeWebClient>()) {}
+      : web_client_(std::make_unique<ChromeWebClient>()) {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+
+    web::WebState::CreateParams params(browser_state_.get());
+    web_state_ = web::WebState::Create(params);
+    web_state_->GetView();
+    web_state_->SetKeepRenderProcessAlive(true);
+  }
 
  protected:
-  // Helper method that EXPECTs |javascript| evaluation on page
-  // |kHTMLForTestingElements| with expectation given by
-  // |elements_with_true_expected|.
+  web::WebState* web_state() { return web_state_.get(); }
+
+  web::WebFrame* WaitForMainFrame() {
+    __block web::WebFrame* main_frame = nullptr;
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+      main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+      return main_frame != nullptr;
+    }));
+    return main_frame;
+  }
+
+  // Helper method that EXPECTs `javascript` evaluation on page
+  // `kHTMLForTestingElements` with expectation given by
+  // `elements_with_true_expected`.
   void TestExecutingBooleanJavaScriptOnElement(
       NSString* javascript,
       const ElementByName elements_with_true_expected[],
       size_t size_elements_with_true_expected);
 
   // Helper method that EXPECTs
-  // |__gCrWeb.fill.webFormControlElementToFormField|. This method applies
-  // |__gCrWeb.fill.webFormControlElementToFormField| on each element in
-  // |test_data| with all possible extract masks and verify the results.
+  // `__gCrWeb.fill.webFormControlElementToFormField`. This method applies
+  // `__gCrWeb.fill.webFormControlElementToFormField` on each element in
+  // `test_data` with all possible extract masks and verify the results.
   void TestWebFormControlElementToFormField(NSArray* test_data,
                                             NSString* tag_name);
 
-  // Helper method for testing |javascripts_statement| that evalutate
-  // |attribute_name| of the elements in |test_data| which has tag name
-  // |tag_name|. EXPECTs JavaScript evaluation on
+  // Helper method for testing `javascripts_statement` that evalutate
+  // `attribute_name` of the elements in `test_data` which has tag name
+  // `tag_name`. EXPECTs JavaScript evaluation on
   // "window.document.getElementsByTagName()"
   void TestInputElementDataEvaluation(NSString* javascripts_statement,
                                       NSString* attribute_name,
                                       NSArray* test_data,
                                       NSString* tag_name);
 
-  // Helper method that EXPECTs |__gCrWeb.fill.webFormElementToFormData| on
-  // a form element obtained by |get_form_element_javascripts|. The results
-  // are verified with |verifying_java_scripts|.
+  // Helper method that EXPECTs `__gCrWeb.fill.webFormElementToFormData` on
+  // a form element obtained by `get_form_element_javascripts`. The results
+  // are verified with `verifying_java_scripts`.
   void TestWebFormElementToFormDataForOneForm(
       NSString* get_form_element_javascripts,
       NSUInteger extract_mask,
       NSString* expected_result,
       NSString* verifying_javascripts);
 
-  // EXPECTs |__gCrWeb.fill.webFormElementToFormData| on all the test data.
+  // EXPECTs `__gCrWeb.fill.webFormElementToFormData` on all the test data.
   void TestWebFormElementToFormData(NSArray* test_items);
 
-  // EXPECTs |__gCrWeb.autofill.extractNewForms| on |html|.
+  // EXPECTs `__gCrWeb.autofill.extractNewForms` on `html`.
   void TestExtractNewForms(NSString* html,
                            BOOL is_origin_window_location,
                            NSArray* expected_items);
+
+  // Helper method that EXPECTs the `java_script` evaluation results on each
+  // element obtained by JavaScripts in `get_element_java_scripts`. The
+  // expected results are boolean and are true only for elements in
+  // `get_element_java_scripts_expecting_true` which is subset of
+  // `get_element_java_scripts`.
+  void ExecuteBooleanJavaScriptOnElementsAndCheck(
+      NSString* java_script,
+      NSArray* get_element_java_scripts,
+      NSArray* get_element_java_scripts_expecting_true);
+
+  // Helper method that EXPECTs the `java_script` evaluation results on each
+  // element obtained by scripts in `get_element_javas_cripts`; the expected
+  // result is the corresponding entry in `expected_results`.
+  void ExecuteJavaScriptOnElementsAndCheck(NSString* java_script,
+                                           NSArray* get_element_java_scripts,
+                                           NSArray* expected_results);
+
+  web::ScopedTestingWebClient web_client_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<web::WebState> web_state_;
 };
 
 void AutofillControllerJsTest::TestExecutingBooleanJavaScriptOnElement(
     NSString* javascript,
     const ElementByName elements_with_true_expected[],
     size_t size_elements_with_true_expected) {
-  // Elements in |kHTMLForTestingElements|.
+  // Elements in `kHTMLForTestingElements`.
   const ElementByName elementsByName[] = {
       {"hl", 0, -1},
       {"firstname", 0, -1},
@@ -893,12 +944,40 @@ void AutofillControllerJsTest::TestExecutingBooleanJavaScriptOnElement(
       {"submit", 0, -1},
   };
 
-  LoadHtml(kHTMLForTestingElements);
+  web::test::LoadHtml(kHTMLForTestingElements, web_state());
   ExecuteBooleanJavaScriptOnElementsAndCheck(
       javascript,
-      GetElementsByNameJavaScripts(elementsByName, base::size(elementsByName)),
+      GetElementsByNameJavaScripts(elementsByName, std::size(elementsByName)),
       GetElementsByNameJavaScripts(elements_with_true_expected,
                                    size_elements_with_true_expected));
+}
+
+void AutofillControllerJsTest::ExecuteBooleanJavaScriptOnElementsAndCheck(
+    NSString* java_script,
+    NSArray* get_element_java_scripts,
+    NSArray* get_element_java_scripts_expecting_true) {
+  for (NSString* get_element_java_script in get_element_java_scripts) {
+    NSString* js_to_execute =
+        [NSString stringWithFormat:java_script, get_element_java_script];
+    BOOL expected = [get_element_java_scripts_expecting_true
+        containsObject:get_element_java_script];
+    EXPECT_NSEQ(@(expected),
+                web::test::ExecuteJavaScript(js_to_execute, web_state()))
+        << [NSString stringWithFormat:@"%@ on %@ should return %d", java_script,
+                                      get_element_java_script, expected];
+  }
+}
+
+void AutofillControllerJsTest::ExecuteJavaScriptOnElementsAndCheck(
+    NSString* java_script,
+    NSArray* get_element_java_scripts,
+    NSArray* expected_results) {
+  for (NSUInteger i = 0; i < get_element_java_scripts.count; ++i) {
+    NSString* js_to_execute =
+        [NSString stringWithFormat:java_script, get_element_java_scripts[i]];
+    EXPECT_NSEQ(expected_results[i],
+                web::test::ExecuteJavaScript(js_to_execute, web_state()));
+  }
 }
 
 TEST_F(AutofillControllerJsTest, HasTagName) {
@@ -922,36 +1001,90 @@ TEST_F(AutofillControllerJsTest, HasTagName) {
 
   TestExecutingBooleanJavaScriptOnElement(
       @"__gCrWeb.fill.hasTagName(%@, 'input')", elements_expecting_true,
-      base::size(elements_expecting_true));
+      std::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, CombineAndCollapseWhitespace) {
-  LoadHtml(@"<html><body></body></html>");
+  web::test::LoadHtml(@"<html><body></body></html>", web_state());
 
-  EXPECT_NSEQ(@"foobar", ExecuteJavaScriptWithFormat(
-                             @"__gCrWeb.fill.combineAndCollapseWhitespace('"
-                             @"foo', 'bar', false)"));
-  EXPECT_NSEQ(@"foo bar", ExecuteJavaScriptWithFormat(
-                              @"__gCrWeb.fill.combineAndCollapseWhitespace("
-                              @"'foo', 'bar', true)"));
-  EXPECT_NSEQ(@"foo bar", ExecuteJavaScriptWithFormat(
-                              @"__gCrWeb.fill.combineAndCollapseWhitespace("
-                               "'foo ', 'bar', false)"));
-  EXPECT_NSEQ(@"foo bar", ExecuteJavaScriptWithFormat(
-                              @"__gCrWeb.fill.combineAndCollapseWhitespace("
-                               "'foo', ' bar', false)"));
-  EXPECT_NSEQ(@"foo bar", ExecuteJavaScriptWithFormat(
-                              @"__gCrWeb.fill.combineAndCollapseWhitespace("
-                               "'foo', ' bar', true)"));
-  EXPECT_NSEQ(@"foo bar", ExecuteJavaScriptWithFormat(
-                              @"__gCrWeb.fill.combineAndCollapseWhitespace("
-                               "'foo  ', '  bar', false)"));
-  EXPECT_NSEQ(@"foobar ", ExecuteJavaScriptWithFormat(
-                              @"__gCrWeb.fill.combineAndCollapseWhitespace("
-                               "'foo', 'bar ', false)"));
-  EXPECT_NSEQ(@" foo bar", ExecuteJavaScriptWithFormat(
-                               @"__gCrWeb.fill.combineAndCollapseWhitespace("
-                                "' foo', 'bar', true)"));
+  std::vector<base::Value> params;
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value("bar"));
+  params.push_back(base::Value(false));
+  auto result = web::test::CallJavaScriptFunction(
+      web_state(), "fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foobar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value("bar"));
+  params.push_back(base::Value(true));
+  result = web::test::CallJavaScriptFunction(
+      web_state(), "fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo "));
+  params.push_back(base::Value("bar"));
+  params.push_back(base::Value(false));
+  result = web::test::CallJavaScriptFunction(
+      web_state(), "fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value(" bar"));
+  params.push_back(base::Value(false));
+  result = web::test::CallJavaScriptFunction(
+      web_state(), "fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value(" bar"));
+  params.push_back(base::Value(true));
+  result = web::test::CallJavaScriptFunction(
+      web_state(), "fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo  "));
+  params.push_back(base::Value("  bar"));
+  params.push_back(base::Value(false));
+  result = web::test::CallJavaScriptFunction(
+      web_state(), "fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foo bar", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value("foo"));
+  params.push_back(base::Value("bar "));
+  params.push_back(base::Value(false));
+  result = web::test::CallJavaScriptFunction(
+      web_state(), "fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("foobar ", result->GetString());
+
+  params.clear();
+
+  params.push_back(base::Value(" foo"));
+  params.push_back(base::Value("bar"));
+  params.push_back(base::Value(true));
+  result = web::test::CallJavaScriptFunction(
+      web_state(), "fill.combineAndCollapseWhitespace", params);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ(" foo bar", result->GetString());
 }
 
 void AutofillControllerJsTest::TestInputElementDataEvaluation(
@@ -960,16 +1093,19 @@ void AutofillControllerJsTest::TestInputElementDataEvaluation(
     NSArray* test_data,
     NSString* tag_name) {
   NSString* html_fragment = [test_data objectAtIndex:0U];
-  LoadHtml(html_fragment);
+  web::test::LoadHtml(html_fragment, web_state());
 
   for (NSUInteger i = 1; i < [test_data count]; ++i) {
     NSString* get_element_javascripts = [NSString
         stringWithFormat:@"window.document.getElementsByTagName('%@')[%" PRIuNS
                           "]",
                          tag_name, i - 1];
-    id actual = ExecuteJavaScriptWithFormat(
-        @"%@(%@) === %@", javascripts_statement, get_element_javascripts,
-        [[test_data objectAtIndex:i] objectForKey:attribute_name]);
+    id actual = web::test::ExecuteJavaScript(
+        [NSString stringWithFormat:@"%@(%@) === %@", javascripts_statement,
+                                   get_element_javascripts,
+                                   [[test_data objectAtIndex:i]
+                                       objectForKey:attribute_name]],
+        web_state());
     EXPECT_NSEQ(@YES, actual);
   }
 }
@@ -1106,20 +1242,20 @@ TEST_F(AutofillControllerJsTest, IsAutofillableElement) {
 
   TestExecutingBooleanJavaScriptOnElement(
       @"__gCrWeb.fill.isAutofillableElement(%@)", elements_expecting_true,
-      base::size(elements_expecting_true));
+      std::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, GetOptionStringsFromElement) {
   ElementByName testing_elements[] = {
       {"state", 0, -1}, {"course", 0, -1}, {"cars", 0, -1}};
 
-  LoadHtml(kHTMLForTestingElements);
+  web::test::LoadHtml(kHTMLForTestingElements, web_state());
   ExecuteJavaScriptOnElementsAndCheck(
       @"var field = {};"
        "__gCrWeb.fill.getOptionStringsFromElement(%@, field);"
        "__gCrWeb.stringify(field);",
       GetElementsByNameJavaScripts(testing_elements,
-                                   base::size(testing_elements)),
+                                   std::size(testing_elements)),
       @[
         @("{\"option_values\":[\"CA\",\"MA\"],"
           "\"option_contents\":[\"CA\",\"MA\"]}"),
@@ -1140,7 +1276,7 @@ TEST_F(AutofillControllerJsTest, GetOptionStringsFromElement) {
 }
 
 TEST_F(AutofillControllerJsTest, FillFormField) {
-  LoadHtml(kHTMLForTestingElements);
+  web::test::LoadHtml(kHTMLForTestingElements, web_state());
 
   // Test text and select elements of which the value should be changed.
   const ElementByName elements[] = {
@@ -1150,15 +1286,18 @@ TEST_F(AutofillControllerJsTest, FillFormField) {
     @"new name",
     @"MA",
   ];
-  for (size_t i = 0; i < base::size(elements); ++i) {
+  for (size_t i = 0; i < std::size(elements); ++i) {
     NSString* get_element_javascript = GetElementByNameJavaScript(elements[i]);
     NSString* new_value = [values objectAtIndex:i];
-    EXPECT_NSEQ(new_value,
-                ExecuteJavaScriptWithFormat(
-                    @"var element=%@;var data={'value':'%@'};"
-                    @"__gCrWeb.autofill.fillFormField(data, element);"
-                    @"element.value",
-                    get_element_javascript, new_value));
+    EXPECT_NSEQ(
+        new_value,
+        web::test::ExecuteJavaScript(
+            [NSString stringWithFormat:
+                          @"var element=%@;var data={'value':'%@'};"
+                          @"__gCrWeb.autofill.fillFormField(data, element);"
+                          @"element.value",
+                          get_element_javascript, new_value],
+            web_state()));
   }
 
   // Test clickable elements, of which 'checked' should be updated.
@@ -1169,18 +1308,22 @@ TEST_F(AutofillControllerJsTest, FillFormField) {
   const bool final_is_checked_values[] = {
       true, false, true, false, true, true,
   };
-  for (size_t i = 0; i < base::size(checkable_elements); ++i) {
+  for (size_t i = 0; i < std::size(checkable_elements); ++i) {
     NSString* get_element_javascript =
         GetElementByNameJavaScript(checkable_elements[i]);
     bool is_checked = final_is_checked_values[i];
 
     EXPECT_NSEQ(
         @(is_checked),
-        ExecuteJavaScriptWithFormat(
-            @"var element=%@; var value=element.value; "
-            @"var data={'value':value,'is_checked':%@};"
-            @"__gCrWeb.autofill.fillFormField(data, element); element.checked",
-            get_element_javascript, is_checked ? @"true" : @"false"));
+        web::test::ExecuteJavaScript(
+            [NSString stringWithFormat:
+                          @"var element=%@; var value=element.value; "
+                          @"var data={'value':value,'is_checked':%@};"
+                          @"__gCrWeb.autofill.fillFormField(data, element); "
+                          @"element.checked",
+                          get_element_javascript,
+                          is_checked ? @"true" : @"false"],
+            web_state()));
   }
 
   // Test elements of which the value should not be changed.
@@ -1189,15 +1332,17 @@ TEST_F(AutofillControllerJsTest, FillFormField) {
       {"state", 0, 0},  // option element
       {"state", 0, 1},  // option element
   };
-  for (size_t i = 0; i < base::size(unchanged_elements); ++i) {
+  for (size_t i = 0; i < std::size(unchanged_elements); ++i) {
     NSString* get_element_javascript =
         GetElementByNameJavaScript(unchanged_elements[i]);
-    NSString* actual = ExecuteJavaScriptWithFormat(
-        @"var element=%@;"
-        @"var oldValue=element.value; var data={'value':'new'};"
-        @"__gCrWeb.autofill.fillFormField(data, element);"
-        @"element.value === oldValue",
-        get_element_javascript);
+    NSString* actual = web::test::ExecuteJavaScript(
+        [NSString stringWithFormat:
+                      @"var element=%@;"
+                      @"var oldValue=element.value; var data={'value':'new'};"
+                      @"__gCrWeb.autofill.fillFormField(data, element);"
+                      @"element.value === oldValue",
+                      get_element_javascript],
+        web_state());
     EXPECT_NSEQ(@YES, actual);
   }
 }
@@ -1212,7 +1357,7 @@ TEST_F(AutofillControllerJsTest, IsTextInput) {
 
   TestExecutingBooleanJavaScriptOnElement(@"__gCrWeb.fill.isTextInput(%@)",
                                           elements_expecting_true,
-                                          base::size(elements_expecting_true));
+                                          std::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, IsSelectElement) {
@@ -1222,7 +1367,7 @@ TEST_F(AutofillControllerJsTest, IsSelectElement) {
 
   TestExecutingBooleanJavaScriptOnElement(@"__gCrWeb.fill.isSelectElement(%@)",
                                           elements_expecting_true,
-                                          base::size(elements_expecting_true));
+                                          std::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, IsCheckableElement) {
@@ -1233,7 +1378,7 @@ TEST_F(AutofillControllerJsTest, IsCheckableElement) {
 
   TestExecutingBooleanJavaScriptOnElement(
       @"__gCrWeb.fill.isCheckableElement(%@)", elements_expecting_true,
-      base::size(elements_expecting_true));
+      std::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, IsAutofillableInputElement) {
@@ -1249,11 +1394,11 @@ TEST_F(AutofillControllerJsTest, IsAutofillableInputElement) {
 
   TestExecutingBooleanJavaScriptOnElement(
       @"__gCrWeb.fill.isAutofillableInputElement(%@)", elements_expecting_true,
-      base::size(elements_expecting_true));
+      std::size(elements_expecting_true));
 }
 
 TEST_F(AutofillControllerJsTest, ExtractAutofillableElements) {
-  LoadHtml(kHTMLForTestingElements);
+  web::test::LoadHtml(kHTMLForTestingElements, web_state());
   ElementByName expected_elements[] = {
       {"firstname", 0, -1}, {"lastname", 0, -1},
       {"email", 0, -1},     {"phone", 0, -1},
@@ -1264,58 +1409,70 @@ TEST_F(AutofillControllerJsTest, ExtractAutofillableElements) {
       {"boolean", 2, -1},   {"state", 0, -1},
   };
   NSArray* expected = GetElementsByNameJavaScripts(
-      expected_elements, base::size(expected_elements));
+      expected_elements, std::size(expected_elements));
 
   NSString* parameter = @"window.document.getElementsByTagName('form')[0]";
   for (NSUInteger index = 0; index < [expected count]; index++) {
-    EXPECT_NSEQ(@YES,
-                ExecuteJavaScriptWithFormat(
+    EXPECT_NSEQ(
+        @YES,
+        web::test::ExecuteJavaScript(
+            [NSString
+                stringWithFormat:
                     @"var controlElements="
                      "__gCrWeb.autofill.extractAutofillableElementsInForm(%@);"
                      "controlElements[%" PRIuNS "] === %@",
-                    parameter, index, expected[index]));
+                    parameter, index, expected[index]],
+            web_state()));
   }
 }
 
 void AutofillControllerJsTest::TestWebFormControlElementToFormField(
     NSArray* test_data,
     NSString* tag_name) {
-  LoadHtml([test_data firstObject]);
+  web::test::LoadHtml([test_data firstObject], web_state());
 
-  for (NSUInteger i = 0; i < base::size(kFormExtractMasks); ++i) {
+  for (NSUInteger i = 0; i < std::size(kFormExtractMasks); ++i) {
     ExtractMask extract_mask = kFormExtractMasks[i];
     NSArray* attributes_to_check =
         GetFormFieldAttributeListsToCheck(extract_mask);
 
-    for (NSUInteger i = 1; i < [test_data count]; ++i) {
+    for (NSUInteger j = 1; j < [test_data count]; ++j) {
       NSString* get_element_to_test =
           [NSString stringWithFormat:@"var element = "
                                       "window.document.getElementsByTagName('%"
                                       "@')[%" PRIuNS "]",
-                                     tag_name, i - 1];
-      NSDictionary* expected = [test_data objectAtIndex:i];
-      // Generates JavaScripts to verify the results. Parameter |results| is
+                                     tag_name, j - 1];
+      NSDictionary* expected = [test_data objectAtIndex:j];
+      // Generates JavaScripts to verify the results. Parameter `results` is
       // @"field" as in the evaluation JavaScripts the results are returned in
-      // |field|.
+      // `field`.
       NSString* verifying_javascripts = GenerateElementItemVerifyingJavaScripts(
           @"field", extract_mask, expected, attributes_to_check, -1);
-      EXPECT_NSEQ(@YES,
-                  ExecuteJavaScriptWithFormat(
-                      @"%@; var field = {};"
-                       "__gCrWeb.fill.webFormControlElementToFormField("
-                       "    element, %u, field);"
-                       "%@",
-                      get_element_to_test, extract_mask, verifying_javascripts))
+      EXPECT_NSEQ(
+          @YES,
+          web::test::ExecuteJavaScript(
+              [NSString stringWithFormat:
+                            @"%@; var field = {};"
+                             "__gCrWeb.fill.webFormControlElementToFormField("
+                             "    element, %u, field);"
+                             "%@",
+                            get_element_to_test, extract_mask,
+                            verifying_javascripts],
+              web_state()))
           << base::SysNSStringToUTF8([NSString
                  stringWithFormat:
                      @"webFormControlElementToFormField actual results are: "
                      @"%@, \n"
                       "expected to be verified by %@",
-                     ExecuteJavaScriptWithFormat(
-                         @"%@; var field = {};"
-                          "__gCrWeb.fill.webFormControlElementToFormField("
-                          "    element, %u, field);__gCrWeb.stringify(field);",
-                         get_element_to_test, extract_mask),
+                     web::test::ExecuteJavaScript(
+                         [NSString stringWithFormat:
+                                       @"%@; var field = {};"
+                                        "__gCrWeb.fill."
+                                        "webFormControlElementToFormField("
+                                        "    element, %u, "
+                                        "field);__gCrWeb.stringify(field);",
+                                       get_element_to_test, extract_mask],
+                         web_state()),
                      verifying_javascripts]);
     }
   }
@@ -1354,23 +1511,28 @@ void AutofillControllerJsTest::TestWebFormElementToFormDataForOneForm(
     NSUInteger extract_mask,
     NSString* expected_result,
     NSString* verifying_javascripts) {
-  NSString* actual = ExecuteJavaScriptWithFormat(
-      @"var form={}; var field={};"
-       "(__gCrWeb.fill.webFormElementToFormData("
-       "window, %@, null, %" PRIuNS ", form, field) === %@) && %@",
-      get_form_element_javascripts, extract_mask, expected_result,
-      verifying_javascripts);
+  NSString* actual = web::test::ExecuteJavaScript(
+      [NSString stringWithFormat:@"var form={}; var field={};"
+                                  "(__gCrWeb.fill.webFormElementToFormData("
+                                  "window, %@, null, %" PRIuNS
+                                  ", form, field) === %@) && %@",
+                                 get_form_element_javascripts, extract_mask,
+                                 expected_result, verifying_javascripts],
+      web_state());
 
   EXPECT_NSEQ(@YES, actual) << base::SysNSStringToUTF8([NSString
-      stringWithFormat:@"Actual:\n%@; expected to be verifyied by\n%@",
-                       ExecuteJavaScriptWithFormat(
-                           @"var form={};"
-                            "__gCrWeb.fill."
-                            "webFormElementToFormData(window, %@, null,"
-                            "%" PRIuNS ", form, null);"
-                            "__gCrWeb.stringify(form);",
-                           get_form_element_javascripts, extract_mask),
-                       verifying_javascripts]);
+      stringWithFormat:
+          @"Actual:\n%@; expected to be verifyied by\n%@",
+          web::test::ExecuteJavaScript(
+              [NSString
+                  stringWithFormat:@"var form={};"
+                                    "__gCrWeb.fill."
+                                    "webFormElementToFormData(window, %@, null,"
+                                    "%" PRIuNS ", form, null);"
+                                    "__gCrWeb.stringify(form);",
+                                   get_form_element_javascripts, extract_mask],
+              web_state()),
+          verifying_javascripts]);
 }
 
 void AutofillControllerJsTest::TestWebFormElementToFormData(
@@ -1383,11 +1545,11 @@ void AutofillControllerJsTest::TestWebFormElementToFormData(
                                     objectAtIndex:0U]];
   }
   form_html_fragment = [form_html_fragment stringByAppendingString:@"</form>"];
-  LoadHtml(form_html_fragment);
+  web::test::LoadHtml(form_html_fragment, web_state());
 
   NSString* parameter = @"document.getElementsByTagName('form')[0]";
   for (NSUInteger extract_index = 0;
-       extract_index < base::size(kFormExtractMasks); ++extract_index) {
+       extract_index < std::size(kFormExtractMasks); ++extract_index) {
     NSString* expected_result = @"true";
     // We don't verify 'action' here as action is generated as a complete url
     // and here data url is used.
@@ -1445,7 +1607,7 @@ TEST_F(AutofillControllerJsTest, WebFormElementToFormDataTooManyFields) {
   }
   html_fragment = [html_fragment stringByAppendingFormat:@"</FORM>"];
 
-  LoadHtml(html_fragment);
+  web::test::LoadHtml(html_fragment, web_state());
   TestWebFormElementToFormDataForOneForm(
       @"document.getElementsByTagName('form')[0]", 1, @"false", @"true");
 }
@@ -1454,7 +1616,7 @@ TEST_F(AutofillControllerJsTest, WebFormElementToFormEmpty) {
   NSString* html_fragment = @"<FORM name='Test' action='http://c.com'>";
   html_fragment = [html_fragment stringByAppendingFormat:@"</FORM>"];
 
-  LoadHtml(html_fragment);
+  web::test::LoadHtml(html_fragment, web_state());
   TestWebFormElementToFormDataForOneForm(
       @"document.getElementsByTagName('form')[0]", 1, @"false", @"true");
 }
@@ -1463,7 +1625,7 @@ void AutofillControllerJsTest::TestExtractNewForms(
     NSString* html,
     BOOL is_origin_window_location,
     NSArray* expected_items) {
-  LoadHtml(html);
+  web::test::LoadHtml(html, web_state());
   // Generates verifying javascripts.
   NSMutableArray* verifying_javascripts = [NSMutableArray array];
   for (NSUInteger i = 0U; i < [expected_items count]; ++i) {
@@ -1495,19 +1657,25 @@ void AutofillControllerJsTest::TestExtractNewForms(
                       GetFormFieldAttributeListsToCheck(extract_mask))];
   }
 
-  NSString* actual = ExecuteJavaScriptWithFormat(
-      @"var forms = __gCrWeb.autofill.extractNewForms(%" PRIuS ", true); %@",
-      autofill::kMinRequiredFieldsForHeuristics,
-      [verifying_javascripts componentsJoinedByString:@"&&"]);
+  NSString* actual = web::test::ExecuteJavaScript(
+      [NSString stringWithFormat:
+                    @"var forms = __gCrWeb.autofill.extractNewForms(%" PRIuS
+                     ", true); %@",
+                    autofill::kMinRequiredFieldsForHeuristics,
+                    [verifying_javascripts componentsJoinedByString:@"&&"]],
+      web_state());
 
   EXPECT_NSEQ(@YES, actual) << base::SysNSStringToUTF8([NSString
-      stringWithFormat:@"actually forms = %@, "
-                        "but it is expected to be verified by %@",
-                       ExecuteJavaScriptWithFormat(
-                           @"var forms = __gCrWeb.autofill.extractNewForms("
-                            "%" PRIuS ", true); __gCrWeb.stringify(forms)",
-                           autofill::kMinRequiredFieldsForHeuristics),
-                       verifying_javascripts]);
+      stringWithFormat:
+          @"actually forms = %@, "
+           "but it is expected to be verified by %@",
+          web::test::ExecuteJavaScript(
+              [NSString stringWithFormat:
+                            @"var forms = __gCrWeb.autofill.extractNewForms("
+                             "%" PRIuS ", true); __gCrWeb.stringify(forms)",
+                            autofill::kMinRequiredFieldsForHeuristics],
+              web_state()),
+          verifying_javascripts]);
 }
 
 TEST_F(AutofillControllerJsTest, ExtractFormsAndFormElements) {
@@ -1558,7 +1726,7 @@ TEST_F(AutofillControllerJsTest,
        "3 <input type='text' name='name3' id='name3' form='testform'></input>"
        "4 <input type='text' name='name4' id='name4' form='testform'></input>"
        "</body></html>";
-  LoadHtml(html);
+  web::test::LoadHtml(html, web_state());
 
   NSString* verifying_javascript = @"forms[0]['fields'][0]['name']==='name1' &&"
                                    @"forms[0]['fields'][0]['label']==='1' &&"
@@ -1568,10 +1736,13 @@ TEST_F(AutofillControllerJsTest,
                                    @"forms[0]['fields'][2]['label']==='3' &&"
                                    @"forms[0]['fields'][3]['name']==='name4' &&"
                                    @"forms[0]['fields'][3]['label']==='4'";
-  EXPECT_NSEQ(@YES, ExecuteJavaScriptWithFormat(
-                        @"var forms = "
-                         "__gCrWeb.autofill.extractNewForms(1, true); %@",
-                        verifying_javascript));
+  EXPECT_NSEQ(
+      @YES, web::test::ExecuteJavaScript(
+                [NSString stringWithFormat:
+                              @"var forms = "
+                               "__gCrWeb.autofill.extractNewForms(1, true); %@",
+                              verifying_javascript],
+                web_state()));
 }
 
 TEST_F(AutofillControllerJsTest, ExtractForms) {
@@ -1594,8 +1765,21 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   html = [html stringByAppendingFormat:@"</form>"];
   html = [html stringByAppendingFormat:@"</body></html>"];
 
-  LoadHtml(html);
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
+  web::test::LoadHtml(html, web_state());
+
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
+
+  uint32_t next_available_id = 1;
+  autofill::FormUtilJavaScriptFeature::GetInstance()
+      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
+
+  // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return [web::test::ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]",
+                                         web_state()) intValue] ==
+           static_cast<int>(next_available_id);
+  }));
 
   NSDictionary* expected = @{
     @"name" : @"TestForm",
@@ -1729,9 +1913,10 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
     ]
   };
 
-  NSString* result =
-      ExecuteJavaScriptWithFormat(@"__gCrWeb.autofill.extractForms(%zu, true)",
-                                  autofill::kMinRequiredFieldsForHeuristics);
+  NSString* result = web::test::ExecuteJavaScript(
+      [NSString stringWithFormat:@"__gCrWeb.autofill.extractForms(%zu, true)",
+                                 autofill::kMinRequiredFieldsForHeuristics],
+      web_state());
   NSArray* resultArray = [NSJSONSerialization
       JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
                  options:0
@@ -1745,10 +1930,12 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   }];
 
   // Test with Object.prototype.toJSON override.
-  result = ExecuteJavaScriptWithFormat(
-      @"Object.prototype.toJSON=function(){return 'abcde';};"
-       "__gCrWeb.autofill.extractForms(%zu, true)",
-      autofill::kMinRequiredFieldsForHeuristics);
+  result = web::test::ExecuteJavaScript(
+      [NSString stringWithFormat:
+                    @"Object.prototype.toJSON=function(){return 'abcde';};"
+                     "__gCrWeb.autofill.extractForms(%zu, true)",
+                    autofill::kMinRequiredFieldsForHeuristics],
+      web_state());
   resultArray = [NSJSONSerialization
       JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
                  options:0
@@ -1761,10 +1948,12 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   }];
 
   // Test with Array.prototype.toJSON override.
-  result = ExecuteJavaScriptWithFormat(
-      @"Array.prototype.toJSON=function(){return 'abcde';};"
-       "__gCrWeb.autofill.extractForms(%zu, true)",
-      autofill::kMinRequiredFieldsForHeuristics);
+  result = web::test::ExecuteJavaScript(
+      [NSString stringWithFormat:
+                    @"Array.prototype.toJSON=function(){return 'abcde';};"
+                     "__gCrWeb.autofill.extractForms(%zu, true)",
+                    autofill::kMinRequiredFieldsForHeuristics],
+      web_state());
   resultArray = [NSJSONSerialization
       JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
                  options:0
@@ -1777,65 +1966,58 @@ TEST_F(AutofillControllerJsTest, ExtractForms) {
   }];
 }
 
-// TODO(crbug/1131038): Remove once using renderer IDs is launched.
 TEST_F(AutofillControllerJsTest, FillActiveFormField) {
-  LoadHtml(kHTMLForTestingElements);
+  web::test::LoadHtml(kHTMLForTestingElements, web_state());
 
-  NSString* newValue = @"new value";
-  EXPECT_NSEQ(newValue,
-              ExecuteJavaScriptWithFormat(
-                  @"var element=document.getElementsByName('lastname')[0];"
-                   "element.focus();"
-                   "var "
-                   "data={\"name\":\"lastname\",\"value\":\"%@\","
-                   "\"identifier\":\"lastname\"};"
-                   "__gCrWeb.autofill.fillActiveFormField(data);"
-                   "element.value",
-                  newValue));
+  web::WebFrame* main_frame = WaitForMainFrame();
+  ASSERT_TRUE(main_frame);
 
-  EXPECT_NSEQ(@YES, ExecuteJavaScriptWithFormat(
-                        @"var element=document.getElementsByName('gl')[0];"
-                         "element.focus();"
-                         "var oldValue = element.value;"
-                         "var "
-                         "data={\"name\":\"lastname\",\"value\":\"%@\","
-                         "\"identifier\":\"lastname\"};"
-                         "__gCrWeb.autofill.fillActiveFormField(data);"
-                         "element.value === oldValue",
-                        newValue))
-      << "A non-form element's value should changed.";
-}
+  uint32_t next_available_id = 1;
+  autofill::FormUtilJavaScriptFeature::GetInstance()
+      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
 
-TEST_F(AutofillControllerJsTest, FillActiveFormFieldUsingRendererIDs) {
-  LoadHtml(kHTMLForTestingElements);
-  ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
+  // Wait for `SetUpForUniqueIDsWithInitialState` to complete.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return [web::test::ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]",
+                                         web_state()) intValue] ==
+           static_cast<int>(next_available_id);
+  }));
+
   // Simulate form parsing to set renderer IDs.
-  ExecuteJavaScript(@"__gCrWeb.autofill.extractForms(0, true)");
+  web::test::ExecuteJavaScript(@"__gCrWeb.autofill.extractForms(0, true)",
+                               web_state());
 
   NSString* newValue = @"new value";
   EXPECT_NSEQ(
       newValue,
-      ExecuteJavaScriptWithFormat(
-          @"var element=document.getElementsByName('lastname')[0];"
-           "element.focus();"
-           "var "
-           "data={\"name\":\"lastname\",\"value\":\"%@\","
-           "\"identifier\":\"lastname\",\"unique_renderer_id\":3};"
-           "__gCrWeb.autofill.fillActiveFormFieldUsingRendererIDs(data);"
-           "element.value",
-          newValue));
+      web::test::ExecuteJavaScript(
+          [NSString
+              stringWithFormat:
+                  @"var element=document.getElementsByName('lastname')[0];"
+                   "element.focus();"
+                   "var "
+                   "data={\"name\":\"lastname\",\"value\":\"%@\","
+                   "\"identifier\":\"lastname\",\"unique_renderer_id\":3};"
+                   "__gCrWeb.autofill.fillActiveFormField(data);"
+                   "element.value",
+                  newValue],
+          web_state()));
 
   EXPECT_NSEQ(
-      @YES, ExecuteJavaScriptWithFormat(
-                @"var element=document.getElementsByName('gl')[0];"
-                 "element.focus();"
-                 "var oldValue = element.value;"
-                 "var "
-                 "data={\"name\":\"lastname\",\"value\":\"%@\","
-                 "\"identifier\":\"lastname\",\"unique_renderer_id\":3};"
-                 "__gCrWeb.autofill.fillActiveFormFieldUsingRendererIDs(data);"
-                 "element.value === oldValue",
-                newValue))
+      @YES,
+      web::test::ExecuteJavaScript(
+          [NSString
+              stringWithFormat:
+                  @"var element=document.getElementsByName('gl')[0];"
+                   "element.focus();"
+                   "var oldValue = element.value;"
+                   "var "
+                   "data={\"name\":\"lastname\",\"value\":\"%@\","
+                   "\"identifier\":\"lastname\",\"unique_renderer_id\":3};"
+                   "__gCrWeb.autofill.fillActiveFormField(data);"
+                   "element.value === oldValue",
+                  newValue],
+          web_state()))
       << "A non-form element's value should changed.";
 }
 
@@ -1879,11 +2061,12 @@ TEST_F(AutofillControllerJsTest, ExtractNewForms) {
   ];
 
   for (NSDictionary* testCase in testCases) {
-    LoadHtml(testCase[@"html"]);
+    web::test::LoadHtml(testCase[@"html"], web_state());
 
-    NSString* result = ExecuteJavaScriptWithFormat(
-        @"__gCrWeb.autofill.extractForms(%zu, true)",
-        autofill::kMinRequiredFieldsForHeuristics);
+    NSString* result = web::test::ExecuteJavaScript(
+        [NSString stringWithFormat:@"__gCrWeb.autofill.extractForms(%zu, true)",
+                                   autofill::kMinRequiredFieldsForHeuristics],
+        web_state());
     NSArray* resultArray = [NSJSONSerialization
         JSONObjectWithData:[result dataUsingEncoding:NSUTF8StringEncoding]
                    options:0
@@ -1898,14 +2081,17 @@ TEST_F(AutofillControllerJsTest, ExtractNewForms) {
 
 // Test sanitizedFieldIsEmpty
 TEST_F(AutofillControllerJsTest, SanitizedFieldIsEmpty) {
-  LoadHtml(@"<html></html>");
+  web::test::LoadHtml(@"<html></html>", web_state());
   NSArray* tests = @[
     @[ @"--  (())//||__", @YES ], @[ @"  --  (())__  ", @YES ],
     @[ @"  --  (()c)__  ", @NO ], @[ @"123-456-7890", @NO ], @[ @"", @YES ]
   ];
   for (NSArray* test in tests) {
-    NSString* result = ExecuteJavaScriptWithFormat(
-        @"__gCrWeb.autofill.sanitizedFieldIsEmpty('%@');", test[0]);
+    NSString* result = web::test::ExecuteJavaScript(
+        [NSString
+            stringWithFormat:@"__gCrWeb.autofill.sanitizedFieldIsEmpty('%@');",
+                             test[0]],
+        web_state());
     EXPECT_NSEQ(result, test[1]);
   }
 }

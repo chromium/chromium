@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,8 +21,10 @@
 #include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_value.mojom.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 
 namespace IPC {
 
@@ -332,33 +334,6 @@ void ParamTraits<viz::SurfaceInfo>::Log(const param_type& p, std::string* l) {
   l->append(", ");
   LogParam(p.size_in_pixels(), l);
   l->append(")");
-}
-
-void ParamTraits<net::SHA256HashValue>::Write(base::Pickle* m,
-                                              const param_type& p) {
-  m->WriteData(reinterpret_cast<const char*>(p.data), sizeof(p.data));
-}
-
-bool ParamTraits<net::SHA256HashValue>::Read(const base::Pickle* m,
-                                             base::PickleIterator* iter,
-                                             param_type* r) {
-  const char* data;
-  int data_length;
-  if (!iter->ReadData(&data, &data_length)) {
-    NOTREACHED();
-    return false;
-  }
-  if (data_length != sizeof(r->data)) {
-    NOTREACHED();
-    return false;
-  }
-  memcpy(r->data, data, sizeof(r->data));
-  return true;
-}
-
-void ParamTraits<net::SHA256HashValue>::Log(const param_type& p,
-                                            std::string* l) {
-  l->append("<SHA256HashValue>");
 }
 
 }  // namespace IPC

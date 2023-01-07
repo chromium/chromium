@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,11 +34,11 @@ class MockInfobarInteractionHandler : public InfobarInteractionHandler {
     ~Builder();
 
     // Constructs an InfobarInteractionHandler using mock handlers.  Calling
-    // this function also populates |mock_handlers_|.  Must only be called once
+    // this function also populates `mock_handlers_`.  Must only be called once
     // per Builder.
     std::unique_ptr<InfobarInteractionHandler> Build();
 
-    // Returns the mock handler for |overlay_type| used to build the
+    // Returns the mock handler for `overlay_type` used to build the
     // InfobarInteractionHandler.  Returns null before Build() is called.
     Handler* mock_handler(InfobarOverlayType overlay_type) {
       return mock_handlers_[overlay_type];

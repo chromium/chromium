@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,21 @@
 namespace chromeos {
 namespace switches {
 
-// Used in CryptohomeClient to determine which Google Privacy CA to use for
+// Used in AttestationClient to determine which Google Privacy CA to use for
 // attestation.
 const char kAttestationServer[] = "attestation-server";
 
+// Enables BIOD fake behavior. If the switch is set, fake biod D-Bus client is
+// initialized and BIOD events do not reach chrome.
+const char kBiodFake[] = "biod-fake";
+
 // Enables cros disks fake behavior. If the switch is set, fake cros disk D-Bus
-// client is initialized and USB events are not reaching chrome.
+// client is initialized and USB events do not reach chrome.
 const char kCrosDisksFake[] = "cros-disks-fake";
 
 // Forces the stub implementation of D-Bus clients.
+// Using stub D-Bus clients is the default for non-Chrome OS environment, to use
+// real D-Bus clients in non-Chrome OS environment, set this flag to "never".
 const char kDbusStub[] = "dbus-stub";
 
 // Path to a OOBE configuration JSON file (used by FakeOobeConfigurationClient).

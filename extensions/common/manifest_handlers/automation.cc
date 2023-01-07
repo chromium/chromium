@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -110,7 +110,7 @@ PermissionIDSet AutomationManifestPermission::GetPermissions() const {
 bool AutomationManifestPermission::FromValue(const base::Value* value) {
   std::u16string error;
   automation_info_.reset(
-      AutomationInfo::FromValue(*value, NULL /* install_warnings */, &error)
+      AutomationInfo::FromValue(*value, nullptr /* install_warnings */, &error)
           .release());
   return error.empty();
 }
@@ -171,8 +171,9 @@ AutomationHandler::AutomationHandler() = default;
 AutomationHandler::~AutomationHandler() = default;
 
 bool AutomationHandler::Parse(Extension* extension, std::u16string* error) {
-  const base::Value* automation = nullptr;
-  CHECK(extension->manifest()->Get(keys::kAutomation, &automation));
+  const base::Value* automation =
+      extension->manifest()->FindPath(keys::kAutomation);
+  CHECK(automation != nullptr);
   std::vector<InstallWarning> install_warnings;
   std::unique_ptr<AutomationInfo> info =
       AutomationInfo::FromValue(*automation, &install_warnings, error);
@@ -206,7 +207,7 @@ ManifestPermission* AutomationHandler::CreateInitialRequiredPermission(
         base::WrapUnique(new const AutomationInfo(info->desktop, info->matches,
                                                   info->interact)));
   }
-  return NULL;
+  return nullptr;
 }
 
 // static
@@ -286,7 +287,7 @@ std::unique_ptr<AutomationInfo> AutomationInfo::FromValue(
 // static
 std::unique_ptr<base::Value> AutomationInfo::ToValue(
     const AutomationInfo& info) {
-  return AsManifestType(info)->ToValue();
+  return base::Value::ToUniquePtrValue(AsManifestType(info)->ToValue());
 }
 
 // static
@@ -294,16 +295,16 @@ std::unique_ptr<Automation> AutomationInfo::AsManifestType(
     const AutomationInfo& info) {
   std::unique_ptr<Automation> automation(new Automation);
   if (!info.desktop && !info.interact && info.matches.size() == 0) {
-    automation->as_boolean.reset(new bool(true));
+    automation->as_boolean = true;
     return automation;
   }
 
-  Automation::Object* as_object = new Automation::Object;
-  as_object->desktop.reset(new bool(info.desktop));
-  as_object->interact.reset(new bool(info.interact));
+  automation->as_object.emplace();
+  automation->as_object->desktop = info.desktop;
+  automation->as_object->interact = info.interact;
   if (info.matches.size() > 0)
-    as_object->matches = info.matches.ToStringVector();
-  automation->as_object.reset(as_object);
+    automation->as_object->matches = info.matches.ToStringVector();
+
   return automation;
 }
 

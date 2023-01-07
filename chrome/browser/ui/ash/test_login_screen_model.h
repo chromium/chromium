@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,23 +6,33 @@
 #define CHROME_BROWSER_UI_ASH_TEST_LOGIN_SCREEN_MODEL_H_
 
 #include "ash/public/cpp/login_screen_model.h"
-#include "base/macros.h"
+
+class AccountId;
 
 class TestLoginScreenModel : public ash::LoginScreenModel {
  public:
   TestLoginScreenModel();
+
+  TestLoginScreenModel(const TestLoginScreenModel&) = delete;
+  TestLoginScreenModel& operator=(const TestLoginScreenModel&) = delete;
+
   ~TestLoginScreenModel() override;
 
   // ash::LoginScreenModel:
   void SetUserList(const std::vector<ash::LoginUserInfo>& users) override;
   void SetPinEnabledForUser(const AccountId& account_id,
                             bool is_enabled) override;
-  void SetFingerprintState(const AccountId& account_id,
-                           ash::FingerprintState state) override;
   void SetAvatarForUser(const AccountId& account_id,
                         const ash::UserAvatar& avatar) override;
+  void SetFingerprintState(const AccountId& account_id,
+                           ash::FingerprintState state) override;
   void NotifyFingerprintAuthResult(const AccountId& account_id,
                                    bool successful) override;
+  void ResetFingerprintUIState(const AccountId& account_id) override;
+  void SetSmartLockState(const AccountId& account_id,
+                         ash::SmartLockState state) override;
+  void NotifySmartLockAuthResult(const AccountId& account_id,
+                                 bool successful) override;
   void EnableAuthForUser(const AccountId& account_id) override;
   void DisableAuthForUser(
       const AccountId& account_id,
@@ -34,7 +44,7 @@ class TestLoginScreenModel : public ash::LoginScreenModel {
                                     bool enabled) override;
   void ForceOnlineSignInForUser(const AccountId& account_id) override;
   void ShowEasyUnlockIcon(const AccountId& user,
-                          const ash::EasyUnlockIconOptions& icon) override;
+                          const ash::EasyUnlockIconInfo& icon_info) override;
   void SetChallengeResponseAuthEnabledForUser(const AccountId& user,
                                               bool enabled) override;
 
@@ -59,9 +69,7 @@ class TestLoginScreenModel : public ash::LoginScreenModel {
       bool show_full_management_disclosure) override;
   void HandleFocusLeavingLockScreenApps(bool reverse) override;
   void NotifyOobeDialogState(ash::OobeDialogState state) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestLoginScreenModel);
+  void NotifyFocusPod(const AccountId& account_id) override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TEST_LOGIN_SCREEN_MODEL_H_

@@ -51,10 +51,8 @@ void HTMLViewSourceParser::PumpTokenizer() {
 
     GetDocument()->AddSource(SourceForToken(token_), token_);
 
-    // FIXME: The tokenizer should do this work for us.
     if (token_.GetType() == HTMLToken::kStartTag)
-      tokenizer_->UpdateStateFor(
-          AttemptStaticStringCreation(token_.GetName(), kLikely8Bit));
+      tokenizer_->UpdateStateFor(token_);
     token_.Clear();
   }
 }
@@ -110,7 +108,7 @@ void HTMLViewSourceParser::EndTracker(SegmentedString& current_input,
 }
 
 String HTMLViewSourceParser::SourceForToken(const HTMLToken& token) {
-  if (!cached_source_for_token_.IsEmpty())
+  if (!cached_source_for_token_.empty())
     return cached_source_for_token_;
 
   wtf_size_t length;

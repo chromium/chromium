@@ -31,9 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_WORKER_THREAD_DEBUGGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_WORKER_THREAD_DEBUGGER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
+#include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -42,9 +42,11 @@ class KURL;
 class SourceLocation;
 class WorkerThread;
 
-class CORE_EXPORT WorkerThreadDebugger final : public ThreadDebugger {
+class CORE_EXPORT WorkerThreadDebugger final : public ThreadDebuggerCommonImpl {
  public:
   explicit WorkerThreadDebugger(v8::Isolate*);
+  WorkerThreadDebugger(const WorkerThreadDebugger&) = delete;
+  WorkerThreadDebugger& operator=(const WorkerThreadDebugger&) = delete;
   ~WorkerThreadDebugger() override;
 
   static WorkerThreadDebugger* From(v8::Isolate*);
@@ -92,8 +94,6 @@ class CORE_EXPORT WorkerThreadDebugger final : public ThreadDebugger {
 
   int paused_context_group_id_;
   WTF::HashMap<int, WorkerThread*> worker_threads_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerThreadDebugger);
 };
 
 }  // namespace blink

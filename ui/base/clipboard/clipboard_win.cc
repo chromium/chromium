@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,15 @@
 #include <objidl.h>
 #include <shellapi.h>
 #include <shlobj.h>
+#include <cstdint>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -40,8 +39,8 @@
 #include "ui/base/clipboard/clipboard_util_win.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -55,7 +54,8 @@ class AnonymousImpersonator {
   AnonymousImpersonator() {
     must_revert_ = ::ImpersonateAnonymousToken(::GetCurrentThread());
   }
-
+  AnonymousImpersonator(const AnonymousImpersonator&) = delete;
+  AnonymousImpersonator& operator=(const AnonymousImpersonator&) = delete;
   ~AnonymousImpersonator() {
     if (must_revert_)
       ::RevertToSelf();
@@ -63,7 +63,6 @@ class AnonymousImpersonator {
 
  private:
   BOOL must_revert_;
-  DISALLOW_COPY_AND_ASSIGN(AnonymousImpersonator);
 };
 
 // A scoper to manage acquiring and automatically releasing the clipboard.
@@ -195,31 +194,6 @@ void MakeBitmapOpaque(SkPixmap* pixmap) {
   }
 }
 
-void ParseBookmarkClipboardFormat(const std::u16string& bookmark,
-                                  std::u16string* title,
-                                  std::string* url) {
-  const std::u16string kDelim = u"\r\n";
-
-  const size_t title_end = bookmark.find_first_of(kDelim);
-  if (title)
-    title->assign(bookmark.substr(0, title_end));
-
-  if (url) {
-    const size_t url_start = bookmark.find_first_not_of(kDelim, title_end);
-    if (url_start != std::u16string::npos) {
-      *url =
-          base::UTF16ToUTF8(bookmark.substr(url_start, std::u16string::npos));
-    }
-  }
-}
-
-void FreeData(unsigned int format, HANDLE data) {
-  if (format == CF_BITMAP)
-    ::DeleteObject(static_cast<HBITMAP>(data));
-  else
-    ::GlobalFree(data);
-}
-
 template <typename StringType>
 void TrimAfterNull(StringType* result) {
   // Text copied to the clipboard may explicitly contain null characters that
@@ -231,16 +205,12 @@ void TrimAfterNull(StringType* result) {
 }
 
 bool ReadFilenamesAvailable() {
-  // Only support filenames if chrome://flags#clipboard-filenames is enabled.
-  if (!base::FeatureList::IsEnabled(features::kClipboardFilenames))
-    return false;
-
   return ::IsClipboardFormatAvailable(
-             ClipboardFormatType::GetCFHDropType().ToFormatEtc().cfFormat) ||
+             ClipboardFormatType::CFHDropType().ToFormatEtc().cfFormat) ||
          ::IsClipboardFormatAvailable(
-             ClipboardFormatType::GetFilenameType().ToFormatEtc().cfFormat) ||
+             ClipboardFormatType::FilenameType().ToFormatEtc().cfFormat) ||
          ::IsClipboardFormatAvailable(
-             ClipboardFormatType::GetFilenameAType().ToFormatEtc().cfFormat);
+             ClipboardFormatType::FilenameAType().ToFormatEtc().cfFormat);
 }
 
 }  // namespace
@@ -268,9 +238,16 @@ DataTransferEndpoint* ClipboardWin::GetSource(ClipboardBuffer buffer) const {
   return nullptr;
 }
 
-uint64_t ClipboardWin::GetSequenceNumber(ClipboardBuffer buffer) const {
+const ClipboardSequenceNumberToken& ClipboardWin::GetSequenceNumber(
+    ClipboardBuffer buffer) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return ::GetClipboardSequenceNumber();
+
+  DWORD sequence_number = ::GetClipboardSequenceNumber();
+  if (sequence_number != clipboard_sequence_.sequence_number) {
+    // Generate a unique token associated with the current sequence number.
+    clipboard_sequence_ = {sequence_number, ClipboardSequenceNumberToken()};
+  }
+  return clipboard_sequence_.token;
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -280,8 +257,19 @@ bool ClipboardWin::IsFormatAvailable(
     ClipboardBuffer buffer,
     const DataTransferEndpoint* data_dst) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  if (format == ClipboardFormatType::GetFilenameType())
+  if (format == ClipboardFormatType::FilenameType())
     return ReadFilenamesAvailable();
+  // Chrome can retrieve an image from the clipboard as either a bitmap or PNG.
+  if (format == ClipboardFormatType::PngType() ||
+      format == ClipboardFormatType::BitmapType()) {
+    return ::IsClipboardFormatAvailable(
+               ClipboardFormatType::PngType().ToFormatEtc().cfFormat) !=
+               FALSE ||
+           ::IsClipboardFormatAvailable(
+               ClipboardFormatType::BitmapType().ToFormatEtc().cfFormat) !=
+               FALSE;
+  }
+
   return ::IsClipboardFormatAvailable(format.ToFormatEtc().cfFormat) != FALSE;
 }
 
@@ -294,6 +282,29 @@ void ClipboardWin::Clear(ClipboardBuffer buffer) {
   ::EmptyClipboard();
 }
 
+std::vector<std::u16string> ClipboardWin::GetStandardFormats(
+    ClipboardBuffer buffer,
+    const DataTransferEndpoint* data_dst) const {
+  std::vector<std::u16string> types;
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::PlainTextAType().ToFormatEtc().cfFormat))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeText));
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::HtmlType().ToFormatEtc().cfFormat))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeHTML));
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::SvgType().ToFormatEtc().cfFormat))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeSvg));
+  if (::IsClipboardFormatAvailable(
+          ClipboardFormatType::RtfType().ToFormatEtc().cfFormat))
+    types.push_back(base::UTF8ToUTF16(kMimeTypeRTF));
+  if (::IsClipboardFormatAvailable(CF_DIB))
+    types.push_back(base::UTF8ToUTF16(kMimeTypePNG));
+  if (ReadFilenamesAvailable())
+    types.push_back(base::UTF8ToUTF16(kMimeTypeURIList));
+  return types;
+}
+
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
 void ClipboardWin::ReadAvailableTypes(
@@ -303,19 +314,7 @@ void ClipboardWin::ReadAvailableTypes(
   DCHECK(types);
 
   types->clear();
-  if (::IsClipboardFormatAvailable(
-          ClipboardFormatType::GetPlainTextAType().ToFormatEtc().cfFormat))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeText));
-  if (::IsClipboardFormatAvailable(
-          ClipboardFormatType::GetHtmlType().ToFormatEtc().cfFormat))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeHTML));
-  if (::IsClipboardFormatAvailable(
-          ClipboardFormatType::GetRtfType().ToFormatEtc().cfFormat))
-    types->push_back(base::UTF8ToUTF16(kMimeTypeRTF));
-  if (::IsClipboardFormatAvailable(CF_DIB))
-    types->push_back(base::UTF8ToUTF16(kMimeTypePNG));
-  if (ReadFilenamesAvailable())
-    types->push_back(base::UTF8ToUTF16(kMimeTypeURIList));
+  *types = GetStandardFormats(buffer, data_dst);
 
   // Acquire the clipboard to read WebCustomDataType types.
   ScopedClipboard clipboard;
@@ -323,40 +322,12 @@ void ClipboardWin::ReadAvailableTypes(
     return;
 
   HANDLE hdata = ::GetClipboardData(
-      ClipboardFormatType::GetWebCustomDataType().ToFormatEtc().cfFormat);
+      ClipboardFormatType::WebCustomDataType().ToFormatEtc().cfFormat);
   if (!hdata)
     return;
 
   ReadCustomDataTypes(::GlobalLock(hdata), ::GlobalSize(hdata), types);
   ::GlobalUnlock(hdata);
-}
-
-// |data_dst| is not used. It's only passed to be consistent with other
-// platforms.
-std::vector<std::u16string>
-ClipboardWin::ReadAvailablePlatformSpecificFormatNames(
-    ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
-  int count = ::CountClipboardFormats();
-  if (!count)
-    return {};
-
-  std::vector<std::u16string> types;
-  types.reserve(count);
-
-  ScopedClipboard clipboard;
-  if (!clipboard.Acquire(GetClipboardWindow()))
-    return {};
-
-  UINT cf_format = 0;
-  cf_format = ::EnumClipboardFormats(cf_format);
-  while (cf_format) {
-    std::string type_name = ClipboardFormatType(cf_format).GetName();
-    if (!type_name.empty())
-      types.push_back(base::UTF8ToUTF16(type_name));
-    cf_format = ::EnumClipboardFormats(cf_format);
-  }
-  return types;
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -442,7 +413,7 @@ void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
     return;
 
   HANDLE data = ::GetClipboardData(
-      ClipboardFormatType::GetHtmlType().ToFormatEtc().cfFormat);
+      ClipboardFormatType::HtmlType().ToFormatEtc().cfFormat);
   if (!data)
     return;
 
@@ -467,9 +438,8 @@ void ClipboardWin::ReadHTML(ClipboardBuffer buffer,
   if (start_index < html_start || end_index < start_index)
     return;
 
-  std::vector<size_t> offsets;
-  offsets.push_back(start_index - html_start);
-  offsets.push_back(end_index - html_start);
+  std::vector<size_t> offsets = {start_index - html_start,
+                                 end_index - html_start};
   markup->assign(base::UTF8ToUTF16AndAdjustOffsets(cf_html.data() + html_start,
                                                    &offsets));
   // Ensure the Fragment points within the string; see https://crbug.com/607181.
@@ -487,7 +457,7 @@ void ClipboardWin::ReadSvg(ClipboardBuffer buffer,
   RecordRead(ClipboardFormatMetric::kSvg);
 
   std::string data;
-  ReadData(ClipboardFormatType::GetSvgType(), data_dst, &data);
+  ReadData(ClipboardFormatType::SvgType(), data_dst, &data);
   result->assign(reinterpret_cast<const char16_t*>(data.data()),
                  data.size() / sizeof(char16_t));
 
@@ -502,17 +472,25 @@ void ClipboardWin::ReadRTF(ClipboardBuffer buffer,
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kRtf);
 
-  ReadData(ClipboardFormatType::GetRtfType(), data_dst, result);
+  ReadData(ClipboardFormatType::RtfType(), data_dst, result);
   TrimAfterNull(result);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardWin::ReadImage(ClipboardBuffer buffer,
-                             const DataTransferEndpoint* data_dst,
-                             ReadImageCallback callback) const {
-  RecordRead(ClipboardFormatMetric::kImage);
-  std::move(callback).Run(ReadImageInternal(buffer));
+void ClipboardWin::ReadPng(ClipboardBuffer buffer,
+                           const DataTransferEndpoint* data_dst,
+                           ReadPngCallback callback) const {
+  RecordRead(ClipboardFormatMetric::kPng);
+  std::vector<uint8_t> data = ReadPngInternal(buffer);
+  // On Windows, PNG and bitmap are separate formats. Read PNG if possible,
+  // otherwise fall back to reading as a bitmap.
+  if (data.empty()) {
+    SkBitmap bitmap = ReadBitmapInternal(buffer);
+    gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
+                                      &data);
+  }
+  std::move(callback).Run(data);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -530,7 +508,7 @@ void ClipboardWin::ReadCustomData(ClipboardBuffer buffer,
     return;
 
   HANDLE hdata = ::GetClipboardData(
-      ClipboardFormatType::GetWebCustomDataType().ToFormatEtc().cfFormat);
+      ClipboardFormatType::WebCustomDataType().ToFormatEtc().cfFormat);
   if (!hdata)
     return;
 
@@ -559,7 +537,7 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
   // TODO(crbug.com/1178671): Refactor similar code in clipboard_utils_win:
   // ClipboardUtil::GetFilenames() and reuse rather than duplicate.
   HANDLE data = ::GetClipboardData(
-      ClipboardFormatType::GetCFHDropType().ToFormatEtc().cfFormat);
+      ClipboardFormatType::CFHDropType().ToFormatEtc().cfFormat);
   if (data) {
     {
       base::win::ScopedHGlobal<HDROP> hdrop(data);
@@ -580,7 +558,7 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
   }
 
   data = ::GetClipboardData(
-      ClipboardFormatType::GetFilenameType().ToFormatEtc().cfFormat);
+      ClipboardFormatType::FilenameType().ToFormatEtc().cfFormat);
   if (data) {
     {
       // filename using Unicode
@@ -594,7 +572,7 @@ void ClipboardWin::ReadFilenames(ClipboardBuffer buffer,
   }
 
   data = ::GetClipboardData(
-      ClipboardFormatType::GetFilenameAType().ToFormatEtc().cfFormat);
+      ClipboardFormatType::FilenameAType().ToFormatEtc().cfFormat);
   if (data) {
     {
       // filename using ASCII
@@ -624,8 +602,8 @@ void ClipboardWin::ReadBookmark(const DataTransferEndpoint* data_dst,
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
 
-  HANDLE data = ::GetClipboardData(
-      ClipboardFormatType::GetUrlType().ToFormatEtc().cfFormat);
+  HANDLE data =
+      ::GetClipboardData(ClipboardFormatType::UrlType().ToFormatEtc().cfFormat);
   if (!data)
     return;
 
@@ -634,7 +612,7 @@ void ClipboardWin::ReadBookmark(const DataTransferEndpoint* data_dst,
   ::GlobalUnlock(data);
   TrimAfterNull(&bookmark);
 
-  ParseBookmarkClipboardFormat(bookmark, title, url);
+  *url = base::UTF16ToUTF8(bookmark);
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -663,37 +641,19 @@ void ClipboardWin::ReadData(const ClipboardFormatType& format,
 
 // |data_src| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardWin::WritePortableRepresentations(
+void ClipboardWin::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
-    std::unique_ptr<DataTransferEndpoint> data_src) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-
-  ScopedClipboard clipboard;
-  if (!clipboard.Acquire(GetClipboardWindow()))
-    return;
-
-  ::EmptyClipboard();
-
-  for (const auto& object : objects)
-    DispatchPortableRepresentation(object.first, object.second);
-}
-
-// |data_src| is not used. It's only passed to be consistent with other
-// platforms.
-void ClipboardWin::WritePlatformRepresentations(
-    ClipboardBuffer buffer,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src) {
-  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-
   ScopedClipboard clipboard;
   if (!clipboard.Acquire(GetClipboardWindow()))
     return;
-
   ::EmptyClipboard();
 
   DispatchPlatformRepresentations(std::move(platform_representations));
+  for (const auto& object : objects)
+    DispatchPortableRepresentation(object.first, object.second);
 }
 
 void ClipboardWin::WriteText(const char* text_data, size_t text_len) {
@@ -701,7 +661,7 @@ void ClipboardWin::WriteText(const char* text_data, size_t text_len) {
   base::UTF8ToUTF16(text_data, text_len, &text);
   HGLOBAL glob = CreateGlobalData(text);
 
-  WriteToClipboard(ClipboardFormatType::GetPlainTextType(), glob);
+  WriteToClipboard(ClipboardFormatType::PlainTextType(), glob);
 }
 
 void ClipboardWin::WriteHTML(const char* markup_data,
@@ -717,7 +677,7 @@ void ClipboardWin::WriteHTML(const char* markup_data,
   std::string html_fragment = ClipboardUtil::HtmlToCFHtml(markup, url);
   HGLOBAL glob = CreateGlobalData(html_fragment);
 
-  WriteToClipboard(ClipboardFormatType::GetHtmlType(), glob);
+  WriteToClipboard(ClipboardFormatType::HtmlType(), glob);
 }
 
 void ClipboardWin::WriteSvg(const char* markup_data, size_t markup_len) {
@@ -725,51 +685,62 @@ void ClipboardWin::WriteSvg(const char* markup_data, size_t markup_len) {
   base::UTF8ToUTF16(markup_data, markup_len, &markup);
   HGLOBAL glob = CreateGlobalData(markup);
 
-  WriteToClipboard(ClipboardFormatType::GetSvgType(), glob);
+  WriteToClipboard(ClipboardFormatType::SvgType(), glob);
 }
 
 void ClipboardWin::WriteRTF(const char* rtf_data, size_t data_len) {
-  WriteData(ClipboardFormatType::GetRtfType(), rtf_data, data_len);
+  WriteData(ClipboardFormatType::RtfType(), rtf_data, data_len);
 }
 
 void ClipboardWin::WriteFilenames(std::vector<ui::FileInfo> filenames) {
   STGMEDIUM storage = ClipboardUtil::CreateStorageForFileNames(filenames);
   if (storage.tymed == TYMED_NULL)
     return;
-  WriteToClipboard(ClipboardFormatType::GetCFHDropType(), storage.hGlobal);
+  WriteToClipboard(ClipboardFormatType::CFHDropType(), storage.hGlobal);
 }
 
 void ClipboardWin::WriteBookmark(const char* title_data,
                                  size_t title_len,
                                  const char* url_data,
                                  size_t url_len) {
-  std::string bookmark(title_data, title_len);
-  bookmark.append(1, L'\n');
-  bookmark.append(url_data, url_len);
-
+  // On Windows, CFSTR_INETURLW is expected to only contain the URL & not the
+  // title separated by a newline.
+  // https://docs.microsoft.com/en-us/windows/win32/shell/clipboard#cfstr_ineturl.
+  std::string bookmark(url_data, url_len);
   std::u16string wide_bookmark = base::UTF8ToUTF16(bookmark);
   HGLOBAL glob = CreateGlobalData(wide_bookmark);
 
-  WriteToClipboard(ClipboardFormatType::GetUrlType(), glob);
+  WriteToClipboard(ClipboardFormatType::UrlType(), glob);
 }
 
 void ClipboardWin::WriteWebSmartPaste() {
   DCHECK_NE(clipboard_owner_->hwnd(), nullptr);
   ::SetClipboardData(
-      ClipboardFormatType::GetWebKitSmartPasteType().ToFormatEtc().cfFormat,
+      ClipboardFormatType::WebKitSmartPasteType().ToFormatEtc().cfFormat,
       nullptr);
 }
 
 void ClipboardWin::WriteBitmap(const SkBitmap& bitmap) {
-  // This doesn't actually cost us a memcpy when the bitmap comes from the
-  // renderer as we load it into the bitmap using setPixels which just sets a
-  // pointer.  Someone has to memcpy it into GDI, it might as well be us here.
-  base::win::ScopedBitmap hbitmap = skia::CreateHBitmapFromN32SkBitmap(bitmap);
-  if (hbitmap.is_valid()) {
-    // Now we have an HBITMAP, we can write it to the clipboard
-    WriteBitmapFromHandle(hbitmap.get(),
-                          gfx::Size(bitmap.width(), bitmap.height()));
+  CHECK_EQ(bitmap.colorType(), kN32_SkColorType);
+
+  // On Windows there are 2 ways of writing a transparent image to the
+  // clipboard: Using the DIBV5 format with correct header and format or using
+  // the PNG format. Some programs only support one or the other. In particular,
+  // Word support for DIBV5 is buggy and PNG format is needed for it. Writing
+  // order is also important as some programs will use the first compatible
+  // format that is available on the clipboard, and we want Word to choose the
+  // PNG format.
+
+  std::vector<unsigned char> png_encoded_bitmap;
+  if (gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false,
+                                        &png_encoded_bitmap)) {
+    HGLOBAL png_hglobal = skia::CreateHGlobalForByteArray(png_encoded_bitmap);
+    if (png_hglobal)
+      WriteToClipboard(ClipboardFormatType::PngType(), png_hglobal);
   }
+  HGLOBAL dibv5_hglobal = skia::CreateDIBV5ImageDataFromN32SkBitmap(bitmap);
+  if (dibv5_hglobal)
+    WriteToClipboard(ClipboardFormatType::BitmapType(), dibv5_hglobal);
 }
 
 void ClipboardWin::WriteData(const ClipboardFormatType& format,
@@ -785,57 +756,28 @@ void ClipboardWin::WriteData(const ClipboardFormatType& format,
   WriteToClipboard(format, hdata);
 }
 
-void ClipboardWin::WriteBitmapFromHandle(HBITMAP source_hbitmap,
-                                         const gfx::Size& size) {
-  // We would like to just call ::SetClipboardData on the source_hbitmap,
-  // but that bitmap might not be of a sort we can write to the clipboard.
-  // For this reason, we create a new bitmap, copy the bits over, and then
-  // write that to the clipboard.
+std::vector<uint8_t> ClipboardWin::ReadPngInternal(
+    ClipboardBuffer buffer) const {
+  DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
-  HDC dc = ::GetDC(nullptr);
-  HDC compatible_dc = ::CreateCompatibleDC(nullptr);
-  HDC source_dc = ::CreateCompatibleDC(nullptr);
+  // Acquire the clipboard.
+  ScopedClipboard clipboard;
+  if (!clipboard.Acquire(GetClipboardWindow()))
+    return std::vector<uint8_t>();
 
-  // This is the HBITMAP we will eventually write to the clipboard
-  HBITMAP hbitmap = ::CreateCompatibleBitmap(dc, size.width(), size.height());
-  if (!hbitmap) {
-    // Failed to create the bitmap
-    ::DeleteDC(compatible_dc);
-    ::DeleteDC(source_dc);
-    ::ReleaseDC(nullptr, dc);
-    return;
-  }
+  HANDLE data =
+      ::GetClipboardData(ClipboardFormatType::PngType().ToFormatEtc().cfFormat);
 
-  HBITMAP old_hbitmap = (HBITMAP)SelectObject(compatible_dc, hbitmap);
-  HBITMAP old_source = (HBITMAP)SelectObject(source_dc, source_hbitmap);
+  if (!data)
+    return std::vector<uint8_t>();
 
-  // Now we need to blend it into an HBITMAP we can place on the clipboard
-  BLENDFUNCTION bf = {AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
-  ::GdiAlphaBlend(compatible_dc,
-                  0,
-                  0,
-                  size.width(),
-                  size.height(),
-                  source_dc,
-                  0,
-                  0,
-                  size.width(),
-                  size.height(),
-                  bf);
-
-  // Clean up all the handles we just opened
-  ::SelectObject(compatible_dc, old_hbitmap);
-  ::SelectObject(source_dc, old_source);
-  ::DeleteObject(old_hbitmap);
-  ::DeleteObject(old_source);
-  ::DeleteDC(compatible_dc);
-  ::DeleteDC(source_dc);
-  ::ReleaseDC(nullptr, dc);
-
-  WriteToClipboard(ClipboardFormatType::GetBitmapType(), hbitmap);
+  std::string result(static_cast<const char*>(::GlobalLock(data)),
+                     ::GlobalSize(data));
+  ::GlobalUnlock(data);
+  return std::vector<uint8_t>(result.begin(), result.end());
 }
 
-SkBitmap ClipboardWin::ReadImageInternal(ClipboardBuffer buffer) const {
+SkBitmap ClipboardWin::ReadBitmapInternal(ClipboardBuffer buffer) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   // Acquire the clipboard.
@@ -850,6 +792,31 @@ SkBitmap ClipboardWin::ReadImageInternal(ClipboardBuffer buffer) const {
   if (!bitmap)
     return SkBitmap();
   int color_table_length = 0;
+
+  // Image is too large, and may cause an allocation failure.
+  // See https://crbug.com/1164680.
+  constexpr size_t kMaxImageSizeBytes = 1 << 27;  // 128 MiB
+  size_t image_size_bytes;
+  // Estimate the number of bytes per pixel. For images with fewer than one byte
+  // pixel we will over-estimate the size. For compressed images we will
+  // over-estimate the size, but some overestimating of the storage size is okay
+  // and the calculation will be a good estimate of the decompressed size. The
+  // reported bug was for uncompressed 32-bit images where this code will give
+  // correct results.
+  size_t bytes_per_pixel = bitmap->bmiHeader.biBitCount / 8;
+  if (bytes_per_pixel == 0)
+    bytes_per_pixel = 1;
+  // Calculate the size of the bitmap. This is not an exact calculation but that
+  // doesn't matter for this purpose. If the calculation overflows then the
+  // image is too big. Return an empty image.
+  if (!base::CheckMul(
+           bitmap->bmiHeader.biWidth,
+           base::CheckMul(bitmap->bmiHeader.biHeight, bytes_per_pixel))
+           .AssignIfValid(&image_size_bytes))
+    return SkBitmap();
+  // If the image size is too big then return an empty image.
+  if (image_size_bytes > kMaxImageSizeBytes)
+    return SkBitmap();
 
   // For more information on BITMAPINFOHEADER and biBitCount definition,
   // see https://docs.microsoft.com/en-us/windows/win32/wmdm/-bitmapinfoheader
@@ -928,7 +895,7 @@ void ClipboardWin::WriteToClipboard(ClipboardFormatType format, HANDLE handle) {
   if (handle && !::SetClipboardData(cf_format, handle)) {
     DCHECK_NE(GetLastError(),
               static_cast<unsigned long>(ERROR_CLIPBOARD_NOT_OPEN));
-    FreeData(cf_format, handle);
+    ::GlobalFree(handle);
   }
 }
 

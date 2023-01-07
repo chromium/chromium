@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="unload-utils.js"></script>
+<script src="utils.js"></script>
+<body>
+<script type="module">
+const params = new URLSearchParams(location.search);
+const state = params.get('state') || 'start';
+
+const bc = openChannel();
+
+// Test steps:
+//   1. `start` page starts prerendering `prerendering` page.
+//   2. `prerendering` page adds `same-origin-frame1`.
+//   3. `same-origin-frame1` navigates to `same-origin-frame2`.
+//   4. `pagehide` and `unload` events are handled.
+bc.postMessage('load ' + state);
+if (state === 'start') {
+  startPrerendering(createTestUrl('prerendering'));
+} else if (state === 'prerendering') {
+  addFrame(createTestUrl('same-origin-frame1'));
+} else if (state === 'same-origin-frame1') {
+  // unload handler should be triggered after the frame navigation.
+  addEventListeners('same-origin-frame1');
+
+  // Run a same-origin navigation.
+  document.location = createTestUrl('same-origin-frame2');
+} else if (state === 'same-origin-frame2') {
+  bc.postMessage('Done');
+}
+
+bc.close();
+</script>
+</body>

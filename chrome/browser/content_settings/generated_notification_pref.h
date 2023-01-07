@@ -1,13 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_CONTENT_SETTINGS_GENERATED_NOTIFICATION_PREF_H_
 #define CHROME_BROWSER_CONTENT_SETTINGS_GENERATED_NOTIFICATION_PREF_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -42,9 +43,10 @@ class GeneratedNotificationPref
   std::unique_ptr<extensions::api::settings_private::PrefObject> GetPrefObject()
       const override;
 
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   void OnNotificationPreferencesChanged();
 
@@ -53,10 +55,10 @@ class GeneratedNotificationPref
       Profile* profile,
       extensions::api::settings_private::PrefObject* pref_object);
 
-  Profile* const profile_;
-  HostContentSettingsMap* host_content_settings_map_;
-  ScopedObserver<HostContentSettingsMap, content_settings::Observer>
-      content_setting_observer_{this};
+  const raw_ptr<Profile> profile_;
+  raw_ptr<HostContentSettingsMap> host_content_settings_map_;
+  base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
+      content_setting_observation_{this};
   PrefChangeRegistrar user_prefs_registrar_;
 };
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ import android.view.Surface;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.MainDex;
+import org.chromium.build.annotations.MainDex;
 import org.chromium.media.MediaCodecUtil.CodecCreationInfo;
 import org.chromium.media.MediaCodecUtil.MimeTypes;
 
@@ -56,8 +56,8 @@ class MediaCodecBridgeBuilder {
     }
 
     @CalledByNative
-    static MediaCodecBridge createVideoEncoder(String mime, int width, int height, int bitRate,
-            int frameRate, int iFrameInterval, int colorFormat) {
+    static MediaCodecBridge createVideoEncoder(String mime, int width, int height, int bitrateMode,
+            int bitRate, int frameRate, int iFrameInterval, int colorFormat) {
         CodecCreationInfo info = new CodecCreationInfo();
         try {
             Log.i(TAG, "create MediaCodec video encoder, mime %s", mime);
@@ -74,7 +74,8 @@ class MediaCodecBridgeBuilder {
                 ? new MediaCodecEncoder(info.mediaCodec, info.bitrateAdjuster)
                 : new MediaCodecBridge(info.mediaCodec, info.bitrateAdjuster, false);
         MediaFormat format = MediaFormatBuilder.createVideoEncoderFormat(mime, width, height,
-                bitRate, BitrateAdjuster.getInitialFrameRate(info.bitrateAdjuster, frameRate),
+                bitrateMode, bitRate,
+                BitrateAdjuster.getInitialFrameRate(info.bitrateAdjuster, frameRate),
                 iFrameInterval, colorFormat, info.supportsAdaptivePlayback);
 
         if (!bridge.configureVideo(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)) {

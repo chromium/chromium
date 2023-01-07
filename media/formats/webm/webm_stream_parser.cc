@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,12 +31,12 @@ WebMStreamParser::~WebMStreamParser() = default;
 
 void WebMStreamParser::Init(
     InitCB init_cb,
-    const NewConfigCB& config_cb,
-    const NewBuffersCB& new_buffers_cb,
+    NewConfigCB config_cb,
+    NewBuffersCB new_buffers_cb,
     bool ignore_text_tracks,
-    const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
-    const NewMediaSegmentCB& new_segment_cb,
-    const EndMediaSegmentCB& end_of_segment_cb,
+    EncryptedMediaInitDataCB encrypted_media_init_data_cb,
+    NewMediaSegmentCB new_segment_cb,
+    EndMediaSegmentCB end_of_segment_cb,
     MediaLog* media_log) {
   DCHECK_EQ(state_, kWaitingForInit);
   DCHECK(!init_cb_);
@@ -49,12 +49,12 @@ void WebMStreamParser::Init(
 
   ChangeState(kParsingHeaders);
   init_cb_ = std::move(init_cb);
-  config_cb_ = config_cb;
-  new_buffers_cb_ = new_buffers_cb;
+  config_cb_ = std::move(config_cb);
+  new_buffers_cb_ = std::move(new_buffers_cb);
   ignore_text_tracks_ = ignore_text_tracks;
-  encrypted_media_init_data_cb_ = encrypted_media_init_data_cb;
-  new_segment_cb_ = new_segment_cb;
-  end_of_segment_cb_ = end_of_segment_cb;
+  encrypted_media_init_data_cb_ = std::move(encrypted_media_init_data_cb);
+  new_segment_cb_ = std::move(new_segment_cb);
+  end_of_segment_cb_ = std::move(end_of_segment_cb);
   media_log_ = media_log;
 }
 
@@ -82,7 +82,7 @@ bool WebMStreamParser::Parse(const uint8_t* buf, int size) {
 
   int result = 0;
   int bytes_parsed = 0;
-  const uint8_t* cur = NULL;
+  const uint8_t* cur = nullptr;
   int cur_size = 0;
 
   byte_queue_.Peek(&cur, &cur_size);
@@ -205,18 +205,18 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
 
   if (info_parser.duration() > 0) {
     int64_t duration_in_us = info_parser.duration() * timecode_scale_in_us;
-    params.duration = base::TimeDelta::FromMicroseconds(duration_in_us);
+    params.duration = base::Microseconds(duration_in_us);
   }
 
   params.timeline_offset = info_parser.date_utc();
 
   if (unknown_segment_size_ && (info_parser.duration() <= 0) &&
       !info_parser.date_utc().is_null()) {
-    params.liveness = DemuxerStream::LIVENESS_LIVE;
+    params.liveness = StreamLiveness::kLive;
   } else if (info_parser.duration() >= 0) {
-    params.liveness = DemuxerStream::LIVENESS_RECORDED;
+    params.liveness = StreamLiveness::kRecorded;
   } else {
-    params.liveness = DemuxerStream::LIVENESS_UNKNOWN;
+    params.liveness = StreamLiveness::kUnknown;
   }
 
   const AudioDecoderConfig& audio_config = tracks_parser.audio_decoder_config();
@@ -234,7 +234,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
     return -1;
   }
 
-  cluster_parser_.reset(new WebMClusterParser(
+  cluster_parser_ = std::make_unique<WebMClusterParser>(
       timecode_scale_in_ns, tracks_parser.audio_track_num(),
       tracks_parser.GetAudioDefaultDuration(timecode_scale_in_ns),
       tracks_parser.video_track_num(),
@@ -242,7 +242,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
       tracks_parser.text_tracks(), tracks_parser.ignored_tracks(),
       tracks_parser.audio_encryption_key_id(),
       tracks_parser.video_encryption_key_id(), audio_config.codec(),
-      media_log_));
+      media_log_);
 
   if (init_cb_) {
     params.detected_audio_track_count =

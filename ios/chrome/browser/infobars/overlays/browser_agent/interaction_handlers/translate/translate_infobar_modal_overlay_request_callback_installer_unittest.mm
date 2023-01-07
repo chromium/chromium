@@ -1,26 +1,26 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/translate/translate_infobar_modal_overlay_request_callback_installer.h"
 
-#include "ios/chrome/browser/infobars/infobar_ios.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_translate_infobar_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/translate/translate_infobar_modal_interaction_handler.h"
 #import "ios/chrome/browser/infobars/overlays/translate_overlay_tab_helper.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/infobar_modal_overlay_responses.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/public/infobar_modal/translate_infobar_modal_overlay_responses.h"
-#include "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
-#include "ios/chrome/browser/overlays/public/overlay_request.h"
-#include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
-#include "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/public/overlay_callback_manager.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
 #import "ios/chrome/browser/translate/fake_translate_infobar_delegate.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/platform_test.h"
+#import "testing/gmock/include/gmock/gmock.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

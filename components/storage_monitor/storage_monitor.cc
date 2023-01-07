@@ -1,13 +1,15 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/storage_monitor/storage_monitor.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/storage_monitor/removable_storage_observer.h"
 #include "components/storage_monitor/transient_device_ids.h"
@@ -37,7 +39,7 @@ class StorageMonitor::ReceiverImpl : public StorageMonitor::Receiver {
   void MarkInitialized() override;
 
  private:
-  StorageMonitor* notifications_;
+  raw_ptr<StorageMonitor> notifications_;
 };
 
 void StorageMonitor::ReceiverImpl::ProcessAttach(const StorageInfo& info) {
@@ -140,7 +142,7 @@ StorageMonitor::StorageMonitor()
       initializing_(false),
       initialized_(false),
       transient_device_ids_(new TransientDeviceIds) {
-  receiver_.reset(new ReceiverImpl(this));
+  receiver_ = std::make_unique<ReceiverImpl>(this);
 }
 
 StorageMonitor::~StorageMonitor() {

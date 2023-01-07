@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,6 +20,12 @@
 // YES for this property must not lay out their presented views in relation to
 // the presenter.  Returns NO by default.
 @property(nonatomic, readonly) BOOL resizesPresentationContainer;
+
+// YES if the presented view was resized and therefore the presenting view
+// controller needs a new layout pass. Defaults to YES to allow for a layout
+// pass the first time through since the presenting view controller needs to
+// resize from CGRectZero to the presented view size or vice versa.
+@property(nonatomic, assign) BOOL needsLayout;
 
 // Subclasses must notify the superclass when their container views lay out
 // their subviews.

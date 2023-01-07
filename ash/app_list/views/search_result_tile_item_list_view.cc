@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 
+#include "ash/app_list/app_list_model_provider.h"
 #include "ash/app_list/app_list_util.h"
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/search/search_result.h"
@@ -80,25 +81,23 @@ SearchResultTileItemListView::SearchResultTileItemListView(
           SharedAppListConfig::instance().max_search_result_tiles()) {
   layout_ = SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets(kItemListVerticalSpacing, kItemListHorizontalSpacing),
+      gfx::Insets::VH(kItemListVerticalSpacing, kItemListHorizontalSpacing),
       kBetweenItemSpacing));
   for (size_t i = 0; i < max_search_result_tiles_; ++i) {
     views::Separator* separator =
         AddChildView(std::make_unique<views::Separator>());
     separator->SetVisible(false);
-    separator->SetBorder(views::CreateEmptyBorder(
+    separator->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         kSeparatorTopPadding, kSeparatorLeftRightPadding,
         SharedAppListConfig::instance().search_tile_height() - kSeparatorHeight,
-        kSeparatorLeftRightPadding));
-    separator->SetColor(AppListColorProvider::Get()->GetSeparatorColor());
+        kSeparatorLeftRightPadding)));
+    separator->SetColorId(AppListColorProvider::Get()->GetSeparatorColorId());
     separator_views_.push_back(separator);
     layout_->SetFlexForView(separator, 0);
 
     SearchResultTileItemView* tile_item =
         AddChildView(std::make_unique<SearchResultTileItemView>(view_delegate));
     tile_item->set_index_in_container(i);
-    tile_item->SetParentBackgroundColor(
-        AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor());
     tile_views_.push_back(tile_item);
     AddObservedResultView(tile_item);
   }
@@ -132,7 +131,6 @@ int SearchResultTileItemListView::DoUpdate() {
   bool is_previous_result_installable_app = false;
   int installed_app_index = -1;
   int playstore_app_index = -1;
-  int reinstall_app_index = -1;
   int app_group_index = -1;
   bool found_playstore_results = false;
 
@@ -158,7 +156,6 @@ int SearchResultTileItemListView::DoUpdate() {
       found_playstore_results = true;
     } else if (item->result_type() ==
                AppListSearchResultType::kPlayStoreReinstallApp) {
-      ++reinstall_app_index;
       app_group_index = playstore_app_index;
     } else {
       ++installed_app_index;
@@ -199,8 +196,7 @@ int SearchResultTileItemListView::DoUpdate() {
     recent_playstore_query_ = user_typed_query;
     playstore_impression_timer_.Stop();
     playstore_impression_timer_.Start(
-        FROM_HERE,
-        base::TimeDelta::FromMilliseconds(kPlayStoreImpressionDelayInMs), this,
+        FROM_HERE, base::Milliseconds(kPlayStoreImpressionDelayInMs), this,
         &SearchResultTileItemListView::OnPlayStoreImpressionTimer);
     // Set the starting time in result view for play store results.
     base::TimeTicks result_display_start = base::TimeTicks::Now();
@@ -212,33 +208,6 @@ int SearchResultTileItemListView::DoUpdate() {
     }
   } else if (!found_playstore_results) {
     playstore_impression_timer_.Stop();
-  }
-
-  // notify visibility changes, if needed.
-  std::set<std::string> actual_added_ids =
-      base::STLSetDifference<std::set<std::string>>(result_id_added,
-                                                    result_id_removed);
-
-  for (const std::string& added_id : actual_added_ids) {
-    SearchResult* added =
-        view_delegate()->GetSearchModel()->FindSearchResult(added_id);
-    if (added != nullptr && added->notify_visibility_change()) {
-      view_delegate()->OnSearchResultVisibilityChanged(added->id(), shown());
-    }
-  }
-  if (shown() != false) {
-    std::set<std::string> actual_removed_ids =
-        base::STLSetDifference<std::set<std::string>>(result_id_removed,
-                                                      result_id_added);
-    // we only notify removed items if we're in the middle of showing.
-    for (const std::string& removed_id : actual_removed_ids) {
-      SearchResult* removed =
-          view_delegate()->GetSearchModel()->FindSearchResult(removed_id);
-      if (removed != nullptr && removed->notify_visibility_change()) {
-        view_delegate()->OnSearchResultVisibilityChanged(removed->id(),
-                                                         false /*=shown*/);
-      }
-    }
   }
 
   return display_results.size();
@@ -364,10 +333,17 @@ void SearchResultTileItemListView::OnShownChanged() {
     if (result == nullptr) {
       continue;
     }
-    if (result->notify_visibility_change()) {
-      view_delegate()->OnSearchResultVisibilityChanged(result->id(), shown());
-    }
   }
+}
+
+void SearchResultTileItemListView::OnThemeChanged() {
+  SearchResultContainerView::OnThemeChanged();
+
+  const auto parent_background_color =
+      AppListColorProvider::Get()->GetSearchBoxCardBackgroundColor(GetWidget());
+
+  for (auto* tile_view : tile_views_)
+    tile_view->SetParentBackgroundColor(parent_background_color);
 }
 
 void SearchResultTileItemListView::VisibilityChanged(View* starting_from,
@@ -385,10 +361,6 @@ void SearchResultTileItemListView::VisibilityChanged(View* starting_from,
     SearchResult* result = tile_view->result();
     if (result == nullptr) {
       continue;
-    }
-    if (result->notify_visibility_change()) {
-      view_delegate()->OnSearchResultVisibilityChanged(result->id(),
-                                                       false /*=visible*/);
     }
   }
 }

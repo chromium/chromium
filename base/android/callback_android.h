@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
+#include "base/time/time.h"
 
 // Provides helper utility methods that run the given callback with the
 // specified argument.
@@ -24,7 +25,13 @@ void BASE_EXPORT RunBooleanCallbackAndroid(const JavaRef<jobject>& callback,
                                            bool arg);
 
 void BASE_EXPORT RunIntCallbackAndroid(const JavaRef<jobject>& callback,
-                                       int arg);
+                                       int32_t arg);
+
+void BASE_EXPORT RunLongCallbackAndroid(const JavaRef<jobject>& callback,
+                                        int64_t arg);
+
+void BASE_EXPORT RunTimeCallbackAndroid(const JavaRef<jobject>& callback,
+                                        base::Time time);
 
 void BASE_EXPORT RunStringCallbackAndroid(const JavaRef<jobject>& callback,
                                           const std::string& arg);

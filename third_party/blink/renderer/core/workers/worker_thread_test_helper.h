@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,13 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
@@ -30,7 +28,8 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -41,6 +40,10 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "v8/include/v8.h"
 
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/renderer/platform/testing/scoped_fake_ukm_recorder.h"
+
 namespace blink {
 
 class FakeWorkerGlobalScope : public WorkerGlobalScope {
@@ -50,11 +53,23 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
       WorkerThread* thread)
       : WorkerGlobalScope(std::move(creation_params),
                           thread,
-                          base::TimeTicks::Now()) {
+                          base::TimeTicks::Now(),
+                          false) {
     ReadyToRunWorkerScript();
+    GetBrowserInterfaceBroker().SetBinderForTesting(
+        ukm::mojom::UkmRecorderInterface::Name_,
+        WTF::BindRepeating(
+            [](ScopedFakeUkmRecorder* interface,
+               mojo::ScopedMessagePipeHandle handle) {
+              interface->SetHandle(std::move(handle));
+            },
+            WTF::Unretained(&scoped_fake_ukm_recorder_)));
   }
 
-  ~FakeWorkerGlobalScope() override = default;
+  ~FakeWorkerGlobalScope() override {
+    GetBrowserInterfaceBroker().SetBinderForTesting(
+        ukm::mojom::UkmRecorderInterface::Name_, {});
+  }
 
   // EventTarget
   const AtomicString& InterfaceName() const override {
@@ -65,16 +80,11 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
   void Initialize(
       const KURL& response_url,
       network::mojom::ReferrerPolicy response_referrer_policy,
-      network::mojom::IPAddressSpace response_address_space,
       Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
-      const Vector<String>* response_origin_trial_tokens,
-      int64_t appcache_id) override {
+      const Vector<String>* response_origin_trial_tokens) override {
     InitializeURL(response_url);
     SetReferrerPolicy(response_referrer_policy);
-    SetAddressSpace(response_address_space);
 
-    // These should be called after SetAddressSpace() to correctly override the
-    // address space by the "treat-as-public-address" CSP directive.
     InitContentSecurityPolicyFromVector(std::move(response_csp));
     BindContentSecurityPolicyToExecutionContext();
 
@@ -88,6 +98,7 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
       const KURL& script_url,
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params,
+      std::unique_ptr<PolicyContainer> policy_container,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
       const v8_inspector::V8StackTraceId& stack_id) override {
@@ -97,6 +108,7 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
       const KURL& module_url_record,
       std::unique_ptr<WorkerMainScriptLoadParameters>
           worker_main_script_load_params,
+      std::unique_ptr<PolicyContainer> policy_container,
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
       network::mojom::CredentialsMode,
@@ -110,9 +122,12 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
   // Returns a token uniquely identifying this fake worker.
   WorkerToken GetWorkerToken() const final { return token_; }
   bool CrossOriginIsolatedCapability() const final { return false; }
+  bool IsolatedApplicationCapability() const final { return false; }
   ExecutionContextToken GetExecutionContextToken() const final {
     return token_;
   }
+
+  ScopedFakeUkmRecorder scoped_fake_ukm_recorder_;
 
  private:
   SharedWorkerToken token_;
@@ -142,11 +157,12 @@ class WorkerThreadForTest : public WorkerThread {
         "fake global scope name", "fake user agent", UserAgentMetadata(),
         nullptr /* web_worker_fetch_context */,
         Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
         network::mojom::ReferrerPolicy::kDefault, security_origin,
         false /* starter_secure_context */,
         CalculateHttpsState(security_origin), worker_clients,
         nullptr /* content_settings_client */,
-        network::mojom::IPAddressSpace::kLocal, nullptr,
+        nullptr /* inherited_trial_features */,
         base::UnguessableToken::Create(),
         std::make_unique<WorkerSettings>(std::make_unique<Settings>().get()),
         mojom::blink::V8CacheOptions::kDefault,
@@ -191,17 +207,15 @@ class MockWorkerReportingProxy final : public WorkerReportingProxy {
   ~MockWorkerReportingProxy() override = default;
 
   MOCK_METHOD1(DidCreateWorkerGlobalScope, void(WorkerOrWorkletGlobalScope*));
-  MOCK_METHOD2(WillEvaluateClassicScriptMock,
-               void(size_t scriptSize, size_t cachedMetadataSize));
+  MOCK_METHOD0(WillEvaluateScriptMock, void());
   MOCK_METHOD1(DidEvaluateTopLevelScript, void(bool success));
   MOCK_METHOD0(DidCloseWorkerGlobalScope, void());
   MOCK_METHOD0(WillDestroyWorkerGlobalScope, void());
   MOCK_METHOD0(DidTerminateWorkerThread, void());
 
-  void WillEvaluateClassicScript(size_t script_size,
-                                 size_t cached_metadata_size) override {
+  void WillEvaluateScript() override {
     script_evaluation_event_.Signal();
-    WillEvaluateClassicScriptMock(script_size, cached_metadata_size);
+    WillEvaluateScriptMock();
   }
 
   void WaitUntilScriptEvaluation() { script_evaluation_event_.Wait(); }

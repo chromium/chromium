@@ -1,8 +1,10 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/capture/video/video_frame_receiver.h"
+
+#include "media/base/bind_to_current_loop.h"
 
 namespace media {
 
@@ -32,5 +34,11 @@ ReadyFrameInBuffer& ReadyFrameInBuffer::operator=(ReadyFrameInBuffer&& other) {
   frame_info = std::move(other.frame_info);
   return *this;
 }
+
+ScopedFrameDoneHelper::ScopedFrameDoneHelper(base::OnceClosure done_callback)
+    : base::ScopedClosureRunner(
+          media::BindToCurrentLoop(std::move(done_callback))) {}
+
+ScopedFrameDoneHelper::~ScopedFrameDoneHelper() = default;
 
 }  // namespace media

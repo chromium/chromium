@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@
 
 #include <memory>
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -31,7 +32,8 @@
 
 namespace ash {
 
-LogoutButtonTray::LogoutButtonTray(Shelf* shelf) : TrayBackgroundView(shelf) {
+LogoutButtonTray::LogoutButtonTray(Shelf* shelf)
+    : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kLogoutButton) {
   DCHECK(shelf);
   Shell::Get()->session_controller()->AddObserver(this);
 
@@ -41,6 +43,9 @@ LogoutButtonTray::LogoutButtonTray(Shelf* shelf) : TrayBackgroundView(shelf) {
                               base::Unretained(this)),
           std::u16string(), CONTEXT_LAUNCHER_BUTTON));
   button_->SetProminent(true);
+  set_use_bounce_in_animation(false);
+
+  SetFocusBehavior(FocusBehavior::NEVER);
 }
 
 LogoutButtonTray::~LogoutButtonTray() {
@@ -88,8 +93,11 @@ const char* LogoutButtonTray::GetClassName() const {
 
 void LogoutButtonTray::OnThemeChanged() {
   TrayBackgroundView::OnThemeChanged();
-  button_->SetBgColorOverride(AshColorProvider::Get()->GetControlsLayerColor(
+  auto* color_provider = AshColorProvider::Get();
+  button_->SetBgColorOverride(color_provider->GetControlsLayerColor(
       AshColorProvider::ControlsLayerType::kControlBackgroundColorAlert));
+  button_->SetEnabledTextColors(color_provider->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kButtonLabelColorPrimary));
 }
 
 void LogoutButtonTray::UpdateShowLogoutButtonInTray() {
@@ -101,7 +109,7 @@ void LogoutButtonTray::UpdateShowLogoutButtonInTray() {
 void LogoutButtonTray::UpdateLogoutDialogDuration() {
   const int duration_ms = pref_change_registrar_->prefs()->GetInteger(
       prefs::kLogoutDialogDurationMs);
-  dialog_duration_ = base::TimeDelta::FromMilliseconds(duration_ms);
+  dialog_duration_ = base::Milliseconds(duration_ms);
 }
 
 void LogoutButtonTray::UpdateAfterLoginStatusChange() {

@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <unordered_set>
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/service/error_state.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -735,7 +736,7 @@ bool ValidateCompressedTexSubDimensions(GLenum target,
         *error_message = "target == GL_TEXTURE_3D is not allowed";
         return false;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT:
     case GL_COMPRESSED_RGBA_BPTC_UNORM_EXT:
@@ -966,8 +967,7 @@ CopyTextureMethod GetCopyTextureCHROMIUMMethod(const FeatureInfo* feature_info,
                                                GLenum dest_internal_format,
                                                bool flip_y,
                                                bool premultiply_alpha,
-                                               bool unpremultiply_alpha,
-                                               bool dither) {
+                                               bool unpremultiply_alpha) {
   bool premultiply_alpha_change = premultiply_alpha ^ unpremultiply_alpha;
   bool source_format_color_renderable =
       Texture::ColorRenderable(feature_info, source_internal_format, false);
@@ -976,7 +976,7 @@ CopyTextureMethod GetCopyTextureCHROMIUMMethod(const FeatureInfo* feature_info,
   std::string output_error_msg;
 
   switch (dest_internal_format) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // RGB5_A1 is not color-renderable on NVIDIA Mac, see
     // https://crbug.com/676209.
     case GL_RGB5_A1:
@@ -1038,7 +1038,7 @@ CopyTextureMethod GetCopyTextureCHROMIUMMethod(const FeatureInfo* feature_info,
   if (source_target == GL_TEXTURE_2D &&
       (dest_target == GL_TEXTURE_2D || dest_target == GL_TEXTURE_CUBE_MAP) &&
       source_format_color_renderable && copy_tex_image_format_valid &&
-      source_level == 0 && !flip_y && !premultiply_alpha_change && !dither) {
+      source_level == 0 && !flip_y && !premultiply_alpha_change) {
     auto source_texture_type = GLES2Util::GetGLReadPixelsImplementationType(
         source_internal_format, source_target);
     auto dest_texture_type = GLES2Util::GetGLReadPixelsImplementationType(
@@ -1186,25 +1186,6 @@ GLenum GetTextureBindingQuery(GLenum texture_type) {
   }
 }
 
-gfx::OverlayTransform GetGFXOverlayTransform(GLenum plane_transform) {
-  switch (plane_transform) {
-    case GL_OVERLAY_TRANSFORM_NONE_CHROMIUM:
-      return gfx::OVERLAY_TRANSFORM_NONE;
-    case GL_OVERLAY_TRANSFORM_FLIP_HORIZONTAL_CHROMIUM:
-      return gfx::OVERLAY_TRANSFORM_FLIP_HORIZONTAL;
-    case GL_OVERLAY_TRANSFORM_FLIP_VERTICAL_CHROMIUM:
-      return gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL;
-    case GL_OVERLAY_TRANSFORM_ROTATE_90_CHROMIUM:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_90;
-    case GL_OVERLAY_TRANSFORM_ROTATE_180_CHROMIUM:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_180;
-    case GL_OVERLAY_TRANSFORM_ROTATE_270_CHROMIUM:
-      return gfx::OVERLAY_TRANSFORM_ROTATE_270;
-    default:
-      return gfx::OVERLAY_TRANSFORM_INVALID;
-  }
-}
-
 bool GetGFXBufferFormat(GLenum internal_format, gfx::BufferFormat* out_format) {
   switch (internal_format) {
     case GL_RGBA8_OES:
@@ -1218,16 +1199,6 @@ bool GetGFXBufferFormat(GLenum internal_format, gfx::BufferFormat* out_format) {
       return true;
     case GL_R8_EXT:
       *out_format = gfx::BufferFormat::R_8;
-      return true;
-    default:
-      return false;
-  }
-}
-
-bool GetGFXBufferUsage(GLenum buffer_usage, gfx::BufferUsage* out_usage) {
-  switch (buffer_usage) {
-    case GL_SCANOUT_CHROMIUM:
-      *out_usage = gfx::BufferUsage::SCANOUT;
       return true;
     default:
       return false;
@@ -1351,6 +1322,17 @@ bool IsCompressedTextureFormat(GLenum internal_format) {
       break;
   }
   return false;
+}
+
+Texture* CreateGLES2TextureWithLightRef(GLuint service_id, GLenum target) {
+  Texture* texture = new Texture(service_id);
+  texture->SetLightweightRef();
+  texture->SetTarget(target, 1 /*max_levels=*/);
+  texture->set_min_filter(GL_LINEAR);
+  texture->set_mag_filter(GL_LINEAR);
+  texture->set_wrap_t(GL_CLAMP_TO_EDGE);
+  texture->set_wrap_s(GL_CLAMP_TO_EDGE);
+  return texture;
 }
 
 }  // namespace gles2

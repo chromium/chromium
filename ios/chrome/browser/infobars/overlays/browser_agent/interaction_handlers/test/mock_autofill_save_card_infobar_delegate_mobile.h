@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
-#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class GURL;
@@ -30,7 +29,7 @@ class MockAutofillSaveCardInfoBarDelegateMobile
           upload_save_card_prompt_callback,
       autofill::AutofillClient::LocalSaveCardPromptCallback
           local_save_card_prompt_callback,
-      PrefService* pref_service);
+      const AccountInfo& displayed_target_account);
   ~MockAutofillSaveCardInfoBarDelegateMobile() override;
 
   MOCK_METHOD3(UpdateAndAccept,
@@ -49,11 +48,9 @@ class MockAutofillSaveCardInfoBarDelegateMobileFactory {
   static std::unique_ptr<MockAutofillSaveCardInfoBarDelegateMobile>
   CreateMockAutofillSaveCardInfoBarDelegateMobileFactory(
       bool upload,
-      PrefService* service,
       autofill::CreditCard card);
 
  private:
-  std::unique_ptr<PrefService> prefs_;
   autofill::CreditCard credit_card_;
 };
 

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@
 #include "media/capture/content/animated_content_sampler.h"
 #include "media/capture/content/capture_resolution_chooser.h"
 #include "media/capture/content/smooth_event_sampler.h"
-#include "media/capture/video_frame_feedback.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace media {
@@ -27,7 +27,17 @@ class CAPTURE_EXPORT VideoCaptureOracle {
  public:
   enum Event {
     kCompositorUpdate,
+
+    // A "refresh request" means that we want to update to keep things
+    // relatively fresh and in sync, and thus should capture a frame as long as
+    // it's not happening too frequently (in practice this ends up being 1-5
+    // frames per second).
     kRefreshRequest,
+
+    // A "refresh demand" means that we know we have new information, such as a
+    // mouse cursor location change, and thus generating a frame is higher
+    // priority than a "refresh request."
+    kRefreshDemand,
     kNumEvents,
   };
 
@@ -106,7 +116,7 @@ class CAPTURE_EXPORT VideoCaptureOracle {
   // This method should only be called for frames where CompleteCapture()
   // returned true.
   void RecordConsumerFeedback(int frame_number,
-                              const media::VideoFrameFeedback& feedback);
+                              const media::VideoCaptureFeedback& feedback);
 
   // Sets the minimum amount of time that must pass between changes to the
   // capture size due to autothrottling. This throttles the rate of size
@@ -139,11 +149,11 @@ class CAPTURE_EXPORT VideoCaptureOracle {
   // Clients are expected to set a better minimum capture period after
   // VideoCaptureOracle is constructed.
   static constexpr base::TimeDelta kDefaultMinCapturePeriod =
-      base::TimeDelta::FromMicroseconds(1000000 / 5);  // 5 FPS
+      base::Milliseconds(200);  // 5 FPS
 
   // Default minimum size change period if SetMinSizeChangePeriod is not called.
   static constexpr base::TimeDelta kDefaultMinSizeChangePeriod =
-      base::TimeDelta::FromSeconds(3);
+      base::Seconds(3);
 
   void SetLogCallback(
       base::RepeatingCallback<void(const std::string&)> emit_log_cb);

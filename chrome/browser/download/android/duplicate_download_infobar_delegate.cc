@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,9 +14,9 @@ std::string DuplicateDownloadInfoBarDelegate::GetPageURL() const {
   return std::string();
 }
 
-base::Optional<Profile::OTRProfileID>
+absl::optional<Profile::OTRProfileID>
 DuplicateDownloadInfoBarDelegate::GetOTRProfileID() const {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool DuplicateDownloadInfoBarDelegate::DuplicateRequestExists() const {

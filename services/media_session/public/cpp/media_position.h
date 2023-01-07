@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace IPC {
 template <class P>
@@ -44,10 +44,11 @@ struct COMPONENT_EXPORT(MEDIA_SESSION_BASE_CPP) MediaPosition {
   MediaPosition();
   MediaPosition(double playback_rate,
                 base::TimeDelta duration,
-                base::TimeDelta position);
+                base::TimeDelta position,
+                bool end_of_media);
   ~MediaPosition();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Creates a Java MediaPosition instance and returns the JNI ref.
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject(
       JNIEnv* env) const;
@@ -64,6 +65,11 @@ struct COMPONENT_EXPORT(MEDIA_SESSION_BASE_CPP) MediaPosition {
 
   // Return the time the position state was last updated.
   base::TimeTicks last_updated_time() const;
+
+  // Return whether playback has reached the end of media. This can be true
+  // even when GetPosition() < duration(), because the duration is not exact in
+  // general.
+  bool end_of_media() const { return end_of_media_; }
 
   // Return the updated position of the media, assuming current time is
   // |time|.
@@ -87,6 +93,8 @@ struct COMPONENT_EXPORT(MEDIA_SESSION_BASE_CPP) MediaPosition {
                            TestPositionUpdatedFasterPlayback);
   FRIEND_TEST_ALL_PREFIXES(MediaPositionTest,
                            TestPositionUpdatedSlowerPlayback);
+  FRIEND_TEST_ALL_PREFIXES(MediaPositionTest,
+                           TestNotEquals_DifferentEndOfMedia);
   FRIEND_TEST_ALL_PREFIXES(MediaPositionTest, TestEquals_AllSame);
   FRIEND_TEST_ALL_PREFIXES(MediaPositionTest, TestEquals_SameButDifferentTime);
   FRIEND_TEST_ALL_PREFIXES(MediaPositionTest, TestNotEquals_DifferentDuration);
@@ -104,6 +112,9 @@ struct COMPONENT_EXPORT(MEDIA_SESSION_BASE_CPP) MediaPosition {
 
   // Last time |position_| was updated.
   base::TimeTicks last_updated_time_;
+
+  // Whether playback has reached the end of media.
+  bool end_of_media_ = false;
 };
 
 }  // namespace media_session

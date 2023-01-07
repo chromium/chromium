@@ -1,0 +1,20 @@
+[package]
+name = "sample_package"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+members = [ "foo" ]
+
+[dependencies]
+foo = { path = "foo" }
+num-traits = "0.2"
+once_cell = "1.12"
+serde = { version = "1.0", features = ["derive"] }
+termcolor = "1.1"
+
+[build-dependencies]
+cc = "1.0"
+
+[dev-dependencies]
+more-asserts = "0.3"

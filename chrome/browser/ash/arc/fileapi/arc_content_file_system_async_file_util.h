@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,13 +14,19 @@ namespace arc {
 class ArcContentFileSystemAsyncFileUtil : public storage::AsyncFileUtil {
  public:
   ArcContentFileSystemAsyncFileUtil();
+
+  ArcContentFileSystemAsyncFileUtil(const ArcContentFileSystemAsyncFileUtil&) =
+      delete;
+  ArcContentFileSystemAsyncFileUtil& operator=(
+      const ArcContentFileSystemAsyncFileUtil&) = delete;
+
   ~ArcContentFileSystemAsyncFileUtil() override;
 
   // storage::AsyncFileUtil overrides.
   void CreateOrOpen(
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& url,
-      int file_flags,
+      uint32_t file_flags,
       CreateOrOpenCallback callback) override;
   void EnsureFileExists(
       std::unique_ptr<storage::FileSystemOperationContext> context,
@@ -53,14 +59,14 @@ class ArcContentFileSystemAsyncFileUtil : public storage::AsyncFileUtil {
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& src_url,
       const storage::FileSystemURL& dest_url,
-      CopyOrMoveOption option,
+      CopyOrMoveOptionSet options,
       CopyFileProgressCallback progress_callback,
       StatusCallback callback) override;
   void MoveFileLocal(
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& src_url,
       const storage::FileSystemURL& dest_url,
-      CopyOrMoveOption option,
+      CopyOrMoveOptionSet options,
       StatusCallback callback) override;
   void CopyInForeignFile(
       std::unique_ptr<storage::FileSystemOperationContext> context,
@@ -82,9 +88,6 @@ class ArcContentFileSystemAsyncFileUtil : public storage::AsyncFileUtil {
       std::unique_ptr<storage::FileSystemOperationContext> context,
       const storage::FileSystemURL& url,
       CreateSnapshotFileCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcContentFileSystemAsyncFileUtil);
 };
 
 }  // namespace arc

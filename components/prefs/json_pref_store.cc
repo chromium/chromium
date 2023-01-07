@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -17,14 +18,15 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram.h"
+#include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/task_runner_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
@@ -148,11 +150,12 @@ const char* GetHistogramSuffix(const base::FilePath& path) {
 JsonPrefStore::JsonPrefStore(
     const base::FilePath& pref_filename,
     std::unique_ptr<PrefFilter> pref_filter,
-    scoped_refptr<base::SequencedTaskRunner> file_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> file_task_runner,
+    bool read_only)
     : path_(pref_filename),
       file_task_runner_(std::move(file_task_runner)),
       prefs_(new base::DictionaryValue()),
-      read_only_(false),
+      read_only_(read_only),
       writer_(pref_filename,
               file_task_runner_,
               GetHistogramSuffix(pref_filename)),
@@ -165,12 +168,12 @@ JsonPrefStore::JsonPrefStore(
   DCHECK(!path_.empty());
 }
 
-bool JsonPrefStore::GetValue(const std::string& key,
+bool JsonPrefStore::GetValue(base::StringPiece key,
                              const base::Value** result) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::Value* tmp = nullptr;
-  if (!prefs_->Get(key, &tmp))
+  base::Value* tmp = prefs_->FindPath(key);
+  if (!tmp)
     return false;
 
   if (result)
@@ -178,8 +181,8 @@ bool JsonPrefStore::GetValue(const std::string& key,
   return true;
 }
 
-std::unique_ptr<base::DictionaryValue> JsonPrefStore::GetValues() const {
-  return prefs_->CreateDeepCopy();
+base::Value::Dict JsonPrefStore::GetValues() const {
+  return prefs_->GetDict().Clone();
 }
 
 void JsonPrefStore::AddObserver(PrefStore::Observer* observer) {
@@ -209,33 +212,35 @@ bool JsonPrefStore::GetMutableValue(const std::string& key,
                                     base::Value** result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return prefs_->Get(key, result);
+  base::Value* tmp = prefs_->FindPath(key);
+  if (!tmp)
+    return false;
+
+  if (result)
+    *result = tmp;
+  return true;
 }
 
 void JsonPrefStore::SetValue(const std::string& key,
-                             std::unique_ptr<base::Value> value,
+                             base::Value value,
                              uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(value);
-  base::Value* old_value = nullptr;
-  prefs_->Get(key, &old_value);
-  if (!old_value || !value->Equals(old_value)) {
-    prefs_->Set(key, std::move(value));
+  base::Value* old_value = prefs_->FindPath(key);
+  if (!old_value || value != *old_value) {
+    prefs_->SetPath(key, std::move(value));
     ReportValueChanged(key, flags);
   }
 }
 
 void JsonPrefStore::SetValueSilently(const std::string& key,
-                                     std::unique_ptr<base::Value> value,
+                                     base::Value value,
                                      uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(value);
-  base::Value* old_value = nullptr;
-  prefs_->Get(key, &old_value);
-  if (!old_value || !value->Equals(old_value)) {
-    prefs_->Set(key, std::move(value));
+  base::Value* old_value = prefs_->FindPath(key);
+  if (!old_value || value != *old_value) {
+    prefs_->SetPath(key, std::move(value));
     ScheduleWrite(flags);
   }
 }
@@ -243,7 +248,7 @@ void JsonPrefStore::SetValueSilently(const std::string& key,
 void JsonPrefStore::RemoveValue(const std::string& key, uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (prefs_->RemovePath(key, nullptr))
+  if (prefs_->RemovePath(key))
     ReportValueChanged(key, flags);
 }
 
@@ -251,7 +256,7 @@ void JsonPrefStore::RemoveValueSilently(const std::string& key,
                                         uint32_t flags) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  prefs_->RemovePath(key, nullptr);
+  prefs_->RemovePath(key);
   ScheduleWrite(flags);
 }
 

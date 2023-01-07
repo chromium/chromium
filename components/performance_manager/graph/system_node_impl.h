@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,10 @@
 
 #include <cstdint>
 #include <memory>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process_handle.h"
-#include "base/time/time.h"
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/properties.h"
 #include "components/performance_manager/public/graph/system_node.h"
@@ -27,7 +24,14 @@ class SystemNodeImpl
   static constexpr NodeTypeEnum Type() { return NodeTypeEnum::kSystem; }
 
   SystemNodeImpl();
+
+  SystemNodeImpl(const SystemNodeImpl&) = delete;
+  SystemNodeImpl& operator=(const SystemNodeImpl&) = delete;
+
   ~SystemNodeImpl() override;
+
+  // Implements NodeBase:
+  void RemoveNodeAttachedData() override;
 
   // This should be called after refreshing the memory usage data of the process
   // nodes.
@@ -50,8 +54,6 @@ class SystemNodeImpl
 
   base::WeakPtrFactory<SystemNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemNodeImpl);
 };
 
 }  // namespace performance_manager

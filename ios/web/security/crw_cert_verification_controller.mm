@@ -1,26 +1,25 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/web/security/crw_cert_verification_controller.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/bind.h"
-#include "base/check_op.h"
+#import "base/bind.h"
+#import "base/check_op.h"
 #import "base/ios/block_types.h"
-#include "base/memory/ref_counted.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/task/post_task.h"
-#include "base/task/thread_pool.h"
-#include "ios/web/public/browser_state.h"
-#include "ios/web/public/security/certificate_policy_cache.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "base/memory/ref_counted.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/task/thread_pool.h"
+#import "ios/web/public/browser_state.h"
+#import "ios/web/public/security/certificate_policy_cache.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web/security/wk_web_view_security_util.h"
-#include "net/cert/cert_verify_proc_ios.h"
-#include "net/cert/x509_util.h"
-#include "net/cert/x509_util_ios.h"
+#import "net/cert/cert_verify_proc_ios.h"
+#import "net/cert/x509_util.h"
+#import "net/cert/x509_util_apple.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -35,14 +34,14 @@ using web::WebThread;
   scoped_refptr<web::CertificatePolicyCache> _certPolicyCache;
 }
 
-// Returns cert status for the given |trust|.
+// Returns cert status for the given `trust`.
 - (net::CertStatus)certStatusFromTrustResult:(SecTrustResultType)trustResult
                                   trustError:(base::ScopedCFTypeRef<CFErrorRef>)
                                                  trustError;
 
-// Decides the policy for the given |trust| which was rejected by iOS and the
-// given |host| and calls |handler| on completion. Must be called on UI thread.
-// |handler| can not be null and will be called on UI thread.
+// Decides the policy for the given `trust` which was rejected by iOS and the
+// given `host` and calls `handler` on completion. Must be called on UI thread.
+// `handler` can not be null and will be called on UI thread.
 - (void)
     decideLoadPolicyForRejectedTrustResult:(SecTrustResultType)trustResult
                                 trustError:(base::ScopedCFTypeRef<CFErrorRef>)
@@ -52,7 +51,7 @@ using web::WebThread;
                                       host:(NSString*)host
                          completionHandler:(web::PolicyDecisionHandler)handler;
 
-// Verifies the given |trust| using SecTrustRef API. |completionHandler| cannot
+// Verifies the given `trust` using SecTrustRef API. `completionHandler` cannot
 // be null and will be called on UI thread or never be called if the worker task
 // can't start or complete. Must be called on UI thread.
 - (void)verifyTrust:(base::ScopedCFTypeRef<SecTrustRef>)trust
@@ -60,7 +59,7 @@ using web::WebThread;
         (void (^)(SecTrustResultType,
                   base::ScopedCFTypeRef<CFErrorRef>))completionHandler;
 
-// Returns cert accept policy for the given SecTrust result. |trustResult| must
+// Returns cert accept policy for the given SecTrust result. `trustResult` must
 // not be for a valid cert. Must be called on IO thread.
 - (web::CertAcceptPolicy)
     loadPolicyForRejectedTrustResult:(SecTrustResultType)trustResult
@@ -132,19 +131,20 @@ using web::WebThread;
   DCHECK_CURRENTLY_ON(WebThread::UI);
   // Store user decisions with the leaf cert, ignoring any intermediates.
   // This is because WKWebView returns the verified certificate chain in
-  // |webView:didReceiveAuthenticationChallenge:completionHandler:|,
+  // `webView:didReceiveAuthenticationChallenge:completionHandler:`,
   // but the server-supplied chain in
-  // |webView:didFailProvisionalNavigation:withError:|.
+  // `webView:didFailProvisionalNavigation:withError:`.
   if (!cert->intermediate_buffers().empty()) {
     cert = net::X509Certificate::CreateFromBuffer(
         bssl::UpRef(cert->cert_buffer()), {});
     DCHECK(cert);
   }
   DCHECK(cert->intermediate_buffers().empty());
-  base::PostTask(FROM_HERE, {WebThread::IO}, base::BindOnce(^{
-                   _certPolicyCache->AllowCertForHost(
-                       cert.get(), base::SysNSStringToUTF8(host), status);
-                 }));
+  web::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        self->_certPolicyCache->AllowCertForHost(
+            cert.get(), base::SysNSStringToUTF8(host), status);
+      }));
 }
 
 #pragma mark - Private
@@ -180,10 +180,10 @@ using web::WebThread;
                          completionHandler:(web::PolicyDecisionHandler)handler {
   DCHECK_CURRENTLY_ON(WebThread::UI);
   DCHECK(handler);
-  TaskTraits traits{WebThread::IO, TaskShutdownBehavior::BLOCK_SHUTDOWN};
-  base::PostTask(FROM_HERE, traits, base::BindOnce(^{
-                   // |loadPolicyForRejectedTrustResult:certStatus:serverTrust
-                   // :host:| can only be called on IO thread.
+  web::GetIOThreadTaskRunner({})
+      ->PostTask(FROM_HERE, base::BindOnce(^{
+                   // `loadPolicyForRejectedTrustResult:certStatus:serverTrust
+                   // :host:` can only be called on IO thread.
                    net::CertStatus certStatus =
                        [self certStatusFromTrustResult:trustResult
                                             trustError:trustError];

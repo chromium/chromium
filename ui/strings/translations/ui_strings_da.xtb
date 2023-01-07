@@ -6,24 +6,15 @@
 <translation id="1127811143501539442">{DAYS,plural, =1{for 1 dag siden}one{for # dag siden}other{for # dage siden}}</translation>
 <translation id="1156623771253174079">{SECONDS,plural, =1{For 1 minut siden}one{For # minut siden}other{For # minutter siden}}</translation>
 <translation id="1169783199079129864">{MINUTES,plural, =1{1 min.}one{# min.}other{# min.}}</translation>
-<translation id="1181037720776840403">Fjern</translation>
-<translation id="1201402288615127009">Næste</translation>
-<translation id="1218444235442067213"><ph name="APP_NAME" />, Play Butik-app</translation>
 <translation id="1243314992276662751">Upload</translation>
 <translation id="1266864766717917324">Det var ikke muligt at dele <ph name="CONTENT_TYPE" /></translation>
 <translation id="1269641567813814718">Win</translation>
-<translation id="1290982764014248209">Flyt <ph name="DRAGGED_APP" /> til mappen <ph name="FOLDER_NAME" />.</translation>
 <translation id="1291104554099683393">Prøv at dele kortere stykker tekst.</translation>
 <translation id="1293699935367580298">Esc</translation>
-<translation id="1306549533752902673">ANBEFALEDE APPS</translation>
 <translation id="1368832886055348810">Venstre til højre</translation>
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1398853756734560583">Maksimér</translation>
-<translation id="1414271762428216854"><ph name="APP_NAME" />, installeret app</translation>
 <translation id="1450753235335490080">Delingen af <ph name="CONTENT_TYPE" /> mislykkedes</translation>
-<translation id="1487931858675166540"><ph name="FIRST_ITEM_TITLE" /> blev udskiftet med <ph name="SECOND_ITEM_TITLE" /></translation>
-<translation id="1498028757988366001">Du har tidligere søgt efter dette. Hvis du sletter "<ph name="QUERY" />" fra din historik, fjernes den permanent på fra din konto på alle dine enheder.</translation>
-<translation id="1510238584712386396">Appliste</translation>
 <translation id="1591184457164800433">{MINUTES,plural, =1{1 minut og }one{# minutter og }other{# minutter og }}</translation>
 <translation id="1643823602425662293">Notifikation</translation>
 <translation id="169515659049020177">Shift</translation>
@@ -34,8 +25,6 @@
 <translation id="1803208670097017349">{MONTHS,plural, =1{1 måned}one{# måned}other{# måneder}}</translation>
 <translation id="1809410197924942083"><ph name="QUANTITY" /> MB/sek.</translation>
 <translation id="1830179671306812954">{HOURS,plural, =1{1 time og }one{# timer og }other{# timer og }}</translation>
-<translation id="1830308660060964064"><ph name="ITEM_TITLE" /> blev frigjort</translation>
-<translation id="1842960171412779397">vælg</translation>
 <translation id="1859234291848436338">Skriveretning</translation>
 <translation id="1860796786778352021">Luk notifikation</translation>
 <translation id="186476001994626254">Web Smart Paste-indhold</translation>
@@ -51,39 +40,35 @@
 <translation id="2168039046890040389">Side op</translation>
 <translation id="2190355936436201913">(tom)</translation>
 <translation id="2192232475740621500">Brug lav tæthed</translation>
-<translation id="219905428774326614">Starter. Alle apps</translation>
 <translation id="2267918077332197517">Bloker alle notifikationer fra dette website</translation>
+<translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Tryk på de punkter på skærmen, der kan trykkes på.</translation>
 <translation id="2295140143284145483">Undersøgelse</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> TB/sek.</translation>
 <translation id="2353636109065292463">Tjekker din internetforbindelse</translation>
 <translation id="2388990488038464401">Vil du ringe til dette nummer fra din telefon?</translation>
+<translation id="2435457462613246316">Vis adgangskode</translation>
 <translation id="24452542372838207">Udvid notifikation</translation>
 <translation id="2445449901874883781">Brug høj tæthed</translation>
 <translation id="2482878487686419369">Notifikationer</translation>
 <translation id="2497284189126895209">Alle filer</translation>
+<translation id="2498950423397131220">Frigør</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2522350507219695259">Kalibreringen er fuldført</translation>
 <translation id="252373100621549798">Ukendt skærm</translation>
 <translation id="2545651323591713692">Udsæt</translation>
-<translation id="2570734079541893434">Administrer indstillinger</translation>
 <translation id="2573731672208488250">{HOURS,plural, =1{om 1 t.}one{om # t.}other{om # t.}}</translation>
 <translation id="2583543531130364912">Kalibrer din touchskærm</translation>
 <translation id="2586657967955657006">Udklipsholder</translation>
 <translation id="2666092431469916601">Top</translation>
 <translation id="2701330563083355633">Delt fra <ph name="DEVICE_NAME" /></translation>
 <translation id="271033894570825754">Nyt</translation>
-<translation id="2743387203779672305">Kopiér til udklipsholderen</translation>
-<translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
-<translation id="2803313416453193357">Åbn mappe</translation>
 <translation id="2824719307700604149">{YEARS,plural, =1{For 1 år siden}one{For # år siden}other{For # år siden}}</translation>
 <translation id="2878511608894704031">Slet alt</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{om 1 dag}one{om # dag}other{om # dage}}</translation>
-<translation id="2931838996092594335">klik</translation>
-<translation id="2981684127883932071">Viser forslag</translation>
+<translation id="2922712708897119705">Kolonnen <ph name="COLUMN_NAME" /> sorteres i faldende rækkefølge.</translation>
 <translation id="3036649622769666520">Åbn filer</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
-<translation id="3068711042108640621">Hylden er til venstre</translation>
 <translation id="3087734570205094154">Bund</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3157931365184549694">Gendan</translation>
@@ -95,8 +80,6 @@
 <translation id="335581015389089642">Tale</translation>
 <translation id="3389286852084373014">Teksten er for lang</translation>
 <translation id="3406306243914553062">HTML-indhold</translation>
-<translation id="348799646910989694">Hylden skjules automatisk</translation>
-<translation id="3554637740840164787"><ph name="ITEM_TITLE" /> blev fastgjort</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 dag tilbage}one{# dage tilbage}other{# dage tilbage}}</translation>
 <translation id="3600969208114796418"><ph name="SAVEAS_EXTENSION_TYPE" />-fil</translation>
 <translation id="3608915363409716668"><ph name="MAXIMUM_VALUE" />+</translation>
@@ -108,50 +91,42 @@
 <translation id="3740362395218339114"><ph name="QUANTITY" /> GB/sek.</translation>
 <translation id="3757388668994797779"><ph name="QUANTITY" /> GB</translation>
 <translation id="3804247818991980532"><ph name="TYPE_1" />, <ph name="TYPE_2" />.</translation>
-<translation id="3842239759367498783">Fortsæt med at læse via din mobilenhed <ph name="TITLE" /></translation>
-<translation id="385051799172605136">Tilbage</translation>
 <translation id="3889424535448813030">Højrepil</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3909791450649380159">Kli&amp;p</translation>
+<translation id="3924145049010392604">Meta</translation>
 <translation id="3990502903496589789">Højre kant</translation>
+<translation id="3994749195054421561">Kolonnen <ph name="COLUMN_NAME" /> sorteres i stigende rækkefølge.</translation>
+<translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 ulæst notifikation}one{# ulæst notifikation}other{# ulæste notifikationer}}</translation>
-<translation id="4202807286478387388">hop</translation>
-<translation id="4250229828105606438">Screenshot</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{For 1 måned siden}one{For # måned siden}other{For # måneder siden}}</translation>
 <translation id="4289300219472526559">Start indtaling</translation>
-<translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> blev flyttet til mappen <ph name="FOLDER_NAME" />.</translation>
+<translation id="4289540628985791613">Oversigt</translation>
 <translation id="4306392492252714209">Fjern fra udklipsholder.</translation>
-<translation id="4316910396681052118">ALLE APPS</translation>
+<translation id="4311195029067684288">Fuld</translation>
 <translation id="4491109536499578614">Billede</translation>
+<translation id="4565377596337484307">Skjul adgangskode</translation>
 <translation id="4588090240171750605">Scroll til højre</translation>
-<translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, antal stjerner <ph name="RATING_SCORE" /></translation>
-<translation id="4648249871170053485"><ph name="APP_NAME" />, anbefalet app</translation>
-<translation id="4690510401873698237">Hylden er i bunden</translation>
 <translation id="4724120544754982507">Notifikationscenter, <ph name="UNREAD_NOTIFICATION_COUNT" /> ulæste notifikationer</translation>
-<translation id="4730374152663651037">OFTE ANVENDT</translation>
+<translation id="4746179598275229723">Udvidelsen er frigjort</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{Der er 1 måned tilbage}one{Der er # måned tilbage}other{Der er # måneder tilbage}}</translation>
 <translation id="4888938634149558681">Ring op</translation>
+<translation id="4937657825850660613">Halver</translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 sekund}one{# sekunder}other{# sekunder}}</translation>
 <translation id="4971687151119236543">Medie: Forrige nummer</translation>
+<translation id="4971925105143343452">Delvis</translation>
 <translation id="5046499563572181734">Tryk her</translation>
 <translation id="5076340679995252485">&amp;Indsæt</translation>
-<translation id="5198715732953550718">En ny mappe blev oprettet ved at slå <ph name="MOVED_APP_NAME" /> og <ph name="IN_PLACE_APP" /> sammen.</translation>
+<translation id="5123162024343028706">Vis som svævende</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
-<translation id="5266161281976477809">Trekant til at vise eller skjule indhold</translation>
 <translation id="5278860589123563674">Afsendelsen mislykkedes</translation>
-<translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> kræver din opmærksomhed.</translation>
 <translation id="528468243742722775">Afslut</translation>
 <translation id="5329858601952122676">&amp;Slet</translation>
-<translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> oven på <ph name="IN_PLACE_APP" />, slip for at oprette mappe.</translation>
 <translation id="5463830097259460683">Emojis og symboler</translation>
-<translation id="5476505524087279545">fjern markering</translation>
-<translation id="547979256943495781">Hylden er til højre</translation>
 <translation id="5528053674512161860">Siden kunne ikke indlæses, da udviklerbrugerflademodulet (dev_ui) ikke er installeret</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" />-system</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5613020302032141669">Venstrepil</translation>
-<translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> kræver din opmærksomhed.</translation>
-<translation id="5675363643668471212">Hyldeelement</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min.}one{# min.}other{# min.}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{Aktiv i dag}=1{Aktiv for 1 dag siden}one{Aktiv for # dag siden}other{Aktiv for # dage siden}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 dag og }one{# dage og }other{# dage og }}</translation>
@@ -162,39 +137,28 @@
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 sekund tilbage}one{# sekunder tilbage}other{# sekunder tilbage}}</translation>
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5943826764092288734">{HOURS,plural, =1{1 time}one{# timer}other{# timer}}</translation>
-<translation id="6012623610530968780">Side <ph name="SELECTED_PAGE" /> ud af <ph name="TOTAL_PAGE_NUM" /></translation>
-<translation id="6022924867608035986">Ryd teksten i søgefeltet</translation>
+<translation id="6007284015834422026">Udvidelsen er fastgjort</translation>
 <translation id="6040143037577758943">Luk</translation>
-<translation id="6119846243427417423">aktivér</translation>
+<translation id="6117103120090651229">Midterknap</translation>
 <translation id="6129953537138746214">Mellemrum</translation>
-<translation id="6134259848159370930">Søg på din enhed, i dine apps, i indstillingerne og på nettet.</translation>
 <translation id="6135826906199951471">Del</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> B/sek.</translation>
-<translation id="6156262341071374681">Vis alle apps</translation>
-<translation id="6165508094623778733">Flere oplysninger</translation>
-<translation id="6166852626429024716">Søg på din enhed, i dine apps, i indstillingerne, på nettet...</translation>
+<translation id="6237461503717005873"><ph name="ROW_NAME" /> er valgt.</translation>
 <translation id="6264365405983206840">Vælg &amp;alle</translation>
-<translation id="6351032674660237738">APPFORSLAG</translation>
 <translation id="6364916375976753737">Scroll Left</translation>
 <translation id="6394627529324717982">Komma</translation>
 <translation id="6397363302884558537">Stop indtaling</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{for 1 sek. siden}one{for # sek. siden}other{for # sek. siden}}</translation>
-<translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6430678249303439055">Bloker alle notifikationer fra denne app</translation>
 <translation id="6483402905448010557">{SECONDS,plural, =1{For 1 sekund siden}one{For # sekund siden}other{For # sekunder siden}}</translation>
 <translation id="6503257047630241175">RTF-indhold</translation>
 <translation id="6539092367496845964">Noget gik galt. Prøv igen senere.</translation>
 <translation id="654149438358937226">Bloker alle notifikationer</translation>
-<translation id="6567071839949112727">klik på overordnet element</translation>
-<translation id="6578407462441924264">Uden navn</translation>
 <translation id="6612467943526193239">Tryk på Esc for at afslutte kalibreringen.</translation>
 <translation id="6620110761915583480">Gem fil</translation>
 <translation id="6699343763173986273">Medie: Næste nummer</translation>
-<translation id="6710213216561001401">Forrige</translation>
-<translation id="6786750046913594791">Luk mappe</translation>
 <translation id="6808150112686056157">Medie: Stop</translation>
 <translation id="6845383723252244143">Vælg mappe</translation>
-<translation id="6845533974506654842">tryk</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 time tilbage}one{# timer tilbage}other{# timer tilbage}}</translation>
 <translation id="688711909580084195">Unavngivet webside</translation>
 <translation id="6902419395050653510">HTML-indhold.</translation>
@@ -204,25 +168,21 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6974053822202609517">Højre til venstre</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7130207228079676353">HØJST SANDSYNLIGT</translation>
 <translation id="7170202025028120564">Din apps skærmindstillinger træder i kraft efter den næste genstart.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min. tilbage}one{# min. tilbage}other{# min. tilbage}}</translation>
-<translation id="7319740667687257810">Appliste, delvis visning</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{for 1 min. siden}one{for # min. siden}other{for # min. siden}}</translation>
 <translation id="7389409599945284130">– <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{1 minut tilbage}one{# minutter tilbage}other{# minutter tilbage}}</translation>
-<translation id="7430878839542012341">Vil du slette denne søgning fra historikken?</translation>
+<translation id="7437971918971306061">Kolonnen <ph name="COLUMN_NAME" /> er ikke sorteret.</translation>
 <translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Emoji</translation>
 <translation id="7620655452534002301">Fjernet.</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7781829728241885113">I går</translation>
 <translation id="7814458197256864873">&amp;Kopier</translation>
-<translation id="7848989271541991537">Flyttet til side <ph name="PAGE_NUMBER" />, række <ph name="ROW_NUMBER" />, kolonne <ph name="COLUMN_NUMBER" />.</translation>
 <translation id="7879499977785298635">Bloker ikke</translation>
 <translation id="7907591526440419938">Åbn fil</translation>
-<translation id="7952747673138230804">Chrome OS viser forslag til nyt indhold, du kan tjekke ud. Der sendes kun statistik til forbedring af forslag, hvis du har valgt at dele dine brugsdata. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7969046989155602842">Kommando</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Der er mere end 1 ulæst notifikation}one{Der er mere end # ulæst notifikation}other{Der er mere end # ulæste notifikationer}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{om 1 min}one{om # min}other{om # min}}</translation>
@@ -231,45 +191,32 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{for 1 time siden}one{for # time siden}other{for # timer siden}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 sek. tilbage}one{# sek. tilbage}other{# sek. tilbage}}</translation>
 <translation id="8134065097954893699">Genindlæs siden</translation>
-<translation id="8152264887680882389"><ph name="TEXT" />, autofuldfør</translation>
 <translation id="815598010540052116">Scroll Down</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Side ned</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8245914219290430011">Tab</translation>
-<translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
 <translation id="8259556432390118667">Hex-farveværdi</translation>
 <translation id="8328145009876646418">Venstre kant</translation>
 <translation id="8331626408530291785">Scroll Up</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 år}one{# år}other{# år}}</translation>
-<translation id="838869780401515933">markér</translation>
 <translation id="8393700583063109961">Send en besked</translation>
 <translation id="8394908167088220973">Medie: Afspil/Pause</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 år}one{# år}other{# år}}</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> Fil (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
-<translation id="8649597172973390955">Hylden vises altid</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> kB/sek.</translation>
-<translation id="8685326675965865247">Søg på din enhed, i dine apps, i indstillingerne og på nettet. Brug piletasterne til at navigere i dine apps.</translation>
 <translation id="8725488761726303204">+<ph name="NUMBER" /> mere</translation>
 <translation id="8730621377337864115">Udfør</translation>
 <translation id="8772073294905169192">{HOURS,plural, =1{1 t}one{# t}other{# t}}</translation>
 <translation id="8798099450830957504">Standard</translation>
-<translation id="8806053966018712535">Mappen <ph name="FOLDER_NAME" /></translation>
-<translation id="883911313571074303">Annoter billede</translation>
 <translation id="8841375032071747811">Knappen Tilbage</translation>
 <translation id="8867568208303837180">Sender...</translation>
 <translation id="8876215549894133151">Format:</translation>
 <translation id="8901569739625249689"><ph name="QUANTITY" /> kB</translation>
-<translation id="8926951137623668982">Hylden er altid skjult</translation>
 <translation id="8996630695507351249">Sørg for, at <ph name="TARGET_DEVICE_NAME" /> har internetforbindelse.</translation>
-<translation id="9002566407876343676">åbn</translation>
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 sek.}one{# sek.}other{# sek.}}</translation>
 <translation id="9059834730836941392">Skjul notifikation</translation>
-<translation id="9150735707954472829">Fane</translation>
-<translation id="9161053988251441839">FORESLÅEDE APPS</translation>
 <translation id="9170848237812810038">&amp;Fortryd</translation>
-<translation id="9178475906033259337">Viser ét resultat for <ph name="QUERY" /></translation>
 <translation id="932327136139879170">Start</translation>
 <translation id="944069440740578670">Ulæste notifikationer</translation>
-<translation id="974545358917229949">Viser <ph name="RESULT_COUNT" /> resultater for <ph name="QUERY" /></translation>
 </translationbundle>

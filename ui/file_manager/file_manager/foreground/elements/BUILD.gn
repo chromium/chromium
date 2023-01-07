@@ -1,56 +1,45 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
-import("//tools/polymer/polymer.gni")
-import("//ui/file_manager/base/gn/js_test_gen_html.gni")
-import("//ui/webui/resources/tools/js_modulizer.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/file_manager/base/gn/js_test_type_check.gni")
 
 visibility = [ "//ui/file_manager/file_manager/foreground/*" ]
 
 group("elements") {
   visibility += [ "//ui/file_manager/*" ]
-  public_deps = [
-    "//ui/file_manager/file_manager/foreground/elements:files_format_dialog_module",
-    "//ui/file_manager/file_manager/foreground/elements:files_icon_button_module",
-    "//ui/file_manager/file_manager/foreground/elements:files_metadata_box_module",
-    "//ui/file_manager/file_manager/foreground/elements:files_metadata_entry_module",
-    "//ui/file_manager/file_manager/foreground/elements:files_quick_view_module",
-    "//ui/file_manager/file_manager/foreground/elements:files_ripple_module",
-    "//ui/file_manager/file_manager/foreground/elements:files_safe_media_module",
-    "//ui/file_manager/file_manager/foreground/elements:files_spinner",
-    "//ui/file_manager/file_manager/foreground/elements:files_toast_module",
-    "//ui/file_manager/file_manager/foreground/elements:files_toggle_ripple_module",
-    "//ui/file_manager/file_manager/foreground/elements:files_tooltip_module",
-    "//ui/file_manager/file_manager/foreground/elements:icons_module",
-  ]
+  public_deps =
+      [ "//ui/file_manager/file_manager/foreground/elements:files_spinner" ]
 }
 
 group("closure_compile") {
   testonly = true
   visibility += [ "//ui/file_manager:closure_compile" ]
   deps = [
-    ":closure_compile_internal",
     ":closure_compile_jsmodules",
-    ":js_test_gen_html_modules_type_check_auto",
+    ":js_test_type_check",
   ]
 }
 
-js_type_check("closure_compile_internal") {
-  uses_legacy_modules = true
+js_type_check("closure_compile_jsmodules") {
+  is_polymer3 = true
+  closure_flags =
+      default_closure_args + [
+        "language_in=ECMASCRIPT_2020",
+        "js_module_root=gen/ui/file_manager/",
+        "js_module_root=" + rebase_path("//ui/file_manager/", root_build_dir),
+      ]
   deps = [
     ":files_format_dialog",
-    ":files_icon_button",
-    ":files_message",
     ":files_metadata_box",
     ":files_metadata_entry",
     ":files_password_dialog",
     ":files_quick_view",
     ":files_ripple",
     ":files_safe_media",
-    ":files_safe_media_webview_content",
     ":files_spinner",
     ":files_toast",
     ":files_toggle_ripple",
@@ -62,418 +51,173 @@ js_type_check("closure_compile_internal") {
   ]
 }
 
-js_type_check("closure_compile_jsmodules") {
-  is_polymer3 = true
-  deps = [
-    ":files_format_dialog.m",
-    ":files_icon_button.m",
-    ":files_message.m",
-    ":files_metadata_box.m",
-    ":files_metadata_entry.m",
-    ":files_password_dialog.m",
-    ":files_quick_view.m",
-    ":files_ripple.m",
-    ":files_safe_media.m",
-    ":files_spinner.m",
-    ":files_toast.m",
-    ":files_toggle_ripple.m",
-    ":files_tooltip.m",
-    ":xf_button.m",
-    ":xf_circular_progress.m",
-    ":xf_display_panel.m",
-    ":xf_panel_item.m",
+html_to_js("web_components") {
+  visibility += [ "//ui/file_manager/*" ]
+  js_files = [
+    "files_format_dialog.js",
+    "files_metadata_box.js",
+    "files_metadata_entry.js",
+    "files_password_dialog.js",
+    "files_quick_view.js",
+    "files_ripple.js",
+    "files_safe_media.js",
+    "files_spinner.js",
+    "files_toast.js",
+    "files_toggle_ripple.js",
+    "files_tooltip.js",
+    "icons.js",
+    "xf_button.js",
+    "xf_circular_progress.js",
+    "xf_display_panel.js",
+    "xf_panel_item.js",
   ]
 }
 
 js_library("files_format_dialog") {
   deps = [
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-polymer_modulizer("files_format_dialog") {
-  js_file = "files_format_dialog.js"
-  html_file = "files_format_dialog.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-
-  auto_imports = [
-    "ui/file_manager/file_manager/common/js/util.html|util",
-    "ui/file_manager/file_manager/common/js/files_app_entry_types.html|EntryList,VolumeEntry",
-    "ui/file_manager/file_manager/common/js/volume_manager_types.html|VolumeManagerCommon",
-    "ui/file_manager/file_manager/externs/volume_info.html|VolumeInfo",
-  ]
-}
-
-js_library("files_format_dialog.m") {
-  visibility += [ "//ui/file_manager/audio_player/*" ]
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_format_dialog.m.js" ]
-  deps = [
+    "//ash/webui/common/resources:i18n_behavior",
     "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/file_manager/file_manager/common/js:files_app_entry_types.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types.m",
-    "//ui/file_manager/file_manager/externs:volume_info.m",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/file_manager/file_manager/common/js:files_app_entry_types",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:volume_info",
+    "//ui/file_manager/file_manager/foreground/js:file_rename",
   ]
-  extra_deps = [ ":files_format_dialog_module" ]
-}
-
-js_library("files_icon_button") {
-  deps = [
-    "//third_party/polymer/v1_0/components-chromium/iron-behaviors:iron-button-state-extracted",
-    "//third_party/polymer/v1_0/components-chromium/iron-behaviors:iron-control-state-extracted",
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
   ]
-}
-
-polymer_modulizer("files_icon_button") {
-  js_file = "files_icon_button.js"
-  html_file = "files_icon_button.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-
-  namespace_rewrites = [
-    "Polymer.IronButtonState|IronButtonState",
-    "Polymer.IronControlState|IronControlState",
-  ]
-
-  auto_imports = [
-    "third_party/polymer/v1_0/components-chromium/iron-behaviors/iron-button-state.html|IronButtonState",
-    "third_party/polymer/v1_0/components-chromium/iron-behaviors/iron-control-state.html|IronControlState",
-  ]
-}
-
-js_library("files_icon_button.m") {
-  visibility += [ "//ui/file_manager/audio_player/*" ]
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_icon_button.m.js" ]
-  deps = [
-    ":files_toggle_ripple.m",
-    "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-button-state",
-    "//third_party/polymer/v3_0/components-chromium/iron-behaviors:iron-control-state",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  extra_deps = [ ":files_icon_button_module" ]
-}
-
-js_library("files_message") {
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
-    "//ui/webui/resources/js:assert",
-  ]
-}
-
-js_unittest("files_message_unittest.m") {
-  deps = [
-    ":files_message.m",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_library("files_message.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_message.m.js" ]
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }
 
 js_library("files_metadata_box") {
-  externs_list = [ "$externs_path/pending_polymer.js" ]
-}
-
-polymer_modulizer("files_metadata_box") {
-  js_file = "files_metadata_box.js"
-  html_file = "files_metadata_box.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-}
-
-js_library("files_metadata_box.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_metadata_box.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":files_metadata_box_module" ]
 }
 
 js_library("files_metadata_entry") {
-}
-
-polymer_modulizer("files_metadata_entry") {
-  js_file = "files_metadata_entry.js"
-  html_file = "files_metadata_entry.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-}
-
-js_library("files_metadata_entry.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_metadata_entry.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":files_metadata_entry_module" ]
+}
+
+js_unittest("files_password_dialog_unittest") {
+  deps = [
+    ":files_password_dialog",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/webui/resources/js:assert",
+  ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js" ]
 }
 
 js_library("files_password_dialog") {
   deps = [
     "//ui/file_manager/file_manager/common/js:async_util",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-    "//ui/webui/resources/js:load_time_data",
-  ]
-}
-
-js_unittest("files_password_dialog_unittest.m") {
-  deps = [
-    ":files_password_dialog.m",
-    "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_library("files_password_dialog.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_password_dialog.m.js" ]
-  deps = [
-    "//ui/file_manager/file_manager/common/js:async_util.m",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
-
-  extra_deps = [ ":modulize" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
+    "//ui/webui/resources/cr_elements/cr_input/cr_input_externs.js",
+  ]
 }
 
 js_library("files_quick_view") {
-  deps = [ ":files_metadata_box" ]
-  externs_list = [
-    "$externs_path/chrome_extensions.js",
-    "$externs_path/webview_tag.js",
-    "$externs_path/pending_polymer.js",
-  ]
-}
-
-polymer_modulizer("files_quick_view") {
-  js_file = "files_quick_view.js"
-  html_file = "files_quick_view.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-
-  auto_imports = [ "ui/webui/resources/html/assert.html|assert" ]
-}
-
-js_library("files_quick_view.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_quick_view.m.js" ]
   deps = [
+    ":files_metadata_box",
+    ":files_safe_media",
+    ":files_tooltip",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [
     "$externs_path/chrome_extensions.js",
     "$externs_path/webview_tag.js",
   ]
-  extra_deps = [ ":files_quick_view_module" ]
 }
 
 js_library("files_ripple") {
-  deps = [ "//ui/webui/resources/js:assert" ]
-}
-
-polymer_modulizer("files_ripple") {
-  js_file = "files_ripple.js"
-  html_file = "files_ripple.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-
-  auto_imports =
-      [ "ui/webui/resources/html/assert.html|assert,assertInstanceof" ]
-}
-
-js_library("files_ripple.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_ripple.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
-  extra_deps = [ ":files_ripple_module" ]
 }
 
 js_library("files_safe_media") {
-}
-
-polymer_modulizer("files_safe_media") {
-  js_file = "files_safe_media.js"
-  html_file = "files_safe_media.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-
-  auto_imports =
-      [ "ui/webui/resources/html/assert.html|assert,assertInstanceof" ]
-}
-
-js_library("files_safe_media.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_safe_media.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:assert",
   ]
-  extra_deps = [ ":files_safe_media_module" ]
-}
-
-js_library("files_safe_media_webview_content") {
+  externs_list = [ "//ui/file_manager/file_manager/externs/quick_view.js" ]
 }
 
 js_library("files_spinner") {
 }
 
-js_library("files_spinner.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_spinner.m.js" ]
-
-  extra_deps = [ ":modulize" ]
-}
-
 # TODO(tapted): Move this to //ui/file_manager/base.
 js_library("files_toast") {
-  visibility += [ "//ui/file_manager/gallery/*" ]
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
-  ]
-}
-
-polymer_modulizer("files_toast") {
-  js_file = "files_toast.js"
-  html_file = "files_toast.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-}
-
-js_library("files_toast.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_toast.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_toast:cr_toast.m",
   ]
-  extra_deps = [ ":files_toast_module" ]
+  externs_list = [
+    "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js",
+    "//ui/webui/resources/cr_elements/cr_toast/cr_toast_externs.js",
+  ]
 }
 
 # TODO(tapted): Move this to //ui/file_manager/base.
 js_library("files_toggle_ripple") {
-  visibility += [ "//ui/file_manager/gallery/*" ]
-}
-
-polymer_modulizer("files_toggle_ripple") {
-  js_file = "files_toggle_ripple.js"
-  html_file = "files_toggle_ripple.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-}
-
-js_library("files_toggle_ripple.m") {
-  visibility += [ "//ui/file_manager/audio_player/*" ]
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_toggle_ripple.m.js" ]
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":files_toggle_ripple_module" ]
 }
 
 # TODO(tapted): Move this to //ui/file_manager/base.
-js_library("files_tooltip") {
-  visibility += [ "//ui/file_manager/gallery/*" ]
-  deps = [ "//ui/file_manager/file_manager/common/js:util" ]
-}
-
-js_unittest("files_tooltip_unittest.m") {
+js_unittest("files_tooltip_unittest") {
   deps = [
-    ":files_tooltip.m",
+    ":files_tooltip",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:test_error_reporting.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
   ]
 }
 
-polymer_modulizer("files_tooltip") {
-  js_file = "files_tooltip.js"
-  html_file = "files_tooltip.html"
-  html_type = "dom-module"
-  preserve_url_scheme = true
-}
-
-js_library("files_tooltip.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/files_tooltip.m.js" ]
+js_library("files_tooltip") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
-  extra_deps = [ ":files_tooltip_module" ]
 }
 
-js_unittest("files_toast_unittest.m") {
+js_unittest("files_toast_unittest") {
   deps = [
-    ":files_toast.m",
+    ":files_toast",
     "//chrome/test/data/webui:chai_assert",
   ]
 }
 
-js_unittest("files_xf_elements_unittest.m") {
+js_unittest("files_xf_elements_unittest") {
   deps = [
-    ":xf_display_panel.m",
+    ":xf_display_panel",
     "//chrome/test/data/webui:chai_assert",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/webui/resources/js:assert.m",
+    "//ui/file_manager/file_manager/common/js:test_error_reporting",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 
   externs_list = [ "$externs_path/file_manager_private.js" ]
 }
 
-polymer_modulizer("icons") {
-  js_file = "icons.m.js"
-  html_file = "icons.html"
-  html_type = "iron-iconset"
-  preserve_url_scheme = true
-}
-
 js_library("xf_button") {
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button",
-  ]
-}
-
-js_library("xf_button.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/xf_button.m.js" ]
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
+  externs_list =
+      [ "//ui/webui/resources/cr_elements/cr_button/cr_button_externs.js" ]
 }
 
 js_library("xf_circular_progress") {
-}
-
-js_library("xf_circular_progress.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/xf_circular_progress.m.js" ]
-
-  deps = [ "//ui/webui/resources/js:assert.m" ]
-  extra_deps = [ ":modulize" ]
+  deps = [ "//ui/webui/resources/js:assert" ]
 }
 
 js_library("xf_display_panel") {
@@ -483,44 +227,22 @@ js_library("xf_display_panel") {
   ]
 }
 
-js_library("xf_display_panel.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/xf_display_panel.m.js" ]
-  deps = [
-    ":xf_panel_item.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
-}
-
-js_modulizer("modulize") {
-  input_files = [
-    "files_message.js",
-    "files_spinner.js",
-    "files_password_dialog.js",
-    "xf_button.js",
-    "xf_circular_progress.js",
-    "xf_panel_item.js",
-    "xf_display_panel.js",
-  ]
-}
-
-js_test_gen_html("js_test_gen_html_modules") {
+js_test_type_check("js_test_type_check") {
   is_polymer3 = true
   deps = [
-    ":files_message_unittest.m",
-    ":files_password_dialog_unittest.m",
-    ":files_toast_unittest.m",
-    ":files_tooltip_unittest.m",
-    ":files_xf_elements_unittest.m",
+    ":files_password_dialog_unittest",
+    ":files_toast_unittest",
+    ":files_tooltip_unittest",
+    ":files_xf_elements_unittest",
   ]
 
   closure_flags =
       strict_error_checking_closure_args + [
+        "language_in=ECMASCRIPT_2020",
         "generate_exports=false",
         "js_module_root=./gen/ui",
-        "js_module_root=../../ui",
-        "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
+        "js_module_root=" + rebase_path("//ui", root_build_dir),
+        "browser_resolver_prefix_replacements=\"chrome://webui-test/=./\"",
         "hide_warnings_for=third_party/",
       ]
 }
@@ -529,17 +251,7 @@ js_library("xf_panel_item") {
   deps = [
     ":xf_button",
     ":xf_circular_progress",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/webui/resources/js:assert",
   ]
-}
-
-js_library("xf_panel_item.m") {
-  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/elements/xf_panel_item.m.js" ]
-  deps = [
-    ":xf_button.m",
-    ":xf_circular_progress.m",
-    "//ui/file_manager/file_manager/common/js:util.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
-
-  extra_deps = [ ":modulize" ]
 }

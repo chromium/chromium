@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -15,8 +14,13 @@ namespace net {
 // Interface for observing JavaScript error messages from PAC scripts.
 class NET_EXPORT_PRIVATE ProxyResolverErrorObserver {
  public:
-  ProxyResolverErrorObserver() {}
-  virtual ~ProxyResolverErrorObserver() {}
+  ProxyResolverErrorObserver() = default;
+
+  ProxyResolverErrorObserver(const ProxyResolverErrorObserver&) = delete;
+  ProxyResolverErrorObserver& operator=(const ProxyResolverErrorObserver&) =
+      delete;
+
+  virtual ~ProxyResolverErrorObserver() = default;
 
   // Handler for when an error is encountered. |line_number| may be -1
   // if a line number is not applicable to this error. |error| is a message
@@ -28,9 +32,6 @@ class NET_EXPORT_PRIVATE ProxyResolverErrorObserver {
   // thread than the proxy resolver's origin thread.
   virtual void OnPACScriptError(int line_number,
                                 const std::u16string& error) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolverErrorObserver);
 };
 
 }  // namespace net

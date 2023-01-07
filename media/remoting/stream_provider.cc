@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,23 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_post_task.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/bind_post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/cast_streaming/public/remoting_proto_enum_utils.h"
+#include "components/cast_streaming/public/remoting_proto_utils.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_transformation.h"
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
-#include "media/remoting/proto_enum_utils.h"
-#include "media/remoting/proto_utils.h"
 #include "media/remoting/receiver_controller.h"
-#include "media/remoting/rpc_broker.h"
+#include "third_party/openscreen/src/cast/streaming/rpc_messenger.h"
+
+using openscreen::cast::RpcMessenger;
 
 namespace media {
 namespace remoting {
@@ -32,13 +34,13 @@ constexpr int kNumFramesInEachReadUntil = 10;
 
 // static
 void StreamProvider::MediaStream::CreateOnMainThread(
-    RpcBroker* rpc_broker,
+    RpcMessenger* rpc_messenger,
     Type type,
     int32_t handle,
     const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner,
     base::OnceCallback<void(MediaStream::UniquePtr)> callback) {
   MediaStream::UniquePtr stream(
-      new MediaStream(rpc_broker, type, handle, media_task_runner),
+      new MediaStream(rpc_messenger, type, handle, media_task_runner),
       &DestructionHelper);
   std::move(callback).Run(std::move(stream));
 }
@@ -49,29 +51,33 @@ void StreamProvider::MediaStream::DestructionHelper(MediaStream* stream) {
 }
 
 StreamProvider::MediaStream::MediaStream(
-    RpcBroker* rpc_broker,
+    RpcMessenger* rpc_messenger,
     Type type,
     int remote_handle,
     const scoped_refptr<base::SingleThreadTaskRunner>& media_task_runner)
     : main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       media_task_runner_(media_task_runner),
-      rpc_broker_(rpc_broker),
+      rpc_messenger_(rpc_messenger),
       type_(type),
       remote_handle_(remote_handle),
-      rpc_handle_(rpc_broker_->GetUniqueHandle()) {
-  DCHECK(remote_handle_ != RpcBroker::kInvalidHandle);
+      rpc_handle_(rpc_messenger_->GetUniqueHandle()) {
+  DCHECK(remote_handle_ != RpcMessenger::kInvalidHandle);
 
   media_weak_this_ = media_weak_factory_.GetWeakPtr();
 
-  const RpcBroker::ReceiveMessageCallback receive_callback = base::BindPostTask(
+  auto receive_callback = base::BindPostTask(
       media_task_runner_,
       BindRepeating(&MediaStream::OnReceivedRpc, media_weak_this_));
-  rpc_broker_->RegisterMessageReceiverCallback(rpc_handle_, receive_callback);
+  rpc_messenger_->RegisterMessageReceiverCallback(
+      rpc_handle_, [cb = std::move(receive_callback)](
+                       std::unique_ptr<openscreen::cast::RpcMessage> message) {
+        cb.Run(std::move(message));
+      });
 }
 
 StreamProvider::MediaStream::~MediaStream() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  rpc_broker_->UnregisterMessageReceiverCallback(rpc_handle_);
+  rpc_messenger_->UnregisterMessageReceiverCallback(rpc_handle_);
 }
 
 void StreamProvider::MediaStream::Destroy() {
@@ -91,13 +97,12 @@ void StreamProvider::MediaStream::Destroy() {
 }
 
 void StreamProvider::MediaStream::SendRpcMessageOnMainThread(
-    std::unique_ptr<pb::RpcMessage> message) {
-  // |rpc_broker_| is owned by |receiver_controller_| which is a singleton per
-  // process, so it's safe to use Unretained() here.
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
+  // |rpc_messenger_| is owned by |receiver_controller_| which is a singleton
+  // per process, so it's safe to use Unretained() here.
   main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&RpcBroker::SendMessageToRemote,
-                     base::Unretained(rpc_broker_), std::move(message)));
+      FROM_HERE, base::BindOnce(&RpcMessenger::SendMessageToRemote,
+                                base::Unretained(rpc_messenger_), *message));
 }
 
 void StreamProvider::MediaStream::Initialize(
@@ -112,9 +117,9 @@ void StreamProvider::MediaStream::Initialize(
 
   init_done_callback_ = std::move(init_done_callback);
 
-  auto rpc = std::make_unique<pb::RpcMessage>();
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
   rpc->set_handle(remote_handle_);
-  rpc->set_proc(pb::RpcMessage::RPC_DS_INITIALIZE);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_INITIALIZE);
   rpc->set_integer_value(rpc_handle_);
   SendRpcMessageOnMainThread(std::move(rpc));
 }
@@ -162,15 +167,15 @@ void StreamProvider::MediaStream::FlushUntil(uint32_t count) {
 }
 
 void StreamProvider::MediaStream::OnReceivedRpc(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(message->handle() == rpc_handle_);
 
   switch (message->proc()) {
-    case pb::RpcMessage::RPC_DS_INITIALIZE_CALLBACK:
+    case openscreen::cast::RpcMessage::RPC_DS_INITIALIZE_CALLBACK:
       OnInitializeCallback(std::move(message));
       break;
-    case pb::RpcMessage::RPC_DS_READUNTIL_CALLBACK:
+    case openscreen::cast::RpcMessage::RPC_DS_READUNTIL_CALLBACK:
       OnReadUntilCallback(std::move(message));
       break;
     default:
@@ -179,9 +184,9 @@ void StreamProvider::MediaStream::OnReceivedRpc(
 }
 
 void StreamProvider::MediaStream::OnInitializeCallback(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
-  const pb::DemuxerStreamInitializeCallback callback_message =
+  const openscreen::cast::DemuxerStreamInitializeCallback callback_message =
       message->demuxerstream_initializecb_rpc();
   if (callback_message.type() != type_) {
     OnError("Wrong type");
@@ -198,18 +203,20 @@ void StreamProvider::MediaStream::OnInitializeCallback(
 
   if (type_ == DemuxerStream::AUDIO &&
       callback_message.has_audio_decoder_config()) {
-    const pb::AudioDecoderConfig audio_message =
+    const openscreen::cast::AudioDecoderConfig audio_message =
         callback_message.audio_decoder_config();
-    ConvertProtoToAudioDecoderConfig(audio_message, &audio_decoder_config_);
+    cast_streaming::remoting::ConvertProtoToAudioDecoderConfig(
+        audio_message, &audio_decoder_config_);
     if (!audio_decoder_config_.IsValidConfig()) {
       OnError("Invalid audio config");
       return;
     }
   } else if (type_ == DemuxerStream::VIDEO &&
              callback_message.has_video_decoder_config()) {
-    const pb::VideoDecoderConfig video_message =
+    const openscreen::cast::VideoDecoderConfig video_message =
         callback_message.video_decoder_config();
-    ConvertProtoToVideoDecoderConfig(video_message, &video_decoder_config_);
+    cast_streaming::remoting::ConvertProtoToVideoDecoderConfig(
+        video_message, &video_decoder_config_);
     if (!video_decoder_config_.IsValidConfig()) {
       OnError("Invalid video config");
       return;
@@ -240,7 +247,7 @@ void StreamProvider::MediaStream::CompleteInitialize() {
 }
 
 void StreamProvider::MediaStream::OnReadUntilCallback(
-    std::unique_ptr<pb::RpcMessage> message) {
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
 
   if (!read_until_sent_) {
@@ -248,19 +255,20 @@ void StreamProvider::MediaStream::OnReadUntilCallback(
     return;
   }
   read_until_sent_ = false;
-  const pb::DemuxerStreamReadUntilCallback callback_message =
+  const openscreen::cast::DemuxerStreamReadUntilCallback callback_message =
       message->demuxerstream_readuntilcb_rpc();
   total_received_frame_count_ = callback_message.count();
 
-  if (ToDemuxerStreamStatus(callback_message.status()) == kConfigChanged) {
+  if (cast_streaming::remoting::ToDemuxerStreamStatus(
+          callback_message.status()) == kConfigChanged) {
     if (callback_message.has_audio_decoder_config()) {
-      const pb::AudioDecoderConfig audio_message =
+      const openscreen::cast::AudioDecoderConfig audio_message =
           callback_message.audio_decoder_config();
       UpdateAudioConfig(audio_message);
     }
 
     if (callback_message.has_video_decoder_config()) {
-      const pb::VideoDecoderConfig video_message =
+      const openscreen::cast::VideoDecoderConfig video_message =
           callback_message.video_decoder_config();
       UpdateVideoConfig(video_message);
     }
@@ -276,10 +284,11 @@ void StreamProvider::MediaStream::OnReadUntilCallback(
 }
 
 void StreamProvider::MediaStream::UpdateAudioConfig(
-    const pb::AudioDecoderConfig& audio_message) {
+    const openscreen::cast::AudioDecoderConfig& audio_message) {
   DCHECK(type_ == AUDIO);
   AudioDecoderConfig audio_config;
-  ConvertProtoToAudioDecoderConfig(audio_message, &audio_config);
+  cast_streaming::remoting::ConvertProtoToAudioDecoderConfig(audio_message,
+                                                             &audio_config);
   if (!audio_config.IsValidConfig()) {
     OnError("Invalid audio config");
     return;
@@ -288,10 +297,11 @@ void StreamProvider::MediaStream::UpdateAudioConfig(
 }
 
 void StreamProvider::MediaStream::UpdateVideoConfig(
-    const pb::VideoDecoderConfig& video_message) {
+    const openscreen::cast::VideoDecoderConfig& video_message) {
   DCHECK(type_ == VIDEO);
   VideoDecoderConfig video_config;
-  ConvertProtoToVideoDecoderConfig(video_message, &video_config);
+  cast_streaming::remoting::ConvertProtoToVideoDecoderConfig(video_message,
+                                                             &video_config);
   if (!video_config.IsValidConfig()) {
     OnError("Invalid video config");
     return;
@@ -303,9 +313,10 @@ void StreamProvider::MediaStream::SendReadUntil() {
   if (read_until_sent_)
     return;
 
-  std::unique_ptr<pb::RpcMessage> rpc(new pb::RpcMessage());
+  std::unique_ptr<openscreen::cast::RpcMessage> rpc(
+      new openscreen::cast::RpcMessage());
   rpc->set_handle(remote_handle_);
-  rpc->set_proc(pb::RpcMessage::RPC_DS_READUNTIL);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_READUNTIL);
   auto* message = rpc->mutable_demuxerstream_readuntil_rpc();
   message->set_count(total_received_frame_count_ + kNumFramesInEachReadUntil);
   message->set_callback_handle(rpc_handle_);
@@ -379,8 +390,8 @@ DemuxerStream::Type StreamProvider::MediaStream::type() const {
   return type_;
 }
 
-DemuxerStream::Liveness StreamProvider::MediaStream::liveness() const {
-  return DemuxerStream::LIVENESS_LIVE;
+StreamLiveness StreamProvider::MediaStream::liveness() const {
+  return StreamLiveness::kLive;
 }
 
 bool StreamProvider::MediaStream::SupportsConfigChanges() {
@@ -407,9 +418,9 @@ void StreamProvider::MediaStream::AppendBuffer(
 }
 
 void StreamProvider::MediaStream::OnError(const std::string& error) {
-  auto rpc = std::make_unique<pb::RpcMessage>();
+  auto rpc = std::make_unique<openscreen::cast::RpcMessage>();
   rpc->set_handle(remote_handle_);
-  rpc->set_proc(pb::RpcMessage::RPC_DS_ONERROR);
+  rpc->set_proc(openscreen::cast::RpcMessage::RPC_DS_ONERROR);
   SendRpcMessageOnMainThread(std::move(rpc));
 }
 
@@ -419,23 +430,27 @@ StreamProvider::StreamProvider(
     : main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       media_task_runner_(media_task_runner),
       receiver_controller_(receiver_controller),
-      rpc_broker_(receiver_controller_->rpc_broker()) {
+      rpc_messenger_(receiver_controller_->rpc_messenger()) {
   DCHECK(receiver_controller_);
-  DCHECK(rpc_broker_);
+  DCHECK(rpc_messenger_);
 
   media_weak_this_ = media_weak_factory_.GetWeakPtr();
 
   auto callback = base::BindPostTask(
       media_task_runner_,
       base::BindRepeating(&StreamProvider::OnReceivedRpc, media_weak_this_));
-  rpc_broker_->RegisterMessageReceiverCallback(RpcBroker::kAcquireDemuxerHandle,
-                                               callback);
+  rpc_messenger_->RegisterMessageReceiverCallback(
+      RpcMessenger::kAcquireDemuxerHandle,
+      [cb = std::move(callback)](
+          std::unique_ptr<openscreen::cast::RpcMessage> message) {
+        cb.Run(std::move(message));
+      });
 }
 
 StreamProvider::~StreamProvider() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  rpc_broker_->UnregisterMessageReceiverCallback(
-      RpcBroker::kAcquireDemuxerHandle);
+  rpc_messenger_->UnregisterMessageReceiverCallback(
+      RpcMessenger::kAcquireDemuxerHandle);
 }
 
 std::string StreamProvider::GetDisplayName() const {
@@ -457,9 +472,8 @@ void StreamProvider::CancelPendingSeek(base::TimeDelta seek_time) {}
 
 void StreamProvider::Seek(base::TimeDelta time,
                           PipelineStatusCallback seek_cb) {
-  media_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(seek_cb), PipelineStatus::PIPELINE_OK));
+  media_task_runner_->PostTask(FROM_HERE,
+                               base::BindOnce(std::move(seek_cb), PIPELINE_OK));
 }
 
 void StreamProvider::Stop() {}
@@ -476,9 +490,9 @@ int64_t StreamProvider::GetMemoryUsage() const {
   return 0;
 }
 
-base::Optional<container_names::MediaContainerName>
+absl::optional<container_names::MediaContainerName>
 StreamProvider::GetContainerForMetrics() const {
-  return base::Optional<container_names::MediaContainerName>();
+  return absl::optional<container_names::MediaContainerName>();
 }
 
 void StreamProvider::OnEnabledAudioTracksChanged(
@@ -517,9 +531,10 @@ void StreamProvider::Destroy() {
   main_task_runner_->DeleteSoon(FROM_HERE, this);
 }
 
-void StreamProvider::OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message) {
+void StreamProvider::OnReceivedRpc(
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   switch (message->proc()) {
-    case pb::RpcMessage::RPC_ACQUIRE_DEMUXER:
+    case openscreen::cast::RpcMessage::RPC_ACQUIRE_DEMUXER:
       OnAcquireDemuxer(std::move(message));
       break;
     default:
@@ -527,7 +542,8 @@ void StreamProvider::OnReceivedRpc(std::unique_ptr<pb::RpcMessage> message) {
   }
 }
 
-void StreamProvider::OnAcquireDemuxer(std::unique_ptr<pb::RpcMessage> message) {
+void StreamProvider::OnAcquireDemuxer(
+    std::unique_ptr<openscreen::cast::RpcMessage> message) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
   DCHECK(message->has_acquire_demuxer_rpc());
 
@@ -535,8 +551,8 @@ void StreamProvider::OnAcquireDemuxer(std::unique_ptr<pb::RpcMessage> message) {
       message->acquire_demuxer_rpc().audio_demuxer_handle();
   int32_t video_demuxer_handle =
       message->acquire_demuxer_rpc().video_demuxer_handle();
-  has_audio_ = audio_demuxer_handle != RpcBroker::kInvalidHandle;
-  has_video_ = video_demuxer_handle != RpcBroker::kInvalidHandle;
+  has_audio_ = audio_demuxer_handle != RpcMessenger::kInvalidHandle;
+  has_video_ = video_demuxer_handle != RpcMessenger::kInvalidHandle;
 
   DCHECK(has_audio_ || has_video_);
 
@@ -544,18 +560,20 @@ void StreamProvider::OnAcquireDemuxer(std::unique_ptr<pb::RpcMessage> message) {
     auto callback = BindToCurrentLoop(base::BindOnce(
         &StreamProvider::OnAudioStreamCreated, media_weak_this_));
     main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&MediaStream::CreateOnMainThread, rpc_broker_,
-                                  DemuxerStream::AUDIO, audio_demuxer_handle,
-                                  media_task_runner_, std::move(callback)));
+        FROM_HERE,
+        base::BindOnce(&MediaStream::CreateOnMainThread, rpc_messenger_,
+                       DemuxerStream::AUDIO, audio_demuxer_handle,
+                       media_task_runner_, std::move(callback)));
   }
 
   if (has_video_) {
     auto callback = BindToCurrentLoop(base::BindOnce(
         &StreamProvider::OnVideoStreamCreated, media_weak_this_));
     main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&MediaStream::CreateOnMainThread, rpc_broker_,
-                                  DemuxerStream::VIDEO, video_demuxer_handle,
-                                  media_task_runner_, std::move(callback)));
+        FROM_HERE,
+        base::BindOnce(&MediaStream::CreateOnMainThread, rpc_messenger_,
+                       DemuxerStream::VIDEO, video_demuxer_handle,
+                       media_task_runner_, std::move(callback)));
   }
 }
 
@@ -610,7 +628,7 @@ void StreamProvider::CompleteInitialize() {
     return;
 
   // |init_done_callback_| should be called on |media_task_runner_|.
-  std::move(init_done_callback_).Run(PipelineStatus::PIPELINE_OK);
+  std::move(init_done_callback_).Run(PIPELINE_OK);
 }
 
 std::vector<DemuxerStream*> StreamProvider::GetAllStreams() {

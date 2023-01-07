@@ -1,12 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/login/login_screen_controller.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/login/mock_login_screen_client.h"
 #include "ash/login/ui/lock_screen.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
@@ -15,12 +15,14 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/session_manager_types.h"
+#include "components/user_manager/known_user.h"
 
 using session_manager::SessionState;
 using ::testing::_;
@@ -28,18 +30,17 @@ using ::testing::_;
 namespace ash {
 
 namespace {
-using LoginScreenControllerTest = AshTestBase;
+class LoginScreenControllerTest : public AshTestBase {
+ public:
+  LoginScreenControllerTest() {
+    user_manager::KnownUser::RegisterPrefs(local_state()->registry());
+  }
+};
+
 using LoginScreenControllerNoSessionTest = NoSessionAshTestBase;
 
 // Enum instead of enum class, because it is used for indexing.
 enum WindowType { kPrimary = 0, kSecondary = 1 };
-
-bool IsSystemTrayForWindowVisible(WindowType index) {
-  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  RootWindowController* controller =
-      RootWindowController::ForWindow(root_windows[index]);
-  return controller->GetStatusAreaWidget()->unified_system_tray()->GetVisible();
-}
 
 TEST_F(LoginScreenControllerTest, RequestAuthentication) {
   LoginScreenController* controller = Shell::Get()->login_screen_controller();
@@ -52,11 +53,11 @@ TEST_F(LoginScreenControllerTest, RequestAuthentication) {
   // (hashed) password, and the correct PIN state.
   EXPECT_CALL(*client,
               AuthenticateUserWithPasswordOrPin_(id, password, false, _));
-  base::Optional<bool> callback_result;
+  absl::optional<bool> callback_result;
   base::RunLoop run_loop1;
   controller->AuthenticateUserWithPasswordOrPin(
       id, password, false,
-      base::BindLambdaForTesting([&](base::Optional<bool> did_auth) {
+      base::BindLambdaForTesting([&](absl::optional<bool> did_auth) {
         callback_result = did_auth;
         run_loop1.Quit();
       }));
@@ -76,7 +77,7 @@ TEST_F(LoginScreenControllerTest, RequestAuthentication) {
   base::RunLoop run_loop2;
   controller->AuthenticateUserWithPasswordOrPin(
       id, pin, true,
-      base::BindLambdaForTesting([&](base::Optional<bool> did_auth) {
+      base::BindLambdaForTesting([&](absl::optional<bool> did_auth) {
         callback_result = did_auth;
         run_loop2.Quit();
       }));
@@ -127,18 +128,33 @@ TEST_F(LoginScreenControllerNoSessionTest, ShowSystemTrayOnPrimaryLoginScreen) {
   ASSERT_EQ(2u, root_windows.size());
 
   EXPECT_FALSE(ash::LockScreen::HasInstance());
-  EXPECT_FALSE(IsSystemTrayForWindowVisible(WindowType::kPrimary));
-  EXPECT_FALSE(IsSystemTrayForWindowVisible(WindowType::kSecondary));
+  EXPECT_FALSE(IsSystemTrayForRootWindowVisible(WindowType::kPrimary));
+  EXPECT_FALSE(IsSystemTrayForRootWindowVisible(WindowType::kSecondary));
 
   // Show login screen.
   GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
   Shell::Get()->login_screen_controller()->ShowLoginScreen();
 
   EXPECT_TRUE(ash::LockScreen::HasInstance());
-  EXPECT_TRUE(IsSystemTrayForWindowVisible(WindowType::kPrimary));
-  EXPECT_FALSE(IsSystemTrayForWindowVisible(WindowType::kSecondary));
+  EXPECT_TRUE(IsSystemTrayForRootWindowVisible(WindowType::kPrimary));
+  EXPECT_FALSE(IsSystemTrayForRootWindowVisible(WindowType::kSecondary));
 
   ash::LockScreen::Get()->Destroy();
+}
+
+TEST_F(LoginScreenControllerNoSessionTest,
+       SystemTrayVisibilityOnSecondaryScreenRestored) {
+  // Create setup with 2 displays primary and secondary.
+  UpdateDisplay("800x600,800x600");
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+
+  // Show login screen, then hide it.
+  GetSessionControllerClient()->SetSessionState(SessionState::LOGIN_PRIMARY);
+  Shell::Get()->login_screen_controller()->ShowLoginScreen();
+  ash::LockScreen::Get()->Destroy();
+
+  // The system tray should be visible on the secondary screen.
+  EXPECT_TRUE(IsSystemTrayForRootWindowVisible(WindowType::kSecondary));
 }
 
 TEST_F(LoginScreenControllerTest, ShowSystemTrayOnPrimaryLockScreen) {
@@ -149,16 +165,16 @@ TEST_F(LoginScreenControllerTest, ShowSystemTrayOnPrimaryLockScreen) {
 
   GetSessionControllerClient()->SetSessionState(SessionState::ACTIVE);
   EXPECT_FALSE(ash::LockScreen::HasInstance());
-  EXPECT_TRUE(IsSystemTrayForWindowVisible(WindowType::kPrimary));
-  EXPECT_TRUE(IsSystemTrayForWindowVisible(WindowType::kSecondary));
+  EXPECT_TRUE(IsSystemTrayForRootWindowVisible(WindowType::kPrimary));
+  EXPECT_TRUE(IsSystemTrayForRootWindowVisible(WindowType::kSecondary));
 
   // Show lock screen.
   GetSessionControllerClient()->SetSessionState(SessionState::LOCKED);
   Shell::Get()->login_screen_controller()->ShowLockScreen();
 
   EXPECT_TRUE(ash::LockScreen::HasInstance());
-  EXPECT_TRUE(IsSystemTrayForWindowVisible(WindowType::kPrimary));
-  EXPECT_FALSE(IsSystemTrayForWindowVisible(WindowType::kSecondary));
+  EXPECT_TRUE(IsSystemTrayForRootWindowVisible(WindowType::kPrimary));
+  EXPECT_FALSE(IsSystemTrayForRootWindowVisible(WindowType::kSecondary));
 
   ash::LockScreen::Get()->Destroy();
 }

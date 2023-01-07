@@ -1,0 +1,528 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+import "components/services/app_service/public/protos/app_types.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+package reporting;
+
+// Diagnostics routine verdict.
+enum RoutineVerdict {
+  ROUTINE_VERDICT_UNSPECIFIED = 0;
+  // Routine ran successfully and no connectivity problem found.
+  NO_PROBLEM = 1;
+  // Routine ran successfully and connectivity problem found.
+  PROBLEM = 2;
+  // Routine has not been run.
+  NOT_RUN = 3;
+}
+
+// Https latency problems.
+enum HttpsLatencyProblem {
+  HTTPS_LATENCY_PROBLEM_UNSPECIFIED = 0;
+  // One or more DNS resolutions resulted in a failure.
+  FAILED_DNS_RESOLUTIONS = 1;
+  // One or more HTTPS requests resulted in a failure.
+  FAILED_HTTPS_REQUESTS = 2;
+  // HTTPS request latency is high.
+  HIGH_LATENCY = 3;
+  // HTTPS request latency is very high.
+  VERY_HIGH_LATENCY = 4;
+}
+
+// Data that describe the result of the https latency diagnostics routine.
+message HttpsLatencyRoutineData {
+  // Https latency routine verdict.
+  optional RoutineVerdict verdict = 1;
+  // Https latency routine problem if a problem occurred.
+  optional HttpsLatencyProblem problem = 2;
+  // Https latency in milliseconds if routine succeeded or failed because of
+  // `HIGH_LATENCY` or `VERY_HIGH_LATENCY`.
+  optional int64 latency_ms = 3;
+}
+
+// Data describing observed network bandwidth
+message BandwidthData {
+  // Download speed in kbps
+  optional int64 download_speed_kbps = 1;
+  // Upload speed in kbps
+  optional int64 upload_speed_kbps = 2;
+}
+
+// Network connection state.
+enum NetworkConnectionState {
+  NETWORK_CONNECTION_STATE_UNSPECIFIED = 0;
+  // The network is connected and internet connectivity is available.
+  ONLINE = 1;
+  // The network is connected and not in a detected portal state, but
+  // internet connectivity may not be available.
+  CONNECTED = 2;
+  // The network is connected but a portal state was detected. Internet
+  // connectivity may be limited.
+  PORTAL = 3;
+  // The network is in the process of connecting.
+  CONNECTING = 4;
+  // The network is not connected.
+  NOT_CONNECTED = 5;
+}
+
+// Network connection type.
+enum NetworkType {
+  NETWORK_TYPE_UNSPECIFIED = 0;
+  CELLULAR = 1;
+  ETHERNET = 2;
+  TETHER = 3;
+  VPN = 4;
+  WIFI = 5;
+}
+
+// A single network telemetry data collected at a specific point of time.
+message NetworkTelemetry {
+  // Unique identifier of the network.
+  optional string guid = 1;
+  // Current connection state of the network.
+  optional NetworkConnectionState connection_state = 2;
+  // Signal strength of the network provided only for wireless networks. Values
+  // are normalized between 0 to 100 inclusive.
+  optional int32 signal_strength = 3;
+  // For networks associated with a device, the path of the device.
+  optional string device_path = 4;
+  // The IP address this interface is bound to, if any.
+  optional string ip_address = 5;
+  // The gateway IP for this interface, if any.
+  optional string gateway = 6;
+  // Network connection type.
+  optional NetworkType type = 7;
+
+  reserved 8;
+
+  // Transmission bit rate measured in Mbps.
+  optional int64 tx_bit_rate_mbps = 9;
+  // Receiving bit rate measured in Mbps.
+  optional int64 rx_bit_rate_mbps = 10;
+  // Transmission power measured in dBm.
+  optional int32 tx_power_dbm = 11;
+  // Is wifi encryption key on or not.
+  optional bool encryption_on = 12;
+  // Wifi link quality.
+  optional int64 link_quality = 13;
+  // Wifi power management enabled
+  optional bool power_management_enabled = 14;
+  // Signal strength for wireless networks in dBm.
+  optional int32 signal_strength_dbm = 15;
+}
+
+// Message describing the NETWORK_CONNECTION_STATE_CHANGE event.
+message NetworkConnectionStateChangeEventData {
+  // Unique identifier of the network.
+  optional string guid = 1;
+  // New connection state of the network.
+  optional NetworkConnectionState connection_state = 2;
+}
+
+// Configured networks telemetry data.
+message NetworksTelemetry {
+  // List of each network telemetry.
+  repeated NetworkTelemetry network_telemetry = 1;
+  // Https latency diagnostics routine result.
+  optional HttpsLatencyRoutineData https_latency_data = 2;
+  // Observed bandwidth data for active connection
+  optional BandwidthData bandwidth_data = 3;
+  // Network connection data describing the NETWORK_CONNECTION_STATE_CHANGE
+  // event.
+  optional NetworkConnectionStateChangeEventData
+      network_connection_change_event_data = 4;
+}
+
+// Security level of the thunderbolt bus.
+enum ThunderboltSecurityLevel {
+  UNSPECIFIED_THUNDERBOLT_SECURITY_LEVEL = 0;
+  // All devices are automatically connected by the firmware. No user approval
+  // is needed.
+  THUNDERBOLT_SECURITY_NONE_LEVEL = 1;
+  // User is asked whether the device is allowed to be connected.
+  THUNDERBOLT_SECURITY_USER_LEVEL = 2;
+  // User is asked whether the device is allowed to be connected. In addition
+  // the device is sent a challenge that should match the expected one based on
+  // a random key written to the key sysfs attribute
+  THUNDERBOLT_SECURITY_SECURE_LEVEL = 3;
+  // The firmware automatically creates tunnels for thunderbolt.
+  THUNDERBOLT_SECURITY_DP_ONLY_LEVEL = 4;
+  // The firmware automatically creates tunnels for the USB controller and
+  // Display Port in a dock. All PCIe links downstream of the dock are removed.
+  THUNDERBOLT_SECURITY_USB_ONLY_LEVEL = 5;
+  // PCIE tunneling is disabled.
+  THUNDERBOLT_SECURITY_NO_PCIE_LEVEL = 6;
+}
+
+message ThunderboltInfo {
+  optional ThunderboltSecurityLevel security_level = 1;
+}
+
+// currently we are only reporting bus device info for thunderbolt, though we
+// will certainly add more in the future.
+message BusDeviceInfo {
+  repeated ThunderboltInfo thunderbolt_info = 1;
+}
+
+enum MemoryEncryptionState {
+  UNSPECIFIED_MEMORY_ENCRYPTION_STATE = 0;
+  // The memory encryption state is unknown.
+  MEMORY_ENCRYPTION_STATE_UNKNOWN = 1;
+  // Memory encrpytion on the device is disabled.
+  MEMORY_ENCRYPTION_STATE_DISABLED = 2;
+  // Memory encryption on the device uses total memory encryption.
+  MEMORY_ENCRYPTION_STATE_TME = 3;
+  // Memory encryption on the device uses multi-key total memory encryption.
+  MEMORY_ENCRYPTION_STATE_MKTME = 4;
+}
+
+enum MemoryEncryptionAlgorithm {
+  UNSPECIFIED_MEMORY_ENCRYPTION_ALGORITHM = 0;
+  // The memory encryption algorithm being used is unknown.
+  MEMORY_ENCRYPTION_ALGORITHM_UNKNOWN = 1;
+  // The memory encryption algorithm is using the AES_XTS encryption algorithm
+  // with a 128 bit block cypher.
+  MEMORY_ENCRYPTION_ALGORITHM_AES_XTS_128 = 2;
+  // The memory encryption algorithm is using the AES_XTS encryption algorithm
+  // with a 256 bit block cypher.
+  MEMORY_ENCRYPTION_ALGORITHM_AES_XTS_256 = 3;
+}
+
+message TotalMemoryEncryptionInfo {
+  // The state of memory encryption on the device.
+  optional MemoryEncryptionState encryption_state = 1;
+  // The maximum number of keys that can be used for encryption.
+  optional int64 max_keys = 2;
+  // The length of the encryption keys.
+  optional int64 key_length = 3;
+  // The encryption algorithm being used on the device.
+  optional MemoryEncryptionAlgorithm encryption_algorithm = 4;
+}
+
+message MemoryInfo {
+  // TME info for the device.
+  optional TotalMemoryEncryptionInfo tme_info = 1;
+}
+
+enum NetworkDeviceType {
+  NETWORK_DEVICE_TYPE_UNSPECIFIED = 0;
+  CELLULAR_DEVICE = 1;
+  ETHERNET_DEVICE = 2;
+  WIFI_DEVICE = 5;
+}
+
+// Info details about network interface.
+message NetworkInterface {
+  // Network device type.
+  optional NetworkDeviceType type = 1;
+
+  // MAC address (if applicable) of the corresponding network device. This is
+  // formatted as an ASCII string with 12 hex digits. Example: A0B1C2D3E4F5.
+  optional string mac_address = 2;
+
+  // MEID (if applicable) of the corresponding network device. Formatted as
+  // ASCII string composed of 14 hex digits. Example: A10000009296F2.
+  optional string meid = 3;
+
+  // IMEI (if applicable) of the corresponding network device. 15-16 decimal
+  // digits encoded as ASCII string. Example: 355402040158759.
+  optional string imei = 4;
+
+  // The device path associated with this network interface.
+  optional string device_path = 5;
+
+  // The integrated circuit card ID associated with the device's sim card.
+  optional string iccid = 6;
+
+  // The mobile directory number associated with the device's sim card.
+  optional string mdn = 7;
+
+  // List of EID (EUICC Identifier) of all cellular EUICCs
+  // (Embedded Universal Integrated Circuit Cards) on the device.
+  // 32 decimal digits encoded as ASCII string.
+  repeated string eids = 8;
+}
+
+// Networks info data.
+message NetworksInfo {
+  repeated NetworkInterface network_interfaces = 1;
+}
+
+// Touch screens info data.
+message TouchScreenInfo {
+  // The touchpad library name used by the input stack.
+  optional string library_name = 1;
+  // List of the touchscreen devices.
+  repeated TouchScreenDevice touch_screen_devices = 2;
+}
+
+// Information about the internal touch screen of a device.
+message TouchScreenDevice {
+  // Name of the device (touchscreen).
+  optional string display_name = 1;
+  // Number of touch points this device supports.
+  optional int32 touch_points = 2;
+  // True if the specified touchscreen device is stylus capable.
+  optional bool has_stylus = 3;
+}
+
+// Information about ePrivacy Screens
+message PrivacyScreenInfo {
+  // If ePrivacy Screen is supported on the device.
+  optional bool supported = 1;
+}
+
+// Information about the displays.
+message DisplayInfo {
+  // Info on all the screens the device has.
+  repeated DisplayDevice display_device = 1;
+}
+
+// Information on one display.
+message DisplayDevice {
+  // Name of display product.
+  optional string display_name = 1;
+  // Display width in millimeters.
+  optional int32 display_width = 2;
+  // Display height in millimeters.
+  optional int32 display_height = 3;
+  // Internal or external display.
+  optional bool is_internal = 4;
+  // Three letter manufacturer ID.
+  optional string manufacturer = 5;
+  // Manufacturer product code.
+  optional int32 model_id = 6;
+  // Year of manufacture.
+  optional int32 manufacture_year = 7;
+}
+
+// Information about keylocker. This is supported on Intel CPUs.
+message KeylockerInfo {
+  // If keylocker is supported on the devices CPUs.
+  optional bool supported = 1;
+  // If keylocker is configured on the devices CPUs.
+  optional bool configured = 2;
+}
+
+message CpuInfo {
+  // Information about keylocker for the devices CPUs.
+  optional KeylockerInfo keylocker_info = 1;
+}
+
+// Data that is considered immutable, should only be reported on startup and
+// policy enablment.
+message InfoData {
+  // CPU info for the device.
+  optional CpuInfo cpu_info = 1;
+  // Bus Device info for the device.
+  optional BusDeviceInfo bus_device_info = 2;
+  // Memory info for the device.
+  optional MemoryInfo memory_info = 3;
+  // Network interfaces info.
+  optional NetworksInfo networks_info = 4;
+  // Touch screen info.
+  optional TouchScreenInfo touch_screen_info = 5;
+  // Information about the ePrivacy Screen.
+  optional PrivacyScreenInfo privacy_screen_info = 6;
+  // Information about the displays.
+  optional DisplayInfo display_info = 7;
+}
+
+// Audio telemetry data recorded intermittently
+message AudioTelemetry {
+  // Is active output device mute or not.
+  optional bool output_mute = 1;
+  // Is active input device mute or not.
+  optional bool input_mute = 2;
+  // Active output device's volume in [0, 100].
+  optional int32 output_volume = 3;
+  // Active output device's name.
+  optional string output_device_name = 4;
+  // Active input device's gain in [0, 100].
+  optional int32 input_gain = 5;
+  // Active input device's name.
+  optional string input_device_name = 6;
+}
+
+// Boot Performance telemetry data
+message BootPerformanceTelemetry {
+  // Total time when to boot up.
+  optional int64 boot_up_seconds = 1;
+  // The Timestamp when power came on.
+  optional int64 boot_up_timestamp_seconds = 2;
+  // Total time since shutdown start to power off.
+  optional int64 shutdown_seconds = 3;
+  // Timestamp when shutdown.
+  optional int64 shutdown_timestamp_seconds = 4;
+  // Shutdown reason.
+  optional string shutdown_reason = 5;
+}
+
+// Data tracking user status information
+message UserStatusTelemetry {
+  enum DeviceActivityState {
+    DEVICE_ACTIVITY_STATE_UNKNOWN = 0;
+    ACTIVE = 1;
+    IDLE = 2;
+    LOCKED = 3;
+  }
+
+  // Device state.
+  optional DeviceActivityState device_activity_state = 1;
+}
+
+message DisplaysTelemetry {
+  // Status of all the displays.
+  repeated DisplayStatus display_status = 1;
+}
+
+message DisplayStatus {
+  // Name of display product.
+  optional string display_name = 1;
+  // Horizontal resolution.
+  optional int32 resolution_horizontal = 2;
+  // Vertical resolution.
+  optional int32 resolution_vertical = 3;
+  // Refresh rate.
+  optional int64 refresh_rate = 4;
+  // Internal or external display.
+  optional bool is_internal = 5;
+}
+
+// Data that can change over time, collected and reported every specific period
+// of time or when an event occur.
+message TelemetryData {
+  // At least one of the following telemetry should be present.
+
+  // Networks telemetry data.
+  optional NetworksTelemetry networks_telemetry = 1;
+  // Audio telemetry data.
+  optional AudioTelemetry audio_telemetry = 2;
+  // Peripherals telemetry data
+  optional PeripheralsTelemetry peripherals_telemetry = 3;
+  // Boot Performance telemetry data.
+  optional BootPerformanceTelemetry boot_performance_telemetry = 4;
+  // User status telemetry data.
+  optional UserStatusTelemetry user_status_telemetry = 5;
+  // Displays telemetry data.
+  optional DisplaysTelemetry displays_telemetry = 6;
+  // App telemetry data.
+  optional AppTelemetry app_telemetry = 7;
+}
+
+enum MetricEventType {
+  EVENT_TYPE_UNSPECIFIED = 0;
+  NETWORK_HTTPS_LATENCY_CHANGE = 1;
+  NETWORK_CONNECTION_STATE_CHANGE = 2;
+  NETWORK_SIGNAL_STRENGTH_CHANGE = 3;
+  AUDIO_SEVERE_UNDERRUN = 4;
+  USB_ADDED = 5;
+  USB_REMOVED = 6;
+  APP_INSTALLED = 7;
+  APP_UNINSTALLED = 8;
+  APP_LAUNCHED = 9;
+  NETWORK_SIGNAL_STRENGTH_LOW = 10;
+  NETWORK_SIGNAL_STRENGTH_RECOVERED = 11;
+}
+
+// App telemetry data.
+message AppTelemetry {
+  // App id.
+  optional string app_id = 1;
+  // Type of app being observed.
+  optional apps.ApplicationType app_type = 2;
+
+  oneof app_metric_data {
+    // App installation data.
+    AppInstallData app_install_data = 3;
+    // App uninstall data.
+    AppUninstallData app_uninstall_data = 4;
+    // App launch data.
+    AppLaunchData app_launch_data = 5;
+    // App usage data
+    AppUsageData app_usage_data = 6;
+  }
+}
+
+// App installation data.
+message AppInstallData {
+  // App installation source.
+  optional apps.ApplicationInstallSource app_install_source = 1;
+  // App installation reason.
+  optional apps.ApplicationInstallReason app_install_reason = 2;
+  // App installation time depending on the app lifecycle.
+  optional apps.ApplicationInstallTime app_install_time = 3;
+}
+
+// App launch data.
+message AppLaunchData {
+  // App launch source.
+  optional apps.ApplicationLaunchSource app_launch_source = 1;
+}
+
+// App usage data.
+message AppUsageData {
+  // App foreground running time (in milliseconds).
+  optional int64 running_time_ms = 1;
+}
+
+// App uninstall data.
+message AppUninstallData {
+  // App uninstall source.
+  optional apps.ApplicationUninstallSource app_uninstall_source = 1;
+}
+
+message PeripheralsTelemetry {
+  repeated UsbTelemetry usb_telemetry = 1;
+}
+
+message UsbTelemetry {
+  // Vendor name
+  optional string vendor = 1;
+  // Device name, model name, or product name
+  optional string name = 2;
+  // Vendor ID
+  optional int32 vid = 3;
+  // Product ID
+  optional int32 pid = 4;
+  // Categories the device belongs to
+  // https://www.usb.org/defined-class-codes
+  repeated string categories = 5;
+  // Class ID
+  // https://www.usb.org/defined-class-codes
+  optional int32 class_id = 6;
+  // Subclass ID
+  // https://www.usb.org/defined-class-codes
+  optional int32 subclass_id = 7;
+  // Firmware version
+  optional string firmware_version = 8;
+}
+
+// Indicates one of the following conditions occurred on the device, data
+// associated with the event will be reported as TelemetryData.
+message EventData {
+  optional MetricEventType type = 1;
+}
+
+// Main message to be reported, can contain `InfoData`, `TelemetryData`, or
+// `EventData`. Data, associated with an event or collected in response to an
+// event, is added as `TelemetryData` along with EventData.
+message MetricData {
+  // The time from epoch when the data was collected.
+  optional int64 timestamp_ms = 1;
+
+  oneof metric_type {
+    // Info data collected.
+    InfoData info_data = 2;
+    // Telemetry data collected.
+    TelemetryData telemetry_data = 3;
+  }
+
+  // Event data collected.
+  optional EventData event_data = 4;
+}

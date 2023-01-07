@@ -51,21 +51,21 @@ bool DeviceMotionEventRotationRate::HasRotationData() const {
   return !std::isnan(alpha_) || !std::isnan(beta_) || !std::isnan(gamma_);
 }
 
-base::Optional<double> DeviceMotionEventRotationRate::alpha() const {
+absl::optional<double> DeviceMotionEventRotationRate::alpha() const {
   if (std::isnan(alpha_))
-    return base::nullopt;
+    return absl::nullopt;
   return alpha_;
 }
 
-base::Optional<double> DeviceMotionEventRotationRate::beta() const {
+absl::optional<double> DeviceMotionEventRotationRate::beta() const {
   if (std::isnan(beta_))
-    return base::nullopt;
+    return absl::nullopt;
   return beta_;
 }
 
-base::Optional<double> DeviceMotionEventRotationRate::gamma() const {
+absl::optional<double> DeviceMotionEventRotationRate::gamma() const {
   if (std::isnan(gamma_))
-    return base::nullopt;
+    return absl::nullopt;
   return gamma_;
 }
 

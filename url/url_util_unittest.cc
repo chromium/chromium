@@ -1,28 +1,34 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "url/url_util.h"
+
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/strings/string_piece.h"
+#include "build/build_config.h"
+#include "testing/gtest/include/gtest/gtest-message.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_canon_stdstring.h"
 #include "url/url_test_utils.h"
-#include "url/url_util.h"
 
 namespace url {
 
 class URLUtilTest : public testing::Test {
  public:
   URLUtilTest() = default;
+
+  URLUtilTest(const URLUtilTest&) = delete;
+  URLUtilTest& operator=(const URLUtilTest&) = delete;
+
   ~URLUtilTest() override = default;
 
  private:
   ScopedSchemeRegistryForTests scoped_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLUtilTest);
 };
 
 TEST_F(URLUtilTest, FindAndCompareScheme) {
@@ -244,7 +250,7 @@ TEST_F(URLUtilTest, DecodeURLEscapeSequences) {
       {"%e4%bd%a0%e5%a5%bd", "\xe4\xbd\xa0\xe5\xa5\xbd"},
   };
 
-  for (size_t i = 0; i < base::size(decode_cases); i++) {
+  for (size_t i = 0; i < std::size(decode_cases); i++) {
     const char* input = decode_cases[i].input;
     RawCanonOutputT<char16_t> output;
     DecodeURLEscapeSequences(input, strlen(input),
@@ -326,7 +332,7 @@ TEST_F(URLUtilTest, TestEncodeURIComponent) {
      "pqrstuvwxyz%7B%7C%7D~%7F"},
   };
 
-  for (size_t i = 0; i < base::size(encode_cases); i++) {
+  for (size_t i = 0; i < std::size(encode_cases); i++) {
     const char* input = encode_cases[i].input;
     RawCanonOutputT<char> buffer;
     EncodeURIComponent(input, strlen(input), &buffer);
@@ -403,7 +409,7 @@ TEST_F(URLUtilTest, TestResolveRelativeWithNonStandardBase) {
       // adding the requested dot doesn't seem wrong either.
       {"aaa://a\\", "aaa:.", true, "aaa://a\\."}};
 
-  for (size_t i = 0; i < base::size(resolve_non_standard_cases); i++) {
+  for (size_t i = 0; i < std::size(resolve_non_standard_cases); i++) {
     const ResolveRelativeCase& test_data = resolve_non_standard_cases[i];
     Parsed base_parsed;
     ParsePathURL(test_data.base, strlen(test_data.base), false, &base_parsed);
@@ -492,6 +498,45 @@ TEST_F(URLUtilTest, PotentiallyDanglingMarkup) {
   }
 }
 
+TEST_F(URLUtilTest, PotentiallyDanglingMarkupAfterReplacement) {
+  // Parse a URL with potentially dangling markup.
+  Parsed original_parsed;
+  RawCanonOutput<32> original;
+  const char* url = "htt\nps://example.com/<path";
+  Canonicalize(url, strlen(url), false, nullptr, &original, &original_parsed);
+  ASSERT_TRUE(original_parsed.potentially_dangling_markup);
+
+  // Perform a replacement, and validate that the potentially_dangling_markup
+  // flag carried over to the new Parsed object.
+  Replacements<char> replacements;
+  replacements.ClearRef();
+  Parsed replaced_parsed;
+  RawCanonOutput<32> replaced;
+  ReplaceComponents(original.data(), original.length(), original_parsed,
+                    replacements, nullptr, &replaced, &replaced_parsed);
+  EXPECT_TRUE(replaced_parsed.potentially_dangling_markup);
+}
+
+TEST_F(URLUtilTest, PotentiallyDanglingMarkupAfterSchemeOnlyReplacement) {
+  // Parse a URL with potentially dangling markup.
+  Parsed original_parsed;
+  RawCanonOutput<32> original;
+  const char* url = "http://example.com/\n/<path";
+  Canonicalize(url, strlen(url), false, nullptr, &original, &original_parsed);
+  ASSERT_TRUE(original_parsed.potentially_dangling_markup);
+
+  // Perform a replacement, and validate that the potentially_dangling_markup
+  // flag carried over to the new Parsed object.
+  Replacements<char> replacements;
+  const char* new_scheme = "https";
+  replacements.SetScheme(new_scheme, Component(0, strlen(new_scheme)));
+  Parsed replaced_parsed;
+  RawCanonOutput<32> replaced;
+  ReplaceComponents(original.data(), original.length(), original_parsed,
+                    replacements, nullptr, &replaced, &replaced_parsed);
+  EXPECT_TRUE(replaced_parsed.potentially_dangling_markup);
+}
+
 TEST_F(URLUtilTest, TestDomainIs) {
   const struct {
     const char* canonicalized_host;
@@ -532,6 +577,54 @@ TEST_F(URLUtilTest, TestDomainIs) {
     EXPECT_EQ(
         test_case.expected_domain_is,
         DomainIs(test_case.canonicalized_host, test_case.lower_ascii_domain));
+  }
+}
+
+namespace {
+absl::optional<std::string> CanonicalizeSpec(base::StringPiece spec,
+                                             bool trim_path_end) {
+  std::string canonicalized;
+  StdStringCanonOutput output(&canonicalized);
+  Parsed parsed;
+  if (!Canonicalize(spec.data(), spec.size(), trim_path_end,
+                    /*charset_converter=*/nullptr, &output, &parsed)) {
+    return {};
+  }
+  output.Complete();  // Must be called before string is used.
+  return canonicalized;
+}
+}  // namespace
+
+#if BUILDFLAG(IS_WIN)
+// Regression test for https://crbug.com/1252658.
+TEST_F(URLUtilTest, TestCanonicalizeWindowsPathWithLeadingNUL) {
+  auto PrefixWithNUL = [](std::string&& s) -> std::string { return '\0' + s; };
+  EXPECT_EQ(CanonicalizeSpec(PrefixWithNUL("w:"), /*trim_path_end=*/false),
+            absl::make_optional("file:///W:"));
+  EXPECT_EQ(CanonicalizeSpec(PrefixWithNUL("\\\\server\\share"),
+                             /*trim_path_end=*/false),
+            absl::make_optional("file://server/share"));
+}
+#endif
+
+TEST_F(URLUtilTest, TestCanonicalizeIdempotencyWithLeadingControlCharacters) {
+  std::string spec = "_w:";
+  // Loop over all C0 control characters and the space character.
+  for (char c = '\0'; c <= ' '; c++) {
+    SCOPED_TRACE(testing::Message() << "c: " << c);
+
+    // Overwrite the first character of `spec`. Note that replacing the first
+    // character with NUL will not change the length!
+    spec[0] = c;
+
+    for (bool trim_path_end : {false, true}) {
+      SCOPED_TRACE(testing::Message() << "trim_path_end: " << trim_path_end);
+
+      absl::optional<std::string> canonicalized =
+          CanonicalizeSpec(spec, trim_path_end);
+      ASSERT_TRUE(canonicalized);
+      EXPECT_EQ(canonicalized, CanonicalizeSpec(*canonicalized, trim_path_end));
+    }
   }
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,12 +35,10 @@ void HistoryStatisticsReporter::RegisterPrefs(PrefRegistrySimple* registry) {
 HistoryStatisticsReporter::HistoryStatisticsReporter(
     history::HistoryService* history_service,
     PrefService* prefs)
-    : history_service_(history_service),
-      prefs_(prefs),
-      history_service_observer_(this) {}
+    : history_service_(history_service), prefs_(prefs) {}
 
 HistoryStatisticsReporter::~HistoryStatisticsReporter() {
-  history_service_observer_.RemoveAll();
+  history_service_observation_.Reset();
 }
 
 void HistoryStatisticsReporter::ScheduleReportStatistics() {
@@ -51,7 +49,7 @@ void HistoryStatisticsReporter::ScheduleReportStatistics() {
 
   // If we've already reported metrics during last week, bail out.
   base::Time last_report_time = prefs_->GetTime(kWeeklyStatsReportingTimestamp);
-  if (last_report_time > base::Time::Now() - base::TimeDelta::FromDays(7))
+  if (last_report_time > base::Time::Now() - base::Days(7))
     return;
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
@@ -69,7 +67,7 @@ void HistoryStatisticsReporter::OnHistoryServiceLoaded(
 
 void HistoryStatisticsReporter::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
-  history_service_observer_.RemoveAll();
+  history_service_observation_.Reset();
 }
 
 void HistoryStatisticsReporter::MaybeReportStatistics() {
@@ -79,8 +77,9 @@ void HistoryStatisticsReporter::MaybeReportStatistics() {
   } else {
     // Register for HistoryServiceLoading in case HistoryService is not yet
     // ready.
-    DCHECK(!history_service_observer_.IsObserving(history_service_));
-    history_service_observer_.Add(history_service_);
+    DCHECK(!history_service_observation_.IsObservingSource(
+        history_service_.get()));
+    history_service_observation_.Observe(history_service_.get());
   }
 }
 

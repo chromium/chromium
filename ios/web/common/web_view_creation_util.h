@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,10 @@ class BrowserState;
 
 // Returns a new WKWebView for displaying regular web content.
 // WKWebViewConfiguration object for resulting web view will be obtained from
-// the given |browser_state|.
+// the given `browser_state`.
 //
 // Preconditions for creation of a WKWebView:
-// 1) |browser_state| is not null.
+// 1) `browser_state` is not null.
 // 2) web::BrowsingDataPartition is synchronized.
 //
 WKWebView* BuildWKWebView(CGRect frame, BrowserState* browser_state);
@@ -29,7 +29,7 @@ WKWebView* BuildWKWebView(CGRect frame, BrowserState* browser_state);
 // are not initialized (e.g. voice search).
 //
 // Preconditions for creation of a WKWebView:
-// 1) |browser_state| is not null.
+// 1) `browser_state` is not null.
 // 2) web::BrowsingDataPartition is synchronized.
 //
 WKWebView* BuildWKWebViewForQueries(BrowserState* browser_state);

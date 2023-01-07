@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist.h"
 
@@ -36,6 +35,10 @@ class HeavyAdBlocklist : public blocklist::OptOutBlocklist {
   HeavyAdBlocklist(std::unique_ptr<blocklist::OptOutStore> opt_out_store,
                    base::Clock* clock,
                    blocklist::OptOutBlocklistDelegate* blocklist_delegate);
+
+  HeavyAdBlocklist(const HeavyAdBlocklist&) = delete;
+  HeavyAdBlocklist& operator=(const HeavyAdBlocklist&) = delete;
+
   ~HeavyAdBlocklist() override;
 
  protected:
@@ -55,9 +58,6 @@ class HeavyAdBlocklist : public blocklist::OptOutBlocklist {
                            int* threshold) const override;
   blocklist::BlocklistData::AllowedTypesAndVersions GetAllowedTypes()
       const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HeavyAdBlocklist);
 };
 
 }  // namespace heavy_ad_intervention

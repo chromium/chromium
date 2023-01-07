@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
-#include "base/task/post_task.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/assets_loader.h"
@@ -24,10 +22,10 @@
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "chrome/android/chrome_jni_headers/VrAssetsComponentInstaller_jni.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using component_updater::ComponentUpdateService;
 
@@ -55,12 +53,12 @@ bool VrAssetsComponentInstallerPolicy::ondemand_update_pending_ = false;
 // static
 bool VrAssetsComponentInstallerPolicy::
     ShouldRegisterVrAssetsComponentOnStartup() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return Java_VrAssetsComponentInstaller_shouldRegisterOnStartup(
       base::android::AttachCurrentThread());
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   return false;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static
@@ -113,7 +111,7 @@ void VrAssetsComponentInstallerPolicy::OnRegisteredComponent(
 
 bool VrAssetsComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool VrAssetsComponentInstallerPolicy::RequiresNetworkEncryption() const {
@@ -122,7 +120,7 @@ bool VrAssetsComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 VrAssetsComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);
 }
@@ -131,15 +129,14 @@ void VrAssetsComponentInstallerPolicy::OnCustomUninstall() {}
 
 // Called during startup and installation before ComponentReady().
 bool VrAssetsComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
-  auto* version_value = manifest.FindKey("version");
-  if (!version_value || !version_value->is_string()) {
+  auto* version_string = manifest.FindStringKey("version");
+  if (!version_string) {
     return false;
   }
 
-  auto version_string = version_value->GetString();
-  base::Version version(version_string);
+  base::Version version(*version_string);
   if (!version.IsValid() || version.components().size() != 2 ||
       !base::PathExists(install_dir)) {
     return false;
@@ -157,7 +154,7 @@ bool VrAssetsComponentInstallerPolicy::VerifyInstallation(
 void VrAssetsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   if (version.components()[0] < vr::kMinMajorVrAssetsComponentVersion) {
     // Don't propagate component readiness and wait until differential update
     // delivers compatible component version.
@@ -174,7 +171,7 @@ base::FilePath VrAssetsComponentInstallerPolicy::GetRelativeInstallDir() const {
 void VrAssetsComponentInstallerPolicy::GetHash(
     std::vector<uint8_t>* hash) const {
   hash->assign(kVrAssetsPublicKeySHA256,
-               kVrAssetsPublicKeySHA256 + base::size(kVrAssetsPublicKeySHA256));
+               kVrAssetsPublicKeySHA256 + std::size(kVrAssetsPublicKeySHA256));
 }
 
 std::string VrAssetsComponentInstallerPolicy::GetName() const {

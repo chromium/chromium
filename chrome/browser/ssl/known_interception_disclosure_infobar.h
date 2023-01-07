@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,14 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/ui/android/infobars/chrome_confirm_infobar.h"
+#include "components/infobars/android/confirm_infobar.h"
 #include "components/infobars/core/infobar.h"
 
 class KnownInterceptionDisclosureInfoBarDelegate;
 
 // KnownInterceptionDisclosureInfoBar is a thin veneer over ConfirmInfoBar that
 // adds a discrete description (instead of just having a title).
-class KnownInterceptionDisclosureInfoBar : public ChromeConfirmInfoBar {
+class KnownInterceptionDisclosureInfoBar : public infobars::ConfirmInfoBar {
  public:
   static std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<KnownInterceptionDisclosureInfoBarDelegate> delegate);

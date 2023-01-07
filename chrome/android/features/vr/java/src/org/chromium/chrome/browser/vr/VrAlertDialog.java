@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -126,7 +126,7 @@ public class VrAlertDialog extends AlertDialog {
 
         return new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                 .with(ModalDialogProperties.CONTROLLER, controller)
-                .with(ModalDialogProperties.MESSAGE, message)
+                .with(ModalDialogProperties.MESSAGE_PARAGRAPH_1, message)
                 .with(ModalDialogProperties.CUSTOM_VIEW, mView)
                 .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, positiveButtonText)
                 .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, negativeButtonText)

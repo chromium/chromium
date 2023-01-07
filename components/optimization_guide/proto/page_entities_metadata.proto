@@ -1,0 +1,58 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "PageEntitiesMetadataProto";
+
+package optimization_guide.proto;
+
+message Entity {
+  // The ID of the entity expected to be present on the page.
+  optional string entity_id = 1;
+
+  // The confidence that the entity, as expressed by entity_id, is on the page.
+  //
+  // It is expected that this score be between 0 and 100, inclusive.
+  optional int32 score = 2;
+}
+
+message Category {
+  // The ID of the category that the page is expected to be about.
+  optional string category_id = 1;
+
+  // The confidence that the category, as expressed by category_id, is relevant
+  // to the page.
+  //
+  // It is expected that this score be between 0 and 1, inclusive.
+  optional float score = 2;
+}
+
+// Optimization metadata associated with providing information about the
+// entities on the page.
+//
+// It is only populated for the PAGE_ENTITIES optimization type.
+//
+// Note that the meaning of metadata here is in relation to a page load.
+message PageEntitiesMetadata {
+  // A set of entities that are expected to be present on the page.
+  repeated Entity entities = 1;
+
+  // A string representing an alternative title for the page.
+  optional string alternative_title = 2;
+
+  // A set of categories that are expected to be present on the page.
+  repeated Category categories = 3;
+}
+
+// The metadata associated with an |Entity|.
+//
+// Each |Entity| has some attached metadata about it which may be stored on
+// device for later lookup. Notably, this includes it's human-readable name as
+// opposed to the opaque entity_id.
+message EntityMetadataStorage {
+  optional string entity_name = 1;
+}

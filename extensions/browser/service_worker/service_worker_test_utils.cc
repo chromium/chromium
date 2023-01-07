@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,9 +15,8 @@ namespace service_worker_test_utils {
 
 TestRegistrationObserver::TestRegistrationObserver(
     content::BrowserContext* browser_context)
-    : context_(
-          content::BrowserContext::GetDefaultStoragePartition(browser_context)
-              ->GetServiceWorkerContext()) {
+    : context_(browser_context->GetDefaultStoragePartition()
+                   ->GetServiceWorkerContext()) {
   context_->AddObserver(this);
 }
 

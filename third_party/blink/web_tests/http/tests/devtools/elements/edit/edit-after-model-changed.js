@@ -1,10 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests that SSP maintains focus if changes occur while editing\n`);
-  await TestRunner.loadModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <div id="inspected">Inspected Node</div>
@@ -16,8 +16,8 @@
   const treeElement = section.addNewBlankProperty(0);
 
   // Flush the pane's throttler and then stall it.
-  const originalDoUpdate = () => treeElement._parentPane.doUpdate();
-  await treeElement._parentPane.update();
+  const originalDoUpdate = () => treeElement.parentPane().doUpdate();
+  await treeElement.parentPane().update();
 
   // Trigger a model change that will schedule a pane update.
   // Once editing begins, we expect any scheduled updates to be suppressed.
@@ -38,7 +38,7 @@
   }
 
   function dumpFocus() {
-    const element = document.deepActiveElement();
+    const element = Platform.DOMUtilities.deepActiveElement(document);
     TestRunner.addResult(`Active element: ${element.tagName}, ${element.className}`);
   }
 })();

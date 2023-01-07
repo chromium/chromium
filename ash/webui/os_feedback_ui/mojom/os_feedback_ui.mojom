@@ -1,0 +1,243 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file contains Mojo interfaces for the Cros Feedback tool, a SWA.
+// The tool provides inline assistive capabilities. As a user types text
+// describing an issue, the tool sends the text to Chromebook help service to
+// find relevant help articles and forum discussions. The top five links are
+// then displayed as suggested help content.
+//
+// The high level design is outlined below:
+// -[A] The input textbox is hosted in trusted context (chrome://os-feedback).
+// -[B] The online search is implemented in the browser process (c++).
+// -[C] The help content is hosted in untrusted context (chrome-untrusted://).
+// -[D] The untrusted context [C] is embedded in [A] inside an iframe.
+// -[E] Mojo is used to fetch the help content in [A](UI/JS) from [B](C++).
+// -[F] PostMessage is used to pass the help content fetched from [A](JS) to
+//      [D](JS). In the future, mojo will be used to replace postMessage.
+
+module ash.os_feedback_ui.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/safe_base_name.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
+
+// The type of help content.
+enum HelpContentType {
+  // Used as safety fallback default.
+  kUnknown,
+  // A help article.
+  kArticle,
+  // A discussion forum thread from community.
+  kForum
+};
+
+// Represent a help content. Although the data is fetched from service provided
+// by Google, it should be treated as untrustworthy.
+struct HelpContent {
+  // The title of the help content.
+  mojo_base.mojom.String16 title;
+  // The url of the help content.
+  url.mojom.Url url;
+  // The type of the help content.
+  HelpContentType content_type;
+};
+
+// Use to hold data for a search request.
+struct SearchRequest {
+  // The query to send to helpcontent search service.
+  mojo_base.mojom.String16 query;
+  // The maximum number of help contents to return per search.
+  uint32 max_results;
+};
+
+// Use to hold data for the search result.
+struct SearchResponse {
+  // The list of help contents to be sent back in response.
+  array<HelpContent> results;
+  // The total number of help contents found.
+  uint32 total_results;
+};
+
+// Interface for searching for help contents. Implemented in the browser
+// process. The interface is called from WebUI chrome://os-feedback.
+interface HelpContentProvider {
+  // [E] Returns top max_result help contents from online search.
+  GetHelpContents(SearchRequest request) => (SearchResponse response);
+};
+
+// Used to hold context info when the feedback tool is opened.
+struct FeedbackContext {
+  // The e-mail of the user that initiated this feedback.
+  string? email;
+  // Whether or not the signed in email is an internal google account.
+  bool is_internal_account;
+  // Whether or not the feedback app is opened from Assistant.
+  bool from_assistant;
+  // Whether or not the assistant debug info is allowed by user.
+  bool assistant_debug_info_allowed;
+  // The URL of the page that this issue was being experienced on.
+  url.mojom.Url?  page_url;
+  // Extra diagnostics information provided by source CrOS application by
+  // setting the extra_diagnostics query parameter when opening the CrOS
+  // Feedback app. Content of extra_diagnostics is added to
+  // a collection of key-value pairs, and eventually is serialized to a text
+  // file, zipped, and then attached to the report.
+  // Example value: "Failed to connect to wifi network.".
+  string? extra_diagnostics;
+  // When a report is sent with bluetooth logs, the category_tag will be set
+  // to BluetoothReportWithLogs.
+  string? category_tag;
+  // The performance trace id.
+  int32 trace_id;
+};
+
+// Status of the sending of a feedback report.
+enum SendReportStatus {
+  // Used as safety fallback default.
+  kUnknown,
+  // Indicating that the backend has successfully received all the data
+  // and the report is being sent.
+  kSuccess,
+  // Indicating that although the backend has successfully received all
+  // the data but because the device is offline, the report will be sent
+  // automatically later when the device is back online.
+  kDelayed
+};
+
+// Used to hold the content and name of the attached file chosen by users.
+// Both fields are required.
+struct AttachedFile {
+  // The content of a file.
+  mojo_base.mojom.BigBuffer file_data;
+  // The name of the file.
+  mojo_base.mojom.SafeBaseName file_name;
+};
+
+// Used to hold all data and flags for the feedback report to be sent.
+struct Report {
+  // The context info when the feedback tool is opened. Some fields may have
+  // been updated by the user. They will be needed directly or indirectly to
+  // generate the final report.
+  FeedbackContext feedback_context;
+  // The feedback text describing the user issue.
+  mojo_base.mojom.String16 description;
+  // The optional attached file info.
+  AttachedFile? attached_file;
+  // Whether or not to send system logs and metrics/histograms with this report.
+  bool include_system_logs_and_histograms;
+  // Whether or not to include the screenshot with this report. The screenshot
+  // data should have been cached in C++ side.
+  bool include_screenshot;
+  // Whether or not consent has been granted to Google for to contact user in
+  // reference to report. See (go/feedback-user-consent-faq).
+  bool contact_user_consent_granted;
+  // Whether or not the report has sendBluetoothLogs
+  // flag set true by internal google account only.
+  bool send_bluetooth_logs;
+};
+
+// The first action taken on the confirmation page.
+enum FeedbackAppPostSubmitAction {
+  // User send a new report.
+  kSendNewReport,
+  // User close app by clicking done button.
+  kClickDoneButton,
+  // User open explore app.
+  kOpenExploreApp,
+  // User open diagnostics app.
+  kOpenDiagnosticsApp,
+  // User open chromebook community link.
+  kOpenChromebookCommunity,
+  // User close app by clicking x button on the top right.
+  kCloseFeedbackApp
+
+  // NOTE: If you add any entries to this enum, you must also update the
+  // corresponding UMA FeedbackAppPostSubmitAction at
+  // tools/metrics/histograms/enums.xml.
+};
+
+// User actions before sending the feedback.
+enum FeedbackAppPreSubmitAction {
+  // User clicked the help content on search page.
+  kViewedHelpContent,
+  // User viewed the screenshot on share data page.
+  kViewedScreenshot,
+  // User viewed the selected image to be attached on share data page.
+  kViewedImage,
+  // User viewed the system and app info on share data page.
+  kViewedSystemAndAppInfo,
+  // User viewed the metrics on share data page.
+  kViewedMetrics
+};
+
+// User exit paths.
+enum FeedbackAppExitPath {
+  // User quit on search page after clicking some help contents.
+  kQuitSearchPageHelpContentClicked,
+  // User quit on search page without clicking some help contents.
+  kQuitSearchPageNoHelpContentClicked,
+  // User close on search page because no help content is shown (Offline or
+  // Search is down).
+  kQuitNoHelpContentDisplayed,
+  // User close on share data page after clicking some help contents.
+  kQuitShareDataPageHelpContentClicked,
+  // User close on share data page without clicking some help contents.
+  kQuitShareDataPageNoHelpContentClicked,
+  // User submit feedback and click the help content.
+  kSuccessHelpContentClicked,
+  // User submit feedback without clicking the help content.
+  kSuccessNoHelpContentClicked
+};
+
+// The outcome of checking help contents.
+enum FeedbackAppHelpContentOutcome {
+  // User click continue after clicking the help content.
+  kContinueHelpContentClicked,
+  // User click continue without clicking any help content.
+  kContinueNoHelpContentClicked,
+  // User click continue despite no help content is displayed.
+  kContinueNoHelpContentDisplayed,
+  // User quit feedback app after clicking the help content.
+  kQuitHelpContentClicked,
+  // User quit feedback app without clicking any help content.
+  kQuitNoHelpContentClicked,
+  // User quit feedback app because no help content is displayed.
+  kQuitNoHelpContentDisplayed,
+};
+
+// Provides services needed by the feedback UI to display data and send reports.
+// Implemented in the browser process and called by the Feedback SWA
+// (a renderer process).
+interface FeedbackServiceProvider {
+  // Returns the feedback context info, e.g., the email of the currently active
+  // or logged in user, the URL of the active page, etc.
+  GetFeedbackContext() => (FeedbackContext feedback_context);
+  // Returns the screenshot of the primary display in PNG format taken before
+  // the feedback tool is launched.
+  GetScreenshotPng() => (array<uint8> png_data);
+  // Sends a feedback report and returns its status.
+  SendReport(Report report) => (SendReportStatus status);
+  // Open Diagnostics app.
+  OpenDiagnosticsApp();
+  // Open Explore app.
+  OpenExploreApp();
+  // Open metrics dialog (which displays chrome://histograms).
+  OpenMetricsDialog();
+  // Open system info dialog (which displays the system logs
+  // to be sent with the report if the user has opted in).
+  OpenSystemInfoDialog();
+  // Record the metrics of users' first action on confirmation page.
+  RecordPostSubmitAction(FeedbackAppPostSubmitAction action);
+  // Record metrics of users' action before sending the feedback.
+  RecordPreSubmitAction(FeedbackAppPreSubmitAction action);
+  // Record metrics of users' exit paths of feedback app.
+  RecordExitPath(FeedbackAppExitPath exit_path);
+  // Record the outcome of clicking and viewing the help content.
+  RecordHelpContentOutcome(FeedbackAppHelpContentOutcome outcome);
+  // Record metrics of number of results returned in each search, fires when
+  // user clicks help content.
+  RecordHelpContentSearchResultCount(int32 count);
+};

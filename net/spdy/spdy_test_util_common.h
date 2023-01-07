@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,11 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "crypto/ec_private_key.h"
-#include "crypto/ec_signature_creator.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
@@ -34,9 +34,7 @@
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_config_service_defaults.h"
-#include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_storage.h"
+#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_REPORTING)
@@ -49,6 +47,7 @@ class GURL;
 namespace net {
 
 class CTPolicyEnforcer;
+class ClientSocketFactory;
 class HashValue;
 class HostPortPair;
 class HostResolver;
@@ -59,12 +58,13 @@ class SpdySessionKey;
 class SpdyStream;
 class SpdyStreamRequest;
 class TransportSecurityState;
+class URLRequestContextBuilder;
 
 // Default upload data used by both, mock objects and framer when creating
 // data frames.
 const char kDefaultUrl[] = "https://www.example.org/";
 const char kUploadData[] = "hello!";
-const int kUploadDataSize = base::size(kUploadData) - 1;
+const int kUploadDataSize = std::size(kUploadData) - 1;
 
 // While HTTP/2 protocol defines default SETTINGS_MAX_HEADER_LIST_SIZE_FOR_TEST
 // to be unlimited, BufferedSpdyFramer constructor requires a value.
@@ -124,7 +124,9 @@ base::WeakPtr<SpdyStream> CreateStreamSynchronously(
     const base::WeakPtr<SpdySession>& session,
     const GURL& url,
     RequestPriority priority,
-    const NetLogWithSource& net_log);
+    const NetLogWithSource& net_log,
+    bool detect_broken_connection = false,
+    base::TimeDelta heartbeat_interval = base::Seconds(0));
 
 // Helper class used by some tests to release a stream as soon as it's
 // created.
@@ -141,38 +143,6 @@ class StreamReleaserCallback : public TestCompletionCallbackBase {
   void OnComplete(SpdyStreamRequest* request, int result);
 };
 
-// An ECSignatureCreator that returns deterministic signatures.
-class MockECSignatureCreator : public crypto::ECSignatureCreator {
- public:
-  explicit MockECSignatureCreator(crypto::ECPrivateKey* key);
-
-  // crypto::ECSignatureCreator
-  bool Sign(const uint8_t* data,
-            int data_len,
-            std::vector<uint8_t>* signature) override;
-  bool DecodeSignature(const std::vector<uint8_t>& signature,
-                       std::vector<uint8_t>* out_raw_sig) override;
-
- private:
-  crypto::ECPrivateKey* key_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockECSignatureCreator);
-};
-
-// An ECSignatureCreatorFactory creates MockECSignatureCreator.
-class MockECSignatureCreatorFactory : public crypto::ECSignatureCreatorFactory {
- public:
-  MockECSignatureCreatorFactory();
-  ~MockECSignatureCreatorFactory() override;
-
-  // crypto::ECSignatureCreatorFactory
-  std::unique_ptr<crypto::ECSignatureCreator> Create(
-      crypto::ECPrivateKey* key) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockECSignatureCreatorFactory);
-};
-
 // Helper to manage the lifetimes of the dependencies for a
 // HttpNetworkTransaction.
 struct SpdySessionDependencies {
@@ -183,7 +153,11 @@ struct SpdySessionDependencies {
   explicit SpdySessionDependencies(
       std::unique_ptr<ProxyResolutionService> proxy_resolution_service);
 
+  SpdySessionDependencies(SpdySessionDependencies&&);
+
   ~SpdySessionDependencies();
+
+  SpdySessionDependencies& operator=(SpdySessionDependencies&&);
 
   HostResolver* GetHostResolver() {
     return alternate_host_resolver ? alternate_host_resolver.get()
@@ -198,9 +172,9 @@ struct SpdySessionDependencies {
   static std::unique_ptr<HttpNetworkSession> SpdyCreateSessionWithSocketFactory(
       SpdySessionDependencies* session_deps,
       ClientSocketFactory* factory);
-  static HttpNetworkSession::Params CreateSessionParams(
+  static HttpNetworkSessionParams CreateSessionParams(
       SpdySessionDependencies* session_deps);
-  static HttpNetworkSession::Context CreateSessionContext(
+  static HttpNetworkSessionContext CreateSessionContext(
       SpdySessionDependencies* session_deps);
 
   // NOTE: host_resolver must be ordered before http_auth_handler_factory.
@@ -221,37 +195,35 @@ struct SpdySessionDependencies {
   std::unique_ptr<ReportingService> reporting_service;
   std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service;
 #endif
-  bool enable_ip_pooling;
-  bool enable_ping;
-  bool enable_user_alternate_protocol_ports;
-  bool enable_quic;
-  bool enable_server_push_cancellation;
-  size_t session_max_recv_window_size;
-  int session_max_queued_capped_frames;
+  bool enable_ip_pooling = true;
+  bool enable_ping = false;
+  bool enable_user_alternate_protocol_ports = false;
+  bool enable_quic = false;
+  bool enable_server_push_cancellation = false;
+  size_t session_max_recv_window_size = kDefaultInitialWindowSize;
+  int session_max_queued_capped_frames = kSpdySessionMaxQueuedCappedFrames;
   spdy::SettingsMap http2_settings;
   SpdySession::TimeFunc time_func;
-  bool enable_http2_alternative_service;
-  bool enable_websocket_over_http2;
-  base::Optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
-  bool http2_end_stream_with_data_frame;
-  NetLog* net_log;
-  bool disable_idle_sockets_close_on_memory_pressure;
-  bool enable_early_data;
-  bool key_auth_cache_server_entries_by_network_isolation_key;
-  bool enable_priority_update;
+  bool enable_http2_alternative_service = false;
+  bool enable_http2_settings_grease = false;
+  absl::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
+  bool http2_end_stream_with_data_frame = false;
+  raw_ptr<NetLog> net_log = nullptr;
+  bool disable_idle_sockets_close_on_memory_pressure = false;
+  bool enable_early_data = false;
+  bool key_auth_cache_server_entries_by_network_anonymization_key = false;
+  bool enable_priority_update = false;
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
+  bool go_away_on_ip_change = true;
+#else
+  bool go_away_on_ip_change = false;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
+  bool ignore_ip_address_changes = false;
 };
 
-class SpdyURLRequestContext : public URLRequestContext {
- public:
-  SpdyURLRequestContext();
-  ~SpdyURLRequestContext() override;
-
-  MockClientSocketFactory& socket_factory() { return socket_factory_; }
-
- private:
-  MockClientSocketFactory socket_factory_;
-  URLRequestContextStorage storage_;
-};
+std::unique_ptr<URLRequestContextBuilder>
+CreateSpdyTestURLRequestContextBuilder(
+    ClientSocketFactory* client_socket_factory);
 
 // Equivalent to pool->GetIfExists(spdy_session_key, NetLogWithSource()) !=
 // NULL.
@@ -264,13 +236,6 @@ base::WeakPtr<SpdySession> CreateSpdySession(HttpNetworkSession* http_session,
                                              const SpdySessionKey& key,
                                              const NetLogWithSource& net_log);
 
-// Like CreateSpdySession(), but the host is considered a trusted proxy and
-// allowed to push cross-origin resources.
-base::WeakPtr<SpdySession> CreateTrustedSpdySession(
-    HttpNetworkSession* http_session,
-    const SpdySessionKey& key,
-    const NetLogWithSource& net_log);
-
 // Like CreateSpdySession(), but does not fail if there is already an IP
 // pooled session for |key|.
 base::WeakPtr<SpdySession> CreateSpdySessionWithIpBasedPoolingDisabled(
@@ -278,33 +243,24 @@ base::WeakPtr<SpdySession> CreateSpdySessionWithIpBasedPoolingDisabled(
     const SpdySessionKey& key,
     const NetLogWithSource& net_log);
 
-// Creates an insecure SPDY session for the given key and puts it in
-// |pool|. The returned session will neither receive nor send any
-// data. A SPDY session for |key| must not already exist.
+// Creates a SPDY session for the given key and puts it in |pool|.
+// The returned session will neither receive nor send any data.
+// A SPDY session for |key| must not already exist.
 base::WeakPtr<SpdySession> CreateFakeSpdySession(SpdySessionPool* pool,
                                                  const SpdySessionKey& key);
-
-// Tries to create an insecure SPDY session for the given key but
-// expects the attempt to fail with the given error. The session will
-// neither receive nor send any data. A SPDY session for |key| must
-// not already exist. The session will be created but close in the
-// next event loop iteration.
-base::WeakPtr<SpdySession> TryCreateFakeSpdySessionExpectingFailure(
-    SpdySessionPool* pool,
-    const SpdySessionKey& key,
-    Error expected_status);
 
 class SpdySessionPoolPeer {
  public:
   explicit SpdySessionPoolPeer(SpdySessionPool* pool);
 
+  SpdySessionPoolPeer(const SpdySessionPoolPeer&) = delete;
+  SpdySessionPoolPeer& operator=(const SpdySessionPoolPeer&) = delete;
+
   void RemoveAliases(const SpdySessionKey& key);
   void SetEnableSendingInitialData(bool enabled);
 
  private:
-  SpdySessionPool* const pool_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpdySessionPoolPeer);
+  const raw_ptr<SpdySessionPool> pool_;
 };
 
 class SpdyTestUtil {

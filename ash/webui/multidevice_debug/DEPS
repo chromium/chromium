@@ -1,0 +1,6 @@
+include_rules = [
+  "+ash/services/device_sync/proto",
+  "+ash/services/device_sync/public/cpp",
+  "+ash/services/multidevice_setup/public/mojom",
+  "+device/bluetooth",
+]

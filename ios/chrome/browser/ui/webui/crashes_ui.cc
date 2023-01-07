@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,19 +11,19 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
 #include "components/crash/core/browser/crashes_ui_util.h"
+#include "components/crash/core/common/reporter_running_ios.h"
 #include "components/grit/dev_ui_components_resources.h"
 #include "components/strings/grit/components_chromium_strings.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/crash_report/crash_upload_list.h"
 #include "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
+#include "ios/chrome/browser/url/chrome_url_constants.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/web/public/webui/web_ui_ios.h"
 #include "ios/web/public/webui/web_ui_ios_data_source.h"
@@ -47,6 +47,10 @@ web::WebUIIOSDataSource* CreateCrashesUIHTMLSource() {
   source->UseStringsJs();
   source->AddResourcePath(crash_reporter::kCrashesUICrashesJS,
                           IDR_CRASH_CRASHES_JS);
+  source->AddResourcePath(crash_reporter::kCrashesUICrashesCSS,
+                          IDR_CRASH_CRASHES_CSS);
+  source->AddResourcePath(crash_reporter::kCrashesUISadTabSVG,
+                          IDR_CRASH_SADTAB_SVG);
   source->SetDefaultResource(IDR_CRASH_CRASHES_HTML);
   return source;
 }
@@ -61,6 +65,10 @@ web::WebUIIOSDataSource* CreateCrashesUIHTMLSource() {
 class CrashesDOMHandler : public web::WebUIIOSMessageHandler {
  public:
   CrashesDOMHandler();
+
+  CrashesDOMHandler(const CrashesDOMHandler&) = delete;
+  CrashesDOMHandler& operator=(const CrashesDOMHandler&) = delete;
+
   ~CrashesDOMHandler() override;
 
   // WebUIMessageHandler implementation.
@@ -72,7 +80,10 @@ class CrashesDOMHandler : public web::WebUIIOSMessageHandler {
   void OnUploadListAvailable();
 
   // Asynchronously fetches the list of crashes. Called from JS.
-  void HandleRequestCrashes(const base::ListValue* args);
+  void HandleRequestCrashes(const base::Value::List& args);
+
+  // Asynchronously requests a user triggered upload. Called from JS.
+  void HandleRequestSingleCrashUpload(const base::Value::List& args);
 
   // Sends the recent crashes list JS.
   void UpdateUI();
@@ -80,8 +91,6 @@ class CrashesDOMHandler : public web::WebUIIOSMessageHandler {
   scoped_refptr<UploadList> upload_list_;
   bool list_available_;
   bool first_load_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrashesDOMHandler);
 };
 
 CrashesDOMHandler::CrashesDOMHandler()
@@ -100,9 +109,13 @@ void CrashesDOMHandler::RegisterMessages() {
       crash_reporter::kCrashesUIRequestCrashList,
       base::BindRepeating(&CrashesDOMHandler::HandleRequestCrashes,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      crash_reporter::kCrashesUIRequestSingleCrashUpload,
+      base::BindRepeating(&CrashesDOMHandler::HandleRequestSingleCrashUpload,
+                          base::Unretained(this)));
 }
 
-void CrashesDOMHandler::HandleRequestCrashes(const base::ListValue* args) {
+void CrashesDOMHandler::HandleRequestCrashes(const base::Value::List& args) {
   if (first_load_) {
     first_load_ = false;
     if (list_available_)
@@ -114,6 +127,17 @@ void CrashesDOMHandler::HandleRequestCrashes(const base::ListValue* args) {
   }
 }
 
+void CrashesDOMHandler::HandleRequestSingleCrashUpload(
+    const base::Value::List& args) {
+  DCHECK(crash_reporter::IsCrashpadRunning());
+  if (!IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled()) {
+    return;
+  }
+
+  std::string local_id = args[0].GetString();
+  upload_list_->RequestSingleUploadAsync(local_id);
+}
+
 void CrashesDOMHandler::OnUploadListAvailable() {
   list_available_ = true;
   if (!first_load_)
@@ -123,25 +147,23 @@ void CrashesDOMHandler::OnUploadListAvailable() {
 void CrashesDOMHandler::UpdateUI() {
   bool crash_reporting_enabled =
       IOSChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
-  base::ListValue crash_list;
+  base::Value::List crash_list;
   if (crash_reporting_enabled)
     crash_reporter::UploadListToValue(upload_list_.get(), &crash_list);
-  base::Value enabled(crash_reporting_enabled);
-  base::Value dynamic_backend(false);
-  base::Value manual_uploads(false);
-  base::Value version(version_info::GetVersionNumber());
-  base::Value os_string(base::SysInfo::OperatingSystemName() + " " +
-                        base::SysInfo::OperatingSystemVersion());
 
-  std::vector<const base::Value*> args;
-  args.push_back(&enabled);
-  args.push_back(&dynamic_backend);
-  args.push_back(&manual_uploads);
-  args.push_back(&crash_list);
-  args.push_back(&version);
-  args.push_back(&os_string);
-  web_ui()->CallJavascriptFunction(crash_reporter::kCrashesUIUpdateCrashList,
-                                   args);
+  base::Value::Dict result;
+  result.Set("enabled", crash_reporting_enabled);
+  result.Set("dynamicBackend", false);
+  result.Set("manualUploads", crash_reporter::IsCrashpadRunning());
+  result.Set("crashes", std::move(crash_list));
+  result.Set("version", version_info::GetVersionNumber());
+  result.Set("os", base::SysInfo::OperatingSystemName() + " " +
+                       base::SysInfo::OperatingSystemVersion());
+
+  base::Value event_name(crash_reporter::kCrashesUIUpdateCrashList);
+
+  base::ValueView args[] = {event_name, result};
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 
 }  // namespace

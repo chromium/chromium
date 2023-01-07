@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,8 +31,9 @@ FileManagerPrivateInternalGetContentMimeTypeFunction::
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetContentMimeTypeFunction::Run() {
-  std::string blob_uuid;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &blob_uuid));
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  const std::string& blob_uuid = args()[0].GetString();
 
   if (blob_uuid.empty()) {
     return RespondNow(Error("fileEntry.file() blob error."));
@@ -71,7 +72,7 @@ void FileManagerPrivateInternalGetContentMimeTypeFunction::SniffMimeType(
     return;
   }
 
-  Respond(OneArgument(base::Value(mime_type)));
+  Respond(WithArguments(mime_type));
 }
 
 FileManagerPrivateInternalGetContentMetadataFunction::
@@ -83,7 +84,7 @@ FileManagerPrivateInternalGetContentMetadataFunction::
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetContentMetadataFunction::Run() {
   using api::file_manager_private_internal::GetContentMetadata::Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->blob_uuid.empty()) {
@@ -166,7 +167,7 @@ void FileManagerPrivateInternalGetContentMetadataFunction::ParserDone(
   }
 
   DCHECK(metadata);
-  std::unique_ptr<base::DictionaryValue> dictionary =
+  base::Value::Dict dictionary =
       extensions::api::file_manager_private::MojoMediaMetadataToValue(
           std::move(metadata));
 
@@ -186,16 +187,16 @@ void FileManagerPrivateInternalGetContentMetadataFunction::ParserDone(
     base::Base64Encode(base::StringPiece(image->data.data(), size), &url);
     url.insert(0, base::StrCat({"data:", image->type, ";base64,"}));
 
-    auto media_thumbnail_image = std::make_unique<base::DictionaryValue>();
-    media_thumbnail_image->SetString("data", std::move(url));
-    media_thumbnail_image->SetString("type", std::move(image->type));
+    base::Value::Dict media_thumbnail_image;
+    media_thumbnail_image.Set("data", std::move(url));
+    media_thumbnail_image.Set("type", std::move(image->type));
 
-    base::ListValue* attached_images_list = nullptr;
-    dictionary->GetList("attachedImages", &attached_images_list);
+    base::Value::List* attached_images_list =
+        dictionary.FindList("attachedImages");
     attached_images_list->Append(std::move(media_thumbnail_image));
   }
 
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dictionary))));
+  Respond(WithArguments(std::move(dictionary)));
 }
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "base/metrics/histogram_macros.h"
 #include "third_party/blink/public/common/permissions_policy/policy_value.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
@@ -16,14 +17,15 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_info.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/size.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -50,8 +52,8 @@ class NullImageResourceInfo final
     return true;
   }
   bool HasCacheControlNoStoreHeader() const override { return false; }
-  base::Optional<ResourceError> GetResourceError() const override {
-    return base::nullopt;
+  absl::optional<ResourceError> GetResourceError() const override {
+    return absl::nullopt;
   }
 
   void SetDecodedSize(size_t) override {}
@@ -111,7 +113,10 @@ void ImageResourceContent::SetImageResourceInfo(ImageResourceInfo* info) {
 
 void ImageResourceContent::Trace(Visitor* visitor) const {
   visitor->Trace(info_);
+  visitor->Trace(observers_);
+  visitor->Trace(finished_observers_);
   ImageObserver::Trace(visitor);
+  MediaTiming::Trace(visitor);
 }
 
 void ImageResourceContent::HandleObserverFinished(
@@ -147,7 +152,7 @@ void ImageResourceContent::AddObserver(ImageResourceObserver* observer) {
     observer->ImageChanged(this, CanDeferInvalidation::kNo);
   }
 
-  if (IsLoaded() && observers_.Contains(observer))
+  if (IsSufficientContentLoadedForPaint() && observers_.Contains(observer))
     HandleObserverFinished(observer);
 }
 
@@ -166,9 +171,13 @@ void ImageResourceContent::RemoveObserver(ImageResourceObserver* observer) {
     DCHECK(it != finished_observers_.end());
     fully_erased = finished_observers_.erase(it);
   }
-  info_->DidRemoveClientOrObserver();
+  DidRemoveObserver();
   if (fully_erased)
     observer->NotifyImageFullyRemoved(this);
+}
+
+void ImageResourceContent::DidRemoveObserver() {
+  info_->DidRemoveClientOrObserver();
 }
 
 static void PriorityFromObserver(const ImageResourceObserver* observer,
@@ -226,10 +235,10 @@ blink::Image* ImageResourceContent::GetImage() const {
   return image_.get();
 }
 
-IntSize ImageResourceContent::IntrinsicSize(
+gfx::Size ImageResourceContent::IntrinsicSize(
     RespectImageOrientationEnum should_respect_image_orientation) const {
   if (!image_)
-    return IntSize();
+    return gfx::Size();
   RespectImageOrientationEnum respect_orientation =
       ForceOrientationIfNecessary(should_respect_image_orientation);
   return image_->Size(respect_orientation);
@@ -246,31 +255,31 @@ void ImageResourceContent::NotifyObservers(
     NotifyFinishOption notifying_finish_option,
     CanDeferInvalidation defer) {
   {
-    Vector<ImageResourceObserver*> finished_observers_as_vector;
+    HeapVector<Member<ImageResourceObserver>> finished_observers_as_vector;
     {
       ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
           this);
-      finished_observers_as_vector = finished_observers_.AsVector();
+      CopyToVector(finished_observers_, finished_observers_as_vector);
       std::sort(finished_observers_as_vector.begin(), finished_observers_as_vector.end(),
-                recordreplay::CompareByPointerId());
+                recordreplay::CompareMemberByPointerId<Member<ImageResourceObserver>>());
     }
 
-    for (auto* observer : finished_observers_as_vector) {
+    for (ImageResourceObserver* observer : finished_observers_as_vector) {
       if (finished_observers_.Contains(observer))
         observer->ImageChanged(this, defer);
     }
   }
   {
-    Vector<ImageResourceObserver*> observers_as_vector;
+    HeapVector<Member<ImageResourceObserver>> observers_as_vector;
     {
       ProhibitAddRemoveObserverInScope prohibit_add_remove_observer_in_scope(
           this);
-      observers_as_vector = observers_.AsVector();
+      CopyToVector(observers_, observers_as_vector);
       std::sort(observers_as_vector.begin(), observers_as_vector.end(),
-                recordreplay::CompareByPointerId());
+                recordreplay::CompareMemberByPointerId<Member<ImageResourceObserver>>());
     }
 
-    for (auto* observer : observers_as_vector) {
+    for (ImageResourceObserver* observer : observers_as_vector) {
       if (observers_.Contains(observer)) {
         observer->ImageChanged(this, defer);
         if (notifying_finish_option == kShouldNotifyFinish &&
@@ -304,7 +313,7 @@ scoped_refptr<Image> ImageResourceContent::CreateImage(bool is_multipart) {
 void ImageResourceContent::ClearImage() {
   if (!image_)
     return;
-  int64_t length = image_->Data() ? image_->Data()->size() : 0;
+  int64_t length = image_->HasData() ? image_->DataSize() : 0;
   v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(-length);
 
   // If our Image has an observer, it's always us so we need to clear the back
@@ -481,27 +490,34 @@ ImageDecoder::CompressionFormat ImageResourceContent::GetCompressionFormat()
                                             GetResponse().HttpContentType());
 }
 
+uint64_t ImageResourceContent::ContentSizeForEntropy() const {
+  int64_t resource_length = GetResponse().ExpectedContentLength();
+  if (resource_length <= 0) {
+    if (image_ && image_->HasData()) {
+      // WPT and LayoutTests server returns -1 or 0 for the content length.
+      resource_length = image_->DataSize();
+    } else {
+      resource_length = 0;
+    }
+  }
+  return resource_length;
+}
+
 bool ImageResourceContent::IsAcceptableCompressionRatio(
     ExecutionContext& context) {
   if (!image_)
     return true;
 
-  uint64_t pixels = image_->Size().Area();
+  uint64_t pixels = image_->Size().Area64();
   if (!pixels)
     return true;
-
-  double resource_length =
-      static_cast<double>(GetResponse().ExpectedContentLength());
-  if (resource_length <= 0 && image_->Data()) {
-    // WPT and LayoutTests server returns -1 or 0 for the content length.
-    resource_length = static_cast<double>(image_->Data()->size());
-  }
 
   // Calculate the image's compression ratio (in bytes per pixel) with both 1k
   // and 10k overhead. The constant overhead allowance is provided to allow room
   // for headers and to account for small images (which are harder to compress).
-  double compression_ratio_1k = (resource_length - 1024) / pixels;
-  double compression_ratio_10k = (resource_length - 10240) / pixels;
+  double raw_bpp = static_cast<double>(ContentSizeForEntropy()) / pixels;
+  double compression_ratio_1k = raw_bpp - (1024 / pixels);
+  double compression_ratio_10k = raw_bpp - (10240 / pixels);
 
   ImageDecoder::CompressionFormat compression_format = GetCompressionFormat();
 
@@ -607,6 +623,14 @@ void ImageResourceContent::EmulateLoadStartedForInspector(
   info_->EmulateLoadStartedForInspector(fetcher, url, initiator_name);
 }
 
+void ImageResourceContent::SetIsSufficientContentLoadedForPaint() {
+  NOTREACHED();
+}
+
+bool ImageResourceContent::IsSufficientContentLoadedForPaint() const {
+  return IsLoaded();
+}
+
 bool ImageResourceContent::IsLoaded() const {
   return GetContentStatus() > ResourceStatus::kPending;
 }
@@ -628,7 +652,19 @@ ResourceStatus ImageResourceContent::GetContentStatus() const {
   return content_status_;
 }
 
-// TODO(hiroshige): Consider removing the following methods, or stoping
+bool ImageResourceContent::IsAnimatedImage() const {
+  return image_ && !image_->IsNull() && image_->MaybeAnimated();
+}
+
+bool ImageResourceContent::IsPaintedFirstFrame() const {
+  return IsAnimatedImage() && image_->CurrentFrameIsComplete();
+}
+
+bool ImageResourceContent::TimingAllowPassed() const {
+  return GetResponse().TimingAllowPassed();
+}
+
+// TODO(hiroshige): Consider removing the following methods, or stopping
 // redirecting to ImageResource.
 const KURL& ImageResourceContent::Url() const {
   return info_->Url();
@@ -654,7 +690,7 @@ const ResourceResponse& ImageResourceContent::GetResponse() const {
   return info_->GetResponse();
 }
 
-base::Optional<ResourceError> ImageResourceContent::GetResourceError() const {
+absl::optional<ResourceError> ImageResourceContent::GetResourceError() const {
   return info_->GetResourceError();
 }
 

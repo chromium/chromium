@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,23 +14,23 @@
 
 namespace {
 
-testing::AssertionResult HasArg(const base::ListValue* args,
+testing::AssertionResult HasArg(const base::Value::List& args,
                                 const char name[]) {
-  const base::DictionaryValue* arg;
-
-  for (size_t i = 0; i < args->GetSize(); ++i) {
-    if (!args->GetDictionary(i, &arg) || arg->size() != 1)
+  for (size_t i = 0; i < args.size(); ++i) {
+    const base::Value& arg = args[i];
+    if (!arg.is_dict() || arg.DictSize() != 1) {
       return testing::AssertionFailure() << " malformed argument for index "
                                          << i;
+    }
 
-    if (arg->HasKey(name))
+    if (arg.FindKey(name)) {
       return testing::AssertionSuccess() << " argument '" << name
                                          << "' found at index " << i;
+    }
   }
 
   return testing::AssertionFailure() << "argument not found: '" << name << "'";
 }
-
 }
 
 namespace content {
@@ -59,49 +59,70 @@ TEST(SkiaBenchmarkingExtensionTest, BenchmarkingCanvas) {
   benchmarking_canvas.restore();
 
   // Verify the recorded commands.
-  const base::ListValue& ops = benchmarking_canvas.Commands();
-  ASSERT_EQ(ops.GetSize(), static_cast<size_t>(5));
+  const base::Value::List& ops = benchmarking_canvas.Commands();
+  ASSERT_EQ(ops.size(), static_cast<size_t>(5));
 
   size_t index = 0;
-  const base::DictionaryValue* op;
-  const base::ListValue* op_args;
-  std::string op_name;
+  const base::Value* value;
+  const base::Value::Dict* op;
+  const base::Value::List* op_args;
+  const std::string* op_name;
 
-  ASSERT_TRUE(ops.GetDictionary(index++, &op));
-  EXPECT_TRUE(op->GetString("cmd_string", &op_name));
-  EXPECT_EQ(op_name, "Save");
-  ASSERT_TRUE(op->GetList("info", &op_args));
-  EXPECT_EQ(op_args->GetSize(), static_cast<size_t>(0));
+  value = &ops[index++];
+  ASSERT_TRUE(value->is_dict());
+  op = &value->GetDict();
+  op_name = op->FindString("cmd_string");
+  ASSERT_TRUE(op_name);
+  EXPECT_EQ(*op_name, "Save");
+  op_args = op->FindList("info");
+  ASSERT_TRUE(op_args);
+  EXPECT_TRUE(op_args->empty());
 
-  ASSERT_TRUE(ops.GetDictionary(index++, &op));
-  EXPECT_TRUE(op->GetString("cmd_string", &op_name));
-  EXPECT_EQ(op_name, "ClipRect");
-  ASSERT_TRUE(op->GetList("info", &op_args));
-  EXPECT_EQ(op_args->GetSize(), static_cast<size_t>(3));
-  EXPECT_TRUE(HasArg(op_args, "rect"));
-  EXPECT_TRUE(HasArg(op_args, "op"));
-  EXPECT_TRUE(HasArg(op_args, "anti-alias"));
+  value = &ops[index++];
+  ASSERT_TRUE(value->is_dict());
+  op = &value->GetDict();
+  op_name = op->FindString("cmd_string");
+  ASSERT_TRUE(op_name);
+  EXPECT_EQ(*op_name, "ClipRect");
+  op_args = op->FindList("info");
+  ASSERT_TRUE(op_args);
+  EXPECT_EQ(op_args->size(), static_cast<size_t>(3));
+  EXPECT_TRUE(HasArg(*op_args, "rect"));
+  EXPECT_TRUE(HasArg(*op_args, "op"));
+  EXPECT_TRUE(HasArg(*op_args, "anti-alias"));
 
-  ASSERT_TRUE(ops.GetDictionary(index++, &op));
-  EXPECT_TRUE(op->GetString("cmd_string", &op_name));
-  EXPECT_EQ(op_name, "SetMatrix");
-  ASSERT_TRUE(op->GetList("info", &op_args));
-  EXPECT_EQ(op_args->GetSize(), static_cast<size_t>(1));
-  EXPECT_TRUE(HasArg(op_args, "matrix"));
+  value = &ops[index++];
+  ASSERT_TRUE(value->is_dict());
+  op = &value->GetDict();
+  op_name = op->FindString("cmd_string");
+  ASSERT_TRUE(op_name);
+  EXPECT_EQ(*op_name, "SetMatrix");
+  op_args = op->FindList("info");
+  ASSERT_TRUE(op_args);
+  EXPECT_EQ(op_args->size(), static_cast<size_t>(1));
+  EXPECT_TRUE(HasArg(*op_args, "matrix"));
 
-  ASSERT_TRUE(ops.GetDictionary(index++, &op));
-  EXPECT_TRUE(op->GetString("cmd_string", &op_name));
-  EXPECT_EQ(op_name, "DrawRect");
-  ASSERT_TRUE(op->GetList("info", &op_args));
-  EXPECT_EQ(op_args->GetSize(), static_cast<size_t>(2));
-  EXPECT_TRUE(HasArg(op_args, "rect"));
-  EXPECT_TRUE(HasArg(op_args, "paint"));
+  value = &ops[index++];
+  ASSERT_TRUE(value->is_dict());
+  op = &value->GetDict();
+  op_name = op->FindString("cmd_string");
+  ASSERT_TRUE(op_name);
+  EXPECT_EQ(*op_name, "DrawRect");
+  op_args = op->FindList("info");
+  ASSERT_TRUE(op_args);
+  EXPECT_EQ(op_args->size(), static_cast<size_t>(2));
+  EXPECT_TRUE(HasArg(*op_args, "rect"));
+  EXPECT_TRUE(HasArg(*op_args, "paint"));
 
-  ASSERT_TRUE(ops.GetDictionary(index++, &op));
-  EXPECT_TRUE(op->GetString("cmd_string", &op_name));
-  EXPECT_EQ(op_name, "Restore");
-  ASSERT_TRUE(op->GetList("info", &op_args));
-  EXPECT_EQ(op_args->GetSize(), static_cast<size_t>(0));
+  value = &ops[index++];
+  ASSERT_TRUE(value->is_dict());
+  op = &value->GetDict();
+  op_name = op->FindString("cmd_string");
+  ASSERT_TRUE(op_name);
+  EXPECT_EQ(*op_name, "Restore");
+  op_args = op->FindList("info");
+  ASSERT_TRUE(op_args);
+  EXPECT_TRUE(op_args->empty());
 }
 
 } // namespace content

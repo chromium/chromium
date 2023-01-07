@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #error "JavaBridge only supports OS_ANDROID"
 #endif
 
@@ -191,8 +191,8 @@ void GinJavaBridgeMessageFilter::OnHasMethod(
 void GinJavaBridgeMessageFilter::OnInvokeMethod(
     GinJavaBoundObject::ObjectID object_id,
     const std::string& method_name,
-    const base::ListValue& arguments,
-    base::ListValue* wrapped_result,
+    const base::Value::List& arguments,
+    base::Value::List* wrapped_result,
     content::GinJavaBridgeError* error_code) {
   DCHECK(JavaBridgeThread::CurrentlyOn());
   scoped_refptr<GinJavaBridgeDispatcherHost> host = FindHost();
@@ -200,7 +200,7 @@ void GinJavaBridgeMessageFilter::OnInvokeMethod(
     host->OnInvokeMethod(current_routing_id_, object_id, method_name, arguments,
                          wrapped_result, error_code);
   } else {
-    wrapped_result->Append(std::make_unique<base::Value>());
+    wrapped_result->Append(base::Value());
     *error_code = kGinJavaBridgeRenderFrameDeleted;
   }
 }

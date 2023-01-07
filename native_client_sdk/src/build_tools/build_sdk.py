@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -342,8 +342,7 @@ def GnNinjaInstall(pepperdir, toolchains):
 
 
   if platform == 'linux':
-    tools_files_x86 += [['nonsfi_loader', 'nonsfi_loader_x86_32'],
-                        ['nacl_helper_bootstrap',
+    tools_files_x86 += [['nacl_helper_bootstrap',
                          'nacl_helper_bootstrap_x86_32']]
     tools_files_x64 += [['nacl_helper_bootstrap',
                          'nacl_helper_bootstrap_x86_64']]
@@ -356,7 +355,6 @@ def GnNinjaInstall(pepperdir, toolchains):
       ]
       tools_files_arm += [
         ['nacl_helper_bootstrap', 'nacl_helper_bootstrap_arm'],
-        ['nonsfi_loader', 'nonsfi_loader_arm'],
         ['sel_ldr', 'sel_ldr_arm']
       ]
 

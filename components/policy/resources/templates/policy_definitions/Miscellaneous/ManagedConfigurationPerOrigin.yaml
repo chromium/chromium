@@ -1,0 +1,42 @@
+caption: Sets managed configuration values to websites to specific origins
+desc: "Setting the policy defines the return value of Managed Configuration API for\
+  \ given origin.\n\n      Managed configuration API is a key-value configuration\
+  \ that can be accessed via navigator.managed.getManagedConfiguration() javascript\
+  \ call. This API is only available to origins which correspond to force-installed\
+  \ web applications via <ph name=\"WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME\">WebAppInstallForceList</ph>.\n\
+  \     "
+example_value:
+- managed_configuration_hash: asd891jedasd12ue9h
+  managed_configuration_url: https://gstatic.google.com/configuration.json
+  origin: https://www.google.com
+- managed_configuration_hash: djio12easd89u12aws
+  managed_configuration_url: https://gstatic.google.com/configuration2.json
+  origin: https://www.example.com
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- file://chrome/browser/device_api/OWNERS
+- apotapchuk@chromium.org
+schema:
+  items:
+    properties:
+      managed_configuration_hash:
+        type: string
+      managed_configuration_url:
+        type: string
+      origin:
+        type: string
+    required:
+    - origin
+    - managed_configuration_url
+    - managed_configuration_hash
+    type: object
+  type: array
+supported_on:
+- chrome.*:89-
+- chrome_os:89-
+tags: []
+type: dict

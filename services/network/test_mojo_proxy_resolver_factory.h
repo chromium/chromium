@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/proxy_resolver/proxy_resolver_factory_impl.h"
@@ -21,6 +20,11 @@ class TestMojoProxyResolverFactory
     : public proxy_resolver::mojom::ProxyResolverFactory {
  public:
   TestMojoProxyResolverFactory();
+
+  TestMojoProxyResolverFactory(const TestMojoProxyResolverFactory&) = delete;
+  TestMojoProxyResolverFactory& operator=(const TestMojoProxyResolverFactory&) =
+      delete;
+
   ~TestMojoProxyResolverFactory() override;
 
   // Returns true if CreateResolver was called.
@@ -44,8 +48,6 @@ class TestMojoProxyResolverFactory
   mojo::Receiver<ProxyResolverFactory> receiver_{this};
 
   bool resolver_created_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMojoProxyResolverFactory);
 };
 
 }  // namespace network

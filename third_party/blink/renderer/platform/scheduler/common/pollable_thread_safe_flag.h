@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_POLLABLE_THREAD_SAFE_FLAG_H_
 
 #include "base/atomicops.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -21,6 +20,8 @@ class PollableThreadSafeFlag {
 
  public:
   explicit PollableThreadSafeFlag(base::Lock* write_lock, const char* ordered_name = nullptr);
+  PollableThreadSafeFlag(const PollableThreadSafeFlag&) = delete;
+  PollableThreadSafeFlag& operator=(const PollableThreadSafeFlag&) = delete;
 
   // Set the flag. May only be called if |write_lock| is held.
   void SetWhileLocked(bool value);
@@ -32,8 +33,6 @@ class PollableThreadSafeFlag {
   int ordered_lock_id_;
   base::subtle::Atomic32 flag_;
   base::Lock* write_lock_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(PollableThreadSafeFlag);
 };
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_POLLABLE_THREAD_SAFE_FLAG_H_

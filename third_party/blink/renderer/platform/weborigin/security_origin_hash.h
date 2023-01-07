@@ -31,6 +31,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -44,8 +45,7 @@ namespace blink {
 struct SecurityOriginHash {
   STATIC_ONLY(SecurityOriginHash);
   static unsigned GetHash(const SecurityOrigin* origin) {
-    base::Optional<base::UnguessableToken> nonce =
-        origin->GetNonceForSerialization();
+    const base::UnguessableToken* nonce = origin->GetNonceForSerialization();
     size_t nonce_hash = nonce ? base::UnguessableTokenHash()(*nonce) : 0;
 
     unsigned hash_codes[] = {

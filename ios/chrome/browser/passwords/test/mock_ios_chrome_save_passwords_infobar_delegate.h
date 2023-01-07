@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ class MockIOSChromeSavePasswordInfoBarDelegate
   ~MockIOSChromeSavePasswordInfoBarDelegate() override;
 
   // Factory method that creates a mock save password delegate for pending
-  // with credentials |username| and |password| for the page at |url|.
+  // with credentials `username` and `password` for the page at `url`.
   static std::unique_ptr<MockIOSChromeSavePasswordInfoBarDelegate> Create(
       NSString* username,
       NSString* password,

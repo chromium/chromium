@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "device/bluetooth/bluez/metrics_recorder.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/stl_util.h"
 
 namespace bluetooth {
 namespace {
@@ -26,9 +26,33 @@ const char kBlueZAgentNotAvailableError[] = "org.bluez.Error.AgentNotAvailable";
 const char kBlueZNotReadyError[] = "org.bluez.Error.NotReady";
 const char kBlueZFailedError[] = "org.bluez.Error.Failed";
 
+// Note: These values are sourced from the "BR/EDR connection failure reasons"
+// in BlueZ's error.h file, and should be kept in sync.
+const char kBlueZConnectionAlreadyConnected[] =
+    "br-connection-already-connected";
+const char kBlueZPageTimeout[] = "br-connection-page-timeout";
+const char kBlueZProfileUnavailable[] = "br-connection-profile-unavailable";
+const char kBlueZSdpSearch[] = "br-connection-sdp-search";
+const char kBlueZCreateSocket[] = "br-connection-create-socket";
+const char kBlueZInvalidArgument[] = "br-connection-invalid-argument";
+const char kBlueZAdapterNotPowered[] = "br-connection-adapter-not-powered";
+const char kBlueZNotSupported[] = "br-connection-not-supported";
+const char kBlueZBadSocket[] = "br-connection-bad-socket";
+const char kBlueZMemoryAllocation[] = "br-connection-memory-allocation";
+const char kBlueZBusy[] = "br-connection-busy";
+const char kBlueZConcurrentConnectionLimit[] =
+    "br-connection-concurrent-connection-limit";
+const char kBlueZTimeout[] = "br-connection-timeout";
+const char kBlueZRefused[] = "br-connection-refused";
+const char kBlueZAbortedByRemote[] = "br-connection-aborted-by-remote";
+const char kBlueZAbortedByLocal[] = "br-connection-aborted-by-local";
+const char kBlueZLmpProtocolError[] = "br-connection-lmp-protocol-error";
+const char kBlueZCanceled[] = "br-connection-canceled";
+const char kBlueZUnknown[] = "br-connection-unknown";
+
 }  // namespace
 
-base::Optional<ConnectToServiceInsecurelyResult> ExtractResultFromErrorString(
+absl::optional<ConnectToServiceInsecurelyResult> ExtractResultFromErrorString(
     const std::string& error_string) {
   if (base::Contains(error_string, kBlueZInvalidArgumentsError))
     return ConnectToServiceInsecurelyResult::kInvalidArgumentsError;
@@ -72,13 +96,86 @@ base::Optional<ConnectToServiceInsecurelyResult> ExtractResultFromErrorString(
   if (base::Contains(error_string, kBlueZFailedError))
     return ConnectToServiceInsecurelyResult::kFailedError;
 
-  return base::nullopt;
+  return absl::nullopt;
+}
+
+ConnectToServiceFailureReason ExtractFailureReasonFromErrorString(
+    const std::string& error_string) {
+  if (base::Contains(error_string, kBlueZConnectionAlreadyConnected))
+    return ConnectToServiceFailureReason::kReasonConnectionAlreadyConnected;
+
+  if (base::Contains(error_string, kBlueZPageTimeout))
+    return ConnectToServiceFailureReason::kReasonPageTimeout;
+
+  if (base::Contains(error_string, kBlueZProfileUnavailable))
+    return ConnectToServiceFailureReason::kReasonProfileUnavailable;
+
+  if (base::Contains(error_string, kBlueZSdpSearch))
+    return ConnectToServiceFailureReason::kReasonSdpSearch;
+
+  if (base::Contains(error_string, kBlueZCreateSocket))
+    return ConnectToServiceFailureReason::kReasonCreateSocket;
+
+  if (base::Contains(error_string, kBlueZInvalidArgument))
+    return ConnectToServiceFailureReason::kReasonInvalidArgument;
+
+  if (base::Contains(error_string, kBlueZAdapterNotPowered))
+    return ConnectToServiceFailureReason::kReasonAdapterNotPowered;
+
+  if (base::Contains(error_string, kBlueZNotSupported))
+    return ConnectToServiceFailureReason::kReasonNotSupported;
+
+  if (base::Contains(error_string, kBlueZBadSocket))
+    return ConnectToServiceFailureReason::kReasonBadSocket;
+
+  if (base::Contains(error_string, kBlueZMemoryAllocation))
+    return ConnectToServiceFailureReason::kReasonMemoryAllocation;
+
+  if (base::Contains(error_string, kBlueZBusy))
+    return ConnectToServiceFailureReason::kReasonBusy;
+
+  if (base::Contains(error_string, kBlueZConcurrentConnectionLimit))
+    return ConnectToServiceFailureReason::kReasonConcurrentConnectionLimit;
+
+  if (base::Contains(error_string, kBlueZTimeout))
+    return ConnectToServiceFailureReason::kReasonTimeout;
+
+  if (base::Contains(error_string, kBlueZRefused))
+    return ConnectToServiceFailureReason::kReasonRefused;
+
+  if (base::Contains(error_string, kBlueZAbortedByRemote))
+    return ConnectToServiceFailureReason::kReasonAbortedByRemote;
+
+  if (base::Contains(error_string, kBlueZAbortedByLocal))
+    return ConnectToServiceFailureReason::kReasonAbortedByLocal;
+
+  if (base::Contains(error_string, kBlueZLmpProtocolError))
+    return ConnectToServiceFailureReason::kReasonLmpProtocolError;
+
+  if (base::Contains(error_string, kBlueZCanceled))
+    return ConnectToServiceFailureReason::kReasonCanceled;
+
+  if (base::Contains(error_string, kBlueZUnknown))
+    return ConnectToServiceFailureReason::kReasonUnknown;
+
+  return ConnectToServiceFailureReason::kReasonUnknown;
 }
 
 void RecordConnectToServiceInsecurelyResult(
     ConnectToServiceInsecurelyResult result) {
   base::UmaHistogramEnumeration(
       "Bluetooth.Linux.ConnectToServiceInsecurelyResult", result);
+}
+
+void RecordConnectToServiceFailureReason(ConnectToServiceFailureReason reason) {
+  base::UmaHistogramEnumeration(
+      "Bluetooth.Linux.ConnectToService.FailureReason", reason);
+}
+
+void RecordBondedConnectToServiceFailureReason(
+    ConnectToServiceFailureReason reason) {
+  base::UmaHistogramEnumeration(
+      "Bluetooth.Linux.ConnectToService.Bonded.FailureReason", reason);
 }
 
 }  // namespace bluetooth

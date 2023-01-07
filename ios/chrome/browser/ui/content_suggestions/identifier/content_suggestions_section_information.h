@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,12 +20,8 @@ typedef NS_ENUM(NSInteger, ContentSuggestionsSectionLayout) {
 typedef NS_ENUM(NSInteger, ContentSuggestionsSectionID) {
   ContentSuggestionsSectionLogo = 0,
   ContentSuggestionsSectionReturnToRecentTab,
-  ContentSuggestionsSectionPromo,
   ContentSuggestionsSectionMostVisited,
-  ContentSuggestionsSectionArticles,
-  ContentSuggestionsSectionReadingList,
-  ContentSuggestionsSectionLearnMore,
-  ContentSuggestionsSectionDiscover,
+  ContentSuggestionsSectionSingleCell,
 
   // Do not use this. It will trigger a DCHECK.
   // Do not add value after this one.
@@ -50,7 +46,7 @@ typedef NS_ENUM(NSInteger, ContentSuggestionsSectionID) {
 // Text to be displayed when the section is empty.
 @property(nonatomic, copy) NSString* emptyText;
 // If the section should be shown when empty at loading. If the section becomes
-// empty because the user dismissed suggestions, the |emptyText| must be shown
+// empty because the user dismissed suggestions, the `emptyText` must be shown
 // in both cases.
 @property(nonatomic, assign) BOOL showIfEmpty;
 // If the section should be expanded (fully visible) or collapsed (only show the

@@ -1,0 +1,74 @@
+<html>
+  <meta charset="UTF-8" />
+  <title>Test matching variable system fonts through FontConfig</title>
+  <style type="text/css">
+    .horizontalgrid {
+      display: flex;
+      font-synthesis: none;
+      font-size: 40px;
+    }
+
+    .gridcell {
+      flex: 1;
+      padding: 10px;
+      overflow: visible;
+    }
+
+    #explanation {
+      font-family: sans-serif;
+      font-size: 14px;
+    }
+
+    #ja {
+      font-family: Noto Sans CJK JP;
+    }
+
+    #ko {
+      font-family: Noto Sans CJK KR;
+    }
+
+    #zh_HANS {
+      font-family: Noto Sans CJK SC;
+    }
+
+    #zh_HANT {
+      font-family: Noto Sans CJK TC;
+    }
+
+    #zh_HK {
+      font-family: Noto Sans CJK HK;
+    }
+  </style>
+  <body>
+    <div id="explanation">
+      This tests test for matching variable weights from the Noto Sans CJK
+      variable font collection in test_fonts. Each line of each block is
+      expected to display with a gradually increasing weight.
+    </div>
+    <div class="horizontalgrid">
+      <div id="ja" class="gridcell"></div>
+      <div id="ko" class="gridcell"></div>
+      <div id="zh_HANS" class="gridcell"></div>
+      <div id="zh_HANT" class="gridcell"></div>
+      <div id="zh_HK" class="gridcell"></div>
+    </div>
+    <script>
+      function weightWaterfallForWord(element_id, word) {
+        var element = document.getElementById(element_id);
+        weights = [100, 300, 350, 400, 500, 700, 900];
+        for (const weight of weights) {
+          wordElement = document.createElement("div");
+          wordElement.setAttribute("style", `font-weight: ${weight}`);
+          wordElement.innerText = word;
+          element.appendChild(wordElement);
+        }
+      }
+
+      weightWaterfallForWord("ja", "クロム");
+      weightWaterfallForWord("ko", "크롬");
+      weightWaterfallForWord("zh_HANS", "铬合金");
+      weightWaterfallForWord("zh_HANT", "鉻合金");
+      weightWaterfallForWord("zh_HK", "鉻合金");
+    </script>
+  </body>
+</html>

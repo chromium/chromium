@@ -1,0 +1,80 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("cpp") {
+  sources = [
+    "nearby_client_uuids.cc",
+    "nearby_client_uuids.h",
+    "nearby_process_manager.cc",
+    "nearby_process_manager.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//components/keyed_service/core",
+  ]
+}
+
+# Create separate build target to avoid circular dependencies with
+# //chromeos/ash/services/nearby/public/mojom
+static_library("tcp_server_socket_port") {
+  sources = [
+    "tcp_server_socket_port.cc",
+    "tcp_server_socket_port.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_firewall_hole.h",
+    "fake_firewall_hole_factory.cc",
+    "fake_firewall_hole_factory.h",
+    "fake_nearby_process_manager.cc",
+    "fake_nearby_process_manager.h",
+    "fake_tcp_connected_socket.cc",
+    "fake_tcp_connected_socket.h",
+    "fake_tcp_server_socket.cc",
+    "fake_tcp_server_socket.h",
+    "fake_tcp_socket_factory.cc",
+    "fake_tcp_socket_factory.h",
+    "mock_nearby_connections.cc",
+    "mock_nearby_connections.h",
+    "mock_nearby_process_manager.cc",
+    "mock_nearby_process_manager.h",
+    "mock_nearby_sharing_decoder.cc",
+    "mock_nearby_sharing_decoder.h",
+  ]
+
+  deps = [
+    ":cpp",
+    ":tcp_server_socket_port",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/services/nearby/public/mojom",
+    "//mojo/public/cpp/bindings/",
+    "//services/network/public/mojom",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "tcp_server_socket_port_unittest.cc" ]
+
+  deps = [
+    ":tcp_server_socket_port",
+    "//base",
+    "//testing/gtest",
+  ]
+}

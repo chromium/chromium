@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,10 +24,19 @@ std::unique_ptr<SyntheticPointerDriver> SyntheticPointerDriver::Create(
     case content::mojom::GestureSourceType::kPenInput:
       return std::make_unique<SyntheticPenDriver>();
     case content::mojom::GestureSourceType::kDefaultInput:
-      return std::unique_ptr<SyntheticPointerDriver>();
+      return nullptr;
   }
   NOTREACHED();
-  return std::unique_ptr<SyntheticPointerDriver>();
+  return nullptr;
+}
+
+// static
+std::unique_ptr<SyntheticPointerDriver> SyntheticPointerDriver::Create(
+    content::mojom::GestureSourceType gesture_source_type,
+    bool from_devtools_debugger) {
+  auto driver = Create(gesture_source_type);
+  driver->from_devtools_debugger_ = from_devtools_debugger;
+  return driver;
 }
 
 }  // namespace content

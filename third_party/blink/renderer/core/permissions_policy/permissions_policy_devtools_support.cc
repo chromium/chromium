@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,24 +12,36 @@
 
 namespace blink {
 
-base::Optional<PermissionsPolicyBlockLocator> TracePermissionsPolicyBlockSource(
+absl::optional<PermissionsPolicyBlockLocator> TracePermissionsPolicyBlockSource(
     Frame* frame,
     mojom::PermissionsPolicyFeature feature) {
   const PermissionsPolicy* current_policy =
       frame->GetSecurityContext()->GetPermissionsPolicy();
   DCHECK(current_policy);
   if (current_policy->IsFeatureEnabled(feature))
-    return base::nullopt;
+    return absl::nullopt;
+
+  // All permissions are disabled by default for fenced frames, irrespective of
+  // headers (see PermissionsPolicy::CreateForFencedFrame).
+  if (frame->IsInFencedFrameTree()) {
+    return PermissionsPolicyBlockLocator{
+        IdentifiersFactory::FrameId(frame),
+        PermissionsPolicyBlockReason::kInFencedFrameTree,
+    };
+  }
 
   Frame* current_frame = frame;
   Frame* child_frame = nullptr;
 
   // Trace up the frame tree until feature is not disabled by inherited policy
-  // in |current_frame|.
-  // After the trace up, the only 2 possibilities for a feature to be disabled
+  // in |current_frame| or until reaching the top of the frame tree for
+  // isolated apps.
+  // After the trace up, the only 3 possibilities for a feature to be disabled
   // become
   // - The HTTP header of |current_frame|.
   // - The iframe attribute on |child_frame|'s html frame owner element.
+  // - The frame tree belongs to an isolated app, which must not have have the
+  //   feature enabled at the top level frame.
   while (true) {
     DCHECK(current_frame);
     current_policy =
@@ -38,6 +50,15 @@ base::Optional<PermissionsPolicyBlockLocator> TracePermissionsPolicyBlockSource(
 
     if (current_policy->IsFeatureEnabledByInheritedPolicy(feature))
       break;
+
+    // For isolated apps, the top level frame might not have the feature
+    // enabled.
+    if (!current_frame->Tree().Parent()) {
+      return PermissionsPolicyBlockLocator{
+          IdentifiersFactory::FrameId(current_frame),
+          PermissionsPolicyBlockReason::kInIsolatedApp,
+      };
+    }
 
     child_frame = current_frame;
     current_frame = current_frame->Tree().Parent();

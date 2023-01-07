@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/syncer_error.h"
@@ -35,6 +34,9 @@ SyncProtocolError ConvertErrorPBToSyncProtocolError(
 
 class SyncerProtoUtil {
  public:
+  SyncerProtoUtil(const SyncerProtoUtil&) = delete;
+  SyncerProtoUtil& operator=(const SyncerProtoUtil&) = delete;
+
   // Adds all fields that must be sent on every request, which includes store
   // birthday, protocol version, client chips, api keys, etc. |msg| must be not
   // null. Must be called before calling PostClientToServerMessage().
@@ -72,7 +74,7 @@ class SyncerProtoUtil {
   static void SetProtocolVersion(sync_pb::ClientToServerMessage* msg);
 
  private:
-  SyncerProtoUtil() {}
+  SyncerProtoUtil() = default;
 
   // Helper functions for PostClientToServerMessage.
 
@@ -91,7 +93,6 @@ class SyncerProtoUtil {
   // Post the message using the scm, and do some processing on the returned
   // headers. Decode the server response.
   static bool PostAndProcessHeaders(ServerConnectionManager* scm,
-                                    SyncCycle* cycle,
                                     const sync_pb::ClientToServerMessage& msg,
                                     sync_pb::ClientToServerResponse* response);
 
@@ -104,8 +105,6 @@ class SyncerProtoUtil {
   FRIEND_TEST_ALL_PREFIXES(SyncerProtoUtilTest, PostAndProcessHeaders);
   FRIEND_TEST_ALL_PREFIXES(SyncerProtoUtilTest, HandleThrottlingNoDatatypes);
   FRIEND_TEST_ALL_PREFIXES(SyncerProtoUtilTest, HandleThrottlingWithDatatypes);
-
-  DISALLOW_COPY_AND_ASSIGN(SyncerProtoUtil);
 };
 
 }  // namespace syncer

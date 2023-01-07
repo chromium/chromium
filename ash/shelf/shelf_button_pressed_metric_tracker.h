@@ -1,15 +1,12 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_SHELF_SHELF_BUTTON_PRESSED_METRIC_TRACKER_H_
 #define ASH_SHELF_SHELF_BUTTON_PRESSED_METRIC_TRACKER_H_
 
-#include <memory>
-
 #include "ash/ash_export.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"
@@ -38,6 +35,12 @@ class ASH_EXPORT ShelfButtonPressedMetricTracker {
       kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName[];
 
   ShelfButtonPressedMetricTracker();
+
+  ShelfButtonPressedMetricTracker(const ShelfButtonPressedMetricTracker&) =
+      delete;
+  ShelfButtonPressedMetricTracker& operator=(
+      const ShelfButtonPressedMetricTracker&) = delete;
+
   ~ShelfButtonPressedMetricTracker();
 
   // Records metrics based on the |event|, |sender|, and |performed_action|.
@@ -77,9 +80,7 @@ class ASH_EXPORT ShelfButtonPressedMetricTracker {
 
   // Stores the source button of the last window minimize action.
   // NOTE: This may become stale and should not be operated on. Not owned.
-  const views::Button* last_minimized_source_button_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfButtonPressedMetricTracker);
+  const views::Button* last_minimized_source_button_ = nullptr;
 };
 
 }  // namespace ash

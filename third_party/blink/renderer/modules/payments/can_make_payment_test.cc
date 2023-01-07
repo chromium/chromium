@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace {
@@ -86,7 +87,7 @@ TEST(HasEnrolledInstrumentTest, ReturnHasNoEnrolledInstrument) {
   static_cast<PaymentRequestClient*>(request)->OnHasEnrolledInstrument(
       HasEnrolledInstrumentQueryResult::HAS_NO_ENROLLED_INSTRUMENT);
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ("false", captor);
 }
 
@@ -103,7 +104,7 @@ TEST(HasEnrolledInstrumentTest, ReturnHasEnrolledInstrument) {
   static_cast<PaymentRequestClient*>(request)->OnHasEnrolledInstrument(
       HasEnrolledInstrumentQueryResult::HAS_ENROLLED_INSTRUMENT);
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ("true", captor);
 }
 
@@ -161,7 +162,7 @@ TEST(CanMakePaymentTest, ReturnCannotMakePayment) {
   static_cast<PaymentRequestClient*>(request)->OnCanMakePayment(
       CanMakePaymentQueryResult::CANNOT_MAKE_PAYMENT);
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ("false", captor);
 }
 
@@ -178,7 +179,7 @@ TEST(CanMakePaymentTest, ReturnCanMakePayment) {
   static_cast<PaymentRequestClient*>(request)->OnCanMakePayment(
       CanMakePaymentQueryResult::CAN_MAKE_PAYMENT);
 
-  v8::MicrotasksScope::PerformCheckpoint(scope.GetScriptState()->GetIsolate());
+  scope.PerformMicrotaskCheckpoint();
   EXPECT_EQ("true", captor);
 }
 

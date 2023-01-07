@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 #include <cstring>
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -18,15 +18,16 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/settings/cros_settings_names.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/remove_user_delegate.h"
@@ -35,6 +36,8 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/common/features/feature_session_type.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,20 +45,6 @@ namespace ash {
 
 // TODO(https://crbug.com/1164001): remove after the class is migrated
 using ::chromeos::SystemSaltGetter;
-
-class UnittestProfileManager : public ::ProfileManagerWithoutInit {
- public:
-  explicit UnittestProfileManager(const base::FilePath& user_data_dir)
-      : ::ProfileManagerWithoutInit(user_data_dir) {}
-
- protected:
-  std::unique_ptr<Profile> CreateProfileHelper(
-      const base::FilePath& path) override {
-    if (!base::PathExists(path) && !base::CreateDirectory(path))
-      return nullptr;
-    return std::make_unique<TestingProfile>(path);
-  }
-};
 
 class UnittestRemoveUserDelegate : public user_manager::RemoveUserDelegate {
  public:
@@ -82,6 +71,43 @@ class UnittestRemoveUserDelegate : public user_manager::RemoveUserDelegate {
   bool has_user_removed_;
 };
 
+class UserManagerObserverTest : public user_manager::UserManager::Observer {
+ public:
+  UserManagerObserverTest() = default;
+
+  UserManagerObserverTest(const UserManagerObserverTest&) = delete;
+  UserManagerObserverTest& operator=(const UserManagerObserverTest&) = delete;
+
+  ~UserManagerObserverTest() override = default;
+
+  // user_manager::UserManager::Observer:
+  void OnUserToBeRemoved(const AccountId& account_id) override {
+    ++on_user_to_be_removed_call_count_;
+    expected_account_id_ = account_id;
+  }
+
+  // user_manager::UserManager::Observer:
+  void OnUserRemoved(const AccountId& account_id,
+                     user_manager::UserRemovalReason reason) override {
+    ++on_user_removed_call_count_;
+    EXPECT_EQ(expected_account_id_, account_id);
+  }
+
+  int OnUserToBeRemovedCallCount() { return on_user_to_be_removed_call_count_; }
+
+  int OnUserRemovedCallCount() { return on_user_removed_call_count_; }
+
+  void ResetCallCounts() {
+    on_user_to_be_removed_call_count_ = 0;
+    on_user_removed_call_count_ = 0;
+  }
+
+ private:
+  AccountId expected_account_id_;
+  int on_user_to_be_removed_call_count_ = 0;
+  int on_user_removed_call_count_ = 0;
+};
+
 class MockRemoveUserManager : public ChromeUserManagerImpl {
  public:
   MOCK_CONST_METHOD1(AsyncRemoveCryptohome, void(const AccountId&));
@@ -89,14 +115,16 @@ class MockRemoveUserManager : public ChromeUserManagerImpl {
 
 class UserManagerTest : public testing::Test {
  public:
-  UserManagerTest() {}
+  UserManagerTest() {
+    session_type_ = extensions::ScopedCurrentFeatureSessionType(
+        extensions::GetCurrentFeatureSessionType());
+  }
 
  protected:
   void SetUp() override {
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
     command_line.AppendSwitch(::switches::kTestType);
-    command_line.AppendSwitch(
-        chromeos::switches::kIgnoreUserProfileMappingForTests);
+    command_line.AppendSwitch(switches::kIgnoreUserProfileMappingForTests);
 
     settings_helper_.ReplaceDeviceSettingsProviderWithStub();
 
@@ -104,14 +132,14 @@ class UserManagerTest : public testing::Test {
     SetDeviceSettings(false, "", false);
 
     // Register an in-memory local settings instance.
-    local_state_.reset(
-        new ScopedTestingLocalState(TestingBrowserProcess::GetGlobal()));
+    local_state_ = std::make_unique<ScopedTestingLocalState>(
+        TestingBrowserProcess::GetGlobal());
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
-        new UnittestProfileManager(temp_dir_.GetPath()));
+        std::make_unique<FakeProfileManager>(temp_dir_.GetPath()));
 
-    chromeos::DBusThreadManager::Initialize();
+    ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
     ResetUserManager();
 
@@ -125,13 +153,13 @@ class UserManagerTest : public testing::Test {
 
     // Shut down the DeviceSettingsService.
     DeviceSettingsService::Get()->UnsetSessionManager();
-    TestingBrowserProcess::GetGlobal()->SetProfileManager(NULL);
+    TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
 
     // Unregister the in-memory local settings instance.
     local_state_.reset();
 
     base::RunLoop().RunUntilIdle();
-    chromeos::DBusThreadManager::Shutdown();
+    ConciergeClient::Shutdown();
   }
 
   ChromeUserManagerImpl* GetChromeUserManager() const {
@@ -164,7 +192,8 @@ class UserManagerTest : public testing::Test {
         ChromeUserManagerImpl::CreateChromeUserManager());
 
     // ChromeUserManagerImpl ctor posts a task to reload policies.
-    base::RunLoop().RunUntilIdle();
+    // Also ensure that all existing ongoing user manager tasks are completed.
+    task_environment_.RunUntilIdle();
   }
 
   std::unique_ptr<MockRemoveUserManager> CreateMockRemoveUserManager() const {
@@ -177,8 +206,6 @@ class UserManagerTest : public testing::Test {
     settings_helper_.SetBoolean(kAccountsPrefEphemeralUsersEnabled,
                                 ephemeral_users_enabled);
     settings_helper_.SetString(kDeviceOwner, owner);
-    settings_helper_.SetBoolean(kAccountsPrefSupervisedUsersEnabled,
-                                supervised_users_enabled);
   }
 
   void RetrieveTrustedDevicePolicies() {
@@ -193,6 +220,18 @@ class UserManagerTest : public testing::Test {
       AccountId::FromUserEmailGaiaId("user1@invalid.domain", "9012345678");
 
  protected:
+  // The call chain
+  // - `ProfileRequiresPolicyUnknown`
+  // - `UserManagerBase::UserLoggedIn()`
+  // - `ChromeUserManagerImpl::NotifyOnLogin()`
+  // - `UserSessionManager::InitNonKioskExtensionFeaturesSessionType()`
+  // calls
+  // `extensions::SetCurrentFeatureSessionType(FeatureSessionType::kRegular)`
+  //
+  // |session_type_| is used to capture the original session type during |SetUp|
+  // and set it back to what it was during |TearDown|.
+  std::unique_ptr<base::AutoReset<extensions::mojom::FeatureSessionType>>
+      session_type_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
 
@@ -235,24 +274,48 @@ TEST_F(UserManagerTest, RemoveUser) {
   ASSERT_EQ(2U, user_manager->GetUsers().size());
 
   // Removing logged-in account is unacceptable.
-  user_manager->RemoveUser(account_id0_at_invalid_domain_, nullptr);
+  user_manager->RemoveUser(account_id0_at_invalid_domain_,
+                           user_manager::UserRemovalReason::UNKNOWN,
+                           /*delegate=*/nullptr);
   EXPECT_EQ(2U, user_manager->GetUsers().size());
 
   // Recreate the user manager to log out all accounts.
   user_manager = CreateMockRemoveUserManager();
+  UserManagerObserverTest observer_test;
+  user_manager->AddObserver(&observer_test);
   ASSERT_EQ(2U, user_manager->GetUsers().size());
   ASSERT_EQ(0U, user_manager->GetLoggedInUsers().size());
 
   // Removing non-owner account is acceptable.
   EXPECT_CALL(*user_manager, AsyncRemoveCryptohome(testing::_)).Times(1);
+  // Get a pointer to the user that will be removed.
+  user_manager::User* user_to_remove = nullptr;
+  for (user_manager::User* user : user_manager->GetUsers()) {
+    if (user->GetAccountId() == account_id0_at_invalid_domain_) {
+      user_to_remove = user;
+      break;
+    }
+  }
+  ASSERT_TRUE(user_to_remove);
+  ASSERT_EQ(account_id0_at_invalid_domain_, user_to_remove->GetAccountId());
   UnittestRemoveUserDelegate delegate(account_id0_at_invalid_domain_);
-  user_manager->RemoveUser(account_id0_at_invalid_domain_, &delegate);
+  // Pass the account id of the user to be removed from the user list to verify
+  // that a reference to the account id will not be used after user removal.
+  user_manager->RemoveUser(user_to_remove->GetAccountId(),
+                           user_manager::UserRemovalReason::UNKNOWN, &delegate);
   EXPECT_TRUE(delegate.HasBeforeUserRemoved());
   EXPECT_TRUE(delegate.HasUserRemoved());
+  EXPECT_EQ(1, observer_test.OnUserToBeRemovedCallCount());
+  EXPECT_EQ(1, observer_test.OnUserRemovedCallCount());
   EXPECT_EQ(1U, user_manager->GetUsers().size());
 
   // Removing owner account is unacceptable.
-  user_manager->RemoveUser(owner_account_id_at_invalid_domain_, nullptr);
+  observer_test.ResetCallCounts();
+  user_manager->RemoveUser(owner_account_id_at_invalid_domain_,
+                           user_manager::UserRemovalReason::UNKNOWN,
+                           /*delegate=*/nullptr);
+  EXPECT_EQ(0, observer_test.OnUserToBeRemovedCallCount());
+  EXPECT_EQ(0, observer_test.OnUserRemovedCallCount());
   EXPECT_EQ(1U, user_manager->GetUsers().size());
 }
 
@@ -327,8 +390,9 @@ TEST_F(UserManagerTest, ScreenLockAvailability) {
       false /* browser_restart */, false /* is_child */);
   user_manager::User* const user =
       user_manager::UserManager::Get()->GetActiveUser();
-  Profile* const profile =
-      ProfileHelper::GetProfileByUserIdHashForTest(user->username_hash());
+  Profile* const profile = profiles::testing::CreateProfileSync(
+      g_browser_process->profile_manager(),
+      ash::ProfileHelper::GetProfilePathByUserIdHash(user->username_hash()));
 
   // Verify that the user is allowed to lock the screen.
   EXPECT_TRUE(user_manager::UserManager::Get()->CanCurrentUserLock());
@@ -346,9 +410,10 @@ TEST_F(UserManagerTest, ProfileRequiresPolicyUnknown) {
   user_manager::UserManager::Get()->UserLoggedIn(
       owner_account_id_at_invalid_domain_,
       owner_account_id_at_invalid_domain_.GetUserEmail(), false, false);
-  EXPECT_EQ(user_manager::known_user::ProfileRequiresPolicy::kUnknown,
-            user_manager::known_user::GetProfileRequiresPolicy(
-                owner_account_id_at_invalid_domain_));
+  user_manager::KnownUser known_user(local_state_->Get());
+  EXPECT_EQ(
+      user_manager::ProfileRequiresPolicy::kUnknown,
+      known_user.GetProfileRequiresPolicy(owner_account_id_at_invalid_domain_));
   ResetUserManager();
 }
 

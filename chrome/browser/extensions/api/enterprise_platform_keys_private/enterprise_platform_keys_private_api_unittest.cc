@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -65,7 +65,8 @@ class EPKPChallengeKeyTestBase : public BrowserWithTestWindowTest {
   virtual void SetAuthenticatedUser() {
     auto* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
-    signin::MakePrimaryAccountAvailable(identity_manager, kUserEmail);
+    signin::MakePrimaryAccountAvailable(identity_manager, kUserEmail,
+                                        signin::ConsentLevel::kSync);
   }
 
   scoped_refptr<const Extension> extension_;
@@ -103,15 +104,15 @@ TEST_F(EPKPChallengeMachineKeyTest, Success) {
   SetMockTpmChallenger();
 
   base::ListValue allowlist;
-  allowlist.AppendString(extension_->id());
+  allowlist.Append(extension_->id());
   prefs_->Set(prefs::kAttestationExtensionAllowlist, allowlist);
 
   std::unique_ptr<base::Value> value(utils::RunFunctionAndReturnSingleResult(
       func_.get(), kFuncArgs, browser(), extensions::api_test_utils::NONE));
 
-  std::string response;
-  value->GetAsString(&response);
-  EXPECT_EQ("cmVzcG9uc2U=" /* Base64 encoding of 'response' */, response);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ("cmVzcG9uc2U=" /* Base64 encoding of 'response' */,
+            value->GetString());
 }
 
 class EPKPChallengeUserKeyTest : public EPKPChallengeKeyTestBase {
@@ -142,15 +143,15 @@ TEST_F(EPKPChallengeUserKeyTest, Success) {
   SetMockTpmChallenger();
 
   base::ListValue allowlist;
-  allowlist.AppendString(extension_->id());
+  allowlist.Append(extension_->id());
   prefs_->Set(prefs::kAttestationExtensionAllowlist, allowlist);
 
   std::unique_ptr<base::Value> value(utils::RunFunctionAndReturnSingleResult(
       func_.get(), kFuncArgs, browser(), extensions::api_test_utils::NONE));
 
-  std::string response;
-  value->GetAsString(&response);
-  EXPECT_EQ("cmVzcG9uc2U=" /* Base64 encoding of 'response' */, response);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ("cmVzcG9uc2U=" /* Base64 encoding of 'response' */,
+            value->GetString());
 }
 
 }  // namespace

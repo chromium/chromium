@@ -1,0 +1,19 @@
+{
+  "name": "Manifest with tab strip customizations",
+  "icons": [
+    {
+      "src": "launcher-icon-4x.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "tab_strip_customizations.html",
+  "display": "standalone",
+  "display_override": [ "tabbed" ],
+  "tab_strip": {
+    "home_tab": {},
+    "new_tab_button": {
+      "url": "favicon_only.html"
+    }
+  }
+}

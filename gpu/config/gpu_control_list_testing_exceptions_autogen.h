@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -128,7 +128,7 @@ const GpuControlList::Conditions kExceptionsForEntry44[2] = {
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
          GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
         0x8086,                                                    // vendor_id
-        base::size(
+        std::size(
             kDevicesForGpuControlTestingEntry44Exception0),  // Devices size
         kDevicesForGpuControlTestingEntry44Exception0,       // Devices
         GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
@@ -148,7 +148,7 @@ const GpuControlList::Conditions kExceptionsForEntry44[2] = {
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
          GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
         0x8086,                                                    // vendor_id
-        base::size(
+        std::size(
             kDevicesForGpuControlTestingEntry44Exception1),  // Devices size
         kDevicesForGpuControlTestingEntry44Exception1,       // Devices
         GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
@@ -200,7 +200,7 @@ const GpuControlList::Conditions kExceptionsForEntry65[1] = {
         nullptr,                                // driver info
         nullptr,                                // GL strings
         nullptr,                                // machine model info
-        base::size(
+        std::size(
             kIntelGpuSeriesForEntry65Exception0),  // intel_gpu_series size
         kIntelGpuSeriesForEntry65Exception0,       // intel_gpu_series
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
@@ -270,18 +270,18 @@ const GpuControlList::Conditions kExceptionsForEntry73[3] = {
     },
 };
 
-const GpuControlList::Conditions kExceptionsForEntry78[2] = {
+const GpuControlList::Conditions kExceptionsForEntry77[2] = {
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
          GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
         0x1002,                                                    // vendor_id
-        base::size(
-            kDevicesForGpuControlTestingEntry78Exception0),  // Devices size
-        kDevicesForGpuControlTestingEntry78Exception0,       // Devices
+        std::size(
+            kDevicesForGpuControlTestingEntry77Exception0),  // Devices size
+        kDevicesForGpuControlTestingEntry77Exception0,       // Devices
         GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
         GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
-        &kDriverInfoForGpuControlTestingEntry78Exception0,  // driver info
+        &kDriverInfoForGpuControlTestingEntry77Exception0,  // driver info
         nullptr,                                            // GL strings
         nullptr,  // machine model info
         0,        // intel_gpu_series size
@@ -289,19 +289,19 @@ const GpuControlList::Conditions kExceptionsForEntry78[2] = {
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
          GpuControlList::kVersionSchemaCommon, nullptr,
          nullptr},                              // intel_gpu_generation
-        &kMoreForEntry78_1440601243Exception0,  // more data
+        &kMoreForEntry77_1440601243Exception0,  // more data
     },
     {
         GpuControlList::kOsAny,  // os_type
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
          GpuControlList::kVersionSchemaCommon, nullptr, nullptr},  // os_version
         0x1002,                                                    // vendor_id
-        base::size(
-            kDevicesForGpuControlTestingEntry78Exception1),  // Devices size
-        kDevicesForGpuControlTestingEntry78Exception1,       // Devices
+        std::size(
+            kDevicesForGpuControlTestingEntry77Exception1),  // Devices size
+        kDevicesForGpuControlTestingEntry77Exception1,       // Devices
         GpuControlList::kMultiGpuCategoryNone,  // multi_gpu_category
         GpuControlList::kMultiGpuStyleNone,     // multi_gpu_style
-        &kDriverInfoForGpuControlTestingEntry78Exception1,  // driver info
+        &kDriverInfoForGpuControlTestingEntry77Exception1,  // driver info
         nullptr,                                            // GL strings
         nullptr,  // machine model info
         0,        // intel_gpu_series size
@@ -309,7 +309,7 @@ const GpuControlList::Conditions kExceptionsForEntry78[2] = {
         {GpuControlList::kUnknown, GpuControlList::kVersionStyleNumerical,
          GpuControlList::kVersionSchemaCommon, nullptr,
          nullptr},                              // intel_gpu_generation
-        &kMoreForEntry78_1440601243Exception1,  // more data
+        &kMoreForEntry77_1440601243Exception1,  // more data
     },
 };
 

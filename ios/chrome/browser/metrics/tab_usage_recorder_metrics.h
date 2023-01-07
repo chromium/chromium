@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,10 @@ extern const char kRendererTerminationSawMemoryWarning[];
 // termination is received.
 extern const char kRendererTerminationAliveRenderers[];
 
+// Name of the histogram to record the total number of tabs when a renderer
+// termination is received.
+extern const char kRendererTerminationTotalTabCount[];
+
 // Name of histogram to record the number of renderers that were alive shortly
 // before a renderer termination. This metric is being recorded in case the OS
 // kills renderers in batches.
@@ -55,7 +59,7 @@ extern const char kRendererTerminationRecentlyAliveRenderers[];
 extern const char kRendererTerminationStateHistogram[];
 
 // The recently alive renderer count metric counts all renderers that were alive
-// x seconds before a renderer termination. |kSecondsBeforeRendererTermination|
+// x seconds before a renderer termination. `kSecondsBeforeRendererTermination`
 // specifies x.
 extern const int kSecondsBeforeRendererTermination;
 

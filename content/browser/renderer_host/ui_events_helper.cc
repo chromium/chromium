@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,7 +80,8 @@ bool MakeUITouchEventsFromWebTouchEvents(
         type, gfx::Point(), timestamp,
         ui::PointerDetails(ui::EventPointerType::kTouch, point.id,
                            point.radius_x, point.radius_y, point.force,
-                           point.rotation_angle),
+                           point.rotation_angle, point.tilt_x, point.tilt_y,
+                           point.tangential_pressure),
         flags);
     uievent->set_location_f(location);
     uievent->set_root_location_f(location);

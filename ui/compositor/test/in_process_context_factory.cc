@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,15 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
-#include "cc/test/pixel_test_output_surface.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -43,12 +44,13 @@
 #include "ui/compositor/test/in_process_context_provider.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #endif
 
@@ -62,90 +64,9 @@ namespace {
 // This should not conflict with ids from RenderWidgetHostImpl or WindowService.
 constexpr uint32_t kDefaultClientId = std::numeric_limits<uint32_t>::max() / 2;
 
-// An OutputSurface implementation that directly draws and swaps to an actual
-// GL surface.
-class DirectOutputSurface : public viz::OutputSurface {
- public:
-  explicit DirectOutputSurface(
-      scoped_refptr<InProcessContextProvider> context_provider)
-      : viz::OutputSurface(context_provider) {
-    capabilities_.output_surface_origin =
-        context_provider->ContextCapabilities().surface_origin;
-  }
-
-  ~DirectOutputSurface() override {}
-
-  // viz::OutputSurface implementation.
-  void BindToClient(viz::OutputSurfaceClient* client) override {
-    client_ = client;
-  }
-  void EnsureBackbuffer() override {}
-  void DiscardBackbuffer() override {}
-  void BindFramebuffer() override {
-    context_provider()->ContextGL()->BindFramebuffer(GL_FRAMEBUFFER, 0);
-  }
-  void Reshape(const gfx::Size& size,
-               float device_scale_factor,
-               const gfx::ColorSpace& color_space,
-               gfx::BufferFormat format,
-               bool use_stencil) override {
-    context_provider()->ContextGL()->ResizeCHROMIUM(
-        size.width(), size.height(), device_scale_factor,
-        color_space.AsGLColorSpace(), gfx::AlphaBitsForBufferFormat(format));
-  }
-  void SwapBuffers(viz::OutputSurfaceFrame frame) override {
-    DCHECK(context_provider_.get());
-    if (frame.sub_buffer_rect) {
-      context_provider_->ContextSupport()->PartialSwapBuffers(
-          *frame.sub_buffer_rect, 0 /* flags */, base::DoNothing(),
-          base::DoNothing());
-    } else {
-      context_provider_->ContextSupport()->Swap(
-          0 /* flags */, base::DoNothing(), base::DoNothing());
-    }
-    gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
-    gpu::SyncToken sync_token;
-    gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
-
-    context_provider_->ContextSupport()->SignalSyncToken(
-        sync_token, base::BindOnce(&DirectOutputSurface::OnSwapBuffersComplete,
-                                   weak_ptr_factory_.GetWeakPtr()));
-  }
-  uint32_t GetFramebufferCopyTextureFormat() override {
-    auto* gl = static_cast<InProcessContextProvider*>(context_provider());
-    return gl->GetCopyTextureInternalFormat();
-  }
-  bool IsDisplayedAsOverlayPlane() const override { return false; }
-  unsigned GetOverlayTextureId() const override { return 0; }
-  bool HasExternalStencilTest() const override { return false; }
-  void ApplyExternalStencil() override {}
-  unsigned UpdateGpuFence() override { return 0; }
-  void SetUpdateVSyncParametersCallback(
-      viz::UpdateVSyncParametersCallback callback) override {}
-  void SetDisplayTransformHint(gfx::OverlayTransform transform) override {}
-  gfx::OverlayTransform GetDisplayTransform() override {
-    return gfx::OVERLAY_TRANSFORM_NONE;
-  }
-
- private:
-  void OnSwapBuffersComplete() {
-    // Metrics tracking in OutputSurfaceClient expects non-null SwapTimings
-    // so we provide dummy values here.
-    base::TimeTicks now = base::TimeTicks::Now();
-    gfx::SwapTimings timings = {now, now};
-    client_->DidReceiveSwapBuffersAck(timings);
-    client_->DidReceivePresentationFeedback(gfx::PresentationFeedback());
-  }
-
-  viz::OutputSurfaceClient* client_ = nullptr;
-  base::WeakPtrFactory<DirectOutputSurface> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DirectOutputSurface);
-};
-
 }  // namespace
 
-// TODO(sgilhuly): This class is managed heavily by InProcessTransportFactory.
+// TODO(rivr): This class is managed heavily by InProcessTransportFactory.
 // Move some of the logic in here and simplify the interface.
 class InProcessContextFactory::PerCompositorData
     : public viz::mojom::DisplayPrivate {
@@ -155,7 +76,7 @@ class InProcessContextFactory::PerCompositorData
     display_->SetVisible(visible);
   }
   void Resize(const gfx::Size& size) override { display_->Resize(size); }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool DisableSwapUntilResize() override {
     display_->DisableSwapUntilResize(base::OnceClosure());
     return true;
@@ -166,7 +87,7 @@ class InProcessContextFactory::PerCompositorData
   }
 #endif
   void SetDisplayColorMatrix(const gfx::Transform& matrix) override {
-    output_color_matrix_ = matrix.matrix();
+    output_color_matrix_ = gfx::TransformToSkM44(matrix);
   }
   void SetDisplayColorSpaces(
       const gfx::DisplayColorSpaces& color_spaces) override {
@@ -182,17 +103,19 @@ class InProcessContextFactory::PerCompositorData
   void AddVSyncParameterObserver(
       mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer)
       override {}
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetVSyncPaused(bool paused) override {}
   void UpdateRefreshRate(float refresh_rate) override {}
   void SetSupportedRefreshRates(
       const std::vector<float>& refresh_rates) override {}
   void PreserveChildSurfaceControls() override {}
+  void SetSwapCompletionCallbackEnabled(bool enabled) override {}
 #endif
-
   void SetDelegatedInkPointRenderer(
-      mojo::PendingReceiver<viz::mojom::DelegatedInkPointRenderer> receiver)
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver)
       override {}
+  void SetStandaloneBeginFrameObserver(
+      mojo::PendingRemote<viz::mojom::BeginFrameObserver> observer) override {}
 
   void SetSurfaceHandle(gpu::SurfaceHandle surface_handle) {
     surface_handle_ = surface_handle;
@@ -206,10 +129,16 @@ class InProcessContextFactory::PerCompositorData
   }
 
   void ResetDisplayOutputParameters() {
-    output_color_matrix_.setIdentity();
+    output_color_matrix_ = SkM44();
     display_color_spaces_ = gfx::DisplayColorSpaces();
     vsync_timebase_ = base::TimeTicks();
     vsync_interval_ = base::TimeDelta();
+  }
+
+  void Bind(
+      mojo::PendingAssociatedReceiver<viz::mojom::DisplayPrivate> remote) {
+    receiver_.reset();
+    receiver_.Bind(std::move(remote));
   }
 
   gpu::SurfaceHandle surface_handle() { return surface_handle_; }
@@ -218,7 +147,7 @@ class InProcessContextFactory::PerCompositorData
   }
   viz::Display* display() { return display_.get(); }
 
-  SkMatrix44 output_color_matrix() { return output_color_matrix_; }
+  SkM44 output_color_matrix() { return output_color_matrix_; }
   gfx::DisplayColorSpaces display_color_spaces() {
     return display_color_spaces_;
   }
@@ -230,25 +159,20 @@ class InProcessContextFactory::PerCompositorData
   std::unique_ptr<viz::BeginFrameSource> begin_frame_source_;
   std::unique_ptr<viz::Display> display_;
 
-  SkMatrix44 output_color_matrix_;
+  SkM44 output_color_matrix_;
   gfx::DisplayColorSpaces display_color_spaces_;
   base::TimeTicks vsync_timebase_;
   base::TimeDelta vsync_interval_;
+
+  mojo::AssociatedReceiver<viz::mojom::DisplayPrivate> receiver_{this};
 };
 
 InProcessContextFactory::InProcessContextFactory(
     viz::HostFrameSinkManager* host_frame_sink_manager,
-    viz::FrameSinkManagerImpl* frame_sink_manager)
-    : InProcessContextFactory(host_frame_sink_manager,
-                              frame_sink_manager,
-                              features::IsUsingSkiaRenderer()) {}
-
-InProcessContextFactory::InProcessContextFactory(
-    viz::HostFrameSinkManager* host_frame_sink_manager,
     viz::FrameSinkManagerImpl* frame_sink_manager,
-    bool use_skia_renderer)
+    bool output_to_window)
     : frame_sink_id_allocator_(kDefaultClientId),
-      use_test_surface_(true),
+      output_to_window_(output_to_window),
       disable_vsync_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableVsyncForTests)),
       host_frame_sink_manager_(host_frame_sink_manager),
@@ -257,9 +181,7 @@ InProcessContextFactory::InProcessContextFactory(
   DCHECK_NE(gl::GetGLImplementation(), gl::kGLImplementationNone)
       << "If running tests, ensure that main() is calling "
       << "gl::GLSurfaceTestSupport::InitializeOneOff()";
-  if (use_skia_renderer)
-    renderer_settings_.use_skia_renderer = true;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   renderer_settings_.release_overlay_resources_after_gpu_query = true;
   // Ensure that tests don't wait for frames that will never come.
   ui::CATransactionCoordinator::Get().DisableForTesting();
@@ -281,69 +203,34 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
   if (shared_worker_context_provider_) {
     // Note: If context is lost, delete reference after releasing the lock.
     base::AutoLock lock(*shared_worker_context_provider_->GetLock());
-    if (shared_worker_context_provider_->ContextGL()
+    if (shared_worker_context_provider_->RasterInterface()
             ->GetGraphicsResetStatusKHR() != GL_NO_ERROR) {
       shared_worker_context_provider_lost = true;
     }
   }
   if (!shared_worker_context_provider_ || shared_worker_context_provider_lost) {
-    constexpr bool support_locking = true;
     shared_worker_context_provider_ = InProcessContextProvider::CreateOffscreen(
-        &gpu_memory_buffer_manager_, &image_factory_, support_locking);
+        &gpu_memory_buffer_manager_, &image_factory_, /*is_worker=*/true);
     auto result = shared_worker_context_provider_->BindToCurrentThread();
     if (result != gpu::ContextResult::kSuccess)
       shared_worker_context_provider_ = nullptr;
   }
 
-  gpu::ContextCreationAttribs attribs;
-  attribs.alpha_size = 8;
-  attribs.blue_size = 8;
-  attribs.green_size = 8;
-  attribs.red_size = 8;
-  attribs.depth_size = 0;
-  attribs.stencil_size = 0;
-  attribs.samples = 0;
-  attribs.sample_buffers = 0;
-  attribs.fail_if_major_perf_caveat = false;
-  attribs.bind_generates_resource = false;
   PerCompositorData* data = per_compositor_data_[compositor.get()].get();
+  mojo::AssociatedRemote<viz::mojom::DisplayPrivate> display_private;
   if (!data)
     data = CreatePerCompositorData(compositor.get());
+  data->Bind(display_private.BindNewEndpointAndPassDedicatedReceiver());
 
-  constexpr bool support_locking = false;
-  scoped_refptr<InProcessContextProvider> context_provider =
-      InProcessContextProvider::Create(attribs, &gpu_memory_buffer_manager_,
-                                       &image_factory_, data->surface_handle(),
-                                       "UICompositor", support_locking);
-
-  auto context_result = context_provider->BindToCurrentThread();
-  DCHECK_EQ(context_result, gpu::ContextResult::kSuccess);
-
-  std::unique_ptr<viz::OutputSurface> display_output_surface;
-  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
-      display_dependency;
-
-  if (renderer_settings_.use_skia_renderer) {
-    auto skia_deps = std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
-        viz::TestGpuServiceHolder::GetInstance()->gpu_service(),
-        gpu::kNullSurfaceHandle);
-    display_dependency =
-        std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
-            std::move(skia_deps));
-    display_output_surface = viz::SkiaOutputSurfaceImpl::Create(
-        display_dependency.get(), renderer_settings_, &debug_settings_);
-  } else if (use_test_surface_) {
-    // The |context_provider| will contain an InProcessCommandBuffer, which will
-    // make a gpu::GpuTaskSchedulerHelper if one is not provided.
-    gfx::SurfaceOrigin surface_origin = gfx::SurfaceOrigin::kBottomLeft;
-    display_output_surface = std::make_unique<cc::PixelTestOutputSurface>(
-        context_provider, surface_origin);
-  } else {
-    // The |context_provider| will contain an InProcessCommandBuffer, which will
-    // make a gpu::GpuTaskSchedulerHelper if one is not provided.
-    display_output_surface =
-        std::make_unique<DirectOutputSurface>(context_provider);
-  }
+  auto skia_deps = std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
+      viz::TestGpuServiceHolder::GetInstance()->gpu_service(),
+      output_to_window_ ? data->surface_handle() : gpu::kNullSurfaceHandle);
+  auto display_dependency =
+      std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
+          std::move(skia_deps));
+  std::unique_ptr<viz::OutputSurface> output_surface =
+      viz::SkiaOutputSurfaceImpl::Create(display_dependency.get(),
+                                         renderer_settings_, &debug_settings_);
 
   auto overlay_processor = std::make_unique<viz::OverlayProcessorStub>();
 
@@ -357,19 +244,19 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
         compositor->task_runner().get());
     time_source->SetTimebaseAndInterval(
         base::TimeTicks(),
-        base::TimeDelta::FromMicroseconds(base::Time::kMicrosecondsPerSecond /
-                                          refresh_rate_));
+        base::Microseconds(base::Time::kMicrosecondsPerSecond / refresh_rate_));
     begin_frame_source = std::make_unique<viz::DelayBasedBeginFrameSource>(
         std::move(time_source), viz::BeginFrameSource::kNotRestartableId);
   }
   auto scheduler = std::make_unique<viz::DisplayScheduler>(
       begin_frame_source.get(), compositor->task_runner().get(),
-      display_output_surface->capabilities().max_frames_pending);
+      output_surface->capabilities().pending_swap_params,
+      /*hint_session_factory=*/nullptr);
 
   data->SetDisplay(std::make_unique<viz::Display>(
       &shared_bitmap_manager_, renderer_settings_, &debug_settings_,
       compositor->frame_sink_id(), std::move(display_dependency),
-      std::move(display_output_surface), std::move(overlay_processor),
+      std::move(output_surface), std::move(overlay_processor),
       std::move(scheduler), compositor->task_runner()));
   frame_sink_manager_->RegisterBeginFrameSource(begin_frame_source.get(),
                                                 compositor->frame_sink_id());
@@ -379,9 +266,10 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
 
   auto layer_tree_frame_sink = std::make_unique<DirectLayerTreeFrameSink>(
       compositor->frame_sink_id(), frame_sink_manager_, data->display(),
-      context_provider, shared_worker_context_provider_,
+      SharedMainThreadContextProvider(), shared_worker_context_provider_,
       compositor->task_runner(), &gpu_memory_buffer_manager_);
-  compositor->SetLayerTreeFrameSink(std::move(layer_tree_frame_sink), data);
+  compositor->SetLayerTreeFrameSink(std::move(layer_tree_frame_sink),
+                                    std::move(display_private));
 
   data->Resize(compositor->size());
 }
@@ -393,9 +281,8 @@ InProcessContextFactory::SharedMainThreadContextProvider() {
           GL_NO_ERROR)
     return shared_main_thread_contexts_;
 
-  constexpr bool support_locking = false;
   shared_main_thread_contexts_ = InProcessContextProvider::CreateOffscreen(
-      &gpu_memory_buffer_manager_, &image_factory_, support_locking);
+      &gpu_memory_buffer_manager_, &image_factory_, /*is_worker=*/false);
   auto result = shared_main_thread_contexts_->BindToCurrentThread();
   if (result != gpu::ContextResult::kSuccess)
     shared_main_thread_contexts_.reset();
@@ -446,11 +333,11 @@ viz::HostFrameSinkManager* InProcessContextFactory::GetHostFrameSinkManager() {
   return host_frame_sink_manager_;
 }
 
-SkMatrix44 InProcessContextFactory::GetOutputColorMatrix(
+SkM44 InProcessContextFactory::GetOutputColorMatrix(
     Compositor* compositor) const {
   auto iter = per_compositor_data_.find(compositor);
   if (iter == per_compositor_data_.end())
-    return SkMatrix44(SkMatrix44::kIdentity_Constructor);
+    return SkM44();
 
   return iter->second->output_color_matrix();
 }
@@ -504,7 +391,7 @@ InProcessContextFactory::CreatePerCompositorData(Compositor* compositor) {
     data->SetSurfaceHandle(tracker->AddSurfaceForNativeWidget(
         gpu::GpuSurfaceTracker::SurfaceRecord(
             widget
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
             // We have to provide a surface too, but we don't have one.  For
             // now, we don't proide it, since nobody should ask anyway.
             // If we ever provide a valid surface here, then GpuSurfaceTracker

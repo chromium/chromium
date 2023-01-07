@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,9 +68,9 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
 
     @CalledByNative
     void setCredential(String displayUrlOrAppName, String username, String password,
-            String displayFederationOrigin) {
-        mCoordinator.setCredential(
-                displayUrlOrAppName, username, password, displayFederationOrigin);
+            String displayFederationOrigin, boolean isInsecureCredential) {
+        mCoordinator.setCredential(displayUrlOrAppName, username, password, displayFederationOrigin,
+                isInsecureCredential);
     }
 
     @CalledByNative

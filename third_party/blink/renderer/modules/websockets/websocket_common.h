@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_WEBSOCKET_COMMON_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_WEBSOCKET_COMMON_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -30,6 +27,10 @@ class MODULES_EXPORT WebSocketCommon {
 
  public:
   WebSocketCommon() = default;
+
+  WebSocketCommon(const WebSocketCommon&) = delete;
+  WebSocketCommon& operator=(const WebSocketCommon&) = delete;
+
   ~WebSocketCommon() = default;
 
   enum State { kConnecting = 0, kOpen = 1, kClosing = 2, kClosed = 3 };
@@ -73,8 +74,6 @@ class MODULES_EXPORT WebSocketCommon {
 
   KURL url_;
   State state_ = kConnecting;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketCommon);
 };
 
 }  // namespace blink

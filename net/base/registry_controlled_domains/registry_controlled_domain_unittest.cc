@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,8 +33,7 @@ namespace test6 {
 
 }  // namespace
 
-namespace net {
-namespace registry_controlled_domains {
+namespace net::registry_controlled_domains {
 
 namespace {
 
@@ -89,7 +88,7 @@ class RegistryControlledDomainTest : public testing::Test {
   template <typename Graph>
   void UseDomainData(const Graph& graph) {
     // This is undone in TearDown.
-    SetFindDomainGraph(graph, sizeof(Graph));
+    SetFindDomainGraphForTesting(graph, sizeof(Graph));
   }
 
   bool CompareDomains(const std::string& url1, const std::string& url2) {
@@ -103,7 +102,7 @@ class RegistryControlledDomainTest : public testing::Test {
     return SameDomainOrHost(g1, g2, EXCLUDE_PRIVATE_REGISTRIES);
   }
 
-  void TearDown() override { SetFindDomainGraph(); }
+  void TearDown() override { ResetFindDomainGraphForTesting(); }
 };
 
 TEST_F(RegistryControlledDomainTest, TestGetDomainAndRegistry) {
@@ -644,5 +643,4 @@ TEST_F(RegistryControlledDomainTest, Permissive) {
 #endif
 }
 
-}  // namespace registry_controlled_domains
-}  // namespace net
+}  // namespace net::registry_controlled_domains

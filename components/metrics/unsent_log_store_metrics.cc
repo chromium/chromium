@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,9 @@
 namespace metrics {
 
 // static
-const base::Feature UnsentLogStoreMetrics::kRecordLastUnsentLogMetadataMetrics =
-    {"RecordLastUnsentLogMetadataMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
+BASE_FEATURE(kRecordLastUnsentLogMetadataMetrics,
+             "RecordLastUnsentLogMetadataMetrics",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 UnsentLogStoreMetrics::UnsentLogStoreMetrics() = default;
 UnsentLogStoreMetrics::~UnsentLogStoreMetrics() = default;

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,8 @@ namespace blink {
 WebString WebFrameContentDumper::DumpFrameTreeAsText(WebLocalFrame* frame,
                                                      size_t max_chars) {
   StringBuilder text;
-  FrameContentAsText(max_chars, To<WebLocalFrameImpl>(frame)->GetFrame(), text);
+  FrameContentAsText(base::checked_cast<wtf_size_t>(max_chars),
+                     To<WebLocalFrameImpl>(frame)->GetFrame(), text);
   return text.ToString();
 }
 

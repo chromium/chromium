@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_NOOP_STORE_H_
 #define COMPONENTS_DOWNLOAD_INTERNAL_BACKGROUND_SERVICE_NOOP_STORE_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/internal/background_service/store.h"
 
@@ -18,6 +17,10 @@ struct Entry;
 class NoopStore : public Store {
  public:
   NoopStore();
+
+  NoopStore(const NoopStore&) = delete;
+  NoopStore& operator=(const NoopStore&) = delete;
+
   ~NoopStore() override;
 
   // Store implementation.
@@ -35,8 +38,6 @@ class NoopStore : public Store {
   bool initialized_;
 
   base::WeakPtrFactory<NoopStore> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NoopStore);
 };
 
 }  // namespace download

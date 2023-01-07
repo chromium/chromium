@@ -1,0 +1,52 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+import("//testing/test.gni")
+
+# Only allow use by targets in this directory unless explicitly specified.
+visibility = [ ":*" ]
+
+# Integration helpers for fuchsia.modular.
+# TODO(crbug.com/1280705): Delete this directory once fully migrated to CFv2.
+source_set("modular") {
+  # Only for use by Fuchsia Components.
+  visibility += [
+    ":unit_tests",
+    "//chromecast/internal/*",
+    "//fuchsia_web/runners/*",
+    "//fuchsia_web/webengine/*",
+  ]
+  sources = [
+    "agent_impl.cc",
+    "agent_impl.h",
+    "agent_manager.cc",
+    "agent_manager.h",
+    "lifecycle_impl.cc",
+    "lifecycle_impl.h",
+  ]
+  deps = [ "//base" ]
+  public_deps = [
+    "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.modular",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  visibility += [ "//fuchsia_web/runners/*" ]
+  sources = [ "agent_impl_unittest.cc" ]
+  deps = [
+    ":modular",
+    "//base",
+    "//base:testfidl",
+    "//base/test:run_all_unittests",
+    "//base/test:test_support",
+    "//fuchsia_web/common/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+  ]
+}

@@ -1,9 +1,10 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
 import("//components/nacl/features.gni")
+import("//components/nacl/toolchain.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 if (enable_nacl) {
@@ -33,11 +34,11 @@ if (enable_nacl) {
     ]
 
     deps = [
-      ":nacl_error_code",
       "//base",
       "//base:base_static",
       "//content/public/common:content_descriptors",
       "//mojo/core/embedder",
+      "//native_client/src/trusted/error_code",
       "//services/service_manager/public/cpp",
     ]
   }
@@ -62,8 +63,6 @@ if (enable_nacl) {
     sources = [
       "nacl_host_messages.cc",
       "nacl_host_messages.h",
-      "nacl_nonsfi_util.cc",
-      "nacl_nonsfi_util.h",
       "pnacl_types.cc",
       "pnacl_types.h",
     ]
@@ -78,8 +77,8 @@ if (enable_nacl) {
     deps = [
       "//base",
       "//build:chromeos_buildflags",
-      "//content/public/common",
       "//url",
+      "//url/ipc:url_ipc",
     ]
 
     if (is_linux || is_chromeos) {
@@ -89,6 +88,8 @@ if (enable_nacl) {
       ]
 
       defines = [ "__STDC_LIMIT_MACROS=1" ]
+
+      deps += [ "//content/common:sandbox_support_linux" ]
     }
   }
 
@@ -103,11 +104,6 @@ if (enable_nacl) {
         "nacl_debug_exception_handler_win.h",
       ]
     }
-  }
-
-  source_set("nacl_error_code") {
-    sources =
-        [ "//native_client/src/trusted/service_runtime/nacl_error_code.h" ]
   }
 
   mojom("mojo_bindings") {
@@ -126,7 +122,7 @@ if (enable_nacl) {
             [ "//components/nacl/common/nacl_types_param_traits.h" ]
         traits_public_deps = [
           ":minimal",
-          ":nacl_error_code",
+          "//native_client/src/trusted/error_code",
         ]
         traits_deps = [ "//ipc" ]
       },
@@ -151,5 +147,8 @@ static_library("switches") {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [ "ENABLE_NACL=$enable_nacl" ]
+  flags = [
+    "ENABLE_NACL=$enable_nacl",
+    "IS_MINIMAL_TOOLCHAIN=$is_minimal_toolchain",
+  ]
 }

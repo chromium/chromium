@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/ash_features.h"
-#include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -17,20 +17,19 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 enum class TestMode { kTablet, kClamshellWithForcedTabletFirstRun };
-
-}  // namespace
 
 class GestureNavigationScreenTest
     : public OobeBaseTest,
@@ -38,7 +37,7 @@ class GestureNavigationScreenTest
  public:
   GestureNavigationScreenTest() {
     feature_list_.InitAndEnableFeature(
-        ash::features::kHideShelfControlsInTabletMode);
+        features::kHideShelfControlsInTabletMode);
   }
   ~GestureNavigationScreenTest() override = default;
 
@@ -49,7 +48,7 @@ class GestureNavigationScreenTest
     OobeBaseTest::SetUpCommandLine(command_line);
   }
   void SetUpOnMainThread() override {
-    ash::ShellTestApi().SetTabletModeEnabledForTest(StartInTabletMode());
+    ShellTestApi().SetTabletModeEnabledForTest(StartInTabletMode());
 
     GestureNavigationScreen* gesture_screen =
         static_cast<GestureNavigationScreen*>(
@@ -72,6 +71,12 @@ class GestureNavigationScreenTest
   void ShowGestureNavigationScreen() {
     WizardController::default_controller()->AdvanceToScreen(
         GestureNavigationScreenView::kScreenId);
+  }
+
+  void PerformLogin() {
+    OobeScreenExitWaiter signin_screen_exit_waiter(GetFirstSigninScreen());
+    login_manager_.LoginAsNewRegularUser();
+    signin_screen_exit_waiter.Wait();
   }
 
   // Checks that `dialog_page` is shown, while also checking that all other oobe
@@ -107,7 +112,7 @@ class GestureNavigationScreenTest
     run_loop.Run();
   }
 
-  base::Optional<GestureNavigationScreen::Result> screen_result_;
+  absl::optional<GestureNavigationScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
 
  private:
@@ -123,6 +128,7 @@ class GestureNavigationScreenTest
   bool screen_exited_ = false;
   base::RepeatingClosure screen_exit_callback_;
   base::test::ScopedFeatureList feature_list_;
+  LoginManagerMixin login_manager_{&mixin_host_};
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -133,6 +139,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Ensure a working flow for the gesture navigation screen.
 IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest, FlowTest) {
+  PerformLogin();
+
   ShowGestureNavigationScreen();
   OobeScreenWaiter(GestureNavigationScreenView::kScreenId).Wait();
 
@@ -181,7 +189,8 @@ IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest, FlowTest) {
 
 // Ensure the flow is skipped when in clamshell mode.
 IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest, ScreenSkippedInClamshell) {
-  ash::ShellTestApi().SetTabletModeEnabledForTest(false);
+  PerformLogin();
+  ShellTestApi().SetTabletModeEnabledForTest(false);
 
   ShowGestureNavigationScreen();
 
@@ -197,6 +206,7 @@ IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest, ScreenSkippedInClamshell) {
 // Ensure the flow is skipped when spoken feedback is enabled.
 IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest,
                        ScreenSkippedWithSpokenFeedbackEnabled) {
+  PerformLogin();
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
 
   ShowGestureNavigationScreen();
@@ -213,6 +223,7 @@ IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest,
 // Ensure the flow is skipped when autoclick is enabled.
 IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest,
                        ScreenSkippedWithAutoclickEnabled) {
+  PerformLogin();
   AccessibilityManager::Get()->EnableAutoclick(true);
 
   ShowGestureNavigationScreen();
@@ -229,6 +240,7 @@ IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest,
 // Ensure the flow is skipped when switch access is enabled.
 IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest,
                        ScreenSkippedWithSwitchAccessEnabled) {
+  PerformLogin();
   AccessibilityManager::Get()->SetSwitchAccessEnabled(true);
 
   ShowGestureNavigationScreen();
@@ -245,8 +257,9 @@ IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest,
 // Ensure the flow is skipped when shelf navigation buttons are enabled.
 IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest,
                        ScreenSkippedWithShelfNavButtonsInTabletModeEnabled) {
+  PerformLogin();
   ProfileManager::GetActiveUserProfile()->GetPrefs()->SetBoolean(
-      ash::prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, true);
+      prefs::kAccessibilityTabletModeShelfNavigationButtonsEnabled, true);
 
   ShowGestureNavigationScreen();
 
@@ -262,6 +275,7 @@ IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest,
 // Ensure the page shown time metrics are being recorded during the gesture
 // navigation screen flow
 IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest, PageShownMetricsTest) {
+  PerformLogin();
   ShowGestureNavigationScreen();
   OobeScreenWaiter(GestureNavigationScreenView::kScreenId).Wait();
 
@@ -295,4 +309,5 @@ IN_PROC_BROWSER_TEST_P(GestureNavigationScreenTest, PageShownMetricsTest) {
       "OOBE.StepCompletionTime.Gesture-navigation", 1);
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

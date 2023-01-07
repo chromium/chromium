@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "cc/paint/paint_flags.h"
@@ -59,8 +59,7 @@ constexpr SkColor kRippleColor = SkColorSetA(gfx::kGoogleBlue600, 0x4C);  // 30%
 constexpr int kMaxRippleBurstRadius = 48;
 constexpr gfx::Tween::Type kBurstAnimationTweenType =
     gfx::Tween::FAST_OUT_SLOW_IN;
-constexpr auto kRippleBurstAnimationDuration =
-    base::TimeDelta::FromMilliseconds(200);
+constexpr auto kRippleBurstAnimationDuration = base::Milliseconds(200);
 
 // Offset of the affordance when it is at the activation threshold. Since the
 // affordance is initially out of content bounds, this is the offset of the
@@ -80,7 +79,7 @@ constexpr float kExtraAffordanceRatio =
 // Parameters defining animation when the affordance is aborted.
 constexpr gfx::Tween::Type kAbortAnimationTweenType =
     gfx::Tween::FAST_OUT_SLOW_IN;
-constexpr auto kAbortAnimationDuration = base::TimeDelta::FromMilliseconds(300);
+constexpr auto kAbortAnimationDuration = base::Milliseconds(300);
 
 bool ShouldNavigateForward(NavigationController* controller,
                            OverscrollMode mode) {
@@ -133,6 +132,10 @@ class Affordance : public ui::LayerDelegate, public gfx::AnimationDelegate {
              OverscrollMode mode,
              const gfx::Rect& content_bounds,
              float max_drag_progress);
+
+  Affordance(const Affordance&) = delete;
+  Affordance& operator=(const Affordance&) = delete;
+
   ~Affordance() override;
 
   // Sets drag progress. 0 means no progress. 1 means full progress. Values more
@@ -181,7 +184,7 @@ class Affordance : public ui::LayerDelegate, public gfx::AnimationDelegate {
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
 
-  GestureNavSimple* const owner_;
+  const raw_ptr<GestureNavSimple> owner_;
 
   const OverscrollMode mode_;
 
@@ -197,7 +200,7 @@ class Affordance : public ui::LayerDelegate, public gfx::AnimationDelegate {
   ui::Layer painted_layer_;
 
   // Image icon of the arrow inside the affordance.
-  const gfx::VectorIcon* arrow_icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> arrow_icon_ = nullptr;
 
   // Values that determine current state of the affordance.
   State state_ = State::DRAGGING;
@@ -206,8 +209,6 @@ class Affordance : public ui::LayerDelegate, public gfx::AnimationDelegate {
   float complete_progress_ = 0.f;
 
   std::unique_ptr<gfx::LinearAnimation> animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(Affordance);
 };
 
 Affordance::Affordance(GestureNavSimple* owner,
@@ -594,10 +595,10 @@ void GestureNavSimple::OnOverscrollModeChange(OverscrollMode old_mode,
   parent->StackAtTop(affordance_->root_layer());
 }
 
-base::Optional<float> GestureNavSimple::GetMaxOverscrollDelta() const {
+absl::optional<float> GestureNavSimple::GetMaxOverscrollDelta() const {
   if (affordance_)
     return max_delta_;
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace content

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,9 +54,9 @@ void JSEventListener::InvokeInternal(EventTarget&,
               : V8EventListener::IgnorePause::kDontIgnore)) {
     return;
   }
-  v8::Maybe<void> maybe_result = event_listener_->InvokeWithoutRunnabilityCheck(
-      event.currentTarget(), &event);
-  ALLOW_UNUSED_LOCAL(maybe_result);
+  [[maybe_unused]] v8::Maybe<void> maybe_result =
+      event_listener_->InvokeWithoutRunnabilityCheck(event.currentTarget(),
+                                                     &event);
 }
 
 void JSEventListener::Trace(Visitor* visitor) const {

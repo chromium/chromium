@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,10 +12,11 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chromecast/public/cast_media_shlib.h"
+#include "media/base/video_transformation.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace chromecast {
 namespace media {
@@ -63,6 +64,27 @@ chromecast::media::VideoPlane::Transform ConvertTransform(
   }
 }
 
+chromecast::media::VideoPlane::Transform ConvertTransform(
+    const ::media::VideoTransformation& transformation) {
+  if (!transformation.mirrored) {
+    switch (transformation.rotation) {
+      case ::media::VIDEO_ROTATION_0:
+        return chromecast::media::VideoPlane::TRANSFORM_NONE;
+      case ::media::VIDEO_ROTATION_90:
+        return chromecast::media::VideoPlane::ROTATE_90;
+      case ::media::VIDEO_ROTATION_180:
+        return chromecast::media::VideoPlane::ROTATE_180;
+      case ::media::VIDEO_ROTATION_270:
+        return chromecast::media::VideoPlane::ROTATE_270;
+    }
+  } else if (transformation.rotation == ::media::VIDEO_ROTATION_0) {
+    return chromecast::media::VideoPlane::FLIP_HORIZONTAL;
+  }
+
+  NOTREACHED();
+  return chromecast::media::VideoPlane::TRANSFORM_NONE;
+}
+
 }  // namespace
 
 // Helper class for calling VideoPlane::SetGeometry with rate-limiting.
@@ -84,6 +106,11 @@ class VideoPlaneController::RateLimitedSetVideoPlaneGeometry
         sample_counter_(0),
         task_runner_(task_runner) {}
 
+  RateLimitedSetVideoPlaneGeometry(const RateLimitedSetVideoPlaneGeometry&) =
+      delete;
+  RateLimitedSetVideoPlaneGeometry& operator=(
+      const RateLimitedSetVideoPlaneGeometry&) = delete;
+
   void SetGeometry(const chromecast::RectF& display_rect,
                    VideoPlane::Transform transform) {
     DCHECK(task_runner_->BelongsToCurrentThread());
@@ -92,7 +119,7 @@ class VideoPlaneController::RateLimitedSetVideoPlaneGeometry
     base::TimeTicks now = base::TimeTicks::Now();
     base::TimeDelta elapsed = now - last_set_geometry_time_;
 
-    if (elapsed < base::TimeDelta::FromMilliseconds(min_calling_interval_ms_)) {
+    if (elapsed < base::Milliseconds(min_calling_interval_ms_)) {
       if (!pending_set_geometry_) {
         pending_set_geometry_ = true;
 
@@ -101,7 +128,7 @@ class VideoPlaneController::RateLimitedSetVideoPlaneGeometry
             base::BindOnce(
                 &RateLimitedSetVideoPlaneGeometry::ApplyPendingSetGeometry,
                 this),
-            base::TimeDelta::FromMilliseconds(2 * min_calling_interval_ms_));
+            base::Milliseconds(2 * min_calling_interval_ms_));
       }
 
       pending_display_rect_ = display_rect;
@@ -160,8 +187,6 @@ class VideoPlaneController::RateLimitedSetVideoPlaneGeometry
   size_t sample_counter_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(RateLimitedSetVideoPlaneGeometry);
 };
 
 VideoPlaneController::VideoPlaneController(
@@ -182,10 +207,21 @@ VideoPlaneController::~VideoPlaneController() {}
 
 void VideoPlaneController::SetGeometry(const gfx::RectF& gfx_display_rect,
                                        gfx::OverlayTransform gfx_transform) {
+  SetGeometryInternal(gfx_display_rect, ConvertTransform(gfx_transform));
+}
+
+void VideoPlaneController::SetGeometryFromMediaType(
+    const gfx::Rect& gfx_display_rect,
+    const ::media::VideoTransformation& transform) {
+  SetGeometryInternal(gfx::RectF(gfx_display_rect),
+                      ConvertTransform(transform));
+}
+
+void VideoPlaneController::SetGeometryInternal(
+    const gfx::RectF& gfx_display_rect,
+    VideoPlane::Transform transform) {
   const RectF display_rect(gfx_display_rect.x(), gfx_display_rect.y(),
                            gfx_display_rect.width(), gfx_display_rect.height());
-  VideoPlane::Transform transform = ConvertTransform(gfx_transform);
-
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(DisplayRectFValid(display_rect));
   if (have_video_plane_geometry_ &&

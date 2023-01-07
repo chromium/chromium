@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 
-#include "chrome/browser/chromeos/policy/dlp/mock_dlp_content_manager.h"
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_content_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -22,7 +23,8 @@ using testing::Return;
 namespace {
 const DlpContentRestrictionSet kEmptyRestrictionSet;
 const DlpContentRestrictionSet kNonEmptyRestrictionSet(
-    DlpContentRestriction::kScreenshot);
+    DlpContentRestriction::kScreenshot,
+    DlpRulesManager::Level::kBlock);
 }  // namespace
 
 class DlpContentTabHelperTest : public ChromeRenderViewHostTestHarness {
@@ -30,8 +32,9 @@ class DlpContentTabHelperTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    DlpContentManager::SetDlpContentManagerForTesting(
-        &mock_dlp_content_manager_);
+    scoped_dlp_content_observer_ =
+        std::make_unique<ScopedDlpContentObserverForTesting>(
+            &mock_dlp_content_observer_);
 
     // Initialize browser.
     const Browser::CreateParams params(profile(), /*user_gesture=*/true);
@@ -43,74 +46,87 @@ class DlpContentTabHelperTest : public ChromeRenderViewHostTestHarness {
     tab_strip_model_->CloseAllTabs();
     browser_.reset();
 
-    DlpContentManager::ResetDlpContentManagerForTesting();
+    scoped_dlp_content_observer_.reset();
 
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  MockDlpContentManager mock_dlp_content_manager_;
+  DlpContentTabHelper::ScopedIgnoreDlpRulesManager ignore_dlp_rules_manager_{
+      DlpContentTabHelper::IgnoreDlpRulesManagerForTesting()};
+  MockDlpContentObserver mock_dlp_content_observer_;
+  std::unique_ptr<ScopedDlpContentObserverForTesting>
+      scoped_dlp_content_observer_;
   TabActivitySimulator tab_activity_simulator_;
-  TabStripModel* tab_strip_model_;
+  raw_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<Browser> browser_;
 };
 
+TEST_F(DlpContentTabHelperTest, NotCreatedForIncognito) {
+  const Browser::CreateParams params(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      /*user_gesture=*/true);
+  auto browser = CreateBrowserWithTestWindowForParams(params);
+
+  content::WebContents* web_contents =
+      tab_activity_simulator_.AddWebContentsAndNavigate(
+          browser->tab_strip_model(), GURL("https://example.com"));
+  EXPECT_EQ(nullptr, DlpContentTabHelper::FromWebContents(web_contents));
+
+  // Close tabs before |browser| is destructed.
+  browser->tab_strip_model()->CloseAllTabs();
+}
+
 TEST_F(DlpContentTabHelperTest, NotConfidential) {
   GURL kUrl = GURL("https://example.com");
-  EXPECT_CALL(mock_dlp_content_manager_, GetRestrictionSetForURL(GURL()))
-      .Times(1)
-      .WillOnce(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_manager_, GetRestrictionSetForURL(kUrl))
-      .Times(1)
-      .WillOnce(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_manager_, OnConfidentialityChanged(_, _))
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      GURL(), kEmptyRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kUrl, kEmptyRestrictionSet);
+  EXPECT_CALL(mock_dlp_content_observer_, OnConfidentialityChanged(_, _))
       .Times(0);
-  EXPECT_CALL(mock_dlp_content_manager_, OnVisibilityChanged(_)).Times(0);
+  EXPECT_CALL(mock_dlp_content_observer_, OnVisibilityChanged(_)).Times(0);
 
   content::WebContents* web_contents =
       tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model_, kUrl);
   EXPECT_NE(nullptr, DlpContentTabHelper::FromWebContents(web_contents));
 
-  EXPECT_CALL(mock_dlp_content_manager_, OnWebContentsDestroyed(_)).Times(1);
+  EXPECT_CALL(mock_dlp_content_observer_, OnWebContentsDestroyed(_)).Times(1);
 }
 
 TEST_F(DlpContentTabHelperTest, Confidential) {
   GURL kUrl = GURL("https://example.com");
-  EXPECT_CALL(mock_dlp_content_manager_, GetRestrictionSetForURL(GURL()))
-      .Times(1)
-      .WillOnce(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_manager_, GetRestrictionSetForURL(kUrl))
-      .Times(1)
-      .WillOnce(Return(kNonEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_manager_,
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      GURL(), kEmptyRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kUrl, kNonEmptyRestrictionSet);
+  EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kNonEmptyRestrictionSet))
       .Times(1);
-  EXPECT_CALL(mock_dlp_content_manager_, OnVisibilityChanged(_)).Times(0);
+  EXPECT_CALL(mock_dlp_content_observer_, OnVisibilityChanged(_)).Times(0);
 
   content::WebContents* web_contents =
       tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model_, kUrl);
   EXPECT_NE(nullptr, DlpContentTabHelper::FromWebContents(web_contents));
 
-  EXPECT_CALL(mock_dlp_content_manager_,
+  EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kEmptyRestrictionSet))
       .Times(1);
-  EXPECT_CALL(mock_dlp_content_manager_, OnWebContentsDestroyed(_)).Times(1);
+  EXPECT_CALL(mock_dlp_content_observer_, OnWebContentsDestroyed(_)).Times(1);
 }
 
 TEST_F(DlpContentTabHelperTest, VisibilityChanged) {
   GURL kUrl1 = GURL("https://example1.com");
   GURL kUrl2 = GURL("https://example2.com");
-  EXPECT_CALL(mock_dlp_content_manager_, GetRestrictionSetForURL(GURL()))
-      .WillRepeatedly(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_manager_, GetRestrictionSetForURL(kUrl1))
-      .Times(1)
-      .WillOnce(Return(kNonEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_manager_, GetRestrictionSetForURL(kUrl2))
-      .Times(1)
-      .WillOnce(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_manager_,
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      GURL(), kEmptyRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kUrl1, kNonEmptyRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kUrl2, kEmptyRestrictionSet);
+  EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kNonEmptyRestrictionSet))
       .Times(1);
-  EXPECT_CALL(mock_dlp_content_manager_, OnVisibilityChanged(_)).Times(0);
+  EXPECT_CALL(mock_dlp_content_observer_, OnVisibilityChanged(_)).Times(0);
   content::WebContents* web_contents1 =
       tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model_,
                                                         kUrl1);
@@ -119,34 +135,32 @@ TEST_F(DlpContentTabHelperTest, VisibilityChanged) {
                                                         kUrl2);
   EXPECT_NE(nullptr, DlpContentTabHelper::FromWebContents(web_contents1));
   EXPECT_NE(nullptr, DlpContentTabHelper::FromWebContents(web_contents2));
-  EXPECT_CALL(mock_dlp_content_manager_, OnVisibilityChanged(_)).Times(1);
+  EXPECT_CALL(mock_dlp_content_observer_, OnVisibilityChanged(_)).Times(1);
 
   tab_activity_simulator_.SwitchToTabAt(tab_strip_model_, 1);
 
-  EXPECT_CALL(mock_dlp_content_manager_, OnVisibilityChanged(_)).Times(1);
+  EXPECT_CALL(mock_dlp_content_observer_, OnVisibilityChanged(_)).Times(1);
 
   tab_activity_simulator_.SwitchToTabAt(tab_strip_model_, 0);
 
-  EXPECT_CALL(mock_dlp_content_manager_,
+  EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kEmptyRestrictionSet))
       .Times(1);
-  EXPECT_CALL(mock_dlp_content_manager_, OnWebContentsDestroyed(_)).Times(2);
+  EXPECT_CALL(mock_dlp_content_observer_, OnWebContentsDestroyed(_)).Times(2);
 }
 
 TEST_F(DlpContentTabHelperTest, SubFrameNavigation) {
   GURL kNonConfidentialUrl = GURL("https://example.com");
   GURL kConfidentialUrl = GURL("https://google.com");
-  EXPECT_CALL(mock_dlp_content_manager_, GetRestrictionSetForURL(GURL()))
-      .WillRepeatedly(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_manager_,
-              GetRestrictionSetForURL(kNonConfidentialUrl))
-      .WillRepeatedly(Return(kEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_manager_,
-              GetRestrictionSetForURL(kConfidentialUrl))
-      .WillRepeatedly(Return(kNonEmptyRestrictionSet));
-  EXPECT_CALL(mock_dlp_content_manager_, OnConfidentialityChanged(_, _))
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      GURL(), kEmptyRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kNonConfidentialUrl, kEmptyRestrictionSet);
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      kConfidentialUrl, kNonEmptyRestrictionSet);
+  EXPECT_CALL(mock_dlp_content_observer_, OnConfidentialityChanged(_, _))
       .Times(0);
-  EXPECT_CALL(mock_dlp_content_manager_, OnVisibilityChanged(_)).Times(0);
+  EXPECT_CALL(mock_dlp_content_observer_, OnVisibilityChanged(_)).Times(0);
 
   // Create WebContents.
   content::WebContents* web_contents =
@@ -155,23 +169,23 @@ TEST_F(DlpContentTabHelperTest, SubFrameNavigation) {
   EXPECT_NE(nullptr, DlpContentTabHelper::FromWebContents(web_contents));
 
   // Add subframe and navigate to confidential URL.
-  EXPECT_CALL(mock_dlp_content_manager_,
+  EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kNonEmptyRestrictionSet))
       .Times(1);
   content::RenderFrameHost* subframe =
       content::NavigationSimulator::NavigateAndCommitFromDocument(
-          kConfidentialUrl,
-          content::RenderFrameHostTester::For(web_contents->GetMainFrame())
-              ->AppendChild("child"));
+          kConfidentialUrl, content::RenderFrameHostTester::For(
+                                web_contents->GetPrimaryMainFrame())
+                                ->AppendChild("child"));
 
   // Navigate away from confidential URL.
-  EXPECT_CALL(mock_dlp_content_manager_,
+  EXPECT_CALL(mock_dlp_content_observer_,
               OnConfidentialityChanged(_, kEmptyRestrictionSet))
       .Times(1);
   content::NavigationSimulator::NavigateAndCommitFromDocument(
       kNonConfidentialUrl, subframe);
 
-  EXPECT_CALL(mock_dlp_content_manager_, OnWebContentsDestroyed(_)).Times(1);
+  EXPECT_CALL(mock_dlp_content_observer_, OnWebContentsDestroyed(_)).Times(1);
 }
 
 }  // namespace policy

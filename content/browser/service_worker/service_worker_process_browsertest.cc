@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,8 @@
 #include "content/shell/browser/shell.h"
 #include "content/test/test_content_browser_client.h"
 #include "net/dns/mock_host_resolver.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/origin.h"
 
 // This file has tests involving render process selection for service workers.
 
@@ -31,10 +33,7 @@ class ServiceWorkerProcessBrowserTest
     : public ContentBrowserTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  ServiceWorkerProcessBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        features::kServiceWorkerPrefersUnusedProcess);
-  }
+  ServiceWorkerProcessBrowserTest() = default;
   ~ServiceWorkerProcessBrowserTest() override = default;
 
   ServiceWorkerProcessBrowserTest(const ServiceWorkerProcessBrowserTest&) =
@@ -47,8 +46,10 @@ class ServiceWorkerProcessBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
-        shell()->web_contents()->GetBrowserContext());
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
     wrapper_ = static_cast<ServiceWorkerContextWrapper*>(
         partition->GetServiceWorkerContext());
   }
@@ -113,7 +114,7 @@ class ServiceWorkerProcessBrowserTest
   }
 
   RenderFrameHostImpl* current_frame_host() {
-    return web_contents()->GetFrameTree()->root()->current_frame_host();
+    return web_contents()->GetPrimaryFrameTree().root()->current_frame_host();
   }
 
  private:
@@ -123,8 +124,15 @@ class ServiceWorkerProcessBrowserTest
 
 // Tests that a service worker started due to a navigation shares the same
 // process as the navigation.
+// Flaky on Android; see https://crbug.com/1320972.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ServiceWorkerAndPageShareProcess \
+  DISABLED_ServiceWorkerAndPageShareProcess
+#else
+#define MAYBE_ServiceWorkerAndPageShareProcess ServiceWorkerAndPageShareProcess
+#endif
 IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
-                       ServiceWorkerAndPageShareProcess) {
+                       MAYBE_ServiceWorkerAndPageShareProcess) {
   // Register the service worker.
   RegisterServiceWorker();
 
@@ -142,13 +150,15 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
 
 namespace {
 
-// ContentBrowserClient that skips assigning a site URL for a given URL.
+// ContentBrowserClient that skips assigning a site URL for a given scheme.
 class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
  public:
-  // Any visit to |url_to_skip| will not cause the site to be assigned to the
-  // SiteInstance.
-  explicit DontAssignSiteContentBrowserClient(const GURL& url_to_skip)
-      : url_to_skip_(url_to_skip) {}
+  // Any visit to |scheme_to_skip| will not cause the site to be assigned to the
+  // SiteInstance. This requires setting it as an empty document scheme.
+  explicit DontAssignSiteContentBrowserClient(const std::string& scheme_to_skip)
+      : scheme_to_skip_(scheme_to_skip) {
+    url::AddEmptyDocumentScheme(scheme_to_skip.c_str());
+  }
 
   DontAssignSiteContentBrowserClient(
       const DontAssignSiteContentBrowserClient&) = delete;
@@ -156,28 +166,28 @@ class DontAssignSiteContentBrowserClient : public TestContentBrowserClient {
       const DontAssignSiteContentBrowserClient&) = delete;
 
   bool ShouldAssignSiteForURL(const GURL& url) override {
-    return url != url_to_skip_;
+    return url.scheme() != scheme_to_skip_;
   }
 
  private:
-  GURL url_to_skip_;
+  std::string scheme_to_skip_;
+  url::ScopedSchemeRegistryForTests scheme_registry_;
 };
 
 }  // namespace
 
-// Tests that a service worker and navigation share the same process in the
+// Tests whether a service worker and navigation share the same process in the
 // special case where the service worker starts before the navigation starts,
 // and the navigation transitions out of a page with no site URL. This special
 // case happens in real life when doing a search from the omnibox while on the
 // Android native NTP page: the service worker starts first due to the
 // navigation hint from the omnibox, and the native page has no site URL. See
 // https://crbug.com/1012143.
-IN_PROC_BROWSER_TEST_P(
-    ServiceWorkerProcessBrowserTest,
-    ServiceWorkerAndPageShareProcess_NavigateFromUnassignedSiteInstance) {
-  // Set up a page URL that will have no site URL.
-  GURL empty_site = embedded_test_server()->GetURL("a.com", "/title1.html");
-  DontAssignSiteContentBrowserClient content_browser_client(empty_site);
+IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
+                       NavigateFromUnassignedSiteInstance) {
+  // Set up an empty page scheme whose URLs will have no site assigned.
+  DontAssignSiteContentBrowserClient content_browser_client("siteless");
+  GURL empty_site_url = GURL("siteless://test");
   ContentBrowserClient* old_client =
       SetBrowserClientForTesting(&content_browser_client);
 
@@ -185,41 +195,39 @@ IN_PROC_BROWSER_TEST_P(
   RegisterServiceWorker();
 
   // Navigate to the empty site instance page.
-  ASSERT_TRUE(NavigateToURL(shell(), empty_site));
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(), empty_site);
+  ASSERT_TRUE(NavigateToURL(shell(), empty_site_url));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), empty_site_url);
   scoped_refptr<SiteInstanceImpl> site_instance =
-      web_contents()->GetMainFrame()->GetSiteInstance();
+      web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_EQ(GURL(), site_instance->GetSiteURL());
   int page_process_id = current_frame_host()->GetProcess()->GetID();
   EXPECT_NE(page_process_id, ChildProcessHost::kInvalidUniqueID);
 
-  // Start the service worker. It should start in the same process.
+  // Start the service worker.
   base::RunLoop loop;
   GURL scope = embedded_test_server()->GetURL("/service_worker/");
   int worker_process_id;
-  scoped_refptr<ServiceWorkerContextWrapper> wrapper_ref = wrapper();
-  RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          &ServiceWorkerContextWrapper::StartWorkerForScope,
-          std::move(wrapper_ref), scope,
-          base::BindLambdaForTesting(
-              [&](int64_t version_id, int process_id, int thread_id) {
-                worker_process_id = process_id;
-                loop.Quit();
-              }),
-          base::BindLambdaForTesting(
-              [&loop](blink::ServiceWorkerStatusCode status_code) {
-                ASSERT_FALSE(true) << "start worker failed";
-                loop.Quit();
-              })));
+  wrapper()->ServiceWorkerContextWrapper::StartWorkerForScope(
+      scope, blink::StorageKey(url::Origin::Create(scope)),
+      base::BindLambdaForTesting(
+          [&](int64_t version_id, int process_id, int thread_id) {
+            worker_process_id = process_id;
+            loop.Quit();
+          }),
+      base::BindLambdaForTesting(
+          [&loop](blink::ServiceWorkerStatusCode status_code) {
+            ASSERT_FALSE(true) << "start worker failed";
+            loop.Quit();
+          }));
   loop.Run();
 
-  // The page and service worker should be in the same process.
-  EXPECT_EQ(page_process_id, worker_process_id);
+  // The page and service worker are in different processes. (This is not
+  // necessarily the desired behavior, but the current one of the
+  // implementation.)
+  EXPECT_NE(page_process_id, worker_process_id);
 
-  // Navigate to a page in the service worker's scope. It should still be in the
-  // same process.
+  // Navigate to a page in the service worker's scope. It should be in the
+  // same process as the original page.
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/service_worker/empty.html")));
   EXPECT_EQ(page_process_id, current_frame_host()->GetProcess()->GetID());

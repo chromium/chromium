@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_background_fetch_options.h"
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_registration.h"
 #include "third_party/blink/renderer/modules/manifest/image_resource_type_converters.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 
 namespace mojo {
 

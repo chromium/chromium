@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define COMPONENTS_MEDIA_ROUTER_BROWSER_ANDROID_MEDIA_ROUTER_ANDROID_BRIDGE_H_
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
@@ -25,6 +25,10 @@ class MediaRouterAndroid;
 class MediaRouterAndroidBridge {
  public:
   explicit MediaRouterAndroidBridge(MediaRouterAndroid* router);
+
+  MediaRouterAndroidBridge(const MediaRouterAndroidBridge&) = delete;
+  MediaRouterAndroidBridge& operator=(const MediaRouterAndroidBridge&) = delete;
+
   virtual ~MediaRouterAndroidBridge();
 
   // Implement the corresponding calls for the MediaRouterAndroid class.
@@ -84,10 +88,8 @@ class MediaRouterAndroidBridge {
                  const base::android::JavaRef<jstring>& jmessage);
 
  private:
-  MediaRouterAndroid* native_media_router_;
+  raw_ptr<MediaRouterAndroid> native_media_router_;
   base::android::ScopedJavaGlobalRef<jobject> java_media_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaRouterAndroidBridge);
 };
 
 }  // namespace media_router

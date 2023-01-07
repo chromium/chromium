@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,11 +28,12 @@ class MockDownloadFile : public DownloadFile {
 
   // DownloadFile functions.
   // Using the legacy workaround for move-only types in mock methods.
-  MOCK_METHOD4(Initialize,
-               void(InitializeCallback initialize_callback,
-                    CancelRequestCallback cancel_request_callback,
-                    const DownloadItem::ReceivedSlices& received_slices,
-                    bool is_parallelizable));
+  MOCK_METHOD(void,
+              Initialize,
+              (InitializeCallback initialize_callback,
+               CancelRequestCallback cancel_request_callback,
+               const DownloadItem::ReceivedSlices& received_slices),
+              ());
   void AddInputStream(std::unique_ptr<InputStream> input_stream,
                       int64_t offset) override;
   MOCK_METHOD2(DoAddInputStream,
@@ -68,7 +69,7 @@ class MockDownloadFile : public DownloadFile {
   MOCK_CONST_METHOD0(DebugString, std::string());
   MOCK_METHOD0(Pause, void());
   MOCK_METHOD0(Resume, void());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD6(RenameToIntermediateUri,
                void(const GURL& original_url,
                     const GURL& referrer_url,
@@ -78,7 +79,7 @@ class MockDownloadFile : public DownloadFile {
                     RenameCompletionCallback callback));
   MOCK_METHOD1(PublishDownload, void(RenameCompletionCallback callback));
   MOCK_METHOD0(GetDisplayName, base::FilePath());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace download

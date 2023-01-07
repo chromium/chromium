@@ -1,22 +1,24 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_FACTORY_H_
-#define REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_FACTORY_H_
+#ifndef REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_H_
+#define REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_H_
 
 #include <string>
 
-#include "base/macros.h"
 #include "remoting/protocol/authenticator.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 // Authenticator that accepts one message and rejects connection after that.
 class RejectingAuthenticator : public Authenticator {
  public:
   RejectingAuthenticator(RejectionReason rejection_reason);
+
+  RejectingAuthenticator(const RejectingAuthenticator&) = delete;
+  RejectingAuthenticator& operator=(const RejectingAuthenticator&) = delete;
+
   ~RejectingAuthenticator() override;
 
   // Authenticator interface
@@ -34,11 +36,8 @@ class RejectingAuthenticator : public Authenticator {
   RejectionReason rejection_reason_;
   State state_ = WAITING_MESSAGE;
   std::string auth_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(RejectingAuthenticator);
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
-#endif  // REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_FACTORY_H_
+#endif  // REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_H_

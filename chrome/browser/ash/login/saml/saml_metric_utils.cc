@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include "base/strings/string_util.h"
 #include "net/cert/x509_certificate.h"
 
-namespace chromeos {
+namespace ash {
 namespace metrics {
 namespace {
 
@@ -32,58 +32,63 @@ enum class ChromeOSSamlProvider {
   kMaxValue = kSalesforce,
 };
 
+struct Provider {
+  const char* prefix;
+  ChromeOSSamlProvider enum_value;
+};
+
+// when one item is a prefix of another one, then the shorter should come first.
+const Provider kProviders[] = {
+    {"adfs", ChromeOSSamlProvider::kAdfs},
+    {"okta", ChromeOSSamlProvider::kOkta},
+    {"ping identity", ChromeOSSamlProvider::kPing},
+    {"onelogin", ChromeOSSamlProvider::kOnelogin},
+    {"microsoft", ChromeOSSamlProvider::kMicrosoft},
+    {"microsoft azure federated sso certificate", ChromeOSSamlProvider::kAzure},
+    {"clever", ChromeOSSamlProvider::kClever},
+    {"cloudgate", ChromeOSSamlProvider::kCloudgate},
+    {"windows", ChromeOSSamlProvider::kWindows},
+    {"salesforce", ChromeOSSamlProvider::kSalesforce}};
+
 }  // namespace
 
 void RecordSAMLProvider(const std::string& x509certificate) {
   net::CertificateList third_party_cert_list =
       net::X509Certificate::CreateCertificateListFromBytes(
-          x509certificate.data(), x509certificate.size(),
+          base::as_bytes(base::make_span(x509certificate)),
           net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
 
-  std::string provider;
+  std::string provider_name;
 
   if (!third_party_cert_list.empty() && third_party_cert_list[0] != nullptr) {
     if (!third_party_cert_list[0]->subject().organization_names.empty()) {
-      provider = third_party_cert_list[0]->subject().organization_names[0];
+      provider_name = third_party_cert_list[0]->subject().organization_names[0];
     } else {
-      // Some providers don't include organization name in the certifcate
-      provider = third_party_cert_list[0]->subject().common_name;
+      // Some providers don't include organization name in the certificate
+      provider_name = third_party_cert_list[0]->subject().common_name;
     }
   }
 
-  provider = base::ToLowerASCII(provider);
+  provider_name = base::ToLowerASCII(provider_name);
 
-  ChromeOSSamlProvider samlProvider;
-  if (provider.empty()) {
-    samlProvider = ChromeOSSamlProvider::kFailure;
+  ChromeOSSamlProvider saml_provider = ChromeOSSamlProvider::kUnknown;
+  if (provider_name.empty()) {
+    saml_provider = ChromeOSSamlProvider::kFailure;
     LOG(WARNING) << "Failed to parse SAML provider certificate";
-  } else if (provider == "adfs") {
-    samlProvider = ChromeOSSamlProvider::kAdfs;
-  } else if (provider == "microsoft azure federated sso certificate") {
-    samlProvider = ChromeOSSamlProvider::kAzure;
-  } else if (provider == "okta") {
-    samlProvider = ChromeOSSamlProvider::kOkta;
-  } else if (provider == "ping identity") {
-    samlProvider = ChromeOSSamlProvider::kPing;
-  } else if (provider == "onelogin") {
-    samlProvider = ChromeOSSamlProvider::kOnelogin;
-  } else if (provider == "microsoft") {
-    samlProvider = ChromeOSSamlProvider::kMicrosoft;
-  } else if (provider == "clever") {
-    samlProvider = ChromeOSSamlProvider::kClever;
-  } else if (provider == "cloudgate") {
-    samlProvider = ChromeOSSamlProvider::kCloudgate;
-  } else if (provider == "windows") {
-    samlProvider = ChromeOSSamlProvider::kWindows;
-  } else if (provider == "salesforce") {
-    samlProvider = ChromeOSSamlProvider::kSalesforce;
   } else {
-    samlProvider = ChromeOSSamlProvider::kUnknown;
-    LOG(WARNING) << "Unknown SAML provider: " << provider;
+    for (const auto& provider : kProviders) {
+      if (base::StartsWith(provider_name, provider.prefix)) {
+        saml_provider = provider.enum_value;
+      }
+    }
   }
 
-  base::UmaHistogramEnumeration("ChromeOS.SAML.Provider", samlProvider);
+  if (saml_provider == ChromeOSSamlProvider::kUnknown) {
+    LOG(WARNING) << "Unknown SAML provider: " << provider_name;
+  }
+
+  base::UmaHistogramEnumeration("ChromeOS.SAML.Provider", saml_provider);
 }
 
 }  // namespace metrics
-}  // namespace chromeos
+}  // namespace ash

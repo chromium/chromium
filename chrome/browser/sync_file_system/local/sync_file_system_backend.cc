@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -83,12 +84,12 @@ void SyncFileSystemBackend::Initialize(storage::FileSystemContext* context) {
 
 void SyncFileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
                                        storage::OpenFileSystemMode mode,
-                                       OpenFileSystemCallback callback) {
+                                       ResolveURLCallback callback) {
   DCHECK(CanHandleType(url.type()));
 
   if (skip_initialize_syncfs_service_for_testing_) {
     GetDelegate()->OpenFileSystem(
-        url.origin(), url.type(), mode, std::move(callback),
+        url.storage_key(), url.bucket(), url.type(), mode, std::move(callback),
         GetSyncableFileSystemRootURI(url.origin().GetURL()));
     return;
   }
@@ -96,7 +97,7 @@ void SyncFileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
   // It is safe to pass Unretained(this) since |context_| owns it.
   SyncStatusCallback initialize_callback = base::BindOnce(
       &SyncFileSystemBackend::DidInitializeSyncFileSystemService,
-      base::Unretained(this), base::RetainedRef(context_),
+      base::Unretained(this), base::RetainedRef(context_.get()),
       url.origin().GetURL(), url.type(), mode, std::move(callback));
   InitializeSyncFileSystemService(url.origin().GetURL(),
                                   std::move(initialize_callback));
@@ -121,7 +122,8 @@ SyncFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   return nullptr;
 }
 
-storage::FileSystemOperation* SyncFileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<storage::FileSystemOperation>
+SyncFileSystemBackend::CreateFileSystemOperation(
     const storage::FileSystemURL& url,
     storage::FileSystemContext* context,
     base::File::Error* error_code) const {
@@ -139,8 +141,9 @@ storage::FileSystemOperation* SyncFileSystemBackend::CreateFileSystemOperation(
                                                 std::move(operation_context));
   }
 
-  return new SyncableFileSystemOperation(url, context,
-                                         std::move(operation_context));
+  return std::make_unique<SyncableFileSystemOperation>(
+      url, context, std::move(operation_context),
+      base::PassKey<SyncFileSystemBackend>());
 }
 
 bool SyncFileSystemBackend::SupportsStreaming(
@@ -263,7 +266,7 @@ void SyncFileSystemBackend::DidInitializeSyncFileSystemService(
     const GURL& origin_url,
     storage::FileSystemType type,
     storage::OpenFileSystemMode mode,
-    OpenFileSystemCallback callback,
+    ResolveURLCallback callback,
     SyncStatusCode status) {
   // Repost to switch from UI thread to IO thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {

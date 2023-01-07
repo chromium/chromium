@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,24 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "components/sync/model/model_type_controller_delegate.h"
+
+namespace syncer {
+class ModelTypeControllerDelegate;
+}
+
+namespace sync_pb {
+class UserConsentSpecifics;
+}
 
 namespace consent_auditor {
 
 class ConsentSyncBridge {
  public:
   ConsentSyncBridge() = default;
+
+  ConsentSyncBridge(const ConsentSyncBridge&) = delete;
+  ConsentSyncBridge& operator=(const ConsentSyncBridge&) = delete;
+
   virtual ~ConsentSyncBridge() = default;
 
   virtual void RecordConsent(
@@ -23,9 +34,6 @@ class ConsentSyncBridge {
   // Returns the delegate for the controller, i.e. sync integration point.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegate() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConsentSyncBridge);
 };
 
 }  // namespace consent_auditor

@@ -1,0 +1,7 @@
+Tests that overriding hardware concurrency changes the navigator property
+Concurrency, plus one: 1
+Concurrency, after reload: 1
+Concurrency, can't set to zero: 1
+Concurrency, can't set to negative: 1
+Concurrency, reset to default: 0
+

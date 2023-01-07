@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
 # Copyright (C) 2013 Google Inc. All rights reserved.
 #

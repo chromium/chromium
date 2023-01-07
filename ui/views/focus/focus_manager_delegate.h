@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,6 @@ class Accelerator;
 
 namespace views {
 
-class View;
-
 // Delegate interface for views::FocusManager.
 class VIEWS_EXPORT FocusManagerDelegate {
  public:
@@ -27,9 +25,6 @@ class VIEWS_EXPORT FocusManagerDelegate {
   // target, and so on.
   // Returns true if an accelerator was activated.
   virtual bool ProcessAccelerator(const ui::Accelerator& accelerator) = 0;
-
-  // Called after focus state has changed.
-  virtual void OnDidChangeFocus(View* focused_before, View* focused_now) = 0;
 };
 
 }  // namespace views

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,13 +27,14 @@ class CannedSharedWorkerHelperTest : public testing::Test {
 TEST_F(CannedSharedWorkerHelperTest, Empty) {
   const GURL worker("https://host1:1/worker.js");
   std::string name("test");
-  const url::Origin constructor_origin = url::Origin::Create(worker);
+  const blink::StorageKey storage_key =
+      blink::StorageKey(url::Origin::Create(worker));
 
   auto helper = base::MakeRefCounted<CannedSharedWorkerHelper>(
-      content::BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   EXPECT_TRUE(helper->empty());
-  helper->AddSharedWorker(worker, name, constructor_origin);
+  helper->AddSharedWorker(worker, name, storage_key);
   EXPECT_FALSE(helper->empty());
   helper->Reset();
   EXPECT_TRUE(helper->empty());
@@ -42,19 +43,19 @@ TEST_F(CannedSharedWorkerHelperTest, Empty) {
 TEST_F(CannedSharedWorkerHelperTest, Delete) {
   const GURL worker1("http://host1:9000/worker.js");
   std::string name1("name");
-  const url::Origin constructor_origin1 = url::Origin::Create(worker1);
+  const blink::StorageKey storage_key1(url::Origin::Create(worker1));
   const GURL worker2("https://example.com/worker.js");
   std::string name2("name");
-  const url::Origin constructor_origin2 = url::Origin::Create(worker2);
+  const blink::StorageKey storage_key2(url::Origin::Create(worker2));
 
   auto helper = base::MakeRefCounted<CannedSharedWorkerHelper>(
-      content::BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   EXPECT_TRUE(helper->empty());
-  helper->AddSharedWorker(worker1, name1, constructor_origin1);
-  helper->AddSharedWorker(worker2, name2, constructor_origin2);
+  helper->AddSharedWorker(worker1, name1, storage_key1);
+  helper->AddSharedWorker(worker2, name2, storage_key2);
   EXPECT_EQ(2u, helper->GetSharedWorkerCount());
-  helper->DeleteSharedWorker(worker2, name2, constructor_origin2);
+  helper->DeleteSharedWorker(worker2, name2, storage_key2);
   EXPECT_EQ(1u, helper->GetSharedWorkerCount());
 }
 
@@ -62,16 +63,16 @@ TEST_F(CannedSharedWorkerHelperTest, IgnoreExtensionsAndDevTools) {
   const GURL worker1("chrome-extension://abcdefghijklmnopqrstuvwxyz/worker.js");
   const GURL worker2("devtools://abcdefghijklmnopqrstuvwxyz/worker.js");
   std::string name("name");
-  const url::Origin constructor_origin1 = url::Origin::Create(worker1);
-  const url::Origin constructor_origin2 = url::Origin::Create(worker2);
+  const blink::StorageKey storage_key1(url::Origin::Create(worker1));
+  const blink::StorageKey storage_key2(url::Origin::Create(worker2));
 
   auto helper = base::MakeRefCounted<CannedSharedWorkerHelper>(
-      content::BrowserContext::GetDefaultStoragePartition(browser_context()));
+      browser_context()->GetDefaultStoragePartition());
 
   EXPECT_TRUE(helper->empty());
-  helper->AddSharedWorker(worker1, name, constructor_origin1);
+  helper->AddSharedWorker(worker1, name, storage_key1);
   EXPECT_TRUE(helper->empty());
-  helper->AddSharedWorker(worker2, name, constructor_origin2);
+  helper->AddSharedWorker(worker2, name, storage_key2);
   EXPECT_TRUE(helper->empty());
 }
 

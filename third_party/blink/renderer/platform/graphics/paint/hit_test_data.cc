@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ static String RectsAsString(const Vector<T>& rects) {
       sb.Append(", ");
     first = false;
     sb.Append("(");
-    sb.Append(rect.ToString());
+    sb.Append(String(rect.ToString()));
     sb.Append(")");
   }
   sb.Append("]");
@@ -30,15 +30,15 @@ String HitTestData::ToString() const {
   sb.Append("{");
 
   bool printed_top_level_field = false;
-  if (!touch_action_rects.IsEmpty()) {
+  if (!touch_action_rects.empty()) {
     sb.Append("touch_action_rects: ");
     sb.Append(RectsAsString<TouchActionRect>(touch_action_rects));
     printed_top_level_field = true;
   }
 
-  if (!wheel_event_rects.IsEmpty()) {
+  if (!wheel_event_rects.empty()) {
     sb.Append("wheel_event_rects: ");
-    sb.Append(RectsAsString<IntRect>(wheel_event_rects));
+    sb.Append(RectsAsString<gfx::Rect>(wheel_event_rects));
     printed_top_level_field = true;
   }
 
@@ -46,14 +46,14 @@ String HitTestData::ToString() const {
     if (printed_top_level_field)
       sb.Append(", ");
     sb.Append("scroll_hit_test_rect: ");
-    sb.Append(scroll_hit_test_rect.ToString());
+    sb.Append(String(scroll_hit_test_rect.ToString()));
     printed_top_level_field = true;
   }
 
   if (scroll_translation) {
     if (printed_top_level_field)
       sb.Append(", ");
-    sb.AppendFormat("scroll_translation: %p", scroll_translation);
+    sb.AppendFormat("scroll_translation: %p", scroll_translation.get());
   }
 
   sb.Append("}");

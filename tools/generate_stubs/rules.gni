@@ -12,6 +12,9 @@
 #   logging_function: override the used logging function (default: VLOG(1))
 #   logging_include: override the additional include (default: base/logging.h)
 #   path_from_source: relative path of generated files from the project root
+#   macro_include: overrides the include for DISABLE_CFI_ICALL
+#                  (default: base/compiler_specific.h)
+#   macro_deps: override the dependency for macro_include (default: //base)
 #
 # Example
 #   generate_stubs("libfoo_stubs") {
@@ -74,6 +77,12 @@ template("generate_stubs") {
         invoker.logging_include,
       ]
     }
+    if (defined(invoker.macro_include)) {
+      args += [
+        "--macro-include",
+        invoker.macro_include,
+      ]
+    }
     args += rebase_path(invoker.sigs, root_build_dir)
   }
 
@@ -82,12 +91,17 @@ template("generate_stubs") {
                            [
                              "deps",
                              "public_deps",
+                             "macro_deps",
                              "visibility",
                            ])
     if (!defined(deps)) {
       deps = []
     }
-    deps += [ "//base" ]
+    if (!defined(macro_deps)) {
+      deps += [ "//base" ]
+    } else {
+      deps += macro_deps
+    }
     if (!defined(public_deps)) {
       public_deps = []
     }

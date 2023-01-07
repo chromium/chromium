@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/tracing/arc_app_performance_tracing_session.h"
 
@@ -22,6 +21,12 @@ class ArcAppPerformanceTracingUmaSession
  public:
   ArcAppPerformanceTracingUmaSession(ArcAppPerformanceTracing* owner,
                                      const std::string& category);
+
+  ArcAppPerformanceTracingUmaSession(
+      const ArcAppPerformanceTracingUmaSession&) = delete;
+  ArcAppPerformanceTracingUmaSession& operator=(
+      const ArcAppPerformanceTracingUmaSession&) = delete;
+
   ~ArcAppPerformanceTracingUmaSession() override;
 
   static void SetTracingPeriodForTesting(const base::TimeDelta& period);
@@ -43,8 +48,6 @@ class ArcAppPerformanceTracingUmaSession
 
   // Tracing category.
   const std::string category_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppPerformanceTracingUmaSession);
 };
 
 }  // namespace arc

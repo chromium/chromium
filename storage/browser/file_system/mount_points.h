@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "storage/common/file_system/file_system_util.h"
 
 class GURL;
-namespace url {
-class Origin;
-}
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 class FileSystemMountOption;
@@ -43,8 +43,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MountPoints {
     }
   };
 
-  MountPoints() {}
-  virtual ~MountPoints() {}
+  MountPoints() = default;
+  MountPoints(const MountPoints&) = delete;
+  MountPoints& operator=(const MountPoints&) = delete;
+  virtual ~MountPoints() = default;
 
   // Revokes a mount point identified by |mount_name|.
   // Returns false if the |mount_name| is not (no longer) registered.
@@ -55,16 +57,23 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MountPoints {
   // the given mount type.
   virtual bool HandlesFileSystemMountType(FileSystemType type) const = 0;
 
-  // Same as CreateCrackedFileSystemURL, but cracks FileSystemURL created
-  // from |url|.
-  virtual FileSystemURL CrackURL(const GURL& url) const = 0;
+  // TODO(https://crbug.com/1240603): Determine if MountPoints::CrackURL()
+  // and its overrides in child classes should be removed and replaced with
+  // FileSystemContext::CrackURL().
+  //
+  // Same as CreateCrackedFileSystemURL, but cracks a FileSystemURL created
+  // from `url` and `storage_key`.
+  virtual FileSystemURL CrackURL(
+      const GURL& url,
+      const blink::StorageKey& storage_key) const = 0;
 
-  // Creates a FileSystemURL with the given origin, type and virtual path and
-  // tries to crack it as a part of one of the registered mount points. If the
-  // the URL is not valid or does not belong to any of the mount points
-  // registered in this context, returns empty, invalid FileSystemURL.
+  // Creates a FileSystemURL with the given `storage_key`, `type`, and
+  // `virtual_path` and tries to crack it as a part of one of the registered
+  // mount points. If the the URL is not valid or does not belong to any of the
+  // mount points registered in this context, returns empty, invalid
+  // FileSystemURL.
   virtual FileSystemURL CreateCrackedFileSystemURL(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       FileSystemType type,
       const base::FilePath& virtual_path) const = 0;
 
@@ -98,9 +107,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) MountPoints {
   // instantiated as the FileSystemURL class. This is internally used for nested
   // URL cracking in FileSystemContext.
   virtual FileSystemURL CrackFileSystemURL(const FileSystemURL& url) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MountPoints);
 };
 
 }  // namespace storage

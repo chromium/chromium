@@ -1,12 +1,13 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
 
-#include "components/strings/grit/components_strings.h"
+#import "base/check.h"
+#import "base/check_op.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
@@ -14,8 +15,8 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -64,7 +65,7 @@ const CGFloat kLocationLabelVerticalOffset = -1;
 @property(nonatomic, readonly) CGFloat trailingButtonTrailingSpacing;
 
 // Constraints to pin the badge view to the right next to the
-// |locationContainerView|.
+// `locationContainerView`.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* badgeViewFullScreenEnabledConstraints;
 
@@ -100,20 +101,6 @@ const CGFloat kLocationLabelVerticalOffset = -1;
   return scheme;
 }
 
-+ (instancetype)incognitoScheme {
-  LocationBarSteadyViewColorScheme* scheme =
-      [[LocationBarSteadyViewColorScheme alloc] init];
-
-  // In iOS 12, the overridePreferredInterfaceStyle API is unavailable, so
-  // incognito colors need to be set specifically.
-  // TODO(crbug.com/981889): Clean up after iOS 12 support is dropped.
-  scheme.fontColor = [UIColor colorNamed:kTextPrimaryDarkColor];
-  scheme.placeholderColor = [UIColor colorNamed:kTextfieldPlaceholderDarkColor];
-  scheme.trailingButtonColor = [UIColor colorNamed:kToolbarButtonDarkColor];
-
-  return scheme;
-}
-
 @end
 
 #pragma mark - LocationBarSteadyButton
@@ -127,9 +114,7 @@ const CGFloat kLocationLabelVerticalOffset = -1;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    if (@available(iOS 13.4, *)) {
-        self.pointerInteractionEnabled = YES;
-    }
+    self.pointerInteractionEnabled = YES;
   }
   return self;
 }
@@ -179,12 +164,10 @@ const CGFloat kLocationLabelVerticalOffset = -1;
     _trailingButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
     _trailingButton.translatesAutoresizingMaskIntoConstraints = NO;
-    if (@available(iOS 13.4, *)) {
-        _trailingButton.pointerInteractionEnabled = YES;
-        // Make the pointer shape fit the location bar's semi-circle end shape.
-        _trailingButton.pointerStyleProvider =
-            CreateLiftEffectCirclePointerStyleProvider();
-    }
+    _trailingButton.pointerInteractionEnabled = YES;
+    // Make the pointer shape fit the location bar's semi-circle end shape.
+    _trailingButton.pointerStyleProvider =
+        CreateLiftEffectCirclePointerStyleProvider();
 
     // Setup label.
     _locationLabel.lineBreakMode = NSLineBreakByTruncatingHead;
@@ -361,7 +344,7 @@ const CGFloat kLocationLabelVerticalOffset = -1;
     [self.locationButton addSubview:_badgeView];
     // Adding InfobarBadge button as an accessibility element behind location
     // label. Thus, there should be at least one object already in
-    // |accessibleElements|.
+    // `accessibleElements`.
     DCHECK_GT([self.accessibleElements count], 0U);
     [self.accessibleElements insertObject:_badgeView atIndex:1];
 
@@ -417,7 +400,7 @@ const CGFloat kLocationLabelVerticalOffset = -1;
   if (display) {
     // Adding InfobarBadge button as an accessibility element behind location
     // label. Thus, there should be at least one object alreading in
-    // |accessibleElements|.
+    // `accessibleElements`.
     DCHECK([self.accessibleElements count] > 0);
     if ([self.accessibleElements indexOfObject:self.badgeView] == NSNotFound) {
       [self.accessibleElements insertObject:self.badgeView atIndex:1];

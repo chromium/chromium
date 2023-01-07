@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,16 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
 namespace blink {
+
+bool SerializedScriptValueForModulesFactory::ExtractTransferable(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> object,
+    wtf_size_t object_index,
+    Transferables& transferables,
+    ExceptionState& exception_state) {
+  return V8ScriptValueSerializerForModules::ExtractTransferable(
+      isolate, object, object_index, transferables, exception_state);
+}
 
 scoped_refptr<SerializedScriptValue>
 SerializedScriptValueForModulesFactory::Create(

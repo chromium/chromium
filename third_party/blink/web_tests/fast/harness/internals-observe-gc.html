@@ -67,9 +67,9 @@ var valueA, observationA, observationB, observationC;
   // Now, movies that failed:
 
   shouldThrow('internals.observeGC(undefined)',
-      '"TypeError: value to observe is null or undefined"');
+      '"TypeError: Failed to execute \'observeGC\' on \'Internals\': value to observe is null or undefined"');
   shouldThrow('internals.observeGC(null)',
-    '"TypeError: value to observe is null or undefined"');
+    '"TypeError: Failed to execute \'observeGC\' on \'Internals\': value to observe is null or undefined"');
 
   // Try to create objects and observers that will die at once
 

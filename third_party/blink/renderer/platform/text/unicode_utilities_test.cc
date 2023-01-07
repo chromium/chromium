@@ -32,7 +32,6 @@
 
 #include <unicode/uchar.h>
 
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -62,7 +61,7 @@ UBool U_CALLCONV TestFirstAndLastCharsInCategory(const void* context,
 
 TEST(UnicodeUtilitiesTest, Separators) {
   // clang-format off
-  static const bool kLatinSeparatorTable[256] = {
+  static constexpr int kLatinSeparatorTable[256] = {
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       // space ! " # $ % & ' ( ) * + , - . /
@@ -89,7 +88,8 @@ TEST(UnicodeUtilitiesTest, Separators) {
   // clang-format on
 
   for (UChar32 character = 0; character < kMaxLatinCharCount; ++character) {
-    EXPECT_EQ(IsSeparator(character), kLatinSeparatorTable[character]);
+    EXPECT_EQ(IsSeparator(character),
+              static_cast<bool>(kLatinSeparatorTable[character]));
   }
 
   g_is_test_first_and_last_chars_in_category_failed = false;
@@ -144,13 +144,13 @@ TEST(UnicodeUtilitiesTest, FoldQuoteMarkOrSoftHyphenTest) {
                                      kRightSingleQuotationMarkCharacter,
                                      kSoftHyphenCharacter};
 
-  String string_to_fold(kCharactersToFold, base::size(kCharactersToFold));
+  String string_to_fold(kCharactersToFold, std::size(kCharactersToFold));
   Vector<UChar> buffer;
   string_to_fold.AppendTo(buffer);
 
   FoldQuoteMarksAndSoftHyphens(string_to_fold);
 
-  const String folded_string("\"\"\"\'\'\'\0", base::size(kCharactersToFold));
+  const String folded_string("\"\"\"\'\'\'\0", std::size(kCharactersToFold));
   EXPECT_EQ(string_to_fold, folded_string);
 
   FoldQuoteMarksAndSoftHyphens(buffer.data(), buffer.size());
@@ -163,37 +163,37 @@ TEST(UnicodeUtilitiesTest, OnlyKanaLettersEqualityTest) {
 
   // Check that non-Kana letters will be skipped.
   EXPECT_TRUE(CheckOnlyKanaLettersInStrings(
-      kNonKanaString1, base::size(kNonKanaString1), kNonKanaString2,
-      base::size(kNonKanaString2)));
+      kNonKanaString1, std::size(kNonKanaString1), kNonKanaString2,
+      std::size(kNonKanaString2)));
 
   const UChar kKanaString[] = {'e', 'f', 'g', 0x3041};
   EXPECT_FALSE(CheckOnlyKanaLettersInStrings(
-      kKanaString, base::size(kKanaString), kNonKanaString2,
-      base::size(kNonKanaString2)));
+      kKanaString, std::size(kKanaString), kNonKanaString2,
+      std::size(kNonKanaString2)));
 
   // Compare with self.
-  EXPECT_TRUE(
-      CheckOnlyKanaLettersInStrings(kKanaString, base::size(kKanaString),
-                                    kKanaString, base::size(kKanaString)));
+  EXPECT_TRUE(CheckOnlyKanaLettersInStrings(kKanaString, std::size(kKanaString),
+                                            kKanaString,
+                                            std::size(kKanaString)));
 
   UChar voiced_kana_string1[] = {0x3042, 0x3099};
   UChar voiced_kana_string2[] = {0x3042, 0x309A};
 
   // Comparing strings with different sound marks should fail.
   EXPECT_FALSE(CheckOnlyKanaLettersInStrings(
-      voiced_kana_string1, base::size(voiced_kana_string1), voiced_kana_string2,
-      base::size(voiced_kana_string2)));
+      voiced_kana_string1, std::size(voiced_kana_string1), voiced_kana_string2,
+      std::size(voiced_kana_string2)));
 
   // Now strings will be the same.
   voiced_kana_string2[1] = 0x3099;
   EXPECT_TRUE(CheckOnlyKanaLettersInStrings(
-      voiced_kana_string1, base::size(voiced_kana_string1), voiced_kana_string2,
-      base::size(voiced_kana_string2)));
+      voiced_kana_string1, std::size(voiced_kana_string1), voiced_kana_string2,
+      std::size(voiced_kana_string2)));
 
   voiced_kana_string2[0] = 0x3043;
   EXPECT_FALSE(CheckOnlyKanaLettersInStrings(
-      voiced_kana_string1, base::size(voiced_kana_string1), voiced_kana_string2,
-      base::size(voiced_kana_string2)));
+      voiced_kana_string1, std::size(voiced_kana_string1), voiced_kana_string2,
+      std::size(voiced_kana_string2)));
 }
 
 TEST(UnicodeUtilitiesTest, StringsWithKanaLettersTest) {
@@ -201,53 +201,53 @@ TEST(UnicodeUtilitiesTest, StringsWithKanaLettersTest) {
   const UChar kNonKanaString2[] = {'a', 'b', 'c'};
 
   // Check that non-Kana letters will be compared.
-  EXPECT_TRUE(
-      CheckKanaStringsEqual(kNonKanaString1, base::size(kNonKanaString1),
-                            kNonKanaString2, base::size(kNonKanaString2)));
+  EXPECT_TRUE(CheckKanaStringsEqual(kNonKanaString1, std::size(kNonKanaString1),
+                                    kNonKanaString2,
+                                    std::size(kNonKanaString2)));
 
   const UChar kKanaString[] = {'a', 'b', 'c', 0x3041};
-  EXPECT_FALSE(CheckKanaStringsEqual(kKanaString, base::size(kKanaString),
+  EXPECT_FALSE(CheckKanaStringsEqual(kKanaString, std::size(kKanaString),
                                      kNonKanaString2,
-                                     base::size(kNonKanaString2)));
+                                     std::size(kNonKanaString2)));
 
   // Compare with self.
-  EXPECT_TRUE(CheckKanaStringsEqual(kKanaString, base::size(kKanaString),
-                                    kKanaString, base::size(kKanaString)));
+  EXPECT_TRUE(CheckKanaStringsEqual(kKanaString, std::size(kKanaString),
+                                    kKanaString, std::size(kKanaString)));
 
   const UChar kKanaString2[] = {'x', 'y', 'z', 0x3041};
   // Comparing strings with different non-Kana letters should fail.
-  EXPECT_FALSE(CheckKanaStringsEqual(kKanaString, base::size(kKanaString),
-                                     kKanaString2, base::size(kKanaString2)));
+  EXPECT_FALSE(CheckKanaStringsEqual(kKanaString, std::size(kKanaString),
+                                     kKanaString2, std::size(kKanaString2)));
 
   const UChar kKanaString3[] = {'a', 'b', 'c', 0x3042, 0x3099, 'm', 'n', 'o'};
   // Check that non-Kana letters after Kana letters will be compared.
-  EXPECT_TRUE(CheckKanaStringsEqual(kKanaString3, base::size(kKanaString3),
-                                    kKanaString3, base::size(kKanaString3)));
+  EXPECT_TRUE(CheckKanaStringsEqual(kKanaString3, std::size(kKanaString3),
+                                    kKanaString3, std::size(kKanaString3)));
 
   const UChar kKanaString4[] = {'a', 'b', 'c', 0x3042, 0x3099,
                                 'm', 'n', 'o', 'p'};
   // And now comparing should fail.
-  EXPECT_FALSE(CheckKanaStringsEqual(kKanaString3, base::size(kKanaString3),
-                                     kKanaString4, base::size(kKanaString4)));
+  EXPECT_FALSE(CheckKanaStringsEqual(kKanaString3, std::size(kKanaString3),
+                                     kKanaString4, std::size(kKanaString4)));
 
   UChar voiced_kana_string1[] = {0x3042, 0x3099};
   UChar voiced_kana_string2[] = {0x3042, 0x309A};
 
   // Comparing strings with different sound marks should fail.
   EXPECT_FALSE(CheckKanaStringsEqual(
-      voiced_kana_string1, base::size(voiced_kana_string1), voiced_kana_string2,
-      base::size(voiced_kana_string2)));
+      voiced_kana_string1, std::size(voiced_kana_string1), voiced_kana_string2,
+      std::size(voiced_kana_string2)));
 
   // Now strings will be the same.
   voiced_kana_string2[1] = 0x3099;
   EXPECT_TRUE(CheckKanaStringsEqual(
-      voiced_kana_string1, base::size(voiced_kana_string1), voiced_kana_string2,
-      base::size(voiced_kana_string2)));
+      voiced_kana_string1, std::size(voiced_kana_string1), voiced_kana_string2,
+      std::size(voiced_kana_string2)));
 
   voiced_kana_string2[0] = 0x3043;
   EXPECT_FALSE(CheckKanaStringsEqual(
-      voiced_kana_string1, base::size(voiced_kana_string1), voiced_kana_string2,
-      base::size(voiced_kana_string2)));
+      voiced_kana_string1, std::size(voiced_kana_string1), voiced_kana_string2,
+      std::size(voiced_kana_string2)));
 }
 
 }  // namespace blink

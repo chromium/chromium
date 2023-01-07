@@ -1,0 +1,83 @@
+<html>
+  <head>
+    <title>Capture Handle Test - Embedded Capturing Page</title>
+    <link rel="icon" href="data:," />
+    <script>
+      "use strict";
+
+      let capturedStream;
+      let capturedVideoTrack;
+
+      function captureOtherTab() {
+        navigator.mediaDevices
+          .getDisplayMedia({ video: true })
+          .then(handleCaptureSuccess)
+          .catch(handleCaptureError);
+      }
+
+      function readLastEvent() {
+        // Blocks until onCaptureHandleChange() unblocks.
+      }
+
+      function readCaptureHandle() {
+        if (!capturedVideoTrack) {
+          window.domAutomationController.send("error-no-video-track");
+          return;
+        }
+
+        let captureHandle = capturedVideoTrack.getCaptureHandle();
+        if (!captureHandle) {
+          window.domAutomationController.send("no-embedded-capture-handle");
+          return;
+        }
+
+        window.domAutomationController.send(
+          JSON.stringify(captureHandle)
+        );
+      }
+
+      function handleCaptureSuccess(stream) {
+        if (capturedStream) {
+          window.domAutomationController.send(
+            "error-multiple-embedded-captures"
+          );
+          return;
+        }
+
+        capturedStream = stream;
+        capturedVideoTrack = stream.getVideoTracks()[0];
+
+        capturedVideoTrack.oncapturehandlechange = onCaptureHandleChange;
+
+        window.domAutomationController.send("embedded-capture-success");
+      }
+
+      function handleCaptureError(error) {
+        window.domAutomationController.send("embedded-capture-failure");
+      }
+
+      function onCaptureHandleChange(event) {
+        window.domAutomationController.send(
+          JSON.stringify(event.target.getCaptureHandle())
+        );
+      }
+
+      function reportEmbeddingSuccess() {
+        window.domAutomationController.send("embedding-done");
+      }
+
+      window.addEventListener("message", (event) => {
+        if (event.data == "start-capture") {
+          captureOtherTab();
+        } else if (event.data == "read-capture-handle") {
+          readCaptureHandle();
+        } else {
+          window.domAutomationController.send("unrecognized-message");
+        }
+      });
+    </script>
+  </head>
+  <body onload="reportEmbeddingSuccess();">
+    <h1>Capture Handle Test - Embedded Capturing Page</h1>
+  </body>
+</html>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,12 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/sync/driver/trusted_vault_histograms.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher.h"
+#include "components/sync/trusted_vault/trusted_vault_server_constants.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
@@ -15,6 +19,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace syncer {
 
@@ -22,8 +27,6 @@ namespace {
 
 const char kAuthorizationHeader[] = "Authorization";
 const char kProtobufContentType[] = "application/x-protobuf";
-const char kQueryParameterAlternateOutputKey[] = "alt";
-const char kQueryParameterAlternateOutputProto[] = "proto";
 
 net::NetworkTrafficAnnotationTag CreateTrafficAnnotationTag() {
   return net::DefineNetworkTrafficAnnotation("trusted_vault_request",
@@ -72,10 +75,15 @@ std::string GetHttpMethodString(TrustedVaultRequest::HttpMethod http_method) {
 TrustedVaultRequest::TrustedVaultRequest(
     HttpMethod http_method,
     const GURL& request_url,
-    const base::Optional<std::string>& serialized_request_proto)
+    const absl::optional<std::string>& serialized_request_proto,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    TrustedVaultURLFetchReasonForUMA reason_for_uma)
     : http_method_(http_method),
       request_url_(request_url),
-      serialized_request_proto_(serialized_request_proto) {
+      serialized_request_proto_(serialized_request_proto),
+      url_loader_factory_(std::move(url_loader_factory)),
+      reason_for_uma_(reason_for_uma) {
+  DCHECK(url_loader_factory_);
   DCHECK(http_method == HttpMethod::kPost ||
          !serialized_request_proto.has_value());
 }
@@ -84,32 +92,32 @@ TrustedVaultRequest::~TrustedVaultRequest() = default;
 
 void TrustedVaultRequest::FetchAccessTokenAndSendRequest(
     const CoreAccountId& account_id,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     TrustedVaultAccessTokenFetcher* access_token_fetcher,
     CompletionCallback callback) {
-  DCHECK(url_loader_factory);
   DCHECK(access_token_fetcher);
   completion_callback_ = std::move(callback);
   access_token_fetcher->FetchAccessToken(
-      account_id,
-      base::BindOnce(&TrustedVaultRequest::OnAccessTokenFetched,
-                     weak_ptr_factory_.GetWeakPtr(), url_loader_factory));
+      account_id, base::BindOnce(&TrustedVaultRequest::OnAccessTokenFetched,
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void TrustedVaultRequest::OnAccessTokenFetched(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::Optional<signin::AccessTokenInfo> access_token_info) {
+    absl::optional<signin::AccessTokenInfo> access_token_info) {
+  base::UmaHistogramBoolean("Sync.TrustedVaultAccessTokenFetchSuccess",
+                            access_token_info.has_value());
+
   if (!access_token_info.has_value()) {
-    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kOtherError,
-                                             /*response_body=*/std::string());
+    RunCompletionCallbackAndMaybeDestroySelf(
+        HttpStatus::kAccessTokenFetchingFailure,
+        /*response_body=*/std::string());
     return;
   }
 
-  url_loader_ = CreateURLLoader(url_loader_factory, access_token_info->token);
+  url_loader_ = CreateURLLoader(access_token_info->token);
   // Destroying |this| object will cancel the request, so use of Unretained() is
   // safe here.
   url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
-      url_loader_factory.get(),
+      url_loader_factory_.get(),
       base::BindOnce(&TrustedVaultRequest::OnURLLoadComplete,
                      base::Unretained(this)));
 }
@@ -117,31 +125,43 @@ void TrustedVaultRequest::OnAccessTokenFetched(
 void TrustedVaultRequest::OnURLLoadComplete(
     std::unique_ptr<std::string> response_body) {
   int http_response_code = 0;
+
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers) {
     http_response_code = url_loader_->ResponseInfo()->headers->response_code();
   }
+
+  RecordTrustedVaultURLFetchResponse(/*http_response_code=*/http_response_code,
+                                     /*net_error=*/url_loader_->NetError(),
+                                     reason_for_uma_);
+
+  std::string response_content = response_body ? *response_body : std::string();
+  if (http_response_code == net::HTTP_BAD_REQUEST) {
+    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kBadRequest,
+                                             response_content);
+    return;
+  }
   if (http_response_code == net::HTTP_NOT_FOUND) {
     RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kNotFound,
-                                             std::string());
+                                             response_content);
     return;
   }
-  if (http_response_code == net::HTTP_PRECONDITION_FAILED) {
-    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kFailedPrecondition,
-                                             std::string());
+  if (http_response_code == net::HTTP_CONFLICT) {
+    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kConflict,
+                                             response_content);
     return;
   }
+
   if (http_response_code != net::HTTP_OK &&
       http_response_code != net::HTTP_NO_CONTENT) {
     RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kOtherError,
-                                             std::string());
+                                             response_content);
     return;
   }
   RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kSuccess,
-                                           *response_body);
+                                           response_content);
 }
 
 std::unique_ptr<network::SimpleURLLoader> TrustedVaultRequest::CreateURLLoader(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& access_token) const {
   auto request = std::make_unique<network::ResourceRequest>();
   // Specify that the server's response body should be formatted as a
@@ -159,8 +179,11 @@ std::unique_ptr<network::SimpleURLLoader> TrustedVaultRequest::CreateURLLoader(
       network::SimpleURLLoader::Create(std::move(request),
                                        CreateTrafficAnnotationTag());
 
-  // TODO(crbug.com/1113598): do we need to set retry options? (in particular
-  // RETRY_ON_NETWORK_CHANGE).
+  // Fetchers are sometimes cancelled because a network change was detected,
+  // especially at startup and after sign-in on ChromeOS.
+  url_loader->SetRetryOptions(
+      3, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+  url_loader->SetAllowHttpErrorResults(true);
 
   if (serialized_request_proto_.has_value()) {
     url_loader->AttachStringForUpload(*serialized_request_proto_,

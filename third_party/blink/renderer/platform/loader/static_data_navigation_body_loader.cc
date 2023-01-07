@@ -1,8 +1,9 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 
 namespace blink {
 
@@ -33,23 +34,20 @@ void StaticDataNavigationBodyLoader::Finish() {
   Continue();
 }
 
-void StaticDataNavigationBodyLoader::SetDefersLoading(
-    WebURLLoader::DeferType defers) {
-  defers_loading_ = defers;
+void StaticDataNavigationBodyLoader::SetDefersLoading(LoaderFreezeMode mode) {
+  freeze_mode_ = mode;
   Continue();
 }
 
 void StaticDataNavigationBodyLoader::StartLoadingBody(
-    WebNavigationBodyLoader::Client* client,
-    bool use_isolated_code_cache) {
+    WebNavigationBodyLoader::Client* client) {
   DCHECK(!is_in_continue_);
   client_ = client;
   Continue();
 }
 
 void StaticDataNavigationBodyLoader::Continue() {
-  if (defers_loading_ != WebURLLoader::DeferType::kNotDeferred || !client_ ||
-      is_in_continue_)
+  if (freeze_mode_ != LoaderFreezeMode::kNone || !client_ || is_in_continue_)
     return;
 
   // We don't want reentrancy in this method -
@@ -74,7 +72,7 @@ void StaticDataNavigationBodyLoader::Continue() {
           return;
       }
 
-      if (defers_loading_ != WebURLLoader::DeferType::kNotDeferred) {
+      if (freeze_mode_ != LoaderFreezeMode::kNone) {
         is_in_continue_ = false;
         return;
       }
@@ -90,7 +88,7 @@ void StaticDataNavigationBodyLoader::Continue() {
     client->BodyLoadingFinished(
         base::TimeTicks::Now(), total_encoded_data_length_,
         total_encoded_data_length_, total_encoded_data_length_, false,
-        base::nullopt);
+        absl::nullopt);
     // |this| can be destroyed from BodyLoadingFinished.
     if (!weak_self)
       return;

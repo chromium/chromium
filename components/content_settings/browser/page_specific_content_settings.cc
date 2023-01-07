@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,11 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
+#include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/browsing_data/content/appcache_helper.h"
 #include "components/browsing_data/content/cache_storage_helper.h"
 #include "components/browsing_data/content/cookie_helper.h"
 #include "components/browsing_data/content/database_helper.h"
@@ -26,113 +24,202 @@
 #include "components/browsing_data/content/service_worker_helper.h"
 #include "components/browsing_data/content/shared_worker_helper.h"
 #include "components/content_settings/common/content_settings_agent.mojom.h"
-#include "components/content_settings/core/browser/content_settings_details.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/canonical_topic.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_handle_user_data.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 using content::BrowserThread;
+using StorageType =
+    content_settings::mojom::ContentSettingsManager::StorageType;
+using LifecycleState = content::RenderFrameHost::LifecycleState;
 
 namespace content_settings {
 namespace {
-
-bool ShouldSendUpdatedContentSettingsRulesToRenderer(
-    ContentSettingsType content_type) {
-  // ContentSettingsType::DEFAULT signals that multiple content settings may
-  // have been updated, e.g. by the PolicyProvider. This should always be sent
-  // to the renderer in case a relevant setting is updated.
-  if (content_type == ContentSettingsType::DEFAULT)
-    return true;
-
-  return RendererContentSettingRules::IsRendererContentSetting((content_type));
-}
-
-void MaybeSendRendererContentSettingsRules(
-    content::RenderFrameHost* rfh,
-    const HostContentSettingsMap* map,
-    PageSpecificContentSettings::Delegate* delegate) {
-  DCHECK_EQ(rfh, rfh->GetMainFrame());
-  // Only send a message to the renderer if it is initialised and not dead.
-  // Otherwise, the IPC messages will be queued in the browser process,
-  // potentially causing large memory leaks. See https://crbug.com/875937.
-  content::RenderProcessHost* process = rfh->GetProcess();
-  if (!process->IsInitializedAndNotDead())
-    return;
-
-  RendererContentSettingRules rules;
-  GetRendererContentSettingRules(map, &rules);
-  delegate->SetContentSettingRules(process, rules);
-}
 
 bool WillNavigationCreateNewPageSpecificContentSettingsOnCommit(
     content::NavigationHandle* navigation_handle) {
   return navigation_handle->IsInMainFrame() &&
          !navigation_handle->IsSameDocument() &&
-         !navigation_handle->IsServedFromBackForwardCache();
+         !navigation_handle->IsServedFromBackForwardCache() &&
+         !navigation_handle->IsPrerenderedPageActivation();
+}
+
+// Keeps track of cookie and service worker access during a navigation.
+// These types of access can happen for the current page or for a new
+// navigation (think cookies sent in the HTTP request or service worker
+// being run to serve a fetch request). A navigation might fail to
+// commit in which case we have to handle it as if it had never
+// occurred. So we cache all cookies and service worker accesses that
+// happen during a navigation and only apply the changes if the
+// navigation commits.
+class InflightNavigationContentSettings
+    : public content::NavigationHandleUserData<
+          InflightNavigationContentSettings> {
+ public:
+  ~InflightNavigationContentSettings() override;
+  std::vector<content::CookieAccessDetails> cookie_accesses;
+  std::vector<std::pair<GURL, content::AllowServiceWorkerResult>>
+      service_worker_accesses;
+
+ private:
+  explicit InflightNavigationContentSettings(
+      content::NavigationHandle& navigation_handle);
+  friend class content::NavigationHandleUserData<
+      InflightNavigationContentSettings>;
+  NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
+};
+
+// This class attaches to WebContents to listen to events and route them to
+// appropriate PageSpecificContentSettings, store navigation related events
+// until the navigation finishes and then transferring the
+// navigation-associated state to the newly-created page.
+class WebContentsHandler
+    : public content::WebContentsObserver,
+      public content::WebContentsUserData<WebContentsHandler> {
+ public:
+  using Delegate = PageSpecificContentSettings::Delegate;
+  using SiteDataObserver = PageSpecificContentSettings::SiteDataObserver;
+
+  explicit WebContentsHandler(content::WebContents* web_contents,
+                              std::unique_ptr<Delegate> delegate);
+  ~WebContentsHandler() override;
+  // Adds the given |SiteDataObserver|. The |observer| is notified when a
+  // locale shared object, like for example a cookie, is accessed.
+  void AddSiteDataObserver(SiteDataObserver* observer);
+
+  // Removes the given |SiteDataObserver|.
+  void RemoveSiteDataObserver(SiteDataObserver* observer);
+
+  // Notifies all registered |SiteDataObserver|s.
+  void NotifySiteDataObservers();
+
+  // Queues update sent while the navigation is still in progress. The update
+  // is run after the navigation completes (DidFinishNavigation).
+  void AddPendingCommitUpdate(content::GlobalRenderFrameHostId id,
+                              base::OnceClosure update);
+
+  Delegate* delegate() { return delegate_.get(); }
+
+ private:
+  friend class content::WebContentsUserData<WebContentsHandler>;
+
+  // Applies all stored events for the given navigation to the current main
+  // document.
+  void TransferNavigationContentSettingsToCommittedDocument(
+      const InflightNavigationContentSettings& navigation_settings,
+      content::RenderFrameHost* rfh);
+
+  // content::WebContentsObserver overrides.
+  void ReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void OnCookiesAccessed(content::NavigationHandle* navigation,
+                         const content::CookieAccessDetails& details) override;
+  void OnCookiesAccessed(content::RenderFrameHost* rfh,
+                         const content::CookieAccessDetails& details) override;
+  // Called when a specific Service Worker scope was accessed.
+  // If access was blocked due to the user's content settings,
+  // |blocked_by_policy_javascript| or/and |blocked_by_policy_cookie|
+  // should be true, and this function should invoke OnContentBlocked for
+  // JavaScript or/and cookies respectively.
+  void OnServiceWorkerAccessed(
+      content::NavigationHandle* navigation,
+      const GURL& scope,
+      content::AllowServiceWorkerResult allowed) override;
+  void OnServiceWorkerAccessed(
+      content::RenderFrameHost* frame,
+      const GURL& scope,
+      content::AllowServiceWorkerResult allowed) override;
+
+  std::unique_ptr<Delegate> delegate_;
+
+  raw_ptr<HostContentSettingsMap> map_;
+
+  // All currently registered |SiteDataObserver|s.
+  base::ObserverList<SiteDataObserver>::Unchecked observer_list_;
+
+  std::map<content::GlobalRenderFrameHostId, std::vector<base::OnceClosure>>
+      pending_commit_updates_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+// Certain notifications for content accesses (script/storage) can be
+// received from the renderer while the RFH is in the kPendingCommit lifecycle
+// state. At this point, no PageSpecificContentSettings object is created (as
+// this only happens in DidFinishNavigation), so we queue up the update until
+// DidFinishNavigation is called. This method returns true if the update is
+// queued, false otherwise.
+template <typename Method, typename... Args>
+bool DelayUntilCommitIfNecessary(content::RenderFrameHost* rfh,
+                                 Method method,
+                                 Args... args) {
+  if (!rfh)
+    return false;
+  if (rfh->GetLifecycleState() == LifecycleState::kPendingCommit) {
+    auto* handler = WebContentsHandler::FromWebContents(
+        content::WebContents::FromRenderFrameHost(rfh));
+    if (!handler)
+      return false;
+    handler->AddPendingCommitUpdate(rfh->GetGlobalId(),
+                                    base::BindOnce(method, args...));
+    return true;
+  }
+  return false;
 }
 
 }  // namespace
 
-PageSpecificContentSettings::SiteDataObserver::SiteDataObserver(
-    content::WebContents* web_contents)
-    : web_contents_(web_contents) {
-  // Make sure the handler was attached to the WebContents as some UT might skip
-  // this.
-  auto* handler =
-      PageSpecificContentSettings::WebContentsHandler::FromWebContents(
-          web_contents_);
-  if (handler)
-    handler->AddSiteDataObserver(this);
-}
+InflightNavigationContentSettings::InflightNavigationContentSettings(
+    content::NavigationHandle&) {}
 
-PageSpecificContentSettings::SiteDataObserver::~SiteDataObserver() {
-  if (!web_contents_)
-    return;
-  auto* handler =
-      PageSpecificContentSettings::WebContentsHandler::FromWebContents(
-          web_contents_);
-  if (handler)
-    handler->RemoveSiteDataObserver(this);
-}
+InflightNavigationContentSettings::~InflightNavigationContentSettings() =
+    default;
 
-void PageSpecificContentSettings::SiteDataObserver::WebContentsDestroyed() {
-  web_contents_ = nullptr;
-}
+NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(InflightNavigationContentSettings);
 
-PageSpecificContentSettings::WebContentsHandler::WebContentsHandler(
-    content::WebContents* web_contents,
-    std::unique_ptr<Delegate> delegate)
+WebContentsHandler::WebContentsHandler(content::WebContents* web_contents,
+                                       std::unique_ptr<Delegate> delegate)
     : WebContentsObserver(web_contents),
+      content::WebContentsUserData<WebContentsHandler>(*web_contents),
       delegate_(std::move(delegate)),
       map_(delegate_->GetSettingsMap()) {
-  DCHECK(!PageSpecificContentSettings::GetForCurrentDocument(
-      web_contents->GetMainFrame()));
-  content::SetRenderDocumentHostUserData(
-      web_contents->GetMainFrame(), PageSpecificContentSettings::UserDataKey(),
-      base::WrapUnique(
-          new PageSpecificContentSettings(*this, delegate_.get())));
+  DCHECK(
+      !PageSpecificContentSettings::GetForPage(web_contents->GetPrimaryPage()));
+  content::PageUserData<PageSpecificContentSettings>::CreateForPage(
+      web_contents->GetPrimaryPage(), delegate_.get());
 }
 
-PageSpecificContentSettings::WebContentsHandler::~WebContentsHandler() {
+WebContentsHandler::~WebContentsHandler() {
   for (SiteDataObserver& observer : observer_list_)
     observer.WebContentsDestroyed();
 }
 
-void PageSpecificContentSettings::WebContentsHandler::
-    TransferNavigationContentSettingsToCommittedDocument(
-        const InflightNavigationContentSettings& navigation_settings,
-        content::RenderFrameHost* rfh) {
+void WebContentsHandler::TransferNavigationContentSettingsToCommittedDocument(
+    const InflightNavigationContentSettings& navigation_settings,
+    content::RenderFrameHost* rfh) {
   for (const auto& cookie_access : navigation_settings.cookie_accesses) {
     OnCookiesAccessed(rfh, cookie_access);
   }
@@ -143,183 +230,197 @@ void PageSpecificContentSettings::WebContentsHandler::
   }
 }
 
-void PageSpecificContentSettings::WebContentsHandler::OnCookiesAccessed(
+void WebContentsHandler::OnCookiesAccessed(
     content::NavigationHandle* navigation,
     const content::CookieAccessDetails& details) {
-  auto it = inflight_navigation_settings_.find(navigation);
-  if (it != inflight_navigation_settings_.end()) {
-    it->second.cookie_accesses.push_back(details);
+  if (WillNavigationCreateNewPageSpecificContentSettingsOnCommit(navigation)) {
+    auto* inflight_navigation_settings =
+        content::NavigationHandleUserData<InflightNavigationContentSettings>::
+            GetOrCreateForNavigationHandle(*navigation);
+    inflight_navigation_settings->cookie_accesses.push_back(details);
     return;
   }
-  // TODO(carlscab): We should be able to
-  // DHECK(!WillNavigationCreateNewPageSpecificContentSettingsOnCommit) here,
-  // but there is still code that starts a navigation before attaching the tab
-  // helpers in DevConsole related code. So we miss the DidStartNavigation event
-  // for those navigations. (https://crbug.com/1095576)
-  OnCookiesAccessed(web_contents()->GetMainFrame(), details);
+  // All accesses during main frame navigations should enter the block above and
+  // not reach here. We also don't expect any accesses to be made during page
+  // activations or same-document navigations.
+  DCHECK(navigation->GetParentFrame());
+  OnCookiesAccessed(navigation->GetParentFrame()->GetMainFrame(), details);
 }
 
-void PageSpecificContentSettings::WebContentsHandler::OnCookiesAccessed(
+void WebContentsHandler::OnCookiesAccessed(
     content::RenderFrameHost* rfh,
     const content::CookieAccessDetails& details) {
-  auto* tscs =
-      PageSpecificContentSettings::GetForCurrentDocument(rfh->GetMainFrame());
-  if (tscs)
-    tscs->OnCookiesAccessed(details);
+  auto* pscs = PageSpecificContentSettings::GetForPage(rfh->GetPage());
+  if (pscs)
+    pscs->OnCookiesAccessed(details);
 }
 
-void PageSpecificContentSettings::WebContentsHandler::OnServiceWorkerAccessed(
+void WebContentsHandler::OnServiceWorkerAccessed(
     content::NavigationHandle* navigation,
     const GURL& scope,
     content::AllowServiceWorkerResult allowed) {
   DCHECK(scope.is_valid());
 
-  auto it = inflight_navigation_settings_.find(navigation);
-  if (it != inflight_navigation_settings_.end()) {
-    it->second.service_worker_accesses.emplace_back(
+  if (WillNavigationCreateNewPageSpecificContentSettingsOnCommit(navigation)) {
+    auto* inflight_navigation_settings =
+        content::NavigationHandleUserData<InflightNavigationContentSettings>::
+            GetOrCreateForNavigationHandle(*navigation);
+    inflight_navigation_settings->service_worker_accesses.emplace_back(
         std::make_pair(scope, allowed));
     return;
   }
-  // TODO(carlscab): We should be able to
-  // DHECK(!WillNavigationCreateNewPageSpecificContentSettingsOnCommit) here,
-  // but there is still code that starts a navigation before attaching the tab
-  // helpers in DevConsole related code. So we miss the DidStartNavigation event
-  // for those navigations.
-  OnServiceWorkerAccessed(web_contents()->GetMainFrame(), scope, allowed);
+  // All accesses during main frame navigations should enter the block above and
+  // not reach here. We also don't expect any accesses to be made during page
+  // activations or same-document navigations.
+  DCHECK(navigation->GetParentFrame());
+  OnServiceWorkerAccessed(navigation->GetParentFrame()->GetMainFrame(), scope,
+                          allowed);
 }
 
-void PageSpecificContentSettings::WebContentsHandler::OnServiceWorkerAccessed(
+void WebContentsHandler::OnServiceWorkerAccessed(
     content::RenderFrameHost* frame,
     const GURL& scope,
     content::AllowServiceWorkerResult allowed) {
-  auto* tscs =
-      PageSpecificContentSettings::GetForCurrentDocument(frame->GetMainFrame());
-  if (tscs)
-    tscs->OnServiceWorkerAccessed(scope, allowed);
+  auto* pscs = PageSpecificContentSettings::GetForPage(frame->GetPage());
+  if (pscs)
+    pscs->OnServiceWorkerAccessed(scope, allowed);
 }
 
-void PageSpecificContentSettings::WebContentsHandler::DidStartNavigation(
+void WebContentsHandler::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!WillNavigationCreateNewPageSpecificContentSettingsOnCommit(
-          navigation_handle)) {
-    return;
-  }
+  content::RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
 
-  inflight_navigation_settings_.insert(
-      std::make_pair(navigation_handle, InflightNavigationContentSettings()));
+  RendererContentSettingRules rules;
+  content_settings::GetRendererContentSettingRules(map_, &rules);
+  delegate()->SetDefaultRendererContentSettingRules(rfh, &rules);
+  const GURL& primary_url =
+      navigation_handle->GetParentFrameOrOuterDocument()
+          ? navigation_handle->GetParentFrameOrOuterDocument()
+                ->GetLastCommittedURL()
+          : navigation_handle->GetURL();
+  rules.FilterRulesByOutermostMainFrameURL(primary_url);
+
+  mojo::AssociatedRemote<content_settings::mojom::ContentSettingsAgent> agent;
+  rfh->GetRemoteAssociatedInterfaces()->GetInterface(&agent);
+  // TODO(crbug.com/1187618): We shouldn't be sending the primary patterns here
+  // because: a) we have already filtered based on them and they are not needed
+  // in the renderer, and b) they could leak the embedder origin to embedded
+  // pages like fenced frames.
+  agent->SendRendererContentSettingRules(std::move(rules));
 }
 
-void PageSpecificContentSettings::WebContentsHandler::ReadyToCommitNavigation(
+void WebContentsHandler::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!WillNavigationCreateNewPageSpecificContentSettingsOnCommit(
+  if (!navigation_handle->HasCommitted())
+    return;
+
+  if (WillNavigationCreateNewPageSpecificContentSettingsOnCommit(
           navigation_handle)) {
-    return;
+    content::PageUserData<PageSpecificContentSettings>::CreateForPage(
+        navigation_handle->GetRenderFrameHost()->GetPage(), delegate_.get());
+    InflightNavigationContentSettings* inflight_settings =
+        content::NavigationHandleUserData<InflightNavigationContentSettings>::
+            GetForNavigationHandle(*navigation_handle);
+
+    if (inflight_settings) {
+      TransferNavigationContentSettingsToCommittedDocument(
+          *inflight_settings, navigation_handle->GetRenderFrameHost());
+    }
+
+    content::GlobalRenderFrameHostId rfh_id =
+        navigation_handle->GetRenderFrameHost()->GetGlobalId();
+    auto it = pending_commit_updates_.find(rfh_id);
+    if (it != pending_commit_updates_.end()) {
+      for (auto& update : it->second) {
+        std::move(update).Run();
+      }
+      pending_commit_updates_.erase(it);
+    }
   }
 
-  // There may be content settings that were updated for the navigated URL.
-  // These would not have been sent before if we're navigating cross-origin.
-  // Ensure up to date rules are sent before navigation commits.
-  MaybeSendRendererContentSettingsRules(
-      navigation_handle->GetWebContents()->GetMainFrame(), map_,
-      delegate_.get());
+  if (navigation_handle->IsPrerenderedPageActivation()) {
+    auto* pscs = PageSpecificContentSettings::GetForFrame(
+        navigation_handle->GetRenderFrameHost());
+    DCHECK(pscs);
+
+    pscs->OnPrerenderingPageActivation();
+  }
+
+  if (navigation_handle->IsInPrimaryMainFrame())
+    delegate_->UpdateLocationBar();
 }
 
-void PageSpecificContentSettings::WebContentsHandler::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!WillNavigationCreateNewPageSpecificContentSettingsOnCommit(
-          navigation_handle)) {
-    return;
-  }
-
-  if (!navigation_handle->HasCommitted()) {
-    inflight_navigation_settings_.erase(navigation_handle);
-    return;
-  }
-
-  auto tscs =
-      base::WrapUnique(new PageSpecificContentSettings(*this, delegate_.get()));
-
-  // TODO(carlscab): This sort of internal. Maybe add a
-  // RenderDocumentHostUserData::Create(RenderFrameHost* rfh, Params...)
-  content::SetRenderDocumentHostUserData(
-      navigation_handle->GetRenderFrameHost(),
-      PageSpecificContentSettings::UserDataKey(), std::move(tscs));
-
-  auto it = inflight_navigation_settings_.find(navigation_handle);
-  if (it != inflight_navigation_settings_.end()) {
-    TransferNavigationContentSettingsToCommittedDocument(
-        it->second, navigation_handle->GetRenderFrameHost());
-    inflight_navigation_settings_.erase(it);
-  }
-
-  delegate_->UpdateLocationBar();
-}
-
-void PageSpecificContentSettings::WebContentsHandler::AppCacheAccessed(
-    const GURL& manifest_url,
-    bool blocked_by_policy) {
-  auto* tscs = PageSpecificContentSettings::GetForCurrentDocument(
-      web_contents()->GetMainFrame());
-  if (tscs)
-    tscs->AppCacheAccessed(manifest_url, blocked_by_policy);
-}
-
-void PageSpecificContentSettings::WebContentsHandler::AddSiteDataObserver(
-    SiteDataObserver* observer) {
+void WebContentsHandler::AddSiteDataObserver(SiteDataObserver* observer) {
   observer_list_.AddObserver(observer);
 }
 
-void PageSpecificContentSettings::WebContentsHandler::RemoveSiteDataObserver(
-    SiteDataObserver* observer) {
+void WebContentsHandler::RemoveSiteDataObserver(SiteDataObserver* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void PageSpecificContentSettings::WebContentsHandler::
-    NotifySiteDataObservers() {
+void WebContentsHandler::NotifySiteDataObservers() {
   for (SiteDataObserver& observer : observer_list_)
     observer.OnSiteDataAccessed();
 }
 
-PageSpecificContentSettings::WebContentsHandler::
-    InflightNavigationContentSettings::InflightNavigationContentSettings() =
-        default;
-PageSpecificContentSettings::WebContentsHandler::
-    InflightNavigationContentSettings::InflightNavigationContentSettings(
-        const InflightNavigationContentSettings&) = default;
-PageSpecificContentSettings::WebContentsHandler::
-    InflightNavigationContentSettings::InflightNavigationContentSettings(
-        InflightNavigationContentSettings&&) = default;
+void WebContentsHandler::AddPendingCommitUpdate(
+    content::GlobalRenderFrameHostId id,
+    base::OnceClosure update) {
+#if DCHECK_IS_ON()
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(id);
+  DCHECK(rfh);
+  DCHECK_EQ(rfh->GetLifecycleState(), LifecycleState::kPendingCommit);
+#endif
+  pending_commit_updates_[id].push_back(std::move(update));
+}
 
-PageSpecificContentSettings::WebContentsHandler::
-    InflightNavigationContentSettings::~InflightNavigationContentSettings() =
-        default;
+WEB_CONTENTS_USER_DATA_KEY_IMPL(WebContentsHandler);
 
-PageSpecificContentSettings::WebContentsHandler::
-    InflightNavigationContentSettings&
-    PageSpecificContentSettings::WebContentsHandler::
-        InflightNavigationContentSettings::operator=(
-            InflightNavigationContentSettings&&) = default;
+PageSpecificContentSettings::SiteDataObserver::SiteDataObserver(
+    content::WebContents* web_contents)
+    : web_contents_(web_contents) {
+  // Make sure the handler was attached to the WebContents as some UT might skip
+  // this.
+  auto* handler = WebContentsHandler::FromWebContents(web_contents_);
+  if (handler)
+    handler->AddSiteDataObserver(this);
+}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(PageSpecificContentSettings::WebContentsHandler)
+PageSpecificContentSettings::SiteDataObserver::~SiteDataObserver() {
+  if (!web_contents_)
+    return;
+  auto* handler = WebContentsHandler::FromWebContents(web_contents_);
+  if (handler)
+    handler->RemoveSiteDataObserver(this);
+}
 
-PageSpecificContentSettings::PageSpecificContentSettings(
-    PageSpecificContentSettings::WebContentsHandler& handler,
-    Delegate* delegate)
-    : handler_(handler),
-      main_frame_(handler_.web_contents()->GetMainFrame()),
+void PageSpecificContentSettings::SiteDataObserver::WebContentsDestroyed() {
+  web_contents_ = nullptr;
+}
+
+PageSpecificContentSettings::PendingUpdates::PendingUpdates() = default;
+
+PageSpecificContentSettings::PendingUpdates::~PendingUpdates() = default;
+
+PageSpecificContentSettings::PageSpecificContentSettings(content::Page& page,
+                                                         Delegate* delegate)
+    : content::PageUserData<PageSpecificContentSettings>(page),
       delegate_(delegate),
-      visible_url_(handler_.web_contents()->GetVisibleURL()),
       map_(delegate_->GetSettingsMap()),
-      allowed_local_shared_objects_(
-          handler_.web_contents()->GetBrowserContext(),
-          delegate_->GetAdditionalFileSystemTypes(),
-          delegate_->GetIsDeletionDisabledCallback()),
-      blocked_local_shared_objects_(
-          handler_.web_contents()->GetBrowserContext(),
-          delegate_->GetAdditionalFileSystemTypes(),
-          delegate_->GetIsDeletionDisabledCallback()),
+      allowed_local_shared_objects_(GetWebContents()->GetBrowserContext(),
+                                    /*ignore_empty_localstorage=*/true,
+                                    delegate_->GetAdditionalFileSystemTypes(),
+                                    delegate_->GetIsDeletionDisabledCallback()),
+      blocked_local_shared_objects_(GetWebContents()->GetBrowserContext(),
+                                    /*ignore_empty_localstorage=*/false,
+                                    delegate_->GetAdditionalFileSystemTypes(),
+                                    delegate_->GetIsDeletionDisabledCallback()),
       microphone_camera_state_(MICROPHONE_CAMERA_NOT_ACCESSED) {
-  observation_.Observe(map_);
+  observation_.Observe(map_.get());
+  if (page.GetMainDocument().GetLifecycleState() ==
+      LifecycleState::kPrerendering) {
+    updates_queued_during_prerender_ = std::make_unique<PendingUpdates>();
+  }
 }
 
 PageSpecificContentSettings::~PageSpecificContentSettings() = default;
@@ -328,20 +429,15 @@ PageSpecificContentSettings::~PageSpecificContentSettings() = default;
 void PageSpecificContentSettings::CreateForWebContents(
     content::WebContents* web_contents,
     std::unique_ptr<Delegate> delegate) {
-  PageSpecificContentSettings::WebContentsHandler::CreateForWebContents(
-      web_contents, std::move(delegate));
+  WebContentsHandler::CreateForWebContents(web_contents, std::move(delegate));
 }
 
 // static
 void PageSpecificContentSettings::DeleteForWebContentsForTest(
     content::WebContents* web_contents) {
-  if (web_contents->GetMainFrame()) {
-    PageSpecificContentSettings::DeleteForCurrentDocument(
-        web_contents->GetMainFrame());
-  }
+  PageSpecificContentSettings::DeleteForPage(web_contents->GetPrimaryPage());
 
-  web_contents->RemoveUserData(
-      PageSpecificContentSettings::WebContentsHandler::UserDataKey());
+  web_contents->RemoveUserData(WebContentsHandler::UserDataKey());
 }
 
 // static
@@ -357,8 +453,7 @@ PageSpecificContentSettings* PageSpecificContentSettings::GetForFrame(
 PageSpecificContentSettings* PageSpecificContentSettings::GetForFrame(
     content::RenderFrameHost* rfh) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return rfh ? PageSpecificContentSettings::GetForCurrentDocument(
-                   rfh->GetMainFrame())
+  return rfh ? PageSpecificContentSettings::GetForPage(rfh->GetPage())
              : nullptr;
 }
 
@@ -366,58 +461,42 @@ PageSpecificContentSettings* PageSpecificContentSettings::GetForFrame(
 PageSpecificContentSettings::Delegate*
 PageSpecificContentSettings::GetDelegateForWebContents(
     content::WebContents* web_contents) {
-  auto* handler =
-      PageSpecificContentSettings::WebContentsHandler::FromWebContents(
-          web_contents);
+  auto* handler = WebContentsHandler::FromWebContents(web_contents);
   return handler ? handler->delegate() : nullptr;
 }
 
 // static
-void PageSpecificContentSettings::WebDatabaseAccessed(int render_process_id,
-                                                      int render_frame_id,
-                                                      const GURL& url,
-                                                      bool blocked_by_policy) {
+void PageSpecificContentSettings::StorageAccessed(StorageType storage_type,
+                                                  int render_process_id,
+                                                  int render_frame_id,
+                                                  const GURL& url,
+                                                  bool blocked_by_policy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  if (DelayUntilCommitIfNecessary(
+          rfh, &PageSpecificContentSettings::StorageAccessed, storage_type,
+          render_process_id, render_frame_id, url, blocked_by_policy))
+    return;
   PageSpecificContentSettings* settings =
       GetForFrame(render_process_id, render_frame_id);
   if (settings)
-    settings->OnWebDatabaseAccessed(url, blocked_by_policy);
+    settings->OnStorageAccessed(storage_type, url, blocked_by_policy);
 }
 
 // static
-void PageSpecificContentSettings::IndexedDBAccessed(int render_process_id,
-                                                    int render_frame_id,
-                                                    const GURL& url,
-                                                    bool blocked_by_policy) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  PageSpecificContentSettings* settings =
-      GetForFrame(render_process_id, render_frame_id);
+void PageSpecificContentSettings::ContentBlocked(int render_process_id,
+                                                 int render_frame_id,
+                                                 ContentSettingsType type) {
+  content::RenderFrameHost* rfh =
+      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+  if (DelayUntilCommitIfNecessary(rfh,
+                                  &PageSpecificContentSettings::ContentBlocked,
+                                  render_process_id, render_frame_id, type))
+    return;
+  PageSpecificContentSettings* settings = GetForFrame(rfh);
   if (settings)
-    settings->OnIndexedDBAccessed(url, blocked_by_policy);
-}
-
-// static
-void PageSpecificContentSettings::CacheStorageAccessed(int render_process_id,
-                                                       int render_frame_id,
-                                                       const GURL& url,
-                                                       bool blocked_by_policy) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  PageSpecificContentSettings* settings =
-      GetForFrame(render_process_id, render_frame_id);
-  if (settings)
-    settings->OnCacheStorageAccessed(url, blocked_by_policy);
-}
-
-// static
-void PageSpecificContentSettings::FileSystemAccessed(int render_process_id,
-                                                     int render_frame_id,
-                                                     const GURL& url,
-                                                     bool blocked_by_policy) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  PageSpecificContentSettings* settings =
-      GetForFrame(render_process_id, render_frame_id);
-  if (settings)
-    settings->OnFileSystemAccessed(url, blocked_by_policy);
+    settings->OnContentBlocked(type);
 }
 
 // static
@@ -426,22 +505,44 @@ void PageSpecificContentSettings::SharedWorkerAccessed(
     int render_frame_id,
     const GURL& worker_url,
     const std::string& name,
-    const url::Origin& constructor_origin,
+    const blink::StorageKey& storage_key,
     bool blocked_by_policy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PageSpecificContentSettings* settings =
       GetForFrame(render_process_id, render_frame_id);
   if (settings)
-    settings->OnSharedWorkerAccessed(worker_url, name, constructor_origin,
+    settings->OnSharedWorkerAccessed(worker_url, name, storage_key,
                                      blocked_by_policy);
+}
+
+// static
+void PageSpecificContentSettings::InterestGroupJoined(
+    content::RenderFrameHost* rfh,
+    const url::Origin api_origin,
+    bool blocked_by_policy) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  PageSpecificContentSettings* settings = GetForFrame(rfh);
+  if (settings)
+    settings->OnInterestGroupJoined(api_origin, blocked_by_policy);
+}
+
+// static
+void PageSpecificContentSettings::TopicAccessed(
+    content::RenderFrameHost* rfh,
+    const url::Origin api_origin,
+    bool blocked_by_policy,
+    privacy_sandbox::CanonicalTopic topic) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  PageSpecificContentSettings* settings = GetForFrame(rfh);
+  if (settings)
+    settings->OnTopicAccessed(api_origin, blocked_by_policy, topic);
 }
 
 // static
 content::WebContentsObserver*
 PageSpecificContentSettings::GetWebContentsObserverForTest(
     content::WebContents* web_contents) {
-  return PageSpecificContentSettings::WebContentsHandler::FromWebContents(
-      web_contents);
+  return WebContentsHandler::FromWebContents(web_contents);
 }
 
 bool PageSpecificContentSettings::IsContentBlocked(
@@ -459,7 +560,6 @@ bool PageSpecificContentSettings::IsContentBlocked(
       content_type == ContentSettingsType::MIXEDSCRIPT ||
       content_type == ContentSettingsType::MEDIASTREAM_MIC ||
       content_type == ContentSettingsType::MEDIASTREAM_CAMERA ||
-      content_type == ContentSettingsType::PPAPI_BROKER ||
       content_type == ContentSettingsType::MIDI_SYSEX ||
       content_type == ContentSettingsType::ADS ||
       content_type == ContentSettingsType::SOUND ||
@@ -484,7 +584,6 @@ bool PageSpecificContentSettings::IsContentAllowed(
   if (content_type != ContentSettingsType::COOKIES &&
       content_type != ContentSettingsType::MEDIASTREAM_MIC &&
       content_type != ContentSettingsType::MEDIASTREAM_CAMERA &&
-      content_type != ContentSettingsType::PPAPI_BROKER &&
       content_type != ContentSettingsType::MIDI_SYSEX &&
       content_type != ContentSettingsType::CLIPBOARD_READ_WRITE &&
       content_type != ContentSettingsType::SENSORS &&
@@ -504,12 +603,19 @@ void PageSpecificContentSettings::OnContentBlocked(ContentSettingsType type) {
       << "Media stream settings handled by OnMediaStreamPermissionSet";
   if (!content_settings::ContentSettingsRegistry::GetInstance()->Get(type))
     return;
-  ContentSettingsStatus& status = content_settings_status_[type];
 
+  ContentSettingsStatus& status = content_settings_status_[type];
   if (!status.blocked) {
     status.blocked = true;
-    delegate_->UpdateLocationBar();
-    delegate_->OnContentBlocked(type);
+    if (!is_updating_synced_pscs_) {
+      base::AutoReset<bool> auto_reset(&is_updating_synced_pscs_, true);
+      if (auto* synced_pccs = MaybeGetSyncedSettingsForPictureInPicture()) {
+        synced_pccs->OnContentBlocked(type);
+      }
+    }
+    MaybeUpdateLocationBar();
+    NotifyDelegate(&Delegate::OnContentBlocked, type);
+    MaybeUpdateParent(&PageSpecificContentSettings::OnContentBlocked, type);
   }
 }
 
@@ -532,7 +638,14 @@ void PageSpecificContentSettings::OnContentAllowed(ContentSettingsType type) {
   if (type == ContentSettingsType::SENSORS)
     must_reset_blocked_status = true;
 
-#if defined(OS_ANDROID)
+  // If this content settings is for the PiP window, must reset |blocked| status
+  // since it will not be updated in OnContentSettingChanged() like the normal
+  // browser window. We need the status to be precise to display the UI.
+  auto* synced_pccs = MaybeGetSyncedSettingsForPictureInPicture();
+  if (synced_pccs)
+    must_reset_blocked_status = true;
+
+#if BUILDFLAG(IS_ANDROID)
   // content_settings_status_[type].allowed is always set to true in
   // OnContentBlocked, so we have to use
   // content_settings_status_[type].blocked to detect whether the protected
@@ -548,35 +661,81 @@ void PageSpecificContentSettings::OnContentAllowed(ContentSettingsType type) {
   if (!status.allowed) {
     status.allowed = true;
     access_changed = true;
-    delegate_->OnContentAllowed(type);
+    NotifyDelegate(&Delegate::OnContentAllowed, type);
   }
 
-  if (access_changed)
-    delegate_->UpdateLocationBar();
+  if (access_changed) {
+    if (!is_updating_synced_pscs_ && synced_pccs) {
+      base::AutoReset<bool> auto_reset(&is_updating_synced_pscs_, true);
+      synced_pccs->OnContentAllowed(type);
+    }
+    MaybeUpdateLocationBar();
+    MaybeUpdateParent(&PageSpecificContentSettings::OnContentAllowed, type);
+  }
 }
 
-void PageSpecificContentSettings::OnDomStorageAccessed(const GURL& url,
-                                                       bool local,
-                                                       bool blocked_by_policy) {
-  browsing_data::LocalSharedObjectsContainer& container =
-      blocked_by_policy ? blocked_local_shared_objects_
-                        : allowed_local_shared_objects_;
-  browsing_data::CannedLocalStorageHelper* helper =
-      local ? container.local_storages() : container.session_storages();
-  helper->Add(url::Origin::Create(url));
+namespace {
+void AddToContainer(browsing_data::LocalSharedObjectsContainer& container,
+                    StorageType storage_type,
+                    const GURL& url) {
+  url::Origin origin = url::Origin::Create(url);
+  switch (storage_type) {
+    case StorageType::DATABASE:
+      container.databases()->Add(origin);
+      return;
+    case StorageType::LOCAL_STORAGE:
+      // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+      // function directly.
+      container.local_storages()->Add(blink::StorageKey(origin));
+      return;
+    case StorageType::SESSION_STORAGE:
+      // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+      // function directly.
+      container.session_storages()->Add(blink::StorageKey(origin));
+      return;
+    case StorageType::INDEXED_DB:
+      // TODO(https://crbug.com/1199077): Pass the real StorageKey into this
+      // function directly.
+      container.indexed_dbs()->Add(blink::StorageKey(origin));
+      return;
+    case StorageType::CACHE:
+      container.cache_storages()->Add(origin);
+      return;
+    case StorageType::FILE_SYSTEM:
+      container.file_systems()->Add(origin);
+      return;
+    case StorageType::WEB_LOCKS:
+      NOTREACHED();
+      return;
+  }
+}
+}  // namespace
 
+void PageSpecificContentSettings::OnStorageAccessed(
+    StorageType storage_type,
+    const GURL& url,
+    bool blocked_by_policy,
+    content::Page* originating_page) {
+  originating_page = originating_page ? originating_page : &page();
   if (blocked_by_policy) {
+    AddToContainer(blocked_local_shared_objects_, storage_type, url);
     OnContentBlocked(ContentSettingsType::COOKIES);
   } else {
-    delegate_->OnDomStorageAccessAllowed(url::Origin::Create(url));
+    AddToContainer(allowed_local_shared_objects_, storage_type, url);
+    NotifyDelegate(&Delegate::OnStorageAccessAllowed, storage_type,
+                   url::Origin::Create(url), std::ref(*originating_page));
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
 
-  handler_.NotifySiteDataObservers();
+  MaybeUpdateParent(&PageSpecificContentSettings::OnStorageAccessed,
+                    storage_type, url, blocked_by_policy, originating_page);
+  MaybeNotifySiteDataObservers();
 }
 
 void PageSpecificContentSettings::OnCookiesAccessed(
-    const content::CookieAccessDetails& details) {
+    const content::CookieAccessDetails& details,
+    content::Page* originating_page) {
+  originating_page = originating_page ? originating_page : &page();
   if (details.cookie_list.empty())
     return;
   if (details.blocked_by_policy) {
@@ -585,51 +744,26 @@ void PageSpecificContentSettings::OnCookiesAccessed(
   } else {
     allowed_local_shared_objects_.cookies()->AddCookies(details);
     OnContentAllowed(ContentSettingsType::COOKIES);
-    delegate_->OnCookieAccessAllowed(details.cookie_list);
+    NotifyDelegate(&Delegate::OnCookieAccessAllowed, details.cookie_list,
+                   std::ref(*originating_page));
   }
 
-  handler_.NotifySiteDataObservers();
-}
-
-void PageSpecificContentSettings::OnIndexedDBAccessed(const GURL& url,
-                                                      bool blocked_by_policy) {
-  if (blocked_by_policy) {
-    blocked_local_shared_objects_.indexed_dbs()->Add(url::Origin::Create(url));
-    OnContentBlocked(ContentSettingsType::COOKIES);
-  } else {
-    allowed_local_shared_objects_.indexed_dbs()->Add(url::Origin::Create(url));
-    delegate_->OnIndexedDBAccessAllowed(url::Origin::Create(url));
-    OnContentAllowed(ContentSettingsType::COOKIES);
-  }
-
-  handler_.NotifySiteDataObservers();
-}
-
-void PageSpecificContentSettings::OnCacheStorageAccessed(
-    const GURL& url,
-    bool blocked_by_policy) {
-  if (blocked_by_policy) {
-    blocked_local_shared_objects_.cache_storages()->Add(
-        url::Origin::Create(url));
-    OnContentBlocked(ContentSettingsType::COOKIES);
-  } else {
-    allowed_local_shared_objects_.cache_storages()->Add(
-        url::Origin::Create(url));
-    delegate_->OnCacheStorageAccessAllowed(url::Origin::Create(url));
-    OnContentAllowed(ContentSettingsType::COOKIES);
-  }
-
-  handler_.NotifySiteDataObservers();
+  MaybeUpdateParent(&PageSpecificContentSettings::OnCookiesAccessed, details,
+                    originating_page);
+  MaybeNotifySiteDataObservers();
 }
 
 void PageSpecificContentSettings::OnServiceWorkerAccessed(
     const GURL& scope,
-    content::AllowServiceWorkerResult allowed) {
+    content::AllowServiceWorkerResult allowed,
+    content::Page* originating_page) {
   DCHECK(scope.is_valid());
+  originating_page = originating_page ? originating_page : &page();
   if (allowed) {
     allowed_local_shared_objects_.service_workers()->Add(
         url::Origin::Create(scope));
-    delegate_->OnServiceWorkerAccessAllowed(url::Origin::Create(scope));
+    NotifyDelegate(&Delegate::OnServiceWorkerAccessAllowed,
+                   url::Origin::Create(scope), std::ref(*originating_page));
   } else {
     blocked_local_shared_objects_.service_workers()->Add(
         url::Origin::Create(scope));
@@ -645,58 +779,56 @@ void PageSpecificContentSettings::OnServiceWorkerAccessed(
   } else {
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
+
+  MaybeUpdateParent(&PageSpecificContentSettings::OnServiceWorkerAccessed,
+                    scope, allowed, originating_page);
 }
 
 void PageSpecificContentSettings::OnSharedWorkerAccessed(
     const GURL& worker_url,
     const std::string& name,
-    const url::Origin& constructor_origin,
+    const blink::StorageKey& storage_key,
     bool blocked_by_policy) {
   DCHECK(worker_url.is_valid());
   if (blocked_by_policy) {
     blocked_local_shared_objects_.shared_workers()->AddSharedWorker(
-        worker_url, name, constructor_origin);
+        worker_url, name, storage_key);
     OnContentBlocked(ContentSettingsType::COOKIES);
   } else {
     allowed_local_shared_objects_.shared_workers()->AddSharedWorker(
-        worker_url, name, constructor_origin);
+        worker_url, name, storage_key);
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
+  MaybeUpdateParent(&PageSpecificContentSettings::OnSharedWorkerAccessed,
+                    worker_url, name, storage_key, blocked_by_policy);
 }
 
-void PageSpecificContentSettings::OnWebDatabaseAccessed(
-    const GURL& url,
+void PageSpecificContentSettings::OnInterestGroupJoined(
+    const url::Origin api_origin,
     bool blocked_by_policy) {
   if (blocked_by_policy) {
-    blocked_local_shared_objects_.databases()->Add(url::Origin::Create(url));
+    blocked_interest_group_api_.push_back(api_origin);
     OnContentBlocked(ContentSettingsType::COOKIES);
   } else {
-    allowed_local_shared_objects_.databases()->Add(url::Origin::Create(url));
-    delegate_->OnWebDatabaseAccessAllowed(url::Origin::Create(url));
+    allowed_interest_group_api_.push_back(api_origin);
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
-
-  handler_.NotifySiteDataObservers();
+  MaybeUpdateParent(&PageSpecificContentSettings::OnInterestGroupJoined,
+                    api_origin, blocked_by_policy);
+  MaybeNotifySiteDataObservers();
 }
 
-void PageSpecificContentSettings::OnFileSystemAccessed(const GURL& url,
-                                                       bool blocked_by_policy) {
-  // Note that all sandboxed file system access is recorded here as
-  // kTemporary; the distinction between temporary (default) and persistent
-  // storage is not made in the UI that presents this data.
-  if (blocked_by_policy) {
-    blocked_local_shared_objects_.file_systems()->Add(url::Origin::Create(url));
-    OnContentBlocked(ContentSettingsType::COOKIES);
-  } else {
-    allowed_local_shared_objects_.file_systems()->Add(url::Origin::Create(url));
-    delegate_->OnFileSystemAccessAllowed(url::Origin::Create(url));
-    OnContentAllowed(ContentSettingsType::COOKIES);
-  }
-
-  handler_.NotifySiteDataObservers();
+void PageSpecificContentSettings::OnTopicAccessed(
+    const url::Origin api_origin,
+    bool blocked_by_policy,
+    privacy_sandbox::CanonicalTopic topic) {
+  // TODO(crbug.com/1286276): Add URL and Topic to local_shared_objects?
+  accessed_topics_.insert(topic);
+  MaybeUpdateParent(&PageSpecificContentSettings::OnTopicAccessed, api_origin,
+                    blocked_by_policy, topic);
 }
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 void PageSpecificContentSettings::OnProtectedMediaIdentifierPermissionSet(
     const GURL& requesting_origin,
     bool allowed) {
@@ -738,6 +870,7 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     const std::string& media_stream_selected_video_device,
     const std::string& media_stream_requested_audio_device,
     const std::string& media_stream_requested_video_device) {
+  DCHECK(!IsEmbeddedPage());
   media_stream_access_origin_ = request_origin;
 
   if (new_microphone_camera_state & MICROPHONE_ACCESSED) {
@@ -746,8 +879,10 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     bool mic_blocked = (new_microphone_camera_state & MICROPHONE_BLOCKED) != 0;
     ContentSettingsStatus& status =
         content_settings_status_[ContentSettingsType::MEDIASTREAM_MIC];
-    if (!status.allowed && !mic_blocked)
-      delegate_->OnContentAllowed(ContentSettingsType::MEDIASTREAM_MIC);
+    if (!status.allowed && !mic_blocked) {
+      NotifyDelegate(&Delegate::OnContentAllowed,
+                     ContentSettingsType::MEDIASTREAM_MIC);
+    }
     status.allowed = !mic_blocked;
     status.blocked = mic_blocked;
   }
@@ -758,15 +893,28 @@ void PageSpecificContentSettings::OnMediaStreamPermissionSet(
     bool cam_blocked = (new_microphone_camera_state & CAMERA_BLOCKED) != 0;
     ContentSettingsStatus& status =
         content_settings_status_[ContentSettingsType::MEDIASTREAM_CAMERA];
-    if (!status.allowed && !cam_blocked)
-      delegate_->OnContentAllowed(ContentSettingsType::MEDIASTREAM_CAMERA);
+    if (!status.allowed && !cam_blocked) {
+      NotifyDelegate(&Delegate::OnContentAllowed,
+                     ContentSettingsType::MEDIASTREAM_CAMERA);
+    }
     status.allowed = !cam_blocked;
     status.blocked = cam_blocked;
   }
 
   if (microphone_camera_state_ != new_microphone_camera_state) {
     microphone_camera_state_ = new_microphone_camera_state;
-    delegate_->UpdateLocationBar();
+    if (!is_updating_synced_pscs_) {
+      base::AutoReset<bool> auto_reset(&is_updating_synced_pscs_, true);
+      if (auto* synced_pccs = MaybeGetSyncedSettingsForPictureInPicture()) {
+        synced_pccs->OnMediaStreamPermissionSet(
+            request_origin, new_microphone_camera_state,
+            media_stream_selected_audio_device,
+            media_stream_selected_video_device,
+            media_stream_requested_audio_device,
+            media_stream_requested_video_device);
+      }
+    }
+    MaybeUpdateLocationBar();
   }
 }
 
@@ -774,31 +922,28 @@ void PageSpecificContentSettings::ClearPopupsBlocked() {
   ContentSettingsStatus& status =
       content_settings_status_[ContentSettingsType::POPUPS];
   status.blocked = false;
-  delegate_->UpdateLocationBar();
+  if (!is_updating_synced_pscs_) {
+    base::AutoReset<bool> auto_reset(&is_updating_synced_pscs_, true);
+    if (auto* synced_pccs = MaybeGetSyncedSettingsForPictureInPicture()) {
+      synced_pccs->ClearPopupsBlocked();
+    }
+  }
+  MaybeUpdateLocationBar();
 }
 
 void PageSpecificContentSettings::OnAudioBlocked() {
   OnContentBlocked(ContentSettingsType::SOUND);
 }
 
-void PageSpecificContentSettings::SetPepperBrokerAllowed(bool allowed) {
-  if (allowed) {
-    OnContentAllowed(ContentSettingsType::PPAPI_BROKER);
-  } else {
-    OnContentBlocked(ContentSettingsType::PPAPI_BROKER);
-  }
-}
-
 void PageSpecificContentSettings::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
-  const ContentSettingsDetails details(primary_pattern, secondary_pattern,
-                                       content_type);
-  if (!details.update_all() &&
-      // The visible URL is the URL in the URL field of a tab.
-      // Currently this should be matched by the |primary_pattern|.
-      !details.primary_pattern().Matches(visible_url_)) {
+  if (IsEmbeddedPage())
+    return;
+
+  const GURL current_url = page().GetMainDocument().GetLastCommittedURL();
+  if (!primary_pattern.Matches(current_url)) {
     return;
   }
 
@@ -826,24 +971,23 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     }
     case ContentSettingsType::GEOLOCATION: {
       ContentSetting geolocation_setting =
-          map_->GetContentSetting(visible_url_, visible_url_, content_type);
+          map_->GetContentSetting(current_url, current_url, content_type);
       if (geolocation_setting == CONTENT_SETTING_ALLOW)
         geolocation_was_just_granted_on_site_level_ = true;
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case ContentSettingsType::IMAGES:
     case ContentSettingsType::JAVASCRIPT:
     case ContentSettingsType::COOKIES:
     case ContentSettingsType::POPUPS:
     case ContentSettingsType::MIXEDSCRIPT:
-    case ContentSettingsType::PPAPI_BROKER:
     case ContentSettingsType::MIDI_SYSEX:
     case ContentSettingsType::ADS:
     case ContentSettingsType::SOUND:
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
     case ContentSettingsType::SENSORS: {
       ContentSetting setting =
-          map_->GetContentSetting(visible_url_, visible_url_, content_type);
+          map_->GetContentSetting(current_url, current_url, content_type);
       // If an indicator is shown and the content settings has changed, swap the
       // indicator for the one with the opposite meaning (allowed <=> blocked).
       if (setting == CONTENT_SETTING_BLOCK && status.allowed) {
@@ -859,24 +1003,6 @@ void PageSpecificContentSettings::OnContentSettingChanged(
     }
     default:
       break;
-  }
-
-  if (!ShouldSendUpdatedContentSettingsRulesToRenderer(content_type))
-    return;
-
-  MaybeSendRendererContentSettingsRules(main_frame_, map_, delegate_);
-}
-
-void PageSpecificContentSettings::AppCacheAccessed(const GURL& manifest_url,
-                                                   bool blocked_by_policy) {
-  if (blocked_by_policy) {
-    blocked_local_shared_objects_.appcaches()->Add(
-        url::Origin::Create(manifest_url));
-    OnContentBlocked(ContentSettingsType::COOKIES);
-  } else {
-    allowed_local_shared_objects_.appcaches()->Add(
-        url::Origin::Create(manifest_url));
-    OnContentAllowed(ContentSettingsType::COOKIES);
   }
 }
 
@@ -903,9 +1029,9 @@ void PageSpecificContentSettings::BlockAllContentForTesting() {
           PageSpecificContentSettings::MICROPHONE_BLOCKED |
           PageSpecificContentSettings::CAMERA_ACCESSED |
           PageSpecificContentSettings::CAMERA_BLOCKED);
-  OnMediaStreamPermissionSet(main_frame_->GetLastCommittedURL(), media_blocked,
-                             std::string(), std::string(), std::string(),
-                             std::string());
+  OnMediaStreamPermissionSet(page().GetMainDocument().GetLastCommittedURL(),
+                             media_blocked, std::string(), std::string(),
+                             std::string(), std::string());
 }
 
 void PageSpecificContentSettings::ContentSettingChangedViaPageInfo(
@@ -919,6 +1045,88 @@ bool PageSpecificContentSettings::HasContentSettingChangedViaPageInfo(
          content_settings_changed_via_page_info_.end();
 }
 
-RENDER_DOCUMENT_HOST_USER_DATA_KEY_IMPL(PageSpecificContentSettings)
+bool PageSpecificContentSettings::HasAccessedTopics() const {
+  return !GetAccessedTopics().empty();
+}
+
+std::vector<privacy_sandbox::CanonicalTopic>
+PageSpecificContentSettings::GetAccessedTopics() const {
+  if (accessed_topics_.empty() &&
+      privacy_sandbox::kPrivacySandboxSettings3ShowSampleDataForTesting.Get() &&
+      page().GetMainDocument().GetLastCommittedURL().host() == "example.com") {
+    // TODO(crbug.com/1286276): Remove sample topic when API is ready.
+    return {privacy_sandbox::CanonicalTopic(
+        browsing_topics::Topic(1),
+        privacy_sandbox::CanonicalTopic::AVAILABLE_TAXONOMY)};
+  }
+  return {accessed_topics_.begin(), accessed_topics_.end()};
+}
+
+bool PageSpecificContentSettings::HasJoinedUserToInterestGroup() const {
+  return !allowed_interest_group_api_.empty();
+}
+
+bool PageSpecificContentSettings::IsPagePrerendering() const {
+  // We consider the Page to be prerendering iff
+  // |updates_queued_during_prerender_| is non null. Note, the page already may
+  // already have exited prerendering as |updates_queued_during_prerender_| is
+  // flushed in DidFinishNavigation for the prerender activation but other
+  // observers may come before this and call into here. In that case we'll still
+  // queue their updates.
+  return !!updates_queued_during_prerender_;
+}
+
+bool PageSpecificContentSettings::IsEmbeddedPage() const {
+  return page().GetMainDocument().GetParentOrOuterDocument();
+}
+
+void PageSpecificContentSettings::OnPrerenderingPageActivation() {
+  DCHECK(updates_queued_during_prerender_);
+  for (auto& delegate_update :
+       updates_queued_during_prerender_->delegate_updates) {
+    std::move(delegate_update).Run();
+  }
+
+  if (updates_queued_during_prerender_->site_data_accessed) {
+    WebContentsHandler::FromWebContents(GetWebContents())
+        ->NotifySiteDataObservers();
+  }
+
+  updates_queued_during_prerender_.reset();
+}
+
+void PageSpecificContentSettings::MaybeNotifySiteDataObservers() {
+  if (IsEmbeddedPage())
+    return;
+  if (IsPagePrerendering()) {
+    updates_queued_during_prerender_->site_data_accessed = true;
+    return;
+  }
+  WebContentsHandler::FromWebContents(GetWebContents())
+      ->NotifySiteDataObservers();
+}
+
+void PageSpecificContentSettings::MaybeUpdateLocationBar() {
+  if (IsEmbeddedPage())
+    return;
+  if (IsPagePrerendering())
+    return;
+  delegate_->UpdateLocationBar();
+}
+
+content::WebContents* PageSpecificContentSettings::GetWebContents() const {
+  return content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
+}
+
+PageSpecificContentSettings*
+PageSpecificContentSettings::MaybeGetSyncedSettingsForPictureInPicture() {
+  content::WebContents* web_contents =
+      delegate_->MaybeGetSyncedWebContentsForPictureInPicture(GetWebContents());
+  if (web_contents)
+    return GetForFrame(web_contents->GetPrimaryMainFrame());
+  return nullptr;
+}
+
+PAGE_USER_DATA_KEY_IMPL(PageSpecificContentSettings);
 
 }  // namespace content_settings

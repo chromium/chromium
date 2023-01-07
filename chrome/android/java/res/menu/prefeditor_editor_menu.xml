@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2016 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2016 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto" >
@@ -11,7 +13,7 @@
         android:icon="@drawable/ic_delete_white_24dp"
         android:title="@string/delete"
         app:showAsAction="ifRoom"
-        app:iconTint="@color/default_icon_color" />
+        app:iconTint="@macro/default_icon_color" />
 
     <item
         android:id="@+id/help_menu_id"

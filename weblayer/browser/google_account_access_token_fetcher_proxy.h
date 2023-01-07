@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "weblayer/public/google_account_access_token_fetch_delegate.h"
 
 namespace weblayer {
@@ -34,10 +34,12 @@ class GoogleAccountAccessTokenFetcherProxy
   // GoogleAccountAccessTokenFetchDelegate:
   void FetchAccessToken(const std::set<std::string>& scopes,
                         OnTokenFetchedCallback callback) override;
+  void OnAccessTokenIdentifiedAsInvalid(const std::set<std::string>& scopes,
+                                        const std::string& token) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace weblayer

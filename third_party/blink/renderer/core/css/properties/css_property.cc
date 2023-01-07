@@ -1,13 +1,13 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/core/css/cssom/cross_thread_unsupported_value.h"
 #include "third_party/blink/renderer/core/css/cssom/style_value_factory.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
+#include "third_party/blink/renderer/core/css/properties/longhands/variable.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 
@@ -17,10 +17,28 @@ const CSSProperty& GetCSSPropertyVariable() {
   return To<CSSProperty>(GetCSSPropertyVariableInternal());
 }
 
+bool CSSProperty::HasEqualCSSPropertyName(const CSSProperty& other) const {
+  return property_id_ == other.property_id_;
+}
+
 const CSSProperty& CSSProperty::Get(CSSPropertyID id) {
   DCHECK_NE(id, CSSPropertyID::kInvalid);
   DCHECK_LE(id, kLastCSSProperty);  // last property id
   return To<CSSProperty>(CSSUnresolvedProperty::GetNonAliasProperty(id));
+}
+
+// The correctness of static functions that operate on CSSPropertyName is
+// ensured by:
+//
+// - DCHECKs in the CustomProperty constructor.
+// - CSSPropertyTest.StaticVariableInstanceFlags
+
+bool CSSProperty::IsShorthand(const CSSPropertyName& name) {
+  return !name.IsCustomProperty() && Get(name.Id()).IsShorthand();
+}
+
+bool CSSProperty::IsRepeated(const CSSPropertyName& name) {
+  return !name.IsCustomProperty() && Get(name.Id()).IsRepeated();
 }
 
 std::unique_ptr<CrossThreadStyleValue>

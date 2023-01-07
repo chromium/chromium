@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,14 +10,7 @@ import unittest
 
 import bcanalyzer
 import parallel
-
-
-_SCRIPT_DIR = os.path.dirname(__file__)
-_TEST_DATA_DIR = os.path.join(_SCRIPT_DIR, 'testdata')
-_TEST_SOURCE_DIR = os.path.join(_TEST_DATA_DIR, 'mock_source_directory')
-_TEST_OUTPUT_DIR = os.path.join(_TEST_SOURCE_DIR, 'out', 'Release')
-_TEST_TOOL_PREFIX = os.path.join(
-    os.path.abspath(_TEST_DATA_DIR), 'mock_toolchain', 'llvm-')
+import test_util
 
 
 def _MakeBytes(bits, toks):
@@ -104,8 +97,10 @@ class BcAnalyzerTest(unittest.TestCase):
       # Tweak global param in bcanalyzer.
       bcanalyzer._CHAR_WIDTH_LIMIT = width_limit
 
-      encoded_results = bcanalyzer.RunBcAnalyzerOnIntermediates(
-          ['test.o'], _TEST_TOOL_PREFIX, _TEST_OUTPUT_DIR)
+      with test_util.AddMocksToPath():
+        encoded_results = bcanalyzer.RunBcAnalyzerOnIntermediates(
+            ['test.o'], test_util.TEST_OUTPUT_DIR)
+
       results = parallel.DecodeDictOfLists(
           encoded_results, value_transform=ast.literal_eval)
       self.assertEqual(['test.o'], list(results.keys()))

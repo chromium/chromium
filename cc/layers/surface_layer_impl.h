@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,10 +39,10 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   SurfaceLayerImpl& operator=(const SurfaceLayerImpl&) = delete;
 
   void SetRange(const viz::SurfaceRange& surface_range,
-                base::Optional<uint32_t> deadline_in_frames);
+                absl::optional<uint32_t> deadline_in_frames);
   const viz::SurfaceRange& range() const { return surface_range_; }
 
-  base::Optional<uint32_t> deadline_in_frames() const {
+  absl::optional<uint32_t> deadline_in_frames() const {
     return deadline_in_frames_;
   }
 
@@ -61,27 +61,28 @@ class CC_EXPORT SurfaceLayerImpl : public LayerImpl {
   bool is_reflection() const { return is_reflection_; }
 
   // LayerImpl overrides.
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
   void PushPropertiesTo(LayerImpl* layer) override;
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
   void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
   bool is_surface_layer() const override;
-  gfx::Rect GetEnclosingRectInTargetSpace() const override;
+  gfx::Rect GetEnclosingVisibleRectInTargetSpace() const override;
 
  protected:
   SurfaceLayerImpl(LayerTreeImpl* tree_impl, int id, UpdateSubmissionStateCB);
 
  private:
-  void GetDebugBorderProperties(SkColor* color, float* width) const override;
+  void GetDebugBorderProperties(SkColor4f* color, float* width) const override;
   void AppendRainbowDebugBorder(viz::CompositorRenderPass* render_pass);
   void AsValueInto(base::trace_event::TracedValue* dict) const override;
   const char* LayerTypeAsString() const override;
 
   UpdateSubmissionStateCB update_submission_state_callback_;
   viz::SurfaceRange surface_range_;
-  base::Optional<uint32_t> deadline_in_frames_;
+  absl::optional<uint32_t> deadline_in_frames_;
 
   bool stretch_content_to_fill_bounds_ = false;
   bool surface_hit_testable_ = false;

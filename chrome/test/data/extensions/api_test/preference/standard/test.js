@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,11 +49,6 @@ var preferences_to_test = [
 // behind flags and might not be present when this test runs.
 var possibly_missing_preferences = new Set();
 
-if (!navigator.userAgent.includes('Windows') &&
-    !navigator.userAgent.includes('CrOS')) {
-  possibly_missing_preferences.add('protectedContentEnabled');
-}
-
 function expect(expected, message) {
   return chrome.test.callbackPass(function(value) {
     chrome.test.assertEq(expected, value, message);
@@ -80,7 +75,7 @@ function expectControlled(prefName, newValue) {
 // Tests getting the preference value (which should be uncontrolled and at its
 // default value).
 function prefGetter(prefName, defaultValue) {
-  if (possibly_missing_preferences.has(prefName) && !this[prefName]) {
+  if (possibly_missing_preferences.has(prefName)) {
     return;
   }
   this[prefName].get({}, expectDefault(prefName, defaultValue));
@@ -89,7 +84,7 @@ function prefGetter(prefName, defaultValue) {
 // Tests setting the preference value (to the inverse of the default, so that
 // it should be controlled by this extension).
 function prefSetter(prefName, defaultValue) {
-  if (possibly_missing_preferences.has(prefName) && !this[prefName]) {
+  if (possibly_missing_preferences.has(prefName)) {
     return;
   }
   this[prefName].set({value: !defaultValue},
@@ -98,82 +93,94 @@ function prefSetter(prefName, defaultValue) {
   }.bind(this)));
 }
 
-window.onload = function() {
-  chrome.test.runTests([
-    function getPreferences() {
-      for (let preferenceSet of preferences_to_test) {
-        for (let key in preferenceSet.preferences) {
-          prefGetter.call(
-              preferenceSet.root, key, preferenceSet.preferences[key]);
+chrome.test.sendMessage('ready', function(message) {
+  if (message != 'run test')
+    return;
+  chrome.test.getConfig(function(config) {
+    // Populate the set of missing prefs from config.customArg.
+    var customArg = JSON.parse(config.customArg);
+    customArg.forEach(element => { possibly_missing_preferences.add(element) });
+    chrome.test.runTests([
+      function getPreferences() {
+        for (let preferenceSet of preferences_to_test) {
+          for (let key in preferenceSet.preferences) {
+            prefGetter.call(
+                preferenceSet.root, key, preferenceSet.preferences[key]);
+          }
         }
-      }
-    },
-    function setGlobals() {
-      for (let preferenceSet of preferences_to_test) {
-        for (let key in preferenceSet.preferences) {
-          prefSetter.call(
-              preferenceSet.root, key, preferenceSet.preferences[key]);
+      },
+      function setGlobals() {
+        for (let preferenceSet of preferences_to_test) {
+          for (let key in preferenceSet.preferences) {
+            prefSetter.call(
+                preferenceSet.root, key, preferenceSet.preferences[key]);
+          }
         }
-      }
-    },
-    // Set the WebRTCIPHhandlingPolicy and verify it in the get function.
-    function testWebRTCIPHandlingPolicy() {
-      if (pn.webRTCIPHandlingPolicy == undefined) {
-        chrome.test.callbackPass();
-        return;
-      }
-      pn.webRTCIPHandlingPolicy.get(
-          {},
-          expect(
-              {
-                value: chrome.privacy.IPHandlingPolicy
-                           .DEFAULT_PUBLIC_INTERFACE_ONLY,
-                levelOfControl: 'controllable_by_this_extension'
-              },
-              'should receive default_public_interface_only.'));
-
-      pn.webRTCIPHandlingPolicy.set(
-          {value: chrome.privacy.IPHandlingPolicy.DISABLE_NON_PROXIED_UDP});
-
-      pn.webRTCIPHandlingPolicy.get(
-          {},
-          expect(
-              {
-                value: chrome.privacy.IPHandlingPolicy.DISABLE_NON_PROXIED_UDP,
-                levelOfControl: 'controlled_by_this_extension'
-              },
-              'should receive disable_non_proxied_udp.'));
-    },
-    // Setting autofillEnabled should also set autofillAddressEnabled and
-    // autofillCreditCardEnabled.
-    function testSetAutofillEnabled() {
-      ps.autofillEnabled.set({value: false}, function() {
-        ps.autofillAddressEnabled.get(
+      },
+      // Set the WebRTCIPHhandlingPolicy and verify it in the get function.
+      function testWebRTCIPHandlingPolicy() {
+        if (pn.webRTCIPHandlingPolicy == undefined) {
+          chrome.test.callbackPass();
+          return;
+        }
+        pn.webRTCIPHandlingPolicy.get(
             {},
             expect(
-                {value: false, levelOfControl: 'controlled_by_this_extension'},
-                'autofillAddressEnabled should be disabled.'));
+                {
+                  value: chrome.privacy.IPHandlingPolicy
+                      .DEFAULT_PUBLIC_INTERFACE_ONLY,
+                  levelOfControl: 'controllable_by_this_extension'
+                },
+                'should receive default_public_interface_only.'));
 
-        ps.autofillCreditCardEnabled.get(
+        pn.webRTCIPHandlingPolicy.set(
+            {value: chrome.privacy.IPHandlingPolicy.DISABLE_NON_PROXIED_UDP});
+
+        pn.webRTCIPHandlingPolicy.get(
             {},
             expect(
-                {value: false, levelOfControl: 'controlled_by_this_extension'},
-                'autofillCreditCardEnabled should be disabled.'));
-
-        ps.autofillEnabled.set({value: true}, function() {
+                {
+                  value:
+                    chrome.privacy.IPHandlingPolicy.DISABLE_NON_PROXIED_UDP,
+                  levelOfControl: 'controlled_by_this_extension'
+                },
+                'should receive disable_non_proxied_udp.'));
+      },
+      // Setting autofillEnabled should also set autofillAddressEnabled and
+      // autofillCreditCardEnabled.
+      function testSetAutofillEnabled() {
+        ps.autofillEnabled.set({value: false}, function() {
           ps.autofillAddressEnabled.get(
               {},
               expect(
-                  {value: true, levelOfControl: 'controlled_by_this_extension'},
-                  'autofillAddressEnabled should be enabled.'));
+                  {value: false,
+                   levelOfControl: 'controlled_by_this_extension'},
+                  'autofillAddressEnabled should be disabled.'));
 
           ps.autofillCreditCardEnabled.get(
               {},
               expect(
-                  {value: true, levelOfControl: 'controlled_by_this_extension'},
-                  'autofillCreditCardEnabled should be enabled.'));
+                  {value: false,
+                   levelOfControl: 'controlled_by_this_extension'},
+                  'autofillCreditCardEnabled should be disabled.'));
+
+          ps.autofillEnabled.set({value: true}, function() {
+            ps.autofillAddressEnabled.get(
+                {},
+                expect(
+                    {value: true,
+                     levelOfControl: 'controlled_by_this_extension'},
+                    'autofillAddressEnabled should be enabled.'));
+
+            ps.autofillCreditCardEnabled.get(
+                {},
+                expect(
+                    {value: true,
+                     levelOfControl: 'controlled_by_this_extension'},
+                    'autofillCreditCardEnabled should be enabled.'));
+          });
         });
-      });
-    }
-  ])
-};
+      }
+    ])
+  })
+});

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -137,8 +137,8 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
-    public Tab getNextTabIfClosed(int id) {
-        return mDelegateModel.getNextTabIfClosed(id);
+    public Tab getNextTabIfClosed(int id, boolean uponExit) {
+        return mDelegateModel.getNextTabIfClosed(id, uponExit);
     }
 
     @Override
@@ -158,9 +158,9 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
-    public void closeAllTabs(boolean allowDelegation, boolean uponExit) {
+    public void closeAllTabs(boolean uponExit) {
         mCountOfAddingOrClosingTabs++;
-        mDelegateModel.closeAllTabs(allowDelegation, uponExit);
+        mDelegateModel.closeAllTabs(uponExit);
         mCountOfAddingOrClosingTabs--;
         destroyIncognitoIfNecessary();
     }
@@ -186,8 +186,8 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
-    public void setIndex(int i, @TabSelectionType int type) {
-        mDelegateModel.setIndex(i, type);
+    public void setIndex(int i, @TabSelectionType int type, boolean skipLoadingTab) {
+        mDelegateModel.setIndex(i, type, skipLoadingTab);
     }
 
     @Override
@@ -238,6 +238,11 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     @Override
     public void cancelTabClosure(int tabId) {
         mDelegateModel.cancelTabClosure(tabId);
+    }
+
+    @Override
+    public void notifyAllTabsClosureUndone() {
+        mDelegateModel.notifyAllTabsClosureUndone();
     }
 
     @Override
@@ -292,5 +297,5 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
-    public void openMostRecentlyClosedTab() {}
+    public void openMostRecentlyClosedEntry() {}
 }

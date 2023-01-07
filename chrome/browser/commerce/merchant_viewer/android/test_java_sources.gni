@@ -1,0 +1,6 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# All end-to-end tests that require launching the entire Chrome browser should be put here.
+commerce_merchant_viewer_java_test_sources = [ "//chrome/browser/commerce/merchant_viewer/android/javatests/src/org/chromium/chrome/browser/merchant_viewer/PageInfoStoreInfoViewTest.java" ]

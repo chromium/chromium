@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -35,8 +36,8 @@
 #include "services/network/test/test_url_loader_factory.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/input_method/input_method_configuration.h"
-#include "chrome/browser/chromeos/input_method/mock_input_method_manager_impl.h"
+#include "chrome/browser/ash/input_method/input_method_configuration.h"
+#include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
 #endif
 
 namespace {
@@ -70,8 +71,8 @@ TestWithBrowserView::~TestWithBrowserView() {}
 
 void TestWithBrowserView::SetUp() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::input_method::InitializeForTesting(
-      new chromeos::input_method::MockInputMethodManagerImpl);
+  ash::input_method::InitializeForTesting(
+      new ash::input_method::MockInputMethodManagerImpl);
 #endif
   BrowserWithTestWindowTest::SetUp();
   browser_view_ = static_cast<BrowserView*>(browser()->window());
@@ -91,7 +92,7 @@ void TestWithBrowserView::TearDown() {
   content::RunAllTasksUntilIdle();
   BrowserWithTestWindowTest::TearDown();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::input_method::Shutdown();
+  ash::input_method::Shutdown();
 #endif
 }
 

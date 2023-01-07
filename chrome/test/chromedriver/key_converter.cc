@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
@@ -172,7 +171,7 @@ bool IsModifierKey(char16_t key) {
 bool KeyCodeFromSpecialWebDriverKey(char16_t key, ui::KeyboardCode* key_code) {
   int index = static_cast<int>(key) - 0xE000U;
   bool is_special_key =
-      index >= 0 && index < static_cast<int>(base::size(kSpecialWebDriverKeys));
+      index >= 0 && index < static_cast<int>(std::size(kSpecialWebDriverKeys));
   if (is_special_key)
     *key_code = kSpecialWebDriverKeys[index];
   return is_special_key;
@@ -578,34 +577,35 @@ Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
     }
 
     // Create the key events.
-    int number_modifiers = base::size(kModifiers);
+    int number_modifiers = std::size(kModifiers);
     bool necessary_modifiers[number_modifiers];
-    for (int i = 0; i < number_modifiers; ++i) {
-      necessary_modifiers[i] =
-          all_modifiers & kModifiers[i].mask &&
-          !(sticky_modifiers & kModifiers[i].mask);
-      if (necessary_modifiers[i]) {
+    for (int j = 0; j < number_modifiers; ++j) {
+      necessary_modifiers[j] = all_modifiers & kModifiers[j].mask &&
+                               !(sticky_modifiers & kModifiers[j].mask);
+      if (necessary_modifiers[j]) {
         KeyEventBuilder builder;
         key_events.push_back(builder.SetType(kRawKeyDownEventType)
-                                   ->SetKeyCode(kModifiers[i].key_code)
-                                   ->SetModifiers(sticky_modifiers)
-                                   ->Build());
+                                 ->SetKeyCode(kModifiers[j].key_code)
+                                 ->SetModifiers(sticky_modifiers)
+                                 ->Build());
       }
     }
 
-    KeyEventBuilder builder;
-    builder.SetModifiers(all_modifiers)
-        ->SetText(unmodified_text, modified_text)
-        ->SetKeyCode(key_code)
-        ->Generate(&key_events);
+    {
+      KeyEventBuilder builder;
+      builder.SetModifiers(all_modifiers)
+          ->SetText(unmodified_text, modified_text)
+          ->SetKeyCode(key_code)
+          ->Generate(&key_events);
+    }
 
-    for (int i = 2; i > -1; --i) {
-      if (necessary_modifiers[i]) {
+    for (int j = 2; j > -1; --j) {
+      if (necessary_modifiers[j]) {
         KeyEventBuilder builder;
         key_events.push_back(builder.SetType(kKeyUpEventType)
-                                   ->SetKeyCode(kModifiers[i].key_code)
-                                   ->SetModifiers(sticky_modifiers)
-                                   ->Build());
+                                 ->SetKeyCode(kModifiers[j].key_code)
+                                 ->SetModifiers(sticky_modifiers)
+                                 ->Build());
       }
     }
   }
@@ -614,31 +614,32 @@ Status ConvertKeysToKeyEvents(const std::u16string& client_keys,
   return Status(kOk);
 }
 
-Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
+Status ConvertKeyActionToKeyEvent(const base::Value::Dict& action_object,
                                   base::DictionaryValue* input_state,
                                   bool is_key_down,
                                   std::vector<KeyEvent>* key_events) {
-  std::string raw_key;
-  if (!action_object->GetString("value", &raw_key))
+  const std::string* raw_key = action_object.FindString("value");
+  if (!raw_key)
     return Status(kUnknownError, "missing 'value'");
 
-  int32_t char_index = 0;
-  uint32_t code_point;
-  base::ReadUnicodeCharacter(raw_key.c_str(), raw_key.size(), &char_index,
+  size_t char_index = 0;
+  base_icu::UChar32 code_point;
+  base::ReadUnicodeCharacter(raw_key->c_str(), raw_key->size(), &char_index,
                              &code_point);
 
   std::string key;
   if (code_point >= kNormalisedKeyValueBase &&
-      code_point < kNormalisedKeyValueBase + base::size(kNormalisedKeyValue)) {
+      code_point < base_icu::UChar32{kNormalisedKeyValueBase +
+                                     std::size(kNormalisedKeyValue)}) {
     key = kNormalisedKeyValue[code_point - kNormalisedKeyValueBase];
   }
   if (key.size() == 0)
-    key = raw_key;
+    key = *raw_key;
 
   base::DictionaryValue* pressed;
   if (!input_state->GetDictionary("pressed", &pressed))
     return Status(kUnknownError, "missing 'pressed'");
-  bool already_pressed = pressed->HasKey(key);
+  bool already_pressed = pressed->FindKey(key);
   if (!is_key_down && !already_pressed)
     return Status(kOk);
 
@@ -652,9 +653,11 @@ Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
     }
   }
 
-  int modifiers;
-  if (!input_state->GetInteger("modifiers", &modifiers))
+  absl::optional<int> maybe_modifiers = input_state->FindIntKey("modifiers");
+  if (!maybe_modifiers)
     return Status(kUnknownError, "missing 'modifiers'");
+
+  int modifiers = *maybe_modifiers;
 
   bool is_modifier_key = false;
   bool is_special_key = false;
@@ -747,15 +750,15 @@ Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
       }
     } else {
       // Do a best effort and use the raw key we were given.
-      unmodified_text = raw_key;
-      modified_text = raw_key;
+      unmodified_text = *raw_key;
+      modified_text = *raw_key;
     }
   }
 
   if (is_key_down)
-    pressed->SetBoolean(key, true);
+    pressed->GetDict().Set(key, true);
   else
-    pressed->Remove(key, nullptr);
+    pressed->GetDict().Remove(key);
 
   KeyEventBuilder builder;
   builder.SetKeyCode(key_code)

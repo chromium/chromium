@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -34,6 +33,10 @@ class ExtensionCacheImpl : public ExtensionCache,
  public:
   explicit ExtensionCacheImpl(
       std::unique_ptr<ChromeOSExtensionCacheDelegate> delegate);
+
+  ExtensionCacheImpl(const ExtensionCacheImpl&) = delete;
+  ExtensionCacheImpl& operator=(const ExtensionCacheImpl&) = delete;
+
   ~ExtensionCacheImpl() override;
 
   // Implementation of ExtensionCache.
@@ -76,8 +79,6 @@ class ExtensionCacheImpl : public ExtensionCache,
 
   // Weak factory for callbacks.
   base::WeakPtrFactory<ExtensionCacheImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionCacheImpl);
 };
 
 }  // namespace extensions

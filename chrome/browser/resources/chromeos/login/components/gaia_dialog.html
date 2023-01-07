@@ -1,0 +1,249 @@
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_shared_style.css.html">
+
+<link rel="import" href="../../../gaia_auth_host/authenticator.html">
+<link rel="import" href="./oobe_types.html">
+<link rel="import" href="./behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="./behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="./buttons/oobe_back_button.html">
+<link rel="import" href="./buttons/oobe_text_button.html">
+<link rel="import" href="./common_styles/common_styles.html">
+<link rel="import" href="./common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="./dialogs/oobe_content_dialog.html">
+
+<!--
+  Element which handles Gaia webview. Including action buttons, back button
+  events, Gaia dialog beign shown, SAML UI.
+  Events:
+    identifierentered: Fired after user types their email.
+    loadabort: Fired on the webview error.
+    ready: Fired when the webview (not necessarily Gaia) is loaded first time.
+    showview: Message from Gaia meaning Gaia UI is ready to be shown.
+    startenrollment: User action to start enterprise enrollment.
+    closesaml: User closes the dialog on the SAML page.
+    backcancel: User presses back button when there is no history in Gaia page.
+-->
+<dom-module id="gaia-dialog">
+  <template>
+    <style include="oobe-dialog-host-styles cr-shared-style">
+      /* -- WebviewScrollShadowsHelper --
+       * Variables that are used for displaying scroll shadows.
+       **/
+      :host {
+        --scroll-shadow-common: {
+          content: '';
+          height: 100%;
+          opacity: 0.3;
+          pointer-events: none;
+          position: absolute;
+          width: 100%;
+        };
+
+        --scroll-shadow-bottom: {
+          @apply --scroll-shadow-common;
+          background: linear-gradient(0deg, var(--google-grey-400) 0,
+                                            transparent 8px);
+        };
+
+        --scroll-shadow-top-and-bottom: {
+          @apply --scroll-shadow-common;
+          background: linear-gradient(0deg,   var(--google-grey-400) 0,
+                                              transparent 8px),
+                      linear-gradient(180deg, var(--google-grey-400) 0,
+                                              transparent 8px);
+        };
+
+        --scroll-shadow-top: {
+          @apply --scroll-shadow-common;
+          background: linear-gradient(180deg, var(--google-grey-400) 0,
+                                            transparent 8px);
+        };
+      }
+
+      #saml-back-button {
+        --cr-icon-button-margin-end: 0;
+        --cr-icon-button-margin-start: 0;
+      }
+
+      #saml-notice-container,
+      #saml-footer-container {
+        align-items: center;
+        background: white;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
+        display: flex;
+        min-height: 0;
+      }
+
+      #saml-notice-container {
+        border-bottom: 1px solid var(--google-grey-200);
+        height: 44px;
+      }
+
+      #saml-footer-container {
+        border-top: 1px solid var(--google-grey-200);
+        height: 58px;
+      }
+
+      #saml-notice-recording-indicator {
+        padding-inline-end: 10px;
+        padding-inline-start: 10px;
+      }
+
+      #saml-notice-message {
+        font-size: 13px;
+      }
+
+      #signin-frame {
+        display: flex;
+        overflow: hidden;
+        /* Position relative is needed for proper size calculation of
+         * ::before element which is responsible for scrolling shadow.
+         **/
+        position: relative;
+      }
+
+      #signin-frame-container {
+        z-index: 10;
+      }
+
+      /* WebviewScrollShadowsHelper */
+      #signin-frame-container:not([hideshadows]) #signin-frame.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom)::before {
+        @apply --scroll-shadow-bottom;
+      }
+      #signin-frame-container:not([hideshadows]) #signin-frame.can-scroll.is-scrolled:not(.scrolled-to-bottom)::before {
+        @apply --scroll-shadow-top-and-bottom;
+      }
+      #signin-frame-container:not([hideshadows]) #signin-frame.is-scrolled.scrolled-to-bottom::before {
+        @apply --scroll-shadow-top;
+      }
+
+      #sshWarning {
+        color: var(--google-red-600);
+        text-align: center;
+      }
+
+      #change-account {
+        padding-inline-end: 8px;
+        padding-inline-start: 8px;
+      }
+    </style>
+    <link rel="stylesheet" href="oobe_popup_overlay.css">
+    <!-- As this dialog have pre-loading logic that require access to elements,
+         dialog is marked as no-lazy. -->
+    <oobe-content-dialog role="dialog" id="gaiaDialog" no-lazy
+        no-buttons$="[[isSamlSsoVisible]]" fullscreen$="[[isSamlSsoVisible]]">
+      <div slot="content" id="signin-frame-container"
+          hideshadows$="[[isPopUpOverlayVisible_]]"
+          class="flex layout vertical">
+        <div id="saml-notice-container" class="layout horizontal center"
+            hidden$="[[!isSamlSsoVisible]]">
+          <cr-icon-button id="saml-back-button" iron-icon="cr:arrow-back"
+              on-click="close_" hidden="[[isSamlBackButtonHidden_]]">
+          </cr-icon-button>
+          <div class="flex layout horizontal center-justified">
+            <span id="saml-notice-recording-indicator"
+                hidden$="[[!videoEnabled]]">
+              <img src="chrome://theme/IDR_TAB_RECORDING_INDICATOR">
+            </span>
+            <span id="saml-notice-message">
+              [[getSamlNoticeMessage_(locale, videoEnabled, authDomain)]]
+            </span>
+          </div>
+        </div>
+        <h3 id="sshWarning" hidden>
+          [[i18nDynamic(locale, 'sshWarningLogin')]]
+        </h3>
+        <webview id="signin-frame" class="flex" name="[[webviewName]]">
+        </webview>
+        <div id="saml-footer-container" hidden="[[!isDefaultSsoProvider]]"
+            class="layout horizontal end-justified">
+          <div>[[i18nDynamic(locale, 'samlChangeProviderMessage')]]</div>
+          <oobe-text-button id="change-account"
+              text-key="samlChangeProviderButton"
+              on-click="onChangeSigninProviderClicked_">
+          </oobe-text-button>
+        </div>
+      </div>
+      <div slot="back-navigation" hidden$="[[navigationHidden]]">
+        <oobe-back-button id="signin-back-button"
+            disabled="[[!navigationEnabled]]"
+            hidden="[[isBackButtonHidden(hideBackButtonIfCantGoBack,
+                                         canGoBack)]]"
+            on-click="onBackButtonClicked_">
+        </oobe-back-button>
+      </div>
+      <div slot="bottom-buttons" hidden$="[[navigationHidden]]">
+        <div hidden="[[!isDefaultNavigationShown_(canGoBack,
+            gaiaDialogButtonsType)]]">
+          <oobe-text-button id="secondary-action-button"
+              label-for-aria="[[secondaryActionButtonLabel_]]"
+              on-click="onSecondaryActionButtonClicked_"
+              hidden$="[[!secondaryActionButtonLabel_]]"
+              disabled="[[!isButtonEnabled_(navigationEnabled,
+                                            secondaryActionButtonEnabled_)]]">
+            <div slot="text">[[secondaryActionButtonLabel_]]</div>
+          </oobe-text-button>
+          <oobe-text-button id="primary-action-button"
+              label-for-aria="[[primaryActionButtonLabel_]]"
+              on-click="onPrimaryActionButtonClicked_"
+              hidden$="[[!primaryActionButtonLabel_]]"
+              disabled="[[!isButtonEnabled_(navigationEnabled,
+                                            primaryActionButtonEnabled_)]]"
+              inverse>
+            <div slot="text">[[primaryActionButtonLabel_]]</div>
+          </oobe-text-button>
+        </div>
+        <div hidden="[[!isEnterpriseNavigationShown_(canGoBack,
+            gaiaDialogButtonsType)]]">
+          <oobe-text-button id="enterprise-navigation-kiosk"
+              text-key="kioskEnrollmentButton"
+              on-click="onKioskButtonClicked_"
+              hidden$="[[!primaryActionButtonLabel_]]"
+              disabled="[[!isButtonEnabled_(navigationEnabled,
+                                            primaryActionButtonEnabled_)]]">
+          </oobe-text-button>
+          <oobe-text-button id="enterprise-navigation-enterprise"
+              text-key="enterpriseEnrollmentButton"
+              on-click="onEnterpriseButtonClicked_"
+              hidden$="[[!primaryActionButtonLabel_]]"
+              disabled="[[!isButtonEnabled_(navigationEnabled,
+                                            primaryActionButtonEnabled_)]]"
+              inverse>
+          </oobe-text-button>
+        </div>
+        <div hidden="[[!isKioskNavigationShown_(canGoBack,
+            gaiaDialogButtonsType)]]">
+          <oobe-text-button id="kiosk-navigation-enterprise"
+              text-key="enterpriseEnrollmentButton"
+              on-click="onEnterpriseButtonClicked_"
+              hidden$="[[!primaryActionButtonLabel_]]"
+              disabled="[[!isButtonEnabled_(navigationEnabled,
+                                            primaryActionButtonEnabled_)]]">
+          </oobe-text-button>
+          <oobe-text-button id="kiosk-navigation-kiosk"
+              text-key="kioskEnrollmentButton"
+              on-click="onKioskButtonClicked_"
+              hidden$="[[!primaryActionButtonLabel_]]"
+              disabled="[[!isButtonEnabled_(navigationEnabled,
+                                            primaryActionButtonEnabled_)]]"
+              inverse>
+          </oobe-text-button>
+        </div>
+      </div>
+    </oobe-content-dialog>
+    <div class="popup-overlay"
+        hidden="[[!isPopUpOverlayVisible_]]">
+    </div>
+  </template>
+  <script src="gaia_dialog.js"></script>
+</dom-module>

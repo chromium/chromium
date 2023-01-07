@@ -1,7 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+GEN('#include "build/build_config.h"');
 GEN('#include "chrome/test/data/webui/ntp4_browsertest.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
@@ -24,9 +25,9 @@ NTP4WebUITest.prototype = {
 // TODO(samarth): delete these tests along with the NTP4 code.
 TEST_F('NTP4WebUITest', 'DISABLED_TestBrowsePages', function() {
   // This tests the ntp4 new tab page which is not used on touch builds.
-  var cardSlider = ntp.getCardSlider();
+  const cardSlider = ntp.getCardSlider();
   assertNotEquals(null, cardSlider);
-  for (var i = 0; i < cardSlider.cardCount; i++) {
+  for (let i = 0; i < cardSlider.cardCount; i++) {
     cardSlider.selectCard(i);
     expectEquals(i, cardSlider.currentCard);
   }
@@ -34,10 +35,10 @@ TEST_F('NTP4WebUITest', 'DISABLED_TestBrowsePages', function() {
 
 // http://crbug.com/118944
 TEST_F('NTP4WebUITest', 'DISABLED_NTPHasThumbnails', function() {
-  var mostVisited = document.querySelectorAll('.most-visited');
+  const mostVisited = document.querySelectorAll('.most-visited');
   assertEquals(8, mostVisited.length, 'There should be 8 most visited tiles.');
 
-  var apps = document.querySelectorAll('.app');
+  const apps = document.querySelectorAll('.app');
   if (loadTimeData.getBoolean('showApps')) {
     assertGE(apps.length, 1, 'There should be at least one app.');
   } else {
@@ -46,7 +47,7 @@ TEST_F('NTP4WebUITest', 'DISABLED_NTPHasThumbnails', function() {
 });
 
 TEST_F('NTP4WebUITest', 'DISABLED_NTPHasNavDots', function() {
-  var navDots = document.querySelectorAll('.dot');
+  const navDots = document.querySelectorAll('.dot');
   if (loadTimeData.getBoolean('showApps')) {
     assertGE(navDots.length, 2, 'There should be at least two navdots.');
   } else {
@@ -56,18 +57,19 @@ TEST_F('NTP4WebUITest', 'DISABLED_NTPHasNavDots', function() {
 
 // http://crbug.com/118514
 TEST_F('NTP4WebUITest', 'DISABLED_NTPHasSelectedPageAndDot', function() {
-  var selectedDot = document.querySelectorAll('.dot.selected');
+  const selectedDot = document.querySelectorAll('.dot.selected');
   assertEquals(
       1, selectedDot.length, 'There should be exactly one selected dot.');
 
-  var selectedTilePage = document.querySelectorAll('.tile-page.selected-card');
+  const selectedTilePage =
+      document.querySelectorAll('.tile-page.selected-card');
   assertEquals(
       1, selectedTilePage.length,
       'There should be exactly one selected tile page.');
 });
 
 TEST_F('NTP4WebUITest', 'DISABLED_NTPHasNoLoginNameWhenSignedOut', function() {
-  var userName = document.querySelector('#login-status-header .profile-name');
+  const userName = document.querySelector('#login-status-header .profile-name');
   assertEquals(null, userName, 'Login name shouldn\'t exist when signed out.');
 });
 
@@ -91,12 +93,12 @@ NTP4LoggedInWebUITest.prototype = {
 };
 
 // The following test is irrelevant to Chrome on Chrome OS.
-GEN('#if !defined(OS_CHROMEOS)');
+GEN('#if !BUILDFLAG(IS_CHROMEOS)');
 
 TEST_F(
     'NTP4LoggedInWebUITest', 'DISABLED_NTPHasLoginNameWhenSignedIn',
     function() {
-      var userName =
+      const userName =
           document.querySelector('#login-status-header .profile-name');
       assertNotEquals(
           userName, null, 'The logged-in user name can\'t be found.');

@@ -1,10 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(`Tests the instrumentation of a UserTiming events\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
     function makeUserTimings()
@@ -46,7 +46,7 @@
     TestRunner.completeTest();
 
     function processAsyncEvent(event) {
-      if (!event._parsedCategories.has('blink.user_timing')) return;
+      if (!event.parsedCategories.has('blink.user_timing')) return;
 
       const roundedDuration = Math.round(event.duration / 100) * 100;
       TestRunner.addResult(`Got Async Event. Duration: ${roundedDuration}`);

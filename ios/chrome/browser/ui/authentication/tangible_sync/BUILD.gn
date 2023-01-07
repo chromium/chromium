@@ -1,0 +1,64 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("tangible_sync") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tangible_sync_coordinator.h",
+    "tangible_sync_coordinator.mm",
+    "tangible_sync_mediator.h",
+    "tangible_sync_mediator.mm",
+    "tangible_sync_mediator_delegate.h",
+  ]
+  deps = [
+    ":signin_ui",
+    "//base",
+    "//components/consent_auditor",
+    "//components/signin/public/identity_manager/objc",
+    "//components/sync/driver",
+    "//components/unified_consent",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/consent_auditor",
+    "//ios/chrome/browser/first_run",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/signin",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/elements:activity_overlay",
+    "//ios/chrome/browser/ui/first_run:utils",
+    "//ios/chrome/browser/unified_consent",
+  ]
+  public_deps =
+      [ "//ios/chrome/browser/ui/first_run:interruptible_chrome_coordinator" ]
+}
+
+source_set("signin_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tangible_sync_consumer.h",
+    "tangible_sync_view_controller.h",
+    "tangible_sync_view_controller.mm",
+    "tangible_sync_view_controller_delegate.h",
+  ]
+  deps = [
+    "//components/signin/public/base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/authentication/tangible_sync/resources:tangible_sync_autofill",
+    "//ios/chrome/browser/ui/authentication/tangible_sync/resources:tangible_sync_bookmarks",
+    "//ios/chrome/browser/ui/authentication/tangible_sync/resources:tangible_sync_history",
+    "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/first_run:field_trial",
+    "//ios/chrome/common/ui/promo_style",
+    "//ios/chrome/common/ui/util",
+    "//net",
+    "//ui/base",
+    "//url",
+  ]
+}

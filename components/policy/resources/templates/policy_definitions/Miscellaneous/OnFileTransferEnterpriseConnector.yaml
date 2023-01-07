@@ -1,0 +1,108 @@
+caption: Configuration policy for the OnFileTransfer Chrome Enterprise Connector
+desc: |-
+  List of Chrome Enterprise Connectors services settings to be applied to the <ph name="ON_FILE_TRANSFER_ENTERPRISE_CONNECTOR">OnFileTransfer</ph> Enterprise Connector, which triggers when a file is transferred within <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
+
+        The <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD">source_destination_list</ph>, <ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD">tags</ph>, <ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD">enable</ph> and <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD">disable</ph> fields are used to determine if the connector should send a file for analysis when it is transferred between a source and a destination and what tags to include in the analysis request for that file. A tag corresponding to an 'enable' rule will be included in the analysis request if the source and destination match the rule associated to that tag as long as no 'disable' rule with that same tag matches the transfer. The analysis occurs if at least 1 tag is to be included in the request. A <ph name="ENTERPRISE_CONNECTOR_SOURCE_DESTINATION_LIST_FIELD">source_destination_list</ph> rule is defined by a list of pairs, where each pair contains a list of sources and a list of destinations. The <ph name="ENTERPRISE_CONNECTOR_FILE_SYSTEM_TYPE_FIELD">file_system_type</ph> defines for which file system a rule should apply.
+
+        The <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD">service_provider</ph> field identifies which analysis service provider the settings correspond to.
+
+        The <ph name="ENTERPRISE_CONNECTOR_BLOCK_UNTIL_VERDICT_FIELD">block_until_verdict</ph> field being set to 1 means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> will wait to get a response from the analysis service before allowing the transfer. Any other integer value means <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> allows the transfer immediately.
+
+        The <ph name="ENTERPRISE_CONNECTOR_BLOCK_PASSWORD_PROTECTED_FIELD">block_password_protected</ph> field controls whether <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> blocks or allows files that are password protected.
+
+        The <ph name="ENTERPRISE_CONNECTOR_BLOCK_LARGE_FILES_FIELD">block_large_files</ph> fields controls whether <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> blocks or allows files that are too large to be analyzed.
+
+        The <ph name="ENTERPRISE_CONNECTOR_REQUIRE_JUSTIFICATION_TAGS_FIELD">require_justification_tags</ph> field is used to determine for which tags the connector should require the user to enter a justification to bypass a scan that results in a bypassable warning. If the field is not set, it's assumed that a justification is not required.
+
+        The <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD">custom_messages</ph>, <ph name="ENTERPRISE_CONNECTOR_MESSAGE_FIELD">message</ph>, <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD">learn_more_url</ph>, <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD">language</ph> and <ph name="ENTERPRISE_CONNECTOR_TAG_FIELD">tag</ph> fields are used to configure a message to show the user when a warning is shown after a scan had a non-clean verdict. The message field contains the text to show the user and should have at most 200 characters. The <ph name="ENTERPRISE_CONNECTOR_LEARN_MORE_URL_FIELD">learn_more_url</ph> field contains an admin-provided URL that will be clickable by the user to get more customer-provided information about why the action was blocked. The <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD">language</ph> field is optional and contains the language of the message. An empty <ph name="ENTERPRISE_CONNECTOR_LANGUAGE_FIELD">language</ph> field or a value of 'default' indicates a message to be used when the user's language doesn't have a message. The tag field specifies for which type of scans the message is displayed. The <ph name="ENTERPRISE_CONNECTOR_CUSTOM_MESSAGES_FIELD">custom_messages</ph> list can have zero or more entries, where each entry is required to have non-empty message and tag fields.
+
+        This policy requires additional setup to take effect, please visit https://support.google.com/chrome/a?p=chrome_enterprise_connector_policies_setting for more information.
+example_value:
+- block_large_files: false
+  block_password_protected: true
+  block_until_verdict: 0
+  custom_messages:
+  - language: default
+    learn_more_url: moreinfo.example.com
+    message: Custom message for potential sensitive data leaks.
+    tag: dlp
+  - language: fr-CA
+    learn_more_url: moreinfo.example.com/fr
+    message: Message pour une fuite de données potentielle.
+    tag: dlp
+  disable:
+  - source_destination_list:
+    - destinations:
+      - file_system_type: ARC
+      - file_system_type: SMB
+      - file_system_type: MY_FILES
+      sources:
+      - file_system_type: '*'
+    tags:
+    - dlp
+  enable:
+  - source_destination_list:
+    - destinations:
+      - file_system_type: MY_FILES
+      sources:
+      - file_system_type: '*'
+    tags:
+    - malware
+  - source_destination_list:
+    - destinations:
+      - file_system_type: '*'
+      sources:
+      - file_system_type: MY_FILES
+      - file_system_type: SMB
+    tags:
+    - dlp
+  require_justification_tags:
+  - dlp
+  service_provider: Google
+features:
+  cloud_only: true
+  dynamic_refresh: true
+  per_profile: false
+owners:
+- sseckler@google.com
+- rogerta@chromium.org
+- mad@chromium.org
+- domfc@chromium.org
+schema:
+  items:
+    properties:
+      block_large_files:
+        type: boolean
+      block_password_protected:
+        type: boolean
+      block_until_verdict:
+        type: integer
+      custom_messages:
+        items:
+          properties:
+            language:
+              type: string
+            learn_more_url:
+              type: string
+            message:
+              type: string
+            tag:
+              type: string
+          type: object
+        type: array
+      disable:
+        $ref: file_transfer_enable_disable_schema
+      enable:
+        $ref: file_transfer_enable_disable_schema
+      require_justification_tags:
+        items:
+          type: string
+        type: array
+      service_provider:
+        type: string
+    type: object
+  type: array
+supported_on:
+- chrome_os:108-
+tags: []
+type: dict

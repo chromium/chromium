@@ -1,11 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CONTENT_CAPTURE_CONTENT_CAPTURE_TASK_HISTOGRAM_REPORTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CONTENT_CAPTURE_CONTENT_CAPTURE_TASK_HISTOGRAM_REPORTER_H_
 
-#include "base/optional.h"
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -45,17 +46,17 @@ class CORE_EXPORT ContentCaptureTaskHistogramReporter
   // Invoked on a capturing session ends, at that time, all captured changes
   // which include the new, changed and removed content has been sent.
   void OnAllCapturedContentSent();
-  void RecordsSentContentCountPerDocument(size_t sent_content_count);
+  void RecordsSentContentCountPerDocument(int sent_content_count);
 
  private:
   void MayRecordTaskRunsPerCapture();
 
   // The time of first content change since the last content captured.
-  base::Optional<base::TimeTicks> content_change_time_;
+  absl::optional<base::TimeTicks> content_change_time_;
   // The copy of |content_change_time| after the content has been captured; we
   // need to record the time the content has been sent, |content_change_time_|
   // shall be released for the next content change.
-  base::Optional<base::TimeTicks> captured_content_change_time_;
+  absl::optional<base::TimeTicks> captured_content_change_time_;
   // The time to start capturing content.
   base::TimeTicks capture_content_start_time_;
   // The time to start sending content.
@@ -65,7 +66,7 @@ class CORE_EXPORT ContentCaptureTaskHistogramReporter
   base::TimeTicks task_scheduled_time_;
   // Counts the task run times to complete a capture which includes capturing
   // and sending the content.
-  size_t task_runs_per_capture_ = 0;
+  int task_runs_per_capture_ = 0;
 
   // Records time to capture the content, its range is from 0 to 50,000
   // microseconds.

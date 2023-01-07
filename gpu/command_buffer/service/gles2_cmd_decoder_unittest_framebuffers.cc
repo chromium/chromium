@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,7 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/numerics/ranges.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
@@ -21,7 +20,6 @@
 #include "gpu/command_buffer/service/gl_surface_mock.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
-#include "gpu/command_buffer/service/image_manager.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/mocks.h"
 #include "gpu/command_buffer/service/program_manager.h"
@@ -624,8 +622,8 @@ void GLES2DecoderTest::CheckReadPixelsOutOfRange(GLint in_read_x,
   // is requesting a larger size.
   GLint read_x = std::max(0, in_read_x);
   GLint read_y = std::max(0, in_read_y);
-  GLint read_end_x = base::ClampToRange(in_read_x + in_read_width, 0, kWidth);
-  GLint read_end_y = base::ClampToRange(in_read_y + in_read_height, 0, kHeight);
+  GLint read_end_x = base::clamp(in_read_x + in_read_width, 0, kWidth);
+  GLint read_end_y = base::clamp(in_read_y + in_read_height, 0, kHeight);
   GLint read_width = read_end_x - read_x;
   GLint read_height = read_end_y - read_y;
   if (read_width > 0 && read_height > 0) {
@@ -1141,7 +1139,7 @@ TEST_P(GLES2DecoderTest, ReadPixelsOutOfRange) {
       },  // completely off right
   };
 
-  for (size_t tt = 0; tt < base::size(tests); ++tt) {
+  for (size_t tt = 0; tt < std::size(tests); ++tt) {
     CheckReadPixelsOutOfRange(
         tests[tt][0], tests[tt][1], tests[tt][2], tests[tt][3], tt == 0);
   }
@@ -3247,7 +3245,7 @@ TEST_P(GLES2DecoderTest, DrawBuffersEXTMainFramebuffer) {
   auto& cmd = *GetImmediateAs<cmds::DrawBuffersEXTImmediate>();
   {
     const GLenum bufs[] = {GL_BACK};
-    const GLsizei count = base::size(bufs);
+    const GLsizei count = std::size(bufs);
     cmd.Init(count, bufs);
 
     EXPECT_CALL(*gl_, DrawBuffersARB(count, Pointee(GL_BACK)))
@@ -3268,7 +3266,7 @@ TEST_P(GLES2DecoderTest, DrawBuffersEXTMainFramebuffer) {
   }
   {
     const GLenum bufs[] = {GL_BACK, GL_NONE};
-    const GLsizei count = base::size(bufs);
+    const GLsizei count = std::size(bufs);
     cmd.Init(count, bufs);
 
     EXPECT_CALL(*gl_, DrawBuffersARB(_, _)).Times(0).RetiresOnSaturation();
@@ -3914,106 +3912,6 @@ TEST_P(GLES3DecoderTest, BlitFramebufferMissingDepthOrStencil) {
     EXPECT_EQ(GL_NO_ERROR, GetGLError());
   }
 }
-
-class GLES2DecoderTestWithDrawRectangle : public GLES2DecoderTest {
-  void SetUp() override {
-    surface_supports_draw_rectangle_ = true;
-    GLES2DecoderTest::SetUp();
-  }
-};
-
-// Test that the draw offset is correctly honored when SetDrawRectangle is
-// supported.
-TEST_P(GLES2DecoderTestWithDrawRectangle, FramebufferDrawRectangleClear) {
-  EXPECT_CALL(*gl_, Scissor(101, 202, 3, 4)).Times(1).RetiresOnSaturation();
-  cmds::Scissor scissor_cmd;
-  scissor_cmd.Init(1, 2, 3, 4);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(scissor_cmd));
-
-  // Scissor and Viewport should be restored to (0,0) offset on when clearing
-  // a framebuffer.
-  {
-    const GLuint kFBOClientTextureId = 4100;
-    const GLuint kFBOServiceTextureId = 4101;
-
-    // Register a texture id.
-    EXPECT_CALL(*gl_, GenTextures(_, _))
-        .WillOnce(SetArgPointee<1>(kFBOServiceTextureId))
-        .RetiresOnSaturation();
-    GenHelper<cmds::GenTexturesImmediate>(kFBOClientTextureId);
-
-    // Setup "render to" texture.
-    DoBindTexture(GL_TEXTURE_2D, kFBOClientTextureId, kFBOServiceTextureId);
-    DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
-                 0, 0);
-    DoBindFramebuffer(GL_FRAMEBUFFER, client_framebuffer_id_,
-                      kServiceFramebufferId);
-    DoFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-                           kFBOClientTextureId, kFBOServiceTextureId, 0,
-                           GL_NO_ERROR);
-    // Set scissor rect and enable GL_SCISSOR_TEST to make sure we re-enable it
-    // and restore the rect again after the clear.
-    DoEnableDisable(GL_SCISSOR_TEST, true);
-    EXPECT_CALL(*gl_, Viewport(0, 0, 128, 64)).Times(1).RetiresOnSaturation();
-    EXPECT_CALL(*gl_, Scissor(1, 2, 3, 4)).Times(1).RetiresOnSaturation();
-
-    // Setup "render from" texture.
-    SetupTexture();
-
-    SetupExpectationsForFramebufferClearing(GL_FRAMEBUFFER,       // target
-                                            GL_COLOR_BUFFER_BIT,  // clear bits
-                                            0, 0, 0,
-                                            0,     // color
-                                            0,     // stencil
-                                            1.0f,  // depth
-                                            true,  // scissor test
-                                            1, 2, 3, 4);
-    SetupExpectationsForApplyingDirtyState(false,   // Framebuffer is RGB
-                                           false,   // Framebuffer has depth
-                                           false,   // Framebuffer has stencil
-                                           0x1111,  // color bits
-                                           false,   // depth mask
-                                           false,   // depth enabled
-                                           0,       // front stencil mask
-                                           0,       // back stencil mask
-                                           false);  // stencil enabled
-
-    EXPECT_CALL(*gl_, Clear(GL_COLOR_BUFFER_BIT))
-        .Times(1)
-        .RetiresOnSaturation();
-
-    cmds::Clear cmd;
-    cmd.Init(GL_COLOR_BUFFER_BIT);
-    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-    EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  }
-
-  // Check that the draw offset is used when switching to the default
-  // framebuffer and clearing it.
-  {
-    DoBindFramebuffer(GL_FRAMEBUFFER, 0, 0);
-    EXPECT_CALL(*gl_, Clear(GL_COLOR_BUFFER_BIT))
-        .Times(1)
-        .RetiresOnSaturation();
-    SetupExpectationsForColorMask(true, true, true, true);
-    SetupExpectationsForDepthMask(true);
-    SetupExpectationsForStencilMask(0, 0);
-    SetupExpectationsForEnableDisable(GL_DEPTH_TEST, false);
-    SetupExpectationsForEnableDisable(GL_STENCIL_TEST, false);
-    EXPECT_CALL(*gl_, Viewport(100, 200, 128, 64))
-        .Times(1)
-        .RetiresOnSaturation();
-    EXPECT_CALL(*gl_, Scissor(101, 202, 3, 4)).Times(1).RetiresOnSaturation();
-    cmds::Clear cmd;
-    cmd.Init(GL_COLOR_BUFFER_BIT);
-    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-    EXPECT_EQ(GL_NO_ERROR, GetGLError());
-  }
-}
-
-INSTANTIATE_TEST_SUITE_P(Service,
-                         GLES2DecoderTestWithDrawRectangle,
-                         ::testing::Bool());
 
 TEST_P(GLES2DecoderManualInitTest, MESAFramebufferFlipYExtensionEnabled) {
   InitState init;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -73,8 +73,8 @@ TEST(HIDDeviceTest, singleUsageItem) {
   EXPECT_FALSE(item->hasNull());
   EXPECT_EQ(1U, item->usages().size());
   EXPECT_EQ(0x00090001U, item->usages()[0]);
-  EXPECT_EQ(0U, item->usageMinimum());
-  EXPECT_EQ(0U, item->usageMaximum());
+  EXPECT_FALSE(item->hasUsageMinimum());
+  EXPECT_FALSE(item->hasUsageMaximum());
   EXPECT_FALSE(item->hasStrings());
   EXPECT_EQ(8U, item->reportSize());
   EXPECT_EQ(1U, item->reportCount());
@@ -134,6 +134,7 @@ TEST(HIDDeviceTest, usageRangeItem) {
   HIDReportItem* item = HIDDevice::ToHIDReportItem(*mojo_item);
 
   EXPECT_FALSE(item->hasStrings());
+  EXPECT_FALSE(item->hasUsages());
   EXPECT_EQ(0x00090001U, item->usageMinimum());
   EXPECT_EQ(0x00090008U, item->usageMaximum());
   EXPECT_EQ(1U, item->reportSize());

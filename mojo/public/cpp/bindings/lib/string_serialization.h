@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,8 @@ struct Serializer<StringDataView, MaybeConstUserType> {
 
     auto r = Traits::GetUTF8(input);
     fragment.AllocateArrayData(r.size());
-    memcpy(fragment->storage(), r.data(), r.size());
+    if (r.size() > 0)
+      memcpy(fragment->storage(), r.data(), r.size());
   }
 
   static bool Deserialize(String_Data* input,

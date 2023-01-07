@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Live caption. -->
+  <message name="IDS_LIVE_CAPTION_BUBBLE_TITLE" desc="Title of the Live Caption bubble">
+    Live Caption
+  </message>
+  <message name="IDS_LIVE_CAPTION_BUBBLE_CLOSE" desc="Tooltip for the Live Caption close button">
+    Turn off Live Caption for now
+  </message>
+  <message name="IDS_LIVE_CAPTION_BUBBLE_EXPAND" desc="Tooltip for the Live Caption expand button">
+    Show more lines
+  </message>
+  <message name="IDS_LIVE_CAPTION_BUBBLE_COLLAPSE" desc="Tooltip for the Live Caption collapse button">
+    Show fewer lines
+  </message>
+  <message name="IDS_LIVE_CAPTION_BUBBLE_BACK_TO_TAB" desc="Tooltip for the Live Caption back-to-tab button. Clicking the button brings a user's focus back to the tab which is streaming the audio or video.">
+    Back to tab
+  </message>
+  <message name="IDS_LIVE_CAPTION_BUBBLE_PIN" desc="Tooltip for the Live Caption pin button.">
+    Pin
+  </message>
+  <message name="IDS_LIVE_CAPTION_BUBBLE_UNPIN" desc="Tooltip for the Live Caption unpin button.">
+    Unpin
+  </message>
+  <message name="IDS_LIVE_CAPTION_BUBBLE_ERROR" desc="Error message for the Live Caption bubble when Live Captions are unavailable.">
+    Live Caption is not available right now
+  </message>
+  <message name="IDS_LIVE_CAPTION_BUBBLE_CONTENT_SETTINGS" desc="Text of Content Settings links.">
+    protected content IDs
+  </message>
+  <message name="IDS_LIVE_CAPTION_BUBBLE_MEDIA_FOUNDATION_RENDERER_ERROR" desc="Error message for the Live Caption bubble when Live Captions are unavailable because the renderer is using hardware-based decryption.">
+    Live Caption is not available for this media. To get captions, block <ph name="CONTENT_SETTINGS">$1<ex>protected content IDs</ex></ph> for this site.
+  </message>
+  <message name="IDS_LIVE_CAPTION_BUBBLE_MEDIA_FOUNDATION_RENDERER_ERROR_CHECKBOX" desc="Text next to the checkbox that silences the warning that Live Caption is unavailable because the renderer is using hardware-based decryption.">
+    Don't show this message again for this site
+  </message>
+  <message name="IDS_LIVE_CAPTION_BUBBLE_APPEAR_SCREENREADER_ANNOUNCEMENT" desc="Announcement to screen readers on ChromeOS when the Live Caption bubble appears to inform users of how to focus the bubble.">
+    Live Caption visible, use window switcher to focus
+  </message>
+</grit-part>

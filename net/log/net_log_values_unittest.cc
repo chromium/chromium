@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,8 @@ namespace net {
 // (rather than the base::Value).
 std::string GetNetLogString(base::StringPiece raw) {
   base::Value value = NetLogStringValue(raw);
-  std::string result;
-  EXPECT_TRUE(value.GetAsString(&result));
-  return result;
+  EXPECT_TRUE(value.is_string());
+  return value.GetString();
 }
 
 TEST(NetLogValuesTest, NetLogASCIIStringValue) {
@@ -52,16 +51,14 @@ TEST(NetLogValuesTest, NetLogASCIIStringValue) {
 TEST(NetLogValuesTest, NetLogBinaryValue) {
   // Test the encoding for empty bytes.
   auto value1 = NetLogBinaryValue(nullptr, 0);
-  std::string string1;
-  ASSERT_TRUE(value1.GetAsString(&string1));
-  EXPECT_EQ("", string1);
+  ASSERT_TRUE(value1.is_string());
+  EXPECT_EQ("", value1.GetString());
 
   // Test the encoding for a non-empty sequence (which needs padding).
   const uint8_t kBytes[] = {0x00, 0xF3, 0xF8, 0xFF};
-  auto value2 = NetLogBinaryValue(kBytes, base::size(kBytes));
-  std::string string2;
-  ASSERT_TRUE(value2.GetAsString(&string2));
-  EXPECT_EQ("APP4/w==", string2);
+  auto value2 = NetLogBinaryValue(kBytes, std::size(kBytes));
+  ASSERT_TRUE(value2.is_string());
+  EXPECT_EQ("APP4/w==", value2.GetString());
 }
 
 template <typename T>

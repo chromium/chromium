@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS requestAnimationFrame
+FAIL Early ResizeObserver assert_equals: Using last remembered size - clientWidth expected 100 but got 40
+PASS Late ResizeObserver
+Harness: the test ran to completion.
+

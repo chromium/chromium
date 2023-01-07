@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.net.CronetTestRule.assertContains;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.test.runner.AndroidJUnit4;
 import android.system.Os;
@@ -27,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
+import org.chromium.net.CronetTestRule.RequiresMinAndroidApi;
 import org.chromium.net.impl.CronetLibraryLoader;
 
 import java.io.FileDescriptor;
@@ -50,15 +50,11 @@ public class NetworkChangeNotifierTest {
     @SmallTest
     @Feature({"Cronet"})
     @OnlyRunNativeCronet
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @RequiresMinAndroidApi(Build.VERSION_CODES.LOLLIPOP)
+    // Os and OsConstants aren't exposed until Lollipop
     public void testNetworkChangeNotifier() throws Exception {
         CronetTestFramework testFramework = mTestRule.startCronetTestFramework();
         assertNotNull(testFramework);
-
-        // Os and OsConstants aren't exposed until Lollipop so we cannot run this test.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            return;
-        }
 
         // Bind a listening socket to a local port. The socket won't be used to accept any
         // connections, but rather to get connection stuck waiting to connect.
@@ -69,7 +65,7 @@ public class NetworkChangeNotifierTest {
         Os.listen(s, 0);
 
         // Make URL pointing at this local port, where requests will get stuck connecting.
-        String url = "http://127.0.0.1:" + ((InetSocketAddress) Os.getsockname(s)).getPort();
+        String url = "https://127.0.0.1:" + ((InetSocketAddress) Os.getsockname(s)).getPort();
 
         // Launch a few requests at this local port.  Four seems to be the magic number where
         // that request and any further request get stuck connecting.

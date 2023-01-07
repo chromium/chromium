@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "ash/wm/window_mirror_view.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -23,6 +22,10 @@ class WindowPreviewView;
 class WindowPreviewViewTestApi {
  public:
   explicit WindowPreviewViewTestApi(WindowPreviewView* preview_view);
+
+  WindowPreviewViewTestApi(const WindowPreviewViewTestApi&) = delete;
+  WindowPreviewViewTestApi& operator=(const WindowPreviewViewTestApi&) = delete;
+
   ~WindowPreviewViewTestApi();
 
   gfx::RectF GetUnionRect() const;
@@ -36,8 +39,6 @@ class WindowPreviewViewTestApi {
 
  private:
   WindowPreviewView* preview_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowPreviewViewTestApi);
 };
 
 }  // namespace ash

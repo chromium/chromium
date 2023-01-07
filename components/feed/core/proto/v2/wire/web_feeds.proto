@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,25 @@ syntax = "proto3";
 
 package feedwire.webfeed;
 
+import "components/feed/core/proto/v2/wire/consistency_token.proto";
+import "components/feed/core/proto/v2/wire/web_feed_matcher.proto";
+
 option optimize_for = LITE_RUNTIME;
 
+enum WebFeedChangeReason {
+  WEB_FEED_CHANGE_REASON_UNSPECIFIED = 0;
+  WEB_PAGE_MENU = 1;
+  WEB_PAGE_ACCELERATOR = 2;
+  MANAGEMENT = 3;
+  IN_FEED_RECOMMENDATION = 4;
+  BACK_OF_CARD_UNFOLLOW = 5;
+}
 message WebFeed {
   enum State {
     STATE_UNSPECIFIED = 0;
     INACTIVE = 1;
     ACTIVE = 2;
+    WAITING_FOR_CONTENT = 4;
   }
   string name = 1;
   string title = 2;
@@ -23,32 +35,42 @@ message WebFeed {
   Image favicon = 7;
   int64 follower_count = 8;
   State state = 9;
-  repeated UriMatcher uri_matchers = 10;
+  repeated WebFeedMatcher web_feed_matchers = 10;
 }
 message Image {
   string uri = 1;
 }
-message UriMatcher {
-  string domain_match = 1;
+message ListWebFeedsRequest {
+  ConsistencyToken consistency_token = 1;
 }
-message ListWebFeedsRequest {}
 message ListWebFeedsResponse {
   repeated WebFeed web_feeds = 1;
 }
 message FollowWebFeedRequest {
   oneof identifier {
     string name = 1;
-    string web_feed_uri = 2;
+    string web_page_uri = 2;
   }
+  string canonical_uri = 5;
+  repeated string page_rss_uris = 3;
+  ConsistencyToken consistency_token = 4;
+  WebFeedChangeReason change_reason = 6;
 }
 message FollowWebFeedResponse {
   WebFeed web_feed = 1;
+  ConsistencyToken consistency_token = 2;
 }
 message UnfollowWebFeedRequest {
   string name = 1;
+  ConsistencyToken consistency_token = 2;
+  WebFeedChangeReason change_reason = 3;
 }
-message UnfollowWebFeedResponse {}
-message ListRecommendedWebFeedsRequest {}
+message UnfollowWebFeedResponse {
+  ConsistencyToken consistency_token = 1;
+}
+message ListRecommendedWebFeedsRequest {
+  ConsistencyToken consistency_token = 1;
+}
 message ListRecommendedWebFeedsResponse {
   repeated WebFeed recommended_web_feeds = 1;
 }

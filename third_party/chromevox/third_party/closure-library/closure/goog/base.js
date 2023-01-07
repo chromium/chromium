@@ -144,29 +144,38 @@ goog.exportPath_ = function(name, opt_object, opt_objectToExportTo) {
 
 
 /**
- * Defines a named value. In uncompiled mode, the value is retreived from
+ * Defines a named value. In uncompiled mode, the value is retrieved from
  * CLOSURE_DEFINES or CLOSURE_UNCOMPILED_DEFINES if the object is defined and
  * has the property specified, and otherwise used the defined defaultValue.
- * When compiled, the default can be overridden using compiler command-line
- * options.
+ * When compiled the default can be overridden using the compiler options or the
+ * value set in the CLOSURE_DEFINES object. Returns the defined value so that it
+ * can be used safely in modules. Note that the value type MUST be either
+ * boolean, number, or string.
  *
  * @param {string} name The distinguished name to provide.
- * @param {string|number|boolean} defaultValue
+ * @param {T} defaultValue
+ * @return {T} The defined value.
+ * @template T
  */
 goog.define = function(name, defaultValue) {
   var value = defaultValue;
   if (!COMPILED) {
-    if (goog.global.CLOSURE_UNCOMPILED_DEFINES &&
-        Object.prototype.hasOwnProperty.call(
-            goog.global.CLOSURE_UNCOMPILED_DEFINES, name)) {
-      value = goog.global.CLOSURE_UNCOMPILED_DEFINES[name];
-    } else if (goog.global.CLOSURE_DEFINES &&
-        Object.prototype.hasOwnProperty.call(
-            goog.global.CLOSURE_DEFINES, name)) {
-      value = goog.global.CLOSURE_DEFINES[name];
+    var uncompiledDefines = goog.global.CLOSURE_UNCOMPILED_DEFINES;
+    var defines = goog.global.CLOSURE_DEFINES;
+    if (uncompiledDefines &&
+        // Anti DOM-clobbering runtime check (b/37736576).
+        /** @type {?} */ (uncompiledDefines).nodeType === undefined &&
+        Object.prototype.hasOwnProperty.call(uncompiledDefines, name)) {
+      value = uncompiledDefines[name];
+    } else if (
+        defines &&
+        // Anti DOM-clobbering runtime check (b/37736576).
+        /** @type {?} */ (defines).nodeType === undefined &&
+        Object.prototype.hasOwnProperty.call(defines, name)) {
+      value = defines[name];
     }
   }
-  goog.exportPath_(name, value);
+  return value;
 };
 
 

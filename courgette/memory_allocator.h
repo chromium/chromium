@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "base/compiler_specific.h"
 #include "base/files/file.h"
-#include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/memory.h"
+#include "build/build_config.h"
 
 #ifndef NDEBUG
 
@@ -86,7 +86,7 @@ struct UncheckedDeleter {
   inline void operator()(T* ptr) const { UncheckedDelete(ptr); }
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Manages a read/write virtual mapping of a physical file.
 class FileMapping {
@@ -109,7 +109,7 @@ class FileMapping {
   bool InitializeView(size_t size);
 
   HANDLE mapping_;
-  void* view_;
+  raw_ptr<void> view_;
 };
 
 // Manages a temporary file and a memory mapping of the temporary file.
@@ -262,7 +262,7 @@ class MemoryAllocator {
   }
 };
 
-#else  // OS_WIN
+#else  // BUILDFLAG(IS_WIN)
 
 // On Mac, Linux, we use a bare bones implementation that only does
 // heap allocations.
@@ -326,7 +326,7 @@ class MemoryAllocator {
   }
 };
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Manages a growable buffer.  The buffer allocation is done by the
 // MemoryAllocator class.  This class will not throw exceptions so call sites
@@ -359,7 +359,7 @@ class NoThrowBuffer {
     return size_ == 0;
   }
 
-  CheckBool reserve(size_t size) WARN_UNUSED_RESULT {
+  [[nodiscard]] CheckBool reserve(size_t size) {
     if (failed())
       return false;
 
@@ -385,7 +385,7 @@ class NoThrowBuffer {
     return !failed();
   }
 
-  CheckBool append(const T* data, size_t size) WARN_UNUSED_RESULT {
+  [[nodiscard]] CheckBool append(const T* data, size_t size) {
     if (failed())
       return false;
 
@@ -419,7 +419,7 @@ class NoThrowBuffer {
     return true;
   }
 
-  CheckBool resize(size_t size, const T& init_value) WARN_UNUSED_RESULT {
+  [[nodiscard]] CheckBool resize(size_t size, const T& init_value) {
     if (size > size_) {
       if (!reserve(size))
         return false;
@@ -435,9 +435,7 @@ class NoThrowBuffer {
     return true;
   }
 
-  CheckBool push_back(const T& item) WARN_UNUSED_RESULT {
-    return append(&item, 1);
-  }
+  [[nodiscard]] CheckBool push_back(const T& item) { return append(&item, 1); }
 
   const T& back() const {
     return buffer_[size_ - 1];
@@ -499,7 +497,7 @@ class NoThrowBuffer {
   }
 
  protected:
-  T* buffer_;
+  raw_ptr<T> buffer_;
   size_t size_;  // how much of the buffer we're using.
   size_t alloc_size_;  // how much space we have allocated.
   Allocator alloc_;

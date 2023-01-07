@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@
 // Block to be called when this action is triggered.
 @property(nonatomic, readonly) void (^handler)(AlertAction* action);
 
-// Initializes an action with |title| and |handler|.
+// Initializes an action with `title` and `handler`.
 + (instancetype)actionWithTitle:(NSString*)title
                           style:(UIAlertActionStyle)style
                         handler:(void (^)(AlertAction* action))handler;

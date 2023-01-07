@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,11 @@ class CONTENT_EXPORT WebBundleURLLoaderFactory final
  public:
   explicit WebBundleURLLoaderFactory(scoped_refptr<WebBundleReader> reader,
                                      int frame_tree_node_id);
+
+  WebBundleURLLoaderFactory(const WebBundleURLLoaderFactory&) = delete;
+  WebBundleURLLoaderFactory& operator=(const WebBundleURLLoaderFactory&) =
+      delete;
+
   ~WebBundleURLLoaderFactory() override;
 
   // Set a |network::mojom::URLLoaderFactory| remote interface used for requests
@@ -58,8 +63,6 @@ class CONTENT_EXPORT WebBundleURLLoaderFactory final
   mojo::Remote<network::mojom::URLLoaderFactory> fallback_factory_;
 
   base::WeakPtrFactory<WebBundleURLLoaderFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebBundleURLLoaderFactory);
 };
 
 }  // namespace content

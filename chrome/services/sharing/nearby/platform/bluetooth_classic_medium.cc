@@ -1,9 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/services/sharing/nearby/platform/bluetooth_classic_medium.h"
 
+#include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_server_socket.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_socket.h"
@@ -15,10 +17,12 @@ namespace chrome {
 
 namespace {
 
+// Client name for logging in BLE scanning.
+constexpr char kScanClientName[] = "Nearby Connections";
+
 // Duration of time after which inactive Bluetooth devices may be removed from
 // the discovered devices map.
-const base::TimeDelta kStaleBluetoothDeviceTimeout =
-    base::TimeDelta::FromSeconds(20);
+const base::TimeDelta kStaleBluetoothDeviceTimeout = base::Seconds(20);
 
 void LogStartDiscoveryResult(bool success) {
   base::UmaHistogramBoolean(
@@ -86,7 +90,8 @@ bool BluetoothClassicMedium::StartDiscovery(
   }
 
   mojo::PendingRemote<bluetooth::mojom::DiscoverySession> discovery_session;
-  success = adapter_->StartDiscoverySession(&discovery_session);
+  success =
+      adapter_->StartDiscoverySession(kScanClientName, &discovery_session);
 
   if (!success || !discovery_session.is_valid()) {
     adapter_observer_.reset();
@@ -134,7 +139,8 @@ std::unique_ptr<api::BluetoothSocket> BluetoothClassicMedium::ConnectToService(
   auto start_time = base::TimeTicks::Now();
   bluetooth::mojom::ConnectToServiceResultPtr result;
   bool success = adapter_->ConnectToServiceInsecurely(
-      address, device::BluetoothUUID(service_uuid), &result);
+      address, device::BluetoothUUID(service_uuid),
+      /*should_unbond_on_error=*/true, &result);
 
   if (success && result) {
     LogConnectToServiceDuration(base::TimeTicks::Now() - start_time);
@@ -183,6 +189,9 @@ BluetoothDevice* BluetoothClassicMedium::GetRemoteDevice(
 }
 
 void BluetoothClassicMedium::PresentChanged(bool present) {
+  // TODO(crbug.com/1191815): Remove this ASAP.
+  VLOG(1) << __func__ << ": " << present;
+
   // TODO(hansberry): It is unclear to me how the API implementation can signal
   // to Core that |present| has become unexpectedly false. Need to ask
   // Nearby team.
@@ -191,6 +200,9 @@ void BluetoothClassicMedium::PresentChanged(bool present) {
 }
 
 void BluetoothClassicMedium::PoweredChanged(bool powered) {
+  // TODO(crbug.com/1191815): Remove this ASAP.
+  VLOG(1) << __func__ << ": " << powered;
+
   // TODO(hansberry): It is unclear to me how the API implementation can signal
   // to Core that |powered| has become unexpectedly false. Need to ask
   // Nearby team.
@@ -199,16 +211,23 @@ void BluetoothClassicMedium::PoweredChanged(bool powered) {
 }
 
 void BluetoothClassicMedium::DiscoverableChanged(bool discoverable) {
+  // TODO(crbug.com/1191815): Remove this ASAP.
+  VLOG(1) << __func__ << ": " << discoverable;
+
   // Do nothing. BluetoothClassicMedium is not responsible for managing
   // discoverable state.
 }
 
 void BluetoothClassicMedium::DiscoveringChanged(bool discovering) {
+  // TODO(crbug.com/1191815): Remove this ASAP.
+  VLOG(1) << __func__ << ": " << discovering;
+
   // TODO(hansberry): It is unclear to me how the API implementation can signal
   // to Core that |discovering| has become unexpectedly false. Need to ask
   // Nearby team.
-  if (!discovering)
+  if (!discovering) {
     StopDiscovery();
+  }
 }
 
 void BluetoothClassicMedium::DeviceAdded(
@@ -217,6 +236,12 @@ void BluetoothClassicMedium::DeviceAdded(
       !discovery_session_.is_bound()) {
     return;
   }
+
+  // TODO(crbug.com/1191815): Remove these logs. They are temporary logs used
+  // to debug this issue.
+  VLOG(1) << "Device added or changed. Address: " << device->address
+          << ", Name: '" << (device->name ? device->name_for_display : "<None>")
+          << "'";
 
   // Best-effort attempt to filter out BLE advertisements. BLE advertisements
   // represented as "devices" may have their |name| set if the system has

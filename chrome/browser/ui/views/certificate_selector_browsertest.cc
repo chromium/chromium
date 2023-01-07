@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
@@ -31,6 +31,9 @@ class TestCertificateSelector : public chrome::CertificateSelector {
   TestCertificateSelector(net::ClientCertIdentityList certificates,
                           content::WebContents* web_contents)
       : CertificateSelector(std::move(certificates), web_contents) {}
+
+  TestCertificateSelector(const TestCertificateSelector&) = delete;
+  TestCertificateSelector& operator=(const TestCertificateSelector&) = delete;
 
   ~TestCertificateSelector() override {
     if (!on_destroy_.is_null())
@@ -65,11 +68,9 @@ class TestCertificateSelector : public chrome::CertificateSelector {
   }
 
  private:
-  bool* accepted_ = nullptr;
-  bool* canceled_ = nullptr;
+  raw_ptr<bool> accepted_ = nullptr;
+  raw_ptr<bool> canceled_ = nullptr;
   base::OnceClosure on_destroy_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCertificateSelector);
 };
 
 class CertificateSelectorTest : public InProcessBrowserTest {
@@ -102,7 +103,7 @@ class CertificateSelectorTest : public InProcessBrowserTest {
 
   // The selector will be owned by the Views hierarchy and will at latest be
   // deleted during the browser shutdown.
-  TestCertificateSelector* selector_ = nullptr;
+  raw_ptr<TestCertificateSelector> selector_ = nullptr;
 };
 
 }  // namespace

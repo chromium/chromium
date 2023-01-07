@@ -8,9 +8,23 @@
 *~
 \#*#
 
+# Temporary directory that is used in CI to generate gh-pages in a separate
+# copy of the repo.
+dist/
+
 # python
 *.pyc
-
 node_modules/
 closure-deps/node_modules/
 package-lock.json
+
+# Closure Generated Unit Tests
+*_test.html
+
+# Generated alltests.js
+alltests.js
+
+# Generated deps.js
+closure/goog/deps.js
+closure/goog/deps_with_tests.js
+

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.password_manager.PasswordManagerDialogProperties.ILLUSTRATION_VISIBLE;
-import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.SmallTest;
 
@@ -66,20 +66,21 @@ public class PasswordManagerDialogTest {
     @Before
     public void setUp() throws InterruptedException {
         mActivityTestRule.startMainActivityOnBlankPage();
-        ChromeActivity activity = (ChromeActivity) mActivityTestRule.getActivity();
-        ModalDialogManager dialogManager =
-                TestThreadUtils.runOnUiThreadBlockingNoException(activity::getModalDialogManager);
-
-        mCoordinator = new PasswordManagerDialogCoordinator(dialogManager,
-                activity.findViewById(android.R.id.content), activity.getBrowserControlsManager(),
-                activity.getControlContainerHeightResource());
-        PasswordManagerDialogContents contents = new PasswordManagerDialogContents(TITLE, DETAILS,
-                R.drawable.data_reduction_illustration, OK_BUTTON, CANCEL_BUTTON, mOnClick);
-        contents.setDialogType(ModalDialogManager.ModalDialogType.TAB);
-        mCoordinator.initialize(activity.getWindowAndroid().getContext().get(), contents);
-        mMediator = mCoordinator.getMediatorForTesting();
-        mModel = mMediator.getModelForTesting();
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mCoordinator.showDialog(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ChromeActivity activity = (ChromeActivity) mActivityTestRule.getActivity();
+            ModalDialogManager dialogManager = activity.getModalDialogManager();
+            mCoordinator = new PasswordManagerDialogCoordinator(dialogManager,
+                    activity.findViewById(android.R.id.content),
+                    activity.getBrowserControlsManager());
+            PasswordManagerDialogContents contents = new PasswordManagerDialogContents(TITLE,
+                    DETAILS, R.drawable.password_checkup_warning, OK_BUTTON, 0, CANCEL_BUTTON,
+                    mOnClick);
+            contents.setDialogType(ModalDialogManager.ModalDialogType.TAB);
+            mCoordinator.initialize(activity.getWindowAndroid().getContext().get(), contents);
+            mMediator = mCoordinator.getMediatorForTesting();
+            mModel = mMediator.getModelForTesting();
+            mCoordinator.showDialog();
+        });
         onViewWaiting(withId(R.id.positive_button));
     }
 

@@ -11,6 +11,11 @@ ROLE_SYSTEM_DOCUMENT READONLY
 ++ROLE_SYSTEM_TEXT name='Readonly-true role unimplemented textbox' READONLY
 ++ROLE_SYSTEM_TEXT name='Readonly-false contenteditable textbox'
 ++ROLE_SYSTEM_TEXT name='Readonly-true contenteditable textbox' READONLY
+++ROLE_SYSTEM_TABLE
+++++ROLE_SYSTEM_ROW
+++++++ROLE_SYSTEM_CELL name='Readonly-false gridcell'
+++++++ROLE_SYSTEM_CELL name='Readonly-true gridcell' READONLY
+++++++ROLE_SYSTEM_CELL name='Readonly not specified gridcell'
 ++ROLE_SYSTEM_CHECKBUTTON name='Readonly checkbox' READONLY
 ++ROLE_SYSTEM_COMBOBOX name='Readonly combobox' READONLY HASPOPUP IA2_STATE_EDITABLE haspopup:listbox
 ++ROLE_SYSTEM_LIST name='Readonly listbox' READONLY

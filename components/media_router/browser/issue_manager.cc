@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,8 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/observer_list.h"
+#include "base/time/time.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -27,17 +29,11 @@ constexpr int kWarningAutoDismissMins = 5;
 // static
 base::TimeDelta IssueManager::GetAutoDismissTimeout(
     const IssueInfo& issue_info) {
-  if (issue_info.is_blocking)
-    return base::TimeDelta();
-
   switch (issue_info.severity) {
     case IssueInfo::Severity::NOTIFICATION:
-      return base::TimeDelta::FromMinutes(kNotificationAutoDismissMins);
+      return base::Minutes(kNotificationAutoDismissMins);
     case IssueInfo::Severity::WARNING:
-      return base::TimeDelta::FromMinutes(kWarningAutoDismissMins);
-    case IssueInfo::Severity::FATAL:
-      NOTREACHED() << "FATAL issues should be blocking";
-      return base::TimeDelta();
+      return base::Minutes(kWarningAutoDismissMins);
   }
   NOTREACHED();
   return base::TimeDelta();
@@ -52,9 +48,7 @@ IssueManager::~IssueManager() {
 
 void IssueManager::AddIssue(const IssueInfo& issue_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto& issues_map =
-      issue_info.is_blocking ? blocking_issues_ : non_blocking_issues_;
-  for (const auto& key_value_pair : issues_map) {
+  for (const auto& key_value_pair : issues_map_) {
     const auto& issue = key_value_pair.second->issue;
     if (issue.info() == issue_info)
       return;
@@ -71,24 +65,32 @@ void IssueManager::AddIssue(const IssueInfo& issue_info) {
                                   timeout);
   }
 
-  issues_map.emplace(issue.id(), std::make_unique<IssueManager::Entry>(
-                                     issue, std::move(cancelable_dismiss_cb)));
+  issues_map_.emplace(issue.id(), std::make_unique<IssueManager::Entry>(
+                                      issue, std::move(cancelable_dismiss_cb)));
   MaybeUpdateTopIssue();
 }
 
 void IssueManager::ClearIssue(const Issue::Id& issue_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (non_blocking_issues_.erase(issue_id) || blocking_issues_.erase(issue_id))
+  if (issues_map_.erase(issue_id))
     MaybeUpdateTopIssue();
 }
 
-void IssueManager::ClearNonBlockingIssues() {
+void IssueManager::ClearAllIssues() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (non_blocking_issues_.empty())
+  if (issues_map_.empty())
     return;
 
-  non_blocking_issues_.clear();
+  issues_map_.clear();
   MaybeUpdateTopIssue();
+}
+
+void IssueManager::ClearTopIssueForSink(const MediaSink::Id& sink_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!top_issue_ || top_issue_->info().sink_id != sink_id)
+    return;
+
+  ClearIssue(top_issue_->id());
 }
 
 void IssueManager::RegisterObserver(IssuesObserver* observer) {
@@ -116,12 +118,9 @@ IssueManager::Entry::~Entry() = default;
 
 void IssueManager::MaybeUpdateTopIssue() {
   const Issue* new_top_issue = nullptr;
-  // Select the first blocking issue in the list of issues.
-  // If there are none, simply select the first issue in the list.
-  if (!blocking_issues_.empty()) {
-    new_top_issue = &blocking_issues_.begin()->second->issue;
-  } else if (!non_blocking_issues_.empty()) {
-    new_top_issue = &non_blocking_issues_.begin()->second->issue;
+  // Select the first issue in the list of issues.
+  if (!issues_map_.empty()) {
+    new_top_issue = &issues_map_.begin()->second->issue;
   }
 
   // If we've found a new top issue, then report it via the observer.

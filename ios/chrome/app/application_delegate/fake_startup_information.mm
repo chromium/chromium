@@ -1,10 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/app/application_delegate/fake_startup_information.h"
+#import "ios/chrome/app/application_delegate/fake_startup_information.h"
 
-#include "base/time/time.h"
+#import "base/time/time.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -14,7 +14,9 @@
 @implementation FakeStartupInformation
 
 @synthesize appLaunchTime = _appLaunchTime;
-@synthesize isPresentingFirstRunUI = _isPresentingFirstRunUI;
+@synthesize didFinishLaunchingTime = _didFinishLaunchingTime;
+@synthesize firstSceneConnectionTime = _firstSceneConnectionTime;
+@synthesize isFirstRun = _isFirstRun;
 @synthesize isColdStart = _isColdStart;
 @synthesize restoreHelper = _restoreHelper;
 

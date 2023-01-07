@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,6 +26,16 @@ using ::testing::Pair;
 namespace base {
 
 namespace {
+
+// A macro to work around the fact that lambdas are not constexpr in C++14.
+// This will define an unnamed struct with a constexpr call operator, similarly
+// to how lambdas behave in C++17+.
+// Note that this does not support capture groups, so all lambdas defined like
+// this must be stateless.
+// Example Usage: `CONSTEXPR_LAMBDA((int i, int j) { return i + j; }) lambda;`
+// TODO(crbug.com/752720): Remove once we have constexpr lambdas for real.
+#define CONSTEXPR_LAMBDA(fun) \
+  constexpr struct { constexpr bool operator() fun }
 
 struct Int {
   constexpr Int() = default;
@@ -325,15 +335,27 @@ TEST(RangesTest, Mismatch) {
 }
 
 TEST(RangesTest, Equal) {
-  int array1[] = {1, 3, 6, 7};
-  int array2[] = {1, 3, 5, 7};
+  static constexpr int array1[] = {1, 3, 6, 7};
+  static constexpr int array2[] = {1, 3, 5, 7};
+
+  static_assert(ranges::equal(array1, array1 + 2, array2, array2 + 2), "");
   EXPECT_TRUE(ranges::equal(array1, array1 + 2, array2, array2 + 2));
+
+  static_assert(!ranges::equal(array1, array1 + 4, array2, array2 + 4), "");
   EXPECT_FALSE(ranges::equal(array1, array1 + 4, array2, array2 + 4));
+
+  static_assert(!ranges::equal(array1, array1 + 2, array2, array2 + 3), "");
   EXPECT_FALSE(ranges::equal(array1, array1 + 2, array2, array2 + 3));
 
-  Int ints[] = {{1}, {3}, {5}, {7}};
-  EXPECT_TRUE(ranges::equal(ints, array2,
-                            [](Int lhs, int rhs) { return lhs.value == rhs; }));
+  static constexpr Int ints[] = {{1}, {3}, {5}, {7}};
+
+  CONSTEXPR_LAMBDA((Int lhs, int rhs) { return lhs.value == rhs; }) lambda;
+  static_assert(ranges::equal(ints, array2, lambda), "");
+  EXPECT_TRUE(ranges::equal(ints, array2, lambda));
+
+  static_assert(
+      ranges::equal(array2, ints, ranges::equal_to{}, identity{}, &Int::value),
+      "");
   EXPECT_TRUE(
       ranges::equal(array2, ints, ranges::equal_to{}, identity{}, &Int::value));
 }

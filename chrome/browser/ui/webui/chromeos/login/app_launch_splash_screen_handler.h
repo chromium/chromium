@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,12 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_state_informer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -24,12 +24,6 @@ class AppLaunchSplashScreenView {
    public:
     // Invoked when the configure network control is clicked.
     virtual void OnConfigureNetwork() {}
-
-    // Invoked when the app launch bailout shortcut key is pressed.
-    virtual void OnCancelAppLaunch() {}
-
-    // Invoked when the network config shortcut key is pressed.
-    virtual void OnNetworkConfigRequested() {}
 
     // Invoked when the network config did prepare network and is closed.
     virtual void OnNetworkConfigFinished() {}
@@ -59,7 +53,8 @@ class AppLaunchSplashScreenView {
     kShowingNetworkConfigureUI,
   };
 
-  constexpr static StaticOobeScreenId kScreenId{"app-launch-splash"};
+  inline constexpr static StaticOobeScreenId kScreenId{"app-launch-splash",
+                                                       "AppLaunchSplashScreen"};
 
   virtual ~AppLaunchSplashScreenView() {}
 
@@ -86,6 +81,9 @@ class AppLaunchSplashScreenView {
 
   // Returns true if the default network has Internet access.
   virtual bool IsNetworkReady() = 0;
+
+  // Continues app launch after error screen is shown.
+  virtual void ContinueAppLaunch() = 0;
 };
 
 // A class that handles the WebUI hooks for the app launch splash screen.
@@ -97,15 +95,18 @@ class AppLaunchSplashScreenHandler
   using TView = AppLaunchSplashScreenView;
 
   AppLaunchSplashScreenHandler(
-      JSCallsContainer* js_calls_container,
       const scoped_refptr<NetworkStateInformer>& network_state_informer,
       ErrorScreen* error_screen);
+
+  AppLaunchSplashScreenHandler(const AppLaunchSplashScreenHandler&) = delete;
+  AppLaunchSplashScreenHandler& operator=(const AppLaunchSplashScreenHandler&) =
+      delete;
+
   ~AppLaunchSplashScreenHandler() override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
 
   // WebUIMessageHandler implementation:
   void RegisterMessages() override;
@@ -119,6 +120,7 @@ class AppLaunchSplashScreenHandler
   void ShowNetworkConfigureUI() override;
   void ShowErrorMessage(KioskAppLaunchError::Error error) override;
   bool IsNetworkReady() override;
+  void ContinueAppLaunch() override;
 
   // NetworkStateInformer::NetworkStateInformerObserver implementation:
   void OnNetworkReady() override;
@@ -129,12 +131,10 @@ class AppLaunchSplashScreenHandler
   void SetLaunchText(const std::string& text);
   int GetProgressMessageFromState(AppLaunchState state);
   void HandleConfigureNetwork();
-  void HandleCancelAppLaunch();
-  void HandleContinueAppLaunch();
-  void HandleNetworkConfigRequested();
+  void DoToggleNetworkConfig(bool visible);
 
   Delegate* delegate_ = nullptr;
-  bool show_on_init_ = false;
+  bool is_shown_ = false;
   AppLaunchState state_ = AppLaunchState::kPreparingProfile;
 
   scoped_refptr<NetworkStateInformer> network_state_informer_;
@@ -143,9 +143,18 @@ class AppLaunchSplashScreenHandler
   // Whether network configure UI is being shown.
   bool network_config_shown_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(AppLaunchSplashScreenHandler);
+  // If this has value it will be populated through ToggleNetworkConfig(value)
+  // after screen is shown. Cleared after screen was shown.
+  absl::optional<bool> toggle_network_config_on_show_;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::AppLaunchSplashScreenHandler;
+using ::chromeos::AppLaunchSplashScreenView;
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_APP_LAUNCH_SPLASH_SCREEN_HANDLER_H_

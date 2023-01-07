@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/media_router/browser/presentation/presentation_service_delegate_observers.h"
 #include "content/public/browser/presentation_service_delegate.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -42,6 +43,11 @@ class ReceiverPresentationServiceDelegateImpl
   static void CreateForWebContents(content::WebContents* web_contents,
                                    const std::string& presentation_id);
 
+  ReceiverPresentationServiceDelegateImpl(
+      const ReceiverPresentationServiceDelegateImpl&) = delete;
+  ReceiverPresentationServiceDelegateImpl& operator=(
+      const ReceiverPresentationServiceDelegateImpl&) = delete;
+
   // content::ReceiverPresentationServiceDelegate implementation.
   void AddObserver(
       int render_process_id,
@@ -60,19 +66,14 @@ class ReceiverPresentationServiceDelegateImpl
   ReceiverPresentationServiceDelegateImpl(content::WebContents* web_contents,
                                           const std::string& presentation_id);
 
-  // Reference to the WebContents that owns this instance.
-  content::WebContents* const web_contents_;
-
   const std::string presentation_id_;
 
   // This is an unowned pointer to the LocalPresentationManager.
-  LocalPresentationManager* const local_presentation_manager_;
+  const raw_ptr<LocalPresentationManager> local_presentation_manager_;
 
   PresentationServiceDelegateObservers observers_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ReceiverPresentationServiceDelegateImpl);
 };
 
 }  // namespace media_router

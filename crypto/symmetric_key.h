@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
 
@@ -26,6 +25,9 @@ class CRYPTO_EXPORT SymmetricKey {
     AES,
     HMAC_SHA1,
   };
+
+  SymmetricKey(const SymmetricKey&) = delete;
+  SymmetricKey& operator=(const SymmetricKey&) = delete;
 
   virtual ~SymmetricKey();
 
@@ -79,8 +81,6 @@ class CRYPTO_EXPORT SymmetricKey {
   SymmetricKey();
 
   std::string key_;
-
-  DISALLOW_COPY_AND_ASSIGN(SymmetricKey);
 };
 
 }  // namespace crypto

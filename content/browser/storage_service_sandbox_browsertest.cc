@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
@@ -14,7 +15,6 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -27,16 +27,14 @@ namespace {
 
 class StorageServiceSandboxBrowserTest : public ContentBrowserTest {
  public:
-  StorageServiceSandboxBrowserTest() {
-    // These tests only make sense when the service is running out-of-process
-    // with sandboxing enabled.
-    feature_list_.InitWithFeatures({features::kStorageServiceOutOfProcess}, {});
-  }
+  StorageServiceSandboxBrowserTest() = default;
 
   DOMStorageContextWrapper* dom_storage() {
-    auto* partition = static_cast<StoragePartitionImpl*>(
-        BrowserContext::GetDefaultStoragePartition(
-            shell()->web_contents()->GetBrowserContext()));
+    auto* partition =
+        static_cast<StoragePartitionImpl*>(shell()
+                                               ->web_contents()
+                                               ->GetBrowserContext()
+                                               ->GetDefaultStoragePartition());
     return partition->GetDOMStorageContext();
   }
 
@@ -54,7 +52,7 @@ class StorageServiceSandboxBrowserTest : public ContentBrowserTest {
               base::BindOnce(&StorageServiceSandboxBrowserTest::
                                  WaitForAnyLocalStorageDataAsync,
                              base::Unretained(test), std::move(callback)),
-              base::TimeDelta::FromMilliseconds(50));
+              base::Milliseconds(50));
         },
         this, std::move(callback)));
   }
@@ -80,7 +78,6 @@ class StorageServiceSandboxBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   mojo::Remote<storage::mojom::TestApi> test_api_;
 };
 
@@ -93,8 +90,8 @@ IN_PROC_BROWSER_TEST_F(StorageServiceSandboxBrowserTest, BasicLaunch) {
 
 IN_PROC_BROWSER_TEST_F(StorageServiceSandboxBrowserTest, PRE_DomStorage) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
-  ignore_result(
-      EvalJs(shell()->web_contents(), R"(window.localStorage.yeet = 42)"));
+  std::ignore =
+      EvalJs(shell()->web_contents(), R"(window.localStorage.yeet = 42)");
   WaitForAnyLocalStorageData();
   FlushLocalStorage();
 }
@@ -108,7 +105,14 @@ IN_PROC_BROWSER_TEST_F(StorageServiceSandboxBrowserTest, DomStorage) {
             EvalJs(shell()->web_contents(), R"(window.localStorage.yeet)"));
 }
 
-IN_PROC_BROWSER_TEST_F(StorageServiceSandboxBrowserTest, CompactDatabase) {
+// TODO(https://crbug.com/1318225): Fix and enable the test on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_CompactDatabase DISABLED_CompactDatabase
+#else
+#define MAYBE_CompactDatabase CompactDatabase
+#endif
+IN_PROC_BROWSER_TEST_F(StorageServiceSandboxBrowserTest,
+                       MAYBE_CompactDatabase) {
   // Tests that the sandboxed service can execute a LevelDB database compaction
   // operation without crashing. If the service crashes, the sync call below
   // will return false.

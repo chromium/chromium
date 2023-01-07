@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -76,11 +76,11 @@ base::FilePath GenerateUniqueFilenameForOfflinePage(
   int uniquifier = base::GetUniquePathNumber(suggested_path);
   base::FilePath::StringType suffix;
   if (uniquifier > 0)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     suffix = base::StringPrintf(L" (%d)", uniquifier);
-#else   // defined(OS_WIN)
+#else   // BUILDFLAG(IS_WIN)
     suffix = base::StringPrintf(" (%d)", uniquifier);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Truncation.
   int max_path_component_length =

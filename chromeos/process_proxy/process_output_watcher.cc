@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,21 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/third_party/icu/icu_utf.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
 
 namespace {
+
+// Number of `unacked_outputs_` we allow before pausing.  Bigger windows are
+// faster but cause jank in the renderer if we flood it.
+// Tuned with `time cat big.txt` using https://norvig.com/big.txt.
+constexpr int kAckWindow = 30;
 
 // Gets byte size for a UTF8 character given it's leading byte. The character
 // size is encoded as number of leading '1' bits in the character's leading
@@ -40,12 +44,6 @@ size_t UTF8SizeFromLeadingByte(uint8_t leading_byte) {
   return byte_count ? byte_count : 1;
 }
 
-void RelayToTaskRunner(
-    const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-    base::OnceClosure callback) {
-  task_runner->PostTask(FROM_HERE, std::move(callback));
-}
-
 }  // namespace
 
 namespace chromeos {
@@ -58,7 +56,7 @@ ProcessOutputWatcher::ProcessOutputWatcher(
       on_read_callback_(callback) {
   CHECK_GE(out_fd, 0);
   // We want to be sure we will be able to add 0 at the end of the input, so -1.
-  read_buffer_capacity_ = base::size(read_buffer_) - 1;
+  read_buffer_capacity_ = std::size(read_buffer_) - 1;
 }
 
 ProcessOutputWatcher::~ProcessOutputWatcher() = default;
@@ -91,11 +89,7 @@ void ProcessOutputWatcher::ReadFromFd(int fd) {
                         read_buffer_capacity_ - read_buffer_size_));
 
   if (bytes_read > 0) {
-    ReportOutput(
-        PROCESS_OUTPUT_TYPE_OUT, bytes_read,
-        base::BindOnce(&RelayToTaskRunner, base::ThreadTaskRunnerHandle::Get(),
-                       base::BindOnce(&ProcessOutputWatcher::WatchProcessOutput,
-                                      weak_factory_.GetWeakPtr())));
+    ReportOutput(PROCESS_OUTPUT_TYPE_OUT, bytes_read);
     return;
   }
 
@@ -104,10 +98,7 @@ void ProcessOutputWatcher::ReadFromFd(int fd) {
 
   // If there is nothing on the output the watched process has exited (slave end
   // of pty is closed).
-  on_read_callback_.Run(PROCESS_OUTPUT_TYPE_EXIT, "", base::OnceClosure());
-
-  // Cancel pending |WatchProcessOutput| calls.
-  weak_factory_.InvalidateWeakPtrs();
+  on_read_callback_.Run(PROCESS_OUTPUT_TYPE_EXIT, "");
 }
 
 size_t ProcessOutputWatcher::OutputSizeWithoutIncompleteUTF8() {
@@ -147,13 +138,11 @@ size_t ProcessOutputWatcher::OutputSizeWithoutIncompleteUTF8() {
 }
 
 void ProcessOutputWatcher::ReportOutput(ProcessOutputType type,
-                                        size_t new_bytes_count,
-                                        base::OnceClosure callback) {
+                                        size_t new_bytes_count) {
   read_buffer_size_ += new_bytes_count;
   size_t output_to_report = OutputSizeWithoutIncompleteUTF8();
 
-  on_read_callback_.Run(type, std::string(read_buffer_, output_to_report),
-                        std::move(callback));
+  on_read_callback_.Run(type, std::string(read_buffer_, output_to_report));
 
   // Move the bytes that were left behind to the beginning of the buffer and
   // update the buffer size accordingly.
@@ -163,6 +152,17 @@ void ProcessOutputWatcher::ReportOutput(ProcessOutputType type,
     }
   }
   read_buffer_size_ -= output_to_report;
+
+  // Continue watching immediately if we don't have too many unacked outputs.
+  if (++unacked_outputs_ <= kAckWindow) {
+    WatchProcessOutput();
+  }
+}
+
+void ProcessOutputWatcher::AckOutput() {
+  if (--unacked_outputs_ == kAckWindow) {
+    WatchProcessOutput();
+  }
 }
 
 }  // namespace chromeos

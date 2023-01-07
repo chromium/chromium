@@ -1,10 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/video_tutorials/video_tutorial_service_factory.h"
 
 #include "base/memory/singleton.h"
+#include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -21,6 +23,13 @@
 #include "components/version_info/version_info.h"
 #include "google_apis/google_api_keys.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
+#include "chrome/android/chrome_jni_headers/VideoTutorialsServiceUtils_jni.h"
+#endif
 
 namespace video_tutorials {
 namespace {
@@ -42,6 +51,18 @@ std::string GetGoogleAPIKey() {
       chrome::GetChannel() == version_info::Channel::STABLE;
   return is_stable_channel ? google_apis::GetAPIKey()
                            : google_apis::GetNonStableAPIKey();
+}
+
+std::string GetDefaultServerUrl() {
+  std::string default_server_url;
+#if BUILDFLAG(IS_ANDROID)
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jstring> j_server_url =
+      Java_VideoTutorialsServiceUtils_getDefaultServerUrl(env);
+  default_server_url =
+      base::android::ConvertJavaStringToUTF8(env, j_server_url);
+#endif
+  return default_server_url;
 }
 
 }  // namespace
@@ -95,7 +116,7 @@ VideoTutorialServiceFactory::BuildServiceInstanceFor(
   return CreateVideoTutorialService(
       db_provider, storage_dir, accept_languanges, GetCountryCode(),
       GetGoogleAPIKey(), client_version, url_loader_factory,
-      ProfileKey::FromSimpleFactoryKey(key)->GetPrefs());
+      GetDefaultServerUrl(), ProfileKey::FromSimpleFactoryKey(key)->GetPrefs());
 }
 
 }  // namespace video_tutorials

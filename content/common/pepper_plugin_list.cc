@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,19 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_plugin_info.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/pepper_plugin_info.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
 
 namespace content {
@@ -25,8 +28,31 @@ namespace {
 // The maximum number of plugins allowed to be registered from command line.
 const size_t kMaxPluginsToRegisterFromCommandLine = 64;
 
+// Returns true if the plugin can be registered from the command line.
+bool IsAllowedFromCommandLine(const ContentPluginInfo& plugin) {
+  // TODO(crbug.com/1134683): Empty the allowlist.
+  static constexpr auto kMimeTypeAllowlist =
+      base::MakeFixedFlatSet<base::StringPiece>({
+          "application/x-blink-deprecated-test-plugin",
+          "application/x-blink-test-plugin",
+          "application/x-ppapi-tests",
+      });
+
+  bool allowed = true;
+
+  DCHECK_GE(plugin.mime_types.size(), 1u);
+  for (const auto& mime_type : plugin.mime_types) {
+    if (!kMimeTypeAllowlist.contains(mime_type.mime_type)) {
+      allowed = false;
+      DVLOG(1) << "MIME type not allowed: " << mime_type.mime_type;
+    }
+  }
+
+  return allowed;
+}
+
 // Appends any plugins from the command line to the given vector.
-void ComputePluginsFromCommandLine(std::vector<PepperPluginInfo>* plugins) {
+void ComputePluginsFromCommandLine(std::vector<ContentPluginInfo>* plugins) {
   // On Linux, once we're sandboxed, we can't know if a plugin is available or
   // not. But (on Linux) this function is always called once before we're
   // sandboxed. So when this function is called for the first time we set a
@@ -79,7 +105,7 @@ void ComputePluginsFromCommandLine(std::vector<PepperPluginInfo>* plugins) {
     std::vector<std::string> name_parts = base::SplitString(
         parts[0], "#", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-    PepperPluginInfo plugin;
+    ContentPluginInfo plugin;
     plugin.is_out_of_process = out_of_process;
     plugin.path = base::FilePath::FromUTF8Unsafe(name_parts[0]);
 
@@ -121,14 +147,15 @@ void ComputePluginsFromCommandLine(std::vector<PepperPluginInfo>* plugins) {
     // Command-line plugins get full permissions.
     plugin.permissions = ppapi::PERMISSION_ALL_BITS;
 
-    plugins->push_back(plugin);
+    if (IsAllowedFromCommandLine(plugin))
+      plugins->push_back(plugin);
   }
 }
 
 }  // namespace
 
 bool MakePepperPluginInfo(const WebPluginInfo& webplugin_info,
-                          PepperPluginInfo* pepper_info) {
+                          ContentPluginInfo* pepper_info) {
   if (!webplugin_info.is_pepper_plugin())
     return false;
 
@@ -145,8 +172,8 @@ bool MakePepperPluginInfo(const WebPluginInfo& webplugin_info,
   return true;
 }
 
-void ComputePepperPluginList(std::vector<PepperPluginInfo>* plugins) {
-  GetContentClient()->AddPepperPlugins(plugins);
+void ComputePepperPluginList(std::vector<ContentPluginInfo>* plugins) {
+  GetContentClient()->AddPlugins(plugins);
   ComputePluginsFromCommandLine(plugins);
 }
 

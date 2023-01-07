@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<script src="../../../resources/js-test.js"></script>
 <style>
 #layer {
   position: relative;
@@ -23,7 +22,7 @@
 <script src="../../../resources/js-test.js"></script>
 <script src="../../../resources/run-after-layout-and-paint.js"></script>
 <script>
-  jsTestIsAsync = true;
+  window.jsTestIsAsync = true;
   description("Make sure we don't crash when a layer with a touch event handler becomes non-composited");
 
   var layer = document.getElementById('layer');

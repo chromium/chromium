@@ -32,7 +32,7 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
@@ -116,25 +116,22 @@ TEST(AnimatedWebPTests, verifyAnimationParametersTransparentImage) {
   const int kCanvasHeight = 29;
   const AnimParam kFrameParameters[] = {
       {0, 0, 11, 29, ImageFrame::kDisposeKeep,
-       ImageFrame::kBlendAtopPreviousFrame,
-       base::TimeDelta::FromMilliseconds(1000), true},
+       ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(1000), true},
       {2, 10, 7, 17, ImageFrame::kDisposeKeep,
-       ImageFrame::kBlendAtopPreviousFrame,
-       base::TimeDelta::FromMilliseconds(500), true},
+       ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(500), true},
       {2, 2, 7, 16, ImageFrame::kDisposeKeep,
-       ImageFrame::kBlendAtopPreviousFrame,
-       base::TimeDelta::FromMilliseconds(1000), true},
+       ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(1000), true},
   };
 
-  for (size_t i = 0; i < base::size(kFrameParameters); ++i) {
+  for (size_t i = 0; i < std::size(kFrameParameters); ++i) {
     const ImageFrame* const frame = decoder->DecodeFrameBufferAtIndex(i);
     EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
     EXPECT_EQ(kCanvasWidth, frame->Bitmap().width());
     EXPECT_EQ(kCanvasHeight, frame->Bitmap().height());
-    EXPECT_EQ(kFrameParameters[i].x_offset, frame->OriginalFrameRect().X());
-    EXPECT_EQ(kFrameParameters[i].y_offset, frame->OriginalFrameRect().Y());
-    EXPECT_EQ(kFrameParameters[i].width, frame->OriginalFrameRect().Width());
-    EXPECT_EQ(kFrameParameters[i].height, frame->OriginalFrameRect().Height());
+    EXPECT_EQ(kFrameParameters[i].x_offset, frame->OriginalFrameRect().x());
+    EXPECT_EQ(kFrameParameters[i].y_offset, frame->OriginalFrameRect().y());
+    EXPECT_EQ(kFrameParameters[i].width, frame->OriginalFrameRect().width());
+    EXPECT_EQ(kFrameParameters[i].height, frame->OriginalFrameRect().height());
     EXPECT_EQ(kFrameParameters[i].disposal_method, frame->GetDisposalMethod());
     EXPECT_EQ(kFrameParameters[i].alpha_blend_source,
               frame->GetAlphaBlendSource());
@@ -142,7 +139,7 @@ TEST(AnimatedWebPTests, verifyAnimationParametersTransparentImage) {
     EXPECT_EQ(kFrameParameters[i].has_alpha, frame->HasAlpha());
   }
 
-  EXPECT_EQ(base::size(kFrameParameters), decoder->FrameCount());
+  EXPECT_EQ(std::size(kFrameParameters), decoder->FrameCount());
   EXPECT_EQ(kAnimationLoopInfinite, decoder->RepetitionCount());
 }
 
@@ -160,28 +157,24 @@ TEST(AnimatedWebPTests,
   const int kCanvasHeight = 87;
   const AnimParam kFrameParameters[] = {
       {4, 10, 33, 32, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopPreviousFrame,
-       base::TimeDelta::FromMilliseconds(1000), true},
+       ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(1000), true},
       {34, 30, 33, 32, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopPreviousFrame,
-       base::TimeDelta::FromMilliseconds(1000), true},
+       ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(1000), true},
       {62, 50, 32, 32, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopPreviousFrame,
-       base::TimeDelta::FromMilliseconds(1000), true},
+       ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(1000), true},
       {10, 54, 32, 33, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopPreviousFrame,
-       base::TimeDelta::FromMilliseconds(1000), true},
+       ImageFrame::kBlendAtopPreviousFrame, base::Milliseconds(1000), true},
   };
 
-  for (size_t i = 0; i < base::size(kFrameParameters); ++i) {
+  for (size_t i = 0; i < std::size(kFrameParameters); ++i) {
     const ImageFrame* const frame = decoder->DecodeFrameBufferAtIndex(i);
     EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
     EXPECT_EQ(kCanvasWidth, frame->Bitmap().width());
     EXPECT_EQ(kCanvasHeight, frame->Bitmap().height());
-    EXPECT_EQ(kFrameParameters[i].x_offset, frame->OriginalFrameRect().X());
-    EXPECT_EQ(kFrameParameters[i].y_offset, frame->OriginalFrameRect().Y());
-    EXPECT_EQ(kFrameParameters[i].width, frame->OriginalFrameRect().Width());
-    EXPECT_EQ(kFrameParameters[i].height, frame->OriginalFrameRect().Height());
+    EXPECT_EQ(kFrameParameters[i].x_offset, frame->OriginalFrameRect().x());
+    EXPECT_EQ(kFrameParameters[i].y_offset, frame->OriginalFrameRect().y());
+    EXPECT_EQ(kFrameParameters[i].width, frame->OriginalFrameRect().width());
+    EXPECT_EQ(kFrameParameters[i].height, frame->OriginalFrameRect().height());
     EXPECT_EQ(kFrameParameters[i].disposal_method, frame->GetDisposalMethod());
     EXPECT_EQ(kFrameParameters[i].alpha_blend_source,
               frame->GetAlphaBlendSource());
@@ -189,7 +182,7 @@ TEST(AnimatedWebPTests,
     EXPECT_EQ(kFrameParameters[i].has_alpha, frame->HasAlpha());
   }
 
-  EXPECT_EQ(base::size(kFrameParameters), decoder->FrameCount());
+  EXPECT_EQ(std::size(kFrameParameters), decoder->FrameCount());
   EXPECT_EQ(kAnimationLoopInfinite, decoder->RepetitionCount());
 }
 
@@ -206,28 +199,24 @@ TEST(AnimatedWebPTests, verifyAnimationParametersBlendOverwrite) {
   const int kCanvasHeight = 87;
   const AnimParam kFrameParameters[] = {
       {4, 10, 33, 32, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopBgcolor, base::TimeDelta::FromMilliseconds(1000),
-       true},
+       ImageFrame::kBlendAtopBgcolor, base::Milliseconds(1000), true},
       {34, 30, 33, 32, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopBgcolor, base::TimeDelta::FromMilliseconds(1000),
-       true},
+       ImageFrame::kBlendAtopBgcolor, base::Milliseconds(1000), true},
       {62, 50, 32, 32, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopBgcolor, base::TimeDelta::FromMilliseconds(1000),
-       true},
+       ImageFrame::kBlendAtopBgcolor, base::Milliseconds(1000), true},
       {10, 54, 32, 33, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopBgcolor, base::TimeDelta::FromMilliseconds(1000),
-       true},
+       ImageFrame::kBlendAtopBgcolor, base::Milliseconds(1000), true},
   };
 
-  for (size_t i = 0; i < base::size(kFrameParameters); ++i) {
+  for (size_t i = 0; i < std::size(kFrameParameters); ++i) {
     const ImageFrame* const frame = decoder->DecodeFrameBufferAtIndex(i);
     EXPECT_EQ(ImageFrame::kFrameComplete, frame->GetStatus());
     EXPECT_EQ(kCanvasWidth, frame->Bitmap().width());
     EXPECT_EQ(kCanvasHeight, frame->Bitmap().height());
-    EXPECT_EQ(kFrameParameters[i].x_offset, frame->OriginalFrameRect().X());
-    EXPECT_EQ(kFrameParameters[i].y_offset, frame->OriginalFrameRect().Y());
-    EXPECT_EQ(kFrameParameters[i].width, frame->OriginalFrameRect().Width());
-    EXPECT_EQ(kFrameParameters[i].height, frame->OriginalFrameRect().Height());
+    EXPECT_EQ(kFrameParameters[i].x_offset, frame->OriginalFrameRect().x());
+    EXPECT_EQ(kFrameParameters[i].y_offset, frame->OriginalFrameRect().y());
+    EXPECT_EQ(kFrameParameters[i].width, frame->OriginalFrameRect().width());
+    EXPECT_EQ(kFrameParameters[i].height, frame->OriginalFrameRect().height());
     EXPECT_EQ(kFrameParameters[i].disposal_method, frame->GetDisposalMethod());
     EXPECT_EQ(kFrameParameters[i].alpha_blend_source,
               frame->GetAlphaBlendSource());
@@ -235,7 +224,7 @@ TEST(AnimatedWebPTests, verifyAnimationParametersBlendOverwrite) {
     EXPECT_EQ(kFrameParameters[i].has_alpha, frame->HasAlpha());
   }
 
-  EXPECT_EQ(base::size(kFrameParameters), decoder->FrameCount());
+  EXPECT_EQ(std::size(kFrameParameters), decoder->FrameCount());
   EXPECT_EQ(kAnimationLoopInfinite, decoder->RepetitionCount());
 }
 
@@ -350,23 +339,18 @@ TEST(AnimatedWebPTests, frameIsCompleteAndDuration) {
   EXPECT_EQ(2u, decoder->FrameCount());
   EXPECT_FALSE(decoder->Failed());
   EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(0));
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1000),
-            decoder->FrameDurationAtIndex(0));
+  EXPECT_EQ(base::Milliseconds(1000), decoder->FrameDurationAtIndex(0));
   EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(1));
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(500),
-            decoder->FrameDurationAtIndex(1));
+  EXPECT_EQ(base::Milliseconds(500), decoder->FrameDurationAtIndex(1));
 
   decoder->SetData(data_buffer.get(), true);
   EXPECT_EQ(3u, decoder->FrameCount());
   EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(0));
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1000),
-            decoder->FrameDurationAtIndex(0));
+  EXPECT_EQ(base::Milliseconds(1000), decoder->FrameDurationAtIndex(0));
   EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(1));
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(500),
-            decoder->FrameDurationAtIndex(1));
+  EXPECT_EQ(base::Milliseconds(500), decoder->FrameDurationAtIndex(1));
   EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(2));
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1000),
-            decoder->FrameDurationAtIndex(2));
+  EXPECT_EQ(base::Milliseconds(1000), decoder->FrameDurationAtIndex(2));
 }
 
 TEST(AnimatedWebPTests, updateRequiredPreviousFrameAfterFirstDecode) {
@@ -514,6 +498,9 @@ TEST(StaticWebPTests, incrementalDecode) {
   TestByteByByteDecode(&CreateWEBPDecoder,
                        "/images/resources/crbug.364830.webp", 1u,
                        kAnimationNone);
+  TestByteByByteDecode(&CreateWEBPDecoder,
+                       "/images/resources/size-failure.b186640109.webp", 1u,
+                       kAnimationNone);
 }
 
 TEST(StaticWebPTests, isSizeAvailable) {
@@ -522,6 +509,9 @@ TEST(StaticWebPTests, isSizeAvailable) {
                               520u, true, kAnimationNone);
   TestByteByByteSizeAvailable(&CreateWEBPDecoder, "/images/resources/test.webp",
                               30u, false, kAnimationNone);
+  TestByteByByteSizeAvailable(&CreateWEBPDecoder,
+                              "/images/resources/size-failure.b186640109.webp",
+                              25u, false, kAnimationNone);
 }
 
 TEST(StaticWebPTests, notAnimated) {

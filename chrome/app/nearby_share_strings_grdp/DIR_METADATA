@@ -1,3 +1,4 @@
-monorail: {
-  component: "UI>Browser>Sharing>Nearby"
+buganizer {
+  component_id: 1131838
 }
+team_email: "chromeos-cross-device-eng@google.com "

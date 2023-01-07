@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/c/pp_completion_callback.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_resource.h"
@@ -31,6 +30,10 @@ namespace proxy {
 class PPAPI_PROXY_EXPORT PluginResourceTracker : public ResourceTracker {
  public:
   PluginResourceTracker();
+
+  PluginResourceTracker(const PluginResourceTracker&) = delete;
+  PluginResourceTracker& operator=(const PluginResourceTracker&) = delete;
+
   ~PluginResourceTracker() override;
 
   // Given a host resource, maps it to an existing plugin resource ID if it
@@ -62,8 +65,6 @@ class PPAPI_PROXY_EXPORT PluginResourceTracker : public ResourceTracker {
   HostResourceMap host_resource_map_;
 
   std::unordered_set<PP_Resource> abandoned_resources_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginResourceTracker);
 };
 
 }  // namespace proxy

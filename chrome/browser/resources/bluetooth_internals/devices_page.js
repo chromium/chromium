@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
  *     chrome://bluetooth-internals/.
  */
 
+import {DeviceInfo} from './device.mojom-webui.js';
 import {DeviceCollection} from './device_collection.js';
 import {DeviceTable} from './device_table.js';
 import {Page} from './page.js';
@@ -48,11 +49,19 @@ export class DevicesPage extends Page {
 
   /**
    * Updates the inspect status of the given |deviceInfo| in the device table.
-   * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
+   * @param {!DeviceInfo} deviceInfo
    * @param {boolean} isInspecting
    */
   setInspecting(deviceInfo, isInspecting) {
     this.deviceTable.setInspecting(deviceInfo, isInspecting);
+  }
+
+  /**
+   * If Bluetooth is currently powered off do not show start discovery button.
+   * @param {boolean} powered
+   */
+  updatedScanButtonVisibility(powered) {
+    this.scanBtn_.hidden = !powered;
   }
 
   setScanStatus(status) {

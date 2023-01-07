@@ -1,0 +1,42 @@
+<style include="scanning-shared">
+  scan-settings-section {
+    --scan-setting-section-height: 40px;
+  }
+
+  #checkboxDiv {
+    align-items: center;
+    color: var(--scanning-multi-page-checkbox-text-color);
+    cursor: pointer;
+    display: flex;
+    font-family: var(--scanning-multi-page-checkbox-font-family);
+    font-size: var(--scanning-multi-page-checkbox-font-size);
+    line-height: var(--scanning-multi-page-checkbox-line-height);
+    margin-top: -16px;
+    width: 200px;
+  }
+
+  #checkboxText {
+    margin-inline-start: 8px;
+  }
+
+  cr-checkbox {
+    --cr-checkbox-size: 20px;
+  }
+</style>
+<scan-settings-section>
+  <span slot="label"></span>
+  <div slot="settings">
+    <div id="checkboxDiv" on-click="onCheckboxClick_">
+      <cr-checkbox class="no-label" checked="{{multiPageScanChecked}}"
+          disabled="[[disabled]]"
+          aria-description="[[i18n('multiPageCheckboxText')]]">
+          <span part="label-container">
+            [[i18n('multiPageCheckboxAriaLabel')]]
+          </span>
+      </cr-checkbox>
+      <span id="checkboxText" aria-hidden="true">
+        [[i18n('multiPageCheckboxText')]]
+      </span>
+    </div>
+  </div>
+</scan-settings-section>

@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -180,7 +180,9 @@ def expr_from_exposure(exposure,
     #         feature_selector-1st-phase-term
     #         feature_selector-2nd-phase-term))
     # which can be represented in more details as:
-    #   (and secure_context_term
+    #   (and cross_origin_isolated_term
+    #        isolated_application_term
+    #        secure_context_term
     #        uncond_exposed_term
     #        (or
     #         (and feature_selector.IsAll()  # 1st phase; all enabled
@@ -190,6 +192,8 @@ def expr_from_exposure(exposure,
     #         (or exposed_selector_term      # 2nd phase; any selected
     #             feature_selector_term)))
     # where
+    #   cross_origin_isolated_term represents [CrossOriginIsolated]
+    #   isolated_application_term represents [IsolatedApplication]
     #   secure_context_term represents [SecureContext=F1]
     #   uncond_exposed_term represents [Exposed=(G1, G2)]
     #   cond_exposed_term represents [Exposed(G1 F1, G2 F2)]
@@ -215,6 +219,18 @@ def expr_from_exposure(exposure,
             features)
         return _Expr("${{feature_selector}}.IsAnyOf({})".format(
             ", ".join(feature_tokens)))
+
+    # [CrossOriginIsolated]
+    if exposure.only_in_coi_contexts:
+        cross_origin_isolated_term = _Expr("${is_cross_origin_isolated}")
+    else:
+        cross_origin_isolated_term = _Expr(True)
+
+    # [IsolatedApplication]
+    if exposure.only_in_isolated_application_contexts:
+        isolated_application_term = _Expr("${is_isolated_application}")
+    else:
+        isolated_application_term = _Expr(True)
 
     # [SecureContext]
     if exposure.only_in_secure_contexts is True:
@@ -254,8 +270,19 @@ def expr_from_exposure(exposure,
                 or matched_global_count > 0)
     else:
         for entry in exposure.global_names_and_features:
-            pred_term = _Expr("${{execution_context}}->{}()".format(
-                GLOBAL_NAME_TO_EXECUTION_CONTEXT_TEST[entry.global_name]))
+            try:
+                execution_context_check = GLOBAL_NAME_TO_EXECUTION_CONTEXT_TEST[
+                    entry.global_name]
+            except KeyError:
+                # We don't currently have a general way of checking the exposure
+                # of [TargetOfExposed] exposure. If this is actually a global,
+                # add it to GLOBAL_NAME_TO_EXECUTION_CONTEXT_CHECK.
+                return _Expr(
+                    "(NOTREACHED() << \"{} exposure test is not supported at runtime\", false)"
+                    .format(entry.global_name))
+
+            pred_term = _Expr(
+                "${{execution_context}}->{}()".format(execution_context_check))
             if not entry.feature:
                 uncond_exposed_terms.append(pred_term)
             else:
@@ -286,6 +313,8 @@ def expr_from_exposure(exposure,
 
     # Build an expression.
     top_level_terms = []
+    top_level_terms.append(cross_origin_isolated_term)
+    top_level_terms.append(isolated_application_term)
     top_level_terms.append(secure_context_term)
     if uncond_exposed_terms:
         top_level_terms.append(expr_or(uncond_exposed_terms))
@@ -296,6 +325,8 @@ def expr_from_exposure(exposure,
             top_level_terms.append(expr_or(cond_exposed_terms))
         if feature_enabled_terms:
             top_level_terms.append(expr_and(feature_enabled_terms))
+        if context_enabled_terms:
+            top_level_terms.append(expr_or(context_enabled_terms))
         return expr_and(top_level_terms)
 
     all_enabled_terms = [_Expr("${feature_selector}.IsAll()")]
@@ -313,7 +344,9 @@ def expr_from_exposure(exposure,
     if exposed_selector_terms:
         selector_terms.append(expr_or(exposed_selector_terms))
     if feature_selector_names:
-        selector_terms.append(ref_selected(feature_selector_names))
+        # Remove duplicates
+        selector_terms.append(ref_selected(sorted(
+            set(feature_selector_names))))
 
     terms = []
     terms.append(expr_and(all_enabled_terms))

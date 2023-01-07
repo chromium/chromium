@@ -1,0 +1,18 @@
+<!--
+@SCRIPT:
+  table.accessibilityRows
+  column:= table.AXChildren[1]
+  column.accessibilityRows
+  tree.accessibilityRows
+  not_applicable.accessibilityRows
+-->
+<!DOCTYPE html>
+<div id="table" role="table">
+  <div role="row">
+    <span role="cell">column 1</span>
+  </div>
+</div>
+<div role="tree" id="tree">
+   <div role="treeitem"></div>
+</div>
+<div id="not_applicable"></div>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -23,14 +22,26 @@ namespace {
 const int kMaxLowEntropySize = 8000;
 
 // Generates a new non-identifying entropy source used to seed persistent
-// activities. Using a NoDestructor so that the new low entropy source value
-// will only be generated on first access. And thus, even though we may write
-// the new low entropy source value to prefs multiple times, it stays the same
+// activities. Make it static so that the new low entropy source value will
+// only be generated on first access. And thus, even though we may write the
+// new low entropy source value to prefs multiple times, it stays the same
 // value.
 int GenerateLowEntropySource() {
-  static const base::NoDestructor<int> low_entropy_source(
-      [] { return base::RandInt(0, kMaxLowEntropySize - 1); }());
-  return *low_entropy_source;
+  static const int low_entropy_source =
+      base::RandInt(0, kMaxLowEntropySize - 1);
+  ;
+  return low_entropy_source;
+}
+
+// Generates a new non-identifying low entropy source using the same method
+// that's used for the actual low entropy source. This one, however, is only
+// used for statistical validation, and *not* for randomization or experiment
+// assignment.
+int GeneratePseudoLowEntropySource() {
+  static const int pseudo_low_entropy_source =
+      base::RandInt(0, kMaxLowEntropySize - 1);
+  ;
+  return pseudo_low_entropy_source;
 }
 
 }  // namespace
@@ -45,6 +56,7 @@ constexpr int EntropyState::kLowEntropySourceNotSet;
 void EntropyState::ClearPrefs(PrefService* local_state) {
   local_state->ClearPref(prefs::kMetricsLowEntropySource);
   local_state->ClearPref(prefs::kMetricsOldLowEntropySource);
+  local_state->ClearPref(prefs::kMetricsPseudoLowEntropySource);
 }
 
 // static
@@ -52,6 +64,8 @@ void EntropyState::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kMetricsLowEntropySource,
                                 kLowEntropySourceNotSet);
   registry->RegisterIntegerPref(prefs::kMetricsOldLowEntropySource,
+                                kLowEntropySourceNotSet);
+  registry->RegisterIntegerPref(prefs::kMetricsPseudoLowEntropySource,
                                 kLowEntropySourceNotSet);
 }
 
@@ -82,6 +96,11 @@ int EntropyState::GetLowEntropySource() {
   return low_entropy_source_;
 }
 
+int EntropyState::GetPseudoLowEntropySource() {
+  UpdateLowEntropySources();
+  return pseudo_low_entropy_source_;
+}
+
 int EntropyState::GetOldLowEntropySource() {
   UpdateLowEntropySources();
   return old_low_entropy_source_;
@@ -90,14 +109,16 @@ int EntropyState::GetOldLowEntropySource() {
 void EntropyState::UpdateLowEntropySources() {
   // The default value for |low_entropy_source_| and the default pref value are
   // both |kLowEntropySourceNotSet|, which indicates the value has not been set.
-  if (low_entropy_source_ != kLowEntropySourceNotSet)
+  if (low_entropy_source_ != kLowEntropySourceNotSet &&
+      pseudo_low_entropy_source_ != kLowEntropySourceNotSet)
     return;
 
   const base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
   // Only try to load the value from prefs if the user did not request a reset.
   // Otherwise, skip to generating a new value. We would have already returned
-  // if |low_entropy_source_| were set, ensuring we only do this reset on the
-  // first call to UpdateLowEntropySources().
+  // if both |low_entropy_source_| and |pseudo_low_entropy_source_| were set,
+  // ensuring we only do this reset on the first call to
+  // UpdateLowEntropySources().
   if (!command_line->HasSwitch(switches::kResetVariationState)) {
     int new_pref = local_state_->GetInteger(prefs::kMetricsLowEntropySource);
     if (IsValidLowEntropySource(new_pref))
@@ -105,6 +126,10 @@ void EntropyState::UpdateLowEntropySources() {
     int old_pref = local_state_->GetInteger(prefs::kMetricsOldLowEntropySource);
     if (IsValidLowEntropySource(old_pref))
       old_low_entropy_source_ = old_pref;
+    int pseudo_pref =
+        local_state_->GetInteger(prefs::kMetricsPseudoLowEntropySource);
+    if (IsValidLowEntropySource(pseudo_pref))
+      pseudo_low_entropy_source_ = pseudo_pref;
   }
 
   // If the new source is missing or corrupt (or requested to be reset), then
@@ -116,6 +141,17 @@ void EntropyState::UpdateLowEntropySources() {
     DCHECK(IsValidLowEntropySource(low_entropy_source_));
     local_state_->SetInteger(prefs::kMetricsLowEntropySource,
                              low_entropy_source_);
+  }
+
+  // If the pseudo source is missing or corrupt (or requested to be reset), then
+  // (re)create it. Don't bother recreating the old source if it's corrupt,
+  // because we only keep the old source around for consistency, and we can't
+  // maintain a consistent value if we recreate it.
+  if (pseudo_low_entropy_source_ == kLowEntropySourceNotSet) {
+    pseudo_low_entropy_source_ = GeneratePseudoLowEntropySource();
+    DCHECK(IsValidLowEntropySource(pseudo_low_entropy_source_));
+    local_state_->SetInteger(prefs::kMetricsPseudoLowEntropySource,
+                             pseudo_low_entropy_source_);
   }
 
   // If the old source was present but corrupt (or requested to be reset), then

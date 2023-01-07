@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 3060 tests; 2974 PASS, 86 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 3098 tests; 3012 PASS, 86 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS head.title: 38 tests
 PASS head.lang: 38 tests
 PASS head.dir: 68 tests
@@ -172,6 +172,7 @@ PASS meta.tabIndex: 26 tests
 PASS meta.name: 38 tests
 PASS meta.httpEquiv (<meta http-equiv>): 38 tests
 PASS meta.content: 38 tests
+PASS meta.media: 38 tests
 PASS meta.scheme: 38 tests
 PASS style.title: 38 tests
 PASS style.lang: 38 tests

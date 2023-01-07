@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -41,13 +41,13 @@ Benchmark timings are output by telemetry to stdout and written to
 """
 
 import json
-import optparse
+import argparse
 import os
 import shutil
 import sys
 import tempfile
 import time
-import urllib
+import six.moves.urllib_parse # pylint: disable=import-error
 
 REPOSITORY_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..', '..', '..'))
@@ -67,9 +67,11 @@ import lighttpd_server
 from pylib import constants
 from telemetry import android
 from telemetry import benchmark
-from telemetry import story
+from telemetry import story as story_module
 from telemetry.web_perf import timeline_based_measurement
 # pylint: enable=wrong-import-position
+
+# pylint: disable=super-with-arguments
 
 
 def GetDevice():
@@ -87,7 +89,7 @@ class CronetPerfTestAndroidStory(android.AndroidStory):
     self._device = device
     config = perf_test_utils.GetConfig(device)
     device.RemovePath(config['DONE_FILE'], force=True)
-    self.url ='http://dummy/?'+urllib.urlencode(config)
+    self.url ='http://dummy/?' + six.moves.urllib_parse.urlencode(config)
     start_intent = intent.Intent(
         package=perf_test_utils.APP_PACKAGE,
         activity=perf_test_utils.APP_ACTIVITY,
@@ -105,13 +107,13 @@ class CronetPerfTestAndroidStory(android.AndroidStory):
         # |is_app_ready_predicate| to not wait.
         is_app_ready_predicate=lambda app: True)
 
-  def Run(self, shared_user_story_state):
+  def Run(self, shared_state):
     while not self._device.FileExists(
         perf_test_utils.GetConfig(self._device)['DONE_FILE']):
       time.sleep(1.0)
 
 
-class CronetPerfTestStorySet(story.StorySet):
+class CronetPerfTestStorySet(story_module.StorySet):
 
   def __init__(self, device):
     super(CronetPerfTestStorySet, self).__init__()
@@ -129,7 +131,7 @@ class CronetPerfTestMeasurement(
     super(CronetPerfTestMeasurement, self).__init__(options)
     self._device = device
 
-  def WillRunStory(self, platform):
+  def WillRunStory(self, platform, story=None):
     # Skip parent implementation which doesn't apply to Cronet perf test app as
     # it is not a browser with a timeline interface.
     pass
@@ -150,7 +152,7 @@ class CronetPerfTestMeasurement(
 class CronetPerfTestBenchmark(benchmark.Benchmark):
   # Benchmark implementation spawning off Cronet perf test measurement and
   # StorySet.
-  SUPPORTED_PLATFORMS = [story.expectations.ALL_ANDROID]
+  SUPPORTED_PLATFORMS = [story_module.expectations.ALL_ANDROID]
 
   def __init__(self, max_failures=None):
     super(CronetPerfTestBenchmark, self).__init__(max_failures)
@@ -164,13 +166,13 @@ class CronetPerfTestBenchmark(benchmark.Benchmark):
 
 
 def main():
-  parser = optparse.OptionParser()
-  parser.add_option('--output-format', default='html',
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--output-format', default='html',
                    help='The output format of the results file.')
-  parser.add_option('--output-dir', default=None,
+  parser.add_argument('--output-dir', default=None,
                    help='The directory for the output file. Default value is '
                         'the base directory of this script.')
-  options, _ = parser.parse_args()
+  args, _ = parser.parse_known_args()
   constants.SetBuildType(perf_test_utils.BUILD_TYPE)
   # Install APK
   device = GetDevice()
@@ -206,9 +208,9 @@ def main():
   sys.argv.insert(1, 'run')
   sys.argv.insert(2, 'run.CronetPerfTestBenchmark')
   sys.argv.insert(3, '--browser=android-system-chrome')
-  sys.argv.insert(4, '--output-format=' + options.output_format)
-  if options.output_dir:
-    sys.argv.insert(5, '--output-dir=' + options.output_dir)
+  sys.argv.insert(4, '--output-format=' + args.output_format)
+  if args.output_dir:
+    sys.argv.insert(5, '--output-dir=' + args.output_dir)
   benchmark_runner.main(runner_config)
   # Shutdown.
   quic_server.ShutdownQuicServer()

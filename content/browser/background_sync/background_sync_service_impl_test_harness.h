@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,14 @@
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/test/fake_mojo_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace content {
+
+const char kServiceWorkerOrigin[] = "https://example.com/";
 
 class BackgroundSyncServiceImplTestHarness : public testing::Test {
  public:
@@ -50,12 +52,20 @@ class BackgroundSyncServiceImplTestHarness : public testing::Test {
                             blink::mojom::BackgroundSyncError error);
 
   BackgroundSyncServiceImplTestHarness();
+
+  BackgroundSyncServiceImplTestHarness(
+      const BackgroundSyncServiceImplTestHarness&) = delete;
+  BackgroundSyncServiceImplTestHarness& operator=(
+      const BackgroundSyncServiceImplTestHarness&) = delete;
+
   ~BackgroundSyncServiceImplTestHarness() override;
 
   void SetUp() override;
   void TearDown() override;
 
  protected:
+  BrowserContext* browser_context();
+
   scoped_refptr<BackgroundSyncContextImpl> background_sync_context_;
   blink::mojom::SyncRegistrationOptionsPtr default_sync_registration_;
   std::vector<std::string> mojo_bad_messages_;
@@ -81,8 +91,6 @@ class BackgroundSyncServiceImplTestHarness : public testing::Test {
   std::unique_ptr<EmbeddedWorkerTestHelper> embedded_worker_helper_;
   std::unique_ptr<StoragePartitionImpl> storage_partition_impl_;
   scoped_refptr<ServiceWorkerRegistration> sw_registration_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncServiceImplTestHarness);
 };
 
 }  // namespace content

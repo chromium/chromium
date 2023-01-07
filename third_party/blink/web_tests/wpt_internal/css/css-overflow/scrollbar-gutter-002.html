@@ -21,10 +21,6 @@
         background: deepskyblue;
     }
 
-    .container.force {
-        scrollbar-gutter: stable force;
-    }
-
     .content {
         height: 100%;
         width: 100%;
@@ -101,32 +97,12 @@
         test(function() {
             let container = document.getElementById('container_hidden_ltr');
             let content = document.getElementById('content_hidden_ltr');
-            assert_equals(container.scrollWidth, 200, "hidden/stable scrollWidth");
-            assert_equals(container.clientWidth, 200, "hidden/stable clientWidth");
+            assert_equals(container.scrollWidth, 180, "hidden/stable scrollWidth");
+            assert_equals(container.clientWidth, 180, "hidden/stable clientWidth");
             assert_equals(container.offsetLeft, content.offsetLeft, "hidden/stable offsetLeft");
             assert_equals(container.clientWidth, content.clientWidth, "hidden/stable clientWidth");
-            assert_equals(container.offsetWidth, content.offsetWidth, "hidden/stable offsetWidth");
+            assert_not_equals(container.offsetWidth, content.offsetWidth, "hidden/stable offsetWidth");
         }, "overflow hidden, scrollbar-gutter stable, horizontal-tb, ltr");
-
-        test(function() {
-            let container = document.getElementById('container_visible_force_ltr');
-            let content = document.getElementById('content_visible_force_ltr');
-            assert_equals(container.scrollWidth, 180, "visible/stable force scrollWidth");
-            assert_equals(container.clientWidth, 180, "visible/stable force clientWidth");
-            assert_equals(container.offsetLeft, content.offsetLeft, "visible/stable force offsetLeft");
-            assert_equals(container.clientWidth, content.clientWidth, "visible/stable force clientWidth");
-            assert_not_equals(container.offsetWidth, content.offsetWidth, "visible/stable force offsetWidth");
-        }, "overflow visible, scrollbar-gutter stable force, horizontal-tb, ltr");
-
-        test(function() {
-            let container = document.getElementById('container_hidden_force_ltr');
-            let content = document.getElementById('content_hidden_force_ltr');
-            assert_equals(container.scrollWidth, 180, "hidden/stable force scrollWidth");
-            assert_equals(container.clientWidth, 180, "hidden/stable force clientWidth");
-            assert_equals(container.offsetLeft, content.offsetLeft, "hidden/stable force offsetLeft");
-            assert_equals(container.clientWidth, content.clientWidth, "hidden/stable force clientWidth");
-            assert_not_equals(container.offsetWidth, content.offsetWidth, "hidden/stable force offsetWidth");
-        }, "overflow hidden, scrollbar-gutter stable force, horizontal-tb, ltr");
 
         // rtl
 
@@ -163,32 +139,12 @@
         test(function() {
             let container = document.getElementById('container_hidden_rtl');
             let content = document.getElementById('content_hidden_rtl');
-            assert_equals(container.scrollWidth, 200, "hidden/stable scrollWidth");
-            assert_equals(container.clientWidth, 200, "hidden/stable clientWidth");
-            assert_equals(container.offsetLeft, content.offsetLeft, "hidden/stable offsetLeft");
+            assert_equals(container.scrollWidth, 180, "hidden/stable scrollWidth");
+            assert_equals(container.clientWidth, 180, "hidden/stable clientWidth");
+            assert_equals(container.offsetLeft, content.offsetLeft - 20, "hidden/stable offsetLeft");
             assert_equals(container.clientWidth, content.clientWidth, "hidden/stable clientWidth");
-            assert_equals(container.offsetWidth, content.offsetWidth, "hidden/stable offsetWidth");
+            assert_not_equals(container.offsetWidth, content.offsetWidth, "hidden/stable offsetWidth");
         }, "overflow hidden, scrollbar-gutter stable, horizontal-tb, rtl");
-
-        test(function() {
-            let container = document.getElementById('container_visible_force_rtl');
-            let content = document.getElementById('content_visible_force_rtl');
-            assert_equals(container.scrollWidth, 180, "visible/stable force scrollWidth");
-            assert_equals(container.clientWidth, 180, "visible/stable force clientWidth");
-            assert_equals(container.offsetLeft, content.offsetLeft - 20, "visible/stable force offsetLeft");
-            assert_equals(container.clientWidth, content.clientWidth, "visible/stable force clientWidth");
-            assert_not_equals(container.offsetWidth, content.offsetWidth, "visible/stable force offsetWidth");
-        }, "overflow visible, scrollbar-gutter stable force, horizontal-tb, rtl");
-
-        test(function() {
-            let container = document.getElementById('container_hidden_force_rtl');
-            let content = document.getElementById('content_hidden_force_rtl');
-            assert_equals(container.scrollWidth, 180, "hidden/stable force scrollWidth");
-            assert_equals(container.clientWidth, 180, "hidden/stable force clientWidth");
-            assert_equals(container.offsetLeft, content.offsetLeft - 20, "hidden/stable force offsetLeft");
-            assert_equals(container.clientWidth, content.clientWidth, "hidden/stable force clientWidth");
-            assert_not_equals(container.offsetWidth, content.offsetWidth, "hidden/stable force offsetWidth");
-        }, "overflow hidden, scrollbar-gutter stable force, horizontal-tb, rtl");
 
         done();
     }
@@ -214,16 +170,6 @@
         <div class="content" id="content_hidden_ltr">overflow-y: hidden</div>
     </div>
 
-    scrollbar-gutter: stable force
-
-    <div class="container classic ltr visible force" id="container_visible_force_ltr">
-        <div class="content" id="content_visible_force_ltr">overflow: visible (force)</div>
-    </div>
-
-    <div class="container classic ltr hidden force" id="container_hidden_force_ltr">
-        <div class="content" id="content_hidden_force_ltr">overflow-y: hidden (force)</div>
-    </div>
-
     direction: rtl
 
     <div class="container classic rtl auto" id="container_auto_rtl">
@@ -240,16 +186,6 @@
 
     <div class="container classic rtl hidden" id="container_hidden_rtl">
         <div class="content" id="content_hidden_rtl">overflow-x: hidden</div>
-    </div>
-
-    scrollbar-gutter: stable force
-
-    <div class="container classic rtl visible force" id="container_visible_force_rtl">
-        <div class="content" id="content_visible_force_rtl">overflow: visible</div>
-    </div>
-
-    <div class="container classic rtl hidden force" id="container_hidden_force_rtl">
-        <div class="content" id="content_hidden_force_rtl">overflow-x: hidden</div>
     </div>
 
 </body>

@@ -35,15 +35,8 @@ labeled as such (*Needs=Feedback* or *Needs=TestConfirmation*).
   terms](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=omnibox+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+%E2%80%9Comni+box%E2%80%9D+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+omnibar+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+%E2%80%9Comni+bar%E2%80%9D+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+locationbar+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+%E2%80%9Clocation+bar%E2%80%9D+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+addressbar+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+%E2%80%9Caddress+bar%E2%80%9D+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner&colspec=ID+Pri+M+Stars+ReleaseBlock+Component+Status+Owner+Summary+OS+Modified&x=m&y=releaseblock&cells=ids)
   to see if any should be moved to the omnibox component and triaged.  ([This
   scan can be limited to those filed in the last week, i.e., since the last
-  check.](https://bugs.chromium.org/p/chromium/issues/list?colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Component%20Status%20Owner%20Summary%20OS%20Modified&x=m&y=releaseblock&cells=ids&q=omnibox%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14%20OR%20“omni%20box”%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14%20OR%20omnibar%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14%20OR%20“omni%20bar”%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14%20OR%20locationbar%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14%20OR%20“location%20bar”%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14%20OR%20addressbar%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14%20OR%20“address%20bar”%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14&can=2))
-* Every week on Thursday, the triage engineer looks over all alerts sent to
-  [chrome-omnibox-team-alerts@](https://groups.google.com/a/google.com/forum/#!forum/chrome-omnibox-team-alerts)
-  and, for each, either files a bug or replies to the message indicating why
-  filing a bug is not appropriate.  These bugs should be set to "Untriaged",
-  so that the current triage engineer sees them, until a root cause has been
-  identified and an owner assigned (or closed.) More details available
-  [below](#How-to-triage-alerts).
-* Every week on Thursday, the triage engineer should
+  check.](https://bugs.chromium.org/p/chromium/issues/list?colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Component%20Status%20Owner%20Summary%20OS%20Modified&x=m&y=releaseblock&cells=ids&q=omnibox%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20%E2%80%9Comni%20box%E2%80%9D%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20omnibar%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20%E2%80%9Comni%20bar%E2%80%9D%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20locationbar%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20%E2%80%9Clocation%20bar%E2%80%9D%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20addressbar%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20%E2%80%9Caddress%20bar%E2%80%9D%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14&can=2&sort=-modified))
+* Every week on Tuesday, the triage engineer should also
   look over [all bugs with *Needs=Feedback*](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=component%3AUI%3EBrowser%3EOmnibox+Needs%3DFeedback+&colspec=ID+Pri+M+Stars+ReleaseBlock+Component+Status+Owner+Summary+OS+Modified&x=m&y=releaseblock&cells=ids)
   and should take action on those that have been sitting for too long.
   * If there's been no feedback over a week since the label was added, ping the
@@ -51,6 +44,13 @@ labeled as such (*Needs=Feedback* or *Needs=TestConfirmation*).
     provide feedback.
   * If there's been no feedback for over a week since the last ping, and no one
     can reproduce the issue, close it as WontFix.
+* Every week on Thursday, the triage engineer looks over all alerts sent to
+  [chrome-omnibox-team-alerts@](https://groups.google.com/a/google.com/forum/#!forum/chrome-omnibox-team-alerts)
+  and, for each, either files a bug or replies to the message indicating why
+  filing a bug is not appropriate.  These bugs should be set to "Untriaged",
+  so that the current triage engineer sees them, until a root cause has been
+  identified and an owner assigned (or closed.) More details available
+  [below](#How-to-triage-alerts).
 
 Other team members are welcome to triage a bug if they see it before the the
 triage engineer.  The triager owner will cycle among team members by
@@ -175,6 +175,7 @@ The subcomponents of omnibox bugs include:
 | --- | --- |
 | UI>Browser>Omnibox>AiS | Answers in Suggest. |
 | UI>Browser>Omnibox>DocumentSuggest | Documents provided by Google Drive |
+| UI>Browser>Omnibox>NTPRealbox | Suggestions displayed in the searchbox on the New Tab Page. |
 | UI>Browser>Omnibox>SecurityIndicators | Secure/insecure icons; triaged by another team. |
 | UI>Browser>Omnibox>TabToSearch | Custom search engines, omnibox extensions, etc. (including adding, triggering, ranking, etc. for them). |
 | UI>Browser>Omnibox>ZeroSuggest | Suggestions displayed on omnibox focus (both contextual and non-contextual). |
@@ -238,7 +239,7 @@ The [timeline dashboard](http://go/uma-timeline) is your friend,
 especially the split by channel, split by platform, split by milestone, and
 split by version features.  Some tips on how to investigate using the timeline
 dashboard:
- 
+
 * If the regression is on Dev, see if you can spot it on Canary.  That can
   usually indicate a narrow regression range.  This can usually be done unless
   the histogram is too noisy.

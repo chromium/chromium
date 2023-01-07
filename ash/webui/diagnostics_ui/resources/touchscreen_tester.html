@@ -1,0 +1,30 @@
+<style>
+  #canvas-dialog {
+    --cr-dialog-width: 100%;
+    --cr-dialog-height: 100%;
+  }
+
+  #canvas-dialog [slot='body'] {
+    overflow: hidden;
+    padding: 0;
+  }
+</style>
+
+<!-- TODO(wenyu): Strings need translation. -->
+<cr-dialog id="intro-dialog">
+  <div slot="body">
+    Test your touchscreen
+    <div>
+      Test your touchscreen by tapping or swiping the screen with up to 5
+      fingers. Wipe down your screen with a microfiber cloth for a more
+      accurate test.
+    </div>
+    <cr-button on-click="onStartClick">Get started</cr-button>
+  </div>
+</cr-dialog>
+
+<cr-dialog id="canvas-dialog">
+  <div slot="body">
+    <canvas id="canvas"></canvas>
+  </div>
+</cr-dialog>

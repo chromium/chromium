@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -112,7 +112,7 @@ public class DownloadForegroundServiceTest {
         mForegroundService = new MockDownloadForegroundService();
         mNotification =
                 NotificationWrapperBuilderFactory
-                        .createNotificationWrapperBuilder(true /* preferCompat */,
+                        .createNotificationWrapperBuilder(
                                 ChromeChannelDefinitions.ChannelId.DOWNLOADS)
                         .setSmallIcon(org.chromium.chrome.R.drawable.ic_file_download_white_24dp)
                         .setContentTitle("fakeContentTitle")

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include "ash/ash_export.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/system/power/power_button_controller.h"
-#include "base/macros.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/view.h"
 
 namespace ash {
+enum class ShutdownReason;
 class PowerButtonMenuView;
 
 // PowerButtonMenuScreenView is the top-level view of power button menu UI. It
@@ -26,6 +26,7 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   // |show_animation_done| is a callback for when the animation that shows the
   // power menu has finished.
   PowerButtonMenuScreenView(
+      ShutdownReason shutdown_reason,
       PowerButtonController::PowerButtonPosition power_button_position,
       double power_button_offset,
       base::RepeatingClosure show_animation_done);
@@ -93,7 +94,10 @@ class ASH_EXPORT PowerButtonMenuScreenView : public views::View,
   double power_button_offset_percentage_ = 0.f;
 
   // The origin of the menu bounds in different screen orientations.
-  std::unordered_map<OrientationLockType, gfx::Point> menu_bounds_origins_;
+  std::unordered_map<chromeos::OrientationType, gfx::Point>
+      menu_bounds_origins_;
+
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 }  // namespace ash

@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/webdatabase/database_basic_types.h"
 #include "third_party/blink/renderer/modules/webdatabase/sql_result_set_row_list.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -48,19 +49,19 @@ class SQLResultSet final : public ScriptWrappable {
   SQLResultSetRowList* rows() const;
 
   int64_t insertId(ExceptionState&) const;
-  int rowsAffected() const;
+  int64_t rowsAffected() const;
 
   // For internal (non-JS) use
   void SetInsertId(int64_t);
-  void SetRowsAffected(int);
+  void SetRowsAffected(int64_t);
   bool IsValid() { return is_valid_; }
 
  private:
   Member<SQLResultSetRowList> rows_;
-  int64_t insert_id_;
-  int rows_affected_;
-  bool insert_id_set_;
-  bool is_valid_;
+  int64_t insert_id_ = 0;
+  int64_t rows_affected_ = 0;
+  bool insert_id_set_ = false;
+  bool is_valid_ = false;
 };
 
 }  // namespace blink

@@ -38,6 +38,7 @@
 <script type="text/javascript">
 var movingDiv = document.getElementById('scrollable');
 promise_test (async () => {
+  await waitForCompositorCommit();
   var scrollbarX = movingDiv.offsetLeft + movingDiv.offsetWidth - 5;
   var scrollThumbSafeOffset = 80;
   var scrollbarY = movingDiv.offsetTop + scrollThumbSafeOffset;
@@ -52,6 +53,7 @@ promise_test (async () => {
    'scrollable div below should be slightly scrolled down if successful.');
 
 promise_test (async () => {
+  await waitForCompositorCommit();
   var scrollbarY = movingDiv.offsetTop + movingDiv.offsetHeight - 5;
   var scrollThumbSafeOffset = 80;
   var scrollbarX = movingDiv.offsetLeft + scrollThumbSafeOffset;

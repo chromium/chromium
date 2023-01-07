@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,14 @@
 #define ASH_SYSTEM_ACCESSIBILITY_AUTOCLICK_MENU_VIEW_H_
 
 #include "ash/public/cpp/accessibility_controller_enums.h"
-#include "ash/system/tray/tray_bubble_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/box_layout_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
+
+namespace views {
+class Button;
+class Separator;
+}  // namespace views
 
 namespace ash {
 
@@ -52,6 +56,7 @@ class AutoclickMenuView : public views::BoxLayoutView {
   FloatingMenuButton* scroll_button_ = nullptr;
   FloatingMenuButton* pause_button_ = nullptr;
   FloatingMenuButton* position_button_ = nullptr;
+  views::Separator* separator_ = nullptr;
 
   // The most recently selected event_type_ excluding kNoAction. This is used
   // when the pause button is selected in order to unpause and reset to the

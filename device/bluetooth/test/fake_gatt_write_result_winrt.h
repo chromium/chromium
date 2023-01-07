@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 
 namespace device {
@@ -25,6 +24,10 @@ class FakeGattWriteResultWinrt
   FakeGattWriteResultWinrt();
   explicit FakeGattWriteResultWinrt(
       BluetoothGattService::GattErrorCode error_code);
+
+  FakeGattWriteResultWinrt(const FakeGattWriteResultWinrt&) = delete;
+  FakeGattWriteResultWinrt& operator=(const FakeGattWriteResultWinrt&) = delete;
+
   ~FakeGattWriteResultWinrt() override;
 
   // IGattWriteResult:
@@ -39,8 +42,6 @@ class FakeGattWriteResultWinrt
       GattCommunicationStatus status_ = ABI::Windows::Devices::Bluetooth::
           GenericAttributeProfile::GattCommunicationStatus_Success;
   uint8_t protocol_error_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeGattWriteResultWinrt);
 };
 
 }  // namespace device

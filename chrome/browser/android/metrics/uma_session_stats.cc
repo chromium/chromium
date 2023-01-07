@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,16 +8,15 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/android/chrome_jni_headers/UmaSessionStats_jni.h"
-#include "chrome/browser/android/metrics/android_incognito_session_durations_service.h"
-#include "chrome/browser/android/metrics/android_incognito_session_durations_service_factory.h"
-#include "chrome/browser/android/metrics/android_profile_session_durations_service.h"
-#include "chrome/browser/android/metrics/android_profile_session_durations_service_factory.h"
+#include "chrome/browser/android/metrics/android_session_durations_service.h"
+#include "chrome/browser/android/metrics/android_session_durations_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
@@ -29,6 +28,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/ukm_service.h"
+#include "components/variations/synthetic_trial_registry.h"
 #include "content/public/browser/browser_thread.h"
 
 using base::android::ConvertJavaStringToUTF8;
@@ -40,15 +40,6 @@ namespace {
 // This is used/read only within the ChromeMetricsServiceAccessor methods.
 bool g_metrics_consent_for_testing = false;
 }  // namespace
-
-UmaSessionStats::UmaSessionStats() = default;
-UmaSessionStats::~UmaSessionStats() = default;
-
-// static
-UmaSessionStats* UmaSessionStats::GetInstance() {
-  static base::NoDestructor<UmaSessionStats> instance;
-  return instance.get();
-}
 
 void UmaSessionStats::UmaResumeSession(JNIEnv* env,
                                        const JavaParamRef<jobject>& obj) {
@@ -77,17 +68,8 @@ void UmaSessionStats::UmaResumeSession(JNIEnv* env,
     if (ukm_service)
       ukm_service->OnAppEnterForeground();
 
-    AndroidProfileSessionDurationsService* psd_service =
-        AndroidProfileSessionDurationsServiceFactory::GetForActiveUserProfile();
-    if (psd_service) {
-      psd_service->OnAppEnterForeground(
-          session_time_tracker_.session_start_time());
-    }
-
-    auto* isd_service(AndroidIncognitoSessionDurationsServiceFactory::
-                          GetForActiveUserProfile());
-    if (isd_service)
-      isd_service->OnAppEnterForeground();
+    AndroidSessionDurationsServiceFactory::OnAppEnterForeground(
+        session_time_tracker_.session_start_time());
   }
 }
 
@@ -113,15 +95,7 @@ void UmaSessionStats::UmaEndSession(JNIEnv* env,
     if (ukm_service)
       ukm_service->OnAppEnterBackground();
 
-    AndroidProfileSessionDurationsService* psd_service =
-        AndroidProfileSessionDurationsServiceFactory::GetForActiveUserProfile();
-    if (psd_service)
-      psd_service->OnAppEnterBackground(duration);
-
-    auto* isd_service(AndroidIncognitoSessionDurationsServiceFactory::
-                          GetForActiveUserProfile());
-    if (isd_service)
-      isd_service->OnAppEnterBackground();
+    AndroidSessionDurationsServiceFactory::OnAppEnterBackground(duration);
 
     // Note: Keep the line below after |metrics->OnAppEnterBackground()|.
     // Otherwise, |ProvideCurrentSessionData()| may report a small timeslice of
@@ -130,21 +104,51 @@ void UmaSessionStats::UmaEndSession(JNIEnv* env,
   }
 }
 
+void UmaSessionStats::ProvideCurrentSessionData() {
+  base::UmaHistogramBoolean("Session.IsActive", active_session_count_ != 0);
+
+  // We record Session.Background.TotalDuration here to ensure each UMA log
+  // containing a background session contains this histogram.
+  session_time_tracker_.AccumulateBackgroundSessionTime();
+  session_time_tracker_.ReportBackgroundSessionTime();
+}
+
+// static
+UmaSessionStats* UmaSessionStats::GetInstance() {
+  static base::NoDestructor<UmaSessionStats> instance;
+  return instance.get();
+}
+
+// static
+bool UmaSessionStats::HasVisibleActivity() {
+  return Java_UmaSessionStats_hasVisibleActivity(
+      base::android::AttachCurrentThread());
+}
+
 // Called on startup. If there is an activity, do nothing because a foreground
 // session will be created naturally. Otherwise, begin recording a background
 // session.
+// static
 void UmaSessionStats::OnStartup() {
-  if (!Java_UmaSessionStats_hasVisibleActivity(
-          base::android::AttachCurrentThread())) {
+  if (!UmaSessionStats::HasVisibleActivity()) {
     GetInstance()->session_time_tracker_.BeginBackgroundSession();
   }
 }
 
-bool UmaSessionStats::SessionTimeTracker::BeginForegroundSession() {
-  AccumulateBackgroundSessionTime();
-  background_session_start_time_ = {};
-  session_start_time_ = base::TimeTicks::Now();
-  return !background_session_accumulated_time_.is_zero();
+// static
+void UmaSessionStats::RegisterSyntheticFieldTrial(
+    const std::string& trial_name,
+    const std::string& group_name,
+    variations::SyntheticTrialAnnotationMode annotation_mode) {
+  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      trial_name, group_name, annotation_mode);
+}
+
+// static
+bool UmaSessionStats::IsBackgroundSessionStartForTesting() {
+  return !GetInstance()
+              ->session_time_tracker_.background_session_start_time()
+              .is_null();
 }
 
 void UmaSessionStats::SessionTimeTracker::AccumulateBackgroundSessionTime() {
@@ -167,10 +171,17 @@ void UmaSessionStats::SessionTimeTracker::ReportBackgroundSessionTime() {
   // This histogram is used in analysis to determine if an uploaded log
   // represents background activity. For this reason, this histogram may be
   // recorded more than once per 'background session'.
-  UMA_HISTOGRAM_CUSTOM_TIMES(
-      "Session.Background.TotalDuration", background_session_accumulated_time_,
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromHours(24), 50);
+  UMA_HISTOGRAM_CUSTOM_TIMES("Session.Background.TotalDuration",
+                             background_session_accumulated_time_,
+                             base::Milliseconds(1), base::Hours(24), 50);
   background_session_accumulated_time_ = base::TimeDelta();
+}
+
+bool UmaSessionStats::SessionTimeTracker::BeginForegroundSession() {
+  AccumulateBackgroundSessionTime();
+  background_session_start_time_ = {};
+  session_start_time_ = base::TimeTicks::Now();
+  return !background_session_accumulated_time_.is_zero();
 }
 
 base::TimeDelta UmaSessionStats::SessionTimeTracker::EndForegroundSession() {
@@ -180,34 +191,12 @@ base::TimeDelta UmaSessionStats::SessionTimeTracker::EndForegroundSession() {
   // DesktopSessionDurationTracker::EndSession.
   UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration", duration);
   UMA_HISTOGRAM_CUSTOM_TIMES("Session.TotalDurationMax1Day", duration,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromHours(24), 50);
+                             base::Milliseconds(1), base::Hours(24), 50);
   return duration;
 }
 
 void UmaSessionStats::SessionTimeTracker::BeginBackgroundSession() {
   background_session_start_time_ = base::TimeTicks::Now();
-}
-
-// static
-void UmaSessionStats::RegisterSyntheticFieldTrial(
-    const std::string& trial_name,
-    const std::string& group_name) {
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(trial_name,
-                                                            group_name);
-}
-
-bool UmaSessionStats::IsBackgroundSessionStartForTesting() {
-  return !GetInstance()
-              ->session_time_tracker_.background_session_start_time()
-              .is_null();
-}
-
-void UmaSessionStats::ProvideCurrentSessionData() {
-  // We record Session.Background.TotalDuration here to ensure each UMA log
-  // containing a background session contains this histogram.
-  session_time_tracker_.AccumulateBackgroundSessionTime();
-  session_time_tracker_.ReportBackgroundSessionTime();
 }
 
 // Updates metrics reporting state managed by native code. This should only be
@@ -305,7 +294,7 @@ static void JNI_UmaSessionStats_RegisterExternalExperiment(
           : variations::SyntheticTrialRegistry::kDoNotOverrideExistingIds;
 
   g_browser_process->metrics_service()
-      ->synthetic_trial_registry()
+      ->GetSyntheticTrialRegistry()
       ->RegisterExternalExperiments(fallback_study_name, experiment_ids,
                                     override_mode);
 }
@@ -313,10 +302,13 @@ static void JNI_UmaSessionStats_RegisterExternalExperiment(
 static void JNI_UmaSessionStats_RegisterSyntheticFieldTrial(
     JNIEnv* env,
     const JavaParamRef<jstring>& jtrial_name,
-    const JavaParamRef<jstring>& jgroup_name) {
+    const JavaParamRef<jstring>& jgroup_name,
+    int annotation_mode) {
   std::string trial_name(ConvertJavaStringToUTF8(env, jtrial_name));
   std::string group_name(ConvertJavaStringToUTF8(env, jgroup_name));
-  UmaSessionStats::RegisterSyntheticFieldTrial(trial_name, group_name);
+  UmaSessionStats::RegisterSyntheticFieldTrial(
+      trial_name, group_name,
+      static_cast<variations::SyntheticTrialAnnotationMode>(annotation_mode));
 }
 
 static void JNI_UmaSessionStats_RecordTabCountPerLoad(

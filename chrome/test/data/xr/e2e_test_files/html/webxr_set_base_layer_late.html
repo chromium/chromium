@@ -19,6 +19,7 @@ WebXR page that only submits one frame.
       onImmersiveXRFrameCallback = function() {
         assert_true(frame_expected);
         frame_count++;
+        console.log('Got immersive frame number ' + frame_count);
       };
 
       function setBaseLayer() {

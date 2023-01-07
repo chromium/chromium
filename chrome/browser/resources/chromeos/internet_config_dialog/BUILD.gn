@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,15 +22,14 @@ if (optimize_webui) {
     input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
     out_manifest = "$target_gen_dir/$build_manifest"
     excludes = [
-      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom.html",
-      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js",
-      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js",
-      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
-      "chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js",
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js",
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js",
+      "chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-webui.js",
     ]
 
     deps = [
       ":preprocess_generated",
+      "../../../../../ui/webui/resources:library",
       "../../../../../ui/webui/resources:preprocess",
     ]
   }
@@ -62,17 +61,17 @@ preprocess_if_expr("preprocess_generated") {
 
 js_type_check("closure_compile") {
   is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args
   deps = [ ":internet_config_dialog" ]
 }
 
 js_library("internet_config_dialog") {
   deps = [
-    "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo.m",
-    "//ui/webui/resources/cr_components/chromeos/network:network_config.m",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources/network:cr_policy_network_behavior_mojo",
+    "//ash/webui/common/resources/network:network_config",
+    "//ash/webui/common/resources/network:onc_mojo",
+    "//ui/webui/resources/js:assert",
   ]
 
   externs_list = [
@@ -80,6 +79,7 @@ js_library("internet_config_dialog") {
     "$externs_path/chrome_extensions.js",
     "$externs_path/chrome_send.js",
     "$externs_path/networking_private.js",
+    "//ui/webui/resources/cr_elements/cr_dialog/cr_dialog_externs.js",
   ]
   extra_sources = [ "$interfaces_path/networking_private_interface.js" ]
 }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -94,10 +94,20 @@ public class WebXrVrTestFramework extends WebXrTestFramework {
      * @param webContents The WebContents of the tab to enter the immersive session in.
      */
     @Override
-    public void enterSessionWithUserGestureOrFail(WebContents webContents) {
+    public void enterSessionWithUserGestureOrFail(
+            WebContents webContents, boolean needsCameraPermission) {
         runJavaScriptOrFail(
                 "sessionTypeToRequest = sessionTypes.IMMERSIVE", POLL_TIMEOUT_LONG_MS, webContents);
+
+        boolean willPromptForCamera =
+                needsCameraPermission && permissionRequestWouldTriggerPrompt("camera");
+
         enterSessionWithUserGesture(webContents);
+
+        if (willPromptForCamera) {
+            PermissionUtils.waitForPermissionPrompt();
+            PermissionUtils.acceptPermissionPrompt();
+        }
 
         pollJavaScriptBooleanOrFail("sessionInfos[sessionTypes.IMMERSIVE].currentSession != null",
                 POLL_TIMEOUT_LONG_MS, webContents);

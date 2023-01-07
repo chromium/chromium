@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -23,7 +22,7 @@ namespace i18n {
 class FileUtilICUTest : public PlatformTest {
 };
 
-#if defined(OS_POSIX) && !defined(OS_APPLE)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 
 // On linux, file path is parsed and filtered as UTF-8.
 static const struct GoodBadPairLinux {
@@ -91,11 +90,11 @@ static const struct FileUtilICUTestCases {
     {u"     ", u"-   -", u"_     _"},
     {u".    ", u"-   -", u"_.    _"}};
 
-#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_POSIX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_POSIX)
 
 TEST_F(FileUtilICUTest, ReplaceIllegalCharactersInPathTest) {
   for (auto i : kIllegalCharacterCases) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     std::wstring bad_name = UTF16ToWide(i.bad_name);
     ReplaceIllegalCharactersInPath(&bad_name, '-');
     EXPECT_EQ(UTF16ToWide(i.good_name_with_dash), bad_name);
@@ -109,7 +108,7 @@ TEST_F(FileUtilICUTest, ReplaceIllegalCharactersInPathTest) {
 
 TEST_F(FileUtilICUTest, ReplaceIllegalCharactersInPathWithIllegalEndCharTest) {
   for (auto i : kIllegalCharacterCases) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     std::wstring bad_name = UTF16ToWide(i.bad_name);
     ReplaceIllegalCharactersInPath(&bad_name, ' ');
     EXPECT_EQ(UTF16ToWide(i.good_name_with_space), bad_name);
@@ -149,7 +148,7 @@ static const struct normalize_name_encoding_test_cases {
 };
 
 TEST_F(FileUtilICUTest, NormalizeFileNameEncoding) {
-  for (size_t i = 0; i < size(kNormalizeFileNameEncodingTestCases); i++) {
+  for (size_t i = 0; i < std::size(kNormalizeFileNameEncodingTestCases); i++) {
     FilePath path(kNormalizeFileNameEncodingTestCases[i].original_path);
     NormalizeFileNameEncoding(&path);
     EXPECT_EQ(FilePath(kNormalizeFileNameEncodingTestCases[i].normalized_path),

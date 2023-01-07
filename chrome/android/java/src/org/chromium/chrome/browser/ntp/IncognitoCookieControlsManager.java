@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.site_settings.CookieControlsServiceBridge;
 import org.chromium.chrome.browser.site_settings.CookieControlsServiceBridge.CookieControlsServiceObserver;
@@ -45,7 +46,6 @@ public class IncognitoCookieControlsManager
     private CookieControlsServiceBridge mServiceBridge;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private boolean mIsInitialized;
-    private boolean mShowCard;
     private boolean mChecked;
     private @CookieControlsEnforcement int mEnforcement = CookieControlsEnforcement.NO_ENFORCEMENT;
 
@@ -61,7 +61,6 @@ public class IncognitoCookieControlsManager
         if (mIsInitialized) return;
 
         mServiceBridge = new CookieControlsServiceBridge(this);
-        mShowCard = true;
         mIsInitialized = true;
     }
 
@@ -80,19 +79,10 @@ public class IncognitoCookieControlsManager
     }
 
     /**
-     * @return a boolean indicating if the card should be visible or not.
-     */
-    public boolean shouldShowCookieControlsCard() {
-        // TODO(crbug.com/1104836): This is always true. Remove this method and everything that
-        // depends on it.
-        return mShowCard;
-    }
-
-    /**
      * Tells the bridge to update itself if necessary.
      */
     public void updateIfNecessary() {
-        if (mShowCard) mServiceBridge.updateServiceIfNecessary();
+        if (mIsInitialized) mServiceBridge.updateServiceIfNecessary();
     }
 
     /**
@@ -118,7 +108,10 @@ public class IncognitoCookieControlsManager
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        if (isChecked != mChecked && (buttonView.getId() == R.id.cookie_controls_card_toggle)) {
+        boolean isCookieToggle = ChromeFeatureList.isEnabled(ChromeFeatureList.INCOGNITO_NTP_REVAMP)
+                ? buttonView.getId() == R.id.revamped_cookie_controls_card_toggle
+                : buttonView.getId() == R.id.cookie_controls_card_toggle;
+        if (isChecked != mChecked && isCookieToggle) {
             mServiceBridge.handleCookieControlsToggleChanged(isChecked);
         }
     }

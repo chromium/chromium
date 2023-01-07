@@ -1,6 +1,6 @@
 [document web]
 ++[combo box] haspopup:menu
-++[combo box]
+++[combo box] haspopup:listbox
 ++[combo box] haspopup:menu
 ++[combo box] haspopup:listbox
 ++[combo box] haspopup:grid

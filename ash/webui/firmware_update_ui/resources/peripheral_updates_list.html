@@ -1,0 +1,14 @@
+<style include="firmware-fonts firmware-shared">
+</style>
+<div id="container">
+  <template is="dom-if" if="[[!hasFirmwareUpdates_(firmwareUpdates_)]]">
+    <div id="upToDateText">[[i18n('upToDate')]]</div>
+  </template>
+  <dom-repeat id="updateList" items="[[firmwareUpdates_]]" as="update">
+    <template>
+      <update-card update="[[update]]"
+          disabled="[[!hasCheckedInitialInflightProgress_]]">
+      </update-card>
+    </template>
+  </dom-repeat>
+</div>

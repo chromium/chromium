@@ -1,0 +1,61 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("breadcrumbs") {
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/breadcrumbs/core",
+    "//components/infobars/content",
+    "//components/keyed_service/content",
+    "//components/security_state/content",
+    "//content/public/browser",
+  ]
+
+  sources = [
+    "breadcrumb_manager_keyed_service_factory.cc",
+    "breadcrumb_manager_keyed_service_factory.h",
+    "breadcrumb_manager_tab_helper.cc",
+    "breadcrumb_manager_tab_helper.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":breadcrumbs",
+    "//base",
+    "//chrome/test:test_support",
+    "//components/breadcrumbs/core",
+    "//components/crash/core/common:crash_key",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+
+  sources = [ "breadcrumb_manager_tab_helper_unittest.cc" ]
+
+  # Chrome on Fuchsia uses the system crash handler.
+  # TODO(crbug.com/1186718): Enable when the implementation is capable of
+  # including CrashKeys in reports.
+  if (!is_fuchsia) {
+    sources += [ "crash_reporter_breadcrumb_observer_unittest.cc" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    testonly = true
+    deps = [
+      ":breadcrumbs",
+      "//chrome/test:test_support",
+      "//components/breadcrumbs/core",
+    ]
+
+    sources = [ "breadcrumb_manager_tab_helper_desktop_browsertest.cc" ]
+  }
+}

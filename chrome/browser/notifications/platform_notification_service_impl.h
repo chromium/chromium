@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@
 #include <unordered_set>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_trigger_scheduler.h"
@@ -21,6 +22,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/platform_notification_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 class GURL;
@@ -55,6 +58,7 @@ class PlatformNotificationServiceImpl
   void DisplayNotification(
       const std::string& notification_id,
       const GURL& origin,
+      const GURL& document_url,
       const blink::PlatformNotificationData& notification_data,
       const blink::NotificationResources& notification_resources) override;
   void DisplayPersistentNotification(
@@ -91,37 +95,58 @@ class PlatformNotificationServiceImpl
                            DisplayNameForContextMessage);
   FRIEND_TEST_ALL_PREFIXES(PlatformNotificationServiceTest,
                            RecordNotificationUkmEvent);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
+      FindWebAppIconAndTitle_NoApp);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
+      FindWebAppIconAndTitle);
+
+  struct WebAppIconAndTitle {
+    gfx::ImageSkia icon;
+    std::u16string title;
+  };
 
   // KeyedService implementation.
   void Shutdown() override;
 
   // content_settings::Observer implementation.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
 
   static void DidGetBackgroundSourceId(
       base::OnceClosure recorded_closure,
       const content::NotificationDatabaseData& data,
-      base::Optional<ukm::SourceId> source_id);
+      absl::optional<ukm::SourceId> source_id);
 
   // Creates a new Web Notification-based Notification object. Should only be
-  // called when the notification is first shown.
+  // called when the notification is first shown. |web_app_hint_url| is used to
+  // find a corresponding web app, it can be a service worker scope or document
+  // url.
   message_center::Notification CreateNotificationFromData(
       const GURL& origin,
       const std::string& notification_id,
       const blink::PlatformNotificationData& notification_data,
-      const blink::NotificationResources& notification_resources) const;
+      const blink::NotificationResources& notification_resources,
+      const GURL& web_app_hint_url) const;
 
   // Returns a display name for an origin, to be used in the context message
   std::u16string DisplayNameForContextMessage(const GURL& origin) const;
+
+  // Finds the icon and title associated with |web_app_hint_url| when this
+  // is part of an installed experience, and the notification can be attributed
+  // as such.
+  absl::optional<WebAppIconAndTitle> FindWebAppIconAndTitle(
+      const GURL& web_app_hint_url) const;
 
   // Clears |closed_notifications_|. Should only be used for testing purposes.
   void ClearClosedNotificationsForTesting() { closed_notifications_.clear(); }
 
   // The profile for this instance or NULL if the initial profile has been
   // shutdown already.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Tracks the id of persistent notifications that have been closed
   // programmatically to avoid dispatching close events for them.

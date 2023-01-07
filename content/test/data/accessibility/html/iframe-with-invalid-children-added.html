@@ -1,0 +1,26 @@
+<!--
+@WAIT-FOR:done
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <iframe id="iframe" aria-label="Empty iframe"></iframe>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      const iframe = document.getElementById('iframe');
+      const label = document.createElement('label');
+      label.innerText = "label";
+      const input = document.createElement('input');
+      label.appendChild(input);
+      iframe.appendChild(label);
+      setTimeout(() => {
+        document.title = 'done';
+      }, 250);
+    }, 250);
+  });
+</script>
+
+</body>
+</html>

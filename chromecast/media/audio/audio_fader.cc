@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ AudioFader::AudioFader(AudioProvider* provider,
                        double playback_rate)
     : provider_(provider),
       // Ensure that fade_frames_ is a multiple of 4 to keep correct alignment.
-      fade_frames_(base::bits::Align(fade_frames, 4)),
+      fade_frames_(base::bits::AlignUp(fade_frames, 4)),
       num_channels_(provider_->num_channels()),
       sample_rate_(provider_->sample_rate()),
       playback_rate_(playback_rate) {
@@ -112,7 +112,16 @@ int AudioFader::FillFrames(int num_frames,
   if (complete) {
     CompleteFill(channel_data, filled_frames);
   } else {
-    IncompleteFill(channel_data, filled_frames);
+    if (state_ == State::kPlaying) {
+      int extra_frames =
+          std::max(filled_frames + buffered_frames_ - fade_frames_, 0);
+      for (size_t c = 0; c < num_channels_; ++c) {
+        fill_channel_data[c] = channel_data[c] + extra_frames;
+      }
+      IncompleteFill(fill_channel_data, filled_frames - extra_frames);
+    } else {
+      IncompleteFill(channel_data, filled_frames);
+    }
   }
 
   return filled_frames;

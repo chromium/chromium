@@ -8,8 +8,8 @@ bsep@chromium.org
 collinbaker@chromium.org
 connily@chromium.org
 corising@chromium.org
-cyan@chromium.org
 dfried@chromium.org
+dpenning@chromium.org
 ellyjones@chromium.org
 kylixrd@chromium.org
 msw@chromium.org
@@ -19,9 +19,12 @@ sky@chromium.org
 tbergquist@chromium.org
 
 per-file drag_and_drop_interactive_uitest.*=lukasza@chromium.org
-per-file drag_and_drop_interactive_uitest.*=paulmeyer@chromium.org
 per-file drag_and_drop_interactive_uitest.*=file://content/OWNERS
 
 per-file hung_renderer*=file://chrome/browser/ui/hung_renderer/OWNERS
 
+per-file intent_picker_*browsertest*=file://chrome/browser/apps/intent_helper/OWNERS
+
 per-file select_file_dialog_extension*=file://ui/file_manager/OWNERS
+
+per-file incognito_clear_browsing_data_dialog*=file://chrome/browser/incognito/OWNERS

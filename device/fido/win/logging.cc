@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,14 +40,14 @@ std::wstring Quoted(const wchar_t* in) {
 std::ostream& operator<<(std::ostream& out,
                          const WEBAUTHN_RP_ENTITY_INFORMATION& in) {
   return out << "{" << in.dwVersion << kSep << Quoted(in.pwszId) << kSep
-             << Quoted(in.pwszName) << kSep << Quoted(in.pwszIcon) << "}";
+             << Quoted(in.pwszName) << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
                          const WEBAUTHN_USER_ENTITY_INFORMATION& in) {
   return out << "{" << in.dwVersion << kSep << base::HexEncode(in.pbId, in.cbId)
-             << kSep << Quoted(in.pwszName) << kSep << Quoted(in.pwszIcon)
-             << kSep << Quoted(in.pwszDisplayName) << "}";
+             << kSep << Quoted(in.pwszName) << kSep
+             << Quoted(in.pwszDisplayName) << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,

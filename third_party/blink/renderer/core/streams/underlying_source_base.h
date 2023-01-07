@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,13 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
 class ReadableStreamDefaultControllerWithScriptScope;
+class ScriptState;
 
 class CORE_EXPORT UnderlyingSourceBase
     : public ScriptWrappable,
@@ -40,8 +39,10 @@ class CORE_EXPORT UnderlyingSourceBase
 
   ScriptValue type(ScriptState*) const;
 
-  // ExecutionContextLifecycleObserver
-  // TODO(ricea): Is this still useful?
+  // ExecutionContextLifecycleObserver implementation:
+
+  // This is needed to prevent stream operations being performed after the
+  // window or worker is destroyed.
   void ContextDestroyed() override;
 
  protected:

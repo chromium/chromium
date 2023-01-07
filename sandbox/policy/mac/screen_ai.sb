@@ -1,0 +1,21 @@
+; Copyright 2022 The Chromium Authors
+; Use of this source code is governed by a BSD-style license that can be
+; found in the LICENSE file.
+
+; --- The contents of common.sb implicitly included here. ---
+
+; Required to load the libscreen_ai.so binary downloaded by the component
+; updater.
+(define screen-ai-component-path "SCREEN_AI_COMPONENT_PATH")
+(allow file-read* (subpath (param screen-ai-component-path)))
+
+; Required to write debug data in temp folder. This is only enabled if
+; |ScreenAIDebugMode| feature is enabled.
+(define screen-ai-debug-mode "SCREEN_AI_DEBUG_MODE")
+(if (param-true? screen-ai-debug-mode)
+  (allow file-write*
+    (regex (string-append (regex-quote
+      (param darwin-user-temp-dir)) #"/csai_.+\..+")
+    )
+  )
+)

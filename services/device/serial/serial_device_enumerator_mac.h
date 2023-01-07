@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,10 @@
 #include <IOKit/IOKitLib.h>
 
 #include <map>
-#include <string>
 #include <utility>
 
 #include "base/mac/scoped_ionotificationportref.h"
 #include "base/mac/scoped_ioobject.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/unguessable_token.h"
 #include "services/device/serial/serial_device_enumerator.h"
@@ -24,6 +22,11 @@ namespace device {
 class SerialDeviceEnumeratorMac : public SerialDeviceEnumerator {
  public:
   SerialDeviceEnumeratorMac();
+
+  SerialDeviceEnumeratorMac(const SerialDeviceEnumeratorMac&) = delete;
+  SerialDeviceEnumeratorMac& operator=(const SerialDeviceEnumeratorMac&) =
+      delete;
+
   ~SerialDeviceEnumeratorMac() override;
 
  private:
@@ -40,8 +43,6 @@ class SerialDeviceEnumeratorMac : public SerialDeviceEnumerator {
   base::mac::ScopedIONotificationPortRef notify_port_;
   base::mac::ScopedIOObject<io_iterator_t> devices_added_iterator_;
   base::mac::ScopedIOObject<io_iterator_t> devices_removed_iterator_;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialDeviceEnumeratorMac);
 };
 
 }  // namespace device

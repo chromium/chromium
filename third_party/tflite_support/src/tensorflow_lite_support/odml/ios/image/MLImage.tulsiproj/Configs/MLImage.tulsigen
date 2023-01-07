@@ -1,0 +1,54 @@
+{
+  "sourceFilters" : [
+    "third_party/tensorflow_lite_support/odml/ios/image",
+    "third_party/tensorflow_lite_support/odml/ios/image/apis",
+    "third_party/tensorflow_lite_support/odml/ios/image/sources",
+    "third_party/tensorflow_lite_support/odml/ios/image/tests"
+  ],
+  "buildTargets" : [
+    "//third_party/tensorflow_lite_support/odml/ios/image:MLImage",
+    "//third_party/tensorflow_lite_support/odml/ios/image:tests"
+  ],
+  "projectName" : "MLImage",
+  "optionSet" : {
+    "LaunchActionPreActionScript" : {
+      "p" : "$(inherited)"
+    },
+    "BazelBuildStartupOptionsRelease" : {
+      "p" : "$(inherited)"
+    },
+    "BazelBuildOptionsRelease" : {
+      "p" : "$(inherited)"
+    },
+    "BazelBuildOptionsDebug" : {
+      "p" : "$(inherited)"
+    },
+    "EnvironmentVariables" : {
+      "p" : "$(inherited)"
+    },
+    "BuildActionPreActionScript" : {
+      "p" : "$(inherited)"
+    },
+    "CommandlineArguments" : {
+      "p" : "$(inherited)"
+    },
+    "TestActionPreActionScript" : {
+      "p" : "$(inherited)"
+    },
+    "BazelBuildStartupOptionsDebug" : {
+      "p" : "$(inherited)"
+    },
+    "BuildActionPostActionScript" : {
+      "p" : "$(inherited)"
+    },
+    "TestActionPostActionScript" : {
+      "p" : "$(inherited)"
+    },
+    "LaunchActionPostActionScript" : {
+      "p" : "$(inherited)"
+    }
+  },
+  "additionalFilePaths" : [
+    "third_party/tensorflow_lite_support/odml/ios/image/BUILD"
+  ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "extensions/common/mojom/frame.mojom.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
@@ -36,6 +35,10 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
  public:
   explicit ScriptInjectionManager(
       UserScriptSetManager* user_script_set_manager);
+
+  ScriptInjectionManager(const ScriptInjectionManager&) = delete;
+  ScriptInjectionManager& operator=(const ScriptInjectionManager&) = delete;
+
   virtual ~ScriptInjectionManager();
 
   // Notifies that a new render view has been created.
@@ -81,8 +84,7 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
   void OnPermitScriptInjectionHandled(ScriptInjection* injection);
 
   // UserScriptSetManager::Observer implementation.
-  void OnUserScriptsUpdated(
-      const std::set<mojom::HostID>& changed_hosts) override;
+  void OnUserScriptsUpdated(const mojom::HostID& changed_host) override;
 
   // Notifies that an RFOHelper should be removed.
   void RemoveObserver(RFOHelper* helper);
@@ -128,8 +130,6 @@ class ScriptInjectionManager : public UserScriptSetManager::Observer {
 
   base::ScopedObservation<UserScriptSetManager, UserScriptSetManager::Observer>
       user_script_set_manager_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptInjectionManager);
 };
 
 }  // namespace extensions

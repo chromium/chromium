@@ -451,6 +451,6 @@ test(() => {
   matrix3d.rotateAxisAngleSelf(0, 1, 0, -90);
   var expectedResult3 = new DOMMatrix([1, 2, 3, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
   assert_matrix_almost_equals(matrix3d, expectedResult3);
-}, "DOMMatrix 3d - rotateAxisAngleSelf()");
+}, "DOMMatrix 3d - rotateAxisAngleSelf() - do rotate -90,-90,-90");
 
 </script>

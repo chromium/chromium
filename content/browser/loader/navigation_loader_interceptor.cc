@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,9 +8,9 @@
 
 namespace content {
 
-base::Optional<SubresourceLoaderParams>
+absl::optional<SubresourceLoaderParams>
 NavigationLoaderInterceptor::MaybeCreateSubresourceLoaderParams() {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool NavigationLoaderInterceptor::MaybeCreateLoaderForResponse(

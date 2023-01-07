@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,17 +14,17 @@
 class OverlayResponseSupport {
  public:
   // Creates an OverlayResponseSupport that aggregates the support from
-  // the OverlayRequestSupports in |supports|.  Instances created with this
+  // the OverlayRequestSupports in `supports`.  Instances created with this
   // constructor will return true from IsResponseSupported() if any of the
-  // OverlayRequestSupports in |supports| returns true from
+  // OverlayRequestSupports in `supports` returns true from
   // IsResponseSupported() for the same response.
   OverlayResponseSupport(
       const std::vector<const OverlayResponseSupport*>& supports);
   virtual ~OverlayResponseSupport();
 
-  // Whether |response| is supported by this instance.  The default
+  // Whether `response` is supported by this instance.  The default
   // implementation returns true is any OverlayResponseSupport in
-  // |aggregated_support_| returns true, or false if |aggregated_support_| is
+  // `aggregated_support_` returns true, or false if `aggregated_support_` is
   // empty.
   virtual bool IsResponseSupported(OverlayResponse* response) const;
 

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/gpu/vaapi/vaapi_picture.h"
 #include "ui/gfx/geometry/size.h"
@@ -38,6 +37,10 @@ class MEDIA_GPU_EXPORT VaapiPictureFactory {
   };
 
   VaapiPictureFactory();
+
+  VaapiPictureFactory(const VaapiPictureFactory&) = delete;
+  VaapiPictureFactory& operator=(const VaapiPictureFactory&) = delete;
+
   virtual ~VaapiPictureFactory();
 
   // Creates a VaapiPicture of picture_buffer.size() associated with
@@ -82,8 +85,6 @@ class MEDIA_GPU_EXPORT VaapiPictureFactory {
 
   CreatePictureCB create_picture_cb_;
   bool needs_vpp_for_downloading_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(VaapiPictureFactory);
 };
 
 }  // namespace media

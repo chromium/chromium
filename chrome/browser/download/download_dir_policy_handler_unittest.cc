@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ namespace {
 
 const char* kUserIDHash = "deadbeef";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char* kRelativeToDriveRoot = "/home/";
 #endif
 
@@ -55,29 +55,25 @@ class DownloadDirPolicyHandlerTest
   scoped_refptr<policy::ConfigurationPolicyPrefStore> recommended_store_;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(DownloadDirPolicyHandlerTest, SetDownloadDirectory) {
   policy::PolicyMap policy;
-  EXPECT_FALSE(store_->GetValue(prefs::kPromptForDownload, NULL));
+  EXPECT_FALSE(store_->GetValue(prefs::kPromptForDownload, nullptr));
   policy.Set(policy::key::kDownloadDirectory, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
              base::Value(std::string()), nullptr);
   UpdateProviderPolicy(policy);
 
   // Setting a DownloadDirectory should disable the PromptForDownload pref.
-  const base::Value* value = NULL;
+  const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(prefs::kPromptForDownload, &value));
   ASSERT_TRUE(value);
-  bool prompt_for_download = true;
-  bool result = value->GetAsBoolean(&prompt_for_download);
-  ASSERT_TRUE(result);
-  EXPECT_FALSE(prompt_for_download);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
 }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToDrive) {
-  EXPECT_FALSE(store_->GetValue(prefs::kPromptForDownload, NULL));
+  EXPECT_FALSE(store_->GetValue(prefs::kPromptForDownload, nullptr));
 
   policy::PolicyMap policy;
   policy.Set(policy::key::kDownloadDirectory, policy::POLICY_LEVEL_MANDATORY,
@@ -86,31 +82,31 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToDrive) {
              nullptr);
   UpdateProviderPolicy(policy);
 
-  const base::Value* value = NULL;
-  bool prompt_for_download;
+  const base::Value* value = nullptr;
   EXPECT_TRUE(store_->GetValue(prefs::kPromptForDownload, &value));
   ASSERT_TRUE(value);
-  EXPECT_TRUE(value->GetAsBoolean(&prompt_for_download));
-  EXPECT_FALSE(prompt_for_download);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
 
-  bool disable_drive;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(store_->GetValue(drive::prefs::kDisableDrive, &value));
   ASSERT_TRUE(value);
-  EXPECT_TRUE(value->GetAsBoolean(&disable_drive));
-  EXPECT_FALSE(disable_drive);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_FALSE(value->GetBool());
+#endif
 
-  std::string download_directory;
   EXPECT_TRUE(store_->GetValue(prefs::kDownloadDefaultDirectory, &value));
   ASSERT_TRUE(value);
-  EXPECT_TRUE(value->GetAsString(&download_directory));
+  ASSERT_TRUE(value->is_string());
   EXPECT_EQ(download_dir_util::kDriveNamePolicyVariableName,
-            download_directory);
+            value->GetString());
 
   policy.Set(policy::key::kDownloadDirectory, policy::POLICY_LEVEL_MANDATORY,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
              base::Value(kUserIDHash), nullptr);
   UpdateProviderPolicy(policy);
-  EXPECT_FALSE(recommended_store_->GetValue(drive::prefs::kDisableDrive, NULL));
+  EXPECT_FALSE(
+      recommended_store_->GetValue(drive::prefs::kDisableDrive, nullptr));
 
   policy.Set(
       policy::key::kDownloadDirectory, policy::POLICY_LEVEL_RECOMMENDED,
@@ -120,29 +116,33 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToDrive) {
       nullptr);
   UpdateProviderPolicy(policy);
 
-  EXPECT_FALSE(recommended_store_->GetValue(prefs::kPromptForDownload, NULL));
-  EXPECT_FALSE(recommended_store_->GetValue(drive::prefs::kDisableDrive, NULL));
+  EXPECT_FALSE(
+      recommended_store_->GetValue(prefs::kPromptForDownload, nullptr));
+  EXPECT_FALSE(
+      recommended_store_->GetValue(drive::prefs::kDisableDrive, nullptr));
 
   EXPECT_TRUE(
       recommended_store_->GetValue(prefs::kDownloadDefaultDirectory, &value));
   ASSERT_TRUE(value);
-  EXPECT_TRUE(value->GetAsString(&download_directory));
+  ASSERT_TRUE(value->is_string());
   EXPECT_EQ(std::string(download_dir_util::kDriveNamePolicyVariableName) +
                 kRelativeToDriveRoot,
-            download_directory);
+            value->GetString());
 
   policy.Set(policy::key::kDownloadDirectory, policy::POLICY_LEVEL_RECOMMENDED,
              policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
              base::Value(kUserIDHash), nullptr);
   UpdateProviderPolicy(policy);
 
-  EXPECT_FALSE(recommended_store_->GetValue(prefs::kPromptForDownload, NULL));
-  EXPECT_FALSE(recommended_store_->GetValue(drive::prefs::kDisableDrive, NULL));
+  EXPECT_FALSE(
+      recommended_store_->GetValue(prefs::kPromptForDownload, nullptr));
+  EXPECT_FALSE(
+      recommended_store_->GetValue(drive::prefs::kDisableDrive, nullptr));
 
   EXPECT_TRUE(
       recommended_store_->GetValue(prefs::kDownloadDefaultDirectory, &value));
   ASSERT_TRUE(value);
-  EXPECT_TRUE(value->GetAsString(&download_directory));
-  EXPECT_EQ(kUserIDHash, download_directory);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(kUserIDHash, value->GetString());
 }
 #endif

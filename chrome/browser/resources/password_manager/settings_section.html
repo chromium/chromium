@@ -1,0 +1,33 @@
+<style include="shared-style cr-shared-style">
+  cr-link-row {
+    --cr-icon-button-margin-start: 0px;
+  }
+
+  cr-link-row[hide-icon]::part(icon) {
+    display: none;
+  }
+</style>
+<h2 class="page-title">$i18n{settings}</h2>
+<div class="card">
+  <pref-toggle-button id="passwordToggle"
+      label="$i18n{savePasswordsLabel}"
+      pref-key="credentials_enable_service">
+  </pref-toggle-button>
+  <pref-toggle-button id="autosigninToggle" class="hr"
+      label="$i18n{autosigninLabel}"
+      sub-label="$i18n{autosigninDescription}"
+      pref-key="credentials_enable_autosignin">
+  </pref-toggle-button>
+  <cr-link-row id="trustedVaultBanner" class="cr-row"
+      label="$i18n{trustedVaultBannerLabelOfferOptIn}"
+      sub-label="$i18n{trustedVaultBannerSubLabelOfferOptIn}" external>
+  </cr-link-row>
+  <cr-link-row id="importPasswords" class="cr-row"
+      label="$i18n{importPasswords}"
+      sub-label="$i18n{importPasswordsDescription}" hide-icon>
+  </cr-link-row>
+  <cr-link-row id="exportPasswords" class="cr-row"
+      label="$i18n{exportPasswords}"
+      sub-label="$i18n{exportPasswordsDescription}" hide-icon>
+  </cr-link-row>
+</div>

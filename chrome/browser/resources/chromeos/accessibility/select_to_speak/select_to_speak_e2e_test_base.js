@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,8 +18,6 @@ SelectToSpeakE2ETest = class extends E2ETestBase {
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/common/extensions/extension_constants.h"
-#include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
     `);
   }

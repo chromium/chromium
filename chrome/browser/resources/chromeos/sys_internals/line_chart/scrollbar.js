@@ -1,10 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
-(function() {
-'use strict';
+import {createElementWithClassName} from 'chrome://resources/js/util.js';
 
 /**
  * Create by |LineChart.LineChart|.
@@ -13,7 +11,7 @@
  * instead of drawing the whole chart.
  * @const
  */
-LineChart.Scrollbar = class {
+export class Scrollbar {
   constructor(/** function(): undefined */ callback) {
     /** @const {function(): undefined} - Handle the scrolling event. */
     this.callback_ = callback;
@@ -43,8 +41,9 @@ LineChart.Scrollbar = class {
    */
   onScroll_() {
     const /** number */ newPosition = this.outerDiv_.scrollLeft;
-    if (newPosition == this.position_)
+    if (newPosition == this.position_) {
       return;
+    }
     this.position_ = newPosition;
     this.callback_();
   }
@@ -81,8 +80,9 @@ LineChart.Scrollbar = class {
    * @param {number} width
    */
   resize(width) {
-    if (this.width_ == width)
+    if (this.width_ == width) {
       return;
+    }
     this.width_ = width;
     this.updateOuterDivWidth_();
   }
@@ -137,8 +137,9 @@ LineChart.Scrollbar = class {
    * range. See crbug.com/760425.
    */
   updateScrollbarPosition_() {
-    if (this.outerDiv_.scrollLeft == this.position_)
+    if (this.outerDiv_.scrollLeft == this.position_) {
       return;
+    }
     this.outerDiv_.scrollLeft = this.position_;
   }
 
@@ -161,6 +162,4 @@ LineChart.Scrollbar = class {
   scrollToRightEdge() {
     this.setPosition(this.range_);
   }
-};
-
-})();
+}

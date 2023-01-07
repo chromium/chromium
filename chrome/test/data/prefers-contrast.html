@@ -7,5 +7,7 @@
     document.title = "less";
   } else if (window.matchMedia("(prefers-contrast: no-preference)").matches) {
     document.title = "no-preference";
+  } else if (window.matchMedia("(prefers-contrast: custom)").matches) {
+    document.title = "custom";
   }
 </script>

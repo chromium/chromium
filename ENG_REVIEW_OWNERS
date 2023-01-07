@@ -2,11 +2,13 @@
 # addings of top-level and third-party directories.
 
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# by emailing lsc-policy@chromium.org when this list changes.
 creis@chromium.org
+estaab@chromium.org
 haraken@chromium.org
 jam@chromium.org
-jochen@chromium.org
 pinkerton@chromium.org
 sky@chromium.org
 yfriedman@chromium.org
 # NOTE: keep this in sync with lsc-owners-override@chromium.org owners
+# by emailing lsc-policy@chromium.org when this list changes.

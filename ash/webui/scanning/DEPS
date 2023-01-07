@@ -1,0 +1,8 @@
+include_rules = [
+  "+chromeos/strings/grit/chromeos_strings.h",
+  "+ui/base",
+  "+ui/gfx",
+  "+ui/resources",
+  "+ui/shell_dialogs",
+  "+ui/webui",
+]

@@ -1,17 +1,32 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef MEDIA_MOJO_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 #define MEDIA_MOJO_MOJOM_VIDEO_ENCODE_ACCELERATOR_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
+#include "media/base/bitrate.h"
 #include "media/base/ipc/media_param_traits.h"
+#include "media/base/video_bitrate_allocation.h"
 #include "media/mojo/mojom/media_types.mojom-shared.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom-shared.h"
 #include "media/video/video_encode_accelerator.h"
+#include "mojo/public/cpp/bindings/union_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
 namespace mojo {
+
+template <>
+struct EnumTraits<media::mojom::VideoEncodeAcceleratorSupportedRateControlMode,
+                  media::VideoEncodeAccelerator::SupportedRateControlMode> {
+  static media::mojom::VideoEncodeAcceleratorSupportedRateControlMode ToMojom(
+      media::VideoEncodeAccelerator::SupportedRateControlMode mode);
+
+  static bool FromMojom(
+      media::mojom::VideoEncodeAcceleratorSupportedRateControlMode input,
+      media::VideoEncodeAccelerator::SupportedRateControlMode* out);
+};
 
 template <>
 struct StructTraits<
@@ -42,6 +57,27 @@ struct StructTraits<
     return profile.max_framerate_denominator;
   }
 
+  static std::vector<media::VideoEncodeAccelerator::SupportedRateControlMode>
+  rate_control_modes(
+      const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+    std::vector<media::VideoEncodeAccelerator::SupportedRateControlMode> modes;
+    if (profile.rate_control_modes &
+        media::VideoEncodeAccelerator::kConstantMode) {
+      modes.push_back(media::VideoEncodeAccelerator::kConstantMode);
+    }
+    if (profile.rate_control_modes &
+        media::VideoEncodeAccelerator::kVariableMode) {
+      modes.push_back(media::VideoEncodeAccelerator::kVariableMode);
+    }
+
+    return modes;
+  }
+
+  static const std::vector<media::SVCScalabilityMode>& scalability_modes(
+      const media::VideoEncodeAccelerator::SupportedProfile& profile) {
+    return profile.scalability_modes;
+  }
+
   static bool Read(
       media::mojom::VideoEncodeAcceleratorSupportedProfileDataView data,
       media::VideoEncodeAccelerator::SupportedProfile* out);
@@ -58,11 +94,30 @@ struct EnumTraits<media::mojom::VideoEncodeAccelerator_Error,
 };
 
 template <>
+class StructTraits<media::mojom::VariableBitratePeakDataView, uint32_t> {
+ public:
+  static constexpr uint32_t bps(const uint32_t peak_bps) { return peak_bps; }
+
+  static bool Read(media::mojom::VariableBitratePeakDataView data,
+                   uint32_t* out_peak_bps);
+};
+
+template <>
 class StructTraits<media::mojom::VideoBitrateAllocationDataView,
                    media::VideoBitrateAllocation> {
  public:
-  static std::vector<int32_t> bitrates(
+  static std::vector<uint32_t> bitrates(
       const media::VideoBitrateAllocation& bitrate_allocation);
+
+  static absl::optional<uint32_t> variable_bitrate_peak(
+      const media::VideoBitrateAllocation& bitrate_allocation) {
+    if (bitrate_allocation.GetMode() == media::Bitrate::Mode::kConstant) {
+      return absl::nullopt;
+    } else {
+      return absl::optional<uint32_t>(
+          bitrate_allocation.GetSumBitrate().peak_bps());
+    }
+  }
 
   static bool Read(media::mojom::VideoBitrateAllocationDataView data,
                    media::VideoBitrateAllocation* out_bitrate_allocation);
@@ -73,22 +128,33 @@ struct UnionTraits<media::mojom::CodecMetadataDataView,
                    media::BitstreamBufferMetadata> {
   static media::mojom::CodecMetadataDataView::Tag GetTag(
       const media::BitstreamBufferMetadata& metadata) {
-    if (metadata.vp8) {
-      return media::mojom::CodecMetadataDataView::Tag::VP8;
+    if (metadata.h264) {
+      return media::mojom::CodecMetadataDataView::Tag::kH264;
+    } else if (metadata.vp8) {
+      return media::mojom::CodecMetadataDataView::Tag::kVp8;
     } else if (metadata.vp9) {
-      return media::mojom::CodecMetadataDataView::Tag::VP9;
+      return media::mojom::CodecMetadataDataView::Tag::kVp9;
+    } else if (metadata.av1) {
+      return media::mojom::CodecMetadataDataView::Tag::kAv1;
     }
     NOTREACHED();
-    return media::mojom::CodecMetadataDataView::Tag::VP8;
+    return media::mojom::CodecMetadataDataView::Tag::kVp8;
   }
 
   static bool IsNull(const media::BitstreamBufferMetadata& metadata) {
-    return !metadata.vp8 && !metadata.vp9;
+    return !metadata.h264 && !metadata.vp8 && !metadata.vp9 && !metadata.av1;
   }
 
   static void SetToNull(media::BitstreamBufferMetadata* metadata) {
+    metadata->h264.reset();
     metadata->vp8.reset();
     metadata->vp9.reset();
+    metadata->av1.reset();
+  }
+
+  static const media::H264Metadata& h264(
+      const media::BitstreamBufferMetadata& metadata) {
+    return *metadata.h264;
   }
 
   static const media::Vp8Metadata& vp8(
@@ -99,6 +165,11 @@ struct UnionTraits<media::mojom::CodecMetadataDataView,
   static const media::Vp9Metadata& vp9(
       const media::BitstreamBufferMetadata& metadata) {
     return *metadata.vp9;
+  }
+
+  static const media::Av1Metadata& av1(
+      const media::BitstreamBufferMetadata& metadata) {
+    return *metadata.av1;
   }
 
   static bool Read(media::mojom::CodecMetadataDataView data,
@@ -118,6 +189,9 @@ class StructTraits<media::mojom::BitstreamBufferMetadataDataView,
   static base::TimeDelta timestamp(const media::BitstreamBufferMetadata& bbm) {
     return bbm.timestamp;
   }
+  static int32_t qp(const media::BitstreamBufferMetadata& bbm) {
+    return bbm.qp;
+  }
   static const media::BitstreamBufferMetadata& codec_metadata(
       const media::BitstreamBufferMetadata& bbm) {
     return bbm;
@@ -125,6 +199,21 @@ class StructTraits<media::mojom::BitstreamBufferMetadataDataView,
 
   static bool Read(media::mojom::BitstreamBufferMetadataDataView data,
                    media::BitstreamBufferMetadata* out_metadata);
+};
+
+template <>
+class StructTraits<media::mojom::H264MetadataDataView, media::H264Metadata> {
+ public:
+  static uint8_t temporal_idx(const media::H264Metadata& vp8) {
+    return vp8.temporal_idx;
+  }
+
+  static bool layer_sync(const media::H264Metadata& vp8) {
+    return vp8.layer_sync;
+  }
+
+  static bool Read(media::mojom::H264MetadataDataView data,
+                   media::H264Metadata* out_metadata);
 };
 
 template <>
@@ -149,14 +238,31 @@ class StructTraits<media::mojom::Vp8MetadataDataView, media::Vp8Metadata> {
 template <>
 class StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata> {
  public:
-  static bool has_reference(const media::Vp9Metadata& vp9) {
-    return vp9.has_reference;
+  static bool inter_pic_predicted(const media::Vp9Metadata& vp9) {
+    return vp9.inter_pic_predicted;
   }
   static bool temporal_up_switch(const media::Vp9Metadata& vp9) {
     return vp9.temporal_up_switch;
   }
+  static bool referenced_by_upper_spatial_layers(
+      const media::Vp9Metadata& vp9) {
+    return vp9.referenced_by_upper_spatial_layers;
+  }
+  static bool reference_lower_spatial_layers(const media::Vp9Metadata& vp9) {
+    return vp9.reference_lower_spatial_layers;
+  }
+  static bool end_of_picture(const media::Vp9Metadata& vp9) {
+    return vp9.end_of_picture;
+  }
   static uint8_t temporal_idx(const media::Vp9Metadata& vp9) {
     return vp9.temporal_idx;
+  }
+  static uint8_t spatial_idx(const media::Vp9Metadata& vp9) {
+    return vp9.spatial_idx;
+  }
+  static const std::vector<gfx::Size>& spatial_layer_resolutions(
+      const media::Vp9Metadata& vp9) {
+    return vp9.spatial_layer_resolutions;
   }
   static const std::vector<uint8_t>& p_diffs(const media::Vp9Metadata& vp9) {
     return vp9.p_diffs;
@@ -164,6 +270,36 @@ class StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata> {
 
   static bool Read(media::mojom::Vp9MetadataDataView data,
                    media::Vp9Metadata* out_metadata);
+};
+
+template <>
+class StructTraits<media::mojom::Av1MetadataDataView, media::Av1Metadata> {
+ public:
+  static bool inter_pic_predicted(const media::Av1Metadata& av1) {
+    return av1.inter_pic_predicted;
+  }
+  static bool switch_frame(const media::Av1Metadata& av1) {
+    return av1.switch_frame;
+  }
+  static bool end_of_picture(const media::Av1Metadata& av1) {
+    return av1.end_of_picture;
+  }
+  static uint8_t temporal_idx(const media::Av1Metadata& av1) {
+    return av1.temporal_idx;
+  }
+  static uint8_t spatial_idx(const media::Av1Metadata& av1) {
+    return av1.spatial_idx;
+  }
+  static const std::vector<gfx::Size>& spatial_layer_resolutions(
+      const media::Av1Metadata& av1) {
+    return av1.spatial_layer_resolutions;
+  }
+  static const std::vector<uint8_t>& f_diffs(const media::Av1Metadata& av1) {
+    return av1.f_diffs;
+  }
+
+  static bool Read(media::mojom::Av1MetadataDataView data,
+                   media::Av1Metadata* out_metadata);
 };
 
 template <>
@@ -175,6 +311,17 @@ struct EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_StorageType,
   static bool FromMojom(
       media::mojom::VideoEncodeAcceleratorConfig_StorageType,
       media::VideoEncodeAccelerator::Config::StorageType* output);
+};
+
+template <>
+struct EnumTraits<media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode,
+                  media::VideoEncodeAccelerator::Config::InterLayerPredMode> {
+  static media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode ToMojom(
+      media::VideoEncodeAccelerator::Config::InterLayerPredMode input);
+
+  static bool FromMojom(
+      media::mojom::VideoEncodeAcceleratorConfig_InterLayerPredMode,
+      media::VideoEncodeAccelerator::Config::InterLayerPredMode* output);
 };
 
 template <>
@@ -226,6 +373,36 @@ struct StructTraits<media::mojom::SpatialLayerDataView,
 };
 
 template <>
+struct StructTraits<media::mojom::ConstantBitrateDataView, media::Bitrate> {
+  static uint32_t target_bps(const media::Bitrate& input) {
+    return input.target_bps();
+  }
+
+  static bool Read(media::mojom::ConstantBitrateDataView input,
+                   media::Bitrate* output);
+};
+
+template <>
+struct StructTraits<media::mojom::VariableBitrateDataView, media::Bitrate> {
+  static uint32_t target_bps(const media::Bitrate& input) {
+    return input.target_bps();
+  }
+  static uint32_t peak_bps(const media::Bitrate& input) {
+    return input.peak_bps();
+  }
+  static bool Read(media::mojom::VariableBitrateDataView input,
+                   media::Bitrate* output);
+};
+
+template <>
+struct UnionTraits<media::mojom::BitrateDataView, media::Bitrate> {
+  static media::mojom::BitrateDataView::Tag GetTag(const media::Bitrate& input);
+  static media::Bitrate constant(const media::Bitrate& input) { return input; }
+  static media::Bitrate variable(const media::Bitrate& input) { return input; }
+  static bool Read(media::mojom::BitrateDataView input, media::Bitrate* output);
+};
+
+template <>
 struct StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
                     media::VideoEncodeAccelerator::Config> {
   static media::VideoPixelFormat input_format(
@@ -243,9 +420,9 @@ struct StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
     return input.output_profile;
   }
 
-  static uint32_t initial_bitrate(
+  static const media::Bitrate& bitrate(
       const media::VideoEncodeAccelerator::Config& input) {
-    return input.initial_bitrate;
+    return input.bitrate;
   }
 
   static uint32_t initial_framerate(
@@ -302,6 +479,16 @@ struct StructTraits<media::mojom::VideoEncodeAcceleratorConfigDataView,
   static const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
   spatial_layers(const media::VideoEncodeAccelerator::Config& input) {
     return input.spatial_layers;
+  }
+
+  static media::VideoEncodeAccelerator::Config::InterLayerPredMode
+  inter_layer_pred(const media::VideoEncodeAccelerator::Config& input) {
+    return input.inter_layer_pred;
+  }
+
+  static bool require_low_delay(
+      const media::VideoEncodeAccelerator::Config& input) {
+    return input.require_low_delay;
   }
 
   static bool Read(media::mojom::VideoEncodeAcceleratorConfigDataView input,

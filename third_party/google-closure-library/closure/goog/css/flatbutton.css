@@ -9,6 +9,10 @@
  * Styling for flat buttons created by goog.ui.FlatButtonRenderer.
  */
 
+@provide 'goog.css.flatbutton';
+
+@require './common';
+
 .goog-flat-button {
   position: relative;
   /*width: 20ex;*/

@@ -1,8 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.autofill_assistant;
+
+import android.os.Bundle;
 
 import androidx.test.filters.MediumTest;
 
@@ -12,16 +14,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.components.autofill_assistant.TriggerContext;
 
 /**
  * Tests for TriggerContext.
@@ -40,54 +39,78 @@ public class TriggerContextTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ASSISTANT)
-    public void testRegularScriptContext() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            Assert.assertFalse(TriggerContext.newBuilder().build().isValid());
+    @UiThreadTest
+    public void triggerContextEnabled() {
+        Assert.assertFalse(TriggerContext.newBuilder().build().isEnabled());
+        Assert.assertFalse(
+                TriggerContext.newBuilder().addParameter("ENABLED", false).build().isEnabled());
+        Assert.assertTrue(
+                TriggerContext.newBuilder().addParameter("ENABLED", true).build().isEnabled());
 
-            Assert.assertFalse(
-                    TriggerContext.newBuilder().addParameter("ENABLED", true).build().isValid());
-
-            Assert.assertTrue(TriggerContext.newBuilder()
-                                      .addParameter("ENABLED", true)
-                                      .addParameter("START_IMMEDIATELY", true)
-                                      .build()
-                                      .isValid());
-        });
+        // Stringified boolean is not allowed.
+        Assert.assertFalse(
+                TriggerContext.newBuilder().addParameter("ENABLED", "true").build().isEnabled());
     }
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ASSISTANT,
-            ChromeFeatureList.AUTOFILL_ASSISTANT_PROACTIVE_HELP})
-    public void
-    testTriggerScriptContext() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Enable MSBB.
-            UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                    Profile.getLastUsedRegularProfile(), true);
-            Assert.assertFalse(TriggerContext.newBuilder()
-                                       .addParameter("ENABLED", true)
-                                       .addParameter("START_IMMEDIATELY", false)
-                                       .build()
-                                       .isValid());
+    @UiThreadTest
+    public void decodeExperimentIds() {
+        Bundle testBundleSingleExperimentId = new Bundle();
+        testBundleSingleExperimentId.putString(
+                "org.chromium.chrome.browser.autofill_assistant.EXPERIMENT_IDS", "123");
+        Assert.assertEquals("123",
+                TriggerContext.newBuilder()
+                        .fromBundle(testBundleSingleExperimentId)
+                        .build()
+                        .getExperimentIds());
 
-            Assert.assertTrue(TriggerContext.newBuilder()
-                                      .addParameter("ENABLED", true)
-                                      .addParameter("START_IMMEDIATELY", false)
-                                      .addParameter("REQUEST_TRIGGER_SCRIPT", true)
-                                      .build()
-                                      .isValid());
+        Bundle testBundleMultipleExperimentIds = new Bundle();
+        testBundleMultipleExperimentIds.putString(
+                "org.chromium.chrome.browser.autofill_assistant.EXPERIMENT_IDS", "123%2C456");
+        Assert.assertEquals("123,456",
+                TriggerContext.newBuilder()
+                        .fromBundle(testBundleMultipleExperimentIds)
+                        .build()
+                        .getExperimentIds());
 
-            // Disable MSBB. Base64 trigger scripts should not require it.
-            UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
-                    Profile.getLastUsedRegularProfile(), false);
-            Assert.assertTrue(TriggerContext.newBuilder()
-                                      .addParameter("ENABLED", true)
-                                      .addParameter("START_IMMEDIATELY", false)
-                                      .addParameter("TRIGGER_SCRIPTS_BASE64", "abcd")
-                                      .build()
-                                      .isValid());
-        });
+        // Invalid entries should be passed on without error.
+        Bundle testBundleWithInvalidExperimentId = new Bundle();
+        testBundleWithInvalidExperimentId.putString(
+                "org.chromium.chrome.browser.autofill_assistant.EXPERIMENT_IDS",
+                "123%2Cinvalid%2C456");
+        Assert.assertEquals("123,invalid,456",
+                TriggerContext.newBuilder()
+                        .fromBundle(testBundleWithInvalidExperimentId)
+                        .build()
+                        .getExperimentIds());
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void decodeStringParameters() {
+        Bundle testBundle = new Bundle();
+        testBundle.putString("org.chromium.chrome.browser.autofill_assistant.FAKE_PARAM",
+                "https%3A%2F%2Fwww.example.com");
+        Assert.assertEquals("https://www.example.com",
+                TriggerContext.newBuilder()
+                        .fromBundle(testBundle)
+                        .build()
+                        .getParameters()
+                        .get("FAKE_PARAM"));
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void deviceOnlyParameters() {
+        Bundle testBundle = new Bundle();
+        testBundle.putString("org.chromium.chrome.browser.autofill_assistant.PARAM_A", "public");
+        testBundle.putString(
+                "org.chromium.chrome.browser.autofill_assistant.device_only.PARAM_B", "secret");
+        TriggerContext triggerContext = TriggerContext.newBuilder().fromBundle(testBundle).build();
+        Assert.assertEquals("public", triggerContext.getParameters().get("PARAM_A"));
+        Assert.assertEquals("secret", triggerContext.getDeviceOnlyParameters().get("PARAM_B"));
     }
 }

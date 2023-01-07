@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,11 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/view_observer.h"
 
@@ -44,6 +45,12 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
                                            public views::ViewObserver {
  public:
   explicit TopControlsSlideControllerChromeOS(BrowserView* browser_view);
+
+  TopControlsSlideControllerChromeOS(
+      const TopControlsSlideControllerChromeOS&) = delete;
+  TopControlsSlideControllerChromeOS& operator=(
+      const TopControlsSlideControllerChromeOS&) = delete;
+
   ~TopControlsSlideControllerChromeOS() override;
 
   // TopControlsSlideController:
@@ -92,7 +99,7 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
   // BrowserView informs us with fullscreen state changes before they happen
   // (See OnBrowserFullscreenStateWillChange()) so that we can disable the
   // sliding behavior *before* immersive mode is entered.
-  bool CanEnable(base::Optional<bool> fullscreen_state) const;
+  bool CanEnable(absl::optional<bool> fullscreen_state) const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called back from the ash::AccessibilityManager so that we're updated by the
@@ -129,11 +136,11 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
   TopControlsSlideTabObserver* GetTabSlideObserverForWebContents(
       const content::WebContents* contents) const;
 
-  BrowserView* browser_view_;
+  raw_ptr<BrowserView> browser_view_;
 
   // The omnibox can be focused via a keyboard shortcut, in which case, we have
   // to show the top controls, and keep them shown until it's blurred.
-  views::View* observed_omni_box_ = nullptr;
+  raw_ptr<views::View> observed_omni_box_ = nullptr;
 
   // Represents the per-browser (as opposed to per-tab) shown ratio of the top
   // controls that is currently applied.
@@ -192,7 +199,7 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
   base::CallbackListSubscription accessibility_status_subscription_;
 #endif
 
-  DISALLOW_COPY_AND_ASSIGN(TopControlsSlideControllerChromeOS);
+  display::ScopedDisplayObserver display_observer_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TOP_CONTROLS_SLIDE_CONTROLLER_CHROMEOS_H_

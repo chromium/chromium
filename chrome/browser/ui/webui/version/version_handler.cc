@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
-#include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/profiles/profile.h"
@@ -57,6 +56,10 @@ VersionHandler::VersionHandler() {}
 
 VersionHandler::~VersionHandler() {}
 
+void VersionHandler::OnJavascriptDisallowed() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
+}
+
 void VersionHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       version_ui::kRequestVersionInfo,
@@ -72,7 +75,7 @@ void VersionHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void VersionHandler::HandleRequestVersionInfo(const base::ListValue* args) {
+void VersionHandler::HandleRequestVersionInfo(const base::Value::List& args) {
   // This method is overridden by platform-specific handlers which may still
   // use |CallJavascriptFunction|. Main version info is returned by promise
   // using handlers below.
@@ -82,31 +85,27 @@ void VersionHandler::HandleRequestVersionInfo(const base::ListValue* args) {
   AllowJavascript();
 }
 
-void VersionHandler::HandleRequestVariationInfo(const base::ListValue* args) {
+void VersionHandler::HandleRequestVariationInfo(const base::Value::List& args) {
   AllowJavascript();
 
-  std::string callback_id;
-  bool include_variations_cmd;
-  CHECK_EQ(2U, args->GetSize());
-  CHECK(args->GetString(0, &callback_id));
-  CHECK(args->GetBoolean(1, &include_variations_cmd));
+  CHECK_EQ(2U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const bool include_variations_cmd = args[1].GetBool();
 
-  base::Value response(base::Value::Type::DICTIONARY);
-  response.SetKey(version_ui::kKeyVariationsList,
-                  std::move(*version_ui::GetVariationsList()));
+  base::Value::Dict response;
+  response.Set(version_ui::kKeyVariationsList, version_ui::GetVariationsList());
   if (include_variations_cmd) {
-    response.SetKey(version_ui::kKeyVariationsCmd,
-                    version_ui::GetVariationsCommandLineAsValue());
+    response.Set(version_ui::kKeyVariationsCmd,
+                 version_ui::GetVariationsCommandLineAsValue());
   }
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
 
-void VersionHandler::HandleRequestPathInfo(const base::ListValue* args) {
+void VersionHandler::HandleRequestPathInfo(const base::Value::List& args) {
   AllowJavascript();
 
-  std::string callback_id;
-  CHECK_EQ(1U, args->GetSize());
-  CHECK(args->GetString(0, &callback_id));
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
 
   // Grab the executable path on the FILE thread. It is returned in
   // OnGotFilePaths.
@@ -127,8 +126,8 @@ void VersionHandler::OnGotFilePaths(std::string callback_id,
                                     std::u16string* executable_path_data,
                                     std::u16string* profile_path_data) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  base::Value response(base::Value::Type::DICTIONARY);
-  response.SetKey(version_ui::kKeyExecPath, base::Value(*executable_path_data));
-  response.SetKey(version_ui::kKeyProfilePath, base::Value(*profile_path_data));
+  base::Value::Dict response;
+  response.Set(version_ui::kKeyExecPath, *executable_path_data);
+  response.Set(version_ui::kKeyProfilePath, *profile_path_data);
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }

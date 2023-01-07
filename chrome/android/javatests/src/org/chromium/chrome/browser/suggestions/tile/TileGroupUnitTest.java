@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,6 @@ import android.widget.FrameLayout;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.CoreMatchers;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -44,8 +43,8 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
-import org.chromium.chrome.browser.ntp.cards.CardsVariationParameters;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -59,7 +58,6 @@ import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -98,7 +96,6 @@ public class TileGroupUnitTest {
 
     @Before
     public void setUp() {
-        CardsVariationParameters.setTestVariationParams(new HashMap<>());
         MockitoAnnotations.initMocks(this);
 
         mImageFetcher = new FakeImageFetcher();
@@ -115,14 +112,10 @@ public class TileGroupUnitTest {
                 .setMostVisitedSitesObserver(any(MostVisitedSites.Observer.class), anyInt());
     }
 
-    @After
-    public void tearDown() {
-        CardsVariationParameters.setTestVariationParams(null);
-    }
-
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1292469")
     public void testInitialiseWithTileList() {
         mMostVisitedSites.setTileSuggestions(URLS);
 
@@ -161,6 +154,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    // If this flakes again, refer to https://crbug.com/1336867.
     public void testReceiveNewTilesWithoutChanges() {
         TileGroup tileGroup = initialiseTileGroup(URLS);
 
@@ -175,6 +169,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1336867")
     public void testReceiveNewTilesWithoutChanges_TrackLoad() {
         TileGroup tileGroup = initialiseTileGroup(/* deferLoad: */ true, URLS);
 
@@ -208,6 +203,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    // If this flakes again, refer to https://crbug.com/1330627, https://crbug.com/1293208.
     public void testReceiveNewTilesWithDataChanges_TrackLoad() {
         TileGroup tileGroup = initialiseTileGroup(/* deferLoad: */ true, URLS);
 
@@ -301,6 +297,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    // If this flakes again, refer to https://crbug.com/1330627, https://crbug.com/1293208.
     public void testRenderTileView() {
         SuggestionsUiDelegate uiDelegate = mSuggestionsUiDelegate;
         when(uiDelegate.getImageFetcher()).thenReturn(mImageFetcher);
@@ -308,14 +305,13 @@ public class TileGroupUnitTest {
                 mTileGroupDelegate, mTileGroupObserver, mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
 
-        TileGridViewHolder tileGrid = setupView(tileGroup);
-        TileGridLayout layout = (TileGridLayout) tileGrid.itemView;
+        MostVisitedTilesGridLayout layout = setupView();
 
         // Initialise the internal list of tiles
         mMostVisitedSites.setTileSuggestions(URLS);
 
         // Render them to the layout.
-        tileGrid.refreshData();
+        refreshData(tileGroup, layout);
         assertThat(layout.getChildCount(), is(2));
         assertThat(((SuggestionsTileView) layout.getChildAt(0)).getUrl().getSpec(), is(URLS[0]));
         assertThat(((SuggestionsTileView) layout.getChildAt(1)).getUrl().getSpec(), is(URLS[1]));
@@ -331,18 +327,19 @@ public class TileGroupUnitTest {
         TileGroup tileGroup = new TileGroup(mTileRenderer, uiDelegate, mContextMenuManager,
                 mTileGroupDelegate, mTileGroupObserver, mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
-        TileGridViewHolder tileGrid = setupView(tileGroup);
+        MostVisitedTilesGridLayout layout = setupView();
 
         // Initialise the internal list of tiles
         mMostVisitedSites.setTileSuggestions(URLS[0], URLS[1], URLS[0]);
 
         // Render them to the layout. The duplicated URL should not trigger an exception.
-        tileGrid.refreshData();
+        refreshData(tileGroup, layout);
     }
 
     @Test
     @UiThreadTest
     @SmallTest
+    // If this flakes again, refer to https://crbug.com/1286755.
     public void testRenderTileViewReplacing() {
         SuggestionsUiDelegate uiDelegate = mSuggestionsUiDelegate;
         when(uiDelegate.getImageFetcher()).thenReturn(mMockImageFetcher);
@@ -352,8 +349,7 @@ public class TileGroupUnitTest {
         mMostVisitedSites.setTileSuggestions(URLS);
 
         // Initialise the layout with views whose URLs don't match the ones of the new tiles.
-        TileGridViewHolder tileGrid = setupView(tileGroup);
-        TileGridLayout layout = (TileGridLayout) tileGrid.itemView;
+        MostVisitedTilesGridLayout layout = setupView();
         SuggestionsTileView view1 = mSuggestionsTileView1;
         layout.addView(view1);
 
@@ -361,7 +357,7 @@ public class TileGroupUnitTest {
         layout.addView(view2);
 
         // The tiles should be updated, the old ones removed.
-        tileGrid.refreshData();
+        refreshData(tileGroup, layout);
         assertThat(layout.getChildCount(), is(2));
         assertThat(layout.indexOfChild(view1), is(-1));
         assertThat(layout.indexOfChild(view2), is(-1));
@@ -378,7 +374,8 @@ public class TileGroupUnitTest {
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
 
         // Initialise the layout with views whose URLs match the ones of the new tiles.
-        TileGridLayout layout = new TileGridLayout(ContextUtils.getApplicationContext(), null);
+        MostVisitedTilesGridLayout layout =
+                new MostVisitedTilesGridLayout(ContextUtils.getApplicationContext(), null);
         SuggestionsTileView view1 = mSuggestionsTileView1;
         when(view1.getData()).thenReturn(sites.get(0));
         layout.addView(view1);
@@ -388,7 +385,7 @@ public class TileGroupUnitTest {
         layout.addView(view2);
 
         // The tiles should be updated, the old ones reused.
-        setupView(tileGroup).refreshData();
+        refreshData(tileGroup);
         assertThat(layout.getChildCount(), is(2));
         assertThat(layout.getChildAt(0), CoreMatchers.is(view1));
         assertThat(layout.getChildAt(1), CoreMatchers.is(view2));
@@ -397,6 +394,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
     public void testIconLoadingForInit() {
         TileGroup tileGroup = initialiseTileGroup(URLS);
         Tile tile = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED).get(0);
@@ -415,6 +413,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "Test is flaky, see crbug.com/1288425")
     public void testIconLoadingWhenTileNotRegistered() {
         TileGroup tileGroup = initialiseTileGroup();
         Tile tile = new Tile(createSiteSuggestion("title", URLS[0]), 0);
@@ -429,16 +428,10 @@ public class TileGroupUnitTest {
         verify(mTileGroupObserver, never()).onTileIconChanged(tile);
     }
 
-    private TileGridViewHolder setupView(TileGroup tileGroup) {
-        TileGridLayout layout = new TileGridLayout(ContextUtils.getApplicationContext(), null);
-        TileGridViewHolder tileGrid = new TileGridViewHolder(layout, 4, 2);
-        tileGrid.bindDataSource(tileGroup, mTileRenderer);
-        return tileGrid;
-    }
-
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
     public void testIconLoading_Sync() {
         TileGroup tileGroup = initialiseTileGroup();
         mImageFetcher.fulfillLargeIconRequests();
@@ -446,7 +439,7 @@ public class TileGroupUnitTest {
 
         // Notify for a second set.
         mMostVisitedSites.setTileSuggestions(URLS);
-        setupView(tileGroup).refreshData();
+        refreshData(tileGroup);
         mImageFetcher.fulfillLargeIconRequests();
 
         // Data changed but no loading complete event is sent
@@ -458,6 +451,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
     public void testIconLoading_AsyncNoTrack() {
         TileGroup tileGroup = initialiseTileGroup(/* deferLoad: */ true);
         mImageFetcher.fulfillLargeIconRequests();
@@ -466,7 +460,7 @@ public class TileGroupUnitTest {
         // Notify for a second set.
         mMostVisitedSites.setTileSuggestions(URLS);
         tileGroup.onSwitchToForeground(/* trackLoadTask: */ false);
-        setupView(tileGroup).refreshData();
+        refreshData(tileGroup);
         mImageFetcher.fulfillLargeIconRequests();
 
         // Data changed but no loading complete event is sent (same as sync)
@@ -478,6 +472,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1330627, https://crbug.com/1293208")
     public void testIconLoading_AsyncTrack() {
         TileGroup tileGroup = initialiseTileGroup(/* deferLoad: */ true);
         mImageFetcher.fulfillLargeIconRequests();
@@ -486,13 +481,30 @@ public class TileGroupUnitTest {
         // Notify for a second set.
         mMostVisitedSites.setTileSuggestions(URLS);
         tileGroup.onSwitchToForeground(/* trackLoadTask: */ true);
-        setupView(tileGroup).refreshData();
+        refreshData(tileGroup);
         mImageFetcher.fulfillLargeIconRequests();
 
         // Data changed but no loading complete event is sent
         verify(mTileGroupObserver).onTileDataChanged();
         verify(mTileGroupObserver, times(URLS.length)).onTileIconChanged(any(Tile.class));
         verify(mTileGroupDelegate).onLoadingComplete(any());
+    }
+
+    private MostVisitedTilesGridLayout setupView() {
+        return new MostVisitedTilesGridLayout(ContextUtils.getApplicationContext(), null);
+    }
+
+    private void refreshData(TileGroup tileGroup) {
+        MostVisitedTilesGridLayout layout = setupView();
+        refreshData(tileGroup, layout);
+    }
+
+    private void refreshData(TileGroup tileGroup, ViewGroup tilesLayout) {
+        assert tileGroup.getTileSections().size() == 1;
+        List<Tile> tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        assert tiles != null;
+        mTileRenderer.renderTileSection(tiles, tilesLayout, tileGroup.getTileSetupDelegate());
+        tileGroup.notifyTilesRendered();
     }
 
     /** {@link #initialiseTileGroup(boolean, String...)} override that does not defer loads. */
@@ -515,7 +527,7 @@ public class TileGroupUnitTest {
         TileGroup tileGroup = new TileGroup(mTileRenderer, mSuggestionsUiDelegate,
                 mContextMenuManager, mTileGroupDelegate, mTileGroupObserver, mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
-        setupView(tileGroup).refreshData();
+        refreshData(tileGroup);
 
         reset(mTileGroupObserver);
         reset(mTileGroupDelegate);

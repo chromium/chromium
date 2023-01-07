@@ -2,6 +2,7 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../../resources/gesture-util.js"></script>
+<script src="../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <style>
 #scroller {
   width: 500px;
@@ -76,8 +77,9 @@ promise_test (async t => {
 
 promise_test (async t => {
   t.add_cleanup(cleanup);
+  const pixelsToScroll = calculatePixelsToScroll(scroller, 140, 0).x;
   // Scroll so we pass the second snap point.
-  await wheelScroll(140 /* pixels to scroll */, 50, 50, 'right');
+  await wheelScroll(pixelsToScroll, 50, 50, 'right');
   await waitForAnimationEndTimeBased(scrollLeft);
   assert_approx_equals(scroller.scrollLeft, 240, 1);
 }, "Wheel scrolling should prefer the next snap point in scroll"
@@ -85,8 +87,9 @@ promise_test (async t => {
 
 promise_test (async t => {
   t.add_cleanup(cleanup);
+  const pixelsToScroll = calculatePixelsToScroll(scroller, 200, 0).x;
   // Scroll passed the last snap point.
-  await wheelScroll(200 /* pixels to scroll */, 50, 50, 'right');
+  await wheelScroll(pixelsToScroll, 50, 50, 'right');
   await waitForAnimationEndTimeBased(scrollLeft);
   assert_approx_equals(scroller.scrollLeft, 240, 1);
 }, "Wheel scrolling should prefer the closest scroll offset in the opposite"

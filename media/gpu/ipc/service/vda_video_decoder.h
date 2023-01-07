@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,10 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/containers/mru_cache.h"
-#include "base/macros.h"
+#include "base/containers/lru_cache.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/base/media_log.h"
 #include "media/base/video_decoder.h"
@@ -60,8 +59,9 @@ class VdaVideoDecoder : public VideoDecoder,
   // unique_ptr<VideoDecoder>.
   //
   // |get_stub_cb|: Callback to retrieve the CommandBufferStub that should be
-  //     used for allocating textures and mailboxes. This callback will be
-  //     called on the GPU thread.
+  //     used for allocating textures and mailboxes. This is only used when
+  //     |output_mode| is ALLOCATE. This callback will be called on the GPU
+  //     thread.
   //
   // See VdaVideoDecoder() for other arguments.
   static std::unique_ptr<VideoDecoder> Create(
@@ -71,8 +71,11 @@ class VdaVideoDecoder : public VideoDecoder,
       const gfx::ColorSpace& target_color_space,
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
-      GetStubCB get_stub_cb);
+      GetStubCB get_stub_cb,
+      VideoDecodeAccelerator::Config::OutputMode output_mode);
 
+  VdaVideoDecoder(const VdaVideoDecoder&) = delete;
+  VdaVideoDecoder& operator=(const VdaVideoDecoder&) = delete;
   ~VdaVideoDecoder() override;
   static void DestroyAsync(std::unique_ptr<VdaVideoDecoder>);
 
@@ -89,6 +92,7 @@ class VdaVideoDecoder : public VideoDecoder,
   bool NeedsBitstreamConversion() const override;
   bool CanReadWithoutStalling() const override;
   int GetMaxDecodeRequests() const override;
+  bool FramesHoldExternalResources() const override;
 
  private:
   friend class VdaVideoDecoderTest;
@@ -101,10 +105,21 @@ class VdaVideoDecoder : public VideoDecoder,
   // |media_log|: MediaLog object to log to.
   // |target_color_space|: Color space of the output device.
   // |create_picture_buffer_manager_cb|: PictureBufferManager factory.
-  // |create_command_buffer_helper_cb|: CommandBufferHelper factory.
+  // |create_command_buffer_helper_cb|: CommandBufferHelper factory. This is
+  //     only used when |output_mode| is ALLOCATE.
   // |create_and_initialize_vda_cb|: VideoDecodeAccelerator factory.
   // |vda_capabilities|: Capabilities of the VDA that
   //     |create_and_initialize_vda_cb| will produce.
+  // |output_mode|: How to manage memory for output frames:
+  //     - ALLOCATE: output buffer allocation is expected to be done by a
+  //     combination of the PictureBufferManager (for texture allocation,
+  //     possibly) and the VDA when AssignPictureBuffers() is called. In this
+  //     case, the VdaVideoDecoder will output Mailbox-backed VideoFrames.
+  //     - IMPORT, output buffer allocation is done by the PictureBufferManager
+  //     (to allocate GpuMemoryBuffers without textures) and these buffers are
+  //     imported into the VDA by calling ImportBufferForPicture(). In this
+  //     case, the VdaVideoDecoder will output GpuMemoryBuffer-backed
+  //     VideoFrames.
   VdaVideoDecoder(
       scoped_refptr<base::SingleThreadTaskRunner> parent_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
@@ -113,15 +128,22 @@ class VdaVideoDecoder : public VideoDecoder,
       CreatePictureBufferManagerCB create_picture_buffer_manager_cb,
       CreateCommandBufferHelperCB create_command_buffer_helper_cb,
       CreateAndInitializeVdaCB create_and_initialize_vda_cb,
-      const VideoDecodeAccelerator::Capabilities& vda_capabilities);
+      const VideoDecodeAccelerator::Capabilities& vda_capabilities,
+      VideoDecodeAccelerator::Config::OutputMode output_mode);
 
   // media::VideoDecodeAccelerator::Client implementation.
-  void NotifyInitializationComplete(Status status) override;
+  void NotifyInitializationComplete(DecoderStatus status) override;
   void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                              VideoPixelFormat format,
                              uint32_t textures_per_buffer,
                              const gfx::Size& dimensions,
                              uint32_t texture_target) override;
+  void ProvidePictureBuffersWithVisibleRect(uint32_t requested_num_of_buffers,
+                                            VideoPixelFormat format,
+                                            uint32_t textures_per_buffer,
+                                            const gfx::Size& dimensions,
+                                            const gfx::Rect& visible_rect,
+                                            uint32_t texture_target) override;
   void DismissPictureBuffer(int32_t picture_buffer_id) override;
   void PictureReady(const Picture& picture) override;
   void NotifyEndOfBitstreamBuffer(int32_t bitstream_buffer_id) override;
@@ -135,7 +157,7 @@ class VdaVideoDecoder : public VideoDecoder,
   static void CleanupOnGpuThread(std::unique_ptr<VdaVideoDecoder>);
   void InitializeOnGpuThread();
   void ReinitializeOnGpuThread();
-  void InitializeDone(Status status);
+  void InitializeDone(DecoderStatus status);
   void DecodeOnGpuThread(scoped_refptr<DecoderBuffer> buffer,
                          int32_t bitstream_id);
   void DismissPictureBufferOnParentThread(int32_t picture_buffer_id);
@@ -166,6 +188,7 @@ class VdaVideoDecoder : public VideoDecoder,
   CreateCommandBufferHelperCB create_command_buffer_helper_cb_;
   CreateAndInitializeVdaCB create_and_initialize_vda_cb_;
   const VideoDecodeAccelerator::Capabilities vda_capabilities_;
+  const VideoDecodeAccelerator::Config::OutputMode output_mode_;
 
   //
   // Parent thread state.
@@ -181,7 +204,7 @@ class VdaVideoDecoder : public VideoDecoder,
   std::map<int32_t, DecodeCB> decode_cbs_;
   // Records timestamps so that they can be mapped to output pictures. Must be
   // large enough to account for any amount of frame reordering.
-  base::MRUCache<int32_t, base::TimeDelta> timestamps_;
+  base::LRUCache<int32_t, base::TimeDelta> timestamps_;
 
   //
   // Shared state.
@@ -215,8 +238,6 @@ class VdaVideoDecoder : public VideoDecoder,
   base::WeakPtr<VdaVideoDecoder> parent_weak_this_;
   base::WeakPtrFactory<VdaVideoDecoder> gpu_weak_this_factory_{this};
   base::WeakPtrFactory<VdaVideoDecoder> parent_weak_this_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VdaVideoDecoder);
 };
 
 }  // namespace media

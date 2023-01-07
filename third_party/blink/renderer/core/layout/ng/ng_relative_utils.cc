@@ -1,10 +1,10 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/layout/ng/ng_relative_utils.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -26,21 +26,21 @@ LogicalOffset ComputeRelativeOffset(
 
   // Helper function to correctly resolve insets.
   auto ResolveInset = [](const Length& length,
-                         LayoutUnit size) -> base::Optional<LayoutUnit> {
+                         LayoutUnit size) -> absl::optional<LayoutUnit> {
     if (length.IsAuto())
-      return base::nullopt;
+      return absl::nullopt;
     if (length.IsPercentOrCalc() && size == kIndefiniteSize)
-      return base::nullopt;
+      return absl::nullopt;
     return MinimumValueForLength(length, size);
   };
 
-  base::Optional<LayoutUnit> left =
+  absl::optional<LayoutUnit> left =
       ResolveInset(child_style.Left(), physical_size.width);
-  base::Optional<LayoutUnit> right =
+  absl::optional<LayoutUnit> right =
       ResolveInset(child_style.Right(), physical_size.width);
-  base::Optional<LayoutUnit> top =
+  absl::optional<LayoutUnit> top =
       ResolveInset(child_style.Top(), physical_size.height);
-  base::Optional<LayoutUnit> bottom =
+  absl::optional<LayoutUnit> bottom =
       ResolveInset(child_style.Bottom(), physical_size.height);
 
   // Common case optimization.
@@ -138,6 +138,33 @@ LogicalOffset ComputeRelativeOffsetForInline(const NGConstraintSpace& space,
     relative_offset.inline_offset = -relative_offset.inline_offset;
   if (writing_direction.IsFlippedLines())
     relative_offset.block_offset = -relative_offset.block_offset;
+
+  return relative_offset;
+}
+
+LogicalOffset ComputeRelativeOffsetForOOFInInline(
+    const NGConstraintSpace& space,
+    const ComputedStyle& child_style) {
+  if (child_style.GetPosition() != EPosition::kRelative)
+    return LogicalOffset();
+
+  // The confliction resolution rules work based off the block's writing-mode
+  // and direction, not the child's container. E.g.
+  // <span style="direction: rtl;">
+  //   <span style="position: relative; left: 100px; right: -50px;"></span>
+  // </span>
+  // In the above example "left" wins.
+  const WritingDirectionMode writing_direction = space.GetWritingDirection();
+  LogicalOffset relative_offset = ComputeRelativeOffset(
+      child_style, writing_direction, space.AvailableSize());
+
+  // Lines are built in a line-logical coordinate system:
+  // https://drafts.csswg.org/css-writing-modes-3/#line-directions
+  // Reverse the offset direction if we are in a RTL. We skip adjusting for
+  // flipped writing-mode when applying the relative position to an OOF
+  // positioned element.
+  if (writing_direction.IsRtl())
+    relative_offset.inline_offset = -relative_offset.inline_offset;
 
   return relative_offset;
 }

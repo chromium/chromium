@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ class PLATFORM_EXPORT ImagePattern final : public Pattern {
   bool IsTextureBacked() const override;
 
  protected:
-  sk_sp<PaintShader> CreateShader(const SkMatrix&) override;
+  sk_sp<PaintShader> CreateShader(const SkMatrix&) const override;
 
  private:
   ImagePattern(scoped_refptr<Image>, RepeatMode);
@@ -29,4 +29,4 @@ class PLATFORM_EXPORT ImagePattern final : public Pattern {
 
 }  // namespace blink
 
-#endif /* ImagePattern_h */
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_IMAGE_PATTERN_H_

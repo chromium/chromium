@@ -1,9 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.net.impl;
 
 import android.annotation.SuppressLint;
+import android.os.Build;
 import android.util.Log;
 import android.util.Pair;
 
@@ -59,6 +60,7 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     private boolean mTrafficStatsUidSet;
     private int mTrafficStatsUid;
     private RequestFinishedInfo.Listener mRequestFinishedListener;
+    private long mNetworkHandle = CronetEngineBase.DEFAULT_NETWORK_HANDLE;
     // Idempotency of the request.
     @CronetEngineBase.Idempotency
     private int mIdempotency = DEFAULT_IDEMPOTENCY;
@@ -204,12 +206,22 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
     }
 
     @Override
+    public UrlRequestBuilderImpl bindToNetwork(long networkHandle) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            throw new UnsupportedOperationException(
+                    "The multi-network API is available starting from Android Marshmallow");
+        }
+        mNetworkHandle = networkHandle;
+        return this;
+    }
+
+    @Override
     public UrlRequestBase build() {
         @SuppressLint("WrongConstant") // TODO(jbudorick): Remove this after rolling to the N SDK.
         final UrlRequestBase request = mCronetEngine.createRequest(mUrl, mCallback, mExecutor,
                 mPriority, mRequestAnnotations, mDisableCache, mDisableConnectionMigration,
                 mAllowDirectExecutor, mTrafficStatsTagSet, mTrafficStatsTag, mTrafficStatsUidSet,
-                mTrafficStatsUid, mRequestFinishedListener, mIdempotency);
+                mTrafficStatsUid, mRequestFinishedListener, mIdempotency, mNetworkHandle);
         if (mMethod != null) {
             request.setHttpMethod(mMethod);
         }

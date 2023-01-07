@@ -1,4 +1,4 @@
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 from __future__ import print_function
 
+import collections
 import codecs
 import filecmp
 import getopt
@@ -447,8 +448,7 @@ are exported to translation interchange files (e.g. XMB files), etc.
     # Print out any fallback warnings, and missing translation errors, and
     # exit with an error code if there are missing translations in a non-pseudo
     # and non-official build.
-    warnings = (self.res.UberClique().MissingTranslationsReport().
-        encode('ascii', 'replace'))
+    warnings = self.res.UberClique().MissingTranslationsReport()
     if warnings:
       self.VerboseOut(warnings)
     if self.res.UberClique().HasMissingTranslations():
@@ -472,25 +472,27 @@ are exported to translation interchange files (e.g. XMB files), etc.
     if asserted != actual:
       missing = list(set(asserted) - set(actual))
       extra = list(set(actual) - set(asserted))
+      duplicates = [
+          path for path, count in collections.Counter(actual).items()
+          if count > 1
+      ]
       error = '''Asserted file list does not match.
 
-Expected output files:
-%s
-Actual output files:
-%s
 Missing output files:
 %s
 Extra output files:
 %s
+Duplicate actual output files:
+%s
 '''
-      print(error % ('\n'.join(asserted), '\n'.join(actual), '\n'.join(missing),
-                     ' \n'.join(extra)))
+      print(error %
+            ('\n'.join(missing), '\n'.join(extra), '\n'.join(duplicates)))
       return False
     return True
 
 
   def GenerateDepfile(self, depfile, depdir, first_ids_file, depend_on_stamp):
-    '''Generate a depfile that contains the imlicit dependencies of the input
+    '''Generate a depfile that contains the implicit dependencies of the input
     grd. The depfile will be in the same format as a makefile, and will contain
     references to files relative to |depdir|. It will be put in |depfile|.
 

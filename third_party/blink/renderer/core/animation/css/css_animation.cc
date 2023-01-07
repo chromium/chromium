@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ namespace blink {
 CSSAnimation::CSSAnimation(ExecutionContext* execution_context,
                            AnimationTimeline* timeline,
                            AnimationEffect* content,
-                           int animation_index,
+                           wtf_size_t animation_index,
                            const String& animation_name)
     : Animation(execution_context, timeline, content),
       animation_index_(animation_index),
@@ -60,10 +60,10 @@ void CSSAnimation::setTimeline(AnimationTimeline* timeline) {
   ignore_css_timeline_ = true;
 }
 
-void CSSAnimation::setStartTime(CSSNumberish start_time_ms,
+void CSSAnimation::setStartTime(const V8CSSNumberish* start_time,
                                 ExceptionState& exception_state) {
   PlayStateTransitionScope scope(*this);
-  Animation::setStartTime(start_time_ms, exception_state);
+  Animation::setStartTime(start_time, exception_state);
 }
 
 AnimationEffect::EventDelegate* CSSAnimation::CreateEventDelegate(

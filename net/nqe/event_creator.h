@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"
 #include "net/nqe/effective_connection_type.h"
@@ -19,14 +17,16 @@ namespace net {
 
 class NetLogWithSource;
 
-namespace nqe {
-
-namespace internal {
+namespace nqe::internal {
 
 // Class that adds net log events for network quality estimator.
 class NET_EXPORT_PRIVATE EventCreator {
  public:
   explicit EventCreator(NetLogWithSource net_log);
+
+  EventCreator(const EventCreator&) = delete;
+  EventCreator& operator=(const EventCreator&) = delete;
+
   ~EventCreator();
 
   // May add network quality changed event to the net-internals log if there
@@ -42,19 +42,16 @@ class NET_EXPORT_PRIVATE EventCreator {
   NetLogWithSource net_log_;
 
   // The effective connection type when the net log event was last added.
-  EffectiveConnectionType past_effective_connection_type_;
+  EffectiveConnectionType past_effective_connection_type_ =
+      EFFECTIVE_CONNECTION_TYPE_UNKNOWN;
 
   //  The network quality when the net log event was last added.
   NetworkQuality past_network_quality_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(EventCreator);
 };
 
-}  // namespace internal
-
-}  // namespace nqe
+}  // namespace nqe::internal
 
 }  // namespace net
 

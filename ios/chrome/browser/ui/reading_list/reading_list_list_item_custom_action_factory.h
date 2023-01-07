@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@
     incognitoDelegate;
 
 // Creates an array of custom a11y actions for a reading list cell configured
-// for |item| with |status|.
+// for `item` with `status`.
 - (NSArray<UIAccessibilityCustomAction*>*)customActionsForItem:
     (id<ReadingListListItem>)item;
 

@@ -53,11 +53,11 @@ class ImageDecodingStoreTest : public testing::Test,
     ASSERT_TRUE(false);
   }
 
-  ImageFrame::Status GetStatus(size_t index) override {
+  ImageFrame::Status GetStatus(wtf_size_t index) override {
     return ImageFrame::kFramePartial;
   }
 
-  size_t FrameCount() override { return 1; }
+  wtf_size_t FrameCount() override { return 1; }
   int RepetitionCount() const override { return kAnimationNone; }
   base::TimeDelta FrameDuration() const override { return base::TimeDelta(); }
 

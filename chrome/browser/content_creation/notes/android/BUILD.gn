@@ -1,0 +1,21 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//chrome/android/features/android_library_factory_tmpl.gni")
+
+android_library("public_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationCoordinator.java" ]
+}
+
+android_library_factory("factory_java") {
+  deps = [
+    ":public_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/share:java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+
+  sources = [ "//chrome/browser/content_creation/notes/internal/android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationCoordinatorFactory.java" ]
+}

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_gdi_object.h"
@@ -37,6 +38,9 @@ class SystemFonts {
     static base::NoDestructor<SystemFonts> instance;
     return instance.get();
   }
+
+  SystemFonts(const SystemFonts&) = delete;
+  SystemFonts& operator=(const SystemFonts&) = delete;
 
   void ResetForTesting() {
     SystemFonts::is_initialized_ = false;
@@ -69,7 +73,7 @@ class SystemFonts {
                             LOGFONT* logfont) {
     DCHECK_GT(font_adjustment.font_scale, 0.0);
     LONG new_height =
-        LONG{std::round(logfont->lfHeight * font_adjustment.font_scale)};
+        base::ClampRound<LONG>(logfont->lfHeight * font_adjustment.font_scale);
     if (logfont->lfHeight && !new_height)
       new_height = logfont->lfHeight > 0 ? 1 : -1;
     logfont->lfHeight = new_height;
@@ -231,8 +235,6 @@ class SystemFonts {
 
   // Minimum size callback.
   static GetMinimumFontSizeCallback get_minimum_font_size_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemFonts);
 };
 
 // static

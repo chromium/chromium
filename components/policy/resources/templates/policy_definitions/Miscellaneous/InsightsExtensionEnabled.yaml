@@ -1,0 +1,28 @@
+arc_support: This policy has no effect on the reporting done by Android.
+caption: Enable insights extension for reporting usage metrics
+default: false
+desc: |-
+  The insights extension reports user internet download and upload speed, user idle time, and application insights.
+
+        If the policy is set to enabled, the insights extension will be installed and report metrics.
+
+        If the policy is not set or set to disabled, then the insights extension will not be installed and will not report metrics.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable insights extension
+  value: true
+- caption: Disable insights extension
+  value: false
+owners:
+- cros-reporting-team@google.com
+- vshenvi@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:103-
+tags:
+- admin-sharing
+type: main

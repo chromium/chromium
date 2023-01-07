@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,11 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_features.h"
 #include "net/base/load_flags.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace content {
@@ -26,7 +27,7 @@ namespace content {
 namespace {
 
 constexpr char kSignedExchangeEnabledAcceptHeaderForPrefetch[] =
-    "application/signed-exchange;v=b3;q=0.9,*/*;q=0.8";
+    "application/signed-exchange;v=b3;q=0.7,*/*;q=0.8";
 
 }  // namespace
 
@@ -35,7 +36,7 @@ PrefetchURLLoader::PrefetchURLLoader(
     uint32_t options,
     int frame_tree_node_id,
     const network::ResourceRequest& resource_request,
-    const net::NetworkIsolationKey& network_isolation_key,
+    const net::NetworkAnonymizationKey& network_anonymization_key,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
     scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory,
@@ -49,7 +50,7 @@ PrefetchURLLoader::PrefetchURLLoader(
     RecursivePrefetchTokenGenerator recursive_prefetch_token_generator)
     : frame_tree_node_id_(frame_tree_node_id),
       resource_request_(resource_request),
-      network_isolation_key_(network_isolation_key),
+      network_anonymization_key_(network_anonymization_key),
       network_loader_factory_(std::move(network_loader_factory)),
       forwarding_client_(std::move(client)),
       url_loader_throttles_getter_(url_loader_throttles_getter),
@@ -72,13 +73,12 @@ PrefetchURLLoader::PrefetchURLLoader(
     resource_request_.headers.SetHeader(
         net::HttpRequestHeaders::kAccept,
         kSignedExchangeEnabledAcceptHeaderForPrefetch);
-    if (prefetched_signed_exchange_cache &&
-        resource_request.is_signed_exchange_prefetch_cache_enabled) {
+    if (prefetched_signed_exchange_cache) {
       prefetched_signed_exchange_cache_adapter_ =
           std::make_unique<PrefetchedSignedExchangeCacheAdapter>(
               std::move(prefetched_signed_exchange_cache),
-              BrowserContext::GetBlobStorageContext(browser_context),
-              resource_request.url, this);
+              browser_context->GetBlobStorageContext(), resource_request.url,
+              this);
     }
   }
 
@@ -96,7 +96,7 @@ void PrefetchURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
-    const base::Optional<GURL>& new_url) {
+    const absl::optional<GURL>& new_url) {
   DCHECK(modified_headers.IsEmpty())
       << "Redirect with modified headers was not supported yet. "
          "crbug.com/845683";
@@ -113,7 +113,7 @@ void PrefetchURLLoader::FollowRedirect(
   loader_->FollowRedirect(
       removed_headers, net::HttpRequestHeaders() /* modified_headers */,
       net::HttpRequestHeaders() /* modified_cors_exempt_headers */,
-      base::nullopt);
+      absl::nullopt);
 }
 
 void PrefetchURLLoader::SetPriority(net::RequestPriority priority,
@@ -142,7 +142,9 @@ void PrefetchURLLoader::OnReceiveEarlyHints(
 }
 
 void PrefetchURLLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response) {
+    network::mojom::URLResponseHeadPtr response,
+    mojo::ScopedDataPipeConsumerHandle body,
+    absl::optional<mojo_base::BigBuffer> cached_metadata) {
   if (is_signed_exchange_handling_enabled_ &&
       signed_exchange_utils::ShouldHandleAsSignedHTTPExchange(
           resource_request_.url, *response)) {
@@ -155,9 +157,9 @@ void PrefetchURLLoader::OnReceiveResponse(
     signed_exchange_prefetch_handler_ =
         std::make_unique<SignedExchangePrefetchHandler>(
             frame_tree_node_id_, resource_request_, std::move(response),
-            mojo::ScopedDataPipeConsumerHandle(), loader_.Unbind(),
-            client_receiver_.Unbind(), network_loader_factory_,
-            url_loader_throttles_getter_, this, network_isolation_key_,
+            std::move(body), loader_.Unbind(), client_receiver_.Unbind(),
+            network_loader_factory_, url_loader_throttles_getter_, this,
+            network_anonymization_key_,
             signed_exchange_prefetch_metric_recorder_, accept_langs_,
             keep_entry_for_prefetch_cache);
     return;
@@ -168,7 +170,7 @@ void PrefetchURLLoader::OnReceiveResponse(
   // token. The renderer will propagate this token to recursive prefetches
   // coming from this response, in the form of preload headers. This token is
   // later used by the PrefetchURLLoaderService to recover the correct
-  // NetworkIsolationKey to use when fetching the request. In the Signed
+  // NetworkAnonymizationKey to use when fetching the request. In the Signed
   // Exchange case, we do this after redirects from the outer response, because
   // we redirect back here for the inner response.
   if (resource_request_.load_flags & net::LOAD_RESTRICTED_PREFETCH) {
@@ -178,7 +180,31 @@ void PrefetchURLLoader::OnReceiveResponse(
     response->recursive_prefetch_token = recursive_prefetch_token;
   }
 
-  forwarding_client_->OnReceiveResponse(std::move(response));
+  // Just drop any cached metadata; we don't need to forward it to the renderer
+  // for prefetch.
+  cached_metadata.reset();
+
+  if (!body) {
+    forwarding_client_->OnReceiveResponse(std::move(response),
+                                          mojo::ScopedDataPipeConsumerHandle(),
+                                          absl::nullopt);
+    return;
+  }
+
+  response_ = std::move(response);
+  if (prefetched_signed_exchange_cache_adapter_ &&
+      signed_exchange_prefetch_handler_) {
+    prefetched_signed_exchange_cache_adapter_->OnStartLoadingResponseBody(
+        std::move(body));
+    return;
+  }
+
+  // Just drain the original response's body here.
+  DCHECK(!pipe_drainer_);
+  pipe_drainer_ =
+      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
+
+  SendEmptyBody();
 }
 
 void PrefetchURLLoader::OnReceiveRedirect(
@@ -205,30 +231,8 @@ void PrefetchURLLoader::OnUploadProgress(int64_t current_position,
                                        std::move(callback));
 }
 
-void PrefetchURLLoader::OnReceiveCachedMetadata(mojo_base::BigBuffer data) {
-  // Just drop this; we don't need to forward this to the renderer
-  // for prefetch.
-}
-
 void PrefetchURLLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
   forwarding_client_->OnTransferSizeUpdated(transfer_size_diff);
-}
-
-void PrefetchURLLoader::OnStartLoadingResponseBody(
-    mojo::ScopedDataPipeConsumerHandle body) {
-  if (prefetched_signed_exchange_cache_adapter_ &&
-      signed_exchange_prefetch_handler_) {
-    prefetched_signed_exchange_cache_adapter_->OnStartLoadingResponseBody(
-        std::move(body));
-    return;
-  }
-
-  // Just drain the original response's body here.
-  DCHECK(!pipe_drainer_);
-  pipe_drainer_ =
-      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
-
-  SendEmptyBody();
 }
 
 void PrefetchURLLoader::OnComplete(
@@ -255,7 +259,9 @@ bool PrefetchURLLoader::SendEmptyBody() {
     client_receiver_.reset();
     return false;
   }
-  forwarding_client_->OnStartLoadingResponseBody(std::move(consumer));
+  DCHECK(response_);
+  forwarding_client_->OnReceiveResponse(std::move(response_),
+                                        std::move(consumer), absl::nullopt);
   return true;
 }
 

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,8 @@ class NearbyShareProfileInfoProviderImpl
   ~NearbyShareProfileInfoProviderImpl() override;
 
   // NearbyShareProfileInfoProvider:
-  base::Optional<std::u16string> GetGivenName() const override;
-  base::Optional<std::string> GetProfileUserName() const override;
+  absl::optional<std::u16string> GetGivenName() const override;
+  absl::optional<std::string> GetProfileUserName() const override;
 
  private:
   Profile* profile_;

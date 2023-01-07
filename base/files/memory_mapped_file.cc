@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ MemoryMappedFile::~MemoryMappedFile() {
   CloseHandles();
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 bool MemoryMappedFile::Initialize(const FilePath& file_name, Access access) {
   if (IsValid())
     return false;
@@ -48,10 +48,10 @@ bool MemoryMappedFile::Initialize(const FilePath& file_name, Access access) {
       // Can't open with "extend" because no maximum size is known.
       NOTREACHED();
       break;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case READ_CODE_IMAGE:
-      flags |= File::FLAG_OPEN | File::FLAG_READ | File::FLAG_EXCLUSIVE_WRITE |
-               File::FLAG_EXECUTE;
+      flags |= File::FLAG_OPEN | File::FLAG_READ |
+               File::FLAG_WIN_EXCLUSIVE_WRITE | File::FLAG_WIN_EXECUTE;
       break;
 #endif
   }
@@ -89,7 +89,7 @@ bool MemoryMappedFile::Initialize(File file,
           return false;
         }
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case READ_ONLY:
     case READ_WRITE:
       // Ensure that the region values are valid.
@@ -98,7 +98,7 @@ bool MemoryMappedFile::Initialize(File file,
         return false;
       }
       break;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case READ_CODE_IMAGE:
       // Can't open with "READ_CODE_IMAGE", not supported outside Windows
       // or with a |region|.
@@ -134,12 +134,15 @@ void MemoryMappedFile::CalculateVMAlignedBoundaries(int64_t start,
                                                     size_t* aligned_size,
                                                     int32_t* offset) {
   // Sadly, on Windows, the mmap alignment is not just equal to the page size.
-  auto mask = SysInfo::VMAllocationGranularity() - 1;
-  DCHECK(IsValueInRangeForNumericType<int32_t>(mask));
-  *offset = start & mask;
-  *aligned_start = start & ~mask;
-  *aligned_size = (size + *offset + mask) & ~mask;
+  uint64_t mask = SysInfo::VMAllocationGranularity() - 1;
+  CHECK(IsValueInRangeForNumericType<int32_t>(mask));
+  *offset = static_cast<int32_t>(static_cast<uint64_t>(start) & mask);
+  *aligned_start = static_cast<int64_t>(static_cast<uint64_t>(start) & ~mask);
+  // The DCHECK above means bit 31 is not set in `mask`, which in turn means
+  // *offset is positive.  Therefore casting it to a size_t is safe.
+  *aligned_size =
+      (size + static_cast<size_t>(*offset) + static_cast<size_t>(mask)) & ~mask;
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace base

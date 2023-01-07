@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/sync_socket.h"
@@ -44,6 +45,9 @@ class TestCancelableSyncSocket : public base::CancelableSyncSocket {
 
   void ExpectOwnershipTransfer() { expect_ownership_transfer_ = true; }
 
+  TestCancelableSyncSocket(const TestCancelableSyncSocket&) = delete;
+  TestCancelableSyncSocket& operator=(const TestCancelableSyncSocket&) = delete;
+
   ~TestCancelableSyncSocket() override {
     // When the handle is sent over mojo, mojo takes ownership over it and
     // closes it. We have to make sure we do not also retain the handle in the
@@ -54,8 +58,6 @@ class TestCancelableSyncSocket : public base::CancelableSyncSocket {
 
  private:
   bool expect_ownership_transfer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCancelableSyncSocket);
 };
 
 class MockDelegate : public AudioOutputDelegate {
@@ -163,7 +165,7 @@ class MojoAudioOutputStreamTest : public Test {
   void ExpectDelegateCreation() {
     delegate_ = new StrictMock<MockDelegate>();
     mock_delegate_factory_.PrepareDelegateForCreation(
-        base::WrapUnique(delegate_));
+        base::WrapUnique(delegate_.get()));
     EXPECT_TRUE(
         base::CancelableSyncSocket::CreatePair(&local_, foreign_socket_.get()));
     mem_ = base::UnsafeSharedMemoryRegion::Create(kShmemSize);
@@ -176,7 +178,7 @@ class MojoAudioOutputStreamTest : public Test {
   base::CancelableSyncSocket local_;
   std::unique_ptr<TestCancelableSyncSocket> foreign_socket_;
   base::UnsafeSharedMemoryRegion mem_;
-  StrictMock<MockDelegate>* delegate_ = nullptr;
+  raw_ptr<StrictMock<MockDelegate>> delegate_ = nullptr;
   AudioOutputDelegate::EventHandler* delegate_event_handler_ = nullptr;
   StrictMock<MockDelegateFactory> mock_delegate_factory_;
   StrictMock<MockDeleter> deleter_;

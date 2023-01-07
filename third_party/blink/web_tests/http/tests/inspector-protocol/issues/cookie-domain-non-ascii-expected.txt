@@ -1,0 +1,19 @@
+Verifies that Set-Cookie lines with a domain attribute including non-ASCII characters file an issue.
+
+Issue reported: {
+    code : CookieIssue
+    details : {
+        cookieIssueDetails : {
+            cookieExclusionReasons : [
+            ]
+            cookieUrl : https://cookie.test:8443/inspector-protocol/network/resources/set-cookie-non-ascii-domain.php
+            cookieWarningReasons : [
+                [0] : WarnDomainNonASCII
+            ]
+            operation : SetCookie
+            rawCookieLine : name=value;domain=éxample.com
+            siteForCookies : https://cookie.test/
+        }
+    }
+}
+

@@ -1,0 +1,21 @@
+caption: Restrict the range of local UDP ports used by WebRTC
+desc: |-
+  If the policy is set, the UDP port range used by WebRTC is restricted to the specified port interval (endpoints included).
+
+        If the policy is not set, or if it is set to the empty string or an invalid port range, WebRTC is allowed to use any available local UDP port.
+example_value: 10000-11999
+features:
+  dynamic_refresh: false
+  per_profile: true
+future_on:
+- fuchsia
+owners:
+- guidou@chromium.org
+schema:
+  type: string
+supported_on:
+- chrome.*:54-
+- chrome_os:54-
+- android:54-
+tags: []
+type: string

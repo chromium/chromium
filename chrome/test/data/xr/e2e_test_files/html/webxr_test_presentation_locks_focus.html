@@ -13,8 +13,6 @@ focus, that the presenting frame still receives input.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
-      setup({single_test: true});
-
       var rafCount = 0;
 
       function stepSetupFocusLoss() {
@@ -25,7 +23,10 @@ focus, that the presenting frame still receives input.
       }
 
       window.onblur = function() {
+        console.log('Blurred, setting second frame callback');
         onImmersiveXRFrameCallback = function() {
+          console.log(
+              'Got immersive frame while blurred. rafCount: ' + rafCount);
           if (rafCount == 3) {
             done();
           }

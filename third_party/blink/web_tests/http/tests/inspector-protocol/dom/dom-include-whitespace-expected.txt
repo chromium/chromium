@@ -1,0 +1,6 @@
+Tests that DOM.enable(includeWhitespace) works
+includeWhitespace:all - childNodeCount: 5, children: 5
+includeWhitespace:none - childNodeCount: 2, children: 2
+includeWhitespace default - childNodeCount: 2, children: 2
+implicit - childNodeCount: 2, children: 2
+

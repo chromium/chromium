@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@
   for (var i = 0; i < testCases.length; i += 2) {
     var url = testCases[i];
     TestRunner.addResult('Testing "' + url + '"');
-    var regexValue = Bindings.ignoreListManager._urlToRegExpString(url);
+    var regexValue = Bindings.ignoreListManager.urlToRegExpString(url);
     TestRunner.assertEquals(testCases[i + 1], regexValue);
     if (!regexValue)
       continue;

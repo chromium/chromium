@@ -69,7 +69,7 @@ void SVGListPropertyBase::Replace(uint32_t index,
 }
 
 String SVGListPropertyBase::ValueAsString() const {
-  if (values_.IsEmpty())
+  if (values_.empty())
     return String();
 
   StringBuilder builder;

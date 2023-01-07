@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/search_engines/template_url_id.h"
 #include "components/webdata/common/web_database_table.h"
 
@@ -36,7 +35,8 @@ class Statement;
 //   keyword
 //   favicon_url
 //   url
-//   safe_for_autoreplace
+//   safe_for_autoreplace   This is set to false for any entry that was manually
+//                          added or edited by the user.
 //   originating_url
 //   date_created           This column was added after we allowed keywords.
 //                          Keywords created before we started tracking
@@ -68,11 +68,16 @@ class Statement;
 //                          version 69.
 //   created_from_play_api  See TemplateURLData::created_from_play_api. This was
 //                          added in version 82.
+//   is_active              See TemplateURLData::is_active. This was added
+//                          in version 97.
+//   starter_pack_id        See TemplateURLData::starter_pack_id.  This was
+//                          added in version 103.
 //
 // This class also manages some fields in the |meta| table:
 //
 // Default Search Provider ID        The id of the default search provider.
 // Builtin Keyword Version           The version of builtin keywords data.
+// Starter Pack Keyword Version      The version of starter pack data.
 //
 class KeywordTable : public WebDatabaseTable {
  public:
@@ -91,6 +96,10 @@ class KeywordTable : public WebDatabaseTable {
   static const char kDefaultSearchProviderKey[];
 
   KeywordTable();
+
+  KeywordTable(const KeywordTable&) = delete;
+  KeywordTable& operator=(const KeywordTable&) = delete;
+
   ~KeywordTable() override;
 
   // Retrieves the KeywordTable* owned by |database|.
@@ -120,6 +129,10 @@ class KeywordTable : public WebDatabaseTable {
   bool SetBuiltinKeywordVersion(int version);
   int GetBuiltinKeywordVersion();
 
+  // Version of built-in starter pack keywords (@bookmarks, @settings, etc.).
+  bool SetStarterPackKeywordVersion(int version);
+  int GetStarterPackKeywordVersion();
+
   // Returns a comma-separated list of the keyword columns for the current
   // version of the table.
   static std::string GetKeywordColumns();
@@ -132,6 +145,8 @@ class KeywordTable : public WebDatabaseTable {
   bool MigrateToVersion76RemoveInstantColumns();
   bool MigrateToVersion77IncreaseTimePrecision();
   bool MigrateToVersion82AddCreatedFromPlayApiColumn();
+  bool MigrateToVersion97AddIsActiveColumn();
+  bool MigrateToVersion103AddStarterPackIdColumn();
 
  private:
   friend class KeywordTableTest;
@@ -143,7 +158,7 @@ class KeywordTable : public WebDatabaseTable {
   // Fills |data| with the data in |s|.  Returns false if we couldn't fill
   // |data| for some reason, e.g. |s| tried to set one of the fields to an
   // illegal value.
-  static bool GetKeywordDataFromStatement(const sql::Statement& s,
+  static bool GetKeywordDataFromStatement(sql::Statement& s,
                                           TemplateURLData* data);
 
   // Adds a new keyword, updating the id field on success.
@@ -164,8 +179,6 @@ class KeywordTable : public WebDatabaseTable {
   bool GetKeywordAsString(TemplateURLID id,
                           const std::string& table_name,
                           std::string* result);
-
-  DISALLOW_COPY_AND_ASSIGN(KeywordTable);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_KEYWORD_TABLE_H_

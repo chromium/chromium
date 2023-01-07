@@ -1,16 +1,18 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_activity_simulator.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -24,16 +26,38 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/version_info/channel.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/web_contents_tester.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/scrollbar_size.h"
 #include "ui/views/controls/webview/webview.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/recently_audible_helper.h"
 #endif
 
 namespace {
+
+// Class for BrowserView unit tests for the loading animation feature.
+// Creates a Browser with a |features_list| where
+// kStopLoadingAnimationForHiddenWindow is enabled before setting GPU thread.
+class BrowserViewTestWithStopLoadingAnimationForHiddenWindow
+    : public TestWithBrowserView {
+ public:
+  BrowserViewTestWithStopLoadingAnimationForHiddenWindow() {
+    feature_list_.InitAndEnableFeature(
+        features::kStopLoadingAnimationForHiddenWindow);
+  }
+
+  BrowserViewTestWithStopLoadingAnimationForHiddenWindow(
+      const BrowserViewTestWithStopLoadingAnimationForHiddenWindow&) = delete;
+  BrowserViewTestWithStopLoadingAnimationForHiddenWindow& operator=(
+      const BrowserViewTestWithStopLoadingAnimationForHiddenWindow&) = delete;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // Tab strip bounds depend on the window frame sizes.
 gfx::Point ExpectedTabStripRegionOrigin(BrowserView* browser_view) {
@@ -165,7 +189,7 @@ TEST_F(BrowserViewTest, DISABLED_BrowserViewLayout) {
 }
 
 // TODO(https://crbug.com/1020758): Flaky on Linux.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FindBarBoundingBoxLocationBar \
   DISABLED_FindBarBoundingBoxLocationBar
 #else
@@ -206,13 +230,64 @@ TEST_F(BrowserViewTest, FindBarBoundingBoxNoLocationBar) {
   const gfx::Rect find_bar_bounds = browser_view()->GetFindBarBoundingBox();
   gfx::Rect contents_bounds = contents_container->ConvertRectToWidget(
       contents_container->GetLocalBounds());
-  contents_bounds.Inset(0, 0, gfx::scrollbar_size(), 0);
+  contents_bounds.Inset(gfx::Insets::TLBR(0, 0, 0, gfx::scrollbar_size()));
 
   EXPECT_EQ(contents_bounds.ToString(), find_bar_bounds.ToString());
 }
 
+// Tests that a browser window is correctly associated to a WebContents that
+// belongs to that window's UI hierarchy.
+TEST_F(BrowserViewTest, FindBrowserWindowWithWebContents) {
+  auto web_view = std::make_unique<views::WebView>(browser()->profile());
+  ASSERT_NE(nullptr, web_view->GetWebContents());
+
+  // If the web contents does not belong browser's UI hierarchy there should not
+  // be a browser window associated with the contents.
+  EXPECT_EQ(nullptr, BrowserWindow::FindBrowserWindowWithWebContents(
+                         web_view->GetWebContents()));
+
+  // After adding the web contents to the browser's UI hierarchy the browser
+  // window should be correctly associated with the contents.
+  auto* web_view_ptr = browser_view()->AddChildView(std::move(web_view));
+  EXPECT_EQ(browser()->window(),
+            BrowserWindow::FindBrowserWindowWithWebContents(
+                web_view_ptr->GetWebContents()));
+
+  // Removing the web contents from the browser's UI hierarchy should
+  // disassociate it with the browser window.
+  web_view = browser_view()->RemoveChildViewT(web_view_ptr);
+  EXPECT_EQ(nullptr, BrowserWindow::FindBrowserWindowWithWebContents(
+                         web_view->GetWebContents()));
+}
+
+// Tests that tab contents are correctly associated with their browser window,
+// even when non-active.
+TEST_F(BrowserViewTest, FindBrowserWindowWithWebContentsTabSwitch) {
+  AddTab(browser_view()->browser(), GURL("about:blank"));
+  content::WebContents* original_active_contents =
+      browser_view()->GetActiveWebContents();
+  EXPECT_EQ(browser()->window(),
+            BrowserWindow::FindBrowserWindowWithWebContents(
+                original_active_contents));
+
+  // Inactive tabs (aka tabs with their web contents not currently embedded in
+  // the browser's ContentWebView) should still be associated with their hosting
+  // browser window.
+  AddTab(browser_view()->browser(), GURL("about:blank"));
+  content::WebContents* new_active_contents =
+      browser_view()->GetActiveWebContents();
+  EXPECT_NE(original_active_contents, browser_view()->GetActiveWebContents());
+  EXPECT_EQ(new_active_contents, browser_view()->GetActiveWebContents());
+  EXPECT_EQ(browser()->window(),
+            BrowserWindow::FindBrowserWindowWithWebContents(
+                original_active_contents));
+  EXPECT_EQ(
+      browser()->window(),
+      BrowserWindow::FindBrowserWindowWithWebContents(new_active_contents));
+}
+
 // On macOS, most accelerators are handled by CommandDispatcher.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // Test that repeated accelerators are processed or ignored depending on the
 // commands that they refer to. The behavior for different commands is dictated
 // by IsCommandRepeatable() in chrome/browser/ui/views/accelerator_table.h.
@@ -231,11 +306,11 @@ TEST_F(BrowserViewTest, DISABLED_RepeatedAccelerators) {
       ui::VKEY_TAB, ui::EF_CONTROL_DOWN | ui::EF_IS_REPEAT);
   EXPECT_TRUE(browser_view()->AcceleratorPressed(kNextTabRepeatAccel));
 }
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 // Test that bookmark bar view becomes invisible when closing the browser.
 // TODO(https://crbug.com/1000251): Flaky on Linux.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_BookmarkBarInvisibleOnShutdown \
   DISABLED_BookmarkBarInvisibleOnShutdown
 #else
@@ -308,7 +383,7 @@ TEST_F(BrowserViewTest, DISABLED_AccessibleWindowTitle) {
           TestingProfile::Builder().BuildIncognito(profile)));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Tests that audio playing state is reflected in the "Window" menu on Mac.
 TEST_F(BrowserViewTest, TitleAudioIndicators) {
   std::u16string playing_icon = u"\U0001F50A";
@@ -345,10 +420,11 @@ class BrowserViewHostedAppTest : public TestWithBrowserView {
   BrowserViewHostedAppTest()
       : TestWithBrowserView(Browser::TYPE_POPUP,
                             BrowserWithTestWindowTest::HostedApp()) {}
-  ~BrowserViewHostedAppTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserViewHostedAppTest);
+  BrowserViewHostedAppTest(const BrowserViewHostedAppTest&) = delete;
+  BrowserViewHostedAppTest& operator=(const BrowserViewHostedAppTest&) = delete;
+
+  ~BrowserViewHostedAppTest() override {}
 };
 
 // Test basic layout for hosted apps.
@@ -392,4 +468,28 @@ TEST_F(BrowserViewWindowTypeTest, TestWindowIsNotReturned) {
   // non-BrowserView BrowserWindow instance - in this case, a TestBrowserWindow.
   EXPECT_NE(nullptr, browser()->window());
   EXPECT_EQ(nullptr, BrowserView::GetBrowserViewForBrowser(browser()));
+}
+
+// Tests Feature to ensure that the loading animation is not rendered after the
+// window changes to hidden.
+TEST_F(BrowserViewTestWithStopLoadingAnimationForHiddenWindow,
+       LoadingAnimationNotRenderedWhenWindowHidden) {
+  TabActivitySimulator tab_activity_simulator;
+  content::WebContents* web_contents =
+      tab_activity_simulator.AddWebContentsAndNavigate(
+          browser()->tab_strip_model(), GURL("about:blank"));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("about:blank"), web_contents);
+  navigation->SetKeepLoading(true);
+
+  browser_view()->frame()->Show();
+
+  EXPECT_TRUE(browser()->tab_strip_model()->TabsAreLoading());
+  EXPECT_TRUE(browser_view()->IsLoadingAnimationRunningForTesting());
+
+  browser_view()->frame()->Hide();
+
+  EXPECT_TRUE(browser()->tab_strip_model()->TabsAreLoading());
+  EXPECT_FALSE(browser_view()->IsLoadingAnimationRunningForTesting());
 }

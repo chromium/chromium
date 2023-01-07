@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -51,7 +51,7 @@ TEST_P(AeadTest, SealOpenSpan) {
       aead.Seal(kPlaintext, nonce, kAdditionalData);
   EXPECT_LT(sizeof(kPlaintext), ciphertext.size());
 
-  base::Optional<std::vector<uint8_t>> decrypted =
+  absl::optional<std::vector<uint8_t>> decrypted =
       aead.Open(ciphertext, nonce, kAdditionalData);
   ASSERT_TRUE(decrypted);
   ASSERT_EQ(decrypted->size(), sizeof(kPlaintext));

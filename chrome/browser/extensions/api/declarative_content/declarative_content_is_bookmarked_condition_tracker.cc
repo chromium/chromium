@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ const char kIsBookmarkedRequiresBookmarkPermission[] =
 
 bool HasBookmarkAPIPermission(const Extension* extension) {
   return extension->permissions_data()->HasAPIPermission(
-      APIPermission::kBookmark);
+      mojom::APIPermissionID::kBookmark);
 }
 
 }  // namespace
@@ -48,20 +48,19 @@ DeclarativeContentIsBookmarkedPredicate::Create(
     const Extension* extension,
     const base::Value& value,
     std::string* error) {
-  bool is_bookmarked = false;
-  if (value.GetAsBoolean(&is_bookmarked)) {
-    if (!HasBookmarkAPIPermission(extension)) {
-      *error = kIsBookmarkedRequiresBookmarkPermission;
-      return std::unique_ptr<DeclarativeContentIsBookmarkedPredicate>();
-    } else {
-      return base::WrapUnique(new DeclarativeContentIsBookmarkedPredicate(
-          evaluator, extension, is_bookmarked));
-    }
-  } else {
+  if (!value.is_bool()) {
     *error = base::StringPrintf(kIsBookmarkedInvalidTypeOfParameter,
                                 declarative_content_constants::kIsBookmarked);
-    return std::unique_ptr<DeclarativeContentIsBookmarkedPredicate>();
+    return nullptr;
   }
+
+  if (!HasBookmarkAPIPermission(extension)) {
+    *error = kIsBookmarkedRequiresBookmarkPermission;
+    return nullptr;
+  }
+
+  return base::WrapUnique(new DeclarativeContentIsBookmarkedPredicate(
+      evaluator, extension, value.GetBool() /* is_bookmarked */));
 }
 
 ContentPredicateEvaluator*
@@ -200,6 +199,10 @@ void DeclarativeContentIsBookmarkedConditionTracker::OnWebContentsNavigation(
   per_web_contents_tracker_[contents]->UpdateState(true);
 }
 
+void DeclarativeContentIsBookmarkedConditionTracker::OnWatchedPageChanged(
+    content::WebContents* contents,
+    const std::vector<std::string>& css_selectors) {}
+
 bool DeclarativeContentIsBookmarkedConditionTracker::EvaluatePredicate(
     const ContentPredicate* predicate,
     content::WebContents* tab) const {
@@ -216,7 +219,8 @@ void DeclarativeContentIsBookmarkedConditionTracker::BookmarkModelChanged() {}
 void DeclarativeContentIsBookmarkedConditionTracker::BookmarkNodeAdded(
     bookmarks::BookmarkModel* model,
     const bookmarks::BookmarkNode* parent,
-    size_t index) {
+    size_t index,
+    bool added_by_user) {
   if (!extensive_bookmark_changes_in_progress_) {
     for (const auto& web_contents_tracker_pair : per_web_contents_tracker_) {
       web_contents_tracker_pair.second->BookmarkAddedForUrl(

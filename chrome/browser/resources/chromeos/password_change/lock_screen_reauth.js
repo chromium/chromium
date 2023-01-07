@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,16 +7,21 @@
  * the lock screen.
  */
 
+import 'chrome://resources/js/cr.m.js';
+import 'chrome://resources/js/cr/event_target.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import './components/oobe_icons.m.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
-import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
-import 'chrome://resources/cr_elements/icons.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import {$} from 'chrome://resources/js/util.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Authenticator, AuthMode, AuthParams, SUPPORTED_PARAMS} from './gaia_auth_host/authenticator.js';
 
 const clearDataType = {
   appcache: true,
@@ -28,9 +33,20 @@ Polymer({
   is: 'lock-reauth',
   behaviors: [I18nBehavior],
 
+  _template: html`{__html_template__}`,
+
   properties: {
     // User non-canonicalized email for display
     email_: String,
+
+
+    /**
+     * Auth Domain property of the authenticator. Updated via events.
+     */
+    authDomain_: {
+      type: String,
+      value: '',
+    },
 
     /**
      * Whether the ‘verify user’ screen is shown.
@@ -80,6 +96,14 @@ Polymer({
       value: false,
     },
 
+    /**
+     * Whether to show Saml Notice Message.
+     */
+    showSamlNoticeMessage_: {
+      type: Boolean,
+      value: false,
+    },
+
     passwordConfirmAttempt_: {
       type: Number,
       value: 0,
@@ -93,7 +117,7 @@ Polymer({
 
   /**
    * The UI component that hosts IdP pages.
-   * @type {!cr.login.Authenticator|undefined}
+   * @type {!Authenticator|undefined}
    */
   authenticator_: undefined,
 
@@ -107,14 +131,14 @@ Polymer({
   /** @override */
   ready() {
     this.signinFrame_ = this.getSigninFrame_();
-    this.authenticator_ = new cr.login.Authenticator(this.signinFrame_);
+    this.authenticator_ = new Authenticator(this.signinFrame_);
+    this.authenticator_.addEventListener('authDomainChange', (e) => {
+      this.authDomain_ = e.newValue;
+    });
     this.authenticator_.addEventListener(
-        'authDomainChange', this.onAuthDomainChange_.bind(this));
+        'authCompleted', (e) => void this.onAuthCompletedMessage_(e));
     this.authenticator_.addEventListener(
-      'authCompleted', this.onAuthCompletedMessage_.bind(this));
-    this.authenticator_.confirmPasswordCallback =
-      this.onAuthConfirmPassword_.bind(this);
-    this.authenticator_.noPasswordCallback = this.onAuthNoPassword_.bind(this);
+        'loadAbort', (e) => void this.onLoadAbortMessage_(e));
     chrome.send('initialize');
   },
 
@@ -126,36 +150,50 @@ Polymer({
     this.isConfirmPassword_ = false;
     this.isManualInput_ = false;
     this.isPasswordChanged_ = false;
+    this.showSamlNoticeMessage_ = false;
+    this.authDomain_ = '';
   },
 
   /**
-   * Invoked when the authDomain property is changed on the authenticator.
-   * @private
+   * Set the orientation which will be used in styling webui.
+   * @param {!Object} is_horizontal whether the orientation is horizontal or
+   *  vertical.
    */
-  onAuthDomainChange_() {
-    // <!--_html_template_start_-->
-    this.$.samlNoticeMessage.textContent =
-      loadTimeData.substituteString('$i18nPolymer{samlNotice}',
-        this.authenticator_.authDomain);
-    // <!--_html_template_end_-->
+  setOrientation(is_horizontal) {
+    if (is_horizontal) {
+      document.documentElement.setAttribute('orientation', 'horizontal');
+    } else {
+      document.documentElement.setAttribute('orientation', 'vertical');
+    }
+  },
+
+  /**
+   * Set the width which will be used in styling webui.
+   * @param {!Object} width the width of the dialog.
+   */
+  setWidth(width) {
+    document.documentElement.style.setProperty(
+      '--lock-screen-reauth-dialog-width', width + 'px');
   },
 
   /**
    * Loads the authentication parameter into the iframe.
-   * @param {!Object} data authenticator parameters bag.
+   * @param {!AuthParams} data authenticator parameters bag.
    */
   loadAuthenticator(data) {
     this.authenticator_.setWebviewPartition(data.webviewPartitionName);
-    let params = {};
-    for (let i in cr.login.Authenticator.SUPPORTED_PARAMS) {
-      const name = cr.login.Authenticator.SUPPORTED_PARAMS[i];
-      if (data[name]) {
+    const params = {};
+    SUPPORTED_PARAMS.forEach(name => {
+      if (data.hasOwnProperty(name)) {
         params[name] = data[name];
       }
-    }
-    params.doSamlRedirect = true;
+    });
+
     this.authenticatorParams_ = params;
     this.email_ = data.email;
+    if (!data['doSamlRedirect']) {
+      this.doGaiaRedirect_();
+    }
     chrome.send('authenticatorLoaded');
   },
 
@@ -173,6 +211,15 @@ Polymer({
   },
 
   /**
+   * Reloads the page.
+   */
+  reloadAuthenticator() {
+    this.signinFrame_.clearData({since: 0}, clearDataType, () => {
+      this.authenticator_.resetStates();
+    });
+  },
+
+  /**
    * @return {!Element}
    * @private
    */
@@ -186,68 +233,58 @@ Polymer({
   },
 
   onAuthCompletedMessage_(e) {
-    let credentials = e.detail;
+    const credentials = e.detail;
     chrome.send('completeAuthentication', [
-      credentials.gaiaId, credentials.email, credentials.password,
-      credentials.usingSAML, credentials.services,
-      credentials.passwordAttributes
+      credentials.gaiaId,
+      credentials.email,
+      credentials.password,
+      credentials.scrapedSAMLPasswords,
+      credentials.usingSAML,
+      credentials.services,
+      credentials.passwordAttributes,
     ]);
+  },
+
+  /**
+   * Invoked when onLoadAbort message received.
+   * @param {!CustomEvent<!Object>} e Event with the payload containing
+   *     additional information about error event like:
+   *     {number} error_code Error code such as net::ERR_INTERNET_DISCONNECTED.
+   *     {string} src The URL that failed to load.
+   * @private
+   */
+  onLoadAbortMessage_(e) {
+    this.onWebviewError_(e.detail);
+  },
+
+  /**
+   * Handler for webview error handling.
+   * @param {!Object} data Additional information about error event like:
+   *     {number} error_code Error code such as net::ERR_INTERNET_DISCONNECTED.
+   *     {string} src The URL that failed to load.
+   * @private
+   */
+  onWebviewError_(data) {
+    chrome.send('webviewLoadAborted', [data.error_code]);
   },
 
   /**
    * Invoked when the user has successfully authenticated via SAML,
    * the Chrome Credentials Passing API was not used and the authenticator needs
    * the user to confirm the scraped password.
-   * @param {string} email The authenticated user's e-mail.
    * @param {number} passwordCount The number of passwords that were scraped.
-   * @private
    */
-  onAuthConfirmPassword_(email, passwordCount) {
+  showSamlConfirmPassword(passwordCount) {
     this.resetState_();
     /** This statement override resetState_ calls.
      * Thus have to be AFTER resetState_. */
     this.isConfirmPassword_ = true;
+    this.isManualInput_ = (passwordCount === 0);
     if (this.passwordConfirmAttempt_ > 0) {
       this.$.passwordInput.value = '';
       this.$.passwordInput.invalid = true;
     }
-  },
-
-  /**
-   * Invoked when the user has successfully authenticated via SAML, the
-   * Chrome Credentials Passing API was not used and no passwords
-   * could be scraped.
-   * The user will be asked to pick a manual password for the device.
-   * @param {string} email The authenticated user's e-mail.
-   * @private
-   */
-  onAuthNoPassword_(email) {
-    this.resetState_();
-    /** These two statement override resetState_ calls.
-     * Thus have to be AFTER resetState_. */
-    this.isConfirmPassword_ = true;
-    this.isManualInput_ = true;
-  },
-
-  /**
-   * Invoked when the dialog where the user enters a manual password for the
-   * device, when password scraping fails.
-   * @param {string} password The password the user entered. Not necessarily
-   *     the same as their SAML password.
-   * @private
-   */
-  onManualPasswordCollected(password) {
-    this.authenticator_.completeAuthWithManualPassword(password);
-  },
-
-  /**
-   * Invoked when the confirm password screen is dismissed.
-   * @param {string} password The password entered at the confirm screen.
-   * @private
-   */
-  onConfirmPasswordCollected(password) {
     this.passwordConfirmAttempt_++;
-    this.authenticator_.verifyConfirmedPassword(password);
   },
 
   /**
@@ -265,23 +302,28 @@ Polymer({
 
   /** @private */
   onVerify_() {
-    this.authenticator_.load(
-      cr.login.Authenticator.AuthMode.DEFAULT, this.authenticatorParams_);
+    this.authenticator_.load(AuthMode.DEFAULT, this.authenticatorParams_);
     this.resetState_();
-    /** This statement override resetStates_ calls.
-     * Thus have to be AFTER resetState_. */
+    /**
+     * These statements override resetStates_ calls.
+     * Thus have to be AFTER resetState_.
+     */
     this.isSamlPage_ = true;
+    this.showSamlNoticeMessage_ = true;
   },
 
   /** @private */
   onConfirm_() {
-    if (!this.$.passwordInput.validate())
+    if (!this.$.passwordInput.validate()) {
       return;
+    }
     if (this.isManualInput_) {
       // When using manual password entry, both passwords must match.
-      let confirmPasswordInput = this.$$('#confirmPasswordInput');
-      if (!confirmPasswordInput.validate())
+      const confirmPasswordInput =
+          this.shadowRoot.querySelector('#confirmPasswordInput');
+      if (!confirmPasswordInput.validate()) {
         return;
+      }
 
       if (confirmPasswordInput.value != this.$.passwordInput.value) {
         this.$.passwordInput.invalid = true;
@@ -290,11 +332,7 @@ Polymer({
       }
     }
 
-    if (this.isManualInput_) {
-      this.onManualPasswordCollected(this.$.passwordInput.value);
-    } else {
-      this.onConfirmPasswordCollected(this.$.passwordInput.value);
-    }
+    chrome.send('onPasswordTyped', [this.$.passwordInput.value]);
   },
 
   /** @private */
@@ -302,6 +340,7 @@ Polymer({
     chrome.send('dialogClose');
   },
 
+  /** @private */
   onResetAndClose_() {
     this.signinFrame_.clearData({since: 0}, clearDataType, () => {
       onCloseTap_();
@@ -319,21 +358,27 @@ Polymer({
   },
 
   /** @private */
+  doGaiaRedirect_() {
+    this.authenticator_.load(AuthMode.DEFAULT, this.authenticatorParams_);
+    this.resetState_();
+    /**
+     * These statements override resetStates_ calls.
+     * Thus have to be AFTER resetState_.
+     */
+    this.isSamlPage_ = true;
+  },
+
+  /** @private */
   passwordPlaceholder_(locale, isManualInput_) {
-    // <!--_html_template_start_-->
-    return isManualInput_ ?
-      '$i18n{manualPasswordInputLabel}' :
-      '$i18n{confirmPasswordLabel}';
-    // <!--_html_template_end_-->
+    return this.i18n(
+        isManualInput_ ? 'manualPasswordInputLabel' : 'confirmPasswordLabel');
   },
 
   /** @private */
   passwordErrorText_(locale, isManualInput_) {
-    // <!--_html_template_start_-->
-    return isManualInput_ ?
-      '$i18n{manualPasswordMismatch}' :
-      '$i18n{passwordChangedIncorrectOldPassword}';
-    // <!--_html_template_end_-->
+    return this.i18n(
+        isManualInput_ ? 'manualPasswordMismatch' :
+                         'passwordChangedIncorrectOldPassword');
   },
 
 });

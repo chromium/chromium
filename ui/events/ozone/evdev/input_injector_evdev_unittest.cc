@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/events/ozone/evdev/input_injector_evdev.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -75,6 +74,9 @@ class InputInjectorEvdevTest : public testing::Test {
  public:
   InputInjectorEvdevTest();
 
+  InputInjectorEvdevTest(const InputInjectorEvdevTest&) = delete;
+  InputInjectorEvdevTest& operator=(const InputInjectorEvdevTest&) = delete;
+
  protected:
   void SimulateMouseClick(int x, int y, EventFlags button, int count);
   void ExpectClick(int x, int y, int button, int count);
@@ -91,9 +93,6 @@ class InputInjectorEvdevTest : public testing::Test {
 
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputInjectorEvdevTest);
 };
 
 InputInjectorEvdevTest::InputInjectorEvdevTest()

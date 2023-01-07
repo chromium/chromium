@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,15 +34,17 @@ TEST_F(DeprecationNotificationControllerTest, AllNotificationsWorkAndNoDupes) {
   controller_.NotifyDeprecatedRightClickRewrite();
   EXPECT_EQ(message_center_.NotificationCount(), expected_notification_count++);
 
-  controller_.NotifyDeprecatedAltBasedKeyRewrite(ui::VKEY_DELETE);
+  controller_.NotifyDeprecatedSixPackKeyRewrite(ui::VKEY_DELETE);
   EXPECT_EQ(message_center_.NotificationCount(), expected_notification_count++);
-  controller_.NotifyDeprecatedAltBasedKeyRewrite(ui::VKEY_HOME);
+  controller_.NotifyDeprecatedSixPackKeyRewrite(ui::VKEY_INSERT);
   EXPECT_EQ(message_center_.NotificationCount(), expected_notification_count++);
-  controller_.NotifyDeprecatedAltBasedKeyRewrite(ui::VKEY_END);
+  controller_.NotifyDeprecatedSixPackKeyRewrite(ui::VKEY_HOME);
   EXPECT_EQ(message_center_.NotificationCount(), expected_notification_count++);
-  controller_.NotifyDeprecatedAltBasedKeyRewrite(ui::VKEY_PRIOR);
+  controller_.NotifyDeprecatedSixPackKeyRewrite(ui::VKEY_END);
   EXPECT_EQ(message_center_.NotificationCount(), expected_notification_count++);
-  controller_.NotifyDeprecatedAltBasedKeyRewrite(ui::VKEY_NEXT);
+  controller_.NotifyDeprecatedSixPackKeyRewrite(ui::VKEY_PRIOR);
+  EXPECT_EQ(message_center_.NotificationCount(), expected_notification_count++);
+  controller_.NotifyDeprecatedSixPackKeyRewrite(ui::VKEY_NEXT);
   EXPECT_EQ(message_center_.NotificationCount(), expected_notification_count++);
 
   // Clear the messages from the message center.
@@ -51,27 +53,13 @@ TEST_F(DeprecationNotificationControllerTest, AllNotificationsWorkAndNoDupes) {
 
   // No additional notifications should be generated.
   controller_.NotifyDeprecatedRightClickRewrite();
-  controller_.NotifyDeprecatedAltBasedKeyRewrite(ui::VKEY_DELETE);
-  controller_.NotifyDeprecatedAltBasedKeyRewrite(ui::VKEY_HOME);
-  controller_.NotifyDeprecatedAltBasedKeyRewrite(ui::VKEY_END);
-  controller_.NotifyDeprecatedAltBasedKeyRewrite(ui::VKEY_PRIOR);
-  controller_.NotifyDeprecatedAltBasedKeyRewrite(ui::VKEY_NEXT);
-  EXPECT_EQ(message_center_.NotificationCount(), 0);
-}
-
-// Only one notification is shown no matter which F-Key is triggered.
-TEST_F(DeprecationNotificationControllerTest, NoDuplicateFKeyNotifications) {
-  // First F-Key generates a notification.
-  controller_.NotifyDeprecatedFKeyRewrite();
-  EXPECT_EQ(message_center_.NotificationCount(), 1);
-
-  // Clear the messages from the message center.
-  message_center_.RemoveAllNotifications(
-      /*by_user=*/false, message_center::FakeMessageCenter::RemoveType::ALL);
-
-  // Subsequent times don't generate an additional notification.
-  controller_.NotifyDeprecatedFKeyRewrite();
-  EXPECT_EQ(message_center_.NotificationCount(), 0);
+  controller_.NotifyDeprecatedSixPackKeyRewrite(ui::VKEY_DELETE);
+  controller_.NotifyDeprecatedSixPackKeyRewrite(ui::VKEY_INSERT);
+  controller_.NotifyDeprecatedSixPackKeyRewrite(ui::VKEY_HOME);
+  controller_.NotifyDeprecatedSixPackKeyRewrite(ui::VKEY_END);
+  controller_.NotifyDeprecatedSixPackKeyRewrite(ui::VKEY_PRIOR);
+  controller_.NotifyDeprecatedSixPackKeyRewrite(ui::VKEY_NEXT);
+  EXPECT_EQ(message_center_.NotificationCount(), 0u);
 }
 
 }  // namespace ash

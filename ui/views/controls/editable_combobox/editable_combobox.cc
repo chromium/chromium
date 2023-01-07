@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -19,6 +19,9 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/menu_source_utils.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/combobox_model_observer.h"
 #include "ui/base/models/menu_model.h"
@@ -52,8 +55,6 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
@@ -73,8 +74,23 @@ class Arrow : public Button {
     button_controller()->set_notify_action(
         ButtonController::NotifyAction::kOnPress);
 
-    SetInkDropMode(InkDropMode::ON);
+    // TODO(pbos): Share ink-drop configuration code between here and
+    // Combobox's TransparentButton.
+    // Similar to Combobox's TransparentButton.
+    InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
     SetHasInkDropActionOnClick(true);
+    InkDrop::UseInkDropForSquareRipple(InkDrop::Get(this),
+                                       /*highlight_on_hover=*/false);
+    InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
+        [](Button* host) -> std::unique_ptr<views::InkDropRipple> {
+          return std::make_unique<views::FloodFillInkDropRipple>(
+              host->size(),
+              InkDrop::Get(host)->GetInkDropCenterBasedOnLastEvent(),
+              style::GetColor(*host, style::CONTEXT_TEXTFIELD,
+                              style::STYLE_PRIMARY),
+              InkDrop::Get(host)->GetVisibleOpacity());
+        },
+        this));
   }
   Arrow(const Arrow&) = delete;
   Arrow& operator=(const Arrow&) = delete;
@@ -84,23 +100,8 @@ class Arrow : public Button {
     return hover_animation().GetCurrentValue();
   }
 
-  // Overridden from InkDropHost:
-  // Similar to Combobox's TransparentButton.
-  std::unique_ptr<InkDrop> CreateInkDrop() override {
-    std::unique_ptr<views::InkDropImpl> ink_drop = CreateDefaultInkDropImpl();
-    ink_drop->SetShowHighlightOnHover(false);
-    return std::move(ink_drop);
-  }
-
-  // Similar to Combobox's TransparentButton.
-  std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override {
-    return std::make_unique<views::FloodFillInkDropRipple>(
-        size(), GetInkDropCenterBasedOnLastEvent(),
-        style::GetColor(*this, style::CONTEXT_TEXTFIELD, style::STYLE_PRIMARY),
-        GetInkDropVisibleOpacity());
-  }
-
  private:
+  // Button:
   void PaintButtonContents(gfx::Canvas* canvas) override {
     gfx::ScopedCanvas scoped_canvas(canvas);
     canvas->ClipRect(GetContentsBounds());
@@ -142,8 +143,12 @@ class EditableCombobox::EditableComboboxMenuModel
         filter_on_edit_(filter_on_edit),
         show_on_empty_(show_on_empty) {
     UpdateItemsShown();
-    observation_.Observe(combobox_model_);
+    observation_.Observe(combobox_model_.get());
   }
+
+  EditableComboboxMenuModel(const EditableComboboxMenuModel&) = delete;
+  EditableComboboxMenuModel& operator=(const EditableComboboxMenuModel&) =
+      delete;
 
   ~EditableComboboxMenuModel() override = default;
 
@@ -151,14 +156,12 @@ class EditableCombobox::EditableComboboxMenuModel
     if (!update_items_shown_enabled_)
       return;
     items_shown_.clear();
-    items_shown_enabled_.clear();
     if (show_on_empty_ || !owner_->GetText().empty()) {
-      for (int i = 0; i < combobox_model_->GetItemCount(); ++i) {
+      for (size_t i = 0; i < combobox_model_->GetItemCount(); ++i) {
         if (!filter_on_edit_ ||
             base::StartsWith(combobox_model_->GetItemAt(i), owner_->GetText(),
                              base::CompareCase::INSENSITIVE_ASCII)) {
-          items_shown_.push_back(combobox_model_->GetItemAt(i));
-          items_shown_enabled_.push_back(combobox_model_->IsItemEnabledAt(i));
+          items_shown_.push_back({i, combobox_model_->IsItemEnabledAt(i)});
         }
       }
     }
@@ -174,76 +177,95 @@ class EditableCombobox::EditableComboboxMenuModel
     return MenuConfig::instance().check_selected_combobox_item;
   }
 
-  std::u16string GetItemTextAt(int index, bool showing_password_text) const {
+  std::u16string GetItemTextAt(size_t index, bool showing_password_text) const {
+    size_t index_in_model = items_shown_[index].index;
+    std::u16string text = combobox_model_->GetItemAt(index_in_model);
     return showing_password_text
-               ? items_shown_[index]
-               : std::u16string(items_shown_[index].length(),
+               ? text
+               : std::u16string(text.length(),
                                 gfx::RenderText::kPasswordReplacementChar);
   }
 
+  ui::ImageModel GetIconAt(size_t index) const override {
+    return combobox_model_->GetDropDownIconAt(items_shown_[index].index);
+  }
+
+  // ComboboxModelObserver:
   void OnComboboxModelChanged(ui::ComboboxModel* model) override {
     UpdateItemsShown();
   }
 
-  int GetItemCount() const override { return items_shown_.size(); }
+  void OnComboboxModelDestroying(ui::ComboboxModel* model) override {
+    observation_.Reset();
+  }
+
+  size_t GetItemCount() const override { return items_shown_.size(); }
 
  private:
-  bool HasIcons() const override { return false; }
+  struct ShownItem {
+    size_t index;
+    bool enabled;
+  };
+  bool HasIcons() const override {
+    for (size_t i = 0; i < GetItemCount(); ++i) {
+      if (!GetIconAt(i).IsEmpty())
+        return true;
+    }
+    return false;
+  }
 
-  ItemType GetTypeAt(int index) const override {
+  ItemType GetTypeAt(size_t index) const override {
     return UseCheckmarks() ? TYPE_CHECK : TYPE_COMMAND;
   }
 
-  ui::MenuSeparatorType GetSeparatorTypeAt(int index) const override {
+  ui::MenuSeparatorType GetSeparatorTypeAt(size_t index) const override {
     return ui::NORMAL_SEPARATOR;
   }
 
-  int GetCommandIdAt(int index) const override {
+  int GetCommandIdAt(size_t index) const override {
     constexpr int kFirstMenuItemId = 1000;
-    return index + kFirstMenuItemId;
+    return static_cast<int>(index) + kFirstMenuItemId;
   }
 
-  std::u16string GetLabelAt(int index) const override {
+  std::u16string GetLabelAt(size_t index) const override {
     std::u16string text = GetItemTextAt(index, owner_->showing_password_text_);
     base::i18n::AdjustStringForLocaleDirection(&text);
     return text;
   }
 
-  bool IsItemDynamicAt(int index) const override { return false; }
+  bool IsItemDynamicAt(size_t index) const override { return false; }
 
-  const gfx::FontList* GetLabelFontListAt(int index) const override {
+  const gfx::FontList* GetLabelFontListAt(size_t index) const override {
     return &owner_->GetFontList();
   }
 
-  bool GetAcceleratorAt(int index,
+  bool GetAcceleratorAt(size_t index,
                         ui::Accelerator* accelerator) const override {
     return false;
   }
 
-  bool IsItemCheckedAt(int index) const override {
-    return UseCheckmarks() && items_shown_[index] == owner_->GetText();
+  bool IsItemCheckedAt(size_t index) const override {
+    return UseCheckmarks() &&
+           combobox_model_->GetItemAt(items_shown_[index].index) ==
+               owner_->GetText();
   }
 
-  int GetGroupIdAt(int index) const override { return -1; }
+  int GetGroupIdAt(size_t index) const override { return -1; }
 
-  ui::ImageModel GetIconAt(int index) const override {
-    return ui::ImageModel();
-  }
-
-  ui::ButtonMenuItemModel* GetButtonMenuItemAt(int index) const override {
+  ui::ButtonMenuItemModel* GetButtonMenuItemAt(size_t index) const override {
     return nullptr;
   }
 
-  bool IsEnabledAt(int index) const override {
-    return items_shown_enabled_[index];
+  bool IsEnabledAt(size_t index) const override {
+    return items_shown_[index].enabled;
   }
 
-  void ActivatedAt(int index) override { owner_->OnItemSelected(index); }
+  void ActivatedAt(size_t index) override { owner_->OnItemSelected(index); }
 
-  MenuModel* GetSubmenuModelAt(int index) const override { return nullptr; }
+  MenuModel* GetSubmenuModelAt(size_t index) const override { return nullptr; }
 
-  EditableCombobox* owner_;            // Weak. Owns |this|.
-  ui::ComboboxModel* combobox_model_;  // Weak.
+  raw_ptr<EditableCombobox> owner_;            // Weak. Owns |this|.
+  raw_ptr<ui::ComboboxModel> combobox_model_;  // Weak.
 
   // Whether to adapt the items shown to the textfield content.
   const bool filter_on_edit_;
@@ -251,17 +273,15 @@ class EditableCombobox::EditableComboboxMenuModel
   // Whether to show options when the textfield is empty.
   const bool show_on_empty_;
 
-  // The items from |combobox_model_| that we are currently showing.
-  std::vector<std::u16string> items_shown_;
-  std::vector<bool> items_shown_enabled_;
+  // The indices of the items from |combobox_model_| that we are currently
+  // showing, and whether they are enabled.
+  std::vector<ShownItem> items_shown_;
 
   // When false, UpdateItemsShown doesn't do anything.
   bool update_items_shown_enabled_ = true;
 
   base::ScopedObservation<ui::ComboboxModel, ui::ComboboxModelObserver>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EditableComboboxMenuModel);
 };
 
 // This class adds itself as the pre-target handler for the RootView of the
@@ -274,6 +294,11 @@ class EditableCombobox::EditableComboboxPreTargetHandler
       : owner_(owner), root_view_(root_view) {
     root_view_->AddPreTargetHandler(this);
   }
+
+  EditableComboboxPreTargetHandler(const EditableComboboxPreTargetHandler&) =
+      delete;
+  EditableComboboxPreTargetHandler& operator=(
+      const EditableComboboxPreTargetHandler&) = delete;
 
   ~EditableComboboxPreTargetHandler() override { StopObserving(); }
 
@@ -304,10 +329,8 @@ class EditableCombobox::EditableComboboxPreTargetHandler
     root_view_ = nullptr;
   }
 
-  EditableCombobox* owner_;
-  View* root_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(EditableComboboxPreTargetHandler);
+  raw_ptr<EditableCombobox> owner_;
+  raw_ptr<View> root_view_;
 };
 
 EditableCombobox::EditableCombobox()
@@ -329,17 +352,16 @@ EditableCombobox::EditableCombobox(
       show_on_empty_(show_on_empty),
       showing_password_text_(type != Type::kPassword) {
   SetModel(std::move(combobox_model));
-  observation_.Observe(textfield_);
+  observation_.Observe(textfield_.get());
   textfield_->set_controller(this);
   textfield_->SetFontList(GetFontList());
   textfield_->SetTextInputType((type == Type::kPassword)
                                    ? ui::TEXT_INPUT_TYPE_PASSWORD
                                    : ui::TEXT_INPUT_TYPE_TEXT);
-  AddChildView(textfield_);
+  AddChildView(textfield_.get());
   if (display_arrow) {
-    textfield_->SetExtraInsets(gfx::Insets(
-        /*top=*/0, /*left=*/0, /*bottom=*/0,
-        /*right=*/kComboboxArrowContainerWidth - kComboboxArrowPaddingWidth));
+    textfield_->SetExtraInsets(gfx::Insets::TLBR(
+        0, 0, 0, kComboboxArrowContainerWidth - kComboboxArrowPaddingWidth));
     arrow_ = AddChildView(std::make_unique<Arrow>(base::BindRepeating(
         &EditableCombobox::ArrowButtonPressed, base::Unretained(this))));
   }
@@ -397,12 +419,16 @@ void EditableCombobox::RevealPasswords(bool revealed) {
   menu_model_->UpdateItemsShown();
 }
 
-int EditableCombobox::GetItemCountForTest() {
+size_t EditableCombobox::GetItemCountForTest() {
   return menu_model_->GetItemCount();
 }
 
-std::u16string EditableCombobox::GetItemForTest(int index) {
+std::u16string EditableCombobox::GetItemForTest(size_t index) {
   return menu_model_->GetItemTextAt(index, showing_password_text_);
+}
+
+ui::ImageModel EditableCombobox::GetIconForTest(size_t index) {
+  return menu_model_->GetIconAt(index);
 }
 
 void EditableCombobox::Layout() {
@@ -467,7 +493,7 @@ void EditableCombobox::CloseMenu() {
   pre_target_handler_.reset();
 }
 
-void EditableCombobox::OnItemSelected(int index) {
+void EditableCombobox::OnItemSelected(size_t index) {
   // |textfield_| can hide the characters on its own so we read the actual
   // characters instead of gfx::RenderText::kPasswordReplacementChar characters.
   std::u16string selected_item_text =

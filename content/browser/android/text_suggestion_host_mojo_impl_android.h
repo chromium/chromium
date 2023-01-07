@@ -1,10 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_ANDROID_TEXT_SUGGESTION_HOST_MOJO_IMPL_ANDROID_H_
 #define CONTENT_BROWSER_ANDROID_TEXT_SUGGESTION_HOST_MOJO_IMPL_ANDROID_H_
 
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/input/input_host.mojom.h"
@@ -20,6 +21,12 @@ class TextSuggestionHostMojoImplAndroid final
   TextSuggestionHostMojoImplAndroid(
       TextSuggestionHostAndroid*,
       mojo::PendingReceiver<blink::mojom::TextSuggestionHost> receiver);
+
+  TextSuggestionHostMojoImplAndroid(const TextSuggestionHostMojoImplAndroid&) =
+      delete;
+  TextSuggestionHostMojoImplAndroid& operator=(
+      const TextSuggestionHostMojoImplAndroid&) = delete;
+
   ~TextSuggestionHostMojoImplAndroid() override;
 
   static std::unique_ptr<TextSuggestionHostMojoImplAndroid> Create(
@@ -40,10 +47,8 @@ class TextSuggestionHostMojoImplAndroid final
       std::vector<blink::mojom::TextSuggestionPtr> suggestions) final;
 
  private:
-  TextSuggestionHostAndroid* const text_suggestion_host_;
+  const raw_ptr<TextSuggestionHostAndroid> text_suggestion_host_;
   mojo::Receiver<blink::mojom::TextSuggestionHost> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextSuggestionHostMojoImplAndroid);
 };
 
 }  // namespace content

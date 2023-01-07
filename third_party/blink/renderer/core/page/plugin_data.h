@@ -21,11 +21,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PLUGIN_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PLUGIN_DATA_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -37,7 +36,10 @@ class CORE_EXPORT MimeClassInfo final : public GarbageCollected<MimeClassInfo> {
  public:
   void Trace(Visitor*) const;
 
-  MimeClassInfo(const String& type, const String& desc, PluginInfo&);
+  MimeClassInfo(const String& type,
+                const String& description,
+                PluginInfo& plugin,
+                const Vector<String> extensions);
 
   const String& Type() const { return type_; }
   const String& Description() const { return description_; }
@@ -93,11 +95,12 @@ class CORE_EXPORT PluginData final : public GarbageCollected<PluginData> {
   void Trace(Visitor*) const;
 
   PluginData() = default;
+  PluginData(const PluginData&) = delete;
+  PluginData& operator=(const PluginData&) = delete;
 
   const HeapVector<Member<PluginInfo>>& Plugins() const { return plugins_; }
   const HeapVector<Member<MimeClassInfo>>& Mimes() const { return mimes_; }
-  const SecurityOrigin* Origin() const { return main_frame_origin_.get(); }
-  void UpdatePluginList(const SecurityOrigin* main_frame_origin);
+  void UpdatePluginList();
   void ResetPluginData();
 
   bool SupportsMimeType(const String& mime_type) const;
@@ -111,11 +114,9 @@ class CORE_EXPORT PluginData final : public GarbageCollected<PluginData> {
  private:
   HeapVector<Member<PluginInfo>> plugins_;
   HeapVector<Member<MimeClassInfo>> mimes_;
-  scoped_refptr<const SecurityOrigin> main_frame_origin_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginData);
+  bool updated_ = false;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_PLUGIN_DATA_H_

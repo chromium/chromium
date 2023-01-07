@@ -1,14 +1,15 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_ACTION_FILTER_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_ACTION_FILTER_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include <string>
+
 #include "cc/input/touch_action.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace blink {
 class WebGestureEvent;
@@ -31,6 +32,10 @@ enum class FilterGestureEventResult {
 class CONTENT_EXPORT TouchActionFilter {
  public:
   TouchActionFilter();
+
+  TouchActionFilter(const TouchActionFilter&) = delete;
+  TouchActionFilter& operator=(const TouchActionFilter&) = delete;
+
   ~TouchActionFilter();
 
   // Returns kFilterGestureEventFiltered if the supplied gesture event should be
@@ -55,11 +60,11 @@ class CONTENT_EXPORT TouchActionFilter {
   // the renderer for a touch start event that is currently in flight.
   void OnSetCompositorAllowedTouchAction(cc::TouchAction);
 
-  base::Optional<cc::TouchAction> allowed_touch_action() const {
+  absl::optional<cc::TouchAction> allowed_touch_action() const {
     return allowed_touch_action_;
   }
 
-  base::Optional<cc::TouchAction> active_touch_action() const {
+  absl::optional<cc::TouchAction> active_touch_action() const {
     return active_touch_action_;
   }
 
@@ -136,22 +141,21 @@ class CONTENT_EXPORT TouchActionFilter {
   int num_of_active_touches_ = 0;
 
   // What touch actions are currently permitted.
-  base::Optional<cc::TouchAction> allowed_touch_action_;
+  absl::optional<cc::TouchAction> allowed_touch_action_;
 
   // The touch action that is used for the current gesture sequence. At the
   // touch sequence end, the |allowed_touch_action_| is reset while this remains
   // set as the effective touch action, for the still in progress gesture
   // sequence due to fling.
-  base::Optional<cc::TouchAction> active_touch_action_;
+  absl::optional<cc::TouchAction> active_touch_action_;
 
   // Allowed touch action received from the compositor.
   cc::TouchAction compositor_allowed_touch_action_;
 
   // Debugging only.
   std::string gesture_sequence_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchActionFilter);
 };
 
-}
+}  // namespace content
+
 #endif  // CONTENT_BROWSER_RENDERER_HOST_INPUT_TOUCH_ACTION_FILTER_H_

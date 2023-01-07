@@ -1,12 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_view_controller.h"
 
-#include "base/feature_list.h"
-#include "base/mac/foundation_util.h"
-#include "base/metrics/user_metrics.h"
+#import "base/feature_list.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/ui/autofill/cells/autofill_edit_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_add_credit_card_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
@@ -14,10 +14,10 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
-#include "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -124,6 +124,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return hasUserInput;
 }
 
+- (BOOL)canBecomeFirstResponder {
+  return YES;
+}
+
 #pragma mark - ChromeTableViewController
 
 - (void)loadModel {
@@ -221,8 +225,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
 
-  // Use |ObjCCast| because |cell| might not be |TableViewTextEditCell|.
-  // Set the delegate and style for only |TableViewTextEditCell| type of cell
+  // Use `ObjCCast` because `cell` might not be `TableViewTextEditCell`.
+  // Set the delegate and style for only `TableViewTextEditCell` type of cell
   // not other types.
   TableViewTextEditCell* editCell =
       base::mac::ObjCCast<TableViewTextEditCell>(cell);
@@ -268,8 +272,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
                sectionIdentifier:SectionIdentifierCreditCardDetails];
 }
 
-// Reads and returns the data from the item with passed |itemType| and
-// |sectionIdentifier|.
+// Reads and returns the data from the item with passed `itemType` and
+// `sectionIdentifier`.
 - (NSString*)readTextFromItemtype:(NSInteger)itemType
                 sectionIdentifier:(NSInteger)sectionIdentifier {
   NSIndexPath* path =
@@ -281,8 +285,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return text;
 }
 
-// Updates TableView cell of |itemType| in |sectionIdentifier| textfieldValue
-// with |text|.
+// Updates TableView cell of `itemType` in `sectionIdentifier` textfieldValue
+// with `text`.
 - (void)updateCellForItemType:(NSInteger)itemType
           inSectionIdentifier:(NSInteger)sectionIdentifier
                      withText:(NSString*)text {

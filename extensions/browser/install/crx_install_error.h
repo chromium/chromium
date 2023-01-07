@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -93,7 +93,7 @@ class CrxInstallError {
  private:
   CrxInstallErrorType type_;
   CrxInstallErrorDetail detail_;
-  base::Optional<SandboxedUnpackerFailureReason> sandbox_failure_detail_;
+  absl::optional<SandboxedUnpackerFailureReason> sandbox_failure_detail_;
   std::u16string message_;
 };
 

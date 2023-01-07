@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,8 @@ enum OverviewAnimationType {
   OVERVIEW_ANIMATION_NO_RECENTS_FADE,
   // Used to fade in all windows when window drag starts or during window drag.
   OVERVIEW_ANIMATION_OPACITY_ON_WINDOW_DRAG,
+  // Used to fade out the desks templates grid when exiting overview mode.
+  OVERVIEW_ANIMATION_EXIT_OVERVIEW_MODE_DESKS_TEMPLATES_GRID_FADE_OUT,
 };
 
 enum class OverviewTransition {
@@ -64,6 +66,12 @@ enum class OverviewEnterExitType {
   // button tray. It's also used to address https://crbug.com/1027179. This
   // should not be used for exiting overview mode.
   kImmediateEnter,
+  // Used when it's desired to enter overview mode immediately without
+  // animations. Additionally, the overview controller will not automatically
+  // move focus over to the overview focus widget (which is something that
+  // happens on a timer with `kImmediateEnter`). Behaves otherwise like
+  // `kImmediateEnter`.
+  kImmediateEnterWithoutFocus,
   // Used only when it's desired to exit overview mode immediately without
   // animations. This is used when performing the desk switch animation when
   // the source desk is in overview mode, while the target desk is not.

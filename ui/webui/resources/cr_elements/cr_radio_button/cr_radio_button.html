@@ -1,13 +1,3 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-<link rel="import" href="../hidden_style_css.html">
-<link rel="import" href="../shared_vars_css.html">
-<link rel="import" href="cr_radio_button_behavior.html">
-<link rel="import" href="cr_radio_button_style_css.html">
-
-<dom-module id="cr-radio-button">
-  <template>
     <style include="cr-radio-button-style cr-hidden-style"></style>
 
     <div aria-checked$="[[getAriaChecked_(checked)]]"
@@ -29,6 +19,3 @@
         <slot></slot>
       </span>
     </div>
-  </template>
-  <script src="cr_radio_button.js"></script>
-</dom-module>

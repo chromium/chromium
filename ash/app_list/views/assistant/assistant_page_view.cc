@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,21 +16,33 @@
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
+#include "ash/assistant/ui/colors/assistant_colors.h"
+#include "ash/assistant/ui/colors/assistant_colors_util.h"
 #include "ash/assistant/util/assistant_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/view_shadow.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "third_party/skia/include/core/SkTypes.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/animation_throughput_reporter.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/views/background.h"
-#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/layout_manager_base.h"
 
 namespace ash {
@@ -52,12 +64,16 @@ constexpr int kShadowElevation = 12;
 int GetPreferredHeightForAppListState(AppListView* app_list_view) {
   auto app_list_view_state = app_list_view->app_list_state();
   switch (app_list_view_state) {
-    case AppListViewState::kHalf:
     case AppListViewState::kFullscreenSearch:
       return kMaxHeightDip;
     default:
       return kMinHeightDip;
   }
+}
+
+bool IsInTabletMode() {
+  // Shell might not has an instance in tests.
+  return Shell::HasInstance() && Shell::Get()->IsInTabletMode();
 }
 
 // AssistantPageViewLayout -----------------------------------------------------
@@ -142,15 +158,14 @@ AssistantPageView::AssistantPageView(
 
   if (AssistantUiController::Get())  // May be |nullptr| in tests.
     AssistantUiController::Get()->GetModel()->AddObserver(this);
+
+  if (Shell::HasInstance())  // Shell might not has an instance in tests.
+    tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
 }
 
 AssistantPageView::~AssistantPageView() {
   if (AssistantUiController::Get())
     AssistantUiController::Get()->GetModel()->RemoveObserver(this);
-}
-
-const char* AssistantPageView::GetClassName() const {
-  return "AssistantPageView";
 }
 
 gfx::Size AssistantPageView::GetMinimumSize() const {
@@ -175,16 +190,15 @@ void AssistantPageView::RequestFocus() {
   if (!AssistantUiController::Get())  // May be |nullptr| in tests.
     return;
 
-  switch (AssistantUiController::Get()->GetModel()->ui_mode()) {
-    case AssistantUiMode::kLauncherEmbeddedUi:
-      if (assistant_main_view_)
-        assistant_main_view_->RequestFocus();
-      break;
-  }
+  if (assistant_main_view_)
+    assistant_main_view_->RequestFocus();
 }
 
 void AssistantPageView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
+
+  // A valid role must be set prior to setting the name.
+  node_data->role = ax::mojom::Role::kPane;
   node_data->SetName(l10n_util::GetStringUTF16(IDS_ASH_ASSISTANT_WINDOW));
 }
 
@@ -285,8 +299,9 @@ void AssistantPageView::OnAnimationStarted(AppListState from_state,
     ui::AnimationThroughputReporter reporter(
         settings->GetAnimator(),
         metrics_util::ForSmoothness(base::BindRepeating([](int value) {
-          base::UmaHistogramPercentageObsoleteDoNotUse(
-              assistant::ui::kAssistantResizePageViewHistogram, value);
+          base::UmaHistogramPercentage(
+              "Ash.Assistant.AnimationSmoothness.ResizeAssistantPageView",
+              value);
         })));
 
     layer()->SetClipRect(gfx::Rect(to_rect.size()));
@@ -316,29 +331,6 @@ gfx::Size AssistantPageView::GetPreferredSearchBoxSize() const {
   return gfx::Size(kPreferredWidthDip, kSearchBoxHeightDip);
 }
 
-base::Optional<int> AssistantPageView::GetSearchBoxTop(
-    AppListViewState view_state) const {
-  if (view_state == AppListViewState::kPeeking ||
-      view_state == AppListViewState::kHalf) {
-    return contents_view()
-        ->GetAppListConfig()
-        .search_box_fullscreen_top_padding();
-  }
-  // For other view states, return base::nullopt so the ContentsView
-  // sets the default search box widget origin.
-  return base::nullopt;
-}
-
-views::View* AssistantPageView::GetFirstFocusableView() {
-  return GetFocusManager()->GetNextFocusableView(
-      this, GetWidget(), /*reverse=*/false, /*dont_loop=*/false);
-}
-
-views::View* AssistantPageView::GetLastFocusableView() {
-  return GetFocusManager()->GetNextFocusableView(
-      this, GetWidget(), /*reverse=*/true, /*dont_loop=*/false);
-}
-
 void AssistantPageView::AnimateYPosition(AppListViewState target_view_state,
                                          const TransformAnimator& animator,
                                          float default_offset) {
@@ -358,8 +350,7 @@ void AssistantPageView::AnimateYPosition(AppListViewState target_view_state,
 }
 
 void AssistantPageView::UpdatePageOpacityForState(AppListState state,
-                                                  float search_box_opacity,
-                                                  bool restore_opacity) {
+                                                  float search_box_opacity) {
   layer()->SetOpacity(search_box_opacity);
 }
 
@@ -402,8 +393,8 @@ void AssistantPageView::OnAssistantControllerDestroying() {
 void AssistantPageView::OnUiVisibilityChanged(
     AssistantVisibility new_visibility,
     AssistantVisibility old_visibility,
-    base::Optional<AssistantEntryPoint> entry_point,
-    base::Optional<AssistantExitPoint> exit_point) {
+    absl::optional<AssistantEntryPoint> entry_point,
+    absl::optional<AssistantExitPoint> exit_point) {
   if (!assistant_view_delegate_)
     return;
 
@@ -424,15 +415,29 @@ void AssistantPageView::OnUiVisibilityChanged(
   }
 }
 
+void AssistantPageView::OnTabletModeStarted() {
+  UpdateBackground(/*in_tablet_mode=*/true);
+}
+
+void AssistantPageView::OnTabletModeEnded() {
+  UpdateBackground(/*in_tablet_mode=*/false);
+}
+
+void AssistantPageView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  UpdateBackground(IsInTabletMode());
+}
+
 void AssistantPageView::InitLayout() {
-  SetPaintToLayer();
+  // Use a solid color layer. The color is set in OnThemeChanged().
+  SetPaintToLayer(ui::LAYER_SOLID_COLOR);
   layer()->SetFillsBoundsOpaquely(false);
 
   view_shadow_ = std::make_unique<ViewShadow>(this, kShadowElevation);
   view_shadow_->SetRoundedCornerRadius(
       kSearchBoxBorderCornerRadiusSearchResult);
 
-  SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
   SetLayoutManager(std::make_unique<AssistantPageViewLayout>(this));
 
   // |assistant_view_delegate_| could be nullptr in test.
@@ -443,22 +448,27 @@ void AssistantPageView::InitLayout() {
       std::make_unique<AssistantMainView>(assistant_view_delegate_));
 }
 
-void AssistantPageView::MaybeUpdateAppListState(int child_height) {
-  auto* app_list_view = contents_view()->app_list_view();
-  auto* widget = app_list_view->GetWidget();
+void AssistantPageView::UpdateBackground(bool in_tablet_mode) {
+  // Blur
+  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
 
-  // |app_list_view| may not be initialized.
-  if (!widget || !widget->IsVisible())
-    return;
+  // Color
+  const auto* color_provider =
+      GetWidget() ? GetWidget()->GetColorProvider() : nullptr;
 
-  // Update app list view state for |assistant_page_view_|.
-  // Embedded Assistant Ui only has two sizes. The only state change is from
-  // |kPeeking| to |kHalf| state.
-  if (app_list_view->app_list_state() != AppListViewState::kPeeking)
-    return;
-
-  if (child_height > GetPreferredHeightForAppListState(app_list_view))
-    app_list_view->SetState(AppListViewState::kHalf);
+  // ColorProvide might be nullptr in tests or this function is triggered before
+  // `this` is added to the view hierarchy.
+  if (color_provider)
+    layer()->SetColor(color_provider->GetColor(kColorAshShieldAndBase80));
+  else
+    layer()->SetColor(SK_ColorWHITE);
 }
+
+// TODO(crbug.com/1359096): Clean up this function and its relative code path.
+void AssistantPageView::MaybeUpdateAppListState(int child_height) {}
+
+BEGIN_METADATA(AssistantPageView, views::View)
+END_METADATA
 
 }  // namespace ash

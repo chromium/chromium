@@ -37,7 +37,6 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/xml/document_xslt.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -94,8 +93,9 @@ Document* XSLTProcessor::CreateDocumentFromSource(
         previous_document_loader->CreateWebNavigationParamsToCloneDocument();
     WebNavigationParams::FillStaticResponse(
         params.get(), mime_type,
-        source_encoding.IsEmpty() ? "UTF-8" : source_encoding,
+        source_encoding.empty() ? "UTF-8" : source_encoding,
         StringUTF8Adaptor(document_source));
+    params->frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
     frame->Loader().CommitNavigation(std::move(params), nullptr,
                                      CommitReason::kXSLT);
     return frame->GetDocument();
@@ -107,7 +107,7 @@ Document* XSLTProcessor::CreateDocumentFromSource(
           .WithTypeFrom(mime_type)
           .WithExecutionContext(owner_document->GetExecutionContext());
   Document* document = init.CreateDocument();
-  auto parsed_source_encoding = source_encoding.IsEmpty()
+  auto parsed_source_encoding = source_encoding.empty()
                                     ? UTF8Encoding()
                                     : WTF::TextEncoding(source_encoding);
   if (parsed_source_encoding.IsValid()) {
@@ -164,7 +164,10 @@ String XSLTProcessor::getParameter(const String& /*namespaceURI*/,
                                    const String& local_name) const {
   // FIXME: namespace support?
   // should make a QualifiedName here but we'd have to expose the impl
-  return parameters_.at(local_name);
+  auto it = parameters_.find(local_name);
+  if (it == parameters_.end())
+    return String();
+  return it->value;
 }
 
 void XSLTProcessor::removeParameter(const String& /*namespaceURI*/,

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <list>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 
 class Profile;
 
@@ -19,6 +18,10 @@ namespace lock_screen_apps {
 class LockScreenProfileCreator {
  public:
   LockScreenProfileCreator();
+
+  LockScreenProfileCreator(const LockScreenProfileCreator&) = delete;
+  LockScreenProfileCreator& operator=(const LockScreenProfileCreator&) = delete;
+
   virtual ~LockScreenProfileCreator();
 
   // Initializes the creator - it marks the object as initialized and calls
@@ -77,8 +80,6 @@ class LockScreenProfileCreator {
   Profile* lock_screen_profile_ = nullptr;
 
   std::list<base::OnceClosure> create_profile_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenProfileCreator);
 };
 
 }  // namespace lock_screen_apps

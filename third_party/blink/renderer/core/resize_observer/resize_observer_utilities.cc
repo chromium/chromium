@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_box_options.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -34,24 +34,24 @@ LayoutSize ComputePaintOffset(LayoutObject* layout_object,
 }
 }  // namespace
 
-FloatSize ResizeObserverUtilities::ComputeZoomAdjustedBox(
+gfx::SizeF ResizeObserverUtilities::ComputeZoomAdjustedBox(
     ResizeObserverBoxOptions box_option,
     LayoutObject* layout_object,
     const ComputedStyle& style) {
   auto* layout_box = To<LayoutBox>(layout_object);
   switch (box_option) {
-    case ResizeObserverBoxOptions::ContentBox:
-      return FloatSize(AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                           layout_box->ContentLogicalWidth(), style),
-                       AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                           layout_box->ContentLogicalHeight(), style));
+    case ResizeObserverBoxOptions::kContentBox:
+      return gfx::SizeF(AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                            layout_box->ContentLogicalWidth(), style),
+                        AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                            layout_box->ContentLogicalHeight(), style));
 
-    case ResizeObserverBoxOptions::BorderBox:
-      return FloatSize(AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                           layout_box->LogicalWidth(), style),
-                       AdjustForAbsoluteZoom::AdjustLayoutUnit(
-                           layout_box->LogicalHeight(), style));
-    case ResizeObserverBoxOptions::DevicePixelContentBox: {
+    case ResizeObserverBoxOptions::kBorderBox:
+      return gfx::SizeF(AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                            layout_box->LogicalWidth(), style),
+                        AdjustForAbsoluteZoom::AdjustLayoutUnit(
+                            layout_box->LogicalHeight(), style));
+    case ResizeObserverBoxOptions::kDevicePixelContentBox: {
       LayoutSize box_size = LayoutSize(layout_box->ContentLogicalWidth(),
                                        layout_box->ContentLogicalHeight());
 
@@ -63,20 +63,13 @@ FloatSize ResizeObserverUtilities::ComputeZoomAdjustedBox(
   }
 }
 
-FloatSize ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
+gfx::SizeF ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
     LayoutSize box_size,
     LayoutObject* layout_object,
     const ComputedStyle& style) {
-  // Get Device Scale Factor for cases where use-zoom-for-dsf is
-  // disabled. This is 1 if use-zoom-for-dsf is enabled.
-  float device_scale_factor =
-      layout_object->GetFrame()->GetPage()->DeviceScaleFactorDeprecated();
   LayoutSize paint_offset = ComputePaintOffset(layout_object, style);
-  return FloatSize(
-      SnapSizeToPixel(LayoutUnit(box_size.Width()), paint_offset.Width()) *
-          device_scale_factor,
-      SnapSizeToPixel(LayoutUnit(box_size.Height()), paint_offset.Height()) *
-          device_scale_factor);
+  return gfx::SizeF(SnapSizeToPixel(box_size.Width(), paint_offset.Width()),
+                    SnapSizeToPixel(box_size.Height(), paint_offset.Height()));
 }
 
 DOMRectReadOnly* ResizeObserverUtilities::ZoomAdjustedLayoutRect(
@@ -91,8 +84,7 @@ DOMRectReadOnly* ResizeObserverUtilities::ZoomAdjustedLayoutRect(
   content_rect.SetHeight(
       AdjustForAbsoluteZoom::AdjustLayoutUnit(content_rect.Height(), style));
 
-  return DOMRectReadOnly::FromFloatRect(FloatRect(
-      FloatPoint(content_rect.Location()), FloatSize(content_rect.Size())));
+  return DOMRectReadOnly::FromRectF(gfx::RectF(content_rect));
 }
 
 }  // namespace blink

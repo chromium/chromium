@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -33,7 +35,7 @@ class CORE_EXPORT RotationViewportAnchor {
  public:
   RotationViewportAnchor(LocalFrameView& root_frame_view,
                          VisualViewport&,
-                         const FloatSize& anchor_in_inner_view_coords,
+                         const gfx::PointF& anchor_in_inner_view_coords,
                          PageScaleConstraintsSet&);
   ~RotationViewportAnchor();
 
@@ -41,11 +43,11 @@ class CORE_EXPORT RotationViewportAnchor {
   void SetAnchor();
   void RestoreToAnchor();
 
-  FloatPoint GetInnerOrigin(const FloatSize& inner_size) const;
+  gfx::PointF GetInnerOrigin(const gfx::SizeF& inner_size) const;
 
-  void ComputeOrigins(const FloatSize& inner_size,
-                      IntPoint& main_frame_offset,
-                      FloatPoint& visual_viewport_offset) const;
+  void ComputeOrigins(const gfx::SizeF& inner_size,
+                      gfx::Point& main_frame_origin,
+                      gfx::PointF& visual_viewport_origin) const;
   ScrollableArea& LayoutViewport() const;
 
   LocalFrameView* root_frame_view_;
@@ -55,19 +57,19 @@ class CORE_EXPORT RotationViewportAnchor {
   float old_minimum_page_scale_factor_;
 
   // Inner viewport origin in the reference frame of the document in CSS pixels
-  FloatPoint visual_viewport_in_document_;
+  gfx::PointF visual_viewport_in_document_;
 
   // Inner viewport origin in the reference frame of the outer viewport
   // normalized to the outer viewport size.
-  FloatSize normalized_visual_viewport_offset_;
+  gfx::Vector2dF normalized_visual_viewport_offset_;
 
   Node* anchor_node_;
 
   // In Document coordinates.
   PhysicalRect anchor_node_bounds_;
 
-  FloatSize anchor_in_inner_view_coords_;
-  FloatSize anchor_in_node_coords_;
+  gfx::PointF anchor_in_inner_view_coords_;
+  gfx::PointF anchor_in_node_coords_;
 
   PageScaleConstraintsSet* page_scale_constraints_set_;
 };

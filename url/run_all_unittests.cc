@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,14 @@
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "mojo/core/embedder/embedder.h"  // nogncheck
 #endif
 
 int main(int argc, char** argv) {
   base::TestSuite test_suite(argc, argv);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   mojo::core::Init();
 #endif
 

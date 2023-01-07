@@ -1,14 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_READING_LIST_ANDROID_READING_LIST_MANAGER_IMPL_H_
 #define CHROME_BROWSER_READING_LIST_ANDROID_READING_LIST_MANAGER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/reading_list/android/reading_list_manager.h"
 
 #include <memory>
 
+#include "base/observer_list.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 
 class ReadingListModel;
@@ -72,7 +74,7 @@ class ReadingListManagerImpl : public ReadingListManager,
   void NotifyReadingListChanged();
 
   // Contains reading list data, outlives this class.
-  ReadingListModel* reading_list_model_;
+  raw_ptr<ReadingListModel> reading_list_model_;
 
   // The bookmark root for reading list articles.
   std::unique_ptr<bookmarks::BookmarkNode> root_;

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ namespace {
 crypto::ScopedPK11Slot GetRootCertsSlot() {
   crypto::AutoSECMODListReadLock auto_lock;
   SECMODModuleList* head = SECMOD_GetDefaultModuleList();
-  for (SECMODModuleList* item = head; item != NULL; item = item->next) {
+  for (SECMODModuleList* item = head; item != nullptr; item = item->next) {
     int slot_count = item->module->loaded ? item->module->slotCount : 0;
     for (int i = 0; i < slot_count; i++) {
       PK11SlotInfo* slot = item->module->slots[i];
@@ -121,7 +121,7 @@ class NSSProfileFilterChromeOSTest : public testing::Test {
 };
 
 TEST_F(NSSProfileFilterChromeOSTest, TempCertNotAllowed) {
-  EXPECT_EQ(NULL, certs_[0]->slot);
+  EXPECT_EQ(nullptr, certs_[0]->slot);
   EXPECT_FALSE(no_slots_profile_filter_.IsCertAllowed(certs_[0].get()));
   EXPECT_FALSE(profile_filter_1_.IsCertAllowed(certs_[0].get()));
   EXPECT_FALSE(profile_filter_1_copy_.IsCertAllowed(certs_[0].get()));

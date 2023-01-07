@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,9 @@
 #include "base/files/file_path.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
@@ -51,7 +51,7 @@ ActivityLogDatabasePolicy::ActivityLogDatabasePolicy(
 
 void ActivityLogDatabasePolicy::Init() {
   LOG(WARNING) << "Scheduling init";
-  ScheduleAndForget(db_, &ActivityDatabase::Init, database_path_);
+  ScheduleAndForget(db_.get(), &ActivityDatabase::Init, database_path_);
 }
 
 void ActivityLogDatabasePolicy::Flush() {
@@ -65,7 +65,8 @@ sql::Database* ActivityLogDatabasePolicy::GetDatabaseConnection() const {
 }
 
 // static
-std::string ActivityLogPolicy::Util::Serialize(const base::Value* value) {
+std::string ActivityLogPolicy::Util::Serialize(
+    absl::optional<base::ValueView> value) {
   std::string value_as_text;
   if (value) {
     JSONStringValueSerializer serializer(&value_as_text);
@@ -90,7 +91,7 @@ void ActivityLogPolicy::Util::StripPrivacySensitiveFields(
 
   // Strip query parameters, username/password, etc., from URLs.
   if (action->page_url().is_valid() || action->arg_url().is_valid()) {
-    url::Replacements<char> url_sanitizer;
+    GURL::Replacements url_sanitizer;
     url_sanitizer.ClearUsername();
     url_sanitizer.ClearPassword();
     url_sanitizer.ClearQuery();
@@ -105,13 +106,10 @@ void ActivityLogPolicy::Util::StripPrivacySensitiveFields(
   // Clear WebRequest details; only keep a record of which types of
   // modifications were performed.
   if (action->action_type() == Action::ACTION_WEB_REQUEST) {
-    base::DictionaryValue* details = NULL;
-    if (action->mutable_other()->GetDictionary(constants::kActionWebRequest,
-                                               &details)) {
-      base::DictionaryValue::Iterator details_iterator(*details);
-      while (!details_iterator.IsAtEnd()) {
-        details->SetBoolean(details_iterator.key(), true);
-        details_iterator.Advance();
+    if (base::Value::Dict* details =
+            action->mutable_other().FindDict(constants::kActionWebRequest)) {
+      for (auto detail : *details) {
+        details->SetByDottedPath(detail.first, true);
       }
     }
   }
@@ -122,7 +120,7 @@ void ActivityLogPolicy::Util::StripArguments(const ApiSet& api_allowlist,
                                              scoped_refptr<Action> action) {
   if (api_allowlist.find(std::make_pair(
           action->action_type(), action->api_name())) == api_allowlist.end()) {
-    action->set_args(std::unique_ptr<base::ListValue>());
+    action->set_args(absl::nullopt);
   }
 }
 
@@ -131,8 +129,7 @@ base::Time ActivityLogPolicy::Util::AddDays(const base::Time& base_date,
                                             int days) {
   // To allow for time zone changes, add an additional partial day then round
   // down to midnight.
-  return (base_date + base::TimeDelta::FromDays(days) +
-          base::TimeDelta::FromHours(4)).LocalMidnight();
+  return (base_date + base::Days(days) + base::Hours(4)).LocalMidnight();
 }
 
 // static

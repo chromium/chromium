@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -22,16 +22,13 @@ import urllib2
 SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
 
 SUPPORTED_DEBIAN_RELEASES = {
-    'Debian 8 (Jessie)': 'jessie',
-    'Debian 9 (Stretch)': 'stretch',
     'Debian 10 (Buster)': 'buster',
+    # TODO: bullseye-updates does not have a .gz file.
+    # 'Debian 11 (Bullseye)': 'bullseye',
 }
 
 SUPPORTED_UBUNTU_RELEASES = {
-    'Ubuntu 14.04 (Trusty)': 'trusty',
-    'Ubuntu 16.04 (Xenial)': 'xenial',
     'Ubuntu 18.04 (Bionic)': 'bionic',
-    'Ubuntu 19.10 (Eoan)': 'eoan',
     'Ubuntu 20.04 (Focal)': 'focal',
 }
 
@@ -49,7 +46,6 @@ PACKAGE_FILTER = set([
     "libgbm1",
     "libgcc1",
     "libglib2.0-0",
-    "libgtk-3-0",
     "libnspr4",
     "libnss3",
     "libpango-1.0-0",

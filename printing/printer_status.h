@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,13 @@
 #include <string>
 #include <vector>
 
-#include "printing/printing_export.h"
+#include "base/component_export.h"
 
 namespace printing {
 
 // Represents the status of a printer containing the properties printer-state,
 // printer-state-reasons, and printer-state-message.
-struct PRINTING_EXPORT PrinterStatus {
+struct COMPONENT_EXPORT(PRINTING_BASE) PrinterStatus {
   struct PrinterReason {
     // This enum is used to record UMA histogram values and should not be
     // reordered. Please keep in sync with PrinterStatusReasons in

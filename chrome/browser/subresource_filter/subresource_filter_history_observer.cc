@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ SubresourceFilterHistoryObserver::SubresourceFilterHistoryObserver(
     : settings_manager_(settings_manager) {
   DCHECK(settings_manager_);
   DCHECK(history_service);
-  history_observer_.Add(history_service);
+  history_observation_.Observe(history_service);
 }
 
 SubresourceFilterHistoryObserver::~SubresourceFilterHistoryObserver() = default;

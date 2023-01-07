@@ -1,27 +1,26 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync/model/model_type_store_impl.h"
 
 #include <map>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
-#include "components/sync/test/model/model_type_store_test_util.h"
-#include "components/sync/test/model/test_matchers.h"
+#include "components/sync/test/model_type_store_test_util.h"
+#include "components/sync/test/test_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/leveldatabase/env_chromium.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -47,33 +46,33 @@ sync_pb::EntityMetadata CreateEntityMetadata(const std::string& value) {
 // Following functions capture parameters passed to callbacks into variables
 // provided by test. They can be passed as callbacks to ModelTypeStore
 // functions.
-static void CaptureError(base::Optional<ModelError>* dst,
-                         const base::Optional<ModelError>& error) {
+static void CaptureError(absl::optional<ModelError>* dst,
+                         const absl::optional<ModelError>& error) {
   *dst = error;
 }
 
 void CaptureErrorAndRecords(
-    base::Optional<ModelError>* dst_error,
+    absl::optional<ModelError>* dst_error,
     std::unique_ptr<ModelTypeStore::RecordList>* dst_records,
-    const base::Optional<ModelError>& error,
+    const absl::optional<ModelError>& error,
     std::unique_ptr<ModelTypeStore::RecordList> records) {
   *dst_error = error;
   *dst_records = std::move(records);
 }
 
-void CaptureErrorAndMetadataBatch(base::Optional<ModelError>* dst_error,
+void CaptureErrorAndMetadataBatch(absl::optional<ModelError>* dst_error,
                                   std::unique_ptr<MetadataBatch>* dst_batch,
-                                  const base::Optional<ModelError>& error,
+                                  const absl::optional<ModelError>& error,
                                   std::unique_ptr<MetadataBatch> batch) {
   *dst_error = error;
   *dst_batch = std::move(batch);
 }
 
 void CaptureErrorRecordsAndIdList(
-    base::Optional<ModelError>* dst_error,
+    absl::optional<ModelError>* dst_error,
     std::unique_ptr<ModelTypeStore::RecordList>* dst_records,
     std::unique_ptr<ModelTypeStore::IdList>* dst_id_list,
-    const base::Optional<ModelError>& error,
+    const absl::optional<ModelError>& error,
     std::unique_ptr<ModelTypeStore::RecordList> records,
     std::unique_ptr<ModelTypeStore::IdList> missing_id_list) {
   *dst_error = error;
@@ -84,9 +83,10 @@ void CaptureErrorRecordsAndIdList(
 void WriteData(ModelTypeStore* store,
                const std::string& key,
                const std::string& data) {
-  auto write_batch = store->CreateWriteBatch();
+  std::unique_ptr<ModelTypeStore::WriteBatch> write_batch =
+      store->CreateWriteBatch();
   write_batch->WriteData(key, data);
-  base::Optional<ModelError> error;
+  absl::optional<ModelError> error;
   store->CommitWriteBatch(std::move(write_batch),
                           base::BindOnce(&CaptureError, &error));
   base::RunLoop().RunUntilIdle();
@@ -96,10 +96,11 @@ void WriteData(ModelTypeStore* store,
 void WriteMetadata(ModelTypeStore* store,
                    const std::string& key,
                    const sync_pb::EntityMetadata& metadata) {
-  auto write_batch = store->CreateWriteBatch();
+  std::unique_ptr<ModelTypeStore::WriteBatch> write_batch =
+      store->CreateWriteBatch();
   write_batch->GetMetadataChangeList()->UpdateMetadata(key, metadata);
 
-  base::Optional<ModelError> error;
+  absl::optional<ModelError> error;
   store->CommitWriteBatch(std::move(write_batch),
                           base::BindOnce(&CaptureError, &error));
   base::RunLoop().RunUntilIdle();
@@ -108,10 +109,11 @@ void WriteMetadata(ModelTypeStore* store,
 
 void WriteModelTypeState(ModelTypeStore* store,
                          const sync_pb::ModelTypeState& state) {
-  auto write_batch = store->CreateWriteBatch();
+  std::unique_ptr<ModelTypeStore::WriteBatch> write_batch =
+      store->CreateWriteBatch();
   write_batch->GetMetadataChangeList()->UpdateModelTypeState(state);
 
-  base::Optional<ModelError> error;
+  absl::optional<ModelError> error;
   store->CommitWriteBatch(std::move(write_batch),
                           base::BindOnce(&CaptureError, &error));
   base::RunLoop().RunUntilIdle();
@@ -122,7 +124,7 @@ void ReadStoreContents(
     ModelTypeStore* store,
     std::unique_ptr<ModelTypeStore::RecordList>* data_records,
     std::unique_ptr<MetadataBatch>* metadata_batch) {
-  base::Optional<ModelError> error;
+  absl::optional<ModelError> error;
   store->ReadAllData(
       base::BindOnce(&CaptureErrorAndRecords, &error, data_records));
   base::RunLoop().RunUntilIdle();
@@ -140,10 +142,10 @@ void VerifyMetadata(
   EXPECT_EQ(state.SerializeAsString(),
             batch->GetModelTypeState().SerializeAsString());
   EntityMetadataMap actual_metadata = batch->TakeAllMetadata();
-  for (const auto& kv : expected_metadata) {
-    auto it = actual_metadata.find(kv.first);
+  for (const auto& [storage_key, metadata] : expected_metadata) {
+    auto it = actual_metadata.find(storage_key);
     ASSERT_TRUE(it != actual_metadata.end());
-    EXPECT_EQ(kv.second.SerializeAsString(), it->second->SerializeAsString());
+    EXPECT_EQ(metadata.SerializeAsString(), it->second->SerializeAsString());
     actual_metadata.erase(it);
   }
   EXPECT_EQ(0U, actual_metadata.size());
@@ -214,14 +216,14 @@ TEST_F(ModelTypeStoreImplTest, WriteThenReadWithPreprocessing) {
   store()->ReadAllDataAndPreprocess(
       base::BindLambdaForTesting(
           [&](std::unique_ptr<ModelTypeStore::RecordList> record_list)
-              -> base::Optional<ModelError> {
-            for (const auto& record : *record_list) {
+              -> absl::optional<ModelError> {
+            for (const ModelTypeStore::Record& record : *record_list) {
               preprocessed[std::string("key_") + record.id] =
                   std::string("value_") + record.value;
             }
-            return base::nullopt;
+            return absl::nullopt;
           }),
-      base::BindLambdaForTesting([&](const base::Optional<ModelError>& error) {
+      base::BindLambdaForTesting([&](const absl::optional<ModelError>& error) {
         EXPECT_FALSE(error) << error->ToString();
         loop.Quit();
       }));
@@ -241,10 +243,10 @@ TEST_F(ModelTypeStoreImplTest, WriteThenReadWithPreprocessingError) {
   store()->ReadAllDataAndPreprocess(
       base::BindLambdaForTesting(
           [&](std::unique_ptr<ModelTypeStore::RecordList> record_list)
-              -> base::Optional<ModelError> {
+              -> absl::optional<ModelError> {
             return ModelError(FROM_HERE, "Preprocessing error");
           }),
-      base::BindLambdaForTesting([&](const base::Optional<ModelError>& error) {
+      base::BindLambdaForTesting([&](const absl::optional<ModelError>& error) {
         EXPECT_TRUE(error);
         loop.Quit();
       }));
@@ -279,9 +281,10 @@ TEST_F(ModelTypeStoreImplTest, WriteThenDeleteAll) {
 TEST_F(ModelTypeStoreImplTest, MissingModelTypeState) {
   WriteTestData();
 
-  base::Optional<ModelError> error;
+  absl::optional<ModelError> error;
 
-  auto write_batch = store()->CreateWriteBatch();
+  std::unique_ptr<ModelTypeStore::WriteBatch> write_batch =
+      store()->CreateWriteBatch();
   write_batch->GetMetadataChangeList()->ClearModelTypeState();
   store()->CommitWriteBatch(std::move(write_batch),
                             base::BindOnce(&CaptureError, &error));
@@ -302,7 +305,7 @@ TEST_F(ModelTypeStoreImplTest, MissingModelTypeState) {
 TEST_F(ModelTypeStoreImplTest, ReadMissingDataRecords) {
   WriteTestData();
 
-  base::Optional<ModelError> error;
+  absl::optional<ModelError> error;
 
   ModelTypeStore::IdList id_list;
   id_list.push_back("id1");
@@ -402,26 +405,6 @@ TEST(ModelTypeStoreImplWithTwoStoreTest, DeleteAllWithSharedBackend) {
     EXPECT_THAT(*data_records, IsEmpty());
     EXPECT_THAT(metadata_batch, IsEmptyMetadataBatch());
   }
-}
-
-TEST_F(ModelTypeStoreImplTest, CommitWriteBatchOutcomeHistogram) {
-  base::HistogramTester histograms;
-  static constexpr char kWebAppCommitWriteBatchOutcomeHistogram[] =
-      "Sync.ModelTypeStoreCommitWriteBatchOutcome.WEB_APP";
-
-  auto store =
-      ModelTypeStoreTestUtil::CreateInMemoryStoreForTest(ModelType::WEB_APPS);
-
-  base::Optional<ModelError> error;
-  auto write_batch = store->CreateWriteBatch();
-  write_batch->WriteData("test", "test");
-  store->CommitWriteBatch(std::move(write_batch),
-                          base::BindOnce(&CaptureError, &error));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_FALSE(error) << error->ToString();
-
-  histograms.ExpectBucketCount(kWebAppCommitWriteBatchOutcomeHistogram,
-                               leveldb_env::LEVELDB_STATUS_OK, 1);
 }
 
 }  // namespace syncer

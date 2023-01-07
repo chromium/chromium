@@ -31,13 +31,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ANIMATION_EFFECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_ANIMATION_EFFECT_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/animation/animation_time_delta.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -47,6 +48,7 @@ class AnimationEffectOwner;
 class EffectTiming;
 class ComputedEffectTiming;
 class OptionalEffectTiming;
+class PropertyHandle;
 class WorkletAnimation;
 
 enum TimingUpdateReason {
@@ -55,7 +57,7 @@ enum TimingUpdateReason {
 };
 
 // Represents the content of an Animation and its fractional timing state.
-// https://drafts.csswg.org/web-animations/#the-animationeffect-interface
+// https://w3.org/TR/web-animations-1/#the-animationeffect-interface
 class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
   // Calls Attach/Detach, GetAnimation, UpdateInheritedTime.
@@ -83,14 +85,16 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   virtual bool IsKeyframeEffect() const { return false; }
   virtual bool IsInertEffect() const { return false; }
 
+  virtual bool Affects(const PropertyHandle&) const = 0;
+
   Timing::Phase GetPhase() const { return EnsureCalculated().phase; }
   bool IsCurrent() const { return EnsureCalculated().is_current; }
   bool IsInEffect() const { return EnsureCalculated().is_in_effect; }
   bool IsInPlay() const { return EnsureCalculated().is_in_play; }
-  base::Optional<double> CurrentIteration() const {
+  absl::optional<double> CurrentIteration() const {
     return EnsureCalculated().current_iteration;
   }
-  base::Optional<double> Progress() const {
+  absl::optional<double> Progress() const {
     return EnsureCalculated().progress;
   }
   AnimationTimeDelta TimeToForwardsEffectChange() const {
@@ -99,11 +103,18 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   AnimationTimeDelta TimeToReverseEffectChange() const {
     return EnsureCalculated().time_to_reverse_effect_change;
   }
-  base::Optional<double> LocalTime() const {
+  absl::optional<AnimationTimeDelta> LocalTime() const {
     return EnsureCalculated().local_time;
   }
 
   const Timing& SpecifiedTiming() const { return timing_; }
+
+  const Timing::NormalizedTiming& NormalizedTiming() const {
+    EnsureNormalizedTiming();
+    return normalized_.value();
+  }
+  void InvalidateNormalizedTiming() { normalized_.reset(); }
+
   void UpdateSpecifiedTiming(const Timing&);
   void SetIgnoreCssTimingProperties();
 
@@ -120,7 +131,10 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   }
 
   // Attach/Detach the AnimationEffect from its owning animation.
-  virtual void Attach(AnimationEffectOwner* owner) { owner_ = owner; }
+  virtual void Attach(AnimationEffectOwner* owner) {
+    owner_ = owner;
+    InvalidateNormalizedTiming();
+  }
   virtual void Detach() {
     DCHECK(owner_);
     owner_ = nullptr;
@@ -133,11 +147,12 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
  protected:
   explicit AnimationEffect(const Timing&, EventDelegate* = nullptr);
 
-  // When AnimationEffect receives a new inherited time via updateInheritedTime
+  // When AnimationEffect receives a new inherited time via UpdateInheritedTime
   // it will (if necessary) recalculate timings and (if necessary) call
-  // updateChildrenAndEffects.
-  void UpdateInheritedTime(base::Optional<AnimationTimeDelta> inherited_time,
-                           base::Optional<TimelinePhase> inherited_phase,
+  // UpdateChildrenAndEffects.
+  void UpdateInheritedTime(absl::optional<AnimationTimeDelta> inherited_time,
+                           bool at_progress_timeline_boundary,
+                           double inherited_playback_rate,
                            TimingUpdateReason) const;
   void Invalidate() const { needs_update_ = true; }
   void InvalidateAndNotifyOwner() const;
@@ -156,24 +171,34 @@ class CORE_EXPORT AnimationEffect : public ScriptWrappable {
     return AnimationTimeDelta();
   }
 
+  // Converts timeline offsets to start and end delays in time units based on
+  // the timeline duration. In the event that the timeline is not an instance
+  // of a view timeline, the delays are zero.
+  using TimeDelayPair = std::pair<AnimationTimeDelta, AnimationTimeDelta>;
+  TimeDelayPair TimelineOffsetsToTimeDelays() const;
+
   virtual AnimationTimeDelta CalculateTimeToEffectChange(
       bool forwards,
-      base::Optional<double> local_time,
+      absl::optional<AnimationTimeDelta> local_time,
       AnimationTimeDelta time_to_next_iteration) const = 0;
 
   const Animation* GetAnimation() const;
   Animation* GetAnimation();
+
+  virtual absl::optional<AnimationTimeDelta> TimelineDuration() const = 0;
 
   Member<AnimationEffectOwner> owner_;
   Timing timing_;
   Member<EventDelegate> event_delegate_;
 
   mutable Timing::CalculatedTiming calculated_;
+  mutable absl::optional<Timing::NormalizedTiming> normalized_;
   mutable bool needs_update_;
-  mutable base::Optional<AnimationTimeDelta> last_update_time_;
-  mutable base::Optional<Timing::Phase> last_update_phase_;
+  mutable absl::optional<AnimationTimeDelta> last_update_time_;
+  mutable bool last_at_progress_timeline_boundary_ = false;
   AnimationTimeDelta cancel_time_;
   const Timing::CalculatedTiming& EnsureCalculated() const;
+  void EnsureNormalizedTiming() const;
 };
 
 }  // namespace blink

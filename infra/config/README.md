@@ -1,10 +1,10 @@
 **IMPORTANT:** This branch only has an effect for branches that have projects
 set up in
-https://chrome-internal.googlesource.com/infradata/config/+/refs/heads/master/configs/luci-config/projects.cfg
+https://chrome-internal.googlesource.com/infradata/config/+/HEAD/configs/luci-config/projects.cfg
 
 This directory contains chromium project-wide configurations
 for Chrome Operations services.
-For example, [cr-buildbucket.cfg](generated/cr-buildbucket.cfg) defines
+For example, [cr-buildbucket.cfg](generated/luci/cr-buildbucket.cfg) defines
 builders.
 
 Currently active version can be checked at

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <title>Test MSE teardown on media element error before HAVE_METADATA</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="mediasource-util.js"></script>
+<body>
+<script>
+
+// This is a Chromium-specific scenario test for https://crbug.com/1204656.
+// It causes a pipeline error before reaching HAVE_MEDATA with media element
+// having some media tracks.
+// The cleanup may involve both the media element and the MSE SourceBuffers
+// attempting removal of the same media tracks from the element's track lists.
+// To cause this kind of pipeline error reliably, attempts at using crafted
+// media didn't succeed in obtaining issue repro because once preroll has
+// started, the media element has already been notified of HAVE_METADATA, or
+// races at best. So instead, endOfStream() before ChunkDemuxer has finished
+// initialization, but after it has processed an initialization segment for
+// one of multiple SourceBuffers, should cause the pipeline error.
+mediasource_testafterdataloaded(
+    function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer,
+             mediaData)
+{
+  test.failOnEvent(mediaElement, 'loadedmetadata');
+
+  // Obtain a second SourceBuffer on mediaSource that will never be
+  // appended to, preventing ChunkDemuxer from completing initialization.
+  var spareSourceBuffer = mediaSource.addSourceBuffer(segmentInfo.type);
+
+  var initSegment =
+      MediaSourceUtil.extractSegmentData(mediaData, segmentInfo.init);
+
+  assert_false(sourceBuffer.updating, "sourceBuffer not updating");
+  sourceBuffer.appendBuffer(initSegment);
+  assert_true(sourceBuffer.updating, "sourceBuffer updating");
+  test.expectEvent(sourceBuffer, "updateend");
+
+  test.waitForExpectedEvents(function()
+  {
+    assert_false(sourceBuffer.updating, "sourceBuffer not updating");
+    assert_less_than(mediaElement.readyState, HTMLMediaElement.HAVE_METADATA,
+                     "mediaElement not yet at HAVE_METADATA");
+    test.expectEvent(mediaElement, "error");
+    mediaSource.endOfStream();
+  });
+
+  test.waitForExpectedEvents(function()
+  {
+    assert_true(mediaElement.error != null, "mediaElement has error");
+    assert_equals(mediaSource.readyState, "closed", "mediaSource is closed");
+    test.done();
+  });
+
+}, "Test MSE teardown on media element error before HAVE_METADATA",
+   { allow_media_element_error: true } );
+
+</script>
+</body>
+</html>
+

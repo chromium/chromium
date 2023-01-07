@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_PROFILES_FORCE_YOUTUBE_SAFETY_MODE_POLICY_HANDLER_H_
 #define CHROME_BROWSER_PROFILES_FORCE_YOUTUBE_SAFETY_MODE_POLICY_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 class PrefValueMap;
@@ -22,15 +21,18 @@ class PolicyMap;
 class ForceYouTubeSafetyModePolicyHandler : public TypeCheckingPolicyHandler {
  public:
   ForceYouTubeSafetyModePolicyHandler();
+
+  ForceYouTubeSafetyModePolicyHandler(
+      const ForceYouTubeSafetyModePolicyHandler&) = delete;
+  ForceYouTubeSafetyModePolicyHandler& operator=(
+      const ForceYouTubeSafetyModePolicyHandler&) = delete;
+
   ~ForceYouTubeSafetyModePolicyHandler() override;
 
  protected:
   // ConfigurationPolicyHandler:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ForceYouTubeSafetyModePolicyHandler);
 };
 
 }  // namespace policy

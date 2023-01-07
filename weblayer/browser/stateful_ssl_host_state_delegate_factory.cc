@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/user_prefs/user_prefs.h"

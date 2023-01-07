@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/sync_file_system/sync_event_observer.h"
 #include "chrome/browser/sync_file_system/task_logger.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -27,6 +26,12 @@ class SyncFileSystemInternalsHandler
       public sync_file_system::TaskLogger::Observer {
  public:
   explicit SyncFileSystemInternalsHandler(Profile* profile);
+
+  SyncFileSystemInternalsHandler(const SyncFileSystemInternalsHandler&) =
+      delete;
+  SyncFileSystemInternalsHandler& operator=(
+      const SyncFileSystemInternalsHandler&) = delete;
+
   ~SyncFileSystemInternalsHandler() override;
 
   // content::WebUIMessageHandler implementation.
@@ -47,16 +52,14 @@ class SyncFileSystemInternalsHandler
       const sync_file_system::TaskLogger::TaskLog& task_log) override;
 
  private:
-  void HandleGetServiceStatus(const base::ListValue* args);
-  void HandleGetNotificationSource(const base::ListValue* args);
-  void HandleGetLog(const base::ListValue* args);
-  void HandleClearLogs(const base::ListValue* args);
-  void HandleObserveTaskLog(const base::ListValue* args);
+  void HandleGetServiceStatus(const base::Value::List& args);
+  void HandleGetNotificationSource(const base::Value::List& args);
+  void HandleGetLog(const base::Value::List& args);
+  void HandleClearLogs(const base::Value::List& args);
+  void HandleObserveTaskLog(const base::Value::List& args);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   bool observing_task_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncFileSystemInternalsHandler);
 };
 
 }  // namespace syncfs_internals

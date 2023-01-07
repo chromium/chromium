@@ -1,25 +1,27 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/test/mock_callback.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_message_bridge.h"
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/sync/driver/sync_token_status.h"
-#include "components/sync/test/fake_server/fake_server_http_post_provider.h"
+#include "components/sync/test/fake_server_http_post_provider.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
 
 using sync_pb::SharingMessageSpecifics;
-using testing::_;
 
 constexpr char kEmptyOAuth2Token[] = "";
 
@@ -42,7 +44,7 @@ MATCHER_P(HasErrorCode, expected_error_code, "") {
 
 class NextCycleIterationChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit NextCycleIterationChecker(syncer::ProfileSyncService* service)
+  explicit NextCycleIterationChecker(syncer::SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {
     last_synced_time_ = SingleClientStatusChangeChecker::service()
                             ->GetLastSyncedTimeForDebugging();
@@ -64,7 +66,7 @@ class NextCycleIterationChecker : public SingleClientStatusChangeChecker {
 
 class DisabledSharingMessageChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit DisabledSharingMessageChecker(syncer::ProfileSyncService* service)
+  explicit DisabledSharingMessageChecker(syncer::SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {}
 
   bool IsExitConditionSatisfied(std::ostream* os) override {
@@ -75,7 +77,7 @@ class DisabledSharingMessageChecker : public SingleClientStatusChangeChecker {
 
 class RetryingAccessTokenFetchChecker : public SingleClientStatusChangeChecker {
  public:
-  explicit RetryingAccessTokenFetchChecker(syncer::ProfileSyncService* service)
+  explicit RetryingAccessTokenFetchChecker(syncer::SyncServiceImpl* service)
       : SingleClientStatusChangeChecker(service) {}
 
   // StatusChangeChecker implementation.
@@ -90,7 +92,7 @@ class RetryingAccessTokenFetchChecker : public SingleClientStatusChangeChecker {
 class SharingMessageEqualityChecker : public SingleClientStatusChangeChecker {
  public:
   SharingMessageEqualityChecker(
-      syncer::ProfileSyncService* service,
+      syncer::SyncServiceImpl* service,
       fake_server::FakeServer* fake_server,
       std::vector<SharingMessageSpecifics> expected_specifics)
       : SingleClientStatusChangeChecker(service),
@@ -111,12 +113,10 @@ class SharingMessageEqualityChecker : public SingleClientStatusChangeChecker {
     }
 
     for (const SharingMessageSpecifics& specifics : expected_specifics_) {
-      auto iter =
-          std::find_if(entities.begin(), entities.end(),
-                       [&specifics](const sync_pb::SyncEntity& entity) {
-                         return specifics.payload() ==
-                                entity.specifics().sharing_message().payload();
-                       });
+      auto iter = base::ranges::find(
+          entities, specifics.payload(), [](const sync_pb::SyncEntity& entity) {
+            return entity.specifics().sharing_message().payload();
+          });
       if (iter == entities.end()) {
         *os << "Server doesn't have expected sharing message with payload: "
             << specifics.payload();
@@ -131,7 +131,7 @@ class SharingMessageEqualityChecker : public SingleClientStatusChangeChecker {
   }
 
  private:
-  fake_server::FakeServer* const fake_server_ = nullptr;
+  const raw_ptr<fake_server::FakeServer> fake_server_ = nullptr;
   const std::vector<SharingMessageSpecifics> expected_specifics_;
 };
 
@@ -140,7 +140,7 @@ class SharingMessageEqualityChecker : public SingleClientStatusChangeChecker {
 class SharingMessageCallbackChecker : public SingleClientStatusChangeChecker {
  public:
   SharingMessageCallbackChecker(
-      syncer::ProfileSyncService* service,
+      syncer::SyncServiceImpl* service,
       sync_pb::SharingMessageCommitError::ErrorCode expected_error_code)
       : SingleClientStatusChangeChecker(service),
         expected_error_code_(expected_error_code) {}
@@ -164,7 +164,7 @@ class SharingMessageCallbackChecker : public SingleClientStatusChangeChecker {
   }
 
   const sync_pb::SharingMessageCommitError::ErrorCode expected_error_code_;
-  base::Optional<sync_pb::SharingMessageCommitError> last_error_code_;
+  absl::optional<sync_pb::SharingMessageCommitError> last_error_code_;
 
   base::WeakPtrFactory<SharingMessageCallbackChecker> weak_ptr_factory_{this};
 };
@@ -174,7 +174,7 @@ class SharingMessageCallbackChecker : public SingleClientStatusChangeChecker {
 // least one sharing message with the expected payload.
 class SharingMessageCommitChecker : public SingleClientStatusChangeChecker {
  public:
-  SharingMessageCommitChecker(syncer::ProfileSyncService* service,
+  SharingMessageCommitChecker(syncer::SyncServiceImpl* service,
                               fake_server::FakeServer* fake_server,
                               const std::string& expected_payload)
       : SingleClientStatusChangeChecker(service),
@@ -196,7 +196,7 @@ class SharingMessageCommitChecker : public SingleClientStatusChangeChecker {
   }
 
  private:
-  fake_server::FakeServer* const fake_server_ = nullptr;
+  const raw_ptr<fake_server::FakeServer> fake_server_ = nullptr;
   const std::string expected_payload_;
 };
 

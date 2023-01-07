@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,9 @@
 #include <stdint.h>
 
 #include <string>
-#include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/gcm_driver/gcm_activity.h"
 #include "google_apis/gcm/engine/connection_factory.h"
@@ -32,6 +31,10 @@ enum class GCMDecryptionResult;
 class GCMStatsRecorderImpl : public GCMStatsRecorder {
  public:
   GCMStatsRecorderImpl();
+
+  GCMStatsRecorderImpl(const GCMStatsRecorderImpl&) = delete;
+  GCMStatsRecorderImpl& operator=(const GCMStatsRecorderImpl&) = delete;
+
   ~GCMStatsRecorderImpl() override;
 
   // Set a delegate to receive callback from the recorder.
@@ -150,7 +153,7 @@ class GCMStatsRecorderImpl : public GCMStatsRecorder {
                      const std::string& details);
 
   bool is_recording_;
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   base::circular_deque<CheckinActivity> checkin_activities_;
   base::circular_deque<ConnectionActivity> connection_activities_;
@@ -161,8 +164,6 @@ class GCMStatsRecorderImpl : public GCMStatsRecorder {
       decryption_failure_activities_;
 
   base::TimeTicks last_connection_initiation_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMStatsRecorderImpl);
 };
 
 }  // namespace gcm

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 namespace blink {
 
 scoped_refptr<const NGTableBorders> NGTableNode::GetTableBorders() const {
-  LayoutNGTable* layout_table = To<LayoutNGTable>(box_);
+  LayoutNGTable* layout_table = To<LayoutNGTable>(box_.Get());
   scoped_refptr<const NGTableBorders> table_borders =
       layout_table->GetCachedTableBorders();
   if (!table_borders) {
@@ -34,7 +34,7 @@ const NGBoxStrut& NGTableNode::GetTableBordersStrut() const {
 scoped_refptr<const NGTableTypes::Columns> NGTableNode::GetColumnConstraints(
     const NGTableGroupedChildren& grouped_children,
     const NGBoxStrut& border_padding) const {
-  LayoutNGTable* layout_table = To<LayoutNGTable>(box_);
+  LayoutNGTable* layout_table = To<LayoutNGTable>(box_.Get());
   scoped_refptr<const NGTableTypes::Columns> column_constraints =
       layout_table->GetCachedTableColumnConstraints();
   if (!column_constraints) {
@@ -50,6 +50,15 @@ LayoutUnit NGTableNode::ComputeTableInlineSize(
     const NGBoxStrut& border_padding) const {
   return NGTableLayoutAlgorithm::ComputeTableInlineSize(*this, space,
                                                         border_padding);
+}
+
+LayoutUnit NGTableNode::ComputeCaptionBlockSize(
+    const NGConstraintSpace& space) const {
+  LayoutUnit table_inline_size =
+      CalculateInitialFragmentGeometry(space, *this, /* break_token */ nullptr)
+          .border_box_size.inline_size;
+  return NGTableLayoutAlgorithm::ComputeCaptionBlockSize(*this, space,
+                                                         table_inline_size);
 }
 
 bool NGTableNode::AllowColumnPercentages(bool is_layout_pass) const {

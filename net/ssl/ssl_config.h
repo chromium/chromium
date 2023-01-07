@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,16 @@
 
 #include <stdint.h>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "net/base/net_export.h"
-#include "net/base/network_isolation_key.h"
+#include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/socket/next_proto.h"
 #include "net/ssl/ssl_private_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -35,14 +37,13 @@ enum {
 // Default minimum protocol version.
 NET_EXPORT extern const uint16_t kDefaultSSLVersionMin;
 
-// Default minimum protocol version to warn about.
-NET_EXPORT extern const uint16_t kDefaultSSLVersionMinWarn;
-
 // Default maximum protocol version.
 NET_EXPORT extern const uint16_t kDefaultSSLVersionMax;
 
 // A collection of SSL-related configuration settings.
 struct NET_EXPORT SSLConfig {
+  using ApplicationSettings = base::flat_map<NextProto, std::vector<uint8_t>>;
+
   // Default to revocation checking.
   SSLConfig();
   SSLConfig(const SSLConfig& other);
@@ -61,8 +62,8 @@ struct NET_EXPORT SSLConfig {
   // If specified, the minimum and maximum protocol versions that are enabled.
   // (Use the SSL_PROTOCOL_VERSION_xxx enumerators defined above.) If
   // unspecified, values from the SSLConfigService are used.
-  base::Optional<uint16_t> version_min_override;
-  base::Optional<uint16_t> version_max_override;
+  absl::optional<uint16_t> version_min_override;
+  absl::optional<uint16_t> version_max_override;
 
   // Whether early data is enabled on this connection. Note that early data has
   // weaker security properties than normal data and changes the
@@ -81,8 +82,7 @@ struct NET_EXPORT SSLConfig {
   // If true, causes only ECDHE cipher suites to be enabled.
   bool require_ecdhe = false;
 
-  // If true, causes 3DES cipher suites and SHA-1 signature algorithms in
-  // TLS 1.2 to be disabled.
+  // If true, causes SHA-1 signature algorithms in TLS 1.2 to be disabled.
   bool disable_legacy_crypto = false;
 
   // TODO(wtc): move the following members to a new SSLParams structure.  They
@@ -121,7 +121,7 @@ struct NET_EXPORT SSLConfig {
   NextProtoVector alpn_protos;
 
   // True if renegotiation should be allowed for the default application-level
-  // protocol when the peer negotiates neither ALPN nor NPN.
+  // protocol when the peer does not negotiate ALPN.
   bool renego_allowed_default = false;
 
   // The list of application-level protocols to enable renegotiation for.
@@ -129,11 +129,17 @@ struct NET_EXPORT SSLConfig {
 
   // ALPS TLS extension is enabled and corresponding data is sent to server
   // for each NextProto in |application_settings|.  Data might be empty.
-  base::flat_map<NextProto, std::vector<uint8_t>> application_settings;
+  ApplicationSettings application_settings;
 
   // If the PartitionSSLSessionsByNetworkIsolationKey feature is enabled, the
   // session cache is partitioned by this value.
-  NetworkIsolationKey network_isolation_key;
+  NetworkAnonymizationKey network_anonymization_key;
+
+  // If non-empty, a serialized ECHConfigList to use to encrypt the ClientHello.
+  // If this field is non-empty, callers should handle |ERR_ECH_NOT_NEGOTIATED|
+  // errors from Connect() by calling GetECHRetryConfigs() to determine how to
+  // retry the connection.
+  std::vector<uint8_t> ech_config_list;
 
   // An additional boolean to partition the session cache by.
   //

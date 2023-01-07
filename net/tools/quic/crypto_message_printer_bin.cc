@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include <iostream>
 
 #include "base/command_line.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_text_utils.h"
-#include "net/third_party/quiche/src/quic/core/crypto/crypto_framer.h"
+#include "base/strings/string_number_conversions.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_framer.h"
 
 using quic::Perspective;
 using std::cerr;
@@ -22,7 +22,7 @@ namespace net {
 
 class CryptoMessagePrinter : public quic::CryptoFramerVisitorInterface {
  public:
-  explicit CryptoMessagePrinter() {}
+  explicit CryptoMessagePrinter() = default;
 
   void OnHandshakeMessage(
       const quic::CryptoHandshakeMessage& message) override {
@@ -50,8 +50,9 @@ int main(int argc, char* argv[]) {
   quic::CryptoFramer framer;
   framer.set_visitor(&printer);
   framer.set_process_truncated_messages(true);
-  std::string input = absl::HexStringToBytes(argv[1]);
-  if (!framer.ProcessInput(input)) {
+  std::string input;
+  if (!base::HexStringToString(argv[1], &input) ||
+      !framer.ProcessInput(input)) {
     return 1;
   }
   if (framer.InputBytesRemaining() != 0) {

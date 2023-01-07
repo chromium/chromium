@@ -4,13 +4,10 @@
 ++++++[section]
 ++++++++[section]
 ++++++++++[spin button] name='Month' current=9.000000 minimum=1.000000 maximum=12.000000
-++++++++++++[static] name='09'
 ++++++++++[static] name='/'
 ++++++++++[spin button] name='Day' current=1.000000 minimum=1.000000 maximum=31.000000
-++++++++++++[static] name='01'
 ++++++++++[static] name='/'
 ++++++++++[spin button] name='Year' current=2008.000000 minimum=1.000000 maximum=275760.000000
-++++++++++++[static] name='2008'
 ++++++[push button] name='Show date picker'
 ++++++[document web] controlled-by
 ++++++++[section]
@@ -19,11 +16,11 @@
 ++++++++++++++[section]
 ++++++++++++++++[push button] name='Show month selection panel'
 ++++++++++++++++++[static] name='September 2008'
-++++++++++++++++++[document frame]
+++++++++++++++++++[image]
 ++++++++++++++[push button] name='Show previous month'
-++++++++++++++++[document frame]
+++++++++++++++++[image]
 ++++++++++++++[push button] name='Show next month'
-++++++++++++++++[document frame]
+++++++++++++++++[image]
 ++++++++++++++[table] cols=7 headers=(NONE); rows=6 headers=(NONE); caption=false; spans=(all: 1x1)
 ++++++++++++++++[section]
 ++++++++++++++++++[section]
@@ -132,4 +129,5 @@
 ++++++++++++++++++++++++[static] name='10'
 ++++++++++++++++++++++[table cell] name='Saturday, October 11, 2008' selectable (row=5, col=6, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++++++++++++++++++[static] name='11'
+++++++++++++++++[push button] name='Clear'
 ++++++++++++++++[push button] name='Today'

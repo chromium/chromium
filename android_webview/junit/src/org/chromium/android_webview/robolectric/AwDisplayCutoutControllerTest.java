@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,13 +36,13 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.android_webview.AwDisplayCutoutController;
 import org.chromium.android_webview.AwDisplayCutoutController.Insets;
 import org.chromium.base.Log;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.testing.local.LocalRobolectricTestRunner;
 
 /**
  * JUnit tests for AwDisplayCutoutController.
  */
-@RunWith(LocalRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AwDisplayCutoutControllerTest {
     private static final String TAG = "DisplayCutoutTest";

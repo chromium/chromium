@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,11 +10,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 
 namespace drive {
 class DriveServiceInterface;
@@ -42,6 +42,10 @@ class ConflictResolver : public SyncTask {
   typedef std::vector<std::string> FileIDList;
 
   explicit ConflictResolver(SyncEngineContext* sync_context);
+
+  ConflictResolver(const ConflictResolver&) = delete;
+  ConflictResolver& operator=(const ConflictResolver&) = delete;
+
   ~ConflictResolver() override;
   void RunPreflight(std::unique_ptr<SyncTaskToken> token) override;
   void RunExclusive(std::unique_ptr<SyncTaskToken> token);
@@ -51,19 +55,19 @@ class ConflictResolver : public SyncTask {
 
   void DetachFromNonPrimaryParents(std::unique_ptr<SyncTaskToken> token);
   void DidDetachFromParent(std::unique_ptr<SyncTaskToken> token,
-                           google_apis::DriveApiErrorCode error);
+                           google_apis::ApiErrorCode error);
 
   std::string PickPrimaryFile(const TrackerIDSet& trackers);
   void RemoveNonPrimaryFiles(std::unique_ptr<SyncTaskToken> token);
   void DidRemoveFile(std::unique_ptr<SyncTaskToken> token,
                      const std::string& file_id,
-                     google_apis::DriveApiErrorCode error);
+                     google_apis::ApiErrorCode error);
 
   void UpdateFileMetadata(const std::string& file_id,
                           std::unique_ptr<SyncTaskToken> token);
   void DidGetRemoteMetadata(const std::string& file_id,
                             std::unique_ptr<SyncTaskToken> token,
-                            google_apis::DriveApiErrorCode error,
+                            google_apis::ApiErrorCode error,
                             std::unique_ptr<google_apis::FileResource> entry);
 
   std::string target_file_id_;
@@ -76,11 +80,9 @@ class ConflictResolver : public SyncTask {
   drive::DriveServiceInterface* drive_service();
   MetadataDatabase* metadata_database();
 
-  SyncEngineContext* sync_context_;  // Not owned.
+  raw_ptr<SyncEngineContext> sync_context_;  // Not owned.
 
   base::WeakPtrFactory<ConflictResolver> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConflictResolver);
 };
 
 }  // namespace drive_backend

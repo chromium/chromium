@@ -1,0 +1,8 @@
+PASS: event at (120, 128) hit box4 at offset (1, 1)
+PASS: event at (336, 87) hit box7 at offset (1, 1)
+PASS: event at (348, 86) hit box7 at offset (15, 1)
+PASS: event at (582, 87) hit box11 at offset (1, 1)
+PASS: event at (594, 86) hit box11 at offset (15, 1)
+
+ 
+ 

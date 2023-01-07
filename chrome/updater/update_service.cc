@@ -1,10 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/updater/update_service.h"
 
 #include <ostream>
+
+#include "base/version.h"
 
 namespace updater {
 
@@ -16,6 +18,15 @@ UpdateService::UpdateState::UpdateState(UpdateState&&) = default;
 UpdateService::UpdateState& UpdateService::UpdateState::operator=(
     UpdateState&&) = default;
 UpdateService::UpdateState::~UpdateState() = default;
+
+UpdateService::AppState::AppState() = default;
+UpdateService::AppState::AppState(const AppState&) = default;
+UpdateService::AppState& UpdateService::AppState::operator=(const AppState&) =
+    default;
+UpdateService::AppState::AppState(UpdateService::AppState&&) = default;
+UpdateService::AppState& UpdateService::AppState::operator=(AppState&&) =
+    default;
+UpdateService::AppState::~AppState() = default;
 
 std::ostream& operator<<(std::ostream& os,
                          const UpdateService::UpdateState& update_state) {
@@ -74,6 +85,20 @@ std::ostream& operator<<(std::ostream& os,
             << ", error_category: " << error_category_formatter()
             << ", error_code: " << update_state.error_code
             << ", extra_code1: " << update_state.extra_code1 << "}";
+}
+
+bool operator==(const UpdateService::UpdateState& lhs,
+                const UpdateService::UpdateState& rhs) {
+  const bool versions_equal =
+      (lhs.next_version.IsValid() && rhs.next_version.IsValid() &&
+       lhs.next_version == rhs.next_version) ||
+      (!lhs.next_version.IsValid() && !rhs.next_version.IsValid());
+  return versions_equal && lhs.app_id == rhs.app_id && lhs.state == rhs.state &&
+         lhs.downloaded_bytes == rhs.downloaded_bytes &&
+         lhs.total_bytes == rhs.total_bytes &&
+         lhs.install_progress == rhs.install_progress &&
+         lhs.error_category == rhs.error_category &&
+         lhs.error_code == rhs.error_code && lhs.extra_code1 == rhs.extra_code1;
 }
 
 }  // namespace updater

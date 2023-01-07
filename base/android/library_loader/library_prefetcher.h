@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,10 @@
 #include <jni.h>
 
 #include <stdint.h>
-#include <string>
 
 #include "base/android/library_loader/anchor_functions_buildflags.h"
 #include "base/base_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
 
@@ -30,6 +28,10 @@ namespace android {
 // the Android runtime, can be killed at any time, which is not an issue here.
 class BASE_EXPORT NativeLibraryPrefetcher {
  public:
+  NativeLibraryPrefetcher() = delete;
+  NativeLibraryPrefetcher(const NativeLibraryPrefetcher&) = delete;
+  NativeLibraryPrefetcher& operator=(const NativeLibraryPrefetcher&) = delete;
+
   // Finds the executable code range, forks a low priority process pre-fetching
   // it wait()s for the process to exit or die. If ordered_only is true, only
   // the ordered section is prefetched. See GetOrdrderedTextRange() in
@@ -59,8 +61,6 @@ class BASE_EXPORT NativeLibraryPrefetcher {
 
   FRIEND_TEST_ALL_PREFIXES(NativeLibraryPrefetcherTest,
                            TestPercentageOfResidentCode);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(NativeLibraryPrefetcher);
 };
 
 }  // namespace android

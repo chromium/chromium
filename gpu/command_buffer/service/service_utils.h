@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,9 @@ GPU_GLES2_EXPORT GrContextType ParseGrContextType();
 // the native implementation.
 GPU_GLES2_EXPORT VulkanImplementationName
 ParseVulkanImplementationName(const base::CommandLine* command_line);
+
+GPU_GLES2_EXPORT WebGPUAdapterName
+ParseWebGPUAdapterName(const base::CommandLine* command_line);
 
 }  // namespace gles2
 }  // namespace gpu

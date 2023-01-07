@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package org.chromium.webview_shell;
@@ -61,6 +61,8 @@ public class TelemetryActivity extends Activity {
 
         CookieManager.setAcceptFileSchemeCookies(true);
         WebSettings settings = webView.getSettings();
+        settings.setBuiltInZoomControls(true);
+        settings.setDisplayZoomControls(false);
         settings.setJavaScriptEnabled(true);
         settings.setUseWideViewPort(true);
         settings.setLoadWithOverviewMode(true);

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,13 +15,13 @@
 #include "base/containers/circular_deque.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -37,8 +37,6 @@ namespace {
 const GLfloat kRGBtoGrayscaleColorWeights[4] = {0.213f, 0.715f, 0.072f, 0.0f};
 
 // Linear translation from RGB to YUV color space.
-// TODO(miu): This needs to stop being hardcoded...and need to identify to&from
-// color spaces.
 const GLfloat kRGBtoYColorWeights[4] = {0.257f, 0.504f, 0.098f, 0.0625f};
 const GLfloat kRGBtoUColorWeights[4] = {-0.148f, -0.291f, 0.439f, 0.5f};
 const GLfloat kRGBtoVColorWeights[4] = {0.439f, -0.368f, -0.071f, 0.5f};
@@ -88,6 +86,9 @@ class ShaderProgram : public base::RefCounted<ShaderProgram> {
         rgb_to_plane1_location_(-1),
         rgb_to_plane2_location_(-1) {}
 
+  ShaderProgram(const ShaderProgram&) = delete;
+  ShaderProgram& operator=(const ShaderProgram&) = delete;
+
   // Compile shader program.
   void Setup(const GLchar* vertex_shader_text,
              const GLchar* fragment_shader_text);
@@ -111,8 +112,8 @@ class ShaderProgram : public base::RefCounted<ShaderProgram> {
   friend class base::RefCounted<ShaderProgram>;
   ~ShaderProgram() { gl_->DeleteProgram(program_); }
 
-  GLES2Interface* gl_;
-  GLHelper* helper_;
+  raw_ptr<GLES2Interface> gl_;
+  raw_ptr<GLHelper> helper_;
   const GLHelperScaling::ShaderType shader_;
 
   // A program for copying a source texture into a destination texture.
@@ -136,8 +137,6 @@ class ShaderProgram : public base::RefCounted<ShaderProgram> {
   GLint rgb_to_plane0_location_;
   GLint rgb_to_plane1_location_;
   GLint rgb_to_plane2_location_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderProgram);
 };
 
 // Implementation of a single stage in a scaler pipeline. If the pipeline has
@@ -364,7 +363,8 @@ class ScalerImpl : public GLHelper::ScalerInterface {
     }
     // Because the texture sampler sometimes reads between pixels, an extra one
     // must be accounted for.
-    sampling_rect->Inset(-(overscan_x + 1.0f), -(overscan_y + 1.0f));
+    sampling_rect->Inset(
+        -gfx::InsetsF::VH(overscan_y + 1.0f, overscan_x + 1.0f));
   }
 
   // Returns the given |rect| in source coordinates.
@@ -563,8 +563,8 @@ class ScalerImpl : public GLHelper::ScalerInterface {
     gl_->ActiveTexture(oldActiveTexture);
   }
 
-  GLES2Interface* gl_;
-  GLHelperScaling* scaler_helper_;
+  raw_ptr<GLES2Interface> gl_;
+  raw_ptr<GLHelperScaling> scaler_helper_;
   GLHelperScaling::ScalerStage spec_;
   GLfloat color_weights_[3][4];  // A vec4 for each plane.
   GLuint intermediate_texture_;
@@ -581,7 +581,7 @@ class ScalerImpl : public GLHelper::ScalerInterface {
     gfx::Vector2d scale_to;
     GLenum readback_format;
   };
-  base::Optional<ChainProperties> chain_properties_;
+  absl::optional<ChainProperties> chain_properties_;
 };
 
 // The important inputs for this function is |x_ops| and |y_ops|. They represent

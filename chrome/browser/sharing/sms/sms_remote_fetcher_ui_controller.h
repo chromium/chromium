@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,13 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/sharing/sharing_metrics.h"
 #include "chrome/browser/sharing/sharing_service.h"
 #include "chrome/browser/sharing/sharing_ui_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -33,9 +32,9 @@ class SmsRemoteFetcherUiController
       public content::WebContentsUserData<SmsRemoteFetcherUiController> {
  public:
   using OnRemoteCallback =
-      base::OnceCallback<void(base::Optional<std::vector<url::Origin>>,
-                              base::Optional<std::string>,
-                              base::Optional<content::SmsFetchFailureType>)>;
+      base::OnceCallback<void(absl::optional<std::vector<url::Origin>>,
+                              absl::optional<std::string>,
+                              absl::optional<content::SmsFetchFailureType>)>;
   static SmsRemoteFetcherUiController* GetOrCreateFromWebContents(
       content::WebContents* web_contents);
 
@@ -52,15 +51,17 @@ class SmsRemoteFetcherUiController
   void OnAppChosen(const SharingApp& app) override;
   std::u16string GetContentType() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
+  bool ShouldShowLoadingIcon() const override;
   std::u16string GetTextForTooltipAndAccessibleName() const override;
   SharingFeatureName GetFeatureMetricsPrefix() const override;
+  bool HasAccessibleUi() const override;
 
   void OnSmsRemoteFetchResponse(
       OnRemoteCallback callback,
       SharingSendMessageResult result,
       std::unique_ptr<chrome_browser_sharing::ResponseMessage> response);
 
-  base::OnceClosure FetchRemoteSms(const url::Origin& origin,
+  base::OnceClosure FetchRemoteSms(const std::vector<url::Origin>& origin_list,
                                    OnRemoteCallback callback);
 
  protected:

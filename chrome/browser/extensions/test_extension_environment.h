@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,13 +8,13 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/common/extension.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/scoped_ole_initializer.h"
 #endif
 
@@ -55,6 +55,9 @@ class TestExtensionEnvironment {
   };
 
   explicit TestExtensionEnvironment(Type type = Type::kWithTaskEnvironment);
+
+  TestExtensionEnvironment(const TestExtensionEnvironment&) = delete;
+  TestExtensionEnvironment& operator=(const TestExtensionEnvironment&) = delete;
 
   ~TestExtensionEnvironment();
 
@@ -106,14 +109,12 @@ class TestExtensionEnvironment {
   const std::unique_ptr<ChromeOSEnv> chromeos_env_;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer_;
 #endif
 
   std::unique_ptr<TestingProfile> profile_;
-  ExtensionService* extension_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionEnvironment);
+  raw_ptr<ExtensionService> extension_service_ = nullptr;
 };
 
 }  // namespace extensions

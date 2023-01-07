@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,21 @@
 
 #include <cstring>
 
+#include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "ui/events/devices/device_util_linux.h"
+#include "ui/events/ozone/features.h"
 
 #if !defined(EVIOCGMTSLOTS)
 #define EVIOCGMTSLOTS(len) _IOC(_IOC_READ, 'E', 0x0a, len)
+#endif
+
+#ifndef INPUT_PROP_HAPTICPAD
+#define INPUT_PROP_HAPTICPAD 0x07
 #endif
 
 namespace ui {
@@ -28,40 +34,251 @@ namespace {
 // unusual.
 const size_t kMaximumDeviceNameLength = 256;
 
-constexpr struct {
+struct DeviceId {
   uint16_t vendor;
   uint16_t product_id;
-} kKeyboardBlocklist[] = {
+  constexpr bool operator<(const DeviceId& other) const {
+    return vendor == other.vendor ? product_id < other.product_id
+                                  : vendor < other.vendor;
+  }
+};
+
+constexpr auto kKeyboardBlocklist = base::MakeFixedFlatSet<DeviceId>({
+    {0x0111, 0x1830},  // SteelSeries Rival 3 Wireless (Bluetooth)
+    {0x0111, 0x183a},  // SteelSeries Aerox 3 Wireless (Bluetooth)
+    {0x0111, 0x1854},  // SteelSeries Aerox 5 Wireless (Bluetooth)
+    {0x0111, 0x185a},  // SteelSeries Aerox 9 Wireless (Bluetooth)
+    {0x03f0, 0x0b97},  // HyperX Pulsefire Haste 2 Gaming Mouse
     {0x03f0, 0xa407},  // HP X4000 Wireless Mouse
     {0x045e, 0x0745},  // Microsoft Wireless Mobile Mouse 6000
     {0x045e, 0x0821},  // Microsoft Surface Precision Mouse
     {0x045e, 0x082a},  // Microsoft Pro IntelliMouse
     {0x045e, 0x082f},  // Microsoft Bluetooth Mouse
+    {0x045e, 0x0845},  // Microsoft Ocean Plastic Mouse
+    {0x045e, 0x095d},  // Microsoft Surface Mobile Mouse
     {0x045e, 0x0b05},  // Xbox One Elite Series 2 gamepad
-    {0x046d, 0x4069},  // Logitech MX Master 2S (Unifying)
+    {0x046d, 0x4026},  // Logitech T400
+    {0x046d, 0x405e},  // Logitech M720 Triathlon (Unifying)
+    {0x046d, 0x4069},  // Logitech MX Master 2S (Unifying) // nocheck
+    {0x046d, 0x406b},  // Logitech M585 (Unifying)
+    {0x046d, 0x4072},  // Logitech MX Anywhere 2 (Unifying)
+    {0x046d, 0x4080},  // Logitech Pebble M350
+    {0x046d, 0xb00d},  // Logitech T630 Ultrathin
+    {0x046d, 0xb011},  // Logitech M558
+    {0x046d, 0xb012},  // Logitech MX Master (Bluetooth) // nocheck
+    {0x046d, 0xb013},  // Logitech MX Anywhere 2 (Bluetooth)
+    {0x046d, 0xb015},  // Logitech M720 Triathlon (Bluetooth)
     {0x046d, 0xb016},  // Logitech M535
-    {0x046d, 0xb019},  // Logitech MX Master 2S (Bluetooth)
+    {0x046d, 0xb017},  // Logitech MX Master / Anywhere 2 (Bluetooth) // nocheck
+    {0x046d, 0xb019},  // Logitech MX Master 2S (Bluetooth) // nocheck
+    {0x046d, 0xb01a},  // Logitech MX Anywhere 2S (Bluetooth)
+    {0x046d, 0xb01b},  // Logitech M585/M590 (Bluetooth)
+    {0x046d, 0xb01c},  // Logitech G603 Lightspeed Gaming Mouse (Bluetooth)
+    {0x046d, 0xb01e},  // Logitech MX Master (Bluetooth) // nocheck
+    {0x046d, 0xb01f},  // Logitech MX Anywhere 2 (Bluetooth)
+    {0x046d, 0xb023},  // Logitech MX Master 3 (Bluetooth) // nocheck
+    {0x046d, 0xb024},  // Logitech G604 Lightspeed Gaming Mouse (Bluetooth)
+    {0x046d, 0xb503},  // Logitech Spotlight Presentation Remote (Bluetooth)
+    {0x046d, 0xb505},  // Logitech R500 (Bluetooth)
     {0x046d, 0xc093},  // Logitech M500s
+    {0x046d, 0xc534},  // Logitech M170
+    {0x046d, 0xc53e},  // Logitech Spotlight Presentation Remote (USB dongle)
+    {0x04b4, 0x121f},  // SteelSeries Ikari
     {0x056e, 0x0134},  // Elecom Enelo IR LED Mouse 350
     {0x056e, 0x0141},  // Elecom EPRIM Blue LED 5 button mouse 228
     {0x056e, 0x0159},  // Elecom Blue LED Mouse 203
-    {0x05e0, 0x1200},  // Zebra LS2208 barcode scanner
+    {0x05e0, 0x1200},  // Symbol Technologies / Zebra LS2208 barcode scanner
+    {0x0951, 0x1727},  // HyperX Pulsefire Haste Gaming Mouse
     {0x0c45, 0x7403},  // RDing FootSwitch1F1
+    {0x1038, 0x0470},  // SteelSeries Reaper Edge
+    {0x1038, 0x0471},  // SteelSeries Rival Rescuer
+    {0x1038, 0x0472},  // SteelSeries Rival 150 net café
+    {0x1038, 0x0473},  // SteelSeries Sensei SP
+    {0x1038, 0x0475},  // SteelSeries Rival 160 retail
+    {0x1038, 0x0777},  // SteelSeries MO3
+    {0x1038, 0x1300},  // SteelSeries Kinzu
+    {0x1038, 0x1310},  // SteelSeries MO4
+    {0x1038, 0x1311},  // SteelSeries MO4v2
+    {0x1038, 0x1320},  // SteelSeries MO3v2
+    {0x1038, 0x1330},  // SteelSeries MO5
+    {0x1038, 0x1332},  // SteelSeries MO5 (Dongle)
+    {0x1038, 0x1356},  // SteelSeries Sensei Dark EDG
+    {0x1038, 0x1358},  // SteelSeries Sensei Dark Snake
+    {0x1038, 0x135a},  // SteelSeries Sensei Dell Alienware
+    {0x1038, 0x1360},  // SteelSeries Xai
+    {0x1038, 0x1361},  // SteelSeries Sensei
+    {0x1038, 0x1362},  // SteelSeries Sensei Raw Diablo III Mouse
+    {0x1038, 0x1364},  // SteelSeries Kana
+    {0x1038, 0x1366},  // SteelSeries Kinzu 2
+    {0x1038, 0x1369},  // SteelSeries Sensei Raw
+    {0x1038, 0x136b},  // SteelSeries MLG Sensei
+    {0x1038, 0x136d},  // SteelSeries Sensei Raw: GW2
+    {0x1038, 0x136f},  // SteelSeries Sensei Raw: CoD
+    {0x1038, 0x1370},  // SteelSeries Sensei Master
+    {0x1038, 0x1372},  // SteelSeries Sensei Master (Hub Controller)
+    {0x1038, 0x1373},  // SteelSeries Sensei Master (Flash Drive Controller)
+    {0x1038, 0x1374},  // SteelSeries Kana: CS:GO
+    {0x1038, 0x1376},  // SteelSeries Kana: DOTA
+    {0x1038, 0x1378},  // SteelSeries Kinzu v2.1
+    {0x1038, 0x137a},  // SteelSeries Kana Pro
+    {0x1038, 0x137c},  // SteelSeries Wireless Sensei
+    {0x1038, 0x137e},  // SteelSeries Wireless Sensei (Charge Stand)
+    {0x1038, 0x1380},  // SteelSeries World of Tank mouse
+    {0x1038, 0x1382},  // SteelSeries Sims Mouse
+    {0x1038, 0x1384},  // SteelSeries Rival
+    {0x1038, 0x1386},  // SteelSeries SIMS 4 mouse
+    {0x1038, 0x1388},  // SteelSeries Kinzu v3 Mouse
+    {0x1038, 0x1390},  // SteelSeries Sensei Raw Heroes of the Storm Mouse
+    {0x1038, 0x1392},  // SteelSeries Rival DOTA 2
+    {0x1038, 0x1394},  // SteelSeries Rival 300 CS:GO Fade Edition
+    {0x1038, 0x1396},  // SteelSeries Rival 300 Gaming Mouse
+    {0x1038, 0x1700},  // SteelSeries Rival 700
+    {0x1038, 0x1701},  // SteelSeries Rival 700 (Basic)
+    {0x1038, 0x1702},  // SteelSeries Rival 100 Gaming Mouse (ELM4 - A)
+    {0x1038, 0x1704},  // SteelSeries Rival 95 PC BANG
+    {0x1038, 0x1705},  // SteelSeries Rival 100 For Alienware
+    {0x1038, 0x1706},  // SteelSeries Rival 95
+    {0x1038, 0x1707},  // SteelSeries Rival 95 MSI edition
+    {0x1038, 0x1708},  // SteelSeries Rival 100 Gaming Mouse (PC Bang)
+    {0x1038, 0x1709},  // SteelSeries Rival 50 MSI edition
+    {0x1038, 0x170a},  // SteelSeries Rival 100 Dell China
+    {0x1038, 0x170b},  // SteelSeries Rival 100 DOTA 2 Mouse
+    {0x1038, 0x170c},  // SteelSeries Rival 100 DOTA 2 Mouse (Lenovo)
+    {0x1038, 0x170d},  // SteelSeries Rival 100 World of Tanks Mouse
+    {0x1038, 0x170e},  // SteelSeries Rival 500 (MBM)
+    {0x1038, 0x170f},  // SteelSeries Rival 500 (Basic)
+    {0x1038, 0x1710},  // SteelSeries Rival 300 Gaming Mouse
+    {0x1038, 0x1712},  // SteelSeries Rival 300 Fallout 4 Gaming Mouse
+    {0x1038, 0x1714},  // SteelSeries Rival 300 Predator Gaming Mouse
+    {0x1038, 0x1716},  // SteelSeries Rival 300 CS:GO Fade Edition
+    {0x1038, 0x1718},  // SteelSeries Rival 300 HP Omen
+    {0x1038, 0x171a},  // SteelSeries Rival 300 CS:GO Hyperbeast Edition
+    {0x1038, 0x171c},  // SteelSeries Rival 300 Evil Geniuses Edition
+    {0x1038, 0x171e},  // SteelSeries Rival 310 CSGO Howl
+    {0x1038, 0x171f},  // SteelSeries Rival 310 CSGO Howl (Basic)
+    {0x1038, 0x1720},  // SteelSeries Rival 310
+    {0x1038, 0x1721},  // SteelSeries Rival 310 (Basic)
+    {0x1038, 0x1722},  // SteelSeries Sensei 310
+    {0x1038, 0x1723},  // SteelSeries Sensei 310  (Basic)
+    {0x1038, 0x1724},  // SteelSeries Rival 600
+    {0x1038, 0x1725},  // SteelSeries Rival 600 (Basic)
+    {0x1038, 0x1726},  // SteelSeries Rival 650 Wireless
+    {0x1038, 0x1727},  // SteelSeries Rival 650 Wireless (Basic)
+    {0x1038, 0x1729},  // SteelSeries Rival 110 Gaming Mouse
+    {0x1038, 0x172b},  // SteelSeries Rival 650 Wireless (Wired)
+    {0x1038, 0x172c},  // SteelSeries Rival 650 Wireless (Basic for wired)
+    {0x1038, 0x172d},  // SteelSeries Rival 110 (Dell)
+    {0x1038, 0x172e},  // SteelSeries Rival 600 Dota 2
+    {0x1038, 0x172f},  // SteelSeries Rival 600 Dota 2 (Basic)
+    {0x1038, 0x1730},  // SteelSeries Rival 710
+    {0x1038, 0x1731},  // SteelSeries Rival 710 (Basic)
+    {0x1038, 0x1736},  // SteelSeries Rival 310 PUBG Edition
+    {0x1038, 0x1737},  // SteelSeries Rival 310 PUBG Edition (Basic)
+    {0x1038, 0x1800},  // SteelSeries Sensei Raw Optical
+    {0x1038, 0x1801},  // SteelSeries Sensei Raw Optical (Basic)
+    {0x1038, 0x1802},  // SteelSeries Sensei Raw Optical RGB
+    {0x1038, 0x1803},  // SteelSeries Sensei Raw Optical RGB (Basic)
+    {0x1038, 0x1810},  // SteelSeries Rival 300S
+    {0x1038, 0x1812},  // SteelSeries Rival 300S Dell Silver
+    {0x1038, 0x1814},  // SteelSeries Rival 105 (Kana v3) Gaming Mouse
+    {0x1038, 0x1816},  // SteelSeries Rival 106 Gaming Mouse
+    {0x1038, 0x1818},  // SteelSeries Rival 610 Wireless
+    {0x1038, 0x1819},  // SteelSeries Rival 610 Wireless (Basic)
+    {0x1038, 0x181a},  // SteelSeries Rival 610 Wireless (Wired)
+    {0x1038, 0x181b},  // SteelSeries Rival 610 Wireless (Basic for wired)
+    {0x1038, 0x181c},  // SteelSeries Rival 310 Wireless
+    {0x1038, 0x181d},  // SteelSeries Rival 310 Wireless (Basic)
+    {0x1038, 0x181e},  // SteelSeries Rival 310 Wireless (Wired)
+    {0x1038, 0x181f},  // SteelSeries Rival 310 Wireless (Basic for wired)
+    {0x1038, 0x1820},  // SteelSeries Rival 610
+    {0x1038, 0x1821},  // SteelSeries Rival 610 (Basic)
+    {0x1038, 0x1822},  // SteelSeries Sensei 610
+    {0x1038, 0x1823},  // SteelSeries Sensei 610 (Basic)
+    {0x1038, 0x1824},  // SteelSeries Rival 3
+    {0x1038, 0x1826},  // SteelSeries Sensei Raw Optical RGB v2
+    {0x1038, 0x1827},  // SteelSeries Sensei Raw Optical RGB v2 (Basic)
+    {0x1038, 0x1828},  // SteelSeries Radical Wireless
+    {0x1038, 0x1829},  // SteelSeries Radical Wireless (Basic)
+    {0x1038, 0x182a},  // SteelSeries Prime Rainbow Six Edition
+    {0x1038, 0x182b},  // SteelSeries Prime Rainbow Six Edition (Basic)
+    {0x1038, 0x182c},  // SteelSeries Prime+
+    {0x1038, 0x182d},  // SteelSeries Prime+ (Basic)
+    {0x1038, 0x182e},  // SteelSeries Prime
+    {0x1038, 0x182f},  // SteelSeries Prime (Basic)
+    {0x1038, 0x1830},  // SteelSeries Rival 3 Wireless
+    {0x1038, 0x1831},  // SteelSeries Rival 3 Wireless (Basic)
+    {0x1038, 0x1832},  // SteelSeries Sensei Ten
+    {0x1038, 0x1833},  // SteelSeries Sensei Ten (Basic)
+    {0x1038, 0x1834},  // SteelSeries Sensei Ten Neon Rider Edition
+    {0x1038, 0x1835},  // SteelSeries Sensei Ten Neon Rider Edition (Basic)
+    {0x1038, 0x1836},  // SteelSeries Aerox 3
+    {0x1038, 0x1838},  // SteelSeries Aerox 3 Wireless (Dongle)
+    {0x1038, 0x1839},  // SteelSeries Aerox 3 Wireless (Basic for dongle)
+    {0x1038, 0x183a},  // SteelSeries Aerox 3 Wireless (Wired)
+    {0x1038, 0x183b},  // SteelSeries Aerox 3 Wireless (Basic for wired)
+    {0x1038, 0x183c},  // SteelSeries Rival 5
+    {0x1038, 0x183d},  // SteelSeries Rival 5 (Basic)
+    {0x1038, 0x183e},  // SteelSeries Rival 5 Destiny 2
+    {0x1038, 0x183f},  // SteelSeries Rival 5 Destiny 2 (Basic)
+    {0x1038, 0x1840},  // SteelSeries Prime Wireless (Dongle)
+    {0x1038, 0x1841},  // SteelSeries Prime Wireless (Basic for dongle)
+    {0x1038, 0x1842},  // SteelSeries Prime Wireless (Wired)
+    {0x1038, 0x1843},  // SteelSeries Prime Wireless (Basic for wired)
+    {0x1038, 0x1848},  // SteelSeries Prime Mini Wireless (Dongle)
+    {0x1038, 0x184a},  // SteelSeries Prime Mini Wireless (Wired)
+    {0x1038, 0x184c},  // SteelSeries Rival 3 (NVIDIA Support - Standard)
+    {0x1038, 0x184d},  // SteelSeries Prime Mini
+    {0x1038, 0x1850},  // SteelSeries Aerox 5
+    {0x1038, 0x1852},  // SteelSeries Aerox 5 Wireless (Dongle)
+    {0x1038, 0x1854},  // SteelSeries Aerox 5 Wireless (Wired)
+    {0x1038, 0x1856},  // SteelSeries Prime CS:GO Neo Noir
+    {0x1038, 0x1858},  // SteelSeries Aerox 9 WL (Dongle)
+    {0x1038, 0x185a},  // SteelSeries Aerox 9 WL (Wired)
     {0x1050, 0x0010},  // Yubico.com Yubikey
     {0x1050, 0x0407},  // Yubico.com Yubikey 4 OTP+U2F+CCID
+    {0x1532, 0x007a},  // Razer Viper Ultimate (Wired)
+    {0x1532, 0x007b},  // Razer Viper Ultimate (Wireless)
+    {0x17ef, 0x60be},  // Lenovo Legion M200 RGB Gaming Mouse
+    {0x17ef, 0x60e4},  // Lenovo Legion M300 RGB Gaming Mouse
+    {0x17ef, 0x6123},  // Lenovo USB-C Wired Compact Mouse
+    {0x1b1c, 0x1b7a},  // Corsair Sabre Pro Champion Gaming Mouse
+    {0x1b1c, 0x1b94},  // Corsair Katar Pro Wireless (USB dongle)
+    {0x1bae, 0x1b1c},  // Corsair Katar Pro Wireless (Bluetooth)
     {0x1bcf, 0x08a0},  // Kensington Pro Fit Full-size
+    {0x2201, 0x0100},  // AirTurn PEDpro
     {0x256c, 0x006d},  // Huion HS64
+    {0x258a, 0x1007},  // Acer Cestus 330
+    {0x2717, 0x003b},  // Xiaomi Mi Portable Mouse
     {0x28bd, 0x0914},  // XP-Pen Star G640
     {0x28bd, 0x091f},  // XP-Pen Artist 12 Pro
     {0x28bd, 0x0928},  // XP-Pen Deco mini7W
-};
+});
 
-constexpr struct {
-  uint16_t vendor;
-  uint16_t product_id;
-} kStylusButtonDevices[] = {
+constexpr DeviceId kStylusButtonDevices[] = {
     {0x413c, 0x81d5},  // Dell Active Pen PN579X
 };
+
+// Certain devices need to be forced to use libinput in place of
+// evdev/libgestures
+constexpr DeviceId kForceLibinputlist[] = {
+    {0x0002, 0x000e},  // HP Stream 14 touchpad
+    {0x044e, 0x120a},  // Dell Latitude 3480 touchpad
+};
+
+bool IsForceLibinput(const EventDeviceInfo& devinfo) {
+  for (auto entry : kForceLibinputlist) {
+    if (devinfo.vendor_id() == entry.vendor &&
+        devinfo.product_id() == entry.product_id) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+const uint16_t kSteelSeriesBluetoothVendorId = 0x0111;
+const uint16_t kSteelSeriesStratusDuoBluetoothProductId = 0x1431;
+const uint16_t kSteelSeriesStratusPlusBluetoothProductId = 0x1434;
 
 bool GetEventBits(int fd,
                   const base::FilePath& path,
@@ -164,7 +381,7 @@ bool IsDenylistedAbsoluteMouseDevice(const input_id& id) {
       {0x222a, 0x0001},  // ILITEK ILITEK-TP
   };
 
-  for (size_t i = 0; i < base::size(kUSBLegacyDenyListedDevices); ++i) {
+  for (size_t i = 0; i < std::size(kUSBLegacyDenyListedDevices); ++i) {
     if (id.vendor == kUSBLegacyDenyListedDevices[i].vid &&
         id.product == kUSBLegacyDenyListedDevices[i].pid) {
       return true;
@@ -176,47 +393,46 @@ bool IsDenylistedAbsoluteMouseDevice(const input_id& id) {
 
 }  // namespace
 
-EventDeviceInfo::EventDeviceInfo() {
-  memset(ev_bits_, 0, sizeof(ev_bits_));
-  memset(key_bits_, 0, sizeof(key_bits_));
-  memset(rel_bits_, 0, sizeof(rel_bits_));
-  memset(abs_bits_, 0, sizeof(abs_bits_));
-  memset(msc_bits_, 0, sizeof(msc_bits_));
-  memset(sw_bits_, 0, sizeof(sw_bits_));
-  memset(led_bits_, 0, sizeof(led_bits_));
-  memset(ff_bits_, 0, sizeof(ff_bits_));
-  memset(prop_bits_, 0, sizeof(prop_bits_));
-  memset(abs_info_, 0, sizeof(abs_info_));
-}
+EventDeviceInfo::EventDeviceInfo()
+    : ev_bits_{},
+      key_bits_{},
+      rel_bits_{},
+      abs_bits_{},
+      msc_bits_{},
+      sw_bits_{},
+      led_bits_{},
+      prop_bits_{},
+      ff_bits_{},
+      abs_info_{} {}
 
 EventDeviceInfo::~EventDeviceInfo() {}
 
 bool EventDeviceInfo::Initialize(int fd, const base::FilePath& path) {
-  if (!GetEventBits(fd, path, 0, ev_bits_, sizeof(ev_bits_)))
+  if (!GetEventBits(fd, path, 0, ev_bits_.data(), sizeof(ev_bits_)))
     return false;
 
-  if (!GetEventBits(fd, path, EV_KEY, key_bits_, sizeof(key_bits_)))
+  if (!GetEventBits(fd, path, EV_KEY, key_bits_.data(), sizeof(key_bits_)))
     return false;
 
-  if (!GetEventBits(fd, path, EV_REL, rel_bits_, sizeof(rel_bits_)))
+  if (!GetEventBits(fd, path, EV_REL, rel_bits_.data(), sizeof(rel_bits_)))
     return false;
 
-  if (!GetEventBits(fd, path, EV_ABS, abs_bits_, sizeof(abs_bits_)))
+  if (!GetEventBits(fd, path, EV_ABS, abs_bits_.data(), sizeof(abs_bits_)))
     return false;
 
-  if (!GetEventBits(fd, path, EV_MSC, msc_bits_, sizeof(msc_bits_)))
+  if (!GetEventBits(fd, path, EV_MSC, msc_bits_.data(), sizeof(msc_bits_)))
     return false;
 
-  if (!GetEventBits(fd, path, EV_SW, sw_bits_, sizeof(sw_bits_)))
+  if (!GetEventBits(fd, path, EV_SW, sw_bits_.data(), sizeof(sw_bits_)))
     return false;
 
-  if (!GetEventBits(fd, path, EV_LED, led_bits_, sizeof(led_bits_)))
+  if (!GetEventBits(fd, path, EV_LED, led_bits_.data(), sizeof(led_bits_)))
     return false;
 
-  if (!GetEventBits(fd, path, EV_FF, ff_bits_, sizeof(ff_bits_)))
+  if (!GetEventBits(fd, path, EV_FF, ff_bits_.data(), sizeof(ff_bits_)))
     return false;
 
-  if (!GetPropBits(fd, path, prop_bits_, sizeof(prop_bits_)))
+  if (!GetPropBits(fd, path, prop_bits_.data(), sizeof(prop_bits_)))
     return false;
 
   for (unsigned int i = 0; i < ABS_CNT; ++i)
@@ -258,39 +474,39 @@ bool EventDeviceInfo::Initialize(int fd, const base::FilePath& path) {
 }
 
 void EventDeviceInfo::SetEventTypes(const unsigned long* ev_bits, size_t len) {
-  AssignBitset(ev_bits, len, ev_bits_, base::size(ev_bits_));
+  AssignBitset(ev_bits, len, ev_bits_.data(), ev_bits_.size());
 }
 
 void EventDeviceInfo::SetKeyEvents(const unsigned long* key_bits, size_t len) {
-  AssignBitset(key_bits, len, key_bits_, base::size(key_bits_));
+  AssignBitset(key_bits, len, key_bits_.data(), key_bits_.size());
 }
 
 void EventDeviceInfo::SetRelEvents(const unsigned long* rel_bits, size_t len) {
-  AssignBitset(rel_bits, len, rel_bits_, base::size(rel_bits_));
+  AssignBitset(rel_bits, len, rel_bits_.data(), rel_bits_.size());
 }
 
 void EventDeviceInfo::SetAbsEvents(const unsigned long* abs_bits, size_t len) {
-  AssignBitset(abs_bits, len, abs_bits_, base::size(abs_bits_));
+  AssignBitset(abs_bits, len, abs_bits_.data(), abs_bits_.size());
 }
 
 void EventDeviceInfo::SetMscEvents(const unsigned long* msc_bits, size_t len) {
-  AssignBitset(msc_bits, len, msc_bits_, base::size(msc_bits_));
+  AssignBitset(msc_bits, len, msc_bits_.data(), msc_bits_.size());
 }
 
 void EventDeviceInfo::SetSwEvents(const unsigned long* sw_bits, size_t len) {
-  AssignBitset(sw_bits, len, sw_bits_, base::size(sw_bits_));
+  AssignBitset(sw_bits, len, sw_bits_.data(), sw_bits_.size());
 }
 
 void EventDeviceInfo::SetLedEvents(const unsigned long* led_bits, size_t len) {
-  AssignBitset(led_bits, len, led_bits_, base::size(led_bits_));
+  AssignBitset(led_bits, len, led_bits_.data(), led_bits_.size());
 }
 
 void EventDeviceInfo::SetFfEvents(const unsigned long* ff_bits, size_t len) {
-  AssignBitset(ff_bits, len, ff_bits_, base::size(ff_bits_));
+  AssignBitset(ff_bits, len, ff_bits_.data(), ff_bits_.size());
 }
 
 void EventDeviceInfo::SetProps(const unsigned long* prop_bits, size_t len) {
-  AssignBitset(prop_bits, len, prop_bits_, base::size(prop_bits_));
+  AssignBitset(prop_bits, len, prop_bits_.data(), prop_bits_.size());
 }
 
 void EventDeviceInfo::SetAbsInfo(unsigned int code,
@@ -333,55 +549,55 @@ void EventDeviceInfo::SetName(const std::string& name) {
 bool EventDeviceInfo::HasEventType(unsigned int type) const {
   if (type > EV_MAX)
     return false;
-  return EvdevBitIsSet(ev_bits_, type);
+  return EvdevBitIsSet(ev_bits_.data(), type);
 }
 
 bool EventDeviceInfo::HasKeyEvent(unsigned int code) const {
   if (code > KEY_MAX)
     return false;
-  return EvdevBitIsSet(key_bits_, code);
+  return EvdevBitIsSet(key_bits_.data(), code);
 }
 
 bool EventDeviceInfo::HasRelEvent(unsigned int code) const {
   if (code > REL_MAX)
     return false;
-  return EvdevBitIsSet(rel_bits_, code);
+  return EvdevBitIsSet(rel_bits_.data(), code);
 }
 
 bool EventDeviceInfo::HasAbsEvent(unsigned int code) const {
   if (code > ABS_MAX)
     return false;
-  return EvdevBitIsSet(abs_bits_, code);
+  return EvdevBitIsSet(abs_bits_.data(), code);
 }
 
 bool EventDeviceInfo::HasMscEvent(unsigned int code) const {
   if (code > MSC_MAX)
     return false;
-  return EvdevBitIsSet(msc_bits_, code);
+  return EvdevBitIsSet(msc_bits_.data(), code);
 }
 
 bool EventDeviceInfo::HasSwEvent(unsigned int code) const {
   if (code > SW_MAX)
     return false;
-  return EvdevBitIsSet(sw_bits_, code);
+  return EvdevBitIsSet(sw_bits_.data(), code);
 }
 
 bool EventDeviceInfo::HasLedEvent(unsigned int code) const {
   if (code > LED_MAX)
     return false;
-  return EvdevBitIsSet(led_bits_, code);
+  return EvdevBitIsSet(led_bits_.data(), code);
 }
 
 bool EventDeviceInfo::HasFfEvent(unsigned int code) const {
   if (code > FF_MAX)
     return false;
-  return EvdevBitIsSet(ff_bits_, code);
+  return EvdevBitIsSet(ff_bits_.data(), code);
 }
 
 bool EventDeviceInfo::HasProp(unsigned int code) const {
   if (code > INPUT_PROP_MAX)
     return false;
-  return EvdevBitIsSet(prop_bits_, code);
+  return EvdevBitIsSet(prop_bits_.data(), code);
 }
 
 int32_t EventDeviceInfo::GetAbsMinimum(unsigned int code) const {
@@ -487,6 +703,10 @@ bool EventDeviceInfo::HasStylus() const {
          HasKeyEvent(BTN_STYLUS2);
 }
 
+bool EventDeviceInfo::IsSemiMultitouch() const {
+  return HasProp(INPUT_PROP_SEMI_MT);
+}
+
 bool EventDeviceInfo::IsStylusButtonDevice() const {
   for (const auto& device_id : kStylusButtonDevices) {
     if (input_id_.vendor == device_id.vendor &&
@@ -497,34 +717,62 @@ bool EventDeviceInfo::IsStylusButtonDevice() const {
   return false;
 }
 
-bool IsInKeyboardBlockList(input_id input_id_) {
-  for (const auto& blocklist_id : kKeyboardBlocklist) {
-    if (input_id_.vendor == blocklist_id.vendor &&
-        input_id_.product == blocklist_id.product_id)
-      return true;
+bool EventDeviceInfo::IsMicrophoneMuteSwitchDevice() const {
+  return HasSwEvent(SW_MUTE_DEVICE) && device_type_ == INPUT_DEVICE_INTERNAL;
+}
+
+bool EventDeviceInfo::UseLibinput() const {
+  bool useLibinput = false;
+  if (HasTouchpad()) {
+    auto overridden_state =
+        base::FeatureList::GetStateIfOverridden(ui::kLibinputHandleTouchpad);
+    if (overridden_state.has_value()) {
+      useLibinput = overridden_state.value();
+    } else {
+      useLibinput = !HasMultitouch() || !HasValidMTAbsXY() ||
+                    IsSemiMultitouch() || IsForceLibinput(*this);
+    }
   }
 
-  return false;
+  return useLibinput;
+}
+
+bool IsInKeyboardBlockList(input_id input_id_) {
+  DeviceId id = {input_id_.vendor, input_id_.product};
+  return kKeyboardBlocklist.contains(id);
 }
 
 bool EventDeviceInfo::HasKeyboard() const {
+  return GetKeyboardType() == KeyboardType::VALID_KEYBOARD;
+}
+
+KeyboardType EventDeviceInfo::GetKeyboardType() const {
   if (!HasEventType(EV_KEY))
-    return false;
+    return KeyboardType::NOT_KEYBOARD;
   if (IsInKeyboardBlockList(input_id_))
-    return false;
+    return KeyboardType::IN_BLOCKLIST;
   if (IsStylusButtonDevice())
-    return false;
+    return KeyboardType::STYLUS_BUTTON_DEVICE;
 
   // Check first 31 keys: If we have all of them, consider it a full
   // keyboard. This is exactly what udev does for ID_INPUT_KEYBOARD.
   for (int key = KEY_ESC; key <= KEY_D; ++key)
     if (!HasKeyEvent(key))
-      return false;
+      return KeyboardType::NOT_KEYBOARD;
 
-  return true;
+  return KeyboardType::VALID_KEYBOARD;
 }
 
 bool EventDeviceInfo::HasMouse() const {
+  // The SteelSeries Stratus Duo claims to be a mouse over Bluetooth, preventing
+  // it from being set up as a gamepad correctly, so check for its vendor and
+  // product ID. (b/189491809)
+  if (input_id_.vendor == kSteelSeriesBluetoothVendorId &&
+      (input_id_.product == kSteelSeriesStratusDuoBluetoothProductId ||
+      input_id_.product == kSteelSeriesStratusPlusBluetoothProductId)) {
+    return false;
+  }
+
   return HasRelXY() && !HasProp(INPUT_PROP_POINTING_STICK);
 }
 
@@ -536,12 +784,52 @@ bool EventDeviceInfo::HasTouchpad() const {
   return HasAbsXY() && HasPointer() && !HasStylus();
 }
 
+bool EventDeviceInfo::HasHapticTouchpad() const {
+  return HasTouchpad() && HasProp(INPUT_PROP_HAPTICPAD);
+}
+
 bool EventDeviceInfo::HasTablet() const {
   return HasAbsXY() && HasPointer() && HasStylus();
 }
 
 bool EventDeviceInfo::HasTouchscreen() const {
   return HasAbsXY() && HasDirect();
+}
+
+bool EventDeviceInfo::HasStylusSwitch() const {
+  return HasSwEvent(SW_PEN_INSERTED) && (device_type_ == INPUT_DEVICE_UNKNOWN ||
+                                         device_type_ == INPUT_DEVICE_INTERNAL);
+}
+
+bool EventDeviceInfo::HasNumberpad() const {
+  // Does not check for HasKeyboard(): the dynamic numberpad
+  // and external standalone numeric-pads will not be considered
+  // keyboards, if their descriptor happens to be correct.
+  if (!HasEventType(EV_KEY))
+    return false;
+
+  // The block-lists for keyboards are useful; currently, if something is
+  // falsely claiming to be a keyboard, it probably has false numberpad keys as
+  // well. If a numberpad needs to be added to the keyboard block-list, then
+  // consider whether we need an overriding allow-list here, or whether
+  // it is time to grow the list into a more detailed structure that can
+  // provides more specific information on what a device's capabilities are.
+  if (IsInKeyboardBlockList(input_id_))
+    return false;
+  if (IsStylusButtonDevice())
+    return false;
+  // Internal USB devices that are keyboards tend to be hammer-likes
+  // that we should not treat as numberpads.
+  if (IsInternalUSB(input_id_))
+    return false;
+
+  // Consider a device to have a numberpad if it has all ten numeric keys.
+  for (int key : {KEY_KP0, KEY_KP1, KEY_KP2, KEY_KP3, KEY_KP4, KEY_KP5, KEY_KP6,
+                  KEY_KP7, KEY_KP8, KEY_KP9}) {
+    if (!HasKeyEvent(key))
+      return false;
+  }
+  return true;
 }
 
 bool EventDeviceInfo::HasGamepad() const {
@@ -561,6 +849,13 @@ bool EventDeviceInfo::HasGamepad() const {
   return support_gamepad_btn && !HasTablet() && !HasKeyboard();
 }
 
+bool EventDeviceInfo::HasValidMTAbsXY() const {
+  const auto x = GetAbsInfoByCode(ABS_MT_POSITION_X);
+  const auto y = GetAbsInfoByCode(ABS_MT_POSITION_Y);
+
+  return x.resolution > 0 && y.resolution > 0;
+}
+
 bool EventDeviceInfo::SupportsRumble() const {
   return HasEventType(EV_FF) && HasFfEvent(FF_RUMBLE);
 }
@@ -573,15 +868,20 @@ ui::InputDeviceType EventDeviceInfo::GetInputDeviceTypeFromId(input_id id) {
   } kUSBInternalDevices[] = {
       {0x18d1, 0x502b},  // Google, Hammer PID (soraka)
       {0x18d1, 0x5030},  // Google, Whiskers PID (nocturne)
-      {0x18d1, 0x503c},  // Google, Masterball PID (krane)
+      {0x18d1, 0x503c},  // Google, Masterball PID (krane) // nocheck
       {0x18d1, 0x503d},  // Google, Magnemite PID (kodama)
       {0x18d1, 0x5044},  // Google, Moonball PID (kakadu)
+      {0x18d1, 0x504c},  // Google, Zed PID (coachz)
       {0x18d1, 0x5050},  // Google, Don PID (katsu)
+      {0x18d1, 0x5052},  // Google, Star PID (homestar)
+      {0x18d1, 0x5056},  // Google, bland PID (mrbland)
+      {0x18d1, 0x5057},  // Google, eel PID (wormdingler)
+      {0x18d1, 0x505B},  // Google, Duck PID (quackingstick)
       {0x1fd2, 0x8103},  // LG, Internal TouchScreen PID
   };
 
   if (id.bustype == BUS_USB) {
-    for (size_t i = 0; i < base::size(kUSBInternalDevices); ++i) {
+    for (size_t i = 0; i < std::size(kUSBInternalDevices); ++i) {
       if (id.vendor == kUSBInternalDevices[i].vid &&
           id.product == kUSBInternalDevices[i].pid)
         return InputDeviceType::INPUT_DEVICE_INTERNAL;
@@ -599,6 +899,12 @@ ui::InputDeviceType EventDeviceInfo::GetInputDeviceTypeFromId(input_id id) {
     default:
       return ui::InputDeviceType::INPUT_DEVICE_UNKNOWN;
   }
+}
+
+// static
+bool EventDeviceInfo::IsInternalUSB(input_id id) {
+  return (id.bustype == BUS_USB && GetInputDeviceTypeFromId(id) ==
+                                       InputDeviceType::INPUT_DEVICE_INTERNAL);
 }
 
 EventDeviceInfo::LegacyAbsoluteDeviceType

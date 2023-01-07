@@ -7,7 +7,8 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
+#include "third_party/blink/public/common/origin_trials/origin_trials.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
 
@@ -15,10 +16,10 @@ namespace blink {
 
 bool WebOriginTrials::isTrialEnabled(const WebDocument* web_document, const WebString& trial) {
   if (!web_document) return false;
-  if (!origin_trials::IsTrialValid(trial))
+  if (!origin_trials::IsTrialValid(trial.Utf8()))
     return false;
   Document* document = *web_document;
-  for (OriginTrialFeature feature : origin_trials::FeaturesForTrial(trial)) {
+  for (OriginTrialFeature feature : origin_trials::FeaturesForTrial(trial.Utf8())) {
     switch (feature) {
     {% for feature in features %}
     {% if feature.origin_trial_feature_name %}

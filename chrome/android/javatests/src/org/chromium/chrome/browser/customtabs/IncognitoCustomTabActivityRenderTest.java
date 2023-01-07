@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,7 +64,10 @@ public class IncognitoCustomTabActivityRenderTest {
     public final EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
 
     @Rule
-    public final RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public final RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_CUSTOM_TABS)
+                    .build();
 
     @Before
     public void setUp() throws TimeoutException {
@@ -83,7 +86,7 @@ public class IncognitoCustomTabActivityRenderTest {
 
     private void prepareCCTIntent() {
         String url = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
-        mIntent = CustomTabsTestUtils.createMinimalIncognitoCustomTabIntent(
+        mIntent = CustomTabsIntentTestUtils.createMinimalIncognitoCustomTabIntent(
                 InstrumentationRegistry.getContext(), url);
     }
 

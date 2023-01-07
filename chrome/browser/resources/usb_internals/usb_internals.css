@@ -1,13 +1,11 @@
-/* Copyright 2016 The Chromium Authors. All rights reserved.
+/* Copyright 2016 The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  */
 
-tabs {
-  position: sticky;
-  top: 0;
+cr-tab-box {
   /* selected treeItem is 2 */
-  z-index: 3;
+  --cr-tab-box-tabs-z-index: 3;
 }
 
 /* Devices Tab */
@@ -122,16 +120,6 @@ descriptorpaneltitle {
 
 .raw-data-byte-view .hovered-field {
   background: yellow;
-}
-
-.tree-row.hover {
-  background-color: hsl(214, 91%, 97%);
-  border-color: hsl(214, 91%, 85%);
-  z-index: 1;
-}
-
-.tree-row button {
-  margin-inline-start: 16px;
 }
 
 #input-type {

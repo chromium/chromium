@@ -1,10 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/cronet/native/generated/cronet.idl_impl_interface.h"
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -14,18 +13,24 @@ namespace {
 class Cronet_BufferCallbackFree : public Cronet_BufferCallback {
  public:
   Cronet_BufferCallbackFree() = default;
+
+  Cronet_BufferCallbackFree(const Cronet_BufferCallbackFree&) = delete;
+  Cronet_BufferCallbackFree& operator=(const Cronet_BufferCallbackFree&) =
+      delete;
+
   ~Cronet_BufferCallbackFree() override = default;
 
   void OnDestroy(Cronet_BufferPtr buffer) override { free(buffer->GetData()); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Cronet_BufferCallbackFree);
 };
 
 // Concrete implementation of abstract Cronet_Buffer interface.
 class Cronet_BufferImpl : public Cronet_Buffer {
  public:
   Cronet_BufferImpl() = default;
+
+  Cronet_BufferImpl(const Cronet_BufferImpl&) = delete;
+  Cronet_BufferImpl& operator=(const Cronet_BufferImpl&) = delete;
+
   ~Cronet_BufferImpl() override;
 
   // Cronet_Buffer implementation
@@ -40,8 +45,6 @@ class Cronet_BufferImpl : public Cronet_Buffer {
   Cronet_RawDataPtr data_ = nullptr;
   uint64_t size_ = 0;
   Cronet_BufferCallbackPtr callback_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_BufferImpl);
 };
 
 Cronet_BufferImpl::~Cronet_BufferImpl() {

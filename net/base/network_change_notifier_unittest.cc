@@ -1,4 +1,4 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/network_interfaces.h"
+#include "net/test/test_connection_cost_observer.h"
 #include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -105,7 +106,7 @@ TEST(NetworkChangeNotifierTest, IgnoreTeredoOnWindows) {
   interface_teredo.friendly_name = "Teredo Tunneling Pseudo-Interface";
   list.push_back(interface_teredo);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_NONE,
             NetworkChangeNotifier::ConnectionTypeFromInterfaceList(list));
 #else
@@ -125,7 +126,7 @@ TEST(NetworkChangeNotifierTest, IgnoreAirdropOnMac) {
       IPAddress({0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4});
   list.push_back(interface_airdrop);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_NONE,
             NetworkChangeNotifier::ConnectionTypeFromInterfaceList(list));
 #else
@@ -145,7 +146,7 @@ TEST(NetworkChangeNotifierTest, IgnoreTunnelsOnMac) {
       IPAddress({0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 3, 2, 1});
   list.push_back(interface_tunnel);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_NONE,
             NetworkChangeNotifier::ConnectionTypeFromInterfaceList(list));
 #else
@@ -165,7 +166,7 @@ TEST(NetworkChangeNotifierTest, IgnoreDisconnectedEthernetOnMac) {
       IPAddress({0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 1, 2, 3});
   list.push_back(interface_ethernet);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_NONE,
             NetworkChangeNotifier::ConnectionTypeFromInterfaceList(list));
 #else
@@ -226,37 +227,17 @@ TEST_F(NetworkChangeNotifierMockedTest, TriggerNonSystemDnsChange) {
   NetworkChangeNotifier::RemoveDNSObserver(&observer);
 }
 
-class TestConnectionCostObserver
-    : public NetworkChangeNotifier::ConnectionCostObserver {
- public:
-  void OnConnectionCostChanged(
-      NetworkChangeNotifier::ConnectionCost cost) override {
-    cost_changed_inputs_.push_back(cost);
-    ++cost_changed_calls_;
-  }
-
-  int cost_changed_calls() const { return cost_changed_calls_; }
-  std::vector<NetworkChangeNotifier::ConnectionCost> cost_changed_inputs()
-      const {
-    return cost_changed_inputs_;
-  }
-
- private:
-  int cost_changed_calls_ = 0;
-  std::vector<NetworkChangeNotifier::ConnectionCost> cost_changed_inputs_;
-};
-
 TEST_F(NetworkChangeNotifierMockedTest, TriggerConnectionCostChange) {
   TestConnectionCostObserver observer;
   NetworkChangeNotifier::AddConnectionCostObserver(&observer);
 
-  ASSERT_EQ(0, observer.cost_changed_calls());
+  ASSERT_EQ(0u, observer.cost_changed_calls());
 
   NetworkChangeNotifier::NotifyObserversOfConnectionCostChangeForTests(
       NetworkChangeNotifier::CONNECTION_COST_METERED);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1, observer.cost_changed_calls());
+  EXPECT_EQ(1u, observer.cost_changed_calls());
   EXPECT_EQ(NetworkChangeNotifier::CONNECTION_COST_METERED,
             observer.cost_changed_inputs()[0]);
 
@@ -265,7 +246,7 @@ TEST_F(NetworkChangeNotifierMockedTest, TriggerConnectionCostChange) {
       NetworkChangeNotifier::CONNECTION_COST_UNMETERED);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(1, observer.cost_changed_calls());
+  EXPECT_EQ(1u, observer.cost_changed_calls());
 }
 
 TEST_F(NetworkChangeNotifierMockedTest, ConnectionCostDefaultsToCellular) {

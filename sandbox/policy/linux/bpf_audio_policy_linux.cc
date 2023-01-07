@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -66,9 +66,6 @@ ResultExpr AudioProcessPolicy::EvaluateSyscall(int system_call_number) const {
 #if defined(__NR_pwrite64)
     case __NR_pwrite64:
 #endif
-#if defined(__NR_sched_setscheduler)
-    case __NR_sched_setscheduler:
-#endif
 #if defined(__NR_setsockopt)
     case __NR_setsockopt:
 #endif
@@ -85,7 +82,7 @@ ResultExpr AudioProcessPolicy::EvaluateSyscall(int system_call_number) const {
     {
       const Arg<int> op(1);
 #if defined(USE_PULSEAUDIO)
-      return Switch(op & ~FUTEX_PRIVATE_FLAG)
+      return Switch(op & ~(FUTEX_PRIVATE_FLAG | FUTEX_CLOCK_REALTIME))
           .SANDBOX_BPF_DSL_CASES(
               (FUTEX_CMP_REQUEUE, FUTEX_LOCK_PI, FUTEX_UNLOCK_PI, FUTEX_WAIT,
                FUTEX_WAIT_BITSET, FUTEX_WAKE),
@@ -132,7 +129,7 @@ ResultExpr AudioProcessPolicy::EvaluateSyscall(int system_call_number) const {
 
       auto* sandbox_linux = SandboxLinux::GetInstance();
       if (sandbox_linux->ShouldBrokerHandleSyscall(system_call_number))
-        return sandbox_linux->HandleViaBroker();
+        return sandbox_linux->HandleViaBroker(system_call_number);
 
       return BPFBasePolicy::EvaluateSyscall(system_call_number);
   }

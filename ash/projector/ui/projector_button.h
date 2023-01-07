@@ -1,9 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef ASH_PROJECTOR_UI_PROJECTOR_BUTTON_H_
 #define ASH_PROJECTOR_UI_PROJECTOR_BUTTON_H_
+
+#include <string>
 
 #include "ash/ash_export.h"
 #include "ui/views/controls/button/image_button.h"
@@ -16,16 +18,21 @@ namespace ash {
 class ASH_EXPORT ProjectorButton : public views::ToggleImageButton {
  public:
   const int kProjectorButtonSize = 32;
+  const int kProjectorButtonBorderSize = 1;
 
-  explicit ProjectorButton(views::Button::PressedCallback callback);
+  ProjectorButton(views::Button::PressedCallback callback,
+                  const std::u16string& name);
   ProjectorButton(const ProjectorButton&) = delete;
   ProjectorButton& operator=(const ProjectorButton&) = delete;
   ~ProjectorButton() override = default;
 
   // views::ToggleImageButton:
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void OnThemeChanged() override;
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
+ private:
+  std::u16string name_;
 };
 
 }  // namespace ash

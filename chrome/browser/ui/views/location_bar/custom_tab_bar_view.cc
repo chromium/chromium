@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -14,8 +15,8 @@
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -28,6 +29,11 @@
 #include "content/public/browser/navigation_entry.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
@@ -36,14 +42,13 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
 #include "ui/views/view_class_properties.h"
@@ -51,8 +56,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ui/base/chromeos_ui_constants.h"
-#else
-#include "chrome/browser/themes/theme_properties.h"
 #endif
 
 namespace {
@@ -79,17 +82,17 @@ bool IsUrlInAppScope(web_app::AppBrowserController* app_controller, GURL url) {
 // TODO(tluk): The color id selection logic for security levels should be shared
 // with that in GetOmniboxSecurityChipColor() once transition to Color Pipeline
 // is complete.
-ui::NativeTheme::ColorId GetSecurityChipColorId(
+ui::ColorId GetSecurityChipColorId(
     security_state::SecurityLevel security_level) {
   switch (security_level) {
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
-      return ui::NativeTheme::kColorId_CustomTabBarSecurityChipWithCertColor;
+      return kColorPwaSecurityChipForegroundPolicyCert;
     case security_state::SECURE:
-      return ui::NativeTheme::kColorId_CustomTabBarSecurityChipSecureColor;
+      return kColorPwaSecurityChipForegroundSecure;
     case security_state::DANGEROUS:
-      return ui::NativeTheme::kColorId_CustomTabBarSecurityChipDangerousColor;
+      return kColorPwaSecurityChipForegroundDangerous;
     default:
-      return ui::NativeTheme::kColorId_CustomTabBarSecurityChipDefaultColor;
+      return kColorPwaSecurityChipForeground;
   }
 }
 
@@ -188,16 +191,16 @@ class CustomTabBarTitleOriginView : public views::View {
 
  private:
   // Can be nullptr.
-  views::Label* title_label_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
 
-  views::Label* location_label_ = nullptr;
+  raw_ptr<views::Label> location_label_ = nullptr;
 };
 
 BEGIN_METADATA(CustomTabBarTitleOriginView, views::View)
 ADD_READONLY_PROPERTY_METADATA(int, MinimumWidth)
 ADD_READONLY_PROPERTY_METADATA(SkColor,
                                LocationColor,
-                               views::metadata::SkColorConverter)
+                               ui::metadata::SkColorConverter)
 END_METADATA
 
 CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
@@ -284,21 +287,18 @@ gfx::Size CustomTabBarView::CalculatePreferredSize() const {
 void CustomTabBarView::OnPaintBackground(gfx::Canvas* canvas) {
   views::View::OnPaintBackground(canvas);
 
-  SkColor separator_color =
-      color_utils::IsDark(background_color_) ? SK_ColorWHITE : SK_ColorBLACK;
-  constexpr float kSeparatorOpacity = 0.15f;
+  auto* color_provider = GetColorProvider();
 
   gfx::Rect bounds = GetLocalBounds();
   const gfx::Size separator_size = gfx::Size(bounds.width(), 1);
 
   // Inset the bounds by 1 on the bottom, so we draw the bottom border inside
   // the custom tab bar.
-  bounds.Inset(0, 0, 0, 1);
+  bounds.Inset(gfx::Insets::TLBR(0, 0, 1, 0));
 
   // Custom tab/content separator (bottom border).
   canvas->FillRect(gfx::Rect(bounds.bottom_left(), separator_size),
-                   color_utils::AlphaBlend(separator_color, background_color_,
-                                           kSeparatorOpacity));
+                   color_provider->GetColor(kColorPwaTabBarBottomSeparator));
 
   // Don't render the separator if there is already sufficient contrast between
   // the custom tab bar and the title bar.
@@ -310,8 +310,7 @@ void CustomTabBarView::OnPaintBackground(gfx::Canvas* canvas) {
 
   // Frame/Custom tab separator (top border).
   canvas->FillRect(gfx::Rect(bounds.origin(), separator_size),
-                   color_utils::AlphaBlend(separator_color, title_bar_color_,
-                                           kSeparatorOpacity));
+                   color_provider->GetColor(kColorPwaTabBarTopSeparator));
 }
 
 void CustomTabBarView::ChildPreferredSizeChanged(views::View* child) {
@@ -321,24 +320,25 @@ void CustomTabBarView::ChildPreferredSizeChanged(views::View* child) {
 
 void CustomTabBarView::OnThemeChanged() {
   views::AccessiblePaneView::OnThemeChanged();
-  base::Optional<SkColor> optional_theme_color = GetThemeColor();
+  const auto* color_provider = GetColorProvider();
 
-  title_bar_color_ = optional_theme_color.value_or(GetDefaultFrameColor());
+  title_bar_color_ = color_provider->GetColor(kColorPwaTheme);
+  const SkColor foreground_color =
+      color_provider->GetColor(kColorPwaToolbarButtonIcon);
+  const SkColor foreground_disabled_color =
+      color_provider->GetColor(kColorPwaToolbarButtonIconDisabled);
+  SetImageFromVectorIconWithColor(close_button_,
+                                  vector_icons::kCloseRoundedIcon,
+                                  GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+                                  foreground_color, foreground_disabled_color);
 
-  const SkColor foreground_color = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_CustomTabBarForegroundColor);
-  SetImageFromVectorIconWithColor(
-      close_button_, vector_icons::kCloseRoundedIcon,
-      GetLayoutConstant(LOCATION_BAR_ICON_SIZE), foreground_color);
-
-  background_color_ = GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_CustomTabBarBackgroundColor);
+  background_color_ = color_provider->GetColor(kColorPwaToolbarBackground);
   SetBackground(views::CreateSolidBackground(background_color_));
 
   title_origin_view_->SetColors(background_color_);
   if (web_app_menu_button_) {
-    web_app_menu_button_->SetColor(GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON));
+    web_app_menu_button_->SetColor(
+        color_provider->GetColor(kColorPwaMenuButtonIcon));
   }
 }
 
@@ -363,7 +363,7 @@ void CustomTabBarView::UpdateContents() {
 
   content::NavigationEntry* entry = contents->GetController().GetVisibleEntry();
   std::u16string title, location;
-  if (entry) {
+  if (entry && !entry->IsInitialEntry()) {
     title = Browser::FormatTitleForDisplay(entry->GetTitleForDisplay());
     if (ShouldDisplayUrl(contents)) {
       location = web_app::AppBrowserController::FormatUrlOrigin(
@@ -398,8 +398,7 @@ SkColor CustomTabBarView::GetIconLabelBubbleSurroundingForegroundColor() const {
 }
 
 SkColor CustomTabBarView::GetIconLabelBubbleBackgroundColor() const {
-  return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_CustomTabBarBackgroundColor);
+  return GetColorProvider()->GetColor(kColorPwaToolbarBackground);
 }
 
 content::WebContents* CustomTabBarView::GetWebContents() {
@@ -416,8 +415,7 @@ void CustomTabBarView::OnLocationIconDragged(const ui::MouseEvent& event) {}
 
 SkColor CustomTabBarView::GetSecurityChipColor(
     security_state::SecurityLevel security_level) const {
-  return GetNativeTheme()->GetSystemColor(
-      GetSecurityChipColorId(security_level));
+  return GetColorProvider()->GetColor(GetSecurityChipColorId(security_level));
 }
 
 bool CustomTabBarView::ShowPageInfoDialog() {
@@ -446,20 +444,6 @@ void CustomTabBarView::GoBackToAppForTesting() {
 
 bool CustomTabBarView::IsShowingOriginForTesting() const {
   return title_origin_view_ && title_origin_view_->IsShowingOriginForTesting();
-}
-
-// TODO(tluk): Remove the use of GetDefaultFrameColor() completely here. When
-// drawing the separator the current frame color should be queried directly and
-// not assume knowledge of what the color might be.
-SkColor CustomTabBarView::GetDefaultFrameColor() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Ash system frames differ from ChromeOS browser frames.
-  return chromeos::kDefaultFrameColor;
-#else
-  return ThemeProperties::GetDefaultColor(
-      ThemeProperties::COLOR_FRAME_ACTIVE, false,
-      GetNativeTheme()->ShouldUseDarkColors());
-#endif
 }
 
 void CustomTabBarView::GoBackToApp() {
@@ -533,20 +517,10 @@ void CustomTabBarView::ShowContextMenuForViewImpl(
       views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
-base::Optional<SkColor> CustomTabBarView::GetThemeColor() const {
-  web_app::AppBrowserController* application_controller = app_controller();
-  return application_controller ? application_controller->GetThemeColor()
-                                : base::nullopt;
-}
-
 bool CustomTabBarView::GetShowTitle() const {
   return app_controller() != nullptr;
 }
 
 BEGIN_METADATA(CustomTabBarView, views::AccessiblePaneView)
-ADD_READONLY_PROPERTY_METADATA(SkColor,
-                               DefaultFrameColor,
-                               views::metadata::SkColorConverter)
-ADD_READONLY_PROPERTY_METADATA(base::Optional<SkColor>, ThemeColor)
 ADD_READONLY_PROPERTY_METADATA(bool, ShowTitle)
 END_METADATA

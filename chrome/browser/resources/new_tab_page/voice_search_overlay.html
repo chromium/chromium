@@ -1,6 +1,6 @@
 <style include="cr-icons">
   :host {
-    --receiving-audio-color: var(--google-red-refresh-500);
+    --receiving-audio-color: var(--google-red-500);
     --speak-shown-duration: 2s;
   }
 
@@ -15,7 +15,7 @@
 
   #dialog {
     align-items: center;
-    background-color: var(--ntp-background-override-color);
+    background-color: var(--color-new-tab-page-background-override);
     border: none;
     display: flex;
     height: 100%;
@@ -30,7 +30,7 @@
   }
 
   #closeButton {
-    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+    --cr-icon-button-fill-color: var(--color-new-tab-page-secondary-foreground);
     margin: 0;
     position: absolute;
     top: 16px;
@@ -52,7 +52,7 @@
   }
 
   #texts {
-    color: var(--cr-secondary-text-color);
+    color: var(--color-new-tab-page-secondary-foreground);
     flex-grow: 1;
     font-size: 32px;
     text-align: start;
@@ -96,7 +96,7 @@
   }
 
   #finalResult {
-    color: var(--cr-primary-text-color);
+    color: var(--color-new-tab-page-primary-foreground);
   }
 
   #errors,
@@ -109,7 +109,6 @@
     font-size: 18px;
     font-weight: 500;
     margin-inline-start: 0.25em;
-    text-decoration: none;
   }
 
   #micContainer {
@@ -127,7 +126,7 @@
         var(--mic-volume-level) * (var(--mic-container-size) -
             var(--mic-button-size)));
     align-items: center;
-    background-color: var(--ntp-border-color);
+    background-color: var(--color-new-tab-page-border);
     border-radius: 50%;
     display: flex;
     height: var(--mic-volume-size);
@@ -139,20 +138,24 @@
   }
 
   #micVolumeCutout {
-    background-color: var(--ntp-background-override-color);
+    background-color: var(--color-new-tab-page-background-override);
     border-radius: 50%;
     height: var(--mic-button-size);
     width: var(--mic-button-size);
   }
 
-  #micButton {
+  #micIconContainer {
+    align-items: center;
+    border: 1px solid var(--color-new-tab-page-mic-border-color);
     border-radius: 50%;
+    display: flex;
     height: var(--mic-button-size);
+    justify-content: center;
     transition: background-color 200ms ease-in-out;
     width: var(--mic-button-size);
   }
 
-  .receiving #micButton {
+  .receiving #micIconContainer {
     background-color: var(--receiving-audio-color);
     border-color: var(--receiving-audio-color);
   }
@@ -161,7 +164,7 @@
     -webkit-mask-image: url(icons/mic.svg);
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 100%;
-    background-color: var(--ntp-border-color);
+    background-color: var(--color-new-tab-page-mic-icon-color);
     height: 80px;
     transition: background-color 200ms ease-in-out;
     width: 80px;
@@ -177,11 +180,7 @@
 </style>
 <dialog id="dialog" on-close="onOverlayClose_" on-click="onOverlayClick_"
     on-keydown="onOverlayKeydown_">
-  <!-- Purely exists to capture focus upon opening the dialog. -->
-  <div tabindex="-1"></div>
-  <cr-icon-button id="closeButton" class="icon-clear" title="$i18n{close}">
-  </cr-icon-button>
-  <div id="content">
+  <div id="content" tabindex="-1">
     <iron-selector id="texts" selected="[[getText_(state_)]]"
         attr-for-selected="text" fallback-selection="none" aria-live="polite"
         selected-attribute="visible" class="display-stack">
@@ -231,9 +230,11 @@
         <div id="micVolumeCutout">
         </div>
       </div>
-      <cr-button id="micButton" on-click="onMicClick_">
+      <div id="micIconContainer">
         <div id="micIcon"></div>
-      </cr-button>
+      </div>
     </div>
   </div>
+  <cr-icon-button id="closeButton" class="icon-clear" title="$i18n{close}">
+  </cr-icon-button>
 </dialog>

@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,6 @@
 #include <stdio.h>  // for FILE*
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "courgette/memory_allocator.h"
 #include "courgette/region.h"
 
@@ -47,6 +45,9 @@ class BasicBuffer {
 class SourceStream {
  public:
   SourceStream() : start_(nullptr), end_(nullptr), current_(nullptr) {}
+
+  SourceStream(const SourceStream&) = delete;
+  SourceStream& operator=(const SourceStream&) = delete;
 
   // Initializes the SourceStream to yield the bytes at |pointer|.  The caller
   // still owns the memory at |pointer| and should free the memory only after
@@ -117,8 +118,6 @@ class SourceStream {
   const uint8_t* start_;    // Points to start of buffer.
   const uint8_t* end_;      // Points to first location after buffer.
   const uint8_t* current_;  // Points into buffer at current read location.
-
-  DISALLOW_COPY_AND_ASSIGN(SourceStream);
 };
 
 // A SinkStream accumulates writes into a buffer that it owns.  The stream is
@@ -129,24 +128,28 @@ class SourceStream {
 class SinkStream {
  public:
   SinkStream() {}
+
+  SinkStream(const SinkStream&) = delete;
+  SinkStream& operator=(const SinkStream&) = delete;
+
   ~SinkStream() {}
 
   // Appends |byte_count| bytes from |data| to the stream.
-  CheckBool Write(const void* data, size_t byte_count) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool Write(const void* data, size_t byte_count);
 
   // Appends the 'varint32' encoding of |value| to the stream.
-  CheckBool WriteVarint32(uint32_t value) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool WriteVarint32(uint32_t value);
 
   // Appends the 'varint32' encoding of |value| to the stream.
-  CheckBool WriteVarint32Signed(int32_t value) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool WriteVarint32Signed(int32_t value);
 
   // Appends the 'varint32' encoding of |value| to the stream.
   // On platforms where sizeof(size_t) != sizeof(int32_t), do a safety check.
-  CheckBool WriteSizeVarint32(size_t value) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool WriteSizeVarint32(size_t value);
 
   // Contents of |other| are appended to |this| stream.  The |other| stream
   // becomes retired.
-  CheckBool Append(SinkStream* other) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool Append(SinkStream* other);
 
   // Returns the number of bytes in this SinkStream
   size_t Length() const { return buffer_.size(); }
@@ -160,7 +163,7 @@ class SinkStream {
 
   // Hints that the stream will grow by an additional |length| bytes.
   // Caller must be prepared to handle memory allocation problems.
-  CheckBool Reserve(size_t length) WARN_UNUSED_RESULT {
+  [[nodiscard]] CheckBool Reserve(size_t length) {
     return buffer_.reserve(length + buffer_.size());
   }
 
@@ -169,14 +172,16 @@ class SinkStream {
 
  private:
   NoThrowBuffer<char> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(SinkStream);
 };
 
 // A SourceStreamSet is a set of SourceStreams.
 class SourceStreamSet {
  public:
   SourceStreamSet();
+
+  SourceStreamSet(const SourceStreamSet&) = delete;
+  SourceStreamSet& operator=(const SourceStreamSet&) = delete;
+
   ~SourceStreamSet();
 
   // Initializes the SourceStreamSet with the stream data in memory at |source|.
@@ -205,8 +210,6 @@ class SourceStreamSet {
  private:
   size_t count_;
   SourceStream streams_[kMaxStreams];
-
-  DISALLOW_COPY_AND_ASSIGN(SourceStreamSet);
 };
 
 // A SinkStreamSet is a set of SinkStreams.  Data is collected by writing to the
@@ -217,6 +220,10 @@ class SourceStreamSet {
 class SinkStreamSet {
  public:
   SinkStreamSet();
+
+  SinkStreamSet(const SinkStreamSet&) = delete;
+  SinkStreamSet& operator=(const SinkStreamSet&) = delete;
+
   ~SinkStreamSet();
 
   // Initializes the SinkStreamSet to have |stream_index_limit| streams.  Must
@@ -231,20 +238,18 @@ class SinkStreamSet {
   // CopyTo serializes the streams in this SinkStreamSet into a single target
   // stream.  The serialized format may be re-read by initializing a
   // SourceStreamSet with a buffer containing the data.
-  CheckBool CopyTo(SinkStream* combined_stream) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool CopyTo(SinkStream* combined_stream);
 
   // Writes the streams of |set| into the corresponding streams of |this|.
   // Stream zero first has some metadata written to it.  |set| becomes retired.
   // Partner to SourceStreamSet::ReadSet.
-  CheckBool WriteSet(SinkStreamSet* set) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool WriteSet(SinkStreamSet* set);
 
  private:
-  CheckBool CopyHeaderTo(SinkStream* stream) WARN_UNUSED_RESULT;
+  [[nodiscard]] CheckBool CopyHeaderTo(SinkStream* stream);
 
   size_t count_;
   SinkStream streams_[kMaxStreams];
-
-  DISALLOW_COPY_AND_ASSIGN(SinkStreamSet);
 };
 
 }  // namespace courgette

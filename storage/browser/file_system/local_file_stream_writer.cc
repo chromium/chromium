@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/memory/ptr_util.h"
+#include "base/types/pass_key.h"
 #include "net/base/file_stream.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -33,8 +33,9 @@ std::unique_ptr<FileStreamWriter> FileStreamWriter::CreateForLocalFile(
     const base::FilePath& file_path,
     int64_t initial_offset,
     OpenOrCreate open_or_create) {
-  return base::WrapUnique(new LocalFileStreamWriter(
-      task_runner, file_path, initial_offset, open_or_create));
+  return std::make_unique<LocalFileStreamWriter>(
+      task_runner, file_path, initial_offset, open_or_create,
+      base::PassKey<FileStreamWriter>());
 }
 
 LocalFileStreamWriter::~LocalFileStreamWriter() {
@@ -91,10 +92,12 @@ int LocalFileStreamWriter::Flush(net::CompletionOnceCallback callback) {
   return result;
 }
 
-LocalFileStreamWriter::LocalFileStreamWriter(base::TaskRunner* task_runner,
-                                             const base::FilePath& file_path,
-                                             int64_t initial_offset,
-                                             OpenOrCreate open_or_create)
+LocalFileStreamWriter::LocalFileStreamWriter(
+    base::TaskRunner* task_runner,
+    const base::FilePath& file_path,
+    int64_t initial_offset,
+    OpenOrCreate open_or_create,
+    base::PassKey<FileStreamWriter> /*pass_key*/)
     : file_path_(file_path),
       open_or_create_(open_or_create),
       initial_offset_(initial_offset),

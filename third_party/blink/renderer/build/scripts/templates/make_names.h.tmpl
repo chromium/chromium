@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/core/core_export.h"
 {% elif export == 'MODULES_EXPORT' %}
 #include "third_party/blink/renderer/modules/modules_export.h"
+{% elif export == 'EXTENSIONS_CHROMEOS_EXPORT' %}
+#include "third_party/blink/renderer/extensions/chromeos/chromeos_extensions.h"
 {% else %}
 #include "third_party/blink/renderer/platform/platform_export.h"
 {% endif %}

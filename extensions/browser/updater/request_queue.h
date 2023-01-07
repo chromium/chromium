@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,11 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 
@@ -37,6 +39,16 @@ namespace extensions {
 template <typename T>
 class RequestQueue {
  public:
+  struct Request {
+    Request(std::unique_ptr<net::BackoffEntry> backoff_entry,
+            std::unique_ptr<T> fetch)
+        : backoff_entry(std::move(backoff_entry)), fetch(std::move(fetch)) {}
+
+    int failure_count() { return backoff_entry->failure_count(); }
+    std::unique_ptr<net::BackoffEntry> backoff_entry;
+    std::unique_ptr<T> fetch;
+  };
+
   class iterator;
 
   RequestQueue(const net::BackoffEntry::Policy* backoff_policy,
@@ -50,11 +62,16 @@ class RequestQueue {
   int active_request_failure_count();
 
   // Signals RequestQueue that processing of the current request has completed.
-  std::unique_ptr<T> reset_active_request();
+  Request reset_active_request();
 
   // Add the given request to the queue, and starts the next request if no
   // request is currently being processed.
   void ScheduleRequest(std::unique_ptr<T> request);
+
+  // Add the request which already was in the queue, but we've decided to retry
+  // it. The queue will take care of the retry backoff.
+  void ScheduleRetriedRequest(Request request,
+                              const base::TimeDelta& min_backoff_delay);
 
   bool empty() const;
   size_t size() const;
@@ -77,26 +94,23 @@ class RequestQueue {
   iterator begin();
   iterator end();
 
+  // Checks all pending requests in the queue for the given condition, removes
+  // from the queue and returns the ones for which the condition returned true.
+  std::vector<std::unique_ptr<T>> erase_if(
+      const base::RepeatingCallback<bool(const T&)> condition);
+
   // Change the backoff policy used by the queue.
   void set_backoff_policy(const net::BackoffEntry::Policy* backoff_policy);
 
  private:
-  struct Request {
-    Request(net::BackoffEntry* backoff_entry, T* request)
-        : backoff_entry(backoff_entry), request(request) {}
-    std::unique_ptr<net::BackoffEntry> backoff_entry;
-    std::unique_ptr<T> request;
-  };
-
   // Compares the release time of two pending requests.
   static bool CompareRequests(const Request& a, const Request& b);
 
   // Pushes a request with a given backoff entry onto the queue.
-  void PushImpl(std::unique_ptr<T> request,
-                std::unique_ptr<net::BackoffEntry> backoff_entry);
+  void PushImpl(Request request);
 
   // The backoff policy used to determine backoff delays.
-  const net::BackoffEntry::Policy* backoff_policy_;
+  raw_ptr<const net::BackoffEntry::Policy> backoff_policy_;
 
   // Callback to call when a new request has become the active request.
   base::RepeatingClosure start_request_callback_;
@@ -105,9 +119,8 @@ class RequestQueue {
   // the code needs to be able to iterate over all pending requests.
   base::circular_deque<Request> pending_requests_;
 
-  // Active request and its associated backoff entry.
-  std::unique_ptr<T> active_request_;
-  std::unique_ptr<net::BackoffEntry> active_backoff_entry_;
+  // Active entry with its associated backoff.
+  absl::optional<Request> active_request_;
 
   // Timer to schedule calls to StartNextRequest, if the first pending request
   // hasn't passed its release time yet.
@@ -121,8 +134,8 @@ class RequestQueue<T>::iterator {
  public:
   iterator() = default;
 
-  T* operator*() { return it_->request.get(); }
-  T* operator->() { return it_->request.get(); }
+  T* operator*() { return it_->fetch.get(); }
+  T* operator->() { return it_->fetch.get(); }
   iterator& operator++() {
     ++it_;
     return *this;

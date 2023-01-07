@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,18 @@
 
 #include "base/callback.h"
 #include "base/containers/id_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/permissions/permission_service_context.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "url/origin.h"
 
-namespace content {
-
+namespace blink {
 enum class PermissionType;
+}
+
+namespace content {
 
 // Implements the PermissionService Mojo interface.
 // This service can be created from a RenderFrameHost or a RenderProcessHost.
@@ -26,11 +27,15 @@ enum class PermissionType;
 // to have some information about the current context. That enables the service
 // to know whether it can show UI and have knowledge of the associated
 // WebContents for example.
-class CONTENT_EXPORT PermissionServiceImpl
-    : public blink::mojom::PermissionService {
+// TODO(crbug.com/1312212): Use url::Origin instead of GURL.
+class PermissionServiceImpl : public blink::mojom::PermissionService {
  public:
   PermissionServiceImpl(PermissionServiceContext* context,
                         const url::Origin& origin);
+
+  PermissionServiceImpl(const PermissionServiceImpl&) = delete;
+  PermissionServiceImpl& operator=(const PermissionServiceImpl&) = delete;
+
   ~PermissionServiceImpl() override;
 
  private:
@@ -66,17 +71,15 @@ class CONTENT_EXPORT PermissionServiceImpl
   blink::mojom::PermissionStatus GetPermissionStatus(
       const blink::mojom::PermissionDescriptorPtr& permission);
   blink::mojom::PermissionStatus GetPermissionStatusFromType(
-      PermissionType type);
-  void ResetPermissionStatus(PermissionType type);
+      blink::PermissionType type);
+  void ResetPermissionStatus(blink::PermissionType type);
   void ReceivedBadMessage();
 
   RequestsMap pending_requests_;
   // context_ owns |this|.
-  PermissionServiceContext* context_;
+  raw_ptr<PermissionServiceContext> context_;
   const url::Origin origin_;
   base::WeakPtrFactory<PermissionServiceImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionServiceImpl);
 };
 
 }  // namespace content

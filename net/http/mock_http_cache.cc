@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -38,30 +39,8 @@ const int kMaxMockCacheEntrySize = 100 * 1000 * 1000;
 int g_test_mode = 0;
 
 int GetTestModeForEntry(const std::string& key) {
-  std::string url = key;
-
-  // 'key' is prefixed with an identifier if it corresponds to a cached POST.
-  // Skip past that to locate the actual URL.
-  //
-  // TODO(darin): It breaks the abstraction a bit that we assume 'key' is an
-  // URL corresponding to a registered MockTransaction.  It would be good to
-  // have another way to access the test_mode.
-  if (isdigit(key[0])) {
-    size_t slash = key.find('/');
-    DCHECK(slash != std::string::npos);
-    url = url.substr(slash + 1);
-  }
-
-  // If we split the cache by top frame origin, then the origin is prepended to
-  // the key. Skip to the second url in the key.
-  if (base::StartsWith(url, "_dk_", base::CompareCase::SENSITIVE)) {
-    auto pos = url.find(" http");
-    url = url.substr(pos + 1);
-    pos = url.find(" http");
-    url = url.substr(pos + 1);
-  }
-
-  const MockTransaction* t = FindMockTransaction(GURL(url));
+  GURL url(HttpCache::GetResourceURLFromHttpCacheKey(key));
+  const MockTransaction* t = FindMockTransaction(url);
   DCHECK(t);
   return t->test_mode;
 }
@@ -72,23 +51,11 @@ int GetTestModeForEntry(const std::string& key) {
 
 struct MockDiskEntry::CallbackInfo {
   scoped_refptr<MockDiskEntry> entry;
-  net::CompletionOnceCallback callback;
-  int result;
+  base::OnceClosure callback;
 };
 
 MockDiskEntry::MockDiskEntry(const std::string& key)
-    : key_(key),
-      in_memory_data_(0),
-      max_file_size_(std::numeric_limits<int>::max()),
-      doomed_(false),
-      sparse_(false),
-      fail_requests_(0),
-      fail_sparse_requests_(false),
-      busy_(false),
-      delayed_(false),
-      cancel_(false),
-      defer_op_(DEFER_NONE),
-      resume_return_code_(0) {
+    : key_(key), max_file_size_(std::numeric_limits<int>::max()) {
   test_mode_ = GetTestModeForEntry(key);
 }
 
@@ -268,44 +235,47 @@ int MockDiskEntry::WriteSparseData(int64_t offset,
   return ERR_IO_PENDING;
 }
 
-int MockDiskEntry::GetAvailableRange(int64_t offset,
-                                     int len,
-                                     int64_t* start,
-                                     CompletionOnceCallback callback) {
+disk_cache::RangeResult MockDiskEntry::GetAvailableRange(
+    int64_t offset,
+    int len,
+    RangeResultCallback callback) {
   DCHECK(!callback.is_null());
   if (!sparse_ || busy_ || cancel_)
-    return ERR_CACHE_OPERATION_NOT_SUPPORTED;
+    return RangeResult(ERR_CACHE_OPERATION_NOT_SUPPORTED);
   if (offset < 0)
-    return ERR_FAILED;
+    return RangeResult(ERR_FAILED);
 
   if (fail_requests_ & FAIL_GET_AVAILABLE_RANGE)
-    return ERR_CACHE_READ_FAILURE;
+    return RangeResult(ERR_CACHE_READ_FAILURE);
 
-  *start = offset;
+  RangeResult result;
+  result.net_error = OK;
+  result.start = offset;
+  result.available_len = 0;
   DCHECK(offset < std::numeric_limits<int32_t>::max());
   int real_offset = static_cast<int>(offset);
   if (static_cast<int>(data_[1].size()) < real_offset)
-    return 0;
+    return result;
 
   int num = std::min(static_cast<int>(data_[1].size()) - real_offset, len);
-  int count = 0;
   for (; num > 0; num--, real_offset++) {
-    if (!count) {
+    if (!result.available_len) {
       if (data_[1][real_offset]) {
-        count++;
-        *start = real_offset;
+        result.available_len++;
+        result.start = real_offset;
       }
     } else {
       if (!data_[1][real_offset])
         break;
-      count++;
+      result.available_len++;
     }
   }
-  if (MockHttpCache::GetTestMode(test_mode_) & TEST_MODE_SYNC_CACHE_WRITE)
-    return count;
+  if (MockHttpCache::GetTestMode(test_mode_) & TEST_MODE_SYNC_CACHE_WRITE) {
+    return result;
+  }
 
-  CallbackLater(std::move(callback), count);
-  return ERR_IO_PENDING;
+  CallbackLater(base::BindOnce(std::move(callback), result));
+  return RangeResult(ERR_IO_PENDING);
 }
 
 bool MockDiskEntry::CouldBeSparse() const {
@@ -348,7 +318,7 @@ void MockDiskEntry::IgnoreCallbacks(bool value) {
     return;
   ignore_callbacks_ = value;
   if (!value)
-    StoreAndDeliverCallbacks(false, nullptr, CompletionOnceCallback(), 0);
+    StoreAndDeliverCallbacks(false, nullptr, base::OnceClosure());
 }
 
 MockDiskEntry::~MockDiskEntry() = default;
@@ -356,15 +326,19 @@ MockDiskEntry::~MockDiskEntry() = default;
 // Unlike the callbacks for MockHttpTransaction, we want this one to run even
 // if the consumer called Close on the MockDiskEntry.  We achieve that by
 // leveraging the fact that this class is reference counted.
-void MockDiskEntry::CallbackLater(CompletionOnceCallback callback, int result) {
+void MockDiskEntry::CallbackLater(base::OnceClosure callback) {
   if (ignore_callbacks_)
-    return StoreAndDeliverCallbacks(true, this, std::move(callback), result);
+    return StoreAndDeliverCallbacks(true, this, std::move(callback));
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&MockDiskEntry::RunCallback, this,
-                                std::move(callback), result));
+      FROM_HERE,
+      base::BindOnce(&MockDiskEntry::RunCallback, this, std::move(callback)));
 }
 
-void MockDiskEntry::RunCallback(CompletionOnceCallback callback, int result) {
+void MockDiskEntry::CallbackLater(CompletionOnceCallback callback, int result) {
+  CallbackLater(base::BindOnce(std::move(callback), result));
+}
+
+void MockDiskEntry::RunCallback(base::OnceClosure callback) {
   if (busy_) {
     // This is kind of hacky, but controlling the behavior of just this entry
     // from a test is sort of complicated.  What we really want to do is
@@ -376,11 +350,11 @@ void MockDiskEntry::RunCallback(CompletionOnceCallback callback, int result) {
     // trips through the message loop instead of one).
     if (!delayed_) {
       delayed_ = true;
-      return CallbackLater(std::move(callback), result);
+      return CallbackLater(std::move(callback));
     }
   }
   busy_ = false;
-  std::move(callback).Run(result);
+  std::move(callback).Run();
 }
 
 // When |store| is true, stores the callback to be delivered later; otherwise
@@ -388,16 +362,14 @@ void MockDiskEntry::RunCallback(CompletionOnceCallback callback, int result) {
 // Static.
 void MockDiskEntry::StoreAndDeliverCallbacks(bool store,
                                              MockDiskEntry* entry,
-                                             CompletionOnceCallback callback,
-                                             int result) {
+                                             base::OnceClosure callback) {
   static std::vector<CallbackInfo> callback_list;
   if (store) {
-    CallbackInfo c = {entry, std::move(callback), result};
+    CallbackInfo c = {entry, std::move(callback)};
     callback_list.push_back(std::move(c));
   } else {
-    for (size_t i = 0; i < callback_list.size(); i++) {
-      CallbackInfo& c = callback_list[i];
-      c.entry->CallbackLater(std::move(c.callback), c.result);
+    for (auto& callback_info : callback_list) {
+      callback_info.entry->CallbackLater(std::move(callback_info.callback));
     }
     callback_list.clear();
   }
@@ -409,19 +381,7 @@ bool MockDiskEntry::ignore_callbacks_ = false;
 //-----------------------------------------------------------------------------
 
 MockDiskCache::MockDiskCache()
-    : Backend(DISK_CACHE),
-      open_count_(0),
-      create_count_(0),
-      doomed_count_(0),
-      max_file_size_(std::numeric_limits<int>::max()),
-      fail_requests_(false),
-      soft_failures_(0),
-      soft_failures_one_instance_(0),
-      double_create_check_(true),
-      fail_sparse_requests_(false),
-      support_in_memory_entry_data_(true),
-      force_fail_callback_later_(false),
-      defer_op_(MockDiskEntry::DEFER_NONE) {}
+    : Backend(DISK_CACHE), max_file_size_(std::numeric_limits<int>::max()) {}
 
 MockDiskCache::~MockDiskCache() {
   ReleaseAll();
@@ -436,13 +396,10 @@ disk_cache::EntryResult MockDiskCache::OpenOrCreateEntry(
     net::RequestPriority request_priority,
     EntryResultCallback callback) {
   DCHECK(!callback.is_null());
-  base::RepeatingCallback<void(EntryResult)> copyable_callback;
-  if (callback)
-    copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
 
   if (force_fail_callback_later_) {
     CallbackLater(base::BindOnce(
-        copyable_callback,
+        std::move(callback),
         EntryResult::MakeError(ERR_CACHE_OPEN_OR_CREATE_FAILURE)));
     return EntryResult::MakeError(ERR_IO_PENDING);
   }
@@ -453,12 +410,13 @@ disk_cache::EntryResult MockDiskCache::OpenOrCreateEntry(
   EntryResult result;
 
   // First try opening the entry.
-  result = OpenEntry(key, request_priority, copyable_callback);
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  result = OpenEntry(key, request_priority, std::move(split_callback.first));
   if (result.net_error() == OK || result.net_error() == ERR_IO_PENDING)
     return result;
 
   // Unable to open, try creating the entry.
-  result = CreateEntry(key, request_priority, copyable_callback);
+  result = CreateEntry(key, request_priority, std::move(split_callback.second));
   if (result.net_error() == OK || result.net_error() == ERR_IO_PENDING)
     return result;
 
@@ -623,7 +581,7 @@ class MockDiskCache::NotImplementedIterator : public Iterator {
 };
 
 std::unique_ptr<disk_cache::Backend::Iterator> MockDiskCache::CreateIterator() {
-  return std::unique_ptr<Iterator>(new NotImplementedIterator());
+  return std::make_unique<NotImplementedIterator>();
 }
 
 void MockDiskCache::GetStats(base::StringPairs* stats) {
@@ -631,12 +589,6 @@ void MockDiskCache::GetStats(base::StringPairs* stats) {
 
 void MockDiskCache::OnExternalCacheHit(const std::string& key) {
   external_cache_hits_.push_back(key);
-}
-
-size_t MockDiskCache::DumpMemoryStats(
-    base::trace_event::ProcessMemoryDump* pmd,
-    const std::string& parent_absolute_name) const {
-  return 0u;
 }
 
 uint8_t MockDiskCache::GetEntryInMemoryData(const std::string& key) {
@@ -696,31 +648,21 @@ const std::vector<std::string>& MockDiskCache::GetExternalCacheHits() const {
 
 //-----------------------------------------------------------------------------
 
-int MockBackendFactory::CreateBackend(
+disk_cache::BackendResult MockBackendFactory::CreateBackend(
     NetLog* net_log,
-    std::unique_ptr<disk_cache::Backend>* backend,
-    CompletionOnceCallback callback) {
-  backend->reset(new MockDiskCache());
-  return OK;
+    disk_cache::BackendResultCallback callback) {
+  return disk_cache::BackendResult::Make(std::make_unique<MockDiskCache>());
 }
 
 //-----------------------------------------------------------------------------
 
-MockHttpCache::MockHttpCache() : MockHttpCache(false) {}
+MockHttpCache::MockHttpCache()
+    : MockHttpCache(std::make_unique<MockBackendFactory>()) {}
 
 MockHttpCache::MockHttpCache(
     std::unique_ptr<HttpCache::BackendFactory> disk_cache_factory)
-    : MockHttpCache(std::move(disk_cache_factory), false) {}
-
-MockHttpCache::MockHttpCache(bool is_main_cache)
-    : MockHttpCache(std::make_unique<MockBackendFactory>(), is_main_cache) {}
-
-MockHttpCache::MockHttpCache(
-    std::unique_ptr<HttpCache::BackendFactory> disk_cache_factory,
-    bool is_main_cache)
     : http_cache_(std::make_unique<MockNetworkLayer>(),
-                  std::move(disk_cache_factory),
-                  is_main_cache) {}
+                  std::move(disk_cache_factory)) {}
 
 disk_cache::Backend* MockHttpCache::backend() {
   TestCompletionCallback cb;
@@ -866,44 +808,41 @@ disk_cache::EntryResult MockDiskCacheNoCB::CreateEntry(
 
 //-----------------------------------------------------------------------------
 
-int MockBackendNoCbFactory::CreateBackend(
+disk_cache::BackendResult MockBackendNoCbFactory::CreateBackend(
     NetLog* net_log,
-    std::unique_ptr<disk_cache::Backend>* backend,
-    CompletionOnceCallback callback) {
-  backend->reset(new MockDiskCacheNoCB());
-  return OK;
+    disk_cache::BackendResultCallback callback) {
+  return disk_cache::BackendResult::Make(std::make_unique<MockDiskCacheNoCB>());
 }
 
 //-----------------------------------------------------------------------------
 
-MockBlockingBackendFactory::MockBlockingBackendFactory()
-    : backend_(nullptr), block_(true), fail_(false) {}
-
+MockBlockingBackendFactory::MockBlockingBackendFactory() = default;
 MockBlockingBackendFactory::~MockBlockingBackendFactory() = default;
 
-int MockBlockingBackendFactory::CreateBackend(
+disk_cache::BackendResult MockBlockingBackendFactory::CreateBackend(
     NetLog* net_log,
-    std::unique_ptr<disk_cache::Backend>* backend,
-    CompletionOnceCallback callback) {
+    disk_cache::BackendResultCallback callback) {
   if (!block_) {
-    if (!fail_)
-      backend->reset(new MockDiskCache());
-    return Result();
+    return MakeResult();
   }
 
-  backend_ =  backend;
   callback_ = std::move(callback);
-  return ERR_IO_PENDING;
+  return disk_cache::BackendResult::MakeError(ERR_IO_PENDING);
 }
 
 void MockBlockingBackendFactory::FinishCreation() {
   block_ = false;
   if (!callback_.is_null()) {
-    if (!fail_)
-      backend_->reset(new MockDiskCache());
     // Running the callback might delete |this|.
-    std::move(callback_).Run(Result());
+    std::move(callback_).Run(MakeResult());
   }
+}
+
+disk_cache::BackendResult MockBlockingBackendFactory::MakeResult() {
+  if (fail_)
+    return disk_cache::BackendResult::MakeError(ERR_FAILED);
+  else
+    return disk_cache::BackendResult::Make(std::make_unique<MockDiskCache>());
 }
 
 }  // namespace net

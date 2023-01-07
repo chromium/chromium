@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS Worker has an opaque origin.
-PASS Worker can read its own blobs.
-PASS Worker can read its owners blobs.
-PASS Worker can XHR fetch a blob.
-PASS Worker can fetch a blob.
-FAIL Worker can access BroadcastChannel Failed to construct 'BroadcastChannel': Can't create BroadcastChannel in an opaque origin
-Harness: the test ran to completion.
-

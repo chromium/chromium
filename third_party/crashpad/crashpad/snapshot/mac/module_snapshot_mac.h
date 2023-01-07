@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "client/crashpad_info.h"
 #include "snapshot/crashpad_info_client_options.h"
 #include "snapshot/mac/process_reader_mac.h"
@@ -41,6 +40,10 @@ namespace internal {
 class ModuleSnapshotMac final : public ModuleSnapshot {
  public:
   ModuleSnapshotMac();
+
+  ModuleSnapshotMac(const ModuleSnapshotMac&) = delete;
+  ModuleSnapshotMac& operator=(const ModuleSnapshotMac&) = delete;
+
   ~ModuleSnapshotMac() override;
 
   //! \brief Initializes the object.
@@ -90,8 +93,6 @@ class ModuleSnapshotMac final : public ModuleSnapshot {
   const MachOImageReader* mach_o_image_reader_;  // weak
   ProcessReaderMac* process_reader_;  // weak
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleSnapshotMac);
 };
 
 }  // namespace internal

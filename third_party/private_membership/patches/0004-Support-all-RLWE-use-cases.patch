@@ -1,0 +1,25 @@
+diff --git a/private_membership_rlwe.proto b/private_membership_rlwe.proto
+index 69070b1fcf28b..3a16cd6787813 100644
+--- a/private_membership_rlwe.proto
++++ b/private_membership_rlwe.proto
+@@ -102,9 +102,18 @@ enum RlweUseCase {
+ 
+   reserved 4;
+ 
+-  // The device state of Chrome OS device, used for Zero Touch,
+-  // License Packaging and Forced Reenrollment.
++  // The device state of Chrome OS device, used for Zero Touch, License
++  // Packaging.
+   CROS_DEVICE_STATE = 5;
++
++  // The device state of Chrome OS device, used for Forced Re-enrollment.
++  CROS_DEVICE_SECONDARY_STATE = 12;
++
++  // Use-cases for ChromeOS Device Active Reporting to Fresnel.
++  // See: go/cros-device-actives-overview.
++  CROS_FRESNEL_DAILY = 13;
++  CROS_FRESNEL_MONTHLY = 14;
++  CROS_FRESNEL_ALL_TIME = 15;
+ }
+ 
+ // Parameters for the hashed buckets (first level).

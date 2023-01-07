@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include <numeric>
 
 #include "base/bind.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/time/time.h"
 #include "media/base/pipeline_status.h"
@@ -484,8 +485,7 @@ void WatchTimeReporter::RecordWatchTime() {
       // purposes these are considered as timeouts. We want a maximum since
       // rebuffer duration is in real time and not media time, which means if
       // the rebuffer spans a suspend/resume the time can be arbitrarily long.
-      constexpr base::TimeDelta kMaximumRebufferDuration =
-          base::TimeDelta::FromMinutes(1);
+      constexpr base::TimeDelta kMaximumRebufferDuration = base::Minutes(1);
       if (ufe.duration != media::kNoTimestamp &&
           ufe.duration <= kMaximumRebufferDuration) {
         ++total_completed_underflow_count_;

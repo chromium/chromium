@@ -1,0 +1,143 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+
+source_set("safe_browsing") {
+  sources = [
+    "pending_unsafe_resource_storage.h",
+    "pending_unsafe_resource_storage.mm",
+    "safe_browsing_client.h",
+    "safe_browsing_error.h",
+    "safe_browsing_error.mm",
+    "safe_browsing_query_manager.h",
+    "safe_browsing_query_manager.mm",
+    "safe_browsing_service.h",
+    "safe_browsing_service_impl.h",
+    "safe_browsing_service_impl.mm",
+    "safe_browsing_tab_helper.h",
+    "safe_browsing_tab_helper.mm",
+    "safe_browsing_tab_helper_delegate.h",
+    "safe_browsing_unsafe_resource_container.h",
+    "safe_browsing_unsafe_resource_container.mm",
+    "url_checker_delegate_impl.h",
+    "url_checker_delegate_impl.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/prefs",
+    "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:v4_local_database_manager",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/realtime:url_lookup_service",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/ios/browser:allow_list",
+    "//components/safe_browsing/ios/browser/password_protection",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//ios/components/cookie_util",
+    "//ios/components/security_interstitials/safe_browsing:util",
+    "//ios/net",
+    "//ios/web/common:user_agent",
+    "//ios/web/public",
+    "//services/network:network_service",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("util") {
+  sources = [
+    "unsafe_resource_util.h",
+    "unsafe_resource_util.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/ios/browser:allow_list",
+    "//components/security_interstitials/core",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//ios/web/public",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_safe_browsing_client.h",
+    "fake_safe_browsing_client.mm",
+    "fake_safe_browsing_service.h",
+    "fake_safe_browsing_service.mm",
+  ]
+
+  deps = [
+    ":safe_browsing",
+    "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser/db:test_database_manager",
+    "//ios/web/public",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "pending_unsafe_resource_storage_unittest.mm",
+    "safe_browsing_query_manager_unittest.mm",
+    "safe_browsing_service_unittest.mm",
+    "safe_browsing_tab_helper_unittest.mm",
+    "safe_browsing_unsafe_resource_container_unittest.mm",
+    "url_checker_delegate_impl_unittest.mm",
+  ]
+
+  deps = [
+    ":safe_browsing",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/keyed_service/ios",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser:token_fetcher",
+    "//components/safe_browsing/core/browser:verdict_cache_manager",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:metadata_proto",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/safe_browsing/core/browser/db:v4_database",
+    "//components/safe_browsing/core/browser/db:v4_get_hash_protocol_manager",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/db:v4_test_util",
+    "//components/safe_browsing/core/browser/realtime:url_lookup_service",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/safe_browsing/ios/browser:allow_list",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//components/sync_preferences:sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//components/unified_consent",
+    "//ios/web/public",
+    "//ios/web/public/test",
+    "//net:test_support",
+    "//net/traffic_annotation:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

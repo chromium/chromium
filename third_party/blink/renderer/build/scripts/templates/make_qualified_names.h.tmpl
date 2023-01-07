@@ -24,6 +24,18 @@ namespace {{cpp_namespace}} {
 {{symbol_export}}extern const WTF::AtomicString& {{namespace_prefix}}NamespaceURI;
 
 // Tags
+
+{% if generate_tag_enum %}
+enum class {{namespace}}Tag {
+  // Explicitly give unknown a value of 0 as comparison to unknown happens a
+  // lot, and comparing to 0 saves an instruction on some hardware.
+  kUnknown = 0,
+{% for tag in tags|sort(attribute='name') %}
+  {{tag|symbol}},
+{% endfor %}
+};
+{% endif %}
+
 {% for tag in tags|sort(attribute='name') %}
 {{symbol_export}}extern const blink::{{namespace}}QualifiedName& {{tag|symbol}}Tag;
 {% endfor %}
@@ -41,6 +53,10 @@ constexpr unsigned kTagsCount = {{tags|count}};
 constexpr unsigned kAttrsCount = {{attrs|count}};
 {% if namespace != 'HTML' %}
 std::unique_ptr<const QualifiedName*[]> GetAttrs();
+{% endif %}
+
+{% if generate_tag_enum %}
+{{symbol_export}} extern const blink::{{namespace}}QualifiedName& TagToQualifedName({{namespace}}Tag tag);
 {% endif %}
 
 void Init();

@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,7 +16,7 @@ declare_args() {
 }
 
 # Disable Widevine when running linux-chromeos.
-if (is_chromeos_ash && !is_chromeos_device) {
+if (is_chromeos && !is_chromeos_device) {
   enable_widevine = false
 }
 
@@ -24,11 +24,12 @@ if (is_chromeos_ash && !is_chromeos_device) {
 # architectures. Notably on Android library CDM is not used and Widevine is
 # supported via Android MediaDrm API.
 library_widevine_cdm_available =
-    (is_chromeos_ash && (target_cpu == "x64" || target_cpu == "arm")) ||
-    ((is_linux || is_chromeos_lacros) &&
-     (target_cpu == "x86" || target_cpu == "x64")) ||
-    (is_mac && (target_cpu == "x64" || target_cpu == "arm64")) ||
-    (is_win && (target_cpu == "x86" || target_cpu == "x64"))
+    (is_chromeos &&
+     (target_cpu == "x64" || target_cpu == "arm" || target_cpu == "arm64")) ||
+    (target_os == "linux" && target_cpu == "x64") ||
+    (target_os == "mac" && (target_cpu == "x64" || target_cpu == "arm64")) ||
+    (target_os == "win" &&
+     (target_cpu == "x86" || target_cpu == "x64" || target_cpu == "arm64"))
 
 # Widevine CDM is available as a library CDM and it's supported by Chromium.
 # This does not define how the CDM will be deployed. It can be bundled or
@@ -44,9 +45,25 @@ enable_widevine_cdm_component =
     enable_library_widevine_cdm &&
     (is_win || is_mac || is_linux || is_chromeos_lacros)
 
+# Enable (Windows) Media Foundation Widevine CDM component.
+declare_args() {
+  enable_media_foundation_widevine_cdm =
+      is_win && enable_widevine && is_chrome_branded
+}
+assert(!enable_media_foundation_widevine_cdm || is_win)
+assert(!enable_media_foundation_widevine_cdm || enable_widevine)
+
 declare_args() {
   # Widevine CDM is bundled as part of Google Chrome builds.
   bundle_widevine_cdm = enable_library_widevine_cdm && is_chrome_branded
+
+  # Relative root directory to //third_party/widevine/cdm for CDM files.
+  # Can be overridden if the CDM files are located in other places.
+  widevine_root = "."
+}
+
+if (target_os == "win" && target_cpu == "arm64") {
+  bundle_widevine_cdm = false
 }
 
 # Enable Widevine CDM host verification, which will sign additional binaries

@@ -28,16 +28,10 @@ promise_test(function() {
   });
 }, 'getUserMedia() audio and video tracks');
 
-promise_test(function() {
-  return navigator.mediaDevices.getUserMedia(
-      {audio: {'mandatory': { 'valid_but_unsupported_1': 0}}})
-  .then(function(s) {
-    fail('getUserMedia should have failed');
-  }).catch(function(e) {
-    assert_equals(e.name, 'OverconstrainedError');
-    assert_equals(e.constraint, 'valid_but_unsupported_1');
-  });
-}, 'getUserMedia() with unsupported mandatory constraint');
+promise_test(async () => {
+  await navigator.mediaDevices.getUserMedia(
+      {audio: {'mandatory': { 'valid_but_unsupported_1': 0}}});
+}, 'getUserMedia() with unsupported mandatory constraint does not throw');
 
 
 </script>

@@ -1,6 +1,7 @@
 <html>
 <head>
 <script src="../../resources/js-test.js"></script>
+<script src="../../resources/sab-polyfill.js"></script>
 <script>
 description('Tests ArrayBuffer / ArrayBufferView constructors of FontFace.');
 
@@ -23,14 +24,12 @@ var face2 = new FontFace('FontFromArrayBufferView', uint8View);
 shouldBeEqualToString('face2.status', 'loaded');
 document.fonts.add(face2);
 
-if (window.SharedArrayBuffer) {
-    try {
-        new FontFace('FontFromSharedArrayBufferView',
-                     new Uint8Array(new SharedArrayBuffer(4)));
-    } catch (e) {
-        rejectionValue = e;
-        shouldBeEqualToString('rejectionValue.name', 'TypeError');
-    }
+try {
+    new FontFace('FontFromSharedArrayBufferView',
+                 new Uint8Array(new SharedArrayBuffer(4)));
+} catch (e) {
+    rejectionValue = e;
+    shouldBeEqualToString('rejectionValue.name', 'TypeError');
 }
 
 var face3 = new FontFace('FontFromEmptyArrayBuffer', new ArrayBuffer(0));

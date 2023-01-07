@@ -1,0 +1,187 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# ASCII digits and letters.
+"0"
+"1"
+"2"
+"3"
+"4"
+"5"
+"6"
+"7"
+"8"
+"9"
+"A"
+"B"
+"C"
+"D"
+"E"
+"F"
+"G"
+"H"
+"I"
+"J"
+"K"
+"L"
+"M"
+"N"
+"O"
+"P"
+"Q"
+"R"
+"S"
+"T"
+"U"
+"V"
+"W"
+"X"
+"Y"
+"Z"
+"a"
+"b"
+"c"
+"d"
+"e"
+"f"
+"g"
+"h"
+"i"
+"j"
+"k"
+"l"
+"m"
+"n"
+"o"
+"p"
+"q"
+"r"
+"s"
+"t"
+"u"
+"v"
+"w"
+"x"
+"y"
+"z"
+
+# GREEK CAPITAL LETTER
+"\xCE\x91"
+"\xCE\x92"
+"\xCE\x93"
+"\xCE\x94"
+"\xCE\x95"
+"\xCE\x96"
+"\xCE\x97"
+"\xCE\x98"
+"\xCE\x99"
+"\xCE\x9A"
+"\xCE\x9B"
+"\xCE\x9C"
+"\xCE\x9D"
+"\xCE\x9E"
+"\xCE\x9F"
+"\xCE\xA0"
+"\xCE\xA1"
+# U+03A2 is not a valid unicode character.
+"\xCF\xB4"
+"\xCE\xA3"
+"\xCE\xA4"
+"\xCE\xA5"
+"\xCE\xA6"
+"\xCE\xA7"
+"\xCE\xA8"
+"\xCE\xA9"
+
+# GREEK SMALL LETTER ALPHA
+"\xCE\xB1"
+"\xCE\xB2"
+"\xCE\xB3"
+"\xCE\xB4"
+"\xCE\xB5"
+"\xCE\xB6"
+"\xCE\xB7"
+"\xCE\xB8"
+"\xCE\xB9"
+"\xCE\xBA"
+"\xCE\xBB"
+"\xCE\xBC"
+"\xCE\xBD"
+"\xCE\xBE"
+"\xCE\xBF"
+"\xCF\x80"
+"\xCF\x81"
+"\xCF\x82"
+"\xCF\x83"
+"\xCF\x84"
+"\xCF\x85"
+"\xCF\x86"
+"\xCF\x87"
+"\xCF\x88"
+"\xCF\x89"
+
+# U+2207 NABLA
+"\xE2\x88\x87"
+
+# U+2202 PARTIAL DIFFERENTIAL
+"\xE2\x88\x82"
+
+# U+03F5 GREEK LUNATE EPSILON SYMBOL
+"\xCF\xB5"
+
+# U+03D1 GREEK THETA SYMBOL
+"\xCF\x91"
+
+# U+03F0 GREEK KAPPA SYMBOL
+"\xCF\xB0"
+
+# U+03D5 GREEK PHI SYMBOL
+"\xCF\x95"
+
+# U+03F1 GREEK RHO SYMBOL
+"\xCF\xB1"
+
+# U+03D6 GREEK PI SYMBOL
+"\xCF\x96"
+
+# U+03DC GREEK LETTER DIGAMMA
+"\xCF\x9C"
+
+# U+03DD GREEK SMALL LETTER DIGAMMA
+"\xCF\x9D"
+
+# U+0131 LATIN SMALL LETTER DOTLESS I
+"\xC4\xB1"
+
+# U+237 LATIN SMALL LETTER DOTLESS J
+"\xC8\xB7"
+
+# ARABIC LETTERS
+"\xD8\xA7"
+"\xD8\xA8"
+"\xD8\xAC"
+"\xD8\xAF"
+"\xD9\x87"
+"\xD9\x88"
+"\xD8\xB2"
+"\xD8\xAD"
+"\xD8\xB7"
+"\xD9\x8A"
+"\xD9\x84"
+"\xD9\x85"
+"\xD9\x86"
+"\xD8\xB3"
+"\xD8\xB9"
+"\xD9\x81"
+"\xD8\xB5"
+"\xD9\x82"
+"\xD8\xB1"
+"\xD8\xB4"
+"\xD8\xAA"
+"\xD8\xAB"
+"\xD8\xAE"
+"\xD8\xB0"
+"\xD8\xB6"
+"\xD8\xB8"
+"\xD8\xBA"

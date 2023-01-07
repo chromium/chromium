@@ -1,0 +1,7 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN
+++++++TEXT_FIELD focusable has_input_focus actions='{DEFAULT, SET_VALUE}' value='Selection'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Selection'
+++++++++++++UNKNOWN label='Selection'

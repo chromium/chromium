@@ -1,0 +1,50 @@
+<style include="print-management-shared">
+  #buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  #clearDialog [slot=button-container] {
+    padding-bottom: 20px;
+    padding-inline-end: 24px;
+    padding-inline-start: 24px;
+    padding-top: 32px;
+  }
+
+  #clearDialog {
+    --cr-dialog-top-container-min-height: 24px;
+  }
+
+  #confirmationText {
+    color: var(--print-management-default-text-color);
+    font-family: var(--print-management-default-font-family);
+    font-size: var(--print-management-default-font-size);
+    font-weight: var(--print-management-default-font-weight);
+    overflow-wrap: break-word;
+  }
+
+  #cancelButton {
+    margin-inline-end: 8px;
+  }
+
+  cr-dialog::part(dialog) {
+    width: 350px;
+  }
+</style>
+
+<cr-dialog id="clearDialog">
+  <div slot="body">
+    <div id="confirmationText">
+      [[i18n('clearHistoryConfirmationText')]]
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancelButton" on-click="onCancelButtonClick">
+      [[i18n('cancelButtonLabel')]]
+    </cr-button>
+    <cr-button class="action-button" on-click="onClearButtonClick"
+        disabled="[[shouldDisableClearButton]]">
+      [[i18n('clearButtonLabel')]]
+    </cr-button>
+  </div>
+</cr-dialog>

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_bluez.h"
@@ -47,6 +46,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
       const bluez::BluetoothProfileManagerClient::Options& options,
       ProfileRegisteredCallback success_callback,
       bluez::BluetoothProfileManagerClient::ErrorCallback error_callback);
+
+  BluetoothAdapterProfileBlueZ(const BluetoothAdapterProfileBlueZ&) = delete;
+  BluetoothAdapterProfileBlueZ& operator=(const BluetoothAdapterProfileBlueZ&) =
+      delete;
 
   ~BluetoothAdapterProfileBlueZ() override;
 
@@ -106,8 +109,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterProfileBlueZ
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdapterProfileBlueZ> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterProfileBlueZ);
 };
 
 }  // namespace bluez

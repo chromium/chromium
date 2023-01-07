@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -91,8 +91,7 @@ class PeakCpuAggregator {
   ~PeakCpuAggregator();
 
   // Window over which to consider cpu time spent in an ad_frame.
-  static constexpr base::TimeDelta kWindowSize =
-      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kWindowSize = base::Seconds(30);
 
   // Update the peak window variables given the current update and update time.
   void UpdatePeakWindowedPercent(base::TimeDelta cpu_usage_update,

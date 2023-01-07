@@ -1,6 +1,8 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include <memory>
 
 #include "base/command_line.h"
 #include "chrome/browser/ui/browser.h"
@@ -27,6 +29,12 @@ namespace payments {
 class SitePerProcessPaymentsBrowserTest : public InProcessBrowserTest {
  public:
   SitePerProcessPaymentsBrowserTest() {}
+
+  SitePerProcessPaymentsBrowserTest(const SitePerProcessPaymentsBrowserTest&) =
+      delete;
+  SitePerProcessPaymentsBrowserTest& operator=(
+      const SitePerProcessPaymentsBrowserTest&) = delete;
+
   ~SitePerProcessPaymentsBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -39,8 +47,8 @@ class SitePerProcessPaymentsBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    https_server_.reset(
-        new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(https_server_->InitializeAndListen());
     content::SetupCrossSiteRedirector(https_server_.get());
@@ -50,15 +58,12 @@ class SitePerProcessPaymentsBrowserTest : public InProcessBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessPaymentsBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SitePerProcessPaymentsBrowserTest,
                        IframePaymentRequestDoesNotCrash) {
   GURL url = https_server_->GetURL("a.com", "/payment_request_main.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -66,10 +71,16 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessPaymentsBrowserTest,
       https_server_->GetURL("b.com", "/payment_request_iframe.html");
   EXPECT_TRUE(content::NavigateIframeToURL(tab, "test", iframe_url));
 
+  content::RenderFrameHost* iframe = content::FrameMatchingPredicate(
+      tab->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameHasSourceUrl, iframe_url));
+  EXPECT_TRUE(content::ExecJs(iframe, "triggerPaymentRequest()"));
+
   EXPECT_TRUE(tab->GetRenderWidgetHostView()->IsShowing());
-  content::RenderFrameHost* frame = ChildFrameAt(tab->GetMainFrame(), 0);
+  content::RenderFrameHost* frame = ChildFrameAt(tab->GetPrimaryMainFrame(), 0);
   EXPECT_TRUE(frame);
-  EXPECT_NE(frame->GetSiteInstance(), tab->GetMainFrame()->GetSiteInstance());
+  EXPECT_NE(frame->GetSiteInstance(),
+            tab->GetPrimaryMainFrame()->GetSiteInstance());
 }
 
 }  // namespace payments

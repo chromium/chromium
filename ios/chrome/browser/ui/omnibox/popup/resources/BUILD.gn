@@ -1,8 +1,18 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/ios/asset_catalog.gni")
+
+colorset("background_color_swiftui_ios14") {
+  sources = [ "background_color_swiftui_ios14.colorset/Contents.json" ]
+}
+
+colorset("grouped_primary_background_color_swiftui_ios14") {
+  sources = [
+    "grouped_primary_background_color_swiftui_ios14.colorset/Contents.json",
+  ]
+}
 
 colorset("omnibox_suggestion_answer_icon_color") {
   sources = [ "omnibox_suggestion_answer_icon_color.colorset/Contents.json" ]
@@ -19,6 +29,10 @@ colorset("omnibox_suggestion_icon_color") {
 
 colorset("omnibox_suggestion_icon_dark_color") {
   sources = [ "omnibox_suggestion_icon_dark_color.colorset/Contents.json" ]
+}
+
+colorset("omnibox_suggestion_row_highlight_color") {
+  sources = [ "omnibox_suggestion_row_highlight_color.colorset/Contents.json" ]
 }
 
 imageset("omnibox_popup_tab_match") {

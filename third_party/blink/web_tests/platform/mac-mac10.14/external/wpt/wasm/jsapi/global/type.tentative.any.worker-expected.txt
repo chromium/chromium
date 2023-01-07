@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+FAIL i32, mutable myglobal.type is not a function
+FAIL i32, immutable myglobal.type is not a function
+FAIL i64, mutable myglobal.type is not a function
+FAIL i64, immutable myglobal.type is not a function
+FAIL f32, mutable myglobal.type is not a function
+FAIL f32, immutable myglobal.type is not a function
+FAIL f64, mutable myglobal.type is not a function
+FAIL f64, immutable myglobal.type is not a function
+FAIL externref, mutable myglobal.type is not a function
+FAIL externref, immutable myglobal.type is not a function
+FAIL anyfunc, mutable myglobal.type is not a function
+FAIL anyfunc, immutable myglobal.type is not a function
+FAIL key ordering myglobal.type is not a function
+Harness: the test ran to completion.
+

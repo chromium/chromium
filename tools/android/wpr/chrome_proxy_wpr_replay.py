@@ -1,13 +1,11 @@
-#!/usr/bin/python2
-# Copyright 2021 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Begins proxying requests from Chrome, replaying a WPR replay file.
 
 To use the proxy, run Chrome with the flags printed by this script.
 """
-
-from __future__ import print_function
 
 import argparse
 import os
@@ -17,7 +15,6 @@ import time
 
 chrome_root = os.path.join(os.path.dirname(__file__), '../../..')
 sys.path.insert(0, os.path.join(chrome_root, 'build/android'))
-# Note that catapult/devil appears to require python2.
 sys.path.insert(0, os.path.join(chrome_root, 'third_party/catapult/devil'))
 
 from devil.android import device_utils

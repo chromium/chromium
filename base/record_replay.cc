@@ -115,8 +115,8 @@ void RecordReplayBytes(const char* why, void* buf, size_t size) {
   OP(V8RecordReplayBytes(why, buf, size));
 }
 
-size_t CreateOrderedLock(const char* name) {
-  return OP2(V8RecordReplayCreateOrderedLock(name), 0);
+int CreateOrderedLock(const char* name) {
+  return (int)OP2(V8RecordReplayCreateOrderedLock(name), 0);
 }
 
 void OrderedLock(int lock) {
@@ -275,7 +275,7 @@ int NewIdAnyThread(const char* name) {
       return 0;
 
     Assert("NewId %s", name);
-    return RecordReplayValue("NewId", gNextAnyThreadId++);
+    return (int)RecordReplayValue("NewId", (uintptr_t)gNextAnyThreadId++);
   }
   return 0;
 }

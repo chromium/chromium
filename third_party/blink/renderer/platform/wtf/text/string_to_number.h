@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_TO_NUMBER_H_
 
 #include "third_party/blink/renderer/platform/wtf/text/number_parsing_options.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace WTF {
@@ -164,4 +164,4 @@ using WTF::CharactersToUInt64;
 using WTF::CharactersToDouble;
 using WTF::CharactersToFloat;
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_TO_NUMBER_H_

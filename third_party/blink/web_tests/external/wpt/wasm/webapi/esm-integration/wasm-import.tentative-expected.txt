@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Invalid imports for WebAssembly modules should error. assert_equals: expected (number) 1 but got (string) "unexpected"
+Harness: the test ran to completion.
+

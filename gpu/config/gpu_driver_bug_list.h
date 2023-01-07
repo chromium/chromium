@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "gpu/config/gpu_control_list.h"
 #include "gpu/gpu_export.h"
 
@@ -17,6 +16,9 @@ namespace gpu {
 
 class GPU_EXPORT GpuDriverBugList : public GpuControlList {
  public:
+  GpuDriverBugList(const GpuDriverBugList&) = delete;
+  GpuDriverBugList& operator=(const GpuDriverBugList&) = delete;
+
   ~GpuDriverBugList() override;
 
   static std::unique_ptr<GpuDriverBugList> Create();
@@ -38,8 +40,6 @@ class GPU_EXPORT GpuDriverBugList : public GpuControlList {
 
  private:
   explicit GpuDriverBugList(const GpuControlListData& data);
-
-  DISALLOW_COPY_AND_ASSIGN(GpuDriverBugList);
 };
 
 }  // namespace gpu

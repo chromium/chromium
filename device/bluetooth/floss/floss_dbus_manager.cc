@@ -1,0 +1,268 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "device/bluetooth/floss/floss_dbus_manager.h"
+
+#include <memory>
+
+#include "base/logging.h"
+#include "base/memory/ptr_util.h"
+#include "base/message_loop/message_pump_type.h"
+#include "base/threading/thread.h"
+#include "build/build_config.h"
+#include "dbus/bus.h"
+#include "dbus/message.h"
+#include "dbus/object_manager.h"
+#include "dbus/object_proxy.h"
+#include "device/bluetooth/floss/fake_floss_manager_client.h"
+#include "device/bluetooth/floss/floss_adapter_client.h"
+#include "device/bluetooth/floss/floss_advertiser_client.h"
+#include "device/bluetooth/floss/floss_lescan_client.h"
+#include "device/bluetooth/floss/floss_manager_client.h"
+#include "device/bluetooth/floss/floss_socket_manager.h"
+
+namespace floss {
+
+namespace {
+FlossDBusManager* g_floss_dbus_manager = nullptr;
+}  // namespace
+
+const int FlossDBusManager::kInvalidAdapter = -1;
+
+static bool g_using_floss_dbus_manager_for_testing = false;
+
+FlossDBusManager::FlossDBusManager(dbus::Bus* bus, bool use_stubs) : bus_(bus) {
+  if (use_stubs) {
+    client_bundle_ = std::make_unique<FlossClientBundle>(use_stubs);
+    active_adapter_ = 0;
+    object_manager_supported_ = true;
+    object_manager_support_known_ = true;
+    return;
+  }
+
+  CHECK(GetSystemBus()) << "Can't initialize real clients without DBus.";
+
+  dbus::MethodCall method_call(dbus::kObjectManagerInterface,
+                               dbus::kObjectManagerGetManagedObjects);
+
+  VLOG(1) << "FlossDBusManager checking for object manager";
+  // Sets up callbacks checking for object manager support. Object manager is
+  // registered on the root object "/"
+  GetSystemBus()
+      ->GetObjectProxy(kManagerService, dbus::ObjectPath("/"))
+      ->CallMethodWithErrorCallback(
+          &method_call, kDBusTimeoutMs,
+          base::BindOnce(&FlossDBusManager::OnObjectManagerSupported,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&FlossDBusManager::OnObjectManagerNotSupported,
+                         weak_ptr_factory_.GetWeakPtr()));
+}
+
+FlossDBusManager::~FlossDBusManager() = default;
+
+// static
+void FlossDBusManager::Initialize(dbus::Bus* system_bus) {
+  // If we initialize FlossDBusManager twice we may also be shutting it down
+  // early; do not allow that.
+  CHECK(!g_floss_dbus_manager);
+
+  VLOG(1) << "FlossDBusManager about to initialize thread manager";
+
+  CreateGlobalInstance(system_bus, /*use_stubs=*/false);
+}
+
+void FlossDBusManager::InitializeFake() {
+  NOTIMPLEMENTED();
+}
+
+// static
+std::unique_ptr<FlossDBusManagerSetter>
+floss::FlossDBusManager::GetSetterForTesting() {
+  if (!g_using_floss_dbus_manager_for_testing) {
+    g_using_floss_dbus_manager_for_testing = true;
+    CreateGlobalInstance(nullptr, /*use_stubs=*/true);
+  }
+
+  return base::WrapUnique(new FlossDBusManagerSetter());
+}
+
+// static
+bool FlossDBusManager::IsInitialized() {
+  return g_floss_dbus_manager;
+}
+
+// static
+void FlossDBusManager::Shutdown() {
+  // Ensure that we only shutdown FlossDBusManager once.
+  CHECK(g_floss_dbus_manager);
+  delete g_floss_dbus_manager;
+  g_floss_dbus_manager = nullptr;
+
+  DVLOG(1) << "FlossDBusManager Shutdown completed";
+}
+
+// static
+FlossDBusManager* FlossDBusManager::Get() {
+  CHECK(g_floss_dbus_manager)
+      << "FlossDBusManager::Get() called before Initialize()";
+  return g_floss_dbus_manager;
+}
+
+// static
+void FlossDBusManager::CreateGlobalInstance(dbus::Bus* bus, bool use_stubs) {
+  CHECK(!g_floss_dbus_manager);
+  g_floss_dbus_manager = new FlossDBusManager(bus, use_stubs);
+  VLOG(1) << "FlossDBusManager CreateGlobalInstance";
+}
+
+bool FlossDBusManager::CallWhenObjectManagerSupportIsKnown(
+    base::OnceClosure callback) {
+  DCHECK(!object_manager_support_known_callback_);
+
+  if (object_manager_support_known_) {
+    std::move(callback).Run();
+    return true;
+  }
+
+  object_manager_support_known_callback_ = std::move(callback);
+  return false;
+}
+
+void FlossDBusManager::OnObjectManagerSupported(dbus::Response* response) {
+  DVLOG(1) << "Floss Bluetooth supported. Initializing clients.";
+  object_manager_supported_ = true;
+
+  client_bundle_ = std::make_unique<FlossClientBundle>(/*use_stubs=*/false);
+
+  // Initialize the manager client (which doesn't depend on any specific
+  // adapter being present)
+  client_bundle_->manager_client()->Init(GetSystemBus(), kManagerInterface,
+                                         kInvalidAdapter);
+
+  object_manager_support_known_ = true;
+  if (object_manager_support_known_callback_) {
+    std::move(object_manager_support_known_callback_).Run();
+  }
+}
+
+void FlossDBusManager::OnObjectManagerNotSupported(
+    dbus::ErrorResponse* response) {
+  DVLOG(1) << "Floss Bluetooth not supported.";
+  object_manager_supported_ = false;
+
+  // Don't initialize any clients since they need ObjectManager.
+
+  object_manager_support_known_ = true;
+  if (object_manager_support_known_callback_)
+    std::move(object_manager_support_known_callback_).Run();
+}
+
+void FlossDBusManager::SwitchAdapter(int adapter) {
+  if (!object_manager_supported_) {
+    DVLOG(1) << "Floss can't switch to adapter without object manager";
+    return;
+  }
+
+  InitializeAdapterClients(adapter);
+  return;
+}
+
+bool FlossDBusManager::HasActiveAdapter() const {
+  return active_adapter_ != kInvalidAdapter;
+}
+
+FlossManagerClient* FlossDBusManager::GetManagerClient() {
+  return client_bundle_->manager_client();
+}
+
+FlossAdapterClient* FlossDBusManager::GetAdapterClient() {
+  return client_bundle_->adapter_client();
+}
+
+FlossSocketManager* FlossDBusManager::GetSocketManager() {
+  return client_bundle_->socket_manager();
+}
+
+FlossLEScanClient* FlossDBusManager::GetLEScanClient() {
+  return client_bundle_->lescan_client();
+}
+
+FlossAdvertiserClient* FlossDBusManager::GetAdvertiserClient() {
+  return client_bundle_->advertiser_client();
+}
+
+void FlossDBusManager::InitializeAdapterClients(int adapter) {
+  // Clean up active adapter clients
+  if (active_adapter_ != kInvalidAdapter) {
+    client_bundle_->ResetAdapterClients();
+  }
+
+  // Set current adapter. If it's kInvalidAdapter, this doesn't need to do any
+  // init.
+  active_adapter_ = adapter;
+  if (adapter == kInvalidAdapter) {
+    return;
+  }
+
+  // Initialize any adapter clients.
+  client_bundle_->adapter_client()->Init(GetSystemBus(), kAdapterService,
+                                         active_adapter_);
+  client_bundle_->socket_manager()->Init(GetSystemBus(), kAdapterService,
+                                         active_adapter_);
+  client_bundle_->lescan_client()->Init(GetSystemBus(), kAdapterService,
+                                        active_adapter_);
+  client_bundle_->advertiser_client()->Init(GetSystemBus(), kAdapterService,
+                                            active_adapter_);
+}
+
+void FlossDBusManagerSetter::SetFlossManagerClient(
+    std::unique_ptr<FlossManagerClient> client) {
+  FlossDBusManager::Get()->client_bundle_->manager_client_ = std::move(client);
+}
+
+void FlossDBusManagerSetter::SetFlossAdapterClient(
+    std::unique_ptr<FlossAdapterClient> client) {
+  FlossDBusManager::Get()->client_bundle_->adapter_client_ = std::move(client);
+}
+
+void FlossDBusManagerSetter::SetFlossSocketManager(
+    std::unique_ptr<FlossSocketManager> mgr) {
+  FlossDBusManager::Get()->client_bundle_->socket_manager_ = std::move(mgr);
+}
+
+void FlossDBusManagerSetter::SetFlossLEScanClient(
+    std::unique_ptr<FlossLEScanClient> client) {
+  FlossDBusManager::Get()->client_bundle_->lescan_client_ = std::move(client);
+}
+
+void FlossDBusManagerSetter::SetFlossAdvertiserClient(
+    std::unique_ptr<FlossAdvertiserClient> client) {
+  FlossDBusManager::Get()->client_bundle_->advertiser_client_ =
+      std::move(client);
+}
+
+FlossClientBundle::FlossClientBundle(bool use_stubs) : use_stubs_(use_stubs) {
+  if (use_stubs) {
+    return;
+  }
+
+  manager_client_ = FlossManagerClient::Create();
+
+  ResetAdapterClients();
+}
+
+FlossClientBundle::~FlossClientBundle() = default;
+
+void FlossClientBundle::ResetAdapterClients() {
+  if (use_stubs_) {
+    return;
+  }
+
+  adapter_client_ = FlossAdapterClient::Create();
+  socket_manager_ = FlossSocketManager::Create();
+  lescan_client_ = FlossLEScanClient::Create();
+  advertiser_client_ = FlossAdvertiserClient::Create();
+}
+
+}  // namespace floss

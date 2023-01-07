@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -35,14 +36,15 @@
 #include "extensions/grit/extensions_browser_resources.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/views/accessibility/ax_virtual_view.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -50,8 +52,6 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -59,13 +59,11 @@ namespace {
 
 // The default time that the bubble should stay on the screen if it will close
 // automatically.
-constexpr base::TimeDelta kBubbleCloseDelayDefault =
-    base::TimeDelta::FromMilliseconds(1500);
+constexpr base::TimeDelta kBubbleCloseDelayDefault = base::Milliseconds(1500);
 
 // A longer timeout used for how long the bubble should stay on the screen
 // before it will close automatically after + or - buttons have been used.
-constexpr base::TimeDelta kBubbleCloseDelayLong =
-    base::TimeDelta::FromMilliseconds(5000);
+constexpr base::TimeDelta kBubbleCloseDelayLong = base::Milliseconds(5000);
 
 class ZoomButtonHighlightPathGenerator : public views::HighlightPathGenerator {
  public:
@@ -112,7 +110,7 @@ class ZoomValue : public views::Label {
 
  private:
   int GetLabelMaxWidth(const content::WebContents* web_contents) const {
-    const int border_width = border() ? border()->GetInsets().width() : 0;
+    const int border_width = GetInsets().width();
     int max_w = 0;
     auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents);
     DCHECK(zoom_controller);
@@ -282,8 +280,6 @@ ZoomBubbleView* ZoomBubbleView::GetZoomBubble() {
 
 void ZoomBubbleView::Refresh() {
   UpdateZoomPercent();
-  zoom_level_alert_->GetCustomData().SetName(GetAccessibleWindowTitle());
-  zoom_level_alert_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert);
   StartTimerIfNecessary();
 }
 
@@ -304,7 +300,6 @@ ZoomBubbleView::ZoomBubbleView(
   if (immersive_mode_controller_)
     immersive_mode_controller_->AddObserver(this);
   UseCompactMargins();
-  chrome::RecordDialogCreation(chrome::DialogIdentifier::ZOOM);
 }
 
 ZoomBubbleView::~ZoomBubbleView() {
@@ -313,7 +308,7 @@ ZoomBubbleView::~ZoomBubbleView() {
 }
 
 std::u16string ZoomBubbleView::GetAccessibleWindowTitle() const {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  Browser* browser = GetBrowser();
   if (!browser)
     return {};
   return BrowserView::GetBrowserViewForBrowser(browser)
@@ -385,16 +380,17 @@ void ZoomBubbleView::Init() {
   // Calculate child views margins in |this| client view.
   const int label_vertical_spacing =
       provider->GetDistanceMetric(DISTANCE_TOAST_LABEL_VERTICAL);
-  const gfx::Insets label_margin(label_vertical_spacing - margins().top(), 0,
-                                 label_vertical_spacing - margins().bottom(),
-                                 kPercentLabelPadding - spacing);
+  const auto label_margin =
+      gfx::Insets::TLBR(label_vertical_spacing - margins().top(), 0,
+                        label_vertical_spacing - margins().bottom(),
+                        kPercentLabelPadding - spacing);
 
   // Account for the apparent margins that vector buttons have around icons.
   const int control_vertical_spacing =
       provider->GetDistanceMetric(DISTANCE_TOAST_CONTROL_VERTICAL);
-  const gfx::Insets control_vertical_margin(
-      control_vertical_spacing - margins().top(), 0,
-      control_vertical_spacing - margins().bottom(), 0);
+  const auto control_vertical_margin =
+      gfx::Insets::TLBR(control_vertical_spacing - margins().top(), 0,
+                        control_vertical_spacing - margins().bottom(), 0);
   const gfx::Insets vector_button_margin(
       control_vertical_margin -
       provider->GetInsetsMetric(views::INSETS_VECTOR_IMAGE_BUTTON));
@@ -413,8 +409,9 @@ void ZoomBubbleView::Init() {
     image_button->SetTooltipText(
         l10n_util::GetStringFUTF16(IDS_TOOLTIP_ZOOM_EXTENSION_ICON,
                                    base::UTF8ToUTF16(extension_info_.name)));
-    image_button->SetImage(views::Button::STATE_NORMAL,
-                           &extension_info_.icon_image->image_skia());
+    image_button->SetImageModel(views::Button::STATE_NORMAL,
+                                ui::ImageModel::FromImageSkia(
+                                    extension_info_.icon_image->image_skia()));
     image_button_ = AddChildView(std::move(image_button));
   }
 
@@ -452,11 +449,6 @@ void ZoomBubbleView::Init() {
       l10n_util::GetStringUTF16(IDS_ACCNAME_ZOOM_SET_DEFAULT));
   reset_button_ = AddChildView(std::move(reset_button));
 
-  auto zoom_level_alert = std::make_unique<views::AXVirtualView>();
-  zoom_level_alert->GetCustomData().role = ax::mojom::Role::kAlert;
-  zoom_level_alert_ = zoom_level_alert.get();
-  GetViewAccessibility().AddVirtualChildView(std::move(zoom_level_alert));
-
   UpdateZoomPercent();
   StartTimerIfNecessary();
 }
@@ -472,8 +464,8 @@ void ZoomBubbleView::WindowClosing() {
 }
 
 void ZoomBubbleView::CloseBubble() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  if (ignore_close_bubble_ &&
+  Browser* browser = GetBrowser();
+  if (ignore_close_bubble_ && browser &&
       GetAnchorViewForBrowser(browser) == GetAnchorView()) {
     return;
   }
@@ -536,6 +528,7 @@ void ZoomBubbleView::SetExtensionInfo(const extensions::Extension* extension) {
 void ZoomBubbleView::UpdateZoomPercent() {
   label_->SetText(base::FormatPercent(
       zoom::ZoomController::FromWebContents(web_contents())->GetZoomPercent()));
+  label_->SetAccessibleName(GetAccessibleWindowTitle());
 
   // Disable buttons at min, max and default
   auto* zoom_controller = zoom::ZoomController::FromWebContents(web_contents());
@@ -587,13 +580,19 @@ void ZoomBubbleView::ButtonPressed(base::RepeatingClosure closure) {
 
 void ZoomBubbleView::ImageButtonPressed() {
   DCHECK(extension_info_.icon_image) << "Invalid button press.";
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  DCHECK(browser);
-  chrome::AddSelectedTabWithURL(
-      browser,
-      GURL(base::StringPrintf("chrome://extensions?id=%s",
-                              extension_info_.id.c_str())),
-      ui::PAGE_TRANSITION_FROM_API);
+  Browser* browser = GetBrowser();
+  if (browser) {
+    chrome::AddSelectedTabWithURL(
+        browser,
+        GURL(base::StringPrintf("chrome://extensions?id=%s",
+                                extension_info_.id.c_str())),
+        ui::PAGE_TRANSITION_FROM_API);
+  }
+}
+
+Browser* ZoomBubbleView::GetBrowser() const {
+  return web_contents() ? chrome::FindBrowserWithWebContents(web_contents())
+                        : nullptr;
 }
 
 ZoomBubbleView::ZoomBubbleExtensionInfo::ZoomBubbleExtensionInfo() {}

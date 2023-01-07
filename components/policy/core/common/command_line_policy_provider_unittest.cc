@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,9 @@
 #include "components/policy/core/common/policy_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace policy {
 
@@ -25,7 +25,7 @@ void VerifyPolicyProvider(ConfigurationPolicyProvider* provider) {
   const base::Value* policy_value =
       provider->policies()
           .Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-          .GetValue("policy");
+          .GetValue("policy", base::Value::Type::INTEGER);
   ASSERT_TRUE(policy_value);
   ASSERT_TRUE(policy_value->is_int());
   EXPECT_EQ(10, policy_value->GetInt());
@@ -71,11 +71,11 @@ TEST_F(CommandLinePolicyProviderTest, Creator) {
       version_info::Channel::STABLE};
   for (auto channel : channels) {
     bool is_created = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     is_created = channel != version_info::Channel::BETA &&
                  channel != version_info::Channel::STABLE &&
                  base::android::BuildInfo::GetInstance()->is_debug_android();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     auto policy_provider = CreatePolicyProviderWithCheck(channel);
     if (is_created)
       EXPECT_TRUE(policy_provider);

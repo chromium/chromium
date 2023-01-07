@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 260 tests; 248 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 273 tests; 261 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setup
 PASS isolation (type: discrete) has testAccumulation function
 PASS isolation: "isolate" onto "auto"
@@ -186,6 +186,19 @@ PASS text-decoration-line: "underline" onto "overline"
 PASS text-decoration-style (type: discrete) has testAccumulation function
 PASS text-decoration-style: "dotted" onto "solid"
 PASS text-decoration-style: "solid" onto "dotted"
+PASS text-emphasis-color (type: color) has testAccumulation function
+PASS text-emphasis-color supports animating as color of rgb() with overflowed  from and to values
+PASS text-emphasis-color supports animating as color of #RGB
+PASS text-emphasis-color supports animating as color of hsl()
+PASS text-emphasis-color supports animating as color of #RGBa
+PASS text-emphasis-color supports animating as color of rgba()
+PASS text-emphasis-color supports animating as color of hsla()
+PASS text-emphasis-position (type: discrete) has testAccumulation function
+PASS text-emphasis-position: "under left" onto "over"
+PASS text-emphasis-position: "over" onto "under left"
+PASS text-emphasis-style (type: discrete) has testAccumulation function
+PASS text-emphasis-style: "open dot" onto "circle"
+PASS text-emphasis-style: "circle" onto "open dot"
 PASS text-overflow (type: discrete) has testAccumulation function
 PASS text-overflow: "ellipsis" onto "clip"
 PASS text-overflow: "clip" onto "ellipsis"

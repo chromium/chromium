@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "chrome/browser/sharing/sharing_fcm_sender.h"
 #include "chrome/browser/sharing/sharing_handler_registry.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
+#include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -194,10 +195,8 @@ TEST_F(SharingFCMHandlerTest, PingMessageHandler) {
   EXPECT_CALL(mock_sharing_message_handler_, OnMessage(_, _));
   EXPECT_CALL(
       mock_sharing_fcm_sender_,
-      SendMessageToFcmTarget(
-          FCMChannelMatcher(),
-          Eq(base::TimeDelta::FromSeconds(kSharingAckMessageTTLSeconds.Get())),
-          ProtoEquals(sharing_ack_message), _));
+      SendMessageToFcmTarget(FCMChannelMatcher(), Eq(kSharingAckMessageTTL),
+                             ProtoEquals(sharing_ack_message), _));
   handler_registry_.SetSharingHandler(SharingMessage::kPingMessage,
                                       &mock_sharing_message_handler_);
   sharing_fcm_handler_->OnMessage(kTestAppId, incoming_message);
@@ -234,10 +233,8 @@ TEST_F(SharingFCMHandlerTest, PingMessageHandlerWithMessageIdInPayload) {
   EXPECT_CALL(mock_sharing_message_handler_, OnMessage(_, _));
   EXPECT_CALL(
       mock_sharing_fcm_sender_,
-      SendMessageToFcmTarget(
-          FCMChannelMatcher(),
-          Eq(base::TimeDelta::FromSeconds(kSharingAckMessageTTLSeconds.Get())),
-          ProtoEquals(sharing_ack_message), _));
+      SendMessageToFcmTarget(FCMChannelMatcher(), Eq(kSharingAckMessageTTL),
+                             ProtoEquals(sharing_ack_message), _));
   handler_registry_.SetSharingHandler(SharingMessage::kPingMessage,
                                       &mock_sharing_message_handler_);
   sharing_fcm_handler_->OnMessage(kTestAppId, incoming_message);
@@ -268,10 +265,8 @@ TEST_F(SharingFCMHandlerTest, PingMessageHandlerWithResponse) {
   EXPECT_CALL(mock_sharing_message_handler_, OnMessage(_, _));
   EXPECT_CALL(
       mock_sharing_fcm_sender_,
-      SendMessageToFcmTarget(
-          FCMChannelMatcher(),
-          Eq(base::TimeDelta::FromSeconds(kSharingAckMessageTTLSeconds.Get())),
-          ProtoEquals(sharing_ack_message), _));
+      SendMessageToFcmTarget(FCMChannelMatcher(), Eq(kSharingAckMessageTTL),
+                             ProtoEquals(sharing_ack_message), _));
   handler_registry_.SetSharingHandler(SharingMessage::kPingMessage,
                                       &mock_sharing_message_handler_);
   sharing_fcm_handler_->OnMessage(kTestAppId, incoming_message);
@@ -301,10 +296,8 @@ TEST_F(SharingFCMHandlerTest, PingMessageHandlerSecondaryUser) {
           }));
   EXPECT_CALL(
       mock_sharing_fcm_sender_,
-      SendMessageToFcmTarget(
-          FCMChannelMatcher(),
-          Eq(base::TimeDelta::FromSeconds(kSharingAckMessageTTLSeconds.Get())),
-          ProtoEquals(sharing_ack_message), _));
+      SendMessageToFcmTarget(FCMChannelMatcher(), Eq(kSharingAckMessageTTL),
+                             ProtoEquals(sharing_ack_message), _));
   handler_registry_.SetSharingHandler(SharingMessage::kPingMessage,
                                       &mock_sharing_message_handler_);
   sharing_fcm_handler_->OnMessage(kTestAppId, incoming_message);

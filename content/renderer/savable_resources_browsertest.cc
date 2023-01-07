@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ class SavableResourcesTest : public ContentBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kSingleProcess);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Don't want to try to create a GPU process.
     command_line->AppendSwitch(switches::kDisableGpu);
 #endif
@@ -54,7 +54,7 @@ class SavableResourcesTest : public ContentBrowserTest {
         &SavableResourcesTest::CheckResources, base::Unretained(this),
         page_file_path, expected_resources_matcher,
         expected_subframe_urls_matcher, file_url,
-        shell()->web_contents()->GetMainFrame()->GetRoutingID()));
+        shell()->web_contents()->GetPrimaryMainFrame()->GetRoutingID()));
   }
 
   void CheckResources(const base::FilePath& page_file_path,

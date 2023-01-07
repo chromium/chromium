@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include "base/callback_forward.h"
 #include "net/dns/notify_watcher_mac.h"
 
-namespace net {
-namespace internal {
+namespace net::internal {
 
 // Watches DNS configuration on Mac.
 class DnsConfigWatcher {
@@ -23,7 +22,6 @@ class DnsConfigWatcher {
   NotifyWatcherMac watcher_;
 };
 
-}  // namespace internal
-}  // namespace net
+}  // namespace net::internal
 
 #endif  // NET_DNS_DNS_CONFIG_WATCHER_MAC_H_

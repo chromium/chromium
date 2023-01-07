@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,8 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
-#include "content/renderer/pepper/gfx_conversion.h"
+#include "content/public/renderer/ppapi_gfx_conversion.h"
 #include "content/renderer/pepper/mock_renderer_ppapi_host.h"
 #include "content/renderer/pepper/ppb_image_data_impl.h"
 #include "ppapi/shared_impl/ppb_view_shared.h"
@@ -136,7 +135,7 @@ TEST_F(PepperGraphics2DHostTest, ConvertToLogicalPixels) {
                // Check negative scroll deltas
                {10, 10, 20, 20, 5, 5, 10, 10, -6, -4, -3, -2, 0.5, true},
                {10, 10, 20, 20, 5, 5, 10, 10, -6, -3, -3, -1, 0.5, false}, };
-  for (size_t i = 0; i < base::size(tests); ++i) {
+  for (size_t i = 0; i < std::size(tests); ++i) {
     gfx::Rect r1(tests[i].x1, tests[i].y1, tests[i].w1, tests[i].h1);
     gfx::Rect r2(tests[i].x2, tests[i].y2, tests[i].w2, tests[i].h2);
     gfx::Rect orig = r1;

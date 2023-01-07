@@ -1,0 +1,18 @@
+<style>
+  #lensForm {
+    display: none;
+  }
+</style>
+
+<div id="lensForm">
+  <form id="fileForm"
+        action="[[uploadFileAction_]]"
+        enctype="multipart/form-data"
+        method="POST">
+    <input id="fileInput"
+           name="encoded_image"
+           type="file"
+           accept="[[supportedFileTypes_]]"
+           on-change="handleFileInputChange_"></input>
+  </form>
+</div>

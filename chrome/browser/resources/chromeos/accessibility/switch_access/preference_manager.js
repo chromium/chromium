@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,9 +81,9 @@ export class PreferenceManager {
   /** @private */
   init_() {
     chrome.settingsPrivate.onPrefsChanged.addListener(
-        this.updateFromSettings_.bind(this));
+        prefs => this.updateFromSettings_(prefs));
     chrome.settingsPrivate.getAllPrefs(
-        (prefs) => this.updateFromSettings_(prefs, true /* isFirstLoad */));
+        prefs => this.updateFromSettings_(prefs, true /* isFirstLoad */));
   }
 
   /**
@@ -106,7 +106,9 @@ export class PreferenceManager {
     const previousSet = previousPref ? Object.keys(previousPref).length : false;
 
     const autoScanEnabled =
-        !!this.getBoolean_(SAConstants.Preference.AUTO_SCAN_ENABLED);
+        // getBoolean_() returns null if a value is not found, so we force the
+        // value to be a boolean (defaulting to false).
+        Boolean(this.getBoolean_(SAConstants.Preference.AUTO_SCAN_ENABLED));
 
     if (!selectSet) {
       return false;

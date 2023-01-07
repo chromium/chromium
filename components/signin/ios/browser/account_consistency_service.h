@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,8 @@
 
 #include <map>
 #include <set>
-#include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -43,28 +41,26 @@ class AccountConsistencyService : public KeyedService,
       AccountReconcilor* account_reconcilor,
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
       signin::IdentityManager* identity_manager);
+
+  AccountConsistencyService(const AccountConsistencyService&) = delete;
+  AccountConsistencyService& operator=(const AccountConsistencyService&) =
+      delete;
+
   ~AccountConsistencyService() override;
 
   // Sets the handler for |web_state| that reacts on Gaia responses with the
   // X-Chrome-Manage-Accounts header and notifies |delegate|.
   void SetWebStateHandler(web::WebState* web_state,
-                          id<ManageAccountsDelegate> delegate);
+                          ManageAccountsDelegate* delegate);
   // Removes the handler associated with |web_state|.
   void RemoveWebStateHandler(web::WebState* web_state);
-
-  // Checks for the presence of Gaia cookies and if they have been deleted
-  // notifies the AccountReconcilor (the class responsible for rebuilding Gaia
-  // cookies if needed). Calls callback if Gaia cookies were restored.
-  //
-  // Applies a one hour time restriction in between updates to avoid too many
-  // |GetAllCookies| calls on the cookie manager.
-  void SetGaiaCookiesIfDeleted(base::OnceClosure cookies_restored_callback);
 
   // Notifies the AccountReconcilor that Gaia cookies have been deleted. Calls
   // callback once the Gaia cookies have been restored and returns YES on
   // success. Note that in order to avoid redirect loops this method applies a
   // one hour time restriction in between restoration calls.
-  BOOL RestoreGaiaCookies(base::OnceClosure cookies_restored_callback);
+  BOOL RestoreGaiaCookies(
+      base::OnceCallback<void(BOOL)> cookies_restored_callback);
 
   // Enqueues a request to set the CHROME_CONNECTED cookie for the domain of the
   // |url|. The cookie is set if it is not already on the domain.
@@ -101,14 +97,15 @@ class AccountConsistencyService : public KeyedService,
                                uint32_t num_cookies_deleted);
 
   // Triggers a Gaia cookie update on the Google domain. Calls
-  // |cookies_restored_callback| if the Gaia cookies were restored.
+  // |cookies_restored_callback| with whether the Gaia cookies were restored.
   void TriggerGaiaCookieChangeIfDeleted(
-      base::OnceClosure cookies_restored_callback,
+      base::OnceCallback<void(BOOL)> cookies_restored_callback,
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& excluded_cookies);
 
-  // Clears all pending cookie requests and cached domains.
-  void ResetInternalState();
+  // Runs the list of callbacks with |has_cookie_changed| to indicate whether
+  // the cookies required a restore call.
+  void RunGaiaCookiesRestoredCallbacks(BOOL has_cookie_changed);
 
   // IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
@@ -134,11 +131,10 @@ class AccountConsistencyService : public KeyedService,
   int64_t active_cookie_manager_requests_for_testing_;
 
   // Last time Gaia cookie was updated for the Google domain.
-  base::Time last_gaia_cookie_verification_time_;
   base::Time last_gaia_cookie_update_time_;
 
   // List of callbacks to be called following GAIA cookie restoration.
-  std::vector<base::OnceClosure> gaia_cookies_restored_callbacks_;
+  std::vector<base::OnceCallback<void(BOOL)>> gaia_cookies_restored_callbacks_;
 
   // Handlers reacting on GAIA responses with the X-Chrome-Manage-Accounts
   // header set.
@@ -147,8 +143,6 @@ class AccountConsistencyService : public KeyedService,
 
   // Record whether Shutdown has been called.
   bool is_shutdown_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountConsistencyService);
 };
 
 #endif  // COMPONENTS_SIGNIN_IOS_BROWSER_ACCOUNT_CONSISTENCY_SERVICE_H_

@@ -1,5 +1,2 @@
-monorail {
-  component: "UI>Browser>Language"
-}
+mixins: "//components/language/COMMON_METADATA"
 
-team_email: "language@chromium.org"

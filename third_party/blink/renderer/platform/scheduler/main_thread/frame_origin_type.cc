@@ -1,10 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_origin_type.h"
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 
 namespace blink {
@@ -16,7 +15,7 @@ FrameOriginType GetFrameOriginType(FrameScheduler* scheduler) {
   if (scheduler->GetFrameType() == FrameScheduler::FrameType::kMainFrame)
     return FrameOriginType::kMainFrame;
 
-  if (scheduler->IsCrossOriginToMainFrame()) {
+  if (scheduler->IsCrossOriginToNearestMainFrame()) {
     return FrameOriginType::kCrossOriginToMainFrame;
   } else {
     return FrameOriginType::kSameOriginToMainFrame;
@@ -31,8 +30,6 @@ const char* FrameOriginTypeToString(FrameOriginType origin) {
       return "same-origin-to-main-frame";
     case FrameOriginType::kCrossOriginToMainFrame:
       return "cross-origin-to-main-frame";
-    case FrameOriginType::kCount:
-      NOTREACHED();
   }
   NOTREACHED();
   return nullptr;

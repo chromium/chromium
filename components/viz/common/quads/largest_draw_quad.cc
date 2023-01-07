@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/picture_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
-#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
@@ -40,7 +39,6 @@ constexpr size_t kLargestDrawQuadSize =
             viz::PictureDrawQuad,
             viz::CompositorRenderPassDrawQuad,
             viz::SolidColorDrawQuad,
-            viz::StreamVideoDrawQuad,
             viz::SurfaceDrawQuad,
             viz::TextureDrawQuad,
             viz::TileDrawQuad,
@@ -65,7 +63,6 @@ constexpr size_t kLargestDrawQuadAlignment =
              viz::PictureDrawQuad,
              viz::CompositorRenderPassDrawQuad,
              viz::SolidColorDrawQuad,
-             viz::StreamVideoDrawQuad,
              viz::SurfaceDrawQuad,
              viz::TextureDrawQuad,
              viz::TileDrawQuad,

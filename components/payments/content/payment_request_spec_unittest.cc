@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
@@ -23,7 +25,7 @@ using ::testing::UnorderedElementsAre;
 class PaymentRequestSpecTest : public testing::Test,
                                public PaymentRequestSpec::Observer {
  protected:
-  ~PaymentRequestSpecTest() override {}
+  ~PaymentRequestSpecTest() override = default;
 
   void OnSpecUpdated() override { on_spec_updated_called_ = true; }
 
@@ -51,220 +53,6 @@ class PaymentRequestSpecTest : public testing::Test,
   bool on_spec_updated_called_ = false;
   base::WeakPtrFactory<PaymentRequestSpecTest> weak_ptr_factory_{this};
 };
-
-// Test that empty method data is parsed correctly.
-TEST_F(PaymentRequestSpecTest, EmptyMethodData) {
-  std::vector<mojom::PaymentMethodDataPtr> method_data;
-  RecreateSpecWithMethodData(std::move(method_data));
-
-  // No supported card networks.
-  EXPECT_EQ(0u, spec()->supported_card_networks().size());
-}
-
-TEST_F(PaymentRequestSpecTest, IsMethodSupportedThroughBasicCard) {
-  mojom::PaymentMethodDataPtr entry1 = mojom::PaymentMethodData::New();
-  entry1->supported_method = "visa";
-  mojom::PaymentMethodDataPtr entry2 = mojom::PaymentMethodData::New();
-  entry2->supported_method = "mastercard";
-  mojom::PaymentMethodDataPtr entry3 = mojom::PaymentMethodData::New();
-  entry3->supported_method = "invalid";
-  mojom::PaymentMethodDataPtr entry4 = mojom::PaymentMethodData::New();
-  entry4->supported_method = "visa";
-  mojom::PaymentMethodDataPtr entry5 = mojom::PaymentMethodData::New();
-  entry5->supported_method = "basic-card";
-  entry5->supported_networks.push_back(mojom::BasicCardNetwork::UNIONPAY);
-  entry5->supported_networks.push_back(mojom::BasicCardNetwork::JCB);
-  entry5->supported_networks.push_back(mojom::BasicCardNetwork::VISA);
-
-  std::vector<mojom::PaymentMethodDataPtr> method_data;
-  method_data.push_back(std::move(entry1));
-  method_data.push_back(std::move(entry2));
-  method_data.push_back(std::move(entry3));
-  method_data.push_back(std::move(entry4));
-  method_data.push_back(std::move(entry5));
-
-  RecreateSpecWithMethodData(std::move(method_data));
-
-  // unionpay and jcb are supported through basic-card. visa is supported
-  // through basic card because it was specified in basic-card in addition to
-  // supportedMethods.
-  EXPECT_TRUE(spec()->IsMethodSupportedThroughBasicCard("unionpay"));
-  EXPECT_TRUE(spec()->IsMethodSupportedThroughBasicCard("jcb"));
-  EXPECT_TRUE(spec()->IsMethodSupportedThroughBasicCard("visa"));
-  EXPECT_FALSE(spec()->IsMethodSupportedThroughBasicCard("mastercard"));
-  EXPECT_FALSE(spec()->IsMethodSupportedThroughBasicCard("diners"));
-  EXPECT_FALSE(spec()->IsMethodSupportedThroughBasicCard("garbage"));
-}
-
-// Order matters when parsing the supportedMethods and basic card networks.
-TEST_F(PaymentRequestSpecTest,
-       IsMethodSupportedThroughBasicCard_DifferentOrder) {
-  mojom::PaymentMethodDataPtr entry1 = mojom::PaymentMethodData::New();
-  entry1->supported_method = "basic-card";
-  entry1->supported_networks.push_back(mojom::BasicCardNetwork::UNIONPAY);
-  entry1->supported_networks.push_back(mojom::BasicCardNetwork::VISA);
-  mojom::PaymentMethodDataPtr entry2 = mojom::PaymentMethodData::New();
-  entry2->supported_method = "visa";
-  mojom::PaymentMethodDataPtr entry3 = mojom::PaymentMethodData::New();
-  entry3->supported_method = "unionpay";
-  mojom::PaymentMethodDataPtr entry4 = mojom::PaymentMethodData::New();
-  entry4->supported_method = "jcb";
-
-  std::vector<mojom::PaymentMethodDataPtr> method_data;
-  method_data.push_back(std::move(entry1));
-  method_data.push_back(std::move(entry2));
-  method_data.push_back(std::move(entry3));
-  method_data.push_back(std::move(entry4));
-
-  RecreateSpecWithMethodData(std::move(method_data));
-
-  // unionpay and visa are supported through basic-card; they were specified
-  // first as basic card networks.
-  EXPECT_TRUE(spec()->IsMethodSupportedThroughBasicCard("unionpay"));
-  EXPECT_TRUE(spec()->IsMethodSupportedThroughBasicCard("visa"));
-  // "jcb" is NOT supported through basic card; it was specified directly
-  // as a supportedMethods
-  EXPECT_FALSE(spec()->IsMethodSupportedThroughBasicCard("jcb"));
-}
-
-// Test that parsing supported methods (with invalid values and duplicates)
-// works as expected.
-TEST_F(PaymentRequestSpecTest, SupportedMethods) {
-  mojom::PaymentMethodDataPtr entry1 = mojom::PaymentMethodData::New();
-  entry1->supported_method = "basic-card";
-  entry1->supported_networks.push_back(mojom::BasicCardNetwork::VISA);
-  mojom::PaymentMethodDataPtr entry2 = mojom::PaymentMethodData::New();
-  entry2->supported_method = "mastercard";
-  mojom::PaymentMethodDataPtr entry3 = mojom::PaymentMethodData::New();
-  entry3->supported_method = "invalid";
-  mojom::PaymentMethodDataPtr entry4 = mojom::PaymentMethodData::New();
-  entry4->supported_method = "";
-  mojom::PaymentMethodDataPtr entry5 = mojom::PaymentMethodData::New();
-  entry5->supported_method = "basic-card";
-  entry5->supported_networks.push_back(mojom::BasicCardNetwork::VISA);
-  std::vector<mojom::PaymentMethodDataPtr> method_data;
-  method_data.push_back(std::move(entry1));
-  method_data.push_back(std::move(entry2));
-  method_data.push_back(std::move(entry3));
-  method_data.push_back(std::move(entry4));
-  method_data.push_back(std::move(entry5));
-
-  RecreateSpecWithMethodData(std::move(method_data));
-
-  // Card networks are not valid |supported_method| so only 'visa' is left.
-  EXPECT_THAT(spec()->supported_card_networks(), ElementsAre("visa"));
-}
-
-// Test that parsing supported methods in different method data entries fails as
-// soon as one entry doesn't specify anything in supported_methods.
-TEST_F(PaymentRequestSpecTest, SupportedMethods_MultipleEntries_OneEmpty) {
-  // First entry is valid.
-  mojom::PaymentMethodDataPtr entry = mojom::PaymentMethodData::New();
-  entry->supported_method = "basic-card";
-  entry->supported_networks.push_back(mojom::BasicCardNetwork::VISA);
-  // Empty method data entry.
-  mojom::PaymentMethodDataPtr entry2 = mojom::PaymentMethodData::New();
-  // Valid one follows the empty.
-  mojom::PaymentMethodDataPtr entry3 = mojom::PaymentMethodData::New();
-  entry3->supported_method = "mastercard";
-
-  std::vector<mojom::PaymentMethodDataPtr> method_data;
-  method_data.push_back(std::move(entry));
-  method_data.push_back(std::move(entry2));
-  method_data.push_back(std::move(entry3));
-
-  RecreateSpecWithMethodData(std::move(method_data));
-
-  // Visa was parsed, but not mastercard.
-  EXPECT_EQ(1u, spec()->supported_card_networks().size());
-  EXPECT_EQ("visa", spec()->supported_card_networks()[0]);
-}
-
-// Test that only specifying basic-card means that all are supported.
-TEST_F(PaymentRequestSpecTest, SupportedMethods_OnlyBasicCard) {
-  mojom::PaymentMethodDataPtr entry = mojom::PaymentMethodData::New();
-  entry->supported_method = "basic-card";
-  std::vector<mojom::PaymentMethodDataPtr> method_data;
-  method_data.push_back(std::move(entry));
-
-  RecreateSpecWithMethodData(std::move(method_data));
-
-  // All of the basic card networks are supported.
-  EXPECT_EQ(8u, spec()->supported_card_networks().size());
-  EXPECT_EQ("amex", spec()->supported_card_networks()[0]);
-  EXPECT_EQ("diners", spec()->supported_card_networks()[1]);
-  EXPECT_EQ("discover", spec()->supported_card_networks()[2]);
-  EXPECT_EQ("jcb", spec()->supported_card_networks()[3]);
-  EXPECT_EQ("mastercard", spec()->supported_card_networks()[4]);
-  EXPECT_EQ("mir", spec()->supported_card_networks()[5]);
-  EXPECT_EQ("unionpay", spec()->supported_card_networks()[6]);
-  EXPECT_EQ("visa", spec()->supported_card_networks()[7]);
-}
-
-// Test that specifying a method AND basic-card means that all are supported,
-// but with the method as first.
-TEST_F(PaymentRequestSpecTest, SupportedMethods_BasicCard_WithSpecificMethod) {
-  mojom::PaymentMethodDataPtr entry1 = mojom::PaymentMethodData::New();
-  entry1->supported_method = "jcb";
-  mojom::PaymentMethodDataPtr entry2 = mojom::PaymentMethodData::New();
-  entry2->supported_method = "basic-card";
-  std::vector<mojom::PaymentMethodDataPtr> method_data;
-  method_data.push_back(std::move(entry1));
-  method_data.push_back(std::move(entry2));
-
-  RecreateSpecWithMethodData(std::move(method_data));
-
-  // All of the basic card networks are supported, but JCB is first because it
-  // was specified first.
-  EXPECT_EQ(8u, spec()->supported_card_networks().size());
-  EXPECT_THAT(spec()->supported_card_networks(),
-              UnorderedElementsAre("jcb", "amex", "diners", "discover",
-                                   "mastercard", "mir", "unionpay", "visa"));
-}
-
-// Test that specifying basic-card with a supported network (with previous
-// supported methods) will work as expected
-TEST_F(PaymentRequestSpecTest, SupportedMethods_BasicCard_Overlap) {
-  mojom::PaymentMethodDataPtr entry1 = mojom::PaymentMethodData::New();
-  entry1->supported_method = "mastercard";
-  mojom::PaymentMethodDataPtr entry2 = mojom::PaymentMethodData::New();
-  entry2->supported_method = "visa";
-  // Visa and mastercard are repeated, but in reverse order.
-  mojom::PaymentMethodDataPtr entry3 = mojom::PaymentMethodData::New();
-  entry3->supported_method = "basic-card";
-  entry3->supported_networks.push_back(mojom::BasicCardNetwork::VISA);
-  entry3->supported_networks.push_back(mojom::BasicCardNetwork::MASTERCARD);
-  entry3->supported_networks.push_back(mojom::BasicCardNetwork::UNIONPAY);
-  std::vector<mojom::PaymentMethodDataPtr> method_data;
-  method_data.push_back(std::move(entry1));
-  method_data.push_back(std::move(entry2));
-  method_data.push_back(std::move(entry3));
-
-  RecreateSpecWithMethodData(std::move(method_data));
-
-  EXPECT_EQ(3u, spec()->supported_card_networks().size());
-  EXPECT_THAT(spec()->supported_card_networks(),
-              ElementsAre("visa", "mastercard", "unionpay"));
-}
-
-// Test that specifying basic-card with supported networks after specifying
-// some methods
-TEST_F(PaymentRequestSpecTest,
-       SupportedMethods_BasicCard_WithSupportedNetworks) {
-  mojom::PaymentMethodDataPtr entry = mojom::PaymentMethodData::New();
-  entry->supported_method = "basic-card";
-  entry->supported_networks.push_back(mojom::BasicCardNetwork::VISA);
-  entry->supported_networks.push_back(mojom::BasicCardNetwork::UNIONPAY);
-  std::vector<mojom::PaymentMethodDataPtr> method_data;
-  method_data.push_back(std::move(entry));
-
-  RecreateSpecWithMethodData(std::move(method_data));
-
-  // Only the specified networks are supported.
-  EXPECT_EQ(2u, spec()->supported_card_networks().size());
-  EXPECT_EQ("visa", spec()->supported_card_networks()[0]);
-  EXPECT_EQ("unionpay", spec()->supported_card_networks()[1]);
-}
 
 // Test that the last shipping option is selected, even in the case of
 // updateWith.
@@ -524,5 +312,4 @@ TEST_F(PaymentRequestSpecTest, RetryWithPayerErrors) {
 
   EXPECT_TRUE(spec()->has_payer_error());
 }
-
 }  // namespace payments

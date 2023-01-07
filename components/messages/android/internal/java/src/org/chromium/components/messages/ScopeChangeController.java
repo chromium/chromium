@@ -1,23 +1,29 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.messages;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ActivityState;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.Visibility;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
+import org.chromium.url.GURL;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
- * Observe the webContents and notify queue manager of proper scope changes.
+ * Observe the webContents to notify queue manager of proper scope changes of {@link
+ * MessageScopeType#NAVIGATION} and {@link MessageScopeType#WEB_CONTENTS}. Observe the windowAndroid
+ * to notify queue manager of proper scope changes of {@link MessageScopeType#WINDOW}.
  */
 class ScopeChangeController {
     /**
@@ -45,9 +51,9 @@ class ScopeChangeController {
      */
     void firstMessageEnqueued(ScopeKey scopeKey) {
         assert !mObservers.containsKey(scopeKey) : "This scope key has already been observed.";
-        ScopeObserver observer = scopeKey.scopeType == MessageScopeType.NAVIGATION
-                ? new NavigationScopeObserver(mDelegate, scopeKey)
-                : new WindowScopeObserver(mDelegate, scopeKey);
+        ScopeObserver observer = scopeKey.scopeType == MessageScopeType.WINDOW
+                ? new WindowScopeObserver(mDelegate, scopeKey)
+                : new NavigationWebContentsScopeObserver(mDelegate, scopeKey);
         mObservers.put(scopeKey, observer);
     }
 
@@ -60,54 +66,68 @@ class ScopeChangeController {
         observer.destroy();
     }
 
-    static class NavigationScopeObserver extends WebContentsObserver implements ScopeObserver {
+    /**
+     * This handles both navigation type and webContents type. Only navigation type
+     * will destroy scopes on page navigation.
+     */
+    static class NavigationWebContentsScopeObserver
+            extends WebContentsObserver implements ScopeObserver {
         private final Delegate mDelegate;
         private final ScopeKey mScopeKey;
+        // TODO(crbug.com/1340572): Replace GURL with Origin.
+        private GURL mLastVisitedUrl;
 
-        public NavigationScopeObserver(Delegate delegate, ScopeKey scopeKey) {
+        public NavigationWebContentsScopeObserver(Delegate delegate, ScopeKey scopeKey) {
             super(scopeKey.webContents);
             mDelegate = delegate;
             mScopeKey = scopeKey;
-            mDelegate.onScopeChange(new MessageScopeChange(mScopeKey.scopeType, scopeKey,
-                    scopeKey.webContents.getVisibility() == Visibility.VISIBLE
-                            ? ChangeType.ACTIVE
-                            : ChangeType.INACTIVE));
+            WebContents webContents = scopeKey.webContents;
+            int changeType =
+                    webContents != null && webContents.getVisibility() == Visibility.VISIBLE
+                    ? ChangeType.ACTIVE
+                    : ChangeType.INACTIVE;
+            mDelegate.onScopeChange(
+                    new MessageScopeChange(mScopeKey.scopeType, scopeKey, changeType));
         }
 
         @Override
         public void wasShown() {
-            super.wasShown();
             mDelegate.onScopeChange(
                     new MessageScopeChange(mScopeKey.scopeType, mScopeKey, ChangeType.ACTIVE));
         }
 
         @Override
         public void wasHidden() {
-            super.wasHidden();
             mDelegate.onScopeChange(
                     new MessageScopeChange(mScopeKey.scopeType, mScopeKey, ChangeType.INACTIVE));
         }
 
         @Override
-        public void didFinishNavigation(NavigationHandle navigation) {
-            if (mScopeKey.scopeType != MessageScopeType.NAVIGATION) {
-                return;
-            }
-            super.didFinishNavigation(navigation);
-            // TODO(crbug.com/1184084): Investigate more on:
-            // 1. whether entry id should be checked to ensure entry id is not changed
-            // 2. whether to set ingore_next_reload_ like infobars to ignore non-user
-            // triggered reload
-            if (!navigation.hasCommitted() || !navigation.isInMainFrame()
-                    || navigation.isSameDocument()) {
+        public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigationHandle) {
+            if (mScopeKey.scopeType != MessageScopeType.NAVIGATION
+                    && mScopeKey.scopeType != MessageScopeType.ORIGIN) {
                 return;
             }
 
-            int transition = navigation.pageTransition();
-            if ((transition & PageTransition.RELOAD) != PageTransition.RELOAD
-                    && (transition & PageTransition.IS_REDIRECT_MASK) == 0) {
-                destroy();
+            if (navigationHandle.isSameDocument() || !navigationHandle.hasCommitted()
+                    || navigationHandle.isReload()) {
+                return;
             }
+
+            if (mScopeKey.scopeType == MessageScopeType.ORIGIN) {
+                if (mLastVisitedUrl == null
+                        || originEquals(mLastVisitedUrl, navigationHandle.getUrl())) {
+                    mLastVisitedUrl = navigationHandle.getUrl();
+                    return;
+                }
+                mLastVisitedUrl = navigationHandle.getUrl();
+            }
+            destroy();
+        }
+
+        @Override
+        public void didFinishNavigationNoop(NavigationHandle navigationHandle) {
+            if (!navigationHandle.isInPrimaryMainFrame()) return;
         }
 
         @Override
@@ -116,6 +136,22 @@ class ScopeChangeController {
             // #destroy will remove the observers.
             mDelegate.onScopeChange(
                     new MessageScopeChange(mScopeKey.scopeType, mScopeKey, ChangeType.DESTROY));
+        }
+
+        @Override
+        public void onTopLevelNativeWindowChanged(@Nullable WindowAndroid windowAndroid) {
+            super.onTopLevelNativeWindowChanged(windowAndroid);
+            // Dismiss the message if it is moved to another window.
+            // TODO(crbug.com/1205392): This is a temporary solution; remove this when
+            // tab-reparent is fully supported.
+            destroy();
+        }
+
+        private boolean originEquals(GURL url1, GURL url2) {
+            if (url1 == null || url2 == null) return false;
+            return Objects.equals(url1.getScheme(), url2.getScheme())
+                    && Objects.equals(url1.getHost(), url2.getHost())
+                    && Objects.equals(url1.getPort(), url2.getPort());
         }
     }
 
@@ -126,7 +162,10 @@ class ScopeChangeController {
         public WindowScopeObserver(Delegate delegate, ScopeKey scopeKey) {
             mDelegate = delegate;
             mScopeKey = scopeKey;
-            WindowAndroid windowAndroid = scopeKey.webContents.getTopLevelNativeWindow();
+            assert scopeKey.scopeType
+                    == MessageScopeType.WINDOW
+                : "WindowScopeObserver should only monitor window scope events.";
+            WindowAndroid windowAndroid = scopeKey.windowAndroid;
             windowAndroid.addActivityStateObserver(this);
             mDelegate.onScopeChange(new MessageScopeChange(scopeKey.scopeType, scopeKey,
                     windowAndroid.getActivityState() == ActivityState.RESUMED
@@ -154,7 +193,7 @@ class ScopeChangeController {
 
         @Override
         public void destroy() {
-            mScopeKey.webContents.getTopLevelNativeWindow().removeActivityStateObserver(this);
+            mScopeKey.windowAndroid.removeActivityStateObserver(this);
         }
     }
 }

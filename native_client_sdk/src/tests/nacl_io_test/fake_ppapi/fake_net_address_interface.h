@@ -1,9 +1,9 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef TESTS_NACL_IO_TEST_FAKE_NET_ADDRESS_INTERFACE_H_
-#define TESTS_NACL_IO_TEST_FAKE_NET_ADDRESS_INTERFACE_H_
+#ifndef TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_NET_ADDRESS_INTERFACE_H_
+#define TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_NET_ADDRESS_INTERFACE_H_
 
 #include <ppapi/c/ppb_host_resolver.h>
 
@@ -16,6 +16,9 @@ class FakeNetAddressInterface : public nacl_io::NetAddressInterface {
  public:
   explicit FakeNetAddressInterface(FakePepperInterface* ppapi);
 
+  FakeNetAddressInterface(const FakeNetAddressInterface&) = delete;
+  FakeNetAddressInterface& operator=(const FakeNetAddressInterface&) = delete;
+
   virtual PP_Resource CreateFromIPv4Address(PP_Instance, PP_NetAddress_IPv4*);
   virtual PP_Resource CreateFromIPv6Address(PP_Instance, PP_NetAddress_IPv6*);
   virtual PP_Bool IsNetAddress(PP_Resource);
@@ -26,8 +29,6 @@ class FakeNetAddressInterface : public nacl_io::NetAddressInterface {
 
  private:
   FakePepperInterface* ppapi_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeNetAddressInterface);
 };
 
-#endif  // TESTS_NACL_IO_TEST_FAKE_NET_ADDRESS_INTERFACE_H_
+#endif  // TESTS_NACL_IO_TEST_FAKE_PPAPI_FAKE_NET_ADDRESS_INTERFACE_H_

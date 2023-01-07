@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,9 @@
 #include <utility>
 
 #include "base/debug/leak_annotations.h"
+#include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_allocator_dump.h"
@@ -32,8 +32,8 @@ class DomStorageDatabaseEnv : public leveldb_env::ChromiumEnv {
   DomStorageDatabaseEnv()
       : ChromiumEnv("ChromiumEnv.StorageService", CreateFilesystemProxy()) {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(DomStorageDatabaseEnv);
+  DomStorageDatabaseEnv(const DomStorageDatabaseEnv&) = delete;
+  DomStorageDatabaseEnv& operator=(const DomStorageDatabaseEnv&) = delete;
 };
 
 DomStorageDatabaseEnv* GetDomStorageDatabaseEnv() {
@@ -181,7 +181,7 @@ DomStorageDatabase::DomStorageDatabase(
     const base::FilePath& directory,
     const std::string& name,
     const leveldb_env::Options& options,
-    const base::Optional<base::trace_event::MemoryAllocatorDumpGuid>&
+    const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     StatusCallback callback)
@@ -194,7 +194,7 @@ DomStorageDatabase::DomStorageDatabase(
 
 DomStorageDatabase::DomStorageDatabase(
     const std::string& tracking_name,
-    const base::Optional<base::trace_event::MemoryAllocatorDumpGuid>&
+    const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     StatusCallback callback)
@@ -209,7 +209,7 @@ DomStorageDatabase::DomStorageDatabase(
     const std::string& name,
     std::unique_ptr<leveldb::Env> env,
     const leveldb_env::Options& options,
-    const base::Optional<base::trace_event::MemoryAllocatorDumpGuid>
+    const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     StatusCallback callback)
@@ -240,7 +240,7 @@ void DomStorageDatabase::OpenDirectory(
     const base::FilePath& directory,
     const std::string& name,
     const leveldb_env::Options& options,
-    const base::Optional<base::trace_event::MemoryAllocatorDumpGuid>&
+    const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     OpenCallback callback) {
@@ -253,7 +253,7 @@ void DomStorageDatabase::OpenDirectory(
 // static
 void DomStorageDatabase::OpenInMemory(
     const std::string& name,
-    const base::Optional<base::trace_event::MemoryAllocatorDumpGuid>&
+    const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     OpenCallback callback) {

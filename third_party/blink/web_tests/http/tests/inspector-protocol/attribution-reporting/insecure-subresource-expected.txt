@@ -1,0 +1,12 @@
+Test that registering a trigger using a subresource request to an insecure reporting origin triggers an issue.
+Issue reported: {
+    code : AttributionReportingIssue
+    details : {
+        attributionReportingIssueDetails : {
+            invalidParameter : http://devtools.test:8000
+            request : <object>
+            violationType : UntrustworthyReportingOrigin
+        }
+    }
+}
+

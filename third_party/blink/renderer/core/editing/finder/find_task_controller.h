@@ -1,17 +1,15 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_FIND_TASK_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_FINDER_FIND_TASK_CONTROLLER_H_
 
+#include "base/time/time.h"
 #include "third_party/blink/public/mojom/frame/find_in_page.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool.h"
-#include "third_party/blink/renderer/platform/scheduler/common/throttling/budget_pool_controller.h"
-#include "third_party/blink/renderer/platform/scheduler/common/throttling/cpu_time_budget_pool.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -87,6 +85,8 @@ class CORE_EXPORT FindTaskController final
                   const WebString& search_text_,
                   mojom::blink::FindOptionsPtr options_);
 
+  int GetMatchYieldCheckInterval() const;
+
  private:
   void RequestFindTask(int identifier,
                        const WebString& search_text,
@@ -143,6 +143,8 @@ class CORE_EXPORT FindTaskController final
   // been searched and returned 0 results, we don't need to search that frame
   // again if the user is just adding to the search (making it more specific).
   WTF::String last_search_string_;
+
+  int match_yield_check_interval_;
 };
 
 }  // namespace blink

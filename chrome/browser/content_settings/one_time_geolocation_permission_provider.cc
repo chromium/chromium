@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,10 +29,12 @@ class OneTimeRuleIterator : public content_settings::RuleIterator {
   content_settings::Rule Next() override {
     content_settings::Rule rule(
         begin_iterator_->first, ContentSettingsPattern::Wildcard(),
-        base::Value::FromUniquePtrValue(
-            content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
-        begin_iterator_->second + base::TimeDelta::FromDays(1),
-        content_settings::SessionModel::OneTime);
+        content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
+        {
+            .last_modified = begin_iterator_->second,
+            .expiration = begin_iterator_->second + base::Days(1),
+            .session_model = content_settings::SessionModel::OneTime,
+        });
     begin_iterator_++;
     return rule;
   }
@@ -69,7 +71,7 @@ bool OneTimeGeolocationPermissionProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_settings_type,
-    std::unique_ptr<base::Value>&& value,
+    base::Value&& value,
     const content_settings::ContentSettingConstraints& constraints) {
   if (content_settings_type != ContentSettingsType::GEOLOCATION)
     return false;
@@ -82,7 +84,7 @@ bool OneTimeGeolocationPermissionProvider::SetWebsiteSetting(
       grants_with_open_tabs_.erase(matching_iterator);
     return false;
   }
-  DCHECK_EQ(content_settings::ValueToContentSetting(value.get()),
+  DCHECK_EQ(content_settings::ValueToContentSetting(value),
             CONTENT_SETTING_ALLOW);
   grants_with_open_tabs_[primary_pattern] = base::Time::Now();
   // We need to handle transitions from Allow to Allow Once gracefully.
@@ -92,21 +94,12 @@ bool OneTimeGeolocationPermissionProvider::SetWebsiteSetting(
   return false;
 }
 
-base::Time OneTimeGeolocationPermissionProvider::GetWebsiteSettingLastModified(
+bool OneTimeGeolocationPermissionProvider::UpdateLastVisitTime(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
-  if (content_type != ContentSettingsType::GEOLOCATION)
-    return base::Time();
-  std::map<ContentSettingsPattern, base::Time>::const_iterator
-      matching_iterator = grants_with_open_tabs_.find(primary_pattern);
-  if (matching_iterator == grants_with_open_tabs_.end())
-    return base::Time();
-  if (matching_iterator->second + base::TimeDelta::FromDays(1) <
-      base::Time::Now()) {
-    return base::Time();
-  }
-  return matching_iterator->second;
+  // LastVisit time is not tracked for one-time permissions.
+  return false;
 }
 
 void OneTimeGeolocationPermissionProvider::ClearAllContentSettingsRules(

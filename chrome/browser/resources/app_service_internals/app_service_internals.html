@@ -1,0 +1,41 @@
+<h1>App Service Internals</h1>
+
+<button on-click="save_">Save as .txt</button>
+
+<ul>
+  <li>
+    <a href="#app-list">App List</a>
+    <ul>
+      <template is="dom-repeat" items="[[appList_]]">
+        <li><a href="#app-[[item.id]]">[[item.name]]</a></li>
+      </template>
+    </ul>
+  </li>
+  <li><a href="#preferred-apps">Preferred Apps</a></li>
+  <ul>
+    <template is="dom-repeat" items="[[preferredAppList_]]">
+      <li><a href="#preferred-app-[[item.id]]">[[item.name]]</a></li>
+    </template>
+  </ul>
+</ul>
+
+<section>
+  <h2 id="app-list">App List</h2>
+
+  <template is="dom-repeat" items="[[appList_]]">
+    <div id="app-[[item.id]]">
+      <h3>[[item.name]]</h3>
+      <img src="chrome://app-icon/[[item.id]]/128">
+      <pre>[[item.debugInfo]]</pre>
+    </div>
+  </template>
+
+  <h2 id="preferred-apps">Preferred Apps</h2>
+
+  <template is="dom-repeat" items="[[preferredAppList_]]">
+    <div id="preferred-app-[[item.id]]">
+      <h3>[[item.name]]</h3>
+      <pre>[[item.preferredFilters]]</pre>
+    </div>
+  </template>
+</section>

@@ -1,13 +1,11 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_BASE_USER_ACTIVITY_USER_ACTIVITY_DETECTOR_H_
 #define UI_BASE_USER_ACTIVITY_USER_ACTIVITY_DETECTOR_H_
 
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"
@@ -29,6 +27,10 @@ class COMPONENT_EXPORT(UI_BASE) UserActivityDetector
   static const int kDisplayPowerChangeIgnoreMouseMs;
 
   UserActivityDetector();
+
+  UserActivityDetector(const UserActivityDetector&) = delete;
+  UserActivityDetector& operator=(const UserActivityDetector&) = delete;
+
   ~UserActivityDetector() override;
 
   // Returns the UserActivityDetector instance if one was created.
@@ -38,6 +40,9 @@ class COMPONENT_EXPORT(UI_BASE) UserActivityDetector
   std::string last_activity_name() const { return last_activity_name_; }
 
   void set_now_for_test(base::TimeTicks now) { now_for_test_ = now; }
+  void set_last_activity_time_for_test(base::TimeTicks value) {
+    last_activity_time_ = value;
+  }
 
   bool HasObserver(const UserActivityObserver* observer) const;
   void AddObserver(UserActivityObserver* observer);
@@ -87,8 +92,6 @@ class COMPONENT_EXPORT(UI_BASE) UserActivityDetector
   // is to avoid reporting mouse events that occur when displays are turned
   // on or off as user activity.
   base::TimeTicks honor_mouse_events_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserActivityDetector);
 };
 
 }  // namespace ui

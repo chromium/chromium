@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.webapps.WebApkIconNameUpdateCustomView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:paddingTop="16dp"
+    android:gravity="center|top"
+    android:orientation="horizontal">
+
+    <!-- The icon, name and short_name as it is before updating. -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/app_icon_old"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:visibility="gone"
+            android:contentDescription="@string/webapp_update_current_icon" />
+
+        <TextView
+            android:id="@+id/short_app_name_old"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:visibility="gone"
+            android:maxLines="5"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
+
+        <TextView
+            android:id="@+id/app_name_old"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:maxLines="5"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="20dp"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/ic_forward_arrow_black_24dp" />
+
+    <!-- The icon, name and short_name as it will be after the update. -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <ImageView
+            android:id="@+id/app_icon_new"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:visibility="gone"
+            android:contentDescription="@string/webapp_update_new_icon"/>
+
+        <TextView
+            android:id="@+id/short_app_name_new"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:visibility="gone"
+            android:maxLines="5"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Primary" />
+
+        <TextView
+            android:id="@+id/app_name_new"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:maxLines="5"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
+    </LinearLayout>
+</org.chromium.chrome.browser.webapps.WebApkIconNameUpdateCustomView>

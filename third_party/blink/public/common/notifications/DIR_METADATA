@@ -1,5 +1,2 @@
-monorail {
-  component: "UI>Notifications"
-}
+mixins: "//content/browser/notifications/COMMON_METADATA"
 
-team_email: "platform-capabilities@chromium.org"

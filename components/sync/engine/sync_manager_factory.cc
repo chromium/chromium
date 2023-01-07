@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ SyncManagerFactory::SyncManagerFactory(
     network::NetworkConnectionTracker* network_connection_tracker)
     : network_connection_tracker_(network_connection_tracker) {}
 
-SyncManagerFactory::~SyncManagerFactory() {}
+SyncManagerFactory::~SyncManagerFactory() = default;
 
 std::unique_ptr<SyncManager> SyncManagerFactory::CreateSyncManager(
     const std::string& name) {

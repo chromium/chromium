@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,77 +9,82 @@
 #include <memory>
 #include <vector>
 
-#include "base/rand_util.h"
-#include "base/stl_util.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
+#include "base/check_op.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/gfx/canvas.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/views/animation/animation_builder.h"
+#include "ui/views/animation/animation_sequence_block.h"
+#include "ui/views/background.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/fill_layout.h"
 
 namespace {
 
-const SkColor kBlockColor = SkColorSetRGB(225, 225, 225);
-const int kBlockSize = 64;
-
-const int kAnimationDurationInMs = 600;
-const float kAnimationOpacity[] = {0.4f, 0.8f, 0.4f};
-const float kAnimationScale[] = {0.8f, 1.0f, 0.8f};
+const base::TimeDelta kPulsingDuration = base::Milliseconds(500);
 
 void SchedulePulsingAnimation(ui::Layer* layer) {
   DCHECK(layer);
-  DCHECK_EQ(base::size(kAnimationOpacity), base::size(kAnimationScale));
-
-  std::unique_ptr<ui::LayerAnimationSequence> opacity_sequence =
-      std::make_unique<ui::LayerAnimationSequence>();
-  std::unique_ptr<ui::LayerAnimationSequence> transform_sequence =
-      std::make_unique<ui::LayerAnimationSequence>();
-
-  // The animations loop infinitely.
-  opacity_sequence->set_is_repeating(true);
-  transform_sequence->set_is_repeating(true);
-
-  const gfx::Rect local_bounds(layer->bounds().size());
-  for (size_t i = 0; i < base::size(kAnimationOpacity); ++i) {
-    opacity_sequence->AddElement(
-        ui::LayerAnimationElement::CreateOpacityElement(
-            kAnimationOpacity[i],
-            base::TimeDelta::FromMilliseconds(kAnimationDurationInMs)));
-    transform_sequence->AddElement(
-        ui::LayerAnimationElement::CreateTransformElement(
-            gfx::GetScaleTransform(local_bounds.CenterPoint(),
-                                   kAnimationScale[i]),
-            base::TimeDelta::FromMilliseconds(kAnimationDurationInMs)));
-  }
-
-  opacity_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-      ui::LayerAnimationElement::OPACITY,
-      base::TimeDelta::FromMilliseconds(kAnimationDurationInMs)));
-
-  transform_sequence->AddElement(ui::LayerAnimationElement::CreatePauseElement(
-      ui::LayerAnimationElement::TRANSFORM,
-      base::TimeDelta::FromMilliseconds(kAnimationDurationInMs)));
-
-  std::vector<ui::LayerAnimationSequence*> animations;
-  animations.push_back(opacity_sequence.release());
-  animations.push_back(transform_sequence.release());
-  layer->GetAnimator()->ScheduleTogether(animations);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Repeatedly()
+      .SetDuration(kPulsingDuration)
+      .SetOpacity(layer, 0.5f, gfx::Tween::FAST_OUT_LINEAR_IN)
+      .At(kPulsingDuration)
+      .SetDuration(kPulsingDuration)
+      .SetOpacity(layer, 1.0f, gfx::Tween::LINEAR);
 }
 
 }  // namespace
 
 namespace ash {
 
-PulsingBlockView::PulsingBlockView(const gfx::Size& size, bool start_delay) {
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
+PulsingBlockView::PulsingBlockView(const gfx::Size& size,
+                                   base::TimeDelta animation_delay)
+    : block_size_(size) {
+  views::BoxLayout* layout_manager =
+      SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  layout_manager->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
+  layout_manager->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
 
-  const int max_delay = kAnimationDurationInMs * base::size(kAnimationOpacity);
-  const int delay = start_delay ? base::RandInt(0, max_delay) : 0;
-  start_delay_timer_.Start(FROM_HERE, base::TimeDelta::FromMilliseconds(delay),
-                           this, &PulsingBlockView::OnStartDelayTimer);
+  // Stack two views for the same block. The bottom view contains the
+  // background blur, which will be visible all the time. The top view
+  // contains the color of the block, which will animate its opacity.
+  views::View* stacked_views = AddChildView(
+      views::Builder<views::View>()
+          .SetVisible(true)
+          .SetLayoutManager(std::make_unique<views::FillLayout>())
+          .AddChild(
+              views::Builder<views::View>()
+                  .CopyAddressTo(&background_color_view_)
+                  .SetEnabled(false)
+                  .SetBackground(views::CreateSolidBackground(
+                      DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+                          ? SkColorSetA(SK_ColorWHITE, 0x4D)
+                          : SkColorSetA(SK_ColorBLACK, 0x33)))
+                  .SetPreferredSize(block_size_))
+          .SetPreferredSize(block_size_)
+          .SetPaintToLayer()
+          .Build());
+
+  stacked_views->layer()->SetMasksToBounds(true);
+  stacked_views->layer()->SetBackgroundBlur(
+      ColorProvider::kBackgroundBlurSigma);
+  stacked_views->layer()->SetBackdropFilterQuality(
+      ColorProvider::kBackgroundBlurQuality);
+  const float radii = block_size_.height() / 2.0f;
+  stacked_views->layer()->SetRoundedCornerRadius({radii, radii, radii, radii});
+
+  start_delay_timer_.Start(FROM_HERE, animation_delay, this,
+                           &PulsingBlockView::OnStartDelayTimer);
 }
 
 PulsingBlockView::~PulsingBlockView() {}
@@ -89,13 +94,34 @@ const char* PulsingBlockView::GetClassName() const {
 }
 
 void PulsingBlockView::OnStartDelayTimer() {
-  SchedulePulsingAnimation(layer());
+  background_color_view_->SetPaintToLayer();
+  background_color_view_->layer()->SetFillsBoundsOpaquely(false);
+
+  SchedulePulsingAnimation(background_color_view_->layer());
 }
 
-void PulsingBlockView::OnPaint(gfx::Canvas* canvas) {
-  gfx::Rect rect(GetContentsBounds());
-  rect.ClampToCenteredSize(gfx::Size(kBlockSize, kBlockSize));
-  canvas->FillRect(rect, kBlockColor);
+void PulsingBlockView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  if (background_color_view_) {
+    background_color_view_->SetBackground(views::CreateSolidBackground(
+        DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
+            ? SkColorSetA(SK_ColorWHITE, 0x4D)
+            : SkColorSetA(SK_ColorBLACK, 0x33)));
+  }
+}
+
+bool PulsingBlockView::IsAnimating() {
+  return background_color_view_->layer() &&
+         background_color_view_->layer()->GetAnimator()->is_animating();
+}
+
+bool PulsingBlockView::FireAnimationTimerForTest() {
+  if (!start_delay_timer_.IsRunning())
+    return false;
+
+  start_delay_timer_.FireNow();
+  return true;
 }
 
 }  // namespace ash

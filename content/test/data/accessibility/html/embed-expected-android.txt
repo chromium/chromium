@@ -1,3 +1,3 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View
-++++android.view.View role_description='object'
+++++android.view.View role_description='object' disabled

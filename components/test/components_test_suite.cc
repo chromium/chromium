@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,11 +11,12 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "mojo/core/embedder/embedder.h"
 #include "services/network/public/cpp/features.h"
@@ -24,19 +25,14 @@
 #include "ui/base/ui_base_paths.h"
 #include "url/url_util.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "components/test/ios_components_test_initializer.h"
 #else
 #include "content/public/common/content_client.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/test/content_test_suite_base.h"
-#include "content/public/test/test_content_client_initializer.h"
 #include "content/public/test/unittest_test_suite.h"
 #include "ui/gl/test/gl_surface_test_support.h"
-#endif
-
-#if defined(OS_WIN)
-#include "base/win/scoped_com_initializer.h"
 #endif
 
 namespace {
@@ -67,7 +63,7 @@ class ComponentsTestSuite : public base::TestSuite {
     url::AddStandardScheme("chrome-search", url::SCHEME_WITH_HOST);
     url::AddStandardScheme("chrome-distiller", url::SCHEME_WITH_HOST);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
     gl::GLSurfaceTestSupport::InitializeOneOff();
 
     content::ForceInProcessNetworkService(true);
@@ -87,10 +83,10 @@ class ComponentsTestSuite : public base::TestSuite {
     ui::RegisterPathProvider();
 
     base::FilePath pak_path;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     base::PathService::Get(ui::DIR_RESOURCE_PAKS_ANDROID, &pak_path);
 #else
-    base::PathService::Get(base::DIR_MODULE, &pak_path);
+    base::PathService::Get(base::DIR_ASSETS, &pak_path);
 #endif
 
     base::FilePath ui_test_pak_path;
@@ -99,21 +95,17 @@ class ComponentsTestSuite : public base::TestSuite {
 
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         pak_path.AppendASCII("components_tests_resources.pak"),
-        ui::SCALE_FACTOR_NONE);
+        ui::kScaleFactorNone);
 
     ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
         kNonWildcardDomainNonPortSchemes,
-        base::size(kNonWildcardDomainNonPortSchemes));
+        std::size(kNonWildcardDomainNonPortSchemes));
   }
 
   void Shutdown() override {
     ui::ResourceBundle::CleanupSharedInstance();
     base::TestSuite::Shutdown();
   }
-
-#if defined(OS_WIN)
-  base::win::ScopedCOMInitializer com_initializer_;
-#endif
 };
 
 class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
@@ -125,47 +117,44 @@ class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
       const ComponentsUnitTestEventListener&) = delete;
   ~ComponentsUnitTestEventListener() override = default;
 
+#if BUILDFLAG(IS_IOS)
   void OnTestStart(const testing::TestInfo& test_info) override {
-#if defined(OS_IOS)
     ios_initializer_.reset(new IosComponentsTestInitializer());
-#else
-    content_initializer_.reset(new content::TestContentClientInitializer());
-#endif
   }
+#endif
 
   void OnTestEnd(const testing::TestInfo& test_info) override {
-#if defined(OS_IOS)
+    breadcrumbs::BreadcrumbManager::GetInstance().ResetForTesting();
+    breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+        .ResetForTesting();
+#if BUILDFLAG(IS_IOS)
     ios_initializer_.reset();
-#else
-    content_initializer_.reset();
 #endif
   }
 
+#if BUILDFLAG(IS_IOS)
  private:
-#if defined(OS_IOS)
   std::unique_ptr<IosComponentsTestInitializer> ios_initializer_;
-#else
-  std::unique_ptr<content::TestContentClientInitializer> content_initializer_;
 #endif
 };
 
 }  // namespace
 
 base::RunTestSuiteCallback GetLaunchCallback(int argc, char** argv) {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   auto test_suite = std::make_unique<content::UnitTestTestSuite>(
-      new ComponentsTestSuite(argc, argv));
+      new ComponentsTestSuite(argc, argv),
+      base::BindRepeating(
+          content::UnitTestTestSuite::CreateTestContentClients));
 #else
   auto test_suite = std::make_unique<ComponentsTestSuite>(argc, argv);
 #endif
 
-  // The listener will set up common test environment for all components unit
-  // tests.
   testing::TestEventListeners& listeners =
       testing::UnitTest::GetInstance()->listeners();
   listeners.Append(new ComponentsUnitTestEventListener());
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   return base::BindOnce(&content::UnitTestTestSuite::Run,
                         std::move(test_suite));
 #else

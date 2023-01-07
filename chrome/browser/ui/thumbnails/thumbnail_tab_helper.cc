@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,9 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
-#include "base/optional.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
@@ -30,10 +29,11 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scrollbar_size.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/native_theme/native_theme.h"
 
 namespace {
@@ -55,34 +55,6 @@ gfx::Size GetMinimumThumbnailSize() {
 
   return min_target_size;
 }
-
-// Manages increment/decrement of video capture state on a WebContents.
-// Acquires (if possible) on construction, releases (if acquired) on
-// destruction.
-class ScopedThumbnailCapture {
- public:
-  explicit ScopedThumbnailCapture(
-      content::WebContentsObserver* web_contents_observer)
-      : web_contents_observer_(web_contents_observer) {
-    auto* const contents = web_contents_observer->web_contents();
-    if (contents) {
-      contents->IncrementCapturerCount(gfx::Size(), /* stay_hidden */ true);
-      captured_ = true;
-    }
-  }
-
-  ~ScopedThumbnailCapture() {
-    auto* const contents = web_contents_observer_->web_contents();
-    if (captured_ && contents)
-      contents->DecrementCapturerCount(/* stay_hidden */ true);
-  }
-
- private:
-  // We track a web contents observer because it's an easy way to see if the
-  // web contents has disappeared without having to add another observer.
-  content::WebContentsObserver* const web_contents_observer_;
-  bool captured_ = false;
-};
 
 }  // anonymous namespace
 
@@ -122,7 +94,7 @@ class ThumbnailTabHelper::TabStateTracker
   // none.
   content::RenderWidgetHostView* GetView() {
     auto* const contents = web_contents();
-    return contents ? contents->GetMainFrame()
+    return contents ? contents->GetPrimaryMainFrame()
                           ->GetRenderViewHost()
                           ->GetWidget()
                           ->GetView()
@@ -131,7 +103,7 @@ class ThumbnailTabHelper::TabStateTracker
 
   // Returns true if we are capturing thumbnails from a tab and should continue
   // to do so, false if we should stop.
-  bool ShouldContinueVideoCapture() const { return scoped_capture_ != nullptr; }
+  bool ShouldContinueVideoCapture() const { return !!scoped_capture_; }
 
   // Tells our scheduling logic that a frame was received.
   void OnFrameCaptured(CaptureType capture_type) {
@@ -144,8 +116,11 @@ class ThumbnailTabHelper::TabStateTracker
 
   // ThumbnailCaptureDriver::Client:
   void RequestCapture() override {
-    if (!scoped_capture_)
-      scoped_capture_ = std::make_unique<ScopedThumbnailCapture>(this);
+    if (!scoped_capture_) {
+      scoped_capture_ = web_contents()->IncrementCapturerCount(
+          gfx::Size(), /*stay_hidden=*/true,
+          /*stay_awake=*/false);
+    }
   }
 
   void StartCapture() override {
@@ -155,7 +130,7 @@ class ThumbnailTabHelper::TabStateTracker
 
   void StopCapture() override {
     thumbnail_tab_helper_->StopVideoCapture();
-    scoped_capture_.reset();
+    scoped_capture_.RunAndReset();
   }
 
   // content::WebContentsObserver:
@@ -172,7 +147,8 @@ class ThumbnailTabHelper::TabStateTracker
 
   void RenderViewReady() override { capture_driver_.SetCanCapture(true); }
 
-  void RenderProcessGone(base::TerminationStatus status) override {
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override {
     // TODO(crbug.com/1073141): determine if there are other ways to
     // lose the view.
     capture_driver_.SetCanCapture(false);
@@ -200,7 +176,7 @@ class ThumbnailTabHelper::TabStateTracker
     capture_driver_.UpdatePageReadiness(readiness);
   }
 
-  ThumbnailTabHelper* const thumbnail_tab_helper_;
+  const raw_ptr<ThumbnailTabHelper> thumbnail_tab_helper_;
 
   ThumbnailCaptureDriver capture_driver_{
       this, &thumbnail_tab_helper_->GetScheduler()};
@@ -212,15 +188,15 @@ class ThumbnailTabHelper::TabStateTracker
   // Where we are in the page lifecycle.
   CaptureReadinesss page_readiness_ = CaptureReadinesss::kNotReady;
 
-  // Scoped request for video capture. Ensures we always decrement the counter
-  // once per increment.
-  std::unique_ptr<ScopedThumbnailCapture> scoped_capture_;
+  // Scoped request for video capture.
+  base::ScopedClosureRunner scoped_capture_;
 };
 
 // ThumbnailTabHelper ----------------------------------------------------
 
 ThumbnailTabHelper::ThumbnailTabHelper(content::WebContents* contents)
-    : state_(std::make_unique<TabStateTracker>(this, contents)),
+    : content::WebContentsUserData<ThumbnailTabHelper>(*contents),
+      state_(std::make_unique<TabStateTracker>(this, contents)),
       background_capturer_(std::make_unique<BackgroundThumbnailVideoCapturer>(
           contents,
           base::BindRepeating(
@@ -230,14 +206,6 @@ ThumbnailTabHelper::ThumbnailTabHelper(content::WebContents* contents)
 
 ThumbnailTabHelper::~ThumbnailTabHelper() {
   StopVideoCapture();
-}
-
-// Called when a thumbnail is published to observers. Records what
-// method was used to capture the thumbnail.
-//
-// static
-void ThumbnailTabHelper::RecordCaptureType(CaptureType type) {
-  UMA_HISTOGRAM_ENUMERATION("Tab.Preview.CaptureType", type);
 }
 
 // static
@@ -278,9 +246,8 @@ void ThumbnailTabHelper::StoreThumbnailForTabSwitch(base::TimeTicks start_time,
                                                     const SkBitmap& bitmap) {
   UMA_HISTOGRAM_CUSTOM_TIMES("Tab.Preview.TimeToStoreAfterTabSwitch",
                              base::TimeTicks::Now() - start_time,
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromSeconds(1), 50);
-  StoreThumbnail(CaptureType::kCopyFromView, bitmap, base::nullopt);
+                             base::Milliseconds(1), base::Seconds(1), 50);
+  StoreThumbnail(CaptureType::kCopyFromView, bitmap, absl::nullopt);
 }
 
 void ThumbnailTabHelper::StoreThumbnailForBackgroundCapture(
@@ -291,7 +258,7 @@ void ThumbnailTabHelper::StoreThumbnailForBackgroundCapture(
 
 void ThumbnailTabHelper::StoreThumbnail(CaptureType type,
                                         const SkBitmap& bitmap,
-                                        base::Optional<uint64_t> frame_id) {
+                                        absl::optional<uint64_t> frame_id) {
   // Failed requests will return an empty bitmap. In tests this can be triggered
   // on threads other than the UI thread.
   if (bitmap.drawsNothing())
@@ -299,7 +266,6 @@ void ThumbnailTabHelper::StoreThumbnail(CaptureType type,
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  RecordCaptureType(type);
   state_->OnFrameCaptured(type);
   thumbnail_->AssignSkBitmap(bitmap, frame_id);
 }
@@ -374,10 +340,11 @@ ThumbnailCaptureInfo ThumbnailTabHelper::GetInitialCaptureInfo(
   // Calculate the target size to be the smallest size which meets the minimum
   // requirements but has the same aspect ratio as the source (with or without
   // scrollbars).
-  const float width_ratio =
-      float{capture_info.copy_rect.width()} / min_target_size.width();
+  const float width_ratio = static_cast<float>(capture_info.copy_rect.width()) /
+                            min_target_size.width();
   const float height_ratio =
-      float{capture_info.copy_rect.height()} / min_target_size.height();
+      static_cast<float>(capture_info.copy_rect.height()) /
+      min_target_size.height();
   const float scale_ratio = std::min(width_ratio, height_ratio);
   capture_info.target_size =
       scale_ratio <= 1.0f
@@ -388,4 +355,4 @@ ThumbnailCaptureInfo ThumbnailTabHelper::GetInitialCaptureInfo(
   return capture_info;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ThumbnailTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ThumbnailTabHelper);

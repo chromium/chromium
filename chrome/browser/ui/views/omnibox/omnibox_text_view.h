@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,12 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_result_view.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/font_list.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -38,11 +39,10 @@ class OmniboxTextView : public views::View {
   int GetHeightForWidth(int width) const override;
   void OnPaint(gfx::Canvas* canvas) override;
 
-  // Applies given part's theme color to underlying render text. Using
-  // OmniboxPart::RESULTS_TEXT_DIMMED gives the gray used by Dim() in the past.
-  // This is called Apply* instead of Set* because the only state kept is in
-  // render_text, so call this after setting text with methods below.
-  void ApplyTextColor(OmniboxPart part);
+  // Applies given theme color to underlying render text. This is called Apply*
+  // instead of Set* because the only state kept is in render_text, so call this
+  // after setting text with methods below.
+  void ApplyTextColor(ui::ColorId id);
 
   // Returns the render text, or an empty string if there is none.
   const std::u16string& GetText() const;
@@ -84,7 +84,7 @@ class OmniboxTextView : public views::View {
   void OnStyleChanged();
 
   // To get color values.
-  OmniboxResultView* result_view_;
+  raw_ptr<OmniboxResultView> result_view_;
 
   // Font settings for this view.
   int font_height_ = 0;

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -102,7 +102,7 @@ public class GroupCardLabelAdder implements ListConsumer {
         }
 
         Pair<Date, String> dateAndDomain = getDateAndDomainForItem(candidateCardItems.get(0));
-        String url = ((ListItem.OfflineItemListItem) candidateCardItems.get(0)).item.pageUrl;
+        String url = ((ListItem.OfflineItemListItem) candidateCardItems.get(0)).item.url.getSpec();
         mCardPaginator.initializeEntry(dateAndDomain);
 
         // Add the card header, and the divider above it.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,12 +17,12 @@ typedef NS_ENUM(NSInteger, CopiedContentType) {
 };
 
 // View to show and allow opening of the copied URL. Shows a button with the
-// |copiedURLString| if it has been set. When tapped, |actionSelector| in
-// |target| is called. If no |copiedURLString| was set, the button is replaced
+// `copiedURLString` if it has been set. When tapped, `actionSelector` in
+// `target` is called. If no `copiedURLString` was set, the button is replaced
 // by a hairline separation and placeholder text.
 @interface CopiedContentView : HighlightButton
 
-// Designated initializer, creates the copiedURLView with a |target| to open the
+// Designated initializer, creates the copiedURLView with a `target` to open the
 // URL.
 - (instancetype)initWithActionTarget:(id)target
                       actionSelector:(SEL)actionSelector

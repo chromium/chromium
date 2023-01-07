@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ int ScannerController::ScanOnly() {
   // Make sure the scanning process gets completed in a reasonable amount of
   // time, otherwise log it and terminate the process.
   base::TimeDelta watchdog_timeout =
-      base::TimeDelta::FromSeconds(watchdog_timeout_in_seconds_);
+      base::Seconds(watchdog_timeout_in_seconds_);
 
   Settings* settings = Settings::GetInstance();
   if (settings->scanning_timeout_overridden())

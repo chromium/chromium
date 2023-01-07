@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "net/base/io_buffer.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
-#include "url/origin.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -20,12 +20,12 @@ const int CacheStorageBlobToDiskCache::kBufferSize = 1024 * 512;
 
 CacheStorageBlobToDiskCache::CacheStorageBlobToDiskCache(
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-    const url::Origin& origin)
+    const blink::StorageKey& storage_key)
     : handle_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                       base::SequencedTaskRunnerHandle::Get()),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
-      origin_(origin) {}
+      storage_key_(storage_key) {}
 
 CacheStorageBlobToDiskCache::~CacheStorageBlobToDiskCache() = default;
 
@@ -94,7 +94,7 @@ void CacheStorageBlobToDiskCache::ReadFromBlob() {
 void CacheStorageBlobToDiskCache::DidWriteDataToEntry(int expected_bytes,
                                                       int rv) {
   if (rv != expected_bytes) {
-    quota_manager_proxy_->NotifyWriteFailed(origin_);
+    quota_manager_proxy_->NotifyWriteFailed(storage_key_);
     RunCallback(false /* success */);
     return;
   }

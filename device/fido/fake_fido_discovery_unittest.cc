@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -26,14 +25,15 @@ using ::testing::_;
 class FakeFidoDiscoveryTest : public ::testing::Test {
  public:
   FakeFidoDiscoveryTest() = default;
+
+  FakeFidoDiscoveryTest(const FakeFidoDiscoveryTest&) = delete;
+  FakeFidoDiscoveryTest& operator=(const FakeFidoDiscoveryTest&) = delete;
+
   ~FakeFidoDiscoveryTest() override = default;
 
  protected:
   FakeFidoDiscoveryFactory fake_fido_discovery_factory_;
   base::test::TaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeFidoDiscoveryTest);
 };
 
 using FakeFidoDiscoveryFactoryTest = FakeFidoDiscoveryTest;
@@ -141,7 +141,7 @@ TEST_F(FakeFidoDiscoveryTest, AddDevice) {
   ::testing::Mock::VerifyAndClearExpectations(&observer);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(FakeFidoDiscoveryFactoryTest, ForgesUsbFactoryFunction) {
   auto* injected_fake_discovery =
       fake_fido_discovery_factory_.ForgeNextHidDiscovery();

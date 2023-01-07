@@ -1,21 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Scripts to allow page console.log() etc. output to be seen on the console
 // of the host application.
 
-goog.provide('__crWeb.console');
-
-// Requires __crWeb.common and __crWeb.message.
+// Requires functions from common.js and message.js.
 
 /**
  * Namespace for this module.
  */
 __gCrWeb.console = {};
 
-/* Beginning of anonymous object. */
-(function() {
 function sendConsoleMessage(log_level, originalArgs) {
   var message, slicedArgs = Array.prototype.slice.call(originalArgs);
   try {
@@ -59,4 +55,3 @@ console.error = function() {
   sendConsoleMessage('error', arguments);
   return originalConsoleError.apply(this, arguments);
 };
-}());

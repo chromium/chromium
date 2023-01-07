@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,11 +15,10 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
-#include "base/sequenced_task_runner.h"
 #include "base/system/sys_info.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/quirks/quirks_manager.h"
 #include "third_party/qcms/src/qcms.h"
@@ -27,6 +26,7 @@
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
+#include "ui/gfx/skia_color_space_util.h"
 
 namespace ash {
 
@@ -161,24 +161,21 @@ std::unique_ptr<DisplayColorManager::ColorCalibrationData> ParseDisplayProfile(
 
 // Fills |out_result_matrix_vector| from the given skia |matrix|.
 void ColorMatrixVectorFromSkMatrix44(
-    const SkMatrix44& matrix,
+    const SkM44& matrix,
     std::vector<float>* out_result_matrix_vector) {
   DCHECK(out_result_matrix_vector);
   out_result_matrix_vector->assign(9, 0.0f);
-  (*out_result_matrix_vector)[0] = matrix.get(0, 0);
-  (*out_result_matrix_vector)[4] = matrix.get(1, 1);
-  (*out_result_matrix_vector)[8] = matrix.get(2, 2);
+  (*out_result_matrix_vector)[0] = matrix.rc(0, 0);
+  (*out_result_matrix_vector)[4] = matrix.rc(1, 1);
+  (*out_result_matrix_vector)[8] = matrix.rc(2, 2);
 }
 
-SkMatrix44 SkMatrix44FromColorMatrixVector(
-    const std::vector<float>& matrix_vector) {
+SkM44 SkMatrix44FromColorMatrixVector(const std::vector<float>& matrix_vector) {
   if (matrix_vector.empty())
-    return SkMatrix44::I();
+    return SkM44();
 
   DCHECK_EQ(matrix_vector.size(), 9u);
-  SkMatrix44 matrix(SkMatrix44::kUninitialized_Constructor);
-  matrix.set3x3RowMajorf(matrix_vector.data());
-  return matrix;
+  return gfx::SkM44FromRowMajor3x3(matrix_vector.data());
 }
 
 bool HasColorCorrectionMatrix(display::DisplayConfigurator* configurator,
@@ -196,29 +193,22 @@ bool HasColorCorrectionMatrix(display::DisplayConfigurator* configurator,
 }  // namespace
 
 DisplayColorManager::DisplayColorManager(
-    display::DisplayConfigurator* configurator,
-    display::Screen* screen_to_observe)
+    display::DisplayConfigurator* configurator)
     : configurator_(configurator),
       matrix_buffer_(9, 0.0f),  // 3x3 matrix.
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
-      displays_ctm_support_(DisplayCtmSupport::kNone),
-      screen_to_observe_(screen_to_observe) {
+      displays_ctm_support_(DisplayCtmSupport::kNone) {
   configurator_->AddObserver(this);
-  if (screen_to_observe_)
-    screen_to_observe_->AddObserver(this);
 }
 
 DisplayColorManager::~DisplayColorManager() {
-  if (screen_to_observe_)
-    screen_to_observe_->RemoveObserver(this);
   configurator_->RemoveObserver(this);
 }
 
-bool DisplayColorManager::SetDisplayColorMatrix(
-    int64_t display_id,
-    const SkMatrix44& color_matrix) {
+bool DisplayColorManager::SetDisplayColorMatrix(int64_t display_id,
+                                                const SkM44& color_matrix) {
   for (const auto* display_snapshot : configurator_->cached_displays()) {
     if (display_snapshot->display_id() != display_id)
       continue;
@@ -232,7 +222,7 @@ bool DisplayColorManager::SetDisplayColorMatrix(
 
 bool DisplayColorManager::SetDisplayColorMatrix(
     const display::DisplaySnapshot* display_snapshot,
-    const SkMatrix44& color_matrix) {
+    const SkM44& color_matrix) {
   DCHECK(display_snapshot);
   DCHECK(base::Contains(configurator_->cached_displays(), display_snapshot));
 
@@ -245,7 +235,7 @@ bool DisplayColorManager::SetDisplayColorMatrix(
   const int64_t display_id = display_snapshot->display_id();
   displays_color_matrix_map_[display_id] = color_matrix;
   const auto iter = calibration_map_.find(display_snapshot->product_code());
-  SkMatrix44 combined_matrix = color_matrix;
+  SkM44 combined_matrix = color_matrix;
   if (iter != calibration_map_.end()) {
     DCHECK(iter->second);
     combined_matrix.preConcat(
@@ -301,7 +291,7 @@ void DisplayColorManager::ApplyDisplayColorCalibration(
     const std::vector<float>* final_matrix =
         &calibration_data.correction_matrix;
     if (color_matrix_iter != displays_color_matrix_map_.end()) {
-      SkMatrix44 combined_matrix = color_matrix_iter->second;
+      SkM44 combined_matrix = color_matrix_iter->second;
       combined_matrix.preConcat(SkMatrix44FromColorMatrixVector(*final_matrix));
       ColorMatrixVectorFromSkMatrix44(combined_matrix, &matrix_buffer_);
       final_matrix = &matrix_buffer_;
@@ -355,7 +345,7 @@ void DisplayColorManager::QueryVpdForCalibration(
     return;
 
   base::FilePath directory;
-  base::PathService::Get(chromeos::DIR_DEVICE_DISPLAY_PROFILES_VPD, &directory);
+  base::PathService::Get(DIR_DEVICE_DISPLAY_PROFILES_VPD, &directory);
   const std::string icc_name = quirks::IdToFileName(product_code);
   const base::FilePath icc_path = directory.Append(icc_name);
 

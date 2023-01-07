@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/schema.h"
@@ -28,9 +27,9 @@ typedef std::map<PolicyDomain, ComponentMap> DomainMap;
 class POLICY_EXPORT SchemaMap : public base::RefCountedThreadSafe<SchemaMap> {
  public:
   SchemaMap();
-  // Takes ownership of |map| (its contents will be swapped).
-  // TODO(emaxx): Change to use move semantics.
-  explicit SchemaMap(DomainMap& map);
+  explicit SchemaMap(DomainMap map);
+  SchemaMap(const SchemaMap&) = delete;
+  SchemaMap& operator=(const SchemaMap&) = delete;
 
   const DomainMap& GetDomains() const;
 
@@ -66,8 +65,6 @@ class POLICY_EXPORT SchemaMap : public base::RefCountedThreadSafe<SchemaMap> {
   ~SchemaMap();
 
   DomainMap map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchemaMap);
 };
 
 }  // namespace policy

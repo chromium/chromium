@@ -62,7 +62,7 @@ bool MediaQueryMatcher::Evaluate(const MediaQuerySet* media) {
     evaluator_ = CreateEvaluator();
 
   if (evaluator_)
-    return evaluator_->Eval(*media);
+    return evaluator_->Eval(*media, &media_query_result_flags_);
 
   return false;
 }
@@ -71,7 +71,7 @@ MediaQueryList* MediaQueryMatcher::MatchMedia(const String& query) {
   if (!document_)
     return nullptr;
 
-  scoped_refptr<MediaQuerySet> media =
+  MediaQuerySet* media =
       MediaQuerySet::Create(query, document_->GetExecutionContext());
   return MakeGarbageCollected<MediaQueryList>(document_->GetExecutionContext(),
                                               this, media);
@@ -106,9 +106,12 @@ void MediaQueryMatcher::MediaFeaturesChanged() {
   if (!document_)
     return;
 
-  // Make sure the favicon is updated when media features have changed.
-  if (document_->GetFrame())
+  // Update favicon and theme color when a media query value has changed.
+  if (document_->GetFrame()) {
     document_->GetFrame()->UpdateFaviconURL();
+    document_->GetFrame()->DidChangeThemeColor(
+        /*update_theme_color_cache=*/false);
+  }
 
   HeapVector<Member<MediaQueryListListener>> listeners_to_notify;
   for (const auto& list : media_lists_) {
@@ -130,6 +133,13 @@ void MediaQueryMatcher::ViewportChanged() {
     listeners_to_notify.push_back(listener);
 
   document_->EnqueueMediaQueryChangeListeners(listeners_to_notify);
+}
+
+void MediaQueryMatcher::DynamicViewportChanged() {
+  if (media_query_result_flags_.unit_flags &
+      MediaQueryExpValue::UnitFlags::kDynamicViewport) {
+    ViewportChanged();
+  }
 }
 
 void MediaQueryMatcher::Trace(Visitor* visitor) const {

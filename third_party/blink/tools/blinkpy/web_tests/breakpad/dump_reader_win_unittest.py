@@ -49,9 +49,9 @@ class TestDumpReaderWin(unittest.TestCase):
 
         dump_file = '/crash-dumps/dump.txt'
         expected_pid = '4711'
-        host.filesystem.write_text_file(
-            dump_file, 'channel:\npid:%s\nplat:Win32\nprod:content_shell\n' %
-            expected_pid)
+        with host.filesystem.open_text_file_for_writing(dump_file) as f:
+            f.write('channel:\npid:%s\nplat:Win32\nprod:content_shell\n' %
+                    expected_pid)
         build_dir = "/mock-checkout/out/Debug"
         host.filesystem.maybe_make_directory(build_dir)
         dump_reader = DumpReaderWin(host, build_dir)

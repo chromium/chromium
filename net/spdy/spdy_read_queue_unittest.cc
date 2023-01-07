@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,20 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/stl_util.h"
 #include "net/spdy/spdy_buffer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace net {
-namespace test {
+namespace net::test {
 namespace {
 
 const char kData[] = "SPDY read queue test data.\0Some more data.";
-const size_t kDataSize = base::size(kData);
+const size_t kDataSize = std::size(kData);
 
 // Enqueues |data| onto |queue| in chunks of at most |max_buffer_size|
 // bytes.
@@ -32,8 +31,7 @@ void EnqueueString(const std::string& data,
   size_t old_total_size = queue->GetTotalSize();
   for (size_t i = 0; i < data.size();) {
     size_t buffer_size = std::min(data.size() - i, max_buffer_size);
-    queue->Enqueue(std::unique_ptr<SpdyBuffer>(
-        new SpdyBuffer(data.data() + i, buffer_size)));
+    queue->Enqueue(std::make_unique<SpdyBuffer>(data.data() + i, buffer_size));
     i += buffer_size;
     EXPECT_FALSE(queue->IsEmpty());
     EXPECT_EQ(old_total_size + i, queue->GetTotalSize());
@@ -135,5 +133,4 @@ TEST_F(SpdyReadQueueTest, Clear) {
   EXPECT_TRUE(read_queue.IsEmpty());
 }
 
-}  // namespace test
-}  // namespace net
+}  // namespace net::test

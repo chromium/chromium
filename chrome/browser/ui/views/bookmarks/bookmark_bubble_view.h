@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 
 class GURL;
@@ -16,6 +15,10 @@ class Profile;
 namespace bookmarks {
 class BookmarkBubbleObserver;
 }
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace views {
 class BubbleDialogDelegate;
@@ -27,7 +30,11 @@ class View;
 // it is created with. The dialog is created using the static ShowBubble method.
 class BookmarkBubbleView {
  public:
+  BookmarkBubbleView(const BookmarkBubbleView&) = delete;
+  BookmarkBubbleView& operator=(const BookmarkBubbleView&) = delete;
+
   static void ShowBubble(views::View* anchor_view,
+                         content::WebContents* web_contents,
                          views::Button* highlighted_button,
                          bookmarks::BookmarkBubbleObserver* observer,
                          std::unique_ptr<BubbleSyncPromoDelegate> delegate,
@@ -45,8 +52,6 @@ class BookmarkBubbleView {
   class BookmarkBubbleDelegate;
   // The bookmark bubble, if we're showing one.
   static views::BubbleDialogDelegate* bookmark_bubble_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkBubbleView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_BUBBLE_VIEW_H_

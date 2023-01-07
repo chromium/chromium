@@ -1,14 +1,14 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef UI_OZONE_DEMO_VULKAN_OVERLAY_RENDERER_H_
 #define UI_OZONE_DEMO_VULKAN_OVERLAY_RENDERER_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/buffer_types.h"
@@ -41,6 +41,10 @@ class VulkanOverlayRenderer : public RendererBase {
                         gpu::VulkanImplementation* vulkan_instance,
                         gfx::AcceleratedWidget widget,
                         const gfx::Size& size);
+
+  VulkanOverlayRenderer(const VulkanOverlayRenderer&) = delete;
+  VulkanOverlayRenderer& operator=(const VulkanOverlayRenderer&) = delete;
+
   ~VulkanOverlayRenderer() override;
 
   // Renderer:
@@ -111,8 +115,8 @@ class VulkanOverlayRenderer : public RendererBase {
 
   std::unique_ptr<PlatformWindowSurface> window_surface_;
 
-  SurfaceFactoryOzone* const surface_factory_ozone_;
-  gpu::VulkanImplementation* const vulkan_implementation_;
+  const raw_ptr<SurfaceFactoryOzone> surface_factory_ozone_;
+  const raw_ptr<gpu::VulkanImplementation> vulkan_implementation_;
   std::unique_ptr<gpu::VulkanDeviceQueue> device_queue_;
   std::unique_ptr<gpu::VulkanCommandPool> command_pool_;
   std::unique_ptr<OverlaySurface> overlay_surface_;
@@ -120,8 +124,6 @@ class VulkanOverlayRenderer : public RendererBase {
   VkRenderPass render_pass_ = VK_NULL_HANDLE;
 
   base::WeakPtrFactory<VulkanOverlayRenderer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanOverlayRenderer);
 };
 
 }  // namespace ui

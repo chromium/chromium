@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/compositor/compositor.h"
 #include "ui/display/display_transform.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -73,7 +74,7 @@ void TestScreen::SetColorSpace(const gfx::ColorSpace& color_space,
   display::Display display(GetPrimaryDisplay());
   gfx::DisplayColorSpaces display_color_spaces(color_space,
                                                gfx::BufferFormat::RGBA_8888);
-  display_color_spaces.SetSDRWhiteLevel(sdr_white_level);
+  display_color_spaces.SetSDRMaxLuminanceNits(sdr_white_level);
   display.set_color_spaces(display_color_spaces);
   display_list().UpdateDisplay(display);
 }

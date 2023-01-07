@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/core/ports/event.h"
 
 namespace mojo {
@@ -32,6 +31,10 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) MessageQueue {
  public:
   explicit MessageQueue();
   explicit MessageQueue(uint64_t next_sequence_num);
+
+  MessageQueue(const MessageQueue&) = delete;
+  MessageQueue& operator=(const MessageQueue&) = delete;
+
   ~MessageQueue();
 
   void set_signalable(bool value) { signalable_ = value; }
@@ -42,8 +45,12 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) MessageQueue {
 
   // Gives ownership of the message. If |filter| is non-null, the next message
   // will only be retrieved if the filter successfully matches it.
+  // Need to call |MessageProcessed| after processing is finished.
   void GetNextMessage(std::unique_ptr<UserMessageEvent>* message,
                       MessageFilter* filter);
+
+  // Mark the message from |GetNextMessage| as processed.
+  void MessageProcessed();
 
   // Takes ownership of the message. Note: Messages are ordered, so while we
   // have added a message to the queue, we may still be waiting on a message
@@ -75,8 +82,6 @@ class COMPONENT_EXPORT(MOJO_CORE_PORTS) MessageQueue {
   uint64_t next_sequence_num_;
   bool signalable_ = true;
   size_t total_queued_bytes_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageQueue);
 };
 
 }  // namespace ports

@@ -1,8 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "media/audio/audio_system_test_util.h"
 #include "media/audio/mock_audio_manager.h"
@@ -26,6 +27,9 @@ class ServiceTestHelper {
    public:
     explicit AudioThreadContext(media::AudioManager* audio_manager)
         : audio_manager_(audio_manager) {}
+
+    AudioThreadContext(const AudioThreadContext&) = delete;
+    AudioThreadContext& operator=(const AudioThreadContext&) = delete;
 
     void CreateServiceOnAudioThread(
         mojo::PendingReceiver<mojom::AudioService> receiver) {
@@ -51,10 +55,8 @@ class ServiceTestHelper {
     friend class base::RefCountedThreadSafe<AudioThreadContext>;
     virtual ~AudioThreadContext() = default;
 
-    media::AudioManager* const audio_manager_;
+    const raw_ptr<media::AudioManager> audio_manager_;
     std::unique_ptr<Service> service_;
-
-    DISALLOW_COPY_AND_ASSIGN(AudioThreadContext);
   };
 
   explicit ServiceTestHelper(media::AudioManager* audio_manager)
@@ -63,6 +65,9 @@ class ServiceTestHelper {
     audio_thread_context_->CreateServiceOnAudioThread(
         service_remote_.BindNewPipeAndPassReceiver());
   }
+
+  ServiceTestHelper(const ServiceTestHelper&) = delete;
+  ServiceTestHelper& operator=(const ServiceTestHelper&) = delete;
 
   ~ServiceTestHelper() {
     // Ensure that the AudioThreadContext is destroyed on the correct thread by
@@ -75,11 +80,9 @@ class ServiceTestHelper {
   mojom::AudioService& service() { return *service_remote_.get(); }
 
  private:
-  media::AudioManager* const audio_manager_;
+  const raw_ptr<media::AudioManager> audio_manager_;
   mojo::Remote<mojom::AudioService> service_remote_;
   scoped_refptr<AudioThreadContext> audio_thread_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceTestHelper);
 };
 
 // if |use_audio_thread| is true, AudioManager has a dedicated audio thread and
@@ -98,6 +101,10 @@ class InProcessServiceTest : public testing::Test {
         audio_system_(std::make_unique<AudioSystemToServiceAdapter>(
             base::BindRepeating(&InProcessServiceTest::BindSystemInfo,
                                 base::Unretained(this)))) {}
+
+  InProcessServiceTest(const InProcessServiceTest&) = delete;
+  InProcessServiceTest& operator=(const InProcessServiceTest&) = delete;
+
   ~InProcessServiceTest() override = default;
 
  protected:
@@ -126,8 +133,6 @@ class InProcessServiceTest : public testing::Test {
   media::MockAudioManager audio_manager_;
   std::unique_ptr<ServiceTestHelper> helper_;
   std::unique_ptr<media::AudioSystem> audio_system_;
-
-  DISALLOW_COPY_AND_ASSIGN(InProcessServiceTest);
 };
 
 // Tests for FakeSystemInfo overriding the global binder.
@@ -135,6 +140,10 @@ class FakeSystemInfoTest : public InProcessServiceTest<false>,
                            public FakeSystemInfo {
  public:
   FakeSystemInfoTest() = default;
+
+  FakeSystemInfoTest(const FakeSystemInfoTest&) = delete;
+  FakeSystemInfoTest& operator=(const FakeSystemInfoTest&) = delete;
+
   ~FakeSystemInfoTest() override = default;
 
  protected:
@@ -145,8 +154,6 @@ class FakeSystemInfoTest : public InProcessServiceTest<false>,
     std::move(callback).Run(true);
     MethodCalled();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSystemInfoTest);
 };
 
 TEST_F(FakeSystemInfoTest, HasInputDevicesCalledOnGlobalBinderOverride) {

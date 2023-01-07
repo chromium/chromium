@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -11,6 +11,7 @@ import("//weblayer/variables.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+  import("//components/safe_browsing/buildflags.gni")
 
   weblayer_browsertests_manifest =
       "${target_gen_dir}/weblayer_browsertests_manifest/AndroidManifest.xml"
@@ -37,15 +38,15 @@ if (is_android) {
       "//base:base_java",
       "//base:base_java_test_support",
       "//base:jni_java",
+      "//build/android:build_java",
       "//components/embedder_support/android:application_java",
       "//components/safe_browsing/android:safe_browsing_java",
       "//components/translate/content/android:java",
       "//content/public/android:content_java",
       "//content/public/test/android:content_java_test_support",
       "//testing/android/native_test:native_test_java",
-      "//third_party/android_deps:android_support_v4_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/androidx:androidx_core_core_java",
+      "//third_party/androidx:androidx_fragment_fragment_java",
       "//ui/android:ui_java",
       "//weblayer/browser/java",
       "//weblayer/browser/java:base_module_interfaces_java",
@@ -93,7 +94,6 @@ test("weblayer_browsertests") {
     "//components/test/data",
     "//net/tools/testserver/",
     "//third_party/pywebsocket3/src/mod_pywebsocket/",
-    "//third_party/tlslite/",
   ]
 
   data_deps = [
@@ -107,14 +107,17 @@ test("weblayer_browsertests") {
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser",
-    "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
     "//components/background_sync",
     "//components/blocked_content",
+    "//components/browsing_data/content:content",
     "//components/content_settings/core/browser",
+    "//components/embedder_support",
     "//components/error_page/content/browser",
     "//components/favicon/content",
     "//components/heavy_ad_intervention",
+    "//components/infobars/content",
+    "//components/language/core/browser",
     "//components/network_session_configurator/common",
     "//components/network_time",
     "//components/no_state_prefetch/browser",
@@ -123,7 +126,10 @@ test("weblayer_browsertests") {
     "//components/page_load_metrics/browser/observers/ad_metrics",
     "//components/page_load_metrics/browser/observers/ad_metrics:test_support",
     "//components/permissions",
+    "//components/permissions:test_support",
     "//components/prefs",
+    "//components/reduce_accept_language/browser:browser",
+    "//components/reduce_accept_language/browser:test_support",
     "//components/security_interstitials/content:security_interstitial_page",
     "//components/sessions:test_support",
     "//components/signin/core/browser",
@@ -143,11 +149,13 @@ test("weblayer_browsertests") {
     "//components/variations",
     "//components/variations/net",
     "//content/public/browser",
+    "//content/public/common",
     "//content/test:test_support",
     "//google_apis",
     "//net:test_support",
     "//testing/gtest",
     "//ui/base",
+    "//ui/display",
     "//ui/gfx:test_support",
     "//weblayer:resources",
     "//weblayer/shell:weblayer_shell_lib",
@@ -156,12 +164,11 @@ test("weblayer_browsertests") {
   sources = [
     "../browser/ad_tagging_browsertest.cc",
     "../browser/ads_page_load_metrics_observer_browsertest.cc",
-    "../browser/autofill_browsertest.cc",
     "../browser/background_sync/background_sync_browsertest.cc",
     "../browser/client_hints_browsertest.cc",
+    "../browser/clipboard_browsertest.cc",
     "../browser/content_settings_browsertest.cc",
     "../browser/cookie_manager_browsertest.cc",
-    "../browser/default_search_engine_browsertest.cc",
     "../browser/download_browsertest.cc",
     "../browser/errorpage_browsertest.cc",
     "../browser/favicon/favicon_fetcher_browsertest.cc",
@@ -181,6 +188,7 @@ test("weblayer_browsertests") {
     "../browser/popup_blocker_browsertest.cc",
     "../browser/prefetch_browsertest.cc",
     "../browser/profile_browsertest.cc",
+    "../browser/reduce_accept_language_service_browsertest.cc",
     "../browser/site_isolation_browsertest.cc",
     "../browser/ssl_browsertest.cc",
     "../browser/subresource_filter_browsertest.cc",
@@ -193,8 +201,6 @@ test("weblayer_browsertests") {
     "interstitial_utils.h",
     "load_completion_observer.cc",
     "load_completion_observer.h",
-    "stub_autofill_provider.cc",
-    "stub_autofill_provider.h",
     "subresource_filter_browser_test_harness.cc",
     "subresource_filter_browser_test_harness.h",
     "test_launcher_delegate_impl.cc",
@@ -216,39 +222,49 @@ test("weblayer_browsertests") {
       "../browser/android/metrics/metrics_test_helper.cc",
       "../browser/android/metrics/metrics_test_helper.h",
       "../browser/android/metrics/ukm_browsertest.cc",
+      "../browser/autofill_browsertest.cc",
+      "../browser/browser_controls_navigation_state_handler_browsertest.cc",
+      "../browser/origin_trials_browsertest.cc",
       "../browser/safe_browsing/client_side_detection_service_browsertest.cc",
       "../browser/safe_browsing/client_side_detection_service_factory_browsertest.cc",
       "../browser/safe_browsing/safe_browsing_browsertest.cc",
+      "../browser/safe_browsing/weblayer_ping_manager_browsertest.cc",
       "../browser/url_bar/page_info_browsertest.cc",
+      "../browser/webapps/webapk_install_scheduler_browsertest.cc",
       "../shell/android/browsertests_apk/translate_test_bridge.cc",
       "../shell/android/browsertests_apk/translate_test_bridge.h",
       "../shell/android/browsertests_apk/weblayer_browser_tests_jni_onload.cc",
+      "stub_autofill_provider.cc",
+      "stub_autofill_provider.h",
     ]
     deps += [
       ":weblayer_browsertests_java",
       ":weblayer_browsertests_jni",
       ":weblayer_test_assets",
-      "//android_webview:generate_aw_strings_grit",
       "//android_webview:locale_pak_assets",
       "//android_webview:pak_file_assets",
+      "//components/android_autofill/browser:test_support",
       "//components/infobars/core",
       "//components/metrics",
+      "//components/origin_trials:browser",
       "//components/page_info",
       "//components/page_info/android",
       "//components/safe_browsing/android:safe_browsing_api_handler",
-      "//components/safe_browsing/content",
+      "//components/safe_browsing/content/browser",
       "//components/safe_browsing/content/browser:client_side_detection",
-      "//components/safe_browsing/content/browser:client_side_model_loader",
+      "//components/safe_browsing/content/browser/web_ui",
       "//components/safe_browsing/content/common:interfaces",
-      "//components/safe_browsing/core:client_model_proto",
-      "//components/safe_browsing/core:features",
       "//components/safe_browsing/core/browser:token_fetcher",
+      "//components/safe_browsing/core/browser:token_fetcher_testing_helper",
       "//components/safe_browsing/core/common",
+      "//components/safe_browsing/core/common/proto:client_model_proto",
       "//components/viz/service:service_java",
+      "//components/webapps/browser:browser",
       "//content/public/test/android:android_test_message_pump_support_java",
       "//content/test:android_test_message_pump_support",
       "//content/test:android_test_message_pump_support",
       "//services/metrics/public/cpp:ukm_builders",
+      "//services/network:test_support",
       "//services/tracing:test_utils",
       "//testing/android/native_test:native_test_support",
       "//third_party/metrics_proto",
@@ -259,10 +275,14 @@ test("weblayer_browsertests") {
       # Needed for WebLayerImpl.
       "//weblayer/browser/java",
 
-      # default upstream safebrowsing related classes
-      "//weblayer/browser/java:gms_bridge_upstream_impl_java",
+      # default upstream classes
+      "//weblayer/browser/java:upstream_java",
     ]
 
+    # Necessary to avoid GN errors in Cast builds, where this target isn't defined.
+    if (safe_browsing_mode > 0) {
+      deps += [ "//components/safe_browsing/content/browser:safe_browsing_blocking_page" ]
+    }
     android_manifest =
         "${target_gen_dir}/weblayer_browsertests_manifest/AndroidManifest.xml"
     android_manifest_dep = ":weblayer_browsertests_manifest"
@@ -297,6 +317,7 @@ test("weblayer_unittests") {
     ":run_all_unittests",
     "//components/favicon/core:database",
     "//components/site_isolation",
+    "//google_apis",
   ]
   sources = [
     "../browser/favicon/favicon_backend_wrapper_unittest.cc",
@@ -304,7 +325,10 @@ test("weblayer_unittests") {
     "../browser/site_isolation_policy_unittest.cc",
   ]
   if (is_android) {
-    deps += [ ":weblayer_test_assets" ]
+    deps += [
+      ":weblayer_test_assets",
+      "//ui/android:ui_full_java",
+    ]
     sources += [
       "../browser/safe_browsing/safe_browsing_token_fetcher_impl_unittest.cc",
     ]

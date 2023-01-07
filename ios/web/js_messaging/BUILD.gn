@@ -1,40 +1,45 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
+import("//ios/web/public/js_messaging/optimize_js.gni")
 
 source_set("js_messaging") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":frame_listeners_js",
     ":java_script_content_world_header",
+    ":java_script_feature_manager_header",
+    ":scoped_wk_script_message_handler",
+    ":setup_frame_js",
     ":web_frames_manager_impl_header",
     "//base",
-    "//crypto",
     "//ios/web/common:features",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
     "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_view:util",
     "//url",
   ]
 
   sources = [
-    "crw_js_injector.h",
-    "crw_js_injector.mm",
     "crw_js_window_id_manager.h",
     "crw_js_window_id_manager.mm",
-    "crw_wk_script_message_router.h",
-    "crw_wk_script_message_router.mm",
     "page_script_util.h",
     "page_script_util.mm",
+    "script_command_java_script_feature.h",
+    "script_command_java_script_feature.mm",
     "web_frame_impl.h",
     "web_frame_impl.mm",
     "web_frame_internal.h",
     "web_frame_util.mm",
     "web_frames_manager_impl.mm",
+    "web_frames_manager_java_script_feature.h",
+    "web_frames_manager_java_script_feature.mm",
     "web_view_js_utils.h",
     "web_view_js_utils.mm",
     "web_view_web_state_map.h",
@@ -53,7 +58,10 @@ source_set("web_frames_manager_impl_header") {
 
 source_set("java_script_feature") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  public_deps = [ ":java_script_content_world_header" ]
+  public_deps = [
+    ":java_script_content_world_header",
+    ":java_script_feature_manager_header",
+  ]
   deps = [
     ":js_messaging",
     ":scoped_wk_script_message_handler",
@@ -68,7 +76,6 @@ source_set("java_script_feature") {
   sources = [
     "java_script_content_world.mm",
     "java_script_feature.mm",
-    "java_script_feature_manager.h",
     "java_script_feature_manager.mm",
     "script_message.mm",
   ]
@@ -86,18 +93,35 @@ source_set("java_script_content_world_header") {
   sources = [ "java_script_content_world.h" ]
 }
 
+source_set("java_script_feature_manager_header") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":java_script_content_world_header",
+    "//base",
+  ]
+
+  sources = [ "java_script_feature_manager.h" ]
+}
+
 source_set("java_script_feature_util") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    ":js_messaging",
     "//base",
+    "//ios/web/annotations",
+    "//ios/web/common:features",
     "//ios/web/favicon",
     "//ios/web/find_in_page",
     "//ios/web/js_features/context_menu",
     "//ios/web/js_features/scroll_helper",
     "//ios/web/js_features/window_error",
+    "//ios/web/navigation:navigation_feature",
+    "//ios/web/navigation:session_restore_feature",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
+    "//ios/web/text_fragments",
   ]
 
   sources = [
@@ -117,6 +141,20 @@ source_set("scoped_wk_script_message_handler") {
   ]
 }
 
+optimize_js("setup_frame_js") {
+  visibility = [ ":js_messaging" ]
+
+  primary_script = "resources/setup_frame.js"
+  sources = [ "resources/setup_frame.js" ]
+}
+
+optimize_js("frame_listeners_js") {
+  visibility = [ ":js_messaging" ]
+
+  primary_script = "resources/frame_listeners.js"
+  sources = [ "resources/frame_listeners.js" ]
+}
+
 source_set("unittests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
@@ -128,12 +166,15 @@ source_set("unittests") {
     ":web_frames_manager_impl_header",
     "//base",
     "//base/test:test_support",
-    "//crypto",
     "//ios/web/common:web_view_creation_util",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
+    "//ios/web/test:js_test_util_internal",
     "//ios/web/test/fakes",
+    "//ios/web/web_state:web_state_impl_header",
+    "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//testing/gtest",
     "//third_party/ocmock",
@@ -141,7 +182,6 @@ source_set("unittests") {
 
   sources = [
     "crw_js_window_id_manager_unittest.mm",
-    "crw_wk_script_message_router_unittest.mm",
     "java_script_content_world_unittest.mm",
     "java_script_feature_manager_unittest.mm",
     "java_script_feature_unittest.mm",
@@ -150,6 +190,7 @@ source_set("unittests") {
     "web_frame_impl_unittest.mm",
     "web_frame_util_unittest.mm",
     "web_frames_manager_impl_unittest.mm",
+    "web_frames_manager_java_script_feature_unittest.mm",
     "web_view_js_utils_unittest.mm",
     "web_view_web_state_map_unittest.mm",
   ]
@@ -170,10 +211,13 @@ source_set("inttests") {
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
+    "//ios/web/test:js_test_util_internal",
     "//ios/web/test:test_support",
     "//ios/web/test/fakes",
+    "//ios/web/web_state/ui:web_controller_header",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
     "//net:test_support",
     "//testing/gmock",

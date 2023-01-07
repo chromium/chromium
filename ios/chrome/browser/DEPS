@@ -8,6 +8,8 @@ include_rules = [
   "+components/browser_sync",
   "+components/browsing_data/core",
   "+components/captive_portal",
+  "+components/commerce/core",
+  "+components/commerce/ios",
   "+components/component_updater",
   "+components/content_settings/core",
   "+components/cookie_config",
@@ -16,6 +18,7 @@ include_rules = [
   "+components/crash/core/browser",
   "+components/crash/core/common",
   "+components/dom_distiller/core",
+  "+components/download",
   "+components/dom_distiller/ios",
   "+components/enterprise",
   "+components/error_page/common",
@@ -25,7 +28,9 @@ include_rules = [
   "+components/favicon/ios",
   "+components/favicon_base",
   "+components/feature_engagement",
-  "+components/feed",
+  "+components/feed/core/shared_prefs",
+  "+components/feed/core/v2/public",
+  "+components/feed/feed_feature_list.h",
   "+components/flags_ui",
   "+components/gcm_driver",
   "+components/google/core",
@@ -43,21 +48,22 @@ include_rules = [
   "+components/keyed_service/ios",
   "+components/language",
   "+components/leveldb_proto",
+  "+components/local_state",
   "+components/lookalikes/core",
   "+components/metrics",
-  "+components/ntp_tiles",
   "+components/user_prefs",
+  "+components/url_param_filter/ios",
   "+components/metrics_services_manager",
   "+components/navigation_metrics",
   "+components/net_log",
   "+components/network_session_configurator",
   "+components/network_time",
   "+components/ntp_snippets",
-  "+components/feed/core/shared_prefs",
   "+components/ntp_tiles",
   "+components/omnibox/browser",
   "+components/omnibox/common",
   "+components/open_from_clipboard",
+  "+components/optimization_guide",
   "+components/password_manager/core/browser",
   "+components/password_manager/core/common",
   "+components/password_manager/ios",
@@ -74,13 +80,17 @@ include_rules = [
   "+components/query_parser",
   "+components/reading_list",
   "+components/rlz",
-  "+components/safe_browsing",
+  "+components/safe_browsing/buildflags.h",
+  "+components/safe_browsing/core/browser",
+  "+components/safe_browsing/core/common",
+  "+components/safe_browsing/ios/browser",
   "+components/safety_check",
   "+components/search",
   "+components/search_engines",
   "+components/search_provider_logos",
   "+components/security_interstitials",
   "+components/security_state",
+  "+components/segmentation_platform/public",
   "+components/send_tab_to_self",
   "+components/services/patch",
   "+components/services/unzip",
@@ -88,6 +98,7 @@ include_rules = [
   "+components/shared_highlighting",
   "+components/signin/core/browser",
   "+components/signin/public",
+  "+components/signin/public/base",
   "+components/signin/ios/browser",
   "+components/ssl_errors",
   "+components/suggestions",
@@ -107,6 +118,8 @@ include_rules = [
   "+components/update_client",
   "+components/upload_list",
   "+components/url_formatter",
+  "+components/url_param_filter/core",
+  "+components/url_param_filter/ios",
   "+components/variations",
   "+components/variations/net",
   "+components/version_info",
@@ -117,6 +130,7 @@ include_rules = [
   "+crypto",
   "+google_apis",
   "+ios/chrome/app",
+  "+ios/components/cookie_util",
   "+ios/components/io_thread",
   "+ios/components/security_interstitials",
   "+ios/components/ui_util",
@@ -134,6 +148,7 @@ include_rules = [
   "+services/network/network_context.h",
   "+services/network/public/mojom",
   "+services/network/public/cpp",
+  "+third_party/crashpad/crashpad/client",
   "+third_party/breakpad/breakpad/src/client/ios",
   "+third_party/breakpad/breakpad/src/common",
   "+third_party/libaddressinput",
@@ -144,6 +159,12 @@ include_rules = [
   # Those depend on //content; exclude them.
   "-components/metrics/gpu",
   "-components/sessions/content",
+
+  # ios/chrome/browser should not depend on ios/chrome/browser/ui except
+  # on commands.
+  "-ios/chrome/browser/ui",
+  "-ios/common/ui",
+  "+ios/chrome/browser/ui/commands",
 
   # For tests.
   "+ios/chrome/test",
@@ -158,5 +179,21 @@ include_rules = [
 specific_include_rules = {
   ".*test\.mm": [
     "+components/previous_session_info/previous_session_info_private.h",
+    # TODO(crbug.com/1294160): browser should not depend on UI, this is a
+    # blanket exception for tests.
+    "+ios/chrome/browser/ui",
   ],
+
+  # TODO(crbug.com/1294160): Remove these dependencies.
+  "^browser_about_rewriter.cc": [
+    "+ios/chrome/browser/ui/ui_feature_flags.h",
+  ],
+  "^ios_chrome_field_trials.mm": [
+    "+ios/chrome/browser/ui/first_run/fre_field_trial.h",
+    "+ios/chrome/browser/ui/first_run/trending_queries_field_trial.h",
+  ],
+  "^system_flags.mm": [
+    "+ios/chrome/browser/ui/ui_feature_flags.h",
+  ],
+
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -85,6 +83,22 @@ class PaintPreviewBaseService : public KeyedService {
 
     // Cap the perframe SkPicture size to |max_per_capture_size| if non-zero.
     size_t max_per_capture_size;
+
+    // Limit on the maximum size of a decoded image that can be serialized.
+    // Any images with a decoded size exceeding this value will be discarded.
+    // This can be used to reduce the chance of an OOM during serialization and
+    // later during playback.
+    uint64_t max_decoded_image_size_bytes{std::numeric_limits<uint64_t>::max()};
+
+    // This flag will skip GPU accelerated content where applicable when
+    // capturing. This reduces hangs, capture time and may also reduce OOM
+    // crashes, but results in a lower fideltiy capture (i.e. the contents
+    // captured may not accurately reflect the content visible to the user at
+    // time of capture).
+    //
+    // At present this flag:
+    // - Shows a poster or blank space instead of live video frames.
+    bool skip_accelerated_content{false};
   };
 
   using OnCapturedCallback =
@@ -125,15 +139,15 @@ class PaintPreviewBaseService : public KeyedService {
                            OnCapturedCallback callback);
 
  private:
-  void OnCaptured(int frame_tree_node_id,
+  void OnCaptured(base::ScopedClosureRunner capture_handle,
                   base::TimeTicks start_time,
                   OnCapturedCallback callback,
                   base::UnguessableToken guid,
                   mojom::PaintPreviewStatus status,
                   std::unique_ptr<CaptureResult> result);
 
-  std::unique_ptr<PaintPreviewFileMixin> file_mixin_ = nullptr;
-  std::unique_ptr<PaintPreviewPolicy> policy_ = nullptr;
+  std::unique_ptr<PaintPreviewFileMixin> file_mixin_;
+  std::unique_ptr<PaintPreviewPolicy> policy_;
   bool is_off_the_record_;
 
   base::WeakPtrFactory<PaintPreviewBaseService> weak_ptr_factory_{this};

@@ -1,0 +1,186 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="en-GB">
+<translation id="1057925581724305206">Full HD (1080p)</translation>
+<translation id="1076394037877376434">Delete page <ph name="PAGE_NUMBER" /></translation>
+<translation id="1113173431709655881">Camera mode</translation>
+<translation id="1153190633558910465">Grid off</translation>
+<translation id="1175958423215084756">Link detected. <ph name="HOSTNAME" /></translation>
+<translation id="1197694886744716213">Page <ph name="PAGE_NUMBER" /> deleted</translation>
+<translation id="1258009455399840361">Rotate 90 degrees clockwise</translation>
+<translation id="1276998909102132017">Gallery images</translation>
+<translation id="1300209025925956156">Scan your document</translation>
+<translation id="1309250603447638106">Downloading updates for document scanning</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Search + left arrow to access.</translation>
+<translation id="1417314334557041815">Edit page <ph name="INDEX" /></translation>
+<translation id="1430915738399379752">Print</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" /> is unplugged.</translation>
+<translation id="1473110567575736769">Three seconds timer</translation>
+<translation id="148783771699678004">Moving in top-right direction</translation>
+<translation id="1545749641540134597">Scan QR Code</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">Normal</translation>
+<translation id="1620510694547887537">Camera</translation>
+<translation id="1627744224761163218">4 x 4</translation>
+<translation id="1644345013557678440">HD (720p)</translation>
+<translation id="1664224225747386870">Nothing recorded</translation>
+<translation id="1838104802459806957">Tilt up</translation>
+<translation id="1843105061469674856">Scan additional page</translation>
+<translation id="1851169887664797861">Additional camera controls available</translation>
+<translation id="1851616744363735765">PAUSED</translation>
+<translation id="1862930711583847113">Unable to export <ph name="FILE" /></translation>
+<translation id="1899697626337024495">Photo resolution</translation>
+<translation id="1925845977604399247">Go to Gallery</translation>
+<translation id="2022953316617983419">QR code</translation>
+<translation id="2036868001356139588">Timer duration</translation>
+<translation id="2050339315714019657">Portrait</translation>
+<translation id="2064538373111010176"><ph name="CAMERA" /> active</translation>
+<translation id="2134029355740465625">Video settings</translation>
+<translation id="2144806332417375165">Custom video parameters</translation>
+<translation id="2175927920773552910">QR code</translation>
+<translation id="2244252133441425811">Enable video FPS picker</translation>
+<translation id="2271433936731426666">Enable full-sized video snapshot</translation>
+<translation id="229579744168541441">Export to disk</translation>
+<translation id="2320741269052147773">Pan left</translation>
+<translation id="2501278716633472235">Go back</translation>
+<translation id="2501853267655415902">Recording stopped</translation>
+<translation id="2501953888035679275">Take photos and record videos with your camera.</translation>
+<translation id="2517472476991765520">Scan</translation>
+<translation id="2549985041256363841">Start recording</translation>
+<translation id="2599796128805996109">Back camera</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" /> / <ph name="MAXIMAL" />s</translation>
+<translation id="2761536921376153655">Scan type</translation>
+<translation id="28682968802727151">Mirror preview</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" /> is plugged in.</translation>
+<translation id="2904654629665923749">Document scan available</translation>
+<translation id="2968794441791257519">Photos and videos taken with the camera will be moved to the Downloads folder. You can access them in Files.
+
+        Apps with storage permissions will have access to your photos and videos.</translation>
+<translation id="3067436040345934772">Pan right</translation>
+<translation id="3081586908890909590">Switch to record video</translation>
+<translation id="313467653172006084">30 FPS</translation>
+<translation id="3183731565330012717">Grid type</translation>
+<translation id="3227137524299004712">Microphone</translation>
+<translation id="3240426699337459095">Link copied</translation>
+<translation id="3259149966178251584">Camera resolution</translation>
+<translation id="3305962767867348165">Fix</translation>
+<translation id="3354465018370944241">Photo settings</translation>
+<translation id="3411958449466169012">Timer off</translation>
+<translation id="3448774564454087943">Video hasn't been saved as it's too short</translation>
+<translation id="346539236881580388">Retake</translation>
+<translation id="3517926952904427380">Unable to take portrait photo</translation>
+<translation id="3566302376254083266">Moving in top-left direction</translation>
+<translation id="3569311554794739032">Do you really want to remove <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Switch to scan mode</translation>
+<translation id="3583444040776960729">Document bottom-left corner</translation>
+<translation id="3789724198583203151">Rotate 90 degrees anti-clockwise</translation>
+<translation id="3810838688059735925">Video</translation>
+<translation id="3838931309141338733">Scan barcode</translation>
+<translation id="3892148308691398805">Copy text</translation>
+<translation id="4061162772429051350"><ph name="MAGAPIXELS_AMOUNT" /> MP</translation>
+<translation id="4118525110028899586">Pause recording</translation>
+<translation id="4121305183798804752">Document detected</translation>
+<translation id="414641094616694804">This camera cannot change resolution</translation>
+<translation id="4269820728363426813">Copy link address</translation>
+<translation id="4281620174117014503">Medium resolution</translation>
+<translation id="428234092390943511">Page thumbnail</translation>
+<translation id="4329152592498422850">Switch to take square photo</translation>
+<translation id="4340659173795395806">You can now create multi-page PDF</translation>
+<translation id="4383571725254449280">Print performance logs</translation>
+<translation id="4445542136948522167">Stop taking photo</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> mega pixel</translation>
+<translation id="4570032796877367747">Front camera</translation>
+<translation id="4620818268515773682">Toggle microphone mute. Mute is off</translation>
+<translation id="4628948037717959914">Photo</translation>
+<translation id="4649291346448517080">Unable to save the file</translation>
+<translation id="4695379108709712600">Moving in top direction</translation>
+<translation id="4705093842003735294">Full resolution</translation>
+<translation id="4890010094662541459">3 x 3</translation>
+<translation id="491895758387112773">Multistream video recording</translation>
+<translation id="4984613436295737187">Quad HD (1440p)</translation>
+<translation id="5034763830503483128">Photo aspect ratio</translation>
+<translation id="5057360777601936059">Your camera is currently unavailable.
+        Please check if the camera is properly connected.</translation>
+<translation id="5163387177077603948">Moving in right direction</translation>
+<translation id="5235304959032763950">16 to 9</translation>
+<translation id="5266635337630551423">Document top-left corner</translation>
+<translation id="5317780077021120954">Save</translation>
+<translation id="5320594929574852403">Moving in left direction</translation>
+<translation id="5374917190292010970">4K (2160p)</translation>
+<translation id="5444515100983837161">Place all edges of the document within the frame. Scanning works best if the document and background are different colours.</translation>
+<translation id="5662366948659129155">Scanning page <ph name="COUNT" /></translation>
+<translation id="5671277269877808209">Square</translation>
+<translation id="5746169159649715125">Save as PDF</translation>
+<translation id="5753488212459587150">Enable expert mode</translation>
+<translation id="5759254179196327752">Scan document</translation>
+<translation id="5775960006311140197">Expert mode</translation>
+<translation id="5860033963881614850">Off</translation>
+<translation id="5869546221129391014">Grid</translation>
+<translation id="5916664084637901428">On</translation>
+<translation id="5975083100439434680">Zoom out</translation>
+<translation id="5976160379964388480">Others</translation>
+<translation id="6073451960410192870">Stop recording</translation>
+<translation id="6197807149213783179">Save metadata</translation>
+<translation id="6233780560267770709">3 by 3</translation>
+<translation id="6243827288366940320">Golden ratio</translation>
+<translation id="6248749904681914629">External camera</translation>
+<translation id="6353688143752491039">Thanks for giving feedback on the Camera app.
+
+If your feedback is about image or video quality, please attach a sample photo or video and describe what's wrong. (For example, photo is too dark or subject isn’t in focus.)</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> - <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> mega pixel</translation>
+<translation id="6527303717912515753">Share</translation>
+<translation id="6617916774429601017">Show all resolutions</translation>
+<translation id="6631515515009660915">Mirror off</translation>
+<translation id="6652737148136672975">Move corner position with arrow keys</translation>
+<translation id="667999046851023355">Document</translation>
+<translation id="6681668084120808868">Take photo</translation>
+<translation id="6778482348691154169">Unable to take photo</translation>
+<translation id="6888362557094394345">Moving in bottom direction</translation>
+<translation id="695140971690006676">Reset all</translation>
+<translation id="6965382102122355670">OK</translation>
+<translation id="698156982839284926">3 seconds</translation>
+<translation id="712848772518857951">Do you really want to remove <ph name="COUNT" /> items?</translation>
+<translation id="7134221860976209830">10 seconds timer</translation>
+<translation id="7191890674911603392">Record type</translation>
+<translation id="7243947652761655814">Video resolution</translation>
+<translation id="7337660886763914220">File system errors.</translation>
+<translation id="7450541714075000668">Text copied</translation>
+<translation id="7488619942230388918">Record GIF video</translation>
+<translation id="7557677699350329807">Switch to next camera</translation>
+<translation id="7607002721634913082">Paused</translation>
+<translation id="7608223098072244877">4 by 4</translation>
+<translation id="761421184377987513">Moving in bottom-left direction</translation>
+<translation id="7649070708921625228">Help</translation>
+<translation id="7658239707568436148">Cancel</translation>
+<translation id="7670511624014457267">60 FPS</translation>
+<translation id="7671804233658741790">Document bottom-right corner</translation>
+<translation id="7692090236657809299">Enable pan tilt zoom</translation>
+<translation id="7726641833034062494">Record normal video</translation>
+<translation id="7748344063862150053">Document top-right corner</translation>
+<translation id="7933675232020478311">Moving in bottom-right direction</translation>
+<translation id="7983668134180549431">Text detected.</translation>
+<translation id="8120146556401698679">Pan tilt zoom</translation>
+<translation id="8131740175452115882">Confirm</translation>
+<translation id="8145038249676204903">Switch to take photo</translation>
+<translation id="8167081290930651932">Save as photo</translation>
+<translation id="8239780215768881278">Take video snapshot</translation>
+<translation id="8261506727792406068">Delete</translation>
+<translation id="8425673304802773841">Tilt down</translation>
+<translation id="8428213095426709021">Settings</translation>
+<translation id="8629662593426079630">360p</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8711011893539266636">Toggle microphone mute. Mute is on</translation>
+<translation id="8712637175834984815">Got it</translation>
+<translation id="8730621377337864115">Done</translation>
+<translation id="8732462232047530626">Preview metadata</translation>
+<translation id="8815966864175525708">Switch to take portrait photo</translation>
+<translation id="8828441885228359828">Resume recording</translation>
+<translation id="8870695351537079478">Unable to start recording</translation>
+<translation id="8880167521484863515">4 to 3</translation>
+<translation id="8903921497873541725">Zoom in</translation>
+<translation id="9045010116236796332">Place all edges of the document within the frame</translation>
+<translation id="9045155556724273246">10 seconds</translation>
+<translation id="906331135292332864">Processing image…</translation>
+<translation id="922762992951083513">Mirror on</translation>
+<translation id="945522503751344254">Send feedback</translation>
+</translationbundle>

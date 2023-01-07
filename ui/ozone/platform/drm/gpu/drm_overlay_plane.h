@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,10 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/overlay_plane_data.h"
 #include "ui/gfx/overlay_transform.h"
 
 namespace gfx {
@@ -37,6 +39,9 @@ struct DrmOverlayPlane {
                   const gfx::RectF& crop_rect,
                   bool enable_blend,
                   std::unique_ptr<gfx::GpuFence> gpu_fence);
+  DrmOverlayPlane(const scoped_refptr<DrmFramebuffer>& buffer,
+                  const gfx::OverlayPlaneData& overlay_plane_data,
+                  std::unique_ptr<gfx::GpuFence> gpu_fence);
   DrmOverlayPlane(DrmOverlayPlane&& other);
   DrmOverlayPlane& operator=(DrmOverlayPlane&& other);
 
@@ -52,6 +57,9 @@ struct DrmOverlayPlane {
       const DrmOverlayPlaneList& overlays);
 
   DrmOverlayPlane Clone() const;
+
+  // Adds trace records to |context|.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
   static std::vector<DrmOverlayPlane> Clone(
       const std::vector<DrmOverlayPlane>& planes);

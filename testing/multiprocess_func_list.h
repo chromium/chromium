@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,9 +45,17 @@ class AppendMultiProcessTest {
                          SetupFunctionPtr setup_func_ptr);
 };
 
-// Invoke the main function of a test previously registered with
-// MULTIPROCESS_TEST_MAIN()
+using ChildProcessTestRunner = int (*)(const std::string&);
+void SetChildProcessTestRunner(ChildProcessTestRunner runner);
+
+// Invokes the ChildProcessTestRunner callback with `test_name` if the callback
+// is not null. Otherwise invokes test associated main function previously
+// registered with MULTIPROCESS_TEST_MAIN().
 int InvokeChildProcessTest(const std::string& test_name);
+
+// Invokes a the main function of a test previously registered with
+// MULTIPROCESS_TEST_MAIN().
+int InvokeChildProcessTestMain(const std::string& test_name);
 
 // This macro creates a global MultiProcessTest::AppendMultiProcessTest object
 // whose constructor does the work of adding the global mapping.

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "pdf/pdf_engine.h"
 
 namespace chrome_pdf {
@@ -22,23 +21,19 @@ class PDFiumEngineExports : public PDFEngineExports {
   ~PDFiumEngineExports() override;
 
 // PDFEngineExports:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::vector<uint8_t> CreateFlattenedPdf(
       base::span<const uint8_t> input_buffer) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN)
   bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
-                         int page_number,
+                         int page_index,
                          const RenderingSettings& settings,
                          HDC dc) override;
-  void SetPDFEnsureTypefaceCharactersAccessible(
-      PDFEnsureTypefaceCharactersAccessible func) override;
-
-  void SetPDFUseGDIPrinting(bool enable) override;
   void SetPDFUsePrintMode(int mode) override;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
-                             int page_number,
+                             int page_index,
                              const RenderingSettings& settings,
                              void* bitmap_buffer) override;
   std::vector<uint8_t> ConvertPdfPagesToNupPdf(
@@ -54,13 +49,13 @@ class PDFiumEngineExports : public PDFEngineExports {
   bool GetPDFDocInfo(base::span<const uint8_t> pdf_buffer,
                      int* page_count,
                      float* max_page_width) override;
-  base::Optional<bool> IsPDFDocTagged(
+  absl::optional<bool> IsPDFDocTagged(
       base::span<const uint8_t> pdf_buffer) override;
   base::Value GetPDFStructTreeForPage(base::span<const uint8_t> pdf_buffer,
                                       int page_index) override;
-  base::Optional<gfx::SizeF> GetPDFPageSizeByIndex(
+  absl::optional<gfx::SizeF> GetPDFPageSizeByIndex(
       base::span<const uint8_t> pdf_buffer,
-      int page_number) override;
+      int page_index) override;
 };
 
 }  // namespace chrome_pdf

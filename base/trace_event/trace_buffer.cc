@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/trace_event/heap_profiler.h"
 #include "base/trace_event/trace_event_impl.h"
 
@@ -31,6 +30,9 @@ class TraceBufferRingBuffer : public TraceBuffer {
     for (size_t i = 0; i < max_chunks; ++i)
       recyclable_chunks_queue_[i] = i;
   }
+
+  TraceBufferRingBuffer(const TraceBufferRingBuffer&) = delete;
+  TraceBufferRingBuffer& operator=(const TraceBufferRingBuffer&) = delete;
 
   std::unique_ptr<TraceBufferChunk> GetChunk(size_t* index) override {
     HEAP_PROFILER_SCOPED_IGNORE;
@@ -148,8 +150,6 @@ class TraceBufferRingBuffer : public TraceBuffer {
 
   size_t current_iteration_index_;
   uint32_t current_chunk_seq_;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceBufferRingBuffer);
 };
 
 class TraceBufferVector : public TraceBuffer {
@@ -160,6 +160,9 @@ class TraceBufferVector : public TraceBuffer {
         max_chunks_(max_chunks) {
     chunks_.reserve(max_chunks_);
   }
+
+  TraceBufferVector(const TraceBufferVector&) = delete;
+  TraceBufferVector& operator=(const TraceBufferVector&) = delete;
 
   std::unique_ptr<TraceBufferChunk> GetChunk(size_t* index) override {
     HEAP_PROFILER_SCOPED_IGNORE;
@@ -173,8 +176,8 @@ class TraceBufferVector : public TraceBuffer {
     chunks_.push_back(nullptr);
     ++in_flight_chunk_count_;
     // + 1 because zero chunk_seq is not allowed.
-    return std::unique_ptr<TraceBufferChunk>(
-        new TraceBufferChunk(static_cast<uint32_t>(*index) + 1));
+    return std::make_unique<TraceBufferChunk>(static_cast<uint32_t>(*index) +
+                                              1);
   }
 
   void ReturnChunk(size_t index,
@@ -239,8 +242,6 @@ class TraceBufferVector : public TraceBuffer {
   size_t current_iteration_index_;
   size_t max_chunks_;
   std::vector<std::unique_ptr<TraceBufferChunk>> chunks_;
-
-  DISALLOW_COPY_AND_ASSIGN(TraceBufferVector);
 };
 
 }  // namespace
@@ -266,7 +267,7 @@ TraceEvent* TraceBufferChunk::AddTraceEvent(size_t* event_index) {
 void TraceBufferChunk::EstimateTraceMemoryOverhead(
     TraceEventMemoryOverhead* overhead) {
   if (!cached_overhead_estimate_) {
-    cached_overhead_estimate_.reset(new TraceEventMemoryOverhead);
+    cached_overhead_estimate_ = std::make_unique<TraceEventMemoryOverhead>();
 
     // When estimating the size of TraceBufferChunk, exclude the array of trace
     // events, as they are computed individually below.

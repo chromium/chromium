@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,11 @@
 #include <memory>
 #include <utility>
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button_controller_delegate.h"
 #include "ui/views/controls/button/menu_button_controller.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/view_class_properties.h"
 
 namespace views {
 
@@ -33,6 +34,10 @@ MenuButton::~MenuButton() = default;
 
 bool MenuButton::Activate(const ui::Event* event) {
   return button_controller()->Activate(event);
+}
+
+void MenuButton::SetCallback(PressedCallback callback) {
+  menu_button_controller_->SetCallback(std::move(callback));
 }
 
 void MenuButton::NotifyClick(const ui::Event& event) {

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
@@ -74,7 +73,6 @@ class BitmapFetcherServiceTest : public testing::Test {
     image.allocN32Pixels(2, 2);
     image.eraseColor(SK_ColorGREEN);
 
-    fetcher->SetStartTimeForTesting();
     fetcher->OnImageDecoded(image);
   }
 
@@ -82,7 +80,6 @@ class BitmapFetcherServiceTest : public testing::Test {
     BitmapFetcher* fetcher =
         const_cast<BitmapFetcher*>(service_->FindFetcherForUrl(url));
     ASSERT_TRUE(fetcher);
-    fetcher->SetStartTimeForTesting();
     fetcher->OnImageDecoded(SkBitmap());
   }
 

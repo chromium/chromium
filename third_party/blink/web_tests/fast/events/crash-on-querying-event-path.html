@@ -21,7 +21,7 @@ function onPageShow() {
 }
 
 function tryToCrash() {
-    // Access of eventObj.path caused the crash.
+    // Access of eventObj.composedPath() caused the crash.
     // The test is somewhat flaky, in that the test may pass as correct
     // despite the bug being the code. The exact conditions
     // are unclear, but 1, asan helps detect the crash and 2, the
@@ -31,7 +31,7 @@ function tryToCrash() {
     gc();
     gc();
     gc();
-    var path = eventObj.path;
+    var path = eventObj.composedPath();
     debug(path);
 
     testPassed('totally did not crash.');

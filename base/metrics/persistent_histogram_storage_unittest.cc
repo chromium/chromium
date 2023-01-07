@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/persistent_histogram_allocator.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +25,12 @@ constexpr char kTestHistogramAllocatorName[] = "TestMetrics";
 }  // namespace
 
 class PersistentHistogramStorageTest : public testing::Test {
+ public:
+  PersistentHistogramStorageTest(const PersistentHistogramStorageTest&) =
+      delete;
+  PersistentHistogramStorageTest& operator=(
+      const PersistentHistogramStorageTest&) = delete;
+
  protected:
   PersistentHistogramStorageTest() = default;
   ~PersistentHistogramStorageTest() override = default;
@@ -46,11 +53,9 @@ class PersistentHistogramStorageTest : public testing::Test {
 
   // The directory into which metrics files are written.
   FilePath test_storage_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(PersistentHistogramStorageTest);
 };
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 TEST_F(PersistentHistogramStorageTest, HistogramWriteTest) {
   auto persistent_histogram_storage =
       std::make_unique<PersistentHistogramStorage>(
@@ -69,7 +74,10 @@ TEST_F(PersistentHistogramStorageTest, HistogramWriteTest) {
   // destruction of the PersistentHistogramStorage instance.
   EXPECT_TRUE(DirectoryExists(test_storage_dir()));
   EXPECT_FALSE(IsDirectoryEmpty(test_storage_dir()));
+
+  // Clean up for subsequent tests.
+  GlobalHistogramAllocator::ReleaseForTesting();
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace base

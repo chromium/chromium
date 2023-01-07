@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ ConfigureGetUpdatesRequestEvent::ConfigureGetUpdatesRequestEvent(
     const sync_pb::ClientToServerMessage& request)
     : timestamp_(timestamp), origin_(origin), request_(request) {}
 
-ConfigureGetUpdatesRequestEvent::~ConfigureGetUpdatesRequestEvent() {}
+ConfigureGetUpdatesRequestEvent::~ConfigureGetUpdatesRequestEvent() = default;
 
 std::unique_ptr<ProtocolEvent> ConfigureGetUpdatesRequestEvent::Clone() const {
   return std::make_unique<ConfigureGetUpdatesRequestEvent>(timestamp_, origin_,
@@ -37,7 +37,9 @@ std::string ConfigureGetUpdatesRequestEvent::GetDetails() const {
 
 std::unique_ptr<base::DictionaryValue>
 ConfigureGetUpdatesRequestEvent::GetProtoMessage(bool include_specifics) const {
-  return ClientToServerMessageToValue(request_, include_specifics);
+  return ClientToServerMessageToValue(
+      request_, {.include_specifics = include_specifics,
+                 .include_full_get_update_triggers = false});
 }
 
 }  // namespace syncer

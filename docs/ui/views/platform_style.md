@@ -48,7 +48,7 @@ is useful to implement the switch using a const boolean exported from
 PlatformStyle, instead of ifdefs inside the control's implementation. For
 example, instead of:
 
-    #if defined(OS_BAR)
+    #if BUILDFLAG(IS_BAR)
     void Foo::DoThing() { ... }
     #else
     void Foo::DoThing() { ... }

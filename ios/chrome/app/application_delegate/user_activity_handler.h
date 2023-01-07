@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,8 @@
 #define IOS_CHROME_APP_APPLICATION_DELEGATE_USER_ACTIVITY_HANDLER_H_
 
 #import <UIKit/UIKit.h>
+
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
 
 @protocol BrowserInterfaceProvider;
 @protocol ConnectionInformation;
@@ -24,16 +26,17 @@ class PrefService;
 // tab or setup startupParameters to open it later. If a new tab must be
 // opened immediately (e.g. if a Siri Shortcut was triggered by the user while
 // Chrome was already in the foreground), it will be done with the provided
-// |browserState|. Returns wether it could continue userActivity.
+// `browserState`. Returns wether it could continue userActivity.
 + (BOOL)continueUserActivity:(NSUserActivity*)userActivity
          applicationIsActive:(BOOL)applicationIsActive
                    tabOpener:(id<TabOpening>)tabOpener
        connectionInformation:(id<ConnectionInformation>)connectionInformation
           startupInformation:(id<StartupInformation>)startupInformation
-                browserState:(ChromeBrowserState*)browserState;
+                browserState:(ChromeBrowserState*)browserState
+                   initStage:(InitStage)initStage;
 
 // Handles the 3D touch application static items. If the First Run UI is active,
-// |completionHandler| will be called with NO.
+// `completionHandler` will be called with NO.
 + (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                    completionHandler:(void (^)(BOOL succeeded))completionHandler
                            tabOpener:(id<TabOpening>)tabOpener
@@ -41,7 +44,8 @@ class PrefService;
                    (id<ConnectionInformation>)connectionInformation
                   startupInformation:(id<StartupInformation>)startupInformation
                    interfaceProvider:
-                       (id<BrowserInterfaceProvider>)interfaceProvider;
+                       (id<BrowserInterfaceProvider>)interfaceProvider
+                           initStage:(InitStage)initStage;
 
 // Returns YES if Chrome is passing a Handoff to itself or if it is an opening
 // from Spotlight.
@@ -53,7 +57,8 @@ class PrefService;
                            (id<ConnectionInformation>)connectionInformation
                           startupInformation:
                               (id<StartupInformation>)startupInformation
-                                browserState:(ChromeBrowserState*)browserState;
+                                browserState:(ChromeBrowserState*)browserState
+                                   initStage:(InitStage)initStage;
 
 // Return YES if the user intends to open links in a certain mode and the
 // browser will proceed the request.

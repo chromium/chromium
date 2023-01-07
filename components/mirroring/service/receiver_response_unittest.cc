@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/test/mock_callback.h"
 #include "components/mirroring/service/value_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,10 +21,11 @@ namespace mirroring {
 class ReceiverResponseTest : public ::testing::Test {
  public:
   ReceiverResponseTest() {}
-  ~ReceiverResponseTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ReceiverResponseTest);
+  ReceiverResponseTest(const ReceiverResponseTest&) = delete;
+  ReceiverResponseTest& operator=(const ReceiverResponseTest&) = delete;
+
+  ~ReceiverResponseTest() override {}
 };
 
 TEST_F(ReceiverResponseTest, ParseValidJson) {
@@ -79,7 +79,6 @@ TEST_F(ReceiverResponseTest, ParseRealWorldAnswerMessage) {
   EXPECT_EQ(50691, response->answer().udp_port);
   EXPECT_EQ(std::vector<int32_t>({0, 1}), response->answer().send_indexes);
   EXPECT_EQ(std::vector<uint32_t>({40863u, 759293u}), response->answer().ssrcs);
-  EXPECT_EQ(false, response->answer().supports_wifi_status_reporting);
 }
 
 TEST_F(ReceiverResponseTest, ParseErrorMessage) {
@@ -102,38 +101,16 @@ TEST_F(ReceiverResponseTest, ParseErrorMessage) {
   ASSERT_TRUE(response->error());
   EXPECT_EQ(42, response->error()->code);
   EXPECT_EQ("it is broken", response->error()->description);
-  std::unique_ptr<base::Value> parsed_details =
-      base::JSONReader::ReadDeprecated(response->error()->details);
+  absl::optional<base::Value> parsed_details =
+      base::JSONReader::Read(response->error()->details);
   ASSERT_TRUE(parsed_details && parsed_details->is_dict());
-  EXPECT_EQ(2u, parsed_details->DictSize());
+  EXPECT_EQ(2u, parsed_details->GetDict().size());
   int fool_value = 0;
   EXPECT_TRUE(GetInt(*parsed_details, "foo", &fool_value));
   EXPECT_EQ(-1, fool_value);
   int bar_value = 0;
   EXPECT_TRUE(GetInt(*parsed_details, "bar", &bar_value));
   EXPECT_EQ(88, bar_value);
-}
-
-TEST_F(ReceiverResponseTest, ParseStatusMessage) {
-  const std::string response_string =
-      R"({"seqNum": 777,
-          "type": "STATUS_RESPONSE",
-          "result": "ok",
-          "sessionId": 12345323,
-          "status": {
-            "wifiSnr": 36.7,
-            "wifiSpeed": [1234, 5678, 3000, 3001],
-            "wifiFcsError": [12, 13, 12, 12]
-          }
-        })";
-  auto response = ReceiverResponse::Parse(response_string);
-  ASSERT_TRUE(response);
-  EXPECT_EQ(777, response->sequence_number());
-  EXPECT_EQ(ResponseType::STATUS_RESPONSE, response->type());
-  ASSERT_TRUE(response->valid());
-  EXPECT_EQ(36.7, response->status().wifi_snr);
-  const std::vector<int32_t> expect_speed({1234, 5678, 3000, 3001});
-  EXPECT_EQ(expect_speed, response->status().wifi_speed);
 }
 
 TEST_F(ReceiverResponseTest, ParseCapabilityMessage) {
@@ -229,7 +206,6 @@ TEST_F(ReceiverResponseTest, ParseResponseWithNullField) {
             "sendIndexes": [0,1],
             "ssrcs": [152818,556029],
             "IV": null,
-            "receiverGetStatus": true,
             "castMode": "mirroring"
           },
           "status": null,
@@ -245,7 +221,6 @@ TEST_F(ReceiverResponseTest, ParseResponseWithNullField) {
   EXPECT_EQ(std::vector<int32_t>({0, 1}), response->answer().send_indexes);
   EXPECT_EQ(std::vector<uint32_t>({152818u, 556029u}),
             response->answer().ssrcs);
-  EXPECT_EQ(true, response->answer().supports_wifi_status_reporting);
 }
 
 }  // namespace mirroring

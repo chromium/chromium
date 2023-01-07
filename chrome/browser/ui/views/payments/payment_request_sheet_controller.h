@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "ui/views/controls/button/button.h"
@@ -36,6 +36,11 @@ class PaymentRequestSheetController {
   PaymentRequestSheetController(base::WeakPtr<PaymentRequestSpec> spec,
                                 base::WeakPtr<PaymentRequestState> state,
                                 base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  PaymentRequestSheetController(const PaymentRequestSheetController&) = delete;
+  PaymentRequestSheetController& operator=(
+      const PaymentRequestSheetController&) = delete;
+
   virtual ~PaymentRequestSheetController();
 
   // Creates a view to be displayed in the PaymentRequestDialog. The header view
@@ -159,6 +164,8 @@ class PaymentRequestSheetController {
     return header_content_separator_container_;
   }
 
+  views::View* content_view() { return content_view_; }
+
   // Returns whether the controller should be controlling the UI.
   bool is_active() const { return is_active_; }
 
@@ -181,26 +188,24 @@ class PaymentRequestSheetController {
   base::WeakPtr<PaymentRequestDialogView> const dialog_;
 
   // This view is owned by its encompassing ScrollView.
-  views::View* pane_ = nullptr;
-  views::View* content_view_ = nullptr;
+  raw_ptr<views::View> pane_ = nullptr;
+  raw_ptr<views::View> content_view_ = nullptr;
 
   // Hold on to the ScrollView because it must be explicitly laid out in some
   // cases.
-  views::ScrollView* scroll_ = nullptr;
+  raw_ptr<views::ScrollView> scroll_ = nullptr;
 
   // Hold on to the primary and secondary buttons to use them as initial focus
   // targets when subclasses don't want to focus anything else.
-  views::MdTextButton* primary_button_ = nullptr;
-  views::Button* secondary_button_ = nullptr;
-  views::View* header_view_ = nullptr;
-  views::View* header_content_separator_container_ = nullptr;
+  raw_ptr<views::MdTextButton> primary_button_ = nullptr;
+  raw_ptr<views::Button> secondary_button_ = nullptr;
+  raw_ptr<views::View> header_view_ = nullptr;
+  raw_ptr<views::View> header_content_separator_container_ = nullptr;
 
   // Whether the controller should be controlling the UI.
   bool is_active_ = true;
 
   base::WeakPtrFactory<PaymentRequestSheetController> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestSheetController);
 };
 
 }  // namespace payments

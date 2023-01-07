@@ -1,0 +1,99 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("permissions") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "permission_metrics_util.h",
+    "permission_metrics_util.mm",
+    "permissions_consumer.h",
+    "permissions_delegate.h",
+  ]
+  deps = [
+    ":permission_info",
+    "//base:base",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ios/web/public/permissions",
+  ]
+}
+
+source_set("permission_info") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "permission_info.h",
+    "permission_info.mm",
+  ]
+  deps = []
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "permissions_constants.h",
+    "permissions_constants.mm",
+  ]
+  deps = []
+}
+
+source_set("eg_app_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "permissions_app_interface.h",
+    "permissions_app_interface.mm",
+  ]
+  deps = [
+    "//ios/chrome/app:app_internal",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/tabs:tabs",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/test/app:test_support",
+    "//ios/testing/earl_grey:eg_app_support+eg2",
+    "//ios/web/public",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "permissions_app_interface.h",
+    "permissions_app_interface_stub.mm",
+  ]
+  deps = [ "//ios/third_party/earl_grey2:test_lib" ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "permissions_egtest.mm" ]
+  deps = [
+    ":constants",
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/badges:public",
+    "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/browser/ui/infobars/modals:public",
+    "//ios/chrome/browser/ui/permissions:constants",
+    "//ios/chrome/browser/ui/permissions:permission_info",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/common",
+    "//ios/web/public/permissions",
+    "//net:test_support",
+    "//ui/base",
+  ]
+}

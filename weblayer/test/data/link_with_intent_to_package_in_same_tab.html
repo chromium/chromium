@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+</head>
+<body>
+  <a id='link'>
+    Click to intent to the package specified in the URL hash in this tab
+  </a>
+  <script type="text/javascript">
+    document.getElementById('link').href = 'intent://example.test#Intent;scheme=https;action=android.intent.action.VIEW;package=' + window.location.href.split('#')[1] + ';end';
+  </script>
+</body>
+</html>

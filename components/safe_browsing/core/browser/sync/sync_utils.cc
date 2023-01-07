@@ -1,11 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
@@ -43,7 +43,7 @@ bool SyncUtils::AreSigninAndSyncSetUpForSafeBrowsingTokenFetches(
          (syncer::GetUploadToGoogleState(
               sync_service, syncer::ModelType::HISTORY_DELETE_DIRECTIVES) ==
           syncer::UploadState::ACTIVE) &&
-         !sync_service->GetUserSettings()->IsUsingSecondaryPassphrase();
+         !sync_service->GetUserSettings()->IsUsingExplicitPassphrase();
 }
 
 // TODO(bdea): Migrate other SB classes that define this method to call the one

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/test/test_render_frame_host.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
+#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -35,7 +36,7 @@ class RenderFrameHostPermissionsPolicyTest
       blink::mojom::PermissionsPolicyFeature::kGeolocation;
 
   RenderFrameHost* GetMainRFH(const char* origin) {
-    RenderFrameHost* result = web_contents()->GetMainFrame();
+    RenderFrameHost* result = web_contents()->GetPrimaryMainFrame();
     RenderFrameHostTester::For(result)->InitializeRenderFrameIfNeeded();
     SimulateNavigation(&result, GURL(origin));
     return result;
@@ -86,8 +87,10 @@ class RenderFrameHostPermissionsPolicyTest
       const std::vector<std::string>& origins) {
     blink::ParsedPermissionsPolicy result(1);
     result[0].feature = feature;
-    for (auto const& origin : origins)
-      result[0].allowed_origins.push_back(url::Origin::Create(GURL(origin)));
+    for (auto const& origin : origins) {
+      result[0].allowed_origins.emplace_back(url::Origin::Create(GURL(origin)),
+                                             /*has_subdomain_wildcard=*/false);
+    }
     return result;
   }
 };

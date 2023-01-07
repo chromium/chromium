@@ -1,4 +1,4 @@
-CONSOLE MESSAGE: line 25: Dragging over plugin_drag
+CONSOLE MESSAGE: Dragging over plugin_drag
 Plugin received event: MouseEnter
 Plugin received event: MouseMove
 Plugin received event: DragEnter
@@ -8,11 +8,11 @@ Plugin received event: DragEnter
 Plugin received event: DragOver
 Plugin received event: DragDrop
 Plugin received event: MouseLeave
-CONSOLE MESSAGE: line 25: Dragging over plugin_editable
+CONSOLE MESSAGE: Dragging over plugin_editable
 Plugin received event: MouseEnter
 Plugin received event: MouseMove
 Plugin received event: MouseLeave
-CONSOLE MESSAGE: line 25: Dragging over plugin
+CONSOLE MESSAGE: Dragging over plugin
 Plugin received event: MouseEnter
 Plugin received event: MouseMove
 Plugin received event: MouseLeave

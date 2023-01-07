@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,7 +21,7 @@ ARCH_DEPENDENT_STRING = "ArchDependentSize"
 
 
 COPYRIGHT_STRING_C = (
-"""/* Copyright (c) %s The Chromium Authors. All rights reserved.
+"""/* Copyright %s The Chromium Authors
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
  *

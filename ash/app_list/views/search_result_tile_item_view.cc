@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,10 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
+#include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
+#include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_id.h"
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_macros.h"
@@ -27,19 +30,20 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/themed_vector_icon.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/native_theme/themed_vector_icon.h"
-#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/style/typography.h"
 
 namespace ash {
 
@@ -58,11 +62,12 @@ constexpr int kSearchRatingStarHorizontalSpacing = 1;
 constexpr int kSearchRatingStarVerticalSpacing = 2;
 // Text line height in the search result tile.
 constexpr int kTileTextLineHeight = 16;
+constexpr int kBadgeIconShadowWidth = 1;
 
 // Delta applied to the font size of SearchResultTile title.
 constexpr int kSearchResultTileTitleTextSizeDelta = 1;
 
-constexpr int kIconSelectedSize = 56;
+constexpr int kIconSelectedSize = 58;
 constexpr int kIconSelectedCornerRadius = 4;
 
 // Offset for centering star rating when there is no price.
@@ -100,18 +105,14 @@ SearchResultTileItemView::SearchResultTileItemView(
   badge_->SetVisible(false);
 
   title_ = AddChildView(std::make_unique<views::Label>());
+  title_->SetEnabledColorId(cros_tokens::kTextColorSecondary);
   title_->SetAutoColorReadabilityEnabled(false);
-  title_->SetEnabledColor(AppListColorProvider::Get()->GetSearchBoxTextColor(
-      /*default_color*/ SK_ColorWHITE));
   title_->SetLineHeight(kTileTextLineHeight);
   title_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   title_->SetHandlesTooltips(false);
   title_->SetAllowCharacterBreak(true);
 
   rating_ = AddChildView(std::make_unique<views::Label>());
-  rating_->SetEnabledColor(
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          /*default_color*/ gfx::kGoogleGrey700));
   rating_->SetLineHeight(kTileTextLineHeight);
   rating_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
   rating_->SetVisible(false);
@@ -119,16 +120,10 @@ SearchResultTileItemView::SearchResultTileItemView(
   rating_star_ = AddChildView(std::make_unique<views::ImageView>());
   rating_star_->SetCanProcessEventsWithinSubtree(false);
   rating_star_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
-  rating_star_->SetImage(gfx::CreateVectorIcon(
-      kBadgeRatingIcon, kSearchRatingStarSize,
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          gfx::kGoogleGrey700)));
   rating_star_->SetVisible(false);
 
   price_ = AddChildView(std::make_unique<views::Label>());
-  price_->SetEnabledColor(
-      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
-          /*default_color*/ gfx::kGoogleGreen600));
+  price_->SetEnabledColorId(cros_tokens::kTextColorSecondary);
   price_->SetLineHeight(kTileTextLineHeight);
   price_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   price_->SetVisible(false);
@@ -149,6 +144,7 @@ void SearchResultTileItemView::OnResultChanged() {
     return;
 
   SetTitle(result()->title());
+  SetTitleTags(result()->title_tags());
   SetRating(result()->rating());
   SetPrice(result()->formatted_price());
 
@@ -182,9 +178,7 @@ void SearchResultTileItemView::OnResultChanged() {
   } else {
     title_->SetFontList(font);
   }
-  title_->SetEnabledColor(AppListColorProvider::Get()->GetSearchBoxTextColor(
-      /*default_color*/ gfx::kGoogleGrey900));
-
+  title_->SetEnabledColorId(cros_tokens::kTextColorPrimary);
   title_->SetMaxLines(2);
   title_->SetMultiLine(
       (result()->display_type() == SearchResultDisplayType::kTile ||
@@ -194,47 +188,10 @@ void SearchResultTileItemView::OnResultChanged() {
 
   // If the new icon is null, it's being decoded asynchronously. Not updating it
   // now to prevent flickering from showing an empty icon while decoding.
-  if (!result()->icon().isNull())
+  if (!result()->icon().icon.isNull())
     OnMetadataChanged();
 
   UpdateAccessibleName();
-}
-
-std::u16string SearchResultTileItemView::ComputeAccessibleName() const {
-  std::u16string accessible_name;
-  if (!result()->accessible_name().empty())
-    return result()->accessible_name();
-
-  if (result()->result_type() == AppListSearchResultType::kPlayStoreApp ||
-      result()->result_type() == AppListSearchResultType::kInstantApp) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_ARC_APP_ANNOUNCEMENT, title_->GetText());
-  } else if (result()->result_type() ==
-             AppListSearchResultType::kPlayStoreReinstallApp) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_APP_RECOMMENDATION_ARC, title_->GetText());
-  } else if (result()->result_type() ==
-             AppListSearchResultType::kInstalledApp) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_INSTALLED_APP_ANNOUNCEMENT, title_->GetText());
-  } else if (result()->result_type() == AppListSearchResultType::kInternalApp) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_INTERNAL_APP_ANNOUNCEMENT, title_->GetText());
-  } else {
-    accessible_name = title_->GetText();
-  }
-
-  if (rating_ && rating_->GetVisible()) {
-    accessible_name = l10n_util::GetStringFUTF16(
-        IDS_APP_ACCESSIBILITY_APP_WITH_STAR_RATING_ARC, accessible_name,
-        rating_->GetText());
-  }
-  if (price_ && price_->GetVisible()) {
-    accessible_name =
-        l10n_util::GetStringFUTF16(IDS_APP_ACCESSIBILITY_APP_WITH_PRICE_ARC,
-                                   accessible_name, price_->GetText());
-  }
-  return accessible_name;
 }
 
 void SearchResultTileItemView::SetParentBackgroundColor(SkColor color) {
@@ -248,7 +205,6 @@ void SearchResultTileItemView::GetAccessibleNodeData(
 
   // The tile is a list item in the search result page's result list.
   node_data->role = ax::mojom::Role::kListBoxOption;
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, selected());
   node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
 
   // Specify |ax::mojom::StringAttribute::kDescription| with an empty string, so
@@ -292,24 +248,33 @@ void SearchResultTileItemView::PaintButtonContents(gfx::Canvas* canvas) {
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kSelectionRingWidth);
-  flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
+  flags.setColor(AppListColorProvider::Get()->GetFocusRingColor(GetWidget()));
 
   gfx::RectF selection_ring = GetSelectionRingBounds();
-  selection_ring.Inset(0, kSelectionRingWidth);
+  selection_ring.Inset(gfx::InsetsF::VH(kSelectionRingWidth / 2.0, 0));
   canvas->DrawRoundRect(selection_ring, kIconSelectedCornerRadius, flags);
+}
+
+void SearchResultTileItemView::OnThemeChanged() {
+  SearchResultBaseView::OnThemeChanged();
+  rating_star_->SetImage(gfx::CreateVectorIcon(
+      kBadgeRatingIcon, kSearchRatingStarSize,
+      AppListColorProvider::Get()->GetSearchBoxSecondaryTextColor(
+          gfx::kGoogleGrey700, GetWidget())));
 }
 
 gfx::RectF SearchResultTileItemView::GetSelectionRingBounds() const {
   gfx::RectF bounds(GetContentsBounds());
   const float horizontal_padding = (bounds.width() - kIconSelectedSize) / 2.0;
-  bounds.Inset(horizontal_padding, 0);
+  bounds.Inset(gfx::InsetsF::VH(0, horizontal_padding));
   bounds.set_height(kIconSelectedSize);
   return bounds;
 }
 
 void SearchResultTileItemView::OnMetadataChanged() {
-  SetIcon(result()->icon());
+  SetIcon(result()->icon().icon);
   SetTitle(result()->title());
+  SetTitleTags(result()->title_tags());
   SetBadgeIcon(result()->badge_icon(), result()->use_badge_icon_background());
   SetRating(result()->rating());
   SetPrice(result()->formatted_price());
@@ -343,9 +308,9 @@ void SearchResultTileItemView::OnGetContextMenuModel(
   gfx::Rect anchor_rect = gfx::ToEnclosingRect(GetSelectionRingBounds());
   views::View::ConvertRectToScreen(this, &anchor_rect);
 
-  AppLaunchedMetricParams metric_params = {
+  AppLaunchedMetricParams metric_params(
       AppListLaunchedFrom::kLaunchedFromSearchBox,
-      AppListLaunchType::kAppSearchResult};
+      AppListLaunchType::kAppSearchResult);
   view_delegate_->GetAppLaunchedMetricParams(&metric_params);
 
   context_menu_ = std::make_unique<AppListMenuModelAdapter>(
@@ -353,15 +318,15 @@ void SearchResultTileItemView::OnGetContextMenuModel(
       metric_params, GetAppType(),
       base::BindOnce(&SearchResultTileItemView::OnMenuClosed,
                      weak_ptr_factory_.GetWeakPtr()),
-      view_delegate_->GetSearchModel()->tablet_mode());
+      view_delegate_->IsInTabletMode());
   context_menu_->Run(anchor_rect, views::MenuAnchorPosition::kBubbleRight,
                      views::MenuRunner::HAS_MNEMONICS |
-                         views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+                         views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                          views::MenuRunner::CONTEXT_MENU |
                          views::MenuRunner::FIXED_ANCHOR);
   if (!selected()) {
     selected_for_context_menu_ = true;
-    SetSelected(true, base::nullopt);
+    SetSelected(true, absl::nullopt);
   }
 }
 
@@ -371,7 +336,7 @@ void SearchResultTileItemView::OnMenuClosed() {
   context_menu_.reset();
   if (selected_for_context_menu_) {
     selected_for_context_menu_ = false;
-    SetSelected(false, base::nullopt);
+    SetSelected(false, absl::nullopt);
   }
 }
 
@@ -399,8 +364,8 @@ void SearchResultTileItemView::ActivateResult(int event_flags,
 
   LogAppLaunchForSuggestedApp();
 
-  RecordSearchResultOpenSource(result(), view_delegate_->GetModel(),
-                               view_delegate_->GetSearchModel());
+  RecordSearchResultOpenSource(result(), view_delegate_->GetAppListViewState(),
+                               view_delegate_->IsInTabletMode());
   view_delegate_->OpenSearchResult(result()->id(), event_flags,
                                    AppListLaunchedFrom::kLaunchedFromSearchBox,
                                    AppListLaunchType::kAppSearchResult,
@@ -423,15 +388,10 @@ void SearchResultTileItemView::SetBadgeIcon(const ui::ImageModel& badge_icon,
     return;
   }
 
-  gfx::ImageSkia badge_icon_skia =
-      badge_icon.IsVectorIcon()
-          ? ui::ThemedVectorIcon(badge_icon.GetVectorIcon())
-                .GetImageSkia(GetNativeTheme())
-          : badge_icon.GetImage().AsImageSkia();
+  gfx::ImageSkia badge_icon_skia = badge_icon.Rasterize(GetColorProvider());
 
   if (use_badge_icon_background) {
-    badge_icon_skia =
-        CreateIconWithCircleBackground(badge_icon_skia, SK_ColorWHITE);
+    badge_icon_skia = CreateIconWithCircleBackground(badge_icon_skia);
   }
 
   gfx::ImageSkia resized_badge_icon(
@@ -441,9 +401,11 @@ void SearchResultTileItemView::SetBadgeIcon(const ui::ImageModel& badge_icon,
 
   gfx::ShadowValues shadow_values;
   shadow_values.push_back(
-      gfx::ShadowValue(gfx::Vector2d(0, 1), 0, SkColorSetARGB(0x33, 0, 0, 0)));
+      gfx::ShadowValue(gfx::Vector2d(0, kBadgeIconShadowWidth), 0,
+                       SkColorSetARGB(0x33, 0, 0, 0)));
   shadow_values.push_back(
-      gfx::ShadowValue(gfx::Vector2d(0, 1), 2, SkColorSetARGB(0x33, 0, 0, 0)));
+      gfx::ShadowValue(gfx::Vector2d(0, kBadgeIconShadowWidth), 2,
+                       SkColorSetARGB(0x33, 0, 0, 0)));
   badge_->SetImage(gfx::ImageSkiaOperations::CreateImageWithDropShadow(
       resized_badge_icon, shadow_values));
   badge_->SetVisible(true);
@@ -451,6 +413,14 @@ void SearchResultTileItemView::SetBadgeIcon(const ui::ImageModel& badge_icon,
 
 void SearchResultTileItemView::SetTitle(const std::u16string& title) {
   title_->SetText(title);
+}
+
+void SearchResultTileItemView::SetTitleTags(const SearchResultTags& tags) {
+  for (const auto& tag : tags) {
+    if (tag.styles & SearchResult::Tag::MATCH) {
+      title_->SetTextStyleRange(views::style::STYLE_EMPHASIZED, tag.range);
+    }
+  }
 }
 
 void SearchResultTileItemView::SetRating(float rating) {
@@ -483,22 +453,14 @@ void SearchResultTileItemView::SetPrice(const std::u16string& price) {
 
 AppListMenuModelAdapter::AppListViewAppType
 SearchResultTileItemView::GetAppType() const {
-  if (IsSuggestedAppTile()) {
-    if (view_delegate_->GetModel()->state_fullscreen() ==
-        AppListViewState::kPeeking) {
-      return AppListMenuModelAdapter::PEEKING_SUGGESTED;
-    } else {
-      return AppListMenuModelAdapter::FULLSCREEN_SUGGESTED;
-    }
-  } else {
-    if (view_delegate_->GetModel()->state_fullscreen() ==
-        AppListViewState::kHalf) {
-      return AppListMenuModelAdapter::HALF_SEARCH_RESULT;
-    } else if (view_delegate_->GetModel()->state_fullscreen() ==
-               AppListViewState::kFullscreenSearch) {
-      return AppListMenuModelAdapter::FULLSCREEN_SEARCH_RESULT;
-    }
+  if (IsSuggestedAppTile())
+    return AppListMenuModelAdapter::FULLSCREEN_SUGGESTED;
+
+  if (view_delegate_->GetAppListViewState() ==
+      AppListViewState::kFullscreenSearch) {
+    return AppListMenuModelAdapter::FULLSCREEN_SEARCH_RESULT;
   }
+
   NOTREACHED();
   return AppListMenuModelAdapter::APP_LIST_APP_TYPE_LAST;
 }
@@ -541,7 +503,8 @@ void SearchResultTileItemView::Layout() {
   icon_->SetBoundsRect(icon_rect);
 
   const int badge_icon_dimension =
-      SharedAppListConfig::instance().search_tile_badge_icon_dimension();
+      SharedAppListConfig::instance().search_tile_badge_icon_dimension() +
+      2 * kBadgeIconShadowWidth;
   const int badge_icon_offset =
       SharedAppListConfig::instance().search_tile_badge_icon_offset();
   const gfx::Rect badge_rect(
@@ -562,8 +525,8 @@ void SearchResultTileItemView::Layout() {
 
   if (rating_) {
     gfx::Rect rating_rect(rect);
-    rating_rect.Inset(rating_horizontal_offset,
-                      title_->GetPreferredSize().height(), 0, 0);
+    rating_rect.Inset(gfx::Insets::TLBR(title_->GetPreferredSize().height(),
+                                        rating_horizontal_offset, 0, 0));
     rating_rect.set_size(rating_->GetPreferredSize());
     rating_rect.set_width(kSearchRatingSize);
     rating_->SetBoundsRect(rating_rect);
@@ -571,19 +534,19 @@ void SearchResultTileItemView::Layout() {
 
   if (rating_star_) {
     gfx::Rect rating_star_rect(rect);
-    rating_star_rect.Inset(
+    rating_star_rect.Inset(gfx::Insets::TLBR(
+        title_->GetPreferredSize().height() + kSearchRatingStarVerticalSpacing,
         rating_horizontal_offset + kSearchRatingSize +
             kSearchRatingStarHorizontalSpacing,
-        title_->GetPreferredSize().height() + kSearchRatingStarVerticalSpacing,
-        0, 0);
+        0, 0));
     rating_star_rect.set_size(rating_star_->GetPreferredSize());
     rating_star_->SetBoundsRect(rating_star_rect);
   }
 
   if (price_) {
     gfx::Rect price_rect(rect);
-    price_rect.Inset(rect.width() - kSearchPriceSize,
-                     title_->GetPreferredSize().height(), 0, 0);
+    price_rect.Inset(gfx::Insets::TLBR(title_->GetPreferredSize().height(),
+                                       rect.width() - kSearchPriceSize, 0, 0));
     price_rect.set_size(price_->GetPreferredSize());
     price_->SetBoundsRect(price_rect);
   }

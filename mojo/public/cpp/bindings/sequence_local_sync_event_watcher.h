@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace mojo {
@@ -31,6 +30,11 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SequenceLocalSyncEventWatcher {
  public:
   explicit SequenceLocalSyncEventWatcher(
       const base::RepeatingClosure& callback);
+
+  SequenceLocalSyncEventWatcher(const SequenceLocalSyncEventWatcher&) = delete;
+  SequenceLocalSyncEventWatcher& operator=(
+      const SequenceLocalSyncEventWatcher&) = delete;
+
   ~SequenceLocalSyncEventWatcher();
 
   // Signals the shared event on behalf of this specific watcher. Safe to call
@@ -60,8 +64,6 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SequenceLocalSyncEventWatcher {
   const std::unique_ptr<Registration> registration_;
   const base::RepeatingClosure callback_;
   bool can_wake_up_during_any_watch_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SequenceLocalSyncEventWatcher);
 };
 
 }  // namespace mojo

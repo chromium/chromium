@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,5 +35,14 @@ bool InstallabilityError::operator==(const InstallabilityError& other) const {
 }
 
 InstallabilityError::~InstallabilityError() = default;
+
+std::ostream& operator<<(std::ostream& os, const InstallabilityError& error) {
+  os << "[" << error.error_id;
+  for (const auto& arg : error.installability_error_arguments)
+    os << ", " << arg.name << "=" << arg.value;
+  os << "]";
+
+  return os;
+}
 
 }  // namespace content

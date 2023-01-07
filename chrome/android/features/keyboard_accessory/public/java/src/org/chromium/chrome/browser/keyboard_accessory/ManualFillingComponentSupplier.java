@@ -1,8 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.keyboard_accessory;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -22,6 +24,7 @@ public class ManualFillingComponentSupplier
      * Return {@link ManualFillingComponent} supplier associated with the given {@link
      * WindowAndroid}.
      */
+    @Nullable
     public static ObservableSupplier<ManualFillingComponent> from(WindowAndroid windowAndroid) {
         return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }

@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/service_manager/public/cpp/service_keepalive.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
+#include "base/observer_list.h"
 #include "services/service_manager/public/cpp/service_receiver.h"
 
 namespace service_manager {
@@ -21,6 +21,9 @@ class ServiceKeepaliveRefImpl : public ServiceKeepaliveRef {
     // thread from the one which constructed it.
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
+
+  ServiceKeepaliveRefImpl(const ServiceKeepaliveRefImpl&) = delete;
+  ServiceKeepaliveRefImpl& operator=(const ServiceKeepaliveRefImpl&) = delete;
 
   ~ServiceKeepaliveRefImpl() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -52,12 +55,10 @@ class ServiceKeepaliveRefImpl : public ServiceKeepaliveRef {
   base::WeakPtr<ServiceKeepalive> keepalive_;
   scoped_refptr<base::SequencedTaskRunner> keepalive_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceKeepaliveRefImpl);
 };
 
 ServiceKeepalive::ServiceKeepalive(ServiceReceiver* receiver,
-                                   base::Optional<base::TimeDelta> idle_timeout)
+                                   absl::optional<base::TimeDelta> idle_timeout)
     : receiver_(receiver), idle_timeout_(idle_timeout) {}
 
 ServiceKeepalive::~ServiceKeepalive() = default;

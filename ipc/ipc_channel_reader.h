@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ipc/ipc_channel.h"
 
 namespace IPC {
@@ -32,6 +32,10 @@ namespace internal {
 class COMPONENT_EXPORT(IPC) ChannelReader {
  public:
   explicit ChannelReader(Listener* listener);
+
+  ChannelReader(const ChannelReader&) = delete;
+  ChannelReader& operator=(const ChannelReader&) = delete;
+
   virtual ~ChannelReader();
 
   void set_listener(Listener* listener) { listener_ = listener; }
@@ -143,7 +147,7 @@ class COMPONENT_EXPORT(IPC) ChannelReader {
   // Checks that |size| is a valid message size. Has side effects if it's not.
   bool CheckMessageSize(size_t size);
 
-  Listener* listener_;
+  raw_ptr<Listener> listener_;
 
   // We read from the pipe into this buffer. Managed by DispatchInputData, do
   // not access directly outside that function.
@@ -157,8 +161,6 @@ class COMPONENT_EXPORT(IPC) ChannelReader {
   // This is not a constant because we update it to reflect the reality
   // of std::string::reserve() implementation.
   size_t max_input_buffer_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChannelReader);
 };
 
 }  // namespace internal

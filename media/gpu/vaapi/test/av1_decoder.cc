@@ -1,6 +1,8 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "media/gpu/vaapi/test/av1_decoder.h"
 
 #include <va/va.h>
 #include <va/va_dec_av1.h>
@@ -10,10 +12,11 @@
 #include "base/notreached.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/vaapi/test/av1_decoder.h"
 #include "media/gpu/vaapi/test/macros.h"
+#include "media/gpu/vaapi/test/scoped_va_config.h"
 #include "media/gpu/vaapi/test/scoped_va_context.h"
-#include "media/gpu/vaapi/test/video_decoder.h"
+#include "media/gpu/vaapi/test/shared_va_surface.h"
+#include "media/gpu/vaapi/test/vaapi_device.h"
 #include "third_party/libgav1/src/src/warp_prediction.h"
 
 namespace media {
@@ -526,9 +529,9 @@ unsigned int GetFormatForColorConfig(libgav1::ColorConfig color_config) {
 }  // namespace
 
 Av1Decoder::Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
-                       const VaapiDevice& va_device)
-    : ivf_parser_(std::move(ivf_parser)),
-      va_device_(va_device),
+                       const VaapiDevice& va_device,
+                       SharedVASurface::FetchPolicy fetch_policy)
+    : VideoDecoder::VideoDecoder(va_device, fetch_policy),
       buffer_pool_(std::make_unique<libgav1::BufferPool>(
           /*on_frame_buffer_size_changed=*/nullptr,
           /*get_frame_buffer=*/nullptr,
@@ -536,7 +539,8 @@ Av1Decoder::Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
           /*callback_private_data=*/nullptr)),
       state_(std::make_unique<libgav1::DecoderState>()),
       ref_frames_(kAv1NumRefFrames),
-      display_surfaces_(kAv1NumRefFrames) {}
+      display_surfaces_(kAv1NumRefFrames),
+      ivf_parser_(std::move(ivf_parser)) {}
 
 Av1Decoder::~Av1Decoder() {
   // We destroy the state explicitly to ensure it's destroyed before the
@@ -612,7 +616,11 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   }
 
   libgav1::ObuFrameHeader current_frame_header = obu_parser_->frame_header();
-  last_decoded_frame_visible_ = current_frame_header.show_frame;
+  if (current_frame_header.show_existing_frame) {
+    last_decoded_frame_visible_ = true;
+  } else {
+    last_decoded_frame_visible_ = current_frame_header.show_frame;
+  }
 
   if (obu_parser_->sequence_header_changed()) {
     if (current_frame_header.frame_type != libgav1::kFrameKey ||
@@ -726,7 +734,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
     default:
       // The OBU Parser can only produce bit depths of 8, 10, and 12; we should
       // not hit any other cases. See
-      // https://source.chromium.org/chromium/chromium/src/+/master:third_party/libgav1/src/src/obu_parser.cc;l=144-150;drc=7880d0cc1d1976012dbec8a1bb982191ac49b7f4
+      // https://source.chromium.org/chromium/chromium/src/+/main:third_party/libgav1/src/src/obu_parser.cc;l=144-150;drc=7880d0cc1d1976012dbec8a1bb982191ac49b7f4
       NOTREACHED() << "Invalid color bit depth: "
                    << current_sequence_header_->color_config.bitdepth;
   }
@@ -899,18 +907,6 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   buffers.clear();
 
   return VideoDecoder::kOk;
-}
-
-void Av1Decoder::LastDecodedFrameToPNG(const std::string& path) {
-  last_decoded_surface_->SaveAsPNG(path);
-}
-
-std::string Av1Decoder::LastDecodedFrameMD5Sum() {
-  return last_decoded_surface_->GetMD5Sum();
-}
-
-bool Av1Decoder::LastDecodedFrameVisible() {
-  return last_decoded_frame_visible_;
 }
 
 }  // namespace vaapi_test

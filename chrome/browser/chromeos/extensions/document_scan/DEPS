@@ -1,3 +1,0 @@
-include_rules = [
-  "+third_party/cros_system_api",
-]

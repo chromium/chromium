@@ -37,7 +37,7 @@
 
 #include <string.h>
 
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace WTF {
@@ -138,7 +138,7 @@ namespace internal {
 double ParseDoubleFromLongString(const UChar* string,
                                  size_t length,
                                  size_t& parsed_length) {
-  wtf_size_t conversion_length = SafeCast<wtf_size_t>(length);
+  wtf_size_t conversion_length = base::checked_cast<wtf_size_t>(length);
   Vector<LChar> conversion_buffer(conversion_length);
   for (wtf_size_t i = 0; i < conversion_length; ++i)
     conversion_buffer[i] = IsASCII(string[i]) ? string[i] : 0;

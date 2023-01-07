@@ -1,6 +1,6 @@
 <!---
   The live version of this document can be viewed at:
-  https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/platform/graphics/README.md
+  https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/platform/graphics/README.md
 -->
 
 # Platform graphics code

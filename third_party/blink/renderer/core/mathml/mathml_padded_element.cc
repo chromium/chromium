@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,6 +48,8 @@ void MathMLPaddedElement::ParseAttribute(
     const AttributeModificationParams& param) {
   if (param.name == mathml_names::kLspaceAttr ||
       param.name == mathml_names::kVoffsetAttr) {
+    // TODO(crbug.com/1121113): Isn't it enough to set needs style recalc and
+    // let the style system perform proper layout and paint invalidation?
     SetNeedsStyleRecalc(
         kLocalStyleChange,
         StyleChangeReasonForTracing::Create(style_change_reason::kAttribute));
@@ -85,11 +87,10 @@ void MathMLPaddedElement::CollectStyleForPresentationAttribute(
 LayoutObject* MathMLPaddedElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  DCHECK(!style.IsDisplayMathType() || legacy != LegacyLayout::kForce);
   if (!RuntimeEnabledFeatures::MathMLCoreEnabled() ||
-      !style.IsDisplayMathType())
+      !style.IsDisplayMathType() || legacy == LegacyLayout::kForce)
     return MathMLElement::CreateLayoutObject(style, legacy);
-  return new LayoutNGMathMLBlockWithAnonymousMrow(this);
+  return MakeGarbageCollected<LayoutNGMathMLBlockWithAnonymousMrow>(this);
 }
 
 }  // namespace blink

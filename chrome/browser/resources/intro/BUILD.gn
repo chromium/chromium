@@ -1,0 +1,32 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/browser/resources/tools/build_webui.gni")
+import("//components/signin/features.gni")
+
+assert(is_chromeos_lacros || enable_dice_support)
+
+build_webui("build") {
+  grd_prefix = "intro"
+
+  static_files = [ "intro.html" ]
+
+  if (is_chromeos_lacros) {
+    web_component_files = [ "lacros_app.ts" ]
+  } else if (enable_dice_support) {
+    web_component_files = [ "dice_app.ts" ]
+  }
+
+  non_web_component_files = [ "browser_proxy.ts" ]
+
+  icons_html_files = [ "icons.html" ]
+
+  ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+  ts_composite = true
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+}

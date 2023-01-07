@@ -238,7 +238,7 @@ The `base::circular_deque` implementation (and the `base::queue` which uses it)
 provide performance consistent across platforms that better matches most
 programmer's expectations on performance (it doesn't waste as much space as
 libc++ and doesn't do as many heap allocations as MSVC). It also generates less
-code tham `std::queue`: using it across the code base saves several hundred
+code than `std::queue`: using it across the code base saves several hundred
 kilobytes.
 
 Since `base::deque` does not have stable iterators and it will move the objects
@@ -319,7 +319,7 @@ As of 8 August 2018, we have added checks to the following classes:
 
 - `base::StringPiece`
 - `base::span`
-- `base::Optional`
+- `base::optional`
 - `base::RingBuffer`
 - `base::small_map`
 

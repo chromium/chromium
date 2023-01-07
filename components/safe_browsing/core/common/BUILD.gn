@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -13,10 +13,9 @@ static_library("safe_browsing_prefs") {
   ]
 
   deps = [
+    ":common",
     "//components/pref_registry:pref_registry",
     "//components/prefs",
-    "//components/safe_browsing/core:features",
-    "//components/safe_browsing/core/common:thread_utils",
     "//net:net",
   ]
 
@@ -42,41 +41,38 @@ source_set("safe_browsing_policy_handler") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "features_unittest.cc",
     "safe_browsing_policy_handler_unittest.cc",
     "safe_browsing_prefs_unittest.cc",
+    "utils_unittest.cc",
   ]
 
   deps = [
+    ":common",
     ":safe_browsing_policy_handler",
     ":safe_browsing_prefs",
-    ":test_support",
     "//base:base",
     "//base/test:test_support",
     "//components/policy/core/browser:browser",
     "//components/policy/core/browser:test_support",
     "//components/prefs:test_support",
-    "//components/safe_browsing/core:features",
     "//testing/gtest",
     "//url:url",
   ]
-
-  if (safe_browsing_mode == 1) {
-    sources += [ "visual_utils_unittest.cc" ]
-    deps += [
-      ":common",
-      "//ui/gfx:color_utils",
-    ]
-  }
 }
 
 source_set("common") {
   sources = [
+    "features.cc",
+    "features.h",
     "safebrowsing_constants.cc",
     "safebrowsing_constants.h",
     "safebrowsing_switches.cc",
     "safebrowsing_switches.h",
     "utils.cc",
     "utils.h",
+    "web_ui_constants.cc",
+    "web_ui_constants.h",
   ]
 
   deps = [
@@ -84,8 +80,9 @@ source_set("common") {
     "//build:chromeos_buildflags",
     "//components/policy/core/browser:browser",
     "//components/prefs:prefs",
-    "//components/safe_browsing/core:csd_proto",
-    "//components/safe_browsing/core:features",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/variations",
     "//crypto:crypto",
     "//ipc",
     "//net",
@@ -93,57 +90,11 @@ source_set("common") {
     "//url/ipc:url_ipc",
   ]
 
-  if (safe_browsing_mode == 1 || safe_browsing_mode == 2) {
-    sources += [
-      "visual_utils.cc",
-      "visual_utils.h",
-    ]
-    deps += [
-      "//components/safe_browsing/core:client_model_proto",
-      "//third_party/opencv:emd",
-      "//ui/gfx:color_utils",
-    ]
-  }
-
   public_deps = [ ":interfaces" ]
-
-  if (!is_ios) {
-    sources += [ "//components/safe_browsing/content/common/safebrowsing_constants_content.cc" ]
-    deps += [ "//third_party/blink/public/mojom:mojom_platform_headers" ]
-  }
 }
 
 mojom("interfaces") {
   sources = [ "safe_browsing_url_checker.mojom" ]
 
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
-}
-
-source_set("thread_utils") {
-  sources = [ "thread_utils.h" ]
-
-  deps = [ "//base" ]
-
-  if (is_ios) {
-    sources += [ "//components/safe_browsing/ios/thread_utils_ios.cc" ]
-    deps += [ "//ios/web/public/thread" ]
-  } else {
-    sources += [ "//components/safe_browsing/content/common/thread_utils.cc" ]
-    deps += [ "//content/public/browser" ]
-  }
-}
-
-source_set("test_support") {
-  testonly = true
-  sources = [ "test_task_environment.h" ]
-  deps = [ "//base/test:test_support" ]
-
-  if (is_ios) {
-    sources += [ "//components/safe_browsing/ios/test_task_environment_ios.cc" ]
-    deps += [ "//ios/web/public/test" ]
-  } else {
-    sources +=
-        [ "//components/safe_browsing/content/common/test_task_environment.cc" ]
-    deps += [ "//content/test:test_support" ]
-  }
 }

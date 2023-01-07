@@ -1,0 +1,42 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 2
+
+module arc.mojom;
+
+// Contains the types of PIP events that happened in Android that we may want
+// to react to on the Chrome side. Currently, this only contains the ENTER
+// event, but if we want to signal other events later, we can add
+// a new event type here (e.g. media started/stopped playing).
+[Extensible]
+enum ArcPipEvent {
+  ENTER = 0,
+};
+
+// Interface for Android communicating to Chrome.
+// Next Method ID: 1
+interface PipHost {
+  // Tells Chrome about the status of the Android PIP window. If Android
+  // opens a PIP window, we may want to close any existing Chrome-side PIP
+  // windows.
+  OnPipEvent@0(ArcPipEvent event);
+};
+
+// Interface for communicating to Android.
+// Next Method ID: 3
+interface PipInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(pending_remote<PipHost> host_remote) => ();
+
+  // Instruct Android to close the current Android PIP window, if it exists.
+  // This is used if the user initiates a Chrome side PIP window, since we
+  // want to avoid showing two PIP windows at the same time.
+  ClosePip@1();
+
+  // Updates the suppression status of PIP. True to suppress PIP windows, or
+  // false not to suppress. Setting this flag also closes existing PIP window.
+  [MinVersion=1]
+  SetPipSuppressionStatus@2(bool suppressed);
+};

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,16 +10,16 @@
 
 #include "base/containers/queue.h"
 #include "base/files/file.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/messaging/native_process_launcher.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif
 
@@ -42,6 +42,9 @@ namespace extensions {
 // thread.
 class NativeMessageProcessHost : public NativeMessageHost {
  public:
+  NativeMessageProcessHost(const NativeMessageProcessHost&) = delete;
+  NativeMessageProcessHost& operator=(const NativeMessageProcessHost&) = delete;
+
   ~NativeMessageProcessHost() override;
 
   // Create using specified |launcher|. Used in tests.
@@ -86,7 +89,7 @@ class NativeMessageProcessHost : public NativeMessageHost {
 
   // The Client messages will be posted to. Should only be accessed from the
   // UI thread.
-  Client* client_;
+  raw_ptr<Client> client_;
 
   // ID of the calling extension.
   std::string source_extension_id_;
@@ -106,10 +109,10 @@ class NativeMessageProcessHost : public NativeMessageHost {
   // Input stream reader.
   std::unique_ptr<net::FileStream> read_stream_;
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::PlatformFile read_file_;
   std::unique_ptr<base::FileDescriptorWatcher::Controller> read_controller_;
-#endif  // !defined(OS_POSIX)
+#endif  // !BUILDFLAG(IS_POSIX)
 
   // Write stream.
   std::unique_ptr<net::FileStream> write_stream_;
@@ -135,8 +138,6 @@ class NativeMessageProcessHost : public NativeMessageHost {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<NativeMessageProcessHost> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NativeMessageProcessHost);
 };
 
 }  // namespace extensions

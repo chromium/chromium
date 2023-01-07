@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,7 +8,8 @@ import("//build/config/ui.gni")
 # For details see declare_args() in build/config/BUILDCONFIG.gn.
 declare_args() {
   # Enable experimental vulkan backend.
-  enable_vulkan = is_linux || is_chromeos || is_android || is_fuchsia || is_win
+  enable_vulkan =
+      is_linux || is_chromeos || is_android || is_fuchsia || is_win || is_apple
 
   # Enable swiftshader vulkan. Disabling it can save build time, however
   # --use-vulkan=swiftshader and some tests which use swiftshader vulkan will

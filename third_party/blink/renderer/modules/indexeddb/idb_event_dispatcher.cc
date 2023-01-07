@@ -40,7 +40,7 @@ DispatchEventResult IDBEventDispatcher::Dispatch(
   wtf_size_t size = event_targets.size();
   DCHECK(size);
 
-  event.SetEventPhase(Event::kCapturingPhase);
+  event.SetEventPhase(Event::PhaseType::kCapturingPhase);
   for (wtf_size_t i = size - 1; i; --i) {  // Don't do the first element.
     event.SetCurrentTarget(event_targets[i].Get());
     event_targets[i]->FireEventListeners(event);
@@ -48,13 +48,13 @@ DispatchEventResult IDBEventDispatcher::Dispatch(
       goto doneDispatching;
   }
 
-  event.SetEventPhase(Event::kAtTarget);
+  event.SetEventPhase(Event::PhaseType::kAtTarget);
   event.SetCurrentTarget(event_targets[0].Get());
   event_targets[0]->FireEventListeners(event);
   if (event.PropagationStopped() || !event.bubbles() || event.cancelBubble())
     goto doneDispatching;
 
-  event.SetEventPhase(Event::kBubblingPhase);
+  event.SetEventPhase(Event::PhaseType::kBubblingPhase);
   for (wtf_size_t i = 1; i < size; ++i) {  // Don't do the first element.
     event.SetCurrentTarget(event_targets[i].Get());
     event_targets[i]->FireEventListeners(event);
@@ -64,7 +64,7 @@ DispatchEventResult IDBEventDispatcher::Dispatch(
 
 doneDispatching:
   event.SetCurrentTarget(nullptr);
-  event.SetEventPhase(Event::kNone);
+  event.SetEventPhase(Event::PhaseType::kNone);
   return EventTarget::GetDispatchEventResult(event);
 }
 

@@ -1,6 +1,6 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -156,7 +156,7 @@ def _GetTombstonesForDevice(device, resolve_all_tombstones,
     return ret
 
   # Sort the tombstones in date order, descending
-  all_tombstones.sort(cmp=lambda a, b: cmp(b[1], a[1]))
+  all_tombstones.sort(key=lambda a: a[1], reverse=True)
 
   # Only resolve the most recent unless --all-tombstones given.
   tombstones = all_tombstones if resolve_all_tombstones else [all_tombstones[0]]

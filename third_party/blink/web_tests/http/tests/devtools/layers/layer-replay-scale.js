@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 (async function() {
   TestRunner.addResult(
       `Tests that when layer snapshots are replayed with scaling applied the image dimensions are properly scaled.\n`);
-  await TestRunner.loadModule('panels/layers'); await TestRunner.loadTestModule('layers_test_runner');
+  await TestRunner.loadTestModule('layers_test_runner');
   await TestRunner.loadHTML(`
       <div id="a" style="background-color:blue; will-change: transform; overflow: hidden;">
 

@@ -1,0 +1,76 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non ChromeOS builds must not depend on //chromeos/ash")
+
+source_set("grpc_services_initializer") {
+  sources = [
+    "action_args.cc",
+    "action_args.h",
+    "action_service.cc",
+    "action_service.h",
+    "event_handler_driver.cc",
+    "event_handler_driver.h",
+    "grpc_services_initializer.cc",
+    "grpc_services_initializer.h",
+  ]
+
+  deps = [
+    ":customer_registration_client",
+    ":grpc_services_observer",
+    ":heartbeat_event_handler_driver",
+    "//base",
+    "//chromeos/ash/services/libassistant:callback_utils",
+    "//chromeos/ash/services/libassistant/grpc:grpc_client",
+    "//chromeos/ash/services/libassistant/grpc:grpc_service",
+    "//chromeos/ash/services/libassistant/grpc:grpc_util",
+    "//chromeos/ash/services/libassistant/grpc:http_connection_client",
+    "//chromeos/ash/services/libassistant/grpc:libassistant_client",
+    "//chromeos/assistant/internal",
+    "//chromeos/assistant/internal:libassistant_shared_headers",
+    "//third_party/grpc:grpc++",
+  ]
+}
+
+source_set("grpc_services_observer") {
+  sources = [ "grpc_services_observer.h" ]
+
+  deps = [ "//base" ]
+}
+
+source_set("customer_registration_client") {
+  sources = [
+    "customer_registration_client.cc",
+    "customer_registration_client.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/services/libassistant/grpc:grpc_client",
+    "//chromeos/ash/services/libassistant/grpc:libassistant_client",
+    "//chromeos/assistant/internal/proto:assistant",
+    "//chromeos/assistant/internal/proto:assistant_grpc",
+  ]
+}
+
+source_set("heartbeat_event_handler_driver") {
+  sources = [
+    "heartbeat_event_handler_driver.cc",
+    "heartbeat_event_handler_driver.h",
+  ]
+
+  public_deps = [
+    "//chromeos/assistant/internal/proto:assistant",
+    "//chromeos/assistant/internal/proto:assistant_grpc",
+  ]
+
+  deps = [
+    ":grpc_services_observer",
+    "//base",
+    "//chromeos/ash/services/libassistant/grpc:grpc_service",
+    "//third_party/grpc:grpc++",
+  ]
+}

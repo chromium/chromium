@@ -1,11 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_APP_DELEGATE_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_APP_DELEGATE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/app_window/app_delegate.h"
 
@@ -16,6 +15,10 @@ namespace extensions {
 class ShellAppDelegate : public AppDelegate {
  public:
   ShellAppDelegate();
+
+  ShellAppDelegate(const ShellAppDelegate&) = delete;
+  ShellAppDelegate& operator=(const ShellAppDelegate&) = delete;
+
   ~ShellAppDelegate() override;
 
   // AppDelegate overrides:
@@ -31,10 +34,8 @@ class ShellAppDelegate : public AppDelegate {
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
                       WindowOpenDisposition disposition,
-                      const gfx::Rect& initial_rect,
+                      const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture) override;
-  content::ColorChooser* ShowColorChooser(content::WebContents* web_contents,
-                                          SkColor initial_color) override;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
                       scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
@@ -55,13 +56,8 @@ class ShellAppDelegate : public AppDelegate {
   void OnShow() override {}
   bool TakeFocus(content::WebContents* web_contents, bool reverse) override;
   content::PictureInPictureResult EnterPictureInPicture(
-      content::WebContents* web_contents,
-      const viz::SurfaceId& surface_id,
-      const gfx::Size& natural_size) override;
+      content::WebContents* web_contents) override;
   void ExitPictureInPicture() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellAppDelegate);
 };
 
 }  // namespace extensions

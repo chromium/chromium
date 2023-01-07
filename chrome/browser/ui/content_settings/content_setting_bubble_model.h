@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,17 +12,17 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
-#include "chrome/common/custom_handlers/protocol_handler.h"
 #include "components/blocked_content/url_list_manager.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/custom_handlers/protocol_handler.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"
@@ -30,9 +30,12 @@
 
 class ContentSettingBubbleModelDelegate;
 class Profile;
+namespace custom_handlers {
 class ProtocolHandlerRegistry;
+}
 
 namespace content {
+class Page;
 class WebContents;
 }
 
@@ -54,7 +57,7 @@ class Event;
 //   ContentSettingMediaStreamBubbleModel        - media (camera and mic)
 //   ContentSettingSubresourceFilterBubbleModel  - filtered subresources
 //   ContentSettingDownloadsBubbleModel          - automatic downloads
-//   ContentSettingNotificationsBubbleModel      - notifications
+//   ContentSettingQuietRequestBubbleModel       - quiet ui prompts
 
 // Forward declaration necessary for downcasts.
 class ContentSettingSimpleBubbleModel;
@@ -62,7 +65,7 @@ class ContentSettingMediaStreamBubbleModel;
 class ContentSettingSubresourceFilterBubbleModel;
 class ContentSettingDownloadsBubbleModel;
 class ContentSettingFramebustBlockBubbleModel;
-class ContentSettingNotificationsBubbleModel;
+class ContentSettingQuietRequestBubbleModel;
 
 // This model provides data for ContentSettingBubble, and also controls
 // the action triggered when the allow / block radio buttons are triggered.
@@ -79,7 +82,7 @@ class ContentSettingBubbleModel {
              int32_t item_id);
     ListItem(const ListItem& other);
     ListItem& operator=(const ListItem& other);
-    const gfx::VectorIcon* image;
+    raw_ptr<const gfx::VectorIcon> image;
     std::u16string title;
     std::u16string description;
     bool has_link;
@@ -144,6 +147,10 @@ class ContentSettingBubbleModel {
 
   struct BubbleContent {
     BubbleContent();
+
+    BubbleContent(const BubbleContent&) = delete;
+    BubbleContent& operator=(const BubbleContent&) = delete;
+
     ~BubbleContent();
 
     std::u16string title;
@@ -159,9 +166,6 @@ class ContentSettingBubbleModel {
     bool show_learn_more = false;
     std::u16string done_button_text;
     std::u16string cancel_button_text;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(BubbleContent);
   };
 
   static const int kAllowButtonIndex;
@@ -174,6 +178,10 @@ class ContentSettingBubbleModel {
   CreateContentSettingBubbleModel(Delegate* delegate,
                                   content::WebContents* web_contents,
                                   ContentSettingsType content_type);
+
+  ContentSettingBubbleModel(const ContentSettingBubbleModel&) = delete;
+  ContentSettingBubbleModel& operator=(const ContentSettingBubbleModel&) =
+      delete;
 
   virtual ~ContentSettingBubbleModel();
 
@@ -190,7 +198,7 @@ class ContentSettingBubbleModel {
                                   const std::string& selected_device_id) {}
   virtual void OnDoneButtonClicked() {}
   virtual void OnCancelButtonClicked() {}
-  // Called by the view code when the bubble is closed
+  // Called by the view code when the bubble is closed.
   virtual void CommitChanges() {}
 
   // TODO(msramek): The casting methods below are only necessary because
@@ -215,8 +223,10 @@ class ContentSettingBubbleModel {
   virtual ContentSettingFramebustBlockBubbleModel*
   AsFramebustBlockBubbleModel();
 
-  // Cast this bubble into ContentSettingNotificationsBubbleModel if possible.
-  virtual ContentSettingNotificationsBubbleModel* AsNotificationsBubbleModel();
+  // Cast this bubble into ContentSettingQuietRequestBubbleModel if possible.
+  virtual ContentSettingQuietRequestBubbleModel* AsQuietRequestBubbleModel();
+
+  bool is_UMA_for_test = false;
 
  protected:
   // |web_contents| must outlive this.
@@ -228,6 +238,7 @@ class ContentSettingBubbleModel {
   Profile* GetProfile() const;
   Delegate* delegate() const { return delegate_; }
   int selected_item() const { return owner_->GetSelectedRadioOption(); }
+  content::Page& GetPage() const { return web_contents_->GetPrimaryPage(); }
 
   void set_title(const std::u16string& title) { bubble_content_.title = title; }
   void set_message(const std::u16string& message) {
@@ -272,12 +283,10 @@ class ContentSettingBubbleModel {
   }
 
  private:
-  content::WebContents* web_contents_;
-  Owner* owner_;
-  Delegate* delegate_;
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<Owner> owner_;
+  raw_ptr<Delegate> delegate_;
   BubbleContent bubble_content_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingBubbleModel);
 };
 
 // A generic bubble used for a single content setting.
@@ -286,6 +295,11 @@ class ContentSettingSimpleBubbleModel : public ContentSettingBubbleModel {
   ContentSettingSimpleBubbleModel(Delegate* delegate,
                                   content::WebContents* web_contents,
                                   ContentSettingsType content_type);
+
+  ContentSettingSimpleBubbleModel(const ContentSettingSimpleBubbleModel&) =
+      delete;
+  ContentSettingSimpleBubbleModel& operator=(
+      const ContentSettingSimpleBubbleModel&) = delete;
 
   ContentSettingsType content_type() { return content_type_; }
 
@@ -304,16 +318,20 @@ class ContentSettingSimpleBubbleModel : public ContentSettingBubbleModel {
   void OnCustomLinkClicked() override;
 
   ContentSettingsType content_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingSimpleBubbleModel);
 };
 
 // RPH stands for Register Protocol Handler.
 class ContentSettingRPHBubbleModel : public ContentSettingSimpleBubbleModel {
  public:
-  ContentSettingRPHBubbleModel(Delegate* delegate,
-                               content::WebContents* web_contents,
-                               ProtocolHandlerRegistry* registry);
+  ContentSettingRPHBubbleModel(
+      Delegate* delegate,
+      content::WebContents* web_contents,
+      custom_handlers::ProtocolHandlerRegistry* registry);
+
+  ContentSettingRPHBubbleModel(const ContentSettingRPHBubbleModel&) = delete;
+  ContentSettingRPHBubbleModel& operator=(const ContentSettingRPHBubbleModel&) =
+      delete;
+
   ~ContentSettingRPHBubbleModel() override;
 
   // ContentSettingBubbleModel:
@@ -326,11 +344,9 @@ class ContentSettingRPHBubbleModel : public ContentSettingSimpleBubbleModel {
   void ClearOrSetPreviousHandler();
   void PerformActionForSelectedItem();
 
-  ProtocolHandlerRegistry* registry_;
-  ProtocolHandler pending_handler_;
-  ProtocolHandler previous_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingRPHBubbleModel);
+  raw_ptr<custom_handlers::ProtocolHandlerRegistry> registry_;
+  custom_handlers::ProtocolHandler pending_handler_;
+  custom_handlers::ProtocolHandler previous_handler_;
 };
 
 // The model of the content settings bubble for media settings.
@@ -338,6 +354,11 @@ class ContentSettingMediaStreamBubbleModel : public ContentSettingBubbleModel {
  public:
   ContentSettingMediaStreamBubbleModel(Delegate* delegate,
                                        content::WebContents* web_contents);
+
+  ContentSettingMediaStreamBubbleModel(
+      const ContentSettingMediaStreamBubbleModel&) = delete;
+  ContentSettingMediaStreamBubbleModel& operator=(
+      const ContentSettingMediaStreamBubbleModel&) = delete;
 
   ~ContentSettingMediaStreamBubbleModel() override;
 
@@ -372,11 +393,11 @@ class ContentSettingMediaStreamBubbleModel : public ContentSettingBubbleModel {
   // Updates the camera and microphone setting with the passed |setting|.
   void UpdateSettings(ContentSetting setting);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Initialize the bubble with the elements specific to the scenario when
   // camera or mic are disabled in a system (OS) level.
   void InitializeSystemMediaPermissionBubble();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // Whether or not to show the bubble UI specific to when media permissions are
   // turned off in a system level.
@@ -396,21 +417,24 @@ class ContentSettingMediaStreamBubbleModel : public ContentSettingBubbleModel {
   ContentSetting radio_item_setting_[2];
   // The state of the microphone and camera access.
   content_settings::PageSpecificContentSettings::MicrophoneCameraState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingMediaStreamBubbleModel);
 };
 
 // The model of a bubble that acts as a quiet permission request prompt for
-// notifications. In contrast to other bubbles (which display the current
-// permission state after the user makes the initial decision), this is shown
-// before the user makes the first ever permission decisions.
-class ContentSettingNotificationsBubbleModel
-    : public ContentSettingBubbleModel {
+// the notification and geolocation permissions. In contrast to other bubbles
+// (which display the current permission state after the user makes the initial
+// decision), this is shown before the user makes the first ever permission
+// decisions.
+class ContentSettingQuietRequestBubbleModel : public ContentSettingBubbleModel {
  public:
-  ContentSettingNotificationsBubbleModel(Delegate* delegate,
-                                         content::WebContents* web_contents);
+  ContentSettingQuietRequestBubbleModel(Delegate* delegate,
+                                        content::WebContents* web_contents);
 
-  ~ContentSettingNotificationsBubbleModel() override;
+  ContentSettingQuietRequestBubbleModel(
+      const ContentSettingQuietRequestBubbleModel&) = delete;
+  ContentSettingQuietRequestBubbleModel& operator=(
+      const ContentSettingQuietRequestBubbleModel&) = delete;
+
+  ~ContentSettingQuietRequestBubbleModel() override;
 
  private:
   void SetManageText();
@@ -420,9 +444,7 @@ class ContentSettingNotificationsBubbleModel
   void OnLearnMoreClicked() override;
   void OnDoneButtonClicked() override;
   void OnCancelButtonClicked() override;
-  ContentSettingNotificationsBubbleModel* AsNotificationsBubbleModel() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingNotificationsBubbleModel);
+  ContentSettingQuietRequestBubbleModel* AsQuietRequestBubbleModel() override;
 };
 
 // The model for the deceptive content bubble.
@@ -432,6 +454,11 @@ class ContentSettingSubresourceFilterBubbleModel
   ContentSettingSubresourceFilterBubbleModel(
       Delegate* delegate,
       content::WebContents* web_contents);
+
+  ContentSettingSubresourceFilterBubbleModel(
+      const ContentSettingSubresourceFilterBubbleModel&) = delete;
+  ContentSettingSubresourceFilterBubbleModel& operator=(
+      const ContentSettingSubresourceFilterBubbleModel&) = delete;
 
   ~ContentSettingSubresourceFilterBubbleModel() override;
 
@@ -448,8 +475,6 @@ class ContentSettingSubresourceFilterBubbleModel
   void CommitChanges() override;
 
   bool is_checked_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingSubresourceFilterBubbleModel);
 };
 
 // The model for automatic downloads setting.
@@ -457,6 +482,12 @@ class ContentSettingDownloadsBubbleModel : public ContentSettingBubbleModel {
  public:
   ContentSettingDownloadsBubbleModel(Delegate* delegate,
                                      content::WebContents* web_contents);
+
+  ContentSettingDownloadsBubbleModel(
+      const ContentSettingDownloadsBubbleModel&) = delete;
+  ContentSettingDownloadsBubbleModel& operator=(
+      const ContentSettingDownloadsBubbleModel&) = delete;
+
   ~ContentSettingDownloadsBubbleModel() override;
 
   // ContentSettingBubbleModel overrides:
@@ -470,8 +501,6 @@ class ContentSettingDownloadsBubbleModel : public ContentSettingBubbleModel {
 
   // ContentSettingBubbleModel overrides:
   void OnManageButtonClicked() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingDownloadsBubbleModel);
 };
 
 class ContentSettingSingleRadioGroup : public ContentSettingSimpleBubbleModel {
@@ -479,6 +508,12 @@ class ContentSettingSingleRadioGroup : public ContentSettingSimpleBubbleModel {
   ContentSettingSingleRadioGroup(Delegate* delegate,
                                  content::WebContents* web_contents,
                                  ContentSettingsType content_type);
+
+  ContentSettingSingleRadioGroup(const ContentSettingSingleRadioGroup&) =
+      delete;
+  ContentSettingSingleRadioGroup& operator=(
+      const ContentSettingSingleRadioGroup&) = delete;
+
   ~ContentSettingSingleRadioGroup() override;
 
   // ContentSettingSimpleBubbleModel:
@@ -496,8 +531,6 @@ class ContentSettingSingleRadioGroup : public ContentSettingSimpleBubbleModel {
   void SetNarrowestContentSetting(ContentSetting setting);
 
   ContentSetting block_setting_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingSingleRadioGroup);
 };
 
 // The bubble that informs users that Chrome does not have access to Location
@@ -531,7 +564,7 @@ class ContentSettingGeolocationBubbleModel
   bool show_system_geolocation_bubble_ = false;
 };
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The model for the blocked Framebust bubble.
 class ContentSettingFramebustBlockBubbleModel
     : public ContentSettingSingleRadioGroup,
@@ -539,6 +572,11 @@ class ContentSettingFramebustBlockBubbleModel
  public:
   ContentSettingFramebustBlockBubbleModel(Delegate* delegate,
                                           content::WebContents* web_contents);
+
+  ContentSettingFramebustBlockBubbleModel(
+      const ContentSettingFramebustBlockBubbleModel&) = delete;
+  ContentSettingFramebustBlockBubbleModel& operator=(
+      const ContentSettingFramebustBlockBubbleModel&) = delete;
 
   ~ContentSettingFramebustBlockBubbleModel() override;
 
@@ -553,12 +591,10 @@ class ContentSettingFramebustBlockBubbleModel
  private:
   ListItem CreateListItem(const GURL& url);
 
-  ScopedObserver<blocked_content::UrlListManager,
-                 blocked_content::UrlListManager::Observer>
-      url_list_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingFramebustBlockBubbleModel);
+  base::ScopedObservation<blocked_content::UrlListManager,
+                          blocked_content::UrlListManager::Observer>
+      url_list_observation_{this};
 };
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #endif  // CHROME_BROWSER_UI_CONTENT_SETTINGS_CONTENT_SETTING_BUBBLE_MODEL_H_

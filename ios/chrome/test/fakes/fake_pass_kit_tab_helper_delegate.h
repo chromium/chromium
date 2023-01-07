@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@ namespace web {
 class WebState;
 }  // namespace web
 
-// PassKitTabHelperDelegate which collects all passes into |passes| array.
+// PassKitTabHelperDelegate which collects all passes into `passes` array.
 @interface FakePassKitTabHelperDelegate : NSObject<PassKitTabHelperDelegate>
 
 - (instancetype)initWithWebState:(web::WebState*)webState

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_CRYPTOHOME_REMOVER_H_
 
 #include <vector>
-
-#include "base/macros.h"
 
 class AccountId;
 class PrefRegistrySimple;
@@ -27,8 +25,9 @@ class KioskCryptohomeRemover {
   static void RemoveCryptohomesAndExitIfNeeded(
       const std::vector<AccountId>& account_ids);
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(KioskCryptohomeRemover);
+  KioskCryptohomeRemover() = delete;
+  KioskCryptohomeRemover(const KioskCryptohomeRemover&) = delete;
+  KioskCryptohomeRemover& operator=(const KioskCryptohomeRemover&) = delete;
 };
 
 }  // namespace ash

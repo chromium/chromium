@@ -1,11 +1,9 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_CHILD_SCOPED_CHILD_PROCESS_REFERENCE_H_
 #define CONTENT_CHILD_SCOPED_CHILD_PROCESS_REFERENCE_H_
-
-#include "base/macros.h"
 
 namespace base {
 class TimeDelta;
@@ -20,6 +18,11 @@ namespace content {
 class ScopedChildProcessReference {
  public:
   ScopedChildProcessReference();
+
+  ScopedChildProcessReference(const ScopedChildProcessReference&) = delete;
+  ScopedChildProcessReference& operator=(const ScopedChildProcessReference&) =
+      delete;
+
   ~ScopedChildProcessReference();
 
   // Releases the process reference after |delay|. Once this is called
@@ -29,8 +32,6 @@ class ScopedChildProcessReference {
 
  private:
   bool has_reference_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedChildProcessReference);
 };
 
 }  // namespace content

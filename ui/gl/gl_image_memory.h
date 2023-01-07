@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "ui/gfx/buffer_types.h"
@@ -23,9 +22,13 @@ class GL_EXPORT GLImageMemory : public GLImage {
  public:
   explicit GLImageMemory(const gfx::Size& size);
 
+  GLImageMemory(const GLImageMemory&) = delete;
+  GLImageMemory& operator=(const GLImageMemory&) = delete;
+
   bool Initialize(const unsigned char* memory,
                   gfx::BufferFormat format,
-                  size_t stride);
+                  size_t stride,
+                  bool disable_pbo_upload = false);
 
   // Safe downcast. Returns |nullptr| on failure.
   static GLImageMemory* FromGLImage(GLImage* image);
@@ -42,13 +45,6 @@ class GL_EXPORT GLImageMemory : public GLImage {
   bool CopyTexSubImage(unsigned target,
                        const gfx::Point& offset,
                        const gfx::Rect& rect) override;
-  bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int z_order,
-                            gfx::OverlayTransform transform,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
   void Flush() override {}
   Type GetType() const override;
 
@@ -73,8 +69,6 @@ class GL_EXPORT GLImageMemory : public GLImage {
   base::WeakPtr<GLSurface> original_surface_;
   size_t buffer_bytes_ = 0;
   int memcpy_tasks_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(GLImageMemory);
 };
 
 }  // namespace gl

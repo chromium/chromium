@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -48,7 +50,7 @@
                 android:paddingStart="4dp"
                 android:clickable="true"
                 android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.TextMedium.Blue" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Accent1" />
         </LinearLayout>
 
         <LinearLayout
@@ -72,7 +74,7 @@
                 android:paddingStart="4dp"
                 android:clickable="true"
                 android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.TextMedium.Blue" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Accent1" />
         </LinearLayout>
 
         <LinearLayout
@@ -96,7 +98,7 @@
                 android:paddingStart="4dp"
                 android:clickable="true"
                 android:maxLines="1"
-                android:textAppearance="@style/TextAppearance.TextMedium.Blue" />
+                android:textAppearance="@style/TextAppearance.TextMedium.Accent1" />
         </LinearLayout>
     </LinearLayout>
 

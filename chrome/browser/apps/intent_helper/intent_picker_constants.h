@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,12 @@
 
 namespace apps {
 
-extern const char kUseBrowserForLink[];
-
 // Restricts the amount of apps displayed to the user without the need of a
 // ScrollView.
-enum { kMaxAppResults = 3 };
+constexpr int kMaxAppResults = 3;
+
+// Identifier for the Intent Chip In-Product Help feature used event.
+extern const char kIntentChipOpensAppEvent[];
 
 }  // namespace apps
 

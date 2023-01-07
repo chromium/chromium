@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/net_log/net_export_file_writer.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
@@ -68,11 +69,11 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
   network_context_params->user_agent = user_agent;
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
   // We're not configuring the cookie encryption on these platforms yet.
   network_context_params->enable_encrypted_cookies = false;
-#endif  // (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) ||
-        // defined(OS_WIN)
+#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) ||
+        // BUILDFLAG(IS_WIN)
 }
 
 SystemNetworkContextManager::SystemNetworkContextManager(
@@ -109,9 +110,6 @@ network::mojom::NetworkContextParamsPtr
 SystemNetworkContextManager::CreateSystemNetworkContextManagerParams() {
   network::mojom::NetworkContextParamsPtr network_context_params =
       CreateDefaultNetworkContextParams(user_agent_);
-
-  network_context_params->context_name = std::string("system");
-
   return network_context_params;
 }
 
@@ -130,6 +128,14 @@ SystemNetworkContextManager::GetSharedURLLoaderFactory() {
             url_loader_factory_.get());
   }
   return shared_url_loader_factory_;
+}
+
+net_log::NetExportFileWriter*
+SystemNetworkContextManager::GetNetExportFileWriter() {
+  if (!net_export_file_writer_) {
+    net_export_file_writer_ = std::make_unique<net_log::NetExportFileWriter>();
+  }
+  return net_export_file_writer_.get();
 }
 
 }  // namespace weblayer

@@ -1,17 +1,15 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.modules.stack_unwinder;
 
-import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.annotations.UsedByReflection;
+import org.chromium.build.annotations.MainDex;
 
 /**
  * Provides access to the stack unwinder native code functions within the dynamic feature module.
  */
-@UsedByReflection("StackUnwinderModule")
 @MainDex
 public class StackUnwinderModuleContentsImpl implements StackUnwinderModuleContents {
     /**
@@ -32,9 +30,19 @@ public class StackUnwinderModuleContentsImpl implements StackUnwinderModuleConte
         return StackUnwinderModuleContentsImplJni.get().getCreateNativeUnwinderFunction();
     }
 
+    /**
+     * Returns the pointer to the CreateLibunwindstackUnwinder native function within the module,
+     * encoded as a long.
+     */
+    @Override
+    public long getCreateLibunwindstackUnwinderFunction() {
+        return StackUnwinderModuleContentsImplJni.get().getCreateLibunwindstackUnwinderFunction();
+    }
+
     @NativeMethods
     interface Natives {
         long getCreateMemoryRegionsMapFunction();
         long getCreateNativeUnwinderFunction();
+        long getCreateLibunwindstackUnwinderFunction();
     }
 }

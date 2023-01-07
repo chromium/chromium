@@ -58,7 +58,7 @@ dialog as available targets for printing.
 
 ### CupsPrintersManager
 
-Defined in `chome/browser/chromeos/printing/cups_printers_manager.[cc|h]`.
+Defined in `chome/browser/ash/printing/cups_printers_manager.[cc|h]`.
 
 The `CupsPrintersManager` class is the top-level object responsible for
 providing information about available printers of all 4 types to all consumers.
@@ -82,7 +82,7 @@ There are 4 primary consumers of `CupsPrintersManager` information:
   (`chrome/browser/ui/webui/print_preview/local_printer_handler_chromeos.cc`).
   This is mostly a thread workaround to access the stuff in the print backend.
 * The ChromeOS printers settings
-  page. (`chrome/browser/ui/webui/settings/chromeos/cups_printers_handler.cc`
+  page. (`chrome/browser/ui/webui/settings/ash/cups_printers_handler.cc`
   and related code).  This is the primary place the user manages available
   printers.
 * `CupsPrintJobManager`.  Requires printer information for the display and
@@ -96,7 +96,7 @@ sites.
 ### SyncedPrintersManager
 
 `SyncedPrintersManager` (nee `PrintersManager`) is a KeyedService Defined in
-`chome/browser/chromeos/printing/printers_sync_manager.[cc|h]`.
+`chome/browser/ash/printers_sync_manager.[cc|h]`.
 `SyncedPrintersManager` manages the persistent data about printers that is
 synced across devices.  It serves as a two-way bridge between the sync systems
 and `CupsPrintersManager` for both Saved and Enterprise printers.
@@ -121,7 +121,7 @@ This responsibility is given to  `CupsPrintersManager`.
 
 ### PrinterDetectors
 
-Defined in `chome/browser/chromeos/printing/printer_detector.h` `PrinterDetector`
+Defined in `chome/browser/ash/printing/printer_detector.h` `PrinterDetector`
 provides an interface implemented by subsystems that can automatically detect
 the existence of printers.
 
@@ -134,12 +134,12 @@ Details for the existing PrinterDetector implementations follow.
 
 #### USBPrinterDetector
 
-Defined in `chome/browser/chromeos/printing/usb_printer_detector.[cc|h]`, this
+Defined in `chome/browser/ash/printing/usb_printer_detector.[cc|h]`, this
 interacts with the USB subsystem to turn USB device detection events into
 printers.  Both cold- and hot-plugged printers are supported.
 
 #### ZeroconfPrinterDetector
 
-Defined in `chome/browser/chromeos/printing/zeroconf_printer_detector.[cc|h]`,
+Defined in `chome/browser/ash/printing/zeroconf_printer_detector.[cc|h]`,
 this interacts with the DNS-SD and mDNS systems to detect printers that
 advertise themselves on the local network.

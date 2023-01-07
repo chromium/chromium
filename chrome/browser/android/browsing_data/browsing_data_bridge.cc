@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,17 +18,17 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/scoped_observer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "chrome/android/chrome_jni_headers/BrowsingDataBridge_jni.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
+#include "chrome/browser/browsing_data/third_party_data_remover.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/history_notice_utils.h"
@@ -38,7 +38,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
-#include "content/public/browser/same_site_data_remover.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -91,7 +90,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
 
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   BrowsingDataRemover* browsing_data_remover =
-      content::BrowserContext::GetBrowsingDataRemover(profile);
+      profile->GetBrowsingDataRemover();
 
   std::vector<int> data_types_vector;
   base::android::JavaIntArrayToIntVector(env, data_types, &data_types_vector);
@@ -129,7 +128,7 @@ static void JNI_BrowsingDataBridge_ClearBrowsingData(
       case browsing_data::BrowsingDataType::HOSTED_APPS_DATA:
         // Only implemented on Desktop.
         NOTREACHED();
-        FALLTHROUGH;
+        [[fallthrough]];
       case browsing_data::BrowsingDataType::NUM_TYPES:
         NOTREACHED();
     }
@@ -177,10 +176,9 @@ static void JNI_BrowsingDataBridge_ClearSameSiteNoneData(
     const JavaParamRef<jobject>& jcallback) {
   TRACE_EVENT0("browsing_data", "BrowsingDataBridge_ClearSameSiteNoneData");
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
-  content::ClearSameSiteNoneData(
-      base::BindOnce(&base::android::RunRunnableAndroid,
-                     ScopedJavaGlobalRef<jobject>(jcallback)),
-      profile);
+  ClearThirdPartyData(base::BindOnce(&base::android::RunRunnableAndroid,
+                                     ScopedJavaGlobalRef<jobject>(jcallback)),
+                      profile);
 }
 
 static void EnableDialogAboutOtherFormsOfBrowsingHistory(
@@ -204,7 +202,7 @@ static void JNI_BrowsingDataBridge_RequestInfoAboutOtherFormsOfBrowsingHistory(
   // The one-time notice in the dialog.
   Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
   browsing_data::ShouldPopupDialogAboutOtherFormsOfBrowsingHistory(
-      ProfileSyncServiceFactory::GetForProfile(profile),
+      SyncServiceFactory::GetForProfile(profile),
       WebHistoryServiceFactory::GetForProfile(profile), chrome::GetChannel(),
       base::BindOnce(&EnableDialogAboutOtherFormsOfBrowsingHistory,
                      ScopedJavaGlobalRef<jobject>(env, listener)));

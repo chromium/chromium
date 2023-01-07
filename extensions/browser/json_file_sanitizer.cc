@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
@@ -90,14 +90,15 @@ void JsonFileSanitizer::JsonFileRead(
     return;
   }
   json_parser_->Parse(std::get<0>(read_and_delete_result),
+                      base::JSON_PARSE_CHROMIUM_EXTENSIONS,
                       base::BindOnce(&JsonFileSanitizer::JsonParsingDone,
                                      weak_factory_.GetWeakPtr(), file_path));
 }
 
 void JsonFileSanitizer::JsonParsingDone(
     const base::FilePath& file_path,
-    base::Optional<base::Value> json_value,
-    const base::Optional<std::string>& error) {
+    absl::optional<base::Value> json_value,
+    const absl::optional<std::string>& error) {
   if (!json_value || !json_value->is_dict()) {
     ReportError(Status::kDecodingError, error ? *error : std::string());
     return;

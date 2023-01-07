@@ -12,8 +12,8 @@ expect('inherit').parsesAs('inherit');
 expect('none').parsesAs('none').isComputedTo('none');
 expect('1px').parsesAs('1px').isComputedTo('1px');
 
-expect('0').isInvalid();
-expect('0px').isInvalid();
+expect('0').parsesAs('0px').isComputedTo('0px');
+expect('0px').parsesAs('0px').isComputedTo('0px');
 expect('5').isInvalid();
 expect('-1px').isInvalid();
 expect('50%').isInvalid();

@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright (c) 2011 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2011 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,8 +10,6 @@ In essense it runs a subset of BinScope tests ensuring that binaries have
 /NXCOMPAT, /DYNAMICBASE and /SAFESEH.
 """
 
-from __future__ import print_function
-
 import json
 import os
 import optparse
@@ -20,7 +18,7 @@ import sys
 REPO_ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
 FILES_CFG = os.path.join(REPO_ROOT, 'chrome', 'tools', 'build', 'win',
                          'FILES.cfg')
-PEFILE_DIR = os.path.join(REPO_ROOT, 'third_party', 'pefile')
+PEFILE_DIR = os.path.join(REPO_ROOT, 'third_party', 'pefile_py3')
 sys.path.append(PEFILE_DIR)
 
 import pefile
@@ -32,21 +30,39 @@ NXCOMPAT_FLAG = 0x0100
 NO_SEH_FLAG = 0x0400
 GUARD_CF_FLAG = 0x4000
 MACHINE_TYPE_AMD64 = 0x8664
+CETCOMPAT_BIT = 0  # offset in extended dll characteristics
 
 # Please do not add your file here without confirming that it indeed doesn't
-# require /NXCOMPAT and /DYNAMICBASE.  Contact cpu@chromium.org or your local
-# Windows guru for advice.
+# require /NXCOMPAT and /DYNAMICBASE.  Contact //sandbox/win/OWNERS or your
+# local Windows guru for advice.
 EXCLUDED_FILES = [
-                  'crashpad_util_test_process_info_test_child.exe',
-                  'mini_installer.exe',
-                  'previous_version_mini_installer.exe',
-                  ]
+    'crashpad_util_test_process_info_test_child.exe',
+    'mini_installer.exe',
+    'previous_version_mini_installer.exe',
+]
+
+# PE files that are otherwise included but for which /cetcompat is not required.
+CETCOMPAT_NOT_REQUIRED = [
+    'chrome_proxy.exe',
+    'chrome_pwa_launcher.exe',
+    'elevation_service.exe',
+    'nacl64.exe',
+    'notification_helper.exe',
+]
 
 
 def IsPEFile(path):
   return (os.path.isfile(path) and
           os.path.splitext(path)[1].lower() in PE_FILE_EXTENSIONS and
           os.path.basename(path) not in EXCLUDED_FILES)
+
+
+def IsBitSet(data, bit_idx):
+  return 0 != data[int(bit_idx / 8)] & (1 << (bit_idx % 8))
+
+
+def IsCetExpected(path):
+  return os.path.basename(path) not in CETCOMPAT_NOT_REQUIRED
 
 
 def main(options, args):
@@ -56,9 +72,11 @@ def main(options, args):
 
   failures = []
 
-  # Load FILES.cfg
+  # Load FILES.cfg - it is a python file setting a FILES variable.
   exec_globals = {'__builtins__': None}
-  execfile(FILES_CFG, exec_globals)
+  with open(FILES_CFG, encoding="utf-8") as f:
+    code = compile(f.read(), FILES_CFG, 'exec')
+    exec(code, exec_globals)
   files_cfg = exec_globals['FILES']
 
   # Determines whether a specified file is in the 'default'
@@ -76,7 +94,9 @@ def main(options, args):
       continue
     pe = pefile.PE(path, fast_load=True)
     pe.parse_data_directories(directories=[
-        pefile.DIRECTORY_ENTRY['IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG']])
+        pefile.DIRECTORY_ENTRY['IMAGE_DIRECTORY_ENTRY_LOAD_CONFIG'],
+        pefile.DIRECTORY_ENTRY['IMAGE_DIRECTORY_ENTRY_DEBUG']
+    ])
     pe_total = pe_total + 1
     success = True
 
@@ -139,6 +159,33 @@ def main(options, args):
     else:
       if options.verbose:
         print("Skipping check for /GUARD:CF for %s." % path)
+
+    # Check cetcompat for x64 - debug directory type
+    # IMAGE_DEBUG_TYPE_EX_DLLCHARACTERISTICS.
+    if pe.FILE_HEADER.Machine == MACHINE_TYPE_AMD64:
+      if IsInDefaultFileGroup(path) and IsCetExpected(path):
+        found_cetcompat = False
+        for dbg_ent in pe.DIRECTORY_ENTRY_DEBUG:
+          if dbg_ent.struct.Type == pefile.DEBUG_TYPE[
+              'IMAGE_DEBUG_TYPE_EX_DLLCHARACTERISTICS']:
+            # pefile does not read this, so access the raw data.
+            ex_dll_offset = dbg_ent.struct.PointerToRawData
+            ex_dll_length = dbg_ent.struct.SizeOfData
+            ex_dll_char_data = pe.__data__[ex_dll_offset:ex_dll_offset +
+                                           ex_dll_length]
+            if IsBitSet(ex_dll_char_data, CETCOMPAT_BIT):
+              found_cetcompat = True
+            break  # only one ex_dllcharacteristics so can stop once seen.
+
+        if found_cetcompat:
+          if options.verbose:
+            print("Checking %s for /CETCOMPAT... PASS" % path)
+        else:
+          success = False
+          print("Checking %s for /CETCOMPAT... FAIL" % path)
+      else:
+        if options.verbose:
+          print("Skipping check for /CETCOMPAT for %s." % path)
 
     # Update tally.
     if success:

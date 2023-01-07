@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,26 @@
 #include <string>
 
 #include "ash/clipboard/clipboard_history_util.h"
+#include "ash/display/display_util.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
+#include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard_data.h"
-#include "ui/base/clipboard/custom_data_helper.h"
+#include "ui/base/ime/input_method.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -91,13 +97,12 @@ std::u16string GetLocalizedString(int resource_id) {
       resource_id);
 }
 
-// Returns the label to display for the custom data contained within |data|.
-std::u16string GetLabelForCustomData(const ui::ClipboardData& data) {
-  // Currently the only supported type of custom data is file system data. This
-  // code should not be reached if `data` does not contain file system data.
+// Returns label to display for the file system data contained within |data|.
+std::u16string GetLabelForFileSystemData(const ui::ClipboardData& data) {
+  // This code should not be reached if `data` doesn't contain file system data.
   std::u16string sources;
   std::vector<base::StringPiece16> source_list;
-  ClipboardHistoryUtil::GetSplitFileSystemData(data, &source_list, &sources);
+  clipboard_history_util::GetSplitFileSystemData(data, &source_list, &sources);
   if (sources.empty()) {
     NOTREACHED();
     return std::u16string();
@@ -152,8 +157,8 @@ ui::ImageModel ClipboardHistoryResourceManager::GetImageModel(
 std::u16string ClipboardHistoryResourceManager::GetLabel(
     const ClipboardHistoryItem& item) const {
   const ui::ClipboardData& data = item.data();
-  switch (ClipboardHistoryUtil::CalculateMainFormat(data).value()) {
-    case ui::ClipboardInternalFormat::kBitmap:
+  switch (clipboard_history_util::CalculateMainFormat(data).value()) {
+    case ui::ClipboardInternalFormat::kPng:
       RecordPlaceholderString(ClipboardHistoryPlaceholderStringType::kBitmap);
       return GetLocalizedString(IDS_CLIPBOARD_MENU_IMAGE);
     case ui::ClipboardInternalFormat::kText:
@@ -169,17 +174,16 @@ std::u16string ClipboardHistoryResourceManager::GetLabel(
     case ui::ClipboardInternalFormat::kRtf:
       RecordPlaceholderString(ClipboardHistoryPlaceholderStringType::kRtf);
       return GetLocalizedString(IDS_CLIPBOARD_MENU_RTF_CONTENT);
-    case ui::ClipboardInternalFormat::kFilenames:
-      DCHECK(!data.filenames().empty());
-      return base::UTF8ToUTF16(data.filenames()[0].display_name.value());
     case ui::ClipboardInternalFormat::kBookmark:
       return base::UTF8ToUTF16(data.bookmark_title());
     case ui::ClipboardInternalFormat::kWeb:
       RecordPlaceholderString(
           ClipboardHistoryPlaceholderStringType::kWebSmartPaste);
       return GetLocalizedString(IDS_CLIPBOARD_MENU_WEB_SMART_PASTE);
+    case ui::ClipboardInternalFormat::kFilenames:
     case ui::ClipboardInternalFormat::kCustom:
-      return GetLabelForCustomData(data);
+      // Currently the only supported type of custom data is file system data.
+      return GetLabelForFileSystemData(data);
   }
 }
 
@@ -222,19 +226,16 @@ void ClipboardHistoryResourceManager::CacheImageModel(
 std::vector<ClipboardHistoryResourceManager::CachedImageModel>::const_iterator
 ClipboardHistoryResourceManager::FindCachedImageModelForId(
     const base::UnguessableToken& id) const {
-  return std::find_if(cached_image_models_.cbegin(),
-                      cached_image_models_.cend(),
-                      [&](const auto& cached_image_model) {
-                        return cached_image_model.id == id;
-                      });
+  return base::ranges::find(
+      cached_image_models_, id,
+      &ClipboardHistoryResourceManager::CachedImageModel::id);
 }
 
 std::vector<ClipboardHistoryResourceManager::CachedImageModel>::const_iterator
 ClipboardHistoryResourceManager::FindCachedImageModelForItem(
     const ClipboardHistoryItem& item) const {
-  return std::find_if(
-      cached_image_models_.cbegin(), cached_image_models_.cend(),
-      [&](const auto& cached_image_model) {
+  return base::ranges::find_if(
+      cached_image_models_, [&](const auto& cached_image_model) {
         return base::Contains(cached_image_model.clipboard_history_item_ids,
                               item.id());
       });
@@ -256,16 +257,18 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
 
   // For items that will be represented by their rendered HTML, we need to do
   // some prep work to pre-render and cache an image model.
-  if (ClipboardHistoryUtil::CalculateDisplayFormat(item.data()) !=
-      ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml) {
+  if (clipboard_history_util::CalculateDisplayFormat(item.data()) !=
+      clipboard_history_util::DisplayFormat::kHtml) {
     return;
   }
 
   const auto& items = clipboard_history_->GetItems();
 
   // See if we have an |existing| item that will render the same as |item|.
-  auto it = std::find_if(items.begin(), items.end(), [&](const auto& existing) {
-    return &existing != &item && existing.data().bitmap().isNull() &&
+  auto it = base::ranges::find_if(items, [&](const auto& existing) {
+    return &existing != &item &&
+           !(existing.data().format() &
+             static_cast<int>(ui::ClipboardInternalFormat::kPng)) &&
            existing.data().markup_data() == item.data().markup_data();
   });
 
@@ -279,8 +282,20 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
     cached_image_model.clipboard_history_item_ids.push_back(item.id());
     cached_image_models_.push_back(std::move(cached_image_model));
 
+    // `text_input_client` can be nullptr in tests.
+    const auto* text_input_client =
+        ash::GetWindowTreeHostForDisplay(
+            display::Screen::GetScreen()->GetPrimaryDisplay().id())
+            ->GetInputMethod()
+            ->GetTextInputClient();
+
+    const gfx::Rect bounding_box =
+        text_input_client ? text_input_client->GetSelectionBoundingBox()
+                          : gfx::Rect();
     ClipboardImageModelFactory::Get()->Render(
         id, item.data().markup_data(),
+        IsRectContainedByAnyDisplay(bounding_box) ? bounding_box.size()
+                                                  : gfx::Size(),
         base::BindOnce(&ClipboardHistoryResourceManager::CacheImageModel,
                        weak_factory_.GetWeakPtr(), id));
     return;
@@ -295,8 +310,8 @@ void ClipboardHistoryResourceManager::OnClipboardHistoryItemAdded(
 void ClipboardHistoryResourceManager::OnClipboardHistoryItemRemoved(
     const ClipboardHistoryItem& item) {
   // For items that will not be represented by their rendered HTML, do nothing.
-  if (ClipboardHistoryUtil::CalculateDisplayFormat(item.data()) !=
-      ClipboardHistoryUtil::ClipboardHistoryDisplayFormat::kHtml) {
+  if (clipboard_history_util::CalculateDisplayFormat(item.data()) !=
+      clipboard_history_util::DisplayFormat::kHtml) {
     return;
   }
 

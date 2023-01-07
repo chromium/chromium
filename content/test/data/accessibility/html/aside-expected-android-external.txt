@@ -1,0 +1,5 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++TextView text:"The aside tag defines some content aside from the content it is placed in." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="complementary", roleDescription="complementary"]
+++++TextView text:"Aside tag" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="heading", roleDescription="heading 4"]
+++++TextView text:"The aside content should be related to the surrounding content." actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]

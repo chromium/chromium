@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,14 +15,14 @@
 
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/memory/raw_ptr.h"
 #include "base/native_library.h"
 #include "base/scoped_native_library.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/pe_image.h"
 #include "build/build_config.h"
 #include "chrome/browser/safe_browsing/incident_reporting/module_integrity_unittest_util_win.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -47,10 +47,13 @@ class ScopedModuleModifier {
     EXPECT_EQ(ModificationLength, bytes_written);
   }
 
+  ScopedModuleModifier(const ScopedModuleModifier&) = delete;
+  ScopedModuleModifier& operator=(const ScopedModuleModifier&) = delete;
+
   ~ScopedModuleModifier() {
     uint8_t modification[ModificationLength];
-    std::transform(address_, address_ + ModificationLength, &modification[0],
-                   [](uint8_t byte) { return byte - 1U; });
+    std::transform(address_.get(), (address_ + ModificationLength).get(),
+                   &modification[0], [](uint8_t byte) { return byte - 1U; });
     SIZE_T bytes_written = 0;
     EXPECT_NE(0, WriteProcessMemory(GetCurrentProcess(),
                                     address_,
@@ -61,9 +64,7 @@ class ScopedModuleModifier {
   }
 
  private:
-  uint8_t* address_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedModuleModifier);
+  raw_ptr<uint8_t> address_;
 };
 
 }  // namespace
@@ -80,13 +81,13 @@ class SafeBrowsingModuleVerifierWinTest : public testing::Test {
     LoadModule();
     HMODULE mem_handle;
     GetMemModuleHandle(&mem_handle);
-    mem_peimage_ptr_.reset(new base::win::PEImage(mem_handle));
+    mem_peimage_ptr_ = std::make_unique<base::win::PEImage>(mem_handle);
     ASSERT_TRUE(mem_peimage_ptr_->VerifyMagic());
 
     LoadDLLAsFile();
     HMODULE disk_handle;
     GetDiskModuleHandle(&disk_handle);
-    disk_peimage_ptr_.reset(new base::win::PEImageAsData(disk_handle));
+    disk_peimage_ptr_ = std::make_unique<base::win::PEImageAsData>(disk_handle);
     ASSERT_TRUE(disk_peimage_ptr_->VerifyMagic());
   }
 
@@ -111,8 +112,8 @@ class SafeBrowsingModuleVerifierWinTest : public testing::Test {
 
     WCHAR module_path[MAX_PATH] = {};
     DWORD length =
-        GetModuleFileName(module_handle, module_path, base::size(module_path));
-    ASSERT_NE(base::size(module_path), length);
+        GetModuleFileName(module_handle, module_path, std::size(module_path));
+    ASSERT_NE(std::size(module_path), length);
     ASSERT_TRUE(disk_dll_handle_.Initialize(base::FilePath(module_path)));
   }
 

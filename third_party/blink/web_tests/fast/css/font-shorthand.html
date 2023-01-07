@@ -7,16 +7,14 @@ if (window.testRunner) {
 }
 
 var style = target.style;
-function showFontLonghands(fontValue, suppressLonghandValue)
+function showFontLonghands(fontValue)
 {
     output.textContent += 'Longhands for font: ' + fontValue + '\n';
     style.font = '';
     style.font = fontValue;
     for (var i = 0; i < style.length; i++) {
         output.textContent += style[i];
-        if (!suppressLonghandValue) {
-            output.textContent += ': ' + style.getPropertyValue(style[i]);
-        }
+        output.textContent += ': ' + style.getPropertyValue(style[i]);
         output.textContent += '\n';
     }
     output.textContent += '\n';
@@ -32,17 +30,17 @@ showFontLonghands('italic bold 12px/24px serif');
 showFontLonghands('small-caps bold 14px/28px Arial, sans-serif');
 showFontLonghands('italic small-caps bold 14px/28px Arial, sans-serif');
 
-// Suppress showing the longhand values for system fonts because they are platform specific.
-// Platform specific system font styles are covered in fast/css/css2-system-fonts.html.
-showFontLonghands('caption', true);
-showFontLonghands('icon', true);
-showFontLonghands('menu', true);
-showFontLonghands('message-box', true);
-showFontLonghands('small-caption', true);
-showFontLonghands('status-bar', true);
-showFontLonghands('-webkit-mini-control', true);
-showFontLonghands('-webkit-small-control', true);
-showFontLonghands('-webkit-control', true);
+// System fonts aren't resolved at parse time, so the longhands serialize as empty strings.
+// Platform specific system font computed styles are covered in fast/css/css2-system-fonts.html.
+showFontLonghands('caption');
+showFontLonghands('icon');
+showFontLonghands('menu');
+showFontLonghands('message-box');
+showFontLonghands('small-caption');
+showFontLonghands('status-bar');
+showFontLonghands('-webkit-mini-control');
+showFontLonghands('-webkit-small-control');
+showFontLonghands('-webkit-control');
 
 // Invalid values should yield no longhands.
 showFontLonghands('italic small-caps bold 12px/24px');

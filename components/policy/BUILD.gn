@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,11 +6,12 @@ import("//build/apple/convert_plist.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//build/config/python.gni")
+import("//build/timestamp.gni")
 import("//build/toolchain/toolchain.gni")
 import("//components/policy/resources/policy_templates.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//tools/grit/grit_args.gni")
 import("//tools/grit/grit_rule.gni")
 
 # To generate policy documentation for local use, set this to true for the
@@ -56,6 +57,7 @@ if (is_component_build) {
       "//build:branding_buildflags",
       "//components/policy/core/browser:internal",
       "//components/policy/core/common:internal",
+      "//components/policy/core/common:policy_namespace_internal",
     ]
   }
 }
@@ -70,7 +72,7 @@ config("component_implementation") {
 # and compiled.
 cloud_policy_proto_path = "$target_gen_dir/proto/cloud_policy.proto"
 
-# This file is used by tools/traffic_annotation/traffic_annotation.proto as it
+# This file is used by chrome/browser/privacy/traffic_annotation.proto as it
 # needs a version without LITE_RUNTIME optimization.
 cloud_policy_full_runtime_proto_path =
     "$target_gen_dir/proto/cloud_policy_full_runtime.proto"
@@ -80,7 +82,7 @@ cloud_policy_full_runtime_proto_path =
 policy_common_definitions_proto_abspath =
     "//components/policy/proto/policy_common_definitions.proto"
 
-# This file is used by tools/traffic_annotation/traffic_annotation.proto as it
+# This file is used by chrome/browser/privacy/traffic_annotation.proto as it
 # needs a version without LITE_RUNTIME optimization.
 policy_common_definitions_full_runtime_proto_path =
     "$target_gen_dir/proto/policy_common_definitions_full_runtime.proto"
@@ -89,7 +91,7 @@ policy_common_definitions_full_runtime_proto_path =
 # policy. It is also the format currently used by the server.
 chrome_settings_proto_path = "$target_gen_dir/proto/chrome_settings.proto"
 
-# This file is used by tools/traffic_annotation/traffic_annotation.proto as it
+# This file is used by chrome/browser/privacy/traffic_annotation.proto as it
 # needs a version without LITE_RUNTIME optimization.
 chrome_settings_full_runtime_proto_path =
     "$target_gen_dir/proto/chrome_settings_full_runtime.proto"
@@ -99,15 +101,18 @@ constants_source_path = "$target_gen_dir/policy_constants.cc"
 app_restrictions_path = "$target_gen_dir/app_restrictions.xml"
 risk_tag_header_path = "$target_gen_dir/risk_tag.h"
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("policy_code_generate") {
+policy_templates_generated_json_path =
+    "$policy_templates_base_dir/policy_templates.json"
+
+action("policy_code_generate") {
   script = "tools/generate_policy_source.py"
   chrome_version_abspath = "//chrome/VERSION"
   chrome_version_path = rebase_path(chrome_version_abspath, root_build_dir)
 
+  deps = [ ":generate_policy_templates" ]
   inputs = [
     chrome_version_abspath,
-    "resources/policy_templates.json",
+    policy_templates_generated_json_path,
   ]
   outputs = [
     constants_header_path,
@@ -126,7 +131,8 @@ python2_action("policy_code_generate") {
     # Input information
     "--chrome-version-file=" + chrome_version_path,
     "--policy-templates-file=" +
-        rebase_path("resources/policy_templates.json", root_build_dir),
+        rebase_path(policy_templates_generated_json_path, root_build_dir),
+    "--target-platform=" + target_os,
 
     # Output files to be generated
     "--policy-constants-header=" +
@@ -141,25 +147,17 @@ python2_action("policy_code_generate") {
         rebase_path(app_restrictions_path, root_build_dir),
     "--risk-tag-header=" + rebase_path(risk_tag_header_path, root_build_dir),
   ]
-
-  #TODO(crbug.com/1169547): Switch lacros-chrome to chromeos policy.
-  if (is_chromeos_lacros) {
-    # Currently lacros-chrome uses linux's policy instead of chromeos policy.
-    args += [ "--target-platform=linux" ]
-  } else {
-    args += [ "--target-platform=" + target_os ]
-  }
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("full_runtime_code_generate") {
+action("full_runtime_code_generate") {
   script = "tools/generate_policy_source.py"
   chrome_version_abspath = "//chrome/VERSION"
   chrome_version_path = rebase_path(chrome_version_abspath, root_build_dir)
 
+  deps = [ ":generate_policy_templates" ]
   inputs = [
     chrome_version_abspath,
-    "resources/policy_templates.json",
+    policy_templates_generated_json_path,
   ]
   outputs = [
     cloud_policy_full_runtime_proto_path,
@@ -172,7 +170,8 @@ python2_action("full_runtime_code_generate") {
     "--chrome-version-file=" + chrome_version_path,
     "--target-platform=" + target_os,
     "--policy-templates-file=" +
-        rebase_path("resources/policy_templates.json", root_build_dir),
+        rebase_path(policy_templates_generated_json_path, root_build_dir),
+    "--target-platform=" + target_os,
 
     # Output files to be generated
     "--cloud-policy-full-runtime-protobuf=" +
@@ -185,17 +184,20 @@ python2_action("full_runtime_code_generate") {
         rebase_path(policy_common_definitions_full_runtime_proto_path,
                     root_build_dir),
   ]
-
-  #TODO(crbug.com/1169547): Switch lacros-chrome to chromeos policy.
-  if (is_chromeos_lacros) {
-    # Currently lacros-chrome uses linux's policy instead of chromeos policy.
-    args += [ "--target-platform=linux" ]
-  } else {
-    args += [ "--target-platform=" + target_os ]
-  }
 }
 
 policy_templates_grd_file = "resources/policy_templates.grd"
+
+# Generates a single policy_templates.json with a real JSON format.
+action("generate_policy_templates") {
+  script = "resources/policy_templates.py"
+  inputs = [ "resources/policy_templates.json" ]
+  outputs = [ policy_templates_generated_json_path ]
+  args = [
+    "--dest",
+    rebase_path(policy_templates_generated_json_path, root_build_dir),
+  ]
+}
 
 # Translates policy_templates.json into various languages.
 grit("translate_policy_templates") {
@@ -206,8 +208,7 @@ grit("translate_policy_templates") {
 }
 
 # Generate the various templates and docs (admx, doc, json, etc.)
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("policy_templates") {
+action("policy_templates") {
   script = "tools/template_writers/template_formatter.py"
   chrome_version_abspath = "//chrome/VERSION"
   chrome_version_path = rebase_path(chrome_version_abspath, root_build_dir)
@@ -221,7 +222,7 @@ python2_action("policy_templates") {
            policy_templates_languages_str,
            "--version_path",
            chrome_version_path,
-         ] + grit_defines
+         ] + grit_args
 
   if (gen_policy_templates_local) {
     args += [ "--local" ]
@@ -338,19 +339,6 @@ proto_library("cloud_policy_proto_generated_compile_proto") {
   proto_deps = [ ":policy_code_generate" ]
 }
 
-# This target generates the "full" protobuf library used by policy_fuzzer.
-if (use_libfuzzer) {
-  fuzzable_proto_library("cloud_policy_full_runtime_proto") {
-    proto_out_dir = "components/policy/proto/fuzzer"
-
-    sources = [ cloud_policy_proto_path ]
-
-    import_dirs = [ "//components/policy/proto" ]
-
-    proto_deps = [ ":policy_code_generate" ]
-  }
-}
-
 # This target builds the "full" protobuf, used for tests only.
 component("chrome_settings_proto_generated_compile") {
   testonly = true
@@ -391,10 +379,7 @@ static_library("generated") {
     "//components/policy/proto:policy_common_definitions_compile_proto",
     "//third_party/protobuf:protobuf_lite",
   ]
-  deps = [
-    "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//build:branding_buildflags" ]
 }
 
 if (gen_policy_templates_android && is_android) {
@@ -474,6 +459,8 @@ if (gen_policy_templates_zip) {
     args = [
       "--output",
       rebase_path(output_zip_file, root_build_dir),
+      "--timestamp",
+      build_timestamp,
       "--base_dir",
       rebase_path(policy_templates_base_dir, root_build_dir),
       "--languages",

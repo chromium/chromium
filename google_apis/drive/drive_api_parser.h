@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
@@ -229,6 +228,10 @@ class TeamDriveResource {
 class TeamDriveList {
  public:
   TeamDriveList();
+
+  TeamDriveList(const TeamDriveList&) = delete;
+  TeamDriveList& operator=(const TeamDriveList&) = delete;
+
   ~TeamDriveList();
 
   // Registers the mapping between JSON field names and the members in this
@@ -268,8 +271,6 @@ class TeamDriveList {
 
   std::string next_page_token_;
   std::vector<std::unique_ptr<TeamDriveResource>> items_;
-
-  DISALLOW_COPY_AND_ASSIGN(TeamDriveList);
 };
 
 // ParentReference represents a directory.
@@ -692,6 +693,10 @@ class FileResource {
 class FileList {
  public:
   FileList();
+
+  FileList(const FileList&) = delete;
+  FileList& operator=(const FileList&) = delete;
+
   ~FileList();
 
   // Registers the mapping between JSON field names and the members in this
@@ -731,8 +736,6 @@ class FileList {
 
   GURL next_link_;
   std::vector<std::unique_ptr<FileResource>> items_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileList);
 };
 
 // ChangeResource represents a change in a file.
@@ -745,6 +748,10 @@ class ChangeResource {
     TEAM_DRIVE,
   };
   ChangeResource();
+
+  ChangeResource(const ChangeResource&) = delete;
+  ChangeResource& operator=(const ChangeResource&) = delete;
+
   ~ChangeResource();
 
   // Registers the mapping between JSON field names and the members in this
@@ -843,8 +850,6 @@ class ChangeResource {
   base::Time modification_date_;
   std::string team_drive_id_;
   std::unique_ptr<TeamDriveResource> team_drive_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChangeResource);
 };
 
 // ChangeList represents a set of changes in the drive.
@@ -852,6 +857,10 @@ class ChangeResource {
 class ChangeList {
  public:
   ChangeList();
+
+  ChangeList(const ChangeList&) = delete;
+  ChangeList& operator=(const ChangeList&) = delete;
+
   ~ChangeList();
 
   // Registers the mapping between JSON field names and the members in this
@@ -908,8 +917,6 @@ class ChangeList {
   int64_t largest_change_id_;
   std::string new_start_page_token_;
   std::vector<std::unique_ptr<ChangeResource>> items_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChangeList);
 };
 
 // StartPageToken represets the starting pageToken for listing changes in the

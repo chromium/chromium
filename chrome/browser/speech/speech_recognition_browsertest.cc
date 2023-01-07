@@ -1,8 +1,9 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/speech/chrome_speech_recognition_manager_delegate.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,12 +25,17 @@ namespace speech {
 class ChromeSpeechRecognitionTest : public InProcessBrowserTest {
  public:
   ChromeSpeechRecognitionTest() {}
+
+  ChromeSpeechRecognitionTest(const ChromeSpeechRecognitionTest&) = delete;
+  ChromeSpeechRecognitionTest& operator=(const ChromeSpeechRecognitionTest&) =
+      delete;
+
   ~ChromeSpeechRecognitionTest() override {}
 
   void SetUp() override {
     // SpeechRecognition test specific SetUp.
-    fake_speech_recognition_manager_.reset(
-        new content::FakeSpeechRecognitionManager());
+    fake_speech_recognition_manager_ =
+        std::make_unique<content::FakeSpeechRecognitionManager>();
     fake_speech_recognition_manager_->set_should_send_fake_response(true);
     // Inject the fake manager factory so that the test result is returned to
     // the web page.
@@ -40,17 +46,14 @@ class ChromeSpeechRecognitionTest : public InProcessBrowserTest {
   }
 
   void TearDown() override {
-    content::SpeechRecognitionManager::SetManagerForTesting(NULL);
-    fake_speech_recognition_manager_->SetDelegate(NULL);
+    content::SpeechRecognitionManager::SetManagerForTesting(nullptr);
+    fake_speech_recognition_manager_->SetDelegate(nullptr);
     InProcessBrowserTest::TearDown();
   }
 
  protected:
   std::unique_ptr<content::FakeSpeechRecognitionManager>
       fake_speech_recognition_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeSpeechRecognitionTest);
 };
 
 class SpeechWebContentsObserver : public content::WebContentsObserver {
@@ -59,6 +62,11 @@ class SpeechWebContentsObserver : public content::WebContentsObserver {
       : WebContentsObserver(web_contents),
         render_view_host_changed_(false),
         web_contents_destroyed_(false) {}
+
+  SpeechWebContentsObserver(const SpeechWebContentsObserver&) = delete;
+  SpeechWebContentsObserver& operator=(const SpeechWebContentsObserver&) =
+      delete;
+
   ~SpeechWebContentsObserver() override {}
 
   // content::WebContentsObserver overrides.
@@ -74,8 +82,6 @@ class SpeechWebContentsObserver : public content::WebContentsObserver {
  private:
   bool render_view_host_changed_;
   bool web_contents_destroyed_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechWebContentsObserver);
 };
 
 // Tests that ChromeSpeechRecognitionManagerDelegate works properly
@@ -96,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, BasicTearDown) {
   static_cast<content::FakeSpeechRecognitionManager*>(
       fake_speech_recognition_manager_.get())->SetDelegate(delegate.get());
 
-  ui_test_utils::NavigateToURL(browser(), http_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), http_url));
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(web_contents);
@@ -124,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSpeechRecognitionTest, BasicTearDown) {
 
   // Navigating to an https page will force RVH change within
   // |web_contents|, results in WCO::RenderViewHostChanged().
-  ui_test_utils::NavigateToURL(browser(), https_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), https_url));
 
   EXPECT_TRUE(speech_contents_observer.render_view_host_changed());
 

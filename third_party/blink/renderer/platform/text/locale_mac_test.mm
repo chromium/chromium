@@ -218,51 +218,28 @@ TEST_F(LocaleMacTest, formatDate) {
 }
 
 TEST_F(LocaleMacTest, formatTime) {
-  // On MacOS 10.13+, Arabic times (which contain spaces) use \xC2\xA0
-  // (which is a non-breaking space) instead of \x20 for those spaces. The
-  // 10.13+ behavior is probably more correct, but there does not appear to be a
-  // way to configure NSDateFormatter to behave that way on < 10.13.
-  const bool expect_ar_nbsp = base::mac::IsAtLeastOS10_13();
-
   EXPECT_EQ("1:23 PM", FormatTime("en_US", 13, 23, 00, 000, true));
   EXPECT_EQ("13:23", FormatTime("fr_FR", 13, 23, 00, 000, true));
   EXPECT_EQ("13:23", FormatTime("ja_JP", 13, 23, 00, 000, true));
-  if (expect_ar_nbsp) {
-    EXPECT_EQ("\xD9\xA1:\xD9\xA2\xD9\xA3\xC2\xA0\xD9\x85",
-              FormatTime("ar", 13, 23, 00, 000, true).Utf8());
-  } else {
-    EXPECT_EQ("\xD9\xA1:\xD9\xA2\xD9\xA3 \xD9\x85",
-              FormatTime("ar", 13, 23, 00, 000, true).Utf8());
-  }
+  EXPECT_EQ("\xD9\xA1:\xD9\xA2\xD9\xA3\xC2\xA0\xD9\x85",
+            FormatTime("ar", 13, 23, 00, 000, true).Utf8());
   EXPECT_EQ("\xDB\xB1\xDB\xB3:\xDB\xB2\xDB\xB3",
             FormatTime("fa", 13, 23, 00, 000, true).Utf8());
 
   EXPECT_EQ("12:00 AM", FormatTime("en_US", 00, 00, 00, 000, true));
   EXPECT_EQ("00:00", FormatTime("fr_FR", 00, 00, 00, 000, true));
   EXPECT_EQ("0:00", FormatTime("ja_JP", 00, 00, 00, 000, true));
-  if (expect_ar_nbsp) {
-    EXPECT_EQ("\xD9\xA1\xD9\xA2:\xD9\xA0\xD9\xA0\xC2\xA0\xD8\xB5",
-              FormatTime("ar", 00, 00, 00, 000, true).Utf8());
-  } else {
-    EXPECT_EQ("\xD9\xA1\xD9\xA2:\xD9\xA0\xD9\xA0 \xD8\xB5",
-              FormatTime("ar", 00, 00, 00, 000, true).Utf8());
-  }
+  EXPECT_EQ("\xD9\xA1\xD9\xA2:\xD9\xA0\xD9\xA0\xC2\xA0\xD8\xB5",
+            FormatTime("ar", 00, 00, 00, 000, true).Utf8());
   EXPECT_EQ("\xDB\xB0:\xDB\xB0\xDB\xB0",
             FormatTime("fa", 00, 00, 00, 000, true).Utf8());
 
   EXPECT_EQ("7:07:07.007 AM", FormatTime("en_US", 07, 07, 07, 007, false));
   EXPECT_EQ("07:07:07,007", FormatTime("fr_FR", 07, 07, 07, 007, false));
   EXPECT_EQ("7:07:07.007", FormatTime("ja_JP", 07, 07, 07, 007, false));
-  if (expect_ar_nbsp) {
-    EXPECT_EQ(
-        "\xD9\xA7:\xD9\xA0\xD9\xA7:"
-        "\xD9\xA0\xD9\xA7\xD9\xAB\xD9\xA0\xD9\xA0\xD9\xA7\xC2\xA0\xD8\xB5",
-        FormatTime("ar", 07, 07, 07, 007, false).Utf8());
-  } else {
-    EXPECT_EQ("\xD9\xA7:\xD9\xA0\xD9\xA7:"
-              "\xD9\xA0\xD9\xA7\xD9\xAB\xD9\xA0\xD9\xA0\xD9\xA7 \xD8\xB5",
-              FormatTime("ar", 07, 07, 07, 007, false).Utf8());
-  }
+  EXPECT_EQ("\xD9\xA7:\xD9\xA0\xD9\xA7:"
+            "\xD9\xA0\xD9\xA7\xD9\xAB\xD9\xA0\xD9\xA0\xD9\xA7\xC2\xA0\xD8\xB5",
+            FormatTime("ar", 07, 07, 07, 007, false).Utf8());
   EXPECT_EQ("\xDB\xB7:\xDB\xB0\xDB\xB7:"
             "\xDB\xB0\xDB\xB7\xD9\xAB\xDB\xB0\xDB\xB0\xDB\xB7",
             FormatTime("fa", 07, 07, 07, 007, false).Utf8());

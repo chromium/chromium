@@ -3,7 +3,7 @@ rootWebArea isLineBreakingObject=true
 ++++genericContainer ignored isLineBreakingObject=true
 ++++++group display='block' name='Group 1' isLineBreakingObject=true
 ++++++++genericContainer display='block' isLineBreakingObject=true
-++++++++++button display='inline-block' name='Before' isLineBreakingObject=true
+++++++++++button display='inline-block' name='Before'
 ++++++++++++staticText display='inline-block' name='Before'
 ++++++++++++++inlineTextBox display='inline-block' name='Before'
 ++++++++genericContainer display='block' isLineBreakingObject=true
@@ -17,12 +17,12 @@ rootWebArea isLineBreakingObject=true
 ++++++++++staticText display='block' name='After'
 ++++++++++++inlineTextBox display='block' name='After'
 ++++++group display='block' name='Group 3' isLineBreakingObject=true
-++++++++anchor display='inline' name='Before'
+++++++++genericContainer display='inline'
 ++++++++++genericContainer display='block' isLineBreakingObject=true
 ++++++++++++staticText display='block' name='Before'
 ++++++++++++++inlineTextBox display='block' name='Before'
 ++++++++genericContainer display='block' isLineBreakingObject=true
-++++++++++anchor display='inline' name='Ever '
+++++++++++genericContainer display='inline'
 ++++++++++++staticText display='inline' name='Ever '
 ++++++++++++++inlineTextBox display='inline' name='Ever '
 ++++++++++link display='inline' name='After'
@@ -32,7 +32,7 @@ rootWebArea isLineBreakingObject=true
 ++++++++genericContainer display='block' isLineBreakingObject=true
 ++++++++++staticText display='block' name='Before'
 ++++++++++++inlineTextBox display='block' name='Before'
-++++++++genericContainer ignored isLineBreakingObject=true
+++++++++genericContainer display='block' isLineBreakingObject=true
 ++++++++++paragraph display='block' isLineBreakingObject=true
 ++++++++++++staticText display='block' name='After'
 ++++++++++++++inlineTextBox display='block' name='After'

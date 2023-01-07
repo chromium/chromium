@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,6 +59,10 @@ class StructTraits<media::mojom::VideoEncoderInfoDataView,
   static bool supports_simulcast(
       const media::VideoEncoderInfo& video_encoder_info) {
     return video_encoder_info.supports_simulcast;
+  }
+  static bool reports_average_qp(
+      const media::VideoEncoderInfo& video_encoder_info) {
+    return video_encoder_info.reports_average_qp;
   }
   static base::span<const std::vector<uint8_t>,
                     media::VideoEncoderInfo::kMaxSpatialLayers>

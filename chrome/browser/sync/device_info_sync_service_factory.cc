@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,104 +17,15 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/sharing/sharing_sync_preference.h"
-#include "chrome/browser/signin/chrome_device_id_helper.h"
+#include "chrome/browser/sync/device_info_sync_client_impl.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/common/channel_info.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/send_tab_to_self/features.h"
-#include "components/sync/base/sync_prefs.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/model/model_type_store_service.h"
 #include "components/sync_device_info/device_info_prefs.h"
-#include "components/sync_device_info/device_info_sync_client.h"
 #include "components/sync_device_info/device_info_sync_service_impl.h"
 #include "components/sync_device_info/local_device_info_provider_impl.h"
-
-#if defined(OS_ANDROID)
-#include "chrome/browser/webauthn/android/cable_module_android.h"
-#endif
-
-namespace {
-
-class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
- public:
-  explicit DeviceInfoSyncClient(Profile* profile) : profile_(profile) {}
-  ~DeviceInfoSyncClient() override = default;
-
-  // syncer::DeviceInfoSyncClient:
-  std::string GetSigninScopedDeviceId() const override {
-// Since the local sync backend is currently only supported on Windows, Mac and
-// Linux don't even check the pref on other os-es.
-// TODO(crbug.com/1052397): Reassess whether the next block needs to be included
-// in lacros-chrome once build flag switch of lacros-chrome is
-// complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
-    syncer::SyncPrefs prefs(profile_->GetPrefs());
-    if (prefs.IsLocalSyncEnabled()) {
-      return "local_device";
-    }
-#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS))
-
-    return GetSigninScopedDeviceIdForProfile(profile_);
-  }
-
-  // syncer::DeviceInfoSyncClient:
-  bool GetSendTabToSelfReceivingEnabled() const override {
-    return send_tab_to_self::IsReceivingEnabledByUserOnThisDevice(
-        profile_->GetPrefs());
-  }
-
-  // syncer::DeviceInfoSyncClient:
-  base::Optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()
-      const override {
-    return SharingSyncPreference::GetLocalSharingInfoForSync(
-        profile_->GetPrefs());
-  }
-
-  // syncer::DeviceInfoSyncClient:
-  base::Optional<std::string> GetFCMRegistrationToken() const override {
-    syncer::SyncInvalidationsService* service =
-        SyncInvalidationsServiceFactory::GetForProfile(profile_);
-    if (service) {
-      return service->GetFCMRegistrationToken();
-    }
-    // If the service is not enabled, then the registration token must be empty,
-    // not unknown (base::nullopt). This is needed to reset previous token if
-    // the invalidations have been turned off.
-    return std::string();
-  }
-
-  // syncer::DeviceInfoSyncClient:
-  base::Optional<syncer::ModelTypeSet> GetInterestedDataTypes() const override {
-    syncer::SyncInvalidationsService* service =
-        SyncInvalidationsServiceFactory::GetForProfile(profile_);
-    if (service) {
-      return service->GetInterestedDataTypes();
-    }
-    // If the service is not enabled, then the list of types must be empty, not
-    // unknown (base::nullopt). This is needed to reset previous types if the
-    // invalidations have been turned off.
-    return syncer::ModelTypeSet();
-  }
-
-  base::Optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
-  GetPhoneAsASecurityKeyInfo() const override {
-#if defined(OS_ANDROID)
-    return webauthn::authenticator::GetSyncDataIfRegistered();
-#else
-    return base::nullopt;
-#endif
-  }
-
- private:
-  Profile* const profile_;
-};
-
-}  // namespace
 
 // static
 syncer::DeviceInfoSyncService* DeviceInfoSyncServiceFactory::GetForProfile(
@@ -150,21 +61,19 @@ void DeviceInfoSyncServiceFactory::GetAllDeviceInfoTrackers(
 }
 
 DeviceInfoSyncServiceFactory::DeviceInfoSyncServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "DeviceInfoSyncService",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("DeviceInfoSyncService") {
   DependsOn(ModelTypeStoreServiceFactory::GetInstance());
   DependsOn(SyncInvalidationsServiceFactory::GetInstance());
 }
 
-DeviceInfoSyncServiceFactory::~DeviceInfoSyncServiceFactory() {}
+DeviceInfoSyncServiceFactory::~DeviceInfoSyncServiceFactory() = default;
 
 KeyedService* DeviceInfoSyncServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
   auto device_info_sync_client =
-      std::make_unique<DeviceInfoSyncClient>(profile);
+      std::make_unique<browser_sync::DeviceInfoSyncClientImpl>(profile);
   auto local_device_info_provider =
       std::make_unique<syncer::LocalDeviceInfoProviderImpl>(
           chrome::GetChannel(),

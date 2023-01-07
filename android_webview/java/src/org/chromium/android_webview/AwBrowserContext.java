@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,6 +17,8 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.content_public.browser.ContentViewStatics;
+
+import java.util.Set;
 
 /**
  * Java side of the Browser Context: contains all the java side objects needed to host one
@@ -119,6 +121,17 @@ public class AwBrowserContext {
     }
 
     /**
+     * Used by {@link AwServiceWorkerSettings#setRequestedWithHeaderOriginAllowList(Set)}
+     */
+    Set<String> updateServiceWorkerXRequestedWithAllowListOriginMatcher(
+            Set<String> allowedOriginRules) {
+        String[] badRules =
+                AwBrowserContextJni.get().updateServiceWorkerXRequestedWithAllowListOriginMatcher(
+                        mNativeAwBrowserContext, allowedOriginRules.toArray(new String[0]));
+        return Set.of(badRules);
+    }
+
+    /**
      * @see android.webkit.WebView#pauseTimers()
      */
     public void pauseTimers() {
@@ -170,5 +183,7 @@ public class AwBrowserContext {
         AwBrowserContext getDefaultJava();
         long getQuotaManagerBridge(long nativeAwBrowserContext);
         void setWebLayerRunningInSameProcess(long nativeAwBrowserContext);
+        String[] updateServiceWorkerXRequestedWithAllowListOriginMatcher(
+                long nativeAwBrowserContext, String[] rules);
     }
 }

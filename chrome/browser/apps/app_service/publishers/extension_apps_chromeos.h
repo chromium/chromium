@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/scoped_observer.h"
+#include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
 #include "chrome/browser/apps/app_service/app_notifications.h"
 #include "chrome/browser/apps/app_service/app_web_contents_data.h"
-#include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/apps/app_service/paused_apps.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps_base.h"
@@ -23,13 +23,15 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
+#include "components/services/app_service/public/cpp/intent.h"
+#include "components/services/app_service/public/cpp/menu.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "mojo/public/cpp/bindings/remote.h"
-
-class Profile;
 
 namespace extensions {
 class AppWindow;
@@ -43,11 +45,13 @@ class NotificationDisplayService;
 
 namespace apps {
 
+class PublisherHost;
+
 // An app publisher (in the App Service sense) of extension-backed apps for
-// ChromeOS, including Chrome Apps (platform apps and legacy packaged apps) and
-// hosted apps (including desktop PWAs).
-//
-// In the future, desktop PWAs will be migrated to a new system.
+// ChromeOS, including Chrome Apps (platform apps and legacy packaged apps),
+// hosted apps (including desktop PWAs), and browser extensions. In Chrome OS,
+// there are 2 ExtensionAppsChromeOs publishers for browser extensions and
+// Chrome apps(including hosted apps) separately.
 //
 // See components/services/app_service/README.md.
 class ExtensionAppsChromeOs : public ExtensionAppsBase,
@@ -57,34 +61,44 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
                               public MediaCaptureDevicesDispatcher::Observer,
                               public AppWebContentsData::Client {
  public:
-  ExtensionAppsChromeOs(
-      const mojo::Remote<apps::mojom::AppService>& app_service,
-      Profile* profile,
-      apps::InstanceRegistry* instance_registry);
+  ExtensionAppsChromeOs(AppServiceProxy* proxy, AppType app_type);
   ~ExtensionAppsChromeOs() override;
 
   ExtensionAppsChromeOs(const ExtensionAppsChromeOs&) = delete;
   ExtensionAppsChromeOs& operator=(const ExtensionAppsChromeOs&) = delete;
-
-  // Record uninstall dialog action for Web apps and Chrome apps.
-  static void RecordUninstallCanceledAction(Profile* profile,
-                                            const std::string& app_id);
 
   void Shutdown();
 
   void ObserveArc();
 
  private:
-  void Initialize();
+  friend class PublisherHost;
+
+  // ExtensionAppsBase overrides.
+  void Initialize() override;
+  void LaunchAppWithParamsImpl(AppLaunchParams&& params,
+                               LaunchCallback callback) override;
+
+  void LaunchAppWithIntent(const std::string& app_id,
+                           int32_t event_flags,
+                           IntentPtr intent,
+                           LaunchSource launch_source,
+                           WindowInfoPtr window_info,
+                           LaunchCallback callback) override;
+  void GetMenuModel(const std::string& app_id,
+                    MenuType menu_type,
+                    int64_t display_id,
+                    base::OnceCallback<void(MenuItems)> callback) override;
 
   // apps::mojom::Publisher overrides.
   void LaunchAppWithIntent(const std::string& app_id,
                            int32_t event_flags,
                            apps::mojom::IntentPtr intent,
                            apps::mojom::LaunchSource launch_source,
-                           apps::mojom::WindowInfoPtr window_info) override;
+                           apps::mojom::WindowInfoPtr window_info,
+                           LaunchAppWithIntentCallback callback) override;
   void PauseApp(const std::string& app_id) override;
-  void UnpauseApps(const std::string& app_id) override;
+  void UnpauseApp(const std::string& app_id) override;
   void GetMenuModel(const std::string& app_id,
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,
@@ -141,7 +155,13 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   void OnHideWebStoreIconPrefChanged() override;
   void OnSystemFeaturesPrefChanged() override;
   bool Accepts(const extensions::Extension* extension) override;
+  void SetShowInFields(const extensions::Extension* extension,
+                       App& app) override;
+  void SetShowInFields(apps::mojom::AppPtr& app,
+                       const extensions::Extension* extension) override;
   bool ShouldShownInLauncher(const extensions::Extension* extension) override;
+  AppPtr CreateApp(const extensions::Extension* extension,
+                   Readiness readiness) override;
   apps::mojom::AppPtr Convert(const extensions::Extension* extension,
                               apps::mojom::Readiness readiness) override;
 
@@ -160,20 +180,24 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   bool ShouldRecordAppWindowActivity(extensions::AppWindow* app_window);
   void RegisterInstance(extensions::AppWindow* app_window, InstanceState state);
 
-  void GetMenuModelForChromeBrowserApp(apps::mojom::MenuType menu_type,
-                                       GetMenuModelCallback callback);
-
   content::WebContents* LaunchImpl(AppLaunchParams&& params) override;
 
   void UpdateAppDisabledState(
-      const base::ListValue* disabled_system_features_pref,
+      const base::Value::List& disabled_system_features_pref,
       int feature,
       const std::string& app_id,
       bool is_disabled_mode_changed);
 
-  apps::InstanceRegistry* instance_registry_;
-  ScopedObserver<extensions::AppWindowRegistry,
-                 extensions::AppWindowRegistry::Observer>
+  void LaunchExtension(const std::string& app_id,
+                       int32_t event_flags,
+                       IntentPtr intent,
+                       LaunchSource launch_source,
+                       WindowInfoPtr window_info,
+                       LaunchAppWithIntentCallback callback);
+
+  apps::InstanceRegistry* const instance_registry_;
+  base::ScopedObservation<extensions::AppWindowRegistry,
+                          extensions::AppWindowRegistry::Observer>
       app_window_registry_{this};
 
   PausedApps paused_apps_;
@@ -201,8 +225,8 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
 
   MediaRequests media_requests_;
 
-  ScopedObserver<NotificationDisplayService,
-                 NotificationDisplayService::Observer>
+  base::ScopedObservation<NotificationDisplayService,
+                          NotificationDisplayService::Observer>
       notification_display_service_{this};
 
   AppNotifications app_notifications_;

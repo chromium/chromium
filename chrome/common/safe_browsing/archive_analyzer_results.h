@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -12,7 +12,7 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace base {
 class File;
@@ -20,21 +20,42 @@ class File;
 
 namespace safe_browsing {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ArchiveAnalysisResult {
+  kUnknown = 0,  // kUnknown indicates a case where we don't have a specific
+                 // reason, but parsing failed. This bucket will be broken into
+                 // more buckets in the future, as we identify more reasons for
+                 // analysis failure.
+  kUnspecified = 1,  // kUnspecified indicates that the analysis code provided
+                     // no reason at all. Logging this value indicates a bug.
+  kValid = 2,
+  kTooLarge = 3,
+  kTimeout = 4,
+  kFailedToOpen = 5,
+  kFailedToOpenTempFile = 6,
+  kDmgNoPartitions = 7,
+  kFailedDuringIteration = 8,
+  kMaxValue = kFailedDuringIteration,
+};
+
 struct ArchiveAnalyzerResults {
-  bool success;
-  bool has_executable;
-  bool has_archive;
+  bool success = false;
+  bool has_executable = false;
+  bool has_archive = false;
   google::protobuf::RepeatedPtrField<ClientDownloadRequest_ArchivedBinary>
       archived_binary;
   std::vector<base::FilePath> archived_archive_filenames;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::vector<uint8_t> signature_blob;
   google::protobuf::RepeatedPtrField<
       ClientDownloadRequest_DetachedCodeSignature>
       detached_code_signatures;
-#endif  // OS_MAC
-  int file_count;
-  int directory_count;
+#endif  // BUILDFLAG(IS_MAC)
+  int file_count = 0;
+  int directory_count = 0;
+  ArchiveAnalysisResult analysis_result = ArchiveAnalysisResult::kUnspecified;
+
   ArchiveAnalyzerResults();
   ArchiveAnalyzerResults(const ArchiveAnalyzerResults& other);
   ~ArchiveAnalyzerResults();

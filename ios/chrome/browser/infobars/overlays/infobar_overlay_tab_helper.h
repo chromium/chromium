@@ -1,13 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_INFOBAR_OVERLAY_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_INFOBAR_OVERLAY_TAB_HELPER_H_
 
-#include <memory>
-
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -47,8 +45,9 @@ class InfobarOverlayTabHelper
     // The owning tab helper.
     InfobarOverlayTabHelper* tab_helper_ = nullptr;
     web::WebState* web_state_ = nullptr;
-    ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-        scoped_observer_;
+    base::ScopedObservation<infobars::InfoBarManager,
+                            infobars::InfoBarManager::Observer>
+        scoped_observation_{this};
   };
 
   // The inserter used to add infobar OverlayRequests to the WebState's queue.

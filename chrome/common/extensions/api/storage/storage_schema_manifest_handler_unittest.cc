@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -87,7 +87,7 @@ TEST_F(StorageSchemaManifestHandlerTest, Parse) {
 
 TEST_F(StorageSchemaManifestHandlerTest, Validate) {
   base::ListValue permissions;
-  permissions.AppendString("storage");
+  permissions.Append("storage");
   manifest_.SetKey("permissions", permissions.Clone());
 
   // Absolute path.

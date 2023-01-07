@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_NETWORK_TRUST_TOKENS_EXPIRY_INSPECTING_RECORD_EXPIRY_DELEGATE_H_
 #define SERVICES_NETWORK_TRUST_TOKENS_EXPIRY_INSPECTING_RECORD_EXPIRY_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_store.h"
 
@@ -34,10 +35,12 @@ class ExpiryInspectingRecordExpiryDelegate
 
   // TrustTokenStore::RecordExpiryDelegate implementation:
   bool IsRecordExpired(const TrustTokenRedemptionRecord& record,
+                       const base::TimeDelta& time_since_last_redemption,
                        const SuitableTrustTokenOrigin& issuer) override;
 
  private:
-  const SynchronousTrustTokenKeyCommitmentGetter* key_commitment_getter_;
+  raw_ptr<const SynchronousTrustTokenKeyCommitmentGetter>
+      key_commitment_getter_;
 };
 
 }  // namespace network

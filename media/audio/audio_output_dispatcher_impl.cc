@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "media/audio/audio_logging.h"
 #include "media/audio/audio_manager.h"
@@ -40,8 +40,8 @@ AudioOutputDispatcherImpl::~AudioOutputDispatcherImpl() {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
 
   // Stop all active streams.
-  for (auto& iter : proxy_to_physical_map_) {
-    StopPhysicalStream(iter.second);
+  for (const auto& [proxy, stream] : proxy_to_physical_map_) {
+    StopPhysicalStream(stream);
   }
 
   // Close all idle streams immediately.  The |close_timer_| will handle
@@ -75,8 +75,7 @@ bool AudioOutputDispatcherImpl::StartStream(
     AudioOutputStream::AudioSourceCallback* callback,
     AudioOutputProxy* stream_proxy) {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
-  DCHECK(proxy_to_physical_map_.find(stream_proxy) ==
-         proxy_to_physical_map_.end());
+  DCHECK(!proxy_to_physical_map_.contains(stream_proxy));
 
   if (idle_streams_.empty() && !CreateAndOpenStream())
     return false;

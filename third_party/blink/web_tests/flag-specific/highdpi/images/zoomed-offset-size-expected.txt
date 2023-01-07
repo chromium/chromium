@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS Image should return a size of 250x166 regardless of zoom level.
-Harness: the test ran to completion.
-

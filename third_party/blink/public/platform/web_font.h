@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-// To avoid conflicts with the CreateWindow macro from the Windows SDK...
+// To avoid conflicts with the DrawText macro from the Windows SDK...
 #undef DrawText
 
 namespace cc {
@@ -26,30 +26,28 @@ namespace blink {
 struct WebFontDescription;
 struct WebTextRun;
 
-class WebFont {
+class BLINK_PLATFORM_EXPORT WebFont {
  public:
-  BLINK_PLATFORM_EXPORT static WebFont* Create(const WebFontDescription&);
-  BLINK_PLATFORM_EXPORT ~WebFont();
+  static WebFont* Create(const WebFontDescription&);
+  ~WebFont();
 
-  BLINK_PLATFORM_EXPORT WebFontDescription GetFontDescription() const;
-  BLINK_PLATFORM_EXPORT int Ascent() const;
-  BLINK_PLATFORM_EXPORT int Descent() const;
-  BLINK_PLATFORM_EXPORT int Height() const;
-  BLINK_PLATFORM_EXPORT int LineSpacing() const;
-  BLINK_PLATFORM_EXPORT float XHeight() const;
-  BLINK_PLATFORM_EXPORT void DrawText(cc::PaintCanvas*,
-                                      const WebTextRun&,
-                                      const gfx::PointF& left_baseline,
-                                      SkColor) const;
-  BLINK_PLATFORM_EXPORT int CalculateWidth(const WebTextRun&) const;
-  BLINK_PLATFORM_EXPORT int OffsetForPosition(const WebTextRun&,
-                                              float position) const;
-  BLINK_PLATFORM_EXPORT gfx::RectF SelectionRectForText(
-      const WebTextRun&,
-      const gfx::PointF& left_baseline,
-      int height,
-      int from = 0,
-      int to = -1) const;
+  WebFontDescription GetFontDescription() const;
+  int Ascent() const;
+  int Descent() const;
+  int Height() const;
+  int LineSpacing() const;
+  float XHeight() const;
+  void DrawText(cc::PaintCanvas*,
+                const WebTextRun&,
+                const gfx::PointF& left_baseline,
+                SkColor) const;
+  int CalculateWidth(const WebTextRun&) const;
+  int OffsetForPosition(const WebTextRun&, float position) const;
+  gfx::RectF SelectionRectForText(const WebTextRun&,
+                                  const gfx::PointF& left_baseline,
+                                  int height,
+                                  int from = 0,
+                                  int to = -1) const;
 
  private:
   explicit WebFont(const WebFontDescription&);
@@ -60,4 +58,4 @@ class WebFont {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_FONT_H_

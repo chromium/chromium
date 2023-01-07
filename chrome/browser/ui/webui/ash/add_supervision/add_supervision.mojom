@@ -1,0 +1,34 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module add_supervision.mojom;
+
+enum OAuthTokenFetchStatus {
+  OK = 0,
+  ERROR = 1
+};
+
+// Interface that supports integration between the AddSupervision WebUI and
+// ChromeOS.
+interface AddSupervisionHandler {
+  // Attempts to close the AddSupervision WebUI. Returns a bool indicating
+  // whether the WebUI was closed.
+  RequestClose() => (bool closed);
+
+  // Returns an array of package names of installed ARC apps.
+  GetInstalledArcApps() => (array<string> package_names);
+
+  // Returns the oauth token to be passed to the server.
+  GetOAuthToken() => (OAuthTokenFetchStatus status, string oauth_token);
+
+  // Triggers a logout from the current login session.
+  LogOut();
+
+  // Indicates to the system that Supervision has been enabled for the primary
+  // user.
+  NotifySupervisionEnabled();
+
+  // Configures whether we should close the dialog when pressing Escape.
+  SetCloseOnEscape(bool enabled);
+};

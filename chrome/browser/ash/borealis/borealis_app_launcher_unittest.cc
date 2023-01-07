@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,17 +6,22 @@
 
 #include <memory>
 
+#include "base/base64.h"
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/borealis/testing/callback_factory.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_cicerone_client.h"
-#include "chromeos/dbus/vm_applications/apps.pb.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
+#include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
+#include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,39 +29,20 @@
 namespace borealis {
 namespace {
 
-class CallbackFactory
-    : public testing::StrictMock<
-          testing::MockFunction<void(BorealisAppLauncher::LaunchResult)>> {
- public:
-  base::OnceCallback<void(BorealisAppLauncher::LaunchResult)> BindOnce() {
-    return base::BindOnce(&CallbackFactory::Call, base::Unretained(this));
-  }
-};
+using CallbackFactory =
+    StrictCallbackFactory<void(BorealisAppLauncher::LaunchResult)>;
 
-class ScopedCiceroneFake {
- public:
-  ScopedCiceroneFake() { chromeos::DBusThreadManager::Initialize(); }
-
-  ~ScopedCiceroneFake() { chromeos::DBusThreadManager::Shutdown(); }
-
-  chromeos::FakeCiceroneClient* Get() {
-    return reinterpret_cast<chromeos::FakeCiceroneClient*>(
-        chromeos::DBusThreadManager::Get()->GetCiceroneClient());
-  }
-};
-
-class BorealisAppLauncherTest : public testing::Test {
+class BorealisAppLauncherTest : public testing::Test,
+                                protected guest_os::FakeVmServicesHelper {
  public:
   BorealisAppLauncherTest()
       : ctx_(BorealisContext::CreateBorealisContextForTesting(&profile_)) {
-    ctx_->set_vm_name("test_vm_name");
-    ctx_->set_container_name("test_container_name");
+    ctx_->set_vm_name("borealis");
+    ctx_->set_container_name("penguin");
   }
 
  protected:
   const BorealisContext& Context() { return *ctx_; }
-
-  chromeos::FakeCiceroneClient* Cicerone() { return cicerone_.Get(); }
 
   // Sets up the registry with a single app. Returns its app id.
   std::string SetDummyApp(const std::string& desktop_file_id) {
@@ -78,16 +64,32 @@ class BorealisAppLauncherTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  ScopedCiceroneFake cicerone_;
   TestingProfile profile_;
   std::unique_ptr<BorealisContext> ctx_;
 };
 
-TEST_F(BorealisAppLauncherTest, LauncherAppAlwaysWorks) {
+TEST_F(BorealisAppLauncherTest, LauncherAppLaunchesMainApp) {
   CallbackFactory callback_check;
+
+  // We add the main app to the registry, so that it will be launched.
+  std::string desktop_file_id;
+  ASSERT_TRUE(base::Base64Decode("c3RlYW0=", &desktop_file_id));
+  ASSERT_EQ(SetDummyApp(desktop_file_id), kClientAppId);
+
   EXPECT_CALL(callback_check,
               Call(BorealisAppLauncher::LaunchResult::kSuccess));
-  BorealisAppLauncher::Launch(Context(), kBorealisAppId,
+  FakeCiceroneClient()->SetOnLaunchContainerApplicationCallback(
+      base::BindLambdaForTesting(
+          [&](const vm_tools::cicerone::LaunchContainerApplicationRequest&
+                  request,
+              chromeos::DBusMethodCallback<
+                  vm_tools::cicerone::LaunchContainerApplicationResponse>
+                  callback) {
+            vm_tools::cicerone::LaunchContainerApplicationResponse response;
+            response.set_success(true);
+            std::move(callback).Run(response);
+          }));
+  BorealisAppLauncher::Launch(Context(), kInstallerAppId,
                               callback_check.BindOnce());
 }
 
@@ -104,7 +106,7 @@ TEST_F(BorealisAppLauncherTest, NoResponseCausesError) {
   EXPECT_CALL(callback_check,
               Call(BorealisAppLauncher::LaunchResult::kNoResponse));
   std::string baz_id = SetDummyApp("foo.desktop");
-  Cicerone()->SetOnLaunchContainerApplicationCallback(
+  FakeCiceroneClient()->SetOnLaunchContainerApplicationCallback(
       base::BindLambdaForTesting(
           [&](const vm_tools::cicerone::LaunchContainerApplicationRequest&
                   request,
@@ -121,7 +123,7 @@ TEST_F(BorealisAppLauncherTest, ErrorResponseIsPropagated) {
   CallbackFactory callback_check;
   EXPECT_CALL(callback_check, Call(BorealisAppLauncher::LaunchResult::kError));
   std::string baz_id = SetDummyApp("bar.desktop");
-  Cicerone()->SetOnLaunchContainerApplicationCallback(
+  FakeCiceroneClient()->SetOnLaunchContainerApplicationCallback(
       base::BindLambdaForTesting(
           [&](const vm_tools::cicerone::LaunchContainerApplicationRequest&
                   request,
@@ -141,7 +143,7 @@ TEST_F(BorealisAppLauncherTest, SuccessfulLaunchHasSuccessResponse) {
   EXPECT_CALL(callback_check,
               Call(BorealisAppLauncher::LaunchResult::kSuccess));
   std::string baz_id = SetDummyApp("baz.desktop");
-  Cicerone()->SetOnLaunchContainerApplicationCallback(
+  FakeCiceroneClient()->SetOnLaunchContainerApplicationCallback(
       base::BindLambdaForTesting(
           [&](const vm_tools::cicerone::LaunchContainerApplicationRequest&
                   request,
@@ -161,7 +163,7 @@ TEST_F(BorealisAppLauncherTest, ApplicationIsRunWithGivenArgs) {
   EXPECT_CALL(callback_check,
               Call(BorealisAppLauncher::LaunchResult::kSuccess));
   std::string baz_id = SetDummyApp("baz.desktop");
-  Cicerone()->SetOnLaunchContainerApplicationCallback(
+  FakeCiceroneClient()->SetOnLaunchContainerApplicationCallback(
       base::BindLambdaForTesting(
           [&](const vm_tools::cicerone::LaunchContainerApplicationRequest&
                   request,

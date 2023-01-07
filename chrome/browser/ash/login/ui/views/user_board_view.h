@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/ash/login/screens/user_selection_screen.h"
+#include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"
 
 class AccountId;
 
-namespace chromeos {
+namespace ash {
 
-class UserSelectionScreen;
+enum class SmartLockState;
 
 // TODO(jdufault): Rename UserBoardView to UserSelectionView. See
 // crbug.com/672142.
@@ -36,7 +38,7 @@ class UserBoardView {
   virtual void SetPublicSessionDisplayName(const AccountId& account_id,
                                            const std::string& display_name) = 0;
   virtual void SetPublicSessionLocales(const AccountId& account_id,
-                                       std::unique_ptr<base::ListValue> locales,
+                                       base::Value::List locales,
                                        const std::string& default_locale,
                                        bool multiple_recommended_locales) = 0;
   virtual void SetPublicSessionShowFullManagementDisclosure(
@@ -45,9 +47,13 @@ class UserBoardView {
                                  bool is_warning) = 0;
   virtual void ShowUserPodCustomIcon(
       const AccountId& account_id,
-      const proximity_auth::ScreenlockBridge::UserPodCustomIconOptions&
-          icon) = 0;
+      const proximity_auth::ScreenlockBridge::UserPodCustomIconInfo&
+          icon_info) = 0;
   virtual void HideUserPodCustomIcon(const AccountId& account_id) = 0;
+  virtual void SetSmartLockState(const AccountId& account_id,
+                                 SmartLockState state) = 0;
+  virtual void NotifySmartLockAuthResult(const AccountId& account_id,
+                                         bool success) = 0;
   virtual void SetAuthType(const AccountId& account_id,
                            proximity_auth::mojom::AuthType auth_type,
                            const std::u16string& initial_value) = 0;
@@ -57,6 +63,12 @@ class UserBoardView {
                                  base::TimeDelta time_left) = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::UserBoardView;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_UI_VIEWS_USER_BOARD_VIEW_H_

@@ -1,15 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_BROWSER_LOADER_CROSS_ORIGIN_READ_BLOCKING_CHECKER_H_
 #define CONTENT_BROWSER_LOADER_CROSS_ORIGIN_READ_BLOCKING_CHECKER_H_
 
-#include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/cpp/cross_origin_read_blocking.h"
+#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace net {
@@ -23,10 +22,6 @@ struct ResourceRequest;
 namespace storage {
 class BlobDataHandle;
 }  // namespace storage
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -43,9 +38,15 @@ class CrossOriginReadBlockingChecker {
   CrossOriginReadBlockingChecker(
       const network::ResourceRequest& request,
       const network::mojom::URLResponseHead& response,
-      const url::Origin& request_initiator_origin_lock,
       const storage::BlobDataHandle& blob_data_handle,
+      network::corb::PerFactoryState& corb_state,
       base::OnceCallback<void(Result)> callback);
+
+  CrossOriginReadBlockingChecker(const CrossOriginReadBlockingChecker&) =
+      delete;
+  CrossOriginReadBlockingChecker& operator=(
+      const CrossOriginReadBlockingChecker&) = delete;
+
   ~CrossOriginReadBlockingChecker();
 
   int GetNetError();
@@ -62,14 +63,11 @@ class CrossOriginReadBlockingChecker {
                       int net_error);
 
   base::OnceCallback<void(Result)> callback_;
-  std::unique_ptr<network::CrossOriginReadBlocking::ResponseAnalyzer>
-      corb_analyzer_;
+  std::unique_ptr<network::corb::ResponseAnalyzer> corb_analyzer_;
   std::unique_ptr<BlobIOState> blob_io_state_;
   int net_error_ = net::OK;
 
   base::WeakPtrFactory<CrossOriginReadBlockingChecker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CrossOriginReadBlockingChecker);
 };
 
 }  // namespace content

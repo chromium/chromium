@@ -20,6 +20,6 @@
         host.offsetTop;
         root.querySelector("#shadowDiv").style.color = "red";
         assert_true(!!window.internals, "This test only works with --expose-internals-for-testing.");
-        assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 2, "Inheritance propagation should stop at #stopInherit element.");
+        assert_equals(internals.updateStyleAndReturnAffectedElementCount(), 1, "Inheritance propagation should stop at #stopInherit element.");
     }, "Inheritance propagation should not cause full subtree recalcs in flat-tree.");
 </script>

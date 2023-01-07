@@ -1,12 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/offline_pages/core/prefetch/prefetch_gcm_app_handler.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
 #include "components/offline_pages/core/prefetch/prefetch_service_impl.h"
@@ -25,11 +27,15 @@ class PrefetchGCMAppHandlerTest : public testing::Test {
     auto gcm_app_handler = std::make_unique<PrefetchGCMAppHandler>();
     handler_ = gcm_app_handler.get();
 
-    prefetch_service_taco_.reset(new PrefetchServiceTestTaco);
+    prefetch_service_taco_ = std::make_unique<PrefetchServiceTestTaco>();
     prefetch_service_taco_->SetPrefetchGCMHandler(std::move(gcm_app_handler));
     prefetch_service_taco_->SetPrefetchDispatcher(std::move(dispatcher));
     prefetch_service_taco_->CreatePrefetchService();
   }
+
+  PrefetchGCMAppHandlerTest(const PrefetchGCMAppHandlerTest&) = delete;
+  PrefetchGCMAppHandlerTest& operator=(const PrefetchGCMAppHandlerTest&) =
+      delete;
 
   ~PrefetchGCMAppHandlerTest() override {
     // Ensures that the store is properly disposed off.
@@ -45,11 +51,9 @@ class PrefetchGCMAppHandlerTest : public testing::Test {
   std::unique_ptr<PrefetchServiceTestTaco> prefetch_service_taco_;
 
   // Owned by the taco.
-  TestPrefetchDispatcher* test_dispatcher_;
+  raw_ptr<TestPrefetchDispatcher> test_dispatcher_;
   // Owned by the taco.
-  PrefetchGCMAppHandler* handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchGCMAppHandlerTest);
+  raw_ptr<PrefetchGCMAppHandler> handler_;
 };
 
 TEST_F(PrefetchGCMAppHandlerTest, TestOnMessage) {

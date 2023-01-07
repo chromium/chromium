@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -21,6 +20,7 @@
 #include "media/audio/mock_audio_source_callback.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/channel_layout.h"
 #include "media/base/data_buffer.h"
 #include "media/base/seekable_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -78,9 +78,13 @@ class MockAudioManagerAlsa : public AudioManagerAlsa {
 };
 
 class AlsaPcmOutputStreamTest : public testing::Test {
+ public:
+  AlsaPcmOutputStreamTest(const AlsaPcmOutputStreamTest&) = delete;
+  AlsaPcmOutputStreamTest& operator=(const AlsaPcmOutputStreamTest&) = delete;
+
  protected:
   AlsaPcmOutputStreamTest() {
-    mock_manager_.reset(new StrictMock<MockAudioManagerAlsa>());
+    mock_manager_ = std::make_unique<StrictMock<MockAudioManagerAlsa>>();
   }
 
   ~AlsaPcmOutputStreamTest() override { mock_manager_->Shutdown(); }
@@ -91,8 +95,10 @@ class AlsaPcmOutputStreamTest : public testing::Test {
 
   AlsaPcmOutputStream* CreateStream(ChannelLayout layout,
                                     int32_t samples_per_packet) {
-    AudioParameters params(kTestFormat, layout, kTestSampleRate,
-                           samples_per_packet);
+    AudioParameters params(
+        kTestFormat,
+        ChannelLayoutConfig(layout, ChannelLayoutToChannelCount(layout)),
+        kTestSampleRate, samples_per_packet);
     return new AlsaPcmOutputStream(kTestDeviceName,
                                    params,
                                    &mock_alsa_wrapper_,
@@ -115,7 +121,7 @@ class AlsaPcmOutputStreamTest : public testing::Test {
     DCHECK(test_stream);
     packet_ = new DataBuffer(kTestPacketSize);
     packet_->set_data_size(kTestPacketSize);
-    test_stream->buffer_.reset(new SeekableBuffer(0, kTestPacketSize));
+    test_stream->buffer_ = std::make_unique<SeekableBuffer>(0, kTestPacketSize);
     test_stream->buffer_->Append(packet_.get());
   }
 
@@ -145,9 +151,6 @@ class AlsaPcmOutputStreamTest : public testing::Test {
   StrictMock<MockAlsaWrapper> mock_alsa_wrapper_;
   std::unique_ptr<StrictMock<MockAudioManagerAlsa>> mock_manager_;
   scoped_refptr<DataBuffer> packet_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AlsaPcmOutputStreamTest);
 };
 
 const ChannelLayout AlsaPcmOutputStreamTest::kTestChannelLayout =

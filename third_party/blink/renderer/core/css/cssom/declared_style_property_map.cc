@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ const CSSValue* DeclaredStylePropertyMap::GetProperty(
 }
 
 const CSSValue* DeclaredStylePropertyMap::GetCustomProperty(
-    AtomicString property_name) const {
+    const AtomicString& property_name) const {
   if (!GetStyleRule())
     return nullptr;
   return GetStyleRule()->Properties().GetPropertyCSSValue(property_name);
@@ -39,6 +39,7 @@ const CSSValue* DeclaredStylePropertyMap::GetCustomProperty(
 
 void DeclaredStylePropertyMap::SetProperty(CSSPropertyID property_id,
                                            const CSSValue& value) {
+  DCHECK_NE(property_id, CSSPropertyID::kVariable);
   if (!GetStyleRule())
     return;
   CSSStyleSheet::RuleMutationScope mutation_scope(owner_rule_);
@@ -53,7 +54,7 @@ bool DeclaredStylePropertyMap::SetShorthandProperty(
   CSSStyleSheet::RuleMutationScope mutation_scope(owner_rule_);
   const auto result = GetStyleRule()->MutableProperties().SetProperty(
       property_id, value, false /* important */, secure_context_mode);
-  return result.did_parse;
+  return result != MutableCSSPropertyValueSet::kParseError;
 }
 
 void DeclaredStylePropertyMap::SetCustomProperty(
@@ -63,12 +64,12 @@ void DeclaredStylePropertyMap::SetCustomProperty(
     return;
   CSSStyleSheet::RuleMutationScope mutation_scope(owner_rule_);
 
-  auto* variable_data =
-      To<CSSVariableReferenceValue>(value).VariableDataValue();
+  const auto& variable_value = To<CSSVariableReferenceValue>(value);
+  CSSVariableData* variable_data = variable_value.VariableDataValue();
   GetStyleRule()->MutableProperties().SetProperty(
-      CSSPropertyID::kVariable,
-      *MakeGarbageCollected<CSSCustomPropertyDeclaration>(property_name,
-                                                          variable_data));
+      CSSPropertyName(property_name),
+      *MakeGarbageCollected<CSSCustomPropertyDeclaration>(
+          variable_data, variable_value.ParserContext()));
 }
 
 void DeclaredStylePropertyMap::RemoveProperty(CSSPropertyID property_id) {
@@ -93,14 +94,13 @@ void DeclaredStylePropertyMap::RemoveAllProperties() {
   GetStyleRule()->MutableProperties().Clear();
 }
 
-void DeclaredStylePropertyMap::ForEachProperty(
-    const IterationCallback& callback) {
+void DeclaredStylePropertyMap::ForEachProperty(IterationFunction visitor) {
   if (!GetStyleRule())
     return;
   const CSSPropertyValueSet& declared_style_set = GetStyleRule()->Properties();
   for (unsigned i = 0; i < declared_style_set.PropertyCount(); i++) {
     const auto& property_reference = declared_style_set.PropertyAt(i);
-    callback(property_reference.Name(), property_reference.Value());
+    visitor(property_reference.Name(), property_reference.Value());
   }
 }
 

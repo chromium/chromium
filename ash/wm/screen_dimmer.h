@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/shell_observer.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -36,6 +35,10 @@ class ASH_EXPORT ScreenDimmer : public ShellObserver {
   };
 
   explicit ScreenDimmer(Container container);
+
+  ScreenDimmer(const ScreenDimmer&) = delete;
+  ScreenDimmer& operator=(const ScreenDimmer&) = delete;
+
   ~ScreenDimmer() override;
 
   // Dim or undim the layers.
@@ -70,8 +73,6 @@ class ASH_EXPORT ScreenDimmer : public ShellObserver {
 
   // Owns the WindowDimmers.
   std::unique_ptr<WindowUserData<WindowDimmer>> window_dimmers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenDimmer);
 };
 
 }  // namespace ash

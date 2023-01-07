@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,11 +9,12 @@
 
 #include <atomic>
 #include <map>
-#include <string>
+#include <memory>
 #include <vector>
 
+#include "base/base_export.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 
 namespace base {
@@ -31,14 +32,17 @@ class HistogramFlattener;
 class BASE_EXPORT HistogramSnapshotManager final {
  public:
   explicit HistogramSnapshotManager(HistogramFlattener* histogram_flattener);
+
+  HistogramSnapshotManager(const HistogramSnapshotManager&) = delete;
+  HistogramSnapshotManager& operator=(const HistogramSnapshotManager&) = delete;
+
   ~HistogramSnapshotManager();
 
-  // Snapshot all histograms, and ask |histogram_flattener_| to record the
+  // Snapshots all histograms and asks |histogram_flattener_| to record the
   // delta. |flags_to_set| is used to set flags for each histogram.
-  // |required_flags| is used to select histograms to be recorded.
-  // Only histograms that have all the flags specified by the argument will be
-  // chosen. If all histograms should be recorded, set it to
-  // |Histogram::kNoFlags|.
+  // |required_flags| is used to select which histograms to record. Only
+  // histograms with all of the required flags are selected. If all histograms
+  // should be recorded, use |Histogram::kNoFlags| as the required flag.
   void PrepareDeltas(const std::vector<HistogramBase*>& histograms,
                      HistogramBase::Flags flags_to_set,
                      HistogramBase::Flags required_flags);
@@ -70,7 +74,7 @@ class BASE_EXPORT HistogramSnapshotManager final {
 
   // |histogram_flattener_| handles the logistics of recording the histogram
   // deltas.
-  HistogramFlattener* const histogram_flattener_;  // Weak.
+  const raw_ptr<HistogramFlattener> histogram_flattener_;  // Weak.
 
   // For histograms, track what has been previously seen, indexed
   // by the hash of the histogram name.
@@ -81,8 +85,6 @@ class BASE_EXPORT HistogramSnapshotManager final {
   // Checker is not sufficient because it may be guarded by at outside lock
   // (as is the case with cronet).
   std::atomic<bool> is_active_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramSnapshotManager);
 };
 
 }  // namespace base

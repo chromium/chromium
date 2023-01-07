@@ -1,18 +1,20 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACCOUNT_ICON_CONTAINER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACCOUNT_ICON_CONTAINER_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class AvatarToolbarButton;
 class Browser;
+class BrowserView;
 class PageActionIconController;
 
 // A container view for user-account-related PageActionIconViews and the profile
@@ -23,7 +25,7 @@ class ToolbarAccountIconContainerView : public ToolbarIconContainerView,
                                         public PageActionIconView::Delegate {
  public:
   METADATA_HEADER(ToolbarAccountIconContainerView);
-  explicit ToolbarAccountIconContainerView(Browser* browser);
+  explicit ToolbarAccountIconContainerView(BrowserView* browser_view);
   ToolbarAccountIconContainerView(const ToolbarAccountIconContainerView&) =
       delete;
   ToolbarAccountIconContainerView& operator=(
@@ -54,13 +56,13 @@ class ToolbarAccountIconContainerView : public ToolbarIconContainerView,
 
  private:
   // PageActionIconContainer:
-  void AddPageActionIcon(views::View* icon) override;
+  void AddPageActionIcon(std::unique_ptr<views::View> icon) override;
 
   std::unique_ptr<PageActionIconController> page_action_icon_controller_;
 
-  AvatarToolbarButton* const avatar_ = nullptr;
+  const raw_ptr<AvatarToolbarButton> avatar_ = nullptr;
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_TOOLBAR_ACCOUNT_ICON_CONTAINER_VIEW_H_

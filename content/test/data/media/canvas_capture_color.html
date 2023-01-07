@@ -133,7 +133,7 @@ function testCanvas2DCaptureColors(alphaContext) {
       .then(function() { window.domAutomationController.send('OK'); });
 }
 
-function testCanvasWebGLCaptureColors(alphaContext) {
+function testCanvasWebGLCaptureOpaqueColors(alphaContext) {
   connectStream('webgl');
 
   doCanvasCaptureAndCheckRgba('webgl', RED, alphaContext)
@@ -143,10 +143,14 @@ function testCanvasWebGLCaptureColors(alphaContext) {
       .then(function() {
         return doCanvasCaptureAndCheckRgba('webgl', BLUE, alphaContext);
       })
-      .then(function() {
-        return doCanvasCaptureAndCheckRgba('webgl', RED_WITH_ALPHA,
-                                           alphaContext);
-      })
+      .catch(function(err) { window.domAutomationController.send(err); })
+      .then(function() { window.domAutomationController.send('OK'); });
+}
+
+function testCanvasWebGLCaptureAlphaColors(alphaContext) {
+  connectStream('webgl');
+
+  doCanvasCaptureAndCheckRgba('webgl', RED_WITH_ALPHA, alphaContext)
       .then(function() {
         return doCanvasCaptureAndCheckRgba('webgl', GREEN_WITH_ALPHA,
                                            alphaContext);

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ namespace {
 
 // TODO(crbug.com/1076270): Finalize a value for this, and possibly use
 // different values for different UI surfaces.
-constexpr base::TimeDelta kImpressionTimer = base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kImpressionTimer = base::Seconds(1);
 
 }  // namespace
 
@@ -23,7 +23,7 @@ AppListNotifierImpl::AppListNotifierImpl(
     : app_list_controller_(app_list_controller) {
   DCHECK(app_list_controller_);
   app_list_controller_->AddObserver(this);
-  OnAppListVisibilityWillChange(app_list_controller_->IsVisible(base::nullopt),
+  OnAppListVisibilityWillChange(app_list_controller_->IsVisible(),
                                 display::kInvalidDisplayId);
 }
 
@@ -43,12 +43,12 @@ void AppListNotifierImpl::NotifyLaunched(Location location,
                                          const Result& result) {
   launched_result_ = result;
 
-  // Only two UI views appear at once: the app tiles and results list. If a
-  // launch occurs in one, mark the other as 'ignored' rather than abandoned.
-  if (location == Location::kList) {
-    DoStateTransition(Location::kTile, State::kIgnored);
-  } else if (location == Location::kTile) {
-    DoStateTransition(Location::kList, State::kIgnored);
+  // The continue and recent apps appear at the same time. If a launch occurs in
+  // one, mark the other as 'ignored' rather than abandoned.
+  if (location == Location::kContinue) {
+    DoStateTransition(Location::kRecentApps, State::kIgnored);
+  } else if (location == Location::kRecentApps) {
+    DoStateTransition(Location::kContinue, State::kIgnored);
   }
 
   DoStateTransition(location, State::kLaunched);
@@ -57,7 +57,29 @@ void AppListNotifierImpl::NotifyLaunched(Location location,
 void AppListNotifierImpl::NotifyResultsUpdated(
     Location location,
     const std::vector<Result>& results) {
-  results_[location] = results;
+  if (location == Location::kList) {
+    for (const auto& result : results)
+      list_results_[result.id] = result;
+  } else {
+    results_[location] = results;
+  }
+}
+
+void AppListNotifierImpl::NotifyContinueSectionVisibilityChanged(
+    Location location,
+    bool visible) {
+  DCHECK(location == Location::kContinue || location == Location::kRecentApps);
+
+  continue_section_visibility_[location] = visible;
+  DoStateTransition(location, shown_ && query_.empty() && visible
+                                  ? State::kShown
+                                  : State::kNone);
+}
+
+bool AppListNotifierImpl::GetContinueSectionVisibility(
+    Location location) const {
+  const auto it = continue_section_visibility_.find(location);
+  return it != continue_section_visibility_.cend() && it->second;
 }
 
 void AppListNotifierImpl::NotifySearchQueryChanged(
@@ -65,57 +87,43 @@ void AppListNotifierImpl::NotifySearchQueryChanged(
   // In some cases the query can change after the launcher is closed, in
   // particular this happens when abandoning the launcher with a non-empty
   // query. Only do a state transition if the launcher is open.
-  if (view_ != ash::AppListViewState::kClosed) {
-    DoStateTransition(Location::kList, State::kShown);
-    DoStateTransition(Location::kTile, State::kShown);
+  if (shown_) {
+    if (query.empty()) {
+      DoStateTransition(Location::kList, State::kNone);
+      DoStateTransition(Location::kContinue,
+                        GetContinueSectionVisibility(Location::kContinue)
+                            ? State::kShown
+                            : State::kNone);
+      DoStateTransition(Location::kRecentApps,
+                        GetContinueSectionVisibility(Location::kRecentApps)
+                            ? State::kShown
+                            : State::kNone);
+    } else {
+      DoStateTransition(Location::kList, State::kShown);
+      DoStateTransition(Location::kContinue, State::kNone);
+      DoStateTransition(Location::kRecentApps, State::kNone);
+    }
   }
 
   // Update the stored |query_| after performing the state transitions, so that
   // an abandon triggered by the query change correctly uses the pre-abandon
   // query.
   query_ = query;
+
+  results_.clear();
+  list_results_.clear();
+
+  for (auto& observer : observers_) {
+    observer.OnQueryChanged(query);
+  }
 }
 
-void AppListNotifierImpl::NotifyUIStateChanged(ash::AppListViewState view) {
-  // We should ignore certain view state changes entirely:
-  //
-  //  1. noop transitions from and to the same view. These are caused by some
-  //     UI actions (like dragging the launcher around) that end up back in
-  //     the same location.
-  //
-  //  2. kHalf to kFullscreenSearch. This doesn't change the displayed tile and
-  //     list results.
-  //
-  //  3. kPeeking to kFullscreenAllApps. This doesn't change the displayed
-  //     chip results.
-  //
-  //  We should also ignore this if the call comes while the launcher is not
-  //  shown at all. This happens, for example, in the transition between
-  //  clamshell and tablet modes.
-  if (!shown_ || view_ == view ||
-      (view_ == ash::AppListViewState::kHalf &&
-       view == ash::AppListViewState::kFullscreenSearch) ||
-      (view_ == ash::AppListViewState::kPeeking &&
-       view == ash::AppListViewState::kFullscreenAllApps)) {
-    return;
-  }
-  view_ = view;
-
-  if (view == ash::AppListViewState::kHalf ||
-      view == ash::AppListViewState::kFullscreenSearch) {
-    DoStateTransition(Location::kList, State::kShown);
-    DoStateTransition(Location::kTile, State::kShown);
-  } else {
-    DoStateTransition(Location::kList, State::kNone);
-    DoStateTransition(Location::kTile, State::kNone);
-  }
-
-  if (view == ash::AppListViewState::kPeeking ||
-      view == ash::AppListViewState::kFullscreenAllApps) {
-    DoStateTransition(Location::kChip, State::kShown);
-  } else {
-    DoStateTransition(Location::kChip, State::kNone);
-  }
+bool AppListNotifierImpl::FireImpressionTimerForTesting(Location location) {
+  auto timer_it = timers_.find(location);
+  if (timer_it == timers_.end() || !timer_it->second->IsRunning())
+    return false;
+  timer_it->second->FireNow();
+  return true;
 }
 
 void AppListNotifierImpl::OnAppListVisibilityWillChange(bool shown,
@@ -125,11 +133,15 @@ void AppListNotifierImpl::OnAppListVisibilityWillChange(bool shown,
   shown_ = shown;
 
   if (shown) {
-    DoStateTransition(Location::kChip, State::kShown);
+    if (GetContinueSectionVisibility(Location::kContinue))
+      DoStateTransition(Location::kContinue, State::kShown);
+    if (GetContinueSectionVisibility(Location::kRecentApps))
+      DoStateTransition(Location::kRecentApps, State::kShown);
+    // kList is not shown until a search query is entered.
   } else {
-    DoStateTransition(Location::kChip, State::kNone);
     DoStateTransition(Location::kList, State::kNone);
-    DoStateTransition(Location::kTile, State::kNone);
+    DoStateTransition(Location::kContinue, State::kNone);
+    DoStateTransition(Location::kRecentApps, State::kNone);
   }
 }
 
@@ -158,6 +170,20 @@ void AppListNotifierImpl::StopTimer(Location location) {
 
 void AppListNotifierImpl::OnTimerFinished(Location location) {
   DoStateTransition(location, State::kSeen);
+}
+
+std::vector<AppListNotifierImpl::Result>
+AppListNotifierImpl::ResultsForLocation(Location location) {
+  // Special case kList, see header comment on |list_results_|.
+  if (location == Location::kList) {
+    std::vector<Result> results;
+    for (const auto& id_result : list_results_) {
+      results.push_back(id_result.second.value());
+    }
+    return results;
+  }
+
+  return results_[location];
 }
 
 void AppListNotifierImpl::DoStateTransition(Location location,
@@ -191,34 +217,32 @@ void AppListNotifierImpl::DoStateTransition(Location location,
   // Notify of impression on kShown -> {kSeen, kIgnored, kLaunched}.
   if (old_state == State::kShown &&
       (new_state == State::kSeen || new_state == State::kLaunched ||
-       new_state == State::kIgnored) &&
-      !results_[location].empty()) {
+       new_state == State::kIgnored)) {
     for (auto& observer : observers_) {
-      observer.OnImpression(location, results_[location], query_);
+      observer.OnImpression(location, ResultsForLocation(location), query_);
     }
   }
 
   // Notify of launch on * -> kLaunched.
   if (new_state == State::kLaunched && launched_result_.has_value()) {
     for (auto& observer : observers_) {
-      observer.OnLaunch(location, launched_result_.value(), results_[location],
-                        query_);
+      observer.OnLaunch(location, launched_result_.value(),
+                        ResultsForLocation(location), query_);
     }
   }
 
   // Notify of ignore on * -> kIgnored.
-  if (new_state == State::kIgnored && !results_[location].empty()) {
+  if (new_state == State::kIgnored) {
     for (auto& observer : observers_) {
-      observer.OnIgnore(location, results_[location], query_);
+      observer.OnIgnore(location, ResultsForLocation(location), query_);
     }
   }
 
   // Notify of abandon on kSeen -> {kNone, kShown}.
   if (old_state == State::kSeen &&
-      (new_state == State::kNone || new_state == State::kShown) &&
-      !results_[location].empty()) {
+      (new_state == State::kNone || new_state == State::kShown)) {
     for (auto& observer : observers_) {
-      observer.OnAbandon(location, results_[location], query_);
+      observer.OnAbandon(location, ResultsForLocation(location), query_);
     }
   }
 }

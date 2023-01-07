@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/thin_webview/internal/compositor_view_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -29,6 +29,10 @@ class ThinWebView : public content::WebContentsObserver {
               jobject obj,
               CompositorView* compositor_view,
               ui::WindowAndroid* window_android);
+
+  ThinWebView(const ThinWebView&) = delete;
+  ThinWebView& operator=(const ThinWebView&) = delete;
+
   ~ThinWebView() override;
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& object);
@@ -46,8 +50,7 @@ class ThinWebView : public content::WebContentsObserver {
 
  private:
   // content::WebContentsObserver overrides:
-  void DocumentAvailableInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void PrimaryPageChanged(content::Page& page) override;
 
   void SetWebContents(
       content::WebContents* web_contents,
@@ -55,14 +58,12 @@ class ThinWebView : public content::WebContentsObserver {
   void ResizeWebContents(const gfx::Size& size);
 
   base::android::ScopedJavaGlobalRef<jobject> obj_;
-  CompositorView* compositor_view_;
-  ui::WindowAndroid* window_android_;
-  content::WebContents* web_contents_;
+  raw_ptr<CompositorView> compositor_view_;
+  raw_ptr<ui::WindowAndroid> window_android_;
+  raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<web_contents_delegate_android::WebContentsDelegateAndroid>
       web_contents_delegate_;
   gfx::Size view_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThinWebView);
 };
 
 }  // namespace android

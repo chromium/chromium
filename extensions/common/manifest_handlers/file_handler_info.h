@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handler.h"
@@ -43,14 +42,16 @@ struct FileHandlers : public Extension::ManifestData {
 class FileHandlersParser : public ManifestHandler {
  public:
   FileHandlersParser();
+
+  FileHandlersParser(const FileHandlersParser&) = delete;
+  FileHandlersParser& operator=(const FileHandlersParser&) = delete;
+
   ~FileHandlersParser() override;
 
   bool Parse(Extension* extension, std::u16string* error) override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(FileHandlersParser);
 };
 
 }  // namespace extensions

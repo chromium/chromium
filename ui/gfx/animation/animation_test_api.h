@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_export.h"
@@ -24,6 +24,10 @@ class AnimationTestApi {
   SetRichAnimationRenderMode(Animation::RichAnimationRenderMode mode);
 
   explicit AnimationTestApi(Animation* animation);
+
+  AnimationTestApi(const AnimationTestApi&) = delete;
+  AnimationTestApi& operator=(const AnimationTestApi&) = delete;
+
   ~AnimationTestApi();
 
   // Sets the start of the animation.
@@ -33,9 +37,7 @@ class AnimationTestApi {
   void Step(base::TimeTicks ticks);
 
  private:
-  Animation* animation_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationTestApi);
+  raw_ptr<Animation> animation_;
 };
 
 // For manual animation time control in tests. Creating this object will
@@ -51,7 +53,7 @@ class AnimationContainerTestApi {
   void IncrementTime(base::TimeDelta delta);
 
  private:
-  AnimationContainer* container_;
+  raw_ptr<AnimationContainer> container_;
 };
 
 }  // namespace gfx

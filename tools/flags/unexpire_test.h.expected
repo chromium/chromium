@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 
 namespace flags {
 
-extern const base::Feature kUnexpireFlagsM122;
-extern const base::Feature kUnexpireFlagsM123;
+BASE_DECLARE_FEATURE(kUnexpireFlagsM122);
+BASE_DECLARE_FEATURE(kUnexpireFlagsM123);
 
 // Returns the base::Feature used to decide whether flag expiration is enabled
 // for a given milestone, if there is such a feature. If not, returns nullptr.

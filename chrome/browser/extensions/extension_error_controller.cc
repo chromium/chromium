@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -126,8 +126,10 @@ void ExtensionErrorController::IdentifyAlertableExtensions() {
       continue;
 
     // Extensions disabled by policy. Note: this no longer includes blocklisted
-    // extensions, though we still show the same UI.
-    if (!management_policy->UserMayLoad(extension, NULL /* ignore error */)) {
+    // extensions. We use similar triggering logic for the dialog, but the
+    // strings will be different.
+    if (!management_policy->UserMayLoad(extension,
+                                        nullptr /*=ignore error */)) {
       if (!prefs->IsBlocklistedExtensionAcknowledged(extension->id()))
         blocklisted_extensions_.Insert(extension);
     }

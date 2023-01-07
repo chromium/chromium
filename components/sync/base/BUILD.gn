@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -15,41 +15,36 @@ static_library("base") {
     "bind_to_task_runner.h",
     "client_tag_hash.cc",
     "client_tag_hash.h",
+    "command_line_switches.cc",
+    "command_line_switches.h",
     "data_type_histogram.cc",
     "data_type_histogram.h",
-    "encryptor.h",
-    "enum_set.h",
     "extensions_activity.cc",
     "extensions_activity.h",
+    "features.cc",
+    "features.h",
     "hash_util.cc",
     "hash_util.h",
-    "immutable.h",
     "invalidation_adapter.cc",
     "invalidation_adapter.h",
     "invalidation_helper.cc",
     "invalidation_helper.h",
-    "invalidation_interface.cc",
-    "invalidation_interface.h",
     "legacy_directory_deletion.cc",
     "legacy_directory_deletion.h",
-    "logging.cc",
-    "logging.h",
     "model_type.cc",
     "model_type.h",
-    "node_ordinal.cc",
-    "node_ordinal.h",
-    "ordinal.h",
+    "page_transition_conversion.cc",
+    "page_transition_conversion.h",
     "passphrase_enums.cc",
     "passphrase_enums.h",
-    "pref_names.cc",
     "pref_names.h",
     "progress_marker_map.cc",
     "progress_marker_map.h",
     "report_unrecoverable_error.cc",
     "report_unrecoverable_error.h",
     "stop_source.h",
-    "sync_base_switches.cc",
-    "sync_base_switches.h",
+    "sync_invalidation.cc",
+    "sync_invalidation.h",
     "sync_mode.h",
     "sync_prefs.cc",
     "sync_prefs.h",
@@ -58,14 +53,10 @@ static_library("base") {
     "sync_util.h",
     "syncer_error.cc",
     "syncer_error.h",
-    "system_encryptor.cc",
-    "system_encryptor.h",
     "time.cc",
     "time.h",
     "unique_position.cc",
     "unique_position.h",
-    "unrecoverable_error_info.cc",
-    "unrecoverable_error_info.h",
     "user_selectable_type.cc",
     "user_selectable_type.h",
     "weak_handle.cc",
@@ -79,9 +70,9 @@ static_library("base") {
     "//third_party/metrics_proto",
   ]
   deps = [
+    "//base",
     "//base:i18n",
     "//build:chromeos_buildflags",
-    "//components/os_crypt",
     "//components/pref_registry",
     "//components/prefs",
     "//components/version_info",
@@ -97,32 +88,4 @@ static_library("base") {
   }
 
   defines = [ "SYNC_USER_AGENT_PRODUCT=$sync_user_agent_product" ]
-}
-
-# TODO(crbug.com/948661): The other sync targets have their test support targets
-# declared outside of the production code directory. Do the same for this one.
-static_library("test_support") {
-  testonly = true
-  sources = [
-    "../test/callback_counter.h",
-    "../test/mock_invalidation.cc",
-    "../test/mock_invalidation.h",
-    "../test/mock_invalidation_tracker.cc",
-    "../test/mock_invalidation_tracker.h",
-    "../test/trackable_mock_invalidation.cc",
-    "../test/trackable_mock_invalidation.h",
-    "fake_encryptor.cc",
-    "fake_encryptor.h",
-    "model_type_test_util.cc",
-    "model_type_test_util.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//components/sync/base",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }

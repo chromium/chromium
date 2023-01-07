@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@
   `);
 
   var watchExpressionsPane = Sources.WatchExpressionsSidebarPane.instance();
-  UI.panels.sources._sidebarPaneStack.showView(UI.panels.sources._watchSidebarPane).then(() => {
+  UI.panels.sources.sidebarPaneStack.showView(UI.panels.sources.watchSidebarPane).then(() => {
     watchExpressionsPane.doUpdate();
-    watchExpressionsPane._createWatchExpression('#$%');
-    watchExpressionsPane._saveExpressions();
+    watchExpressionsPane.createWatchExpression('#$%');
+    watchExpressionsPane.saveExpressions();
     TestRunner.deprecatedRunAfterPendingDispatches(step1);
   });
 
@@ -24,7 +24,7 @@
         watchExpressionsPane.contentElement.deepTextContent().indexOf('<not available>') !== -1 ? 'SUCCESS' : 'FAILED');
 
     // Clear watch expressions after execution.
-    watchExpressionsPane._deleteAllButtonClicked();
+    watchExpressionsPane.deleteAllButtonClicked();
     TestRunner.completeTest();
   }
 })();

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
@@ -54,7 +55,7 @@ class COMPONENT_EXPORT(UI_BASE_X) X11WorkspaceHandler
 
   std::string workspace_;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   base::WeakPtrFactory<X11WorkspaceHandler> weak_factory_{this};
 };

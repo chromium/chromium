@@ -2,24 +2,22 @@
   "name": "__MSG_COLOR_ENHANCER_APPNAME__",
   "version": "1.13.3",
   "description": "__MSG_COLOR_ENHANCER_APPDESC__",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "icons": {
     "16": "res/cvd-16.png",
     "48": "res/cvd-48.png",
     "128": "res/cvd-128.png"
   },
   "permissions": [
-    "<all_urls>",
+    "scripting",
+    "storage",
     "tabs"
   ],
+  "host_permissions": ["<all_urls>"],
   "background": {
-    "scripts": [
-      "src/common.js",
-      "src/storage.js",
-      "src/background.js"
-    ]
+    "service_worker": "src/background.js"
   },
-  "browser_action": {
+  "action": {
     "default_icon": {
       "19": "res/cvd-19.png",
       "38": "res/cvd-38.png"
@@ -36,6 +34,8 @@
       ],
       "js": [
         "src/common.js",
+	"src/matrix.js",
+	"src/cvd_type.js",
         "src/cvd.js"
       ]
     }

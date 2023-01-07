@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "base/optional.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/internal_linux.h"
 #include "base/process/process_metrics_iocounters.h"
 #include "base/strings/string_number_conversions.h"
@@ -32,8 +32,9 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -46,7 +47,7 @@ void TrimKeyValuePairs(StringPairs* pairs) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Read a file with a single number string and return the number as a uint64_t.
 uint64_t ReadFileToUint64(const FilePath& file) {
   std::string file_contents;
@@ -106,7 +107,7 @@ size_t ReadProcStatusAndGetFieldAsSizeT(pid_t pid, StringPiece field) {
   return 0;
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 // Read /proc/<pid>/status and look for |field|. On success, return true and
 // write the value for |field| into |result|.
 // Only works for fields in the form of "field    :     uint_value"
@@ -131,7 +132,7 @@ bool ReadProcStatusAndGetFieldAsUint64(pid_t pid,
   }
   return false;
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 
 // Get the total CPU from a proc stat buffer.  Return value is number of jiffies
 // on success or 0 if parsing failed.
@@ -173,7 +174,7 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
 
 size_t ProcessMetrics::GetResidentSetSize() const {
   return internal::ReadProcStatsAndGetFieldAsSizeT(process_, internal::VM_RSS) *
-      getpagesize();
+         checked_cast<size_t>(getpagesize());
 }
 
 TimeDelta ProcessMetrics::GetCumulativeCPUUsage() {
@@ -262,7 +263,7 @@ bool ProcessMetrics::GetIOCounters(IoCounters* io_counters) const {
   return true;
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 uint64_t ProcessMetrics::GetVmSwapBytes() const {
   return ReadProcStatusAndGetFieldAsSizeT(process_, "VmSwap") * 1024;
 }
@@ -283,7 +284,8 @@ bool ProcessMetrics::GetPageFaultCounts(PageFaultCounts* counts) const {
       internal::GetProcStatsFieldAsInt64(proc_stats, internal::VM_MAJFLT);
   return true;
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
 
 int ProcessMetrics::GetOpenFdCount() const {
   // Use /proc/<pid>/fd to count the number of entries there.
@@ -328,7 +330,7 @@ int ProcessMetrics::GetOpenFdSoftLimit() const {
   return -1;
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 ProcessMetrics::ProcessMetrics(ProcessHandle process)
     : process_(process), last_absolute_idle_wakeups_(0) {}
 #else
@@ -339,7 +341,8 @@ size_t GetSystemCommitCharge() {
   SystemMemoryInfoKB meminfo;
   if (!GetSystemMemoryInfo(&meminfo))
     return 0;
-  return meminfo.total - meminfo.free - meminfo.buffers - meminfo.cached;
+  return checked_cast<size_t>(meminfo.total - meminfo.free - meminfo.buffers -
+                              meminfo.cached);
 }
 
 int ParseProcStatCPU(StringPiece input) {
@@ -374,7 +377,7 @@ int ParseProcStatCPU(StringPiece input) {
   return -1;
 }
 
-int GetNumberOfThreads(ProcessHandle process) {
+int64_t GetNumberOfThreads(ProcessHandle process) {
   return internal::ReadProcStatsAndGetFieldAsInt64(process,
                                                    internal::VM_NUMTHREADS);
 }
@@ -430,7 +433,7 @@ bool ProcessMetrics::ParseProcTimeInState(
       if (time > 0) {
         time_in_state_per_thread.push_back(
             {tid, current_core_type, current_core_index, frequency,
-             internal::ClockTicksToTimeDelta(time)});
+             internal::ClockTicksToTimeDelta(checked_cast<int64_t>(time))});
       }
     } else {
       // Data without a header is not supported.
@@ -439,17 +442,17 @@ bool ProcessMetrics::ParseProcTimeInState(
 
     // Advance line.
     DCHECK_GT(num_chars, 0);
-    pos += num_chars;
+    pos += static_cast<size_t>(num_chars);
   }
 
   return true;
 }
 
-CPU::CoreType ProcessMetrics::GetCoreType(int core_index) {
+CPU::CoreType ProcessMetrics::GetCoreType(uint32_t core_index) {
   const std::vector<CPU::CoreType>& core_types = CPU::GetGuessedCoreTypes();
-  if (static_cast<size_t>(core_index) >= core_types.size())
+  if (core_index >= core_types.size())
     return CPU::CoreType::kUnknown;
-  return core_types[static_cast<size_t>(core_index)];
+  return core_types[core_index];
 }
 
 const char kProcSelfExe[] = "/proc/self/exe";
@@ -509,25 +512,25 @@ const size_t kDiskWeightedIOTime = 13;
 
 }  // namespace
 
-std::unique_ptr<DictionaryValue> SystemMemoryInfoKB::ToValue() const {
-  auto res = std::make_unique<DictionaryValue>();
-  res->SetIntKey("total", total);
-  res->SetIntKey("free", free);
-  res->SetIntKey("available", available);
-  res->SetIntKey("buffers", buffers);
-  res->SetIntKey("cached", cached);
-  res->SetIntKey("active_anon", active_anon);
-  res->SetIntKey("inactive_anon", inactive_anon);
-  res->SetIntKey("active_file", active_file);
-  res->SetIntKey("inactive_file", inactive_file);
-  res->SetIntKey("swap_total", swap_total);
-  res->SetIntKey("swap_free", swap_free);
-  res->SetIntKey("swap_used", swap_total - swap_free);
-  res->SetIntKey("dirty", dirty);
-  res->SetIntKey("reclaimable", reclaimable);
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  res->SetIntKey("shmem", shmem);
-  res->SetIntKey("slab", slab);
+Value SystemMemoryInfoKB::ToValue() const {
+  Value res(Value::Type::DICTIONARY);
+  res.SetIntKey("total", total);
+  res.SetIntKey("free", free);
+  res.SetIntKey("available", available);
+  res.SetIntKey("buffers", buffers);
+  res.SetIntKey("cached", cached);
+  res.SetIntKey("active_anon", active_anon);
+  res.SetIntKey("inactive_anon", inactive_anon);
+  res.SetIntKey("active_file", active_file);
+  res.SetIntKey("inactive_file", inactive_file);
+  res.SetIntKey("swap_total", swap_total);
+  res.SetIntKey("swap_free", swap_free);
+  res.SetIntKey("swap_used", swap_total - swap_free);
+  res.SetIntKey("dirty", dirty);
+  res.SetIntKey("reclaimable", reclaimable);
+#if BUILDFLAG(IS_CHROMEOS)
+  res.SetIntKey("shmem", shmem);
+  res.SetIntKey("slab", slab);
 #endif
 
   return res;
@@ -587,7 +590,7 @@ bool ParseProcMeminfo(StringPiece meminfo_data, SystemMemoryInfoKB* meminfo) {
       target = &meminfo->dirty;
     else if (tokens[0] == "SReclaimable:")
       target = &meminfo->reclaimable;
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
     // Chrome OS has a tweaked kernel that allows querying Shmem, which is
     // usually video memory otherwise invisible to the OS.
     else if (tokens[0] == "Shmem:")
@@ -677,11 +680,13 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
   return true;
 }
 
-std::unique_ptr<DictionaryValue> VmStatInfo::ToValue() const {
-  auto res = std::make_unique<DictionaryValue>();
-  res->SetIntKey("pswpin", pswpin);
-  res->SetIntKey("pswpout", pswpout);
-  res->SetIntKey("pgmajfault", pgmajfault);
+Value VmStatInfo::ToValue() const {
+  Value res(Value::Type::DICTIONARY);
+  // TODO(crbug.com/1334256): Make base::Value able to hold uint64_t and remove
+  // casts below.
+  res.SetIntKey("pswpin", static_cast<int>(pswpin));
+  res.SetIntKey("pswpout", static_cast<int>(pswpout));
+  res.SetIntKey("pgmajfault", static_cast<int>(pgmajfault));
   return res;
 }
 
@@ -716,26 +721,28 @@ SystemDiskInfo::SystemDiskInfo() {
   weighted_io_time = 0;
 }
 
-SystemDiskInfo::SystemDiskInfo(const SystemDiskInfo& other) = default;
+SystemDiskInfo::SystemDiskInfo(const SystemDiskInfo&) = default;
 
-std::unique_ptr<Value> SystemDiskInfo::ToValue() const {
-  auto res = std::make_unique<DictionaryValue>();
+SystemDiskInfo& SystemDiskInfo::operator=(const SystemDiskInfo&) = default;
+
+Value SystemDiskInfo::ToValue() const {
+  Value res(Value::Type::DICTIONARY);
 
   // Write out uint64_t variables as doubles.
   // Note: this may discard some precision, but for JS there's no other option.
-  res->SetDouble("reads", static_cast<double>(reads));
-  res->SetDouble("reads_merged", static_cast<double>(reads_merged));
-  res->SetDouble("sectors_read", static_cast<double>(sectors_read));
-  res->SetDouble("read_time", static_cast<double>(read_time));
-  res->SetDouble("writes", static_cast<double>(writes));
-  res->SetDouble("writes_merged", static_cast<double>(writes_merged));
-  res->SetDouble("sectors_written", static_cast<double>(sectors_written));
-  res->SetDouble("write_time", static_cast<double>(write_time));
-  res->SetDouble("io", static_cast<double>(io));
-  res->SetDouble("io_time", static_cast<double>(io_time));
-  res->SetDouble("weighted_io_time", static_cast<double>(weighted_io_time));
+  res.SetDoubleKey("reads", static_cast<double>(reads));
+  res.SetDoubleKey("reads_merged", static_cast<double>(reads_merged));
+  res.SetDoubleKey("sectors_read", static_cast<double>(sectors_read));
+  res.SetDoubleKey("read_time", static_cast<double>(read_time));
+  res.SetDoubleKey("writes", static_cast<double>(writes));
+  res.SetDoubleKey("writes_merged", static_cast<double>(writes_merged));
+  res.SetDoubleKey("sectors_written", static_cast<double>(sectors_written));
+  res.SetDoubleKey("write_time", static_cast<double>(write_time));
+  res.SetDoubleKey("io", static_cast<double>(io));
+  res.SetDoubleKey("io_time", static_cast<double>(io_time));
+  res.SetDoubleKey("weighted_io_time", static_cast<double>(weighted_io_time));
 
-  return std::move(res);
+  return res;
 }
 
 bool IsValidDiskName(StringPiece candidate) {
@@ -846,31 +853,32 @@ TimeDelta GetUserCpuTimeSinceBoot() {
   return internal::GetUserCpuTimeSinceBoot();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
-std::unique_ptr<Value> SwapInfo::ToValue() const {
-  auto res = std::make_unique<DictionaryValue>();
+#if BUILDFLAG(IS_CHROMEOS)
+Value SwapInfo::ToValue() const {
+  Value res(Value::Type::DICTIONARY);
 
   // Write out uint64_t variables as doubles.
   // Note: this may discard some precision, but for JS there's no other option.
-  res->SetDouble("num_reads", static_cast<double>(num_reads));
-  res->SetDouble("num_writes", static_cast<double>(num_writes));
-  res->SetDouble("orig_data_size", static_cast<double>(orig_data_size));
-  res->SetDouble("compr_data_size", static_cast<double>(compr_data_size));
-  res->SetDouble("mem_used_total", static_cast<double>(mem_used_total));
+  res.SetDoubleKey("num_reads", static_cast<double>(num_reads));
+  res.SetDoubleKey("num_writes", static_cast<double>(num_writes));
+  res.SetDoubleKey("orig_data_size", static_cast<double>(orig_data_size));
+  res.SetDoubleKey("compr_data_size", static_cast<double>(compr_data_size));
+  res.SetDoubleKey("mem_used_total", static_cast<double>(mem_used_total));
   double ratio = compr_data_size ? static_cast<double>(orig_data_size) /
                                        static_cast<double>(compr_data_size)
                                  : 0;
-  res->SetDouble("compression_ratio", ratio);
+  res.SetDoubleKey("compression_ratio", ratio);
 
-  return std::move(res);
+  return res;
 }
 
-std::unique_ptr<Value> GraphicsMemoryInfoKB::ToValue() const {
-  auto res = std::make_unique<DictionaryValue>();
-  res->SetIntKey("gpu_objects", gpu_objects);
-  res->SetDouble("gpu_memory_size", static_cast<double>(gpu_memory_size));
+Value GraphicsMemoryInfoKB::ToValue() const {
+  Value res(Value::Type::DICTIONARY);
 
-  return std::move(res);
+  res.SetIntKey("gpu_objects", gpu_objects);
+  res.SetDoubleKey("gpu_memory_size", static_cast<double>(gpu_memory_size));
+
+  return res;
 }
 
 bool ParseZramMmStat(StringPiece mm_stat_data, SwapInfo* swap_info) {
@@ -966,7 +974,7 @@ bool GetSwapInfoImpl(SwapInfo* swap_info) {
   // Since ZRAM update, it shows the usage data in different places.
   // If file "/sys/block/zram0/mm_stat" exists, use the new way, otherwise,
   // use the old way.
-  static Optional<bool> use_new_zram_interface;
+  static absl::optional<bool> use_new_zram_interface;
   FilePath zram_mm_stat_file("/sys/block/zram0/mm_stat");
   if (!use_new_zram_interface.has_value()) {
     use_new_zram_interface = PathExists(zram_mm_stat_file);
@@ -1060,9 +1068,9 @@ bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
   return gpu_meminfo->gpu_memory_size != -1;
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 int ProcessMetrics::GetIdleWakeupsPerSecond() {
   uint64_t num_switches;
   static const char kSwitchStat[] = "voluntary_ctxt_switches";
@@ -1070,6 +1078,6 @@ int ProcessMetrics::GetIdleWakeupsPerSecond() {
              ? CalculateIdleWakeupsPerSecond(num_switches)
              : 0;
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_AIX)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 
 }  // namespace base

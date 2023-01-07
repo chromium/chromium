@@ -1,0 +1,54 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// chrome.sidePanel API
+namespace sidePanel {
+  dictionary SidePanel {
+    // Developer specified path for side panel display.
+    DOMString default_path;
+  };
+
+  dictionary ManifestKeys {
+    SidePanel side_panel;
+  };
+
+  // The options used when setting a side panel. Omitted properties are
+  // unchanged.
+  dictionary PanelOptions {
+    // If specified, the side panel options will only apply to the tab with
+    // this id. If omitted, these options set the default behavior (used for any
+    // tab that doesn't have specific settings).
+    long? tabId;
+    // The path to the side panel HTML file to use. This must be a local
+    // resource within the extension package.
+    DOMString? path;
+    // Whether the side panel should be enabled.
+    boolean? enabled;
+  };
+
+  dictionary GetPanelOptions {
+    // If specified, the side panel options for the given tab will be returned.
+    // Otherwise, returns the default side panel options (used for any tab that
+    // doesn't have specific settings).
+    long? tabId;
+  };
+
+  callback VoidCallback = void();
+  callback PanelOptionsCallback = void(PanelOptions options);
+
+  interface Functions {
+    // Configures the side panel.
+    // |options|: The configuration options to apply to the panel.
+    // |callback|: Invoked when the options have been set.
+    [supportsPromises] static void setOptions(PanelOptions options,
+                                              optional VoidCallback callback);
+
+    // Returns the active panel configuration.
+    // |options|: Specifies the context to return the configuration for.
+    // |callback|: Called with the active panel configuration.
+    [supportsPromises] static void getOptions(
+      GetPanelOptions options,
+      PanelOptionsCallback callback);
+  };
+};

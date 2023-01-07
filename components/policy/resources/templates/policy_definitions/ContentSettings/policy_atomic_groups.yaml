@@ -1,0 +1,75 @@
+CookiesSettings:
+  caption: Cookies settings
+  policies:
+  - DefaultCookiesSetting
+  - CookiesAllowedForUrls
+  - CookiesBlockedForUrls
+  - CookiesSessionOnlyForUrls
+ImageSettings:
+  caption: Image settings
+  policies:
+  - DefaultImagesSetting
+  - ImagesAllowedForUrls
+  - ImagesBlockedForUrls
+JavascriptSettings:
+  caption: Javascript settings
+  policies:
+  - DefaultJavaScriptSetting
+  - JavaScriptAllowedForUrls
+  - JavaScriptBlockedForUrls
+KeygenSettings:
+  caption: Keygen settings
+  policies:
+  - DefaultKeygenSetting
+  - KeygenAllowedForUrls
+  - KeygenBlockedForUrls
+LegacySameSiteCookieBehaviorSettings:
+  caption: Legacy <ph name="ATTRIBUTE_SAMESITE_NAME">SameSite</ph> cookie behavior
+    settings
+  policies:
+  - LegacySameSiteCookieBehaviorEnabled
+  - LegacySameSiteCookieBehaviorEnabledForDomainList
+LocalFontsSettings:
+  caption: Local Fonts settings
+  policies:
+  - DefaultLocalFontsSetting
+  - LocalFontsAllowedForUrls
+  - LocalFontsBlockedForUrls
+NotificationsSettings:
+  caption: Notification settings
+  policies:
+  - DefaultNotificationsSetting
+  - NotificationsAllowedForUrls
+  - NotificationsBlockedForUrls
+PluginsSettings:
+  caption: Plugins settings
+  policies:
+  - DefaultPluginsSetting
+  - PluginsAllowedForUrls
+  - PluginsBlockedForUrls
+PopupsSettings:
+  caption: Pop-ups settings
+  policies:
+  - DefaultPopupsSetting
+  - PopupsAllowedForUrls
+  - PopupsBlockedForUrls
+SensorsSettings:
+  caption: Sensors settings
+  policies:
+  - DefaultSensorsSetting
+  - SensorsAllowedForUrls
+  - SensorsBlockedForUrls
+WebUsbSettings:
+  caption: Web USB settings
+  policies:
+  - DefaultWebUsbGuardSetting
+  - DeviceLoginScreenWebUsbAllowDevicesForUrls
+  - WebUsbAllowDevicesForUrls
+  - WebUsbAskForUrls
+  - WebUsbBlockedForUrls
+WindowPlacementSettings:
+  caption: Window Placement settings
+  policies:
+  - DefaultWindowPlacementSetting
+  - WindowPlacementAllowedForUrls
+  - WindowPlacementBlockedForUrls

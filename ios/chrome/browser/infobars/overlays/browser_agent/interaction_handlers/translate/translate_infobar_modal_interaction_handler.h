@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,22 +19,22 @@ class TranslateInfobarModalInteractionHandler
   TranslateInfobarModalInteractionHandler();
   ~TranslateInfobarModalInteractionHandler() override;
 
-  // Instructs the handler that the user has used |infobar|'s modal UI to
+  // Instructs the handler that the user has used `infobar`'s modal UI to
   // request that the always translate preference be toggled.
   virtual void ToggleAlwaysTranslate(InfoBarIOS* infobar);
-  // Instructs the handler that the user has used |infobar|'s modal UI to
+  // Instructs the handler that the user has used `infobar`'s modal UI to
   // request that the never translate source language preference be toggled.
   virtual void ToggleNeverTranslateLanguage(InfoBarIOS* infobar);
-  // Instructs the handler that the user has used |infobar|'s modal UI to
+  // Instructs the handler that the user has used `infobar`'s modal UI to
   // request that the never translate site preference be toggled.
   virtual void ToggleNeverTranslateSite(InfoBarIOS* infobar);
-  // Instructs the handler that the user has used |infobar|'s modal UI to
+  // Instructs the handler that the user has used `infobar`'s modal UI to
   // request that the translation be reverted.
   virtual void RevertTranslation(InfoBarIOS* infobar);
-  // Instructs the handler that the user has used |infobar|'s modal UI to
+  // Instructs the handler that the user has used `infobar`'s modal UI to
   // request that the source language change to the language at
-  // |source_language_index| and/or the target language change to the language
-  // at |target_language_index|. If either do not need to be updated, then the
+  // `source_language_index` and/or the target language change to the language
+  // at `target_language_index`. If either do not need to be updated, then the
   // index passed should be -1.
   virtual void UpdateLanguages(InfoBarIOS* infobar,
                                int source_language_index,
@@ -47,14 +47,14 @@ class TranslateInfobarModalInteractionHandler
   void InfobarVisibilityChanged(InfoBarIOS* infobar, bool visible) override;
 
  private:
-  // Initiates a translate for |infobar|.
+  // Initiates a translate for `infobar`.
   void StartTranslation(InfoBarIOS* infobar);
 
   // InfobarModalInteractionHandler:
   std::unique_ptr<InfobarModalOverlayRequestCallbackInstaller>
   CreateModalInstaller() override;
 
-  // Returns the translate delegate from |infobar|.
+  // Returns the translate delegate from `infobar`.
   translate::TranslateInfoBarDelegate* GetDelegate(InfoBarIOS* infobar);
 };
 

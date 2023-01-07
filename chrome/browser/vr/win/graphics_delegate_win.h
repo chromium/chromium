@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/vr/graphics_delegate.h"
 #include "chrome/browser/vr/render_info.h"
@@ -21,6 +22,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace gpu {
+class SharedImageInterface;
 namespace gles2 {
 class GLES2Interface;
 }
@@ -41,15 +43,17 @@ class GraphicsDelegateWin : public GraphicsDelegate {
 
   // Called on background GL thread.
   void InitializeOnGLThread();
-  void SetVRDisplayInfo(device::mojom::VRDisplayInfoPtr info);
+  void SetXrViews(const std::vector<device::mojom::XRViewPtr>& views);
   bool PreRender();
   void PostRender();
   mojo::PlatformHandle GetTexture();
+  const gpu::SyncToken& GetSyncToken();
   gfx::RectF GetLeft();
   gfx::RectF GetRight();
   void ResetMemoryBuffer();
   bool BindContext();
   void ClearContext();
+  void UpdateViews(std::vector<device::mojom::XRViewPtr> views);
 
  private:
   // GraphicsDelegate:
@@ -82,17 +86,21 @@ class GraphicsDelegateWin : public GraphicsDelegate {
   bool EnsureMemoryBuffer(int width, int height);
   gfx::Rect GetTextureSize();
 
-  device::mojom::VRDisplayInfoPtr info_;
+  device::mojom::XRViewPtr left_;
+  device::mojom::XRViewPtr right_;
 
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
-  gpu::gles2::GLES2Interface* gl_ = nullptr;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_ = nullptr;
+  raw_ptr<gpu::SharedImageInterface> sii_ = nullptr;
   int last_width_ = 0;
   int last_height_ = 0;
-  GLuint image_id_ = 0;  // Image corresponding to our target GpuMemoryBuffer.
+  gpu::Mailbox mailbox_;  // Corresponding to our target GpuMemoryBuffer.
   GLuint dest_texture_id_ = 0;
   GLuint draw_frame_buffer_ = 0;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
-  gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_ = nullptr;
+  raw_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_ = nullptr;
+  // Sync point after access to |gpu_memory_buffer_| is done.
+  gpu::SyncToken access_done_sync_token_;
 
   RenderInfo cached_info_ = {};
 

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8"/>
+<title>CSS Test: Support for font-style: auto in @font-face</title>
+<link rel="match" href="font-face-style-auto-variable-synthetic-italic-ref.html">
+<link rel="help" href="https://www.w3.org/TR/css-fonts-4/#font-prop-desc" />
+<meta name="assert" content="synthetic italic is applied to variable fonts">
+<style>
+    @font-face {
+        font-family: "Inter";
+        src: url('support/fonts/Inter-VF.subset.ttf') format('truetype');
+        font-display: swap;
+        font-style: auto;
+    }
+    .style20 {
+        font-family: "Inter";
+        font-size: 3em;
+        font-style: oblique 20deg;
+    }
+    .style10 {
+        font-family: "Inter";
+        font-size: 3em;
+        font-style: oblique 10deg;
+    }
+    .style0 {
+        font-family: "Inter";
+        font-size: 3em;
+        font-style: oblique 0deg;
+    }
+</style>
+
+<p class="style20">text</p>
+<p class="style10">text</p>
+<p class="style0">text</p>

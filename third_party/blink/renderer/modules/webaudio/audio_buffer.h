@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -60,7 +61,7 @@ class MODULES_EXPORT AudioBuffer final : public ScriptWrappable {
   // Creates an AudioBuffer with uninitialized contents.  This should
   // only be used where we are guaranteed to initialize the contents
   // with valid data and where JS cannot access until initializations
-  // is done.  |OfflineAudioContext::startRendering()| is one such
+  // is done.  `OfflineAudioContext::StartRendering()` is one such
   // place.
   static AudioBuffer* CreateUninitialized(unsigned number_of_channels,
                                           uint32_t number_of_frames,
@@ -70,8 +71,8 @@ class MODULES_EXPORT AudioBuffer final : public ScriptWrappable {
 
   explicit AudioBuffer(AudioBus*);
   // How to initialize the contents of an AudioBuffer.  Default is to
-  // zero-initialize (|kZeroInitialize|).  Otherwise, leave the array
-  // uninitialized (|kDontInitialize|).
+  // zero-initialize (`kZeroInitialize`).  Otherwise, leave the array
+  // uninitialized (`kDontInitialize`).
   enum InitializationPolicy { kZeroInitialize, kDontInitialize };
   AudioBuffer(unsigned number_of_channels,
               uint32_t number_of_frames,

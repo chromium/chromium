@@ -1,14 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sync_device_info/device_info_util.h"
 
-#include "components/sync/protocol/sync.pb.h"
+#include "base/time/time.h"
+#include "components/sync/protocol/device_info_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 using sync_pb::DeviceInfoSpecifics;
 
 namespace syncer {
@@ -28,8 +28,8 @@ class DeviceInfoUtilTest : public testing::Test {
   }
 
   const Time now_ = Time::Now();
-  const TimeDelta small_ = TimeDelta::FromMilliseconds(1);
-  const TimeDelta big_ = TimeDelta::FromDays(1000);
+  const base::TimeDelta small_ = base::Milliseconds(1);
+  const base::TimeDelta big_ = base::Days(1000);
 };
 
 }  // namespace
@@ -52,17 +52,18 @@ TEST_F(DeviceInfoUtilTest, CalculatePulseDelayMiddle) {
 }
 
 TEST_F(DeviceInfoUtilTest, CalculatePulseDelayStale) {
-  EXPECT_EQ(TimeDelta(),
+  EXPECT_EQ(base::TimeDelta(),
             DeviceInfoUtil::CalculatePulseDelay(
                 Time(), Time() + DeviceInfoUtil::GetPulseInterval()));
-  EXPECT_EQ(TimeDelta(),
+  EXPECT_EQ(base::TimeDelta(),
             DeviceInfoUtil::CalculatePulseDelay(
                 Time(), Time() + DeviceInfoUtil::GetPulseInterval() + small_));
-  EXPECT_EQ(TimeDelta(),
+  EXPECT_EQ(base::TimeDelta(),
             DeviceInfoUtil::CalculatePulseDelay(
                 Time(), Time() + DeviceInfoUtil::GetPulseInterval() + small_));
-  EXPECT_EQ(TimeDelta(), DeviceInfoUtil::CalculatePulseDelay(
-                             now_, now_ + DeviceInfoUtil::GetPulseInterval()));
+  EXPECT_EQ(base::TimeDelta(),
+            DeviceInfoUtil::CalculatePulseDelay(
+                now_, now_ + DeviceInfoUtil::GetPulseInterval()));
 }
 
 TEST_F(DeviceInfoUtilTest, CalculatePulseDelayFuture) {

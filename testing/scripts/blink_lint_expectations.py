@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2015 The Chromium Authors. All rights reserved.
+#!/usr/bin/env vpython3
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,8 +7,10 @@ import json
 import os
 import sys
 
-
-import common
+# Add src/testing/ into sys.path for importing common without pylint errors.
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from scripts import common
 
 
 def main_run(args):
@@ -23,10 +25,8 @@ def main_run(args):
     with open(tempfile_path) as f:
       failures = json.load(f)
 
-  json.dump({
-      'valid': True,
-      'failures': failures,
-  }, args.output)
+  common.record_local_script_results(
+      'blink_lint_expectations', args.output, failures, True)
 
   return rc
 

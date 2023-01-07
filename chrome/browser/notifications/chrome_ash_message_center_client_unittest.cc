@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/notifications/chrome_ash_message_center_client.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -17,19 +18,20 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
-#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/permissions/permission_manager.h"
-#include "components/permissions/permission_result.h"
+#include "components/permissions/test/permission_test_util.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 
@@ -90,7 +92,7 @@ class ChromeAshMessageCenterClientTest : public testing::Test,
   }
 
   void CreateClient() {
-    client_.reset(new ChromeAshMessageCenterClient(nullptr));
+    client_ = std::make_unique<ChromeAshMessageCenterClient>(nullptr);
     client_->AddNotifierSettingsObserver(this);
   }
 
@@ -233,7 +235,7 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
 }
 
 TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
-  Profile* profile = CreateProfile("myprofile@gmail.com");
+  TestingProfile* profile = CreateProfile("myprofile@gmail.com");
   CreateClient();
 
   GURL origin("https://example.com/");
@@ -242,27 +244,30 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
 
   ContentSetting default_setting =
       HostContentSettingsMapFactory::GetForProfile(profile)
-          ->GetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS, NULL);
+          ->GetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS,
+                                     nullptr);
   ASSERT_EQ(CONTENT_SETTING_ASK, default_setting);
 
-  permissions::PermissionManager* permission_manager =
-      PermissionManagerFactory::GetForProfile(profile);
+  profile->SetPermissionControllerDelegate(
+      permissions::GetPermissionControllerDelegate(profile));
 
   // (1) Enable the permission when the default is to ask (expected to set).
   message_center_client()->SetNotifierEnabled(notifier_id, true);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      origin, origin)
-                .content_setting);
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::GRANTED,
+      profile->GetPermissionController()
+          ->GetPermissionResultForOriginWithoutContext(
+              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+          .status);
 
   // (2) Disable the permission when the default is to ask (expected to clear).
   message_center_client()->SetNotifierEnabled(notifier_id, false);
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      origin, origin)
-                .content_setting);
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::ASK,
+      profile->GetPermissionController()
+          ->GetPermissionResultForOriginWithoutContext(
+              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+          .status);
 
   // Change the default content setting vaule for notifications to ALLOW.
   HostContentSettingsMapFactory::GetForProfile(profile)
@@ -271,19 +276,22 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
 
   // (3) Disable the permission when the default is allowed (expected to set).
   message_center_client()->SetNotifierEnabled(notifier_id, false);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      origin, origin)
-                .content_setting);
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::DENIED,
+      profile->GetPermissionController()
+          ->GetPermissionResultForOriginWithoutContext(
+              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+          .status);
 
   // (4) Enable the permission when the default is allowed (expected to clear).
   message_center_client()->SetNotifierEnabled(notifier_id, true);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      origin, origin)
-                .content_setting);
+
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::GRANTED,
+      profile->GetPermissionController()
+          ->GetPermissionResultForOriginWithoutContext(
+              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+          .status);
 
   // Now change the default content setting value to BLOCK.
   HostContentSettingsMapFactory::GetForProfile(profile)
@@ -292,19 +300,21 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
 
   // (5) Enable the permission when the default is blocked (expected to set).
   message_center_client()->SetNotifierEnabled(notifier_id, true);
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      origin, origin)
-                .content_setting);
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::GRANTED,
+      profile->GetPermissionController()
+          ->GetPermissionResultForOriginWithoutContext(
+              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+          .status);
 
   // (6) Disable the permission when the default is blocked (expected to clear).
   message_center_client()->SetNotifierEnabled(notifier_id, false);
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      origin, origin)
-                .content_setting);
+  EXPECT_EQ(
+      blink::mojom::PermissionStatus::DENIED,
+      profile->GetPermissionController()
+          ->GetPermissionResultForOriginWithoutContext(
+              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+          .status);
 }
 
 }  // namespace

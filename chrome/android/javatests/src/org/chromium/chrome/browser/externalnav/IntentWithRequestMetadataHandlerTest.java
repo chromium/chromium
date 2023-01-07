@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.externalnav.IntentWithRequestMetadataHandler.RequestMetadata;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
@@ -21,6 +22,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
  * Instrumentation tests for {@link IntentWithRequestMetadataHandler}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 public class IntentWithRequestMetadataHandlerTest {
     @After
     public void tearDown() {

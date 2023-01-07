@@ -1,0 +1,14 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package feedwire;
+
+option optimize_for = LITE_RUNTIME;
+
+message ContentLifetime {
+  optional int64 stale_age_ms = 1;
+  optional int64 invalid_age_ms = 2;
+}

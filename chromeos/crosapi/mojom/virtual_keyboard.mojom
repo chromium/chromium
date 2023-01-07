@@ -1,0 +1,40 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+// The virtual keyboard features that RestrictFeatures API can control, this
+// should align with the definition of FeatureRestrictions in
+// extensions/common/api/virtual_keyboard.idl
+[Stable, Extensible]
+enum VirtualKeyboardFeature {
+  [Default] NONE = 0, // invalid restriction type
+  AUTOCOMPLETE = 1,
+  AUTOCORRECT = 2,
+  HANDWRITING = 3,
+  SPELL_CHECK = 4,
+  VOICE_INPUT = 5,
+};
+
+// A list of enabled features and a list of disabled features that users want to
+// change. Ideally no feature should appear in both lists, but if it happens, it
+// will be disabled. VirtualKeyboardFeature::NONE should not be in any of the
+// lists.
+[Stable]
+struct VirtualKeyboardRestrictions {
+  // A list of features we want to enable.
+  array<VirtualKeyboardFeature> enabled_features;
+
+  // A list of features we want to disable.
+  array<VirtualKeyboardFeature> disabled_features;
+};
+
+// VirtualKeyboard is a service that allows trusted extensions in Lacros
+// to control the virtual keyboard.
+[Stable, Uuid="1236c20e-5ddd-4ecd-bacf-37c2f5d112fe"]
+interface VirtualKeyboard {
+  // Sets restrictions on features provided by the virtual keyboard.
+  RestrictFeatures@0(VirtualKeyboardRestrictions restrictions) =>
+      (VirtualKeyboardRestrictions updated);
+};

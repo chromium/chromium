@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_TESTS_MESSAGE_QUEUE_H_
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {
@@ -16,6 +15,10 @@ namespace test {
 class MessageQueue {
  public:
   MessageQueue();
+
+  MessageQueue(const MessageQueue&) = delete;
+  MessageQueue& operator=(const MessageQueue&) = delete;
+
   ~MessageQueue();
 
   bool IsEmpty() const;
@@ -33,8 +36,6 @@ class MessageQueue {
   void Pop();
 
   base::queue<Message> queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageQueue);
 };
 
 }  // namespace test

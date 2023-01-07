@@ -28,7 +28,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 #include <CoreFoundation/CoreFoundation.h>
 
@@ -44,16 +44,19 @@ scoped_refptr<StringImpl> AtomicString::Add(CFStringRef string) {
           CFStringGetCStringPtr(string, kCFStringEncodingISOLatin1)))
     return AtomicStringTable::Instance().Add(ptr, length);
 
-  if (const UniChar* ptr = CFStringGetCharactersPtr(string))
+  if (const UniChar* ptr = CFStringGetCharactersPtr(string)) {
     return AtomicStringTable::Instance().Add(
-        reinterpret_cast<const UChar*>(ptr), length);
+        reinterpret_cast<const UChar*>(ptr), length,
+        AtomicStringUCharEncoding::kUnknown);
+  }
 
   Vector<UniChar, 1024> uchar_buffer(length);
   CFStringGetCharacters(string, CFRangeMake(0, length), uchar_buffer.data());
   return AtomicStringTable::Instance().Add(
-      reinterpret_cast<const UChar*>(uchar_buffer.data()), length);
+      reinterpret_cast<const UChar*>(uchar_buffer.data()), length,
+      AtomicStringUCharEncoding::kUnknown);
 }
 
 }  // namespace WTF
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)

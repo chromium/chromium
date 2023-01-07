@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,19 +10,27 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/web_cache/public/features.h"
+#include "third_party/blink/public/common/features.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace web_cache {
+
+constexpr uint64_t kNoCapacitySet = std::numeric_limits<uint64_t>::max();
+
+WebCacheManager::WebCacheInfo::WebCacheInfo() : last_capacity(kNoCapacitySet) {}
+WebCacheManager::WebCacheInfo::~WebCacheInfo() = default;
 
 static const int kReviseAllocationDelayMS = 200;
 
@@ -54,28 +62,33 @@ WebCacheManager* WebCacheManager::GetInstance() {
 }
 
 WebCacheManager::WebCacheManager()
-    : global_size_limit_(GetDefaultGlobalSizeLimit()) {
-}
+    : global_size_limit_(GetDefaultGlobalSizeLimit()) {}
 
-WebCacheManager::~WebCacheManager() {
-}
+WebCacheManager::~WebCacheManager() {}
 
 void WebCacheManager::Add(int renderer_id) {
   DCHECK(inactive_renderers_.count(renderer_id) == 0);
   DCHECK(active_renderers_.count(renderer_id) == 0);
   active_renderers_.insert(renderer_id);
 
-  RendererInfo* stats = &(stats_[renderer_id]);
-  memset(stats, 0, sizeof(*stats));
-  stats->access = Time::Now();
-
   content::RenderProcessHost* host =
       content::RenderProcessHost::FromID(renderer_id);
   if (host) {
     mojo::Remote<mojom::WebCache> service;
     host->BindReceiver(service.BindNewPipeAndPassReceiver());
-    web_cache_services_[renderer_id] = std::move(service);
+    web_cache_services_[renderer_id].service = std::move(service);
   }
+
+  // Need to bind the interface (above), but not to collect metric, or to revise
+  // the strategy (below), hence returning here.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kNoCentralWebCacheLimitControl)) {
+    return;
+  }
+
+  RendererInfo* stats = &(stats_[renderer_id]);
+  memset(stats, 0, sizeof(*stats));
+  stats->access = Time::Now();
 
   // Revise our allocation strategy to account for this new renderer.
   ReviseAllocationStrategyLater();
@@ -84,6 +97,13 @@ void WebCacheManager::Add(int renderer_id) {
 void WebCacheManager::Remove(int renderer_id) {
   // Erase all knowledge of this renderer
   active_renderers_.erase(renderer_id);
+
+  // Inserted into the active set, and never removed.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kNoCentralWebCacheLimitControl)) {
+    return;
+  }
+
   inactive_renderers_.erase(renderer_id);
   stats_.erase(renderer_id);
 
@@ -94,6 +114,11 @@ void WebCacheManager::Remove(int renderer_id) {
 }
 
 void WebCacheManager::ObserveActivity(int renderer_id) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kNoCentralWebCacheLimitControl)) {
+    return;
+  }
+
   auto item = stats_.find(renderer_id);
   if (item == stats_.end())
     return;  // We might see stats for a renderer that has been destroyed.
@@ -124,6 +149,11 @@ void WebCacheManager::ObserveActivity(int renderer_id) {
 void WebCacheManager::ObserveStats(int renderer_id,
                                    uint64_t capacity,
                                    uint64_t size) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kNoCentralWebCacheLimitControl)) {
+    return;
+  }
+
   auto entry = stats_.find(renderer_id);
   if (entry == stats_.end())
     return;  // We might see stats for a renderer that has been destroyed.
@@ -134,6 +164,11 @@ void WebCacheManager::ObserveStats(int renderer_id,
 }
 
 void WebCacheManager::SetGlobalSizeLimit(uint64_t bytes) {
+  if (base::FeatureList::IsEnabled(
+          blink::features::kNoCentralWebCacheLimitControl)) {
+    return;
+  }
+
   global_size_limit_ = bytes;
   ReviseAllocationStrategyLater();
 }
@@ -177,6 +212,8 @@ uint64_t WebCacheManager::GetDefaultGlobalSizeLimit() {
 void WebCacheManager::GatherStats(const std::set<int>& renderers,
                                   uint64_t* capacity,
                                   uint64_t* size) {
+  DCHECK(!base::FeatureList::IsEnabled(
+      blink::features::kNoCentralWebCacheLimitControl));
   *capacity = *size = 0;
 
   auto iter = renderers.begin();
@@ -192,19 +229,21 @@ void WebCacheManager::GatherStats(const std::set<int>& renderers,
 
 // static
 uint64_t WebCacheManager::GetSize(AllocationTactic tactic, uint64_t size) {
+  DCHECK(!base::FeatureList::IsEnabled(
+      blink::features::kNoCentralWebCacheLimitControl));
   switch (tactic) {
-  case DIVIDE_EVENLY:
-    // We aren't going to reserve any space for existing objects.
-    return 0;
-  case KEEP_CURRENT_WITH_HEADROOM:
-    // We need enough space for our current objects, plus some headroom.
-    return 3 * GetSize(KEEP_CURRENT, size) / 2;
-  case KEEP_CURRENT:
-    // We need enough space to keep our current objects.
-    return size;
-  default:
-    NOTREACHED() << "Unknown cache allocation tactic";
-    return 0;
+    case DIVIDE_EVENLY:
+      // We aren't going to reserve any space for existing objects.
+      return 0;
+    case KEEP_CURRENT_WITH_HEADROOM:
+      // We need enough space for our current objects, plus some headroom.
+      return 3 * GetSize(KEEP_CURRENT, size) / 2;
+    case KEEP_CURRENT:
+      // We need enough space to keep our current objects.
+      return size;
+    default:
+      NOTREACHED() << "Unknown cache allocation tactic";
+      return 0;
   }
 }
 
@@ -213,6 +252,8 @@ bool WebCacheManager::AttemptTactic(AllocationTactic active_tactic,
                                     AllocationTactic inactive_tactic,
                                     uint64_t inactive_used_size,
                                     AllocationStrategy* strategy) {
+  DCHECK(!base::FeatureList::IsEnabled(
+      blink::features::kNoCentralWebCacheLimitControl));
   DCHECK(strategy);
 
   uint64_t active_size = GetSize(active_tactic, active_used_size);
@@ -252,6 +293,8 @@ void WebCacheManager::AddToStrategy(const std::set<int>& renderers,
                                     AllocationTactic tactic,
                                     uint64_t extra_bytes_to_allocate,
                                     AllocationStrategy* strategy) {
+  DCHECK(!base::FeatureList::IsEnabled(
+      blink::features::kNoCentralWebCacheLimitControl));
   DCHECK(strategy);
 
   // Nothing to do if there are no renderers.  It is common for there to be no
@@ -279,24 +322,27 @@ void WebCacheManager::AddToStrategy(const std::set<int>& renderers,
 }
 
 void WebCacheManager::EnactStrategy(const AllocationStrategy& strategy) {
-  // Inform each render process of its cache allocation.
-  auto allocation = strategy.begin();
-  while (allocation != strategy.end()) {
-    content::RenderProcessHost* host =
-        content::RenderProcessHost::FromID(allocation->first);
-    if (host) {
-      // This is the capacity this renderer has been allocated.
-      uint64_t capacity = allocation->second;
+  DCHECK(!base::FeatureList::IsEnabled(
+      blink::features::kNoCentralWebCacheLimitControl));
 
-      // Find the mojo::Remote<WebCache> by renderer process id.
-      auto it = web_cache_services_.find(allocation->first);
-      if (it != web_cache_services_.end()) {
-        const mojo::Remote<mojom::WebCache>& service = it->second;
-        DCHECK(service);
-        service->SetCacheCapacity(capacity);
-      }
-    }
-    ++allocation;
+  for (auto& [render_process_id, new_capacity] : strategy) {
+    content::RenderProcessHost* host =
+        content::RenderProcessHost::FromID(render_process_id);
+    if (!host)
+      continue;
+
+    // Find the mojo::Remote<WebCache> by renderer process id.
+    auto it = web_cache_services_.find(render_process_id);
+    if (it == web_cache_services_.end())
+      continue;
+
+    WebCacheInfo& cache_info = it->second;
+    if (cache_info.last_capacity == new_capacity)
+      continue;
+
+    DCHECK(cache_info.service);
+    cache_info.service->SetCacheCapacity(new_capacity);
+    cache_info.last_capacity = new_capacity;
   }
 }
 
@@ -317,17 +363,23 @@ void WebCacheManager::ClearRendererCache(
       // Find the mojo::Remote<WebCache> by renderer process id.
       auto it = web_cache_services_.find(*iter);
       if (it != web_cache_services_.end()) {
-        const mojo::Remote<mojom::WebCache>& service = it->second;
-        DCHECK(service);
-        service->ClearCache(occasion == ON_NAVIGATION);
+        WebCacheInfo& cache_info = it->second;
+        DCHECK(cache_info.service);
+        cache_info.service->ClearCache(occasion == ON_NAVIGATION);
       }
     }
   }
 }
 
 void WebCacheManager::ReviseAllocationStrategy() {
+  DCHECK(!base::FeatureList::IsEnabled(
+      blink::features::kNoCentralWebCacheLimitControl));
+  DCHECK(!base::FeatureList::IsEnabled(kTrimWebCacheOnMemoryPressureOnly));
+
   DCHECK(stats_.size() <=
-      active_renderers_.size() + inactive_renderers_.size());
+         active_renderers_.size() + inactive_renderers_.size());
+
+  callback_pending_ = false;
 
   // Check if renderers have gone inactive.
   FindInactiveRenderers();
@@ -352,7 +404,7 @@ void WebCacheManager::ReviseAllocationStrategy() {
   // we've found a workable strategy.
   AllocationStrategy strategy;
   if (  // Ideally, we'd like to give the active renderers some headroom and
-      // keep all our current objects.
+        // keep all our current objects.
       AttemptTactic(KEEP_CURRENT_WITH_HEADROOM, active_size, KEEP_CURRENT,
                     inactive_size, &strategy) ||
       // Next, we try to keep the current objects in the active renders (with
@@ -377,22 +429,36 @@ void WebCacheManager::ReviseAllocationStrategy() {
 }
 
 void WebCacheManager::ReviseAllocationStrategyLater() {
+  DCHECK(!base::FeatureList::IsEnabled(
+      blink::features::kNoCentralWebCacheLimitControl));
+  if (base::FeatureList::IsEnabled(kTrimWebCacheOnMemoryPressureOnly))
+    return;
+
+  // Avoid piling up notifications.
+  if (callback_pending_)
+    return;
+
+  callback_pending_ = true;
+
   // Ask to be called back in a few milliseconds to actually recompute our
   // allocation.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&WebCacheManager::ReviseAllocationStrategy,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kReviseAllocationDelayMS));
+      base::Milliseconds(kReviseAllocationDelayMS));
 }
 
 void WebCacheManager::FindInactiveRenderers() {
+  DCHECK(!base::FeatureList::IsEnabled(
+      blink::features::kNoCentralWebCacheLimitControl));
+
   auto iter = active_renderers_.begin();
   while (iter != active_renderers_.end()) {
     auto elmt = stats_.find(*iter);
     DCHECK(elmt != stats_.end());
-    TimeDelta idle = Time::Now() - elmt->second.access;
-    if (idle >= TimeDelta::FromMinutes(kRendererInactiveThresholdMinutes)) {
+    base::TimeDelta idle = Time::Now() - elmt->second.access;
+    if (idle >= base::Minutes(kRendererInactiveThresholdMinutes)) {
       // Moved to inactive status.  This invalidates our iterator.
       inactive_renderers_.insert(*iter);
       active_renderers_.erase(*iter);

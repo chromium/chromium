@@ -1,16 +1,17 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CONTENT_GPU_GPU_SERVICE_FACTORY_H_
 #define CONTENT_GPU_GPU_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/android_overlay_mojo_factory.h"
 #include "media/mojo/buildflags.h"
@@ -34,9 +35,14 @@ class GpuServiceFactory {
       const gpu::GpuPreferences& gpu_preferences,
       const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
       const gpu::GpuFeatureInfo& gpu_feature_info,
+      const gpu::GPUInfo& gpu_info,
       base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager,
       gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       media::AndroidOverlayMojoFactoryCB android_overlay_factory_cb);
+
+  GpuServiceFactory(const GpuServiceFactory&) = delete;
+  GpuServiceFactory& operator=(const GpuServiceFactory&) = delete;
+
   ~GpuServiceFactory();
 
   void RunMediaService(
@@ -52,13 +58,12 @@ class GpuServiceFactory {
   base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager_;
   media::AndroidOverlayMojoFactoryCB android_overlay_factory_cb_;
   // Indirectly owned by GpuChildThread.
-  gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory_;
+  raw_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   gpu::GpuFeatureInfo gpu_feature_info_;
+  gpu::GPUInfo gpu_info_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(GpuServiceFactory);
 };
 
 }  // namespace content

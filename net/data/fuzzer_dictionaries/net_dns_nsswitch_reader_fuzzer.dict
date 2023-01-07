@@ -1,0 +1,72 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Fuzzer dictionary for nsswitch.conf files.
+
+# File comments.
+"#"
+"# comment"
+"#comment"
+"# /etc/nsswitch.conf"
+"# Name Service Switch configuration file."
+
+# Common database entries.
+"hosts:      files dns"
+"hosts:      files mdns4_minimal [NOTFOUND=return] dns mdns4"
+"hosts:      files mdns4_minimal [NOTFOUND=return] dns"
+"hosts:      files resolve [!UNAVAIL=return] myhostname dns"
+"hosts:      files nis dns wins myhostname"
+"passwd:     db files"
+"shadow:     files"
+
+# Database names.
+"aliases:"
+"ethers:"
+"group:"
+"hosts:"
+"initgroups:"
+"netgroup:"
+"networks:"
+"passwd:"
+"protocols:"
+"publickey:"
+"rpc:"
+"services:"
+"shadow:"
+
+# Known service names (not an exhaustive vocabulary because NSS maps these
+# labels to extensible `libnss_name` library modules).
+"compat"
+"db"
+"dns"
+"files"
+"mdns"
+"mdns4"
+"mdns6"
+"mdns_minimal"
+"mdns4_minimal"
+"mdns6_minimal"
+"myhostname"
+"nis"
+"nisplus"
+"resolve"
+
+# Common actions.
+"[NOTFOUND=return]"
+"[!UNAVAIL=return]"
+
+# Action statuses (repeated in CAPS as the common style).
+"success"
+"SUCCESS"
+"notfound"
+"NOTFOUND"
+"unavail"
+"UNAVAIL"
+"tryagain"
+"TRYAGAIN"
+
+# Action values.
+"return"
+"continue"
+"merge"

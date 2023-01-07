@@ -1,5 +1,2 @@
-monorail {
-  component: "Enterprise>CloudPolicy"
-}
+mixins: "//components/policy/COMMON_METADATA"
 
-team_email: "chromium-reviews@chromium.org"

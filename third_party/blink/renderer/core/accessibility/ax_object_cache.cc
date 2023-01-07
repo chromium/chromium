@@ -31,14 +31,12 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "third_party/blink/public/web/web_ax_enums.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -51,9 +49,10 @@ void AXObjectCache::Init(AXObjectCacheCreateFunction function) {
   create_function_ = function;
 }
 
-AXObjectCache* AXObjectCache::Create(Document& document) {
+AXObjectCache* AXObjectCache::Create(Document& document,
+                                     const ui::AXMode& ax_mode) {
   DCHECK(create_function_);
-  return create_function_(document);
+  return create_function_(document, ax_mode);
 }
 
 namespace {
@@ -73,7 +72,7 @@ const char* g_aria_widgets[] = {
 
 static ARIAWidgetSet* CreateARIARoleWidgetSet() {
   ARIAWidgetSet* widget_set = new HashSet<String, CaseFoldingHash>();
-  for (size_t i = 0; i < base::size(g_aria_widgets); ++i)
+  for (size_t i = 0; i < std::size(g_aria_widgets); ++i)
     widget_set->insert(String(g_aria_widgets[i]));
   return widget_set;
 }
@@ -107,8 +106,7 @@ const char* g_aria_interactive_widget_attributes[] = {
 };
 
 bool HasInteractiveARIAAttribute(const Element& element) {
-  for (size_t i = 0; i < base::size(g_aria_interactive_widget_attributes);
-       ++i) {
+  for (size_t i = 0; i < std::size(g_aria_interactive_widget_attributes); ++i) {
     const char* attribute = g_aria_interactive_widget_attributes[i];
     if (element.hasAttribute(attribute)) {
       return true;
@@ -126,7 +124,7 @@ bool AXObjectCache::IsInsideFocusableElementOrARIAWidget(const Node& node) {
       if (element->IsFocusable())
         return true;
       String role = element->getAttribute("role");
-      if (!role.IsEmpty() && IncludesARIAWidgetRole(role))
+      if (!role.empty() && IncludesARIAWidgetRole(role))
         return true;
       if (HasInteractiveARIAAttribute(*element))
         return true;

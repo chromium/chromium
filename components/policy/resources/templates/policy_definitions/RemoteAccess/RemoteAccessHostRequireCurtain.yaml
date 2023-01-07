@@ -1,0 +1,28 @@
+caption: Enable curtaining of remote access hosts
+desc: |-
+  Setting the policy to Enabled turns off remote access hosts' physical input and output devices during a remote connection.
+
+        Setting the policy to Disabled or leaving it unset lets both local and remote users interact with the host while it's shared.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+  platform_only: true
+future_on:
+- fuchsia
+items:
+- caption: Enable curtaining of the remote access host
+  value: true
+- caption: Disable curtaining of the remote access host
+  value: false
+owners:
+- file://remoting/OWNERS
+- jamiewalch@chromium.org
+- garykac@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:23-
+tags:
+- system-security
+type: main

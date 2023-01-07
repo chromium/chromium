@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,13 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/callback_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/unguessable_token.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
-#include "content/common/content_export.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
@@ -27,6 +25,7 @@
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -54,7 +53,7 @@ namespace content {
 // the |task_runner_|, as provided during construction.
 // |context_provider| should not support locking and will be bound to
 // |task_runner_| where all the operations on the context should also happen.
-class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
+class GpuVideoAcceleratorFactoriesImpl
     : public media::GpuVideoAcceleratorFactories,
       public viz::ContextLostObserver {
  public:
@@ -67,26 +66,28 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
       const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
       bool enable_video_gpu_memory_buffers,
       bool enable_media_stream_gpu_memory_buffers,
-      bool enable_video_accelerator,
+      bool enable_video_decode_accelerator,
+      bool enable_video_encode_accelerator,
       mojo::PendingRemote<media::mojom::InterfaceFactory>
           interface_factory_remote,
       mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
           vea_provider_remote);
 
   // media::GpuVideoAcceleratorFactories implementation.
-  bool IsGpuVideoAcceleratorEnabled() override;
-  base::UnguessableToken GetChannelToken() override;
+  bool IsGpuVideoDecodeAcceleratorEnabled() override;
+  bool IsGpuVideoEncodeAcceleratorEnabled() override;
+  void GetChannelToken(
+      gpu::mojom::GpuChannel::GetChannelTokenCallback cb) override;
   int32_t GetCommandBufferRouteId() override;
   Supported IsDecoderConfigSupported(
-      media::VideoDecoderImplementation implementation,
       const media::VideoDecoderConfig& config) override;
+  media::VideoDecoderType GetDecoderType() override;
   bool IsDecoderSupportKnown() override;
   void NotifyDecoderSupportKnown(base::OnceClosure callback) override;
   std::unique_ptr<media::VideoDecoder> CreateVideoDecoder(
       media::MediaLog* media_log,
-      media::VideoDecoderImplementation implementation,
       media::RequestOverlayInfoCB request_overlay_info_cb) override;
-  base::Optional<media::VideoEncodeAccelerator::SupportedProfiles>
+  absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>
   GetVideoEncodeAcceleratorSupportedProfiles() override;
   bool IsEncoderSupportKnown() override;
   void NotifyEncoderSupportKnown(base::OnceClosure callback) override;
@@ -130,6 +131,11 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   // with a new ContextProvider.
   bool CheckContextProviderLostOnMainThread();
 
+  GpuVideoAcceleratorFactoriesImpl(const GpuVideoAcceleratorFactoriesImpl&) =
+      delete;
+  GpuVideoAcceleratorFactoriesImpl& operator=(
+      const GpuVideoAcceleratorFactoriesImpl&) = delete;
+
   ~GpuVideoAcceleratorFactoriesImpl() override;
 
  private:
@@ -155,7 +161,8 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
       const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
       bool enable_gpu_memory_buffer_video_frames_for_video,
       bool enable_gpu_memory_buffer_video_frames_for_media_stream,
-      bool enable_video_accelerator,
+      bool enable_video_decode_accelerator,
+      bool enable_video_encode_accelerator,
       mojo::PendingRemote<media::mojom::InterfaceFactory>
           interface_factory_remote,
       mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
@@ -172,13 +179,15 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   void SetContextProviderLostOnMainThread();
 
   void OnSupportedDecoderConfigs(
-      const media::SupportedVideoDecoderConfigMap& supported_configs);
+      const media::SupportedVideoDecoderConfigs& supported_configs,
+      media::VideoDecoderType decoder_type);
   void OnDecoderSupportFailed();
 
   void OnGetVideoEncodeAcceleratorSupportedProfiles(
       const media::VideoEncodeAccelerator::SupportedProfiles&
           supported_profiles);
   void OnEncoderSupportFailed();
+  void OnChannelTokenReady(const base::UnguessableToken& token);
 
   const scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -195,12 +204,15 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   bool context_provider_lost_on_media_thread_ = false;
 
   base::UnguessableToken channel_token_;
+  base::OnceCallbackList<void(const base::UnguessableToken&)>
+      channel_token_callbacks_;
 
   // Whether gpu memory buffers should be used to hold video frames data.
   const bool enable_video_gpu_memory_buffers_;
   const bool enable_media_stream_gpu_memory_buffers_;
   // Whether video acceleration encoding/decoding should be enabled.
-  const bool video_accelerator_enabled_;
+  const bool video_decode_accelerator_enabled_;
+  const bool video_encode_accelerator_enabled_;
 
   gfx::ColorSpace rendering_color_space_;
 
@@ -217,15 +229,15 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
   // If the Optional is empty, then we have not yet gotten the configs.  If the
   // Optional contains an empty vector, then we have gotten the result and there
   // are no supported configs.
-  base::Optional<media::SupportedVideoDecoderConfigMap>
-      supported_decoder_configs_ GUARDED_BY(supported_profiles_lock_);
+  absl::optional<media::SupportedVideoDecoderConfigs> supported_decoder_configs_
+      GUARDED_BY(supported_profiles_lock_);
+  media::VideoDecoderType video_decoder_type_
+      GUARDED_BY(supported_profiles_lock_) = media::VideoDecoderType::kUnknown;
   Notifier decoder_support_notifier_ GUARDED_BY(supported_profiles_lock_);
 
-  base::Optional<media::VideoEncodeAccelerator::SupportedProfiles>
+  absl::optional<media::VideoEncodeAccelerator::SupportedProfiles>
       supported_vea_profiles_ GUARDED_BY(supported_profiles_lock_);
   Notifier encoder_support_notifier_ GUARDED_BY(supported_profiles_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(GpuVideoAcceleratorFactoriesImpl);
 };
 
 }  // namespace content

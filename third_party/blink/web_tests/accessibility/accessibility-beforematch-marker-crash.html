@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<li id=hiddenli hidden=until-found>
+  <a id><a><div id=hiddentext>hiddentext</div>
+</li>
+<script>
+const testCase = async_test('Regression test for crbug.com/1250959 should not crash');
+
+hiddenli.addEventListener('beforematch', testCase.step_func(() => {
+  hiddenli.setAttribute('hidden', 'until-found');
+  setTimeout(testCase.step_func_done(() => {
+    hiddenli.removeAttribute('hidden');
+  }));
+}));
+
+testCase.step(() => {
+  assert_own_property(window, 'testRunner', 'This test requires testRunner');
+  testRunner.findString('hiddentext', ['Async']);
+});
+</script>

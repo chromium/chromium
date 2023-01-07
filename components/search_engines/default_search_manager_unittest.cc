@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,19 +10,18 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/search_engines_pref_names.h"
 #include "components/search_engines/search_engines_test_util.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -30,50 +29,54 @@ namespace {
 // TODO(caitkp): TemplateURLData-ify this.
 void SetOverrides(sync_preferences::TestingPrefServiceSyncable* prefs,
                   bool update) {
-  prefs->SetUserPref(prefs::kSearchProviderOverridesVersion,
-                     std::make_unique<base::Value>(1));
-  auto overrides = std::make_unique<base::ListValue>();
-  auto entry = std::make_unique<base::DictionaryValue>();
+  prefs->SetUserPref(prefs::kSearchProviderOverridesVersion, base::Value(1));
+  base::Value::List overrides;
+  base::Value::Dict entry;
 
-  entry->SetString("name", update ? "new_foo" : "foo");
-  entry->SetString("keyword", update ? "new_fook" : "fook");
-  entry->SetString("search_url", "http://foo.com/s?q={searchTerms}");
-  entry->SetString("favicon_url", "http://foi.com/favicon.ico");
-  entry->SetString("encoding", "UTF-8");
-  entry->SetInteger("id", 1001);
-  entry->SetString("suggest_url", "http://foo.com/suggest?q={searchTerms}");
-  auto alternate_urls = std::make_unique<base::ListValue>();
-  alternate_urls->AppendString("http://foo.com/alternate?q={searchTerms}");
-  entry->Set("alternate_urls", std::move(alternate_urls));
-  overrides->Append(std::move(entry));
+  entry.Set("name", update ? "new_foo" : "foo");
+  entry.Set("keyword", update ? "new_fook" : "fook");
+  entry.Set("search_url", "http://foo.com/s?q={searchTerms}");
+  entry.Set("favicon_url", "http://foi.com/favicon.ico");
+  entry.Set("encoding", "UTF-8");
+  entry.Set("id", 1001);
+  entry.Set("suggest_url", "http://foo.com/suggest?q={searchTerms}");
+  base::Value::List alternate_urls;
+  alternate_urls.Append("http://foo.com/alternate?q={searchTerms}");
+  entry.Set("alternate_urls", std::move(alternate_urls));
+  overrides.Append(std::move(entry));
 
-  entry = std::make_unique<base::DictionaryValue>();
-  entry->SetInteger("id", 1002);
-  entry->SetString("name", update ? "new_bar" : "bar");
-  entry->SetString("keyword", update ? "new_bark" : "bark");
-  entry->SetString("encoding", std::string());
-  overrides->Append(std::make_unique<base::Value>(entry->Clone()));
-  entry->SetInteger("id", 1003);
-  entry->SetString("name", "baz");
-  entry->SetString("keyword", "bazk");
-  entry->SetString("encoding", "UTF-8");
-  overrides->Append(std::move(entry));
-  prefs->SetUserPref(prefs::kSearchProviderOverrides, std::move(overrides));
+  entry = base::Value::Dict();
+  entry.Set("id", 1002);
+  entry.Set("name", update ? "new_bar" : "bar");
+  entry.Set("keyword", update ? "new_bark" : "bark");
+  entry.Set("encoding", std::string());
+  overrides.Append(entry.Clone());
+  entry.Set("id", 1003);
+  entry.Set("name", "baz");
+  entry.Set("keyword", "bazk");
+  entry.Set("encoding", "UTF-8");
+  overrides.Append(std::move(entry));
+  prefs->SetUserPref(prefs::kSearchProviderOverrides,
+                     base::Value(std::move(overrides)));
 }
 
 void SetPolicy(sync_preferences::TestingPrefServiceSyncable* prefs,
                bool enabled,
-               TemplateURLData* data) {
+               TemplateURLData* data,
+               bool is_mandatory) {
   if (enabled) {
     EXPECT_FALSE(data->keyword().empty());
     EXPECT_FALSE(data->url().empty());
   }
-  std::unique_ptr<base::DictionaryValue> entry(
-      TemplateURLDataToDictionary(*data));
-  entry->SetBoolean(DefaultSearchManager::kDisabledByPolicy, !enabled);
-  prefs->SetManagedPref(
-      DefaultSearchManager::kDefaultSearchProviderDataPrefName,
-      std::move(entry));
+  std::unique_ptr<base::Value> entry = TemplateURLDataToDictionary(*data);
+  entry->SetBoolKey(DefaultSearchManager::kDisabledByPolicy, !enabled);
+
+  is_mandatory ? prefs->SetManagedPref(
+                     DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+                     std::move(entry))
+               : prefs->SetRecommendedPref(
+                     DefaultSearchManager::kDefaultSearchProviderDataPrefName,
+                     std::move(entry));
 }
 
 }  // namespace
@@ -82,8 +85,12 @@ class DefaultSearchManagerTest : public testing::Test {
  public:
   DefaultSearchManagerTest() {}
 
+  DefaultSearchManagerTest(const DefaultSearchManagerTest&) = delete;
+  DefaultSearchManagerTest& operator=(const DefaultSearchManagerTest&) = delete;
+
   void SetUp() override {
-    pref_service_.reset(new sync_preferences::TestingPrefServiceSyncable);
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     DefaultSearchManager::RegisterProfilePrefs(pref_service_->registry());
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_->registry());
   }
@@ -93,9 +100,9 @@ class DefaultSearchManagerTest : public testing::Test {
   }
 
  private:
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultSearchManagerTest);
 };
 
 // Test that a TemplateURLData object is properly written and read from Prefs.
@@ -193,7 +200,7 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByOverrides) {
 }
 
 // Test DefaultSearchManager handles policy-enforced DSEs correctly.
-TEST_F(DefaultSearchManagerTest, DefaultSearchSetByPolicy) {
+TEST_F(DefaultSearchManagerTest, DefaultSearchSetByEnforcedPolicy) {
   DefaultSearchManager manager(pref_service(),
                                DefaultSearchManager::ObserverCallback());
   std::unique_ptr<TemplateURLData> data = GenerateDummyTemplateURLData("user");
@@ -205,19 +212,80 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByPolicy) {
 
   std::unique_ptr<TemplateURLData> policy_data =
       GenerateDummyTemplateURLData("policy");
-  SetPolicy(pref_service(), true, policy_data.get());
+  SetPolicy(pref_service(), true, policy_data.get(), /*is_mandatory=*/true);
 
   ExpectSimilar(policy_data.get(), manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);
 
   TemplateURLData null_policy_data;
-  SetPolicy(pref_service(), false, &null_policy_data);
+  SetPolicy(pref_service(), false, &null_policy_data, /*is_mandatory=*/true);
   EXPECT_EQ(nullptr, manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);
 
   pref_service()->RemoveManagedPref(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
   ExpectSimilar(data.get(), manager.GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+}
+
+// Policy-recommended DSE is handled correctly when no existing DSE is present.
+TEST_F(DefaultSearchManagerTest, DefaultSearchSetByRecommendedPolicy) {
+  DefaultSearchManager manager(pref_service(),
+                               DefaultSearchManager::ObserverCallback());
+  DefaultSearchManager::Source source = DefaultSearchManager::FROM_FALLBACK;
+
+  // Set recommended policy DSE with valid data.
+  std::unique_ptr<TemplateURLData> policy_data =
+      GenerateDummyTemplateURLData("policy");
+  SetPolicy(pref_service(), true, policy_data.get(), /*is_mandatory=*/false);
+  ExpectSimilar(policy_data.get(), manager.GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_POLICY_RECOMMENDED, source);
+
+  // Set recommended policy DSE with null data.
+  TemplateURLData null_policy_data;
+  SetPolicy(pref_service(), false, &null_policy_data, /*is_mandatory=*/false);
+  EXPECT_EQ(nullptr, manager.GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_POLICY_RECOMMENDED, source);
+
+  // Set user-configured DSE.
+  std::unique_ptr<TemplateURLData> user_data =
+      GenerateDummyTemplateURLData("user");
+  manager.SetUserSelectedDefaultSearchEngine(*user_data);
+  // The user-configured DSE overrides the recommended policy DSE.
+  ExpectSimilar(user_data.get(), manager.GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+
+  // Remove the recommended policy DSE.
+  pref_service()->RemoveRecommendedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName);
+  ExpectSimilar(user_data.get(), manager.GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+}
+
+// Policy-recommended DSE does not override existing DSE set by user.
+TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserAndRecommendedPolicy) {
+  DefaultSearchManager manager(pref_service(),
+                               DefaultSearchManager::ObserverCallback());
+  // Set user-configured DSE.
+  std::unique_ptr<TemplateURLData> user_data =
+      GenerateDummyTemplateURLData("user");
+  manager.SetUserSelectedDefaultSearchEngine(*user_data);
+  DefaultSearchManager::Source source = DefaultSearchManager::FROM_FALLBACK;
+  ExpectSimilar(user_data.get(), manager.GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+
+  // Set recommended policy DSE.
+  std::unique_ptr<TemplateURLData> policy_data =
+      GenerateDummyTemplateURLData("policy");
+  SetPolicy(pref_service(), true, policy_data.get(), /*is_mandatory=*/false);
+  // The recommended policy DSE does not override the existing user DSE.
+  ExpectSimilar(user_data.get(), manager.GetDefaultSearchEngine(&source));
+  EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
+
+  // Remove the recommended policy DSE.
+  pref_service()->RemoveRecommendedPref(
+      DefaultSearchManager::kDefaultSearchProviderDataPrefName);
+  ExpectSimilar(user_data.get(), manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
 }
 
@@ -243,7 +311,7 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByExtension) {
   // Policy trumps extension:
   std::unique_ptr<TemplateURLData> policy_data =
       GenerateDummyTemplateURLData("policy");
-  SetPolicy(pref_service(), true, policy_data.get());
+  SetPolicy(pref_service(), true, policy_data.get(), /*is_mandatory=*/true);
 
   ExpectSimilar(policy_data.get(), manager.GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_POLICY, source);

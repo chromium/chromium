@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -111,10 +111,11 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultSearchProvider) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL expected("http://search.example/search?q=stuff+to+search+for");
-  EXPECT_EQ(expected, web_contents->GetURL());
+  EXPECT_EQ(expected, web_contents->GetVisibleURL());
 
   // Verify that searching from the omnibox can be disabled.
-  ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
   policies.Set(key::kDefaultSearchProviderEnabled, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
                nullptr);
@@ -124,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DefaultSearchProvider) {
   ui_test_utils::SendToOmniboxAndSubmit(browser(), "should not work");
   // This means that submitting won't trigger any action.
   EXPECT_FALSE(model->CurrentMatch(nullptr).destination_url.is_valid());
-  EXPECT_EQ(GURL(url::kAboutBlankURL), web_contents->GetURL());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), web_contents->GetLastCommittedURL());
 }
 
 }  // namespace policy

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,13 @@
 #include <string>
 
 #include "base/containers/linked_list.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom.h"
 #include "url/gurl.h"
+
+namespace net {
+class CanonicalCookie;
+enum class CookieAccessSemantics;
+}  // namespace net
 
 namespace content {
 
@@ -73,6 +76,9 @@ class CookieChangeSubscription
                            ::network::mojom::CookieMatchType match_type,
                            int64_t service_worker_registration_id);
 
+  CookieChangeSubscription(const CookieChangeSubscription&) = delete;
+  CookieChangeSubscription& operator=(const CookieChangeSubscription&) = delete;
+
   ~CookieChangeSubscription();
 
   // The URL whose cookie list is watched for changes.
@@ -111,8 +117,6 @@ class CookieChangeSubscription
   const std::string name_;
   const ::network::mojom::CookieMatchType match_type_;
   const int64_t service_worker_registration_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieChangeSubscription);
 };
 
 // Used to deduplicate equivalent subscriptons.

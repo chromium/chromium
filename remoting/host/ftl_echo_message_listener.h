@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/signaling/signal_strategy.h"
 
 namespace remoting {
@@ -22,6 +22,10 @@ class FtlEchoMessageListener : public SignalStrategy::Listener {
   // |signal_strategy| is expected to outlive this object.
   FtlEchoMessageListener(std::string host_owner,
                          SignalStrategy* signal_strategy);
+
+  FtlEchoMessageListener(const FtlEchoMessageListener&) = delete;
+  FtlEchoMessageListener& operator=(const FtlEchoMessageListener&) = delete;
+
   ~FtlEchoMessageListener() override;
 
   // SignalStrategy::Listener interface.
@@ -35,8 +39,7 @@ class FtlEchoMessageListener : public SignalStrategy::Listener {
 
  private:
   std::string host_owner_;
-  SignalStrategy* signal_strategy_;
-  DISALLOW_COPY_AND_ASSIGN(FtlEchoMessageListener);
+  raw_ptr<SignalStrategy> signal_strategy_;
 };
 
 }  // namespace remoting

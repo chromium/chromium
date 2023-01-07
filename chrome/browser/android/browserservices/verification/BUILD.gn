@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,19 +6,21 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifier.java",
-    "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierFactory.java",
-    "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierFactoryImpl.java",
-    "java/src/org/chromium/chrome/browser/browserservices/verification/PackageFingerprintCalculator.java",
-    "java/src/org/chromium/chrome/browser/browserservices/verification/Relationship.java",
-    "java/src/org/chromium/chrome/browser/browserservices/verification/VerificationResultStore.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifier.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifierFactory.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifierFactoryImpl.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeVerificationResultStore.java",
   ]
   deps = [
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//chrome/browser/android/browserservices/metrics:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//components/digital_asset_links:java",
+    "//components/digital_asset_links/android:java",
     "//components/embedder_support/android:util_java",
     "//components/externalauth/android:java",
     "//content/public/android:content_java",
@@ -31,23 +33,20 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifier.java" ]
+  sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifier.java" ]
 }
 
 android_library("javatests") {
   testonly = true
-  sources = [
-    "./java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierTest.java",
-    "./java/src/org/chromium/chrome/browser/browserservices/verification/PackageFingerprintCalculatorTest.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifierTest.java" ]
 
   deps = [
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
-    "//chrome/test/android:chrome_java_test_support",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/digital_asset_links/android:java",
     "//components/embedder_support/android:util_java",
     "//components/externalauth/android:java",
     "//content/public/android:content_java",
@@ -55,5 +54,37 @@ android_library("javatests") {
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
+  ]
+}
+
+robolectric_binary("verification_junit_tests") {
+  sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifierJunitTest.java" ]
+  deps = [
+    ":java",
+    ":junit_test_support",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/profiles/android:java",
+    "//components/digital_asset_links:java",
+    "//components/digital_asset_links/android:java",
+    "//components/digital_asset_links/android:junit_test_support",
+    "//components/embedder_support/android:util_java",
+    "//content/public/android:content_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
+robolectric_library("junit_test_support") {
+  sources = [ "java/src/org/chromium/chrome/browser/browserservices/verification/ChromeOriginVerifierUnitTestSupport.java" ]
+  deps = [
+    ":java",
+    "//components/embedder_support/android:util_java",
+    "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/mockito:mockito_java",
   ]
 }

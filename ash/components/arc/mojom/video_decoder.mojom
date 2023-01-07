@@ -1,0 +1,92 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module arc.mojom;
+
+import "ash/components/arc/mojom/gfx.mojom";
+import "ash/components/arc/mojom/video_common.mojom";
+import "ash/components/arc/mojom/video_frame_pool.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+
+// Based on media::DecoderStatus, only a limited set of relevant status codes
+// are currently added here.
+// TODO(b:189278506): ensure that the ARCVM side of the video decoder uses the
+// new entries listed here.
+[Extensible]
+enum DecoderStatus {
+  OK = 0,
+  ABORTED = 1,
+  FAILED = 2,
+  INVALID_ARGUMENT = 3,
+  CREATION_FAILED = 4,
+};
+
+// Based on media::DecoderBuffer
+// Next ordinal: 4
+struct Buffer {
+  // Presentation time of the frame. This value is user-defined and is returned
+  // along with the decoded video frame in OnVideoFrameDecoded(). This allows a
+  // client to map encoded input buffers to decoded output video frames.
+  int64 timestamp@0;
+  // Handle to the buffer data.
+  handle<platform> handle_fd@1;
+  // Size of the encoded data.
+  uint32 size@2;
+  // Offset of the encoded data.
+  uint32 offset@3;
+};
+
+// Based on media::DecoderBuffer
+// Next ordinal: 2
+union DecoderBuffer {
+  Buffer buffer@0;
+  // TODO(https://crbug.com/999900): Replace with actual placeholder type.
+  uint8 end_of_stream@1;
+};
+
+// Video decoder configuration, based on the media::VideoDecoderConfig
+// structure. Not all fields are present as they are not relevant for ARCVM.
+// Next ordinal: 2
+struct VideoDecoderConfig {
+  VideoCodecProfile profile@0;
+  Size coded_size@1;
+};
+
+// The VideoDecoder service is modeled after the media::VideoDecoder interface
+// and replaces the deprecated VideoDecodeAccelerator interface. The ARCVM
+// client can instantiate a VideoDecoder through the GPU service. Upon
+// initialization the video decoder creates a video frame pool, which the ARCVM
+// client needs to connect to in order to provide output buffers.
+// Next Method ID: 4
+[ServiceSandbox=sandbox.mojom.Sandbox.kGpu]
+interface VideoDecoder {
+  // Initialize video decoder with specified config.
+  Initialize@0(VideoDecoderConfig config,
+               pending_remote<VideoDecoderClient> client,
+               pending_associated_receiver<VideoFramePool> video_frame_pool)
+               => (DecoderStatus status);
+
+  // Decode the specified frame, flushes if an EOS buffer is passed
+  Decode@1(DecoderBuffer buffer) => (DecoderStatus status);
+
+  // Reset the decoder. All pending Decode requests will be finished or aborted
+  // before the callback is called.
+  Reset@2() => ();
+
+  // Release the video frame with specified |video_frame_id| so it can be
+  // returned to the pool.
+  ReleaseVideoFrame@3(int32 video_frame_id);
+};
+
+// Video decoder service client.
+// Next Method ID: 2
+interface VideoDecoderClient {
+  // Notify the client that a |frame| is ready to be displayed. Frames are
+  // returned in display order.
+  OnVideoFrameDecoded@0(int32 video_frame_id, Rect visible_rect,
+                        int64 timestamp);
+
+  // Notify the client an error happened while decoding the stream.
+  OnError@1(DecoderStatus status);
+};

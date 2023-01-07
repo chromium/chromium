@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
-#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -61,9 +61,7 @@ WorkerResourceTimingNotifierImpl::WorkerResourceTimingNotifierImpl(
 
 void WorkerResourceTimingNotifierImpl::AddResourceTiming(
     mojom::blink::ResourceTimingInfoPtr info,
-    const AtomicString& initiator_type,
-    mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-        worker_timing_receiver) {
+    const AtomicString& initiator_type) {
   if (task_runner_->RunsTasksInCurrentSequence()) {
     DCHECK(inside_execution_context_);
     if (inside_execution_context_->IsContextDestroyed())
@@ -71,7 +69,6 @@ void WorkerResourceTimingNotifierImpl::AddResourceTiming(
     DCHECK(inside_execution_context_->IsContextThread());
     GetPerformance(*inside_execution_context_)
         ->AddResourceTiming(std::move(info), initiator_type,
-                            std::move(worker_timing_receiver),
                             inside_execution_context_);
   } else {
     PostCrossThreadTask(
@@ -79,15 +76,13 @@ void WorkerResourceTimingNotifierImpl::AddResourceTiming(
         CrossThreadBindOnce(
             &WorkerResourceTimingNotifierImpl::AddCrossThreadResourceTiming,
             WrapCrossThreadWeakPersistent(this), std::move(info),
-            initiator_type.GetString(), std::move(worker_timing_receiver)));
+            initiator_type.GetString()));
   }
 }
 
 void WorkerResourceTimingNotifierImpl::AddCrossThreadResourceTiming(
     mojom::blink::ResourceTimingInfoPtr info,
-    const String& initiator_type,
-    mojo::PendingReceiver<mojom::blink::WorkerTimingContainer>
-        worker_timing_receiver) {
+    const String& initiator_type) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   auto outside_execution_context = outside_execution_context_.Lock();
   if (!outside_execution_context ||
@@ -96,7 +91,6 @@ void WorkerResourceTimingNotifierImpl::AddCrossThreadResourceTiming(
   DCHECK(outside_execution_context->IsContextThread());
   GetPerformance(*outside_execution_context)
       ->AddResourceTiming(std::move(info), AtomicString(initiator_type),
-                          std::move(worker_timing_receiver),
                           outside_execution_context);
 }
 

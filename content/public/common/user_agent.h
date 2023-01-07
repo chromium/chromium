@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,33 +10,17 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom.h"
 
 namespace content {
-
-namespace frozen_user_agent_strings {
-
-const char kDesktop[] =
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, "
-    "like Gecko) Chrome/%s.0.0.0 Safari/537.36";
-const char kAndroid[] =
-    "Mozilla/5.0 (Linux; Android 9; Unspecified Device) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s.0.0.0 "
-    "Safari/537.36";
-const char kAndroidMobile[] =
-    "Mozilla/5.0 (Linux; Android 9; Unspecified Device) "
-    "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s.0.0.0 Mobile "
-    "Safari/537.36";
-
-}  // namespace frozen_user_agent_strings
 
 enum class IncludeAndroidBuildNumber { Include, Exclude };
 enum class IncludeAndroidModel { Include, Exclude };
 
-// Returns the WebKit version, in the form "major.minor (branch@revision)".
+// Returns the (incorrectly named, for historical reasons) WebKit version, in
+// the form "major.minor (@chromium_git_revision)".
 CONTENT_EXPORT std::string GetWebKitVersion();
 
-CONTENT_EXPORT std::string GetWebKitRevision();
+CONTENT_EXPORT std::string GetChromiumGitRevision();
 
 // Builds a string that describes the CPU type when available (or blank
 // otherwise).
@@ -44,7 +28,11 @@ CONTENT_EXPORT std::string BuildCpuInfo();
 
 // Takes the cpu info (see BuildCpuInfo()) and extracts the architecture for
 // most common cases.
-CONTENT_EXPORT std::string GetLowEntropyCpuArchitecture();
+CONTENT_EXPORT std::string GetCpuArchitecture();
+
+// Takes the cpu info (see BuildCpuInfo()) and extracts the CPU bitness for
+// most common cases.
+CONTENT_EXPORT std::string GetCpuBitness();
 
 // Builds a User-agent compatible string that describes the OS and CPU type.
 // On Android, the string will only include the build number and model if
@@ -66,21 +54,31 @@ CONTENT_EXPORT std::string GetOSVersion(
     IncludeAndroidBuildNumber include_android_build_number,
     IncludeAndroidModel include_android_model);
 
-// Returns the frozen User-agent string for
+// Returns the reduced User-agent string for
 // https://github.com/WICG/ua-client-hints.
-CONTENT_EXPORT std::string GetFrozenUserAgent(bool mobile,
-                                              std::string major_version);
+CONTENT_EXPORT std::string GetReducedUserAgent(bool mobile,
+                                               std::string major_version);
+
+// TODO(crbug.com/1257310): Remove this after user agent reduction phase 5 and
+// --force-major-version-to-minor is removed.
+// Return the <unifiedPlatform> token of a reduced User-Agent header.
+CONTENT_EXPORT std::string GetUnifiedPlatformForTesting();
 
 // Helper function to generate a full user agent string from a short
 // product name.
 CONTENT_EXPORT std::string BuildUserAgentFromProduct(
     const std::string& product);
 
+// Helper function to generate a reduced user agent string with unified
+// platform from a given product name.
+CONTENT_EXPORT std::string BuildUnifiedPlatformUserAgentFromProduct(
+    const std::string& product);
+
 // Returns the model information. Returns a blank string if not on Android or
 // if on a codenamed (i.e. not a release) build of an Android.
 CONTENT_EXPORT std::string BuildModelInfo();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Helper function to generate a full user agent string given a short
 // product name and some extra text to be added to the OS info.
 // This is currently only used for Android Web View.
@@ -100,6 +98,10 @@ CONTENT_EXPORT std::string GetAndroidOSInfo(
 CONTENT_EXPORT std::string BuildUserAgentFromOSAndProduct(
     const std::string& os_info,
     const std::string& product);
+
+// Returns true if the binary was built in 32-bit mode and is running on 64-bit
+// Windows; returns false otherwise.
+CONTENT_EXPORT bool IsWoW64();
 
 }  // namespace content
 

@@ -1,0 +1,52 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{%- set header_guard = "%s_"|format(
+        out_file_path|upper|replace("/","_")|replace(".","_")|
+            replace("-", "_")) %}
+
+// This file is generated from:
+{%- for path in in_files %}
+//   {{path}}
+{%-  endfor %}
+
+#ifndef {{header_guard}}
+#define {{header_guard}}
+
+#include "base/component_export.h"
+#include "ui/color/color_id.h"
+
+namespace ui {
+class ColorMixer;
+}
+
+namespace {{namespace_name}} {
+
+{%- set ns = namespace(start_value=color_id_start_value) -%}
+
+{% for set_name, set_colors in color_mappings.items() %}
+
+enum {{set_name}}ColorIds : ui::ColorId {
+  k{{set_name}}ColorsStart = {{ns.start_value}},
+{%- for obj in set_colors %}
+{%-   if loop.first %}
+  {{obj.name | to_color_id_name}} = k{{set_name}}ColorsStart,
+{%-   else %}
+  {{obj.name | to_color_id_name}},
+{%-   endif %}
+{%- endfor %}
+  k{{set_name}}ColorsEnd,
+};
+
+COMPONENT_EXPORT({{namespace_name}}_COLOR_MAPPINGS) void Add{{set_name}}ColorsToMixer(ui::ColorMixer& mixer, bool dark_mode);
+
+{%- set ns.start_value = 'k%sColorsEnd' % set_name -%}
+
+{%-  endfor %}
+
+COMPONENT_EXPORT({{namespace_name}}_COLOR_MAPPINGS) std::string ColorIdName(ui::ColorId id);
+
+}  // namespace {{namespace_name}}
+
+#endif  // {{header_guard}}

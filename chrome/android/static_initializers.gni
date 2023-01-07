@@ -1,9 +1,10 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//components/optimization_guide/features.gni")
 import("//ui/gl/features.gni")
 
 # The monochrome_static_initializers target will cause release bots to fail if
@@ -20,34 +21,35 @@ if (current_toolchain == default_toolchain &&
   # Comments show static_initializers according to
   # tools/linux/dump-static-initializers.py.
 
-  # 000101 (initializer offset 0x142e924 size 0xc)
-  # std::__1::ios_base::Init::Init()
-  #
-  # iostream.cpp (initializer offset 0x142e930 size 0x2)
-  #   [empty ctor, but it still has cost on gcc <4.6]
-  expected_static_initializer_count = 2
-
   # TODO(https://crbug.com/1177849): Remove from tflite:
   # tflite_engine.cc (initializer offset 0x34cb88c size 0x2c)
   #   __ThumbV7PILongThunk__ZNSt3__18ios_base4InitC1Ev
   #   __ThumbV7PILongThunk___cxa_atexit
-  expected_static_initializer_count += 1
+  expected_static_initializer_count = 1
 
   # From v8 I think:
   # token.cc (initializer offset 0x27f024c size 0x11c)
   expected_static_initializer_count += 1
 
-  if (target_cpu == "arm") {
-    # This one is from //third_party/gvr-android-sdk
-    # base_logging.cc (initializer offset 0x9a4b0c size 0x48)
+  # This one is from //third_party/gvr-android-sdk
+  # base_logging.cc (initializer offset 0x9a4b0c size 0x48)
+  expected_static_initializer_count += 1
+
+  if (build_with_internal_optimization_guide) {
+    # 000081d1 t _GLOBAL__I_000101
     expected_static_initializer_count += 1
   }
 
-  if (use_static_angle) {
+  if (use_static_angle && !is_official_build &&
+      (is_debug || dcheck_always_on)) {
     # TODO(https://crbug.com/1172451): remove global variables from ANGLE:
     #
     # doc.cpp (initializer offset 0xcf9c6c size 0x138)
     # SPVRemapper.cpp (initializer offset 0xcf2924 size 0x64)
     expected_static_initializer_count += 2
+  }
+  if (use_clang_coverage) {
+    # InstrProfilingRuntime.cpp, Only in coverage builds, not production.
+    expected_static_initializer_count += 1
   }
 }

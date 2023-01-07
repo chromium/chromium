@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,7 +28,7 @@ class ImageElementTimingTest : public testing::Test,
     web_view_helper_.Initialize();
     frame_test_helpers::LoadFrame(
         web_view_helper_.GetWebView()->MainFrameImpl(), "about:blank");
-    WebURL base_url_ = url_test_helpers::ToKURL("http://www.test.com/");
+    base_url_ = url_test_helpers::ToKURL("http://www.test.com/");
     // Enable compositing on the page.
     web_view_helper_.GetWebView()
         ->GetPage()

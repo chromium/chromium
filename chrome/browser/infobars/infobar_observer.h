@@ -1,13 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_INFOBARS_INFOBAR_OBSERVER_H_
 #define CHROME_BROWSER_INFOBARS_INFOBAR_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 
 // A test-only class to wait for infobar events.
@@ -22,6 +21,10 @@ class InfoBarObserver : public infobars::InfoBarManager::Observer {
   // Creates the observer. |type| is the type of infobar event that should be
   // waited for.
   InfoBarObserver(infobars::InfoBarManager* manager, Type type);
+
+  InfoBarObserver(const InfoBarObserver&) = delete;
+  InfoBarObserver& operator=(const InfoBarObserver&) = delete;
+
   ~InfoBarObserver() override;
 
   // Waits for the specified infobar event to happen. It is OK if the infobar
@@ -41,10 +44,9 @@ class InfoBarObserver : public infobars::InfoBarManager::Observer {
 
   base::RunLoop run_loop_;
   const Type type_;
-  ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      infobar_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(InfoBarObserver);
+  base::ScopedObservation<infobars::InfoBarManager,
+                          infobars::InfoBarManager::Observer>
+      infobar_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_INFOBARS_INFOBAR_OBSERVER_H_

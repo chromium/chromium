@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,7 @@ WasmMemPool.prototype = {
   },
 
   allocate: function(array, type) {
-    const ptr = this.module.allocate(array, type, this.module.ALLOC_NORMAL);
+    const ptr = this.module.allocate(array, this.module.ALLOC_NORMAL);
     this.ptrs_.push(ptr);
     return ptr;
   },
@@ -84,7 +84,7 @@ LiblouisWrapper.prototype = {
 
     const tableNames = command['table_names'];
     const tableNamesPtr =
-        this.pool_.allocate(this.module.intArrayFromString(tableNames), 'i8');
+        this.pool_.allocate(this.module.intArrayFromString(tableNames));
     const tableCount = this.module._lou_checkTable(tableNamesPtr);
     this.pool_.freeAll();
     const msg = {in_reply_to: command['message_id'], success: tableCount > 0};
@@ -106,7 +106,7 @@ LiblouisWrapper.prototype = {
   translateOrBackTranslate_: function(
       tableNames, contents, messageId, formTypeMap, backTranslate) {
     const tableNamesPtr =
-        this.pool_.allocate(this.module.intArrayFromString(tableNames), 'i8');
+        this.pool_.allocate(this.module.intArrayFromString(tableNames));
 
     let formTypeMapPtr = 0;
     if (formTypeMap) {
@@ -156,6 +156,7 @@ LiblouisWrapper.prototype = {
     // length given by liblouis.
     let outLen = inLen;
     const maxAlloc = (inLen + 1) * 8;
+    let msg;
     while (outLen < maxAlloc) {
       // This is required as consecutive tries to [back]Translate requires
       // resetting the value of this int pointer.
@@ -189,7 +190,7 @@ LiblouisWrapper.prototype = {
       const actualInLen = this.module.getValue(inLenPtr, 'i32');
       const actualOutLen = this.module.getValue(outLenPtr, 'i32');
       if ((inLen - 1) <= actualInLen && actualOutLen > 0) {
-        const msg = {in_reply_to: messageId, success: true};
+        msg = {in_reply_to: messageId, success: true};
         if (backTranslate) {
           let outBuf = '';
           for (let i = 0; i < actualOutLen; i++) {
@@ -204,16 +205,27 @@ LiblouisWrapper.prototype = {
           msg['braille_to_text'] =
               this.getIntArray(brailleToTextPtr, actualOutLen);
         }
-        self.postMessage(JSON.stringify(msg));
-        break;
+
+        // TODO(accessibility): this check controls a workaround for a
+        // regression in LibLouis 3.21. It used to work in 3.19. The issue is
+        // that sometimes, LibLouis sets an empty translation result which
+        // appears to be valid, but requires us to increase our output buffer
+        // size to get the non-empty braille translation. Try removing on the
+        // next uprev to LibLouis.
+        if (backTranslate || actualInLen !== 1 || actualOutLen !== 1 ||
+            msg['cells'] !== '00') {
+          break;
+        }
       }
 
       outLen = outLen * 2;
     }
 
-    this.pool_.freeAll();
+    if (msg) {
+      self.postMessage(JSON.stringify(msg));
+    }
 
-    // TODO: raise an error if we didn't send a result in the loop above.
+    this.pool_.freeAll();
   },
 
   getHexEncoding_: function(bufPtr, len) {

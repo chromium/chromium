@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,7 +71,7 @@ void TestMediaControllerObserver::MediaSessionInfoChanged(
 }
 
 void TestMediaControllerObserver::MediaSessionMetadataChanged(
-    const base::Optional<MediaMetadata>& metadata) {
+    const absl::optional<MediaMetadata>& metadata) {
   session_metadata_ = metadata;
 
   if (expected_metadata_.has_value() && expected_metadata_ == metadata) {
@@ -96,7 +96,7 @@ void TestMediaControllerObserver::MediaSessionActionsChanged(
 }
 
 void TestMediaControllerObserver::MediaSessionChanged(
-    const base::Optional<base::UnguessableToken>& request_id) {
+    const absl::optional<base::UnguessableToken>& request_id) {
   session_request_id_ = request_id;
 
   if (expected_request_id_.has_value() &&
@@ -107,7 +107,7 @@ void TestMediaControllerObserver::MediaSessionChanged(
 }
 
 void TestMediaControllerObserver::MediaSessionPositionChanged(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   session_position_ = position;
 
   if (waiting_for_empty_position_ && !position.has_value()) {
@@ -176,7 +176,7 @@ void TestMediaControllerObserver::WaitForExpectedActions(
 }
 
 void TestMediaControllerObserver::WaitForEmptyPosition() {
-  // |session_position_| is doubly wrapped in base::Optional so we must check
+  // |session_position_| is doubly wrapped in absl::optional so we must check
   // both values.
   if (session_position_.has_value() && !session_position_->has_value())
     return;
@@ -194,7 +194,7 @@ void TestMediaControllerObserver::WaitForNonEmptyPosition() {
 }
 
 void TestMediaControllerObserver::WaitForSession(
-    const base::Optional<base::UnguessableToken>& request_id) {
+    const absl::optional<base::UnguessableToken>& request_id) {
   if (session_request_id_.has_value() && session_request_id_ == request_id)
     return;
 
@@ -254,9 +254,9 @@ void TestMediaController::NextTrack() {
 void TestMediaController::Seek(base::TimeDelta seek_time) {
   DCHECK(!seek_time.is_zero());
 
-  if (seek_time > base::TimeDelta()) {
+  if (seek_time.is_positive()) {
     ++seek_forward_count_;
-  } else if (seek_time < base::TimeDelta()) {
+  } else if (seek_time.is_negative()) {
     ++seek_backward_count_;
   }
 }

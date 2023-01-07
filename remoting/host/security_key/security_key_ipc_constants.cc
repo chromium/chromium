@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 #include "base/lazy_instance.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 namespace {
 
@@ -43,14 +43,14 @@ void SetSecurityKeyIpcChannelForTest(
 
 std::string GetChannelNamePathPrefixForTest() {
   std::string base_path;
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::FilePath base_file_path;
   if (base::GetTempDir(&base_file_path)) {
     base_path = base_file_path.AsEndingWithSeparator().value();
   } else {
     LOG(ERROR) << "Failed to retrieve temporary directory.";
   }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
   return base_path;
 }
 

@@ -31,7 +31,7 @@
 import logging
 import sys
 
-from StringIO import StringIO
+from six import StringIO
 
 
 class OutputCapture(object):

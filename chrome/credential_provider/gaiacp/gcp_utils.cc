@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,6 @@
 #include <winternl.h>
 
 #define _NTDEF_  // Prevent redefition errors, must come after <winternl.h>
-#include <atlbase.h>
-#include <atlcom.h>
-#include <atlcomcli.h>
 #include <malloc.h>
 #include <memory.h>
 #include <ntsecapi.h>  // For LsaLookupAuthenticationPackage()
@@ -27,19 +24,20 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/atl.h"
 #include "base/win/current_module.h"
 #include "base/win/embedded_i18n/language_selector.h"
 #include "base/win/win_util.h"
@@ -93,10 +91,8 @@ constexpr wchar_t kDefaultMdmUrl[] =
     L"https://deviceenrollmentforwindows.googleapis.com/v1/discovery";
 
 constexpr int kMaxNumConsecutiveUploadDeviceFailures = 3;
-const base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh =
-    base::TimeDelta::FromDays(1);
-const base::TimeDelta kMaxTimeDeltaSinceLastExperimentsFetch =
-    base::TimeDelta::FromDays(1);
+const base::TimeDelta kMaxTimeDeltaSinceLastUserPolicyRefresh = base::Days(1);
+const base::TimeDelta kMaxTimeDeltaSinceLastExperimentsFetch = base::Days(1);
 
 // Path elements for the path where the experiments are stored on disk.
 const wchar_t kGcpwExperimentsDirectory[] = L"Experiments";
@@ -146,9 +142,9 @@ const base::win::i18n::LanguageSelector& GetLanguageSelector() {
 // that |path| isn't in use. It can however be deleted.
 base::File GetFileLock(const base::FilePath& path) {
   return base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                              base::File::FLAG_EXCLUSIVE_READ |
-                              base::File::FLAG_EXCLUSIVE_WRITE |
-                              base::File::FLAG_SHARE_DELETE);
+                              base::File::FLAG_WIN_EXCLUSIVE_READ |
+                              base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                              base::File::FLAG_WIN_SHARE_DELETE);
 }
 
 // Deletes a specific GCP version from the disk.
@@ -231,7 +227,7 @@ HRESULT GetGCPWDmTokenInternal(const std::wstring& sid,
   } else {
     wchar_t dm_token_lsa_data[1024];
     HRESULT hr = policy->RetrievePrivateData(
-        store_key.c_str(), dm_token_lsa_data, base::size(dm_token_lsa_data));
+        store_key.c_str(), dm_token_lsa_data, std::size(dm_token_lsa_data));
     if (FAILED(hr)) {
       LOGFN(ERROR) << "ScopedLsaPolicy::RetrievePrivateData hr=" << putHR(hr);
       return hr;
@@ -438,7 +434,7 @@ HRESULT WaitForProcess(base::win::ScopedHandle::Handle process_handle,
 
   for (bool is_done = false; !is_done;) {
     char buffer[80];
-    DWORD length = base::size(buffer) - 1;
+    DWORD length = std::size(buffer) - 1;
     HRESULT hr = S_OK;
 
     const DWORD kThreeMinutesInMs = 3 * 60 * 1000;
@@ -471,8 +467,8 @@ HRESULT WaitForProcess(base::win::ScopedHandle::Handle process_handle,
       }
       case WAIT_FAILED:
       default: {
-        HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
-        LOGFN(ERROR) << "WaitForMultipleObjectsEx hr=" << putHR(hr);
+        HRESULT last_error_hr = HRESULT_FROM_WIN32(::GetLastError());
+        LOGFN(ERROR) << "WaitForMultipleObjectsEx hr=" << putHR(last_error_hr);
         is_done = true;
         break;
       }
@@ -680,9 +676,9 @@ HRESULT InitializeStdHandles(CommDirection direction,
 HRESULT GetPathToDllFromHandle(HINSTANCE dll_handle,
                                base::FilePath* path_to_dll) {
   wchar_t path[MAX_PATH];
-  DWORD length = base::size(path);
+  DWORD length = std::size(path);
   length = ::GetModuleFileName(dll_handle, path, length);
-  if (length == 0 || length >= base::size(path)) {
+  if (length == 0 || length >= std::size(path)) {
     HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "GetModuleFileNameW hr=" << putHR(hr);
     return hr;
@@ -711,11 +707,11 @@ HRESULT GetEntryPointArgumentForRunDll(HINSTANCE dll_handle,
     return hr;
 
   wchar_t short_path[MAX_PATH];
-  DWORD short_length = base::size(short_path);
+  DWORD short_length = std::size(short_path);
   short_length =
       ::GetShortPathName(path_to_dll.value().c_str(), short_path, short_length);
-  if (short_length >= base::size(short_path)) {
-    HRESULT hr = HRESULT_FROM_WIN32(::GetLastError());
+  if (short_length >= std::size(short_path)) {
+    hr = HRESULT_FROM_WIN32(::GetLastError());
     LOGFN(ERROR) << "GetShortPathNameW hr=" << putHR(hr);
     return hr;
   }
@@ -773,7 +769,7 @@ HRESULT GetLocalizedNameBuiltinAdministratorAccount(
         PolicyHandle, PolicyAccountDomainInformation, (void**)&ppadi);
     if (status >= 0) {
       BYTE well_known_sid[SECURITY_MAX_SID_SIZE];
-      DWORD size_local_users_group_sid = base::size(well_known_sid);
+      DWORD size_local_users_group_sid = std::size(well_known_sid);
       if (CreateWellKnownSid(::WinAccountAdministratorSid, ppadi->DomainSid,
                              well_known_sid, &size_local_users_group_sid)) {
         return LookupLocalizedNameBySid(well_known_sid,
@@ -831,7 +827,7 @@ HRESULT LookupLocalizedNameBySid(PSID sid, std::wstring* localized_name) {
 HRESULT LookupLocalizedNameForWellKnownSid(WELL_KNOWN_SID_TYPE sid_type,
                                            std::wstring* localized_name) {
   BYTE well_known_sid[SECURITY_MAX_SID_SIZE];
-  DWORD size_local_users_group_sid = base::size(well_known_sid);
+  DWORD size_local_users_group_sid = std::size(well_known_sid);
 
   // Get the sid for the well known local users group.
   if (!::CreateWellKnownSid(sid_type, nullptr, well_known_sid,
@@ -845,6 +841,7 @@ HRESULT LookupLocalizedNameForWellKnownSid(WELL_KNOWN_SID_TYPE sid_type,
 }
 
 bool WriteToStartupSentinel() {
+  LOGFN(VERBOSE);
   // Always try to write to the startup sentinel file. If writing or opening
   // fails for any reason (file locked, no access etc) consider this a failure.
   // If no sentinel file path can be found this probably means that we are
@@ -887,6 +884,8 @@ bool WriteToStartupSentinel() {
       return false;
     }
 
+    LOGFN(VERBOSE) << "Writing to sentinel. Current length="
+                   << startup_sentinel.GetLength();
     return startup_sentinel.WriteAtCurrentPos("0", 1) == 1;
   }
 
@@ -898,6 +897,7 @@ void DeleteStartupSentinel() {
 }
 
 void DeleteStartupSentinelForVersion(const std::wstring& version) {
+  LOGFN(VERBOSE) << "Deleting sentinel for version " << version;
   base::FilePath startup_sentinel_path = GetStartupSentinelLocation(version);
   if (base::PathExists(startup_sentinel_path) &&
       !base::DeleteFile(startup_sentinel_path)) {
@@ -905,10 +905,11 @@ void DeleteStartupSentinelForVersion(const std::wstring& version) {
   }
 }
 
-std::wstring GetStringResource(int base_message_id) {
+std::wstring GetStringResource(UINT base_message_id) {
   std::wstring localized_string;
 
-  int message_id = base_message_id + GetLanguageSelector().offset();
+  UINT message_id =
+      static_cast<UINT>(base_message_id + GetLanguageSelector().offset());
   const ATLSTRINGRESOURCEIMAGE* image =
       AtlGetStringResourceImage(_AtlBaseModule.GetModuleInstance(), message_id);
   if (image) {
@@ -920,7 +921,7 @@ std::wstring GetStringResource(int base_message_id) {
   return localized_string;
 }
 
-std::wstring GetStringResource(int base_message_id,
+std::wstring GetStringResource(UINT base_message_id,
                                const std::vector<std::wstring>& subst) {
   std::wstring format_string = GetStringResource(base_message_id);
   std::wstring formatted =
@@ -933,11 +934,11 @@ std::wstring GetSelectedLanguage() {
   return GetLanguageSelector().matched_candidate();
 }
 
-void SecurelyClearDictionaryValue(base::Optional<base::Value>* value) {
+void SecurelyClearDictionaryValue(absl::optional<base::Value>* value) {
   SecurelyClearDictionaryValueWithKey(value, kKeyPassword);
 }
 
-void SecurelyClearDictionaryValueWithKey(base::Optional<base::Value>* value,
+void SecurelyClearDictionaryValueWithKey(absl::optional<base::Value>* value,
                                          const std::string& password_key) {
   if (!value || !(*value) || !((*value)->is_dict()))
     return;
@@ -969,7 +970,7 @@ std::string SearchForKeyInStringDictUTF8(
     const std::initializer_list<base::StringPiece>& path) {
   DCHECK(path.size() > 0);
 
-  base::Optional<base::Value> json_obj =
+  absl::optional<base::Value> json_obj =
       base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!json_obj || !json_obj->is_dict()) {
     LOGFN(ERROR) << "base::JSONReader::Read failed to translate to JSON";
@@ -1007,7 +1008,7 @@ HRESULT SearchForListInStringDictUTF8(
     std::vector<std::string>* output) {
   DCHECK(path.size() > 0);
 
-  base::Optional<base::Value> json_obj =
+  absl::optional<base::Value> json_obj =
       base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
   if (!json_obj || !json_obj->is_dict()) {
     LOGFN(ERROR) << "base::JSONReader::Read failed to translate to JSON";
@@ -1016,10 +1017,9 @@ HRESULT SearchForListInStringDictUTF8(
 
   auto* value = json_obj->FindListPath(base::JoinString(path, "."));
   if (value && value->is_list()) {
-    for (const base::Value& entry : value->GetList()) {
+    for (const base::Value& entry : value->GetListDeprecated()) {
       if (entry.FindKey(list_key) && entry.FindKey(list_key)->is_string()) {
-        std::string value = entry.FindKey(list_key)->GetString();
-        output->push_back(value);
+        output->push_back(entry.FindKey(list_key)->GetString());
       } else {
         return E_FAIL;
       }
@@ -1043,7 +1043,7 @@ base::FilePath::StringType GetInstallParentDirectoryName() {
 
 std::wstring GetWindowsVersion() {
   wchar_t release_id[32];
-  ULONG length = base::size(release_id);
+  ULONG length = std::size(release_id);
   HRESULT hr =
       GetMachineRegString(L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
                           L"ReleaseId", release_id, &length);
@@ -1162,7 +1162,7 @@ void GetOsVersion(std::string* version) {
   DWORD major;
   DWORD minor;
   wchar_t build[32];
-  ULONG length = base::size(build);
+  ULONG length = std::size(build);
 
   HRESULT hr1 = GetMachineRegDWORD(kOsRegistryPath, kOsMajorName, &major);
   HRESULT hr2 = GetMachineRegDWORD(kOsRegistryPath, kOsMinorName, &minor);
@@ -1221,7 +1221,7 @@ HRESULT SetGaiaEndpointCommandLineIfNeeded(const wchar_t* override_registry_key,
                                            base::CommandLine* command_line) {
   // Registry specified endpoint.
   wchar_t endpoint_url_setting[256];
-  ULONG endpoint_url_length = base::size(endpoint_url_setting);
+  ULONG endpoint_url_length = std::size(endpoint_url_setting);
   HRESULT hr = GetGlobalFlag(override_registry_key, endpoint_url_setting,
                              &endpoint_url_length);
   if (SUCCEEDED(hr) && endpoint_url_setting[0]) {
@@ -1257,7 +1257,7 @@ base::FilePath GetChromePath() {
   base::FilePath gls_path = GetSystemChromePath();
 
   wchar_t custom_gls_path_value[MAX_PATH];
-  ULONG path_len = base::size(custom_gls_path_value);
+  ULONG path_len = std::size(custom_gls_path_value);
   HRESULT hr = GetGlobalFlag(kRegGlsPath, custom_gls_path_value, &path_len);
   if (SUCCEEDED(hr)) {
     base::FilePath custom_gls_path(custom_gls_path_value);
@@ -1357,7 +1357,7 @@ std::unique_ptr<base::File> GetOpenedFileForUser(
 base::TimeDelta GetTimeDeltaSinceLastFetch(const std::wstring& sid,
                                            const std::wstring& flag) {
   wchar_t last_fetch_millis[512];
-  ULONG last_fetch_size = base::size(last_fetch_millis);
+  ULONG last_fetch_size = std::size(last_fetch_millis);
   HRESULT hr = GetUserProperty(sid, flag, last_fetch_millis, &last_fetch_size);
 
   if (FAILED(hr)) {
@@ -1371,7 +1371,7 @@ base::TimeDelta GetTimeDeltaSinceLastFetch(const std::wstring& sid,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMilliseconds() -
       last_fetch_millis_int64;
 
-  return base::TimeDelta::FromMilliseconds(time_delta_from_last_fetch_ms);
+  return base::Milliseconds(time_delta_from_last_fetch_ms);
 }
 
 }  // namespace credential_provider

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,16 @@
 
 #include "extensions/renderer/bindings/interaction_provider.h"
 
-#include "base/macros.h"
 #include "v8/include/v8.h"
 
 namespace extensions {
 class TestInteractionProvider : public InteractionProvider {
  public:
   TestInteractionProvider();
+
+  TestInteractionProvider(const TestInteractionProvider&) = delete;
+  TestInteractionProvider& operator=(const TestInteractionProvider&) = delete;
+
   ~TestInteractionProvider() override;
 
   // InteractionProvider:
@@ -23,9 +26,6 @@ class TestInteractionProvider : public InteractionProvider {
       v8::Local<v8::Context> v8_context,
       std::unique_ptr<InteractionProvider::Token> token) const override;
   bool HasActiveInteraction(v8::Local<v8::Context> v8_context) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestInteractionProvider);
 };
 
 // User activation mock for test: sets transient activation state on

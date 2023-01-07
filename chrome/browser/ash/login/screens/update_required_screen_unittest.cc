@@ -1,13 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/screens/update_required_screen.h"
 
+#include <memory>
+
 #include "ash/constants/ash_switches.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/ash/login/screens/mock_error_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
@@ -18,27 +19,33 @@
 #include "chrome/browser/ui/webui/chromeos/login/fake_update_required_screen_handler.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_update_engine_client.h"
-#include "chromeos/dbus/update_engine_client.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/network/portal_detector/mock_network_portal_detector.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
-#include "chromeos/tpm/stub_install_attributes.h"
+#include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/network/network_handler_test_helper.h"
+#include "chromeos/ash/components/network/portal_detector/mock_network_portal_detector.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-using testing::_;
-using testing::AnyNumber;
-using testing::Return;
+namespace ash {
+namespace {
 
-namespace chromeos {
+// TODO(https://crbug.com/1164001): remove after migrated to ash::
+using ::chromeos::FakeUpdateRequiredScreenHandler;
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::Return;
 
 class UpdateRequiredScreenUnitTest : public testing::Test {
  public:
   UpdateRequiredScreenUnitTest()
       : local_state_(TestingBrowserProcess::GetGlobal()) {}
+
+  UpdateRequiredScreenUnitTest(const UpdateRequiredScreenUnitTest&) = delete;
+  UpdateRequiredScreenUnitTest& operator=(const UpdateRequiredScreenUnitTest&) =
+      delete;
 
   void SetUpdateEngineStatus(update_engine::Operation operation) {
     update_engine::StatusResult status;
@@ -55,15 +62,16 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
     // Initialize objects needed by `UpdateRequiredScreen`.
     wizard_context_ = std::make_unique<WizardContext>();
     fake_view_ = std::make_unique<FakeUpdateRequiredScreenHandler>();
-    fake_update_engine_client_ = new FakeUpdateEngineClient();
-    DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
-        std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
+    fake_update_engine_client_ = UpdateEngineClient::InitializeFakeForTest();
 
-    NetworkHandler::Initialize();
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
+    network_handler_test_helper_->AddDefaultProfiles();
+
     mock_network_portal_detector_ = new MockNetworkPortalDetector();
     network_portal_detector::SetNetworkPortalDetector(
         mock_network_portal_detector_);
-    mock_error_screen_.reset(new MockErrorScreen(mock_error_view_.get()));
+    mock_error_screen_ =
+        std::make_unique<MockErrorScreen>(mock_error_view_.AsWeakPtr());
 
     // Ensure proper behavior of `UpdateRequiredScreen`'s supporting objects.
     EXPECT_CALL(*mock_network_portal_detector_, IsEnabled())
@@ -71,14 +79,11 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
         .WillRepeatedly(Return(false));
 
     update_required_screen_ = std::make_unique<UpdateRequiredScreen>(
-        fake_view_.get(), mock_error_screen_.get(), base::DoNothing());
+        fake_view_.get()->AsWeakPtr(), mock_error_screen_.get(),
+        base::DoNothing());
 
     update_required_screen_->GetVersionUpdaterForTesting()
-        ->set_wait_for_reboot_time_for_testing(base::TimeDelta::FromSeconds(0));
-
-    network_state_test_helper_ =
-        std::make_unique<chromeos::NetworkStateTestHelper>(
-            true /*use_default_devices_and_services*/);
+        ->set_wait_for_reboot_time_for_testing(base::Seconds(0));
   }
 
   void TearDown() override {
@@ -86,13 +91,11 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
 
     wizard_context_.reset();
     update_required_screen_.reset();
-    mock_error_view_.reset();
     mock_error_screen_.reset();
-    network_state_test_helper_.reset();
 
     network_portal_detector::Shutdown();
-    NetworkHandler::Shutdown();
-    DBusThreadManager::Shutdown();
+    network_handler_test_helper_.reset();
+    UpdateEngineClient::Shutdown();
   }
 
  protected:
@@ -102,15 +105,15 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   // Accessory objects needed by `UpdateRequiredScreen`.
   TestLoginScreen test_login_screen_;
   std::unique_ptr<FakeUpdateRequiredScreenHandler> fake_view_;
-  std::unique_ptr<MockErrorScreenView> mock_error_view_;
+  MockErrorScreenView mock_error_view_;
   std::unique_ptr<MockErrorScreen> mock_error_screen_;
   std::unique_ptr<WizardContext> wizard_context_;
   // Will be deleted in `network_portal_detector::Shutdown()`.
   MockNetworkPortalDetector* mock_network_portal_detector_;
   // Will be deleted in `DBusThreadManager::Shutdown()`.
   FakeUpdateEngineClient* fake_update_engine_client_;
-  // Initializes NetworkStateHandler
-  std::unique_ptr<chromeos::NetworkStateTestHelper> network_state_test_helper_;
+  // Initializes NetworkHandler and required DBus clients.
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 
  private:
   // Test versions of core browser infrastructure.
@@ -119,8 +122,6 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   // This is used for `GetEnterpriseDisplayDomain`.
   ScopedStubInstallAttributes test_install_attributes_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateRequiredScreenUnitTest);
 };
 
 namespace {
@@ -133,7 +134,8 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesNoUpdate) {
   update_required_screen_->Show(wizard_context_.get());
   EXPECT_EQ(fake_view_->ui_state(),
             UpdateRequiredView::UPDATE_REQUIRED_MESSAGE);
-  update_required_screen_->HandleUserAction(kUserActionUpdateButtonClicked);
+  update_required_screen_->HandleUserActionDeprecated(
+      kUserActionUpdateButtonClicked);
 
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
@@ -150,7 +152,8 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesUpdateExists) {
   update_required_screen_->Show(wizard_context_.get());
   EXPECT_EQ(fake_view_->ui_state(),
             UpdateRequiredView::UPDATE_REQUIRED_MESSAGE);
-  update_required_screen_->HandleUserAction(kUserActionUpdateButtonClicked);
+  update_required_screen_->HandleUserActionDeprecated(
+      kUserActionUpdateButtonClicked);
 
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
@@ -178,7 +181,8 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesCellularPermissionNeeded) {
   update_required_screen_->Show(wizard_context_.get());
   EXPECT_EQ(fake_view_->ui_state(),
             UpdateRequiredView::UPDATE_REQUIRED_MESSAGE);
-  update_required_screen_->HandleUserAction(kUserActionUpdateButtonClicked);
+  update_required_screen_->HandleUserActionDeprecated(
+      kUserActionUpdateButtonClicked);
 
   // Verify that the DUT checks for an update.
   EXPECT_EQ(fake_update_engine_client_->request_update_check_call_count(), 1);
@@ -189,7 +193,7 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesCellularPermissionNeeded) {
 
   SetUpdateEngineStatus(update_engine::Operation::NEED_PERMISSION_TO_UPDATE);
 
-  update_required_screen_->HandleUserAction(
+  update_required_screen_->HandleUserActionDeprecated(
       kUserActionAcceptUpdateOverCellular);
 
   EXPECT_GE(
@@ -212,4 +216,5 @@ TEST_F(UpdateRequiredScreenUnitTest, HandlesCellularPermissionNeeded) {
             UpdateRequiredView::UPDATE_COMPLETED_NEED_REBOOT);
 }
 
-}  // namespace chromeos
+}  // namespace
+}  // namespace ash

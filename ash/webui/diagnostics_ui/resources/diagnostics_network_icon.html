@@ -1,0 +1,20 @@
+<style include="diagnostics-shared">
+  :host {
+    --cros-icon-color-primary: var(--cros-icon-color-secondary);
+  }
+
+  #connectingIcon {
+    height: 20px;
+    width: 20px;
+  }
+</style>
+<div id="iconContainer" hidden$="[[!network]]">
+  <network-icon id="networkIcon"
+      hidden$="[[computeShouldDisplaySpinner_(network.state)]]"
+      network-state="[[computeNetworkState_(network.*)]]">
+  </network-icon>
+  <paper-spinner-lite id="connectingIcon" active tabindex="0"
+      alt$="[[computeSpinnerAriaLabel_(locale, network.state)]]"
+      hidden$="[[!computeShouldDisplaySpinner_(network.state)]]">
+  </paper-spinner-lite>
+</div>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,20 +7,16 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
+#include "base/values.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_store.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/zoom_level_delegate.h"
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace zoom {
 class ZoomEventManager;
@@ -43,6 +39,10 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
       const base::FilePath& profile_path,
       const base::FilePath& partition_path,
       base::WeakPtr<zoom::ZoomEventManager> zoom_event_manager);
+
+  ChromeZoomLevelPrefs(const ChromeZoomLevelPrefs&) = delete;
+  ChromeZoomLevelPrefs& operator=(const ChromeZoomLevelPrefs&) = delete;
+
   ~ChromeZoomLevelPrefs() override;
 
   static std::string GetPartitionKeyForTesting(
@@ -53,9 +53,8 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
   base::CallbackListSubscription RegisterDefaultZoomLevelCallback(
       base::RepeatingClosure callback);
 
-  void ExtractPerHostZoomLevels(
-      const base::DictionaryValue* host_zoom_dictionary,
-      bool sanitize_partition_host_zoom_levels);
+  void ExtractPerHostZoomLevels(const base::Value::Dict& host_zoom_dictionary,
+                                bool sanitize_partition_host_zoom_levels);
 
   // content::ZoomLevelDelegate
   void InitHostZoomMap(content::HostZoomMap* host_zoom_map) override;
@@ -66,14 +65,12 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
   // zoom levels (if any) managed by this class (for its associated partition).
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
 
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   base::WeakPtr<zoom::ZoomEventManager> zoom_event_manager_;
-  content::HostZoomMap* host_zoom_map_;
+  raw_ptr<content::HostZoomMap> host_zoom_map_;
   base::CallbackListSubscription zoom_subscription_;
   std::string partition_key_;
   base::RepeatingClosureList default_zoom_changed_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeZoomLevelPrefs);
 };
 
 #endif  // CHROME_BROWSER_UI_ZOOM_CHROME_ZOOM_LEVEL_PREFS_H_

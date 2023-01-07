@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -172,7 +172,7 @@ public class SslPreferencesTest {
                     mContentsClient.getOnReceivedSslErrorHelper();
 
             int onSslErrorCallCount = onReceivedSslErrorHelper.getCallCount();
-            int errorCount = mContentsClient.getOnReceivedError2Helper().getCallCount();
+            int errorCount = mContentsClient.getOnReceivedErrorHelper().getCallCount();
             int httpErrorCount = mContentsClient.getOnReceivedHttpErrorHelper().getCallCount();
 
             // Load the page and cancel the SslError
@@ -183,7 +183,7 @@ public class SslPreferencesTest {
             Assert.assertEquals("onReceivedSslError should be called once", onSslErrorCallCount + 1,
                     onReceivedSslErrorHelper.getCallCount());
             Assert.assertEquals("Canceled SslErrors should not trigger network errors", errorCount,
-                    mContentsClient.getOnReceivedError2Helper().getCallCount());
+                    mContentsClient.getOnReceivedErrorHelper().getCallCount());
             Assert.assertEquals("Canceled SslErrors should not trigger HTTP errors", httpErrorCount,
                     mContentsClient.getOnReceivedHttpErrorHelper().getCallCount());
 
@@ -195,7 +195,7 @@ public class SslPreferencesTest {
             Assert.assertEquals("onReceivedSslError should be called a second time",
                     onSslErrorCallCount + 2, onReceivedSslErrorHelper.getCallCount());
             Assert.assertEquals("Allowed SslErrors should not trigger network errors", errorCount,
-                    mContentsClient.getOnReceivedError2Helper().getCallCount());
+                    mContentsClient.getOnReceivedErrorHelper().getCallCount());
             Assert.assertEquals("Allowed SslErrors should not trigger HTTP errors", httpErrorCount,
                     mContentsClient.getOnReceivedHttpErrorHelper().getCallCount());
         } finally {

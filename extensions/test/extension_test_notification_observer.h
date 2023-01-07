@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -34,11 +34,13 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
                                           ExtensionRegistryObserver {
  public:
   explicit ExtensionTestNotificationObserver(content::BrowserContext* context);
-  ~ExtensionTestNotificationObserver() override;
 
-  // Wait for the specified extension to crash. Returns true if it really
-  // crashed.
-  bool WaitForExtensionCrash(const std::string& extension_id);
+  ExtensionTestNotificationObserver(const ExtensionTestNotificationObserver&) =
+      delete;
+  ExtensionTestNotificationObserver& operator=(
+      const ExtensionTestNotificationObserver&) = delete;
+
+  ~ExtensionTestNotificationObserver() override;
 
   // Wait for the crx installer to be done. Returns true if it has finished
   // successfully.
@@ -76,6 +78,10 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
                           public extensions::ProcessManagerObserver {
    public:
     NotificationSet();
+
+    NotificationSet(const NotificationSet&) = delete;
+    NotificationSet& operator=(const NotificationSet&) = delete;
+
     ~NotificationSet() override;
 
     void Add(int type, const content::NotificationSource& source);
@@ -111,8 +117,6 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
     std::map<content::WebContents*,
              std::unique_ptr<ForwardingWebContentsObserver>>
         web_contents_observers_;
-
-    DISALLOW_COPY_AND_ASSIGN(NotificationSet);
   };
 
   // Wait for |condition_| to be met. |notification_set| is the set of
@@ -127,7 +131,7 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
   // Quits the message loop if |condition_| is met.
   void MaybeQuit();
 
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
 
  private:
   content::NotificationRegistrar registrar_;
@@ -146,8 +150,6 @@ class ExtensionTestNotificationObserver : public content::NotificationObserver,
   // Listens to extension loaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionTestNotificationObserver);
 };
 
 }  // namespace extensions

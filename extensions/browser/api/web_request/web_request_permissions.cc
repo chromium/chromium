@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,8 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/common/url_constants.h"
@@ -31,10 +29,6 @@
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/login/login_state/login_state.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 using extensions::PermissionsData;
 
 namespace {
@@ -51,10 +45,8 @@ bool HasWebRequestScheme(const GURL& url) {
           url.SchemeIs(url::kFileSystemScheme) ||
           url.SchemeIs(url::kFtpScheme) || url.SchemeIsHTTPOrHTTPS() ||
           url.SchemeIs(extensions::kExtensionScheme) || url.SchemeIsWSOrWSS() ||
-          url.SchemeIs(url::kUrnScheme));
+          url.SchemeIs(url::kUuidInPackageScheme));
 }
-
-bool g_allow_all_extension_locations_in_public_session = false;
 
 PermissionsData::PageAccess GetHostAccessForURL(
     const extensions::Extension& extension,
@@ -84,8 +76,8 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
     int tab_id,
     bool crosses_incognito,
     WebRequestPermissions::HostPermissionsCheck host_permissions_check,
-    const base::Optional<url::Origin>& initiator,
-    const base::Optional<extensions::WebRequestResourceType>&
+    const absl::optional<url::Origin>& initiator,
+    const absl::optional<extensions::WebRequestResourceType>&
         web_request_type) {
   const extensions::Extension* extension =
       permission_helper->extension_registry()->enabled_extensions().GetByID(
@@ -96,23 +88,9 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
   // Prevent viewing / modifying requests initiated by a host protected by
   // policy.
   if (initiator &&
-      extension->permissions_data()->IsPolicyBlockedHost(initiator->GetURL()))
+      extension->permissions_data()->IsPolicyBlockedHost(initiator->GetURL())) {
     return PermissionsData::PageAccess::kDenied;
-
-// When restrictions are enabled in Public Session, allow all URLs for
-// webRequests initiated by a regular extension (but don't allow chrome://
-// URLs).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::LoginState::IsInitialized() &&
-      chromeos::LoginState::Get()->ArePublicSessionRestrictionsEnabled() &&
-      extension->is_extension() && !url.SchemeIs("chrome")) {
-    // Make sure that the extension is truly installed by policy (the assumption
-    // in Public Session is that all extensions are installed by policy).
-    CHECK(g_allow_all_extension_locations_in_public_session ||
-          extensions::Manifest::IsPolicyLocation(extension->location()));
-    return PermissionsData::PageAccess::kAllowed;
   }
-#endif
 
   // Check if this event crosses incognito boundaries when it shouldn't.
   if (crosses_incognito && !permission_helper->CanCrossIncognito(extension))
@@ -203,8 +181,8 @@ bool IsSensitiveGoogleClientUrl(const extensions::WebRequestInfo& request) {
   // PermissionsData::CanAccessPage into one function.
   static constexpr char kGoogleCom[] = "google.com";
   static constexpr char kClient[] = "clients";
-  constexpr size_t kGoogleComLength = base::size(kGoogleCom) - 1;
-  constexpr size_t kClientLength = base::size(kClient) - 1;
+  constexpr size_t kGoogleComLength = std::size(kGoogleCom) - 1;
+  constexpr size_t kClientLength = std::size(kClient) - 1;
 
   if (!url.DomainIs(kGoogleCom))
     return false;
@@ -339,7 +317,7 @@ bool WebRequestPermissions::HideRequest(
   // Safebrowsing and Chrome Webstore URLs are always protected, i.e. also
   // for requests from common renderers.
   if (extension_urls::IsWebstoreUpdateUrl(url) ||
-      extension_urls::IsBlacklistUpdateUrl(url) ||
+      extension_urls::IsBlocklistUpdateUrl(url) ||
       extension_urls::IsSafeBrowsingUrl(url::Origin::Create(url),
                                         url.path_piece()) ||
       (url.DomainIs("chrome.google.com") &&
@@ -352,12 +330,6 @@ bool WebRequestPermissions::HideRequest(
 }
 
 // static
-void WebRequestPermissions::
-     AllowAllExtensionLocationsInPublicSessionForTesting(bool value) {
-  g_allow_all_extension_locations_in_public_session = value;
-}
-
-// static
 PermissionsData::PageAccess WebRequestPermissions::CanExtensionAccessURL(
     extensions::PermissionHelper* permission_helper,
     const std::string& extension_id,
@@ -365,7 +337,7 @@ PermissionsData::PageAccess WebRequestPermissions::CanExtensionAccessURL(
     int tab_id,
     bool crosses_incognito,
     HostPermissionsCheck host_permissions_check,
-    const base::Optional<url::Origin>& initiator,
+    const absl::optional<url::Origin>& initiator,
     extensions::WebRequestResourceType web_request_type) {
   return CanExtensionAccessURLInternal(
       permission_helper, extension_id, url, tab_id, crosses_incognito,
@@ -376,7 +348,7 @@ PermissionsData::PageAccess WebRequestPermissions::CanExtensionAccessURL(
 bool WebRequestPermissions::CanExtensionAccessInitiator(
     extensions::PermissionHelper* permission_helper,
     const extensions::ExtensionId extension_id,
-    const base::Optional<url::Origin>& initiator,
+    const absl::optional<url::Origin>& initiator,
     int tab_id,
     bool crosses_incognito) {
   if (!initiator)
@@ -386,7 +358,7 @@ bool WebRequestPermissions::CanExtensionAccessInitiator(
              permission_helper, extension_id, initiator->GetURL(), tab_id,
              crosses_incognito,
              WebRequestPermissions::REQUIRE_HOST_PERMISSION_FOR_URL,
-             base::nullopt /* initiator */,
-             base::nullopt /* resource_type */) ==
+             absl::nullopt /* initiator */,
+             absl::nullopt /* resource_type */) ==
          PermissionsData::PageAccess::kAllowed;
 }

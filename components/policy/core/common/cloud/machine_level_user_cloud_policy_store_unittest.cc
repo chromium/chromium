@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,14 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
-#include "components/policy/core/common/cloud/policy_builder.h"
+#include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -40,6 +40,10 @@ class MachineLevelUserCloudPolicyStoreTest : public ::testing::Test {
     policy_.payload().mutable_searchsuggestenabled()->set_value(false);
     policy_.Build();
   }
+  MachineLevelUserCloudPolicyStoreTest(
+      const MachineLevelUserCloudPolicyStoreTest&) = delete;
+  MachineLevelUserCloudPolicyStoreTest& operator=(
+      const MachineLevelUserCloudPolicyStoreTest&) = delete;
 
   ~MachineLevelUserCloudPolicyStoreTest() override {}
 
@@ -57,14 +61,12 @@ class MachineLevelUserCloudPolicyStoreTest : public ::testing::Test {
                              nullptr);
   }
 
-  std::unique_ptr<MachineLevelUserCloudPolicyStore> CreateStore(
-      bool cloud_policy_overrides = false) {
+  std::unique_ptr<MachineLevelUserCloudPolicyStore> CreateStore() {
     std::unique_ptr<MachineLevelUserCloudPolicyStore> store =
         MachineLevelUserCloudPolicyStore::Create(
             DMToken::CreateValidTokenForTesting(PolicyBuilder::kFakeToken),
             PolicyBuilder::kFakeDeviceId, updater_policy_dir_,
-            tmp_policy_dir_.GetPath(), cloud_policy_overrides,
-            base::ThreadTaskRunnerHandle::Get());
+            tmp_policy_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get());
     store->AddObserver(&observer_);
     return store;
   }
@@ -110,8 +112,6 @@ class MachineLevelUserCloudPolicyStoreTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachineLevelUserCloudPolicyStoreTest);
 };
 
 TEST_F(MachineLevelUserCloudPolicyStoreTest, LoadWithoutDMToken) {
@@ -138,7 +138,11 @@ TEST_F(MachineLevelUserCloudPolicyStoreTest, LoadImmediatelyWithoutDMToken) {
   EXPECT_FALSE(store_->policy());
   EXPECT_TRUE(store_->policy_map().empty());
 
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_CALL(observer_, OnStoreLoaded(_)).Times(1);
+#else
   EXPECT_CALL(observer_, OnStoreLoaded(_)).Times(0);
+#endif
   EXPECT_CALL(observer_, OnStoreError(_)).Times(0);
 
   store_->LoadImmediately();
@@ -366,30 +370,6 @@ TEST_F(MachineLevelUserCloudPolicyStoreTest, LoadOnlyExternalPolicies) {
 
   ::testing::Mock::VerifyAndClearExpectations(&observer_);
   loader->RemoveObserver(&observer_);
-}
-
-TEST_F(MachineLevelUserCloudPolicyStoreTest,
-       StoreAndLoadPolicyWithCloudPriority) {
-  EXPECT_CALL(observer_, OnStoreLoaded(store_.get()));
-  store_->Store(policy_.policy());
-  base::RunLoop().RunUntilIdle();
-
-  ::testing::Mock::VerifyAndClearExpectations(&observer_);
-
-  std::unique_ptr<MachineLevelUserCloudPolicyStore> loader = CreateStore(true);
-  EXPECT_CALL(observer_, OnStoreLoaded(loader.get()));
-  loader->Load();
-  base::RunLoop().RunUntilIdle();
-
-  SetExpectedPolicyMap(POLICY_SOURCE_PRIORITY_CLOUD);
-  ASSERT_TRUE(loader->policy());
-  EXPECT_EQ(policy_.policy_data().SerializeAsString(),
-            loader->policy()->SerializeAsString());
-  EXPECT_TRUE(expected_policy_map_.Equals(loader->policy_map()));
-  EXPECT_EQ(CloudPolicyStore::STATUS_OK, loader->status());
-  loader->RemoveObserver(&observer_);
-
-  ::testing::Mock::VerifyAndClearExpectations(&observer_);
 }
 
 TEST_F(MachineLevelUserCloudPolicyStoreTest,

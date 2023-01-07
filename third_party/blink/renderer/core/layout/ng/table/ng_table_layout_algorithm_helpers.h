@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_TABLE_NG_TABLE_LAYOUT_ALGORITHM_HELPERS_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_layout_algorithm_types.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 
@@ -33,8 +34,7 @@ class CORE_EXPORT NGTableAlgorithmHelpers {
       const NGTableTypes::Columns& column_constraints,
       LayoutUnit undistributable_space,
       bool is_fixed_layout,
-      bool is_layout_pass,
-      bool skip_collapsed_columns);
+      bool is_layout_pass);
 
   static void DistributeColspanCellsToColumns(
       const NGTableTypes::ColspanCells& colspan_cells,
@@ -44,7 +44,6 @@ class CORE_EXPORT NGTableAlgorithmHelpers {
 
   static Vector<LayoutUnit> SynchronizeAssignableTableInlineSizeAndColumns(
       LayoutUnit assignable_table_inline_size,
-      LayoutUnit inline_border_spacing,
       bool is_fixed_layout,
       const NGTableTypes::Columns& column_constraints);
 

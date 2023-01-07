@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,9 @@
 
 #include <string>
 
+#include "base/strings/string_piece.h"
 
 class GURL;
-
-namespace base {
-class ListValue;
-}
 
 namespace web {
 
@@ -22,15 +19,14 @@ class WebUIIOS;
 // manages the data source and message handlers.
 class WebUIIOSController {
  public:
-  explicit WebUIIOSController(WebUIIOS* web_ui, const std::string& host)
+  WebUIIOSController(WebUIIOS* web_ui, const std::string& host)
       : web_ui_(web_ui), host_(host) {}
   virtual ~WebUIIOSController() {}
 
   // Allows the controller to override handling all messages from the page.
   // Return true if the message handling was overridden.
   virtual bool OverrideHandleWebUIIOSMessage(const GURL& source_url,
-                                             const std::string& message,
-                                             const base::ListValue& args);
+                                             base::StringPiece message);
 
   WebUIIOS* web_ui() const { return web_ui_; }
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -178,7 +178,7 @@ struct EncodedLogo {
 };
 using EncodedLogoCallback =
     base::OnceCallback<void(LogoCallbackReason type,
-                            const base::Optional<EncodedLogo>& logo)>;
+                            const absl::optional<EncodedLogo>& logo)>;
 
 struct Logo {
   Logo();
@@ -192,7 +192,7 @@ struct Logo {
   LogoMetadata metadata;
 };
 using LogoCallback = base::OnceCallback<void(LogoCallbackReason type,
-                                             const base::Optional<Logo>& logo)>;
+                                             const absl::optional<Logo>& logo)>;
 
 struct LogoCallbacks {
   EncodedLogoCallback on_cached_encoded_logo_available;

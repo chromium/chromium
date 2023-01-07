@@ -1,4 +1,4 @@
-# Extension layer/service worker interactions
+# Extension Layer/Service Worker Interactions
 An extension background is the context that an extension runs on. It allows
 extensions to react to events or messages with specified instructions. Up until
 Manifest V2, there were two types of extension background pages, persistent
@@ -8,11 +8,13 @@ service workers. Service worker is a web platform feature that forms the basis
 of app-like capabilities such as offline support, push notifications, and
 background sync. A service worker is an event-driven JavaScript program that
 runs in a worker thread. For a more detailed
-explanation, see the [Service Workers documentation](https://chromium.googlesource.com/chromium/src/+/HEAD/content/browser/service_worker/README.md).
+explanation, see the [Service workers documentation](https://chromium.googlesource.com/chromium/src/+/HEAD/content/browser/service_worker/README.md).
 
 This document describes the assumptions the //extensions layer makes when
-relying on the service worker layer for registering/unregistering/startinga
-service worker or ensuring the service worker’s liveness.
+relying on the service worker layer for registering/unregistering/starting a
+service worker or ensuring the service worker’s liveness. It also documents
+how ES modules can be imported in Manifest V3. Furthermore, it documents error
+reporting and handling for service worker based extensions.
 
 ## Registration
 When adding/loading an extension, `ExtensionRegistrar::ActivateExtension` is
@@ -109,3 +111,25 @@ It is guaranteed that the worker will not be stopped between step 1 and step 2,
 as long as we use `ServiceWorkerContext::StartingExternalRequest` and
 `ServiceWorkerContext::FinishedExternalRequest`. The external request is a
 mechanism to keep the worker alive.
+
+## ES modules
+[ES modules in service workers](https://chromium.googlesource.com/chromium/src/+/HEAD/content/browser/service_worker/es_modules.md) details the current state of ES module support
+in service workers. In Manifest V3, type is added to the background key in the
+manifest file, where two types are supported: classic and module. Type is set
+to classic by default. For a module service worker, background.type should be
+set to module in the manifest file. The following shows an example background
+key in Manifest V3:
+```
+"background": {
+  "service_worker": "sw.js",
+  "type": "classic" (default) | "module"
+}
+```
+
+## Error reporting and handling
+For service worker-based extensions, when service worker registration fails, an
+error is displayed in chrome://extensions page. Runtime errors are also
+displayed in chrome://extensions page. When registering or starting a service
+worker fails, a detailed error code is propagated from the content layer to the
+//extensions layer, which enables the //extensions layer to display the error in
+chrome://extensions to give developers a hint about the issue.

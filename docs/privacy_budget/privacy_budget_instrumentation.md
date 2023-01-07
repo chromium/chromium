@@ -62,7 +62,7 @@ Follow the instructions below for adding instrumentation for an API.
 
    /* ... */
 
-   if (IdentifiabilityStudySettings::Get()->IsSurfaceAllowed(my_surface)) {
+   if (IdentifiabilityStudySettings::Get()->ShouldSampleSurface(my_surface)) {
      // Only do work here.
    }
    ```
@@ -74,7 +74,7 @@ Follow the instructions below for adding instrumentation for an API.
 
    /* ... */
 
-   if (IdentifiabilityStudySettings::Get()->IsTypeAllowed(my_surface_type)) {
+   if (IdentifiabilityStudySettings::Get()->ShouldSampleType(my_surface_type)) {
      // Only do work here.
    }
    ```
@@ -99,7 +99,7 @@ Follow the instructions below for adding instrumentation for an API.
 
    This includes calculating the `IdentifiableSurface` and any related digests.
    If calculating the `IdentifiableSurface` is expensive, then the code should
-   check `IsTypeAllowed()` before progressing.
+   check `ShouldSampleType()` before progressing.
 
    The primary mechanism for recovering from an unforeseen adverse effect of
    sampling a surface is to stop the collection of that specific sample by way
@@ -335,7 +335,7 @@ alters the observed characteristics of the API from what it really is.
 [`blink::IdentifiabilityStudySettings`]: ../../third_party/blink/public/common/privacy_budget/identifiability_study_settings.h
 [`blink::IdentifiableSurface::Type`]: ../../third_party/blink/public/common/privacy_budget/identifiable_surface.h
 [`blink::IdentifiableSurface`]: ../../third_party/blink/public/common/privacy_budget/identifiable_surface.h
-[`blink::WebFeature`]: ../../third_party/blink/public/mojom/web_feature/web_feature.mojom
+[`blink::WebFeature`]: ../../third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom
 [`HighEntropy`]: ../../third_party/blink/renderer/bindings/IDLExtendedAttributes.md#HighEntropy_m_a_c
 [`identifiability_digest_helpers.h`]: ../../third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h
 [`identifiable_surface.h`]: ../../third_party/blink/public/common/privacy_budget/identifiable_surface.h

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #import "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/font.h"
 
@@ -18,13 +17,29 @@ namespace gfx {
 using Weight = Font::Weight;
 
 TEST(PlatformFontMacTest, DeriveFont) {
+  // macOS 13 bug: For non-system fonts with 0-valued traits,
+  // `kCFBooleanFalse` is used instead of a `CFNumberRef` of 0. See
+  // https://crbug.com/1372420. Filed as FB11673021.
+  auto GetValueFromDictionaryAndWorkAroundMacOS13Bug = [](CFDictionaryRef dict,
+                                                          CFStringRef key) {
+    CFTypeRef value = CFDictionaryGetValue(dict, key);
+    if (value == kCFBooleanFalse) {
+      CGFloat zero = 0;
+      return (CFNumberRef)CFAutorelease(
+          CFNumberCreate(nullptr, kCFNumberCGFloatType, &zero));
+    }
+
+    return base::mac::GetValueFromDictionary<CFNumberRef>(dict, key);
+  };
+
   // |weight_tri| is either -1, 0, or 1 meaning "light", "normal", or "bold".
-  auto CheckExpected = [](const Font& font, int weight_tri, bool isItalic) {
+  auto CheckExpected = [GetValueFromDictionaryAndWorkAroundMacOS13Bug](
+                           const Font& font, int weight_tri, bool isItalic) {
     base::ScopedCFTypeRef<CFDictionaryRef> traits(
         CTFontCopyTraits(base::mac::NSToCFCast(font.GetNativeFont())));
     DCHECK(traits);
 
-    CFNumberRef cf_slant = base::mac::GetValueFromDictionary<CFNumberRef>(
+    CFNumberRef cf_slant = GetValueFromDictionaryAndWorkAroundMacOS13Bug(
         traits, kCTFontSlantTrait);
     CGFloat slant;
     CFNumberGetValue(cf_slant, kCFNumberCGFloatType, &slant);
@@ -33,7 +48,7 @@ TEST(PlatformFontMacTest, DeriveFont) {
     else
       EXPECT_EQ(slant, 0);
 
-    CFNumberRef cf_weight = base::mac::GetValueFromDictionary<CFNumberRef>(
+    CFNumberRef cf_weight = GetValueFromDictionaryAndWorkAroundMacOS13Bug(
         traits, kCTFontWeightTrait);
     CGFloat weight;
     CFNumberGetValue(cf_weight, kCFNumberCGFloatType, &weight);
@@ -184,16 +199,15 @@ TEST(PlatformFontMacTest, DerivedFineGrainedFonts) {
 // Ensures that the Font's reported height is consistent with the native font's
 // ascender and descender metrics.
 TEST(PlatformFontMacTest, ValidateFontHeight) {
-  // Use the default ResourceBundle system font. E.g. Helvetica Neue in 10.10,
-  // Lucida Grande before that, and San Francisco after.
+  // Use the default ResourceBundle system font (i.e. San Francisco).
   Font default_font;
   Font::FontStyle styles[] = {Font::NORMAL, Font::ITALIC, Font::UNDERLINE};
 
-  for (size_t i = 0; i < base::size(styles); ++i) {
-    SCOPED_TRACE(testing::Message() << "Font::FontStyle: " << styles[i]);
+  for (auto& style : styles) {
+    SCOPED_TRACE(testing::Message() << "Font::FontStyle: " << style);
     // Include the range of sizes used by ResourceBundle::FontStyle (-1 to +8).
     for (int delta = -1; delta <= 8; ++delta) {
-      Font font = default_font.Derive(delta, styles[i], Weight::NORMAL);
+      Font font = default_font.Derive(delta, style, Weight::NORMAL);
       SCOPED_TRACE(testing::Message() << "FontSize(): " << font.GetFontSize());
       NSFont* native_font = font.GetNativeFont();
 

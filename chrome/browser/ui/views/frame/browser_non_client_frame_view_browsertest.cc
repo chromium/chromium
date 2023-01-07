@@ -1,13 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/scoped_disable_client_side_decorations_for_test.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -15,25 +16,35 @@
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/components/web_app_install_utils.h"
-#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
+#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/theme_change_waiter.h"
-#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
-#include "ui/base/theme_provider.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 
 class BrowserNonClientFrameViewBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
   BrowserNonClientFrameViewBrowserTest() = default;
+
+  BrowserNonClientFrameViewBrowserTest(
+      const BrowserNonClientFrameViewBrowserTest&) = delete;
+  BrowserNonClientFrameViewBrowserTest& operator=(
+      const BrowserNonClientFrameViewBrowserTest&) = delete;
+
   ~BrowserNonClientFrameViewBrowserTest() override = default;
 
   void SetUp() override {
@@ -50,39 +61,44 @@ class BrowserNonClientFrameViewBrowserTest
   // TODO: Add tests for non-bookmark hosted apps, as bookmark apps will no
   // longer be hosted apps when BMO ships.
   void InstallAndLaunchBookmarkApp(
-      base::Optional<GURL> app_url = base::nullopt) {
-    blink::Manifest manifest;
+      absl::optional<GURL> app_url = absl::nullopt) {
+    blink::mojom::Manifest manifest;
     manifest.start_url = app_url.value_or(GetAppURL());
     manifest.scope = manifest.start_url.GetWithoutFilename();
+    manifest.has_theme_color = true;
     manifest.theme_color = app_theme_color_;
 
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     GURL manifest_url = embedded_test_server()->GetURL("/manifest");
     web_app::UpdateWebAppInfoFromManifest(manifest, manifest_url,
                                           web_app_info.get());
 
     web_app::AppId app_id =
-        web_app::InstallWebApp(profile(), std::move(web_app_info));
+        web_app::test::InstallWebApp(profile(), std::move(web_app_info));
     app_browser_ = web_app::LaunchWebAppBrowser(profile(), app_id);
     web_contents_ = app_browser_->tab_strip_model()->GetActiveWebContents();
-    // Ensure the main page has loaded and is ready for ExecJs DOM manipulation.
+    // Ensure the main page has loaded and is ready for ExecJs DOM
+    // manipulation.
     ASSERT_TRUE(content::NavigateToURL(web_contents_, manifest.start_url));
 
     app_browser_view_ = BrowserView::GetBrowserViewForBrowser(app_browser_);
-    app_frame_view_ = app_browser_view_->frame()->GetFrameView();
+  }
+
+  // Frame view may get reset after theme change, so always access from the
+  // browser view and don't retain the pointer.
+  // TODO(crbug.com/1020050): Make it not do this and only refresh the Widget.
+  BrowserNonClientFrameView* GetAppFrameView() {
+    return app_browser_view_->frame()->GetFrameView();
   }
 
  protected:
-  base::Optional<SkColor> app_theme_color_ = SK_ColorBLUE;
-  Browser* app_browser_ = nullptr;
-  BrowserView* app_browser_view_ = nullptr;
-  content::WebContents* web_contents_ = nullptr;
-  BrowserNonClientFrameView* app_frame_view_ = nullptr;
+  SkColor app_theme_color_ = SK_ColorBLUE;
+  raw_ptr<Browser> app_browser_ = nullptr;
+  raw_ptr<BrowserView> app_browser_view_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 
  private:
   GURL GetAppURL() { return embedded_test_server()->GetURL("/empty.html"); }
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserNonClientFrameViewBrowserTest);
 };
 
 // Tests the frame color for a normal browser window.
@@ -93,11 +109,11 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   const BrowserNonClientFrameView* frame_view =
       browser_view->frame()->GetFrameView();
-  const ui::ThemeProvider* theme_provider = frame_view->GetThemeProvider();
+  const ui::ColorProvider* color_provider = frame_view->GetColorProvider();
   const SkColor expected_active_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_FRAME_ACTIVE);
+      color_provider->GetColor(ui::kColorFrameActive);
   const SkColor expected_inactive_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_FRAME_INACTIVE);
+      color_provider->GetColor(ui::kColorFrameInactive);
 
   EXPECT_EQ(expected_active_color,
             frame_view->GetFrameColor(BrowserFrameActiveState::kActive));
@@ -114,22 +130,22 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
   InstallAndLaunchBookmarkApp();
   // Note: This is checking for the bookmark app's theme color, not the user's
   // theme color.
-  EXPECT_EQ(*app_theme_color_,
-            app_frame_view_->GetFrameColor(BrowserFrameActiveState::kActive));
+  EXPECT_EQ(app_theme_color_,
+            GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kActive));
 }
 
 // Tests the frame color for a bookmark app when a theme is applied, with the
 // app itself having no theme color.
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                        BookmarkAppFrameColorCustomThemeNoThemeColor) {
-  InstallExtension(test_data_dir_.AppendASCII("theme"), 1);
-  app_theme_color_.reset();
   InstallAndLaunchBookmarkApp();
+  const SkColor color_without_theme =
+      GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kActive);
+
+  InstallExtension(test_data_dir_.AppendASCII("theme"), 1);
   // Bookmark apps are not affected by browser themes.
-  EXPECT_EQ(ThemeProperties::GetDefaultColor(
-                ThemeProperties::COLOR_FRAME_ACTIVE, false,
-                app_frame_view_->GetNativeTheme()->ShouldUseDarkColors()),
-            app_frame_view_->GetFrameColor(BrowserFrameActiveState::kActive));
+  EXPECT_EQ(color_without_theme,
+            GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kActive));
 }
 
 // Tests that an opaque frame color is used for a web app with a transparent
@@ -143,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 
   app_theme_color_ = SkColorSetA(SK_ColorBLUE, 0x88);
   InstallAndLaunchBookmarkApp();
-  EXPECT_EQ(app_frame_view_->GetFrameColor(BrowserFrameActiveState::kActive),
+  EXPECT_EQ(GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kActive),
             SK_ColorBLUE);
 }
 
@@ -158,21 +174,19 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
   ASSERT_TRUE(theme_service->UsingSystemTheme());
 
   InstallAndLaunchBookmarkApp();
-// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // On Linux, the system theme is the GTK theme and should change the frame
   // color to the system color (not the app theme color); otherwise the title
   // and border would clash horribly with the GTK title bar.
   // (https://crbug.com/878636)
-  const ui::ThemeProvider* theme_provider = app_frame_view_->GetThemeProvider();
-  const SkColor frame_color =
-      theme_provider->GetColor(ThemeProperties::COLOR_FRAME_ACTIVE);
+  const ui::ColorProvider* color_provider =
+      GetAppFrameView()->GetColorProvider();
+  const SkColor frame_color = color_provider->GetColor(ui::kColorFrameActive);
   EXPECT_EQ(frame_color,
-            app_frame_view_->GetFrameColor(BrowserFrameActiveState::kActive));
+            GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kActive));
 #else
-  EXPECT_EQ(*app_theme_color_,
-            app_frame_view_->GetFrameColor(BrowserFrameActiveState::kActive));
+  EXPECT_EQ(app_theme_color_,
+            GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kActive));
 #endif
 }
 
@@ -181,53 +195,135 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                        FullscreenForTabTitlebarHeight) {
   InstallAndLaunchBookmarkApp();
-  EXPECT_GT(app_frame_view_->GetTopInset(false), 0);
+  EXPECT_GT(GetAppFrameView()->GetTopInset(false), 0);
 
   static_cast<content::WebContentsDelegate*>(app_browser_)
-      ->EnterFullscreenModeForTab(web_contents_->GetMainFrame(), {});
+      ->EnterFullscreenModeForTab(web_contents_->GetPrimaryMainFrame(), {});
 
-  EXPECT_EQ(app_frame_view_->GetTopInset(false), 0);
+  EXPECT_EQ(GetAppFrameView()->GetTopInset(false), 0);
 }
 
 // Tests that the custom tab bar is visible in fullscreen mode.
+// TODO(crbug.com/1349592): Flaky on linux-wayland-rel and linux-lacros-rel
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_CustomTabBarIsVisibleInFullscreen \
+  DISABLED_CustomTabBarIsVisibleInFullscreen
+#else
+#define MAYBE_CustomTabBarIsVisibleInFullscreen \
+  CustomTabBarIsVisibleInFullscreen
+#endif
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
-                       CustomTabBarIsVisibleInFullscreen) {
+                       MAYBE_CustomTabBarIsVisibleInFullscreen) {
   InstallAndLaunchBookmarkApp();
 
-  ui_test_utils::NavigateToURL(app_browser_, GURL("http://example.com"));
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(app_browser_, GURL("http://example.com")));
 
   static_cast<content::WebContentsDelegate*>(app_browser_)
-      ->EnterFullscreenModeForTab(web_contents_->GetMainFrame(), {});
+      ->EnterFullscreenModeForTab(web_contents_->GetPrimaryMainFrame(), {});
 
-  EXPECT_TRUE(
-      app_frame_view_->browser_view()->toolbar()->custom_tab_bar()->IsDrawn());
+  EXPECT_TRUE(app_browser_view_->toolbar()->custom_tab_bar()->IsDrawn());
 }
 
 // Tests that hosted app frames reflect the theme color set by HTML meta tags.
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                        HTMLMetaThemeColorOverridesManifest) {
+  // TODO(crbug.com/1240482): the test expectations fail if the window gets CSD
+  // and becomes smaller because of that.  Investigate this and remove the line
+  // below if possible.
+  ui::ScopedDisableClientSideDecorationsForTest scoped_disabled_csd;
+
   // Ensure we're not using the system theme on Linux.
   ThemeService* theme_service =
       ThemeServiceFactory::GetForProfile(browser()->profile());
   theme_service->UseDefaultTheme();
 
   InstallAndLaunchBookmarkApp();
-  EXPECT_EQ(app_frame_view_->GetFrameColor(), *app_theme_color_);
+  ASSERT_EQ(app_theme_color_, SK_ColorBLUE);
+  EXPECT_EQ(
+      GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
+      app_theme_color_);
 
-  content::ThemeChangeWaiter waiter(web_contents_);
-  EXPECT_TRUE(content::ExecJs(web_contents_, R"(
-      document.documentElement.innerHTML =
-          '<meta name="theme-color" content="yellow">';
-  )"));
-  waiter.Wait();
+  {
+    // Add two meta theme color elements. The first element's color should be
+    // picked.
+    content::ThemeChangeWaiter waiter(web_contents_);
+    EXPECT_TRUE(content::ExecJs(
+        web_contents_.get(),
+        "document.documentElement.innerHTML = '"
+        "<meta id=\"first\"  name=\"theme-color\" content=\"red\">"
+        "<meta id=\"second\" name=\"theme-color\" content=\"#00ff00\">'"));
+    waiter.Wait();
 
-  // Frame view may get reset after theme change.
-  // TODO(crbug.com/1020050): Make it not do this and only refresh the Widget.
-  BrowserNonClientFrameView* frame_view =
-      app_browser_view_->frame()->GetFrameView();
+    EXPECT_EQ(
+        GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
+        SK_ColorRED);
+  }
+  {
+    // Change the color of the first element. The new color should be picked.
+    content::ThemeChangeWaiter waiter(web_contents_);
+    EXPECT_TRUE(content::ExecJs(
+        web_contents_.get(),
+        "document.getElementById('first').setAttribute('content', 'yellow')"));
+    waiter.Wait();
 
-  EXPECT_EQ(frame_view->GetFrameColor(), SK_ColorYELLOW);
-  ASSERT_NE(*app_theme_color_, SK_ColorYELLOW);
+    EXPECT_EQ(
+        GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
+        SK_ColorYELLOW);
+  }
+  {
+    // Set a non matching media query to the first element. The second element's
+    // color should be picked.
+    content::ThemeChangeWaiter waiter(web_contents_);
+    EXPECT_TRUE(content::ExecJs(web_contents_.get(),
+                                "document.getElementById('first')."
+                                "setAttribute('media', '(max-width: 0px)')"));
+    waiter.Wait();
+
+    EXPECT_EQ(
+        GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
+        SK_ColorGREEN);
+  }
+  {
+    // Remove the second element. The manifest color should be picked because
+    // the first element still does not match.
+    content::ThemeChangeWaiter waiter(web_contents_);
+    EXPECT_TRUE(content::ExecJs(web_contents_.get(),
+                                "document.getElementById('second').remove()"));
+    waiter.Wait();
+
+    EXPECT_EQ(
+        GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
+        SK_ColorBLUE);
+  }
+  {
+    // Set a matching media query to the first element. The first element's
+    // color should be picked.
+    content::ThemeChangeWaiter waiter(web_contents_);
+    std::string width =
+        content::EvalJs(web_contents_.get(), "outerWidth.toString()")
+            .ExtractString();
+    EXPECT_TRUE(content::ExecJs(web_contents_.get(),
+                                "document.getElementById('first')."
+                                "setAttribute('media', '(max-width: " +
+                                    width + "px')"));
+    waiter.Wait();
+
+    EXPECT_EQ(
+        GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
+        SK_ColorYELLOW);
+  }
+  {
+    // Resize the window so that the media query on the first element does not
+    // match anymore. The manifest color should be picked.
+    content::ThemeChangeWaiter waiter(web_contents_);
+    EXPECT_TRUE(content::ExecJs(web_contents_.get(), "window.resizeBy(24, 0)"));
+    waiter.Wait();
+
+    EXPECT_EQ(
+        GetAppFrameView()->GetFrameColor(BrowserFrameActiveState::kUseCurrent),
+        SK_ColorBLUE);
+  }
 }
 
 class SaveCardOfferObserver
@@ -235,7 +331,7 @@ class SaveCardOfferObserver
  public:
   explicit SaveCardOfferObserver(content::WebContents* web_contents) {
     manager_ = autofill::ContentAutofillDriver::GetForRenderFrameHost(
-                   web_contents->GetMainFrame())
+                   web_contents->GetPrimaryMainFrame())
                    ->autofill_manager()
                    ->client()
                    ->GetFormDataImporter()
@@ -253,30 +349,65 @@ class SaveCardOfferObserver
   void Wait() { run_loop_.Run(); }
 
  private:
-  autofill::CreditCardSaveManager* manager_ = nullptr;
+  raw_ptr<autofill::CreditCardSaveManager> manager_ = nullptr;
   base::RunLoop run_loop_;
 };
 
+namespace {
+
+class TestAutofillManager : public autofill::BrowserAutofillManager {
+ public:
+  TestAutofillManager(autofill::ContentAutofillDriver* driver,
+                      autofill::AutofillClient* client)
+      : BrowserAutofillManager(driver,
+                               client,
+                               "en-US",
+                               EnableDownloadManager(false)) {}
+
+  [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
+      int min_num_awaited_calls) {
+    return forms_seen_waiter_.Wait(min_num_awaited_calls);
+  }
+
+ private:
+  autofill::TestAutofillManagerWaiter forms_seen_waiter_{
+      *this,
+      {&AutofillManager::Observer::OnAfterFormsSeen}};
+};
+
+}  // namespace
+
+// TODO(crbug.com/1366531): Fails on Mac 12.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_SaveCardIcon DISABLED_SaveCardIcon
+#else
+#define MAYBE_SaveCardIcon SaveCardIcon
+#endif
 // Tests that hosted app frames reflect the theme color set by HTML meta tags.
-IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest, SaveCardIcon) {
+IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest, MAYBE_SaveCardIcon) {
+  autofill::TestAutofillManagerFutureInjectors<TestAutofillManager>
+      autofill_manager_injectors;
   InstallAndLaunchBookmarkApp(embedded_test_server()->GetURL(
       "/autofill/credit_card_upload_form_address_and_cc.html"));
-  ASSERT_TRUE(content::ExecJs(web_contents_, "fill_form.click();"));
+  ASSERT_TRUE(
+      autofill_manager_injectors[0].GetForPrimaryMainFrame()->WaitForFormsSeen(
+          1));
+  ASSERT_TRUE(content::ExecJs(web_contents_.get(), "fill_form.click();"));
 
   content::TestNavigationObserver nav_observer(web_contents_);
   SaveCardOfferObserver offer_observer(web_contents_);
-  ASSERT_TRUE(content::ExecJs(web_contents_, "submit.click();"));
+  ASSERT_TRUE(content::ExecJs(web_contents_.get(), "submit.click();"));
   nav_observer.Wait();
   offer_observer.Wait();
 
   PageActionIconView* icon =
       app_browser_view_->toolbar_button_provider()->GetPageActionIconView(
           PageActionIconType::kSaveCard);
-  EXPECT_TRUE(app_frame_view_->Contains(icon));
+  EXPECT_TRUE(GetAppFrameView()->Contains(icon));
   EXPECT_TRUE(icon->GetVisible());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests that GetWindowMask is supported for lacros in chromeos.
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                        BrowserFrameWindowMask) {
@@ -290,4 +421,4 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
   EXPECT_TRUE(path.isEmpty());
 #endif
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)

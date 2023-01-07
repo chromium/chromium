@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ String FuzzedDataProvider::ConsumeRandomLengthString(size_t max_length) {
 
 std::string FuzzedDataProvider::ConsumeRemainingBytes() {
   WebVector<char> bytes = provider_.ConsumeRemainingBytes<char>();
-  return std::string(bytes.Data(), bytes.size());
+  return std::string(bytes.data(), bytes.size());
 }
 
 }  // namespace blink

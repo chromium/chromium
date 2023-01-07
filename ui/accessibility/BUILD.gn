@@ -1,10 +1,11 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -20,10 +21,12 @@ if (is_win) {
 }
 
 mojom("ax_constants_mojo") {
+  generate_java = true
   sources = [ "ax_constants.mojom" ]
 }
 
 mojom_component("ax_enums_mojo") {
+  generate_java = true
   sources = [ "ax_enums.mojom" ]
 
   macro_prefix = "UI_ACCESSIBILITY_AX_MOJOM"
@@ -61,12 +64,13 @@ component("ax_base") {
     "ax_mode.h",
     "ax_node_data.cc",
     "ax_node_data.h",
-    "ax_node_text_styles.cc",
-    "ax_node_text_styles.h",
+    "ax_node_id_forward.h",
     "ax_relative_bounds.cc",
     "ax_relative_bounds.h",
     "ax_role_properties.cc",
     "ax_role_properties.h",
+    "ax_text_attributes.cc",
+    "ax_text_attributes.h",
     "ax_tree_data.cc",
     "ax_tree_data.h",
     "ax_tree_id.cc",
@@ -76,19 +80,34 @@ component("ax_base") {
     "ax_tree_update_forward.h",
   ]
 
+  if (!is_chromeos) {
+    sources += [
+      "ax_enum_localization_util.cc",
+      "ax_enum_localization_util.h",
+    ]
+  }
+
   public_deps = [
     ":ax_constants_mojo",
     ":ax_enums_mojo",
     "//base",
-    "//base:i18n",
-    "//base/util/values:values_util",
-    "//ui/base",
     "//ui/gfx",
     "//ui/gfx/geometry",
-    "//ui/strings",
   ]
 
+  if (!is_chromeos) {
+    public_deps += [
+      "//base:i18n",
+      "//ui/base",
+      "//ui/strings",
+    ]
+  }
+
   deps = [ "//build:chromeos_buildflags" ]
+
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
 }
 
 #if (is_win) {
@@ -107,12 +126,20 @@ component("accessibility") {
     "ax_active_popup.cc",
     "ax_active_popup.h",
     "ax_clipping_behavior.h",
+    "ax_computed_node_data.cc",
+    "ax_computed_node_data.h",
     "ax_coordinate_system.h",
+    "ax_dummy_tree_manager.cc",
+    "ax_dummy_tree_manager.h",
     "ax_event_generator.cc",
     "ax_event_generator.h",
     "ax_export.h",
+    "ax_hypertext.cc",
+    "ax_hypertext.h",
     "ax_language_detection.cc",
     "ax_language_detection.h",
+    "ax_live_region_tracker.cc",
+    "ax_live_region_tracker.h",
     "ax_mode_observer.h",
     "ax_node.cc",
     "ax_node.h",
@@ -121,6 +148,8 @@ component("accessibility") {
     "ax_offscreen_result.h",
     "ax_position.h",
     "ax_range.h",
+    "ax_selection.cc",
+    "ax_selection.h",
     "ax_serializable_tree.cc",
     "ax_serializable_tree.h",
     "ax_table_info.cc",
@@ -131,7 +160,10 @@ component("accessibility") {
     "ax_tree.h",
     "ax_tree_combiner.cc",
     "ax_tree_combiner.h",
+    "ax_tree_manager.cc",
     "ax_tree_manager.h",
+    "ax_tree_manager_base.cc",
+    "ax_tree_manager_base.h",
     "ax_tree_manager_map.cc",
     "ax_tree_manager_map.h",
     "ax_tree_observer.cc",
@@ -139,18 +171,22 @@ component("accessibility") {
     "ax_tree_serializer.cc",
     "ax_tree_serializer.h",
     "ax_tree_source.h",
+    "ax_tree_source_annotator.h",
     "ax_tree_source_checker.h",
+    "ax_tree_source_observer.h",
     "null_ax_action_target.cc",
     "null_ax_action_target.h",
   ]
 
   deps = [
-    "//base/util/values:values_util",
+    "//base",
+    "//components/crash/core/common:crash_key",
     "//third_party/cld_3/src/src:cld_3",
   ]
 
   public_deps = [
     ":ax_base",
+    "//skia",
     "//ui/accessibility/platform",
   ]
 
@@ -171,6 +207,11 @@ component("accessibility") {
     ]
   }
 
+  if (is_fuchsia) {
+    public_deps +=
+        [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics" ]
+  }
+
   if (use_aura) {
     sources += [
       "aura/aura_window_properties.cc",
@@ -188,6 +229,8 @@ source_set("ax_assistant") {
   ]
 
   deps = [ ":accessibility" ]
+
+  public_deps = [ ":ax_enums_mojo" ]
 }
 
 static_library("test_support") {
@@ -197,6 +240,10 @@ static_library("test_support") {
     "test_ax_node_helper.h",
     "test_ax_tree_manager.cc",
     "test_ax_tree_manager.h",
+    "test_ax_tree_update.cc",
+    "test_ax_tree_update.h",
+    "test_ax_tree_update_json_reader.cc",
+    "test_ax_tree_update_json_reader.h",
     "tree_generator.cc",
     "tree_generator.h",
   ]
@@ -214,6 +261,7 @@ static_library("test_support") {
 test("accessibility_unittests") {
   testonly = true
   sources = [
+    "ax_computed_node_data_unittest.cc",
     "ax_enum_util_unittest.cc",
     "ax_event_generator_unittest.cc",
     "ax_generated_tree_unittest.cc",
@@ -223,10 +271,13 @@ test("accessibility_unittests") {
     "ax_node_unittest.cc",
     "ax_range_unittest.cc",
     "ax_role_properties_unittest.cc",
+    "ax_selection_unittest.cc",
     "ax_table_info_unittest.cc",
     "ax_text_utils_unittest.cc",
     "ax_tree_combiner_unittest.cc",
     "ax_tree_id_unittest.cc",
+    "ax_tree_manager_base_unittest.cc",
+    "ax_tree_manager_unittest.cc",
     "ax_tree_serializer_unittest.cc",
     "ax_tree_source_checker_unittest.cc",
     "ax_tree_unittest.cc",
@@ -242,7 +293,11 @@ test("accessibility_unittests") {
     "platform/ax_platform_node_unittest.cc",
     "platform/ax_platform_node_unittest.h",
     "platform/ax_unique_id_unittest.cc",
+    "platform/inspect/ax_inspect_scenario_unittest.cc",
+    "platform/inspect/ax_inspect_test_helper_unittest.cc",
+    "platform/inspect/ax_inspect_utils_unittest.cc",
     "platform/inspect/ax_property_node_unittest.cc",
+    "platform/inspect/ax_script_instruction_unittest.cc",
     "run_all_unittests.cc",
   ]
 
@@ -260,6 +315,25 @@ test("accessibility_unittests") {
     "//ui/accessibility/mojom",
     "//ui/gfx:test_support",
   ]
+
+  if (enable_extensions) {
+    sources += [ "platform/automation/automation_api_util_unittest.cc" ]
+  }
+
+  if (is_fuchsia) {
+    sources += [
+      "platform/fuchsia/accessibility_bridge_fuchsia_unittest.cc",
+      "platform/fuchsia/semantic_provider_unittest.cc",
+    ]
+
+    deps += [
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.math",
+      "//third_party/fuchsia-sdk/sdk/pkg/inspect",
+      "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
+      "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
+    ]
+  }
 
   if (has_native_accessibility) {
     # This test depends heavily on NativeViewAccessible, which is only
@@ -310,6 +384,50 @@ fuzzer_test("ax_table_fuzzer") {
   deps = [ ":accessibility" ]
 
   seed_corpus = "fuzz_corpus"
+}
+
+fuzzer_test("ax_node_position_fuzzer") {
+  sources = [
+    "ax_node_position_fuzzer.cc",
+    "ax_tree_fuzzer_util.cc",
+    "ax_tree_fuzzer_util.h",
+  ]
+
+  deps = [
+    ":accessibility",
+    ":test_support",
+    "//base/test:test_support",
+  ]
+}
+
+if (is_win) {
+  fuzzer_test("ax_platform_node_textrangeprovider_win_fuzzer") {
+    sources = [
+      "ax_tree_fuzzer_util.cc",
+      "ax_tree_fuzzer_util.h",
+      "platform/ax_platform_node_textrangeprovider_win_fuzzer.cc",
+    ]
+
+    deps = [
+      ":accessibility",
+      ":test_support",
+      "//base/test:test_support",
+    ]
+  }
+}
+
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":accessibility_features_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "//ui/accessibility/accessibility_features.cc" ]
+    template = "//ui/accessibility/android/java_templates/AccessibilityFeatures.java.tmpl"
+  }
+
+  # A minimal library used to expose accessibility features to webview.
+  android_library("accessibility_features_java") {
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
 }
 
 test("accessibility_perftests") {

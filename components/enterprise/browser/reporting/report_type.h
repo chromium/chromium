@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 
 namespace enterprise_reporting {
 
-enum ReportType : uint32_t {
+enum class ReportType {
   kFull = 0,
-  kBrowserVersion = 1u << 0,
-  kExtensionRequest = 2u << 1,
+  kBrowserVersion = 1,
+  kProfileReport = 2,
 };
 
 }  // namespace enterprise_reporting

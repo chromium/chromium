@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,15 +7,15 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/app_window/size_constraints.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
@@ -93,9 +93,9 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
   views::View* GetInitiallyFocusedView() override;
   std::u16string GetWindowTitle() const override;
   bool ShouldShowWindowTitle() const override;
+  bool ShouldSaveWindowPlacement() const override;
   void SaveWindowPlacement(const gfx::Rect& bounds,
                            ui::WindowShowState show_state) override;
-  void DeleteDelegate() override;
   bool ShouldDescendIntoChildForEventHandling(
       gfx::NativeView child,
       const gfx::Point& location) override;
@@ -154,9 +154,9 @@ class NativeAppWindowViews : public extensions::NativeAppWindow,
   bool GetCanMaximizeWindow() const;
   bool GetCanResizeWindow() const;
 
-  extensions::AppWindow* app_window_ = nullptr;  // Not owned.
-  views::WebView* web_view_ = nullptr;
-  views::Widget* widget_ = nullptr;
+  raw_ptr<extensions::AppWindow> app_window_ = nullptr;  // Not owned.
+  raw_ptr<views::WebView> web_view_ = nullptr;
+  raw_ptr<views::Widget> widget_ = nullptr;
 
   std::unique_ptr<SkRegion> draggable_region_;
 

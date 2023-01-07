@@ -1,16 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/web/lookalike_url_app_interface.h"
 
-#include "components/lookalikes/core/lookalike_url_util.h"
+#import "components/lookalikes/core/lookalike_url_util.h"
 #import "ios/chrome/browser/web/lookalike_url_constants.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
-#include "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
-#include "ios/components/security_interstitials/lookalikes/lookalike_url_error.h"
-#include "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
+#import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
+#import "ios/components/security_interstitials/lookalikes/lookalike_url_error.h"
+#import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/web_state_user_data.h"
 #import "net/base/mac/url_conversions.h"
@@ -29,9 +29,12 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
   LookalikeUrlDecider(web::WebState* web_state)
       : web::WebStatePolicyDecider(web_state), web_state_(web_state) {}
 
+  LookalikeUrlDecider(const LookalikeUrlDecider&) = delete;
+  LookalikeUrlDecider& operator=(const LookalikeUrlDecider&) = delete;
+
   void ShouldAllowResponse(
       NSURLResponse* response,
-      bool for_main_frame,
+      web::WebStatePolicyDecider::ResponseInfo response_info,
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override {
     LookalikeUrlContainer* lookalike_container =
         LookalikeUrlContainer::FromWebState(web_state_);
@@ -46,6 +49,16 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
     if (response_url.path() == kLookalikePagePathForTesting) {
       GURL::Replacements safeReplacements;
       safeReplacements.SetPathStr("echo");
+      if (@available(iOS 15.1, *)) {
+      } else {
+        if (@available(iOS 14.5, *)) {
+          // Workaround https://bugs.webkit.org/show_bug.cgi?id=226323, which
+          // breaks some back/forward navigations between pages that share a
+          // renderer process. Use 'localhost' instead of '127.0.0.1' for the
+          // safe URL to prevent sharing renderer processes with unsafe URLs.
+          safeReplacements.SetHostStr("localhost");
+        }
+      }
       lookalike_container->SetLookalikeUrlInfo(
           response_url.ReplaceComponents(safeReplacements), response_url,
           LookalikeUrlMatchType::kSkeletonMatchTop5k);
@@ -59,7 +72,7 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
       std::move(callback).Run(CreateLookalikeErrorDecision());
       return;
     }
-    return std::move(callback).Run(
+    std::move(callback).Run(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
 
@@ -67,8 +80,6 @@ class LookalikeUrlDecider : public web::WebStatePolicyDecider,
 
  private:
   web::WebState* web_state_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LookalikeUrlDecider);
 };
 
 WEB_STATE_USER_DATA_KEY_IMPL(LookalikeUrlDecider)

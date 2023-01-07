@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ namespace password_manager {
 
 LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
     const std::u16string& plain_text,
-    std::string* cipher_text) const {
+    std::string* cipher_text) {
   if (OSCrypt::EncryptString16(plain_text, cipher_text))
     return ENCRYPTION_RESULT_SUCCESS;
   return ENCRYPTION_RESULT_ITEM_FAILURE;
@@ -19,7 +19,7 @@ LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
 
 LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
     const std::string& cipher_text,
-    std::u16string* plain_text) const {
+    std::u16string* plain_text) {
   // Unittests need to read sample database entries. If these entries had real
   // passwords, their encoding would need to be different for every platform.
   // To avoid the need for that, the entries have empty passwords. OSCrypt on

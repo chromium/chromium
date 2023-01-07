@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/posix/process_info.h"
@@ -76,6 +75,7 @@ class ProcessReaderMac {
     ThreadContext thread_context;
     FloatContext float_context;
     DebugContext debug_context;
+    std::string name;
     uint64_t id;
     mach_vm_address_t stack_region_address;
     mach_vm_size_t stack_region_size;
@@ -111,6 +111,10 @@ class ProcessReaderMac {
   };
 
   ProcessReaderMac();
+
+  ProcessReaderMac(const ProcessReaderMac&) = delete;
+  ProcessReaderMac& operator=(const ProcessReaderMac&) = delete;
+
   ~ProcessReaderMac();
 
   //! \brief Initializes this object. This method must be called before any
@@ -262,8 +266,6 @@ class ProcessReaderMac {
 
   bool initialized_threads_;
   bool initialized_modules_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessReaderMac);
 };
 
 }  // namespace crashpad

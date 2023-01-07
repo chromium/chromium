@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,21 +7,28 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_messages.h"
 #include "extensions/common/message_bundle.h"
-#include "extensions/renderer/bindings/api_signature.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/script_context.h"
+#include "extensions/renderer/shared_l10n_map.h"
+#include "extensions/renderer/worker_thread_dispatcher.h"
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
 #include "third_party/cld_3/src/src/nnet_language_identifier.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 
@@ -54,6 +61,8 @@ struct DetectedLanguage {
 // array of DetectedLanguage
 struct LanguageDetectionResult {
   LanguageDetectionResult() {}
+  LanguageDetectionResult(const LanguageDetectionResult&) = delete;
+  LanguageDetectionResult& operator=(const LanguageDetectionResult&) = delete;
   ~LanguageDetectionResult() {}
 
   // Returns a new v8::Local<v8::Value> representing the serialized form of
@@ -66,9 +75,6 @@ struct LanguageDetectionResult {
   // Array of detectedLanguage of size 1-3. The null is returned if
   // there were no languages detected
   std::vector<DetectedLanguage> languages;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LanguageDetectionResult);
 };
 
 v8::Local<v8::Value> DetectedLanguage::ToV8(v8::Isolate* isolate) const {
@@ -143,33 +149,12 @@ v8::Local<v8::Value> GetI18nMessage(const std::string& message_name,
                                     const std::string& extension_id,
                                     v8::Local<v8::Value> v8_substitutions,
                                     v8::Local<v8::Value> v8_options,
-                                    content::RenderFrame* render_frame,
+                                    IPC::Sender* message_sender,
                                     v8::Local<v8::Context> context) {
   v8::Isolate* isolate = context->GetIsolate();
-  L10nMessagesMap* l10n_messages = nullptr;
-  {
-    ExtensionToL10nMessagesMap& messages_map = *GetExtensionToL10nMessagesMap();
-    auto iter = messages_map.find(extension_id);
-    if (iter != messages_map.end()) {
-      l10n_messages = &iter->second;
-    } else {
-      if (!render_frame)
-        return v8::Undefined(isolate);
 
-      l10n_messages = &messages_map[extension_id];
-      // A sync call to load message catalogs for current extension.
-      // TODO(devlin): Wait, what?! A synchronous call to the browser to perform
-      // potentially blocking work reading files from disk? That's Bad.
-      {
-        SCOPED_UMA_HISTOGRAM_TIMER("Extensions.SyncGetMessageBundle");
-        render_frame->Send(
-            new ExtensionHostMsg_GetMessageBundle(extension_id, l10n_messages));
-      }
-    }
-  }
-
-  std::string message =
-      MessageBundle::GetL10nMessage(message_name, *l10n_messages);
+  std::string message = SharedL10nMap::GetInstance().GetMessage(
+      extension_id, message_name, message_sender);
 
   std::vector<std::string> substitutions;
   // For now, we just suppress all errors, but that's really not the best.
@@ -258,8 +243,8 @@ RequestResult I18nHooksDelegate::HandleRequest(
     std::vector<v8::Local<v8::Value>>* arguments,
     const APITypeReferenceMap& refs) {
   using Handler = RequestResult (I18nHooksDelegate::*)(
-      ScriptContext*, const std::vector<v8::Local<v8::Value>>&);
-  static const struct {
+      ScriptContext*, const APISignature::V8ParseResult&);
+  static constexpr struct {
     Handler handler;
     base::StringPiece method;
   } kHandlers[] = {
@@ -289,19 +274,28 @@ RequestResult I18nHooksDelegate::HandleRequest(
     return result;
   }
 
-  return (this->*handler)(script_context, *parse_result.arguments);
+  return (this->*handler)(script_context, parse_result);
 }
 
 RequestResult I18nHooksDelegate::HandleGetMessage(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& parsed_arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   DCHECK(script_context->extension());
-  DCHECK(parsed_arguments[0]->IsString());
+  DCHECK(arguments[0]->IsString());
+
+  IPC::Sender* message_sender = nullptr;
+  if (script_context->IsForServiceWorker()) {
+    message_sender = WorkerThreadDispatcher::Get();
+  } else {
+    message_sender = script_context->GetRenderFrame();
+  }
+
   v8::Local<v8::Value> message = GetI18nMessage(
-      gin::V8ToString(script_context->isolate(), parsed_arguments[0]),
-      script_context->extension()->id(), parsed_arguments[1],
-      parsed_arguments[2], script_context->GetRenderFrame(),
-      script_context->v8_context());
+      gin::V8ToString(script_context->isolate(), arguments[0]),
+      script_context->extension()->id(), arguments[1], arguments[2],
+      message_sender, script_context->v8_context());
 
   RequestResult result(RequestResult::HANDLED);
   result.return_value = message;
@@ -310,34 +304,43 @@ RequestResult I18nHooksDelegate::HandleGetMessage(
 
 RequestResult I18nHooksDelegate::HandleGetUILanguage(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& parsed_arguments) {
+    const APISignature::V8ParseResult& parse_result) {
+  DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   RequestResult result(RequestResult::HANDLED);
-  result.return_value = gin::StringToSymbol(
-      script_context->isolate(), content::RenderThread::Get()->GetLocale());
+  const std::string lang = base::i18n::GetConfiguredLocale();
+  DCHECK(!lang.empty());
+
+  result.return_value = gin::StringToSymbol(script_context->isolate(), lang);
   return result;
 }
 
 RequestResult I18nHooksDelegate::HandleDetectLanguage(
     ScriptContext* script_context,
-    const std::vector<v8::Local<v8::Value>>& parsed_arguments) {
-  DCHECK(parsed_arguments[0]->IsString());
-  DCHECK(parsed_arguments[1]->IsFunction());
+    const APISignature::V8ParseResult& parse_result) {
+  const std::vector<v8::Local<v8::Value>>& arguments = *parse_result.arguments;
+  DCHECK(arguments[0]->IsString());
 
   v8::Local<v8::Context> v8_context = script_context->v8_context();
 
   v8::Local<v8::Value> detected_languages = DetectTextLanguage(
-      v8_context,
-      gin::V8ToString(script_context->isolate(), parsed_arguments[0]));
+      v8_context, gin::V8ToString(script_context->isolate(), arguments[0]));
 
-  // NOTE(devlin): The JS bindings make this callback asynchronous through a
-  // setTimeout, but it shouldn't be necessary.
-  v8::Local<v8::Value> callback_args[] = {detected_languages};
-  JSRunner::Get(v8_context)
-      ->RunJSFunction(parsed_arguments[1].As<v8::Function>(),
-                      script_context->v8_context(), base::size(callback_args),
-                      callback_args);
+  v8::Local<v8::Value> response_args[] = {detected_languages};
+  RequestResult result(RequestResult::HANDLED);
+  if (parse_result.async_type == binding::AsyncResponseType::kCallback) {
+    DCHECK(arguments[1]->IsFunction());
+    JSRunner::Get(v8_context)
+        ->RunJSFunction(arguments[1].As<v8::Function>(), v8_context,
+                        std::size(response_args), response_args);
+  } else {
+    DCHECK_EQ(binding::AsyncResponseType::kPromise, parse_result.async_type);
+    auto promise_resolver =
+        v8::Promise::Resolver::New(v8_context).ToLocalChecked();
+    promise_resolver->Resolve(v8_context, response_args[0]).FromJust();
+    result.return_value = promise_resolver->GetPromise();
+  }
 
-  return RequestResult(RequestResult::HANDLED);
+  return result;
 }
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,10 @@ constexpr size_t kMaxEntries = 256u;
 
 // SignedExchangePrefetchMetricRecorder will not associate prefetch
 // to a navigation if they are older than |kPrefetchExpireTimeDelta|.
-constexpr base::TimeDelta kPrefetchExpireTimeDelta =
-    base::TimeDelta::FromMilliseconds(30000);
+constexpr base::TimeDelta kPrefetchExpireTimeDelta = base::Milliseconds(30000);
 // SignedExchangePrefetchMetricRecorder flushes expired prefetch entries once
 // per |kFlushTimeoutTimeDelta|.
-constexpr base::TimeDelta kFlushTimeoutTimeDelta =
-    base::TimeDelta::FromMilliseconds(30100);
+constexpr base::TimeDelta kFlushTimeoutTimeDelta = base::Milliseconds(30100);
 
 constexpr char kPrecisionHistogram[] =
     "SignedExchange.Prefetch.Precision.30Seconds";

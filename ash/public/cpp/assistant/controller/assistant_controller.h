@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "chromeos/ash/services/assistant/public/cpp/assistant_service.h"
 
 class GURL;
 
@@ -40,7 +40,7 @@ class ASH_PUBLIC_EXPORT AssistantController {
   virtual base::WeakPtr<AssistantController> GetWeakPtr() = 0;
 
   // Provides a reference to the underlying |assistant| service.
-  virtual void SetAssistant(chromeos::assistant::Assistant* assistant) = 0;
+  virtual void SetAssistant(assistant::Assistant* assistant) = 0;
 
   // Methods below may only be called after |SetAssistant| is called.
   // Show speaker id enrollment flow.

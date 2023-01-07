@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,7 +39,7 @@ callback MediaSessionActionHandler = void (MediaSessionActionDetails details);
     [Measure, RaisesException] void setActionHandler(MediaSessionAction action,
                                     MediaSessionActionHandler? handler);
 
-    [Measure, RaisesException, RuntimeEnabled=MediaSessionPosition]
+    [Measure, RaisesException]
     void setPositionState(optional MediaPositionState state = {});
 
     [Measure, RuntimeEnabled=MediaSessionWebRTC]

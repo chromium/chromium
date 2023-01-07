@@ -1,21 +1,24 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_GLOBAL_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_WORKLET_GLOBAL_SCOPE_H_
 
+#include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_param_descriptor.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
+class AudioWorkletObjectProxy;
 class AudioWorkletProcessor;
 class AudioWorkletProcessorDefinition;
 class CrossThreadAudioWorkletProcessorInfo;
@@ -24,7 +27,6 @@ class MessagePortChannel;
 class SerializedScriptValue;
 class V8BlinkAudioWorkletProcessorConstructor;
 struct GlobalScopeCreationParams;
-
 
 // The storage for the construction of AudioWorkletProcessor, contains the
 // processor name and MessageChannelPort object.
@@ -39,13 +41,12 @@ class MODULES_EXPORT ProcessorCreationParams final {
   ~ProcessorCreationParams() = default;
 
   const String& Name() const { return name_; }
-  MessagePortChannel PortChannel() {  return message_port_channel_; }
+  MessagePortChannel PortChannel() { return message_port_channel_; }
 
  private:
   const String name_;
   MessagePortChannel message_port_channel_;
 };
-
 
 // This is constructed and destroyed on a worker thread, and all methods also
 // must be called on the worker thread.
@@ -82,10 +83,10 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   unsigned NumberOfRegisteredDefinitions();
 
   std::unique_ptr<Vector<CrossThreadAudioWorkletProcessorInfo>>
-      WorkletProcessorInfoListForSynchronization();
+  WorkletProcessorInfoListForSynchronization();
 
-  // Gets |processor_creation_params_| for the processor construction. If there
-  // is no on-going processor construction, this MUST return nullptr.
+  // Gets `processor_creation_params_` for the processor construction. If there
+  // is no on-going processor construction, this MUST return `nullptr`.
   ProcessorCreationParams* GetProcessorCreationParams();
 
   void SetCurrentFrame(size_t current_frame);
@@ -105,26 +106,37 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
     return token_;
   }
 
- private:
-  bool is_closing_ = false;
+  void SetObjectProxy(AudioWorkletObjectProxy&);
 
+ private:
   typedef HeapHashMap<String, Member<AudioWorkletProcessorDefinition>>
       ProcessorDefinitionMap;
   typedef HeapVector<Member<AudioWorkletProcessor>> ProcessorInstances;
+
+  network::mojom::RequestDestination GetDestination() const override {
+    return network::mojom::RequestDestination::kAudioWorklet;
+  }
+
+  bool is_closing_ = false;
 
   ProcessorDefinitionMap processor_definition_map_;
   ProcessorInstances processor_instances_;
 
   // Gets set when the processor construction is invoked, and cleared out after
-  // the construction. See the comment in |CreateProcessor()| method for the
+  // the construction. See the comment in `CreateProcessor()` method for the
   // detail.
   std::unique_ptr<ProcessorCreationParams> processor_creation_params_;
 
   size_t current_frame_ = 0;
-  float sample_rate_ = 0.0;
+  float sample_rate_ = 0.0f;
 
   // Default initialized to generate a distinct token for this worklet.
   const AudioWorkletToken token_;
+
+  // AudioWorkletObjectProxy manages the cross-thread messaging to
+  // AudioWorkletMessagingProxy on the main thread. AudioWorkletObjectProxy
+  // outlives AudioWorkletGlobalScope, this raw pointer is safe.
+  AudioWorkletObjectProxy* object_proxy_ = nullptr;
 };
 
 template <>

@@ -1,0 +1,105 @@
+<link rel="stylesheet" href="../demo.css">
+<style include="cr-hidden-style cr-icons">
+  cr-input {
+    max-width: 400px;
+    width: 100%;
+  }
+
+  .cr-icon {
+    --cr-icon-button-margin-start: 0;
+  }
+
+  .no-error {
+    --cr-input-error-display: none;
+  }
+
+  .icon-cancel {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-margin-end: 6px;
+    --cr-icon-button-size: 24px;
+  }
+
+  .domain-name {
+    padding-inline-end: 8px;
+  }
+</style>
+
+<h1>cr-input</h1>
+
+<div class="demos">
+  <cr-input
+      class="no-error"
+      type="text"
+      label="Standard input"
+      placeholder="Placeholder text"
+      value="{{textValue_}}">
+  </cr-input>
+
+  <cr-input
+      class="no-error"
+      type="search"
+      placeholder="Search a query"
+      value="{{searchValue_}}">
+    <div slot="inline-prefix" class="cr-icon icon-search" alt=""></div>
+    <cr-icon-button class="icon-cancel"
+        hidden$="[[!searchValue_]]" slot="inline-suffix"
+        on-click="onClearSearchClick_"
+        title="Clear search">
+    </cr-icon-button>
+  </cr-input>
+
+  <cr-input
+      class="no-error"
+      label="Email address"
+      type="text"
+      placeholder="username"
+      value="{{emailValue_}}">
+    <div slot="inline-suffix" class="domain-name">@chromium.org</div>
+  </cr-input>
+
+  <cr-input
+      id="numberInput"
+      label="Number input"
+      type="number"
+      min="5"
+      max="200"
+      placeholder="A number between 5 and 200"
+      error-message="Number needs to be between 5 and 200"
+      value="{{numberValue_}}">
+    <cr-button slot="suffix" on-click="onValidateClick_">Validate</cr-button>
+  </cr-input>
+
+  <cr-input
+      label="Auto-validating pin"
+      type="password"
+      placeholder="Enter a pin of 4 digits"
+      pattern="[0-9]{4}"
+      error-message="Pin must be 4 digits"
+      value="{{pinValue_}}"
+      auto-validate>
+  </cr-input>
+
+  <cr-input
+      class="no-error"
+      type="text"
+      label="Disabled input"
+      disabled
+      value="The value cannot be changed">
+  </cr-input>
+
+  <cr-input
+      class="no-error"
+      type="text"
+      label="Readonly input"
+      readonly
+      value="The value cannot be changed">
+  </cr-input>
+
+  <div>
+    <div>Text input value: [[textValue_]]</div>
+    <div>Search input value: [[searchValue_]]</div>
+    <div>Email input value: [[emailValue_]]</div>
+    <div>Number input value: [[numberValue_]]</div>
+    <div>Pin input value: [[pinValue_]]</div>
+  </div>
+</div>

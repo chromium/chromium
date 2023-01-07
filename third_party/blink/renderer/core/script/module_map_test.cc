@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_source_location_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetcher.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_loader_client.h"
@@ -19,9 +20,10 @@
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/module_test_base.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
+#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -138,13 +140,8 @@ class ModuleMapTestModulator final : public DummyModulator {
     return MakeGarbageCollected<TestModuleScriptFetcher>(this, pass_key);
   }
 
-  Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
-      v8::Local<v8::Module>) override {
-    return Vector<ModuleRequest>();
-  }
-
   base::SingleThreadTaskRunner* TaskRunner() override {
-    return Thread::Current()->GetTaskRunner().get();
+    return task_runner_.get();
   }
 
   struct TestRequest final : public GarbageCollected<TestRequest> {
@@ -165,11 +162,14 @@ class ModuleMapTestModulator final : public DummyModulator {
   HeapVector<Member<TestRequest>> test_requests_;
 
   Member<ScriptState> script_state_;
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   Member<TestModuleRecordResolver> resolver_;
 };
 
 ModuleMapTestModulator::ModuleMapTestModulator(ScriptState* script_state)
     : script_state_(script_state),
+      task_runner_(ExecutionContext::From(script_state_)
+                       ->GetTaskRunner(TaskType::kNetworking)),
       resolver_(MakeGarbageCollected<TestModuleRecordResolver>()) {}
 
 void ModuleMapTestModulator::Trace(Visitor* visitor) const {
@@ -182,13 +182,13 @@ void ModuleMapTestModulator::Trace(Visitor* visitor) const {
 void ModuleMapTestModulator::ResolveFetches() {
   for (const auto& test_request : test_requests_) {
     TaskRunner()->PostTask(FROM_HERE,
-                           WTF::Bind(&TestRequest::NotifyFetchFinished,
-                                     WrapPersistent(test_request.Get())));
+                           WTF::BindOnce(&TestRequest::NotifyFetchFinished,
+                                         WrapPersistent(test_request.Get())));
   }
   test_requests_.clear();
 }
 
-class ModuleMapTest : public PageTestBase, public ParametrizedModuleTest {
+class ModuleMapTest : public PageTestBase, public ModuleTestBase {
  public:
   void SetUp() override;
   void TearDown() override;
@@ -202,8 +202,8 @@ class ModuleMapTest : public PageTestBase, public ParametrizedModuleTest {
 };
 
 void ModuleMapTest::SetUp() {
-  ParametrizedModuleTest::SetUp();
-  PageTestBase::SetUp(IntSize(500, 500));
+  ModuleTestBase::SetUp();
+  PageTestBase::SetUp(gfx::Size(500, 500));
   NavigateTo(KURL("https://example.com"));
   modulator_ = MakeGarbageCollected<ModuleMapTestModulator>(
       ToScriptStateForMainWorld(&GetFrame()));
@@ -211,15 +211,11 @@ void ModuleMapTest::SetUp() {
 }
 
 void ModuleMapTest::TearDown() {
-  ParametrizedModuleTest::TearDown();
+  ModuleTestBase::TearDown();
   PageTestBase::TearDown();
 }
 
-TEST_P(ModuleMapTest, sequentialRequests) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
-  platform->AdvanceClockSeconds(1.);  // For non-zero DocumentParserTimings
-
+TEST_F(ModuleMapTest, sequentialRequests) {
   KURL url(NullURL(), "https://example.com/foo.js");
 
   // First request
@@ -232,7 +228,7 @@ TEST_P(ModuleMapTest, sequentialRequests) {
   Modulator()->ResolveFetches();
   EXPECT_FALSE(client->WasNotifyFinished())
       << "fetchSingleModuleScript shouldn't complete synchronously";
-  platform->RunUntilIdle();
+  test::RunPendingTasks();
 
   EXPECT_EQ(Modulator()
                 ->GetTestModuleRecordResolver()
@@ -251,7 +247,7 @@ TEST_P(ModuleMapTest, sequentialRequests) {
   Modulator()->ResolveFetches();
   EXPECT_FALSE(client2->WasNotifyFinished())
       << "fetchSingleModuleScript shouldn't complete synchronously";
-  platform->RunUntilIdle();
+  test::RunPendingTasks();
 
   EXPECT_EQ(Modulator()
                 ->GetTestModuleRecordResolver()
@@ -262,11 +258,7 @@ TEST_P(ModuleMapTest, sequentialRequests) {
   EXPECT_TRUE(client2->GetModuleScript());
 }
 
-TEST_P(ModuleMapTest, concurrentRequestsShouldJoin) {
-  ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
-      platform;
-  platform->AdvanceClockSeconds(1.);  // For non-zero DocumentParserTimings
-
+TEST_F(ModuleMapTest, concurrentRequestsShouldJoin) {
   KURL url(NullURL(), "https://example.com/foo.js");
 
   // First request
@@ -290,7 +282,7 @@ TEST_P(ModuleMapTest, concurrentRequestsShouldJoin) {
       << "fetchSingleModuleScript shouldn't complete synchronously";
   EXPECT_FALSE(client2->WasNotifyFinished())
       << "fetchSingleModuleScript shouldn't complete synchronously";
-  platform->RunUntilIdle();
+  test::RunPendingTasks();
 
   EXPECT_EQ(Modulator()
                 ->GetTestModuleRecordResolver()
@@ -302,10 +294,5 @@ TEST_P(ModuleMapTest, concurrentRequestsShouldJoin) {
   EXPECT_TRUE(client2->WasNotifyFinished());
   EXPECT_TRUE(client2->GetModuleScript());
 }
-// Instantiate tests once with TLA and once without:
-INSTANTIATE_TEST_SUITE_P(ModuleMapTestGroup,
-                         ModuleMapTest,
-                         testing::Bool(),
-                         ParametrizedModuleTestParamName());
 
 }  // namespace blink

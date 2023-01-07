@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 #include "ppapi/shared_impl/scoped_pp_var.h"
@@ -22,6 +21,9 @@ class PPAPI_SHARED_EXPORT DictionaryVar : public Var {
   typedef std::map<std::string, ScopedPPVar> KeyValueMap;
 
   DictionaryVar();
+
+  DictionaryVar(const DictionaryVar&) = delete;
+  DictionaryVar& operator=(const DictionaryVar&) = delete;
 
   // Helper function that converts a PP_Var to a DictionaryVar. This will
   // return NULL if the PP_Var is not of type PP_VARTYPE_DICTIONARY or the
@@ -52,8 +54,6 @@ class PPAPI_SHARED_EXPORT DictionaryVar : public Var {
 
  private:
   KeyValueMap key_value_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(DictionaryVar);
 };
 
 }  // namespace ppapi

@@ -68,7 +68,7 @@ content_shell instance for each test. Tests that fail when run in isolation but
 pass when run as part of the full test suite represent some state that we're not
 properly resetting between test runs or some state that we're not properly
 setting when starting up content_shell. You might want to run with
-`--time-out-ms=60000` to weed out tests that timeout due to waiting on
+`--timeout-ms=60000` to weed out tests that timeout due to waiting on
 content_shell startup time.
 
 #### Diagnose especially flaky tests

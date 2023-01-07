@@ -1,0 +1,43 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(fivedots): Replace link with explainer, once it lands.
+// https://docs.google.com/document/d/1g7ZCqZ5NdiU7oqyCpsc2iZ7rRAY1ZXO-9VoG4LfP7fM
+
+// TODO(crbug.com/1338340): Update `any` return type to a specific type once
+// we migrate all methods to be sync. Currently, `any` is used to hold either
+// Promise or value during migration.
+
+[
+  Exposed=DedicatedWorker,
+  RuntimeEnabled=FileSystemAccessAccessHandle,
+  SecureContext
+] interface FileSystemSyncAccessHandle {
+  [CallWith=ScriptState, Measure] any close();
+
+[
+  CallWith=ScriptState, RaisesException, Measure
+] any flush();
+
+[
+  CallWith=ScriptState, RaisesException, Measure
+] any getSize();
+
+// TODO(crbug.com/1338340): Add back [EnforceRange] to `size` after all methods
+// migrated to be sync. This check is currently done in 
+// `file_system_sync_access_handle.cc` due to `any` return type wrapping a
+// ScriptPromise throwing a TypeError instead of rejecting a promise.
+[
+  CallWith = ScriptState, RaisesException, Measure
+] any truncate(unsigned long long size);
+
+[
+  RaisesException, Measure
+] unsigned long long read([AllowShared] ArrayBufferView buffer,
+                           optional FileSystemReadWriteOptions options = {});
+[
+  RaisesException, Measure
+] unsigned long long write([AllowShared] ArrayBufferView buffer,
+                           optional FileSystemReadWriteOptions options = {});
+};

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter_model.h"
 
 namespace ui {
@@ -19,17 +18,25 @@ namespace ui {
 class COMPONENT_EXPORT(EVDEV) OneDeviceTrainNeuralStylusPalmDetectionFilterModel
     : public NeuralStylusPalmDetectionFilterModel {
  public:
-  OneDeviceTrainNeuralStylusPalmDetectionFilterModel();
   explicit OneDeviceTrainNeuralStylusPalmDetectionFilterModel(
+      const std::string& model_version,
       const std::vector<float>& radius_poly);
+
+  OneDeviceTrainNeuralStylusPalmDetectionFilterModel(
+      const OneDeviceTrainNeuralStylusPalmDetectionFilterModel&) = delete;
+  OneDeviceTrainNeuralStylusPalmDetectionFilterModel& operator=(
+      const OneDeviceTrainNeuralStylusPalmDetectionFilterModel&) = delete;
+
   float Inference(const std::vector<float>& features) const override;
 
   const NeuralStylusPalmDetectionFilterModelConfig& config() const override;
 
-  DISALLOW_COPY_AND_ASSIGN(OneDeviceTrainNeuralStylusPalmDetectionFilterModel);
+ protected:
+  NeuralStylusPalmDetectionFilterModelConfig config_;
 
  private:
-  NeuralStylusPalmDetectionFilterModelConfig config_;
+  void Initialize();
+  size_t expected_feature_size_;
 };
 
 }  // namespace ui

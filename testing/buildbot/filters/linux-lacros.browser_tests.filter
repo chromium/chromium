@@ -1,0 +1,38 @@
+# TODO(crbug.com/1111979) Enable all tests on lacros.
+-AccessContextAuditBrowserTest.CheckSessionOnly
+-AccessContextAuditBrowserTest.RemoveRecords
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/*
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/*
+-BluetoothApiTest.*
+-BluetoothLowEnergyApiTest.*
+-BluetoothPrivateApiTest.*
+-BrowserTest.RestorePinnedTabs
+-BrowserViewTest.GetAccessibleTabModalDialogTitle
+-BrowsingDataRemoverBrowserTest.StorageRemovedFromDisk
+-ContextMenuBrowserTest.OpenLinkInProfile
+-DeclarativeContentApiTest.RulesPersistence
+-ExternalProtocolDialogBrowserTest.TestFocus
+-FolderUploadConfirmationViewTest.InitiallyFocusesCancel
+-KeepAliveDevToolsTest.KeepsAliveUntilBrowserClose
+-OmniboxPopupContentsViewTest.ClickOmnibox
+-OmniboxPopupContentsViewTest.PopupMatchesLocationBarBackground
+-OutOfProcessPPAPITest.Printing
+-ProfileListDesktopBrowserTest.SwitchToProfile
+-SSLUITest.TestCloseTabWithUnsafePopup
+# crbug.com/1121486
+# Following tests were flaky. We disable them first until we have time to investigate.
+-All/HostedOrWebAppTest.CtrlClickLink/HostedApp
+-All/HostedOrWebAppTest.CtrlClickLink/WebApp
+-AudioFocusWebContentsObserverBrowserTest.PlatformAppHasDifferentAudioFocus
+-ContentSettingsTest.AllowCookiesForASessionUsingExceptions
+-CustomTabBarViewBrowserTest.BackToAppButtonIsNotVisibleInOutOfScopePopups
+-DevToolsTest.TestDispatchKeyEventShowsAutoFill
+# #TODO (b/235882005): These tests fail due to a NOT_IMPLEMENTED_LOG_ONCE()
+# within the  wayland_surface.cc implementation. This implementation is
+# currently used by linux-lacros. This causes our focused dialog object to
+# instantly close and causes these tests to fail. Until a solution is
+# introduced with wayland support or a workaround can be discovered in the
+# browser tests, simply disable them.
+-AccessCodeCastDialogBrowserTest.*
+-AccessCodeCastHandlerBrowserTest.*
+-AccessCodeCastSinkServiceBrowserTest.*

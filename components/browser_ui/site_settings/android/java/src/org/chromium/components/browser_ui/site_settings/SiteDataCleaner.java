@@ -1,11 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.components.browser_ui.site_settings;
 
 import org.chromium.components.content_settings.ContentSettingValues;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 /**
  * Encapsulates clearing the data of {@link Website}s.

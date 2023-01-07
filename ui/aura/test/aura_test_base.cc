@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/init/input_method_initializer.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/event_sink.h"
@@ -38,9 +37,11 @@ void AuraTestBase::SetUp() {
   // tests to fail, so we use a separate set of parameters for unit
   // testing.
   gesture_config->set_default_radius(0);
+  gesture_config->set_double_tap_timeout_in_ms(400);
   gesture_config->set_fling_max_cancel_to_down_time_in_ms(400);
   gesture_config->set_fling_max_tap_gap_time_in_ms(200);
   gesture_config->set_gesture_begin_end_types_enabled(true);
+  gesture_config->set_short_press_time(base::Milliseconds(900));
   gesture_config->set_long_press_time_in_ms(1000);
   gesture_config->set_max_distance_between_taps_for_double_tap(20);
   gesture_config->set_max_distance_for_two_finger_tap_in_pixels(300);
@@ -57,7 +58,6 @@ void AuraTestBase::SetUp() {
   gesture_config->set_min_scaling_span_in_pixels(125);
   gesture_config->set_min_swipe_velocity(10);
   gesture_config->set_scroll_debounce_interval_in_ms(0);
-  gesture_config->set_semi_long_press_time_in_ms(400);
   gesture_config->set_show_press_delay_in_ms(5);
   gesture_config->set_swipe_enabled(true);
   gesture_config->set_two_finger_tap_enabled(true);

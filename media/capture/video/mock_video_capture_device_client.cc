@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "media/capture/video/mock_video_capture_device_client.h"
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/video_frame.h"
 
 using testing::_;
@@ -24,7 +25,7 @@ class StubBufferHandle : public VideoCaptureBufferHandle {
 
  private:
   const size_t mapped_size_;
-  uint8_t* const data_;
+  const raw_ptr<uint8_t> data_;
 };
 
 class StubBufferHandleProvider
@@ -40,11 +41,6 @@ class StubBufferHandleProvider
     return {};
   }
 
-  mojo::ScopedSharedBufferHandle DuplicateAsMojoBuffer() override {
-    NOTREACHED();
-    return mojo::ScopedSharedBufferHandle();
-  }
-
   std::unique_ptr<VideoCaptureBufferHandle> GetHandleForInProcessAccess()
       override {
     return std::make_unique<StubBufferHandle>(mapped_size_, data_);
@@ -56,7 +52,7 @@ class StubBufferHandleProvider
 
  private:
   const size_t mapped_size_;
-  uint8_t* const data_;
+  const raw_ptr<uint8_t> data_;
 };
 
 class StubReadWritePermission
@@ -66,7 +62,7 @@ class StubReadWritePermission
   ~StubReadWritePermission() override { delete[] data_; }
 
  private:
-  uint8_t* const data_;
+  const raw_ptr<uint8_t> data_;
 };
 
 VideoCaptureDevice::Client::Buffer CreateStubBuffer(int buffer_id,

@@ -25,7 +25,7 @@
 
 🌱🌲🌳🌴🌵🌷🌸🌹🌺🌻🌼💐🌾🌿🍀🍁🍂🍃🍄🌰☺️😀👪
 #emoji:
-"Apple Color Emoji" : 24
+"Apple Color Emoji" : 23
 
 𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏
 #egyptian_hieroglyphs:
@@ -46,8 +46,7 @@
 
 ⇦⇧⇨⇩￩￪￫￬⟀
 #text_presentation_arrows_maths:
-"Arial Unicode MS" : 4,
-"Hiragino Mincho ProN" : 4,
-"Apple Symbols" : 1
+"Apple Symbols" : 5,
+"Hiragino Mincho ProN" : 4
 
 

@@ -5,6 +5,8 @@ and discusses appropriate uses and standard patterns for each of them. Some of
 these are intended for use by users, some by developers, and some by system
 administrators.
 
+[TOC]
+
 ## Prefs
 
 Example: prefs::kAllowDinosaurEasterEgg aka "allow_dinosaur_easter_egg"
@@ -31,7 +33,7 @@ Example: base::kDCheckIsFatalFeature
 
 These are implemented via creating a [base::Feature][base-feature] anywhere.
 These can be enabled via server-side experimentation or via the command-line
-using --enable-feature.  Which features are in use is tracked by UMA metrics,
+using "--enable-features".  Which features are in use is tracked by UMA metrics,
 and is visible in chrome://version as the "Variations" field. Do note that in
 release builds, only a series of hashes show up in chrome://version rather than
 the string names of the variations, but these hashes can be turned back into
@@ -135,10 +137,18 @@ You should add a setting if end-users might want to change this behavior. A
 decent litmus test for whether something should be a flag or a setting is: "will
 someone who can't read or write code want to change this?"
 
+## Related Documents
+
+* [Chromium Feature API & Finch (Googler-only)](http://go/finch-feature-api)
+* [Adding a new feature flag in chrome://flags](how_to_add_your_feature_flag.md)
+* [Runtime Enabled Features](../third_party/blink/renderer/platform/RuntimeEnabledFeatures.md)
+* [Initialization of Blink runtime features in content layer](initialize_blink_features.md)
+* [Integrating a feature with the origin trials framework](origin_trials_integration.md)
+
 [base-commandline]: https://cs.chromium.org/chromium/src/base/command_line.h?type=cs&l=98
 [base-feature]: https://cs.chromium.org/chromium/src/base/feature_list.h?sq=package:chromium&g=0&l=53
 [about-flags]: https://cs.chromium.org/chromium/src/chrome/browser/about_flags.cc
 [fieldtrial-config]: https://cs.chromium.org/chromium/src/testing/variations/fieldtrial_testing_config.json
 [flag-metadata]: https://cs.chromium.org/chromium/src/chrome/browser/flag-metadata.json
 [prefs]: https://www.chromium.org/developers/design-documents/preferences
-[profile-register]: https://cs.chromium.org/chromium/src/chrome/browser/profiles/profile.cc?type=cs&g=0&l=138
+[profile-register]: https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/profiles/profile.h;l=189;drc=b0378e4b67a5dbdb15acf0341ccd51acda81c8e0

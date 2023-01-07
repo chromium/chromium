@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,31 +13,28 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/trace_event/trace_event.h"
 #include "cc/base/rtree.h"
 #include "cc/paint/discardable_image_map.h"
 #include "cc/paint/image_id.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_op_buffer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 class SkCanvas;
 
-namespace gpu {
-namespace raster {
+namespace gpu::raster {
 class RasterImplementation;
 class RasterImplementationGLES;
-}  // namespace raster
-}  // namespace gpu
+}  // namespace gpu::raster
 
-namespace base {
-namespace trace_event {
+namespace base::trace_event {
 class TracedValue;
-}
-}
+}  // namespace base::trace_event
 
 namespace cc {
 
@@ -90,8 +87,8 @@ class CC_PAINT_EXPORT DisplayItemList
     size_t offset = paint_op_buffer_.next_op_offset();
     if (usage_hint_ == kTopLevelDisplayItemList)
       offsets_.push_back(offset);
-    const T* op = paint_op_buffer_.push<T>(std::forward<Args>(args)...);
-    DCHECK(op->IsValid());
+    const T& op = paint_op_buffer_.push<T>(std::forward<Args>(args)...);
+    DCHECK(op.IsValid());
     return offset;
   }
 
@@ -136,7 +133,8 @@ class CC_PAINT_EXPORT DisplayItemList
   void Finalize();
 
   struct DirectlyCompositedImageResult {
-    gfx::Size intrinsic_image_size;
+    // See PictureLayerImpl::direct_composited_image_default_raster_scale_.
+    gfx::Vector2dF default_raster_scale;
     bool nearest_neighbor;
   };
 
@@ -144,15 +142,23 @@ class CC_PAINT_EXPORT DisplayItemList
   // rasterized at the intrinsic size of the image), return the intrinsic size
   // of the image and whether or not to use nearest neighbor filtering when
   // scaling the layer.
-  base::Optional<DirectlyCompositedImageResult>
-  GetDirectlyCompositedImageResult(gfx::Size containing_layer_bounds) const;
+  absl::optional<DirectlyCompositedImageResult>
+  GetDirectlyCompositedImageResult() const;
 
-  int NumSlowPaths() const { return paint_op_buffer_.numSlowPaths(); }
+  int num_slow_paths_up_to_min_for_MSAA() const {
+    return paint_op_buffer_.num_slow_paths_up_to_min_for_MSAA();
+  }
   bool HasNonAAPaint() const { return paint_op_buffer_.HasNonAAPaint(); }
 
   // This gives the total number of PaintOps.
   size_t TotalOpCount() const { return paint_op_buffer_.total_op_count(); }
-  size_t BytesUsed() const;
+  size_t BytesUsed() const {
+    // TODO(jbroman): Does anything else owned by this class substantially
+    // contribute to memory usage?
+    // TODO(vmpstr): Probably DiscardableImageMap is worth counting here.
+    return sizeof(*this) + paint_op_buffer_.bytes_used();
+  }
+  size_t OpBytesUsed() const { return paint_op_buffer_.paint_ops_size(); }
 
   const DiscardableImageMap& discardable_image_map() const {
     return image_map_;
@@ -165,7 +171,9 @@ class CC_PAINT_EXPORT DisplayItemList
   void EmitTraceSnapshot() const;
   void GenerateDiscardableImagesMetadata();
 
-  gfx::Rect VisualRectForTesting(int index) { return visual_rects_[index]; }
+  gfx::Rect VisualRectForTesting(int index) {
+    return visual_rects_[static_cast<size_t>(index)];
+  }
 
   // Generate a PaintRecord from this DisplayItemList, leaving |this| in
   // an empty state.
@@ -175,7 +183,7 @@ class CC_PAINT_EXPORT DisplayItemList
   // indicates the maximum number of draw ops we consider when determining if a
   // rectangle is solid color.
   bool GetColorIfSolidInRect(const gfx::Rect& rect,
-                             SkColor* color,
+                             SkColor4f* color,
                              int max_ops_to_analyze = 1);
 
   std::string ToString() const;

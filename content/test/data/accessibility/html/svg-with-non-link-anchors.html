@@ -1,0 +1,12 @@
+<!--
+@AURALINUX-ALLOW:tag:*
+@BLINK-ALLOW:htmlTag*
+-->
+<svg aria-label="Text descendants">
+  <text><a tabindex="0">focusable</a></text>
+  <text><a>not focusable</a></text>
+</svg>
+<svg aria-label="Not text descendants">
+  <a tabindex="0"><circle cx="40" cy="40" r="25" /></a>
+  <a><circle cx="40" cy="40" r="25" /></a>
+</svg>

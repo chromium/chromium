@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,8 +50,8 @@ class THREAD_ANNOTATION_ATTRIBUTE__(capability("context"))
   // it in the out-parameter, storing inside it the stack from where the failing
   // SequenceChecker was bound to its sequence. Otherwise, out_bound_at is left
   // untouched.
-  bool CalledOnValidSequence(std::unique_ptr<debug::StackTrace>* out_bound_at =
-                                 nullptr) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool CalledOnValidSequence(
+      std::unique_ptr<debug::StackTrace>* out_bound_at = nullptr) const;
 
   // Unbinds the checker from the currently associated sequence. The checker
   // will be re-bound on the next call to CalledOnValidSequence().

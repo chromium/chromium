@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,14 +7,15 @@ package org.chromium.ui.modelutil;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
 import android.view.View;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,7 +28,11 @@ import java.util.List;
  * Tests to ensure/validate SimpleRecyclerViewAdapter behavior.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE,
+        instrumentedPackages =
+                {
+                        "androidx.recyclerview.widget.RecyclerView" // required to mock final
+                })
 public class SimpleRecyclerViewAdapterTest {
     private static final PropertyModel.WritableIntPropertyKey INT_PROPERTY =
             new PropertyModel.WritableIntPropertyKey();
@@ -40,9 +45,6 @@ public class SimpleRecyclerViewAdapterTest {
 
     // Mockito Spies allow us to intercept calls to parent class.
     private SimpleRecyclerViewAdapter mSpyAdapter;
-
-    @Mock
-    View mMockView;
 
     @Before
     public void setUp() {
@@ -58,9 +60,10 @@ public class SimpleRecyclerViewAdapterTest {
                         .useConstructor(mModelList)
                         .defaultAnswer(Mockito.CALLS_REAL_METHODS));
 
-        mSpyAdapter.registerType(VIEW_TYPE_1, parent -> mMockView, (m, v, p) -> {});
-        mSpyAdapter.registerType(VIEW_TYPE_2, parent -> mMockView, (m, v, p) -> {});
-        mSpyAdapter.registerType(VIEW_TYPE_3, parent -> mMockView, (m, v, p) -> {});
+        View view = new View(Robolectric.setupActivity(Activity.class));
+        mSpyAdapter.registerType(VIEW_TYPE_1, parent -> view, (m, v, p) -> {});
+        mSpyAdapter.registerType(VIEW_TYPE_2, parent -> view, (m, v, p) -> {});
+        mSpyAdapter.registerType(VIEW_TYPE_3, parent -> view, (m, v, p) -> {});
     }
 
     @Test

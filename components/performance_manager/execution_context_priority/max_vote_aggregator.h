@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,8 @@ namespace execution_context_priority {
 class MaxVoteAggregator : public VoteObserver {
  public:
   MaxVoteAggregator();
+  MaxVoteAggregator(const MaxVoteAggregator&) = delete;
+  MaxVoteAggregator& operator=(const MaxVoteAggregator&) = delete;
   ~MaxVoteAggregator() override;
 
   // Issues a voting channel (effectively registered a voter).
@@ -127,8 +129,6 @@ class MaxVoteAggregator : public VoteObserver {
 
   // Received votes, plus all of the upstreamed votes.
   VoteDataMap vote_data_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(MaxVoteAggregator);
 };
 
 }  // namespace execution_context_priority

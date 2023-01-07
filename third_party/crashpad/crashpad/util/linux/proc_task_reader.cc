@@ -1,4 +1,4 @@
-// Copyright 2019 The Crashpad Authors. All rights reserved.
+// Copyright 2019 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 #include <stdio.h>
 
+#include <iterator>
+
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "util/file/directory_reader.h"
 #include "util/misc/as_underlying_type.h"
@@ -29,7 +30,7 @@ bool ReadThreadIDs(pid_t pid, std::vector<pid_t>* tids) {
   DCHECK(tids->empty());
 
   char path[32];
-  snprintf(path, base::size(path), "/proc/%d/task", pid);
+  snprintf(path, std::size(path), "/proc/%d/task", pid);
   DirectoryReader reader;
   if (!reader.Open(base::FilePath(path))) {
     return false;

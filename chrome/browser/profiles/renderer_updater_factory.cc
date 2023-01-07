@@ -1,19 +1,20 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/profiles/renderer_updater_factory.h"
 
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/renderer_updater.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 RendererUpdaterFactory::RendererUpdaterFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "RendererUpdater",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::BuildForRegularAndIncognito()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(HostContentSettingsMapFactory::GetInstance());
 }
 
 RendererUpdaterFactory::~RendererUpdaterFactory() {}

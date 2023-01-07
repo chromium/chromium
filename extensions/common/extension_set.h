@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -29,9 +27,14 @@ class ExtensionSet {
 
   // Iteration over the values of the map (given that it's an ExtensionSet,
   // it should iterate like a set iterator).
-  class const_iterator : public std::iterator<std::input_iterator_tag,
-                                              scoped_refptr<const Extension> > {
+  class const_iterator {
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = scoped_refptr<const Extension>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = scoped_refptr<const Extension>*;
+    using reference = scoped_refptr<const Extension>&;
+
     const_iterator();
     const_iterator(const const_iterator& other);
     explicit const_iterator(ExtensionMap::const_iterator it);
@@ -63,6 +66,10 @@ class ExtensionSet {
   };
 
   ExtensionSet();
+
+  ExtensionSet(const ExtensionSet&) = delete;
+  ExtensionSet& operator=(const ExtensionSet&) = delete;
+
   ~ExtensionSet();
 
   size_t size() const;
@@ -100,7 +107,8 @@ class ExtensionSet {
   // NOTE: This can return NULL if called before UpdateExtensions receives
   // bulk extension data (e.g. if called from
   // EventBindings::HandleContextCreated)
-  const Extension* GetExtensionOrAppByURL(const GURL& url) const;
+  const Extension* GetExtensionOrAppByURL(const GURL& url,
+                                          bool include_guid = false) const;
 
   // Returns the app specified by the given |url|, if one exists. This will
   // return NULL if there is no entry with |url|, or if the extension with
@@ -119,8 +127,10 @@ class ExtensionSet {
   // |old_url|.  Also returns true if neither URL is in an app.
   bool InSameExtent(const GURL& old_url, const GURL& new_url) const;
 
-  // Look up an Extension object by id.
+  // Look up an Extension object by id or guid.
   const Extension* GetByID(const ExtensionId& id) const;
+  const Extension* GetByGUID(const std::string& guid) const;
+  const Extension* GetByIDorGUID(const std::string& id_or_guid) const;
 
   // Gets the IDs of all extensions in the set.
   ExtensionIdSet GetIDs() const;
@@ -138,8 +148,6 @@ class ExtensionSet {
 
  private:
   ExtensionMap extensions_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionSet);
 };
 
 }  // namespace extensions

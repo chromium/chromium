@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -54,7 +54,7 @@ struct WebFetchClientSettingsObject {
         // set to a valid, empty WebURL. But the given |outgoing_referrer| may
         // be a non-null empty String since the caller may pass one.
         // We canonicalize it to an invalid WebURL if it's empty.
-        outgoing_referrer(settings_object.GetOutgoingReferrer().IsEmpty()
+        outgoing_referrer(settings_object.GetOutgoingReferrer().empty()
                               ? KURL()
                               : KURL(settings_object.GetOutgoingReferrer())),
         insecure_requests_policy(

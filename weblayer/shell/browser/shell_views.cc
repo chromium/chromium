@@ -1,15 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-#include "weblayer/shell/browser/shell.h"
 
 #include <stddef.h>
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/command_line.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/aura/env.h"
@@ -17,30 +17,32 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/events/event.h"
-#include "ui/native_theme/native_theme_color_id.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/controls/webview/webview.h"
-#include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
 #include "ui/views/view.h"
-#include "ui/views/widget/desktop_aura/desktop_screen.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "weblayer/public/tab.h"
+#include "weblayer/shell/browser/shell.h"
 
-#if defined(USE_AURA)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
+#include "ui/display/screen.h"
+#include "ui/views/widget/desktop_aura/desktop_screen.h"
 #include "ui/wm/core/wm_state.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <fcntl.h>
 #include <io.h>
 #endif
@@ -73,18 +75,19 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
   }
 
   void AttachTab(Tab* tab, const gfx::Size& size) {
-    contents_view_->SetLayoutManager(std::make_unique<views::FillLayout>());
+    contents_view_->SetUseDefaultFillLayout(true);
     // If there was a previous WebView in this Shell it should be removed and
     // deleted.
-    if (web_view_) {
-      contents_view_->RemoveChildView(web_view_);
-      delete web_view_;
-    }
-    auto web_view = std::make_unique<views::WebView>(nullptr);
-    tab->AttachToView(web_view.get());
-    web_view->SetPreferredSize(size);
-    web_view_ = contents_view_->AddChildView(std::move(web_view));
-    Layout();
+    if (web_view_)
+      contents_view_->RemoveChildViewT(web_view_.get());
+
+    views::Builder<views::View>(contents_view_.get())
+        .AddChild(views::Builder<views::WebView>()
+                      .CopyAddressTo(&web_view_)
+                      .SetPreferredSize(size))
+        .BuildChildren();
+    tab->AttachToView(web_view_);
+    web_view_->SizeToPreferredSize();
 
     // Resize the widget, keeping the same origin.
     gfx::Rect bounds = GetWidget()->GetWindowBoundsInScreen();
@@ -119,96 +122,91 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
  private:
   // Initialize the UI control contained in shell window
   void InitShellWindow() {
-    SetBackground(CreateThemedSolidBackground(
-        this, ui::NativeTheme::kColorId_WindowBackground));
+    auto toolbar_button_rule = [](const views::View* view,
+                                  const views::SizeBounds& size_bounds) {
+      gfx::Size preferred_size = view->GetPreferredSize();
+      if (size_bounds != views::SizeBounds() &&
+          size_bounds.width().is_bounded()) {
+        preferred_size.set_width(std::max(
+            std::min(size_bounds.width().value(), preferred_size.width()),
+            preferred_size.width() / 2));
+      }
+      return preferred_size;
+    };
 
-    auto contents_view = std::make_unique<views::View>();
-    auto toolbar_view = std::make_unique<views::View>();
+    auto* box_layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical));
 
-    views::GridLayout* layout =
-        SetLayoutManager(std::make_unique<views::GridLayout>());
-
-    views::ColumnSet* column_set = layout->AddColumnSet(0);
-    column_set->AddPaddingColumn(0, 2);
-    column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1,
-                          views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    column_set->AddPaddingColumn(0, 2);
-
-    // Add toolbar buttons and URL text field
-    layout->AddPaddingRow(0, 2);
-    layout->StartRow(0, 0);
-    views::GridLayout* toolbar_layout =
-        toolbar_view->SetLayoutManager(std::make_unique<views::GridLayout>());
-
-    views::ColumnSet* toolbar_column_set = toolbar_layout->AddColumnSet(0);
-    // Back button
-    auto back_button = std::make_unique<views::MdTextButton>(
-        base::BindRepeating(&Shell::GoBackOrForward,
-                            base::Unretained(shell_.get()), -1),
-        u"Back");
-    gfx::Size back_button_size = back_button->GetPreferredSize();
-    toolbar_column_set->AddColumn(
-        views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
-        views::GridLayout::ColumnSize::kFixed, back_button_size.width(),
-        back_button_size.width() / 2);
-    // Forward button
-    auto forward_button = std::make_unique<views::MdTextButton>(
-        base::BindRepeating(&Shell::GoBackOrForward,
-                            base::Unretained(shell_.get()), 1),
-        u"Forward");
-    gfx::Size forward_button_size = forward_button->GetPreferredSize();
-    toolbar_column_set->AddColumn(
-        views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
-        views::GridLayout::ColumnSize::kFixed, forward_button_size.width(),
-        forward_button_size.width() / 2);
-    // Refresh button
-    auto refresh_button = std::make_unique<views::MdTextButton>(
-        base::BindRepeating(&Shell::Reload, base::Unretained(shell_.get())),
-        u"Refresh");
-    gfx::Size refresh_button_size = refresh_button->GetPreferredSize();
-    toolbar_column_set->AddColumn(
-        views::GridLayout::CENTER, views::GridLayout::CENTER, 0,
-        views::GridLayout::ColumnSize::kFixed, refresh_button_size.width(),
-        refresh_button_size.width() / 2);
-    // Stop button
-    auto stop_button = std::make_unique<views::MdTextButton>(
-        base::BindRepeating(&Shell::Stop, base::Unretained(shell_.get())),
-        u"Stop (100%)");
-    int stop_button_width = stop_button->GetPreferredSize().width();
-    toolbar_column_set->AddColumn(views::GridLayout::FILL,
-                                  views::GridLayout::CENTER, 0,
-                                  views::GridLayout::ColumnSize::kFixed,
-                                  stop_button_width, stop_button_width / 2);
-    toolbar_column_set->AddPaddingColumn(0, 2);
-    // URL entry
-    auto url_entry = std::make_unique<views::Textfield>();
-    url_entry->SetAccessibleName(u"Enter URL");
-    url_entry->set_controller(this);
-    url_entry->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_URL);
-    toolbar_column_set->AddColumn(
-        views::GridLayout::FILL, views::GridLayout::FILL, 1,
-        views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-    toolbar_column_set->AddPaddingColumn(0, 2);
-
-    // Fill up the first row
-    toolbar_layout->StartRow(0, 0);
-    back_button_ = toolbar_layout->AddView(std::move(back_button));
-    forward_button_ = toolbar_layout->AddView(std::move(forward_button));
-    refresh_button_ = toolbar_layout->AddView(std::move(refresh_button));
-    stop_button_ = toolbar_layout->AddView(std::move(stop_button));
-    url_entry_ = toolbar_layout->AddView(std::move(url_entry));
-
-    toolbar_view_ = layout->AddView(std::move(toolbar_view));
-
-    layout->AddPaddingRow(0, 5);
-
-    // Add WebBrowser view as the second row
-    {
-      layout->StartRow(1, 0);
-      contents_view_ = layout->AddView(std::move(contents_view));
-    }
-
-    layout->AddPaddingRow(0, 5);
+    views::Builder<views::WidgetDelegateView>(this)
+        .SetBackground(
+            views::CreateThemedSolidBackground(ui::kColorWindowBackground))
+        .AddChildren(
+            views::Builder<views::FlexLayoutView>()
+                .CopyAddressTo(&toolbar_view_)
+                .SetOrientation(views::LayoutOrientation::kHorizontal)
+                // Top/Left/Right padding = 2, Bottom padding = 5
+                .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(2, 2, 5, 2))
+                .AddChildren(
+                    views::Builder<views::MdTextButton>()
+                        .CopyAddressTo(&back_button_)
+                        .SetText(u"Back")
+                        .SetCallback(base::BindRepeating(
+                            &Shell::GoBackOrForward,
+                            base::Unretained(shell_.get()), -1))
+                        .SetProperty(
+                            views::kFlexBehaviorKey,
+                            views::FlexSpecification(
+                                base::BindRepeating(toolbar_button_rule))),
+                    views::Builder<views::MdTextButton>()
+                        .CopyAddressTo(&forward_button_)
+                        .SetText(u"Forward")
+                        .SetCallback(base::BindRepeating(
+                            &Shell::GoBackOrForward,
+                            base::Unretained(shell_.get()), 1))
+                        .SetProperty(
+                            views::kFlexBehaviorKey,
+                            views::FlexSpecification(
+                                base::BindRepeating(toolbar_button_rule))),
+                    views::Builder<views::MdTextButton>()
+                        .CopyAddressTo(&refresh_button_)
+                        .SetText(u"Refresh")
+                        .SetCallback(base::BindRepeating(
+                            &Shell::Reload, base::Unretained(shell_.get())))
+                        .SetProperty(
+                            views::kFlexBehaviorKey,
+                            views::FlexSpecification(
+                                base::BindRepeating(toolbar_button_rule))),
+                    views::Builder<views::MdTextButton>()
+                        .CopyAddressTo(&stop_button_)
+                        .SetText(u"Stop (100%)")
+                        .SetCallback(base::BindRepeating(
+                            &Shell::Stop, base::Unretained(shell_.get())))
+                        .SetProperty(
+                            views::kFlexBehaviorKey,
+                            views::FlexSpecification(
+                                base::BindRepeating(toolbar_button_rule))),
+                    views::Builder<views::Textfield>()
+                        .CopyAddressTo(&url_entry_)
+                        .SetAccessibleName(u"Enter URL")
+                        .SetController(this)
+                        .SetTextInputType(
+                            ui::TextInputType::TEXT_INPUT_TYPE_URL)
+                        .SetProperty(
+                            views::kFlexBehaviorKey,
+                            views::FlexSpecification(
+                                views::MinimumFlexSizeRule::kScaleToMinimum,
+                                views::MaximumFlexSizeRule::kUnbounded))
+                        // Left padding  = 2, Right padding = 2
+                        .SetProperty(views::kMarginsKey,
+                                     gfx::Insets::TLBR(0, 2, 0, 2))),
+            views::Builder<views::View>()
+                .CopyAddressTo(&contents_view_)
+                .SetUseDefaultFillLayout(true)
+                .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 2, 0, 2)),
+            views::Builder<views::View>().SetProperty(
+                views::kMarginsKey, gfx::Insets::TLBR(0, 0, 5, 0)))
+        .BuildChildren();
+    box_layout->SetFlexForView(contents_view_, 1);
   }
 
   void InitAccelerators() {
@@ -216,7 +214,7 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
     DCHECK(GetWidget());
     static const ui::KeyboardCode keys[] = {ui::VKEY_F5, ui::VKEY_BROWSER_BACK,
                                             ui::VKEY_BROWSER_FORWARD};
-    for (size_t i = 0; i < base::size(keys); ++i) {
+    for (size_t i = 0; i < std::size(keys); ++i) {
       GetFocusManager()->RegisterAccelerator(
           ui::Accelerator(keys[i], ui::EF_NONE),
           ui::AcceleratorManager::kNormalPriority, this);
@@ -278,16 +276,16 @@ class ShellWindowDelegateView : public views::WidgetDelegateView,
   std::u16string title_;
 
   // Toolbar view contains forward/backward/reload button and URL entry
-  View* toolbar_view_ = nullptr;
-  views::Button* back_button_ = nullptr;
-  views::Button* forward_button_ = nullptr;
-  views::Button* refresh_button_ = nullptr;
-  views::MdTextButton* stop_button_ = nullptr;
-  views::Textfield* url_entry_ = nullptr;
+  raw_ptr<views::View> toolbar_view_ = nullptr;
+  raw_ptr<views::Button> back_button_ = nullptr;
+  raw_ptr<views::Button> forward_button_ = nullptr;
+  raw_ptr<views::Button> refresh_button_ = nullptr;
+  raw_ptr<views::MdTextButton> stop_button_ = nullptr;
+  raw_ptr<views::Textfield> url_entry_ = nullptr;
 
   // Contents view contains the WebBrowser view
-  View* contents_view_ = nullptr;
-  views::WebView* web_view_ = nullptr;
+  raw_ptr<views::View> contents_view_ = nullptr;
+  raw_ptr<views::WebView> web_view_ = nullptr;
 };
 
 BEGIN_METADATA(ShellWindowDelegateView, views::WidgetDelegateView)
@@ -295,21 +293,25 @@ END_METADATA
 
 }  // namespace
 
-#if defined(USE_AURA)
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
 // static
 wm::WMState* Shell::wm_state_ = nullptr;
+display::Screen* Shell::screen_ = nullptr;
 #endif
 // static
 views::ViewsDelegate* Shell::views_delegate_ = nullptr;
 
 // static
 void Shell::PlatformInitialize(const gfx::Size& default_window_size) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   _setmode(_fileno(stdout), _O_BINARY);
   _setmode(_fileno(stderr), _O_BINARY);
 #endif
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS)
   wm_state_ = new wm::WMState;
-  views::InstallDesktopScreenIfNecessary();
+  CHECK(!display::Screen::GetScreen());
+  screen_ = views::CreateDesktopScreen().release();
+#endif
   views_delegate_ = new views::DesktopTestViewsDelegate();
 }
 
@@ -319,6 +321,8 @@ void Shell::PlatformExit() {
   // delete platform_;
   // platform_ = nullptr;
 #if defined(USE_AURA)
+  delete screen_;
+  screen_ = nullptr;
   delete wm_state_;
   wm_state_ = nullptr;
 #endif

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_theme_update_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 // static
 ProfileThemeUpdateService* ProfileThemeUpdateServiceFactory::GetForProfile(
@@ -29,9 +27,7 @@ ProfileThemeUpdateServiceFactory::GetInstance() {
 }
 
 ProfileThemeUpdateServiceFactory::ProfileThemeUpdateServiceFactory()
-    : BrowserContextKeyedServiceFactory(
-          "ProfileThemeUpdateServiceFactory",
-          BrowserContextDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactory("ProfileThemeUpdateServiceFactory") {
   DependsOn(ThemeServiceFactory::GetInstance());
 }
 
@@ -46,8 +42,7 @@ KeyedService* ProfileThemeUpdateServiceFactory::BuildServiceInstanceFor(
 
   Profile* profile = Profile::FromBrowserContext(context);
   return new ProfileThemeUpdateService(
-      profile, &profile_manager->GetProfileAttributesStorage(),
-      ThemeServiceFactory::GetForProfile(profile));
+      profile, &profile_manager->GetProfileAttributesStorage());
 }
 
 bool ProfileThemeUpdateServiceFactory::ServiceIsCreatedWithBrowserContext()

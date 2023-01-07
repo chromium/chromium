@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -48,6 +48,10 @@ class CONTENT_EXPORT OverscrollControllerAndroid
       std::unique_ptr<ui::OverscrollGlow> glow_effect,
       std::unique_ptr<ui::OverscrollRefresh> refresh_effect);
 
+  OverscrollControllerAndroid(const OverscrollControllerAndroid&) = delete;
+  OverscrollControllerAndroid& operator=(const OverscrollControllerAndroid&) =
+      delete;
+
   ~OverscrollControllerAndroid() override;
 
   // Returns true if |event| is consumed by an overscroll effect, in which
@@ -70,7 +74,7 @@ class CONTENT_EXPORT OverscrollControllerAndroid
                               float device_scale_factor,
                               const gfx::SizeF& scrollable_viewport_size,
                               const gfx::SizeF& root_layer_size,
-                              const gfx::Vector2dF& root_scroll_offset,
+                              const gfx::PointF& root_scroll_offset,
                               bool root_overflow_y_hidden);
 
   // Toggle activity of any overscroll effects. When disabled, events will be
@@ -91,7 +95,7 @@ class CONTENT_EXPORT OverscrollControllerAndroid
 
   void SetNeedsAnimate();
 
-  ui::WindowAndroidCompositor* const compositor_;
+  const raw_ptr<ui::WindowAndroidCompositor> compositor_;
   const float dpi_scale_;
 
   bool enabled_;
@@ -99,8 +103,6 @@ class CONTENT_EXPORT OverscrollControllerAndroid
   // TODO(jdduke): Factor out a common API from the two overscroll effects.
   std::unique_ptr<ui::OverscrollGlow> glow_effect_;
   std::unique_ptr<ui::OverscrollRefresh> refresh_effect_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollControllerAndroid);
 };
 
 }  // namespace content

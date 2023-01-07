@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_test_suite.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 
 namespace blink {
@@ -25,7 +26,8 @@ class ScrollbarThemeAuraButtonOverride final : public ScrollbarThemeAura {
   }
 
   int MinimumThumbLength(const Scrollbar& scrollbar) override {
-    return ScrollbarThickness(scrollbar.ScaleFromDIP());
+    return ScrollbarThickness(scrollbar.ScaleFromDIP(),
+                              scrollbar.CSSScrollbarWidth());
   }
 
  private:
@@ -74,17 +76,17 @@ TEST_F(ScrollbarThemeAuraTest, ButtonSizeHorizontal) {
   Scrollbar* scrollbar = Scrollbar::CreateForTesting(
       mock_scrollable_area, kHorizontalScrollbar, &theme);
 
-  IntRect scrollbar_size_normal_dimensions(11, 22, 444, 66);
+  gfx::Rect scrollbar_size_normal_dimensions(11, 22, 444, 66);
   scrollbar->SetFrameRect(scrollbar_size_normal_dimensions);
-  IntSize size1 = theme.ButtonSize(*scrollbar);
-  EXPECT_EQ(66, size1.Width());
-  EXPECT_EQ(66, size1.Height());
+  gfx::Size size1 = theme.ButtonSize(*scrollbar);
+  EXPECT_EQ(66, size1.width());
+  EXPECT_EQ(66, size1.height());
 
-  IntRect scrollbar_size_squashed_dimensions(11, 22, 444, 666);
+  gfx::Rect scrollbar_size_squashed_dimensions(11, 22, 444, 666);
   scrollbar->SetFrameRect(scrollbar_size_squashed_dimensions);
-  IntSize size2 = theme.ButtonSize(*scrollbar);
-  EXPECT_EQ(222, size2.Width());
-  EXPECT_EQ(666, size2.Height());
+  gfx::Size size2 = theme.ButtonSize(*scrollbar);
+  EXPECT_EQ(222, size2.width());
+  EXPECT_EQ(666, size2.height());
 
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
@@ -98,17 +100,17 @@ TEST_F(ScrollbarThemeAuraTest, ButtonSizeVertical) {
   Scrollbar* scrollbar = Scrollbar::CreateForTesting(
       mock_scrollable_area, kVerticalScrollbar, &theme);
 
-  IntRect scrollbar_size_normal_dimensions(11, 22, 44, 666);
+  gfx::Rect scrollbar_size_normal_dimensions(11, 22, 44, 666);
   scrollbar->SetFrameRect(scrollbar_size_normal_dimensions);
-  IntSize size1 = theme.ButtonSize(*scrollbar);
-  EXPECT_EQ(44, size1.Width());
-  EXPECT_EQ(44, size1.Height());
+  gfx::Size size1 = theme.ButtonSize(*scrollbar);
+  EXPECT_EQ(44, size1.width());
+  EXPECT_EQ(44, size1.height());
 
-  IntRect scrollbar_size_squashed_dimensions(11, 22, 444, 666);
+  gfx::Rect scrollbar_size_squashed_dimensions(11, 22, 444, 666);
   scrollbar->SetFrameRect(scrollbar_size_squashed_dimensions);
-  IntSize size2 = theme.ButtonSize(*scrollbar);
-  EXPECT_EQ(444, size2.Width());
-  EXPECT_EQ(333, size2.Height());
+  gfx::Size size2 = theme.ButtonSize(*scrollbar);
+  EXPECT_EQ(444, size2.width());
+  EXPECT_EQ(333, size2.height());
 
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
@@ -123,10 +125,10 @@ TEST_F(ScrollbarThemeAuraTest, NoButtonsReturnsSize0) {
       mock_scrollable_area, kVerticalScrollbar, &theme);
   theme.SetHasScrollbarButtons(false);
 
-  scrollbar->SetFrameRect(IntRect(1, 2, 3, 4));
-  IntSize size = theme.ButtonSize(*scrollbar);
-  EXPECT_EQ(0, size.Width());
-  EXPECT_EQ(0, size.Height());
+  scrollbar->SetFrameRect(gfx::Rect(1, 2, 3, 4));
+  gfx::Size size = theme.ButtonSize(*scrollbar);
+  EXPECT_EQ(0, size.width());
+  EXPECT_EQ(0, size.height());
 
   ThreadState::Current()->CollectAllGarbageForTesting();
 }
@@ -143,7 +145,7 @@ TEST_F(ScrollbarThemeAuraTest, ScrollbarPartsInvalidationTest) {
   ON_CALL(*mock_scrollable_area, VerticalScrollbar())
       .WillByDefault(Return(scrollbar));
 
-  IntRect vertical_rect(1010, 0, 14, 768);
+  gfx::Rect vertical_rect(1010, 0, 14, 768);
   scrollbar->SetFrameRect(vertical_rect);
   scrollbar->ClearThumbNeedsRepaint();
   scrollbar->ClearTrackNeedsRepaint();

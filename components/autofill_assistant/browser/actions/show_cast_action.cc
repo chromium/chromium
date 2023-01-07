@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,8 @@
 #include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/element_action_util.h"
+#include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace autofill_assistant {
@@ -30,11 +32,6 @@ void ShowCastAction::InternalProcessAction(ProcessActionCallback callback) {
   process_action_callback_ = std::move(callback);
 
   const ShowCastProto& show_cast = proto_.show_cast();
-  if (show_cast.has_title()) {
-    // TODO(crbug.com/806868): Deprecate and remove message from this action and
-    // use tell instead.
-    delegate_->SetStatusMessage(show_cast.title());
-  }
   Selector selector = Selector(show_cast.element_to_present());
   if (selector.empty()) {
     VLOG(1) << __func__ << ": empty selector";
@@ -94,7 +91,7 @@ void ShowCastAction::OnFindContainer(
     const Selector& selector,
     const TopPadding& top_padding,
     const ClientStatus& element_status,
-    std::unique_ptr<ElementFinder::Result> container) {
+    std::unique_ptr<ElementFinderResult> container) {
   if (!element_status.ok()) {
     VLOG(1) << __func__ << " Failed to find container.";
     EndAction(element_status);
@@ -107,8 +104,8 @@ void ShowCastAction::OnFindContainer(
 void ShowCastAction::ScrollToElement(
     const Selector& selector,
     const TopPadding& top_padding,
-    std::unique_ptr<ElementFinder::Result> container) {
-  auto actions = std::make_unique<action_delegate_util::ElementActionVector>();
+    std::unique_ptr<ElementFinderResult> container) {
+  auto actions = std::make_unique<element_action_util::ElementActionVector>();
   actions->emplace_back(base::BindOnce(
       &ShowCastAction::RunAndIncreaseWaitTimer, weak_ptr_factory_.GetWeakPtr(),
       base::BindOnce(&ActionDelegate::WaitUntilDocumentIsInReadyState,
@@ -121,8 +118,9 @@ void ShowCastAction::ScrollToElement(
   }
   action_delegate_util::AddOptionalStep(
       wait_for_stable_element,
-      base::BindOnce(&WebController::ScrollIntoView,
-                     delegate_->GetWebController()->GetWeakPtr(), false),
+      base::BindOnce(&WebController::ScrollIntoViewIfNeeded,
+                     delegate_->GetWebController()->GetWeakPtr(),
+                     /* center= */ true),
       actions.get());
   action_delegate_util::AddOptionalStep(
       wait_for_stable_element,
@@ -132,25 +130,30 @@ void ShowCastAction::ScrollToElement(
           base::BindOnce(&WebController::WaitUntilElementIsStable,
                          delegate_->GetWebController()->GetWeakPtr(),
                          proto_.show_cast().stable_check_max_rounds(),
-                         base::TimeDelta::FromMilliseconds(
+                         base::Milliseconds(
                              proto_.show_cast().stable_check_interval_ms()))),
       actions.get());
-  actions->emplace_back(base::BindOnce(&ActionDelegate::ScrollToElementPosition,
-                                       delegate_->GetWeakPtr(), selector,
-                                       top_padding, std::move(container)));
+  action_delegate_util::AddStepWithoutCallback(
+      base::BindOnce(&ActionDelegate::StoreScrolledToElement,
+                     delegate_->GetWeakPtr()),
+      actions.get());
+  actions->emplace_back(
+      base::BindOnce(&WebController::ScrollToElementPosition,
+                     delegate_->GetWebController()->GetWeakPtr(),
+                     std::move(container), top_padding));
 
   action_delegate_util::FindElementAndPerform(
       delegate_, selector,
-      base::BindOnce(&action_delegate_util::PerformAll, std::move(actions)),
+      base::BindOnce(&element_action_util::PerformAll, std::move(actions)),
       base::BindOnce(&ShowCastAction::OnScrollToElementPosition,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ShowCastAction::RunAndIncreaseWaitTimer(
     base::OnceCallback<void(
-        const ElementFinder::Result&,
+        const ElementFinderResult&,
         base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>)> action,
-    const ElementFinder::Result& element,
+    const ElementFinderResult& element,
     base::OnceCallback<void(const ClientStatus&)> done) {
   std::move(action).Run(
       element, base::BindOnce(&ShowCastAction::OnWaitForElementTimed,

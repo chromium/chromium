@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ namespace blink {
 
 // This file is used to maintain a consistent initial set of state between the
 // RendererProcessHostImpl and the RendererSchedulerImpl.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // This matches Android's ChildProcessConnection state before OnProcessLaunched.
 constexpr bool kLaunchingProcessIsBackgrounded = true;
 #else

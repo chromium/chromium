@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
 #include "mojo/public/cpp/bindings/lib/validation_util.h"
@@ -49,11 +49,15 @@ class RunResponseForwardToCallback : public MessageReceiver {
  public:
   explicit RunResponseForwardToCallback(RunCallback callback)
       : callback_(std::move(callback)) {}
+
+  RunResponseForwardToCallback(const RunResponseForwardToCallback&) = delete;
+  RunResponseForwardToCallback& operator=(const RunResponseForwardToCallback&) =
+      delete;
+
   bool Accept(Message* message) override;
 
  private:
   RunCallback callback_;
-  DISALLOW_COPY_AND_ASSIGN(RunResponseForwardToCallback);
 };
 
 bool RunResponseForwardToCallback::Accept(Message* message) {
@@ -139,8 +143,8 @@ ControlMessageProxy::~ControlMessageProxy() {
 
 void ControlMessageProxy::QueryVersion(
     base::OnceCallback<void(uint32_t)> callback) {
-  auto input_ptr = interface_control::RunInput::New();
-  input_ptr->set_query_version(interface_control::QueryVersion::New());
+  auto input_ptr = interface_control::RunInput::NewQueryVersion(
+      interface_control::QueryVersion::New());
   SendRunMessage(owner_, std::move(input_ptr),
                  base::BindOnce(&RunVersionCallback, std::move(callback)));
 }
@@ -148,8 +152,8 @@ void ControlMessageProxy::QueryVersion(
 void ControlMessageProxy::RequireVersion(uint32_t version) {
   auto require_version = interface_control::RequireVersion::New();
   require_version->version = version;
-  auto input_ptr = interface_control::RunOrClosePipeInput::New();
-  input_ptr->set_require_version(std::move(require_version));
+  auto input_ptr = interface_control::RunOrClosePipeInput::NewRequireVersion(
+      std::move(require_version));
   SendRunOrClosePipeMessage(owner_, std::move(input_ptr));
 }
 
@@ -166,8 +170,8 @@ void ControlMessageProxy::FlushAsyncForTesting(base::OnceClosure callback) {
     return;
   }
 
-  auto input_ptr = interface_control::RunInput::New();
-  input_ptr->set_flush_for_testing(interface_control::FlushForTesting::New());
+  auto input_ptr = interface_control::RunInput::NewFlushForTesting(
+      interface_control::FlushForTesting::New());
   DCHECK(!pending_flush_callback_);
   pending_flush_callback_ = std::move(callback);
   SendRunMessage(
@@ -184,21 +188,20 @@ void ControlMessageProxy::RunFlushForTestingClosure() {
 }
 
 void ControlMessageProxy::EnableIdleTracking(base::TimeDelta timeout) {
-  auto input = interface_control::RunOrClosePipeInput::New();
-  input->set_enable_idle_tracking(
+  auto input = interface_control::RunOrClosePipeInput::NewEnableIdleTracking(
       interface_control::EnableIdleTracking::New(timeout.InMicroseconds()));
   SendRunOrClosePipeMessage(owner_, std::move(input));
 }
 
 void ControlMessageProxy::SendMessageAck() {
-  auto input = interface_control::RunOrClosePipeInput::New();
-  input->set_message_ack(interface_control::MessageAck::New());
+  auto input = interface_control::RunOrClosePipeInput::NewMessageAck(
+      interface_control::MessageAck::New());
   SendRunOrClosePipeMessage(owner_, std::move(input));
 }
 
 void ControlMessageProxy::NotifyIdle() {
-  auto input = interface_control::RunOrClosePipeInput::New();
-  input->set_notify_idle(interface_control::NotifyIdle::New());
+  auto input = interface_control::RunOrClosePipeInput::NewNotifyIdle(
+      interface_control::NotifyIdle::New());
   SendRunOrClosePipeMessage(owner_, std::move(input));
 }
 

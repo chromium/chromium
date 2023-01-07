@@ -1,8 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "mojo/core/embedder/embedder.h"
 #include "mojo/core/test/mojo_test_base.h"
 #include "mojo/public/c/system/buffer.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -26,6 +27,8 @@ TEST_F(SignalsTest, QueryInvalidArguments) {
   CreateMessagePipe(&a, &b);
   EXPECT_EQ(MOJO_RESULT_INVALID_ARGUMENT,
             MojoQueryHandleSignalsState(a, nullptr));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(a));
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
 
 TEST_F(SignalsTest, QueryMessagePipeSignals) {
@@ -80,6 +83,7 @@ TEST_F(SignalsTest, QueryMessagePipeSignals) {
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED, state.satisfied_signals);
   EXPECT_EQ(MOJO_HANDLE_SIGNAL_PEER_CLOSED | MOJO_HANDLE_SIGNAL_QUOTA_EXCEEDED,
             state.satisfiable_signals);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
 
 TEST_F(SignalsTest, LocalPeers) {
@@ -131,9 +135,13 @@ TEST_F(SignalsTest, LocalPeers) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
 }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 
 TEST_F(SignalsTest, RemotePeers) {
+  if (IsMojoIpczEnabled()) {
+    GTEST_SKIP() << "Peer remoteness tracking is not implemented by MojoIpcz.";
+  }
+
   MojoHandleSignalsState state = {0, 0};
   MojoHandle a, b;
   CreateMessagePipe(&a, &b);
@@ -191,6 +199,8 @@ TEST_F(SignalsTest, RemotePeers) {
                              MOJO_TRIGGER_CONDITION_SIGNALS_UNSATISFIED));
     EXPECT_EQ(MOJO_RESULT_OK, MojoQueryHandleSignalsState(a, &state));
     EXPECT_FALSE(state.satisfied_signals & MOJO_HANDLE_SIGNAL_PEER_REMOTE);
+    EXPECT_EQ(MOJO_RESULT_OK, MojoClose(a));
+    EXPECT_EQ(MOJO_RESULT_OK, MojoClose(b));
   });
 }
 
@@ -213,9 +223,10 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(RemotePeersClient, SignalsTest, h) {
 
   // Now send |b| back home.
   WriteMessageWithHandles(h, "O_O", &b, 1);
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
 }
 
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 }  // namespace core

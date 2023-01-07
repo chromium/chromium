@@ -1,0 +1,12 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN
+++++++TEXT_FIELD focusable has_input_focus actions='{DEFAULT, SET_VALUE}' value='The textarea tag defines a multi-line text input control.<newline>'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='The textarea tag defines a multi-line text input control.<newline>'
+++++++++++++UNKNOWN label='The textarea tag defines a multi-line text input'
+++++++++++++UNKNOWN label=' '
+++++++++++++UNKNOWN label='control.'
+++++++++++++UNKNOWN label='<newline>'
+++++++++++UNKNOWN label='<newline>'
+++++++++++++UNKNOWN label='<newline>'

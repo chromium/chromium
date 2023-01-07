@@ -1,6 +1,8 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
+from __future__ import print_function
 
 import collections
 import itertools
@@ -9,6 +11,7 @@ import sys
 
 import gold_inexact_matching.iterative_parameter_optimizer\
     as iterative_optimizer
+from gold_inexact_matching import common_typing as ct
 from gold_inexact_matching import parameter_set
 
 
@@ -22,8 +25,8 @@ class LocalMinimaParameterOptimizer(
   MIN_EDGE_THRESHOLD_WEIGHT = 0
   MIN_MAX_DIFF_WEIGHT = MIN_DELTA_THRESHOLD_WEIGHT = 0
 
-  def __init__(self, args, test_name):
-    super(LocalMinimaParameterOptimizer, self).__init__(args, test_name)
+  def __init__(self, args: ct.ParsedCmdArgs, test_name: str):
+    super().__init__(args, test_name)
     # These are (or will be) maps of ints to maps of ints to ints, i.e. a 2D
     # array containing ints, just using maps instead of lists. They hold the
     # most permissive value visited so far that resulted in a comparison failure
@@ -38,7 +41,7 @@ class LocalMinimaParameterOptimizer(
     self._permissive_edge_map = {}
 
   @classmethod
-  def AddArguments(cls, parser):
+  def AddArguments(cls, parser: ct.CmdArgParser) -> ct.ArgumentGroupTuple:
     common_group, sobel_group, fuzzy_group = super(
         LocalMinimaParameterOptimizer, cls).AddArguments(parser)
 
@@ -73,15 +76,15 @@ class LocalMinimaParameterOptimizer(
 
     return common_group, sobel_group, fuzzy_group
 
-  def _VerifyArgs(self):
-    super(LocalMinimaParameterOptimizer, self)._VerifyArgs()
+  def _VerifyArgs(self) -> None:
+    super()._VerifyArgs()
 
     assert self._args.edge_threshold_weight >= self.MIN_EDGE_THRESHOLD_WEIGHT
 
     assert self._args.max_diff_weight >= self.MIN_MAX_DIFF_WEIGHT
     assert self._args.delta_threshold_weight >= self.MIN_DELTA_THRESHOLD_WEIGHT
 
-  def _RunOptimizationImpl(self):
+  def _RunOptimizationImpl(self) -> None:
     visited_parameters = set()
     to_visit = collections.deque()
     smallest_weight = sys.maxsize
@@ -93,7 +96,7 @@ class LocalMinimaParameterOptimizer(
     # 2. They haven't been visited already.
     # 3. They are not guaranteed to fail based on previously tested parameters.
     # 4. The current parameters result in a successful comparison.
-    while len(to_visit):
+    while to_visit:
       current_parameters = None
       if self._args.use_bfs:
         current_parameters = to_visit.popleft()
@@ -123,12 +126,14 @@ class LocalMinimaParameterOptimizer(
           smallest_parameters = [current_parameters]
       else:
         self._UpdateMostPermissiveFailedParameters(current_parameters)
-    print 'Found %d parameter(s) with the smallest weight:' % len(
-        smallest_parameters)
+    print('Found %d parameter(s) with the smallest weight:' %
+          len(smallest_parameters))
     for p in smallest_parameters:
-      print p
+      print(p)
 
-  def _ParametersAreGuaranteedToFail(self, parameters):
+  def _ParametersAreGuaranteedToFail(self,
+                                     parameters: parameter_set.ParameterSet
+                                     ) -> bool:
     """Checks whether the given ParameterSet is guaranteed to fail.
 
     A ParameterSet is guaranteed to fail if we have already tried and failed
@@ -161,7 +166,8 @@ class LocalMinimaParameterOptimizer(
 
     return False
 
-  def _UpdateMostPermissiveFailedParameters(self, parameters):
+  def _UpdateMostPermissiveFailedParameters(
+      self, parameters: parameter_set.ParameterSet) -> None:
     """Updates the array of most permissive failed parameters.
 
     This is used in conjunction with _ParametersAreGuaranteedToFail to prune
@@ -220,7 +226,7 @@ class LocalMinimaParameterOptimizer(
       if adjacent != starting_parameters:
         yield adjacent
 
-  def _GetWeight(self, parameters):
+  def _GetWeight(self, parameters: parameter_set.ParameterSet) -> int:
     return (parameters.max_diff * self._args.max_diff_weight +
             parameters.delta_threshold * self._args.delta_threshold_weight +
             (self.MAX_EDGE_THRESHOLD - parameters.edge_threshold) *

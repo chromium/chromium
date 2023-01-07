@@ -1,25 +1,47 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//chrome/services/file_util/public/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [ "file_util_service.mojom" ]
+  enabled_features = []
 
   if (safe_browsing_mode == 1) {
     sources += [ "safe_archive_analyzer.mojom" ]
-    enabled_features = [ "full_safe_browsing" ]
+    enabled_features += [ "full_safe_browsing" ]
   }
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
+  ]
 
   if (is_chromeos_ash) {
     sources += [ "zip_file_creator.mojom" ]
     public_deps += [ "//components/services/filesystem/public/mojom" ]
+  }
+
+  if (enable_xz_extractor) {
+    sources += [ "xz_file_extractor.mojom" ]
+    enabled_features += [ "xz_extractor" ]
+  }
+
+  if (safe_browsing_mode == 1 && enable_maldoca) {
+    sources += [
+      "document_analysis_service.mojom",
+      "safe_document_analyzer.mojom",
+    ]
+    enabled_features += [ "enable_maldoca" ]
+    public_deps += [
+      "//components/services/filesystem/public/mojom",
+      "//sandbox/policy/mojom",
+    ]
   }
 
   cpp_typemaps = [
@@ -35,8 +57,29 @@ mojom("mojom") {
       traits_public_deps = [
         "//chrome/common/safe_browsing:proto",
         "//components/safe_browsing:buildflags",
-        "//components/safe_browsing/core:csd_proto",
+        "//components/safe_browsing/core/common/proto:csd_proto",
+        "//ipc:protobuf_support",
       ]
     },
   ]
+
+  if (safe_browsing_mode == 1 && enable_maldoca) {
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "chrome.mojom.SafeDocumentAnalyzerResults"
+            cpp = "::safe_browsing::DocumentAnalyzerResults"
+          },
+        ]
+        traits_headers = [ "safe_document_analyzer_mojom_traits.h" ]
+        traits_sources = [ "safe_document_analyzer_mojom_traits.cc" ]
+        traits_public_deps = [
+          "//chrome/common/safe_browsing:proto",
+          "//components/safe_browsing:buildflags",
+          "//components/safe_browsing/core/common/proto:csd_proto",
+        ]
+      },
+    ]
+  }
 }

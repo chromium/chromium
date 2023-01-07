@@ -1,0 +1,58 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//v8/gni/v8.gni")
+
+source_set("shared_storage_worklet") {
+  sources = [
+    "console.cc",
+    "console.h",
+    "module_script_downloader.cc",
+    "module_script_downloader.h",
+    "private_aggregation.cc",
+    "private_aggregation.h",
+    "shared_storage.cc",
+    "shared_storage.h",
+    "shared_storage_iterator.cc",
+    "shared_storage_iterator.h",
+    "shared_storage_worklet_global_scope.cc",
+    "shared_storage_worklet_global_scope.h",
+    "shared_storage_worklet_service_impl.cc",
+    "shared_storage_worklet_service_impl.h",
+    "unnamed_operation_handler.cc",
+    "unnamed_operation_handler.h",
+    "url_selection_operation_handler.cc",
+    "url_selection_operation_handler.h",
+    "worklet_v8_helper.cc",
+    "worklet_v8_helper.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//content:content_implementation",
+    "//v8:external_startup_data",
+  ]
+
+  deps = [
+    "//base",
+    "//content:export",
+    "//content/services/worklet_utils",
+    "//gin",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//third_party/blink/public/common",
+    "//url",
+    "//v8",
+  ]
+
+  public_deps = [ "//content/common:mojo_bindings" ]
+}
+
+# See comment at the top of //content/BUILD.gn for how this works.
+group("for_content_tests") {
+  visibility = [ "//content/test/*" ]
+  if (!is_component_build) {
+    public_deps = [ ":shared_storage_worklet" ]
+  }
+}

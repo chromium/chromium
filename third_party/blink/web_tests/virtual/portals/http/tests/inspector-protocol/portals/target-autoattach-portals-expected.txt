@@ -1,0 +1,62 @@
+Tests how portal targets are auto-attached.
+Auto-attached via Tab target: [
+    [0] : {
+        sessionId : <string>
+        targetInfo : {
+            attached : true
+            browserContextId : <string>
+            canAccessOpener : false
+            targetId : <string>
+            title : Page with a portal
+            type : page
+            url : http://devtools.oopif-a.test:8000/inspector-protocol/portals/resources/page-with-portal.html
+        }
+        waitingForDebugger : false
+    }
+    [1] : {
+        sessionId : <string>
+        targetInfo : {
+            attached : true
+            browserContextId : <string>
+            canAccessOpener : false
+            subtype : portal
+            targetId : <string>
+            title : This is a portal
+            type : page
+            url : http://devtools.oopif-b.test:8000/inspector-protocol/portals/resources/portal.html
+        }
+        waitingForDebugger : false
+    }
+]
+Auto-attached via Page target (legacy mode): [
+    [0] : {
+        sessionId : <string>
+        targetInfo : {
+            attached : true
+            browserContextId : <string>
+            canAccessOpener : false
+            subtype : portal
+            targetId : <string>
+            title : This is a portal
+            type : page
+            url : http://devtools.oopif-b.test:8000/inspector-protocol/portals/resources/portal.html
+        }
+        waitingForDebugger : false
+    }
+]
+Auto-attached via Page target (Tab target mode): [
+]
+Detached from http://devtools.oopif-a.test:8000/inspector-protocol/portals/resources/page-with-portal.html
+Portal activated
+{
+    attached : true
+    browserContextId : <string>
+    canAccessOpener : false
+    subtype : portal
+    targetId : <string>
+    title : 
+    type : page
+    url : 
+}
+Detached, correct target: true
+

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -25,6 +24,9 @@
 class TabUIHelper : public content::WebContentsObserver,
                     public content::WebContentsUserData<TabUIHelper> {
  public:
+  TabUIHelper(const TabUIHelper&) = delete;
+  TabUIHelper& operator=(const TabUIHelper&) = delete;
+
   ~TabUIHelper() override;
 
   // Get the title of the tab. When the associated WebContents' title is empty,
@@ -50,6 +52,9 @@ class TabUIHelper : public content::WebContentsObserver,
   void set_was_active_at_least_once() { was_active_at_least_once_ = true; }
   void set_created_by_session_restore(bool created_by_session_restore) {
     created_by_session_restore_ = created_by_session_restore;
+  }
+  bool is_created_by_session_restore_for_testing() {
+    return created_by_session_restore_;
   }
 
  private:
@@ -84,8 +89,6 @@ class TabUIHelper : public content::WebContentsObserver,
   base::WeakPtrFactory<TabUIHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(TabUIHelper);
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_UI_HELPER_H_

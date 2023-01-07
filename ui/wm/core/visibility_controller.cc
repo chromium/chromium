@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,8 +45,8 @@ bool VisibilityController::CallAnimateOnChildWindowVisibilityChanged(
 
 void VisibilityController::UpdateLayerVisibility(aura::Window* window,
                                                  bool visible) {
-  bool animated = window->type() != aura::client::WINDOW_TYPE_CONTROL &&
-                  window->type() != aura::client::WINDOW_TYPE_UNKNOWN &&
+  bool animated = window->GetType() != aura::client::WINDOW_TYPE_CONTROL &&
+                  window->GetType() != aura::client::WINDOW_TYPE_UNKNOWN &&
                   ShouldAnimateWindow(window);
   animated = animated &&
       CallAnimateOnChildWindowVisibilityChanged(window, visible);

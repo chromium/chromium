@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_text_layout_engine.h"
 
 #include "base/auto_reset.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_api_shim.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_svg_text_path.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
@@ -32,11 +33,12 @@
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
 SVGTextLayoutEngine::SVGTextLayoutEngine(
-    const Vector<LayoutSVGInlineText*>& descendant_text_nodes)
+    const HeapVector<Member<LayoutSVGInlineText>>& descendant_text_nodes)
     : descendant_text_nodes_(descendant_text_nodes),
       current_logical_text_node_index_(0),
       logical_character_offset_(0),
@@ -44,12 +46,13 @@ SVGTextLayoutEngine::SVGTextLayoutEngine(
       is_vertical_text_(false),
       in_path_layout_(false),
       text_length_spacing_in_effect_(false),
+      last_text_box_was_in_text_path_(false),
       text_path_(nullptr),
       text_path_current_offset_(0),
       text_path_displacement_(0),
       text_path_spacing_(0),
       text_path_scaling_(1) {
-  DCHECK(!descendant_text_nodes_.IsEmpty());
+  DCHECK(!descendant_text_nodes_.empty());
 }
 
 SVGTextLayoutEngine::~SVGTextLayoutEngine() = default;
@@ -57,11 +60,11 @@ SVGTextLayoutEngine::~SVGTextLayoutEngine() = default;
 bool SVGTextLayoutEngine::SetCurrentTextPosition(const SVGCharacterData& data) {
   bool has_x = data.HasX();
   if (has_x)
-    text_position_.SetX(data.x);
+    text_position_.set_x(data.x);
 
   bool has_y = data.HasY();
   if (has_y)
-    text_position_.SetY(data.y);
+    text_position_.set_y(data.y);
 
   // If there's an absolute x/y position available, it marks the beginning of
   // a new position along the path.
@@ -77,6 +80,10 @@ bool SVGTextLayoutEngine::SetCurrentTextPosition(const SVGCharacterData& data) {
       if (has_x)
         text_path_current_offset_ = data.x + text_path_start_offset_;
     }
+  } else if ((!has_x || !has_y) && last_text_box_was_in_text_path_) {
+    UseCounter::Count(descendant_text_nodes_[0]->GetDocument(),
+                      WebFeature::kSVGTextHangingFromPath);
+    last_text_box_was_in_text_path_ = false;
   }
   return has_x || has_y;
 }
@@ -85,31 +92,31 @@ void SVGTextLayoutEngine::AdvanceCurrentTextPosition(float glyph_advance) {
   // TODO(fs): m_textPathCurrentOffset should preferably also be updated
   // here, but that requires a bit more untangling yet.
   if (is_vertical_text_)
-    text_position_.SetY(text_position_.Y() + glyph_advance);
+    text_position_.set_y(text_position_.y() + glyph_advance);
   else
-    text_position_.SetX(text_position_.X() + glyph_advance);
+    text_position_.set_x(text_position_.x() + glyph_advance);
 }
 
 bool SVGTextLayoutEngine::ApplyRelativePositionAdjustmentsIfNeeded(
     const SVGCharacterData& data) {
-  FloatPoint delta;
+  gfx::Vector2dF delta;
   bool has_dx = data.HasDx();
   if (has_dx)
-    delta.SetX(data.dx);
+    delta.set_x(data.dx);
 
   bool has_dy = data.HasDy();
   if (has_dy)
-    delta.SetY(data.dy);
+    delta.set_y(data.dy);
 
   // Apply dx/dy value adjustments to current text position, if needed.
-  text_position_.MoveBy(delta);
+  text_position_ += delta;
 
   if (in_path_layout_) {
     if (is_vertical_text_)
-      delta = delta.TransposedPoint();
+      delta.Transpose();
 
-    text_path_current_offset_ += delta.X();
-    text_path_displacement_ += delta.Y();
+    text_path_current_offset_ += delta.x();
+    text_path_displacement_ += delta.y();
   }
   return has_dx || has_dy;
 }
@@ -124,7 +131,7 @@ void SVGTextLayoutEngine::ComputeCurrentFragmentMetrics(
   float scaling_factor = text_line_layout.ScalingFactor();
   DCHECK(scaling_factor);
   const Font& scaled_font = text_line_layout.ScaledFont();
-  FloatRect glyph_overflow_bounds;
+  gfx::RectF glyph_overflow_bounds;
 
   const SimpleFontData* font_data = scaled_font.PrimaryFont();
   DCHECK(font_data);
@@ -262,12 +269,14 @@ void SVGTextLayoutEngine::LayoutCharactersInTextBoxes(InlineFlowBox* start) {
       text_length_spacing_in_effect_ || DefinesTextLengthWithSpacing(start);
   base::AutoReset<bool> text_length_spacing_scope(
       &text_length_spacing_in_effect_, text_length_spacing_in_effect);
+  last_text_box_was_in_text_path_ = false;
 
   for (InlineBox* child = start->FirstChild(); child;
        child = child->NextOnLine()) {
     if (auto* svg_inline_text_box = DynamicTo<SVGInlineTextBox>(child)) {
       DCHECK(child->GetLineLayoutItem().IsSVGInlineText());
       LayoutInlineTextBox(svg_inline_text_box);
+      last_text_box_was_in_text_path_ = false;
     } else {
       // Skip generated content.
       Node* node = child->GetLineLayoutItem().GetNode();
@@ -283,6 +292,7 @@ void SVGTextLayoutEngine::LayoutCharactersInTextBoxes(InlineFlowBox* start) {
 
       if (is_text_path)
         EndTextPathLayout();
+      last_text_box_was_in_text_path_ = is_text_path;
     }
   }
 }
@@ -383,11 +393,11 @@ void SVGTextLayoutEngine::LayoutTextOnLineOrPath(
   float baseline_shift_value = baseline_layout.CalculateBaselineShift(style);
   baseline_shift_value -= baseline_layout.CalculateAlignmentBaselineShift(
       is_vertical_text_, text_line_layout);
-  FloatPoint baseline_shift;
+  gfx::Vector2dF baseline_shift;
   if (is_vertical_text_)
-    baseline_shift.SetX(baseline_shift_value);
+    baseline_shift.set_x(baseline_shift_value);
   else
-    baseline_shift.SetY(-baseline_shift_value);
+    baseline_shift.set_y(-baseline_shift_value);
 
   // Main layout algorithm.
   const unsigned box_end_offset = text_box->Start() + text_box->Len();
@@ -405,8 +415,11 @@ void SVGTextLayoutEngine::LayoutTextOnLineOrPath(
     if (!logical_text_node)
       break;
 
+    auto it = logical_text_node->CharacterDataMap().find(
+        logical_character_offset_ + 1);
     const SVGCharacterData data =
-        logical_text_node->CharacterDataMap().at(logical_character_offset_ + 1);
+        it != logical_text_node->CharacterDataMap().end() ? it->value
+                                                          : SVGCharacterData();
 
     // TODO(fs): Use the return value to eliminate the additional
     // hash-lookup below when determining if this text box should be tagged
@@ -440,14 +453,15 @@ void SVGTextLayoutEngine::LayoutTextOnLineOrPath(
     // needed.
     float spacing = spacing_layout.CalculateCSSSpacing(current_character);
 
-    FloatPoint text_path_shift;
+    gfx::Vector2dF text_path_shift;
     PointAndTangent position;
     if (in_path_layout_) {
       float scaled_glyph_advance = glyph_advance * text_path_scaling_;
       // Setup translations that move to the glyph midpoint.
-      text_path_shift.Set(-scaled_glyph_advance / 2, text_path_displacement_);
+      text_path_shift =
+          gfx::Vector2dF(-scaled_glyph_advance / 2, text_path_displacement_);
       if (is_vertical_text_)
-        text_path_shift = text_path_shift.TransposedPoint();
+        text_path_shift.Transpose();
       text_path_shift += baseline_shift;
 
       // Calculate current offset along path.
@@ -509,16 +523,16 @@ void SVGTextLayoutEngine::LayoutTextOnLineOrPath(
           visual_metrics_iterator_.CharacterOffset();
       current_text_fragment_.metrics_list_offset =
           visual_metrics_iterator_.MetricsListOffset();
-      current_text_fragment_.x = position.point.X();
-      current_text_fragment_.y = position.point.Y();
+      current_text_fragment_.x = position.point.x();
+      current_text_fragment_.y = position.point.y();
 
       // Build fragment transformation.
       if (position.tangent_in_degrees)
         current_text_fragment_.transform.Rotate(position.tangent_in_degrees);
 
-      if (text_path_shift.X() || text_path_shift.Y()) {
-        current_text_fragment_.transform.Translate(text_path_shift.X(),
-                                                   text_path_shift.Y());
+      if (text_path_shift.x() || text_path_shift.y()) {
+        current_text_fragment_.transform.Translate(text_path_shift.x(),
+                                                   text_path_shift.y());
       }
 
       // For vertical text, always rotate by 90 degrees regardless of

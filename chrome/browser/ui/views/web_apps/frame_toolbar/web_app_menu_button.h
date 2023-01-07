@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,14 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 class BrowserView;
 
@@ -31,13 +33,13 @@ class WebAppMenuButton : public AppMenuButton {
   void SetColor(SkColor color);
   SkColor GetColor() const;
 
+  // Sets the icon.
+  void set_icon(const gfx::VectorIcon& icon) { icon_ = &icon; }
+
   // Fades the menu button highlight on and off.
   void StartHighlightAnimation();
 
-  void ButtonPressed(const ui::Event& event);
-
-  // AppMenuButton:
-  SkColor GetInkDropBaseColor() const override;
+  virtual void ButtonPressed(const ui::Event& event);
 
  protected:
   BrowserView* browser_view() { return browser_view_; }
@@ -46,9 +48,10 @@ class WebAppMenuButton : public AppMenuButton {
   void FadeHighlightOff();
 
   // The containing browser view.
-  BrowserView* browser_view_;
+  raw_ptr<BrowserView> browser_view_;
 
   SkColor color_ = gfx::kPlaceholderColor;
+  raw_ptr<const gfx::VectorIcon> icon_ = &kBrowserToolsIcon;
 
   base::OneShotTimer highlight_off_timer_;
 };

@@ -1,18 +1,21 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "omnibox_controller_emitter.h"
 
-#if !defined(OS_IOS)
+#include "base/observer_list.h"
+#include "build/build_config.h"
+
+#if !BUILDFLAG(IS_IOS)
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 namespace {
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 class OmniboxControllerEmitterFactory
     : public BrowserContextKeyedServiceFactory {
  public:
@@ -44,20 +47,20 @@ class OmniboxControllerEmitterFactory
     return context;
   }
 };
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
 OmniboxControllerEmitter::OmniboxControllerEmitter() {}
 OmniboxControllerEmitter::~OmniboxControllerEmitter() {}
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // static
 OmniboxControllerEmitter* OmniboxControllerEmitter::GetForBrowserContext(
     content::BrowserContext* browser_context) {
   return OmniboxControllerEmitterFactory::GetForBrowserContext(browser_context);
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 void OmniboxControllerEmitter::AddObserver(
     AutocompleteController::Observer* observer) {

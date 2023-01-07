@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2011 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2011 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <resources
     xmlns:tools="http://schemas.android.com/tools"
@@ -25,13 +27,7 @@
     <!-- Compositor Tab Title Text -->
     <bool name="compositor_tab_title_fake_bold_text">true</bool>
 
-    <!-- Toolbar/AppMenu - Drawable level on reload image button -->
-    <integer name="reload_button_level_reload">0</integer>
-    <integer name="reload_button_level_stop">1</integer>
-
     <!-- Download InfoBar animation. -->
-    <integer name="download_infobar_sweep_up_delay">500</integer>
-    <integer name="download_infobar_sweep_down_delay">800</integer>
     <integer name="download_infobar_fill_in_delay">1200</integer>
     <integer name="download_infobar_fill_out_delay">200</integer>
     <integer name="download_infobar_bar_start_offset">800</integer>
@@ -40,4 +36,11 @@
 
     <!-- Contextual Search -->
     <item name="contextual_search_sheet_full_height_fraction" format="float" type="dimen">0.95</item>
+
+    <!-- Tablet tab strip -->
+    <item name="compositor_background_tab_outline_alpha" format="float" type="dimen">0.5</item>
+    <item name="compositor_background_tab_overlay_alpha" format="float" type="dimen">0</item>
+
+    <!-- Revamped Incognito NTP -->
+    <integer name="descriptions_weight">1</integer>
 </resources>

@@ -1,0 +1,4 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++Spinner text:"00:00:00" clickable focusable inputType:36 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="inputTime", clickableScore="300", roleDescription="time picker"]
+++++Spinner text:"00:00:00" hint:"Breakfast" clickable focusable inputType:36 actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="inputTime", clickableScore="300", hint="Breakfast", roleDescription="time picker"]

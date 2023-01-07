@@ -1,0 +1,96 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.w3.org/TR/webnn/
+
+typedef record<DOMString, MLOperand> MLNamedOperands;
+
+enum MLInputOperandLayout { "nchw", "nhwc" };
+
+enum MLConv2dFilterOperandLayout { "oihw", "hwio", "ohwi", "ihwo" };
+
+enum MLAutoPad { "explicit", "same-upper", "same-lower" };
+
+dictionary MLConv2dOptions {
+  sequence<long> padding;
+  sequence<long> strides;
+  sequence<long> dilations;
+  MLAutoPad autoPad = "explicit";
+  long groups = 1;
+  MLInputOperandLayout inputLayout = "nchw";
+  MLConv2dFilterOperandLayout filterLayout = "oihw";
+  MLOperand bias;
+  MLOperator activation;
+};
+
+dictionary MLGemmOptions {
+  MLOperand c;
+  float alpha = 1.0;
+  float beta = 1.0;
+  boolean aTranspose = false;
+  boolean bTranspose = false;
+};
+
+enum MLRoundingType {
+  "floor",
+  "ceil"
+};
+
+dictionary MLPool2dOptions {
+  sequence<long> windowDimensions;
+  sequence<long> padding;
+  sequence<long> strides;
+  sequence<long> dilations;
+  MLAutoPad autoPad = "explicit";
+  MLInputOperandLayout layout = "nchw";
+  MLRoundingType roundingType = "floor";
+  sequence<long> outputSizes;
+};
+
+dictionary MLClampOptions {
+  float minValue;
+  float maxValue;
+};
+
+[
+  RuntimeEnabled=MachineLearningNeuralNetwork,
+  Exposed=Window
+] interface MLGraphBuilder {
+  constructor(MLContext context);
+
+  [RaisesException] MLOperand input(DOMString name, MLOperandDescriptor desc);
+
+  [RaisesException] MLOperand constant(MLOperandDescriptor desc, MLBufferView bufferView);
+
+  [RaisesException] MLOperand clamp(MLOperand input, optional MLClampOptions options = {});
+  [RaisesException] MLOperator clamp(optional MLClampOptions options = {});
+
+  [RaisesException] MLOperand conv2d(MLOperand input, MLOperand filter, optional MLConv2dOptions options = {});
+
+  // Element-wise binary operations
+  [RaisesException] MLOperand add(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand sub(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand mul(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand div(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand max(MLOperand a, MLOperand b);
+  [RaisesException] MLOperand min(MLOperand a, MLOperand b);
+
+  [RaisesException] MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});
+
+  [RaisesException] MLOperand hardSwish(MLOperand x);
+  [RaisesException] MLOperator hardSwish();
+
+  // Pooling operations
+  [RaisesException] MLOperand averagePool2d(MLOperand input, optional MLPool2dOptions options = {});
+  [RaisesException] MLOperand maxPool2d(MLOperand input, optional MLPool2dOptions options = {});
+
+  [RaisesException] MLOperand relu(MLOperand input);
+  [RaisesException] MLOperator relu();
+
+  [RaisesException] MLOperand reshape(MLOperand input, sequence<long> newShape);
+
+  [RaisesException] MLOperand softmax(MLOperand input);
+
+  [CallWith=ScriptState, RaisesException] Promise<MLGraph> buildAsync(MLNamedOperands outputs);
+};

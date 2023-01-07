@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<link rel=author title="Joey Arhar" href="mailto:jarhar@chromium.org">
+<link rel=help href="https://bugs.chromium.org/p/chromium/issues/detail?id=1200932">
+<link rel=match href="accent-color-no-transparency-expected.html">
+
+<p>The alpha component of accent-color should be ignored, and the form control
+should be drawn as if alpha fully opaque.</p>
+
+<div>
+  <input checked type=checkbox style="accent-color:rgba(255, 0, 0, 0.5)">
+</div>
+
+<div>
+  <input checked type=radio style="accent-color:rgba(255, 0, 0, 0.5)">
+</div>
+
+<div>
+  <input type=range style="accent-color:rgba(255, 0, 0, 0.5)">
+</div>
+
+<div>
+  <progress style="accent-color:rgba(255, 0, 0, 0.5)" max="100" value="50"> 50% </progress>
+</div>

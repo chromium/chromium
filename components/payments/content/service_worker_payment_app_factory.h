@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "components/payments/content/payment_app_factory.h"
 
 namespace payments {
@@ -19,6 +18,12 @@ class ServiceWorkerPaymentAppCreator;
 class ServiceWorkerPaymentAppFactory : public PaymentAppFactory {
  public:
   ServiceWorkerPaymentAppFactory();
+
+  ServiceWorkerPaymentAppFactory(const ServiceWorkerPaymentAppFactory&) =
+      delete;
+  ServiceWorkerPaymentAppFactory& operator=(
+      const ServiceWorkerPaymentAppFactory&) = delete;
+
   ~ServiceWorkerPaymentAppFactory() override;
 
   // PaymentAppFactory:
@@ -32,8 +37,6 @@ class ServiceWorkerPaymentAppFactory : public PaymentAppFactory {
   std::map<ServiceWorkerPaymentAppCreator*,
            std::unique_ptr<ServiceWorkerPaymentAppCreator>>
       creators_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerPaymentAppFactory);
 };
 
 }  // namespace payments

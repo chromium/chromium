@@ -1,0 +1,124 @@
+.layout.horizontal,
+.layout.horizontal-reverse,
+.layout.vertical,
+.layout.vertical-reverse {
+  display: flex;
+  min-height: 0;
+}
+
+.layout.inline {
+  display: inline-flex;
+  min-height: 0;
+}
+
+.layout.horizontal {
+  flex-direction: row;
+}
+
+.layout.horizontal-reverse {
+  flex-direction: row-reverse;
+}
+
+.layout.vertical {
+  flex-direction: column;
+}
+
+.layout.vertical-reverse {
+  flex-direction: column-reverse;
+}
+
+.flex {
+  flex: 1;
+}
+
+.flex-grow {
+  flex: 1 0 auto; /* flex-grow flex-shrink flex-basis */
+}
+
+/* alignment in cross axis */
+
+.layout.start {
+  align-items: flex-start;
+}
+
+.layout.center {
+  align-items: center;
+}
+
+.layout.end {
+  align-items: flex-end;
+}
+
+.layout.stretch {
+  align-items: stretch;
+}
+
+/* alignment in main axis */
+
+.layout.start-justified {
+  justify-content: flex-start;
+}
+
+.layout.center-justified {
+  justify-content: center;
+}
+
+.layout.end-justified {
+  justify-content: flex-end;
+}
+
+.layout.around-justified {
+  justify-content: space-around;
+}
+
+.layout.justified {
+  justify-content: space-between;
+}
+
+/* wrapping */
+
+.layout.wrap {
+  flex-wrap: wrap;
+}
+
+.layout.no-wrap {
+  flex-wrap: nowrap;
+}
+
+/* self alignment */
+
+.self-start {
+  align-self: flex-start;
+}
+
+.self-center {
+  align-self: center;
+}
+
+.self-end {
+  align-self: flex-end;
+}
+
+.self-stretch {
+  align-self: stretch;
+}
+
+/*******************************
+          Other Layout
+*******************************/
+
+[hidden] {
+  display: none !important;
+}
+
+.relative {
+  position: relative;
+}
+
+.fit {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+}

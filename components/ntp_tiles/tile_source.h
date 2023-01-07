@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,8 +14,6 @@ namespace ntp_tiles {
 enum class TileSource {
   // Tile comes from the personal top sites list, based on local history.
   TOP_SITES,
-  // Tile comes from the suggestions service, based on synced history.
-  SUGGESTIONS_SERVICE,
   // Tile is regionally popular.
   POPULAR,
   // Tile is a popular site baked into the binary.
@@ -28,10 +26,8 @@ enum class TileSource {
   HOMEPAGE,
   // Tile comes from explore sites list.
   EXPLORE,
-  // Tile comes from the repeatable queries service, based on search history.
-  REPEATABLE_QUERIES_SERVICE,
 
-  LAST = REPEATABLE_QUERIES_SERVICE
+  LAST = EXPLORE
 };
 
 }  // namespace ntp_tiles

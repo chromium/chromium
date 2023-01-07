@@ -1,0 +1,6 @@
+include_rules = [
+  "+chrome/android",
+  "+components/browser_ui/bottomsheet/android",
+  "+components/favicon/android",
+  "+components/image_fetcher/android",
+]

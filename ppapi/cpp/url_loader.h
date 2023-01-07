@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,7 @@ class URLLoader : public Resource {
   ///
   /// @param other A <code>URLLoader</code> to be copied.
   URLLoader(const URLLoader& other);
+  URLLoader& operator=(const URLLoader& other);
 
   /// This function begins loading the <code>URLRequestInfo</code>.
   /// The operation completes when response headers are received or when an

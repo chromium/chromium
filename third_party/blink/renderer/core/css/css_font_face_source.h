@@ -30,7 +30,8 @@
 #include "third_party/blink/renderer/core/css/font_display.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/fonts/lock_for_parallel_text_shaping.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/linked_hash_set.h"
@@ -62,13 +63,16 @@ class CORE_EXPORT CSSFontFaceSource
   // Returns nullptr unless the source is a loaded RemoteFontFaceSource.
   virtual String GetURL() const { return g_null_atom; }
 
+  virtual bool IsPendingDataUrl() const { return false; }
+
   // Returns nullptr unless the source is a loaded RemoteFontFaceSource.
   virtual const FontCustomPlatformData* GetCustomPlaftormData() const {
     return nullptr;
   }
 
   scoped_refptr<SimpleFontData> GetFontData(const FontDescription&,
-                                            const FontSelectionCapabilities&);
+                                            const FontSelectionCapabilities&)
+      LOCKS_EXCLUDED(lock_);
 
   // TODO(https://crbug.com/947461): IsLocalFontAvailable must not have a
   // FontDescription argument.
@@ -96,7 +100,7 @@ class CORE_EXPORT CSSFontFaceSource
   virtual scoped_refptr<SimpleFontData> CreateFontData(
       const FontDescription&,
       const FontSelectionCapabilities&) = 0;
-  void PruneTable();
+  void PruneTable() LOCKS_EXCLUDED(lock_);
 
   // Report the font lookup for metrics collection. Only used for local font
   // face sources currently.
@@ -105,14 +109,15 @@ class CORE_EXPORT CSSFontFaceSource
                                 bool is_loading_fallback = false) {}
 
  private:
-  void PruneOldestIfNeeded();
+  void PruneOldestIfNeeded() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   using FontDataTable = HashMap<FontCacheKey, scoped_refptr<SimpleFontData>>;
   using FontCacheKeyAgeList = LinkedHashSet<FontCacheKey>;
 
-  FontDataTable font_data_table_;
-  FontCacheKeyAgeList font_cache_key_age;
+  LockForParallelTextShaping lock_;
+  FontDataTable font_data_table_ GUARDED_BY(lock_);
+  FontCacheKeyAgeList font_cache_key_age GUARDED_BY(lock_);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FACE_SOURCE_H_

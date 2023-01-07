@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALLED_WAITER_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
-#include "base/time/time.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extension_removal_watcher.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -58,15 +58,15 @@ class ExtensionInstalledWaiter : public extensions::ExtensionRegistryObserver {
   void OnExtensionLoaded(content::BrowserContext* browser_context,
                          const extensions::Extension* extension) override;
 
-  void OnExtensionRemoved();
+  void OnExtensionRemovedOrBrowserClosed();
 
   const scoped_refptr<const extensions::Extension> extension_;
-  const Browser* const browser_;
+  const raw_ptr<const Browser> browser_;
   base::OnceClosure done_callback_;
 
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   std::unique_ptr<ExtensionRemovalWatcher> removal_watcher_;
 

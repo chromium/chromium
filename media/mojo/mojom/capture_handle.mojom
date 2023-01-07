@@ -1,0 +1,13 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/origin.mojom";
+
+struct CaptureHandle {
+  url.mojom.Origin origin;
+  mojo_base.mojom.String16 capture_handle;
+};

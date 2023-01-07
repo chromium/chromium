@@ -1,0 +1,28 @@
+<style include="common wallpaper"></style>
+<main id="main" tabindex="-1"
+    aria-label$="[[getMainAriaLabel_(collectionId, collections_)]]">
+  <iron-media-query query="(prefers-color-scheme: dark)"
+      query-matches="{{isDarkModeActive}}">
+  </iron-media-query>
+  <template is="dom-if" if="[[tiles_]]">
+    <iron-list grid items="[[tiles_]]" role="listbox"
+        aria-setsize$="[[tiles_.length]]">
+      <template>
+        <wallpaper-grid-item
+            aria-disabled$="[[isLoadingTile_(item)]]"
+            aria-label$="[[getAriaLabel_(item)]]"
+            aria-posinset$="[[getAriaIndex_(index)]]"
+            data-asset-id$="[[item.assetId]]"
+            data-unit-id$="[[item.unitId]]"
+            index="[[index]]"
+            on-click="onImageSelected_"
+            on-keypress="onImageSelected_"
+            role="option"
+            selected="[[isTileSelected_(item, selectedAssetId_, pendingSelectedAssetId_)]]"
+            src="[[item.preview]]"
+            tabindex$="[[tabIndex]]">
+        </wallpaper-grid-item>
+      </template>
+    </iron-list>
+  </template>
+</main>

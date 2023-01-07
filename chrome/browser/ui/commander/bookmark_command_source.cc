@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,11 +20,6 @@ namespace commander {
 
 namespace {
 
-// The minimum size the input should have before the source returns commands to
-// open specific bookmarks without the user choosing "Open Bookmark..." first.
-// TODO(lgrey): Centralize this constant when more composite commands are added.
-size_t constexpr kNounFirstMinimum = 4;
-
 std::unique_ptr<CommandItem> CreateOpenBookmarkItem(
     const bookmarks::UrlAndTitle& bookmark,
     Browser* browser) {
@@ -34,7 +29,7 @@ std::unique_ptr<CommandItem> CreateOpenBookmarkItem(
   // base::Unretained is safe because commands are reset when a browser is
   // closed.
   item->command = base::BindOnce(&chrome::AddTabAt, base::Unretained(browser),
-                                 GURL(bookmark.url), -1, true, base::nullopt);
+                                 GURL(bookmark.url), -1, true, absl::nullopt);
   return item;
 }
 
@@ -77,10 +72,6 @@ CommandSource::CommandResults BookmarkCommandSource::GetCommands(
   // a persistent UI surface and they can just try again.
   if (!model || !model->loaded() || !model->HasBookmarks())
     return results;
-
-  if (input.size() >= kNounFirstMinimum) {
-    results = GetMatchingBookmarks(browser, input);
-  }
 
   FuzzyFinder finder(input);
   std::vector<gfx::Range> ranges;

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,7 @@ namespace proxy {
 
 namespace {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 void ContextLost(PP_Instance instance) {
   HostDispatcher::GetForInstance(instance)->Send(
       new PpapiMsg_PPPGraphics3D_ContextLost(API_ID_PPP_GRAPHICS_3D, instance));
@@ -28,7 +28,7 @@ static const PPP_Graphics3D graphics_3d_interface = {
 #else
 // The NaCl plugin doesn't need the host side interface - stub it out.
 static const PPP_Graphics3D graphics_3d_interface = {};
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace
 

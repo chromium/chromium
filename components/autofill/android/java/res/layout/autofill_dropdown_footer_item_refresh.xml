@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2018 The Chromium Authors. All rights reserved.
-
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file.
+<!--
+Copyright 2018 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
 -->
 
 <LinearLayout
@@ -26,7 +26,7 @@
         android:includeFontPadding="false"
         android:singleLine="true"
         android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline" />
 
     <ImageView
         android:id="@+id/dropdown_icon"

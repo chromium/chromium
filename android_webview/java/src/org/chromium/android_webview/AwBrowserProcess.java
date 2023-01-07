@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,11 +18,14 @@ import androidx.annotation.IntDef;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.services.ICrashReceiverService;
 import org.chromium.android_webview.common.services.IMetricsBridgeService;
+import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
+import org.chromium.android_webview.metrics.AwMetricsLogUploader;
 import org.chromium.android_webview.metrics.AwMetricsServiceClient;
 import org.chromium.android_webview.metrics.AwNonembeddedUmaReplayer;
 import org.chromium.android_webview.policy.AwPolicyProvider;
@@ -48,6 +51,7 @@ import org.chromium.base.task.TaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.component_updater.ComponentLoaderPolicyBridge;
 import org.chromium.components.component_updater.EmbeddedComponentLoader;
+import org.chromium.components.metrics.AndroidMetricsLogUploader;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.policy.CombinedPolicyProvider;
 import org.chromium.content_public.browser.BrowserStartupController;
@@ -154,7 +158,7 @@ public final class AwBrowserProcess {
                 // Check android settings but only when safebrowsing is enabled.
                 try (ScopedSysTraceEvent e2 =
                                 ScopedSysTraceEvent.scoped("AwBrowserProcess.maybeEnable")) {
-                    AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest(appContext);
+                    AwSafeBrowsingConfigHelper.maybeEnableSafeBrowsingFromManifest();
                 }
 
                 TrustTokenFulfillerManager.setFactory(
@@ -227,13 +231,13 @@ public final class AwBrowserProcess {
 
             PlatformServiceBridge.getInstance().queryMetricsSetting(enabled -> {
                 ThreadUtils.assertOnUiThread();
+                boolean userApproved = Boolean.TRUE.equals(enabled);
                 if (updateMetricsConsent) {
-                    AwMetricsServiceClient.setConsentSetting(
-                            ContextUtils.getApplicationContext(), enabled);
+                    AwMetricsServiceClient.setConsentSetting(userApproved);
                 }
 
                 if (!enableMinidumpUploadingForTesting) {
-                    handleMinidumps(enabled);
+                    handleMinidumps(userApproved);
                 }
             });
         }
@@ -303,7 +307,7 @@ public final class AwBrowserProcess {
                 List<Map<String, String>> crashesInfoList =
                         getCrashKeysForCrashFiles(minidumpFiles, crashesInfoMap);
                 service.transmitCrashes(
-                        (ParcelFileDescriptor[]) minidumpFds.toArray(), crashesInfoList);
+                        minidumpFds.toArray(new ParcelFileDescriptor[0]), crashesInfoList);
             } catch (RemoteException e) {
                 // TODO(gsennton): add a UMA metric here to ensure we aren't losing
                 // too many minidumps because of this.
@@ -370,7 +374,8 @@ public final class AwBrowserProcess {
                     @Override
                     public void onServiceDisconnected(ComponentName className) {}
                 };
-                if (!appContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)) {
+                if (!ServiceHelper.bindService(
+                            appContext, intent, connection, Context.BIND_AUTO_CREATE)) {
                     Log.w(TAG, "Could not bind to Minidump-copying Service " + intent);
                 }
             } catch (RuntimeException e) {
@@ -426,7 +431,7 @@ public final class AwBrowserProcess {
      */
     public static void collectNonembeddedMetrics() {
         final Context appContext = ContextUtils.getApplicationContext();
-        if (AwMetricsServiceClient.isAppOptedOut(appContext)) {
+        if (ManifestMetadataUtil.isAppOptedOutFromMetricsCollection()) {
             Log.d(TAG, "App opted out from metrics collection, not connecting to metrics service");
             return;
         }
@@ -482,7 +487,7 @@ public final class AwBrowserProcess {
             @Override
             public void onServiceDisconnected(ComponentName className) {}
         };
-        if (!appContext.bindService(intent, connection, Context.BIND_AUTO_CREATE)) {
+        if (!ServiceHelper.bindService(appContext, intent, connection, Context.BIND_AUTO_CREATE)) {
             Log.d(TAG, "Could not bind to MetricsBridgeService " + intent);
         }
     }
@@ -501,8 +506,26 @@ public final class AwBrowserProcess {
         EmbeddedComponentLoader loader =
                 new EmbeddedComponentLoader(Arrays.asList(componentPolicies));
         final Intent intent = new Intent();
-        intent.setClassName(getWebViewPackageName(), ServiceNames.COMPONENTS_PROVIDER_SERVICE);
+        intent.setClassName(
+                getWebViewPackageName(), EmbeddedComponentLoader.AW_COMPONENTS_PROVIDER_SERVICE);
         loader.connect(intent);
+    }
+
+    /**
+     * Initialize the metrics uploader.
+     */
+    public static void initializeMetricsLogUploader() {
+        if (AwFeatureList.isEnabled(AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE)) {
+            AwMetricsLogUploader uploader = new AwMetricsLogUploader();
+            // Open a connection during startup while connecting to other services such as
+            // ComponentsProviderService and VariationSeedServer to try to avoid spinning the
+            // nonembedded ":webview_service" twice.
+            uploader.initialize();
+            AndroidMetricsLogUploader.setUploader(uploader);
+        } else {
+            AndroidMetricsLogUploader.setUploader(
+                    (byte[] data) -> { PlatformServiceBridge.getInstance().logMetrics(data); });
+        }
     }
 
     // Do not instantiate this class.

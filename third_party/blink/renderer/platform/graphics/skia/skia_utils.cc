@@ -31,13 +31,16 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
+#include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/effects/SkCornerPathEffect.h"
-#include "third_party/skia/include/third_party/skcms/skcms.h"
+#include "third_party/skia/modules/skcms/skcms.h"
 #include "ui/base/ui_base_features.h"
 
 #include <algorithm>
@@ -117,82 +120,109 @@ SkBlendMode WebCoreBlendModeToSkBlendMode(BlendMode blend_mode) {
       return SkBlendMode::kColor;
     case BlendMode::kLuminosity:
       return SkBlendMode::kLuminosity;
+    case BlendMode::kPlusLighter:
+      return SkBlendMode::kPlus;
   }
 
   NOTREACHED();
   return SkBlendMode::kSrcOver;
 }
 
-CompositeOperator CompositeOperatorFromSkBlendMode(SkBlendMode blend_mode) {
-  switch (blend_mode) {
+std::pair<CompositeOperator, BlendMode> CompositeAndBlendOpsFromSkBlendMode(
+    SkBlendMode sk_blend_mode) {
+  CompositeOperator composite_op = kCompositeSourceOver;
+  BlendMode blend_mode = BlendMode::kNormal;
+  switch (sk_blend_mode) {
+    // The following are SkBlendMode values that map to CompositeOperators.
     case SkBlendMode::kClear:
-      return kCompositeClear;
+      composite_op = kCompositeClear;
+      break;
     case SkBlendMode::kSrc:
-      return kCompositeCopy;
+      composite_op = kCompositeCopy;
+      break;
     case SkBlendMode::kSrcOver:
-      return kCompositeSourceOver;
-    case SkBlendMode::kSrcIn:
-      return kCompositeSourceIn;
-    case SkBlendMode::kSrcOut:
-      return kCompositeSourceOut;
-    case SkBlendMode::kSrcATop:
-      return kCompositeSourceAtop;
+      composite_op = kCompositeSourceOver;
+      break;
     case SkBlendMode::kDstOver:
-      return kCompositeDestinationOver;
+      composite_op = kCompositeDestinationOver;
+      break;
+    case SkBlendMode::kSrcIn:
+      composite_op = kCompositeSourceIn;
+      break;
     case SkBlendMode::kDstIn:
-      return kCompositeDestinationIn;
+      composite_op = kCompositeDestinationIn;
+      break;
+    case SkBlendMode::kSrcOut:
+      composite_op = kCompositeSourceOut;
+      break;
     case SkBlendMode::kDstOut:
-      return kCompositeDestinationOut;
+      composite_op = kCompositeDestinationOut;
+      break;
+    case SkBlendMode::kSrcATop:
+      composite_op = kCompositeSourceAtop;
+      break;
     case SkBlendMode::kDstATop:
-      return kCompositeDestinationAtop;
+      composite_op = kCompositeDestinationAtop;
+      break;
     case SkBlendMode::kXor:
-      return kCompositeXOR;
+      composite_op = kCompositeXOR;
+      break;
     case SkBlendMode::kPlus:
-      return kCompositePlusLighter;
-    default:
+      composite_op = kCompositePlusLighter;
       break;
-  }
-  return kCompositeSourceOver;
-}
 
-BlendMode BlendModeFromSkBlendMode(SkBlendMode blend_mode) {
-  switch (blend_mode) {
-    case SkBlendMode::kSrcOver:
-      return BlendMode::kNormal;
-    case SkBlendMode::kMultiply:
-      return BlendMode::kMultiply;
+    // The following are SkBlendMode values that map to BlendModes.
     case SkBlendMode::kScreen:
-      return BlendMode::kScreen;
+      blend_mode = BlendMode::kScreen;
+      break;
     case SkBlendMode::kOverlay:
-      return BlendMode::kOverlay;
+      blend_mode = BlendMode::kOverlay;
+      break;
     case SkBlendMode::kDarken:
-      return BlendMode::kDarken;
+      blend_mode = BlendMode::kDarken;
+      break;
     case SkBlendMode::kLighten:
-      return BlendMode::kLighten;
+      blend_mode = BlendMode::kLighten;
+      break;
     case SkBlendMode::kColorDodge:
-      return BlendMode::kColorDodge;
+      blend_mode = BlendMode::kColorDodge;
+      break;
     case SkBlendMode::kColorBurn:
-      return BlendMode::kColorBurn;
+      blend_mode = BlendMode::kColorBurn;
+      break;
     case SkBlendMode::kHardLight:
-      return BlendMode::kHardLight;
+      blend_mode = BlendMode::kHardLight;
+      break;
     case SkBlendMode::kSoftLight:
-      return BlendMode::kSoftLight;
+      blend_mode = BlendMode::kSoftLight;
+      break;
     case SkBlendMode::kDifference:
-      return BlendMode::kDifference;
+      blend_mode = BlendMode::kDifference;
+      break;
     case SkBlendMode::kExclusion:
-      return BlendMode::kExclusion;
+      blend_mode = BlendMode::kExclusion;
+      break;
+    case SkBlendMode::kMultiply:
+      blend_mode = BlendMode::kMultiply;
+      break;
     case SkBlendMode::kHue:
-      return BlendMode::kHue;
+      blend_mode = BlendMode::kHue;
+      break;
     case SkBlendMode::kSaturation:
-      return BlendMode::kSaturation;
+      blend_mode = BlendMode::kSaturation;
+      break;
     case SkBlendMode::kColor:
-      return BlendMode::kColor;
+      blend_mode = BlendMode::kColor;
+      break;
     case SkBlendMode::kLuminosity:
-      return BlendMode::kLuminosity;
+      blend_mode = BlendMode::kLuminosity;
+      break;
+
+    // We don't handle other SkBlendModes.
     default:
       break;
   }
-  return BlendMode::kNormal;
+  return std::make_pair(composite_op, blend_mode);
 }
 
 SkMatrix AffineTransformToSkMatrix(const AffineTransform& source) {
@@ -228,25 +258,25 @@ SkMatrix TransformationMatrixToSkMatrix(const TransformationMatrix& source) {
   // assuming that a 2D-transformation with perspective is what's desired,
   // throwing out the z-dimension values. i.e.:
 
-  //        INPUT                  OUTPUT
-  // | m11 m21 m31 m41 |       | m11 m21 m41 |
-  // | m12 m22 m32 m42 | ----> | m12 m22 m42 |
-  // | m13 m23 m33 m43 |       | m14 m24 m44 |
-  // | m14 m24 m34 m44 |
+  //                  INPUT                               OUTPUT
+  // | scale_x skew_xy skew_xz trans_x |     | scale_x skew_x  trans_x |
+  // | skew_yx scale_y skew_yz trans_y | --> | skew_y  scale_y trans_y |
+  // | skew_xz skew_zy scale_z trans_z |     | persp_x persp_y persp_w |
+  // | persp_x persp_y persp_z persp_w |
 
   SkMatrix result;
 
-  result.setScaleX(WebCoreDoubleToSkScalar(source.M11()));
-  result.setSkewX(WebCoreDoubleToSkScalar(source.M21()));
-  result.setTranslateX(WebCoreDoubleToSkScalar(source.M41()));
+  result.setScaleX(WebCoreDoubleToSkScalar(source.rc(0, 0)));
+  result.setSkewX(WebCoreDoubleToSkScalar(source.rc(0, 1)));
+  result.setTranslateX(WebCoreDoubleToSkScalar(source.rc(0, 3)));
 
-  result.setScaleY(WebCoreDoubleToSkScalar(source.M22()));
-  result.setSkewY(WebCoreDoubleToSkScalar(source.M12()));
-  result.setTranslateY(WebCoreDoubleToSkScalar(source.M42()));
+  result.setScaleY(WebCoreDoubleToSkScalar(source.rc(1, 1)));
+  result.setSkewY(WebCoreDoubleToSkScalar(source.rc(1, 0)));
+  result.setTranslateY(WebCoreDoubleToSkScalar(source.rc(1, 3)));
 
-  result.setPerspX(source.M14());
-  result.setPerspY(source.M24());
-  result.set(SkMatrix::kMPersp2, source.M44());
+  result.setPerspX(source.rc(3, 0));
+  result.setPerspY(source.rc(3, 1));
+  result.set(SkMatrix::kMPersp2, source.rc(3, 3));
 
   return result;
 }
@@ -255,14 +285,13 @@ bool NearlyIntegral(float value) {
   return fabs(value - floorf(value)) < std::numeric_limits<float>::epsilon();
 }
 
-bool IsValidImageSize(const IntSize& size) {
+bool IsValidImageSize(const gfx::Size& size) {
   if (size.IsEmpty())
     return false;
-  base::CheckedNumeric<int> area = size.Width();
-  area *= size.Height();
+  base::CheckedNumeric<int> area = size.GetCheckedArea();
   if (!area.IsValid() || area.ValueOrDie() > kMaxCanvasArea)
     return false;
-  if (size.Width() > kMaxSkiaDim || size.Height() > kMaxSkiaDim)
+  if (size.width() > kMaxSkiaDim || size.height() > kMaxSkiaDim)
     return false;
   return true;
 }
@@ -354,7 +383,8 @@ InterpolationQuality ComputeInterpolationQuality(float src_width,
 
 SkColor ScaleAlpha(SkColor color, float alpha) {
   const auto clamped_alpha = std::max(0.0f, std::min(1.0f, alpha));
-  const auto rounded_alpha = std::lround(SkColorGetA(color) * clamped_alpha);
+  const auto rounded_alpha =
+      base::ClampRound<U8CPU>(SkColorGetA(color) * clamped_alpha);
 
   return SkColorSetA(color, rounded_alpha);
 }
@@ -378,87 +408,40 @@ SkRect LayoutRectToSkRect(const blink::LayoutRect& rect) {
                           SkFloatToScalar(rect.Height()));
 }
 
-template <typename PrimitiveType>
-void DrawFocusRingPrimitive(const PrimitiveType&,
-                            cc::PaintCanvas*,
-                            const PaintFlags&,
-                            float corner_radius) {
-  NOTREACHED();  // Missing an explicit specialization?
+static cc::PaintFlags PaintFlagsForFocusRing(SkColor color, float width) {
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setColor(color);
+  flags.setStrokeWidth(width);
+  return flags;
 }
 
-template <>
-void DrawFocusRingPrimitive<SkRect>(const SkRect& rect,
-                                    cc::PaintCanvas* canvas,
-                                    const PaintFlags& flags,
-                                    float corner_radius) {
-  SkRRect rrect;
-  rrect.setRectXY(rect, SkFloatToScalar(corner_radius),
-                  SkFloatToScalar(corner_radius));
-  canvas->drawRRect(rrect, flags);
+void DrawPlatformFocusRing(const SkRRect& rrect,
+                           cc::PaintCanvas* canvas,
+                           SkColor color,
+                           float width) {
+  canvas->drawRRect(rrect, PaintFlagsForFocusRing(color, width));
 }
 
-template <>
-void DrawFocusRingPrimitive<SkPath>(const SkPath& path,
-                                    cc::PaintCanvas* canvas,
-                                    const PaintFlags& flags,
-                                    float corner_radius) {
-  PaintFlags path_flags = flags;
-  path_flags.setPathEffect(
-      SkCornerPathEffect::Make(SkFloatToScalar(corner_radius)));
-  canvas->drawPath(path, path_flags);
-}
-
-template <typename PrimitiveType>
-void DrawPlatformFocusRing(const PrimitiveType& primitive,
+void DrawPlatformFocusRing(const SkPath& path,
                            cc::PaintCanvas* canvas,
                            SkColor color,
                            float width,
-                           float border_radius) {
-  PaintFlags flags;
-  flags.setAntiAlias(true);
-  flags.setStyle(PaintFlags::kStroke_Style);
-  flags.setColor(color);
-  flags.setStrokeWidth(width);
-
-  if (::features::IsFormControlsRefreshEnabled()) {
-    DrawFocusRingPrimitive(primitive, canvas, flags, border_radius);
-    return;
+                           float corner_radius) {
+  cc::PaintFlags path_flags = PaintFlagsForFocusRing(color, width);
+  if (corner_radius) {
+    path_flags.setPathEffect(
+        SkCornerPathEffect::Make(SkFloatToScalar(corner_radius)));
   }
-
-#if defined(OS_MAC)
-  flags.setAlpha(64);
-  const float corner_radius = (width - 1) * 0.5f;
-#else
-  const float corner_radius = width;
-#endif
-
-  DrawFocusRingPrimitive(primitive, canvas, flags, corner_radius);
-
-#if defined(OS_MAC)
-  // Inner part
-  flags.setAlpha(128);
-  flags.setStrokeWidth(flags.getStrokeWidth() * 0.5f);
-  DrawFocusRingPrimitive(primitive, canvas, flags, corner_radius);
-#endif
+  canvas->drawPath(path, path_flags);
 }
 
-template void PLATFORM_EXPORT
-DrawPlatformFocusRing<SkRect>(const SkRect&,
-                              cc::PaintCanvas*,
-                              SkColor,
-                              float width,
-                              float border_radius);
-template void PLATFORM_EXPORT
-DrawPlatformFocusRing<SkPath>(const SkPath&,
-                              cc::PaintCanvas*,
-                              SkColor,
-                              float width,
-                              float border_radius);
-
 sk_sp<SkData> TryAllocateSkData(size_t size) {
-  void* buffer = WTF::Partitions::BufferPartition()->AllocFlags(
-      base::PartitionAllocReturnNull | base::PartitionAllocZeroFill, size,
-      "SkData");
+  void* buffer = WTF::Partitions::BufferPartition()->AllocWithFlags(
+      partition_alloc::AllocFlags::kReturnNull |
+          partition_alloc::AllocFlags::kZeroFill,
+      size, "SkData");
   if (!buffer)
     return nullptr;
   return SkData::MakeWithProc(

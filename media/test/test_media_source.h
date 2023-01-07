@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <limits>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/demuxer.h"
 #include "media/base/media_util.h"
@@ -42,6 +43,10 @@ class TestMediaSource {
                   const std::string& mimetype,
                   size_t initial_append_size,
                   bool initial_sequence_mode = false);
+
+  TestMediaSource(const TestMediaSource&) = delete;
+  TestMediaSource& operator=(const TestMediaSource&) = delete;
+
   ~TestMediaSource();
 
   std::unique_ptr<Demuxer> GetDemuxer();
@@ -112,7 +117,7 @@ class TestMediaSource {
   size_t initial_append_size_;
   bool initial_sequence_mode_;
   std::string mimetype_;
-  ChunkDemuxer* chunk_demuxer_;
+  raw_ptr<ChunkDemuxer> chunk_demuxer_;
   std::unique_ptr<Demuxer> owned_chunk_demuxer_;
   PipelineStatusCB demuxer_failure_cb_;
   Demuxer::EncryptedMediaInitDataCB encrypted_media_init_data_cb_;
@@ -121,8 +126,6 @@ class TestMediaSource {
   base::TimeDelta append_window_end_ = kInfiniteDuration;
   bool do_eos_after_next_append_ = false;
   ExpectedAppendResult expected_append_result_ = ExpectedAppendResult::kSuccess;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMediaSource);
 };
 
 }  // namespace media

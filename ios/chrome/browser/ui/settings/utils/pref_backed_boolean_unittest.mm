@@ -1,19 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 
-#include <memory>
-#include <utility>
+#import <memory>
+#import <utility>
 
-#include "base/values.h"
-#include "components/prefs/pref_registry_simple.h"
-#include "components/prefs/testing_pref_service.h"
+#import "base/values.h"
+#import "components/prefs/pref_registry_simple.h"
+#import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/ui/settings/utils/fake_observable_boolean.h"
-#include "ios/web/public/test/web_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/platform_test.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -26,10 +26,17 @@ const char kTestSwitchPref[] = "test-pref";
 class PrefBackedBooleanTest : public PlatformTest {
  public:
   void SetUp() override {
+    PlatformTest::SetUp();
     pref_service_.registry()->RegisterBooleanPref(kTestSwitchPref, false);
     observable_boolean_ =
         [[PrefBackedBoolean alloc] initWithPrefService:&pref_service_
                                               prefName:kTestSwitchPref];
+  }
+
+  void TearDown() override {
+    [observable_boolean_ stop];
+    observable_boolean_ = nil;
+    PlatformTest::TearDown();
   }
 
  protected:

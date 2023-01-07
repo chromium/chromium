@@ -1,4 +1,1 @@
-monorail {
-  component: "UI>Browser>Sharing"
-}
-os: ANDROID
+mixins: "//chrome/browser/sharing/COMMON_METADATA"

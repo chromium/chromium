@@ -1,10 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tabmodel;
 
-import org.chromium.base.annotations.MockedInTests;
+import org.chromium.build.annotations.MockedInTests;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
@@ -44,11 +44,4 @@ public interface TabList {
      * @return index of the given tab in the order of the tab stack.
      */
     int indexOf(Tab tab);
-
-    /**
-     * @param tabId The id of the {@link Tab} that might have a pending closure.
-     * @return      Whether or not the {@link Tab} specified by {@code tabId} has a pending
-     *              closure.
-     */
-    boolean isClosurePending(int tabId);
 }

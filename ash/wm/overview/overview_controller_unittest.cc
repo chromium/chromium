@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/keyboard/ui/keyboard_util.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -25,6 +24,7 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_wallpaper_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_resizer.h"
@@ -33,8 +33,10 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/base/hit_test.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 
@@ -62,6 +64,10 @@ class TestOverviewObserver : public OverviewObserver {
       : should_monitor_animation_state_(should_monitor_animation_state) {
     Shell::Get()->overview_controller()->AddObserver(this);
   }
+
+  TestOverviewObserver(const TestOverviewObserver&) = delete;
+  TestOverviewObserver& operator=(const TestOverviewObserver&) = delete;
+
   ~TestOverviewObserver() override {
     Shell::Get()->overview_controller()->RemoveObserver(this);
   }
@@ -175,13 +181,11 @@ class TestOverviewObserver : public OverviewObserver {
   bool should_monitor_animation_state_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOverviewObserver);
 };
 
 void WaitForOcclusionStateChange(aura::Window* window) {
-  auto current_state = window->occlusion_state();
-  while (window->occlusion_state() == current_state)
+  auto current_state = window->GetOcclusionState();
+  while (window->GetOcclusionState() == current_state)
     base::RunLoop().RunUntilIdle();
 }
 
@@ -216,7 +220,7 @@ TEST_F(OverviewControllerTest, AnimationCallbacksForCrossFadeWallpaper) {
   TestOverviewObserver observer(/*should_monitor_animation_state = */ true);
   // Enter without windows.
   auto* overview_controller = Shell::Get()->overview_controller();
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_EQ(TestOverviewObserver::COMPLETED,
             observer.starting_animation_state());
@@ -228,7 +232,7 @@ TEST_F(OverviewControllerTest, AnimationCallbacksForCrossFadeWallpaper) {
 
   // Exiting overview has no animations until the overview animation is
   // complete.
-  overview_controller->EndOverview();
+  ExitOverview();
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.ending_animation_state());
   EXPECT_EQ(wallpaper_constants::kOverviewBlur,
@@ -253,7 +257,7 @@ TEST_F(OverviewControllerTest, AnimationCallbacksForCrossFadeWallpaper) {
   ASSERT_EQ(TestOverviewObserver::UNKNOWN, observer.ending_animation_state());
 
   // Enter with windows.
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.starting_animation_state());
   EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.ending_animation_state());
@@ -262,7 +266,7 @@ TEST_F(OverviewControllerTest, AnimationCallbacksForCrossFadeWallpaper) {
   EXPECT_FALSE(wallpaper_widget_controller->IsAnimating());
 
   // Exit with windows before starting animation ends.
-  overview_controller->EndOverview();
+  ExitOverview();
   EXPECT_FALSE(overview_controller->InOverviewSession());
   EXPECT_EQ(TestOverviewObserver::CANCELED,
             observer.starting_animation_state());
@@ -275,7 +279,7 @@ TEST_F(OverviewControllerTest, AnimationCallbacksForCrossFadeWallpaper) {
   observer.Reset();
 
   // Enter again before exit animation ends.
-  overview_controller->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
   EXPECT_EQ(TestOverviewObserver::UNKNOWN, observer.starting_animation_state());
   EXPECT_EQ(TestOverviewObserver::CANCELED, observer.ending_animation_state());
@@ -302,8 +306,7 @@ TEST_F(OverviewControllerTest, OcclusionTest) {
 
   Shell::Get()
       ->overview_controller()
-      ->set_occlusion_pause_duration_for_end_for_test(
-          base::TimeDelta::FromMilliseconds(100));
+      ->set_occlusion_pause_duration_for_end_for_test(base::Milliseconds(100));
   TestOverviewObserver observer(/*should_monitor_animation_state = */ true);
   ui::ScopedAnimationDurationScaleMode non_zero(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
@@ -319,59 +322,59 @@ TEST_F(OverviewControllerTest, OcclusionTest) {
 
   window1->TrackOcclusionState();
   window2->TrackOcclusionState();
-  EXPECT_EQ(OcclusionState::OCCLUDED, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
+  EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
 
   // Enter with windows.
-  Shell::Get()->overview_controller()->StartOverview();
-  EXPECT_EQ(OcclusionState::OCCLUDED, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
+  EnterOverview();
+  EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
 
   observer.WaitForStartingAnimationComplete();
   // Occlusion tracking is paused.
-  EXPECT_EQ(OcclusionState::OCCLUDED, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
+  EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
   WaitForOcclusionStateChange(window1.get());
-  EXPECT_EQ(OcclusionState::VISIBLE, window1->occlusion_state());
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
 
   // Exit with windows.
-  Shell::Get()->overview_controller()->EndOverview();
-  EXPECT_EQ(OcclusionState::VISIBLE, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
+  ExitOverview();
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
   observer.WaitForEndingAnimationComplete();
-  EXPECT_EQ(OcclusionState::VISIBLE, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
   WaitForOcclusionStateChange(window1.get());
-  EXPECT_EQ(OcclusionState::OCCLUDED, window1->occlusion_state());
+  EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
 
   observer.Reset();
 
   // Enter again.
-  Shell::Get()->overview_controller()->StartOverview();
-  EXPECT_EQ(OcclusionState::OCCLUDED, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
+  EnterOverview();
+  EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
   auto* active = window_util::GetActiveWindow();
   EXPECT_EQ(window2.get(), active);
 
   observer.WaitForStartingAnimationComplete();
 
   // Window 1 is still occluded because tracker is paused.
-  EXPECT_EQ(OcclusionState::OCCLUDED, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
+  EXPECT_EQ(OcclusionState::OCCLUDED, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
 
   WaitForOcclusionStateChange(window1.get());
-  EXPECT_EQ(OcclusionState::VISIBLE, window1->occlusion_state());
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
 
   wm::ActivateWindow(window1.get());
   observer.WaitForEndingAnimationComplete();
 
   // Windows are visible because tracker is paused.
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
-  EXPECT_EQ(OcclusionState::VISIBLE, window2->occlusion_state());
-  EXPECT_EQ(OcclusionState::VISIBLE, window1->occlusion_state());
+  EXPECT_EQ(OcclusionState::VISIBLE, window2->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
   WaitForOcclusionStateChange(window2.get());
-  EXPECT_EQ(OcclusionState::VISIBLE, window1->occlusion_state());
-  EXPECT_EQ(OcclusionState::OCCLUDED, window2->occlusion_state());
+  EXPECT_EQ(OcclusionState::VISIBLE, window1->GetOcclusionState());
+  EXPECT_EQ(OcclusionState::OCCLUDED, window2->GetOcclusionState());
 }
 
 // Tests that PIP windows are not shown in overview.
@@ -381,7 +384,7 @@ TEST_F(OverviewControllerTest, PipMustNotInOverviewGridTest) {
       CreateTestWindowInShellWithBounds(bounds));
   WaitForShowAnimation(window.get());
   auto* controller = Shell::Get()->overview_controller();
-  controller->StartOverview();
+  EnterOverview();
   // Ensure |window| is in overview with window state non-PIP.
   EXPECT_TRUE(controller->overview_session()->IsWindowInOverview(window.get()));
   WMEvent pip_event(WM_EVENT_PIP);
@@ -398,7 +401,7 @@ TEST_F(OverviewControllerTest, SelectingHidesAppList) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplay().id());
   GetAppListTestHelper()->CheckVisibility(true);
 
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   GetAppListTestHelper()->WaitUntilIdle();
   GetAppListTestHelper()->CheckVisibility(false);
 }
@@ -420,9 +423,8 @@ TEST_F(OverviewControllerTest, ExcludedWindowsHidden) {
   ASSERT_TRUE(window3->IsVisible());
 
   // Enter overview. Only one of the three windows is in overview, and visible.
-  auto* controller = Shell::Get()->overview_controller();
-  controller->StartOverview();
-  auto* session = controller->overview_session();
+  EnterOverview();
+  auto* session = Shell::Get()->overview_controller()->overview_session();
   ASSERT_TRUE(session);
   EXPECT_TRUE(session->IsWindowInOverview(window1.get()));
   EXPECT_FALSE(session->IsWindowInOverview(window2.get()));
@@ -434,7 +436,7 @@ TEST_F(OverviewControllerTest, ExcludedWindowsHidden) {
   // On exiting overview, the windows should all be visible. Use a run loop
   // since |session| is destroyed in a post task, and the restoring windows'
   // previous visibility happens in the destructor.
-  controller->EndOverview();
+  ExitOverview();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(window1->IsVisible());
   EXPECT_TRUE(window2->IsVisible());
@@ -467,15 +469,13 @@ TEST_F(OverviewControllerTest, ObserverCallsMatch) {
 
   // Tests the case where we enter without windows and do regular enter/exit
   // (wait for enter animation to finish before exiting).
-  auto* overview_controller = Shell::Get()->overview_controller();
-
   for (bool is_tablet_mode : {false, true}) {
     SCOPED_TRACE(is_tablet_mode ? "Tablet Mode" : "Clamshell Mode");
     set_tablet_mode_enabled(is_tablet_mode);
 
-    overview_controller->StartOverview();
+    EnterOverview();
     wait_for_animation(/*enter=*/true);
-    overview_controller->EndOverview();
+    ExitOverview();
     wait_for_animation(/*enter=*/false);
     EXPECT_TRUE(observer.ObserverCountsEqual());
   }
@@ -489,26 +489,26 @@ TEST_F(OverviewControllerTest, ObserverCallsMatch) {
 
     // Tests the case where we enter with windows and do regular enter/exit
     // (wait for enter animation to finish before exiting).
-    overview_controller->StartOverview();
+    EnterOverview();
     wait_for_animation(/*enter=*/true);
-    overview_controller->EndOverview();
+    ExitOverview();
     wait_for_animation(/*enter=*/false);
     EXPECT_TRUE(observer.ObserverCountsEqual());
 
     // Tests the case where we exit overview before the start animation has
     // completed.
-    overview_controller->StartOverview();
-    overview_controller->EndOverview();
+    EnterOverview();
+    ExitOverview();
     wait_for_animation(/*enter=*/false);
     EXPECT_TRUE(observer.ObserverCountsEqual());
 
     // Tests the case where we enter overview before the exit animation has
     // completed.
-    overview_controller->StartOverview();
+    EnterOverview();
     wait_for_animation(/*enter=*/true);
-    overview_controller->EndOverview();
-    overview_controller->StartOverview();
-    overview_controller->EndOverview();
+    ExitOverview();
+    EnterOverview();
+    ExitOverview();
     wait_for_animation(/*enter=*/false);
     EXPECT_TRUE(observer.ObserverCountsEqual());
   }
@@ -528,13 +528,12 @@ TEST_F(OverviewControllerTest, OverviewEnterExitAnimationTablet) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(bounds));
 
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   EXPECT_FALSE(observer.last_animation_was_fade());
 
   // Exit to home launcher using fade out animation. This should minimize all
   // windows.
-  Shell::Get()->overview_controller()->EndOverview(
-      OverviewEnterExitType::kFadeOutExit);
+  ExitOverview(OverviewEnterExitType::kFadeOutExit);
 
   EXPECT_TRUE(observer.last_animation_was_fade());
 
@@ -543,7 +542,7 @@ TEST_F(OverviewControllerTest, OverviewEnterExitAnimationTablet) {
 
   // All windows are minimized, so we should use the fade in animation to enter
   // overview.
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   EXPECT_TRUE(observer.last_animation_was_fade());
 }
 
@@ -556,17 +555,17 @@ TEST_F(OverviewControllerTest, OverviewEnterExitAnimationClamshell) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindowInShellWithBounds(bounds));
 
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   EXPECT_FALSE(observer.last_animation_was_fade());
 
-  Shell::Get()->overview_controller()->EndOverview();
+  ExitOverview();
   EXPECT_FALSE(observer.last_animation_was_fade());
 
   // Even with all window minimized, overview should not use fade animation to
   // enter.
   ASSERT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
   WindowState::Get(window.get())->Minimize();
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   EXPECT_FALSE(observer.last_animation_was_fade());
 }
 
@@ -579,8 +578,7 @@ TEST_F(OverviewControllerTest, WallpaperAnimationTiming) {
   ui::ScopedAnimationDurationScaleMode non_zero(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  Shell::Get()->overview_controller()->StartOverview(
-      OverviewEnterExitType::kFadeInEnter);
+  EnterOverview(OverviewEnterExitType::kFadeInEnter);
   auto* wallpaper_widget_controller =
       Shell::GetPrimaryRootWindowController()->wallpaper_widget_controller();
   EXPECT_GT(wallpaper_widget_controller->GetWallpaperBlur(), 0);
@@ -603,13 +601,12 @@ TEST_F(OverviewControllerTest, OverviewExitWhileStillEntering) {
   // started asynchronously.
   ui::ScopedAnimationDurationScaleMode non_zero(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
 
   // Exit to home launcher using fade out animation. This should minimize all
   // windows.
   TestOverviewObserver observer(/*should_monitor_animation_state = */ true);
-  Shell::Get()->overview_controller()->EndOverview(
-      OverviewEnterExitType::kFadeOutExit);
+  ExitOverview(OverviewEnterExitType::kFadeOutExit);
 
   EXPECT_TRUE(observer.last_animation_was_fade());
 
@@ -631,7 +628,7 @@ TEST_F(OverviewControllerTest, CloseWindowDuringAnimation) {
 
   ui::ScopedAnimationDurationScaleMode non_zero(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
 
   // Destroy a window during the enter animation.
   window1.reset();
@@ -639,7 +636,7 @@ TEST_F(OverviewControllerTest, CloseWindowDuringAnimation) {
       OverviewAnimationState::kEnterAnimationComplete);
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
-  Shell::Get()->overview_controller()->EndOverview();
+  ExitOverview();
 
   // Destroy a window during the exit animation.
   window2.reset();
@@ -667,7 +664,8 @@ class DeskSwitchStartOverviewAnimationWaiter
   // DeskSwitchAnimationWaiter:
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override {
-    Shell::Get()->overview_controller()->StartOverview();
+    Shell::Get()->overview_controller()->StartOverview(
+        OverviewStartAction::kTests);
   }
 };
 
@@ -690,13 +688,40 @@ TEST_F(OverviewControllerTest, OverviewEnterExitWhileDeskAnimation) {
   waiter.Wait();
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
 
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
   // Tests that exiting overview works as it is part of the desk switch
   // animation.
   ActivateDesk(desk1);
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+}
+
+// Tests that clipping the window to remove the top view inset (header) works as
+// expected.
+TEST_F(OverviewControllerTest, WindowClipping) {
+  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  window->SetBounds(gfx::Rect(300, 300));
+  window->SetProperty(aura::client::kTopViewInset, 20);
+  ASSERT_EQ(gfx::Rect(), window->layer()->GetTargetClipRect());
+
+  ui::ScopedAnimationDurationScaleMode non_zero(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Tests that the clipping bounds in overview will clip away the top inset.
+  // There is a extra pixel added to account for what seems to be a rounding
+  // error.
+  EnterOverview();
+  WaitForOverviewEnterAnimation();
+  EXPECT_EQ(gfx::Rect(0, 21, 300, 279), window->layer()->GetTargetClipRect());
+
+  // Tests that we animate to the window size from the overview clip on exit.
+  ExitOverview();
+  EXPECT_EQ(gfx::Rect(300, 300), window->layer()->GetTargetClipRect());
+
+  // Tests that the clipping is removed after the animation ends.
+  WaitForOverviewExitAnimation();
+  EXPECT_EQ(gfx::Rect(), window->layer()->GetTargetClipRect());
 }
 
 class OverviewVirtualKeyboardTest : public OverviewControllerTest {
@@ -727,7 +752,7 @@ TEST_F(OverviewVirtualKeyboardTest, ToggleOverviewModeHidesVirtualKeyboard) {
   keyboard_ui_controller()->ShowKeyboard(false /* locked */);
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
 
   // Timeout failure here if the keyboard does not hide.
   keyboard::WaitUntilHidden();
@@ -738,7 +763,7 @@ TEST_F(OverviewVirtualKeyboardTest,
   keyboard_ui_controller()->ShowKeyboard(true /* locked */);
   ASSERT_TRUE(keyboard::WaitUntilShown());
 
-  Shell::Get()->overview_controller()->StartOverview();
+  EnterOverview();
   EXPECT_FALSE(keyboard::IsKeyboardHiding());
 }
 
@@ -767,16 +792,16 @@ TEST_F(OverviewControllerTest, FrameThrottling) {
     arc_windows[i] = created_windows[i + browser_window_count].get();
   }
 
-  auto* controller = Shell::Get()->overview_controller();
-  EXPECT_CALL(observer, OnThrottlingStarted(
-                            testing::UnorderedElementsAreArray(arc_windows),
-                            frame_throttling_controller->throttled_fps()));
-  controller->StartOverview();
+  EXPECT_CALL(observer,
+              OnThrottlingStarted(
+                  testing::UnorderedElementsAreArray(arc_windows),
+                  frame_throttling_controller->GetCurrentThrottledFrameRate()));
+  EnterOverview();
   EXPECT_THAT(frame_throttling_controller->GetFrameSinkIdsToThrottle(),
               ::testing::UnorderedElementsAreArray(ids));
 
   EXPECT_CALL(observer, OnThrottlingEnded());
-  controller->EndOverview();
+  ExitOverview();
   EXPECT_TRUE(frame_throttling_controller->GetFrameSinkIdsToThrottle().empty());
 
   frame_throttling_controller->RemoveArcObserver(&observer);

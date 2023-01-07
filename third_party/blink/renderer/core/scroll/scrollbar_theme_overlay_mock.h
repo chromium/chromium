@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_OVERLAY_MOCK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_THEME_OVERLAY_MOCK_H_
 
+#include "base/time/time.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_overlay_mobile.h"
 
 namespace blink {
@@ -43,7 +45,7 @@ class CORE_EXPORT ScrollbarThemeOverlayMock
   // non-composited scrollbars have the same appearance for tests using mock
   // overlay scrollbars.
   ScrollbarThemeOverlayMock()
-      : ScrollbarThemeOverlayMobile(3, 4, Color(128, 128, 128, 128)) {}
+      : ScrollbarThemeOverlayMobile(3, 4, 3, 4, Color(128, 128, 128, 128)) {}
 
   base::TimeDelta OverlayScrollbarFadeOutDelay() const override {
     return delay_;
@@ -62,7 +64,7 @@ class CORE_EXPORT ScrollbarThemeOverlayMock
   }
 
   int MinimumThumbLength(const Scrollbar& scrollbar) override {
-    return ThumbThickness(scrollbar.ScaleFromDIP());
+    return ThumbThickness(scrollbar.ScaleFromDIP(), EScrollbarWidth::kAuto);
   }
 
  private:

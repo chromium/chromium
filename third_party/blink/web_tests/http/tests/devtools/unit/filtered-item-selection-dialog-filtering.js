@@ -1,5 +1,4 @@
 (async function() {
-    await TestRunner.loadModule("quick_open");
     await TestRunner.loadLegacyModule('quick_open');
     TestRunner.addResult("Check to see that FilteredItemSelectionDialog uses proper regex to filter results.");
 
@@ -26,16 +25,16 @@
 
         var filteredSelectionDialog = new QuickOpen.FilteredListWidget(provider, history);
         filteredSelectionDialog.showAsDialog();
-        var promise = TestRunner.addSnifferPromise(filteredSelectionDialog, "_itemsFilteredForTest").then(accept);
+        var promise = TestRunner.addSnifferPromise(filteredSelectionDialog, "itemsFilteredForTest").then(accept);
         filteredSelectionDialog.setQuery(query);
-        filteredSelectionDialog._updateAfterItemsLoaded();
+        filteredSelectionDialog.updateAfterItemsLoaded();
         return promise;
 
         function dump()
         {
-            TestRunner.addResult("Query:" + JSON.stringify(filteredSelectionDialog._value()));
+            TestRunner.addResult("Query:" + JSON.stringify(filteredSelectionDialog.cleanValue()));
             var output = [];
-            for (var item of filteredSelectionDialog._items)
+            for (var item of filteredSelectionDialog.items)
                 output.push(provider.itemKeyAt(item));
             TestRunner.addResult("Output:" + JSON.stringify(output));
         }
@@ -43,7 +42,7 @@
         function accept()
         {
             dump();
-            filteredSelectionDialog._onEnter(TestRunner.createKeyEvent("Enter"));
+            filteredSelectionDialog.onEnter(TestRunner.createKeyEvent("Enter"));
             TestRunner.addResult("History:" + JSON.stringify(history));
         }
     }

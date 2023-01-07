@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
 
 BrowserProcessPlatformPartTestApi::BrowserProcessPlatformPartTestApi(
@@ -31,4 +31,9 @@ void BrowserProcessPlatformPartTestApi::ShutdownCrosComponentManager() {
   DCHECK(platform_part_->using_testing_cros_component_manager_);
   platform_part_->using_testing_cros_component_manager_ = false;
   platform_part_->cros_component_manager_.reset();
+}
+
+bool BrowserProcessPlatformPartTestApi::CanRestoreUrlsForProfile(
+    const Profile* profile) {
+  return platform_part_->CanRestoreUrlsForProfile(profile);
 }

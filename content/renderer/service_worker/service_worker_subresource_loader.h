@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -19,12 +17,16 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-forward.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_event_status.mojom-forward.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_fetch_response_callback.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_stream_handle.mojom-forward.h"
-#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-forward.h"
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -59,6 +61,11 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       base::WeakPtr<ServiceWorkerSubresourceLoaderFactory>
           service_worker_subresource_loader_factory);
 
+  ServiceWorkerSubresourceLoader(const ServiceWorkerSubresourceLoader&) =
+      delete;
+  ServiceWorkerSubresourceLoader& operator=(
+      const ServiceWorkerSubresourceLoader&) = delete;
+
   ~ServiceWorkerSubresourceLoader() override;
 
   // ControllerServiceWorkerConnector::Observer overrides:
@@ -92,7 +99,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // Called when this loader no longer needs to restart dispatching the fetch
   // event on failure. Null |status| means the event dispatch was not attempted.
   void SettleFetchEventDispatch(
-      base::Optional<blink::ServiceWorkerStatusCode> status);
+      absl::optional<blink::ServiceWorkerStatusCode> status);
 
   // blink::mojom::ServiceWorkerFetchResponseCallback overrides:
   void OnResponse(
@@ -103,6 +110,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       blink::mojom::ServiceWorkerStreamHandlePtr body_as_stream,
       blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override;
   void OnFallback(
+      absl::optional<network::DataElementChunkedDataPipe> request_body,
       blink::mojom::ServiceWorkerFetchEventTimingPtr timing) override;
 
   void UpdateResponseTiming(
@@ -116,7 +124,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const base::Optional<GURL>& new_url) override;
+      const absl::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -124,15 +132,15 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
 
   int StartBlobReading(mojo::ScopedDataPipeConsumerHandle* body_pipe);
   void OnSideDataReadingComplete(mojo::ScopedDataPipeConsumerHandle data_pipe,
-                                 base::Optional<mojo_base::BigBuffer> metadata);
+                                 absl::optional<mojo_base::BigBuffer> metadata);
   void OnBodyReadingComplete(int net_error);
 
-  // Calls url_loader_client_->OnReceiveResponse() with |response_head_|.
   void CommitResponseHeaders();
 
-  // Calls url_loader_client_->OnStartLoadingResponseBody() with
-  // |response_body|.
-  void CommitResponseBody(mojo::ScopedDataPipeConsumerHandle response_body);
+  // Calls url_loader_client_->OnReceiveResponse() with |response_head_|,
+  // |response_body|, and |cached_metadata|.
+  void CommitResponseBody(mojo::ScopedDataPipeConsumerHandle response_body,
+                          absl::optional<mojo_base::BigBuffer> cached_metadata);
 
   // Creates and sends an empty response's body with the net::OK status.
   // Sends net::ERR_INSUFFICIENT_RESOURCES when it can't be created.
@@ -149,9 +157,8 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
 
   void TransitionToStatus(Status new_status);
 
-  network::mojom::URLResponseHeadPtr response_head_ =
-      network::mojom::URLResponseHead::New();
-  base::Optional<net::RedirectInfo> redirect_info_;
+  network::mojom::URLResponseHeadPtr response_head_;
+  absl::optional<net::RedirectInfo> redirect_info_;
   int redirect_limit_;
 
   mojo::Remote<network::mojom::URLLoaderClient> url_loader_client_;
@@ -205,8 +212,6 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   network::mojom::FetchResponseSource response_source_;
 
   base::WeakPtrFactory<ServiceWorkerSubresourceLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerSubresourceLoader);
 };
 
 // A custom URLLoaderFactory implementation used by Service Worker controllees
@@ -215,33 +220,26 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
 class CONTENT_EXPORT ServiceWorkerSubresourceLoaderFactory
     : public network::mojom::URLLoaderFactory {
  public:
-  using WorkerTimingCallback = base::RepeatingCallback<void(
-      int /* request_id */,
-      mojo::PendingReceiver<blink::mojom::WorkerTimingContainer>)>;
-
   // |controller_connector| is used to get a connection to the controller
   // ServiceWorker.
-  // |network_loader_factory| is used to get the associated loading context's
+  // |fallback_factory| is used to get the associated loading context's
   // default URLLoaderFactory for network fallback. This should be the
   // URLLoaderFactory that directly goes to network without going through
   // any custom URLLoader factories.
   // |task_runner| is the runner where this loader runs. In production it runs,
   // on a background thread.
-  // |worker_timing_callback| is passed the WorkerTimingContainer for the given
-  // request_id. It is called on |parent_task_runner|.
   static void Create(
       scoped_refptr<ControllerServiceWorkerConnector> controller_connector,
       scoped_refptr<network::SharedURLLoaderFactory> fallback_factory,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
-      WorkerTimingCallback worker_timing_callback);
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+  ServiceWorkerSubresourceLoaderFactory(
+      const ServiceWorkerSubresourceLoaderFactory&) = delete;
+  ServiceWorkerSubresourceLoaderFactory& operator=(
+      const ServiceWorkerSubresourceLoaderFactory&) = delete;
 
   ~ServiceWorkerSubresourceLoaderFactory() override;
-
-  void AddPendingWorkerTimingReceiver(
-      int request_id,
-      mojo::PendingReceiver<blink::mojom::WorkerTimingContainer> receiver);
 
   // network::mojom::URLLoaderFactory overrides:
   void CreateLoaderAndStart(
@@ -260,9 +258,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoaderFactory
       scoped_refptr<ControllerServiceWorkerConnector> controller_connector,
       scoped_refptr<network::SharedURLLoaderFactory> fallback_factory,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
-      WorkerTimingCallback worker_timing_callback);
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   void OnMojoDisconnect();
 
@@ -276,17 +272,8 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoaderFactory
   // The task runner where this factory is running.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  // The task runner of the context (the main thread for frame or worker thread
-  // for worker) that is using this factory.
-  scoped_refptr<base::SequencedTaskRunner> parent_task_runner_;
-  // The callback used to pass the WorkerTimingContainer pending receiver.
-  // Called on |parent_task_runner_|.
-  WorkerTimingCallback worker_timing_callback_;
-
   base::WeakPtrFactory<ServiceWorkerSubresourceLoaderFactory> weak_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerSubresourceLoaderFactory);
 };
 
 }  // namespace content

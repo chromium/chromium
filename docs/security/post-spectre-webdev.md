@@ -41,7 +41,7 @@ provide concrete recommendations for web developers responsible for protecting
 users' data.
 
 [spectre]: https://spectreattack.com/
-[post-spectre-rethink]: https://chromium.googlesource.com/chromium/src/+/master/docs/security/side-channel-threat-model.md
+[post-spectre-rethink]: https://chromium.googlesource.com/chromium/src/+/main/docs/security/side-channel-threat-model.md
 [site-isolation]: https://www.chromium.org/Home/chromium-security/site-isolation
 [project-fission]: https://wiki.mozilla.org/Project_Fission
 
@@ -126,7 +126,7 @@ This model is spelled out in more detail in both Chromium's
 [fetch-metadata]: https://web.dev/fetch-metadata/
 [corp]: https://resourcepolicy.fyi/
 [coop]: https://docs.google.com/document/d/1Ey3MXcLzwR1T7aarkpBXEwP7jKdd2NvQdgYvF8_8scI/edit
-[corb]: https://chromium.googlesource.com/chromium/src/+/master/services/network/cross_origin_read_blocking_explainer.md
+[corb]: https://chromium.googlesource.com/chromium/src/+/main/services/network/cross_origin_read_blocking_explainer.md
 [orb]: https://github.com/annevk/orb
 
 

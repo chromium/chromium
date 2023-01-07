@@ -1,0 +1,4 @@
+button.accessibilityAttributeNames.has(AXKeyShortcutsValue)='yes'
+button.accessibilityAttributeValue(AXKeyShortcutsValue)='Ctrl+X'
+not_applicable.accessibilityAttributeNames.has(AXKeyShortcutsValue)='no'
+not_applicable.accessibilityAttributeValue(AXKeyShortcutsValue)=NULL

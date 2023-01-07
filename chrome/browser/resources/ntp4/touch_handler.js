@@ -1,9 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertInstanceof} from 'chrome://resources/js/assert.m.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
+import {assert, assertInstanceof} from 'chrome://resources/js/assert.js';
+import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 
 /**
  * @fileoverview Touch Handler. Class that handles all touch events and
@@ -123,7 +123,7 @@ TouchHandler.EventType = {
 
   // Fired whenever the element is tapped in a short time and no dragging is
   // detected.
-  TAP: 'touchHandler:tap'
+  TAP: 'touchHandler:tap',
 };
 
 
@@ -187,7 +187,7 @@ TouchHandler.Event.prototype = {
    * drag delta.
    * @type {number|undefined}
    */
-  dragDeltaY: undefined
+  dragDeltaY: undefined,
 };
 
 /**
@@ -392,7 +392,7 @@ TouchHandler.prototype = {
         identifier: 0,
         clientX: e.clientX,
         clientY: e.clientY,
-        target: e.target
+        target: e.target,
       };
       e.touches = [];
       e.targetTouches = [];
@@ -873,5 +873,5 @@ TouchHandler.prototype = {
 
     this.element_.dispatchEvent(event);
     return event.enableDrag;
-  }
+  },
 };

@@ -1,14 +1,14 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/first_run/first_run.h"
+#import "ios/chrome/browser/first_run/first_run.h"
 
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/path_service.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "ios/chrome/browser/chrome_paths.h"
+#import "base/files/file_path.h"
+#import "base/files/file_util.h"
+#import "base/path_service.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "ios/chrome/browser/paths/paths.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

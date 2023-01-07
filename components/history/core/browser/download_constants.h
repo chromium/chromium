@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +45,7 @@ enum class DownloadDangerType {
   DEEP_SCANNED_OPENED_DANGEROUS = 16,
   PROMPT_FOR_SCANNING = 17,
   BLOCKED_UNSUPPORTED_FILETYPE = 18,
+  DANGEROUS_ACCOUNT_COMRPOMISE = 19,
 };
 
 // DownloadId represents the id of a DownloadRow into the DownloadDatabase.
@@ -52,6 +53,6 @@ enum class DownloadDangerType {
 // kInvalidDownloadId.
 extern const DownloadId kInvalidDownloadId;
 
-}  // namespace
+}  // namespace history
 
 #endif  // COMPONENTS_HISTORY_CORE_BROWSER_DOWNLOAD_CONSTANTS_H_

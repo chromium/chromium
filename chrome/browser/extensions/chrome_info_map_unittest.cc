@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,8 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 namespace {
@@ -69,25 +71,21 @@ TEST_F(ChromeInfoMapTest, CheckPermissions) {
   // chrome-extension URL or from its web extent.
   const Extension* match = info_map->extensions().GetExtensionOrAppByURL(
       app->GetResourceURL("a.html"));
-  EXPECT_TRUE(match &&
-              match->permissions_data()->HasAPIPermission(
-                  APIPermission::kNotifications));
+  EXPECT_TRUE(match && match->permissions_data()->HasAPIPermission(
+                           APIPermissionID::kNotifications));
   match = info_map->extensions().GetExtensionOrAppByURL(app_url);
-  EXPECT_TRUE(match &&
-              match->permissions_data()->HasAPIPermission(
-                  APIPermission::kNotifications));
-  EXPECT_FALSE(
-      match &&
-      match->permissions_data()->HasAPIPermission(APIPermission::kTab));
+  EXPECT_TRUE(match && match->permissions_data()->HasAPIPermission(
+                           APIPermissionID::kNotifications));
+  EXPECT_FALSE(match && match->permissions_data()->HasAPIPermission(
+                            APIPermissionID::kTab));
 
   // The extension should have the tabs permission.
   match = info_map->extensions().GetExtensionOrAppByURL(
       extension->GetResourceURL("a.html"));
-  EXPECT_TRUE(match &&
-              match->permissions_data()->HasAPIPermission(APIPermission::kTab));
-  EXPECT_FALSE(match &&
-               match->permissions_data()->HasAPIPermission(
-                   APIPermission::kNotifications));
+  EXPECT_TRUE(match && match->permissions_data()->HasAPIPermission(
+                           APIPermissionID::kTab));
+  EXPECT_FALSE(match && match->permissions_data()->HasAPIPermission(
+                            APIPermissionID::kNotifications));
 
   // Random URL should not have any permissions.
   GURL evil_url("http://evil.com/a.html");

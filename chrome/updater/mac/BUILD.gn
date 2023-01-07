@@ -1,51 +1,30 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/apple/compile_plist.gni")
 import("//build/apple/tweak_info_plist.gni")
 import("//build/config/mac/rules.gni")
 import("//build/config/python.gni")
-import("//build/util/version.gni")
+import("//build/util/process_version.gni")
 import("//chrome/updater/branding.gni")
+import("//chrome/updater/zip.gni")
+import("//chrome/version.gni")
 
 group("mac") {
   deps = [
     ":browser_install_script",
+    ":privileged_helper",
     ":updater_bundle",
+    ":updater_bundle_test",
     ":updater_install_script",
+    ":updater_zip",
+    "//chrome/updater/mac/installer:metainstaller",
     "//chrome/updater/mac/signing",
   ]
-}
-
-source_set("network_fetcher_sources") {
-  sources = [
-    "net/network.h",
-    "net/network_fetcher.h",
-    "net/network_fetcher.mm",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/updater:base",
-    "//components/crash/core/common:crash_key_lib",
-    "//components/update_client",
-    "//net",
-  ]
-}
-
-source_set("updater_tests") {
-  testonly = true
-
-  sources = [ "net/network_unittest.cc" ]
-
-  deps = [
-    ":network_fetcher_sources",
-    ":updater_setup_sources",
-    "//base/test:test_support",
-    "//net:test_support",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
+  if (!is_component_build && enable_dsyms) {
+    deps += [ ":syms_archive" ]
+  }
 }
 
 tweak_info_plist("updater_plist") {
@@ -60,51 +39,113 @@ mac_app_bundle("updater_bundle") {
 
   sources = [ "main.cc" ]
   deps = [
-    ":network_fetcher_sources",
-    ":updater_setup_sources",
-    "//chrome/updater:lib",
+    ":keystone_agent_bundle_resource_executable",
+    ":keystone_agent_bundle_resource_plist",
+    ":updater_bundle_keystone_executable",
+    ":updater_bundle_keystone_helpers",
+    ":updater_bundle_keystone_plist",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_prod",
   ]
 }
 
-source_set("xpc_names") {
-  sources = [
-    "xpc_service_names.h",
-    "xpc_service_names.mm",
-  ]
+mac_app_bundle("updater_bundle_test") {
+  info_plist_target = ":updater_plist"
+  output_name = updater_product_full_name + "_test"
+  extra_substitutions =
+      [ "MAC_BUNDLE_IDENTIFIER=$mac_updater_bundle_identifier" ]
 
+  sources = [ "main.cc" ]
   deps = [
-    "//base",
-    "//chrome/updater:branding_header",
-    "//chrome/updater:version_header",
+    ":keystone_agent_bundle_resource_executable",
+    ":keystone_agent_bundle_resource_plist",
+    ":updater_bundle_keystone_executable",
+    ":updater_bundle_keystone_helpers",
+    ":updater_bundle_keystone_plist",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_test",
   ]
-
-  frameworks = [ "Foundation.framework" ]
 }
 
-source_set("updater_setup_sources") {
+source_set("privileged_helper_sources") {
   sources = [
-    "setup/setup.h",
-    "setup/setup.mm",
+    "privileged_helper/server.h",
+    "privileged_helper/server.mm",
+    "privileged_helper/service.h",
+    "privileged_helper/service.mm",
+    "privileged_helper/service_protocol.h",
   ]
 
   deps = [
-    ":network_fetcher_sources",
-    ":xpc_names",
+    ":helper_header",
     "//base",
-    "//chrome/common/mac:launchd",
     "//chrome/updater:base",
     "//chrome/updater:branding_header",
-    "//chrome/updater:version_header",
-    "//components/crash/core/common:crash_key_lib",
-    "//mojo/public/cpp/platform",
+  ]
+}
+
+compile_plist("priviledged_info_plist") {
+  plist_templates = [ "privileged_helper/Info.plist" ]
+  format = "xml1"
+  substitutions = [
+    "UPDATER_HELPER_BUNDLE_ID=$privileged_helper_name",
+    "UPDATER_HELPER_BUNDLE_NAME=$privileged_helper_bundle_name",
+    "BROWSER_BUNDLE_IDENTIFIER=$mac_browser_bundle_identifier",
+  ]
+  output_name = "$target_gen_dir/$privileged_helper_name-Info.plist"
+}
+
+process_version("priviledged_launchd_plist") {
+  extra_args = [
+    "-e",
+    "UPDATER_HELPER_BUNDLE_ID=\"$privileged_helper_name\"",
   ]
 
-  allow_circular_includes_from = [ "//chrome/updater:base" ]
+  process_only = true
+  template_file = "privileged_helper/launchd.plist"
+  output = "$target_gen_dir/$privileged_helper_name-launchd.plist"
+}
+
+process_version("helper_header") {
+  extra_args = [
+    "-e",
+    "UPDATER_HELPER_BUNDLE_ID=\"$privileged_helper_name\"",
+  ]
+
+  template_file = "privileged_helper/helper_branding.h.in"
+  output = "$target_gen_dir/privileged_helper/helper_branding.h"
+}
+
+executable("privileged_helper") {
+  output_name = privileged_helper_name
+
+  sources = [ "privileged_helper/main.mm" ]
+  deps = [
+    ":priviledged_info_plist",
+    ":priviledged_launchd_plist",
+    ":privileged_helper_sources",
+    "//base",
+    "//chrome/updater:constants_prod",
+  ]
 
   frameworks = [
-    "AppKit.framework",
-    "CoreServices.framework",
-    "ServiceManagement.framework",
+    "Foundation.framework",
+    "Security.framework",
+  ]
+
+  inputs = [
+    "$target_gen_dir/$privileged_helper_name-Info.plist",
+    "$target_gen_dir/$privileged_helper_name-launchd.plist",
+  ]
+  ldflags = [
+    "-sectcreate",
+    "__TEXT",
+    "__info_plist",
+    rebase_path(inputs[0], root_out_dir),
+    "-sectcreate",
+    "__TEXT",
+    "__launchd_plist",
+    rebase_path(inputs[1], root_out_dir),
   ]
 }
 
@@ -125,6 +166,26 @@ action("updater_install_script") {
     rebase_path(root_out_dir + "/chrome/updater/.install"),
     "-p",
     updater_product_full_name,
+  ]
+}
+
+action("updater_test_install_script") {
+  script = "embed_variables.py"
+
+  inputs = [
+    script,
+    "setup/.install.sh",
+  ]
+
+  outputs = [ "$root_out_dir/.install" ]
+
+  args = [
+    "-i",
+    rebase_path("setup/.install.sh"),
+    "-o",
+    rebase_path(root_out_dir + "/.install"),
+    "-p",
+    updater_product_full_name + "_test",
   ]
 }
 
@@ -149,59 +210,240 @@ action("browser_install_script") {
   ]
 }
 
-source_set("installer_sources") {
+source_set("ksadmin_lib") {
   sources = [
-    "installer.h",
-    "installer.mm",
-  ]
-
-  deps = [ "//base" ]
-}
-
-source_set("updater_setup_tests") {
-  testonly = true
-
-  sources = [ "setup/setup_unittest.mm" ]
-
-  data = [ "//chrome/test/data/updater/updater_setup_test_dmg.dmg" ]
-
-  deps = [
-    ":installer_sources",
-    ":updater_setup_sources",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/common:constants",
-    "//testing/gtest",
-  ]
-}
-
-source_set("enterprise") {
-  sources = [
-    "managed_preference_policy_manager.h",
-    "managed_preference_policy_manager.mm",
-    "managed_preference_policy_manager_impl.h",
-    "managed_preference_policy_manager_impl.mm",
+    "keystone/ksadmin.h",
+    "keystone/ksadmin.mm",
   ]
 
   deps = [
     "//base",
     "//chrome/updater:base",
+    "//chrome/updater:version_header",
+  ]
+
+  visibility = [
+    ":ksadmin",
+    "//chrome/updater:updater_test_sources",
   ]
 }
 
-source_set("enterprise_tests") {
-  testonly = true
+executable("ksadmin") {
+  output_name = "ksadmin"
+  sources = [ "keystone/ksadmin_main.cc" ]
 
+  public_deps = [ ":ksadmin_lib" ]
+
+  deps = [
+    "//base",
+    "//chrome/updater:constants_prod",
+  ]
+
+  frameworks = [ "CoreFoundation.framework" ]
+
+  if (is_asan) {
+    # asan injects a dylib that we package in ../MacOS.
+    ldflags = [ "-Wl,-rpath,@executable_path/../MacOS" ]
+  }
+}
+
+executable("ksinstall") {
+  output_name = "ksinstall"
   sources = [
-    "managed_preference_policy_manager_impl_unittest.mm",
-    "managed_preference_policy_manager_unittest.cc",
+    "keystone/ksinstall.h",
+    "keystone/ksinstall.mm",
+    "keystone/ksinstall_main.cc",
   ]
 
   deps = [
-    ":enterprise",
     "//base",
-    "//base/test:test_support",
     "//chrome/updater:base",
-    "//testing/gtest",
+    "//chrome/updater:constants_prod",
+    "//chrome/updater:version_header",
+  ]
+
+  frameworks = [ "CoreFoundation.framework" ]
+
+  if (is_asan) {
+    # asan injects a dylib that we package in ../MacOS.
+    ldflags = [ "-Wl,-rpath,@executable_path/../MacOS" ]
+  }
+}
+
+bundle_data("keystone_helpers") {
+  sources = [
+    "$root_out_dir/ksadmin",
+    "$root_out_dir/ksinstall",
+  ]
+
+  outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
+  public_deps = [
+    ":ksadmin",
+    ":ksinstall",
+  ]
+}
+
+mac_app_bundle("keystone_agent_bundle") {
+  info_plist = "keystone/Info.plist"
+  sources = [ "keystone/agent_main.cc" ]
+  output_name = keystone_app_name + "Agent"
+  extra_substitutions = [
+    "MAC_BUNDLE_IDENTIFIER=${keystone_app_name}Agent",
+    "PACKAGE_TYPE=APPL",
+  ]
+}
+
+bundle_data("keystone_agent_bundle_resource_executable") {
+  sources = [ "$root_out_dir/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent" ]
+
+  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/{{source_file_part}}" ]
+  public_deps = [ ":keystone_agent_bundle" ]
+
+  if (is_asan) {
+    sources += [ "$root_out_dir/${keystone_app_name}Agent.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+  }
+}
+
+bundle_data("keystone_agent_bundle_resource_plist") {
+  sources =
+      [ "$root_out_dir/${keystone_app_name}Agent.app/Contents/Info.plist" ]
+
+  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/{{source_file_part}}" ]
+  public_deps = [ ":keystone_agent_bundle" ]
+}
+
+mac_app_bundle("keystone_bundle") {
+  info_plist = "keystone/Info.plist"
+  sources = [ "keystone/keystone_main.cc" ]
+  output_name = keystone_app_name
+  package_type = "bundle"
+  extra_substitutions = [
+    "MAC_BUNDLE_IDENTIFIER=$keystone_app_name",
+    "PACKAGE_TYPE=BNDL",
+  ]
+  public_deps = [ ":keystone_helpers" ]
+}
+
+bundle_data("updater_bundle_keystone_executable") {
+  sources = [
+    "$root_out_dir/$keystone_app_name.bundle/Contents/MacOS/$keystone_app_name",
+  ]
+  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/MacOS/{{source_file_part}}" ]
+
+  public_deps = [ ":keystone_bundle" ]
+
+  if (is_asan) {
+    sources += [ "$root_out_dir/${keystone_app_name}.bundle/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+  }
+}
+
+bundle_data("updater_bundle_keystone_plist") {
+  sources = [ "$root_out_dir/$keystone_app_name.bundle/Contents/Info.plist" ]
+  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/{{source_file_part}}" ]
+
+  public_deps = [ ":keystone_bundle" ]
+}
+
+bundle_data("updater_bundle_keystone_helpers") {
+  sources = [
+    "$root_out_dir/$keystone_app_name.bundle/Contents/Helpers/ksadmin",
+    "$root_out_dir/$keystone_app_name.bundle/Contents/Helpers/ksinstall",
+  ]
+  outputs = [ "{{bundle_contents_dir}}/Helpers/$keystone_app_name.bundle/Contents/Helpers/{{source_file_part}}" ]
+
+  public_deps = [ ":keystone_bundle" ]
+}
+
+if (!is_component_build && enable_dsyms) {
+  _symbols_sources = [
+    "$root_out_dir/$updater_product_full_name.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin",
+    "$root_out_dir/$updater_product_full_name.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksinstall",
+    "$root_out_dir/$updater_product_full_name.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent",
+    "$root_out_dir/$updater_product_full_name.app/Contents/MacOS/$updater_product_full_name",
+  ]
+
+  action_foreach("syms") {
+    script = "//build/redirect_stdout.py"
+    sources = _symbols_sources
+    dump_syms = "//third_party/breakpad:dump_syms($host_toolchain)"
+    public_deps = [
+      ":updater_bundle",
+      dump_syms,
+    ]
+    outputs =
+        [ "$root_out_dir/{{source_file_part}}-$chrome_version_full.breakpad" ]
+
+    args = rebase_path(outputs, root_build_dir) + [
+             rebase_path(get_label_info(dump_syms, "root_out_dir") + "/" +
+                             get_label_info(dump_syms, "name"),
+                         root_build_dir),
+             "-g",
+             rebase_path(
+                 "$root_out_dir/{{source_file_part}}.dSYM/Contents/Resources/DWARF/{{source_file_part}}",
+                 root_build_dir),
+             "{{source}}",
+           ]
+  }
+
+  action("syms_archive") {
+    script = "//chrome/tools/build/mac/archive_symbols.py"
+    sources = _symbols_sources
+    deps = [ ":syms" ]
+    _output = "$root_out_dir/$updater_product_full_name.dSYM.tar.bz2"
+    outputs = [ _output ]
+    args = [ rebase_path(_output, root_out_dir) ] +
+           rebase_path([
+                         "$root_out_dir/ksadmin.dSYM",
+                         "$root_out_dir/ksinstall.dSYM",
+                       ],
+                       root_out_dir)
+  }
+}
+
+# The contents of this zip are uploaded by archivers (//infra/archive_config).
+artifact_zip("updater_zip") {
+  output = "$root_build_dir/updater.zip"
+  inputs = [
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Info.plist",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/MacOS/${updater_product_full_name}",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/$keystone_app_name",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksinstall",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/Info.plist",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Info.plist",
+    "$root_build_dir/${updater_product_full_name}.app/Contents/PkgInfo",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Info.plist",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/MacOS/${updater_product_full_name}_test",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/MacOS/$keystone_app_name",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksinstall",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Helpers/ksadmin",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/MacOS/${keystone_app_name}Agent",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Resources/${keystone_app_name}Agent.app/Contents/Info.plist",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/Helpers/$keystone_app_name.bundle/Contents/Info.plist",
+    "$root_build_dir/${updater_product_full_name}_test.app/Contents/PkgInfo",
+    "$root_build_dir/Updater Packaging/signing/signing.py",
+    "$root_build_dir/Updater Packaging/signing/config.py",
+    "$root_build_dir/Updater Packaging/signing/modification.py",
+    "$root_build_dir/Updater Packaging/signing/notarize.py",
+    "$root_build_dir/Updater Packaging/signing/pkg-dmg",
+    "$root_build_dir/Updater Packaging/signing/__init__.py",
+    "$root_build_dir/Updater Packaging/signing/model.py",
+    "$root_build_dir/Updater Packaging/signing/unbranded_config.py",
+    "$root_build_dir/Updater Packaging/signing/pipeline.py",
+    "$root_build_dir/Updater Packaging/signing/parts.py",
+    "$root_build_dir/Updater Packaging/signing/config_factory.py",
+    "$root_build_dir/Updater Packaging/signing/build_props_config.py",
+    "$root_build_dir/Updater Packaging/signing/commands.py",
+    "$root_build_dir/Updater Packaging/sign_updater.py",
+    "$root_build_dir/chrome/updater/.install",
+    "$root_build_dir/UpdaterSetup",
+  ]
+  deps = [
+    ":updater_bundle",
+    ":updater_bundle_test",
+    ":updater_install_script",
+    "//chrome/updater/mac/installer:metainstaller",
+    "//chrome/updater/mac/signing",
   ]
 }

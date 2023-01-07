@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.mediarouter.media.MediaRouter;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
@@ -165,7 +166,19 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
                 Intent i = new Intent(getContext(),
                         ChromeMediaNotificationControllerServices.PlaybackListenerService.class);
                 i.setAction(intent.getAction());
-                getContext().startService(i);
+                boolean succeeded = true;
+                try {
+                    getContext().startService(i);
+                } catch (RuntimeException e) {
+                    // This happens occasionally with "cannot start foreground service".  It's not
+                    // at all clear what causes it; no combination of multi-window / background
+                    // unplugging headphones has managed to repro it locally.  While it might be
+                    // possible to trampoline this through an activity like we do elsewhere for
+                    // notifications, that's a fairly invasive change without a local repro.  So,
+                    // for now, just log that this happened and move on. https://crbug.com/1245017
+                    succeeded = false;
+                }
+                RecordHistogram.recordBooleanHistogram("Media.Android.BecomingNoisy", succeeded);
             }
         };
     }
@@ -241,8 +254,7 @@ class ChromeMediaNotificationControllerDelegate implements MediaNotificationCont
                 new NotificationMetadata(NotificationUmaTracker.SystemNotificationType.MEDIA,
                         null /* notificationTag */, notificationId);
         return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                true /* preferCompat */, ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK,
-                null /* remoteAppPackageName*/, metadata);
+                ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK, metadata);
     }
 
     private static Context getContext() {

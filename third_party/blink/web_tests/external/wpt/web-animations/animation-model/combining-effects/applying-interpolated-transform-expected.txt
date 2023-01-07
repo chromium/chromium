@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL  apply interpolated transform on multiple keyframes assert_approx_equals: expected matrix(1, 0, 0, 1, 20, 0) but got matrix(0.809017, 0.587785, -0.587785, 0.809017, 20, 0): undefined expected 1 +/- 0.0001 but got 0.809017
-Harness: the test ran to completion.
-

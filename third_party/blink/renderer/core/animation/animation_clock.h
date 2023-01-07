@@ -33,8 +33,8 @@
 
 #include <limits>
 
-#include "base/macros.h"
 #include "base/time/default_tick_clock.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -53,6 +53,8 @@ class CORE_EXPORT AnimationClock {
         clock_(base::DefaultTickClock::GetInstance()),
         task_for_which_time_was_calculated_(
             std::numeric_limits<unsigned>::max()) {}
+  AnimationClock(const AnimationClock&) = delete;
+  AnimationClock& operator=(const AnimationClock&) = delete;
 
   void UpdateTime(base::TimeTicks time);
   base::TimeTicks CurrentTime();
@@ -97,8 +99,6 @@ class CORE_EXPORT AnimationClock {
   // See |NotifyTaskStart| documentation for these members.
   unsigned task_for_which_time_was_calculated_;
   static unsigned currently_running_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationClock);
 };
 
 }  // namespace blink

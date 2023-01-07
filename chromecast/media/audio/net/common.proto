@@ -1,0 +1,51 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package chromecast.media.audio_service;
+
+enum ContentType {
+  CONTENT_TYPE_MEDIA = 0;
+  CONTENT_TYPE_ALARM = 1;
+  CONTENT_TYPE_COMMUNICATION = 2;
+  CONTENT_TYPE_OTHER = 3;
+}
+
+enum SampleFormat {
+  // Interleaved formats:
+  SAMPLE_FORMAT_INT16_I = 0;
+  SAMPLE_FORMAT_INT32_I = 1;
+  SAMPLE_FORMAT_FLOAT_I = 2;
+  // Planar formats:
+  SAMPLE_FORMAT_INT16_P = 3;
+  SAMPLE_FORMAT_INT32_P = 4;
+  SAMPLE_FORMAT_FLOAT_P = 5;
+}
+
+enum ChannelLayout {
+  CHANNEL_LAYOUT_NONE = 0;
+  CHANNEL_LAYOUT_MONO = 1;
+  CHANNEL_LAYOUT_STEREO = 2;
+  CHANNEL_LAYOUT_5_1 = 3;
+  CHANNEL_LAYOUT_BITSTREAM = 4;
+  CHANNEL_LAYOUT_DISCRETE = 5;
+}
+
+enum AudioCodec {
+  AUDIO_CODEC_UNKNOWN = 0;
+  AUDIO_CODEC_AAC = 1;
+  AUDIO_CODEC_MP3 = 2;
+  AUDIO_CODEC_PCM = 3;
+  AUDIO_CODEC_PCM_S16BE = 4;
+  AUDIO_CODEC_VORBIS = 5;
+  AUDIO_CODEC_OPUS = 6;
+  AUDIO_CODEC_EAC3 = 7;
+  AUDIO_CODEC_AC3 = 8;
+  AUDIO_CODEC_DTS = 9;
+  AUDIO_CODEC_FLAC = 10;
+  AUDIO_CODEC_MPEG_H_AUDIO = 11;
+}

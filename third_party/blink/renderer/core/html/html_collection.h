@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/live_node_list_base.h"
 #include "third_party/blink/renderer/core/html/collection_items_cache.h"
 #include "third_party/blink/renderer/core/html/collection_type.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -122,14 +123,14 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
 
     const HeapVector<Member<Element>>* GetElementsById(
         const AtomicString& id) const {
-      auto it = id_cache_.find(id.Impl());
+      auto it = id_cache_.find(id);
       if (it == id_cache_.end())
         return nullptr;
       return it->value;
     }
     const HeapVector<Member<Element>>* GetElementsByName(
         const AtomicString& name) const {
-      auto it = name_cache_.find(name.Impl());
+      auto it = name_cache_.find(name);
       if (it == name_cache_.end())
         return nullptr;
       return it->value;
@@ -147,14 +148,13 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
     }
 
    private:
-    typedef HeapHashMap<StringImpl*, Member<HeapVector<Member<Element>>>>
+    typedef HeapHashMap<AtomicString, Member<HeapVector<Member<Element>>>>
         StringToElementsMap;
     static void AddElementToMap(StringToElementsMap& map,
                                 const AtomicString& key,
                                 Element* element) {
       HeapVector<Member<Element>>* vector =
-          map.insert(key.Impl(),
-                     MakeGarbageCollected<HeapVector<Member<Element>>>())
+          map.insert(key, MakeGarbageCollected<HeapVector<Member<Element>>>())
               .stored_value->value;
       vector->push_back(element);
     }

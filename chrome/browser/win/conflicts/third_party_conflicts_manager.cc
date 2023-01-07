@@ -1,8 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/win/conflicts/third_party_conflicts_manager.h"
+
+#include <windows.h>
 
 #include <string>
 #include <utility>
@@ -14,12 +16,11 @@
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
-#include "base/task_runner.h"
-#include "base/task_runner_util.h"
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "chrome/browser/browser_process.h"
@@ -37,6 +38,8 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+
+#include <windows.h>
 
 namespace {
 
@@ -281,7 +284,7 @@ void ThirdPartyConflictsManager::OnModuleListComponentRegistered(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   DCHECK(module_list_component_id_.empty());
-  module_list_component_id_ = component_id.as_string();
+  module_list_component_id_ = std::string(component_id);
 
   if (component_version == base::Version("0.0.0.0")) {
     // The module list component is currently not installed. An update is

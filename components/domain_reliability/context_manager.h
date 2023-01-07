@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/domain_reliability/beacon.h"
@@ -32,6 +32,12 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContextManager {
       const std::string& upload_reporter_string,
       DomainReliabilityContext::UploadAllowedCallback upload_allowed_callback,
       DomainReliabilityDispatcher* dispatcher);
+
+  DomainReliabilityContextManager(const DomainReliabilityContextManager&) =
+      delete;
+  DomainReliabilityContextManager& operator=(
+      const DomainReliabilityContextManager&) = delete;
+
   ~DomainReliabilityContextManager();
 
   // If |url| maps to a context added to this manager, calls |OnBeacon| on
@@ -47,7 +53,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContextManager {
   // |origin_filter| is interpreted as an always-true filter, indicating
   // complete deletion.
   void ClearBeacons(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
+      const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter);
 
   // Creates and stores a context for the given |config|, which should be for an
   // origin distinct from any existing ones. Returns pointer to the inserted
@@ -59,7 +65,7 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContextManager {
   // (discarding all queued beacons in the process). A null |origin_filter|
   // is interpreted as an always-true filter, indicating complete deletion.
   void RemoveContexts(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
+      const base::RepeatingCallback<bool(const url::Origin&)>& origin_filter);
 
   // Finds a context for the exact domain |host|. Otherwise returns nullptr.
   DomainReliabilityContext* GetContext(const std::string& host) const;
@@ -75,8 +81,6 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContextManager {
   // |uploader_| needs to be set before any contexts are created.
   void SetUploader(DomainReliabilityUploader* uploader);
 
-  std::unique_ptr<base::Value> GetWebUIData() const;
-
   size_t contexts_size_for_testing() const { return contexts_.size(); }
 
  private:
@@ -89,22 +93,20 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityContextManager {
 
   // |time_| is owned by the Monitor and a copy of this pointer is given to
   // every Context.
-  const MockableTime* const time_;
+  const raw_ptr<const MockableTime> time_;
   const std::string upload_reporter_string_;
   base::TimeTicks last_network_change_time_;
   DomainReliabilityContext::UploadAllowedCallback upload_allowed_callback_;
   // |dispatcher_| is owned by the Monitor and a copy of this pointer is given
   // to every Context.
-  DomainReliabilityDispatcher* const dispatcher_;
+  const raw_ptr<DomainReliabilityDispatcher> dispatcher_;
   // |uploader_| is owned by the Monitor. Expected to be non-null after
   // initialization because it should be set by the Monitor, as long as the
   // Monitor has been fully initialized. A copy of this pointer is given to
   // every Context.
-  DomainReliabilityUploader* uploader_ = nullptr;
+  raw_ptr<DomainReliabilityUploader> uploader_ = nullptr;
 
   ContextMap contexts_;
-
-  DISALLOW_COPY_AND_ASSIGN(DomainReliabilityContextManager);
 };
 
 }  // namespace domain_reliability

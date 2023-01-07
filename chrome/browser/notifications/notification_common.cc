@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,13 +29,30 @@ const PersistentNotificationMetadata* PersistentNotificationMetadata::From(
   return static_cast<const PersistentNotificationMetadata*>(metadata);
 }
 
+NonPersistentNotificationMetadata::NonPersistentNotificationMetadata() {
+  type = NotificationHandler::Type::WEB_NON_PERSISTENT;
+}
+
+NonPersistentNotificationMetadata::~NonPersistentNotificationMetadata() =
+    default;
+
+// static
+const NonPersistentNotificationMetadata*
+NonPersistentNotificationMetadata::From(const Metadata* metadata) {
+  if (!metadata ||
+      metadata->type != NotificationHandler::Type::WEB_NON_PERSISTENT)
+    return nullptr;
+
+  return static_cast<const NonPersistentNotificationMetadata*>(metadata);
+}
+
 // static
 void NotificationCommon::OpenNotificationSettings(Profile* profile,
                                                   const GURL& origin) {
 // TODO(peter): Use the |origin| to direct the user to a more appropriate
 // settings page to toggle permission.
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 // Android settings are handled through Java. Chrome OS settings are handled
 // through the tray's setting panel.
 NOTREACHED();

@@ -1,0 +1,31 @@
+caption: Allow certificates issued by local trust anchors without subjectAlternativeName
+  extension
+deprecated: true
+desc: |-
+  When this setting is enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will use the commonName of a server certificate to match a hostname if the certificate is missing a subjectAlternativeName extension, as long as it successfully validates and chains to a locally-installed CA certificates.
+
+        Note that this is not recommended, as this may allow bypassing the nameConstraints extension that restricts the hostnames that a given certificate can be authorized for.
+
+        If this policy is not set, or is set to false, server certificates that lack a subjectAlternativeName extension containing either a DNS name or IP address will not be trusted.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Allow certificates lacking a subjectAlternativeName extension when issued
+    by local trust anchors
+  value: true
+- caption: Disallow certificates lacking a subjectAlternativeName extension
+  value: false
+owners:
+- file://net/cert/OWNERS
+- rsleevi@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:58-65
+- chrome_os:58-65
+- android:58-65
+tags:
+- system-security
+type: main

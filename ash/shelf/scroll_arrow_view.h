@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,10 @@ class ASH_EXPORT ScrollArrowView : public ShelfButton {
                   bool is_horizontal_alignment,
                   Shelf* shelf,
                   ShelfButtonDelegate* button_listener);
+
+  ScrollArrowView(const ScrollArrowView&) = delete;
+  ScrollArrowView& operator=(const ScrollArrowView&) = delete;
+
   ~ScrollArrowView() override;
 
   void set_is_horizontal_alignment(bool is_horizontal_alignment) {
@@ -36,8 +40,6 @@ class ASH_EXPORT ScrollArrowView : public ShelfButton {
  private:
   ArrowType arrow_type_ = kLeft;
   bool is_horizontal_alignment_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollArrowView);
 };
 
 }  // namespace ash

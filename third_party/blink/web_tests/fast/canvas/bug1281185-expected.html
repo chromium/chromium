@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Regression test for crbug.com/1281185</title>
+</head>
+<body>
+</body>
+<script>
+const w = 100;
+const canvas = document.createElement('canvas');
+canvas.width = canvas.height = w;
+const ctx = canvas.getContext('2d');
+document.body.appendChild(canvas);
+ctx.fillStyle = '#0f0';
+ctx.fillRect(0, 0, w, w);
+</script>
+</html>

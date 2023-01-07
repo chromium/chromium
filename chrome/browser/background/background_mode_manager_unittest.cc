@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,10 +8,12 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_simple_task_runner.h"
@@ -57,6 +59,7 @@ using testing::AtMost;
 using testing::Exactly;
 using testing::InSequence;
 using testing::Mock;
+using testing::NiceMock;
 using testing::StrictMock;
 
 namespace {
@@ -74,12 +77,12 @@ class TestBackgroundModeManager : public StrictMock<BackgroundModeManager> {
  public:
   TestBackgroundModeManager(const base::CommandLine& command_line,
                             ProfileAttributesStorage* storage)
-      : StrictMock<BackgroundModeManager>(command_line, storage),
-        have_status_tray_(false),
-        has_shown_balloon_(false) {
+      : StrictMock<BackgroundModeManager>(command_line, storage) {
     ResumeBackgroundMode();
   }
-  ~TestBackgroundModeManager() override {}
+  TestBackgroundModeManager(TestBackgroundModeManager&) = delete;
+  TestBackgroundModeManager& operator=(TestBackgroundModeManager&) = delete;
+  ~TestBackgroundModeManager() override = default;
 
   MOCK_METHOD1(EnableLaunchOnStartup, void(bool should_launch));
 
@@ -96,15 +99,16 @@ class TestBackgroundModeManager : public StrictMock<BackgroundModeManager> {
 
  private:
   // Flags to track whether we have a status tray/have shown the balloon.
-  bool have_status_tray_;
-  bool has_shown_balloon_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBackgroundModeManager);
+  bool have_status_tray_ = false;
+  bool has_shown_balloon_ = false;
 };
 
 class TestStatusIcon : public StatusIcon {
  public:
-  TestStatusIcon() {}
+  TestStatusIcon() = default;
+  TestStatusIcon(TestStatusIcon&) = delete;
+  TestStatusIcon& operator=(TestStatusIcon&) = delete;
+
   void SetImage(const gfx::ImageSkia& image) override {}
   void SetToolTip(const std::u16string& tool_tip) override {}
   void DisplayBalloon(const gfx::ImageSkia& icon,
@@ -112,9 +116,6 @@ class TestStatusIcon : public StatusIcon {
                       const std::u16string& contents,
                       const message_center::NotifierId& notifier_id) override {}
   void UpdatePlatformContextMenu(StatusIconMenuModel* menu) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestStatusIcon);
 };
 
 void AssertBackgroundModeActive(const TestBackgroundModeManager& manager) {
@@ -138,20 +139,24 @@ class AdvancedTestBackgroundModeManager : public TestBackgroundModeManager {
                                     ProfileAttributesStorage* storage,
                                     bool enabled)
       : TestBackgroundModeManager(command_line, storage), enabled_(enabled) {}
-  ~AdvancedTestBackgroundModeManager() override {}
+  AdvancedTestBackgroundModeManager(AdvancedTestBackgroundModeManager&) =
+      delete;
+  AdvancedTestBackgroundModeManager& operator=(
+      AdvancedTestBackgroundModeManager&) = delete;
+  ~AdvancedTestBackgroundModeManager() override = default;
 
   // TestBackgroundModeManager:
   bool HasPersistentBackgroundClient() const override {
-    return std::find_if(profile_app_counts_.begin(), profile_app_counts_.end(),
-                        [](const auto& profile_count_pair) {
-                          return profile_count_pair.second.persistent > 0;
-                        }) != profile_app_counts_.end();
+    return base::ranges::any_of(
+        profile_app_counts_, [](const auto& profile_count_pair) {
+          return profile_count_pair.second.persistent > 0;
+        });
   }
   bool HasAnyBackgroundClient() const override {
-    return std::find_if(profile_app_counts_.begin(), profile_app_counts_.end(),
-                        [](const auto& profile_count_pair) {
-                          return profile_count_pair.second.any > 0;
-                        }) != profile_app_counts_.end();
+    return base::ranges::any_of(profile_app_counts_,
+                                [](const auto& profile_count_pair) {
+                                  return profile_count_pair.second.any > 0;
+                                });
   }
   bool HasPersistentBackgroundClientForProfile(
       const Profile* profile) const override {
@@ -189,57 +194,61 @@ class AdvancedTestBackgroundModeManager : public TestBackgroundModeManager {
   };
   bool enabled_;
   std::map<const Profile*, AppCounts> profile_app_counts_;
-
-  DISALLOW_COPY_AND_ASSIGN(AdvancedTestBackgroundModeManager);
 };
 
 class BackgroundModeManagerTest : public testing::Test {
  public:
-  BackgroundModeManagerTest() {}
-  ~BackgroundModeManagerTest() override {}
+  BackgroundModeManagerTest() = default;
+  BackgroundModeManagerTest(BackgroundModeManagerTest&) = delete;
+  BackgroundModeManagerTest& operator=(BackgroundModeManagerTest&) = delete;
+  ~BackgroundModeManagerTest() override = default;
 
   void SetUp() override {
-    command_line_.reset(new base::CommandLine(base::CommandLine::NO_PROGRAM));
+    command_line_ =
+        std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
 
     auto policy_service = std::make_unique<policy::PolicyServiceImpl>(
         std::vector<policy::ConfigurationPolicyProvider*>{&policy_provider_});
     profile_manager_ = CreateTestingProfileManager();
     profile_ = profile_manager_->CreateTestingProfile(
-        "p1", nullptr, u"p1", 0, "", TestingProfile::TestingFactories(),
-        base::nullopt, std::move(policy_service));
+        "p1", nullptr, u"p1", 0, TestingProfile::TestingFactories(),
+        /*is_supervised_profile=*/false, absl::nullopt,
+        std::move(policy_service));
   }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<base::CommandLine> command_line_;
 
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   // Test profile used by all tests - this is owned by profile_manager_.
-  TestingProfile* profile_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BackgroundModeManagerTest);
+  raw_ptr<TestingProfile> profile_;
 };
 
 class BackgroundModeManagerWithExtensionsTest : public testing::Test {
  public:
-  BackgroundModeManagerWithExtensionsTest() {}
-  ~BackgroundModeManagerWithExtensionsTest() override {}
+  BackgroundModeManagerWithExtensionsTest() = default;
+  BackgroundModeManagerWithExtensionsTest(
+      BackgroundModeManagerWithExtensionsTest&) = delete;
+  BackgroundModeManagerWithExtensionsTest& operator=(
+      BackgroundModeManagerWithExtensionsTest&) = delete;
+  ~BackgroundModeManagerWithExtensionsTest() override = default;
 
   void SetUp() override {
-    command_line_.reset(new base::CommandLine(base::CommandLine::NO_PROGRAM));
+    command_line_ =
+        std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
     profile_manager_ = CreateTestingProfileManager();
     profile_ = profile_manager_->CreateTestingProfile("p1");
 
-    test_keep_alive_.reset(
-        new ScopedKeepAlive(KeepAliveOrigin::BACKGROUND_MODE_MANAGER,
-                            KeepAliveRestartOption::DISABLED));
+    test_keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::BACKGROUND_MODE_MANAGER,
+        KeepAliveRestartOption::DISABLED);
 
     // Create our test BackgroundModeManager.
-    manager_.reset(new TestBackgroundModeManager(
-        *command_line_, profile_manager_->profile_attributes_storage()));
+    manager_ = std::make_unique<TestBackgroundModeManager>(
+        *command_line_, profile_manager_->profile_attributes_storage());
     manager_->RegisterProfile(profile_);
   }
 
@@ -248,16 +257,6 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
     // the context menu updates will DCHECK with the now deleted profiles.
     delete manager_->status_icon_;
     manager_->status_icon_ = nullptr;
-
-    // We have to destroy the profiles now because we created them with real
-    // thread state. This causes a lot of machinery to spin up that stops
-    // working when we tear down our thread state at the end of the test.
-    // Deleting our testing profile may have the side-effect of disabling
-    // background mode if it was enabled for that profile (explicitly note that
-    // here to satisfy StrictMock requirements.
-    EXPECT_CALL(*manager_, EnableLaunchOnStartup(false)).Times(AtMost(1));
-    profile_manager_->DeleteAllTestingProfiles();
-    Mock::VerifyAndClearExpectations(manager_.get());
 
     // We're getting ready to shutdown the message loop. Clear everything out!
     base::RunLoop().RunUntilIdle();
@@ -284,11 +283,9 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
  protected:
   // From views::MenuModelAdapter::IsCommandEnabled with modification.
   bool IsCommandEnabled(ui::MenuModel* model, int id) const {
-    int index = 0;
-    if (ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index))
-      return model->IsEnabledAt(index);
-
-    return false;
+    size_t index = 0;
+    return ui::MenuModel::GetModelAndIndexForCommandId(id, &model, &index) &&
+           model->IsEnabledAt(index);
   }
 
   std::unique_ptr<TestBackgroundModeManager> manager_;
@@ -297,7 +294,7 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
 
   std::unique_ptr<TestingProfileManager> profile_manager_;
   // Test profile used by all tests - this is owned by profile_manager_.
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
 
  private:
   // Required for extension service.
@@ -314,8 +311,6 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   ash::ScopedTestUserManager test_user_manager_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundModeManagerWithExtensionsTest);
 };
 
 
@@ -705,31 +700,34 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BackgroundMenuGeneration) {
 
 TEST_F(BackgroundModeManagerWithExtensionsTest,
        BackgroundMenuGenerationMultipleProfile) {
-  scoped_refptr<const extensions::Extension> component_extension =
-      extensions::ExtensionBuilder("Component Extension")
-          .SetLocation(ManifestLocation::kComponent)
-          .AddPermission("background")
-          .Build();
-
-  scoped_refptr<const extensions::Extension> component_extension_with_options =
-      extensions::ExtensionBuilder("Component Extension with Options")
-          .SetLocation(ManifestLocation::kComponent)
-          .AddPermission("background")
-          .SetManifestKey("options_page", "test.html")
-          .Build();
-
-  scoped_refptr<const extensions::Extension> regular_extension =
-      extensions::ExtensionBuilder("Regular Extension")
-          .SetLocation(ManifestLocation::kCommandLine)
-          .AddPermission("background")
-          .Build();
-
-  scoped_refptr<const extensions::Extension> regular_extension_with_options =
-      extensions::ExtensionBuilder("Regular Extension with Options")
-          .SetLocation(ManifestLocation::kCommandLine)
-          .AddPermission("background")
-          .SetManifestKey("options_page", "test.html")
-          .Build();
+  // Helper methods to build extensions; we build new instances so that each
+  // Extension object is only used in a single profile.
+  auto build_component_extension = []() {
+    return extensions::ExtensionBuilder("Component Extension")
+        .SetLocation(ManifestLocation::kComponent)
+        .AddPermission("background")
+        .Build();
+  };
+  auto build_component_extension_with_options = []() {
+    return extensions::ExtensionBuilder("Component Extension with Options")
+        .SetLocation(ManifestLocation::kComponent)
+        .AddPermission("background")
+        .SetManifestKey("options_page", "test.html")
+        .Build();
+  };
+  auto build_regular_extension = []() {
+    return extensions::ExtensionBuilder("Regular Extension")
+        .SetLocation(ManifestLocation::kCommandLine)
+        .AddPermission("background")
+        .Build();
+  };
+  auto build_regular_extension_with_options = []() {
+    return extensions::ExtensionBuilder("Regular Extension with Options")
+        .SetLocation(ManifestLocation::kCommandLine)
+        .AddPermission("background")
+        .SetManifestKey("options_page", "test.html")
+        .Build();
+  };
 
   static_cast<extensions::TestExtensionSystem*>(
       extensions::ExtensionSystem::Get(profile_))
@@ -741,10 +739,11 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(*manager_, EnableLaunchOnStartup(true)).Times(Exactly(1));
-  service1->AddComponentExtension(component_extension.get());
-  service1->AddComponentExtension(component_extension_with_options.get());
-  service1->AddExtension(regular_extension.get());
-  service1->AddExtension(regular_extension_with_options.get());
+  service1->AddComponentExtension(build_component_extension().get());
+  service1->AddComponentExtension(
+      build_component_extension_with_options().get());
+  service1->AddExtension(build_regular_extension().get());
+  service1->AddExtension(build_regular_extension_with_options().get());
   Mock::VerifyAndClearExpectations(manager_.get());
 
   TestingProfile* profile2 = profile_manager_->CreateTestingProfile("p2");
@@ -759,9 +758,9 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   service2->Init();
   base::RunLoop().RunUntilIdle();
 
-  service2->AddComponentExtension(component_extension.get());
-  service2->AddExtension(regular_extension.get());
-  service2->AddExtension(regular_extension_with_options.get());
+  service2->AddComponentExtension(build_component_extension().get());
+  service2->AddExtension(build_regular_extension().get());
+  service2->AddExtension(build_regular_extension_with_options().get());
 
   manager_->status_icon_ = new TestStatusIcon();
   manager_->UpdateStatusTrayIconContextMenu();
@@ -830,15 +829,15 @@ TEST_F(BackgroundModeManagerWithExtensionsTest,
   // CEO: Component Extenison with Options Menu Item
   // RE: Regular Extension Menu Item
   // REO: Regular Extension with Options Menu Item
-  EXPECT_FALSE(IsCommandEnabled(context_menu, 0)); // P1 - CE
-  EXPECT_TRUE(IsCommandEnabled(context_menu, 1));  // P1 - CEO
-  EXPECT_TRUE(IsCommandEnabled(context_menu, 2));  // P1 - RE
-  EXPECT_TRUE(IsCommandEnabled(context_menu, 3));  // P1 - REO
-  EXPECT_TRUE(IsCommandEnabled(context_menu, 4));  // P1
-  EXPECT_FALSE(IsCommandEnabled(context_menu, 5)); // P2 - CE
-  EXPECT_TRUE(IsCommandEnabled(context_menu, 6));  // P2 - RE
-  EXPECT_TRUE(IsCommandEnabled(context_menu, 7));  // P2 - REO
-  EXPECT_TRUE(IsCommandEnabled(context_menu, 8));  // P2
+  EXPECT_FALSE(IsCommandEnabled(context_menu, 0));  // P1 - CE
+  EXPECT_TRUE(IsCommandEnabled(context_menu, 1));   // P1 - CEO
+  EXPECT_TRUE(IsCommandEnabled(context_menu, 2));   // P1 - RE
+  EXPECT_TRUE(IsCommandEnabled(context_menu, 3));   // P1 - REO
+  EXPECT_TRUE(IsCommandEnabled(context_menu, 4));   // P1
+  EXPECT_FALSE(IsCommandEnabled(context_menu, 5));  // P2 - CE
+  EXPECT_TRUE(IsCommandEnabled(context_menu, 6));   // P2 - RE
+  EXPECT_TRUE(IsCommandEnabled(context_menu, 7));   // P2 - REO
+  EXPECT_TRUE(IsCommandEnabled(context_menu, 8));   // P2
 }
 
 TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
@@ -901,7 +900,7 @@ TEST_F(BackgroundModeManagerWithExtensionsTest, BalloonDisplay) {
 
   // Upgrading an extension that has background should not reshow the balloon.
   {
-    // TODO: Fix crbug.com/438376 and remove these checks.
+    // TODO(crbug.com/438376): Fix crbug.com/438376 and remove these checks.
     InSequence expected_call_sequence;
     EXPECT_CALL(*manager_, EnableLaunchOnStartup(false)).Times(Exactly(1));
     EXPECT_CALL(*manager_, EnableLaunchOnStartup(true)).Times(Exactly(1));

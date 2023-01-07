@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,8 +17,8 @@
 // are saved to userdefaults. The favicons are saved to a shared directory.
 namespace ntp_tile_saver {
 
-// Saves the most visited sites to disk with icons in |favicons_directory|,
-// using |favicon_fetcher| to get the favicons.
+// Saves the most visited sites to disk with icons in `favicons_directory`,
+// using `favicon_fetcher` to get the favicons.
 void SaveMostVisitedToDisk(const ntp_tiles::NTPTilesVector& most_visited_data,
                            FaviconAttributesProvider* favicon_provider,
                            NSURL* favicons_directory);
@@ -27,7 +27,7 @@ void SaveMostVisitedToDisk(const ntp_tiles::NTPTilesVector& most_visited_data,
 NSDictionary* ReadSavedMostVisited();
 
 // Fetches the updated favicon for a single site and saves it in
-// |favicons_directory|.
+// `favicons_directory`.
 void UpdateSingleFavicon(const GURL& site_url,
                          FaviconAttributesProvider* favicon_provider,
                          NSURL* favicons_directory);

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,15 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/files/file_path.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -63,14 +64,15 @@ class MockDownloadItem : public DownloadItem {
   MOCK_CONST_METHOD0(IsDone, bool());
   MOCK_CONST_METHOD0(GetBytesWasted, int64_t());
   MOCK_CONST_METHOD0(GetAutoResumeCount, int32_t());
+  MOCK_CONST_METHOD0(IsOffTheRecord, bool());
   MOCK_CONST_METHOD0(GetURL, const GURL&());
   MOCK_CONST_METHOD0(GetUrlChain, const std::vector<GURL>&());
   MOCK_CONST_METHOD0(GetOriginalUrl, const GURL&());
   MOCK_CONST_METHOD0(GetReferrerUrl, const GURL&());
-  MOCK_CONST_METHOD0(GetSiteUrl, const GURL&());
+  MOCK_CONST_METHOD0(GetSerializedEmbedderDownloadData, const std::string&());
   MOCK_CONST_METHOD0(GetTabUrl, const GURL&());
   MOCK_CONST_METHOD0(GetTabReferrerUrl, const GURL&());
-  MOCK_CONST_METHOD0(GetRequestInitiator, const base::Optional<url::Origin>&());
+  MOCK_CONST_METHOD0(GetRequestInitiator, const absl::optional<url::Origin>&());
   MOCK_CONST_METHOD0(GetSuggestedFilename, std::string());
   MOCK_CONST_METHOD0(GetContentDisposition, std::string());
   MOCK_CONST_METHOD0(GetResponseHeaders,
@@ -94,12 +96,16 @@ class MockDownloadItem : public DownloadItem {
   MOCK_CONST_METHOD0(GetHash, const std::string&());
   MOCK_CONST_METHOD0(GetHashState, const std::string&());
   MOCK_CONST_METHOD0(GetFileExternallyRemoved, bool());
-  virtual void DeleteFile(base::OnceCallback<void(bool)> cb) override {
+  void DeleteFile(base::OnceCallback<void(bool)> cb) override {
     DeleteFile_(cb);
   }
   MOCK_METHOD1(DeleteFile_, void(base::OnceCallback<void(bool)>& cb));
   MOCK_METHOD0(GetDownloadFile, DownloadFile*());
   MOCK_METHOD0(GetRenameHandler, DownloadItemRenameHandler*());
+  MOCK_METHOD(const DownloadItemRerouteInfo&,
+              GetRerouteInfo,
+              (),
+              (const override));
   MOCK_CONST_METHOD0(IsDangerous, bool());
   MOCK_CONST_METHOD0(IsMixedContent, bool());
   MOCK_CONST_METHOD0(GetDangerType, DownloadDangerType());
@@ -123,10 +129,14 @@ class MockDownloadItem : public DownloadItem {
   MOCK_CONST_METHOD0(GetOpened, bool());
   MOCK_CONST_METHOD0(GetLastAccessTime, base::Time());
   MOCK_CONST_METHOD0(IsTransient, bool());
+  MOCK_CONST_METHOD0(RequireSafetyChecks, bool());
   MOCK_CONST_METHOD0(IsParallelDownload, bool());
   MOCK_CONST_METHOD0(GetDownloadCreationType, DownloadCreationType());
-  MOCK_CONST_METHOD0(GetDownloadSchedule,
-                     const base::Optional<DownloadSchedule>&());
+  MOCK_CONST_METHOD0(GetCredentialsMode, ::network::mojom::CredentialsMode());
+  MOCK_METHOD((const absl::optional<net::IsolationInfo>&),
+              GetIsolationInfo,
+              (),
+              (const override));
   MOCK_METHOD2(OnContentCheckCompleted,
                void(DownloadDangerType, DownloadInterruptReason));
   MOCK_METHOD1(SetOpenWhenComplete, void(bool));
@@ -138,10 +148,6 @@ class MockDownloadItem : public DownloadItem {
   MOCK_METHOD1(SimulateErrorForTesting, void(DownloadInterruptReason));
   MOCK_METHOD2(Rename, void(const base::FilePath&, RenameDownloadCallback));
   MOCK_METHOD1(OnAsyncScanningCompleted, void(DownloadDangerType));
-  MOCK_METHOD(void,
-              OnDownloadScheduleChanged,
-              (base::Optional<DownloadSchedule>),
-              (override));
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;

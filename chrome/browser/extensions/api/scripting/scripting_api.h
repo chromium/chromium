@@ -1,17 +1,34 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_API_SCRIPTING_SCRIPTING_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_SCRIPTING_SCRIPTING_API_H_
 
+#include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "chrome/common/extensions/api/scripting.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/script_executor.h"
+#include "extensions/common/mojom/code_injection.mojom.h"
+#include "extensions/common/user_script.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
+
+// A simple helper struct to represent a read file (either CSS or JS) to be
+// injected.
+struct InjectedFileSource {
+  InjectedFileSource(std::string file_name, std::unique_ptr<std::string> data);
+  InjectedFileSource(InjectedFileSource&&);
+  ~InjectedFileSource();
+
+  std::string file_name;
+  std::unique_ptr<std::string> data;
+};
 
 class ScriptingExecuteScriptFunction : public ExtensionFunction {
  public:
@@ -29,14 +46,13 @@ class ScriptingExecuteScriptFunction : public ExtensionFunction {
  private:
   ~ScriptingExecuteScriptFunction() override;
 
-  // Called when the resource file to be injected has been loaded.
-  void DidLoadResource(bool success, std::unique_ptr<std::string> data);
+  // Called when the resource files to be injected has been loaded.
+  void DidLoadResources(std::vector<InjectedFileSource> file_sources,
+                        absl::optional<std::string> load_error);
 
-  // Triggers the execution of `code_to_execute` in the appropriate context.
+  // Triggers the execution of `sources` in the appropriate context.
   // Returns true on success; on failure, populates `error`.
-  bool Execute(std::string code_to_execute,
-               GURL script_url,
-               std::string* error);
+  bool Execute(std::vector<mojom::JSSourcePtr> sources, std::string* error);
 
   // Invoked when script execution is complete.
   void OnScriptExecuted(std::vector<ScriptExecutor::FrameResult> frame_results);
@@ -59,14 +75,13 @@ class ScriptingInsertCSSFunction : public ExtensionFunction {
  private:
   ~ScriptingInsertCSSFunction() override;
 
-  // Called when the resource file to be injected has been loaded.
-  void DidLoadResource(bool success, std::unique_ptr<std::string> data);
+  // Called when the resource files to be injected has been loaded.
+  void DidLoadResources(std::vector<InjectedFileSource> file_sources,
+                        absl::optional<std::string> load_error);
 
-  // Triggers the execution of `code_to_execute` in the appropriate context.
+  // Triggers the execution of `sources` in the appropriate context.
   // Returns true on success; on failure, populates `error`.
-  bool Execute(std::string code_to_execute,
-               GURL script_url,
-               std::string* error);
+  bool Execute(std::vector<mojom::CSSSourcePtr> sources, std::string* error);
 
   // Called when the CSS insertion is complete.
   void OnCSSInserted(std::vector<ScriptExecutor::FrameResult> results);
@@ -91,6 +106,100 @@ class ScriptingRemoveCSSFunction : public ExtensionFunction {
 
   // Called when the CSS removal is complete.
   void OnCSSRemoved(std::vector<ScriptExecutor::FrameResult> results);
+};
+
+using ValidateContentScriptsResult =
+    std::pair<std::unique_ptr<UserScriptList>, absl::optional<std::string>>;
+
+class ScriptingRegisterContentScriptsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("scripting.registerContentScripts",
+                             SCRIPTING_REGISTERCONTENTSCRIPTS)
+
+  ScriptingRegisterContentScriptsFunction();
+  ScriptingRegisterContentScriptsFunction(
+      const ScriptingRegisterContentScriptsFunction&) = delete;
+  ScriptingRegisterContentScriptsFunction& operator=(
+      const ScriptingRegisterContentScriptsFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ScriptingRegisterContentScriptsFunction() override;
+
+  // Called when script files have been checked.
+  void OnContentScriptFilesValidated(
+      std::set<std::string> persistent_script_ids,
+      ValidateContentScriptsResult result);
+
+  // Called when content scripts have been registered.
+  void OnContentScriptsRegistered(const absl::optional<std::string>& error);
+};
+
+class ScriptingGetRegisteredContentScriptsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("scripting.getRegisteredContentScripts",
+                             SCRIPTING_GETREGISTEREDCONTENTSCRIPTS)
+
+  ScriptingGetRegisteredContentScriptsFunction();
+  ScriptingGetRegisteredContentScriptsFunction(
+      const ScriptingGetRegisteredContentScriptsFunction&) = delete;
+  ScriptingGetRegisteredContentScriptsFunction& operator=(
+      const ScriptingGetRegisteredContentScriptsFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ScriptingGetRegisteredContentScriptsFunction() override;
+};
+
+class ScriptingUnregisterContentScriptsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("scripting.unregisterContentScripts",
+                             SCRIPTING_UNREGISTERCONTENTSCRIPTS)
+
+  ScriptingUnregisterContentScriptsFunction();
+  ScriptingUnregisterContentScriptsFunction(
+      const ScriptingUnregisterContentScriptsFunction&) = delete;
+  ScriptingUnregisterContentScriptsFunction& operator=(
+      const ScriptingUnregisterContentScriptsFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ScriptingUnregisterContentScriptsFunction() override;
+
+  // Called when content scripts have been unregistered.
+  void OnContentScriptsUnregistered(const absl::optional<std::string>& error);
+};
+
+class ScriptingUpdateContentScriptsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("scripting.updateContentScripts",
+                             SCRIPTING_UPDATECONTENTSCRIPTS)
+
+  ScriptingUpdateContentScriptsFunction();
+  ScriptingUpdateContentScriptsFunction(
+      const ScriptingUpdateContentScriptsFunction&) = delete;
+  ScriptingUpdateContentScriptsFunction& operator=(
+      const ScriptingUpdateContentScriptsFunction&) = delete;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+
+ private:
+  ~ScriptingUpdateContentScriptsFunction() override;
+
+  // Called when script files have been checked.
+  void OnContentScriptFilesValidated(
+      std::set<std::string> persistent_script_ids,
+      ValidateContentScriptsResult result);
+
+  // Called when content scripts have been updated.
+  void OnContentScriptsUpdated(const absl::optional<std::string>& error);
 };
 
 }  // namespace extensions

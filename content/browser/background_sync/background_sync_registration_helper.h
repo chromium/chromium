@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,15 +8,20 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_sync/background_sync_status.h"
 #include "content/public/browser/background_sync_registration.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class BackgroundSyncContextImpl;
+class RenderProcessHost;
 
 // Used by OneShotBackgroundSyncService and PeriodicBackgroundSyncService to
 // create and get BackgroundSync registrations.
@@ -29,9 +34,19 @@ class BackgroundSyncRegistrationHelper {
       blink::mojom::BackgroundSyncError status,
       std::vector<blink::mojom::SyncRegistrationOptionsPtr> results)>;
 
-  explicit BackgroundSyncRegistrationHelper(
-      BackgroundSyncContextImpl* background_sync_context);
+  BackgroundSyncRegistrationHelper(
+      BackgroundSyncContextImpl* background_sync_context,
+      RenderProcessHost* render_process_host);
+
+  BackgroundSyncRegistrationHelper(const BackgroundSyncRegistrationHelper&) =
+      delete;
+  BackgroundSyncRegistrationHelper& operator=(
+      const BackgroundSyncRegistrationHelper&) = delete;
+
   ~BackgroundSyncRegistrationHelper();
+
+  bool ValidateSWRegistrationID(int64_t sw_registration_id,
+                                const url::Origin& origin);
 
   void Register(blink::mojom::SyncRegistrationOptionsPtr options,
                 int64_t sw_registration_id,
@@ -52,11 +67,10 @@ class BackgroundSyncRegistrationHelper {
 
  private:
   // |background_sync_context_| (indirectly) owns |this|.
-  BackgroundSyncContextImpl* const background_sync_context_;
+  const raw_ptr<BackgroundSyncContextImpl> background_sync_context_;
+  int render_process_host_id_;
   base::WeakPtrFactory<BackgroundSyncRegistrationHelper> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncRegistrationHelper);
 };
 
 }  // namespace content

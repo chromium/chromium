@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/profiler/metadata_recorder.h"
 #include "base/profiler/module_cache.h"
 #include "base/profiler/profile_builder.h"
@@ -62,6 +61,9 @@ class CallStackProfileBuilder : public base::ProfileBuilder {
       const WorkIdRecorder* work_id_recorder = nullptr,
       base::OnceClosure completed_callback = base::OnceClosure());
 
+  CallStackProfileBuilder(const CallStackProfileBuilder&) = delete;
+  CallStackProfileBuilder& operator=(const CallStackProfileBuilder&) = delete;
+
   ~CallStackProfileBuilder() override;
 
   // Both weight and count are used by the heap profiler only.
@@ -91,10 +93,18 @@ class CallStackProfileBuilder : public base::ProfileBuilder {
           callback);
 
   // Sets the CallStackProfileCollector interface from |browser_interface|.
-  // This function must be called within child processes.
+  // This function must be called within child processes, and must only be
+  // called once.
   static void SetParentProfileCollectorForChildProcess(
       mojo::PendingRemote<metrics::mojom::CallStackProfileCollector>
           browser_interface);
+
+  // Resets the ChildCallStackProfileCollector to its default state. This will
+  // discard all collected profiles, remove any CallStackProfileCollector
+  // interface set through SetParentProfileCollectorForChildProcess, and allow
+  // SetParentProfileCollectorForChildProcess to be called multiple times during
+  // tests.
+  static void ResetChildCallStackProfileCollectorForTesting();
 
  protected:
   // Test seam.
@@ -114,7 +124,7 @@ class CallStackProfileBuilder : public base::ProfileBuilder {
 
   unsigned int last_work_id_ = std::numeric_limits<unsigned int>::max();
   bool is_continued_work_ = false;
-  const WorkIdRecorder* const work_id_recorder_;
+  const raw_ptr<const WorkIdRecorder> work_id_recorder_;
 
   // The SampledProfile protobuf message which contains the collected stack
   // samples.
@@ -140,8 +150,6 @@ class CallStackProfileBuilder : public base::ProfileBuilder {
 
   // Maintains the current metadata to apply to samples.
   CallStackProfileMetadata metadata_;
-
-  DISALLOW_COPY_AND_ASSIGN(CallStackProfileBuilder);
 };
 
 }  // namespace metrics

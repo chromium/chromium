@@ -1,14 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './ui_trigger_list_object.js';
 import './shared_style.js';
 
-import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {WebUIListenerBehavior} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {NearbyPrefsBrowserProxy} from './nearby_prefs_browser_proxy.js';
 import {NearbyUiTriggerBrowserProxy} from './nearby_ui_trigger_browser_proxy.js';
 import {NearbyShareStates, ShareTarget, ShareTargetDiscoveryChange, ShareTargetSelectOption, StatusCode, TimestampedMessage, TransferMetadataStatus} from './types.js';
 
@@ -42,6 +44,9 @@ Polymer({
   /** @private {?NearbyUiTriggerBrowserProxy}*/
   browserProxy_: null,
 
+  /** @private {?NearbyPrefsBrowserProxy}*/
+  prefsBrowserProxy_: null,
+
   /**
    * Initialize |browserProxy_|,|selectedShareTargetId_|, and
    * |shareTargetSelectOptionList_|.
@@ -49,6 +54,7 @@ Polymer({
    */
   created() {
     this.browserProxy_ = NearbyUiTriggerBrowserProxy.getInstance();
+    this.prefsBrowserProxy_ = NearbyPrefsBrowserProxy.getInstance();
   },
 
   /**
@@ -101,6 +107,38 @@ Polymer({
   onUnregisterSendSurfaceClicked_() {
     this.browserProxy_.unregisterSendSurface().then(
         statusCode => this.onStatusCodeReturned_(statusCode));
+  },
+
+  /**
+   * Clears Nearby Share Prefs.
+   * @private
+   */
+  onClearPrefsButtonClicked_() {
+    this.prefsBrowserProxy_.clearNearbyPrefs();
+  },
+
+  onFastPairErrorNotificationClicked_() {
+    this.browserProxy_.notifyFastPairError();
+  },
+
+  onFastPairDiscoveryNotificationClicked_() {
+    this.browserProxy_.notifyFastPairDiscovery();
+  },
+
+  onFastPairPairingNotificationClicked_() {
+    this.browserProxy_.notifyFastPairPairing();
+  },
+
+  onFastPairDeviceApplicationAvailableNotificationClicked_() {
+    this.browserProxy_.notifyFastPairApplicationAvailable();
+  },
+
+  onFastPairDeviceApplicationInstalledNotificationClicked_() {
+    this.browserProxy_.notifyFastPairApplicationInstalled();
+  },
+
+  onFastPairAssociateAccountNotificationClicked_() {
+    this.browserProxy_.notifyFastPairAssociateAccount();
   },
 
   /**

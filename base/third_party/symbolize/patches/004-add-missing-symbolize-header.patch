@@ -1,0 +1,13 @@
+diff --git a/base/third_party/symbolize/symbolize.cc b/base/third_party/symbolize/symbolize.cc
+index 2cfd4c490cc94..e2f99a647bf88 100644
+--- a/base/third_party/symbolize/symbolize.cc
++++ b/base/third_party/symbolize/symbolize.cc
+@@ -52,6 +52,8 @@
+ #include GLOG_BUILD_CONFIG_INCLUDE
+ #endif  // GLOG_BUILD_CONFIG_INCLUDE
+ 
++#include "symbolize.h"
++
+ #include "utilities.h"
+ 
+ #if defined(HAVE_SYMBOLIZE)

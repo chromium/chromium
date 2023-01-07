@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -44,7 +44,7 @@ namespace {
 
 memory_instrumentation::CoordinatorImpl* g_coordinator_impl;
 
-constexpr base::TimeDelta kHeapDumpTimeout = base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kHeapDumpTimeout = base::Seconds(60);
 
 // A wrapper classes that allows a string to be exported as JSON in a trace
 // event.
@@ -63,9 +63,12 @@ class StringWrapper : public base::trace_event::ConvertableToTraceFormat {
 
 CoordinatorImpl::CoordinatorImpl()
     : next_dump_id_(0),
-      client_process_timeout_(base::TimeDelta::FromSeconds(15)),
+      client_process_timeout_(base::Seconds(15)),
       use_proto_writer_(!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseMemoryTrackingJsonWriter)) {
+          switches::kUseMemoryTrackingJsonWriter)),
+      write_proto_heap_profile_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kUseHeapProfilingProtoWriter)) {
   DCHECK(!g_coordinator_impl);
   g_coordinator_impl = this;
   base::trace_event::MemoryDumpManager::GetInstance()->set_tracing_process_id(
@@ -102,10 +105,11 @@ void CoordinatorImpl::RegisterClientProcess(
     mojo::PendingRemote<mojom::ClientProcess> client_process,
     mojom::ProcessType process_type,
     base::ProcessId process_id,
-    const base::Optional<std::string>& service_name) {
+    const absl::optional<std::string>& service_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   mojo::Remote<mojom::ClientProcess> process(std::move(client_process));
-  coordinator_receivers_.Add(this, std::move(receiver), process_id);
+  if (receiver.is_valid())
+    coordinator_receivers_.Add(this, std::move(receiver), process_id);
   process.set_disconnect_handler(
       base::BindOnce(&CoordinatorImpl::UnregisterClientProcess,
                      base::Unretained(this), process_id));
@@ -248,18 +252,21 @@ void CoordinatorImpl::UnregisterClientProcess(base::ProcessId process_id) {
       if (current->process_id != process_id)
         continue;
       RemovePendingResponse(process_id, current->type);
+      DLOG(ERROR)
+          << "Memory dump request failed due to disconnected child process "
+          << process_id;
       request->failed_memory_dump_count++;
     }
     FinalizeGlobalMemoryDumpIfAllManagersReplied();
   }
 
   for (auto& pair : in_progress_vm_region_requests_) {
-    QueuedVmRegionRequest* request = pair.second.get();
-    auto it = request->pending_responses.begin();
-    while (it != request->pending_responses.end()) {
+    QueuedVmRegionRequest* in_progress_request = pair.second.get();
+    auto it = in_progress_request->pending_responses.begin();
+    while (it != in_progress_request->pending_responses.end()) {
       auto current = it++;
       if (*current == process_id) {
-        request->pending_responses.erase(current);
+        in_progress_request->pending_responses.erase(current);
       }
     }
   }
@@ -334,6 +341,10 @@ void CoordinatorImpl::OnQueuedRequestTimedOut(uint64_t dump_guid) {
     return;
 
   // Fail all remaining dumps being waited upon and clear the vector.
+  if (request->pending_responses.size() > 0) {
+    DLOG(ERROR) << "Global dump request timed out waiting for "
+                << request->pending_responses.size() << " requests";
+  }
   request->failed_memory_dump_count += request->pending_responses.size();
   request->pending_responses.clear();
 
@@ -401,7 +412,7 @@ void CoordinatorImpl::PerformNextQueuedGlobalMemoryDump() {
             ->GetCurrentTraceConfig()
             .IsArgumentFilterEnabled();
     heap_profiler_->DumpProcessesForTracing(
-        strip_path_from_mapped_files,
+        strip_path_from_mapped_files, write_proto_heap_profile_,
         base::BindOnce(&CoordinatorImpl::OnDumpProcessesForTracing,
                        weak_ptr_factory_.GetWeakPtr(), request->dump_guid));
 
@@ -446,8 +457,8 @@ void CoordinatorImpl::OnChromeMemoryDumpResponse(
   response->chrome_dump = std::move(chrome_memory_dump);
 
   if (!success) {
+    DLOG(ERROR) << "Memory dump request failed: NACK from client process";
     request->failed_memory_dump_count++;
-    VLOG(1) << "RequestGlobalMemoryDump() FAIL: NACK from client process";
   }
 
   FinalizeGlobalMemoryDumpIfAllManagersReplied();
@@ -474,8 +485,8 @@ void CoordinatorImpl::OnOSMemoryDumpResponse(uint64_t dump_guid,
   request->responses[process_id].os_dumps = std::move(os_dumps);
 
   if (!success) {
+    DLOG(ERROR) << "Memory dump request failed: NACK from client process";
     request->failed_memory_dump_count++;
-    VLOG(1) << "RequestGlobalMemoryDump() FAIL: NACK from client process";
   }
 
   FinalizeGlobalMemoryDumpIfAllManagersReplied();
@@ -588,7 +599,7 @@ void CoordinatorImpl::FinalizeGlobalMemoryDumpIfAllManagersReplied() {
 CoordinatorImpl::ClientInfo::ClientInfo(
     mojo::Remote<mojom::ClientProcess> client,
     mojom::ProcessType process_type,
-    base::Optional<std::string> service_name)
+    absl::optional<std::string> service_name)
     : client(std::move(client)),
       process_type(process_type),
       service_name(std::move(service_name)) {}

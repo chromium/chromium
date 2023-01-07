@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,13 +29,15 @@ class COMPONENT_EXPORT(CHROMEOS_UI_BASE) TabletState
   // Returns true if the system is in tablet mode.
   bool InTabletMode() const;
 
-  display::TabletState state() const { return state_; }
+  display::TabletState state() const;
 
   // display::DisplayObserver:
   void OnDisplayTabletStateChanged(display::TabletState state) override;
 
  private:
-  display::TabletState state_ = display::TabletState::kInClamshellMode;
+  display::ScopedDisplayObserver display_observer_{this};
+
+  // display::TabletState state_ = display::TabletState::kInClamshellMode;
 };
 
 }  // namespace chromeos

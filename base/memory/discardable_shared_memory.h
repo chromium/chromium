@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
-#include "base/check_op.h"
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/threading/thread_collision_warner.h"
@@ -27,7 +26,7 @@
 // and Android to indicate that this type of behavior can be expected on
 // those platforms. Note that madvise() will still be used on other POSIX
 // platforms but doesn't provide the zero-fill-on-demand pages guarantee.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #define DISCARDABLE_SHARED_MEMORY_ZERO_FILL_ON_DEMAND_PAGES_AFTER_PURGE
 #endif
 
@@ -51,6 +50,9 @@ class BASE_EXPORT DiscardableSharedMemory {
   // Create a new DiscardableSharedMemory object from an existing, open shared
   // memory file. Memory must be locked.
   explicit DiscardableSharedMemory(UnsafeSharedMemoryRegion region);
+
+  DiscardableSharedMemory(const DiscardableSharedMemory&) = delete;
+  DiscardableSharedMemory& operator=(const DiscardableSharedMemory&) = delete;
 
   // Closes any open files.
   virtual ~DiscardableSharedMemory();
@@ -157,7 +159,7 @@ class BASE_EXPORT DiscardableSharedMemory {
       trace_event::ProcessMemoryDump* pmd,
       bool is_owned) const;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns true if the Ashmem device is supported on this system.
   // Only use this for unit-testing.
   static bool IsAshmemDeviceSupportedForTesting();
@@ -191,8 +193,6 @@ class BASE_EXPORT DiscardableSharedMemory {
   // synchronized somehow. Use a collision warner to detect incorrect usage.
   DFAKE_MUTEX(thread_collision_warner_);
   Time last_known_usage_;
-
-  DISALLOW_COPY_AND_ASSIGN(DiscardableSharedMemory);
 };
 
 }  // namespace base

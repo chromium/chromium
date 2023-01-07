@@ -1,18 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/bulleted_label_list_view.h"
 
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
-#include "ui/views/metadata/metadata_header_macros.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/layout/table_layout.h"
 
 namespace {
-constexpr int kColumnSetId = 0;
 
 class BulletView : public views::View {
  public:
@@ -52,36 +51,32 @@ BulletedLabelListView::BulletedLabelListView()
 
 BulletedLabelListView::BulletedLabelListView(
     const std::vector<std::u16string>& texts) {
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* columns = layout->AddColumnSet(kColumnSetId);
-
-  int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
+  const int width = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kFixed, width, width);
-  columns->AddColumn(views::GridLayout::FILL, views::GridLayout::FILL, 1.0,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  SetLayoutManager(std::make_unique<views::TableLayout>())
+      ->AddColumn(views::LayoutAlignment::kStretch,
+                  views::LayoutAlignment::kStretch,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kFixed, width, width)
+      .AddColumn(views::LayoutAlignment::kStretch,
+                 views::LayoutAlignment::kStretch, 1.0,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
 
   for (const auto& text : texts)
     AddLabel(text);
 }
 
-BulletedLabelListView::~BulletedLabelListView() {}
+BulletedLabelListView::~BulletedLabelListView() = default;
 
 void BulletedLabelListView::AddLabel(const std::u16string& text) {
-  views::GridLayout* layout =
-      static_cast<views::GridLayout*>(GetLayoutManager());
-  layout->StartRow(views::GridLayout::kFixedSize, kColumnSetId);
+  views::TableLayout* layout =
+      static_cast<views::TableLayout*>(GetLayoutManager());
+  layout->AddRows(1, views::TableLayout::kFixedSize);
 
-  auto label = std::make_unique<views::Label>(text);
-
+  AddChildView(std::make_unique<BulletView>());
+  auto* label = AddChildView(std::make_unique<views::Label>(text));
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
-  layout->AddView(std::make_unique<BulletView>());
-  layout->AddView(std::move(label));
 }
 
 BEGIN_METADATA(BulletedLabelListView, views::View)

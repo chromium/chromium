@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Copyright 2022 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<grit current_release="1" latest_public_release="0" output_all_resource_defines="false">
+  <outputs>
+    <output filename="values-af/android_fast_checkout_strings.xml" lang="af" type="android" />
+    <output filename="values-am/android_fast_checkout_strings.xml" lang="am" type="android" />
+    <output filename="values-ar/android_fast_checkout_strings.xml" lang="ar" type="android" />
+    <output filename="values-as/android_fast_checkout_strings.xml" lang="as" type="android" />
+    <output filename="values-az/android_fast_checkout_strings.xml" lang="az" type="android" />
+    <output filename="values-be/android_fast_checkout_strings.xml" lang="be" type="android" />
+    <output filename="values-bg/android_fast_checkout_strings.xml" lang="bg" type="android" />
+    <output filename="values-bn/android_fast_checkout_strings.xml" lang="bn" type="android" />
+    <output filename="values-bs/android_fast_checkout_strings.xml" lang="bs" type="android" />
+    <output filename="values-ca/android_fast_checkout_strings.xml" lang="ca" type="android" />
+    <output filename="values-cs/android_fast_checkout_strings.xml" lang="cs" type="android" />
+    <output filename="values-da/android_fast_checkout_strings.xml" lang="da" type="android" />
+    <output filename="values-de/android_fast_checkout_strings.xml" lang="de" type="android" />
+    <output filename="values-el/android_fast_checkout_strings.xml" lang="el" type="android" />
+    <output filename="values/android_fast_checkout_strings.xml" lang="en" type="android" />
+    <output filename="values-en-rGB/android_fast_checkout_strings.xml" lang="en-GB" type="android" />
+    <output filename="values-es/android_fast_checkout_strings.xml" lang="es" type="android" />
+    <output filename="values-es-rUS/android_fast_checkout_strings.xml" lang="es-419" type="android" />
+    <output filename="values-et/android_fast_checkout_strings.xml" lang="et" type="android" />
+    <output filename="values-eu/android_fast_checkout_strings.xml" lang="eu" type="android" />
+    <output filename="values-fa/android_fast_checkout_strings.xml" lang="fa" type="android" />
+    <output filename="values-fi/android_fast_checkout_strings.xml" lang="fi" type="android" />
+    <output filename="values-tl/android_fast_checkout_strings.xml" lang="fil" type="android" />
+    <output filename="values-fr/android_fast_checkout_strings.xml" lang="fr" type="android" />
+    <output filename="values-fr-rCA/android_fast_checkout_strings.xml" lang="fr-CA" type="android" />
+    <output filename="values-gl/android_fast_checkout_strings.xml" lang="gl" type="android" />
+    <output filename="values-gu/android_fast_checkout_strings.xml" lang="gu" type="android" />
+    <output filename="values-hi/android_fast_checkout_strings.xml" lang="hi" type="android" />
+    <output filename="values-hr/android_fast_checkout_strings.xml" lang="hr" type="android" />
+    <output filename="values-hu/android_fast_checkout_strings.xml" lang="hu" type="android" />
+    <output filename="values-hy/android_fast_checkout_strings.xml" lang="hy" type="android" />
+    <output filename="values-in/android_fast_checkout_strings.xml" lang="id" type="android" />
+    <output filename="values-is/android_fast_checkout_strings.xml" lang="is" type="android" />
+    <output filename="values-it/android_fast_checkout_strings.xml" lang="it" type="android" />
+    <output filename="values-iw/android_fast_checkout_strings.xml" lang="iw" type="android" />
+    <output filename="values-ja/android_fast_checkout_strings.xml" lang="ja" type="android" />
+    <output filename="values-ka/android_fast_checkout_strings.xml" lang="ka" type="android" />
+    <output filename="values-kk/android_fast_checkout_strings.xml" lang="kk" type="android" />
+    <output filename="values-km/android_fast_checkout_strings.xml" lang="km" type="android" />
+    <output filename="values-kn/android_fast_checkout_strings.xml" lang="kn" type="android" />
+    <output filename="values-ko/android_fast_checkout_strings.xml" lang="ko" type="android" />
+    <output filename="values-ky/android_fast_checkout_strings.xml" lang="ky" type="android" />
+    <output filename="values-lo/android_fast_checkout_strings.xml" lang="lo" type="android" />
+    <output filename="values-lt/android_fast_checkout_strings.xml" lang="lt" type="android" />
+    <output filename="values-lv/android_fast_checkout_strings.xml" lang="lv" type="android" />
+    <output filename="values-mk/android_fast_checkout_strings.xml" lang="mk" type="android" />
+    <output filename="values-ml/android_fast_checkout_strings.xml" lang="ml" type="android" />
+    <output filename="values-mn/android_fast_checkout_strings.xml" lang="mn" type="android" />
+    <output filename="values-mr/android_fast_checkout_strings.xml" lang="mr" type="android" />
+    <output filename="values-ms/android_fast_checkout_strings.xml" lang="ms" type="android" />
+    <output filename="values-my/android_fast_checkout_strings.xml" lang="my" type="android" />
+    <output filename="values-ne/android_fast_checkout_strings.xml" lang="ne" type="android" />
+    <output filename="values-nl/android_fast_checkout_strings.xml" lang="nl" type="android" />
+    <output filename="values-nb/android_fast_checkout_strings.xml" lang="no" type="android" />
+    <output filename="values-or/android_fast_checkout_strings.xml" lang="or" type="android" />
+    <output filename="values-pa/android_fast_checkout_strings.xml" lang="pa" type="android" />
+    <output filename="values-pl/android_fast_checkout_strings.xml" lang="pl" type="android" />
+    <output filename="values-pt-rBR/android_fast_checkout_strings.xml" lang="pt-BR" type="android" />
+    <output filename="values-pt-rPT/android_fast_checkout_strings.xml" lang="pt-PT" type="android" />
+    <output filename="values-ro/android_fast_checkout_strings.xml" lang="ro" type="android" />
+    <output filename="values-ru/android_fast_checkout_strings.xml" lang="ru" type="android" />
+    <output filename="values-si/android_fast_checkout_strings.xml" lang="si" type="android" />
+    <output filename="values-sk/android_fast_checkout_strings.xml" lang="sk" type="android" />
+    <output filename="values-sl/android_fast_checkout_strings.xml" lang="sl" type="android" />
+    <output filename="values-sq/android_fast_checkout_strings.xml" lang="sq" type="android" />
+    <output filename="values-sr/android_fast_checkout_strings.xml" lang="sr" type="android" />
+    <output filename="values-b+sr+Latn/android_fast_checkout_strings.xml" lang="sr-Latn" type="android" />
+    <output filename="values-sv/android_fast_checkout_strings.xml" lang="sv" type="android" />
+    <output filename="values-sw/android_fast_checkout_strings.xml" lang="sw" type="android" />
+    <output filename="values-ta/android_fast_checkout_strings.xml" lang="ta" type="android" />
+    <output filename="values-te/android_fast_checkout_strings.xml" lang="te" type="android" />
+    <output filename="values-th/android_fast_checkout_strings.xml" lang="th" type="android" />
+    <output filename="values-tr/android_fast_checkout_strings.xml" lang="tr" type="android" />
+    <output filename="values-uk/android_fast_checkout_strings.xml" lang="uk" type="android" />
+    <output filename="values-ur/android_fast_checkout_strings.xml" lang="ur" type="android" />
+    <output filename="values-uz/android_fast_checkout_strings.xml" lang="uz" type="android" />
+    <output filename="values-vi/android_fast_checkout_strings.xml" lang="vi" type="android" />
+    <output filename="values-zh-rCN/android_fast_checkout_strings.xml" lang="zh-CN" type="android" />
+    <output filename="values-zh-rHK/android_fast_checkout_strings.xml" lang="zh-HK" type="android" />
+    <output filename="values-zh-rTW/android_fast_checkout_strings.xml" lang="zh-TW" type="android" />
+    <output filename="values-zu/android_fast_checkout_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/android_fast_checkout_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/android_fast_checkout_strings.xml" lang="en-XA" type="android" />
+  </outputs>
+   <translations>
+    <file path="translations/android_fast_checkout_strings_af.xtb" lang="af"/>
+    <file path="translations/android_fast_checkout_strings_am.xtb" lang="am"/>
+    <file path="translations/android_fast_checkout_strings_ar.xtb" lang="ar"/>
+    <file path="translations/android_fast_checkout_strings_as.xtb" lang="as"/>
+    <file path="translations/android_fast_checkout_strings_az.xtb" lang="az"/>
+    <file path="translations/android_fast_checkout_strings_be.xtb" lang="be"/>
+    <file path="translations/android_fast_checkout_strings_bg.xtb" lang="bg"/>
+    <file path="translations/android_fast_checkout_strings_bn.xtb" lang="bn"/>
+    <file path="translations/android_fast_checkout_strings_bs.xtb" lang="bs"/>
+    <file path="translations/android_fast_checkout_strings_ca.xtb" lang="ca"/>
+    <file path="translations/android_fast_checkout_strings_cs.xtb" lang="cs"/>
+    <file path="translations/android_fast_checkout_strings_cy.xtb" lang="cy"/>
+    <file path="translations/android_fast_checkout_strings_da.xtb" lang="da"/>
+    <file path="translations/android_fast_checkout_strings_de.xtb" lang="de"/>
+    <file path="translations/android_fast_checkout_strings_el.xtb" lang="el"/>
+    <file path="translations/android_fast_checkout_strings_en-GB.xtb" lang="en-GB"/>
+    <file path="translations/android_fast_checkout_strings_es.xtb" lang="es"/>
+    <file path="translations/android_fast_checkout_strings_es-419.xtb" lang="es-419"/>
+    <file path="translations/android_fast_checkout_strings_et.xtb" lang="et"/>
+    <file path="translations/android_fast_checkout_strings_eu.xtb" lang="eu"/>
+    <file path="translations/android_fast_checkout_strings_fa.xtb" lang="fa"/>
+    <file path="translations/android_fast_checkout_strings_fi.xtb" lang="fi"/>
+    <file path="translations/android_fast_checkout_strings_fil.xtb" lang="fil"/>
+    <file path="translations/android_fast_checkout_strings_fr.xtb" lang="fr"/>
+    <file path="translations/android_fast_checkout_strings_fr-CA.xtb" lang="fr-CA"/>
+    <file path="translations/android_fast_checkout_strings_gl.xtb" lang="gl"/>
+    <file path="translations/android_fast_checkout_strings_gu.xtb" lang="gu"/>
+    <file path="translations/android_fast_checkout_strings_hi.xtb" lang="hi"/>
+    <file path="translations/android_fast_checkout_strings_hr.xtb" lang="hr"/>
+    <file path="translations/android_fast_checkout_strings_hu.xtb" lang="hu"/>
+    <file path="translations/android_fast_checkout_strings_hy.xtb" lang="hy"/>
+    <file path="translations/android_fast_checkout_strings_id.xtb" lang="id"/>
+    <file path="translations/android_fast_checkout_strings_is.xtb" lang="is"/>
+    <file path="translations/android_fast_checkout_strings_it.xtb" lang="it"/>
+    <file path="translations/android_fast_checkout_strings_iw.xtb" lang="iw"/>
+    <file path="translations/android_fast_checkout_strings_ja.xtb" lang="ja"/>
+    <file path="translations/android_fast_checkout_strings_ka.xtb" lang="ka"/>
+    <file path="translations/android_fast_checkout_strings_kk.xtb" lang="kk"/>
+    <file path="translations/android_fast_checkout_strings_km.xtb" lang="km"/>
+    <file path="translations/android_fast_checkout_strings_kn.xtb" lang="kn"/>
+    <file path="translations/android_fast_checkout_strings_ko.xtb" lang="ko"/>
+    <file path="translations/android_fast_checkout_strings_ky.xtb" lang="ky"/>
+    <file path="translations/android_fast_checkout_strings_lo.xtb" lang="lo"/>
+    <file path="translations/android_fast_checkout_strings_lt.xtb" lang="lt"/>
+    <file path="translations/android_fast_checkout_strings_lv.xtb" lang="lv"/>
+    <file path="translations/android_fast_checkout_strings_mk.xtb" lang="mk"/>
+    <file path="translations/android_fast_checkout_strings_ml.xtb" lang="ml"/>
+    <file path="translations/android_fast_checkout_strings_mn.xtb" lang="mn"/>
+    <file path="translations/android_fast_checkout_strings_mr.xtb" lang="mr"/>
+    <file path="translations/android_fast_checkout_strings_ms.xtb" lang="ms"/>
+    <file path="translations/android_fast_checkout_strings_my.xtb" lang="my"/>
+    <file path="translations/android_fast_checkout_strings_ne.xtb" lang="ne"/>
+    <file path="translations/android_fast_checkout_strings_nl.xtb" lang="nl"/>
+    <file path="translations/android_fast_checkout_strings_no.xtb" lang="no"/>
+    <file path="translations/android_fast_checkout_strings_or.xtb" lang="or"/>
+    <file path="translations/android_fast_checkout_strings_pa.xtb" lang="pa"/>
+    <file path="translations/android_fast_checkout_strings_pl.xtb" lang="pl"/>
+    <file path="translations/android_fast_checkout_strings_pt-BR.xtb" lang="pt-BR"/>
+    <file path="translations/android_fast_checkout_strings_pt-PT.xtb" lang="pt-PT"/>
+    <file path="translations/android_fast_checkout_strings_ro.xtb" lang="ro"/>
+    <file path="translations/android_fast_checkout_strings_ru.xtb" lang="ru"/>
+    <file path="translations/android_fast_checkout_strings_si.xtb" lang="si"/>
+    <file path="translations/android_fast_checkout_strings_sk.xtb" lang="sk"/>
+    <file path="translations/android_fast_checkout_strings_sl.xtb" lang="sl"/>
+    <file path="translations/android_fast_checkout_strings_sq.xtb" lang="sq"/>
+    <file path="translations/android_fast_checkout_strings_sr.xtb" lang="sr"/>
+    <file path="translations/android_fast_checkout_strings_sr-Latn.xtb" lang="sr-Latn"/>
+    <file path="translations/android_fast_checkout_strings_sv.xtb" lang="sv"/>
+    <file path="translations/android_fast_checkout_strings_sw.xtb" lang="sw"/>
+    <file path="translations/android_fast_checkout_strings_ta.xtb" lang="ta"/>
+    <file path="translations/android_fast_checkout_strings_te.xtb" lang="te"/>
+    <file path="translations/android_fast_checkout_strings_th.xtb" lang="th"/>
+    <file path="translations/android_fast_checkout_strings_tr.xtb" lang="tr"/>
+    <file path="translations/android_fast_checkout_strings_uk.xtb" lang="uk"/>
+    <file path="translations/android_fast_checkout_strings_ur.xtb" lang="ur"/>
+    <file path="translations/android_fast_checkout_strings_uz.xtb" lang="uz"/>
+    <file path="translations/android_fast_checkout_strings_vi.xtb" lang="vi"/>
+    <file path="translations/android_fast_checkout_strings_zh-CN.xtb" lang="zh-CN"/>
+    <file path="translations/android_fast_checkout_strings_zh-HK.xtb" lang="zh-HK"/>
+    <file path="translations/android_fast_checkout_strings_zh-TW.xtb" lang="zh-TW"/>
+    <file path="translations/android_fast_checkout_strings_zu.xtb" lang="zu"/>
+  </translations>
+  <release allow_pseudo="false" seq="1">
+    <messages fallback_to_english="true">
+      <!-- Fast Checkout -->
+      <message name="IDS_FAST_CHECKOUT_HOME_SHEET_TITLE" desc="Header for Fast Checkout sheet where a user can pick an address and payment option to fill during checkout flows.">
+        Check out faster?
+      </message>
+      <message name="IDS_FAST_CHECKOUT_HOME_SHEET_SUBTITLE" desc="Subtitle for Fast Checkout sheet where a user can pick an address and payment option to fill during checkout flows.">
+        Autofill shipping and payment info as you check out
+      </message>
+      <message name="IDS_FAST_CHECKOUT_HOME_SHEET_ACCEPT" desc="Text for accepting autofilling the selected options on the site.">
+        Autofill my info
+      </message>
+      <message name="IDS_FAST_CHECKOUT_HOME_SHEET_ACCEPT_BUTTON_CLICKED_DESCRIPTION" desc="Accessibility string describing the actions to follow after the user accepts a selection.">
+        As you check out, your other info will be autofilled.
+      </message>
+      <message name="IDS_FAST_CHECKOUT_HOME_SHEET_EXPAND_ICON_AUTOFILL_PROFILE_DESCRIPTION" desc="Accessibility string for the icon that allows entering the Autofill profile detail sheet.">
+        Change to other shipping address under this menu item.
+      </message>
+      <message name="IDS_FAST_CHECKOUT_HOME_SHEET_EXPAND_ICON_CREDIT_CARD_DESCRIPTION" desc="Accessibility string for the icon that allows entering the Autofill profile detail sheet.">
+        Change to other payment method under this menu item.
+      </message>
+      <message name="IDS_FAST_CHECKOUT_CONTENT_DESCRIPTION" desc="Accessibility string read when the Fast Checkout bottom sheet is opened. It describes the bottom sheet where a user can pick an address and payment option to fill during checkout flows">
+        Addresses and payment methods available to be filled on touch. Keyboard hidden.
+      </message>
+      <message name="IDS_FAST_CHECKOUT_SHEET_CLOSED" desc="Accessibility string read when the Fast Checkout bottom sheet showing a list of the user stored addresses and payment options is closed.">
+        List of addresses and payment options to be filled during checkout flows is closed.
+      </message>
+      <message name="IDS_FAST_CHECKOUT_BACK_TO_HOME_SCREEN_ICON_DESCRIPTION" desc="Acessibility string describing the back icon on the autofill profile and credit card detail sheets.">
+        Back
+      </message>
+      <message name="IDS_FAST_CHECKOUT_DETAIL_SCREEN_ADD_AUTOFILL_PROFILE_TEXT" desc="The text appearing on the element to add a new Autofill profile on the detail sheet.">
+        Add new address
+      </message>
+      <message name="IDS_FAST_CHECKOUT_DETAIL_SCREEN_ADD_CREDIT_CARD_TEXT" desc="The text appearing on the element to add a new credit card on the detail sheet.">
+        Add new credit card
+      </message>
+      <message name="IDS_FAST_CHECKOUT_DETAIL_SCREEN_SELECTED_DESCRIPTION" desc="Accessibility string describing the icon that indicates that an Autofill profile or a credit card is the currently selected one.">
+        Selected
+      </message>
+      <message name="IDS_FAST_CHECKOUT_DETAIL_SCREEN_NON_SELECTED_DESCRIPTION" desc="Accessibility string describing the icon that indicates an Autofill profile or a credit card non selected item.">
+        Menu item
+      </message>
+      <message name="IDS_FAST_CHECKOUT_AUTOFILL_PROFILE_SHEET_TITLE" desc="Header of the autofill profile selection sheet.">
+        Shipping address
+      </message>
+      <message name="IDS_FAST_CHECKOUT_AUTOFILL_PROFILE_SHEET_TITLE_DESCRIPTION" desc="Accessibility string describing the header of the autofill profile selection sheet.">
+        Select shipping address. Navigation options.
+      </message>
+      <message name="IDS_FAST_CHECKOUT_AUTOFILL_PROFILE_SETTINGS_BUTTON_DESCRIPTION" desc="Accessibility string describing the icon to open Autofill profile settings.">
+        Manage addresses.
+      </message>
+      <message name="IDS_FAST_CHECKOUT_CREDIT_CARD_SHEET_TITLE" desc="Header of the credit card selection sheet.">
+        Payment methods
+      </message>
+      <message name="IDS_FAST_CHECKOUT_CREDIT_CARD_ITEM_EXPIRE_DESCRIPTION" desc="Accessibility string to describe the credit card expiry date.">
+        Expires
+      </message>
+      <message name="IDS_FAST_CHECKOUT_CREDIT_CARD_SHEET_TITLE_DESCRIPTION" desc="Accessibility string describing the header of the credit card selection sheet.">
+        Select payment method. Navigation options.
+      </message>
+      <message name="IDS_FAST_CHECKOUT_CREDIT_CARD_SETTINGS_BUTTON_DESCRIPTION" desc="Accessibility string describing the icon to open credit card settings.">
+        Manage payment methods
+      </message>
+    </messages>
+  </release>
+</grit>

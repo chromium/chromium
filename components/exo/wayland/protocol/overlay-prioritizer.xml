@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="overlay_prioritizer">
+
+  <copyright>
+    Copyright 2021 The Chromium Authors
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice (including the next
+    paragraph) shall be included in all copies or substantial portions of the
+    Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+  </copyright>
+
+  <interface name="overlay_prioritizer" version="1">
+    <description summary="overlay hint prioritization">
+      The global interface exposing overlay delegated prioritization
+      hint capabilities is used to instantiate an interface extension for a
+      wl_surface object. This extended interface will then allow
+      delegated overlay prioritization of the surface.
+    </description>
+
+    <request name="destroy" type="destructor">
+      <description summary="Destroy the overlay prioritizer.">
+        Informs the server that the client will not be using this
+        protocol object anymore. This does not affect any other objects,
+        prioritizer objects included.
+      </description>
+    </request>
+
+    <enum name="error">
+      <entry name="overlay_hinted_surface_exists" value="0"
+             summary="the surface already has a prioritizer object
+             associated"/>
+    </enum>
+
+    <request name="get_overlay_prioritized_surface">
+      <description summary="extend surface interface for overlay prioritization hint">
+	Instantiate an interface extension for the given wl_surface to
+	add support for overlay prioritization hinting. If the given wl_surface already has
+	a prioritization object associated, the delegate_exists protocol error is
+  raised.
+      </description>
+      <arg name="id" type="new_id" interface="overlay_prioritized_surface"
+           summary="the new prioritized interface id"/>
+      <arg name="surface" type="object" interface="wl_surface"
+           summary="the surface"/>
+    </request>
+  </interface>
+
+  <interface name="overlay_prioritized_surface" version="1">
+    <description summary="delegate overlay prioritization hint of a wl_surface">
+      An additional interface to a wl_surface object, which allows the
+      client to specify hints for the overlay prioritization of the surface.
+    </description>
+     <request name="destroy" type="destructor">
+      <description summary="remove overlay prioritization the surface">
+	The associated wl_surface's overlay prioritization is removed.
+	The change is applied on the next wl_surface.commit.
+      </description>
+    </request>
+
+    <enum name="error">
+      <entry name="bad_value" value="0"
+	     summary="negative values in radius or size"/>
+      <entry name="no_surface" value="1"
+	     summary="the wl_surface was destroyed"/>
+    </enum>
+
+    <enum name="overlay_priority">
+    <description summary="hints for overlay prioritization">
+    </description>
+      <entry name="none" value="0" summary="overlay promotion is not necessary for this surface" />
+      <entry name="regular" value="1" summary="surface could be considered as a candidate for promotion" />
+      <entry name="preferred_low_latency_canvas" value="2" summary="the surface is a low latency canvas that works better if promoted to overlay" />
+      <entry name="required_hardware_protection" value="3" summary="the surface contains protected content and requires to be promoted to overlay" />
+    </enum>
+
+    <request name="set_overlay_priority">
+      <description summary="set the surface overlay priority">
+      </description>
+      <arg name="priority" type="uint" />
+    </request>
+
+  </interface>
+
+</protocol>

@@ -1,11 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/embedded_content_painter.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/embedded_content_view.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
@@ -26,15 +27,20 @@ void EmbeddedContentPainter::PaintReplaced(const PaintInfo& paint_info,
   if (!embedded_content_view)
     return;
 
-  IntPoint paint_location(RoundedIntPoint(
-      paint_offset + layout_embedded_content_.ReplacedContentRect().offset));
+  // Apply the translation to offset the content within the object's border-box
+  // only if we're not using a transform node for this. If the frame size is
+  // frozen then |ReplacedContentTransform| is used instead.
+  gfx::Point paint_location;
+  if (!layout_embedded_content_.FrozenFrameSize().has_value()) {
+    paint_location = ToRoundedPoint(
+        paint_offset + layout_embedded_content_.ReplacedContentRect().offset);
+  }
 
-  IntSize view_paint_offset =
-      paint_location - embedded_content_view->FrameRect().Location();
+  gfx::Vector2d view_paint_offset =
+      paint_location - embedded_content_view->FrameRect().origin();
   CullRect adjusted_cull_rect = paint_info.GetCullRect();
   adjusted_cull_rect.Move(-view_paint_offset);
-  embedded_content_view->Paint(paint_info.context,
-                               paint_info.GetGlobalPaintFlags(),
+  embedded_content_view->Paint(paint_info.context, paint_info.GetPaintFlags(),
                                adjusted_cull_rect, view_paint_offset);
 }
 

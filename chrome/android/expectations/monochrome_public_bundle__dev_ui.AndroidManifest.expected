@@ -1,0 +1,14 @@
+<?xml version="1.0" ?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:dist="http://schemas.android.com/apk/distribution"
+    featureSplit="dev_ui"
+    package="org.chromium.chrome.stable"
+    platformBuildVersionCode="33"
+    platformBuildVersionName="13">
+  <dist:module dist:onDemand="true" dist:title="@string/dev_ui_module_title">  # DIFF-ANCHOR: 671a5c9f
+    <dist:fusing dist:include="true"/>
+  </dist:module>  # DIFF-ANCHOR: 671a5c9f
+  <uses-sdk android:minSdkVersion="24" android:targetSdkVersion="33"/>
+  <application/>
+</manifest>

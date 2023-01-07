@@ -1,0 +1,24 @@
+caption: Allow wake locks
+default: true
+desc: |-
+  Setting the policy to Enabled or leaving it unset allows wake locks for power management. Extensions can request wake locks through the power management extension API and ARC apps.
+
+        Setting the policy to Disabled means wake lock requests are ignored.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+items:
+- caption: Allow wake locks for power management
+  value: true
+- caption: Ignore requests for wake locks for power management
+  value: false
+owners:
+- file://chrome/browser/ash/login/demo_mode/OWNERS
+- michaelpg@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:71-
+tags: []
+type: main

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,16 +12,17 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
 #include "chromecast/media/audio/audio_fader.h"
 #include "chromecast/media/audio/audio_log.h"
+#include "chromecast/media/audio/interleaved_channel_mixer.h"
 #include "chromecast/media/cma/backend/mixer/audio_output_redirector_input.h"
 #include "chromecast/media/cma/backend/mixer/channel_layout.h"
 #include "chromecast/media/cma/backend/mixer/filter_group.h"
+#include "chromecast/media/cma/backend/mixer/post_processing_pipeline.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/channel_mixer.h"
 #include "media/base/multi_channel_resampler.h"
 
 namespace chromecast {
@@ -48,87 +49,141 @@ MixerInput::MixerInput(Source* source, FilterGroup* filter_group)
       primary_(source->primary()),
       device_id_(source->device_id()),
       content_type_(source->content_type()),
-      slew_volume_(kDefaultSlewTimeMs, true),
-      volume_applied_(false),
-      previous_ended_in_silence_(false),
-      first_buffer_(true),
-      resampler_buffered_frames_(0.0) {
+      slew_volume_(kDefaultSlewTimeMs, true) {
   DCHECK(source_);
+  DCHECK(filter_group);
   DCHECK_GT(num_channels_, 0);
   DCHECK_GT(input_samples_per_second_, 0);
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 
   fill_buffer_ =
       ::media::AudioBus::Create(num_channels_, kDefaultFillBufferFrames);
   fill_buffer_->Zero();
+  interleaved_.assign(kDefaultFillBufferFrames * num_channels_, 0.0f);
 
-  MediaPipelineBackend::AudioDecoder::RenderingDelay initial_rendering_delay =
-      filter_group->GetRenderingDelayToOutput();
-
-  int source_read_size = filter_group->input_frames_per_write();
-  if (output_samples_per_second_ > 0 &&
+  source_read_size_ = filter_group->input_frames_per_write();
+  if (output_samples_per_second_ == 0) {
+    // Mixer is not running. OnError() will be called shortly.
+    return;
+  }
+  if (source_->require_clock_rate_simulation() ||
       output_samples_per_second_ != input_samples_per_second_) {
-    // Round up to nearest multiple of SincResampler::kKernelSize. The read size
-    // must be > kKernelSize, so we round up to at least 2 * kKernelSize.
-    source_read_size = std::max(source_->desired_read_size(),
-                                ::media::SincResampler::kKernelSize + 1);
-    source_read_size =
-        RoundUpMultiple(source_read_size, ::media::SincResampler::kKernelSize);
-    double resample_ratio = static_cast<double>(input_samples_per_second_) /
-                            output_samples_per_second_;
+    if (source_->require_clock_rate_simulation()) {
+      // Minimize latency.
+      source_read_size_ = ::media::SincResampler::kKernelSize * 2;
+    } else {
+      // Round up to nearest multiple of SincResampler::kKernelSize. The read
+      // size must be > kKernelSize, so we round up to at least 2 * kKernelSize.
+      source_read_size_ =
+          RoundUpMultiple(std::max(source_->desired_read_size(),
+                                   ::media::SincResampler::kKernelSize + 1),
+                          ::media::SincResampler::kKernelSize);
+    }
+    resample_ratio_ = static_cast<double>(input_samples_per_second_) /
+                      output_samples_per_second_;
     resampler_ = std::make_unique<::media::MultiChannelResampler>(
-        num_channels_, resample_ratio, source_read_size,
+        num_channels_, resample_ratio_, source_read_size_,
         base::BindRepeating(&MixerInput::ResamplerReadCallback,
                             base::Unretained(this)));
     resampler_->PrimeWithSilence();
+  }
 
+  slew_volume_.SetSampleRate(output_samples_per_second_);
+
+  SetFilterGroupInternal(filter_group);
+  // Don't add to the filter group yet, since this may not be the correct
+  // sequence. It will be added in Initialize().
+}
+
+MixerInput::~MixerInput() {
+  source_->FinalizeAudioPlayback();
+}
+
+void MixerInput::Initialize() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(filter_group_);
+  MediaPipelineBackend::AudioDecoder::RenderingDelay initial_rendering_delay =
+      filter_group_->GetRenderingDelayToOutput();
+  initial_rendering_delay.delay_microseconds +=
+      prerender_delay_seconds_ * base::Time::kMicrosecondsPerSecond;
+
+  if (resampler_) {
     double resampler_queued_frames = resampler_->BufferedFrames();
     initial_rendering_delay.delay_microseconds +=
         static_cast<int64_t>(resampler_queued_frames * kMicrosecondsPerSecond /
                              input_samples_per_second_);
   }
 
-  if (output_samples_per_second_ != 0) {
-    // If output_samples_per_second_ is 0, this stream will be unusable.
-    // OnError() will be called shortly.
-    slew_volume_.SetSampleRate(output_samples_per_second_);
-  }
-  source_->InitializeAudioPlayback(source_read_size, initial_rendering_delay);
-
-  SetFilterGroup(filter_group);
+  source_->InitializeAudioPlayback(source_read_size_, initial_rendering_delay);
+  filter_group_->AddInput(this);
 }
 
-MixerInput::~MixerInput() {
+void MixerInput::Destroy() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   SetFilterGroup(nullptr);
-  source_->FinalizeAudioPlayback();
 }
 
 void MixerInput::SetFilterGroup(FilterGroup* filter_group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!filter_group || !filter_group_);
+  if (SetFilterGroupInternal(filter_group)) {
+    filter_group->AddInput(this);
+  }
+}
 
-  if (filter_group == filter_group_) {
-    return;
+bool MixerInput::SetFilterGroupInternal(FilterGroup* filter_group) {
+  if (output_samples_per_second_ == 0) {
+    LOG(ERROR) << "Attempt to set filter group when output sample rate is 0";
+    return false;
+  }
+  if (filter_group == filter_group_ &&
+      (!filter_group || filter_group_tag_ == filter_group->tag())) {
+    return false;
   }
   if (filter_group_) {
     filter_group_->RemoveInput(this);
   }
   if (filter_group) {
-    filter_group->AddInput(this);
-    if (filter_group->num_channels() == num_channels_) {
-      channel_mixer_.reset();
-    } else {
-      AUDIO_LOG(INFO) << "Remixing channels for " << source_ << " from "
-                      << num_channels_ << " to "
-                      << filter_group->num_channels();
-      channel_mixer_ = std::make_unique<::media::ChannelMixer>(
-          mixer::CreateAudioParametersForChannelMixer(channel_layout_,
-                                                      num_channels_),
-          mixer::CreateAudioParametersForChannelMixer(
-              ::media::CHANNEL_LAYOUT_NONE, filter_group->num_channels()));
-    }
+    filter_group_tag_ = filter_group->tag();
+
+    prerender_pipeline_ = filter_group->CreatePrerenderPipeline(num_channels_);
+    playout_channel_ = source_->playout_channel();
+
+    AudioPostProcessor2::Config config;
+    config.output_sample_rate = output_samples_per_second_;
+    config.system_output_sample_rate =
+        filter_group->system_output_sample_rate();
+    config.output_frames_per_write = filter_group->input_frames_per_write();
+    CHECK(prerender_pipeline_->SetOutputConfig(config));
+    prerender_pipeline_->SetContentType(content_type_);
+    prerender_pipeline_->UpdatePlayoutChannel(playout_channel_);
+    DCHECK_EQ(prerender_pipeline_->GetInputSampleRate(),
+              output_samples_per_second_);
+    DCHECK_EQ(prerender_pipeline_->NumOutputChannels(), num_channels_);
+    prerender_delay_seconds_ = prerender_pipeline_->GetDelaySeconds();
+
+    CreateChannelMixer(playout_channel_, filter_group);
   }
   filter_group_ = filter_group;
+  return (filter_group != nullptr);
+}
+
+void MixerInput::SetPostProcessorConfig(const std::string& name,
+                                        const std::string& config) {
+  prerender_pipeline_->SetPostProcessorConfig(name, config);
+}
+
+void MixerInput::CreateChannelMixer(int playout_channel,
+                                    FilterGroup* filter_group) {
+  int effective_channels = num_channels_;
+  ::media::ChannelLayout channel_layout = channel_layout_;
+  if (playout_channel != kChannelAll && playout_channel < num_channels_) {
+    effective_channels = 1;
+    channel_layout = ::media::CHANNEL_LAYOUT_MONO;
+  }
+  channel_mixer_ = std::make_unique<InterleavedChannelMixer>(
+      channel_layout, effective_channels,
+      mixer::GuessChannelLayout(filter_group->num_channels()),
+      filter_group->num_channels(), filter_group->input_frames_per_write());
 }
 
 void MixerInput::AddAudioOutputRedirector(
@@ -159,6 +214,79 @@ void MixerInput::RemoveAudioOutputRedirector(
       audio_output_redirectors_.end());
 }
 
+bool MixerInput::Render(
+    int num_output_frames,
+    MediaPipelineBackend::AudioDecoder::RenderingDelay rendering_delay) {
+  if (num_output_frames > fill_buffer_->frames()) {
+    fill_buffer_ = ::media::AudioBus::Create(num_channels_, num_output_frames);
+    interleaved_.assign(num_output_frames * num_channels_, 0.0f);
+  }
+
+  if (incomplete_previous_fill_) {
+    slew_volume_.Interrupted();
+  }
+
+  rendering_delay.delay_microseconds +=
+      prerender_delay_seconds_ * base::Time::kMicrosecondsPerSecond;
+  int filled =
+      FillAudioData(num_output_frames, rendering_delay, fill_buffer_.get());
+  if (filled == 0) {
+    if (!prerender_pipeline_->IsRinging()) {
+      render_output_ = nullptr;
+      return false;
+    }
+  }
+
+  fill_buffer_->ZeroFramesPartial(filled, num_output_frames - filled);
+
+  fill_buffer_->ToInterleaved<::media::FloatSampleTypeTraitsNoClip<float>>(
+      num_output_frames, interleaved_.data());
+  slew_volume_.ProcessFMUL(false /* repeat_transition */, interleaved_.data(),
+                           num_output_frames, num_channels_,
+                           interleaved_.data());
+
+  const int playout_channel = source_->playout_channel();
+  if (playout_channel != playout_channel_) {
+    prerender_pipeline_->UpdatePlayoutChannel(playout_channel);
+    CreateChannelMixer(playout_channel, filter_group_);
+    playout_channel_ = playout_channel;
+  }
+
+  const bool is_silence = (filled == 0);
+  prerender_pipeline_->ProcessFrames(interleaved_.data(), num_output_frames,
+                                     InstantaneousVolume(), TargetVolume(),
+                                     is_silence);
+  prerender_delay_seconds_ = prerender_pipeline_->GetDelaySeconds();
+
+  RenderInterleaved(num_output_frames);
+  return true;
+}
+
+void MixerInput::RenderInterleaved(int num_output_frames) {
+  // TODO(kmackay): If we ever support channel selections other than L and R,
+  // we should remix channels to a format that includes the selected channel
+  // and then do channel selection. Currently if the input is mono we don't
+  // bother doing channel selection since the result would be the same as
+  // doing nothing anyway.
+  float* data = prerender_pipeline_->GetOutputBuffer();
+
+  if (playout_channel_ != kChannelAll && playout_channel_ < num_channels_) {
+    // Keep only the samples from the selected channel.
+    float* dest = interleaved_.data();
+    for (int f = 0; f < num_output_frames; ++f) {
+      dest[f] = data[f * num_channels_ + playout_channel_];
+    }
+    data = dest;
+  }
+
+  render_output_ = channel_mixer_->Transform(data, num_output_frames);
+}
+
+float* MixerInput::RenderedAudioBuffer() {
+  DCHECK(render_output_);
+  return render_output_;
+}
+
 int MixerInput::FillAudioData(int num_frames,
                               RenderingDelay rendering_delay,
                               ::media::AudioBus* dest) {
@@ -166,34 +294,23 @@ int MixerInput::FillAudioData(int num_frames,
   DCHECK(dest);
   DCHECK_GE(dest->frames(), num_frames);
 
-  ::media::AudioBus* fill_dest;
-  if (channel_mixer_) {
-    if (num_frames > fill_buffer_->frames()) {
-      fill_buffer_ = ::media::AudioBus::Create(num_channels_, dest->frames());
-    }
-    fill_dest = fill_buffer_.get();
-  } else {
-    fill_dest = dest;
-  }
-
-  volume_applied_ = false;
-
   RenderingDelay redirected_delay = rendering_delay;
   if (!audio_output_redirectors_.empty()) {
     redirected_delay.delay_microseconds +=
         audio_output_redirectors_[0]->GetDelayMicroseconds();
   }
-  int filled = FillBuffer(num_frames, redirected_delay, fill_dest);
+  int filled = FillBuffer(num_frames, redirected_delay, dest);
+  incomplete_previous_fill_ = (filled != num_frames);
 
   bool redirected = false;
   for (auto* redirector : audio_output_redirectors_) {
-    redirector->Redirect(fill_dest, filled, rendering_delay, redirected);
+    redirector->Redirect(dest, filled, rendering_delay, redirected);
     redirected = true;
   }
 
   float* channels[num_channels_];
   for (int c = 0; c < num_channels_; ++c) {
-    channels[c] = fill_dest->channel(c);
+    channels[c] = dest->channel(c);
   }
   if (first_buffer_ && redirected) {
     // If the first buffer is redirected, don't provide any data to the mixer
@@ -216,31 +333,6 @@ int MixerInput::FillAudioData(int num_frames,
   previous_ended_in_silence_ = redirected;
   first_buffer_ = false;
 
-  // TODO(kmackay): If we ever support channel selections other than L and R,
-  // we should remix channels to a format that includes the selected channel
-  // and then do channel selection. Currently if the input is mono we don't
-  // bother doing channel selection since the result would be the same as
-  // doing nothing anyway.
-  int playout_channel = source_->playout_channel();
-  if (playout_channel != kChannelAll && playout_channel < num_channels_) {
-    // Duplicate selected channel to all channels.
-    for (int c = 0; c < num_channels_; ++c) {
-      if (c != source_->playout_channel()) {
-        std::copy_n(fill_dest->channel(playout_channel), filled,
-                    fill_dest->channel(c));
-      }
-    }
-  }
-
-  // Mix channels if necessary.
-  if (channel_mixer_) {
-    channel_mixer_->TransformPartial(fill_dest, filled, dest);
-  }
-
-  if (filled != num_frames) {
-    slew_volume_.Interrupted();
-  }
-
   return filled;
 }
 
@@ -256,7 +348,10 @@ int MixerInput::FillBuffer(int num_frames,
     mixer_rendering_delay_ = rendering_delay;
     // resampler_->BufferedFrames() gives incorrect values in the read callback,
     // so track the number of buffered frames ourselves.
-    resampler_buffered_frames_ = resampler_->BufferedFrames();
+    // Based on testing, the buffered frames reported by SincResampler does not
+    // include the delay incurred by the filter kernel, so add it explicitly.
+    resampler_buffered_frames_ =
+        resampler_->BufferedFrames() + ::media::SincResampler::kKernelSize / 2;
     filled_for_resampler_ = 0;
     tried_to_fill_resampler_ = false;
     resampler_->Resample(num_frames, dest);
@@ -315,11 +410,11 @@ void MixerInput::SignalError(Source::MixerError error) {
 
 void MixerInput::VolumeScaleAccumulate(const float* src,
                                        int frames,
-                                       float* dest) {
+                                       float* dest,
+                                       int channel_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  slew_volume_.ProcessFMAC(volume_applied_ /* repeat_transition */, src, frames,
-                           1, dest);
-  volume_applied_ = true;
+  const bool same_volume_transition = (channel_index != 0);
+  slew_volume_.ProcessFMAC(same_volume_transition, src, frames, 1, dest);
 }
 
 void MixerInput::SetVolumeMultiplier(float multiplier) {
@@ -404,19 +499,26 @@ void MixerInput::SetMuted(bool muted) {
 float MixerInput::TargetVolume() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   float output_volume = stream_volume_multiplier_ * type_volume_multiplier_;
-  float clamped_volume =
-      base::ClampToRange(output_volume, volume_min_, volume_max_);
+  float clamped_volume = base::clamp(output_volume, volume_min_, volume_max_);
   float limited_volume = std::min(clamped_volume, output_volume_limit_);
   float muted_volume = limited_volume * mute_volume_multiplier_;
   // Volume is clamped after all gains have been multiplied, to avoid clipping.
   // TODO(kmackay): Consider removing this clamp and use a postprocessor filter
   // to avoid clipping instead.
-  return base::ClampToRange(muted_volume, 0.0f, 1.0f);
+  return base::clamp(muted_volume, 0.0f, 1.0f);
 }
 
 float MixerInput::InstantaneousVolume() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return slew_volume_.LastBufferMaxMultiplier();
+}
+
+void MixerInput::SetSimulatedClockRate(double new_clock_rate) {
+  if (new_clock_rate == simulated_clock_rate_ || !resampler_) {
+    return;
+  }
+  simulated_clock_rate_ = new_clock_rate;
+  resampler_->SetRatio(resample_ratio_ * simulated_clock_rate_);
 }
 
 }  // namespace media

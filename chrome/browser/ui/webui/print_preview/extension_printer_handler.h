@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,14 +9,13 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "extensions/browser/api/printer_provider/printer_provider_api.h"
 
 namespace base {
-class DictionaryValue;
-class ListValue;
 class RefCountedMemory;
 }
 
@@ -43,6 +42,9 @@ class ExtensionPrinterHandler : public PrinterHandler {
 
   explicit ExtensionPrinterHandler(Profile* profile);
 
+  ExtensionPrinterHandler(const ExtensionPrinterHandler&) = delete;
+  ExtensionPrinterHandler& operator=(const ExtensionPrinterHandler&) = delete;
+
   ~ExtensionPrinterHandler() override;
 
   // PrinterHandler implementation:
@@ -52,7 +54,7 @@ class ExtensionPrinterHandler : public PrinterHandler {
   void StartGetCapability(const std::string& destination_id,
                           GetCapabilityCallback callback) override;
   void StartPrint(const std::u16string& job_title,
-                  base::Value settings,
+                  base::Value::Dict settings,
                   scoped_refptr<base::RefCountedMemory> print_data,
                   PrintCallback callback) override;
   void StartGrantPrinterAccess(const std::string& printer_id,
@@ -64,12 +66,13 @@ class ExtensionPrinterHandler : public PrinterHandler {
   void SetPwgRasterConverterForTesting(
       std::unique_ptr<PwgRasterConverter> pwg_raster_converter);
 
-  // Converts |data| to PWG raster format (from PDF) for a printer described
-  // by |printer_description|.
-  // |callback| is called with the converted data.
+  // Converts `data` to PWG raster format (from PDF) for a printer described
+  // by `printer_description` and a given `print_ticket`.
+  // `callback` is called with the converted data.
   void ConvertToPWGRaster(
       scoped_refptr<base::RefCountedMemory> data,
       const cloud_devices::CloudDeviceDescription& printer_description,
+      const cloud_devices::CloudDeviceDescription& print_ticket,
       const gfx::Size& page_size,
       std::unique_ptr<extensions::PrinterProviderPrintJob> job,
       PrintJobCallback callback);
@@ -83,10 +86,10 @@ class ExtensionPrinterHandler : public PrinterHandler {
   // methods, primarily so the callbacks can be bound to this class' weak ptr.
   // They just propagate results to callbacks passed to them.
   void WrapGetPrintersCallback(AddedPrintersCallback callback,
-                               const base::ListValue& printers,
+                               base::Value::List printers,
                                bool done);
   void WrapGetCapabilityCallback(GetCapabilityCallback callback,
-                                 const base::DictionaryValue& capability);
+                                 base::Value::Dict capability);
   void WrapPrintCallback(PrintCallback callback, const base::Value& status);
   void WrapGetPrinterInfoCallback(GetPrinterInfoCallback callback,
                                   const base::DictionaryValue& printer_info);
@@ -95,15 +98,13 @@ class ExtensionPrinterHandler : public PrinterHandler {
       AddedPrintersCallback callback,
       std::vector<device::mojom::UsbDeviceInfoPtr> devices);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   GetPrintersDoneCallback done_callback_;
   PrintJobCallback print_job_callback_;
   std::unique_ptr<PwgRasterConverter> pwg_raster_converter_;
   int pending_enumeration_count_ = 0;
 
   base::WeakPtrFactory<ExtensionPrinterHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionPrinterHandler);
 };
 
 }  // namespace printing

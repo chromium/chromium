@@ -1,29 +1,31 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/updater/mac/net/network.h"
 
-#include <stdint.h>
+#include <cstdint>
+#include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "chrome/updater/mac/net/network_fetcher.h"
+#include "chrome/updater/policy/service.h"
+#include "chrome/updater/unittest_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-namespace updater {
-namespace {
 
 using ::base::test::RunClosure;
 using ResponseStartedCallback =
@@ -34,7 +36,7 @@ using PostRequestCompleteCallback =
 using DownloadToFileCompleteCallback =
     ::update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
-}  // namespace
+namespace updater {
 
 class ChromeUpdaterNetworkMacTest : public ::testing::Test {
  public:
@@ -118,7 +120,10 @@ TEST_F(ChromeUpdaterNetworkMacTest, NetworkFetcherMacPostRequest) {
 
   const std::string kPostData = "\x01\x00\x55\x33\xda\x10\x44";
 
-  auto fetcher = base::MakeRefCounted<NetworkFetcherFactory>()->Create();
+  std::unique_ptr<update_client::NetworkFetcher> fetcher =
+      base::MakeRefCounted<NetworkFetcherFactory>(
+          PolicyServiceProxyConfiguration::Get(test::CreateTestPolicyService()))
+          ->Create();
   fetcher->PostRequest(
       test_server.GetURL("/echo"), kPostData, {}, {},
       base::BindOnce(&ChromeUpdaterNetworkMacTest::StartedCallback,
@@ -148,7 +153,10 @@ TEST_F(ChromeUpdaterNetworkMacTest, NetworkFetcherMacDownloadToFile) {
   const base::FilePath test_file_path =
       temp_dir.GetPath().Append(FILE_PATH_LITERAL("downloaded_file"));
 
-  auto fetcher = base::MakeRefCounted<NetworkFetcherFactory>()->Create();
+  std::unique_ptr<update_client::NetworkFetcher> fetcher =
+      base::MakeRefCounted<NetworkFetcherFactory>(
+          PolicyServiceProxyConfiguration::Get(test::CreateTestPolicyService()))
+          ->Create();
   fetcher->DownloadToFile(
       test_server.GetURL("/echo"), test_file_path,
       base::BindOnce(&ChromeUpdaterNetworkMacTest::StartedCallback,

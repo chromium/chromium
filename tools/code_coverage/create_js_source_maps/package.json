@@ -1,0 +1,9 @@
+{
+  "name": "create_js_source_maps",
+  "version": "0.1",
+  "description": "Create JavaScript source maps after preprocess_if_expr",
+  "main": "create_js_source_maps.js",
+  "files": [ "create_js_source_maps.js" ],
+  "license": "SEE LICENSE IN ../../../LICENSE",
+  "type" : "module"
+}

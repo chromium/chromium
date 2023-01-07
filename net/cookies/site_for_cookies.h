@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -168,6 +168,11 @@ class NET_EXPORT SiteForCookies {
   // If the SchemefulSameSite feature is enabled then !schemefully_same_ causes
   // this function to return true.
   bool IsNull() const;
+
+  // Allows SiteForCookies to be used as a key in STL (for example, a std::set
+  // or std::map).
+  NET_EXPORT friend bool operator<(const SiteForCookies& lhs,
+                                   const SiteForCookies& rhs);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SiteForCookiesTest, SameScheme);

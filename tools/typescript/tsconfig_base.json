@@ -2,29 +2,21 @@
   "compilerOptions": {
     "module": "ESNext",
     "target": "ESNext",
-    "outDir": "./",
+    "useDefineForClassFields": false,
 
     "noEmitOnError": true,
     "pretty": true,
 
-    "composite": true,
-    "declaration": true,
-    "tsBuildInfoFile": "tsconfig.tsbuildinfo",
-
-    "alwaysStrict": true,
+    "allowUnreachableCode": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
+    "noImplicitOverride": true,
     "noImplicitReturns": true,
-    "noImplicitThis": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "strictBindCallApply": true,
-    "strictFunctionTypes": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "strict": true
+    "strict": true,
+    "typeRoots": []
   }
 }

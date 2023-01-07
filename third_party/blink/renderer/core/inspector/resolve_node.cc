@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,9 +63,6 @@ std::unique_ptr<v8_inspector::protocol::Runtime::API::RemoteObject>
 NullRemoteObject(v8_inspector::V8InspectorSession* v8_session,
                  LocalFrame* frame,
                  const String& object_group) {
-  if (!frame)
-    return nullptr;
-
   ScriptState* script_state = ToScriptStateForMainWorld(frame);
   if (!script_state)
     return nullptr;

@@ -1,22 +1,23 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#import <memory>
 
-#include "base/strings/stringprintf.h"
+#import "base/strings/stringprintf.h"
 #import "base/test/ios/wait_util.h"
-#include "base/time/time.h"
+#import "base/threading/platform_thread.h"
+#import "base/time/time.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#include "ios/web/public/test/http_server/html_response_provider.h"
+#import "ios/web/public/test/http_server/html_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
-#include "ios/web/public/test/http_server/http_server_util.h"
-#include "url/gurl.h"
+#import "ios/web/public/test/http_server/http_server_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -53,7 +54,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
           base::StringPrintf("<p>%s</p><img src='%s'/>", kPageText,
                              GetInfinitePendingResponseUrl().spec().c_str());
     } else if (request.url == GetInfinitePendingResponseUrl()) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromDays(1));
+      base::PlatformThread::Sleep(base::Days(1));
     } else {
       NOTREACHED();
     }
@@ -64,7 +65,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
   GURL GetInfinitePendingResponseUrl() const {
     GURL::Replacements replacements;
     replacements.SetPathStr("resource");
-    return url_.GetOrigin().ReplaceComponents(replacements);
+    return url_.DeprecatedGetOriginAsURL().ReplaceComponents(replacements);
   }
 
   // Main page URL that never finish loading.
@@ -114,7 +115,7 @@ void WaitForMatcherVisible(id<GREYMatcher> matcher,
     [ChromeEarlGreyUI openToolsMenu];
   }
   // Sleep for UI change because synchronization is disabled.
-  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+  base::PlatformThread::Sleep(base::Seconds(1));
 
   // Wait and verify that stop button is visible and reload button is hidden.
   WaitForMatcherVisible(chrome_test_util::StopButton(), @"stop button");
@@ -125,7 +126,7 @@ void WaitForMatcherVisible(id<GREYMatcher> matcher,
   [[EarlGrey selectElementWithMatcher:chrome_test_util::StopButton()]
       performAction:grey_tap()];
   // Sleep for UI change because synchronization is disabled.
-  base::PlatformThread::Sleep(base::TimeDelta::FromSeconds(1));
+  base::PlatformThread::Sleep(base::Seconds(1));
   if (![ChromeEarlGrey isIPadIdiom]) {
     // On iPhone Stop/Reload button is a part of tools menu, so open it.
     [ChromeEarlGreyUI openToolsMenu];

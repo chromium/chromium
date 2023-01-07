@@ -1,11 +1,12 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
-import("//build/config/ui.gni")  # For the use_x11 and toolkit_views variables.
+import("//build/config/ui.gni")  # For the toolkit_views variables.
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")  # For the enable_plugins variable.
+import("//printing/buildflags/buildflags.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
@@ -96,6 +97,8 @@ static_library("web_test_browser") {
     "browser/mojo_web_test_helper.h",
     "browser/test_info_extractor.cc",
     "browser/test_info_extractor.h",
+    "browser/web_test_attribution_manager.cc",
+    "browser/web_test_attribution_manager.h",
     "browser/web_test_background_fetch_delegate.cc",
     "browser/web_test_background_fetch_delegate.h",
     "browser/web_test_bluetooth_adapter_provider.cc",
@@ -115,6 +118,8 @@ static_library("web_test_browser") {
     "browser/web_test_content_browser_client.h",
     "browser/web_test_control_host.cc",
     "browser/web_test_control_host.h",
+    "browser/web_test_cookie_manager.cc",
+    "browser/web_test_cookie_manager.h",
     "browser/web_test_devtools_bindings.cc",
     "browser/web_test_devtools_bindings.h",
     "browser/web_test_download_manager_delegate.cc",
@@ -140,7 +145,7 @@ static_library("web_test_browser") {
       "browser/web_test_browser_main_platform_support_mac.mm",
       "browser/web_test_shell_platform_delegate_mac.mm",
     ]
-  } else if (toolkit_views && !is_chromecast) {
+  } else if (toolkit_views && !is_castos) {
     sources += [ "browser/web_test_shell_platform_delegate_views.cc" ]
   } else {
     sources += [ "browser/web_test_shell_platform_delegate_aura.cc" ]
@@ -164,6 +169,7 @@ static_library("web_test_browser") {
     "//components/download/public/background_service:public",
     "//components/download/public/common:public",
     "//components/network_session_configurator/common",
+    "//components/proxy_config",
     "//content/browser:for_content_tests",  # For non-component builds.
     "//content/public/browser",  # For component builds.
     "//content/shell:content_shell_lib",
@@ -198,7 +204,8 @@ static_library("web_test_browser") {
     "//url",
   ]
 
-  if (enable_plugins) {
+  # TODO(crbug.com/1103882): Blink test plugin must be migrated from PPAPI.
+  if (enable_ppapi) {
     deps += [
       "//content/ppapi_plugin",
       "//ppapi:blink_deprecated_test_plugin",
@@ -206,9 +213,49 @@ static_library("web_test_browser") {
     ]
   }
 
-  if (use_x11) {
-    deps += [ "//ui/events/devices/x11" ]
+  if (is_mac) {
+    deps += [ "//ui/display:test_support" ]
   }
+
+  if (use_aura) {
+    deps += [ "//ui/aura:test_support" ]
+  }
+}
+
+# TODO(crbug.com/1154721): The `allow_circular_includes_from` declared in
+# `:web_test_renderer` does not propagate the public_deps
+# from `:web_test_renderer`'s own dependencies. This means that those targets
+# are not built when `//third_party/blink/renderer/core/web_test` is built,
+# and some generated mojom headers will be missing. As a workaround, split
+# these deps into this separate group so that
+# `//third_party/blink/renderer/core/web_test` can add include them in its
+# own deps directly.
+group("web_test_renderer_public_deps") {
+  testonly = true
+
+  public_deps = [
+    ":web_test_common",
+    "//base",
+    "//cc",
+    "//cc/paint",
+    "//content/public/renderer",  # For component builds.
+    "//content/renderer:for_content_tests",  # For non-component builds.
+    "//content/shell:content_shell_lib",
+    "//device/gamepad/public/cpp:shared_with_blink",
+    "//device/gamepad/public/mojom",
+    "//gin",
+    "//gpu",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public:test_headers",
+    "//ui/accessibility:ax_base",
+    "//ui/base/dragdrop/mojom",
+    "//ui/display",
+    "//ui/gfx/geometry",
+    "//url",
+    "//v8",
+  ]
 }
 
 static_library("web_test_renderer") {
@@ -246,8 +293,6 @@ static_library("web_test_renderer") {
     "renderer/gc_controller.h",
     "renderer/layout_dump.cc",
     "renderer/layout_dump.h",
-    "renderer/pixel_dump.cc",
-    "renderer/pixel_dump.h",
     "renderer/spell_check_client.cc",
     "renderer/spell_check_client.h",
     "renderer/test_plugin.cc",
@@ -276,44 +321,39 @@ static_library("web_test_renderer") {
     "renderer/web_test_spell_checker.h",
   ]
   deps = [
-    ":web_test_common",
-    "//base",
-    "//cc",
-    "//cc/paint",
     "//components/plugins/renderer",
     "//components/viz/common",
     "//components/web_cache/renderer",
     "//content/public/common",
-    "//content/public/renderer",  # For component builds.
-    "//content/renderer:for_content_tests",  # For non-component builds.
-    "//content/shell:content_shell_lib",
     "//content/test:test_support",
-    "//device/gamepad/public/cpp:shared_with_blink",
-    "//device/gamepad/public/mojom",
-    "//gin",
-    "//gpu",
     "//gpu/command_buffer/client:gles2_interface",
     "//media/capture",
-    "//printing",
+    "//printing/buildflags",
+
+    # TODO(crbug.com/1200443) Remove //printing/mojom requirement coming from
+    # //third_party/blink/public:blink_headers.
     "//printing/mojom",
-    "//services/device/public/mojom",
     "//services/service_manager/public/cpp",
     "//skia",
     "//skia:test_fonts",
-    "//third_party/blink/public:blink_headers",
-    "//third_party/blink/public:test_headers",
-    "//third_party/blink/renderer/core/web_test",
-    "//ui/accessibility:ax_base",
-    "//ui/base/dragdrop/mojom",
     "//ui/base/ime:ime_types",
-    "//ui/display",
     "//ui/events:dom_keycode_converter",
     "//ui/events:events_base",
     "//ui/events/blink",
     "//ui/gfx",
     "//ui/gfx:test_support",
-    "//ui/gfx/geometry",
-    "//url",
-    "//v8",
   ]
+
+  public_deps = [
+    ":web_test_renderer_public_deps",
+    "//third_party/blink/renderer/core/web_test",
+  ]
+
+  if (enable_basic_printing) {
+    sources += [
+      "renderer/pixel_dump.cc",
+      "renderer/pixel_dump.h",
+    ]
+    deps += [ "//printing" ]
+  }
 }

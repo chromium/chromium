@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,8 @@ class OverlayRequestCallbackInstaller {
   OverlayRequestCallbackInstaller();
   virtual ~OverlayRequestCallbackInstaller();
 
-  // Installs callbacks for |request|.  Will only install callbacks once per
-  // supported request if called more than once.  |request| must be non-null.
+  // Installs callbacks for `request`.  Will only install callbacks once per
+  // supported request if called more than once.  `request` must be non-null.
   void InstallCallbacks(OverlayRequest* request);
 
   // Returns the request support for this installer.  InstallCallbacksInternal()
@@ -30,14 +30,14 @@ class OverlayRequestCallbackInstaller {
   virtual const OverlayRequestSupport* GetRequestSupport() const;
 
  protected:
-  // Called from InstallCallbacks() if |request| is supported by
+  // Called from InstallCallbacks() if `request` is supported by
   // GetRequestSupport().  Subclasses should override to supply callbacks for a
   // specific kind of request.  Does nothing by default.
   virtual void InstallCallbacksInternal(OverlayRequest* request);
 
  private:
-  // Called as a completion callback for |request| to remove the completed
-  // request from |requests_|.
+  // Called as a completion callback for `request` to remove the completed
+  // request from `requests_`.
   void OverlayCompleted(OverlayRequest* request, OverlayResponse* response);
 
   // Set containing the requests for which callbacks have already been

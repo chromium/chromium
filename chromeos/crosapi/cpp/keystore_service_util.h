@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 #define CHROMEOS_CROSAPI_CPP_KEYSTORE_SERVICE_UTIL_H_
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crosapi {
 namespace keystore_service_util {
@@ -26,16 +26,29 @@ COMPONENT_EXPORT(CROSAPI)
 extern const char kWebCryptoNamedCurveP256[];
 
 // Converts a crosapi signing algorithm into a WebCrypto dictionary. Returns
-// base::nullopt on error.
+// absl::nullopt on error.
 COMPONENT_EXPORT(CROSAPI)
-base::Optional<base::DictionaryValue> DictionaryFromSigningAlgorithm(
-    const crosapi::mojom::KeystoreSigningAlgorithmPtr& algorithm);
+absl::optional<base::Value::Dict> DictionaryFromSigningAlgorithm(
+    const mojom::KeystoreSigningAlgorithmPtr& algorithm);
 
 // Converts a WebCrypto dictionary into a crosapi signing algorithm. Returns
-// base::nullopt on error.
+// absl::nullopt on error.
 COMPONENT_EXPORT(CROSAPI)
-base::Optional<crosapi::mojom::KeystoreSigningAlgorithmPtr>
-SigningAlgorithmFromDictionary(const base::DictionaryValue& dictionary);
+absl::optional<mojom::KeystoreSigningAlgorithmPtr>
+SigningAlgorithmFromDictionary(const base::Value::Dict& dictionary);
+
+// Creates the KeystorePKCS115Params variant of the KeystoreSigningAlgorithm
+// union and populates the modulus_length field with |modulus_length|.
+COMPONENT_EXPORT(CROSAPI)
+mojom::KeystoreSigningAlgorithmPtr MakeRsaKeystoreSigningAlgorithm(
+    unsigned int modulus_length,
+    bool sw_backed);
+
+// Creates the KeystoreECDSAParams variant of the KeystoreSigningAlgorithm
+// union and populates the named_curve field with |modulus_length|.
+COMPONENT_EXPORT(CROSAPI)
+mojom::KeystoreSigningAlgorithmPtr MakeEcKeystoreSigningAlgorithm(
+    const std::string& named_curve);
 
 }  // namespace keystore_service_util
 }  // namespace crosapi

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "chrome/installer/util/work_item_list.h"
@@ -33,29 +32,40 @@ class InstallServiceWorkItemImpl {
                   uint32_t service_start_type,
                   uint32_t service_error_control,
                   const std::wstring& service_cmd_line,
-                  const wchar_t* dependencies_multi_sz);
-    ServiceConfig(ServiceConfig&& rhs);
+                  const wchar_t* dependencies_multi_sz,
+                  const std::wstring& service_display_name);
 
+    ServiceConfig(const ServiceConfig& rhs);
+    ServiceConfig& operator=(const ServiceConfig& rhs) = default;
+
+    ServiceConfig(ServiceConfig&& rhs);
     ServiceConfig& operator=(ServiceConfig&& rhs) = default;
 
     ~ServiceConfig();
 
-    bool is_valid;
-    uint32_t type;
-    uint32_t start_type;
-    uint32_t error_control;
+    friend bool operator==(const ServiceConfig& lhs, const ServiceConfig& rhs);
+
+    bool is_valid = false;
+    uint32_t type = SERVICE_NO_CHANGE;
+    uint32_t start_type = SERVICE_NO_CHANGE;
+    uint32_t error_control = SERVICE_NO_CHANGE;
     std::wstring cmd_line;
     std::vector<wchar_t> dependencies;
-
-    DISALLOW_COPY_AND_ASSIGN(ServiceConfig);
+    std::wstring display_name;
   };
 
   InstallServiceWorkItemImpl(const std::wstring& service_name,
                              const std::wstring& display_name,
+                             uint32_t start_type,
                              const base::CommandLine& service_cmd_line,
+                             const base::CommandLine& com_service_cmd_line_args,
                              const std::wstring& registry_path,
                              const std::vector<GUID>& clsids,
                              const std::vector<GUID>& iids);
+
+  InstallServiceWorkItemImpl(const InstallServiceWorkItemImpl&) = delete;
+  InstallServiceWorkItemImpl& operator=(const InstallServiceWorkItemImpl&) =
+      delete;
 
   ~InstallServiceWorkItemImpl();
 
@@ -64,7 +74,19 @@ class InstallServiceWorkItemImpl {
   bool DeleteServiceImpl();
 
   // Member functions that help with service installation or upgrades.
-  bool IsServiceCorrectlyConfigured(const ServiceConfig& config);
+
+  // `MakeUpgradeServiceConfig()` returns a differential `ServiceConfig` that
+  // facilitates passing it with minimal changes subsequently to
+  // `ChangeServiceConfig()`. This way, `ChangeServiceConfig()` only asks the
+  // Windows SCM to make changes where they differ from the existing service
+  // configuration.
+  ServiceConfig MakeUpgradeServiceConfig(const ServiceConfig& original_config);
+
+  // Takes the `new_config` returned by `MakeUpgradeServiceConfig()` and
+  // returns true if `new_config` does not match the default configuration.
+  bool IsUpgradeNeeded(const ServiceConfig& new_config);
+
+  bool ChangeServiceConfig(const ServiceConfig& config);
   bool DeleteCurrentService();
 
   // Helper functions for service install/upgrade/delete/rollback.
@@ -98,6 +120,10 @@ class InstallServiceWorkItemImpl {
    public:
     using Handle = SC_HANDLE;
 
+    ScHandleTraits() = delete;
+    ScHandleTraits(const ScHandleTraits&) = delete;
+    ScHandleTraits& operator=(const ScHandleTraits&) = delete;
+
     static bool CloseHandle(SC_HANDLE handle) {
       return ::CloseServiceHandle(handle) != FALSE;
     }
@@ -105,9 +131,6 @@ class InstallServiceWorkItemImpl {
     static bool IsHandleValid(SC_HANDLE handle) { return handle != nullptr; }
 
     static SC_HANDLE NullHandle() { return nullptr; }
-
-   private:
-    DISALLOW_IMPLICIT_CONSTRUCTORS(ScHandleTraits);
   };
 
   using ScopedScHandle =
@@ -141,7 +164,6 @@ class InstallServiceWorkItemImpl {
 
   // Helper functions for service install/upgrade/delete/rollback.
   bool InstallService(const ServiceConfig& config);
-  bool ChangeServiceConfig(const ServiceConfig& config);
   bool DeleteService(ScopedScHandle service) const;
 
   // Generates a versioned service name prefixed with service_name_ and suffixed
@@ -161,8 +183,16 @@ class InstallServiceWorkItemImpl {
   // The service name displayed to the user.
   const std::wstring display_name_;
 
+  // The service start options. This parameter is typically SERVICE_AUTO_START
+  // or SERVICE_DEMAND_START.
+  const uint32_t start_type_;
+
   // The desired service command line.
   const base::CommandLine service_cmd_line_;
+
+  // The SCM will pass any switches specified in `com_service_cmd_line_args_` to
+  // ServiceMain() during COM activation.
+  const base::CommandLine com_service_cmd_line_args_;
 
   // The path under HKEY_LOCAL_MACHINE where the service persists information,
   // such as a versioned service name. For legacy reasons, this path is mapped
@@ -200,8 +230,6 @@ class InstallServiceWorkItemImpl {
   // True if a pre-existing service (named |original_service_name_|) could not
   // be deleted and still exists on rollback.
   bool original_service_still_exists_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallServiceWorkItemImpl);
 };
 
 }  // namespace installer

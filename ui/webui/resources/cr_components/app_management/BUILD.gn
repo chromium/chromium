@@ -1,0 +1,161 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/css_to_wrapper.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
+import("app_management.gni")
+
+assert(!is_android && !is_ios)
+
+mojom("mojo_bindings") {
+  sources = [ "app_management.mojom" ]
+  webui_module_path = "/"
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "app_management.mojom.AppType"
+          cpp = "::apps::AppType"
+        },
+        {
+          mojom = "app_management.mojom.PermissionType"
+          cpp = "::apps::PermissionType"
+        },
+        {
+          mojom = "app_management.mojom.Permission"
+          cpp = "::apps::PermissionPtr"
+          move_only = true
+        },
+        {
+          mojom = "app_management.mojom.InstallReason"
+          cpp = "::apps::InstallReason"
+        },
+        {
+          mojom = "app_management.mojom.InstallSource"
+          cpp = "::apps::InstallSource"
+        },
+        {
+          mojom = "app_management.mojom.WindowMode"
+          cpp = "::apps::WindowMode"
+        },
+        {
+          mojom = "app_management.mojom.RunOnOsLoginMode"
+          cpp = "::apps::RunOnOsLoginMode"
+        },
+        {
+          mojom = "app_management.mojom.RunOnOsLogin"
+          cpp = "::apps::RunOnOsLoginPtr"
+          move_only = true
+        },
+      ]
+      traits_headers = [
+        "//ui/webui/resources/cr_components/app_management/app_management_mojom_traits.h",
+        "//components/services/app_service/public/cpp/app_types.h",
+        "//components/services/app_service/public/cpp/permission.h",
+        "//components/services/app_service/public/cpp/run_on_os_login_types.h",
+      ]
+      traits_sources = [ "//ui/webui/resources/cr_components/app_management/app_management_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//components/services/app_service/public/cpp:app_types",
+        "//components/services/app_service/public/cpp:run_on_os_login",
+      ]
+    },
+  ]
+}
+
+preprocess_folder_tmp = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/app_management_tmp"
+preprocess_folder =
+    "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/app_management"
+
+preprocess_if_expr("preprocess") {
+  visibility = [
+    ":build_ts",
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+  ]
+  in_folder = "."
+  out_folder = preprocess_folder_tmp
+  in_files = ts_files + html_files + html_icons_files + css_files
+}
+
+html_to_wrapper("html_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = preprocess_folder_tmp
+  out_folder = preprocess_folder_tmp
+  in_files = html_files + html_icons_files
+  minify = optimize_webui
+}
+
+css_to_wrapper("css_wrapper_files") {
+  deps = [ ":preprocess" ]
+  in_folder = preprocess_folder_tmp
+  out_folder = preprocess_folder_tmp
+  in_files = css_files
+  minify = optimize_webui
+}
+
+copy("copy_mojo") {
+  deps = [
+    ":mojo_bindings_webui_js",
+    "//components/services/app_service/public/mojom:types_js__generator",
+  ]
+  sources = [
+    "$root_gen_dir/mojom-webui/components/services/app_service/public/mojom/types.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/app_management/app_management.mojom-webui.js",
+  ]
+  outputs = [ "$preprocess_folder_tmp/{{source_file_part}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = preprocess_folder_tmp
+  out_dir = preprocess_folder
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = ts_files + html_wrapper_files + css_wrapper_files + mojo_files
+
+  definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [
+    ":copy_mojo",
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+    ":preprocess",
+  ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "cr_components_app_management"
+  out_grd = "$target_gen_dir/resources.grdp"
+  public_deps = [ ":build_ts" ]
+  manifest_files =
+      filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+  resource_path_prefix = "cr_components/app_management"
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_management_mojom_traits_unittests.cc" ]
+
+  deps = [
+    ":mojo_bindings",
+    "//base/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+  ]
+}

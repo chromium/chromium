@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/extensions/settings_api_bubble_delegate.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
@@ -21,6 +20,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_url_handler.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -122,7 +122,7 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
 
   const GURL search_url = secondary_search->GenerateSearchURL(
       template_url_service->search_terms_data());
-  const GURL origin = search_url.GetOrigin();
+  const GURL origin = search_url.DeprecatedGetOriginAsURL();
   if (google_util::IsGoogleSearchUrl(search_url))
     return {SecondarySearchInfo::Type::kGoogle, origin};
 
@@ -138,13 +138,13 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
 
 }  // namespace
 
-base::Optional<ExtensionSettingsOverriddenDialog::Params>
+absl::optional<ExtensionSettingsOverriddenDialog::Params>
 GetNtpOverriddenParams(Profile* profile) {
   const GURL ntp_url(chrome::kChromeUINewTabURL);
   const extensions::Extension* extension =
       ExtensionWebUI::GetExtensionControllingURL(ntp_url, profile);
   if (!extension)
-    return base::nullopt;
+    return absl::nullopt;
 
   // This preference tracks whether users have acknowledged the extension's
   // control, so that they are not warned twice about the same extension.
@@ -192,7 +192,7 @@ GetNtpOverriddenParams(Profile* profile) {
         IDS_EXTENSION_NTP_OVERRIDDEN_DIALOG_TITLE_BACK_TO_GOOGLE);
     histogram_name = kBackToGoogleDialogHistogramName;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    icon = &kGoogleGLogoIcon;
+    icon = &vector_icons::kGoogleGLogoIcon;
 #endif
   } else {
     dialog_title = l10n_util::GetStringUTF16(
@@ -211,12 +211,12 @@ GetNtpOverriddenParams(Profile* profile) {
       std::move(dialog_message), icon);
 }
 
-base::Optional<ExtensionSettingsOverriddenDialog::Params>
+absl::optional<ExtensionSettingsOverriddenDialog::Params>
 GetSearchOverriddenParams(Profile* profile) {
   const extensions::Extension* extension =
       extensions::GetExtensionOverridingSearchEngine(profile);
   if (!extension)
-    return base::nullopt;
+    return absl::nullopt;
 
   // We deliberately re-use the same preference that the bubble UI uses. This
   // way, users won't see the bubble or dialog UI if they've already
@@ -250,8 +250,8 @@ GetSearchOverriddenParams(Profile* profile) {
   // dialog to the user. That's likely good if any extension is doing something
   // as crazy as using filesystem: URLs as a search engine.
   if (!secondary_search.origin.is_empty() &&
-      secondary_search.origin == search_url.GetOrigin()) {
-    return base::nullopt;
+      secondary_search.origin == search_url.DeprecatedGetOriginAsURL()) {
+    return absl::nullopt;
   }
 
   // Format the URL for display.
@@ -260,7 +260,7 @@ GetSearchOverriddenParams(Profile* profile) {
       url_formatter::kFormatUrlTrimAfterHost |
       url_formatter::kFormatUrlOmitHTTP | url_formatter::kFormatUrlOmitHTTPS;
   std::u16string formatted_search_url = url_formatter::FormatUrl(
-      search_url, kFormatRules, net::UnescapeRule::SPACES, nullptr, nullptr,
+      search_url, kFormatRules, base::UnescapeRule::SPACES, nullptr, nullptr,
       nullptr);
 
   constexpr char kGenericDialogHistogramName[] =
@@ -279,7 +279,7 @@ GetSearchOverriddenParams(Profile* profile) {
       dialog_title = l10n_util::GetStringUTF16(
           IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_TITLE_BACK_TO_GOOGLE);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      icon = &kGoogleGLogoIcon;
+      icon = &vector_icons::kGoogleGLogoIcon;
 #endif
       break;
     case SecondarySearchInfo::Type::kNonGoogleInDefaultList:

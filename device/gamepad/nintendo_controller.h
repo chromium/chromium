@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "device/gamepad/abstract_haptic_gamepad.h"
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/hid.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -182,7 +183,7 @@ class NintendoController final : public AbstractHapticGamepad {
 
   // AbstractHapticGamepad implementation.
   void DoShutdown() override;
-  void SetVibration(double strong_magnitude, double weak_magnitude) override;
+  void SetVibration(mojom::GamepadEffectParametersPtr params) override;
   double GetMaxEffectDurationMillis() override;
   base::WeakPtr<AbstractHapticGamepad> GetWeakPtr() override;
 
@@ -290,7 +291,7 @@ class NintendoController final : public AbstractHapticGamepad {
   void OnReadInputReport(
       bool success,
       uint8_t report_id,
-      const base::Optional<std::vector<uint8_t>>& report_bytes);
+      const absl::optional<std::vector<uint8_t>>& report_bytes);
 
   // Request to send an output report to the underlying HID device. If
   // |expect_reply| is true, a timeout is armed that will retry the current
@@ -397,7 +398,7 @@ class NintendoController final : public AbstractHapticGamepad {
   GamepadId gamepad_id_;
 
   // HID service manager.
-  mojom::HidManager* const hid_manager_;
+  const raw_ptr<mojom::HidManager> hid_manager_;
 
   // The open connection to the underlying HID device.
   mojo::Remote<mojom::HidConnection> connection_;

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 #define COMPONENTS_OFFLINE_PAGES_TASK_TASK_QUEUE_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback.h"
-#include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/containers/circular_deque.h"
+#include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -46,22 +48,34 @@ class TaskQueue {
   };
 
   explicit TaskQueue(Delegate* delegate);
+
+  TaskQueue(const TaskQueue&) = delete;
+  TaskQueue& operator=(const TaskQueue&) = delete;
+
   ~TaskQueue();
 
-  // Adds a task to the queue. Queue takes ownership of the task.
+  // Adds a task to the queue. Queue takes ownership of the task. Optionally,
+  // use FROM_HERE as the first parameter for debugging.
   void AddTask(std::unique_ptr<Task> task);
+  void AddTask(const base::Location& from_here, std::unique_ptr<Task> task);
+
   // Whether the task queue has any pending (not-running) tasks.
   bool HasPendingTasks() const;
   // Whether there is a task currently running.
   bool HasRunningTask() const;
+  // Returns a human-readable string describing the contents of the task queue.
+  std::string GetStateForTesting() const;
 
  private:
+  friend Task;
+  struct Entry;
   // Checks whether there are any tasks to run, as well as whether no task is
   // currently running. When both are met, it will start the next task in the
   // queue.
   void StartTaskIfAvailable();
 
   void RunCurrentTask();
+  void ResumeCurrentTask(base::OnceClosure on_resume);
 
   // Callback for informing the queue that a task was completed. Can be called
   // from any thread.
@@ -70,6 +84,8 @@ class TaskQueue {
       base::WeakPtr<TaskQueue> task_queue,
       Task* task);
 
+  void SuspendTask(Task* task);
+  void ResumeTask(Task* task, base::OnceClosure on_resume);
   void TaskCompleted(Task* task);
 
   void InformTaskQueueIsIdle();
@@ -79,19 +95,21 @@ class TaskQueue {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // Owns and outlives this TaskQueue.
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   // Currently running tasks.
   std::unique_ptr<Task> current_task_;
+  base::Location current_task_location_;
 
   // A FIFO queue of tasks that will be run using this task queue.
-  base::queue<std::unique_ptr<Task>> tasks_;
+  base::circular_deque<Entry> tasks_;
+
+  // A set of tasks which are suspended.
+  std::vector<Entry> suspended_tasks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<TaskQueue> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TaskQueue);
 };
 
 }  // namespace offline_pages

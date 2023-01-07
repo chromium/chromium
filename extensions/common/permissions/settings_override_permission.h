@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,9 +34,6 @@ class SettingsOverrideAPIPermission : public APIPermission {
   std::unique_ptr<APIPermission> Union(const APIPermission* rhs) const override;
   std::unique_ptr<APIPermission> Intersect(
       const APIPermission* rhs) const override;
-  void Write(base::Pickle* m) const override;
-  bool Read(const base::Pickle* m, base::PickleIterator* iter) override;
-  void Log(std::string* log) const override;
 
  private:
   std::string setting_value_;

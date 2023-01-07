@@ -1,53 +1,23 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
-import("../../tools/js_modulizer.gni")
-
-js_type_check("closure_compile") {
-  uses_legacy_modules = true
-  deps = [
-    ":event_target",
-    ":ui",
-  ]
-}
 
 js_type_check("closure_compile_modules") {
-  deps = [
-    ":event_target.m",
-    ":ui.m",
-  ]
+  deps = [ ":event_target" ]
+  if (is_chromeos_ash) {
+    deps += [ ":ui" ]
+  }
 }
 
 js_library("event_target") {
-  deps = [ "..:cr" ]
 }
 
-js_library("ui") {
-  deps = [ "..:cr" ]
-}
-
-js_library("event_target.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/event_target.m.js" ]
-  extra_deps = [ ":modulize_local" ]
-}
-
-js_library("ui.m") {
-  sources = [ "$root_gen_dir/ui/webui/resources/js/cr/ui.m.js" ]
-  extra_deps = [ ":modulize_local" ]
-}
-
-group("modulize") {
-  public_deps = [
-    ":modulize_local",
-    "ui:modulize",
-  ]
-}
-
-js_modulizer("modulize_local") {
-  input_files = [
-    "event_target.js",
-    "ui.js",
-  ]
+if (is_chromeos_ash) {
+  # Deprecated, and only used on Desktop by bluetooth-internals and ntp4, which
+  # have opted to drop typechecking.
+  js_library("ui") {
+  }
 }

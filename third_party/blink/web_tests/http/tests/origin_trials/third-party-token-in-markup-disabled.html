@@ -12,5 +12,7 @@ generate_token.py http://127.0.0.1:8000 FrobulateThirdParty --version 3 --is-thi
 <script>
   // The trial should not be enabled, as third party tokens are only valid when
   // injected by an external script.
-  expect_failure_third_party();
+  promise_test(async t => {
+    await expect_failure_third_party();
+  });
 </script>

@@ -1,11 +1,10 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CORE_SAFE_BROWSING_LOUD_ERROR_UI_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CORE_SAFE_BROWSING_LOUD_ERROR_UI_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
@@ -36,10 +35,13 @@ class SafeBrowsingLoudErrorUI
       ControllerClient* controller,
       bool created_prior_to_navigation);
 
+  SafeBrowsingLoudErrorUI(const SafeBrowsingLoudErrorUI&) = delete;
+  SafeBrowsingLoudErrorUI& operator=(const SafeBrowsingLoudErrorUI&) = delete;
+
   ~SafeBrowsingLoudErrorUI() override;
 
   // Implement BaseSafeBrowsingErrorUI.
-  void PopulateStringsForHtml(base::DictionaryValue* load_time_data) override;
+  void PopulateStringsForHtml(base::Value::Dict& load_time_data) override;
   void HandleCommand(SecurityInterstitialCommand command) override;
 
   int GetHTMLTemplateId() const override;
@@ -47,16 +49,14 @@ class SafeBrowsingLoudErrorUI
  private:
   // Fills the passed dictionary with the values to be passed to the template
   // when creating the HTML.
-  void PopulateExtendedReportingOption(base::DictionaryValue* load_time_data);
-  void PopulateMalwareLoadTimeData(base::DictionaryValue* load_time_data);
-  void PopulateHarmfulLoadTimeData(base::DictionaryValue* load_time_data);
-  void PopulatePhishingLoadTimeData(base::DictionaryValue* load_time_data);
-  void PopulateBillingLoadTimeData(base::DictionaryValue* load_time_data);
-  void PopulateEnhancedProtectionMessage(base::DictionaryValue* load_time_data);
+  void PopulateExtendedReportingOption(base::Value::Dict& load_time_data);
+  void PopulateMalwareLoadTimeData(base::Value::Dict& load_time_data);
+  void PopulateHarmfulLoadTimeData(base::Value::Dict& load_time_data);
+  void PopulatePhishingLoadTimeData(base::Value::Dict& load_time_data);
+  void PopulateBillingLoadTimeData(base::Value::Dict& load_time_data);
+  void PopulateEnhancedProtectionMessage(base::Value::Dict& load_time_data);
 
   const bool created_prior_to_navigation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SafeBrowsingLoudErrorUI);
 };
 
 }  // security_interstitials

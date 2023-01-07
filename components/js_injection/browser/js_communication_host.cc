@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/js_injection/browser/js_communication_host.h"
 
 #include "base/bind.h"
+#include "base/functional/function_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/js_injection/browser/js_to_browser_messaging.h"
 #include "components/js_injection/browser/web_message_host.h"
@@ -26,6 +27,26 @@ std::string ConvertToNativeAllowedOriginRulesWithSanityCheck(
       return "allowedOriginRules " + rule + " is invalid";
   }
   return std::string();
+}
+
+// Performs ForEachRenderFrameHost starting from `render_frame_host`, but skips
+// any inner WebContents.
+void ForEachRenderFrameHostWithinSameWebContents(
+    content::RenderFrameHost* render_frame_host,
+    base::FunctionRef<void(content::RenderFrameHost*)> func_ref) {
+  render_frame_host->ForEachRenderFrameHostWithAction(
+      [starting_web_contents =
+           content::WebContents::FromRenderFrameHost(render_frame_host),
+       func_ref](content::RenderFrameHost* rfh) {
+        // Don't cross into inner WebContents since we wouldn't be notified of
+        // its changes.
+        if (content::WebContents::FromRenderFrameHost(rfh) !=
+            starting_web_contents) {
+          return content::RenderFrameHost::FrameIterationAction::kSkipChildren;
+        }
+        func_ref(rfh);
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
 }
 
 }  // namespace
@@ -92,9 +113,12 @@ JsCommunicationHost::AddDocumentStartJavaScript(
 
   scripts_.emplace_back(script, origin_matcher, next_script_id_++);
 
-  web_contents()->ForEachFrame(base::BindRepeating(
-      &JsCommunicationHost::NotifyFrameForAddDocumentStartJavaScript,
-      base::Unretained(this), &*scripts_.rbegin()));
+  ForEachRenderFrameHostWithinSameWebContents(
+      web_contents()->GetPrimaryMainFrame(),
+      [this](content::RenderFrameHost* render_frame_host) {
+        NotifyFrameForAddDocumentStartJavaScript(&*scripts_.rbegin(),
+                                                 render_frame_host);
+      });
   result.script_id = scripts_.rbegin()->script_id_;
   return result;
 }
@@ -103,9 +127,12 @@ bool JsCommunicationHost::RemoveDocumentStartJavaScript(int script_id) {
   for (auto it = scripts_.begin(); it != scripts_.end(); ++it) {
     if (it->script_id_ == script_id) {
       scripts_.erase(it);
-      web_contents()->ForEachFrame(base::BindRepeating(
-          &JsCommunicationHost::NotifyFrameForRemoveDocumentStartJavaScript,
-          base::Unretained(this), script_id));
+      ForEachRenderFrameHostWithinSameWebContents(
+          web_contents()->GetPrimaryMainFrame(),
+          [this, script_id](content::RenderFrameHost* render_frame_host) {
+            NotifyFrameForRemoveDocumentStartJavaScript(script_id,
+                                                        render_frame_host);
+          });
       return true;
     }
   }
@@ -131,9 +158,11 @@ std::u16string JsCommunicationHost::AddWebMessageHostFactory(
   js_objects_.push_back(std::make_unique<JsObject>(
       js_object_name, origin_matcher, std::move(factory)));
 
-  web_contents()->ForEachFrame(base::BindRepeating(
-      &JsCommunicationHost::NotifyFrameForWebMessageListener,
-      base::Unretained(this)));
+  ForEachRenderFrameHostWithinSameWebContents(
+      web_contents()->GetPrimaryMainFrame(),
+      [this](content::RenderFrameHost* render_frame_host) {
+        NotifyFrameForWebMessageListener(render_frame_host);
+      });
   return std::u16string();
 }
 
@@ -143,9 +172,11 @@ void JsCommunicationHost::RemoveWebMessageHostFactory(
        ++iterator) {
     if ((*iterator)->name == js_object_name) {
       js_objects_.erase(iterator);
-      web_contents()->ForEachFrame(base::BindRepeating(
-          &JsCommunicationHost::NotifyFrameForWebMessageListener,
-          base::Unretained(this)));
+      ForEachRenderFrameHostWithinSameWebContents(
+          web_contents()->GetPrimaryMainFrame(),
+          [this](content::RenderFrameHost* render_frame_host) {
+            NotifyFrameForWebMessageListener(render_frame_host);
+          });
       break;
     }
   }
@@ -171,16 +202,23 @@ void JsCommunicationHost::RenderFrameCreated(
 
 void JsCommunicationHost::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  js_to_browser_messagings_.erase(render_frame_host);
+  js_to_browser_messagings_.erase(render_frame_host->GetGlobalId());
 }
 
-void JsCommunicationHost::FrameBackForwardCacheStateChanged(
-    content::RenderFrameHost* render_frame_host) {
-  auto iter = js_to_browser_messagings_.find(render_frame_host);
+void JsCommunicationHost::RenderFrameHostStateChanged(
+    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost::LifecycleState old_state,
+    content::RenderFrameHost::LifecycleState new_state) {
+  auto iter = js_to_browser_messagings_.find(render_frame_host->GetGlobalId());
   if (iter == js_to_browser_messagings_.end())
     return;
-  for (auto& js_to_browser_messaging_ptr : iter->second)
-    js_to_browser_messaging_ptr->OnBackForwardCacheStateChanged();
+
+  using LifecycleState = content::RenderFrameHost::LifecycleState;
+  if (old_state == LifecycleState::kInBackForwardCache ||
+      new_state == LifecycleState::kInBackForwardCache) {
+    for (auto& js_to_browser_messaging_ptr : iter->second)
+      js_to_browser_messaging_ptr->OnBackForwardCacheStateChanged();
+  }
 }
 
 void JsCommunicationHost::NotifyFrameForAllDocumentStartJavaScripts(
@@ -192,6 +230,13 @@ void JsCommunicationHost::NotifyFrameForAllDocumentStartJavaScripts(
 
 void JsCommunicationHost::NotifyFrameForWebMessageListener(
     content::RenderFrameHost* render_frame_host) {
+  // AddWebMessageHostFactory() uses this method with ForEachFrame() from JNI.
+  // Old entries are deleted from `js_to_browser_messagings_` by
+  // RenderFrameDeleted(); however, RenderFrameDeleted() will not be called if
+  // there is no live RenderFrame.
+  if (!render_frame_host->IsRenderFrameLive())
+    return;
+
   mojo::AssociatedRemote<mojom::JsCommunication> configurator_remote;
   render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &configurator_remote);
@@ -199,7 +244,7 @@ void JsCommunicationHost::NotifyFrameForWebMessageListener(
   js_objects.reserve(js_objects_.size());
   for (const auto& js_object : js_objects_) {
     mojo::PendingAssociatedRemote<mojom::JsToBrowserMessaging> pending_remote;
-    js_to_browser_messagings_[render_frame_host].emplace_back(
+    js_to_browser_messagings_[render_frame_host->GetGlobalId()].emplace_back(
         std::make_unique<JsToBrowserMessaging>(
             render_frame_host,
             pending_remote.InitWithNewEndpointAndPassReceiver(),

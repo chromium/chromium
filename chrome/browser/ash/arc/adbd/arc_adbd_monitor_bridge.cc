@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,19 +9,25 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
+#include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/optional.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "chromeos/system/statistics_provider.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/session/arc_bridge_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
 
 namespace arc {
 
@@ -88,14 +94,14 @@ bool IsAdbOverUsbEnabled() {
 }
 
 // Returns cid from vm info. Otherwise, return nullopt.
-base::Optional<int64_t> GetCid() {
+absl::optional<int64_t> GetCid() {
   if (g_enable_adb_over_usb_for_testing)
     return kCidInTesting;
 
   const auto& vm_info = arc::ArcSessionManager::Get()->GetVmInfo();
   if (!vm_info) {
     LOG(ERROR) << "ARCVM is NOT ready";
-    return base::nullopt;
+    return absl::nullopt;
   }
   return vm_info->cid();
 }
@@ -106,16 +112,16 @@ std::string GetSerialNumber() {
   return arc::ArcSessionManager::Get()->GetSerialNumber();
 }
 
-base::Optional<std::vector<std::string>> CreateAndGetAdbdUpstartEnvironment() {
+absl::optional<std::vector<std::string>> CreateAndGetAdbdUpstartEnvironment() {
   auto cid = GetCid();
   if (!cid) {
     LOG(ERROR) << "ARCVM cid is empty";
-    return base::nullopt;
+    return absl::nullopt;
   }
   auto serial_number = GetSerialNumber();
   if (serial_number.empty()) {
     LOG(ERROR) << "Serial number is empty";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::vector<std::string> environment = {

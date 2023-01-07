@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,6 +19,10 @@ namespace ui {
 class TreeNodeModelTest : public testing::Test, public TreeModelObserver {
  public:
   TreeNodeModelTest() = default;
+
+  TreeNodeModelTest(const TreeNodeModelTest&) = delete;
+  TreeNodeModelTest& operator=(const TreeNodeModelTest&) = delete;
+
   ~TreeNodeModelTest() override = default;
 
  protected:
@@ -51,8 +54,6 @@ class TreeNodeModelTest : public testing::Test, public TreeModelObserver {
   int added_count_ = 0;
   int removed_count_ = 0;
   int changed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TreeNodeModelTest);
 };
 
 typedef TreeNodeWithValue<int> TestNode;
@@ -153,20 +154,20 @@ TEST_F(TreeNodeModelTest, GetIndexOf) {
   TestNode* child2 = root.Add(std::make_unique<TestNode>(), 1);
   TestNode* foo1 = child1->Add(std::make_unique<TestNode>(), 0);
 
-  EXPECT_EQ(-1, root.GetIndexOf(&root));
-  EXPECT_EQ(0, root.GetIndexOf(child1));
-  EXPECT_EQ(1, root.GetIndexOf(child2));
-  EXPECT_EQ(-1, root.GetIndexOf(foo1));
+  EXPECT_FALSE(root.GetIndexOf(&root).has_value());
+  EXPECT_EQ(0u, root.GetIndexOf(child1));
+  EXPECT_EQ(1u, root.GetIndexOf(child2));
+  EXPECT_FALSE(root.GetIndexOf(foo1).has_value());
 
-  EXPECT_EQ(-1, child1->GetIndexOf(&root));
-  EXPECT_EQ(-1, child1->GetIndexOf(child1));
-  EXPECT_EQ(-1, child1->GetIndexOf(child2));
-  EXPECT_EQ(0, child1->GetIndexOf(foo1));
+  EXPECT_FALSE(child1->GetIndexOf(&root).has_value());
+  EXPECT_FALSE(child1->GetIndexOf(child1).has_value());
+  EXPECT_FALSE(child1->GetIndexOf(child2).has_value());
+  EXPECT_EQ(0u, child1->GetIndexOf(foo1));
 
-  EXPECT_EQ(-1, child2->GetIndexOf(&root));
-  EXPECT_EQ(-1, child2->GetIndexOf(child2));
-  EXPECT_EQ(-1, child2->GetIndexOf(child1));
-  EXPECT_EQ(-1, child2->GetIndexOf(foo1));
+  EXPECT_FALSE(child2->GetIndexOf(&root).has_value());
+  EXPECT_FALSE(child2->GetIndexOf(child2).has_value());
+  EXPECT_FALSE(child2->GetIndexOf(child1).has_value());
+  EXPECT_FALSE(child2->GetIndexOf(foo1).has_value());
 }
 
 // Verifies whether a specified node has or not an ancestor.
@@ -236,11 +237,11 @@ TEST_F(TreeNodeModelTest, GetTotalNodeCount) {
 
   TestNode* bar1 = root.Add(std::make_unique<TestNode>(), 2);
 
-  EXPECT_EQ(9, root.GetTotalNodeCount());
-  EXPECT_EQ(3, child1->GetTotalNodeCount());
-  EXPECT_EQ(2, child2->GetTotalNodeCount());
-  EXPECT_EQ(2, foo2->GetTotalNodeCount());
-  EXPECT_EQ(1, bar1->GetTotalNodeCount());
+  EXPECT_EQ(9u, root.GetTotalNodeCount());
+  EXPECT_EQ(3u, child1->GetTotalNodeCount());
+  EXPECT_EQ(2u, child2->GetTotalNodeCount());
+  EXPECT_EQ(2u, foo2->GetTotalNodeCount());
+  EXPECT_EQ(1u, bar1->GetTotalNodeCount());
 }
 
 // Makes sure that we are notified when the node is renamed,
@@ -282,6 +283,55 @@ TEST_F(TreeNodeModelTest, IsRoot) {
 
   TestNode* child1 = root.Add(std::make_unique<TestNode>());
   EXPECT_FALSE(child1->is_root());
+}
+
+TEST_F(TreeNodeModelTest, ReorderChildren) {
+  TestNode root;
+
+  TestNode* child0 = root.Add(std::make_unique<TestNode>(), 0);
+  TestNode* child1 = root.Add(std::make_unique<TestNode>(), 1);
+  TestNode* child2 = root.Add(std::make_unique<TestNode>(), 2);
+  TestNode* child3 = root.Add(std::make_unique<TestNode>(), 3);
+
+  ASSERT_EQ(4u, root.children().size());
+  ASSERT_EQ(child0, root.children()[0].get());
+  ASSERT_EQ(child1, root.children()[1].get());
+  ASSERT_EQ(child2, root.children()[2].get());
+  ASSERT_EQ(child3, root.children()[3].get());
+
+  root.ReorderChildren({3, 1, 2, 0});
+
+  ASSERT_EQ(4u, root.children().size());
+  EXPECT_EQ(child3, root.children()[0].get());
+  EXPECT_EQ(child1, root.children()[1].get());
+  EXPECT_EQ(child2, root.children()[2].get());
+  EXPECT_EQ(child0, root.children()[3].get());
+}
+
+TEST_F(TreeNodeModelTest, SortChildren) {
+  TestNode root;
+
+  TestNode* child3 = root.Add(std::make_unique<TestNode>(3), 0);
+  TestNode* child1 = root.Add(std::make_unique<TestNode>(1), 1);
+  TestNode* child2 = root.Add(std::make_unique<TestNode>(2), 2);
+  TestNode* child0 = root.Add(std::make_unique<TestNode>(0), 3);
+
+  ASSERT_EQ(4u, root.children().size());
+  ASSERT_EQ(child3, root.children()[0].get());
+  ASSERT_EQ(child1, root.children()[1].get());
+  ASSERT_EQ(child2, root.children()[2].get());
+  ASSERT_EQ(child0, root.children()[3].get());
+
+  root.SortChildren([](const std::unique_ptr<TestNode>& lhs,
+                       const std::unique_ptr<TestNode>& rhs) {
+    return lhs->value < rhs->value;
+  });
+
+  ASSERT_EQ(4u, root.children().size());
+  EXPECT_EQ(child0, root.children()[0].get());
+  EXPECT_EQ(child1, root.children()[1].get());
+  EXPECT_EQ(child2, root.children()[2].get());
+  EXPECT_EQ(child3, root.children()[3].get());
 }
 
 }  // namespace ui

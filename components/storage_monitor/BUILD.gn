@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -59,7 +59,10 @@ static_library("storage_monitor") {
       "storage_monitor_chromeos.cc",
       "storage_monitor_chromeos.h",
     ]
-    deps += [ "//chromeos/disks" ]
+    deps += [
+      "//chromeos/ash/components/dbus/cros_disks",
+      "//chromeos/ash/components/disks",
+    ]
 
     if (use_dbus) {
       sources += [
@@ -164,8 +167,8 @@ source_set("unit_tests") {
     ]
   }
 
-  if (use_dbus) {
-    if (is_chromeos_ash) {
+  if (is_chromeos_ash) {
+    if (use_dbus) {
       deps += [
         "//services/device/public/mojom",
         "//testing/gmock",
@@ -174,11 +177,13 @@ source_set("unit_tests") {
         "mtp_manager_client_chromeos_unittest.cc",
         "storage_monitor_chromeos_unittest.cc",
       ]
-    } else if (is_linux || is_chromeos_lacros) {
+    }
+  } else if (is_linux || is_chromeos_lacros) {
+    if (use_udev) {
       sources += [ "storage_monitor_linux_unittest.cc" ]
     }
   }
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/disks:test_support" ]
+    deps += [ "//chromeos/ash/components/disks:test_support" ]
   }
 }

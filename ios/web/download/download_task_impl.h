@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,45 +8,35 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/files/file_path.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#import "ios/web/public/download/download_task.h"
+#include "base/sequence_checker.h"
+#include "ios/web/download/download_result.h"
+#include "ios/web/public/download/download_task.h"
 #include "url/gurl.h"
 
-@class NSURLSession;
-
-namespace net {
-class URLFetcherResponseWriter;
-class URLRequestContextGetter;
-}
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace web {
+namespace download {
+namespace internal {
+struct CreateFileResult;
+}  // namespace internal
+}  // namespace download
 
 class DownloadTaskObserver;
 class WebState;
 
-// Implements DownloadTask interface. Uses background NSURLSession as
-// implementation.
+// Partial implementation of the DownloadTask interface used to share common
+// behaviour between the different concrete sub-classes.
 class DownloadTaskImpl : public DownloadTask {
  public:
-  class Delegate {
-   public:
-    // Called when download task is about to be destroyed. Delegate should
-    // remove all references to the given DownloadTask and stop using it.
-    virtual void OnTaskDestroyed(DownloadTaskImpl* task) = 0;
-
-    // Creates background NSURLSession with given |identifier|, |cookies|,
-    // |delegate| and |delegate_queue|.
-    virtual NSURLSession* CreateSession(NSString* identifier,
-                                        NSArray<NSHTTPCookie*>* cookies,
-                                        id<NSURLSessionDataDelegate> delegate,
-                                        NSOperationQueue* delegate_queue) = 0;
-    virtual ~Delegate() = default;
-  };
-
-  // Constructs a new DownloadTaskImpl objects. |web_state|, |identifier| and
-  // |delegate| must be valid.
+  // Constructs a new DownloadTaskImpl objects. `web_state` and `identifier`
+  // must be valid.
   DownloadTaskImpl(WebState* web_state,
                    const GURL& original_url,
                    NSString* http_method,
@@ -54,76 +44,72 @@ class DownloadTaskImpl : public DownloadTask {
                    int64_t total_bytes,
                    const std::string& mime_type,
                    NSString* identifier,
-                   Delegate* delegate);
+                   const scoped_refptr<base::SequencedTaskRunner>& task_runner);
 
-  // Stops the download operation and clears the delegate.
-  void ShutDown();
-
-  // DownloadTask overrides:
-  WebState* GetWebState() override;
-  DownloadTask::State GetState() const override;
-  void Start(std::unique_ptr<net::URLFetcherResponseWriter> writer) override;
-  void Cancel() override;
-  net::URLFetcherResponseWriter* GetResponseWriter() const override;
-  NSString* GetIndentifier() const override;
-  const GURL& GetOriginalUrl() const override;
-  NSString* GetHttpMethod() const override;
-  bool IsDone() const override;
-  int GetErrorCode() const override;
-  int GetHttpCode() const override;
-  int64_t GetTotalBytes() const override;
-  int64_t GetReceivedBytes() const override;
-  int GetPercentComplete() const override;
-  std::string GetContentDisposition() const override;
-  std::string GetOriginalMimeType() const override;
-  std::string GetMimeType() const override;
-  std::u16string GetSuggestedFilename() const override;
-  bool HasPerformedBackgroundDownload() const override;
-  void AddObserver(DownloadTaskObserver* observer) override;
-  void RemoveObserver(DownloadTaskObserver* observer) override;
   ~DownloadTaskImpl() override;
 
+  // DownloadTask overrides:
+  WebState* GetWebState() final;
+  DownloadTask::State GetState() const final;
+  void Start(const base::FilePath& path) final;
+  void Cancel() final;
+  NSString* GetIdentifier() const final;
+  const GURL& GetOriginalUrl() const final;
+  NSString* GetHttpMethod() const final;
+  bool IsDone() const final;
+  int GetErrorCode() const final;
+  int GetHttpCode() const final;
+  int64_t GetTotalBytes() const final;
+  int64_t GetReceivedBytes() const final;
+  int GetPercentComplete() const final;
+  std::string GetContentDisposition() const final;
+  std::string GetOriginalMimeType() const final;
+  std::string GetMimeType() const final;
+  base::FilePath GenerateFileName() const final;
+  bool HasPerformedBackgroundDownload() const final;
+  void AddObserver(DownloadTaskObserver* observer) final;
+  void RemoveObserver(DownloadTaskObserver* observer) final;
+  void GetResponseData(ResponseDataReadCallback callback) const final;
+  const base::FilePath& GetResponsePath() const final;
+
  private:
-  // Creates background NSURLSession with given |identifier| and |cookies|.
-  NSURLSession* CreateSession(NSString* identifier,
-                              NSArray<NSHTTPCookie*>* cookies);
+  // Needs to be overridden by sub-classes to perform the download. When this
+  // method is invoked, `path` is non-empty, its parent directory exists, the
+  // location is writable, but the file does not exist.
+  virtual void StartInternal(const base::FilePath& path) = 0;
 
-  // Asynchronously returns cookies for WebState associated with this task.
-  // Must be called on UI thread. The callback will be invoked on the UI thread.
-  void GetCookies(base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback);
+  // Needs to be overridden by sub-classes to clean themselves when the
+  // download is cancelled. If they need to clean during their shutdown,
+  // then they need to call `CancelInternal()` from their destructor.
+  virtual void CancelInternal() = 0;
 
-  // Asynchronously returns cookies for |context_getter|. Must
-  // be called on IO thread. The callback will be invoked on the UI thread.
-  static void GetCookiesFromContextGetter(
-      scoped_refptr<net::URLRequestContextGetter> context_getter,
-      base::OnceCallback<void(NSArray<NSHTTPCookie*>*)> callback);
+  // Can be overridden by sub-classes to return a suggested name for the
+  // downloaded file. The default implementation returns an empty string.
+  virtual std::string GetSuggestedName() const;
 
-  // Starts the download with given cookies.
-  void StartWithCookies(NSArray<NSHTTPCookie*>* cookies);
+  // Invoked when UIApplicationWillResignActiveNotification is received.
+  void OnAppWillResignActive();
 
-  // Starts parsing data:// url. Separate code path is used because
-  // NSURLSession does not support data URLs.
-  void StartDataUrlParsing();
+  // Invoked asynchronously when the file has been created.
+  void OnDownloadFileCreated(download::internal::CreateFileResult result);
+
+ protected:
+  // Called when download was completed and the data writing was finished.
+  void OnDownloadFinished(DownloadResult download_result);
 
   // Called when download task was updated.
   void OnDownloadUpdated();
 
-  // Called when download was completed and the data writing was finished.
-  void OnDownloadFinished(int error_code);
-
-  // Called when data:// url parsing has completed and the data has been
-  // written.
-  void OnDataUrlWritten(int bytes_written);
+  // Used to check that the methods are called on the correct sequence.
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // A list of observers. Weak references.
   base::ObserverList<DownloadTaskObserver, true>::Unchecked observers_;
 
   // Back up corresponding public methods of DownloadTask interface.
   State state_ = State::kNotStarted;
-  std::unique_ptr<net::URLFetcherResponseWriter> writer_;
   GURL original_url_;
   NSString* http_method_ = nil;
-  int error_code_ = 0;
   int http_code_ = -1;
   int64_t total_bytes_ = -1;
   int64_t received_bytes_ = 0;
@@ -133,18 +119,18 @@ class DownloadTaskImpl : public DownloadTask {
   std::string mime_type_;
   NSString* identifier_ = nil;
   bool has_performed_background_download_ = false;
-
+  DownloadResult download_result_;
   WebState* web_state_ = nullptr;
-  Delegate* delegate_ = nullptr;
-  NSURLSession* session_ = nil;
-  NSURLSessionTask* session_task_ = nil;
+
+  base::FilePath path_;
+  bool owns_file_ = false;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Observes UIApplicationWillResignActiveNotification notifications.
   id<NSObject> observer_ = nil;
 
-  base::WeakPtrFactory<DownloadTaskImpl> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadTaskImpl);
+  base::WeakPtrFactory<DownloadTaskImpl> weak_factory_{this};
 };
 
 }  // namespace web

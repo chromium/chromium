@@ -1,9 +1,10 @@
-// Copyright (c) 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/peerconnection/thermal_resource.h"
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
@@ -15,14 +16,14 @@ const int kReportIntervalSeconds = 10;
 
 }  // namespace
 
-const base::Feature kWebRtcThermalResource {
-  "WebRtcThermalResource",
-#if defined(OS_MAC)
-      base::FEATURE_ENABLED_BY_DEFAULT
+BASE_FEATURE(kWebRtcThermalResource,
+             "WebRtcThermalResource",
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
 #else
-      base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_DISABLED_BY_DEFAULT
 #endif
-};
+);
 
 // static
 scoped_refptr<ThermalResource> ThermalResource::Create(
@@ -73,12 +74,14 @@ void ThermalResource::ReportMeasurementWhileHoldingLock(size_t measurement_id) {
     case mojom::blink::DeviceThermalState::kNominal:
     case mojom::blink::DeviceThermalState::kFair:
       listener_->OnResourceUsageStateMeasured(
-          this, webrtc::ResourceUsageState::kUnderuse);
+          rtc::scoped_refptr<Resource>(this),
+          webrtc::ResourceUsageState::kUnderuse);
       break;
     case mojom::blink::DeviceThermalState::kSerious:
     case mojom::blink::DeviceThermalState::kCritical:
       listener_->OnResourceUsageStateMeasured(
-          this, webrtc::ResourceUsageState::kOveruse);
+          rtc::scoped_refptr<Resource>(this),
+          webrtc::ResourceUsageState::kOveruse);
       break;
   }
   // Repeat the reporting every 10 seconds until a new measurement is made or
@@ -87,7 +90,7 @@ void ThermalResource::ReportMeasurementWhileHoldingLock(size_t measurement_id) {
       FROM_HERE,
       base::BindOnce(&ThermalResource::ReportMeasurement,
                      scoped_refptr<ThermalResource>(this), measurement_id),
-      base::TimeDelta::FromSeconds(kReportIntervalSeconds));
+      base::Seconds(kReportIntervalSeconds));
 }
 
 }  // namespace blink

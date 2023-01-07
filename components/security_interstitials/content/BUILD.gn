@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//components/captive_portal/core/features.gni")
@@ -23,6 +23,8 @@ static_library("security_interstitial_page") {
     "connection_help_ui.h",
     "content_metrics_helper.cc",
     "content_metrics_helper.h",
+    "https_only_mode_blocking_page.cc",
+    "https_only_mode_blocking_page.h",
     "insecure_form_blocking_page.cc",
     "insecure_form_blocking_page.h",
     "insecure_form_navigation_throttle.cc",
@@ -31,14 +33,8 @@ static_library("security_interstitial_page") {
     "insecure_form_tab_storage.h",
     "known_interception_disclosure_ui.cc",
     "known_interception_disclosure_ui.h",
-    "legacy_tls_blocking_page.cc",
-    "legacy_tls_blocking_page.h",
     "mitm_software_blocking_page.cc",
     "mitm_software_blocking_page.h",
-    "origin_policy_interstitial_page.cc",
-    "origin_policy_interstitial_page.h",
-    "origin_policy_ui.cc",
-    "origin_policy_ui.h",
     "security_blocking_page_factory.h",
     "security_interstitial_controller_client.cc",
     "security_interstitial_controller_client.h",
@@ -70,7 +66,7 @@ static_library("security_interstitial_page") {
 
   public_deps = [
     "//components/captive_portal/core:buildflags",
-    "//components/safe_browsing/core/db:hit_report",
+    "//components/safe_browsing/core/browser/db:hit_report",
   ]
 
   deps = [
@@ -114,7 +110,7 @@ static_library("security_interstitial_page") {
     deps += [ "//components/captive_portal/content" ]
   }
 
-  if (is_win || is_mac) {
+  if (is_win || is_mac || is_fuchsia) {
     deps += [ "//components/wifi" ]
   }
 

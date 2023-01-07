@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -78,6 +78,7 @@ struct GPU_EXPORT Capabilities {
   int max_fragment_uniform_vectors = 0;
   int max_renderbuffer_size = 0;
   int max_texture_image_units = 0;
+  // Note this may be smaller than GL_MAX_TEXTURE_SIZE for a GLES context.
   int max_texture_size = 0;
   int max_varying_vectors = 0;
   int max_vertex_attribs = 0;
@@ -174,7 +175,9 @@ struct GPU_EXPORT Capabilities {
   bool dc_layers = false;
   bool protected_video_swap_chain = false;
   bool gpu_vsync = false;
+  bool shared_image_d3d = false;
   bool shared_image_swap_chain = false;
+  bool angle_rgbx_internal_format = false;
 
   // When this parameter is true, a CHROMIUM image created with RGB format will
   // actually have RGBA format. The client is responsible for handling most of
@@ -193,8 +196,6 @@ struct GPU_EXPORT Capabilities {
 
   bool chromium_gpu_fence = false;
 
-  bool unpremultiply_and_dither_copy = false;
-
   bool separate_stencil_ref_mask_writemask = false;
 
   bool use_gpu_fences_for_overlay_planes = false;
@@ -202,6 +203,9 @@ struct GPU_EXPORT Capabilities {
   bool chromium_nonblocking_readback = false;
 
   bool mesa_framebuffer_flip_y = false;
+
+  // Clients should use SharedImageInterface instead.
+  bool disable_legacy_mailbox = false;
 
   int major_version = 2;
   int minor_version = 0;

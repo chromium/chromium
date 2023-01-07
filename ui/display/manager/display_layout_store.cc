@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager_utilities.h"
 #include "ui/display/types/display_constants.h"
+#include "ui/display/util/display_util.h"
 
 namespace display {
 
@@ -89,23 +90,21 @@ void DisplayLayoutStore::RegisterLayoutForDisplayIdList(
 
 const DisplayLayout& DisplayLayoutStore::GetRegisteredDisplayLayout(
     const DisplayIdList& list) {
-  DCHECK_GT(list.size(), 1u);
-  const auto iter = layouts_.find(list);
-  const DisplayLayout* layout = iter != layouts_.end()
-                                    ? iter->second.get()
-                                    : CreateDefaultDisplayLayout(list);
-  DCHECK(DisplayLayout::Validate(list, *layout)) << layout->ToString();
-  DCHECK_NE(layout->primary_id, kInvalidDisplayId);
-  return *layout;
+  return GetOrCreateRegisteredDisplayLayoutInternal(list, /*create=*/false);
 }
 
 void DisplayLayoutStore::UpdateDefaultUnified(const DisplayIdList& list,
                                               bool default_unified) {
   DCHECK(layouts_.find(list) != layouts_.end());
   if (layouts_.find(list) == layouts_.end())
-    CreateDefaultDisplayLayout(list);
-
+    GetOrCreateRegisteredDisplayLayoutInternal(list,
+                                               /*create_if_not_exist=*/false);
   layouts_[list]->default_unified = default_unified;
+}
+
+const DisplayLayout& DisplayLayoutStore::GetOrCreateRegisteredDisplayLayout(
+    const DisplayIdList& list) {
+  return GetOrCreateRegisteredDisplayLayoutInternal(list, /*create=*/true);
 }
 
 DisplayLayout* DisplayLayoutStore::CreateDefaultDisplayLayout(
@@ -123,6 +122,25 @@ DisplayLayout* DisplayLayoutStore::CreateDefaultDisplayLayout(
   layouts_[list] = std::move(layout);
   auto iter = layouts_.find(list);
   return iter->second.get();
+}
+
+const DisplayLayout&
+DisplayLayoutStore::GetOrCreateRegisteredDisplayLayoutInternal(
+    const DisplayIdList& list,
+    bool create_if_not_exist) {
+  DCHECK_GT(list.size(), 1u);
+  DCHECK(IsDisplayIdListSorted(list));
+
+  const auto iter = layouts_.find(list);
+  DCHECK(create_if_not_exist || iter != layouts_.end());
+
+  const DisplayLayout* layout = iter != layouts_.end()
+                                    ? iter->second.get()
+                                    : CreateDefaultDisplayLayout(list);
+
+  DCHECK(DisplayLayout::Validate(list, *layout)) << layout->ToString();
+  DCHECK_NE(layout->primary_id, kInvalidDisplayId);
+  return *layout;
 }
 
 }  // namespace display

@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <sstream>
 #include <string>
 
@@ -64,7 +65,7 @@ class GCMEncryptionProviderTest : public ::testing::Test {
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
 
-    encryption_provider_.reset(new GCMEncryptionProvider);
+    encryption_provider_ = std::make_unique<GCMEncryptionProvider>();
     encryption_provider_->Init(scoped_temp_dir_.GetPath(),
                                base::ThreadTaskRunnerHandle::Get());
   }

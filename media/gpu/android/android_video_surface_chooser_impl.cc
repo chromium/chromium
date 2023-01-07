@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,7 @@ namespace media {
 
 // Minimum time that we require after a failed overlay attempt before we'll try
 // again for an overlay.
-constexpr base::TimeDelta MinimumDelayAfterFailedOverlay =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta MinimumDelayAfterFailedOverlay = base::Seconds(5);
 
 AndroidVideoSurfaceChooserImpl::AndroidVideoSurfaceChooserImpl(
     bool allow_dynamic,
@@ -35,7 +34,7 @@ void AndroidVideoSurfaceChooserImpl::SetClientCallbacks(
 }
 
 void AndroidVideoSurfaceChooserImpl::UpdateState(
-    base::Optional<AndroidOverlayFactoryCB> new_factory,
+    absl::optional<AndroidOverlayFactoryCB> new_factory,
     const State& new_state) {
   DCHECK(use_overlay_cb_);
   bool entered_fullscreen =
@@ -53,8 +52,9 @@ void AndroidVideoSurfaceChooserImpl::UpdateState(
       // Note that we ignore |is_expecting_relayout| here, since it's transient.
       // We don't want to pick TextureOwner permanently for that.
       if (overlay_factory_ &&
-          (current_state_.is_fullscreen || current_state_.is_secure ||
-           current_state_.is_required) &&
+          ((current_state_.is_fullscreen &&
+            !current_state_.promote_secure_only) ||
+           current_state_.is_secure || current_state_.is_required) &&
           current_state_.video_rotation == VIDEO_ROTATION_0) {
         SwitchToOverlay(false);
       } else {
@@ -87,15 +87,10 @@ void AndroidVideoSurfaceChooserImpl::Choose() {
 
   // TODO(liberato): should this depend on resolution?
   OverlayState new_overlay_state =
-      current_state_.promote_aggressively ? kUsingOverlay : kUsingTextureOwner;
-  // Do we require a power-efficient overlay?
-  bool needs_power_efficient = current_state_.promote_aggressively;
+      current_state_.promote_secure_only ? kUsingTextureOwner : kUsingOverlay;
 
-  // In player element fullscreen, we want to use overlays if we can.  Note that
-  // this does nothing if |promote_aggressively|, which is fine since switching
-  // from "want power efficient" from "don't care" is problematic.
-  if (current_state_.is_fullscreen)
-    new_overlay_state = kUsingOverlay;
+  // Do we require a power-efficient overlay?
+  bool needs_power_efficient = true;
 
   // Try to use an overlay if possible for protected content.  If the compositor
   // won't promote, though, it's okay if we switch out.  Set |is_required| in

@@ -1,0 +1,84 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+# This directories are used from ash-chrome and lacros-chrome.
+static_library("common") {
+  sources = [
+    "intent_helper/activity_icon_loader.cc",
+    "intent_helper/activity_icon_loader.h",
+    "intent_helper/adaptive_icon_delegate.h",
+    "intent_helper/arc_icon_cache_delegate.cc",
+    "intent_helper/arc_icon_cache_delegate.h",
+    "intent_helper/arc_intent_helper_mojo_delegate.cc",
+    "intent_helper/arc_intent_helper_mojo_delegate.h",
+    "intent_helper/link_handler_model.cc",
+    "intent_helper/link_handler_model.h",
+  ]
+
+  # Enable VLOG(1).
+  defines = [ "ENABLED_VLOG_LEVEL=1" ]
+
+  deps = [
+    ":arc_intent_helper_constants",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/google/core/common",
+    "//ui/base",
+    "//ui/gfx",
+    "//url:url",
+  ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash/components/arc",
+      "//ash/components/arc:arc_base_utils",
+      "//ash/components/arc:arc_metrics_constants",
+      "//ash/components/arc/mojom",
+      "//ash/components/arc/session",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [
+      "//chromeos/crosapi/mojom",
+      "//chromeos/lacros",
+    ]
+  }
+}
+
+static_library("arc_intent_helper_constants") {
+  sources = [ "intent_helper/arc_intent_helper_package.h" ]
+}
+
+static_library("arc_test_support") {
+  testonly = true
+  sources = [
+    "test/fake_arc_icon_cache.cc",
+    "test/fake_arc_icon_cache.h",
+    "test/fake_arc_intent_helper_mojo.cc",
+    "test/fake_arc_intent_helper_mojo.h",
+  ]
+  deps = [
+    "//components/arc/common",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "intent_helper/activity_icon_loader_unittest.cc",
+    "intent_helper/link_handler_model_unittest.cc",
+  ]
+
+  deps = [
+    ":common",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//url:url",
+  ]
+}

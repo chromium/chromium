@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -92,7 +92,7 @@ bool EsParserTestBase::ProcessPesPackets(
     size_t cur_pes_size = pes_packets[k].size;
 
     base::TimeDelta pts = kNoTimestamp;
-    DecodeTimestamp dts = kNoDecodeTimestamp();
+    DecodeTimestamp dts = kNoDecodeTimestamp;
     if (pes_packets[k].pts >= base::TimeDelta() || force_timing)
       pts = pes_packets[k].pts;
 

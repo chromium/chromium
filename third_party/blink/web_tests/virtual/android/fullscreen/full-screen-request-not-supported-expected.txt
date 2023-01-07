@@ -1,4 +1,0 @@
-EVENT(webkitfullscreenerror)
-END OF TEST
-
-Tests for the fullscreenSupported setting which will be set to false in those platforms where fullscreen is not supported.

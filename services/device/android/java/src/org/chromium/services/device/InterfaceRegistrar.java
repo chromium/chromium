@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,7 @@ import org.chromium.services.service_manager.InterfaceRegistry;
 @JNINamespace("device")
 class InterfaceRegistrar {
     @CalledByNative
-    static void createInterfaceRegistryForContext(
-            int nativeHandle, NfcDelegate nfcDelegate) {
+    static void createInterfaceRegistryForContext(long nativeHandle, NfcDelegate nfcDelegate) {
         // Note: The bindings code manages the lifetime of this object, so it
         // is not necessary to hold on to a reference to it explicitly.
         InterfaceRegistry registry = InterfaceRegistry.create(

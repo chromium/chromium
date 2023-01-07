@@ -1,0 +1,31 @@
+caption: Enable AutoFill
+deprecated: true
+desc: |-
+  This policy is deprecated in M70, please use <ph name="AUTOFILL_ADDRESS_ENABLED_POLICY_NAME">AutofillAddressEnabled</ph> and <ph name="AUTOFILL_CREDIT_CARD_ENABLED_POLICY_NAME">AutofillCreditCardEnabled</ph> instead.
+
+        Enables <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s AutoFill feature and allows users to auto complete web forms using previously stored information such as address or credit card information.
+
+        If you disable this setting, AutoFill will be inaccessible to users.
+
+        If you enable this setting or do not set a value, AutoFill will remain under the control of the user. This will allow them to configure AutoFill profiles and to switch AutoFill on or off at their own discretion.
+example_value: false
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable AutoFill
+  value: true
+- caption: Disable AutoFill
+  value: false
+owners:
+- file://components/autofill/OWNERS
+- sebsg@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.*:8-
+- chrome_os:11-
+- android:30-
+tags: []
+type: main

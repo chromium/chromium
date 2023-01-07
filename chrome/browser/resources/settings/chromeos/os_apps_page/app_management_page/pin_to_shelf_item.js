@@ -1,38 +1,60 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-Polymer({
-  is: 'app-management-pin-to-shelf-item',
+import 'chrome://resources/cr_components/app_management/toggle_row.js';
 
-  properties: {
-    /**
-     * @type {App}
-     */
-    app: Object,
+import {AppManagementUserAction, OptionalBool} from 'chrome://resources/cr_components/app_management/constants.js';
+import {convertOptionalBoolToBool, recordAppManagementUserAction, toggleOptionalBool} from 'chrome://resources/cr_components/app_management/util.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    /**
-     * @type {boolean}
-     */
-    hidden: {
-      type: Boolean,
-      computed: 'isAvailable_(app)',
-      reflectToAttribute: true,
-    },
+import {recordSettingChange} from '../../metrics_recorder.js';
 
-    /**
-     * @type {boolean}
-     */
-    disabled: {
-      type: Boolean,
-      computed: 'isManaged_(app)',
-      reflectToAttribute: true,
-    },
-  },
+import {BrowserProxy} from './browser_proxy.js';
 
-  listeners: {
-    click: 'onClick_',
-    change: 'toggleSetting_',
-  },
+/** @polymer */
+class AppManagementPinToShelfItemElement extends PolymerElement {
+  static get is() {
+    return 'app-management-pin-to-shelf-item';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * @type {App}
+       */
+      app: Object,
+
+      /**
+       * @type {boolean}
+       */
+      hidden: {
+        type: Boolean,
+        computed: 'isAvailable_(app)',
+        reflectToAttribute: true,
+      },
+
+      /**
+       * @type {boolean}
+       */
+      disabled: {
+        type: Boolean,
+        computed: 'isManaged_(app)',
+        reflectToAttribute: true,
+      },
+    };
+  }
+
+  ready() {
+    super.ready();
+
+    this.addEventListener('click', this.onClick_);
+    this.addEventListener('change', this.toggleSetting_);
+  }
 
   /**
    * @param {App} app
@@ -45,7 +67,7 @@ Polymer({
     }
     assert(app);
     return app.isPinned === OptionalBool.kTrue;
-  },
+  }
 
   /**
    * @param {App} app
@@ -57,7 +79,7 @@ Polymer({
     }
     assert(app);
     return app.hidePinToShelf;
-  },
+  }
 
   /**
    * @param {App} app
@@ -70,30 +92,34 @@ Polymer({
     }
     assert(app);
     return app.isPolicyPinned === OptionalBool.kTrue;
-  },
+  }
 
+  /** @private */
   toggleSetting_() {
-    const newState =
-        assert(app_management.util.toggleOptionalBool(this.app.isPinned));
-    const newStateBool =
-        app_management.util.convertOptionalBoolToBool(newState);
-    assert(newStateBool === this.$['toggle-row'].isChecked());
-    app_management.BrowserProxy.getInstance().handler.setPinned(
+    const newState = assert(toggleOptionalBool(this.app.isPinned));
+    const newStateBool = convertOptionalBoolToBool(newState);
+    assert(
+        newStateBool ===
+        (/** @type {AppManagementToggleRowElement} */ (this.$['toggle-row']))
+            .isChecked());
+    BrowserProxy.getInstance().handler.setPinned(
         this.app.id,
         newState,
     );
-    settings.recordSettingChange();
+    recordSettingChange();
     const userAction = newStateBool ?
-        AppManagementUserAction.PinToShelfTurnedOn :
-        AppManagementUserAction.PinToShelfTurnedOff;
-    app_management.util.recordAppManagementUserAction(
-        this.app.type, userAction);
-  },
+        AppManagementUserAction.PIN_TO_SHELF_TURNED_ON :
+        AppManagementUserAction.PIN_TO_SHELF_TURNED_OFF;
+    recordAppManagementUserAction(this.app.type, userAction);
+  }
 
   /**
    * @private
    */
   onClick_() {
     this.$['toggle-row'].click();
-  },
-});
+  }
+}
+
+customElements.define(
+    AppManagementPinToShelfItemElement.is, AppManagementPinToShelfItemElement);

@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,15 @@ bool FakeProxy::RequestedAnimatePending() {
 
 bool FakeProxy::IsStarted() const { return true; }
 
+bool FakeProxy::StartDeferringCommits(base::TimeDelta timeout,
+                                      PaintHoldingReason reason) {
+  return false;
+}
+
+bool FakeProxy::IsDeferringCommits() const {
+  return false;
+}
+
 bool FakeProxy::CommitRequested() const { return false; }
 
 void FakeProxy::SetMutator(std::unique_ptr<LayerTreeMutator> mutator) {}
@@ -30,6 +39,10 @@ void FakeProxy::SetPaintWorkletLayerPainter(
 
 bool FakeProxy::MainFrameWillHappenForTesting() {
   return false;
+}
+
+double FakeProxy::GetPercentDroppedFrames() const {
+  return 0.0;
 }
 
 }  // namespace cc

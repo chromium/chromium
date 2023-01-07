@@ -1,25 +1,26 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.directactions;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.CancellationSignal;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.autofill_assistant.AssistantDependencyUtilsChrome;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.lifecycle.Destroyable;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -36,8 +37,8 @@ import java.util.function.Consumer;
  * <p>To extend the set of direct actions beyond what's provided by this class, register handlers to
  * the coordinator {@code mCoordinator}.
  */
-@TargetApi(29)
-public class DirectActionInitializer implements NativeInitObserver, Destroyable {
+@RequiresApi(29)
+public class DirectActionInitializer implements NativeInitObserver, DestroyObserver {
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final BrowserControlsStateProvider mBrowserControls;
@@ -152,7 +153,7 @@ public class DirectActionInitializer implements NativeInitObserver, Destroyable 
         registerMenuHandlerIfNecessary(actionController, tabModelSelector)
                 .allowlistActions(R.id.forward_menu_id, R.id.reload_menu_id);
 
-        if (AutofillAssistantFacade.areDirectActionsAvailable(activityType)) {
+        if (AssistantDependencyUtilsChrome.areDirectActionsAvailable(activityType)) {
             DirectActionHandler handler = AutofillAssistantFacade.createDirectActionHandler(context,
                     bottomSheetController, browserControls, compositorViewHolder,
                     activityTabProvider);
@@ -184,9 +185,9 @@ public class DirectActionInitializer implements NativeInitObserver, Destroyable 
                 .allowlistActions(itemIds);
     }
 
-    // Implements Destroyable
+    // Implements DestroyObserver
     @Override
-    public void destroy() {
+    public void onDestroy() {
         mCoordinator = null;
         mDirectActionsRegistered = false;
     }
@@ -207,7 +208,7 @@ public class DirectActionInitializer implements NativeInitObserver, Destroyable 
     void registerDirectActions() {
         registerCommonChromeActions(mContext, mActivityType, mMenuOrKeyboardActionController,
                 mGoBackAction, mTabModelSelector, mFindToolbarManager,
-                AutofillAssistantFacade.areDirectActionsAvailable(mActivityType)
+                AssistantDependencyUtilsChrome.areDirectActionsAvailable(mActivityType)
                         ? mBottomSheetController
                         : null,
                 mBrowserControls, mCompositorViewHolder, mActivityTabProvider);

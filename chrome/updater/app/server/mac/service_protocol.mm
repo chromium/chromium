@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,11 +22,21 @@ NSXPCInterface* GetXPCUpdateServicingInterface() {
 
   [updateCheckingInterface
        setInterface:updateStateObservingInterface
-        forSelector:@selector(checkForUpdateWithAppID:
-                                             priority:updateState:reply:)
-      argumentIndex:2
+        forSelector:@selector
+        (checkForUpdateWithAppId:
+                installDataIndex:priority:policySameVersionUpdate:updateState
+                                :reply:)
+      argumentIndex:4
             ofReply:NO];
 
+  [updateCheckingInterface
+       setInterface:updateStateObservingInterface
+        forSelector:@selector
+        (runInstallerWithAppId:
+                 installerPath:installArgs:installData:installSettings
+                              :updateState:reply:)
+      argumentIndex:5
+            ofReply:NO];
   return updateCheckingInterface;
 }
 

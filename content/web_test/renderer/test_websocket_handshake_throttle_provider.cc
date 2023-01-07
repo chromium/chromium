@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "content/public/renderer/render_frame.h"
@@ -40,7 +40,7 @@ base::TimeDelta ExtractDelayFromUrl(const GURL& url) {
     if (!base::StringToInt(value_piece, &value_int) || value_int < 0)
       return base::TimeDelta();
 
-    return base::TimeDelta::FromMilliseconds(value_int);
+    return base::Milliseconds(value_int);
   }
 
   // Parameter was not found.
@@ -67,7 +67,7 @@ class TestWebSocketHandshakeThrottle
 
     auto wrapper = base::BindOnce(
         [](CompletionCallback callback) {
-          std::move(callback).Run(base::nullopt);
+          std::move(callback).Run(absl::nullopt);
         },
         std::move(completion_callback));
 

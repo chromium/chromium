@@ -1,16 +1,8 @@
-// Copyright 2009 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 /**
  * @fileoverview Utilities for adding, removing and setting values in
@@ -60,6 +52,7 @@ goog.dom.dataset.PREFIX_ = 'data-';
  * @private
  */
 goog.dom.dataset.isValidProperty_ = function(key) {
+  'use strict';
   return !/-[a-z]/.test(key);
 };
 
@@ -72,6 +65,7 @@ goog.dom.dataset.isValidProperty_ = function(key) {
  * @param {string} value Value for the custom data attribute.
  */
 goog.dom.dataset.set = function(element, key, value) {
+  'use strict';
   var htmlElement = /** @type {HTMLElement} */ (element);
   if (goog.dom.dataset.ALLOWED_ && htmlElement.dataset) {
     htmlElement.dataset[key] = value;
@@ -94,6 +88,7 @@ goog.dom.dataset.set = function(element, key, value) {
  * @return {?string} The attribute value, if it exists.
  */
 goog.dom.dataset.get = function(element, key) {
+  'use strict';
   // Edge, unlike other browsers, will do camel-case conversion when retrieving
   // "dash-case" properties.
   if (!goog.dom.dataset.isValidProperty_(key)) {
@@ -123,6 +118,7 @@ goog.dom.dataset.get = function(element, key) {
  * @param {string} key Key for the custom data attribute.
  */
 goog.dom.dataset.remove = function(element, key) {
+  'use strict';
   // Edge, unlike other browsers, will do camel-case conversion when removing
   // "dash-case" properties.
   if (!goog.dom.dataset.isValidProperty_(key)) {
@@ -151,6 +147,7 @@ goog.dom.dataset.remove = function(element, key) {
  * @return {boolean} Whether the attribute exists.
  */
 goog.dom.dataset.has = function(element, key) {
+  'use strict';
   // Edge, unlike other browsers, will do camel-case conversion when retrieving
   // "dash-case" properties.
   if (!goog.dom.dataset.isValidProperty_(key)) {
@@ -179,6 +176,7 @@ goog.dom.dataset.has = function(element, key) {
  *     respective values.
  */
 goog.dom.dataset.getAll = function(element) {
+  'use strict';
   var htmlElement = /** @type {HTMLElement} */ (element);
   if (goog.dom.dataset.ALLOWED_ && htmlElement.dataset) {
     return htmlElement.dataset;

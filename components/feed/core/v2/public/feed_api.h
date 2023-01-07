@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,11 @@
 #include "base/observer_list_types.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
-#include "components/feed/core/v2/common_enums.h"
+#include "components/feed/core/v2/public/common_enums.h"
 #include "components/feed/core/v2/public/refresh_task_scheduler.h"
+#include "components/feed/core/v2/public/stream_type.h"
 #include "components/feed/core/v2/public/types.h"
+#include "components/feed/core/v2/public/unread_content_observer.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "url/gurl.h"
 
@@ -26,84 +28,10 @@ class DataOperation;
 }  // namespace feedstore
 
 namespace feed {
-class WebFeedSubscriptions;
+class FeedStreamSurface;
 class PersistentKeyValueStore;
-
-// Selects the stream type.
-// TODO(crbug.com/1152592): Need to use StreamType in several places:
-// - Stream loading/saving
-// - Metrics
-// Note: currently there are two options, but this leaves room for more
-// parameters.
-class StreamType {
- public:
-  enum class Type {
-    // An unspecified stream type. Used only to represent an uninitialized
-    // stream type value.
-    kUnspecified,
-    // The For-You feed stream.
-    kForYou,
-    // The Web Feed stream.
-    kWebFeed,
-  };
-  constexpr StreamType() = default;
-  constexpr explicit StreamType(Type t) : type_(t) {}
-  bool operator<(const StreamType& rhs) const { return type_ < rhs.type_; }
-  bool operator==(const StreamType& rhs) const { return type_ == rhs.type_; }
-  // TODO(crbug.com/1152592): When we're closer to code-complete, audit all uses
-  // of IsForYou() and IsWebFeed().
-  bool IsForYou() const { return type_ == Type::kForYou; }
-  bool IsWebFeed() const { return type_ == Type::kWebFeed; }
-
-  // Returns a human-readable value, for debugging/DCHECK prints.
-  std::string ToString() const;
-
-  // Mapping functions between RefreshTaskId and StreamType.
-  // Returns false if there should be no background refreshes associated with
-  // this stream.
-  bool GetRefreshTaskId(RefreshTaskId& out_id) const;
-  static StreamType ForTaskId(RefreshTaskId task_id);
-
- private:
-  Type type_ = Type::kUnspecified;
-};
-
-// Consumes stream data for a single `StreamType` and displays it to the user.
-class FeedStreamSurface : public base::CheckedObserver {
- public:
-  explicit FeedStreamSurface(StreamType type);
-  ~FeedStreamSurface() override;
-
-  // Returns a unique ID for the surface. The ID will not be reused until
-  // after the Chrome process is closed.
-  SurfaceId GetSurfaceId() const;
-
-  // Returns the `StreamType` this `FeedStreamSurface` requests.
-  StreamType GetStreamType() const { return stream_type_; }
-
-  // Called after registering the observer to provide the full stream state.
-  // Also called whenever the stream changes.
-  virtual void StreamUpdate(const feedui::StreamUpdate&) = 0;
-
-  // Access to the xsurface data store.
-  virtual void ReplaceDataStoreEntry(base::StringPiece key,
-                                     base::StringPiece data) = 0;
-  virtual void RemoveDataStoreEntry(base::StringPiece key) = 0;
-
- private:
-  StreamType stream_type_;
-  SurfaceId surface_id_;
-};
-
-inline std::ostream& operator<<(std::ostream& os,
-                                const StreamType& stream_type) {
-  return os << stream_type.ToString();
-}
-
-// TODO(crbug.com/1152592): When we're closer to code-complete, audit all uses
-// of kForYouStream and kWebFeedStream.
-constexpr StreamType kForYouStream(StreamType::Type::kForYou);
-constexpr StreamType kWebFeedStream(StreamType::Type::kWebFeed);
+class WebFeedSubscriptions;
+struct LoggingParameters;
 
 // This is the public access point for interacting with the Feed contents.
 // FeedApi serves multiple streams of data, one for each StreamType.
@@ -114,34 +42,18 @@ class FeedApi {
   FeedApi(const FeedApi&) = delete;
   FeedApi& operator=(const FeedApi&) = delete;
 
-  // TODO(crbug/1152592): Implement subscriptions().
-  // WebFeedSubscriptions& subscriptions() = 0;
-  // Observes whether there is unread content for a specific stream type.
-  // In some cases, this information will not be known until after stream
-  // data is loaded from the database. This observer will not be notified until
-  // the information is available.
-  class UnreadContentObserver {
-   public:
-    UnreadContentObserver();
-    virtual ~UnreadContentObserver();
-    virtual void HasUnreadContentChanged(bool has_unread_content) = 0;
-    UnreadContentObserver(const UnreadContentObserver&) = delete;
-    UnreadContentObserver& operator=(const UnreadContentObserver&) = delete;
-
-    base::WeakPtr<UnreadContentObserver> GetWeakPtr() {
-      return weak_ptr_factory_.GetWeakPtr();
-    }
-
-   private:
-    base::WeakPtrFactory<UnreadContentObserver> weak_ptr_factory_{this};
-  };
-
   virtual WebFeedSubscriptions& subscriptions() = 0;
 
   // Attach/detach a surface. Surfaces should be attached when content is
   // required for display, and detached when content is no longer shown.
   virtual void AttachSurface(FeedStreamSurface*) = 0;
   virtual void DetachSurface(FeedStreamSurface*) = 0;
+
+  // Notifies |this| that the user clicked on a feed card with its |url| and
+  // |entity_mids| entities.
+  virtual void UpdateUserProfileOnLinkClick(
+      const GURL& url,
+      const std::vector<int64_t>& entity_mids) = 0;
 
   // Begin/stop observing a stream type. An observer instance should not be
   // added twice without first being removed.
@@ -152,20 +64,23 @@ class FeedApi {
 
   virtual bool IsArticlesListVisible() = 0;
 
-  // Returns true if activity logging is enabled. The returned value is
-  // ephemeral, this should be called for each candidate log, as it can change
-  // as the feed is refreshed or the user signs in/out.
-  virtual bool IsActivityLoggingEnabled(
-      const StreamType& stream_type) const = 0;
-
-  // Returns the signed-in client_instance_id. This value is reset whenever the
-  // feed stream is cleared (on sign-in, sign-out, and some data clear events).
-  virtual std::string GetClientInstanceId() const = 0;
-
   // Returns the client's signed-out session id. This value is reset whenever
   // the feed stream is cleared (on sign-in, sign-out, and some data clear
   // events).
   virtual std::string GetSessionId() const = 0;
+
+  // Sets the requested content order of the feed, and triggers a refresh if
+  // necessary. Note that currently, only Web Feed can change the content order.
+  virtual void SetContentOrder(const StreamType& stream_type,
+                               ContentOrder content_order) = 0;
+
+  // Returns the current `ContentOrder` for `stream_type`.
+  virtual ContentOrder GetContentOrder(const StreamType& stream_type) const = 0;
+
+  // Gets the "raw" content order value stored in prefs. Returns `kUnspecified`
+  // if the user has not selected one yet.
+  virtual ContentOrder GetContentOrderFromPrefs(
+      const StreamType& stream_type) = 0;
 
   // Invoked by RefreshTaskScheduler's scheduled task.
   virtual void ExecuteRefreshTask(RefreshTaskId task_id) = 0;
@@ -176,6 +91,11 @@ class FeedApi {
   // further.
   virtual void LoadMore(const FeedStreamSurface& surface,
                         base::OnceCallback<void(bool)> callback) = 0;
+
+  // Refresh the feed content by fetching the fresh content from the server.
+  // Calls |callback| when complete. If the fetch fails, the parameter is false.
+  virtual void ManualRefresh(const StreamType& stream_type,
+                             base::OnceCallback<void(bool)> callback) = 0;
 
   // Request to fetch and image for use in the feed. Calls |callback|
   // with the network response when complete. The returned ImageFetchId can be
@@ -188,7 +108,7 @@ class FeedApi {
   // |id| doesn't match an active fetch, nothing happens.
   virtual void CancelImageFetch(ImageFetchId id) = 0;
 
-  virtual PersistentKeyValueStore* GetPersistentKeyValueStore() = 0;
+  virtual PersistentKeyValueStore& GetPersistentKeyValueStore() = 0;
 
   // Apply |operations| to the stream model. Does nothing if the model is not
   // yet loaded.
@@ -215,13 +135,27 @@ class FeedApi {
 
   // Sends 'ThereAndBackAgainData' back to the server. |data| is a serialized
   // |feedwire::ThereAndBackAgainData| message.
-  virtual void ProcessThereAndBackAgain(base::StringPiece data) = 0;
+  virtual void ProcessThereAndBackAgain(
+      base::StringPiece data,
+      const LoggingParameters& logging_parameters) = 0;
   // Saves a view action for eventual upload. |data| is a serialized
-  //|feedwire::FeedAction| message.
-  virtual void ProcessViewAction(base::StringPiece data) = 0;
+  //|feedwire::FeedAction| message. `logging_parameters` are the logging
+  // parameters associated with this item, see `feedui::StreamUpdate`.
+  virtual void ProcessViewAction(
+      base::StringPiece data,
+      const LoggingParameters& logging_parameters) = 0;
 
-  // User interaction reporting. These should have no side-effects other than
-  // reporting metrics.
+  // Returns whether `url` is a suggested Feed URLs, recently
+  // navigated to by the user.
+  virtual bool WasUrlRecentlyNavigatedFromFeed(const GURL& url) = 0;
+
+  // Requests that the cache of the feed identified by |stream_kind| be
+  // invalidated so that its contents are re-fetched the next time that feed is
+  // shown/loaded.
+  virtual void InvalidateContentCacheFor(StreamKind stream_kind) = 0;
+
+  // User interaction reporting. Unless otherwise documented, these have no
+  // side-effects other than reporting metrics.
 
   // A slice was viewed (2/3rds of it is in the viewport). Should be called
   // once for each viewed slice in the stream.
@@ -230,19 +164,22 @@ class FeedApi {
                                  const std::string& slice_id) = 0;
   // Some feed content has been loaded and is now available to the user on the
   // feed surface. Reported only once after a surface is attached.
-  virtual void ReportFeedViewed(SurfaceId surface_id) = 0;
+  virtual void ReportFeedViewed(const StreamType& stream_type,
+                                SurfaceId surface_id) = 0;
   // A web page was loaded in response to opening a link from the Feed.
   virtual void ReportPageLoaded() = 0;
-  // The user triggered the default open action, usually by tapping the card.
-  virtual void ReportOpenAction(const StreamType& stream_type,
-                                const std::string& slice_id) = 0;
+  // The user triggered the open action which can be caused by tapping the card,
+  // or selecting 'Open in new tab' menu item. The open action to trigger is
+  // providen in `action_type`.
+  // Remembers the URL for later calls to `WasUrlRecentlyNavigatedFromFeed()`.
+  virtual void ReportOpenAction(const GURL& url,
+                                const StreamType& stream_type,
+                                const std::string& slice_id,
+                                OpenActionType action_type) = 0;
   // The user triggered an open action, visited a web page, and then navigated
   // away or backgrouded the tab. |visit_time| is a measure of how long the
   // visited page was foregrounded.
   virtual void ReportOpenVisitComplete(base::TimeDelta visit_time) = 0;
-  // The user triggered the 'open in new tab' action.
-  virtual void ReportOpenInNewTabAction(const StreamType& stream_type,
-                                        const std::string& slice_id) = 0;
   // The user scrolled the feed by |distance_dp| and then stopped.
   virtual void ReportStreamScrolled(const StreamType& stream_type,
                                     int distance_dp) = 0;
@@ -253,17 +190,39 @@ class FeedApi {
   // reporting function above..
   virtual void ReportOtherUserAction(const StreamType& stream_type,
                                      FeedUserActionType action_type) = 0;
+  // Reports that the info card is being tracked for its full visibility.
+  virtual void ReportInfoCardTrackViewStarted(const StreamType& stream_type,
+                                              int info_card_type) = 0;
+  // Reports that the info card is visible in the viewport within the threshold.
+  virtual void ReportInfoCardViewed(const StreamType& stream_type,
+                                    int info_card_type,
+                                    int minimum_view_interval_seconds) = 0;
+  // Reports that the user taps the info card.
+  virtual void ReportInfoCardClicked(const StreamType& stream_type,
+                                     int info_card_type) = 0;
+  // Reports that the user dismisses the info card explicitly by tapping the
+  // close button.
+  virtual void ReportInfoCardDismissedExplicitly(const StreamType& stream_type,
+                                                 int info_card_type) = 0;
+  // Resets all the states of the info card.
+  virtual void ResetInfoCardStates(const StreamType& stream_type,
+                                   int info_card_type) = 0;
 
   // The following methods are used for the internals page.
 
   virtual DebugStreamData GetDebugStreamData() = 0;
   // Forces a Feed refresh from the server.
-  virtual void ForceRefreshForDebugging() = 0;
+  virtual void ForceRefreshForDebugging(const StreamType& stream_type) = 0;
   // Dumps some state information for debugging.
   virtual std::string DumpStateForDebugging() = 0;
   // Forces to render a StreamUpdate on all subsequent surface attaches.
   virtual void SetForcedStreamUpdateForDebugging(
       const feedui::StreamUpdate& stream_update) = 0;
+  // Returns the time of the last successful content fetch.
+  virtual base::Time GetLastFetchTime(const StreamType& stream_type) = 0;
+  // Increase the count of the number of times the user has followed from the
+  // web page menu.
+  virtual void IncrementFollowedFromWebPageMenuCount() = 0;
 };
 
 }  // namespace feed

@@ -1,107 +1,93 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
 <script src="resources/suggestion-picker-common.js"></script>
-</head>
+
 <body style="background-color: #bbbbbb;">
-<p id="description"></p>
-<div id="console"></div>
-<input type=datetime-local id=datetime-local value="2012-11-22T00:00" step="3600" list=suggestions>
+<input type=datetime-local value="2012-11-22T00:00" step="3600" list=suggestions>
 <datalist id=suggestions>
-    <option>2012-11-22T01:00</option>
-    <option>2012-11-22T01:00:01</option>
-    <option>2012-11-22T01:00:01.001</option>
-    <option>2012-11-22T01:00:01.010</option>
-    <option>2012-11-22T01:01</option>
-    <option>2012-11-22T02:00</option>
-    <option>2012-11-22T02:01</option>
+  <option>2012-11-22T01:00</option>
+  <option>2012-11-22T01:00:01</option>
+  <option>2012-11-22T01:00:01.001</option>
+  <option>2012-11-22T01:00:01.010</option>
+  <option>2012-11-22T01:01</option>
+  <option>2012-11-22T02:00</option>
+  <option>2012-11-22T02:01</option>
 </datalist>
+
 <script>
-description('Tests that step attribute filter out suggestions as expected.');
+window.onload = () => {
+  const element = document.querySelector('input');
+  promise_test(() => {
+    return openPicker(element)
+    .then(() => {
+      internals.pagePopupWindow.focus();
 
-debug('Check that page popup doesn\'t exist at first.');
-shouldBeNull('document.getElementById("mock-page-popup")');
+      assert_equals(entryValues().length, 3);
+      assert_equals(entryValues()[0], '2012-11-22T01:00');
+      assert_equals(entryValues()[1], '2012-11-22T02:00');
+      assert_equals(entryValues()[2], '@openCalendarPicker');
 
-var datetimeLocalElement = document.getElementById('datetime-local');
+      return attemptToClosePicker(element);
+    });
+  },'Step attribute filters out suggestions');
 
-window.onload = function() {
-    openPicker(datetimeLocalElement, test1);
+  promise_test(() => {
+    element.step = 60;
+    return openPicker(element)
+    .then(() => {
+      internals.pagePopupWindow.focus();
+
+      assert_equals(entryValues().length, 5);
+      assert_equals(entryValues()[0], '2012-11-22T01:00');
+      assert_equals(entryValues()[1], '2012-11-22T01:01');
+      assert_equals(entryValues()[2], '2012-11-22T02:00');
+      assert_equals(entryValues()[3], '2012-11-22T02:01');
+      assert_equals(entryValues()[4], '@openCalendarPicker');
+
+      return attemptToClosePicker(element);
+    });
+  },'Step attribute filters out suggestions - longer step');
+
+  promise_test(() => {
+    element.step = 1;
+    return openPicker(element)
+    .then(() => {
+      internals.pagePopupWindow.focus();
+
+      assert_equals(entryValues().length, 6);
+      assert_equals(entryValues()[0], '2012-11-22T01:00');
+      assert_equals(entryValues()[1], '2012-11-22T01:00:01');
+      assert_equals(entryValues()[2], '2012-11-22T01:01');
+      assert_equals(entryValues()[3], '2012-11-22T02:00');
+      assert_equals(entryValues()[4], '2012-11-22T02:01');
+      assert_equals(entryValues()[5], '@openCalendarPicker');
+
+      return attemptToClosePicker(element);
+    });
+  },'Step attribute filters out suggestions - short step');
+
+  promise_test(() => {
+    element.step = 0.001;
+    return openPicker(element)
+    .then(() => {
+      internals.pagePopupWindow.focus();
+
+      assert_equals(entryValues().length, 8);
+      assert_equals(entryValues()[0], '2012-11-22T01:00');
+      assert_equals(entryValues()[1], '2012-11-22T01:00:01');
+      assert_equals(entryValues()[2], '2012-11-22T01:00:01.001');
+      assert_equals(entryValues()[3], '2012-11-22T01:00:01.010');
+      assert_equals(entryValues()[4], '2012-11-22T01:01');
+      assert_equals(entryValues()[5], '2012-11-22T02:00');
+      assert_equals(entryValues()[6], '2012-11-22T02:01');
+      assert_equals(entryValues()[7], '@openCalendarPicker');
+
+      return attemptToClosePicker(element);
+    });
+  },'Step attribute filters out suggestions - very short step');
 };
-
-function test1() {
-    popupWindow.focus();
-
-    shouldBe('entryValues().length', '3');
-    shouldBeEqualToString('entryValues()[0]', '2012-11-22T01:00');
-    shouldBeEqualToString('entryValues()[1]', '2012-11-22T02:00');
-    shouldBeEqualToString('entryValues()[2]', '@openCalendarPicker');
-
-    eventSender.keyDown('Escape'); // Close picker.
-    waitUntilClosing(test1AfterClosing);
-}
-
-function test1AfterClosing() {
-    datetimeLocalElement.step = 60;
-    openPicker(datetimeLocalElement, test2);
-}
-
-function test2() {
-    popupWindow.focus();
-
-    shouldBe('entryValues().length', '5');
-    shouldBeEqualToString('entryValues()[0]', '2012-11-22T01:00');
-    shouldBeEqualToString('entryValues()[1]', '2012-11-22T01:01');
-    shouldBeEqualToString('entryValues()[2]', '2012-11-22T02:00');
-    shouldBeEqualToString('entryValues()[3]', '2012-11-22T02:01');
-    shouldBeEqualToString('entryValues()[4]', '@openCalendarPicker');
-
-    eventSender.keyDown('Escape'); // Close picker.
-    waitUntilClosing(test2AfterClosing);
-}
-
-function test2AfterClosing() {
-    datetimeLocalElement.step = 1;
-    openPicker(datetimeLocalElement, test3);
-}
-
-function test3() {
-    popupWindow.focus();
-
-    shouldBe('entryValues().length', '6');
-    shouldBeEqualToString('entryValues()[0]', '2012-11-22T01:00');
-    shouldBeEqualToString('entryValues()[1]', '2012-11-22T01:00:01');
-    shouldBeEqualToString('entryValues()[2]', '2012-11-22T01:01');
-    shouldBeEqualToString('entryValues()[3]', '2012-11-22T02:00');
-    shouldBeEqualToString('entryValues()[4]', '2012-11-22T02:01');
-    shouldBeEqualToString('entryValues()[5]', '@openCalendarPicker');
-
-    eventSender.keyDown('Escape'); // Close picker.
-    waitUntilClosing(test3AfterClosing);
-}
-
-function test3AfterClosing() {
-    datetimeLocalElement.step = 0.001;
-    openPicker(datetimeLocalElement, test4);
-}
-
-function test4() {
-    popupWindow.focus();
-
-    shouldBe('entryValues().length', '8');
-    shouldBeEqualToString('entryValues()[0]', '2012-11-22T01:00');
-    shouldBeEqualToString('entryValues()[1]', '2012-11-22T01:00:01');
-    shouldBeEqualToString('entryValues()[2]', '2012-11-22T01:00:01.001');
-    shouldBeEqualToString('entryValues()[3]', '2012-11-22T01:00:01.010');
-    shouldBeEqualToString('entryValues()[4]', '2012-11-22T01:01');
-    shouldBeEqualToString('entryValues()[5]', '2012-11-22T02:00');
-    shouldBeEqualToString('entryValues()[6]', '2012-11-22T02:01');
-    shouldBeEqualToString('entryValues()[7]', '@openCalendarPicker');
-
-    finishJSTest();
-}
-
 </script>
-</body>
-</html>

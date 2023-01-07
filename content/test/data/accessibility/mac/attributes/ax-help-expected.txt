@@ -1,0 +1,4 @@
+link.accessibilityAttributeNames.has(AXHelp)='yes'
+link.accessibilityAttributeValue(AXHelp)='help description'
+not_applicable.accessibilityAttributeNames.has(AXHelp)='yes'
+not_applicable.accessibilityAttributeValue(AXHelp)=NULL

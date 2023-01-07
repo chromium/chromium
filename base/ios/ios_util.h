@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,10 @@ BASE_EXPORT bool IsRunningOnIOS13OrLater();
 // TODO(crbug.com/1129484): Remove once minimum supported version is at least 14
 BASE_EXPORT bool IsRunningOnIOS14OrLater();
 
+// Returns whether the operating system is iOS 15 or later.
+// TODO(crbug.com/1227419): Remove once minimum supported version is at least 15
+BASE_EXPORT bool IsRunningOnIOS15OrLater();
+
 // Returns whether the operating system is at the given version or later.
 BASE_EXPORT bool IsRunningOnOrLater(int32_t major,
                                     int32_t minor,
@@ -45,21 +49,18 @@ BASE_EXPORT void OverridePathOfEmbeddedICU(const char* path);
 // returns invalid FilePath.
 BASE_EXPORT FilePath FilePathOfEmbeddedICU();
 
-// Returns true if multiwindow is supported on this OS version and is enabled in
-// the current build configuration. Does not check if this device can actually
-// show multiple windows (e.g. on iPhone): use [UIApplication
-// supportsMultipleScenes] instead.
-BASE_EXPORT bool IsMultiwindowSupported();
-
-// Returns true if the iOS13 UIScene-based startup flow is supported, regardless
-// of whether multiple windows are permitted. This always returns true if
-// base::ios::IsMultiwindowSupported() returns true.
-BASE_EXPORT bool IsSceneStartupSupported();
-
 // Returns true iff multiple windows can be opened, i.e. when the multiwindow
 // build flag is on, the device is running on iOS 13+ and it's a compatible
 // iPad.
 BASE_EXPORT bool IsMultipleScenesSupported();
+
+// iOS 15 introduced pre-warming, which launches and then pauses the app, to
+// speed up actual launch time.
+BASE_EXPORT bool IsApplicationPreWarmed();
+
+// The iPhone 14 Pro and Pro Max introduced a dynamic island. This should only
+// be called when working around UIKit bugs.
+BASE_EXPORT bool HasDynamicIsland();
 
 }  // namespace ios
 }  // namespace base

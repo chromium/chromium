@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,11 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
-#include "ios/chrome/common/app_group/app_group_constants.h"
-#import "ios/chrome/common/credential_provider/constants.h"
-#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
+#import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
+#import "ios/chrome/credential_provider_extension/metrics_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_view_controller.h"
 
@@ -17,9 +18,9 @@
 #error "This file requires ARC support."
 #endif
 
-@interface ConsentCoordinator () <ConfirmationAlertActionHandler>
+@interface ConsentCoordinator () <PromoStyleViewControllerDelegate>
 
-// Base view controller from where |viewController| is presented.
+// Base view controller from where `viewController` is presented.
 @property(nonatomic, weak) UIViewController* baseViewController;
 
 // The view controller of this coordinator.
@@ -32,46 +33,31 @@
 // The extension context for the credential provider.
 @property(nonatomic, weak) ASCredentialProviderExtensionContext* context;
 
-// Interface for |reauthenticationModule|, handling mostly the case when no
-// hardware for authentication is available.
-@property(nonatomic, weak) ReauthenticationHandler* reauthenticationHandler;
-
-// Indicates if the extension should finish after consent is given.
-@property(nonatomic) BOOL isInitialConfigurationRequest;
-
 @end
 
 @implementation ConsentCoordinator
 
 - (instancetype)
-       initWithBaseViewController:(UIViewController*)baseViewController
-                          context:(ASCredentialProviderExtensionContext*)context
-          reauthenticationHandler:
-              (ReauthenticationHandler*)reauthenticationHandler
-    isInitialConfigurationRequest:(BOOL)isInitialConfigurationRequest {
+    initWithBaseViewController:(UIViewController*)baseViewController
+                       context:(ASCredentialProviderExtensionContext*)context {
   self = [super init];
   if (self) {
     _baseViewController = baseViewController;
     _context = context;
-    _reauthenticationHandler = reauthenticationHandler;
-    _isInitialConfigurationRequest = isInitialConfigurationRequest;
   }
   return self;
 }
 
 - (void)start {
   self.viewController = [[ConsentViewController alloc] init];
-  self.viewController.actionHandler = self;
-  if (@available(iOS 13, *)) {
-    self.viewController.modalInPresentation = YES;
-    self.viewController.modalPresentationStyle =
-        self.isInitialConfigurationRequest ? UIModalPresentationFullScreen
-                                           : UIModalPresentationAutomatic;
-  }
-  BOOL animated = !self.isInitialConfigurationRequest;
+  self.viewController.delegate = self;
+  self.viewController.modalInPresentation = YES;
+  self.viewController.modalPresentationStyle = UIModalPresentationFullScreen;
+
   [self.baseViewController presentViewController:self.viewController
-                                        animated:animated
+                                        animated:NO
                                       completion:nil];
+  UpdateUMACountForKey(app_group::kCredentialExtensionConsentVerifiedCount);
 }
 
 - (void)stop {
@@ -81,39 +67,15 @@
   self.viewController = nil;
 }
 
-#pragma mark - ConfirmationAlertActionHandler
+#pragma mark - PromoStyleViewControllerDelegate
 
-- (void)confirmationAlertDismissAction {
-  NSError* error =
-      [[NSError alloc] initWithDomain:ASExtensionErrorDomain
-                                 code:ASExtensionErrorCodeUserCanceled
-                             userInfo:nil];
-  [self.context cancelRequestWithError:error];
+// Invoked when the primary action button is tapped.
+- (void)didTapPrimaryActionButton {
+  [self.context completeExtensionConfigurationRequest];
 }
 
-- (void)confirmationAlertPrimaryAction {
-  [self.reauthenticationHandler
-      verifyUserWithCompletionHandler:^(ReauthenticationResult result) {
-        if (result != ReauthenticationResult::kFailure) {
-          NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
-          [user_defaults
-              setBool:YES
-               forKey:kUserDefaultsCredentialProviderConsentVerified];
-          if (self.isInitialConfigurationRequest) {
-            [self.context completeExtensionConfigurationRequest];
-          } else {
-            [self.delegate consentCoordinatorDidAcceptConsent:self];
-          }
-        }
-      }
-      presentReminderOnViewController:self.viewController];
-}
-
-- (void)confirmationAlertSecondaryAction {
-  // No-op.
-}
-
-- (void)confirmationAlertLearnMoreAction {
+// Invoked when the learn more button is tapped.
+- (void)didTapLearnMoreButton {
   NSString* message =
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_MORE_INFO_STRING",
                         @"The information provided in the consent popover.");
@@ -122,8 +84,8 @@
   [self.viewController presentViewController:self.learnMoreViewController
                                     animated:YES
                                   completion:nil];
-  self.learnMoreViewController.popoverPresentationController.barButtonItem =
-      self.viewController.helpButton;
+  self.learnMoreViewController.popoverPresentationController.sourceView =
+      self.viewController.learnMoreButton.imageView;
   self.learnMoreViewController.popoverPresentationController
       .permittedArrowDirections = UIPopoverArrowDirectionUp;
 }

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,8 @@
 
 #include "base/threading/thread_restrictions.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/password_manager/core/browser/password_store_impl.h"
+#import "components/password_manager/core/browser/bulk_leak_check_service_interface.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_data_manager_internal.h"
@@ -16,10 +17,12 @@
 #import "ios/web_view/internal/cwv_preferences_internal.h"
 #import "ios/web_view/internal/cwv_user_content_controller_internal.h"
 #import "ios/web_view/internal/cwv_web_view_internal.h"
+#import "ios/web_view/internal/passwords/cwv_leak_check_service_internal.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
+#import "ios/web_view/internal/passwords/web_view_bulk_leak_check_service_factory.h"
 #include "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/cwv_sync_controller_internal.h"
-#import "ios/web_view/internal/sync/web_view_profile_sync_service_factory.h"
+#import "ios/web_view/internal/sync/web_view_sync_service_factory.h"
 #include "ios/web_view/internal/web_view_browser_state.h"
 #include "ios/web_view/internal/web_view_global_state_util.h"
 
@@ -46,6 +49,7 @@ NSHashTable<CWVWebViewConfiguration*>* gNonPersistentConfigurations = nil;
 @implementation CWVWebViewConfiguration
 
 @synthesize autofillDataManager = _autofillDataManager;
+@synthesize leakCheckService = _leakCheckService;
 @synthesize preferences = _preferences;
 @synthesize syncController = _syncController;
 @synthesize userContentController = _userContentController;
@@ -131,7 +135,7 @@ NSHashTable<CWVWebViewConfiguration*>* gNonPersistentConfigurations = nil;
     autofill::PersonalDataManager* personalDataManager =
         ios_web_view::WebViewPersonalDataManagerFactory::GetForBrowserState(
             self.browserState);
-    scoped_refptr<password_manager::PasswordStore> passwordStore =
+    scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
         ios_web_view::WebViewAccountPasswordStoreFactory::GetForBrowserState(
             self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
     _autofillDataManager = [[CWVAutofillDataManager alloc]
@@ -146,7 +150,7 @@ NSHashTable<CWVWebViewConfiguration*>* gNonPersistentConfigurations = nil;
 - (CWVSyncController*)syncController {
   if (!_syncController && self.persistent) {
     syncer::SyncService* syncService =
-        ios_web_view::WebViewProfileSyncServiceFactory::GetForBrowserState(
+        ios_web_view::WebViewSyncServiceFactory::GetForBrowserState(
             self.browserState);
     signin::IdentityManager* identityManager =
         ios_web_view::WebViewIdentityManagerFactory::GetForBrowserState(
@@ -157,6 +161,19 @@ NSHashTable<CWVWebViewConfiguration*>* gNonPersistentConfigurations = nil;
                 prefService:_browserState->GetPrefs()];
   }
   return _syncController;
+}
+
+#pragma mark - LeakCheckService
+
+- (CWVLeakCheckService*)leakCheckService {
+  if (!_leakCheckService && self.persistent) {
+    password_manager::BulkLeakCheckServiceInterface* bulkLeakCheckService =
+        ios_web_view::WebViewBulkLeakCheckServiceFactory::GetForBrowserState(
+            self.browserState);
+    _leakCheckService = [[CWVLeakCheckService alloc]
+        initWithBulkLeakCheckService:bulkLeakCheckService];
+  }
+  return _leakCheckService;
 }
 
 #pragma mark - Public Methods

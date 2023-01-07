@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<body>
+<script>
+test(() => {
+    const kElementGetInnerHTML = 3874; // From web_feature.mojom
+    assert_false(internals.isUseCounted(document, kElementGetInnerHTML));
+    document.body.getInnerHTML({includeShadowRoots: true});
+    assert_true(internals.isUseCounted(document, kElementGetInnerHTML));
+}, 'Use of getInnerHTML is use counted.');
+</script>
+
+

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,10 +18,8 @@ class ChromeBrowserState;
 @interface BubblePresenter : NSObject <HelpCommands>
 
 // Initializes a BubblePresenter whose bubbles are presented on the
-// |rootViewController|.
+// `rootViewController`.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-                            delegate:(id<BubblePresenterDelegate>)delegate
-                  rootViewController:(UIViewController*)rootViewController
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -30,7 +28,11 @@ class ChromeBrowserState;
 @property(nonatomic, strong, readonly)
     BubbleViewControllerPresenter* incognitoTabTipBubblePresenter;
 
+@property(nonatomic, weak) id<BubblePresenterDelegate> delegate;
+@property(nonatomic, weak) UIViewController* rootViewController;
 @property(nonatomic, weak) id<ToolbarCommands> toolbarHandler;
+
+- (void)stop;
 
 // Notifies the presenter that the user entered the tab switcher.
 - (void)userEnteredTabSwitcher;
@@ -40,6 +42,16 @@ class ChromeBrowserState;
 
 // Presents a bubble associated with the Discover feed header's menu button.
 - (void)presentDiscoverFeedHeaderTipBubble;
+
+// Shows a relevant Reading List help bubble, if applicable.
+- (void)presentReadingListBottomToolbarTipBubble;
+
+// Shows a relevant Follow help bubble while browsing a site, if applicable.
+- (void)presentFollowWhileBrowsingTipBubble;
+
+// Shows a help bubble to let the user know that they can change the default
+// mode (Desktop/Mobile) of the websites.
+- (void)presentDefaultSiteViewTipBubble;
 
 @end
 

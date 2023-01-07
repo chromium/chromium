@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
@@ -14,11 +15,17 @@
 #include "components/version_info/channel.h"
 #include "ui/gfx/paint_vector_icon.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#endif
+
 namespace {
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Maps an upgrade level to a severity level. When |show_very_low_upgrade_level|
 // is true, VERY_LOW through HIGH all return Severity::LOW. Otherwise, VERY_LOW
-// is ignored and LOW through HIGH return their respective Severity level.
+// is ignored and LOW through HIGH return their respective Severity level, with
+// GRACE treated the same as HIGH.
 AppMenuIconController::Severity SeverityFromUpgradeLevel(
     bool show_very_low_upgrade_level,
     UpgradeDetector::UpgradeNotificationAnnoyanceLevel level) {
@@ -30,6 +37,7 @@ AppMenuIconController::Severity SeverityFromUpgradeLevel(
       case UpgradeDetector::UPGRADE_ANNOYANCE_VERY_LOW:
       case UpgradeDetector::UPGRADE_ANNOYANCE_LOW:
       case UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED:
+      case UpgradeDetector::UPGRADE_ANNOYANCE_GRACE:
       case UpgradeDetector::UPGRADE_ANNOYANCE_HIGH:
         return AppMenuIconController::Severity::LOW;
       case UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL:
@@ -46,6 +54,7 @@ AppMenuIconController::Severity SeverityFromUpgradeLevel(
         return AppMenuIconController::Severity::LOW;
       case UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED:
         return AppMenuIconController::Severity::MEDIUM;
+      case UpgradeDetector::UPGRADE_ANNOYANCE_GRACE:
       case UpgradeDetector::UPGRADE_ANNOYANCE_HIGH:
       case UpgradeDetector::UPGRADE_ANNOYANCE_CRITICAL:
         return AppMenuIconController::Severity::HIGH;
@@ -55,6 +64,7 @@ AppMenuIconController::Severity SeverityFromUpgradeLevel(
 
   return AppMenuIconController::Severity::NONE;
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Return true if the browser is updating on the dev or canary channels.
 bool IsUnstableChannel() {
@@ -99,6 +109,13 @@ void AppMenuIconController::UpdateDelegate() {
 
 AppMenuIconController::TypeAndSeverity
 AppMenuIconController::GetTypeAndSeverity() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // In ash-chrome, the upgrade icon styling is used for upgrading the browser
+  // from ash-chrome to lacros-chrome.
+  // It can be done if Profile can be migrated into Lacros.
+  if (crosapi::browser_util::IsProfileMigrationAvailable())
+    return {IconType::UPGRADE_NOTIFICATION, Severity::LOW};
+#else
   if (browser_defaults::kShowUpgradeMenuItem &&
       upgrade_detector_->notify_upgrade()) {
     UpgradeDetector::UpgradeNotificationAnnoyanceLevel level =
@@ -117,12 +134,12 @@ AppMenuIconController::GetTypeAndSeverity() const {
     // and the bubble icon.
     return {IconType::GLOBAL_ERROR, Severity::MEDIUM};
   }
-
+#endif
   return {IconType::NONE, Severity::NONE};
 }
 
 SkColor AppMenuIconController::GetIconColor(
-    const base::Optional<SkColor>& severity_none_color) const {
+    const absl::optional<SkColor>& severity_none_color) const {
   const Severity severity = GetTypeAndSeverity().severity;
   return ((severity == AppMenuIconController::Severity::NONE) &&
           severity_none_color.has_value())

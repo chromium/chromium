@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -31,23 +31,23 @@ void BrowserControls::ScrollBegin() {
   ResetBaseline();
 }
 
-FloatSize BrowserControls::ScrollBy(FloatSize pending_delta) {
+ScrollOffset BrowserControls::ScrollBy(ScrollOffset pending_delta) {
   // If one or both of the top/bottom controls are showing, the shown ratio
   // needs to be computed.
   if (!TopHeight() && !BottomHeight())
     return pending_delta;
 
   if ((permitted_state_ == cc::BrowserControlsState::kShown &&
-       pending_delta.Height() > 0) ||
+       pending_delta.y() > 0) ||
       (permitted_state_ == cc::BrowserControlsState::kHidden &&
-       pending_delta.Height() < 0))
+       pending_delta.y() < 0))
     return pending_delta;
 
   float page_scale = page_->GetVisualViewport().Scale();
 
   // Update accumulated vertical scroll and apply it to browser controls
   // Compute scroll delta in viewport space by applying page scale
-  accumulated_scroll_delta_ += pending_delta.Height() * page_scale;
+  accumulated_scroll_delta_ += pending_delta.y() * page_scale;
 
   // We want to base our calculations on top or bottom controls. After consuming
   // the scroll delta, we will calculate a shown ratio for the controls. The
@@ -64,7 +64,7 @@ FloatSize BrowserControls::ScrollBy(FloatSize pending_delta) {
   float height = base_on_top_controls ? TopHeight() : BottomHeight();
   // Clamp and use the expected content offset so that we don't return
   // spurious remaining scrolls due to the imprecision of the shownRatio.
-  new_content_offset = clampTo(
+  new_content_offset = ClampTo(
       new_content_offset,
       base_on_top_controls ? TopMinHeight() : BottomMinHeight(), height);
 
@@ -74,7 +74,7 @@ FloatSize BrowserControls::ScrollBy(FloatSize pending_delta) {
   float min_ratio =
       base_on_top_controls ? TopMinShownRatio() : BottomMinShownRatio();
   float normalized_shown_ratio =
-      (clampTo(shown_ratio, min_ratio, 1.f) - min_ratio) / (1.f - min_ratio);
+      (ClampTo(shown_ratio, min_ratio, 1.f) - min_ratio) / (1.f - min_ratio);
   // Even though the real shown ratios (shown height / total height) of the top
   // and bottom controls can be different, they share the same
   // relative/normalized ratio to keep them in sync.
@@ -89,7 +89,7 @@ FloatSize BrowserControls::ScrollBy(FloatSize pending_delta) {
 
   // We negate the difference because scrolling down (positive delta) causes
   // browser controls to hide (negative offset difference).
-  FloatSize applied_delta(
+  ScrollOffset applied_delta(
       0, base_on_top_controls
              ? (old_top_offset - new_content_offset) / page_scale
              : 0);

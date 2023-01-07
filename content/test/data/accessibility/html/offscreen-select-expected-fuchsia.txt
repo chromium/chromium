@@ -1,0 +1,14 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN focusable actions='{DEFAULT}' value='Onscreen 1'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN focusable selected label='Onscreen 1' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Onscreen 2' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Onscreen 3' actions='{DEFAULT}'
+++++++UNKNOWN hidden
+++++++UNKNOWN focusable actions='{DEFAULT}' value='Offscreen 1'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN focusable selected label='Offscreen 1' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Offscreen 2' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Offscreen 3' actions='{DEFAULT}'

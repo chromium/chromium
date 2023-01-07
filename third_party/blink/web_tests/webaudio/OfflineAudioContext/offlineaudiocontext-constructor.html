@@ -33,13 +33,13 @@
                 .notThrow();
             should(context.length, 'context1.length').beEqualTo(512);
             should(
-                () => context = new OfflineAudioContext(2, 1024, 384000),
-                'context2 = new OfflineAudioContext(2, 1024, 384000)')
+                () => context = new OfflineAudioContext(2, 1024, 768000),
+                'context2 = new OfflineAudioContext(2, 1024, 768000)')
                 .notThrow();
             should(context.length, 'context2.length').beEqualTo(1024);
             should(
-                () => context = new OfflineAudioContext(2, 1024, 384001),
-                'context3 = new OfflineAudioContext(2, 1024, 384001)')
+                () => context = new OfflineAudioContext(2, 1024, 768001),
+                'context3 = new OfflineAudioContext(2, 1024, 768001)')
                 .throw();
             should(
                 () => context = new OfflineAudioContext(2, 2048, 8000),

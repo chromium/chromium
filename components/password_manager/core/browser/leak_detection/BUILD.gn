@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -16,15 +16,12 @@ source_set("leak_detection_interface_headers") {
   ]
   deps = [
     "//base",
-    "//base/util/type_safety",
     "//url",
   ]
 }
 
 source_set("leak_detection") {
   sources = [
-    "authenticated_leak_check.cc",
-    "authenticated_leak_check.h",
     "bulk_leak_check.h",
     "bulk_leak_check_impl.cc",
     "bulk_leak_check_impl.h",
@@ -34,6 +31,8 @@ source_set("leak_detection") {
     "leak_detection_check_factory.h",
     "leak_detection_check_factory_impl.cc",
     "leak_detection_check_factory_impl.h",
+    "leak_detection_check_impl.cc",
+    "leak_detection_check_impl.h",
     "leak_detection_request.cc",
     "leak_detection_request.h",
     "leak_detection_request_factory.cc",
@@ -52,8 +51,9 @@ source_set("leak_detection") {
   deps = [
     ":proto",
     "//base",
-    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager",
+    "//components/version_info:channel",
     "//third_party/private-join-and-compute/src:ec_commutative_cipher",
     "//url",
   ]
@@ -80,10 +80,10 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "authenticated_leak_check_unittest.cc",
     "bulk_leak_check_impl_unittest.cc",
     "encryption_utils_unittest.cc",
     "leak_detection_check_factory_impl_unittest.cc",
+    "leak_detection_check_impl_unittest.cc",
     "leak_detection_request_unittest.cc",
     "leak_detection_request_utils_unittest.cc",
   ]
@@ -93,8 +93,9 @@ source_set("unit_tests") {
     ":proto",
     ":test_support",
     "//base/test:test_support",
-    "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/signin/public/identity_manager:test_support",
+    "//components/version_info:channel",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

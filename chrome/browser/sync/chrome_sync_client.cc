@@ -1,20 +1,19 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/sync/chrome_sync_client.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/path_service.h"
 #include "base/syslog_logging.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -34,7 +33,6 @@
 #include "chrome/browser/sync/bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
@@ -43,9 +41,6 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
-#include "chrome/browser/undo/bookmark_undo_service_factory.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
@@ -59,33 +54,34 @@
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
-#include "components/browser_sync/profile_sync_components_factory_impl.h"
+#include "components/browser_sync/sync_api_component_factory_impl.h"
 #include "components/consent_auditor/consent_auditor.h"
+#include "components/desks_storage/core/desk_sync_service.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/metrics/demographics/user_demographics.h"
-#include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
+#include "components/sync/base/features.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/report_unrecoverable_error.h"
-#include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync/driver/model_type_controller.h"
 #include "components/sync/driver/sync_api_component_factory.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/syncable_service_based_model_type_controller.h"
 #include "components/sync/model/forwarding_model_type_controller_delegate.h"
+#include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_store_service.h"
-#include "components/sync/trusted_vault/standalone_trusted_vault_client.h"
 #include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -101,6 +97,9 @@
 #include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/sync/glue/extension_model_type_controller.h"
 #include "chrome/browser/sync/glue/extension_setting_model_type_controller.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -118,33 +117,37 @@
 #include "components/spellcheck/browser/pref_names.h"
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/sync/trusted_vault_client_android.h"
-#endif  // defined(OS_ANDROID)
+#else
+#include "components/sync/trusted_vault/standalone_trusted_vault_client.h"  // nogncheck
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/chromeos/printing/printers_sync_bridge.h"
-#include "chrome/browser/chromeos/printing/synced_printers_manager.h"
-#include "chrome/browser/chromeos/printing/synced_printers_manager_factory.h"
-#include "chrome/browser/chromeos/sync/app_settings_model_type_controller.h"
-#include "chrome/browser/chromeos/sync/apps_model_type_controller.h"
-#include "chrome/browser/chromeos/sync/os_sync_model_type_controller.h"
-#include "chrome/browser/chromeos/sync/os_syncable_service_model_type_controller.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/printing/oauth2/authorization_zones_manager.h"
+#include "chrome/browser/ash/printing/oauth2/authorization_zones_manager_factory.h"
+#include "chrome/browser/ash/printing/printers_sync_bridge.h"
+#include "chrome/browser/ash/printing/synced_printers_manager.h"
+#include "chrome/browser/ash/printing/synced_printers_manager_factory.h"
+#include "chrome/browser/ash/sync/app_settings_model_type_controller.h"
+#include "chrome/browser/ash/sync/apps_model_type_controller.h"
+#include "chrome/browser/ash/sync/os_syncable_service_model_type_controller.h"
+#include "chrome/browser/sync/desk_sync_service_factory.h"
 #include "chrome/browser/sync/wifi_configuration_sync_service_factory.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_package_sync_model_type_controller.h"
 #include "chrome/browser/ui/app_list/arc/arc_package_syncable_service.h"
-#include "chromeos/components/sync_wifi/wifi_configuration_sync_service.h"
-#include "components/arc/arc_util.h"
+#include "chromeos/ash/components/sync_wifi/wifi_configuration_sync_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using content::BrowserThread;
-using syncer::ForwardingModelTypeControllerDelegate;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 using browser_sync::ExtensionModelTypeController;
@@ -154,29 +157,15 @@ namespace browser_sync {
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const base::FilePath::CharType kTrustedVaultFilename[] =
     FILE_PATH_LITERAL("Trusted Vault");
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kLoopbackServerBackendFilename[] =
     FILE_PATH_LITERAL("profile.pb");
-#endif  // defined(OS_WIN)
-
-syncer::ModelTypeSet GetDisabledTypesFromCommandLine() {
-  std::string disabled_types_str =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kDisableSyncTypes);
-
-  syncer::ModelTypeSet disabled_types =
-      syncer::ModelTypeSetFromString(disabled_types_str);
-  if (disabled_types.Has(syncer::DEVICE_INFO)) {
-    DLOG(WARNING) << "DEVICE_INFO cannot be disabled via a command-line switch";
-    disabled_types.Remove(syncer::DEVICE_INFO);
-  }
-  return disabled_types;
-}
+#endif  // BUILDFLAG(IS_WIN)
 
 base::WeakPtr<syncer::SyncableService> GetWeakPtrOrNull(
     syncer::SyncableService* service) {
@@ -188,9 +177,50 @@ base::RepeatingClosure GetDumpStackClosure() {
                              chrome::GetChannel());
 }
 
+bool ShouldSyncBrowserTypes() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return crosapi::browser_util::IsAshBrowserSyncEnabled();
+#else
+  return true;
+#endif
+}
+
+syncer::ModelTypeSet GetDisabledCommonDataTypes() {
+  if (!ShouldSyncBrowserTypes()) {
+    // If browser-sync is disabled (on ChromeOS Ash), most "common" data types
+    // are disabled. These types will be synced in Lacros instead.
+    return base::Difference(syncer::UserTypes(),
+                            {syncer::DEVICE_INFO, syncer::USER_CONSENTS});
+  }
+
+  // Common case: No disabled types.
+  return {};
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Denotes whether app sync may occur on profiles other than the main profile.
+// This may be modified by ChromeSyncClient::SkipMainProfileCheckForTesting().
+bool g_skip_main_profile_check_for_testing = false;
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// App sync is enabled by default, with the exception of Lacros secondary
+// profiles.
+bool IsAppSyncEnabled(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!profile->IsMainProfile() && !g_skip_main_profile_check_for_testing) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  return true;
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 }  // namespace
 
-ChromeSyncClient::ChromeSyncClient(Profile* profile) : profile_(profile) {
+ChromeSyncClient::ChromeSyncClient(Profile* profile)
+    : profile_(profile), extensions_activity_monitor_(profile) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   profile_web_data_service_ =
@@ -216,29 +246,31 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile) : profile_(profile) {
   account_password_store_ = AccountPasswordStoreFactory::GetForProfile(
       profile_, ServiceAccessType::IMPLICIT_ACCESS);
 
-  component_factory_ = std::make_unique<ProfileSyncComponentsFactoryImpl>(
-      this, chrome::GetChannel(), prefs::kSavingBrowserHistoryDisabled,
-      content::GetUIThreadTaskRunner({}), web_data_service_thread_,
-      profile_web_data_service_, account_web_data_service_,
-      profile_password_store_, account_password_store_,
+  component_factory_ = std::make_unique<SyncApiComponentFactoryImpl>(
+      this, chrome::GetChannel(), content::GetUIThreadTaskRunner({}),
+      web_data_service_thread_, profile_web_data_service_,
+      account_web_data_service_, profile_password_store_,
+      account_password_store_,
       BookmarkSyncServiceFactory::GetForProfile(profile_));
 
-#if defined(OS_ANDROID)
-  trusted_vault_client_ = std::make_unique<TrustedVaultClientAndroid>();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+
+#if BUILDFLAG(IS_ANDROID)
+  trusted_vault_client_ = std::make_unique<TrustedVaultClientAndroid>(
+      /*gaia_account_info_by_gaia_id_cb=*/base::BindRepeating(
+          [](signin::IdentityManager* identity_manager,
+             const std::string& gaia_id) -> CoreAccountInfo {
+            return identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
+          },
+          identity_manager));
 #else
-  // TODO(crbug.com/1113597): consider destroying/notifying
-  // |trusted_vault_client_| upon IdentityManager shutdown, to avoid its usages
-  // afterwards. This can be done by tranferring |trusted_vault_client_|
-  // ownership to ProfileSyncService and acting on
-  // ProfileSyncService::Shutdown() or by handling
-  // IdentityManagerFactory::Observer::IdentityManagerShutdown().
   trusted_vault_client_ =
       std::make_unique<syncer::StandaloneTrustedVaultClient>(
-          profile_->GetPath().Append(kTrustedVaultFilename),
-          IdentityManagerFactory::GetForProfile(profile_),
-          content::BrowserContext::GetDefaultStoragePartition(profile_)
+          profile_->GetPath().Append(kTrustedVaultFilename), identity_manager,
+          profile_->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ChromeSyncClient::~ChromeSyncClient() = default;
@@ -257,7 +289,7 @@ base::FilePath ChromeSyncClient::GetLocalSyncBackendFolder() {
   base::FilePath local_sync_backend_folder =
       GetPrefService()->GetFilePath(syncer::prefs::kLocalSyncBackendDir);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (local_sync_backend_folder.empty()) {
     if (!base::PathService::Get(chrome::DIR_ROAMING_USER_DATA,
                                 &local_sync_backend_folder)) {
@@ -274,10 +306,10 @@ base::FilePath ChromeSyncClient::GetLocalSyncBackendFolder() {
   // should be considered roamed. For now the code assumes all profiles are
   // created in the same order on all machines.
   local_sync_backend_folder =
-      local_sync_backend_folder.Append(profile_->GetPath().BaseName());
+      local_sync_backend_folder.Append(profile_->GetBaseName());
   local_sync_backend_folder =
       local_sync_backend_folder.Append(kLoopbackServerBackendFilename);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   return local_sync_backend_folder;
 }
@@ -289,11 +321,6 @@ syncer::ModelTypeStoreService* ChromeSyncClient::GetModelTypeStoreService() {
 
 syncer::DeviceInfoSyncService* ChromeSyncClient::GetDeviceInfoSyncService() {
   return DeviceInfoSyncServiceFactory::GetForProfile(profile_);
-}
-
-bookmarks::BookmarkModel* ChromeSyncClient::GetBookmarkModel() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return BookmarkModelFactory::GetForBrowserContext(profile_);
 }
 
 favicon::FaviconService* ChromeSyncClient::GetFaviconService() {
@@ -324,27 +351,19 @@ sync_sessions::SessionSyncService* ChromeSyncClient::GetSessionSyncService() {
   return SessionSyncServiceFactory::GetForProfile(profile_);
 }
 
-base::RepeatingClosure ChromeSyncClient::GetPasswordStateChangedCallback() {
-  return base::BindRepeating(
-      &PasswordStoreFactory::OnPasswordsSyncedStatePotentiallyChanged,
-      base::Unretained(profile_));
-}
-
 syncer::DataTypeController::TypeVector
 ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
-  syncer::ModelTypeSet disabled_types = GetDisabledTypesFromCommandLine();
-
   syncer::DataTypeController::TypeVector controllers =
-      component_factory_->CreateCommonDataTypeControllers(disabled_types,
-                                                          sync_service);
+      component_factory_->CreateCommonDataTypeControllers(
+          GetDisabledCommonDataTypes(), sync_service);
 
   const base::RepeatingClosure dump_stack = GetDumpStackClosure();
 
   syncer::RepeatingModelTypeStoreFactory model_type_store_factory =
       GetModelTypeStoreService()->GetStoreFactory();
 
-  if (!disabled_types.Has(syncer::SECURITY_EVENTS)) {
-    syncer::ModelTypeControllerDelegate* delegate =
+  if (ShouldSyncBrowserTypes()) {
+    syncer::ModelTypeControllerDelegate* security_events_delegate =
         SecurityEventRecorderFactory::GetForProfile(profile_)
             ->GetControllerDelegate()
             .get();
@@ -354,130 +373,98 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
         syncer::SECURITY_EVENTS,
         /*delegate_for_full_sync_mode=*/
         std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-            delegate),
+            security_events_delegate),
         /*delegate_for_transport_mode=*/
         std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-            delegate)));
-  }
+            security_events_delegate)));
 
-  if (!disabled_types.Has(syncer::SHARING_MESSAGE)) {
     // Forward both full-sync and transport-only modes to the same delegate,
     // since behavior for SHARING_MESSAGE does not differ. They both do not
     // store data on persistent storage.
-    syncer::ModelTypeControllerDelegate* delegate =
+    syncer::ModelTypeControllerDelegate* sharing_message_delegate =
         GetControllerDelegateForModelType(syncer::SHARING_MESSAGE).get();
     controllers.push_back(std::make_unique<SharingMessageModelTypeController>(
         sync_service,
         /*delegate_for_full_sync_mode=*/
         std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-            delegate),
+            sharing_message_delegate),
         /*delegate_for_transport_mode=*/
         std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
-            delegate)));
-  }
+            sharing_message_delegate)));
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-  controllers.push_back(std::make_unique<SupervisedUserSyncModelTypeController>(
-      syncer::SUPERVISED_USER_SETTINGS, profile_, dump_stack,
-      model_type_store_factory,
-      GetSyncableServiceForType(syncer::SUPERVISED_USER_SETTINGS)));
+    controllers.push_back(
+        std::make_unique<SupervisedUserSyncModelTypeController>(
+            syncer::SUPERVISED_USER_SETTINGS, profile_, dump_stack,
+            model_type_store_factory,
+            GetSyncableServiceForType(syncer::SUPERVISED_USER_SETTINGS)));
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  // App sync is enabled by default.  Register unless explicitly
-  // disabled.
-  if (!disabled_types.Has(syncer::APPS)) {
-    controllers.push_back(CreateAppsModelTypeController(sync_service));
-  }
-
-  // Extension sync is enabled by default.  Register unless explicitly
-  // disabled.
-  if (!disabled_types.Has(syncer::EXTENSIONS)) {
+    // Extension sync is enabled by default.
     controllers.push_back(std::make_unique<ExtensionModelTypeController>(
         syncer::EXTENSIONS, model_type_store_factory,
         GetSyncableServiceForType(syncer::EXTENSIONS), dump_stack, profile_));
-  }
 
-  // Extension setting sync is enabled by default.  Register unless explicitly
-  // disabled.
-  if (!disabled_types.Has(syncer::EXTENSION_SETTINGS)) {
+    // Extension setting sync is enabled by default.
     controllers.push_back(std::make_unique<ExtensionSettingModelTypeController>(
         syncer::EXTENSION_SETTINGS, model_type_store_factory,
         extensions::settings_sync_util::GetSyncableServiceProvider(
             profile_, syncer::EXTENSION_SETTINGS),
         dump_stack, profile_));
-  }
 
-  // App setting sync is enabled by default.  Register unless explicitly
-  // disabled.
-  if (!disabled_types.Has(syncer::APP_SETTINGS)) {
-    controllers.push_back(CreateAppSettingsModelTypeController(sync_service));
-  }
+    if (IsAppSyncEnabled(profile_)) {
+      controllers.push_back(CreateAppsModelTypeController());
 
-  // Web Apps sync is disabled by default.
-  if (base::FeatureList::IsEnabled(features::kDesktopPWAsWithoutExtensions) &&
-      web_app::WebAppProvider::Get(profile_)) {
-    if (!disabled_types.Has(syncer::WEB_APPS)) {
-      controllers.push_back(CreateWebAppsModelTypeController(sync_service));
+      controllers.push_back(CreateAppSettingsModelTypeController(sync_service));
+
+      if (web_app::AreWebAppsEnabled(profile_) &&
+          web_app::WebAppProvider::GetForWebApps(profile_)) {
+        controllers.push_back(CreateWebAppsModelTypeController());
+      }
     }
-  }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !defined(OS_ANDROID)
-  // Theme sync is enabled by default.  Register unless explicitly disabled.
-  if (!disabled_types.Has(syncer::THEMES)) {
+#if !BUILDFLAG(IS_ANDROID)
+    // Theme sync is enabled by default.
     controllers.push_back(std::make_unique<ExtensionModelTypeController>(
         syncer::THEMES, model_type_store_factory,
         GetSyncableServiceForType(syncer::THEMES), dump_stack, profile_));
-  }
 
-  // Search Engine sync is enabled by default.  Register unless explicitly
-  // disabled. The service can be null in tests.
-  if (!disabled_types.Has(syncer::SEARCH_ENGINES)) {
+    // Search Engine sync is enabled by default.
     controllers.push_back(
         std::make_unique<syncer::SyncableServiceBasedModelTypeController>(
             syncer::SEARCH_ENGINES, model_type_store_factory,
             GetSyncableServiceForType(syncer::SEARCH_ENGINES), dump_stack));
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Chrome prefers OS provided spell checkers where they exist. So only sync the
+// custom dictionary on platforms that typically don't provide one.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+    // Dictionary sync is enabled by default.
+    if (GetPrefService()->GetBoolean(spellcheck::prefs::kSpellCheckEnable)) {
+      controllers.push_back(
+          std::make_unique<syncer::SyncableServiceBasedModelTypeController>(
+              syncer::DICTIONARY, model_type_store_factory,
+              GetSyncableServiceForType(syncer::DICTIONARY), dump_stack));
+    }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   }
-#endif  // !defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Some profile types (e.g. sign-in screen) don't support app list.
   // Temporarily Disable AppListSyncableService for tablet form factor devices.
   // See crbug/1013732 for details.
   if (app_list::AppListSyncableServiceFactory::GetForProfile(profile_) &&
-      !chromeos::switches::IsTabletFormFactor()) {
-    if (chromeos::features::IsSplitSettingsSyncEnabled()) {
-      // Runs in sync transport-mode and full-sync mode.
-      controllers.push_back(
-          std::make_unique<OsSyncableServiceModelTypeController>(
-              syncer::APP_LIST, model_type_store_factory,
-              GetSyncableServiceForType(syncer::APP_LIST), dump_stack,
-              profile_->GetPrefs(), sync_service));
-    } else {
-      // Only runs in full-sync mode.
-      controllers.push_back(
-          std::make_unique<syncer::SyncableServiceBasedModelTypeController>(
-              syncer::APP_LIST, model_type_store_factory,
-              GetSyncableServiceForType(syncer::APP_LIST), dump_stack));
-    }
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Chrome prefers OS provided spell checkers where they exist. So only sync the
-// custom dictionary on platforms that typically don't provide one.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
-  // Dictionary sync is enabled by default.
-  if (!disabled_types.Has(syncer::DICTIONARY) &&
-      GetPrefService()->GetBoolean(spellcheck::prefs::kSpellCheckEnable)) {
+      !ash::switches::IsTabletFormFactor()) {
+    // Runs in sync transport-mode and full-sync mode.
     controllers.push_back(
-        std::make_unique<syncer::SyncableServiceBasedModelTypeController>(
-            syncer::DICTIONARY, model_type_store_factory,
-            GetSyncableServiceForType(syncer::DICTIONARY), dump_stack));
+        std::make_unique<OsSyncableServiceModelTypeController>(
+            syncer::APP_LIST, model_type_store_factory,
+            GetSyncableServiceForType(syncer::APP_LIST), dump_stack,
+            profile_->GetPrefs(), sync_service));
   }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (arc::IsArcAllowedForProfile(profile_) &&
       !arc::IsArcAppSyncFlowDisabled()) {
     controllers.push_back(std::make_unique<ArcPackageSyncModelTypeController>(
@@ -485,66 +472,51 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
         GetSyncableServiceForType(syncer::ARC_PACKAGE), dump_stack,
         sync_service, profile_));
   }
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
-    if (!disabled_types.Has(syncer::OS_PREFERENCES)) {
-      controllers.push_back(
-          std::make_unique<OsSyncableServiceModelTypeController>(
-              syncer::OS_PREFERENCES, model_type_store_factory,
-              GetSyncableServiceForType(syncer::OS_PREFERENCES), dump_stack,
-              profile_->GetPrefs(), sync_service));
-    }
-    if (!disabled_types.Has(syncer::OS_PRIORITY_PREFERENCES)) {
-      controllers.push_back(
-          std::make_unique<OsSyncableServiceModelTypeController>(
-              syncer::OS_PRIORITY_PREFERENCES, model_type_store_factory,
-              GetSyncableServiceForType(syncer::OS_PRIORITY_PREFERENCES),
-              dump_stack, profile_->GetPrefs(), sync_service));
-    }
-    if (!disabled_types.Has(syncer::PRINTERS)) {
-      // Use the same delegate in full-sync and transport-only modes.
-      syncer::ModelTypeControllerDelegate* delegate =
-          GetControllerDelegateForModelType(syncer::PRINTERS).get();
-      controllers.push_back(std::make_unique<OsSyncModelTypeController>(
-          syncer::PRINTERS,
-          /*delegate_for_full_sync_mode=*/
-          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
-          /*delegate_for_transport_mode=*/
-          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
-          profile_->GetPrefs(), sync_service));
-    }
-    if (!disabled_types.Has(syncer::WIFI_CONFIGURATIONS) &&
-        base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations) &&
-        WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
-      // Use the same delegate in full-sync and transport-only modes.
-      syncer::ModelTypeControllerDelegate* delegate =
-          GetControllerDelegateForModelType(syncer::WIFI_CONFIGURATIONS).get();
-      controllers.push_back(std::make_unique<OsSyncModelTypeController>(
-          syncer::WIFI_CONFIGURATIONS,
-          /*delegate_for_full_sync_mode=*/
-          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
-          /*delegate_for_transport_mode=*/
-          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
-          profile_->GetPrefs(), sync_service));
-    }
-  } else {
-    // SplitSettingsSync is disabled.
-    if (!disabled_types.Has(syncer::WIFI_CONFIGURATIONS) &&
-        base::FeatureList::IsEnabled(switches::kSyncWifiConfigurations) &&
-        WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
-      syncer::ModelTypeControllerDelegate* delegate =
-          GetControllerDelegateForModelType(syncer::WIFI_CONFIGURATIONS).get();
-      controllers.push_back(std::make_unique<syncer::ModelTypeController>(
-          syncer::WIFI_CONFIGURATIONS,
-          std::make_unique<ForwardingModelTypeControllerDelegate>(delegate)));
-    }
+  controllers.push_back(std::make_unique<OsSyncableServiceModelTypeController>(
+      syncer::OS_PREFERENCES, model_type_store_factory,
+      GetSyncableServiceForType(syncer::OS_PREFERENCES), dump_stack,
+      profile_->GetPrefs(), sync_service));
+  controllers.push_back(std::make_unique<OsSyncableServiceModelTypeController>(
+      syncer::OS_PRIORITY_PREFERENCES, model_type_store_factory,
+      GetSyncableServiceForType(syncer::OS_PRIORITY_PREFERENCES), dump_stack,
+      profile_->GetPrefs(), sync_service));
+
+  syncer::ModelTypeControllerDelegate* printers_delegate =
+      GetControllerDelegateForModelType(syncer::PRINTERS).get();
+  controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+      syncer::PRINTERS,
+      std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+          printers_delegate)));
+
+  if (WifiConfigurationSyncServiceFactory::ShouldRunInProfile(profile_)) {
+    syncer::ModelTypeControllerDelegate* wifi_configurations_delegate =
+        GetControllerDelegateForModelType(syncer::WIFI_CONFIGURATIONS).get();
+    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+        syncer::WIFI_CONFIGURATIONS,
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+            wifi_configurations_delegate)));
+  }
+  syncer::ModelTypeControllerDelegate* workspace_desk_delegate =
+      GetControllerDelegateForModelType(syncer::WORKSPACE_DESK).get();
+  controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+      syncer::WORKSPACE_DESK,
+      std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+          workspace_desk_delegate)));
+
+  if (chromeos::features::IsOAuthIppEnabled()) {
+    syncer::ModelTypeControllerDelegate*
+        printers_authorization_servers_delegate =
+            GetControllerDelegateForModelType(
+                syncer::PRINTERS_AUTHORIZATION_SERVERS)
+                .get();
+    controllers.push_back(std::make_unique<syncer::ModelTypeController>(
+        syncer::PRINTERS_AUTHORIZATION_SERVERS,
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+            printers_authorization_servers_delegate)));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return controllers;
-}
-
-BookmarkUndoService* ChromeSyncClient::GetBookmarkUndoService() {
-  return BookmarkUndoServiceFactory::GetForProfile(profile_);
 }
 
 syncer::TrustedVaultClient* ChromeSyncClient::GetTrustedVaultClient() {
@@ -555,8 +527,9 @@ invalidation::InvalidationService* ChromeSyncClient::GetInvalidationService() {
   invalidation::ProfileInvalidationProvider* provider =
       invalidation::ProfileInvalidationProviderFactory::GetForProfile(profile_);
 
-  if (provider)
+  if (provider) {
     return provider->GetInvalidationService();
+  }
   return nullptr;
 }
 
@@ -586,11 +559,12 @@ ChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
       return GetWeakPtrOrNull(
           app_list::AppListSyncableServiceFactory::GetForProfile(profile_));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     case syncer::THEMES:
-      return ThemeServiceFactory::GetForProfile(profile_)->
-          GetThemeSyncableService()->AsWeakPtr();
-#endif  // !defined(OS_ANDROID)
+      return ThemeServiceFactory::GetForProfile(profile_)
+          ->GetThemeSyncableService()
+          ->AsWeakPtr();
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_SPELLCHECK)
     case syncer::DICTIONARY: {
       SpellcheckService* spellcheck_service =
@@ -633,14 +607,22 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     case syncer::PRINTERS:
-      return chromeos::SyncedPrintersManagerFactory::GetForBrowserContext(
-                 profile_)
+      return ash::SyncedPrintersManagerFactory::GetForBrowserContext(profile_)
           ->GetSyncBridge()
           ->change_processor()
           ->GetControllerDelegate();
+    case syncer::PRINTERS_AUTHORIZATION_SERVERS:
+      return ash::printing::oauth2::AuthorizationZonesManagerFactory::
+          GetForBrowserContext(profile_)
+              ->GetModelTypeSyncBridge()
+              ->change_processor()
+              ->GetControllerDelegate();
     case syncer::WIFI_CONFIGURATIONS:
       return WifiConfigurationSyncServiceFactory::GetForProfile(profile_,
                                                                 /*create=*/true)
+          ->GetControllerDelegate();
+    case syncer::WORKSPACE_DESK:
+      return DeskSyncServiceFactory::GetForProfile(profile_)
           ->GetControllerDelegate();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case syncer::SHARING_MESSAGE:
@@ -654,16 +636,16 @@ ChromeSyncClient::GetControllerDelegateForModelType(syncer::ModelType type) {
           ->GetControllerDelegate();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     case syncer::WEB_APPS: {
-      DCHECK(base::FeatureList::IsEnabled(
-          features::kDesktopPWAsWithoutExtensions));
-      auto* provider = web_app::WebAppProvider::Get(profile_);
+      auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+
+      // CreateWebAppsModelTypeController(), and therefore this code, should
+      // never be called when GetForWebApps() returns nullptr.
       DCHECK(provider);
+      DCHECK(web_app::AreWebAppsEnabled(profile_));
 
-      web_app::WebAppSyncBridge* sync_bridge =
-          provider->registry_controller().AsWebAppSyncBridge();
-      DCHECK(sync_bridge);
-
-      return sync_bridge->change_processor()->GetControllerDelegate();
+      return provider->sync_bridge()
+          .change_processor()
+          ->GetControllerDelegate();
     }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     // We don't exercise this function for certain datatypes, because their
@@ -704,65 +686,69 @@ void ChromeSyncClient::OnLocalSyncTransportDataCleared() {
   metrics::ClearDemographicsPrefs(profile_->GetPrefs());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// static
+void ChromeSyncClient::SkipMainProfileCheckForTesting() {
+  g_skip_main_profile_check_for_testing = true;
+}
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 std::unique_ptr<syncer::ModelTypeController>
-ChromeSyncClient::CreateAppsModelTypeController(
-    syncer::SyncService* sync_service) {
+ChromeSyncClient::CreateAppsModelTypeController() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
-    return AppsModelTypeController::Create(
-        GetModelTypeStoreService()->GetStoreFactory(),
-        GetSyncableServiceForType(syncer::APPS), GetDumpStackClosure(),
-        sync_service, profile_);
-  }
-  // Fall through.
-#endif
+  return AppsModelTypeController::Create(
+      GetModelTypeStoreService()->GetStoreFactory(),
+      GetSyncableServiceForType(syncer::APPS), GetDumpStackClosure(), profile_);
+#else
   return std::make_unique<ExtensionModelTypeController>(
       syncer::APPS, GetModelTypeStoreService()->GetStoreFactory(),
       GetSyncableServiceForType(syncer::APPS), GetDumpStackClosure(), profile_);
+#endif
 }
 
 std::unique_ptr<syncer::ModelTypeController>
 ChromeSyncClient::CreateAppSettingsModelTypeController(
     syncer::SyncService* sync_service) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
-    return std::make_unique<AppSettingsModelTypeController>(
-        GetModelTypeStoreService()->GetStoreFactory(),
-        extensions::settings_sync_util::GetSyncableServiceProvider(
-            profile_, syncer::APP_SETTINGS),
-        GetDumpStackClosure(), profile_, sync_service);
-  }
-  // Fall through.
-#endif
+  return std::make_unique<AppSettingsModelTypeController>(
+      GetModelTypeStoreService()->GetStoreFactory(),
+      extensions::settings_sync_util::GetSyncableServiceProvider(
+          profile_, syncer::APP_SETTINGS),
+      GetDumpStackClosure(), profile_, sync_service);
+#else
   return std::make_unique<ExtensionSettingModelTypeController>(
       syncer::APP_SETTINGS, GetModelTypeStoreService()->GetStoreFactory(),
       extensions::settings_sync_util::GetSyncableServiceProvider(
           profile_, syncer::APP_SETTINGS),
       GetDumpStackClosure(), profile_);
+#endif
 }
 
 std::unique_ptr<syncer::ModelTypeController>
-ChromeSyncClient::CreateWebAppsModelTypeController(
-    syncer::SyncService* sync_service) {
+ChromeSyncClient::CreateWebAppsModelTypeController() {
   syncer::ModelTypeControllerDelegate* delegate =
       GetControllerDelegateForModelType(syncer::WEB_APPS).get();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::features::IsSplitSettingsSyncEnabled()) {
-    // Use the same delegate in full-sync and transport-only modes.
-    return std::make_unique<OsSyncModelTypeController>(
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
+    // When apps sync controlled by Ash Sync settings, allow running WEB_APPS in
+    // transport-only mode using the same `delegate`.
+    return std::make_unique<syncer::ModelTypeController>(
         syncer::WEB_APPS,
         /*delegate_for_full_sync_mode=*/
-        std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+            delegate),
         /*delegate_for_transport_mode=*/
-        std::make_unique<ForwardingModelTypeControllerDelegate>(delegate),
-        profile_->GetPrefs(), sync_service);
+        std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+            delegate));
   }
-  // Fall through.
 #endif
+
   return std::make_unique<syncer::ModelTypeController>(
       syncer::WEB_APPS,
-      std::make_unique<ForwardingModelTypeControllerDelegate>(delegate));
+      std::make_unique<syncer::ForwardingModelTypeControllerDelegate>(
+          delegate));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 

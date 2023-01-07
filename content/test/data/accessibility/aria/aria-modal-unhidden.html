@@ -1,0 +1,23 @@
+<!--
+@AURALINUX-ALLOW:modal
+@WAIT-FOR:cancel
+-->
+<!DOCTYPE html>
+<html>
+<body>
+<div>
+  <span>Non-modal contents:</span>
+  <button>ok</button>
+</div>
+<div role="alertdialog" id="dialog" aria-modal="true" style="display:none;">
+  <span>Modal contents:</span>
+  <button id="button">cancel</button>
+</div>
+<script>
+  setTimeout(() => {
+    document.getElementById("dialog").style.display = "block";
+    document.getElementById("button").focus();
+  }, 100);
+</script>
+</body>
+</html>

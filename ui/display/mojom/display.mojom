@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,4 +45,5 @@ struct Display {
   int32 depth_per_component;
   bool is_monochrome;
   int32 display_frequency;
+  string label;
 };

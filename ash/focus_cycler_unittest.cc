@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -60,10 +60,13 @@ class FocusCyclerTest : public AshTestBase {
  public:
   FocusCyclerTest() = default;
 
+  FocusCyclerTest(const FocusCyclerTest&) = delete;
+  FocusCyclerTest& operator=(const FocusCyclerTest&) = delete;
+
   void SetUp() override {
     AshTestBase::SetUp();
 
-    focus_cycler_.reset(new FocusCycler());
+    focus_cycler_ = std::make_unique<FocusCycler>();
   }
 
   void TearDown() override {
@@ -100,8 +103,6 @@ class FocusCyclerTest : public AshTestBase {
 
  private:
   std::unique_ptr<FocusCycler> focus_cycler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusCyclerTest);
 };
 
 TEST_F(FocusCyclerTest, CycleFocusBrowserOnly) {
@@ -277,7 +278,8 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
 
   std::unique_ptr<PanedWidgetDelegate> test_widget_delegate;
   std::unique_ptr<views::Widget> browser_widget(new views::Widget);
-  test_widget_delegate.reset(new PanedWidgetDelegate(browser_widget.get()));
+  test_widget_delegate =
+      std::make_unique<PanedWidgetDelegate>(browser_widget.get());
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::TYPE_WINDOW);
   widget_params.delegate = test_widget_delegate.get();
@@ -364,8 +366,7 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
 
   // Pressing "Escape" while on the status area should
   // deactivate it, and activate the browser window.
-  ui::test::EventGenerator* event_generator = GetEventGenerator();
-  event_generator->PressKey(ui::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
   EXPECT_TRUE(wm::IsActiveWindow(browser_window));
   EXPECT_EQ(focus_manager->GetFocusedView(), view1);
 
@@ -373,7 +374,7 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
   // Focus the navigation widget directly because the shelf has no apps here.
   GetPrimaryShelf()->shelf_focus_cycler()->FocusNavigation(false /* last */);
   EXPECT_TRUE(GetPrimaryShelf()->navigation_widget()->IsActive());
-  event_generator->PressKey(ui::VKEY_ESCAPE, 0);
+  PressAndReleaseKey(ui::VKEY_ESCAPE);
   EXPECT_TRUE(wm::IsActiveWindow(browser_window));
   EXPECT_EQ(focus_manager->GetFocusedView(), view1);
 }
@@ -383,10 +384,10 @@ TEST_F(FocusCyclerTest, CycleFocusThroughWindowWithPanes) {
 TEST_F(FocusCyclerTest, RemoveWidgetOnDisplayRemoved) {
   // Two displays are added, so two shelf widgets and two status area widgets
   // are added to focus cycler.
-  UpdateDisplay("800x800, 500x500");
+  UpdateDisplay("800x700, 600x500");
   // Remove one display. Its shelf widget and status area widget should also be
   // removed from focus cycler.
-  UpdateDisplay("800x800");
+  UpdateDisplay("800x700");
 
   // Create a single test window.
   std::unique_ptr<Window> window(CreateTestWindowInShellWithId(0));

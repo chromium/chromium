@@ -1,0 +1,36 @@
+<style include="network-shared">
+  cr-input {
+    margin: 0 var(--cr-button-edge-spacing);
+  }
+
+  #container {
+    align-items: center;
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: row;
+  }
+
+  #label {
+    flex: 1;
+  }
+
+  #host {
+    width: 200px;
+  }
+
+  #port {
+    width: 50px;
+  }
+</style>
+<div id="container">
+  <div id="label">[[label]]</div>
+  <cr-input id="host" readonly="[[!editable]]"
+      aria-label="[[i18n('networkProxyHostInputA11yLabel', label)]]"
+      value="{{value.host.activeValue}}" on-change="onValueChange_">
+  </cr-input>
+  <div>[[i18n('networkProxyPort')]]</div>
+  <cr-input id="port" readonly="[[!editable]]"
+      aria-label="[[i18n('networkProxyPortInputA11yLabel', label)]]"
+      value="{{value.port.activeValue}}" on-change="onValueChange_">
+  </cr-input>
+</div>

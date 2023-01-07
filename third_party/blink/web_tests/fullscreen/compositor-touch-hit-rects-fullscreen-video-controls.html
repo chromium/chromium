@@ -24,10 +24,7 @@ window.onload = function () {
     logRects('handler');
 
     waitForEvent(document, 'webkitfullscreenchange', function() {
-        if (internals.runtimeFlags.forceOverlayFullscreenVideoEnabled)
-            consoleWrite("Should report no rect or another rect which is not on the document");
-        else
-            consoleWrite("Should keep rect on document");
+        consoleWrite("Should keep rect on document");
         logRects('handler');
         if (JSON.parse(internals.layerTreeAsText(document)).layers.find(
             layer => layer.name.includes("LayoutVideo")))

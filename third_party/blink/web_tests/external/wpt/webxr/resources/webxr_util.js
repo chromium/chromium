@@ -15,6 +15,10 @@ var xr_debug = function(name, msg) {};
 
 function xr_promise_test(name, func, properties, glContextType, glContextProperties) {
   promise_test(async (t) => {
+    if (glContextType === 'webgl2') {
+      // Fast fail on platforms not supporting WebGL2.
+      assert_implements('WebGL2RenderingContext' in window, 'webgl2 not supported.');
+    }
     // Perform any required test setup:
     xr_debug(name, 'setup');
 
@@ -125,6 +129,7 @@ function xr_session_promise_test(
                         xr_debug(name, 'session start');
                         testSession = session;
                         session.mode = sessionMode;
+                        session.sessionInit = sessionInit;
                         let glLayer = new XRWebGLLayer(session, sessionObjects.gl, gllayerProperties);
                         glLayer.context = sessionObjects.gl;
                         // Session must have a baseLayer or frame requests

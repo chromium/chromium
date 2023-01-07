@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,9 +29,11 @@ namespace {
   DO(ArAugmentedImage_getTrackingMethod)                           \
   DO(ArAugmentedImageDatabase_addImageWithPhysicalSize)            \
   DO(ArAugmentedImageDatabase_create)                              \
+  DO(ArAugmentedImageDatabase_destroy)                             \
   DO(ArAugmentedImageDatabase_getNumImages)                        \
   DO(ArCamera_getDisplayOrientedPose)                              \
   DO(ArCamera_getProjectionMatrix)                                 \
+  DO(ArCamera_getTextureIntrinsics)                                \
   DO(ArCamera_getTrackingState)                                    \
   DO(ArCamera_getViewMatrix)                                       \
   DO(ArCameraConfig_create)                                        \
@@ -49,6 +51,9 @@ namespace {
   DO(ArCameraConfigList_destroy)                                   \
   DO(ArCameraConfigList_getItem)                                   \
   DO(ArCameraConfigList_getSize)                                   \
+  DO(ArCameraIntrinsics_create)                                    \
+  DO(ArCameraIntrinsics_destroy)                                   \
+  DO(ArCameraIntrinsics_getImageDimensions)                        \
   DO(ArConfig_create)                                              \
   DO(ArConfig_destroy)                                             \
   DO(ArConfig_getDepthMode)                                        \
@@ -284,6 +289,11 @@ void ArAugmentedImageDatabase_create(
       session, out_augmented_image_database);
 }
 
+void ArAugmentedImageDatabase_destroy(
+    ArAugmentedImageDatabase* augmented_image_database) {
+  g_arcore_api->impl_ArAugmentedImageDatabase_destroy(augmented_image_database);
+}
+
 void ArAugmentedImageDatabase_getNumImages(
     const ArSession* session,
     const ArAugmentedImageDatabase* augmented_image_database,
@@ -306,6 +316,13 @@ void ArCamera_getProjectionMatrix(const ArSession* session,
                                   float* dest_col_major_4x4) {
   return g_arcore_api->impl_ArCamera_getProjectionMatrix(
       session, camera, near, far, dest_col_major_4x4);
+}
+
+void ArCamera_getTextureIntrinsics(const ArSession* session,
+                                   const ArCamera* camera,
+                                   ArCameraIntrinsics* camera_intrinsics) {
+  return g_arcore_api->impl_ArCamera_getTextureIntrinsics(session, camera,
+                                                          camera_intrinsics);
 }
 
 void ArCamera_getTrackingState(const ArSession* session,
@@ -414,6 +431,25 @@ void ArCameraConfigList_getSize(const ArSession* session,
                                 const ArCameraConfigList* list,
                                 int32_t* out_size) {
   return g_arcore_api->impl_ArCameraConfigList_getSize(session, list, out_size);
+}
+
+void ArCameraIntrinsics_create(const ArSession* session,
+                               ArCameraIntrinsics** out_camera_intrinsics) {
+  return g_arcore_api->impl_ArCameraIntrinsics_create(session,
+                                                      out_camera_intrinsics);
+}
+
+void ArCameraIntrinsics_destroy(ArCameraIntrinsics* camera_intrinsics) {
+  return g_arcore_api->impl_ArCameraIntrinsics_destroy(camera_intrinsics);
+}
+
+void ArCameraIntrinsics_getImageDimensions(
+    const ArSession* session,
+    const ArCameraIntrinsics* camera_intrinsics,
+    int32_t* out_width,
+    int32_t* out_height) {
+  return g_arcore_api->impl_ArCameraIntrinsics_getImageDimensions(
+      session, camera_intrinsics, out_width, out_height);
 }
 
 void ArConfig_create(const ArSession* session, ArConfig** out_config) {

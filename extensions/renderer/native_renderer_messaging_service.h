@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,12 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/gin_port.h"
 #include "extensions/renderer/one_time_message_handler.h"
 #include "gin/handle.h"
+#include "v8/include/v8-forward.h"
 
 struct ExtensionMsg_ExternalConnectionInfo;
 struct ExtensionMsg_TabConnectionInfo;
@@ -21,6 +22,7 @@ class RenderFrame;
 }
 
 namespace extensions {
+enum class SerializationFormat;
 class NativeExtensionBindingsSystem;
 class ScriptContextSetIterable;
 struct Message;
@@ -67,6 +69,12 @@ class NativeRendererMessagingService : public GinPort::Delegate {
  public:
   explicit NativeRendererMessagingService(
       NativeExtensionBindingsSystem* bindings_system);
+
+  NativeRendererMessagingService(const NativeRendererMessagingService&) =
+      delete;
+  NativeRendererMessagingService& operator=(
+      const NativeRendererMessagingService&) = delete;
+
   ~NativeRendererMessagingService() override;
 
   // Checks whether the port exists in the given frame. If it does not, a reply
@@ -102,14 +110,19 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   // Creates and opens a new message port in the specified context.
   gin::Handle<GinPort> Connect(ScriptContext* script_context,
                                const MessageTarget& target,
-                               const std::string& name);
+                               const std::string& name,
+                               SerializationFormat format);
 
-  // Sends a one-time message, as is used by runtime.sendMessage.
-  void SendOneTimeMessage(ScriptContext* script_context,
-                          const MessageTarget& target,
-                          const std::string& channel_name,
-                          const Message& message,
-                          v8::Local<v8::Function> response_callback);
+  // Sends a one-time message, as is used by runtime.sendMessage. Returns a
+  // Promise if used in a promise based API call, otherwise returns an empty
+  // v8::Local<>.
+  v8::Local<v8::Promise> SendOneTimeMessage(
+      ScriptContext* script_context,
+      const MessageTarget& target,
+      const std::string& channel_name,
+      const Message& message,
+      binding::AsyncResponseType async_type,
+      v8::Local<v8::Function> response_callback);
 
   // GinPort::Delegate:
   void PostMessageToPort(v8::Local<v8::Context> context,
@@ -143,6 +156,12 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   void DeliverMessageToScriptContext(const Message& message,
                                      const PortId& target_port_id,
                                      ScriptContext* script_context);
+  void DeliverMessageToWorker(const Message& message,
+                              const PortId& target_port_id,
+                              ScriptContext* script_context);
+  void DeliverMessageToBackgroundPage(const Message& message,
+                                      const PortId& target_port_id,
+                                      ScriptContext* script_context);
   void DispatchOnDisconnectToScriptContext(const PortId& port_id,
                                            const std::string& error_message,
                                            ScriptContext* script_context);
@@ -190,8 +209,6 @@ class NativeRendererMessagingService : public GinPort::Delegate {
   NativeExtensionBindingsSystem* const bindings_system_;
 
   OneTimeMessageHandler one_time_message_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeRendererMessagingService);
 };
 
 }  // namespace extensions

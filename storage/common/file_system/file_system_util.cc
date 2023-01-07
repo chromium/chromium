@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,13 +9,11 @@
 #include <algorithm>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
+#include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
-#include "net/base/escape.h"
 #include "net/base/net_errors.h"
 #include "storage/common/database/database_identifier.h"
 #include "url/gurl.h"
@@ -176,7 +174,7 @@ bool ParseFileSystemSchemeURL(const GURL& url,
   if (file_system_type == kFileSystemTypeUnknown)
     return false;
 
-  std::string path = net::UnescapeBinaryURLComponent(url.path_piece());
+  std::string path = base::UnescapeBinaryURLComponent(url.path_piece());
 
   // Ensure the path is relative.
   while (!path.empty() && path[0] == '/')
@@ -189,7 +187,7 @@ bool ParseFileSystemSchemeURL(const GURL& url,
     return false;
 
   if (origin_url)
-    *origin_url = url.GetOrigin();
+    *origin_url = url.DeprecatedGetOriginAsURL();
   if (type)
     *type = file_system_type;
   if (virtual_path)
@@ -236,39 +234,6 @@ std::string GetFileSystemName(const GURL& origin_url, FileSystemType type) {
   return origin_identifier + ":" + type_string;
 }
 
-FileSystemType QuotaStorageTypeToFileSystemType(
-    blink::mojom::StorageType storage_type) {
-  switch (storage_type) {
-    case blink::mojom::StorageType::kTemporary:
-      return kFileSystemTypeTemporary;
-    case blink::mojom::StorageType::kPersistent:
-      return kFileSystemTypePersistent;
-    case blink::mojom::StorageType::kSyncable:
-      return kFileSystemTypeSyncable;
-    case blink::mojom::StorageType::kQuotaNotManaged:
-    case blink::mojom::StorageType::kUnknown:
-      return kFileSystemTypeUnknown;
-  }
-  return kFileSystemTypeUnknown;
-}
-
-blink::mojom::StorageType FileSystemTypeToQuotaStorageType(
-    FileSystemType type) {
-  switch (type) {
-    case kFileSystemTypeTemporary:
-      return blink::mojom::StorageType::kTemporary;
-    case kFileSystemTypePersistent:
-      return blink::mojom::StorageType::kPersistent;
-    case kFileSystemTypeSyncable:
-    case kFileSystemTypeSyncableForInternalSync:
-      return blink::mojom::StorageType::kSyncable;
-    case kFileSystemTypePluginPrivate:
-      return blink::mojom::StorageType::kQuotaNotManaged;
-    default:
-      return blink::mojom::StorageType::kUnknown;
-  }
-}
-
 std::string GetFileSystemTypeString(FileSystemType type) {
   switch (type) {
     case kFileSystemTypeTemporary:
@@ -298,10 +263,6 @@ std::string GetFileSystemTypeString(FileSystemType type) {
       return "LocalForPlatformApp";
     case kFileSystemTypeForTransientFile:
       return "TransientFile";
-    case kFileSystemTypePluginPrivate:
-      return "PluginPrivate";
-    case kFileSystemTypeCloudDevice:
-      return "CloudDevice";
     case kFileSystemTypeProvided:
       return "Provided";
     case kFileSystemTypeDeviceMediaAsFileStorage:
@@ -314,10 +275,12 @@ std::string GetFileSystemTypeString(FileSystemType type) {
       return "DriveFs";
     case kFileSystemTypeSmbFs:
       return "SmbFs";
+    case kFileSystemTypeFuseBox:
+      return "FuseBox";
     case kFileSystemInternalTypeEnumStart:
     case kFileSystemInternalTypeEnumEnd:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kFileSystemTypeUnknown:
       return "Unknown";
   }
@@ -327,18 +290,18 @@ std::string GetFileSystemTypeString(FileSystemType type) {
 
 std::string FilePathToString(const base::FilePath& file_path) {
   // TODO(pkasting): Probably this should use AsUTF8Unsafe() across platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return file_path.AsUTF8Unsafe();
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return file_path.value();
 #endif
 }
 
 base::FilePath StringToFilePath(const std::string& file_path_string) {
   // TODO(pkasting): Probably this should use FromUTF8Unsafe() across platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::FilePath::FromUTF8Unsafe(file_path_string);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return base::FilePath(file_path_string);
 #endif
 }
@@ -420,12 +383,12 @@ std::string GetIsolatedFileSystemRootURIString(
       GetFileSystemRootURI(origin_url, kFileSystemTypeIsolated).spec();
   if (base::FilePath::FromUTF8Unsafe(filesystem_id).ReferencesParent())
     return std::string();
-  root.append(net::EscapePath(filesystem_id));
+  root.append(base::EscapePath(filesystem_id));
   root.append("/");
   if (!optional_root_name.empty()) {
     if (base::FilePath::FromUTF8Unsafe(optional_root_name).ReferencesParent())
       return std::string();
-    root.append(net::EscapePath(optional_root_name));
+    root.append(base::EscapePath(optional_root_name));
     root.append("/");
   }
   return root;
@@ -437,7 +400,7 @@ std::string GetExternalFileSystemRootURIString(const GURL& origin_url,
       GetFileSystemRootURI(origin_url, kFileSystemTypeExternal).spec();
   if (base::FilePath::FromUTF8Unsafe(mount_name).ReferencesParent())
     return std::string();
-  root.append(net::EscapePath(mount_name));
+  root.append(base::EscapePath(mount_name));
   root.append("/");
   return root;
 }

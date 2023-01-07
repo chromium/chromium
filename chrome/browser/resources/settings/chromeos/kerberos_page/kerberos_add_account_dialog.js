@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,130 +7,199 @@
  * 'kerberos-add-account-dialog' is an element to add Kerberos accounts.
  */
 
-Polymer({
-  is: 'kerberos-add-account-dialog',
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/js/action_link.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../../controls/settings_textarea.js';
+import '../../settings_shared.css.js';
 
-  behaviors: [I18nBehavior],
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/ash/common/i18n_behavior.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  properties: {
-    /**
-     * If set, some fields are preset from this account (like username or
-     * whether to remember the password).
-     * @type {?settings.KerberosAccount}
-     */
-    presetAccount: Object,
+import {recordSettingChange} from '../metrics_recorder.js';
 
-    /**
-     * Whether an existing |presetAccount| was successfully authenticated.
-     * Always false if |presetAccount| is null (new accounts).
-     */
-    accountWasRefreshed: {
-      type: Boolean,
-      value: false,
-    },
+import {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType, ValidateKerberosConfigResult} from './kerberos_accounts_browser_proxy.js';
 
-    /** @private */
-    username_: {
-      type: String,
-      value: '',
-    },
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ */
+const KerberosAddAccountDialogElementBase =
+    mixinBehaviors([I18nBehavior], PolymerElement);
 
-    /** @private */
-    password_: {
-      type: String,
-      value: '',
-    },
+/**
+ * The default placeholder that is shown in the username field
+ * of authentication dialog.
+ * @type {string}
+ */
+const DEFAULT_USERNAME_PLACEHOLDER = 'user@example.com';
 
-    /**
-     * Current configuration in the Advanced Config dialog. Propagates to
-     * |config| only if 'Save' button is pressed.
-     * @private {string}
-     */
-    editableConfig_: {
-      type: String,
-      value: '',
-    },
+/** @polymer */
+class KerberosAddAccountDialogElement extends
+    KerberosAddAccountDialogElementBase {
+  static get is() {
+    return 'kerberos-add-account-dialog';
+  }
 
-    /** @private */
-    rememberPassword_: {
-      type: Boolean,
-      value: false,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /** @private */
-    generalErrorText_: {
-      type: String,
-      value: '',
-    },
+  static get properties() {
+    return {
+      /**
+       * If set, some fields are preset from this account (like username or
+       * whether to remember the password).
+       * @type {?KerberosAccount}
+       */
+      presetAccount: Object,
 
-    /** @private */
-    usernameErrorText_: {
-      type: String,
-      value: '',
-    },
-
-    /** @private */
-    passwordErrorText_: {
-      type: String,
-      value: '',
-    },
-
-    /** @private */
-    configErrorText_: {
-      type: String,
-      value: '',
-    },
-
-    /** @private */
-    inProgress_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    isManaged_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    showAdvancedConfig_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /** @private */
-    rememberPasswordEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('kerberosRememberPasswordEnabled');
+      /**
+       * Whether an existing |presetAccount| was successfully authenticated.
+       * Always false if |presetAccount| is null (new accounts).
+       */
+      accountWasRefreshed: {
+        type: Boolean,
+        value: false,
       },
-    },
-  },
 
-  /** @private {boolean} */
-  useRememberedPassword_: false,
+      /** @private */
+      username_: {
+        type: String,
+        value: '',
+      },
 
-  /** @private {string} */
-  config_: '',
+      /** @private */
+      password_: {
+        type: String,
+        value: '',
+      },
 
-  /** @private {string} */
-  title_: '',
+      /**
+       * Current configuration in the Advanced Config dialog. Propagates to
+       * |config| only if 'Save' button is pressed.
+       * @private {string}
+       */
+      editableConfig_: {
+        type: String,
+        value: '',
+      },
 
-  /** @private {string} */
-  actionButtonLabel_: '',
+      /** @private */
+      rememberPassword_: {
+        type: Boolean,
+        value: false,
+      },
 
-  /** @private {?settings.KerberosAccountsBrowserProxy} */
-  browserProxy_: null,
+      /** @private */
+      generalErrorText_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private */
+      usernameErrorText_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private */
+      passwordErrorText_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private */
+      configErrorText_: {
+        type: String,
+        value: '',
+      },
+
+      /** @private */
+      inProgress_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      isManaged_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private */
+      showAdvancedConfig_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether the remember password options is allowed by policy.
+       * @private {boolean}
+       */
+      rememberPasswordEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('kerberosRememberPasswordEnabled');
+        },
+      },
+
+      /**
+       * Prefilled domain for the new tickets if kerberosDomainAutocomplete
+       * policy is enabled. Empty by default. Starts with '@' if it is
+       * not empty.
+       */
+      prefillDomain_: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * Whether the user is in guest mode.
+       * @private {boolean}
+       */
+      isGuestMode_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isGuest');
+        },
+      },
+    };
+  }
 
   /** @override */
-  created() {
-    this.browserProxy_ =
-        settings.KerberosAccountsBrowserProxyImpl.getInstance();
-  },
+  constructor() {
+    super();
+
+    /** @private {boolean} */
+    this.useRememberedPassword_ = false;
+
+    /** @private {string} */
+    this.config_ = '';
+
+    /** @private {string} */
+    this.title_ = '';
+
+    /** @private {string} */
+    this.actionButtonLabel_ = '';
+
+    /** @private {!KerberosAccountsBrowserProxy} */
+    this.browserProxy_ = KerberosAccountsBrowserProxyImpl.getInstance();
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.$.addDialog.showModal();
 
     if (this.presetAccount) {
@@ -165,15 +234,22 @@ Polymer({
       this.title_ = this.i18n('addKerberosAccount');
       this.actionButtonLabel_ = this.i18n('add');
 
+      // Get the prefill domain and add '@' to it if it's not empty.
+      // Also the domain is considered invalid if it already has '@' in it.
+      const domain = loadTimeData.getString('kerberosDomainAutocomplete');
+      if (domain && domain.indexOf('@') === -1) {
+        this.prefillDomain_ = '@' + domain;
+      }
+
       // Set a default configuration.
       this.config_ = loadTimeData.getString('defaultKerberosConfig');
     }
-  },
+  }
 
   /** @private */
   onCancel_() {
     this.$.addDialog.cancel();
-  },
+  }
 
   /** @private */
   onAdd_() {
@@ -193,13 +269,14 @@ Polymer({
 
     this.browserProxy_
         .addAccount(
-            this.username_, passwordToSubmit, this.rememberPassword_,
-            this.config_, allowExisting)
+            this.computeUsername_(this.username_, this.prefillDomain_),
+            passwordToSubmit, this.rememberPassword_, this.config_,
+            allowExisting)
         .then(error => {
           this.inProgress_ = false;
 
           // Success case. Close dialog.
-          if (error === settings.KerberosErrorType.kNone) {
+          if (error === KerberosErrorType.kNone) {
             this.accountWasRefreshed = this.presetAccount != null;
             this.$.addDialog.close();
             return;
@@ -208,31 +285,42 @@ Polymer({
           // Triggers the UI to update error messages.
           this.updateErrorMessages_(error);
         });
-    settings.recordSettingChange();
-  },
+    recordSettingChange();
+  }
 
   /** @private */
   onPasswordInput_() {
     // On first input, don't reuse the remembered password, but submit the
     // changed one.
     this.useRememberedPassword_ = false;
-  },
+  }
 
   /** @private */
   onAdvancedConfigClick_() {
+    this.browserProxy_.validateConfig(this.config_).then(result => {
+      // Success case.
+      if (result.error === KerberosErrorType.kNone) {
+        this.configErrorText_ = '';
+        return;
+      }
+
+      // Triggers the UI to update error messages.
+      this.updateConfigErrorMessage_(result);
+    });
+
     // Keep a copy of the config in case the user cancels.
     this.editableConfig_ = this.config_;
     this.showAdvancedConfig_ = true;
-    Polymer.dom.flush();
-    this.$$('#advancedConfigDialog').showModal();
-  },
+    flush();
+    this.shadowRoot.querySelector('#advancedConfigDialog').showModal();
+  }
 
   /** @private */
   onAdvancedConfigCancel_() {
     this.configErrorText_ = '';
     this.showAdvancedConfig_ = false;
-    this.$$('#advancedConfigDialog').cancel();
-  },
+    this.shadowRoot.querySelector('#advancedConfigDialog').cancel();
+  }
 
   /** @private */
   onAdvancedConfigSave_() {
@@ -243,19 +331,19 @@ Polymer({
       this.inProgress_ = false;
 
       // Success case. Close dialog.
-      if (result.error === settings.KerberosErrorType.kNone) {
+      if (result.error === KerberosErrorType.kNone) {
         this.showAdvancedConfig_ = false;
         this.config_ = this.editableConfig_;
         this.configErrorText_ = '';
-        this.$$('#advancedConfigDialog').close();
+        this.shadowRoot.querySelector('#advancedConfigDialog').close();
         return;
       }
 
       // Triggers the UI to update error messages.
       this.updateConfigErrorMessage_(result);
     });
-    settings.recordSettingChange();
-  },
+    recordSettingChange();
+  }
 
   onAdvancedConfigClose_(event) {
     // Note: 'Esc' doesn't trigger onAdvancedConfigCancel_() and some tests
@@ -266,10 +354,10 @@ Polymer({
     // Since this is a sub-dialog, prevent event from bubbling up. Otherwise,
     // it might cause the add-dialog to be closed.
     event.stopPropagation();
-  },
+  }
 
   /**
-   * @param {!settings.KerberosErrorType} error Current error enum
+   * @param {!KerberosErrorType} error Current error enum
    * @private
    */
   updateErrorMessages_(error) {
@@ -278,54 +366,54 @@ Polymer({
     this.passwordErrorText_ = '';
 
     switch (error) {
-      case settings.KerberosErrorType.kNone:
+      case KerberosErrorType.kNone:
         break;
 
-      case settings.KerberosErrorType.kNetworkProblem:
+      case KerberosErrorType.kNetworkProblem:
         this.generalErrorText_ = this.i18n('kerberosErrorNetworkProblem');
         break;
-      case settings.KerberosErrorType.kParsePrincipalFailed:
+      case KerberosErrorType.kParsePrincipalFailed:
         this.usernameErrorText_ = this.i18n('kerberosErrorUsernameInvalid');
         break;
-      case settings.KerberosErrorType.kBadPrincipal:
+      case KerberosErrorType.kBadPrincipal:
         this.usernameErrorText_ = this.i18n('kerberosErrorUsernameUnknown');
         break;
-      case settings.KerberosErrorType.kDuplicatePrincipalName:
+      case KerberosErrorType.kDuplicatePrincipalName:
         this.usernameErrorText_ =
             this.i18n('kerberosErrorDuplicatePrincipalName');
         break;
-      case settings.KerberosErrorType.kContactingKdcFailed:
+      case KerberosErrorType.kContactingKdcFailed:
         this.usernameErrorText_ = this.i18n('kerberosErrorContactingServer');
         break;
 
-      case settings.KerberosErrorType.kBadPassword:
+      case KerberosErrorType.kBadPassword:
         this.passwordErrorText_ = this.i18n('kerberosErrorPasswordInvalid');
         break;
-      case settings.KerberosErrorType.kPasswordExpired:
+      case KerberosErrorType.kPasswordExpired:
         this.passwordErrorText_ = this.i18n('kerberosErrorPasswordExpired');
         break;
 
-      case settings.KerberosErrorType.kKdcDoesNotSupportEncryptionType:
+      case KerberosErrorType.kKdcDoesNotSupportEncryptionType:
         this.generalErrorText_ = this.i18n('kerberosErrorKdcEncType');
         break;
       default:
         this.generalErrorText_ =
             this.i18n('kerberosErrorGeneral', error.toString());
     }
-  },
+  }
 
   /**
-   * @param {!settings.ValidateKerberosConfigResult} result Result from a
+   * @param {!ValidateKerberosConfigResult} result Result from a
    *    validateKerberosConfig() call.
    * @private
    */
   updateConfigErrorMessage_(result) {
     // There should be an error at this point.
-    assert(result.error !== settings.KerberosErrorType.kNone);
+    assert(result.error !== KerberosErrorType.kNone);
 
     // Only handle kBadConfig here. Display generic error otherwise. Should only
     // occur if something is wrong with D-Bus, but nothing user-induced.
-    if (result.error !== settings.KerberosErrorType.kBadConfig) {
+    if (result.error !== KerberosErrorType.kBadConfig) {
       this.configErrorText_ =
           this.i18n('kerberosErrorGeneral', result.error.toString());
       return;
@@ -335,48 +423,50 @@ Polymer({
 
     // Don't fall for the classical blunder 0 == false.
     if (result.errorInfo.lineIndex !== undefined) {
-      const textArea = this.$$('#config').shadowRoot.querySelector('#input');
+      const textArea =
+          this.shadowRoot.querySelector('#config').shadowRoot.querySelector(
+              '#input');
       errorLine = this.selectAndScrollTo_(textArea, result.errorInfo.lineIndex);
     }
 
     // If kBadConfig, the error code should be set.
-    assert(result.errorInfo.code !== settings.KerberosConfigErrorCode.kNone);
+    assert(result.errorInfo.code !== KerberosConfigErrorCode.kNone);
     this.configErrorText_ =
         this.getConfigErrorString_(result.errorInfo.code, errorLine);
-  },
+  }
 
   /**
-   * @param {!settings.KerberosConfigErrorCode} code Error code
+   * @param {!KerberosConfigErrorCode} code Error code
    * @param {string} errorLine Line where the error occurred
    * @return {string} Localized error string that corresponds to code
    * @private
    */
   getConfigErrorString_(code, errorLine) {
     switch (code) {
-      case settings.KerberosConfigErrorCode.kSectionNestedInGroup:
+      case KerberosConfigErrorCode.kSectionNestedInGroup:
         return this.i18n('kerberosConfigErrorSectionNestedInGroup', errorLine);
-      case settings.KerberosConfigErrorCode.kSectionSyntax:
+      case KerberosConfigErrorCode.kSectionSyntax:
         return this.i18n('kerberosConfigErrorSectionSyntax', errorLine);
-      case settings.KerberosConfigErrorCode.kExpectedOpeningCurlyBrace:
+      case KerberosConfigErrorCode.kExpectedOpeningCurlyBrace:
         return this.i18n(
             'kerberosConfigErrorExpectedOpeningCurlyBrace', errorLine);
-      case settings.KerberosConfigErrorCode.kExtraCurlyBrace:
+      case KerberosConfigErrorCode.kExtraCurlyBrace:
         return this.i18n('kerberosConfigErrorExtraCurlyBrace', errorLine);
-      case settings.KerberosConfigErrorCode.kRelationSyntax:
+      case KerberosConfigErrorCode.kRelationSyntax:
         return this.i18n('kerberosConfigErrorRelationSyntax', errorLine);
-      case settings.KerberosConfigErrorCode.kKeyNotSupported:
+      case KerberosConfigErrorCode.kKeyNotSupported:
         return this.i18n('kerberosConfigErrorKeyNotSupported', errorLine);
-      case settings.KerberosConfigErrorCode.kSectionNotSupported:
+      case KerberosConfigErrorCode.kSectionNotSupported:
         return this.i18n('kerberosConfigErrorSectionNotSupported', errorLine);
-      case settings.KerberosConfigErrorCode.kKrb5FailedToParse:
+      case KerberosConfigErrorCode.kKrb5FailedToParse:
         // Note: This error doesn't have an error line.
         return this.i18n('kerberosConfigErrorKrb5FailedToParse');
-      case settings.KerberosConfigErrorCode.kTooManyNestedGroups:
+      case KerberosConfigErrorCode.kTooManyNestedGroups:
         return this.i18n('kerberosConfigErrorTooManyNestedGroups', errorLine);
       default:
         assertNotReached();
     }
-  },
+  }
 
   /**
    * Selects a line in a text area and scrolls to it.
@@ -410,7 +500,7 @@ Polymer({
     textArea.scrollTop = lineHeight * firstLine;
 
     return lines[lineIndex];
-  },
+  }
 
   /**
    * Whether an error element should be shown.
@@ -422,4 +512,49 @@ Polymer({
   showError_(errorText) {
     return !!errorText;
   }
-});
+
+  /**
+   * Prefilled domain is not shown if the username contains '@',
+   * giving the user an opportunity to use some other domain.
+   * @param {string} username The username typed by the user.
+   * @param {string} domain Prefilled domain, prefixed with '@'.
+   * @return {string}
+   */
+  computeDomain_(username, domain) {
+    if (username && username.indexOf('@') !== -1) {
+      return '';
+    }
+    return domain;
+  }
+
+  /**
+   * Return username if it contains '@', otherwise append prefilled
+   * domain (which could be empty) to the current username.
+   * @param {string} username The username typed by the user.
+   * @param {string} domain Prefilled domain, prefixed with '@'.
+   * @return {string}
+   * @private
+   */
+  computeUsername_(username, domain) {
+    if (username && username.indexOf('@') === -1) {
+      return username + domain;
+    }
+    return username;
+  }
+
+  /**
+   * If prefilled domain is present return an empty string,
+   * otherwise show the default placeholder.
+   * @param {string} prefillDomain Prefilled domain, prefixed with '@'.
+   * @return {string}
+   */
+  computePlaceholder_(prefillDomain) {
+    if (prefillDomain) {
+      return '';
+    }
+    return DEFAULT_USERNAME_PLACEHOLDER;
+  }
+}
+
+customElements.define(
+    KerberosAddAccountDialogElement.is, KerberosAddAccountDialogElement);

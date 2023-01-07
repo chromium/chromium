@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<script src="resources/link-highlight-helper.js"></script>
+<link rel="stylesheet" href="resources/link-highlight-style.css">
+<style>
+  a:link, a:visited { color: red; }
+</style>
+<div style="columns:5; width: 580px; column-gap:20px; column-fill:auto; height:100px; line-height:40px;">
+  <a class="opaqueHighlight" href="" id="highlightTarget">
+    &nbsp;xxx&nbsp;<br>
+    &nbsp;xxx&nbsp;<br>
+  </a>
+  <div style="float:left; width:100%; height:100px; break-inside:avoid;"></div>
+</div>
+<p>This test is successful if there are two green rectangles and no red above.</p>
+<script>
+  onload = testHighlightTarget;
+</script>

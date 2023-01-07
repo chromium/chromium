@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+  <script>
+test(() => {
+  // WebAssembly memory greater than 2GB.
+  let mem;
+  try {
+    mem =
+      new WebAssembly.Memory({initial: 33000, maximum: 33000, shared: true});
+  } catch (e) {
+    // We failed to allocate the WebAssembly memory. We can just return.
+    assert_equals(e.constructor, RangeError);
+    assert_equals(e.message,
+      "WebAssembly.Memory(): could not allocate memory");
+    return;
+  }
+  window.postMessage(mem, "*");
+}, "Test that WebAssembly memories greater than 2GB can be postmessaged.");
+  </script>
+</body>
+</html>

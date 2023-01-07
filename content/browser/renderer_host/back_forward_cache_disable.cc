@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,9 +12,6 @@ std::string ReasonIdToString(
   switch (reason_id) {
     case BackForwardCacheDisable::DisabledReasonId::kUnknown:
       return "Unknown";
-    case BackForwardCacheDisable::DisabledReasonId::
-        kMediaSessionImplOnServiceCreated:
-      return "MediaSessionImpl::OnServiceCreated";
     case BackForwardCacheDisable::DisabledReasonId::kSecurityHandler:
       return "content::protocol::SecurityHandler";
     case BackForwardCacheDisable::DisabledReasonId::kWebAuthenticationAPI:
@@ -31,8 +28,10 @@ std::string ReasonIdToString(
       return "WebBluetooth";
     case BackForwardCacheDisable::DisabledReasonId::kWebUSB:
       return "WebUSB";
-    default:
-      return "Unknown (default)";
+    case BackForwardCacheDisable::DisabledReasonId::kMediaSessionService:
+      return "MediaSessionService";
+    case BackForwardCacheDisable::DisabledReasonId::kScreenReader:
+      return "ScreenReader";
   }
 }
 

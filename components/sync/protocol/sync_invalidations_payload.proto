@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,10 +24,14 @@ message SyncInvalidationsPayload {
   }
 
   // This field contains information about each data type which needs to be
-  // updated.
+  // updated. Note that it may contain data types which current client is not
+  // interested in.
   repeated DataTypeInvalidation data_type_invalidations = 1;
 
   // Opaque field, which has to be provided as part of resulting GetUpdates
   // back to the server.
   optional bytes hint = 2;
+
+  // Version of invalidation, used to order incoming invalidations.
+  optional int64 version = 3;
 }

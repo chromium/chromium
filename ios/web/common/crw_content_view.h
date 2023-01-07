@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,22 @@
 
 #import <UIKit/UIKit.h>
 
+// For devices running on a version >= iOS 16.0+, WKFullScreenState is converted
+// into CrFullscreenState. Once min version supported is iOS 16.0,
+// uses of this enum should be be replaced with WKFullScreenState and this enum
+// declaration should be removed.
+enum class CrFullscreenState {
+  kEnteringFullscreen,
+  kExitingFullscreen,
+  kInFullscreen,
+  kNotInFullScreen,
+};
+
 // UIViews conforming to CRWScrollableContent (i.e. CRWContentViews) are used
 // to display content within a WebState.
 @protocol CRWScrollableContent <NSObject>
 
-// The scroll view used to display the content.  If |scrollView| is non-nil,
+// The scroll view used to display the content.  If `scrollView` is non-nil,
 // it will be used to back the CRWContentViewScrollViewProxy and is expected to
 // be a subview of the CRWContentView.
 @property(nonatomic, strong, readonly) UIScrollView* scrollView;
@@ -30,7 +41,7 @@
 @optional
 
 // Whether or not the content view should use the content inset when setting
-// |contentInset|.
+// `contentInset`.
 @property(nonatomic, assign) BOOL shouldUseViewContentInset;
 
 @end

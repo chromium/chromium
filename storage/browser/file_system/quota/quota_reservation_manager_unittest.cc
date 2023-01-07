@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/quota/open_file_handle.h"
@@ -49,6 +48,10 @@ void SetFileSize(const base::FilePath& path, int64_t size) {
 class FakeBackend : public QuotaReservationManager::QuotaBackend {
  public:
   FakeBackend() = default;
+
+  FakeBackend(const FakeBackend&) = delete;
+  FakeBackend& operator=(const FakeBackend&) = delete;
+
   ~FakeBackend() override = default;
 
   void ReserveQuota(const url::Origin& origin,
@@ -94,8 +97,6 @@ class FakeBackend : public QuotaReservationManager::QuotaBackend {
   const url::Origin origin_ = url::Origin::Create(GURL("http://example.com"));
   int64_t on_memory_usage_ = kInitialFileSize;
   int64_t on_disk_usage_ = kInitialFileSize;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBackend);
 };
 
 class FakeWriter {
@@ -181,6 +182,11 @@ void RefreshReservation(QuotaReservation* reservation, int64_t size) {
 class QuotaReservationManagerTest : public testing::Test {
  public:
   QuotaReservationManagerTest() = default;
+
+  QuotaReservationManagerTest(const QuotaReservationManagerTest&) = delete;
+  QuotaReservationManagerTest& operator=(const QuotaReservationManagerTest&) =
+      delete;
+
   ~QuotaReservationManagerTest() override = default;
 
   void SetUp() override {
@@ -215,8 +221,6 @@ class QuotaReservationManagerTest : public testing::Test {
   base::ScopedTempDir work_dir_;
   base::FilePath file_path_;
   std::unique_ptr<QuotaReservationManager> reservation_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuotaReservationManagerTest);
 };
 
 TEST_F(QuotaReservationManagerTest, BasicTest) {

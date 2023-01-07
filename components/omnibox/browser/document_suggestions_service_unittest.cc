@@ -1,20 +1,25 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/omnibox/browser/document_suggestions_service.h"
 
 #include "base/bind.h"
+#include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/variations/variations_ids_provider.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -22,6 +27,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -45,16 +51,17 @@ class DocumentSuggestionsServiceTest : public testing::Test {
             identity_test_env_.identity_manager(),
             shared_url_loader_factory_)) {
     // Set up identity manager.
-    identity_test_env_.SetPrimaryAccount("foo@gmail.com");
+    identity_test_env_.SetPrimaryAccount("foo@gmail.com",
+                                         signin::ConsentLevel::kSync);
     identity_test_env_.SetRefreshTokenForPrimaryAccount();
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
 
     // Set up a variation.
-    variations::VariationsIdsProvider::GetInstance()->ResetForTesting();
     variations::AssociateGoogleVariationID(
         variations::GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, "trial name",
         "group name", kVariationID);
-    base::FieldTrialList::CreateFieldTrial("trial name", "group name")->group();
+    base::FieldTrialList::CreateFieldTrial("trial name", "group name")
+        ->Activate();
   }
   DocumentSuggestionsServiceTest(const DocumentSuggestionsServiceTest&) =
       delete;
@@ -62,6 +69,8 @@ class DocumentSuggestionsServiceTest : public testing::Test {
       const DocumentSuggestionsServiceTest&) = delete;
 
   base::test::TaskEnvironment task_environment_;
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
@@ -83,6 +92,51 @@ TEST_F(DocumentSuggestionsServiceTest, VariationHeaders) {
       base::BindOnce(OnURLLoadComplete));
 
   base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(DocumentSuggestionsServiceTest, AsoParamInRequest) {
+  auto expect_aso_param = [&](const std::string& expected_value,
+                              const network::ResourceRequest& request) {
+    base::StringPiece request_string(request.request_body->elements()
+                                         ->at(0)
+                                         .As<network::DataElementBytes>()
+                                         .AsStringPiece());
+    absl::optional<base::Value> request_value =
+        base::JSONReader::Read(request_string);
+    ASSERT_TRUE(request_value) << expected_value;
+    std::string* param =
+        request_value->FindStringPath("requestOptions.debugOptions.optsParams");
+    ASSERT_NE(param, nullptr) << expected_value;
+    EXPECT_EQ(*param, expected_value) << expected_value;
+  };
+
+  {
+    // ASO disabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kDocumentProviderAso);
+    test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+        [&](const network::ResourceRequest& request) {
+          expect_aso_param("enable_aso_search:true", request);
+        }));
+    document_suggestions_service_->CreateDocumentSuggestionsRequest(
+        u"", false, base::BindOnce(OnDocumentSuggestionsLoaderAvailable),
+        base::BindOnce(OnURLLoadComplete));
+    base::RunLoop().RunUntilIdle();
+  }
+
+  {
+    // ASO enabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(omnibox::kDocumentProviderAso);
+    test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
+        [&](const network::ResourceRequest& request) {
+          expect_aso_param("enable_aso_search:false", request);
+        }));
+    document_suggestions_service_->CreateDocumentSuggestionsRequest(
+        u"", false, base::BindOnce(OnDocumentSuggestionsLoaderAvailable),
+        base::BindOnce(OnURLLoadComplete));
+    base::RunLoop().RunUntilIdle();
+  }
 }
 
 }  // namespace

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,9 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "extensions/browser/api/storage/settings_observer.h"
@@ -28,10 +27,13 @@ namespace policy {
 class PolicyMap;
 }
 
+namespace value_store {
+class ValueStoreFactory;
+}
+
 namespace extensions {
 
 class PolicyValueStore;
-class ValueStoreFactory;
 
 // A ValueStoreCache that manages a PolicyValueStore for each extension that
 // uses the storage.managed namespace. This class observes policy changes and
@@ -44,8 +46,12 @@ class ManagedValueStoreCache : public ValueStoreCache,
   // |observers| is the list of SettingsObservers to notify when a ValueStore
   // changes.
   ManagedValueStoreCache(content::BrowserContext* context,
-                         scoped_refptr<ValueStoreFactory> factory,
-                         scoped_refptr<SettingsObserverList> observers);
+                         scoped_refptr<value_store::ValueStoreFactory> factory,
+                         SettingsChangedCallback observer);
+
+  ManagedValueStoreCache(const ManagedValueStoreCache&) = delete;
+  ManagedValueStoreCache& operator=(const ManagedValueStoreCache&) = delete;
+
   ~ManagedValueStoreCache() override;
 
  private:
@@ -70,7 +76,7 @@ class ManagedValueStoreCache : public ValueStoreCache,
   // Posted by OnPolicyUpdated() to update a PolicyValueStore on the backend
   // sequence.
   void UpdatePolicyOnBackend(const std::string& extension_id,
-                             std::unique_ptr<policy::PolicyMap> current_policy);
+                             const policy::PolicyMap& current_policy);
 
   // Returns an existing PolicyValueStore for |extension_id|, or NULL.
   PolicyValueStore* GetStoreFor(const std::string& extension_id);
@@ -80,28 +86,28 @@ class ManagedValueStoreCache : public ValueStoreCache,
 
   // The profile that owns the extension system being used. This is used to
   // get the PolicyService, the EventRouter and the ExtensionService.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The policy domain. This is used for both updating the schema registry with
   // the list of extensions and for observing the policy updates.
   policy::PolicyDomain policy_domain_;
 
   // The |profile_|'s PolicyService.
-  policy::PolicyService* policy_service_;
+  raw_ptr<policy::PolicyService> policy_service_;
 
   // Observes extension loading and unloading, and keeps the Profile's
   // PolicyService aware of the current list of extensions.
   std::unique_ptr<ExtensionTracker> extension_tracker_;
 
   // These live on the FILE thread.
-  scoped_refptr<ValueStoreFactory> storage_factory_;
-  scoped_refptr<SettingsObserverList> observers_;
+  scoped_refptr<value_store::ValueStoreFactory> storage_factory_;
+  SequenceBoundSettingsChangedCallback observer_;
 
   // All the PolicyValueStores live on the FILE thread, and |store_map_| can be
   // accessed only on the FILE thread as well.
   std::map<std::string, std::unique_ptr<PolicyValueStore>> store_map_;
 
-  DISALLOW_COPY_AND_ASSIGN(ManagedValueStoreCache);
+  base::WeakPtrFactory<ManagedValueStoreCache> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

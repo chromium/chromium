@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -36,7 +37,6 @@ MachineLevelUserCloudPolicyStore::MachineLevelUserCloudPolicyStore(
     const base::FilePath& external_policy_info_path,
     const base::FilePath& policy_path,
     const base::FilePath& key_path,
-    bool cloud_policy_has_priority,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner)
     : DesktopCloudPolicyStore(
           policy_path,
@@ -46,9 +46,7 @@ MachineLevelUserCloudPolicyStore::MachineLevelUserCloudPolicyStore(
               external_policy_path,
               external_policy_info_path),
           background_task_runner,
-          PolicyScope::POLICY_SCOPE_MACHINE,
-          cloud_policy_has_priority ? PolicySource::POLICY_SOURCE_PRIORITY_CLOUD
-                                    : PolicySource::POLICY_SOURCE_CLOUD),
+          PolicyScope::POLICY_SCOPE_MACHINE),
       machine_dm_token_(machine_dm_token),
       machine_client_id_(machine_client_id) {}
 
@@ -61,7 +59,6 @@ MachineLevelUserCloudPolicyStore::Create(
     const std::string& machine_client_id,
     const base::FilePath& external_policy_dir,
     const base::FilePath& policy_dir,
-    bool cloud_policy_has_priority,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner) {
   base::FilePath policy_cache_file = policy_dir.Append(kPolicyCache);
   base::FilePath key_cache_file = policy_dir.Append(kKeyCache);
@@ -78,7 +75,7 @@ MachineLevelUserCloudPolicyStore::Create(
   return std::make_unique<MachineLevelUserCloudPolicyStore>(
       machine_dm_token, machine_client_id, external_policy_path,
       external_policy_info_path, policy_cache_file, key_cache_file,
-      cloud_policy_has_priority, background_task_runner);
+      background_task_runner);
 }
 
 bool IsResultKeyEqual(const PolicyLoadResult& default_result,
@@ -92,10 +89,28 @@ bool IsResultKeyEqual(const PolicyLoadResult& default_result,
 }
 
 void MachineLevelUserCloudPolicyStore::LoadImmediately() {
-  // There is no global dm token, stop loading the policy cache. The policy will
-  // be fetched in the end of enrollment process.
+  // There is no global dm token, stop loading the policy cache in order to
+  // avoid an unnecessary disk access. Policies will be fetched after enrollment
+  // succeeded.
   if (!machine_dm_token_.is_valid()) {
     VLOG(1) << "LoadImmediately ignored, no DM token present.";
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, some dependencies (e.g. FirstRunActivity) are blocked until
+    // the PolicyService is initialized, which waits on all policy providers to
+    // indicate that policies are available.
+    //
+    // When cloud enrollment is not mandatory, machine-level cloud policies are
+    // loaded asynchronously and will be applied once they are fetched from the
+    // server. To avoid blocking those dependencies on Android, notify that the
+    // PolicyService initialization doesn't need to wait on cloud policies by
+    // sending out an empty policy set.
+    //
+    // The call to |PolicyLoaded| is exactly the same that would happen if this
+    // disk access optimization was not implemented.
+    PolicyLoadResult result;
+    result.status = policy::LOAD_RESULT_NO_POLICY_FILE;
+    PolicyLoaded(/*validate_in_background=*/false, result);
+#endif  // BUILDFLAG(IS_ANDROID)
     return;
   }
   VLOG(1) << "Load policy cache Immediately.";
@@ -179,19 +194,20 @@ PolicyLoadResult MachineLevelUserCloudPolicyStore::LoadExternalCachedPolicies(
 
 std::unique_ptr<UserCloudPolicyValidator>
 MachineLevelUserCloudPolicyStore::CreateValidator(
-    std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
+    std::unique_ptr<enterprise_management::PolicyFetchResponse>
+        policy_fetch_response,
     CloudPolicyValidatorBase::ValidateTimestampOption option) {
   auto validator = std::make_unique<UserCloudPolicyValidator>(
-      std::move(policy), background_task_runner());
+      std::move(policy_fetch_response), background_task_runner());
   validator->ValidatePolicyType(
       GetMachineLevelUserCloudPolicyTypeForCurrentOS());
   validator->ValidateDMToken(machine_dm_token_.value(),
                              CloudPolicyValidatorBase::DM_TOKEN_REQUIRED);
   validator->ValidateDeviceId(machine_client_id_,
                               CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);
-  if (policy_) {
-    validator->ValidateTimestamp(base::Time::FromJavaTime(policy_->timestamp()),
-                                 option);
+  if (has_policy()) {
+    validator->ValidateTimestamp(
+        base::Time::FromJavaTime(policy()->timestamp()), option);
   }
   validator->ValidatePayload();
   return validator;

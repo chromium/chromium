@@ -1,4 +1,4 @@
-// Copyright (c) 2009 The Chromium Authors. All rights reserved.
+// Copyright 2009 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace sql {
 class Database;
@@ -48,7 +49,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) DatabasesTable {
       std::vector<DatabaseDetails>* details);
   bool DeleteOriginIdentifier(const std::string& origin_identifier);
  private:
-  sql::Database* db_;
+  raw_ptr<sql::Database> db_;
 };
 
 }  // namespace storage

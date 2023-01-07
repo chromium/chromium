@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,15 +15,15 @@
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace {
 
 constexpr base::TimeDelta kPictureInPictureStyleChangeTransitionDuration =
-    base::TimeDelta::FromMilliseconds(200);
+    base::Milliseconds(200);
 constexpr base::TimeDelta kPictureInPictureHiddenAnimationSeconds =
-    base::TimeDelta::FromMilliseconds(300);
+    base::Milliseconds(300);
 
 }  // namespace
 
@@ -80,10 +80,8 @@ PictureInPictureInterstitial::PictureInPictureInterstitial(
   message_element_ = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   message_element_->SetShadowPseudoId(
       AtomicString("-internal-picture-in-picture-interstitial-message"));
-  message_element_->setInnerText(
-      GetVideoElement().GetLocale().QueryString(
-          IDS_MEDIA_PICTURE_IN_PICTURE_INTERSTITIAL_TEXT),
-      ASSERT_NO_EXCEPTION);
+  message_element_->setInnerText(GetVideoElement().GetLocale().QueryString(
+      IDS_MEDIA_PICTURE_IN_PICTURE_INTERSTITIAL_TEXT));
   ParserAppendChild(message_element_);
 
   resize_observer_->observe(video_element_);

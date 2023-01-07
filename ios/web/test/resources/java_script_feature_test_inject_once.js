@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
  * @fileoverview Setup functions used in JavaScriptFeature inttests. This file
  * will be executed once for a given |window| JS object.
  */
-goog.provide('__crWeb.javaScriptFeatureTestInjectOnce');
 
 /**
  * Namespace for this file. It depends on |__gCrWeb| having already been

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -65,15 +65,17 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_math.h"
+#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/load_flags.h"
@@ -81,8 +83,10 @@
 #include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 // TODO(eroman): Add support for POST parameters.
 // TODO(eroman): Add controls for bypassing the cache.
@@ -139,6 +143,10 @@ class CertNetFetcherURLLoader::AsyncCertNetFetcherURLLoader {
           factory_pending_remote,
       BindNewURLLoaderFactoryCallback bind_new_url_loader_factory_cb);
 
+  AsyncCertNetFetcherURLLoader(const AsyncCertNetFetcherURLLoader&) = delete;
+  AsyncCertNetFetcherURLLoader& operator=(const AsyncCertNetFetcherURLLoader&) =
+      delete;
+
   // The AsyncCertNetFetcherURLLoader is expected to be kept alive until all
   // requests have completed or Shutdown() is called.
   ~AsyncCertNetFetcherURLLoader();
@@ -185,8 +193,6 @@ class CertNetFetcherURLLoader::AsyncCertNetFetcherURLLoader {
   BindNewURLLoaderFactoryCallback bind_new_url_loader_factory_cb_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncCertNetFetcherURLLoader);
 };
 
 namespace {
@@ -202,8 +208,8 @@ net::Error CanFetchUrl(const GURL& url) {
 
 base::TimeDelta GetTimeout(int timeout_milliseconds) {
   if (timeout_milliseconds == net::CertNetFetcher::DEFAULT)
-    return base::TimeDelta::FromSeconds(kTimeoutSeconds);
-  return base::TimeDelta::FromMilliseconds(timeout_milliseconds);
+    return base::Seconds(kTimeoutSeconds);
+  return base::Milliseconds(timeout_milliseconds);
 }
 
 size_t GetMaxResponseBytes(int max_response_bytes,
@@ -229,6 +235,9 @@ class CertNetFetcherURLLoader::RequestCore
       : completion_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                           base::WaitableEvent::InitialState::NOT_SIGNALED),
         task_runner_(std::move(task_runner)) {}
+
+  RequestCore(const RequestCore&) = delete;
+  RequestCore& operator=(const RequestCore&) = delete;
 
   void AttachedToJob(Job* job) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -288,7 +297,7 @@ class CertNetFetcherURLLoader::RequestCore
   void CancelJobOnTaskRunner();
 
   // A non-owned pointer to the job that is executing the request.
-  Job* job_ = nullptr;
+  raw_ptr<Job> job_ = nullptr;
 
   // May be written to from network thread, or from the caller thread only when
   // there is no work that will be done on the network thread (e.g. when the
@@ -302,12 +311,13 @@ class CertNetFetcherURLLoader::RequestCore
 
   // The task runner of the creation thread.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestCore);
 };
 
 struct CertNetFetcherURLLoader::RequestParams {
   RequestParams();
+
+  RequestParams(const RequestParams&) = delete;
+  RequestParams& operator=(const RequestParams&) = delete;
 
   bool operator<(const RequestParams& other) const;
 
@@ -319,9 +329,6 @@ struct CertNetFetcherURLLoader::RequestParams {
   base::TimeDelta timeout;
 
   // IMPORTANT: When adding fields to this structure, update operator<().
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RequestParams);
 };
 
 CertNetFetcherURLLoader::RequestParams::RequestParams()
@@ -342,6 +349,10 @@ class Job {
  public:
   Job(std::unique_ptr<CertNetFetcherURLLoader::RequestParams> request_params,
       CertNetFetcherURLLoader::AsyncCertNetFetcherURLLoader* parent);
+
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
+
   ~Job();
 
   const CertNetFetcherURLLoader::RequestParams& request_params() const {
@@ -403,9 +414,7 @@ class Job {
 
   // Non-owned pointer to the AsyncCertNetFetcherURLLoader that created this
   // job.
-  CertNetFetcherURLLoader::AsyncCertNetFetcherURLLoader* parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
+  raw_ptr<CertNetFetcherURLLoader::AsyncCertNetFetcherURLLoader> parent_;
 };
 
 }  // namespace
@@ -434,7 +443,7 @@ void CertNetFetcherURLLoader::RequestCore::CancelJob() {
 
 void CertNetFetcherURLLoader::RequestCore::CancelJobOnTaskRunner() {
   if (job_) {
-    auto* job = job_;
+    auto* job = job_.get();
     job_ = nullptr;
     job->DetachRequest(this);
   }
@@ -461,7 +470,7 @@ void Job::AttachRequest(
 void Job::DetachRequest(CertNetFetcherURLLoader::RequestCore* request) {
   std::unique_ptr<Job> delete_this;
 
-  auto it = std::find(requests_.begin(), requests_.end(), request);
+  auto it = base::ranges::find(requests_, request);
   DCHECK(it != requests_.end());
   requests_.erase(it);
 
@@ -614,7 +623,7 @@ void CertNetFetcherURLLoader::AsyncCertNetFetcherURLLoader::
   // it, binding it to a new pipe, and dropping the PendingReceiver on the
   // floor.
   factory_.reset();
-  ignore_result(factory_.BindNewPipeAndPassReceiver());
+  std::ignore = factory_.BindNewPipeAndPassReceiver();
   factory_.FlushForTesting();
 }
 

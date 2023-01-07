@@ -1,0 +1,64 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//testing/test.gni")
+
+static_library("calendar") {
+  sources = [
+    "calendar_api_requests.cc",
+    "calendar_api_requests.h",
+    "calendar_api_response_types.cc",
+    "calendar_api_response_types.h",
+    "calendar_api_url_generator.cc",
+    "calendar_api_url_generator.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base/third_party/dynamic_annotations",
+    "//components/signin/public/identity_manager",
+    "//crypto",
+    "//google_apis:google_apis",
+    "//google_apis/common:common",
+    "//net",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = []
+
+  public_deps = [
+    ":calendar",
+    "//base",
+    "//base/test:test_support",
+    "//google_apis:test_support",
+    "//google_apis/common:common",
+    "//google_apis/common:test_support",
+    "//net:test_support",
+  ]
+}
+
+source_set("calendar_unittests") {
+  testonly = true
+
+  sources = [
+    "calendar_api_requests_unittest.cc",
+    "calendar_api_response_types_unittest.cc",
+    "calendar_api_url_generator_unittest.cc",
+  ]
+
+  deps = [
+    ":calendar",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

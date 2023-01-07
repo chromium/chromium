@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ AppListClientImpl* GetAppListClient();
 Profile* CreateSecondProfileAsync();
 
 // Creates |n| app items with dummy data and adds to the current app-list
-// client.
+// client. New app items are appended to the end of the app list.
 void PopulateDummyAppListItems(int n);
 
 }  // namespace test

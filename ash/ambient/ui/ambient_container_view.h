@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,18 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
-class AmbientAssistantContainerView;
-class AmbientViewDelegate;
-class PhotoView;
+class AmbientAnimationProgressTracker;
+class AmbientAnimationStaticResources;
+class AmbientMultiScreenMetricsRecorder;
+class AmbientViewDelegateImpl;
+
+namespace ambient {
+class AmbientOrientationMetricsRecorder;
+}  // namespace ambient
 
 // Container view to display all Ambient Mode related views, i.e. photo frame,
 // weather info.
@@ -23,19 +27,22 @@ class ASH_EXPORT AmbientContainerView : public views::View {
  public:
   METADATA_HEADER(AmbientContainerView);
 
-  explicit AmbientContainerView(AmbientViewDelegate* delegate);
+  // |animation_static_resources| contains the Lottie animation file to render
+  // along with its accompanying static image assets. If null, that means the
+  // slideshow UI should be rendered instead.
+  AmbientContainerView(
+      AmbientViewDelegateImpl* delegate,
+      AmbientAnimationProgressTracker* progress_tracker,
+      std::unique_ptr<AmbientAnimationStaticResources>
+          animation_static_resources,
+      AmbientMultiScreenMetricsRecorder* multi_screen_metrics_recorder);
   ~AmbientContainerView() override;
 
  private:
   friend class AmbientAshTestBase;
 
-  void Init();
-
-  AmbientViewDelegate* delegate_ = nullptr;
-
-  // Owned by view hierarchy.
-  PhotoView* photo_view_ = nullptr;
-  AmbientAssistantContainerView* ambient_assistant_container_view_ = nullptr;
+  std::unique_ptr<ambient::AmbientOrientationMetricsRecorder>
+      orientation_metrics_recorder_;
 };
 
 }  // namespace ash

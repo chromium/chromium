@@ -1,13 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_ICON_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/omnibox/browser/location_bar_model.h"
-#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace content {
 class WebContents;
@@ -18,7 +19,6 @@ enum SecurityLevel;
 }
 
 // Use a LocationIconView to display an icon on the leading side of the edit
-// field. It shows the user's current action (while the user is editing), or the
 // page security status (after navigation has completed), or extension name (if
 // the URL is a chrome-extension:// URL).
 class LocationIconView : public IconLabelBubbleView {
@@ -109,25 +109,8 @@ class LocationIconView : public IconLabelBubbleView {
   bool IsTriggerableEvent(const ui::Event& event) override;
 
  private:
-  // The security level when the location icon was last updated. Used to decide
-  // whether to animate security level transitions.
-  security_state::SecurityLevel last_update_security_level_ =
-      security_state::NONE;
-
-  // Whether the delegate's editing or empty flag was set the last time the
-  // location icon was updated.
-  bool was_editing_or_empty_ = false;
-
   // Returns what the minimum size would be if the preferred size were |size|.
   gfx::Size GetMinimumSizeForPreferredSize(gfx::Size size) const;
-
-  Delegate* delegate_;
-
-  // Used to scope the lifetime of asynchronous icon fetch callbacks to the
-  // lifetime of the object. Weak pointers issued by this factory are
-  // invalidated whenever we start a new icon fetch, so don't use this weak
-  // factory for any other purposes.
-  base::WeakPtrFactory<LocationIconView> icon_fetch_weak_ptr_factory_{this};
 
   // Determines whether or not a text change should be animated.
   bool GetAnimateTextVisibilityChange() const;
@@ -142,6 +125,23 @@ class LocationIconView : public IconLabelBubbleView {
 
   // Handles the arrival of an asynchronously fetched icon.
   void OnIconFetched(const gfx::Image& image);
+
+  // The security level when the location icon was last updated. Used to decide
+  // whether to animate security level transitions.
+  security_state::SecurityLevel last_update_security_level_ =
+      security_state::NONE;
+
+  // Whether the delegate's editing or empty flag was set the last time the
+  // location icon was updated.
+  bool was_editing_or_empty_ = false;
+
+  raw_ptr<Delegate> delegate_;
+
+  // Used to scope the lifetime of asynchronous icon fetch callbacks to the
+  // lifetime of the object. Weak pointers issued by this factory are
+  // invalidated whenever we start a new icon fetch, so don't use this weak
+  // factory for any other purposes.
+  base::WeakPtrFactory<LocationIconView> icon_fetch_weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_ICON_VIEW_H_

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,10 +37,9 @@ ForceInstalledTestBase::ForceInstalledTestBase() = default;
 ForceInstalledTestBase::~ForceInstalledTestBase() = default;
 
 void ForceInstalledTestBase::SetUp() {
-  ON_CALL(policy_provider_, IsInitializationComplete(testing::_))
-      .WillByDefault(testing::Return(false));
-  ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
-      .WillByDefault(testing::Return(false));
+  policy_provider_.SetDefaultReturns(
+      /*is_initialization_complete_return=*/false,
+      /*is_first_policy_load_complete_return=*/false);
 
   auto policy_service = std::make_unique<policy::PolicyServiceImpl>(
       std::vector<policy::ConfigurationPolicyProvider*>{&policy_provider_});
@@ -48,8 +47,9 @@ void ForceInstalledTestBase::SetUp() {
       TestingBrowserProcess::GetGlobal());
   ASSERT_TRUE(profile_manager_->SetUp());
   profile_ = profile_manager_->CreateTestingProfile(
-      "p1", nullptr, u"p1", 0, "", TestingProfile::TestingFactories(),
-      base::nullopt, std::move(policy_service));
+      "p1", nullptr, u"p1", 0, TestingProfile::TestingFactories(),
+      /*is_supervised_profile=*/false, absl::nullopt,
+      std::move(policy_service));
 
   prefs_ = profile_->GetTestingPrefService();
   registry_ = ExtensionRegistry::Get(profile_);
@@ -58,10 +58,11 @@ void ForceInstalledTestBase::SetUp() {
       std::make_unique<ForceInstalledTracker>(registry_, profile_);
 }
 
-void ForceInstalledTestBase::SetupForceList(bool is_from_store) {
+void ForceInstalledTestBase::SetupForceList(ExtensionOrigin origin) {
   base::Value list(base::Value::Type::LIST);
-  const std::string update_url =
-      is_from_store ? kExtensionUpdateUrl : kOffStoreUpdateUrl;
+  const std::string update_url = origin == ExtensionOrigin::kWebStore
+                                     ? kExtensionUpdateUrl
+                                     : kOffStoreUpdateUrl;
   list.Append(base::StrCat({kExtensionId1, ";", update_url}));
   list.Append(base::StrCat({kExtensionId2, ";", update_url}));
   std::unique_ptr<base::Value> dict =
@@ -114,9 +115,11 @@ scoped_refptr<const Extension> ForceInstalledTestBase::CreateNewExtension(
     case ForceInstalledTracker::ExtensionStatus::kFailed:
       break;
     case ForceInstalledTracker::ExtensionStatus::kLoaded:
+      registry()->AddEnabled(ext.get());
       force_installed_tracker()->OnExtensionLoaded(profile(), ext.get());
       break;
     case ForceInstalledTracker::ExtensionStatus::kReady:
+      registry()->AddEnabled(ext.get());
       force_installed_tracker()->OnExtensionLoaded(profile(), ext.get());
       force_installed_tracker()->OnExtensionReady(profile(), ext.get());
   }

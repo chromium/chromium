@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/macros.h"
 #include "ui/aura/client/screen_position_client.h"
 
 namespace ash {
@@ -29,6 +28,10 @@ class ASH_EXPORT ScreenPositionController
       aura::Window** target_window);
 
   ScreenPositionController() {}
+
+  ScreenPositionController(const ScreenPositionController&) = delete;
+  ScreenPositionController& operator=(const ScreenPositionController&) = delete;
+
   ~ScreenPositionController() override {}
 
   // aura::client::ScreenPositionClient overrides:
@@ -46,9 +49,6 @@ class ASH_EXPORT ScreenPositionController
   // aura::client::ScreenPositionClient:
   gfx::Point GetRootWindowOriginInScreen(
       const aura::Window* root_window) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenPositionController);
 };
 
 }  // namespace ash

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,11 @@
 // Protocol for instances that will provide menus to ReadingList components.
 @protocol ReadingListMenuProvider
 
-// Creates a context menu configuration instance for the given |item| and it's
-// corresponding |view|.
+// Creates a context menu configuration instance for the given `item` and it's
+// corresponding `view`.
 - (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
                                    (id<ReadingListListItem>)item
-                                                      withView:(UIView*)view
-    API_AVAILABLE(ios(13.0));
+                                                      withView:(UIView*)view;
 
 @end
 

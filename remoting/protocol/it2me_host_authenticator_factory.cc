@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,8 +12,7 @@
 #include "remoting/protocol/negotiating_host_authenticator.h"
 #include "remoting/protocol/validating_authenticator.h"
 
-namespace remoting {
-namespace protocol {
+namespace remoting::protocol {
 
 It2MeHostAuthenticatorFactory::It2MeHostAuthenticatorFactory(
     const std::string& local_cert,
@@ -40,5 +39,4 @@ It2MeHostAuthenticatorFactory::CreateAuthenticator(
       remote_jid, std::move(validation_callback_), std::move(authenticator));
 }
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol

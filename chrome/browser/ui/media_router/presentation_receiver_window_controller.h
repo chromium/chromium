@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,10 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/media_router/presentation_receiver_window_delegate.h"
 #include "components/media_router/browser/presentation/presentation_navigation_policy.h"
@@ -19,7 +21,6 @@
 
 class GURL;
 class PresentationReceiverWindow;
-class Profile;
 
 namespace content {
 class WebContents;
@@ -48,6 +49,11 @@ class PresentationReceiverWindowController final
                             const gfx::Rect& bounds,
                             base::OnceClosure termination_callback,
                             TitleChangeCallback title_change_callback);
+
+  PresentationReceiverWindowController(
+      const PresentationReceiverWindowController&) = delete;
+  PresentationReceiverWindowController& operator=(
+      const PresentationReceiverWindowController&) = delete;
 
   ~PresentationReceiverWindowController() final;
 
@@ -103,13 +109,15 @@ class PresentationReceiverWindowController final
       const GURL& target_url) override;
 
   // The profile used for the presentation.
-  Profile* otr_profile_;
+  raw_ptr<Profile> otr_profile_;
+  base::ScopedObservation<Profile, ProfileObserver> otr_profile_observation_{
+      this};
 
   // WebContents for rendering the receiver page.
   std::unique_ptr<content::WebContents> web_contents_;
 
   // The actual UI window for displaying the receiver page.
-  PresentationReceiverWindow* window_;
+  raw_ptr<PresentationReceiverWindow> window_;
 
   base::OnceClosure termination_callback_;
 
@@ -117,8 +125,6 @@ class PresentationReceiverWindowController final
   TitleChangeCallback title_change_callback_;
 
   media_router::PresentationNavigationPolicy navigation_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationReceiverWindowController);
 };
 
 #endif  // CHROME_BROWSER_UI_MEDIA_ROUTER_PRESENTATION_RECEIVER_WINDOW_CONTROLLER_H_

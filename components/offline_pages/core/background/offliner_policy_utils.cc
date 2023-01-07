@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,7 @@ OfflinerPolicyUtils::CheckRequestExpirationStatus(
   DCHECK(policy);
 
   if (OfflineTimeNow() - request->creation_time() >=
-      base::TimeDelta::FromSeconds(
-          policy->GetRequestExpirationTimeInSeconds())) {
+      base::Seconds(policy->GetRequestExpirationTimeInSeconds())) {
     return RequestExpirationStatus::EXPIRED;
   }
   if (request->started_attempt_count() >= policy->GetMaxStartedTries())

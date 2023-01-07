@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,19 +34,25 @@ TaskSource::Transaction::~Transaction() {
 }
 
 void TaskSource::Transaction::UpdatePriority(TaskPriority priority) {
-  if (FeatureList::IsEnabled(kAllTasksUserBlocking))
-    return;
   task_source_->traits_.UpdatePriority(priority);
   task_source_->priority_racy_.store(task_source_->traits_.priority(),
                                      std::memory_order_relaxed);
 }
 
-void TaskSource::SetHeapHandle(const HeapHandle& handle) {
-  heap_handle_ = handle;
+void TaskSource::SetImmediateHeapHandle(const HeapHandle& handle) {
+  immediate_pq_heap_handle_ = handle;
 }
 
-void TaskSource::ClearHeapHandle() {
-  heap_handle_ = HeapHandle();
+void TaskSource::ClearImmediateHeapHandle() {
+  immediate_pq_heap_handle_ = HeapHandle();
+}
+
+void TaskSource::SetDelayedHeapHandle(const HeapHandle& handle) {
+  delayed_pq_heap_handle_ = handle;
+}
+
+void TaskSource::ClearDelayedHeapHandle() {
+  delayed_pq_heap_handle_ = HeapHandle();
 }
 
 TaskPriority TaskSource::priority_racy() const {
@@ -80,6 +86,11 @@ TaskSource::~TaskSource() {
 
 TaskSource::Transaction TaskSource::BeginTransaction() {
   return Transaction(this);
+}
+
+void TaskSource::ClearForTesting() {
+  auto task = Clear(nullptr);
+  std::move(task.task).Run();
 }
 
 RegisteredTaskSource::RegisteredTaskSource() = default;
@@ -128,6 +139,13 @@ RegisteredTaskSource& RegisteredTaskSource::operator=(
   return *this;
 }
 
+void RegisteredTaskSource::OnBecomeReady() {
+#if DCHECK_IS_ON()
+  DCHECK_EQ(run_step_, State::kInitial);
+#endif  // DCHECK_IS_ON()
+  task_source_->OnBecomeReady();
+}
+
 TaskSource::RunStatus RegisteredTaskSource::WillRunTask() {
   TaskSource::RunStatus run_status = task_source_->WillRunTask();
 #if DCHECK_IS_ON()
@@ -161,6 +179,15 @@ bool RegisteredTaskSource::DidProcessTask(
   return task_source_->DidProcessTask(transaction);
 }
 
+bool RegisteredTaskSource::WillReEnqueue(TimeTicks now,
+                                         TaskSource::Transaction* transaction) {
+  DCHECK(!transaction || transaction->task_source() == get());
+#if DCHECK_IS_ON()
+  DCHECK_EQ(State::kInitial, run_step_);
+#endif  // DCHECK_IS_ON()
+  return task_source_->WillReEnqueue(now, transaction);
+}
+
 RegisteredTaskSource::RegisteredTaskSource(
     scoped_refptr<TaskSource> task_source,
     TaskTracker* task_tracker)
@@ -181,6 +208,27 @@ TransactionWithRegisteredTaskSource::FromTaskSource(
   auto transaction = task_source_in->BeginTransaction();
   return TransactionWithRegisteredTaskSource(std::move(task_source_in),
                                              std::move(transaction));
+}
+
+TaskSourceAndTransaction::TaskSourceAndTransaction(
+    TaskSourceAndTransaction&& other) = default;
+
+TaskSourceAndTransaction::~TaskSourceAndTransaction() = default;
+
+TaskSourceAndTransaction::TaskSourceAndTransaction(
+    scoped_refptr<TaskSource> task_source_in,
+    TaskSource::Transaction transaction_in)
+    : task_source(std::move(task_source_in)),
+      transaction(std::move(transaction_in)) {
+  DCHECK_EQ(task_source.get(), transaction.task_source());
+}
+
+// static:
+TaskSourceAndTransaction TaskSourceAndTransaction::FromTaskSource(
+    scoped_refptr<TaskSource> task_source_in) {
+  auto transaction = task_source_in->BeginTransaction();
+  return TaskSourceAndTransaction(std::move(task_source_in),
+                                  std::move(transaction));
 }
 
 }  // namespace internal

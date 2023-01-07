@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -36,6 +36,15 @@ class VIEWS_EXPORT ViewObserver {
 
   // Called when the bounds of |observed_view|'s layer change.
   virtual void OnLayerTargetBoundsChanged(View* observed_view) {}
+
+  // Called when the `observed_view`'s layer transform changes.
+  // TODO(crbug.com/1203386): This is temporarily added to support a migration.
+  // Do not use for new call sites, we should instead figure out how to
+  // migrate this method (and possibly others) into callbacks.
+  virtual void OnViewLayerTransformed(View* observed_view) {}
+
+  // Called when `observed_view`'s layer clip rect changes.
+  virtual void OnViewLayerClipRectChanged(View* observed_view) {}
 
   // Called when View::ViewHierarchyChanged() is called.
   virtual void OnViewHierarchyChanged(

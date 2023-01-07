@@ -9,7 +9,7 @@ var x, y, w = 1, h = 1;
 function testLargeDimension(size, isWidth) {
     canvas.width = (isWidth ? size : 50);
     canvas.height = (isWidth ? 50 : size);
-    var ctx = canvas.getContext('2d');
+    var ctx = canvas.getContext('2d', {willReadFrequently: true});
     ctx.fillStyle = 'rgba(255, 255, 255, 1)';
     assert_equals((isWidth ? canvas.width : canvas.height), size);
     x = canvas.width - 2;

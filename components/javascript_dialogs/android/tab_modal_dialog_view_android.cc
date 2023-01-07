@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/javascript_dialogs/android/jni_headers/JavascriptTabModalDialog_jni.h"
 #include "content/public/browser/browser_thread.h"

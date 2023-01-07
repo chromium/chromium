@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,14 +43,14 @@ void DownloadAndVerifyFile(Browser* browser,
   embedded_test_server.ServeFilesFromDirectory(test_data_directory);
   ASSERT_TRUE(embedded_test_server.Start());
   content::DownloadManager* download_manager =
-      content::BrowserContext::GetDownloadManager(browser->profile());
+      browser->profile()->GetDownloadManager();
   content::DownloadTestObserverTerminal observer(
       download_manager, 1,
       content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
   GURL url(embedded_test_server.GetURL("/" + file.MaybeAsASCII()));
   base::FilePath downloaded = dir.Append(file);
   EXPECT_FALSE(base::PathExists(downloaded));
-  ui_test_utils::NavigateToURL(browser, url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
   observer.WaitForFinished();
   EXPECT_EQ(1u,
             observer.NumDownloadsSeenInState(download::DownloadItem::COMPLETE));

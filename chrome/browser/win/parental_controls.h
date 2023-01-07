@@ -1,11 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_WIN_PARENTAL_CONTROLS_H_
 #define CHROME_BROWSER_WIN_PARENTAL_CONTROLS_H_
-
-#include "base/compiler_specific.h"
 
 struct WinParentalControls {
   bool any_restrictions = false;
@@ -20,6 +18,6 @@ void InitializeWinParentalControls();
 // caches if the platform controls have been enabled on the first call, which
 // requires a thread supporting blocking. Subsequent calls may be from any
 // thread.
-const WinParentalControls& GetWinParentalControls() WARN_UNUSED_RESULT;
+[[nodiscard]] const WinParentalControls& GetWinParentalControls();
 
 #endif  // CHROME_BROWSER_WIN_PARENTAL_CONTROLS_H_

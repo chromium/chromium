@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator_compositor_coordinator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
@@ -63,7 +63,7 @@ class CORE_EXPORT ScrollAnimatorBase
   // no unusedDelta and didScroll=true, i.e. fully consuming the scroll request.
   // This makes animations latch to a single scroller. Note, the semantics are
   // currently somewhat different on Mac - see ScrollAnimatorMac.mm.
-  virtual ScrollResult UserScroll(ScrollGranularity,
+  virtual ScrollResult UserScroll(ui::ScrollGranularity,
                                   const ScrollOffset& delta,
                                   ScrollableArea::ScrollCallback on_finish);
 
@@ -77,11 +77,13 @@ class CORE_EXPORT ScrollAnimatorBase
   // area.
   virtual ScrollOffset ComputeDeltaToConsume(const ScrollOffset& delta) const;
 
+  virtual void AdjustAnimation(const gfx::Vector2d& adjustment) {}
+
   // ScrollAnimatorCompositorCoordinator implementation.
   ScrollableArea* GetScrollableArea() const override {
     return scrollable_area_;
   }
-  void TickAnimation(double monotonic_time) override {}
+  void TickAnimation(base::TimeTicks monotonic_time) override {}
   void CancelAnimation() override {}
   void TakeOverCompositorAnimation() override {}
   void UpdateCompositorAnimations() override {}
@@ -92,8 +94,6 @@ class CORE_EXPORT ScrollAnimatorBase
   void Trace(Visitor*) const override;
 
  protected:
-  virtual void NotifyOffsetChanged();
-
   Member<ScrollableArea> scrollable_area_;
 
   ScrollOffset current_offset_;

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,18 +18,6 @@ var NetworkType = chrome.networkingPrivate.NetworkType;
 var kCellularGuid = 'stub_cellular1_guid';
 var kDefaultPin = '1111';
 var kDefaultPuk = '12345678';
-
-// Test properties for the verification API.
-var verificationProperties = {
-  certificate: 'certificate',
-  intermediateCertificates: ['ica1', 'ica2', 'ica3'],
-  publicKey: 'cHVibGljX2tleQ==',  // Base64('public_key')
-  nonce: 'nonce',
-  signedData: 'c2lnbmVkX2RhdGE=',  // Base64('signed_data')
-  deviceSerial: 'device_serial',
-  deviceSsid: 'Device 0123',
-  deviceBssid: '00:01:02:03:04:05'
-};
 
 var privateHelpers = {
   // Watches for the states |expectedStates| in reverse order. If all states
@@ -644,10 +632,18 @@ var availableTests = [
         assertEq({
           ConnectionState: ConnectionStateType.NOT_CONNECTED,
           GUID: 'stub_wifi2',
+          IPAddressConfigType: {
+            Active: 'DHCP',
+            Effective: 'UserPolicy'
+          },
           Name: {
             Active: 'wifi2_PSK',
             Effective: 'UserPolicy',
             UserPolicy: 'My WiFi Network'
+          },
+          NameServersConfigType: {
+            Active: 'DHCP',
+            Effective: 'UserPolicy'
           },
           ProxySettings: {
             Type: {
@@ -656,20 +652,16 @@ var availableTests = [
               UserPolicy: 'Direct'
             }
           },
-          IPAddressConfigType: {
-            Active: 'DHCP',
-            Effective: 'UserPolicy'
-          },
-          NameServersConfigType: {
-            Active: 'DHCP',
-            Effective: 'UserPolicy'
-          },
           Source: 'UserPolicy',
           Type: NetworkType.WI_FI,
           WiFi: {
             AutoConnect: {
-              UserEditable: true
+              Effective: 'UserPolicy',
+              UserEditable: true,
+              UserPolicy: false
             },
+            Frequency: 5000,
+            FrequencyList: [2400, 5000],
             HexSSID: {
               Active: '77696669325F50534B', // 'wifi2_PSK'
               Effective: 'UserPolicy',
@@ -680,8 +672,6 @@ var availableTests = [
               Effective: 'UserPolicy',
               UserPolicy: false,
             },
-            Frequency: 5000,
-            FrequencyList: [2400, 5000],
             Passphrase: {
               Effective: 'UserSetting',
               UserEditable: true,
@@ -891,21 +881,6 @@ var availableTests = [
     chrome.test.listenOnce(
         chrome.networkingPrivate.onCertificateListsChanged, function() {});
     chrome.test.sendMessage('eventListenerReady');
-  },
-  function verifyDestination() {
-    chrome.networkingPrivate.verifyDestination(
-      verificationProperties,
-      callbackPass(function(isValid) {
-        assertTrue(isValid);
-      }));
-  },
-  function verifyAndEncryptData() {
-    chrome.networkingPrivate.verifyAndEncryptData(
-      verificationProperties,
-      'data',
-      callbackPass(function(result) {
-        assertEq('encrypted_data', result);
-      }));
   },
   function getCaptivePortalStatus() {
     var networks = [['stub_ethernet_guid', 'Online'],

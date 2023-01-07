@@ -1,12 +1,9 @@
-#!/usr/bin/env python2
+#!/usr/bin/env vpython3
 #
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 '''Implements Chrome-Fuchsia package binary size checks.'''
-
-from __future__ import division
-from __future__ import print_function
 
 import argparse
 import collections
@@ -26,6 +23,9 @@ import uuid
 
 from common import GetHostToolPathFromPlatform, GetHostArchFromPlatform
 from common import SDK_ROOT, DIR_SOURCE_ROOT
+
+PACKAGES_BLOBS_FILE = 'package_blobs.json'
+PACKAGES_SIZES_FILE = 'package_sizes.json'
 
 # Structure representing the compressed and uncompressed sizes for a Fuchsia
 # package.
@@ -96,7 +96,7 @@ def CreateTestResults(test_status, timestamp):
   """Create test results data to write to JSON test results file.
 
   The JSON data format is defined in
-  https://chromium.googlesource.com/chromium/src/+/master/docs/testing/json_test_results_format.md
+  https://chromium.googlesource.com/chromium/src/+/main/docs/testing/json_test_results_format.md
   """
 
   results = {
@@ -182,6 +182,29 @@ def WriteGerritPluginSizeData(output_path, package_sizes):
     json.dump(sizes_data, sizes_file)
 
 
+def ReadPackageBlobsJson(json_path):
+  """Reads package blob info from json file.
+
+  Opens json file of blob info written by WritePackageBlobsJson,
+  and converts back into package blobs used in this script.
+  """
+  with open(json_path, 'rt') as json_file:
+    formatted_blob_info = json.load(json_file)
+
+  package_blobs = {}
+  for package in formatted_blob_info:
+    package_blobs[package] = {}
+    for blob_info in formatted_blob_info[package]:
+      blob = Blob(name=blob_info['path'],
+                  hash=blob_info['merkle'],
+                  uncompressed=blob_info['bytes'],
+                  compressed=blob_info['size'],
+                  is_counted=blob_info['is_counted'])
+      package_blobs[package][blob.name] = blob
+
+  return package_blobs
+
+
 def WritePackageBlobsJson(json_path, package_blobs):
   """Writes package blob information in human-readable JSON format.
 
@@ -200,8 +223,8 @@ def WritePackageBlobsJson(json_path, package_blobs):
     for blob_name in package_blobs[package]:
       blob = package_blobs[package][blob_name]
       blob_data.append({
-          'path': blob.name,
-          'merkle': blob.hash,
+          'path': str(blob.name),
+          'merkle': str(blob.hash),
           'bytes': blob.uncompressed,
           'size': blob.compressed,
           'is_counted': blob.is_counted
@@ -210,6 +233,41 @@ def WritePackageBlobsJson(json_path, package_blobs):
 
   with (open(json_path, 'w')) as json_file:
     json.dump(formatted_blob_stats_per_package, json_file, indent=2)
+
+
+def WritePackageSizesJson(json_path, package_sizes):
+  """Writes package sizes into a human-readable JSON format.
+
+  JSON data is a dictionary of each package name being a key, with
+  the following keys within the sub-object:
+    'compressed': compressed size of the package in bytes.
+    'uncompressed': uncompressed size of the package in bytes.
+  """
+  formatted_package_sizes = {}
+  for package, size_info in package_sizes.items():
+    formatted_package_sizes[package] = {
+        'uncompressed': size_info.uncompressed,
+        'compressed': size_info.compressed
+    }
+  with (open(json_path, 'w')) as json_file:
+    json.dump(formatted_package_sizes, json_file, indent=2)
+
+
+def ReadPackageSizesJson(json_path):
+  """Reads package_sizes from a given JSON file.
+
+  Opens json file of blob info written by WritePackageSizesJson,
+  and converts back into package sizes used in this script.
+  """
+  with open(json_path, 'rt') as json_file:
+    formatted_package_info = json.load(json_file)
+
+  package_sizes = {}
+  for package, size_info in formatted_package_info.items():
+    package_sizes[package] = PackageSizes(
+        compressed=size_info['compressed'],
+        uncompressed=size_info['uncompressed'])
+  return package_sizes
 
 
 def GetCompressedSize(file_path):
@@ -228,7 +286,7 @@ def GetCompressedSize(file_path):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT)
     proc.wait()
-    compressor_output = proc.stdout.read()
+    compressor_output = proc.stdout.read().decode('utf-8')
     if proc.returncode != 0:
       print(compressor_output, file=sys.stderr)
       raise Exception('Error while running %s' % compressor_path)
@@ -407,7 +465,8 @@ def GetPackageSizes(package_blobs):
   blob_counts = collections.defaultdict(int)
   for package_name in package_blobs:
     for blob_name in package_blobs[package_name]:
-      blob_counts[blob_name] += 1
+      blob = package_blobs[package_name][blob_name]
+      blob_counts[blob.hash] += 1
 
   # Package sizes are the sum of blob sizes divided by their share counts.
   package_sizes = {}
@@ -417,7 +476,7 @@ def GetPackageSizes(package_blobs):
     for blob_name in package_blobs[package_name]:
       blob = package_blobs[package_name][blob_name]
       if blob.is_counted:
-        count = blob_counts[blob_name]
+        count = blob_counts[blob.hash]
         compressed_total += blob.compressed // count
         uncompressed_total += blob.uncompressed // count
     package_sizes[package_name] = PackageSizes(compressed_total,
@@ -469,8 +528,7 @@ def main():
   )
   parser.add_argument(
       '--sizes-path',
-      default=os.path.join('fuchsia', 'release', 'size_tests',
-                           'fyi_sizes.json'),
+      default=os.path.join('tools', 'fuchsia', 'size_tests', 'fyi_sizes.json'),
       help='path to package size limits json file.  The path is relative to '
       'the workspace src directory')
   parser.add_argument('--verbose',
@@ -540,7 +598,9 @@ def main():
       with open(os.path.join(results_directory, 'perf_results.json'), 'w') as f:
         json.dump(sizes_histogram, f)
       WritePackageBlobsJson(
-          os.path.join(results_directory, 'package_blobs.json'), package_blobs)
+          os.path.join(results_directory, PACKAGES_BLOBS_FILE), package_blobs)
+      WritePackageSizesJson(
+          os.path.join(results_directory, PACKAGES_SIZES_FILE), package_sizes)
 
     if args.isolated_script_test_output:
       WriteTestResults(args.isolated_script_test_output, test_completed,

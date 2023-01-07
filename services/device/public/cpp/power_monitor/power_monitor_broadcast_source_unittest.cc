@@ -1,12 +1,12 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/device/public/cpp/power_monitor/power_monitor_broadcast_source.h"
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/power_monitor_test_base.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -14,6 +14,12 @@
 namespace device {
 
 class PowerMonitorBroadcastSourceTest : public testing::Test {
+ public:
+  PowerMonitorBroadcastSourceTest(const PowerMonitorBroadcastSourceTest&) =
+      delete;
+  PowerMonitorBroadcastSourceTest& operator=(
+      const PowerMonitorBroadcastSourceTest&) = delete;
+
  protected:
   PowerMonitorBroadcastSourceTest() {}
   ~PowerMonitorBroadcastSourceTest() override {}
@@ -38,13 +44,11 @@ class PowerMonitorBroadcastSourceTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
  private:
-  PowerMonitorBroadcastSource* power_monitor_source_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(PowerMonitorBroadcastSourceTest);
+  raw_ptr<PowerMonitorBroadcastSource> power_monitor_source_ptr_;
 };
 
 TEST_F(PowerMonitorBroadcastSourceTest, PowerMessageReceiveBroadcast) {
-  base::PowerMonitorTestObserver observer;
+  base::test::PowerMonitorTestObserver observer;
   base::PowerMonitor::AddPowerSuspendObserver(&observer);
   base::PowerMonitor::AddPowerStateObserver(&observer);
 

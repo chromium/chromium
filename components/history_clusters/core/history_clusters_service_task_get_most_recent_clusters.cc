@@ -1,0 +1,257 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "history_clusters_service_task_get_most_recent_clusters.h"
+
+#include <utility>
+
+#include "base/bind.h"
+#include "base/location.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
+#include "base/time/time_to_iso8601.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history_clusters/core/clustering_backend.h"
+#include "components/history_clusters/core/config.h"
+#include "components/history_clusters/core/history_clusters_db_tasks.h"
+#include "components/history_clusters/core/history_clusters_debug_jsons.h"
+#include "components/history_clusters/core/history_clusters_service.h"
+
+namespace {
+
+std::string HistogramNameSlice(
+    history_clusters::HistoryClustersServiceTaskGetMostRecentClusters::Source
+        source) {
+  switch (source) {
+    case history_clusters::HistoryClustersServiceTaskGetMostRecentClusters::
+        Source::kAllKeywordCacheRefresh:
+      return ".AllKeywordCacheRefresh";
+    case history_clusters::HistoryClustersServiceTaskGetMostRecentClusters::
+        Source::kShortKeywordCacheRefresh:
+      return ".ShortKeywordCacheRefresh";
+    case history_clusters::HistoryClustersServiceTaskGetMostRecentClusters::
+        Source::kWebUi:
+      return ".WebUI";
+    default:
+      NOTREACHED();
+  }
+}
+
+}  // namespace
+
+namespace history_clusters {
+
+HistoryClustersServiceTaskGetMostRecentClusters::
+    HistoryClustersServiceTaskGetMostRecentClusters(
+        base::WeakPtr<HistoryClustersService> weak_history_clusters_service,
+        const IncompleteVisitMap incomplete_visit_context_annotations,
+        ClusteringBackend* const backend,
+        history::HistoryService* const history_service,
+        ClusteringRequestSource clustering_request_source,
+        base::Time begin_time,
+        QueryClustersContinuationParams continuation_params,
+        bool recluster,
+        QueryClustersCallback callback,
+        Source source)
+    : weak_history_clusters_service_(std::move(weak_history_clusters_service)),
+      incomplete_visit_context_annotations_(
+          incomplete_visit_context_annotations),
+      backend_(backend),
+      history_service_(history_service),
+      clustering_request_source_(clustering_request_source),
+      begin_time_(begin_time),
+      continuation_params_(continuation_params),
+      recluster_(recluster),
+      callback_(std::move(callback)),
+      source_(source) {
+  DCHECK(weak_history_clusters_service_);
+  DCHECK(history_service_);
+  Start();
+}
+
+HistoryClustersServiceTaskGetMostRecentClusters::
+    ~HistoryClustersServiceTaskGetMostRecentClusters() = default;
+
+void HistoryClustersServiceTaskGetMostRecentClusters::Start() {
+  // Shouldn't request more clusters if history has been exhausted.
+  DCHECK(!continuation_params_.exhausted_all_visits);
+
+  if (continuation_params_.exhausted_unclustered_visits) {
+    // If all unclustered visits have already been clustered and returned, then
+    // return persisted clusters.
+    if (weak_history_clusters_service_ &&
+        weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
+      weak_history_clusters_service_->NotifyDebugMessage(
+          "HistoryClustersServiceTaskGetMostRecentClusters::Start() "
+          "exhausted unclustered visits. Returning most recent clusters.");
+    }
+    ReturnMostRecentPersistedClusters(continuation_params_.continuation_time);
+
+  } else {
+    // TODO(manukh): It's not clear how to blend unclustered and clustered
+    //  visits when iterating recent first. E.g., if we have 4 days of
+    //  unclustered visits, should the most recent 3 be clustered in isolation,
+    //  while the 4th is clustered with older clustered visits? For now, we do
+    //  the simplest approach: cluster each day in isolation. If updating
+    //  clusters occurs frequently enough, this issue will be mitigated.
+    //  However, since the top, most prominent clusters will be the most recent
+    //  clusters, and current-day visits will never be pre-clustered, we
+    //  probably want to make sure they're optimal. So we should probably not
+    //  cluster at least the current day in isolation.
+    get_annotated_visits_to_cluster_start_time_ = base::TimeTicks::Now();
+    history_service_->ScheduleDBTask(
+        FROM_HERE,
+        std::make_unique<GetAnnotatedVisitsToCluster>(
+            incomplete_visit_context_annotations_, begin_time_,
+            continuation_params_, true, 0, recluster_,
+            base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::
+                               OnGotAnnotatedVisitsToCluster,
+                           weak_ptr_factory_.GetWeakPtr())),
+        &task_tracker_);
+  }
+}
+
+void HistoryClustersServiceTaskGetMostRecentClusters::
+    OnGotAnnotatedVisitsToCluster(
+        // Unused because clusters aren't persisted in this flow.
+        std::vector<int64_t> old_clusters_unused,
+        std::vector<history::AnnotatedVisit> annotated_visits,
+        QueryClustersContinuationParams continuation_params) {
+  if (!weak_history_clusters_service_)
+    return;
+  DCHECK(backend_);
+
+  const auto elapsed_time =
+      base::TimeTicks::Now() - get_annotated_visits_to_cluster_start_time_;
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.GetMostRecentClusters."
+      "GetAnnotatedVisitsToClusterLatency",
+      elapsed_time);
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.GetMostRecentClusters."
+      "GetAnnotatedVisitsToClusterLatency" +
+          HistogramNameSlice(source_),
+      elapsed_time);
+
+  if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
+    weak_history_clusters_service_->NotifyDebugMessage(
+        "HistoryClustersServiceTaskGetMostRecentClusters::"
+        "OnGotAnnotatedVisitsToCluster("
+        ")");
+    weak_history_clusters_service_->NotifyDebugMessage(
+        "  continuation_time = " +
+        (continuation_params.continuation_time.is_null()
+             ? "null (i.e. exhausted history)"
+             : base::TimeToISO8601(continuation_params.continuation_time)));
+    weak_history_clusters_service_->NotifyDebugMessage(
+        base::StringPrintf("GET MOST RECENT CLUSTERS TASK - VISITS %zu:",
+                           annotated_visits.size()));
+    weak_history_clusters_service_->NotifyDebugMessage(
+        GetDebugJSONForVisits(annotated_visits));
+  }
+
+  if (annotated_visits.empty()) {
+    // If there're no unclustered visits to cluster, then return persisted
+    // clusters.
+    ReturnMostRecentPersistedClusters(continuation_params.continuation_time);
+
+  } else {
+    base::UmaHistogramCounts1000("History.Clusters.Backend.NumVisitsToCluster",
+                                 static_cast<int>(annotated_visits.size()));
+    get_model_clusters_start_time_ = base::TimeTicks::Now();
+    backend_->GetClusters(
+        clustering_request_source_,
+        base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::
+                           OnGotModelClusters,
+                       weak_ptr_factory_.GetWeakPtr(), continuation_params),
+        std::move(annotated_visits));
+  }
+}
+
+void HistoryClustersServiceTaskGetMostRecentClusters::OnGotModelClusters(
+    QueryClustersContinuationParams continuation_params,
+    std::vector<history::Cluster> clusters) {
+  if (!weak_history_clusters_service_)
+    return;
+
+  const auto elapsed_time =
+      base::TimeTicks::Now() - get_model_clusters_start_time_;
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.GetMostRecentClusters.ComputeClustersLatency",
+      elapsed_time);
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.GetMostRecentClusters.ComputeClustersLatency" +
+          HistogramNameSlice(source_),
+      elapsed_time);
+  base::UmaHistogramCounts1000("History.Clusters.Backend.NumClustersReturned",
+                               clusters.size());
+
+  if (weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
+    weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
+        "GET MOST RECENT CLUSTERS TASK - CLUSTERS %zu:", clusters.size()));
+    weak_history_clusters_service_->NotifyDebugMessage(
+        GetDebugJSONForClusters(clusters));
+  }
+
+  done_ = true;
+  std::move(callback_).Run(clusters, continuation_params);
+}
+
+void HistoryClustersServiceTaskGetMostRecentClusters::
+    ReturnMostRecentPersistedClusters(base::Time exclusive_max_time) {
+  get_most_recent_persisted_clusters_start_time_ = base::TimeTicks::Now();
+  if (GetConfig().persist_clusters_in_history_db && !recluster_) {
+    history_service_->GetMostRecentClusters(
+        begin_time_, exclusive_max_time,
+        GetConfig().max_persisted_clusters_to_fetch,
+        GetConfig().max_persisted_cluster_visits_to_fetch_soft_cap,
+        base::BindOnce(&HistoryClustersServiceTaskGetMostRecentClusters::
+                           OnGotMostRecentPersistedClusters,
+                       weak_ptr_factory_.GetWeakPtr()),
+        &task_tracker_);
+  } else {
+    OnGotMostRecentPersistedClusters({});
+  }
+}
+
+void HistoryClustersServiceTaskGetMostRecentClusters::
+    OnGotMostRecentPersistedClusters(std::vector<history::Cluster> clusters) {
+  if (!weak_history_clusters_service_)
+    return;
+
+  const auto elapsed_time =
+      base::TimeTicks::Now() - get_most_recent_persisted_clusters_start_time_;
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.GetMostRecentClusters."
+      "GetMostRecentPersistedClustersLatency",
+      elapsed_time);
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.GetMostRecentClusters."
+      "GetMostRecentPersistedClustersLatency" +
+          HistogramNameSlice(source_),
+      elapsed_time);
+
+  if (GetConfig().persist_clusters_in_history_db && !recluster_ &&
+      weak_history_clusters_service_->ShouldNotifyDebugMessage()) {
+    weak_history_clusters_service_->NotifyDebugMessage(base::StringPrintf(
+        "GET MOST RECENT CLUSTERS TASK - PERSISTED CLUSTERS %zu:",
+        clusters.size()));
+    weak_history_clusters_service_->NotifyDebugMessage(
+        GetDebugJSONForClusters(clusters));
+  }
+  // TODO(manukh): If the most recent cluster is invalid (due to DB corruption),
+  //  `GetMostRecentClusters()` will return no clusters. We should handle this
+  //  case and not assume we've exhausted history.
+  auto continuation_params =
+      clusters.empty() ? QueryClustersContinuationParams::DoneParams()
+                       : QueryClustersContinuationParams{
+                             clusters.back()
+                                 .GetMostRecentVisit()
+                                 .annotated_visit.visit_row.visit_time,
+                             true, false, true, false};
+  done_ = true;
+  std::move(callback_).Run(clusters, continuation_params);
+}
+
+}  // namespace history_clusters

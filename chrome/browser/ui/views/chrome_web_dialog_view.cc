@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
 #include "ui/views/widget/widget.h"
@@ -34,11 +33,6 @@ gfx::NativeWindow CreateWebDialogWidget(views::Widget::InitParams params,
   views::Widget* widget = new views::Widget;
   widget->Init(std::move(params));
 
-  // Observer is needed for ChromeVox extension to send messages between content
-  // and background scripts.
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      view->web_contents());
-
   if (show)
     widget->Show();
   return widget->GetNativeWindow();
@@ -51,7 +45,7 @@ gfx::NativeWindow ShowWebDialog(gfx::NativeView parent,
                                 content::BrowserContext* context,
                                 ui::WebDialogDelegate* delegate,
                                 bool show) {
-  return ShowWebDialogWithParams(parent, context, delegate, base::nullopt,
+  return ShowWebDialogWithParams(parent, context, delegate, absl::nullopt,
                                  show);
 }
 
@@ -59,10 +53,14 @@ gfx::NativeWindow ShowWebDialogWithParams(
     gfx::NativeView parent,
     content::BrowserContext* context,
     ui::WebDialogDelegate* delegate,
-    base::Optional<views::Widget::InitParams> extra_params,
+    absl::optional<views::Widget::InitParams> extra_params,
     bool show) {
   views::WebDialogView* view = new views::WebDialogView(
       context, delegate, std::make_unique<ChromeWebContentsHandler>());
+  // If the corner radius is specified, set it to |views::DialogDelegate|.
+  if (extra_params && extra_params->corner_radius)
+    view->set_corner_radius(*(extra_params->corner_radius));
+
   views::Widget::InitParams params;
   if (extra_params)
     params = std::move(*extra_params);
@@ -77,9 +75,8 @@ gfx::NativeWindow ShowWebDialogWithParams(
   gfx::NativeWindow window =
       CreateWebDialogWidget(std::move(params), view, show);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(
-          Profile::FromBrowserContext(context));
+  const user_manager::User* user = ash::ProfileHelper::Get()->GetUserByProfile(
+      Profile::FromBrowserContext(context));
   if (user && session_manager::SessionManager::Get()->session_state() ==
                   session_manager::SessionState::ACTIVE) {
     // Dialogs should not be shown for other users when logged in and the

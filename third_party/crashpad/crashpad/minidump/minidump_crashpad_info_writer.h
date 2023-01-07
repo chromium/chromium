@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "minidump/minidump_extensions.h"
 #include "minidump/minidump_stream_writer.h"
 #include "util/misc/uuid.h"
@@ -35,6 +34,11 @@ class ProcessSnapshot;
 class MinidumpCrashpadInfoWriter final : public internal::MinidumpStreamWriter {
  public:
   MinidumpCrashpadInfoWriter();
+
+  MinidumpCrashpadInfoWriter(const MinidumpCrashpadInfoWriter&) = delete;
+  MinidumpCrashpadInfoWriter& operator=(const MinidumpCrashpadInfoWriter&) =
+      delete;
+
   ~MinidumpCrashpadInfoWriter() override;
 
   //! \brief Initializes MinidumpCrashpadInfo based on \a process_snapshot.
@@ -105,8 +109,6 @@ class MinidumpCrashpadInfoWriter final : public internal::MinidumpStreamWriter {
   MinidumpCrashpadInfo crashpad_info_;
   std::unique_ptr<MinidumpSimpleStringDictionaryWriter> simple_annotations_;
   std::unique_ptr<MinidumpModuleCrashpadInfoListWriter> module_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpCrashpadInfoWriter);
 };
 
 }  // namespace crashpad

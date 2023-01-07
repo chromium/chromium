@@ -1,0 +1,183 @@
+{
+  "kind": "calendar#events",
+  "etag": "\"p32ofplf5q6gf20g\"",
+  "timeZone": "America/Los_Angeles",
+  "items": [
+    {
+      "kind": "calendar#event",
+      "id": "1",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest",
+      "summary": "no attendees[].self",
+      "colorId": "3",
+      "start": {
+        "dateTime": "2020-11-02T10:00:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2020-11-02T10:30:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "attendees": [
+        {
+          "email": "test4@google.com",
+          "responseStatus": "needsAction"
+        }
+      ]
+    },
+    {
+      "kind": "calendar#event",
+      "id": "2",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest",
+      "summary": "accepted",
+      "colorId": "3",
+      "start": {
+        "dateTime": "2020-11-02T10:00:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2020-11-02T10:30:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "attendees": [
+        {
+          "email": "test4@google.com",
+          "responseStatus": "accepted",
+          "self": true
+        }
+      ]
+    },
+    {
+      "kind": "calendar#event",
+      "id": "3",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest",
+      "summary": "declined",
+      "colorId": "3",
+      "start": {
+        "dateTime": "2020-11-02T10:00:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2020-11-02T10:30:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "attendees": [
+        {
+          "email": "test4@google.com",
+          "responseStatus": "declined",
+          "self": true
+        }
+      ]
+    },
+    {
+      "kind": "calendar#event",
+      "id": "4",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest",
+      "summary": "needs action",
+      "colorId": "3",
+      "start": {
+        "dateTime": "2020-11-02T10:00:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2020-11-02T10:30:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "attendees": [
+        {
+          "email": "test4@google.com",
+          "responseStatus": "needsAction",
+          "self": true
+        }
+      ]
+    },
+    {
+      "kind": "calendar#event",
+      "id": "5",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest",
+      "summary": "tentative",
+      "colorId": "3",
+      "start": {
+        "dateTime": "2020-11-02T10:00:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2020-11-02T10:30:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "attendees": [
+        {
+          "email": "test4@google.com",
+          "responseStatus": "tentative",
+          "self": true
+        }
+      ]
+    },
+    {
+      "kind": "calendar#event",
+      "id": "6",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest",
+      "summary": "personal time",
+      "colorId": "3",
+      "creator": {
+        "self": true
+      },
+      "start": {
+        "dateTime": "2020-11-02T10:00:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2020-11-02T10:30:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "attendeesOmitted": false
+    },
+    {
+      "kind": "calendar#event",
+      "id": "7",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest",
+      "summary": "non-self attendee",
+      "colorId": "3",
+      "start": {
+        "dateTime": "2020-11-02T10:00:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2020-11-02T10:30:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "attendees": [
+        {
+          "email": "test4@google.com",
+          "responseStatus": "tentative"
+        }
+      ]
+    },
+    {
+      "kind": "calendar#event",
+      "id": "8",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=b3I4MjIxc2lydDRvZ2Ztest",
+      "summary": "has omitted attendees",
+      "colorId": "3",
+      "creator": {
+        "self": true
+      },
+      "start": {
+        "dateTime": "2020-11-02T10:00:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "end": {
+        "dateTime": "2020-11-02T10:30:00-08:00",
+        "timeZone": "America/Los_Angeles"
+      },
+      "attendeesOmitted": true
+    }
+  ]
+}

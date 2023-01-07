@@ -1,12 +1,13 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/metrics/network_quality_estimator_provider_impl.h"
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -40,7 +41,7 @@ void NetworkQualityEstimatorProviderImpl::PostReplyOnNetworkQualityChanged(
     return;
   }
 
-#ifdef OS_ANDROID
+#if BUILDFLAG(IS_ANDROID)
   // TODO(tbansal): https://crbug.com/898304: Tasks posted at BEST_EFFORT
   // may take up to ~20 seconds to execute. Figure out a way to call
   // g_browser_process->network_quality_tracker earlier rather than waiting for

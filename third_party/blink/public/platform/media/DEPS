@@ -1,0 +1,11 @@
+include_rules = [
+  "+base/bind.h",
+  "+base/containers/lru_cache.h",
+  "+base/hash/hash.h",
+  "+base/thread_annotations.h",
+  "+base/timer/timer.h",
+  "+media/base",
+  "+media/mojo/mojom/media_metrics_provider.mojom-forward.h",
+  "+media/renderers",
+  "+third_party/blink/public/web",
+]

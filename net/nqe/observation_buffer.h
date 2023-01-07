@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,13 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/optional.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
 #include "net/base/net_export.h"
 #include "net/nqe/network_quality_estimator_util.h"
 #include "net/nqe/network_quality_observation.h"
 #include "net/nqe/network_quality_observation_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -30,37 +31,8 @@ namespace net {
 
 class NetworkQualityEstimatorParams;
 
-namespace nqe {
+namespace nqe::internal {
 
-namespace internal {
-constexpr int32_t kStatVal0p = 0;
-constexpr int32_t kStatVal5p = 5;
-constexpr int32_t kStatVal50p = 50;
-constexpr int32_t kStatVal95p = 95;
-constexpr int32_t kStatVal99p = 99;
-constexpr int32_t kCanonicalPercentiles[] = {
-    kStatVal0p, kStatVal5p, kStatVal50p, kStatVal95p, kStatVal99p};
-
-struct NET_EXPORT_PRIVATE CanonicalStats {
-  CanonicalStats();
-  CanonicalStats(std::map<int32_t, int32_t>& canonical_pcts,
-                 int32_t most_recent_val,
-                 size_t observation_count);
-  CanonicalStats(const CanonicalStats& other);
-  ~CanonicalStats();
-
-  CanonicalStats& operator=(const CanonicalStats& other);
-
-  // Canonical percentiles values for a distribution.
-  std::map<int32_t, int32_t> canonical_pcts;
-
-  // The most recent value.
-  int32_t most_recent_val = 0;
-
-  // Counts the number of observations that were available for
-  // computing these results.
-  size_t observation_count = 0;
-};
 struct WeightedObservation;
 
 // Stores observations sorted by time and provides utility functions for
@@ -76,6 +48,8 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
   //  As such, this constructor should only be called before adding any
   //  observations to |other|.
   ObservationBuffer(const ObservationBuffer& other);
+
+  ObservationBuffer& operator=(const ObservationBuffer&) = delete;
 
   ~ObservationBuffer();
 
@@ -101,20 +75,10 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
   // signal strength. |result| must not be null. If |observations_count| is not
   // null, then it is set to the number of observations that were available
   // in the observation buffer for computing the percentile.
-  base::Optional<int32_t> GetPercentile(base::TimeTicks begin_timestamp,
+  absl::optional<int32_t> GetPercentile(base::TimeTicks begin_timestamp,
                                         int32_t current_signal_strength,
                                         int percentile,
                                         size_t* observations_count) const;
-
-  // Computes canonical statistic values of the observations for all hosts if
-  // |target_hosts| is empty. Otherwise, computes canonical statistic values
-  // only for hosts that are in the |target_hosts| set. Only observations made
-  // on or after |begin_timestamp| are considered. Returns all canonical
-  // statistics keyed by hosts. These include canonical percentile values, the
-  // most recent value, and the number of observations to compute these values.
-  std::map<IPHash, CanonicalStats> GetCanonicalStatsKeyedByHosts(
-      const base::TimeTicks& begin_timestamp,
-      const std::set<IPHash>& target_hosts) const;
 
   void SetTickClockForTesting(const base::TickClock* tick_clock) {
     tick_clock_ = tick_clock;
@@ -141,7 +105,7 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
       std::vector<WeightedObservation>* weighted_observations,
       double* total_weight) const;
 
-  const NetworkQualityEstimatorParams* params_;
+  raw_ptr<const NetworkQualityEstimatorParams> params_;
 
   // Holds observations sorted by time, with the oldest observation at the
   // front of the queue.
@@ -162,14 +126,10 @@ class NET_EXPORT_PRIVATE ObservationBuffer {
   // |weight_multiplier_per_signal_level_| ^ 3.
   const double weight_multiplier_per_signal_level_;
 
-  const base::TickClock* tick_clock_;
-
-  DISALLOW_ASSIGN(ObservationBuffer);
+  raw_ptr<const base::TickClock> tick_clock_;
 };
 
-}  // namespace internal
-
-}  // namespace nqe
+}  // namespace nqe::internal
 
 }  // namespace net
 

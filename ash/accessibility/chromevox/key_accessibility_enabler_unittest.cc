@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -43,7 +43,7 @@ class KeyAccessibilityEnablerTest : public AshTestBase,
 
   void WaitForAccessibilityStatusChanged() {
     run_loop_ = std::make_unique<base::RunLoop>();
-    clock_.Advance(base::TimeDelta::FromMilliseconds(5000));
+    clock_.Advance(base::Milliseconds(5000));
     run_loop_->Run();
   }
 

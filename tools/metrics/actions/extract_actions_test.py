@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2014 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -279,7 +279,7 @@ class ActionXmlTest(unittest.TestCase):
     # Clear suffixes and mark actions as not coming from suffixes, so that
     # the returned XML file is the expanded one.
     suffixes = []
-    for action in actions_dict.itervalues():
+    for action in actions_dict.values():
       action.from_suffix = False
     return extract_actions.PrettyPrint(actions_dict, comments, suffixes)
 

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/metrics/perf/metric_collector.h"
@@ -35,6 +34,9 @@ class MetricProvider {
  public:
   MetricProvider(std::unique_ptr<internal::MetricCollector> collector,
                  ProfileManager* profile_manager);
+
+  MetricProvider(const MetricProvider&) = delete;
+  MetricProvider& operator=(const MetricProvider&) = delete;
 
   virtual ~MetricProvider();
 
@@ -78,8 +80,8 @@ class MetricProvider {
     kAppSyncEnabled = 4,
     kSyncServiceUnavailable = 5,
     kChromeSyncFeatureDisabled = 6,
-    kChromeAppSyncDisabled = 7,
-    kOSSyncFeatureDisabled = 8,
+    // Deprecated: kChromeAppSyncDisabled = 7,
+    // Deprecated: kOSSyncFeatureDisabled = 8,
     kOSAppSyncDisabled = 9,
     kMaxValue = kOSAppSyncDisabled,
   };
@@ -134,8 +136,6 @@ class MetricProvider {
   base::RepeatingClosure cache_updated_callback_;
 
   base::WeakPtrFactory<MetricProvider> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricProvider);
 };
 
 }  // namespace metrics

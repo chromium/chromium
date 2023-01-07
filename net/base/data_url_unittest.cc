@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -103,6 +103,14 @@ TEST(DataURLTest, Parse) {
 
       // Not sufficiently padded.
       {"data:;base64,aGVsbG8gd29ybGQ", true, "text/plain", "US-ASCII",
+       "hello world"},
+
+      // Not sufficiently padded with whitespace.
+      {"data:;base64,aGV sbG8g d29ybGQ", true, "text/plain", "US-ASCII",
+       "hello world"},
+
+      // Not sufficiently padded with escaped whitespace.
+      {"data:;base64,aGV%20sbG8g%20d29ybGQ", true, "text/plain", "US-ASCII",
        "hello world"},
 
       // Bad encoding (truncated).

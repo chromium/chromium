@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_utils.h"
@@ -25,7 +24,8 @@ static const int kAllSchemes =
     URLPattern::SCHEME_FILE | URLPattern::SCHEME_FTP |
     URLPattern::SCHEME_CHROMEUI | URLPattern::SCHEME_EXTENSION |
     URLPattern::SCHEME_FILESYSTEM | URLPattern::SCHEME_WS |
-    URLPattern::SCHEME_WSS | URLPattern::SCHEME_DATA | URLPattern::SCHEME_URN;
+    URLPattern::SCHEME_WSS | URLPattern::SCHEME_DATA |
+    URLPattern::SCHEME_UUID_IN_PACKAGE;
 
 TEST(ExtensionURLPatternTest, ParseInvalid) {
   const struct {
@@ -47,7 +47,7 @@ TEST(ExtensionURLPatternTest, ParseInvalid) {
       {"http://bar", URLPattern::ParseResult::kEmptyPath},
       {"http://foo.*/bar", URLPattern::ParseResult::kInvalidHostWildcard}};
 
-  for (size_t i = 0; i < base::size(kInvalidPatterns); ++i) {
+  for (size_t i = 0; i < std::size(kInvalidPatterns); ++i) {
     URLPattern pattern(URLPattern::SCHEME_ALL);
     EXPECT_EQ(kInvalidPatterns[i].expected_result,
               pattern.Parse(kInvalidPatterns[i].pattern))
@@ -90,7 +90,7 @@ TEST(ExtensionURLPatternTest, Ports) {
       {"http://*.foo/bar:1234", URLPattern::ParseResult::kSuccess, "*"},
       {"http://foo/bar:1234/path", URLPattern::ParseResult::kSuccess, "*"}};
 
-  for (size_t i = 0; i < base::size(kTestPatterns); ++i) {
+  for (size_t i = 0; i < std::size(kTestPatterns); ++i) {
     URLPattern pattern(URLPattern::SCHEME_ALL);
     EXPECT_EQ(kTestPatterns[i].expected_result,
               pattern.Parse(kTestPatterns[i].pattern))
@@ -411,7 +411,7 @@ static const struct MatchPatterns {
 
 // SCHEME_ALL and specific schemes.
 TEST(ExtensionURLPatternTest, Match13) {
-  for (size_t i = 0; i < base::size(kMatch13UrlPatternTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kMatch13UrlPatternTestCases); ++i) {
     URLPattern pattern(URLPattern::SCHEME_ALL);
     EXPECT_EQ(URLPattern::ParseResult::kSuccess,
               pattern.Parse(kMatch13UrlPatternTestCases[i].pattern))
@@ -554,7 +554,7 @@ static const struct GetAsStringPatterns {
 };
 
 TEST(ExtensionURLPatternTest, GetAsString) {
-  for (size_t i = 0; i < base::size(kGetAsStringTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kGetAsStringTestCases); ++i) {
     URLPattern pattern(URLPattern::SCHEME_ALL);
     EXPECT_EQ(URLPattern::ParseResult::kSuccess,
               pattern.Parse(kGetAsStringTestCases[i].pattern))
@@ -654,7 +654,7 @@ TEST(ExtensionURLPatternTest, ConvertToExplicitSchemes) {
   EXPECT_EQ("ws://*/*", all_urls[7].GetAsString());
   EXPECT_EQ("wss://*/*", all_urls[8].GetAsString());
   EXPECT_EQ("data:/*", all_urls[9].GetAsString());
-  EXPECT_EQ("urn:/*", all_urls[10].GetAsString());
+  EXPECT_EQ("uuid-in-package:/*", all_urls[10].GetAsString());
 
   EXPECT_EQ("http://google.com/foo", all_schemes[0].GetAsString());
   EXPECT_EQ("https://google.com/foo", all_schemes[1].GetAsString());
@@ -772,7 +772,7 @@ TEST(ExtensionURLPatternTest, Equals) {
     }
   };
 
-  for (size_t i = 0; i < base::size(kEqualsTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kEqualsTestCases); ++i) {
     std::string message = kEqualsTestCases[i].pattern1;
     message += " ";
     message += kEqualsTestCases[i].pattern2;
@@ -1175,14 +1175,14 @@ TEST(ExtensionURLPatternTest, Intersection) {
 
     // Intersection of two URLPatterns should be identical regardless of which
     // is the "first".
-    base::Optional<URLPattern> intersection1 =
+    absl::optional<URLPattern> intersection1 =
         pattern1.CreateIntersection(pattern2);
-    base::Optional<URLPattern> intersection2 =
+    absl::optional<URLPattern> intersection2 =
         pattern2.CreateIntersection(pattern1);
 
     if (test_case.expected_intersection.empty()) {
-      EXPECT_EQ(base::nullopt, intersection1) << intersection1->GetAsString();
-      EXPECT_EQ(base::nullopt, intersection2) << intersection2->GetAsString();
+      EXPECT_EQ(absl::nullopt, intersection1) << intersection1->GetAsString();
+      EXPECT_EQ(absl::nullopt, intersection2) << intersection2->GetAsString();
     } else {
       ASSERT_TRUE(intersection1);
       EXPECT_EQ(test_case.expected_intersection, intersection1->GetAsString());
@@ -1220,14 +1220,14 @@ TEST(ExtensionURLPatternTest, ValidSchemeIntersection) {
     URLPattern pattern2(test_case.scheme2);
     ASSERT_EQ(URLPattern::ParseResult::kSuccess,
               pattern2.Parse(URLPattern::kAllUrlsPattern));
-    base::Optional<URLPattern> intersection1 =
+    absl::optional<URLPattern> intersection1 =
         pattern1.CreateIntersection(pattern2);
-    base::Optional<URLPattern> intersection2 =
+    absl::optional<URLPattern> intersection2 =
         pattern2.CreateIntersection(pattern1);
 
     if (test_case.expected_scheme == URLPattern::SCHEME_NONE) {
-      EXPECT_EQ(base::nullopt, intersection1) << intersection1->GetAsString();
-      EXPECT_EQ(base::nullopt, intersection2) << intersection2->GetAsString();
+      EXPECT_EQ(absl::nullopt, intersection1) << intersection1->GetAsString();
+      EXPECT_EQ(absl::nullopt, intersection2) << intersection2->GetAsString();
     } else {
       ASSERT_TRUE(intersection1);
       EXPECT_EQ(test_case.expected_scheme, intersection1->valid_schemes());

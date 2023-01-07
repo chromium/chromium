@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,9 +47,12 @@ class EmbeddedTestServer;
 // Turns mock authentication back on.
 - (void)enableMockAuthentication;
 
-// Returns YES if the test method name extracted from |selector| matches the
+// Returns YES if the test method name extracted from `selector` matches the
 // name of the currently running test method.
 - (BOOL)isRunningTest:(SEL)selector;
+
+// Configures the fixture for startup testing.
++ (void)testForStartup;
 
 @end
 

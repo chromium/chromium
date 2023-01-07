@@ -1,0 +1,72 @@
+<!--
+  -- Copyright 2022 The Chromium Authors
+  -- Use of this source code is governed by a BSD-style license that can be
+  -- found in the LICENSE file.
+  -->
+<style>
+  form {
+    border: 1px solid var(--cros-separator-color);
+    border-radius: 12px;
+    margin: 10px;
+  }
+
+  .sync-selection-row {
+    align-items: center;
+    border-bottom: 1px solid var(--cros-separator-color);
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .sync-selection-row:last-child {
+    border-bottom: none;
+  }
+
+  .radio-wrapper {
+    margin-inline-start: 16px;
+    width: 32px;
+  }
+
+  input[type='radio'] {
+    margin: 0;
+  }
+
+  .sync-selection-description {
+    padding: 16px 0 16px;
+  }
+
+  .sync-selection-description h2 {
+    color: var(--cros-text-color-primary);
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .sync-selection-description p {
+    color: var(--cros-text-color-secondary);
+    font-size: 14px;
+    font-weight: 400;
+    margin: 0;
+  }
+</style>
+<form>
+  <label class="sync-selection-row">
+    <div class="radio-wrapper">
+      <input type="radio" name="selection" value="everything" id="everything">
+    </div>
+    <div class="sync-selection-description">
+      <h2>Sync everything on this Chromebook</h2>
+      <p>All files (except Play and Linux files) back up to Google Drive.</p>
+    </div>
+  </label>
+  <label class="sync-selection-row">
+    <div class="radio-wrapper">
+      <input type="radio" name="selection" value="selected" id="selected">
+    </div>
+    <div class="sync-selection-description">
+      <h2>Sync selected files or folders</h2>
+    </div>
+  </label>
+  <folder-selector hidden></folder-selector>
+</form>

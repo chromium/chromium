@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,8 +8,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/metrics/enrollment_status.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_delegate.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
@@ -17,11 +16,10 @@ TEST(LacrosMetricsProviderTest, EnrollmentStatusRecordedForCurrentSession) {
   base::test::TaskEnvironment task_environment;
 
   // Simulate lacros initialization on an enterprise-enrolled device.
-  chromeos::LacrosChromeServiceImpl lacros_chrome_service(/*delegate=*/nullptr);
   crosapi::mojom::BrowserInitParamsPtr init_params =
       crosapi::mojom::BrowserInitParams::New();
   init_params->device_mode = crosapi::mojom::DeviceMode::kEnterprise;
-  lacros_chrome_service.SetInitParamsForTests(std::move(init_params));
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
 
   // Provide current session metrics.
   base::HistogramTester histogram_tester;

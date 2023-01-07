@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,17 +12,18 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "chromecast/base/chromecast_switches.h"
 #include "chromecast/chromecast_buildflags.h"
 
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 #include "chromecast/external_mojo/external_service_support/crash_reporter_client.h"
 #endif
 
 namespace chromecast {
 namespace external_service_support {
 
-void CommonProcessInitialization(int argc, char** argv) {
-#if !defined(OS_ANDROID)
+void CommonProcessInitialization(int argc, const char* const* argv) {
+#if !BUILDFLAG(IS_ANDROID)
   // Set C library locale to make sure CommandLine can parse argument values
   // in the correct encoding.
   setlocale(LC_ALL, "");
@@ -44,11 +45,13 @@ void CommonProcessInitialization(int argc, char** argv) {
 #endif  // BUILDFLAG(IS_CAST_DESKTOP_BUILD)
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  base::FeatureList::InitializeInstance(
-      command_line->GetSwitchValueASCII(switches::kEnableFeatures),
-      command_line->GetSwitchValueASCII(switches::kDisableFeatures));
+  if (!command_line->HasSwitch(switches::kDeferFeatureList)) {
+    base::FeatureList::InitializeInstance(
+        command_line->GetSwitchValueASCII(switches::kEnableFeatures),
+        command_line->GetSwitchValueASCII(switches::kDisableFeatures));
+  }
 
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
   CrashReporterClient::Init();
 #endif
 

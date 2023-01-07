@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_SUMMING_JUNCTION_H_
 
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -48,12 +47,12 @@ class AudioSummingJunction {
     return *deferred_task_handler_;
   }
 
-  // This must be called whenever we modify m_outputs.
+  // This must be called whenever we modify `outputs_`.
   void ChangedOutputs();
 
-  // This copies m_outputs to m_renderingOutputs. Please see comments for these
-  // lists below.  This must be called when we own the context's graph lock in
-  // the audio thread at the very start or end of the render quantum.
+  // This copies `outputs_` to `rendering_outputs_`. Please see comments for
+  // these lists below.  This must be called when we own the context's graph
+  // lock in the audio thread at the very start or end of the render quantum.
   void UpdateRenderingState();
 
   // Rendering code accesses its version of the current connections here.
@@ -70,26 +69,26 @@ class AudioSummingJunction {
 
   scoped_refptr<DeferredTaskHandler> deferred_task_handler_;
 
-  // m_outputs contains the AudioNodeOutputs representing current connections
+  // `outputs_` contains the AudioNodeOutputs representing current connections
   // which are not disabled.  The rendering code should never use this
-  // directly, but instead uses m_renderingOutputs.
+  // directly, but instead uses `rendering_outputs_`.
   // These raw pointers are safe. Owner AudioNodes of these AudioNodeOutputs
   // manage their lifetime, and AudioNode::dispose() disconnects all of
   // connections.
   HashSet<AudioNodeOutput*> outputs_;
 
-  // m_renderingOutputs is a copy of m_outputs which will never be modified
+  // `rendering_outputs_` is a copy of `outputs_` which will never be modified
   // during the graph rendering on the audio thread.  This is the list which
   // is used by the rendering code.
-  // Whenever m_outputs is modified, the context is told so it can later
-  // update m_renderingOutputs from m_outputs at a safe time.  Most of the
-  // time, m_renderingOutputs is identical to m_outputs.
+  // Whenever `outputs_` is modified, the context is told so it can later
+  // update `rendering_outputs_` from `outputs_` at a safe time.  Most of the
+  // time, `rendering_outputs_` is identical to `outputs_`.
   // These raw pointers are safe. Owner of this AudioSummingJunction has
   // strong references to owners of these AudioNodeOutput.
   Vector<AudioNodeOutput*> rendering_outputs_;
 
-  // m_renderingStateNeedUpdating keeps track if m_outputs is modified.
-  bool rendering_state_need_updating_;
+  // `rendering_state_need_updating_` keeps track if `outputs_` is modified.
+  bool rendering_state_need_updating_ = false;
 };
 
 }  // namespace blink

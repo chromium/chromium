@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,9 @@
 #include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace local_discovery {
@@ -107,8 +108,8 @@ class ServiceDiscoveryDeviceListerImpl : public ServiceDiscoveryDeviceLister {
     service_watcher_->Start();
   }
 
-  Delegate* const delegate_;
-  ServiceDiscoveryClient* const service_discovery_client_;
+  const raw_ptr<Delegate> delegate_;
+  const raw_ptr<ServiceDiscoveryClient> service_discovery_client_;
   const std::string service_type_;
 
   std::unique_ptr<ServiceWatcher> service_watcher_;

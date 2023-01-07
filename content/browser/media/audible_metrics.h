@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,9 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -37,6 +38,10 @@ class CONTENT_EXPORT AudibleMetrics {
   };
 
   AudibleMetrics();
+
+  AudibleMetrics(const AudibleMetrics&) = delete;
+  AudibleMetrics& operator=(const AudibleMetrics&) = delete;
+
   ~AudibleMetrics();
 
   void UpdateAudibleWebContentsState(const WebContents* web_contents,
@@ -56,7 +61,7 @@ class CONTENT_EXPORT AudibleMetrics {
 
   base::TimeTicks concurrent_web_contents_start_time_;
   size_t max_concurrent_audible_web_contents_in_session_;
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   // This stores the audible web contents in insertion order. We add a
   // web contents to the list when it becomes audible and remove it is
@@ -67,8 +72,6 @@ class CONTENT_EXPORT AudibleMetrics {
   // contents to the set when it becomes currently audible and remove it when it
   // is no longer audible.
   std::set<const WebContents*> audible_web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudibleMetrics);
 };
 
 }  // namespace content

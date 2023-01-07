@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,10 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+// TODO(https://crbug.com/1164001): move to forward declaration
+#include "chrome/browser/chromeos/extensions/external_cache.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
 #include "chrome/browser/extensions/external_loader.h"
 
@@ -21,9 +22,7 @@ namespace base {
 class Value;
 }
 
-namespace chromeos {
-
-class ExternalCache;
+namespace ash {
 
 // External loader for extensions to be loaded into demo mode sessions. The CRX
 // files are loaded from preinstalled demo mode resources image mounted by
@@ -42,6 +41,10 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
 
   explicit DemoExtensionsExternalLoader(const base::FilePath& cache_dir);
 
+  DemoExtensionsExternalLoader(const DemoExtensionsExternalLoader&) = delete;
+  DemoExtensionsExternalLoader& operator=(const DemoExtensionsExternalLoader&) =
+      delete;
+
   // Loads the app with `app_id` and installs it from the update url or cache.
   void LoadApp(const std::string& app_id);
 
@@ -49,7 +52,7 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
   void StartLoading() override;
 
   // ExternalCacheDelegate:
-  void OnExtensionListsUpdated(const base::DictionaryValue* prefs) override;
+  void OnExtensionListsUpdated(const base::Value::Dict& prefs) override;
 
  protected:
   ~DemoExtensionsExternalLoader() override;
@@ -62,7 +65,8 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
 
   // Called when the external extensions prefs are read from the disk.
   // `prefs` - demo extensions prefs.
-  void DemoExternalExtensionsPrefsLoaded(base::Optional<base::Value> prefs);
+  void DemoExternalExtensionsPrefsLoaded(
+      absl::optional<base::Value::Dict> prefs);
 
   std::unique_ptr<ExternalCache> external_cache_;
 
@@ -72,10 +76,14 @@ class DemoExtensionsExternalLoader : public extensions::ExternalLoader,
   std::vector<std::string> app_ids_;
 
   base::WeakPtrFactory<DemoExtensionsExternalLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DemoExtensionsExternalLoader);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::DemoExtensionsExternalLoader;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_DEMO_MODE_DEMO_EXTENSIONS_EXTERNAL_LOADER_H_

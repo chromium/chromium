@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,12 +8,10 @@
 #include <stddef.h>
 #include <memory>
 
-#include "base/macros.h"
-
-#include "net/third_party/quiche/src/quic/core/quic_connection.h"
-#include "net/third_party/quiche/src/quic/core/quic_packet_writer.h"
-#include "net/third_party/quiche/src/quic/core/quic_packets.h"
-#include "net/third_party/quiche/src/quic/core/quic_types.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
+#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 
 #include "chrome/browser/media/router/providers/openscreen/network_service_async_packet_sender.h"
 
@@ -49,6 +47,11 @@ class NetworkServiceQuicPacketWriter : quic::QuicPacketWriter {
       Delegate* delegate,
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
 
+  NetworkServiceQuicPacketWriter(const NetworkServiceQuicPacketWriter&) =
+      delete;
+  NetworkServiceQuicPacketWriter& operator=(
+      const NetworkServiceQuicPacketWriter&) = delete;
+
   ~NetworkServiceQuicPacketWriter() override;
 
   // quic::QuicPacketWriter
@@ -64,6 +67,7 @@ class NetworkServiceQuicPacketWriter : quic::QuicPacketWriter {
       const quic::QuicSocketAddress& peer_address) override;
 
   void SetWritable() override;
+  absl::optional<int> MessageTooBigErrorCode() const override;
   bool SupportsReleaseTime() const override;
 
   quic::WriteResult WritePacket(const char* buffer,
@@ -112,7 +116,6 @@ class NetworkServiceQuicPacketWriter : quic::QuicPacketWriter {
   bool writable_ = true;
 
   base::WeakPtrFactory<NetworkServiceQuicPacketWriter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceQuicPacketWriter);
 };
 
 }  // namespace media_router

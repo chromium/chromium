@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -55,6 +55,14 @@ public class UiThreadTaskTraitsImpl {
 
     public static final TaskTraits DEFAULT =
             TaskTraits.USER_VISIBLE.withExtension(DESCRIPTOR, new UiThreadTaskTraitsImpl());
+    // NOTE: Depending on browser configuration, the underlying C++ task executor executes bootstrap
+    // tasks either in a dedicated high-priority task queue or in the default priority-based task
+    // queues. While in the former case the priority of individual bootstrap tasks is ignored, in
+    // the latter case it is used. It is thus important that these tasks have USER_BLOCKING priority
+    // so that they are ordered correctly with C++ tasks of type kBootstrap in this latter case.
+    // UPDATE: We have reverted Java bootstrap task traits back to having USER_VISIBLE priority
+    // to determine whether changing them to have USER_BLOCKING priority caused a performance
+    // regression.
     public static final TaskTraits BOOTSTRAP = TaskTraits.USER_VISIBLE.withExtension(
             DESCRIPTOR, new UiThreadTaskTraitsImpl().setTaskType(BrowserTaskType.BOOTSTRAP));
     public static final TaskTraits BEST_EFFORT = DEFAULT.taskPriority(TaskPriority.BEST_EFFORT);

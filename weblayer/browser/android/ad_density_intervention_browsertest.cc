@@ -1,10 +1,11 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
@@ -20,10 +21,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/widget/screen_info.h"
+#include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
-#include "weblayer/browser/infobar_service.h"
 #include "weblayer/test/subresource_filter_browser_test_harness.h"
 
 namespace weblayer {
@@ -40,10 +40,10 @@ class AdDensityViolationBrowserTest : public SubresourceFilterBrowserTest {
   AdDensityViolationBrowserTest() = default;
 
   void SetUp() override {
-    std::vector<base::Feature> enabled = {
+    std::vector<base::test::FeatureRef> enabled = {
         subresource_filter::kAdTagging,
         subresource_filter::kAdsInterventionsEnforced};
-    std::vector<base::Feature> disabled = {};
+    std::vector<base::test::FeatureRef> disabled = {};
 
     feature_list_.InitWithFeatures(enabled, disabled);
     SubresourceFilterBrowserTest::SetUp();
@@ -94,10 +94,12 @@ IN_PROC_BROWSER_TEST_F(
 
   // blank_with_adiframe_writer loads a script tagged as an ad, verify it is not
   // loaded and the subresource filter UI for ad blocking is shown.
-  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
-  EXPECT_EQ(InfoBarService::FromWebContents(web_contents())->infobar_count(),
+  EXPECT_FALSE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
+  EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents())
+                ->infobar_count(),
             1u);
-  EXPECT_EQ(InfoBarService::FromWebContents(web_contents())
+  EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents())
                 ->infobar_at(0)
                 ->delegate()
                 ->GetIdentifier(),
@@ -145,11 +147,13 @@ IN_PROC_BROWSER_TEST_F(
   // blank_with_adiframe_writer loads a script tagged as an ad, verify it is
   // loaded as ads are not blocked and the subresource filter UI is not
   // shown.
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   // No ads blocked infobar should be shown as we have not triggered the
   // intervention.
-  EXPECT_EQ(InfoBarService::FromWebContents(web_contents())->infobar_count(),
+  EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents())
+                ->infobar_count(),
             0u);
   histogram_tester.ExpectTotalCount(kAdsInterventionRecordedHistogram, 0);
 }
@@ -160,8 +164,9 @@ class AdDensityViolationBrowserTestWithoutEnforcement
   AdDensityViolationBrowserTestWithoutEnforcement() = default;
 
   void SetUp() override {
-    std::vector<base::Feature> enabled = {subresource_filter::kAdTagging};
-    std::vector<base::Feature> disabled = {
+    std::vector<base::test::FeatureRef> enabled = {
+        subresource_filter::kAdTagging};
+    std::vector<base::test::FeatureRef> disabled = {
         subresource_filter::kAdsInterventionsEnforced};
 
     feature_list_.InitWithFeatures(enabled, disabled);
@@ -213,11 +218,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // We are not enforcing ad blocking on ads violations, site should load
   // as expected without subresource filter UI.
-  EXPECT_TRUE(WasParsedScriptElementLoaded(web_contents()->GetMainFrame()));
+  EXPECT_TRUE(
+      WasParsedScriptElementLoaded(web_contents()->GetPrimaryMainFrame()));
 
   // No ads blocked infobar should be shown as we have not triggered the
   // intervention.
-  EXPECT_EQ(InfoBarService::FromWebContents(web_contents())->infobar_count(),
+  EXPECT_EQ(infobars::ContentInfoBarManager::FromWebContents(web_contents())
+                ->infobar_count(),
             0u);
   histogram_tester.ExpectBucketCount(
       kAdsInterventionRecordedHistogram,

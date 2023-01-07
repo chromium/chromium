@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,9 +10,8 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/offline_pages/core/prefetch/store/prefetch_store.h"
@@ -35,6 +34,10 @@ extern const int kPrefetchStoreCommandFailed;
 class PrefetchStoreTestUtil {
  public:
   PrefetchStoreTestUtil();
+
+  PrefetchStoreTestUtil(const PrefetchStoreTestUtil&) = delete;
+  PrefetchStoreTestUtil& operator=(const PrefetchStoreTestUtil&) = delete;
+
   ~PrefetchStoreTestUtil();
 
   // Builds a new store in a temporary directory.
@@ -69,7 +72,7 @@ class PrefetchStoreTestUtil {
   int ZombifyPrefetchItems(const std::string& name_space, const GURL& url);
 
   // Returns number of rows affected by last SQL statement.
-  int LastCommandChangeCount();
+  int64_t LastCommandChangeCount();
 
   // Gets the prefetch downloader quota value for testing.
   // Quota calculation will use |clock_| as time source.
@@ -90,10 +93,8 @@ class PrefetchStoreTestUtil {
   base::ScopedTempDir temp_directory_;
   // TODO(jianli): Refactor this class to avoid owning the store.
   std::unique_ptr<PrefetchStore> owned_store_;
-  PrefetchStore* store_;
+  raw_ptr<PrefetchStore> store_;
   base::SimpleTestClock clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchStoreTestUtil);
 };
 
 }  // namespace offline_pages

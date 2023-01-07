@@ -1,9 +1,10 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -21,7 +22,7 @@
 
 using V8DetailedMemoryExecutionContextData =
     performance_manager::v8_memory::V8DetailedMemoryExecutionContextData;
-using FrameDataMap = base::flat_map<content::GlobalFrameRoutingId,
+using FrameDataMap = base::flat_map<content::GlobalRenderFrameHostId,
                                     V8DetailedMemoryExecutionContextData>;
 
 const char kMainUrl[] = "https://main.com/";
@@ -44,10 +45,13 @@ class TestPageLoadMetricsEmbedder
 
   // page_load_metrics::PageLoadMetricsEmbedderBase:
   bool IsNewTabPageUrl(const GURL& url) override { return false; }
-  bool IsPrerender(content::WebContents* web_contents) override {
+  bool IsNoStatePrefetch(content::WebContents* web_contents) override {
     return false;
   }
   bool IsExtensionUrl(const GURL& url) override { return false; }
+  bool IsSidePanel(content::WebContents* web_contents) override {
+    return false;
+  }
 
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
@@ -62,7 +66,6 @@ class TestPageLoadMetricsEmbedder
   // page_load_metrics::PageLoadMetricsEmbedderBase:
   void RegisterEmbedderObservers(
       page_load_metrics::PageLoadTracker* tracker) override {}
-  bool IsPrerendering() const override { return false; }
 
  private:
   page_load_metrics::PageLoadMetricsMemoryTracker memory_tracker_;
@@ -125,7 +128,7 @@ class PageLoadMetricsMemoryTrackerTest
     observer_ = new TestMestricsWebContentsObserver(
         web_contents(), std::move(embedder_interface));
     web_contents()->SetUserData(TestMestricsWebContentsObserver::UserDataKey(),
-                                base::WrapUnique(observer_));
+                                base::WrapUnique(observer_.get()));
 
     tracker_ = embedder_interface_->GetMemoryTrackerForBrowserContext(
         browser_context());
@@ -148,7 +151,7 @@ class PageLoadMetricsMemoryTrackerTest
 
   // Returns the final RenderFrameHost after navigation commits.
   content::RenderFrameHost* NavigateMainFrame(const std::string& url) {
-    return NavigateFrame(url, web_contents()->GetMainFrame());
+    return NavigateFrame(url, web_contents()->GetPrimaryMainFrame());
   }
 
   // Returns the final RenderFrameHost after navigation commits.
@@ -171,8 +174,8 @@ class PageLoadMetricsMemoryTrackerTest
     if (!render_frame_host || !render_frame_host->GetProcess())
       return;
 
-    content::GlobalFrameRoutingId global_routing_id =
-        render_frame_host->GetGlobalFrameRoutingId();
+    content::GlobalRenderFrameHostId global_routing_id =
+        render_frame_host->GetGlobalId();
     int process_id = render_frame_host->GetProcess()->GetID();
 
     performance_manager::RenderProcessHostId pm_process_id =
@@ -195,14 +198,14 @@ class PageLoadMetricsMemoryTrackerTest
   }
 
  protected:
-  PageLoadMetricsMemoryTracker* tracker_;
+  raw_ptr<PageLoadMetricsMemoryTracker> tracker_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  TestMestricsWebContentsObserver* observer_;
-  TestPageLoadMetricsEmbedder* embedder_interface_;
+  raw_ptr<TestMestricsWebContentsObserver> observer_;
+  raw_ptr<TestPageLoadMetricsEmbedder> embedder_interface_;
   PageLoadMetricsTestContentBrowserClient browser_client_;
-  content::ContentBrowserClient* original_browser_client_ = nullptr;
+  raw_ptr<content::ContentBrowserClient> original_browser_client_ = nullptr;
 };
 
 }  // namespace

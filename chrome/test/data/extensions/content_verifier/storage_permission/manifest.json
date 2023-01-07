@@ -1,0 +1,8 @@
+{
+  "name": "Storage permission - Background script",
+  "version": "1.0",
+  "manifest_version": 2,
+  "permissions": ["storage"],
+  "background": {"scripts": ["background.js"]},
+  "update_url": "https://clients2.google.com/service/update2/crx"
+}

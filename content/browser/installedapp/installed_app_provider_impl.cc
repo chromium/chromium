@@ -1,22 +1,25 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/installedapp/installed_app_provider_impl.h"
+
 #include "build/build_config.h"
-#include "content/browser/installedapp/installed_app_provider_impl_win.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "content/browser/installedapp/installed_app_provider_impl_win.h"
+#endif
 
 namespace content {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void DidGetInstalledApps(
     bool is_off_the_record,
     InstalledAppProviderImpl::FilterInstalledAppsCallback callback,
@@ -34,29 +37,27 @@ void DidGetInstalledApps(
 }  // namespace
 
 InstalledAppProviderImpl::InstalledAppProviderImpl(
-    RenderFrameHost* render_frame_host)
-    : content::WebContentsObserver(
-          WebContents::FromRenderFrameHost(render_frame_host)),
-      render_frame_host_(render_frame_host) {
-  DCHECK(render_frame_host_);
-}
+    RenderFrameHost& render_frame_host,
+    mojo::PendingReceiver<blink::mojom::InstalledAppProvider> pending_receiver)
+    : DocumentService(render_frame_host, std::move(pending_receiver)) {}
+
+InstalledAppProviderImpl::~InstalledAppProviderImpl() = default;
 
 void InstalledAppProviderImpl::FilterInstalledApps(
     std::vector<blink::mojom::RelatedApplicationPtr> related_apps,
     const GURL& manifest_url,
     FilterInstalledAppsCallback callback) {
   bool is_implemented = false;
-  if (base::FeatureList::IsEnabled(features::kInstalledAppProvider) &&
-      render_frame_host_) {
-#if defined(OS_WIN)
+  if (base::FeatureList::IsEnabled(features::kInstalledAppProvider)) {
+#if BUILDFLAG(IS_WIN)
     is_implemented = true;
     bool is_off_the_record =
-        render_frame_host_->GetProcess()->GetBrowserContext()->IsOffTheRecord();
+        render_frame_host().GetProcess()->GetBrowserContext()->IsOffTheRecord();
     installed_app_provider_win::FilterInstalledAppsForWin(
         std::move(related_apps),
         base::BindOnce(&DidGetInstalledApps, is_off_the_record,
                        std::move(callback)),
-        render_frame_host_->GetLastCommittedURL());
+        render_frame_host().GetLastCommittedURL());
 #endif
   }
 
@@ -66,19 +67,20 @@ void InstalledAppProviderImpl::FilterInstalledApps(
   }
 }
 
-void InstalledAppProviderImpl::RenderFrameDeleted(
-    RenderFrameHost* render_frame_host) {
-  if (render_frame_host_ == render_frame_host) {
-    render_frame_host_ = nullptr;
-  }
-}
-
 // static
 void InstalledAppProviderImpl::Create(
-    RenderFrameHost* host,
+    RenderFrameHost& host,
     mojo::PendingReceiver<blink::mojom::InstalledAppProvider> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<InstalledAppProviderImpl>(host),
-                              std::move(receiver));
+  if (host.GetParentOrOuterDocument()) {
+    // The renderer is supposed to disallow this and we shouldn't end up here.
+    mojo::ReportBadMessage(
+        "InstalledAppProvider only allowed for outermost main frame.");
+    return;
+  }
+
+  // The object is bound to the lifetime of |host|'s current document and the
+  // mojo connection. See DocumentService for details.
+  new InstalledAppProviderImpl(host, std::move(receiver));
 }
 
 }  // namespace content

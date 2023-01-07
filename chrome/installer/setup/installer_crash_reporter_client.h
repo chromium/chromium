@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,17 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "components/crash/core/app/crash_reporter_client.h"
 
 class InstallerCrashReporterClient
     : public crash_reporter::CrashReporterClient {
  public:
   explicit InstallerCrashReporterClient(bool is_per_user_install);
+
+  InstallerCrashReporterClient(const InstallerCrashReporterClient&) = delete;
+  InstallerCrashReporterClient& operator=(const InstallerCrashReporterClient&) =
+      delete;
+
   ~InstallerCrashReporterClient() override;
 
   // crash_reporter::CrashReporterClient methods:
@@ -40,8 +44,6 @@ class InstallerCrashReporterClient
 
  private:
   bool is_per_user_install_;
-
-  DISALLOW_COPY_AND_ASSIGN(InstallerCrashReporterClient);
 };
 
 #endif  // CHROME_INSTALLER_SETUP_INSTALLER_CRASH_REPORTER_CLIENT_H_

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,8 @@
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/encryption/testing_primitives.h"
-#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/resources/resource_interface.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -43,10 +44,6 @@ class EncryptionModuleTest : public ::testing::Test {
   EncryptionModuleTest() = default;
 
   void SetUp() override {
-    // Enable encryption.
-    scoped_feature_list_.InitFromCommandLine(
-        {EncryptionModuleInterface::kEncryptedReporting}, {});
-
     encryption_module_ = EncryptionModule::Create();
 
     auto decryptor_result = test::Decryptor::Create();
@@ -132,9 +129,6 @@ class EncryptionModuleTest : public ::testing::Test {
 
   scoped_refptr<EncryptionModuleInterface> encryption_module_;
   scoped_refptr<test::Decryptor> decryptor_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(EncryptionModuleTest, EncryptAndDecrypt) {
@@ -165,10 +159,9 @@ TEST_F(EncryptionModuleTest, EncryptAndDecrypt) {
 TEST_F(EncryptionModuleTest, EncryptionDisabled) {
   constexpr char kTestString[] = "ABCDEF";
 
-  // Disable encryption.
+  // Disable encryption for this test.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitFromCommandLine(
-      {}, {EncryptionModuleInterface::kEncryptedReporting});
+  scoped_feature_list.InitAndDisableFeature(kEncryptedReportingFeature);
 
   // Encrypt the test string.
   const auto encrypted_result = EncryptSync(kTestString);
@@ -200,14 +193,14 @@ TEST_F(EncryptionModuleTest, PublicKeyUpdate) {
   ASSERT_OK(encrypted_result.status()) << encrypted_result.status();
 
   // Simulate short wait. Key is still available and not needed.
-  task_environment_.FastForwardBy(base::TimeDelta::FromHours(8));
+  task_environment_.FastForwardBy(base::Hours(8));
   ASSERT_TRUE(encryption_module_->has_encryption_key());
   ASSERT_FALSE(encryption_module_->need_encryption_key());
   encrypted_result = EncryptSync(kTestString);
   ASSERT_OK(encrypted_result.status()) << encrypted_result.status();
 
   // Simulate long wait. Key is still available, but is needed now.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(1));
+  task_environment_.FastForwardBy(base::Days(1));
   ASSERT_TRUE(encryption_module_->has_encryption_key());
   ASSERT_TRUE(encryption_module_->need_encryption_key());
   encrypted_result = EncryptSync(kTestString);

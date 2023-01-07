@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import time
@@ -12,15 +12,22 @@ from page_sets.rendering import story_tags
 
 class ToughFastScrollingPage(rendering_story.RenderingStory):
   ABSTRACT_STORY = True
+  EXTRA_BROWSER_ARGS = None
+  SELECTOR = None
   SPEED_IN_PIXELS_PER_SECOND = None
   SYNTHETIC_GESTURE_SOURCE = page_action.GESTURE_SOURCE_DEFAULT
   TAGS = [story_tags.GPU_RASTERIZATION, story_tags.TOUGH_SCROLLING]
+  USE_FLING_SCROLL = False
 
   def __init__(self,
                page_set,
                shared_page_state_class=shared_page_state.SharedPageState,
                name_suffix='',
                extra_browser_args=None):
+    if self.EXTRA_BROWSER_ARGS is not None:
+      if extra_browser_args is None:
+        extra_browser_args = []
+      extra_browser_args.append(self.EXTRA_BROWSER_ARGS)
     super(ToughFastScrollingPage, self).__init__(
         page_set=page_set,
         shared_page_state_class=shared_page_state_class,
@@ -29,17 +36,54 @@ class ToughFastScrollingPage(rendering_story.RenderingStory):
 
   def RunPageInteractions(self, action_runner):
     start = time.time()
+    selector = self.SELECTOR
     with action_runner.CreateGestureInteraction('ScrollAction'):
-      direction = 'down'
+      direction = 'up' if self.USE_FLING_SCROLL else 'down'
       # Some of the metrics the benchmark reports require the scroll to run for
       # a few seconds (5+). Therefore, scroll the page for long enough that
       # these metrics are accurately reported.
       while time.time() - start < 15:
-        action_runner.ScrollPage(
-            direction=direction,
-            speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
-            synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE)
+        if self.USE_FLING_SCROLL:
+          action_runner.SwipePage(
+              direction=direction,
+              speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND)
+          action_runner.Wait(1)
+        else:
+          if selector is None:
+            action_runner.ScrollPage(
+                direction=direction,
+                speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
+                synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE)
+          else:
+            # When there is a `selector` specified, scroll just that particular
+            # element, rather than the entire page.
+            action_runner.ScrollElement(
+                selector=selector,
+                direction=direction,
+                speed_in_pixels_per_second=self.SPEED_IN_PIXELS_PER_SECOND,
+                synthetic_gesture_source=self.SYNTHETIC_GESTURE_SOURCE)
         direction = 'up' if direction == 'down' else 'down'
+
+
+class FlingingText05000Page(ToughFastScrollingPage):
+  BASE_NAME = 'text_fling_05000_pixels_per_second'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  USE_FLING_SCROLL = True
+  SPEED_IN_PIXELS_PER_SECOND = 5000
+
+
+class FlingingText10000Page(ToughFastScrollingPage):
+  BASE_NAME = 'text_fling_10000_pixels_per_second'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  USE_FLING_SCROLL = True
+  SPEED_IN_PIXELS_PER_SECOND = 10000
+
+
+class FlingingText20000Page(ToughFastScrollingPage):
+  BASE_NAME = 'text_fling_20000_pixels_per_second'
+  URL = 'file://../tough_scrolling_cases/text.html'
+  USE_FLING_SCROLL = True
+  SPEED_IN_PIXELS_PER_SECOND = 20000
 
 
 class ScrollingText5000Page(ToughFastScrollingPage):
@@ -220,3 +264,19 @@ class ScrollingCanvas90000Page(ToughFastScrollingPage):
   BASE_NAME = 'canvas_90000_pixels_per_second'
   URL = 'file://../tough_scrolling_cases/canvas.html'
   SPEED_IN_PIXELS_PER_SECOND = 90000
+
+
+class NonOpaqueBackgroundMainThreadScrolling00050Page(ToughFastScrollingPage):
+  BASE_NAME = 'non_opaque_background_main_thread_scrolling_00050_pixels_per_second'
+  URL = 'file://../tough_scrolling_cases/text_on_non_opaque_background.html'
+  EXTRA_BROWSER_ARGS = '--disable-prefer-compositing-to-lcd-text'
+  SELECTOR = '#scroll'
+  SPEED_IN_PIXELS_PER_SECOND = 50
+
+
+class NonOpaqueBackgroundCompositorThreadScrolling00050Page(
+    ToughFastScrollingPage):
+  BASE_NAME = 'non_opaque_background_compositor_thread_scrolling_00050_pixels_per_second'
+  URL = 'file://../tough_scrolling_cases/text_on_non_opaque_background.html'
+  SELECTOR = '#scroll'
+  SPEED_IN_PIXELS_PER_SECOND = 50

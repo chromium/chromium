@@ -9,42 +9,39 @@
 <script>
     test(() => assert_true(CSS.supports("list-style-type", "decimal")));
 
-    // With @counter-style rules, all counter style type names are supported as custom counter styles.
-    let counterStyleEnabled = window.internals && internals.runtimeFlags.cssAtRuleCounterStyleEnabled;
-
-    test(() => assert_equals(CSS.supports("list-style-type", "binary"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "lower-hexadecimal"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "octal"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "upper-hexadecimal"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "afar"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "ethiopic-halehame-aa-et"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "ethiopic-halehame-aa-er"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "amharic"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "ethiopic-halehame-am-et"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "ethiopic-halehame-gez"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "ethiopic-abegede"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "ethiopic-abegede-gez"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "amharic-abegede"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "ethiopic-abegede-am-et"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "oromo"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "ethiopic-halehame-om-et"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "sidama"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "ethiopic-halehame-sid-et"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "somali"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "ethiopic-halehame-so-et"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "tigre"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "ethiopic-halehame-tig"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "tigrinya-er"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "tigrinya-er-abegede"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "ethiopic-abegede-ti-er"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "tigrinya-et"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "tigrinya-et-abegede"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "ethiopic-abegede-ti-et"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "lower-norwegian"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "upper-greek"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "upper-norwegian"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "asterisks"), counterStyleEnabled));
-    test(() => assert_equals(CSS.supports("list-style-type", "footnotes"), counterStyleEnabled));
+    test(() => assert_true(CSS.supports("list-style-type", "binary")));
+    test(() => assert_true(CSS.supports("list-style-type", "lower-hexadecimal")));
+    test(() => assert_true(CSS.supports("list-style-type", "octal")));
+    test(() => assert_true(CSS.supports("list-style-type", "upper-hexadecimal")));
+    test(() => assert_true(CSS.supports("list-style-type", "afar")));
+    test(() => assert_true(CSS.supports("list-style-type", "ethiopic-halehame-aa-et")));
+    test(() => assert_true(CSS.supports("list-style-type", "ethiopic-halehame-aa-er")));
+    test(() => assert_true(CSS.supports("list-style-type", "amharic")));
+    test(() => assert_true(CSS.supports("list-style-type", "ethiopic-halehame-am-et")));
+    test(() => assert_true(CSS.supports("list-style-type", "ethiopic-halehame-gez")));
+    test(() => assert_true(CSS.supports("list-style-type", "ethiopic-abegede")));
+    test(() => assert_true(CSS.supports("list-style-type", "ethiopic-abegede-gez")));
+    test(() => assert_true(CSS.supports("list-style-type", "amharic-abegede")));
+    test(() => assert_true(CSS.supports("list-style-type", "ethiopic-abegede-am-et")));
+    test(() => assert_true(CSS.supports("list-style-type", "oromo")));
+    test(() => assert_true(CSS.supports("list-style-type", "ethiopic-halehame-om-et")));
+    test(() => assert_true(CSS.supports("list-style-type", "sidama")));
+    test(() => assert_true(CSS.supports("list-style-type", "ethiopic-halehame-sid-et")));
+    test(() => assert_true(CSS.supports("list-style-type", "somali")));
+    test(() => assert_true(CSS.supports("list-style-type", "ethiopic-halehame-so-et")));
+    test(() => assert_true(CSS.supports("list-style-type", "tigre")));
+    test(() => assert_true(CSS.supports("list-style-type", "ethiopic-halehame-tig")));
+    test(() => assert_true(CSS.supports("list-style-type", "tigrinya-er")));
+    test(() => assert_true(CSS.supports("list-style-type", "tigrinya-er-abegede")));
+    test(() => assert_true(CSS.supports("list-style-type", "ethiopic-abegede-ti-er")));
+    test(() => assert_true(CSS.supports("list-style-type", "tigrinya-et")));
+    test(() => assert_true(CSS.supports("list-style-type", "tigrinya-et-abegede")));
+    test(() => assert_true(CSS.supports("list-style-type", "ethiopic-abegede-ti-et")));
+    test(() => assert_true(CSS.supports("list-style-type", "lower-norwegian")));
+    test(() => assert_true(CSS.supports("list-style-type", "upper-greek")));
+    test(() => assert_true(CSS.supports("list-style-type", "upper-norwegian")));
+    test(() => assert_true(CSS.supports("list-style-type", "asterisks")));
+    test(() => assert_true(CSS.supports("list-style-type", "footnotes")));
 </script>
 </head>
 </html>

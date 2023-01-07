@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS slotchange event must not fire synchronously.
+PASS slotchange event should not fire when assignments do not change assignedNodes.
+PASS slotchange event should not fire when same node is assigned.
+PASS Fire slotchange event when slot's assigned nodes changes.
+PASS Fire slotchange event on previous slot and new slot when node is reassigned.
+PASS Fire slotchange event on node assignment and when assigned node is removed.
+PASS Fire slotchange event when order of assigned nodes changes.
+PASS Fire slotchange event when assigned node is removed.
+PASS Fire slotchange event when removing a slot from Shadows Root that changes its assigned nodes.
+PASS No slotchange event when adding or removing an empty slot.
+PASS No slotchange event when adding another slotable.
+PASS Fire slotchange event when assign node to nested slot, ensure event bubbles ups.
+FAIL Signal a slot change should be done in tree order. assert_array_equals: expected property 0 to be "s1" but got "s2.5" (expected array ["s1", "s2.5", "s3"] got ["s2.5", "s1", "s3"])
+Harness: the test ran to completion.
+

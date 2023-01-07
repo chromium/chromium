@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS shape-margin can be assigned 'inherit' value
-FAIL shape-margin is not inherited and defaults to 0px assert_equals: expected (object) null but got (string) ""
-PASS shape-margin is not inherited
-Harness: the test ran to completion.
-

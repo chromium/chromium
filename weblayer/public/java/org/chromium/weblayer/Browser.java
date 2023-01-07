@@ -1,16 +1,15 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.weblayer;
 
 import android.os.RemoteException;
+import android.view.SurfaceControlViewHost;
 import android.view.View;
-import android.webkit.ValueCallback;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IBrowser;
@@ -26,17 +25,57 @@ import java.util.Set;
  * Browser contains any number of Tabs, with one active Tab. The active Tab is visible to the user,
  * all other Tabs are hidden.
  *
- * By default Browser has a single active Tab.
+ * Newly created Browsers have a single active Tab.
+ *
+ * Browser provides for two distinct ways to save state, which impacts the state of the Browser at
+ * various points in the lifecycle.
+ *
+ * Asynchronously to the file system. This is used if a {@link persistenceId} was supplied when the
+ * Browser was created. The {@link persistenceId} uniquely identifies the Browser for saving the
+ * set of tabs and navigations. This is intended for long term persistence.
+ *
+ * For Browsers created with a {@link persistenceId}, restore happens asynchronously. As a result,
+ * the Browser will not have any tabs until restore completes (which may be after the Fragment has
+ * started).
+ *
+ * If a {@link persistenceId} is not supplied, then a minimal amount of state is saved to the
+ * fragment (instance state). During recreation, if instance state is available, the state is
+ * restored in {@link onStart}. Restore happens during start so that callbacks can be attached. As
+ *  a result of this, the Browser has no tabs until the Fragment is started.
  */
-public class Browser {
+class Browser {
     // Set to null once destroyed (or for tests).
     private IBrowser mImpl;
-    private BrowserFragment mFragment;
     private final ObserverList<TabListCallback> mTabListCallbacks;
     private final UrlBarController mUrlBarController;
 
     private final ObserverList<BrowserControlsOffsetCallback> mBrowserControlsOffsetCallbacks;
     private final ObserverList<BrowserRestoreCallback> mBrowserRestoreCallbacks;
+
+    private static int sMaxNavigationsPerTabForInstanceState;
+
+    /**
+     * Sets the maximum number of navigations saved when persisting a Browsers instance state. The
+     * max applies to each Tab in the Browser. For example, if a value of 6 is supplied and the
+     * Browser has 4 tabs, then up to 24 navigation entries may be saved. The supplied value is
+     * a recommendation, for various reasons it may not be honored. A value of 0 results in
+     * using the default.
+     *
+     * @param value The maximum number of navigations to persist.
+     *
+     * @throws IllegalArgumentException If {@code value} is less than 0.
+     *
+     * @since 98
+     */
+    public static void setMaxNavigationsPerTabForInstanceState(int value) {
+        ThreadCheck.ensureOnUiThread();
+        if (value < 0) throw new IllegalArgumentException("Max must be >= 0");
+        sMaxNavigationsPerTabForInstanceState = value;
+    }
+
+    static int getMaxNavigationsPerTabForInstanceState() {
+        return sMaxNavigationsPerTabForInstanceState;
+    }
 
     // Constructor for test mocking.
     protected Browser() {
@@ -47,10 +86,13 @@ public class Browser {
         mBrowserRestoreCallbacks = null;
     }
 
-    Browser(IBrowser impl, BrowserFragment fragment) {
+    // Constructor for browserfragment to inject the {@code tabListCallback} on startup.
+    Browser(IBrowser impl, @Nullable TabListCallback tabListCallback) {
         mImpl = impl;
-        mFragment = fragment;
         mTabListCallbacks = new ObserverList<TabListCallback>();
+        if (tabListCallback != null) {
+            mTabListCallbacks.addObserver(tabListCallback);
+        }
         mBrowserControlsOffsetCallbacks = new ObserverList<BrowserControlsOffsetCallback>();
         mBrowserRestoreCallbacks = new ObserverList<BrowserRestoreCallback>();
 
@@ -73,18 +115,6 @@ public class Browser {
     }
 
     /**
-     * Returns the Browser for the supplied Fragment; null if
-     * {@link fragment} was not created by WebLayer.
-     *
-     * @return the Browser
-     */
-    @Nullable
-    public static Browser fromFragment(@Nullable Fragment fragment) {
-        return fragment instanceof BrowserFragment ? ((BrowserFragment) fragment).getBrowser()
-                                                   : null;
-    }
-
-    /**
      * Returns true if this Browser has been destroyed.
      */
     public boolean isDestroyed() {
@@ -94,7 +124,6 @@ public class Browser {
 
     // Called prior to notifying IBrowser of destroy().
     void prepareForDestroy() {
-        mFragment = null;
         for (TabListCallback callback : mTabListCallbacks) {
             callback.onWillDestroyBrowserAndAllTabs();
         }
@@ -177,6 +206,21 @@ public class Browser {
     }
 
     /**
+     * Returns a List of Tabs as saved in the native Browser.
+     *
+     * @return The Tabs.
+     */
+    @NonNull
+    private int[] getTabIds() {
+        ThreadCheck.ensureOnUiThread();
+        try {
+            return mImpl.getTabIds();
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
      * Disposes a Tab. If {@link tab} is the active Tab, no Tab is made active. After this call
      *  {@link tab} should not be used.
      *
@@ -198,6 +242,47 @@ public class Browser {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
+    }
+
+    /**
+     * Navigates to the previous navigation across all tabs according to tabs in native Browser.
+     */
+    void tryNavigateBack(@NonNull Callback<Boolean> callback) {
+        Tab activeTab = getActiveTab();
+        if (activeTab == null) {
+            callback.onResult(false);
+            return;
+        }
+        if (activeTab.dismissTransientUi()) {
+            callback.onResult(true);
+            return;
+        }
+        NavigationController controller = activeTab.getNavigationController();
+        if (controller.canGoBack()) {
+            controller.goBack();
+            callback.onResult(true);
+            return;
+        }
+        int[] tabIds = getTabIds();
+        if (tabIds.length > 1) {
+            Tab previousTab = null;
+            int activeTabId = activeTab.getId();
+            int prevId = -1;
+            for (int id : tabIds) {
+                if (id == activeTabId) {
+                    previousTab = Tab.getTabById(prevId);
+                    break;
+                }
+                prevId = id;
+            }
+            if (previousTab != null) {
+                activeTab.dispatchBeforeUnloadAndClose();
+                setActiveTab(previousTab);
+                callback.onResult(true);
+                return;
+            }
+        }
+        callback.onResult(false);
     }
 
     /**
@@ -383,54 +468,6 @@ public class Browser {
     }
 
     /**
-     * Control support for embedding use cases such as animations. This should be enabled when the
-     * container view of the fragment is animated in any way, needs to be rotated or blended, or
-     * need to control z-order with other views or other BrowserFragmentImpls. Note embedder should
-     * keep WebLayer in the default non-embedding mode when user is interacting with the web
-     * content. Embedding mode does not support encrypted video.
-     * Deprecated in 90. Use setEmbeddabilityMode instead.
-     *
-     * @param enable Whether to support embedding
-     * @param callback {@link Callback} to be called with a boolean indicating whether request
-     * succeeded. A request might fail if it is subsumed by a subsequent request, or if this object
-     * is destroyed.
-     */
-    @Deprecated
-    public void setSupportsEmbedding(boolean enable, @NonNull Callback<Boolean> callback) {
-        ThreadCheck.ensureOnUiThread();
-        throwIfDestroyed();
-        try {
-            mImpl.setSupportsEmbedding(
-                    enable, ObjectWrapper.wrap((ValueCallback<Boolean>) callback::onResult));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    /**
-     * See BrowserEmbeddabilityMode for details. The default mode is UNSUPPORTED.
-     * @param mode the requested embedding mode.
-     * @param callback {@link Callback} to be called with a boolean indicating whether request
-     * succeeded. A request might fail if it is subsumed by a subsequent request, or if this object
-     * is destroyed.
-     * @since 90
-     */
-    public void setEmbeddabilityMode(
-            @BrowserEmbeddabilityMode int mode, @NonNull Callback<Boolean> callback) {
-        ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 90) {
-            throw new UnsupportedOperationException();
-        }
-        throwIfDestroyed();
-        try {
-            mImpl.setEmbeddabilityMode(
-                    mode, ObjectWrapper.wrap((ValueCallback<Boolean>) callback::onResult));
-        } catch (RemoteException e) {
-            throw new APICallException(e);
-        }
-    }
-
-    /**
      * Set the minimum surface size of this Browser instance.
      * Setting this avoids expensive surface resize for a fragment view resize that is within the
      * minimum size. The trade off is the additional memory and power needed for the larger
@@ -507,6 +544,58 @@ public class Browser {
         return mUrlBarController;
     }
 
+    /**
+     * Normally when the Browser is detached the visibility of the page is set to hidden. When the
+     * visibility is hidden video may stop, or other side effects may result. At certain times,
+     * such as fullscreen or rotation, it may be necessary to transiently detach the Browser.
+     * Calling this method with a value of false results in WebLayer not hiding the page on the next
+     * detach. Once the Browser is reattached, the value is implicitly reset to true. Calling this
+     * method when the Browser is already detached does nothing.
+     *
+     * @param changeVisibility Whether WebLayer should change visibility as the result of a detach.
+     *
+     * @since 91
+     */
+    public void setChangeVisibilityOnNextDetach(boolean changeVisibility) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 91) {
+            throw new UnsupportedOperationException();
+        }
+        throwIfDestroyed();
+        try {
+            mImpl.setChangeVisibilityOnNextDetach(changeVisibility);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    /**
+     * Attaches the top-level view to the SurfaceControlViewHost.
+     * @param host The SurfaceControlViewHost created from the host app's SurfaceView.
+     *
+     * @since 105
+     */
+    void setSurfaceControlViewHost(SurfaceControlViewHost host) {
+        ThreadCheck.ensureOnUiThread();
+
+        if (WebLayer.getSupportedMajorVersionInternal() < 105) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            mImpl.setSurfaceControlViewHost(ObjectWrapper.wrap(host));
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
+    View getContentViewRenderView() {
+        try {
+            return ObjectWrapper.unwrap(mImpl.getContentViewRenderView(), View.class);
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     private final class BrowserClientImpl extends IBrowserClient.Stub {
         @Override
         public void onActiveTabChanged(int activeTabId) {
@@ -555,7 +644,7 @@ public class Browser {
         @Override
         public IRemoteFragment createMediaRouteDialogFragment() {
             StrictModeWorkaround.apply();
-            return MediaRouteDialogFragment.create(mFragment);
+            return new MediaRouteDialogFragmentEventHandler().getRemoteFragment();
         }
 
         @Override

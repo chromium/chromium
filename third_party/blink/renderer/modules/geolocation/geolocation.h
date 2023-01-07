@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOLOCATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOLOCATION_H_
 
+#include "base/dcheck_is_on.h"
 #include "services/device/public/mojom/geolocation.mojom-blink.h"
 #include "third_party/blink/public/mojom/geolocation/geolocation_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -41,7 +42,8 @@
 #include "third_party/blink/renderer/modules/geolocation/geoposition.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -148,7 +150,7 @@ class MODULES_EXPORT Geolocation final
     }
 
     auto Contains(GeoNotifier* value) const { return set_.Contains(value); }
-    auto IsEmpty() const { return set_.IsEmpty(); }
+    auto IsEmpty() const { return set_.empty(); }
 
     auto InsertWithoutTimerCheck(GeoNotifier* value) {
       return set_.insert(value);

@@ -1,0 +1,28 @@
+caption: Allow showing the most recent default search engine results page in a Browser
+  side panel
+default: true
+desc: |-
+  Setting the policy to Enabled or leaving the policy unset means that users can bring up their most recent default search engine results page in a side panel via toggling an icon in the toolbar.
+
+        Setting the policy to Disabled removes the icon from the toolbar that opens the side panel with the default search engine results page.
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: true
+future_on:
+- fuchsia
+items:
+- caption: Enable showing default search engine results pages in a Browser side panel.
+  value: true
+- caption: Disable showing default search engine results pages in a Browser side panel.
+  value: false
+owners:
+- tluk@chromium.org
+- chrome-cros@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:96-
+- chrome.*:101-
+tags: []
+type: main

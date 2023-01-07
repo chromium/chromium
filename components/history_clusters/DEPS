@@ -1,0 +1,5 @@
+include_rules = [
+  # Memories is a layered component; subdirectories must explicitly
+  # introduce the ability to use non-core layers as appropriate.
+  "-components/history_clusters/content",
+]

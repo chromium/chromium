@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,22 @@ extern NSString* const kDataFromChromeSyncAccessibilityIdentifier;
 // Accessibility identifier for Manage Sync table view.
 extern NSString* const kManageSyncTableViewAccessibilityIdentifier;
 
+// Accessibility identifiers for sync switch items.
+extern NSString* const kSyncEverythingItemAccessibilityIdentifier;
+extern NSString* const kSyncBookmarksIdentifier;
+extern NSString* const kSyncOmniboxHistoryIdentifier;
+extern NSString* const kSyncPasswordsIdentifier;
+extern NSString* const kSyncOpenTabsIdentifier;
+extern NSString* const kSyncAutofillIdentifier;
+extern NSString* const kSyncPreferencesIdentifier;
+extern NSString* const kSyncReadingListIdentifier;
+
 // Sections used in Sync Settings page.
 typedef NS_ENUM(NSInteger, SyncSettingsSectionIdentifier) {
   // Section for all the sync settings.
   SyncDataTypeSectionIdentifier = kSectionIdentifierEnumZero,
+  // Sign out options.
+  SignOutSectionIdentifier,
   // Advanced settings.
   AdvancedSettingsSectionIdentifier,
   // Sync errors.
@@ -47,6 +59,8 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   SettingsDataTypeItemType,
   // Item for kAutofillWalletImportEnabled.
   AutocompleteWalletItemType,
+  // Sign out item,
+  SignOutItemType,
   // AdvancedSettingsSectionIdentifier section.
   // Encryption item.
   EncryptionItemType,
@@ -55,11 +69,13 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   // Data from Chrome sync.
   DataFromChromeSync,
   // Sync errors.
-  RestartAuthenticationFlowErrorItemType,
   ReauthDialogAsSyncIsInAuthErrorItemType,
   ShowPassphraseDialogErrorItemType,
   SyncNeedsTrustedVaultKeyErrorItemType,
+  SyncTrustedVaultRecoverabilityDegradedErrorItemType,
   SyncDisabledByAdministratorErrorItemType,
+  // Sign out item footer.
+  SignOutItemFooterType,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_CONSTANTS_H_

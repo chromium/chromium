@@ -1,31 +1,44 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/callback.h"
+#include "base/feature_list.h"
+#include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "v8/include/v8-isolate.h"
+
 #include "base/record_replay.h"
 
 namespace blink {
 
-FrameOrWorkerScheduler::Observer::Observer() {
-  // Pointer registration is needed for sorting in
-  // FrameOrWorkerScheduler::NotifyLifecycleObservers.
-  recordreplay::RegisterPointer("FrameOrWorkerScheduler::Observer", this);
+namespace {
+
+// When enabled, Source Location blocking BFCache is captured
+// to send it to the browser.
+BASE_FEATURE(kRegisterJSSourceLocationBlockingBFCache,
+             "RegisterJSSourceLocationBlockingBFCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Returns whether features::kRegisterJSSourceLocationBlockingBFCache is
+// enabled.
+bool IsRegisterJSSourceLocationBlockingBFCache() {
+  return base::FeatureList::IsEnabled(kRegisterJSSourceLocationBlockingBFCache);
 }
 
-FrameOrWorkerScheduler::Observer::~Observer() {
-  recordreplay::UnregisterPointer(this);
-}
+}  // namespace
 
 FrameOrWorkerScheduler::LifecycleObserverHandle::LifecycleObserverHandle(
-    FrameOrWorkerScheduler* scheduler,
-    Observer* observer)
-    : scheduler_(scheduler->GetWeakPtr()), observer_(observer) {}
+    FrameOrWorkerScheduler* scheduler)
+    : scheduler_(scheduler->GetWeakPtr()) {}
 
 FrameOrWorkerScheduler::LifecycleObserverHandle::~LifecycleObserverHandle() {
   if (scheduler_)
-    scheduler_->RemoveLifecycleObserver(observer_);
+    scheduler_->RemoveLifecycleObserver(this);
 }
 
 FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle::
@@ -65,71 +78,84 @@ FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
 FrameOrWorkerScheduler::RegisterFeature(SchedulingPolicy::Feature feature,
                                         SchedulingPolicy policy) {
   DCHECK(!scheduler::IsFeatureSticky(feature));
-  // We reset feature sets upon frame navigation, so having a document-bound
-  // weak pointer ensures that the feature handle associated with previous
-  // document can't influence the new one.
-  return SchedulingAffectingFeatureHandle(feature, policy,
-                                          GetDocumentBoundWeakPtr());
+  if (IsRegisterJSSourceLocationBlockingBFCache()) {
+    // Check if V8 is currently running an isolate.
+    // CaptureSourceLocation() detects the location of JS blocking BFCache if JS
+    // is running.
+    if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
+      // TODO(crbug.com/1366675): Add source location into
+      // SchedulingAffectingFeatureHandle to pass it to the browser.
+      std::unique_ptr<SourceLocation> source_location = CaptureSourceLocation();
+    }
+  }
+  return SchedulingAffectingFeatureHandle(
+      feature, policy, GetSchedulingAffectingFeatureWeakPtr());
 }
 
 void FrameOrWorkerScheduler::RegisterStickyFeature(
     SchedulingPolicy::Feature feature,
     SchedulingPolicy policy) {
   DCHECK(scheduler::IsFeatureSticky(feature));
+  if (IsRegisterJSSourceLocationBlockingBFCache()) {
+    // Check if V8 is currently running an isolate.
+    // CaptureSourceLocation() detects the location of JS blocking BFCache if JS
+    // is running.
+    if (v8::Isolate* isolate = v8::Isolate::TryGetCurrent()) {
+      // TODO(crbug.com/1366675): Add source location into
+      // SchedulingAffectingFeatureHandle to pass it to the browser.
+      std::unique_ptr<SourceLocation> source_location = CaptureSourceLocation();
+    }
+  }
   OnStartedUsingFeature(feature, policy);
 }
 
 std::unique_ptr<FrameOrWorkerScheduler::LifecycleObserverHandle>
-FrameOrWorkerScheduler::AddLifecycleObserver(ObserverType type,
-                                             Observer* observer) {
-  DCHECK(observer);
-  observer->OnLifecycleStateChanged(CalculateLifecycleState(type));
-  lifecycle_observers_.Set(observer, type);
-  return std::make_unique<LifecycleObserverHandle>(this, observer);
+FrameOrWorkerScheduler::AddLifecycleObserver(
+    ObserverType type,
+    OnLifecycleStateChangedCallback callback) {
+  callback.Run(CalculateLifecycleState(type));
+  auto handle = std::make_unique<LifecycleObserverHandle>(this);
+  lifecycle_observers_.Set(
+      handle.get(), std::make_unique<ObserverState>(type, std::move(callback)));
+  return handle;
 }
 
-void FrameOrWorkerScheduler::RemoveLifecycleObserver(Observer* observer) {
-  DCHECK(observer);
-  const auto found = lifecycle_observers_.find(observer);
+void FrameOrWorkerScheduler::RemoveLifecycleObserver(
+    LifecycleObserverHandle* handle) {
+  DCHECK(handle);
+  const auto found = lifecycle_observers_.find(handle);
   DCHECK(lifecycle_observers_.end() != found);
   lifecycle_observers_.erase(found);
 }
 
-struct CompareObserverByPointerId {
-  bool operator()(const std::pair<FrameOrWorkerScheduler::Observer*,
-                                  FrameOrWorkerScheduler::ObserverType>& a,
-                  const std::pair<FrameOrWorkerScheduler::Observer*,
-                                  FrameOrWorkerScheduler::ObserverType>& b) const {
-    if (recordreplay::IsRecordingOrReplaying("pointer-ids")) {
-      int ida = recordreplay::PointerId(a.first);
-      int idb = recordreplay::PointerId(b.first);
-      CHECK(ida && idb);
-      return ida < idb;
-    }
-    return (uintptr_t)a.first < (uintptr_t)b.first;
-  }
-};
-
 void FrameOrWorkerScheduler::NotifyLifecycleObservers() {
-  std::vector<std::pair<Observer*, ObserverType>> observers;
+  std::vector<ObserverState*> observers;
   for (const auto& observer : lifecycle_observers_)
-    observers.emplace_back(observer.key, observer.value);
+    observers.push_back(observer.value.get());
   std::sort(observers.begin(), observers.end(),
-            CompareObserverByPointerId());
+            recordreplay::CompareByPointerId());
 
-  for (const auto& observer : observers) {
-    observer.first->OnLifecycleStateChanged(
-        CalculateLifecycleState(observer.second));
+  for (auto* observer : observers) {
+    observer->GetCallback().Run(
+        CalculateLifecycleState(observer->GetObserverType()));
   }
-}
-
-base::WeakPtr<FrameOrWorkerScheduler>
-FrameOrWorkerScheduler::GetDocumentBoundWeakPtr() {
-  return nullptr;
 }
 
 base::WeakPtr<FrameOrWorkerScheduler> FrameOrWorkerScheduler::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+FrameOrWorkerScheduler::ObserverState::ObserverState(
+    FrameOrWorkerScheduler::ObserverType observer_type,
+    FrameOrWorkerScheduler::OnLifecycleStateChangedCallback callback)
+    : observer_type_(observer_type), callback_(callback) {
+  // Pointer registration is needed for sorting in
+  // FrameOrWorkerScheduler::NotifyLifecycleObservers.
+  recordreplay::RegisterPointer("FrameOrWorkerScheduler::ObserverState", this);
+}
+
+FrameOrWorkerScheduler::ObserverState::~ObserverState() {
+  recordreplay::UnregisterPointer(this);
 }
 
 }  // namespace blink

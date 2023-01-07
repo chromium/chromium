@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
@@ -29,16 +29,15 @@ namespace {
 
 using extensions::api::file_manager_private::SharesheetLaunchSource;
 
-sharesheet::SharesheetMetrics::LaunchSource GetLaunchSource(
-    SharesheetLaunchSource launch_source) {
+sharesheet::LaunchSource GetLaunchSource(SharesheetLaunchSource launch_source) {
   switch (launch_source) {
     case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_SHARESHEET_BUTTON):
-      return sharesheet::SharesheetMetrics::LaunchSource::kFilesAppShareButton;
+      return sharesheet::LaunchSource::kFilesAppShareButton;
     case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_CONTEXT_MENU):
-      return sharesheet::SharesheetMetrics::LaunchSource::kFilesAppContextMenu;
+      return sharesheet::LaunchSource::kFilesAppContextMenu;
     case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_UNKNOWN):
     case (SharesheetLaunchSource::SHARESHEET_LAUNCH_SOURCE_NONE):
-      return sharesheet::SharesheetMetrics::LaunchSource::kUnknown;
+      return sharesheet::LaunchSource::kUnknown;
   }
 }
 
@@ -47,8 +46,7 @@ sharesheet::SharesheetMetrics::LaunchSource GetLaunchSource(
 namespace extensions {
 
 FileManagerPrivateInternalSharesheetHasTargetsFunction::
-    FileManagerPrivateInternalSharesheetHasTargetsFunction()
-    : chrome_details_(this) {}
+    FileManagerPrivateInternalSharesheetHasTargetsFunction() = default;
 
 FileManagerPrivateInternalSharesheetHasTargetsFunction::
     ~FileManagerPrivateInternalSharesheetHasTargetsFunction() = default;
@@ -57,21 +55,24 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalSharesheetHasTargetsFunction::Run() {
   using extensions::api::file_manager_private_internal::SharesheetHasTargets::
       Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->urls.empty())
     return RespondNow(Error("No URLs provided"));
 
+  profile_ = Profile::FromBrowserContext(browser_context());
+
   const scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
-          chrome_details_.GetProfile(), render_frame_host());
+          profile_, render_frame_host());
 
   // Collect all the URLs, convert them to GURLs, and crack all the urls into
   // file paths.
   for (size_t i = 0; i < params->urls.size(); ++i) {
     const GURL url(params->urls[i]);
-    storage::FileSystemURL file_system_url(file_system_context->CrackURL(url));
+    storage::FileSystemURL file_system_url(
+        file_system_context->CrackURLInFirstPartyContext(url));
     if (drive::util::HasHostedDocumentExtension(file_system_url.path())) {
       contains_hosted_document_ = true;
     }
@@ -82,8 +83,7 @@ FileManagerPrivateInternalSharesheetHasTargetsFunction::Run() {
   }
 
   mime_type_collector_ =
-      std::make_unique<app_file_handler_util::MimeTypeCollector>(
-          chrome_details_.GetProfile());
+      std::make_unique<app_file_handler_util::MimeTypeCollector>(profile_);
   mime_type_collector_->CollectForURLs(
       file_system_urls_,
       base::BindOnce(&FileManagerPrivateInternalSharesheetHasTargetsFunction::
@@ -95,8 +95,7 @@ FileManagerPrivateInternalSharesheetHasTargetsFunction::Run() {
 void FileManagerPrivateInternalSharesheetHasTargetsFunction::
     OnMimeTypesCollected(std::unique_ptr<std::vector<std::string>> mime_types) {
   sharesheet::SharesheetService* sharesheet_service =
-      sharesheet::SharesheetServiceFactory::GetForProfile(
-          chrome_details_.GetProfile());
+      sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
 
   bool result = false;
 
@@ -115,7 +114,7 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
     if (connection_status == drive::util::DRIVE_CONNECTED_METERED ||
         connection_status == drive::util::DRIVE_CONNECTED) {
       file_manager::util::SingleEntryPropertiesGetterForDriveFs::Start(
-          file_system_urls_[0], chrome_details_.GetProfile(),
+          file_system_urls_[0], profile_,
           base::BindOnce(
               &FileManagerPrivateInternalSharesheetHasTargetsFunction::
                   OnDrivePropertyCollected,
@@ -124,7 +123,7 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
     }
   }
   result = sharesheet_service->HasShareTargets(
-      apps_util::CreateShareIntentFromFiles(urls_, *mime_types),
+      apps_util::MakeShareIntent(urls_, *mime_types),
       contains_hosted_document_);
   Respond(ArgumentList(extensions::api::file_manager_private_internal::
                            SharesheetHasTargets::Results::Create(result)));
@@ -145,8 +144,7 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
   }
 
   is_directory_collector_ =
-      std::make_unique<app_file_handler_util::IsDirectoryCollector>(
-          chrome_details_.GetProfile());
+      std::make_unique<app_file_handler_util::IsDirectoryCollector>(profile_);
   is_directory_collector_->CollectForEntriesPaths(
       std::vector<base::FilePath>{file_system_urls_[0].path()},
       base::BindOnce(&FileManagerPrivateInternalSharesheetHasTargetsFunction::
@@ -163,23 +161,21 @@ void FileManagerPrivateInternalSharesheetHasTargetsFunction::
                       path_directory_set->end();
 
   sharesheet::SharesheetService* sharesheet_service =
-      sharesheet::SharesheetServiceFactory::GetForProfile(
-          chrome_details_.GetProfile());
+      sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
   GURL share_url =
       (properties->can_share && *properties->can_share && properties->share_url)
           ? GURL(*properties->share_url)
           : GURL();
   bool result = sharesheet_service->HasShareTargets(
-      apps_util::CreateShareIntentFromDriveFile(urls_[0], (*mime_types)[0],
-                                                share_url, is_directory),
+      apps_util::MakeShareIntent(urls_[0], (*mime_types)[0], share_url,
+                                 is_directory),
       contains_hosted_document_);
   Respond(ArgumentList(extensions::api::file_manager_private_internal::
                            SharesheetHasTargets::Results::Create(result)));
 }
 
 FileManagerPrivateInternalInvokeSharesheetFunction::
-    FileManagerPrivateInternalInvokeSharesheetFunction()
-    : chrome_details_(this) {}
+    FileManagerPrivateInternalInvokeSharesheetFunction() = default;
 
 FileManagerPrivateInternalInvokeSharesheetFunction::
     ~FileManagerPrivateInternalInvokeSharesheetFunction() = default;
@@ -188,21 +184,24 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
   using extensions::api::file_manager_private_internal::InvokeSharesheet::
       Params;
-  const std::unique_ptr<Params> params(Params::Create(*args_));
+  const std::unique_ptr<Params> params(Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->urls.empty())
     return RespondNow(Error("No URLs provided"));
 
+  profile_ = Profile::FromBrowserContext(browser_context());
+
   const scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
-          chrome_details_.GetProfile(), render_frame_host());
+          profile_, render_frame_host());
 
   // Collect all the URLs, convert them to GURLs, and crack all the urls into
   // file paths.
   for (size_t i = 0; i < params->urls.size(); ++i) {
     const GURL url(params->urls[i]);
-    storage::FileSystemURL file_system_url(file_system_context->CrackURL(url));
+    storage::FileSystemURL file_system_url(
+        file_system_context->CrackURLInFirstPartyContext(url));
     if (drive::util::HasHostedDocumentExtension(file_system_url.path()))
       contains_hosted_document_ = true;
     if (!chromeos::FileSystemBackend::CanHandleURL(file_system_url))
@@ -212,8 +211,7 @@ FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
   }
 
   mime_type_collector_ =
-      std::make_unique<app_file_handler_util::MimeTypeCollector>(
-          chrome_details_.GetProfile());
+      std::make_unique<app_file_handler_util::MimeTypeCollector>(profile_);
   mime_type_collector_->CollectForURLs(
       file_system_urls_,
       base::BindOnce(&FileManagerPrivateInternalInvokeSharesheetFunction::
@@ -224,12 +222,11 @@ FileManagerPrivateInternalInvokeSharesheetFunction::Run() {
 }
 
 void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
-    sharesheet::SharesheetMetrics::LaunchSource launch_source,
+    sharesheet::LaunchSource launch_source,
     std::unique_ptr<std::vector<std::string>> mime_types) {
   // On button press show sharesheet bubble.
-  auto* profile = chrome_details_.GetProfile();
   sharesheet::SharesheetService* sharesheet_service =
-      sharesheet::SharesheetServiceFactory::GetForProfile(profile);
+      sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
   if (!sharesheet_service) {
     Respond(Error("Cannot find sharesheet service"));
     return;
@@ -243,7 +240,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
     if (connection_status == drive::util::DRIVE_CONNECTED_METERED ||
         connection_status == drive::util::DRIVE_CONNECTED) {
       file_manager::util::SingleEntryPropertiesGetterForDriveFs::Start(
-          file_system_urls_[0], chrome_details_.GetProfile(),
+          file_system_urls_[0], profile_,
           base::BindOnce(&FileManagerPrivateInternalInvokeSharesheetFunction::
                              OnDrivePropertyCollected,
                          this, launch_source, std::move(mime_types)));
@@ -252,15 +249,14 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnMimeTypesCollected(
   }
 
   sharesheet_service->ShowBubble(
-      GetSenderWebContents(),
-      apps_util::CreateShareIntentFromFiles(urls_, *mime_types),
+      GetSenderWebContents(), apps_util::MakeShareIntent(urls_, *mime_types),
       contains_hosted_document_, launch_source, base::NullCallback());
   Respond(NoArguments());
 }
 
 void FileManagerPrivateInternalInvokeSharesheetFunction::
     OnDrivePropertyCollected(
-        sharesheet::SharesheetMetrics::LaunchSource launch_source,
+        sharesheet::LaunchSource launch_source,
         std::unique_ptr<std::vector<std::string>> mime_types,
         std::unique_ptr<api::file_manager_private::EntryProperties> properties,
         base::File::Error error) {
@@ -272,8 +268,7 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::
   }
 
   is_directory_collector_ =
-      std::make_unique<app_file_handler_util::IsDirectoryCollector>(
-          chrome_details_.GetProfile());
+      std::make_unique<app_file_handler_util::IsDirectoryCollector>(profile_);
   is_directory_collector_->CollectForEntriesPaths(
       std::vector<base::FilePath>{file_system_urls_[0].path()},
       base::BindOnce(&FileManagerPrivateInternalInvokeSharesheetFunction::
@@ -283,16 +278,15 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::
 }
 
 void FileManagerPrivateInternalInvokeSharesheetFunction::OnIsDirectoryCollected(
-    sharesheet::SharesheetMetrics::LaunchSource launch_source,
+    sharesheet::LaunchSource launch_source,
     std::unique_ptr<std::vector<std::string>> mime_types,
     std::unique_ptr<api::file_manager_private::EntryProperties> properties,
     std::unique_ptr<std::set<base::FilePath>> path_directory_set) {
   bool is_directory = path_directory_set->find(file_system_urls_[0].path()) !=
                       path_directory_set->end();
 
-  auto* profile = chrome_details_.GetProfile();
   sharesheet::SharesheetService* sharesheet_service =
-      sharesheet::SharesheetServiceFactory::GetForProfile(profile);
+      sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
   if (!sharesheet_service) {
     Respond(Error("Cannot find sharesheet service"));
     return;
@@ -304,8 +298,8 @@ void FileManagerPrivateInternalInvokeSharesheetFunction::OnIsDirectoryCollected(
           : GURL();
   sharesheet_service->ShowBubble(
       GetSenderWebContents(),
-      apps_util::CreateShareIntentFromDriveFile(urls_[0], (*mime_types)[0],
-                                                share_url, is_directory),
+      apps_util::MakeShareIntent(urls_[0], (*mime_types)[0], share_url,
+                                 is_directory),
       contains_hosted_document_, launch_source, base::NullCallback());
   Respond(NoArguments());
 }

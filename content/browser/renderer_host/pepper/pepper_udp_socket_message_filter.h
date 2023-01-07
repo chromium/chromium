@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -37,7 +35,7 @@
 struct PP_NetAddress_Private;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/network/firewall_hole.h"
+#include "chromeos/ash/components/network/firewall_hole.h"
 #include "content/public/browser/browser_thread.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -67,6 +65,10 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
   PepperUDPSocketMessageFilter(BrowserPpapiHostImpl* host,
                                PP_Instance instance,
                                bool private_api);
+
+  PepperUDPSocketMessageFilter(const PepperUDPSocketMessageFilter&) = delete;
+  PepperUDPSocketMessageFilter& operator=(const PepperUDPSocketMessageFilter&) =
+      delete;
 
   using CreateUDPSocketCallback = base::RepeatingCallback<void(
       network::mojom::NetworkContext* network_context,
@@ -133,7 +135,7 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
                           listener_receiver,
                       const ppapi::host::ReplyMessageContext& context,
                       int result,
-                      const base::Optional<net::IPEndPoint>& local_addr_out);
+                      const absl::optional<net::IPEndPoint>& local_addr_out);
   void OnBindComplete(mojo::PendingReceiver<network::mojom::UDPSocketListener>
                           listener_receiver,
                       const ppapi::host::ReplyMessageContext& context,
@@ -144,15 +146,15 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
           listener_receiver,
       const ppapi::host::ReplyMessageContext& context,
       const PP_NetAddress_Private& net_address,
-      std::unique_ptr<chromeos::FirewallHole> hole);
+      std::unique_ptr<ash::FirewallHole> hole);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void StartPendingSend();
   void Close();
 
   // network::mojom::UDPSocketListener override:
   void OnReceived(int result,
-                  const base::Optional<net::IPEndPoint>& src_addr,
-                  base::Optional<base::span<const uint8_t>> data) override;
+                  const absl::optional<net::IPEndPoint>& src_addr,
+                  absl::optional<base::span<const uint8_t>> data) override;
 
   void OnSendToCompleted(int net_result);
   void FinishPendingSend(int net_result);
@@ -225,16 +227,13 @@ class CONTENT_EXPORT PepperUDPSocketMessageFilter
   mojo::Receiver<network::mojom::UDPSocketListener> receiver_{this};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<chromeos::FirewallHole,
-                  content::BrowserThread::DeleteOnUIThread>
+  std::unique_ptr<ash::FirewallHole, content::BrowserThread::DeleteOnUIThread>
       firewall_hole_;
   // Allows for cancellation of opening a hole in the firewall in the case the
   // network service crashes.
   base::WeakPtrFactory<PepperUDPSocketMessageFilter>
       firewall_hole_weak_ptr_factory_{this};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  DISALLOW_COPY_AND_ASSIGN(PepperUDPSocketMessageFilter);
 };
 
 }  // namespace content

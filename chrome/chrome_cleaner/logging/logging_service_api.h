@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/values.h"
 #include "chrome/chrome_cleaner/logging/utils.h"
 #include "chrome/chrome_cleaner/os/disk_util_types.h"
 #include "chrome/chrome_cleaner/os/process.h"

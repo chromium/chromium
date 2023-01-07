@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
@@ -29,6 +29,11 @@ class LocalPrinterHandlerDefault : public PrinterHandler {
  public:
   explicit LocalPrinterHandlerDefault(
       content::WebContents* preview_web_contents);
+
+  LocalPrinterHandlerDefault(const LocalPrinterHandlerDefault&) = delete;
+  LocalPrinterHandlerDefault& operator=(const LocalPrinterHandlerDefault&) =
+      delete;
+
   ~LocalPrinterHandlerDefault() override;
 
   // PrinterHandler implementation.
@@ -39,22 +44,21 @@ class LocalPrinterHandlerDefault : public PrinterHandler {
   void StartGetCapability(const std::string& destination_id,
                           GetCapabilityCallback callback) override;
   void StartPrint(const std::u16string& job_title,
-                  base::Value settings,
+                  base::Value::Dict settings,
                   scoped_refptr<base::RefCountedMemory> print_data,
                   PrintCallback callback) override;
 
  private:
   static PrinterList EnumeratePrintersAsync(const std::string& locale);
-  static base::Value FetchCapabilitiesAsync(const std::string& device_name,
-                                            const std::string& locale);
+  static base::Value::Dict FetchCapabilitiesAsync(
+      const std::string& device_name,
+      const std::string& locale);
   static std::string GetDefaultPrinterAsync(const std::string& locale);
 
-  content::WebContents* const preview_web_contents_;
+  const raw_ptr<content::WebContents> preview_web_contents_;
 
   // TaskRunner for blocking tasks. Threading behavior is platform-specific.
   scoped_refptr<base::TaskRunner> const task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalPrinterHandlerDefault);
 };
 
 }  // namespace printing

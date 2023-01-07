@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL finalizeAd() should be supported on the navigator interface. assert_not_equals: got disallowed value undefined
+FAIL finalizeAd() should reject an invalid Ads object. promise_test: Unhandled rejection with value: object "TypeError: navigator.finalizeAd is not a function"
+FAIL finalizeAd() should reject a missing decisionLogicUrl. promise_test: Unhandled rejection with value: object "TypeError: navigator.finalizeAd is not a function"
+FAIL finalizeAd() should reject a non-HTTPS decisionLogicUrl. promise_test: Unhandled rejection with value: object "TypeError: navigator.finalizeAd is not a function"
+Harness: the test ran to completion.
+

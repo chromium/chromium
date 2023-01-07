@@ -1,16 +1,17 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 source_set("privacy_budget") {
   sources = [
-    "container_ops.h",
     "field_trial_param_conversions.cc",
     "field_trial_param_conversions.h",
+    "order_preserving_set.h",
     "privacy_budget_features.cc",
     "privacy_budget_features.h",
     "privacy_budget_settings_provider.cc",
     "privacy_budget_settings_provider.h",
+    "types.h",
   ]
 
   public_deps = [
@@ -23,8 +24,8 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "container_ops_unittest.cc",
     "field_trial_param_conversions_unittest.cc",
+    "order_preserving_set_unittest.cc",
   ]
 
   deps = [

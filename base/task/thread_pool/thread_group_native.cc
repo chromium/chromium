@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/record_replay.h"
+#include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool/task_tracker.h"
+
+#include "base/record_replay.h"
 
 namespace base {
 namespace internal {
@@ -34,7 +36,7 @@ class ThreadGroupNative::ScopedCommandsExecutor
   }
 
  private:
-  ThreadGroupNative* const outer_;
+  const raw_ptr<ThreadGroupNative> outer_;
   size_t num_threadpool_work_to_submit_ = 0;
 };
 
@@ -183,8 +185,7 @@ size_t ThreadGroupNative::GetMaxConcurrentNonBlockedTasksDeprecated() const {
   // active at one time. Consequently, we cannot report a true value here.
   // Instead, the values were chosen to match
   // ThreadPoolInstance::StartWithDefaultParams.
-  const int num_cores = SysInfo::NumberOfProcessors();
-  return std::max(3, num_cores - 1);
+  return static_cast<size_t>(std::max(3, SysInfo::NumberOfProcessors() - 1));
 }
 
 void ThreadGroupNative::DidUpdateCanRunPolicy() {
@@ -192,6 +193,8 @@ void ThreadGroupNative::DidUpdateCanRunPolicy() {
   CheckedAutoLock auto_lock(lock_);
   EnsureEnoughWorkersLockRequired(&executor);
 }
+
+void ThreadGroupNative::OnShutdownStarted() {}
 
 }  // namespace internal
 }  // namespace base

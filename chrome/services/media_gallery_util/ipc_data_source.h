@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CHROME_SERVICES_MEDIA_GALLERY_UTIL_IPC_DATA_SOURCE_H_
 
 #include <stdint.h>
-
-#include <string>
 
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
@@ -40,7 +38,7 @@ class IPCDataSource : public media::DataSource {
             int size,
             uint8_t* destination,
             ReadCB callback) override;
-  bool GetSize(int64_t* size_out) override;
+  [[nodiscard]] bool GetSize(int64_t* size_out) override;
   bool IsStreaming() override;
   void SetBitrate(int bitrate) override;
 

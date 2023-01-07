@@ -32,9 +32,9 @@ class PLATFORM_EXPORT FEDropShadow final : public FilterEffect {
 
   // Compute which destination area will be affected when applying a drop
   // shadow effect with |stdDeviation| and |offset| to an area |rect|.
-  static FloatRect MapEffect(const FloatSize& std_deviation,
-                             const FloatPoint& offset,
-                             const FloatRect&);
+  static gfx::RectF MapEffect(const gfx::SizeF& std_deviation,
+                              const gfx::PointF& offset,
+                              const gfx::RectF&);
 
   void SetShadowColor(const Color& color) { shadow_color_ = color; }
   void SetShadowOpacity(float opacity) { shadow_opacity_ = opacity; }
@@ -43,7 +43,7 @@ class PLATFORM_EXPORT FEDropShadow final : public FilterEffect {
                                           int indention) const override;
 
  private:
-  FloatRect MapEffect(const FloatRect&) const override;
+  gfx::RectF MapEffect(const gfx::RectF&) const override;
 
   sk_sp<PaintFilter> CreateImageFilter() override;
 

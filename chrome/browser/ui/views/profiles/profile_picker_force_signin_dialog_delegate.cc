@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 ProfilePickerForceSigninDialogDelegate::ProfilePickerForceSigninDialogDelegate(
     ProfilePickerForceSigninDialogHost* host,
@@ -27,6 +27,9 @@ ProfilePickerForceSigninDialogDelegate::ProfilePickerForceSigninDialogDelegate(
   SetTitle(IDS_PROFILES_GAIA_SIGNIN_TITLE);
   SetButtons(ui::DIALOG_BUTTON_NONE);
   SetModalType(ui::MODAL_TYPE_WINDOW);
+  RegisterDeleteDelegateCallback(
+      base::BindOnce(&ProfilePickerForceSigninDialogDelegate::OnDialogDestroyed,
+                     base::Unretained(this)));
   set_use_custom_frame(false);
 
   web_view_ = AddChildView(std::move(web_view));
@@ -46,9 +49,6 @@ ProfilePickerForceSigninDialogDelegate::ProfilePickerForceSigninDialogDelegate(
       ->SetDelegate(this);
 
   web_view_->LoadInitialURL(url);
-
-  chrome::RecordDialogCreation(
-      chrome::DialogIdentifier::PROFILE_PICKER_FORCE_SIGNIN);
 }
 
 ProfilePickerForceSigninDialogDelegate::
@@ -65,7 +65,7 @@ void ProfilePickerForceSigninDialogDelegate::DisplayErrorMessage() {
 }
 
 bool ProfilePickerForceSigninDialogDelegate::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Prevents the context menu from being shown. While the signin page could do
   // this just with JS, there could be a brief moment before a context menu
@@ -100,11 +100,6 @@ void ProfilePickerForceSigninDialogDelegate::AddObserver(
 
 void ProfilePickerForceSigninDialogDelegate::RemoveObserver(
     web_modal::ModalDialogHostObserver* observer) {}
-
-void ProfilePickerForceSigninDialogDelegate::DeleteDelegate() {
-  OnDialogDestroyed();
-  delete this;
-}
 
 views::View* ProfilePickerForceSigninDialogDelegate::GetInitiallyFocusedView() {
   return static_cast<views::View*>(web_view_);

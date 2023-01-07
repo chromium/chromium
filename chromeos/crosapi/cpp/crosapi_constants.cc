@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,13 @@ const char kLacrosAppIdPrefix[] = "org.chromium.lacros.";
 // NOTE: This is security sensitive. The directory must be inside the encrypted
 // user data partition.
 const char kLacrosUserDataPath[] = "/home/chronos/user/lacros";
+
+// The file name of shared resource file.
+const char kSharedResourcesPackName[] = "resources_for_sharing.rspak";
+const char kSharedChrome100PercentPackName[] =
+    "chrome_100_percent_for_sharing.rspak";
+const char kSharedChrome200PercentPackName[] =
+    "chrome_200_percent_for_sharing.rspak";
 
 // Release channel key in /etc/lsb-release.
 const char kChromeOSReleaseTrack[] = "CHROMEOS_RELEASE_TRACK";

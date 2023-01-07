@@ -1,18 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_BIDI_PARAGRAPH_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_BIDI_PARAGRAPH_H_
 
-#include "base/optional.h"
+#include <unicode/ubidi.h>
+
+#include "base/check_op.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-
-#include <unicode/ubidi.h>
 
 namespace blink {
 
@@ -38,7 +39,7 @@ class CORE_EXPORT NGBidiParagraph {
   // called.
   bool SetParagraph(const String&, const ComputedStyle&);
   bool SetParagraph(const String&,
-                    base::Optional<TextDirection> base_direction);
+                    absl::optional<TextDirection> base_direction);
 
   // @return the entire text is unidirectional.
   bool IsUnidirectional() const {

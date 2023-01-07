@@ -8,8 +8,7 @@
 <script>
 'use strict';
 
-function prepareDOMTree(parent, delegatesFocus)
-{
+function prepareDOMTree(parent, delegatesFocus) {
     parent.innerHTML = '';
     let host = document.createElement('div');
     host.id = 'shadowHost';
@@ -24,6 +23,8 @@ var innerDiv;
 var inputA;
 var inputB;
 
+// TODO(https://crbug.com/1350218): Replace this with test_diver.click() and
+// move test to WPT
 function clickOn(el) {
     eventSender.mouseMoveTo(el.offsetLeft + 8, el.offsetTop + 8);
     eventSender.mouseDown();
@@ -89,16 +90,18 @@ test(() => {
     // Clicking on focusable directly will cause the element to be focused.
     clickOn(inputA);
     assert_innermost_active_element('shadowHost/inputA');
+    inputA.setSelectionRange(1, 1);
     clickOn(innerDiv);
     assert_innermost_active_element('shadowHost/inputA');
-    assert_equals(inputA.selectionStart, 1);
-    assert_equals(inputA.selectionEnd, 1);
+    assert_equals(inputA.selectionStart, 1, 'inputA selection start should be preserved.');
+    assert_equals(inputA.selectionEnd, 1, 'inputA selection end should be preserved.');
 
     clickOn(inputB);
     assert_innermost_active_element('shadowHost/inputB');
+    inputA.setSelectionRange(1, 1);
     clickOn(innerDiv);
     assert_innermost_active_element('shadowHost/inputB');
-    assert_equals(inputB.selectionStart, 1);
-    assert_equals(inputB.selectionEnd, 1);
+    assert_equals(inputB.selectionStart, 1, 'inputB selection start should be preserved.');
+    assert_equals(inputB.selectionEnd, 1, 'inputB selection end should be preserved.');
 }, 'click on inner div should focus inner focusable (with delegatesFocus = true).');
 </script>

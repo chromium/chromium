@@ -1,6 +1,9 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#ifndef COMPONENTS_CRONET_IOS_TEST_START_CRONET_H_
+#define COMPONENTS_CRONET_IOS_TEST_START_CRONET_H_
 
 namespace cronet {
 
@@ -9,3 +12,5 @@ namespace cronet {
 void StartCronet(int port);
 
 }  // namespace cronet
+
+#endif  // COMPONENTS_CRONET_IOS_TEST_START_CRONET_H_

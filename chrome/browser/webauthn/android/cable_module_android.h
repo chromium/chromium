@@ -1,12 +1,14 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_WEBAUTHN_ANDROID_CABLE_MODULE_ANDROID_H_
 #define CHROME_BROWSER_WEBAUTHN_ANDROID_CABLE_MODULE_ANDROID_H_
 
-#include "base/optional.h"
 #include "components/sync_device_info/device_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class PrefRegistrySimple;
 
 namespace webauthn {
 namespace authenticator {
@@ -22,8 +24,12 @@ void RegisterForCloudMessages();
 // Sync that will let other Chrome instances contact this device to perform
 // security key transactions, or it returns |nullopt| if that information is
 // not yet ready.
-base::Optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
+absl::optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
 GetSyncDataIfRegistered();
+
+// RegisterLocalState registers prefs with the local-state represented by
+// |registry|.
+void RegisterLocalState(PrefRegistrySimple* registry);
 
 }  // namespace authenticator
 }  // namespace webauthn

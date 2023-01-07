@@ -1,12 +1,13 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target_iterator.h"
@@ -23,43 +24,13 @@ typedef std::vector<std::string> HandlerSequenceRecorder;
 namespace ui {
 namespace test {
 
-class SelfDestroyingEventProcessor : public TestEventProcessor {
- public:
-  SelfDestroyingEventProcessor() {}
-
- protected:
-  EventDispatchDetails PostDispatchEvent(EventTarget* target,
-                                         const Event& event) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelfDestroyingEventProcessor);
-};
-
-class SelfDestroyingTestEventTarget : public TestEventTarget {
- public:
-  SelfDestroyingTestEventTarget()
-      : processor_(new SelfDestroyingEventProcessor()) {}
-
-  TestEventProcessor* processor() { return processor_.get(); }
-
-  void DestroyProcessor() { processor_.reset(); }
-
- private:
-  std::unique_ptr<SelfDestroyingEventProcessor> processor_;
-
-  DISALLOW_COPY_AND_ASSIGN(SelfDestroyingTestEventTarget);
-};
-
-EventDispatchDetails SelfDestroyingEventProcessor::PostDispatchEvent(
-    EventTarget* target,
-    const Event& event) {
-  static_cast<SelfDestroyingTestEventTarget*>(target)->DestroyProcessor();
-  return EventDispatchDetails();
-}
-
 class EventProcessorTest : public testing::Test {
  public:
   EventProcessorTest() {}
+
+  EventProcessorTest(const EventProcessorTest&) = delete;
+  EventProcessorTest& operator=(const EventProcessorTest&) = delete;
+
   ~EventProcessorTest() override {}
 
  protected:
@@ -90,8 +61,6 @@ class EventProcessorTest : public testing::Test {
 
  private:
   TestEventProcessor processor_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventProcessorTest);
 };
 
 TEST_F(EventProcessorTest, Basic) {
@@ -122,6 +91,10 @@ class ReDispatchEventHandler : public TestEventHandler {
  public:
   ReDispatchEventHandler(EventProcessor* processor, EventTarget* target)
       : processor_(processor), expected_target_(target) {}
+
+  ReDispatchEventHandler(const ReDispatchEventHandler&) = delete;
+  ReDispatchEventHandler& operator=(const ReDispatchEventHandler&) = delete;
+
   ~ReDispatchEventHandler() override {}
 
   // TestEventHandler:
@@ -144,10 +117,8 @@ class ReDispatchEventHandler : public TestEventHandler {
   }
 
  private:
-  EventProcessor* processor_;
-  EventTarget* expected_target_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReDispatchEventHandler);
+  raw_ptr<EventProcessor> processor_;
+  raw_ptr<EventTarget> expected_target_;
 };
 
 // Verifies that the phase and target information of an event is not mutated
@@ -177,7 +148,7 @@ TEST_F(EventProcessorTest, NestedEventProcessing) {
   // first event processor should be handled by |target_handler| instead.
   std::unique_ptr<TestEventHandler> target_handler(
       new ReDispatchEventHandler(second_processor.get(), root()->child_at(0)));
-  ignore_result(root()->child_at(0)->SetTargetHandler(target_handler.get()));
+  std::ignore = root()->child_at(0)->SetTargetHandler(target_handler.get());
 
   // Dispatch a mouse event to the tree of event targets owned by the first
   // event processor, checking in ReDispatchEventHandler that the phase and
@@ -403,13 +374,54 @@ TEST_F(EventProcessorTest, HandlerSequence) {
 
   std::string expected[] = { "PreR", "PreC", "PreG", "G", "PostG", "PostC",
       "PostR", "PreR", "PreC", "C", "PostC", "PostR", "PreR", "R", "PostR" };
-  EXPECT_EQ(std::vector<std::string>(expected, expected + base::size(expected)),
+  EXPECT_EQ(std::vector<std::string>(expected, expected + std::size(expected)),
             recorder);
 
   root()->RemovePreTargetHandler(&pre_root);
   child_r->RemovePreTargetHandler(&pre_child);
   grandchild_r->RemovePreTargetHandler(&pre_grandchild);
 }
+
+namespace {
+
+class SelfDestroyingEventProcessor : public TestEventProcessor {
+ public:
+  SelfDestroyingEventProcessor() = default;
+  SelfDestroyingEventProcessor(const SelfDestroyingEventProcessor&) = delete;
+  SelfDestroyingEventProcessor& operator=(const SelfDestroyingEventProcessor&) =
+      delete;
+  ~SelfDestroyingEventProcessor() override = default;
+
+ protected:
+  EventDispatchDetails PostDispatchEvent(EventTarget* target,
+                                         const Event& event) override;
+};
+
+class SelfDestroyingTestEventTarget : public TestEventTarget {
+ public:
+  SelfDestroyingTestEventTarget()
+      : processor_(new SelfDestroyingEventProcessor()) {}
+
+  SelfDestroyingTestEventTarget(const SelfDestroyingTestEventTarget&) = delete;
+  SelfDestroyingTestEventTarget& operator=(
+      const SelfDestroyingTestEventTarget&) = delete;
+
+  TestEventProcessor* processor() { return processor_.get(); }
+
+  void DestroyProcessor() { processor_.reset(); }
+
+ private:
+  std::unique_ptr<SelfDestroyingEventProcessor> processor_;
+};
+
+EventDispatchDetails SelfDestroyingEventProcessor::PostDispatchEvent(
+    EventTarget* target,
+    const Event& event) {
+  static_cast<SelfDestroyingTestEventTarget*>(target)->DestroyProcessor();
+  return EventDispatchDetails();
+}
+
+}  // namespace
 
 TEST(EventProcessorCrashTest, Basic) {
   std::unique_ptr<TestEventTarget> root(new TestEventTarget());
@@ -419,6 +431,48 @@ TEST(EventProcessorCrashTest, Basic) {
       std::make_unique<TestEventTargeter>(target.get(), false));
   TestEventProcessor* processor = target->processor();
   processor->SetRoot(std::move(root));
+
+  MouseEvent mouse(ET_MOUSE_MOVED, gfx::Point(10, 10), gfx::Point(10, 10),
+                   EventTimeForNow(), EF_NONE, EF_NONE);
+  EXPECT_TRUE(processor->OnEventFromSource(&mouse).dispatcher_destroyed);
+}
+
+namespace {
+
+class SelfDestroyingTestEventTargeter : public TestEventTargeter {
+ public:
+  explicit SelfDestroyingTestEventTargeter(std::unique_ptr<EventTarget> root)
+      : TestEventTargeter(nullptr, false),
+        processor_(new TestEventProcessor()) {
+    processor_->SetRoot(std::move(root));
+  }
+  SelfDestroyingTestEventTargeter(const SelfDestroyingTestEventTarget&) =
+      delete;
+  SelfDestroyingTestEventTargeter& operator=(
+      const SelfDestroyingTestEventTargeter&) = delete;
+  ~SelfDestroyingTestEventTargeter() override = default;
+
+  // EventTargeter:
+  EventTarget* FindTargetForEvent(EventTarget* root, Event* event) override {
+    processor_.reset();
+    return nullptr;
+  }
+
+  EventProcessor* processor() { return processor_.get(); }
+
+ private:
+  std::unique_ptr<TestEventProcessor> processor_;
+};
+
+}  // namespace
+
+TEST(EventProcessorCrashTest, DestroyDuringFindTarget) {
+  std::unique_ptr<TestEventTarget> root(new TestEventTarget());
+  auto* root_ptr = root.get();
+  auto event_targeter =
+      std::make_unique<SelfDestroyingTestEventTargeter>(std::move(root));
+  auto* processor = event_targeter->processor();
+  root_ptr->SetEventTargeter(std::move(event_targeter));
 
   MouseEvent mouse(ET_MOUSE_MOVED, gfx::Point(10, 10), gfx::Point(10, 10),
                    EventTimeForNow(), EF_NONE, EF_NONE);

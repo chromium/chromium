@@ -1,67 +1,24 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import platform
 import sys
 import util
+
 import psutil
 
 import command_executor
 from command_executor import Command
 from webelement import WebElement
+from webshadowroot import WebShadowRoot
 from websocket_connection import WebSocketConnection
+from exceptions import *
 
 ELEMENT_KEY_W3C = "element-6066-11e4-a52e-4f735466cecf"
 ELEMENT_KEY = "ELEMENT"
+SHADOW_KEY = "shadow-6066-11e4-a52e-4f735466cecf"
 MAX_RETRY_COUNT = 5
-
-class ChromeDriverException(Exception):
-  pass
-class NoSuchElement(ChromeDriverException):
-  pass
-class NoSuchFrame(ChromeDriverException):
-  pass
-class UnknownCommand(ChromeDriverException):
-  pass
-class StaleElementReference(ChromeDriverException):
-  pass
-class ElementNotVisible(ChromeDriverException):
-  pass
-class InvalidElementState(ChromeDriverException):
-  pass
-class UnknownError(ChromeDriverException):
-  pass
-class JavaScriptError(ChromeDriverException):
-  pass
-class XPathLookupError(ChromeDriverException):
-  pass
-class Timeout(ChromeDriverException):
-  pass
-class NoSuchWindow(ChromeDriverException):
-  pass
-class InvalidCookieDomain(ChromeDriverException):
-  pass
-class ScriptTimeout(ChromeDriverException):
-  pass
-class InvalidSelector(ChromeDriverException):
-  pass
-class SessionNotCreated(ChromeDriverException):
-  pass
-class InvalidSessionId(ChromeDriverException):
-  pass
-class UnexpectedAlertOpen(ChromeDriverException):
-  pass
-class NoSuchAlert(ChromeDriverException):
-  pass
-class NoSuchCookie(ChromeDriverException):
-  pass
-class InvalidArgument(ChromeDriverException):
-  pass
-class ElementNotInteractable(ChromeDriverException):
-  pass
-class UnsupportedOperation(ChromeDriverException):
-  pass
 
 def _ExceptionForLegacyResponse(response):
   exception_class_map = {
@@ -116,6 +73,8 @@ def _ExceptionForStandardResponse(response):
     'invalid argument': InvalidArgument,
     'element not interactable': ElementNotInteractable,
     'unsupported operation': UnsupportedOperation,
+    'no such shadow root': NoSuchShadowRoot,
+    'detached shadow root': DetachedShadowRoot,
   }
 
   error = response['value']['error']
@@ -132,7 +91,7 @@ class ChromeDriver(object):
     try:
       self._InternalInit(server_url, **kwargs)
     except Exception as e:
-      if not e.message.startswith('timed out'):
+      if not str(e).startswith('timed out'):
         raise
       else:
         # Kill ChromeDriver child processes recursively
@@ -141,13 +100,13 @@ class ChromeDriver(object):
         if server_pid:
           processes = psutil.Process(server_pid).children(recursive=True)
           if len(processes):
-            print 'Terminating ', len(processes), ' processes'
+            print('Terminating', len(processes), 'processes')
             for p in processes:
               p.terminate()
 
             gone, alive = psutil.wait_procs(processes, timeout=3)
             if len(alive):
-              print 'Killing ', len(alive), ' processes'
+              print('Killing', len(alive), 'processes')
               for p in alive:
                 p.kill()
 
@@ -157,7 +116,7 @@ class ChromeDriver(object):
             self._InternalInit(server_url, **kwargs)
           except:
             # Only count it as retry if failed
-            print 'Retry ', ChromeDriver.retry_count, ' failed'
+            print('Retry', ChromeDriver.retry_count, 'failed')
             ChromeDriver.retry_count = ChromeDriver.retry_count + 1
             raise
         else:
@@ -208,6 +167,9 @@ class ChromeDriver(object):
     if chrome_switches is None:
       chrome_switches = []
     chrome_switches.append('force-color-profile=srgb')
+
+    # Resampling can change the distance of a synthetic scroll.
+    chrome_switches.append('disable-features=ResamplingScrollEvents')
 
     if chrome_switches:
       assert type(chrome_switches) is list
@@ -323,6 +285,8 @@ class ChromeDriver(object):
         return {ELEMENT_KEY_W3C: value._id}
       else:
         return {ELEMENT_KEY: value._id}
+    elif isinstance(value, WebShadowRoot):
+        return {SHADOW_KEY: value._id}
     elif isinstance(value, list):
       return list(self._WrapValue(item) for item in value)
     else:
@@ -333,10 +297,13 @@ class ChromeDriver(object):
       if (self.w3c_compliant and len(value) == 1
           and ELEMENT_KEY_W3C in value
           and isinstance(
-            value[ELEMENT_KEY_W3C], basestring)):
+            value[ELEMENT_KEY_W3C], str)):
         return WebElement(self, value[ELEMENT_KEY_W3C])
+      elif (len(value) == 1 and SHADOW_KEY in value
+            and isinstance(value[SHADOW_KEY], str)):
+        return WebShadowRoot(self, value[SHADOW_KEY])
       elif (len(value) == 1 and ELEMENT_KEY in value
-            and isinstance(value[ELEMENT_KEY], basestring)):
+            and isinstance(value[ELEMENT_KEY], str)):
         return WebElement(self, value[ELEMENT_KEY])
       else:
         unwraped = {}
@@ -353,7 +320,7 @@ class ChromeDriver(object):
     try:
       response = self._executor.Execute(command, params)
     except Exception as e:
-      if e.message.startswith('timed out'):
+      if str(e).startswith('timed out'):
         self._RequestCrash()
       raise e
 
@@ -379,8 +346,9 @@ class ChromeDriver(object):
       # In some cases, Chrome will not honor the request
       # Print the exception as it may give information on the Chrome state
       # but Page.crash will also generate exception, so filter that out
-      if 'session deleted because of page crash' not in e.message:
-        print '\n Exception from Page.crash: ' + str(e.message) + '\n'
+      message = str(e)
+      if 'session deleted because of page crash' not in message:
+        print('\n Exception from Page.crash: ' + message + '\n')
     tempDriver.Quit()
 
   def ExecuteCommand(self, command, params={}):
@@ -431,7 +399,7 @@ class ChromeDriver(object):
         {'script': script, 'args': converted_args})
 
   def SwitchToFrame(self, id_or_name):
-    if isinstance(id_or_name, basestring) and self.w3c_compliant:
+    if isinstance(id_or_name, str) and self.w3c_compliant:
         try:
           id_or_name = self.FindElement('css selector',
                                         '[id="%s"]' % id_or_name)
@@ -757,8 +725,22 @@ class ChromeDriver(object):
               'isUserVerified': isUserVerified}
     return self.ExecuteCommand(Command.SET_USER_VERIFIED, params)
 
+  def SetSPCTransactionMode(self, mode):
+    params = {'mode': mode}
+    return self.ExecuteCommand(Command.SET_SPC_TRANSACTION_MODE, params)
+
   def GetSessionId(self):
     if not hasattr(self, '_session_id'):
       return None
     return self._session_id
+
+  def GetCastSinks(self, vendorId):
+    params = {'vendorId': vendorId}
+    return self.ExecuteCommand(Command.GET_CAST_SINKS, params)
+
+  def __enter__(self):
+    return self
+
+  def __exit__(self, *args):
+    self.Quit()
 

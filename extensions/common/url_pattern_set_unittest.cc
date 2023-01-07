@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 
 #include <sstream>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -23,20 +23,6 @@ namespace {
 void AddPattern(URLPatternSet* set, const std::string& pattern) {
   int schemes = URLPattern::SCHEME_ALL;
   set->AddPattern(URLPattern(schemes, pattern));
-}
-
-URLPatternSet Patterns(const std::string& pattern) {
-  URLPatternSet set;
-  AddPattern(&set, pattern);
-  return set;
-}
-
-URLPatternSet Patterns(const std::string& pattern1,
-                       const std::string& pattern2) {
-  URLPatternSet set;
-  AddPattern(&set, pattern1);
-  AddPattern(&set, pattern2);
-  return set;
 }
 
 }  // namespace
@@ -279,10 +265,10 @@ TEST(URLPatternSetTest, CreateIntersection_Detailed) {
         set2, set1, URLPatternSet::IntersectionBehavior::kDetailed);
 
     EXPECT_THAT(
-        *intersection1.ToStringVector(),
+        intersection1.ToStringVector(),
         testing::UnorderedElementsAreArray(test_case.expected_intersection));
     EXPECT_THAT(
-        *intersection2.ToStringVector(),
+        intersection2.ToStringVector(),
         testing::UnorderedElementsAreArray(test_case.expected_intersection));
   }
 }
@@ -372,157 +358,13 @@ TEST(URLPatternSetTest, ToValueAndPopulate) {
 
   std::string error;
   bool allow_file_access = false;
-  std::unique_ptr<base::ListValue> value(set1.ToValue());
-  set2.Populate(*value, URLPattern::SCHEME_ALL, allow_file_access, &error);
+  base::Value::List value = set1.ToValue();
+  set2.Populate(value, URLPattern::SCHEME_ALL, allow_file_access, &error);
   EXPECT_EQ(set1, set2);
 
   set2.ClearPatterns();
   set2.Populate(patterns, URLPattern::SCHEME_ALL, allow_file_access, &error);
   EXPECT_EQ(set1, set2);
-}
-
-TEST(URLPatternSetTest, NwayUnion) {
-  std::string google_a = "http://www.google.com/a*";
-  std::string google_b = "http://www.google.com/b*";
-  std::string google_c = "http://www.google.com/c*";
-  std::string yahoo_a = "http://www.yahoo.com/a*";
-  std::string yahoo_b = "http://www.yahoo.com/b*";
-  std::string yahoo_c = "http://www.yahoo.com/c*";
-  std::string reddit_a = "http://www.reddit.com/a*";
-  std::string reddit_b = "http://www.reddit.com/b*";
-  std::string reddit_c = "http://www.reddit.com/c*";
-
-  // Empty list.
-  {
-    std::vector<URLPatternSet> empty;
-
-    URLPatternSet result = URLPatternSet::CreateUnion(empty);
-
-    URLPatternSet expected;
-    EXPECT_EQ(expected, result);
-  }
-
-  // Singleton list.
-  {
-    std::vector<URLPatternSet> test;
-    test.push_back(Patterns(google_a));
-
-    URLPatternSet result = URLPatternSet::CreateUnion(test);
-
-    URLPatternSet expected = Patterns(google_a);
-    EXPECT_EQ(expected, result);
-  }
-
-  // List with 2 elements.
-  {
-    std::vector<URLPatternSet> test;
-    test.push_back(Patterns(google_a, google_b));
-    test.push_back(Patterns(google_b, google_c));
-
-    URLPatternSet result = URLPatternSet::CreateUnion(test);
-
-    URLPatternSet expected;
-    AddPattern(&expected, google_a);
-    AddPattern(&expected, google_b);
-    AddPattern(&expected, google_c);
-    EXPECT_EQ(expected, result);
-  }
-
-  // List with 3 elements.
-  {
-    std::vector<URLPatternSet> test;
-    test.push_back(Patterns(google_a, google_b));
-    test.push_back(Patterns(google_b, google_c));
-    test.push_back(Patterns(yahoo_a, yahoo_b));
-
-    URLPatternSet result = URLPatternSet::CreateUnion(test);
-
-    URLPatternSet expected;
-    AddPattern(&expected, google_a);
-    AddPattern(&expected, google_b);
-    AddPattern(&expected, google_c);
-    AddPattern(&expected, yahoo_a);
-    AddPattern(&expected, yahoo_b);
-    EXPECT_EQ(expected, result);
-  }
-
-  // List with 7 elements.
-  {
-    std::vector<URLPatternSet> test;
-    test.push_back(Patterns(google_a));
-    test.push_back(Patterns(google_b));
-    test.push_back(Patterns(google_c));
-    test.push_back(Patterns(yahoo_a));
-    test.push_back(Patterns(yahoo_b));
-    test.push_back(Patterns(yahoo_c));
-    test.push_back(Patterns(reddit_a));
-
-    URLPatternSet result = URLPatternSet::CreateUnion(test);
-
-    URLPatternSet expected;
-    AddPattern(&expected, google_a);
-    AddPattern(&expected, google_b);
-    AddPattern(&expected, google_c);
-    AddPattern(&expected, yahoo_a);
-    AddPattern(&expected, yahoo_b);
-    AddPattern(&expected, yahoo_c);
-    AddPattern(&expected, reddit_a);
-    EXPECT_EQ(expected, result);
-  }
-
-  // List with 8 elements.
-  {
-    std::vector<URLPatternSet> test;
-    test.push_back(Patterns(google_a));
-    test.push_back(Patterns(google_b));
-    test.push_back(Patterns(google_c));
-    test.push_back(Patterns(yahoo_a));
-    test.push_back(Patterns(yahoo_b));
-    test.push_back(Patterns(yahoo_c));
-    test.push_back(Patterns(reddit_a));
-    test.push_back(Patterns(reddit_b));
-
-    URLPatternSet result = URLPatternSet::CreateUnion(test);
-
-    URLPatternSet expected;
-    AddPattern(&expected, google_a);
-    AddPattern(&expected, google_b);
-    AddPattern(&expected, google_c);
-    AddPattern(&expected, yahoo_a);
-    AddPattern(&expected, yahoo_b);
-    AddPattern(&expected, yahoo_c);
-    AddPattern(&expected, reddit_a);
-    AddPattern(&expected, reddit_b);
-    EXPECT_EQ(expected, result);
-  }
-
-  // List with 9 elements.
-  {
-    std::vector<URLPatternSet> test;
-    test.push_back(Patterns(google_a));
-    test.push_back(Patterns(google_b));
-    test.push_back(Patterns(google_c));
-    test.push_back(Patterns(yahoo_a));
-    test.push_back(Patterns(yahoo_b));
-    test.push_back(Patterns(yahoo_c));
-    test.push_back(Patterns(reddit_a));
-    test.push_back(Patterns(reddit_b));
-    test.push_back(Patterns(reddit_c));
-
-    URLPatternSet result = URLPatternSet::CreateUnion(test);
-
-    URLPatternSet expected;
-    AddPattern(&expected, google_a);
-    AddPattern(&expected, google_b);
-    AddPattern(&expected, google_c);
-    AddPattern(&expected, yahoo_a);
-    AddPattern(&expected, yahoo_b);
-    AddPattern(&expected, yahoo_c);
-    AddPattern(&expected, reddit_a);
-    AddPattern(&expected, reddit_b);
-    AddPattern(&expected, reddit_c);
-    EXPECT_EQ(expected, result);
-  }
 }
 
 TEST(URLPatternSetTest, AddOrigin) {
@@ -562,12 +404,54 @@ TEST(URLPatternSetTest, ToStringVector) {
   AddPattern(&set, "https://google.com/");
   AddPattern(&set, "https://yahoo.com/");
 
-  std::unique_ptr<std::vector<std::string>> string_vector(set.ToStringVector());
+  std::vector<std::string> string_vector = set.ToStringVector();
 
-  EXPECT_EQ(2UL, string_vector->size());
+  EXPECT_EQ(2UL, string_vector.size());
 
-  EXPECT_TRUE(base::Contains(*string_vector, "https://google.com/"));
-  EXPECT_TRUE(base::Contains(*string_vector, "https://yahoo.com/"));
+  EXPECT_TRUE(base::Contains(string_vector, "https://google.com/"));
+  EXPECT_TRUE(base::Contains(string_vector, "https://yahoo.com/"));
+}
+
+TEST(URLPatternSetTest, MatchesHost) {
+  URLPatternSet set;
+  AddPattern(&set, "https://example.com/");
+  AddPattern(&set, "https://*.google.com/");
+  AddPattern(&set, "https://*.sub.yahoo.com/");
+
+  struct {
+    std::string url;
+    bool require_match_subdomains;
+    bool expect_matches_host;
+  } test_cases[] = {
+      // Simple cases to test if the url's host is contained within any patterns
+      // in `set`.
+      {"http://example.com", false, true},
+      {"http://images.google.com/path", false, true},
+
+      // Test subdomain matching for patterns in `set`.
+      {"http://example.com", true, false},
+      {"http://yahoo.com", true, false},
+      {"http://sub.yahoo.com", true, true},
+      {"http://asdf.sub.yahoo.com", true, true},
+      {"http://google.com", true, true},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.url);
+    EXPECT_EQ(test_case.expect_matches_host,
+              set.MatchesHost(GURL(test_case.url),
+                              test_case.require_match_subdomains));
+  }
+
+  // Test subdomain matching for a pattern that matches any .com site, and a
+  // pattern that matches with all urls.
+  AddPattern(&set, "https://*.com/");
+
+  EXPECT_TRUE(set.MatchesHost(GURL("http://anything.com"), true));
+  EXPECT_FALSE(set.MatchesHost(GURL("http://anything.ca"), false));
+
+  AddPattern(&set, "<all_urls>");
+  EXPECT_TRUE(set.MatchesHost(GURL("http://anything.ca"), true));
 }
 
 }  // namespace extensions

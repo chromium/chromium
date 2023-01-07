@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,9 +77,10 @@ TEST(WebRtcAudioSinkTest, CaptureTimestamp) {
   constexpr int64_t kStartCaptureTimestampMs = 12345678;
   constexpr int64_t kCaptureIntervalMs = 567;
 
-  web_media_stream_audio_sink->OnSetFormat(media::AudioParameters(
-      media::AudioParameters::AUDIO_PCM_LINEAR, media::CHANNEL_LAYOUT_STEREO,
-      kSampleRateHz, kOutputFramesPerBuffer));
+  web_media_stream_audio_sink->OnSetFormat(
+      media::AudioParameters(media::AudioParameters::AUDIO_PCM_LINEAR,
+                             media::ChannelLayoutConfig::Stereo(),
+                             kSampleRateHz, kOutputFramesPerBuffer));
   std::unique_ptr<media::AudioBus> bus =
       media::AudioBus::Create(kInputChannels, kInputFramesPerBuffer);
   bus->Zero();
@@ -88,8 +89,7 @@ TEST(WebRtcAudioSinkTest, CaptureTimestamp) {
     ScopedFakeClock clock(kStartRtcTimestampMs);
 
     base::TimeTicks capture_time =
-        base::TimeTicks() +
-        base::TimeDelta::FromMilliseconds(kStartCaptureTimestampMs);
+        base::TimeTicks() + base::Milliseconds(kStartCaptureTimestampMs);
 
     // The first time to the call OnData(), the TimestampAligner should have no
     // effect work. So expected capture timestamp is from fake_clock.
@@ -104,7 +104,7 @@ TEST(WebRtcAudioSinkTest, CaptureTimestamp) {
 
     web_media_stream_audio_sink->OnData(*bus, capture_time);
 
-    capture_time += base::TimeDelta::FromMilliseconds(kCaptureIntervalMs);
+    capture_time += base::Milliseconds(kCaptureIntervalMs);
     clock.AdvanceTimeMilliseconds(kCaptureIntervalMs);
 
     constexpr int64_t kExpectedTimestampMs =

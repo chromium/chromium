@@ -3,7 +3,6 @@
       `Tests that browser.Target.setAutoAttach() attaches to pages opened by click on noopener link.`);
 
   const target = testRunner.browserP().Target;
-  await target.setDiscoverTargets({discover: true});
   await target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
 
   await page.navigate('../resources/link.html');

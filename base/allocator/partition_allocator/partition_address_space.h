@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,68 +6,162 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ADDRESS_SPACE_H_
 
 #include <algorithm>
+#include <array>
+#include <cstddef>
+#include <limits>
 
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
+#include "base/allocator/partition_allocator/page_allocator_constants.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
-#include "base/base_export.h"
-#include "base/bits.h"
-#include "base/notreached.h"
-#include "base/partition_alloc_buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_notreached.h"
+#include "base/allocator/partition_allocator/tagging.h"
 #include "build/build_config.h"
-#include "build/buildflag.h"
-
-namespace base {
-
-namespace internal {
 
 // The feature is not applicable to 32-bit address space.
 #if defined(PA_HAS_64_BITS_POINTERS)
 
-// Reserves address space for PartitionAllocator.
-class BASE_EXPORT PartitionAddressSpace {
+namespace partition_alloc {
+
+namespace internal {
+
+// Manages PartitionAlloc address space, which is split into pools.
+// See `glossary.md`.
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
  public:
-  // BRP stands for BackupRefPtr. GigaCage is split into pools, one which
-  // supports BackupRefPtr and one that doesn't.
-  static ALWAYS_INLINE internal::pool_handle GetNonBRPPool() {
-    return non_brp_pool_;
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+  static PA_ALWAYS_INLINE uintptr_t RegularPoolBaseMask() {
+    return setup_.regular_pool_base_mask_;
   }
-  static ALWAYS_INLINE internal::pool_handle GetBRPPool() { return brp_pool_; }
+#else
+  static PA_ALWAYS_INLINE constexpr uintptr_t RegularPoolBaseMask() {
+    return kRegularPoolBaseMask;
+  }
+#endif
 
-  static ALWAYS_INLINE constexpr uintptr_t BRPPoolBaseMask() {
-    return kBRPPoolBaseMask;
+  static PA_ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
+      uintptr_t address) {
+    // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
+#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    PA_DCHECK(!IsInBRPPool(address));
+#endif
+    pool_handle pool = 0;
+    uintptr_t base = 0;
+    if (IsInRegularPool(address)) {
+      pool = kRegularPoolHandle;
+      base = setup_.regular_pool_base_address_;
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    } else if (IsInBRPPool(address)) {
+      pool = kBRPPoolHandle;
+      base = setup_.brp_pool_base_address_;
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    } else if (IsInConfigurablePool(address)) {
+      PA_DCHECK(IsConfigurablePoolInitialized());
+      pool = kConfigurablePoolHandle;
+      base = setup_.configurable_pool_base_address_;
+    } else {
+      PA_NOTREACHED();
+    }
+    return std::make_pair(pool, address - base);
+  }
+  static PA_ALWAYS_INLINE constexpr size_t ConfigurablePoolMaxSize() {
+    return kConfigurablePoolMaxSize;
+  }
+  static PA_ALWAYS_INLINE constexpr size_t ConfigurablePoolMinSize() {
+    return kConfigurablePoolMinSize;
   }
 
+  // Initialize pools (except for the configurable one).
+  //
+  // This function must only be called from the main thread.
   static void Init();
+  // Initialize the ConfigurablePool at the given address |pool_base|. It must
+  // be aligned to the size of the pool. The size must be a power of two and
+  // must be within [ConfigurablePoolMinSize(), ConfigurablePoolMaxSize()].
+  //
+  // This function must only be called from the main thread.
+  static void InitConfigurablePool(uintptr_t pool_base, size_t size);
   static void UninitForTesting();
+  static void UninitConfigurablePoolForTesting();
 
-  static ALWAYS_INLINE bool IsInitialized() {
-    if (reserved_base_address_) {
-      PA_DCHECK(non_brp_pool_ != 0);
-      PA_DCHECK(brp_pool_ != 0);
+  static PA_ALWAYS_INLINE bool IsInitialized() {
+    // Either neither or both regular and BRP pool are initialized. The
+    // configurable pool is initialized separately.
+    if (setup_.regular_pool_base_address_ != kUninitializedPoolBaseAddress) {
+      PA_DCHECK(setup_.brp_pool_base_address_ != kUninitializedPoolBaseAddress);
       return true;
     }
 
-    PA_DCHECK(non_brp_pool_ == 0);
-    PA_DCHECK(brp_pool_ == 0);
+    PA_DCHECK(setup_.brp_pool_base_address_ == kUninitializedPoolBaseAddress);
     return false;
   }
 
-  // Returns false for nullptr.
-  static ALWAYS_INLINE bool IsInNonBRPPool(const void* address) {
-    return (reinterpret_cast<uintptr_t>(address) & kNonBRPPoolBaseMask) ==
-           non_brp_pool_base_address_;
-  }
-  // Returns false for nullptr.
-  static ALWAYS_INLINE bool IsInBRPPool(const void* address) {
-    return (reinterpret_cast<uintptr_t>(address) & kBRPPoolBaseMask) ==
-           brp_pool_base_address_;
+  static PA_ALWAYS_INLINE bool IsConfigurablePoolInitialized() {
+    return setup_.configurable_pool_base_address_ !=
+           kUninitializedPoolBaseAddress;
   }
 
-  static ALWAYS_INLINE uintptr_t BRPPoolBase() {
-    return brp_pool_base_address_;
+  // Returns false for nullptr.
+  static PA_ALWAYS_INLINE bool IsInRegularPool(uintptr_t address) {
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+    const uintptr_t regular_pool_base_mask = setup_.regular_pool_base_mask_;
+#else
+    constexpr uintptr_t regular_pool_base_mask = kRegularPoolBaseMask;
+#endif
+    return (address & regular_pool_base_mask) ==
+           setup_.regular_pool_base_address_;
   }
+
+  static PA_ALWAYS_INLINE uintptr_t RegularPoolBase() {
+    return setup_.regular_pool_base_address_;
+  }
+
+  // Returns false for nullptr.
+  static PA_ALWAYS_INLINE bool IsInBRPPool(uintptr_t address) {
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+    const uintptr_t brp_pool_base_mask = setup_.brp_pool_base_mask_;
+#else
+    constexpr uintptr_t brp_pool_base_mask = kBRPPoolBaseMask;
+#endif
+    return (address & brp_pool_base_mask) == setup_.brp_pool_base_address_;
+  }
+
+  static PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
+    PA_DCHECK(IsInBRPPool(address));
+    return address - setup_.brp_pool_base_address_;
+  }
+
+  // Returns false for nullptr.
+  static PA_ALWAYS_INLINE bool IsInConfigurablePool(uintptr_t address) {
+    return (address & setup_.configurable_pool_base_mask_) ==
+           setup_.configurable_pool_base_address_;
+  }
+
+  static PA_ALWAYS_INLINE uintptr_t ConfigurablePoolBase() {
+    return setup_.configurable_pool_base_address_;
+  }
+
+#if defined(PA_ENABLE_SHADOW_METADATA)
+  static PA_ALWAYS_INLINE std::ptrdiff_t ShadowPoolOffset(pool_handle pool) {
+    if (pool == kRegularPoolHandle) {
+      return regular_pool_shadow_offset_;
+    } else if (pool == kBRPPoolHandle) {
+      return brp_pool_shadow_offset_;
+    } else {
+      // TODO(crbug.com/1362969): Add shadow for configurable pool as well.
+      // Shadow is not created for ConfigurablePool for now, so this part should
+      // be unreachable.
+      PA_NOTREACHED();
+      return 0;
+    }
+  }
+#endif
 
   // PartitionAddressSpace is static_only class.
   PartitionAddressSpace() = delete;
@@ -76,109 +170,193 @@ class BASE_EXPORT PartitionAddressSpace {
   void* operator new(size_t, void*) = delete;
 
  private:
-  // Partition Alloc Address Space
-  // Reserves 32GiB address space for one pool that supports BackupRefPtr and
-  // one that doesn't, 16GiB each.
-  // TODO(bartekn): Look into devices with 39-bit address space that have 256GiB
-  // user-mode space. Libraries loaded at random addresses may stand in the way
-  // of reserving a contiguous 48GiB region (even though we're requesting only
-  // 32GiB, AllocPages may under the covers reserve extra 16GiB to satisfy the
-  // alignment requirements).
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+  static PA_ALWAYS_INLINE size_t RegularPoolSize();
+  static PA_ALWAYS_INLINE size_t BRPPoolSize();
+#else
+  // The pool sizes should be as large as maximum whenever possible.
+  constexpr static PA_ALWAYS_INLINE size_t RegularPoolSize() {
+    return kRegularPoolSize;
+  }
+  constexpr static PA_ALWAYS_INLINE size_t BRPPoolSize() {
+    return kBRPPoolSize;
+  }
+#endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+
+  // On 64-bit systems, PA allocates from several contiguous, mutually disjoint
+  // pools. The BRP pool is where all allocations have a BRP ref-count, thus
+  // pointers pointing there can use a BRP protection against UaF. Allocations
+  // in the other pools don't have that.
   //
-  // +----------------+ reserved_base_address_ (16GiB aligned)
-  // |    non-BRP     |     == non_brp_pool_base_address_
-  // |      pool      |
-  // +----------------+ reserved_base_address_ + 16GiB
-  // |      BRP       |     == brp_pool_base_address_
-  // |      pool      |
-  // +----------------+ reserved_base_address_ + 32GiB
+  // Pool sizes have to be the power of two. Each pool will be aligned at its
+  // own size boundary.
   //
-  // NOTE! On 64-bit systems with BackupRefPtr enabled, the non-BRP pool must
-  // precede the BRP pool. This is to prevent a pointer immediately past a
-  // non-GigaCage allocation from falling into the BRP pool, thus triggering
-  // BackupRefPtr mechanism and likely crashing.
-
-  static constexpr size_t kGigaBytes = 1024 * 1024 * 1024;
-
-  // Pool sizes are flexible, as long as each pool is aligned on its own size
-  // boundary and the size is a power of two. The entire region is aligned on
-  // the max pool size boundary, so the further pools only need to care about
-  // the shift from the beginning of the region (for clarity, the pool sizes are
-  // declared in the order the pools are allocated).
+  // NOTE! The BRP pool must be preceded by an inaccessible region. This is to
+  // prevent a pointer to the end of a non-BRP-pool allocation from falling into
+  // the BRP pool, thus triggering BRP mechanism and likely crashing. This
+  // "forbidden zone" can be as small as 1B, but it's simpler to just reserve an
+  // allocation granularity unit.
   //
-  // For example, [16GiB,8GiB] would work, but [8GiB,16GiB] wouldn't (the 2nd
-  // pool is aligned on 8GiB but needs 16GiB), and [8GiB,8GiB,16GiB,1GiB] would.
-  static constexpr size_t kNonBRPPoolSize = 16 * kGigaBytes;
-  static constexpr size_t kBRPPoolSize = 16 * kGigaBytes;
+  // The ConfigurablePool is an optional Pool that can be created inside an
+  // existing mapping provided by the embedder. This Pool can be used when
+  // certain PA allocations must be located inside a given virtual address
+  // region. One use case for this Pool is V8 Sandbox, which requires that
+  // ArrayBuffers be located inside of it.
+  static constexpr size_t kRegularPoolSize = kPoolMaxSize;
+  static constexpr size_t kBRPPoolSize = kPoolMaxSize;
+  static_assert(base::bits::IsPowerOfTwo(kRegularPoolSize) &&
+                base::bits::IsPowerOfTwo(kBRPPoolSize));
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+  // We can't afford pool sizes as large as kPoolMaxSize on Windows <8.1 (see
+  // crbug.com/1101421 and crbug.com/1217759).
+  static constexpr size_t kRegularPoolSizeForLegacyWindows = 4 * kGiB;
+  static constexpr size_t kBRPPoolSizeForLegacyWindows = 4 * kGiB;
+  static_assert(kRegularPoolSizeForLegacyWindows < kRegularPoolSize);
+  static_assert(kBRPPoolSizeForLegacyWindows < kBRPPoolSize);
+  static_assert(base::bits::IsPowerOfTwo(kRegularPoolSizeForLegacyWindows) &&
+                base::bits::IsPowerOfTwo(kBRPPoolSizeForLegacyWindows));
+#endif  // defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+  static constexpr size_t kConfigurablePoolMaxSize = kPoolMaxSize;
+  static constexpr size_t kConfigurablePoolMinSize = 1 * kGiB;
+  static_assert(kConfigurablePoolMinSize <= kConfigurablePoolMaxSize);
+  static_assert(base::bits::IsPowerOfTwo(kConfigurablePoolMaxSize) &&
+                base::bits::IsPowerOfTwo(kConfigurablePoolMinSize));
 
-  static constexpr size_t kDesiredAddressSpaceSize =
-      kNonBRPPoolSize + kBRPPoolSize;
-  static constexpr size_t kReservedAddressSpaceAlignment =
-      std::max(kNonBRPPoolSize, kBRPPoolSize);
+#if BUILDFLAG(IS_IOS)
 
-  static_assert(bits::IsPowerOfTwo(kNonBRPPoolSize) &&
-                    bits::IsPowerOfTwo(kBRPPoolSize),
-                "Each pool size should be a power of two.");
-  static_assert(bits::IsPowerOfTwo(kReservedAddressSpaceAlignment),
-                "kReservedAddressSpaceAlignment should be a power of two.");
-  static_assert(kReservedAddressSpaceAlignment >= kNonBRPPoolSize &&
-                    kReservedAddressSpaceAlignment >= kBRPPoolSize,
-                "kReservedAddressSpaceAlignment should be larger or equal to "
-                "each pool size.");
-  static_assert(kReservedAddressSpaceAlignment % kNonBRPPoolSize == 0 &&
-                    (kReservedAddressSpaceAlignment + kNonBRPPoolSize) %
-                            kBRPPoolSize ==
-                        0,
-                "Each pool should be aligned to its own size");
+#if !defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+#error iOS is only supported with a dynamically sized GigaCase.
+#endif
 
+  // We can't afford pool sizes as large as kPoolMaxSize in iOS EarlGrey tests,
+  // since the test process cannot use an extended virtual address space (see
+  // crbug.com/1250788).
+  static constexpr size_t kRegularPoolSizeForIOSTestProcess = kGiB / 4;
+  static constexpr size_t kBRPPoolSizeForIOSTestProcess = kGiB / 4;
+  static_assert(kRegularPoolSizeForIOSTestProcess < kRegularPoolSize);
+  static_assert(kBRPPoolSizeForIOSTestProcess < kBRPPoolSize);
+  static_assert(base::bits::IsPowerOfTwo(kRegularPoolSizeForIOSTestProcess) &&
+                base::bits::IsPowerOfTwo(kBRPPoolSizeForIOSTestProcess));
+#endif  // BUILDFLAG(IOS_IOS)
+
+#if !defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
   // Masks used to easy determine belonging to a pool.
-  static constexpr uintptr_t kNonBRPPoolOffsetMask =
-      static_cast<uintptr_t>(kNonBRPPoolSize) - 1;
-  static constexpr uintptr_t kNonBRPPoolBaseMask = ~kNonBRPPoolOffsetMask;
+  static constexpr uintptr_t kRegularPoolOffsetMask =
+      static_cast<uintptr_t>(kRegularPoolSize) - 1;
+  static constexpr uintptr_t kRegularPoolBaseMask = ~kRegularPoolOffsetMask;
   static constexpr uintptr_t kBRPPoolOffsetMask =
       static_cast<uintptr_t>(kBRPPoolSize) - 1;
   static constexpr uintptr_t kBRPPoolBaseMask = ~kBRPPoolOffsetMask;
+#endif  // !defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+
+  // This must be set to such a value that IsIn*Pool() always returns false when
+  // the pool isn't initialized.
+  static constexpr uintptr_t kUninitializedPoolBaseAddress =
+      static_cast<uintptr_t>(-1);
+
+  struct PoolSetup {
+    // Before PartitionAddressSpace::Init(), no allocation are allocated from a
+    // reserved address space. Therefore, set *_pool_base_address_ initially to
+    // -1, so that PartitionAddressSpace::IsIn*Pool() always returns false.
+    constexpr PoolSetup()
+        : regular_pool_base_address_(kUninitializedPoolBaseAddress),
+          brp_pool_base_address_(kUninitializedPoolBaseAddress),
+          configurable_pool_base_address_(kUninitializedPoolBaseAddress),
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+          regular_pool_base_mask_(0),
+          brp_pool_base_mask_(0),
+#endif
+          configurable_pool_base_mask_(0) {
+    }
+
+    // Using a union to enforce padding.
+    union {
+      struct {
+        uintptr_t regular_pool_base_address_;
+        uintptr_t brp_pool_base_address_;
+        uintptr_t configurable_pool_base_address_;
+#if defined(PA_DYNAMICALLY_SELECT_POOL_SIZE)
+        uintptr_t regular_pool_base_mask_;
+        uintptr_t brp_pool_base_mask_;
+#endif
+        uintptr_t configurable_pool_base_mask_;
+      };
+
+      char one_cacheline_[kPartitionCachelineSize];
+    };
+  };
+  static_assert(sizeof(PoolSetup) % kPartitionCachelineSize == 0,
+                "PoolSetup has to fill a cacheline(s)");
 
   // See the comment describing the address layout above.
-  static uintptr_t reserved_base_address_;
-  static uintptr_t non_brp_pool_base_address_;
-  static uintptr_t brp_pool_base_address_;
+  //
+  // These are write-once fields, frequently accessed thereafter. Make sure they
+  // don't share a cacheline with other, potentially writeable data, through
+  // alignment and padding.
+  alignas(kPartitionCachelineSize) static PoolSetup setup_;
 
-  static internal::pool_handle non_brp_pool_;
-  static internal::pool_handle brp_pool_;
+#if defined(PA_ENABLE_SHADOW_METADATA)
+  static std::ptrdiff_t regular_pool_shadow_offset_;
+  static std::ptrdiff_t brp_pool_shadow_offset_;
+#endif
 };
 
-ALWAYS_INLINE internal::pool_handle GetNonBRPPool() {
-  // This file is included from checked_ptr.h. This will result in a cycle if it
-  // includes partition_alloc_features.h where IsPartitionAllocGigaCageEnabled
-  // resides, because it includes Finch headers which may include checked_ptr.h.
-  // TODO(bartekn): Uncomment once Finch is no longer used there.
-  // PA_DCHECK(IsPartitionAllocGigaCageEnabled());
-  return PartitionAddressSpace::GetNonBRPPool();
+PA_ALWAYS_INLINE std::pair<pool_handle, uintptr_t> GetPoolAndOffset(
+    uintptr_t address) {
+  return PartitionAddressSpace::GetPoolAndOffset(address);
 }
 
-ALWAYS_INLINE internal::pool_handle GetBRPPool() {
-  // TODO(bartekn): Uncomment once Finch is no longer used there (see above).
-  // PA_DCHECK(IsPartitionAllocGigaCageEnabled());
-  return PartitionAddressSpace::GetBRPPool();
+PA_ALWAYS_INLINE pool_handle GetPool(uintptr_t address) {
+  return std::get<0>(GetPoolAndOffset(address));
 }
 
-#endif  // defined(PA_HAS_64_BITS_POINTERS)
-
-}  // namespace internal
-
-#if defined(PA_HAS_64_BITS_POINTERS)
-// Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAllocNonBRPPool(const void* address) {
-  return internal::PartitionAddressSpace::IsInNonBRPPool(address);
+PA_ALWAYS_INLINE uintptr_t OffsetInBRPPool(uintptr_t address) {
+  return PartitionAddressSpace::OffsetInBRPPool(address);
 }
 
-// Returns false for nullptr.
-ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(void* address) {
-  return internal::PartitionAddressSpace::IsInBRPPool(address);
+#if defined(PA_ENABLE_SHADOW_METADATA)
+PA_ALWAYS_INLINE std::ptrdiff_t ShadowPoolOffset(pool_handle pool) {
+  return PartitionAddressSpace::ShadowPoolOffset(pool);
 }
 #endif
 
-}  // namespace base
+}  // namespace internal
+
+// Returns false for nullptr.
+PA_ALWAYS_INLINE bool IsManagedByPartitionAlloc(uintptr_t address) {
+  // When ENABLE_BACKUP_REF_PTR_SUPPORT is off, BRP pool isn't used.
+#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  PA_DCHECK(!internal::PartitionAddressSpace::IsInBRPPool(address));
+#endif
+  return internal::PartitionAddressSpace::IsInRegularPool(address)
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+         || internal::PartitionAddressSpace::IsInBRPPool(address)
+#endif
+         || internal::PartitionAddressSpace::IsInConfigurablePool(address);
+}
+
+// Returns false for nullptr.
+PA_ALWAYS_INLINE bool IsManagedByPartitionAllocRegularPool(uintptr_t address) {
+  return internal::PartitionAddressSpace::IsInRegularPool(address);
+}
+
+// Returns false for nullptr.
+PA_ALWAYS_INLINE bool IsManagedByPartitionAllocBRPPool(uintptr_t address) {
+  return internal::PartitionAddressSpace::IsInBRPPool(address);
+}
+
+// Returns false for nullptr.
+PA_ALWAYS_INLINE bool IsManagedByPartitionAllocConfigurablePool(
+    uintptr_t address) {
+  return internal::PartitionAddressSpace::IsInConfigurablePool(address);
+}
+
+PA_ALWAYS_INLINE bool IsConfigurablePoolAvailable() {
+  return internal::PartitionAddressSpace::IsConfigurablePoolInitialized();
+}
+
+}  // namespace partition_alloc
+
+#endif  // defined(PA_HAS_64_BITS_POINTERS)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ADDRESS_SPACE_H_

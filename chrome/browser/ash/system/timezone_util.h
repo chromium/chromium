@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,28 +8,29 @@
 #include <memory>
 #include <string>
 
-// TODO(https://crbug.com/1164001): move TimeZoneResponseData to forward
-// declaration when moved to chrome/browser/ash/.
-#include "chromeos/timezone/timezone_request.h"
+#include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
-
-namespace base {
-class ListValue;
-}
 
 namespace user_manager {
 class User;
 }
 
 namespace ash {
+
+struct TimeZoneResponseData;
+
 namespace system {
+
+absl::optional<std::string> GetCountryCodeFromTimezoneIfAvailable(
+    const std::string& timezone);
 
 // Gets the current timezone's display name.
 std::u16string GetCurrentTimezoneName();
 
 // Creates a list of pairs of each timezone's ID and name.
-std::unique_ptr<base::ListValue> GetTimezoneList();
+base::Value::List GetTimezoneList();
 
 // Returns true if device is managed and has SystemTimezonePolicy set.
 bool HasSystemTimezonePolicy();
@@ -44,7 +45,7 @@ void ApplyTimeZone(const TimeZoneResponseData* timezone);
 bool IsTimezonePrefsManaged(const std::string& pref_name);
 
 // Updates system timezone from user profile data if needed.
-// This is called from chromeos::Preferences after updating profile
+// This is called from `Preferences` after updating profile
 // preferences to apply new value to system time zone.
 void UpdateSystemTimezone(Profile* profile);
 
@@ -57,7 +58,7 @@ bool SetSystemTimezone(const user_manager::User* user,
                        const std::string& timezone);
 
 // Updates Local State preference prefs::kSigninScreenTimezone AND
-// also immediately sets system timezone (chromeos::system::TimezoneSettings).
+// also immediately sets system timezone (ash::system::TimezoneSettings).
 // This is called when there is no user session (i.e. OOBE and signin screen),
 // or when device policies are updated.
 void SetSystemAndSigninScreenTimezone(const std::string& timezone);

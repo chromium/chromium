@@ -1,0 +1,31 @@
+<template id="test-contents">
+  <div role="doc-endnotes">
+    <div role="presentation">
+      <span role="doc-endnote" id="e1">Endnote 1</span>
+      <div role="doc-endnote" id="e2">Endnote 2</div>
+      <slot name="stuff"></slot>
+    </div>
+  </div>
+</template>
+<test-element role="group" aria-owns="1 2">
+  <!-- This content is rendered because it's assigned to a slot.
+       This is important: aria-owns only works with rendered targets.
+       See also custom-element-with-aria-owns-inside.html -->
+  <div role="group" slot="stuff">
+    <div role="presentation">
+      <span role="button" id="1">1</span>
+      <div role="button" id="2">2</div>
+    </div>
+   </div>
+</test-element>
+<script>
+  class TestElement extends HTMLElement {
+    constructor() {
+      super();
+
+      const testContents = document.getElementById('test-contents');
+      this.attachShadow({mode: 'open'}).innerHTML = testContents.innerHTML;
+    }
+  }
+  customElements.define('test-element', TestElement);
+</script>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ class RenderViewContextMenuMacTest : public testing::Test {
     content::ContextMenuParams params;
     params.selection_text = base::UTF8ToUTF16(text);
     auto menu = std::make_unique<RenderViewContextMenuMac>(
-        contents_->GetMainFrame(), params);
+        *contents_->GetPrimaryMainFrame(), params);
     menu->InitToolkitMenu();
     return menu;
   }
@@ -46,7 +46,7 @@ class RenderViewContextMenuMacTest : public testing::Test {
 };
 
 bool MenuHasItemWithCommand(const ui::MenuModel& menu, int command) {
-  for (int i = 0; i < menu.GetItemCount(); ++i) {
+  for (size_t i = 0; i < menu.GetItemCount(); ++i) {
     if (menu.GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU) {
       ui::MenuModel* submenu = menu.GetSubmenuModelAt(i);
       if (MenuHasItemWithCommand(*submenu, command))

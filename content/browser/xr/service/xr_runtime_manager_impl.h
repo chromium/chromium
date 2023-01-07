@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,9 +13,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -25,8 +23,13 @@
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/browser/xr_integration_client.h"
 #include "content/public/browser/xr_runtime_manager.h"
+#include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/public/mojom/vr_service.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_types.h"
+#endif
 
 namespace content {
 class XRRuntimeManagerTest;
@@ -36,7 +39,8 @@ class XRRuntimeManagerTest;
 class CONTENT_EXPORT XRRuntimeManagerImpl
     : public XRRuntimeManager,
       public base::RefCounted<XRRuntimeManagerImpl>,
-      public content::GpuDataManagerObserver {
+      public content::GpuDataManagerObserver,
+      public device::VRDeviceProviderClient {
  public:
   friend base::RefCounted<XRRuntimeManagerImpl>;
   static constexpr auto kRefCountPreference =
@@ -69,9 +73,6 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   // runtime or if there's no active immersive session.
   BrowserXRRuntimeImpl* GetCurrentlyPresentingImmersiveRuntime();
 
-  device::mojom::VRDisplayInfoPtr GetCurrentVRDisplayInfo(
-      VRServiceImpl* service);
-
   // Returns true if another service is presenting. Returns false if this
   // service is presenting, or if nobody is presenting.
   bool IsOtherClientPresenting(VRServiceImpl* service);
@@ -90,6 +91,15 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   void ForEachRuntime(
       base::RepeatingCallback<void(BrowserXRRuntime*)> fn) override;
 
+  // VRDeviceProviderClient implementation
+  void AddRuntime(
+      device::mojom::XRDeviceId id,
+      device::mojom::XRDeviceDataPtr device_data,
+      mojo::PendingRemote<device::mojom::XRRuntime> runtime) override;
+  void RemoveRuntime(device::mojom::XRDeviceId id) override;
+  void OnProviderInitialized() override;
+  device::XrFrameSinkClientFactory GetXrFrameSinkClientFactory() override;
+
  private:
   // Constructor also used by tests to supply an arbitrary list of providers
   static scoped_refptr<XRRuntimeManagerImpl> CreateInstance(
@@ -106,14 +116,7 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   ~XRRuntimeManagerImpl() override;
 
   void InitializeProviders();
-  void OnProviderInitialized();
   bool AreAllProvidersInitialized();
-
-  void AddRuntime(device::mojom::XRDeviceId id,
-                  device::mojom::VRDisplayInfoPtr info,
-                  device::mojom::XRDeviceDataPtr device_data,
-                  mojo::PendingRemote<device::mojom::XRRuntime> runtime);
-  void RemoveRuntime(device::mojom::XRDeviceId id);
 
   bool IsInitializedOnCompatibleAdapter(BrowserXRRuntimeImpl* runtime);
 
@@ -136,8 +139,8 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
   size_t num_initialized_providers_ = 0;
 
   bool xr_compatible_restarted_gpu_ = false;
-#if defined(OS_WIN)
-  LUID default_gpu_ = {0, 0};
+#if BUILDFLAG(IS_WIN)
+  CHROME_LUID default_gpu_ = {0, 0};
 #endif
 
   std::set<VRServiceImpl*> services_;

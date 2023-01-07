@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,10 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/ios_util.h"
-#include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
@@ -19,7 +19,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/web/common/features.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -53,9 +53,7 @@
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
       performAction:grey_tap()];
 
-  // Tap a second time to close the menu.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI closeToolsMenu];
 }
 
 // Tests that helpers from chrome_actions.h are available for use in tests.
@@ -67,10 +65,10 @@
   // Toggle the passwords switch off and on.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSavePasswordSwitchTableViewId)]
-      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSavePasswordSwitchTableViewId)]
-      performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
   // Close the settings menu.
   [[EarlGrey
@@ -88,16 +86,9 @@
 // Tests that string resources are loaded into the ResourceBundle and available
 // for use in tests.
 - (void)testAppResourcesArePresent {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
-      performAction:grey_tap()];
-
   NSString* settingsLabel = l10n_util::GetNSString(IDS_IOS_TOOLBAR_SETTINGS);
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(settingsLabel)]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap a second time to close the menu.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
-      performAction:grey_tap()];
 }
 
 // Tests that helpers in chrome_earl_grey_ui.h are available for use in tests.
@@ -170,7 +161,8 @@
 
 // Tests executeJavaScript:error: in chrome_earl_grey.h
 - (void)testExecuteJavaScript {
-  id actualResult = [ChromeEarlGrey executeJavaScript:@"0"];
+  auto result = [ChromeEarlGrey evaluateJavaScript:@"0"];
+  NSNumber* actualResult = [NSNumber numberWithInt:result.GetDouble()];
   GREYAssertEqualObjects(@0, actualResult,
                          @"Actual JavaScript execution result: %@",
                          actualResult);
@@ -246,7 +238,8 @@
 }
 
 // Tests gracefully kill through AppLaunchManager.
-- (void)testAppLaunchManagerForceRelaunchByCleanShutdown {
+// TODO(crbug.com/1354554): Test flaky on smoke.
+- (void)DISABLED_testAppLaunchManagerForceRelaunchByCleanShutdown {
   [ChromeEarlGrey openNewTab];
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
       disabled:{}
@@ -283,29 +276,20 @@
   [self disableMockAuthentication];
   [ChromeEarlGrey openNewTab];
   // No relauch when feature list isn't changed.
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
-      disabled:{}
-      relaunchPolicy:NoForceRelaunchAndKeepState];
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithFeaturesEnabled:config.features_enabled
+                                  disabled:config.features_disabled
+                            relaunchPolicy:NoForceRelaunchAndKeepState];
   [ChromeEarlGrey waitForMainTabCount:2];
   [[EarlGrey selectElementWithMatcher:grey_text(@"Restore")]
       assertWithMatcher:grey_notVisible()];
 }
 
 // Tests backgrounding app and moving app back through AppLaunchManager.
-// TODO:(crbug.com/1164446): Re-enable this test on simulators.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testAppLaunchManagerBackgroundAndForegroundApp \
-  FLAKY_testAppLaunchManagerBackgroundAndForegroundApp
-#else
-#define MAYBE_testAppLaunchManagerBackgroundAndForegroundApp \
-  testAppLaunchManagerBackgroundAndForegroundApp
-#endif
-- (void)FLAKY_testAppLaunchManagerBackgroundAndForegroundApp {
-  if (!base::ios::IsRunningOnOrLater(13, 0, 0)) {
-    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 12 and lower.");
-  }
-
+- (void)testAppLaunchManagerBackgroundAndForegroundApp {
   [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:GURL("chrome://version")];
   [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
   [ChromeEarlGrey waitForMainTabCount:2];
 }
@@ -313,9 +297,8 @@
 // Tests isCompactWidth method in chrome_earl_grey.h.
 - (void)testisCompactWidth {
   BOOL expectedIsCompactWidth =
-      [[[[GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication] keyWindow]
-          traitCollection] horizontalSizeClass] ==
-      UIUserInterfaceSizeClassCompact;
+      [[chrome_test_util::GetAnyKeyWindow() traitCollection]
+          horizontalSizeClass] == UIUserInterfaceSizeClassCompact;
   GREYAssertTrue([ChromeEarlGrey isCompactWidth] == expectedIsCompactWidth,
                  @"isCompactWidth should return %@",
                  expectedIsCompactWidth ? @"YES" : @"NO");
@@ -325,7 +308,6 @@
 - (void)testGetPrefs {
   // The actual pref names and values below are irrelevant, but the calls
   // themselves should return data without crashing or asserting.
-  [ChromeEarlGrey localStateBooleanPref:prefs::kLastSessionExitedCleanly];
   [ChromeEarlGrey localStateIntegerPref:prefs::kBrowserStatesNumCreated];
   [ChromeEarlGrey localStateStringPref:prefs::kBrowserStateLastUsed];
 

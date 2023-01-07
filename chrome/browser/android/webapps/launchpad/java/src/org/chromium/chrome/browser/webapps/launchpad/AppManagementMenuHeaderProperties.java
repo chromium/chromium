@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Contains all the properties for app management menu header. */
 class AppManagementMenuHeaderProperties {
+    private AppManagementMenuHeaderProperties() {}
+
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<CharSequence> URL =
             new WritableObjectPropertyKey<>();

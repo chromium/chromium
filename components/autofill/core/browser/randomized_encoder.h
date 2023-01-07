@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/signatures.h"
@@ -45,6 +46,7 @@ class RandomizedEncoder {
   static const char FIELD_CSS_CLASS[];
   static const char FIELD_PLACEHOLDER[];
   static const char FIELD_INITIAL_VALUE_HASH[];
+  static const char FIELD_AUTOCOMPLETE[];
 
   static const char kUrlKeyedAnonymizedDataCollectionEnabled[];
 
@@ -100,7 +102,7 @@ class RandomizedEncoder {
 
  private:
   const std::string seed_;
-  const EncodingInfo* const encoding_info_;
+  const raw_ptr<const EncodingInfo> encoding_info_;
   const bool anonymous_url_collection_is_enabled_;
 };
 }  // namespace autofill

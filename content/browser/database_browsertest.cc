@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -19,16 +17,21 @@
 
 namespace content {
 
-class DatabaseTest : public ContentBrowserTest {
+// TODO(crbug.com/1317431): WebSQL does not work on Fuchsia.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_DatabaseTest DISABLED_DatabaseTest
+#else
+#define MAYBE_DatabaseTest DatabaseTest
+#endif
+class MAYBE_DatabaseTest : public ContentBrowserTest {
  public:
-  DatabaseTest() {}
+  MAYBE_DatabaseTest() {}
 
   void RunScriptAndCheckResult(Shell* shell,
                                const std::string& script,
                                const std::string& result) {
-    std::string data;
-    ASSERT_TRUE(ExecuteScriptAndExtractString(shell, script, &data));
-    ASSERT_EQ(data, result);
+    ASSERT_EQ(result, EvalJs(shell->web_contents(), script,
+                             EXECUTE_SCRIPT_USE_MANUAL_REPLY));
   }
 
   void Navigate(Shell* shell) {
@@ -60,14 +63,15 @@ class DatabaseTest : public ContentBrowserTest {
   }
 
   bool HasTable(Shell* shell) {
-    std::string data;
-    CHECK(ExecuteScriptAndExtractString(shell, "getRecords()", &data));
+    std::string data =
+        EvalJs(shell, "getRecords()", EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+            .ExtractString();
     return data != "getRecords error: [object SQLError]";
   }
 };
 
 // Insert records to the database.
-IN_PROC_BROWSER_TEST_F(DatabaseTest, InsertRecord) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest, InsertRecord) {
   Navigate(shell());
   CreateTable(shell());
   InsertRecord(shell(), "text");
@@ -77,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(DatabaseTest, InsertRecord) {
 }
 
 // Update records in the database.
-IN_PROC_BROWSER_TEST_F(DatabaseTest, UpdateRecord) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest, UpdateRecord) {
   Navigate(shell());
   CreateTable(shell());
   InsertRecord(shell(), "text");
@@ -91,7 +95,7 @@ IN_PROC_BROWSER_TEST_F(DatabaseTest, UpdateRecord) {
 }
 
 // Delete records in the database.
-IN_PROC_BROWSER_TEST_F(DatabaseTest, DeleteRecord) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest, DeleteRecord) {
   Navigate(shell());
   CreateTable(shell());
   InsertRecord(shell(), "text");
@@ -106,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(DatabaseTest, DeleteRecord) {
 }
 
 // Attempts to delete a nonexistent row in the table.
-IN_PROC_BROWSER_TEST_F(DatabaseTest, DeleteNonexistentRow) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest, DeleteNonexistentRow) {
   Navigate(shell());
   CreateTable(shell());
   InsertRecord(shell(), "text");
@@ -118,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(DatabaseTest, DeleteNonexistentRow) {
 }
 
 // Insert, update, and delete records in the database.
-IN_PROC_BROWSER_TEST_F(DatabaseTest, DatabaseOperations) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest, DatabaseOperations) {
   Navigate(shell());
   CreateTable(shell());
 
@@ -154,14 +158,12 @@ IN_PROC_BROWSER_TEST_F(DatabaseTest, DatabaseOperations) {
 }
 
 // Create records in the database and verify they persist after reload.
-IN_PROC_BROWSER_TEST_F(DatabaseTest, ReloadPage) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest, ReloadPage) {
   Navigate(shell());
   CreateTable(shell());
   InsertRecord(shell(), "text");
 
-  WindowedNotificationObserver load_stop_observer(
-      NOTIFICATION_LOAD_STOP,
-      NotificationService::AllSources());
+  LoadStopObserver load_stop_observer(shell()->web_contents());
   shell()->Reload();
   load_stop_observer.Wait();
 
@@ -170,7 +172,8 @@ IN_PROC_BROWSER_TEST_F(DatabaseTest, ReloadPage) {
 
 // Attempt to read a database created in a regular browser from an off the
 // record browser.
-IN_PROC_BROWSER_TEST_F(DatabaseTest, OffTheRecordCannotReadRegularDatabase) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest,
+                       OffTheRecordCannotReadRegularDatabase) {
   Navigate(shell());
   CreateTable(shell());
   InsertRecord(shell(), "text");
@@ -185,7 +188,8 @@ IN_PROC_BROWSER_TEST_F(DatabaseTest, OffTheRecordCannotReadRegularDatabase) {
 
 // Attempt to read a database created in an off the record browser from a
 // regular browser.
-IN_PROC_BROWSER_TEST_F(DatabaseTest, RegularCannotReadOffTheRecordDatabase) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest,
+                       RegularCannotReadOffTheRecordDatabase) {
   Shell* otr = CreateOffTheRecordBrowser();
   Navigate(otr);
   CreateTable(otr);
@@ -198,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(DatabaseTest, RegularCannotReadOffTheRecordDatabase) {
 }
 
 // Verify DB changes within first window are present in the second window.
-IN_PROC_BROWSER_TEST_F(DatabaseTest, ModificationPersistInSecondTab) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest, ModificationPersistInSecondTab) {
   Navigate(shell());
   CreateTable(shell());
   InsertRecord(shell(), "text");
@@ -212,33 +216,35 @@ IN_PROC_BROWSER_TEST_F(DatabaseTest, ModificationPersistInSecondTab) {
 }
 
 // Verify database modifications persist after restarting browser.
-IN_PROC_BROWSER_TEST_F(DatabaseTest, PRE_DatabasePersistsAfterRelaunch) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest, PRE_DatabasePersistsAfterRelaunch) {
   Navigate(shell());
   CreateTable(shell());
   InsertRecord(shell(), "text");
 }
 
-IN_PROC_BROWSER_TEST_F(DatabaseTest, DatabasePersistsAfterRelaunch) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest, DatabasePersistsAfterRelaunch) {
   Navigate(shell());
   CompareRecords(shell(), "text");
 }
 
 // Verify OTR database is removed after OTR window closes.
-IN_PROC_BROWSER_TEST_F(DatabaseTest, PRE_OffTheRecordDatabaseNotPersistent) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest,
+                       PRE_OffTheRecordDatabaseNotPersistent) {
   Shell* otr = CreateOffTheRecordBrowser();
   Navigate(otr);
   CreateTable(otr);
   InsertRecord(otr, "text");
 }
 
-IN_PROC_BROWSER_TEST_F(DatabaseTest, OffTheRecordDatabaseNotPersistent) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest, OffTheRecordDatabaseNotPersistent) {
   Shell* otr = CreateOffTheRecordBrowser();
   Navigate(otr);
   ASSERT_FALSE(HasTable(otr));
 }
 
 // Verify database modifications persist after crashing window.
-IN_PROC_BROWSER_TEST_F(DatabaseTest, ModificationsPersistAfterRendererCrash) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest,
+                       ModificationsPersistAfterRendererCrash) {
   Navigate(shell());
   CreateTable(shell());
   InsertRecord(shell(), "1");
@@ -250,7 +256,8 @@ IN_PROC_BROWSER_TEST_F(DatabaseTest, ModificationsPersistAfterRendererCrash) {
 
 // Test to check if database modifications are persistent across windows in
 // off the record window.
-IN_PROC_BROWSER_TEST_F(DatabaseTest, OffTheRecordDBPersistentAcrossWindows) {
+IN_PROC_BROWSER_TEST_F(MAYBE_DatabaseTest,
+                       OffTheRecordDBPersistentAcrossWindows) {
   Shell* otr1 = CreateOffTheRecordBrowser();
   Navigate(otr1);
   CreateTable(otr1);

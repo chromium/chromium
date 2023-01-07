@@ -27,7 +27,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_ANIMATION_SMIL_ANIMATION_SANDWICH_H_
 
 #include "third_party/blink/renderer/core/svg/animation/smil_time.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -104,7 +105,7 @@ class SMILAnimationSandwich : public GarbageCollected<SMILAnimationSandwich> {
   void UpdateActiveAnimationStack(SMILTime presentation_time);
   bool ApplyAnimationValues();
 
-  bool IsEmpty() { return sandwich_.IsEmpty(); }
+  bool IsEmpty() { return sandwich_.empty(); }
 
   void Trace(Visitor*) const;
 

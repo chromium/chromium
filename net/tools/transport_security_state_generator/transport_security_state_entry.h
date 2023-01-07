@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 #include <vector>
 #include "net/tools/huffman_trie/trie_entry.h"
 
-namespace net {
-
-namespace transport_security_state {
+namespace net::transport_security_state {
 
 // Maps a name to an index. This is used to track the index of several values
 // in the C++ code. The trie refers to the array index of the values. For
@@ -58,8 +56,6 @@ class TransportSecurityStateTrieEntry : public huffman_trie::TrieEntry {
   TransportSecurityStateEntry* entry_;
 };
 
-}  // namespace transport_security_state
-
-}  // namespace net
+}  // namespace net::transport_security_state
 
 #endif  // NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_TRANSPORT_SECURITY_STATE_ENTRY_H_

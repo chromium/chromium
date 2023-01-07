@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>Dialog-Popup appearance</title>
+<link rel="author" href="mailto:masonf@chromium.org">
+
+<p>Both dialogs should have the same shades of background.</p>
+<p>The pop-up should have a completely-transparent ::backdrop.</p>
+<dialog popup id=d1>This is a modal dialog</dialog>
+<dialog popup id=d2>This is a dialog pop-up</dialog>
+
+<style>
+  dialog {
+    left: 50px;
+    right: auto;
+    bottom: auto;
+  }
+  #d1 {top:100px;}
+  #d2 {top:150px;}
+  /* Force backdrop to spec: */
+  #d1::backdrop {
+    /* https://html.spec.whatwg.org/multipage/rendering.html#flow-content-3 */
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  #d2::backdrop {
+    /* When shown as a pop-up, backdrop must be transparent */
+    background-color: transparent;
+  }
+</style>
+
+<script>
+  document.getElementById('d1').showModal();
+  document.getElementById('d2').showPopUp();
+</script>

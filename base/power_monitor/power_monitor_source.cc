@@ -1,10 +1,12 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "base/power_monitor/power_monitor_source.h"
 
+#include "base/notreached.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/power_monitor/power_observer.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -17,14 +19,18 @@ PowerMonitorSource::GetCurrentThermalState() {
   return PowerThermalObserver::DeviceThermalState::kUnknown;
 }
 
+int PowerMonitorSource::GetInitialSpeedLimit() {
+  return PowerThermalObserver::kSpeedLimitMax;
+}
+
 void PowerMonitorSource::SetCurrentThermalState(
     PowerThermalObserver::DeviceThermalState state) {}
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 int PowerMonitorSource::GetRemainingBatteryCapacity() {
   return 0;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // static
 void PowerMonitorSource::ProcessPowerEvent(PowerEvent event_id) {
@@ -51,6 +57,13 @@ void PowerMonitorSource::ProcessThermalEvent(
   if (!PowerMonitor::IsInitialized())
     return;
   PowerMonitor::NotifyThermalStateChange(new_thermal_state);
+}
+
+// static
+void PowerMonitorSource::ProcessSpeedLimitEvent(int speed_limit) {
+  if (!PowerMonitor::IsInitialized())
+    return;
+  PowerMonitor::NotifySpeedLimitChange(speed_limit);
 }
 
 // static

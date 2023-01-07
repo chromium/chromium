@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -26,13 +26,12 @@ source_set("tabs") {
   ]
   public_deps = [ "//ios/chrome/browser/tabs" ]
   deps = [
+    ":constants",
     "resources:open_new_tab_background",
     "resources:tabstrip_background_tab",
     "resources:tabstrip_foreground_tab",
     "resources:tabstrip_inactive_tab_close_button_color",
     "resources:tabstrip_inactive_tab_text_color",
-    "resources:tabstrip_incognito_background_tab",
-    "resources:tabstrip_incognito_foreground_tab",
     "resources:tabstrip_new_tab",
     "resources:tabstrip_tab_switcher_count_button",
     "resources:tabstrip_tab_switcher_count_button_pressed",
@@ -44,18 +43,19 @@ source_set("tabs") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/drag_and_drop",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/bubble",
-    "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/elements",
     "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/ui/fullscreen:feature_flags",
     "//ios/chrome/browser/ui/gestures",
+    "//ios/chrome/browser/ui/icons:symbols",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/main:scene_state_header",
+    "//ios/chrome/browser/ui/ntp:logo",
     "//ios/chrome/browser/ui/ntp:util",
     "//ios/chrome/browser/ui/open_in",
     "//ios/chrome/browser/ui/popup_menu/public",
@@ -69,8 +69,7 @@ source_set("tabs") {
     "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/resources:default_world_favicon",
     "//ios/chrome/common/ui/util",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/ui",
+    "//ios/public/provider/chrome/browser/fullscreen:fullscreen_api",
     "//ios/third_party/material_components_ios",
     "//ios/web",
     "//ui/base",
@@ -93,7 +92,16 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/bubble",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/gestures",
     "//ios/chrome/browser/ui/tabs/requirements",
+  ]
+}
+
+source_set("constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "tab_strip_constants.h",
+    "tab_strip_constants.mm",
   ]
 }
 
@@ -111,7 +119,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/main:scene_state_header",
-    "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/web/public",
@@ -119,11 +126,11 @@ source_set("unit_tests") {
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -131,6 +138,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [ "tab_strip_egtest.mm" ]
   deps = [
+    ":constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",

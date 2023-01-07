@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,7 +74,7 @@ class SpellCheckTest : public testing::Test {
                     base::File::FLAG_OPEN | base::File::FLAG_READ);
     EXPECT_TRUE(file.IsValid()) << hunspell_file_path << " is not valid"
                                 << file.ErrorToString(file.GetLastFileError());
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     // TODO(groby): Forcing spellcheck to use hunspell, even on OSX.
     // Instead, tests should exercise individual spelling engines.
     spell_check_->languages_.push_back(
@@ -107,7 +107,7 @@ class SpellCheckTest : public testing::Test {
     spellcheck::FillSuggestions(suggestions_list, optional_suggestions);
   }
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
  protected:
   void TestSpellCheckParagraph(const std::u16string& input,
                                const std::vector<SpellCheckResult>& expected) {
@@ -542,7 +542,7 @@ TEST_F(SpellCheckTest, SpellCheckStrings_EN_US) {
       {L"3.141592653", true},
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     size_t input_length = 0;
     if (kTestCases[i].input)
       input_length = wcslen(kTestCases[i].input);
@@ -737,7 +737,7 @@ TEST_F(SpellCheckTest, SpellCheckText) {
        L"\x092E\x0947\x0902 \x0914\x0930 \x0909\x092A\x092F\x094B\x0917\x0940 "
        L"\x092C\x0928\x093E\x0928\x093E \x0939\x0948."},
       {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
           // Hungarian
           "hu-HU",
           L"A Google azt a k\x00FCldet\x00E9st v\x00E1llalta mag\x00E1ra, "
@@ -746,8 +746,8 @@ TEST_F(SpellCheckTest, SpellCheckText) {
           L"el\x00E9rhet\x0151v\x00E9, "
           L"illetve haszn\x00E1lhat\x00F3v\x00E1 tegye."},
       {
-#endif  // !defined(OS_WIN)
-          // Croatian
+#endif  // !BUILDFLAG(IS_WIN)
+        // Croatian
           "hr-HR",
           // L"Googleova " - to be added.
           L"je misija organizirati svjetske informacije i u\x010Diniti ih "
@@ -797,30 +797,30 @@ TEST_F(SpellCheckTest, SpellCheckText) {
        L"zasob\x00F3w informacji, aby sta\x0142y si\x0119 one powszechnie "
        L"dost\x0119pne i u\x017Cyteczne."},
       {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
           // Portuguese (Brazil)
           "pt-BR",
           L"A miss\x00E3o do "
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
           L"Google "
 #endif
           L"\x00E9 organizar as informa\x00E7\x00F5"
           L"es do mundo todo e "
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
           L"torn\x00E1-las "
 #endif
           L"acess\x00EDveis e \x00FAteis em car\x00E1ter universal."},
       {
-#endif  // !defined(OS_WIN)
-          // Portuguese (Portugal)
+#endif  // !BUILDFLAG(IS_WIN)
+        // Portuguese (Portugal)
           "pt-PT",
           L"O "
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
           L"Google "
 #endif
           L"tem por miss\x00E3o organizar a informa\x00E7\x00E3o do "
           L"mundo e "
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
           L"torn\x00E1-la "
 #endif
           L"universalmente acess\x00EDvel e \x00FAtil"},
@@ -875,7 +875,7 @@ TEST_F(SpellCheckTest, SpellCheckText) {
        L"samlade information och g\x00F6ra den tillg\x00E4nglig f\x00F6r "
        L"alla."},
       {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
           // Turkish
           "tr-TR",
           // L"Google\x2019\x0131n " - to be added.
@@ -883,8 +883,8 @@ TEST_F(SpellCheckTest, SpellCheckText) {
           L"organize etmek ve evrensel olarak eri\x015Filebilir ve "
           L"kullan\x0131\x015Fl\x0131 k\x0131lmakt\x0131r."},
       {
-#endif  // !defined(OS_WIN)
-          // Ukranian
+#endif  // !BUILDFLAG(IS_WIN)
+        // Ukrainian
           "uk-UA",
           L"\x041c\x0456\x0441\x0456\x044f "
           L"\x043a\x043e\x043c\x043f\x0430\x043d\x0456\x0457 Google "
@@ -907,7 +907,7 @@ TEST_F(SpellCheckTest, SpellCheckText) {
        L"th\x1EBF gi\x1EDBi va l\x00E0m cho n\x00F3 universal c\x00F3 "
        L"th\x1EC3 truy c\x1EADp va h\x1EEFu d\x1EE5ng h\x01A1n."},
       {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
           // Korean
           "ko",
           L"Google\xC758 \xBAA9\xD45C\xB294 \xC804\xC138\xACC4\xC758 "
@@ -916,8 +916,8 @@ TEST_F(SpellCheckTest, SpellCheckText) {
           L"\xD3B8\xB9AC\xD558\xAC8C \xC774\xC6A9\xD560 \xC218 "
           L"\xC788\xB3C4\xB85D \xD558\xB294 \xAC83\xC785\xB2C8\xB2E4."},
       {
-#endif  // !defined(OS_WIN)
-          // Albanian
+#endif  // !BUILDFLAG(IS_WIN)
+        // Albanian
           "sq",
           L"Misioni i Google \x00EBsht\x00EB q\x00EB t\x00EB organizoj\x00EB "
           L"informacionin e bot\x00EBs dhe t\x00EB b\x00EBjn\x00EB at\x00EB "
@@ -948,7 +948,7 @@ TEST_F(SpellCheckTest, SpellCheckText) {
        L"\x043e\x043d\x04b3\x043e \x0430\x0441\x0442."},
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     ReinitializeSpellCheck(kTestCases[i].language);
     size_t input_length = 0;
     if (kTestCases[i].input)
@@ -1006,7 +1006,7 @@ TEST_F(SpellCheckTest, MisspelledWords) {
     },
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     ReinitializeSpellCheck(kTestCases[i].language);
 
     std::u16string word(base::WideToUTF16(kTestCases[i].input));
@@ -1024,7 +1024,7 @@ TEST_F(SpellCheckTest, MisspelledWords) {
 
 // Since SpellCheck::SpellCheckParagraph is not implemented on Mac,
 // we skip these SpellCheckParagraph tests on Mac.
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
 
 // Make sure SpellCheckParagraph does not crash if the input is empty.
 TEST_F(SpellCheckTest, SpellCheckParagraphEmptyParagraph) {
@@ -1065,12 +1065,12 @@ TEST_F(SpellCheckTest, SpellCheckParagraphMultipleMisspellings) {
 TEST_F(SpellCheckTest, SpellCheckParagraphLongSentence) {
   std::vector<SpellCheckResult> expected;
   // The text is taken from US constitution preamble.
-  const std::u16string text = base::UTF8ToUTF16(
-      "We the people of the United States, in order to form a more perfect "
-      "union, establish justice, insure domestic tranquility, provide for "
-      "the common defense, promote the general welfare, and secure the "
-      "blessings of liberty to ourselves and our posterity, do ordain and "
-      "establish this Constitution for the United States of America.");
+  const std::u16string text =
+      u"We the people of the United States, in order to form a more perfect "
+      u"union, establish justice, insure domestic tranquility, provide for "
+      u"the common defense, promote the general welfare, and secure the "
+      u"blessings of liberty to ourselves and our posterity, do ordain and "
+      u"establish this Constitution for the United States of America.";
 
   TestSpellCheckParagraph(text, expected);
 }
@@ -1080,12 +1080,12 @@ TEST_F(SpellCheckTest, SpellCheckParagraphLongSentenceMultipleMisspellings) {
   std::vector<SpellCheckResult> expected;
 
   // All 'the' are converted to 'hte' in US consitition preamble.
-  const std::u16string text = base::UTF8ToUTF16(
-      "We hte people of hte United States, in order to form a more perfect "
-      "union, establish justice, insure domestic tranquility, provide for "
-      "hte common defense, promote hte general welfare, and secure hte "
-      "blessings of liberty to ourselves and our posterity, do ordain and "
-      "establish this Constitution for hte United States of America.");
+  const std::u16string text =
+      u"We hte people of hte United States, in order to form a more perfect "
+      u"union, establish justice, insure domestic tranquility, provide for "
+      u"hte common defense, promote hte general welfare, and secure hte "
+      u"blessings of liberty to ourselves and our posterity, do ordain and "
+      u"establish this Constitution for hte United States of America.";
 
   expected.push_back(SpellCheckResult(
       SpellCheckResult::SPELLING, 3, 3));
@@ -1396,9 +1396,9 @@ TEST_F(SpellCheckTest, EnglishWords) {
 
   static const char* const kLocales[] = { "en-GB", "en-US", "en-CA", "en-AU" };
 
-  for (size_t j = 0; j < base::size(kLocales); ++j) {
+  for (size_t j = 0; j < std::size(kLocales); ++j) {
     ReinitializeSpellCheck(kLocales[j]);
-    for (size_t i = 0; i < base::size(kTestCases); ++i) {
+    for (size_t i = 0; i < std::size(kTestCases); ++i) {
       size_t input_length = 0;
       if (kTestCases[i].input)
         input_length = strlen(kTestCases[i].input);
@@ -1513,7 +1513,7 @@ TEST_F(SpellCheckTest, SpellingEngine_CheckSpelling) {
   InitializeIfNeeded();
   ASSERT_FALSE(InitializeIfNeeded());
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     bool result = CheckSpelling(kTestCases[i].word, 0);
     EXPECT_EQ(kTestCases[i].expected_result, result) <<
         "Failed test for " << kTestCases[i].word;
@@ -1531,7 +1531,7 @@ TEST_F(SpellCheckTest, LogicalSuggestions) {
     { "accidently", "accidentally" }
   };
 
-  for (size_t i = 0; i < base::size(kTestCases); ++i) {
+  for (size_t i = 0; i < std::size(kTestCases); ++i) {
     size_t misspelling_start = 0;
     size_t misspelling_length = 0;
     std::vector<std::u16string> suggestions;
@@ -1559,9 +1559,9 @@ TEST_F(SpellCheckTest, IsValidContraction) {
       L"in’n’out",
   };
 
-  for (size_t i = 0; i < base::size(kLanguages); ++i) {
+  for (size_t i = 0; i < std::size(kLanguages); ++i) {
     ReinitializeSpellCheck(kLanguages[i]);
-    for (size_t j = 0; j < base::size(kWords); ++j)
+    for (size_t j = 0; j < std::size(kWords); ++j)
       EXPECT_TRUE(IsValidContraction(base::WideToUTF16(kWords[j]), 0));
   }
 }

@@ -1,10 +1,11 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef GIN_DICTIONARY_H_
 #define GIN_DICTIONARY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "gin/converter.h"
 #include "gin/gin_export.h"
 
@@ -15,7 +16,7 @@ namespace gin {
 // arbitrary JavaScript object as a result. For example, Dictionary is useful
 // when you might use the |dictionary| type in WebIDL:
 //
-//   http://heycam.github.io/webidl/#idl-dictionaries
+//   https://webidl.spec.whatwg.org/#idl-dictionaries
 //
 // WARNING: You cannot retain a Dictionary object in the heap. The underlying
 //          storage for Dictionary is tied to the closest enclosing
@@ -58,7 +59,7 @@ class GIN_EXPORT Dictionary {
   friend struct Converter<Dictionary>;
 
   // TODO(aa): Remove this. Instead, get via FromV8(), Set(), and Get().
-  v8::Isolate* isolate_;
+  raw_ptr<v8::Isolate> isolate_;
   v8::Local<v8::Object> object_;
 };
 

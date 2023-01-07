@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,6 +25,9 @@ class NotificationOverflowImageView;
 class APP_MENU_EXPORT NotificationOverflowView : public views::View {
  public:
   NotificationOverflowView();
+
+  NotificationOverflowView(const NotificationOverflowView&) = delete;
+  NotificationOverflowView& operator=(const NotificationOverflowView&) = delete;
 
   ~NotificationOverflowView() override;
 
@@ -57,8 +60,6 @@ class APP_MENU_EXPORT NotificationOverflowView : public views::View {
   // The overflow icon shown when there are more than |kMaxOverflowIcons|
   // notifications.
   message_center::ProportionalImageView* overflow_icon_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationOverflowView);
 };
 
 }  // namespace ash

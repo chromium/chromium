@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,9 +19,9 @@ extern const char kHeavyAdReportingOnlyParamName[];
 // ad intervention.
 extern const char kHeavyAdReportingEnabledParamName[];
 
-extern const base::Feature kHeavyAdIntervention;
-extern const base::Feature kHeavyAdInterventionWarning;
-extern const base::Feature kHeavyAdPrivacyMitigations;
+BASE_DECLARE_FEATURE(kHeavyAdIntervention);
+BASE_DECLARE_FEATURE(kHeavyAdInterventionWarning);
+BASE_DECLARE_FEATURE(kHeavyAdPrivacyMitigations);
 
 }  // namespace features
 

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/c/ppp_message_handler.h"
@@ -51,6 +50,10 @@ class PPAPI_PROXY_EXPORT MessageHandler {
       void* user_data,
       PP_Resource message_loop,
       int32_t* error);
+
+  MessageHandler(const MessageHandler&) = delete;
+  MessageHandler& operator=(const MessageHandler&) = delete;
+
   ~MessageHandler();
 
   bool LoopIsValid() const;
@@ -68,8 +71,6 @@ class PPAPI_PROXY_EXPORT MessageHandler {
   const PPP_MessageHandler_0_2* handler_if_;
   void* user_data_;
   scoped_refptr<MessageLoopResource> message_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessageHandler);
 };
 
 }  // namespace proxy

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/time/time.h"
 #include "components/domain_reliability/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace domain_reliability {
 namespace {
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 class DomainReliabilityMockTimeTest : public testing::Test {
@@ -24,7 +24,7 @@ TEST_F(DomainReliabilityMockTimeTest, Create) {
 }
 
 TEST_F(DomainReliabilityMockTimeTest, NowAndAdvance) {
-  const TimeDelta delta = TimeDelta::FromSeconds(1);
+  const base::TimeDelta delta = base::Seconds(1);
 
   TimeTicks initial = time_.NowTicks();
   time_.Advance(delta);
@@ -33,7 +33,7 @@ TEST_F(DomainReliabilityMockTimeTest, NowAndAdvance) {
 }
 
 TEST_F(DomainReliabilityMockTimeTest, AddTask) {
-  const TimeDelta delta = TimeDelta::FromSeconds(1);
+  const base::TimeDelta delta = base::Seconds(1);
   TestCallback callback;
 
   time_.AddTask(2 * delta, callback.callback());
@@ -48,7 +48,7 @@ TEST_F(DomainReliabilityMockTimeTest, TimerCreate) {
 }
 
 TEST_F(DomainReliabilityMockTimeTest, TimerIsRunning) {
-  const TimeDelta delta = TimeDelta::FromSeconds(1);
+  const base::TimeDelta delta = base::Seconds(1);
   TestCallback callback;
 
   std::unique_ptr<MockTime::Timer> timer(time_.CreateTimer());
@@ -60,7 +60,7 @@ TEST_F(DomainReliabilityMockTimeTest, TimerIsRunning) {
 }
 
 TEST_F(DomainReliabilityMockTimeTest, TimerGoesOff) {
-  const TimeDelta delta = TimeDelta::FromSeconds(1);
+  const base::TimeDelta delta = base::Seconds(1);
   TestCallback callback;
 
   std::unique_ptr<MockTime::Timer> timer(time_.CreateTimer());
@@ -73,7 +73,7 @@ TEST_F(DomainReliabilityMockTimeTest, TimerGoesOff) {
 }
 
 TEST_F(DomainReliabilityMockTimeTest, TimerStopped) {
-  const TimeDelta delta = TimeDelta::FromSeconds(1);
+  const base::TimeDelta delta = base::Seconds(1);
   TestCallback callback;
 
   std::unique_ptr<MockTime::Timer> timer(time_.CreateTimer());
@@ -86,7 +86,7 @@ TEST_F(DomainReliabilityMockTimeTest, TimerStopped) {
 }
 
 TEST_F(DomainReliabilityMockTimeTest, TimerRestarted) {
-  const TimeDelta delta = TimeDelta::FromSeconds(1);
+  const base::TimeDelta delta = base::Seconds(1);
   TestCallback callback;
 
   std::unique_ptr<MockTime::Timer> timer(time_.CreateTimer());
@@ -101,7 +101,7 @@ TEST_F(DomainReliabilityMockTimeTest, TimerRestarted) {
 }
 
 TEST_F(DomainReliabilityMockTimeTest, TimerReentrantStart) {
-  const TimeDelta delta = TimeDelta::FromSeconds(1);
+  const base::TimeDelta delta = base::Seconds(1);
   std::unique_ptr<MockTime::Timer> timer(time_.CreateTimer());
   TestCallback callback;
 

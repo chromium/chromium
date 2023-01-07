@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 import("../../tools/optimize_webui.gni")
 
 preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
 preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
 if (optimize_webui) {
@@ -17,20 +18,23 @@ if (optimize_webui) {
 
   optimize_webui("build") {
     host = "internet-detail-dialog"
-    js_out_files = [ "internet_detail_dialog.rollup.js" ]
-    js_module_in_files = [ "internet_detail_dialog.js" ]
+    js_out_files = [ "internet_detail_dialog_container.rollup.js" ]
+    js_module_in_files = [ "internet_detail_dialog_container.js" ]
     input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
 
     out_manifest = "$target_gen_dir/$build_manifest"
     excludes = [
-      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js",
-      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js",
-      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
-      "chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js",
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js",
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js",
+      "chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-webui.js",
+      "chrome://resources/ash/common/network/mojo_interface_provider.js",
+      "chrome://resources/js/cr.m.js",
     ]
 
     deps = [
+      ":preprocess",
       ":preprocess_generated",
+      "../../../../../ui/webui/resources:library",
       "../../../../../ui/webui/resources:preprocess",
     ]
   }
@@ -41,15 +45,29 @@ generate_grd("build_grd") {
   input_files_base_dir = rebase_path(".", "//")
   if (optimize_webui) {
     deps = [ ":build" ]
-    resource_path_rewrites =
-        [ "internet_detail_dialog.rollup.js|internet_detail_dialog.js" ]
+    resource_path_rewrites = [ "internet_detail_dialog_container.rollup.js|internet_detail_dialog_container.js" ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
   } else {
-    deps = [ ":preprocess_generated" ]
-    manifest_files = [ "$target_gen_dir/$preprocess_gen_manifest" ]
+    deps = [
+      ":preprocess",
+      ":preprocess_generated",
+    ]
+    manifest_files = [
+      "$target_gen_dir/$preprocess_manifest",
+      "$target_gen_dir/$preprocess_gen_manifest",
+    ]
   }
   grd_prefix = "internet_detail_dialog"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
+
+preprocess_if_expr("preprocess") {
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [
+    "internet_detail_dialog_browser_proxy.js",
+    "internet_detail_dialog_container.js",
+  ]
 }
 
 preprocess_if_expr("preprocess_generated") {
@@ -62,18 +80,26 @@ preprocess_if_expr("preprocess_generated") {
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  deps = [ ":internet_detail_dialog" ]
+  closure_flags = default_closure_args + mojom_js_args
+  deps = [
+    ":internet_detail_dialog",
+    ":internet_detail_dialog_browser_proxy",
+  ]
 }
 
 js_library("internet_detail_dialog") {
   deps = [
-    "//ui/webui/resources/cr_components/chromeos/network:cr_policy_network_behavior_mojo.m",
-    "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
-    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ash/webui/common/resources:i18n_behavior",
+    "//ash/webui/common/resources/network:cr_policy_network_behavior_mojo",
+    "//ash/webui/common/resources/network:network_listener_behavior",
+    "//ash/webui/common/resources/network:onc_mojo",
+    "//ui/webui/resources/js:assert",
   ]
   externs_list = [ "$externs_path/chrome_send.js" ]
+}
+
+js_library("internet_detail_dialog_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
 }
 
 html_to_js("web_components") {

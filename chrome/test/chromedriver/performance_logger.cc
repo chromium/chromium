@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -107,7 +107,7 @@ Status PerformanceLogger::OnEvent(
     const std::string& method,
     const base::DictionaryValue& params) {
   if (method == "Target.attachedToTarget") {
-    std::string type, target_id, session_id;
+    std::string type;
     if (!params.GetString("targetInfo.type", &type))
       return Status(kUnknownError,
                     "missing target type in Target.attachedToTarget event");
@@ -186,7 +186,7 @@ Status PerformanceLogger::EnableInspectorDomains(DevToolsClient* client) {
     enable_commands.push_back("Page.enable");
   }
   for (const auto& enable_command : enable_commands) {
-    base::DictionaryValue params;  // All the enable commands have empty params.
+    base::Value::Dict params;  // All the enable commands have empty params.
     Status status = client->SendCommand(enable_command, params);
     if (status.IsError())
       return status;
@@ -219,7 +219,7 @@ Status PerformanceLogger::HandleTraceEvents(
       return Status(kUnknownError,
                     "received DevTools trace data in unexpected format");
     }
-    for (const auto& trace : *traces) {
+    for (const auto& trace : traces->GetList()) {
       const base::DictionaryValue* event_dict;
       if (!trace.GetAsDictionary(&event_dict))
         return Status(kUnknownError, "trace event must be a dictionary");
@@ -228,22 +228,23 @@ Status PerformanceLogger::HandleTraceEvents(
   } else if (method == "Tracing.bufferUsage") {
     // 'value' will be between 0-1 and represents how full the DevTools trace
     // buffer is. If the buffer is full, warn the user.
-    double buffer_usage = 0;
-    if (!params.GetDouble("percentFull", &buffer_usage)) {
+    absl::optional<double> maybe_buffer_usage =
+        params.FindDoubleKey("percentFull");
+    if (!maybe_buffer_usage.has_value()) {
       // Tracing.bufferUsage event will occur once per second, and it really
       // only serves as a warning, so if we can't reliably tell whether the
       // buffer is full, just fail silently instead of spamming the logs.
       return Status(kOk);
     }
-    if (buffer_usage >= 0.99999) {
-      base::DictionaryValue params;
+    if (maybe_buffer_usage.value() >= 0.99999) {
+      base::DictionaryValue error_params;
       std::string err("Chrome's trace buffer filled while collecting events, "
                       "so some trace events may have been lost");
-      params.SetString("error", err);
+      error_params.SetString("error", err);
       // Expose error to client via perf log using same format as other entries.
       AddLogEntry(Log::kWarning,
                   DevToolsClientImpl::kBrowserwideDevToolsClientId,
-                  "Tracing.bufferUsage", params);
+                  "Tracing.bufferUsage", error_params);
       LOG(WARNING) << err;
     }
   }
@@ -259,17 +260,20 @@ Status PerformanceLogger::StartTrace() {
     LOG(WARNING) << "tried to start tracing, but a trace was already started";
     return Status(kOk);
   }
-  std::unique_ptr<base::ListValue> categories(new base::ListValue());
-  categories->AppendStrings(base::SplitString(prefs_.trace_categories,
-                                              ",",
-                                              base::TRIM_WHITESPACE,
-                                              base::SPLIT_WANT_NONEMPTY));
-  base::DictionaryValue params;
-  params.Set("traceConfig.includedCategories", std::move(categories));
-  params.SetString("traceConfig.recordingMode", "recordAsMuchAsPossible");
+  base::ListValue categories;
+  const std::vector<std::string> str_list =
+      base::SplitString(prefs_.trace_categories, ",", base::TRIM_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+  for (const std::string& str : str_list) {
+    categories.Append(str);
+  }
+  base::Value::Dict params;
+  params.SetByDottedPath("traceConfig.includedCategories",
+                         std::move(categories));
+  params.SetByDottedPath("traceConfig.recordingMode", "recordAsMuchAsPossible");
   // Ask DevTools to report buffer usage.
-  params.SetInteger("bufferUsageReportingInterval",
-                    prefs_.buffer_usage_reporting_interval);
+  params.Set("bufferUsageReportingInterval",
+             prefs_.buffer_usage_reporting_interval);
   Status status = browser_client_->SendCommand("Tracing.start", params);
   if (status.IsError()) {
     LOG(ERROR) << "error when starting trace: " << status.message();
@@ -289,7 +293,7 @@ Status PerformanceLogger::CollectTraceEvents() {
                   "was not started");
   }
 
-  base::DictionaryValue params;
+  base::Value::Dict params;
   Status status = browser_client_->SendCommand("Tracing.end", params);
   if (status.IsError()) {
     LOG(ERROR) << "error when stopping trace: " << status.message();
@@ -300,7 +304,7 @@ Status PerformanceLogger::CollectTraceEvents() {
   status = browser_client_->HandleEventsUntil(
       base::BindRepeating(&PerformanceLogger::IsTraceDone,
                           base::Unretained(this)),
-      Timeout(base::TimeDelta::FromSeconds(30)));
+      Timeout(base::Seconds(30)));
   if (status.IsError())
     return status;
 

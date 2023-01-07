@@ -1,0 +1,4 @@
+level_one.accessibilityAttributeNames.has(AXBlockQuoteLevel)='yes'
+level_one.accessibilityAttributeValue(AXBlockQuoteLevel)=1
+not_applicable.accessibilityAttributeNames.has(AXBlockQuoteLevel)='yes'
+not_applicable.accessibilityAttributeValue(AXBlockQuoteLevel)=0

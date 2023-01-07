@@ -1,0 +1,137 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/rust.gni")
+import("//build/rust/rust_unit_tests_group.gni")
+
+# Defines a Rust unit test.
+#
+# This generates an executable + a script that can be run on Chromium bots.
+# Future iterations of this template may do something smarter with the test
+# code in order to automatically contribute it to test steps on the bots.
+#
+# Parameters
+#
+#   sources
+#   edition (optional)
+#   configs (optional)
+#   deps (optional)
+#   crate_root (optional)
+#   features (optional)
+#   rustflags (optional)
+#   inputs (optional)
+#     All as in rust_static_library.
+#
+# Example of usage:
+#
+#   rust_unit_test("foo_tests") {
+#     deps = [
+#       "//third_party/rust/test_utils/v1:lib",
+#     ]
+#     sources = [ "src/lib.rs" ]
+#   }
+#
+# Implementation note: you might assume it makes sense to implement this
+# in terms of rust_target in order to avoid the duplication of logic around
+# features and editions. We don't do that because rust_target actually
+# depends on this template in order to build embedded unit tests
+# (and therefore depending on rust_target here would lead to an infinite
+# import loop).
+
+template("rust_unit_test") {
+  assert(can_build_rust_unit_tests)
+  if (defined(invoker.crate_name)) {
+    _crate_name = invoker.crate_name
+  } else {
+    _crate_name = target_name
+  }
+  if (defined(invoker.crate_root)) {
+    _crate_root = invoker.crate_root
+  } else {
+    _crate_root = "src/lib.rs"
+  }
+  _rustflags = invoker.rustflags
+  if (defined(invoker.features)) {
+    foreach(i, invoker.features) {
+      _rustflags += [ "--cfg=feature=\"${i}\"" ]
+    }
+  }
+  _configs = invoker.configs
+  _edition = "2021"
+  if (defined(invoker.edition)) {
+    _edition = invoker.edition
+  }
+  _configs += [ string_join("",
+                            [
+                              "//build/rust:edition_",
+                              _edition,
+                            ]) ]
+
+  # We require that all source files are listed, even though this is
+  # not a requirement for rustc. The reason is to ensure that tools
+  # such as `gn deps` give the correct answer, and thus we trigger
+  # the right test suites etc. on code change.
+  # TODO(crbug.com/1256930) - verify this is correct
+  assert(defined(invoker.sources), "sources must be listed")
+
+  _exe_target_name = target_name + "_exe"
+  rust_unit_tests_group(target_name) {
+    deps = [ ":$_exe_target_name" ]
+  }
+
+  # TODO(crbug.com/1229320): Arrange to run test executables on try bots.
+  # TODO(crbug.com/gn/146): Allow Rust executables to depend on C/C++ source
+  # sets.
+  # This is important in cases where Rust tests may depend upon C/C++
+  # dependencies.
+  executable(_exe_target_name) {
+    testonly = true
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "edition",
+                             "features",
+                             "rustflags",
+                             "configs",
+                             "output_name",
+                             "crate_name",
+                             "crate_root",
+                           ])
+
+    if (defined(output_dir) && output_dir != "") {
+      _out_dir = output_dir
+    } else {
+      _out_dir = target_out_dir
+    }
+
+    if (!defined(output_name) || output_name == "") {
+      output_name = _crate_name
+    }
+
+    rustflags = [
+      "--cfg",
+      "feature=\"test\"",
+      "--test",
+    ]
+    rustflags += _rustflags
+    configs = []
+    configs = _configs
+    crate_name = _crate_name
+    crate_root = _crate_root
+    if (!defined(rustenv)) {
+      rustenv = []
+    }
+    rustenv += [ "OUT_DIR=" + rebase_path(_out_dir) ]
+    metadata = {
+      # Consumed by "rust_unit_tests_group" gni template.
+      rust_unit_test_executables = [ _crate_name ]
+    }
+  }
+}
+
+set_defaults("rust_unit_test") {
+  configs = default_executable_configs
+  deps = []
+  rustflags = []
+}

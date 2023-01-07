@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,13 @@
 
 #include <Security/Security.h>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "crypto/crypto_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 using AppleSecKeychainItemRef = void*;
 #else
 using AppleSecKeychainItemRef = SecKeychainItemRef;
@@ -30,33 +30,59 @@ using AppleSecKeychainItemRef = SecKeychainItemRef;
 class CRYPTO_EXPORT AppleKeychain {
  public:
   AppleKeychain();
+
+  AppleKeychain(const AppleKeychain&) = delete;
+  AppleKeychain& operator=(const AppleKeychain&) = delete;
+
   virtual ~AppleKeychain();
 
-  virtual OSStatus FindGenericPassword(UInt32 serviceNameLength,
-                                       const char* serviceName,
-                                       UInt32 accountNameLength,
-                                       const char* accountName,
-                                       UInt32* passwordLength,
-                                       void** passwordData,
-                                       AppleSecKeychainItemRef* itemRef) const;
+  virtual OSStatus FindGenericPassword(UInt32 service_name_length,
+                                       const char* service_name,
+                                       UInt32 account_name_length,
+                                       const char* account_name,
+                                       UInt32* password_length,
+                                       void** password_data,
+                                       AppleSecKeychainItemRef* item) const;
 
   virtual OSStatus ItemFreeContent(void* data) const;
 
-  virtual OSStatus AddGenericPassword(UInt32 serviceNameLength,
-                                      const char* serviceName,
-                                      UInt32 accountNameLength,
-                                      const char* accountName,
-                                      UInt32 passwordLength,
-                                      const void* passwordData,
-                                      AppleSecKeychainItemRef* itemRef) const;
+  virtual OSStatus AddGenericPassword(UInt32 service_name_length,
+                                      const char* service_name,
+                                      UInt32 account_name_length,
+                                      const char* account_name,
+                                      UInt32 password_length,
+                                      const void* password_data,
+                                      AppleSecKeychainItemRef* item) const;
 
-#if !defined(OS_IOS)
-  virtual OSStatus ItemDelete(AppleSecKeychainItemRef itemRef) const;
-#endif  // !defined(OS_IOS)
+#if BUILDFLAG(IS_MAC)
+  virtual OSStatus ItemDelete(AppleSecKeychainItemRef item) const;
+#endif  // !BUILDFLAG(IS_MAC)
+};
+
+#if BUILDFLAG(IS_MAC)
+
+// Sets whether Keychain Services is permitted to display UI if needed by
+// calling SecKeychainSetUserInteractionAllowed. This operates in a scoped
+// fashion: on destruction, the previous state will be restored. This is useful
+// to interact with the Keychain on a best-effort basis, without displaying any
+// Keychain Services UI (which is beyond the application's control) to the user.
+class CRYPTO_EXPORT ScopedKeychainUserInteractionAllowed {
+ public:
+  ScopedKeychainUserInteractionAllowed(
+      const ScopedKeychainUserInteractionAllowed&) = delete;
+  ScopedKeychainUserInteractionAllowed& operator=(
+      const ScopedKeychainUserInteractionAllowed&) = delete;
+
+  explicit ScopedKeychainUserInteractionAllowed(Boolean allowed,
+                                                OSStatus* status = nullptr);
+
+  ~ScopedKeychainUserInteractionAllowed();
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(AppleKeychain);
+  absl::optional<Boolean> was_allowed_;
 };
+
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace crypto
 

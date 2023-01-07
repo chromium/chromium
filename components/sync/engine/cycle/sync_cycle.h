@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,9 @@
 #include <map>
 #include <memory>
 #include <set>
-#include <string>
 #include <utility>
-#include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/cycle/status_controller.h"
@@ -20,6 +18,7 @@
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/sync_cycle_event.h"
 #include "components/sync/protocol/sync_protocol_error.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -80,11 +79,23 @@ class SyncCycle {
     // Called when server requests a migration.
     virtual void OnReceivedMigrationRequest(ModelTypeSet types) = 0;
 
+    // Called when server wants to change the parameters for commit quotas of
+    // data types that can receive commits via extension APIs. Empty optional
+    // means using the client-side defaults.
+    virtual void OnReceivedQuotaParamsForExtensionTypes(
+        absl::optional<int> max_tokens,
+        absl::optional<base::TimeDelta> refill_interval,
+        absl::optional<base::TimeDelta> depleted_quota_nudge_delay) = 0;
+
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   SyncCycle(SyncCycleContext* context, Delegate* delegate);
+
+  SyncCycle(const SyncCycle&) = delete;
+  SyncCycle& operator=(const SyncCycle&) = delete;
+
   ~SyncCycle();
 
   // Builds a thread-safe and read-only copy of the current cycle state.
@@ -111,15 +122,13 @@ class SyncCycle {
 
  private:
   // The context for this cycle, guaranteed to outlive |this|.
-  SyncCycleContext* const context_;
+  const raw_ptr<SyncCycleContext> context_;
 
   // The delegate for this cycle, must never be null.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Our controller for various status and error counters.
   std::unique_ptr<StatusController> status_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncCycle);
 };
 
 }  // namespace syncer

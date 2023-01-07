@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,9 +9,8 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
@@ -29,11 +28,7 @@ class PollingProxyConfigService::Core
        const NetworkTrafficAnnotationTag& traffic_annotation)
       : get_config_func_(get_config_func),
         poll_interval_(poll_interval),
-        traffic_annotation_(traffic_annotation),
-        have_initialized_origin_runner_(false),
-        has_config_(false),
-        poll_task_outstanding_(false),
-        poll_task_queued_(false) {}
+        traffic_annotation_(traffic_annotation) {}
 
   // Called when the parent PollingProxyConfigService is destroyed
   // (observers should not be called past this point).
@@ -160,10 +155,10 @@ class PollingProxyConfigService::Core
   base::Lock lock_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner_;
 
-  bool have_initialized_origin_runner_;
-  bool has_config_;
-  bool poll_task_outstanding_;
-  bool poll_task_queued_;
+  bool have_initialized_origin_runner_ = false;
+  bool has_config_ = false;
+  bool poll_task_outstanding_ = false;
+  bool poll_task_queued_ = false;
 };
 
 void PollingProxyConfigService::AddObserver(Observer* observer) {
@@ -188,7 +183,9 @@ PollingProxyConfigService::PollingProxyConfigService(
     base::TimeDelta poll_interval,
     GetConfigFunction get_config_func,
     const NetworkTrafficAnnotationTag& traffic_annotation)
-    : core_(new Core(poll_interval, get_config_func, traffic_annotation)) {}
+    : core_(base::MakeRefCounted<Core>(poll_interval,
+                                       get_config_func,
+                                       traffic_annotation)) {}
 
 PollingProxyConfigService::~PollingProxyConfigService() {
   core_->Orphan();

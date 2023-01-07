@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Title</key>
+			<string>Debug Settings</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>This is not available in stable.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable notifications when background refreshes are completed</string>
+			<key>Key</key>
+			<string>FeedBackgroundRefreshNotificationEnabled</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>FeedModel didBeginReload Timestamp</string>
+			<key>Key</key>
+			<string>FeedModelDidBeginReloadTimestamp</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>RefreshFeedModel Timestamp</string>
+			<key>Key</key>
+			<string>RefreshFeedModelTimestamp</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>RefreshFeedForced Timestamp</string>
+			<key>Key</key>
+			<string>RefreshFeedForcedTimestamp</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Last Background Refresh Timestamp</string>
+			<key>Key</key>
+			<string>FeedLastBackgroundRefreshTimestamp</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>Alphabet</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Override</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>When enabled, all the settings below override all defaults.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Override defaults</string>
+			<key>Key</key>
+			<string>FeedOverrideDefaultsEnabled</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Foreground Refresh</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>Foreground refreshes occur on cold starts, new NTPs, and switching tabs to an NTP. They do not occur on app foregrounding.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Max Cache Age In Seconds</string>
+			<key>Key</key>
+			<string>FeedMaxCacheAgeInSeconds</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+		</dict>
+		<dict>
+			<key>Title</key>
+			<string>Background Refresh</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>When server-driven schedule is enabled, background refreshes are scheduled for an absolute time provided by the server. Otherwise, background refreshes are scheduled for the specified interval after app backgrounding.</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSTextFieldSpecifier</string>
+			<key>Title</key>
+			<string>Refresh Interval In Seconds</string>
+			<key>Key</key>
+			<string>FeedBackgroundRefreshIntervalInSeconds</string>
+			<key>DefaultValue</key>
+			<string></string>
+			<key>KeyboardType</key>
+			<string>NumberPad</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable Following Feed Background Refresh</string>
+			<key>Key</key>
+			<string>FollowingFeedBackgroundRefreshEnabled</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable server-driven schedule</string>
+			<key>Key</key>
+			<string>FeedServerDrivenBackgroundRefreshScheduleEnabled</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enable recurring schedule</string>
+			<key>Key</key>
+			<string>FeedRecurringBackgroundRefreshScheduleEnabled</string>
+			<key>DefaultValue</key>
+			<false/>
+		</dict>
+	</array>
+</dict>
+</plist>

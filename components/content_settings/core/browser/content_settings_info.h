@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 
 namespace content_settings {
@@ -53,6 +53,10 @@ class ContentSettingsInfo {
                       IncognitoBehavior incognito_behavior,
                       StorageBehavior storage_behavior,
                       OriginRestriction origin_restriction);
+
+  ContentSettingsInfo(const ContentSettingsInfo&) = delete;
+  ContentSettingsInfo& operator=(const ContentSettingsInfo&) = delete;
+
   ~ContentSettingsInfo();
 
   const WebsiteSettingsInfo* website_settings_info() const {
@@ -73,14 +77,12 @@ class ContentSettingsInfo {
   OriginRestriction origin_restriction() const { return origin_restriction_; }
 
  private:
-  const WebsiteSettingsInfo* website_settings_info_;
+  raw_ptr<const WebsiteSettingsInfo> website_settings_info_;
   const std::vector<std::string> allowlisted_schemes_;
   const std::set<ContentSetting> valid_settings_;
   const IncognitoBehavior incognito_behavior_;
   const StorageBehavior storage_behavior_;
   const OriginRestriction origin_restriction_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingsInfo);
 };
 
 }  // namespace content_settings

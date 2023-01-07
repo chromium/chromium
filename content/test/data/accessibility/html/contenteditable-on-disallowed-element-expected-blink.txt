@@ -1,0 +1,89 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer ignored
+++++++textField editable focusable multiline
+++++++++genericContainer editable
+++++++++++staticText editable
+++++++++++++inlineTextBox editable
+++++++textField editable focusable inputType='text'
+++++++++genericContainer editable
+++++++++++staticText editable
+++++++++++++inlineTextBox editable
+++++++comboBoxSelect collapsed editable focusable multiline nonAtomicTextFieldRoot=true
+++++++++menuListPopup invisible
+++++++++++menuListOption editable focusable multiline nonAtomicTextFieldRoot=true selected=true
+++++++lineBreak editable focusable multiline nonAtomicTextFieldRoot=true
+++++++++inlineTextBox editable focusable
+++++++splitter editable focusable horizontal multiline nonAtomicTextFieldRoot=true
+++++++image editable focusable multiline nonAtomicTextFieldRoot=true
+++++++staticText
+++++++++inlineTextBox
+++++++video editable focusable multiline restriction=disabled nonAtomicTextFieldRoot=true
+++++++++genericContainer
+++++++++++genericContainer ignored invisible
+++++++++++genericContainer
+++++++++++++button ignored invisible
+++++++++++genericContainer ignored
+++++++++++++genericContainer
+++++++++++++++genericContainer ignored invisible
+++++++++++++++genericContainer
+++++++++++++++++button inputType='button' restriction=disabled
+++++++++++++++++++genericContainer
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer
+++++++++++++++++++genericContainer
+++++++++++++++++++slider ignored invisible
+++++++++++++++++++button inputType='button' restriction=disabled
+++++++++++++++++button inputType='button' restriction=disabled
+++++++++++++++++++genericContainer
+++++++++++++++++popUpButton description='more options' inputType='button' descriptionFrom=title restriction=disabled
+++++++++++++++++++genericContainer
+++++++++++++++slider horizontal description='total time: 0:00' inputType='range' descriptionFrom=ariaDescription restriction=disabled valueForRange=0.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++menu ignored invisible
+++++++++++menu ignored invisible
+++++++++++menu ignored invisible
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++++++++menuItem ignored invisible
+++++++++++++++button ignored invisible
+++++++++++++++genericContainer ignored invisible
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++staticText ignored invisible
+++++++progressIndicator editable focusable multiline nonAtomicTextFieldRoot=true minValueForRange=0.00 maxValueForRange=1.00

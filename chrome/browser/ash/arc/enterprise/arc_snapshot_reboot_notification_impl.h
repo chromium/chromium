@@ -1,13 +1,14 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_ASH_ARC_ENTERPRISE_ARC_SNAPSHOT_REBOOT_NOTIFICATION_IMPL_H_
 #define CHROME_BROWSER_ASH_ARC_ENTERPRISE_ARC_SNAPSHOT_REBOOT_NOTIFICATION_IMPL_H_
 
+#include "ash/components/arc/enterprise/arc_snapshot_reboot_notification.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/arc/enterprise/arc_snapshot_reboot_notification.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 namespace data_snapshotd {
@@ -33,7 +34,7 @@ class ArcSnapshotRebootNotificationImpl : public ArcSnapshotRebootNotification {
   static int get_restart_button_id_for_testing();
 
  private:
-  void HandleClick(base::Optional<int> button_index);
+  void HandleClick(absl::optional<int> button_index);
 
   base::RepeatingClosure user_consent_callback_;
   bool shown_ = false;

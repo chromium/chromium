@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,10 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/download/public/common/mock_download_item.h"
-#include "components/safe_browsing/core/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
@@ -198,37 +198,37 @@ class DownloadMetadataManagerTestBase : public ::testing::Test {
   void AddDownloadItems() {
     ASSERT_NE(nullptr, dm_observer_);
     // Add the item under test.
-    test_item_.reset(new NiceMock<download::MockDownloadItem>);
+    test_item_ = std::make_unique<NiceMock<download::MockDownloadItem>>();
     ON_CALL(*test_item_, GetId())
         .WillByDefault(Return(kTestDownloadId));
     ON_CALL(*test_item_, GetEndTime())
         .WillByDefault(Return(base::Time::FromJsTime(kTestDownloadEndTimeMs)));
     ON_CALL(*test_item_, GetState())
         .WillByDefault(Return(download::DownloadItem::COMPLETE));
-    content::DownloadItemUtils::AttachInfo(test_item_.get(), &profile_,
-                                           nullptr);
+    content::DownloadItemUtils::AttachInfoForTesting(test_item_.get(),
+                                                     &profile_, nullptr);
     dm_observer_->OnDownloadCreated(&download_manager_, test_item_.get());
 
     // Add another item.
-    other_item_.reset(new NiceMock<download::MockDownloadItem>);
+    other_item_ = std::make_unique<NiceMock<download::MockDownloadItem>>();
     ON_CALL(*other_item_, GetId())
         .WillByDefault(Return(kOtherDownloadId));
     ON_CALL(*other_item_, GetEndTime())
         .WillByDefault(Return(base::Time::FromJsTime(kTestDownloadEndTimeMs)));
-    content::DownloadItemUtils::AttachInfo(other_item_.get(), &profile_,
-                                           nullptr);
+    content::DownloadItemUtils::AttachInfoForTesting(other_item_.get(),
+                                                     &profile_, nullptr);
     dm_observer_->OnDownloadCreated(&download_manager_, other_item_.get());
 
     // Add an item with an id of zero.
-    zero_item_.reset(new NiceMock<download::MockDownloadItem>);
+    zero_item_ = std::make_unique<NiceMock<download::MockDownloadItem>>();
     ON_CALL(*zero_item_, GetId())
         .WillByDefault(Return(0));
     ON_CALL(*zero_item_, GetEndTime())
         .WillByDefault(Return(base::Time::FromJsTime(kTestDownloadEndTimeMs)));
     ON_CALL(*zero_item_, GetState())
         .WillByDefault(Return(download::DownloadItem::COMPLETE));
-    content::DownloadItemUtils::AttachInfo(zero_item_.get(), &profile_,
-                                           nullptr);
+    content::DownloadItemUtils::AttachInfoForTesting(zero_item_.get(),
+                                                     &profile_, nullptr);
     dm_observer_->OnDownloadCreated(&download_manager_, zero_item_.get());
 
     ON_CALL(download_manager_, GetAllDownloads(_))

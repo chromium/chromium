@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/infobars/android/confirm_infobar.h"
 
 namespace content {
@@ -27,10 +27,14 @@ class SmsInfoBar : public infobars::ConfirmInfoBar {
  public:
   SmsInfoBar(content::WebContents* web_contents,
              std::unique_ptr<SmsInfoBarDelegate> delegate);
+
+  SmsInfoBar(const SmsInfoBar&) = delete;
+  SmsInfoBar& operator=(const SmsInfoBar&) = delete;
+
   ~SmsInfoBar() override;
 
   // Creates an SMS receiver infobar and delegate and adds it to
-  // |infobar_service|.
+  // |infobar_manager|.
   static void Create(content::WebContents* web_contents,
                      infobars::InfoBarManager* manager,
                      const std::vector<url::Origin>& origin_list,
@@ -44,9 +48,7 @@ class SmsInfoBar : public infobars::ConfirmInfoBar {
       JNIEnv* env,
       const ResourceIdMapper& resource_id_mapper) override;
 
-  content::WebContents* web_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmsInfoBar);
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace sms

@@ -1,0 +1,6 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^window_accessibility_change_notifier_app_agent.mm": [
+    "+ios/chrome/browser/ui/main/scene_state.h",
+  ],
+}

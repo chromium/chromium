@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -18,6 +19,8 @@
 #include "components/sync/engine/loopback_server/persistent_permanent_entity.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
+#include "components/sync/protocol/loopback_server.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 
@@ -37,7 +40,7 @@ const char kIdSeparator[] = "_";
 
 namespace syncer {
 
-LoopbackServerEntity::~LoopbackServerEntity() {}
+LoopbackServerEntity::~LoopbackServerEntity() = default;
 
 // static
 std::unique_ptr<LoopbackServerEntity>
@@ -150,7 +153,7 @@ std::string LoopbackServerEntity::GetInnerIdFromId(const std::string& id) {
     return std::string();
   }
 
-  return tokens[1].as_string();
+  return std::string(tokens[1]);
 }
 
 LoopbackServerEntity::LoopbackServerEntity(const string& id,

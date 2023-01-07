@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
+#include "data_saver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 // Tests if the save data header holdback works as expected.
@@ -29,26 +29,18 @@ class DataSaverHoldbackBrowserTest : public InProcessBrowserTest,
     InProcessBrowserTest::SetUp();
   }
 
-  void SetUpCommandLine(base::CommandLine* cmd) override {
-    InProcessBrowserTest::SetUpCommandLine(cmd);
-    cmd->AppendSwitch(
-        data_reduction_proxy::switches::kEnableDataReductionProxy);
-  }
-
   void VerifySaveDataHeader(const std::string& expected_header_value) {
-    ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/echoheader?Save-Data"));
-    std::string header_value;
-    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        "window.domAutomationController.send(document.body.textContent);",
-        &header_value));
-    EXPECT_EQ(expected_header_value, header_value);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/echoheader?Save-Data")));
+    EXPECT_EQ(
+        expected_header_value,
+        content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                        "document.body.textContent;"));
   }
 
   void VerifySaveDataAPI(bool expected_header_set) {
-    ui_test_utils::NavigateToURL(browser(),
-                                 test_server_.GetURL("/net_info.html"));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), test_server_.GetURL("/net_info.html")));
     EXPECT_EQ(expected_header_set, RunScriptExtractBool("getSaveData()"));
   }
 
@@ -59,12 +51,16 @@ class DataSaverHoldbackBrowserTest : public InProcessBrowserTest,
         {{features::kDataSaverHoldback, {params}}}, {});
   }
 
+  void TearDown() override {
+    data_saver::ResetIsDataSaverEnabledForTesting();
+    InProcessBrowserTest::TearDown();
+  }
+
  private:
   bool RunScriptExtractBool(const std::string& script) {
-    bool data;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        browser()->tab_strip_model()->GetActiveWebContents(), script, &data));
-    return data;
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           script, content::EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+        .ExtractBool();
   }
 
   net::EmbeddedTestServer test_server_;
@@ -77,6 +73,7 @@ INSTANTIATE_TEST_SUITE_P(All, DataSaverHoldbackBrowserTest, testing::Bool());
 IN_PROC_BROWSER_TEST_P(DataSaverHoldbackBrowserTest,
                        DataSaverEnabledWithHoldbackEnabled) {
   ASSERT_TRUE(embedded_test_server()->Start());
+  data_saver::OverrideIsDataSaverEnabledForTesting(true);
 
   // If holdback is enabled, then the save-data header should not be set.
   if (GetParam()) {

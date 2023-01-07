@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,7 @@ std::unique_ptr<Advertisement> Advertisement::NewInstance(
     std::vector<uint8_t> salt,
     std::vector<uint8_t> encrypted_metadata_key,
     nearby_share::mojom::ShareTargetType device_type,
-    base::Optional<std::string> device_name) {
+    absl::optional<std::string> device_name) {
   if (salt.size() != sharing::Advertisement::kSaltSize) {
     LOG(ERROR) << "Failed to create advertisement because the salt did "
                   "not match the expected length "
@@ -106,7 +106,7 @@ Advertisement::Advertisement(int version,
                              std::vector<uint8_t> salt,
                              std::vector<uint8_t> encrypted_metadata_key,
                              nearby_share::mojom::ShareTargetType device_type,
-                             base::Optional<std::string> device_name)
+                             absl::optional<std::string> device_name)
     : version_(version),
       salt_(std::move(salt)),
       encrypted_metadata_key_(std::move(encrypted_metadata_key)),

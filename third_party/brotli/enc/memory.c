@@ -7,7 +7,7 @@
 /* Algorithms for distributing the literals and commands of a metablock between
    block types and contexts. */
 
-#include "./memory.h"
+#include "memory.h"
 
 #include <stdlib.h>  /* exit, free, malloc */
 #include <string.h>  /* memcpy */
@@ -164,6 +164,28 @@ void BrotliWipeOutMemoryManager(MemoryManager* m) {
 }
 
 #endif  /* BROTLI_ENCODER_EXIT_ON_OOM */
+
+void* BrotliBootstrapAlloc(size_t size,
+    brotli_alloc_func alloc_func, brotli_free_func free_func, void* opaque) {
+  if (!alloc_func && !free_func) {
+    return malloc(size);
+  } else if (alloc_func && free_func) {
+    return alloc_func(opaque, size);
+  }
+  return NULL;
+}
+
+void BrotliBootstrapFree(void* address, MemoryManager* m) {
+  if (!address) {
+    /* Should not happen! */
+    return;
+  } else {
+    /* Copy values, as those would be freed. */
+    brotli_free_func free_func = m->free_func;
+    void* opaque = m->opaque;
+    free_func(opaque, address);
+  }
+}
 
 #if defined(__cplusplus) || defined(c_plusplus)
 }  /* extern "C" */

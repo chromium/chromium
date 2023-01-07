@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,15 @@ jboolean JNI_UrlUtil_IsOriginAllowedToUseWebPaymentApis(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_url) {
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  return UrlUtil::IsOriginAllowedToUseWebPaymentApis(*url);
+  return url && UrlUtil::IsOriginAllowedToUseWebPaymentApis(*url);
+}
+
+// static
+jboolean JNI_UrlUtil_IsValidUrlBasedPaymentMethodIdentifier(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_url) {
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
+  return url && UrlUtil::IsValidUrlBasedPaymentMethodIdentifier(*url);
 }
 
 // static
@@ -25,7 +33,7 @@ jboolean JNI_UrlUtil_IsLocalDevelopmentUrl(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_url) {
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_url);
-  return UrlUtil::IsLocalDevelopmentUrl(*url);
+  return url && UrlUtil::IsLocalDevelopmentUrl(*url);
 }
 
 }  // namespace android

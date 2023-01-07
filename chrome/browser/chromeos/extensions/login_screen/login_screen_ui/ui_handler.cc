@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,13 +10,11 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/login_screen_model.h"
 #include "ash/public/cpp/login_types.h"
-#include "base/macros.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
 #include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/login_screen_client.h"
-#include "chromeos/tpm/install_attributes.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/constants.h"
@@ -36,7 +34,7 @@ const char kErrorNoExistingWindow[] = "No open window to close.";
 const char kErrorNotOnLoginOrLockScreen[] =
     "Windows can only be created on the login and lock screen.";
 
-const char kExtensionNameImprivata[] = "Imprivata";
+const char kExtensionNameImprivata[] = "Imprivata OneSign";
 const char kExtensionNameImprivataTest[] = "LoginScreenUi test extension";
 const char kExtensionNameUnknown[] = "UNKNOWN EXTENSION";
 
@@ -61,7 +59,7 @@ bool CanUseLoginScreenUiApi(const extensions::Extension* extension) {
              ->enabled_extensions()
              .Contains(extension->id()) &&
          extension->permissions_data()->HasAPIPermission(
-             extensions::APIPermission::kLoginScreenUi) &&
+             extensions::mojom::APIPermissionID::kLoginScreenUi) &&
          InstallAttributes::Get()->IsEnterpriseManaged();
 }
 
@@ -98,8 +96,8 @@ void UiHandler::Shutdown() {
 UiHandler::UiHandler(std::unique_ptr<WindowFactory> window_factory)
     : window_factory_(std::move(window_factory)) {
   UpdateSessionState();
-  session_manager_observer_.Add(session_manager::SessionManager::Get());
-  extension_registry_observer_.Add(
+  session_manager_observation_.Observe(session_manager::SessionManager::Get());
+  extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(ProfileHelper::GetSigninProfile()));
 }
 
@@ -155,7 +153,7 @@ void UiHandler::RemoveWindowForExtension(const std::string& extension_id) {
 
 void UiHandler::OnWindowClosed(const std::string& extension_id) {
   if (!close_callback_.is_null()) {
-    std::move(close_callback_).Run(/*success=*/true, base::nullopt);
+    std::move(close_callback_).Run(/*success=*/true, absl::nullopt);
     close_callback_.Reset();
   }
 

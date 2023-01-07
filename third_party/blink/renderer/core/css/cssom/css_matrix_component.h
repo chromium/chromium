@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATRIX_COMPONENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATRIX_COMPONENT_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/css_transform_component.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/geometry/dom_matrix_read_only.h"
@@ -53,4 +54,4 @@ class CORE_EXPORT CSSMatrixComponent final : public CSSTransformComponent {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATRIX_COMPONENT_H_

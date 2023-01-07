@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 
 #include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/public/common/main_function_params.h"
 
 namespace content {
 
@@ -25,16 +26,16 @@ class CONTENT_EXPORT BrowserMainRunner {
   // Returns true if the BrowserMainRunner has exited the main loop.
   static bool ExitedMainMessageLoop();
 
-  // Initialize all necessary browser state. The |parameters| values will be
-  // copied. Returning a non-negative value indicates that initialization
-  // failed, and the returned value is used as the exit code for the process.
-  virtual int Initialize(const content::MainFunctionParams& parameters) = 0;
+  // Initialize all necessary browser state. Returning a non-negative value
+  // indicates that initialization failed, and the returned value is used as
+  // the exit code for the process.
+  virtual int Initialize(content::MainFunctionParams parameters) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Run all queued startup tasks. Only defined on Android because other
   // platforms run startup tasks immediately.
   virtual void SynchronouslyFlushStartupTasks() = 0;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Perform the default run logic.
   virtual int Run() = 0;

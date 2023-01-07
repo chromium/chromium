@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.password_manager;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 
@@ -22,8 +21,7 @@ public class PasswordGenerationDialogBridge {
     private PasswordGenerationDialogBridge(
             WindowAndroid windowAndroid, long nativePasswordGenerationDialogViewAndroid) {
         mNativePasswordGenerationDialogViewAndroid = nativePasswordGenerationDialogViewAndroid;
-        ChromeActivity activity = (ChromeActivity) windowAndroid.getActivity().get();
-        mPasswordGenerationDialog = new PasswordGenerationDialogCoordinator(activity);
+        mPasswordGenerationDialog = new PasswordGenerationDialogCoordinator(windowAndroid);
     }
 
     @CalledByNative

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "ui/gfx/color_palette.h"
@@ -38,7 +39,7 @@ Insets GetInsets(const ShadowValues& shadows, bool include_inner_blur) {
     bottom = std::max(bottom, blur_length + shadow.y());
   }
 
-  return Insets(top, left, bottom, right);
+  return Insets::TLBR(top, left, bottom, right);
 }
 
 }  // namespace
@@ -71,8 +72,9 @@ Insets ShadowValue::GetBlurRegion(const ShadowValues& shadows) {
 }
 
 // static
-ShadowValues ShadowValue::MakeRefreshShadowValues(int elevation,
-                                                  SkColor color) {
+ShadowValues ShadowValue::MakeShadowValues(int elevation,
+                                           SkColor key_shadow_color,
+                                           SkColor ambient_shadow_color) {
   // Refresh uses hand-tweaked shadows corresponding to a small set of
   // elevations. Use the Refresh spec and designer input to add missing shadow
   // values.
@@ -84,21 +86,22 @@ ShadowValues ShadowValue::MakeRefreshShadowValues(int elevation,
 
   switch (elevation) {
     case 3: {
-      ShadowValue key = {Vector2d(0, 1), 12, SkColorSetA(color, 0x66)};
-      ShadowValue ambient = {Vector2d(0, 4), 64, SkColorSetA(color, 0x40)};
+      ShadowValue key = {Vector2d(0, 1), 12, key_shadow_color};
+      ShadowValue ambient = {Vector2d(0, 4), 64, ambient_shadow_color};
       return {key, ambient};
     }
     case 16: {
       ShadowValue key = {Vector2d(0, 0), kBlurCorrection * 16,
-                         SkColorSetA(color, 0x1a)};
+                         key_shadow_color};
       ShadowValue ambient = {Vector2d(0, 12), kBlurCorrection * 16,
-                             SkColorSetA(color, 0x3d)};
+                             ambient_shadow_color};
       return {key, ambient};
     }
     default:
       // This surface has not been updated for Refresh. Fall back to the
       // deprecated style.
-      return MakeMdShadowValues(elevation, color);
+      DCHECK_EQ(key_shadow_color, ambient_shadow_color);
+      return MakeMdShadowValues(elevation, key_shadow_color);
   }
 }
 
@@ -121,5 +124,29 @@ ShadowValues ShadowValue::MakeMdShadowValues(int elevation, SkColor color) {
   //               0 0 24px rgba(0, 0, 0, .12);
   return shadow_values;
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// static
+ShadowValues ShadowValue::MakeChromeOSSystemUIShadowValues(int elevation,
+                                                           SkColor color) {
+  ShadowValues shadow_values;
+  // To match the CSS notion of blur (spread outside the bounding box) to the
+  // Skia notion of blur (spread outside and inside the bounding box), we have
+  // to double the designer-provided blur values.
+  const int kBlurCorrection = 2;
+  // "Key shadow": y offset is elevation and blur value is equal to the
+  // elevation.
+  shadow_values.emplace_back(Vector2d(0, elevation),
+                             kBlurCorrection * elevation,
+                             SkColorSetA(color, 0x3d));
+  // "Ambient shadow": no offset and blur matches the elevation.
+  shadow_values.emplace_back(Vector2d(), kBlurCorrection * elevation,
+                             SkColorSetA(color, 0x1a));
+  // To see what this looks like for elevation 24, try this CSS:
+  //   box-shadow: 0 24px 24px rgba(0, 0, 0, .24),
+  //               0 0 24px rgba(0, 0, 0, .10);
+  return shadow_values;
+}
+#endif
 
 }  // namespace gfx

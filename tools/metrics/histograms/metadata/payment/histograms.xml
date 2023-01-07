@@ -1,0 +1,313 @@
+<!--
+Copyright 2020 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Payment histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="DigitalGoods.CrossSite" enum="Boolean"
+    expires_after="2023-01-22">
+  <owner>glenrob@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records whether the |GetDigitalGoodsService| method was called from a
+    cross-site sub-frame. This metric is emitted when the cross-site check is
+    made in the renderer, i.e. only when the payment method is non-empty and the
+    script context is not being destroyed.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.CheckoutFunnel"
+    enum="PaymentRequestCheckoutFunnelSteps" expires_after="2023-03-19">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Counts the number of Payment Requests (PR) that go through each checkout
+    step. A single PR may be counted in multiple buckets depending on its final
+    status. e.g. A completed PR will be counted in all of the following buckets
+    1- Initiated, 2- show() called 3- Payment request triggered 4- Payment
+    handler invoked, 5- Completed.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.CheckoutFunnel.Aborted"
+    enum="PaymentRequestAbortReason" expires_after="2022-11-22">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>The reason that lead to an abort of the Payment Request.</summary>
+</histogram>
+
+<histogram name="PaymentRequest.CheckoutFunnel.NoShow"
+    enum="PaymentRequestNoShowReason" expires_after="2022-11-22">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    The reason that leads to the Payment Request not being shown to the user.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.EventResponse.CanMakePayment" enum="Boolean"
+    expires_after="2023-02-12">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    A payment handler's response to the &quot;canmakepayment&quot; event in its
+    service worker. The event is fired when &quot;new PaymentRequest()&quot; is
+    called in JavaScript, but only for URL-based payment methods, only for
+    already installed payment handlers, and only when not in private browsing
+    mode. The response from &quot;canmakepayment&quot; is expected to be
+    &quot;true&quot; in the majority of cases. The value of &quot;false&quot;
+    could be either the payment handler refusing to make payments or an internal
+    error, which should both be rare.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.EventResponse.IsReadyToPay" enum="Boolean"
+    expires_after="2023-02-12">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    An Android payment app's response to an IS_READY_TO_PAY intent. The intent
+    is sent when &quot;new PaymentRequest()&quot; is called in JavaScript, but
+    only for URL-based payment methods, only for apps that expose the
+    IS_READY_TO_PAY intent to Chrome, only when Chrome is able to connect to the
+    service at this intent filter, and only when not in private browsing mode.
+    The response from IS_READY_TO_PAY is expected to be &quot;true&quot; in the
+    majority of cases. The value of &quot;false&quot; could be either the
+    payment app refusing to make payments or an internal error, which should
+    both be rare.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.Events" units="bitfield value"
+    expires_after="2023-02-19">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    A bitfield representing the different events that happened during the
+    Payment Request.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.Events2" units="bitfield value"
+    expires_after="2023-06-26">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    The 2.0 version of Events. A bitfield representing the different events that
+    happened during the Payment Request.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.JourneyLoggerHasRecorded" enum="Boolean"
+    expires_after="2023-02-26">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Whether a journey logger has recorded an events bit field or not.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.JourneyLoggerHasRecordedMultipleTimes"
+    enum="Boolean" expires_after="2022-11-22">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    When a journey logger attempts to record multiple events bit fields.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.MissingContactFields"
+    enum="PaymentRequestMissingContactFields" expires_after="2022-10-30">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    A bitfield representing different missing fields of the contact section in
+    payment sheet. This only gets recorded when no complete contact profile is
+    available. In case of multiple partially complete profiles, this is only
+    recorded for the most complete one which is also the first profile in the
+    suggestion list.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.MissingPaymentFields"
+    enum="PaymentRequestMissingPaymentFields" expires_after="2022-06-26">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    A bitfield representing different missing fields of the payment info section
+    in the payment sheet. This only gets recorded when no complete payment
+    instrument is available (SW based instruments are always considered as
+    complete). In case of multiple partially complete cards this is only
+    recorded for the first card in the suggestion list.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.MissingShippingFields"
+    enum="PaymentRequestMissingShippingFields" expires_after="2022-10-30">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    A bitfield representing different missing fields of the shipping section in
+    the payment sheet. This only gets recorded when no complete shipping profile
+    is available. In case of multiple partially complete profiles, this is only
+    recorded for the most complete one which is also the first profile in the
+    suggestion list.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.NumberOfSuggestionsShown" units="units"
+    expires_after="2022-11-22">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    The number of suggestions shown to the user during a payment request.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.NumberOfSupportedMethods.AndroidApp"
+    units="methods" expires_after="2023-07-14">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    The number of payment methods that an installed Android payment app declares
+    to support. Recorded when a website creates a new PaymentRequest JS object.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.PaymentHandlerInstallSuccess"
+    enum="BooleanSuccess" expires_after="2023-03-05">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Whether an attempted just-in-time payment handler installation was
+    successful. Recorded when the attempted installation is finished.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.PrePurchaseQuery"
+    enum="PaymentRequestPrePurchaseQuery" expires_after="2023-07-07">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    A count of the number of queries to the payment apps of different types,
+    where the query happens before the purchase flow is initiated. Recorded when
+    a PaymentRequest object is constructed with payment method parameters that
+    match with the already installed payment apps on the user device.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.RefetchIconForInstalledApp" enum="Boolean"
+    expires_after="2022-11-22">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    True when chrome crawls to refetch the missing icon of an already installed
+    payment app.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.Funnel.AuthenticationDialogResult"
+    enum="SecurePaymentConfirmationAuthenticationDialogResult"
+    expires_after="2023-03-19">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the action performed by the user on the Secure Payment confirmation
+    dialog. The result is Accepted if the affirmitive button is pressed,
+    Canceled if the dialog is canceled, or Closed if it is otherwise closed.
+    Logged when the user interacts with the dialog or the dialog is otherwise
+    closed.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollSystemPromptResult"
+    enum="SecurePaymentConfirmationEnrollSystemPromptResult"
+    expires_after="2023-03-05">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the result of the FIDO system prompt, which is shown after the
+    Secure Payment Confirmation enrollment dialog is accepted. The result is
+    Accepted if the prompt is successful, i.e., the user has approved the FIDO
+    system prompt, or Canceled if the prompt is canceled or failed. Logged when
+    the FIDO system prompt closes.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.Funnel.SystemPromptResult"
+    enum="SecurePaymentConfirmationSystemPromptResult"
+    expires_after="2023-03-05">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the result of the FIDO system prompt, which is shown after the
+    Secure Payment Confirmation dialog is accepted. The result is Accepted if
+    the prompt is successful, or Canceled if the prompt is canceled. Logged when
+    the FIDO system prompt closes.
+  </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes"
+    units="bytes" expires_after="2023-03-05">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the size of Credential ID for secure-payment-confirmation method in
+    bytes.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.ServiceWorkerStatusCodeTimeout" enum="Boolean"
+    expires_after="2022-11-22">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>True when a service worker times out 5 mins after request.</summary>
+</histogram>
+
+<histogram name="PaymentRequest.TransactionAmount.Completed"
+    enum="PaymentRequestTransactionSize" expires_after="2023-03-19">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the transaction amounts completed using payment request API after
+    converting to USD.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.TransactionAmount.Triggered"
+    enum="PaymentRequestTransactionSize" expires_after="2023-03-19">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    Records the transaction amounts triggered using payment request API after
+    converting to USD.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

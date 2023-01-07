@@ -1,10 +1,11 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/help/version_updater_chromeos.h"
 
 #include <cmath>
+#include <optional>
 #include <string>
 
 #include "base/bind.h"
@@ -18,26 +19,24 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/help/help_utils_chromeos.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/network/network_handler.h"
+#include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/network/network_type_pattern.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_type_pattern.h"
-#include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 
-using chromeos::CrosSettings;
-using chromeos::DBusThreadManager;
-using chromeos::OwnerSettingsServiceAsh;
-using chromeos::OwnerSettingsServiceAshFactory;
-using chromeos::UpdateEngineClient;
-using chromeos::WizardController;
-
 namespace {
+
+using ::ash::UpdateEngineClient;
+using ::chromeos::OwnerSettingsServiceAsh;
+using ::chromeos::OwnerSettingsServiceAshFactory;
 
 // Network status in the context of device update.
 enum NetworkStatus {
@@ -52,7 +51,7 @@ enum NetworkStatus {
 const bool kDefaultAutoUpdateDisabled = false;
 
 NetworkStatus GetNetworkStatus(bool interactive,
-                               const chromeos::NetworkState* network,
+                               const ash::NetworkState* network,
                                bool metered) {
   if (!network || !network->IsConnectedState())  // Offline state.
     return NETWORK_STATUS_OFFLINE;
@@ -71,25 +70,27 @@ bool IsAutoUpdateDisabled() {
   if (!settings)
     return update_disabled;
   const base::Value* update_disabled_value =
-      settings->GetPref(chromeos::kUpdateDisabled);
-  if (update_disabled_value)
-    CHECK(update_disabled_value->GetAsBoolean(&update_disabled));
+      settings->GetPref(ash::kUpdateDisabled);
+  if (update_disabled_value) {
+    CHECK(update_disabled_value->is_bool());
+    update_disabled = update_disabled_value->GetBool();
+  }
   return update_disabled;
 }
 
-std::u16string GetConnectionTypeAsUTF16(const chromeos::NetworkState* network,
+std::u16string GetConnectionTypeAsUTF16(const ash::NetworkState* network,
                                         bool metered) {
   const std::string type = network->type();
-  if (chromeos::NetworkTypePattern::WiFi().MatchesType(type)) {
+  if (ash::NetworkTypePattern::WiFi().MatchesType(type)) {
     if (metered)
       return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_METERED_WIFI);
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_WIFI);
   }
-  if (chromeos::NetworkTypePattern::Ethernet().MatchesType(type))
+  if (ash::NetworkTypePattern::Ethernet().MatchesType(type))
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_ETHERNET);
-  if (chromeos::NetworkTypePattern::Mobile().MatchesType(type))
+  if (ash::NetworkTypePattern::Mobile().MatchesType(type))
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_MOBILE_DATA);
-  if (chromeos::NetworkTypePattern::VPN().MatchesType(type))
+  if (ash::NetworkTypePattern::VPN().MatchesType(type))
     return l10n_util::GetStringUTF16(IDS_NETWORK_TYPE_VPN);
   NOTREACHED();
   return std::u16string();
@@ -107,10 +108,9 @@ bool EnsureCanUpdate(bool interactive,
     return false;
   }
 
-  chromeos::NetworkStateHandler* network_state_handler =
-      chromeos::NetworkHandler::Get()->network_state_handler();
-  const chromeos::NetworkState* network =
-      network_state_handler->DefaultNetwork();
+  ash::NetworkStateHandler* network_state_handler =
+      ash::NetworkHandler::Get()->network_state_handler();
+  const ash::NetworkState* network = network_state_handler->DefaultNetwork();
   const bool metered = network_state_handler->default_network_is_metered();
   // Don't allow an update if we're currently offline or connected
   // to a network for which updates are disallowed.
@@ -143,13 +143,21 @@ void VersionUpdaterCros::GetUpdateStatus(StatusCallback callback) {
   if (!EnsureCanUpdate(false /* interactive */, callback_))
     return;
 
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
+  UpdateEngineClient* update_engine_client = UpdateEngineClient::Get();
   if (!update_engine_client->HasObserver(this))
     update_engine_client->AddObserver(this);
 
-  this->UpdateStatusChanged(
-      DBusThreadManager::Get()->GetUpdateEngineClient()->GetLastStatus());
+  this->UpdateStatusChanged(update_engine_client->GetLastStatus());
+}
+
+void VersionUpdaterCros::ApplyDeferredUpdate() {
+  UpdateEngineClient* update_engine_client = UpdateEngineClient::Get();
+
+  DCHECK(update_engine_client->GetLastStatus().current_operation() ==
+         update_engine::Operation::UPDATED_BUT_DEFERRED);
+
+  update_engine_client->ApplyDeferredUpdate(/*shutdown_after_update=*/false,
+                                            base::DoNothing());
 }
 
 void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
@@ -160,8 +168,7 @@ void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
   if (!EnsureCanUpdate(true /* interactive */, callback_))
     return;
 
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
+  UpdateEngineClient* update_engine_client = UpdateEngineClient::Get();
   if (!update_engine_client->HasObserver(this))
     update_engine_client->AddObserver(this);
 
@@ -173,8 +180,8 @@ void VersionUpdaterCros::CheckForUpdate(StatusCallback callback,
   check_for_update_when_idle_ = false;
 
   // Make sure that libcros is loaded and OOBE is complete.
-  if (!WizardController::default_controller() ||
-      chromeos::StartupUtils::IsDeviceRegistered()) {
+  if (!ash::WizardController::default_controller() ||
+      ash::StartupUtils::IsDeviceRegistered()) {
     update_engine_client->RequestUpdateCheck(base::BindOnce(
         &VersionUpdaterCros::OnUpdateCheck, weak_ptr_factory_.GetWeakPtr()));
   }
@@ -189,9 +196,8 @@ void VersionUpdaterCros::SetChannel(const std::string& channel,
           : nullptr;
   // For local owner set the field in the policy blob.
   if (service)
-    service->SetString(chromeos::kReleaseChannel, channel);
-  DBusThreadManager::Get()->GetUpdateEngineClient()->
-      SetChannel(channel, is_powerwash_allowed);
+    service->SetString(ash::kReleaseChannel, channel);
+  UpdateEngineClient::Get()->SetChannel(channel, is_powerwash_allowed);
 }
 
 void VersionUpdaterCros::SetUpdateOverCellularOneTimePermission(
@@ -199,13 +205,11 @@ void VersionUpdaterCros::SetUpdateOverCellularOneTimePermission(
     const std::string& update_version,
     int64_t update_size) {
   callback_ = std::move(callback);
-  DBusThreadManager::Get()
-      ->GetUpdateEngineClient()
-      ->SetUpdateOverCellularOneTimePermission(
-          update_version, update_size,
-          base::BindOnce(
-              &VersionUpdaterCros::OnSetUpdateOverCellularOneTimePermission,
-              weak_ptr_factory_.GetWeakPtr()));
+  UpdateEngineClient::Get()->SetUpdateOverCellularOneTimePermission(
+      update_version, update_size,
+      base::BindOnce(
+          &VersionUpdaterCros::OnSetUpdateOverCellularOneTimePermission,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void VersionUpdaterCros::OnSetUpdateOverCellularOneTimePermission(
@@ -224,12 +228,9 @@ void VersionUpdaterCros::OnSetUpdateOverCellularOneTimePermission(
 
 void VersionUpdaterCros::GetChannel(bool get_current_channel,
                                     ChannelCallback cb) {
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
-
   // Request the channel information. Bind to a weak_ptr bound method rather
   // than passing |cb| directly so that |cb| does not outlive |this|.
-  update_engine_client->GetChannel(
+  UpdateEngineClient::Get()->GetChannel(
       get_current_channel,
       base::BindOnce(&VersionUpdaterCros::OnGetChannel,
                      weak_ptr_factory_.GetWeakPtr(), std::move(cb)));
@@ -241,20 +242,38 @@ void VersionUpdaterCros::OnGetChannel(ChannelCallback cb,
 }
 
 void VersionUpdaterCros::GetEolInfo(EolInfoCallback cb) {
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
-
   // Request the EolInfo. Bind to a weak_ptr bound method rather than passing
   // |cb| directly so that |cb| does not outlive |this|.
-  update_engine_client->GetEolInfo(
+  UpdateEngineClient::Get()->GetEolInfo(
       base::BindOnce(&VersionUpdaterCros::OnGetEolInfo,
                      weak_ptr_factory_.GetWeakPtr(), std::move(cb)));
 }
 
-void VersionUpdaterCros::OnGetEolInfo(
-    EolInfoCallback cb,
-    chromeos::UpdateEngineClient::EolInfo eol_info) {
+void VersionUpdaterCros::OnGetEolInfo(EolInfoCallback cb,
+                                      UpdateEngineClient::EolInfo eol_info) {
   std::move(cb).Run(std::move(eol_info));
+}
+
+void VersionUpdaterCros::ToggleFeature(const std::string& feature,
+                                       bool enable) {
+  UpdateEngineClient::Get()->ToggleFeature(feature, enable);
+}
+
+void VersionUpdaterCros::IsFeatureEnabled(const std::string& feature,
+                                          IsFeatureEnabledCallback callback) {
+  UpdateEngineClient::Get()->IsFeatureEnabled(
+      feature,
+      base::BindOnce(&VersionUpdaterCros::OnIsFeatureEnabled,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void VersionUpdaterCros::OnIsFeatureEnabled(IsFeatureEnabledCallback callback,
+                                            absl::optional<bool> enabled) {
+  std::move(callback).Run(std::move(enabled));
+}
+
+bool VersionUpdaterCros::IsManagedAutoUpdateEnabled() {
+  return !IsAutoUpdateDisabled();
 }
 
 VersionUpdaterCros::VersionUpdaterCros(content::WebContents* web_contents)
@@ -263,9 +282,7 @@ VersionUpdaterCros::VersionUpdaterCros(content::WebContents* web_contents)
       check_for_update_when_idle_(false) {}
 
 VersionUpdaterCros::~VersionUpdaterCros() {
-  UpdateEngineClient* update_engine_client =
-      DBusThreadManager::Get()->GetUpdateEngineClient();
-  update_engine_client->RemoveObserver(this);
+  UpdateEngineClient::Get()->RemoveObserver(this);
 }
 
 void VersionUpdaterCros::UpdateStatusChanged(
@@ -296,17 +313,33 @@ void VersionUpdaterCros::UpdateStatusChanged(
     case update_engine::Operation::ERROR:
     case update_engine::Operation::REPORTING_ERROR_EVENT:
     case update_engine::Operation::ATTEMPTING_ROLLBACK:
-      // This path previously used the FAILED status and IDS_UPGRADE_ERROR, but
-      // the update engine reports errors for some conditions that shouldn't
-      // actually be displayed as errors to users: http://crbug.com/146919.
-      // Just use the UPDATED status instead.
+    case update_engine::Operation::CLEANUP_PREVIOUS_UPDATE:
+      // Update engine reports errors for some conditions that shouldn't
+      // actually be displayed as errors to users so leave the status as
+      // UPDATED. However for some specific errors use the specific FAILED
+      // statuses. Last attempt error remains when update engine state is
+      // idle.
+
+      if (status.last_attempt_error() ==
+          static_cast<int32_t>(
+              update_engine::ErrorCode::kOmahaUpdateIgnoredPerPolicy)) {
+        my_status = DISABLED_BY_ADMIN;
+      } else if (status.last_attempt_error() ==
+                 static_cast<int32_t>(
+                     update_engine::ErrorCode::kOmahaErrorInHTTPResponse)) {
+        my_status = FAILED_HTTP;
+      } else if (status.last_attempt_error() ==
+                 static_cast<int32_t>(
+                     update_engine::ErrorCode::kDownloadTransferError)) {
+        my_status = FAILED_DOWNLOAD;
+      }
       break;
     case update_engine::Operation::CHECKING_FOR_UPDATE:
       my_status = CHECKING;
       break;
     case update_engine::Operation::DOWNLOADING:
       progress = static_cast<int>(round(status.progress() * 100));
-      FALLTHROUGH;
+      [[fallthrough]];
     case update_engine::Operation::UPDATE_AVAILABLE:
       my_status = UPDATING;
       break;
@@ -323,8 +356,21 @@ void VersionUpdaterCros::UpdateStatusChanged(
     case update_engine::Operation::UPDATED_NEED_REBOOT:
       my_status = NEARLY_UPDATED;
       break;
+    case update_engine::Operation::UPDATED_BUT_DEFERRED:
+      my_status = DEFERRED;
+      break;
     default:
       NOTREACHED();
+  }
+
+  // If the current auto update is non-interactive and will be deferred, ignore
+  // update status change and show UPDATED instead. The NEARLY_UPDATED or
+  // DEFERRED status will still be shown, because user may need to interact with
+  // UI to apply the update and reboot the device.
+  if (my_status != NEARLY_UPDATED && my_status != DEFERRED &&
+      !status.is_interactive() && status.will_defer_update()) {
+    my_status = UPDATED;
+    progress = 0;
   }
 
   callback_.Run(my_status, progress, status.is_enterprise_rollback(),

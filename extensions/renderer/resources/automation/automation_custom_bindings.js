@@ -1,25 +1,26 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // Custom bindings for the automation API.
-var AutomationRootNode = require('automationNode').AutomationRootNode;
-var automationInternal = getInternalApi('automationInternal');
-var exceptionHandler = require('uncaught_exception_handler');
-var logging = requireNative('logging');
-var nativeAutomationInternal = requireNative('automationInternal');
-var DestroyAccessibilityTree =
+const AutomationRootNode = require('automationNode').AutomationRootNode;
+const automationInternal = getInternalApi('automationInternal');
+const exceptionHandler = require('uncaught_exception_handler');
+const logging = requireNative('logging');
+const nativeAutomationInternal = requireNative('automationInternal');
+const DestroyAccessibilityTree =
     nativeAutomationInternal.DestroyAccessibilityTree;
-var StartCachingAccessibilityTrees =
+const StartCachingAccessibilityTrees =
     nativeAutomationInternal.StartCachingAccessibilityTrees;
-var AddTreeChangeObserver = nativeAutomationInternal.AddTreeChangeObserver;
-var RemoveTreeChangeObserver =
+const StopCachingAccessibilityTrees =
+    nativeAutomationInternal.StopCachingAccessibilityTrees;
+const AddTreeChangeObserver = nativeAutomationInternal.AddTreeChangeObserver;
+const RemoveTreeChangeObserver =
     nativeAutomationInternal.RemoveTreeChangeObserver;
-var GetFocusNative = nativeAutomationInternal.GetFocus;
-var GetAccessibilityFocusNative =
+const GetFocusNative = nativeAutomationInternal.GetFocus;
+const GetAccessibilityFocusNative =
     nativeAutomationInternal.GetAccessibilityFocus;
-var SetDesktopID =
-    nativeAutomationInternal.SetDesktopID;
+const SetDesktopID = nativeAutomationInternal.SetDesktopID;
 
 /**
  * A namespace to export utility functions to other files in automation.
@@ -27,22 +28,25 @@ var SetDesktopID =
 window.automationUtil = function() {};
 
 // TODO(aboxhall): Look into using WeakMap
-var idToCallback = {};
+let idToCallback = {};
 
-var desktopId = undefined;
+let desktopId;
+let desktopTree;
 
 automationUtil.storeTreeCallback = function(id, callback) {
-  if (!callback)
+  if (!callback) {
     return;
+  }
 
-  var targetTree = AutomationRootNode.get(id);
+  const targetTree = AutomationRootNode.get(id);
   if (!targetTree) {
     // If we haven't cached the tree, hold the callback until the tree is
     // populated by the initial onAccessibilityEvent call.
-    if (id in idToCallback)
+    if (id in idToCallback) {
       idToCallback[id].push(callback);
-    else
+    } else {
       idToCallback[id] = [callback];
+    }
   } else {
     callback(targetTree);
   }
@@ -61,10 +65,10 @@ automationUtil.treeChangeObserverMap = {};
 automationUtil.nextTreeChangeObserverId = 1;
 
 apiBridge.registerCustomHook(function(bindingsAPI) {
-  var apiFunctions = bindingsAPI.apiFunctions;
+  const apiFunctions = bindingsAPI.apiFunctions;
 
   // TODO(aboxhall, dtseng): Make this return the speced AutomationRootNode obj.
-automationUtil.tabIDToAutomationNode = {};
+  automationUtil.tabIDToAutomationNode = {};
   apiFunctions.setHandleRequest('getTree', function getTree(tabID, callback) {
     StartCachingAccessibilityTrees();
 
@@ -80,25 +84,24 @@ automationUtil.tabIDToAutomationNode = {};
       return;
     }
 
-    var params = { tabID: tabID };
-    automationInternal.enableTab(params,
-                                 function onEnable(treeID, resultTabID) {
-          if (bindingUtil.hasLastError()) {
-            callback();
-            return;
-          }
-          automationUtil.storeTreeCallback(treeID, function(root) {
-            automationUtil.tabIDToAutomationNode[resultTabID] = root;
-            callback(root);
-          });
-        });
+    const params = {tabID: tabID};
+    automationInternal.enableTab(params, function onEnable(result) {
+      if (bindingUtil.hasLastError()) {
+        callback();
+        return;
+      }
+      automationUtil.storeTreeCallback(result.treeID, function(root) {
+        automationUtil.tabIDToAutomationNode[result.tabID] = root;
+        callback(root);
+      });
+    });
   });
 
-  var desktopTree = null;
   apiFunctions.setHandleRequest('getDesktop', function(callback) {
     StartCachingAccessibilityTrees();
-    if (desktopId !== undefined)
+    if (desktopId !== undefined) {
       desktopTree = AutomationRootNode.get(desktopId);
+    }
     if (!desktopTree) {
       automationInternal.enableDesktop(function(treeId) {
         if (bindingUtil.hasLastError()) {
@@ -122,12 +125,12 @@ automationUtil.tabIDToAutomationNode = {};
   });
 
   apiFunctions.setHandleRequest('getFocus', function(callback) {
-    var focusedNodeInfo = GetFocusNative();
+    const focusedNodeInfo = GetFocusNative();
     if (!focusedNodeInfo) {
       callback(null);
       return;
     }
-    var tree = AutomationRootNode.getOrCreate(focusedNodeInfo.treeId);
+    const tree = AutomationRootNode.getOrCreate(focusedNodeInfo.treeId);
     if (tree) {
       callback(privates(tree).impl.get(focusedNodeInfo.nodeId));
       return;
@@ -135,18 +138,19 @@ automationUtil.tabIDToAutomationNode = {};
   });
 
   apiFunctions.setHandleRequest('getAccessibilityFocus', function(callback) {
-    var focusedNodeInfo = GetAccessibilityFocusNative();
+    const focusedNodeInfo = GetAccessibilityFocusNative();
     if (!focusedNodeInfo) {
       callback(null);
       return;
     }
-    var tree = AutomationRootNode.getOrCreate(focusedNodeInfo.treeId);
-    if (tree)
+    const tree = AutomationRootNode.getOrCreate(focusedNodeInfo.treeId);
+    if (tree) {
       callback(privates(tree).impl.get(focusedNodeInfo.nodeId));
+    }
   });
 
   function removeTreeChangeObserver(observer) {
-    for (var id in automationUtil.treeChangeObserverMap) {
+    for (const id in automationUtil.treeChangeObserverMap) {
       if (automationUtil.treeChangeObserverMap[id] == observer) {
         RemoveTreeChangeObserver(id);
         delete automationUtil.treeChangeObserverMap[id];
@@ -160,7 +164,7 @@ automationUtil.tabIDToAutomationNode = {};
 
   function addTreeChangeObserver(filter, observer) {
     removeTreeChangeObserver(observer);
-    var id = automationUtil.nextTreeChangeObserverId++;
+    const id = automationUtil.nextTreeChangeObserverId++;
     AddTreeChangeObserver(id, filter);
     automationUtil.treeChangeObserverMap[id] = observer;
   }
@@ -170,10 +174,11 @@ automationUtil.tabIDToAutomationNode = {};
   });
 
   apiFunctions.setHandleRequest('setDocumentSelection', function(params) {
-    var anchorNodeImpl = privates(params.anchorObject).impl;
-    var focusNodeImpl = privates(params.focusObject).impl;
-    if (anchorNodeImpl.treeID !== focusNodeImpl.treeID)
+    const anchorNodeImpl = privates(params.anchorObject).impl;
+    const focusNodeImpl = privates(params.focusObject).impl;
+    if (anchorNodeImpl.treeID !== focusNodeImpl.treeID) {
       throw new Error('Selection anchor and focus must be in the same tree.');
+    }
     if (anchorNodeImpl.treeID === desktopId) {
       throw new Error('Use AutomationNode.setSelection to set the selection ' +
           'in the desktop tree.');
@@ -185,16 +190,16 @@ automationUtil.tabIDToAutomationNode = {};
                                        anchorOffset: params.anchorOffset,
                                        focusOffset: params.focusOffset });
   });
-
 });
 
 automationInternal.onChildTreeID.addListener(function(childTreeId) {
-  var targetTree = AutomationRootNode.get(childTreeId);
+  const targetTree = AutomationRootNode.get(childTreeId);
 
   // If the tree is already loded, or if we previously requested it be loaded
   // (i.e. have a callback for it), don't try to do so again.
-  if (targetTree || idToCallback[childTreeId])
+  if (targetTree || idToCallback[childTreeId]) {
     return;
+  }
 
   // A WebView in the desktop tree has a different AX tree as its child.
   // When we encounter a WebView with a child AX tree id that we don't
@@ -212,21 +217,22 @@ automationInternal.onChildTreeID.addListener(function(childTreeId) {
   automationInternal.enableTree(childTreeId);
 });
 
-automationInternal.onTreeChange.addListener(function(observerID,
-                                                     treeID,
-                                                     nodeID,
-                                                     changeType) {
-  var tree = AutomationRootNode.getOrCreate(treeID);
-  if (!tree)
+automationInternal.onTreeChange.addListener(function(
+    observerID, treeID, nodeID, changeType) {
+  const tree = AutomationRootNode.getOrCreate(treeID);
+  if (!tree) {
     return;
+  }
 
-  var node = privates(tree).impl.get(nodeID);
-  if (!node)
+  const node = privates(tree).impl.get(nodeID);
+  if (!node) {
     return;
+  }
 
-  var observer = automationUtil.treeChangeObserverMap[observerID];
-  if (!observer)
+  const observer = automationUtil.treeChangeObserverMap[observerID];
+  if (!observer) {
     return;
+  }
 
   try {
     observer({target: node, type: changeType});
@@ -237,13 +243,27 @@ automationInternal.onTreeChange.addListener(function(observerID,
 });
 
 automationInternal.onNodesRemoved.addListener(function(treeID, nodeIDs) {
-  var tree = AutomationRootNode.getOrCreate(treeID);
-  if (!tree)
+  const tree = AutomationRootNode.getOrCreate(treeID);
+  if (!tree) {
     return;
+  }
 
-  for (var i = 0; i < nodeIDs.length; i++) {
+  for (let i = 0; i < nodeIDs.length; i++) {
     privates(tree).impl.remove(nodeIDs[i]);
   }
+});
+
+automationInternal.onAllAutomationEventListenersRemoved.addListener(() => {
+  if (!desktopId) {
+    return;
+  }
+  automationInternal.disableDesktop(() => {
+    desktopId = undefined;
+    desktopTree = undefined;
+    idToCallback = {};
+    AutomationRootNode.destroyAll();
+    StopCachingAccessibilityTrees();
+  });
 });
 
 /**
@@ -251,33 +271,34 @@ automationInternal.onNodesRemoved.addListener(function(treeID, nodeIDs) {
  * corresponding AutomationNode.
  */
 automationInternal.onAccessibilityEvent.addListener(function(eventParams) {
-  var id = eventParams.treeID;
-  var targetTree = AutomationRootNode.getOrCreate(id);
+  const id = eventParams.treeID;
+  const targetTree = AutomationRootNode.getOrCreate(id);
   if (eventParams.eventType == 'mediaStartedPlaying' ||
       eventParams.eventType == 'mediaStoppedPlaying') {
     // These events are global to the tree.
     eventParams.targetID = privates(targetTree).impl.id;
   }
 
-  if (!privates(targetTree).impl.onAccessibilityEvent(eventParams))
-    return;
+  privates(targetTree).impl.onAccessibilityEvent(eventParams);
 
   // If we're not waiting on a callback to getTree(), we can early out here.
-  if (!(id in idToCallback))
+  if (!(id in idToCallback)) {
     return;
+  }
 
   // We usually get a 'placeholder' tree first, which doesn't have any url
   // attribute or child nodes. If we've got that, wait for the full tree before
   // calling the callback.
   // TODO(dmazzoni): Don't send down placeholder (crbug.com/397553)
-  if (id != desktopId && !targetTree.url && targetTree.children.length == 0)
+  if (id != desktopId && !targetTree.url && targetTree.children.length == 0) {
     return;
+  }
 
   // If the tree wasn't available when getTree() was called, the callback will
   // have been cached in idToCallback, so call and delete it now that we
   // have the complete tree.
-  for (var i = 0; i < idToCallback[id].length; i++) {
-    var callback = idToCallback[id][i];
+  for (let i = 0; i < idToCallback[id].length; i++) {
+    const callback = idToCallback[id][i];
     callback(targetTree);
   }
   delete idToCallback[id];
@@ -285,11 +306,11 @@ automationInternal.onAccessibilityEvent.addListener(function(eventParams) {
 
 automationInternal.onAccessibilityTreeDestroyed.addListener(function(id) {
   // Destroy the AutomationRootNode.
-  var targetTree = AutomationRootNode.get(id);
+  const targetTree = AutomationRootNode.get(id);
   if (targetTree) {
     privates(targetTree).impl.destroy();
     AutomationRootNode.destroy(id);
-    for (var tabID in automationUtil.tabIDToAutomationNode) {
+    for (const tabID in automationUtil.tabIDToAutomationNode) {
       if (automationUtil.tabIDToAutomationNode[tabID] == targetTree) {
         delete automationUtil.tabIDToAutomationNode[tabID];
       }
@@ -309,17 +330,19 @@ automationInternal.onAccessibilityTreeSerializationError.addListener(
 
 automationInternal.onActionResult.addListener(function(
     treeID, requestID, result) {
-  var targetTree = AutomationRootNode.get(treeID);
-  if (!targetTree)
+  const targetTree = AutomationRootNode.get(treeID);
+  if (!targetTree) {
     return;
+  }
 
   privates(targetTree).impl.onActionResult(requestID, result);
 });
 
 automationInternal.onGetTextLocationResult.addListener(function(
     textLocationParams) {
-  var targetTree = AutomationRootNode.get(textLocationParams.treeID);
-  if (!targetTree)
+  const targetTree = AutomationRootNode.get(textLocationParams.treeID);
+  if (!targetTree) {
     return;
+  }
   privates(targetTree).impl.onGetTextLocationResult(textLocationParams);
 });

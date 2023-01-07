@@ -1,0 +1,20 @@
+// Copyright 2015 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// A variant of ic_expand_less with rounded corners.
+CANVAS_DIMENSIONS, 32,
+// Hard clip at path points +- half the stroke.
+CLIP, 7, 10, 18, 11,
+STROKE, 3,
+MOVE_TO, 8.5f, 19.5f,
+R_LINE_TO, 7.5f, -8,
+R_LINE_TO, 7.5f, 8,
+
+// A variant of ic_expand_less with rounded corners and optimized for 1x
+// scale factor devices.
+CANVAS_DIMENSIONS, 16,
+STROKE, 1.765f,
+MOVE_TO, 4, 10,
+R_LINE_TO, 4, -4,
+R_LINE_TO, 4, 4,

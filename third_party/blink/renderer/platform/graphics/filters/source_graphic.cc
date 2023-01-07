@@ -30,11 +30,11 @@ SourceGraphic::SourceGraphic(Filter* filter) : FilterEffect(filter) {
 
 SourceGraphic::~SourceGraphic() = default;
 
-FloatRect SourceGraphic::MapInputs(const FloatRect& rect) const {
-  return !source_rect_.IsEmpty() ? FloatRect(source_rect_) : rect;
+gfx::RectF SourceGraphic::MapInputs(const gfx::RectF& rect) const {
+  return !source_rect_.IsEmpty() ? gfx::RectF(source_rect_) : rect;
 }
 
-void SourceGraphic::SetSourceRectForTests(const IntRect& source_rect) {
+void SourceGraphic::SetSourceRectForTests(const gfx::Rect& source_rect) {
   source_rect_ = source_rect;
 }
 

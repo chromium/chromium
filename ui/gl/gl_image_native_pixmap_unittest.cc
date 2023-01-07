@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,23 +32,22 @@ const uint8_t kImageColor[] = {0x30, 0x40, 0x10, 0xFF};
 template <gfx::BufferFormat format>
 class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
  public:
-  base::Optional<GLImplementationParts> GetPreferedGLImplementation()
+  absl::optional<GLImplementationParts> GetPreferedGLImplementation()
       const override {
-#if defined(OS_WIN)
-    return base::Optional<GLImplementationParts>(GLImplementationParts(
+#if BUILDFLAG(IS_WIN)
+    return absl::optional<GLImplementationParts>(GLImplementationParts(
         kGLImplementationEGLANGLE, ANGLEImplementation::kNone));
 #else
-    return base::Optional<GLImplementationParts>(
+    return absl::optional<GLImplementationParts>(
         GLImplementationParts(kGLImplementationEGLGLES2));
 #endif
   }
 
-  bool SkipTest() const override {
-    const std::string dmabuf_import_ext = "EGL_MESA_image_dma_buf_export";
-    std::string platform_extensions(DriverEGL::GetPlatformExtensions());
-    gfx::ExtensionSet extensions(gfx::MakeExtensionSet(platform_extensions));
-    if (!gfx::HasExtension(extensions, dmabuf_import_ext)) {
-      LOG(WARNING) << "Skip test, missing extension " << dmabuf_import_ext;
+  bool SkipTest(GLDisplay* display) const override {
+    GLDisplayEGL* display_egl = static_cast<GLDisplayEGL*>(display);
+    if (!display_egl->ext->b_EGL_MESA_image_dma_buf_export) {
+      LOG(WARNING) << "Skip test, missing extension "
+                   << "EGL_MESA_image_dma_buf_export";
       return true;
     }
 
@@ -95,7 +94,7 @@ TYPED_TEST_SUITE_P(GLImageNativePixmapToDmabufTest);
 
 TYPED_TEST_P_WITH_EXPANSION(GLImageNativePixmapToDmabufTest,
                             MAYBE_GLTexture2DToDmabuf) {
-  if (this->delegate_.SkipTest())
+  if (this->delegate_.SkipTest(this->display_))
     return;
 
   const gfx::Size image_size(64, 64);

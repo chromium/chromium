@@ -1,0 +1,57 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='overline style: none'
+++++++++++UNKNOWN label='overline style: none'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='overline style: dotted'
+++++++++++UNKNOWN label='overline style: dotted'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='overline style: dashed'
+++++++++++UNKNOWN label='overline style: dashed'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='overline style: solid'
+++++++++++UNKNOWN label='overline style: solid'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='overline style: double'
+++++++++++UNKNOWN label='overline style: double'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='overline style: wavy'
+++++++++++UNKNOWN label='overline style: wavy'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='underline style: none'
+++++++++++UNKNOWN label='underline style: none'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='underline style: dotted'
+++++++++++UNKNOWN label='underline style: dotted'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='underline style: dashed'
+++++++++++UNKNOWN label='underline style: dashed'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='underline style: solid'
+++++++++++UNKNOWN label='underline style: solid'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='underline style: double'
+++++++++++UNKNOWN label='underline style: double'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='underline style: wavy'
+++++++++++UNKNOWN label='underline style: wavy'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='line-through style: none'
+++++++++++UNKNOWN label='line-through style: none'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='line-through style: dotted'
+++++++++++UNKNOWN label='line-through style: dotted'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='line-through style: dashed'
+++++++++++UNKNOWN label='line-through style: dashed'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='line-through style: solid'
+++++++++++UNKNOWN label='line-through style: solid'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='line-through style: double'
+++++++++++UNKNOWN label='line-through style: double'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='line-through style: wavy'
+++++++++++UNKNOWN label='line-through style: wavy'

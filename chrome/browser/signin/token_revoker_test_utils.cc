@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace token_revoker_test_utils {
 

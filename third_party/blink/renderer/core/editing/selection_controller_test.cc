@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,10 @@
 namespace blink {
 
 class SelectionControllerTest : public EditingTestBase {
+ public:
+  SelectionControllerTest(const SelectionControllerTest&) = delete;
+  SelectionControllerTest& operator=(const SelectionControllerTest&) = delete;
+
  protected:
   using AppendTrailingWhitespace =
       SelectionController::AppendTrailingWhitespace;
@@ -35,7 +39,7 @@ class SelectionControllerTest : public EditingTestBase {
   }
 
   HitTestResult HitTestResultAtLocation(int x, int y) {
-    HitTestLocation location(IntPoint(x, y));
+    HitTestLocation location(gfx::Point(x, y));
     return HitTestResultAtLocation(location);
   }
 
@@ -59,9 +63,6 @@ class SelectionControllerTest : public EditingTestBase {
   void SetCaretAtHitTestResult(const HitTestResult&);
   void SetNonDirectionalSelectionIfNeeded(const SelectionInFlatTree&,
                                           TextGranularity);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SelectionControllerTest);
 };
 
 bool SelectionControllerTest::SelectClosestWordFromHitTestResult(
@@ -169,7 +170,7 @@ TEST_F(SelectionControllerTest, setCaretAtHitTestResult) {
       "  event => elem.parentNode.removeChild(elem));");
   GetDocument().body()->AppendChild(script);
   UpdateAllLifecyclePhasesForTest();
-  HitTestLocation location((IntPoint(8, 8)));
+  HitTestLocation location((gfx::Point(8, 8)));
   GetFrame().GetEventHandler().GetSelectionController().HandleGestureLongPress(
       GetFrame().GetEventHandler().HitTestResultAtLocation(location));
 }
@@ -185,7 +186,7 @@ TEST_F(SelectionControllerTest, setCaretAtHitTestResultWithNullPosition) {
   UpdateAllLifecyclePhasesForTest();
 
   // Hit "&nbsp;" in before pseudo element of "sample".
-  HitTestLocation location((IntPoint(10, 10)));
+  HitTestLocation location((gfx::Point(10, 10)));
   SetCaretAtHitTestResult(
       GetFrame().GetEventHandler().HitTestResultAtLocation(location));
 
@@ -220,7 +221,7 @@ TEST_F(SelectionControllerTest,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   // Frame scale defaults to 0, which would cause a divide-by-zero problem.
   mouse_event.SetFrameScale(1);
-  HitTestLocation location((IntPoint(0, 0)));
+  HitTestLocation location((gfx::Point(0, 0)));
   GetFrame().GetEventHandler().GetSelectionController().HandleMousePressEvent(
       MouseEventWithHitTestResults(
           mouse_event, location,
@@ -263,7 +264,7 @@ TEST_F(SelectionControllerTest,
   SetBodyContent("<pre>(1)\n(2)</pre>");
 
   // Click/Tap after "(1)"
-  HitTestLocation location(IntPoint(40, 10));
+  HitTestLocation location(gfx::Point(40, 10));
   HitTestResult result =
       GetFrame().GetEventHandler().HitTestResultAtLocation(location);
   ASSERT_EQ("<pre>(1)|\n(2)</pre>",
@@ -292,7 +293,7 @@ TEST_F(SelectionControllerTest,
   SetBodyContent("<pre>ab:\ncd</pre>");
 
   // Click/Tap after "(1)"
-  HitTestLocation location(IntPoint(40, 10));
+  HitTestLocation location(gfx::Point(40, 10));
   HitTestResult result =
       GetFrame().GetEventHandler().HitTestResultAtLocation(location);
   ASSERT_EQ("<pre>ab:|\ncd</pre>",
@@ -327,7 +328,7 @@ TEST_F(SelectionControllerTest, SelectWordToEndOfLine) {
       blink::WebInputEvent::GetStaticTimeStampForTests());
   // Frame scale defaults to 0, which would cause a divide-by-zero problem.
   double_click.SetFrameScale(1);
-  HitTestLocation location((IntPoint(20, 5)));
+  HitTestLocation location((gfx::Point(20, 5)));
   double_click.button = blink::WebMouseEvent::Button::kLeft;
   double_click.click_count = 2;
   HitTestResult result =
@@ -353,7 +354,7 @@ TEST_F(SelectionControllerTest, SelectWordToEndOfLine) {
       blink::WebInputEvent::GetStaticTimeStampForTests());
   // Frame scale defaults to 0, which would cause a divide-by-zero problem.
   single_shift_click.SetFrameScale(1);
-  HitTestLocation single_click_location((IntPoint(400, 5)));
+  HitTestLocation single_click_location((gfx::Point(400, 5)));
   single_shift_click.button = blink::WebMouseEvent::Button::kLeft;
   single_shift_click.click_count = 1;
   HitTestResult single_click_result =
@@ -379,7 +380,7 @@ TEST_F(SelectionControllerTest, SelectWordToEndOfTableCell) {
       blink::WebInputEvent::GetStaticTimeStampForTests());
   // Frame scale defaults to 0, which would cause a divide-by-zero problem.
   double_click.SetFrameScale(1);
-  HitTestLocation location((IntPoint(20, 5)));
+  HitTestLocation location((gfx::Point(20, 5)));
   double_click.button = WebMouseEvent::Button::kLeft;
   double_click.click_count = 2;
   HitTestResult result =
@@ -405,7 +406,7 @@ TEST_F(SelectionControllerTest, SelectWordToEndOfTableCell) {
       blink::WebInputEvent::GetStaticTimeStampForTests());
   // Frame scale defaults to 0, which would cause a divide-by-zero problem.
   cell1_single_shift_click.SetFrameScale(1);
-  HitTestLocation cell1_single_click_location((IntPoint(175, 5)));
+  HitTestLocation cell1_single_click_location((gfx::Point(175, 5)));
   cell1_single_shift_click.button = blink::WebMouseEvent::Button::kLeft;
   cell1_single_shift_click.click_count = 1;
   HitTestResult cell1_single_click_result =
@@ -425,7 +426,7 @@ TEST_F(SelectionControllerTest, SelectWordToEndOfTableCell) {
       blink::WebInputEvent::GetStaticTimeStampForTests());
   // Frame scale defaults to 0, which would cause a divide-by-zero problem.
   cell2_single_shift_click.SetFrameScale(1);
-  HitTestLocation cell2_single_click_location((IntPoint(375, 5)));
+  HitTestLocation cell2_single_click_location((gfx::Point(375, 5)));
   cell2_single_shift_click.button = blink::WebMouseEvent::Button::kLeft;
   cell2_single_shift_click.click_count = 1;
   HitTestResult cell2_single_click_result =

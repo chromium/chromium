@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,6 +47,11 @@ enum OpenPosition {
 // Convenience initializers
 
 // Initializes a command intended to open a URL from browser chrome (e.g.,
+// settings).
++ (instancetype)commandWithURLFromChrome:(const GURL&)URL
+                             inIncognito:(BOOL)inIncognito;
+
+// Initializes a command intended to open a URL from browser chrome (e.g.,
 // settings). This will always open in a new foreground tab in non-incognito
 // mode.
 + (instancetype)commandWithURLFromChrome:(const GURL&)URL;
@@ -54,15 +59,15 @@ enum OpenPosition {
 + (instancetype)commandWithIncognito:(BOOL)incognito
                          originPoint:(CGPoint)origin;
 
-// Creates an OpenTabCommand with |incognito| and an |originPoint| of
+// Creates an OpenTabCommand with `incognito` and an `originPoint` of
 // CGPointZero.
 + (instancetype)commandWithIncognito:(BOOL)incognito;
 
-// Creates an OpenTabCommand with |incognito| NO and an |originPoint| of
+// Creates an OpenTabCommand with `incognito` NO and an `originPoint` of
 // CGPointZero.
 + (instancetype)command;
 
-// Creates an OpenTabCommand with |incognito| YES and an |originPoint| of
+// Creates an OpenTabCommand with `incognito` YES and an `originPoint` of
 // CGPointZero.
 + (instancetype)incognitoTabCommand;
 
@@ -70,11 +75,11 @@ enum OpenPosition {
 
 // Whether the new tab command was initiated by the user (e.g. by tapping the
 // new tab button in the tools menu) or not (e.g. opening a new tab via a
-// Javascript action). Defaults to |YES|. Only used when the |URL| isn't valid.
+// Javascript action). Defaults to `YES`. Only used when the `URL` isn't valid.
 @property(nonatomic, assign, getter=isUserInitiated) BOOL userInitiated;
 
 // Whether the new tab command should also trigger the omnibox to be focused.
-// Only used when the |URL| isn't valid.
+// Only used when the `URL` isn't valid.
 @property(nonatomic, assign) BOOL shouldFocusOmnibox;
 
 // Origin point of the action triggering this command.
@@ -88,7 +93,7 @@ enum OpenPosition {
 // Whether this URL command requests opening in background or not.
 @property(nonatomic, readonly, assign) BOOL inBackground;
 
-// ---- Properties only used when |URL| is valid.
+// ---- Properties only used when `URL` is valid.
 
 // URL to open.
 @property(nonatomic, readonly, assign) const GURL& URL;

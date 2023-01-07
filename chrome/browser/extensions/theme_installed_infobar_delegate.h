@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,16 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 // When a user installs a theme, we display it immediately, but provide an
 // infobar allowing them to cancel.
@@ -23,9 +25,9 @@ class ThemeInstalledInfoBarDelegate : public ConfirmInfoBarDelegate,
                                       public ThemeServiceObserver {
  public:
   // Creates a theme installed infobar and delegate and adds the infobar to
-  // |infobar_service|, replacing any previous theme infobar.
+  // |infobar_manager|, replacing any previous theme infobar.
   static void Create(
-      InfoBarService* infobar_service,
+      infobars::ContentInfoBarManager* infobar_manager,
       ThemeService* theme_service,
       const std::string& theme_name,
       const std::string& theme_id,
@@ -51,7 +53,7 @@ class ThemeInstalledInfoBarDelegate : public ConfirmInfoBarDelegate,
   // ThemeServiceObserver:
   void OnThemeChanged() override;
 
-  ThemeService* theme_service_;
+  raw_ptr<ThemeService> theme_service_;
 
   // Name of theme that's just been installed.
   std::string theme_name_;

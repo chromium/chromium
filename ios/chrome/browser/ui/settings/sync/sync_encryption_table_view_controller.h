@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ class Browser;
 // Controller to allow user to specify encryption passphrase for Sync.
 @interface SyncEncryptionTableViewController : SettingsRootTableViewController
 
-// Designated initializer. |browserState| must not be nil.
+// Designated initializer. `browserState` must not be nil.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

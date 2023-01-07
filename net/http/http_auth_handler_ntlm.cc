@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@ HttpAuthHandlerNTLM::Factory::~Factory() = default;
 bool HttpAuthHandlerNTLM::Init(
     HttpAuthChallengeTokenizer* tok,
     const SSLInfo& ssl_info,
-    const NetworkIsolationKey& network_isolation_key) {
+    const NetworkAnonymizationKey& network_anonymization_key) {
   auth_scheme_ = HttpAuth::AUTH_SCHEME_NTLM;
   score_ = 3;
   properties_ = ENCRYPTS_IDENTITY | IS_CONNECTION_BASED;
@@ -36,11 +36,12 @@ HttpAuth::AuthorizationResult HttpAuthHandlerNTLM::HandleAnotherChallengeImpl(
 }
 
 // static
-std::string HttpAuthHandlerNTLM::CreateSPN(const GURL& origin) {
+std::string HttpAuthHandlerNTLM::CreateSPN(
+    const url::SchemeHostPort& scheme_host_port) {
   // The service principal name of the destination server.  See
   // http://msdn.microsoft.com/en-us/library/ms677949%28VS.85%29.aspx
   std::string target("HTTP/");
-  target.append(GetHostAndOptionalPort(origin));
+  target.append(GetHostAndOptionalPort(scheme_host_port));
   return target;
 }
 

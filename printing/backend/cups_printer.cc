@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "printing/backend/cups_connection.h"
@@ -92,7 +93,7 @@ class CupsPrinterImpl : public CupsPrinter {
     const std::string info = GetInfo();
     const std::string make_and_model = GetMakeAndModel();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // On Mac, "printer-info" option specifies the human-readable printer name,
     // while "printer-make-and-model" specifies the printer description.
     printer_info->display_name = info;
@@ -101,7 +102,7 @@ class CupsPrinterImpl : public CupsPrinter {
     // On other platforms, "printer-info" specifies the printer description.
     printer_info->display_name = printer->name;
     printer_info->printer_description = info;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
     const char* state = cupsGetOption(kCUPSOptPrinterState,
                                       printer->num_options, printer->options);
@@ -241,7 +242,7 @@ class CupsPrinterImpl : public CupsPrinter {
 
  private:
   // http connection owned by the CupsConnection which created this object
-  http_t* const cups_http_;
+  const raw_ptr<http_t> cups_http_;
 
   // information to identify a printer
   ScopedDestination destination_;

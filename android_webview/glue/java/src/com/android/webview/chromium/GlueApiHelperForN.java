@@ -1,10 +1,9 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package com.android.webview.chromium;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
@@ -14,7 +13,7 @@ import android.webkit.ServiceWorkerController;
 import android.webkit.WebView;
 import android.webkit.WebViewDelegate;
 
-import org.chromium.base.annotations.VerifiesOnN;
+import androidx.annotation.RequiresApi;
 
 /**
  * Utility class to use new APIs that were added in N (API level 24). These need to exist in a
@@ -23,8 +22,7 @@ import org.chromium.base.annotations.VerifiesOnN;
  * in base/, for reasons such as using system APIs or instantiating an adapter class that is
  * specific to glue layer.
  */
-@VerifiesOnN
-@TargetApi(Build.VERSION_CODES.N)
+@RequiresApi(Build.VERSION_CODES.N)
 public final class GlueApiHelperForN {
     private GlueApiHelperForN() {}
 

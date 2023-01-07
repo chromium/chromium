@@ -1,4 +1,4 @@
-// Copyright 2014 The Crashpad Authors. All rights reserved.
+// Copyright 2014 The Crashpad Authors
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,8 @@
 //
 // This file is included by snapshot/mac/process_types.h and
 // snapshot/mac/process_types.cc to produce process type struct definitions and
-// accessors.
+// accessors. This file is also used by the iOS in process handler to read both
+// messages in client/ios_handler/in_process_intermediate_dump_handler.cc.
 
 // Client Mach-O images will contain a __DATA,__crash_info section formatted
 // according to this structure.

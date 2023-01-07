@@ -1,0 +1,6 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++staticText name='Fallback'
+++++++++++inlineTextBox name='Fallback'

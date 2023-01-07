@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,8 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -134,8 +136,10 @@ void CredentialProviderFetcherTest::RunFetcher(
       base::BindOnce(&CredentialProviderFetcherTest::OnFetchComplete,
                      base::Unretained(this), run_loop.QuitClosure());
 
-  CredentialProviderSigninInfoFetcher fetcher(kRefreshTokenValue,
-                                              shared_factory());
+  CredentialProviderSigninInfoFetcher fetcher(
+      kRefreshTokenValue,
+      /*consumer_name=*/"credential_provider_signin_info_fetcher_win_unittest",
+      shared_factory());
   fetcher.SetCompletionCallbackAndStart(
       kAccessTokenValue, additional_oauth_scopes, std::move(fetcher_callback));
   run_loop.Run();

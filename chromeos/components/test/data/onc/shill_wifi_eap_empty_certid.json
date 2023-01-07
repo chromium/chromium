@@ -1,0 +1,26 @@
+{
+  "EAP.CertID": "",
+  "EAP.DomainSuffixMatch": [
+    "domain1.com",
+    "domain2.com"
+  ],
+  "EAP.EAP": "TLS",
+  "EAP.Identity": "my_identity",
+  "EAP.KeyID": "1:123456abcdef",
+  "EAP.PIN": "111111",
+  "EAP.SubjectMatch": "my_subject",
+  "EAP.SubjectAlternativeNameMatch": [
+    "{\"Type\":\"EMAIL\",\"Value\":\"my_email_1\"}",
+    "{\"Type\":\"EMAIL\",\"Value\":\"my_email_2\"}",
+    "{\"Type\":\"EMAIL\",\"Value\":\"my;email\"}",
+    "{\"Type\":\"DNS\",\"Value\":\"my_dns\"}",
+    "{\"Type\":\"URI\",\"Value\":\"my_uri\"}"
+  ],
+  "EAP.TLSVersionMax": "1.2",
+  "EAP.UseSystemCAs": true,
+  "GUID": "{77db0089-0bc8-4358-929c-123xcv}",
+  "Mode": "managed",
+  "SaveCredentials": true,
+  "SecurityClass": "802_1x",
+  "Type": "wifi",
+}

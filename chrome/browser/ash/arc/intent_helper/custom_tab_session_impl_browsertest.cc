@@ -1,16 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
 
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "base/containers/contains.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/arc_util.h"
 #include "components/arc/intent_helper/custom_tab.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/test/shell_surface_builder.h"

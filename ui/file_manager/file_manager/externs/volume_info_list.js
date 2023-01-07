@@ -1,14 +1,14 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {VolumeInfo} from './volume_info.m.js';
+import {VolumeInfo} from './volume_info.js';
 
 /**
  * The container of the VolumeInfo for each mounted volume.
  * @interface
  */
-/* #export */ class VolumeInfoList {
+export class VolumeInfoList {
   constructor() {
     /** @const {number} */
     this.length;

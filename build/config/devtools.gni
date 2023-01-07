@@ -1,0 +1,37 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build_overrides/build.gni")
+
+declare_args() {
+  if (build_with_chromium) {
+    # devtools_location is used in DevTools to resolve to the correct location
+    # for any script/file referenced in the DevTools build scripts. Since
+    # DevTools supports both a standalone build and build integration with
+    # Chromium, we need to differentiate between the two versions.
+    # devtools_location points to the Chromium version in both Chrome-branded
+    # and not Chrome-branded builds. devtools_root_location points to the root
+    # of the Chrome-branded version when is_chrome_branded is true and to the root
+    # of the Chromium version when is_chrome_branded is false.
+    # devtools_grd_location is the location of the GRD file listing all DevTools
+    # resources.
+    if (is_chrome_branded) {
+      devtools_root_location = "third_party/devtools-frontend-internal"
+      devtools_location = "$devtools_root_location/devtools-frontend/"
+      devtools_grd_location =
+          "$devtools_root_location/chrome_devtools_resources.grd"
+    } else {
+      devtools_root_location = "third_party/devtools-frontend/src"
+      devtools_location = "third_party/devtools-frontend/src/"
+      devtools_grd_location =
+          "$devtools_root_location/front_end/devtools_resources.grd"
+    }
+  } else {
+    # DevTools is building a standalone version
+    devtools_location = ""
+    devtools_root_location = ""
+    devtools_grd_location = ""
+  }
+}

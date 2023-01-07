@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "ui/gfx/gfx_jni_headers/ViewConfigurationHelper_jni.h"
 
@@ -48,6 +47,9 @@ struct ViewConfigurationData {
            Java_ViewConfigurationHelper_getMinScalingSpan(
                env, j_view_configuration_helper_));
   }
+
+  ViewConfigurationData(const ViewConfigurationData&) = delete;
+  ViewConfigurationData& operator=(const ViewConfigurationData&) = delete;
 
   ~ViewConfigurationData() {}
 
@@ -120,9 +122,6 @@ struct ViewConfigurationData {
   int touch_slop_in_dips_;
   int double_tap_slop_in_dips_;
   int min_scaling_span_in_dips_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ViewConfigurationData);
 };
 
 // Leaky to allow access from any thread.

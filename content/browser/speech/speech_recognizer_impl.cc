@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/browser/browser_main_loop.h"
@@ -22,10 +22,11 @@
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "media/audio/audio_system.h"
 #include "media/base/audio_converter.h"
+#include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "services/audio/public/cpp/device_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "media/audio/win/core_audio_util_win.h"
 #endif
 
@@ -44,6 +45,10 @@ class SpeechRecognizerImpl::OnDataConverter
  public:
   OnDataConverter(const AudioParameters& input_params,
                   const AudioParameters& output_params);
+
+  OnDataConverter(const OnDataConverter&) = delete;
+  OnDataConverter& operator=(const OnDataConverter&) = delete;
+
   ~OnDataConverter() override;
 
   // Converts input audio |data| bus into an AudioChunk where the input format
@@ -66,8 +71,6 @@ class SpeechRecognizerImpl::OnDataConverter
   const AudioParameters input_parameters_;
   const AudioParameters output_parameters_;
   bool data_was_converted_;
-
-  DISALLOW_COPY_AND_ASSIGN(OnDataConverter);
 };
 
 namespace {
@@ -293,7 +296,9 @@ void SpeechRecognizerImpl::Capture(const AudioBus* data,
   CHECK(audio_converter_->data_was_converted());
 }
 
-void SpeechRecognizerImpl::OnCaptureError(const std::string& message) {
+void SpeechRecognizerImpl::OnCaptureError(
+    media::AudioCapturerSource::ErrorCode code,
+    const std::string& message) {
   FSMEventArgs event_args(EVENT_AUDIO_ERROR);
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&SpeechRecognizerImpl::DispatchEvent,
@@ -535,7 +540,7 @@ void SpeechRecognizerImpl::ProcessAudioPipeline(const AudioChunk& raw_audio) {
 }
 
 void SpeechRecognizerImpl::OnDeviceInfo(
-    const base::Optional<media::AudioParameters>& params) {
+    const absl::optional<media::AudioParameters>& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   device_params_ = params.value_or(AudioParameters());
   DVLOG(1) << "Device parameters: " << device_params_.AsHumanReadableString();
@@ -580,7 +585,8 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
   // Hard coded, WebSpeech specific parameters are utilized here.
   int frames_per_buffer = (kAudioSampleRate * chunk_duration_ms) / 1000;
   AudioParameters output_parameters =
-      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY, kChannelLayout,
+      AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                      media::ChannelLayoutConfig::FromLayout<kChannelLayout>(),
                       kAudioSampleRate, frames_per_buffer);
   DVLOG(1) << "SRI::output_parameters: "
            << output_parameters.AsHumanReadableString();
@@ -592,7 +598,7 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
   // TODO(henrika): this code should be moved to platform dependent audio
   // managers.
   bool use_native_audio_params = true;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   use_native_audio_params = media::CoreAudioUtil::IsSupported();
   DVLOG_IF(1, !use_native_audio_params) << "Reverting to WaveIn for WebSpeech";
 #endif
@@ -617,8 +623,8 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
 
   // Create an audio converter which converts data between native input format
   // and WebSpeech specific output format.
-  audio_converter_.reset(
-      new OnDataConverter(input_parameters, output_parameters));
+  audio_converter_ =
+      std::make_unique<OnDataConverter>(input_parameters, output_parameters);
 
   // The endpointer needs to estimate the environment/background noise before
   // starting to treat the audio as user input. We wait in the state
@@ -848,15 +854,14 @@ void SpeechRecognizerImpl::UpdateSignalAndNoiseLevels(const float& rms,
   // Perhaps it might be quite expensive on mobile.
   float level = (rms - kAudioMeterMinDb) /
       (kAudioMeterDbRange / kAudioMeterRangeMaxUnclipped);
-  level = base::ClampToRange(level, 0.0f, kAudioMeterRangeMaxUnclipped);
+  level = base::clamp(level, 0.0f, kAudioMeterRangeMaxUnclipped);
   const float smoothing_factor = (level > audio_level_) ? kUpSmoothingFactor :
                                                           kDownSmoothingFactor;
   audio_level_ += (level - audio_level_) * smoothing_factor;
 
   float noise_level = (endpointer_.NoiseLevelDb() - kAudioMeterMinDb) /
       (kAudioMeterDbRange / kAudioMeterRangeMaxUnclipped);
-  noise_level =
-      base::ClampToRange(noise_level, 0.0f, kAudioMeterRangeMaxUnclipped);
+  noise_level = base::clamp(noise_level, 0.0f, kAudioMeterRangeMaxUnclipped);
 
   listener()->OnAudioLevelsChange(
       session_id(), clip_detected ? 1.0f : audio_level_, noise_level);
@@ -870,7 +875,8 @@ void SpeechRecognizerImpl::SetAudioEnvironmentForTesting(
 }
 
 media::AudioSystem* SpeechRecognizerImpl::GetAudioSystem() {
-  return audio_system_for_tests_ ? audio_system_for_tests_ : audio_system_;
+  return audio_system_for_tests_ ? audio_system_for_tests_
+                                 : audio_system_.get();
 }
 
 void SpeechRecognizerImpl::CreateAudioCapturerSource() {

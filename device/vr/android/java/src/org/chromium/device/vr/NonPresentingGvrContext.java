@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 /**
@@ -89,14 +88,5 @@ public class NonPresentingGvrContext {
 
     public void onDisplayConfigurationChanged() {
         mGvrApi.refreshDisplayMetrics();
-        if (mNativeGvrDevice != 0) {
-            NonPresentingGvrContextJni.get().onDisplayConfigurationChanged(
-                    mNativeGvrDevice, NonPresentingGvrContext.this);
-        }
-    }
-
-    @NativeMethods
-    interface Natives {
-        void onDisplayConfigurationChanged(long nativeGvrDevice, NonPresentingGvrContext caller);
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,8 +31,16 @@ CertificateViewerUITest.prototype = {
    * Show the certificate viewer dialog.
    */
   testGenPreamble: function() {
-    GEN('ShowCertificateViewer();');
+    GEN('ShowCertificateViewerGoogleCert();');
   },
+};
+
+var CertificateViewerUIInvalidCertTest = class extends CertificateViewerUITest {
+  get testGenPreamble() {
+    return () => {
+      GEN('ShowCertificateViewerInvalidCert();');
+    };
+  }
 };
 
 // Helper for loading the Mocha test file as a JS module. Not using
@@ -42,7 +50,7 @@ function loadTestModule() {
   const scriptPolicy =
       window.trustedTypes.createPolicy('certificate-test-script', {
         createScriptURL: () =>
-            'chrome://test/certificate_viewer_dialog_test.js',
+            'chrome://webui-test/certificate_viewer_dialog_test.js',
       });
   const s = document.createElement('script');
   s.type = 'module';
@@ -78,5 +86,11 @@ TEST_F('CertificateViewerUITest', 'CommonName', function() {
 TEST_F('CertificateViewerUITest', 'Details', function() {
   loadTestModule().then(() => {
     mocha.grep('Details').run();
+  });
+});
+
+TEST_F('CertificateViewerUIInvalidCertTest', 'InvalidCert', function() {
+  loadTestModule().then(() => {
+    mocha.grep('InvalidCert').run();
   });
 });

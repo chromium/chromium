@@ -1,8 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/error_screens_histogram_helper.h"
+
+#include <memory>
 
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -10,13 +12,14 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 class ErrorScreensHistogramHelperTest : public testing::Test {
  public:
   void SetUp() override {
-    helper_.reset(new ErrorScreensHistogramHelper("TestScreen"));
-    second_helper_.reset(new ErrorScreensHistogramHelper("TestScreen2"));
+    helper_ = std::make_unique<ErrorScreensHistogramHelper>("TestScreen");
+    second_helper_ =
+        std::make_unique<ErrorScreensHistogramHelper>("TestScreen2");
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -72,7 +75,7 @@ TEST_F(ErrorScreensHistogramHelperTest, TestShowHideTime) {
   second_helper_->OnScreenShow();
   base::Time now = base::Time::Now();
   helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PORTAL, now);
-  now += base::TimeDelta::FromMilliseconds(1000);
+  now += base::Milliseconds(1000);
   helper_->OnErrorHideTime(now);
   helper_.reset();
   histograms_.ExpectUniqueSample("OOBE.ErrorScreensTime.TestScreen.Portal",
@@ -86,11 +89,11 @@ TEST_F(ErrorScreensHistogramHelperTest, TestShowHideShowHideTime) {
   second_helper_->OnScreenShow();
   base::Time now = base::Time::Now();
   helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PROXY, now);
-  now += base::TimeDelta::FromMilliseconds(1000);
+  now += base::Milliseconds(1000);
   helper_->OnErrorHideTime(now);
-  now += base::TimeDelta::FromMilliseconds(1000);
+  now += base::Milliseconds(1000);
   helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PORTAL, now);
-  now += base::TimeDelta::FromMilliseconds(1000);
+  now += base::Milliseconds(1000);
   helper_->OnErrorHideTime(now);
   helper_.reset();
   histograms_.ExpectUniqueSample("OOBE.ErrorScreensTime.TestScreen.Portal",
@@ -104,13 +107,13 @@ TEST_F(ErrorScreensHistogramHelperTest, TestShowShowHideTime) {
   second_helper_->OnScreenShow();
   base::Time now = base::Time::Now();
   helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PROXY, now);
-  now += base::TimeDelta::FromMilliseconds(1000);
+  now += base::Milliseconds(1000);
   helper_->OnErrorShowTime(NetworkError::ERROR_STATE_PORTAL, now);
-  now += base::TimeDelta::FromMilliseconds(1000);
+  now += base::Milliseconds(1000);
   helper_->OnErrorHideTime(now);
   helper_.reset();
   histograms_.ExpectUniqueSample("OOBE.ErrorScreensTime.TestScreen.Portal",
                                  2000, 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

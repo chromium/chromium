@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/policy/core/common/async_policy_loader.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -41,8 +41,9 @@ void AsyncPolicyProvider::Init(SchemaRegistry* registry) {
       &AsyncPolicyProvider::LoaderUpdateCallback,
       base::ThreadTaskRunnerHandle::Get(), weak_factory_.GetWeakPtr());
   bool post = loader_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&AsyncPolicyLoader::Init,
-                                base::Unretained(loader_.get()), callback));
+      FROM_HERE,
+      base::BindOnce(&AsyncPolicyLoader::Init, base::Unretained(loader_.get()),
+                     base::ThreadTaskRunnerHandle::Get(), callback));
   DCHECK(post) << "AsyncPolicyProvider::Init() called with threads not running";
 }
 

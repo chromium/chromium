@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
 
 // InfobarTranslateLanguageSelectionTableViewController represents the content
 // for selecting a different source or target language depending on
-// |sourceLanguage| passed in the init method.
+// `sourceLanguage` passed in the init method.
 @interface InfobarTranslateLanguageSelectionTableViewController
     : ChromeTableViewController <InfobarTranslateLanguageSelectionConsumer>
 

@@ -1,6 +1,16 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(libxml2 C)
+file(STRINGS "configure.ac" CONFIGURE_AC_LINES)
+foreach(line ${CONFIGURE_AC_LINES})
+	if(line MATCHES [[^m4_define\(\[(MAJOR_VERSION|MINOR_VERSION|MICRO_VERSION)\],[ \t]*([0-9]+)\)$]])
+		set(LIBXML_${CMAKE_MATCH_1} ${CMAKE_MATCH_2})
+	elseif(line MATCHES "^(LIBXML_MAJOR_VERSION|LIBXML_MINOR_VERSION|LIBXML_MICRO_VERSION)=([0-9]+)$")
+		set(${CMAKE_MATCH_1} ${CMAKE_MATCH_2})
+	endif()
+endforeach()
+set(VERSION "${LIBXML_MAJOR_VERSION}.${LIBXML_MINOR_VERSION}.${LIBXML_MICRO_VERSION}")
+
+project(libxml2 VERSION ${VERSION} LANGUAGES C)
 
 include(CheckCSourceCompiles)
 include(CheckFunctionExists)
@@ -11,30 +21,19 @@ include(CheckSymbolExists)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
 
-set(LIBXML_MAJOR_VERSION 2)
-set(LIBXML_MINOR_VERSION 9)
-set(LIBXML_MICRO_VERSION 10)
-
-set(VERSION "${LIBXML_MAJOR_VERSION}.${LIBXML_MINOR_VERSION}.${LIBXML_MICRO_VERSION}")
-set(LIBXML_VERSION ${LIBXML_MAJOR_VERSION}0${LIBXML_MINOR_VERSION}0${LIBXML_MICRO_VERSION})
-set(LIBXML_VERSION_STRING "${LIBXML_VERSION}")
-set(LIBXML_VERSION_EXTRA "")
-set(LIBXML_VERSION_NUMBER ${LIBXML_VERSION})
-
 option(BUILD_SHARED_LIBS "Build shared libraries" ON)
 set(LIBXML2_WITH_AUTOMATA ON)
 option(LIBXML2_WITH_C14N "Add the Canonicalization support" ON)
 option(LIBXML2_WITH_CATALOG "Add the Catalog support" ON)
 option(LIBXML2_WITH_DEBUG "Add the debugging module" ON)
-option(LIBXML2_WITH_DOCB "Add Docbook SGML support" ON)
 set(LIBXML2_WITH_EXPR ON)
-option(LIBXML2_WITH_FTP "Add the FTP support" ON)
+option(LIBXML2_WITH_FTP "Add the FTP support" OFF)
 option(LIBXML2_WITH_HTML "Add the HTML support" ON)
 option(LIBXML2_WITH_HTTP "Add the HTTP support" ON)
 option(LIBXML2_WITH_ICONV "Add ICONV support" ON)
 option(LIBXML2_WITH_ICU "Add ICU support" OFF)
 option(LIBXML2_WITH_ISO8859X "Add ISO8859X support if no iconv" ON)
-option(LIBXML2_WITH_LEGACY "Add deprecated APIs for compatibility" ON)
+option(LIBXML2_WITH_LEGACY "Add deprecated APIs for compatibility" OFF)
 option(LIBXML2_WITH_LZMA "Use liblzma" ON)
 option(LIBXML2_WITH_MEM_DEBUG "Add the memory debugging module" OFF)
 option(LIBXML2_WITH_MODULES "Add the dynamic modules support" ON)
@@ -60,6 +59,7 @@ option(LIBXML2_WITH_WRITER "Add the xmlWriter saving interface" ON)
 option(LIBXML2_WITH_XINCLUDE "Add the XInclude support" ON)
 option(LIBXML2_WITH_XPATH "Add the XPATH support" ON)
 option(LIBXML2_WITH_XPTR "Add the XPointer support" ON)
+option(LIBXML2_WITH_XPTR_LOCS "Add support for XPointer locations" OFF)
 option(LIBXML2_WITH_ZLIB "Use libz" ON)
 set(LIBXML2_XMLCONF_WORKING_DIR ${CMAKE_CURRENT_BINARY_DIR} CACHE PATH "Working directory for XML Conformance Test Suite")
 
@@ -97,13 +97,21 @@ if(LIBXML2_WITH_ZLIB)
 	find_package(ZLIB REQUIRED)
 endif()
 
-foreach(VARIABLE IN ITEMS WITH_AUTOMATA WITH_C14N WITH_CATALOG WITH_DEBUG WITH_DOCB WITH_EXPR WITH_FTP WITH_HTML WITH_HTTP WITH_ICONV WITH_ICU WITH_ISO8859X WITH_LEGACY WITH_LZMA WITH_MEM_DEBUG WITH_MODULES WITH_OUTPUT WITH_PATTERN WITH_PUSH WITH_READER WITH_REGEXPS WITH_RUN_DEBUG WITH_SAX1 WITH_SCHEMAS WITH_SCHEMATRON WITH_THREADS WITH_THREAD_ALLOC WITH_TREE WITH_TRIO WITH_UNICODE WITH_VALID WITH_WRITER WITH_XINCLUDE WITH_XPATH WITH_XPTR WITH_ZLIB)
+foreach(VARIABLE IN ITEMS WITH_AUTOMATA WITH_C14N WITH_CATALOG WITH_DEBUG WITH_EXPR WITH_FTP WITH_HTML WITH_HTTP WITH_ICONV WITH_ICU WITH_ISO8859X WITH_LEGACY WITH_LZMA WITH_MEM_DEBUG WITH_MODULES WITH_OUTPUT WITH_PATTERN WITH_PUSH WITH_READER WITH_REGEXPS WITH_RUN_DEBUG WITH_SAX1 WITH_SCHEMAS WITH_SCHEMATRON WITH_THREADS WITH_THREAD_ALLOC WITH_TREE WITH_TRIO WITH_UNICODE WITH_VALID WITH_WRITER WITH_XINCLUDE WITH_XPATH WITH_XPTR WITH_XPTR_LOCS WITH_ZLIB)
 	if(LIBXML2_${VARIABLE})
 		set(${VARIABLE} 1)
 	else()
 		set(${VARIABLE} 0)
 	endif()
 endforeach()
+
+set(LIBXML_VERSION ${VERSION})
+set(LIBXML_VERSION_EXTRA "")
+math(EXPR LIBXML_VERSION_NUMBER "
+    ${LIBXML_MAJOR_VERSION} * 10000 +
+    ${LIBXML_MINOR_VERSION} * 100 +
+    ${LIBXML_MICRO_VERSION}
+")
 
 set(MODULE_EXTENSION "${CMAKE_SHARED_LIBRARY_SUFFIX}")
 
@@ -112,7 +120,7 @@ set(PACKAGE_BUGREPORT "xml@gnome.org")
 set(PACKAGE_NAME "libxml2")
 set(PACKAGE_STRING "libxml2 ${VERSION}")
 set(PACKAGE_TARNAME "libxml2")
-set(PACKAGE_URL "http://www.xmlsoft.org/")
+set(PACKAGE_URL "https://gitlab.gnome.org/GNOME/libxml2")
 set(PACKAGE_VERSION ${VERSION})
 
 if(LIBLZMA_FOUND)
@@ -127,14 +135,15 @@ if(ZLIB_FOUND)
 	list(APPEND CMAKE_REQUIRED_LIBRARIES ZLIB::ZLIB)
 endif()
 
-if(MSVC)
-	configure_file(include/win32config.h config.h COPYONLY)
-else()
+if (NOT MSVC)
 	check_c_source_compiles("
 		void __attribute__((destructor))
 		f(void) {}
 		int main(void) { return 0; }
-	" ATTRIBUTE_DESTRUCTOR)
+	" HAVE_ATTRIBUTE_DESTRUCTOR)
+	if(HAVE_ATTRIBUTE_DESTRUCTOR)
+		set(ATTRIBUTE_DESTRUCTOR "__attribute__((destructor))")
+	endif()
 	check_c_source_compiles("
 		#include <netdb.h>
 		int main() { (void) gethostbyname((const char*) \"\"); return 0; }
@@ -152,97 +161,39 @@ else()
 		set(ss_family __ss_family)
 	endif()
 	check_function_exists(class HAVE_CLASS)
-	check_include_files(ctype.h HAVE_CTYPE_H)
-	check_include_files(dirent.h HAVE_DIRENT_H)
 	check_include_files(dlfcn.h HAVE_DLFCN_H)
 	check_library_exists(dl dlopen "" HAVE_DLOPEN)
 	check_include_files(dl.h HAVE_DL_H)
-	check_include_files(errno.h HAVE_ERRNO_H)
 	check_include_files(fcntl.h HAVE_FCNTL_H)
-	check_function_exists(finite HAVE_FINITE)
-	check_include_files(float.h HAVE_FLOAT_H)
 	check_function_exists(fpclass HAVE_FPCLASS)
-	check_function_exists(fprintf HAVE_FPRINTF)
-	check_function_exists(fp_class HAVE_FP_CLASS)
 	check_function_exists(ftime HAVE_FTIME)
 	check_function_exists(getaddrinfo HAVE_GETADDRINFO)
 	check_function_exists(gettimeofday HAVE_GETTIMEOFDAY)
 	check_include_files(inttypes.h HAVE_INTTYPES_H)
 	check_function_exists(isascii HAVE_ISASCII)
-	check_function_exists(isinf HAVE_ISINF)
-	check_function_exists(isnan HAVE_ISNAN)
-	check_function_exists(isnand HAVE_ISNAND)
 	check_library_exists(history append_history "" HAVE_LIBHISTORY)
-	check_library_exists(lzma lzma_code "" HAVE_LIBLZMA)
-	check_library_exists(pthread pthread_join "" HAVE_LIBPTHREAD)
 	check_library_exists(readline readline "" HAVE_LIBREADLINE)
-	check_library_exists(z gzread "" HAVE_LIBZ)
-	check_include_files(limits.h HAVE_LIMITS_H)
-	check_function_exists(localtime HAVE_LOCALTIME)
-	check_include_files(lzma.h HAVE_LZMA_H)
-	check_include_files(malloc.h HAVE_MALLOC_H)
-	check_include_files(math.h HAVE_MATH_H)
-	check_include_files(memory.h HAVE_MEMORY_H)
 	check_function_exists(mmap HAVE_MMAP)
 	check_function_exists(munmap HAVE_MUNMAP)
-	check_symbol_exists(DIR ndir.h HAVE_NDIR_H)
 	check_include_files(netdb.h HAVE_NETDB_H)
 	check_include_files(netinet/in.h HAVE_NETINET_IN_H)
 	check_include_files(poll.h HAVE_POLL_H)
-	check_function_exists(printf HAVE_PRINTF)
-	check_include_files(pthread.h HAVE_PTHREAD_H)
 	check_function_exists(putenv HAVE_PUTENV)
-	check_function_exists(rand HAVE_RAND)
 	check_function_exists(rand_r HAVE_RAND_R)
 	check_include_files(resolv.h HAVE_RESOLV_H)
 	check_library_exists(dld shl_load "" HAVE_SHLLOAD)
-	check_function_exists(signal HAVE_SIGNAL)
-	check_include_files(signal.h HAVE_SIGNAL_H)
-	check_function_exists(snprintf HAVE_SNPRINTF)
-	check_function_exists(sprintf HAVE_SPRINTF)
-	check_function_exists(srand HAVE_SRAND)
-	check_function_exists(sscanf HAVE_SSCANF)
 	check_function_exists(stat HAVE_STAT)
-	check_include_files(stdarg.h HAVE_STDARG_H)
 	check_include_files(stdint.h HAVE_STDINT_H)
-	check_include_files(stdlib.h HAVE_STDLIB_H)
-	check_function_exists(strftime HAVE_STRFTIME)
-	check_include_files(strings.h HAVE_STRINGS_H)
-	check_include_files(string.h HAVE_STRING_H)
-	check_symbol_exists(DIR sys/dir.h HAVE_SYS_DIR_H)
 	check_include_files(sys/mman.h HAVE_SYS_MMAN_H)
-	check_symbol_exists(DIR sys/ndir.h HAVE_SYS_NDIR_H)
 	check_include_files(sys/select.h HAVE_SYS_SELECT_H)
 	check_include_files(sys/socket.h HAVE_SYS_SOCKET_H)
 	check_include_files(sys/stat.h HAVE_SYS_STAT_H)
 	check_include_files(sys/timeb.h HAVE_SYS_TIMEB_H)
 	check_include_files(sys/time.h HAVE_SYS_TIME_H)
 	check_include_files(sys/types.h HAVE_SYS_TYPES_H)
-	check_function_exists(time HAVE_TIME)
-	check_include_files(time.h HAVE_TIME_H)
 	check_include_files(unistd.h HAVE_UNISTD_H)
 	check_function_exists(va_copy HAVE_VA_COPY)
-	check_function_exists(vfprintf HAVE_VFPRINTF)
-	check_function_exists(vsnprintf HAVE_VSNPRINTF)
-	check_function_exists(vsprintf HAVE_VSPRINTF)
 	check_function_exists(__va_copy HAVE___VA_COPY)
-	check_c_source_compiles("
-		#include <stdlib.h>
-		#include <iconv.h>
-		extern
-		#ifdef __cplusplus
-		\"C\"
-		#endif
-		#if defined(__STDC__) || defined(__cplusplus)
-		size_t iconv(iconv_t cd, char** inbuf, size_t* inbytesleft, char** outbuf, size_t* outbytesleft);
-		#else
-		size_t iconv();
-		#endif
-		int main() { return 0; }
-	" ICONV_CONST_TEST)
-	if(NOT ICONV_CONST_TEST)
-		set(ICONV_CONST "const")
-	endif()
 	set(LT_OBJDIR ".libs/")
 	check_c_source_compiles("
 		#include <sys/socket.h>
@@ -254,7 +205,6 @@ else()
 	else()
 		set(SEND_ARG2_CAST "/**/")
 	endif()
-	check_include_files("float.h;stdarg.h;stdlib.h;string.h" STDC_HEADERS)
 	check_c_source_compiles("
 		#include <stdarg.h>
 		void a(va_list* ap) {};
@@ -292,7 +242,6 @@ else()
 			set(XML_SOCKLEN_T int)
 		endif()
 	endif()
-	configure_file(config.h.cmake.in config.h)
 endif()
 
 set(
@@ -302,7 +251,6 @@ set(
 	include/libxml/chvalid.h
 	include/libxml/debugXML.h
 	include/libxml/dict.h
-	include/libxml/DOCBparser.h
 	include/libxml/encoding.h
 	include/libxml/entities.h
 	include/libxml/globals.h
@@ -405,25 +353,32 @@ if(WIN32)
 	)
 endif()
 
-if(LIBXML2_WITH_SAX1)
-	list(APPEND LIBXML2_SRCS DOCBparser.c)
-endif()
-
 if(LIBXML2_WITH_TRIO)
 	list(APPEND LIBXML2_SRCS trio.c triostr.c)
 endif()
 
 add_library(LibXml2 ${LIBXML2_HDRS} ${LIBXML2_SRCS})
+add_library(LibXml2::LibXml2 ALIAS LibXml2)
+
+target_compile_definitions(LibXml2 PRIVATE SYSCONFDIR="${CMAKE_INSTALL_FULL_SYSCONFDIR}")
 
 if(NOT BUILD_SHARED_LIBS)
 	target_compile_definitions(LibXml2 INTERFACE LIBXML_STATIC)
 	set(XML_CFLAGS "-DLIBXML_STATIC")
 endif()
 
+if(BUILD_SHARED_LIBS AND UNIX AND NOT APPLE)
+	if(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
+		target_link_options(LibXml2 PRIVATE "-Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libxml2.syms")
+	endif()
+endif()
+
 if(LIBXML2_WITH_THREADS)
 	target_compile_definitions(LibXml2 PRIVATE _REENTRANT)
 	if(WIN32)
 		target_compile_definitions(LibXml2 PRIVATE HAVE_WIN32_THREADS)
+	else()
+		check_include_files(pthread.h HAVE_PTHREAD_H)
 	endif()
 endif()
 
@@ -447,7 +402,7 @@ endif()
 
 if(UNIX)
 	target_link_libraries(LibXml2 PRIVATE m)
-	set(M_LIBS "-lm")
+	set(LIBM "-lm")
 endif()
 
 if(WIN32)
@@ -493,10 +448,10 @@ set_target_properties(
 	OUTPUT_NAME xml2
 	POSITION_INDEPENDENT_CODE ON
 	PREFIX lib
-	VERSION ${VERSION}
+	VERSION ${PROJECT_VERSION}
 )
 
-if(WIN32)
+if(MSVC)
 	if(BUILD_SHARED_LIBS)
 		set_target_properties(
 			LibXml2
@@ -537,6 +492,8 @@ if(LIBXML2_WITH_PROGRAMS)
 	)
 	foreach(PROGRAM ${PROGRAMS})
 		add_executable(${PROGRAM} ${PROGRAM}.c)
+		add_executable(LibXml2::${PROGRAM} ALIAS ${PROGRAM})
+		target_compile_definitions(${PROGRAM} PRIVATE SYSCONFDIR="${CMAKE_INSTALL_FULL_SYSCONFDIR}")
 		target_link_libraries(${PROGRAM} LibXml2)
 		if(HAVE_LIBHISTORY)
 			target_link_libraries(${PROGRAM} history)
@@ -552,29 +509,32 @@ if(LIBXML2_WITH_TESTS)
 	enable_testing()
 	set(
 		TESTS
+		runtest
 		runxmlconf
 		runsuite
 		testapi
 		testAutomata
-		testC14N
 		testchar
 		testdict
-		testHTML
 		testModule
 		testlimits
-		testReader
 		testrecurse
-		testRegexp
-		testRelax
-		testSAX
-		testSchemas
-		testURI
-		testXPath
+		testThreads
 	)
 	foreach(TEST ${TESTS})
 		add_executable(${TEST} ${TEST}.c)
+		target_compile_definitions(${TEST} PRIVATE SYSCONFDIR="${CMAKE_INSTALL_FULL_SYSCONFDIR}")
 		target_link_libraries(${TEST} LibXml2)
 	endforeach()
+	if(Threads_FOUND)
+		foreach(TEST runtest testThreads)
+			if(WIN32)
+				target_compile_definitions(${TEST} PRIVATE HAVE_WIN32_THREADS)
+			endif()
+			target_link_libraries(${TEST} Threads::Threads)
+		endforeach()
+	endif()
+	add_test(NAME runtest COMMAND runtest --out ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 	if(EXISTS ${LIBXML2_XMLCONF_WORKING_DIR}/xmlconf/xmlconf.xml)
 		add_test(NAME runxmlconf COMMAND runxmlconf WORKING_DIRECTORY ${LIBXML2_XMLCONF_WORKING_DIR})
 	endif()
@@ -584,22 +544,7 @@ if(LIBXML2_WITH_TESTS)
 	add_test(NAME testchar COMMAND testchar)
 	add_test(NAME testdict COMMAND testdict)
 	add_test(NAME testrecurse COMMAND testrecurse WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-	if(Threads_FOUND)
-		set(
-			TESTS_THREADS
-			runtest
-			testThreads
-		)
-		foreach(TEST ${TESTS_THREADS})
-			add_executable(${TEST} ${TEST}.c)
-			if(WIN32)
-				target_compile_definitions(${TEST} PRIVATE HAVE_WIN32_THREADS)
-			endif()
-			target_link_libraries(${TEST} LibXml2 Threads::Threads)
-		endforeach()
-		add_test(NAME runtest COMMAND runtest --out ${CMAKE_CURRENT_BINARY_DIR} WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-		add_test(NAME testThreads COMMAND testThreads WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-	endif()
+	add_test(NAME testThreads COMMAND testThreads WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
 if(LIBXML2_WITH_PYTHON)
@@ -637,7 +582,7 @@ if(LIBXML2_WITH_PYTHON)
 		IMPORT_PREFIX lib
 		OUTPUT_NAME xml2mod
 		PREFIX lib
-		VERSION ${VERSION}
+		VERSION ${PROJECT_VERSION}
 	)
 	install(
 		TARGETS	LibXml2Mod
@@ -652,49 +597,55 @@ if(LIBXML2_WITH_PYTHON)
 	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libxml2.py DESTINATION ${LIBXML2_PYTHON_INSTALL_DIR} COMPONENT runtime)
 endif()
 
-install(FILES libxml.3 DESTINATION ${CMAKE_INSTALL_MANDIR}/man3 COMPONENT documentation)
+install(FILES doc/xml2-config.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 COMPONENT documentation)
 install(FILES doc/xmlcatalog.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 COMPONENT documentation)
 install(FILES doc/xmllint.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1 COMPONENT documentation)
-install(DIRECTORY doc/ DESTINATION ${CMAKE_INSTALL_DATADIR}/doc/libxml2 COMPONENT documentation PATTERN Makefile.* EXCLUDE)
+install(DIRECTORY doc/ DESTINATION ${CMAKE_INSTALL_DOCDIR} COMPONENT documentation
+	PATTERN "Makefile.*" EXCLUDE
+	PATTERN "*.1" EXCLUDE
+	PATTERN "*.py" EXCLUDE
+	PATTERN "*.res" EXCLUDE
+	PATTERN "*.xml" EXCLUDE
+	PATTERN "*.xsl" EXCLUDE)
 
 configure_package_config_file(
 	libxml2-config.cmake.cmake.in libxml2-config.cmake
-	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libxml2-${VERSION}
+	INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libxml2-${PROJECT_VERSION}
 )
 
 install(
 	FILES ${CMAKE_CURRENT_BINARY_DIR}/libxml2-config.cmake
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libxml2-${VERSION}
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libxml2-${PROJECT_VERSION}
 	COMPONENT development
 )
 
 write_basic_package_version_file(
 	${CMAKE_CURRENT_BINARY_DIR}/libxml2-config-version.cmake
-	VERSION ${VERSION}
+	VERSION ${PROJECT_VERSION}
 	COMPATIBILITY ExactVersion
 )
 
 install(
 	FILES ${CMAKE_CURRENT_BINARY_DIR}/libxml2-config-version.cmake
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libxml2-${VERSION}
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libxml2-${PROJECT_VERSION}
 	COMPONENT development
 )
 
 install(
 	EXPORT LibXml2
-	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libxml2-${VERSION}
+	DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/libxml2-${PROJECT_VERSION}
 	NAMESPACE LibXml2::
 	FILE libxml2-export.cmake
 	COMPONENT development
 )
 
+if(MSVC)
+	configure_file(include/win32config.h config.h COPYONLY)
+else()
+	configure_file(config.h.cmake.in config.h)
+endif()
 configure_file(include/libxml/xmlversion.h.in libxml/xmlversion.h)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libxml/xmlversion.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libxml2/libxml COMPONENT development)
-
-if(MSVC)
-	configure_file(include/libxml/xmlwin32version.h.in libxml/xmlwin32version.h)
-	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libxml/xmlwin32version.h DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/libxml2/libxml COMPONENT development)
-endif()
 
 if(LIBXML2_WITH_PYTHON)
 	set(prefix "${CMAKE_INSTALL_PREFIX}")
@@ -704,26 +655,34 @@ endif()
 set(XML_INCLUDEDIR "-I\${includedir}/libxml2")
 set(XML_LIBDIR "-L\${libdir}")
 set(XML_LIBS "-lxml2")
-set(XML_PRIVATE_LIBS "${Z_LIBS} ${LZMA_LIBS} ${THREAD_LIBS} ${ICONV_LIBS} ${ICU_LIBS} ${M_LIBS}")
+set(XML_PRIVATE_LIBS "${Z_LIBS} ${LZMA_LIBS} ${THREAD_LIBS} ${ICONV_LIBS} ${ICU_LIBS} ${LIBM} ${WIN32_EXTRA_LIBADD}")
 
 file(RELATIVE_PATH PACKAGE_RELATIVE_PATH "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" "${CMAKE_INSTALL_PREFIX}")
 string(REGEX REPLACE "/$" "" PACKAGE_RELATIVE_PATH "${PACKAGE_RELATIVE_PATH}")
 
-set(prefix "\${pcfiledir}/${PACKAGE_RELATIVE_PATH}")
+if(WIN32)
+	set(prefix "\${pcfiledir}/${PACKAGE_RELATIVE_PATH}")
+else()
+	set(prefix "${CMAKE_INSTALL_PREFIX}")
+endif()
 set(exec_prefix "\${prefix}")
 set(libdir "\${prefix}/${CMAKE_INSTALL_LIBDIR}")
 set(includedir "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
 configure_file(libxml-2.0.pc.in libxml-2.0.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/libxml-2.0.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig COMPONENT development)
 
-set(prefix "\$(cd \"\$(dirname \"\$0\")\"; pwd -P)/..")
+if(WIN32)
+	set(prefix "\$(cd \"\$(dirname \"\$0\")\"; pwd -P)/..")
+endif()
 configure_file(xml2-config.in xml2-config @ONLY)
 install(PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/xml2-config DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT development)
 
+if(UNIX)
+	install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/libxml.m4 DESTINATION ${CMAKE_INSTALL_DATADIR}/aclocal)
+endif()
+
 set(XML_INCLUDEDIR "-I${CMAKE_INSTALL_FULL_INCLUDEDIR}/libxml2")
 set(XML_LIBDIR "-L${CMAKE_INSTALL_FULL_LIBDIR}")
-configure_file(xml2Conf.sh.in xml2Conf.sh @ONLY)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/xml2Conf.sh DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT development)
 
 set(CPACK_COMPONENT_DEVELOPMENT_DEPENDS runtime)
 set(CPACK_COMPONENT_PROGRAMS_DEPENDS runtime)

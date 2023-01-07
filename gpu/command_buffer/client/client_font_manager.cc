@@ -1,11 +1,14 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "gpu/command_buffer/client/client_font_manager.h"
 
+#include <type_traits>
+
 #include "base/bits.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 
 namespace gpu {
 namespace raster {
@@ -20,7 +23,7 @@ class Serializer {
 
   template <typename T>
   void Write(const T* val) {
-    static_assert(base::is_trivially_copyable<T>::value, "");
+    static_assert(std::is_trivially_copyable_v<T>);
     WriteData(val, sizeof(T), alignof(T));
   }
 
@@ -39,15 +42,15 @@ class Serializer {
     // Due to the math below, alignment must be a power of two.
     DCHECK(base::bits::IsPowerOfTwo(alignment));
 
-    size_t memory = reinterpret_cast<size_t>(memory_);
-    size_t padding = base::bits::Align(memory, alignment) - memory;
+    size_t memory = reinterpret_cast<size_t>(memory_.get());
+    size_t padding = base::bits::AlignUp(memory, alignment) - memory;
     DCHECK_LE(bytes_written_ + size + padding, memory_size_);
 
     memory_ += padding;
     bytes_written_ += padding;
   }
 
-  char* memory_ = nullptr;
+  raw_ptr<char> memory_ = nullptr;
   uint32_t memory_size_ = 0u;
   uint32_t bytes_written_ = 0u;
 };

@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/webui/cr_components/most_visited/most_visited_handler.h"
 #include "chrome/browser/ui/webui/customize_themes/chrome_customize_themes_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_handler.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/new_tab_page_third_party_resources.h"
@@ -25,11 +28,13 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/favicon_base/favicon_url_parser.h"
 #include "components/prefs/pref_service.h"
+#include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "url/url_util.h"
@@ -58,26 +63,62 @@ content::WebUIDataSource* CreateNewTabPageThirdPartyUiHtmlSource(
 
   source->AddLocalizedStrings(kStrings);
 
-  const ui::ThemeProvider& theme_provider =
-      ThemeService::GetThemeProviderForProfile(profile);
-  source->AddString("backgroundPosition",
-                    GetNewTabBackgroundPositionCSS(theme_provider));
-  source->AddString("backgroundTiling",
-                    GetNewTabBackgroundTilingCSS(theme_provider));
-  source->AddString("colorBackground",
-                    color_utils::SkColorToRgbaString(GetThemeColor(
-                        webui::GetNativeTheme(web_contents), theme_provider,
-                        ThemeProperties::COLOR_NTP_BACKGROUND)));
-  source->AddString("themeId",
-                    profile->GetPrefs()->GetString(prefs::kCurrentThemeID));
-  source->AddString("hascustombackground",
-                    theme_provider.HasCustomImage(IDR_THEME_NTP_BACKGROUND)
-                        ? "has-custom-background"
-                        : "");
-  source->AddString("isdark", !color_utils::IsDark(theme_provider.GetColor(
-                                  ThemeProperties::COLOR_NTP_TEXT))
-                                  ? "dark"
-                                  : "");
+  const ui::ThemeProvider* theme_provider =
+      webui::GetThemeProvider(web_contents);
+  // TODO(crbug.com/1299925): Always mock theme provider in tests so that
+  // `theme_provider` is never nullptr.
+  if (theme_provider) {
+    const ui::ColorProvider& color_provider = web_contents->GetColorProvider();
+    source->AddString("backgroundPosition",
+                      GetNewTabBackgroundPositionCSS(*theme_provider));
+    source->AddString("backgroundTiling",
+                      GetNewTabBackgroundTilingCSS(*theme_provider));
+    source->AddString("colorBackground",
+                      color_utils::SkColorToRgbaString(GetThemeColor(
+                          webui::GetNativeTheme(web_contents), color_provider,
+                          kColorNewTabPageBackground)));
+    // TODO(crbug.com/1056758): don't get theme id from profile.
+    source->AddString("themeId",
+                      profile->GetPrefs()->GetString(prefs::kCurrentThemeID));
+    source->AddString("hascustombackground",
+                      theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND)
+                          ? "has-custom-background"
+                          : "");
+    source->AddString(
+        "isdark",
+        !color_utils::IsDark(color_provider.GetColor(kColorNewTabPageText))
+            ? "dark"
+            : "");
+  } else {
+    source->AddString("backgroundPosition", "");
+    source->AddString("backgroundTiling", "");
+    source->AddString("colorBackground", "");
+    source->AddString("themeId", "");
+    source->AddString("hascustombackground", "");
+    source->AddString("isdark", "");
+  }
+
+  source->AddBoolean(
+      "handleMostVisitedNavigationExplicitly",
+      base::FeatureList::IsEnabled(
+          ntp_features::kNtpHandleMostVisitedNavigationExplicitly));
+
+  // Needed by <cr-most-visited> but not used in
+  // chrome://new-tab-page-third-party/.
+  source->AddString("addLinkTitle", "");
+  source->AddString("editLinkTitle", "");
+  source->AddString("invalidUrl", "");
+  source->AddString("linkAddedMsg", "");
+  source->AddString("linkCancel", "");
+  source->AddString("linkCantCreate", "");
+  source->AddString("linkCantEdit", "");
+  source->AddString("linkDone", "");
+  source->AddString("linkEditedMsg", "");
+  source->AddString("moreActions", "");
+  source->AddString("nameField", "");
+  source->AddString("restoreDefaultLinks", "");
+  source->AddString("shortcutAlreadyExists", "");
+  source->AddString("urlField", "");
 
   webui::SetupWebUIDataSource(
       source,
@@ -92,6 +133,7 @@ content::WebUIDataSource* CreateNewTabPageThirdPartyUiHtmlSource(
 NewTabPageThirdPartyUI::NewTabPageThirdPartyUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/false),
       page_factory_receiver_(this),
+      most_visited_page_factory_receiver_(this),
       profile_(Profile::FromWebUI(web_ui)),
       web_contents_(web_ui->GetWebContents()),
       navigation_start_time_(base::Time::Now()) {
@@ -111,8 +153,9 @@ NewTabPageThirdPartyUI::~NewTabPageThirdPartyUI() = default;
 
 // static
 bool NewTabPageThirdPartyUI::IsNewTabPageOrigin(const GURL& url) {
-  return url.GetOrigin() ==
-         GURL(chrome::kChromeUINewTabPageThirdPartyURL).GetOrigin();
+  return url.DeprecatedGetOriginAsURL() ==
+         GURL(chrome::kChromeUINewTabPageThirdPartyURL)
+             .DeprecatedGetOriginAsURL();
 }
 
 void NewTabPageThirdPartyUI::BindInterface(
@@ -125,6 +168,16 @@ void NewTabPageThirdPartyUI::BindInterface(
   page_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
+void NewTabPageThirdPartyUI::BindInterface(
+    mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandlerFactory>
+        pending_receiver) {
+  if (most_visited_page_factory_receiver_.is_bound()) {
+    most_visited_page_factory_receiver_.reset();
+  }
+
+  most_visited_page_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
 void NewTabPageThirdPartyUI::CreatePageHandler(
     mojo::PendingRemote<new_tab_page_third_party::mojom::Page> pending_page,
     mojo::PendingReceiver<new_tab_page_third_party::mojom::PageHandler>
@@ -133,5 +186,18 @@ void NewTabPageThirdPartyUI::CreatePageHandler(
 
   page_handler_ = std::make_unique<NewTabPageThirdPartyHandler>(
       std::move(pending_page_handler), std::move(pending_page), profile_,
-      web_contents_, navigation_start_time_);
+      web_contents_);
+}
+
+void NewTabPageThirdPartyUI::CreatePageHandler(
+    mojo::PendingRemote<most_visited::mojom::MostVisitedPage> pending_page,
+    mojo::PendingReceiver<most_visited::mojom::MostVisitedPageHandler>
+        pending_page_handler) {
+  DCHECK(pending_page.is_valid());
+
+  most_visited_page_handler_ = std::make_unique<MostVisitedHandler>(
+      std::move(pending_page_handler), std::move(pending_page), profile_,
+      web_contents_, GURL(chrome::kChromeUINewTabPageThirdPartyURL),
+      navigation_start_time_);
+  most_visited_page_handler_->EnableCustomLinks(false);
 }

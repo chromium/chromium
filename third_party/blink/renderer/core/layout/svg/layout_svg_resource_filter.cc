@@ -47,8 +47,8 @@ void LayoutSVGResourceFilter::RemoveAllClientsFromCache() {
   MarkAllClientsForInvalidation(kPaintInvalidation | kFilterCacheInvalidation);
 }
 
-FloatRect LayoutSVGResourceFilter::ResourceBoundingBox(
-    const FloatRect& reference_box) const {
+gfx::RectF LayoutSVGResourceFilter::ResourceBoundingBox(
+    const gfx::RectF& reference_box) const {
   NOT_DESTROYED();
   const auto* filter_element = To<SVGFilterElement>(GetElement());
   return SVGLengthContext::ResolveRectangle(filter_element, FilterUnits(),

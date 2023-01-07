@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -98,7 +98,7 @@ float WallpaperWidgetController::GetWallpaperBlur() const {
 void WallpaperWidgetController::OnImplicitAnimationsCompleted() {
   StopAnimating();
   wallpaper_view_->SetLockShieldEnabled(
-      wallpaper_view_->GetWidget()->GetNativeWindow()->parent()->id() ==
+      wallpaper_view_->GetWidget()->GetNativeWindow()->parent()->GetId() ==
       kShellWindowId_LockScreenWallpaperContainer);
   RunAnimationEndCallbacks();
 }

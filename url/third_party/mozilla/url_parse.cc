@@ -38,6 +38,8 @@
 
 #include <stdlib.h>
 
+#include <ostream>
+
 #include "base/check_op.h"
 #include "url/url_parse_internal.h"
 #include "url/url_util.h"
@@ -689,6 +691,11 @@ bool DoExtractQueryKeyValue(const CHAR* spec,
 }
 
 }  // namespace
+
+COMPONENT_EXPORT(URL)
+std::ostream& operator<<(std::ostream& os, const Component& component) {
+  return os << '{' << component.begin << ", " << component.len << "}";
+}
 
 Parsed::Parsed() : potentially_dangling_markup(false), inner_parsed_(NULL) {}
 

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,25 +9,30 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
-#include "chrome/browser/chromeos/file_manager/filesystem_api_util.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/file_manager/snapshot_manager.h"
-#include "chrome/browser/chromeos/file_manager/volume_manager.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/snapshot_manager.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chromeos/components/drivefs/drivefs_util.h"
+#include "chromeos/ash/components/drivefs/drivefs_util.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_errors.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -91,8 +96,8 @@ void GetSelectedFileInfoInternal(
     std::unique_ptr<GetSelectedFileInfoParams> params) {
   DCHECK(profile);
 
-  for (size_t i = params->selected_files.size();
-       i < params->file_paths.size(); ++i) {
+  for (size_t i = params->selected_files.size(); i < params->file_paths.size();
+       ++i) {
     const base::FilePath& file_path = params->file_paths[i];
 
     if (file_manager::util::IsUnderNonNativeLocalPath(profile, file_path)) {
@@ -200,8 +205,7 @@ void ContinueGetSelectedFileInfoWithDriveFsMetadata(
   GetSelectedFileInfoInternal(profile, std::move(params));
 }
 
-std::unique_ptr<std::string> GetShareUrlFromAlternateUrl(
-    const GURL& alternate_url) {
+std::string GetShareUrlFromAlternateUrl(const GURL& alternate_url) {
   // Set |share_url| to a modified version of |alternate_url| that opens the
   // sharing dialog for files and folders (add ?userstoinvite="" to the URL).
   GURL::Replacements replacements;
@@ -210,8 +214,28 @@ std::unique_ptr<std::string> GetShareUrlFromAlternateUrl(
       "userstoinvite=%22%22";
   replacements.SetQueryStr(new_query);
 
-  return std::make_unique<std::string>(
-      alternate_url.ReplaceComponents(replacements).spec());
+  return alternate_url.ReplaceComponents(replacements).spec();
+}
+
+extensions::api::file_manager_private::VmType VmTypeToJs(
+    guest_os::VmType vm_type) {
+  switch (vm_type) {
+    case guest_os::VmType::TERMINA:
+      return extensions::api::file_manager_private::VM_TYPE_TERMINA;
+    case guest_os::VmType::PLUGIN_VM:
+      return extensions::api::file_manager_private::VM_TYPE_PLUGIN_VM;
+    case guest_os::VmType::BOREALIS:
+      return extensions::api::file_manager_private::VM_TYPE_BOREALIS;
+    case guest_os::VmType::BRUSCHETTA:
+      return extensions::api::file_manager_private::VM_TYPE_BRUSCHETTA;
+    case guest_os::VmType::ARCVM:
+      return extensions::api::file_manager_private::VM_TYPE_ARCVM;
+    case guest_os::VmType::UNKNOWN:
+    case guest_os::VmType::VmType_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case guest_os::VmType::VmType_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
+      return extensions::api::file_manager_private::VM_TYPE_NONE;
+  }
 }
 
 }  // namespace
@@ -287,84 +311,90 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
     return;
   }
 
-  properties_->size = std::make_unique<double>(metadata->size);
-  properties_->present = std::make_unique<bool>(metadata->available_offline);
-  properties_->dirty = std::make_unique<bool>(metadata->dirty);
-  properties_->hosted =
-      std::make_unique<bool>(drivefs::IsHosted(metadata->type));
-  properties_->available_offline = std::make_unique<bool>(
-      metadata->available_offline || *properties_->hosted);
-  properties_->available_when_metered = std::make_unique<bool>(
-      metadata->available_offline || *properties_->hosted);
-  properties_->pinned = std::make_unique<bool>(metadata->pinned);
-  properties_->shared = std::make_unique<bool>(metadata->shared);
-  properties_->starred = std::make_unique<bool>(metadata->starred);
+  if (base::FeatureList::IsEnabled(ash::features::kFilesInlineSyncStatus)) {
+    drive::DriveIntegrationService* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(running_profile_);
+    auto sync_status = (!integration_service)
+                           ? drivefs::SyncStatus::kNotFound
+                           : integration_service->GetSyncStatusForPath(
+                                 file_system_url_.path());
+    switch (sync_status) {
+      case drivefs::SyncStatus::kInProgress:
+        properties_->sync_status =
+            file_manager_private::SYNC_STATUS_IN_PROGRESS;
+        break;
+      case drivefs::SyncStatus::kError:
+        properties_->sync_status = file_manager_private::SYNC_STATUS_ERROR;
+        break;
+      default:
+        properties_->sync_status = file_manager_private::SYNC_STATUS_NOT_FOUND;
+        break;
+    }
+  } else {
+    properties_->sync_status = file_manager_private::SYNC_STATUS_NOT_FOUND;
+  }
+
+  properties_->size = metadata->size;
+  properties_->present = metadata->available_offline;
+  properties_->dirty = metadata->dirty;
+  properties_->hosted = drivefs::IsHosted(metadata->type);
+  properties_->available_offline =
+      metadata->available_offline || *properties_->hosted;
+  properties_->available_when_metered =
+      metadata->available_offline || *properties_->hosted;
+  properties_->pinned = metadata->pinned;
+  properties_->shared = metadata->shared;
+  properties_->starred = metadata->starred;
 
   if (metadata->modification_time != base::Time()) {
-    properties_->modification_time =
-        std::make_unique<double>(metadata->modification_time.ToJsTime());
+    properties_->modification_time = metadata->modification_time.ToJsTime();
   }
   if (metadata->last_viewed_by_me_time != base::Time()) {
     properties_->modification_by_me_time =
-        std::make_unique<double>(metadata->last_viewed_by_me_time.ToJsTime());
+        metadata->last_viewed_by_me_time.ToJsTime();
   }
   if (!metadata->content_mime_type.empty()) {
-    properties_->content_mime_type =
-        std::make_unique<std::string>(metadata->content_mime_type);
+    properties_->content_mime_type = metadata->content_mime_type;
   }
   if (!metadata->custom_icon_url.empty()) {
-    properties_->custom_icon_url =
-        std::make_unique<std::string>(std::move(metadata->custom_icon_url));
+    properties_->custom_icon_url = std::move(metadata->custom_icon_url);
   }
   if (!metadata->alternate_url.empty()) {
-    properties_->alternate_url =
-        std::make_unique<std::string>(std::move(metadata->alternate_url));
+    properties_->alternate_url = std::move(metadata->alternate_url);
     properties_->share_url =
         GetShareUrlFromAlternateUrl(GURL(*properties_->alternate_url));
   }
   if (metadata->image_metadata) {
-    if (metadata->image_metadata->height) {
-      properties_->image_height =
-          std::make_unique<int32_t>(metadata->image_metadata->height);
-    }
-    if (metadata->image_metadata->width) {
-      properties_->image_width =
-          std::make_unique<int32_t>(metadata->image_metadata->width);
-    }
-    if (metadata->image_metadata->rotation) {
-      properties_->image_rotation =
-          std::make_unique<int32_t>(metadata->image_metadata->rotation);
-    }
+    properties_->image_height = metadata->image_metadata->height;
+    properties_->image_width = metadata->image_metadata->width;
+    properties_->image_rotation = metadata->image_metadata->rotation;
   }
 
-  properties_->can_delete =
-      std::make_unique<bool>(metadata->capabilities->can_delete);
-  properties_->can_rename =
-      std::make_unique<bool>(metadata->capabilities->can_rename);
-  properties_->can_add_children =
-      std::make_unique<bool>(metadata->capabilities->can_add_children);
+  properties_->can_delete = metadata->capabilities->can_delete;
+  properties_->can_rename = metadata->capabilities->can_rename;
+  properties_->can_add_children = metadata->capabilities->can_add_children;
 
   // Only set the |can_copy| capability for hosted documents; for other files,
   // we must have read access, so |can_copy| is implicitly true.
-  properties_->can_copy = std::make_unique<bool>(
-      !*properties_->hosted || metadata->capabilities->can_copy);
-  properties_->can_share =
-      std::make_unique<bool>(metadata->capabilities->can_share);
+  properties_->can_copy =
+      !*properties_->hosted || metadata->capabilities->can_copy;
+  properties_->can_share = metadata->capabilities->can_share;
+
+  properties_->can_pin =
+      metadata->can_pin == drivefs::mojom::FileMetadata::CanPinStatus::kOk;
 
   if (drivefs::IsAFile(metadata->type)) {
-    properties_->thumbnail_url = std::make_unique<std::string>(
-        base::StrCat({"drivefs:", file_system_url_.ToGURL().spec()}));
-    properties_->cropped_thumbnail_url =
-        std::make_unique<std::string>(*properties_->thumbnail_url);
+    properties_->thumbnail_url =
+        base::StrCat({"drivefs:", file_system_url_.ToGURL().spec()});
+    properties_->cropped_thumbnail_url = *properties_->thumbnail_url;
   }
 
   if (metadata->folder_feature) {
-    properties_->is_machine_root =
-        std::make_unique<bool>(metadata->folder_feature->is_machine_root);
+    properties_->is_machine_root = metadata->folder_feature->is_machine_root;
     properties_->is_external_media =
-        std::make_unique<bool>(metadata->folder_feature->is_external_media);
-    properties_->is_arbitrary_sync_folder = std::make_unique<bool>(
-        metadata->folder_feature->is_arbitrary_sync_folder);
+        metadata->folder_feature->is_external_media;
+    properties_->is_arbitrary_sync_folder =
+        metadata->folder_feature->is_arbitrary_sync_folder;
   }
 
   CompleteGetEntryProperties(drive::FILE_ERROR_OK);
@@ -381,16 +411,14 @@ void SingleEntryPropertiesGetterForDriveFs::CompleteGetEntryProperties(
 }
 
 void FillIconSet(file_manager_private::IconSet* output,
-                 const chromeos::file_system_provider::IconSet& input) {
+                 const ash::file_system_provider::IconSet& input) {
   DCHECK(output);
-  using chromeos::file_system_provider::IconSet;
+  using ash::file_system_provider::IconSet;
   if (input.HasIcon(IconSet::IconSize::SIZE_16x16)) {
-    output->icon16x16_url = std::make_unique<std::string>(
-        input.GetIcon(IconSet::IconSize::SIZE_16x16).spec());
+    output->icon16x16_url = input.GetIcon(IconSet::IconSize::SIZE_16x16).spec();
   }
   if (input.HasIcon(IconSet::IconSize::SIZE_32x32)) {
-    output->icon32x32_url = std::make_unique<std::string>(
-        input.GetIcon(IconSet::IconSize::SIZE_32x32).spec());
+    output->icon32x32_url = input.GetIcon(IconSet::IconSize::SIZE_32x32).spec();
   }
 }
 
@@ -408,12 +436,10 @@ void VolumeToVolumeMetadata(
   volume_metadata->profile.is_current_profile = true;
 
   if (!volume.source_path().empty()) {
-    volume_metadata->source_path =
-        std::make_unique<std::string>(volume.source_path().AsUTF8Unsafe());
+    volume_metadata->source_path = volume.source_path().AsUTF8Unsafe();
   }
   if (!volume.remote_mount_path().empty()) {
-    volume_metadata->remote_mount_path =
-        std::make_unique<std::string>(volume.remote_mount_path().value());
+    volume_metadata->remote_mount_path = volume.remote_mount_path().value();
   }
 
   switch (volume.source()) {
@@ -422,8 +448,8 @@ void VolumeToVolumeMetadata(
       break;
     case SOURCE_DEVICE:
       volume_metadata->source = file_manager_private::SOURCE_DEVICE;
-      volume_metadata->is_read_only_removable_device = volume
-          .is_read_only_removable_device();
+      volume_metadata->is_read_only_removable_device =
+          volume.is_read_only_removable_device();
       break;
     case SOURCE_NETWORK:
       volume_metadata->source =
@@ -439,25 +465,19 @@ void VolumeToVolumeMetadata(
   volume_metadata->watchable = volume.watchable();
 
   if (volume.type() == VOLUME_TYPE_PROVIDED) {
-    volume_metadata->provider_id =
-        std::make_unique<std::string>(volume.provider_id().ToString());
-    volume_metadata->file_system_id =
-        std::make_unique<std::string>(volume.file_system_id());
+    volume_metadata->provider_id = volume.provider_id().ToString();
+    volume_metadata->file_system_id = volume.file_system_id();
   }
 
   FillIconSet(&volume_metadata->icon_set, volume.icon_set());
 
-  volume_metadata->volume_label =
-      std::make_unique<std::string>(volume.volume_label());
-  volume_metadata->disk_file_system_type =
-      std::make_unique<std::string>(volume.file_system_type());
-  volume_metadata->drive_label =
-      std::make_unique<std::string>(volume.drive_label());
+  volume_metadata->volume_label = volume.volume_label();
+  volume_metadata->disk_file_system_type = volume.file_system_type();
+  volume_metadata->drive_label = volume.drive_label();
 
   switch (volume.type()) {
     case VOLUME_TYPE_GOOGLE_DRIVE:
-      volume_metadata->volume_type =
-          file_manager_private::VOLUME_TYPE_DRIVE;
+      volume_metadata->volume_type = file_manager_private::VOLUME_TYPE_DRIVE;
       break;
     case VOLUME_TYPE_DOWNLOADS_DIRECTORY:
       volume_metadata->volume_type =
@@ -492,11 +512,17 @@ void VolumeToVolumeMetadata(
           file_manager_private::VOLUME_TYPE_DOCUMENTS_PROVIDER;
       break;
     case VOLUME_TYPE_TESTING:
-      volume_metadata->volume_type =
-          file_manager_private::VOLUME_TYPE_TESTING;
+      volume_metadata->volume_type = file_manager_private::VOLUME_TYPE_TESTING;
       break;
     case VOLUME_TYPE_SMB:
       volume_metadata->volume_type = file_manager_private::VOLUME_TYPE_SMB;
+      break;
+    case VOLUME_TYPE_SYSTEM_INTERNAL:
+      volume_metadata->volume_type =
+          file_manager_private::VOLUME_TYPE_SYSTEM_INTERNAL;
+      break;
+    case VOLUME_TYPE_GUEST_OS:
+      volume_metadata->volume_type = file_manager_private::VOLUME_TYPE_GUEST_OS;
       break;
     case NUM_VOLUME_TYPE:
       NOTREACHED();
@@ -506,49 +532,54 @@ void VolumeToVolumeMetadata(
   // Fill device_type iff the volume is removable partition.
   if (volume.type() == VOLUME_TYPE_REMOVABLE_DISK_PARTITION) {
     switch (volume.device_type()) {
-      case chromeos::DEVICE_TYPE_UNKNOWN:
+      case ash::DeviceType::kUnknown:
         volume_metadata->device_type =
             file_manager_private::DEVICE_TYPE_UNKNOWN;
         break;
-      case chromeos::DEVICE_TYPE_USB:
+      case ash::DeviceType::kUSB:
         volume_metadata->device_type = file_manager_private::DEVICE_TYPE_USB;
         break;
-      case chromeos::DEVICE_TYPE_SD:
+      case ash::DeviceType::kSD:
         volume_metadata->device_type = file_manager_private::DEVICE_TYPE_SD;
         break;
-      case chromeos::DEVICE_TYPE_OPTICAL_DISC:
-      case chromeos::DEVICE_TYPE_DVD:
+      case ash::DeviceType::kOpticalDisc:
+      case ash::DeviceType::kDVD:
         volume_metadata->device_type =
             file_manager_private::DEVICE_TYPE_OPTICAL;
         break;
-      case chromeos::DEVICE_TYPE_MOBILE:
+      case ash::DeviceType::kMobile:
         volume_metadata->device_type = file_manager_private::DEVICE_TYPE_MOBILE;
         break;
     }
-    volume_metadata->device_path = std::make_unique<std::string>(
-        volume.storage_device_path().AsUTF8Unsafe());
-    volume_metadata->is_parent_device =
-        std::make_unique<bool>(volume.is_parent());
+    volume_metadata->device_path = volume.storage_device_path().AsUTF8Unsafe();
+    volume_metadata->is_parent_device = volume.is_parent();
   } else {
-    volume_metadata->device_type =
-        file_manager_private::DEVICE_TYPE_NONE;
+    volume_metadata->device_type = file_manager_private::DEVICE_TYPE_NONE;
   }
 
   volume_metadata->is_read_only = volume.is_read_only();
   volume_metadata->has_media = volume.has_media();
+  volume_metadata->hidden = volume.hidden();
 
   switch (volume.mount_condition()) {
-    case chromeos::disks::MOUNT_CONDITION_NONE:
+    default:
+      NOTREACHED() << "Unexpected mount condition " << volume.mount_condition();
+      [[fallthrough]];
+    case ash::MountError::kNone:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_NONE;
       break;
-    case chromeos::disks::MOUNT_CONDITION_UNKNOWN_FILESYSTEM:
+    case ash::MountError::kUnknownFilesystem:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_UNKNOWN;
       break;
-    case chromeos::disks::MOUNT_CONDITION_UNSUPPORTED_FILESYSTEM:
+    case ash::MountError::kUnsupportedFilesystem:
       volume_metadata->mount_condition =
           file_manager_private::MOUNT_CONDITION_UNSUPPORTED;
+      break;
+    case ash::MountError::kInProgress:
+      volume_metadata->mount_condition =
+          file_manager_private::MOUNT_CONDITION_IN_PROGRESS;
       break;
   }
 
@@ -563,6 +594,10 @@ void VolumeToVolumeMetadata(
     case MOUNT_CONTEXT_UNKNOWN:
       break;
   }
+
+  if (volume.vm_type()) {
+    volume_metadata->vm_type = VmTypeToJs(*volume.vm_type());
+  }
 }
 
 base::FilePath GetLocalPathFromURL(content::RenderFrameHost* render_frame_host,
@@ -575,7 +610,7 @@ base::FilePath GetLocalPathFromURL(content::RenderFrameHost* render_frame_host,
       util::GetFileSystemContextForRenderFrameHost(profile, render_frame_host);
 
   const storage::FileSystemURL filesystem_url(
-      file_system_context->CrackURL(url));
+      file_system_context->CrackURLInFirstPartyContext(url));
   base::FilePath path;
   if (!chromeos::FileSystemBackend::CanHandleURL(filesystem_url))
     return base::FilePath();
@@ -595,13 +630,11 @@ void GetSelectedFileInfo(content::RenderFrameHost* render_frame_host,
   params->local_path_option = local_path_option;
   params->callback = std::move(callback);
 
-  for (size_t i = 0; i < file_urls.size(); ++i) {
-    const GURL& file_url = file_urls[i];
-    const base::FilePath path = GetLocalPathFromURL(
-        render_frame_host, profile, file_url);
+  for (const GURL& url : file_urls) {
+    base::FilePath path = GetLocalPathFromURL(render_frame_host, profile, url);
     if (!path.empty()) {
-      DVLOG(1) << "Selected: file path: " << path.value();
-      params->file_paths.push_back(path);
+      DVLOG(1) << "Selected: file path: " << path;
+      params->file_paths.push_back(std::move(path));
     }
   }
 
@@ -611,9 +644,27 @@ void GetSelectedFileInfo(content::RenderFrameHost* render_frame_host,
 }
 
 drive::EventLogger* GetLogger(Profile* profile) {
+  if (!profile)
+    return nullptr;
   drive::DriveIntegrationService* service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   return service ? service->event_logger() : nullptr;
+}
+
+std::vector<extensions::api::file_manager_private::MountableGuest>
+CreateMountableGuestList(Profile* profile) {
+  auto* registry =
+      guest_os::GuestOsService::GetForProfile(profile)->MountProviderRegistry();
+  std::vector<file_manager_private::MountableGuest> guests;
+  for (const auto id : registry->List()) {
+    file_manager_private::MountableGuest guest;
+    auto* provider = registry->Get(id);
+    guest.id = id;
+    guest.display_name = provider->DisplayName();
+    guest.vm_type = VmTypeToJs(provider->vm_type());
+    guests.push_back(std::move(guest));
+  }
+  return guests;
 }
 
 }  // namespace util

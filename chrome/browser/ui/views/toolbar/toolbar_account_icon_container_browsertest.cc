@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,18 +23,12 @@
 // The param is whether to use the highlight in the container.
 class ToolbarAccountIconContainerViewBrowserTest : public InProcessBrowserTest {
  public:
-  ToolbarAccountIconContainerViewBrowserTest() {}
+  ToolbarAccountIconContainerViewBrowserTest() = default;
   ToolbarAccountIconContainerViewBrowserTest(
       const ToolbarAccountIconContainerViewBrowserTest&) = delete;
   ToolbarAccountIconContainerViewBrowserTest& operator=(
       const ToolbarAccountIconContainerViewBrowserTest&) = delete;
   ~ToolbarAccountIconContainerViewBrowserTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillEnableToolbarStatusChip);
-    InProcessBrowserTest::SetUp();
-  }
 
   void TestUsesHighlight(ToolbarAccountIconContainerView* container,
                          bool expect_highlight) {
@@ -46,7 +40,7 @@ class ToolbarAccountIconContainerViewBrowserTest : public InProcessBrowserTest {
         container->page_action_icon_controller()->GetIconView(
             PageActionIconType::kSaveCard);
     save_card_icon->SetVisible(true);
-    container->Layout();
+    save_card_icon->InstallLoadingIndicatorForTesting();
 
     EXPECT_EQ(container->uses_highlight(), expect_highlight);
     EXPECT_FALSE(IsHighlighted(container));
@@ -72,29 +66,24 @@ class ToolbarAccountIconContainerViewBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ToolbarAccountIconContainerViewBrowserTest,
                        ShouldUpdateHighlightInNormalWindow) {
-  ToolbarAccountIconContainerView* container_view =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar()
-          ->toolbar_account_icon_container();
-  TestUsesHighlight(container_view, /*expect_highlight=*/true);
+  ToolbarAccountIconContainerView container_view =
+      ToolbarAccountIconContainerView(
+          BrowserView::GetBrowserViewForBrowser(browser()));
+  TestUsesHighlight(&container_view, /*expect_highlight=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarAccountIconContainerViewBrowserTest,
                        ShouldUpdateHighlightInGuestWindow) {
-  Browser* guest_browser = InProcessBrowserTest::CreateGuestBrowser();
-  ToolbarAccountIconContainerView* container_view =
-      BrowserView::GetBrowserViewForBrowser(guest_browser)
-          ->toolbar()
-          ->toolbar_account_icon_container();
-  TestUsesHighlight(container_view, /*expect_highlight=*/true);
+  ToolbarAccountIconContainerView container_view =
+      ToolbarAccountIconContainerView(BrowserView::GetBrowserViewForBrowser(
+          InProcessBrowserTest::CreateGuestBrowser()));
+  TestUsesHighlight(&container_view, /*expect_highlight=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolbarAccountIconContainerViewBrowserTest,
                        ShouldNotUpdateHighlightInIncognitoWindow) {
-  Browser* incognito_browser = CreateIncognitoBrowser();
-  ToolbarAccountIconContainerView* container_view =
-      BrowserView::GetBrowserViewForBrowser(incognito_browser)
-          ->toolbar()
-          ->toolbar_account_icon_container();
-  TestUsesHighlight(container_view, /*expect_highlight=*/false);
+  ToolbarAccountIconContainerView container_view =
+      ToolbarAccountIconContainerView(BrowserView::GetBrowserViewForBrowser(
+          InProcessBrowserTest::CreateIncognitoBrowser()));
+  TestUsesHighlight(&container_view, /*expect_highlight=*/false);
 }

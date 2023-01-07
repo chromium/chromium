@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_file_formdata_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_validity_state_flags.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
@@ -20,6 +21,7 @@
 namespace blink {
 
 namespace {
+
 bool IsValidityStateFlagsValid(const ValidityStateFlags* flags) {
   if (!flags)
     return true;
@@ -30,7 +32,8 @@ bool IsValidityStateFlagsValid(const ValidityStateFlags* flags) {
     return false;
   return true;
 }
-}  // anonymous namespace
+
+}  // namespace
 
 ElementInternals::ElementInternals(HTMLElement& target) : target_(target) {
 }
@@ -47,13 +50,13 @@ void ElementInternals::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-void ElementInternals::setFormValue(const ControlValue& value,
+void ElementInternals::setFormValue(const V8ControlValue* value,
                                     ExceptionState& exception_state) {
   setFormValue(value, value, exception_state);
 }
 
-void ElementInternals::setFormValue(const ControlValue& value,
-                                    const ControlValue& state,
+void ElementInternals::setFormValue(const V8ControlValue* value,
+                                    const V8ControlValue* state,
                                     ExceptionState& exception_state) {
   if (!IsTargetFormAssociated()) {
     exception_state.ThrowDOMException(
@@ -62,18 +65,18 @@ void ElementInternals::setFormValue(const ControlValue& value,
     return;
   }
 
-  if (value.IsFormData()) {
-    value_ = ControlValue::FromFormData(
-        MakeGarbageCollected<FormData>(*value.GetAsFormData()));
+  if (value && value->IsFormData()) {
+    value_ = MakeGarbageCollected<V8ControlValue>(
+        MakeGarbageCollected<FormData>(*value->GetAsFormData()));
   } else {
     value_ = value;
   }
 
-  if (&value == &state) {
+  if (value == state) {
     state_ = value_;
-  } else if (state.IsFormData()) {
-    state_ = ControlValue::FromFormData(
-        MakeGarbageCollected<FormData>(*state.GetAsFormData()));
+  } else if (state && state->IsFormData()) {
+    state_ = MakeGarbageCollected<V8ControlValue>(
+        MakeGarbageCollected<FormData>(*state->GetAsFormData()));
   } else {
     state_ = state;
   }
@@ -113,9 +116,8 @@ void ElementInternals::setValidity(ValidityStateFlags* flags,
   }
   // Custom element authors should provide a message. They can omit the message
   // argument only if nothing if | flags| is true.
-  if (!IsValidityStateFlagsValid(flags) && message.IsEmpty()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kTypeMismatchError,
+  if (!IsValidityStateFlagsValid(flags) && message.empty()) {
+    exception_state.ThrowTypeError(
         "The second argument should not be empty if one or more flags in the "
         "first argument are true.");
     return;
@@ -233,7 +235,10 @@ ShadowRoot* ElementInternals::shadowRoot() const {
 
 const AtomicString& ElementInternals::FastGetAttribute(
     const QualifiedName& attribute) const {
-  return accessibility_semantics_map_.at(attribute);
+  const auto it = accessibility_semantics_map_.find(attribute);
+  if (it == accessibility_semantics_map_.end())
+    return g_null_atom;
+  return it->value;
 }
 
 const HashMap<QualifiedName, AtomicString>& ElementInternals::GetAttributes()
@@ -285,39 +290,37 @@ void ElementInternals::SetElementAttribute(const QualifiedName& name,
 }
 
 Element* ElementInternals::GetElementAttribute(const QualifiedName& name) {
-  HeapLinkedHashSet<WeakMember<Element>>* stored_elements =
-      explicitly_set_attr_elements_map_.at(name);
-  if (!stored_elements)
+  const auto& iter = explicitly_set_attr_elements_map_.find(name);
+  if (iter == explicitly_set_attr_elements_map_.end())
     return nullptr;
+  HeapLinkedHashSet<WeakMember<Element>>* stored_elements = iter->value;
   DCHECK_EQ(stored_elements->size(), 1u);
   return *(stored_elements->begin());
 }
 
-base::Optional<HeapVector<Member<Element>>>
-ElementInternals::GetElementArrayAttribute(const QualifiedName& name) const {
+HeapVector<Member<Element>>* ElementInternals::GetElementArrayAttribute(
+    const QualifiedName& name) const {
   const auto& iter = explicitly_set_attr_elements_map_.find(name);
-  if (iter == explicitly_set_attr_elements_map_.end()) {
-    return base::nullopt;
-  }
+  if (iter == explicitly_set_attr_elements_map_.end())
+    return nullptr;
+  HeapLinkedHashSet<WeakMember<Element>>* stored_elements = iter->value;
 
   // Convert from our internal HeapLinkedHashSet of weak references to a
   // HeapVector of strong references so that V8 can implicitly convert to a
   // FrozenArray.
   HeapVector<Member<Element>>* results =
-      MakeGarbageCollected<HeapVector<Member<Element>>>();
-
-  blink::HeapLinkedHashSet<blink::WeakMember<blink::Element>>* stored_elements =
-      iter->value;
+      MakeGarbageCollected<HeapVector<Member<Element>>>(
+          stored_elements->size());
   for (auto item : *stored_elements) {
     results->push_back(item);
   }
 
-  return *results;
+  return results;
 }
 
 void ElementInternals::SetElementArrayAttribute(
     const QualifiedName& name,
-    const base::Optional<HeapVector<Member<Element>>>& given_elements) {
+    const HeapVector<Member<Element>>* given_elements) {
   if (!given_elements) {
     explicitly_set_attr_elements_map_.erase(name);
     return;
@@ -334,7 +337,7 @@ void ElementInternals::SetElementArrayAttribute(
     stored_elements.stored_value->value->clear();
   }
 
-  for (auto element : given_elements.value()) {
+  for (auto element : *given_elements) {
     stored_elements.stored_value->value->insert(element);
   }
 }
@@ -376,22 +379,32 @@ bool ElementInternals::IsEnumeratable() const {
 void ElementInternals::AppendToFormData(FormData& form_data) {
   if (Target().IsDisabledFormControl())
     return;
-  const AtomicString& name = Target().FastGetAttribute(html_names::kNameAttr);
-  if (!value_.IsFormData()) {
-    if (name.IsEmpty())
-      return;
-    if (value_.IsFile())
-      form_data.AppendFromElement(name, value_.GetAsFile());
-    else if (value_.IsUSVString())
-      form_data.AppendFromElement(name, value_.GetAsUSVString());
-    // Append nothing for null value.
+
+  if (!value_)
     return;
-  }
-  for (const auto& entry : value_.GetAsFormData()->Entries()) {
-    if (entry->isFile())
-      form_data.append(entry->name(), entry->GetFile());
-    else
-      form_data.append(entry->name(), entry->Value());
+
+  const AtomicString& name = Target().FastGetAttribute(html_names::kNameAttr);
+  if (!value_->IsFormData() && name.empty())
+    return;
+
+  switch (value_->GetContentType()) {
+    case V8ControlValue::ContentType::kFile: {
+      form_data.AppendFromElement(name, value_->GetAsFile());
+      break;
+    }
+    case V8ControlValue::ContentType::kUSVString: {
+      form_data.AppendFromElement(name, value_->GetAsUSVString());
+      break;
+    }
+    case V8ControlValue::ContentType::kFormData: {
+      for (const auto& entry : value_->GetAsFormData()->Entries()) {
+        if (entry->isFile())
+          form_data.append(entry->name(), entry->GetFile());
+        else
+          form_data.append(entry->name(), entry->Value());
+      }
+      break;
+    }
   }
 }
 
@@ -459,18 +472,27 @@ bool ElementInternals::ShouldSaveAndRestoreFormControlState() const {
 
 FormControlState ElementInternals::SaveFormControlState() const {
   FormControlState state;
-  if (value_.IsUSVString()) {
-    state.Append("USVString");
-    state.Append(value_.GetAsUSVString());
-  } else if (value_.IsFile()) {
-    state.Append("File");
-    File* file = value_.GetAsFile();
-    file->AppendToControlState(state);
-  } else if (value_.IsFormData()) {
-    state.Append("FormData");
-    value_.GetAsFormData()->AppendToControlState(state);
+
+  if (!value_)
+    return state;
+
+  switch (value_->GetContentType()) {
+    case V8ControlValue::ContentType::kFile: {
+      state.Append("File");
+      value_->GetAsFile()->AppendToControlState(state);
+      break;
+    }
+    case V8ControlValue::ContentType::kFormData: {
+      state.Append("FormData");
+      value_->GetAsFormData()->AppendToControlState(state);
+      break;
+    }
+    case V8ControlValue::ContentType::kUSVString: {
+      state.Append("USVString");
+      state.Append(value_->GetAsUSVString());
+      break;
+    }
   }
-  // Add nothing if value_.IsNull().
   return state;
 }
 
@@ -478,17 +500,17 @@ void ElementInternals::RestoreFormControlState(const FormControlState& state) {
   if (state.ValueSize() < 2)
     return;
   if (state[0] == "USVString") {
-    value_ = ControlValue::FromUSVString(state[1]);
+    value_ = MakeGarbageCollected<V8ControlValue>(state[1]);
   } else if (state[0] == "File") {
     wtf_size_t i = 1;
     if (auto* file = File::CreateFromControlState(state, i))
-      value_ = ControlValue::FromFile(file);
+      value_ = MakeGarbageCollected<V8ControlValue>(file);
   } else if (state[0] == "FormData") {
     wtf_size_t i = 1;
     if (auto* form_data = FormData::CreateFromControlState(state, i))
-      value_ = ControlValue::FromFormData(form_data);
+      value_ = MakeGarbageCollected<V8ControlValue>(form_data);
   }
-  if (!value_.IsNull())
+  if (value_)
     CustomElement::EnqueueFormStateRestoreCallback(Target(), value_, "restore");
 }
 

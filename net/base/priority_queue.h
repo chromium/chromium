@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -132,8 +132,7 @@ class PriorityQueue {
   };
 
   // Creates a new queue for |num_priorities|.
-  explicit PriorityQueue(Priority num_priorities)
-      : lists_(num_priorities), size_(0) {
+  explicit PriorityQueue(Priority num_priorities) : lists_(num_priorities) {
 #if !defined(NDEBUG)
     next_id_ = 0;
 #endif
@@ -373,7 +372,7 @@ class PriorityQueue {
 #endif
 
   ListVector lists_;
-  size_t size_;
+  size_t size_ = 0;
 
   THREAD_CHECKER(thread_checker_);
 };

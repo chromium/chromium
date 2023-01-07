@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,6 +14,10 @@
 class MockSharingService : public SharingService {
  public:
   MockSharingService();
+
+  MockSharingService(const MockSharingService&) = delete;
+  MockSharingService& operator=(const MockSharingService&) = delete;
+
   ~MockSharingService() override;
 
   MOCK_CONST_METHOD1(
@@ -40,9 +44,6 @@ class MockSharingService : public SharingService {
   MOCK_METHOD1(
       UnregisterSharingHandler,
       void(chrome_browser_sharing::SharingMessage::PayloadCase payload_case));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSharingService);
 };
 
 #endif  // CHROME_BROWSER_SHARING_MOCK_SHARING_SERVICE_H_

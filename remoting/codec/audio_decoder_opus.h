@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/codec/audio_decoder.h"
 
 struct OpusDecoder;
@@ -19,6 +19,10 @@ class AudioPacket;
 class AudioDecoderOpus : public AudioDecoder {
  public:
   AudioDecoderOpus();
+
+  AudioDecoderOpus(const AudioDecoderOpus&) = delete;
+  AudioDecoderOpus& operator=(const AudioDecoderOpus&) = delete;
+
   ~AudioDecoderOpus() override;
 
   // AudioDecoder interface.
@@ -32,9 +36,7 @@ class AudioDecoderOpus : public AudioDecoder {
 
   int sampling_rate_;
   int channels_;
-  OpusDecoder* decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDecoderOpus);
+  raw_ptr<OpusDecoder> decoder_;
 };
 
 }  // namespace remoting

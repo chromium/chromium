@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,8 +86,8 @@ void WebGLTimerQueryEXT::ScheduleAllowAvailabilityUpdate() {
     return;
   task_handle_ = PostCancellableTask(
       *task_runner_, FROM_HERE,
-      WTF::Bind(&WebGLTimerQueryEXT::AllowAvailabilityUpdate,
-                WrapWeakPersistent(this)));
+      WTF::BindOnce(&WebGLTimerQueryEXT::AllowAvailabilityUpdate,
+                    WrapWeakPersistent(this)));
 }
 
 void WebGLTimerQueryEXT::AllowAvailabilityUpdate() {

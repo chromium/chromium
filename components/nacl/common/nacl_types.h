@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,7 +68,12 @@ struct NaClResourcePrefetchResult {
 // Parameters sent to the NaCl process when we start it.
 struct NaClStartParams {
   NaClStartParams();
+
+  NaClStartParams(const NaClStartParams&) = delete;
+  NaClStartParams& operator=(const NaClStartParams&) = delete;
+
   NaClStartParams(NaClStartParams&& other);
+
   ~NaClStartParams();
 
   IPC::PlatformFileForTransit nexe_file;
@@ -76,20 +81,8 @@ struct NaClStartParams {
   base::FilePath nexe_file_path_metadata;
 
   IPC::PlatformFileForTransit irt_handle;
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   IPC::PlatformFileForTransit debug_stub_server_bound_socket;
-#endif
-
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_NACL_NONSFI)
-  // These are for Non-SFI mode IPC channels.
-  // For security hardening, unlike in SFI mode, we cannot create socket pairs
-  // in a NaCl loader process. Thus, the browser process creates the
-  // ChannelHandle instances, and passes them to the NaCl loader process.
-  // SFI mode uses NaClProcessHostMsg_PpapiChannelsCreated instead.
-  IPC::ChannelHandle ppapi_browser_channel_handle;
-  IPC::ChannelHandle ppapi_renderer_channel_handle;
-  IPC::ChannelHandle trusted_service_channel_handle;
-  IPC::ChannelHandle manifest_service_channel_handle;
 #endif
 
   bool validation_cache_enabled;
@@ -109,9 +102,6 @@ struct NaClStartParams {
   // NOTE: Any new fields added here must also be added to the IPC
   // serialization in nacl_messages.h and (for POD fields) the constructor
   // in nacl_types.cc.
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NaClStartParams);
 };
 
 // Parameters sent to the browser process to have it launch a NaCl process.
@@ -126,10 +116,8 @@ struct NaClLaunchParams {
                    uint64_t nexe_token_hi,
                    const std::vector<NaClResourcePrefetchRequest>&
                        resource_prefetch_request_list,
-                   int render_view_id,
                    int render_frame_id,
                    uint32_t permission_bits,
-                   bool uses_nonsfi_mode,
                    NaClAppProcessType process_type);
   NaClLaunchParams(const NaClLaunchParams& other);
   ~NaClLaunchParams();
@@ -143,10 +131,8 @@ struct NaClLaunchParams {
   uint64_t nexe_token_hi = 0;
   std::vector<NaClResourcePrefetchRequest> resource_prefetch_request_list;
 
-  int render_view_id = 0;
   int render_frame_id = 0;
   uint32_t permission_bits = 0;
-  bool uses_nonsfi_mode = false;
 
   NaClAppProcessType process_type = kUnknownNaClProcessType;
 };
@@ -160,6 +146,10 @@ struct NaClLaunchResult {
       base::ProcessId plugin_pid,
       int plugin_child_id,
       base::ReadOnlySharedMemoryRegion crash_info_shmem_region);
+
+  NaClLaunchResult(const NaClLaunchResult&) = delete;
+  NaClLaunchResult& operator=(const NaClLaunchResult&) = delete;
+
   ~NaClLaunchResult();
 
   // For plugin <-> renderer PPAPI communication.
@@ -177,9 +167,6 @@ struct NaClLaunchResult {
 
   // For NaCl <-> renderer crash information reporting.
   base::ReadOnlySharedMemoryRegion crash_info_shmem_region;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NaClLaunchResult);
 };
 
 }  // namespace nacl

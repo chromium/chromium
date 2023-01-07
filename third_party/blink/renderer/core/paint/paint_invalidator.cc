@@ -1,10 +1,11 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 
-#include "base/optional.h"
+#include "base/trace_event/trace_event.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -17,7 +18,6 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_fragment_child_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
 #include "third_party/blink/renderer/core/page/link_highlight.h"
@@ -31,22 +31,13 @@
 
 namespace blink {
 
-const PaintInvalidatorContext*
-PaintInvalidatorContext::ParentContextAccessor::ParentContext() const {
-  return tree_walk_ ? &tree_walk_->ContextAt(parent_context_index_)
-                           .paint_invalidator_context
-                    : nullptr;
-}
-
 void PaintInvalidator::UpdatePaintingLayer(const LayoutObject& object,
-                                           PaintInvalidatorContext& context,
-                                           bool is_ng_painting) {
+                                           PaintInvalidatorContext& context) {
   if (object.HasLayer() &&
       To<LayoutBoxModelObject>(object).HasSelfPaintingLayer()) {
     context.painting_layer = To<LayoutBoxModelObject>(object).Layer();
-  } else if (!is_ng_painting &&
-             (object.IsColumnSpanAll() ||
-              object.IsFloatingWithNonContainingBlockParent())) {
+  } else if (object.IsColumnSpanAll() ||
+             object.IsFloatingWithNonContainingBlockParent()) {
     // See |LayoutObject::PaintingLayer| for the special-cases of floating under
     // inline and multicolumn.
     // Post LayoutNG the |LayoutObject::IsFloatingWithNonContainingBlockParent|
@@ -71,88 +62,6 @@ void PaintInvalidator::UpdatePaintingLayer(const LayoutObject& object,
        // See |StyleForContinuationOutline|.
        (layout_block_flow && layout_block_flow->StyleForContinuationOutline())))
     context.painting_layer->SetNeedsPaintPhaseDescendantOutlines();
-}
-
-void PaintInvalidator::UpdateDirectlyCompositedContainer(
-    const LayoutObject& object,
-    PaintInvalidatorContext& context,
-    bool is_ng_painting) {
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
-  if (object.CanBeCompositedForDirectReasons()) {
-    context.directly_composited_container = To<LayoutBoxModelObject>(&object);
-    if (object.IsStackingContext() || object.IsSVGRoot()) {
-      context.directly_composited_container_for_stacked_contents =
-          To<LayoutBoxModelObject>(&object);
-    }
-  } else if (IsA<LayoutView>(object)) {
-    // paint_invalidation_container_for_stacked_contents is only for stacked
-    // descendants in its own frame, because it doesn't establish stacking
-    // context for stacked contents in sub-frames.
-    // Contents stacked in the root stacking context in this frame should use
-    // this frame's PaintInvalidationContainer.
-    context.directly_composited_container_for_stacked_contents =
-        context.directly_composited_container =
-            &object.DirectlyCompositableContainer();
-  } else if (!is_ng_painting &&
-             (object.IsColumnSpanAll() ||
-              object.IsFloatingWithNonContainingBlockParent())) {
-    // In these cases, the object may belong to an ancestor of the current
-    // paint invalidation container, in paint order.
-    // Post LayoutNG the |LayoutObject::IsFloatingWithNonContainingBlockParent|
-    // check can be removed as floats will be painted by the correct layer.
-    context.directly_composited_container =
-        &object.DirectlyCompositableContainer();
-  } else if (object.IsStacked() &&
-             // This is to exclude some objects (e.g. LayoutText) inheriting
-             // stacked style from parent but aren't actually stacked.
-             object.HasLayer() &&
-             context.directly_composited_container !=
-                 context.directly_composited_container_for_stacked_contents) {
-    if (To<LayoutBoxModelObject>(object)
-            .Layer()
-            ->IsReplacedNormalFlowStacking()) {
-      DCHECK(object.IsStackingContext());
-      // A ReplacedNormalFlowStacking object doesn't stack into parent stacking
-      // context, while the stacked descendants are stacked into it and inherit
-      // its direct_composited_container.
-      context.directly_composited_container_for_stacked_contents =
-          context.directly_composited_container;
-    } else {
-      // The current object is stacked, so we should use
-      // directly_composited_container_for_stacked_contents as its paint
-      // invalidation container on which the current object is painted.
-      context.directly_composited_container =
-          context.directly_composited_container_for_stacked_contents;
-      if (context.subtree_flags &
-          PaintInvalidatorContext::kSubtreeFullInvalidationForStackedContents) {
-        context.subtree_flags |=
-            PaintInvalidatorContext::kSubtreeFullInvalidation;
-      }
-    }
-  }
-
-  if (object == context.directly_composited_container) {
-    // When we hit a new directly composited container, we don't need to
-    // continue forcing a check for paint invalidation, since we're
-    // descending into a different invalidation container. (For instance if
-    // our parents were moved, the entire container will just move.)
-    if (object != context.directly_composited_container_for_stacked_contents) {
-      // However, we need to keep kSubtreeFullInvalidationForStackedContents
-      // if the current object isn't the direct composited container of stacked
-      // contents.
-      context.subtree_flags &=
-          PaintInvalidatorContext::kSubtreeFullInvalidationForStackedContents;
-    } else {
-      context.subtree_flags = 0;
-    }
-  }
-
-  DCHECK_EQ(context.directly_composited_container,
-            object.DirectlyCompositableContainer())
-      << object;
-  DCHECK_EQ(context.painting_layer, object.PaintingLayer()) << object;
 }
 
 void PaintInvalidator::UpdateFromTreeBuilderContext(
@@ -184,7 +93,8 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
   if (!object.ShouldCheckGeometryForPaintInvalidation())
     return;
 
-  if (tree_builder_context.this_or_ancestor_opacity_is_zero) {
+  if (tree_builder_context.this_or_ancestor_opacity_is_zero ||
+      context.inside_opaque_layout_shift_root) {
     object.GetMutableForPainting().SetShouldSkipNextLayoutShiftTracking(true);
     return;
   }
@@ -207,7 +117,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
       context.old_paint_offset -
       tree_builder_context.current
           .additional_offset_to_layout_shift_root_delta -
-      PhysicalOffset::FromFloatSizeRound(
+      PhysicalOffset::FromVector2dFRound(
           tree_builder_context.translation_2d_to_layout_shift_root_delta +
           tree_builder_context.current
               .scroll_offset_to_layout_shift_root_delta);
@@ -234,6 +144,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
         adjusted_old_paint_offset,
         tree_builder_context.translation_2d_to_layout_shift_root_delta,
         tree_builder_context.current.scroll_offset_to_layout_shift_root_delta,
+        tree_builder_context.current.pending_scroll_anchor_adjustment,
         new_paint_offset, logical_height);
     return;
   }
@@ -241,22 +152,27 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
   DCHECK(object.IsBox());
   const auto& box = To<LayoutBox>(object);
 
-  PhysicalRect new_rect = box.PhysicalVisualOverflowRect();
+  PhysicalRect new_rect = box.PhysicalVisualOverflowRectAllowingUnset();
   new_rect.Move(new_paint_offset);
   PhysicalRect old_rect = box.PreviousPhysicalVisualOverflowRect();
   old_rect.Move(adjusted_old_paint_offset);
 
+  // TODO(crbug.com/1178618): We may want to do better than this. For now, just
+  // don't report anything inside multicol containers.
+  const auto* block_flow = DynamicTo<LayoutBlockFlow>(&box);
+  if (block_flow && block_flow->IsFragmentationContextRoot() &&
+      block_flow->IsLayoutNGObject())
+    context.inside_opaque_layout_shift_root = true;
+
   bool should_create_containing_block_scope =
-      // TODO(crbug.com/1178618): Support multiple-fragments when switching to
-      // LayoutNGFragmentTraversal.
-      context.fragment_data == &box.FirstFragment() &&
-      box.IsLayoutBlockFlow() && box.ChildrenInline() && box.SlowFirstChild();
+      // TODO(crbug.com/1178618): Support multiple-fragments.
+      context.fragment_data == &box.FirstFragment() && block_flow &&
+      block_flow->ChildrenInline() && block_flow->FirstChild();
   if (should_create_containing_block_scope) {
     // For layout shift tracking of contained LayoutTexts.
-    context.containing_block_scope_ =
-        std::make_unique<LayoutShiftTracker::ContainingBlockScope>(
-            PhysicalSizeToBeNoop(box.PreviousSize()),
-            PhysicalSizeToBeNoop(box.Size()), old_rect, new_rect);
+    context.containing_block_scope_.emplace(
+        PhysicalSizeToBeNoop(box.PreviousSize()),
+        PhysicalSizeToBeNoop(box.Size()), old_rect, new_rect);
   }
 
   bool should_report_layout_shift = [&]() -> bool {
@@ -296,6 +212,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
         box, property_tree_state, old_rect, new_rect, adjusted_old_paint_offset,
         tree_builder_context.translation_2d_to_layout_shift_root_delta,
         tree_builder_context.current.scroll_offset_to_layout_shift_root_delta,
+        tree_builder_context.current.pending_scroll_anchor_adjustment,
         new_paint_offset);
   }
 }
@@ -317,9 +234,19 @@ bool PaintInvalidator::InvalidatePaint(
 
   object.GetMutableForPainting().EnsureIsReadyForPaintInvalidation();
 
-  UpdatePaintingLayer(object, context, /* is_ng_painting */ !!pre_paint_info);
-  UpdateDirectlyCompositedContainer(object, context,
-                                    /* is_ng_painting */ !!pre_paint_info);
+  UpdatePaintingLayer(object, context);
+
+  // Assert that the container state in the invalidation context is consistent
+  // with what the LayoutObject tree says. We cannot do this if we're fragment-
+  // traversing an "orphaned" object (an object that has a fragment inside a
+  // fragmentainer, even though not all its ancestor objects have it; this may
+  // happen to OOFs, and also to floats, if they are inside a non-atomic
+  // inline). In such cases we'll just have to live with the inconsitency, which
+  // means that we'll lose any paint effects from such "missing" ancestors.
+  DCHECK_EQ(context.painting_layer, object.PaintingLayer()) << object;
+
+  if (AXObjectCache* cache = object.GetDocument().ExistingAXObjectCache())
+    cache->InvalidateBoundingBox(&object);
 
   if (!object.ShouldCheckForPaintInvalidation() && !context.NeedsSubtreeWalk())
     return false;
@@ -345,7 +272,7 @@ bool PaintInvalidator::InvalidatePaint(
   }
 
   if (pre_paint_info) {
-    FragmentData& fragment_data = pre_paint_info->fragment_data;
+    FragmentData& fragment_data = *pre_paint_info->fragment_data;
     context.fragment_data = &fragment_data;
 
     if (tree_builder_context) {
@@ -376,10 +303,6 @@ bool PaintInvalidator::InvalidatePaint(
         UpdateFromTreeBuilderContext(fragment_tree_builder_context, context);
         UpdateLayoutShiftTracking(object, fragment_tree_builder_context,
                                   context);
-
-        if (auto* mf_checker =
-                object.GetFrameView()->GetMobileFriendlinessChecker())
-          mf_checker->NotifyInvalidatePaint(object);
       } else {
         context.old_paint_offset = fragment_data->PaintOffset();
       }
@@ -396,14 +319,11 @@ bool PaintInvalidator::InvalidatePaint(
        reason == PaintInvalidationReason::kJustCreated))
     pending_delayed_paint_invalidations_.push_back(&object);
 
-  if (AXObjectCache* cache = object.GetDocument().ExistingAXObjectCache())
-    cache->InvalidateBoundingBox(&object);
-
   return reason != PaintInvalidationReason::kNone;
 }
 
 void PaintInvalidator::ProcessPendingDelayedPaintInvalidations() {
-  for (auto* target : pending_delayed_paint_invalidations_)
+  for (const auto& target : pending_delayed_paint_invalidations_)
     target->GetMutableForPainting().SetShouldDelayFullPaintInvalidation();
 }
 

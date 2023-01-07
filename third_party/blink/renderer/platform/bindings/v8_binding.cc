@@ -30,7 +30,8 @@
 
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 
-#include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 
 namespace blink {
 
@@ -50,30 +51,125 @@ v8::Local<v8::Value> FreezeV8Object(v8::Local<v8::Value> value,
   return value;
 }
 
-String GetCurrentScriptUrl(int max_stack_depth) {
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+String GetCurrentScriptUrl(v8::Isolate* isolate) {
   DCHECK(isolate);
   if (!isolate->InContext())
     return String();
 
-  // CurrentStackTrace is 10x faster than CaptureStackTrace if all that you need
-  // is the url of the script at the top of the stack. See crbug.com/1057211 for
-  // more detail.
+  v8::Local<v8::String> script_name =
+      v8::StackTrace::CurrentScriptNameOrSourceURL(isolate);
+  return ToCoreStringWithNullCheck(script_name);
+}
+
+Vector<String> GetScriptUrlsFromCurrentStack(v8::Isolate* isolate,
+                                             wtf_size_t unique_url_count) {
+  Vector<String> unique_urls;
+
+  DCHECK(isolate);
+  if (!isolate->InContext())
+    return unique_urls;
+
+  // CurrentStackTrace is 10x faster than CaptureStackTrace if all that you
+  // need is the url of the script at the top of the stack. See
+  // crbug.com/1057211 for more detail.
+  // Get at most 10 frames, regardless of the requested url count, to minimize
+  // the performance impact.
   v8::Local<v8::StackTrace> stack_trace =
-      v8::StackTrace::CurrentStackTrace(isolate, max_stack_depth);
-  if (stack_trace.IsEmpty())
-    return String();
-  for (int i = 0, frame_count = stack_trace->GetFrameCount(); i < frame_count;
-       ++i) {
+      v8::StackTrace::CurrentStackTrace(isolate, /*frame_limit=*/10);
+
+  int frame_count = stack_trace->GetFrameCount();
+  for (int i = 0; i < frame_count; ++i) {
     v8::Local<v8::StackFrame> frame = stack_trace->GetFrame(isolate, i);
-    if (frame.IsEmpty())
-      continue;
-    v8::Local<v8::String> script_name = frame->GetScriptNameOrSourceURL();
+    v8::Local<v8::String> script_name = frame->GetScriptName();
     if (script_name.IsEmpty() || !script_name->Length())
       continue;
-    return ToCoreString(script_name);
+    String url = ToCoreString(script_name);
+    if (!unique_urls.Contains(url)) {
+      unique_urls.push_back(std::move(url));
+    }
+    if (unique_urls.size() == unique_url_count)
+      break;
   }
-  return String();
+  return unique_urls;
 }
+
+namespace bindings {
+
+void V8ObjectToPropertyDescriptor(v8::Isolate* isolate,
+                                  v8::Local<v8::Value> descriptor_object,
+                                  V8PropertyDescriptorBag& descriptor_bag,
+                                  ExceptionState& exception_state) {
+  // TODO(crbug.com/1261485): This function is the same as
+  // v8::internal::PropertyDescriptor::ToPropertyDescriptor.  Make the
+  // function exposed public and re-use it rather than re-implementing
+  // the same logic in Blink.
+
+  auto& desc = descriptor_bag;
+  desc = V8PropertyDescriptorBag();
+
+  if (!descriptor_object->IsObject()) {
+    exception_state.ThrowTypeError("Property description must be an object.");
+    return;
+  }
+
+  v8::Local<v8::Context> current_context = isolate->GetCurrentContext();
+  v8::Local<v8::Object> v8_desc = descriptor_object.As<v8::Object>();
+  v8::TryCatch try_catch(isolate);
+
+  auto get_value = [&](const char* property, bool& has,
+                       v8::Local<v8::Value>& value) -> bool {
+    const auto& v8_property = V8AtomicString(isolate, property);
+    if (!v8_desc->Has(current_context, v8_property).To(&has)) {
+      exception_state.RethrowV8Exception(try_catch.Exception());
+      return false;
+    }
+    if (has) {
+      if (!v8_desc->Get(current_context, v8_property).ToLocal(&value)) {
+        exception_state.RethrowV8Exception(try_catch.Exception());
+        return false;
+      }
+    } else {
+      value = v8::Undefined(isolate);
+    }
+    return true;
+  };
+
+  auto get_bool = [&](const char* property, bool& has, bool& value) -> bool {
+    v8::Local<v8::Value> v8_value;
+    if (!get_value(property, has, v8_value))
+      return false;
+    if (has) {
+      value = v8_value->ToBoolean(isolate)->Value();
+    }
+    return true;
+  };
+
+  if (!get_bool("enumerable", desc.has_enumerable, desc.enumerable))
+    return;
+
+  if (!get_bool("configurable", desc.has_configurable, desc.configurable))
+    return;
+
+  if (!get_value("value", desc.has_value, desc.value))
+    return;
+
+  if (!get_bool("writable", desc.has_writable, desc.writable))
+    return;
+
+  if (!get_value("get", desc.has_get, desc.get))
+    return;
+
+  if (!get_value("set", desc.has_set, desc.set))
+    return;
+
+  if ((desc.has_get || desc.has_set) && (desc.has_value || desc.has_writable)) {
+    exception_state.ThrowTypeError(
+        "Invalid property descriptor. Cannot both specify accessors and "
+        "a value or writable attribute");
+    return;
+  }
+}
+
+}  // namespace bindings
 
 }  // namespace blink

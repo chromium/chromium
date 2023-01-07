@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,19 +9,18 @@
 #include <string>
 
 #include "base/metrics/field_trial_params.h"
-#include "base/stl_util.h"
 
 #include "base/notreached.h"
 #include "components/leveldb_proto/internal/leveldb_proto_feature_list.h"
 
 namespace leveldb_proto {
 
-
 // static
 std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
     ProtoDbType db_type) {
-  // Please update the suffix LevelDBClients in histograms.xml to match the
-  // strings returned here.
+  // Please update the variant LevelDBClient in
+  // //tools/metrics/histograms/metadata/leveldb_proto/histograms.xml
+  // to match the strings returned here.
   switch (db_type) {
     case ProtoDbType::TEST_DATABASE0:
       return "TestDatabase0";
@@ -91,6 +90,26 @@ std::string SharedProtoDatabaseClientList::ProtoDbTypeToString(
       return "CartDatabase";
     case ProtoDbType::COMMERCE_SUBSCRIPTION_DATABASE:
       return "CommerceSubscriptionDatabase";
+    case ProtoDbType::MERCHANT_TRUST_SIGNAL_DATABASE:
+      return "MerchantTrustSignalEventDatabase";
+    case ProtoDbType::SHARE_HISTORY_DATABASE:
+      return "ShareHistoryDatabase";
+    case ProtoDbType::SHARE_RANKING_DATABASE:
+      return "ShareRankingDatabase";
+    case ProtoDbType::SEGMENT_INFO_DATABASE:
+      return "SegmentInfoDatabase";
+    case ProtoDbType::SIGNAL_DATABASE:
+      return "SignalDatabase";
+    case ProtoDbType::SIGNAL_STORAGE_CONFIG_DATABASE:
+      return "SignalStorageConfigDatabase";
+    case ProtoDbType::VIDEO_TUTORIALS_V2_DATABASE:
+      return "VideoTutorialsV2Database";
+    case ProtoDbType::COUPON_DATABASE:
+      return "CouponDatabase";
+    case ProtoDbType::PAGE_ENTITY_METADATA_STORE:
+      return "PageEntityMetadataDatabase";
+    case ProtoDbType::WEBRTC_VIDEO_STATS_DB:
+      return "WebrtcVideoStatsDB";
     case ProtoDbType::LAST:
       NOTREACHED();
       return std::string();

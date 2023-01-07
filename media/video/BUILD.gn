@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -32,6 +32,8 @@ source_set("video") {
     "half_float_maker.h",
     "picture.cc",
     "picture.h",
+    "renderable_gpu_memory_buffer_video_frame_pool.cc",
+    "renderable_gpu_memory_buffer_video_frame_pool.h",
     "trace_util.cc",
     "trace_util.h",
     "video_decode_accelerator.cc",
@@ -40,15 +42,25 @@ source_set("video") {
     "video_encode_accelerator.h",
     "video_encode_accelerator_adapter.cc",
     "video_encode_accelerator_adapter.h",
+    "video_encoder_fallback.cc",
+    "video_encoder_fallback.h",
     "video_encoder_info.cc",
     "video_encoder_info.h",
   ]
 
-  if (proprietary_codecs && enable_platform_hevc) {
+  if (enable_platform_hevc) {
     sources += [
-      "h265_parser.cc",
-      "h265_parser.h",
+      "h265_nalu_parser.cc",
+      "h265_nalu_parser.h",
     ]
+    if (enable_hevc_parser_and_hw_decoder) {
+      sources += [
+        "h265_parser.cc",
+        "h265_parser.h",
+        "h265_poc.cc",
+        "h265_poc.h",
+      ]
+    }
   }
 
   public_deps = [ "//gpu/command_buffer/client:gles2_interface" ]
@@ -57,17 +69,23 @@ source_set("video") {
     "//build:chromeos_buildflags",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
+    "//gpu/ipc/common",
     "//media/base",
     "//third_party/libyuv",
     "//ui/gfx",
     "//ui/gl",
   ]
 
-  configs += [
-    # TODO(crbug.com/167187): Fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//media:subcomponent_config",
-  ]
+  configs += [ "//media:subcomponent_config" ]
+
+  if (enable_libaom) {
+    sources += [
+      "av1_video_encoder.cc",
+      "av1_video_encoder.h",
+    ]
+
+    public_deps += [ "//third_party/libaom" ]
+  }
 
   if (media_use_libvpx) {
     sources += [
@@ -125,11 +143,19 @@ source_set("unit_tests") {
     "h264_parser_unittest.cc",
     "h264_poc_unittest.cc",
     "half_float_maker_unittest.cc",
+    "renderable_gpu_memory_buffer_video_frame_pool_unittest.cc",
     "software_video_encoder_test.cc",
     "video_encode_accelerator_adapter_test.cc",
+    "video_encoder_fallback_test.cc",
   ]
   if (enable_platform_hevc) {
-    sources += [ "h265_parser_unittest.cc" ]
+    sources += [ "h265_nalu_parser_unittest.cc" ]
+    if (enable_hevc_parser_and_hw_decoder) {
+      sources += [
+        "h265_parser_unittest.cc",
+        "h265_poc_unittest.cc",
+      ]
+    }
   }
 
   configs += [ "//media:media_config" ]
@@ -157,7 +183,7 @@ fuzzer_test("media_h264_parser_fuzzer") {
   ]
 }
 
-if (proprietary_codecs && enable_platform_hevc) {
+if (enable_hevc_parser_and_hw_decoder) {
   fuzzer_test("media_h265_parser_fuzzer") {
     sources = [ "h265_parser_fuzzertest.cc" ]
     deps = [

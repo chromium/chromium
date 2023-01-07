@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
-#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -63,8 +62,8 @@ TEST_F(EditorTest, copyGeneratedPassword) {
       To<HTMLInputElement>(*GetDocument().getElementById("password"));
 
   const String kPasswordValue = "secret";
-  element.focus();
-  element.setValue(kPasswordValue);
+  element.Focus();
+  element.SetValue(kPasswordValue);
   element.SetSelectionRange(0, kPasswordValue.length());
 
   Editor& editor = GetDocument().GetFrame()->GetEditor();
@@ -101,13 +100,13 @@ TEST_F(EditorTest, DontCopyHiddenSelections) {
 
   auto& checkbox =
       To<HTMLInputElement>(*GetDocument().getElementById("checkbox"));
-  checkbox.focus();
+  checkbox.Focus();
 
   ExecuteCopy();
 
   const String copied =
       GetDocument().GetFrame()->GetSystemClipboard()->ReadPlainText();
-  EXPECT_TRUE(copied.IsEmpty()) << copied << " was copied.";
+  EXPECT_TRUE(copied.empty()) << copied << " was copied.";
 }
 
 TEST_F(EditorTest, ReplaceSelection) {
@@ -122,14 +121,14 @@ TEST_F(EditorTest, ReplaceSelection) {
   Editor& editor = GetDocument().GetFrame()->GetEditor();
   editor.ReplaceSelection("NEW");
 
-  EXPECT_EQ("HENEWLLO", text_control.value());
+  EXPECT_EQ("HENEWLLO", text_control.Value());
 }
 
 // http://crbug.com/263819
 TEST_F(EditorTest, RedoWithDisconnectedEditable) {
   SetBodyContent("<p contenteditable id=target></p>");
   auto& target = *GetElementById("target");
-  target.focus();
+  target.Focus();
   GetDocument().execCommand("insertHtml", false, "<b>xyz</b>",
                             ASSERT_NO_EXCEPTION);
   ASSERT_EQ("<b>xyz</b>", target.innerHTML());
@@ -140,14 +139,7 @@ TEST_F(EditorTest, RedoWithDisconnectedEditable) {
   ASSERT_EQ(1, SizeOfRedoStack());
   ASSERT_EQ(0, SizeOfUndoStack());
 
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
-  ASSERT_EQ(1, SizeOfRedoStack());
-  ASSERT_EQ(0, SizeOfUndoStack());
-
   target.remove();
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   EXPECT_EQ(0, SizeOfRedoStack())
       << "We don't need to have redo steps for removed <input>";
   EXPECT_EQ(0, SizeOfUndoStack());
@@ -157,9 +149,9 @@ TEST_F(EditorTest, RedoWithDisconnectedEditable) {
 TEST_F(EditorTest, RedoWithDisconnectedInput) {
   SetBodyContent("<input id=target>");
   auto& input = *To<HTMLInputElement>(GetElementById("target"));
-  input.focus();
+  input.Focus();
   GetDocument().execCommand("insertText", false, "xyz", ASSERT_NO_EXCEPTION);
-  ASSERT_EQ("xyz", input.value());
+  ASSERT_EQ("xyz", input.Value());
   ASSERT_EQ(0, SizeOfRedoStack());
   ASSERT_EQ(1, SizeOfUndoStack());
 
@@ -167,14 +159,7 @@ TEST_F(EditorTest, RedoWithDisconnectedInput) {
   ASSERT_EQ(1, SizeOfRedoStack());
   ASSERT_EQ(0, SizeOfUndoStack());
 
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
-  ASSERT_EQ(1, SizeOfRedoStack());
-  ASSERT_EQ(0, SizeOfUndoStack());
-
   input.remove();
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   EXPECT_EQ(0, SizeOfRedoStack())
       << "We don't need to have redo steps for removed <input>";
   EXPECT_EQ(0, SizeOfUndoStack());
@@ -184,21 +169,14 @@ TEST_F(EditorTest, RedoWithDisconnectedInput) {
 TEST_F(EditorTest, UndoWithDisconnectedEditable) {
   SetBodyContent("<p contenteditable id=target></p>");
   auto& target = *GetElementById("target");
-  target.focus();
+  target.Focus();
   GetDocument().execCommand("insertHtml", false, "<b>xyz</b>",
                             ASSERT_NO_EXCEPTION);
   ASSERT_EQ("<b>xyz</b>", target.innerHTML());
   ASSERT_EQ(0, SizeOfRedoStack());
   ASSERT_EQ(1, SizeOfUndoStack());
 
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
-  ASSERT_EQ(0, SizeOfRedoStack());
-  ASSERT_EQ(1, SizeOfUndoStack());
-
   target.remove();
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   EXPECT_EQ(0, SizeOfRedoStack());
   EXPECT_EQ(0, SizeOfUndoStack())
       << "We don't need to have undo steps for removed editable";
@@ -208,20 +186,14 @@ TEST_F(EditorTest, UndoWithDisconnectedEditable) {
 TEST_F(EditorTest, UndoWithDisconnectedInput) {
   SetBodyContent("<input id=target>");
   auto& input = *To<HTMLInputElement>(GetElementById("target"));
-  input.focus();
+  input.Focus();
   GetDocument().execCommand("insertText", false, "xyz", ASSERT_NO_EXCEPTION);
-  ASSERT_EQ("xyz", input.value());
+  ASSERT_EQ("xyz", input.Value());
   ASSERT_EQ(0, SizeOfRedoStack());
   ASSERT_EQ(1, SizeOfUndoStack());
 
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
-  ASSERT_EQ(0, SizeOfRedoStack());
-  ASSERT_EQ(1, SizeOfUndoStack());
 
   input.remove();
-  MemoryPressureListenerRegistry::Instance().OnMemoryPressure(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
   EXPECT_EQ(0, SizeOfRedoStack());
   EXPECT_EQ(0, SizeOfUndoStack())
       << "We don't need to have undo steps for removed <input>";

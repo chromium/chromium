@@ -1,14 +1,16 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/sct_auditing/sct_auditing_cache.h"
 
-#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/field_trial_params.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "crypto/secure_hash.h"
+#include "crypto/sha2.h"
+#include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/ct_serialization.h"
 #include "net/cert/sct_status_flags.h"
@@ -18,11 +20,14 @@
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/proto/sct_audit_report.pb.h"
-#include "services/network/test/test_url_loader_factory.h"
+#include "services/network/sct_auditing/sct_auditing_handler.h"
+#include "services/network/sct_auditing/sct_auditing_reporter.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/gurl.h"
+#include "third_party/abseil-cpp/absl/utility/utility.h"
+#include "third_party/boringssl/src/include/openssl/pool.h"
+#include "third_party/boringssl/src/include/openssl/sha.h"
 
 namespace network {
 
@@ -30,7 +35,7 @@ namespace {
 
 class SCTAuditingCacheTest : public testing::Test {
  public:
-  SCTAuditingCacheTest() {}
+  SCTAuditingCacheTest() = default;
   ~SCTAuditingCacheTest() override = default;
 
   SCTAuditingCacheTest(const SCTAuditingCacheTest&) = delete;
@@ -43,32 +48,25 @@ class SCTAuditingCacheTest : public testing::Test {
   }
 
  protected:
-  // Initializes the configuration for the SCTAuditingCache to defaults and
-  // sets up the URLLoaderFactory. Individual tests can directly call the set_*
-  // methods to tweak the configuration.
-  void InitSCTAuditing(SCTAuditingCache* cache) {
-    cache->set_enabled(true);
-    cache->set_sampling_rate(1.0);
-    cache->set_report_uri(GURL("https://example.test"));
-    cache->set_traffic_annotation(
-        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
-
-    url_loader_factory_ = std::make_unique<TestURLLoaderFactory>();
-    mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_client;
-    url_loader_factory_->Clone(factory_client.InitWithNewPipeAndPassReceiver());
-    cache->set_url_loader_factory(std::move(factory_client));
+  // Initializes the configuration for the SCTAuditingCache to defaults.
+  void InitSCTAuditing(SCTAuditingCache* cache, double sampling_rate = 1.0) {
+    mojom::SCTAuditingConfigurationPtr configuration(absl::in_place);
+    configuration->sampling_rate = sampling_rate;
+    configuration->traffic_annotation =
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+    cache->Configure(std::move(configuration));
   }
 
-  // Getter for TestURLLoaderFactory to allow tests to specify responses.
-  TestURLLoaderFactory* url_loader_factory() {
-    return url_loader_factory_.get();
-  }
-
+  // Use MOCK_TIME so tests (particularly those involving retry and backoff) can
+  // use TaskEnvironment::FastForwardUntilNoTasksRemain() and FastForwardBy().
   base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::MainThreadType::IO};
-  std::unique_ptr<TestURLLoaderFactory> url_loader_factory_;
+      base::test::TaskEnvironment::MainThreadType::IO,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   scoped_refptr<net::X509Certificate> chain_;
+
+  std::unique_ptr<base::RunLoop> run_loop_;
+  size_t num_requests_seen_ = 0;
 };
 
 // Constructs a net::SignedCertificateTimestampAndStatus with the given
@@ -101,23 +99,21 @@ void MakeTestSCTAndStatus(
   sct_list->push_back(net::SignedCertificateTimestampAndStatus(sct, status));
 }
 
-}  // namespace
-
-// Test that if auditing is disabled, no reports are cached.
-TEST_F(SCTAuditingCacheTest, NoReportsCachedWhenAuditingDisabled) {
-  SCTAuditingCache cache(10);
-  InitSCTAuditing(&cache);
-  cache.set_enabled(false);
-
-  const net::HostPortPair host_port_pair("example.com", 443);
-  net::SignedCertificateTimestampAndStatusList sct_list;
-  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
-                       "extensions1", "signature1", base::Time::Now(),
-                       net::ct::SCT_STATUS_OK, &sct_list);
-  cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
-
-  ASSERT_EQ(0u, cache.GetCacheForTesting()->size());
+// Computes the cache key from a list of SCTs. This matches how SCTAuditingCache
+// computes cache keys internally.
+net::HashValue ComputeCacheKey(
+    net::SignedCertificateTimestampAndStatusList sct_list) {
+  net::HashValue cache_key(net::HASH_VALUE_SHA256);
+  SHA256_CTX ctx;
+  SHA256_Init(&ctx);
+  std::string encoded_sct;
+  net::ct::EncodeSignedCertificateTimestamp(sct_list.at(0).sct, &encoded_sct);
+  SHA256_Update(&ctx, encoded_sct.data(), encoded_sct.size());
+  SHA256_Final(reinterpret_cast<uint8_t*>(cache_key.data()), &ctx);
+  return cache_key;
 }
+
+}  // namespace
 
 // Test that inserting and retrieving a report works.
 TEST_F(SCTAuditingCacheTest, InsertAndRetrieveReport) {
@@ -129,12 +125,12 @@ TEST_F(SCTAuditingCacheTest, InsertAndRetrieveReport) {
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions1", "signature1", base::Time::Now(),
                        net::ct::SCT_STATUS_OK, &sct_list);
-  cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
-
-  ASSERT_EQ(1u, cache.GetCacheForTesting()->size());
+  EXPECT_TRUE(
+      cache.MaybeGenerateReportEntry(host_port_pair, chain_.get(), sct_list));
+  EXPECT_EQ(1u, cache.GetCacheForTesting()->size());
 }
 
-// Tests that old entries are evicted when the cache is full.
+// Tests that old entries are evicted when the dedupe cache is full.
 TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
   SCTAuditingCache cache(2);
   InitSCTAuditing(&cache);
@@ -143,13 +139,18 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
   const net::HostPortPair host_port_pair2("example2.com", 443);
   const net::HostPortPair host_port_pair3("example3.com", 443);
 
+  net::HashValue first_key(net::HASH_VALUE_SHA256);
   {
     net::SignedCertificateTimestampAndStatusList sct_list;
     MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                          "extensions1", "signature1", base::Time::Now(),
                          net::ct::SCT_STATUS_OK, &sct_list);
-    cache.MaybeEnqueueReport(host_port_pair1, chain_.get(), sct_list);
+    ASSERT_TRUE(cache.MaybeGenerateReportEntry(host_port_pair1, chain_.get(),
+                                               sct_list));
     ASSERT_EQ(1u, cache.GetCacheForTesting()->size());
+
+    // Save the initial cache key for later inspection.
+    first_key = ComputeCacheKey(sct_list);
   }
 
   {
@@ -157,24 +158,23 @@ TEST_F(SCTAuditingCacheTest, EvictLRUAfterCacheFull) {
     MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                          "extensions1", "signature2", base::Time::Now(),
                          net::ct::SCT_STATUS_OK, &sct_list);
-    cache.MaybeEnqueueReport(host_port_pair2, chain_.get(), sct_list);
+    ASSERT_TRUE(cache.MaybeGenerateReportEntry(host_port_pair2, chain_.get(),
+                                               sct_list));
     ASSERT_EQ(2u, cache.GetCacheForTesting()->size());
   }
 
-  // Cache is now full, so the first entry (for "example1.com") should no longer
-  // be in the cache after inserting a third entry.
+  // Cache is now full. Add another entry to trigger eviction.
   {
     net::SignedCertificateTimestampAndStatusList sct_list;
     MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                          "extensions1", "signature3", base::Time::Now(),
                          net::ct::SCT_STATUS_OK, &sct_list);
-    cache.MaybeEnqueueReport(host_port_pair3, chain_.get(), sct_list);
+    ASSERT_TRUE(cache.MaybeGenerateReportEntry(host_port_pair3, chain_.get(),
+                                               sct_list));
     ASSERT_EQ(2u, cache.GetCacheForTesting()->size());
-    for (const auto& entry : *cache.GetCacheForTesting()) {
-      ASSERT_NE(
-          "example1.com",
-          entry.second->certificate_report(0).context().origin().hostname());
-    }
+    // The key for the first entry should not be in the cache anymore.
+    EXPECT_EQ(cache.GetCacheForTesting()->Get(first_key),
+              cache.GetCacheForTesting()->end());
   }
 }
 
@@ -191,14 +191,16 @@ TEST_F(SCTAuditingCacheTest, ReportWithSameSCTsDeduplicated) {
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions1", "signature1", base::Time::Now(),
                        net::ct::SCT_STATUS_OK, &sct_list);
-  cache.MaybeEnqueueReport(host_port_pair1, chain_.get(), sct_list);
+  ASSERT_TRUE(
+      cache.MaybeGenerateReportEntry(host_port_pair1, chain_.get(), sct_list));
 
   ASSERT_EQ(1u, cache.GetCacheForTesting()->size());
 
-  // Enqueuing the same SCTs won't cause a new report to be added to the queue
-  // (even if the connection origin is different).
-  cache.MaybeEnqueueReport(host_port_pair2, chain_.get(), sct_list);
-  ASSERT_EQ(1u, cache.GetCacheForTesting()->size());
+  // Generating a report entry for the same SCTs won't cause a new report to be
+  // generated (even if the connection origin is different).
+  ASSERT_FALSE(
+      cache.MaybeGenerateReportEntry(host_port_pair2, chain_.get(), sct_list));
+  EXPECT_EQ(1u, cache.GetCacheForTesting()->size());
 }
 
 // When a report gets deduplicated, the existing entry should have its last-seen
@@ -216,18 +218,18 @@ TEST_F(SCTAuditingCacheTest, DeduplicationUpdatesLastSeenTime) {
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions1", "signature1", base::Time::Now(),
                        net::ct::SCT_STATUS_OK, &sct_list1);
-  cache.MaybeEnqueueReport(host_port_pair1, chain_.get(), sct_list1);
+  cache.MaybeGenerateReportEntry(host_port_pair1, chain_.get(), sct_list1);
 
   net::SignedCertificateTimestampAndStatusList sct_list2;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions2", "signature2", base::Time::Now(),
                        net::ct::SCT_STATUS_OK, &sct_list2);
-  cache.MaybeEnqueueReport(host_port_pair2, chain_.get(), sct_list2);
+  cache.MaybeGenerateReportEntry(host_port_pair2, chain_.get(), sct_list2);
 
   EXPECT_EQ(2u, cache.GetCacheForTesting()->size());
 
   // Try to enqueue the report for "example1.com" again. It should be deduped.
-  cache.MaybeEnqueueReport(host_port_pair1, chain_.get(), sct_list1);
+  cache.MaybeGenerateReportEntry(host_port_pair1, chain_.get(), sct_list1);
   EXPECT_EQ(2u, cache.GetCacheForTesting()->size());
 
   // If we enqueue a new report causing the cache size limit to be exceeded,
@@ -237,135 +239,68 @@ TEST_F(SCTAuditingCacheTest, DeduplicationUpdatesLastSeenTime) {
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions3", "signature3", base::Time::Now(),
                        net::ct::SCT_STATUS_OK, &sct_list3);
-  cache.MaybeEnqueueReport(host_port_pair3, chain_.get(), sct_list3);
+  cache.MaybeGenerateReportEntry(host_port_pair3, chain_.get(), sct_list3);
 
   EXPECT_EQ(2u, cache.GetCacheForTesting()->size());
-  for (const auto& entry : *cache.GetCacheForTesting()) {
-    ASSERT_NE(
-        "example2.com",
-        entry.second->certificate_report(0).context().origin().hostname());
-  }
+
+  net::HashValue evicted_key = ComputeCacheKey(sct_list2);
+  EXPECT_EQ(cache.GetCacheForTesting()->Get(evicted_key),
+            cache.GetCacheForTesting()->end());
 }
 
 TEST_F(SCTAuditingCacheTest, ReportsCachedButNotSentWhenSamplingIsZero) {
   SCTAuditingCache cache(2);
-  InitSCTAuditing(&cache);
-  cache.set_sampling_rate(0);
+  InitSCTAuditing(&cache, /*sampling_rate=*/0);
 
-  // Enqueue a report.
+  // Generate a report.
   const net::HostPortPair host_port_pair("example.com", 443);
   net::SignedCertificateTimestampAndStatusList sct_list;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions", "signature", base::Time::Now(),
                        net::ct::SCT_STATUS_OK, &sct_list);
-  cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
+  // Check that no report is returned.
+  EXPECT_FALSE(
+      cache.MaybeGenerateReportEntry(host_port_pair, chain_.get(), sct_list));
 
   // Check that there is one entry in the cache.
   EXPECT_EQ(1u, cache.GetCacheForTesting()->size());
-
-  // Check that there are no pending reports.
-  EXPECT_EQ(0, url_loader_factory()->NumPending());
-}
-
-// Tests that when a new report is sampled, it will be sent to the server.
-// TODO(cthomp): Allow tracking success/failure of the report being sent. One
-// way would be to have OnSuccess/OnError handlers be defined by an
-// SCTAuditingReportingDelegate installed on the cache.
-TEST_F(SCTAuditingCacheTest, ReportsSentWithServerOK) {
-  SCTAuditingCache cache(2);
-  InitSCTAuditing(&cache);
-
-  // Enqueue a report which will trigger a send.
-  const net::HostPortPair host_port_pair("example.com", 443);
-  net::SignedCertificateTimestampAndStatusList sct_list;
-  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
-                       "extensions", "signature", base::Time::Now(),
-                       net::ct::SCT_STATUS_OK, &sct_list);
-  cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
-
-  // Check that there is one pending report.
-  EXPECT_EQ(1, url_loader_factory()->NumPending());
-
-  // Simulate the server returning 200 OK to the report request.
-  url_loader_factory()->AddResponse("https://example.test",
-                                    /*content=*/"",
-                                    /*status=*/net::HTTP_OK);
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(0, url_loader_factory()->NumPending());
-
-  // Check that the report has been cleared in the cache as it has been
-  // successfully sent.
-  for (const auto& entry : *cache.GetCacheForTesting()) {
-    EXPECT_FALSE(entry.second);
-  }
-}
-
-// Tests when the report server returns an HTTP error code.
-// TODO(cthomp): Check that the cache treats the send as a failure.
-TEST_F(SCTAuditingCacheTest, ReportSentWithServerError) {
-  SCTAuditingCache cache(2);
-  InitSCTAuditing(&cache);
-
-  // Enqueue a report which will trigger a send.
-  const net::HostPortPair host_port_pair("example.com", 443);
-  net::SignedCertificateTimestampAndStatusList sct_list;
-  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
-                       "extensions", "signature", base::Time::Now(),
-                       net::ct::SCT_STATUS_OK, &sct_list);
-  cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
-
-  // Check that there is one pending report.
-  EXPECT_EQ(1, url_loader_factory()->NumPending());
-
-  // Simulate the server returning 429 TOO MANY REQUEST to the report request.
-  url_loader_factory()->AddResponse("https://example.test",
-                                    /*content=*/"",
-                                    /*status=*/net::HTTP_TOO_MANY_REQUESTS);
-  task_environment_.RunUntilIdle();
-
-  EXPECT_EQ(0, url_loader_factory()->NumPending());
-
-  // Check that the report is still stored in the cache as it has not succeeded.
-  for (const auto& entry : *cache.GetCacheForTesting()) {
-    EXPECT_TRUE(entry.second);
-  }
 }
 
 // Tests that cache size high water mark metrics are correctly logged.
 TEST_F(SCTAuditingCacheTest, HighWaterMarkMetrics) {
   base::HistogramTester histograms;
-  // Create a cache so we can trigger destruction when it goes out of scope,
-  // which is when HWM metrics are logged.
-  {
-    SCTAuditingCache cache(5);
-    InitSCTAuditing(&cache);
+  SCTAuditingCache cache(2);
+  InitSCTAuditing(&cache);
 
-    const net::HostPortPair host_port_pair1("example1.com", 443);
-    const net::HostPortPair host_port_pair2("example2.com", 443);
+  const net::HostPortPair host_port_pair1("example1.com", 443);
+  const net::HostPortPair host_port_pair2("example2.com", 443);
 
-    // Fill the cache with two reports.
-    net::SignedCertificateTimestampAndStatusList sct_list1;
-    MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
-                         "extensions1", "signature1", base::Time::Now(),
-                         net::ct::SCT_STATUS_OK, &sct_list1);
-    cache.MaybeEnqueueReport(host_port_pair1, chain_.get(), sct_list1);
+  // Fill the cache with two reports.
+  net::SignedCertificateTimestampAndStatusList sct_list1;
+  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                       "extensions1", "signature1", base::Time::Now(),
+                       net::ct::SCT_STATUS_OK, &sct_list1);
+  EXPECT_TRUE(
+      cache.MaybeGenerateReportEntry(host_port_pair1, chain_.get(), sct_list1));
 
-    net::SignedCertificateTimestampAndStatusList sct_list2;
-    MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
-                         "extensions2", "signature2", base::Time::Now(),
-                         net::ct::SCT_STATUS_OK, &sct_list2);
-    cache.MaybeEnqueueReport(host_port_pair2, chain_.get(), sct_list2);
+  net::SignedCertificateTimestampAndStatusList sct_list2;
+  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
+                       "extensions2", "signature2", base::Time::Now(),
+                       net::ct::SCT_STATUS_OK, &sct_list2);
+  EXPECT_TRUE(
+      cache.MaybeGenerateReportEntry(host_port_pair2, chain_.get(), sct_list2));
 
-    EXPECT_EQ(2u, cache.GetCacheForTesting()->size());
-  }
+  EXPECT_EQ(2u, cache.GetCacheForTesting()->size());
 
-  // The bucket for a HWM of 2 should have a single sample as there were two
-  // items in the cache when it was destroyed.
-  histograms.ExpectUniqueSample("Security.SCTAuditing.OptIn.CacheHWM", 2, 1);
+  // High-water-mark metrics are recorded once an hour.
+  task_environment_.FastForwardBy(base::Hours(1));
+
+  // The bucket for a HWM of 2 should have a single sample.
+  histograms.ExpectUniqueSample("Security.SCTAuditing.OptIn.DedupeCacheHWM", 2,
+                                1);
 }
 
-// Tests that enqueueing a report causes its size to be logged. Trying to log
+// Tests that generating a report causes its size to be logged. Trying to log
 // the same SCTs a second time will cause the deduplication to be logged instead
 // of logging the report size a second time.
 TEST_F(SCTAuditingCacheTest, ReportSizeMetrics) {
@@ -379,17 +314,19 @@ TEST_F(SCTAuditingCacheTest, ReportSizeMetrics) {
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions", "signature", base::Time::Now(),
                        net::ct::SCT_STATUS_OK, &sct_list);
-  cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
+  absl::optional<SCTAuditingCache::ReportEntry> entry =
+      cache.MaybeGenerateReportEntry(host_port_pair, chain_.get(), sct_list);
+  ASSERT_TRUE(entry);
 
-  // Get the size of the enqueued report and test that it is correctly logged.
-  size_t report_size =
-      cache.GetCacheForTesting()->begin()->second->ByteSizeLong();
+  // Get the size of the pending report and test that it is correctly logged.
+  size_t report_size = entry->report->ByteSizeLong();
   ASSERT_GT(report_size, 0u);
   histograms.ExpectUniqueSample("Security.SCTAuditing.OptIn.ReportSize",
                                 report_size, 1);
 
   // Retry enqueueing the same report which will be deduplicated.
-  cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
+  EXPECT_FALSE(
+      cache.MaybeGenerateReportEntry(host_port_pair, chain_.get(), sct_list));
 
   histograms.ExpectTotalCount("Security.SCTAuditing.OptIn.ReportSampled", 1);
   histograms.ExpectTotalCount("Security.SCTAuditing.OptIn.ReportSize", 1);
@@ -403,72 +340,21 @@ TEST_F(SCTAuditingCacheTest, ReportSampleDroppedMetrics) {
   base::HistogramTester histograms;
 
   SCTAuditingCache cache(10);
-  InitSCTAuditing(&cache);
-  cache.set_sampling_rate(0);
+  InitSCTAuditing(&cache, /*sampling_rate=*/0);
 
   const net::HostPortPair host_port_pair("example.com", 443);
   net::SignedCertificateTimestampAndStatusList sct_list;
   MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
                        "extensions", "signature", base::Time::Now(),
                        net::ct::SCT_STATUS_OK, &sct_list);
-  cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
+  EXPECT_FALSE(
+      cache.MaybeGenerateReportEntry(host_port_pair, chain_.get(), sct_list));
 
   histograms.ExpectUniqueSample("Security.SCTAuditing.OptIn.ReportSampled",
                                 false, 1);
   histograms.ExpectTotalCount("Security.SCTAuditing.OptIn.ReportSize", 0);
   histograms.ExpectBucketCount("Security.SCTAuditing.OptIn.ReportDeduplicated",
                                false, 1);
-}
-
-// If a report doesn't have any valid SCTs, it should not get added to the cache
-// at all.
-TEST_F(SCTAuditingCacheTest, ReportNotGeneratedIfNoValidSCTs) {
-  SCTAuditingCache cache(10);
-  InitSCTAuditing(&cache);
-
-  const net::HostPortPair host_port_pair("example.com", 443);
-  net::SignedCertificateTimestampAndStatusList sct_list;
-  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
-                       "extensions", "signature", base::Time::Now(),
-                       net::ct::SCT_STATUS_INVALID_SIGNATURE, &sct_list);
-  cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
-
-  EXPECT_EQ(0u, cache.GetCacheForTesting()->size());
-}
-
-// Connections that have a mix of valid and invalid SCTs should only include the
-// valid SCTs in the report.
-TEST_F(SCTAuditingCacheTest, ReportsOnlyIncludesValidSCTs) {
-  SCTAuditingCache cache(10);
-  InitSCTAuditing(&cache);
-
-  // Add a report with different types and validities of SCTs.
-  const net::HostPortPair host_port_pair("example.com", 443);
-  net::SignedCertificateTimestampAndStatusList sct_list;
-  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
-                       "extensions1", "valid_signature", base::Time::Now(),
-                       net::ct::SCT_STATUS_OK, &sct_list);
-  MakeTestSCTAndStatus(net::ct::SignedCertificateTimestamp::SCT_EMBEDDED,
-                       "extensions2", "invalid_signature", base::Time::Now(),
-                       net::ct::SCT_STATUS_INVALID_SIGNATURE, &sct_list);
-  MakeTestSCTAndStatus(
-      net::ct::SignedCertificateTimestamp::SCT_FROM_TLS_EXTENSION,
-      "extensions3", "invalid_log", base::Time::Now(),
-      net::ct::SCT_STATUS_LOG_UNKNOWN, &sct_list);
-  cache.MaybeEnqueueReport(host_port_pair, chain_.get(), sct_list);
-
-  // No invalid SCTs should be in any reports in the cache.
-  for (const auto& entry : *cache.GetCacheForTesting()) {
-    for (auto& sct_and_status :
-         entry.second->certificate_report(0).included_sct()) {
-      // Decode the SCT and check that only the valid SCT was included.
-      base::StringPiece encoded_sct(sct_and_status.serialized_sct());
-      scoped_refptr<net::ct::SignedCertificateTimestamp> decoded_sct;
-      ASSERT_TRUE(net::ct::DecodeSignedCertificateTimestamp(&encoded_sct,
-                                                            &decoded_sct));
-      EXPECT_EQ("valid_signature", decoded_sct->signature.signature_data);
-    }
-  }
 }
 
 }  // namespace network

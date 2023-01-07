@@ -1,4 +1,4 @@
-CONSOLE ERROR: line 67: Uncaught TypeError: RegExp.prototype.ignoreCase getter called on non-RegExp object
+CONSOLE ERROR: Uncaught TypeError: RegExp.prototype.ignoreCase getter called on non-RegExp object
 This page tests cached access to getters and setters. If the test passes, you'll see a series of PASS messages below.
 
 PASS: testGetter({__proto__: {count: 'FAIL'}, get length(){ return this.count; }, count: 7}) should be 7 and is.

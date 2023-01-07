@@ -1,0 +1,16 @@
+caption: Force networking code to run in the browser process
+deprecated: true
+desc: This policy is deprecated.
+example_value: false
+features:
+  dynamic_refresh: false
+  per_profile: false
+owners:
+- file://services/network/OWNERS
+- jam@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome.win:72-83
+tags: []
+type: main

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -150,14 +150,20 @@ TEST_F(SharedMemoryMappingTest, TooBigSpanWithExplicitElementCount) {
 // TODO(dcheng): This test is temporarily disabled on iOS. iOS devices allow
 // the creation of a 1GB shared memory region, but don't allow the region to be
 // mapped.
-#if !defined(OS_IOS)
-TEST_F(SharedMemoryMappingTest, TotalMappedSizeLimit) {
+#if !BUILDFLAG(IS_IOS)
+// TODO(crbug.com/1334079) Fix flakiness and re-enable on Linux and ChromeOS.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_TotalMappedSizeLimit DISABLED_TotalMappedSizeLimit
+#else
+#define MAYBE_TotalMappedSizeLimit TotalMappedSizeLimit
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+TEST_F(SharedMemoryMappingTest, MAYBE_TotalMappedSizeLimit) {
   // Nothing interesting to test if the address space isn't 64 bits, since
   // there's no real limit enforced on 32 bits other than complete address
   // space exhaustion.
   // Also exclude NaCl since pointers are 32 bits on all architectures:
   // https://bugs.chromium.org/p/nativeclient/issues/detail?id=1162
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#if defined(ARCH_CPU_64_BITS) && !BUILDFLAG(IS_NACL)
   base::HistogramTester histogram_tester;
   auto region = WritableSharedMemoryRegion::Create(1024 * 1024 * 1024);
   ASSERT_TRUE(region.IsValid());
@@ -175,6 +181,6 @@ TEST_F(SharedMemoryMappingTest, TotalMappedSizeLimit) {
       ::testing::ElementsAre(Bucket(0, 31), Bucket(1, 1)));
 #endif  // defined(ARCH_CPU_64_BITS)
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 }  // namespace base

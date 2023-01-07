@@ -1,18 +1,19 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/webui/translate_internals/translate_internals_ui.h"
 
-#include <string>
+#import <string>
 
+#import "components/translate/core/common/translate_util.h"
 #import "components/translate/translate_internals/translate_internals_handler.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/webui/translate_internals/ios_translate_internals_handler.h"
-#include "ios/chrome/grit/ios_resources.h"
-#include "ios/web/public/webui/web_ui_ios.h"
-#include "ios/web/public/webui/web_ui_ios_data_source.h"
+#import "ios/chrome/browser/url/chrome_url_constants.h"
+#import "ios/chrome/grit/ios_resources.h"
+#import "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web/public/webui/web_ui_ios_data_source.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -34,17 +35,21 @@ web::WebUIIOSDataSource* CreateTranslateInternalsHTMLSource() {
   source->AddResourcePath("translate_internals.js",
                           IDR_IOS_TRANSLATE_INTERNALS_JS);
 
-  base::DictionaryValue langs;
-  translate::TranslateInternalsHandler::GetLanguages(&langs);
-  for (base::DictionaryValue::Iterator it(langs); !it.IsAtEnd(); it.Advance()) {
-    std::string key = "language-" + it.key();
-    std::string value;
-    it.value().GetAsString(&value);
+  base::Value::Dict langs =
+      translate::TranslateInternalsHandler::GetLanguages();
+  for (const auto key_value_pair : langs) {
+    DCHECK(key_value_pair.second.is_string());
+    std::string key = "language-" + key_value_pair.first;
+    const std::string& value = key_value_pair.second.GetString();
     source->AddString(key, value);
   }
 
-  // Current language detection model is "CLD3".
-  source->AddString("model-version", "CLD3");
+  if (translate::IsTFLiteLanguageDetectionEnabled()) {
+    source->AddString("model-version", "TFLite_v1");
+  } else {
+    // The default language detection model is "CLD3".
+    source->AddString("model-version", "CLD3");
+  }
 
   return source;
 }

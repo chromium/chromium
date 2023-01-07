@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,9 @@
 
 #include <windows.h>
 #include <winevt.h>
+
+#include <memory>
+#include <unordered_map>
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -26,7 +29,7 @@ const char kGcpwServiceUploadEventLogsPath[] = "/v1/uploadEventViewerLogs";
 
 // Default timeout when trying to make requests to the GCPW service.
 const base::TimeDelta kDefaultUploadLogsRequestTimeout =
-    base::TimeDelta::FromMilliseconds(12000);
+    base::Milliseconds(12000);
 
 // Parameter names that are used in the JSON payload of the requests.
 const char kRequestSerialNumberParameterName[] = "device_serial_number";
@@ -437,7 +440,8 @@ HRESULT EventLogsUploadManager::UploadEventViewerLogs(
     }
 
     if (!log_entry_value_list) {
-      log_entry_value_list.reset(new base::Value(base::Value::Type::LIST));
+      log_entry_value_list =
+          std::make_unique<base::Value>(base::Value::Type::LIST);
     }
     log_entry_value_list->Append(std::move(log_entry_value));
 
@@ -454,7 +458,8 @@ HRESULT EventLogsUploadManager::UploadEventViewerLogs(
     }
   }
 
-  if (log_entry_value_list && log_entry_value_list->GetList().size() > 0) {
+  if (log_entry_value_list &&
+      log_entry_value_list->GetListDeprecated().size() > 0) {
     upload_status_ = MakeUploadLogChunkRequest(access_token, chunk_id,
                                                std::move(log_entry_value_list));
     if (FAILED(upload_status_)) {
@@ -483,7 +488,8 @@ HRESULT EventLogsUploadManager::MakeUploadLogChunkRequest(
     return hr;
   }
 
-  size_t num_events_to_upload = log_entries_value_list->GetList().size();
+  size_t num_events_to_upload =
+      log_entries_value_list->GetListDeprecated().size();
 
   base::Value request_dict(base::Value::Type::DICTIONARY);
   request_dict.SetStringKey(kRequestSerialNumberParameterName,
@@ -494,7 +500,7 @@ HRESULT EventLogsUploadManager::MakeUploadLogChunkRequest(
   base::Value log_entries =
       base::Value::FromUniquePtrValue(std::move(log_entries_value_list));
   request_dict.SetKey(kRequestLogEntriesParameterName, std::move(log_entries));
-  base::Optional<base::Value> request_result;
+  absl::optional<base::Value> request_result;
 
   // Make the upload HTTP request.
   hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(

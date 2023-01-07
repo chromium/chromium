@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 
 #include "base/check.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 
 namespace {
 // TODO(jamiewalch): Use the correct DPI for the mode: http://crbug.com/172405.
@@ -36,14 +36,20 @@ static inline bool operator <(const ScreenResolution& a,
 class DesktopResizerWin : public DesktopResizer {
  public:
   DesktopResizerWin();
+  DesktopResizerWin(const DesktopResizerWin&) = delete;
+  DesktopResizerWin& operator=(const DesktopResizerWin&) = delete;
   ~DesktopResizerWin() override;
 
   // DesktopResizer interface.
-  ScreenResolution GetCurrentResolution() override;
+  ScreenResolution GetCurrentResolution(webrtc::ScreenId screen_id) override;
   std::list<ScreenResolution> GetSupportedResolutions(
-      const ScreenResolution& preferred) override;
-  void SetResolution(const ScreenResolution& resolution) override;
-  void RestoreResolution(const ScreenResolution& original) override;
+      const ScreenResolution& preferred,
+      webrtc::ScreenId screen_id) override;
+  void SetResolution(const ScreenResolution& resolution,
+                     webrtc::ScreenId screen_id) override;
+  void RestoreResolution(const ScreenResolution& original,
+                         webrtc::ScreenId screen_id) override;
+  void SetVideoLayout(const protocol::VideoLayout& layout) override;
 
  private:
   void UpdateBestModeForResolution(const DEVMODE& current_mode,
@@ -64,8 +70,6 @@ class DesktopResizerWin : public DesktopResizer {
 
   std::map<ScreenResolution, DEVMODE> best_mode_for_resolution_;
   DEVMODE initial_mode_;
-
-  DISALLOW_COPY_AND_ASSIGN(DesktopResizerWin);
 };
 
 DesktopResizerWin::DesktopResizerWin() {
@@ -80,7 +84,8 @@ DesktopResizerWin::DesktopResizerWin() {
 DesktopResizerWin::~DesktopResizerWin() {
 }
 
-ScreenResolution DesktopResizerWin::GetCurrentResolution() {
+ScreenResolution DesktopResizerWin::GetCurrentResolution(
+    webrtc::ScreenId screen_id) {
   DEVMODE current_mode;
   if (GetPrimaryDisplayMode(ENUM_CURRENT_SETTINGS, 0, &current_mode) &&
       IsModeValid(current_mode))
@@ -89,7 +94,8 @@ ScreenResolution DesktopResizerWin::GetCurrentResolution() {
 }
 
 std::list<ScreenResolution> DesktopResizerWin::GetSupportedResolutions(
-    const ScreenResolution& preferred) {
+    const ScreenResolution& preferred,
+    webrtc::ScreenId screen_id) {
   if (!IsResizeSupported())
     return std::list<ScreenResolution>();
 
@@ -116,7 +122,8 @@ std::list<ScreenResolution> DesktopResizerWin::GetSupportedResolutions(
   return resolutions;
 }
 
-void DesktopResizerWin::SetResolution(const ScreenResolution& resolution) {
+void DesktopResizerWin::SetResolution(const ScreenResolution& resolution,
+                                      webrtc::ScreenId screen_id) {
   if (best_mode_for_resolution_.count(resolution) == 0)
     return;
 
@@ -126,11 +133,16 @@ void DesktopResizerWin::SetResolution(const ScreenResolution& resolution) {
     LOG(ERROR) << "SetResolution failed: " << result;
 }
 
-void DesktopResizerWin::RestoreResolution(const ScreenResolution& original) {
+void DesktopResizerWin::RestoreResolution(const ScreenResolution& original,
+                                          webrtc::ScreenId screen_id) {
   // Restore the display mode based on the registry configuration.
   DWORD result = ChangeDisplaySettings(nullptr, 0);
   if (result != DISP_CHANGE_SUCCESSFUL)
     LOG(ERROR) << "RestoreResolution failed: " << result;
+}
+
+void DesktopResizerWin::SetVideoLayout(const protocol::VideoLayout& layout) {
+  NOTIMPLEMENTED();
 }
 
 void DesktopResizerWin::UpdateBestModeForResolution(

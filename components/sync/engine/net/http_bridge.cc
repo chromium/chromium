@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,10 +9,11 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/task/post_task.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -24,7 +25,10 @@
 #include "net/http/http_response_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/static_http_user_agent_settings.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/simple_url_loader_throttle.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace syncer {
@@ -34,7 +38,7 @@ namespace {
 // It's possible for an http request to be silently stalled. We set a time
 // limit for all http requests, beyond which the request is cancelled and
 // treated as a transient failure.
-constexpr base::TimeDelta kMaxHttpRequestTime = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kMaxHttpRequestTime = base::Minutes(5);
 
 // Helper method for logging timeouts via UMA.
 void LogTimeout(bool timed_out) {
@@ -49,10 +53,8 @@ base::LazyInstance<scoped_refptr<base::SequencedTaskRunner>>::Leaky
 HttpBridgeFactory::HttpBridgeFactory(
     const std::string& user_agent,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory,
-    const NetworkTimeUpdateCallback& network_time_update_callback)
-    : user_agent_(user_agent),
-      network_time_update_callback_(network_time_update_callback) {
+        pending_url_loader_factory)
+    : user_agent_(user_agent) {
   // Some tests pass null'ed out pending_url_loader_factory instances.
   if (pending_url_loader_factory) {
     url_loader_factory_ = network::SharedURLLoaderFactory::Create(
@@ -62,11 +64,11 @@ HttpBridgeFactory::HttpBridgeFactory(
 
 HttpBridgeFactory::~HttpBridgeFactory() = default;
 
-scoped_refptr<HttpPostProviderInterface> HttpBridgeFactory::Create() {
+scoped_refptr<HttpPostProvider> HttpBridgeFactory::Create() {
   DCHECK(url_loader_factory_);
 
-  scoped_refptr<HttpPostProviderInterface> http = new HttpBridge(
-      user_agent_, url_loader_factory_->Clone(), network_time_update_callback_);
+  scoped_refptr<HttpPostProvider> http =
+      new HttpBridge(user_agent_, url_loader_factory_->Clone());
   return http;
 }
 
@@ -76,13 +78,11 @@ HttpBridge::URLFetchState::URLFetchState()
       request_succeeded(false),
       http_status_code(-1),
       net_error_code(-1) {}
-HttpBridge::URLFetchState::~URLFetchState() {}
+HttpBridge::URLFetchState::~URLFetchState() = default;
 
-HttpBridge::HttpBridge(
-    const std::string& user_agent,
-    std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory,
-    const NetworkTimeUpdateCallback& network_time_update_callback)
+HttpBridge::HttpBridge(const std::string& user_agent,
+                       std::unique_ptr<network::PendingSharedURLLoaderFactory>
+                           pending_url_loader_factory)
     : user_agent_(user_agent),
       http_post_completed_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                            base::WaitableEvent::InitialState::NOT_SIGNALED),
@@ -90,8 +90,7 @@ HttpBridge::HttpBridge(
       network_task_runner_(g_io_capable_task_runner_for_tests.Get()
                                ? g_io_capable_task_runner_for_tests.Get()
                                : base::ThreadPool::CreateSequencedTaskRunner(
-                                     {base::MayBlock()})),
-      network_time_update_callback_(network_time_update_callback) {}
+                                     {base::MayBlock()})) {}
 
 HttpBridge::~HttpBridge() = default;
 
@@ -99,6 +98,11 @@ void HttpBridge::SetExtraRequestHeaders(const char* headers) {
   DCHECK(extra_headers_.empty())
       << "HttpBridge::SetExtraRequestHeaders called twice.";
   extra_headers_.assign(headers);
+}
+
+void HttpBridge::SetAllowBatching(bool allow_batching) {
+  DCHECK(!fetch_state_.url_loader);
+  allow_batching_ = allow_batching;
 }
 
 void HttpBridge::SetURL(const GURL& url) {
@@ -182,11 +186,9 @@ void HttpBridge::MakeAsynchronousPost() {
   // Start the timer on the network thread (the same thread progress is made
   // on, and on which the url fetcher lives).
   DCHECK(!fetch_state_.http_request_timeout_timer);
-  fetch_state_.http_request_timeout_timer =
-      std::make_unique<base::OneShotTimer>();
-  fetch_state_.http_request_timeout_timer->Start(
-      FROM_HERE, kMaxHttpRequestTime,
-      base::BindOnce(&HttpBridge::OnURLLoadTimedOut, this));
+  fetch_state_.http_request_timeout_timer = std::make_unique<base::DelayTimer>(
+      FROM_HERE, kMaxHttpRequestTime, this, &HttpBridge::OnURLLoadTimedOut);
+  fetch_state_.http_request_timeout_timer->Reset();
 
   // Some tests inject |url_loader_factory_| created to operated on the
   // IO-capable thread currently running.
@@ -247,6 +249,11 @@ void HttpBridge::MakeAsynchronousPost() {
   fetch_state_.url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   network::SimpleURLLoader* url_loader = fetch_state_.url_loader.get();
+
+  if (allow_batching_ &&
+      network::SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation)) {
+    url_loader->SetAllowBatching();
+  }
 
   std::string request_to_send;
   compression::GzipCompress(request_content_, &request_to_send);
@@ -315,7 +322,7 @@ void HttpBridge::Abort() {
 
 void HttpBridge::DestroyURLLoaderOnIOThread(
     std::unique_ptr<network::SimpleURLLoader> loader,
-    std::unique_ptr<base::OneShotTimer> loader_timer) {
+    std::unique_ptr<base::DelayTimer> loader_timer) {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
   // Both |loader_timer| and |loader| go out of scope.
@@ -353,8 +360,7 @@ void HttpBridge::OnURLLoadCompleteInternal(
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
 
   // Stop the request timer now that the request completed.
-  if (fetch_state_.http_request_timeout_timer)
-    fetch_state_.http_request_timeout_timer.reset();
+  fetch_state_.http_request_timeout_timer = nullptr;
 
   // TODO(crbug.com/844968): Relax this if-check to become a DCHECK?
   if (fetch_state_.aborted)
@@ -381,8 +387,6 @@ void HttpBridge::OnURLLoadCompleteInternal(
 
   if (response_body)
     fetch_state_.response_content = std::move(*response_body);
-
-  UpdateNetworkTime();
 
   fetch_state_.url_loader.reset();
   url_loader_factory_ = nullptr;
@@ -422,7 +426,7 @@ void HttpBridge::OnURLLoadTimedOut() {
   url_loader_factory_ = nullptr;
 
   // Timer is smart enough to handle being deleted as part of the invoked task.
-  fetch_state_.http_request_timeout_timer.reset();
+  fetch_state_.http_request_timeout_timer = nullptr;
 
   // Wake the blocked syncer thread in MakeSynchronousPost.
   // WARNING: DONT DO ANYTHING AFTER THIS CALL! |this| may be deleted!
@@ -432,25 +436,6 @@ void HttpBridge::OnURLLoadTimedOut() {
 void HttpBridge::SetIOCapableTaskRunnerForTest(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   g_io_capable_task_runner_for_tests.Get() = task_runner;
-}
-
-void HttpBridge::UpdateNetworkTime() {
-  std::string sane_time_str;
-  if (!fetch_state_.request_succeeded || fetch_state_.start_time.is_null() ||
-      fetch_state_.end_time < fetch_state_.start_time ||
-      !fetch_state_.response_headers ||
-      !fetch_state_.response_headers->EnumerateHeader(
-          nullptr, "Sane-Time-Millis", &sane_time_str)) {
-    return;
-  }
-
-  int64_t sane_time_ms = 0;
-  if (base::StringToInt64(sane_time_str, &sane_time_ms)) {
-    network_time_update_callback_.Run(
-        base::Time::FromJsTime(sane_time_ms),
-        base::TimeDelta::FromMilliseconds(1),
-        fetch_state_.end_time - fetch_state_.start_time);
-  }
 }
 
 }  // namespace syncer

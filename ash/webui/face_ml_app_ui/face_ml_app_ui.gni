@@ -1,0 +1,5 @@
+declare_args() {
+  # Whether to enable the product Face ML app. When false, a mock app
+  # is bundled for testing integration points.
+  enable_cros_face_ml = false
+}

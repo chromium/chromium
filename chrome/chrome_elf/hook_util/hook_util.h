@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,6 @@
 #define CHROME_CHROME_ELF_HOOK_UTIL_HOOK_UTIL_H_
 
 #include <windows.h>
-
-#include "base/macros.h"
 
 namespace sandbox {
 class ServiceResolverThunk;
@@ -29,6 +27,10 @@ sandbox::ServiceResolverThunk* HookSystemService(bool relaxed);
 class IATHook {
  public:
   IATHook();
+
+  IATHook(const IATHook&) = delete;
+  IATHook& operator=(const IATHook&) = delete;
+
   ~IATHook();
 
   // Intercept a function in an import table of a specific
@@ -57,10 +59,8 @@ class IATHook {
   void* intercept_function_;
   void* original_function_;
   IMAGE_THUNK_DATA* iat_thunk_;
-
-  DISALLOW_COPY_AND_ASSIGN(IATHook);
 };
 
 }  // namespace elf_hook
 
-#endif  // CHROME_ELF_HOOK_UTIL_HOOK_UTIL_H_
+#endif  // CHROME_CHROME_ELF_HOOK_UTIL_HOOK_UTIL_H_

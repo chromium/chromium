@@ -1,27 +1,42 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_cell.h"
 
-#include <ostream>
+#import <MaterialComponents/MaterialActivityIndicator.h>
+#import <ostream>
 
-#include "base/check.h"
-#include "base/notreached.h"
+#import "base/check.h"
+#import "base/feature_list.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
+#import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "ui/gfx/ios/uikit_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
+
+// The size of symbol icons.
+NSInteger kIconSymbolPointSize = 13;
+
+// Specific symbol image used as a badge for unslected tabs.
+NSString* kCircleSymbol = @"circle";
+
+// Size of activity indicator replacing fav icon when active.
+const CGFloat kIndicatorSize = 16.0;
+
 // Frame-based layout utilities for GridTransitionCell.
-// Scales the size of |view|'s frame by |factor| in both height and width. This
+// Scales the size of `view`'s frame by `factor` in both height and width. This
 // scaling is done by changing the frame size without changing its origin,
 // unlike a scale transform which scales around the view's center.
 void ScaleView(UIView* view, CGFloat factor) {
@@ -33,7 +48,7 @@ void ScaleView(UIView* view, CGFloat factor) {
   view.frame = frame;
 }
 
-// Positions |view| by setting its frame's origin to |point|.
+// Positions `view` by setting its frame's origin to `point`.
 void PositionView(UIView* view, CGPoint point) {
   if (!view)
     return;
@@ -41,6 +56,12 @@ void PositionView(UIView* view, CGPoint point) {
   frame.origin = point;
   view.frame = frame;
 }
+
+// Kill switch guarding a workaround for crash, see crbug.com/1350976
+BASE_FEATURE(kPreviousTabViewWidthCrash,
+             "PreviousTabViewWidthCrash",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace
 
 @interface GridCell ()
@@ -50,6 +71,11 @@ void PositionView(UIView* view, CGPoint point) {
 // The constraints enabled under normal font size.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* nonAccessibilityConstraints;
+// The constraints enabled while showing the close icon.
+@property(nonatomic, strong) NSArray<NSLayoutConstraint*>* closeIconConstraints;
+// The constraints enabled while showing the selection icon.
+@property(nonatomic, strong)
+    NSArray<NSLayoutConstraint*>* selectIconConstraints;
 // Header height of the cell.
 @property(nonatomic, strong) NSLayoutConstraint* topBarHeightConstraint;
 // Visual components of the cell.
@@ -58,19 +84,32 @@ void PositionView(UIView* view, CGPoint point) {
 @property(nonatomic, weak) TopAlignedImageView* snapshotView;
 @property(nonatomic, weak) UILabel* titleLabel;
 @property(nonatomic, weak) UIImageView* closeIconView;
+@property(nonatomic, weak) UIImageView* selectIconView;
+@property(nonatomic, weak) MDCActivityIndicator* activityIndicator;
 // Since the close icon dimensions are smaller than the recommended tap target
 // size, use an overlaid tap target button.
 @property(nonatomic, weak) UIButton* closeTapTargetButton;
 @property(nonatomic, weak) UIView* border;
+// Whether or not the cell is currently displaying an editing state.
+@property(nonatomic, readonly) BOOL isInSelectionMode;
 @end
 
 @implementation GridCell
 
-// |-dequeueReusableCellWithReuseIdentifier:forIndexPath:| calls this method to
+// `-dequeueReusableCellWithReuseIdentifier:forIndexPath:` calls this method to
 // initialize a cell.
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
+    _state = GridCellStateNotEditing;
+
+    // The background color must be set to avoid the corners behind the rounded
+    // layer from showing when dragging and dropping. Unfortunately, using
+    // `UIColor.clearColor` here will not remain transparent, so a solid color
+    // must be chosen. Using the grid color prevents the corners from showing
+    // while it transitions to the presented context menu/dragging state.
+    self.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
+
     [self setupSelectedBackgroundView];
     UIView* contentView = self.contentView;
     contentView.layer.cornerRadius = kGridCellCornerRadius;
@@ -87,20 +126,29 @@ void PositionView(UIView* view, CGPoint point) {
                    forControlEvents:UIControlEventTouchUpInside];
     closeTapTargetButton.accessibilityIdentifier =
         kGridCellCloseButtonIdentifier;
-
     [contentView addSubview:topBar];
     [contentView addSubview:snapshotView];
+    PriceCardView* priceCardView = [[PriceCardView alloc] init];
+    [snapshotView addSubview:priceCardView];
     [contentView addSubview:closeTapTargetButton];
     _topBar = topBar;
     _snapshotView = snapshotView;
     _closeTapTargetButton = closeTapTargetButton;
+    _priceCardView = priceCardView;
+    _opacity = 1.0;
 
+    self.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    self.snapshotView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    self.topBar.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+    self.closeIconView.tintColor = [UIColor colorNamed:kCloseButtonColor];
+
+    self.layer.cornerRadius = kGridCellCornerRadius;
     self.layer.shadowColor = [UIColor blackColor].CGColor;
     self.layer.shadowOffset = CGSizeMake(0, 0);
     self.layer.shadowRadius = 4.0f;
     self.layer.shadowOpacity = 0.5f;
     self.layer.masksToBounds = NO;
-
     NSArray* constraints = @[
       [topBar.topAnchor constraintEqualToAnchor:contentView.topAnchor],
       [topBar.leadingAnchor constraintEqualToAnchor:contentView.leadingAnchor],
@@ -121,6 +169,15 @@ void PositionView(UIView* view, CGPoint point) {
           constraintEqualToConstant:kGridCellCloseTapTargetWidthHeight],
       [closeTapTargetButton.heightAnchor
           constraintEqualToConstant:kGridCellCloseTapTargetWidthHeight],
+      [priceCardView.topAnchor
+          constraintEqualToAnchor:snapshotView.topAnchor
+                         constant:kGridCellPriceDropTopSpacing],
+      [priceCardView.leadingAnchor
+          constraintEqualToAnchor:snapshotView.leadingAnchor
+                         constant:kGridCellPriceDropLeadingSpacing],
+      [priceCardView.trailingAnchor
+          constraintLessThanOrEqualToAnchor:snapshotView.trailingAnchor
+                                   constant:-kGridCellPriceDropTrailingSpacing],
     ];
     [NSLayoutConstraint activateConstraints:constraints];
   }
@@ -138,7 +195,7 @@ void PositionView(UIView* view, CGPoint point) {
       UIContentSizeCategoryIsAccessibilityCategory(
           self.traitCollection.preferredContentSizeCategory);
   if (isPreviousAccessibilityCategory ^ isCurrentAccessibilityCategory) {
-    [self updateTopBar];
+    [self updateTopBarSize];
   }
 }
 
@@ -155,7 +212,11 @@ void PositionView(UIView* view, CGPoint point) {
   self.titleHidden = NO;
   self.icon = nil;
   self.snapshot = nil;
+  self.snapshotView.image = nil;
   self.selected = NO;
+  self.priceCardView.hidden = YES;
+  self.opacity = 1.0;
+  [self hideActivityIndicator];
 }
 
 #pragma mark - UIAccessibility
@@ -167,7 +228,13 @@ void PositionView(UIView* view, CGPoint point) {
 }
 
 - (NSArray*)accessibilityCustomActions {
-  // Each cell has 2 custom actions, which is accessible through swiping. The
+  if (self.isInSelectionMode) {
+    // If the cell is in tab grid selection mode, only allow toggling the
+    // selection state.
+    return nil;
+  }
+
+  // In normal cell mode, there are 2 actions, accessible through swiping. The
   // default is to select the cell. Another is to close the cell.
   return @[ [[UIAccessibilityCustomAction alloc]
       initWithName:l10n_util::GetNSString(IDS_IOS_TAB_SWITCHER_CLOSE_TAB)
@@ -183,50 +250,15 @@ void PositionView(UIView* view, CGPoint point) {
   if (_theme == theme)
     return;
 
-  // This background color must be set to avoid the corners behind the rounded
-  // layer from showing when dragging and dropping.
-  self.backgroundColor = [UIColor clearColor];
-
   self.iconView.backgroundColor = UIColor.clearColor;
-  switch (theme) {
-    // This is necessary for iOS 13 because on iOS 13, this will return
-    // the dynamic color (which will then be colored with the user
-    // interface style).
-    // On iOS 12, this will always return the dynamic color in the light
-    // variant.
-    case GridThemeLight:
-      self.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-      self.snapshotView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-      self.topBar.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-      self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-      self.closeIconView.tintColor = [UIColor colorNamed:kCloseButtonColor];
-      break;
-    // These dark-theme specific colorsets should only be used for iOS 12
-    // dark theme, as they will be removed along with iOS 12.
-    // TODO (crbug.com/981889): The following lines will be removed
-    // along with iOS 12
-    case GridThemeDark:
-      self.contentView.backgroundColor =
-          [UIColor colorNamed:kBackgroundDarkColor];
-      self.snapshotView.backgroundColor =
-          [UIColor colorNamed:kBackgroundDarkColor];
-      self.topBar.backgroundColor = [UIColor colorNamed:kBackgroundDarkColor];
-      self.titleLabel.textColor = [UIColor colorNamed:kTextPrimaryDarkColor];
-      self.closeIconView.tintColor = [UIColor colorNamed:kCloseButtonDarkColor];
-      break;
-  }
 
-  if (@available(iOS 13, *)) {
-    // When iOS 12 is dropped, only the next line is needed for styling.
-    // Every other check for |GridThemeDark| can be removed, as well as
-    // the dark theme specific assets.
-    self.overrideUserInterfaceStyle = (theme == GridThemeDark)
-                                          ? UIUserInterfaceStyleDark
-                                          : UIUserInterfaceStyleUnspecified;
-  }
+  self.overrideUserInterfaceStyle = (theme == GridThemeDark)
+                                        ? UIUserInterfaceStyleDark
+                                        : UIUserInterfaceStyleUnspecified;
 
-  // When iOS 12 is dropped, only the next switch statement is needed for
-  // styling.
+  // The light and dark themes have different colored borders based on the
+  // theme, regardless of dark mode, so `overrideUserInterfaceStyle` is not
+  // enough here.
   switch (theme) {
     case GridThemeLight:
       self.border.layer.borderColor =
@@ -237,6 +269,7 @@ void PositionView(UIView* view, CGPoint point) {
           [UIColor colorNamed:@"grid_theme_dark_selection_tint_color"].CGColor;
       break;
   }
+
   _theme = theme;
 }
 
@@ -245,9 +278,58 @@ void PositionView(UIView* view, CGPoint point) {
   _icon = icon;
 }
 
+- (void)showActivityIndicator {
+  [self.activityIndicator startAnimating];
+  [self.activityIndicator setHidden:NO];
+  [self.iconView setHidden:YES];
+}
+
+- (void)hideActivityIndicator {
+  [self.activityIndicator stopAnimating];
+  [self.activityIndicator setHidden:YES];
+  [self.iconView setHidden:NO];
+}
+
 - (void)setSnapshot:(UIImage*)snapshot {
   self.snapshotView.image = snapshot;
   _snapshot = snapshot;
+}
+
+- (void)fadeInSnapshot:(UIImage*)snapshot {
+  // Do not fade in the same snapshot
+  if ([_snapshot isEqual:snapshot]) {
+    return;
+  }
+  // Do not fade in if there is no previous snapshot
+  if (_snapshot != nil) {
+    [UIView transitionWithView:self.snapshotView
+                      duration:0.2f
+                       options:UIViewAnimationOptionTransitionCrossDissolve
+                    animations:^{
+                      self.snapshotView.image = snapshot;
+                    }
+                    completion:nil];
+  } else {
+    self.snapshotView.image = snapshot;
+  }
+  _snapshot = snapshot;
+}
+
+- (BOOL)hasIdentifier:(NSString*)identifier {
+  return [self.itemIdentifier isEqualToString:identifier];
+}
+
+- (void)setPriceDrop:(NSString*)price previousPrice:(NSString*)previousPrice {
+  [self.priceCardView setPriceDrop:price previousPrice:previousPrice];
+  // Only append PriceCardView accessibility text if it doesn't already exist in
+  // the accessibility label.
+  if ([self.accessibilityLabel
+          rangeOfString:self.priceCardView.accessibilityLabel]
+          .location == NSNotFound) {
+    self.accessibilityLabel =
+        [@[ self.accessibilityLabel, self.priceCardView.accessibilityLabel ]
+            componentsJoinedByString:@". "];
+  }
 }
 
 - (void)setTitle:(NSString*)title {
@@ -270,6 +352,16 @@ void PositionView(UIView* view, CGPoint point) {
   return params;
 }
 
+- (void)setOpacity:(CGFloat)opacity {
+  _opacity = opacity;
+  self.alpha = opacity;
+}
+
+- (void)setAlpha:(CGFloat)alpha {
+  // Make sure alpha is synchronized with opacity.
+  super.alpha = _opacity;
+}
+
 #pragma mark - Private
 
 // Sets up the top bar with icon, title, and close button.
@@ -283,6 +375,13 @@ void PositionView(UIView* view, CGPoint point) {
   iconView.layer.cornerRadius = kGridCellIconCornerRadius;
   iconView.layer.masksToBounds = YES;
 
+  CGRect indicatorFrame = CGRectMake(0, 0, kIndicatorSize, kIndicatorSize);
+  MDCActivityIndicator* activityIndicator =
+      [[MDCActivityIndicator alloc] initWithFrame:indicatorFrame];
+  activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+  activityIndicator.cycleColors = @[ [UIColor colorNamed:kBlueColor] ];
+  activityIndicator.radius = ui::AlignValueToUpperPixel(kIndicatorSize / 2);
+
   UILabel* titleLabel = [[UILabel alloc] init];
   titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
   titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
@@ -291,13 +390,31 @@ void PositionView(UIView* view, CGPoint point) {
   UIImageView* closeIconView = [[UIImageView alloc] init];
   closeIconView.translatesAutoresizingMaskIntoConstraints = NO;
   closeIconView.contentMode = UIViewContentModeCenter;
-  closeIconView.image = [[UIImage imageNamed:@"grid_cell_close_button"]
-      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  closeIconView.hidden = self.isInSelectionMode;
+  closeIconView.image =
+      UseSymbols()
+          ? DefaultSymbolTemplateWithPointSize(kXMarkSymbol,
+                                               kIconSymbolPointSize)
+          : [[UIImage imageNamed:@"grid_cell_close_button"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+
+  UIImageView* selectIconView = [[UIImageView alloc] init];
+  selectIconView.translatesAutoresizingMaskIntoConstraints = NO;
+  selectIconView.contentMode = UIViewContentModeScaleAspectFit;
+  selectIconView.hidden = !self.isInSelectionMode;
+
+  selectIconView.image = [self selectIconImageForCurrentState];
+
+  [topBar addSubview:selectIconView];
+  _selectIconView = selectIconView;
 
   [topBar addSubview:iconView];
+  [topBar addSubview:activityIndicator];
   [topBar addSubview:titleLabel];
   [topBar addSubview:closeIconView];
+
   _iconView = iconView;
+  _activityIndicator = activityIndicator;
   _titleLabel = titleLabel;
   _closeIconView = closeIconView;
 
@@ -324,21 +441,47 @@ void PositionView(UIView* view, CGPoint point) {
   _topBarHeightConstraint =
       [topBar.heightAnchor constraintEqualToConstant:kGridCellHeaderHeight];
 
-  [self updateTopBar];
-
-  NSArray* constraints = @[
-    _topBarHeightConstraint,
-    [titleLabel.centerYAnchor constraintEqualToAnchor:topBar.centerYAnchor],
+  _closeIconConstraints = @[
     [titleLabel.trailingAnchor
         constraintEqualToAnchor:closeIconView.leadingAnchor
                        constant:-kGridCellTitleLabelContentInset],
-    [closeIconView.topAnchor
-        constraintEqualToAnchor:topBar.topAnchor
-                       constant:kGridCellCloseButtonContentInset],
+    [titleLabel.centerYAnchor
+        constraintEqualToAnchor:closeIconView.centerYAnchor],
     [closeIconView.trailingAnchor
         constraintEqualToAnchor:topBar.trailingAnchor
                        constant:-kGridCellCloseButtonContentInset],
   ];
+
+  if (_selectIconView) {
+    _selectIconConstraints = @[
+      [_selectIconView.heightAnchor
+          constraintEqualToConstant:kGridCellSelectIconSize],
+      [_selectIconView.widthAnchor
+          constraintEqualToConstant:kGridCellSelectIconSize],
+      [titleLabel.trailingAnchor
+          constraintEqualToAnchor:_selectIconView.leadingAnchor
+                         constant:-kGridCellTitleLabelContentInset],
+      [titleLabel.centerYAnchor
+          constraintEqualToAnchor:_selectIconView.centerYAnchor],
+      [_selectIconView.trailingAnchor
+          constraintEqualToAnchor:topBar.trailingAnchor
+                         constant:-kGridCellSelectIconContentInset],
+
+    ];
+  }
+
+  [self updateTopBarSize];
+  [self configureCloseOrSelectIconConstraints];
+
+  NSArray* constraints = @[
+    _topBarHeightConstraint,
+    [titleLabel.centerYAnchor constraintEqualToAnchor:topBar.centerYAnchor],
+  ];
+
+  // Center indicator over favicon.
+  AddSameCenterXConstraint(self, iconView, activityIndicator);
+  AddSameCenterYConstraint(self, iconView, activityIndicator);
+
   [NSLayoutConstraint activateConstraints:constraints];
   [titleLabel
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
@@ -348,14 +491,33 @@ void PositionView(UIView* view, CGPoint point) {
                                       forAxis:UILayoutConstraintAxisHorizontal];
   [closeIconView setContentHuggingPriority:UILayoutPriorityRequired
                                    forAxis:UILayoutConstraintAxisHorizontal];
+  if (_selectIconView) {
+    [_selectIconView
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+    [_selectIconView
+        setContentHuggingPriority:UILayoutPriorityRequired
+                          forAxis:UILayoutConstraintAxisHorizontal];
+  }
   return topBar;
+}
+
+- (UIImage*)selectIconImageForCurrentState {
+  if (_state == GridCellStateEditingUnselected) {
+    return DefaultSymbolTemplateWithPointSize(kCircleSymbol,
+                                              kIconSymbolPointSize);
+  }
+  return DefaultSymbolTemplateWithPointSize(kCheckMarkCircleFillSymbol,
+                                            kIconSymbolPointSize);
 }
 
 // Update constraints of top bar when system font size changes. If accessibility
 // font size is chosen, the favicon will be hidden, and the title text will be
 // shown in two lines.
-- (void)updateTopBar {
+- (void)updateTopBarSize {
   self.topBarHeightConstraint.constant = [self topBarHeight];
+
   if (UIContentSizeCategoryIsAccessibilityCategory(
           self.traitCollection.preferredContentSizeCategory)) {
     self.titleLabel.numberOfLines = 2;
@@ -368,6 +530,47 @@ void PositionView(UIView* view, CGPoint point) {
   }
 }
 
+- (void)configureCloseOrSelectIconConstraints {
+  BOOL showSelectionMode = self.isInSelectionMode && _selectIconView;
+
+  self.closeIconView.hidden = showSelectionMode;
+  self.selectIconView.hidden = !showSelectionMode;
+
+  if (showSelectionMode) {
+    [NSLayoutConstraint deactivateConstraints:_closeIconConstraints];
+    [NSLayoutConstraint activateConstraints:_selectIconConstraints];
+  } else {
+    [NSLayoutConstraint deactivateConstraints:_selectIconConstraints];
+    [NSLayoutConstraint activateConstraints:_closeIconConstraints];
+  }
+}
+
+- (BOOL)isInSelectionMode {
+  return self.state != GridCellStateNotEditing;
+}
+
+- (void)setState:(GridCellState)state {
+  if (state == _state) {
+    return;
+  }
+
+  _state = state;
+  if (_state == GridCellStateEditingSelected) {
+    self.accessibilityValue =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_CELL_SELECTED);
+  } else if (_state == GridCellStateEditingUnselected) {
+    self.accessibilityValue =
+        l10n_util::GetNSString(IDS_IOS_TAB_GRID_CELL_DESELECTED);
+  } else {
+    self.accessibilityValue = nil;
+  }
+  _closeTapTargetButton.enabled = !self.isInSelectionMode;
+  self.selectIconView.image = [self selectIconImageForCurrentState];
+
+  [self configureCloseOrSelectIconConstraints];
+  self.border.hidden = self.isInSelectionMode;
+}
+
 // Sets up the selection border. The tint color is set when the theme is
 // selected.
 - (void)setupSelectedBackgroundView {
@@ -375,6 +578,7 @@ void PositionView(UIView* view, CGPoint point) {
   self.selectedBackgroundView.backgroundColor =
       [UIColor colorNamed:kGridBackgroundColor];
   UIView* border = [[UIView alloc] init];
+  border.hidden = self.isInSelectionMode;
   border.translatesAutoresizingMaskIntoConstraints = NO;
   border.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
   border.layer.cornerRadius = kGridCellCornerRadius +
@@ -426,6 +630,7 @@ void PositionView(UIView* view, CGPoint point) {
   proxy.selected = YES;
   proxy.theme = cell.theme;
   proxy.contentView.hidden = YES;
+  proxy.opacity = cell.opacity;
   return proxy;
 }
 
@@ -449,12 +654,14 @@ void PositionView(UIView* view, CGPoint point) {
   proxy.snapshot = cell.snapshot;
   proxy.title = cell.title;
   proxy.titleHidden = cell.titleHidden;
+  proxy.priceCardView = cell.priceCardView;
+  proxy.opacity = cell.opacity;
   return proxy;
 }
 #pragma mark - GridToTabTransitionView properties.
 
 - (void)setTopCellView:(UIView*)topCellView {
-  // The top cell view is |topBar| and can't be changed.
+  // The top cell view is `topBar` and can't be changed.
   NOTREACHED();
 }
 
@@ -483,6 +690,12 @@ void PositionView(UIView* view, CGPoint point) {
   if (!mainTabView.superview)
     [self.contentView addSubview:mainTabView];
   _previousTabViewWidth = mainTabView.frame.size.width;
+  static bool previous_tab_view_width_crash_workaround =
+      base::FeatureList::IsEnabled(kPreviousTabViewWidthCrash);
+  if (previous_tab_view_width_crash_workaround && !_previousTabViewWidth) {
+    UIWindow* window = UIApplication.sharedApplication.windows.firstObject;
+    _previousTabViewWidth = window.bounds.size.width;
+  }
   _mainTabView = mainTabView;
 }
 
@@ -525,8 +738,9 @@ void PositionView(UIView* view, CGPoint point) {
   self.topBarHeightConstraint.constant = [self topBarHeight];
   [self setNeedsUpdateConstraints];
   [self layoutIfNeeded];
-  CGFloat yOffset = kGridCellHeaderHeight - self.topTabView.frame.size.height;
-  PositionView(self.topTabView, CGPointMake(0, yOffset));
+  CGFloat topYOffset =
+      kGridCellHeaderHeight - self.topTabView.frame.size.height;
+  PositionView(self.topTabView, CGPointMake(0, topYOffset));
   // Position the main view so it's top-aligned with the main cell view.
   PositionView(self.mainTabView, self.mainCellView.frame.origin);
   if (!self.bottomTabView)
@@ -539,8 +753,8 @@ void PositionView(UIView* view, CGPoint point) {
                  CGPointMake(0, self.bottomTabView.frame.origin.y * scale));
   } else {
     // Position the bottom tab view below the main content view.
-    CGFloat yOffset = CGRectGetMaxY(self.mainCellView.frame);
-    PositionView(self.bottomTabView, CGPointMake(0, yOffset));
+    CGFloat bottomYOffset = CGRectGetMaxY(self.mainCellView.frame);
+    PositionView(self.bottomTabView, CGPointMake(0, bottomYOffset));
   }
 }
 
@@ -553,6 +767,12 @@ void PositionView(UIView* view, CGPoint point) {
   ScaleView(self.mainTabView, scale);
   ScaleView(self.bottomTabView, scale);
   _previousTabViewWidth = self.mainTabView.frame.size.width;
+  static bool previous_tab_view_width_crash_workaround =
+      base::FeatureList::IsEnabled(kPreviousTabViewWidthCrash);
+  if (previous_tab_view_width_crash_workaround && !_previousTabViewWidth) {
+    UIWindow* window = UIApplication.sharedApplication.windows.firstObject;
+    _previousTabViewWidth = window.bounds.size.width;
+  }
 }
 
 @end

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -80,7 +80,7 @@ TEST_F(CrxCreatorTest, VerifyCrxWithVerifiedContents) {
   std::string test_compressed_verified_contents(
       kTestCompressedVerifiedContents);
   EXPECT_EQ(CreatorResult::OK,
-            CreateCrxWithVerifiedContentsInHeaderForTesting(
+            CreateCrxWithVerifiedContentsInHeader(
                 temp_file, TestFile("sample.zip"), signing_key.get(),
                 test_compressed_verified_contents));
 

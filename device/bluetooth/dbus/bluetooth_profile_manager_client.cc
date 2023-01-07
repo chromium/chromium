@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,12 @@
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
+#include "device/bluetooth/dbus/bluetooth_metrics_helper.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {
@@ -25,6 +27,11 @@ BluetoothProfileManagerClient::Options::~Options() = default;
 class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
  public:
   BluetoothProfileManagerClientImpl() {}
+
+  BluetoothProfileManagerClientImpl(const BluetoothProfileManagerClientImpl&) =
+      delete;
+  BluetoothProfileManagerClientImpl& operator=(
+      const BluetoothProfileManagerClientImpl&) = delete;
 
   ~BluetoothProfileManagerClientImpl() override = default;
 
@@ -42,22 +49,22 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
     writer.AppendObjectPath(profile_path);
     writer.AppendString(uuid);
 
-    dbus::MessageWriter array_writer(NULL);
+    dbus::MessageWriter array_writer(nullptr);
     writer.OpenArray("{sv}", &array_writer);
 
-    dbus::MessageWriter dict_writer(NULL);
+    dbus::MessageWriter main_dict_writer(nullptr);
 
     // Send Name if provided.
-    if (options.name.get() != NULL) {
-      array_writer.OpenDictEntry(&dict_writer);
-      dict_writer.AppendString(bluetooth_profile_manager::kNameOption);
-      dict_writer.AppendVariantOfString(*(options.name));
-      array_writer.CloseContainer(&dict_writer);
+    if (options.name.get() != nullptr) {
+      array_writer.OpenDictEntry(&main_dict_writer);
+      main_dict_writer.AppendString(bluetooth_profile_manager::kNameOption);
+      main_dict_writer.AppendVariantOfString(*(options.name));
+      array_writer.CloseContainer(&main_dict_writer);
     }
 
     // Send Service if provided.
-    if (options.service.get() != NULL) {
-      dbus::MessageWriter dict_writer(NULL);
+    if (options.service.get() != nullptr) {
+      dbus::MessageWriter dict_writer(nullptr);
       array_writer.OpenDictEntry(&dict_writer);
       dict_writer.AppendString(bluetooth_profile_manager::kServiceOption);
       dict_writer.AppendVariantOfString(*(options.service));
@@ -66,7 +73,7 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
 
     // Send Role if not the default value.
     if (options.role != SYMMETRIC) {
-      dbus::MessageWriter dict_writer(NULL);
+      dbus::MessageWriter dict_writer(nullptr);
       array_writer.OpenDictEntry(&dict_writer);
       dict_writer.AppendString(bluetooth_profile_manager::kRoleOption);
       if (options.role == CLIENT)
@@ -81,8 +88,8 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
     }
 
     // Send Channel if provided.
-    if (options.channel.get() != NULL) {
-      dbus::MessageWriter dict_writer(NULL);
+    if (options.channel.get() != nullptr) {
+      dbus::MessageWriter dict_writer(nullptr);
       array_writer.OpenDictEntry(&dict_writer);
       dict_writer.AppendString(bluetooth_profile_manager::kChannelOption);
       dict_writer.AppendVariantOfUint16(*(options.channel));
@@ -90,8 +97,8 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
     }
 
     // Send PSM if provided.
-    if (options.psm.get() != NULL) {
-      dbus::MessageWriter dict_writer(NULL);
+    if (options.psm.get() != nullptr) {
+      dbus::MessageWriter dict_writer(nullptr);
       array_writer.OpenDictEntry(&dict_writer);
       dict_writer.AppendString(bluetooth_profile_manager::kPSMOption);
       dict_writer.AppendVariantOfUint16(*(options.psm));
@@ -99,34 +106,35 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
     }
 
     // Send RequireAuthentication if provided.
-    if (options.require_authentication.get() != NULL) {
-      array_writer.OpenDictEntry(&dict_writer);
-      dict_writer.AppendString(
+    if (options.require_authentication.get() != nullptr) {
+      array_writer.OpenDictEntry(&main_dict_writer);
+      main_dict_writer.AppendString(
           bluetooth_profile_manager::kRequireAuthenticationOption);
-      dict_writer.AppendVariantOfBool(*(options.require_authentication));
-      array_writer.CloseContainer(&dict_writer);
+      main_dict_writer.AppendVariantOfBool(*(options.require_authentication));
+      array_writer.CloseContainer(&main_dict_writer);
     }
 
     // Send RequireAuthorization if provided.
-    if (options.require_authorization.get() != NULL) {
-      array_writer.OpenDictEntry(&dict_writer);
-      dict_writer.AppendString(
+    if (options.require_authorization.get() != nullptr) {
+      array_writer.OpenDictEntry(&main_dict_writer);
+      main_dict_writer.AppendString(
           bluetooth_profile_manager::kRequireAuthorizationOption);
-      dict_writer.AppendVariantOfBool(*(options.require_authorization));
-      array_writer.CloseContainer(&dict_writer);
+      main_dict_writer.AppendVariantOfBool(*(options.require_authorization));
+      array_writer.CloseContainer(&main_dict_writer);
     }
 
     // Send AutoConnect if provided.
-    if (options.auto_connect.get() != NULL) {
-      array_writer.OpenDictEntry(&dict_writer);
-      dict_writer.AppendString(bluetooth_profile_manager::kAutoConnectOption);
-      dict_writer.AppendVariantOfBool(*(options.auto_connect));
-      array_writer.CloseContainer(&dict_writer);
+    if (options.auto_connect.get() != nullptr) {
+      array_writer.OpenDictEntry(&main_dict_writer);
+      main_dict_writer.AppendString(
+          bluetooth_profile_manager::kAutoConnectOption);
+      main_dict_writer.AppendVariantOfBool(*(options.auto_connect));
+      array_writer.CloseContainer(&main_dict_writer);
     }
 
     // Send ServiceRecord if provided.
-    if (options.service_record.get() != NULL) {
-      dbus::MessageWriter dict_writer(NULL);
+    if (options.service_record.get() != nullptr) {
+      dbus::MessageWriter dict_writer(nullptr);
       array_writer.OpenDictEntry(&dict_writer);
       dict_writer.AppendString(bluetooth_profile_manager::kServiceRecordOption);
       dict_writer.AppendVariantOfString(*(options.service_record));
@@ -134,8 +142,8 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
     }
 
     // Send Version if provided.
-    if (options.version.get() != NULL) {
-      dbus::MessageWriter dict_writer(NULL);
+    if (options.version.get() != nullptr) {
+      dbus::MessageWriter dict_writer(nullptr);
       array_writer.OpenDictEntry(&dict_writer);
       dict_writer.AppendString(bluetooth_profile_manager::kVersionOption);
       dict_writer.AppendVariantOfUint16(*(options.version));
@@ -143,8 +151,8 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
     }
 
     // Send Features if provided.
-    if (options.features.get() != NULL) {
-      dbus::MessageWriter dict_writer(NULL);
+    if (options.features.get() != nullptr) {
+      dbus::MessageWriter dict_writer(nullptr);
       array_writer.OpenDictEntry(&dict_writer);
       dict_writer.AppendString(bluetooth_profile_manager::kFeaturesOption);
       dict_writer.AppendVariantOfUint16(*(options.features));
@@ -155,11 +163,13 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
 
     object_proxy_->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothProfileManagerClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothProfileManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(error_callback)));
+        base::BindOnce(
+            &BluetoothProfileManagerClientImpl::OnRegisterProfileSuccess,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            /*start_time=*/base::Time::Now()),
+        base::BindOnce(
+            &BluetoothProfileManagerClientImpl::OnRegisterProfileError,
+            weak_ptr_factory_.GetWeakPtr(), std::move(error_callback)));
   }
 
   // BluetoothProfileManagerClient override.
@@ -175,11 +185,13 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
 
     object_proxy_->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothProfileManagerClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothProfileManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(error_callback)));
+        base::BindOnce(
+            &BluetoothProfileManagerClientImpl::OnUnregisterProfileSuccess,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            /*start_time=*/base::Time::Now()),
+        base::BindOnce(
+            &BluetoothProfileManagerClientImpl::OnUnregisterProfileError,
+            weak_ptr_factory_.GetWeakPtr(), std::move(error_callback)));
   }
 
  protected:
@@ -193,10 +205,32 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
   }
 
  private:
-  // Called when a response for successful method call is received.
-  void OnSuccess(base::OnceClosure callback, dbus::Response* response) {
+  void OnRegisterProfileSuccess(base::OnceClosure callback,
+                                base::Time start_time,
+                                dbus::Response* response) {
     DCHECK(response);
+    RecordSuccess(kRegisterProfileMethod, start_time);
     std::move(callback).Run();
+  }
+
+  void OnRegisterProfileError(ErrorCallback error_callback,
+                              dbus::ErrorResponse* response) {
+    RecordFailure(kRegisterProfileMethod, response);
+    OnError(std::move(error_callback), response);
+  }
+
+  void OnUnregisterProfileSuccess(base::OnceClosure callback,
+                                  base::Time start_time,
+                                  dbus::Response* response) {
+    DCHECK(response);
+    RecordSuccess(kUnregisterProfileMethod, start_time);
+    std::move(callback).Run();
+  }
+
+  void OnUnregisterProfileError(ErrorCallback error_callback,
+                                dbus::ErrorResponse* response) {
+    RecordFailure(kUnregisterProfileMethod, response);
+    OnError(std::move(error_callback), response);
   }
 
   // Called when a response for a failed method call is received.
@@ -215,7 +249,7 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
     std::move(error_callback).Run(error_name, error_message);
   }
 
-  dbus::ObjectProxy* object_proxy_;
+  raw_ptr<dbus::ObjectProxy> object_proxy_;
 
   // Weak pointer factory for generating 'this' pointers that might live longer
   // than we do.
@@ -223,8 +257,6 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothProfileManagerClientImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothProfileManagerClientImpl);
 };
 
 BluetoothProfileManagerClient::BluetoothProfileManagerClient() = default;

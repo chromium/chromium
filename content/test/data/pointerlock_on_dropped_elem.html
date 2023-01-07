@@ -1,0 +1,20 @@
+<div id="target">
+  <div></div>
+</div>
+<script>
+  function lock() {
+      document.getElementById("target").firstElementChild.requestPointerLock();
+  }
+
+  function replace() {
+      let target = document.getElementById("target");
+      target.removeChild(target.firstElementChild);
+      target.appendChild(document.createElement("div"));
+  }
+
+  document.addEventListener("click", () => {
+      setTimeout(lock, 0);
+      setTimeout(replace, 0);
+      setTimeout(lock, 0);
+  });
+</script>

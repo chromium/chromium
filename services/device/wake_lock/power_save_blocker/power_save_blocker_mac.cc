@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,8 +10,8 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 

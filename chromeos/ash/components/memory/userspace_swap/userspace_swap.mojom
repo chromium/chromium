@@ -1,0 +1,62 @@
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module userspace_swap.mojom;
+
+struct MemoryRegion {
+  uint64 address;
+  uint64 length;
+};
+
+// The UserspaceSwapInitialization interface is used for the renderer to
+// negotiate userspace swap with the browser.
+interface UserspaceSwapInitialization {
+  // TransferUserfaultFD is called from the renderer to hand over the
+  // userfaultfd it created or to provide an error for why a userfaultfd
+  // could not be created. |swap_area| is a memory region which was created
+  // with PROT_NONE at a random address which can be used as a destination
+  // for MovePtes.
+  [Sync]
+  TransferUserfaultFD(uint64 uffd_error, handle<platform> uffd_handle,
+                      uint64 mmap_error, MemoryRegion swap_area) => ();
+};
+
+// The UserspaceSwap interface are the messages the browser will send to a
+// renderer to prepare for and complete userspace swap.
+interface UserspaceSwap {
+  // The MovePTEsLeavingMapping message tells the renderer to move the
+  // region located at the region |src| to |dest|. The renderer
+  // will move the page table entries leaving the source |address| mapped.
+  //
+  // CAUTION: There is an inherent race condition that exists when using
+  // this message. It's entirely possible that a mapping may be unmapped
+  // and an unrelated one remapped at this same address. This situation
+  // which can be detected (by use of userfaultfd) cannot be avoided. The
+  // expectation is that this message will only be used on mappings which
+  // should never be unmapped. As a result detected unmaps or failures
+  // to perform the remap will result in the receiver of this message
+  // being killed.
+  MovePTEsLeavingMapping(MemoryRegion src, uint64 dest);
+
+  // The MapArea message tells the renderer to mmap an area as PROT_NONE.
+  // The primary use of this is to cause memory to be dropped without being
+  // recounted. It's possible to use MADV_DONTNEED to accomplish the same;
+  // however, that's less than ideal as it not reset the VMA itself. When
+  // using MMAP_FIXED the result is unmapping what is at that location
+  // first while holding the mm semaphore in write mode. This mapping will
+  // be created (MAP_ANONYMOUS | MAP_FIXED) with PROT_NONE protections.
+  //
+  // Ultimately we need to discard the remapped memory, unregister with
+  // userfaultfd, and mark a region as PROT_NONE so it can be merged
+  // with it's neighboring previously split VMAs. A single mmap(2)
+  // can accomplish all of these things.
+  MapArea(MemoryRegion area);
+
+  // GetPartitionAllocAreasUsed will return ranges of memory which are in
+  // use and also in core. The memory will be tested using mincore(2) before
+  // being included. |max_superpages| can be used to limited the number of
+  // items returned.
+  GetPartitionAllocSuperPagesUsed(int32 max_superpages)
+    => (array<MemoryRegion> superpages);
+};

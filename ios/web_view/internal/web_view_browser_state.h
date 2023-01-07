@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/prefs/pref_service.h"
 #include "ios/web/public/browser_state.h"
@@ -28,11 +27,15 @@ class WebViewDownloadManager;
 
 // WebView implementation of BrowserState. Can only be used only on the UI
 // thread.
-class WebViewBrowserState : public web::BrowserState {
+class WebViewBrowserState final : public web::BrowserState {
  public:
   explicit WebViewBrowserState(
       bool off_the_record,
       WebViewBrowserState* recording_browser_state = nullptr);
+
+  WebViewBrowserState(const WebViewBrowserState&) = delete;
+  WebViewBrowserState& operator=(const WebViewBrowserState&) = delete;
+
   ~WebViewBrowserState() override;
 
   // web::BrowserState implementation.
@@ -74,8 +77,6 @@ class WebViewBrowserState : public web::BrowserState {
 
   // Handles browser downloads.
   std::unique_ptr<WebViewDownloadManager> download_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewBrowserState);
 };
 
 }  // namespace ios_web_view

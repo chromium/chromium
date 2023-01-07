@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -12,7 +12,7 @@ declare_args() {
 }
 
 if (current_toolchain == default_toolchain) {
-  if (action_pool_depth == -1 || (use_goma || use_rbe)) {
+  if (action_pool_depth == -1 || (use_goma || use_remoteexec)) {
     action_pool_depth = exec_script("get_cpu_count.py", [], "value")
   }
 

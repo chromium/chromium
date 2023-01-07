@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
@@ -15,7 +17,7 @@
 #include "third_party/blink/renderer/core/html/forms/select_type.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -45,7 +47,7 @@ class HTMLSelectElementTest : public PageTestBase {
 
   bool FirstSelectIsConnectedAfterSelectMultiple(const Vector<int>& indices) {
     auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
-    select->focus();
+    select->Focus();
     select->SelectMultipleOptionsByPopup(indices);
     return select->isConnected();
   }
@@ -172,14 +174,14 @@ TEST_F(HTMLSelectElementTest, RestoreUnmatchedFormControlState) {
   EXPECT_EQ(nullptr, To<HTMLSelectElement>(element)->OptionToBeShown());
 }
 
-TEST_F(HTMLSelectElementTest, VisibleBoundsInVisualViewport) {
+TEST_F(HTMLSelectElementTest, VisibleBoundsInLocalRoot) {
   SetHtmlInnerHTML(
       "<select style='position:fixed; top:12.3px; height:24px; "
       "-webkit-appearance:none;'><option>o1</select>");
   auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
   ASSERT_NE(select, nullptr);
-  IntRect bounds = select->VisibleBoundsInVisualViewport();
-  EXPECT_EQ(24, bounds.Height());
+  gfx::Rect bounds = select->VisibleBoundsInLocalRoot();
+  EXPECT_EQ(24, bounds.height());
 }
 
 TEST_F(HTMLSelectElementTest, PopupIsVisible) {
@@ -620,6 +622,74 @@ TEST_F(HTMLSelectElementTest, ChangeRenderingCrash) {
   // Changing the size attribute changes the rendering. This should not trigger
   // a DCHECK failure updating the style recalc root.
   GetElementById("sel")->setAttribute(html_names::kSizeAttr, AtomicString("2"));
+}
+
+TEST_F(HTMLSelectElementTest, ChangeRenderingCrash2) {
+  SetHtmlInnerHTML(R"HTML(
+    <select id="sel">
+      <optgroup id="grp">
+        <option id="opt"></option>
+      </optgroup>
+    </select>
+  )HTML");
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  // Make the select UA slot the style recalc root.
+  GetElementById("opt")->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+  GetElementById("grp")->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+  // Changing the multiple attribute changes the rendering. This should not
+  // trigger a DCHECK failure updating the style recalc root.
+  GetElementById("sel")->setAttribute(html_names::kMultipleAttr,
+                                      AtomicString("true"));
+}
+
+TEST_F(HTMLSelectElementTest, ChangeRenderingCrash3) {
+  SetHtmlInnerHTML(R"HTML(
+    <div id="host">
+      <select id="select">
+        <option></option>
+      </select>
+    </div>
+    <div id="green">Green</div>
+  )HTML");
+
+  auto* host = GetDocument().getElementById("host");
+  auto* select = GetDocument().getElementById("select");
+  auto* green = GetDocument().getElementById("green");
+
+  // Make sure the select is outside the flat tree.
+  host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  // Changing the select rendering should not clear the style recalc root set by
+  // the color change on #green.
+  green->SetInlineStyleProperty(CSSPropertyID::kColor, "green");
+  select->setAttribute(html_names::kMultipleAttr, AtomicString("true"));
+
+  EXPECT_TRUE(GetDocument().GetStyleEngine().NeedsStyleRecalc());
+  EXPECT_TRUE(green->NeedsStyleRecalc());
+}
+
+TEST_F(HTMLSelectElementTest, ChangeRenderingSelectRoot) {
+  // This test exercises the path in StyleEngine::ChangeRenderingForHTMLSelect()
+  // where the select does not have a GetStyleRecalcParent().
+  SetHtmlInnerHTML(R"HTML(
+    <select id="sel">
+      <option></option>
+    </select>
+  )HTML");
+
+  auto* select = GetElementById("sel");
+
+  // Make the select the root element.
+  select->remove();
+  GetDocument().documentElement()->remove();
+  GetDocument().appendChild(select);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  // Changing the multiple attribute changes the rendering.
+  select->setAttribute(html_names::kMultipleAttr, AtomicString("true"));
+  EXPECT_TRUE(GetDocument().GetStyleEngine().NeedsStyleRecalc());
+  EXPECT_TRUE(select->NeedsStyleRecalc());
 }
 
 }  // namespace blink

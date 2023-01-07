@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@ package org.chromium.components.browser_ui.site_settings;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.components.embedder_support.browser_context.BrowserContextHandle;
+import org.chromium.content_public.browser.BrowserContextHandle;
 
 import java.io.Serializable;
 

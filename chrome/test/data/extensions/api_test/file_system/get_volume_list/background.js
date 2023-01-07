@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,10 +15,11 @@ chrome.test.runTests([
           chrome.test.assertEq(5, volumeList.length);
           chrome.test.assertTrue(/^downloads:.*/.test(volumeList[0].volumeId));
           chrome.test.assertTrue(volumeList[0].writable);
-          chrome.test.assertEq('downloads:downloads', volumeList[1].volumeId);
+          chrome.test.assertEq('drive:drive-user', volumeList[1].volumeId);
           chrome.test.assertTrue(volumeList[1].writable);
-          chrome.test.assertEq('drive:drive-user', volumeList[2].volumeId);
-          chrome.test.assertTrue(volumeList[2].writable);
+          chrome.test.assertEq(
+              'system_internal:ShareCache', volumeList[2].volumeId);
+          chrome.test.assertFalse(volumeList[2].writable);
 
           chrome.test.assertEq('testing:read-only', volumeList[3].volumeId);
           chrome.test.assertFalse(volumeList[3].writable);

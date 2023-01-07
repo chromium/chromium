@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-# Copyright 2017 The Chromium Authors. All rights reserved.
+#!/usr/bin/env python3
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -71,7 +71,7 @@ class CheckGnHeadersTest(unittest.TestCase):
         'dir3/path/b.h': ['obj/c.o'],
         'c3.hh': ['obj/c.o'],
     }
-    self.assertEquals(headers, expected)
+    self.assertEqual(headers, expected)
 
   def testGn(self):
     headers = check_gn_headers.ParseGNProjectJSON(gn_input,
@@ -83,7 +83,7 @@ class CheckGnHeadersTest(unittest.TestCase):
         'base/p.h',
         'out/Release/gen/a.h',
     ])
-    self.assertEquals(headers, expected)
+    self.assertEqual(headers, expected)
 
   def testWhitelist(self):
     output = check_gn_headers.ParseWhiteList(whitelist)
@@ -93,7 +93,7 @@ class CheckGnHeadersTest(unittest.TestCase):
         'dir/white-both.c',
         'a/b/c',
     ])
-    self.assertEquals(output, expected)
+    self.assertEqual(output, expected)
 
 
 if __name__ == '__main__':

@@ -3,4 +3,4 @@ FOUND ITEM: 2
 FOUND ITEM: 1
 FOUND ITEM: 1
 FOUND ITEM: 1
-ERROR: Cannot read property 'innerHTML' of null
+ERROR: Cannot read properties of null (reading 'innerHTML')

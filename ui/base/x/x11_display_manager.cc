@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,8 +34,6 @@ XDisplayManager::~XDisplayManager() = default;
 void XDisplayManager::Init() {
   if (IsXrandrAvailable()) {
     auto& randr = connection_->randr();
-    xrandr_event_base_ = randr.first_event();
-
     randr.SelectInput(
         {x_root_window_, x11::RandR::NotifyMask::ScreenChange |
                              x11::RandR::NotifyMask::OutputChange |

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@
 
 #include <cmath>
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_constants.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-blink.h"
@@ -20,7 +20,7 @@ namespace blink {
 namespace {
 
 // 99.9% of all images were fetched successfully in 90 seconds.
-constexpr base::TimeDelta kImageFetchTimeout = base::TimeDelta::FromSeconds(90);
+constexpr base::TimeDelta kImageFetchTimeout = base::Seconds(90);
 
 enum class NotificationIconType { kImage, kIcon, kBadge, kActionIcon };
 
@@ -65,24 +65,24 @@ void NotificationResourcesLoader::Start(
   // TODO(mvanouwerkerk): ensure no badge is loaded when it will not be used.
   LoadIcon(context, notification_data.image,
            GetIconDimensions(NotificationIconType::kImage),
-           WTF::Bind(&NotificationResourcesLoader::DidLoadIcon,
-                     WrapWeakPersistent(this), WTF::Unretained(&image_)));
+           WTF::BindOnce(&NotificationResourcesLoader::DidLoadIcon,
+                         WrapWeakPersistent(this), WTF::Unretained(&image_)));
   LoadIcon(context, notification_data.icon,
            GetIconDimensions(NotificationIconType::kIcon),
-           WTF::Bind(&NotificationResourcesLoader::DidLoadIcon,
-                     WrapWeakPersistent(this), WTF::Unretained(&icon_)));
+           WTF::BindOnce(&NotificationResourcesLoader::DidLoadIcon,
+                         WrapWeakPersistent(this), WTF::Unretained(&icon_)));
   LoadIcon(context, notification_data.badge,
            GetIconDimensions(NotificationIconType::kBadge),
-           WTF::Bind(&NotificationResourcesLoader::DidLoadIcon,
-                     WrapWeakPersistent(this), WTF::Unretained(&badge_)));
+           WTF::BindOnce(&NotificationResourcesLoader::DidLoadIcon,
+                         WrapWeakPersistent(this), WTF::Unretained(&badge_)));
 
   action_icons_.Grow(num_actions);
   for (wtf_size_t i = 0; i < num_actions; i++) {
     LoadIcon(context, notification_data.actions.value()[i]->icon,
              GetIconDimensions(NotificationIconType::kActionIcon),
-             WTF::Bind(&NotificationResourcesLoader::DidLoadIcon,
-                       WrapWeakPersistent(this),
-                       WTF::Unretained(&action_icons_[i])));
+             WTF::BindOnce(&NotificationResourcesLoader::DidLoadIcon,
+                           WrapWeakPersistent(this),
+                           WTF::Unretained(&action_icons_[i])));
   }
 }
 

@@ -1,0 +1,75 @@
+// Copyright 2018 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module subresource_filter.mojom;
+
+import "components/subresource_filter/core/mojom/subresource_filter.mojom";
+import "third_party/blink/public/mojom/ad_tagging/ad_evidence.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
+// The interface implemented in the renderer that the browser host can interact
+// with. This interface is per-frame.
+interface SubresourceFilterAgent {
+  // Instructs the renderer to activate subresource filtering at the specified
+  // |activation_state| for the document load committed next in a frame. Also
+  // informs the renderer of the frame's ad evidence. If the frame is a
+  // subresource filter root frame, `ad_evidence` should be null as only child
+  // frames can be tagged.
+  //
+  // Must be called just before mojom::FrameNavigationControl::CommitNavigation,
+  // at ReadyToCommitNavigation time. If not called, the default behavior is
+  // mojom::ActivationLevel::kDisabled and unchanged ad evidence.
+  ActivateForNextCommittedLoad(ActivationState activation_state,
+                               blink.mojom.FrameAdEvidence? ad_evidence);
+};
+
+// The browser host object that manages subresource filtering for a conceptual
+// page.
+interface SubresourceFilterHost {
+  // Called the first time a subresource load is disallowed for the most
+  // recently committed document load in a frame. It is used to trigger a UI
+  // prompt to inform the user and allow them to turn off filtering.
+  DidDisallowFirstSubresource();
+
+  // Called when a RenderFrame is created and is tagged as an ad frame. The
+  // browser keeps track of this in case the frame later changes processes, at
+  // which point it will inform the new RenderFrame that it has been tagged as
+  // an ad via SubresourceFilterMsg_ActivateForNextCommittedLoad, at
+  // ReadyToCommitNavigation time.
+  FrameIsAd();
+
+  // Called when a RenderFrame is created with ad script on the v8 stack. The
+  // browser keeps track of this for deciding whether to tag frames as ads.
+  FrameWasCreatedByAdScript();
+
+  // Notifies the host that an MPArch-based FencedFrame was created while an ad
+  // script was on the v8 stack. Note that this is called from the owning
+  // RenderFrame since in MPArch the fenced frame's inner RenderFrame is
+  // isolated from the embedding frame so it cannot inspect the creating v8
+  // stack. The host uses this to initialize the AdEvidence for the inner
+  // frame. This is called immediately after the FencedFrame is created by the
+  // embedding RenderFrameHostImpl.
+  //
+  // Note: This is not called in the ShadowDOM FencedFrame implementation.
+  //
+  // `fenced_frame_root_placeholder_token` is the frame token for the
+  // placeholder remote frame representing the fenced frame root in the
+  // embedding renderer. i.e. what the browser side calls the "outer delegate
+  // proxy".
+  AdScriptDidCreateFencedFrame(
+      blink.mojom.RemoteFrameToken fenced_frame_root_placeholder_token);
+
+  // This is sent to a RenderFrameHost in the browser when a document load is
+  // finished, just before the DidFinishLoad message, and contains statistics
+  // collected by the DocumentSubresourceFilter up until that point: the number
+  // of subresources evaluated/disallowed/etc, and total time spent on
+  // evaluating subresource loads in its allowLoad method. The time metrics are
+  // equal to zero if performance measurements were disabled for the load.
+  SetDocumentLoadStatistics(DocumentLoadStatistics statistics);
+
+  // Called when a render frame detects an ads violation. It is used to record
+  // ads violations within the ads intervention manager.
+  OnAdsViolationTriggered(AdsViolation violation);
+};
+

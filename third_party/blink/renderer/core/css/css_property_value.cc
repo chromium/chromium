@@ -63,10 +63,6 @@ CSSPropertyID CSSPropertyValueMetadata::ShorthandID() const {
   return shorthands.at(index_in_shorthands_vector_).id();
 }
 
-CSSPropertyID CSSPropertyValueMetadata::PropertyID() const {
-  return ConvertToCSSPropertyID(property_id_);
-}
-
 CSSPropertyName CSSPropertyValueMetadata::Name() const {
   if (PropertyID() != CSSPropertyID::kVariable)
     return CSSPropertyName(PropertyID());
@@ -74,7 +70,7 @@ CSSPropertyName CSSPropertyValueMetadata::Name() const {
 }
 
 bool CSSPropertyValue::operator==(const CSSPropertyValue& other) const {
-  return DataEquivalent(value_, other.value_) &&
+  return base::ValuesEquivalent(value_, other.value_) &&
          IsImportant() == other.IsImportant();
 }
 

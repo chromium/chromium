@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,14 +6,10 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("picture_in_picture") {
   sources = [
-    "document_picture_in_picture.cc",
-    "document_picture_in_picture.h",
-    "html_element_picture_in_picture.cc",
-    "html_element_picture_in_picture.h",
+    "document_video_picture_in_picture.cc",
+    "document_video_picture_in_picture.h",
     "html_video_element_picture_in_picture.cc",
     "html_video_element_picture_in_picture.h",
-    "picture_in_picture_controller_impl.cc",
-    "picture_in_picture_controller_impl.h",
     "picture_in_picture_event.cc",
     "picture_in_picture_event.h",
     "picture_in_picture_window.cc",

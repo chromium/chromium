@@ -1,4 +1,4 @@
-// Copyright (c) 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,6 +19,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using net::test::IsOk;
 
@@ -34,8 +35,9 @@ class MockServerPushHelper : public ServerPushDelegate::ServerPushHelper {
 
   const GURL& GetURL() const override { return request_url_; }
 
-  NetworkIsolationKey GetNetworkIsolationKey() const override {
-    return network_isolation_key_;
+  NetworkAnonymizationKey GetNetworkAnonymizationKey() const override {
+    return NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
+        network_isolation_key_);
   }
 
   void set_network_isolation_key(
@@ -64,6 +66,8 @@ std::unique_ptr<MockTransaction> CreateMockTransaction(const GURL& url) {
       base::Time(),
       "<html><body>Google Blah Blah</body></html>",
       {},
+      absl::nullopt,
+      absl::nullopt,
       TEST_MODE_NORMAL,
       nullptr,
       nullptr,
@@ -83,7 +87,6 @@ void PopulateCacheEntry(HttpCache* cache, const GURL& request_url) {
   AddMockTransaction(mock_trans.get());
 
   MockHttpRequest request(*(mock_trans.get()));
-
   std::unique_ptr<HttpTransaction> trans;
   int rv = cache->CreateTransaction(DEFAULT_PRIORITY, &trans);
   EXPECT_THAT(rv, IsOk());

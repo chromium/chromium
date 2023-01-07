@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,8 +26,15 @@ class Connection {
   explicit Connection(std::unique_ptr<IPC::MojoBootstrap> bootstrap,
                       int32_t sender_id)
       : bootstrap_(std::move(bootstrap)) {
-    bootstrap_->Connect(&sender_, &receiver_);
+    mojo::PendingAssociatedRemote<IPC::mojom::Channel> sender;
+    bootstrap_->Connect(&sender, &receiver_);
+    sender_.Bind(std::move(sender));
     sender_->SetPeerPid(sender_id);
+
+    // It's OK to start receiving right away even though `receiver_` isn't
+    // bound, because all of these tests are single-threaded and it will be
+    // bound before any incoming messages can be scheduled for processing.
+    bootstrap_->StartReceiving();
   }
 
   void TakeReceiver(
@@ -61,6 +68,9 @@ class PeerPidReceiver : public IPC::mojom::Channel {
     receiver_.set_disconnect_handler(disconnect_run_loop_.QuitClosure());
   }
 
+  PeerPidReceiver(const PeerPidReceiver&) = delete;
+  PeerPidReceiver& operator=(const PeerPidReceiver&) = delete;
+
   ~PeerPidReceiver() override {
     bool expected_message =
         message_expectation_ != MessageExpectation::kNotExpected;
@@ -86,9 +96,7 @@ class PeerPidReceiver : public IPC::mojom::Channel {
   }
 
   void GetAssociatedInterface(
-      const std::string& name,
-      mojo::PendingAssociatedReceiver<IPC::mojom::GenericInterface> receiver)
-      override {}
+      mojo::GenericPendingAssociatedReceiver receiver) override {}
 
   int32_t peer_pid() const { return peer_pid_; }
 
@@ -101,8 +109,6 @@ class PeerPidReceiver : public IPC::mojom::Channel {
   int32_t peer_pid_ = -1;
   bool received_message_ = false;
   base::RunLoop disconnect_run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(PeerPidReceiver);
 };
 
 class IPCMojoBootstrapTest : public testing::Test {
@@ -198,7 +204,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
 
   uint8_t data = 0;
   sender->Receive(
-      IPC::MessageView(base::make_span(&data, 0), base::nullopt /* handles */));
+      IPC::MessageView(base::make_span(&data, 0), absl::nullopt /* handles */));
 
   base::RunLoop run_loop;
   PeerPidReceiver impl(std::move(receiver), run_loop.QuitClosure());

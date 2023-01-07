@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,6 +47,12 @@ class COMPOSITOR_EXPORT LayerDelegate {
   // |reason| indicates whether the property was changed directly or by an
   // animation.
   virtual void OnLayerFillsBoundsOpaquelyChanged(PropertyChangeReason reason);
+
+  // Invoked when the clip rect is set. |reason| indicates whether the clip rect
+  // was set directly or by an animation. This will be called at every step of a
+  // clip rect animation.
+  virtual void OnLayerClipRectChanged(const gfx::Rect& old_rect,
+                                      PropertyChangeReason reason);
 
   // Called when it is a good opportunity for the delegate to update any visual
   // state or schedule any additional regions to be painted. Soon after this is

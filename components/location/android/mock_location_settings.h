@@ -1,11 +1,10 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_LOCATION_ANDROID_MOCK_LOCATION_SETTINGS_H_
 #define COMPONENTS_LOCATION_ANDROID_MOCK_LOCATION_SETTINGS_H_
 
-#include "base/macros.h"
 #include "components/location/android/location_settings.h"
 #include "components/location/android/location_settings_dialog_context.h"
 #include "components/location/android/location_settings_dialog_outcome.h"
@@ -14,6 +13,10 @@
 class MockLocationSettings : public LocationSettings {
  public:
   MockLocationSettings();
+
+  MockLocationSettings(const MockLocationSettings&) = delete;
+  MockLocationSettings& operator=(const MockLocationSettings&) = delete;
+
   ~MockLocationSettings() override;
 
   static void SetLocationStatus(bool has_android_location_permission,
@@ -38,8 +41,6 @@ class MockLocationSettings : public LocationSettings {
       const LocationSettingsDialogContext prompt_context,
       ui::WindowAndroid* window,
       LocationSettingsDialogOutcomeCallback callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(MockLocationSettings);
 };
 
 #endif  // COMPONENTS_LOCATION_ANDROID_MOCK_LOCATION_SETTINGS_H_

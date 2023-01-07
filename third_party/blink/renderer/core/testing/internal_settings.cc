@@ -230,16 +230,18 @@ void InternalSettings::setFantasyFontFamily(const AtomicString& family,
     GetSettings()->NotifyGenericFontFamilyChange();
 }
 
-void InternalSettings::setPictographFontFamily(
-    const AtomicString& family,
-    const String& script,
-    ExceptionState& exception_state) {
+void InternalSettings::setMathFontFamily(const AtomicString& family,
+                                         const String& script,
+                                         ExceptionState& exception_state) {
   InternalSettingsGuardForSettings();
+  // It is not clear whether math fonts really require one setting per script.
+  // However, given that other generic font families behave that way and that
+  // this per-script configuration is exposed by various public APIs, it seems
+  // best to do that for math font family too.
   UScriptCode code = ScriptNameToCode(script);
   if (code == USCRIPT_INVALID_CODE)
     return;
-  if (GetSettings()->GetGenericFontFamilySettings().UpdatePictograph(family,
-                                                                     code))
+  if (GetSettings()->GetGenericFontFamilySettings().UpdateMath(family, code))
     GetSettings()->NotifyGenericFontFamilyChange();
 }
 
@@ -255,7 +257,7 @@ void InternalSettings::setTextAutosizingWindowSizeOverride(
     int height,
     ExceptionState& exception_state) {
   InternalSettingsGuardForSettings();
-  GetSettings()->SetTextAutosizingWindowSizeOverride(IntSize(width, height));
+  GetSettings()->SetTextAutosizingWindowSizeOverride(gfx::Size(width, height));
 }
 
 void InternalSettings::setTextTrackKindUserPreference(

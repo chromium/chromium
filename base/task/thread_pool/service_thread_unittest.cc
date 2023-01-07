@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ void VerifyHasStringOnStack(const std::string& query) {
 
 }  // namespace
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Many POSIX bots flakily crash on |debug::StackTrace().ToString()|,
 // https://crbug.com/840429.
 #define MAYBE_StackHasIdentifyingFrame DISABLED_StackHasIdentifyingFrame

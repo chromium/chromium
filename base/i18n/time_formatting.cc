@@ -1,4 +1,4 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -155,21 +155,21 @@ std::u16string TimeFormatShortDateAndTimeWithTimeZone(const Time& time) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-std::u16string TimeFormatMonthAndYear(const Time& time,
-                                      const icu::TimeZone* time_zone) {
+std::u16string TimeFormatMonthAndYearForTimeZone(
+    const Time& time,
+    const icu::TimeZone* time_zone) {
   icu::SimpleDateFormat formatter =
       CreateSimpleDateFormatter(DateFormatToString(DATE_FORMAT_YEAR_MONTH));
-  if (time_zone)
-    formatter.setTimeZone(*time_zone);
+  formatter.setTimeZone(*time_zone);
   return TimeFormat(&formatter, time);
 }
-#else
+#endif
+
 std::u16string TimeFormatMonthAndYear(const Time& time) {
   icu::SimpleDateFormat formatter =
       CreateSimpleDateFormatter(DateFormatToString(DATE_FORMAT_YEAR_MONTH));
   return TimeFormat(&formatter, time);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::u16string TimeFormatFriendlyDateAndTime(const Time& time) {
   std::unique_ptr<icu::DateFormat> formatter(
@@ -193,7 +193,7 @@ bool TimeDurationFormat(const TimeDelta time,
                         std::u16string* out) {
   DCHECK(out);
   UErrorCode status = U_ZERO_ERROR;
-  const int total_minutes = ClampRound(time / base::TimeDelta::FromMinutes(1));
+  const int total_minutes = ClampRound(time / base::Minutes(1));
   const int hours = total_minutes / 60;
   const int minutes = total_minutes % 60;
   UMeasureFormatWidth u_width = DurationWidthToMeasureWidth(width);

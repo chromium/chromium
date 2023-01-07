@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_request_enums.h"
-#include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/prediction_service/prediction_service_base.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -54,8 +53,7 @@ class PredictionService : public PredictionServiceBase {
  private:
   static const GURL GetPredictionServiceUrl(bool recalculate_for_testing);
   std::unique_ptr<network::ResourceRequest> GetResourceRequest();
-  std::unique_ptr<GeneratePredictionsRequest> GetPredictionRequestProto(
-      const PredictionRequestFeatures& entity);
+
   void SendRequestInternal(std::unique_ptr<network::ResourceRequest> request,
                            const std::string& request_data,
                            const PredictionRequestFeatures& entity,

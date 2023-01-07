@@ -1,0 +1,58 @@
+/* Copyright 2013 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+button.white-button,
+button.blue-button {
+  border: 1px solid transparent;
+  border-radius: 2px;
+  box-sizing: content-box;
+  cursor: default;
+  font-size: 14px;
+  height: 21px;
+  line-height: 21px;
+  margin: 0;
+  min-height: 21px;
+  min-width: 55px;
+  padding: 4px 14px;
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+button.white-button[disabled] {
+  border-color: #c6c6c6;
+}
+
+button.white-button:active {
+  background-color: #e6e6e6;
+  border-color: #a6a6a6;
+}
+
+button.white-button {
+  background-color: #f9f9f9;
+  border-color: #a4a4a4;
+}
+
+button.blue-button {
+  background-color: rgb(26, 115, 232);
+  border-color: rgb(43, 103, 206);
+}
+
+button.blue-button:hover {
+  background-color: rgb(60, 110, 255);
+}
+
+button.blue-button:active {
+  background-color: rgb(26, 91, 216);
+  border-color: rgb(35, 82, 162);
+}
+
+button.blue-button:focus {
+  box-shadow: 0 0 0 1px inset rgb(173, 204, 255);
+}
+
+button.blue-button[disabled] {
+  background-color: rgb(110, 140, 255);
+  border-color: rgb(148, 177, 229);
+}

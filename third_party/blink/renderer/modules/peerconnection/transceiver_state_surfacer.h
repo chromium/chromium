@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -58,56 +58,6 @@ class MODULES_EXPORT TransceiverStateSurfacer {
   bool states_obtained_;
   blink::WebRTCSctpTransportSnapshot sctp_transport_snapshot_;
   std::vector<blink::RtpTransceiverState> transceiver_states_;
-};
-
-// A dummy implementation of a transceiver used to surface sender state
-// information only. It is not thread safe, only designed to be passed on to
-// TransceiverStateSurfacer::Initialize().
-class MODULES_EXPORT SurfaceSenderStateOnly
-    : public rtc::RefCountedObject<webrtc::RtpTransceiverInterface> {
- public:
-  explicit SurfaceSenderStateOnly(
-      rtc::scoped_refptr<webrtc::RtpSenderInterface> sender);
-  ~SurfaceSenderStateOnly() override;
-
-  cricket::MediaType media_type() const override;
-  absl::optional<std::string> mid() const override;
-  rtc::scoped_refptr<webrtc::RtpSenderInterface> sender() const override;
-  rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver() const override;
-  bool stopped() const override;
-  webrtc::RtpTransceiverDirection direction() const override;
-  void SetDirection(webrtc::RtpTransceiverDirection new_direction) override;
-  absl::optional<webrtc::RtpTransceiverDirection> current_direction()
-      const override;
-  void Stop() override;
-
- private:
-  rtc::scoped_refptr<webrtc::RtpSenderInterface> sender_;
-};
-
-// A dummy implementation of a transceiver used to surface receiver state
-// information only. It is not thread safe, only designed to be passed on to
-// TransceiverStateSurfacer::Initialize().
-class MODULES_EXPORT SurfaceReceiverStateOnly
-    : public rtc::RefCountedObject<webrtc::RtpTransceiverInterface> {
- public:
-  explicit SurfaceReceiverStateOnly(
-      rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver);
-  ~SurfaceReceiverStateOnly() override;
-
-  cricket::MediaType media_type() const override;
-  absl::optional<std::string> mid() const override;
-  rtc::scoped_refptr<webrtc::RtpSenderInterface> sender() const override;
-  rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver() const override;
-  bool stopped() const override;
-  webrtc::RtpTransceiverDirection direction() const override;
-  void SetDirection(webrtc::RtpTransceiverDirection new_direction) override;
-  absl::optional<webrtc::RtpTransceiverDirection> current_direction()
-      const override;
-  void Stop() override;
-
- private:
-  rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver_;
 };
 
 }  // namespace blink

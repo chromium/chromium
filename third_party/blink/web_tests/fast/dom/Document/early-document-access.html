@@ -3,7 +3,7 @@
     <script>
     function test() {
         if (window.testRunner) {
-            testRunner.setCanOpenWindows();
+            testRunner.setPopupBlockingEnabled(false);
             testRunner.dumpAsText();
             testRunner.waitUntilDone();
         }

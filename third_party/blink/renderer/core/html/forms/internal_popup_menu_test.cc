@@ -1,4 +1,4 @@
-// Copyright (c) 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
@@ -20,11 +20,11 @@ namespace blink {
 // InternalPopupMenuTest is not used on Android, and its Platform implementation
 // does not provide the resources (as in GetDataResource) needed by
 // InternalPopupMenu::WriteDocument.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 TEST(InternalPopupMenuTest, ShowSelectDisplayNone) {
   auto dummy_page_holder_ =
-      std::make_unique<DummyPageHolder>(IntSize(800, 600));
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& document = dummy_page_holder_->GetDocument();
   document.body()->setInnerHTML(R"HTML(
     <div id="container">
@@ -45,9 +45,9 @@ TEST(InternalPopupMenuTest, ShowSelectDisplayNone) {
   div->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
 
   // This call should not cause a crash.
-  menu->Show();
+  menu->Show(PopupMenu::kOther);
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

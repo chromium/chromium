@@ -1,12 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_RENDERER_EXTENSIONS_NOTIFICATIONS_NATIVE_HANDLER_H_
 #define CHROME_RENDERER_EXTENSIONS_NOTIFICATIONS_NATIVE_HANDLER_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "extensions/renderer/object_backed_native_handler.h"
 
 namespace base {
@@ -18,6 +16,10 @@ namespace extensions {
 class NotificationsNativeHandler : public ObjectBackedNativeHandler {
  public:
   explicit NotificationsNativeHandler(ScriptContext* context);
+
+  NotificationsNativeHandler(const NotificationsNativeHandler&) = delete;
+  NotificationsNativeHandler& operator=(const NotificationsNativeHandler&) =
+      delete;
 
   // ObjectBackedNativeHandler:
   void AddRoutes() override;
@@ -37,8 +39,6 @@ class NotificationsNativeHandler : public ObjectBackedNativeHandler {
   //         buttonIcon - a dictionary of the same format as |icon|
   void GetNotificationImageSizes(
       const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationsNativeHandler);
 };
 
 }  // namespace extensions

@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/events/touch_event_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -70,7 +70,7 @@ HeapVector<Member<EventTarget>>& TreeScopeEventContext::EnsureEventPath(
 
   event_path_ = MakeGarbageCollected<HeapVector<Member<EventTarget>>>();
   LocalDOMWindow* window = path.GetWindowEventContext().Window();
-  event_path_->ReserveCapacity(path.size() + (window ? 1 : 0));
+  event_path_->reserve(path.size() + (window ? 1 : 0));
 
   for (auto& context : path.NodeEventContexts()) {
     if (context.GetTreeScopeEventContext().IsUnclosedTreeOf(*this))

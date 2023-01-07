@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
@@ -27,139 +27,111 @@ class MockDeviceManagementServiceConfiguration
   MockDeviceManagementServiceConfiguration();
   explicit MockDeviceManagementServiceConfiguration(
       const std::string& server_url);
+  MockDeviceManagementServiceConfiguration(
+      const MockDeviceManagementServiceConfiguration&) = delete;
+  MockDeviceManagementServiceConfiguration& operator=(
+      const MockDeviceManagementServiceConfiguration&) = delete;
   ~MockDeviceManagementServiceConfiguration() override;
 
-  std::string GetDMServerUrl() override;
-  std::string GetAgentParameter() override;
-  std::string GetPlatformParameter() override;
-  std::string GetRealtimeReportingServerUrl() override;
-  std::string GetEncryptedReportingServerUrl() override;
+  std::string GetDMServerUrl() const override;
+  std::string GetAgentParameter() const override;
+  std::string GetPlatformParameter() const override;
+  std::string GetRealtimeReportingServerUrl() const override;
+  std::string GetEncryptedReportingServerUrl() const override;
   std::string GetReportingConnectorServerUrl(
-      content::BrowserContext* context) override;
+      content::BrowserContext* context) const override;
 
  private:
   const std::string server_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDeviceManagementServiceConfiguration);
 };
 
-class MockDeviceManagementService : public DeviceManagementService {
+class MockJobCreationHandler {
  public:
-  using StartJobFunction = void(JobControl* job);
+  MockJobCreationHandler();
+  MockJobCreationHandler(const MockJobCreationHandler&) = delete;
+  MockJobCreationHandler& operator=(const MockJobCreationHandler&) = delete;
+  ~MockJobCreationHandler();
 
-  MockDeviceManagementService();
-  ~MockDeviceManagementService() override;
+  MOCK_METHOD(void,
+              OnJobCreation,
+              (const DeviceManagementService::JobForTesting&));
+};
 
-  using DeviceManagementService::GetWeakPtr;
-  using DeviceManagementService::RequeueJobForTesting;
-  using DeviceManagementService::StartQueuedJobs;
+class FakeDeviceManagementService : public DeviceManagementService {
+ public:
+  using JobAction = testing::Action<void(const JobForTesting&)>;
 
-  MOCK_METHOD1(StartJob, StartJobFunction);
+  explicit FakeDeviceManagementService(
+      MockJobCreationHandler* creation_handler);
+  FakeDeviceManagementService(std::unique_ptr<Configuration> config,
+                              MockJobCreationHandler* creation_handler);
+  FakeDeviceManagementService(const FakeDeviceManagementService&) = delete;
+  FakeDeviceManagementService& operator=(const FakeDeviceManagementService&) =
+      delete;
+  ~FakeDeviceManagementService() override;
 
-  // Can be used as an action when mocking the StartJob method. Will respond
-  // with the given data to the network request during the next idle run loop.
-  // This call behaves the same as calling StartJobAsync() with the first
-  // arguments set to net::OK and DeviceManagement::kSuccess.
-  testing::Action<StartJobFunction> StartJobOKAsync(
-      const enterprise_management::DeviceManagementResponse& response);
-
-  // Can be used as an action when mocking the StartJob method.
-  // Will respond with the given data to the network request during the next
-  // idle run loop.
-  testing::Action<StartJobFunction> StartJobAsync(
-      int net_error,
-      int response_code,
-      const enterprise_management::DeviceManagementResponse& response =
-          enterprise_management::DeviceManagementResponse());
-
-  // Can be used as an action when mocking the StartJob method.
-  // Will respond with the given data to the network request during the next
-  // idle run loop.
-  testing::Action<StartJobFunction> StartJobAsync(int net_error,
-                                                  int response_code,
-                                                  const std::string& payload);
-
-  // Can be used as an action when mocking the StartJob method.
-  // Will not respond to the network request automatically.  The caller is
-  // responsible for responding when needed with a call to DoURLCompletion().
-  // Note that MockDeviceManagementService owns the job_control object and
-  // callers should not delete it.  The object will be deleted once
-  // DoURLCompletion() is called or MockDeviceManagementService is destroyed.
-  testing::Action<StartJobFunction> StartJobFullControl(
-      JobControl** job_control);
-
-  // Can be used as an action when mocking the StartJob method.
-  // Makes a copy of the job type from the JobConfiguration of the Job passed
-  // to StartJob.
-  testing::Action<StartJobFunction> CaptureJobType(
+  // Convenience actions to obtain the respective data from the job's
+  // configuration.
+  JobAction CaptureAuthData(DMAuth* auth_data);
+  JobAction CaptureJobType(
       DeviceManagementService::JobConfiguration::JobType* job_type);
-
-  // Can be used as an action when mocking the StartJob method.
-  // Makes a copy of the query parameters from the JobConfiguration of the Job
-  //  passed to StartJob.
-  testing::Action<StartJobFunction> CaptureQueryParams(
-      DeviceManagementService::JobConfiguration::ParameterMap* params);
-
-  // Can be used as an action when mocking the StartJob method.
-  // Makes a copy of the DMAuth from the JobConfiguration of the Job passed
-  // to StartJob.
-  testing::Action<StartJobFunction> CaptureAuthData(DMAuth* auth_data);
-
-  // Can be used as an action when mocking the StartJob method.
-  // Makes a copy of the device management request from the JobConfiguration
-  // of the Job passed to StartJob.
-  testing::Action<StartJobFunction> CaptureRequest(
+  JobAction CapturePayload(std::string* payload);
+  JobAction CaptureQueryParams(
+      std::map<std::string, std::string>* query_params);
+  JobAction CaptureRequest(
       enterprise_management::DeviceManagementRequest* request);
+  JobAction CaptureTimeout(base::TimeDelta* timeout);
 
-  // Can be used as an action when mocking the StartJob method.
-  // Makes a copy of the payload of the JobConfiguration
-  // of the Job passed to StartJob.
-  testing::Action<StartJobFunction> CapturePayload(std::string* payload);
-
-  // Call after using StartJobFullControl() to respond to the network request.
-  // If the job completed successfully, |*job| will be nulled to prevent callers
-  // from using the pointer beyond its lifetime.  If the job was retried, then
-  // |*job| is not nulled and the caller can continue to use the pointer.
-  void DoURLCompletion(
-      JobControl** job,
+  // Convenience actions to post a task which will call |SetResponseForTesting|
+  // on the job.
+  JobAction SendJobResponseAsync(
       int net_error,
       int response_code,
-      const enterprise_management::DeviceManagementResponse& response);
+      const std::string& response = "",
+      const std::string& mime_type = "application/x-protobuffer",
+      bool was_fetched_via_proxy = false);
 
-  // Call after using StartJobFullControl() to respond to the network request.
-  // If the job completed successfully, |*job| will be nulled to prevent callers
-  // from using the pointer beyond its lifetime.  If the job was retried, then
-  // |*job| is not nulled and the caller can continue to use the pointer.
-  void DoURLCompletion(JobControl** job,
-                       int net_error,
-                       int response_code,
-                       const std::string& payload);
-
-  // Call after using StartJobFullControl() to respond to the network request.
-  // Use this overload only when using base::BindXXX() to complete a network
-  // request.
-  void DoURLCompletionForBinding(
-      JobControl* job,
+  JobAction SendJobResponseAsync(
       int net_error,
       int response_code,
+      const enterprise_management::DeviceManagementResponse& response,
+      const std::string& mime_type = "application/x-protobuffer",
+      bool was_fetched_via_proxy = false);
+
+  JobAction SendJobOKAsync(const std::string& response);
+
+  JobAction SendJobOKAsync(
       const enterprise_management::DeviceManagementResponse& response);
 
-  // Call after using StartJobFullControl() to respond to the network request.
-  // If the job completed successfully, |*job| will be nulled to prevent callers
-  // from using the pointer beyond its lifetime.  If the job was retried, then
-  // |*job| is not nulled and the caller can continue to use the pointer.
-  void DoURLCompletionWithPayload(JobControl** job,
-                                  int net_error,
-                                  int response_code,
-                                  const std::string& payload);
+  // Convenience wrappers around |job->SetResponseForTesting()|
+  void SendJobResponseNow(
+      DeviceManagementService::JobForTesting* job,
+      int net_error,
+      int response_code,
+      const std::string& response = "",
+      const std::string& mime_type = "application/x-protobuffer",
+      bool was_fetched_via_proxy = false);
+
+  void SendJobResponseNow(
+      DeviceManagementService::JobForTesting* job,
+      int net_error,
+      int response_code,
+      const enterprise_management::DeviceManagementResponse& response,
+      const std::string& mime_type = "application/x-protobuffer",
+      bool was_fetched_via_proxy = false);
+
+  void SendJobOKNow(DeviceManagementService::JobForTesting* job,
+                    const std::string& response);
+
+  void SendJobOKNow(
+      DeviceManagementService::JobForTesting* job,
+      const enterprise_management::DeviceManagementResponse& response);
 
  private:
-  Job::RetryMethod DoURLCompletionInternal(JobControl* job,
-                                           int net_error,
-                                           int response_code,
-                                           const std::string& payload);
+  std::unique_ptr<Job> CreateJob(
+      std::unique_ptr<JobConfiguration> config) override;
 
-  DISALLOW_COPY_AND_ASSIGN(MockDeviceManagementService);
+  raw_ptr<MockJobCreationHandler> creation_handler_;
 };
 
 // A fake implementation of DMServerJobConfiguration that can be used in tests
@@ -176,13 +148,14 @@ class FakeJobConfiguration : public DMServerJobConfiguration {
                                        const std::string& response_body)>
       RetryCallback;
 
+  explicit FakeJobConfiguration(DeviceManagementService* service);
   FakeJobConfiguration(
       DeviceManagementService* service,
       JobType type,
       const std::string& client_id,
       bool critical,
       DMAuth auth_data,
-      base::Optional<std::string> oauth_token,
+      absl::optional<std::string> oauth_token,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       FakeCallback callback,
       RetryCallback retry_callback,
@@ -191,6 +164,7 @@ class FakeJobConfiguration : public DMServerJobConfiguration {
 
   void SetRequestPayload(const std::string& request_payload);
   void SetShouldRetryResponse(DeviceManagementService::Job::RetryMethod method);
+  void SetTimeoutDuration(base::TimeDelta timeout);
 
  private:
   DeviceManagementService::Job::RetryMethod ShouldRetry(

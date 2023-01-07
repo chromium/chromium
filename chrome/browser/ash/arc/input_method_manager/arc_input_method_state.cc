@@ -1,24 +1,23 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/arc/input_method_manager/arc_input_method_state.h"
 
-#include <algorithm>
-
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/components/arc/mojom/input_method_manager.mojom.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
-#include "components/arc/mojom/input_method_manager.mojom.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/ranges/algorithm.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "ui/base/ime/chromeos/extension_ime_util.h"
+#include "ui/base/ime/ash/extension_ime_util.h"
 
 namespace arc {
 
-using InputMethodDescriptor = ::chromeos::input_method::InputMethodDescriptor;
-using InputMethodDescriptors = ::chromeos::input_method::InputMethodDescriptors;
+using InputMethodDescriptor = ::ash::input_method::InputMethodDescriptor;
+using InputMethodDescriptors = ::ash::input_method::InputMethodDescriptors;
 
 ArcInputMethodState::ArcInputMethodState(const Delegate* const delegate)
     : delegate_(delegate) {}
@@ -27,6 +26,9 @@ ArcInputMethodState::~ArcInputMethodState() = default;
 void ArcInputMethodState::InitializeWithImeInfo(
     const std::string& proxy_ime_extension_id,
     const std::vector<mojom::ImeInfoPtr>& ime_info_array) {
+  if (ime_info_array.size() != installed_imes_.size())
+    UMA_HISTOGRAM_COUNTS_100("Arc.ImeCount", ime_info_array.size());
+
   installed_imes_.clear();
   for (const auto& info : ime_info_array) {
     installed_imes_.push_back({info->ime_id, info->enabled,
@@ -39,7 +41,7 @@ void ArcInputMethodState::DisableInputMethod(const std::string& ime_id) {
   SetInputMethodEnabled(ime_id, false);
 }
 
-InputMethodDescriptors ArcInputMethodState::GetActiveInputMethods() const {
+InputMethodDescriptors ArcInputMethodState::GetAvailableInputMethods() const {
   const bool all_allowed = delegate_->ShouldArcIMEAllowed();
 
   InputMethodDescriptors result;
@@ -63,10 +65,8 @@ InputMethodDescriptors ArcInputMethodState::GetEnabledInputMethods() const {
 
 void ArcInputMethodState::SetInputMethodEnabled(const std::string& ime_id,
                                                 bool enabled) {
-  auto it = std::find_if(installed_imes_.begin(), installed_imes_.end(),
-                         [&ime_id](const InputMethodEntry& entry) {
-                           return ime_id == entry.ime_id_;
-                         });
+  auto it =
+      base::ranges::find(installed_imes_, ime_id, &InputMethodEntry::ime_id_);
   if (it == installed_imes_.end()) {
     // Ignore the request to enable/disable not-installed IME.
     return;

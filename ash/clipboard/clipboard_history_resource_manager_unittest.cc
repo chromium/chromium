@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,12 @@
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/test_support/clipboard_history_item_builder.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -70,6 +68,7 @@ class MockClipboardImageModelFactory : public ClipboardImageModelFactory {
               Render,
               (const base::UnguessableToken&,
                const std::string&,
+               const gfx::Size&,
                ImageModelCallback),
               (override));
   MOCK_METHOD(void, CancelRequest, (const base::UnguessableToken&), (override));
@@ -89,8 +88,6 @@ class ClipboardHistoryResourceManagerTest : public AshTestBase {
   ~ClipboardHistoryResourceManagerTest() override = default;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        chromeos::features::kClipboardHistory);
     AshTestBase::SetUp();
     clipboard_history_ =
         Shell::Get()->clipboard_history_controller()->history();
@@ -113,7 +110,6 @@ class ClipboardHistoryResourceManagerTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   const ClipboardHistory* clipboard_history_;
   const ClipboardHistoryResourceManager* resource_manager_;
   std::unique_ptr<MockClipboardImageModelFactory> mock_image_factory_;
@@ -127,19 +123,21 @@ TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
   builder.SetText("Text")
       .SetMarkup("HTML with no image or table tags")
       .SetRtf("Rtf")
-      .SetFilenames({ui::FileInfo(base::FilePath("/dir/filename"),
-                                  base::FilePath("filename"))})
+      .SetFilenames({ui::FileInfo(base::FilePath("/path/to/File.txt"),
+                                  base::FilePath("File.txt")),
+                     ui::FileInfo(base::FilePath("/path/to/Other%20File.txt"),
+                                  base::FilePath("Other%20File.txt"))})
       .SetBookmarkTitle("Bookmark Title")
-      .SetBitmap(gfx::test::CreateBitmap(10, 10))
-      .SetFileSystemData({"/path/to/File.txt", "/path/to/Other%20File.txt"})
+      .SetPng(gfx::test::CreatePNGBytes(10))
+      .SetFileSystemData({u"/path/to/File.txt", u"/path/to/Other%20File.txt"})
       .SetWebSmartPaste(true);
 
-  // Bitmap data always take precedence.
+  // PNG data always take precedence.
   EXPECT_EQ(resource_manager()->GetLabel(builder.Build()), u"Image");
 
-  builder.ClearBitmap();
+  builder.ClearPng();
 
-  // In the absence of bitmap data, HTML data takes precedence, but we use
+  // In the absence of PNG data, HTML data takes precedence, but we use
   // plain-text format for the label.
   EXPECT_EQ(resource_manager()->GetLabel(builder.Build()), u"Text");
 
@@ -163,7 +161,8 @@ TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
   builder.ClearRtf();
 
   // In the absence of RTF data, Filenames data takes precedence.
-  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()), u"filename");
+  EXPECT_EQ(resource_manager()->GetLabel(builder.Build()),
+            u"File.txt, Other File.txt");
 
   builder.ClearFilenames();
 
@@ -189,7 +188,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, GetLabel) {
 TEST_F(ClipboardHistoryResourceManagerTest, BasicImgCachedImageModel) {
   ui::ImageModel expected_image_model = GetRandomImageModel();
   ON_CALL(*mock_image_factory(), Render)
-      .WillByDefault(testing::WithArg<2>(
+      .WillByDefault(testing::WithArg<3>(
           [&](ClipboardImageModelFactory::ImageModelCallback callback) {
             std::move(callback).Run(expected_image_model);
           }));
@@ -213,7 +212,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, BasicImgCachedImageModel) {
 TEST_F(ClipboardHistoryResourceManagerTest, BasicTableCachedImageModel) {
   ui::ImageModel expected_image_model = GetRandomImageModel();
   ON_CALL(*mock_image_factory(), Render)
-      .WillByDefault(testing::WithArg<2>(
+      .WillByDefault(testing::WithArg<3>(
           [&](ClipboardImageModelFactory::ImageModelCallback callback) {
             std::move(callback).Run(expected_image_model);
           }));
@@ -237,7 +236,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, BasicTableCachedImageModel) {
 TEST_F(ClipboardHistoryResourceManagerTest, BasicIneligibleCachedImageModel) {
   ui::ImageModel expected_image_model = GetRandomImageModel();
   ON_CALL(*mock_image_factory(), Render)
-      .WillByDefault(testing::WithArg<2>(
+      .WillByDefault(testing::WithArg<3>(
           [&](ClipboardImageModelFactory::ImageModelCallback callback) {
             std::move(callback).Run(expected_image_model);
           }));
@@ -260,7 +259,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, DuplicateHTML) {
   // history, but they should share a CachedImageModel.
   ui::ImageModel expected_image_model = GetRandomImageModel();
   ON_CALL(*mock_image_factory(), Render)
-      .WillByDefault(testing::WithArg<2>(
+      .WillByDefault(testing::WithArg<3>(
           [&](ClipboardImageModelFactory::ImageModelCallback callback) {
             std::move(callback).Run(expected_image_model);
           }));
@@ -295,7 +294,7 @@ TEST_F(ClipboardHistoryResourceManagerTest, DifferentHTML) {
   std::deque<ui::ImageModel> expected_image_models{first_expected_image_model,
                                                    second_expected_image_model};
   ON_CALL(*mock_image_factory(), Render)
-      .WillByDefault(testing::WithArg<2>(
+      .WillByDefault(testing::WithArg<3>(
           [&](ClipboardImageModelFactory::ImageModelCallback callback) {
             std::move(callback).Run(expected_image_models.front());
             expected_image_models.pop_front();

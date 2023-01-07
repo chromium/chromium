@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,8 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -33,8 +34,11 @@ class VersionUpdater {
     FAILED,
     FAILED_OFFLINE,
     FAILED_CONNECTION_TYPE_DISALLOWED,
+    FAILED_HTTP,
+    FAILED_DOWNLOAD,
     DISABLED,
-    DISABLED_BY_ADMIN
+    DISABLED_BY_ADMIN,
+    DEFERRED
   };
 
   // Promotion state (Mac-only).
@@ -50,7 +54,9 @@ class VersionUpdater {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   typedef base::OnceCallback<void(const std::string&)> ChannelCallback;
   using EolInfoCallback =
-      base::OnceCallback<void(chromeos::UpdateEngineClient::EolInfo eol_info)>;
+      base::OnceCallback<void(ash::UpdateEngineClient::EolInfo eol_info)>;
+  using IsFeatureEnabledCallback =
+      base::OnceCallback<void(absl::optional<bool>)>;
 #endif
 
   // Used to update the client of status changes.
@@ -91,9 +97,9 @@ class VersionUpdater {
   virtual void CheckForUpdate(StatusCallback status_callback,
                               PromoteCallback promote_callback) = 0;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Make updates available for all users.
-  virtual void PromoteUpdater() const = 0;
+  virtual void PromoteUpdater() = 0;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -103,6 +109,11 @@ class VersionUpdater {
                           ChannelCallback callback) = 0;
   // Get the End of Life (Auto Update Expiration) Date.
   virtual void GetEolInfo(EolInfoCallback callback) = 0;
+
+  virtual void ToggleFeature(const std::string& feature, bool enable) = 0;
+  virtual void IsFeatureEnabled(const std::string& feature,
+                                IsFeatureEnabledCallback callback) = 0;
+  virtual bool IsManagedAutoUpdateEnabled() = 0;
 
   // Sets a one time permission on a certain update in Update Engine.
   // - update_version: the Chrome OS version we want to update to.
@@ -117,6 +128,9 @@ class VersionUpdater {
       StatusCallback callback,
       const std::string& update_version,
       int64_t update_size) = 0;
+
+  // If an update is downloaded but deferred, apply the deferred update.
+  virtual void ApplyDeferredUpdate() = 0;
 #endif
 };
 

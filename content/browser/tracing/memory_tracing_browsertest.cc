@@ -1,15 +1,16 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -102,7 +103,7 @@ class MemoryTracingTest : public ContentBrowserTest {
   void SetUp() override {
     next_request_index_ = 0;
 
-    mock_dump_provider_.reset(new MockDumpProvider());
+    mock_dump_provider_ = std::make_unique<MockDumpProvider>();
     MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         mock_dump_provider_.get(), "MockDumpProvider", nullptr);
     MemoryDumpManager::GetInstance()
@@ -179,7 +180,7 @@ class MemoryTracingTest : public ContentBrowserTest {
 
 // Run SingleProcessMemoryTracingTests only on Android, since these tests are
 // intended to give coverage to Android WebView.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 class SingleProcessMemoryTracingTest : public MemoryTracingTest {
  public:
@@ -191,11 +192,11 @@ class SingleProcessMemoryTracingTest : public MemoryTracingTest {
 };
 
 // https://crbug.com/788788
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 #define MAYBE_BrowserInitiatedSingleDump DISABLED_BrowserInitiatedSingleDump
 #else
 #define MAYBE_BrowserInitiatedSingleDump BrowserInitiatedSingleDump
-#endif  // defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#endif  // BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 
 // Checks that a memory dump initiated from a the main browser thread ends up in
 // a single dump even in single process mode.
@@ -214,11 +215,11 @@ IN_PROC_BROWSER_TEST_F(SingleProcessMemoryTracingTest,
 }
 
 // https://crbug.com/788788
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 #define MAYBE_RendererInitiatedSingleDump DISABLED_RendererInitiatedSingleDump
 #else
 #define MAYBE_RendererInitiatedSingleDump RendererInitiatedSingleDump
-#endif  // defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#endif  // BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 
 // Checks that a memory dump initiated from a renderer thread ends up in a
 // single dump even in single process mode.
@@ -237,11 +238,11 @@ IN_PROC_BROWSER_TEST_F(SingleProcessMemoryTracingTest,
 }
 
 // https://crbug.com/788788
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 #define MAYBE_ManyInterleavedDumps DISABLED_ManyInterleavedDumps
 #else
 #define MAYBE_ManyInterleavedDumps ManyInterleavedDumps
-#endif  // defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#endif  // BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 IN_PROC_BROWSER_TEST_F(SingleProcessMemoryTracingTest,
                        MAYBE_ManyInterleavedDumps) {
   Navigate(shell());
@@ -335,11 +336,15 @@ IN_PROC_BROWSER_TEST_F(SingleProcessMemoryTracingTest, DISABLED_QueuedDumps) {
   DisableTracing();
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Flaky on Mac. crbug.com/809809
 // Failing on Android ASAN. crbug.com/1041392
-#if defined(OS_MAC) || (defined(OS_ANDROID) && defined(ADDRESS_SANITIZER))
+// TODO(https://crbug.com/1129269): OSMetrics::GetProcessMemoryMaps is not
+// implemented on Fuchsia
+#if BUILDFLAG(IS_MAC) ||                                     \
+    (BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)) || \
+    BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_BrowserInitiatedDump DISABLED_BrowserInitiatedDump
 #else
 #define MAYBE_BrowserInitiatedDump BrowserInitiatedDump
@@ -350,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(MemoryTracingTest, MAYBE_BrowserInitiatedDump) {
   Navigate(shell());
 
   EXPECT_CALL(*mock_dump_provider_, OnMemoryDump(_,_)).WillOnce(Return(true));
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // TODO(ssid): Test for dump success once the on start tracing done callback
   // is fixed to be called after enable tracing is acked by all processes,
   // crbug.com/709524. The test still tests if dumping does not crash.

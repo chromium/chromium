@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/network/network_status_listener.h"
 #include "components/download/public/common/download_export.h"
@@ -60,6 +60,10 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
       std::unique_ptr<download::TaskManager> task_manager,
       std::unique_ptr<Config> config,
       base::Clock* clock);
+
+  AutoResumptionHandler(const AutoResumptionHandler&) = delete;
+  AutoResumptionHandler& operator=(const AutoResumptionHandler&) = delete;
+
   ~AutoResumptionHandler() override;
 
   void SetResumableDownloads(
@@ -80,6 +84,7 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
   using DownloadMap = std::map<std::string, DownloadItem*>;
 
   // NetworkStatusListener::Observer implementation.
+  void OnNetworkStatusReady(network::mojom::ConnectionType type) override;
   void OnNetworkChanged(network::mojom::ConnectionType type) override;
 
   void ResumePendingDownloads();
@@ -94,13 +99,6 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
   bool ShouldResumeNow(download::DownloadItem* download) const;
   bool IsAutoResumableDownload(download::DownloadItem* item) const;
 
-  // Returns whether the user has scheduled the download to happen later.
-  static bool ShouldDownloadLater(DownloadItem* item, base::Time now);
-
-  // Reschedule the download later background task. May cancel the task when no
-  // need to run a future task.
-  void RescheduleDownloadLaterTask(const std::vector<DownloadItem*> downloads);
-
   // Listens to network events to stop/resume downloads accordingly.
   std::unique_ptr<download::NetworkStatusListener> network_listener_;
 
@@ -108,7 +106,7 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
 
   std::unique_ptr<Config> config_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   // List of downloads that are auto-resumable. These will be resumed as soon as
   // network conditions becomes favorable.
@@ -120,8 +118,6 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
   bool recompute_task_params_scheduled_ = false;
 
   base::WeakPtrFactory<AutoResumptionHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutoResumptionHandler);
 };
 
 }  // namespace download

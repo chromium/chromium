@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 
 namespace blink {
@@ -29,6 +30,8 @@ class FakeTransformableFrame : public webrtc::TransformableFrameInterface {
   void SetData(rtc::ArrayView<const uint8_t> data) override {}
   uint32_t GetTimestamp() const override { return 0; }
   uint32_t GetSsrc() const override { return 0; }
+  // 255 is not a valid payload type (which can be in the range [0..127]).
+  uint8_t GetPayloadType() const override { return 255; }
 };
 }  // namespace
 
@@ -37,7 +40,8 @@ class RTCEncodedAudioUnderlyingSourceTest : public testing::Test {
   RTCEncodedAudioUnderlyingSource* CreateSource(ScriptState* script_state,
                                                 bool is_receiver = false) {
     return MakeGarbageCollected<RTCEncodedAudioUnderlyingSource>(
-        script_state, WTF::Bind(disconnect_callback_.Get()), is_receiver);
+        script_state, WTF::CrossThreadBindOnce(disconnect_callback_.Get()),
+        is_receiver);
   }
 
  protected:

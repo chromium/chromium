@@ -1,3 +1,0 @@
-_NLClassifier*
-_BertNLClassifier*
-_BertQuestionAnswerer*

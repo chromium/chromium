@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -134,8 +134,7 @@ std::pair<size_t, DeletePageResult> ClearPagesSync(
         base::TimeDelta time_since_creation = start_time - page.creation_time;
         UMA_HISTOGRAM_CUSTOM_COUNTS(
             "OfflinePages.ClearTemporaryPages.TimeSinceCreation",
-            time_since_creation.InMinutes(), 1,
-            base::TimeDelta::FromDays(30).InMinutes(), 50);
+            time_since_creation.InMinutes(), 1, base::Days(30).InMinutes(), 50);
       }
     }
   }

@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,23 +8,24 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 
 namespace network {
 class SimpleURLLoader;
 }
 
-namespace chromeos {
-
-class TermsOfServiceScreenView;
+namespace ash {
 
 // A screen that shows Terms of Service which have been configured through
 // policy. The screen is shown during login and requires the user to accept the
-// Terms of Service before proceeding. Currently, Terms of Service are available
-// for public sessions only.
+// Terms of Service before proceeding. Try to load online version of Terms of
+// Service, if it isn't available due to any reason - load locally saved terms
+// from file. If there is no locally saved terms - show an error message.
 class TermsOfServiceScreen : public BaseScreen {
  public:
   enum class Result { ACCEPTED, DECLINED, NOT_APPLICABLE };
@@ -35,8 +36,12 @@ class TermsOfServiceScreen : public BaseScreen {
   enum class ScreenState : int { LOADING = 0, LOADED = 1, ERROR = 2 };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
-  TermsOfServiceScreen(TermsOfServiceScreenView* view,
+  TermsOfServiceScreen(base::WeakPtr<TermsOfServiceScreenView> view,
                        const ScreenExitCallback& exit_callback);
+
+  TermsOfServiceScreen(const TermsOfServiceScreen&) = delete;
+  TermsOfServiceScreen& operator=(const TermsOfServiceScreen&) = delete;
+
   ~TermsOfServiceScreen() override;
 
   // Called when the user declines the Terms of Service.
@@ -48,8 +53,8 @@ class TermsOfServiceScreen : public BaseScreen {
   // Called when the user retries to obtain the Terms of Service.
   void OnRetry();
 
-  // Called when view is destroyed so there is no dead reference to it.
-  void OnViewDestroyed(TermsOfServiceScreenView* view);
+  // Set callback to wait for file saving in tests.
+  static void SetTosSavedCallbackForTesting(base::OnceClosure callback);
 
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
     exit_callback_ = exit_callback;
@@ -59,12 +64,14 @@ class TermsOfServiceScreen : public BaseScreen {
     return exit_callback_;
   }
 
+  // Get path for a user terms of service file.
+  static base::FilePath GetTosFilePath();
  private:
   // BaseScreen:
-  bool MaybeSkip(WizardContext* context) override;
+  bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   // Start downloading the Terms of Service.
   void StartDownload();
@@ -75,7 +82,16 @@ class TermsOfServiceScreen : public BaseScreen {
   // Callback function called when SimpleURLLoader completes.
   void OnDownloaded(std::unique_ptr<std::string> response_body);
 
-  TermsOfServiceScreenView* view_;
+  // Try to load terms of service from file, show error if there is a failure.
+  void LoadFromFileOrShowError();
+  // Show terms of service once they are loaded from file.
+  void OnTosLoadedFromFile(absl::optional<std::string> tos);
+  // Save terms as text to a local file.
+  void SaveTos(const std::string& tos);
+  // Runs callback for tests.
+  void OnTosSavedForTesting();
+
+  base::WeakPtr<TermsOfServiceScreenView> view_;
   ScreenExitCallback exit_callback_;
 
   std::unique_ptr<network::SimpleURLLoader> terms_of_service_loader_;
@@ -84,9 +100,15 @@ class TermsOfServiceScreen : public BaseScreen {
   // the Terms of Service.
   base::OneShotTimer download_timer_;
 
-  DISALLOW_COPY_AND_ASSIGN(TermsOfServiceScreen);
+  base::WeakPtrFactory<TermsOfServiceScreen> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+using ::ash::TermsOfServiceScreen;
+}
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_SCREENS_TERMS_OF_SERVICE_SCREEN_H_

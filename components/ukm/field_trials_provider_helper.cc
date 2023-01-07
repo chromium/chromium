@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,10 +14,10 @@ const char kUKMFieldTrialSuffix[] = "UKM";
 }  // namespace
 
 std::unique_ptr<variations::FieldTrialsProvider>
-CreateFieldTrialsProviderForUkm() {
-  // TODO(crbug.com/754877): Support synthetic trials for UKM.
+CreateFieldTrialsProviderForUkm(
+    variations::SyntheticTrialRegistry* synthetic_trial_registry) {
   return std::make_unique<variations::FieldTrialsProvider>(
-      nullptr, kUKMFieldTrialSuffix);
+      synthetic_trial_registry, kUKMFieldTrialSuffix);
 }
 
 }  //  namespace ukm

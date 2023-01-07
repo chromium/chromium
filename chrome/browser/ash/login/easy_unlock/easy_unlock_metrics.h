@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,7 @@ namespace base {
 class TimeDelta;
 }
 
-namespace chromeos {
+namespace ash {
 
 // Tracking login events for Easy unlock metrics.
 // This enum is used to define the buckets for an enumerated UMA histogram.
@@ -57,9 +57,9 @@ enum EasyUnlockAuthEvent {
   // Password is used because pairing data is changed for a "new" Chromebook
   // (where there was no previous pairing data).
   PASSWORD_ENTRY_PAIRING_ADDED = 17,
-  // Password is used because there is no screenlock state handler. Most likely
+  // Password is used because there is no smartlock state handler. Most likely
   // because EasyUnlock is disabled, e.g. Bluetooth adapter not ready.
-  PASSWORD_ENTRY_NO_SCREENLOCK_STATE_HANDLER = 18,
+  PASSWORD_ENTRY_NO_SMARTLOCK_STATE_HANDLER = 18,
   // Password is used because the phone is (a) locked, and (b) not right next to
   // the Chromebook.
   PASSWORD_ENTRY_PHONE_LOCKED_AND_RSSI_TOO_LOW = 19,
@@ -84,6 +84,6 @@ void RecordEasyUnlockSigninEvent(EasyUnlockAuthEvent event);
 void RecordEasyUnlockScreenUnlockDuration(const base::TimeDelta& duration);
 void RecordEasyUnlockScreenUnlockEvent(EasyUnlockAuthEvent event);
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_METRICS_H_

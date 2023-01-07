@@ -1,10 +1,73 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/mediacapture-main/#idl-def-mediastreamconstraints
+// https://github.com/w3c/mediacapture-screen-share/pull/222/files
+enum SystemAudioPreferenceEnum {
+  "include",
+  "exclude"
+};
 
+// https://github.com/w3c/mediacapture-screen-share/pull/216/files
+enum SelfCapturePreferenceEnum {
+  "include",
+  "exclude"
+};
+
+// https://github.com/w3c/mediacapture-screen-share/pull/225/files
+enum SurfaceSwitchingPreferenceEnum {
+  "include",
+  "exclude"
+};
+
+// https://w3c.github.io/mediacapture-main/#idl-def-mediastreamconstraints
+// The name differs from the spec because the name MediaStreamConstraints
+// is used internally to hold all media stream constraints from getUserMedia()
+// and getDisplayMedia().
+dictionary UserMediaStreamConstraints {
+    (boolean or MediaTrackConstraints) video = false;
+    (boolean or MediaTrackConstraints) audio = false;
+};
+
+// https://www.w3.org/TR/screen-capture/#dom-displaymediastreamoptions
+dictionary DisplayMediaStreamOptions {
+    (boolean or MediaTrackConstraints) video = true;
+    (boolean or MediaTrackConstraints) audio = false;
+
+    // https://wicg.github.io/prefer-current-tab/#prefer-current-tab
+    boolean preferCurrentTab = false;
+
+    [
+      RuntimeEnabled = GetDisplayMediaSetAutoSelectAllScreens
+    ] boolean autoSelectAllScreens = false;
+
+    // https://github.com/w3c/mediacapture-screen-share/pull/222/files
+    [
+      RuntimeEnabled = SystemAudioConstraint
+    ] SystemAudioPreferenceEnum systemAudio;
+
+    // https://github.com/w3c/mediacapture-screen-share/pull/216/files
+    [
+      RuntimeEnabled = SelfBrowserSurfaceConstraint
+    ] SelfCapturePreferenceEnum selfBrowserSurface;
+
+    // https://github.com/w3c/mediacapture-screen-share/pull/225/files
+    [
+      RuntimeEnabled = SurfaceSwitchingConstraint
+    ] SurfaceSwitchingPreferenceEnum surfaceSwitching;
+};
+
+// This dictionnary is used internally to hold all members from
+// UserMediaStreamConstraints and DisplayMediaStreamOptions dictionary
+// passed respectively to getUserMedia() and getDisplayMedia().
+// UserMediaStreamConstraints and DisplayMediaStreamOptions are converted to
+// MediaStreamConstraints and consumed by MediaDevices::SendUserMediaRequest().
 dictionary MediaStreamConstraints {
     (boolean or MediaTrackConstraints) video = false;
     (boolean or MediaTrackConstraints) audio = false;
+    boolean preferCurrentTab = false;
+    boolean autoSelectAllScreens = false;
+    SystemAudioPreferenceEnum systemAudio;
+    SelfCapturePreferenceEnum selfBrowserSurface;
+    SurfaceSwitchingPreferenceEnum surfaceSwitching;
 };

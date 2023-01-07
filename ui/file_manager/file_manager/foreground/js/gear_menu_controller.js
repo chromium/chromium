@@ -1,23 +1,23 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import {ProvidersModel} from './providers_model.m.js';
-// #import {CommandHandler} from './file_manager_commands.m.js';
-// #import {DirectoryModel} from './directory_model.m.js';
-// #import {ProvidersMenu} from './ui/providers_menu.m.js';
-// #import {GearMenu} from './ui/gear_menu.m.js';
-// #import {MultiMenuButton} from './ui/multi_menu_button.m.js';
-// #import {VolumeManagerCommon} from '../../common/js/volume_manager_types.m.js';
-// #import {DirectoryChangeEvent} from '../../externs/directory_change_event.m.js';
-// #import {str, util} from '../../common/js/util.m.js';
-// clang-format on
+import {getDriveQuotaMetadata, getSizeStats} from '../../common/js/api.js';
+import {str, strf, util} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
+
+import {DirectoryModel} from './directory_model.js';
+import {CommandHandler} from './file_manager_commands.js';
+import {ProvidersModel} from './providers_model.js';
+import {GearMenu} from './ui/gear_menu.js';
+import {MultiMenuButton} from './ui/multi_menu_button.js';
+import {ProvidersMenu} from './ui/providers_menu.js';
 
 
-/* #export */ class GearMenuController {
+export class GearMenuController {
   /**
-   * @param {!cr.ui.MultiMenuButton} gearButton
+   * @param {!MultiMenuButton} gearButton
    * @param {!FilesToggleRippleElement} toggleRipple
    * @param {!GearMenu} gearMenu
    * @param {!ProvidersMenu} providersMenu
@@ -28,7 +28,7 @@
   constructor(
       gearButton, toggleRipple, gearMenu, providersMenu, directoryModel,
       commandHandler, providersModel) {
-    /** @private @const {!cr.ui.MultiMenuButton} */
+    /** @private @const {!MultiMenuButton} */
     this.gearButton_ = gearButton;
 
     /** @private @const {!FilesToggleRippleElement} */
@@ -126,18 +126,26 @@
       return;
     }
 
-    // TODO(crbug.com/1177203): Remove once Drive sends proper quota info to
-    // Chrome.
     if (currentVolumeInfo.volumeType == VolumeManagerCommon.VolumeType.DRIVE) {
-      this.gearMenu_.setSpaceInfo(null, false);
+      this.gearMenu_.setSpaceInfo(
+          getDriveQuotaMetadata().then(
+              quota /* chrome.fileManagerPrivate.DriveQuotaMetadata */ => ({
+                totalSize: quota.totalUserBytes,
+                usedSize: quota.usedUserBytes,
+                warningMessage: quota.organizationLimitExceeded ?
+                    strf('DRIVE_ORGANIZATION_STORAGE_FULL') :
+                    null,
+              })),
+          true);
       return;
     }
 
     this.gearMenu_.setSpaceInfo(
-        new Promise(fulfill => {
-          chrome.fileManagerPrivate.getSizeStats(
-              currentVolumeInfo.volumeId, fulfill);
-        }),
+        getSizeStats(currentVolumeInfo.volumeId)
+            .then(size /* chrome.fileManagerPrivate.MountPointSizeStats */ => ({
+                    totalSize: size.totalSize,
+                    usedSize: size.totalSize - size.remainingSize,
+                  })),
         true);
   }
 

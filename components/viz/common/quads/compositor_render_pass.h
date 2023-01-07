@@ -1,4 +1,4 @@
-// Copyright 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,20 +13,22 @@
 
 #include "base/callback.h"
 #include "base/hash/hash.h"
-#include "base/macros.h"
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "cc/base/list_container.h"
 #include "cc/paint/filter_operations.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/largest_draw_quad.h"
 #include "components/viz/common/quads/quad_list.h"
 #include "components/viz/common/quads/render_pass_internal.h"
+#include "components/viz/common/shared_element_resource_id.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/rrect_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/rrect_f.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace base {
 namespace trace_event {
@@ -41,13 +43,16 @@ class DrawQuad;
 class CompositorRenderPass;
 class CompositorRenderPassDrawQuad;
 
-using CompositorRenderPassId = util::IdTypeU64<CompositorRenderPass>;
+using CompositorRenderPassId = base::IdTypeU64<CompositorRenderPass>;
 
 // This class represents a render pass that is submitted from the UI or renderer
 // compositor to viz. It is mojo-serializable and typically has a unique
 // CompositorRenderPassId within its surface id.
 class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
  public:
+  CompositorRenderPass(const CompositorRenderPass&) = delete;
+  CompositorRenderPass& operator=(const CompositorRenderPass&) = delete;
+
   ~CompositorRenderPass();
 
   static std::unique_ptr<CompositorRenderPass> Create();
@@ -56,23 +61,26 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
       size_t shared_quad_state_list_size,
       size_t quad_list_size);
 
-  void SetNew(CompositorRenderPassId id,
+  void SetNew(CompositorRenderPassId pass_id,
               const gfx::Rect& output_rect,
               const gfx::Rect& damage_rect,
               const gfx::Transform& transform_to_root_target);
 
-  void SetAll(CompositorRenderPassId id,
+  void SetAll(CompositorRenderPassId pass_id,
               const gfx::Rect& output_rect,
               const gfx::Rect& damage_rect,
               const gfx::Transform& transform_to_root_target,
               const cc::FilterOperations& filters,
               const cc::FilterOperations& backdrop_filters,
-              const base::Optional<gfx::RRectF>& backdrop_filter_bounds,
-              SubtreeCaptureId subtree_capture_id,
+              const absl::optional<gfx::RRectF>& backdrop_filter_bounds,
+              SubtreeCaptureId capture_id,
+              gfx::Size subtree_capture_size,
+              SharedElementResourceId resource_id,
               bool has_transparent_background,
               bool cache_render_pass,
               bool has_damage_from_contributing_content,
-              bool generate_mipmap);
+              bool generate_mipmap,
+              bool per_quad_damage);
 
   void AsValueInto(base::trace_event::TracedValue* dict) const;
 
@@ -90,6 +98,21 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
   // A unique ID that identifies a layer subtree which produces this render
   // pass, so that it can be captured by a FrameSinkVideoCapturer.
   SubtreeCaptureId subtree_capture_id;
+
+  // A clip size in pixels indicating what subsection of the |output_rect|
+  // should be copied when |subtree_capture_id| is valid. Must be smaller or
+  // equal to |output_rect|. If empty, then the full |output_rect| should be
+  // copied.
+  gfx::Size subtree_size;
+
+  // A unique ID that identifies an element that this render pass corresponds
+  // to. This is used to implement a live snapshot of an element's content.
+  SharedElementResourceId shared_element_resource_id;
+
+  // Set to true if at least one of the quads in the |quad_list| contains damage
+  // that is not contained in |damage_rect|. Only the root render pass in a
+  // CompositorFrame should have per quad damage.
+  bool has_per_quad_damage = false;
 
   // For testing functions.
   // TODO(vmpstr): See if we can clean these up by moving the tests to use
@@ -114,9 +137,6 @@ class VIZ_COMMON_EXPORT CompositorRenderPass : public RenderPassInternal {
   explicit CompositorRenderPass(size_t num_layers);
   CompositorRenderPass(size_t shared_quad_state_list_size,
                        size_t quad_list_size);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CompositorRenderPass);
 };
 
 using CompositorRenderPassList =

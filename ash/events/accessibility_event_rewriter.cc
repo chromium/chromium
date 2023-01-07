@@ -1,19 +1,23 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ash/events/accessibility_event_rewriter.h"
 
 #include "ash/accessibility/accessibility_controller_impl.h"
-#include "ash/accessibility/magnifier/magnification_controller.h"
+#include "ash/accessibility/magnifier/docked_magnifier_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
+#include "ash/constants/ash_constants.h"
 #include "ash/keyboard/keyboard_util.h"
 #include "ash/public/cpp/accessibility_event_rewriter_delegate.h"
 #include "ash/shell.h"
+#include "base/system/sys_info.h"
 #include "ui/chromeos/events/event_rewriter_chromeos.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/types/event_type.h"
 
 namespace ash {
@@ -29,8 +33,9 @@ ui::InputDeviceType GetInputDeviceType(
     return ui::INPUT_DEVICE_USB;
   if (switch_access_device_type == kSwitchAccessBluetoothDevice)
     return ui::INPUT_DEVICE_BLUETOOTH;
-
-  NOTREACHED();
+  // On Chrome OS emulated on Linux, the keyboard is always "UNKNOWN".
+  if (base::SysInfo::IsRunningOnChromeOS())
+    NOTREACHED();
   return ui::INPUT_DEVICE_UNKNOWN;
 }
 }  // namespace
@@ -40,6 +45,9 @@ AccessibilityEventRewriter::AccessibilityEventRewriter(
     AccessibilityEventRewriterDelegate* delegate)
     : delegate_(delegate), event_rewriter_chromeos_(event_rewriter_chromeos) {
   Shell::Get()->accessibility_controller()->SetAccessibilityEventRewriter(this);
+  observation_.Observe(input_method::InputMethodManager::Get());
+  // InputMethodManagerImpl::AddObserver calls our InputMethodChanged, so no
+  // further initialization needed.
 }
 
 AccessibilityEventRewriter::~AccessibilityEventRewriter() {
@@ -132,8 +140,16 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
     std::unique_ptr<ui::Event> rewritten_event;
     ui::EventRewriterChromeOS::BuildRewrittenKeyEvent(*key_event, state,
                                                       &rewritten_event);
-    const ui::KeyEvent* rewritten_key_event =
-        rewritten_event.get()->AsKeyEvent();
+    ui::KeyEvent* rewritten_key_event = rewritten_event.get()->AsKeyEvent();
+
+    // Account for positional keys which we want to remap.
+    if (try_rewriting_positional_keys_for_chromevox_) {
+      const ui::KeyboardCode remapped_key_code =
+          ui::KeycodeConverter::MapPositionalDomCodeToUSShortcutKey(
+              key_event->code());
+      if (remapped_key_code != ui::VKEY_UNKNOWN)
+        rewritten_key_event->set_key_code(remapped_key_code);
+    }
 
     bool capture = chromevox_capture_all_keys_;
 
@@ -148,8 +164,8 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
     if (rewritten_key_event->GetDomKey() == ui::DomKey::TAB)
       capture = false;
 
-    delegate_->DispatchKeyEventToChromeVox(
-        ui::Event::Clone(*rewritten_key_event), capture);
+    delegate_->DispatchKeyEventToChromeVox(rewritten_key_event->Clone(),
+                                           capture);
     return capture;
   }
 
@@ -163,8 +179,17 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
     return false;
 
   const ui::KeyEvent* key_event = event.AsKeyEvent();
+  ui::EventRewriterChromeOS::MutableKeyState state(key_event);
+  event_rewriter_chromeos_->RewriteModifierKeys(*key_event, &state);
+  event_rewriter_chromeos_->RewriteFunctionKeys(*key_event, &state);
+
+  std::unique_ptr<ui::Event> rewritten_event;
+  ui::EventRewriterChromeOS::BuildRewrittenKeyEvent(*key_event, state,
+                                                    &rewritten_event);
+  ui::KeyEvent* rewritten_key_event = rewritten_event.get()->AsKeyEvent();
+
   const auto& key =
-      switch_access_key_codes_to_capture_.find(key_event->key_code());
+      switch_access_key_codes_to_capture_.find(rewritten_key_event->key_code());
   if (key == switch_access_key_codes_to_capture_.end())
     return false;
 
@@ -192,14 +217,14 @@ bool AccessibilityEventRewriter::RewriteEventForSwitchAccess(
     if (accessibility_controller->IsPointScanEnabled()) {
       PointScanController* point_scan_controller =
           accessibility_controller->GetPointScanController();
-      base::Optional<gfx::PointF> point =
+      absl::optional<gfx::PointF> point =
           point_scan_controller->OnPointSelect();
       if (point.has_value()) {
         delegate_->SendPointScanPoint(point.value());
       }
     } else {
       SwitchAccessCommand command =
-          key_code_to_switch_access_command_[key_event->key_code()];
+          key_code_to_switch_access_command_[rewritten_key_event->key_code()];
       delegate_->SendSwitchAccessCommand(command);
     }
   }
@@ -238,23 +263,26 @@ bool AccessibilityEventRewriter::RewriteEventForMagnifier(
 
 void AccessibilityEventRewriter::OnMagnifierKeyPressed(
     const ui::KeyEvent* event) {
-  MagnificationController* controller =
-      Shell::Get()->magnification_controller();
+  FullscreenMagnifierController* controller =
+      Shell::Get()->fullscreen_magnifier_controller();
   switch (event->key_code()) {
     case ui::VKEY_UP:
-      controller->SetScrollDirection(MagnificationController::SCROLL_UP);
+      controller->SetScrollDirection(FullscreenMagnifierController::SCROLL_UP);
       delegate_->SendMagnifierCommand(MagnifierCommand::kMoveUp);
       break;
     case ui::VKEY_DOWN:
-      controller->SetScrollDirection(MagnificationController::SCROLL_DOWN);
+      controller->SetScrollDirection(
+          FullscreenMagnifierController::SCROLL_DOWN);
       delegate_->SendMagnifierCommand(MagnifierCommand::kMoveDown);
       break;
     case ui::VKEY_LEFT:
-      controller->SetScrollDirection(MagnificationController::SCROLL_LEFT);
+      controller->SetScrollDirection(
+          FullscreenMagnifierController::SCROLL_LEFT);
       delegate_->SendMagnifierCommand(MagnifierCommand::kMoveLeft);
       break;
     case ui::VKEY_RIGHT:
-      controller->SetScrollDirection(MagnificationController::SCROLL_RIGHT);
+      controller->SetScrollDirection(
+          FullscreenMagnifierController::SCROLL_RIGHT);
       delegate_->SendMagnifierCommand(MagnifierCommand::kMoveRight);
       break;
     default:
@@ -264,19 +292,25 @@ void AccessibilityEventRewriter::OnMagnifierKeyPressed(
 
 void AccessibilityEventRewriter::OnMagnifierKeyReleased(
     const ui::KeyEvent* event) {
-  MagnificationController* controller =
-      Shell::Get()->magnification_controller();
-  controller->SetScrollDirection(MagnificationController::SCROLL_NONE);
+  FullscreenMagnifierController* controller =
+      Shell::Get()->fullscreen_magnifier_controller();
+  controller->SetScrollDirection(FullscreenMagnifierController::SCROLL_NONE);
   delegate_->SendMagnifierCommand(MagnifierCommand::kMoveStop);
 }
 
 void AccessibilityEventRewriter::MaybeSendMouseEvent(const ui::Event& event) {
   // Mouse moves are the only pertinent event for accessibility component
   // extensions.
-  if (send_mouse_events_ && event.type() == ui::ET_MOUSE_MOVED &&
-      (Shell::Get()->magnification_controller()->IsEnabled() ||
+  if (send_mouse_events_ &&
+      (event.type() == ui::ET_MOUSE_MOVED ||
+       event.type() == ui::ET_MOUSE_DRAGGED) &&
+      (Shell::Get()
+           ->accessibility_controller()
+           ->fullscreen_magnifier()
+           .enabled() ||
+       Shell::Get()->accessibility_controller()->docked_magnifier().enabled() ||
        Shell::Get()->accessibility_controller()->spoken_feedback().enabled())) {
-    delegate_->DispatchMouseEvent(ui::Event::Clone(event));
+    delegate_->DispatchMouseEvent(event.Clone());
   }
 }
 
@@ -308,6 +342,14 @@ ui::EventDispatchDetails AccessibilityEventRewriter::RewriteEvent(
 
   return captured ? DiscardEvent(continuation)
                   : SendEvent(continuation, &event);
+}
+
+void AccessibilityEventRewriter::InputMethodChanged(
+    input_method::InputMethodManager* manager,
+    Profile* profile,
+    bool show_message) {
+  try_rewriting_positional_keys_for_chromevox_ =
+      manager->ArePositionalShortcutsUsedByCurrentInputMethod();
 }
 
 }  // namespace ash

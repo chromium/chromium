@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,23 +8,24 @@
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/dbus/attestation/fake_attestation_client.h"
+#include "chromeos/ash/components/dbus/attestation/fake_attestation_client.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using net::test_server::BasicHttpResponse;
-using net::test_server::HttpRequest;
-using net::test_server::HttpResponse;
-
-namespace chromeos {
-
+namespace ash {
 namespace {
+
+using ::net::test_server::BasicHttpResponse;
+using ::net::test_server::HttpRequest;
+using ::net::test_server::HttpResponse;
 
 // The header that the server returns in a HTTP response to ask the client to
 // authenticate.
@@ -41,8 +42,12 @@ constexpr char kSamlLoginPath[] = "SAML";
 constexpr char kSamlLoginAuthPath[] = "SAMLAuth";
 constexpr char kSamlLoginWithDeviceAttestationPath[] =
     "SAML-with-device-attestation";
+constexpr char kSamlLoginWithDeviceTrustPath[] = "SAML-with-device-trust";
 constexpr char kSamlLoginCheckDeviceAnswerPath[] = "SAML-check-device-answer";
 
+// Must be equal to SAML_VERIFIED_ACCESS_RESPONSE_HEADER from
+// chrome/browser/enterprise/connectors/device_trust/navigation_throttle.cc.
+constexpr char kDeviceTrustHeader[] = "x-device-trust";
 // Must be equal to SAML_VERIFIED_ACCESS_CHALLENGE_HEADER from saml_handler.js.
 constexpr char kSamlVerifiedAccessChallengeHeader[] =
     "x-verified-access-challenge";
@@ -50,10 +55,11 @@ constexpr char kSamlVerifiedAccessChallengeHeader[] =
 constexpr char kSamlVerifiedAccessResponseHeader[] =
     "x-verified-access-challenge-response";
 
-constexpr char kTpmChallenge[] = {0, 1, 2, 'c', 'h', 'a', 'l', 253, 254, 255};
+constexpr char kTpmChallenge[] = {0,   1,   2,      'c',    'h',
+                                  'a', 'l', '\xFD', '\xFE', '\xFF'};
 
 std::string GetTpmChallenge() {
-  return std::string(kTpmChallenge, base::size(kTpmChallenge));
+  return std::string(kTpmChallenge, std::size(kTpmChallenge));
 }
 
 std::string GetTpmChallengeBase64() {
@@ -111,6 +117,16 @@ void FakeSamlIdpMixin::SetUpCommandLine(base::CommandLine* command_line) {
   html_template_dir_ = test_data_dir.Append("login");
   saml_response_dir_ = test_data_dir.Append("chromeos").Append("login");
 
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+    std::string fake_saml_continue_response;
+    EXPECT_TRUE(base::ReadFileToString(
+        html_template_dir_.Append("gaia_finish_after_saml.html"),
+        &fake_saml_continue_response));
+    gaia_mixin_->fake_gaia()->SetFakeSamlContinueResponse(
+        fake_saml_continue_response);
+  }
+
   ASSERT_TRUE(saml_server_.Start());
   ASSERT_TRUE(saml_http_server_.Start());
 }
@@ -152,8 +168,20 @@ void FakeSamlIdpMixin::SetSamlResponseFile(const std::string& xml_file) {
   base::Base64Encode(saml_response_, &saml_response_);
 }
 
+bool FakeSamlIdpMixin::DeviceTrustHeaderRecieved() const {
+  return device_trust_header_recieved_;
+}
+
 bool FakeSamlIdpMixin::IsLastChallengeResponseExists() const {
   return challenge_response_.has_value();
+}
+
+bool FakeSamlIdpMixin::IsLastChallengeResponseError() const {
+  return error_challenge_response_.has_value();
+}
+
+int FakeSamlIdpMixin::GetChallengeResponseCount() const {
+  return challenge_response_count_;
 }
 
 void FakeSamlIdpMixin::AssertChallengeResponseMatchesTpmResponse() const {
@@ -181,6 +209,11 @@ GURL FakeSamlIdpMixin::GetSamlWithDeviceAttestationUrl() const {
       kIdPHost, std::string("/") + kSamlLoginWithDeviceAttestationPath);
 }
 
+GURL FakeSamlIdpMixin::GetSamlWithDeviceTrustUrl() const {
+  return saml_server_.GetURL(kIdPHost,
+                             std::string("/") + kSamlLoginWithDeviceTrustPath);
+}
+
 GURL FakeSamlIdpMixin::GetSamlAuthPageUrl() const {
   return saml_server_.GetURL(kIdPHost, std::string("/") + kSamlLoginAuthPath);
 }
@@ -197,7 +230,7 @@ std::unique_ptr<net::test_server::HttpResponse> FakeSamlIdpMixin::HandleRequest(
 
   if (request_type == RequestType::kUnknown) {
     // Ignore this request.
-    return std::unique_ptr<HttpResponse>();
+    return nullptr;
   }
 
   // For HTTP Basic Auth, we don't care to check the credentials, just
@@ -220,11 +253,13 @@ std::unique_ptr<net::test_server::HttpResponse> FakeSamlIdpMixin::HandleRequest(
       return BuildResponseForLoginAuth(request, request_url);
     case RequestType::kLoginWithDeviceAttestation:
       return BuildResponseForLoginWithDeviceAttestation(request, request_url);
+    case RequestType::kLoginWithDeviceTrust:
+      return BuildResponseForLoginWithDeviceTrust(request, request_url);
     case RequestType::kLoginCheckDeviceAnswer:
       return BuildResponseForCheckDeviceAnswer(request, request_url);
     case RequestType::kUnknown:
       NOTREACHED();
-      return std::unique_ptr<HttpResponse>();
+      return nullptr;
   }
 }
 
@@ -238,6 +273,8 @@ FakeSamlIdpMixin::RequestType FakeSamlIdpMixin::ParseRequestTypeFromRequestPath(
     return RequestType::kLoginAuth;
   if (request_path == GetSamlWithDeviceAttestationUrl().path())
     return RequestType::kLoginWithDeviceAttestation;
+  if (request_path == GetSamlWithDeviceTrustUrl().path())
+    return RequestType::kLoginWithDeviceTrust;
   if (request_path == GetSamlWithCheckDeviceAnswerUrl().path())
     return RequestType::kLoginCheckDeviceAnswer;
 
@@ -256,8 +293,7 @@ std::unique_ptr<HttpResponse> FakeSamlIdpMixin::BuildResponseForLoginAuth(
     const HttpRequest& request,
     const GURL& request_url) {
   const std::string relay_state = GetRelayState(request);
-  GURL redirect_url =
-      gaia_mixin_->gaia_https_forwarder()->GetURLForSSLHost("").Resolve("/SSO");
+  GURL redirect_url = gaia_mixin_->GetFakeGaiaURL("/SSO");
 
   if (!login_auth_html_template_.empty()) {
     return BuildHTMLResponse(login_auth_html_template_, relay_state,
@@ -293,6 +329,36 @@ FakeSamlIdpMixin::BuildResponseForLoginWithDeviceAttestation(
   http_response->AddCustomHeader(kSamlVerifiedAccessChallengeHeader,
                                  GetTpmChallengeBase64());
 
+  return http_response;
+}
+
+std::unique_ptr<HttpResponse>
+FakeSamlIdpMixin::BuildResponseForLoginWithDeviceTrust(
+    const HttpRequest& request,
+    const GURL& request_url) {
+  std::string relay_state = GetRelayState(request);
+
+  device_trust_header_recieved_ =
+      base::Contains(request.headers, kDeviceTrustHeader);
+
+  GURL redirect_url = GetSamlWithCheckDeviceAnswerUrl();
+  redirect_url =
+      net::AppendQueryParameter(redirect_url, kRelayState, relay_state);
+
+  auto http_response = std::make_unique<BasicHttpResponse>();
+  http_response->set_code(net::HTTP_TEMPORARY_REDIRECT);
+  http_response->AddCustomHeader("Location", redirect_url.spec());
+
+  // Device Trust only supports V2 challenges, which are formatted as a JSON
+  // object with only one "challenge" property (containing the value from V1).
+  // TODO(b:253427534): Update code to handle V1 challenges.
+  base::Value::Dict challenge_value;
+  challenge_value.Set("challenge", GetTpmChallengeBase64());
+  std::string challenge_json_value;
+  EXPECT_TRUE(base::JSONWriter::Write(challenge_value, &challenge_json_value));
+
+  http_response->AddCustomHeader(kSamlVerifiedAccessChallengeHeader,
+                                 challenge_json_value);
   return http_response;
 }
 
@@ -337,12 +403,34 @@ FakeSamlIdpMixin::BuildHTMLResponse(const std::string& html_template,
 }
 
 void FakeSamlIdpMixin::SaveChallengeResponse(const std::string& response) {
-  EXPECT_EQ(challenge_response_, base::nullopt);
-  challenge_response_ = response;
+  EXPECT_EQ(challenge_response_, absl::nullopt);
+  auto parsed_value = base::JSONReader::Read(
+      response, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+
+  if (!parsed_value || !parsed_value->is_dict()) {
+    // Most likely given a V1, no need to try parsing the values out.
+    challenge_response_ = response;
+    return;
+  }
+
+  const std::string* challenge_response_string =
+      parsed_value->GetDict().FindString("challengeResponse");
+  const std::string* error_string = parsed_value->GetDict().FindString("error");
+
+  // Only one of those values should be set.
+  EXPECT_NE(!!challenge_response_string, !!error_string);
+  challenge_response_count_++;
+
+  if (challenge_response_string) {
+    challenge_response_ = response;
+  } else {
+    error_challenge_response_ = response;
+  }
 }
 
 void FakeSamlIdpMixin::ClearChallengeResponse() {
   challenge_response_.reset();
+  error_challenge_response_.reset();
 }
 
-}  // namespace chromeos
+}  // namespace ash

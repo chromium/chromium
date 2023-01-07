@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,29 +15,24 @@ DownloadNotificationManager::~DownloadNotificationManager() {
     DownloadUIModel* model = download_notification->GetDownload();
     if (model->GetState() == download::DownloadItem::IN_PROGRESS)
       download_notification->DisablePopup();
-    download_notification->ShutDown();
   }
 }
 
 void DownloadNotificationManager::OnNewDownloadReady(
     download::DownloadItem* item) {
   // Lower the priority of all existing in-progress download notifications.
-  for (auto& item : items_) {
-    DownloadUIModel* model = item.second->GetDownload();
-    DownloadItemNotification* download_notification = item.second.get();
+  for (auto& it : items_) {
+    DownloadItemNotification* notification = it.second.get();
+    DownloadUIModel* model = notification->GetDownload();
     if (model->GetState() == download::DownloadItem::IN_PROGRESS)
-      download_notification->DisablePopup();
+      notification->DisablePopup();
   }
 
-  DownloadUIModel::DownloadUIModelPtr model(
-      new DownloadItemModel(item),
-      base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
+  auto model = std::make_unique<DownloadItemModel>(item);
   ContentId contentId = model->GetContentId();
-  DownloadItemNotification::DownloadItemNotificationPtr notification(
-      new DownloadItemNotification(profile_, std::move(model)),
-      base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));
-  notification->SetObserver(this);
-  items_.emplace(contentId, std::move(notification));
+  items_.emplace(contentId,
+                 new DownloadItemNotification(profile_, std::move(model)));
+  items_[contentId]->SetObserver(this);
 }
 
 void DownloadNotificationManager::OnDownloadDestroyed(

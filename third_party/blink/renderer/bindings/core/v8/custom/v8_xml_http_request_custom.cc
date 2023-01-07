@@ -30,18 +30,18 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_xml_http_request.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_form_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_document.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/xmlhttprequest/xml_http_request.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -99,19 +99,19 @@ void V8XMLHttpRequest::ResponseAttributeGetterCustom(
 
     case XMLHttpRequest::kResponseTypeDocument: {
       Document* document = xml_http_request->responseXML(exception_state);
-      V8SetReturnValueFast(info, document, xml_http_request);
+      bindings::V8SetReturnValue(info, document, xml_http_request);
       return;
     }
 
     case XMLHttpRequest::kResponseTypeBlob: {
       Blob* blob = xml_http_request->ResponseBlob();
-      V8SetReturnValueFast(info, blob, xml_http_request);
+      bindings::V8SetReturnValue(info, blob, xml_http_request);
       return;
     }
 
     case XMLHttpRequest::kResponseTypeArrayBuffer: {
       DOMArrayBuffer* array_buffer = xml_http_request->ResponseArrayBuffer();
-      V8SetReturnValueFast(info, array_buffer, xml_http_request);
+      bindings::V8SetReturnValue(info, array_buffer, xml_http_request);
       return;
     }
   }

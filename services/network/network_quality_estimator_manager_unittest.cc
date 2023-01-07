@@ -1,18 +1,19 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "services/network/network_quality_estimator_manager.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "net/log/test_net_log.h"
+#include "net/log/net_log.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "services/network/public/mojom/network_quality_estimator_manager.mojom.h"
@@ -41,6 +42,11 @@ class TestNetworkQualityEstimatorManagerClient
     manager->RequestNotifications(receiver_.BindNewPipeAndPassRemote());
   }
 
+  TestNetworkQualityEstimatorManagerClient(
+      const TestNetworkQualityEstimatorManagerClient&) = delete;
+  TestNetworkQualityEstimatorManagerClient& operator=(
+      const TestNetworkQualityEstimatorManagerClient&) = delete;
+
   ~TestNetworkQualityEstimatorManagerClient() override {}
 
   void OnNetworkQualityChanged(net::EffectiveConnectionType type,
@@ -68,7 +74,7 @@ class TestNetworkQualityEstimatorManagerClient
       net::EffectiveConnectionType effective_connection_type) {
     run_loop_wait_effective_connection_type_ = effective_connection_type;
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   net::EffectiveConnectionType effective_connection_type() const {
@@ -79,7 +85,7 @@ class TestNetworkQualityEstimatorManagerClient
   int32_t downlink_bandwidth_kbps() const { return downlink_bandwidth_kbps_; }
 
  private:
-  NetworkQualityEstimatorManager* network_quality_estimator_manager_;
+  raw_ptr<NetworkQualityEstimatorManager> network_quality_estimator_manager_;
   size_t num_network_quality_changed_;
   std::unique_ptr<base::RunLoop> run_loop_;
   net::EffectiveConnectionType run_loop_wait_effective_connection_type_;
@@ -88,8 +94,6 @@ class TestNetworkQualityEstimatorManagerClient
   base::TimeDelta transport_rtt_;
   int32_t downlink_bandwidth_kbps_;
   mojo::Receiver<mojom::NetworkQualityEstimatorManagerClient> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkQualityEstimatorManagerClient);
 };
 
 }  // namespace
@@ -97,10 +101,9 @@ class TestNetworkQualityEstimatorManagerClient
 class NetworkQualityEstimatorManagerTest : public testing::Test {
  public:
   NetworkQualityEstimatorManagerTest()
-      : net_log_(std::make_unique<net::RecordingBoundTestNetLog>()),
-        network_quality_estimator_manager_(
+      : network_quality_estimator_manager_(
             std::make_unique<NetworkQualityEstimatorManager>(
-                net_log_->bound().net_log())) {
+                net::NetLog::Get())) {
     // Change the network quality to UNKNOWN to prevent any spurious
     // notifications.
     SimulateNetworkQualityChange(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN);
@@ -108,6 +111,11 @@ class NetworkQualityEstimatorManagerTest : public testing::Test {
         std::make_unique<TestNetworkQualityEstimatorManagerClient>(
             network_quality_estimator_manager_.get());
   }
+
+  NetworkQualityEstimatorManagerTest(
+      const NetworkQualityEstimatorManagerTest&) = delete;
+  NetworkQualityEstimatorManagerTest& operator=(
+      const NetworkQualityEstimatorManagerTest&) = delete;
 
   ~NetworkQualityEstimatorManagerTest() override {}
 
@@ -127,13 +135,10 @@ class NetworkQualityEstimatorManagerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<net::RecordingBoundTestNetLog> net_log_;
   std::unique_ptr<NetworkQualityEstimatorManager>
       network_quality_estimator_manager_;
   std::unique_ptr<TestNetworkQualityEstimatorManagerClient>
       network_quality_estimator_manager_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualityEstimatorManagerTest);
 };
 
 TEST_F(NetworkQualityEstimatorManagerTest, ClientNotified) {
@@ -150,9 +155,9 @@ TEST_F(NetworkQualityEstimatorManagerTest, ClientNotified) {
                     ->num_network_quality_changed());
   // Typical RTT and downlink values when effective connection type is 3G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(450),
+  EXPECT_EQ(base::Milliseconds(450),
             network_quality_estimator_manager_client()->http_rtt());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(400),
+  EXPECT_EQ(base::Milliseconds(400),
             network_quality_estimator_manager_client()->transport_rtt());
   EXPECT_EQ(
       400,
@@ -174,9 +179,9 @@ TEST_F(NetworkQualityEstimatorManagerTest,
   base::RunLoop().RunUntilIdle();
   // Typical RTT and downlink values when effective connection type is 3G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(450),
+  EXPECT_EQ(base::Milliseconds(450),
             network_quality_estimator_manager_client()->http_rtt());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(400),
+  EXPECT_EQ(base::Milliseconds(400),
             network_quality_estimator_manager_client()->transport_rtt());
   EXPECT_EQ(
       400,
@@ -214,9 +219,9 @@ TEST_F(NetworkQualityEstimatorManagerTest, OneClientPipeBroken) {
       network_quality_estimator_manager_client2->effective_connection_type());
   // Typical RTT and downlink values when effective connection type is 4G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(175),
+  EXPECT_EQ(base::Milliseconds(175),
             network_quality_estimator_manager_client2->http_rtt());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(125),
+  EXPECT_EQ(base::Milliseconds(125),
             network_quality_estimator_manager_client()->transport_rtt());
   EXPECT_EQ(
       1600,
@@ -243,9 +248,9 @@ TEST_F(NetworkQualityEstimatorManagerTest, OneClientPipeBroken) {
       network_quality_estimator_manager_client()->effective_connection_type());
   EXPECT_GE(3u, network_quality_estimator_manager_client()
                     ->num_network_quality_changed());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1800),
+  EXPECT_EQ(base::Milliseconds(1800),
             network_quality_estimator_manager_client()->http_rtt());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1500),
+  EXPECT_EQ(base::Milliseconds(1500),
             network_quality_estimator_manager_client()->transport_rtt());
   EXPECT_EQ(
       75,
@@ -265,9 +270,9 @@ TEST_F(NetworkQualityEstimatorManagerTest,
   base::RunLoop().RunUntilIdle();
   // Typical RTT and downlink values when effective connection type is 2G. Taken
   // from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1800),
+  EXPECT_EQ(base::Milliseconds(1800),
             network_quality_estimator_manager_client()->http_rtt());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1500),
+  EXPECT_EQ(base::Milliseconds(1500),
             network_quality_estimator_manager_client()->transport_rtt());
   EXPECT_EQ(
       75,
@@ -285,9 +290,9 @@ TEST_F(NetworkQualityEstimatorManagerTest,
       network_quality_estimator_manager_client2.effective_connection_type());
   // Typical RTT and downlink values when when effective connection type is 2G.
   // Taken from net::NetworkQualityEstimatorParams.
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1800),
+  EXPECT_EQ(base::Milliseconds(1800),
             network_quality_estimator_manager_client2.http_rtt());
-  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1500),
+  EXPECT_EQ(base::Milliseconds(1500),
             network_quality_estimator_manager_client()->transport_rtt());
   EXPECT_EQ(
       75, network_quality_estimator_manager_client2.downlink_bandwidth_kbps());

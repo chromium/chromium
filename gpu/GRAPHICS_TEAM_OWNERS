@@ -1,0 +1,100 @@
+## File enumerating all Chrome Graphics team members who should have
+## ownership over common files.
+
+# Chrome GPU Overall team
+vmiura@chromium.org
+geofflang@chromium.org
+fserb@chromium.org
+sadrul@chromium.org
+rockot@google.com
+rjkroege@chromium.org
+zmo@chromium.org
+
+# ANGLE team
+capn@chromium.org
+jmadill@chromium.org
+jonahr@chromium.org
+srisser@chromium.org
+sugoi@chromium.org
+syoussefi@chromium.org
+ynovikov@chromium.org
+
+# Canvas team
+aaronhk@chromium.org
+jpgravel@chromium.org
+juanmihd@chromium.org
+junov@chromium.org
+yiyix@chromium.org
+
+# Metrics team
+behdadb@chromium.org
+jonross@chromium.org
+mjzhang@chromium.org
+mohsen@chromium.org
+
+# Platforms Team
+backer@chromium.org
+boliu@chromium.org
+ccameron@chromium.org
+fangzhoug@chromium.org
+hitawala@chromium.org
+khaslett@chromium.org
+kylechar@chromium.org
+magchen@chromium.org
+penghuang@chromium.org
+petermcneeley@chromium.org
+rivr@chromium.org
+sunnyps@chromium.org
+vasilyt@chromium.org
+vikassoni@chromium.org
+
+# 3D Web team
+alanbaker@google.com
+amaiorano@google.com
+bajones@chromium.org
+bclayton@chromium.org
+cwallez@chromium.org
+dneto@google.com
+dsinclair@chromium.org
+enga@chromium.org
+gman@chromium.org
+jrprice@google.com
+kainino@chromium.org
+kbr@chromium.org
+lokokung@google.com
+rharrison@chromium.org
+ricardocabello@google.com
+shrekshao@google.com
+senorblanco@chromium.org
+
+# Skia
+brianosman@google.com
+bsalomon@google.com
+djsollen@google.com
+egdaniel@google.com
+fmalita@chromium.org
+jcgregorio@chromium.org
+
+# Skia Core / eSkia
+bungeman@chromium.org
+jlavrova@google.com
+scroggo@google.com
+tdenniston@google.com
+wrightgeorge@google.com
+
+# Skia GPU
+jvanverth@chromium.org
+michaelludwig@google.com
+robertphillips@google.com
+
+# Skia Infra
+borenet@google.com
+erikrose@google.com
+lovisolo@google.com
+rmistry@chromium.org
+
+# SkSL
+armansito@chromium.org
+ethannicholas@chromium.org
+herb@google.com
+johnstiles@google.com

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_tick_clock.h"
+#include "media/cast/common/encoded_frame.h"
 #include "media/cast/constants.h"
 #include "media/cast/net/cast_transport.h"
 #include "media/cast/test/utility/default_config.h"
@@ -20,6 +19,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using Dependency = openscreen::cast::EncodedFrame::Dependency;
 
 namespace mirroring {
 
@@ -30,10 +31,14 @@ constexpr int kDataPipeCapacity = 1024;
 
 // Implements the CastTransport interface to capture output from the
 // RemotingSender.
-class FakeTransport : public media::cast::CastTransport {
+class FakeTransport final : public media::cast::CastTransport {
  public:
-  FakeTransport() {}
-  ~FakeTransport() final {}
+  FakeTransport() = default;
+
+  FakeTransport(const FakeTransport&) = delete;
+  FakeTransport& operator=(const FakeTransport&) = delete;
+
+  ~FakeTransport() override = default;
 
   void TakeSentFrames(std::vector<media::cast::EncodedFrame>* frames) {
     frames->swap(sent_frames_);
@@ -54,19 +59,19 @@ class FakeTransport : public media::cast::CastTransport {
 
  protected:
   void InsertFrame(uint32_t ssrc,
-                   const media::cast::EncodedFrame& frame) final {
+                   const media::cast::EncodedFrame& frame) override {
     sent_frames_.push_back(frame);
   }
 
   void CancelSendingFrames(
       uint32_t ssrc,
-      const std::vector<media::cast::FrameId>& frame_ids) final {
+      const std::vector<media::cast::FrameId>& frame_ids) override {
     for (media::cast::FrameId frame_id : frame_ids)
       canceled_frame_ids_.push_back(frame_id);
   }
 
   void ResendFrameForKickstart(uint32_t ssrc,
-                               media::cast::FrameId frame_id) final {
+                               media::cast::FrameId frame_id) override {
     kickstarted_frame_id_ = frame_id;
     if (!kickstarted_callback_.is_null())
       std::move(kickstarted_callback_).Run();
@@ -76,20 +81,20 @@ class FakeTransport : public media::cast::CastTransport {
   void SendSenderReport(
       uint32_t ssrc,
       base::TimeTicks current_time,
-      media::cast::RtpTimeTicks current_time_as_rtp_timestamp) final {}
+      media::cast::RtpTimeTicks current_time_as_rtp_timestamp) override {}
   void AddValidRtpReceiver(uint32_t rtp_sender_ssrc,
-                           uint32_t rtp_receiver_ssrc) final {}
+                           uint32_t rtp_receiver_ssrc) override {}
   void InitializeRtpReceiverRtcpBuilder(
       uint32_t rtp_receiver_ssrc,
-      const media::cast::RtcpTimeData& time_data) final {}
+      const media::cast::RtcpTimeData& time_data) override {}
   void AddCastFeedback(const media::cast::RtcpCastMessage& cast_message,
-                       base::TimeDelta target_delay) final {}
-  void AddPli(const media::cast::RtcpPliMessage& pli_message) final {}
+                       base::TimeDelta target_delay) override {}
+  void AddPli(const media::cast::RtcpPliMessage& pli_message) override {}
   void AddRtcpEvents(
-      const media::cast::ReceiverRtcpEventSubscriber::RtcpEvents& e) final {}
-  void AddRtpReceiverReport(const media::cast::RtcpReportBlock& b) final {}
-  void SendRtcpFromRtpReceiver() final {}
-  void SetOptions(const base::DictionaryValue& options) final {}
+      const media::cast::ReceiverRtcpEventSubscriber::RtcpEvents& e) override {}
+  void AddRtpReceiverReport(const media::cast::RtcpReportBlock& b) override {}
+  void SendRtcpFromRtpReceiver() override {}
+  void SetOptions(const base::Value::Dict& options) override {}
 
  private:
   std::vector<media::cast::EncodedFrame> sent_frames_;
@@ -97,13 +102,15 @@ class FakeTransport : public media::cast::CastTransport {
 
   base::RepeatingClosure kickstarted_callback_;
   media::cast::FrameId kickstarted_frame_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTransport);
 };
 
 }  // namespace
 
 class RemotingSenderTest : public ::testing::Test {
+ public:
+  RemotingSenderTest(const RemotingSenderTest&) = delete;
+  RemotingSenderTest& operator=(const RemotingSenderTest&) = delete;
+
  protected:
   RemotingSenderTest()
       : cast_environment_(new media::cast::CastEnvironment(
@@ -136,8 +143,8 @@ class RemotingSenderTest : public ::testing::Test {
 
     // Give CastRemotingSender a small RTT measurement to prevent kickstart
     // testing from taking too long.
-    remoting_sender_->OnMeasuredRoundTripTime(
-        base::TimeDelta::FromMilliseconds(1));
+    remoting_sender_->frame_sender_->OnMeasuredRoundTripTime(
+        base::Milliseconds(1));
     RunPendingTasks();
   }
 
@@ -154,11 +161,11 @@ class RemotingSenderTest : public ::testing::Test {
 
  protected:
   media::cast::FrameId latest_acked_frame_id() const {
-    return remoting_sender_->latest_acked_frame_id_;
+    return remoting_sender_->frame_sender_->LatestAckedFrameId();
   }
 
   int NumberOfFramesInFlight() {
-    return remoting_sender_->GetUnacknowledgedFrameCount();
+    return remoting_sender_->frame_sender_->GetUnacknowledgedFrameCount();
   }
 
   size_t GetSizeOfNextFrameData() {
@@ -169,7 +176,7 @@ class RemotingSenderTest : public ::testing::Test {
     return remoting_sender_->flow_restart_pending_;
   }
 
-  bool ProduceDataChunk(size_t offset, size_t size) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool ProduceDataChunk(size_t offset, size_t size) {
     std::vector<uint8_t> fake_chunk(size);
     for (size_t i = 0; i < size; ++i)
       fake_chunk[i] = static_cast<uint8_t>(offset + i);
@@ -199,7 +206,7 @@ class RemotingSenderTest : public ::testing::Test {
   void AckUpToAndIncluding(media::cast::FrameId frame_id) {
     media::cast::RtcpCastMessage cast_feedback(receiver_ssrc_);
     cast_feedback.ack_frame_id = frame_id;
-    remoting_sender_->OnReceivedCastFeedback(cast_feedback);
+    remoting_sender_->frame_sender_->OnReceivedCastFeedback(cast_feedback);
   }
 
   void AckOldestInFlightFrames(int count) {
@@ -258,8 +265,6 @@ class RemotingSenderTest : public ::testing::Test {
   mojo::ScopedDataPipeProducerHandle producer_end_;
   bool expecting_error_callback_run_;
   uint32_t receiver_ssrc_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemotingSenderTest);
 };
 
 TEST_F(RemotingSenderTest, SendsFramesViaMojoDataPipe) {
@@ -365,9 +370,7 @@ TEST_F(RemotingSenderTest, CancelsUnsentFrame) {
   EXPECT_TRUE(ExpectNoFramesCanceled());
 }
 
-// http://crbug.com/647423
-#define MAYBE_CancelsFramesInFlight DISABLED_CancelsFramesInFlight
-TEST_F(RemotingSenderTest, MAYBE_CancelsFramesInFlight) {
+TEST_F(RemotingSenderTest, CancelsFramesInFlight) {
   EXPECT_TRUE(IsFlowRestartPending());
 
   // Send 10 frames.
@@ -386,23 +389,21 @@ TEST_F(RemotingSenderTest, MAYBE_CancelsFramesInFlight) {
   EXPECT_TRUE(ExpectFramesCanceled(media::cast::FrameId::first(),
                                    media::cast::FrameId::first()));
 
-  // Cancel all in-flight data. This should cause the remaining 9 frames to be
-  // canceled.
+  // Despite the name, this does not actually cancel in-flight frames, as that
+  // capability was never implemented.
   CancelInFlightData();
   RunPendingTasks();
   EXPECT_TRUE(IsFlowRestartPending());
-  EXPECT_EQ(0, NumberOfFramesInFlight());
-  EXPECT_TRUE(ExpectFramesCanceled(media::cast::FrameId::first() + 1,
-                                   media::cast::FrameId::first() + 9));
+  EXPECT_EQ(9, NumberOfFramesInFlight());
 
   // Send one more frame and ack it.
   ASSERT_TRUE(ProduceDataChunk(0, 16));
   SendFrame(16);
   RunPendingTasks();
   EXPECT_FALSE(IsFlowRestartPending());
-  EXPECT_EQ(1, NumberOfFramesInFlight());
+  EXPECT_EQ(10, NumberOfFramesInFlight());
   AckOldestInFlightFrames(1);
-  EXPECT_EQ(0, NumberOfFramesInFlight());
+  EXPECT_EQ(9, NumberOfFramesInFlight());
 
   // Check that the dependency metadata was set correctly to indicate a frame
   // that immediately follows a CancelInFlightData() operation.
@@ -413,9 +414,9 @@ TEST_F(RemotingSenderTest, MAYBE_CancelsFramesInFlight) {
     const media::cast::EncodedFrame& frame = frames[i];
     EXPECT_EQ(media::cast::FrameId::first() + i, frame.frame_id);
     if (i == 0 || i == 10)
-      EXPECT_EQ(media::cast::EncodedFrame::KEY, frame.dependency);
+      EXPECT_EQ(Dependency::kKeyFrame, frame.dependency);
     else
-      EXPECT_EQ(media::cast::EncodedFrame::DEPENDENT, frame.dependency);
+      EXPECT_EQ(Dependency::kDependent, frame.dependency);
   }
 }
 
@@ -588,10 +589,10 @@ TEST_F(RemotingSenderTest, StopsConsumingWhileTooManyFramesAreInFlight) {
     const media::cast::EncodedFrame& frame = frames[i];
     EXPECT_EQ(media::cast::FrameId::first() + i, frame.frame_id);
     if (i == 0) {
-      EXPECT_EQ(media::cast::EncodedFrame::KEY, frame.dependency);
+      EXPECT_EQ(Dependency::kKeyFrame, frame.dependency);
       EXPECT_EQ(media::cast::FrameId::first() + i, frame.referenced_frame_id);
     } else {
-      EXPECT_EQ(media::cast::EncodedFrame::DEPENDENT, frame.dependency);
+      EXPECT_EQ(Dependency::kDependent, frame.dependency);
       EXPECT_EQ(media::cast::FrameId::first() + i - 1,
                 frame.referenced_frame_id);
     }

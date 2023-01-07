@@ -1,0 +1,36 @@
+{ "GUID": "123",
+  "Type": "VPN",
+  "Name": "testopenvpn",
+  "StaticIPConfig": {
+    "Type": "IPv4",
+    "IPAddress": "127.0.0.1",
+    "NameServers": [  ],
+    "RoutingPrefix": 32
+  },
+  "VPN": {
+    "Host": "policys host",
+    "Recommended": [ "Host" ],
+    "Type": "OpenVPN",
+    "OpenVPN": {
+      "Port": 1194,
+      "Username": "policy user",
+      "Recommended": [ "Username", "Password" ],
+      "ClientCertType": "Pattern",
+      "ClientCertPattern": {
+        "IssuerCARef": [ "openvpn-test-ca" ],
+        "Recommended": [ "EnrollmentURI", "IssuerCARef" ]
+      },
+      "ServerCARefs": [ "ref1", "ref2" ]
+    },
+    "IPsec": {
+      "AuthenticationType": "PSK",
+      "PSK": "sharedkey",
+      "IKEVersion": 1
+    }
+  },
+  // We explicitly do not provide a policy value for this property, but still
+  // consider it recommended, to verify that we still provide the correct
+  // default (which is different than the default value for a string) in the
+  // final augmented ONC.
+  "Recommended": [ "NameServersConfigType" ]
+}

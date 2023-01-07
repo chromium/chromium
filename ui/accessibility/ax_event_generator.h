@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,13 @@
 
 #include <bitset>
 #include <map>
+#include <memory>
 #include <ostream>
 #include <set>
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/accessibility/ax_event_intent.h"
 #include "ui/accessibility/ax_export.h"
@@ -20,6 +22,8 @@
 
 namespace ui {
 
+class AXLiveRegionTracker;
+
 // Subclass of AXTreeObserver that automatically generates AXEvents to fire
 // based on changes to an accessibility tree.  Every platform
 // tends to want different events, so this class lets each platform
@@ -27,6 +31,7 @@ namespace ui {
 class AX_EXPORT AXEventGenerator : public AXTreeObserver {
  public:
   enum class Event : int32_t {
+    NONE,
     ACCESS_KEY_CHANGED,
     ACTIVE_DESCENDANT_CHANGED,
     ALERT,
@@ -39,11 +44,14 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     ATOMIC_CHANGED,
     AUTO_COMPLETE_CHANGED,
     BUSY_CHANGED,
+    CARET_BOUNDS_CHANGED,
     CHECKED_STATE_CHANGED,
+    CHECKED_STATE_DESCRIPTION_CHANGED,
     CHILDREN_CHANGED,
     CLASS_NAME_CHANGED,
     COLLAPSED,
     CONTROLS_CHANGED,
+    DETAILS_CHANGED,
     DESCRIBED_BY_CHANGED,
     DESCRIPTION_CHANGED,
     DOCUMENT_SELECTION_CHANGED,
@@ -79,9 +87,9 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     LIVE_RELEVANT_CHANGED,
     // Fired only on the root of the ARIA live region.
     LIVE_STATUS_CHANGED,
-    LOAD_COMPLETE,
-    LOAD_START,
     MENU_ITEM_SELECTED,
+    MENU_POPUP_END,
+    MENU_POPUP_START,
     MULTILINE_STATE_CHANGED,
     MULTISELECTABLE_STATE_CHANGED,
     NAME_CHANGED,
@@ -105,12 +113,12 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     SELECTED_CHANGED,
     SELECTED_CHILDREN_CHANGED,
     SELECTED_VALUE_CHANGED,
-    SELECTION_IN_TEXT_FIELD_CHANGED,
     SET_SIZE_CHANGED,
     SORT_CHANGED,
     STATE_CHANGED,
     SUBTREE_CREATED,
     TEXT_ATTRIBUTE_CHANGED,
+    TEXT_SELECTION_CHANGED,
     VALUE_IN_TEXT_FIELD_CHANGED,
 
     // This event is fired for the exact set of attributes that affect the
@@ -144,20 +152,25 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   };
 
   struct AX_EXPORT TargetedEvent final {
-    // |node| must not be null.
-    TargetedEvent(AXNode* node, const EventParams& event_params);
+    TargetedEvent(AXNodeID node_id, const EventParams& event_params);
     ~TargetedEvent();
 
-    AXNode* const node;
+    const AXNodeID node_id;
     const EventParams& event_params;
   };
 
-  class AX_EXPORT Iterator
-      : public std::iterator<std::input_iterator_tag, TargetedEvent> {
+  class AX_EXPORT Iterator {
    public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = TargetedEvent;
+    using difference_type = std::ptrdiff_t;
+    using pointer = TargetedEvent*;
+    using reference = TargetedEvent&;
+
     Iterator(
-        std::map<AXNode*, std::set<EventParams>>::const_iterator map_start_iter,
-        std::map<AXNode*, std::set<EventParams>>::const_iterator map_end_iter);
+        std::map<AXNodeID, std::set<EventParams>>::const_iterator
+            map_start_iter,
+        std::map<AXNodeID, std::set<EventParams>>::const_iterator map_end_iter);
     Iterator(const Iterator& other);
     ~Iterator();
 
@@ -171,8 +184,8 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
     AX_EXPORT friend bool operator!=(const Iterator& lhs, const Iterator& rhs);
     AX_EXPORT friend void swap(Iterator& lhs, Iterator& rhs);
 
-    std::map<AXNode*, std::set<EventParams>>::const_iterator map_iter_;
-    std::map<AXNode*, std::set<EventParams>>::const_iterator map_end_iter_;
+    std::map<AXNodeID, std::set<EventParams>>::const_iterator map_iter_;
+    std::map<AXNodeID, std::set<EventParams>>::const_iterator map_end_iter_;
     std::set<EventParams>::const_iterator set_iter_;
   };
 
@@ -232,14 +245,14 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   // same order they were added.
   void AddEvent(ui::AXNode* node, Event event);
 
-  void set_always_fire_load_complete(bool val) {
-    always_fire_load_complete_ = val;
-  }
-
-  void AddEventsForTesting(AXNode* node, const std::set<EventParams>& events);
+  void AddEventsForTesting(const AXNode& node,
+                           const std::set<EventParams>& events);
 
  protected:
   // AXTreeObserver overrides.
+  void OnIgnoredWillChange(AXTree* tree,
+                           AXNode* node,
+                           bool is_ignored_new_value) override;
   void OnNodeDataChanged(AXTree* tree,
                          const AXNodeData& old_node_data,
                          const AXNodeData& new_node_data) override;
@@ -247,6 +260,9 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
                      AXNode* node,
                      ax::mojom::Role old_role,
                      ax::mojom::Role new_role) override;
+  void OnIgnoredChanged(AXTree* tree,
+                        AXNode* node,
+                        bool is_ignored_new_value) override;
   void OnStateChanged(AXTree* tree,
                       AXNode* node,
                       ax::mojom::State state,
@@ -283,7 +299,9 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
   void OnSubtreeWillBeDeleted(AXTree* tree, AXNode* node) override;
   void OnNodeWillBeReparented(AXTree* tree, AXNode* node) override;
   void OnSubtreeWillBeReparented(AXTree* tree, AXNode* node) override;
+  void OnNodeDeleted(AXTree* tree, AXNodeID node_id) override;
   void OnNodeReparented(AXTree* tree, AXNode* node) override;
+  void OnNodeCreated(AXTree* tree, AXNode* node) override;
   void OnAtomicUpdateFinished(AXTree* tree,
                               bool root_changed,
                               const std::vector<Change>& changes) override;
@@ -300,9 +318,12 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
 
   void FireLiveRegionEvents(AXNode* node);
   void FireActiveDescendantEvents();
-  void FireValueInTextFieldChangedEvent(AXTree* tree, AXNode* target_node);
+  // If the given target node is inside a text field and the node's modification
+  // could affect the field's value, generates an `VALUE_IN_TEXT_FIELD_CHANGED`
+  // on the text field that contains the node.
+  void FireValueInTextFieldChangedEventIfNecessary(AXTree* tree,
+                                                   AXNode* target_node);
   void FireRelationSourceEvents(AXTree* tree, AXNode* target_node);
-  bool ShouldFireLoadEvents(AXNode* node);
 
   // Remove excessive events for a tree update containing node.
   // We remove certain events on a node when it flips its IGNORED state to
@@ -324,14 +345,23 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
           ancestor_ignored_changed_map);
   void PostprocessEvents();
 
-  AXTree* tree_ = nullptr;  // Not owned.
-  std::map<AXNode*, std::set<EventParams>> tree_events_;
+  AXLiveRegionTracker* GetOrCreateLiveRegionTracker();
+
+  raw_ptr<AXTree> tree_ = nullptr;  // Not owned.
+  std::map<AXNodeID, std::set<EventParams>> tree_events_;
 
   // Valid between the call to OnIntAttributeChanged and the call to
   // OnAtomicUpdateFinished. List of nodes whose active descendant changed.
   std::vector<AXNode*> active_descendant_changed_;
 
-  bool always_fire_load_complete_ = false;
+  // Keeps track of nodes that have changed their state from ignored to
+  // unignored, but which used to be in an invisible subtree. We should not fire
+  // `Event::PARENT_CHANGED` on any of their children because they were
+  // previously unknown to ATs.
+  std::set<AXNodeID> nodes_to_suppress_parent_changed_on_;
+
+  // Helper that tracks live regions.
+  std::unique_ptr<AXLiveRegionTracker> live_region_tracker_;
 
   // Please make sure that this ScopedObserver is always declared last in order
   // to prevent any use-after-free.
@@ -341,6 +371,14 @@ class AX_EXPORT AXEventGenerator : public AXTreeObserver {
 AX_EXPORT std::ostream& operator<<(std::ostream& os,
                                    AXEventGenerator::Event event);
 AX_EXPORT const char* ToString(AXEventGenerator::Event event);
+
+// Parses the attribute and updates |result| and returns true if a match is
+// found, or returns false if no match is found.
+AX_EXPORT bool MaybeParseGeneratedEvent(const char* attribute,
+                                        AXEventGenerator::Event* result);
+
+// Does a NOTREACHED if no match is found.
+AX_EXPORT AXEventGenerator::Event ParseGeneratedEvent(const char* attribute);
 
 }  // namespace ui
 

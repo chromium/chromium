@@ -1,0 +1,24 @@
+diff -rupN curl-7.68.0/scripts/Makefile.am curl-7.68.0.new/scripts/Makefile.am
+--- curl-7.68.0/scripts/Makefile.am	2019-12-20 08:17:42.000000000 +0000
++++ curl-7.68.0.new/scripts/Makefile.am	2021-11-04 19:48:15.121879894 +0000
+@@ -34,16 +34,16 @@ $(ZSH_COMPLETION_FUNCTION_FILENAME): com
+ if CROSSCOMPILING
+ 	@echo "NOTICE: we can't generate zsh completion when cross-compiling!"
+ else # if not cross-compiling:
+-	@if ! test -x "$(PERL)"; then echo "No perl: can't install completion.pl"; exit 0; fi
+-	$(PERL) $(srcdir)/completion.pl --curl $(top_builddir)/src/curl$(EXEEXT) --shell zsh > $@
++	@echo "NOTICE: we can't generate zsh completion in MSAN builds"
++	touch $@
+ endif
+ 
+ $(FISH_COMPLETION_FUNCTION_FILENAME): completion.pl
+ if CROSSCOMPILING
+ 	@echo "NOTICE: we can't generate fish completion when cross-compiling!"
+ else # if not cross-compiling:
+-	@if ! test -x "$(PERL)"; then echo "No perl: can't install completion.pl"; exit 0; fi
+-	$(PERL) $(srcdir)/completion.pl --curl $(top_builddir)/src/curl$(EXEEXT) --shell fish > $@
++	@echo "NOTICE: we can't generate fish completion in MSAN builds"
++	touch $@
+ endif
+ 
+ install-data-local:

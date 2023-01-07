@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/picker-common.js"></script>
 </head>
 <body>
@@ -23,9 +25,7 @@ function errorCallback() {
     window.location = "../resources/popup-no-crash.html";
 }
 
-window.onload = function () {
-    openPicker(document.getElementById('menu'), openCallback, errorCallback);
-}
+openPickerDeprecatedJsTest(document.getElementById('menu'), openCallback, errorCallback);
 </script>
 </body>
 </html>

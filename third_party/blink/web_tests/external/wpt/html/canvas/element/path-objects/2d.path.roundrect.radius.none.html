@@ -8,7 +8,7 @@
 <body class="show_output">
 
 <h1>2d.path.roundrect.radius.none</h1>
-<p class="desc">Check that roundRect throws an IndexSizeError if radii is an empty array.</p>
+<p class="desc">Check that roundRect throws an RangeError if radii is an empty array.</p>
 
 
 <p class="output">Actual output:</p>
@@ -16,10 +16,10 @@
 
 <ul id="d"></ul>
 <script>
-var t = async_test("Check that roundRect throws an IndexSizeError if radii is an empty array.");
+var t = async_test("Check that roundRect throws an RangeError if radii is an empty array.");
 _addTest(function(canvas, ctx) {
 
-assert_throws_dom("INDEX_SIZE_ERR", function() { ctx.roundRect(0, 0, 100, 50, []); });
+assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 100, 50, [])});
 
 
 });

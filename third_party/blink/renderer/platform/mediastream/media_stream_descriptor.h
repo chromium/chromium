@@ -32,7 +32,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_DESCRIPTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_DESCRIPTOR_H_
 
-#include <memory>
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -56,7 +55,6 @@ class PLATFORM_EXPORT MediaStreamDescriptorClient
 
   virtual ~MediaStreamDescriptorClient() = default;
 
-  virtual void StreamEnded() = 0;
   virtual void AddTrackByComponentAndFireEvents(MediaStreamComponent*,
                                                 DispatchEventTiming) = 0;
   virtual void RemoveTrackByComponentAndFireEvents(MediaStreamComponent*,
@@ -70,12 +68,6 @@ class PLATFORM_EXPORT MediaStreamDescriptor final
   static int GenerateUniqueId();
 
  public:
-  // Only used for AudioDestinationNode.
-  MediaStreamDescriptor(const MediaStreamSourceVector& audio_sources,
-                        const MediaStreamSourceVector& video_sources);
-  MediaStreamDescriptor(const String& id,
-                        const MediaStreamSourceVector& audio_sources,
-                        const MediaStreamSourceVector& video_sources);
   MediaStreamDescriptor(const MediaStreamComponentVector& audio_components,
                         const MediaStreamComponentVector& video_components);
   MediaStreamDescriptor(const String& id,

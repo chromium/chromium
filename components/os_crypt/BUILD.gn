@@ -1,4 +1,4 @@
-# Copyright 2014 The Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -41,18 +41,21 @@ component("os_crypt") {
   deps = [
     "//base",
     "//build:branding_buildflags",
+    "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
     "//components/prefs",
     "//crypto",
-
-    # TODO(tfarina): Remove this dep when http://crbug.com/363749 is fixed.
-    "//crypto:platform",
   ]
 
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   defines = [ "IS_OS_CRYPT_IMPL" ]
 
-  if ((is_posix || is_fuchsia) && !is_apple &&
-      (!(is_linux || is_chromeos_lacros) || is_chromecast)) {
+  if (allow_runtime_configurable_key_storage) {
+    defines += [ "ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE" ]
+  }
+
+  # TODO(crbug.com/1339022): Provide a Fuchsia-specific implementation.
+  if ((is_posix && !is_apple && !(is_linux && !is_castos)) || is_fuchsia) {
     sources += [ "os_crypt_posix.cc" ]
   }
 
@@ -69,7 +72,7 @@ component("os_crypt") {
     libs = [ "crypt32.lib" ]
   }
 
-  if ((is_linux || is_chromeos_lacros) && !is_chromecast) {
+  if (is_linux && !is_castos) {
     sources += [
       "key_storage_config_linux.cc",
       "key_storage_config_linux.h",
@@ -125,7 +128,7 @@ static_library("test_support") {
     "//base",
     "//testing/gtest",
   ]
-  if ((is_linux || is_chromeos_lacros) && !is_chromecast) {
+  if (is_linux && !is_castos) {
     sources += [
       "os_crypt_mocker_linux.cc",
       "os_crypt_mocker_linux.h",
@@ -163,7 +166,7 @@ source_set("unit_tests") {
     sources += [ "keychain_password_mac_unittest.mm" ]
   }
 
-  if ((is_linux || is_chromeos_lacros) && !is_chromecast) {
+  if (is_linux && !is_castos) {
     sources += [
       "key_storage_linux_unittest.cc",
       "key_storage_util_linux_unittest.cc",

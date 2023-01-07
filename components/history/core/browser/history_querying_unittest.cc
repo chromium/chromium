@@ -1,8 +1,10 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include <stddef.h>
+
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -10,11 +12,11 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
@@ -32,23 +34,36 @@ struct TestEntry {
   const int days_ago;
   base::Time time;  // Filled by SetUp.
 } test_entries[] = {
-  // This one is visited super long ago so it will be in a different database
-  // from the next appearance of it at the end.
-  {"http://example.com/", "Other", 180},
+    // This one is visited super long ago so it will be in a different database
+    // from the next appearance of it at the end.
+    {"http://example.com/", "Other", 180},
 
-  // These are deliberately added out of chronological order. The history
-  // service should sort them by visit time when returning query results.
-  // The correct index sort order is 4 2 3 1 7 6 5 0.
-  {"http://www.google.com/1", "Title PAGEONE FOO some text", 10},
-  {"http://www.google.com/3", "Title PAGETHREE BAR some hello world", 8},
-  {"http://www.google.com/2", "Title PAGETWO FOO some more blah blah blah", 9},
+    // These are deliberately added out of chronological order. The history
+    // service should sort them by visit time when returning query results.
+    // The correct index sort order is 4 2 3 1 7 6 5 0.
+    {"http://www.google.com/1", "Title PAGEONE FOO some text", 10},
+    {"http://www.google.com/3", "Title PAGETHREE BAR some hello world", 8},
+    {"http://www.google.com/2", "Title PAGETWO FOO some more blah blah blah",
+     9},
 
-  // A more recent visit of the first one.
-  {"http://example.com/", "Other", 6},
+    // A more recent visit of the first one.
+    {"http://example.com/", "Other", 6},
 
-  {"http://www.google.com/6", "Title I'm the second oldest", 13},
-  {"http://www.google.com/4", "Title four", 12},
-  {"http://www.google.com/5", "Title five", 11},
+    {"http://www.google.com/6", "Title I'm the second oldest", 13},
+    {"http://www.google.com/4", "Title four", 12},
+    {"http://www.google.com/5", "Title five", 11},
+
+    // Tricky URLs to test query history by hostname. Will be sorted by visit
+    // order.
+    // These URLs should all match the hostname example.test.
+    {"http://example.test/", "Host Normal HTTP", 14},
+    {"http://example.test/page_1", "Host HTTP path1", 15},
+    {"https://example.test/page_2", "Host HTTPS path2", 16},
+    {"http://example.test:8080/page_3", "Host HTTP port", 17},
+    // These URLs should not match the hostname.
+    {"http://evil.test/example", "Host Evil domain", 18},
+    {"http://evil.com/example.test", "Host Evil path", 19},
+    {"https://random.test/", "Host random example.test", 20},
 };
 
 // Returns true if the nth result in the given results set matches. It will
@@ -76,6 +91,9 @@ bool NthResultIs(const QueryResults& results,
 class HistoryQueryTest : public testing::Test {
  public:
   HistoryQueryTest() : nav_entry_id_(0) {}
+
+  HistoryQueryTest(const HistoryQueryTest&) = delete;
+  HistoryQueryTest& operator=(const HistoryQueryTest&) = delete;
 
   // Acts like a synchronous call to history's QueryHistory.
   void QueryHistory(const std::string& text_query,
@@ -126,12 +144,12 @@ class HistoryQueryTest : public testing::Test {
       options.end_time = results.back().visit_time();
     }
 
-    // Add a couple of entries with duplicate timestamps. Use |query_text| as
+    // Add a couple of entries with duplicate timestamps. Use `query_text` as
     // the title of both entries so that they match a text query.
-    TestEntry duplicates[] = {
-      { "http://www.google.com/x",  query_text.c_str(), 1, },
-      { "http://www.google.com/y",  query_text.c_str(), 1, }
-    };
+    TestEntry duplicates[] = {{"http://www.google.com/x", query_text.c_str(), 1,
+                               GetTimeFromDaysAgo(1)},
+                              {"http://www.google.com/y", query_text.c_str(), 1,
+                               GetTimeFromDaysAgo(1)}};
     AddEntryToHistory(duplicates[0]);
     AddEntryToHistory(duplicates[1]);
 
@@ -150,6 +168,10 @@ class HistoryQueryTest : public testing::Test {
   // Counter used to generate a unique ID for each page added to the history.
   int nav_entry_id_;
 
+  // Fixed base:Time to use as the base in calculating the time of each
+  // TestEntry, using days_ago.
+  base::Time base_;
+
   void AddEntryToHistory(const TestEntry& entry) {
     // We need the ID scope and page ID so that the visit tracker can find it.
     ContextID context_id = reinterpret_cast<ContextID>(1);
@@ -157,7 +179,7 @@ class HistoryQueryTest : public testing::Test {
 
     history_->AddPage(url, entry.time, context_id, nav_entry_id_++, GURL(),
                       history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                      history::SOURCE_BROWSED, false, false);
+                      history::SOURCE_BROWSED, false);
     history_->SetPageTitle(url, base::UTF8ToUTF16(entry.title));
   }
 
@@ -167,19 +189,22 @@ class HistoryQueryTest : public testing::Test {
     history_dir_ = temp_dir_.GetPath().AppendASCII("HistoryTest");
     ASSERT_TRUE(base::CreateDirectory(history_dir_));
 
-    history_.reset(new HistoryService);
+    history_ = std::make_unique<HistoryService>();
     if (!history_->Init(TestHistoryDatabaseParamsForPath(history_dir_))) {
       history_.reset();  // Tests should notice this NULL ptr & fail.
       return;
     }
 
     // Fill the test data.
-    base::Time now = base::Time::Now().LocalMidnight();
-    for (size_t i = 0; i < base::size(test_entries); i++) {
-      test_entries[i].time =
-          now - (test_entries[i].days_ago * base::TimeDelta::FromDays(1));
+    base_ = base::Time::Now().LocalMidnight();
+    for (size_t i = 0; i < std::size(test_entries); i++) {
+      test_entries[i].time = GetTimeFromDaysAgo(test_entries[i].days_ago);
       AddEntryToHistory(test_entries[i]);
     }
+  }
+
+  base::Time GetTimeFromDaysAgo(int days_ago) {
+    return base_ - (days_ago * base::Days(1));
   }
 
   void TearDown() override {
@@ -199,8 +224,6 @@ class HistoryQueryTest : public testing::Test {
   base::FilePath history_dir_;
 
   base::CancelableTaskTracker tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryQueryTest);
 };
 
 TEST_F(HistoryQueryTest, Basic) {
@@ -212,7 +235,7 @@ TEST_F(HistoryQueryTest, Basic) {
   // Test duplicate collapsing. 0 is an older duplicate of 4, and should not
   // appear in the result set.
   QueryHistory(std::string(), options, &results);
-  EXPECT_EQ(7U, results.size());
+  EXPECT_EQ(14U, results.size());
 
   EXPECT_TRUE(NthResultIs(results, 0, 4));
   EXPECT_TRUE(NthResultIs(results, 1, 2));
@@ -221,6 +244,13 @@ TEST_F(HistoryQueryTest, Basic) {
   EXPECT_TRUE(NthResultIs(results, 4, 7));
   EXPECT_TRUE(NthResultIs(results, 5, 6));
   EXPECT_TRUE(NthResultIs(results, 6, 5));
+  EXPECT_TRUE(NthResultIs(results, 7, 8));
+  EXPECT_TRUE(NthResultIs(results, 8, 9));
+  EXPECT_TRUE(NthResultIs(results, 9, 10));
+  EXPECT_TRUE(NthResultIs(results, 10, 11));
+  EXPECT_TRUE(NthResultIs(results, 11, 12));
+  EXPECT_TRUE(NthResultIs(results, 12, 13));
+  EXPECT_TRUE(NthResultIs(results, 13, 14));
 
   // Next query a time range. The beginning should be inclusive, the ending
   // should be exclusive.
@@ -264,37 +294,35 @@ TEST_F(HistoryQueryTest, ReachedBeginning) {
   QueryHistory("some", options, &results);
   EXPECT_FALSE(results.reached_beginning());
 
-  // Try |begin_time| just later than the oldest visit.
-  options.begin_time =
-      test_entries[0].time + base::TimeDelta::FromMicroseconds(1);
+  // Try `begin_time` just later than the oldest visit.
+  options.begin_time = test_entries[0].time + base::Microseconds(1);
   QueryHistory(std::string(), options, &results);
   EXPECT_FALSE(results.reached_beginning());
   QueryHistory("some", options, &results);
   EXPECT_FALSE(results.reached_beginning());
 
-  // Try |begin_time| equal to the oldest visit.
+  // Try `begin_time` equal to the oldest visit.
   options.begin_time = test_entries[0].time;
   QueryHistory(std::string(), options, &results);
   EXPECT_TRUE(results.reached_beginning());
   QueryHistory("some", options, &results);
   EXPECT_TRUE(results.reached_beginning());
 
-  // Try |begin_time| just earlier than the oldest visit.
-  options.begin_time =
-      test_entries[0].time - base::TimeDelta::FromMicroseconds(1);
+  // Try `begin_time` just earlier than the oldest visit.
+  options.begin_time = test_entries[0].time - base::Microseconds(1);
   QueryHistory(std::string(), options, &results);
   EXPECT_TRUE(results.reached_beginning());
   QueryHistory("some", options, &results);
   EXPECT_TRUE(results.reached_beginning());
 
-  // Test with |max_count| specified.
+  // Test with `max_count` specified.
   options.max_count = 1;
   QueryHistory(std::string(), options, &results);
   EXPECT_FALSE(results.reached_beginning());
   QueryHistory("some", options, &results);
   EXPECT_FALSE(results.reached_beginning());
 
-  // Test with |max_count| greater than the number of results,
+  // Test with `max_count` greater than the number of results,
   // and exactly equal to the number of results.
   options.max_count = 100;
   QueryHistory(std::string(), options, &results);
@@ -358,6 +386,34 @@ TEST_F(HistoryQueryTest, TextSearchPrefix) {
   EXPECT_TRUE(NthResultIs(results, 1, 3));
 }
 
+TEST_F(HistoryQueryTest, HostSearch) {
+  ASSERT_TRUE(history_.get());
+
+  QueryOptions options;
+  QueryResults results;
+
+  // Query all normal search to make sure all entries appear.
+  options.host_only = false;
+  QueryHistory("example.test", options, &results);
+  EXPECT_EQ(7U, results.size());
+  EXPECT_TRUE(NthResultIs(results, 0, 8));
+  EXPECT_TRUE(NthResultIs(results, 1, 9));
+  EXPECT_TRUE(NthResultIs(results, 2, 10));
+  EXPECT_TRUE(NthResultIs(results, 3, 11));
+  EXPECT_TRUE(NthResultIs(results, 4, 12));
+  EXPECT_TRUE(NthResultIs(results, 5, 13));
+  EXPECT_TRUE(NthResultIs(results, 6, 14));
+
+  // Query with host_only = true to make sure only the host entries show up.
+  options.host_only = true;
+  QueryHistory("example.test", options, &results);
+  EXPECT_EQ(4U, results.size());
+  EXPECT_TRUE(NthResultIs(results, 0, 8));
+  EXPECT_TRUE(NthResultIs(results, 1, 9));
+  EXPECT_TRUE(NthResultIs(results, 2, 10));
+  EXPECT_TRUE(NthResultIs(results, 3, 11));
+}
+
 // Tests max_count feature for text search queries.
 TEST_F(HistoryQueryTest, TextSearchCount) {
   ASSERT_TRUE(history_.get());
@@ -402,7 +458,7 @@ TEST_F(HistoryQueryTest, TextSearchIDN) {
                        L"\u0438\u0434\u0435\u043d\u0442.\u0440\u0444"), 1, },
   };
 
-  for (size_t i = 0; i < base::size(queries); ++i) {
+  for (size_t i = 0; i < std::size(queries); ++i) {
     QueryHistory(queries[i].query, options, &results);
     EXPECT_EQ(queries[i].results_size, results.size());
   }
@@ -412,8 +468,8 @@ TEST_F(HistoryQueryTest, TextSearchIDN) {
 TEST_F(HistoryQueryTest, Paging) {
   // Since results are fetched 1 and 2 at a time, entry #0 and #6 will not
   // be de-duplicated.
-  int expected_results[] = { 4, 2, 3, 1, 7, 6, 5, 0 };
-  TestPaging(std::string(), expected_results, base::size(expected_results));
+  int expected_results[] = {4, 2, 3, 1, 7, 6, 5, 8, 9, 10, 11, 12, 13, 14, 0};
+  TestPaging(std::string(), expected_results, std::size(expected_results));
 }
 
 TEST_F(HistoryQueryTest, TextSearchPaging) {
@@ -421,7 +477,7 @@ TEST_F(HistoryQueryTest, TextSearchPaging) {
   // be de-duplicated. Entry #4 does not contain the text "title", so it
   // shouldn't appear.
   int expected_results[] = { 2, 3, 1, 7, 6, 5 };
-  TestPaging("title", expected_results, base::size(expected_results));
+  TestPaging("title", expected_results, std::size(expected_results));
 }
 
 }  // namespace history

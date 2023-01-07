@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,31 @@
  * @fileoverview
  * 'crostini-subpage' is the settings subpage for managing Crostini.
  */
+
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import '../../controls/settings_toggle_button.js';
+import './crostini_confirmation_dialog.js';
+import '../../settings_shared.css.js';
+import './crostini_disk_resize_dialog.js';
+import './crostini_disk_resize_confirmation_dialog.js';
+import './crostini_port_forwarding.js';
+import './crostini_extra_containers.js';
+
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/ash/common/web_ui_listener_behavior.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Setting} from '../../mojom-webui/setting.mojom-webui.js';
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {recordSettingChange} from '../metrics_recorder.js';
+import {routes} from '../os_route.js';
+import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs_behavior.js';
+import {RouteOriginBehavior, RouteOriginBehaviorImpl, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
+
+import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl, CrostiniDiskInfo} from './crostini_browser_proxy.js';
 
 /**
  * The current confirmation state.
@@ -16,201 +41,233 @@ const ConfirmationState = {
   CONFIRMED: 'confirmed',
 };
 
-Polymer({
-  is: 'settings-crostini-subpage',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {PrefsBehaviorInterface}
+ * @implements {RouteOriginBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsCrostiniSubpageElementBase = mixinBehaviors(
+    [
+      DeepLinkingBehavior,
+      PrefsBehavior,
+      RouteOriginBehavior,
+      WebUIListenerBehavior,
+    ],
+    PolymerElement);
 
-  behaviors: [
-    DeepLinkingBehavior,
-    PrefsBehavior,
-    settings.RouteOriginBehavior,
-    WebUIListenerBehavior,
-  ],
+/** @polymer */
+class SettingsCrostiniSubpageElement extends
+    SettingsCrostiniSubpageElementBase {
+  static get is() {
+    return 'settings-crostini-subpage';
+  }
 
-  properties: {
-    /** Preferences state. */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * Whether export / import UI should be displayed.
-     * @private {boolean}
-     */
-    showCrostiniExportImport_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('showCrostiniExportImport');
+  static get properties() {
+    return {
+      /** Preferences state. */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    /** @private {boolean} */
-    showArcAdbSideloading_: {
-      type: Boolean,
-      computed: 'and_(isArcAdbSideloadingSupported_, isAndroidEnabled_)',
-    },
-
-    /** @private {boolean} */
-    isArcAdbSideloadingSupported_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('arcAdbSideloadingSupported');
+      /**
+       * Whether export / import UI should be displayed.
+       * @private {boolean}
+       */
+      showCrostiniExportImport_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showCrostiniExportImport');
+        },
       },
-    },
 
-    /** @private {boolean} */
-    showCrostiniPortForwarding_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('showCrostiniPortForwarding');
+      /** @private {boolean} */
+      showArcAdbSideloading_: {
+        type: Boolean,
+        computed: 'and_(isArcAdbSideloadingSupported_, isAndroidEnabled_)',
       },
-    },
 
-    /** @private {boolean} */
-    isAndroidEnabled_: {
-      type: Boolean,
-    },
-
-    /**
-     * Whether the uninstall options should be displayed.
-     * @private {boolean}
-     */
-    hideCrostiniUninstall_: {
-      type: Boolean,
-      computed: 'or_(installerShowing_, upgraderDialogShowing_)',
-    },
-
-    /**
-     * Whether the button to launch the Crostini container upgrade flow should
-     * be shown.
-     * @private {boolean}
-     */
-    showCrostiniContainerUpgrade_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('showCrostiniContainerUpgrade');
+      /** @private {boolean} */
+      isArcAdbSideloadingSupported_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('arcAdbSideloadingSupported');
+        },
       },
-    },
 
-    /**
-     * Whether the button to show the disk resizing view should be shown.
-     * @private {boolean}
-     */
-    showCrostiniDiskResize_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('showCrostiniDiskResize');
+      /** @private {boolean} */
+      showCrostiniPortForwarding_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showCrostiniPortForwarding');
+        },
       },
-    },
 
-    /** @private */
-    showDiskResizeConfirmationDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private {boolean} */
+      showCrostiniExtraContainers_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showCrostiniExtraContainers');
+        },
+      },
 
-    /*
-     * Whether the installer is showing.
-     * @private {boolean}
-     */
-    installerShowing_: {
-      type: Boolean,
-    },
+      /** @private {boolean} */
+      isAndroidEnabled_: {
+        type: Boolean,
+      },
 
-    /**
-     * Whether the upgrader dialog is showing.
-     * @private {boolean}
-     */
-    upgraderDialogShowing_: {
-      type: Boolean,
-    },
+      /**
+       * Whether the uninstall options should be displayed.
+       * @private {boolean}
+       */
+      hideCrostiniUninstall_: {
+        type: Boolean,
+        computed: 'or_(installerShowing_, upgraderDialogShowing_)',
+      },
 
-    /**
-     * Whether the button to launch the Crostini container upgrade flow should
-     * be disabled.
-     * @private {boolean}
-     */
-    disableUpgradeButton_: {
-      type: Boolean,
-      computed: 'or_(installerShowing_, upgraderDialogShowing_)',
-    },
+      /**
+       * Whether the button to launch the Crostini container upgrade flow should
+       * be shown.
+       * @private {boolean}
+       */
+      showCrostiniContainerUpgrade_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showCrostiniContainerUpgrade');
+        },
+      },
 
-    /**
-     * Whether the disk resizing dialog is visible or not
-     * @private {boolean}
-     */
-    showDiskResizeDialog_: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Whether the button to show the disk resizing view should be shown.
+       * @private {boolean}
+       */
+      showCrostiniDiskResize_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showCrostiniDiskResize');
+        },
+      },
+
+      /** @private */
+      showDiskResizeConfirmationDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /*
+       * Whether the installer is showing.
+       * @private {boolean}
+       */
+      installerShowing_: {
+        type: Boolean,
+      },
+
+      /**
+       * Whether the upgrader dialog is showing.
+       * @private {boolean}
+       */
+      upgraderDialogShowing_: {
+        type: Boolean,
+      },
+
+      /**
+       * Whether the button to launch the Crostini container upgrade flow should
+       * be disabled.
+       * @private {boolean}
+       */
+      disableUpgradeButton_: {
+        type: Boolean,
+        computed: 'or_(installerShowing_, upgraderDialogShowing_)',
+      },
+
+      /**
+       * Whether the disk resizing dialog is visible or not
+       * @private {boolean}
+       */
+      showDiskResizeDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {boolean} */
+      showCrostiniMicPermissionDialog_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @private {string} */
+      diskSizeLabel_: {
+        type: String,
+        value: loadTimeData.getString('crostiniDiskSizeCalculating'),
+      },
+
+      /** @private {string} */
+      diskResizeButtonLabel_: {
+        type: String,
+        value: loadTimeData.getString('crostiniDiskResizeShowButton'),
+      },
+
+      /** @private {string} */
+      diskResizeButtonAriaLabel_: {
+        type: String,
+        value: loadTimeData.getString('crostiniDiskResizeShowButtonAriaLabel'),
+      },
+
+      /** @private {boolean} */
+      canDiskResize_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          Setting.kUninstallCrostini,
+          Setting.kCrostiniDiskResize,
+          Setting.kCrostiniMicAccess,
+          Setting.kCrostiniContainerUpgrade,
+        ]),
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'onCrostiniEnabledChanged_(prefs.crostini.enabled.value)',
+      'onArcEnabledChanged_(prefs.arc.enabled.value)',
+    ];
+  }
+
+  constructor() {
+    super();
+
+    /** RouteOriginBehavior override */
+    this.route_ = routes.CROSTINI_DETAILS;
 
     /** @private {boolean} */
-    crostiniMicSharingEnabled_: {
-      type: Boolean,
-      value: false,
-    },
+    this.isDiskUserChosenSize_ = false;
 
-    /** @private {boolean} */
-    showCrostiniMicSharingDialog_: {
-      type: Boolean,
-      value: false,
-    },
+    /** @private {!ConfirmationState} */
+    this.diskResizeConfirmationState_ = ConfirmationState.NOT_CONFIRMED;
 
-    /** @private {string} */
-    diskSizeLabel_: {
-      type: String,
-      value: loadTimeData.getString('crostiniDiskSizeCalculating'),
-    },
+    /** @private {!CrostiniBrowserProxy} */
+    this.browserProxy_ = CrostiniBrowserProxyImpl.getInstance();
+  }
 
-    /** @private {string} */
-    diskResizeButtonLabel_: {
-      type: String,
-      value: loadTimeData.getString('crostiniDiskResizeShowButton'),
-    },
+  connectedCallback() {
+    super.connectedCallback();
 
-    /** @private {string} */
-    diskResizeButtonAriaLabel_: {
-      type: String,
-      value: loadTimeData.getString('crostiniDiskResizeShowButtonAriaLabel'),
-    },
-
-    /** @private {boolean} */
-    canDiskResize_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kUninstallCrostini,
-        chromeos.settings.mojom.Setting.kCrostiniDiskResize,
-        chromeos.settings.mojom.Setting.kCrostiniMicAccess,
-        chromeos.settings.mojom.Setting.kCrostiniContainerUpgrade,
-      ]),
-    },
-  },
-
-  /** settings.RouteOriginBehavior override */
-  route_: settings.routes.CROSTINI_DETAILS,
-
-
-  /** @private {boolean} */
-  isDiskUserChosenSize_: false,
-
-  /** @private {!ConfirmationState} */
-  diskResizeConfirmationState_: ConfirmationState.NOT_CONFIRMED,
-
-  observers: [
-    'onCrostiniEnabledChanged_(prefs.crostini.enabled.value)',
-    'onArcEnabledChanged_(prefs.arc.enabled.value)'
-  ],
-
-  attached() {
     this.addWebUIListener('crostini-installer-status-changed', (status) => {
       this.installerShowing_ = status;
     });
@@ -221,82 +278,75 @@ Polymer({
         'crostini-container-upgrade-available-changed', (canUpgrade) => {
           this.showCrostiniContainerUpgrade_ = canUpgrade;
         });
-    this.addWebUIListener(
-        'crostini-mic-sharing-enabled-changed',
-        this.onCrostiniMicSharingEnabledChanged_.bind(this));
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .requestCrostiniInstallerStatus();
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .requestCrostiniUpgraderDialogStatus();
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .requestCrostiniContainerUpgradeAvailable();
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .getCrostiniMicSharingEnabled()
-        .then(this.onCrostiniMicSharingEnabledChanged_.bind(this));
+    this.browserProxy_.requestCrostiniInstallerStatus();
+    this.browserProxy_.requestCrostiniUpgraderDialogStatus();
+    this.browserProxy_.requestCrostiniContainerUpgradeAvailable();
     this.loadDiskInfo_();
-  },
+  }
 
   ready() {
-    const r = settings.routes;
-    this.addFocusConfig_(r.CROSTINI_SHARED_PATHS, '#crostini-shared-paths');
-    this.addFocusConfig_(
+    super.ready();
+
+    const r = routes;
+    this.addFocusConfig(r.CROSTINI_SHARED_PATHS, '#crostini-shared-paths');
+    this.addFocusConfig(
         r.CROSTINI_SHARED_USB_DEVICES, '#crostini-shared-usb-devices');
-    this.addFocusConfig_(r.CROSTINI_EXPORT_IMPORT, '#crostini-export-import');
-    this.addFocusConfig_(r.CROSTINI_ANDROID_ADB, '#crostini-enable-arc-adb');
-    this.addFocusConfig_(
+    this.addFocusConfig(
+        r.BRUSCHETTA_SHARED_USB_DEVICES, '#bruschetta-shared-usb-devices');
+    this.addFocusConfig(r.CROSTINI_EXPORT_IMPORT, '#crostini-export-import');
+    this.addFocusConfig(r.CROSTINI_ANDROID_ADB, '#crostini-enable-arc-adb');
+    this.addFocusConfig(
         r.CROSTINI_PORT_FORWARDING, '#crostini-port-forwarding');
-  },
+    this.addFocusConfig(
+        r.CROSTINI_EXTRA_CONTAINERS, '#crostini-extra-containers');
+  }
 
   /**
-   * @param {!settings.Route} route
-   * @param {!settings.Route} oldRoute
+   * @param {!Route} route
+   * @param {!Route} oldRoute
    */
   currentRouteChanged(route, oldRoute) {
     // Does not apply to this page.
-    if (route !== settings.routes.CROSTINI_DETAILS) {
+    if (route !== routes.CROSTINI_DETAILS) {
       return;
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /** @private */
   onCrostiniEnabledChanged_(enabled) {
     if (!enabled &&
-        settings.Router.getInstance().getCurrentRoute() ===
-            settings.routes.CROSTINI_DETAILS) {
-      settings.Router.getInstance().navigateToPreviousRoute();
+        Router.getInstance().getCurrentRoute() === routes.CROSTINI_DETAILS) {
+      Router.getInstance().navigateToPreviousRoute();
     }
     if (enabled) {
       // The disk size or type could have changed due to the user reinstalling
       // Crostini, update our info.
       this.loadDiskInfo_();
     }
-  },
+  }
 
   /** @private */
   onArcEnabledChanged_(enabled) {
     this.isAndroidEnabled_ = enabled;
-  },
+  }
 
   /** @private */
   onExportImportClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.CROSTINI_EXPORT_IMPORT);
-  },
+    Router.getInstance().navigateTo(routes.CROSTINI_EXPORT_IMPORT);
+  }
 
   /** @private */
   onEnableArcAdbClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.CROSTINI_ANDROID_ADB);
-  },
+    Router.getInstance().navigateTo(routes.CROSTINI_ANDROID_ADB);
+  }
 
   /** @private */
   loadDiskInfo_() {
     // TODO(davidmunro): No magic 'termina' string.
     const vmName = 'termina';
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .getCrostiniDiskInfo(vmName, /*requestFullInfo=*/ false)
+    this.browserProxy_.getCrostiniDiskInfo(vmName, /*requestFullInfo=*/ false)
         .then(
             diskInfo => {
               if (diskInfo.succeeded) {
@@ -304,9 +354,9 @@ Polymer({
               }
             },
             reason => {
-              console.log(`Unable to get info: ${reason}`);
+              console.warn(`Unable to get info: ${reason}`);
             });
-  },
+  }
 
   /**
    * @param {!CrostiniDiskInfo} diskInfo
@@ -336,7 +386,7 @@ Polymer({
       this.diskResizeButtonAriaLabel_ =
           loadTimeData.getString('crostiniDiskReserveSizeButtonAriaLabel');
     }
-  },
+  }
 
   /** @private */
   onDiskResizeClick_() {
@@ -346,7 +396,7 @@ Polymer({
       return;
     }
     this.showDiskResizeDialog_ = true;
-  },
+  }
 
   /** @private */
   onDiskResizeDialogClose_() {
@@ -354,7 +404,7 @@ Polymer({
     this.diskResizeConfirmationState_ = ConfirmationState.NOT_CONFIRMED;
     // DiskInfo could have changed.
     this.loadDiskInfo_();
-  },
+  }
 
   /** @private */
   onDiskResizeConfirmationDialogClose_() {
@@ -365,81 +415,89 @@ Polymer({
       this.showDiskResizeConfirmationDialog_ = false;
       this.showDiskResizeDialog_ = true;
     }
-  },
+  }
 
   /** @private */
   onDiskResizeConfirmationDialogCancel_() {
     this.showDiskResizeConfirmationDialog_ = false;
-  },
+  }
 
   /**
    * Shows a confirmation dialog when removing crostini.
    * @private
    */
   onRemoveClick_() {
-    settings.CrostiniBrowserProxyImpl.getInstance().requestRemoveCrostini();
-    settings.recordSettingChange();
-  },
+    this.browserProxy_.requestRemoveCrostini();
+    recordSettingChange();
+  }
 
   /**
    * Shows the upgrade flow dialog.
    * @private
    */
   onContainerUpgradeClick_() {
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .requestCrostiniContainerUpgradeView();
-  },
+    this.browserProxy_.requestCrostiniContainerUpgradeView();
+  }
 
   /** @private */
   onSharedPathsClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.CROSTINI_SHARED_PATHS);
-  },
+    Router.getInstance().navigateTo(routes.CROSTINI_SHARED_PATHS);
+  }
 
   /** @private */
   onSharedUsbDevicesClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.CROSTINI_SHARED_USB_DEVICES);
-  },
+    Router.getInstance().navigateTo(routes.CROSTINI_SHARED_USB_DEVICES);
+  }
 
   /** @private */
-  onPortForwardingClick_: function() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.CROSTINI_PORT_FORWARDING);
-  },
+  onBruschettaSharedUsbDevicesClick_() {
+    Router.getInstance().navigateTo(routes.BRUSCHETTA_SHARED_USB_DEVICES);
+  }
+
+  /** @private */
+  onPortForwardingClick_() {
+    Router.getInstance().navigateTo(routes.CROSTINI_PORT_FORWARDING);
+  }
+
+  /** @private */
+  onExtraContainersClick_() {
+    Router.getInstance().navigateTo(routes.CROSTINI_EXTRA_CONTAINERS);
+  }
+
+  /**
+   * @private
+   * @return {SettingsToggleButtonElement}
+   */
+  getMicToggle_() {
+    return /** @type {SettingsToggleButtonElement} */ (
+        this.shadowRoot.querySelector('#crostini-mic-permission-toggle'));
+  }
 
   /**
    * If a change to the mic settings requires Crostini to be restarted, a
    * dialog is shown.
    * @private
    */
-  onMicSharingChange_: function() {
-    // Manually resetting the toggle so that it is only changed by the dialog
-    // or when the dialog isn't required.
-    this.$$('#crostini-mic-sharing-toggle').checked =
-        this.crostiniMicSharingEnabled_;
-    const proposedValue = !this.crostiniMicSharingEnabled_;
-    settings.CrostiniBrowserProxyImpl.getInstance()
-        .checkCrostiniMicSharingStatus(proposedValue)
-        .then(requiresRestart => {
-          if (requiresRestart) {
-            this.showCrostiniMicSharingDialog_ = true;
-          } else {
-            settings.CrostiniBrowserProxyImpl.getInstance()
-                .setCrostiniMicSharingEnabled(proposedValue);
-          }
-        });
-  },
+  async onMicPermissionChange_() {
+    if (await this.browserProxy_.checkCrostiniIsRunning()) {
+      this.showCrostiniMicPermissionDialog_ = true;
+    } else {
+      this.getMicToggle_().sendPrefChange();
+    }
+  }
 
   /** @private */
-  onCrostiniMicSharingDialogClose_: function() {
-    this.showCrostiniMicSharingDialog_ = false;
-  },
+  onCrostiniMicPermissionDialogClose_(e) {
+    const toggle = this.getMicToggle_();
+    if (e.detail.accepted) {
+      toggle.sendPrefChange();
+      this.browserProxy_.shutdownCrostini();
+    } else {
+      toggle.resetToPrefValue();
+    }
 
-  /** @private */
-  onCrostiniMicSharingEnabledChanged_: function(enabled) {
-    this.crostiniMicSharingEnabled_ = enabled;
-  },
+    this.showCrostiniMicPermissionDialog_ = false;
+  }
 
   /**
    * @private
@@ -447,9 +505,9 @@ Polymer({
    * @param {boolean} b
    * @return {boolean}
    */
-  and_: function(a, b) {
+  and_(a, b) {
     return a && b;
-  },
+  }
 
   /**
    * @private
@@ -457,7 +515,10 @@ Polymer({
    * @param {boolean} b
    * @return {boolean}
    */
-  or_: function(a, b) {
+  or_(a, b) {
     return a || b;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsCrostiniSubpageElement.is, SettingsCrostiniSubpageElement);

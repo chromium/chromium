@@ -1,0 +1,43 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name=timeout content=long>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/helpers.js"></script>
+<script>
+const uuidPattern = /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/;
+
+attribution_reporting_promise_test(async t => {
+  const source = {
+    source_event_id: '9153495207648170476',
+    destination: `https://{{host}}`,
+  };
+  const trigger = {event_trigger_data: [{trigger_data: '2'}]};
+
+  await registerAttributionSrc(t, {source, cookie: 'foo=bar;Secure;HttpOnly;Path=/'});
+  await registerAttributionSrc(t, {trigger});
+
+  const payload = await pollEventLevelReports();
+  assert_equals(payload.reports.length, 1);
+
+  const report = JSON.parse(payload.reports[0].body);
+
+  // The trigger data is sanitized to "0" because event sources are limited to 1
+  // bit.
+  assert_equals(report.trigger_data, '0');
+  assert_equals(report.source_event_id, source.source_event_id);
+  assert_equals(report.source_type, 'event');
+  assert_equals(report.attribution_destination, source.destination);
+
+  assert_between_inclusive(report.randomized_trigger_rate, 0.0, 1.0);
+
+  assert_own_property(report, 'report_id');
+  assert_equals(typeof report.report_id, 'string');
+  assert_regexp_match(report.report_id, uuidPattern);
+
+  assert_not_own_property(report, 'source_debug_key');
+  assert_not_own_property(report, 'trigger_debug_key');
+
+  validateReportHeaders(payload.reports[0].headers);
+}, 'Ensure attribution report is received.');
+</script>

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,21 +6,26 @@
 
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 BytesUploader::BytesUploader(
+    ExecutionContext* execution_context,
     BytesConsumer* consumer,
     mojo::PendingReceiver<network::mojom::blink::ChunkedDataPipeGetter>
         pending_receiver,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : consumer_(consumer),
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    Client* client)
+    : ExecutionContextLifecycleObserver(execution_context),
+      consumer_(consumer),
+      client_(client),
       receiver_(this, std::move(pending_receiver)),
       upload_pipe_watcher_(FROM_HERE,
                            mojo::SimpleWatcher::ArmingPolicy::MANUAL,
@@ -34,7 +39,9 @@ BytesUploader::~BytesUploader() = default;
 
 void BytesUploader::Trace(blink::Visitor* visitor) const {
   visitor->Trace(consumer_);
+  visitor->Trace(client_);
   BytesConsumer::Client::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 void BytesUploader::GetSize(GetSizeCallback get_size_callback) {
@@ -45,10 +52,10 @@ void BytesUploader::GetSize(GetSizeCallback get_size_callback) {
 void BytesUploader::StartReading(
     mojo::ScopedDataPipeProducerHandle upload_pipe) {
   DVLOG(3) << this << " StartReading()";
-  DCHECK(get_size_callback_);
   DCHECK(upload_pipe);
-  if (upload_pipe_) {
-    // Replay was asked by net/ service.
+  if (!get_size_callback_ || upload_pipe_) {
+    // When StartReading() is called while |upload_pipe_| is valid, it means
+    // replay was asked by the network service.
     CloseOnError();
     return;
   }
@@ -61,6 +68,11 @@ void BytesUploader::StartReading(
       BytesConsumer::PublicState::kReadableOrWaiting) {
     WriteDataOnPipe();
   }
+}
+
+void BytesUploader::ContextDestroyed() {
+  CloseOnError();
+  Dispose();
 }
 
 void BytesUploader::OnStateChange() {
@@ -88,8 +100,6 @@ void BytesUploader::OnPipeWriteable(MojoResult unused) {
 void BytesUploader::WriteDataOnPipe() {
   DVLOG(3) << this << " WriteDataOnPipe(). consumer_->GetPublicState()="
            << consumer_->GetPublicState();
-  DCHECK(upload_pipe_);
-  DCHECK(get_size_callback_);
   if (!upload_pipe_.is_valid())
     return;
 
@@ -116,8 +126,7 @@ void BytesUploader::WriteDataOnPipe() {
     const MojoResult mojo_result = upload_pipe_->WriteData(
         buffer, &written_bytes, MOJO_WRITE_DATA_FLAG_NONE);
     DVLOG(3) << "  upload_pipe_->WriteData()=" << mojo_result
-             << ", mojo_written=" << written_bytes
-             << ", consumer_->EndRead()=" << consumer_result;
+             << ", mojo_written=" << written_bytes;
     if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
       // Wait for the pipe to have more capacity available
       consumer_result = consumer_->EndRead(0);
@@ -130,6 +139,8 @@ void BytesUploader::WriteDataOnPipe() {
     }
 
     consumer_result = consumer_->EndRead(written_bytes);
+    DVLOG(3) << "  consumer_->EndRead()=" << consumer_result;
+
     if (!base::CheckAdd(total_size_, written_bytes)
              .AssignIfValid(&total_size_)) {
       CloseOnError();
@@ -154,16 +165,31 @@ void BytesUploader::WriteDataOnPipe() {
 
 void BytesUploader::Close() {
   DVLOG(3) << this << " Close(). total_size=" << total_size_;
-  DCHECK(get_size_callback_);
-  std::move(get_size_callback_).Run(net::OK, total_size_);
+  if (get_size_callback_)
+    std::move(get_size_callback_).Run(net::OK, total_size_);
+  consumer_->Cancel();
+  if (Client* client = client_) {
+    client_ = nullptr;
+    client->OnComplete();
+  }
+  Dispose();
 }
 
 void BytesUploader::CloseOnError() {
   DVLOG(3) << this << " CloseOnError(). total_size=" << total_size_;
-  DCHECK(consumer_);
+  if (get_size_callback_)
+    std::move(get_size_callback_).Run(net::ERR_FAILED, total_size_);
   consumer_->Cancel();
-  DCHECK(get_size_callback_);
-  std::move(get_size_callback_).Run(net::ERR_FAILED, total_size_);
+  if (Client* client = client_) {
+    client_ = nullptr;
+    client->OnError();
+  }
+  Dispose();
+}
+
+void BytesUploader::Dispose() {
+  receiver_.reset();
+  upload_pipe_watcher_.Cancel();
 }
 
 }  // namespace blink

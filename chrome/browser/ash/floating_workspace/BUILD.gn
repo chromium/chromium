@@ -1,0 +1,22 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos_ash)
+
+source_set("floating_workspace_service") {
+  deps = [
+    "//components/sessions",
+    "//components/sync",
+    "//components/sync_device_info",
+    "//components/sync_sessions",
+  ]
+  sources = [
+    "floating_workspace_service.cc",
+    "floating_workspace_service.h",
+    "floating_workspace_service_factory.cc",
+    "floating_workspace_service_factory.h",
+    "floating_workspace_util.cc",
+    "floating_workspace_util.h",
+  ]
+}

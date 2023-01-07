@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -17,9 +18,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import java.util.List;
 /**
  * IdentityManager provides access to native IdentityManager's public API to java components.
  */
@@ -56,26 +55,24 @@ public class IdentityManager {
             extends ProfileOAuth2TokenServiceDelegate.GetAccessTokenCallback {}
 
     private long mNativeIdentityManager;
-    private ProfileOAuth2TokenServiceDelegate mProfileOAuth2TokenServiceDelegate;
+    private final ProfileOAuth2TokenServiceDelegate mProfileOAuth2TokenServiceDelegate;
 
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    // Account id and the corresponding fetch start time, this is only used to record the
-    // account information fetch duration.
-    private final Map<CoreAccountId, Long> mAccountAndFetchStartTimes = new HashMap<>();
+    private Callback<CoreAccountInfo> mRefreshTokenUpdateObserver;
 
     /**
      * Called by native to create an instance of IdentityManager.
      */
     @CalledByNative
-    private static IdentityManager create(long nativeIdentityManager,
+    @VisibleForTesting
+    public static IdentityManager create(long nativeIdentityManager,
             ProfileOAuth2TokenServiceDelegate profileOAuth2TokenServiceDelegate) {
-        assert nativeIdentityManager != 0;
         return new IdentityManager(nativeIdentityManager, profileOAuth2TokenServiceDelegate);
     }
 
-    @VisibleForTesting
-    public IdentityManager(long nativeIdentityManager,
+    private IdentityManager(long nativeIdentityManager,
             ProfileOAuth2TokenServiceDelegate profileOAuth2TokenServiceDelegate) {
+        assert nativeIdentityManager != 0;
         mNativeIdentityManager = nativeIdentityManager;
         mProfileOAuth2TokenServiceDelegate = profileOAuth2TokenServiceDelegate;
     }
@@ -134,10 +131,21 @@ public class IdentityManager {
     }
 
     /**
-     * Returns whether the user's primary account is available.
+     * Called when the refresh token of the give account gets updated.
      */
-    public boolean hasPrimaryAccount() {
-        return getPrimaryAccountInfo(ConsentLevel.SYNC) != null;
+    @CalledByNative
+    private void onRefreshTokenUpdatedForAccount(CoreAccountInfo coreAccountInfo) {
+        if (mRefreshTokenUpdateObserver != null) {
+            mRefreshTokenUpdateObserver.onResult(coreAccountInfo);
+        }
+    }
+
+    /**
+     * Returns whether the user's primary account is available.
+     * @param consentLevel {@link ConsentLevel} necessary for the caller.
+     */
+    public boolean hasPrimaryAccount(@ConsentLevel int consentLevel) {
+        return getPrimaryAccountInfo(consentLevel) != null;
     }
 
     /**
@@ -153,8 +161,7 @@ public class IdentityManager {
      * Returns non-null if the primary account was set AND the required consent level was granted,
      * null otherwise.
      *
-     * @param consentLevel {@link ConsentLevel} necessary for the caller. Most features should use
-     *         {@link ConsentLevel.SYNC}.
+     * @param consentLevel {@link ConsentLevel} necessary for the caller.
      */
     public @Nullable CoreAccountInfo getPrimaryAccountInfo(@ConsentLevel int consentLevel) {
         return IdentityManagerJni.get().getPrimaryAccountInfo(mNativeIdentityManager, consentLevel);
@@ -164,24 +171,20 @@ public class IdentityManager {
      * Looks up and returns information for account with given |email|. If the account
      * cannot be found, return a null value.
      */
-    public @Nullable AccountInfo findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-            String email) {
-        return IdentityManagerJni.get()
-                .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                        mNativeIdentityManager, email);
+    public @Nullable AccountInfo findExtendedAccountInfoByEmailAddress(String email) {
+        return IdentityManagerJni.get().findExtendedAccountInfoByEmailAddress(
+                mNativeIdentityManager, email);
     }
 
     /**
-     * Forces refreshing extended {@link AccountInfo} with image for the given
-     * {@link CoreAccountId}.
-     *
-     * This method should only be invoked by {@link ProfileDownloader} to fetch account information
-     * while users are signed out.
+     * Refreshes extended {@link AccountInfo} with image for the given
+     * list of {@link CoreAccountInfo} if the existing ones are stale.
      */
-    public void forceRefreshOfExtendedAccountInfo(CoreAccountId coreAccountId) {
-        assert coreAccountId != null : "coreAccountId shouldn't be null!";
-        IdentityManagerJni.get().forceRefreshOfExtendedAccountInfo(
-                mNativeIdentityManager, coreAccountId);
+    public void refreshAccountInfoIfStale(List<CoreAccountInfo> accountInfos) {
+        for (CoreAccountInfo accountInfo : accountInfos) {
+            IdentityManagerJni.get().refreshAccountInfoIfStale(
+                    mNativeIdentityManager, accountInfo.getId());
+        }
     }
 
     /**
@@ -210,15 +213,18 @@ public class IdentityManager {
         mProfileOAuth2TokenServiceDelegate.invalidateAccessToken(accessToken);
     }
 
+    @VisibleForTesting
+    public void setRefreshTokenUpdateObserverForTests(Callback<CoreAccountInfo> callback) {
+        mRefreshTokenUpdateObserver = callback;
+    }
+
     @NativeMethods
     public interface Natives {
         @Nullable
         CoreAccountInfo getPrimaryAccountInfo(long nativeIdentityManager, int consentLevel);
         @Nullable
-        AccountInfo findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-                long nativeIdentityManager, String email);
+        AccountInfo findExtendedAccountInfoByEmailAddress(long nativeIdentityManager, String email);
         CoreAccountInfo[] getAccountsWithRefreshTokens(long nativeIdentityManager);
-        void forceRefreshOfExtendedAccountInfo(
-                long nativeIdentityManager, CoreAccountId coreAccountId);
+        void refreshAccountInfoIfStale(long nativeIdentityManager, CoreAccountId coreAccountId);
     }
 }

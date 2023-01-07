@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <video preload=metadata poster='../../banners/image-512px.png' src='../bigbuck.webm'></video>
 <script>
-  function enterPictureInPicture() {
-    document.querySelector('video').requestPictureInPicture().then(() => {
-      window.domAutomationController.send(true);
-    });
+  async function enterPictureInPicture() {
+    await document.querySelector('video').requestPictureInPicture();
+    return true;
   }
 </script>

@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_effect.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_alpha.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_graphic.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -105,8 +105,8 @@ void SVGFilterGraphNodeMap::Trace(Visitor* visitor) const {
 
 SVGFilterBuilder::SVGFilterBuilder(FilterEffect* source_graphic,
                                    SVGFilterGraphNodeMap* node_map,
-                                   const PaintFlags* fill_flags,
-                                   const PaintFlags* stroke_flags)
+                                   const cc::PaintFlags* fill_flags,
+                                   const cc::PaintFlags* stroke_flags)
     : node_map_(node_map) {
   builtin_effects_.insert(FilterInputKeywords::GetSourceGraphic(),
                           source_graphic);
@@ -163,7 +163,7 @@ InterpolationSpace SVGFilterBuilder::ResolveInterpolationSpace(
 
 void SVGFilterBuilder::BuildGraph(Filter* filter,
                                   SVGFilterElement& filter_element,
-                                  const FloatRect& reference_box) {
+                                  const gfx::RectF& reference_box) {
   EColorInterpolation filter_color_interpolation =
       ColorInterpolationForElement(filter_element, EColorInterpolation::kAuto);
   SVGUnitTypes::SVGUnitType primitive_units =
@@ -196,7 +196,8 @@ void SVGFilterBuilder::BuildGraph(Filter* filter,
 }
 
 void SVGFilterBuilder::Add(const AtomicString& id, FilterEffect* effect) {
-  if (id.IsEmpty()) {
+  DCHECK(effect);
+  if (id.empty()) {
     last_effect_ = effect;
     return;
   }
@@ -209,17 +210,21 @@ void SVGFilterBuilder::Add(const AtomicString& id, FilterEffect* effect) {
 }
 
 FilterEffect* SVGFilterBuilder::GetEffectById(const AtomicString& id) const {
-  if (!id.IsEmpty()) {
-    if (FilterEffect* builtin_effect = builtin_effects_.at(id))
-      return builtin_effect;
+  if (!id.empty()) {
+    auto builtin_it = builtin_effects_.find(id);
+    if (builtin_it != builtin_effects_.end())
+      return builtin_it->value;
 
-    if (FilterEffect* named_effect = named_effects_.at(id))
-      return named_effect;
+    auto named_it = named_effects_.find(id);
+    if (named_it != named_effects_.end())
+      return named_it->value;
   }
 
   if (last_effect_)
     return last_effect_;
 
+  // Fallback to the 'SourceGraphic' input. We add it in the constructor so it will always be
+  // present.
   return builtin_effects_.at(FilterInputKeywords::GetSourceGraphic());
 }
 

@@ -1,0 +1,4 @@
+Tests that the script which caused the frame to be labelled as an ad is reported on frame attachmend
+
+has adScriptId: true
+

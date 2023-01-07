@@ -85,10 +85,11 @@ class CORE_EXPORT LayoutTextControl : public LayoutBlockFlow {
   void RemoveLeftoverAnonymousBlock(LayoutBlock*) final { NOT_DESTROYED(); }
 
   void AddOutlineRects(Vector<PhysicalRect>&,
+                       OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;
 
-  bool CanBeProgramaticallyScrolled() const final {
+  bool CanBeProgrammaticallyScrolled() const final {
     NOT_DESTROYED();
     return true;
   }

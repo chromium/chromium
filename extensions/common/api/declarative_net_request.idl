@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,21 @@ namespace declarativeNetRequest {
     csp_report,
     media,
     websocket,
+    webtransport,
+    webbundle,
     other
+  };
+
+  // This describes the HTTP request method of a network request.
+  enum RequestMethod {
+    connect,
+    delete,
+    get,
+    head,
+    options,
+    patch,
+    post,
+    put
   };
 
   // This describes whether the request is first or third party to the frame in
@@ -91,6 +105,10 @@ namespace declarativeNetRequest {
   dictionary QueryKeyValue {
     DOMString key;
     DOMString value;
+
+    // If true, the query key is replaced only if it's already present.
+    // Otherwise, the key is also added if it's missing. Defaults to false.
+    boolean? replaceOnly;
   };
 
   // Describes modification to the url query.
@@ -151,8 +169,7 @@ namespace declarativeNetRequest {
      DOMString? regexSubstitution;
   };
 
-  [noinline_doc]
-  dictionary RuleCondition {
+  [noinline_doc] dictionary RuleCondition {
 
     // The pattern which is matched against the network request url.
     // Supported constructs:
@@ -184,7 +201,8 @@ namespace declarativeNetRequest {
     // characters. This is matched against a url where the host is encoded in
     // the punycode format (in case of internationalized domains) and any other
     // non-ascii characters are url encoded in utf-8.
-    // For example, when the request url is http://abc.рф?q=ф, the
+    // For example, when the request url is
+    // http://abc.&#x0440;&#x0444;?q=&#x0444;, the
     // <code>urlFilter</code> will be matched against the url
     // http://abc.xn--p1ai/?q=%D1%84.
     DOMString? urlFilter;
@@ -206,8 +224,8 @@ namespace declarativeNetRequest {
     boolean? isUrlFilterCaseSensitive;
 
     // The rule will only match network requests originating from the list of
-    // <code>domains</code>. If the list is omitted, the rule is applied to
-    // requests from all domains. An empty list is not allowed.
+    // <code>initiatorDomains</code>. If the list is omitted, the rule is
+    // applied to requests from all domains. An empty list is not allowed.
     //
     // Notes:
     // <ul>
@@ -218,11 +236,12 @@ namespace declarativeNetRequest {
     //    This matches against the request initiator and not the request url.
     //  </li>
     // </ul>
-    DOMString[]? domains;
+    DOMString[]? initiatorDomains;
 
     // The rule will not match network requests originating from the list of
     // <code>excludedDomains</code>. If the list is empty or omitted, no
-    // domains are excluded. This takes precedence over <code>domains</code>.
+    // domains are excluded. This takes precedence over
+    // <code>initiatorDomains</code>.
     //
     // Notes:
     // <ul>
@@ -233,6 +252,42 @@ namespace declarativeNetRequest {
     //    This matches against the request initiator and not the request url.
     //  </li>
     // </ul>
+    DOMString[]? excludedInitiatorDomains;
+
+    // The rule will only match network requests when the domain matches one
+    // from the list of <code>requestDomains</code>. If the list is omitted,
+    // the rule is applied to requests from all domains. An empty list is not
+    // allowed.
+    //
+    // Notes:
+    // <ul>
+    //  <li>Sub-domains like "a.example.com" are also allowed.</li>
+    //  <li>The entries must consist of only ascii characters.</li>
+    //  <li>Use punycode encoding for internationalized domains.</li>
+    // </ul>
+    DOMString[]? requestDomains;
+
+    // The rule will not match network requests when the domains matches one
+    // from the list of <code>excludedDomains</code>. If the list is empty or
+    // omitted, no domains are excluded. This takes precedence over
+    // <code>requestDomains</code>.
+    //
+    // Notes:
+    // <ul>
+    //  <li>Sub-domains like "a.example.com" are also allowed.</li>
+    //  <li>The entries must consist of only ascii characters.</li>
+    //  <li>Use punycode encoding for internationalized domains.</li>
+    // </ul>
+    DOMString[]? excludedRequestDomains;
+
+    // The rule will only match network requests originating from the list of
+    // <code>domains</code>.
+    [deprecated="Use $(ref:initiatorDomains) instead"]
+    DOMString[]? domains;
+
+    // The rule will not match network requests originating from the list of
+    // <code>excludedDomains</code>.
+    [deprecated="Use $(ref:excludedInitiatorDomains) instead"]
     DOMString[]? excludedDomains;
 
     // List of resource types which the rule can match. An empty list is not
@@ -249,10 +304,35 @@ namespace declarativeNetRequest {
     // "main_frame" are blocked.
     ResourceType[]? excludedResourceTypes;
 
+    // List of HTTP request methods which the rule can match. An empty list is
+    // not allowed.
+    //
+    // Note: Specifying a <code>requestMethods</code> rule condition will also
+    // exclude non-HTTP(s) requests, whereas specifying
+    // <code>excludedRequestMethods</code> will not.
+    RequestMethod[]? requestMethods;
+
+    // List of request methods which the rule won't match. Only one of
+    // <code>requestMethods</code> and <code>excludedRequestMethods</code>
+    // should be specified. If neither of them is specified, all request methods
+    // are matched.
+    RequestMethod[]? excludedRequestMethods;
+
     // Specifies whether the network request is first-party or third-party to
     // the domain from which it originated. If omitted, all requests are
     // accepted.
     DomainType? domainType;
+
+    // List of $(ref:tabs.Tab.id) which the rule should match. An ID of
+    // $(ref:tabs.TAB_ID_NONE) matches requests which don't originate from a
+    // tab. An empty list is not allowed. Only supported for session-scoped
+    // rules.
+    long[]? tabIds;
+
+    // List of $(ref:tabs.Tab.id) which the rule should not match. An ID of
+    // $(ref:tabs.TAB_ID_NONE) excludes requests which don't originate from a
+    // tab. Only supported for session-scoped rules.
+    long[]? excludedTabIds;
   };
 
   dictionary ModifyHeaderInfo {
@@ -361,9 +441,24 @@ namespace declarativeNetRequest {
     // are unique within a tab.
     long frameId;
 
+    // The unique identifier for the frame's document, if this request is for a
+    // frame.
+    DOMString? documentId;
+
+    // The type of the frame, if this request is for a frame.
+    extensionTypes.FrameType? frameType;
+
+    // The lifecycle of the frame's document, if this request is for a
+    // frame.
+    extensionTypes.DocumentLifecycle? documentLifecycle;
+
     // ID of frame that wraps the frame which sent the request. Set to -1 if no
     // parent frame exists.
     long parentFrameId;
+
+    // The unique identifier for the frame's parent document, if this request
+    // is for a frame and has a parent.
+    DOMString? parentDocumentId;
 
     // The ID of the tab in which the request takes place. Set to -1 if the
     // request isn't related to a tab.
@@ -371,6 +466,26 @@ namespace declarativeNetRequest {
 
     // The resource type of the request.
     ResourceType type;
+  };
+
+  dictionary TestMatchRequestDetails {
+    // The URL of the hypothetical request.
+    DOMString url;
+
+    // The initiator URL (if any) for the hypothetical request.
+    DOMString? initiator;
+
+    // Standard HTTP method of the hypothetical request. Defaults to "get" for
+    // HTTP requests and is ignored for non-HTTP requests.
+    RequestMethod? method;
+
+    // The resource type of the hypothetical request.
+    ResourceType type;
+
+    // The ID of the tab in which the hypothetical request takes place. Does
+    // not need to correspond to a real tab ID. Default is -1, meaning that
+    // the request isn't related to a tab.
+    long? tabId;
   };
 
   dictionary MatchedRuleInfoDebug {
@@ -408,6 +523,11 @@ namespace declarativeNetRequest {
     // Specifies the reason why the regular expression is not supported. Only
     // provided if <code>isSupported</code> is false.
     UnsupportedRegexReason? reason;
+  };
+
+  dictionary TestMatchOutcomeResult {
+    // The rules (if any) that match the hypothetical request.
+    MatchedRule[] matchedRules;
   };
 
   dictionary UpdateRuleOptions {
@@ -449,6 +569,7 @@ namespace declarativeNetRequest {
   callback GetEnabledRulesetsCallback = void(DOMString[] rulesetIds);
   callback IsRegexSupportedCallback = void(IsRegexSupportedResult result);
   callback GetAvailableStaticRuleCountCallback = void(long count);
+  callback TestMatchOutcomeCallback = void(TestMatchOutcomeResult result);
 
   interface Functions {
 
@@ -563,6 +684,16 @@ namespace declarativeNetRequest {
     // <a href="#global-rule-limit">global static rule limit</a> is reached.
     [supportsPromises] static void getAvailableStaticRuleCount(
         GetAvailableStaticRuleCountCallback callback);
+
+    // Checks if any of the extension's declarativeNetRequest rules would match
+    // a hypothetical request.
+    // Note: Only available for unpacked extensions as this is only intended to
+    // be used during extension development.
+    // |requestDetails|: The request details to test.
+    // |callback|: Called with the details of matched rules.
+    [supportsPromises] static void testMatchOutcome(
+        TestMatchRequestDetails request,
+        TestMatchOutcomeCallback callback);
   };
 
   interface Properties {
@@ -597,7 +728,11 @@ namespace declarativeNetRequest {
 
     // The maximum number of static <code>Rulesets</code> an extension can
     // specify as part of the <code>"rule_resources"</code> manifest key.
-    [value=10] static long MAX_NUMBER_OF_STATIC_RULESETS();
+    [value=50] static long MAX_NUMBER_OF_STATIC_RULESETS();
+
+    // The maximum number of static <code>Rulesets</code> an extension can
+    // enable at any one time.
+    [value=10] static long MAX_NUMBER_OF_ENABLED_STATIC_RULESETS();
 
     // Ruleset ID for the dynamic rules added by the extension.
     [value="_dynamic"] static DOMString DYNAMIC_RULESET_ID();

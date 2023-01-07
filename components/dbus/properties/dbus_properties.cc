@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,7 @@ DbusProperties::DbusProperties(dbus::ExportedObject* exported_object,
       {kMethodPropertiesSet, &DbusProperties::OnSetProperty},
   };
 
-  barrier_ = SuccessBarrierCallback(base::size(methods), std::move(callback));
+  barrier_ = SuccessBarrierCallback(std::size(methods), std::move(callback));
   for (const auto& method : methods) {
     exported_object_->ExportMethod(
         DBUS_INTERFACE_PROPERTIES, method.name,

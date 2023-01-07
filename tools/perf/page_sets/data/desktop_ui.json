@@ -1,10 +1,22 @@
 {
     "archives": {
-        "download_shelf:1file": {
-            "DEFAULT": "desktop_ui_73656f4868.wprgo"
+        "new_tab_page:loading": {
+            "DEFAULT": "desktop_ui_9eb4b2f805.wprgo"
         },
-        "download_shelf:5file": {
-            "DEFAULT": "desktop_ui_73656f4868.wprgo"
+        "omnibox:pedal": {
+            "DEFAULT": "desktop_ui_43a34671bf.wprgo"
+        },
+        "omnibox:scoped_search": {
+            "DEFAULT": "desktop_ui_43a34671bf.wprgo"
+        },
+        "omnibox:search": {
+            "DEFAULT": "desktop_ui_43a34671bf.wprgo"
+        },
+        "side_search:measure_memory": {
+            "DEFAULT": "desktop_ui_0a53cfa584.wprgo"
+        },
+        "side_search:navigation": {
+            "DEFAULT": "desktop_ui_0a53cfa584.wprgo"
         },
         "tab_search:close_and_open:2020": {
             "DEFAULT": "desktop_ui_ea9951736b.wprgo"
@@ -13,12 +25,6 @@
             "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         },
         "tab_search:scroll_up_and_down:2020": {
-            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
-        },
-        "tab_search:top100:2020": {
-            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
-        },
-        "tab_search:top100:loading:2020": {
             "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         },
         "tab_search:top10:2020": {
@@ -31,6 +37,12 @@
             "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         },
         "tab_search:top50:loading:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "webui_tab_strip:top10:2020": {
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
+        },
+        "webui_tab_strip:top10:loading:2020": {
             "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         }
     },

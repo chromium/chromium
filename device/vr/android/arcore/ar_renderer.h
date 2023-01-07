@@ -1,11 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef DEVICE_VR_ANDROID_ARCORE_AR_RENDERER_H_
 #define DEVICE_VR_ANDROID_ARCORE_AR_RENDERER_H_
 
-#include "base/macros.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace device {
@@ -15,6 +14,10 @@ namespace device {
 class ArRenderer {
  public:
   ArRenderer();
+
+  ArRenderer(const ArRenderer&) = delete;
+  ArRenderer& operator=(const ArRenderer&) = delete;
+
   ~ArRenderer();
 
   void Draw(int texture_handle, const float (&uv_transform)[16]);
@@ -27,8 +30,6 @@ class ArRenderer {
   GLuint uv_transform_ = 0;
   GLuint vertex_buffer_ = 0;
   GLuint index_buffer_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ArRenderer);
 };
 
 }  // namespace device

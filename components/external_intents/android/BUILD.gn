@@ -1,4 +1,4 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -6,8 +6,7 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/components/external_intents/AuthenticatorNavigationInterceptor.java",
-    "java/src/org/chromium/components/external_intents/ExternalIntentsFeatureList.java",
+    "java/src/org/chromium/components/external_intents/ExternalIntentsFeatures.java",
     "java/src/org/chromium/components/external_intents/ExternalIntentsSwitches.java",
     "java/src/org/chromium/components/external_intents/ExternalNavigationDelegate.java",
     "java/src/org/chromium/components/external_intents/ExternalNavigationHandler.java",
@@ -21,8 +20,13 @@ android_library("java") {
   deps = [
     ":java_resources",
     "//base:base_java",
+    "//base:jni_java",
+    "//build/android:build_java",
     "//components/embedder_support/android:util_java",
+    "//components/messages/android:java",
     "//components/navigation_interception/android:navigation_interception_java",
+    "//components/strings:components_strings_grd",
+    "//components/url_formatter/android:url_formatter_java",
     "//components/webapk/android/libs/client:java",
     "//content/public/android:content_java",
     "//services/network/public/mojom:url_loader_base_java",
@@ -39,21 +43,21 @@ android_resources("java_resources") {
   sources = []
   deps = [
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
-    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java_resources",
   ]
 }
 
 generate_jni("jni_headers") {
   sources = [
-    "java/src/org/chromium/components/external_intents/ExternalIntentsFeatureList.java",
+    "java/src/org/chromium/components/external_intents/ExternalIntentsFeatures.java",
     "java/src/org/chromium/components/external_intents/InterceptNavigationDelegateImpl.java",
   ]
 }
 
 static_library("android") {
   sources = [
-    "external_intents_feature_list.cc",
-    "external_intents_feature_list.h",
+    "external_intents_features.cc",
+    "external_intents_features.h",
     "intercept_navigation_delegate_impl.cc",
   ]
 
@@ -65,7 +69,7 @@ static_library("android") {
   ]
 }
 
-android_library("javatests") {
+android_library("unit_device_javatests") {
   testonly = true
 
   sources = [
@@ -80,13 +84,53 @@ android_library("javatests") {
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_sdk:android_test_mock_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
     "//url:gurl_java",
     "//url:gurl_junit_test_support",
     "//url:origin_java",
   ]
+}
+
+android_library("test_support_java") {
+  testonly = true
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  sources = [ "javatests/src/org/chromium/components/external_intents/TestChildFrameNavigationObserver.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:jni_java",
+    "//build/android:build_java",
+    "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test_child_frame_navigation_observer.cc",
+    "test_child_frame_navigation_observer.h",
+  ]
+
+  deps = [
+    ":test_support_java_jni_headers",
+    "//base",
+    "//content/public/browser:browser",
+  ]
+}
+
+generate_jni("test_support_java_jni_headers") {
+  testonly = true
+
+  sources = [ "javatests/src/org/chromium/components/external_intents/TestChildFrameNavigationObserver.java" ]
 }

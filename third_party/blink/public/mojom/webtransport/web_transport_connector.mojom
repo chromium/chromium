@@ -1,0 +1,19 @@
+// Copyright 2019 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/network/public/mojom/web_transport.mojom";
+import "url/mojom/url.mojom";
+
+// An interface for creating a WebTransport connection from the renderer,
+// implemented in the browser process.
+interface WebTransportConnector {
+  // Starts an opening handshake.
+  // It is recommended to detect mojo connection errors on |client|.
+  Connect(
+    url.mojom.Url url,
+    array<network.mojom.WebTransportCertificateFingerprint> fingerprints,
+    pending_remote<network.mojom.WebTransportHandshakeClient> client);
+};

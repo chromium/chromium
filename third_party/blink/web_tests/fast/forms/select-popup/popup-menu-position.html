@@ -1,183 +1,180 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/picker-common.js"></script>
-</head>
-<body>
+
 <style>
 select {
     position: absolute;
-    -webkit-appearance: none;
 }
 </style>
-<select id="menu" style="width: 200px; height: 10px;">
-</select>
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
+
+<select style="width: 200px; height: 10px;"></select>
+
 <script>
-var menu = document.getElementById('menu');
-var screenWidth = 500;
-var screenHeight = 500;
-var menuWidth = 200;
-var menuHeight = 10;
-test1();
+window.onload = () => {
+  var menu = document.querySelector('select');
+  var screenWidth = 500;
+  var screenHeight = 500;
+  var menuWidth = 200;
+  var menuHeight = 10;
 
-function openPickerErrorCallback() {
-    testFailed('picker didn\'t open')
-    finishJSTest();
-}
+  function getPopupWindowRect() {
+      return new internals.pagePopupWindow.Rectangle(internals.pagePopupWindow.screenX - window.screen.availLeft, internals.pagePopupWindow.screenY - window.screen.availTop, internals.pagePopupWindow.innerWidth, internals.pagePopupWindow.innerHeight);
+  }
 
-function test1() {
+  function setItemCount(count) {
+      menu.innerHTML = '';
+      for (var i = 0; i < count; i++) {
+          var option = document.createElement('option');
+          menu.appendChild(option);
+      }
+  }
+
+  function injectFakeScreenSize() {
+      Object.defineProperty(internals.pagePopupWindow, 'screen', {
+          value: {
+              width: screenWidth,
+              height: screenHeight,
+              availLeft: window.screen.availLeft,
+              availTop: window.screen.availTop,
+              availWidth: screenWidth,
+              availHeight: screenHeight
+          }
+      });
+  }
+
+  function injectFakeItemSize(width, height, callback) {
+      var style = internals.pagePopupWindow.document.createElement('style');
+      style.innerHTML = 'select { width: ' + width + 'px !important; } option { height: ' + height + 'px; }';
+      internals.pagePopupWindow.document.body.appendChild(style);
+      internals.pagePopupWindow.global.picker._fixWindowSize();
+      internals.pagePopupWindow.addEventListener('resize', callback, false);
+  }
+
+  promise_test(() => {
     // Position menu at top left.
     menu.style.top = 0;
     menu.style.left = 0;
     setItemCount(1);
-    openPicker(menu, function () {
-        injectFakeScreenSize()
-        injectFakeItemSize(20, 100, test2);
-    }, openPickerErrorCallback);
-}
-
-function test2() {
-    popupWindowRect = getPopupWindowRect();
-    shouldBe('popupWindowRect.x', '0');
-    shouldBe('popupWindowRect.y', 'menuHeight');
-
-    popupWindow.pagePopupController.closePopup();
-    // Position menu at bottom right.
-    menu.style.top = (screenHeight - menuHeight) + 'px';
-    menu.style.left = (screenWidth - menuWidth) + 'px';
-    setItemCount(1);
-    openPicker(menu, function () {
-        injectFakeScreenSize();
-        injectFakeItemSize(20, 100, test3);
-    }, openPickerErrorCallback);
-}
-
-function test3() {
-    popupWindowRect = getPopupWindowRect();
-    shouldBe('popupWindowRect.x', 'screenWidth - popupWindowRect.width');
-    shouldBe('popupWindowRect.y', 'screenHeight - popupWindowRect.height - menuHeight');
-
-    popupWindow.pagePopupController.closePopup();
-    // Position menu at right edge, clipped.
-    menu.style.top = '0';
-    menu.style.left = (screenWidth - 100) + 'px';
-    setItemCount(1);
-    openPicker(menu, function () {
-        injectFakeScreenSize();
-        injectFakeItemSize(200, 100, test4);
-    }, openPickerErrorCallback);
-}
-
-function test4() {
-    popupWindowRect = getPopupWindowRect();
-    shouldBe('popupWindowRect.x', 'screenWidth - 100');
-    shouldBe('popupWindowRect.y', 'menuHeight');
-
-    popupWindow.pagePopupController.closePopup();
-    // Position menu at left edge, clipped.
-    menu.style.top = '0';
-    menu.style.left = '-100px';
-    setItemCount(1);
-    openPicker(menu, function () {
-        injectFakeScreenSize();
-        injectFakeItemSize(200, 100, test5);
-    }, openPickerErrorCallback);
-}
-
-function test5() {
-    popupWindowRect = getPopupWindowRect();
-    shouldBe('popupWindowRect.x', '0');
-    shouldBe('popupWindowRect.y', 'menuHeight');
-
-    popupWindow.pagePopupController.closePopup();
-    // Position close to right edge.
-    menu.style.top = '0';
-    menu.style.left = (screenWidth - menuWidth - 10) + 'px';
-    setItemCount(1);
-    openPicker(menu, function () {
-        injectFakeScreenSize();
-        injectFakeItemSize(250, 100, test6);
-    }, openPickerErrorCallback);
-}
-
-function test6() {
-    popupWindowRect = getPopupWindowRect();
-    shouldBe('popupWindowRect.x', 'screenWidth - 250 - 10');
-    shouldBe('popupWindowRect.y', 'menuHeight');
-
-    popupWindow.pagePopupController.closePopup();
-    // Position close to bottom edge.
-    menu.style.top = (screenHeight - 100) + 'px';
-    menu.style.left = '0';
-    setItemCount(2);
-    openPicker(menu, function () {
-        injectFakeScreenSize();
-        injectFakeItemSize(200, 100, test7);
-    }, openPickerErrorCallback);
-}
-
-function test7() {
-    popupWindowRect = getPopupWindowRect();
-    // Popup should appear right at the right edge of the screen.
-    shouldBe('popupWindowRect.x', '0');
-    shouldBe('popupWindowRect.y', 'screenHeight - 100 - popupWindowRect.height');
-
-
-    popupWindow.pagePopupController.closePopup();
-    // Apply transform.
-    menu.style.transform = 'scale(1.2)';
-    menu.style.top = '100px';
-    menu.style.left = '100px';
-    setItemCount(1);
-    openPicker(menu, function () {
-        injectFakeScreenSize();
-        injectFakeItemSize(200, 100, test8);
-    }, openPickerErrorCallback);
-}
-
-function test8() {
-    popupWindowRect = getPopupWindowRect();
-    shouldBe('popupWindowRect.x', '100 - menuWidth * 0.1');
-    shouldBe('popupWindowRect.y', '100 + menuHeight * 1.1');
-
-    finishJSTest();
-}
-
-function getPopupWindowRect() {
-    return new popupWindow.Rectangle(popupWindow.screenX - window.screen.availLeft, popupWindow.screenY - window.screen.availTop, popupWindow.innerWidth, popupWindow.innerHeight);
-}
-
-function setItemCount(count) {
-    menu.innerHTML = '';
-    for (var i = 0; i < count; i++) {
-        var option = document.createElement('option');
-        menu.appendChild(option);
-    }
-}
-
-function injectFakeScreenSize() {
-    Object.defineProperty(popupWindow, 'screen', {
-        value: {
-            width: screenWidth,
-            height: screenHeight,
-            availLeft: window.screen.availLeft,
-            availTop: window.screen.availTop,
-            availWidth: screenWidth,
-            availHeight: screenHeight
-        }
+    return openPicker(menu)
+    .then(() => {
+      injectFakeScreenSize()
+      return new Promise(resolve => injectFakeItemSize(20, 100, resolve));
+    })
+    .then(() => {
+      popupWindowRect = getPopupWindowRect();
+      assert_equals(popupWindowRect.x, 0);
+      assert_equals(popupWindowRect.y, -15);
+      return attemptToClosePicker(menu);
+    })
+    .then(() => {
+      // Position menu at bottom right.
+      menu.style.top = (screenHeight - menuHeight) + 'px';
+      menu.style.left = (screenWidth - menuWidth) + 'px';
+      setItemCount(1);
+      return openPicker(menu);
+    })
+    .then(() => {
+      injectFakeScreenSize();
+      return new Promise(resolve => injectFakeItemSize(20, 100, resolve));
+    })
+    .then(() => {
+      popupWindowRect = getPopupWindowRect();
+      assert_equals(popupWindowRect.x, screenWidth - popupWindowRect.width);
+      assert_equals(popupWindowRect.y, screenHeight - popupWindowRect.height - menuHeight);
+      return attemptToClosePicker(menu);
+    })
+    .then(() => {
+      // Position menu at right edge, clipped.
+      menu.style.top = '0';
+      menu.style.left = (screenWidth - 100) + 'px';
+      setItemCount(1);
+      return openPicker(menu);
+    })
+    .then(() => {
+      injectFakeScreenSize();
+      return new Promise(resolve => injectFakeItemSize(200, 100, resolve));
+    })
+    .then(() => {
+      popupWindowRect = getPopupWindowRect();
+      assert_equals(popupWindowRect.x, screenWidth - 100);
+      assert_equals(popupWindowRect.y, menuHeight);
+      return attemptToClosePicker(menu);
+    })
+    .then(() => {
+      // Position menu at left edge, clipped.
+      menu.style.top = '0';
+      menu.style.left = '-100px';
+      setItemCount(1);
+      return openPicker(menu);
+    })
+    .then(() => {
+      injectFakeScreenSize();
+      injectFakeItemSize(200, 100, test5);
+      return new Promise(resolve => injectFakeItemSize(200, 100, resolve));
+    })
+    .then(() => {
+      popupWindowRect = getPopupWindowRect();
+      assert_equals(popupWindowRect.x, 0);
+      assert_equals(popupWindowRect.y, menuHeight);
+      return attemptToClosePicker(menu);
+    })
+    .then(() => {
+      // Position close to right edge.
+      menu.style.top = '0';
+      menu.style.left = (screenWidth - menuWidth - 10) + 'px';
+      setItemCount(1);
+      return openPicker(menu);
+    })
+    .then(() => {
+      injectFakeScreenSize();
+      return new Promise(resolve => injectFakeItemSize(250, 100, resolve));
+    })
+    .then(() => {
+      popupWindowRect = getPopupWindowRect();
+      assert_equals(popupWindowRect.x, screenWidth - 250 - 10);
+      assert_equals(popupWindowRect.y, menuHeight);
+      return attemptToClosePicker(menu);
+    })
+    .then(() => {
+      // Position close to bottom edge.
+      menu.style.top = (screenHeight - 100) + 'px';
+      menu.style.left = '0';
+      setItemCount(2);
+      return openPicker(menu);
+    })
+    .then(() => {
+      injectFakeScreenSize();
+      return new Promise(resolve => injectFakeItemSize(200, 100, resolve));
+    })
+    .then(() => {
+      popupWindowRect = getPopupWindowRect();
+      // Popup should appear right at the right edge of the screen.
+      assert_equals(popupWindowRect.x, 0);
+      assert_equals(popupWindowRect.y, screenHeight - 100 - popupWindowRect.height);
+      return attemptToClosePicker(menu);
+    })
+    .then(() => {
+      // Apply transform.
+      menu.style.transform = 'scale(1.2)';
+      menu.style.top = '100px';
+      menu.style.left = '100px';
+      setItemCount(1);
+      return openPicker(menu);
+    })
+    .then(() => {
+      injectFakeScreenSize();
+      return new Promise(resolve => injectFakeItemSize(200, 100, resolve));
+    })
+    .then(() => {
+      popupWindowRect = getPopupWindowRect();
+      assert_equals(popupWindowRect.x, 100 - menuWidth * 0.1);
+      assert_equals(popupWindowRect.y, 100 + menuHeight * 1.1);
+      finishJSTest();
     });
-}
-
-function injectFakeItemSize(width, height, callback) {
-    var style = popupWindow.document.createElement('style');
-    style.innerHTML = 'select { width: ' + width + 'px !important; } option { height: ' + height + 'px; }';
-    popupWindow.document.body.appendChild(style);
-    popupWindow.global.picker._fixWindowSize();
-    popupWindow.addEventListener('resize', callback, false);
-}
+  }, 'popup menu position');
+};
 </script>
-</body>
-</html>

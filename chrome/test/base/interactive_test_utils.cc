@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -57,12 +57,6 @@ void BrowserActivationWaiter::OnBrowserSetLastActive(Browser* browser) {
   if (browser != browser_)
     return;
 
-// On Mac, BrowserWindowCocoa::Show() sets the active browser before the
-// window becomes the key window.
-#if !defined(OS_MAC)
-  EXPECT_TRUE(browser->window()->IsActive());
-#endif
-
   observed_ = true;
   BrowserList::RemoveObserver(this);
   if (run_loop_.running())
@@ -100,7 +94,7 @@ void BrowserDeactivationWaiter::OnBrowserNoLongerActive(Browser* browser) {
 }
 
 bool BringBrowserWindowToFront(const Browser* browser) {
-  gfx::NativeWindow window = NULL;
+  gfx::NativeWindow window = nullptr;
   if (!GetNativeWindow(browser, &window))
     return false;
 
@@ -118,7 +112,7 @@ bool SendKeyPressSync(const Browser* browser,
                       bool shift,
                       bool alt,
                       bool command) {
-  gfx::NativeWindow window = NULL;
+  gfx::NativeWindow window = nullptr;
   if (!GetNativeWindow(browser, &window))
     return false;
   return SendKeyPressToWindowSync(window, key, control, shift, alt, command);
@@ -130,7 +124,7 @@ bool SendKeyPressToWindowSync(const gfx::NativeWindow window,
                               bool shift,
                               bool alt,
                               bool command) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(key != ui::VKEY_ESCAPE || !control)
       << "'ctrl + esc' opens start menu on Windows. Start menu on windows "
          "2012 is a full-screen always on top window. It breaks all "
@@ -142,7 +136,7 @@ bool SendKeyPressToWindowSync(const gfx::NativeWindow window,
   bool result;
   result = ui_controls::SendKeyPressNotifyWhenDone(
       window, key, control, shift, alt, command, runner->QuitClosure());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!result && ui_test_utils::ShowAndFocusNativeWindow(window)) {
     result = ui_controls::SendKeyPressNotifyWhenDone(
         window, key, control, shift, alt, command, runner->QuitClosure());

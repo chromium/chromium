@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,16 +24,17 @@ extern const char kComponentHintsUpdatedResultHistogramString[];
 // Keep in sync with OptimizationGuideProcessHintsResult in
 // tools/metrics/histograms/enums.xml.
 enum class ProcessHintsComponentResult {
-  kSuccess,
-  kFailedInvalidParameters,
-  kFailedReadingFile,
-  kFailedInvalidConfiguration,
-  kFailedFinishProcessing,
-  kSkippedProcessingHints,
-  kProcessedNoHints,
+  kSuccess = 0,
+  kFailedInvalidParameters = 1,
+  kFailedReadingFile = 2,
+  kFailedInvalidConfiguration = 3,
+  kFailedFinishProcessing = 4,
+  kSkippedProcessingHints = 5,
+  kProcessedNoHints = 6,
+  kFailedPreviouslyAttemptedVersionInvalid = 7,
 
   // Insert new values before this line.
-  kMaxValue = kProcessedNoHints,
+  kMaxValue = kFailedPreviouslyAttemptedVersionInvalid,
 };
 
 // Records the ProcessHintsComponentResult to UMA.

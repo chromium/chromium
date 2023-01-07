@@ -1,4 +1,4 @@
 monorail {
-  component: "Internals>ResourceCoordinator"
+  component: "Internals>PerformanceManager"
 }
-team_email: "chrome-catan@chromium.org"
+team_email: "catan-team@chromium.org"

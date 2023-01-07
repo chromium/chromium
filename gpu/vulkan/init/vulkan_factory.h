@@ -1,4 +1,4 @@
-// Copyright (c) 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,8 +15,7 @@ namespace gpu {
 COMPONENT_EXPORT(VULKAN_INIT)
 std::unique_ptr<VulkanImplementation> CreateVulkanImplementation(
     bool use_swiftshader = false,
-    bool allow_protected_memory = false,
-    bool enforce_protected_memory = false);
+    bool allow_protected_memory = false);
 
 }  // namespace gpu
 

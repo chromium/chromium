@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,38 +8,46 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
-#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
 
 namespace {
 
-std::unique_ptr<views::Textfield> MakePinTextField(
-    views::TextfieldController* controller,
-    views::View* label) {
-  constexpr int kMinWidthInChars = 6;
-  constexpr int kDefaultWidthInChars = 20;
-  constexpr int kBottomBorderThickness = 2;
+class PinTextfield : public views::Textfield {
+ public:
+  PinTextfield(views::TextfieldController* controller, views::View* label) {
+    SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_PASSWORD);
+    SetMinimumWidthInChars(6);
+    SetDefaultWidthInChars(20);
 
-  auto field = std::make_unique<views::Textfield>();
-  field->SetTextInputType(ui::TextInputType::TEXT_INPUT_TYPE_PASSWORD);
-  field->SetMinimumWidthInChars(kMinWidthInChars);
-  field->SetDefaultWidthInChars(kDefaultWidthInChars);
-  field->SetBorder(views::CreateSolidSidedBorder(0, 0, kBottomBorderThickness,
-                                                 0, gfx::kGoogleBlue500));
-  field->set_controller(controller);
-  field->SetAssociatedLabel(label);
-  return field;
-}
+    set_controller(controller);
+    SetAssociatedLabel(label);
+  }
+  PinTextfield(const PinTextfield&) = delete;
+  PinTextfield& operator=(const PinTextfield&) = delete;
+  ~PinTextfield() override = default;
+
+  void OnThemeChanged() override {
+    views::Textfield::OnThemeChanged();
+    constexpr int kBottomBorderThickness = 2;
+    SetBorder(views::CreateSolidSidedBorder(
+        gfx::Insets::TLBR(0, 0, kBottomBorderThickness, 0),
+        GetColorProvider()->GetColor(kColorWebAuthnPinTextfieldBottomBorder)));
+  }
+};
 
 }  // namespace
 
@@ -48,57 +56,59 @@ AuthenticatorClientPinEntryView::AuthenticatorClientPinEntryView(
     bool show_confirmation_text_field)
     : delegate_(delegate),
       show_confirmation_text_field_(show_confirmation_text_field) {
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
-  views::ColumnSet* columns = layout->AddColumnSet(0);
+  auto* layout = SetLayoutManager(std::make_unique<views::TableLayout>());
 
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
-  columns->AddPaddingColumn(views::GridLayout::kFixedSize, 10);
-  columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
-                     views::GridLayout::kFixedSize,
-                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  layout
+      ->AddColumn(views::LayoutAlignment::kStart,
+                  views::LayoutAlignment::kStart,
+                  views::TableLayout::kFixedSize,
+                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(views::TableLayout::kFixedSize, 10)
+      .AddColumn(views::LayoutAlignment::kStart, views::LayoutAlignment::kStart,
+                 views::TableLayout::kFixedSize,
+                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(2, views::TableLayout::kFixedSize);
 
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-
-  auto pin_label = std::make_unique<views::Label>(
+  pin_label_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_ENTRY_PIN_LABEL),
-      views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
-  pin_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  pin_label->SetEnabledColor(gfx::kGoogleBlue500);
-  auto* pin_label_ptr = layout->AddView(std::move(pin_label));
+      views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
+  pin_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
-  views::View* confirmation_label_ptr = nullptr;
   if (show_confirmation_text_field_) {
-    auto confirmation_label = std::make_unique<views::Label>(
+    confirmation_label_ = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_WEBAUTHN_PIN_SETUP_CONFIRMATION_LABEL),
-        views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY);
-    confirmation_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    confirmation_label->SetEnabledColor(gfx::kGoogleBlue500);
-    confirmation_label_ptr = confirmation_label.get();
-    layout->AddView(std::move(confirmation_label));
+        views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY));
+    confirmation_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  } else {
+    // For TableLayout, we must add a filler view to the empty cell.
+    AddChildView(std::make_unique<views::View>());
   }
 
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-
-  pin_text_field_ = layout->AddView(MakePinTextField(this, pin_label_ptr));
+  pin_text_field_ =
+      AddChildView(std::make_unique<PinTextfield>(this, pin_label_));
 
   if (show_confirmation_text_field_) {
-    DCHECK(confirmation_label_ptr);
-    auto confirmation_text_field =
-        MakePinTextField(this, confirmation_label_ptr);
-    confirmation_text_field_ = confirmation_text_field.get();
-    layout->AddView(std::move(confirmation_text_field));
+    DCHECK(confirmation_label_);
+    confirmation_text_field_ = AddChildView(
+        std::make_unique<PinTextfield>(this, confirmation_label_));
+  } else {
+    AddChildView(std::make_unique<views::View>());
   }
-
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
 }
 
 AuthenticatorClientPinEntryView::~AuthenticatorClientPinEntryView() = default;
 
 void AuthenticatorClientPinEntryView::RequestFocus() {
   pin_text_field_->RequestFocus();
+}
+
+void AuthenticatorClientPinEntryView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  const auto* const color_provider = GetColorProvider();
+  const SkColor label_color = color_provider->GetColor(ui::kColorAccent);
+  pin_label_->SetEnabledColor(label_color);
+  if (confirmation_label_)
+    confirmation_label_->SetEnabledColor(label_color);
 }
 
 void AuthenticatorClientPinEntryView::ContentsChanged(

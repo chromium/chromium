@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,26 +6,33 @@
 
 #include <tuple>
 
-#include "base/base64.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector.h"
+#include "chrome/browser/policy/messaging_layer/util/reporting_server_connector_test_util.h"
+#include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
+#include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
-#include "components/reporting/proto/record.pb.h"
-#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/proto/synced/record.pb.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/resources/memory_resource_impl.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -59,57 +66,6 @@ MATCHER_P(EqualsProto,
   return expected_serialized == actual_serialized;
 }
 
-// Helper function composes JSON represented as base::Value from Sequencing
-// information in request.
-base::Value ValueFromSucceededSequencingInfo(
-    const base::Optional<base::Value> request,
-    bool force_confirm_flag) {
-  EXPECT_TRUE(request.has_value());
-  EXPECT_TRUE(request.value().is_dict());
-  base::Value response(base::Value::Type::DICTIONARY);
-
-  // Retrieve and process data
-  const base::Value* const encrypted_record_list =
-      request.value().FindListKey("encryptedRecord");
-  EXPECT_TRUE(encrypted_record_list != nullptr);
-  EXPECT_FALSE(encrypted_record_list->GetList().empty());
-
-  // Retrieve and process sequencing information
-  const base::Value* unsigned_seq_info =
-      encrypted_record_list->GetList().rbegin()->FindDictKey(
-          "sequencingInformation");
-  EXPECT_TRUE(unsigned_seq_info != nullptr);
-  const base::Value* seq_info =
-      encrypted_record_list->GetList().rbegin()->FindDictKey(
-          "sequenceInformation");
-  EXPECT_TRUE(seq_info != nullptr);
-  response.SetPath("lastSucceedUploadedRecord", seq_info->Clone());
-
-  // If forceConfirm confirm is expected, set it.
-  if (force_confirm_flag) {
-    response.SetPath("forceConfirm", base::Value(true));
-  }
-
-  // If attach_encryption_settings it true, process that.
-  const auto attach_encryption_settings =
-      request.value().FindBoolKey("attachEncryptionSettings");
-  if (attach_encryption_settings.has_value() &&
-      attach_encryption_settings.value()) {
-    base::Value encryption_settings{base::Value::Type::DICTIONARY};
-    std::string public_key;
-    base::Base64Encode("PUBLIC KEY", &public_key);
-    encryption_settings.SetStringKey("publicKey", public_key);
-    encryption_settings.SetIntKey("publicKeyId", 12345);
-    std::string public_key_signature;
-    base::Base64Encode("PUBLIC KEY SIG", &public_key_signature);
-    encryption_settings.SetStringKey("publicKeySignature",
-                                     public_key_signature);
-    response.SetPath("encryptionSettings", std::move(encryption_settings));
-  }
-
-  return response;
-}
-
 class UploadClientTest : public ::testing::TestWithParam<
                              ::testing::tuple</*need_encryption_key*/ bool,
                                               /*force_confirm*/ bool>> {
@@ -118,6 +74,9 @@ class UploadClientTest : public ::testing::TestWithParam<
 
  protected:
   void SetUp() override {
+    memory_resource_ = base::MakeRefCounted<MemoryResourceImpl>(
+        4u * 1024LLu * 1024LLu);  // 4 MiB
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Set up fake primary profile.
     auto mock_user_manager =
@@ -141,6 +100,7 @@ class UploadClientTest : public ::testing::TestWithParam<
     user_manager_.reset();
     profile_.reset();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    EXPECT_THAT(memory_resource_->GetUsed(), Eq(0uL));
   }
 
   bool need_encryption_key() const { return std::get<0>(GetParam()); }
@@ -152,6 +112,7 @@ class UploadClientTest : public ::testing::TestWithParam<
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  scoped_refptr<ResourceInterface> memory_resource_;
 };
 
 using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
@@ -171,20 +132,23 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   record->set_data(json_data);
   record->set_destination(Destination::UPLOAD_EVENTS);
 
+  ScopedReservation total_reservation(0uL, memory_resource_);
   std::string serialized_record;
   wrapped_record.SerializeToString(&serialized_record);
-  std::unique_ptr<std::vector<EncryptedRecord>> records =
-      std::make_unique<std::vector<EncryptedRecord>>();
+  std::vector<EncryptedRecord> records;
   for (int64_t i = 0; i < kExpectedCallTimes; i++) {
     EncryptedRecord encrypted_record;
     encrypted_record.set_encrypted_wrapped_record(serialized_record);
-
-    SequencingInformation* sequencing_information =
-        encrypted_record.mutable_sequencing_information();
-    sequencing_information->set_sequencing_id(static_cast<int64_t>(i));
-    sequencing_information->set_generation_id(kGenerationId);
-    sequencing_information->set_priority(Priority::IMMEDIATE);
-    records->push_back(encrypted_record);
+    SequenceInformation* sequence_information =
+        encrypted_record.mutable_sequence_information();
+    sequence_information->set_sequencing_id(static_cast<int64_t>(i));
+    sequence_information->set_generation_id(kGenerationId);
+    sequence_information->set_priority(Priority::IMMEDIATE);
+    ScopedReservation record_reservation(encrypted_record.ByteSizeLong(),
+                                         memory_resource_);
+    EXPECT_TRUE(record_reservation.reserved());
+    total_reservation.HandOver(record_reservation);
+    records.push_back(encrypted_record);
   }
 
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
@@ -203,40 +167,64 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   client->SetDMToken(
       policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
 
-  const bool force_confirm_flag = force_confirm();
-  EXPECT_CALL(*client, UploadEncryptedReport(_, _, _))
-      .WillOnce(WithArgs<0, 2>(
-          Invoke([&force_confirm_flag](
-                     base::Value request,
-                     policy::CloudPolicyClient::ResponseCallback response_cb) {
-            std::move(response_cb)
-                .Run(ValueFromSucceededSequencingInfo(std::move(request),
-                                                      force_confirm_flag));
-          })));
+  static constexpr char matched_record_template[] =
+      R"JSON(
+{
+  "sequenceInformation": {
+    "generationId": "1234",
+    "priority": 1,
+    "sequencingId": "%d"
+  }
+}
+)JSON";
+  EXPECT_CALL(*client, UploadEncryptedReport(
+                           AllOf(IsDataUploadRequestValid(),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 0)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 1)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 2)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 3)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 4)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 5)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 6)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 7)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 8)),
+                                 DoesRequestContainRecord(base::StringPrintf(
+                                     matched_record_template, 9))),
+                           _, _))
+      .WillOnce(MakeUploadEncryptedReportAction(
+          std::move(ResponseBuilder().SetForceConfirm(force_confirm()))));
 
-  test::TestMultiEvent<SequencingInformation, bool> upload_completion;
-  UploadClient::ReportSuccessfulUploadCallback completion_cb =
-      upload_completion.cb();
+  test::TestMultiEvent<SequenceInformation, bool> upload_success_event;
 
   // Save last record seq info for verification.
-  const SequencingInformation last_record_seq_info =
-      records->back().sequencing_information();
+  const SequenceInformation last_record_seq_info =
+      records.back().sequence_information();
 
+  ReportingServerConnector::TestEnvironment test_env(client.get());
   test::TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
-  UploadClient::Create(client.get(), completion_cb, encryption_key_attached_cb,
-                       e.cb());
+  UploadClient::Create(e.cb());
   StatusOr<std::unique_ptr<UploadClient>> upload_client_result = e.result();
   ASSERT_OK(upload_client_result) << upload_client_result.status();
 
   auto upload_client = std::move(upload_client_result.ValueOrDie());
-  auto enqueue_result =
-      upload_client->EnqueueUpload(need_encryption_key(), std::move(records));
+  auto enqueue_result = upload_client->EnqueueUpload(
+      need_encryption_key(), std::move(records), std::move(total_reservation),
+      upload_success_event.repeating_cb(), encryption_key_attached_cb);
   EXPECT_TRUE(enqueue_result.ok());
 
-  auto completion_result = upload_completion.result();
-  EXPECT_THAT(std::get<0>(completion_result),
+  auto upload_success_result = upload_success_event.result();
+  EXPECT_THAT(std::get<0>(upload_success_result),
               EqualsProto(last_record_seq_info));
-  EXPECT_THAT(std::get<1>(completion_result), Eq(force_confirm()));
+  EXPECT_THAT(std::get<1>(upload_success_result), Eq(force_confirm()));
 }
 
 INSTANTIATE_TEST_SUITE_P(

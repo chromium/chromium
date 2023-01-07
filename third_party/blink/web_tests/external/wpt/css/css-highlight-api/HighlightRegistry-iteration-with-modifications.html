@@ -5,13 +5,15 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
   'use strict';
-  let customHighlight1 = new Highlight("example1");
-  let customHighlight2 = new Highlight("example2");
+  let customHighlight1 = new Highlight();
+  let customHighlight2 = new Highlight();
+  let highlightName1 = "example1";
+  let highlightName2 = "example2";
 
   // Test insertions using .add
   test(() => {
     let iterator = CSS.highlights[Symbol.iterator]();
-    CSS.highlights.add(customHighlight1);
+    CSS.highlights.set(highlightName1, customHighlight1);
     let element = iterator.next();
     assert_true(element.done, 'The iteration ends although we added a new Highlight after starting the iteration');
     assert_equals(element.value, undefined, 'A Highlight added after starting the iteration is not found during the current iteration');
@@ -20,12 +22,13 @@
   CSS.highlights.clear();
 
   test(() => {
-    CSS.highlights.add(customHighlight1);
+    CSS.highlights.set(highlightName1, customHighlight1);
     let iterator = CSS.highlights[Symbol.iterator]();
-    CSS.highlights.add(customHighlight2);
+    CSS.highlights.set(highlightName2, customHighlight2);
     let element = iterator.next();
     assert_false(element.done, 'The iteration doesn\'t end although there was a second Highlight added to the HighlightRegistry after starting the iteration');
-    assert_equals(element.value, customHighlight1, 'The Highlight that was pointed to by the iterator is returned although a second Highlight was added after starting the iteration');
+    assert_equals(element.value[0], highlightName1, 'The highlight name that was pointed to by the iterator is returned although a second Highlight was added after starting the iteration');
+    assert_equals(element.value[1], customHighlight1, 'The Highlight that was pointed to by the iterator is returned although a second Highlight was added after starting the iteration');
     element = iterator.next();
     assert_true(element.done, 'The iteration ends after going through all the Highlights that were in the HighlightRegistry when the iteration started although there was a Highlight addition after starting the iteration');
     assert_equals(element.value, undefined, 'A Highlight added after starting the iteration is not found during the current iteration');
@@ -35,12 +38,13 @@
 
   // Test deletions using .delete
   test(() => {
-    CSS.highlights.add(customHighlight1);
+    CSS.highlights.set(highlightName1, customHighlight1);
     let iterator = CSS.highlights[Symbol.iterator]();
-    CSS.highlights.delete(customHighlight1);
+    CSS.highlights.delete(highlightName1);
     let element = iterator.next();
     assert_false(element.done, 'The iteration doesn\'t end although the Highlight that was pointed to by the iterator was deleted');
-    assert_equals(element.value, customHighlight1, 'The Highlight that was pointed to by the iterator is returned although it was deleted after starting the iteration');
+    assert_equals(element.value[0], highlightName1, 'The highlight name that was pointed to by the iterator is returned although it was deleted after starting the iteration');
+    assert_equals(element.value[1], customHighlight1, 'The Highlight that was pointed to by the iterator is returned although it was deleted after starting the iteration');
     element = iterator.next();
     assert_true(element.done, 'The iteration ends after going through all the highlights although the Highlight that was pointed to by the iterator was deleted after starting the iteration');
     assert_equals(element.value, undefined, '.next() returns undefined when the iteration ends');
@@ -49,16 +53,18 @@
   CSS.highlights.clear();
 
   test(() => {
-    CSS.highlights.add(customHighlight1);
-    CSS.highlights.add(customHighlight2);
+    CSS.highlights.set(highlightName1, customHighlight1);
+    CSS.highlights.set(highlightName2, customHighlight2);
     let iterator = CSS.highlights[Symbol.iterator]();
-    CSS.highlights.delete(customHighlight2);
+    CSS.highlights.delete(highlightName2);
     let element = iterator.next();
     assert_false(element.done, 'The iteration doesn\'t end although the Highlight following to the one that was pointed to by the iterator was deleted');
-    assert_equals(element.value, customHighlight1, 'The Highlight that was pointed to by the iterator is returned as it should although the next Highlight was deleted immediately after starting the iteration');
+    assert_equals(element.value[0], highlightName1, 'The highlight name that was pointed to by the iterator is returned as it should although the next Highlight was deleted immediately after starting the iteration');
+    assert_equals(element.value[1], customHighlight1, 'The Highlight that was pointed to by the iterator is returned as it should although the next Highlight was deleted immediately after starting the iteration');
     element = iterator.next();
     assert_false(element.done, 'The iteration doesn\'t end when you call .next twice since the beginning of the iteration although the second Highlight was deleted');
-    assert_equals(element.value, customHighlight2, 'The Highlight that was pointed to by the iterator is returned as it should although the next Highlight was deleted immediately after starting the iteration');
+    assert_equals(element.value[0], highlightName2, 'The highlight name that was pointed to by the iterator is returned as it should although the next Highlight was deleted immediately after starting the iteration');
+    assert_equals(element.value[1], customHighlight2, 'The Highlight that was pointed to by the iterator is returned as it should although the next Highlight was deleted immediately after starting the iteration');
     element = iterator.next();
     assert_true(element.done, 'The iteration ends after going through all the highlights although the second Highlight was deleted immediately after starting the iteration');
     assert_equals(element.value, undefined, '.next() returns undefined when the iteration ends');
@@ -67,16 +73,18 @@
   CSS.highlights.clear();
 
   test(() => {
-    CSS.highlights.add(customHighlight1);
-    CSS.highlights.add(customHighlight2);
+    CSS.highlights.set(highlightName1, customHighlight1);
+    CSS.highlights.set(highlightName2, customHighlight2);
     let iterator = CSS.highlights[Symbol.iterator]();
     let element = iterator.next();
     assert_false(element.done, 'The iteration doesn\'t end when there are still two Highlights to visit');
-    assert_equals(element.value, customHighlight1, 'The Highlight that was pointed to by the iterator is returned as it should');
-    CSS.highlights.delete(customHighlight1);
+    assert_equals(element.value[0], highlightName1, 'The highlight name that was pointed to by the iterator is returned as it should');
+    assert_equals(element.value[1], customHighlight1, 'The Highlight that was pointed to by the iterator is returned as it should');
+    CSS.highlights.delete(highlightName1);
     element = iterator.next();
     assert_false(element.done, 'The iteration doesn\'t end when the Highlight previously visited is deleted and there is still a Highlight to visit');
-    assert_equals(element.value, customHighlight2, 'The Highlight that was pointed to by the iterator is returned as it should although the previous Highlight was deleted after calling .next');
+    assert_equals(element.value[0], highlightName2, 'The highlight name that was pointed to by the iterator is returned as it should although the previous Highlight was deleted after calling .next');
+    assert_equals(element.value[1], customHighlight2, 'The Highlight that was pointed to by the iterator is returned as it should although the previous Highlight was deleted after calling .next');
     element = iterator.next();
     assert_true(element.done, 'The iteration ends after going through all the highlights although the first Highlight was deleted after the first call to .next');
     assert_equals(element.value, undefined, '.next() returns undefined when the iteration ends');
@@ -86,12 +94,13 @@
 
   // Test deletions using .clear
   test(() => {
-    CSS.highlights.add(customHighlight1);
+    CSS.highlights.set(highlightName1, customHighlight1);
     let iterator = CSS.highlights[Symbol.iterator]();
     CSS.highlights.clear();
     let element = iterator.next();
     assert_false(element.done, 'The iteration doesn\'t end although the Highlight that was pointed to by the iterator was deleted using .clear()');
-    assert_equals(element.value, customHighlight1, 'The Highlight that was pointed to by the iterator is returned although it was deleted using .clear() after starting the iteration');
+    assert_equals(element.value[0], highlightName1, 'The highlight name that was pointed to by the iterator is returned although it was deleted using .clear() after starting the iteration');
+    assert_equals(element.value[1], customHighlight1, 'The Highlight that was pointed to by the iterator is returned although it was deleted using .clear() after starting the iteration');
     element = iterator.next();
     assert_true(element.done, 'The iteration ends after going through all the highlights although the Highlight that was pointed to by the iterator was deleted using .clear() after starting the iteration');
     assert_equals(element.value, undefined, '.next() returns undefined when the iteration ends');

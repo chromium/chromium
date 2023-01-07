@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ void DisplayConfigurationObserver::OnDisplaysInitialized() {
   Shell::Get()->tablet_mode_controller()->AddObserver(this);
   // Update the display pref with the initial power state.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(chromeos::switches::kFirstExecAfterBoot))
+  if (command_line->HasSwitch(switches::kFirstExecAfterBoot))
     Shell::Get()->display_prefs()->MaybeStoreDisplayPrefs();
 }
 
@@ -58,21 +58,19 @@ void DisplayConfigurationObserver::StartMirrorMode() {
   // TODO(oshima): Tablet mode defaults to mirror mode until we figure out
   // how to handle this scenario, and we shouldn't save this state.
   // https://crbug.com/733092.
-  save_preference_ = false;
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   was_in_mirror_mode_ = display_manager->IsInMirrorMode();
   display_manager->layout_store()->set_forced_mirror_mode_for_tablet(true);
-  display_manager->SetMirrorMode(display::MirrorMode::kNormal, base::nullopt);
+  display_manager->SetMirrorMode(display::MirrorMode::kNormal, absl::nullopt);
 }
 
 void DisplayConfigurationObserver::EndMirrorMode() {
   if (!was_in_mirror_mode_) {
     Shell::Get()->display_manager()->SetMirrorMode(display::MirrorMode::kOff,
-                                                   base::nullopt);
+                                                   absl::nullopt);
   }
   display::DisplayManager* display_manager = Shell::Get()->display_manager();
   display_manager->layout_store()->set_forced_mirror_mode_for_tablet(false);
-  save_preference_ = true;
 }
 
 }  // namespace ash

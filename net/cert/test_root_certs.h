@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,24 +6,19 @@
 #define NET_CERT_TEST_ROOT_CERTS_H_
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
-#include "net/cert/internal/trust_store_in_memory.h"
+#include "net/cert/pki/trust_store_in_memory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/wincrypt_shim.h"
-#elif defined(OS_APPLE)
+#include "crypto/scoped_capi_types.h"
+#elif BUILDFLAG(IS_APPLE)
 #include <CoreFoundation/CFArray.h>
 #include <Security/SecTrust.h>
 #include "base/mac/scoped_cftyperef.h"
 #endif
-
-namespace base {
-class FilePath;
-}
 
 namespace net {
 
@@ -33,23 +28,19 @@ typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
 // TestRootCerts is a helper class for unit tests that is used to
 // artificially mark a certificate as trusted, independent of the local
 // machine configuration.
+//
+// Test roots can be added using the ScopedTestRoot class below. See the
+// class documentation for usage and limitations.
 class NET_EXPORT TestRootCerts {
  public:
   // Obtains the Singleton instance to the trusted certificates.
   static TestRootCerts* GetInstance();
 
+  TestRootCerts(const TestRootCerts&) = delete;
+  TestRootCerts& operator=(const TestRootCerts&) = delete;
+
   // Returns true if an instance exists, without forcing an initialization.
   static bool HasInstance();
-
-  // Marks |certificate| as trusted in the effective trust store
-  // used by CertVerifier::Verify(). Returns false if the
-  // certificate could not be marked trusted.
-  bool Add(X509Certificate* certificate);
-
-  // Reads a single certificate from |file| and marks it as trusted. Returns
-  // false if an error is encountered, such as being unable to read |file|
-  // or more than one certificate existing in |file|.
-  bool AddFromFile(const base::FilePath& file);
 
   // Clears the trusted status of any certificates that were previously
   // marked trusted via Add().
@@ -58,66 +49,72 @@ class NET_EXPORT TestRootCerts {
   // Returns true if there are no certificates that have been marked trusted.
   bool IsEmpty() const;
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   CFArrayRef temporary_roots() const { return temporary_roots_; }
 
   // Modifies the root certificates of |trust_ref| to include the
   // certificates stored in |temporary_roots_|. If IsEmpty() is true, this
   // does not modify |trust_ref|.
   OSStatus FixupSecTrustRef(SecTrustRef trust_ref) const;
-
-  TrustStore* test_trust_store() { return &test_trust_store_; }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   HCERTSTORE temporary_roots() const { return temporary_roots_; }
 
   // Returns an HCERTCHAINENGINE suitable to be used for certificate
   // validation routines, or NULL to indicate that the default system chain
-  // engine is appropriate. The caller is responsible for freeing the
-  // returned HCERTCHAINENGINE.
-  HCERTCHAINENGINE GetChainEngine() const;
-#elif defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-  TrustStore* test_trust_store() { return &test_trust_store_; }
+  // engine is appropriate.
+  crypto::ScopedHCERTCHAINENGINE GetChainEngine() const;
 #endif
+
+  TrustStore* test_trust_store() { return &test_trust_store_; }
 
  private:
   friend struct base::LazyInstanceTraitsBase<TestRootCerts>;
+  friend class ScopedTestRoot;
 
   TestRootCerts();
   ~TestRootCerts();
 
-  // Performs platform-dependent initialization.
+  // Marks |certificate| as trusted in the effective trust store
+  // used by CertVerifier::Verify(). Returns false if the
+  // certificate could not be marked trusted.
+  bool Add(X509Certificate* certificate);
+
+  // Performs platform-dependent operations.
   void Init();
+  bool AddImpl(X509Certificate* certificate);
+  void ClearImpl();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HCERTSTORE temporary_roots_;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   base::ScopedCFTypeRef<CFMutableArrayRef> temporary_roots_;
-  TrustStoreInMemory test_trust_store_;
-#elif defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS)
-  TrustStoreInMemory test_trust_store_;
 #endif
 
-#if defined(OS_WIN) || defined(OS_ANDROID) || defined(OS_FUCHSIA) || \
-    defined(OS_LINUX) || defined(OS_CHROMEOS)
-  // True if there are no temporarily trusted root certificates.
-  bool empty_ = true;
-#endif
-
-  DISALLOW_COPY_AND_ASSIGN(TestRootCerts);
+  TrustStoreInMemory test_trust_store_;
 };
 
 // Scoped helper for unittests to handle safely managing trusted roots.
-class NET_EXPORT_PRIVATE ScopedTestRoot {
+//
+// Limitations:
+// Multiple instances of ScopedTestRoot may be created at once, which will
+// trust the union of the certs provided. However, when one of the
+// ScopedTestRoot instances removes its trust, either by going out of scope, or
+// by Reset() being called, *all* test root certs will be untrusted. (This
+// limitation could be removed if a reason arises.)
+class NET_EXPORT ScopedTestRoot {
  public:
   ScopedTestRoot();
-  // Creates a ScopedTestRoot that sets |cert| as the single root in the
-  // TestRootCerts store (if there were existing roots they are
-  // cleared).
+  // Creates a ScopedTestRoot that adds |cert| to the TestRootCerts store.
   explicit ScopedTestRoot(X509Certificate* cert);
-  // Creates a ScopedTestRoot that sets |certs| as the only roots in the
-  // TestRootCerts store (if there were existing roots they are
-  // cleared).
+  // Creates a ScopedTestRoot that adds |certs| to the TestRootCerts store.
   explicit ScopedTestRoot(CertificateList certs);
+
+  ScopedTestRoot(const ScopedTestRoot&) = delete;
+  ScopedTestRoot& operator=(const ScopedTestRoot&) = delete;
+
+  ScopedTestRoot(ScopedTestRoot&& other);
+  ScopedTestRoot& operator=(ScopedTestRoot&& other);
+
   ~ScopedTestRoot();
 
   // Assigns |certs| to be the new test root certs. If |certs| is empty, undoes
@@ -127,10 +124,11 @@ class NET_EXPORT_PRIVATE ScopedTestRoot {
   // cleared.
   void Reset(CertificateList certs);
 
+  // Returns true if this ScopedTestRoot has no certs assigned.
+  bool IsEmpty() const { return certs_.empty(); }
+
  private:
   CertificateList certs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedTestRoot);
 };
 
 }  // namespace net

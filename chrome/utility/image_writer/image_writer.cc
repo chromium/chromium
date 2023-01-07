@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,14 +8,14 @@
 
 #include "base/location.h"
 #include "base/memory/aligned_memory.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/utility/image_writer/error_message_strings.h"
 #include "chrome/utility/image_writer/image_writer_handler.h"
 #include "content/public/utility/utility_thread.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/utility/image_writer/disk_unmounter_mac.h"
 #endif
 
@@ -36,7 +36,7 @@ ImageWriter::ImageWriter(ImageWriterHandler* handler,
       handler_(handler) {}
 
 ImageWriter::~ImageWriter() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   for (std::vector<HANDLE>::const_iterator it = volume_handles_.begin();
        it != volume_handles_.end();
        ++it) {
@@ -91,7 +91,7 @@ bool ImageWriter::InitializeFiles() {
   if (!image_file_.IsValid()) {
     image_file_.Initialize(image_path_,
                            base::File::FLAG_OPEN | base::File::FLAG_READ |
-                               base::File::FLAG_EXCLUSIVE_READ);
+                               base::File::FLAG_WIN_EXCLUSIVE_READ);
 
     if (!image_file_.IsValid()) {
       DLOG(ERROR) << "Unable to open file for read: " << image_path_.value();

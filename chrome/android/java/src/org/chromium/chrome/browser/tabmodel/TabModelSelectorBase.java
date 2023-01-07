@@ -1,10 +1,13 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.tabmodel;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -17,7 +20,8 @@ import java.util.List;
 /**
  * Implement methods shared across the different model implementations.
  */
-public abstract class TabModelSelectorBase implements TabModelSelector, IncognitoTabModelObserver {
+public abstract class TabModelSelectorBase
+        implements TabModelSelector, IncognitoTabModelObserver, TabModelDelegate {
     private static final int MODEL_NOT_FOUND = -1;
 
     private static TabModelSelectorObserver sObserver;
@@ -33,9 +37,14 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
 
     private final TabModelFilterFactory mTabModelFilterFactory;
     private int mActiveModelIndex;
+
     private final ObserverList<TabModelSelectorObserver> mObservers = new ObserverList<>();
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
             new ObserverList<>();
+
+    @Nullable
+    protected IncognitoReauthDialogDelegate mIncognitoReauthDialogDelegate;
+
     private boolean mTabStateInitialized;
     private boolean mStartIncognito;
     private boolean mReparentingInProgress;
@@ -98,6 +107,17 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
         sObserver = observer;
     }
 
+    /**
+     * Should be called once the native library is loaded so that the actual internals of this
+     * class can be initialized.
+     *
+     * @param tabContentProvider A {@link TabContentManager} instance.
+     */
+    public void onNativeLibraryReady(TabContentManager tabContentProvider) {}
+
+    @Override
+    public void onTabsViewShown() {}
+
     @Override
     public void selectModel(boolean incognito) {
         if (mTabModels.size() == 0) {
@@ -113,6 +133,12 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
         previousModel.setActive(false);
         newModel.setActive(true);
         mActiveModelIndex = newIndex;
+
+        // Notify the re-auth code first so we show the re-auth dialog first.
+        if (mIncognitoReauthDialogDelegate != null && newModel.isIncognito()) {
+            mIncognitoReauthDialogDelegate.onBeforeIncognitoTabModelSelected();
+        }
+
         for (TabModelSelectorObserver listener : mObservers) {
             listener.onTabModelSelected(newModel, previousModel);
         }
@@ -224,7 +250,7 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
     @Override
     public void closeAllTabs(boolean uponExit) {
         for (int i = 0; i < getModels().size(); i++) {
-            mTabModels.get(i).closeAllTabs(!uponExit, uponExit);
+            mTabModels.get(i).closeAllTabs(uponExit);
         }
     }
 
@@ -246,9 +272,6 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
     public void removeObserver(TabModelSelectorObserver observer) {
         mObservers.removeObserver(observer);
     }
-
-    @Override
-    public void setCloseAllTabsDelegate(CloseAllTabsDelegate delegate) { }
 
     /**
      * Marks the task state being initialized and notifies observers.
@@ -280,7 +303,8 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
      * Notifies all the listeners that the {@link TabModelSelector} or its {@link TabModel} has
      * changed.
      */
-    protected void notifyChanged() {
+    // TODO(tedchoc): Remove the need for this to be exposed.
+    public void notifyChanged() {
         for (TabModelSelectorObserver listener : mObservers) {
             listener.onChange();
         }
@@ -343,5 +367,11 @@ public abstract class TabModelSelectorBase implements TabModelSelector, Incognit
         for (IncognitoTabModelObserver observer : mIncognitoObservers) {
             observer.didBecomeEmpty();
         }
+    }
+
+    @Override
+    public void setIncognitoReauthDialogDelegate(
+            IncognitoReauthDialogDelegate incognitoReauthDialogDelegate) {
+        mIncognitoReauthDialogDelegate = incognitoReauthDialogDelegate;
     }
 }

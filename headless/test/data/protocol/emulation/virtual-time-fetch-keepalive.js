@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,10 +16,9 @@
       FetchHelper.makeContentResponse(`<html></html>`));
 
   await dp.Emulation.setVirtualTimePolicy({policy: 'pause'});
-  await dp.Emulation.setVirtualTimePolicy({
-      policy: 'pauseIfNetworkFetchesPending', budget: 5000,
-      waitForNavigation: true});
   await dp.Page.navigate({url: 'https://test.com/index.html'});
+  dp.Emulation.setVirtualTimePolicy({
+    policy: 'pauseIfNetworkFetchesPending', budget: 5000});
 
   helper.onceRequest('https://test.com/post').matched().then(() =>
       testRunner.log('FAIL: this request should not come through!'));

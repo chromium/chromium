@@ -1,0 +1,16 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module optimization_guide_common.mojom;
+
+// Source (or category) of the log message.
+// Must be kept in sync with |getLogSource| method in
+// optimization_guide_internals/resources/optimization_guide_internals.ts.
+enum LogSource {
+  SERVICE_AND_SETTINGS,
+  HINTS,
+  MODEL_MANAGEMENT,
+  PAGE_CONTENT_ANNOTATIONS,
+  HINTS_NOTIFICATIONS,
+};

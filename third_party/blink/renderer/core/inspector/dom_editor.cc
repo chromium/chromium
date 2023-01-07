@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/core/inspector/dom_editor.h"
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -40,7 +39,7 @@
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
 #include "third_party/blink/renderer/core/inspector/dom_patch_support.h"
 #include "third_party/blink/renderer/core/inspector/inspector_history.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Protocol.h"
+#include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -53,6 +52,8 @@ class DOMEditor::RemoveChildAction final : public InspectorHistory::Action {
       : InspectorHistory::Action("RemoveChild"),
         parent_node_(parent_node),
         node_(node) {}
+  RemoveChildAction(const RemoveChildAction&) = delete;
+  RemoveChildAction& operator=(const RemoveChildAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
     anchor_node_ = node_->nextSibling();
@@ -81,7 +82,6 @@ class DOMEditor::RemoveChildAction final : public InspectorHistory::Action {
   Member<ContainerNode> parent_node_;
   Member<Node> node_;
   Member<Node> anchor_node_;
-  DISALLOW_COPY_AND_ASSIGN(RemoveChildAction);
 };
 
 class DOMEditor::InsertBeforeAction final : public InspectorHistory::Action {
@@ -91,6 +91,8 @@ class DOMEditor::InsertBeforeAction final : public InspectorHistory::Action {
         parent_node_(parent_node),
         node_(node),
         anchor_node_(anchor_node) {}
+  InsertBeforeAction(const InsertBeforeAction&) = delete;
+  InsertBeforeAction& operator=(const InsertBeforeAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
     if (node_->parentNode()) {
@@ -134,7 +136,6 @@ class DOMEditor::InsertBeforeAction final : public InspectorHistory::Action {
   Member<Node> node_;
   Member<Node> anchor_node_;
   Member<RemoveChildAction> remove_child_action_;
-  DISALLOW_COPY_AND_ASSIGN(InsertBeforeAction);
 };
 
 class DOMEditor::RemoveAttributeAction final : public InspectorHistory::Action {
@@ -143,6 +144,8 @@ class DOMEditor::RemoveAttributeAction final : public InspectorHistory::Action {
       : InspectorHistory::Action("RemoveAttribute"),
         element_(element),
         name_(name) {}
+  RemoveAttributeAction(const RemoveAttributeAction&) = delete;
+  RemoveAttributeAction& operator=(const RemoveAttributeAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
     value_ = element_->getAttribute(name_);
@@ -168,7 +171,6 @@ class DOMEditor::RemoveAttributeAction final : public InspectorHistory::Action {
   Member<Element> element_;
   AtomicString name_;
   AtomicString value_;
-  DISALLOW_COPY_AND_ASSIGN(RemoveAttributeAction);
 };
 
 class DOMEditor::SetAttributeAction final : public InspectorHistory::Action {
@@ -181,6 +183,8 @@ class DOMEditor::SetAttributeAction final : public InspectorHistory::Action {
         name_(name),
         value_(value),
         had_attribute_(false) {}
+  SetAttributeAction(const SetAttributeAction&) = delete;
+  SetAttributeAction& operator=(const SetAttributeAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
     const AtomicString& value = element_->getAttribute(name_);
@@ -214,7 +218,6 @@ class DOMEditor::SetAttributeAction final : public InspectorHistory::Action {
   AtomicString value_;
   bool had_attribute_;
   AtomicString old_value_;
-  DISALLOW_COPY_AND_ASSIGN(SetAttributeAction);
 };
 
 class DOMEditor::SetOuterHTMLAction final : public InspectorHistory::Action {
@@ -227,6 +230,8 @@ class DOMEditor::SetOuterHTMLAction final : public InspectorHistory::Action {
         new_node_(nullptr),
         history_(MakeGarbageCollected<InspectorHistory>()),
         dom_editor_(MakeGarbageCollected<DOMEditor>(history_.Get())) {}
+  SetOuterHTMLAction(const SetOuterHTMLAction&) = delete;
+  SetOuterHTMLAction& operator=(const SetOuterHTMLAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
     old_html_ = CreateMarkup(node_.Get());
@@ -268,7 +273,6 @@ class DOMEditor::SetOuterHTMLAction final : public InspectorHistory::Action {
   Member<Node> new_node_;
   Member<InspectorHistory> history_;
   Member<DOMEditor> dom_editor_;
-  DISALLOW_COPY_AND_ASSIGN(SetOuterHTMLAction);
 };
 
 class DOMEditor::ReplaceWholeTextAction final
@@ -278,6 +282,8 @@ class DOMEditor::ReplaceWholeTextAction final
       : InspectorHistory::Action("ReplaceWholeText"),
         text_node_(text_node),
         text_(text) {}
+  ReplaceWholeTextAction(const ReplaceWholeTextAction&) = delete;
+  ReplaceWholeTextAction& operator=(const ReplaceWholeTextAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
     old_text_ = text_node_->wholeText();
@@ -303,7 +309,6 @@ class DOMEditor::ReplaceWholeTextAction final
   Member<Text> text_node_;
   String text_;
   String old_text_;
-  DISALLOW_COPY_AND_ASSIGN(ReplaceWholeTextAction);
 };
 
 class DOMEditor::ReplaceChildNodeAction final
@@ -316,6 +321,8 @@ class DOMEditor::ReplaceChildNodeAction final
         parent_node_(parent_node),
         new_node_(new_node),
         old_node_(old_node) {}
+  ReplaceChildNodeAction(const ReplaceChildNodeAction&) = delete;
+  ReplaceChildNodeAction& operator=(const ReplaceChildNodeAction&) = delete;
 
   bool Perform(ExceptionState& exception_state) override {
     return Redo(exception_state);
@@ -342,13 +349,14 @@ class DOMEditor::ReplaceChildNodeAction final
   Member<ContainerNode> parent_node_;
   Member<Node> new_node_;
   Member<Node> old_node_;
-  DISALLOW_COPY_AND_ASSIGN(ReplaceChildNodeAction);
 };
 
 class DOMEditor::SetNodeValueAction final : public InspectorHistory::Action {
  public:
   SetNodeValueAction(Node* node, const String& value)
       : InspectorHistory::Action("SetNodeValue"), node_(node), value_(value) {}
+  SetNodeValueAction(const SetNodeValueAction&) = delete;
+  SetNodeValueAction& operator=(const SetNodeValueAction&) = delete;
 
   bool Perform(ExceptionState&) override {
     old_value_ = node_->nodeValue();
@@ -374,7 +382,6 @@ class DOMEditor::SetNodeValueAction final : public InspectorHistory::Action {
   Member<Node> node_;
   String value_;
   String old_value_;
-  DISALLOW_COPY_AND_ASSIGN(SetNodeValueAction);
 };
 
 DOMEditor::DOMEditor(InspectorHistory* history) : history_(history) {}

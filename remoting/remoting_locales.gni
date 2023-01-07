@@ -1,4 +1,4 @@
-# Copyright 2015 The Chromium Authors. All rights reserved.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -72,11 +72,16 @@ remoting_locales_without_pseudolocales = [
 # TODO(yuweih): Our build script doesn't seem to work with en-US and Chrome
 # on iOS doesn't seem to have en-US.lproj. Add is_ios back if we do need to
 # work with en-US.
-if (is_chromeos_ash || is_chromeos_lacros) {
+if (is_chromeos) {
   # Support Icelandic in ChromeOS
   remoting_locales_without_pseudolocales += [
+    "af",
+    "cy",
     "en-US",
+    "eu",
+    "gl",
     "is",
+    "zu",
   ]
 }
 

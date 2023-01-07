@@ -14,12 +14,28 @@
   </outputs>
   <release seq="1">
     <includes>
+      <!-- Capture Mode custom cursor images -->
+      <include name="IDR_CAPTURE_IMAGE_CURSOR" file="unscaled_resources/capture_image_cursor.png" type="BINDATA" />
+      <include name="IDR_CAPTURE_VIDEO_CURSOR" file="unscaled_resources/capture_video_cursor.png" type="BINDATA" />
       <!-- CrOS internal apps images -->
       <include name="IDR_SHORTCUT_VIEWER_LOGO_192" file="unscaled_resources/shortcut_viewer_logo_192.png" type="BINDATA" />
       <include name="IDR_SETTINGS_LOGO_192" file="unscaled_resources/settings_logo_192.png" type="BINDATA" />
-      <include name="IDR_PHONE_HUB_ONBOARDING_IMAGE" file="unscaled_resources/phone_hub_onboarding_image.png" type="BINDATA" />
-      <include name="IDR_PHONE_HUB_CONNECTING_IMAGE" file="unscaled_resources/phone_hub_connecting_image.png" type="BINDATA" />
-      <include name="IDR_PHONE_HUB_ERROR_STATE_IMAGE" file="unscaled_resources/phone_hub_error_state_image.png" type="BINDATA" />
+      <include name="IDR_OS_FLAGS_APP_ICONS_48_PNG" file="unscaled_resources/os_flags_app_icon_48.png" type="BINDATA" />
+      <include name="IDR_OS_FLAGS_APP_ICONS_128_PNG" file="unscaled_resources/os_flags_app_icon_128.png" type="BINDATA" />
+      <include name="IDR_OS_FLAGS_APP_ICONS_192_PNG" file="unscaled_resources/os_flags_app_icon_192.png" type="BINDATA" />
+      <include name="IDR_OS_URL_HANDLER_APP_ICONS_48_PNG" file="unscaled_resources/os_url_handler_app_icon_48.png" type="BINDATA" />
+      <include name="IDR_OS_URL_HANDLER_APP_ICONS_128_PNG" file="unscaled_resources/os_url_handler_app_icon_128.png" type="BINDATA" />
+      <include name="IDR_OS_URL_HANDLER_APP_ICONS_192_PNG" file="unscaled_resources/os_url_handler_app_icon_192.png" type="BINDATA" />
+      <include name="IDR_SETTINGS_RGB_KEYBOARD_RAINBOW_COLOR_48_PNG" file="unscaled_resources/rgb_keyboard_rainbow_color_48.png" type="BINDATA" />
+      <!-- Accessibility animations -->
+      <include name="IDR_DICTATION_BUBBLE_ANIMATION" file="unscaled_resources/dictation_bubble_animation.json" type="BINDATA"/>
     </includes>
+    <structures>
+      <structure type="lottie" name="IDR_PHONE_HUB_ONBOARDING_IMAGE" file="unscaled_resources/phone_hub_onboarding_image.json" compress="gzip" />
+      <structure type="lottie" name="IDR_PHONE_HUB_CONNECTING_IMAGE" file="unscaled_resources/phone_hub_connecting_image.json" compress="gzip" />
+      <structure type="lottie" name="IDR_PHONE_HUB_ERROR_STATE_IMAGE" file="unscaled_resources/phone_hub_error_state_image.json" compress="gzip" />
+      <structure type="lottie" name="IDR_SHARESHEET_EMPTY_STATE_IMAGE" file="unscaled_resources/sharesheet_empty_state_image.json" compress="gzip" />
+      <structure type="lottie" name="IDR_HOLDING_SPACE_RECENT_FILES_PLACEHOLDER_IMAGE" file="unscaled_resources/holding_space_recent_files_placeholder_image.json" compress="gzip" />
+    </structures>
   </release>
 </grit>

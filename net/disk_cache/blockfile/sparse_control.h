@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,11 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/disk_cache/blockfile/bitmap.h"
 #include "net/disk_cache/blockfile/disk_format.h"
+#include "net/disk_cache/disk_cache.h"
 
 namespace net {
 class IOBuffer;
@@ -23,7 +24,6 @@ class DrainableIOBuffer;
 
 namespace disk_cache {
 
-class Entry;
 class EntryImpl;
 
 // This class provides support for the sparse capabilities of the disk cache.
@@ -44,6 +44,10 @@ class SparseControl {
   };
 
   explicit SparseControl(EntryImpl* entry);
+
+  SparseControl(const SparseControl&) = delete;
+  SparseControl& operator=(const SparseControl&) = delete;
+
   ~SparseControl();
 
   // Initializes the object for the current entry. If this entry already stores
@@ -68,7 +72,7 @@ class SparseControl {
               CompletionOnceCallback callback);
 
   // Implements Entry::GetAvailableRange().
-  int GetAvailableRange(int64_t offset, int len, int64_t* start);
+  RangeResult GetAvailableRange(int64_t offset, int len);
 
   // Cancels the current sparse operation (if any).
   void CancelIO();
@@ -151,14 +155,14 @@ class SparseControl {
   void DoUserCallback();
   void DoAbortCallbacks();
 
-  EntryImpl* entry_;  // The sparse entry.
+  raw_ptr<EntryImpl> entry_;        // The sparse entry.
   scoped_refptr<EntryImpl> child_;  // The current child entry.
-  SparseOperation operation_;
-  bool pending_;  // True if any child IO operation returned pending.
-  bool finished_;
-  bool init_;
-  bool range_found_;  // True if GetAvailableRange found something.
-  bool abort_;  // True if we should abort the current operation ASAP.
+  SparseOperation operation_ = kNoOperation;
+  bool pending_ = false;  // True if any child IO operation returned pending.
+  bool finished_ = false;
+  bool init_ = false;
+  bool range_found_ = false;  // True if GetAvailableRange found something.
+  bool abort_ = false;  // True if we should abort the current operation ASAP.
 
   SparseHeader sparse_header_;  // Data about the children of entry_.
   Bitmap children_map_;  // The actual bitmap of children.
@@ -167,14 +171,12 @@ class SparseControl {
 
   CompletionOnceCallback user_callback_;
   std::vector<CompletionOnceCallback> abort_callbacks_;
-  int64_t offset_;  // Current sparse offset.
+  int64_t offset_ = 0;  // Current sparse offset.
   scoped_refptr<net::DrainableIOBuffer> user_buf_;
-  int buf_len_;  // Bytes to read or write.
-  int child_offset_;  // Offset to use for the current child.
-  int child_len_;  // Bytes to read or write for this child.
-  int result_;
-
-  DISALLOW_COPY_AND_ASSIGN(SparseControl);
+  int buf_len_ = 0;       // Bytes to read or write.
+  int child_offset_ = 0;  // Offset to use for the current child.
+  int child_len_ = 0;     // Bytes to read or write for this child.
+  int result_ = 0;
 };
 
 }  // namespace disk_cache

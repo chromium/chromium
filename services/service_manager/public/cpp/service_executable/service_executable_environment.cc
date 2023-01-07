@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,10 +19,11 @@
 #include "sandbox/policy/switches.h"
 #include "services/service_manager/public/cpp/service_executable/switches.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
+#include "sandbox/policy/sandbox_type.h"
 #endif
 
 namespace service_manager {
@@ -31,7 +32,7 @@ ServiceExecutableEnvironment::ServiceExecutableEnvironment()
     : ipc_thread_("IPC Thread") {
   DCHECK(!base::CurrentThread::Get());
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   if (command_line.HasSwitch(sandbox::policy::switches::kServiceSandboxType)) {

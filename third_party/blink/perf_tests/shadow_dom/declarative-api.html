@@ -4,7 +4,7 @@
 </div>
 <script>
   const host = document.querySelector("#host");
-  const shadow_root = host.attachShadow({ mode: 'open', slotAssignment: 'auto' });
+  const shadow_root = host.attachShadow({ mode: 'open' });
   const slot1 = document.createElement("slot");
   const child1 = document.createElement("child");
   shadow_root.appendChild(slot1);

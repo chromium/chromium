@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_DISPLAY_SERVICE_FACTORY_H_
 
 #include "base/memory/singleton.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class NotificationDisplayService;
 class Profile;
 
-class NotificationDisplayServiceFactory
-    : public BrowserContextKeyedServiceFactory {
+class NotificationDisplayServiceFactory : public ProfileKeyedServiceFactory {
  public:
   NotificationDisplayServiceFactory(const NotificationDisplayServiceFactory&) =
       delete;
@@ -28,8 +27,6 @@ class NotificationDisplayServiceFactory
 
   // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
 };
 

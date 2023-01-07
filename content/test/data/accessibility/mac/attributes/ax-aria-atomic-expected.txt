@@ -1,0 +1,6 @@
+true.accessibilityAttributeNames.has(AXARIAAtomic)='yes'
+true.accessibilityAttributeValue(AXARIAAtomic)=1
+false.accessibilityAttributeNames.has(AXARIAAtomic)='yes'
+false.accessibilityAttributeValue(AXARIAAtomic)=0
+none.accessibilityAttributeNames.has(AXARIAAtomic)='yes'
+none.accessibilityAttributeValue(AXARIAAtomic)=0

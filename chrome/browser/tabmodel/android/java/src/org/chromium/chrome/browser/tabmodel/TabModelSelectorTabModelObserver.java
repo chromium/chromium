@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -33,7 +33,7 @@ public class TabModelSelectorTabModelObserver implements TabModelObserver {
     public TabModelSelectorTabModelObserver(TabModelSelector selector) {
         mTabModelSelector = selector;
 
-        List<TabModel> tabModels = selector.getModels();
+        List<TabModel> tabModels = mTabModelSelector.getModels();
         if (tabModels.isEmpty()) {
             mSelectorObserver = new TabModelSelectorObserver() {
                 @Override

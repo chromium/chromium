@@ -1,16 +1,17 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "net/dns/dns_reloader.h"
 
-#if defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_OPENBSD) && \
-    !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OPENBSD) && \
+    !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
 #include <resolv.h>
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/synchronization/lock.h"
 #include "base/task/current_thread.h"
@@ -47,6 +48,9 @@ namespace {
 
 class DnsReloader : public NetworkChangeNotifier::DNSObserver {
  public:
+  DnsReloader(const DnsReloader&) = delete;
+  DnsReloader& operator=(const DnsReloader&) = delete;
+
   // NetworkChangeNotifier::DNSObserver:
   void OnDNSChanged() override {
     base::AutoLock lock(lock_);
@@ -90,8 +94,6 @@ class DnsReloader : public NetworkChangeNotifier::DNSObserver {
 
   // We use thread local storage to identify which ReloadState to interact with.
   base::ThreadLocalOwnedPointer<ReloadState> tls_reload_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsReloader);
 };
 
 base::LazyInstance<DnsReloader>::Leaky
@@ -111,5 +113,5 @@ void DnsReloaderMaybeReload() {
 
 }  // namespace net
 
-#endif  // defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_OPENBSD) &&
-        // !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OPENBSD)
+        // && !BUILDFLAG(IS_ANDROID)

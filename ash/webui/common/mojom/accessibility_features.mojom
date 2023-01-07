@@ -1,0 +1,24 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.common.mojom;
+
+// Observer interface for tracking when at least one of a set of predefined
+// accessbility features is enabled that should trigger the UI to make hidden
+// elements such as tooltips always visible. These features are: ChromeVox,
+// Switch Control, and Magnifier.
+interface ForceHiddenElementsVisibleObserver {
+  // Only called when the value of `forceVisible` would change due to the
+  // tracked accessibility features being enabled/disabled.
+  OnForceHiddenElementsVisibleChange(bool forceVisible);
+};
+
+// Interface used to observe the enabled/disabled statuses of the accessbility
+// features on the device.
+interface AccessibilityFeatures {
+  // Registers the observer and returns the current status.
+  ObserveForceHiddenElementsVisible(
+      pending_remote<ForceHiddenElementsVisibleObserver> observer)
+      => (bool forceVisible);
+};

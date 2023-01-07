@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,115 +9,12 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
-#include "third_party/blink/public/web/web_dom_message_event.h"
-#include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 
 namespace blink {
-
-// static
-BlinkTransferableMessage BlinkTransferableMessage::FromMessageEvent(
-    MessageEvent* message_event,
-    base::Optional<base::UnguessableToken> cluster_id) {
-  BlinkTransferableMessage result;
-  SerializedScriptValue* serialized_script_value =
-      message_event->DataAsSerializedScriptValue();
-
-  // Message data and cluster ID (optional).
-  base::span<const uint8_t> message_wire_data =
-      serialized_script_value->GetWireData();
-  result.message = SerializedScriptValue::Create(
-      reinterpret_cast<const char*>(message_wire_data.data()),
-      message_wire_data.size());
-  result.locked_agent_cluster_id = cluster_id;
-
-  // Ports
-  Vector<MessagePortChannel> ports = message_event->ReleaseChannels();
-  result.ports.AppendRange(ports.begin(), ports.end());
-
-  // User activation
-  UserActivation* user_activation = message_event->userActivation();
-  if (user_activation) {
-    result.user_activation = mojom::blink::UserActivationSnapshot::New(
-        user_activation->hasBeenActive(), user_activation->isActive());
-  }
-
-  // Capability delegation
-  result.delegate_payment_request = message_event->delegatePaymentRequest();
-
-  // Blobs.
-  for (const auto& blob : serialized_script_value->BlobDataHandles()) {
-    result.message->BlobDataHandles().Set(
-        blob.value->Uuid(),
-        BlobDataHandle::Create(blob.value->Uuid(), blob.value->GetType(),
-                               blob.value->size(),
-                               blob.value->CloneBlobRemote()));
-  }
-
-  // Stream channels.
-  for (auto& stream : serialized_script_value->GetStreams()) {
-    result.message->GetStreams().push_back(std::move(stream));
-  }
-  // Array buffer contents array.
-  auto& source_array_buffer_contents_array =
-      serialized_script_value->GetArrayBufferContentsArray();
-  if (!source_array_buffer_contents_array.IsEmpty()) {
-    SerializedScriptValue::ArrayBufferContentsArray array_buffer_contents_array;
-    array_buffer_contents_array.ReserveInitialCapacity(
-        base::checked_cast<wtf_size_t>(
-            source_array_buffer_contents_array.size()));
-
-    for (auto& source_contents : source_array_buffer_contents_array) {
-      uint8_t* allocation_start = static_cast<uint8_t*>(source_contents.Data());
-      mojo_base::BigBuffer buffer(
-          base::make_span(allocation_start, source_contents.DataLength()));
-      ArrayBufferContents contents(buffer.size(), 1,
-                                   ArrayBufferContents::kNotShared,
-                                   ArrayBufferContents::kDontInitialize);
-      // Check if we allocated the backing store of the ArrayBufferContents
-      // correctly.
-      CHECK_EQ(contents.DataLength(), buffer.size());
-      memcpy(contents.Data(), buffer.data(), buffer.size());
-      array_buffer_contents_array.push_back(std::move(contents));
-    }
-    result.message->SetArrayBufferContentsArray(
-        std::move(array_buffer_contents_array));
-  }
-
-  // Image bitmap contents array.
-  auto& source_image_bitmap_contents_array =
-      serialized_script_value->GetImageBitmapContentsArray();
-  if (!source_image_bitmap_contents_array.IsEmpty()) {
-    SerializedScriptValue::ImageBitmapContentsArray image_bitmap_contents_array;
-    image_bitmap_contents_array.ReserveInitialCapacity(
-        base::checked_cast<wtf_size_t>(
-            source_image_bitmap_contents_array.size()));
-
-    for (auto& contents : image_bitmap_contents_array) {
-      base::Optional<SkBitmap> sk_bitmap = ToSkBitmap(contents);
-      if (!sk_bitmap)
-        continue;
-
-      const scoped_refptr<StaticBitmapImage> bitmap_contents =
-          ToStaticBitmapImage(sk_bitmap.value());
-      if (!bitmap_contents)
-        continue;
-      image_bitmap_contents_array.push_back(bitmap_contents);
-    }
-    result.message->SetImageBitmapContentsArray(
-        std::move(image_bitmap_contents_array));
-  }
-
-  // File System Access transfer tokens.
-  for (auto& token : serialized_script_value->FileSystemAccessTokens()) {
-    result.message->FileSystemAccessTokens().push_back(std::move(token));
-  }
-
-  return result;
-}
 
 // static
 BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
@@ -142,7 +39,9 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
       std::make_pair(message.stack_trace_debugger_id_first,
                      message.stack_trace_debugger_id_second),
       message.stack_trace_should_pause);
-  result.locked_agent_cluster_id = message.locked_agent_cluster_id;
+  result.sender_agent_cluster_id = message.sender_agent_cluster_id;
+  result.locked_to_sender_agent_cluster =
+      message.locked_to_sender_agent_cluster;
   result.ports.AppendRange(message.ports.begin(), message.ports.end());
   for (auto& channel : message.stream_channels) {
     result.message->GetStreams().push_back(
@@ -153,7 +52,9 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
         message.user_activation->has_been_active,
         message.user_activation->was_active);
   }
-  result.delegate_payment_request = message.delegate_payment_request;
+  result.delegated_capability = message.delegated_capability;
+
+  result.parent_task_id = message.parent_task_id;
 
   if (!message.array_buffer_contents_array.empty()) {
     SerializedScriptValue::ArrayBufferContentsArray array_buffer_contents_array;
@@ -217,18 +118,6 @@ scoped_refptr<StaticBitmapImage> ToStaticBitmapImage(
     return nullptr;
 
   return UnacceleratedStaticBitmapImage::Create(std::move(image));
-}
-
-base::Optional<SkBitmap> ToSkBitmap(
-    const scoped_refptr<blink::StaticBitmapImage>& static_bitmap_image) {
-  const sk_sp<SkImage> image =
-      static_bitmap_image->PaintImageForCurrentFrame().GetSwSkImage();
-  SkBitmap result;
-  if (image && image->asLegacyBitmap(
-                   &result, SkImage::LegacyBitmapMode::kRO_LegacyBitmapMode)) {
-    return result;
-  }
-  return base::nullopt;
 }
 
 }  // namespace blink

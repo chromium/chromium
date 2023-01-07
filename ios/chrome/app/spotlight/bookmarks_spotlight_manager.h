@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,7 +47,7 @@ initWithLargeIconService:(favicon::LargeIconService*)largeIconService
 - (void)getParentKeywordsForNode:(const bookmarks::BookmarkNode*)node
                          inArray:(NSMutableArray*)keywords;
 
-// Adds keywords to |item|.
+// Adds keywords to `item`.
 - (void)addKeywords:(NSArray*)keywords toSearchableItem:(CSSearchableItem*)item;
 
 // Called before the instance is deallocated. This method should be overridden

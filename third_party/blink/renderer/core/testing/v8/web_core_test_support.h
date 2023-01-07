@@ -34,10 +34,9 @@ namespace web_core_test_support {
 
 void InjectInternalsObject(v8::Local<v8::Context>);
 void ResetInternalsObject(v8::Local<v8::Context>);
-void RegisterInstallOriginTrialFeaturesForTesting();
 
 }  // namespace web_core_test_support
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_V8_WEB_CORE_TEST_SUPPORT_H_

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,40 +18,55 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
     const NGPhysicalBoxFragment& previous_fragment,
     bool is_new_fragment)
     : NGLayoutAlgorithm(params),
-      writing_direction_(Style().GetWritingDirection()),
-      incoming_break_token_(params.break_token) {
+      writing_direction_(Style().GetWritingDirection()) {
   DCHECK(previous_fragment.IsFragmentainerBox());
   DCHECK(params.space.HasKnownFragmentainerBlockSize());
 
   container_builder_.SetBoxType(previous_fragment.BoxType());
   container_builder_.SetFragmentBlockSize(
       params.space.FragmentainerBlockSize());
+  container_builder_.SetDisableOOFDescendantsPropagation();
+  container_builder_.SetHasOutOfFlowFragmentChild(true);
 
-  if (incoming_break_token_)
-    break_token_iterator_ = incoming_break_token_->ChildBreakTokens().begin();
+  const NGBlockBreakToken* old_fragment_break_token =
+      previous_fragment.BreakToken();
+  if (old_fragment_break_token) {
+    container_builder_.SetHasColumnSpanner(
+        old_fragment_break_token->IsCausedByColumnSpanner());
+  }
+
+  // We need the previous physical container size to calculate the position of
+  // any child fragments.
+  previous_physical_container_size_ = previous_fragment.Size();
+
+  // In this algorithm we'll add all break tokens manually, to ensure that we
+  // retain the original order (we may have a break before a node that precedes
+  // a node which actually got a fragment). Disable the automatic child break
+  // token addition that we normally get as part of adding child fragments. Note
+  // that we will not add break tokens for OOFs that fragment. There's no need
+  // for those break tokens, since the calling code will resume the OOFs on its
+  // own.
+  container_builder_.SetShouldAddBreakTokensManually();
+
+  // Copy the original child break tokens.
+  if (old_fragment_break_token) {
+    for (const auto& child_break_token :
+         old_fragment_break_token->ChildBreakTokens())
+      container_builder_.AddBreakToken(child_break_token);
+  }
 
   // Don't apply children to new fragments.
   if (is_new_fragment) {
-    child_iterator_ = children_.end();
     container_builder_.SetIsFirstForNode(false);
     return;
   }
 
   container_builder_.SetIsFirstForNode(previous_fragment.IsFirstForNode());
 
-  // We need the previous physical container size to calculate the position of
-  // any child fragments.
-  previous_physical_container_size_ = previous_fragment.Size();
-
-  // Children (along with any OOF fragments that will be added as children) need
-  // to be added in an order that matches the order of any incoming break tokens
-  // (as indicated by the order in |break_token_iterator_|). After all incoming
-  // break tokens are accounted for, the order will be determined by the
-  // remaining children in |child_iterator_|, followed by any newly added OOF
-  // children.
-  children_ = previous_fragment.Children();
-  child_iterator_ = children_.begin();
-  AdvanceChildIterator();
+  // Copy the original child fragments. See above: this will *not* add the
+  // outgoing break tokens from the fragments (if any).
+  for (const auto& child_link : previous_fragment.Children())
+    AddChildFragment(child_link);
 
   // Inflow-bounds should never exist on a fragmentainer.
   DCHECK(!previous_fragment.InflowBounds());
@@ -59,76 +74,32 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
       previous_fragment.MayHaveDescendantAboveBlockStart());
 }
 
-scoped_refptr<const NGLayoutResult> NGSimplifiedOOFLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGSimplifiedOOFLayoutAlgorithm::Layout() {
+  FinishFragmentationForFragmentainer(ConstraintSpace(), &container_builder_);
   return container_builder_.ToBoxFragment();
 }
 
 void NGSimplifiedOOFLayoutAlgorithm::AppendOutOfFlowResult(
-    scoped_refptr<const NGLayoutResult> result) {
-  container_builder_.AddResult(*result, result->OutOfFlowPositionedOffset(),
-                               /* offset_includes_relative_position */ false,
-                               /* propagate_oof_descendants */ false);
-
-  // If there is an incoming child break token, make sure that it matches
-  // the OOF child that was just added.
-  if (incoming_break_token_ &&
-      break_token_iterator_ !=
-          incoming_break_token_->ChildBreakTokens().end()) {
-    DCHECK_EQ(result->PhysicalFragment().GetLayoutObject(),
-              (*break_token_iterator_)->InputNode().GetLayoutBox());
-    DCHECK(!To<NGPhysicalBoxFragment>(result->PhysicalFragment())
-                .IsFirstForNode() ||
-           To<NGBlockBreakToken>(*break_token_iterator_)->IsBreakBefore());
-    break_token_iterator_++;
-    AdvanceChildIterator();
-  }
+    const NGLayoutResult* result) {
+  container_builder_.AddResult(*result, result->OutOfFlowPositionedOffset());
 }
 
 void NGSimplifiedOOFLayoutAlgorithm::AddChildFragment(const NGLink& child) {
-  const auto* fragment = To<NGPhysicalContainerFragment>(child.get());
+  const auto* fragment = child.get();
   // Determine the previous position in the logical coordinate system.
   LogicalOffset child_offset =
       WritingModeConverter(writing_direction_,
                            previous_physical_container_size_)
           .ToLogical(child.Offset(), fragment->Size());
+  // Any relative offset will have already been applied, avoid re-adding one.
+  absl::optional<LogicalOffset> relative_offset = LogicalOffset();
 
   // Add the fragment to the builder.
   container_builder_.AddChild(
-      *fragment, child_offset, /* inline_container */ nullptr,
-      /* margin_strut */ nullptr, /* is_self_collapsing */ false,
-      /* offset_includes_relative_position */ true,
-      /* propagate_oof_descendants */ false);
-}
-
-void NGSimplifiedOOFLayoutAlgorithm::AdvanceChildIterator() {
-  while (child_iterator_ != children_.end()) {
-    const auto& child_link = *child_iterator_;
-    if (incoming_break_token_ &&
-        break_token_iterator_ !=
-            incoming_break_token_->ChildBreakTokens().end()) {
-      // Add the current child if it matches the incoming child break token.
-      const auto* break_token = *break_token_iterator_;
-      if (child_link.fragment->GetLayoutObject() ==
-          break_token->InputNode().GetLayoutBox()) {
-        DCHECK(!To<NGPhysicalBoxFragment>(child_link.get())->IsFirstForNode() ||
-               To<NGBlockBreakToken>(break_token)->IsBreakBefore());
-        AddChildFragment(child_link);
-        child_iterator_++;
-        break_token_iterator_++;
-      } else {
-        // The current child does not match the incoming break token. The break
-        // token must belong to an OOF positioned element that has not yet been
-        // added via AppendOutOfFlowResult().
-        DCHECK(break_token->InputNode().IsOutOfFlowPositioned());
-        break;
-      }
-    } else {
-      // There are no more incoming child break tokens, so add the remaining
-      // children in |child_iterator_|.
-      AddChildFragment(child_link);
-      child_iterator_++;
-    }
-  }
+      *fragment, child_offset, /* margin_strut */ nullptr,
+      /* is_self_collapsing */ false, relative_offset,
+      /* inline_container */ nullptr,
+      /* adjustment_for_oof_propagation */ absl::nullopt);
 }
 
 }  // namespace blink

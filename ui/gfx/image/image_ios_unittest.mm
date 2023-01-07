@@ -1,15 +1,16 @@
-// Copyright (c) 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/image/image.h"
+
 #import <QuartzCore/QuartzCore.h>
-#include <stddef.h>
 #import <UIKit/UIKit.h>
+#include <stddef.h>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/stl_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/image/image.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace {
@@ -47,6 +48,10 @@ UIImage* UIImageWithSizeAndScale(CGFloat width, CGFloat height, CGFloat scale) {
 class ImageIOSTest : public testing::Test {
  public:
   ImageIOSTest() {}
+
+  ImageIOSTest(const ImageIOSTest&) = delete;
+  ImageIOSTest& operator=(const ImageIOSTest&) = delete;
+
   ~ImageIOSTest() override {}
 
   void SetUp() override {
@@ -60,8 +65,6 @@ class ImageIOSTest : public testing::Test {
  private:
   // Used to save and restore the scale factors in effect before this test.
   std::vector<float> original_scale_factors_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageIOSTest);
 };
 
 // Tests image conversion when the scale factor of the source image is not in
@@ -71,8 +74,8 @@ TEST_F(ImageIOSTest, ImageConversionWithUnsupportedScaleFactor) {
   const CGFloat kHeight = 100;
   const CGFloat kTestScales[3] = { 1.0f, 2.0f, 3.0f };
 
-  for (size_t i = 0; i < base::size(kTestScales); ++i) {
-    for (size_t j = 0; j < base::size(kTestScales); ++j) {
+  for (size_t i = 0; i < std::size(kTestScales); ++i) {
+    for (size_t j = 0; j < std::size(kTestScales); ++j) {
       const CGFloat source_scale = kTestScales[i];
       const CGFloat supported_scale = kTestScales[j];
 

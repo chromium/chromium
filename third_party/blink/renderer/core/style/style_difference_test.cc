@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,14 +30,16 @@ TEST(StyleDifferenceTest, StreamOutputAllFieldsMutated) {
   diff.SetNeedsReshape();
   diff.SetNeedsRecomputeVisualOverflow();
   diff.SetNeedsVisualRectUpdate();
-  diff.SetTransformChanged();
+  diff.SetTransformPropertyChanged();
+  diff.SetOtherTransformPropertyChanged();
   diff.SetScrollAnchorDisablingPropertyChanged();
   string_stream << diff;
   EXPECT_EQ(
       "StyleDifference{layoutType=PositionedMovement, "
       "reshape=1, paintInvalidation=1, "
       "recomputeVisualOverflow=1, visualRectUpdate=1, "
-      "propertySpecificDifferences=TransformChanged, "
+      "propertySpecificDifferences="
+      "TransformPropertyChanged|OtherTransformPropertyChanged, "
       "scrollAnchorDisablingPropertyChanged=1}",
       string_stream.str());
 }
@@ -45,7 +47,8 @@ TEST(StyleDifferenceTest, StreamOutputAllFieldsMutated) {
 TEST(StyleDifferenceTest, StreamOutputSetAllProperties) {
   std::stringstream string_stream;
   StyleDifference diff;
-  diff.SetTransformChanged();
+  diff.SetTransformPropertyChanged();
+  diff.SetOtherTransformPropertyChanged();
   diff.SetOpacityChanged();
   diff.SetZIndexChanged();
   diff.SetFilterChanged();
@@ -57,7 +60,8 @@ TEST(StyleDifferenceTest, StreamOutputSetAllProperties) {
       "StyleDifference{layoutType=NoLayout, "
       "reshape=0, paintInvalidation=0, "
       "recomputeVisualOverflow=0, visualRectUpdate=0, "
-      "propertySpecificDifferences=TransformChanged|OpacityChanged|"
+      "propertySpecificDifferences=TransformPropertyChanged|"
+      "OtherTransformPropertyChanged|OpacityChanged|"
       "ZIndexChanged|FilterChanged|CSSClipChanged|"
       "TextDecorationOrColorChanged|BlendModeChanged, "
       "scrollAnchorDisablingPropertyChanged=0}",

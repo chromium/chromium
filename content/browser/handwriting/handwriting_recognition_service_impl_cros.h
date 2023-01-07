@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,9 +35,9 @@ class CONTENT_EXPORT CrOSHandwritingRecognitionServiceImpl final
   void CreateHandwritingRecognizer(
       handwriting::mojom::HandwritingModelConstraintPtr model_constraint,
       CreateHandwritingRecognizerCallback callback) override;
-  void QueryHandwritingRecognizerSupport(
-      handwriting::mojom::HandwritingFeatureQueryPtr query,
-      QueryHandwritingRecognizerSupportCallback callback) override;
+  void QueryHandwritingRecognizer(
+      handwriting::mojom::HandwritingModelConstraintPtr model_constraint,
+      QueryHandwritingRecognizerCallback callback) override;
 };
 
 }  // namespace content

@@ -1,3 +1,1 @@
-monorail {
-  component: "UI>Notifications"
-}
+mixins: "//chrome/browser/notifications/COMMON_METADATA"

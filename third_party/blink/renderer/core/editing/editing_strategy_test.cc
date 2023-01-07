@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,22 @@ TEST_F(EditingStrategyTest, caretMaxOffset) {
   EXPECT_EQ(1, EditingInFlatTreeStrategy::CaretMaxOffset(*one));
   EXPECT_EQ(1, EditingInFlatTreeStrategy::CaretMaxOffset(*one->firstChild()));
   EXPECT_EQ(2, EditingInFlatTreeStrategy::CaretMaxOffset(*two->firstChild()));
+}
+
+TEST_F(EditingStrategyTest, CaretMaxOffsetWithFirstLetter) {
+  SetBodyContent(
+      "<style>div::first-letter { text-transform: uppercase }</style>"
+      "<div id='a'>a</div>"
+      "<div id='b'>   b</div>"
+      "<div id='c'>cde</div>");
+
+  Node* a = GetDocument().getElementById("a");
+  Node* b = GetDocument().getElementById("b");
+  Node* c = GetDocument().getElementById("c");
+
+  EXPECT_EQ(1, EditingStrategy::CaretMaxOffset(*a->firstChild()));
+  EXPECT_EQ(4, EditingStrategy::CaretMaxOffset(*b->firstChild()));
+  EXPECT_EQ(3, EditingStrategy::CaretMaxOffset(*c->firstChild()));
 }
 
 }  // namespace blink

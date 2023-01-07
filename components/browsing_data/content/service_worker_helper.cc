@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_usage_info.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using content::BrowserThread;
 using content::ServiceWorkerContext;
@@ -26,19 +27,18 @@ namespace {
 
 void GetAllOriginsInfoForServiceWorkerCallback(
     ServiceWorkerHelper::FetchCallback callback,
-    const std::vector<StorageUsageInfo>& origins) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+    const std::vector<StorageUsageInfo>& infos) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
 
   std::list<StorageUsageInfo> result;
-  for (const StorageUsageInfo& origin : origins) {
-    if (!HasWebScheme(origin.origin.GetURL()))
+  for (const StorageUsageInfo& info : infos) {
+    if (!HasWebScheme(info.storage_key.origin().GetURL()))
       continue;  // Non-websafe state is not considered browsing data.
-    result.push_back(origin);
+    result.push_back(info);
   }
 
-  content::RunOrPostTaskOnThread(FROM_HERE, BrowserThread::UI,
-                                 base::BindOnce(std::move(callback), result));
+  std::move(callback).Run(result);
 }
 
 }  // namespace
@@ -54,34 +54,16 @@ ServiceWorkerHelper::~ServiceWorkerHelper() {}
 void ServiceWorkerHelper::StartFetching(FetchCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
-  content::RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(
-          &ServiceWorkerHelper::FetchServiceWorkerUsageInfoOnCoreThread, this,
-          std::move(callback)));
-}
-
-void ServiceWorkerHelper::DeleteServiceWorkers(const url::Origin& origin) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::RunOrPostTaskOnThread(
-      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-      base::BindOnce(&ServiceWorkerHelper::DeleteServiceWorkersOnCoreThread,
-                     this, origin));
-}
-
-void ServiceWorkerHelper::FetchServiceWorkerUsageInfoOnCoreThread(
-    FetchCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  DCHECK(!callback.is_null());
-
   service_worker_context_->GetAllOriginsInfo(base::BindOnce(
       &GetAllOriginsInfoForServiceWorkerCallback, std::move(callback)));
 }
 
-void ServiceWorkerHelper::DeleteServiceWorkersOnCoreThread(
-    const url::Origin& origin) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
-  service_worker_context_->DeleteForOrigin(origin, base::DoNothing());
+void ServiceWorkerHelper::DeleteServiceWorkers(const url::Origin& origin) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // TODO(crbug.com/1199077): Update this when the cookie tree model understands
+  // StorageKey.
+  service_worker_context_->DeleteForStorageKey(blink::StorageKey(origin),
+                                               base::DoNothing());
 }
 
 CannedServiceWorkerHelper::CannedServiceWorkerHelper(
@@ -119,7 +101,7 @@ void CannedServiceWorkerHelper::StartFetching(FetchCallback callback) {
 
   std::list<StorageUsageInfo> result;
   for (const auto& origin : pending_origins_)
-    result.emplace_back(origin, 0, base::Time());
+    result.emplace_back(blink::StorageKey(origin), 0, base::Time());
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));

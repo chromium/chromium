@@ -362,4 +362,3 @@
     ctx.fillRect(-100, -10, 100, 50);
     @assert pixel 50,25 == 0,255,0,255;
     t.done();
-

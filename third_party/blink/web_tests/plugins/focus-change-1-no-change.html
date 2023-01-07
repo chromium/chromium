@@ -1,27 +1,31 @@
-<script src="../resources/js-test.js"></script>
-<p>Test no change of focus inside plugin onfocus and onblur events</p>
-<input id="input1" type="text" onfocus="i1Focus()" onblur="i1Blur()"></input>
-<input id="input2" type="text" onfocus="i2Focus()" onblur="i2Blur()"></input>
+
+<!DOCTYPE html>
+<title>Test no change of focus inside plugin onfocus and onblur events</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<input id="input1" type="text" onfocus="i1Focus()" onblur="i1Blur()">
+<input id="input2" type="text" onfocus="i2Focus()" onblur="i2Blur()">
 <embed id="plugin" type="application/x-blink-test-plugin" onfocus="pFocus()" onblur="pBlur()"></embed>
+
 <script>
-function i1Focus() { debug('i1focus'); }
-function i1Blur() { debug('i1blur'); }
-function i2Focus() { debug('i2focus'); }
-function i2Blur() { debug('i2blur'); }
-function pFocus() { debug('pfocus'); }
-function pBlur() { debug('pblur'); }
+let events = [];
+function i1Focus() { events.push('i1focus'); }
+function i1Blur() { events.push('i1blur'); }
+function i2Focus() { events.push('i2focus'); }
+function i2Blur() { events.push('i2blur'); }
+function pFocus() { events.push('pfocus'); }
+function pBlur() { events.push('pblur'); }
 
-if (testRunner)
-  testRunner.waitUntilDone();
+async_test(t => {
+  function finish() {
+    assert_array_equals(events, ["i1focus","i1blur","pfocus","pblur","i2focus"]);
+    t.done();
+  }
+  document.getElementById('input1').focus();
+  document.getElementById('plugin').focus();
+  document.getElementById('input2').focus();
 
-document.getElementById('input1').focus();
-document.getElementById('plugin').focus();
-document.getElementById('input2').focus();
-
-setTimeout(
-    function() {
-      if (testRunner)
-        testRunner.notifyDone();
-    },
-    0);
+  t.step_timeout(finish, 0);
+},"Test plugin focus behavior");
 </script>

@@ -1,24 +1,64 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/scheduler/public/dummy_schedulers.h"
 
+#include "base/threading/thread_task_runner_handle.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
+#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_scheduler.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
-#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_task_queue.h"
+#include "third_party/blink/renderer/platform/scheduler/public/widget_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
-namespace scheduler {
 
+class VirtualTimeController;
+
+namespace scheduler {
 namespace {
+
+std::unique_ptr<AgentGroupScheduler> CreateDummyAgentGroupSchedulerWithIsolate(
+    v8::Isolate* isolate);
+
+class DummyWidgetScheduler final : public WidgetScheduler {
+ public:
+  DummyWidgetScheduler() = default;
+  DummyWidgetScheduler(const DummyWidgetScheduler&) = delete;
+  DummyWidgetScheduler& operator=(const DummyWidgetScheduler&) = delete;
+  ~DummyWidgetScheduler() override = default;
+
+  void Shutdown() override {}
+  // Returns the input task runner.
+  scoped_refptr<base::SingleThreadTaskRunner> InputTaskRunner() override {
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+  void WillBeginFrame(const viz::BeginFrameArgs& args) override {}
+  void BeginFrameNotExpectedSoon() override {}
+  void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override {}
+  void DidCommitFrameToCompositor() override {}
+  void DidHandleInputEventOnCompositorThread(
+      const WebInputEvent& web_input_event,
+      InputEventState event_state) override {}
+  void WillPostInputEventToMainThread(
+      WebInputEvent::Type web_input_event_type,
+      const WebInputEventAttribution& web_input_event_attribution) override {}
+  void WillHandleInputEventOnMainThread(
+      WebInputEvent::Type web_input_event_type,
+      const WebInputEventAttribution& web_input_event_attribution) override {}
+  void DidHandleInputEventOnMainThread(const WebInputEvent& web_input_event,
+                                       WebInputEventResult result) override {}
+  void DidAnimateForInputOnCompositorThread() override {}
+  void DidRunBeginMainFrame() override {}
+  void SetHidden(bool hidden) override {}
+  void SetHasTouchHandler(bool has_touch_handler) override {}
+};
 
 class DummyFrameScheduler : public FrameScheduler {
  public:
@@ -46,10 +86,11 @@ class DummyFrameScheduler : public FrameScheduler {
   bool IsPageVisible() const override { return true; }
   void SetPaused(bool) override {}
   void SetShouldReportPostedTasksWhenDisabled(bool) override {}
-  void SetCrossOriginToMainFrame(bool) override {}
-  bool IsCrossOriginToMainFrame() const override { return false; }
+  void SetCrossOriginToNearestMainFrame(bool) override {}
+  bool IsCrossOriginToNearestMainFrame() const override { return false; }
   void SetIsAdFrame(bool is_ad_frame) override {}
   bool IsAdFrame() const override { return false; }
+  bool IsInEmbeddedFrameTree() const override { return false; }
   void TraceUrlChange(const String&) override {}
   void AddTaskTime(base::TimeDelta) override {}
   FrameType GetFrameType() const override { return FrameType::kMainFrame; }
@@ -58,10 +99,10 @@ class DummyFrameScheduler : public FrameScheduler {
       WebScopedVirtualTimePauser::VirtualTaskDuration) override {
     return WebScopedVirtualTimePauser();
   }
-  void DidStartProvisionalLoad(bool is_main_frame) override {}
+  void DidStartProvisionalLoad() override {}
   void DidCommitProvisionalLoad(bool, FrameScheduler::NavigationType) override {
   }
-  void OnFirstContentfulPaint() override {}
+  void OnFirstContentfulPaintInMainFrame() override {}
   void OnFirstMeaningfulPaint() override {}
   void OnLoad() override {}
   bool IsExemptFromBudgetBasedThrottling() const override { return false; }
@@ -88,6 +129,10 @@ class DummyFrameScheduler : public FrameScheduler {
                              const SchedulingPolicy& policy) override {}
   void OnStoppedUsingFeature(SchedulingPolicy::Feature feature,
                              const SchedulingPolicy& policy) override {}
+  base::WeakPtr<FrameOrWorkerScheduler> GetSchedulingAffectingFeatureWeakPtr()
+      override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
   WTF::HashSet<SchedulingPolicy::Feature>
   GetActiveFeaturesTrackedForBackForwardCacheMetrics() override {
     return WTF::HashSet<SchedulingPolicy::Feature>();
@@ -96,6 +141,9 @@ class DummyFrameScheduler : public FrameScheduler {
     return weak_ptr_factory_.GetWeakPtr();
   }
   void ReportActiveSchedulerTrackedFeatures() override {}
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
+    return base::ThreadTaskRunnerHandle::Get();
+  }
 
  private:
   std::unique_ptr<PageScheduler> page_scheduler_;
@@ -113,7 +161,7 @@ class DummyPageScheduler : public PageScheduler {
 
   std::unique_ptr<FrameScheduler> CreateFrameScheduler(
       FrameScheduler::Delegate* delegate,
-      BlameContext*,
+      bool is_in_embedded_frame_tree,
       FrameScheduler::FrameType) override {
     return CreateDummyFrameScheduler();
   }
@@ -122,19 +170,8 @@ class DummyPageScheduler : public PageScheduler {
   void SetPageVisible(bool) override {}
   void SetPageFrozen(bool) override {}
   void SetPageBackForwardCached(bool) override {}
-  void OnFocusChanged(bool focused) override {}
-  void SetKeepActive(bool) override {}
   bool IsMainFrameLocal() const override { return true; }
   void SetIsMainFrameLocal(bool) override {}
-  void OnLocalMainFrameNetworkAlmostIdle() override {}
-  base::TimeTicks EnableVirtualTime() override { return base::TimeTicks(); }
-  void DisableVirtualTimeForTesting() override {}
-  bool VirtualTimeAllowedToAdvance() const override { return true; }
-  void SetInitialVirtualTime(base::Time) override {}
-  void SetInitialVirtualTimeOffset(base::TimeDelta) override {}
-  void SetVirtualTimePolicy(VirtualTimePolicy) override {}
-  void GrantVirtualTimeBudget(base::TimeDelta, base::OnceClosure) override {}
-  void SetMaxVirtualTimeTaskStarvationCount(int) override {}
   void AudioStateChanged(bool is_audio_playing) override {}
   bool IsAudioPlaying() const override { return false; }
   bool IsExemptFromBudgetBasedThrottling() const override { return false; }
@@ -143,23 +180,120 @@ class DummyPageScheduler : public PageScheduler {
   }
   bool IsInBackForwardCache() const override { return false; }
   bool RequestBeginMainFrameNotExpected(bool) override { return false; }
-  WebScopedVirtualTimePauser CreateWebScopedVirtualTimePauser(
-      const String& name,
-      WebScopedVirtualTimePauser::VirtualTaskDuration) override {
-    return WebScopedVirtualTimePauser();
-  }
   WebAgentGroupScheduler& GetAgentGroupScheduler() override {
     return *agent_group_scheduler_;
+  }
+  VirtualTimeController* GetVirtualTimeController() override { return nullptr; }
+  scoped_refptr<WidgetScheduler> CreateWidgetScheduler() override {
+    return base::MakeRefCounted<DummyWidgetScheduler>();
   }
 
  private:
   std::unique_ptr<WebAgentGroupScheduler> agent_group_scheduler_;
 };
 
+// TODO(altimin,yutak): Merge with SimpleThread in platform.cc.
+class SimpleThread : public MainThread {
+ public:
+  explicit SimpleThread(ThreadScheduler* scheduler) : scheduler_(scheduler) {}
+  ~SimpleThread() override {}
+
+  SimpleThread(const SimpleThread&) = delete;
+  SimpleThread& operator=(const SimpleThread&) = delete;
+
+  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
+      MainThreadTaskRunnerRestricted) const override {
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+
+  ThreadScheduler* Scheduler() override { return scheduler_; }
+
+  bool IsCurrentThread() const { return WTF::IsMainThread(); }
+
+ private:
+  ThreadScheduler* scheduler_;
+};
+
+class DummyWebMainThreadScheduler : public WebThreadScheduler,
+                                    public MainThreadScheduler {
+ public:
+  DummyWebMainThreadScheduler() = default;
+  ~DummyWebMainThreadScheduler() override = default;
+
+  // WebThreadScheduler implementation:
+  void Shutdown() override {}
+  WebThreadScheduler* ToWebMainThreadScheduler() override { return this; }
+
+  // ThreadScheduler implementation:
+  bool ShouldYieldForHighPriorityWork() override { return false; }
+  void PostIdleTask(const base::Location&, Thread::IdleTask) override {}
+  void PostDelayedIdleTask(const base::Location&,
+                           base::TimeDelta delay,
+                           Thread::IdleTask) override {}
+  void PostNonNestableIdleTask(const base::Location&,
+                               Thread::IdleTask) override {}
+  void AddRAILModeObserver(RAILModeObserver*) override {}
+  void RemoveRAILModeObserver(RAILModeObserver const*) override {}
+  base::TimeTicks MonotonicallyIncreasingVirtualTime() override {
+    return base::TimeTicks::Now();
+  }
+  void AddTaskObserver(base::TaskObserver*) override {}
+  void RemoveTaskObserver(base::TaskObserver*) override {}
+  blink::MainThreadScheduler* ToMainThreadScheduler() override { return this; }
+  void SetV8Isolate(v8::Isolate* isolate) override { isolate_ = isolate; }
+
+  scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
+      override {
+    DCHECK(WTF::IsMainThread());
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
+    DCHECK(WTF::IsMainThread());
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override {
+    DCHECK(WTF::IsMainThread());
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+
+  std::unique_ptr<MainThread> CreateMainThread() override {
+    return std::make_unique<SimpleThread>(this);
+  }
+
+  std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override {
+    return CreateDummyAgentGroupSchedulerWithIsolate(isolate_);
+  }
+
+  scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override {
+    DCHECK(WTF::IsMainThread());
+    return base::ThreadTaskRunnerHandle::Get();
+  }
+
+  WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
+    return nullptr;
+  }
+
+  std::unique_ptr<RendererPauseHandle> PauseScheduler() override {
+    return nullptr;
+  }
+
+  v8::Isolate* Isolate() override {
+    DCHECK(isolate_);
+    return isolate_;
+  }
+
+ private:
+  v8::Isolate* isolate_ = nullptr;
+};
+
 class DummyAgentGroupScheduler : public AgentGroupScheduler {
  public:
-  DummyAgentGroupScheduler()
-      : main_thread_scheduler_(CreateDummyWebThreadScheduler()) {}
+  explicit DummyAgentGroupScheduler(v8::Isolate* isolate)
+      : main_thread_scheduler_(new DummyWebMainThreadScheduler()) {
+    main_thread_scheduler_->SetV8Isolate(isolate);
+  }
   ~DummyAgentGroupScheduler() override = default;
 
   DummyAgentGroupScheduler(const DummyAgentGroupScheduler&) = delete;
@@ -185,132 +319,18 @@ class DummyAgentGroupScheduler : public AgentGroupScheduler {
   BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker() override {
     return GetEmptyBrowserInterfaceBroker();
   }
+  v8::Isolate* Isolate() override { return main_thread_scheduler_->Isolate(); }
+  void AddAgent(Agent* agent) override {}
+  void RemoveAgent(Agent* agent) override {}
 
  private:
-  std::unique_ptr<WebThreadScheduler> main_thread_scheduler_;
+  std::unique_ptr<DummyWebMainThreadScheduler> main_thread_scheduler_;
 };
 
-// TODO(altimin,yutak): Merge with SimpleThread in platform.cc.
-class SimpleThread : public Thread {
- public:
-  explicit SimpleThread(ThreadScheduler* scheduler) : scheduler_(scheduler) {}
-  ~SimpleThread() override {}
-
-  SimpleThread(const SimpleThread&) = delete;
-  SimpleThread& operator=(const SimpleThread&) = delete;
-
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() const override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
-  ThreadScheduler* Scheduler() override { return scheduler_; }
-
-  bool IsCurrentThread() const { return WTF::IsMainThread(); }
-
- private:
-  ThreadScheduler* scheduler_;
-};
-
-class DummyThreadScheduler : public ThreadScheduler {
- public:
-  DummyThreadScheduler() {}
-  ~DummyThreadScheduler() override {}
-
-  void Shutdown() override {}
-
-  scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
-      override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override {
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
-  std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override {
-    return CreateDummyAgentGroupScheduler();
-  }
-
-  WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
-    return nullptr;
-  }
-
-  // ThreadScheduler implementation:
-  bool ShouldYieldForHighPriorityWork() override { return false; }
-  bool CanExceedIdleDeadlineIfRequired() const override { return false; }
-  void PostIdleTask(const base::Location&, Thread::IdleTask) override {}
-  void PostDelayedIdleTask(const base::Location&,
-                           base::TimeDelta delay,
-                           Thread::IdleTask) override {}
-  void PostNonNestableIdleTask(const base::Location&,
-                               Thread::IdleTask) override {}
-  void AddRAILModeObserver(RAILModeObserver*) override {}
-  void RemoveRAILModeObserver(RAILModeObserver const*) override {}
-  std::unique_ptr<WebThreadScheduler::RendererPauseHandle> PauseScheduler()
-      override {
-    return nullptr;
-  }
-  base::TimeTicks MonotonicallyIncreasingVirtualTime() override {
-    return base::TimeTicks::Now();
-  }
-  void AddTaskObserver(base::TaskObserver*) override {}
-  void RemoveTaskObserver(base::TaskObserver*) override {}
-  NonMainThreadSchedulerImpl* AsNonMainThreadScheduler() override {
-    return nullptr;
-  }
-  void SetV8Isolate(v8::Isolate* isolate) override {}
-};
-
-class DummyWebThreadScheduler : public WebThreadScheduler,
-                                public DummyThreadScheduler {
- public:
-  DummyWebThreadScheduler() {}
-  ~DummyWebThreadScheduler() override {}
-
-  // WebThreadScheduler implementation:
-  void Shutdown() override {}
-
-  scoped_refptr<base::SingleThreadTaskRunner> DefaultTaskRunner() override {
-    DCHECK(WTF::IsMainThread());
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> DeprecatedDefaultTaskRunner()
-      override {
-    DCHECK(WTF::IsMainThread());
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> CompositorTaskRunner() override {
-    DCHECK(WTF::IsMainThread());
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
-  scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override {
-    DCHECK(WTF::IsMainThread());
-    return base::ThreadTaskRunnerHandle::Get();
-  }
-
-  std::unique_ptr<Thread> CreateMainThread() override {
-    return std::make_unique<SimpleThread>(this);
-  }
-
-  std::unique_ptr<WebAgentGroupScheduler> CreateAgentGroupScheduler() override {
-    return CreateDummyAgentGroupScheduler();
-  }
-
-  WebAgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
-    return nullptr;
-  }
-};
+std::unique_ptr<AgentGroupScheduler> CreateDummyAgentGroupSchedulerWithIsolate(
+    v8::Isolate* isolate) {
+  return std::make_unique<DummyAgentGroupScheduler>(isolate);
+}
 
 }  // namespace
 
@@ -323,15 +343,11 @@ std::unique_ptr<PageScheduler> CreateDummyPageScheduler() {
 }
 
 std::unique_ptr<AgentGroupScheduler> CreateDummyAgentGroupScheduler() {
-  return std::make_unique<DummyAgentGroupScheduler>();
+  return std::make_unique<DummyAgentGroupScheduler>(/*isolate=*/nullptr);
 }
 
-std::unique_ptr<ThreadScheduler> CreateDummyThreadScheduler() {
-  return std::make_unique<DummyThreadScheduler>();
-}
-
-std::unique_ptr<WebThreadScheduler> CreateDummyWebThreadScheduler() {
-  return std::make_unique<DummyWebThreadScheduler>();
+std::unique_ptr<WebThreadScheduler> CreateDummyWebMainThreadScheduler() {
+  return std::make_unique<DummyWebMainThreadScheduler>();
 }
 
 }  // namespace scheduler

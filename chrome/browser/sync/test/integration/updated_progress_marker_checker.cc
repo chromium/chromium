@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,11 +7,11 @@
 #include "base/bind.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/sync/driver/profile_sync_service.h"
+#include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 
 UpdatedProgressMarkerChecker::UpdatedProgressMarkerChecker(
-    syncer::ProfileSyncService* service)
+    syncer::SyncServiceImpl* service)
     : SingleClientStatusChangeChecker(service) {
   DCHECK(sync_datatype_helper::test()->TestUsesSelfNotifications());
 
@@ -23,7 +23,7 @@ UpdatedProgressMarkerChecker::UpdatedProgressMarkerChecker(
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-UpdatedProgressMarkerChecker::~UpdatedProgressMarkerChecker() {}
+UpdatedProgressMarkerChecker::~UpdatedProgressMarkerChecker() = default;
 
 bool UpdatedProgressMarkerChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for progress markers";

@@ -1,14 +1,14 @@
-CONSOLE ERROR: line 17: Error: <polyline> attribute points: Expected number, "a".
-CONSOLE ERROR: line 17: Error: <polyline> attribute points: Unexpected end of attribute. Expected number, "10".
-CONSOLE ERROR: line 17: Error: <polyline> attribute points: Unexpected end of attribute. Expected number, "10,".
-CONSOLE ERROR: line 17: Error: <polyline> attribute points: Expected number, "10,,".
-CONSOLE ERROR: line 17: Error: <polyline> attribute points: Expected number, "10,,10".
-CONSOLE ERROR: line 17: Error: <polyline> attribute points: Unexpected end of attribute. Expected number, "10,10,".
-CONSOLE ERROR: line 17: Error: <polyline> attribute points: Expected number, "10,10a".
-CONSOLE ERROR: line 17: Error: <polyline> attribute points: Expected number, ",10".
-CONSOLE ERROR: line 17: Error: <polyline> attribute points: Expected number, ",10,".
-CONSOLE ERROR: line 17: Error: <polyline> attribute points: Expected number, ",10,,".
-CONSOLE ERROR: line 17: Error: <polyline> attribute points: Expected number, ",10,10".
+CONSOLE ERROR: Error: <polyline> attribute points: Expected number, "a".
+CONSOLE ERROR: Error: <polyline> attribute points: Unexpected end of attribute. Expected number, "10".
+CONSOLE ERROR: Error: <polyline> attribute points: Unexpected end of attribute. Expected number, "10,".
+CONSOLE ERROR: Error: <polyline> attribute points: Expected number, "10,,".
+CONSOLE ERROR: Error: <polyline> attribute points: Expected number, "10,,10".
+CONSOLE ERROR: Error: <polyline> attribute points: Unexpected end of attribute. Expected number, "10,10,".
+CONSOLE ERROR: Error: <polyline> attribute points: Expected number, "10,10a".
+CONSOLE ERROR: Error: <polyline> attribute points: Expected number, ",10".
+CONSOLE ERROR: Error: <polyline> attribute points: Expected number, ",10,".
+CONSOLE ERROR: Error: <polyline> attribute points: Expected number, ",10,,".
+CONSOLE ERROR: Error: <polyline> attribute points: Expected number, ",10,10".
 This tests the parser for points attribute values.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

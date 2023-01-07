@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,17 +7,9 @@
 
 #include <type_traits>
 
-#include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
-#include "third_party/blink/renderer/core/layout/layout_progress.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
-#include "third_party/blink/renderer/core/layout/layout_table_caption.h"
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_block.h"
 
 namespace blink {
 
@@ -25,17 +17,33 @@ enum class NGBaselineAlgorithmType;
 struct NGInlineNodeData;
 
 // This mixin holds code shared between LayoutNG subclasses of LayoutBlockFlow.
+//
+// If you'd like to make a LayoutNGFoo class inheriting from
+// LayoutNGBlockFlowMixin<LayoutBar>, you need to do:
+//  * Add the following to the header for LayoutNGFoo.
+//     extern template class CORE_EXTERN_TEMPLATE_EXPORT
+//         LayoutNGBlockFlowMixin<LayoutBar>;
+//     extern template class CORE_EXTERN_TEMPLATE_EXPORT
+//         LayoutNGMixin<LayoutBar>;
+//  * Add |#include "header for LayoutNGFoo"| to layout_ng_block_flow_mixin.cc
+//    and layout_ng_mixin.cc.
+//    It's the header for LayoutNGFoo, not for LayoutBar. The purpose is to
+//    include the above |extern template| declarations.
+//  * Add |template class CORE_TEMPLATE_EXPORT
+//    LayoutNGBlockFlowMixin<LayoutBar>;| to layout_ng_block_flow_mixin.cc.
+//  * Add |template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutBar>;| to
+//    layout_ng_mixin.cc.
 template <typename Base>
 class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
  public:
-  explicit LayoutNGBlockFlowMixin(Element* element);
+  explicit LayoutNGBlockFlowMixin(ContainerNode*);
   ~LayoutNGBlockFlowMixin() override;
 
   NGInlineNodeData* TakeNGInlineNodeData() final;
   NGInlineNodeData* GetNGInlineNodeData() const final;
   void ResetNGInlineNodeData() final;
   void ClearNGInlineNodeData() final;
-  bool HasNGInlineNodeData() const final { return ng_inline_node_data_.get(); }
+  bool HasNGInlineNodeData() const final;
 
   LayoutUnit FirstLineBoxBaseline() const final;
   LayoutUnit InlineBlockBaseline(LineDirectionMode) const final;
@@ -43,18 +51,21 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) override;
+                   HitTestPhase) override;
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
-  using LayoutNGMixin<Base>::CurrentFragment;
+  void Trace(Visitor*) const override;
 
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
+#if DCHECK_IS_ON()
   void AddLayoutOverflowFromChildren() final;
+#endif
 
   void AddOutlineRects(Vector<PhysicalRect>&,
+                       LayoutObject::OutlineInfo*,
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;
 
@@ -65,35 +76,10 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
   // behavior as LayoutNGBlockFlow.
   void UpdateNGBlockLayout();
 
-  std::unique_ptr<NGInlineNodeData> ng_inline_node_data_;
+  Member<NGInlineNodeData> ng_inline_node_data_;
 
   friend class NGBaseLayoutAlgorithmTest;
-
- private:
-  void AddScrollingOverflowFromChildren();
-  void UpdateMargins();
 };
-
-// If you edit these export templates, also update templates in
-// layout_ng_mixin.h.
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutBlockFlow>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutProgress>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutRubyAsBlock>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutRubyBase>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutRubyRun>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutRubyText>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutSVGBlock>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutTableCaption>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutTableCell>;
 
 }  // namespace blink
 

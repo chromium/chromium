@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -410,7 +410,9 @@ TEST_F(NodeTest, UpdateChildDirtyAncestorsOnSlotAssignment) {
 }
 
 TEST_F(NodeTest, UpdateChildDirtySlotAfterRemoval) {
-  SetBodyContent("<div id=host><span></span></div>");
+  SetBodyContent(R"HTML(
+    <div id="host"><span style="display:contents"></span></div>
+  )HTML");
   Element* host = GetDocument().getElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
@@ -440,7 +442,9 @@ TEST_F(NodeTest, UpdateChildDirtySlotAfterRemoval) {
 }
 
 TEST_F(NodeTest, UpdateChildDirtyAfterSlotRemoval) {
-  SetBodyContent("<div id=host><span></span></div>");
+  SetBodyContent(R"HTML(
+    <div id="host"><span style="display:contents"></span></div>
+  )HTML");
   Element* host = GetDocument().getElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
@@ -499,6 +503,84 @@ TEST_F(NodeTest, UpdateChildDirtyAfterSlottingDirtyNode) {
 
   // This used to call a DCHECK failure. Make sure we don't regress.
   UpdateAllLifecyclePhasesForTest();
+}
+
+TEST_F(NodeTest, ReassignStyleDirtyElementIntoSlotOutsideFlatTree) {
+  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+    <div>
+      <template shadowroot="open">
+        <div>
+          <slot name="s1"></slot>
+        </div>
+        <div>
+          <template shadowroot="open">
+            <div></div>
+          </template>
+          <slot name="s2"></slot>
+        </div>
+      </template>
+      <span id="slotted" slot="s1"></span>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* slotted = GetDocument().getElementById("slotted");
+
+  // Starts with #slotted in the flat tree as a child of the s1 slot.
+  EXPECT_TRUE(slotted->GetComputedStyle());
+
+  // Mark #slotted dirty.
+  slotted->SetInlineStyleProperty(CSSPropertyID::kColor, "orange");
+  EXPECT_TRUE(slotted->NeedsStyleRecalc());
+
+  // Mark for slot reassignment. The #s2 slot is outside the flat tree because
+  // its parent is a shadow host with no slots in the shadow tree.
+  slotted->setAttribute("slot", "s2");
+
+  // After doing the slot assignment, the #slotted element should no longer be
+  // marked dirty and its ComputedStyle should be null because it's outside the
+  // flat tree.
+  GetDocument().GetSlotAssignmentEngine().RecalcSlotAssignments();
+  EXPECT_FALSE(slotted->NeedsStyleRecalc());
+  EXPECT_FALSE(slotted->GetComputedStyle());
+}
+
+TEST_F(NodeTest, FlatTreeParentForChildDirty) {
+  GetDocument().body()->setInnerHTMLWithDeclarativeShadowDOMForTesting(R"HTML(
+    <div id="host">
+      <template shadowroot="open">
+        <slot id="slot1">
+          <span id="fallback1"></span>
+        </slot>
+        <slot id="slot2">
+          <span id="fallback2"></span>
+        </slot>
+      </template>
+      <div id="slotted"></div>
+      <div id="not_slotted" slot="notfound"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* host = GetDocument().getElementById("host");
+  Element* slotted = GetDocument().getElementById("slotted");
+  Element* not_slotted = GetDocument().getElementById("not_slotted");
+
+  ShadowRoot* shadow_root = host->GetShadowRoot();
+  Element* slot1 = shadow_root->getElementById("slot1");
+  Element* slot2 = shadow_root->getElementById("slot2");
+  Element* fallback1 = shadow_root->getElementById("fallback1");
+  Element* fallback2 = shadow_root->getElementById("fallback2");
+
+  EXPECT_EQ(host->FlatTreeParentForChildDirty(), GetDocument().body());
+  EXPECT_EQ(slot1->FlatTreeParentForChildDirty(), host);
+  EXPECT_EQ(slot2->FlatTreeParentForChildDirty(), host);
+  EXPECT_EQ(slotted->FlatTreeParentForChildDirty(), slot1);
+  EXPECT_EQ(not_slotted->FlatTreeParentForChildDirty(), nullptr);
+  EXPECT_EQ(fallback1->FlatTreeParentForChildDirty(), nullptr);
+  EXPECT_EQ(fallback2->FlatTreeParentForChildDirty(), slot2);
 }
 
 }  // namespace blink

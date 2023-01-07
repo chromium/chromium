@@ -21,7 +21,8 @@ assets, gets placed in
 
 out/Release/chromevoxclassic.
 
-The one exception is ./_locales. You must copy this directory manually to
+The two exceptions are the ./_locales directory and third party files.
+The ./_locales directory and third party files must be copied manually to
 out/Release/chromevoxclassic.
 
 These translations are no longer part of mainline ChromeVox.
@@ -54,12 +55,12 @@ webstore.
 
 ### Third party files
 
-The extension currently depends on a shim to polyfill shadow DOM. This file is located at:
-./shadydom.js.
+The extension currently depends on a shim to polyfill shadow DOM. This file is
+located at ./webcomponents-bundle.js.
 
 It is not checked into the repository, but can be obtained by building:
 https://github.com/webcomponents/polyfills/
-(packages/shadydom).
+(packages/webcomponentsjs)
 
 You can test things work by visiting any polymer app e.g.
 chrome://settings

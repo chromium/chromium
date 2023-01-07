@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_serializer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
+namespace media {
+class AudioBuffer;
+class DecoderBuffer;
+}
+
 namespace blink {
 
-class AudioFrameSerializationData;
+class CropTarget;
 class FileSystemHandle;
+class MediaSourceHandleImpl;
 class RTCEncodedAudioFrame;
 class RTCEncodedVideoFrame;
 class VideoFrameHandle;
@@ -23,6 +29,13 @@ class WebCryptoKey;
 class MODULES_EXPORT V8ScriptValueSerializerForModules final
     : public V8ScriptValueSerializer {
  public:
+  // |object_index| is for use in exception messages.
+  static bool ExtractTransferable(v8::Isolate*,
+                                  v8::Local<v8::Value>,
+                                  wtf_size_t object_index,
+                                  Transferables&,
+                                  ExceptionState&);
+
   explicit V8ScriptValueSerializerForModules(
       ScriptState* script_state,
       const SerializedScriptValue::SerializeOptions& options)
@@ -39,8 +52,15 @@ class MODULES_EXPORT V8ScriptValueSerializerForModules final
   bool WriteRTCEncodedAudioFrame(RTCEncodedAudioFrame*);
   bool WriteRTCEncodedVideoFrame(RTCEncodedVideoFrame*);
   bool WriteVideoFrameHandle(scoped_refptr<VideoFrameHandle>);
-  bool WriteAudioFrameSerializationData(
-      std::unique_ptr<AudioFrameSerializationData>);
+  bool WriteMediaAudioBuffer(scoped_refptr<media::AudioBuffer>);
+  bool WriteDecoderBuffer(scoped_refptr<media::DecoderBuffer> data,
+                          bool for_audio);
+  bool WriteMediaStreamTrack(MediaStreamTrack* track,
+                             ScriptWrappable::TypeDispatcher& dispatcher,
+                             ExceptionState& exception_state);
+  bool WriteCropTarget(CropTarget*);
+  bool WriteMediaSourceHandle(MediaSourceHandleImpl* handle,
+                              ExceptionState& exception_state);
 };
 
 }  // namespace blink

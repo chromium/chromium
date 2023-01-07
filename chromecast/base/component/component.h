@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -145,7 +145,6 @@
 
 #include "base/callback.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
@@ -174,6 +173,9 @@ class ComponentBase {
    protected:
     virtual ~Observer() {}
   };
+
+  ComponentBase(const ComponentBase&) = delete;
+  ComponentBase& operator=(const ComponentBase&) = delete;
 
   virtual ~ComponentBase();
 
@@ -266,8 +268,6 @@ class ComponentBase {
   bool async_call_in_progress_;
   int pending_dependency_count_;
   const scoped_refptr<base::ObserverListThreadSafe<Observer>> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentBase);
 };
 
 template <typename C>
@@ -276,13 +276,13 @@ class StrongDependency : public subtle::DependencyBase {
   StrongDependency(const WeakReference<C>& dependency, ComponentBase* dependent)
       : subtle::DependencyBase(dependency, dependent) {}
 
+  StrongDependency(const StrongDependency&) = delete;
+  StrongDependency& operator=(const StrongDependency&) = delete;
+
   C* operator->() const {
     DCHECK(dependency_);
     return static_cast<C*>(dependency_);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StrongDependency);
 };
 
 template <typename C>
@@ -316,10 +316,10 @@ class Component : public ComponentBase {
 
   Component() = default;
 
-  WeakRef GetRef() { return WeakRef(*static_cast<C*>(this)); }
+  Component(const Component&) = delete;
+  Component& operator=(const Component&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(Component);
+  WeakRef GetRef() { return WeakRef(*static_cast<C*>(this)); }
 };
 
 }  // namespace chromecast

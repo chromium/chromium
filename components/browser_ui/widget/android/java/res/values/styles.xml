@@ -1,24 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- AlertDialog styles -->
+    <!-- This should be kept in sync with |Theme.BrowserUI.AlertDialog.NoActionBar|. -->
+    <style name="ThemeOverlay.BrowserUI.AlertDialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:textColorPrimary">@macro/default_text_color</item>
+        <item name="android:windowBackground">@drawable/dialog_bg_no_shadow</item>
+        <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>
+        <item name="android:textColorHighlight">@color/text_highlight_color</item>
+
+        <!--  Overriding AppCompat values -->
+        <item name="colorControlHighlight">@color/control_highlight_color</item>
+        <item name="spinnerStyle">@style/SpinnerStyle</item>
+
+        <!-- Depending on if the support library or framework is inflating the
+             dialog, a different layout is used, that names this style slightly
+             differently. WebView will use the framework version for the
+             foreseeable future, so both of these need to be specified. See
+             https://crbug.com/1234129. -->
+        <item name="android:buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
+        <item name="buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
+    </style>
+
+    <style name="ThemeOverlay.BrowserUI.AlertDialog.NoActionBar">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+    </style>
+
     <!-- Card styles -->
-    <style name="Card">
-        <item name="android:background">@drawable/hairline_border_card_background</item>
-    </style>
     <style name="CardTransparentForDark">
-        <item name="android:background">@drawable/hairline_border_card_dark_transparent_bg</item>
+        <item name="android:background">@drawable/incognito_card_bg</item>
     </style>
 
+    <style name="MaterialCardStyle" parent="Widget.MaterialComponents.CardView">
+        <item name="shapeAppearance">@style/MaterialCardShape</item>
+        <item name="cardElevation">@dimen/card_elevation</item>
+    </style>
+
+    <style name="MaterialCardShape" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerSize">@dimen/card_rounded_corner_radius</item>
+    </style>
 
     <style name="ListActionButton" parent="@style/TextButton">
         <item name="android:minHeight">48dp</item>
     </style>
 
     <style name="TextAppearance.ListMenuItem">
-        <item name="android:textColor">@color/default_icon_color_tint_list</item>
+        <item name="android:textColor">@color/default_text_color_list</item>
         <item name="android:textSize">16sp</item>
     </style>
 
@@ -28,13 +61,21 @@
         <item name="android:paddingEnd">@dimen/default_list_row_padding</item>
     </style>
 
-    <style name="OverflowMenuAnim">
+    <style name="EndIconMenuAnim">
         <item name="android:windowEnterAnimation">@anim/menu_enter</item>
         <item name="android:windowExitAnimation">@anim/menu_exit</item>
     </style>
-    <style name="OverflowMenuAnimBottom">
+    <style name="EndIconMenuAnimBottom">
         <item name="android:windowEnterAnimation">@anim/menu_enter_from_bottom</item>
         <item name="android:windowExitAnimation">@anim/menu_exit_from_bottom</item>
+    </style>
+    <style name="StartIconMenuAnim">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_from_top_left</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_from_top_left</item>
+    </style>
+    <style name="StartIconMenuAnimBottom">
+        <item name="android:windowEnterAnimation">@anim/menu_enter_from_bottom_left</item>
+        <item name="android:windowExitAnimation">@anim/menu_exit_from_bottom_left</item>
     </style>
 
     <!-- Modern List Item -->
@@ -46,6 +87,10 @@
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_marginStart">@dimen/list_item_default_margin</item>
     </style>
+    <style name="ListItemContainerV2" parent="ListItemContainer">
+        <item name="android:layout_marginTop">@dimen/list_item_v2_margin</item>
+        <item name="android:layout_marginBottom">@dimen/list_item_v2_margin</item>
+    </style>
     <style name="ListItemStartIcon">
         <item name="android:layout_width">@dimen/list_item_start_icon_width</item>
         <item name="android:layout_height">@dimen/list_item_start_icon_width</item>
@@ -54,13 +99,23 @@
         <item name="android:scaleType">center</item>
         <item name="android:contentDescription">@null</item>
     </style>
+    <style name="ListItemStartIconV2" parent="ListItemStartIcon">
+        <item name="android:layout_width">@dimen/list_item_v2_start_icon_width</item>
+        <item name="android:layout_height">@dimen/list_item_v2_start_icon_width</item>
+    </style>
     <style name="ListItemEndIcon">
         <item name="android:layout_width">@dimen/list_item_end_icon_width</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">@null</item>
         <item name="android:scaleType">center</item>
     </style>
-
+    <style name="ListItemEndIconV2">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:background">@null</item>
+        <item name="android:scaleType">center</item>
+    </style>
+    
     <!-- Promo dialogs -->
     <style name="PromoDialog" >
         <item name="android:background">@android:color/transparent</item>
@@ -92,5 +147,77 @@
     <style name="ChipAnimation">
         <item name="android:windowEnterAnimation">@anim/chip_in</item>
         <item name="android:windowExitAnimation">@anim/chip_out</item>
+    </style>
+
+    <!-- Snooze button -->
+    <style name="TextButton.OnAccent1.Snooze">
+        <item name="android:paddingStart">@dimen/text_bubble_with_snooze_padding_horizontal</item>
+        <item name="android:paddingEnd">@dimen/text_bubble_with_snooze_padding_horizontal</item>
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+        <item name="android:layout_marginTop">6dp</item>
+        <item name="android:layout_marginBottom">6dp</item>
+    </style>
+
+    <!-- Chips -->
+    <style name="SuggestionChipThemeOverlay">
+        <item name="chipStyle">@style/SuggestionChip</item>
+    </style>
+
+    <style name="Chip">
+        <item name="android:minHeight">@dimen/min_touch_target_size</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="chipColor">@color/chip_background_color</item>
+        <item name="chipStateLayerColor">@color/chip_state_layer_color</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.ChipText</item>
+        <item name="secondaryTextAppearance">@style/TextAppearance.ChipHint</item>
+        <item name="rippleColor">@color/chip_ripple_color</item>
+        <item name="verticalInset">@dimen/chip_bg_vertical_inset</item>
+    </style>
+    <style name="SuggestionChip" parent="Chip">
+        <item name="primaryTextAppearance">@style/TextAppearance.ChipHint</item>
+        <item name="cornerRadius">@dimen/chip_corner_radius</item>
+    </style>
+    <style name="InputChip" parent="Chip">
+        <item name="cornerRadius">@dimen/chip_default_height</item>
+    </style>
+    <style name="AssistiveChip" parent="Chip">
+        <item name="cornerRadius">@dimen/chip_default_height</item>
+    </style>
+    <style name="InputChipWithRemoveIcon" parent="InputChip" tools:ignore="UnusedResources">
+        <item name="iconWidth">28dp</item>
+        <item name="iconHeight">28dp</item>
+        <item name="useRoundedIcon">true</item>
+        <item name="endIconWidth">18dp</item>
+        <item name="endIconHeight">18dp</item>
+    </style>
+
+    <style name="ChipTextView">
+        <item name="android:gravity">center</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:paddingStart">@dimen/chip_element_leading_padding</item>
+        <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="MenuChip" parent="Chip" tools:ignore="UnusedResources">
+        <item name="cornerRadius">@dimen/chip_default_height</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.MenuChip.Text.Blue</item>
+        <item name="chipColor">@color/menu_chip_background</item>
+        <item name="solidColorChip">true</item>
+        <item name="verticalInset">@dimen/menu_chip_vertical_inset</item>
+    </style>
+
+    <!-- Popup and long-press context popup menu style -->
+    <style name="PopupMenuStyle" parent="Widget.AppCompat.Light.PopupMenu">
+        <item name="android:popupBackground">@drawable/menu_bg_tinted</item>
+        <item name="android:overlapAnchor" tools:targetApi="21">true</item>
+        <item name="android:popupElevation" tools:targetApi="21">0dp</item>
+    </style>
+
+    <!-- Spinner styles -->
+    <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner">
+        <item name="android:popupBackground">@drawable/dialog_bg_tinted</item>
+        <item name="android:popupElevation" tools:targetApi="21">0dp</item>
     </style>
 </resources>

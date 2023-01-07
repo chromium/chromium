@@ -1,14 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-goog.provide('InstanceChecker');
 
 /**
  * Used to prevent multiple instances of the extension from running
  * simultaneously.
  */
-const InstanceChecker = class {
+export class InstanceChecker {
   static closeExtraInstances() {
     // In 'split' manifest mode, the extension system runs two copies of the
     // extension. One in an incognito context; the other not. In guest mode, the
@@ -22,4 +20,4 @@ const InstanceChecker = class {
       window.close();
     }
   }
-};
+}

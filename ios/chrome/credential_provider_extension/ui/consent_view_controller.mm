@@ -1,48 +1,95 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "ios/chrome/credential_provider_extension/ui/consent_view_controller.h"
+
+#import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/credential_provider/constants.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
-constexpr CGFloat kStackViewSpacingAfterIllustration = 37;
+NSString* const kConsentViewControllerIdentifier =
+    @"ConsentViewControllerIdentifier";
 }  // namespace
 
 @implementation ConsentViewController
 
-#pragma mark - Public
+#pragma mark - UIViewController
 
-- (void)loadView {
-  self.image = [UIImage imageNamed:@"consent_illustration"];
-  self.customSpacingAfterImage = kStackViewSpacingAfterIllustration;
+- (void)viewDidLoad {
+  self.view.accessibilityIdentifier = kConsentViewControllerIdentifier;
 
-  self.helpButtonAvailable = YES;
-  self.helpButtonAccessibilityLabel = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_HELP_ACCESSIBILITY_LABEL", @"Help.");
+  if (IsPasswordManagerBrandingUpdateEnable()) {
+    self.bannerName = @"consent_view_controller";
 
-  self.primaryActionAvailable = YES;
-  NSString* titleString =
+    NSString* userEmail = [app_group::GetGroupUserDefaults()
+        stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
+
+    if (userEmail.length) {
+      NSString* baseLocalizedString = NSLocalizedString(
+          @"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_SUBTITLE_BRANDED_SYNC",
+          @"The subtitle in the consent screen.");
+      self.subtitleText =
+          [baseLocalizedString stringByReplacingOccurrencesOfString:@"$1"
+                                                         withString:userEmail];
+    } else {
+      self.subtitleText = NSLocalizedString(
+          @"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_SUBTITLE_BRANDED_NO_SYNC",
+          @"The subtitle in the consent screen.");
+    }
+  } else {
+    self.bannerName = @"legacy_consent_view_controller";
+    self.subtitleText =
+        NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_SUBTITLE",
+                          @"The subtitle in the consent screen.");
+  }
+  self.titleText =
       NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_TITLE",
                         @"The title in the consent screen.");
-  NSString* subtitleString =
-      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_SUBTITLE",
-                        @"The subtitle in the consent screen.");
-  NSString* primaryActionString = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_ENABLE_BUTTON_TITLE",
-      @"The primary action title in the consent screen. Used to explicitly "
-      @"enable the extension.");
-  self.titleString = titleString;
-  self.subtitleString = subtitleString;
-  self.primaryActionString = primaryActionString;
-  self.dismissBarButtonSystemItem = UIBarButtonSystemItemCancel;
-  if (@available(iOS 13.4, *)) {
-    self.pointerInteractionEnabled = YES;
-  }
-  [super loadView];
+  self.isTallBanner = NO;
+  self.shouldShowLearnMoreButton = YES;
+  self.primaryActionString = NSLocalizedString(
+      @"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_BUTTON_TITLE",
+      @"The primary action title in the consent screen. Used to enable the "
+      @"extension and dismiss the view");
+
+  // Add consent view specific content.
+  UILabel* captionLabel = [self drawCaptionLabel];
+  [self.specificContentView addSubview:captionLabel];
+  [NSLayoutConstraint activateConstraints:@[
+    [captionLabel.topAnchor
+        constraintEqualToAnchor:self.specificContentView.topAnchor],
+    [captionLabel.centerXAnchor
+        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
+    [captionLabel.widthAnchor
+        constraintLessThanOrEqualToAnchor:self.specificContentView.widthAnchor],
+    [captionLabel.bottomAnchor
+        constraintLessThanOrEqualToAnchor:self.specificContentView
+                                              .bottomAnchor],
+  ]];
+  [super viewDidLoad];
 }
 
+#pragma mark - Private
+
+- (UILabel*)drawCaptionLabel {
+  UILabel* captionLabel = [[UILabel alloc] init];
+  captionLabel.text = NSLocalizedString(
+      @"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_CAPTION",
+      @"Caption below subtitle to show when enabling the extension");
+  captionLabel.numberOfLines = 0;
+  captionLabel.textAlignment = NSTextAlignmentCenter;
+  captionLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  captionLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  captionLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  captionLabel.adjustsFontForContentSizeCategory = YES;
+  return captionLabel;
+}
 @end

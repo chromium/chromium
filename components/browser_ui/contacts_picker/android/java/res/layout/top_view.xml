@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright 2019 The Chromium Authors. All rights reserved.
-     Use of this source code is governed by a BSD-style license that can be
-     found in the LICENSE file. -->
+<!--
+Copyright 2019 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
 
 <org.chromium.components.browser_ui.contacts_picker.TopView
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -28,35 +30,35 @@
         android:paddingStart="15dp"
         app:horizontalSpacing="8dp">
 
-        <org.chromium.ui.widget.ChipView
+        <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/icon_filter"
             android:gravity="center"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             style="@style/SuggestionChipContacts" />
 
-        <org.chromium.ui.widget.ChipView
+        <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/names_filter"
             android:gravity="center"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             style="@style/SuggestionChipContacts" />
 
-        <org.chromium.ui.widget.ChipView
+        <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/address_filter"
             android:gravity="center"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             style="@style/SuggestionChipContacts" />
 
-        <org.chromium.ui.widget.ChipView
+        <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/email_filter"
             android:gravity="center"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             style="@style/SuggestionChipContacts" />
 
-        <org.chromium.ui.widget.ChipView
+        <org.chromium.components.browser_ui.widget.chips.ChipView
             android:id="@+id/tel_filter"
             android:gravity="center"
             android:layout_height="wrap_content"

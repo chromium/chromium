@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<title>Console messages should be completely suppressed in this mock WPT test.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+console.log("Single line message");
+console.log("Multi-line\nmessage");
+test(function() {
+  assert_true(false);
+}, 'Test needs to fail so that an expected.txt file is written out and be examined for console messages.');
+
+</script>

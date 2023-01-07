@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
-#include "base/stl_util.h"
 
 namespace media {
 
@@ -44,9 +43,10 @@ static const int kLayoutToChannels[] = {
     8,   // CHANNEL_LAYOUT_7_1_WIDE_BACK
     8,   // CHANNEL_LAYOUT_OCTAGONAL
     0,   // CHANNEL_LAYOUT_DISCRETE
-    3,   // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC
+    3,   // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC, deprecated
     5,   // CHANNEL_LAYOUT_4_1_QUAD_SIDE
     0,   // CHANNEL_LAYOUT_BITSTREAM
+    6,   // CHANNEL_LAYOUT_5_1_4 (downmixed to 5.1)
 };
 
 // The channel orderings for each layout as specified by FFmpeg. Each value
@@ -152,7 +152,7 @@ static const int kChannelOrderings[CHANNEL_LAYOUT_MAX + 1][CHANNELS_MAX + 1] = {
     // CHANNEL_LAYOUT_DISCRETE
     {  -1 , -1 , -1 , -1  , -1 , -1 , -1    , -1    , -1 , -1 , -1 },
 
-    // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC
+    // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC, deprecated
     {  0  , 1  , 2  , -1  , -1 , -1 , -1    , -1    , -1 , -1 , -1 },
 
     // CHANNEL_LAYOUT_4_1_QUAD_SIDE
@@ -162,10 +162,13 @@ static const int kChannelOrderings[CHANNEL_LAYOUT_MAX + 1][CHANNELS_MAX + 1] = {
     {  -1 , -1 , -1 , -1  , -1 , -1 , -1    , -1    , -1 , -1 , -1 },
 
     // FL | FR | FC | LFE | BL | BR | FLofC | FRofC | BC | SL | SR
+
+    // CHANNEL_LAYOUT_5_1_4, downmixed to six channels (5.1)
+    {  0  , 1  , 2  , 3   , -1 , -1 , -1    , -1    , -1 , 4  ,  5 },
 };
 
 int ChannelLayoutToChannelCount(ChannelLayout layout) {
-  DCHECK_LT(static_cast<size_t>(layout), base::size(kLayoutToChannels));
+  DCHECK_LT(static_cast<size_t>(layout), std::size(kLayoutToChannels));
   DCHECK_LE(kLayoutToChannels[layout], kMaxConcurrentChannels);
   return kLayoutToChannels[layout];
 }
@@ -189,6 +192,8 @@ ChannelLayout GuessChannelLayout(int channels) {
       return CHANNEL_LAYOUT_6_1;
     case 8:
       return CHANNEL_LAYOUT_7_1;
+    case 10:
+      return CHANNEL_LAYOUT_5_1_4_DOWNMIX;
     default:
       DVLOG(1) << "Unsupported channel count: " << channels;
   }
@@ -196,8 +201,8 @@ ChannelLayout GuessChannelLayout(int channels) {
 }
 
 int ChannelOrder(ChannelLayout layout, Channels channel) {
-  DCHECK_LT(static_cast<size_t>(layout), base::size(kChannelOrderings));
-  DCHECK_LT(static_cast<size_t>(channel), base::size(kChannelOrderings[0]));
+  DCHECK_LT(static_cast<size_t>(layout), std::size(kChannelOrderings));
+  DCHECK_LT(static_cast<size_t>(channel), std::size(kChannelOrderings[0]));
   return kChannelOrderings[layout][channel];
 }
 
@@ -264,11 +269,13 @@ const char* ChannelLayoutToString(ChannelLayout layout) {
     case CHANNEL_LAYOUT_DISCRETE:
       return "DISCRETE";
     case CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC:
-      return "STEREO_AND_KEYBOARD_MIC";
+      return "STEREO_AND_KEYBOARD_MIC";  // deprecated
     case CHANNEL_LAYOUT_4_1_QUAD_SIDE:
       return "4.1_QUAD_SIDE";
     case CHANNEL_LAYOUT_BITSTREAM:
       return "BITSTREAM";
+    case CHANNEL_LAYOUT_5_1_4_DOWNMIX:
+      return "5.1.4 DOWNMIX";
   }
   NOTREACHED() << "Invalid channel layout provided: " << layout;
   return "";

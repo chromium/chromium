@@ -55,6 +55,13 @@ static void CheckForColorChange(SVGFilterPrimitiveStandardAttributes& element,
     element.PrimitiveAttributeChanged(attr_name);
 }
 
+void LayoutSVGFilterPrimitive::WillBeDestroyed() {
+  NOT_DESTROYED();
+  auto& element = To<SVGFilterPrimitiveStandardAttributes>(*GetNode());
+  element.Invalidate();
+  LayoutObject::WillBeDestroyed();
+}
+
 void LayoutSVGFilterPrimitive::StyleDidChange(StyleDifference diff,
                                               const ComputedStyle* old_style) {
   NOT_DESTROYED();

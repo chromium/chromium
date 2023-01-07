@@ -1,10 +1,10 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 from __future__ import print_function
 
-from v8_utilities import capitalize
+from blinkbuild import name_style_converter
 from google.protobuf.text_format import MessageToString
 import web_idl
 import blink_apis_pb2 as pb
@@ -78,10 +78,14 @@ class BlinkApiProto(object):
             return None
 
         if parent is not None:
-            prefix = '%s_%s' % (capitalize(
-                parent.identifier), capitalize(member.identifier))
+            prefix = '{}_{}'.format(
+                name_style_converter.NameStyleConverter(
+                    parent.identifier).to_upper_camel_case(),
+                name_style_converter.NameStyleConverter(
+                    member.identifier).to_upper_camel_case())
         else:
-            prefix = capitalize(member.identifier)
+            prefix = name_style_converter.NameStyleConverter(
+                member.identifier).to_upper_camel_case()
 
         suffix = ""
         if isinstance(member, web_idl.FunctionLike):

@@ -1,0 +1,7 @@
+[document web]
+++[section]
+++++[static] name='Non-modal contents:'
+++++[push button] name='ok'
+++[alert] modal
+++++[static] name='Modal contents:'
+++++[push button] name='cancel'

@@ -6,23 +6,21 @@
 <div style="position: absolute; z-index: 2">
     <p>This test checks that the yellow reference DOM node (which should be as
     big as the window) gets resized when the window is resized.</p>
-    
-    <p>To avoid relayouts and repaints caused by DOM-based logging, it doesn't
-    output anything. Please check the console for confirmation that the node
-    dimensions increase by 10x10.</p>
 </div>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <script>
-    if (window.testRunner) {
-        testRunner.useUnfortunateSynchronousResizeMode();
-        testRunner.dumpAsText();
-    }
-    var referenceNode = document.getElementById('reference');
-    console.log('Initial reference node dimensions ' +
-        referenceNode.offsetWidth + ' x ' + referenceNode.offsetHeight);
-    console.log('Increasing window size by 10 x 10');
-    window.resizeBy(10, 10);
-    console.log('Post-resize reference node dimensions ' +
-        referenceNode.offsetWidth + ' x ' + referenceNode.offsetHeight);
+promise_test(async () => {
+  var referenceNode = document.getElementById('reference');
+  var originalWidth = referenceNode.offsetWidth;
+  var originalHeight = referenceNode.offsetHeight;
+  var resizePromise = new Promise(resolve => window.onresize = resolve);
+  window.resizeBy(10, 10);
+  await resizePromise;
+
+  assert_equals(originalWidth + 10, referenceNode.offsetWidth);
+  assert_equals(originalHeight + 10, referenceNode.offsetHeight);
+});
 </script>
 
 </body>

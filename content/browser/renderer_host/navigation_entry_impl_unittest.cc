@@ -1,9 +1,10 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -14,6 +15,7 @@
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/test/browser_task_environment.h"
@@ -26,30 +28,6 @@ using base::ASCIIToUTF16;
 namespace content {
 
 namespace {
-
-// A test class for testing SSLStatus user data.
-class TestSSLStatusData : public SSLStatus::UserData {
- public:
-  TestSSLStatusData() {}
-  ~TestSSLStatusData() override {}
-
-  void set_user_data_flag(bool user_data_flag) {
-    user_data_flag_ = user_data_flag;
-  }
-  bool user_data_flag() { return user_data_flag_; }
-
-  // SSLStatus implementation:
-  std::unique_ptr<SSLStatus::UserData> Clone() override {
-    std::unique_ptr<TestSSLStatusData> cloned =
-        std::make_unique<TestSSLStatusData>();
-    cloned->set_user_data_flag(user_data_flag_);
-    return std::move(cloned);
-  }
-
- private:
-  bool user_data_flag_ = false;
-  DISALLOW_COPY_AND_ASSIGN(TestSSLStatusData);
-};
 
 blink::PageState CreateTestPageState() {
   blink::ExplodedPageState exploded_state;
@@ -65,17 +43,17 @@ class NavigationEntryTest : public testing::Test {
   NavigationEntryTest() : instance_(nullptr) {}
 
   void SetUp() override {
-    entry1_.reset(new NavigationEntryImpl);
+    entry1_ = std::make_unique<NavigationEntryImpl>();
 
     const url::Origin kInitiatorOrigin =
         url::Origin::Create(GURL("https://initiator.example.com"));
 
     instance_ = SiteInstanceImpl::Create(&browser_context_);
-    entry2_.reset(new NavigationEntryImpl(
+    entry2_ = std::make_unique<NavigationEntryImpl>(
         instance_, GURL("test:url"),
         Referrer(GURL("from"), network::mojom::ReferrerPolicy::kDefault),
         kInitiatorOrigin, u"title", ui::PAGE_TRANSITION_TYPED, false,
-        nullptr /* blob_url_loader_factory */));
+        nullptr /* blob_url_loader_factory */, false /* is_initial_entry */);
   }
 
   void TearDown() override {}
@@ -197,25 +175,6 @@ TEST_F(NavigationEntryTest, NavigationEntrySSLStatus) {
   EXPECT_FALSE(!!(content_status & SSLStatus::RAN_INSECURE_CONTENT));
 }
 
-// Tests that SSLStatus user data can be added, retrieved, and copied.
-TEST_F(NavigationEntryTest, SSLStatusUserData) {
-  // Set up an SSLStatus with some user data on it.
-  SSLStatus ssl;
-  ssl.user_data = std::make_unique<TestSSLStatusData>();
-  TestSSLStatusData* ssl_data =
-      static_cast<TestSSLStatusData*>(ssl.user_data.get());
-  ASSERT_TRUE(ssl_data);
-  ssl_data->set_user_data_flag(true);
-
-  // Clone the SSLStatus and test that the user data has been cloned.
-  SSLStatus cloned(ssl);
-  TestSSLStatusData* cloned_ssl_data =
-      static_cast<TestSSLStatusData*>(cloned.user_data.get());
-  ASSERT_TRUE(cloned_ssl_data);
-  EXPECT_TRUE(cloned_ssl_data->user_data_flag());
-  EXPECT_NE(cloned_ssl_data, ssl_data);
-}
-
 // Test other basic accessors
 TEST_F(NavigationEntryTest, NavigationEntryAccessors) {
   // SiteInstance
@@ -309,7 +268,9 @@ TEST_F(NavigationEntryTest, NavigationEntryAccessors) {
   // (referrer, initiator, etc.).  This is why it is important to test
   // SetPageState/GetPageState last.
   blink::PageState test_page_state = CreateTestPageState();
-  entry2_->SetPageState(test_page_state);
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  entry2_->SetPageState(test_page_state, context.get());
   EXPECT_EQ(test_page_state.ToEncodedData(),
             entry2_->GetPageState().ToEncodedData());
 }
@@ -318,7 +279,6 @@ TEST_F(NavigationEntryTest, NavigationEntryAccessors) {
 TEST_F(NavigationEntryTest, NavigationEntryClone) {
   // Set some additional values.
   entry2_->SetTransitionType(ui::PAGE_TRANSITION_RELOAD);
-  entry2_->set_should_replace_entry(true);
 
   std::unique_ptr<NavigationEntryImpl> clone(entry2_->Clone());
 
@@ -334,9 +294,6 @@ TEST_F(NavigationEntryTest, NavigationEntryClone) {
   // Value set after constructor.
   EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
       clone->GetTransitionType(), entry2_->GetTransitionType()));
-
-  // Value not copied due to ResetForCommit.
-  EXPECT_NE(entry2_->should_replace_entry(), clone->should_replace_entry());
 }
 
 // Test timestamps.
@@ -347,7 +304,57 @@ TEST_F(NavigationEntryTest, NavigationEntryTimestamps) {
   EXPECT_EQ(now, entry1_->GetTimestamp());
 }
 
-#if defined(OS_ANDROID)
+TEST_F(NavigationEntryTest, SetPageStateWithCorruptedSequenceNumbers) {
+  // Create a page state for multiple frames with identical sequence numbers,
+  // which ought never happen.
+  blink::ExplodedPageState exploded_state;
+  blink::ExplodedFrameState child_state;
+  exploded_state.top.item_sequence_number = 1234;
+  exploded_state.top.document_sequence_number = 5678;
+  child_state.target = u"unique_name";
+  child_state.item_sequence_number = 1234;
+  child_state.document_sequence_number = 5678;
+  exploded_state.top.children.push_back(child_state);
+  std::string encoded_data;
+  blink::EncodePageState(exploded_state, &encoded_data);
+  blink::PageState page_state =
+      blink::PageState::CreateFromEncodedData(encoded_data);
+
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  entry1_->SetPageState(page_state, context.get());
+
+  ASSERT_EQ(1u, entry1_->root_node()->children.size());
+  EXPECT_NE(entry1_->root_node()->frame_entry.get(),
+            entry1_->root_node()->children[0]->frame_entry.get());
+}
+
+TEST_F(NavigationEntryTest, SetPageStateWithDefaultSequenceNumbers) {
+  blink::PageState page_state1 =
+      blink::PageState::CreateFromURL(GURL("http://foo.com"));
+  blink::PageState page_state2 =
+      blink::PageState::CreateFromURL(GURL("http://bar.com"));
+
+  std::unique_ptr<NavigationEntryRestoreContextImpl> context =
+      std::make_unique<NavigationEntryRestoreContextImpl>();
+  entry1_->SetPageState(page_state1, context.get());
+  entry2_->SetPageState(page_state2, context.get());
+
+  // Because no sequence numbers were set on the PageState objects, they will
+  // default to 0.
+  EXPECT_EQ(entry1_->root_node()->frame_entry->item_sequence_number(), 0);
+  EXPECT_EQ(entry2_->root_node()->frame_entry->item_sequence_number(), 0);
+  EXPECT_EQ(entry1_->root_node()->frame_entry->document_sequence_number(), 0);
+  EXPECT_EQ(entry2_->root_node()->frame_entry->document_sequence_number(), 0);
+
+  // However, because the item sequence number was the "default" value,
+  // NavigationEntryRestoreContext should not have de-duplicated the root
+  // FrameNavigationEntries, even though they "match".
+  EXPECT_NE(entry1_->root_node()->frame_entry.get(),
+            entry2_->root_node()->frame_entry.get());
+}
+
+#if BUILDFLAG(IS_ANDROID)
 // Failing test, see crbug/1050906.
 // Test that content URIs correctly show the file display name as the title.
 TEST_F(NavigationEntryTest, DISABLED_NavigationEntryContentUri) {

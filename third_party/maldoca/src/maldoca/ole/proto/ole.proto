@@ -1,0 +1,196 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// proto to hold the data from parsed ole stream.
+
+syntax = "proto2";
+
+package maldoca.ole;
+
+option optimize_for = LITE_RUNTIME;
+
+import "maldoca/ole/proto/vba_extraction.proto";
+
+message Guid {
+  optional bytes data = 1;
+}
+
+message OleDirectoryEntry {
+  reserved 9, 10;  // For historical reasons
+  optional bytes name = 1;
+  optional uint32 entry_type = 2;
+  optional Guid clsid = 3;
+  optional uint32 user_flags = 4;
+  optional uint64 creation_timestamp = 5;
+  optional uint64 modification_timestamp = 6;
+  optional uint32 stream_size = 7;
+  optional bytes stream_hash = 8;
+  // index into OleFile.ole_dirs repeated field
+  // -1 for root directory
+  repeated int32 child_index = 11;
+  // strings extracted from the stream (if format of the stream is unknown)
+  repeated bytes strings = 12;
+  // indicate if entry contains XLS forumla(s).
+  optional bool xls_formula = 13;
+}
+
+// Enum linking properties types to `property type` found in
+// the `Property` proto. See:
+// 1.
+// https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-oleps/f7933d28-2cc4-4b36-bc23-8861cbcd37c4
+// 2.
+// https://docs.microsoft.com/en-us/windows/win32/stg/the-documentsummaryinformation-and-userdefined-property-sets
+// 3.
+// https://docs.microsoft.com/en-us/dotnet/api/documentformat.openxml.extendedproperties?view=openxml-2.8.1
+// for more info.
+enum VariantType {
+  kVtEmpty = 0;
+  kVtNull = 1;
+  kVtI2 = 2;
+  kVtI4 = 3;
+  kVtR4 = 4;
+  kVtR8 = 5;
+  kVtCy = 6;
+  kVtDate = 7;
+  kVtBstr = 8;
+  kVtError = 9;
+  kVtBool = 10;
+  kVtVariant = 11;
+  kVtI1 = 12;
+  kVtUI1 = 13;
+  kVtUI2 = 14;
+  kVtUI4 = 15;
+  kVtI8 = 16;
+  kVtUI8 = 17;
+  kVtLpstr = 18;
+  kVtLpwstr = 19;
+  kVtFiletime = 20;
+  kVtBlob = 21;
+  kVtVector = 22;
+  kVtVectorVtVariant = 23;
+  kVtVectorVtLpstr = 24;
+}
+
+message VtVector {
+  optional VariantType type = 1;
+  repeated VtValue value = 2;
+}
+
+message VtValue {
+  optional uint64 uint = 1;
+  optional int64 int = 2;
+  optional bool boolean = 3;
+  optional bytes str = 4;
+  optional bytes blob = 5;
+  optional VtVector vector = 6;
+  optional bytes blob_hash = 7;
+}
+
+// https://msdn.microsoft.com/en-us/library/dd944216(v=office.12).aspx
+message VtHyperlink {
+  optional int32 hash = 1;
+  optional int32 app = 2;
+  optional int32 office_art = 3;
+  optional int32 info = 4;
+  optional bytes hlink1 = 5;
+  optional bytes hlink2 = 6;
+}
+message Property {
+  optional uint32 property_id = 1;
+  optional VariantType type = 2;
+  optional VtValue value = 3;
+}
+
+message DictionaryEntry {
+  optional uint32 property_id = 1;
+  optional bytes name = 2;
+}
+
+message Dictionary {
+  repeated DictionaryEntry entry = 1;
+}
+
+message PropertySet {
+  optional Guid fmtid = 1;
+  repeated Property property = 2;
+  repeated Dictionary dictionary = 3;
+}
+
+message PropertySetStream {
+  optional uint32 byte_order = 1;
+  optional uint32 version = 2;
+  optional uint32 system_id = 3;
+  optional Guid clsid = 4;
+  repeated PropertySet property_set = 5;
+}
+
+// https://msdn.microsoft.com/en-us/library/dd922717(v=office.12).aspx
+message OleReservedProperties {
+  repeated VtHyperlink pid_hlinks = 1;
+}
+
+// See CompObjStream in https://msdn.microsoft.com/en-us/library/dd942265.aspx
+message CompObj {
+  // Version, often 0xa03
+  optional uint32 version = 1;
+  // eg "Microsoft Office Excel \xB9\xA4\xD7\xF7\xB1\xED"
+  optional bytes user_type = 2;
+  // eg "Biff8"
+  optional bytes clipboard_format = 3;
+  // App version
+  // eg "Excel.Sheet.8"
+  optional bytes app_version = 4;
+}
+
+// 1.3.1 & 2.3.6 of MS-OLEDS.
+message OleNativeEmbedded {
+  optional uint32 native_size = 1;
+  optional uint32 type = 2;
+  optional bytes file_name = 3;
+  optional bytes file_path = 4;
+  optional uint64 reserved_unknown = 5;
+  optional bytes temp_path = 6;
+  optional uint32 file_size = 7;
+  // sha256 hash of file
+  optional bytes file_hash = 8;
+  optional bytes file_content = 9;
+}
+
+message OleFile {
+  reserved 4;  // for historical reasons
+  // This is the version of our results, nothing to do with the OLE file itself.
+  optional int64 results_version = 1 [default = 0];
+
+  optional PropertySetStream summary_information = 2;
+  optional PropertySetStream document_summary_information = 3;
+  // New code stores ole directories in a repeated field ole_dirs
+  optional maldoca.VBACodeChunks vba_code = 5;
+  optional OleReservedProperties reserved_properties = 6;
+  optional CompObj comp_obj = 7;
+  repeated OleDirectoryEntry ole_dirs = 8;
+  optional OleNativeEmbedded olenative_embedded = 9;
+  reserved 10;
+
+  // Increment CURRENT_VERSION on each code change.
+  enum Version {
+    UNKNOWN = 0;
+    CURRENT_VERSION = 11;
+  }
+}
+
+//  TODO(X): Add more data from OleFile
+message ParserOutput {
+  optional maldoca.VBACodeChunks vba_code = 1;
+  optional OLEDirectoryMessage directory = 2;
+}

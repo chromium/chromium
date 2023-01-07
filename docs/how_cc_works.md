@@ -362,7 +362,7 @@ A BSP tree is used to sort and intersect these against each other in the same 3d
 
 ## Glossary
 
-See: [cc/README.md](https://chromium.googlesource.com/chromium/src/+/master/cc/README.md#glossaries)
+See: [cc/README.md](https://chromium.googlesource.com/chromium/src/+/main/cc/README.md#glossaries)
 
 ## Other Resources
 

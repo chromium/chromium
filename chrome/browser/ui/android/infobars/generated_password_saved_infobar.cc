@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/android/chrome_jni_headers/GeneratedPasswordSavedInfoBarDelegate_jni.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/web_contents.h"
 
 using base::android::JavaParamRef;
@@ -20,7 +20,7 @@ using base::android::JavaParamRef;
 // static
 void GeneratedPasswordSavedInfoBarDelegateAndroid::Create(
     content::WebContents* web_contents) {
-  InfoBarService::FromWebContents(web_contents)
+  infobars::ContentInfoBarManager::FromWebContents(web_contents)
       ->AddInfoBar(
           std::make_unique<GeneratedPasswordSavedInfoBar>(base::WrapUnique(
               new GeneratedPasswordSavedInfoBarDelegateAndroid())));

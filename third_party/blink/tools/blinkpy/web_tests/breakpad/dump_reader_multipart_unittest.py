@@ -80,9 +80,6 @@ class TestDumpReaderMultipart(unittest.TestCase):
         host.filesystem.maybe_make_directory(build_dir)
         host.filesystem.exists = lambda x: True
 
-        # The mock file object returned by open_binary_file_for_reading doesn't
-        # have readline(), however, the real File object does.
-        host.filesystem.open_binary_file_for_reading = host.filesystem.open_text_file_for_reading
         dump_reader = DumpReaderMultipart(host, build_dir)
         dump_reader._file_extension = lambda: 'dmp'
         dump_reader._binaries_to_symbolize = lambda: ['content_shell']
@@ -101,9 +98,6 @@ class TestDumpReaderMultipart(unittest.TestCase):
         host.filesystem.maybe_make_directory(build_dir)
         host.filesystem.exists = lambda x: True
 
-        # The mock file object returned by open_binary_file_for_reading doesn't
-        # have readline(), however, the real File object does.
-        host.filesystem.open_binary_file_for_reading = host.filesystem.open_text_file_for_reading
         dump_reader = DumpReaderMultipart(host, build_dir)
         dump_reader._file_extension = lambda: 'dmp'
         dump_reader._binaries_to_symbolize = lambda: ['content_shell']

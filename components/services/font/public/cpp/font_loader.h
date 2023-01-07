@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,12 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "components/services/font/public/cpp/mapped_font_file.h"
 #include "components/services/font/public/mojom/font_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "pdf/buildflags.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/ports/SkFontConfigInterface.h"
@@ -33,6 +33,10 @@ class FontLoader : public SkFontConfigInterface,
  public:
   explicit FontLoader(
       mojo::PendingRemote<mojom::FontService> pending_font_service);
+
+  FontLoader(const FontLoader&) = delete;
+  FontLoader& operator=(const FontLoader&) = delete;
+
   ~FontLoader() override;
 
   // SkFontConfigInterface:
@@ -70,6 +74,7 @@ class FontLoader : public SkFontConfigInterface,
       std::string postscript_name_or_full_font_name,
       mojom::FontIdentityPtr* out_identity);
 
+#if BUILDFLAG(ENABLE_PDF)
   // Out parameter out_font_file_handle should always be an opened file handle
   // to a matched or default font file. out_font_file_handle is a default
   // initialized base::File on error.
@@ -79,6 +84,7 @@ class FontLoader : public SkFontConfigInterface,
                              uint32_t charset,
                              uint32_t fallbackFamilyType,
                              base::File* out_font_file_handle);
+#endif  // BUILDFLAG(ENABLE_PDF)
 
  private:
   // internal::MappedFontFile::Observer:
@@ -95,8 +101,6 @@ class FontLoader : public SkFontConfigInterface,
 
   // Maps font identity ID to the memory-mapped file with font data.
   std::unordered_map<uint32_t, internal::MappedFontFile*> mapped_font_files_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontLoader);
 };
 
 }  // namespace font_service

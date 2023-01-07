@@ -1,0 +1,131 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.components.browser_ui.site_settings;
+
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Represents a group of Websites that either share the same eTLD+1 or are embedded on it.
+ */
+public class WebsiteGroup implements WebsiteEntry {
+    // The common eTLD+1.
+    private final String mDomainAndRegistry;
+    // A list of origins associated with the eTLD+1.
+    private final List<Website> mWebsites;
+    // Total storage taken up by all the stored websites.
+    private final long mTotalUsage;
+    // Total number of cookies associated with the websites.
+    private final int mCookiesCount;
+    // First Party Sets info relative to the eTLD+1.
+    private FPSCookieInfo mFPSInfo;
+
+    /**
+     * Groups the websites by eTLD+1.
+     *
+     * @param websites A collection of {@code Website} objects representing origins.
+     * @return A {@code List} of {@code WebsiteGroup} objects, each corresponding to an eTLD+1.
+     */
+    public static List<WebsiteEntry> groupWebsites(Collection<Website> websites) {
+        // Put all the sites into an eTLD+1 -> list of origins mapping.
+        Map<String, List<Website>> etldMap = new HashMap<>();
+        for (Website website : websites) {
+            // TODO(crbug.com/1342991): Handle partitioned storage.
+            String etld = website.getAddress().getDomainAndRegistry();
+            List<Website> etldSites = etldMap.get(etld);
+            if (etldSites == null) {
+                etldSites = new ArrayList<>();
+                etldMap.put(etld, etldSites);
+            }
+            etldSites.add(website);
+        }
+        // Convert the mapping to a list of WebsiteGroup objects.
+        List<WebsiteEntry> entries = new ArrayList<>();
+        for (Map.Entry<String, List<Website>> etld : etldMap.entrySet()) {
+            entries.add((etld.getValue().size() == 1)
+                            ? etld.getValue().get(0)
+                            : new WebsiteGroup(etld.getKey(), etld.getValue()));
+        }
+        return entries;
+    }
+
+    public WebsiteGroup(String domainAndRegistry, List<Website> websites) {
+        mDomainAndRegistry = domainAndRegistry;
+        mWebsites = websites;
+
+        long totalUsage = 0;
+        for (Website website : websites) {
+            totalUsage += website.getTotalUsage();
+            // If there's more than 1 website with FPS info in the group it's fine to override it
+            // since websites are grouped by eTLD+1, and FPS info are at eTLD+1 level as well.
+            if (website.getFPSCookieInfo() != null) {
+                mFPSInfo = website.getFPSCookieInfo();
+            }
+        }
+        mTotalUsage = totalUsage;
+
+        int cookiesCount = 0;
+        for (Website website : websites) {
+            cookiesCount += website.getNumberOfCookies();
+        }
+        mCookiesCount = cookiesCount;
+    }
+
+    // WebsiteEntry implementation.
+
+    /** Returns the title to be displayed in a user-friendly way. */
+    @Override
+    public String getTitleForPreferenceRow() {
+        return mDomainAndRegistry;
+    }
+
+    /**
+     * Returns the URL to use for fetching the favicon: https:// + eTLD+1 is returned.
+     */
+    @Override
+    public GURL getFaviconUrl() {
+        return new GURL(UrlConstants.HTTPS_URL_PREFIX + mDomainAndRegistry);
+    }
+
+    @Override
+    public long getTotalUsage() {
+        return mTotalUsage;
+    }
+
+    @Override
+    public int getNumberOfCookies() {
+        return mCookiesCount;
+    }
+
+    @Override
+    public boolean matches(String search) {
+        // eTLD+1 matches.
+        if (mDomainAndRegistry.contains(search)) return true;
+        for (Website site : mWebsites) {
+            // One of the associated origins matches.
+            if (site.getTitle().contains(search)) return true;
+        }
+        // No matches.
+        return false;
+    }
+
+    public FPSCookieInfo getFPSInfo() {
+        return mFPSInfo;
+    }
+
+    public String getDomainAndRegistry() {
+        return mDomainAndRegistry;
+    }
+
+    public List<Website> getWebsites() {
+        return mWebsites;
+    }
+}

@@ -29,7 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATH_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATH_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -41,12 +40,15 @@
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "third_party/skia/include/core/SkPathMeasure.h"
 
+namespace gfx {
+class PointF;
+class RectF;
+class Vector2dF;
+}
+
 namespace blink {
 
 class AffineTransform;
-class FloatPoint;
-class FloatRect;
-class FloatSize;
 class StrokeData;
 
 enum PathElementType {
@@ -62,12 +64,12 @@ enum PathElementType {
 // returns two tangent points and the endpoint.
 struct PathElement {
   PathElementType type;
-  FloatPoint* points;
+  gfx::PointF* points;
 };
 
 // Result structure from Path::PointAndNormalAtLength() (and similar).
 struct PointAndTangent {
-  FloatPoint point;
+  gfx::PointF point;
   float tangent_in_degrees = 0;
 };
 
@@ -87,13 +89,13 @@ class PLATFORM_EXPORT Path {
   bool operator==(const Path&) const;
   bool operator!=(const Path& other) const { return !(*this == other); }
 
-  bool Contains(const FloatPoint&) const;
-  bool Contains(const FloatPoint&, WindRule) const;
+  bool Contains(const gfx::PointF&) const;
+  bool Contains(const gfx::PointF&, WindRule) const;
 
   // Determine if the path's stroke contains the point.  The transform is used
   // only to determine the precision factor when analyzing the stroke, so that
   // we return accurate results in high-zoom scenarios.
-  bool StrokeContains(const FloatPoint&,
+  bool StrokeContains(const gfx::PointF&,
                       const StrokeData&,
                       const AffineTransform&) const;
   SkPath StrokePath(const StrokeData&, const AffineTransform&) const;
@@ -101,12 +103,12 @@ class PLATFORM_EXPORT Path {
   // Tight Bounding calculation is very expensive, but it guarantees the strict
   // bounding box. It's always included in BoundingRect. For a logical bounding
   // box (used for clipping or damage) BoundingRect is recommended.
-  FloatRect TightBoundingRect() const;
-  FloatRect BoundingRect() const;
-  FloatRect StrokeBoundingRect(const StrokeData&) const;
+  gfx::RectF TightBoundingRect() const;
+  gfx::RectF BoundingRect() const;
+  gfx::RectF StrokeBoundingRect(const StrokeData&) const;
 
   float length() const;
-  FloatPoint PointAtLength(float length) const;
+  gfx::PointF PointAtLength(float length) const;
   PointAndTangent PointAndNormalAtLength(float length) const;
 
   // Helper for computing a sequence of positions and normals (normal angles) on
@@ -115,11 +117,12 @@ class PLATFORM_EXPORT Path {
   // vary depending on curvature and number of segments, but should never be
   // worse than that of the state-less method on Path.
   class PLATFORM_EXPORT PositionCalculator {
-    DISALLOW_COPY_AND_ASSIGN(PositionCalculator);
     USING_FAST_MALLOC(PositionCalculator);
 
    public:
     explicit PositionCalculator(const Path&);
+    PositionCalculator(const PositionCalculator&) = delete;
+    PositionCalculator& operator=(const PositionCalculator&) = delete;
 
     PointAndTangent PointAndNormalAtLength(float length);
 
@@ -142,62 +145,55 @@ class PLATFORM_EXPORT Path {
   // point reached by the path so far. Note the Path can be empty
   // (isEmpty() == true) and still have a current point.
   bool HasCurrentPoint() const;
-  FloatPoint CurrentPoint() const;
+  gfx::PointF CurrentPoint() const;
 
   void SetWindRule(const WindRule);
 
-  void MoveTo(const FloatPoint&);
-  void AddLineTo(const FloatPoint&);
-  void AddQuadCurveTo(const FloatPoint& control_point,
-                      const FloatPoint& end_point);
-  void AddBezierCurveTo(const FloatPoint& control_point1,
-                        const FloatPoint& control_point2,
-                        const FloatPoint& end_point);
-  void AddArcTo(const FloatPoint&, const FloatPoint&, float radius);
-  void AddArcTo(const FloatPoint&,
-                const FloatSize& r,
+  void MoveTo(const gfx::PointF&);
+  void AddLineTo(const gfx::PointF&);
+  void AddQuadCurveTo(const gfx::PointF& control_point,
+                      const gfx::PointF& end_point);
+  void AddBezierCurveTo(const gfx::PointF& control_point1,
+                        const gfx::PointF& control_point2,
+                        const gfx::PointF& end_point);
+  void AddArcTo(const gfx::PointF&, const gfx::PointF&, float radius);
+  void AddArcTo(const gfx::PointF&,
+                float radius_x,
+                float radius_y,
                 float x_rotate,
                 bool large_arc,
                 bool sweep);
   void CloseSubpath();
 
-  void AddArc(const FloatPoint&,
+  void AddArc(const gfx::PointF&,
               float radius,
               float start_angle,
               float end_angle);
-  void AddRect(const FloatRect&);
-  void AddEllipse(const FloatPoint&,
+
+  void AddRect(const gfx::RectF&);
+  // Use this form if the rect is defined by locations of a pair of opposite
+  // corners, where |origin| may not be the top-left corner.
+  void AddRect(const gfx::PointF& origin, const gfx::PointF& opposite_point);
+
+  void AddEllipse(const gfx::PointF&,
                   float radius_x,
                   float radius_y,
                   float rotation,
                   float start_angle,
                   float end_angle);
-  void AddEllipse(const FloatRect&);
+  void AddEllipse(const gfx::PointF& center, float radius_x, float radius_y);
 
-  void AddRoundedRect(const FloatRect&, const FloatSize& rounding_radii);
-  void AddRoundedRect(const FloatRect&,
-                      const FloatSize& top_left_radius,
-                      const FloatSize& top_right_radius,
-                      const FloatSize& bottom_left_radius,
-                      const FloatSize& bottom_right_radius);
-  void AddRoundedRect(const FloatRoundedRect&);
+  void AddRoundedRect(const FloatRoundedRect&, bool clockwise = true);
 
   void AddPath(const Path&, const AffineTransform&);
 
-  void Translate(const FloatSize&);
+  void Translate(const gfx::Vector2dF&);
 
   const SkPath& GetSkPath() const { return path_; }
 
   void Apply(void* info, PathApplierFunction) const;
-  void Transform(const AffineTransform&);
-  void Transform(const TransformationMatrix&);
-
-  void AddPathForRoundedRect(const FloatRect&,
-                             const FloatSize& top_left_radius,
-                             const FloatSize& top_right_radius,
-                             const FloatSize& bottom_left_radius,
-                             const FloatSize& bottom_right_radius,
-                             bool clockwise);
+  Path& Transform(const AffineTransform&);
+  Path& Transform(const TransformationMatrix&);
 
   bool SubtractPath(const Path&);
 
@@ -205,10 +201,8 @@ class PLATFORM_EXPORT Path {
   // argument.
   bool UnionPath(const Path& other);
 
-  bool IntersectPath(const Path& other);
-
  private:
-  void AddEllipse(const FloatPoint&,
+  void AddEllipse(const gfx::PointF&,
                   float radius_x,
                   float radius_y,
                   float start_angle,
@@ -218,18 +212,9 @@ class PLATFORM_EXPORT Path {
   SkPath path_;
 };
 
-class PLATFORM_EXPORT RefCountedPath : public blink::Path,
-                                       public RefCounted<RefCountedPath> {
-  USING_FAST_MALLOC(RefCountedPath);
-
- public:
-  template <typename... Args>
-  RefCountedPath(Args&&... args) : blink::Path(std::forward<Args>(args)...) {}
-};
-
 // Only used for DCHECKs
 PLATFORM_EXPORT bool EllipseIsRenderable(float start_angle, float end_angle);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATH_H_

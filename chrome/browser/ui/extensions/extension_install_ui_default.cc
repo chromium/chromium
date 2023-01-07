@@ -1,16 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/extensions/extension_install_ui_default.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -26,16 +24,31 @@
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/install/crx_install_error.h"
 #include "extensions/common/extension.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/extensions/extension_installed_notification.h"
+#include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #else
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/notification_service.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/callback_helpers.h"
+#include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/message_center/public/cpp/notification.h"
+#include "ui/message_center/public/cpp/notifier_id.h"
 #endif
 
 using content::BrowserThread;
@@ -54,6 +67,78 @@ Browser* FindOrCreateVisibleBrowser(Profile* profile) {
   if (browser->tab_strip_model()->count() == 0)
     chrome::AddTabAt(browser, GURL(), -1, true);
   return browser;
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Toast id and duration for extension install success.
+constexpr char kExtensionInstallSuccessToastId[] = "extension_install_success";
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ShowToast(const std::string& id,
+               ash::ToastCatalogName catalog_name,
+               const std::u16string& text) {
+  ash::ToastManager::Get()->Show(ash::ToastData(id, catalog_name, text));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void ShowInstalledNotification(
+    scoped_refptr<const extensions::Extension> extension,
+    raw_ptr<Profile> profile) {
+  auto notification = std::make_unique<message_center::Notification>(
+      message_center::NOTIFICATION_TYPE_SIMPLE,
+      std::string(kExtensionInstallSuccessToastId),
+      /*title=*/std::u16string(),
+      /*message=*/
+      l10n_util::GetStringFUTF16(IDS_EXTENSION_NOTIFICATION_INSTALLED,
+                                 base::UTF8ToUTF16(extension->name())),
+      /*icon=*/ui::ImageModel(),
+      /*display_source=*/std::u16string(),
+      /*origin_url=*/GURL(),
+      message_center::NotifierId(message_center::NotifierType::APPLICATION,
+                                 extension->id()),
+      /*optional_fields=*/message_center::RichNotificationData(),
+      /*delegate=*/
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::DoNothingAs<void()>()));
+
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
+      NotificationHandler::Type::TRANSIENT, *notification,
+      /*metadata=*/nullptr);
+}
+#endif
+
+void OpenAppInstalledUIImpl(const std::string& app_id,
+                            raw_ptr<Profile> profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  // chrome://apps/ is not available on ChromeOS.
+  // Toast is shown for Ash and Lacros.
+  NOTREACHED();
+#else
+  Profile* current_profile = profile->GetOriginalProfile();
+  Browser* browser = FindOrCreateVisibleBrowser(current_profile);
+  if (browser) {
+    NavigateParams params(
+        GetSingletonTabNavigateParams(browser, GURL(chrome::kChromeUIAppsURL)));
+    Navigate(&params);
+  }
+#endif
+}
+
+void ShowAppInstalledNotification(
+    scoped_refptr<const extensions::Extension> extension,
+    raw_ptr<Profile> profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ShowToast(kExtensionInstallSuccessToastId,
+            ash::ToastCatalogName::kExtensionInstallSuccess,
+            l10n_util::GetStringFUTF16(IDS_EXTENSION_NOTIFICATION_INSTALLED,
+                                       base::UTF8ToUTF16(extension->name())));
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  ShowInstalledNotification(extension, profile);
+#else   // !BUILDFLAG(IS_CHROMEOS)
+  OpenAppInstalledUIImpl(extension->id(), profile);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace
@@ -90,11 +175,7 @@ void ExtensionInstallUIDefault::OnInstallSuccess(
       return;
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ExtensionInstalledNotification::Show(extension.get(), current_profile);
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-    OpenAppInstalledUI(extension->id());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    ShowAppInstalledNotification(extension, profile_);
     return;
   }
 
@@ -115,28 +196,11 @@ void ExtensionInstallUIDefault::OnInstallFailure(
   if (!web_contents)
     return;
   InstallationErrorInfoBarDelegate::Create(
-      InfoBarService::FromWebContents(web_contents), error);
+      infobars::ContentInfoBarManager::FromWebContents(web_contents), error);
 }
 
 void ExtensionInstallUIDefault::OpenAppInstalledUI(const std::string& app_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Notification always enabled on ChromeOS, so always handled in
-  // OnInstallSuccess.
-  NOTREACHED();
-#else
-  Profile* current_profile = profile_->GetOriginalProfile();
-  Browser* browser = FindOrCreateVisibleBrowser(current_profile);
-  if (browser) {
-    NavigateParams params(
-        GetSingletonTabNavigateParams(browser, GURL(chrome::kChromeUIAppsURL)));
-    Navigate(&params);
-
-    content::NotificationService::current()->Notify(
-        chrome::NOTIFICATION_APP_INSTALLED_TO_NTP,
-        content::Source<WebContents>(params.navigated_or_inserted_contents),
-        content::Details<const std::string>(&app_id));
-  }
-#endif
+  OpenAppInstalledUIImpl(app_id, profile_);
 }
 
 void ExtensionInstallUIDefault::SetUseAppInstalledBubble(bool use_bubble) {

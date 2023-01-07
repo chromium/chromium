@@ -1,0 +1,30 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is generated from:
+{%- for path in source_json_files %}
+//   {{ path }}
+{%- endfor %}
+
+#include "{{ out_file_path.split('gen/')[1] | replace('.cc', '.h') }}"
+
+namespace file_types_data {
+
+const base::flat_map<std::string, std::string> kExtensionToMIME({
+{%- for key, value in extension_to_type_map.items() %}
+{%- if value['mime'] %}
+  {"{{ key }}", "{{ value['mime'] }}"},
+{%- endif %}
+{%- endfor %}
+});
+
+const base::flat_set<std::string> kDocumentMIMETypes({
+{%- for file_type in model.file_types %}
+{%- if file_type['mime'] and file_type['type'] in ['text', 'hosted', 'document'] %}
+  "{{ file_type['mime'] }}",
+{%- endif %}
+{%- endfor %}
+});
+
+}  // namespace files_types_data

@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@ package org.chromium.media;
 import android.annotation.SuppressLint;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
 import android.util.Base64;
@@ -79,9 +78,6 @@ public class MediaPlayerBridge {
     @SuppressLint("NewApi")
     @CalledByNative
     protected void setPlaybackRate(double speed) {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) return;
-
-        Log.w(TAG, "Unexpectedly setting playback speed to 0.");
         try {
             MediaPlayer player = getLocalPlayer();
             player.setPlaybackParams(player.getPlaybackParams().setSpeed((float) speed));

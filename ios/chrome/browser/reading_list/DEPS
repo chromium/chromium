@@ -1,0 +1,7 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^reading_list_distiller_page.mm": [
+    "+ios/chrome/browser/ui/util/uikit_ui_util.h",
+  ],
+}
+

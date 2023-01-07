@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "content/public/browser/web_contents_delegate.h"
-#include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/web_dialogs/web_dialogs_export.h"
@@ -150,9 +149,14 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
 
   // A callback to allow the delegate to inhibit context menu or show
   // customized menu.
+  //
+  // The `render_frame_host` represents the frame that requests the context menu
+  // (typically this frame is focused, but this is not necessarily the case -
+  // see https://crbug.com/1257907#c14).
+  //
   // Returns true iff you do NOT want the standard context menu to be
   // shown (because you want to handle it yourself).
-  virtual bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  virtual bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                                  const content::ContextMenuParams& params);
 
   // A callback to allow the delegate to open a new URL inside |source|.
@@ -176,8 +180,6 @@ class WEB_DIALOGS_EXPORT WebDialogDelegate {
   virtual bool AcceleratorPressed(const Accelerator& accelerator);
 
   virtual void OnWebContentsFinishedLoad() {}
-  virtual void OnMainFrameResourceLoadComplete(
-      const blink::mojom::ResourceLoadInfo& resource_load_info) {}
 
   virtual void RequestMediaAccessPermission(
       content::WebContents* web_contents,

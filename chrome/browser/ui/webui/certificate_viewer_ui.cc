@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,7 @@ content::WebUIDataSource* GetWebUIDataSource(const std::string& host) {
       {"details", IDS_CERT_INFO_DETAILS_TAB_LABEL},
       {"close", IDS_CLOSE},
       {"export", IDS_CERT_DETAILS_EXPORT_CERTIFICATE},
-      {"usages", IDS_CERT_INFO_VERIFIED_USAGES_GROUP},
+      {"exportA11yLabel", IDS_CERT_DETAILS_EXPORT_CERTIFICATE_A11Y_LABEL},
       {"issuedTo", IDS_CERT_INFO_SUBJECT_GROUP},
       {"issuedBy", IDS_CERT_INFO_ISSUER_GROUP},
       {"cn", IDS_CERT_INFO_COMMON_NAME_LABEL},
@@ -45,15 +45,16 @@ content::WebUIDataSource* GetWebUIDataSource(const std::string& host) {
       {"hierarchy", IDS_CERT_DETAILS_CERTIFICATE_HIERARCHY_LABEL},
       {"certFields", IDS_CERT_DETAILS_CERTIFICATE_FIELDS_LABEL},
       {"certFieldVal", IDS_CERT_DETAILS_CERTIFICATE_FIELD_VALUE_LABEL},
+      {"certError", IDS_CERT_DUMP_ERROR},
   };
   html_source->AddLocalizedStrings(kStrings);
 
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types cr-ui-tree-js-static certificate-test-script;");
+      "trusted-types static-types certificate-test-script;");
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
+      "script-src chrome://resources chrome://webui-test 'self';");
 
   html_source->UseStringsJs();
 

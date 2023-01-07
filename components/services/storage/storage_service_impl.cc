@@ -1,11 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/services/storage/storage_service_impl.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/services/storage/dom_storage/storage_area_impl.h"
@@ -25,7 +24,7 @@ namespace {
 
 // We don't use out-of-process Storage Service on Android, so we can avoid
 // pulling all the related code (including Directory mojom) into the build.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // The name under which we register our own sandboxed VFS instance when running
 // out-of-process.
 constexpr char kVfsName[] = "storage_service";
@@ -61,7 +60,7 @@ void StorageServiceImpl::EnableAggressiveDomStorageFlushing() {
   StorageAreaImpl::EnableAggressiveCommitDelay();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void StorageServiceImpl::SetDataDirectory(
     const base::FilePath& path,
     mojo::PendingRemote<mojom::Directory> directory) {
@@ -91,10 +90,10 @@ void StorageServiceImpl::SetDataDirectory(
       kVfsName, std::make_unique<SandboxedVfsDelegate>(CreateFilesystemProxy()),
       /*make_default=*/true);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void StorageServiceImpl::BindPartition(
-    const base::Optional<base::FilePath>& path,
+    const absl::optional<base::FilePath>& path,
     mojo::PendingReceiver<mojom::Partition> receiver) {
   if (path.has_value()) {
     if (!path->IsAbsolute()) {
@@ -132,7 +131,7 @@ void StorageServiceImpl::RemovePartition(PartitionImpl* partition) {
     partitions_.erase(iter);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void StorageServiceImpl::BindDataDirectoryReceiver(
     mojo::PendingReceiver<mojom::Directory> receiver) {
   DCHECK(remote_data_directory_.is_bound());

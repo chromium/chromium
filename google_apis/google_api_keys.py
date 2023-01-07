@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Copyright 2012 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,6 +9,8 @@ Note that this does not have the exact same semantics as the C++ API
 in google_api_keys.h, since it does not have access to gyp variables
 or preprocessor defines.
 """
+
+from __future__ import print_function
 
 import os
 import re
@@ -70,9 +72,9 @@ def GetAPIKey():
   return _GetToken('GOOGLE_API_KEY')
 
 
-def GetAPIKeyPhysicalWebTest():
-  """Returns the API key to test Physical Web service."""
-  return _GetToken('GOOGLE_API_KEY_PHYSICAL_WEB_TEST')
+def GetAPIKeyAndroidNonStable():
+  """Returns the API key for android non-stable channel."""
+  return _GetToken('GOOGLE_API_KEY_ANDROID_NON_STABLE')
 
 
 def GetClientID(client_name):
@@ -86,15 +88,13 @@ def GetClientSecret(client_name):
 
 
 if __name__ == "__main__":
-  print 'GOOGLE_API_KEY=%s' % GetAPIKey()
-  print 'GOOGLE_CLIENT_ID_MAIN=%s' % GetClientID('MAIN')
-  print 'GOOGLE_CLIENT_SECRET_MAIN=%s' % GetClientSecret('MAIN')
-  print 'GOOGLE_CLIENT_ID_CLOUD_PRINT=%s' % GetClientID('CLOUD_PRINT')
-  print 'GOOGLE_CLIENT_SECRET_CLOUD_PRINT=%s' % GetClientSecret('CLOUD_PRINT')
-  print 'GOOGLE_CLIENT_ID_REMOTING=%s' % GetClientID('REMOTING')
-  print 'GOOGLE_CLIENT_SECRET_REMOTING=%s' % GetClientSecret('REMOTING')
-  print 'GOOGLE_CLIENT_ID_REMOTING_HOST=%s' % GetClientID('REMOTING_HOST')
-  print 'GOOGLE_CLIENT_SECRET_REMOTING_HOST=%s' % GetClientSecret(
-      'REMOTING_HOST')
-  print 'GOOGLE_CLIENT_ID_REMOTING_IDENTITY_API=%s' %GetClientID(
-      'REMOTING_IDENTITY_API')
+  print('GOOGLE_API_KEY=%s' % GetAPIKey())
+  print('GOOGLE_CLIENT_ID_MAIN=%s' % GetClientID('MAIN'))
+  print('GOOGLE_CLIENT_SECRET_MAIN=%s' % GetClientSecret('MAIN'))
+  print('GOOGLE_CLIENT_ID_REMOTING=%s' % GetClientID('REMOTING'))
+  print('GOOGLE_CLIENT_SECRET_REMOTING=%s' % GetClientSecret('REMOTING'))
+  print('GOOGLE_CLIENT_ID_REMOTING_HOST=%s' % GetClientID('REMOTING_HOST'))
+  print('GOOGLE_CLIENT_SECRET_REMOTING_HOST=%s' % GetClientSecret(
+      'REMOTING_HOST'))
+  print('GOOGLE_CLIENT_ID_REMOTING_IDENTITY_API=%s' %GetClientID(
+      'REMOTING_IDENTITY_API'))

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL same-document traversals are not canceled by fragment navigations step_wait_func: Timed out waiting on condition
+FAIL same-document traversals are not canceled by pushState() step_wait_func: Timed out waiting on condition
+Harness: the test ran to completion.
+

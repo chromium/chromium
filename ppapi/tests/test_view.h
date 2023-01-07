@@ -1,9 +1,9 @@
-// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Copyright 2011 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_TEST_TEST_VIEW_H_
-#define PPAPI_TEST_TEST_VIEW_H_
+#ifndef PPAPI_TESTS_TEST_VIEW_H_
+#define PPAPI_TESTS_TEST_VIEW_H_
 
 #include <stdint.h>
 
@@ -51,4 +51,4 @@ class TestView : public TestCase {
   bool post_quit_on_view_changed_;
 };
 
-#endif  // PPAPI_TEST_TEST_VIEW_H_
+#endif  // PPAPI_TESTS_TEST_VIEW_H_

@@ -1,0 +1,62 @@
+caption: Automatically grant permission to sites to connect to USB serial devices.
+desc: |-
+  Setting the policy allows you to list sites which are automatically granted permission to access USB serial devices with vendor and product IDs matching the <ph name="VENDOR_ID_FIELD_NAME">vendor_id</ph> and <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> fields. Omitting the <ph name="PRODUCT_ID_FIELD_NAME">product_id</ph> field allows the given sites permission to access devices with a vendor ID matching the <ph name="VENDOR_ID_FIELD_NAME">vendor_id</ph> field and any product ID.
+
+        The URLs must be valid, otherwise the policy is ignored. Only the origin (scheme, host and port) of the URL is considered.
+
+        On ChromeOS, this policy only applies to affiliated users.
+
+        This policy overrides <ph name="DEFAULT_SERIAL_GUARD_SETTING_POLICY_NAME">DefaultSerialGuardSetting</ph>, <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME">SerialAskForUrls</ph>, <ph name="SERIAL_BLOCKED_FOR_URLS_POLICY_NAME">SerialBlockedForUrls</ph> and the user's preferences.
+
+        This policy only affects access to USB devices through the Web Serial API. To grant access to USB devices through the WebUSB API see the <ph name="WEB_USB_ALLOW_DEVICES_FOR_URLS_POLICY_NAME">WebUsbAllowDevicesForUrls</ph> policy.
+example_value:
+- devices:
+  - product_id: 5678
+    vendor_id: 1234
+  urls:
+  - https://specific-device.example.com
+- devices:
+  - vendor_id: 1234
+  urls:
+  - https://all-vendor-devices.example.com
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- fuchsia
+owners:
+- reillyg@chromium.org
+- file://content/browser/serial/OWNERS
+schema:
+  items:
+    properties:
+      devices:
+        items:
+          properties:
+            product_id:
+              maximum: 65535
+              minimum: 0
+              type: integer
+            vendor_id:
+              maximum: 65535
+              minimum: 0
+              type: integer
+          required:
+          - vendor_id
+          type: object
+        type: array
+      urls:
+        items:
+          type: string
+        type: array
+    required:
+    - devices
+    - urls
+    type: object
+  type: array
+supported_on:
+- chrome_os:94-
+- chrome.*:94-
+tags:
+- website-sharing
+type: dict

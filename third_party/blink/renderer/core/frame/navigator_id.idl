@@ -38,5 +38,5 @@ interface mixin NavigatorID {
     readonly attribute DOMString product; // constant "Gecko"
     // https://www.w3.org/Bugs/Public/show_bug.cgi?id=22555
     // boolean taintEnabled(); // constant false
-    [Affects=Nothing, HighEntropy=Direct, MeasureAs=NavigatorUserAgent] readonly attribute DOMString userAgent;
+    [HighEntropy=Direct, MeasureAs=NavigatorUserAgent] readonly attribute DOMString userAgent;
 };

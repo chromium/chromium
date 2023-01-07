@@ -1,0 +1,3 @@
+Verifies that WebSocket does not recieve messages when emulating offline network.
+
+

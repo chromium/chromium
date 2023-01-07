@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,15 @@
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom-blink.h"
+#include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/messaging/delegated_capability.mojom-blink.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/transferables.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -22,12 +25,14 @@ namespace blink {
 class InputDeviceCapabilitiesConstants;
 class LocalDOMWindow;
 class Location;
-class MessageEvent;
 class ScriptValue;
 class SecurityOrigin;
 class SerializedScriptValue;
+class UserActivation;
 class WindowPostMessageOptions;
 class WindowProxyManager;
+
+struct BlinkTransferableMessage;
 
 // DOMWindow is an abstract class of Window interface implementations.
 // We have two derived implementation classes;  LocalDOMWindow and
@@ -67,9 +72,7 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   virtual bool IsRemoteDOMWindow() const = 0;
 
   // ScriptWrappable overrides:
-  v8::Local<v8::Value> Wrap(v8::Isolate*,
-                            v8::Local<v8::Object> creation_context) final;
-  v8::MaybeLocal<v8::Value> WrapV2(ScriptState*) final;
+  v8::MaybeLocal<v8::Value> Wrap(ScriptState*) final;
   v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate*,
       const WrapperTypeInfo*,
@@ -87,15 +90,15 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
 
   // Self-referential attributes
   DOMWindow* self() const;
-  DOMWindow* window() const { return self(); }
-  DOMWindow* frames() const { return self(); }
+  DOMWindow* window() const;
+  DOMWindow* frames() const;
 
   DOMWindow* opener() const;
   DOMWindow* parent() const;
   DOMWindow* top() const;
 
   void focus(v8::Isolate*);
-  virtual void blur() = 0;
+  void blur();
   void close(v8::Isolate*);
   void Close(LocalDOMWindow* incumbent_window);
 
@@ -112,6 +115,9 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
 
   // Indexed properties
   DOMWindow* AnonymousIndexedGetter(uint32_t index);
+
+  // Returns the opener and collects cross-origin access metrics.
+  DOMWindow* OpenerWithMetrics() const;
 
   String SanitizedCrossDomainAccessErrorMessage(
       const LocalDOMWindow* accessing_window,
@@ -139,12 +145,9 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   // Check accesses from |accessing_frame| and every same-origin iframe toward
   // this window. A report is sent to |reporter| when this happens.
   void InstallCoopAccessMonitor(
-      network::mojom::blink::CoopAccessReportType report_type,
       LocalFrame* accessing_frame,
-      mojo::PendingRemote<
-          network::mojom::blink::CrossOriginOpenerPolicyReporter> reporter,
-      bool endpoint_defined,
-      const WTF::String& reported_window_url);
+      network::mojom::blink::CrossOriginOpenerPolicyReporterParamsPtr
+          coop_reporter_params);
   // Whenever we detect that the enforcement of a report-only COOP policy would
   // have resulted in preventing access to this window, a report is potentially
   // sent when calling this function.
@@ -153,12 +156,28 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   // marked as "CrossOrigin" in the window.idl.
   void ReportCoopAccess(const char* property_name);
 
+  // Records metrics for cross-origin access to the WindowProxy properties,
+  void RecordWindowProxyAccessMetrics(
+      mojom::blink::WebFeature property_access,
+      mojom::blink::WebFeature property_access_from_other_page) const;
+
  protected:
   explicit DOMWindow(Frame&);
 
-  virtual void SchedulePostMessage(MessageEvent*,
-                                   scoped_refptr<const SecurityOrigin> target,
-                                   LocalDOMWindow* source) = 0;
+  struct PostedMessage final : GarbageCollected<PostedMessage> {
+    void Trace(Visitor* visitor) const;
+    BlinkTransferableMessage ToBlinkTransferableMessage() &&;
+
+    scoped_refptr<const SecurityOrigin> source_origin;
+    scoped_refptr<const SecurityOrigin> target_origin;
+    scoped_refptr<SerializedScriptValue> data;
+    Vector<MessagePortChannel> channels;
+    Member<LocalDOMWindow> source;
+    Member<UserActivation> user_activation;
+    mojom::blink::DelegatedCapability delegated_capability =
+        mojom::blink::DelegatedCapability::kNone;
+  };
+  virtual void SchedulePostMessage(PostedMessage* message) = 0;
 
   void DisconnectFromFrame() { frame_ = nullptr; }
 

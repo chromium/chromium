@@ -1,0 +1,69 @@
+# Copyright 2013 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/nacl/config.gni")
+
+static_library("libevent") {
+  sources = [
+    "buffer.c",
+    "evbuffer.c",
+    "evdns.c",
+    "evdns.h",
+    "event-config.h",
+    "event-internal.h",
+    "event.c",
+    "event.h",
+    "event_tagging.c",
+    "evhttp.h",
+    "evrpc-internal.h",
+    "evrpc.c",
+    "evrpc.h",
+    "evsignal.h",
+    "evutil.c",
+    "evutil.h",
+    "http-internal.h",
+    "http.c",
+    "log.c",
+    "log.h",
+    "min_heap.h",
+    "poll.c",
+    "select.c",
+    "signal.c",
+    "strlcpy-internal.h",
+    "strlcpy.c",
+  ]
+
+  defines = [ "HAVE_CONFIG_H" ]
+
+  if (is_apple) {
+    sources += [
+      "kqueue.c",
+      "mac/config.h",
+      "mac/event-config.h",
+    ]
+    include_dirs = [ "mac" ]
+  } else if (is_linux || is_chromeos) {
+    sources += [
+      "epoll.c",
+      "linux/config.h",
+      "linux/event-config.h",
+    ]
+    include_dirs = [ "linux" ]
+  } else if (is_android) {
+    sources += [
+      "android/config.h",
+      "android/event-config.h",
+      "epoll.c",
+    ]
+    include_dirs = [ "android" ]
+  }
+
+  if (!is_debug) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+}

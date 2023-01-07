@@ -1,16 +1,15 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ANIMATIONWORKLET_ANIMATION_WORKLET_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ANIMATIONWORKLET_ANIMATION_WORKLET_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/workers/worklet.h"
 #include "third_party/blink/renderer/modules/animationworklet/animation_worklet_proxy_client.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutators_state.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -24,6 +23,10 @@ class LocalDOMWindow;
 class MODULES_EXPORT AnimationWorklet final : public Worklet {
  public:
   explicit AnimationWorklet(LocalDOMWindow&);
+
+  AnimationWorklet(const AnimationWorklet&) = delete;
+  AnimationWorklet& operator=(const AnimationWorklet&) = delete;
+
   ~AnimationWorklet() override;
 
   WorkletAnimationId NextWorkletAnimationId();
@@ -40,8 +43,6 @@ class MODULES_EXPORT AnimationWorklet final : public Worklet {
   WorkletGlobalScopeProxy* CreateGlobalScope() final;
 
   Member<AnimationWorkletProxyClient> proxy_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationWorklet);
 };
 
 }  // namespace blink

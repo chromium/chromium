@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -70,6 +70,25 @@ TEST_F(PositionTest, editingPositionOfWithEditingIgnoresContent) {
             Position::EditingPositionOf(textarea, 2));
   EXPECT_EQ(Position::AfterNode(*textarea),
             Position::EditingPositionOf(textarea, 3));
+}
+
+// http://crbug.com/1248760
+TEST_F(PositionTest, LastPositionInOrAfterNodeNotInFlatTree) {
+  SetBodyContent("<option><select>A</select></option>");
+  const Element& document_element = *GetDocument().documentElement();
+  const Element& select = *GetDocument().QuerySelector("select");
+
+  EXPECT_EQ(Position::LastPositionInNode(document_element),
+            Position::LastPositionInOrAfterNode(document_element));
+  EXPECT_EQ(PositionInFlatTree::LastPositionInNode(document_element),
+            PositionInFlatTree::LastPositionInOrAfterNode(document_element));
+
+  // Note: <select> isn't appeared in flat tree, because <option> doesn't
+  // take it as valid child node.
+  EXPECT_EQ(Position::AfterNode(select),
+            Position::LastPositionInOrAfterNode(select));
+  EXPECT_EQ(PositionInFlatTree::LastPositionInNode(select),
+            PositionInFlatTree::LastPositionInOrAfterNode(select));
 }
 
 TEST_F(PositionTest, NodeAsRangeLastNode) {
@@ -273,6 +292,31 @@ TEST_F(PositionTest, LastPositionInShadowHost) {
   PositionInFlatTree flat = PositionInFlatTree::LastPositionInNode(*host);
   EXPECT_EQ(dom, ToPositionInDOMTree(flat));
   EXPECT_EQ(flat, ToPositionInFlatTree(dom));
+}
+
+TEST_F(PositionTest, ComparePositionsAcrossShadowBoundary) {
+  SetBodyContent("<p id=host>foo</p>");
+  ShadowRoot* shadow_root = SetShadowContent("<div>bar</div>", "host");
+  Element* body = GetDocument().body();
+  Element* host = GetDocument().getElementById("host");
+  Node* child = shadow_root->firstChild();
+  Node* grandchild = child->firstChild();
+  std::array<Node*, 4> nodes = {body, host, child, grandchild};
+  unsigned size = nodes.size();
+  for (unsigned i = 0; i < size; ++i) {
+    for (unsigned j = 0; j < i; ++j) {
+      EXPECT_LT(Position(nodes[j], 0), Position(nodes[i], 0));
+      EXPECT_LT(PositionInFlatTree(nodes[j], 0),
+                PositionInFlatTree(nodes[i], 0));
+    }
+    EXPECT_EQ(Position(nodes[i], 0), Position(nodes[i], 0));
+    EXPECT_EQ(PositionInFlatTree(nodes[i], 0), PositionInFlatTree(nodes[i], 0));
+    for (unsigned j = i + 1; j < size; ++j) {
+      EXPECT_GT(Position(nodes[j], 0), Position(nodes[i], 0));
+      EXPECT_GT(PositionInFlatTree(nodes[j], 0),
+                PositionInFlatTree(nodes[i], 0));
+    }
+  }
 }
 
 }  // namespace blink

@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -9,7 +9,10 @@ source_set("infobar_modal") {
   configs += [ "//build/config/compiler:enable_arc" ]
 
   deps = [
+    "//ios/chrome/browser/ui/overlays/infobar_modal/autofill_address_profile",
     "//ios/chrome/browser/ui/overlays/infobar_modal/passwords",
+    "//ios/chrome/browser/ui/overlays/infobar_modal/permissions",
+    "//ios/chrome/browser/ui/overlays/infobar_modal/reading_list",
     "//ios/chrome/browser/ui/overlays/infobar_modal/save_card",
     "//ios/chrome/browser/ui/overlays/infobar_modal/translate",
   ]
@@ -32,6 +35,7 @@ source_set("coordinators") {
     "//ios/chrome/browser/ui/infobars/modals",
     "//ios/chrome/browser/ui/infobars/presentation",
     "//ios/chrome/browser/ui/overlays:coordinators",
+    "//ios/chrome/browser/ui/overlays:util",
   ]
 }
 

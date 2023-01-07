@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
@@ -30,9 +29,12 @@ namespace autofill {
 template <typename Event>
 class EventWaiter {
  public:
-  explicit EventWaiter(
-      std::list<Event> expected_event_sequence,
-      base::TimeDelta timeout = base::TimeDelta::FromSeconds(0));
+  explicit EventWaiter(std::list<Event> expected_event_sequence,
+                       base::TimeDelta timeout = base::Seconds(0));
+
+  EventWaiter(const EventWaiter&) = delete;
+  EventWaiter& operator=(const EventWaiter&) = delete;
+
   ~EventWaiter();
 
   // Either returns right away if all events were observed between this
@@ -46,8 +48,6 @@ class EventWaiter {
  private:
   std::list<Event> expected_events_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventWaiter);
 };
 
 template <typename Event>

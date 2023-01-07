@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chrome/chrome_cleaner/ipc/mock_chrome_prompt_ipc.h"
+#include "chrome/chrome_cleaner/ipc/chrome_prompt_test_util.h"
 #include "chrome/chrome_cleaner/test/test_file_util.h"
 #include "chrome/chrome_cleaner/test/test_pup_data.h"
 #include "chrome/chrome_cleaner/test/test_settings_util.h"

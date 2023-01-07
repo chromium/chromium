@@ -1,4 +1,4 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2017 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -19,15 +19,6 @@ imageset("infobar_downloading") {
     "infobar_downloading.imageset/infobar_downloading.png",
     "infobar_downloading.imageset/infobar_downloading@2x.png",
     "infobar_downloading.imageset/infobar_downloading@3x.png",
-  ]
-}
-
-imageset("infobar_popup_blocker") {
-  sources = [
-    "infobar_popup_blocker.imageset/Contents.json",
-    "infobar_popup_blocker.imageset/infobar_popup_blocker.png",
-    "infobar_popup_blocker.imageset/infobar_popup_blocker@2x.png",
-    "infobar_popup_blocker.imageset/infobar_popup_blocker@3x.png",
   ]
 }
 
@@ -69,5 +60,45 @@ imageset("infobar_save_card_icon") {
     "infobar_save_card_icon.imageset/Contents.json",
     "infobar_save_card_icon.imageset/infobar_save_card_icon@2x.png",
     "infobar_save_card_icon.imageset/infobar_save_card_icon@3x.png",
+  ]
+}
+
+imageset("infobar_autofill_address_icon") {
+  sources = [
+    "infobar_autofill_address_icon.imageset/Contents.json",
+    "infobar_autofill_address_icon.imageset/infobar_autofill_address_icon@2x.png",
+    "infobar_autofill_address_icon.imageset/infobar_autofill_address_icon@3x.png",
+  ]
+}
+
+imageset("infobar_reading_list") {
+  sources = [
+    "infobar_reading_list.imageset/Contents.json",
+    "infobar_reading_list.imageset/infobar_reading_list@2x.png",
+    "infobar_reading_list.imageset/infobar_reading_list@3x.png",
+  ]
+}
+
+imageset("infobar_email_icon") {
+  sources = [
+    "infobar_email_icon.imageset/Contents.json",
+    "infobar_email_icon.imageset/infobar_email_icon@2x.png",
+    "infobar_email_icon.imageset/infobar_email_icon@3x.png",
+  ]
+}
+
+imageset("infobar_phone_icon") {
+  sources = [
+    "infobar_phone_icon.imageset/Contents.json",
+    "infobar_phone_icon.imageset/infobar_phone_icon@2x.png",
+    "infobar_phone_icon.imageset/infobar_phone_icon@3x.png",
+  ]
+}
+
+imageset("infobar_profile_icon") {
+  sources = [
+    "infobar_profile_icon.imageset/Contents.json",
+    "infobar_profile_icon.imageset/infobar_profile_icon@2x.png",
+    "infobar_profile_icon.imageset/infobar_profile_icon@3x.png",
   ]
 }

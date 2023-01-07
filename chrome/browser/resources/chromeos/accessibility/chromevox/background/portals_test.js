@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,6 +18,13 @@ ChromeVoxPortalsTest = class extends ChromeVoxNextE2ETest {
   /** @override */
   get featureList() {
     return {enabled: ['blink::features::kPortals']};
+  }
+
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
   }
 
   get testServer() {
@@ -64,44 +71,39 @@ ChromeVoxPortalsTest = class extends ChromeVoxNextE2ETest {
   }
 };
 
-TEST_F('ChromeVoxPortalsTest', 'ShouldFocusPortal', function() {
-  this.runWithLoadedTree(
-      undefined, function(root) {
-        const portal = root.find({role: RoleType.PORTAL});
-        const button = root.find({role: RoleType.BUTTON});
-        assertEquals(RoleType.PORTAL, portal.role);
-        assertEquals(RoleType.BUTTON, button.role);
+AX_TEST_F('ChromeVoxPortalsTest', 'ShouldFocusPortal', async function() {
+  const root = await this.runWithLoadedTree(null, {
+    url: `${testRunnerParams.testServerBaseUrl}portal/portal-and-button.html`,
+  });
+  const portal = root.find({role: RoleType.PORTAL});
+  const button = root.find({role: RoleType.BUTTON});
+  assertEquals(RoleType.PORTAL, portal.role);
+  assertEquals(RoleType.BUTTON, button.role);
 
-        const afterPortalIsReady = this.newCallback(() => {
-          const chromeVoxState = ChromeVoxState.instance;
-          portal.addEventListener(EventType.FOCUS, this.newCallback(function() {
-            assertEquals(portal, chromeVoxState.currentRange.start.node);
-            // test is done.
-          }));
-          assertEquals(button, chromeVoxState.currentRange.start.node);
-          doCmd('nextObject')();
-        });
+  const afterPortalIsReady = this.newCallback(() => {
+    const chromeVoxState = ChromeVoxState.instance;
+    portal.addEventListener(EventType.FOCUS, this.newCallback(function() {
+      assertEquals(portal, chromeVoxState.currentRange.start.node);
+      // test is done.
+    }));
+    assertEquals(button, chromeVoxState.currentRange.start.node);
+    doCmd('nextObject')();
+  });
 
-        button.focus();
-        button.addEventListener(
-            EventType.FOCUS,
-            () => this.waitForPortal(portal).then(afterPortalIsReady));
-      }.bind(this), {
-        url:
-            `${testRunnerParams.testServerBaseUrl}portal/portal-and-button.html`
-      });
+  button.focus();
+  button.addEventListener(
+      EventType.FOCUS,
+      () => this.waitForPortal(portal).then(afterPortalIsReady));
 });
 
-TEST_F('ChromeVoxPortalsTest', 'PortalName', function() {
-  this.runWithLoadedTree(
-      undefined, function(root) {
-        const portal = root.find({role: RoleType.PORTAL});
-        assertEquals(RoleType.PORTAL, portal.role);
-        this.waitForPortal(portal).then(this.newCallback(() => {
-          assertTrue(portal.firstChild.docLoaded);
-          assertEquals(portal.name, 'some text');
-        }));
-      }.bind(this), {
-        url: `${testRunnerParams.testServerBaseUrl}portal/portal-with-text.html`
-      });
+AX_TEST_F('ChromeVoxPortalsTest', 'PortalName', async function() {
+  const root = await this.runWithLoadedTree(null, {
+    url: `${testRunnerParams.testServerBaseUrl}portal/portal-with-text.html`,
+  });
+  const portal = root.find({role: RoleType.PORTAL});
+  assertEquals(RoleType.PORTAL, portal.role);
+  this.waitForPortal(portal).then(this.newCallback(() => {
+    assertTrue(portal.firstChild.docLoaded);
+    assertEquals(portal.name, 'some text');
+  }));
 });

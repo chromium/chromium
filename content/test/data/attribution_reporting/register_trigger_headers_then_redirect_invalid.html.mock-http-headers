@@ -1,0 +1,3 @@
+HTTP/1.1 301 Yo
+Attribution-Reporting-Register-Trigger:!
+Location: /register_trigger_headers.html

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_notifier_impl.h"
@@ -43,23 +42,23 @@ TEST(AccountConsistencyModeManagerTest, DefaultValue) {
   std::unique_ptr<TestingProfile> profile =
       BuildTestingProfile(/*is_new_profile=*/false);
 
-#if BUILDFLAG(ENABLE_MIRROR) || BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(signin::AccountConsistencyMethod::kMirror,
-            AccountConsistencyModeManager::GetMethodForProfile(profile.get()));
-  EXPECT_TRUE(
-      AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile.get()));
-  EXPECT_FALSE(
-      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile.get()));
+  signin::AccountConsistencyMethod method =
+#if BUILDFLAG(ENABLE_MIRROR)
+      signin::AccountConsistencyMethod::kMirror;
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)
-  EXPECT_EQ(signin::AccountConsistencyMethod::kDice,
-            AccountConsistencyModeManager::GetMethodForProfile(profile.get()));
-  EXPECT_FALSE(
-      AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile.get()));
-  EXPECT_TRUE(
-      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile.get()));
+      signin::AccountConsistencyMethod::kDice;
 #else
 #error Either Dice or Mirror should be enabled
 #endif
+
+  EXPECT_EQ(method,
+            AccountConsistencyModeManager::GetMethodForProfile(profile.get()));
+  EXPECT_EQ(
+      method == signin::AccountConsistencyMethod::kMirror,
+      AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile.get()));
+  EXPECT_EQ(
+      method == signin::AccountConsistencyMethod::kDice,
+      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile.get()));
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -136,8 +135,8 @@ TEST(AccountConsistencyModeManagerTest, AllowBrowserSigninSwitch) {
   }
 }
 
-// Checks that Dice migration happens when the manager is created.
-TEST(AccountConsistencyModeManagerTest, MigrateAtCreation) {
+// Checks that Dice is enabled for new profiles.
+TEST(AccountConsistencyModeManagerTest, DiceEnabledForNewProfiles) {
   content::BrowserTaskEnvironment task_environment;
   std::unique_ptr<TestingProfile> profile =
       BuildTestingProfile(/*is_new_profile=*/false);
@@ -146,34 +145,7 @@ TEST(AccountConsistencyModeManagerTest, MigrateAtCreation) {
             manager.GetAccountConsistencyMethod());
 }
 
-TEST(AccountConsistencyModeManagerTest, ForceDiceMigration) {
-  content::BrowserTaskEnvironment task_environment;
-  std::unique_ptr<TestingProfile> profile =
-      BuildTestingProfile(/*is_new_profile=*/false);
-  profile->GetPrefs()->SetBoolean(prefs::kTokenServiceDiceCompatible, true);
-  AccountConsistencyModeManager manager(profile.get());
-  EXPECT_EQ(signin::AccountConsistencyMethod::kDice,
-            manager.GetAccountConsistencyMethod());
-  // Migration is not completed yet, |kDiceMigrationCompletePref| should not
-  // be written.
-  EXPECT_FALSE(manager.IsDiceMigrationCompleted(profile.get()));
-  manager.SetDiceMigrationCompleted();
-  EXPECT_TRUE(manager.IsDiceMigrationCompleted(profile.get()));
-}
-
-// Checks that new profiles are migrated at creation.
-TEST(AccountConsistencyModeManagerTest, NewProfile) {
-  content::BrowserTaskEnvironment task_environment;
-  std::unique_ptr<TestingProfile> profile =
-      BuildTestingProfile(/*is_new_profile=*/true);
-  EXPECT_TRUE(
-      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile.get()));
-  EXPECT_TRUE(
-      AccountConsistencyModeManager::IsDiceMigrationCompleted(profile.get()));
-}
-
-TEST(AccountConsistencyModeManagerTest,
-     DiceOnlyForRegularAndEphemeralGuestProfile) {
+TEST(AccountConsistencyModeManagerTest, DiceOnlyForRegularProfile) {
   content::BrowserTaskEnvironment task_environment;
 
   {
@@ -187,7 +159,8 @@ TEST(AccountConsistencyModeManagerTest,
         AccountConsistencyModeManager::ShouldBuildServiceForProfile(&profile));
 
     // Incognito profile.
-    Profile* incognito_profile = profile.GetPrimaryOTRProfile();
+    Profile* incognito_profile =
+        profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
     EXPECT_FALSE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
         incognito_profile));
     EXPECT_FALSE(
@@ -200,7 +173,8 @@ TEST(AccountConsistencyModeManagerTest,
 
     // Non-primary off-the-record profile.
     Profile* otr_profile = profile.GetOffTheRecordProfile(
-        Profile::OTRProfileID("Test::AccountConsistency"));
+        Profile::OTRProfileID::CreateUniqueForTesting(),
+        /*create_if_needed=*/true);
     EXPECT_FALSE(
         AccountConsistencyModeManager::IsDiceEnabledForProfile(otr_profile));
     EXPECT_FALSE(AccountConsistencyModeManager::GetForProfile(otr_profile));
@@ -210,12 +184,8 @@ TEST(AccountConsistencyModeManagerTest,
         otr_profile));
   }
 
-  // OTR Guest profile.
+  // Guest profile.
   {
-    base::test::ScopedFeatureList scoped_feature_list;
-    TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-        scoped_feature_list, false);
-
     TestingProfile::Builder profile_builder;
     profile_builder.SetGuestSession();
     std::unique_ptr<Profile> profile = profile_builder.Build();
@@ -228,29 +198,10 @@ TEST(AccountConsistencyModeManagerTest,
     EXPECT_FALSE(AccountConsistencyModeManager::ShouldBuildServiceForProfile(
         profile.get()));
   }
-
-  // Ephemeral Guest profile.
-  {
-    base::test::ScopedFeatureList scoped_feature_list;
-    if (TestingProfile::SetScopedFeatureListForEphemeralGuestProfiles(
-            scoped_feature_list, true)) {
-      TestingProfile::Builder profile_builder;
-      profile_builder.SetGuestSession();
-      std::unique_ptr<Profile> profile = profile_builder.Build();
-      ASSERT_TRUE(profile->IsEphemeralGuestProfile());
-      EXPECT_TRUE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
-          profile.get()));
-      EXPECT_EQ(
-          signin::AccountConsistencyMethod::kDice,
-          AccountConsistencyModeManager::GetMethodForProfile(profile.get()));
-      EXPECT_TRUE(AccountConsistencyModeManager::ShouldBuildServiceForProfile(
-          profile.get()));
-    }
-  }
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_MIRROR)
 // Mirror is enabled by default on Chrome OS, unless specified otherwise.
 TEST(AccountConsistencyModeManagerTest, MirrorEnabledByDefault) {
   // Creation of this object sets the current thread's id as UI thread.
@@ -284,7 +235,8 @@ TEST(AccountConsistencyModeManagerTest, MirrorDisabledForOffTheRecordProfile) {
   content::BrowserTaskEnvironment task_environment;
 
   TestingProfile profile;
-  Profile* incognito_profile = profile.GetPrimaryOTRProfile();
+  Profile* incognito_profile =
+      profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
   EXPECT_FALSE(AccountConsistencyModeManager::IsMirrorEnabledForProfile(
       incognito_profile));
   EXPECT_FALSE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
@@ -294,7 +246,8 @@ TEST(AccountConsistencyModeManagerTest, MirrorDisabledForOffTheRecordProfile) {
       AccountConsistencyModeManager::GetMethodForProfile(incognito_profile));
 
   Profile* otr_profile = profile.GetOffTheRecordProfile(
-      Profile::OTRProfileID("Test::AccountConsistency"));
+      Profile::OTRProfileID::CreateUniqueForTesting(),
+      /*create_if_needed=*/true);
   EXPECT_FALSE(
       AccountConsistencyModeManager::IsMirrorEnabledForProfile(otr_profile));
   EXPECT_FALSE(
@@ -302,19 +255,5 @@ TEST(AccountConsistencyModeManagerTest, MirrorDisabledForOffTheRecordProfile) {
   EXPECT_EQ(signin::AccountConsistencyMethod::kDisabled,
             AccountConsistencyModeManager::GetMethodForProfile(otr_profile));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(ENABLE_MIRROR)
-// Test that Mirror is enabled for child accounts.
-TEST(AccountConsistencyModeManagerTest, MirrorChildAccount) {
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  profile.SetSupervisedUserId(supervised_users::kChildAccountSUID);
-  EXPECT_TRUE(
-      AccountConsistencyModeManager::IsMirrorEnabledForProfile(&profile));
-  EXPECT_FALSE(
-      AccountConsistencyModeManager::IsDiceEnabledForProfile(&profile));
-  EXPECT_EQ(signin::AccountConsistencyMethod::kMirror,
-            AccountConsistencyModeManager::GetMethodForProfile(&profile));
-}
 #endif  // BUILDFLAG(ENABLE_MIRROR)

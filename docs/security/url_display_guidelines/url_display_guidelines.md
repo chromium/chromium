@@ -104,6 +104,8 @@ Do not attempt to write your own canonicalizer.
 
 ### Eliding URLs
 
+* tl;dr: use [`url_formatter::ElideUrl`](https://source.chromium.org/chromium/chromium/src/+/main:components/url_formatter/elide_url.h;l=40;drc=9bf53ab9128027a4a3df5cc10485e7962ddfad4d;bpv=1;bpt=1?q=url_formatter::ElideUrl&sq=&ss=chromium%2Fchromium%2Fsrc)
+
 * When the full hostname cannot be displayed, elide labels starting from the front. (Right-to-Left character support means that the *front* of the string may not appear at the *left*). (Note that Chrome's omnibox behavior on desktop is currently [buggy](https://bugs.chromium.org/p/chromium/issues/detail?id=527638) in this respect.)
 
 * Ensure that at least the registrable domain can be shown, to avoid showing **...paypal.com** when loading `https://not-really-paypal.com`.
@@ -192,7 +194,7 @@ An attacker may abuse whitespace and line-wrapping characters in order to push t
 
 * Use of [Combining characters](https://blog.emojipedia.org/fun-emoji-hacks/) to create look-alikes.
 
-In Chromium, this is handled by routines in `net/base/escape.h`. Outside of Chromium, consult `ShouldUnescapeCodePoint` in `net/base/escape.cc` for guidance.
+In Chromium, this is handled by routines in `base/strings/escape.h`. Outside of Chromium, consult `ShouldUnescapeCodePoint` in `net/base/escape.cc` for guidance.
 
 ### Literal IP Addresses
 
@@ -255,7 +257,7 @@ The [URL Standard](https://url.spec.whatwg.org/#url-rendering) suggests that *th
 
 This is generally a user-experience feature (some sites strive to use human-readable URLs and %-escaped characters are not human readable) but could lead to spoofing attacks if performed incorrectly.
 
-Chrome’s [`FormatUrl`](https://cs.chromium.org/chromium/src/components/url_formatter/url_formatter.h?l=100&rcl=1deab0dd75a1659e44b8159d60de9cf26dc3dbf0) function takes an [`UnescapeRule`](https://cs.chromium.org/chromium/src/net/base/escape.h?l=64&rcl=ecba19472b9290092745e9846edd0d6fd8dcc48b) parameter that determines what components should be decoded for display. As of Chrome 65, we unescape path, query, and fragment components for display.
+Chrome’s [`FormatUrl`](https://cs.chromium.org/chromium/src/components/url_formatter/url_formatter.h?l=100&rcl=1deab0dd75a1659e44b8159d60de9cf26dc3dbf0) function takes an [`UnescapeRule`](https://cs.chromium.org/chromium/src/base/strings/escape.h?l=64&rcl=ecba19472b9290092745e9846edd0d6fd8dcc48b) parameter that determines what components should be decoded for display. As of Chrome 65, we unescape path, query, and fragment components for display.
 
 Space and other invisible characters should be displayed in encoded form.
 

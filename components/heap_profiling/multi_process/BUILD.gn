@@ -1,4 +1,4 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -34,7 +34,7 @@ if (is_android) {
   android_library("heap_profiling_java_test_support") {
     testonly = true
     sources = [ "javatests/src/org/chromium/components/heap_profiling/multi_process/HeapProfilingTestShim.java" ]
-    deps = [ "//base:base_java" ]
+    deps = [ "//build/android:build_java" ]
   }
 }
 

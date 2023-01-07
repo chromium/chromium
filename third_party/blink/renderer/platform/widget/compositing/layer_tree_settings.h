@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,7 +18,8 @@ PLATFORM_EXPORT cc::ManagedMemoryPolicy GetGpuMemoryPolicy(
 
 cc::LayerTreeSettings GenerateLayerTreeSettings(
     bool has_compositor,
-    bool for_child_local_root_frame,
+    bool is_for_embedded_frame,
+    bool is_for_scalable_page,
     const gfx::Size& initial_screen_size,
     float initial_device_scale_factor);
 

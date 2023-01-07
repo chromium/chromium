@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <!--
-Copyright 2018 The Chromium Authors. All rights reserved.
+Copyright 2018 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -75,6 +75,10 @@ found in the LICENSE file.
     <style>
       #full_height_section {
         height: 100vh;
+      }
+
+      #triple_height_section {
+        height: 300vh;
       }
 
       #touch_area_two {
@@ -174,6 +178,8 @@ found in the LICENSE file.
   </head>
 
   <body onload="moveTouchAreaTwoAndThree()">
+    <input type="text" id="trigger-keyboard" />
+
     <!-- Touch areas can be accessed without needing scroll. -->
     <div>
       <p id="touch_area_one" ontouchend="removeTouchArea(event)" onmouseup="removeTouchArea(event)">
@@ -193,6 +199,14 @@ found in the LICENSE file.
     section.
     -->
     <div id="full_height_section">
+      <p>Blank Section</p>
+    </div>
+
+    <!--
+    This section is as tall as 3 viewports, this ensures the center is not
+    visible if we just scroll until one side of it is visible.
+    -->
+    <div id="triple_height_section">
       <p>Blank Section</p>
     </div>
 
@@ -237,6 +251,8 @@ found in the LICENSE file.
         <option value="two">Zürich Hauptbahnhof</option>
         <option value="three">Three</option>
         <option value="Aü万𠜎">Character Test Entry</option>
+        <option value="four">Four</option>
+        <option value="five" disabled>Five</option>
       </select>
     </div>
 
@@ -271,6 +287,9 @@ found in the LICENSE file.
     </div>
     <div>
       <input id="input_with_onchange" type="text" value="0" onchange="onChangeIncrement(event)" />
+    </div>
+    <div>
+      <input id="input_password" type="password" />
     </div>
 
     <div>
@@ -311,7 +330,10 @@ found in the LICENSE file.
         "autofill_assistant_target_website_iframe_one.html"></iframe>
 
     <iframe id="iframeExternal" name="test_iframe_external" width="100%" height="500" src=
-        "http://localhost:8081/autofill_assistant_external_iframe.html"></iframe>
+        "http://localhost:51217/autofill_assistant_external_iframe.html"></iframe>
+
+    <iframe id="iframeRedirecting" name="redirecting_iframe" width="100%" height="500" src=
+        "autofill_assistant_target_website_redirecting_iframe.html"></iframe>
 
     <input type="checkbox" id="terms-and-conditions" />
     <label for="terms-and-conditions" >
@@ -324,6 +346,7 @@ found in the LICENSE file.
       Option <b>2</b>
       <input id="option2" type="checkbox" name="option2">
     </label>
+    <input id="option3" type="checkbox" name="option3" checked="true">
     <label id="bad_label1" for="doesnotexist">A label without an element</label>
     <label id="bad_label2">Another label without an element</label>
 
@@ -420,6 +443,28 @@ found in the LICENSE file.
         document.addEventListener('duplexweb', onDuplexwebEvent);
       </script>
     </div>
+
+    <div class="dynamic less-than-2-seconds">Dynamic element</div>
+    <script>
+      setTimeout(() => {
+        const el = document.querySelector('.dynamic');
+        el.classList.remove('less-than-2-seconds');
+        el.classList.add('about-2-seconds');
+        setTimeout(() => {
+          el.classList.remove('about-2-seconds');
+          el.classList.add('more-than-2-seconds');
+        }, 200);
+      }, 2000);
+    </script>
+
+    <textarea id="textarea1">Initial textarea value.</textarea>
+
+    <label for="radio_red">Red
+      <input type="radio" id="radio_red" name="color_choice" value="red">
+    </label>
+    <label for="radio_blue">Blue
+      <input type="radio" id="radio_blue" name="color_choice" value="blue">
+    </label>
 
   </body>
 </html>

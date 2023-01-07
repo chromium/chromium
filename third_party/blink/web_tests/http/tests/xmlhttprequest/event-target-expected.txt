@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 59: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 Tests for bug 11053 - XMLHttpRequest should be an EventTarget.
 
 fooListener: this = [object XMLHttpRequest]

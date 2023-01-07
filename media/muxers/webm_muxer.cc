@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -21,9 +22,39 @@ namespace media {
 
 namespace {
 
+namespace av1 {
+// CodecPrivate for AV1. See
+// https://github.com/ietf-wg-cellar/matroska-specification/blob/master/codec/av1.md.
+constexpr int high_bitdepth = 0;
+constexpr int twelve_bit = 0;
+constexpr int monochrome = 0;
+constexpr int initial_presentation_delay_present = 0;
+constexpr int initial_presentation_delay_minus_one = 0;
+constexpr int chroma_sample_position = 0;
+constexpr int seq_profile = 0;      // Main
+constexpr int seq_level_idx_0 = 9;  // level 4.1 ~1920x1080@60fps
+constexpr int seq_tier_0 = 0;
+constexpr int chroma_subsampling_x = 1;
+constexpr int chroma_subsampling_y = 1;
+constexpr uint8_t codec_private[4] = {
+    255,                                         //
+    (seq_profile << 5) | seq_level_idx_0,        //
+    (seq_tier_0 << 7) |                          //
+        (high_bitdepth << 6) |                   //
+        (twelve_bit << 5) |                      //
+        (monochrome << 4) |                      //
+        (chroma_subsampling_x << 3) |            //
+        (chroma_subsampling_y << 2) |            //
+        chroma_sample_position,                  //
+    (initial_presentation_delay_present << 4) |  //
+        initial_presentation_delay_minus_one     //
+};
+
+}  // namespace av1
+
 // Force new clusters at a maximum rate of 10 Hz.
 constexpr base::TimeDelta kMinimumForcedClusterDuration =
-    base::TimeDelta::FromMilliseconds(100);
+    base::Milliseconds(100);
 
 void WriteOpusHeader(const media::AudioParameters& params, uint8_t* header) {
   // See https://wiki.xiph.org/OggOpus#ID_Header.
@@ -66,11 +97,13 @@ static const char kPcmCodecId[] = "A_PCM/FLOAT/IEEE";
 
 static const char* MkvCodeIcForMediaVideoCodecId(VideoCodec video_codec) {
   switch (video_codec) {
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       return mkvmuxer::Tracks::kVp8CodecId;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       return mkvmuxer::Tracks::kVp9CodecId;
-    case kCodecH264:
+    case VideoCodec::kAV1:
+      return mkvmuxer::Tracks::kAv1CodecId;
+    case VideoCodec::kH264:
       return kH264CodecId;
     default:
       NOTREACHED() << "Unsupported codec " << GetCodecName(video_codec);
@@ -78,7 +111,7 @@ static const char* MkvCodeIcForMediaVideoCodecId(VideoCodec video_codec) {
   }
 }
 
-base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
+absl::optional<mkvmuxer::Colour> ColorFromColorSpace(
     const gfx::ColorSpace& color) {
   using mkvmuxer::Colour;
   using MatrixID = gfx::ColorSpace::MatrixID;
@@ -95,7 +128,7 @@ base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
       matrix_coefficients = Colour::kBt2020NonConstantLuminance;
       break;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
   colour.set_matrix_coefficients(matrix_coefficients);
   int range;
@@ -107,7 +140,7 @@ base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
       range = Colour::kFullRange;
       break;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
   colour.set_range(range);
   int transfer_characteristics;
@@ -115,14 +148,14 @@ base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
     case TransferID::BT709:
       transfer_characteristics = Colour::kIturBt709Tc;
       break;
-    case TransferID::IEC61966_2_1:
+    case TransferID::SRGB:
       transfer_characteristics = Colour::kIec6196621;
       break;
-    case TransferID::SMPTEST2084:
+    case TransferID::PQ:
       transfer_characteristics = Colour::kSmpteSt2084;
       break;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
   colour.set_transfer_characteristics(transfer_characteristics);
   int primaries;
@@ -134,7 +167,7 @@ base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
       primaries = Colour::kIturBt2020;
       break;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
   colour.set_primaries(primaries);
   return colour;
@@ -142,18 +175,43 @@ base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
 
 }  // anonymous namespace
 
+// -----------------------------------------------------------------------------
+// WebmMuxer::Delegate:
+
+WebmMuxer::Delegate::Delegate() {
+  // Creation can be done on a different sequence than main activities.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+WebmMuxer::Delegate::~Delegate() = default;
+
+mkvmuxer::int32 WebmMuxer::Delegate::Write(const void* buf,
+                                           mkvmuxer::uint32 len) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(2) << __func__ << " len " << len;
+  DCHECK(buf);
+
+  last_data_output_timestamp_ = base::TimeTicks::Now();
+  const auto result = DoWrite(buf, len);
+  position_ += len;
+  return result;
+}
+
+// -----------------------------------------------------------------------------
+// WebmMuxer::VideoParameters:
+
 WebmMuxer::VideoParameters::VideoParameters(
     scoped_refptr<media::VideoFrame> frame)
     : visible_rect_size(frame->visible_rect().size()),
       frame_rate(frame->metadata().frame_rate.value_or(0.0)),
-      codec(kUnknownVideoCodec),
+      codec(VideoCodec::kUnknown),
       color_space(frame->ColorSpace()) {}
 
 WebmMuxer::VideoParameters::VideoParameters(
     gfx::Size visible_rect_size,
     double frame_rate,
     VideoCodec codec,
-    base::Optional<gfx::ColorSpace> color_space)
+    absl::optional<gfx::ColorSpace> color_space)
     : visible_rect_size(visible_rect_size),
       frame_rate(frame_rate),
       codec(codec),
@@ -163,27 +221,27 @@ WebmMuxer::VideoParameters::VideoParameters(const VideoParameters&) = default;
 
 WebmMuxer::VideoParameters::~VideoParameters() = default;
 
+// -----------------------------------------------------------------------------
+// WebmMuxer:
+
 WebmMuxer::WebmMuxer(AudioCodec audio_codec,
                      bool has_video,
                      bool has_audio,
-                     const WriteDataCB& write_data_callback)
+                     std::unique_ptr<Delegate> delegate)
     : audio_codec_(audio_codec),
-      video_codec_(kUnknownVideoCodec),
+      video_codec_(VideoCodec::kUnknown),
       video_track_index_(0),
       audio_track_index_(0),
       has_video_(has_video),
       has_audio_(has_audio),
-      write_data_callback_(write_data_callback),
-      position_(0),
+      delegate_(std::move(delegate)),
       force_one_libwebm_error_(false) {
   DCHECK(has_video_ || has_audio_);
-  DCHECK(!write_data_callback_.is_null());
-  DCHECK(audio_codec == kCodecOpus || audio_codec == kCodecPCM)
+  DCHECK(delegate_);
+  DCHECK(audio_codec == AudioCodec::kOpus || audio_codec == AudioCodec::kPCM)
       << " Unsupported audio codec: " << GetCodecName(audio_codec);
 
-  segment_.Init(this);
-  segment_.set_mode(mkvmuxer::Segment::kLive);
-  segment_.OutputCues(false);
+  delegate_->InitSegment(&segment_);
 
   mkvmuxer::SegmentInfo* const info = segment_.GetSegmentInfo();
   info->set_writing_app("Chrome");
@@ -210,10 +268,10 @@ bool WebmMuxer::OnEncodedVideo(const VideoParameters& params,
                                bool is_key_frame) {
   DVLOG(2) << __func__ << " - " << encoded_data.size() << "B";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(params.codec == kCodecVP8 || params.codec == kCodecVP9 ||
-         params.codec == kCodecH264)
+  DCHECK(params.codec == VideoCodec::kVP8 || params.codec == VideoCodec::kVP9 ||
+         params.codec == VideoCodec::kH264 || params.codec == VideoCodec::kAV1)
       << " Unsupported video codec: " << GetCodecName(params.codec);
-  DCHECK(video_codec_ == kUnknownVideoCodec || video_codec_ == params.codec)
+  DCHECK(video_codec_ == VideoCodec::kUnknown || video_codec_ == params.codec)
       << "Unsupported: codec switched, to: " << GetCodecName(params.codec);
 
   if (encoded_data.size() == 0u) {
@@ -233,6 +291,11 @@ bool WebmMuxer::OnEncodedVideo(const VideoParameters& params,
       first_frame_timestamp_video_ = timestamp - total_time_in_pause_;
       last_frame_timestamp_video_ = first_frame_timestamp_video_;
     }
+    // Add codec private for AV1.
+    if (params.codec == VideoCodec::kAV1 &&
+        !segment_.GetTrackByNumber(video_track_index_)
+             ->SetCodecPrivate(av1::codec_private, sizeof(av1::codec_private)))
+      LOG(ERROR) << __func__ << " failed to set CodecPrivate for AV1.";
   }
 
   // TODO(ajose): Support multiple tracks: http://crbug.com/528523
@@ -302,8 +365,9 @@ void WebmMuxer::Resume() {
 }
 
 bool WebmMuxer::Flush() {
-  // No need to segment_.Finalize() since is not Seekable(), i.e. a live
-  // stream, but is a good practice.
+  // Depending on the |delegate_|, it can be either non-seekable (i.e. a live
+  // stream), or seekable (file mode). So calling |segment_.Finalize()| here is
+  // needed.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   FlushQueues();
   return segment_.Finalize();
@@ -312,7 +376,7 @@ bool WebmMuxer::Flush() {
 void WebmMuxer::AddVideoTrack(
     const gfx::Size& frame_size,
     double frame_rate,
-    const base::Optional<gfx::ColorSpace>& color_space) {
+    const absl::optional<gfx::ColorSpace>& color_space) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(0u, video_track_index_)
       << "WebmMuxer can only be initialized once.";
@@ -345,7 +409,7 @@ void WebmMuxer::AddVideoTrack(
   DCHECK_EQ(1000000ull, segment_.GetSegmentInfo()->timecode_scale());
 
   // Set alpha channel parameters for only VPX (crbug.com/711825).
-  if (video_codec_ == kCodecH264)
+  if (video_codec_ == VideoCodec::kH264)
     return;
   video_track->SetAlphaMode(mkvmuxer::VideoTrack::kAlpha);
   // Alpha channel, if present, is stored in a BlockAdditional next to the
@@ -381,7 +445,7 @@ void WebmMuxer::AddAudioTrack(const media::AudioParameters& params) {
   // Audio data is always pcm_f32le.
   audio_track->set_bit_depth(32u);
 
-  if (audio_codec_ == kCodecOpus) {
+  if (audio_codec_ == AudioCodec::kOpus) {
     audio_track->set_codec_id(mkvmuxer::Tracks::kOpusCodecId);
 
     uint8_t opus_header[OPUS_EXTRADATA_SIZE];
@@ -393,40 +457,9 @@ void WebmMuxer::AddAudioTrack(const media::AudioParameters& params) {
     // Segment's timestamps should be in milliseconds, DCHECK it. See
     // http://www.webmproject.org/docs/container/#muxer-guidelines
     DCHECK_EQ(1000000ull, segment_.GetSegmentInfo()->timecode_scale());
-  } else if (audio_codec_ == kCodecPCM) {
+  } else if (audio_codec_ == AudioCodec::kPCM) {
     audio_track->set_codec_id(kPcmCodecId);
   }
-}
-
-mkvmuxer::int32 WebmMuxer::Write(const void* buf, mkvmuxer::uint32 len) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(2) << __func__ << " len " << len;
-  DCHECK(buf);
-  last_data_output_timestamp_ = base::TimeTicks::Now();
-  write_data_callback_.Run(
-      base::StringPiece(reinterpret_cast<const char*>(buf), len));
-  position_ += len;
-  return 0;
-}
-
-mkvmuxer::int64 WebmMuxer::Position() const {
-  return position_.ValueOrDie();
-}
-
-mkvmuxer::int32 WebmMuxer::Position(mkvmuxer::int64 position) {
-  // The stream is not Seekable() so indicate we cannot set the position.
-  return -1;
-}
-
-bool WebmMuxer::Seekable() const {
-  return false;
-}
-
-void WebmMuxer::ElementStartNotify(mkvmuxer::uint64 element_id,
-                                   mkvmuxer::int64 position) {
-  // This method gets pinged before items are sent to |write_data_callback_|.
-  DCHECK_GE(position, position_.ValueOrDefault(0))
-      << "Can't go back in a live WebM stream.";
 }
 
 void WebmMuxer::FlushQueues() {
@@ -497,6 +530,7 @@ bool WebmMuxer::FlushNextFrame() {
     force_one_libwebm_error_ = false;
     return false;
   }
+
   DCHECK(frame.data.data());
   bool result =
       frame.alpha_data.empty()
@@ -529,12 +563,15 @@ base::TimeTicks WebmMuxer::UpdateLastTimestampMonotonically(
 
 void WebmMuxer::MaybeForceNewCluster() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (has_video_ && !max_data_output_interval_.is_zero() &&
-      !last_data_output_timestamp_.is_null()) {
-    base::TimeTicks now = base::TimeTicks::Now();
-    if (now - last_data_output_timestamp_ >= max_data_output_interval_) {
-      segment_.ForceNewClusterOnNextFrame();
-    }
+
+  if (!has_video_ || max_data_output_interval_.is_zero() ||
+      delegate_->last_data_output_timestamp().is_null()) {
+    return;
+  }
+
+  if (base::TimeTicks::Now() - delegate_->last_data_output_timestamp() >=
+      max_data_output_interval_) {
+    segment_.ForceNewClusterOnNextFrame();
   }
 }
 

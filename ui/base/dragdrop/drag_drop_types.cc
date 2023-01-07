@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,5 +19,15 @@ STATIC_ASSERT_ENUM(DragDropTypes::DRAG_NONE, DragOperation::kNone);
 STATIC_ASSERT_ENUM(DragDropTypes::DRAG_COPY, DragOperation::kCopy);
 STATIC_ASSERT_ENUM(DragDropTypes::DRAG_LINK, DragOperation::kLink);
 STATIC_ASSERT_ENUM(DragDropTypes::DRAG_MOVE, DragOperation::kMove);
+
+DragOperation PreferredDragOperation(int operations) {
+  if (operations & DragDropTypes::DRAG_COPY)
+    return DragOperation::kCopy;
+  if (operations & DragDropTypes::DRAG_MOVE)
+    return DragOperation::kMove;
+  if (operations & DragDropTypes::DRAG_LINK)
+    return DragOperation::kLink;
+  return DragOperation::kNone;
+}
 
 }  // namespace ui

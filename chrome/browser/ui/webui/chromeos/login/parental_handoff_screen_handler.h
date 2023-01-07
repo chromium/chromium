@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 namespace login {
@@ -15,25 +16,18 @@ class LocalizedValuesBuilder;
 
 namespace chromeos {
 
-class ParentalHandoffScreen;
-class JSCallsContainer;
-
 // Interface for dependency injection between ParentalHandoffScreen and its
 // WebUI representation.
-class ParentalHandoffScreenView {
+class ParentalHandoffScreenView
+    : public base::SupportsWeakPtr<ParentalHandoffScreenView> {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"parental-handoff"};
+  inline constexpr static StaticOobeScreenId kScreenId{"parental-handoff",
+                                                       "ParentalHandoffScreen"};
 
   virtual ~ParentalHandoffScreenView() = default;
 
   // Shows the contents of the screen.
   virtual void Show(const std::u16string& username) = 0;
-
-  // Binds |screen| to the view.
-  virtual void Bind(ParentalHandoffScreen* screen) = 0;
-
-  // Unbinds the screen from the view.
-  virtual void Unbind() = 0;
 };
 
 class ParentalHandoffScreenHandler : public BaseScreenHandler,
@@ -41,7 +35,7 @@ class ParentalHandoffScreenHandler : public BaseScreenHandler,
  public:
   using TView = ParentalHandoffScreenView;
 
-  explicit ParentalHandoffScreenHandler(JSCallsContainer* js_calls_container);
+  ParentalHandoffScreenHandler();
   ParentalHandoffScreenHandler(const ParentalHandoffScreenHandler&) = delete;
   ParentalHandoffScreenHandler& operator=(const ParentalHandoffScreenHandler&) =
       delete;
@@ -51,16 +45,18 @@ class ParentalHandoffScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void Initialize() override;
 
   // Shows the contents of the screen.
   void Show(const std::u16string& username) override;
-  void Bind(ParentalHandoffScreen* screen) override;
-  void Unbind() override;
-
-  ParentalHandoffScreen* screen_ = nullptr;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::ParentalHandoffScreenHandler;
+using ::chromeos::ParentalHandoffScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_PARENTAL_HANDOFF_SCREEN_HANDLER_H_

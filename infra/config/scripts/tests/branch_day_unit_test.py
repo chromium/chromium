@@ -1,11 +1,12 @@
 #!/usr/bin/env vpython3
-# Copyright 2021 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Integration test for branch-day.py"""
 
 import json
 import os
+import shutil
 import subprocess
 import tempfile
 import unittest
@@ -29,7 +30,7 @@ class BranchDayUnitTest(unittest.TestCase):
                       self._dev_star)
 
     for path in self._binaries:
-      os.symlink(MOCK_PY, path)
+      shutil.copy2(MOCK_PY, path)
 
   def tearDown(self):
     self._temp_dir.cleanup()
@@ -62,6 +63,8 @@ class BranchDayUnitTest(unittest.TestCase):
         self._branch_py, '--main-star', self._main_star, '--dev-star',
         self._dev_star
     ]
+    if os.name == 'nt':
+      cmd = ['vpython3.bat'] + cmd
     cmd += args or []
     return subprocess.run(cmd,
                           env=env,
@@ -80,11 +83,12 @@ class BranchDayUnitTest(unittest.TestCase):
             }
         })
     self.assertNotEqual(result.returncode, 0)
+    cmd = [self._milestones_py]
+    if os.name == 'nt':
+      cmd = ['vpython3.bat'] + cmd
     expected_output = '\n'.join([
-        'Executing {} failed'.format([
-            self._milestones_py, 'activate', '--milestone', 'XX', '--branch',
-            'YYYY'
-        ]),
+        'Executing {} failed'.format(
+            cmd + ['activate', '--milestone', 'XX', '--branch', 'YYYY']),
         'FAKE FAILURE STDOUT',
         'FAKE FAILURE STDERR',
         '',

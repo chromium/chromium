@@ -5,7 +5,10 @@ include_rules = [
   # about how to communicate with viz.
   "-mojo/public/cpp/bindings",
   # Exception is struct_traits.h which is used for defining friends only.
+  "+cc/base",
+  "+cc/paint/filter_operations.h",
   "+mojo/public/cpp/bindings/struct_traits.h",
+  "+mojo/public/cpp/bindings/union_traits.h",
   "+third_party/perfetto/protos/perfetto/trace/track_event",
   "+third_party/skia",
 ]
@@ -42,5 +45,5 @@ specific_include_rules = {
   "bitmap_allocation.cc" : [
     # Only used to pass Mojo handles, not to communicate with the viz service.
     "+mojo/public/cpp/base/shared_memory_utils.h",
-  ],
+  ]
 }

@@ -1,13 +1,14 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -23,7 +24,7 @@
 #include "media/filters/fake_video_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "media/filters/decrypting_video_decoder.h"
 #endif
 
@@ -48,7 +49,7 @@ namespace media {
 namespace {
 const int kNumConfigs = 4;
 const int kNumBuffersInOneConfig = 5;
-constexpr base::TimeDelta kPrepareDelay = base::TimeDelta::FromMilliseconds(5);
+constexpr base::TimeDelta kPrepareDelay = base::Milliseconds(5);
 
 static int GetDecoderId(int i) {
   return i;
@@ -97,12 +98,12 @@ class VideoDecoderStreamTest
         pending_stop_(false),
         num_decoded_bytes_unreported_(0),
         has_no_key_(false) {
-    video_decoder_stream_.reset(new VideoDecoderStream(
+    video_decoder_stream_ = std::make_unique<VideoDecoderStream>(
         std::make_unique<VideoDecoderStream::StreamTraits>(&media_log_),
         task_environment_.GetMainThreadTaskRunner(),
         base::BindRepeating(&VideoDecoderStreamTest::CreateVideoDecodersForTest,
                             base::Unretained(this)),
-        &media_log_));
+        &media_log_);
     video_decoder_stream_->set_decoder_change_observer(base::BindRepeating(
         &VideoDecoderStreamTest::OnDecoderChanged, base::Unretained(this)));
     video_decoder_stream_
@@ -115,7 +116,7 @@ class VideoDecoderStreamTest
     }
 
     if (GetParam().is_encrypted && GetParam().has_decryptor) {
-      decryptor_.reset(new NiceMock<MockDecryptor>());
+      decryptor_ = std::make_unique<NiceMock<MockDecryptor>>();
 
       // Decryptor can only decrypt (not decrypt-and-decode) so that
       // DecryptingDemuxerStream will be used.
@@ -126,7 +127,7 @@ class VideoDecoderStreamTest
     }
 
     if (GetParam().is_encrypted) {
-      cdm_context_.reset(new StrictMock<MockCdmContext>());
+      cdm_context_ = std::make_unique<StrictMock<MockCdmContext>>();
 
       EXPECT_CALL(*cdm_context_, RegisterEventCB(_)).Times(AnyNumber());
       EXPECT_CALL(*cdm_context_, GetDecryptor())
@@ -141,6 +142,9 @@ class VideoDecoderStreamTest
     EXPECT_MEDIA_LOG(HasSubstr("Audio")).Times(AnyNumber());
     EXPECT_MEDIA_LOG(HasSubstr("decryptor")).Times(AnyNumber());
   }
+
+  VideoDecoderStreamTest(const VideoDecoderStreamTest&) = delete;
+  VideoDecoderStreamTest& operator=(const VideoDecoderStreamTest&) = delete;
 
   ~VideoDecoderStreamTest() {
     // Check that the pipeline statistics callback was fired correctly.
@@ -200,7 +204,7 @@ class VideoDecoderStreamTest
     // parameterized tests which need to pass in all combinations.
     std::vector<std::unique_ptr<VideoDecoder>> decoders;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // Note this is _not_ inserted into |decoders_| below, so we don't need to
     // adjust the indices used below to compensate.
     decoders.push_back(std::make_unique<DecryptingVideoDecoder>(
@@ -365,9 +369,10 @@ class VideoDecoderStreamTest
   void FrameReady(VideoDecoderStream::ReadResult result) {
     DCHECK(pending_read_);
     last_read_status_code_ = result.code();
-    scoped_refptr<VideoFrame> frame = last_read_status_code_ == StatusCode::kOk
-                                          ? std::move(result).value()
-                                          : nullptr;
+    scoped_refptr<VideoFrame> frame =
+        last_read_status_code_ == DecoderStatus::Codes::kOk
+            ? std::move(result).value()
+            : nullptr;
     frame_read_ = frame;
     if (frame && !frame->metadata().end_of_stream) {
       EXPECT_EQ(*frame->metadata().frame_duration, demuxer_stream_->duration());
@@ -473,7 +478,7 @@ class VideoDecoderStreamTest
       case DEMUXER_READ_CONFIG_CHANGE:
         EXPECT_MEDIA_LOG(HasSubstr("decoder config changed"))
             .Times(testing::AtLeast(1));
-        FALLTHROUGH;
+        [[fallthrough]];
       case DEMUXER_READ_NORMAL:
         demuxer_stream_->SatisfyRead();
         break;
@@ -541,7 +546,7 @@ class VideoDecoderStreamTest
   std::vector<int> platform_decoder_indices_;
 
   // The current decoder used by |video_decoder_stream_|.
-  FakeVideoDecoder* decoder_ = nullptr;
+  raw_ptr<FakeVideoDecoder> decoder_ = nullptr;
 
   bool is_initialized_;
   int num_decoded_frames_;
@@ -551,13 +556,10 @@ class VideoDecoderStreamTest
   bool pending_stop_;
   int num_decoded_bytes_unreported_;
   scoped_refptr<VideoFrame> frame_read_;
-  StatusCode last_read_status_code_;
+  DecoderStatus::Codes last_read_status_code_;
 
   // Decryptor has no key to decrypt a frame.
   bool has_no_key_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoDecoderStreamTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -688,8 +690,7 @@ TEST_P(VideoDecoderStreamTest, Read_ProperMetadata) {
                             base::Unretained(this)));
   }
 
-  constexpr base::TimeDelta kDecodeDelay =
-      base::TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDecodeDelay = base::Milliseconds(10);
 
   Initialize();
 
@@ -824,7 +825,7 @@ TEST_P(VideoDecoderStreamTest, Read_DuringEndOfStreamDecode) {
   decoder_->SatisfySingleDecode();
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(pending_read_);
-  EXPECT_EQ(last_read_status_code_, StatusCode::kOk);
+  EXPECT_EQ(last_read_status_code_, DecoderStatus::Codes::kOk);
 
   // The read output should indicate end of stream.
   ASSERT_TRUE(frame_read_.get());
@@ -847,8 +848,8 @@ TEST_P(VideoDecoderStreamTest, Read_DemuxerStreamReadError) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(pending_read_);
-  EXPECT_NE(last_read_status_code_, StatusCode::kOk);
-  EXPECT_NE(last_read_status_code_, StatusCode::kAborted);
+  EXPECT_NE(last_read_status_code_, DecoderStatus::Codes::kOk);
+  EXPECT_NE(last_read_status_code_, DecoderStatus::Codes::kAborted);
 }
 
 // No Reset() before initialization is successfully completed.
@@ -1037,7 +1038,7 @@ TEST_P(VideoDecoderStreamTest, FallbackDecoder_DecodeError) {
   ASSERT_EQ(GetDecoderId(1), decoder_->GetDecoderId());
 
   ASSERT_FALSE(pending_read_);
-  ASSERT_EQ(last_read_status_code_, StatusCode::kOk);
+  ASSERT_EQ(last_read_status_code_, DecoderStatus::Codes::kOk);
 
   // Check that we fell back to Decoder2.
   ASSERT_GT(decoder_->total_bytes_decoded(), 0);
@@ -1077,7 +1078,7 @@ TEST_P(VideoDecoderStreamTest,
 
   // A frame should have been emitted.
   EXPECT_FALSE(pending_read_);
-  EXPECT_EQ(last_read_status_code_, StatusCode::kOk);
+  EXPECT_EQ(last_read_status_code_, DecoderStatus::Codes::kOk);
   EXPECT_FALSE(frame_read_->metadata().end_of_stream);
   EXPECT_GT(decoder_->total_bytes_decoded(), 0);
 
@@ -1151,8 +1152,8 @@ TEST_P(VideoDecoderStreamTest, FallbackDecoder_DecodeErrorRepeated) {
   // No decoders left, expect failure.
   EXPECT_EQ(decoder_, nullptr);
   EXPECT_FALSE(pending_read_);
-  EXPECT_NE(last_read_status_code_, StatusCode::kOk);
-  EXPECT_NE(last_read_status_code_, StatusCode::kAborted);
+  EXPECT_NE(last_read_status_code_, DecoderStatus::Codes::kOk);
+  EXPECT_NE(last_read_status_code_, DecoderStatus::Codes::kAborted);
 }
 
 // This tests verifies that we properly fallback to a new decoder if the first
@@ -1173,7 +1174,7 @@ TEST_P(VideoDecoderStreamTest,
   // Verify that the first frame was decoded successfully.
   EXPECT_FALSE(pending_read_);
   EXPECT_GT(decoder_->total_bytes_decoded(), 0);
-  EXPECT_EQ(last_read_status_code_, StatusCode::kOk);
+  EXPECT_EQ(last_read_status_code_, DecoderStatus::Codes::kOk);
 
   // Continue up to the point of reinitialization.
   EnterPendingState(DEMUXER_READ_CONFIG_CHANGE);
@@ -1197,7 +1198,7 @@ TEST_P(VideoDecoderStreamTest,
   // Verify that fallback happened.
   EXPECT_EQ(GetDecoderId(0), decoder_->GetDecoderId());
   EXPECT_FALSE(pending_read_);
-  EXPECT_EQ(last_read_status_code_, StatusCode::kOk);
+  EXPECT_EQ(last_read_status_code_, DecoderStatus::Codes::kOk);
   EXPECT_GT(decoder_->total_bytes_decoded(), 0);
 }
 
@@ -1234,8 +1235,8 @@ TEST_P(VideoDecoderStreamTest,
   // No decoders left.
   EXPECT_EQ(decoder_, nullptr);
   EXPECT_FALSE(pending_read_);
-  EXPECT_NE(last_read_status_code_, StatusCode::kOk);
-  EXPECT_NE(last_read_status_code_, StatusCode::kAborted);
+  EXPECT_NE(last_read_status_code_, DecoderStatus::Codes::kOk);
+  EXPECT_NE(last_read_status_code_, DecoderStatus::Codes::kAborted);
 }
 
 TEST_P(VideoDecoderStreamTest,
@@ -1388,7 +1389,7 @@ TEST_P(VideoDecoderStreamTest, FallbackDecoder_SelectedOnDecodeThenInitErrors) {
   ASSERT_EQ(GetDecoderId(2), decoder_->GetDecoderId());
 
   ASSERT_FALSE(pending_read_);
-  ASSERT_EQ(last_read_status_code_, StatusCode::kOk);
+  ASSERT_EQ(last_read_status_code_, DecoderStatus::Codes::kOk);
 
   // Can't check previously selected decoder(s) right now, they might have been
   // destroyed already.
@@ -1413,7 +1414,7 @@ TEST_P(VideoDecoderStreamTest, FallbackDecoder_SelectedOnInitThenDecodeErrors) {
   ASSERT_EQ(GetDecoderId(2), decoder_->GetDecoderId());
 
   ASSERT_FALSE(pending_read_);
-  ASSERT_EQ(last_read_status_code_, StatusCode::kOk);
+  ASSERT_EQ(last_read_status_code_, DecoderStatus::Codes::kOk);
 
   // Can't check previously selected decoder(s) right now, they might have been
   // destroyed already.
@@ -1435,7 +1436,7 @@ TEST_P(VideoDecoderStreamTest,
   decoder_->SimulateError();
 
   // The error must surface from Read() as DECODE_ERROR.
-  while (last_read_status_code_ == StatusCode::kOk) {
+  while (last_read_status_code_ == DecoderStatus::Codes::kOk) {
     ReadOneFrame();
     base::RunLoop().RunUntilIdle();
     EXPECT_FALSE(pending_read_);
@@ -1444,8 +1445,8 @@ TEST_P(VideoDecoderStreamTest,
   // Verify the error was surfaced, rather than falling back to other decoders.
   ASSERT_EQ(GetDecoderId(0), decoder_->GetDecoderId());
   EXPECT_FALSE(pending_read_);
-  EXPECT_NE(last_read_status_code_, StatusCode::kOk);
-  EXPECT_NE(last_read_status_code_, StatusCode::kAborted);
+  EXPECT_NE(last_read_status_code_, DecoderStatus::Codes::kOk);
+  EXPECT_NE(last_read_status_code_, DecoderStatus::Codes::kAborted);
 }
 
 TEST_P(VideoDecoderStreamTest, DecoderErrorWhenNotReading) {
@@ -1464,13 +1465,13 @@ TEST_P(VideoDecoderStreamTest, DecoderErrorWhenNotReading) {
   decoder_->SimulateError();
 
   // The error must surface from Read() as DECODE_ERROR.
-  while (last_read_status_code_ == StatusCode::kOk) {
+  while (last_read_status_code_ == DecoderStatus::Codes::kOk) {
     ReadOneFrame();
     base::RunLoop().RunUntilIdle();
     EXPECT_FALSE(pending_read_);
   }
-  EXPECT_NE(last_read_status_code_, StatusCode::kOk);
-  EXPECT_NE(last_read_status_code_, StatusCode::kAborted);
+  EXPECT_NE(last_read_status_code_, DecoderStatus::Codes::kOk);
+  EXPECT_NE(last_read_status_code_, DecoderStatus::Codes::kAborted);
 }
 
 TEST_P(VideoDecoderStreamTest, ReinitializeFailure_Once) {
@@ -1531,13 +1532,13 @@ TEST_P(VideoDecoderStreamTest, ReinitializeFailure_NoSupportedDecoder) {
   ReadUntilDecoderReinitialized();
 
   // The error will surface from Read() as DECODE_ERROR.
-  while (last_read_status_code_ == StatusCode::kOk) {
+  while (last_read_status_code_ == DecoderStatus::Codes::kOk) {
     ReadOneFrame();
     base::RunLoop().RunUntilIdle();
     EXPECT_FALSE(pending_read_);
   }
-  EXPECT_NE(last_read_status_code_, StatusCode::kOk);
-  EXPECT_NE(last_read_status_code_, StatusCode::kAborted);
+  EXPECT_NE(last_read_status_code_, DecoderStatus::Codes::kOk);
+  EXPECT_NE(last_read_status_code_, DecoderStatus::Codes::kAborted);
 }
 
 TEST_P(VideoDecoderStreamTest, Destroy_DuringFallbackDecoderSelection) {

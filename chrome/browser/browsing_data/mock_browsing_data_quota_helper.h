@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,15 +10,20 @@
 #include <list>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/browsing_data/browsing_data_quota_helper.h"
 
 class MockBrowsingDataQuotaHelper : public BrowsingDataQuotaHelper {
  public:
   explicit MockBrowsingDataQuotaHelper(Profile* profile);
 
+  MockBrowsingDataQuotaHelper(const MockBrowsingDataQuotaHelper&) = delete;
+  MockBrowsingDataQuotaHelper& operator=(const MockBrowsingDataQuotaHelper&) =
+      delete;
+
   void StartFetching(FetchResultCallback callback) override;
   void RevokeHostQuota(const std::string& host) override;
+  void DeleteHostData(const std::string& host,
+                      blink::mojom::StorageType type) override;
 
   void AddHost(const std::string& host,
                int64_t temporary_usage,
@@ -32,8 +37,6 @@ class MockBrowsingDataQuotaHelper : public BrowsingDataQuotaHelper {
 
   FetchResultCallback callback_;
   std::list<QuotaInfo> response_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockBrowsingDataQuotaHelper);
 };
 
 #endif  // CHROME_BROWSER_BROWSING_DATA_MOCK_BROWSING_DATA_QUOTA_HELPER_H_

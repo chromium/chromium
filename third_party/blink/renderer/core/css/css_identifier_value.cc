@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -48,6 +48,9 @@ CSSIdentifierValue::CSSIdentifierValue(const Length& length)
       break;
     case Length::kFitContent:
       value_id_ = CSSValueID::kFitContent;
+      break;
+    case Length::kContent:
+      value_id_ = CSSValueID::kContent;
       break;
     case Length::kExtendToZoom:
       value_id_ = CSSValueID::kInternalExtendToZoom;

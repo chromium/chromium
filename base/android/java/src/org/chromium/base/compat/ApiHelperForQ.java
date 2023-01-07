@@ -1,27 +1,31 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package org.chromium.base.compat;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.hardware.biometrics.BiometricManager;
+import android.net.NetworkCapabilities;
+import android.net.TransportInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.FileUtils;
+import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.telephony.CellInfo;
 import android.telephony.TelephonyManager;
 import android.view.MotionEvent;
 
+import androidx.annotation.RequiresApi;
+import androidx.annotation.RequiresPermission;
+
 import org.chromium.base.Callback;
-import org.chromium.base.annotations.VerifiesOnQ;
 import org.chromium.base.task.AsyncTask;
 
 import java.io.IOException;
@@ -36,12 +40,12 @@ import java.util.concurrent.Executor;
  * separate class so that Android framework can successfully verify classes without
  * encountering the new APIs.
  */
-@VerifiesOnQ
-@TargetApi(Build.VERSION_CODES.Q)
+@RequiresApi(Build.VERSION_CODES.Q)
 public final class ApiHelperForQ {
     private ApiHelperForQ() {}
 
     /** See {@link TelephonyManager.requestCellInfoUpdate() }. */
+    @RequiresPermission(android.Manifest.permission.ACCESS_FINE_LOCATION)
     public static void requestCellInfoUpdate(
             TelephonyManager telephonyManager, Callback<List<CellInfo>> callback) {
         telephonyManager.requestCellInfoUpdate(
@@ -96,7 +100,18 @@ public final class ApiHelperForQ {
     }
 
     /** See {@link BiometricManager#canAuthenticate() }. */
+    @RequiresPermission(android.Manifest.permission.USE_BIOMETRIC)
     public static int canAuthenticate(BiometricManager manager) {
         return manager.canAuthenticate();
+    }
+
+    /** See {@link NetworkCapabilities#getTransportInfo() } */
+    public static TransportInfo getTransportInfo(NetworkCapabilities networkCapabilities) {
+        return networkCapabilities.getTransportInfo();
+    }
+
+    /** See {@link PowerManager#getCurrentThermalStatus() }. */
+    public static int getCurrentThermalStatus(PowerManager powerManager) {
+        return powerManager.getCurrentThermalStatus();
     }
 }

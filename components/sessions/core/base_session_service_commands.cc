@@ -1,10 +1,12 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "components/sessions/core/base_session_service_commands.h"
 
 #include <stddef.h>
+
+#include <memory>
 
 #include "base/pickle.h"
 #include "components/sessions/core/command_storage_backend.h"
@@ -52,8 +54,7 @@ std::unique_ptr<SessionCommand> CreateUpdateTabNavigationCommand(
   static const size_t max_state_size =
       std::numeric_limits<SessionCommand::size_type>::max() - 1024;
   navigation.WriteToPickle(max_state_size, &pickle);
-  return std::unique_ptr<SessionCommand>(
-      new SessionCommand(command_id, pickle));
+  return std::make_unique<SessionCommand>(command_id, pickle);
 }
 
 std::unique_ptr<SessionCommand> CreateSetTabExtensionAppIDCommand(
@@ -72,8 +73,7 @@ std::unique_ptr<SessionCommand> CreateSetTabExtensionAppIDCommand(
 
   WriteStringToPickle(pickle, &bytes_written, max_id_size, extension_id);
 
-  return std::unique_ptr<SessionCommand>(
-      new SessionCommand(command_id, pickle));
+  return std::make_unique<SessionCommand>(command_id, pickle);
 }
 
 std::unique_ptr<SessionCommand> CreateSetTabUserAgentOverrideCommand(
@@ -106,8 +106,7 @@ std::unique_ptr<SessionCommand> CreateSetTabUserAgentOverrideCommand(
         user_agent_override.opaque_ua_metadata_override.value());
   }
 
-  return std::unique_ptr<SessionCommand>(
-      new SessionCommand(command_id, pickle));
+  return std::make_unique<SessionCommand>(command_id, pickle);
 }
 
 std::unique_ptr<SessionCommand> CreateSetWindowAppNameCommand(
@@ -126,8 +125,7 @@ std::unique_ptr<SessionCommand> CreateSetWindowAppNameCommand(
 
   WriteStringToPickle(pickle, &bytes_written, max_id_size, app_name);
 
-  return std::unique_ptr<SessionCommand>(
-      new SessionCommand(command_id, pickle));
+  return std::make_unique<SessionCommand>(command_id, pickle);
 }
 
 std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
@@ -147,6 +145,24 @@ std::unique_ptr<SessionCommand> CreateSetWindowUserTitleCommand(
   WriteStringToPickle(pickle, &bytes_written, max_id_size, user_title);
 
   return std::make_unique<SessionCommand>(command_id, pickle);
+}
+
+std::unique_ptr<SessionCommand> CreateAddExtraDataCommand(
+    SessionCommand::id_type command,
+    const SessionID& session_id,
+    const std::string& key,
+    const std::string& data) {
+  base::Pickle pickle;
+  pickle.WriteInt(session_id.id());
+
+  // Enforce a max for ids. They should never be anywhere near this size.
+  static const SessionCommand::size_type max_id_size =
+      std::numeric_limits<SessionCommand::size_type>::max() - 1024;
+  int total_bytes_written = 0;
+  WriteStringToPickle(pickle, &total_bytes_written, max_id_size, key);
+  WriteStringToPickle(pickle, &total_bytes_written, max_id_size, data);
+
+  return std::make_unique<SessionCommand>(command, pickle);
 }
 
 bool RestoreUpdateTabNavigationCommand(
@@ -189,7 +205,7 @@ bool RestoreSetTabUserAgentOverrideCommand2(
     const SessionCommand& command,
     SessionID* tab_id,
     std::string* user_agent_override,
-    base::Optional<std::string>* opaque_ua_metadata_override) {
+    absl::optional<std::string>* opaque_ua_metadata_override) {
   std::unique_ptr<base::Pickle> pickle(command.PayloadAsPickle());
   if (!pickle)
     return false;
@@ -204,7 +220,7 @@ bool RestoreSetTabUserAgentOverrideCommand2(
   if (!iterator.ReadBool(&has_ua_metadata_override))
     return false;
   if (!has_ua_metadata_override) {
-    *opaque_ua_metadata_override = base::nullopt;
+    *opaque_ua_metadata_override = absl::nullopt;
     return true;
   }
 
@@ -238,6 +254,19 @@ bool RestoreSetWindowUserTitleCommand(const SessionCommand& command,
   base::PickleIterator iterator(*pickle);
   return ReadSessionIdFromPickle(&iterator, window_id) &&
          iterator.ReadString(user_title);
+}
+
+bool RestoreAddExtraDataCommand(const SessionCommand& command,
+                                SessionID* session_id,
+                                std::string* key,
+                                std::string* data) {
+  std::unique_ptr<base::Pickle> pickle(command.PayloadAsPickle());
+  if (!pickle)
+    return false;
+
+  base::PickleIterator it(*pickle);
+  return ReadSessionIdFromPickle(&it, session_id) && it.ReadString(key) &&
+         it.ReadString(data);
 }
 
 }  // namespace sessions

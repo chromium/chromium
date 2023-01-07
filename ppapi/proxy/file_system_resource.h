@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/pp_file_info.h"
 #include "ppapi/c/pp_resource.h"
@@ -44,6 +43,10 @@ class PPAPI_PROXY_EXPORT FileSystemResource : public PluginResource,
                      int pending_renderer_id,
                      int pending_browser_id,
                      PP_FileSystemType type);
+
+  FileSystemResource(const FileSystemResource&) = delete;
+  FileSystemResource& operator=(const FileSystemResource&) = delete;
+
   ~FileSystemResource() override;
 
   // Resource overrides.
@@ -100,8 +103,6 @@ class PPAPI_PROXY_EXPORT FileSystemResource : public PluginResource,
   base::queue<QuotaRequest> pending_quota_requests_;
   int64_t reserved_quota_;
   bool reserving_quota_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemResource);
 };
 
 }  // namespace proxy

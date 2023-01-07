@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -37,6 +36,7 @@ import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.List;
@@ -160,8 +160,9 @@ public class DownloadNotificationServiceTest {
         assertTrue(mDownloadNotificationService.mDownloadsInProgress.contains(ID1));
 
         // Download is successful.
-        mDownloadNotificationService.notifyDownloadSuccessful(
-                ID1, "", "test", 1L, mPrimaryOTRProfileID, true, true, null, "", false, "", 0);
+        mDownloadNotificationService.notifyDownloadSuccessful(ID1, "", "test", 1L,
+                mPrimaryOTRProfileID, true, true, null, GURL.emptyGURL(), false, GURL.emptyGURL(),
+                0);
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
         assertFalse(mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
                 notificationId1));
@@ -228,38 +229,5 @@ public class DownloadNotificationServiceTest {
         assertFalse(mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
                 notificationId1));
         assertFalse(mDownloadNotificationService.mDownloadsInProgress.contains(ID1));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"Download"})
-    @DisabledTest(message = "https://crbug.com/837298")
-    public void testResumeAllPendingDownloads() {
-        // Queue a few pending downloads.
-        mDownloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(
-                buildEntryStringWithGuid(ID1, 3, "success", false, true));
-        mDownloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(
-                buildEntryStringWithGuid(ID2, 4, "failed", true, true));
-        mDownloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(
-                buildEntryStringWithGuid(ID3, 5, "nonresumable", true, false));
-
-        // Resume pending downloads when network is metered.
-        DownloadManagerService.disableNetworkListenerForTest();
-        DownloadManagerService.setIsNetworkMeteredForTest(true);
-        mDownloadNotificationService.resumeAllPendingDownloads();
-
-        assertEquals(1, mDownloadNotificationService.mResumedDownloads.size());
-        assertEquals(ID2.id, mDownloadNotificationService.mResumedDownloads.get(0));
-
-        // Resume pending downloads when network is not metered.
-        mDownloadNotificationService.mResumedDownloads.clear();
-        DownloadManagerService.setIsNetworkMeteredForTest(false);
-        mDownloadNotificationService.resumeAllPendingDownloads();
-        assertEquals(1, mDownloadNotificationService.mResumedDownloads.size());
-
-        mDownloadSharedPreferenceHelper.removeSharedPreferenceEntry(ID1);
-        mDownloadSharedPreferenceHelper.removeSharedPreferenceEntry(ID2);
-        mDownloadSharedPreferenceHelper.removeSharedPreferenceEntry(ID3);
     }
 }

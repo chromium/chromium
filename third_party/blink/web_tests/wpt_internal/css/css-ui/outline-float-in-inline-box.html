@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<link rel="help" href="https://drafts.csswg.org/css-ui-3/#outline-props">
+<link rel="help" href="https://crbug.com/1207824">
+<link rel="match" href="outline-float-in-inline-box-ref.html">
+<link rel="author" href="mailto:kojii@chromium.com">
+<style>
+.outline {
+  outline: auto;
+}
+
+.float {
+  background: orange;
+  float: right;
+  width: 100px;
+  height: 20px;
+  margin-left: 24px;
+}
+
+.block {
+  display: block;
+  height: 20px;
+  line-height: 20px;
+  overflow: hidden;
+}
+</style>
+<div>
+  <a class="outline">
+    <span class="float"></span>
+    <span class="block">
+      <span>X</span>
+    </span>
+  </a>
+</div>

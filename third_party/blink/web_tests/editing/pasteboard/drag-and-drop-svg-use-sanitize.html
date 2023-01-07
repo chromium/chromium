@@ -1,0 +1,47 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<div id="drag-from" draggable=true>Drag from</div>
+<div id="drag-to" contenteditable>Drag to</div>
+
+<script>
+function computePoint(element) {
+  return {
+     x: element.offsetLeft + element.offsetWidth / 2,
+     y: element.offsetTop + element.offsetHeight / 2
+  };
+}
+
+let dragged = false;
+let executed = false;
+const payload = `
+  <svg><use href="data:image/svg+xml,&lt;svg id='x' xmlns='http://www.w3.org/2000/svg'&gt;&lt;image href='fake' onerror='executed=true' /&gt;&lt;/svg&gt;#x" />
+`;
+
+const dragFrom = document.getElementById('drag-from');
+dragFrom.ondragstart = event => {
+  dragged = true;
+  event.dataTransfer.setData('text/html', payload);
+}
+
+const dragTo = document.getElementById('drag-to');
+
+promise_test(async test => {
+  assert_own_property(window, 'eventSender', 'This test requires eventSender to simulate drag and drop');
+
+  const fromPoint = computePoint(dragFrom);
+  eventSender.mouseMoveTo(fromPoint.x, fromPoint.y);
+  eventSender.mouseDown();
+
+  const toPoint = computePoint(dragTo);
+  eventSender.mouseMoveTo(toPoint.x, toPoint.y);
+  eventSender.mouseUp();
+
+  assert_true(dragged, 'Element should be dragged');
+
+  // The 'error' event is dispatched asynchronously.
+  await new Promise(resolve => test.step_timeout(resolve, 100));
+  assert_false(executed, 'Script should be blocked');
+}, 'Script in SVG use href should be sanitized');
+</script>

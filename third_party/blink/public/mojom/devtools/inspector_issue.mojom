@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,12 @@ import "url/mojom/url.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/blocked_by_response_reason.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // A code that uniquely identifies an issue. This type should be descriptive
 // enough for the front-end to provide a clear description of the issue.
 enum InspectorIssueCode {
-  kSameSiteCookieIssue,
+  kCookieIssue,
   kMixedContentIssue,
   kBlockedByResponseIssue,
   kContentSecurityPolicyIssue,
@@ -20,6 +21,8 @@ enum InspectorIssueCode {
   kTrustedWebActivityIssue,
   kHeavyAdIssue,
   kLowTextContrastIssue,
+  kFederatedAuthRequestIssue,
+  kGenericIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -90,6 +93,7 @@ enum ContentSecurityPolicyViolationType {
     kURLViolation,
     kTrustedTypesSinkViolation,
     kTrustedTypesPolicyViolation,
+    kWasmEvalViolation,
 };
 
 struct ContentSecurityPolicyIssueDetails {
@@ -103,18 +107,22 @@ struct ContentSecurityPolicyIssueDetails {
   int32 violating_node_id = 0;
 };
 
-enum SameSiteCookieOperation {
+enum CookieOperation {
   kSetCookie, kReadCookie
 };
 
-enum SameSiteCookieExclusionReason {
+// Reasons why a cookie was excluded from a cookie get or set operation,
+// see net/cookies/cookie_inclusion_status.h
+enum CookieExclusionReason {
   kExcludeSameSiteUnspecifiedTreatedAsLax,
   kExcludeSameSiteNoneInsecure,
   kExcludeSameSiteLax,
   kExcludeSameSiteStrict,
+  kExcludeDomainNonASCII,
 };
 
-enum SameSiteCookieWarningReason {
+// Reasons to warn about a cookie, see net/cookies/cookie_inclusion_status.h
+enum CookieWarningReason {
   kWarnSameSiteUnspecifiedCrossSiteContext,
   kWarnSameSiteNoneInsecure,
   kWarnSameSiteUnspecifiedLaxAllowUnsafe,
@@ -123,14 +131,16 @@ enum SameSiteCookieWarningReason {
   kWarnSameSiteStrictCrossDowngradeLax,
   kWarnSameSiteLaxCrossDowngradeStrict,
   kWarnSameSiteLaxCrossDowngradeLax,
+  kWarnAttributeValueExceedsMaxSize,
+  kWarnDomainNonASCII,
 };
 
-// Specific information about |kSameSiteCookieIssue| type issues.
-struct SameSiteCookieIssueDetails {
+// Specific information about |kCookieIssue| type issues.
+struct CookieIssueDetails {
   AffectedCookie cookie;
-  array<SameSiteCookieExclusionReason> exclusion_reason;
-  array<SameSiteCookieWarningReason> warning_reason;
-  SameSiteCookieOperation operation;
+  array<CookieExclusionReason> exclusion_reason;
+  array<CookieWarningReason> warning_reason;
+  CookieOperation operation;
   url.mojom.Url? site_for_cookies;
   url.mojom.Url? cookie_url;
   AffectedRequest? request;
@@ -172,10 +182,54 @@ struct LowTextContrastIssue {
   string font_weight;
 };
 
+// Represents the fetch result from a federated authentication request. Should
+// be updated alongside FederatedAuthRequestIssueReason in
+// third_party/blink/public/devtools_protocol/browser_protocol.pdl, which
+// includes all cases except for kSuccess.
+enum FederatedAuthRequestResult {
+  kSuccess,
+  kShouldEmbargo,
+  kErrorDisabledInSettings,
+  kErrorTooManyRequests,
+  kErrorFetchingManifestListHttpNotFound,
+  kErrorFetchingManifestListNoResponse,
+  kErrorFetchingManifestListInvalidResponse,
+  kErrorManifestNotInManifestList,
+  kErrorManifestListTooBig,
+  kErrorFetchingManifestHttpNotFound,
+  kErrorFetchingManifestNoResponse,
+  kErrorFetchingManifestInvalidResponse,
+  kErrorFetchingClientMetadataHttpNotFound,
+  kErrorFetchingClientMetadataNoResponse,
+  kErrorFetchingClientMetadataInvalidResponse,
+  kErrorFetchingAccountsHttpNotFound,
+  kErrorFetchingAccountsNoResponse,
+  kErrorFetchingAccountsInvalidResponse,
+  kErrorFetchingIdTokenHttpNotFound,
+  kErrorFetchingIdTokenNoResponse,
+  kErrorFetchingIdTokenInvalidResponse,
+  kErrorCanceled,
+  kErrorRpPageNotVisible,
+  kError,
+};
+
+struct FederatedAuthRequestIssueDetails {
+  FederatedAuthRequestResult status;
+};
+
+enum GenericIssueErrorType {
+  kCrossOriginPortalPostMessageError,
+};
+
+struct GenericIssueDetails {
+  GenericIssueErrorType error_type;
+  string? frame_id;
+};
+
 // A collection of optional fields that may store additional data depending
 // on the issue code.
 struct InspectorIssueDetails {
-  SameSiteCookieIssueDetails? samesite_cookie_issue_details;
+  CookieIssueDetails? cookie_issue_details;
   MixedContentIssueDetails? mixed_content_issue_details;
   BlockedByResponseIssueDetails? blocked_by_response_issue_details;
   ContentSecurityPolicyIssueDetails? csp_issue_details;
@@ -183,6 +237,9 @@ struct InspectorIssueDetails {
   TrustedWebActivityIssueDetails? twa_issue_details;
   HeavyAdIssueDetails? heavy_ad_issue_details;
   LowTextContrastIssue? low_text_contrast_details;
+  FederatedAuthRequestIssueDetails? federated_auth_request_details;
+  GenericIssueDetails? generic_issue_details;
+  mojo_base.mojom.UnguessableToken? issue_id;
 };
 
 struct InspectorIssueInfo {

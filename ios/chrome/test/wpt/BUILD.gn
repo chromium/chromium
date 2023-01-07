@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,8 +17,33 @@ group("all_tests") {
   ]
 }
 
+copy("copy_clusterfuzz_scripts") {
+  sources = [
+    "//ios/build/bots/scripts",
+    "//ios/chrome/test/wpt/tools",
+
+    # Variations test utilities used by variations_runner script.
+    "//testing/scripts/variations_seed_access_helper.py",
+  ]
+  outputs =
+      [ "$root_build_dir/{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
+group("ios_chrome_clusterfuzz_asan_build") {
+  testonly = true
+  deps = [
+    ":all_tests",
+    ":copy_clusterfuzz_scripts",
+  ]
+}
+
 ios_chrome_xcuitest_app_host("ios_cwt_chromedriver_tests") {
-  deps = [ ":app_support" ]
+  deps = [
+    ":app_support",
+
+    # Use the chromium implementation of the provider API.
+    "//ios/chrome/browser/providers:chromium_providers",
+  ]
   bundle_deps = [ "//ios/third_party/gtx:gtx+bundle" ]
 }
 
@@ -66,7 +91,6 @@ source_set("app_support") {
     "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/tabs:tabs",
-    "//ios/chrome/browser/web:tab_id_tab_helper",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",

@@ -1,0 +1,56 @@
+<!--
+@WIN-ALLOW:colcount*
+@WIN-ALLOW:colindex*
+@WIN-ALLOW:rowcount*
+@WIN-ALLOW:rowindex*
+@WIN-ALLOW:ia2_table_cell_column_index=*
+@WIN-ALLOW:ia2_table_cell_row_index=*
+@MAC-ALLOW:AXARIAColumnCount
+@MAC-ALLOW:AXARIAColumnIndex
+@MAC-ALLOW:AXARIARowCount
+@MAC-ALLOW:AXARIARowIndex
+@BLINK-ALLOW:ariaColumn*
+@BLINK-ALLOW:ariaCellColumn*
+@BLINK-ALLOW:ariaRow*
+@BLINK-ALLOW:ariaCellRow*
+@AURALINUX-ALLOW:colcount*
+@AURALINUX-ALLOW:colindex*
+@AURALINUX-ALLOW:rowcount*
+@AURALINUX-ALLOW:rowindex*
+-->
+<div role="table">
+  <div role="rowgroup">
+    <div role="row" aria-rowindex="2">
+      <span role="columnheader" aria-colindex="2">row2 colheader2</span>
+      <span role="columnheader" aria-colindex="3">row2 colheader3</span>
+      <span role="columnheader" aria-colindex="4">row2 colheader4</span>
+      <span role="columnheader" aria-colindex="5">row2 colheader5</span>
+    </div>
+  </div>
+  <div role="rowgroup">
+    <div role="row" aria-rowindex="3">
+      <span role="cell" aria-colindex="2">row3 col2</span>
+      <span role="cell" aria-colindex="3">row3 col3</span>
+      <span role="cell" aria-colindex="4">row3 col4</span>
+      <span role="cell" aria-colindex="5">row3 col5</span>
+    </div>
+    <div role="row" aria-rowindex="4">
+      <span role="cell" aria-colindex="2">row4 col2</span>
+      <span role="cell" aria-colindex="3">row4 col3</span>
+      <span role="cell" aria-colindex="4">row4 col4</span>
+      <span role="cell" aria-colindex="5">row4 col5</span>
+    </div>
+    <div role="row" aria-rowindex="5">
+      <span role="cell" aria-colindex="2">row5 col2</span>
+      <span role="cell" aria-colindex="3">row5 col3</span>
+      <span role="cell" aria-colindex="4">row5 col4</span>
+      <span role="cell" aria-colindex="5">row5 col5</span>
+    </div>
+    <div role="row" aria-rowindex="6">
+      <span role="cell" aria-colindex="2">row6 col2</span>
+      <span role="cell" aria-colindex="3">row6 col3</span>
+      <span role="cell" aria-colindex="4">row6 col4</span>
+      <span role="cell" aria-colindex="5">row6 col5</span>
+    </div>
+  </div>
+</div>

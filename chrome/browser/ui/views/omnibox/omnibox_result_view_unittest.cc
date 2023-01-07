@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -24,6 +25,10 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
+#if defined(USE_AURA)
+#include "ui/aura/env.h"
+#endif
+
 namespace {
 
 // An arbitrary index for the result view under test. Used to test the selection
@@ -37,16 +42,20 @@ class TestOmniboxPopupContentsView : public OmniboxPopupContentsView {
             /*omnibox_view=*/nullptr,
             edit_model,
             /*location_bar_view=*/nullptr),
-        selected_index_(0) {}
+        selection_(OmniboxPopupSelection(0, OmniboxPopupSelection::NORMAL)) {}
 
-  void SetSelectedIndex(size_t index) override { selected_index_ = index; }
+  TestOmniboxPopupContentsView(const TestOmniboxPopupContentsView&) = delete;
+  TestOmniboxPopupContentsView& operator=(const TestOmniboxPopupContentsView&) =
+      delete;
 
-  size_t GetSelectedIndex() const override { return selected_index_; }
+  void SetSelectedIndex(size_t index) override { selection_.line = index; }
+
+  size_t GetSelectedIndex() const override { return selection_.line; }
+
+  OmniboxPopupSelection GetSelection() const override { return selection_; }
 
  private:
-  size_t selected_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestOmniboxPopupContentsView);
+  OmniboxPopupSelection selection_;
 };
 
 }  // namespace
@@ -54,40 +63,38 @@ class TestOmniboxPopupContentsView : public OmniboxPopupContentsView {
 class OmniboxResultViewTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
+#if !defined(USE_AURA)
+    test_screen_ = std::make_unique<display::test::TestScreen>();
+    scoped_screen_override_ =
+        std::make_unique<display::test::ScopedScreenOverride>(
+            test_screen_.get());
+#endif
     ChromeViewsTestBase::SetUp();
 
     // Create a widget and assign bounds to support calls to HitTestPoint.
     widget_ = CreateTestWidget();
 
-    // Install |test_screen_| after superclass setup and widget creation; on Ash
-    // both these require the Screen to work well with the underlying Shell, and
-    // TestScreen has no knowledge of that.
-    test_screen_ = std::make_unique<display::test::TestScreen>();
-    scoped_screen_override_ =
-        std::make_unique<display::test::ScopedScreenOverride>(
-            test_screen_.get());
-
     edit_model_ = std::make_unique<OmniboxEditModel>(
         nullptr, nullptr, std::make_unique<TestOmniboxClient>());
     popup_view_ =
         std::make_unique<TestOmniboxPopupContentsView>(edit_model_.get());
-    result_view_ =
-        new OmniboxResultView(popup_view_.get(), kTestResultViewIndex);
+    result_view_ = new OmniboxResultView(popup_view_.get(), edit_model_.get(),
+                                         kTestResultViewIndex);
 
     views::View* root_view = widget_->GetRootView();
     root_view->SetBoundsRect(gfx::Rect(0, 0, 500, 500));
     result_view_->SetBoundsRect(gfx::Rect(0, 0, 100, 100));
-    root_view->AddChildView(result_view_);
+    root_view->AddChildView(result_view_.get());
 
     // Start by not hovering over the result view.
     FakeMouseEvent(ui::ET_MOUSE_MOVED, 0, 200, 200);
   }
 
   void TearDown() override {
-    scoped_screen_override_.reset();
-    test_screen_.reset();
     widget_.reset();
     ChromeViewsTestBase::TearDown();
+    scoped_screen_override_.reset();
+    test_screen_.reset();
   }
 
   // Also sets the fake screen's mouse cursor to 0, 0.
@@ -100,7 +107,11 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
                                 int flags,
                                 float x,
                                 float y) {
+#if !defined(USE_AURA)
     test_screen_->set_cursor_screen_point(gfx::Point(x, y));
+#else
+    aura::Env::GetInstance()->SetLastMouseLocation(gfx::Point(x, y));
+#endif
     return ui::MouseEvent(type, gfx::Point(x, y), gfx::Point(),
                           ui::EventTimeForNow(), flags, 0);
   }
@@ -111,7 +122,7 @@ class OmniboxResultViewTest : public ChromeViewsTestBase {
  private:
   std::unique_ptr<OmniboxEditModel> edit_model_;
   std::unique_ptr<TestOmniboxPopupContentsView> popup_view_;
-  OmniboxResultView* result_view_;
+  raw_ptr<OmniboxResultView> result_view_;
   std::unique_ptr<views::Widget> widget_;
 
   std::unique_ptr<display::test::TestScreen> test_screen_;

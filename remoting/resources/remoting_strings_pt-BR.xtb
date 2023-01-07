@@ -11,6 +11,7 @@
 <translation id="1546934824884762070">Ocorreu um erro inesperado. Informe este problema aos desenvolvedores.</translation>
 <translation id="1697532407822776718">Pronto.</translation>
 <translation id="1742469581923031760">Conectando...</translation>
+<translation id="177040763384871009">Para permitir que links clicados no dispositivo remoto sejam abertos no navegador do cliente, mude o navegador da Web do sistema para "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP do canal do cliente: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' ip_host='<ph name="HOST_IP_ADDRESS_AND_PORT" />' canal='<ph name="CHANNEL_TYPE" />' conexão='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Excluir</translation>
 <translation id="2009755455353575666">Falha na conexão</translation>
@@ -24,7 +25,7 @@ Para conceder essa permissão, clique em "<ph name="BUTTON_NAME" />" abaixo para
 Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-a e marque-a novamente.</translation>
 <translation id="225614027745146050">Bem-vindo</translation>
 <translation id="2320166752086256636">Ocultar teclado</translation>
-<translation id="2333212046079545895">Copyright 2021 Google LLC. Todos os direitos reservados.</translation>
+<translation id="2329392777730037872">Falha ao abrir <ph name="URL" /> no cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">Não é possível acessar o host. Isso se deve, provavelmente, à configuração da rede que você está usando.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Visto on-line pela última vez <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -35,6 +36,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="2599300881200251572">Este serviço permite conexões de entrada a partir de clientes da Área de trabalho remota do Google Chrome.</translation>
 <translation id="2647232381348739934">Serviço Chromoting</translation>
 <translation id="2676780859508944670">Processando…</translation>
+<translation id="2692522824157224199">Copyright 2022 Google LLC. Todos os direitos reservados.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Ocorreu um problema durante a autenticação. Faça login novamente.</translation>
 <translation id="2803375539583399270">Insira o PIN</translation>
@@ -55,6 +57,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="369442766917958684">Off-line.</translation>
 <translation id="3695446226812920698">Saiba como</translation>
 <translation id="3776024066357219166">Sua sessão na Área de trabalho remota do Google Chrome foi encerrada.</translation>
+<translation id="3858860766373142691">Nome</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3905196214175737742">Domínio de proprietário de host inválido.</translation>
 <translation id="3931191050278863510">O host parou.</translation>
@@ -67,14 +70,16 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="4176825807642096119">Código de acesso</translation>
 <translation id="4227991223508142681">Utilitário de provisionamento de host</translation>
 <translation id="4240294130679914010">Desinstalador do host do Chromoting</translation>
+<translation id="4257751272692708833">Encaminhador de URLs da <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Código de acesso inválido. Tente novamente.</translation>
 <translation id="4281844954008187215">Termos de Serviço</translation>
+<translation id="4372650392690220936">Copyright 2022 Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="4405930547258349619">Biblioteca principal</translation>
 <translation id="443560535555262820">Abrir preferências de acessibilidade</translation>
 <translation id="4450893287417543264">Não mostrar novamente</translation>
-<translation id="4512952200932940229">Copyright 2021 Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="4563926062592110512">Cliente desconectado: <ph name="CLIENT_USERNAME" />.</translation>
+<translation id="4618411825115957973">O <ph name="URL_FORWARDER_NAME" /> não foi configurado corretamente. Escolha outro navegador da Web padrão e ative o encaminhamento de URLs novamente.</translation>
 <translation id="4635770493235256822">Dispositivos remotos</translation>
 <translation id="4660011489602794167">Mostrar teclado</translation>
 <translation id="4703799847237267011">Sua sessão do Chromoting foi encerrada.</translation>
@@ -87,6 +92,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="4867841927763172006">Enviar PrtScn</translation>
 <translation id="4974476491460646149">Conexão fechada para <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Primeiro, é necessário configurar seu computador para acesso remoto.</translation>
+<translation id="4987330545941822761">A Área de trabalho remota do Google Chrome não conseguiu determinar em qual navegador abrir URLs localmente. Selecione uma opção na lista abaixo.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (off-line)</translation>
 <translation id="507204348399810022">Você quer mesmo desativar conexões remotas para <ph name="HOSTNAME" />?</translation>
 <translation id="5170982930780719864">ID de host inválido.</translation>
@@ -94,7 +100,6 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="5222676887888702881">Sair</translation>
 <translation id="5234764350956374838">Dispensar</translation>
 <translation id="5308380583665731573">Conectar</translation>
-<translation id="5327248766486351172">Nome</translation>
 <translation id="533625276787323658">Não há nenhum computador para conexão</translation>
 <translation id="5397086374758643919">Desinstalador do host da Área de trabalho remota do Google Chrome</translation>
 <translation id="5419418238395129586">Última conexão: <ph name="DATE" /></translation>
@@ -105,6 +110,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="5750083143895808682">Conectado como <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="579702532610384533">Reconectar</translation>
 <translation id="5810269635982033450">A tela atua como um trackpad</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> solicitou acesso para ver sua tela e controlar seu teclado e mouse. Se você não esperava essa solicitação, pressione "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />". Se estiver tudo certo, pressione "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" para permitir a conexão.</translation>
 <translation id="5823658491130719298">No computador que você quer acessar remotamente, abra o Chrome e acesse <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opções de exibição</translation>
 <translation id="6033507038939587647">Opções do teclado</translation>
@@ -121,6 +127,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Compartilhar</translation>
 <translation id="677755392401385740">Host iniciado para o usuário <ph name="HOST_USERNAME" />.</translation>
+<translation id="6902524959760471898">Aplicativo para ajudar a abrir um URL no cliente da <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Mostrar/ocultar teclado</translation>
 <translation id="6963936880795878952">As conexões com o computador remoto estão temporariamente bloqueadas porque alguém estava tentando se conectar a ele com um PIN inválido. Tente novamente mais tarde.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -133,10 +140,12 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="7312846573060934304">O host está off-line.</translation>
 <translation id="7319983568955948908">Parar compartilhamento</translation>
+<translation id="7359298090707901886">Não é possível usar o navegador escolhido para abrir URLs na máquina local.</translation>
 <translation id="7401733114166276557">Área de trabalho remota do Google Chrome</translation>
 <translation id="7434397035092923453">Acesso negado para o cliente <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Cliente conectado: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Alterar conta</translation>
+<translation id="7535110896613603182">Abrir configurações padrão dos apps</translation>
 <translation id="7628469622942688817">Lembrar meu PIN neste dispositivo.</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7658239707568436148">Cancelar</translation>
@@ -161,6 +170,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 Clique em "<ph name="BUTTON_NAME" />" abaixo. No painel de preferências "Acessibilidade", marque a caixa ao lado de "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Se "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-a e marque novamente.</translation>
+<translation id="8305209735512572429">Web Authentication Remoting Process</translation>
 <translation id="8383794970363966105">Para usar o Chromoting, adicione uma Conta do Google a seu dispositivo.</translation>
 <translation id="8386846956409881180">O host está configurado com credenciais de OAuth inválidas.</translation>
 <translation id="8397385476380433240">Conceder permissão à <ph name="PRODUCT_NAME" /></translation>

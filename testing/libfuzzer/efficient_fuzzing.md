@@ -76,6 +76,11 @@ fuzzing effectiveness:
   [coverage script] stored in the Chromium repository. The script provides
   detailed instructions and a usage example.
 
+For the `out/coverage` target in the coverage script, make sure to add all of
+the gn args you needed to build the `out/libfuzzer` target; this could include
+args like `target_os=chromeos` and `is_asan=true` depending on the [gn config]
+you chose.
+
 *** note
 **Note:** The code coverage of a fuzz target depends heavily on the corpus. A
 well-chosen corpus will produce much greater code coverage. On the other hand,
@@ -290,6 +295,7 @@ crashes).
 [ClusterFuzz status]: libFuzzer_integration.md#Status-Links
 [Corpus GCS Bucket]: https://console.cloud.google.com/storage/clusterfuzz-corpus/libfuzzer
 [Getting Started Guide]: getting_started.md
+[gn config]: getting_started.md#running-the-fuzz-target
 [corpus from ClusterFuzz]: libFuzzer_integration.md#Corpus
 [coverage script]: https://cs.chromium.org/chromium/src/tools/code_coverage/coverage.py
 [fuzzing coverage]: https://chromium-coverage.appspot.com/reports/latest_fuzzers_only/linux/index.html

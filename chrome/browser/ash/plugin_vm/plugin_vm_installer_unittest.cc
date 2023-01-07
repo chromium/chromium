@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,6 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/optional.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -27,9 +26,11 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
-#include "chromeos/dbus/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
+#include "chromeos/ash/components/dbus/vm_plugin_dispatcher/vm_plugin_dispatcher_client.h"
 #include "components/account_id/account_id.h"
 #include "components/download/public/background_service/test/test_download_service.h"
 #include "components/drive/service/dummy_drive_service.h"
@@ -37,9 +38,10 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
-#include "google_apis/drive/drive_api_error_codes.h"
+#include "google_apis/common/api_error_codes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace plugin_vm {
 
@@ -104,12 +106,12 @@ class SimpleFakeDriveService : public drive::DummyDriveService {
   using GetContentCallback = google_apis::GetContentCallback;
   using ProgressCallback = google_apis::ProgressCallback;
 
-  void RunDownloadActionCallback(google_apis::DriveApiErrorCode error,
+  void RunDownloadActionCallback(google_apis::ApiErrorCode error,
                                  const base::FilePath& temp_file) {
     std::move(download_action_callback_).Run(error, temp_file);
   }
 
-  void RunGetContentCallback(google_apis::DriveApiErrorCode error,
+  void RunGetContentCallback(google_apis::ApiErrorCode error,
                              std::unique_ptr<std::string> content) {
     get_content_callback_.Run(error, std::move(content),
                               !get_content_callback_called_);
@@ -154,11 +156,18 @@ class SimpleFakeDriveService : public drive::DummyDriveService {
 class PluginVmInstallerTestBase : public testing::Test {
  public:
   PluginVmInstallerTestBase() = default;
+
+  PluginVmInstallerTestBase(const PluginVmInstallerTestBase&) = delete;
+  PluginVmInstallerTestBase& operator=(const PluginVmInstallerTestBase&) =
+      delete;
+
   ~PluginVmInstallerTestBase() override = default;
 
  protected:
   void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
+    ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::DebugDaemonClient::InitializeFake();
+    ash::VmPluginDispatcherClient::InitializeFake();
 
     ASSERT_TRUE(profiles_dir_.CreateUniqueTempDir());
     CreateProfile();
@@ -171,17 +180,17 @@ class PluginVmInstallerTestBase : public testing::Test {
     installer_ = PluginVmInstallerFactory::GetForProfile(profile_.get());
     observer_ = std::make_unique<StrictMock<MockObserver>>();
     installer_->SetObserver(observer_.get());
+    installer_->SkipLicenseCheckForTesting();
     installer_->SetFreeDiskSpaceForTesting(std::numeric_limits<int64_t>::max());
     installer_->SetDownloadedImageForTesting(CreateZipFile());
 
     SetDefaultExpectations();
 
-    fake_concierge_client_ = static_cast<chromeos::FakeConciergeClient*>(
-        chromeos::DBusThreadManager::Get()->GetConciergeClient());
+    fake_concierge_client_ = ash::FakeConciergeClient::Get();
 
-    chromeos::DlcserviceClient::InitializeFake();
-    fake_dlcservice_client_ = static_cast<chromeos::FakeDlcserviceClient*>(
-        chromeos::DlcserviceClient::Get());
+    ash::DlcserviceClient::InitializeFake();
+    fake_dlcservice_client_ =
+        static_cast<ash::FakeDlcserviceClient*>(ash::DlcserviceClient::Get());
   }
 
   void TearDown() override {
@@ -190,15 +199,17 @@ class PluginVmInstallerTestBase : public testing::Test {
     profile_.reset();
     observer_.reset();
 
-    chromeos::DBusThreadManager::Shutdown();
-    chromeos::DlcserviceClient::Shutdown();
+    ash::VmPluginDispatcherClient::Shutdown();
+    ash::DebugDaemonClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
   }
 
   void SetPluginVmImagePref(std::string url, std::string hash) {
-    DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kPluginVmImage);
-    base::DictionaryValue* plugin_vm_image = update.Get();
-    plugin_vm_image->SetKey("url", base::Value(url));
-    plugin_vm_image->SetKey("hash", base::Value(hash));
+    ScopedDictPrefUpdate update(profile_->GetPrefs(), prefs::kPluginVmImage);
+    base::Value::Dict& plugin_vm_image = update.Get();
+    plugin_vm_image.Set("url", url);
+    plugin_vm_image.Set("hash", hash);
   }
 
   void SetRequiredFreeDiskSpaceGBPref(int required_free_disk_space) {
@@ -264,9 +275,11 @@ class PluginVmInstallerTestBase : public testing::Test {
   PluginVmInstaller* installer_;
   std::unique_ptr<MockObserver> observer_;
 
-  // Owned by chromeos::DBusThreadManager
-  chromeos::FakeConciergeClient* fake_concierge_client_;
-  chromeos::FakeDlcserviceClient* fake_dlcservice_client_;
+  // A pointer to a singleton object which is valid until
+  // ConciergeClient::Shutdown() is called.
+  ash::FakeConciergeClient* fake_concierge_client_;
+  // Owned by ash::DBusThreadManager
+  ash::FakeDlcserviceClient* fake_dlcservice_client_;
 
  private:
   void CreateProfile() {
@@ -286,13 +299,17 @@ class PluginVmInstallerTestBase : public testing::Test {
   }
 
   base::ScopedTempDir profiles_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(PluginVmInstallerTestBase);
 };
 
 class PluginVmInstallerDownloadServiceTest : public PluginVmInstallerTestBase {
  public:
   PluginVmInstallerDownloadServiceTest() = default;
+
+  PluginVmInstallerDownloadServiceTest(
+      const PluginVmInstallerDownloadServiceTest&) = delete;
+  PluginVmInstallerDownloadServiceTest& operator=(
+      const PluginVmInstallerDownloadServiceTest&) = delete;
+
   ~PluginVmInstallerDownloadServiceTest() override = default;
 
  protected:
@@ -321,19 +338,23 @@ class PluginVmInstallerDownloadServiceTest : public PluginVmInstallerTestBase {
 
  private:
   std::unique_ptr<PluginVmImageDownloadClient> client_;
-  DISALLOW_COPY_AND_ASSIGN(PluginVmInstallerDownloadServiceTest);
 };
 
 class PluginVmInstallerDriveTest : public PluginVmInstallerTestBase {
  public:
   PluginVmInstallerDriveTest() = default;
+
+  PluginVmInstallerDriveTest(const PluginVmInstallerDriveTest&) = delete;
+  PluginVmInstallerDriveTest& operator=(const PluginVmInstallerDriveTest&) =
+      delete;
+
   ~PluginVmInstallerDriveTest() override = default;
 
  protected:
   void SetUp() override {
     PluginVmInstallerTestBase::SetUp();
 
-    google_apis::DriveApiErrorCode error = google_apis::DRIVE_OTHER_ERROR;
+    google_apis::ApiErrorCode error = google_apis::OTHER_ERROR;
     std::unique_ptr<google_apis::FileResource> entry;
     auto fake_drive_service = std::make_unique<drive::FakeDriveService>();
     // We will need to access this object for some tests in the future.
@@ -344,7 +365,7 @@ class PluginVmInstallerDriveTest : public PluginVmInstallerTestBase {
         kPluginVmImageFile,
         true,  // shared_with_me
         base::BindLambdaForTesting(
-            [&](google_apis::DriveApiErrorCode drive_error,
+            [&](google_apis::ApiErrorCode drive_error,
                 std::unique_ptr<google_apis::FileResource> drive_entry) {
               error = drive_error;
               entry = std::move(drive_entry);
@@ -389,9 +410,6 @@ class PluginVmInstallerDriveTest : public PluginVmInstallerTestBase {
   PluginVmDriveImageDownloadService* drive_download_service_;
   drive::FakeDriveService* fake_drive_service_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PluginVmInstallerDriveTest);
 };
 
 TEST_F(PluginVmInstallerDownloadServiceTest, ProgressUpdates) {
@@ -476,7 +494,7 @@ TEST_F(PluginVmInstallerDownloadServiceTest, DownloadPluginVmImageParamsTest) {
   StartAndRunUntil(InstallingState::kDownloadingImage);
 
   std::string guid = installer_->GetCurrentDownloadGuid();
-  base::Optional<download::DownloadParams> params =
+  const absl::optional<download::DownloadParams>& params =
       download_service_->GetDownload(guid);
   ASSERT_TRUE(params.has_value());
   EXPECT_EQ(guid, params->guid);
@@ -637,8 +655,8 @@ TEST_F(PluginVmInstallerDownloadServiceTest, VerifyDownloadTest) {
 }
 
 TEST_F(PluginVmInstallerDownloadServiceTest, CannotStartIfPluginVmIsDisabled) {
-  profile_->ScopedCrosSettingsTestHelper()->SetBoolean(
-      chromeos::kPluginVmAllowed, false);
+  profile_->ScopedCrosSettingsTestHelper()->SetBoolean(ash::kPluginVmAllowed,
+                                                       false);
   EXPECT_EQ(FailureReason::NOT_ALLOWED, installer_->Start());
   task_environment_.RunUntilIdle();
 }
@@ -687,7 +705,7 @@ TEST_F(PluginVmInstallerDriveTest, DriveDownloadFailedAfterStartingTest) {
   fake_drive_service->RunGetContentCallback(
       google_apis::HTTP_SUCCESS, std::make_unique<std::string>("Part2"));
   fake_drive_service->RunProgressCallback(10, 100);
-  fake_drive_service->RunGetContentCallback(google_apis::DRIVE_NO_CONNECTION,
+  fake_drive_service->RunGetContentCallback(google_apis::NO_CONNECTION,
                                             std::unique_ptr<std::string>());
 }
 
@@ -785,6 +803,19 @@ TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcWhenUnsupported) {
   histogram_tester_->ExpectUniqueSample(kPluginVmDlcUseResultHistogram,
                                         PluginVmDlcUseResult::kInvalidDlcError,
                                         1);
+}
+
+TEST_F(PluginVmInstallerDriveTest, InstallingPluginVmDlcWhenNoImageFound) {
+  SetPluginVmImagePref(kDriveUrl, kHash);
+  fake_dlcservice_client_->set_install_error(dlcservice::kErrorNoImageFound);
+
+  ExpectObserverEventsUntil(InstallingState::kDownloadingDlc);
+  EXPECT_CALL(*observer_, OnError(FailureReason::DLC_INTERNAL));
+
+  StartAndRunToCompletion();
+  histogram_tester_->ExpectUniqueSample(
+      kPluginVmDlcUseResultHistogram,
+      PluginVmDlcUseResult::kNoImageFoundDlcError, 1);
 }
 
 }  // namespace plugin_vm

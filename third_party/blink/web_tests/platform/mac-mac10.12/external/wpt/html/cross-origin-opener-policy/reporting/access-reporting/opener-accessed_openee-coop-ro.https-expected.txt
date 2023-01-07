@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Openee (COOP-RO+COEP) accesses opener. Report to openee promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'includes' of undefined"
-Harness: the test ran to completion.
-

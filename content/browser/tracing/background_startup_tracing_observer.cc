@@ -1,10 +1,11 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "content/browser/tracing/background_startup_tracing_observer.h"
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "components/tracing/common/trace_startup_config.h"
 #include "content/browser/tracing/background_tracing_rule.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -33,11 +34,10 @@ class PreferenceManagerImpl
 }  // namespace
 
 // static
-BackgroundStartupTracingObserver*
+BackgroundStartupTracingObserver&
 BackgroundStartupTracingObserver::GetInstance() {
-  static BackgroundStartupTracingObserver* instance =
-      new BackgroundStartupTracingObserver;
-  return instance;
+  static base::NoDestructor<BackgroundStartupTracingObserver> instance;
+  return *instance;
 }
 
 // static
@@ -71,7 +71,7 @@ void BackgroundStartupTracingObserver::OnScenarioActivated(
       FROM_HERE,
       base::BindOnce(
           &BackgroundTracingManagerImpl::OnRuleTriggered,
-          base::Unretained(BackgroundTracingManagerImpl::GetInstance()),
+          base::Unretained(&BackgroundTracingManagerImpl::GetInstance()),
           base::Unretained(startup_rule),
           BackgroundTracingManager::StartedFinalizingCallback()));
 }
@@ -119,23 +119,22 @@ BackgroundStartupTracingObserver::IncludeStartupConfigIfNeeded(
   if (!enabled_in_current_session_ || startup_rule)
     return config;
 
-  std::unique_ptr<base::DictionaryValue> rules_dict(
-      new base::DictionaryValue());
-  rules_dict->SetString("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-  rules_dict->SetString("trigger_name", kStartupTracingConfig);
-  rules_dict->SetInteger("trigger_delay", 30);
-  rules_dict->SetString("category", "BENCHMARK_STARTUP");
+  base::Value::Dict rules_dict;
+  rules_dict.Set("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+  rules_dict.Set("trigger_name", kStartupTracingConfig);
+  rules_dict.Set("trigger_delay", 30);
+  rules_dict.Set("category", "BENCHMARK_STARTUP");
 
   if (config) {
     config->AddReactiveRule(
-        rules_dict.get(),
+        rules_dict,
         BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_STARTUP);
   } else {
-    base::DictionaryValue dict;
-    std::unique_ptr<base::ListValue> rules_list(new base::ListValue());
-    rules_list->Append(std::move(rules_dict));
+    base::Value::Dict dict;
+    base::Value::List rules_list;
+    rules_list.Append(std::move(rules_dict));
     dict.Set("configs", std::move(rules_list));
-    config = BackgroundTracingConfigImpl::ReactiveFromDict(&dict);
+    config = BackgroundTracingConfigImpl::ReactiveFromDict(dict);
   }
   DCHECK(FindStartupRuleInConfig(*config));
   return config;

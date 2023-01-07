@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_api_call_flow_impl.h"
 #include "chrome/browser/nearby_sharing/client/nearby_share_http_notifier.h"
@@ -21,8 +20,8 @@
 #include "chrome/browser/nearby_sharing/proto/contact_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/device_rpc.pb.h"
 #include "chrome/browser/nearby_sharing/proto/rpc_resources.pb.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
-#include "components/signin/public/identity_manager/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -95,10 +94,10 @@ ListPublicCertificatesRequestToQueryParameters(
 // TODO(crbug.com/1103471): Update "chrome_policy" when a Nearby Share
 // enterprise policy is created.
 const net::PartialNetworkTrafficAnnotationTag& GetUpdateDeviceAnnotation() {
-  static const base::NoDestructor<net::PartialNetworkTrafficAnnotationTag>
-      annotation(net::DefinePartialNetworkTrafficAnnotation(
-          "nearby_share_update_device", "oauth2_api_call_flow",
-          R"(
+  static const net::PartialNetworkTrafficAnnotationTag annotation =
+      net::DefinePartialNetworkTrafficAnnotation("nearby_share_update_device",
+                                                 "oauth2_api_call_flow",
+                                                 R"(
       semantics {
         sender: "Nearby Share"
         description:
@@ -137,17 +136,17 @@ const net::PartialNetworkTrafficAnnotationTag& GetUpdateDeviceAnnotation() {
             SigninAllowed: false
           }
         }
-      })"));
-  return *annotation;
+      })");
+  return annotation;
 }
 
 // TODO(crbug.com/1103471): Update "chrome_policy" when a Nearby Share
 // enterprise policy is created.
 const net::PartialNetworkTrafficAnnotationTag& GetContactsAnnotation() {
-  static const base::NoDestructor<net::PartialNetworkTrafficAnnotationTag>
-      annotation(net::DefinePartialNetworkTrafficAnnotation(
-          "nearby_share_contacts", "oauth2_api_call_flow",
-          R"(
+  static const net::PartialNetworkTrafficAnnotationTag annotation =
+      net::DefinePartialNetworkTrafficAnnotation("nearby_share_contacts",
+                                                 "oauth2_api_call_flow",
+                                                 R"(
       semantics {
         sender: "Nearby Share"
         description:
@@ -173,16 +172,16 @@ const net::PartialNetworkTrafficAnnotationTag& GetContactsAnnotation() {
             SigninAllowed: false
           }
         }
-          })"));
-  return *annotation;
+          })");
+  return annotation;
 }
 
 // TODO(crbug.com/1103471): Update "chrome_policy" when a Nearby Share
 // enterprise policy is created.
 const net::PartialNetworkTrafficAnnotationTag&
 GetListPublicCertificatesAnnotation() {
-  static const base::NoDestructor<net::PartialNetworkTrafficAnnotationTag>
-      annotation(net::DefinePartialNetworkTrafficAnnotation(
+  static const net::PartialNetworkTrafficAnnotationTag annotation =
+      net::DefinePartialNetworkTrafficAnnotation(
           "nearby_share_list_public_certificates", "oauth2_api_call_flow",
           R"(
       semantics {
@@ -213,8 +212,8 @@ GetListPublicCertificatesAnnotation() {
             SigninAllowed: false
           }
         }
-          })"));
-  return *annotation;
+          })");
+  return annotation;
 }
 
 }  // namespace
@@ -239,7 +238,7 @@ void NearbyShareClientImpl::UpdateDevice(
   notifier_->NotifyOfRequest(request);
   MakeApiCall(CreateV1RequestUrl(request.device().name()), RequestType::kPatch,
               request.SerializeAsString(),
-              /*request_as_query_parameters=*/base::nullopt,
+              /*request_as_query_parameters=*/absl::nullopt,
               std::move(callback), std::move(error_callback),
               GetUpdateDeviceAnnotation());
 }
@@ -250,7 +249,7 @@ void NearbyShareClientImpl::ListContactPeople(
     ErrorCallback&& error_callback) {
   notifier_->NotifyOfRequest(request);
   MakeApiCall(CreateV1RequestUrl(kListContactPeoplePath), RequestType::kGet,
-              /*serialized_request=*/base::nullopt,
+              /*serialized_request=*/absl::nullopt,
               ListContactPeopleRequestToQueryParameters(request),
               std::move(callback), std::move(error_callback),
               GetContactsAnnotation());
@@ -263,7 +262,7 @@ void NearbyShareClientImpl::ListPublicCertificates(
   notifier_->NotifyOfRequest(request);
   MakeApiCall(
       CreateV1RequestUrl(request.parent() + "/" + kListPublicCertificatesPath),
-      RequestType::kGet, /*serialized_request=*/base::nullopt,
+      RequestType::kGet, /*serialized_request=*/absl::nullopt,
       ListPublicCertificatesRequestToQueryParameters(request),
       std::move(callback), std::move(error_callback),
       GetListPublicCertificatesAnnotation());
@@ -277,8 +276,8 @@ template <class ResponseProto>
 void NearbyShareClientImpl::MakeApiCall(
     const GURL& request_url,
     RequestType request_type,
-    const base::Optional<std::string>& serialized_request,
-    const base::Optional<NearbyShareApiCallFlow::QueryParameters>&
+    const absl::optional<std::string>& serialized_request,
+    const absl::optional<NearbyShareApiCallFlow::QueryParameters>&
         request_as_query_parameters,
     base::OnceCallback<void(const ResponseProto&)>&& response_callback,
     ErrorCallback&& error_callback,
@@ -311,8 +310,8 @@ void NearbyShareClientImpl::MakeApiCall(
 template <class ResponseProto>
 void NearbyShareClientImpl::OnAccessTokenFetched(
     RequestType request_type,
-    const base::Optional<std::string>& serialized_request,
-    const base::Optional<NearbyShareApiCallFlow::QueryParameters>&
+    const absl::optional<std::string>& serialized_request,
+    const absl::optional<NearbyShareApiCallFlow::QueryParameters>&
         request_as_query_parameters,
     base::OnceCallback<void(const ResponseProto&)>&& response_callback,
     GoogleServiceAuthError error,

@@ -1,100 +1,53 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 
-#include "base/bind.h"
-#include "base/callback_helpers.h"
-#include "base/macros.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/safe_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/task/post_task.h"
-#include "base/task/task_traits.h"
-#include "build/build_config.h"
-#include "chrome/browser/browser_process.h"
-#include "components/metrics/data_use_tracker.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "base/no_destructor.h"
+#include "base/trace_event/trace_event.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/network_service_instance.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "net/android/traffic_stats.h"
+#endif
 
 using content::BrowserThread;
 
-namespace data_use_measurement {
-
+#if BUILDFLAG(IS_ANDROID)
 namespace {
-// Global instance to be used when network service is enabled, this will never
-// be deleted. When network service is disabled, this should always be null.
-ChromeDataUseMeasurement* g_chrome_data_use_measurement = nullptr;
-
-DataUseUserData::DataUseContentType GetContentType(const std::string& mime_type,
-                                                   bool is_main_frame_resource,
-                                                   bool is_app_background,
-                                                   bool is_tab_visible) {
-  if (mime_type == "text/html")
-    return is_main_frame_resource ? DataUseUserData::MAIN_FRAME_HTML
-                                  : DataUseUserData::NON_MAIN_FRAME_HTML;
-  if (mime_type == "text/css")
-    return DataUseUserData::CSS;
-  if (base::StartsWith(mime_type, "image/", base::CompareCase::SENSITIVE))
-    return DataUseUserData::IMAGE;
-  if (base::EndsWith(mime_type, "javascript", base::CompareCase::SENSITIVE) ||
-      base::EndsWith(mime_type, "ecmascript", base::CompareCase::SENSITIVE)) {
-    return DataUseUserData::JAVASCRIPT;
-  }
-  if (mime_type.find("font") != std::string::npos)
-    return DataUseUserData::FONT;
-  if (base::StartsWith(mime_type, "audio/", base::CompareCase::SENSITIVE))
-    return is_app_background
-               ? DataUseUserData::AUDIO_APPBACKGROUND
-               : (!is_tab_visible ? DataUseUserData::AUDIO_TABBACKGROUND
-                                  : DataUseUserData::AUDIO);
-  if (base::StartsWith(mime_type, "video/", base::CompareCase::SENSITIVE))
-    return is_app_background
-               ? DataUseUserData::VIDEO_APPBACKGROUND
-               : (!is_tab_visible ? DataUseUserData::VIDEO_TABBACKGROUND
-                                  : DataUseUserData::VIDEO);
-  return DataUseUserData::OTHER;
-}
-
-}  // namespace
+BASE_FEATURE(kRunLegacyDataUseMeasurment,
+             "RunLegacyDataUseMeasurement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}  // anonymous namespace
+#endif
 
 // static
-void ChromeDataUseMeasurement::CreateInstance(PrefService* local_state) {
+ChromeDataUseMeasurement& ChromeDataUseMeasurement::GetInstance() {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
          !BrowserThread::IsThreadInitialized(BrowserThread::UI));
 
-  DCHECK(!g_chrome_data_use_measurement);
-
-  g_chrome_data_use_measurement = new ChromeDataUseMeasurement(
-      content::GetNetworkConnectionTracker(), local_state);
+  static base::NoDestructor<ChromeDataUseMeasurement>
+      s_chrome_data_use_measurement;
+  return *s_chrome_data_use_measurement;
 }
 
-// static
-ChromeDataUseMeasurement* ChromeDataUseMeasurement::GetInstance() {
-  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI) ||
-         !BrowserThread::IsThreadInitialized(BrowserThread::UI));
-
-  return g_chrome_data_use_measurement;
-}
-
-// static
-void ChromeDataUseMeasurement::DeleteInstance() {
-  if (g_chrome_data_use_measurement) {
-    delete g_chrome_data_use_measurement;
-    g_chrome_data_use_measurement = nullptr;
+#if BUILDFLAG(IS_ANDROID)
+ChromeDataUseMeasurement::ChromeDataUseMeasurement() {
+  if (base::FeatureList::IsEnabled(kRunLegacyDataUseMeasurment)) {
+    int64_t bytes = 0;
+    net::android::traffic_stats::GetCurrentUidRxBytes(&bytes);
+    net::android::traffic_stats::GetCurrentUidTxBytes(&bytes);
   }
 }
+#else
+ChromeDataUseMeasurement::ChromeDataUseMeasurement() = default;
+#endif
 
-ChromeDataUseMeasurement::ChromeDataUseMeasurement(
-    network::NetworkConnectionTracker* network_connection_tracker,
-    PrefService* local_state)
-    : DataUseMeasurement(local_state, network_connection_tracker),
-      local_state_(local_state) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
+ChromeDataUseMeasurement::~ChromeDataUseMeasurement() = default;
 
 void ChromeDataUseMeasurement::ReportNetworkServiceDataUse(
     int32_t network_traffic_annotation_id_hash,
@@ -107,62 +60,41 @@ void ChromeDataUseMeasurement::ReportNetworkServiceDataUse(
   DCHECK_GE(recv_bytes, 0);
   DCHECK_GE(sent_bytes, 0);
 
-  bool is_user_request =
-      DataUseMeasurement::IsUserRequest(network_traffic_annotation_id_hash);
-  bool is_metrics_service_request =
-      IsMetricsServiceRequest(network_traffic_annotation_id_hash);
-  UpdateMetricsUsagePrefs(recv_bytes, IsCurrentNetworkCellular(),
-                          is_metrics_service_request);
-  UpdateMetricsUsagePrefs(sent_bytes, IsCurrentNetworkCellular(),
-                          is_metrics_service_request);
-  if (!is_user_request) {
-    ReportDataUsageServices(network_traffic_annotation_id_hash, UPSTREAM,
-                            CurrentAppState(), sent_bytes);
-    ReportDataUsageServices(network_traffic_annotation_id_hash, DOWNSTREAM,
-                            CurrentAppState(), recv_bytes);
-  }
-  if (!is_user_request || DataUseMeasurement::IsUserDownloadsRequest(
-                              network_traffic_annotation_id_hash)) {
-    for (auto& observer : services_data_use_observer_list_)
-      observer.OnServicesDataUse(network_traffic_annotation_id_hash, recv_bytes,
-                                 sent_bytes);
-  }
-  base::UmaHistogramCustomCounts("DataUse.BytesReceived2.Delegate", recv_bytes,
-                                 50, 10 * 1000 * 1000, 50);
-  UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesSent.Delegate", sent_bytes);
+  ReportDataUsage(TrafficDirection::kUpstream, sent_bytes);
+  ReportDataUsage(TrafficDirection::kDownstream, recv_bytes);
 }
 
-void ChromeDataUseMeasurement::ReportUserTrafficDataUse(bool is_tab_visible,
-                                                        int64_t recv_bytes) {
-  RecordDownstreamUserTrafficSizeMetric(is_tab_visible, recv_bytes);
-}
-
-void ChromeDataUseMeasurement::RecordContentTypeMetric(
-    const std::string& mime_type,
-    bool is_main_frame_resource,
-    bool is_tab_visible,
-    int64_t recv_bytes) {
-  DataUseUserData::DataUseContentType content_type = GetContentType(
-      mime_type, is_main_frame_resource,
-      CurrentAppState() == DataUseUserData::BACKGROUND, is_tab_visible);
-  UMA_HISTOGRAM_SCALED_ENUMERATION("DataUse.ContentType.UserTrafficKB",
-                                   content_type, recv_bytes, 1024);
-}
-
-void ChromeDataUseMeasurement::UpdateMetricsUsagePrefs(
-    int64_t total_bytes,
-    bool is_cellular,
-    bool is_metrics_service_usage) {
+void ChromeDataUseMeasurement::ReportDataUsage(TrafficDirection dir,
+                                               int64_t message_size_bytes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(local_state_);
-  metrics::DataUseTracker::UpdateMetricsUsagePrefs(
-      base::saturated_cast<int>(total_bytes), is_cellular,
-      is_metrics_service_usage, local_state_);
-}
+  TRACE_EVENT0("browser", "ChromeDataUseMeasurement::ReportDataUsage");
 
-// static
-void ChromeDataUseMeasurement::RegisterPrefs(PrefRegistrySimple* registry) {
-  DataUseMeasurement::RegisterDataUseComponentLocalStatePrefs(registry);
-}
+  if (message_size_bytes <= 0)
+    return;
 
-}  // namespace data_use_measurement
+  if (dir == TrafficDirection::kDownstream) {
+    base::UmaHistogramCustomCounts("DataUse.BytesReceived3.Delegate",
+                                   message_size_bytes, 50, 10 * 1000 * 1000,
+                                   50);
+  }
+
+  if (dir == TrafficDirection::kUpstream)
+    UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesSent3.Delegate", message_size_bytes);
+
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/1339449): remove this after running experiment.
+  if (base::FeatureList::IsEnabled(kRunLegacyDataUseMeasurment)) {
+    bytes_transferred_since_last_traffic_stats_query_ += message_size_bytes;
+    // Minimum number of bytes that should be reported by the network delegate
+    // before Android's TrafficStats API is queried (if Chrome is not in
+    // background). This reduces the overhead of repeatedly calling the API.
+    static const int64_t kMinDelegateBytes = 25000;
+    if (bytes_transferred_since_last_traffic_stats_query_ >= kMinDelegateBytes) {
+      bytes_transferred_since_last_traffic_stats_query_ = 0;
+      int64_t bytes = 0;
+      net::android::traffic_stats::GetCurrentUidRxBytes(&bytes);
+      net::android::traffic_stats::GetCurrentUidTxBytes(&bytes);
+    }
+  }
+#endif
+}

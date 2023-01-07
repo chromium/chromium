@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="test_utils.js"></script>
+<script>
+function getSessionStorageKeys() {
+  let keys = [];
+  let txt = '';
+  for (let i = 0; i < sessionStorage.length; ++i) {
+    keys.push(sessionStorage.key(i));
+  }
+  keys.sort();
+  keys.forEach((key) => {
+    if (txt.length) {
+      txt += ', ';
+    }
+    txt += key;
+  });
+  return txt;
+}
+
+(() => {
+  const params = new URLSearchParams(location.search);
+  const isPrerendering = params.has('prerendering');
+  if (!isPrerendering) {
+    sessionStorage.setItem('initial', '1');
+    return;
+  }
+  sessionStorage.setItem('prerendering', '1');
+  window.sessionKeysInPrerenderingchange = new Promise((resolve) => {
+    document.addEventListener('prerenderingchange', () => {
+      resolve(getSessionStorageKeys());
+      sessionStorage.setItem('activated', '1');
+    });
+  });
+})();
+</script>
+</head>
+<body></body>
+</html>

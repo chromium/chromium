@@ -1,3 +1,0 @@
-This test attempts to trigger a paint invalidation after renderer creation but before layout.
-
-PASS if no assertion failure or crash.

@@ -1,0 +1,11 @@
+Test that prerender navigations reports bad http status failure on triggering
+{
+    method : Page.prerenderAttemptCompleted
+    params : {
+        finalStatus : NavigationBadHttpStatus
+        initiatingFrameId : <string>
+        prerenderingUrl : http://127.0.0.1:8000/echo?status=204
+    }
+    sessionId : <string>
+}
+

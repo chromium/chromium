@@ -1,0 +1,15 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.mojom;
+
+// AudioSocketBroker is a service hosted in the browser process for delivering
+// socket descriptors to renderers. The socket file descriptor can be used to
+// connect to the audio output service hosted in the |cast_service| process.
+interface AudioSocketBroker {
+
+  // Gets the socket descriptor which can be used to connect to the audio output
+  // service.
+  GetSocketDescriptor() => (handle<platform>? fd);
+};

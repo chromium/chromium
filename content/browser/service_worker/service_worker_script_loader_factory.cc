@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -161,17 +161,15 @@ bool ServiceWorkerScriptLoaderFactory::CheckIfScriptRequestIsValid(
   if (!version)
     return false;
 
-  // Handle only the service worker main script
-  // (network::mojom::RequestDestination::kServiceWorker) or importScripts()
-  // (network::mojom::RequestDestination::kScript).
+  // Handle only RequestDestination::kServiceWorker (the service worker main
+  // script or static-import) or RequestDestination::kScript (importScripts()).
   if (resource_request.destination !=
           network::mojom::RequestDestination::kServiceWorker &&
       resource_request.destination !=
           network::mojom::RequestDestination::kScript) {
-    static auto* key = base::debug::AllocateCrashKeyString(
-        "swslf_bad_type", base::debug::CrashKeySize::Size32);
-    base::debug::SetCrashKeyString(
-        key, network::RequestDestinationToString(resource_request.destination));
+    SCOPED_CRASH_KEY_STRING32(
+        "ServiceWorkerSLF", "bad_type",
+        network::RequestDestinationToString(resource_request.destination));
     mojo::ReportBadMessage("SWSLF_BAD_REQUEST_DESTINATION");
     return false;
   }
@@ -196,6 +194,10 @@ void ServiceWorkerScriptLoaderFactory::CopyScript(
     int64_t resource_id,
     base::OnceCallback<void(int64_t, net::Error)> callback,
     int64_t new_resource_id) {
+  if (!context_) {
+    std::move(callback).Run(new_resource_id, net::ERR_FAILED);
+    return;
+  }
   mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader;
   context_->registry()->GetRemoteStorageControl()->CreateResourceReader(
       resource_id, reader.BindNewPipeAndPassReceiver());
@@ -209,15 +211,14 @@ void ServiceWorkerScriptLoaderFactory::CopyScript(
   scoped_refptr<ServiceWorkerVersion> version = worker_host_->version();
   version->script_cache_map()->NotifyStartedCaching(url, new_resource_id);
 
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   net::Error error = cache_writer_->StartCopy(
-      base::BindOnce(repeating_callback, new_resource_id));
+      base::BindOnce(std::move(split_callback.first), new_resource_id));
 
   // Run the callback directly if the operation completed or failed
   // synchronously.
   if (net::ERR_IO_PENDING != error) {
-    repeating_callback.Run(new_resource_id, error);
+    std::move(split_callback.second).Run(new_resource_id, error);
   }
 }
 
@@ -284,11 +285,14 @@ void ServiceWorkerScriptLoaderFactory::OnResourceIdAssignedForNewScriptLoader(
     return;
   }
 
+  // Note: We do not need to run throttles because they have been already by
+  // the ResourceFetcher on the renderer-side.
   mojo::MakeSelfOwnedReceiver(
       ServiceWorkerNewScriptLoader::CreateAndStart(
           request_id, options, resource_request, std::move(client),
           worker_host_->version(), loader_factory_for_new_scripts_,
-          traffic_annotation, resource_id),
+          traffic_annotation, resource_id, /*is_throttle_needed=*/false,
+          /*requesting_frame_id=*/GlobalRenderFrameHostId()),
       std::move(receiver));
 }
 

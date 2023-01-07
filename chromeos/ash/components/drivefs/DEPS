@@ -1,0 +1,7 @@
+include_rules = [
+  "+chromeos/ash/components/dbus/cros_disks",
+  "+chromeos/ash/components/disks",
+  "+components/drive",
+  "+components/invalidation/impl/fake_invalidation_service.h",
+  "+components/signin",
+]

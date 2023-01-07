@@ -34,6 +34,7 @@
 
 #include <stdlib.h>
 
+#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -88,11 +89,11 @@ MockCodeGenerator::MockCodeGenerator(const std::string& name) : name_(name) {}
 MockCodeGenerator::~MockCodeGenerator() {}
 
 uint64_t MockCodeGenerator::GetSupportedFeatures() const {
-  uint64 all_features = CodeGenerator::FEATURE_PROTO3_OPTIONAL;
+  uint64_t all_features = CodeGenerator::FEATURE_PROTO3_OPTIONAL;
   return all_features & ~suppressed_features_;
 }
 
-void MockCodeGenerator::SuppressFeatures(uint64 features) {
+void MockCodeGenerator::SuppressFeatures(uint64_t features) {
   suppressed_features_ = features;
 }
 
@@ -119,7 +120,7 @@ void MockCodeGenerator::ExpectGenerated(
 
   std::vector<std::string> insertion_list;
   if (!insertions.empty()) {
-    SplitStringUsing(insertions, ",", &insertion_list);
+    insertion_list = Split(insertions, ",", true);
   }
 
   EXPECT_EQ(lines.size(), 3 + insertion_list.size() * 2);
@@ -250,12 +251,10 @@ bool MockCodeGenerator::Generate(const FileDescriptor* file,
 
   bool insert_endlines = HasPrefixString(parameter, "insert_endlines=");
   if (insert_endlines || HasPrefixString(parameter, "insert=")) {
-    std::vector<std::string> insert_into;
-
-    SplitStringUsing(
+    std::vector<std::string> insert_into = Split(
         StripPrefixString(
             parameter, insert_endlines ? "insert_endlines=" : "insert="),
-        ",", &insert_into);
+        ",", true);
 
     for (size_t i = 0; i < insert_into.size(); i++) {
       {
@@ -316,7 +315,7 @@ bool MockCodeGenerator::Generate(const FileDescriptor* file,
     io::AnnotationProtoCollector<GeneratedCodeInfo> annotation_collector(
         &annotations);
     io::Printer printer(output.get(), '$',
-                        annotate ? &annotation_collector : NULL);
+                        annotate ? &annotation_collector : nullptr);
     printer.PrintRaw(GetOutputFileContent(name_, parameter, file, context));
     std::string annotate_suffix = "_annotation";
     if (annotate) {

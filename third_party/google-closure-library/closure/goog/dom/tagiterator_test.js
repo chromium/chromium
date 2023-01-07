@@ -1,16 +1,8 @@
-// Copyright 2008 The Closure Library Authors. All Rights Reserved.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS-IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+/**
+ * @license
+ * Copyright The Closure Library Authors.
+ * SPDX-License-Identifier: Apache-2.0
+ */
 
 goog.module('goog.dom.TagIteratorTest');
 goog.setTestOnly();
@@ -410,9 +402,14 @@ testSuite({
     testDiv.innerHTML = '<br/>';
     it = new TagIterator(testDiv.firstChild);
 
-    iter.forEach(it, (node, dummy, i) => {
-      i.splice();
-    });
+    iter.forEach(
+        it, /**
+               @suppress {strictMissingProperties} suppression added to enable
+               type checking
+             */
+        (node, dummy, i) => {
+          i.splice();
+        });
 
     assertEquals('Node not removed', 0, testDiv.childNodes.length);
   },
@@ -422,14 +419,19 @@ testSuite({
     testDiv.innerHTML = 'hello<b>world</b><em>goodbye</em>';
     it = new TagIterator(testDiv.firstChild, false, true);
 
-    iter.forEach(it, (node, dummy, i) => {
-      if (node.nodeType == 3 && node.data == 'hello') {
-        i.splice();
-      }
-      if (node.nodeName == TagName.EM) {
-        i.splice(dom.createDom(TagName.I, null, node.childNodes));
-      }
-    });
+    iter.forEach(
+        it, /**
+               @suppress {strictMissingProperties} suppression added to enable
+               type checking
+             */
+        (node, dummy, i) => {
+          if (node.nodeType == 3 && node.data == 'hello') {
+            i.splice();
+          }
+          if (node.nodeName == TagName.EM) {
+            i.splice(dom.createDom(TagName.I, null, node.childNodes));
+          }
+        });
 
     testingDom.assertHtmlMatches(
         '<b>world</b><i>goodbye</i>', testDiv.innerHTML);
@@ -440,13 +442,18 @@ testSuite({
     testDiv.innerHTML = 'hello<b>world</b>';
     it = new TagIterator(testDiv.firstChild, false, true);
 
-    iter.forEach(it, (node, dummy, i) => {
-      if (node.nodeType == 3 && node.data == 'hello') {
-        i.splice(dom.createDom(TagName.EM, null, 'HELLO'));
-      } else if (node.nodeName == TagName.EM) {
-        i.splice(dom.createDom(TagName.I, null, node.childNodes));
-      }
-    });
+    iter.forEach(
+        it, /**
+               @suppress {strictMissingProperties} suppression added to enable
+               type checking
+             */
+        (node, dummy, i) => {
+          if (node.nodeType == 3 && node.data == 'hello') {
+            i.splice(dom.createDom(TagName.EM, null, 'HELLO'));
+          } else if (node.nodeName == TagName.EM) {
+            i.splice(dom.createDom(TagName.I, null, node.childNodes));
+          }
+        });
 
     testingDom.assertHtmlMatches('<i>HELLO</i><b>world</b>', testDiv.innerHTML);
   },
@@ -456,9 +463,14 @@ testSuite({
     testDiv.innerHTML = '<br/>';
     it = new TagIterator(testDiv.firstChild);
 
-    iter.forEach(it, (node, dummy, i) => {
-      i.splice(dom.createDom(TagName.LINK), dom.createDom(TagName.IMG));
-    });
+    iter.forEach(
+        it, /**
+               @suppress {strictMissingProperties} suppression added to enable
+               type checking
+             */
+        (node, dummy, i) => {
+          i.splice(dom.createDom(TagName.LINK), dom.createDom(TagName.IMG));
+        });
 
     testingDom.assertHtmlMatches('<link><img>', testDiv.innerHTML);
   },
@@ -468,9 +480,14 @@ testSuite({
     testDiv.innerHTML = '<div><b>one</b>two<i>three</i></div>';
     it = new TagIterator(testDiv.firstChild);
 
-    iter.forEach(it, (node, dummy, i) => {
-      i.splice(node.childNodes);
-    });
+    iter.forEach(
+        it, /**
+               @suppress {strictMissingProperties} suppression added to enable
+               type checking
+             */
+        (node, dummy, i) => {
+          i.splice(node.childNodes);
+        });
 
     testingDom.assertHtmlMatches(
         '<b>one</b>two<i>three</i>', testDiv.innerHTML);
@@ -481,11 +498,16 @@ testSuite({
     testDiv.innerHTML = 'a<b>hello<span>world</span></b>c';
     it = new TagIterator(testDiv);
 
-    iter.forEach(it, (node, dummy, i) => {
-      if (node.nodeName == TagName.B) {
-        i.splice(dom.createDom(TagName.IMG));
-      }
-    });
+    iter.forEach(
+        it, /**
+               @suppress {strictMissingProperties} suppression added to enable
+               type checking
+             */
+        (node, dummy, i) => {
+          if (node.nodeName == TagName.B) {
+            i.splice(dom.createDom(TagName.IMG));
+          }
+        });
 
     testingDom.assertHtmlMatches('a<img>c', testDiv.innerHTML);
   },
@@ -495,11 +517,16 @@ testSuite({
     testDiv.innerHTML = 'a<b>hello<span>world</span></b>c';
     it = new TagIterator(testDiv, true);
 
-    iter.forEach(it, (node, dummy, i) => {
-      if (node.nodeName == TagName.B) {
-        i.splice(dom.createDom(TagName.IMG));
-      }
-    });
+    iter.forEach(
+        it, /**
+               @suppress {strictMissingProperties} suppression added to enable
+               type checking
+             */
+        (node, dummy, i) => {
+          if (node.nodeName == TagName.B) {
+            i.splice(dom.createDom(TagName.IMG));
+          }
+        });
 
     testingDom.assertHtmlMatches('a<img>c', testDiv.innerHTML);
   },
@@ -509,11 +536,16 @@ testSuite({
     testDiv.innerHTML = 'a<b>hello<span>world</span></b>c';
     it = new TagIterator(testDiv);
 
-    iter.forEach(it, (node, dummy, i) => {
-      if (node.tagName == TagName.B && i.isEndTag()) {
-        i.splice(dom.createDom(TagName.IMG));
-      }
-    });
+    iter.forEach(
+        it, /**
+               @suppress {strictMissingProperties} suppression added to enable
+               type checking
+             */
+        (node, dummy, i) => {
+          if (node.tagName == TagName.B && i.isEndTag()) {
+            i.splice(dom.createDom(TagName.IMG));
+          }
+        });
 
     testingDom.assertHtmlMatches('a<img>c', testDiv.innerHTML);
   },
@@ -523,17 +555,22 @@ testSuite({
     testDiv.innerHTML = '<strong>this</strong> is <em>from IE</em>';
     it = new TagIterator(testDiv);
 
-    iter.forEach(it, (node, dummy, i) => {
-      let replace = null;
-      if (node.nodeName == TagName.STRONG) {
-        replace = dom.createDom(TagName.B, null, node.childNodes);
-      } else if (node.nodeName == TagName.EM) {
-        replace = dom.createDom(TagName.I, null, node.childNodes);
-      }
-      if (replace) {
-        i.splice(replace);
-      }
-    });
+    iter.forEach(
+        it, /**
+               @suppress {strictMissingProperties} suppression added to enable
+               type checking
+             */
+        (node, dummy, i) => {
+          let replace = null;
+          if (node.nodeName == TagName.STRONG) {
+            replace = dom.createDom(TagName.B, null, node.childNodes);
+          } else if (node.nodeName == TagName.EM) {
+            replace = dom.createDom(TagName.I, null, node.childNodes);
+          }
+          if (replace) {
+            i.splice(replace);
+          }
+        });
 
     testingDom.assertHtmlMatches(
         '<b>this</b> is <i>from IE</i>', testDiv.innerHTML);
@@ -544,17 +581,22 @@ testSuite({
     testDiv.innerHTML = '<strong>this</strong> is <em>from IE</em>';
     it = new TagIterator(testDiv);
 
-    iter.forEach(it, (node, dummy, i) => {
-      let replace = null;
-      if (node.nodeName == TagName.STRONG && i.isEndTag()) {
-        replace = dom.createDom(TagName.B, null, node.childNodes);
-      } else if (node.nodeName == TagName.EM && i.isEndTag()) {
-        replace = dom.createDom(TagName.I, null, node.childNodes);
-      }
-      if (replace) {
-        i.splice(replace);
-      }
-    });
+    iter.forEach(
+        it, /**
+               @suppress {strictMissingProperties} suppression added to enable
+               type checking
+             */
+        (node, dummy, i) => {
+          let replace = null;
+          if (node.nodeName == TagName.STRONG && i.isEndTag()) {
+            replace = dom.createDom(TagName.B, null, node.childNodes);
+          } else if (node.nodeName == TagName.EM && i.isEndTag()) {
+            replace = dom.createDom(TagName.I, null, node.childNodes);
+          }
+          if (replace) {
+            i.splice(replace);
+          }
+        });
 
     testingDom.assertHtmlMatches(
         '<b>this</b> is <i>from IE</i>', testDiv.innerHTML);
@@ -565,17 +607,22 @@ testSuite({
     testDiv.innerHTML = '<strong>this</strong> is <em>from IE</em>';
     it = new TagIterator(testDiv, true);
 
-    iter.forEach(it, (node, dummy, i) => {
-      let replace = null;
-      if (node.nodeName == TagName.STRONG) {
-        replace = dom.createDom(TagName.B, null, node.childNodes);
-      } else if (node.nodeName == TagName.EM) {
-        replace = dom.createDom(TagName.I, null, node.childNodes);
-      }
-      if (replace) {
-        i.splice(replace);
-      }
-    });
+    iter.forEach(
+        it, /**
+               @suppress {strictMissingProperties} suppression added to enable
+               type checking
+             */
+        (node, dummy, i) => {
+          let replace = null;
+          if (node.nodeName == TagName.STRONG) {
+            replace = dom.createDom(TagName.B, null, node.childNodes);
+          } else if (node.nodeName == TagName.EM) {
+            replace = dom.createDom(TagName.I, null, node.childNodes);
+          }
+          if (replace) {
+            i.splice(replace);
+          }
+        });
 
     testingDom.assertHtmlMatches(
         '<b>this</b> is <i>from IE</i>', testDiv.innerHTML);

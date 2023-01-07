@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,15 +6,14 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -53,10 +52,20 @@ bool User::TypeHasGaiaAccount(UserType user_type) {
          user_type == USER_TYPE_CHILD;
 }
 
+// static
+bool User::TypeIsKiosk(UserType type) {
+  return type == USER_TYPE_KIOSK_APP || type == USER_TYPE_ARC_KIOSK_APP ||
+         type == USER_TYPE_WEB_KIOSK_APP;
+}
+
 // Also used for regular supervised users.
 class RegularUser : public User {
  public:
   RegularUser(const AccountId& account_id, const UserType user_type);
+
+  RegularUser(const RegularUser&) = delete;
+  RegularUser& operator=(const RegularUser&) = delete;
+
   ~RegularUser() override;
 
   // Overridden from User:
@@ -66,8 +75,6 @@ class RegularUser : public User {
 
  private:
   bool is_child_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegularUser);
 };
 
 class ActiveDirectoryUser : public RegularUser {
@@ -82,17 +89,22 @@ class ActiveDirectoryUser : public RegularUser {
 class GuestUser : public User {
  public:
   explicit GuestUser(const AccountId& guest_account_id);
+
+  GuestUser(const GuestUser&) = delete;
+  GuestUser& operator=(const GuestUser&) = delete;
+
   ~GuestUser() override;
 
   // Overridden from User:
   UserType GetType() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GuestUser);
 };
 
 class DeviceLocalAccountUserBase : public User {
  public:
+  DeviceLocalAccountUserBase(const DeviceLocalAccountUserBase&) = delete;
+  DeviceLocalAccountUserBase& operator=(const DeviceLocalAccountUserBase&) =
+      delete;
+
   // User:
   bool IsAffiliated() const override;
 
@@ -102,70 +114,58 @@ class DeviceLocalAccountUserBase : public User {
   // User:
   void SetAffiliation(bool) override;
   bool IsDeviceLocalAccount() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountUserBase);
 };
 
 class KioskAppUser : public DeviceLocalAccountUserBase {
  public:
   explicit KioskAppUser(const AccountId& kiosk_app_account_id);
+
+  KioskAppUser(const KioskAppUser&) = delete;
+  KioskAppUser& operator=(const KioskAppUser&) = delete;
+
   ~KioskAppUser() override;
 
   // Overridden from User:
   UserType GetType() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KioskAppUser);
 };
 
 class ArcKioskAppUser : public DeviceLocalAccountUserBase {
  public:
   explicit ArcKioskAppUser(const AccountId& arc_kiosk_account_id);
+
+  ArcKioskAppUser(const ArcKioskAppUser&) = delete;
+  ArcKioskAppUser& operator=(const ArcKioskAppUser&) = delete;
+
   ~ArcKioskAppUser() override;
 
   // Overridden from User:
   UserType GetType() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcKioskAppUser);
 };
 
 class WebKioskAppUser : public DeviceLocalAccountUserBase {
  public:
   explicit WebKioskAppUser(const AccountId& web_kiosk_account_id);
+
+  WebKioskAppUser(const WebKioskAppUser&) = delete;
+  WebKioskAppUser& operator=(const WebKioskAppUser&) = delete;
+
   ~WebKioskAppUser() override;
 
   // Overridden from User:
   UserType GetType() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebKioskAppUser);
-};
-
-class SupervisedUser : public User {
- public:
-  explicit SupervisedUser(const AccountId& account_id);
-  ~SupervisedUser() override;
-
-  // Overridden from User:
-  UserType GetType() const override;
-  std::string display_email() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUser);
 };
 
 class PublicAccountUser : public DeviceLocalAccountUserBase {
  public:
   explicit PublicAccountUser(const AccountId& account_id);
+
+  PublicAccountUser(const PublicAccountUser&) = delete;
+  PublicAccountUser& operator=(const PublicAccountUser&) = delete;
+
   ~PublicAccountUser() override;
 
   // Overridden from User:
   UserType GetType() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PublicAccountUser);
 };
 
 User::User(const AccountId& account_id)
@@ -207,11 +207,6 @@ bool User::HasGaiaAccount() const {
 
 bool User::IsActiveDirectoryUser() const {
   return GetType() == user_manager::USER_TYPE_ACTIVE_DIRECTORY;
-}
-
-bool User::IsChildOrDeprecatedSupervised() const {
-  UserType type = GetType();
-  return type == USER_TYPE_SUPERVISED_DEPRECATED || type == USER_TYPE_CHILD;
 }
 
 bool User::IsChild() const {
@@ -262,7 +257,6 @@ bool User::has_gaia_account() const {
       return true;
     case user_manager::USER_TYPE_GUEST:
     case user_manager::USER_TYPE_PUBLIC_ACCOUNT:
-    case user_manager::USER_TYPE_SUPERVISED_DEPRECATED:
     case user_manager::USER_TYPE_KIOSK_APP:
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
@@ -312,9 +306,7 @@ bool User::IsDeviceLocalAccount() const {
 }
 
 bool User::IsKioskType() const {
-  UserType type = GetType();
-  return type == USER_TYPE_KIOSK_APP || type == USER_TYPE_ARC_KIOSK_APP ||
-         type == USER_TYPE_WEB_KIOSK_APP;
+  return TypeIsKiosk(GetType());
 }
 
 User* User::CreateRegularUser(const AccountId& account_id,
@@ -340,10 +332,6 @@ User* User::CreateWebKioskAppUser(const AccountId& web_kiosk_account_id) {
   return new WebKioskAppUser(web_kiosk_account_id);
 }
 
-User* User::CreateSupervisedUser(const AccountId& account_id) {
-  return new SupervisedUser(account_id);
-}
-
 User* User::CreatePublicAccountUser(const AccountId& account_id,
                                     bool is_using_saml) {
   User* user = new PublicAccountUser(account_id);
@@ -352,7 +340,7 @@ User* User::CreatePublicAccountUser(const AccountId& account_id,
 }
 
 void User::SetAccountLocale(const std::string& resolved_account_locale) {
-  account_locale_.reset(new std::string(resolved_account_locale));
+  account_locale_ = std::make_unique<std::string>(resolved_account_locale);
 }
 
 void User::SetImage(std::unique_ptr<UserImage> user_image, int image_index) {
@@ -421,10 +409,6 @@ void RegularUser::UpdateType(UserType user_type) {
       return;
     const bool old_is_child = is_child_;
     is_child_ = user_type == user_manager::USER_TYPE_CHILD;
-
-    // Clear information about profile policy requirements to enforce setting it
-    // again for the new account type.
-    user_manager::known_user::ClearProfileRequiresPolicy(GetAccountId());
 
     LOG(WARNING) << "User type has changed: " << current_type
                  << " (is_child=" << old_is_child << ") => " << user_type
@@ -507,21 +491,6 @@ WebKioskAppUser::~WebKioskAppUser() {}
 
 UserType WebKioskAppUser::GetType() const {
   return user_manager::USER_TYPE_WEB_KIOSK_APP;
-}
-
-SupervisedUser::SupervisedUser(const AccountId& account_id) : User(account_id) {
-  set_can_lock(true);
-}
-
-SupervisedUser::~SupervisedUser() {
-}
-
-UserType SupervisedUser::GetType() const {
-  return user_manager::USER_TYPE_SUPERVISED_DEPRECATED;
-}
-
-std::string SupervisedUser::display_email() const {
-  return base::UTF16ToUTF8(display_name());
 }
 
 PublicAccountUser::PublicAccountUser(const AccountId& account_id)

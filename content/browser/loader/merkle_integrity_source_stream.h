@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
 #include "net/filter/filter_source_stream.h"
@@ -26,15 +25,21 @@ class CONTENT_EXPORT MerkleIntegritySourceStream
  public:
   MerkleIntegritySourceStream(base::StringPiece digest_header_value,
                               std::unique_ptr<SourceStream> upstream);
+
+  MerkleIntegritySourceStream(const MerkleIntegritySourceStream&) = delete;
+  MerkleIntegritySourceStream& operator=(const MerkleIntegritySourceStream&) =
+      delete;
+
   ~MerkleIntegritySourceStream() override;
 
   // net::FilterSourceStream
-  int FilterData(net::IOBuffer* output_buffer,
-                 int output_buffer_size,
-                 net::IOBuffer* input_buffer,
-                 int input_buffer_size,
-                 int* consumed_bytes,
-                 bool upstream_eof_reached) override;
+  base::expected<size_t, net::Error> FilterData(
+      net::IOBuffer* output_buffer,
+      size_t output_buffer_size,
+      net::IOBuffer* input_buffer,
+      size_t input_buffer_size,
+      size_t* consumed_bytes,
+      bool upstream_eof_reached) override;
   std::string GetTypeAsString() const override;
 
  private:
@@ -80,8 +85,6 @@ class CONTENT_EXPORT MerkleIntegritySourceStream
   bool failed_ = false;
   // Whether the final record has been processed.
   bool final_record_done_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MerkleIntegritySourceStream);
 };
 
 }  // namespace content

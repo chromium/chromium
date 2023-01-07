@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,7 +63,6 @@ bool TsSectionPat::ParsePsiSection(BitReader* bit_reader) {
   std::vector<int> program_number_array(pmt_pid_count);
   std::vector<int> pmt_pid_array(pmt_pid_count);
   for (int k = 0; k < pmt_pid_count; k++) {
-    int reserved;
     RCHECK(bit_reader->ReadBits(16, &program_number_array[k]));
     RCHECK(bit_reader->ReadBits(3, &reserved));
     RCHECK(bit_reader->ReadBits(13, &pmt_pid_array[k]));

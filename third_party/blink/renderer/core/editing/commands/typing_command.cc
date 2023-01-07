@@ -56,7 +56,7 @@
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -302,7 +302,7 @@ void TypingCommand::ForwardDeleteKeyPressed(Document& document,
 }
 
 String TypingCommand::TextDataForInputEvent() const {
-  if (commands_.IsEmpty() || IsIncrementalInsertion())
+  if (commands_.empty() || IsIncrementalInsertion())
     return text_to_insert_;
   return commands_.back()->TextDataForInputEvent();
 }
@@ -409,8 +409,7 @@ void TypingCommand::InsertText(
   }
 
   // Do nothing if no need to delete and insert.
-  if (passed_selection_for_insertion_as_undo_step.IsCaret() &&
-      new_text.IsEmpty())
+  if (passed_selection_for_insertion_as_undo_step.IsCaret() && new_text.empty())
     return;
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
@@ -555,7 +554,7 @@ void TypingCommand::DoApply(EditingState* editing_state) {
     return;
 
   if (command_type_ == kDeleteKey) {
-    if (commands_.IsEmpty())
+    if (commands_.empty())
       opened_by_backward_delete_ = true;
   }
 
@@ -635,7 +634,7 @@ void TypingCommand::InsertTextInternal(const String& text,
                                        EditingState* editing_state) {
   text_to_insert_ = text;
 
-  if (text.IsEmpty()) {
+  if (text.empty()) {
     InsertTextRunWithoutNewlines(text, editing_state);
     return;
   }

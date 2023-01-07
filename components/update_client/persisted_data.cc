@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
@@ -39,11 +38,10 @@ const base::Value* PersistedData::GetAppKey(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_service_)
     return nullptr;
-  const base::DictionaryValue* dict =
-      pref_service_->GetDictionary(kPersistedDataPreference);
-  if (!dict)
+  const base::Value& dict = pref_service_->GetValue(kPersistedDataPreference);
+  if (dict.type() != base::Value::Type::DICTIONARY)
     return nullptr;
-  const base::Value* apps = dict->FindDictKey("apps");
+  const base::Value* apps = dict.FindDictKey("apps");
   if (!apps)
     return nullptr;
   return apps->FindDictKey(id);
@@ -84,6 +82,10 @@ std::string PersistedData::GetPingFreshness(const std::string& id) const {
   return !result.empty() ? base::StringPrintf("{%s}", result.c_str()) : result;
 }
 
+int PersistedData::GetInstallDate(const std::string& id) const {
+  return GetInt(id, "installdate", kDateUnknown);
+}
+
 std::string PersistedData::GetCohort(const std::string& id) const {
   return GetString(id, "cohort");
 }
@@ -96,15 +98,15 @@ std::string PersistedData::GetCohortHint(const std::string& id) const {
   return GetString(id, "cohorthint");
 }
 
-base::Value* PersistedData::GetOrCreateAppKey(const std::string& id,
-                                              base::Value* root) {
+base::Value::Dict* PersistedData::GetOrCreateAppKey(const std::string& id,
+                                                    base::Value::Dict& root) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value* apps = root->FindDictKey("apps");
-  if (!apps)
-    apps = root->SetKey("apps", base::Value(base::Value::Type::DICTIONARY));
-  base::Value* app = apps->FindDictKey(id);
-  if (!app)
-    app = apps->SetKey(id, base::Value(base::Value::Type::DICTIONARY));
+  base::Value::Dict* apps = root.EnsureDict("apps");
+  base::Value::Dict* app = apps->FindDict(id);
+  if (!app) {
+    app = &apps->Set(id, base::Value::Dict())->GetDict();
+    app->Set("installdate", kDateFirstTime);
+  }
   return app;
 }
 
@@ -114,13 +116,15 @@ void PersistedData::SetDateLastDataHelper(
     base::OnceClosure callback,
     const std::set<std::string>& active_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DictionaryPrefUpdate update(pref_service_, kPersistedDataPreference);
+  ScopedDictPrefUpdate update(pref_service_, kPersistedDataPreference);
   for (const auto& id : ids) {
-    base::Value* app_key = GetOrCreateAppKey(id, update.Get());
-    app_key->SetIntKey("dlrc", datenum);
-    app_key->SetStringKey("pf", base::GenerateGUID());
+    base::Value::Dict* app_key = GetOrCreateAppKey(id, update.Get());
+    app_key->Set("dlrc", datenum);
+    app_key->Set("pf", base::GenerateGUID());
+    if (GetInstallDate(id) == kDateFirstTime)
+      app_key->Set("installdate", datenum);
     if (active_ids.find(id) != active_ids.end()) {
-      app_key->SetIntKey("dla", datenum);
+      app_key->Set("dla", datenum);
     }
   }
   std::move(callback).Run();
@@ -151,8 +155,8 @@ void PersistedData::SetString(const std::string& id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_service_)
     return;
-  DictionaryPrefUpdate update(pref_service_, kPersistedDataPreference);
-  GetOrCreateAppKey(id, update.Get())->SetStringKey(key, value);
+  ScopedDictPrefUpdate update(pref_service_, kPersistedDataPreference);
+  GetOrCreateAppKey(id, update.Get())->Set(key, value);
 }
 
 void PersistedData::SetCohort(const std::string& id,

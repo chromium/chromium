@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-PASS When in a non-secure context, getGamepad() should throw an error.
-Harness: the test ran to completion.
-

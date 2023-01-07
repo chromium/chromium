@@ -6,6 +6,7 @@
 	<string>${CHROMIUM_TEAM_ID}.${CHROMIUM_BUNDLE_ID}</string>
 	<key>keychain-access-groups</key>
 	<array>
+		<string>${CHROMIUM_TEAM_ID}.${CHROMIUM_BUNDLE_ID}.devicetrust</string>
 		<string>${CHROMIUM_TEAM_ID}.${CHROMIUM_BUNDLE_ID}.webauthn</string>
 	</array>
 	<key>com.apple.developer.associated-domains.applinks.read-write</key>

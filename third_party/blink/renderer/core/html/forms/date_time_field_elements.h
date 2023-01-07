@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_FIELD_ELEMENTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_FIELD_ELEMENTS_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_numeric_field_element.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_symbolic_field_element.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -36,14 +35,14 @@ namespace blink {
 class DateTimeAMPMFieldElement final : public DateTimeSymbolicFieldElement {
  public:
   DateTimeAMPMFieldElement(Document&, FieldOwner&, const Vector<String>&);
+  DateTimeAMPMFieldElement(const DateTimeAMPMFieldElement&) = delete;
+  DateTimeAMPMFieldElement& operator=(const DateTimeAMPMFieldElement&) = delete;
 
  private:
   // DateTimeFieldElement functions.
   void PopulateDateTimeFieldsState(DateTimeFieldsState&) override;
   void SetValueAsDate(const DateComponents&) override;
   void SetValueAsDateTimeFieldsState(const DateTimeFieldsState&) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeAMPMFieldElement);
 };
 
 class DateTimeDayFieldElement final : public DateTimeNumericFieldElement {
@@ -52,17 +51,22 @@ class DateTimeDayFieldElement final : public DateTimeNumericFieldElement {
                           FieldOwner&,
                           const String& placeholder,
                           const Range&);
+  DateTimeDayFieldElement(const DateTimeDayFieldElement&) = delete;
+  DateTimeDayFieldElement& operator=(const DateTimeDayFieldElement&) = delete;
 
  private:
   // DateTimeFieldElement functions.
   void PopulateDateTimeFieldsState(DateTimeFieldsState&) override;
   void SetValueAsDate(const DateComponents&) override;
   void SetValueAsDateTimeFieldsState(const DateTimeFieldsState&) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeDayFieldElement);
 };
 
 class DateTimeHourFieldElementBase : public DateTimeNumericFieldElement {
+ public:
+  DateTimeHourFieldElementBase(const DateTimeHourFieldElementBase&) = delete;
+  DateTimeHourFieldElementBase& operator=(const DateTimeHourFieldElementBase&) =
+      delete;
+
  protected:
   DateTimeHourFieldElementBase(Document&,
                                FieldOwner&,
@@ -75,8 +79,6 @@ class DateTimeHourFieldElementBase : public DateTimeNumericFieldElement {
   // DateTimeFieldElement functions.
   void SetValueAsDate(const DateComponents&) override;
   void SetValueAsDateTimeFieldsState(const DateTimeFieldsState&) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeHourFieldElementBase);
 };
 
 class DateTimeHour11FieldElement final : public DateTimeHourFieldElementBase {
@@ -85,13 +87,14 @@ class DateTimeHour11FieldElement final : public DateTimeHourFieldElementBase {
                              FieldOwner&,
                              const Range& hour23_range,
                              const Step&);
+  DateTimeHour11FieldElement(const DateTimeHour11FieldElement&) = delete;
+  DateTimeHour11FieldElement& operator=(const DateTimeHour11FieldElement&) =
+      delete;
 
  private:
   // DateTimeFieldElement functions.
   void PopulateDateTimeFieldsState(DateTimeFieldsState&) override;
   void SetValueAsInteger(int, EventBehavior = kDispatchNoEvent) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeHour11FieldElement);
 };
 
 class DateTimeHour12FieldElement final : public DateTimeHourFieldElementBase {
@@ -100,6 +103,9 @@ class DateTimeHour12FieldElement final : public DateTimeHourFieldElementBase {
                              FieldOwner&,
                              const Range& hour23_range,
                              const Step&);
+  DateTimeHour12FieldElement(const DateTimeHour12FieldElement&) = delete;
+  DateTimeHour12FieldElement& operator=(const DateTimeHour12FieldElement&) =
+      delete;
 
  private:
   // DateTimeFieldElement functions.
@@ -113,8 +119,6 @@ class DateTimeHour12FieldElement final : public DateTimeHourFieldElementBase {
                                    Step step,
                                    int old_value,
                                    int new_value) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeHour12FieldElement);
 };
 
 class DateTimeHour23FieldElement final : public DateTimeHourFieldElementBase {
@@ -123,13 +127,14 @@ class DateTimeHour23FieldElement final : public DateTimeHourFieldElementBase {
                              FieldOwner&,
                              const Range& hour23_range,
                              const Step&);
+  DateTimeHour23FieldElement(const DateTimeHour23FieldElement&) = delete;
+  DateTimeHour23FieldElement& operator=(const DateTimeHour23FieldElement&) =
+      delete;
 
  private:
   // DateTimeFieldElement functions.
   void PopulateDateTimeFieldsState(DateTimeFieldsState&) override;
   void SetValueAsInteger(int, EventBehavior = kDispatchNoEvent) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeHour23FieldElement);
 };
 
 class DateTimeHour24FieldElement final : public DateTimeHourFieldElementBase {
@@ -138,13 +143,14 @@ class DateTimeHour24FieldElement final : public DateTimeHourFieldElementBase {
                              FieldOwner&,
                              const Range& hour23_range,
                              const Step&);
+  DateTimeHour24FieldElement(const DateTimeHour24FieldElement&) = delete;
+  DateTimeHour24FieldElement& operator=(const DateTimeHour24FieldElement&) =
+      delete;
 
  private:
   // DateTimeFieldElement functions.
   void PopulateDateTimeFieldsState(DateTimeFieldsState&) override;
   void SetValueAsInteger(int, EventBehavior = kDispatchNoEvent) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeHour24FieldElement);
 };
 
 class DateTimeMillisecondFieldElement final
@@ -154,27 +160,30 @@ class DateTimeMillisecondFieldElement final
                                   FieldOwner&,
                                   const Range&,
                                   const Step&);
+  DateTimeMillisecondFieldElement(const DateTimeMillisecondFieldElement&) =
+      delete;
+  DateTimeMillisecondFieldElement& operator=(
+      const DateTimeMillisecondFieldElement&) = delete;
 
  private:
   // DateTimeFieldElement functions.
   void PopulateDateTimeFieldsState(DateTimeFieldsState&) override;
   void SetValueAsDate(const DateComponents&) override;
   void SetValueAsDateTimeFieldsState(const DateTimeFieldsState&) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeMillisecondFieldElement);
 };
 
 class DateTimeMinuteFieldElement final : public DateTimeNumericFieldElement {
  public:
   DateTimeMinuteFieldElement(Document&, FieldOwner&, const Range&, const Step&);
+  DateTimeMinuteFieldElement(const DateTimeMinuteFieldElement&) = delete;
+  DateTimeMinuteFieldElement& operator=(const DateTimeMinuteFieldElement&) =
+      delete;
 
  private:
   // DateTimeFieldElement functions.
   void PopulateDateTimeFieldsState(DateTimeFieldsState&) override;
   void SetValueAsDate(const DateComponents&) override;
   void SetValueAsDateTimeFieldsState(const DateTimeFieldsState&) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeMinuteFieldElement);
 };
 
 class DateTimeMonthFieldElement final : public DateTimeNumericFieldElement {
@@ -183,27 +192,29 @@ class DateTimeMonthFieldElement final : public DateTimeNumericFieldElement {
                             FieldOwner&,
                             const String& placeholder,
                             const Range&);
+  DateTimeMonthFieldElement(const DateTimeMonthFieldElement&) = delete;
+  DateTimeMonthFieldElement& operator=(const DateTimeMonthFieldElement&) =
+      delete;
 
  private:
   // DateTimeFieldElement functions.
   void PopulateDateTimeFieldsState(DateTimeFieldsState&) override;
   void SetValueAsDate(const DateComponents&) override;
   void SetValueAsDateTimeFieldsState(const DateTimeFieldsState&) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeMonthFieldElement);
 };
 
 class DateTimeSecondFieldElement final : public DateTimeNumericFieldElement {
  public:
   DateTimeSecondFieldElement(Document&, FieldOwner&, const Range&, const Step&);
+  DateTimeSecondFieldElement(const DateTimeSecondFieldElement&) = delete;
+  DateTimeSecondFieldElement& operator=(const DateTimeSecondFieldElement&) =
+      delete;
 
  private:
   // DateTimeFieldElement functions.
   void PopulateDateTimeFieldsState(DateTimeFieldsState&) override;
   void SetValueAsDate(const DateComponents&) override;
   void SetValueAsDateTimeFieldsState(const DateTimeFieldsState&) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeSecondFieldElement);
 };
 
 class DateTimeSymbolicMonthFieldElement final
@@ -214,6 +225,10 @@ class DateTimeSymbolicMonthFieldElement final
                                     const Vector<String>&,
                                     int minimum,
                                     int maximum);
+  DateTimeSymbolicMonthFieldElement(const DateTimeSymbolicMonthFieldElement&) =
+      delete;
+  DateTimeSymbolicMonthFieldElement& operator=(
+      const DateTimeSymbolicMonthFieldElement&) = delete;
 
  private:
   // DateTimeFieldElement functions.
@@ -221,20 +236,19 @@ class DateTimeSymbolicMonthFieldElement final
   void SetValueAsDate(const DateComponents&) override;
   void SetValueAsDateTimeFieldsState(const DateTimeFieldsState&) override;
 
-  DISALLOW_COPY_AND_ASSIGN(DateTimeSymbolicMonthFieldElement);
 };
 
 class DateTimeWeekFieldElement final : public DateTimeNumericFieldElement {
  public:
   DateTimeWeekFieldElement(Document&, FieldOwner&, const Range&);
+  DateTimeWeekFieldElement(const DateTimeWeekFieldElement&) = delete;
+  DateTimeWeekFieldElement& operator=(const DateTimeWeekFieldElement&) = delete;
 
  private:
   // DateTimeFieldElement functions.
   void PopulateDateTimeFieldsState(DateTimeFieldsState&) override;
   void SetValueAsDate(const DateComponents&) override;
   void SetValueAsDateTimeFieldsState(const DateTimeFieldsState&) override;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeWeekFieldElement);
 };
 
 class DateTimeYearFieldElement final : public DateTimeNumericFieldElement {
@@ -257,6 +271,8 @@ class DateTimeYearFieldElement final : public DateTimeNumericFieldElement {
   };
 
   DateTimeYearFieldElement(Document&, FieldOwner&, const Parameters&);
+  DateTimeYearFieldElement(const DateTimeYearFieldElement&) = delete;
+  DateTimeYearFieldElement& operator=(const DateTimeYearFieldElement&) = delete;
 
  private:
   // DateTimeFieldElement functions.
@@ -270,10 +286,8 @@ class DateTimeYearFieldElement final : public DateTimeNumericFieldElement {
 
   bool min_is_specified_;
   bool max_is_specified_;
-
-  DISALLOW_COPY_AND_ASSIGN(DateTimeYearFieldElement);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_DATE_TIME_FIELD_ELEMENTS_H_

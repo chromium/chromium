@@ -1,4 +1,4 @@
-# Copyright 2016 The Chromium Authors. All rights reserved.
+# Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -87,7 +87,7 @@ class MockGit(object):
     def delete(self, path):
         return self.delete_list([path])
 
-    def delete_list(self, paths):
+    def delete_list(self, paths, ignore_unmatch: bool = False):
         if not self._filesystem:
             return
         for path in paths:
@@ -104,3 +104,6 @@ class MockGit(object):
 
     def unstaged_changes(self):
         return {}
+
+    def uncommitted_changes(self):
+        return []

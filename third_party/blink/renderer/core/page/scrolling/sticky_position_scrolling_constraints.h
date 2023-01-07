@@ -1,21 +1,19 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_STICKY_POSITION_SCROLLING_CONSTRAINTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_SCROLLING_STICKY_POSITION_SCROLLING_CONSTRAINTS_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
 class PaintLayer;
-struct StickyPositionScrollingConstraints;
-
-typedef WTF::HashMap<PaintLayer*, StickyPositionScrollingConstraints>
-    StickyConstraintsMap;
 
 // Encapsulates the constraint information for a position: sticky element and
 // does calculation of the sticky offset for a given overflow clip rectangle.
@@ -71,40 +69,34 @@ typedef WTF::HashMap<PaintLayer*, StickyPositionScrollingConstraints>
 // already being shifted by its ancestor. To correctly handle such situations we
 // apply more complicated logic which is explained in the implementation of
 // |ComputeStickyOffset|.
-struct StickyPositionScrollingConstraints final {
+struct CORE_EXPORT StickyPositionScrollingConstraints final
+    : public GarbageCollected<StickyPositionScrollingConstraints> {
  public:
-  StickyPositionScrollingConstraints()
-      : is_anchored_left(false),
-        is_anchored_right(false),
-        is_anchored_top(false),
-        is_anchored_bottom(false) {}
-  StickyPositionScrollingConstraints(
-      const StickyPositionScrollingConstraints& other) = default;
-
-  // Computes the sticky offset for a given overflow clip rect.
-  //
-  // This method is non-const as we cache internal state for performance; see
-  // documentation in the implementation for details.
-  PhysicalOffset ComputeStickyOffset(const PhysicalRect& content_box_rect,
-                                     const StickyConstraintsMap&);
+  // Computes the sticky offset for a given scroll position of the containing
+  // scroll container. When the scroll position changed in a ScrollableArea,
+  // this method must be called for all affected sticky objects in pre-tree
+  // order.
+  void ComputeStickyOffset(const gfx::PointF& scroll_position);
 
   // Returns the last-computed offset of the sticky box from its original
   // position before scroll.
-  //
-  // This method exists for performance (to avoid recomputing the sticky offset)
-  // and must only be called when compositing inputs are clean for the sticky
-  // element. (Or after prepaint for CompositeAfterPaint).
-  PhysicalOffset GetOffsetForStickyPosition(const StickyConstraintsMap&) const;
+  PhysicalOffset StickyOffset() const { return sticky_offset_; }
 
-  bool is_anchored_left : 1;
-  bool is_anchored_right : 1;
-  bool is_anchored_top : 1;
-  bool is_anchored_bottom : 1;
+  void Trace(Visitor* visitor) const;
+
+  bool is_anchored_left = false;
+  bool is_anchored_right = false;
+  bool is_anchored_top = false;
+  bool is_anchored_bottom = false;
 
   LayoutUnit left_offset;
   LayoutUnit right_offset;
   LayoutUnit top_offset;
   LayoutUnit bottom_offset;
+
+  // The rectangle in which the sticky box is able to be positioned. This may be
+  // smaller than the scroller viewport due to things like padding.
+  PhysicalRect constraining_rect;
 
   // The containing block rect and sticky box rect are the basic components
   // for calculating the sticky offset to apply after a scroll. Consider the
@@ -135,8 +127,14 @@ struct StickyPositionScrollingConstraints final {
   //
   // See the implementation of |ComputeStickyOffset| for documentation on how
   // these ancestors are used to correct the offset calculation.
-  PaintLayer* nearest_sticky_layer_shifting_sticky_box = nullptr;
-  PaintLayer* nearest_sticky_layer_shifting_containing_block = nullptr;
+  Member<const PaintLayer> nearest_sticky_layer_shifting_sticky_box = nullptr;
+  Member<const PaintLayer> nearest_sticky_layer_shifting_containing_block =
+      nullptr;
+
+  // These fields cache the result of
+  // PaintLayer::ContainingScrollContainerLayer().
+  Member<const PaintLayer> containing_scroll_container_layer = nullptr;
+  bool is_fixed_to_view = false;
 
  private:
   // For performance we cache our accumulated sticky offset to allow descendant
@@ -146,8 +144,8 @@ struct StickyPositionScrollingConstraints final {
 
   // The sticky box offset accumulates the chain of sticky elements that are
   // between this sticky element and its containing block. Any descendant using
-  // |total_sticky_box_sticky_offset| has the same containing block as this
-  // element, so |total_sticky_box_sticky_offset| does not accumulate
+  // |total_sticky_box_sticky_offset_| has the same containing block as this
+  // element, so |total_sticky_box_sticky_offset_| does not accumulate
   // containing block sticky offsets. For example, consider the following chain:
   //
   // <div style="position: sticky;">
@@ -158,17 +156,22 @@ struct StickyPositionScrollingConstraints final {
   //
   // In the above example, both outerInline and innerInline have the same
   // containing block - the outermost <div>.
-  PhysicalOffset total_sticky_box_sticky_offset;
+  PhysicalOffset total_sticky_box_sticky_offset_;
 
   // The containing block offset accumulates all sticky-related offsets between
   // this element and the ancestor scroller. If this element is a containing
   // block shifting ancestor for some descendant, it shifts the descendant's
   // constraint rects by its entire offset.
-  PhysicalOffset total_containing_block_sticky_offset;
+  PhysicalOffset total_containing_block_sticky_offset_;
 
-  PhysicalOffset AncestorStickyBoxOffset(const StickyConstraintsMap&) const;
-  PhysicalOffset AncestorContainingBlockOffset(
-      const StickyConstraintsMap&) const;
+  // This is the real sticky offset which is  total_sticky_box_sticky_offset_ -
+  // AncestorStickyBoxOffset(). It's stored to avoid access to the
+  // Member<PaintLayer> fields from StickyOffset() in case it's called during
+  // layout. See the TODO in LayoutBoxModelObject::StickyPositionOffset().
+  PhysicalOffset sticky_offset_;
+
+  PhysicalOffset AncestorStickyBoxOffset() const;
+  PhysicalOffset AncestorContainingBlockOffset() const;
 };
 
 }  // namespace blink

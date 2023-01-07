@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,17 +10,17 @@
 #include <string>
 
 #include "components/invalidation/public/invalidation.h"
-#include "components/sync/base/invalidation_interface.h"
+#include "components/sync/base/sync_invalidation.h"
 
 namespace syncer {
 
-// Wraps a Invalidation in the InvalidationInterface.
-class InvalidationAdapter : public InvalidationInterface {
+// Wraps a Invalidation in the SyncInvalidation interface.
+class InvalidationAdapter : public SyncInvalidation {
  public:
   explicit InvalidationAdapter(const invalidation::Invalidation& invalidation);
   ~InvalidationAdapter() override;
 
-  // Implementation of InvalidationInterface.
+  // Implementation of SyncInvalidation.
   bool IsUnknownVersion() const override;
   const std::string& GetPayload() const override;
   int64_t GetVersion() const override;

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,9 +7,16 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/shell/app/shell_main_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(erikchen): Move #include to .cc file and forward declare
+// chromeos::LacrosService to resolve crbug.com/1195401.
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 namespace content {
 class ContentUtilityClient;
@@ -20,7 +27,16 @@ namespace extensions {
 class TestShellMainDelegate : public extensions::ShellMainDelegate {
  public:
   TestShellMainDelegate();
+
+  TestShellMainDelegate(const TestShellMainDelegate&) = delete;
+  TestShellMainDelegate& operator=(const TestShellMainDelegate&) = delete;
+
   ~TestShellMainDelegate() override;
+
+  // ContentMainDelegate implementation:
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<int> PostEarlyInitialization(InvokedIn invoked_in) override;
+#endif
 
  protected:
   // content::ContentMainDelegate implementation:
@@ -29,7 +45,9 @@ class TestShellMainDelegate : public extensions::ShellMainDelegate {
  private:
   std::unique_ptr<content::ContentUtilityClient> utility_client_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestShellMainDelegate);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<chromeos::LacrosService> lacros_service_;
+#endif
 };
 
 }  // namespace extensions

@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry.h"
@@ -49,7 +50,7 @@ class ExtensionActionManager : public KeyedService,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Listen to extension unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>

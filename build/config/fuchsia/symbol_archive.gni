@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -8,7 +8,7 @@ assert(is_fuchsia)
 # ".build_ids" convention used by the symbolizer and GNU GDB.
 #
 # Parameters:
-#   deps: Must all be cr_fuchsia_package() or fuchsia_package() targets.
+#   deps: Must all be fuchsia_package() targets.
 #   ids_txt: The "ids.txt" file which lists the relative paths to unstripped
 #            executables and libraries, along with their build IDs.
 #   archive_name: The path to the compressed tarball that will be generated.

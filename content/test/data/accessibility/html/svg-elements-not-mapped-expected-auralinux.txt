@@ -1,0 +1,50 @@
+[document web] tag:#document
+++[section] tag:body
+++++[image] name='animate should not be exposed' tag:svg
+++++[image] name='animateMotion should not be exposed' tag:svg
+++++[image] name='animateTransform should not be exposed' tag:svg
+++++[image] name='clipPath should not be exposed' tag:svg
+++++[image] name='cursor should not be exposed' tag:svg
+++++[image] name='defs should not be exposed' tag:svg
+++++[image] name='discard should not be exposed' tag:svg
+++++[image] name='filter and filter effect elements should not be exposed' tag:svg
+++++[image] name='hatch should not be exposed' tag:svg
+++++[image] name='hatchpath should not be exposed' tag:svg
+++++[image] name='image which lacks criteria for inclusion should not be exposed' tag:svg
+++++[image] name='linearGradient should not be exposed' tag:svg
+++++[image] name='marker should not be exposed' tag:svg
+++++[image] name='mask should not be exposed' tag:svg
+++++[image] name='metadata should not be exposed' tag:svg
+++++[image] name='mpath should not be exposed' tag:svg
+++++[image] name='pattern should not be exposed' tag:svg
+++++[image] name='radialGradient should not be exposed' tag:svg
+++++[image] name='solidColor should not be exposed' tag:svg
+++++[image] name='stop should not be exposed' tag:svg
+++++[document frame] name='style and set should not be exposed' tag:svg
+++++++[image] id:clickable tag:rect
+++++[document frame] name='switch should not be exposed' tag:svg
+++++++[section] tag:text
+++++++++[static] name='Hey!'
+++++[image] name='view should not be exposed' tag:svg
+++++[image] name='desc should not be exposed as accessible object' description='abc' description-from:svg-desc-element tag:svg
+++++[image] name='title should not be exposed as accessible object' description='abc' description-from:tooltip tag:svg
+++++[image] name='circle which lacks criteria for inclusion should not be exposed' tag:svg
+++++[image] name='ellipse which lacks criteria for inclusion should not be exposed' tag:svg
+++++[document frame] name='foreignObject which lacks criteria for inclusion should not be exposed' tag:svg
+++++++[paragraph] tag:p
+++++++++[static] name='Hello world'
+++++[image] name='group which lacks criteria for inclusion should not be exposed' tag:svg
+++++[image] name='line which lacks criteria for inclusion should not be exposed' tag:svg
+++++[image] name='path which lacks criteria for inclusion should not be exposed' tag:svg
+++++[image] name='polygon which lacks criteria for inclusion should not be exposed' tag:svg
+++++[image] name='polyline which lacks criteria for inclusion should not be exposed' tag:svg
+++++[image] name='rect which lacks criteria for inclusion should not be exposed' tag:svg
+++++[image] name='symbol which lacks criteria for inclusion should not be exposed' tag:svg
+++++[document frame] name='textPath which lacks criteria for inclusion should not be exposed' tag:svg
+++++++[section] tag:text
+++++++++[static] name='Hello'
+++++[document frame] name='tspan which lacks criteria for inclusion should not be exposed' tag:svg
+++++++[section] tag:text
+++++++++[static] name='Hello '
+++++++++[static] name='world'
+++++++++[static] name='!'

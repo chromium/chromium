@@ -1,0 +1,12 @@
+{
+  "AutoConnect": true,
+  "Type": "cellular",
+  "Cellular.AllowRoaming": true,
+  "Cellular.APN": {
+    "apn": "test-apn",
+    "authentication": "chap",
+    "username": "test-username",
+    "password": "test-password"
+  },
+  "StaticIPConfig": {}
+}

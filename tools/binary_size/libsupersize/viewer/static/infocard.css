@@ -1,0 +1,120 @@
+/* Copyright 2018 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+.infocards {
+  visibility: hidden;
+  position: fixed;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  margin: 0 auto;
+  max-width: 720px;
+  max-height: 50vh;
+  overflow-y: auto;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px #3c40434d, 0 1px 3px 1px #3c404326;
+  transform: translateY(16px);
+  opacity: 0;
+  transition: 0.3s ease transform, 0.3s ease opacity, 0.3s ease visibility;
+}
+.tree-view:hover ~ .infocards,
+.tree-view.focused ~ .infocards,
+.infocards:hover {
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+}
+
+.infocard {
+  display: grid;
+  padding: 16px;
+}
+.infocard-artifact {
+  grid-template-areas: 'header icon' 'type type';
+  grid-template-columns: 1fr 80px;
+  grid-column-gap: 16px;
+  grid-row-gap: 8px;
+}
+.infocard-symbol {
+  grid-template-areas: 'icon header' 'type type';
+  grid-template-columns: 40px auto;
+  grid-column-gap: 16px;
+}
+
+.infocard[hidden] {
+  display: none;
+}
+@media (min-width: 700px) {
+  .show-options .infocards {
+    right: 256px;
+  }
+}
+
+.icon-info {
+  grid-area: icon;
+  align-self: center;
+  padding: 8px 2px 8px 8px;
+  border-radius: 50%;
+}
+.artifact-icon-info {
+  position: relative;
+  padding: 0;
+  height: 80px;
+}
+.header-info {
+  grid-area: header;
+  color: #202124;
+}
+.size-info {
+  margin: 0 0 2px;
+}
+.address-info {
+  margin: 0 0 2px 20px;
+}
+.padding-info {
+  margin: 0 0 2px 20px;
+}
+.details-info {
+  margin: 0 0 8px;
+  word-break: break-word;
+  color: #3c4043;
+}
+.symbol-name-info {
+  font-weight: 500;
+}
+.type-info-artifact {
+  grid-area: type;
+  margin-bottom: 0;
+}
+
+.type-pie-info {
+  height: 80px;
+  width: 80px;
+  border-radius: 50%;
+}
+.type-breakdown-info {
+  grid-area: type;
+  overflow-x: auto;
+  border-top: 1px solid #dadce0;
+  padding-top: 8px;
+  clear: right;
+  text-align: left;
+}
+.canvas-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.type-breakdown-info table {
+  min-width: 100%;
+  font-size: 14px;
+}
+.type-breakdown-info th[scope='row'] {
+  font-weight: normal;
+}

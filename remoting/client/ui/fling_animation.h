@@ -1,14 +1,14 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2017 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef REMOTING_CLIENT_UI_FLING_ANIMATION_H_
 #define REMOTING_CLIENT_UI_FLING_ANIMATION_H_
 
-#include <memory>
-
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "remoting/client/ui/fling_tracker.h"
 
 namespace remoting {
@@ -45,7 +45,7 @@ class FlingAnimation {
 
   base::TimeTicks fling_start_time_;
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   // FlingAnimation is neither copyable nor movable.
   FlingAnimation(const FlingAnimation&) = delete;

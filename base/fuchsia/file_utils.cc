@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,22 +10,20 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <tuple>
 #include <utility>
 
 #include "base/files/scoped_file.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/macros.h"
-
 namespace base {
 
-const char kPersistedDataDirectoryPath[] = "/data";
-const char kPersistedCacheDirectoryPath[] = "/cache";
-const char kServiceDirectoryPath[] = "/svc";
-const char kPackageRootDirectoryPath[] = "/pkg";
+namespace {
 
-fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandle(
-    const base::FilePath& path) {
-  ScopedFD fd(open(path.value().c_str(), O_DIRECTORY | O_RDONLY));
+fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandleInternal(
+    const base::FilePath& path,
+    bool read_only) {
+  ScopedFD fd(open(path.value().c_str(),
+                   O_DIRECTORY | (read_only ? O_RDONLY : O_RDWR)));
   if (!fd.is_valid()) {
     DPLOG(ERROR) << "Failed to open " << path;
     return fidl::InterfaceHandle<::fuchsia::io::Directory>();
@@ -35,13 +33,30 @@ fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandle(
   zx_status_t status =
       fdio_fd_transfer(fd.get(), channel.reset_and_get_address());
   if (status != ZX_ERR_UNAVAILABLE)
-    ignore_result(fd.release());
+    std::ignore = fd.release();
   if (status != ZX_OK) {
     ZX_DLOG(ERROR, status) << "fdio_fd_transfer";
     return fidl::InterfaceHandle<::fuchsia::io::Directory>();
   }
 
   return fidl::InterfaceHandle<::fuchsia::io::Directory>(std::move(channel));
+}
+
+}  // namespace
+
+const char kPersistedDataDirectoryPath[] = "/data";
+const char kPersistedCacheDirectoryPath[] = "/cache";
+const char kServiceDirectoryPath[] = "/svc";
+const char kPackageRootDirectoryPath[] = "/pkg";
+
+fidl::InterfaceHandle<::fuchsia::io::Directory> OpenDirectoryHandle(
+    const base::FilePath& path) {
+  return OpenDirectoryHandleInternal(path, true);
+}
+
+fidl::InterfaceHandle<::fuchsia::io::Directory> OpenWritableDirectoryHandle(
+    const base::FilePath& path) {
+  return OpenDirectoryHandleInternal(path, false);
 }
 
 }  // namespace base

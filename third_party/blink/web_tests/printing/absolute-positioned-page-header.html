@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner)
+    testRunner.setPrinting();
+</script>
+<style>
+  body {
+    margin: 0;
+  }
+  .header {
+    position: absolute;
+    counter-increment: pagecount;
+  }
+  .header::before {
+    content: "Page " counter(pagecount);
+  }
+</style>
+<p style="position:absolute; margin-top:4em;">
+  When printed, each page should have a header indicating the page number.
+</p>
+<div class="header" style="top:0;"></div>
+<div class="header" style="top:100vh;"></div>
+<div class="header" style="top:200vh;"></div>
+<div class="header" style="top:300vh;"></div>
+<div class="header" style="top:400vh;"></div>

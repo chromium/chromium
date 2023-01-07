@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,19 +9,22 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_video_frame.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
+#include "third_party/blink/renderer/modules/peerconnection/testing/mock_transformable_video_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
-#include "third_party/webrtc/api/test/mock_transformable_video_frame.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 using testing::_;
@@ -75,11 +78,15 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
     EXPECT_FALSE(transformer_.HasTransformedFrameSinkCallback(kSSRC));
   }
 
-  RTCEncodedVideoUnderlyingSink* CreateSink(ScriptState* script_state) {
+  RTCEncodedVideoUnderlyingSink* CreateSink(
+      ScriptState* script_state,
+      webrtc::TransformableFrameInterface::Direction expected_direction =
+          webrtc::TransformableFrameInterface::Direction::kSender) {
     return MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
         script_state,
         WTF::BindRepeating(&RTCEncodedVideoUnderlyingSinkTest::GetTransformer,
-                           WTF::Unretained(this)));
+                           WTF::Unretained(this)),
+        expected_direction);
   }
 
   RTCEncodedVideoUnderlyingSink* CreateNullCallbackSink(
@@ -87,20 +94,26 @@ class RTCEncodedVideoUnderlyingSinkTest : public testing::Test {
     return MakeGarbageCollected<RTCEncodedVideoUnderlyingSink>(
         script_state,
         WTF::BindRepeating(
-            []() -> RTCEncodedVideoStreamTransformer* { return nullptr; }));
+            []() -> RTCEncodedVideoStreamTransformer* { return nullptr; }),
+        webrtc::TransformableFrameInterface::Direction::kSender);
   }
 
   RTCEncodedVideoStreamTransformer* GetTransformer() { return &transformer_; }
 
-  ScriptValue CreateEncodedVideoFrameChunk(ScriptState* script_state) {
-    auto mock_frame =
-        std::make_unique<NiceMock<webrtc::MockTransformableVideoFrame>>();
+  ScriptValue CreateEncodedVideoFrameChunk(
+      ScriptState* script_state,
+      webrtc::TransformableFrameInterface::Direction direction =
+          webrtc::TransformableFrameInterface::Direction::kSender) {
+    auto mock_frame = std::make_unique<NiceMock<MockTransformableVideoFrame>>();
+
     ON_CALL(*mock_frame.get(), GetSsrc).WillByDefault(Return(kSSRC));
+    ON_CALL(*mock_frame.get(), GetDirection).WillByDefault(Return(direction));
     RTCEncodedVideoFrame* frame =
         MakeGarbageCollected<RTCEncodedVideoFrame>(std::move(mock_frame));
-    return ScriptValue(script_state->GetIsolate(),
-                       ToV8(frame, script_state->GetContext()->Global(),
-                            script_state->GetIsolate()));
+    return ScriptValue(
+        script_state->GetIsolate(),
+        ToV8Traits<RTCEncodedVideoFrame>::ToV8(script_state, frame)
+            .ToLocalChecked());
   }
 
  protected:
@@ -174,6 +187,23 @@ TEST_F(RTCEncodedVideoUnderlyingSinkTest, WriteToNullCallbackSinkFails) {
   EXPECT_TRUE(write_tester.IsRejected());
   EXPECT_TRUE(IsDOMException(script_state, write_tester.Value(),
                              DOMExceptionCode::kInvalidStateError));
+}
+
+TEST_F(RTCEncodedVideoUnderlyingSinkTest, WriteInvalidDirectionFails) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* sink = CreateSink(
+      script_state, webrtc::TransformableFrameInterface::Direction::kSender);
+
+  // Write an encoded chunk with direction set to Receiver should fail as it
+  // doesn't match the expected direction of our sink.
+  DummyExceptionStateForTesting dummy_exception_state;
+  sink->write(script_state,
+              CreateEncodedVideoFrameChunk(
+                  script_state,
+                  webrtc::TransformableFrameInterface::Direction::kReceiver),
+              nullptr, dummy_exception_state);
+  EXPECT_TRUE(dummy_exception_state.HadException());
 }
 
 }  // namespace blink

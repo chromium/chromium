@@ -1,13 +1,10 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef SERVICES_DEVICE_BATTERY_BATTERY_MONITOR_IMPL_H_
 #define SERVICES_DEVICE_BATTERY_BATTERY_MONITOR_IMPL_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/battery/battery_status_service.h"
@@ -20,6 +17,10 @@ class BatteryMonitorImpl : public mojom::BatteryMonitor {
   static void Create(mojo::PendingReceiver<mojom::BatteryMonitor> receiver);
 
   BatteryMonitorImpl();
+
+  BatteryMonitorImpl(const BatteryMonitorImpl&) = delete;
+  BatteryMonitorImpl& operator=(const BatteryMonitorImpl&) = delete;
+
   ~BatteryMonitorImpl() override;
 
  private:
@@ -35,8 +36,6 @@ class BatteryMonitorImpl : public mojom::BatteryMonitor {
   QueryNextStatusCallback callback_;
   mojom::BatteryStatus status_;
   bool status_to_report_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryMonitorImpl);
 };
 
 }  // namespace device

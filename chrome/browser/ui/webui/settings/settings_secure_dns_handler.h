@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/browser/net/dns_probe_runner.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -25,6 +24,10 @@ namespace settings {
 class SecureDnsHandler : public SettingsPageUIHandler {
  public:
   SecureDnsHandler();
+
+  SecureDnsHandler(const SecureDnsHandler&) = delete;
+  SecureDnsHandler& operator=(const SecureDnsHandler&) = delete;
+
   ~SecureDnsHandler() override;
 
   // SettingsPageUIHandler:
@@ -36,7 +39,7 @@ class SecureDnsHandler : public SettingsPageUIHandler {
   // as a dictionary with the following keys: "name" (the text to display in the
   // UI), "value" (the DoH template for this provider), and "policy" (the URL of
   // the provider's privacy policy).
-  base::Value GetSecureDnsResolverList();
+  base::Value::List GetSecureDnsResolverList();
 
   void SetNetworkContextForTesting(
       network::mojom::NetworkContext* network_context);
@@ -47,19 +50,19 @@ class SecureDnsHandler : public SettingsPageUIHandler {
 
  protected:
   // Retrieves all pre-approved secure resolvers and returns them to WebUI.
-  void HandleGetSecureDnsResolverList(const base::ListValue* args);
+  void HandleGetSecureDnsResolverList(const base::Value::List& args);
 
   // Intended to be called once upon creation of the secure DNS setting.
-  void HandleGetSecureDnsSetting(const base::ListValue* args);
+  void HandleGetSecureDnsSetting(const base::Value::List& args);
 
-  // Parses a custom entry into templates, if they are all valid.
-  void HandleParseCustomDnsEntry(const base::ListValue* args);
+  // Parses a custom entry and returns true if it is a fully valid config.
+  void HandleIsValidConfig(const base::Value::List& args);
 
-  // Returns whether or not a test query to the resolver succeeds.
-  void HandleProbeCustomDnsTemplate(const base::ListValue* args);
+  // Returns whether or not a test query succeeds with the provided config.
+  void HandleProbeConfig(const base::Value::List& args);
 
   // Records metrics on the user-initiated dropdown selection event.
-  void HandleRecordUserDropdownInteraction(const base::ListValue* args);
+  void HandleRecordUserDropdownInteraction(const base::Value::List& args);
 
   // Retrieves the current host resolver configuration, computes the
   // corresponding UI representation, and sends it to javascript.
@@ -81,8 +84,6 @@ class SecureDnsHandler : public SettingsPageUIHandler {
   // there is no probe currently in progress.
   std::string probe_callback_id_;
   PrefChangeRegistrar pref_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureDnsHandler);
 };
 
 }  // namespace settings

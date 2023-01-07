@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,18 +12,21 @@
 @class ChromeActivityItemThumbnailGenerator;
 
 // This UIActivityItemSource-conforming object conforms to UTType public.url so
-// it can be used with other Social Sharing Extensions as well. The |shareURL|
-// is the URL shared with Social Sharing Extensions. The |subject| is used by
+// it can be used with other Social Sharing Extensions as well. The `shareURL`
+// is the URL shared with Social Sharing Extensions. The `subject` is used by
 // Mail applications to pre-fill in the subject line.
 @interface ChromeActivityURLSource : NSObject <ChromeActivityItemSource>
 
-// Default initializer. |shareURL| and |subject| must not be nil.
+// Default initializer. `shareURL` and `subject` must not be nil.
 - (instancetype)initWithShareURL:(NSURL*)shareURL subject:(NSString*)subject;
 
 // Thumbnail generator used to provide thumbnails to extensions that request
 // one.
 @property(nonatomic, strong)
     ChromeActivityItemThumbnailGenerator* thumbnailGenerator;
+
+// Prefillled link metadata that can be displayed in the share sheet.
+@property(nonatomic, strong) LPLinkMetadata* linkMetadata;
 
 @end
 

@@ -1,4 +1,4 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,8 +9,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/tray/tray_detailed_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace ash {
 
@@ -117,6 +117,10 @@ class ImeListView : public TrayDetailedView {
 class ASH_EXPORT ImeListViewTestApi {
  public:
   explicit ImeListViewTestApi(ImeListView* ime_list_view);
+
+  ImeListViewTestApi(const ImeListViewTestApi&) = delete;
+  ImeListViewTestApi& operator=(const ImeListViewTestApi&) = delete;
+
   virtual ~ImeListViewTestApi();
 
   views::View* GetToggleView() const;
@@ -127,8 +131,6 @@ class ASH_EXPORT ImeListViewTestApi {
 
  private:
   ImeListView* ime_list_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeListViewTestApi);
 };
 
 }  // namespace ash

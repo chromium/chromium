@@ -1,0 +1,6 @@
+AriaProperties changed on role=dialog
+AriaProperties changed on role=heading, name=Described by dialog title
+AriaProperties changed on role=textbox
+IsDataValidForForm changed on role=textbox
+StructureChanged/ChildAdded on role=dialog
+StructureChanged/ChildrenReordered on role=document

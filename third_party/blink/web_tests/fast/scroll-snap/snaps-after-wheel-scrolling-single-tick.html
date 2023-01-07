@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<!-- crbug.com/1122774 -->
+<style>
+#scroll-container {
+  scroll-snap-type: y mandatory;
+  width: 600px;
+  height: 400px;
+  background-color: skyblue;
+  overflow-y: auto;
+}
+
+#scroll-container > div {
+  scroll-snap-align: center;
+  width: 100%;
+  height: 400px;
+}
+
+#scroll-container > div:nth-child(even) {
+  background-color: seagreen;
+}
+
+#scroll-container > div:nth-child(odd) {
+  background-color: snow;
+}
+</style>
+
+<div id="scroll-container">
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+  <div></div>
+</div>
+
+
+<script>
+promise_test (async t => {
+  const scrollDelta = 10;
+  const isPreciseDelta = false;
+  const xPos = 50;
+  const yPos = 50;
+  const scrollDirection = 'down';
+  const speed_in_pixels_per_s = 100;
+  const scroller = document.getElementById('scroll-container');
+
+  const scrollTop = () => { return scroller.scrollTop; }
+  const scrollPromise = waitForScrollEvent(scroller);
+
+  await mouseMoveTo(xPos, yPos);
+  await smoothScroll(scrollDelta, xPos, yPos, GestureSourceType.MOUSE_INPUT,
+                     scrollDirection, speed_in_pixels_per_s, isPreciseDelta);
+  await scrollPromise;
+
+  // Using a time based wait rather than waiting until a condition is met in
+  // order to catch a secondary scroll snap triggered after gesture-scroll-end.
+  await waitForAnimationEndTimeBased(scrollTop);
+  assert_equals(scrollTop(), 400, 'Failed to stop at the first snap target');
+}, 'mouse wheel does not skip over snap targets');
+</script>

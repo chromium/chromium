@@ -244,8 +244,6 @@ void OnPaintFinished(const SkPixmap& pixmap) {
     char* encoded = EncodeBitmapContents(gRepaintMimeType, gRepaintJPEGQuality);
     CHECK(!gRepaintResult);
     gRepaintResult = encoded;
-
-    gRepaintEvent->Signal();
   } else {
     size_t bookmark = gLastCommitBookmark;
     if (bookmark) {
@@ -254,6 +252,12 @@ void OnPaintFinished(const SkPixmap& pixmap) {
   }
 
   gCurrentPixmap = nullptr;
+}
+
+void OnRepaintFinished() {
+  CHECK(gCompositorRepainting);
+  CHECK(HasDivergedFromRecording());
+  gRepaintEvent->Signal();
 }
 
 static cc::ProxyMain* gCurrentCompositorProxy;
@@ -265,6 +269,7 @@ void SetCompositorProxy(cc::ProxyMain* proxy) {
 static char* PaintWhenDiverged(const char* mime_type, int jpeg_quality) {
   gRepaintMimeType = mime_type;
   gRepaintJPEGQuality = jpeg_quality;
+  gRepaintResult = nullptr;
 
   base::WaitableEvent event;
   gRepaintEvent = &event;
@@ -280,7 +285,7 @@ static char* PaintWhenDiverged(const char* mime_type, int jpeg_quality) {
   gCurrentCompositorProxy->RecordReplayRepaint();
 
   // Wait for the repainting frame to complete.
-  bool signaled = event.TimedWait(base::TimeDelta::FromMilliseconds(200));
+  bool signaled = event.TimedWait(base::Milliseconds(200));
   CHECK(signaled);
 
   gRepaintEvent = nullptr;

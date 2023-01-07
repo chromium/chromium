@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,9 +16,10 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/component_updater/component_installer.h"
-#include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/component_updater_utils.h"
 #include "components/update_client/crx_update_item.h"
@@ -35,18 +36,13 @@ AwComponentUpdateService* AwComponentUpdateService::GetInstance() {
 // static
 void JNI_AwComponentUpdateService_StartComponentUpdateService(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_finished_callback) {
-  // Has to be called after init WebViewApkProcess, should only happen once
-  // during the lifetime of webview_apk process.
-  component_updater::RegisterPathProvider(
-      /*components_system_root_key=*/android_webview::DIR_COMPONENTS_ROOT,
-      /*components_system_root_key_alt=*/android_webview::DIR_COMPONENTS_ROOT,
-      /*components_user_root_key=*/android_webview::DIR_COMPONENTS_ROOT);
-
+    const base::android::JavaParamRef<jobject>& j_finished_callback,
+    jboolean j_on_demand_update) {
   AwComponentUpdateService::GetInstance()->StartComponentUpdateService(
       base::BindOnce(
-          base::android::RunRunnableAndroid,
-          base::android::ScopedJavaGlobalRef<jobject>(j_finished_callback)));
+          &base::android::RunIntCallbackAndroid,
+          base::android::ScopedJavaGlobalRef<jobject>(j_finished_callback)),
+      j_on_demand_update);
 }
 
 AwComponentUpdateService::AwComponentUpdateService()
@@ -62,7 +58,8 @@ AwComponentUpdateService::~AwComponentUpdateService() = default;
 
 // Start ComponentUpdateService once.
 void AwComponentUpdateService::StartComponentUpdateService(
-    base::OnceClosure finished_callback) {
+    UpdateCallback finished_callback,
+    bool on_demand_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RegisterComponents(
@@ -70,11 +67,12 @@ void AwComponentUpdateService::StartComponentUpdateService(
                           base::Unretained(this)),
       base::BindOnce(
           &AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents,
-          weak_ptr_factory_.GetWeakPtr(), std::move(finished_callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(finished_callback),
+          on_demand_update));
 }
 
 bool AwComponentUpdateService::RegisterComponent(
-    const update_client::CrxComponent& component) {
+    const component_updater::ComponentRegistration& component) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/1180595): Add the histograms being logged in
@@ -97,7 +95,8 @@ bool AwComponentUpdateService::RegisterComponent(
   return true;
 }
 
-void AwComponentUpdateService::CheckForUpdates(base::OnceClosure on_finished) {
+void AwComponentUpdateService::CheckForUpdates(UpdateCallback on_finished,
+                                               bool on_demand_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(crbug.com/1180595): Add the histograms being logged in
@@ -116,23 +115,24 @@ void AwComponentUpdateService::CheckForUpdates(base::OnceClosure on_finished) {
   }
 
   if (unsecure_ids.empty() && secure_ids.empty()) {
-    base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                  std::move(on_finished));
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(on_finished), 0));
     return;
   }
 
-  auto on_finished_callback = base::BindOnce(
-      [](base::OnceClosure on_finished, update_client::Error error) {
-        std::move(on_finished).Run();
-      },
-      std::move(on_finished));
+  auto on_finished_callback =
+      base::BindOnce(&AwComponentUpdateService::RecordComponentsUpdated,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(on_finished));
+
+  // Reset updated components counter.
+  components_updated_count_ = 0;
 
   if (!unsecure_ids.empty()) {
     update_client_->Update(
         unsecure_ids,
         base::BindOnce(&AwComponentUpdateService::GetCrxComponents,
                        base::Unretained(this)),
-        {}, false,
+        {}, on_demand_update,
         base::BindOnce(&AwComponentUpdateService::OnUpdateComplete,
                        weak_ptr_factory_.GetWeakPtr(),
                        secure_ids.empty() ? std::move(on_finished_callback)
@@ -145,7 +145,7 @@ void AwComponentUpdateService::CheckForUpdates(base::OnceClosure on_finished) {
         secure_ids,
         base::BindOnce(&AwComponentUpdateService::GetCrxComponents,
                        base::Unretained(this)),
-        {}, false,
+        {}, on_demand_update,
         base::BindOnce(&AwComponentUpdateService::OnUpdateComplete,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(on_finished_callback),
@@ -169,30 +169,67 @@ void AwComponentUpdateService::OnUpdateComplete(
   }
 }
 
-base::Optional<update_client::CrxComponent>
+update_client::CrxComponent AwComponentUpdateService::ToCrxComponent(
+    const component_updater::ComponentRegistration& component) const {
+  update_client::CrxComponent crx;
+  crx.pk_hash = component.public_key_hash;
+  crx.app_id = component.app_id;
+  crx.installer = component.installer;
+  crx.action_handler = component.action_handler;
+  crx.version = component.version;
+  crx.fingerprint = component.fingerprint;
+  crx.name = component.name;
+  crx.installer_attributes = component.installer_attributes;
+  crx.requires_network_encryption = component.requires_network_encryption;
+
+  crx.crx_format_requirement =
+      crx_file::VerifierFormat::CRX3_WITH_PUBLISHER_PROOF;
+
+  return crx;
+}
+
+absl::optional<component_updater::ComponentRegistration>
 AwComponentUpdateService::GetComponent(const std::string& id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return component_updater::GetComponent(components_, id);
 }
 
-std::vector<base::Optional<update_client::CrxComponent>>
+std::vector<absl::optional<update_client::CrxComponent>>
 AwComponentUpdateService::GetCrxComponents(
     const std::vector<std::string>& ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return component_updater::GetCrxComponents(components_, ids);
+  std::vector<absl::optional<update_client::CrxComponent>> crxs;
+  for (absl::optional<component_updater::ComponentRegistration> item :
+       component_updater::GetCrxComponents(components_, ids)) {
+    crxs.push_back(
+        item
+            ? absl::optional<update_client::CrxComponent>{ToCrxComponent(*item)}
+            : absl::nullopt);
+  }
+  return crxs;
 }
 
 void AwComponentUpdateService::ScheduleUpdatesOfRegisteredComponents(
-    base::OnceClosure on_finished_updates) {
+    UpdateCallback on_finished_updates,
+    bool on_demand_update) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  CheckForUpdates(std::move(on_finished_updates));
+  CheckForUpdates(std::move(on_finished_updates), on_demand_update);
 }
 
 void AwComponentUpdateService::RegisterComponents(
     RegisterComponentsCallback register_callback,
     base::OnceClosure on_finished) {
   RegisterComponentsForUpdate(register_callback, std::move(on_finished));
+}
+
+void AwComponentUpdateService::IncrementComponentsUpdatedCount() {
+  components_updated_count_++;
+}
+
+void AwComponentUpdateService::RecordComponentsUpdated(
+    UpdateCallback on_finished,
+    update_client::Error error) {
+  std::move(on_finished).Run(components_updated_count_);
 }
 
 }  // namespace android_webview

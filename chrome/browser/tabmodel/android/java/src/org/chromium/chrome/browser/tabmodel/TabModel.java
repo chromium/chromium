@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,36 +74,50 @@ public interface TabModel extends TabList {
     /**
      * Returns which tab would be selected if the specified tab {@code id} were closed.
      * @param id The ID of tab which would be closed.
+     * @param uponExit If the next tab is being selected upon exit or backgrounding of the app.
      * @return The id of the next tab that would be visible.
      */
-    public Tab getNextTabIfClosed(int id);
+    public Tab getNextTabIfClosed(int id, boolean uponExit);
 
     /**
      * Close multiple tabs on this model.
      * @param tabs The tabs to be closed.
-     * @param canUndo Whether or not this action can be undone.
+     * @param canUndo Whether or not this action can be undone. If this is {@code true} and
+     *                {@link #supportsPendingClosures()} is {@code true}, this {@link Tab}
+     *                will not actually be closed until {@link #commitTabClosure(int)} is called for
+     *                every {@link Tab} in {@code tabs} or {@link #commitAllTabClosures()} is
+     *                called. However, it will be effectively removed from this list. To get a
+     *                comprehensive list of all tabs, including ones that have been partially
+     *                closed, use the {@link TabList} from {@link #getComprehensiveModel()}.
      */
     public void closeMultipleTabs(List<Tab> tabs, boolean canUndo);
 
     /**
-     * Close all the tabs on this model.
+     * Close all the tabs on this model. Same as closeAllTabs(false).
+     * @deprecated in favor of the clearer {@link #closeAllTabs(boolean)}.
      */
+    @Deprecated
     public void closeAllTabs();
 
     /**
-     * Close all tabs on this model. If allowDelegation is true, the model has the option
-     * of not closing all tabs and delegating the closure to another class.
-     * @param allowDelegation true iff the model may delegate the close all request.
-     *                        false iff the model must close all tabs.
+     * Close all tabs on this model. Note this inherently supports the {@code canUndo} behavior of
+     * {@link #closeMultipleTabs(List<Tab>, boolean)}.
      * @param uponExit true iff the tabs are being closed upon application exit (after user presses
-     *                 the system back button)
+     *                 the system back button).
      */
-    public void closeAllTabs(boolean allowDelegation, boolean uponExit);
+    public void closeAllTabs(boolean uponExit);
 
     /**
      * @return Whether or not this model supports pending closures.
      */
     public boolean supportsPendingClosures();
+
+    /**
+     * @param tabId The id of the {@link Tab} that might have a pending closure.
+     * @return Whether or not the {@link Tab} specified by {@code tabId} has a pending
+     *         closure.
+     */
+    boolean isClosurePending(int tabId);
 
     /**
      * Commits all pending closures, closing all tabs that had a chance to be undone.
@@ -124,10 +138,16 @@ public interface TabModel extends TabList {
     public void cancelTabClosure(int tabId);
 
     /**
-     * Opens the most recently closed tab, bringing the tab back into its original tab model or
+     * Notifies observers that all tabs closure action has been completed and tabs have been
+     * restored.
+     */
+    public void notifyAllTabsClosureUndone();
+
+    /**
+     * Restores the most recent closure, bringing the tab(s) back into their original tab model or
      * this model if the original model no longer exists.
      */
-    public void openMostRecentlyClosedTab();
+    public void openMostRecentlyClosedEntry();
 
     /**
      * @return The complete {@link TabList} this {@link TabModel} represents.  Note that this may
@@ -140,8 +160,9 @@ public interface TabModel extends TabList {
      * Selects a tab by its index.
      * @param i    The index of the tab to select.
      * @param type The type of selection.
+     * @param skipLoadingTab Whether to skip loading the Tab.
      */
-    public void setIndex(int i, final @TabSelectionType int type);
+    public void setIndex(int i, final @TabSelectionType int type, boolean skipLoadingTab);
 
     /**
      * @return Whether this tab model is currently selected in the correspond

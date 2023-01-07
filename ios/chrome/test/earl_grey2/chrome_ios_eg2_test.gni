@@ -1,53 +1,56 @@
-# Copyright 2018 The Chromium Authors. All rights reserved.
+# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import("//build/apple/compile_entitlements.gni")
 import("//build/apple/tweak_info_plist.gni")
+import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 import("//ios/third_party/earl_grey2/ios_eg2_test.gni")
 
 template("chrome_ios_eg2_test_app_host") {
-  if (!defined(entitlements_path) && !defined(entitlements_target)) {
-    _target_name = target_name
-    _tweak_entitlements = target_name + "_tweak_entitlements"
-    compile_entitlements(_tweak_entitlements) {
-      substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
-      output_name = "$target_gen_dir/$_target_name.entitlements"
-      entitlements_templates =
-          [ "//ios/chrome/test/earl_grey/resources/Chrome.entitlements" ]
-      if (ios_egtests_entitlements_additions != []) {
-        entitlements_templates += ios_egtests_entitlements_additions
+  if (!is_fat_secondary_toolchain) {
+    if (!defined(entitlements_path) && !defined(entitlements_target)) {
+      _target_name = target_name
+      _tweak_entitlements = target_name + "_tweak_entitlements"
+      compile_entitlements(_tweak_entitlements) {
+        substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
+        output_name = "$target_gen_dir/$_target_name.entitlements"
+        entitlements_templates =
+            [ "//ios/chrome/test/earl_grey/resources/Chrome.entitlements" ]
+        if (ios_egtests_entitlements_additions != []) {
+          entitlements_templates += ios_egtests_entitlements_additions
+        }
       }
     }
-  }
 
-  if (!defined(info_plist) && !defined(info_plist_target)) {
-    _tweak_info_plist = target_name + "_tweak_info_plist"
-    tweak_info_plist(_tweak_info_plist) {
-      info_plists = [
-        "//ios/chrome/app/resources/Info.plist",
-        "//ios/chrome/app/resources/EarlGreyAddition+Info.plist",
-      ]
-      if (ios_chrome_info_plist_additions != []) {
-        info_plists += ios_chrome_info_plist_additions
-      }
-      if (ios_chrome_info_plist_addition_targets != []) {
-        if (!defined(deps)) {
-          deps = []
+    if (!defined(info_plist) && !defined(info_plist_target)) {
+      _tweak_info_plist = target_name + "_tweak_info_plist"
+      tweak_info_plist(_tweak_info_plist) {
+        info_plists = [
+          "//ios/chrome/app/resources/Info.plist",
+          "//ios/chrome/app/resources/EarlGreyAddition+Info.plist",
+        ]
+        if (ios_chrome_info_plist_additions != []) {
+          info_plists += ios_chrome_info_plist_additions
         }
-        deps += ios_chrome_info_plist_addition_targets
+        if (ios_chrome_info_plist_addition_targets != []) {
+          if (!defined(deps)) {
+            deps = []
+          }
+          deps += ios_chrome_info_plist_addition_targets
+        }
+        if (defined(invoker.extra_info_plists)) {
+          info_plists += invoker.extra_info_plists
+        }
+        args = [
+          "--breakpad=$breakpad_enabled_as_int",
+          "--branding=$chromium_short_name",
+          "--version-overrides=MINOR=9999",
+        ]
       }
-      if (defined(invoker.extra_info_plists)) {
-        info_plists += invoker.extra_info_plists
-      }
-      args = [
-        "--breakpad=$breakpad_enabled_as_int",
-        "--branding=$chromium_short_name",
-        "--version-overrides=MINOR=9999",
-      ]
     }
   }
 
@@ -73,19 +76,31 @@ template("chrome_ios_eg2_test_app_host") {
                              "eg_main_application_delegate",
                              "info_plist",
                              "info_plist_target",
+                             "output_name",
                            ],
                            [
                              "deps",
                              "public_deps",
                            ])
-    testonly = true
-    xcode_product_bundle_id = "gtest.$target_name"
 
-    if (!defined(entitlements_path) && !defined(entitlements_target)) {
+    testonly = true
+    _output_name = target_name
+    if (defined(output_name)) {
+      _output_name = output_name
+    }
+
+    if (ios_use_shared_bundle_id_for_test_apps) {
+      bundle_identifier = shared_bundle_id_for_test_apps
+    } else {
+      bundle_identifier = "$ios_app_bundle_id_prefix.chrome." +
+                          string_replace(_output_name, "_", "-")
+    }
+
+    if (defined(_tweak_entitlements)) {
       entitlements_target = ":$_tweak_entitlements"
     }
 
-    if (!defined(info_plist) && !defined(info_plist_target)) {
+    if (defined(_tweak_info_plist)) {
       info_plist_target = ":$_tweak_info_plist"
     }
 
@@ -101,6 +116,9 @@ template("chrome_ios_eg2_test_app_host") {
       "//ios/chrome/test/earl_grey:hooks",
       "//ios/testing:http_server_bundle_data",
       "//ios/third_party/earl_grey2:app_framework+link",
+
+      # Use the same provider API as Chromium.app.
+      ios_provider_target,
     ]
 
     if (!defined(bundle_deps)) {
@@ -113,21 +131,18 @@ template("chrome_ios_eg2_test_app_host") {
       ios_application_icons_target,
     ]
 
-    if (!defined(extra_substitutions)) {
-      extra_substitutions = []
-    }
-    extra_substitutions += [
+    extra_substitutions = [
+      "CHROMIUM_BUNDLE_ID=$bundle_identifier",
       "CHROMIUM_HANDOFF_ID=$chromium_handoff_id",
       "CHROMIUM_SHORT_NAME=$target_name",
+      "CHROMIUM_URL_CHANNEL_SCHEME=$url_channel_scheme",
       "CHROMIUM_URL_SCHEME_1=$url_unsecure_scheme",
       "CHROMIUM_URL_SCHEME_2=$url_secure_scheme",
       "CHROMIUM_URL_SCHEME_3=$url_x_callback_scheme",
-      "CHROMIUM_URL_CHANNEL_SCHEME=$url_channel_scheme",
+      "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$bundle_identifier.ContentTodayExtension",
       "EG_MAIN_APPLICATION_DELEGATE=$_eg_main_application_delegate",
-      "SSOAUTH_URL_SCHEME=$url_ssoauth_scheme",
-      "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$chromium_bundle_id.ContentTodayExtension",
-      "CHROMIUM_BUNDLE_ID=gtest.$target_name",
       "IOS_MOVE_TAB_ACTIVITY_TYPE=$ios_move_tab_activity_type",
+      "SSOAUTH_URL_SCHEME=$url_ssoauth_scheme",
     ]
   }
 }
@@ -161,6 +176,7 @@ template("chrome_ios_eg2_test") {
     forward_variables_from(invoker,
                            [
                              "bundle_deps",
+                             "data",
                              "deps",
                              "data_deps",
                              "executable_args",

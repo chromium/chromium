@@ -1,4 +1,4 @@
-// Copyright 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,20 +14,17 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/time.h"
-#include "components/sync/engine/all_status.h"
 #include "components/sync/engine/debug_info_event_listener.h"
 #include "components/sync/engine/events/protocol_event_buffer.h"
-#include "components/sync/engine/js_sync_encryption_handler_observer.h"
-#include "components/sync/engine/js_sync_manager_observer.h"
 #include "components/sync/engine/net/server_connection_manager.h"
 #include "components/sync/engine/nudge_handler.h"
 #include "components/sync/engine/sync_engine_event_listener.h"
 #include "components/sync/engine/sync_manager.h"
-#include "components/sync/js/js_backend.h"
+#include "components/sync/engine/sync_status_tracker.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace syncer {
@@ -41,7 +38,6 @@ class SyncCycleContext;
 class SyncManagerImpl
     : public SyncManager,
       public network::NetworkConnectionTracker::NetworkConnectionObserver,
-      public JsBackend,
       public SyncEngineEventListener,
       public ServerConnectionEventListener,
       public SyncEncryptionHandler::Observer,
@@ -52,12 +48,16 @@ class SyncManagerImpl
   SyncManagerImpl(
       const std::string& name,
       network::NetworkConnectionTracker* network_connection_tracker);
+
+  SyncManagerImpl(const SyncManagerImpl&) = delete;
+  SyncManagerImpl& operator=(const SyncManagerImpl&) = delete;
+
   ~SyncManagerImpl() override;
 
   // SyncManager implementation.
   void Init(InitArgs* args) override;
   ModelTypeSet InitialSyncEndedTypes() override;
-  ModelTypeSet GetEnabledTypes() override;
+  ModelTypeSet GetConnectedTypes() override;
   void UpdateCredentials(const SyncCredentials& credentials) override;
   void InvalidateCredentials() override;
   void StartSyncingNormally(base::Time last_poll_time) override;
@@ -69,7 +69,7 @@ class SyncManagerImpl
   void SetInvalidatorEnabled(bool invalidator_enabled) override;
   void OnIncomingInvalidation(
       ModelType type,
-      std::unique_ptr<InvalidationInterface> invalidation) override;
+      std::unique_ptr<SyncInvalidation> invalidation) override;
   void AddObserver(SyncManager::Observer* observer) override;
   void RemoveObserver(SyncManager::Observer* observer) override;
   void ShutdownOnSyncThread() override;
@@ -84,9 +84,8 @@ class SyncManagerImpl
       override;
   void OnCookieJarChanged(bool account_mismatch) override;
   void UpdateInvalidationClientId(const std::string& client_id) override;
-  void UpdateSingleClientStatus(bool single_client) override;
-  void UpdateActiveDeviceFCMRegistrationTokens(
-      std::vector<std::string> fcm_registration_tokens) override;
+  void UpdateActiveDevicesInvalidationInfo(
+      ActiveDevicesInvalidationInfo active_devices_invalidation_info) override;
 
   // SyncEncryptionHandler::Observer implementation.
   void OnPassphraseRequired(
@@ -95,8 +94,6 @@ class SyncManagerImpl
   void OnPassphraseAccepted() override;
   void OnTrustedVaultKeyRequired() override;
   void OnTrustedVaultKeyAccepted() override;
-  void OnBootstrapTokenUpdated(const std::string& bootstrap_token,
-                               BootstrapTokenType type) override;
   void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                bool encrypt_everything) override;
   void OnCryptographerStateChanged(Cryptographer* cryptographer,
@@ -116,10 +113,6 @@ class SyncManagerImpl
   // ServerConnectionEventListener implementation.
   void OnServerConnectionEvent(const ServerConnectionEvent& event) override;
 
-  // JsBackend implementation.
-  void SetJsEventHandler(
-      const WeakHandle<JsEventHandler>& event_handler) override;
-
   // Handle explicit requests to fetch updates for the given types.
   void RefreshTypes(ModelTypeSet types) override;
 
@@ -130,34 +123,12 @@ class SyncManagerImpl
   void NudgeForInitialDownload(ModelType type) override;
   void NudgeForCommit(ModelType type) override;
 
- protected:
-  // Helper functions.  Virtual for testing.
-  virtual void NotifyInitializationSuccess();
-  virtual void NotifyInitializationFailure();
-
  private:
-  friend class SyncManagerTest;
-  FRIEND_TEST_ALL_PREFIXES(SyncManagerTest, NudgeDelayTest);
-
-  struct NotificationInfo {
-    NotificationInfo();
-    ~NotificationInfo();
-
-    int total_count;
-    std::string payload;
-
-    // Returned pointer owned by the caller.
-    base::DictionaryValue* ToValue() const;
-  };
-
-  using NotificationInfoMap = std::map<ModelType, NotificationInfo>;
-
-  void RequestNudgeForDataTypes(const base::Location& nudge_location,
-                                ModelTypeSet type);
+  void NotifySyncStatusChanged(const SyncStatus& status);
 
   const std::string name_;
 
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -180,34 +151,24 @@ class SyncManagerImpl
   std::unique_ptr<SyncScheduler> scheduler_;
 
   // A multi-purpose status watch object that aggregates stats from various
-  // sync components.
-  AllStatus allstatus_;
+  // sync components. Initialized in Init().
+  std::unique_ptr<SyncStatusTracker> sync_status_tracker_;
 
   // Set to true once Init has been called.
   bool initialized_;
 
   bool observing_network_connectivity_changes_;
 
-  // Map used to store the notification info to be displayed in
-  // chrome://sync-internals page.
-  NotificationInfoMap notification_info_map_;
-
-  // These are for interacting with chrome://sync-internals.
-  JsSyncManagerObserver js_sync_manager_observer_;
-  JsSyncEncryptionHandlerObserver js_sync_encryption_handler_observer_;
-
   // This is for keeping track of client events to send to the server.
   DebugInfoEventListener debug_info_event_listener_;
 
   ProtocolEventBuffer protocol_event_buffer_;
 
-  SyncEncryptionHandler* sync_encryption_handler_;
+  raw_ptr<SyncEncryptionHandler> sync_encryption_handler_;
 
   std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy_;
 
   base::WeakPtrFactory<SyncManagerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SyncManagerImpl);
 };
 
 }  // namespace syncer

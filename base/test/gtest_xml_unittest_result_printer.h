@@ -1,4 +1,4 @@
-// Copyright 2013 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,8 +7,7 @@
 
 #include <stdio.h>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,6 +20,10 @@ class FilePath;
 class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
  public:
   XmlUnitTestResultPrinter();
+
+  XmlUnitTestResultPrinter(const XmlUnitTestResultPrinter&) = delete;
+  XmlUnitTestResultPrinter& operator=(const XmlUnitTestResultPrinter&) = delete;
+
   ~XmlUnitTestResultPrinter() override;
 
   static XmlUnitTestResultPrinter* Get();
@@ -31,7 +34,7 @@ class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
   void AddLink(const std::string& name, const std::string& url);
 
   // Must be called before adding as a listener. Returns true on success.
-  bool Initialize(const FilePath& output_file_path) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Initialize(const FilePath& output_file_path);
 
   // CHECK/DCHECK failed. Print file/line and message to the xml.
   void OnAssert(const char* file,
@@ -53,11 +56,9 @@ class XmlUnitTestResultPrinter : public testing::EmptyTestEventListener {
                            const std::string& message);
 
   static XmlUnitTestResultPrinter* instance_;
-  FILE* output_file_{nullptr};
+  raw_ptr<FILE> output_file_{nullptr};
   bool open_failed_{false};
   ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(XmlUnitTestResultPrinter);
 };
 
 }  // namespace base

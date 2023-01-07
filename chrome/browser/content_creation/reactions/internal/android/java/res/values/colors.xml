@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+    <!-- TODO(crbug/1256847): update button color to align with specs. -->
+    <color name="button_color">@color/default_icon_color_blue_dark</color>
+    <color name="button_icon_color">@android:color/white</color>
+</resources>

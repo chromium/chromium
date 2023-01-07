@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace syncer {
@@ -31,7 +32,7 @@ TEST(GetClientNameTest, GetPersonalizableDeviceNameBlocking) {
 // board type is CHROMEBOOK and make sure the return value is "Chromebook".
 TEST(GetClientNameTest, GetPersonalizableDeviceNameBlockingChromebook) {
   const char* kLsbRelease = "DEVICETYPE=CHROMEBOOK\n";
-  base::SysInfo::SetChromeOSVersionInfoForTest(kLsbRelease, base::Time());
+  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, base::Time());
   const std::string& client_name = GetPersonalizableDeviceNameBlocking();
   EXPECT_EQ("Chromebook", client_name);
 }
@@ -40,7 +41,7 @@ TEST(GetClientNameTest, GetPersonalizableDeviceNameBlockingChromebook) {
 // board type is a CHROMEBOX and make sure the return value is "Chromebox".
 TEST(GetClientNameTest, GetPersonalizableDeviceNameBlockingChromebox) {
   const char* kLsbRelease = "DEVICETYPE=CHROMEBOX\n";
-  base::SysInfo::SetChromeOSVersionInfoForTest(kLsbRelease, base::Time());
+  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, base::Time());
   const std::string& client_name = GetPersonalizableDeviceNameBlocking();
   EXPECT_EQ("Chromebox", client_name);
 }

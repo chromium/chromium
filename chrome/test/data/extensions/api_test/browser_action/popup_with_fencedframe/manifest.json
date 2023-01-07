@@ -1,0 +1,9 @@
+{
+  "name": "Popup with fenced frame",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Test a browser action popup with a fenced frame",
+  "browser_action": {
+    "default_popup": "popup.html"
+  }
+}

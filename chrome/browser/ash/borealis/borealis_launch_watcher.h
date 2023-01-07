@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/cicerone_client.h"
+#include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 
 class Profile;
 
@@ -16,10 +16,10 @@ namespace borealis {
 
 // Watches to see if a specified VM (from a given owner id and vm name) was
 // started.
-class BorealisLaunchWatcher : public chromeos::CiceroneClient::Observer {
+class BorealisLaunchWatcher : public ash::CiceroneClient::Observer {
  public:
   using OnLaunchCallback =
-      base::OnceCallback<void(base::Optional<std::string>)>;
+      base::OnceCallback<void(absl::optional<std::string>)>;
 
   BorealisLaunchWatcher(Profile* profile, std::string vm_name);
   BorealisLaunchWatcher(const BorealisLaunchWatcher&) = delete;
@@ -45,8 +45,8 @@ class BorealisLaunchWatcher : public chromeos::CiceroneClient::Observer {
 
   std::string owner_id_;
   std::string vm_name_;
-  base::TimeDelta timeout_ = base::TimeDelta::FromMilliseconds(30000);
-  base::Optional<vm_tools::cicerone::ContainerStartedSignal>
+  base::TimeDelta timeout_ = base::Seconds(30);
+  absl::optional<vm_tools::cicerone::ContainerStartedSignal>
       container_started_signal_;
   base::queue<OnLaunchCallback> callback_queue_;
 

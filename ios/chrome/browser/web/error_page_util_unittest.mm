@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,13 +6,13 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/strings/grit/components_strings.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/web/public/test/error_test_util.h"
-#include "net/base/net_errors.h"
-#include "testing/platform_test.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "url/gurl.h"
+#import "net/base/net_errors.h"
+#import "testing/platform_test.h"
+#import "ui/base/l10n/l10n_util.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -33,8 +33,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -44,7 +45,7 @@ namespace blink {
 class IDBKey;
 class IDBRequest;
 class IDBValue;
-class WebIDBCursorImpl;
+class WebIDBCursor;
 struct IDBDatabaseMetadata;
 
 class WebIDBCallbacksImpl final : public WebIDBCallbacks {
@@ -59,7 +60,7 @@ class WebIDBCallbacksImpl final : public WebIDBCallbacks {
   explicit WebIDBCallbacksImpl(IDBRequest*);
   ~WebIDBCallbacksImpl() override;
 
-  void SetState(base::WeakPtr<WebIDBCursorImpl> cursor,
+  void SetState(base::WeakPtr<WebIDBCursor> cursor,
                 int64_t transaction_id) override;
 
   // Pointers transfer ownership.
@@ -70,7 +71,7 @@ class WebIDBCallbacksImpl final : public WebIDBCallbacks {
       mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor_info,
       std::unique_ptr<IDBKey> key,
       std::unique_ptr<IDBKey> primary_key,
-      base::Optional<std::unique_ptr<IDBValue>> optional_value) override;
+      absl::optional<std::unique_ptr<IDBValue>> optional_value) override;
   void SuccessCursorPrefetch(Vector<std::unique_ptr<IDBKey>> keys,
                              Vector<std::unique_ptr<IDBKey>> primary_keys,
                              Vector<std::unique_ptr<IDBValue>> values) override;
@@ -80,12 +81,14 @@ class WebIDBCallbacksImpl final : public WebIDBCallbacks {
   void SuccessKey(std::unique_ptr<IDBKey>) override;
   void SuccessValue(mojom::blink::IDBReturnValuePtr) override;
   void SuccessArray(Vector<mojom::blink::IDBReturnValuePtr>) override;
+  void SuccessArrayArray(
+      Vector<Vector<mojom::blink::IDBReturnValuePtr>>) override;
   void SuccessInteger(int64_t) override;
   void Success() override;
   void SuccessCursorContinue(
       std::unique_ptr<IDBKey>,
       std::unique_ptr<IDBKey> primary_key,
-      base::Optional<std::unique_ptr<IDBValue>>) override;
+      absl::optional<std::unique_ptr<IDBValue>>) override;
   void ReceiveGetAllResults(
       bool key_only,
       mojo::PendingReceiver<mojom::blink::IDBDatabaseGetAllResultSink> receiver)
@@ -105,9 +108,9 @@ class WebIDBCallbacksImpl final : public WebIDBCallbacks {
   void DetachCallbackFromRequest();
 
   Persistent<IDBRequest> request_;
-  base::WeakPtr<WebIDBCursorImpl> cursor_;
+  base::WeakPtr<WebIDBCursor> cursor_;
   int64_t transaction_id_;
-  probe::AsyncTaskId async_task_id_;
+  probe::AsyncTaskContext async_task_context_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 

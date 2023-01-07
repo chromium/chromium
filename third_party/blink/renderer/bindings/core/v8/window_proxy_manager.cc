@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ void WindowProxyManager::ClearForV8MemoryPurge() {
 
 void WindowProxyManager::ReleaseGlobalProxies(
     GlobalProxyVector& global_proxies) {
-  DCHECK(global_proxies.IsEmpty());
+  DCHECK(global_proxies.empty());
   global_proxies.ReserveInitialCapacity(1 + isolated_worlds_.size());
   global_proxies.emplace_back(&window_proxy_->World(),
                               window_proxy_->ReleaseGlobalProxy());

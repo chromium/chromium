@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,13 @@ import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://nearby/nearby_discovery_page.js';
 
 import {setDiscoveryManagerForTesting} from 'chrome://nearby/discovery_manager.js';
+import {NearbyDiscoveryPageElement} from 'chrome://nearby/nearby_discovery_page.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {isVisible} from '../test_util.m.js';
+import {isVisible} from '../test_util.js';
 
 import {FakeConfirmationManagerRemote, FakeDiscoveryManagerRemote} from './fake_mojo_interfaces.js';
 
@@ -46,23 +49,30 @@ suite('DiscoveryPageTest', function() {
   }
 
   /**
-   * Returns a list of visible share target elements. The not([hidden]) selector
-   * is needed for iron-list as it reuses components but hides them when not in
-   * use.
+   * Returns a list of visible share target elements.
    * @return {!Array<!NearbyDiscoveryPageElement>}
    */
   function getShareTargetElements() {
-    // Make sure the iron-list had time to render its elements.
     flush();
-    const deviceList = discoveryPageElement.$$('#deviceList');
+    const selector = discoveryPageElement.shadowRoot.querySelector('#selector');
 
     // If the device list isn't found, it's because the dom-if wrapping it
     // isn't showing because there are no elements.
-    if (!deviceList) {
+    if (!selector) {
       return [];
     }
 
-    return [...deviceList.querySelectorAll('nearby-device:not([hidden])')];
+    return selector.items;
+  }
+
+  /**
+   * Returns a list of visible share target elements.
+   */
+  function getNearbyDeviceElementAt(index) {
+    const container =
+        discoveryPageElement.shadowRoot.querySelector('.device-list-container');
+    const nearbyDeviceElements = container.querySelectorAll('nearby-device');
+    return nearbyDeviceElements[index];
   }
 
   /**
@@ -70,8 +80,14 @@ suite('DiscoveryPageTest', function() {
    * @return {!Array<string>}
    */
   function getDeviceNames() {
-    return getShareTargetElements().map(
-        (device) => device.$$('#name').textContent);
+    const names = [];
+    const shareTargets = getShareTargetElements();
+
+    for (const shareTarget of shareTargets) {
+      names.push(shareTarget.name);
+    }
+
+    return names;
   }
 
   /**
@@ -83,7 +99,95 @@ suite('DiscoveryPageTest', function() {
     if (index >= devices.length) {
       return false;
     }
-    devices[index].click();
+
+    getNearbyDeviceElementAt(index).click();
+    return true;
+  }
+
+  /**
+   * Presses enter on device with |index| and returns if that succeeded.
+   * @return {boolean}
+   */
+  function pressEnterOnDevice(index) {
+    const devices = getShareTargetElements();
+    if (index >= devices.length) {
+      return false;
+    }
+
+    getNearbyDeviceElementAt(index).dispatchEvent(new KeyboardEvent('keydown', {
+      code: 'Enter',
+      key: 'Enter',
+      charCode: 13,
+      keyCode: 13,
+      view: window,
+      bubbles: true,
+    }));
+    return true;
+  }
+
+  /**
+   * Presses space on device with |index| and returns if that succeeded.
+   * @return {boolean}
+   */
+  function pressSpaceOnDevice(index) {
+    const devices = getShareTargetElements();
+    if (index >= devices.length) {
+      return false;
+    }
+
+    getNearbyDeviceElementAt(index).dispatchEvent(new KeyboardEvent('keydown', {
+      code: 'Space',
+      key: 'Space',
+      charCode: 32,
+      keyCode: 32,
+      view: window,
+      bubbles: true,
+    }));
+    return true;
+  }
+
+  /**
+   * Presses up arrow on device with |index| and returns if that succeeded.
+   * @return {boolean}
+   */
+  function arrowUpOnDevice(index) {
+    const devices = getShareTargetElements();
+    if (index >= devices.length) {
+      return false;
+    }
+
+    getNearbyDeviceElementAt(index).dispatchEvent(new KeyboardEvent('keydown', {
+      code: 'ArrowUp',
+      key: 'ArrowUp',
+      charCode: 38,
+      keyCode: 38,
+      view: window,
+      bubbles: true,
+    }));
+
+    return true;
+  }
+
+  /**
+   * Presses down arrow on device with |index| and returns if that succeeded.
+   * @return {boolean}
+   */
+  function arrowDownOnDevice(index) {
+    const devices = getShareTargetElements();
+    if (index >= devices.length) {
+      return false;
+    }
+
+    getNearbyDeviceElementAt(index).dispatchEvent(new KeyboardEvent('keydown', {
+      code: 'ArrowDown',
+      key: 'ArrowDown',
+      charCode: 40,
+      keyCode: 40,
+      view: window,
+      composed: true,
+      bubbles: true,
+    }));
+
     return true;
   }
 
@@ -96,6 +200,9 @@ suite('DiscoveryPageTest', function() {
       id: {high: BigInt(0), low: BigInt(nextId++)},
       name,
       type: nearbyShare.mojom.ShareTargetType.kPhone,
+      imageUrl: {
+        url: 'testImageURL',
+      },
       payloadPreview: {
         description: '',
         fileCount: 0,
@@ -108,7 +215,8 @@ suite('DiscoveryPageTest', function() {
    * @param {string} button button selector (i.e. #actionButton)
    */
   function getButton(button) {
-    return discoveryPageElement.$$('nearby-page-template').$$(button);
+    return discoveryPageElement.shadowRoot.querySelector('nearby-page-template')
+        .shadowRoot.querySelector(button);
   }
 
   /**
@@ -116,7 +224,7 @@ suite('DiscoveryPageTest', function() {
    * @return {!Promise<nearbyShare.mojom.ShareTargetListenerRemote>}
    */
   async function startDiscovery() {
-    discoveryPageElement.fire('view-enter-start');
+    fireViewEnterStart();
     return await discoveryManager.whenCalled('startDiscovery');
   }
 
@@ -130,6 +238,11 @@ suite('DiscoveryPageTest', function() {
     listener.onShareTargetDiscovered(shareTarget);
     await listener.$.flushForTesting();
     return shareTarget;
+  }
+
+  function fireViewEnterStart() {
+    discoveryPageElement.dispatchEvent(
+        new CustomEvent('view-enter-start', {bubbles: true, composed: true}));
   }
 
   setup(function() {
@@ -146,38 +259,53 @@ suite('DiscoveryPageTest', function() {
 
   test('renders component', async function() {
     assertEquals('NEARBY-DISCOVERY-PAGE', discoveryPageElement.tagName);
-    discoveryPageElement.fire('view-enter-start');
+    fireViewEnterStart();
     await discoveryManager.whenCalled('getPayloadPreview');
     assertEquals(
         discoveryManager.shareDescription,
-        discoveryPageElement.$$('nearby-preview').payloadPreview.description);
+        discoveryPageElement.shadowRoot.querySelector('nearby-preview')
+            .payloadPreview.description);
   });
 
   test('error state with generic error', async function() {
     discoveryManager.startDiscoveryResult =
         nearbyShare.mojom.StartDiscoveryResult.kErrorGeneric;
-    discoveryPageElement.fire('view-enter-start');
-    await discoveryManager.whenCalled('startDiscovery');
+    await startDiscovery();
     flush();
 
     const expectedMessage = 'Something went wrong. Please try again.';
     assertEquals(
         expectedMessage,
-        discoveryPageElement.$$('#errorDescription').textContent.trim());
+        discoveryPageElement.shadowRoot.querySelector('#errorDescription')
+            .textContent.trim());
   });
 
   test('error state with in progress transfer', async function() {
     discoveryManager.startDiscoveryResult =
         nearbyShare.mojom.StartDiscoveryResult.kErrorInProgressTransferring;
-    discoveryPageElement.fire('view-enter-start');
-    await discoveryManager.whenCalled('startDiscovery');
+    await startDiscovery();
     flush();
 
     const expectedMessage = 'You can only share one file at a time.' +
         ' Try again when the current transfer is complete.';
     assertEquals(
         expectedMessage,
-        discoveryPageElement.$$('#errorDescription').textContent.trim());
+        discoveryPageElement.shadowRoot.querySelector('#errorDescription')
+            .textContent.trim());
+  });
+
+  test('error state with unavailable connections error', async function() {
+    discoveryManager.startDiscoveryResult =
+        nearbyShare.mojom.StartDiscoveryResult.kNoConnectionMedium;
+    await startDiscovery();
+    flush();
+
+    const expectedMessage = 'To use Nearby Share, turn on Bluetooth' +
+        ' and Wi-Fi';
+    assertEquals(
+        expectedMessage,
+        discoveryPageElement.shadowRoot.querySelector('#errorDescription')
+            .textContent.trim());
   });
 
   test('selects share target with success', async function() {
@@ -246,15 +374,16 @@ suite('DiscoveryPageTest', function() {
     await listener.$.flushForTesting();
     flush();
     const deviceList = /** @type{?HTMLElement} */
-        (discoveryPageElement.$$('#deviceList'));
-    const placeholder = discoveryPageElement.$$('#placeholder');
-    assertTrue(!!deviceList && isVisible(deviceList));
+        (discoveryPageElement.shadowRoot.querySelector('#deviceList'));
+    const placeholder =
+        discoveryPageElement.shadowRoot.querySelector('#placeholder');
+    assertTrue(!!deviceList && !deviceList.hidden);
     assertTrue(placeholder.hidden);
     assertEquals(1, getShareTargetElements().length);
 
     const onConnectionClosedPromise = new Promise(
         (resolve) => listener.onConnectionError.addListener(resolve));
-    discoveryPageElement.fire('view-exit-finish');
+    discoveryPageElement.dispatchEvent(new CustomEvent('view-exit-finish'));
     await onConnectionClosedPromise;
 
     assertFalse(!!deviceList && isVisible(deviceList));
@@ -339,7 +468,7 @@ suite('DiscoveryPageTest', function() {
     const shareTarget = discoveryPageElement.selectedShareTarget;
     const onConnectionClosedPromise = new Promise(
         (resolve) => listener.onConnectionError.addListener(resolve));
-    discoveryPageElement.fire('view-exit-finish');
+    discoveryPageElement.dispatchEvent(new CustomEvent('view-exit-finish'));
     await onConnectionClosedPromise;
 
     // Stopping discovery does not clear selected share target.
@@ -371,5 +500,85 @@ suite('DiscoveryPageTest', function() {
     assertEquals(null, discoveryPageElement.selectedShareTarget);
     assertTrue(getButton('#actionButton').disabled);
   });
+
+  test('accessibility test for selecting device with enter', async function() {
+    const listener = await startDiscovery();
+
+    // Setup 3 targets to select from.
+    const targets = [
+      createShareTarget('Device 1'),
+      createShareTarget('Device 2'),
+      createShareTarget('Device 3'),
+    ];
+    targets.forEach((target) => listener.onShareTargetDiscovered(target));
+    await listener.$.flushForTesting();
+
+    assertEquals(null, discoveryPageElement.selectedShareTarget);
+
+    // Press enter on first share target and expect it to be selected.
+    assertTrue(pressEnterOnDevice(0));
+    assertShareTargetsEqual(
+        targets[0], discoveryPageElement.selectedShareTarget);
+  });
+
+  test('accessibility test for selecting device with space', async function() {
+    const listener = await startDiscovery();
+
+    // Setup 3 targets to select from.
+    const targets = [
+      createShareTarget('Device 1'),
+      createShareTarget('Device 2'),
+      createShareTarget('Device 3'),
+    ];
+    targets.forEach((target) => listener.onShareTargetDiscovered(target));
+    await listener.$.flushForTesting();
+
+    assertEquals(null, discoveryPageElement.selectedShareTarget);
+
+    // Press enter on first share target and expect it to be selected.
+    assertTrue(pressSpaceOnDevice(0));
+    assertShareTargetsEqual(
+        targets[0], discoveryPageElement.selectedShareTarget);
+  });
+
+  test(
+      'accessibility test for navigating device list: down arrow',
+      async function() {
+        const listener = await startDiscovery();
+
+        // Setup 3 targets to select from.
+        const targets = [
+          createShareTarget('Device 1'),
+          createShareTarget('Device 2'),
+          createShareTarget('Device 3'),
+        ];
+        targets.forEach((target) => listener.onShareTargetDiscovered(target));
+        await listener.$.flushForTesting();
+
+        // Press down arrow on share target and expect the next share target
+        // to have focus.
+        assertTrue(arrowDownOnDevice(0));
+        assertEquals(getNearbyDeviceElementAt(1), getDeepActiveElement());
+      });
+
+  test(
+      'accessibility test for navigating device list: up arrow',
+      async function() {
+        const listener = await startDiscovery();
+
+        // Setup 3 targets to select from.
+        const targets = [
+          createShareTarget('Device 1'),
+          createShareTarget('Device 2'),
+          createShareTarget('Device 3'),
+        ];
+        targets.forEach((target) => listener.onShareTargetDiscovered(target));
+        await listener.$.flushForTesting();
+
+        // Press up arrow on share target and expect the previous share target
+        // to have focus.
+        assertTrue(arrowUpOnDevice(2));
+        assertEquals(getNearbyDeviceElementAt(1), getDeepActiveElement());
+      });
 
 });

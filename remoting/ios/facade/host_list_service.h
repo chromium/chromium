@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/threading/sequence_bound.h"
@@ -48,6 +47,9 @@ class HostListService {
 
   // Returns the singleton instance.
   static HostListService* GetInstance();
+
+  HostListService(const HostListService&) = delete;
+  HostListService& operator=(const HostListService&) = delete;
 
   ~HostListService();
 
@@ -109,7 +111,6 @@ class HostListService {
   std::unique_ptr<FetchFailureInfo> last_fetch_failure_;
 
   base::WeakPtrFactory<HostListService> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(HostListService);
 };
 
 }  // namespace remoting

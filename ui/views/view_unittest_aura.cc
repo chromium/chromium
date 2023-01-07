@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,14 +46,15 @@ View* CreateViewWithLayer(const gfx::Rect& bounds, const char* layer_name) {
 class ViewAuraTest : public ViewsTestBase {
  public:
   ViewAuraTest() = default;
+
+  ViewAuraTest(const ViewAuraTest&) = delete;
+  ViewAuraTest& operator=(const ViewAuraTest&) = delete;
+
   ~ViewAuraTest() override = default;
 
   const View::Views& GetViewsWithLayers(Widget* widget) {
     return widget->GetViewsWithLayers();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ViewAuraTest);
 };
 
 // Test that wm::RecreateLayers() recreates the layers for all child windows and

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "media/midi/usb_midi_device.h"
@@ -26,6 +25,10 @@ namespace {
 class TestUsbMidiDevice : public UsbMidiDevice {
  public:
   TestUsbMidiDevice() = default;
+
+  TestUsbMidiDevice(const TestUsbMidiDevice&) = delete;
+  TestUsbMidiDevice& operator=(const TestUsbMidiDevice&) = delete;
+
   ~TestUsbMidiDevice() override = default;
   std::vector<uint8_t> GetDescriptors() override {
     return std::vector<uint8_t>();
@@ -34,14 +37,15 @@ class TestUsbMidiDevice : public UsbMidiDevice {
   std::string GetProductName() override { return std::string(); }
   std::string GetDeviceVersion() override { return std::string(); }
   void Send(int endpoint_number, const std::vector<uint8_t>& data) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestUsbMidiDevice);
 };
 
 class MockDelegate : public UsbMidiInputStream::Delegate {
  public:
   MockDelegate() = default;
+
+  MockDelegate(const MockDelegate&) = delete;
+  MockDelegate& operator=(const MockDelegate&) = delete;
+
   ~MockDelegate() override = default;
   void OnReceivedData(size_t jack_index,
                       const uint8_t* data,
@@ -56,13 +60,16 @@ class MockDelegate : public UsbMidiInputStream::Delegate {
 
  private:
   std::string received_data_;
-  DISALLOW_COPY_AND_ASSIGN(MockDelegate);
 };
 
 class UsbMidiInputStreamTest : public ::testing::Test {
+ public:
+  UsbMidiInputStreamTest(const UsbMidiInputStreamTest&) = delete;
+  UsbMidiInputStreamTest& operator=(const UsbMidiInputStreamTest&) = delete;
+
  protected:
   UsbMidiInputStreamTest() {
-    stream_.reset(new UsbMidiInputStream(&delegate_));
+    stream_ = std::make_unique<UsbMidiInputStream>(&delegate_);
 
     stream_->Add(UsbMidiJack(&device1_,
                              84,  // jack_id
@@ -86,9 +93,6 @@ class UsbMidiInputStreamTest : public ::testing::Test {
   TestUsbMidiDevice device2_;
   MockDelegate delegate_;
   std::unique_ptr<UsbMidiInputStream> stream_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UsbMidiInputStreamTest);
 };
 
 TEST_F(UsbMidiInputStreamTest, UnknownMessage) {
@@ -96,7 +100,7 @@ TEST_F(UsbMidiInputStreamTest, UnknownMessage) {
       0x40, 0xff, 0xff, 0xff, 0x41, 0xff, 0xff, 0xff,
   };
 
-  stream_->OnReceivedData(&device1_, 7, data, base::size(data), TimeTicks());
+  stream_->OnReceivedData(&device1_, 7, data, std::size(data), TimeTicks());
   EXPECT_EQ("", delegate_.received_data());
 }
 
@@ -105,7 +109,7 @@ TEST_F(UsbMidiInputStreamTest, SystemCommonMessage) {
       0x45, 0xf8, 0x00, 0x00, 0x42, 0xf3, 0x22, 0x00, 0x43, 0xf2, 0x33, 0x44,
   };
 
-  stream_->OnReceivedData(&device1_, 7, data, base::size(data), TimeTicks());
+  stream_->OnReceivedData(&device1_, 7, data, std::size(data), TimeTicks());
   EXPECT_EQ("0xf8 \n"
             "0xf3 0x22 \n"
             "0xf2 0x33 0x44 \n", delegate_.received_data());
@@ -117,7 +121,7 @@ TEST_F(UsbMidiInputStreamTest, SystemExclusiveMessage) {
       0x46, 0xf0, 0xf7, 0x00, 0x47, 0xf0, 0x33, 0xf7,
   };
 
-  stream_->OnReceivedData(&device1_, 7, data, base::size(data), TimeTicks());
+  stream_->OnReceivedData(&device1_, 7, data, std::size(data), TimeTicks());
   EXPECT_EQ("0xf0 0x11 0x22 \n"
             "0xf7 \n"
             "0xf0 0xf7 \n"
@@ -131,7 +135,7 @@ TEST_F(UsbMidiInputStreamTest, ChannelMessage) {
       0x4d, 0xd0, 0xaa, 0x00, 0x4e, 0xe0, 0xbb, 0xcc,
   };
 
-  stream_->OnReceivedData(&device1_, 7, data, base::size(data), TimeTicks());
+  stream_->OnReceivedData(&device1_, 7, data, std::size(data), TimeTicks());
   EXPECT_EQ("0x80 0x11 0x22 \n"
             "0x90 0x33 0x44 \n"
             "0xa0 0x55 0x66 \n"
@@ -146,7 +150,7 @@ TEST_F(UsbMidiInputStreamTest, SingleByteMessage) {
       0x4f, 0xf8, 0x00, 0x00,
   };
 
-  stream_->OnReceivedData(&device1_, 7, data, base::size(data), TimeTicks());
+  stream_->OnReceivedData(&device1_, 7, data, std::size(data), TimeTicks());
   EXPECT_EQ("0xf8 \n", delegate_.received_data());
 }
 
@@ -155,14 +159,14 @@ TEST_F(UsbMidiInputStreamTest, DispatchForMultipleCables) {
       0x4f, 0xf8, 0x00, 0x00, 0x5f, 0xfa, 0x00, 0x00, 0x6f, 0xfb, 0x00, 0x00,
   };
 
-  stream_->OnReceivedData(&device1_, 7, data, base::size(data), TimeTicks());
+  stream_->OnReceivedData(&device1_, 7, data, std::size(data), TimeTicks());
   EXPECT_EQ("0xf8 \n0xfa \n", delegate_.received_data());
 }
 
 TEST_F(UsbMidiInputStreamTest, DispatchForDevice2) {
   uint8_t data[] = {0x4f, 0xf8, 0x00, 0x00};
 
-  stream_->OnReceivedData(&device2_, 7, data, base::size(data), TimeTicks());
+  stream_->OnReceivedData(&device2_, 7, data, std::size(data), TimeTicks());
   EXPECT_EQ("0xf8 \n", delegate_.received_data());
 }
 

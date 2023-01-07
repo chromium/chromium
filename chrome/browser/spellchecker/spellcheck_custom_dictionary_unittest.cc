@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,8 +13,8 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/strings/string_number_conversions.h"
@@ -29,9 +29,10 @@
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/model/sync_error_factory.h"
-#include "components/sync/protocol/sync.pb.h"
-#include "components/sync/test/model/sync_change_processor_wrapper_for_test.h"
-#include "components/sync/test/model/sync_error_factory_mock.h"
+#include "components/sync/protocol/dictionary_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
+#include "components/sync/test/sync_change_processor_wrapper_for_test.h"
+#include "components/sync/test/sync_error_factory_mock.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/default_handlers.h"
@@ -147,6 +148,10 @@ class SyncErrorFactoryStub : public syncer::SyncErrorFactory {
  public:
   explicit SyncErrorFactoryStub(int* error_counter)
       : error_counter_(error_counter) {}
+
+  SyncErrorFactoryStub(const SyncErrorFactoryStub&) = delete;
+  SyncErrorFactoryStub& operator=(const SyncErrorFactoryStub&) = delete;
+
   ~SyncErrorFactoryStub() override {}
 
   // Overridden from syncer::SyncErrorFactory:
@@ -160,14 +165,18 @@ class SyncErrorFactoryStub : public syncer::SyncErrorFactory {
   }
 
  private:
-  int* error_counter_;
-  DISALLOW_COPY_AND_ASSIGN(SyncErrorFactoryStub);
+  raw_ptr<int> error_counter_;
 };
 
 // Counts the number of notifications for dictionary load and change.
 class DictionaryObserverCounter : public SpellcheckCustomDictionary::Observer {
  public:
   DictionaryObserverCounter() : loads_(0), changes_(0) {}
+
+  DictionaryObserverCounter(const DictionaryObserverCounter&) = delete;
+  DictionaryObserverCounter& operator=(const DictionaryObserverCounter&) =
+      delete;
+
   virtual ~DictionaryObserverCounter() {}
 
   int loads() const { return loads_; }
@@ -183,7 +192,6 @@ class DictionaryObserverCounter : public SpellcheckCustomDictionary::Observer {
  private:
   int loads_;
   int changes_;
-  DISALLOW_COPY_AND_ASSIGN(DictionaryObserverCounter);
 };
 
 TEST_F(SpellcheckCustomDictionaryTest, SaveAndLoad) {
@@ -1109,7 +1117,7 @@ TEST_F(SpellcheckCustomDictionaryTest, DictionarySyncLimit) {
             server_custom_dictionary->GetWords().size());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Failing consistently on Win7+. See crbug.com/230534.
 #define MAYBE_RecordSizeStatsCorrectly DISABLED_RecordSizeStatsCorrectly
 #else
@@ -1122,7 +1130,7 @@ TEST_F(SpellcheckCustomDictionaryTest, MAYBE_RecordSizeStatsCorrectly) {
 
   HistogramBase* histogram =
       StatisticsRecorder::FindHistogram("SpellCheck.CustomWords");
-  ASSERT_TRUE(histogram != NULL);
+  ASSERT_TRUE(histogram != nullptr);
   std::unique_ptr<HistogramSamples> baseline = histogram->SnapshotSamples();
 
   // Load the dictionary which should be empty.
@@ -1133,7 +1141,7 @@ TEST_F(SpellcheckCustomDictionaryTest, MAYBE_RecordSizeStatsCorrectly) {
   // We expect there to be an entry with 0.
   histogram =
       StatisticsRecorder::FindHistogram("SpellCheck.CustomWords");
-  ASSERT_TRUE(histogram != NULL);
+  ASSERT_TRUE(histogram != nullptr);
   std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
 
   samples->Subtract(*baseline);
@@ -1150,7 +1158,7 @@ TEST_F(SpellcheckCustomDictionaryTest, MAYBE_RecordSizeStatsCorrectly) {
 
   histogram =
       StatisticsRecorder::FindHistogram("SpellCheck.CustomWords");
-  ASSERT_TRUE(histogram != NULL);
+  ASSERT_TRUE(histogram != nullptr);
   std::unique_ptr<HistogramSamples> samples2 = histogram->SnapshotSamples();
 
   samples2->Subtract(*baseline);

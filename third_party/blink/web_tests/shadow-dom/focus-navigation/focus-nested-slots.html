@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="Joey Arhar" href="mailto:jarhar@chromium.org">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1209217">
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+
+<button id=button1>one</button>
+<span>
+  <template shadowroot=open>
+    <slot name=myslot></slot>
+  </template>
+  <slot slot=myslot>
+    <button id=button2>two</button>
+    <button id=button3>three</button>
+    <button id=button4>four</button>
+  </slot>
+</span>
+<button id=button5>five</button>
+
+<script>
+test(() => {
+  button1.focus();
+  assert_equals(document.activeElement, button1);
+
+  // TODO(crbug.com/893480): Replace this with test_driver.Actions() and move
+  // this test to WPT when test_driver.Actions() is supported in content_shell
+  // or when all WPTs are run on chrome instead of content_shell.
+  eventSender.keyDown('\t');
+  assert_equals(document.activeElement, button2);
+	eventSender.keyDown('\t');
+  assert_equals(document.activeElement, button3);
+	eventSender.keyDown('\t');
+  assert_equals(document.activeElement, button4);
+	eventSender.keyDown('\t');
+  assert_equals(document.activeElement, button5);
+  eventSender.keyDown('\t', ['shiftKey']);
+  assert_equals(document.activeElement, button4);
+  eventSender.keyDown('\t', ['shiftKey']);
+  assert_equals(document.activeElement, button3);
+  eventSender.keyDown('\t', ['shiftKey']);
+  assert_equals(document.activeElement, button2);
+  eventSender.keyDown('\t', ['shiftKey']);
+  assert_equals(document.activeElement, button1);
+}, `Verifies that focus order goes in flat tree order with buttons inside nested slots which have a mixture of assigned and unassigned states.`);
+
+</script>

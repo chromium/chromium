@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,14 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/typed_macros.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/values.h"
 #include "content/public/renderer/render_frame.h"
-#include "content/public/renderer/v8_value_converter.h"
+#include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_messages.h"
 #include "extensions/common/identifiability_metrics.h"
@@ -24,16 +26,19 @@
 #include "extensions/renderer/dom_activity_logger.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extensions_renderer_client.h"
-#include "extensions/renderer/script_injection_callback.h"
 #include "extensions/renderer/scripts_run_info.h"
+#include "extensions/renderer/trace_util.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/platform/web_isolated_world_info.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "url/gurl.h"
+
+using perfetto::protos::pbzero::ChromeTrackEvent;
 
 namespace extensions {
 
@@ -87,38 +92,6 @@ int GetIsolatedWorldIdForInstance(const InjectionHost* injection_host) {
   return id;
 }
 
-// This class manages its own lifetime.
-class TimedScriptInjectionCallback : public ScriptInjectionCallback {
- public:
-  TimedScriptInjectionCallback(base::WeakPtr<ScriptInjection> injection)
-      : ScriptInjectionCallback(
-            base::BindOnce(&TimedScriptInjectionCallback::OnCompleted,
-                           base::Unretained(this))),
-        injection_(injection) {}
-  ~TimedScriptInjectionCallback() override {}
-
-  void OnCompleted(const std::vector<v8::Local<v8::Value>>& result) {
-    if (injection_) {
-      base::TimeTicks timestamp(base::TimeTicks::Now());
-      base::Optional<base::TimeDelta> elapsed;
-      // If the script will never execute (such as if the context is destroyed),
-      // willExecute() will not be called, but OnCompleted() will. Only log a
-      // time for execution if the script, in fact, executed.
-      if (!start_time_.is_null())
-        elapsed = timestamp - start_time_;
-      injection_->OnJsInjectionCompleted(result, elapsed);
-    }
-  }
-
-  void WillExecute() override {
-    start_time_ = base::TimeTicks::Now();
-  }
-
- private:
-  base::WeakPtr<ScriptInjection> injection_;
-  base::TimeTicks start_time_;
-};
-
 }  // namespace
 
 // Watches for the deletion of a RenderFrame, after which is_valid will return
@@ -129,6 +102,10 @@ class ScriptInjection::FrameWatcher : public content::RenderFrameObserver {
                ScriptInjection* injection)
       : content::RenderFrameObserver(render_frame),
         injection_(injection) {}
+
+  FrameWatcher(const FrameWatcher&) = delete;
+  FrameWatcher& operator=(const FrameWatcher&) = delete;
+
   ~FrameWatcher() override {}
 
  private:
@@ -136,8 +113,6 @@ class ScriptInjection::FrameWatcher : public content::RenderFrameObserver {
   void OnDestruct() override { injection_->invalidate_render_frame(); }
 
   ScriptInjection* injection_;
-
-  DISALLOW_COPY_AND_ASSIGN(FrameWatcher);
 };
 
 // static
@@ -174,11 +149,22 @@ ScriptInjection::ScriptInjection(
       log_activity_(log_activity),
       frame_watcher_(new FrameWatcher(render_frame, this)) {
   CHECK(injection_host_.get());
+  TRACE_EVENT_BEGIN(
+      "extensions", "ScriptInjection", perfetto::Track::FromPointer(this),
+      ChromeTrackEvent::kRenderProcessHost, *content::RenderThread::Get(),
+      ChromeTrackEvent::kChromeExtensionId,
+      ExtensionIdForTracing(host_id().id));
 }
 
 ScriptInjection::~ScriptInjection() {
   if (!complete_)
     NotifyWillNotInject(ScriptInjector::WONT_INJECT);
+
+  TRACE_EVENT_END("extensions", perfetto::Track::FromPointer(this),
+                  ChromeTrackEvent::kRenderProcessHost,
+                  *content::RenderThread::Get(),
+                  ChromeTrackEvent::kChromeExtensionId,
+                  ExtensionIdForTracing(host_id().id));
 }
 
 ScriptInjection::InjectionResult ScriptInjection::TryToInject(
@@ -302,21 +288,14 @@ ScriptInjection::InjectionResult ScriptInjection::Inject(
 
 void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
                                size_t* num_injected_js_scripts) {
+  TRACE_RENDERER_EXTENSION_EVENT("ScriptInjection::InjectJs", host_id().id);
+
   DCHECK(!did_inject_js_);
   std::vector<blink::WebScriptSource> sources = injector_->GetJsSources(
       run_location_, executing_scripts, num_injected_js_scripts);
   DCHECK(!sources.empty());
-  int world_id = GetIsolatedWorldIdForInstance(injection_host_.get());
-  bool is_user_gesture = injector_->IsUserGesture();
-
-  std::unique_ptr<blink::WebScriptExecutionCallback> callback(
-      new TimedScriptInjectionCallback(weak_ptr_factory_.GetWeakPtr()));
 
   base::ElapsedTimer exec_timer;
-  if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
-      log_activity_) {
-    DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id);
-  }
 
   // For content scripts executing during page load, we run them asynchronously
   // in order to reduce UI jank experienced by the user. (We don't do this for
@@ -329,20 +308,44 @@ void ScriptInjection::InjectJs(std::set<std::string>* executing_scripts,
       injector_->script_type() == mojom::InjectionType::kContentScript &&
       (run_location_ == mojom::RunLocation::kDocumentEnd ||
        run_location_ == mojom::RunLocation::kDocumentIdle);
-  blink::WebLocalFrame::ScriptExecutionType execution_option =
+  blink::mojom::EvaluationTiming execution_option =
       should_execute_asynchronously
-          ? blink::WebLocalFrame::kAsynchronousBlockingOnload
-          : blink::WebLocalFrame::kSynchronous;
+          ? blink::mojom::EvaluationTiming::kAsynchronous
+          : blink::mojom::EvaluationTiming::kSynchronous;
 
-  render_frame_->GetWebFrame()->RequestExecuteScriptInIsolatedWorld(
-      world_id, &sources.front(), sources.size(), is_user_gesture,
-      execution_option, callback.release());
+  int32_t world_id = blink::kMainDOMWorldId;
+  switch (injector_->GetExecutionWorld()) {
+    case mojom::ExecutionWorld::kIsolated:
+      world_id = GetIsolatedWorldIdForInstance(injection_host_.get());
+      if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
+          log_activity_) {
+        DOMActivityLogger::AttachToWorld(world_id, injection_host_->id().id);
+      }
+      break;
+    case mojom::ExecutionWorld::kMain:
+      world_id = blink::kMainDOMWorldId;
+      break;
+  }
+  render_frame_->GetWebFrame()->RequestExecuteScript(
+      world_id, sources, injector_->IsUserGesture(), execution_option,
+      blink::mojom::LoadEventBlockingOption::kBlock,
+      base::BindOnce(&ScriptInjection::OnJsInjectionCompleted,
+                     weak_ptr_factory_.GetWeakPtr()),
+      blink::BackForwardCacheAware::kPossiblyDisallow,
+      injector_->ExpectsResults(), injector_->ShouldWaitForPromise());
 }
 
-void ScriptInjection::OnJsInjectionCompleted(
-    const std::vector<v8::Local<v8::Value>>& results,
-    base::Optional<base::TimeDelta> elapsed) {
+void ScriptInjection::OnJsInjectionCompleted(absl::optional<base::Value> value,
+                                             base::TimeTicks start_time) {
   DCHECK(!did_inject_js_);
+
+  base::TimeTicks timestamp(base::TimeTicks::Now());
+  absl::optional<base::TimeDelta> elapsed;
+  // If the script will never execute (such as if the context is destroyed),
+  // `start_time` is null. Only log a time for execution if the script, in fact,
+  // executed.
+  if (!start_time.is_null())
+    elapsed = timestamp - start_time;
 
   if (injection_host_->id().type == mojom::HostID::HostType::kExtensions &&
       elapsed) {
@@ -365,22 +368,7 @@ void ScriptInjection::OnJsInjectionCompleted(
     }
   }
 
-  bool expects_results = injector_->ExpectsResults();
-  if (expects_results) {
-    if (!results.empty() && !results[0].IsEmpty()) {
-      // Right now, we only support returning single results (per frame).
-      // It's safe to always use the main world context when converting
-      // here. V8ValueConverterImpl shouldn't actually care about the
-      // context scope, and it switches to v8::Object's creation context
-      // when encountered.
-      v8::Local<v8::Context> context =
-          render_frame_->GetWebFrame()->MainWorldScriptContext();
-      execution_result_ =
-          content::V8ValueConverter::Create()->FromV8Value(results[0], context);
-    }
-    if (!execution_result_.get())
-      execution_result_ = std::make_unique<base::Value>();
-  }
+  execution_result_ = std::move(value);
   did_inject_js_ = true;
   if (host_id().type == mojom::HostID::HostType::kExtensions)
     RecordContentScriptInjection(ukm_source_id_, host_id().id);
@@ -398,46 +386,42 @@ void ScriptInjection::OnJsInjectionCompleted(
 void ScriptInjection::InjectOrRemoveCss(
     std::set<std::string>* injected_stylesheets,
     size_t* num_injected_stylesheets) {
-  std::vector<blink::WebString> css_sources = injector_->GetCssSources(
+  std::vector<ScriptInjector::CSSSource> css_sources = injector_->GetCssSources(
       run_location_, injected_stylesheets, num_injected_stylesheets);
   blink::WebLocalFrame* web_frame = render_frame_->GetWebFrame();
 
-  blink::WebDocument::CSSOrigin blink_css_origin =
-      blink::WebDocument::kAuthorOrigin;
+  auto blink_css_origin = blink::WebCssOrigin::kAuthor;
   switch (injector_->GetCssOrigin()) {
     case mojom::CSSOrigin::kUser:
-      blink_css_origin = blink::WebDocument::kUserOrigin;
+      blink_css_origin = blink::WebCssOrigin::kUser;
       break;
     case mojom::CSSOrigin::kAuthor:
-      blink_css_origin = blink::WebDocument::kAuthorOrigin;
+      blink_css_origin = blink::WebCssOrigin::kAuthor;
       break;
   }
 
-  blink::WebStyleSheetKey style_sheet_key;
-  if (const base::Optional<std::string>& injection_key =
-          injector_->GetInjectionKey())
-    style_sheet_key = blink::WebString::FromASCII(*injection_key);
-  // CSS deletion can be thought of as the inverse of CSS injection
-  // (i.e. x - y = x + -y and x | y = ~(~x & ~y)), so it is handled here in the
-  // injection function.
-  //
-  // TODO(https://crbug.com/1116061): Extend this API's capabilities to also
-  // remove CSS added by content scripts?
-  bool adding_css = injector_->IsAddingCSS();
-  bool removing_css = injector_->IsRemovingCSS();
-  DCHECK(!(adding_css && removing_css)) << "Operations are mutually exclusive.";
-  DCHECK(adding_css || removing_css)
-      << "At least one of the operations must happen for InjectOrRemoveCss() "
-         "to be called.";
-
-  if (removing_css) {
-    web_frame->GetDocument().RemoveInsertedStyleSheet(style_sheet_key,
-                                                      blink_css_origin);
-  } else {
-    DCHECK(adding_css);
-    for (const blink::WebString& css : css_sources)
-      web_frame->GetDocument().InsertStyleSheet(css, &style_sheet_key,
-                                                blink_css_origin);
+  mojom::CSSInjection::Operation operation =
+      injector_->GetCSSInjectionOperation();
+  for (const auto& source : css_sources) {
+    switch (operation) {
+      case mojom::CSSInjection::Operation::kRemove:
+        DCHECK(!source.key.IsEmpty())
+            << "An injection key is required to remove CSS.";
+        // CSS deletion can be thought of as the inverse of CSS injection
+        // (i.e. x - y = x + -y and x | y = ~(~x & ~y)), so it is handled here
+        // in the injection function.
+        //
+        // TODO(https://crbug.com/1116061): Extend this API's capabilities to
+        // also remove CSS added by content scripts?
+        web_frame->GetDocument().RemoveInsertedStyleSheet(source.key,
+                                                          blink_css_origin);
+        break;
+      case mojom::CSSInjection::Operation::kAdd:
+        web_frame->GetDocument().InsertStyleSheet(
+            source.code, &source.key, blink_css_origin,
+            blink::BackForwardCacheAware::kPossiblyDisallow);
+        break;
+    }
   }
 }
 

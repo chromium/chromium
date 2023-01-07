@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2015 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ static void JNI_CronetUrlRequestContextTest_VerifyUrlRequestContextConfig(
   CHECK_EQ(config->http_cache, URLRequestContextConfig::HttpCacheType::MEMORY);
   CHECK_EQ(config->http_cache_max_size, 54321);
   CHECK_EQ(config->user_agent, "efgh");
-  CHECK(!config->effective_experimental_options);
+  CHECK(config->effective_experimental_options.empty());
   CHECK_EQ(config->storage_path,
            base::android::ConvertJavaStringToUTF8(env, jstorage_path));
 }
@@ -62,7 +62,7 @@ JNI_CronetUrlRequestContextTest_VerifyUrlRequestContextQuicOffConfig(
   CHECK_EQ(config->http_cache, URLRequestContextConfig::HttpCacheType::MEMORY);
   CHECK_EQ(config->http_cache_max_size, 54321);
   CHECK_EQ(config->user_agent, "efgh");
-  CHECK(!config->effective_experimental_options);
+  CHECK(config->effective_experimental_options.empty());
   CHECK_EQ(config->storage_path,
            base::android::ConvertJavaStringToUTF8(env, jstorage_path));
 }

@@ -1,10 +1,10 @@
-NAME_FIRST | addfirstName |  |  | addfirstName_1-default
-NAME_LAST | addlastName |  |  | addfirstName_1-default
-ADDRESS_HOME_LINE1 | address |  |  | addfirstName_1-default
-ADDRESS_HOME_CITY | addcity |  |  | addfirstName_1-default
-ADDRESS_HOME_STATE | addstate |  |  | addfirstName_1-default
-ADDRESS_HOME_ZIP | addzipcode |  |  | addfirstName_1-default
-UNKNOWN_TYPE | addzipcodeExt | Optional |  | addfirstName_1-default
-EMAIL_ADDRESS | addemail |  |  | addfirstName_1-default
-PHONE_HOME_WHOLE_NUMBER | addphone |  |  | addfirstName_1-default
-UNKNOWN_TYPE | signupfordeals | Get Walgreens online and in-store deals. | option2 | addfirstName_1-default
+NAME_FIRST | addfirstName |  |  | addfirstName_1
+NAME_LAST | addlastName |  |  | addfirstName_1
+ADDRESS_HOME_LINE1 | address |  |  | addfirstName_1
+ADDRESS_HOME_CITY | addcity |  |  | addfirstName_1
+ADDRESS_HOME_STATE | addstate |  |  | addfirstName_1
+ADDRESS_HOME_ZIP | addzipcode |  |  | addfirstName_1
+UNKNOWN_TYPE | addzipcodeExt | Optional |  | addfirstName_1
+EMAIL_ADDRESS | addemail |  |  | addfirstName_1
+PHONE_HOME_WHOLE_NUMBER | addphone |  |  | addfirstName_1
+UNKNOWN_TYPE | signupfordeals | Get Walgreens online and in-store deals. | option2 | addfirstName_1

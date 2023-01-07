@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -63,8 +63,7 @@ void MediaControlsDisplayCutoutDelegate::Trace(Visitor* visitor) const {
 }
 
 void MediaControlsDisplayCutoutDelegate::DidEnterFullscreen() {
-  if (RuntimeEnabledFeatures::MediaControlsUseCutOutByDefaultEnabled())
-    GetDocument().GetViewportData().SetExpandIntoDisplayCutout(true);
+  GetDocument().GetViewportData().SetExpandIntoDisplayCutout(true);
 
   video_element_->addEventListener(event_type_names::kTouchstart, this, true);
   video_element_->addEventListener(event_type_names::kTouchend, this, true);

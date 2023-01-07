@@ -1,51 +1,44 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 
 #include "gpu/command_buffer/client/webgpu_interface.h"
-#include "media/base/video_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_descriptor.h"
-#include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
+#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_usage.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_view.h"
+#include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
-#include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_resource_provider_cache.h"
 
 namespace blink {
 
-bool GPUTextureUsage::usedDeprecatedOutputAttachment = false;
-
 namespace {
 
-WGPUTextureDescriptor AsDawnType(const GPUTextureDescriptor* webgpu_desc,
-                                 std::string* label,
-                                 GPUDevice* device) {
+WGPUTextureDescriptor AsDawnType(
+    const GPUTextureDescriptor* webgpu_desc,
+    std::string* label,
+    std::unique_ptr<WGPUTextureFormat[]>* view_formats,
+    GPUDevice* device) {
   DCHECK(webgpu_desc);
   DCHECK(label);
+  DCHECK(view_formats);
   DCHECK(device);
-
-  if (webgpu_desc->usage() & GPUTextureUsage::kRenderAttachment &&
-      GPUTextureUsage::usedDeprecatedOutputAttachment) {
-    GPUTextureUsage::usedDeprecatedOutputAttachment = false;
-    device->AddConsoleWarning(
-        "GPUTextureUsage.OUTPUT_ATTACHMENT has been "
-        "renamed to GPUTextureUsage.RENDER_ATTACHMENT.");
-  }
 
   WGPUTextureDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
   dawn_desc.usage = static_cast<WGPUTextureUsage>(webgpu_desc->usage());
-  dawn_desc.dimension =
-      AsDawnEnum<WGPUTextureDimension>(webgpu_desc->dimension());
-  dawn_desc.size = AsDawnType(&webgpu_desc->size(), device);
-  dawn_desc.format = AsDawnEnum<WGPUTextureFormat>(webgpu_desc->format());
+  dawn_desc.dimension = AsDawnEnum(webgpu_desc->dimension());
+  dawn_desc.size = AsDawnType(webgpu_desc->size());
+  dawn_desc.format = AsDawnEnum(webgpu_desc->format());
   dawn_desc.mipLevelCount = webgpu_desc->mipLevelCount();
   dawn_desc.sampleCount = webgpu_desc->sampleCount();
 
@@ -53,6 +46,10 @@ WGPUTextureDescriptor AsDawnType(const GPUTextureDescriptor* webgpu_desc,
     *label = webgpu_desc->label().Utf8();
     dawn_desc.label = label->c_str();
   }
+
+  *view_formats = AsDawnEnum<WGPUTextureFormat>(webgpu_desc->viewFormats());
+  dawn_desc.viewFormatCount = webgpu_desc->viewFormats().size();
+  dawn_desc.viewFormats = view_formats->get();
 
   return dawn_desc;
 }
@@ -65,14 +62,25 @@ WGPUTextureViewDescriptor AsDawnType(
 
   WGPUTextureViewDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
-  dawn_desc.format = AsDawnEnum<WGPUTextureFormat>(webgpu_desc->format());
-  dawn_desc.dimension =
-      AsDawnEnum<WGPUTextureViewDimension>(webgpu_desc->dimension());
+  if (webgpu_desc->hasFormat()) {
+    dawn_desc.format = AsDawnEnum(webgpu_desc->format());
+  }
+  if (webgpu_desc->hasDimension()) {
+    dawn_desc.dimension = AsDawnEnum(webgpu_desc->dimension());
+  }
   dawn_desc.baseMipLevel = webgpu_desc->baseMipLevel();
-  dawn_desc.mipLevelCount = webgpu_desc->mipLevelCount();
+  dawn_desc.mipLevelCount = WGPU_MIP_LEVEL_COUNT_UNDEFINED;
+  if (webgpu_desc->hasMipLevelCount()) {
+    dawn_desc.mipLevelCount =
+        std::min(webgpu_desc->mipLevelCount(), dawn_desc.mipLevelCount - 1u);
+  }
   dawn_desc.baseArrayLayer = webgpu_desc->baseArrayLayer();
-  dawn_desc.arrayLayerCount = webgpu_desc->arrayLayerCount();
-  dawn_desc.aspect = AsDawnEnum<WGPUTextureAspect>(webgpu_desc->aspect());
+  dawn_desc.arrayLayerCount = WGPU_ARRAY_LAYER_COUNT_UNDEFINED;
+  if (webgpu_desc->hasArrayLayerCount()) {
+    dawn_desc.arrayLayerCount = std::min(webgpu_desc->arrayLayerCount(),
+                                         dawn_desc.arrayLayerCount - 1u);
+  }
+  dawn_desc.aspect = AsDawnEnum(webgpu_desc->aspect());
   if (webgpu_desc->hasLabel()) {
     *label = webgpu_desc->label().Utf8();
     dawn_desc.label = label->c_str();
@@ -90,160 +98,228 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
   DCHECK(device);
   DCHECK(webgpu_desc);
 
+  if (!device->ValidateTextureFormatUsage(webgpu_desc->format(),
+                                          exception_state)) {
+    return nullptr;
+  }
+
+  for (auto view_format : webgpu_desc->viewFormats()) {
+    if (!device->ValidateTextureFormatUsage(view_format, exception_state)) {
+      return nullptr;
+    }
+  }
+
   std::string label;
-  WGPUTextureDescriptor dawn_desc = AsDawnType(webgpu_desc, &label, device);
+  std::unique_ptr<WGPUTextureFormat[]> view_formats;
+  WGPUTextureDescriptor dawn_desc =
+      AsDawnType(webgpu_desc, &label, &view_formats, device);
 
   GPUTexture* texture = MakeGarbageCollected<GPUTexture>(
       device,
-      device->GetProcs().deviceCreateTexture(device->GetHandle(), &dawn_desc),
-      dawn_desc.format);
-  texture->setLabel(webgpu_desc->label());
+      device->GetProcs().deviceCreateTexture(device->GetHandle(), &dawn_desc));
+  if (webgpu_desc->hasLabel())
+    texture->setLabel(webgpu_desc->label());
   return texture;
 }
 
 // static
-GPUTexture* GPUTexture::FromVideo(GPUDevice* device,
-                                  HTMLVideoElement* video,
-                                  WGPUTextureUsage usage,
-                                  ExceptionState& exception_state) {
-  if (!video || !video->videoWidth() || !video->videoHeight()) {
+GPUTexture* GPUTexture::CreateError(GPUDevice* device,
+                                    const WGPUTextureDescriptor* desc) {
+  DCHECK(device);
+  DCHECK(desc);
+  return MakeGarbageCollected<GPUTexture>(
+      device,
+      device->GetProcs().deviceCreateErrorTexture(device->GetHandle(), desc));
+}
+
+// static
+GPUTexture* GPUTexture::FromCanvas(GPUDevice* device,
+                                   HTMLCanvasElement* canvas,
+                                   WGPUTextureUsage usage,
+                                   ExceptionState& exception_state) {
+  if (!canvas || !canvas->width() || !canvas->height()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Missing video source");
+                                      "Missing canvas source");
     return nullptr;
   }
 
-  if (video->WouldTaintOrigin()) {
+  if (!canvas->OriginClean()) {
     exception_state.ThrowSecurityError(
-        "Video element contains cross-origin data and may not be loaded.");
+        "Canvas element is tainted by cross-origin data and may not be "
+        "loaded.");
     return nullptr;
   }
 
-  media::PaintCanvasVideoRenderer* video_renderer = nullptr;
-  scoped_refptr<media::VideoFrame> media_video_frame;
-  if (auto* wmp = video->GetWebMediaPlayer()) {
-    media_video_frame = wmp->GetCurrentFrame();
-    video_renderer = wmp->GetPaintCanvasVideoRenderer();
-  }
-
-  if (!media_video_frame || !video_renderer) {
+  // TODO: Webgpu contexts also return true for Is3d(), but most of the webgl
+  // specific CanvasRenderingContext methods don't work for webgpu.
+  auto* canvas_context = canvas->RenderingContext();
+  if (!canvas_context) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Failed to import texture from video");
+                                      "Missing canvas rendering context");
     return nullptr;
   }
 
-  // Create a CanvasResourceProvider for producing WebGPU-compatible shared
-  // images.
-  // TODO(crbug.com/1174809): This should recycle resources instead of creating
-  // a new shared image every time.
-  const auto intrinsic_size = IntSize(media_video_frame->natural_size());
-  std::unique_ptr<CanvasResourceProvider> resource_provider =
-      CanvasResourceProvider::CreateWebGPUImageProvider(
-          intrinsic_size, kLow_SkFilterQuality,
-          CanvasResourceParams(CanvasColorSpace::kSRGB, kN32_SkColorType,
-                               kPremul_SkAlphaType),
-          CanvasResourceProvider::ShouldInitialize::kNo,
-          SharedGpuContext::ContextProviderWrapper());
-
-  if (!resource_provider) {
+  // If the context is lost, the resource provider would be invalid.
+  auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
+  if (!context_provider_wrapper ||
+      context_provider_wrapper->ContextProvider()->IsContextLost()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Failed to import texture from video");
+                                      "Shared GPU context lost");
     return nullptr;
   }
 
-  viz::RasterContextProvider* raster_context_provider = nullptr;
-  if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
-    if (auto* context_provider = wrapper->ContextProvider())
-      raster_context_provider = context_provider->RasterContextProvider();
-  }
-
-  // TODO(crbug.com/1174809): This isn't efficient for VideoFrames which are
-  // already available as a shared image. A WebGPUMailboxTexture should be
-  // created directly from the VideoFrame instead.
-  const auto dest_rect = gfx::Rect(media_video_frame->natural_size());
-  if (!DrawVideoFrameIntoResourceProvider(
-          std::move(media_video_frame), resource_provider.get(),
-          raster_context_provider, dest_rect, video_renderer)) {
+  // Get a recyclable resource for producing WebGPU-compatible shared images.
+  // First texel i.e. UV (0, 0) should be mapped to top left of the source.
+  std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
+      device->GetDawnControlClient()->GetOrCreateCanvasResource(
+          SkImageInfo::MakeN32Premul(canvas->Size().width(),
+                                     canvas->Size().height()),
+          /*is_origin_top_left=*/true);
+  if (!recyclable_canvas_resource) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                      "Failed to import texture from video");
+                                      "Failed to create resource provider");
     return nullptr;
   }
 
-  // Acquire the CanvasResource wrapping the shared image.
-  scoped_refptr<CanvasResource> canvas_resource =
-      resource_provider->ProduceCanvasResource();
-  DCHECK(canvas_resource->IsValid());
-  DCHECK(canvas_resource->IsAccelerated());
+  CanvasResourceProvider* resource_provider =
+      recyclable_canvas_resource->resource_provider();
+  DCHECK(resource_provider);
 
-  // Extract the format. This is only used to validate copyImageBitmapToTexture
+  // Extract the format. This is only used to validate experimentalImportTexture
   // right now. We may want to reflect it from this function or validate it
   // against some input parameters.
-  WGPUTextureFormat format;
-  switch (canvas_resource->CreateSkImageInfo().colorType()) {
-    case SkColorType::kRGBA_8888_SkColorType:
-      format = WGPUTextureFormat_RGBA8Unorm;
-      break;
-    case SkColorType::kBGRA_8888_SkColorType:
-      format = WGPUTextureFormat_BGRA8Unorm;
-      break;
-    case SkColorType::kRGBA_1010102_SkColorType:
-      format = WGPUTextureFormat_RGB10A2Unorm;
-      break;
-    case SkColorType::kRGBA_F16_SkColorType:
-      format = WGPUTextureFormat_RGBA16Float;
-      break;
-    case SkColorType::kRGBA_F32_SkColorType:
-      format = WGPUTextureFormat_RGBA32Float;
-      break;
-    case SkColorType::kR8G8_unorm_SkColorType:
-      format = WGPUTextureFormat_RG8Unorm;
-      break;
-    case SkColorType::kR16G16_float_SkColorType:
-      format = WGPUTextureFormat_RG16Float;
-      break;
-    default:
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kOperationError,
-          "Failed to import texture from video. Unsupported format.");
+  WGPUTextureFormat format =
+      AsDawnType(resource_provider->GetSkImageInfo().colorType());
+  if (format == WGPUTextureFormat_Undefined) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Unsupported format for import texture");
+    return nullptr;
+  }
+
+  if (!canvas_context->CopyRenderingResultsFromDrawingBuffer(resource_provider,
+                                                             kBackBuffer)) {
+    // Fallback to static bitmap image.
+    SourceImageStatus source_image_status = kInvalidSourceImageStatus;
+    auto image = canvas->GetSourceImageForCanvas(&source_image_status,
+                                                 gfx::SizeF(canvas->Size()));
+    if (source_image_status != kNormalSourceImageStatus) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                        "Failed to get image from canvas");
       return nullptr;
+    }
+    auto* static_bitmap_image = DynamicTo<StaticBitmapImage>(image.get());
+    if (!static_bitmap_image ||
+        !static_bitmap_image->CopyToResourceProvider(resource_provider)) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                        "Failed to import texture from canvas");
+      return nullptr;
+    }
   }
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
-      WebGPUMailboxTexture::FromCanvasResource(device->GetDawnControlClient(),
-                                               device->GetHandle(), usage,
-                                               std::move(canvas_resource));
-  DCHECK(mailbox_texture->GetTexture() != nullptr);
+      WebGPUMailboxTexture::FromCanvasResource(
+          device->GetDawnControlClient(), device->GetHandle(), usage,
+          std::move(recyclable_canvas_resource));
+  DCHECK(mailbox_texture->GetTexture());
 
-  return MakeGarbageCollected<GPUTexture>(device, format,
+  return MakeGarbageCollected<GPUTexture>(device, format, usage,
                                           std::move(mailbox_texture));
 }
 
-GPUTexture::GPUTexture(GPUDevice* device,
-                       WGPUTexture texture,
-                       WGPUTextureFormat format)
-    : DawnObject<WGPUTexture>(device, texture), format_(format) {}
+GPUTexture::GPUTexture(GPUDevice* device, WGPUTexture texture)
+    : DawnObject<WGPUTexture>(device, texture),
+      dimension_(GetProcs().textureGetDimension(GetHandle())),
+      format_(GetProcs().textureGetFormat(GetHandle())),
+      usage_(GetProcs().textureGetUsage(GetHandle())) {}
 
 GPUTexture::GPUTexture(GPUDevice* device,
                        WGPUTextureFormat format,
+                       WGPUTextureUsage usage,
                        scoped_refptr<WebGPUMailboxTexture> mailbox_texture)
     : DawnObject<WGPUTexture>(device, mailbox_texture->GetTexture()),
       format_(format),
-      mailbox_texture_(std::move(mailbox_texture)) {}
+      usage_(usage),
+      mailbox_texture_(std::move(mailbox_texture)) {
+  if (mailbox_texture_) {
+    device_->TrackTextureWithMailbox(this);
+  }
+
+  // Mailbox textures are all 2d texture.
+  dimension_ = WGPUTextureDimension_2D;
+
+  // The mailbox texture releases the texture on destruction, so reference it
+  // here.
+  GetProcs().textureReference(GetHandle());
+}
 
 GPUTextureView* GPUTexture::createView(
-    const GPUTextureViewDescriptor* webgpu_desc) {
+    const GPUTextureViewDescriptor* webgpu_desc,
+    ExceptionState& exception_state) {
   DCHECK(webgpu_desc);
+
+  if (webgpu_desc->hasFormat() && !device()->ValidateTextureFormatUsage(
+                                      webgpu_desc->format(), exception_state)) {
+    return nullptr;
+  }
 
   std::string label;
   WGPUTextureViewDescriptor dawn_desc = AsDawnType(webgpu_desc, &label);
   GPUTextureView* view = MakeGarbageCollected<GPUTextureView>(
       device_, GetProcs().textureCreateView(GetHandle(), &dawn_desc));
-  view->setLabel(webgpu_desc->label());
+  if (webgpu_desc->hasLabel())
+    view->setLabel(webgpu_desc->label());
   return view;
 }
 
+GPUTexture::~GPUTexture() {
+  DissociateMailbox();
+}
+
 void GPUTexture::destroy() {
+  if (mailbox_texture_) {
+    DissociateMailbox();
+    device_->UntrackTextureWithMailbox(this);
+  }
   GetProcs().textureDestroy(GetHandle());
-  mailbox_texture_.reset();
+}
+
+uint32_t GPUTexture::width() const {
+  return GetProcs().textureGetWidth(GetHandle());
+}
+
+uint32_t GPUTexture::height() const {
+  return GetProcs().textureGetHeight(GetHandle());
+}
+
+uint32_t GPUTexture::depthOrArrayLayers() const {
+  return GetProcs().textureGetDepthOrArrayLayers(GetHandle());
+}
+
+uint32_t GPUTexture::mipLevelCount() const {
+  return GetProcs().textureGetMipLevelCount(GetHandle());
+}
+
+uint32_t GPUTexture::sampleCount() const {
+  return GetProcs().textureGetSampleCount(GetHandle());
+}
+
+String GPUTexture::dimension() const {
+  return FromDawnEnum(GetProcs().textureGetDimension(GetHandle()));
+}
+
+String GPUTexture::format() const {
+  return FromDawnEnum(GetProcs().textureGetFormat(GetHandle()));
+}
+
+uint32_t GPUTexture::usage() const {
+  return GetProcs().textureGetUsage(GetHandle());
+}
+
+void GPUTexture::DissociateMailbox() {
+  if (mailbox_texture_) {
+    mailbox_texture_->Dissociate();
+    mailbox_texture_ = nullptr;
+  }
 }
 
 }  // namespace blink

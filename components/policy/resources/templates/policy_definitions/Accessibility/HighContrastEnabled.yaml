@@ -1,0 +1,19 @@
+caption: Enable high contrast mode
+desc: |-
+  Setting the policy to True keeps High-contrast mode on. Setting the policy to False keeps High-contrast mode off.
+
+        If you set the policy, users can't change it. If not set, High-contrast mode is off, but users can turn it on any time.
+example_value: true
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- file://components/policy/resources/OWNERS
+- rsorokin@chromium.org
+schema:
+  type: boolean
+supported_on:
+- chrome_os:29-
+tags: []
+type: main

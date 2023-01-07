@@ -22,7 +22,6 @@
 
 [
     ActiveScriptWrappable,
-    ConstructorCallWith=Document,
     Exposed=Window,
     HTMLConstructor,
     NamedConstructor=Image(optional unsigned long width, optional unsigned long height),
@@ -43,7 +42,7 @@
     readonly attribute DOMString currentSrc;
     [CEReactions, Reflect, ReflectOnly=("","no-referrer","origin","no-referrer-when-downgrade","origin-when-cross-origin","unsafe-url"), ReflectMissing="", ReflectInvalid=""] attribute DOMString referrerPolicy;
     [CEReactions, Reflect, ReflectOnly=("async", "sync", "auto"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString decoding;
-    [CEReactions, MeasureAs=PriorityHints, RuntimeEnabled=PriorityHints, Reflect, ReflectOnly=("low", "auto", "high"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString importance;
+    [CEReactions, MeasureAs=PriorityHints, RuntimeEnabled=PriorityHints, Reflect, ReflectOnly=("low", "auto", "high"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString fetchPriority;
     [RuntimeEnabled=LazyImageLoading, CEReactions, Reflect, ReflectOnly=("lazy", "eager", "auto"), ReflectMissing="auto", ReflectInvalid="auto"] attribute DOMString loading;
 
     // obsolete members
@@ -64,3 +63,5 @@
 
     [CallWith=ScriptState, RaisesException] Promise<void> decode();
 };
+
+HTMLImageElement includes HTMLAttributionSrcElementUtils;

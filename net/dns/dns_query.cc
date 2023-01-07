@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,12 +10,13 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/opt_record_rdata.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -58,31 +59,36 @@ size_t DeterminePaddingSize(size_t unpadded_size,
   }
 }
 
-base::Optional<OptRecordRdata> AddPaddingIfNecessary(
+std::unique_ptr<OptRecordRdata> AddPaddingIfNecessary(
     const OptRecordRdata* opt_rdata,
     DnsQuery::PaddingStrategy padding_strategy,
     size_t no_opt_buffer_size) {
   // If no input OPT record rdata and no padding, no OPT record rdata needed.
   if (!opt_rdata && padding_strategy == DnsQuery::PaddingStrategy::NONE)
-    return base::nullopt;
+    return nullptr;
 
-  OptRecordRdata merged_opt_rdata;
-  if (opt_rdata)
-    merged_opt_rdata.AddOpts(*opt_rdata);
+  std::unique_ptr<OptRecordRdata> merged_opt_rdata;
+  if (opt_rdata) {
+    merged_opt_rdata = OptRecordRdata::Create(
+        base::StringPiece(opt_rdata->buf().data(), opt_rdata->buf().size()));
+  } else {
+    merged_opt_rdata = std::make_unique<OptRecordRdata>();
+  }
+  DCHECK(merged_opt_rdata);
 
-  size_t unpadded_size = no_opt_buffer_size + OptRecordSize(&merged_opt_rdata);
+  size_t unpadded_size =
+      no_opt_buffer_size + OptRecordSize(merged_opt_rdata.get());
   size_t padding_size = DeterminePaddingSize(unpadded_size, padding_strategy);
 
   if (padding_size > 0) {
     // |opt_rdata| must not already contain padding if DnsQuery is to add
     // padding.
-    DCHECK(!merged_opt_rdata.ContainsOptCode(dns_protocol::kEdnsPadding));
+    DCHECK(!merged_opt_rdata->ContainsOptCode(dns_protocol::kEdnsPadding));
     // OPT header is the minimum amount of padding.
     DCHECK(padding_size >= OptRecordRdata::Opt::kHeaderSize);
 
-    merged_opt_rdata.AddOpt(OptRecordRdata::Opt(
-        dns_protocol::kEdnsPadding,
-        std::string(padding_size - OptRecordRdata::Opt::kHeaderSize, 0)));
+    merged_opt_rdata->AddOpt(std::make_unique<OptRecordRdata::PaddingOpt>(
+        padding_size - OptRecordRdata::Opt::kHeaderSize));
   }
 
   return merged_opt_rdata;
@@ -101,15 +107,15 @@ DnsQuery::DnsQuery(uint16_t id,
                    PaddingStrategy padding_strategy)
     : qname_size_(qname.size()) {
 #if DCHECK_IS_ON()
-  base::Optional<std::string> dotted_name = DnsDomainToString(qname);
+  absl::optional<std::string> dotted_name = DnsDomainToString(qname);
   DCHECK(dotted_name && !dotted_name.value().empty());
 #endif  // DCHECK_IS_ON()
 
   size_t buffer_size = kHeaderSize + QuestionSize(qname_size_);
-  base::Optional<OptRecordRdata> merged_opt_rdata =
+  std::unique_ptr<OptRecordRdata> merged_opt_rdata =
       AddPaddingIfNecessary(opt_rdata, padding_strategy, buffer_size);
   if (merged_opt_rdata)
-    buffer_size += OptRecordSize(&merged_opt_rdata.value());
+    buffer_size += OptRecordSize(merged_opt_rdata.get());
 
   io_buffer_ = base::MakeRefCounted<IOBufferWithSize>(buffer_size);
 
@@ -127,7 +133,7 @@ DnsQuery::DnsQuery(uint16_t id,
   writer.WriteU16(dns_protocol::kClassIN);
 
   if (merged_opt_rdata) {
-    DCHECK(!merged_opt_rdata.value().opts().empty());
+    DCHECK_NE(merged_opt_rdata->OptCount(), 0u);
 
     header_->arcount = base::HostToNet16(1);
     // Write OPT pseudo-resource record.
@@ -142,9 +148,9 @@ DnsQuery::DnsQuery(uint16_t id,
     writer.WriteU16(0);  // flags
 
     // rdata
-    writer.WriteU16(merged_opt_rdata.value().buf().size());  // rdata length
-    writer.WriteBytes(merged_opt_rdata.value().buf().data(),
-                      merged_opt_rdata.value().buf().size());
+    writer.WriteU16(merged_opt_rdata->buf().size());  // rdata length
+    writer.WriteBytes(merged_opt_rdata->buf().data(),
+                      merged_opt_rdata->buf().size());
   }
 }
 
@@ -175,7 +181,8 @@ bool DnsQuery::Parse(size_t valid_bytes) {
   // buffer. If we have constructed the query from data or the query is already
   // parsed after constructed from a raw buffer, |header_| is not null.
   DCHECK(header_ == nullptr);
-  base::BigEndianReader reader(io_buffer_->data(), valid_bytes);
+  base::BigEndianReader reader(
+      reinterpret_cast<const uint8_t*>(io_buffer_->data()), valid_bytes);
   dns_protocol::Header header;
   if (!ReadHeader(&reader, &header)) {
     return false;
@@ -183,8 +190,9 @@ bool DnsQuery::Parse(size_t valid_bytes) {
   if (header.flags & dns_protocol::kFlagResponse) {
     return false;
   }
-  if (header.qdcount > 1) {
-    VLOG(1) << "Not supporting parsing a DNS query with multiple questions.";
+  if (header.qdcount != 1) {
+    VLOG(1) << "Not supporting parsing a DNS query with multiple (or zero) "
+               "questions.";
     return false;
   }
   std::string qname;
@@ -214,8 +222,9 @@ base::StringPiece DnsQuery::qname() const {
 
 uint16_t DnsQuery::qtype() const {
   uint16_t type;
-  base::ReadBigEndian<uint16_t>(io_buffer_->data() + kHeaderSize + qname_size_,
-                                &type);
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(
+                          io_buffer_->data() + kHeaderSize + qname_size_),
+                      &type);
   return type;
 }
 
@@ -256,13 +265,18 @@ bool DnsQuery::ReadHeader(base::BigEndianReader* reader,
 bool DnsQuery::ReadName(base::BigEndianReader* reader, std::string* out) {
   DCHECK(out != nullptr);
   out->clear();
-  out->reserve(dns_protocol::kMaxNameLength);
+  out->reserve(dns_protocol::kMaxNameLength + 1);
   uint8_t label_length;
   if (!reader->ReadU8(&label_length)) {
     return false;
   }
-  out->append(reinterpret_cast<char*>(&label_length), 1);
   while (label_length) {
+    if (out->size() + 1 + label_length > dns_protocol::kMaxNameLength) {
+      return false;
+    }
+
+    out->append(reinterpret_cast<char*>(&label_length), 1);
+
     base::StringPiece label;
     if (!reader->ReadPiece(&label, label_length)) {
       return false;
@@ -271,8 +285,9 @@ bool DnsQuery::ReadName(base::BigEndianReader* reader, std::string* out) {
     if (!reader->ReadU8(&label_length)) {
       return false;
     }
-    out->append(reinterpret_cast<char*>(&label_length), 1);
   }
+  DCHECK_LE(out->size(), static_cast<size_t>(dns_protocol::kMaxNameLength));
+  out->append(1, '\0');
   return true;
 }
 

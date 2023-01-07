@@ -1,0 +1,3 @@
+per-file StartSurfaceToolbar*=file://chrome/android/features/start_surface/OWNERS
+per-file IncognitoSwitch*=file://chrome/android/java/src/org/chromium/chrome/browser/tasks/OWNERS
+per-file TabSwitcher*=file://chrome/android/java/src/org/chromium/chrome/browser/tasks/OWNERS

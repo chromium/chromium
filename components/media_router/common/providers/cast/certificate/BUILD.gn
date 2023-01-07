@@ -1,0 +1,107 @@
+# Copyright 2016 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/openscreen/src/build/config/cast.gni")
+
+config("developer_certificate_config") {
+  defines = []
+  if (cast_allow_developer_certificate) {
+    defines += [ "CAST_ALLOW_DEVELOPER_CERTIFICATE" ]
+  }
+}
+
+source_set("certificate_reader") {
+  sources = [
+    "cast_cert_reader.cc",
+    "cast_cert_reader.h",
+  ]
+  deps = [
+    "//base",
+    "//net",
+  ]
+}
+
+source_set("certificate_roots") {
+  sources = [
+    "cast_root_ca_cert_der-inc.h",
+    "eureka_root_ca_der-inc.h",
+  ]
+}
+
+static_library("certificate") {
+  sources = [
+    "cast_cert_validator.cc",
+    "cast_cert_validator.h",
+    "cast_crl.cc",
+    "cast_crl.h",
+  ]
+  configs += [ ":developer_certificate_config" ]
+  deps = [
+    ":certificate_roots",
+    "//base",
+    "//net",
+    "//third_party/boringssl",
+    "//third_party/openscreen/src/cast/common/certificate/proto:certificate_proto",
+
+    # Although we won't use the reader unless cast_allow_developer_certificate
+    # is enabled, the buildfiles generation step requires the inclusion
+    # anyway since it doesn't check preprocesser macros.
+    ":certificate_reader",
+  ]
+  if (cast_allow_developer_certificate) {
+    sources += [
+      "switches.cc",
+      "switches.h",
+    ]
+  }
+}
+
+source_set("openscreen_certificate_verifier") {
+  sources = [
+    "net_parsed_certificate.cc",
+    "net_parsed_certificate.h",
+    "net_trust_store.cc",
+    "net_trust_store.h",
+  ]
+  public_deps = [
+    ":certificate_roots",
+    "//base",
+    "//net",
+    "//third_party/openscreen/src/cast/common:public",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "cast_cert_test_helpers.cc",
+    "cast_cert_test_helpers.h",
+  ]
+  deps = [
+    ":certificate",
+    ":certificate_reader",
+    "//base",
+    "//net",
+    "//testing/gtest",
+    "//third_party/openscreen/src/cast/common/certificate/proto:certificate_unittest_proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "cast_cert_validator_unittest.cc",
+    "cast_crl_unittest.cc",
+  ]
+  deps = [
+    ":certificate",
+    ":certificate_reader",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//net",
+    "//testing/gtest",
+    "//third_party/openscreen/src/cast/common/certificate/proto:certificate_unittest_proto",
+  ]
+}

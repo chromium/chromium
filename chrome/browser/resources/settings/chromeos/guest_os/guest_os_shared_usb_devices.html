@@ -1,68 +1,119 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared md-select">
+  .toggle-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
 
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../metrics_recorder.html">
-<link rel="import" href="guest_os_browser_proxy.html">
+  #selectDevice {
+    width: 100%;
+  }
+</style>
+<div class="settings-box first">
+  <div class="settings-box-text">
+    [[getDescriptionText_()]]
+    <div class="secondary" id="secondaryText">
+      $i18n{guestOsSharedUsbDevicesExtraDescription}
+    </div>
+  </div>
+</div>
+<template is="dom-if" if="[[!hasContainers]]" restamp>
+  <div class="settings-box secondary continuation"
+      hidden="[[sharedUsbDevices_.length]]">
+     $i18n{guestOsSharedUsbDevicesListEmptyMessage}
+  </div>
+  <template is="dom-if" if="[[sharedUsbDevices_.length]]" restamp>
+    <div class="list-frame vertical-list">
+      <template is="dom-repeat" items="[[sharedUsbDevices_]]">
+        <div class="list-item toggle-container">
+          <div class="label">[[item.device.label]]</div>
+          <cr-toggle class="toggle" checked="[[item.shared]]"
+              on-change="onDeviceSharedChange_"
+              aria-label$="[[item.device.label]]">
+          </cr-toggle>
+        </div>
+      </template>
+    </div>
+  </template>
+</template>
 
-<dom-module id="settings-guest-os-shared-usb-devices">
-  <template>
-    <style include="settings-shared">
-      .toggle-container {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-      }
-    </style>
-    <div class="settings-box first">
-      <div class="settings-box-text">
-        [[getDescriptionText_()]]
-        <div class="secondary" id="secondaryText">
-          $i18n{guestOsSharedUsbDevicesExtraDescription}
-        </div>
-      </div>
+<template is="dom-if" if="[[hasContainers]]" restamp>
+  <div id="addUsb" class="settings-box first">
+    <div id="usbTableTitle" class="start"
+        aria-hidden="true">
+      $i18n{guestOsSharedUsbDevicesTableTitle}
     </div>
-    <div class="settings-box secondary continuation"
-        hidden="[[sharedUsbDevices_.length]]">
-       $i18n{guestOsSharedUsbDevicesListEmptyMessage}
-    </div>
-    <template is="dom-if" if="[[sharedUsbDevices_.length]]" restamp>
-      <div class="list-frame vertical-list">
-        <template is="dom-repeat" items="[[sharedUsbDevices_]]">
-          <div class="list-item toggle-container">
-            <div class="label">[[item.device.label]]</div>
-            <cr-toggle class="toggle" checked="[[item.shared]]"
-                on-change="onDeviceSharedChange_"
-                aria-label$="[[item.device.label]]">
-            </cr-toggle>
-          </div>
-        </template>
-      </div>
-    </template>
-    <template is="dom-if" if="[[reassignDevice_]]" restamp>
-      <cr-dialog id="reassignDialog" close-text="$i18n{close}"
-          on-cancel="onReassignCancel_" show-on-attach>
-        <div slot="title">
-          $i18n{guestOsSharedUsbDevicesInUse}
+    <cr-button id="addUsbBtn" on-click="onAddUsbClick_"
+        aria-label="$i18n{guestOsSharedUsbDevicesAddTitle}"
+        aria-describedby="addUsb">
+      $i18n{add}
+    </cr-button>
+  </div>
+  <template is="dom-if" if="[[sharedUsbDevices_.length]]" restamp>
+    <template is="dom-repeat" items="[[allContainers_]]"
+        as="containerInfo" index-as="cidx" mutable-data>
+      <template is="dom-if"
+          if="[[showGuestId_(sharedUsbDevices_, containerInfo.id)]]" restamp>
+        <h2 id="usbListContainerId[[cidx]]"
+            hidden="[[!showGuestId_(sharedUsbDevices_, containerInfo.id)]]"
+            class="settings-box usb-list-guest-id">
+            [[guestLabel_(containerInfo.id)]]
+        </h2>
+        <div class="list-frame vertical-list usb-list-card"
+            id="usbListCard[[cidx]]">
+          <template is="dom-repeat" items="[[sharedUsbDevices_]]"
+              filter="[[byGuestId_(containerInfo.id)]]" mutable-data>
+            <div class="list-item">
+              <div id="usbLabel[[cidx]]-[[index]]"
+                  class="start usb-list-card-label" aria-hidden="true">
+                [[item.device.label]]
+              </div>
+              <cr-icon-button id="removeUsb[[cidx]]-[[index]]"
+                  class="icon-clear usb-list-card-remove" title="$i18n{remove}"
+                  on-click="onRemoveUsbClick_" data-guid$="[[item.device.guid]]"
+                  aria-label="$i18n{remove}"
+                  aria-describedby$="usbLabel[[cidx]]-[[index]]">
+              </cr-icon-button>
+            </div>
+          </template>
         </div>
-        <div slot="body">
-          [[getReassignDialogText_(reassignDevice_)]]
-        </div>
-        <div slot="button-container">
-          <cr-button id="cancel" class="cancel-button"
-              on-click="onReassignCancel_">
-            $i18n{cancel}
-          </cr-button>
-          <cr-button id="continue" class="action-button"
-              on-click="onReassignContinueClick_">
-            $i18n{continue}
-          </cr-button>
-        </div>
-      </cr-dialog>
+      </template>
     </template>
   </template>
-  <script src="guest_os_shared_usb_devices.js"></script>
-</dom-module>
+  <template is="dom-if"
+      if="[[!hasSharedDevices_(sharedUsbDevices_, allContainers_)]]" restamp>
+    <div class="settings-box secondary">
+      $i18n{guestOsSharedUsbDevicesNoneAttached}
+    </div>
+  </template>
+</template>
+<template is="dom-if" if="[[showAddUsbDialog_]]" restamp>
+  <settings-guest-os-shared-usb-devices-add-dialog
+      on-close="onAddUsbDialogClose_"
+      shared-usb-devices="[[sharedUsbDevices_]]"
+      all-containers="[[allContainers_]]"
+      default-guest-id="[[defaultGuestId]]">
+  </settings-guest-os-shared-usb-devices-add-dialog>
+</template>
+<template is="dom-if" if="[[reassignDevice_]]" restamp>
+  <cr-dialog id="reassignDialog" close-text="$i18n{close}"
+      on-cancel="onReassignCancel_" show-on-attach>
+    <div slot="title">
+      $i18n{guestOsSharedUsbDevicesInUse}
+    </div>
+    <div slot="body">
+      [[getReassignDialogText_(reassignDevice_)]]
+    </div>
+    <div slot="button-container">
+      <cr-button id="cancel" class="cancel-button"
+          on-click="onReassignCancel_">
+        $i18n{cancel}
+      </cr-button>
+      <cr-button id="continue" class="action-button"
+          on-click="onReassignContinueClick_">
+        $i18n{continue}
+      </cr-button>
+    </div>
+  </cr-dialog>
+</template>

@@ -1,4 +1,4 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
+// Copyright 2014 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -74,8 +74,26 @@ enum SearchEngineType {
   SEARCH_ENGINE_OCEANHERO = 57,
   SEARCH_ENGINE_PRIVACYWALL = 58,
   SEARCH_ENGINE_ECOSIA = 59,
+  SEARCH_ENGINE_PETALSEARCH = 60,
+  SEARCH_ENGINE_STARTER_PACK_BOOKMARKS = 61,
+  SEARCH_ENGINE_STARTER_PACK_HISTORY = 62,
+  SEARCH_ENGINE_STARTER_PACK_TABS = 63,
 
   SEARCH_ENGINE_MAX  // Bounding value needed for UMA histogram macro.
+};
+
+// Enum to record the type of search engine a user used in keyword mode. This
+// should be kept aligned with the `OmniboxBuiltinEngineType` enum in enums.xml.
+// Entries should not be renumbered and numeric values should never be reused.
+enum BuiltinEngineType {
+  KEYWORD_MODE_NON_BUILT_IN = 0,
+  KEYWORD_MODE_PREPOPULATED_ENGINE = 1,
+  KEYWORD_MODE_STARTER_PACK_BOOKMARKS = 2,
+  KEYWORD_MODE_STARTER_PACK_HISTORY = 3,
+  KEYWORD_MODE_STARTER_PACK_TABS = 4,
+
+  KEYWORD_MODE_ENGINE_TYPE_MAX  // Bounding value needed for UMA histogram
+                                // macro.
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINE_TYPE_H_
